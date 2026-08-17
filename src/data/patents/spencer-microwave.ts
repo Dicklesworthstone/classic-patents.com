@@ -5,7 +5,7 @@ export const spencerMicrowavePatent: Patent = {
   patentNumber: "US 2,495,429",
   title: "Method of Treating Foodstuffs",
   shortTitle: "Spencer Microwave Oven & Dielectric RF Heating",
-  subtitle: "High-Power Cavity Magnetron and 2.45 GHz Dielectric Molecular Agitation",
+  subtitle: "High-Power Cavity Magnetron and Ten-Centimeter Microwave Food Processing",
   inventors: ["Percy L. Spencer"],
   inventorLocation: "Newton, Massachusetts",
   grantDate: "1950-01-24",
@@ -14,9 +14,9 @@ export const spencerMicrowavePatent: Patent = {
   category: "materials",
   categoryLabel: "Microwave Engineering & Thermodynamics",
   summary:
-    "Spencer's 1945–49 Raytheon filing: put a cavity magnetron on a kitchen box so 2.45 GHz couples to water dipoles in the food instead of to a radar target. The first Radarange was a 750 lb restaurant cabinet.",
+    "Spencer's 1945 Raytheon filing treats food by directing roughly ten-centimeter microwave energy from magnetrons through a common wave guide, including a conveyor-fed arrangement. The later Radarange made this process familiar in kitchens.",
   heroQuote:
-    "This invention relates to the treatment of foodstuffs, and more particularly to the cooking of food by means of high-frequency electromagnetic energy...",
+    "My present invention relates to the treatment of foodstuffs, and more particularly to the cooking thereof through the use of electromagnetic energy.",
   originalPdfUrl: "/patents/pdfs/us-2495429-spencer-microwave.pdf",
   googlePatentsUrl: "https://patents.google.com/patent/US2495429A/en",
   usptoClassification: "H05B 6/64 (Dielectric heating / Microwave ovens)",
@@ -37,33 +37,34 @@ Such energy has been used before for this purpose, but the frequencies employed 
   },
   plainEnglishExplanation: {
     overview:
-      "For hundreds of thousands of years, humans cooked food by applying heat from the outside in (fire, ovens, pans), relying on slow thermal conduction through meat and vegetables. In 1945, while standing near an active radar cavity magnetron at Raytheon, self-taught engineer Percy Spencer noticed that a peanut butter candy bar in his pocket had melted. He placed corn kernels near the tube, which exploded into popcorn. Spencer realized that microwave radio waves penetrate food and heat it from within in seconds by shaking water molecules.",
+      "Spencer's claimed process is not yet a countertop oven. It is an industrial microwave treatment line: two magnetrons feed a common hollow wave guide, which concentrates the field near food moving on a conveyor. The technical insight is that a microwave wavelength comparable to a food's dimensions can heat it much more efficiently than the low-frequency electromagnetic methods Spencer contrasts with it.",
     coreMechanism:
-      "A cavity magnetron generates 2.45 GHz microwave radiation ($2,450,000,000\\text{ cycles/sec}$). These electromagnetic waves travel through a metal waveguide into a reflective metal cooking cavity. Water molecules ($H_2O$) inside food are electric dipoles (positive on hydrogen, negative on oxygen). As the microwave electric field alternates billions of times per second, the water molecules rapidly twist back and forth to align with the field, dissipating kinetic energy as friction that cooks food uniformly and in a fraction of traditional cooking time.",
+      "Two cavity magnetrons alternate in push-pull operation and feed a common hollow wave guide. The patent repeatedly specifies a wavelength of about ten centimetres or less ($f \\approx c/\\lambda$, so roughly 3 GHz at 10 cm), then controls cooking time by holding food in or moving it through the concentrated field. Modern domestic ovens commonly use 2.45 GHz, a later practical standard rather than a number written into this patent's claims.",
     mechanicalBreakdown: [
       {
         title: "Resonant Cavity Magnetron Oscillator",
         summary: "A vacuum tube with cylindrical resonant cavities cut into a copper anode block.",
         technicalDetails:
-          "Crossed electric ($E$) and magnetic ($B$) fields force emitted thermionic electrons into rotating spoke wheels (cyclotron frequency $\\omega_c = qB/m$), exciting intense electromagnetic microwave oscillations at $2.45\\text{ GHz}$.",
+          "Crossed electric ($E$) and magnetic ($B$) fields guide thermionically emitted electrons through the magnetron's resonant cavities, exciting microwave oscillations. The patent uses two such devices in push-pull operation and calls their output hyper-frequency energy.",
         archaicTerm: "Magnetron oscillator tube",
         modernEquivalent: "Microwave cavity magnetron",
       },
       {
-        title: "TE10 Rectangular Metallic Waveguide",
-        summary: "A hollow copper/aluminum pipe that channels microwaves into the cooking cavity.",
+        title: "Common Hollow Wave Guide",
+        summary: "The shared hollow guide carries both magnetrons' energy to the treatment region.",
         technicalDetails:
-          "Transmits microwaves in the fundamental transverse electric (TE10) mode with minimal attenuation ($<0.1\\text{ dB/m}$), matching impedance into the cooking box.",
+          "Spencer's drawing identifies a common hollow wave guide fed from the two magnetrons by coaxial transmission lines. The specification deliberately claims the method of concentrating and guiding the field rather than a particular domestic-oven cavity geometry.",
         archaicTerm: "Hollow rectangular waveguide",
         modernEquivalent: "Microwave waveguide launcher",
       },
       {
-        title: "Resonant Metallic Cooking Cavity & Mode Stirrer",
-        summary: "A Faraday cage oven box with reflective metal walls.",
+        title: "Transversely Moving Conveyor",
+        summary:
+          "A conveyor carries food through the region exposed to the guided microwave energy.",
         technicalDetails:
-          "Reflective steel walls create multi-mode 3D standing waves. A rotating metallic fan (mode stirrer) continually shifts standing wave hot spots to ensure even heating.",
-        archaicTerm: "Metallic cooking enclosure",
-        modernEquivalent: "Resonant microwave cooking cavity",
+          "Claims 2 and 5 define cooking by conveying food through the treatment region at a rate chosen for the required exposure interval. Claims 3 and 6 likewise protect moving the food relative to the established electromagnetic field.",
+        archaicTerm: "Transversely-moving conveyor system",
+        modernEquivalent: "Continuous microwave processing line",
       },
     ],
     scientificPrinciples: [
@@ -77,9 +78,9 @@ Such energy has been used before for this purpose, but the frequencies employed 
       {
         principle: "Microwave Penetration Depth in Foodstuffs",
         formula:
-          "D_p = \\frac{c}{2\\pi f \\sqrt{2\\varepsilon'}} \\left[ \\sqrt{1 + \\left(\\frac{\\varepsilon''}{\\varepsilon'}\\right)^2} - 1 \\right]^{-1/2} \\approx 1.5\\text{ to }3.5\\text{ cm}",
+          "f = \\frac{c}{\\lambda}; \\quad \\lambda \\approx 10\\text{ cm} \\implies f \\approx 3\\text{ GHz}",
         explanation:
-          "At 2.45 GHz, electromagnetic waves penetrate deep into the bulk volume of food rather than stopping at the surface, eliminating thermal conduction delays.",
+          "The specification's key scale argument is explicit: when wavelength is comparable to a food's average dimension, heating becomes intense while the energy requirement falls. Penetration and absorbed power still depend on the food's dielectric properties and geometry.",
       },
     ],
     whyItMattersToday:
@@ -106,10 +107,7 @@ Such energy has been used before for this purpose, but the frequencies employed 
         "In the method of treating foodstuffs, those steps which include: generating electromagnetic wave energy of a wavelength falling in the microwave region of the electromagnetic spectrum; concentrating and guiding said energy within a restricted region of space; and conveying the foodstuff to be treated through said region of space at such a rate as to expose the same to said energy for an interval of time sufficient to cook the same to a predetermined degree.",
       plainEnglish:
         "Adds a moving conveyor: cook by controlling how long food travels through the microwave field.",
-      keyInnovations: [
-        "Conveyor-fed microwave processing",
-        "Residence-time control",
-      ],
+      keyInnovations: ["Conveyor-fed microwave processing", "Residence-time control"],
     },
     {
       number: 3,
@@ -118,18 +116,14 @@ Such energy has been used before for this purpose, but the frequencies employed 
         "In the method of treating foodstuffs, those steps which include: generating electromagnetic wave energy of a wavelength falling in the microwave region of the electromagnetic spectrum; concentrating and guiding said energy within a restricted region of space to establish an electromagnetic field therein; exposing the foodstuff to be treated to said field for a period of time sufficient to cook the same to a predetermined degree; and moving said foodstuff relative to said field while said foodstuff is so exposed.",
       plainEnglish:
         "Covers relative motion between food and the field, a way to avoid heating one fixed spot continuously.",
-      keyInnovations: [
-        "Relative motion during exposure",
-        "Field-uniformity process control",
-      ],
+      keyInnovations: ["Relative motion during exposure", "Field-uniformity process control"],
     },
     {
       number: 4,
       isIndependent: true,
       originalText:
         "In the method of treating foodstuffs, those steps which include: generating electromagnetic wave energy of a wave length of substantially ten centimeters; concentrating and guiding said wave energy within a restricted region of space and exposing the foodstuff to be treated to the energy so generated for a period of time sufficient to cook the same to a predetermined degree.",
-      plainEnglish:
-        "The narrower version fixes the microwave wavelength at about ten centimetres.",
+      plainEnglish: "The narrower version fixes the microwave wavelength at about ten centimetres.",
       keyInnovations: [
         "Approximately ten-centimetre microwaves",
         "Wavelength matched to food dimensions",
@@ -140,12 +134,8 @@ Such energy has been used before for this purpose, but the frequencies employed 
       isIndependent: true,
       originalText:
         "In the method of treating foodstuffs, those steps which include: generating electromagnetic wave energy of a wave length of substantially ten centimeters; concentrating and guiding said energy within a restricted region of space; and conveying the foodstuff to be treated through said region of space at such a rate of speed as to expose the same to said energy for an interval of time sufficient to cook the same to a predetermined degree.",
-      plainEnglish:
-        "Combines the ten-centimetre wavelength with controlled conveyor speed.",
-      keyInnovations: [
-        "Ten-centimetre process window",
-        "Conveyor-speed control",
-      ],
+      plainEnglish: "Combines the ten-centimetre wavelength with controlled conveyor speed.",
+      keyInnovations: ["Ten-centimetre process window", "Conveyor-speed control"],
     },
     {
       number: 6,
@@ -163,35 +153,38 @@ Such energy has been used before for this purpose, but the frequencies employed 
   drawings: [
     {
       figureNumber: "Fig. 1",
-      title: "Spencer Microwave Cooking System",
+      title: "Spencer Dual-Magnetron Food-Treatment System",
       caption:
-        "Schematic diagram showing cavity magnetron, power transformer, rectangular waveguide, and reflective metal cooking chamber.",
+        "The sole patent drawing: two push-pull magnetrons, their transformer supply and coaxial lines, a common hollow wave guide, and food moving on a conveyor at the guide outlet.",
       svgType: "spencer-microwave",
       callouts: [
         {
           id: "sm-1",
           figureRef: "Fig. 1",
-          label: "A",
-          element: "Cavity Magnetron Oscillator",
-          description: "Generates 2.45 GHz high-power microwave radiation.",
+          label: "10, 11",
+          element: "Push-Pull Magnetron Oscillators",
+          description:
+            "The paired magnetron electron-discharge devices alternately feed hyper-frequency energy to the common guide.",
           x: 25,
           y: 40,
         },
         {
           id: "sm-2",
           figureRef: "Fig. 1",
-          label: "B",
-          element: "Rectangular Waveguide",
-          description: "Hollow metal duct channeling microwave energy into the oven.",
+          label: "23",
+          element: "Common Hollow Wave Guide",
+          description:
+            "Concentrates and guides energy from both magnetrons to the food-treatment region.",
           x: 45,
           y: 30,
         },
         {
           id: "sm-3",
           figureRef: "Fig. 1",
-          label: "C",
-          element: "Reflective Cooking Cavity",
-          description: "Metal Faraday enclosure reflecting microwaves into food from all angles.",
+          label: "28",
+          element: "Transversely-Moving Conveyor",
+          description:
+            "Carries food through the exposed region at a speed set by the desired cooking time.",
           x: 75,
           y: 50,
         },

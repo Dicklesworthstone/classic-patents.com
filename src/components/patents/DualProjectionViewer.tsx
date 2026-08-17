@@ -19,6 +19,7 @@ import { ClaimsDecoder } from "./ClaimsDecoder";
 import { HistoricalContextPanel } from "./HistoricalContextPanel";
 import { InteractiveDiagramViewer } from "./InteractiveDiagramViewer";
 import { MuseumBroadsidePlaque } from "./MuseumBroadsidePlaque";
+import { PhysicsTelemetryBadge } from "./PhysicsTelemetryBadge";
 import { PatentVisualDispatcher } from "./visuals";
 
 interface DualProjectionViewerProps {
@@ -374,6 +375,7 @@ export function DualProjectionViewer({ patent, initialView }: DualProjectionView
                 </span>
               </div>
               <PatentVisualDispatcher patentId={patent.id} />
+              <PhysicsTelemetryBadge patentId={patent.id} />
             </div>
 
             {/* Step-by-Step Mechanical Breakdown Grid */}

@@ -12,6 +12,7 @@ import {
 } from "lucide-react";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import type { PatentDrawing } from "@/types/patent";
+import { PhysicsTelemetryBadge } from "./PhysicsTelemetryBadge";
 
 interface InteractiveDiagramViewerProps {
   drawings: PatentDrawing[];
@@ -1361,6 +1362,9 @@ export function InteractiveDiagramViewer({
           )}
         </div>
       </div>
+
+      {/* Embedded FrankenSim SI Physics Telemetry Readout */}
+      {patentId && <PhysicsTelemetryBadge patentId={patentId} />}
     </div>
   );
 }

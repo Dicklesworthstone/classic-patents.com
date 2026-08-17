@@ -67,14 +67,18 @@ async function runVisualsAudit() {
 
     try {
       const response = await page.goto(url, { waitUntil: "networkidle", timeout: 15000 });
-      if (!response || response.status() !== 200) {
+      if (response?.status() !== 200) {
         throw new Error(`HTTP Status ${response?.status()}`);
       }
 
-      // 1. Check 3D WebGL Canvas Render
-      await page.waitForTimeout(500);
-      const canvasCount = await page.locator("canvas").count();
-      const canvasFound = canvasCount > 0;
+      // 1. Check 3D WebGL Canvas Render (allow dynamic import chunk to finish mounting)
+      let canvasFound = false;
+      try {
+        await page.waitForSelector("canvas", { timeout: 6000 });
+        canvasFound = true;
+      } catch {
+        canvasFound = false;
+      }
 
       let threeDStatus: "PASS" | "FAIL" = "PASS";
       if (!canvasFound || pageErrors.length > 0) {
@@ -118,7 +122,9 @@ async function runVisualsAudit() {
         console.log("✓ OK (3D: PASS, 2D: PASS, Errors: 0)");
       } else {
         failCount++;
-        console.log(`❌ FAILED (3D: ${threeDStatus}, 2D: ${twoDStatus}, PageErrors: ${pageErrors.length}, ConsoleErrors: ${consoleErrors.length})`);
+        console.log(
+          `❌ FAILED (3D: ${threeDStatus}, 2D: ${twoDStatus}, PageErrors: ${pageErrors.length}, ConsoleErrors: ${consoleErrors.length})`,
+        );
         if (pageErrors.length > 0) {
           console.log(`   [PageErrors]:`, pageErrors);
         }
