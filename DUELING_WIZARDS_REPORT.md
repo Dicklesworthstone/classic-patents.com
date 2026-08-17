@@ -138,8 +138,9 @@ underspecified:
 - Patent detail pages currently report a 389 kB first-load JavaScript footprint in the successful
   production build. The all-visual static import pattern remains a measured follow-up candidate.
 - OCR output is not a substitute for human-reviewed transcription or provenance metadata.
-- `ubs --diff` found zero critical issues, but reported broad static warnings in concurrent 3D
-  work; those warnings require owner-specific triage rather than mechanical edits.
+- An earlier scan of a large concurrent 3D diff reported broad static warnings, requiring
+  owner-specific triage rather than mechanical edits. The final `ubs --diff` scan of the current
+  five-file diff found zero critical issues and zero warnings.
 
 ## Verification completed
 
@@ -148,4 +149,4 @@ underspecified:
 - `bun run typecheck` — passed at the final snapshot.
 - `bun run lint` — passed at the final snapshot.
 - `bun run build` — passed at the final snapshot; generated all 22 patent routes.
-- `ubs --diff` — 0 critical findings; warnings reported as above.
+- `ubs --diff` — final current-diff scan: 0 critical findings and 0 warnings.
