@@ -10,12 +10,15 @@ export function BardeenTransistorSim() {
 
   // Solid-state calculations
   // Current transfer ratio alpha decreases with wider point spacing
-  const alphaRatio = Math.max(0.4, 1.8 * Math.exp(-pointSpacingMicrons / 80));
+  const geometricAlpha = Math.max(0.4, 1.8 * Math.exp(-pointSpacingMicrons / 80));
+  // Reverse collector bias must be strong enough to sweep injected holes before they recombine.
+  const collectionEfficiency = Math.min(1, Math.max(0.25, collectorVoltageV / 28));
+  const alphaRatio = geometricAlpha * collectionEfficiency;
   const collectorCurrentMa = emitterCurrentMa * alphaRatio;
   const loadResistanceKohm = 20;
   const inputResistanceOhm = 250;
   const voltageGain = (alphaRatio * (loadResistanceKohm * 1000)) / inputResistanceOhm;
-  const powerGainDb = (10 * Math.log10(voltageGain * alphaRatio)).toFixed(1);
+  const powerGainDb = (10 * Math.log10(Math.max(1e-6, voltageGain * alphaRatio))).toFixed(1);
 
   return (
     <div className="rounded-2xl border border-amber-900/20 dark:border-ink-800 bg-parchment-50 dark:bg-ink-950 p-6 sm:p-7 shadow-patent space-y-6">

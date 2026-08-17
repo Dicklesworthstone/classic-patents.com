@@ -6,12 +6,12 @@ import { useState } from "react";
 import { ThemeToggle } from "./ThemeToggle";
 
 const NAV_LINKS = [
-  { href: "/", label: "Museum Catalog", short: "Catalog" },
-  { href: "/patents/us-821393-wright-flyer", label: "Wright Flyer 3D", short: "Flyer" },
-  { href: "/patents/us-381968-tesla-motor", label: "Tesla AC Motor", short: "Tesla" },
-  { href: "/patents/us-2981877-noyce-ic", label: "Noyce Silicon IC", short: "Noyce" },
-  { href: "/timeline", label: "Timeline", short: "Timeline" },
-  { href: "/about", label: "Mission", short: "Mission" },
+  { href: "/", label: "Museum Catalog" },
+  { href: "/patents/us-821393-wright-flyer", label: "Wright Flyer 3D" },
+  { href: "/patents/us-381968-tesla-motor", label: "Tesla AC Motor" },
+  { href: "/patents/us-2981877-noyce-ic", label: "Noyce Silicon IC" },
+  { href: "/timeline", label: "Timeline" },
+  { href: "/about", label: "Mission" },
 ] as const;
 
 export function Header() {

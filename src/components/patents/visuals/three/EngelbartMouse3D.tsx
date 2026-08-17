@@ -354,6 +354,9 @@ export function EngelbartMouse3D() {
     let reqId: number;
     const clock = new THREE.Clock();
     let prevX = 0;
+    let hudAcc = 0;
+    let lastHudX = Number.NaN;
+    let lastHudY = Number.NaN;
     let prevZ = 0;
 
     const animate = () => {
@@ -408,10 +411,17 @@ export function EngelbartMouse3D() {
       redButton.position.y = p.isClicking ? 2.44 : 2.6;
       switchLeaf.rotation.x = p.isClicking ? 0.08 : 0;
 
-      // Live 2D Screen Coordinate Simulation
+      // Live 2D Screen Coordinate Simulation — throttle HUD writes; rAF setState every frame
+      // would re-render the whole React tree at 60 Hz.
       const screenX = Math.round(512 + posX * 120);
       const screenY = Math.round(384 + posZ * 120);
-      setCurrentCoords({ x: screenX, y: screenY });
+      hudAcc += delta;
+      if (hudAcc >= 0.08 && (screenX !== lastHudX || screenY !== lastHudY)) {
+        hudAcc = 0;
+        lastHudX = screenX;
+        lastHudY = screenY;
+        setCurrentCoords({ x: screenX, y: screenY });
+      }
 
       controls.update();
       renderer.render(scene, camera);
