@@ -1,0 +1,262 @@
+"use client";
+
+import { Play, RotateCcw, Volume2, VolumeX } from "lucide-react";
+import { useEffect, useRef, useState } from "react";
+
+export function DeLavalSeparatorSim() {
+  const [bowlRpm, setBowlRpm] = useState<number>(6500);
+  const [rawMilkFlowLph, setRawMilkFlowLph] = useState<number>(300);
+  const [isPlaying, setIsPlaying] = useState<boolean>(true);
+  const [isMuted, setIsMuted] = useState<boolean>(true);
+  const [angleDeg, setAngleDeg] = useState<number>(0);
+  const animRef = useRef<number | null>(null);
+
+  // Centrifugal fluid mechanics
+  const bowlRadiusMeters = 0.1;
+  const angularVelocityRadPs = (bowlRpm * 2 * Math.PI) / 60;
+  const centrifugalAccG = Math.round((angularVelocityRadPs ** 2 * bowlRadiusMeters) / 9.80665);
+  const creamYieldLph = Number((rawMilkFlowLph * 0.12).toFixed(1));
+  const skimMilkYieldLph = Number((rawMilkFlowLph * 0.88).toFixed(1));
+  const separationEfficiencyPct = Math.min(
+    99.9,
+    Number((95 + (centrifugalAccG / 5000) * 4.5).toFixed(1)),
+  );
+
+  useEffect(() => {
+    if (!isPlaying) return;
+    let lastTime = performance.now();
+
+    const loop = (time: number) => {
+      const dt = (time - lastTime) / 1000;
+      lastTime = time;
+      setAngleDeg((prev) => (prev + (bowlRpm / 60) * 360 * dt) % 360);
+      animRef.current = requestAnimationFrame(loop);
+    };
+
+    animRef.current = requestAnimationFrame(loop);
+    return () => {
+      if (animRef.current) cancelAnimationFrame(animRef.current);
+    };
+  }, [isPlaying, bowlRpm]);
+
+  return (
+    <div className="w-full rounded-2xl border border-parchment-300 dark:border-ink-800 bg-parchment-50 dark:bg-ink-950 p-4 sm:p-6 shadow-md transition-colors">
+      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 border-b border-parchment-200 dark:border-ink-800 pb-3 mb-4">
+        <div>
+          <h3 className="font-serif text-lg font-bold text-ink-900 dark:text-parchment-100">
+            De Laval Continuous Centrifugal Cream Separator (US 247,804)
+          </h3>
+          <p className="font-sans text-xs text-ink-500 dark:text-ink-400">
+            Interactive 2D Centrifugal Model — High-G Artificial Gravity (4,000+ G), Concentric
+            Fluid Density Stratification, and Dual Spout Discharge
+          </p>
+        </div>
+        <div className="flex items-center gap-2 self-end sm:self-auto">
+          <button
+            type="button"
+            onClick={() => setIsPlaying(!isPlaying)}
+            aria-label={isPlaying ? "Pause Simulation" : "Play Simulation"}
+            className="p-2 rounded-lg bg-parchment-200 dark:bg-ink-800 hover:bg-parchment-300 dark:hover:bg-ink-700 text-ink-800 dark:text-parchment-200 transition-colors"
+          >
+            <Play className={`w-4 h-4 ${isPlaying ? "text-amber-600" : ""}`} />
+          </button>
+          <button
+            type="button"
+            onClick={() => {
+              setBowlRpm(6500);
+              setRawMilkFlowLph(300);
+              setAngleDeg(0);
+            }}
+            aria-label="Reset Simulation"
+            className="p-2 rounded-lg bg-parchment-200 dark:bg-ink-800 hover:bg-parchment-300 dark:hover:bg-ink-700 text-ink-800 dark:text-parchment-200 transition-colors"
+          >
+            <RotateCcw className="w-4 h-4" />
+          </button>
+          <button
+            type="button"
+            onClick={() => setIsMuted(!isMuted)}
+            aria-label={isMuted ? "Unmute Audio" : "Mute Audio"}
+            className="p-2 rounded-lg bg-parchment-200 dark:bg-ink-800 hover:bg-parchment-300 dark:hover:bg-ink-700 text-ink-800 dark:text-parchment-200 transition-colors"
+          >
+            {isMuted ? (
+              <VolumeX className="w-4 h-4" />
+            ) : (
+              <Volume2 className="w-4 h-4 text-amber-600" />
+            )}
+          </button>
+        </div>
+      </div>
+
+      {/* SVG Animation Stage */}
+      <div className="relative w-full aspect-[16/9] max-h-[360px] bg-parchment-100 dark:bg-ink-900 rounded-xl overflow-hidden border border-parchment-200 dark:border-ink-800 flex items-center justify-center">
+        <svg viewBox="0 0 600 340" className="w-full h-full">
+          {/* Vertical Separating Rotor Bowl Cross Section */}
+          <g transform="translate(300, 180)">
+            {/* Outer Forged Steel Bowl Wall */}
+            <path
+              d="M -90 -60 L -110 50 Q -100 80, 0 80 Q 100 80, 110 50 L 90 -60 Z"
+              fill="#2D3748"
+              stroke="#1A202C"
+              strokeWidth="3"
+            />
+
+            {/* Stratified Fluid Layers inside Bowl */}
+            {/* Outer Layer: Dense Skim Milk (Blue/Grey) */}
+            <path
+              d="M -85 -55 L -105 45 Q -95 72, 0 72 Q 95 72, 105 45 L 85 -55 Z"
+              fill="#4299E1"
+              opacity="0.75"
+            />
+
+            {/* Inner Core Layer: Light Butterfat Cream (Yellow) */}
+            <path
+              d="M -45 -55 L -55 45 Q -45 65, 0 65 Q 45 65, 55 45 L 45 -55 Z"
+              fill="#ECC94B"
+              opacity="0.9"
+            />
+
+            {/* Central Vertical Feed Spindle */}
+            <rect
+              x="-8"
+              y="-90"
+              width="16"
+              height="170"
+              fill="#CBD5E0"
+              stroke="#4A5568"
+              strokeWidth="1"
+            />
+
+            {/* Skim Milk Climbing Conduit Tube */}
+            <path
+              d="M -95 30 L -75 -65 L -140 -80"
+              stroke="#3182CE"
+              strokeWidth="5"
+              fill="none"
+              strokeLinecap="round"
+            />
+            <text
+              x="-195"
+              y="-85"
+              fill="#3182CE"
+              fontSize="10"
+              fontWeight="bold"
+              fontFamily="sans-serif"
+            >
+              Skim Spout ({skimMilkYieldLph} L/h)
+            </text>
+
+            {/* Cream Central Overflow Weir */}
+            <path
+              d="M 40 -55 L 45 -70 L 130 -80"
+              stroke="#D69E2E"
+              strokeWidth="5"
+              fill="none"
+              strokeLinecap="round"
+            />
+            <text
+              x="135"
+              y="-85"
+              fill="#D69E2E"
+              fontSize="10"
+              fontWeight="bold"
+              fontFamily="sans-serif"
+            >
+              Cream Spout ({creamYieldLph} L/h)
+            </text>
+
+            {/* Central Raw Milk Feed Stream */}
+            <line
+              x1="0"
+              y1="-120"
+              x2="0"
+              y2="-60"
+              stroke="#FFFFFF"
+              strokeWidth="6"
+              strokeDasharray="4 4"
+            />
+            <text
+              x="-55"
+              y="-125"
+              fill="#CBD5E0"
+              fontSize="10"
+              fontWeight="bold"
+              fontFamily="sans-serif"
+            >
+              Raw Milk ({rawMilkFlowLph} L/h)
+            </text>
+          </g>
+        </svg>
+      </div>
+
+      {/* Telemetry Grid */}
+      <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 my-4">
+        <div className="bg-parchment-100 dark:bg-ink-900 border border-parchment-200 dark:border-ink-800 p-2.5 rounded-xl text-center">
+          <span className="text-[10px] uppercase tracking-wider text-ink-500 dark:text-ink-400 block font-sans">
+            Centrifugal Field
+          </span>
+          <span className="font-mono text-sm sm:text-base font-bold text-ink-900 dark:text-parchment-100">
+            {centrifugalAccG.toLocaleString()} G ({bowlRpm} RPM)
+          </span>
+        </div>
+        <div className="bg-parchment-100 dark:bg-ink-900 border border-parchment-200 dark:border-ink-800 p-2.5 rounded-xl text-center">
+          <span className="text-[10px] uppercase tracking-wider text-ink-500 dark:text-ink-400 block font-sans">
+            Cream Yield
+          </span>
+          <span className="font-mono text-sm sm:text-base font-bold text-amber-700 dark:text-amber-500">
+            {creamYieldLph} L/hr
+          </span>
+        </div>
+        <div className="bg-parchment-100 dark:bg-ink-900 border border-parchment-200 dark:border-ink-800 p-2.5 rounded-xl text-center">
+          <span className="text-[10px] uppercase tracking-wider text-ink-500 dark:text-ink-400 block font-sans">
+            Skim Yield
+          </span>
+          <span className="font-mono text-sm sm:text-base font-bold text-emerald-700 dark:text-emerald-500">
+            {skimMilkYieldLph} L/hr
+          </span>
+        </div>
+        <div className="bg-parchment-100 dark:bg-ink-900 border border-parchment-200 dark:border-ink-800 p-2.5 rounded-xl text-center">
+          <span className="text-[10px] uppercase tracking-wider text-ink-500 dark:text-ink-400 block font-sans">
+            Fat Recovery
+          </span>
+          <span className="font-mono text-sm sm:text-base font-bold text-ink-900 dark:text-parchment-100">
+            {separationEfficiencyPct}%
+          </span>
+        </div>
+      </div>
+
+      {/* Sliders */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-2 border-t border-parchment-200 dark:border-ink-800">
+        <div>
+          <div className="flex justify-between text-xs font-sans font-medium text-ink-700 dark:text-parchment-300 mb-1">
+            <span>Rotor Bowl Rotational Speed</span>
+            <span className="font-mono">{bowlRpm} RPM</span>
+          </div>
+          <input
+            type="range"
+            min="3000"
+            max="9000"
+            step="100"
+            value={bowlRpm}
+            onChange={(e) => setBowlRpm(Number(e.target.value))}
+            className="w-full accent-amber-600 cursor-pointer"
+          />
+        </div>
+        <div>
+          <div className="flex justify-between text-xs font-sans font-medium text-ink-700 dark:text-parchment-300 mb-1">
+            <span>Raw Milk Feed Rate</span>
+            <span className="font-mono">{rawMilkFlowLph} L/hr</span>
+          </div>
+          <input
+            type="range"
+            min="100"
+            max="800"
+            step="25"
+            value={rawMilkFlowLph}
+            onChange={(e) => setRawMilkFlowLph(Number(e.target.value))}
+            className="w-full accent-amber-600 cursor-pointer"
+          />
+        </div>
+      </div>
+    </div>
+  );
+}

@@ -1,0 +1,255 @@
+"use client";
+
+import { Camera, RotateCcw, Volume2, VolumeX } from "lucide-react";
+import { useState } from "react";
+
+export function EastmanKodakSim() {
+  const [shutterSpeedSec, setShutterSpeedSec] = useState<number>(0.02); // 1/50 sec
+  const [exposureCount, setExposureCount] = useState<number>(14);
+  const [isShutterTriggered, setIsShutterTriggered] = useState<boolean>(false);
+  const [isMuted, setIsMuted] = useState<boolean>(true);
+
+  // Optics & Photographic Film Physics
+  const totalExposures = 100;
+  const filmDiameterInches = 2.5; // Circular 2.5" frame
+  const focalLengthMm = 57; // Rapid Rectilinear Lens
+  const fNumber = 9.0;
+  const filmWoundPct = Math.round((exposureCount / totalExposures) * 100);
+
+  const handleTriggerShutter = () => {
+    setIsShutterTriggered(true);
+    if (exposureCount < totalExposures) {
+      setExposureCount((prev) => prev + 1);
+    }
+    setTimeout(() => setIsShutterTriggered(false), 500);
+  };
+
+  return (
+    <div className="w-full rounded-2xl border border-parchment-300 dark:border-ink-800 bg-parchment-50 dark:bg-ink-950 p-4 sm:p-6 shadow-md transition-colors">
+      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 border-b border-parchment-200 dark:border-ink-800 pb-3 mb-4">
+        <div>
+          <h3 className="font-serif text-lg font-bold text-ink-900 dark:text-parchment-100">
+            Eastman Kodak Box Camera & Roll Film (US 388,850)
+          </h3>
+          <p className="font-sans text-xs text-ink-500 dark:text-ink-400">
+            Interactive 2D Optical Model — Cylindrical Barrel Shutter, 100-Exposure Flexible Roll
+            Film, and Key Wind Mechanism
+          </p>
+        </div>
+        <div className="flex items-center gap-2 self-end sm:self-auto">
+          <button
+            type="button"
+            onClick={handleTriggerShutter}
+            aria-label="Press Button / Snap Shutter"
+            className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-amber-600 hover:bg-amber-700 text-white font-sans text-xs font-bold shadow transition-colors"
+          >
+            <Camera className="w-4 h-4" />
+            <span>Snap Shutter</span>
+          </button>
+          <button
+            type="button"
+            onClick={() => {
+              setExposureCount(0);
+              setIsShutterTriggered(false);
+            }}
+            aria-label="Reset Film Roll"
+            className="p-2 rounded-lg bg-parchment-200 dark:bg-ink-800 hover:bg-parchment-300 dark:hover:bg-ink-700 text-ink-800 dark:text-parchment-200 transition-colors"
+          >
+            <RotateCcw className="w-4 h-4" />
+          </button>
+          <button
+            type="button"
+            onClick={() => setIsMuted(!isMuted)}
+            aria-label={isMuted ? "Unmute Audio" : "Mute Audio"}
+            className="p-2 rounded-lg bg-parchment-200 dark:bg-ink-800 hover:bg-parchment-300 dark:hover:bg-ink-700 text-ink-800 dark:text-parchment-200 transition-colors"
+          >
+            {isMuted ? (
+              <VolumeX className="w-4 h-4" />
+            ) : (
+              <Volume2 className="w-4 h-4 text-amber-600" />
+            )}
+          </button>
+        </div>
+      </div>
+
+      {/* SVG Animation Stage */}
+      <div className="relative w-full aspect-[16/9] max-h-[360px] bg-parchment-100 dark:bg-ink-900 rounded-xl overflow-hidden border border-parchment-200 dark:border-ink-800 flex items-center justify-center">
+        <svg viewBox="0 0 600 340" className="w-full h-full">
+          {/* Black Leatherette Box Camera Body */}
+          <rect
+            x="100"
+            y="60"
+            width="400"
+            height="220"
+            rx="12"
+            fill="#1A202C"
+            stroke="#2D3748"
+            strokeWidth="4"
+          />
+          <text
+            x="230"
+            y="90"
+            fill="#718096"
+            fontWeight="bold"
+            fontSize="14"
+            fontFamily="sans-serif"
+          >
+            THE KODAK CAMERA (1888)
+          </text>
+
+          {/* Front Barrel Shutter & Lens (Left) */}
+          <g transform="translate(100, 170)">
+            <rect
+              x="-30"
+              y="-35"
+              width="30"
+              height="70"
+              rx="4"
+              fill="#B87333"
+              stroke="#8B5A2B"
+              strokeWidth="2"
+            />
+            <circle cx="-15" cy="0" r="14" fill="#3182CE" opacity="0.8" />
+            {/* Cylindrical Rotary Shutter Slit */}
+            <line
+              x1="-15"
+              y1="-12"
+              x2="-15"
+              y2="12"
+              stroke={isShutterTriggered ? "#FFFFFF" : "#1A202C"}
+              strokeWidth="4"
+            />
+            <text
+              x="-75"
+              y="-45"
+              fill="#B87333"
+              fontSize="10"
+              fontWeight="bold"
+              fontFamily="sans-serif"
+            >
+              f/9 Fixed Lens
+            </text>
+          </g>
+
+          {/* Light Rays entering dark chamber */}
+          {isShutterTriggered && (
+            <polygon points="100,170 420,95 420,245" fill="#ECC94B" opacity="0.35" />
+          )}
+
+          {/* Roll Film Carrier Spools & Focal Plane (Right) */}
+          <g transform="translate(420, 95)">
+            {/* Supply Spool (Top) */}
+            <circle cx="0" cy="0" r="18" fill="#4A5568" stroke="#718096" strokeWidth="2" />
+            <circle cx="0" cy="0" r="12" fill="#D69E2E" />
+
+            {/* Film Plane along back */}
+            <line x1="0" y1="18" x2="0" y2="132" stroke="#E2E8F0" strokeWidth="4" />
+            <text
+              x="15"
+              y="75"
+              fill="#E2E8F0"
+              fontSize="10"
+              fontWeight="bold"
+              fontFamily="sans-serif"
+            >
+              Film Plane ({exposureCount}/100)
+            </text>
+
+            {/* Take-Up Spool & Key Wind (Bottom) */}
+            <circle cx="0" cy="150" r="18" fill="#4A5568" stroke="#718096" strokeWidth="2" />
+            <circle cx="0" cy="150" r="14" fill="#D69E2E" />
+            {/* Winding Key */}
+            <rect x="-4" y="168" width="8" height="25" fill="#D4AF37" rx="2" />
+            <ellipse cx="0" cy="195" rx="14" ry="6" fill="#D4AF37" />
+          </g>
+
+          {/* Circular Photographic Exposure Preview */}
+          <g transform="translate(270, 170)">
+            <circle cx="0" cy="0" r="55" fill="#000000" stroke="#718096" strokeWidth="3" />
+            <circle cx="0" cy="0" r="50" fill="#2B6CB0" opacity="0.3" />
+            <text
+              x="-40"
+              y="5"
+              fill="#CBD5E0"
+              fontSize="11"
+              fontWeight="bold"
+              fontFamily="sans-serif"
+            >
+              2.5" Circular Frame
+            </text>
+          </g>
+        </svg>
+      </div>
+
+      {/* Telemetry Grid */}
+      <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 my-4">
+        <div className="bg-parchment-100 dark:bg-ink-900 border border-parchment-200 dark:border-ink-800 p-2.5 rounded-xl text-center">
+          <span className="text-[10px] uppercase tracking-wider text-ink-500 dark:text-ink-400 block font-sans">
+            Exposures Taken
+          </span>
+          <span className="font-mono text-sm sm:text-base font-bold text-ink-900 dark:text-parchment-100">
+            {exposureCount} / {totalExposures}
+          </span>
+        </div>
+        <div className="bg-parchment-100 dark:bg-ink-900 border border-parchment-200 dark:border-ink-800 p-2.5 rounded-xl text-center">
+          <span className="text-[10px] uppercase tracking-wider text-ink-500 dark:text-ink-400 block font-sans">
+            Shutter Speed
+          </span>
+          <span className="font-mono text-sm sm:text-base font-bold text-amber-700 dark:text-amber-500">
+            1/{(1 / shutterSpeedSec).toFixed(0)} s
+          </span>
+        </div>
+        <div className="bg-parchment-100 dark:bg-ink-900 border border-parchment-200 dark:border-ink-800 p-2.5 rounded-xl text-center">
+          <span className="text-[10px] uppercase tracking-wider text-ink-500 dark:text-ink-400 block font-sans">
+            Optical Aperture
+          </span>
+          <span className="font-mono text-sm sm:text-base font-bold text-emerald-700 dark:text-emerald-500">
+            f/{fNumber} ({focalLengthMm}mm)
+          </span>
+        </div>
+        <div className="bg-parchment-100 dark:bg-ink-900 border border-parchment-200 dark:border-ink-800 p-2.5 rounded-xl text-center">
+          <span className="text-[10px] uppercase tracking-wider text-ink-500 dark:text-ink-400 block font-sans">
+            Roll Remaining
+          </span>
+          <span className="font-mono text-sm sm:text-base font-bold text-ink-900 dark:text-parchment-100">
+            {100 - filmWoundPct}%
+          </span>
+        </div>
+      </div>
+
+      {/* Sliders */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-2 border-t border-parchment-200 dark:border-ink-800">
+        <div>
+          <div className="flex justify-between text-xs font-sans font-medium text-ink-700 dark:text-parchment-300 mb-1">
+            <span>Barrel Shutter Exposure Duration</span>
+            <span className="font-mono">1/{(1 / shutterSpeedSec).toFixed(0)} sec</span>
+          </div>
+          <input
+            type="range"
+            min="0.01"
+            max="0.05"
+            step="0.005"
+            value={shutterSpeedSec}
+            onChange={(e) => setShutterSpeedSec(Number(e.target.value))}
+            className="w-full accent-amber-600 cursor-pointer"
+          />
+        </div>
+        <div>
+          <div className="flex justify-between text-xs font-sans font-medium text-ink-700 dark:text-parchment-300 mb-1">
+            <span>Current Exposure on Roll</span>
+            <span className="font-mono">{exposureCount} / 100</span>
+          </div>
+          <input
+            type="range"
+            min="0"
+            max="100"
+            step="1"
+            value={exposureCount}
+            onChange={(e) => setExposureCount(Number(e.target.value))}
+            className="w-full accent-amber-600 cursor-pointer"
+          />
+        </div>
+      </div>
+    </div>
+  );
+}
