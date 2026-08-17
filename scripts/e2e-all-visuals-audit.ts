@@ -46,6 +46,12 @@ async function runVisualsAudit() {
 
     const page = await context.newPage();
 
+    page.on("response", (res) => {
+      if (res.status() >= 400) {
+        console.log(`\n       [HTTP ${res.status()}] ${res.url()}`);
+      }
+    });
+
     const onPageError = (err: Error) => {
       pageErrors.push(err.message);
     };
@@ -53,8 +59,7 @@ async function runVisualsAudit() {
     const onConsole = (msg: any) => {
       if (msg.type() === "error") {
         const text = msg.text();
-        // Ignore expected favicon or non-fatal network noise if any
-        if (!text.includes("favicon") && !text.includes("404")) {
+        if (!text.includes("favicon")) {
           consoleErrors.push(text);
         }
       }
