@@ -15,14 +15,16 @@ export function SpencerMicrowaveSim() {
     if (!isEmitting) return;
     const interval = setInterval(() => {
       if (foodType === "water-popcorn") {
-        setTempCelsius((t) => Math.min(180, t + (powerWatts / 1000) * 8));
-        setPoppedCount((c) => {
-          if (c >= 12) return c;
-          // Pop once the kernel exceeds the 100 °C steam-pressure threshold.
-          // Temperature is read from the previous tick via the paired setter above;
-          // we only need the count here so the interval is not torn down on every pop.
-          soundEngine.playPopcornPop();
-          return c + 1;
+        setTempCelsius((t) => {
+          const next = Math.min(180, t + (powerWatts / 1000) * 8);
+          if (next > 100) {
+            setPoppedCount((c) => {
+              if (c >= 12) return c;
+              soundEngine.playPopcornPop();
+              return c + 1;
+            });
+          }
+          return next;
         });
       } else {
         // Non-polar or low-loss materials barely heat

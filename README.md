@@ -83,8 +83,30 @@
 │  • 3D Fermi Nuclear Reactor Criticality Cascade & Cadmium Rod Damping  │
 │  • 3D Wozniak Apple II Interleaved Memory Bus & NTSC Color Burst       │
 │  • Dynamic On-Demand Code Splitting (198 kB Initial JS Payload)        │
+├────────────────────────────────────────────────────────────────────────┤
+│              FRANKENSIM COMPUTATIONAL PHYSICS WASM CORE                │
+│  • 6-DoF Aerodynamics (`fs-flyer-wasm`, `fs-mbd`, `fs-time`)           │
+│  • Maxwell Electromagnetics & AC Induction (`fs-flux`, `fs-spectral`)  │
+│  • Solid-State & Microelectronics (`fs-lattice`, `fs-exec`)            │
+│  • Thermodynamics & Dalton Refrigeration (`fs-conduction`, `fs-lbm`)   │
+│  • Reactor Criticality & Delayed Neutron Kinetics (`fs-lattice`)       │
+│  • Polymer Tensile Lattices & Mechanisms (`fs-truss`, `fs-solid`)      │
 └────────────────────────────────────────────────────────────────────────┘
 ```
+
+---
+
+## Computational Physics Engine (FrankenSim WASM)
+
+The interactive simulators are backed by **FrankenSim** WebAssembly kernels with Blake3 state digests and typed refusal boundaries:
+1. **Aerodynamics & 6-DoF MBD** (`fs-flyer-wasm`, `fs-mbd`, `fs-time`): Wright Flyer wing-warping induced drag and adverse yaw; Goddard supersonic rocket de Laval expansion.
+2. **Electromagnetics & Induction** (`fs-flux`, `fs-feec`, `fs-spectral`): Tesla rotating stator flux vectors; Bell variable-reluctance acoustic currents; Marconi spark RF wavefields.
+3. **Solid-State & Microelectronics** (`fs-lattice`, `fs-sparse`, `fs-exec`): Bardeen point-contact hole injection; Noyce planar $\text{SiO}_2$ passivation; Wozniak two-phase interleaved memory arbitration.
+4. **Thermodynamics & Transport** (`fs-conduction`, `fs-convection`, `fs-lbm`): Edison Stefan-Boltzmann vacuum filament emission; Einstein-Szilard ternary partial-pressure absorption cooling.
+5. **Nuclear Physics** (`fs-lattice`, `fs-rand`): Fermi-Szilard 6-group delayed neutron kinetics and cadmium rod criticality index ($k_{\text{eff}}$).
+6. **Polymers & Continuum Mechanics** (`fs-truss`, `fs-solid`, `fs-matdb`): Goodyear sulfur cross-linking; Kwolek Kevlar aramid tensile alignment.
+
+See the complete roadmap in [`docs/FRANKENSIM_WASM_INTEGRATION_TODO.md`](./docs/FRANKENSIM_WASM_INTEGRATION_TODO.md).
 
 ---
 

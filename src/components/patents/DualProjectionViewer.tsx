@@ -307,8 +307,8 @@ export function DualProjectionViewer({ patent }: DualProjectionViewerProps) {
                   <Activity className="w-5 h-5 text-amber-700 dark:text-amber-500" />
                   <span>Interactive Real-Time 3D Physics Simulation</span>
                 </h4>
-                <span className="text-xs font-sans text-ink-500">
-                  Drag to rotate · Scroll to zoom
+                <span className="text-xs font-sans text-ink-500 hidden sm:inline">
+                  Drag to rotate · Scroll to zoom · Switch to 2D for the annotated schematic
                 </span>
               </div>
               <PatentVisualDispatcher patentId={patent.id} />

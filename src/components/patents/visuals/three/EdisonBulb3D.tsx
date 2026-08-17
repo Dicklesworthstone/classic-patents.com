@@ -4,6 +4,7 @@ import { Lightbulb } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import * as THREE from "three";
 import { createGlowPointTexture, createThreeStudioScene } from "./ThreeStudioScene";
+import { useLiveSimParams } from "./useLiveSimParams";
 
 export function EdisonBulb3D() {
   const containerRef = useRef<HTMLDivElement>(null);
@@ -24,6 +25,12 @@ export function EdisonBulb3D() {
   const filamentTempKelvin = Math.round(300 + (powerWatts * 4e10) ** 0.25);
   const estimatedLifespanHours =
     vacuumTorr < 1e-4 ? Math.round(1200 / (appliedVoltage / 110) ** 3.5) : 0;
+
+  const live = useLiveSimParams({
+    appliedVoltage,
+    filamentTempKelvin,
+    showGasMolecules,
+  });
 
   useEffect(() => {
     const container = containerRef.current;
@@ -190,27 +197,28 @@ export function EdisonBulb3D() {
       reqId = requestAnimationFrame(animate);
       const _delta = clock.getDelta();
 
+      const p = live.current;
+
       // Compute Incandescence Intensity & Color Temperature
-      const _normVoltage = appliedVoltage / 110;
-      const incandescence = Math.min(1.0, (appliedVoltage / 120) ** 2.2);
+      const incandescence = Math.min(1.0, (p.appliedVoltage / 120) ** 2.2);
 
       // Blackbody Color Ramp: Black -> Dull Cherry (800K) -> Orange-Gold (1800K) -> White-Gold (2400K)
       let r = 0;
       let g = 0;
       let b = 0;
 
-      if (filamentTempKelvin < 700) {
+      if (p.filamentTempKelvin < 700) {
         r = 0.1;
         g = 0.05;
         b = 0.05;
-      } else if (filamentTempKelvin < 1400) {
+      } else if (p.filamentTempKelvin < 1400) {
         r = 0.9;
-        g = 0.2 + (filamentTempKelvin - 700) / 1400;
+        g = 0.2 + (p.filamentTempKelvin - 700) / 1400;
         b = 0.05;
       } else {
         r = 1.0;
-        g = 0.75 + (filamentTempKelvin - 1400) / 4000;
-        b = 0.4 + (filamentTempKelvin - 1400) / 3000;
+        g = 0.75 + (p.filamentTempKelvin - 1400) / 4000;
+        b = 0.4 + (p.filamentTempKelvin - 1400) / 3000;
       }
 
       filamentMaterialMesh.emissive = new THREE.Color(r, g, b);
@@ -239,7 +247,7 @@ export function EdisonBulb3D() {
         }
       }
       gasGeo.attributes.position.needsUpdate = true;
-      gasPoints.visible = showGasMolecules;
+      gasPoints.visible = p.showGasMolecules;
 
       controls.update();
       renderer.render(scene, camera);
@@ -251,7 +259,7 @@ export function EdisonBulb3D() {
       cancelAnimationFrame(reqId);
       studio.dispose();
     };
-  }, [appliedVoltage, vacuumTorr, showGasMolecules, filamentTempKelvin]);
+  }, [live]);
 
   return (
     <div className="flex flex-col h-full bg-parchment-50/60 dark:bg-ink-950/80 rounded-2xl overflow-hidden border border-parchment-300 dark:border-ink-800 shadow-patent">
