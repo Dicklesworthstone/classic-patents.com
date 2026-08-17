@@ -1,6 +1,6 @@
 "use client";
 
-import { Camera, Flame, RotateCcw, Shield, Sparkles, Volume2, VolumeX, Zap } from "lucide-react";
+import { Camera, Eye, EyeOff, Flame, RotateCcw, Shield, Sparkles, Volume2, VolumeX, Zap } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import * as THREE from "three";
 import { soundEngine } from "@/utils/soundEngine";
@@ -20,33 +20,33 @@ interface ScenarioPreset {
 
 const SCENARIOS: ScenarioPreset[] = [
   {
-    id: "cp1_1942",
-    name: "Dec 2, 1942 First Criticality (CP-1)",
-    desc: "Enrico Fermi commands George Weil to withdraw the cadmium rod to 13 ft; k_eff reaches 1.0006 for the first self-sustaining chain reaction.",
+    id: "cp1_1942_criticality",
+    name: "Dec 2, 1942 CP-1 First Criticality",
+    desc: "Enrico Fermi commands George Weil to withdraw ZIP rod to 65%, reaching self-sustaining chain reaction (k_eff = 1.006).",
     rodPct: 65,
     moderatorPct: 99.9,
     enrichmentPct: 0.72,
   },
   {
-    id: "scram_safety",
-    name: "Emergency Cadmium ZIP Rod SCRAM",
-    desc: "Gravity-assisted cadmium safety rod plunges into the core, slashing k_eff to 0.880 and immediately quenching neutron multiplication.",
+    id: "scram_shutdown",
+    name: "Full SCRAM Emergency Insertion",
+    desc: "All cadmium safety control rods dropped into the graphite core, absorbing thermal neutrons and terminating criticality.",
     rodPct: 0,
     moderatorPct: 99.9,
     enrichmentPct: 0.72,
   },
   {
-    id: "power_run",
-    name: "Controlled 200 Watt Power Run",
-    desc: "Deliberate supercritical drift at k_eff = 1.003 governed safely within the 0.65% delayed neutron fraction window.",
-    rodPct: 78,
-    moderatorPct: 99.95,
+    id: "delayed_critical",
+    name: "Delayed-Neutron Steady State",
+    desc: "Exact critical balance (k_eff = 1.000) governed by the 0.65% delayed neutron fraction from precursor fission decays.",
+    rodPct: 58,
+    moderatorPct: 99.9,
     enrichmentPct: 0.72,
   },
   {
-    id: "subcritical",
-    name: "Sub-Critical Fuel Assembly Loading",
-    desc: "Layer 40 construction phase: k_eff = 0.940 demonstrating 1/(1 - k_eff) sub-critical multiplication from spontaneous fission neutrons.",
+    id: "impure_graphite",
+    name: "Boron-Contaminated Graphite",
+    desc: "Prior-art impure moderator with high thermal neutron capture cross-section preventing chain reaction buildup.",
     rodPct: 30,
     moderatorPct: 98.5,
     enrichmentPct: 0.72,
@@ -57,6 +57,7 @@ export function FermiReactor3D() {
   const containerRef = useRef<HTMLDivElement>(null);
 
   // Nuclear Reactor Kinetics State Controls
+  const [showUiOverlay, setShowUiOverlay] = useState<boolean>(true);
   const [controlRodWithdrawalPct, setControlRodWithdrawalPct] = useState<number>(65); // 0 to 100%
   const [moderatorPurityPct, setModeratorPurityPct] = useState<number>(99.9); // 95 to 99.99%
   const [fuelEnrichmentPct, setFuelEnrichmentPct] = useState<number>(0.72); // 0.72% natural U
@@ -385,123 +386,141 @@ export function FermiReactor3D() {
         <div ref={containerRef} className="absolute inset-0 w-full h-full" />
 
         {/* Live HUD Telemetry Overlay */}
-        <div className="absolute top-4 left-4 z-10 flex flex-col gap-2 pointer-events-none max-w-[calc(100%-8rem)] sm:max-w-md">
-          <div className="bg-white/90 dark:bg-ink-900/90 backdrop-blur-md px-3.5 py-2.5 rounded-xl border border-parchment-300 dark:border-ink-700 shadow-sm">
-            <div className="text-[11px] font-sans text-amber-700 dark:text-amber-400 font-bold uppercase tracking-wider flex items-center gap-1.5">
-              <Shield className="w-3.5 h-3.5 text-blue-500 animate-pulse" />
-              Neutronic Criticality Telemetry
+        {showUiOverlay && (
+          <div className="absolute top-3 left-3 sm:top-4 sm:left-4 z-10 flex flex-col gap-1.5 sm:gap-2 pointer-events-none max-w-[calc(100%-8rem)] sm:max-w-md transition-opacity duration-200">
+            <div className="bg-white/90 dark:bg-ink-900/90 backdrop-blur-md p-2 sm:px-3.5 sm:py-2.5 rounded-xl border border-parchment-300 dark:border-ink-700 shadow-sm">
+              <div className="text-[10px] sm:text-[11px] font-sans text-amber-700 dark:text-amber-400 font-bold uppercase tracking-wider flex items-center gap-1.5">
+                <Shield className="w-3 h-3 sm:w-3.5 sm:h-3.5 text-blue-500 animate-pulse" />
+                Neutronic Criticality Telemetry
+              </div>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-3 gap-y-0.5 sm:gap-y-1 mt-1 text-[10px] sm:text-xs font-sans">
+                <div>
+                  <span className="text-ink-600 dark:text-ink-400">Effective $k$:</span>{" "}
+                  <span
+                    className={`font-bold ${
+                      isCritical
+                        ? "text-emerald-600 dark:text-emerald-400"
+                        : isSupercritical
+                          ? "text-purple-600 dark:text-purple-400"
+                          : "text-amber-600 dark:text-amber-400"
+                    }`}
+                  >
+                    {kEff} ({isCritical ? "Crit" : isSupercritical ? "Super" : "Sub"})
+                  </span>
+                </div>
+                <div>
+                  <span className="text-ink-600 dark:text-ink-400">Reactivity:</span>{" "}
+                  <span className="font-bold text-blue-600 dark:text-blue-400">
+                    {reactivityDollars} $
+                  </span>
+                </div>
+                <div>
+                  <span className="text-ink-600 dark:text-ink-400">Power:</span>{" "}
+                  <span className="font-bold text-amber-600 dark:text-amber-400">
+                    {reactorPowerWatts} W Th
+                  </span>
+                </div>
+                <div>
+                  <span className="text-ink-600 dark:text-ink-400">ZIP Height:</span>{" "}
+                  <span className="font-bold text-purple-600 dark:text-purple-400">
+                    {controlRodWithdrawalPct}% Withdrawn
+                  </span>
+                </div>
+              </div>
             </div>
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-4 gap-y-1 mt-1 text-xs font-sans">
-              <div>
-                <span className="text-ink-600 dark:text-ink-400">
-                  Effective $k_&#123;eff&#125;$:
-                </span>{" "}
-                <span
-                  className={`font-bold ${
-                    isCritical
-                      ? "text-emerald-600 dark:text-emerald-400"
-                      : isSupercritical
-                        ? "text-purple-600 dark:text-purple-400"
-                        : "text-amber-600 dark:text-amber-400"
-                  }`}
-                >
-                  {kEff} (
-                  {isCritical ? "Critical" : isSupercritical ? "Supercritical" : "Sub-critical"})
-                </span>
-              </div>
-              <div>
-                <span className="text-ink-600 dark:text-ink-400">Reactivity ($\rho$):</span>{" "}
-                <span className="font-bold text-blue-600 dark:text-blue-400">
-                  {reactivityDollars} $
-                </span>
-              </div>
-              <div>
-                <span className="text-ink-600 dark:text-ink-400">Core Power Output:</span>{" "}
-                <span className="font-bold text-amber-600 dark:text-amber-400">
-                  {reactorPowerWatts} Watts Thermal
-                </span>
-              </div>
-              <div>
-                <span className="text-ink-600 dark:text-ink-400">Cadmium ZIP Height:</span>{" "}
-                <span className="font-bold text-purple-600 dark:text-purple-400">
-                  {controlRodWithdrawalPct}% Withdrawn
-                </span>
-              </div>
+
+            <div className="hidden sm:flex bg-white/90 dark:bg-ink-900/90 backdrop-blur-md px-3 py-1.5 rounded-lg border border-parchment-300 dark:border-ink-700 text-[11px] font-sans text-ink-700 dark:text-ink-300 items-center gap-2 max-w-full">
+              <Sparkles className="w-3.5 h-3.5 text-emerald-500 animate-pulse shrink-0" />
+              <span className="truncate">
+                Enrico Fermi & Leo Szilard (US 2,708,656) — Neutronic Reactor (1942)
+              </span>
             </div>
           </div>
+        )}
 
-          <div className="bg-white/90 dark:bg-ink-900/90 backdrop-blur-md px-3 py-1.5 rounded-lg border border-parchment-300 dark:border-ink-700 text-[11px] font-sans text-ink-700 dark:text-ink-300 flex items-center gap-2 max-w-full">
-            <Sparkles className="w-3.5 h-3.5 text-emerald-500 animate-pulse shrink-0" />
-            <span className="truncate">
-              Enrico Fermi & Leo Szilard (US 2,708,656) — Neutronic Reactor (1942)
-            </span>
-          </div>
-        </div>
-
-        {/* Top Right Tool Bar (Audio, Pins, Reset) */}
-        <div className="absolute top-4 right-4 z-10 flex gap-2">
+        {/* Top Right Tool Bar (Toggle UI, Audio, Pins, Reset) */}
+        <div className="absolute top-3 right-3 sm:top-4 sm:right-4 z-10 flex gap-1.5 sm:gap-2">
+          <button
+            type="button"
+            onClick={() => setShowUiOverlay(!showUiOverlay)}
+            className={`p-1.5 sm:p-2.5 rounded-xl backdrop-blur-md border transition-all shadow-sm ${
+              showUiOverlay
+                ? "bg-white/90 dark:bg-ink-900/90 border-parchment-300 dark:border-ink-700 text-ink-700 dark:text-parchment-300 hover:bg-parchment-100"
+                : "bg-amber-600 text-white border-amber-700 shadow-md ring-2 ring-amber-500/30"
+            }`}
+            title={showUiOverlay ? "Hide Overlay UI (Clean 3D View)" : "Show Overlay UI"}
+            aria-label={showUiOverlay ? "Hide Overlay UI" : "Show Overlay UI"}
+          >
+            {showUiOverlay ? (
+              <EyeOff className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
+            ) : (
+              <Eye className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
+            )}
+          </button>
           <button
             type="button"
             onClick={toggleSound}
-            className="p-2.5 rounded-xl bg-white/90 dark:bg-ink-900/90 backdrop-blur-md border border-parchment-300 dark:border-ink-700 text-ink-700 dark:text-parchment-300 hover:bg-parchment-100 dark:hover:bg-ink-800 transition-all shadow-sm"
+            className="p-1.5 sm:p-2.5 rounded-xl bg-white/90 dark:bg-ink-900/90 backdrop-blur-md border border-parchment-300 dark:border-ink-700 text-ink-700 dark:text-parchment-300 hover:bg-parchment-100 dark:hover:bg-ink-800 transition-all shadow-sm"
             title={isAudioMuted ? "Enable Sound Synthesis" : "Mute Sound"}
           >
             {isAudioMuted ? (
-              <VolumeX className="w-4 h-4" />
+              <VolumeX className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
             ) : (
-              <Volume2 className="w-4 h-4 text-amber-600" />
+              <Volume2 className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-amber-600" />
             )}
           </button>
           <button
             type="button"
             onClick={() => setShowCalloutPins(!showCalloutPins)}
-            className={`p-2.5 rounded-xl backdrop-blur-md border transition-all shadow-sm ${
+            className={`p-1.5 sm:p-2.5 rounded-xl backdrop-blur-md border transition-all shadow-sm ${
               showCalloutPins
                 ? "bg-amber-600 text-white border-amber-700 shadow-md"
                 : "bg-white/90 dark:bg-ink-900/90 border-parchment-300 dark:border-ink-700 text-ink-700 dark:text-parchment-300 hover:bg-parchment-100"
             }`}
             title="Toggle Historical Patent Numeral Pins"
           >
-            <Zap className="w-4 h-4" />
+            <Zap className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
           </button>
           <button
             type="button"
             onClick={() => applyCameraPreset("iso")}
-            className="p-2.5 rounded-xl bg-white/90 dark:bg-ink-900/90 backdrop-blur-md border border-parchment-300 dark:border-ink-700 text-ink-700 dark:text-parchment-300 hover:bg-parchment-100 dark:hover:bg-ink-800 transition-all shadow-sm"
+            className="p-1.5 sm:p-2.5 rounded-xl bg-white/90 dark:bg-ink-900/90 backdrop-blur-md border border-parchment-300 dark:border-ink-700 text-ink-700 dark:text-parchment-300 hover:bg-parchment-100 dark:hover:bg-ink-800 transition-all shadow-sm"
             title="Reset Orbit Camera"
           >
-            <RotateCcw className="w-4 h-4" />
+            <RotateCcw className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
           </button>
         </div>
 
         {/* Camera Views Bar */}
-        <div className="absolute bottom-4 left-4 z-10 flex flex-wrap gap-1.5 bg-white/85 dark:bg-ink-900/85 backdrop-blur-md p-1.5 rounded-xl border border-parchment-300 dark:border-ink-700 shadow-sm text-xs">
-          <span className="px-2 py-1 text-ink-500 font-sans flex items-center gap-1">
-            <Camera className="w-3.5 h-3.5" /> View:
-          </span>
-          {(
-            [
-              ["iso", "Isometric"],
-              ["control_rods", "Cadmium Rods"],
-              ["graphite_core", "Graphite Core"],
-              ["gantry", "Timber Rigging"],
-              ["top", "Core Grid"],
-            ] as const
-          ).map(([id, label]) => (
-            <button
-              key={id}
-              type="button"
-              onClick={() => applyCameraPreset(id)}
-              className={`px-2.5 py-1 rounded-lg font-sans transition-all ${
-                activeCamera === id
-                  ? "bg-amber-700 dark:bg-amber-600 text-white font-semibold shadow-xs"
-                  : "text-ink-700 dark:text-parchment-300 hover:bg-parchment-200 dark:hover:bg-ink-800"
-              }`}
-            >
-              {label}
-            </button>
-          ))}
-        </div>
+        {showUiOverlay && (
+          <div className="absolute bottom-3 left-3 sm:bottom-4 sm:left-4 z-10 flex flex-nowrap overflow-x-auto scrollbar-none max-w-[calc(100%-1.5rem)] sm:max-w-none gap-1 sm:gap-1.5 bg-white/85 dark:bg-ink-900/85 backdrop-blur-md p-1 sm:p-1.5 rounded-xl border border-parchment-300 dark:border-ink-700 shadow-sm text-[10px] sm:text-xs transition-opacity duration-200">
+            <span className="px-1.5 sm:px-2 py-0.5 sm:py-1 text-ink-500 font-sans flex items-center gap-1 shrink-0">
+              <Camera className="w-3 h-3 sm:w-3.5 sm:h-3.5" /> View:
+            </span>
+            {(
+              [
+                ["iso", "Isometric"],
+                ["control_rods", "Cadmium Rods"],
+                ["graphite_core", "Graphite Core"],
+                ["gantry", "Timber Rigging"],
+                ["top", "Core Grid"],
+              ] as const
+            ).map(([id, label]) => (
+              <button
+                key={id}
+                type="button"
+                onClick={() => applyCameraPreset(id)}
+                className={`px-2 py-0.5 sm:px-2.5 sm:py-1 rounded-lg font-sans whitespace-nowrap shrink-0 transition-all ${
+                  activeCamera === id
+                    ? "bg-amber-700 dark:bg-amber-600 text-white font-semibold shadow-xs"
+                    : "text-ink-700 dark:text-parchment-300 hover:bg-parchment-200 dark:hover:bg-ink-800"
+                }`}
+              >
+                {label}
+              </button>
+            ))}
+          </div>
+        )}
       </div>
 
       {/* Interactive Controls & Scenario Bar */}
