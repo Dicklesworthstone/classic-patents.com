@@ -331,35 +331,49 @@ export function FarnsworthTV3D() {
           </div>
 
           {/* 3D Canvas */}
-          <div ref={containerRef} className="w-full h-[440px] cursor-grab active:cursor-grabbing" />
+          <div ref={containerRef} className="w-full h-[460px] cursor-grab active:cursor-grabbing" />
 
           {/* Bottom Telemetry */}
-          <div className="w-full grid grid-cols-4 gap-2 text-center text-xs font-mono p-3 bg-ink-950/90 border-t border-ink-800 text-ink-300 z-10">
+          <div className="w-full grid grid-cols-4 gap-3 text-center text-sm font-mono p-4 bg-ink-950/95 border-t border-ink-800 text-ink-300 z-10">
             <div>
-              <span className="text-ink-500 block text-[10px]">SCAN RESOLUTION</span>
-              <span className="text-emerald-400 font-bold">{scanLines} Scan Lines</span>
+              <span className="text-ink-400 block text-xs font-semibold uppercase tracking-wider">
+                SCAN RESOLUTION
+              </span>
+              <span className="text-emerald-400 font-bold text-sm sm:text-base">
+                {scanLines} Scan Lines
+              </span>
             </div>
             <div>
-              <span className="text-ink-500 block text-[10px]">FRAME RATE</span>
-              <span className="text-blue-400 font-bold">{frameRateFps} FPS</span>
+              <span className="text-ink-400 block text-xs font-semibold uppercase tracking-wider">
+                FRAME RATE
+              </span>
+              <span className="text-blue-400 font-bold text-sm sm:text-base">
+                {frameRateFps} FPS
+              </span>
             </div>
             <div>
-              <span className="text-ink-500 block text-[10px]">DEFLECTION MODE</span>
-              <span className="text-amber-400 font-bold">
+              <span className="text-ink-400 block text-xs font-semibold uppercase tracking-wider">
+                DEFLECTION MODE
+              </span>
+              <span className="text-amber-400 font-bold text-xs sm:text-sm truncate block">
                 {isNipkowMechMode ? "Mechanical Wheel" : "Electromagnetic"}
               </span>
             </div>
             <div>
-              <span className="text-ink-500 block text-[10px]">INTERACTION</span>
-              <span className="text-purple-400">Drag to Orbit / Scroll Zoom</span>
+              <span className="text-ink-400 block text-xs font-semibold uppercase tracking-wider">
+                3D INTERACTION
+              </span>
+              <span className="text-purple-400 font-semibold text-xs sm:text-sm">
+                Drag Orbit / Zoom
+              </span>
             </div>
           </div>
         </div>
 
         {/* Controls Sidebar */}
         <div className="lg:col-span-4 space-y-4">
-          <div className="rounded-2xl border border-parchment-300 dark:border-ink-800 bg-parchment-100/70 dark:bg-ink-900/60 p-5 space-y-4">
-            <span className="font-serif font-bold text-sm text-ink-900 dark:text-parchment-100 block">
+          <div className="rounded-2xl border border-parchment-300 dark:border-ink-800 bg-parchment-100/80 dark:bg-ink-900/70 p-6 space-y-5 shadow-sm">
+            <span className="font-serif font-bold text-base sm:text-lg text-ink-950 dark:text-parchment-50 block">
               Electron Optics &amp; Deflection Controls
             </span>
 

@@ -10,53 +10,58 @@ export function PatentCard({ patent }: PatentCardProps) {
   return (
     <Link
       href={`/patents/${patent.id}`}
-      className="group block rounded-xl border border-parchment-300 dark:border-ink-800 bg-parchment-50 dark:bg-ink-950 p-6 shadow-patent hover:shadow-patent-lg hover:border-amber-600/50 dark:hover:border-amber-500/50 transition-all duration-200 flex flex-col justify-between"
+      className="group relative block rounded-2xl border border-parchment-300 dark:border-ink-800 bg-parchment-50/90 dark:bg-ink-950 p-6 sm:p-7 shadow-patent hover:shadow-patent-lg hover:border-amber-600/60 dark:hover:border-amber-500/60 transition-all duration-300 flex flex-col justify-between kinetic-card overflow-hidden"
     >
+      {/* Subtle Top Gold Accent Line on Hover */}
+      <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-amber-600 via-amber-400 to-amber-700 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+
       <div className="space-y-4">
         {/* Top Header Row */}
-        <div className="flex items-center justify-between gap-2 text-xs font-mono">
-          <span className="font-bold text-amber-700 dark:text-amber-400 bg-amber-100 dark:bg-amber-950/80 px-2 py-0.5 rounded border border-amber-300 dark:border-amber-800">
+        <div className="flex items-center justify-between gap-2 text-xs sm:text-sm font-mono">
+          <span className="font-bold text-amber-800 dark:text-amber-300 bg-amber-100/90 dark:bg-amber-950/90 px-2.5 py-1 rounded-md border border-amber-300 dark:border-amber-700/80 shadow-xs">
             {patent.patentNumber}
           </span>
-          <span className="text-ink-500 text-[11px]">{patent.era}</span>
+          <span className="text-ink-600 dark:text-ink-400 text-xs sm:text-sm font-medium">
+            {patent.era}
+          </span>
         </div>
 
         {/* Title & Subtitle */}
-        <div className="space-y-1">
-          <h3 className="font-serif text-xl font-bold text-ink-900 dark:text-parchment-100 group-hover:text-amber-800 dark:group-hover:text-amber-400 transition-colors">
+        <div className="space-y-1.5 pt-1">
+          <h3 className="font-serif text-2xl font-bold tracking-tight text-ink-950 dark:text-parchment-50 group-hover:text-amber-800 dark:group-hover:text-amber-400 transition-colors leading-snug">
             {patent.shortTitle}
           </h3>
-          <p className="font-serif text-xs text-ink-600 dark:text-parchment-300 italic line-clamp-1">
+          <p className="font-serif text-sm sm:text-base text-ink-700 dark:text-parchment-300 italic line-clamp-1">
             {patent.subtitle}
           </p>
         </div>
 
         {/* Summary */}
-        <p className="text-xs font-sans text-ink-700 dark:text-ink-300 line-clamp-3 leading-relaxed">
+        <p className="text-sm sm:text-base font-sans text-ink-800 dark:text-ink-200 line-clamp-3 leading-relaxed">
           {patent.summary}
         </p>
 
         {/* Inventors & Meta */}
-        <div className="pt-2 border-t border-parchment-200 dark:border-ink-800/80 space-y-1.5 text-xs font-mono text-ink-600 dark:text-ink-400">
-          <div className="flex items-center gap-1.5 truncate">
-            <User className="w-3.5 h-3.5 text-amber-700 dark:text-amber-500 flex-shrink-0" />
-            <span className="truncate">{patent.inventors.join(", ")}</span>
+        <div className="pt-3 border-t border-parchment-200 dark:border-ink-800/80 space-y-2 text-xs sm:text-sm font-mono text-ink-700 dark:text-ink-300">
+          <div className="flex items-center gap-2 truncate">
+            <User className="w-4 h-4 text-amber-700 dark:text-amber-400 flex-shrink-0" />
+            <span className="truncate font-semibold">{patent.inventors.join(", ")}</span>
           </div>
-          <div className="flex items-center gap-1.5">
-            <Calendar className="w-3.5 h-3.5 text-amber-700 dark:text-amber-500 flex-shrink-0" />
+          <div className="flex items-center gap-2">
+            <Calendar className="w-4 h-4 text-amber-700 dark:text-amber-400 flex-shrink-0" />
             <span>Granted: {patent.grantDate}</span>
           </div>
         </div>
       </div>
 
       {/* Footer tags & CTA */}
-      <div className="mt-5 pt-3 border-t border-parchment-200 dark:border-ink-800 flex items-center justify-between text-xs font-mono">
-        <span className="inline-flex items-center gap-1 text-amber-800 dark:text-amber-400 font-semibold group-hover:underline">
-          <Activity className="w-3 h-3" />
+      <div className="mt-6 pt-4 border-t border-parchment-200 dark:border-ink-800 flex items-center justify-between text-xs sm:text-sm font-mono">
+        <span className="inline-flex items-center gap-1.5 text-amber-800 dark:text-amber-400 font-bold group-hover:underline">
+          <Activity className="w-4 h-4 text-amber-600" />
           Interactive Sim &amp; Claims
         </span>
-        <span className="flex items-center gap-1 text-ink-500 group-hover:text-amber-700 dark:group-hover:text-amber-400 group-hover:translate-x-1 transition-transform">
-          Explore <ArrowRight className="w-3.5 h-3.5" />
+        <span className="flex items-center gap-1 text-ink-600 dark:text-ink-400 font-semibold group-hover:text-amber-800 dark:group-hover:text-amber-400 group-hover:translate-x-1 transition-transform">
+          Explore <ArrowRight className="w-4 h-4" />
         </span>
       </div>
     </Link>

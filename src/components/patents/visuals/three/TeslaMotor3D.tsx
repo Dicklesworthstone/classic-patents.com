@@ -388,49 +388,63 @@ export function TeslaMotor3D() {
           </div>
 
           {/* 3D WebGL Canvas */}
-          <div ref={containerRef} className="w-full h-[440px] cursor-grab active:cursor-grabbing" />
+          <div ref={containerRef} className="w-full h-[460px] cursor-grab active:cursor-grabbing" />
 
           {/* Bottom Telemetry Strip */}
-          <div className="w-full grid grid-cols-4 gap-2 text-center text-xs font-mono p-3 bg-ink-950/90 border-t border-ink-800 text-ink-300 z-10">
+          <div className="w-full grid grid-cols-4 gap-3 text-center text-sm font-mono p-4 bg-ink-950/95 border-t border-ink-800 text-ink-300 z-10">
             <div>
-              <span className="text-ink-500 block text-[10px]">SYNC SPEED</span>
-              <span className="text-amber-400 font-bold">{syncRpm} RPM</span>
+              <span className="text-ink-400 block text-xs font-semibold uppercase tracking-wider">
+                SYNC SPEED
+              </span>
+              <span className="text-amber-400 font-bold text-sm sm:text-base">{syncRpm} RPM</span>
             </div>
             <div>
-              <span className="text-ink-500 block text-[10px]">ROTOR SPEED</span>
-              <span className="text-emerald-400 font-bold">{rotorRpm} RPM</span>
+              <span className="text-ink-400 block text-xs font-semibold uppercase tracking-wider">
+                ROTOR SPEED
+              </span>
+              <span className="text-emerald-400 font-bold text-sm sm:text-base">
+                {rotorRpm} RPM
+              </span>
             </div>
             <div>
-              <span className="text-ink-500 block text-[10px]">INDUCTION SLIP</span>
-              <span className="text-blue-400 font-bold">{(slip * 100).toFixed(1)}%</span>
+              <span className="text-ink-400 block text-xs font-semibold uppercase tracking-wider">
+                INDUCTION SLIP
+              </span>
+              <span className="text-blue-400 font-bold text-sm sm:text-base">
+                {(slip * 100).toFixed(1)}%
+              </span>
             </div>
             <div>
-              <span className="text-ink-500 block text-[10px]">INTERACTION</span>
-              <span className="text-purple-400">Drag to Orbit / Scroll Zoom</span>
+              <span className="text-ink-400 block text-xs font-semibold uppercase tracking-wider">
+                3D INTERACTION
+              </span>
+              <span className="text-purple-400 font-semibold text-xs sm:text-sm">
+                Drag Orbit / Zoom
+              </span>
             </div>
           </div>
         </div>
 
         {/* Controls Sidebar */}
         <div className="lg:col-span-4 space-y-4">
-          <div className="rounded-2xl border border-parchment-300 dark:border-ink-800 bg-parchment-100/70 dark:bg-ink-900/60 p-5 space-y-4">
-            <span className="font-serif font-bold text-sm text-ink-900 dark:text-parchment-100 block">
-              AC Generator &amp; Stator Tuning
+          <div className="rounded-2xl border border-parchment-300 dark:border-ink-800 bg-parchment-100/80 dark:bg-ink-900/70 p-6 space-y-5 shadow-sm">
+            <span className="font-serif font-bold text-base sm:text-lg text-ink-950 dark:text-parchment-50 block">
+              AC Polyphase Stator Controls
             </span>
 
             {/* Phase Mode Selection */}
             <div>
-              <span className="text-xs font-mono block text-ink-700 dark:text-ink-300 font-semibold mb-1">
+              <span className="text-xs sm:text-sm font-mono block text-ink-800 dark:text-ink-200 font-semibold mb-1.5">
                 AC Phase Configuration
               </span>
-              <div className="grid grid-cols-2 gap-2 text-xs font-mono">
+              <div className="grid grid-cols-2 gap-2 text-xs sm:text-sm font-mono">
                 <button
                   type="button"
                   onClick={() => setPhaseCount(2)}
-                  className={`p-2 rounded-lg border text-center transition-colors ${
+                  className={`p-2.5 rounded-xl border text-center transition-colors shadow-2xs ${
                     phaseCount === 2
-                      ? "bg-amber-700 text-white border-amber-800 font-bold"
-                      : "bg-parchment-200 dark:bg-ink-800 text-ink-700 dark:text-ink-300 border-parchment-300"
+                      ? "bg-amber-700 text-white border-amber-800 font-bold dark:bg-amber-600"
+                      : "bg-parchment-200 dark:bg-ink-800 text-ink-800 dark:text-ink-200 border-parchment-300"
                   }`}
                 >
                   2-Phase (90° Quad)
@@ -438,10 +452,10 @@ export function TeslaMotor3D() {
                 <button
                   type="button"
                   onClick={() => setPhaseCount(3)}
-                  className={`p-2 rounded-lg border text-center transition-colors ${
+                  className={`p-2.5 rounded-xl border text-center transition-colors shadow-2xs ${
                     phaseCount === 3
-                      ? "bg-amber-700 text-white border-amber-800 font-bold"
-                      : "bg-parchment-200 dark:bg-ink-800 text-ink-700 dark:text-ink-300 border-parchment-300"
+                      ? "bg-amber-700 text-white border-amber-800 font-bold dark:bg-amber-600"
+                      : "bg-parchment-200 dark:bg-ink-800 text-ink-800 dark:text-ink-200 border-parchment-300"
                   }`}
                 >
                   3-Phase (120° Poly)

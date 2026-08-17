@@ -1,3 +1,4 @@
+@import "katex/dist/katex.min.css";
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -98,6 +99,18 @@
 .kinetic-card:hover {
   transform: translateY(-4px) scale(1.008);
   box-shadow: var(--shadow-brand);
+}
+
+/* KaTeX custom sizing and contrast */
+.katex-display {
+  margin: 0.75em 0;
+  overflow-x: auto;
+  overflow-y: hidden;
+  padding: 0.25em 0;
+}
+
+.katex {
+  font-size: 1.1em;
 }
 
 /* Custom crisp scrollbars */

@@ -557,44 +557,56 @@ export function WrightFlyer3D() {
           </div>
 
           {/* 3D WebGL Mounting Container */}
-          <div ref={containerRef} className="w-full h-[440px] cursor-grab active:cursor-grabbing" />
+          <div ref={containerRef} className="w-full h-[460px] cursor-grab active:cursor-grabbing" />
 
           {/* Bottom HUD Telemetry Strip */}
-          <div className="w-full grid grid-cols-4 gap-2 text-center text-xs font-mono p-3 bg-ink-950/90 border-t border-ink-800 text-ink-300 z-10">
+          <div className="w-full grid grid-cols-4 gap-3 text-center text-sm font-mono p-4 bg-ink-950/95 border-t border-ink-800 text-ink-300 z-10">
             <div>
-              <span className="text-ink-500 block text-[10px]">TOTAL LIFT</span>
-              <span className="text-emerald-400 font-bold">{totalLift.toFixed(0)} N</span>
+              <span className="text-ink-400 block text-xs font-semibold uppercase tracking-wider">
+                TOTAL LIFT
+              </span>
+              <span className="text-emerald-400 font-bold text-sm sm:text-base">
+                {totalLift.toFixed(0)} N
+              </span>
             </div>
             <div>
-              <span className="text-ink-500 block text-[10px]">AIRSPEED</span>
-              <span className="text-amber-400 font-bold">
+              <span className="text-ink-400 block text-xs font-semibold uppercase tracking-wider">
+                AIRSPEED
+              </span>
+              <span className="text-amber-400 font-bold text-sm sm:text-base">
                 {airspeedMps} m/s ({(airspeedMps * 2.237).toFixed(0)} mph)
               </span>
             </div>
             <div>
-              <span className="text-ink-500 block text-[10px]">NET YAW MOMENT</span>
+              <span className="text-ink-400 block text-xs font-semibold uppercase tracking-wider">
+                NET YAW MOMENT
+              </span>
               <span
                 className={
                   Math.abs(netYawTorque) < 15
-                    ? "text-emerald-400 font-bold"
-                    : "text-red-400 font-bold"
+                    ? "text-emerald-400 font-bold text-sm sm:text-base"
+                    : "text-red-400 font-bold text-sm sm:text-base"
                 }
               >
                 {netYawTorque.toFixed(1)} N·m
               </span>
             </div>
             <div>
-              <span className="text-ink-500 block text-[10px]">3D CAMERA</span>
-              <span className="text-blue-400">Drag to Orbit / Scroll Zoom</span>
+              <span className="text-ink-400 block text-xs font-semibold uppercase tracking-wider">
+                3D INTERACTION
+              </span>
+              <span className="text-blue-400 font-semibold text-xs sm:text-sm">
+                Drag Orbit / Zoom
+              </span>
             </div>
           </div>
         </div>
 
         {/* Flight Controls Sidebar */}
         <div className="lg:col-span-4 space-y-4">
-          <div className="rounded-2xl border border-parchment-300 dark:border-ink-800 bg-parchment-100/70 dark:bg-ink-900/60 p-5 space-y-4">
-            <span className="font-serif font-bold text-sm text-ink-900 dark:text-parchment-100 block">
-              Pilot 3-Axis Control Deck
+          <div className="rounded-2xl border border-parchment-300 dark:border-ink-800 bg-parchment-100/80 dark:bg-ink-900/70 p-6 space-y-5 shadow-sm">
+            <span className="font-serif font-bold text-base sm:text-lg text-ink-950 dark:text-parchment-50 block">
+              Pilot 3-Axis Aerodynamic Controls
             </span>
 
             {/* Wing Warping Slider */}
