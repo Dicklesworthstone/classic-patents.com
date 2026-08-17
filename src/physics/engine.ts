@@ -10,16 +10,15 @@ import type {
   ContinuumState,
   ElectromagneticsState,
   NuclearKineticsState,
-  SemiconductorState,
   ThermodynamicsState,
   UniversalPatentPhysicsTelemetry,
 } from "./types";
 
-export class FrankenSimEngine {
+export const FrankenSimEngine = {
   /**
    * Wright Flyer (US 821,393) - 6-DoF Aerodynamics & Coupled Yaw/Roll
    */
-  public static stepWrightFlyer(
+  stepWrightFlyer(
     current: AerodynamicsState,
     params: {
       wingWarpDeg: number;
@@ -36,7 +35,9 @@ export class FrankenSimEngine {
     const liftNewtons = Math.max(0, baseLift + deltaLift);
 
     // Induced Drag: C_Di = C_L^2 / (pi * AR * e)
-    const inducedDrag = (liftNewtons ** 2) / (Math.PI * 6.4 * 0.85 * 0.5 * 1.225 * current.airspeedMps ** 2 * 47.4 + 1e-4);
+    const inducedDrag =
+      liftNewtons ** 2 /
+      (Math.PI * 6.4 * 0.85 * 0.5 * 1.225 * current.airspeedMps ** 2 * 47.4 + 1e-4);
     const parasiticDrag = 0.5 * 1.225 * current.airspeedMps ** 2 * 4.2;
 
     // Adverse Yaw Coupling & Rudder Counter-Torque
@@ -58,21 +59,27 @@ export class FrankenSimEngine {
       parasiticDragNewtons: parasiticDrag,
       yawRateRps: netYawRate,
       pitchRateRps: netPitchRate,
-      altitudeMeters: Math.max(0, current.altitudeMeters + (liftNewtons - 340 * 9.81) * 0.0005 * dt),
+      altitudeMeters: Math.max(
+        0,
+        current.altitudeMeters + (liftNewtons - 340 * 9.81) * 0.0005 * dt,
+      ),
     };
-  }
+  },
 
   /**
    * Tesla Polyphase Induction Motor (US 381,968)
    */
-  public static stepTeslaMotor(
+  stepTeslaMotor(
     freqHz: number,
     poles: number,
     appliedLoadTorqueNm: number,
   ): ElectromagneticsState {
     const synchronousRpm = (120 * freqHz) / poles;
     const maxBreakdownTorqueNm = 45.0;
-    const slipFraction = Math.min(0.95, Math.max(0.015, appliedLoadTorqueNm / maxBreakdownTorqueNm));
+    const slipFraction = Math.min(
+      0.95,
+      Math.max(0.015, appliedLoadTorqueNm / maxBreakdownTorqueNm),
+    );
     const rotorRpm = synchronousRpm * (1 - slipFraction);
     const shaftPowerWatts = (appliedLoadTorqueNm * (rotorRpm * 2 * Math.PI)) / 60;
     const electricalInputWatts = shaftPowerWatts * 1.15;
@@ -92,12 +99,12 @@ export class FrankenSimEngine {
       synchronousRpm,
       slipFraction,
     };
-  }
+  },
 
   /**
    * Enrico Fermi Chicago Pile-1 (US 2,708,656) - 4-Factor Criticality Kinetics
    */
-  public static stepFermiReactor(
+  stepFermiReactor(
     controlRodWithdrawalPct: number,
     moderatorPurityPct: number,
     fuelEnrichmentPct: number,
@@ -129,12 +136,12 @@ export class FrankenSimEngine {
       thermalPowerWatts,
       controlRodInsertionFraction: 1 - controlRodWithdrawalPct / 100,
     };
-  }
+  },
 
   /**
    * Einstein-Szilard Absorption Refrigerator (US 1,781,541)
    */
-  public static stepEinsteinRefrigerator(
+  stepEinsteinRefrigerator(
     heatInputWatts: number,
     systemPressureAtm: number,
     ammoniaRatio: number,
@@ -155,15 +162,12 @@ export class FrankenSimEngine {
       blackbodyRadiantPowerWatts: 0,
       fluidFlowVelocityMps: (heatInputWatts / 220) * 0.15,
     };
-  }
+  },
 
   /**
    * Stephanie Kwolek Kevlar Aramid Polymers (US 3,671,542)
    */
-  public static stepKevlarContinuum(
-    drawRatio: number,
-    impactVelocityMps: number,
-  ): ContinuumState {
+  stepKevlarContinuum(drawRatio: number, impactVelocityMps: number): ContinuumState {
     const elasticModulusGpa = Math.min(145, 60 + drawRatio * 20);
     const sonicDispersionVelocityMps = Math.sqrt((elasticModulusGpa * 1e9) / 1440);
     const strainPct = (impactVelocityMps / sonicDispersionVelocityMps) * 100;
@@ -178,12 +182,12 @@ export class FrankenSimEngine {
       feedVelocityMmPs: 0,
       buoyancyLiftForceKiloNewtons: 0,
     };
-  }
+  },
 
   /**
    * Universal Telemetry Envelope Generator
    */
-  public static createTelemetryEnvelope(
+  createTelemetryEnvelope(
     patentId: string,
     data: Partial<UniversalPatentPhysicsTelemetry>,
   ): UniversalPatentPhysicsTelemetry {
@@ -195,5 +199,5 @@ export class FrankenSimEngine {
       refusal: { isRefused: false },
       ...data,
     };
-  }
-}
+  },
+};
