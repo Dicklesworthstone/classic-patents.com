@@ -2,17 +2,25 @@
 
 import { Box, Layers } from "lucide-react";
 import { useState } from "react";
+import { BardeenTransistorSim } from "./BardeenTransistorSim";
 import { BellTelephoneSim } from "./BellTelephoneSim";
+import { BoyleSmithCcdSim } from "./BoyleSmithCcdSim";
 import { EdisonBulbSim } from "./EdisonBulbSim";
 import { FarnsworthTVSim } from "./FarnsworthTVSim";
+import { GoddardRocketSim } from "./GoddardRocketSim";
 import { GoodyearRubberSim } from "./GoodyearRubberSim";
+import { HoweSewingMachineSim } from "./HoweSewingMachineSim";
 import { KwolekKevlarSim } from "./KwolekKevlarSim";
 import { LamarrFrequencyHoppingSim } from "./LamarrFrequencyHoppingSim";
+import { LincolnBuoySim } from "./LincolnBuoySim";
 import { MarconiRadioSim } from "./MarconiRadioSim";
 import { MorseTelegraphSim } from "./MorseTelegraphSim";
 import { NoycePlanarICSim } from "./NoycePlanarICSim";
 import { SpencerMicrowaveSim } from "./SpencerMicrowaveSim";
+import { TeslaCoilSim } from "./TeslaCoilSim";
 import { TeslaMotorSim } from "./TeslaMotorSim";
+import { BellTelephone3D } from "./three/BellTelephone3D";
+import { EdisonBulb3D } from "./three/EdisonBulb3D";
 import { FarnsworthTV3D } from "./three/FarnsworthTV3D";
 import { KwolekKevlar3D } from "./three/KwolekKevlar3D";
 import { NoycePlanarIC3D } from "./three/NoycePlanarIC3D";
@@ -31,6 +39,8 @@ export function PatentVisualDispatcher({ patentId }: PatentVisualDispatcherProps
   const has3DMode = [
     "us-821393-wright-flyer",
     "us-381968-tesla-motor",
+    "us-223898-edison-lightbulb",
+    "us-174465-bell-telephone",
     "us-1773980-farnsworth-tv",
     "us-2495429-spencer-microwave",
     "us-2981877-noyce-ic",
@@ -87,9 +97,21 @@ export function PatentVisualDispatcher({ patentId }: PatentVisualDispatcherProps
           case "us-3671542-kwolek-kevlar":
             return renderMode === "3d-physics" ? <KwolekKevlar3D /> : <KwolekKevlarSim />;
           case "us-223898-edison-lightbulb":
-            return <EdisonBulbSim />;
+            return renderMode === "3d-physics" ? <EdisonBulb3D /> : <EdisonBulbSim />;
           case "us-174465-bell-telephone":
-            return <BellTelephoneSim />;
+            return renderMode === "3d-physics" ? <BellTelephone3D /> : <BellTelephoneSim />;
+          case "us-6281-lincoln-buoy":
+            return <LincolnBuoySim />;
+          case "us-4750-howe-sewing-machine":
+            return <HoweSewingMachineSim />;
+          case "us-533367-tesla-coil":
+            return <TeslaCoilSim />;
+          case "us-1155986-goddard-rocket":
+            return <GoddardRocketSim />;
+          case "us-2569347-bardeen-transistor":
+            return <BardeenTransistorSim />;
+          case "us-3923554-boyle-smith-ccd":
+            return <BoyleSmithCcdSim />;
           case "us-586193-marconi-radio":
             return <MarconiRadioSim />;
           case "us-1647-morse-telegraph":

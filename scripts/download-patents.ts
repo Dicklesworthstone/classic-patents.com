@@ -8,6 +8,20 @@ import * as fs from "node:fs";
 import * as path from "node:path";
 import { allPatents } from "../src/data/patents";
 
+function getBundledPdfPath(pdfUrl: string): string | null {
+  if (!pdfUrl.startsWith("/")) return null;
+
+  const publicDir = path.resolve(process.cwd(), "public");
+  const pdfPath = path.resolve(publicDir, `.${pdfUrl}`);
+  const relativePath = path.relative(publicDir, pdfPath);
+
+  if (relativePath.startsWith("..") || path.isAbsolute(relativePath)) {
+    throw new Error(`PDF path escapes the public directory: ${pdfUrl}`);
+  }
+
+  return pdfPath;
+}
+
 async function main() {
   console.log("=== Classic Patents Download Pipeline ===");
   console.log(`Processing ${allPatents.length} curated historical patents...\n`);
@@ -29,6 +43,17 @@ async function main() {
       continue;
     }
 
+    const bundledPdfPath = getBundledPdfPath(patent.originalPdfUrl);
+    if (bundledPdfPath) {
+      if (!fs.existsSync(bundledPdfPath)) {
+        throw new Error(`Bundled PDF is missing: ${bundledPdfPath}`);
+      }
+
+      fs.copyFileSync(bundledPdfPath, targetFile);
+      console.log(`  ✓ Copied bundled PDF -> ${targetFile}\n`);
+      continue;
+    }
+
     try {
       console.log(`  Downloading PDF from ${patent.originalPdfUrl}...`);
       const response = await fetch(patent.originalPdfUrl);
@@ -39,8 +64,9 @@ async function main() {
       const buffer = await response.arrayBuffer();
       fs.writeFileSync(targetFile, Buffer.from(buffer));
       console.log(`  ✓ Downloaded ${buffer.byteLength} bytes -> ${targetFile}\n`);
-    } catch (err: any) {
-      console.warn(`  ⚠ Could not download PDF: ${err.message}\n`);
+    } catch (err: unknown) {
+      const message = err instanceof Error ? err.message : String(err);
+      console.warn(`  ⚠ Could not download PDF: ${message}\n`);
     }
   }
 

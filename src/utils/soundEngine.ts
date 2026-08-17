@@ -72,19 +72,32 @@ class SoundEngine {
   }
 
   public stopContinuousTone() {
-    if (this.oscillator && this.ctx) {
-      try {
-        this.gainNode?.gain.setTargetAtTime(0, this.ctx.currentTime, 0.05);
-        setTimeout(() => {
-          if (this.oscillator) {
-            this.oscillator.stop();
-            this.oscillator.disconnect();
-            this.oscillator = null;
-          }
-        }, 100);
-      } catch {
-        this.oscillator = null;
-      }
+    const oscillator = this.oscillator;
+    const gainNode = this.gainNode;
+    const ctx = this.ctx;
+
+    if (!oscillator || !ctx) return;
+
+    // Clear shared state before scheduling the release. A control change can start a
+    // replacement oscillator before this short fade completes; the timeout must only
+    // ever stop the oscillator it was created to retire.
+    this.oscillator = null;
+    this.gainNode = null;
+
+    try {
+      gainNode?.gain.setTargetAtTime(0, ctx.currentTime, 0.05);
+      window.setTimeout(() => {
+        try {
+          oscillator.stop();
+        } catch {
+          // The oscillator may already have been stopped while the context was closing.
+        }
+        oscillator.disconnect();
+        gainNode?.disconnect();
+      }, 100);
+    } catch {
+      oscillator.disconnect();
+      gainNode?.disconnect();
     }
   }
 
