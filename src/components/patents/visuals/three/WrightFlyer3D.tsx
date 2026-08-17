@@ -1,6 +1,6 @@
 "use client";
 
-import { Compass, Play, Wind } from "lucide-react";
+import { Compass, Eye, EyeOff, Play, Wind } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import * as THREE from "three";
 import { createGlowPointTexture, createThreeStudioScene } from "./ThreeStudioScene";
@@ -9,6 +9,9 @@ import { buildWrightFlyerAirframe, FLYER_DIM } from "./wrightFlyerAirframe";
 
 export function WrightFlyer3D() {
   const containerRef = useRef<HTMLDivElement>(null);
+
+  // UI Visibility State
+  const [showUiOverlay, setShowUiOverlay] = useState<boolean>(true);
 
   // Aerodynamic State Controls
   const [wingWarpDeg, setWingWarpDeg] = useState<number>(8); // -15 to +15 deg
@@ -247,92 +250,114 @@ export function WrightFlyer3D() {
         <div ref={containerRef} className="absolute inset-0 w-full h-full" />
 
         {/* Live HUD Telemetry Overlay */}
-        <div className="absolute top-4 left-4 z-10 flex flex-col gap-2 pointer-events-none">
-          <div className="bg-white/90 dark:bg-ink-900/90 backdrop-blur-md px-3.5 py-2.5 rounded-xl border border-parchment-300 dark:border-ink-700 shadow-sm">
-            <div className="text-[11px] font-sans text-amber-700 dark:text-amber-400 font-bold uppercase tracking-wider flex items-center gap-1.5">
-              <Compass className="w-3.5 h-3.5 animate-spin-slow" />
-              Aerodynamic Equilibrium
+        {showUiOverlay && (
+          <div className="absolute top-3 left-3 sm:top-4 sm:left-4 z-10 flex flex-col gap-1.5 sm:gap-2 pointer-events-none max-w-[calc(100%-7rem)] sm:max-w-md transition-opacity duration-200">
+            <div className="bg-white/90 dark:bg-ink-900/90 backdrop-blur-md p-2 sm:px-3.5 sm:py-2.5 rounded-xl border border-parchment-300 dark:border-ink-700 shadow-sm">
+              <div className="text-[10px] sm:text-[11px] font-sans text-amber-700 dark:text-amber-400 font-bold uppercase tracking-wider flex items-center gap-1.5">
+                <Compass className="w-3 h-3 sm:w-3.5 sm:h-3.5 animate-spin-slow" />
+                Aerodynamic Equilibrium
+              </div>
+              <div className="grid grid-cols-2 gap-x-2 gap-y-0.5 sm:gap-x-4 sm:gap-y-1 mt-1 text-[10px] sm:text-xs font-sans">
+                <div>
+                  <span className="text-ink-600 dark:text-ink-400">Total Lift:</span>{" "}
+                  <span className="font-bold text-emerald-600 dark:text-emerald-400">
+                    {totalLiftLbs} lbs
+                  </span>
+                </div>
+                <div>
+                  <span className="text-ink-600 dark:text-ink-400">Total Drag:</span>{" "}
+                  <span className="font-bold text-red-600 dark:text-red-400">
+                    {totalDragLbs} lbs
+                  </span>
+                </div>
+                <div>
+                  <span className="text-ink-600 dark:text-ink-400">Lift/Drag (L/D):</span>{" "}
+                  <span className="font-bold text-blue-600 dark:text-blue-400">
+                    {(totalLiftLbs / Math.max(1, totalDragLbs)).toFixed(2)}
+                  </span>
+                </div>
+                <div>
+                  <span className="text-ink-600 dark:text-ink-400">Net Yaw:</span>{" "}
+                  <span
+                    className={`font-bold ${
+                      Math.abs(netYawMoment) < 30
+                        ? "text-emerald-600 dark:text-emerald-400"
+                        : "text-amber-600 dark:text-amber-400"
+                    }`}
+                  >
+                    {netYawMoment > 0 ? `+${netYawMoment}` : netYawMoment} ft-lb
+                  </span>
+                </div>
+              </div>
             </div>
-            <div className="grid grid-cols-2 gap-x-4 gap-y-1 mt-1 text-xs font-sans">
-              <div>
-                <span className="text-ink-600 dark:text-ink-400">Total Lift:</span>{" "}
-                <span className="font-bold text-emerald-600 dark:text-emerald-400">
-                  {totalLiftLbs} lbs
-                </span>
-              </div>
-              <div>
-                <span className="text-ink-600 dark:text-ink-400">Total Drag:</span>{" "}
-                <span className="font-bold text-red-600 dark:text-red-400">{totalDragLbs} lbs</span>
-              </div>
-              <div>
-                <span className="text-ink-600 dark:text-ink-400">Lift/Drag (L/D):</span>{" "}
-                <span className="font-bold text-blue-600 dark:text-blue-400">
-                  {(totalLiftLbs / Math.max(1, totalDragLbs)).toFixed(2)}
-                </span>
-              </div>
-              <div>
-                <span className="text-ink-600 dark:text-ink-400">Net Yaw Torque:</span>{" "}
-                <span
-                  className={`font-bold ${
-                    Math.abs(netYawMoment) < 30
-                      ? "text-emerald-600 dark:text-emerald-400"
-                      : "text-amber-600 dark:text-amber-400"
-                  }`}
-                >
-                  {netYawMoment > 0 ? `+${netYawMoment}` : netYawMoment} ft-lb
-                </span>
-              </div>
-            </div>
-          </div>
 
-          <div className="bg-white/90 dark:bg-ink-900/90 backdrop-blur-md px-3 py-1.5 rounded-lg border border-parchment-300 dark:border-ink-700 text-[11px] font-sans text-ink-700 dark:text-ink-300 flex items-center gap-2">
-            <span
-              className={`w-2 h-2 rounded-full ${isCoupled ? "bg-emerald-500 animate-pulse" : "bg-red-500"}`}
-            />
-            <span>
-              {isCoupled
-                ? "Claim 1 cable coupling: warp drives starboard rudder"
-                : "Unlinked controls — adverse yaw is unopposed"}
-            </span>
+            <div className="hidden sm:flex bg-white/90 dark:bg-ink-900/90 backdrop-blur-md px-3 py-1.5 rounded-lg border border-parchment-300 dark:border-ink-700 text-[11px] font-sans text-ink-700 dark:text-ink-300 items-center gap-2">
+              <span
+                className={`w-2 h-2 rounded-full ${isCoupled ? "bg-emerald-500 animate-pulse" : "bg-red-500"}`}
+              />
+              <span>
+                {isCoupled
+                  ? "Claim 1 cable coupling: warp drives starboard rudder"
+                  : "Unlinked controls — adverse yaw is unopposed"}
+              </span>
+            </div>
           </div>
-        </div>
+        )}
 
         {/* Camera & Toggle Controls */}
-        <div className="absolute top-4 right-4 z-10 flex flex-wrap justify-end gap-2 max-w-[55%]">
+        <div className="absolute top-3 right-3 sm:top-4 sm:right-4 z-10 flex flex-wrap justify-end gap-1.5 sm:gap-2 max-w-[65%]">
+          <button
+            type="button"
+            onClick={() => setShowUiOverlay(!showUiOverlay)}
+            className={`p-1.5 sm:px-2.5 sm:py-1.5 rounded-lg text-xs font-sans font-semibold border transition-all shadow-sm ${
+              showUiOverlay
+                ? "bg-white/85 dark:bg-ink-900/85 text-ink-700 dark:text-ink-300 border-parchment-300 dark:border-ink-700 hover:bg-parchment-100"
+                : "bg-amber-600 text-white border-amber-700 shadow-md ring-2 ring-amber-500/30"
+            }`}
+            title={showUiOverlay ? "Hide Overlay UI (Full Canvas View)" : "Show Overlay UI"}
+            aria-label={showUiOverlay ? "Hide Overlay UI" : "Show Overlay UI"}
+          >
+            {showUiOverlay ? (
+              <EyeOff className="w-3.5 h-3.5 inline sm:mr-1" />
+            ) : (
+              <Eye className="w-3.5 h-3.5 inline sm:mr-1" />
+            )}
+            <span className="hidden md:inline">{showUiOverlay ? "Hide UI" : "Show UI"}</span>
+          </button>
           <button
             type="button"
             onClick={() => setShowStreamlines(!showStreamlines)}
-            className={`px-3 py-1.5 rounded-lg text-xs font-sans font-semibold border transition-all ${
+            className={`p-1.5 sm:px-3 sm:py-1.5 rounded-lg text-xs font-sans font-semibold border transition-all ${
               showStreamlines
                 ? "bg-amber-500 text-white border-amber-600 shadow-sm"
                 : "bg-white/80 dark:bg-ink-900/80 text-ink-700 dark:text-ink-300 border-parchment-300 dark:border-ink-700"
             }`}
           >
-            <Wind className="w-3.5 h-3.5 inline mr-1" />
-            Streamlines
+            <Wind className="w-3.5 h-3.5 inline sm:mr-1" />
+            <span className="hidden sm:inline">Streamlines</span>
           </button>
           <button
             type="button"
             onClick={() => setShowVectors(!showVectors)}
-            className={`px-3 py-1.5 rounded-lg text-xs font-sans font-semibold border transition-all ${
+            className={`p-1.5 sm:px-3 sm:py-1.5 rounded-lg text-xs font-sans font-semibold border transition-all ${
               showVectors
                 ? "bg-blue-600 text-white border-blue-700 shadow-sm"
                 : "bg-white/80 dark:bg-ink-900/80 text-ink-700 dark:text-ink-300 border-parchment-300 dark:border-ink-700"
             }`}
           >
-            Force Vectors
+            <span className="hidden sm:inline">Force </span>Vectors
           </button>
           <button
             type="button"
             onClick={() => setIsAutoFlying(!isAutoFlying)}
-            className={`px-3 py-1.5 rounded-lg text-xs font-sans font-semibold border transition-all ${
+            className={`p-1.5 sm:px-3 sm:py-1.5 rounded-lg text-xs font-sans font-semibold border transition-all ${
               isAutoFlying
                 ? "bg-emerald-600 text-white border-emerald-700 shadow-sm"
                 : "bg-white/80 dark:bg-ink-900/80 text-ink-700 dark:text-ink-300 border-parchment-300 dark:border-ink-700"
             }`}
           >
-            <Play className="w-3.5 h-3.5 inline mr-1" />
-            {isAutoFlying ? "Live Flight" : "Freeze"}
+            <Play className="w-3.5 h-3.5 inline sm:mr-1" />
+            <span className="hidden sm:inline">{isAutoFlying ? "Live Flight" : "Freeze"}</span>
           </button>
         </div>
       </div>

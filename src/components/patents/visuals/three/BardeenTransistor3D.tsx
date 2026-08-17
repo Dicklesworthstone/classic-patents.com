@@ -1,6 +1,17 @@
 "use client";
 
-import { Activity, Camera, Cpu, RotateCcw, Sparkles, Volume2, VolumeX, Zap } from "lucide-react";
+import {
+  Activity,
+  Camera,
+  Cpu,
+  Eye,
+  EyeOff,
+  RotateCcw,
+  Sparkles,
+  Volume2,
+  VolumeX,
+  Zap,
+} from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import * as THREE from "three";
 import { soundEngine } from "@/utils/soundEngine";
@@ -38,15 +49,15 @@ const SCENARIOS: ScenarioPreset[] = [
   {
     id: "diffusion_cutoff",
     name: "Hole Diffusion Cutoff",
-    desc: "140µm gap exceeds minority carrier diffusion length $L_p = 80$ µm, dropping α below threshold.",
+    desc: "140µm wide gap exceeding hole recombination distance, causing current gain to collapse below unity.",
     gap: 140,
-    emitterMa: 2.5,
-    collectorV: -40,
+    emitterMa: 2.0,
+    collectorV: -30,
   },
   {
-    id: "high_power",
-    name: "Heavy Injection Current",
-    desc: "High emitter forward bias injecting dense stream of minority carrier holes into the inversion layer.",
+    id: "max_power",
+    name: "Maximum Power Saturation",
+    desc: "High emitter injection driving heavy hole density into germanium inversion layer.",
     gap: 35,
     emitterMa: 7.0,
     collectorV: -75,
@@ -57,6 +68,7 @@ export function BardeenTransistor3D() {
   const containerRef = useRef<HTMLDivElement>(null);
 
   // Semiconductor Point-Contact State Controls
+  const [showUiOverlay, setShowUiOverlay] = useState<boolean>(true);
   const [emitterCurrentMa, setEmitterCurrentMa] = useState<number>(2.5);
   const [collectorVoltageV, setCollectorVoltageV] = useState<number>(-40);
   const [pointContactGapMicrons, setPointContactGapMicrons] = useState<number>(50);
@@ -319,93 +331,114 @@ export function BardeenTransistor3D() {
     <div className="flex flex-col h-full bg-parchment-50/60 dark:bg-ink-950/80 rounded-2xl overflow-hidden border border-parchment-300 dark:border-ink-800 shadow-patent">
       <div className="relative flex-1 min-h-[380px] sm:min-h-[460px] w-full cursor-grab active:cursor-grabbing">
         <div ref={containerRef} className="absolute inset-0 w-full h-full" />
-        <div className="absolute top-4 left-4 z-10 flex flex-col gap-2 pointer-events-none max-w-[calc(100%-8rem)] sm:max-w-md">
-          <div className="bg-white/90 dark:bg-ink-900/90 backdrop-blur-md px-3.5 py-2.5 rounded-xl border border-parchment-300 dark:border-ink-700 shadow-sm">
-            <div className="text-[11px] font-sans text-amber-700 dark:text-amber-400 font-bold uppercase tracking-wider flex items-center gap-1.5">
-              <Cpu className="w-3.5 h-3.5 text-blue-500 animate-pulse" />
-              Point-Contact Transistor Telemetry
+        {showUiOverlay && (
+          <div className="absolute top-3 left-3 sm:top-4 sm:left-4 z-10 flex flex-col gap-1.5 sm:gap-2 pointer-events-none max-w-[calc(100%-8rem)] sm:max-w-md transition-opacity duration-200">
+            <div className="bg-white/90 dark:bg-ink-900/90 backdrop-blur-md p-2 sm:px-3.5 sm:py-2.5 rounded-xl border border-parchment-300 dark:border-ink-700 shadow-sm">
+              <div className="text-[10px] sm:text-[11px] font-sans text-amber-700 dark:text-amber-400 font-bold uppercase tracking-wider flex items-center gap-1.5">
+                <Cpu className="w-3 h-3 sm:w-3.5 sm:h-3.5 text-blue-500 animate-pulse" />
+                Point-Contact Transistor Telemetry
+              </div>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-3 gap-y-0.5 sm:gap-y-1 mt-1 text-[10px] sm:text-xs font-sans">
+                <div>
+                  <span className="text-ink-600 dark:text-ink-400">Current Gain (α):</span>{" "}
+                  <span className="font-bold text-emerald-600 dark:text-emerald-400">
+                    {alphaCurrentGain}
+                  </span>
+                </div>
+                <div>
+                  <span className="text-ink-600 dark:text-ink-400">Collector:</span>{" "}
+                  <span className="font-bold text-blue-600 dark:text-blue-400">
+                    {collectorCurrentMa} mA
+                  </span>
+                </div>
+                <div>
+                  <span className="text-ink-600 dark:text-ink-400">Power Gain:</span>{" "}
+                  <span className="font-bold text-purple-600 dark:text-purple-400">
+                    +{powerGainDb} dB ({voltageGain}×)
+                  </span>
+                </div>
+              </div>
             </div>
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-4 gap-y-1 mt-1 text-xs font-sans">
-              <div>
-                <span className="text-ink-600 dark:text-ink-400">Current Gain (α):</span>{" "}
-                <span className="font-bold text-emerald-600 dark:text-emerald-400">
-                  {alphaCurrentGain}
-                </span>
-              </div>
-              <div>
-                <span className="text-ink-600 dark:text-ink-400">Collector Current:</span>{" "}
-                <span className="font-bold text-blue-600 dark:text-blue-400">
-                  {collectorCurrentMa} mA
-                </span>
-              </div>
-              <div>
-                <span className="text-ink-600 dark:text-ink-400">Power Gain:</span>{" "}
-                <span className="font-bold text-purple-600 dark:text-purple-400">
-                  +{powerGainDb} dB ({voltageGain}×)
-                </span>
-              </div>
+            <div className="hidden sm:flex bg-white/90 dark:bg-ink-900/90 backdrop-blur-md px-3 py-1.5 rounded-lg border border-parchment-300 dark:border-ink-700 text-[11px] font-sans text-ink-700 dark:text-ink-300 items-center gap-2 max-w-full">
+              <Sparkles className="w-3.5 h-3.5 text-amber-500 animate-pulse shrink-0" />
+              <span className="truncate">
+                John Bardeen &amp; Walter Brattain (US 2,524,035) — Point-Contact Transistor
+              </span>
             </div>
           </div>
-          <div className="bg-white/90 dark:bg-ink-900/90 backdrop-blur-md px-3 py-1.5 rounded-lg border border-parchment-300 dark:border-ink-700 text-[11px] font-sans text-ink-700 dark:text-ink-300 flex items-center gap-2 max-w-full">
-            <Sparkles className="w-3.5 h-3.5 text-amber-500 animate-pulse shrink-0" />
-            <span className="truncate">
-              John Bardeen &amp; Walter Brattain (US 2,524,035) — Point-Contact Transistor
-            </span>
-          </div>
-        </div>
+        )}
 
-        <div className="absolute top-4 right-4 z-10 flex gap-2">
+        <div className="absolute top-3 right-3 sm:top-4 sm:right-4 z-10 flex gap-1.5 sm:gap-2">
+          <button
+            type="button"
+            onClick={() => setShowUiOverlay(!showUiOverlay)}
+            className={`p-1.5 sm:p-2.5 rounded-xl backdrop-blur-md border transition-all shadow-sm ${
+              showUiOverlay
+                ? "bg-white/90 dark:bg-ink-900/90 border-parchment-300 dark:border-ink-700 text-ink-700 dark:text-parchment-300 hover:bg-parchment-100"
+                : "bg-amber-600 text-white border-amber-700 shadow-md ring-2 ring-amber-500/30"
+            }`}
+            title={showUiOverlay ? "Hide Overlay UI (Clean 3D View)" : "Show Overlay UI"}
+            aria-label={showUiOverlay ? "Hide Overlay UI" : "Show Overlay UI"}
+          >
+            {showUiOverlay ? (
+              <EyeOff className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
+            ) : (
+              <Eye className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
+            )}
+          </button>
           <button
             type="button"
             onClick={toggleAudioTone}
-            className={`p-2.5 rounded-xl backdrop-blur-md border transition-all shadow-sm ${isToneActive ? "bg-emerald-600 text-white border-emerald-700 shadow-md ring-2 ring-emerald-400 animate-pulse" : "bg-white/90 dark:bg-ink-900/90 border-parchment-300 dark:border-ink-700 text-ink-700 dark:text-parchment-300 hover:bg-parchment-100"}`}
+            className={`p-1.5 sm:p-2.5 rounded-xl backdrop-blur-md border transition-all shadow-sm ${isToneActive ? "bg-emerald-600 text-white border-emerald-700 shadow-md ring-2 ring-emerald-400 animate-pulse" : "bg-white/90 dark:bg-ink-900/90 border-parchment-300 dark:border-ink-700 text-ink-700 dark:text-parchment-300 hover:bg-parchment-100"}`}
             title="Play 1 kHz Test Tone"
           >
-            <Activity className="w-4 h-4" />
+            <Activity className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
           </button>
           <button
             type="button"
             onClick={toggleSound}
-            className="p-2.5 rounded-xl bg-white/90 dark:bg-ink-900/90 backdrop-blur-md border border-parchment-300 dark:border-ink-700 text-ink-700 dark:text-parchment-300 hover:bg-parchment-100 transition-all shadow-sm"
+            className="p-1.5 sm:p-2.5 rounded-xl bg-white/90 dark:bg-ink-900/90 backdrop-blur-md border border-parchment-300 dark:border-ink-700 text-ink-700 dark:text-parchment-300 hover:bg-parchment-100 transition-all shadow-sm"
           >
             {isAudioMuted ? (
-              <VolumeX className="w-4 h-4" />
+              <VolumeX className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
             ) : (
-              <Volume2 className="w-4 h-4 text-amber-600" />
+              <Volume2 className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-amber-600" />
             )}
           </button>
           <button
             type="button"
             onClick={() => setShowCalloutPins(!showCalloutPins)}
-            className={`p-2.5 rounded-xl backdrop-blur-md border transition-all shadow-sm ${showCalloutPins ? "bg-amber-600 text-white border-amber-700 shadow-md" : "bg-white/90 dark:bg-ink-900/90 border-parchment-300 dark:border-ink-700 text-ink-700 dark:text-parchment-300"}`}
+            className={`p-1.5 sm:p-2.5 rounded-xl backdrop-blur-md border transition-all shadow-sm ${showCalloutPins ? "bg-amber-600 text-white border-amber-700 shadow-md" : "bg-white/90 dark:bg-ink-900/90 border-parchment-300 dark:border-ink-700 text-ink-700 dark:text-parchment-300"}`}
             title="Toggle Pins"
           >
-            <Zap className="w-4 h-4" />
+            <Zap className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
           </button>
           <button
             type="button"
             onClick={() => applyCameraPreset("iso")}
-            className="p-2.5 rounded-xl bg-white/90 dark:bg-ink-900/90 backdrop-blur-md border border-parchment-300 dark:border-ink-700 text-ink-700 dark:text-parchment-300 hover:bg-parchment-100 transition-all shadow-sm"
+            className="p-1.5 sm:p-2.5 rounded-xl bg-white/90 dark:bg-ink-900/90 backdrop-blur-md border border-parchment-300 dark:border-ink-700 text-ink-700 dark:text-parchment-300 hover:bg-parchment-100 transition-all shadow-sm"
           >
-            <RotateCcw className="w-4 h-4" />
+            <RotateCcw className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
           </button>
         </div>
 
-        <div className="absolute bottom-4 left-4 z-10 flex flex-wrap gap-1.5 bg-white/85 dark:bg-ink-900/85 backdrop-blur-md p-1.5 rounded-xl border border-parchment-300 dark:border-ink-700 shadow-sm text-xs">
-          <span className="px-2 py-1 text-ink-500 font-sans flex items-center gap-1">
-            <Camera className="w-3.5 h-3.5" /> View:
-          </span>
-          {(["iso", "apex", "band", "spring", "base"] as const).map((id) => (
-            <button
-              key={id}
-              type="button"
-              onClick={() => applyCameraPreset(id)}
-              className={`px-2.5 py-1 rounded-lg font-sans transition-all ${activeCamera === id ? "bg-amber-700 text-white font-semibold" : "text-ink-700 dark:text-parchment-300 hover:bg-parchment-200"}`}
-            >
-              {id.toUpperCase()}
-            </button>
-          ))}
-        </div>
+        {showUiOverlay && (
+          <div className="absolute bottom-3 left-3 sm:bottom-4 sm:left-4 z-10 flex flex-nowrap overflow-x-auto scrollbar-none max-w-[calc(100%-1.5rem)] sm:max-w-none gap-1 sm:gap-1.5 bg-white/85 dark:bg-ink-900/85 backdrop-blur-md p-1 sm:p-1.5 rounded-xl border border-parchment-300 dark:border-ink-700 shadow-sm text-[10px] sm:text-xs transition-opacity duration-200">
+            <span className="px-1.5 sm:px-2 py-0.5 sm:py-1 text-ink-500 font-sans flex items-center gap-1 shrink-0">
+              <Camera className="w-3 h-3 sm:w-3.5 sm:h-3.5" /> View:
+            </span>
+            {(["iso", "apex", "band", "spring", "base"] as const).map((id) => (
+              <button
+                key={id}
+                type="button"
+                onClick={() => applyCameraPreset(id)}
+                className={`px-2 py-0.5 sm:px-2.5 sm:py-1 rounded-lg font-sans whitespace-nowrap shrink-0 transition-all ${activeCamera === id ? "bg-amber-700 text-white font-semibold" : "text-ink-700 dark:text-parchment-300 hover:bg-parchment-200"}`}
+              >
+                {id.toUpperCase()}
+              </button>
+            ))}
+          </div>
+        )}
       </div>
 
       <div className="p-4 sm:p-5 bg-parchment-100/90 dark:bg-ink-900/90 border-t border-parchment-300 dark:border-ink-800 space-y-4">

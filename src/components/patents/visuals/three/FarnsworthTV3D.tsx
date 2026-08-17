@@ -1,6 +1,17 @@
 "use client";
 
-import { Camera, Radio, RotateCcw, Sparkles, Tv, Volume2, VolumeX, Zap } from "lucide-react";
+import {
+  Camera,
+  Eye,
+  EyeOff,
+  Radio,
+  RotateCcw,
+  Sparkles,
+  Tv,
+  Volume2,
+  VolumeX,
+  Zap,
+} from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import * as THREE from "three";
 import { soundEngine } from "@/utils/soundEngine";
@@ -21,31 +32,31 @@ interface ScenarioPreset {
 
 const SCENARIOS: ScenarioPreset[] = [
   {
-    id: "farnsworth_1927",
-    name: "1927 First All-Electronic Transmission",
-    desc: "Philo Farnsworth transmits the famous dollar sign ('$') at 202 Green St, San Francisco with 3.5 kV anode beam.",
+    id: "farnsworth_1927_nominal",
+    name: "1927 Green Street Lab Transmission",
+    desc: "Farnsworth's historic all-electronic image dissector tube successfully transmitting a straight line image (US 1,773,980).",
     voltageKv: 3.5,
-    hFreqKhz: 10.0,
-    vFreqHz: 60,
-    lux: 650,
-  },
-  {
-    id: "ntsc_525",
-    name: "Standard NTSC 525-Line Broadcast",
-    desc: "15.75 kHz horizontal sawtooth scan with 60 Hz vertical field rate scanning 30 interlaced frames per second.",
-    voltageKv: 4.5,
     hFreqKhz: 15.75,
     vFreqHz: 60,
     lux: 500,
   },
   {
-    id: "high_intensity",
-    name: "Intense Carbon Arc Studio Illumination",
-    desc: "1500 Lux incandescent spotlight producing dense 67.5 µA photoelectron emission off the Cs-O photocathode.",
-    voltageKv: 5.0,
+    id: "high_def",
+    name: "High-Resolution Raster Scan",
+    desc: "Higher accelerating potential with 30 kHz magnetic sawtooth deflection creating a sharp, high-density electron raster.",
+    voltageKv: 5.5,
+    hFreqKhz: 30.0,
+    vFreqHz: 60,
+    lux: 1200,
+  },
+  {
+    id: "low_light_dollar",
+    name: "Low-Light '$' Dollar Sign Test",
+    desc: "Simulating the historic transmission of the dollar sign slide with high-gain electron multiplication.",
+    voltageKv: 4.0,
     hFreqKhz: 15.75,
     vFreqHz: 60,
-    lux: 1500,
+    lux: 150,
   },
   {
     id: "slow_scan",
@@ -62,7 +73,8 @@ export function FarnsworthTV3D() {
   const containerRef = useRef<HTMLDivElement>(null);
 
   // Dissector Tube State Controls
-  const [acceleratingVoltageKv, setAcceleratingVoltageKv] = useState<number>(3.5); // 1.0 to 6.0 kV
+  const [showUiOverlay, setShowUiOverlay] = useState<boolean>(true);
+  const [acceleratingVoltageKv, setAcceleratingVoltageKv] = useState<number>(3.5); // 1.0 to 6.0 kVkV
   const [horizontalFreqKhz, setHorizontalFreqKhz] = useState<number>(15.75); // 5 to 30 kHz
   const [verticalFreqHz, setVerticalFreqHz] = useState<number>(60); // 30 to 120 Hz
   const [lightIntensityLux, setLightIntensityLux] = useState<number>(500); // 100 to 2000 Lux
@@ -397,112 +409,133 @@ export function FarnsworthTV3D() {
         <div ref={containerRef} className="absolute inset-0 w-full h-full" />
 
         {/* Live HUD Telemetry Overlay */}
-        <div className="absolute top-4 left-4 z-10 flex flex-col gap-2 pointer-events-none max-w-[calc(100%-8rem)] sm:max-w-md">
-          <div className="bg-white/90 dark:bg-ink-900/90 backdrop-blur-md px-3.5 py-2.5 rounded-xl border border-parchment-300 dark:border-ink-700 shadow-sm">
-            <div className="text-[11px] font-sans text-amber-700 dark:text-amber-400 font-bold uppercase tracking-wider flex items-center gap-1.5">
-              <Tv className="w-3.5 h-3.5 text-blue-500 animate-pulse" />
-              Electron Dissector Optics Telemetry
+        {showUiOverlay && (
+          <div className="absolute top-3 left-3 sm:top-4 sm:left-4 z-10 flex flex-col gap-1.5 sm:gap-2 pointer-events-none max-w-[calc(100%-8rem)] sm:max-w-md transition-opacity duration-200">
+            <div className="bg-white/90 dark:bg-ink-900/90 backdrop-blur-md p-2 sm:px-3.5 sm:py-2.5 rounded-xl border border-parchment-300 dark:border-ink-700 shadow-sm">
+              <div className="text-[10px] sm:text-[11px] font-sans text-amber-700 dark:text-amber-400 font-bold uppercase tracking-wider flex items-center gap-1.5">
+                <Tv className="w-3 h-3 sm:w-3.5 sm:h-3.5 text-blue-500 animate-pulse" />
+                Electron Dissector Optics Telemetry
+              </div>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-3 gap-y-0.5 sm:gap-y-1 mt-1 text-[10px] sm:text-xs font-sans">
+                <div>
+                  <span className="text-ink-600 dark:text-ink-400">Beam Velocity:</span>{" "}
+                  <span className="font-bold text-blue-600 dark:text-blue-400">
+                    {(velocityMps / 1e6).toFixed(1)}M m/s ({velocityFractionC}% c)
+                  </span>
+                </div>
+                <div>
+                  <span className="text-ink-600 dark:text-ink-400">Photo-Current:</span>{" "}
+                  <span className="font-bold text-emerald-600 dark:text-emerald-400">
+                    {photocathodeCurrentUa} µA
+                  </span>
+                </div>
+                <div>
+                  <span className="text-ink-600 dark:text-ink-400">H-Sweep:</span>{" "}
+                  <span className="font-bold text-amber-600 dark:text-amber-400">
+                    {horizontalFreqKhz.toFixed(2)} kHz
+                  </span>
+                </div>
+                <div>
+                  <span className="text-ink-600 dark:text-ink-400">V-Field:</span>{" "}
+                  <span className="font-bold text-purple-600 dark:text-purple-400">
+                    {verticalFreqHz} Hz
+                  </span>
+                </div>
+              </div>
             </div>
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-4 gap-y-1 mt-1 text-xs font-sans">
-              <div>
-                <span className="text-ink-600 dark:text-ink-400">Beam Velocity:</span>{" "}
-                <span className="font-bold text-blue-600 dark:text-blue-400">
-                  {(velocityMps / 1e6).toFixed(1)} × 10⁶ m/s ({velocityFractionC}% c)
-                </span>
-              </div>
-              <div>
-                <span className="text-ink-600 dark:text-ink-400">Photo-Current:</span>{" "}
-                <span className="font-bold text-emerald-600 dark:text-emerald-400">
-                  {photocathodeCurrentUa} µA
-                </span>
-              </div>
-              <div>
-                <span className="text-ink-600 dark:text-ink-400">Horizontal Sweep:</span>{" "}
-                <span className="font-bold text-amber-600 dark:text-amber-400">
-                  {horizontalFreqKhz.toFixed(2)} kHz
-                </span>
-              </div>
-              <div>
-                <span className="text-ink-600 dark:text-ink-400">Vertical Field:</span>{" "}
-                <span className="font-bold text-purple-600 dark:text-purple-400">
-                  {verticalFreqHz} Hz
-                </span>
-              </div>
+
+            <div className="hidden sm:flex bg-white/90 dark:bg-ink-900/90 backdrop-blur-md px-3 py-1.5 rounded-lg border border-parchment-300 dark:border-ink-700 text-[11px] font-sans text-ink-700 dark:text-ink-300 items-center gap-2 max-w-full">
+              <Sparkles className="w-3.5 h-3.5 text-emerald-500 animate-pulse shrink-0" />
+              <span className="truncate">
+                Philo T. Farnsworth (US 1,773,980) — Television System (1927)
+              </span>
             </div>
           </div>
+        )}
 
-          <div className="bg-white/90 dark:bg-ink-900/90 backdrop-blur-md px-3 py-1.5 rounded-lg border border-parchment-300 dark:border-ink-700 text-[11px] font-sans text-ink-700 dark:text-ink-300 flex items-center gap-2 max-w-full">
-            <Sparkles className="w-3.5 h-3.5 text-emerald-500 animate-pulse shrink-0" />
-            <span className="truncate">
-              Philo T. Farnsworth (US 1,773,980) — Television System (1927)
-            </span>
-          </div>
-        </div>
-
-        {/* Top Right Tool Bar (Audio, Pins, Reset) */}
-        <div className="absolute top-4 right-4 z-10 flex gap-2">
+        {/* Top Right Tool Bar (Toggle UI, Audio, Pins, Reset) */}
+        <div className="absolute top-3 right-3 sm:top-4 sm:right-4 z-10 flex gap-1.5 sm:gap-2">
+          <button
+            type="button"
+            onClick={() => setShowUiOverlay(!showUiOverlay)}
+            className={`p-1.5 sm:p-2.5 rounded-xl backdrop-blur-md border transition-all shadow-sm ${
+              showUiOverlay
+                ? "bg-white/90 dark:bg-ink-900/90 border-parchment-300 dark:border-ink-700 text-ink-700 dark:text-parchment-300 hover:bg-parchment-100"
+                : "bg-amber-600 text-white border-amber-700 shadow-md ring-2 ring-amber-500/30"
+            }`}
+            title={showUiOverlay ? "Hide Overlay UI (Clean 3D View)" : "Show Overlay UI"}
+            aria-label={showUiOverlay ? "Hide Overlay UI" : "Show Overlay UI"}
+          >
+            {showUiOverlay ? (
+              <EyeOff className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
+            ) : (
+              <Eye className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
+            )}
+          </button>
           <button
             type="button"
             onClick={toggleSound}
-            className="p-2.5 rounded-xl bg-white/90 dark:bg-ink-900/90 backdrop-blur-md border border-parchment-300 dark:border-ink-700 text-ink-700 dark:text-parchment-300 hover:bg-parchment-100 dark:hover:bg-ink-800 transition-all shadow-sm"
+            className="p-1.5 sm:p-2.5 rounded-xl bg-white/90 dark:bg-ink-900/90 backdrop-blur-md border border-parchment-300 dark:border-ink-700 text-ink-700 dark:text-parchment-300 hover:bg-parchment-100 dark:hover:bg-ink-800 transition-all shadow-sm"
             title={isAudioMuted ? "Enable Sound Synthesis" : "Mute Sound"}
           >
             {isAudioMuted ? (
-              <VolumeX className="w-4 h-4" />
+              <VolumeX className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
             ) : (
-              <Volume2 className="w-4 h-4 text-amber-600" />
+              <Volume2 className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-amber-600" />
             )}
           </button>
           <button
             type="button"
             onClick={() => setShowCalloutPins(!showCalloutPins)}
-            className={`p-2.5 rounded-xl backdrop-blur-md border transition-all shadow-sm ${
+            className={`p-1.5 sm:p-2.5 rounded-xl backdrop-blur-md border transition-all shadow-sm ${
               showCalloutPins
                 ? "bg-amber-600 text-white border-amber-700 shadow-md"
                 : "bg-white/90 dark:bg-ink-900/90 border-parchment-300 dark:border-ink-700 text-ink-700 dark:text-parchment-300 hover:bg-parchment-100"
             }`}
             title="Toggle Historical Patent Numeral Pins"
           >
-            <Zap className="w-4 h-4" />
+            <Zap className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
           </button>
           <button
             type="button"
             onClick={() => applyCameraPreset("iso")}
-            className="p-2.5 rounded-xl bg-white/90 dark:bg-ink-900/90 backdrop-blur-md border border-parchment-300 dark:border-ink-700 text-ink-700 dark:text-parchment-300 hover:bg-parchment-100 dark:hover:bg-ink-800 transition-all shadow-sm"
+            className="p-1.5 sm:p-2.5 rounded-xl bg-white/90 dark:bg-ink-900/90 backdrop-blur-md border border-parchment-300 dark:border-ink-700 text-ink-700 dark:text-parchment-300 hover:bg-parchment-100 dark:hover:bg-ink-800 transition-all shadow-sm"
             title="Reset Orbit Camera"
           >
-            <RotateCcw className="w-4 h-4" />
+            <RotateCcw className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
           </button>
         </div>
 
         {/* Camera Views Bar */}
-        <div className="absolute bottom-4 left-4 z-10 flex flex-wrap gap-1.5 bg-white/85 dark:bg-ink-900/85 backdrop-blur-md p-1.5 rounded-xl border border-parchment-300 dark:border-ink-700 shadow-sm text-xs">
-          <span className="px-2 py-1 text-ink-500 font-sans flex items-center gap-1">
-            <Camera className="w-3.5 h-3.5" /> View:
-          </span>
-          {(
-            [
-              ["iso", "Isometric"],
-              ["photocathode", "Photocathode"],
-              ["aperture", "Anode Aperture"],
-              ["coils", "Deflection Coils"],
-              ["top", "Optical Axis"],
-            ] as const
-          ).map(([id, label]) => (
-            <button
-              key={id}
-              type="button"
-              onClick={() => applyCameraPreset(id)}
-              className={`px-2.5 py-1 rounded-lg font-sans transition-all ${
-                activeCamera === id
-                  ? "bg-amber-700 dark:bg-amber-600 text-white font-semibold shadow-xs"
-                  : "text-ink-700 dark:text-parchment-300 hover:bg-parchment-200 dark:hover:bg-ink-800"
-              }`}
-            >
-              {label}
-            </button>
-          ))}
-        </div>
+        {showUiOverlay && (
+          <div className="absolute bottom-3 left-3 sm:bottom-4 sm:left-4 z-10 flex flex-nowrap overflow-x-auto scrollbar-none max-w-[calc(100%-1.5rem)] sm:max-w-none gap-1 sm:gap-1.5 bg-white/85 dark:bg-ink-900/85 backdrop-blur-md p-1 sm:p-1.5 rounded-xl border border-parchment-300 dark:border-ink-700 shadow-sm text-[10px] sm:text-xs transition-opacity duration-200">
+            <span className="px-1.5 sm:px-2 py-0.5 sm:py-1 text-ink-500 font-sans flex items-center gap-1 shrink-0">
+              <Camera className="w-3 h-3 sm:w-3.5 sm:h-3.5" /> View:
+            </span>
+            {(
+              [
+                ["iso", "Isometric"],
+                ["photocathode", "Photocathode"],
+                ["aperture", "Anode Aperture"],
+                ["coils", "Deflection Coils"],
+                ["top", "Optical Axis"],
+              ] as const
+            ).map(([id, label]) => (
+              <button
+                key={id}
+                type="button"
+                onClick={() => applyCameraPreset(id)}
+                className={`px-2 py-0.5 sm:px-2.5 sm:py-1 rounded-lg font-sans whitespace-nowrap shrink-0 transition-all ${
+                  activeCamera === id
+                    ? "bg-amber-700 dark:bg-amber-600 text-white font-semibold shadow-xs"
+                    : "text-ink-700 dark:text-parchment-300 hover:bg-parchment-200 dark:hover:bg-ink-800"
+                }`}
+              >
+                {label}
+              </button>
+            ))}
+          </div>
+        )}
       </div>
 
       {/* Interactive Controls & Scenario Bar */}
