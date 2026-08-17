@@ -1,10 +1,57 @@
 "use client";
 
-import { Radio, Zap } from "lucide-react";
+import { Camera, Radio, RotateCcw, Sparkles, Volume2, VolumeX, Zap } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import * as THREE from "three";
+import { soundEngine } from "@/utils/soundEngine";
 import { createGlowPointTexture, createThreeStudioScene } from "./ThreeStudioScene";
 import { useLiveSimParams } from "./useLiveSimParams";
+
+type CameraPreset = "iso" | "spark_gap" | "induction_coil" | "aerial_monopole" | "top";
+
+interface ScenarioPreset {
+  id: string;
+  name: string;
+  desc: string;
+  heightM: number;
+  gapMm: number;
+  coilKv: number;
+}
+
+const SCENARIOS: ScenarioPreset[] = [
+  {
+    id: "marconi_1896_patent",
+    name: "1896 Wireless Patent (US 586,193)",
+    desc: "Guglielmo Marconi's breakthrough: Elevated vertical aerial antenna paired with low-impedance earth ground plate.",
+    heightM: 30,
+    gapMm: 10,
+    coilKv: 20,
+  },
+  {
+    id: "salisbury_plain_1897",
+    name: "1897 Salisbury Plain 4-Mile Trial",
+    desc: "First official British Post Office military demonstration transmitting clear Morse code across 4.5 miles of terrain.",
+    heightM: 45,
+    gapMm: 14,
+    coilKv: 30,
+  },
+  {
+    id: "transatlantic_1901",
+    name: "1901 Transatlantic Morse 'S' Signal",
+    desc: "2,100-mile historic transmission from Poldhu, Cornwall to Signal Hill, Newfoundland defying curved-earth skeptics.",
+    heightM: 60,
+    gapMm: 22,
+    coilKv: 50,
+  },
+  {
+    id: "tabletop_laboratory",
+    name: "Villa Griffone Laboratory Test",
+    desc: "Early Bologna garden experiments testing Righi spark oscillator triggering Branly coherer through stone walls.",
+    heightM: 15,
+    gapMm: 6,
+    coilKv: 12,
+  },
+];
 
 export function MarconiRadio3D() {
   const containerRef = useRef<HTMLDivElement>(null);
@@ -13,14 +60,15 @@ export function MarconiRadio3D() {
   const [aerialHeightMeters, setAerialHeightMeters] = useState<number>(30); // 10 to 60 meters
   const [sparkGapMm, setSparkGapMm] = useState<number>(10); // 2 to 25 mm
   const [inductionCoilKv, setInductionCoilKv] = useState<number>(20); // 5 to 50 kV
-  const [showEmWavefronts, setShowEmWavefronts] = useState<boolean>(true);
-  const [isSparking, setIsSparking] = useState<boolean>(true);
+  const [showEmWavefronts, _setShowEmWavefronts] = useState<boolean>(true);
+  const [isSparking, _setIsSparking] = useState<boolean>(true);
+  const [showCalloutPins, setShowCalloutPins] = useState<boolean>(false);
+  const [activeCamera, setActiveCamera] = useState<CameraPreset>("iso");
+  const [isAudioMuted, setIsAudioMuted] = useState<boolean>(true);
 
   // Electromagnetic Wireless Physics (Maxwell-Hertz-Marconi Equation)
-  // Fundamental Monopole Resonance: lambda = 4 * h
   const wavelengthMeters = aerialHeightMeters * 4;
   const resonantFreqMhz = (300 / wavelengthMeters).toFixed(2);
-  // Marconi's Law: Maximum Transmission Range D = C * h^2
   const maxRangeMiles = (
     0.015 *
     aerialHeightMeters *
@@ -35,13 +83,64 @@ export function MarconiRadio3D() {
     inductionCoilKv,
     showEmWavefronts,
     isSparking,
+    isAudioMuted,
   });
+
+  const controlsRef = useRef<any>(null);
+  const cameraRef = useRef<THREE.PerspectiveCamera | null>(null);
+
+  const applyCameraPreset = (preset: CameraPreset) => {
+    setActiveCamera(preset);
+    const camera = cameraRef.current;
+    const controls = controlsRef.current;
+    if (!camera || !controls) return;
+
+    switch (preset) {
+      case "iso":
+        camera.position.set(13, 10, 16);
+        controls.target.set(0, 0, 0);
+        break;
+      case "spark_gap":
+        camera.position.set(0, -0.8, 3.8);
+        controls.target.set(0, -1.8, 0);
+        break;
+      case "induction_coil":
+        camera.position.set(0, -1.2, -4.5);
+        controls.target.set(0, -2.1, -1.8);
+        break;
+      case "aerial_monopole":
+        camera.position.set(-3.5, 3.5, 6.5);
+        controls.target.set(-3.5, 2.5, 0);
+        break;
+      case "top":
+        camera.position.set(0, 13.5, 0.1);
+        controls.target.set(0, 0, 0);
+        break;
+    }
+    controls.update();
+  };
+
+  const applyScenario = (s: ScenarioPreset) => {
+    setAerialHeightMeters(s.heightM);
+    setSparkGapMm(s.gapMm);
+    setInductionCoilKv(s.coilKv);
+    if (!isAudioMuted) {
+      soundEngine.playSwitchClick();
+    }
+  };
+
+  const toggleSound = () => {
+    const isMuted = soundEngine.toggleMute();
+    setIsAudioMuted(isMuted);
+    if (!isMuted) {
+      soundEngine.playSwitchClick();
+    }
+  };
 
   useEffect(() => {
     const container = containerRef.current;
     if (!container) return;
 
-    // Create Studio Scene with High-Luminosity Studio Lighting
     const studio = createThreeStudioScene({
       container,
       cameraPos: [13, 10, 16],
@@ -49,43 +148,45 @@ export function MarconiRadio3D() {
     });
 
     const { scene, camera, renderer, controls } = studio;
+    cameraRef.current = camera;
+    controlsRef.current = controls;
 
     // --- PBR MATERIALS ---
     const brassBallMat = new THREE.MeshStandardMaterial({
-      color: 0xf59e0b, // Polished Righi 4-sphere brass discharge balls
+      color: 0xf59e0b,
       roughness: 0.1,
       metalness: 0.98,
     });
 
     const copperAerialMat = new THREE.MeshStandardMaterial({
-      color: 0xca8a04, // Elevated copper monopole antenna wire
+      color: 0xca8a04,
       roughness: 0.25,
       metalness: 0.88,
     });
 
     const woodMastMat = new THREE.MeshStandardMaterial({
-      color: 0x78350f, // Pine wooden telegraph mast
+      color: 0x78350f,
       roughness: 0.5,
       metalness: 0.05,
     });
 
     const groundEarthMat = new THREE.MeshStandardMaterial({
-      color: 0x475569, // Buried copper earth plate grounding
+      color: 0x475569,
       roughness: 0.6,
       metalness: 0.7,
     });
 
-    // --- 3D MARCONI WIRELESS TRANSMITTER & RECEIVER ASSEMBLY ---
+    // --- 3D MARCONI WIRELESS TRANSMITTER ASSEMBLY ---
     const radioGroup = new THREE.Group();
     scene.add(radioGroup);
 
-    // Pine Wood Aerial Mast with Guy Wire Rigging
+    // Pine Wood Aerial Mast
     const mast = new THREE.Mesh(new THREE.CylinderGeometry(0.18, 0.35, 9.5, 16), woodMastMat);
     mast.position.set(-3.5, 0.8, 0);
     mast.castShadow = true;
     radioGroup.add(mast);
 
-    // Top Aerial Capacity Plate (Elevated Sheet Reflector / Mesh Hat)
+    // Top Aerial Capacity Plate
     const capacityHat = new THREE.Mesh(
       new THREE.CylinderGeometry(1.2, 1.2, 0.08, 24),
       copperAerialMat,
@@ -93,7 +194,7 @@ export function MarconiRadio3D() {
     capacityHat.position.set(-3.5, 5.5, 0);
     radioGroup.add(capacityHat);
 
-    // Steel Guy Wires Bracing Mast
+    // Guy Wires
     const guyWiresGeo = new THREE.BufferGeometry();
     const guyPositions: number[] = [];
     [-2.2, 2.2].forEach((gz) => {
@@ -109,7 +210,7 @@ export function MarconiRadio3D() {
     );
     radioGroup.add(guyLines);
 
-    // Elevated Monopole Copper Aerial Wire
+    // Aerial Wire
     const aerialWire = new THREE.Mesh(
       new THREE.CylinderGeometry(0.04, 0.04, 8.5, 8),
       copperAerialMat,
@@ -118,7 +219,7 @@ export function MarconiRadio3D() {
     aerialWire.castShadow = true;
     radioGroup.add(aerialWire);
 
-    // Ruhmkorff Induction Spark Coil on Walnut Base
+    // Induction Spark Coil Base
     const coilBase = new THREE.Mesh(
       new THREE.BoxGeometry(3.6, 0.35, 2.4),
       new THREE.MeshStandardMaterial({ color: 0x78350f, roughness: 0.4 }),
@@ -134,110 +235,91 @@ export function MarconiRadio3D() {
     inductionCoil.position.set(0, -2.1, -1.8);
     radioGroup.add(inductionCoil);
 
-    // Augusto Righi 4-Sphere Spark Gap in Vaseline Oil Bath
+    // Augusto Righi 4-Sphere Spark Gap
     const sparkGapGroup = new THREE.Group();
     sparkGapGroup.position.set(0, -1.8, 0);
 
-    // Glass Oil Bath Cylinder
-    const oilBath = new THREE.Mesh(
-      new THREE.CylinderGeometry(1.6, 1.6, 1.2, 24),
-      new THREE.MeshPhysicalMaterial({ color: 0xfef08a, transmission: 0.8, roughness: 0.1 }),
-    );
-    oilBath.position.set(0, 0, 0);
-    sparkGapGroup.add(oilBath);
+    const spherePositions = [-1.2, -0.4, 0.4, 1.2];
+    spherePositions.forEach((sx, idx) => {
+      const isInner = idx === 1 || idx === 2;
+      const radius = isInner ? 0.35 : 0.28;
+      const ball = new THREE.Mesh(new THREE.SphereGeometry(radius, 24, 24), brassBallMat);
+      ball.position.x = sx;
+      ball.castShadow = true;
+      sparkGapGroup.add(ball);
 
-    const ball1 = new THREE.Mesh(new THREE.SphereGeometry(0.42, 24, 24), brassBallMat);
-    ball1.position.set(-1.1, 0, 0);
-    ball1.castShadow = true;
-    const ball2 = new THREE.Mesh(new THREE.SphereGeometry(0.62, 24, 24), brassBallMat);
-    ball2.position.set(-0.35, 0, 0);
-    ball2.castShadow = true;
-    const ball3 = new THREE.Mesh(new THREE.SphereGeometry(0.62, 24, 24), brassBallMat);
-    ball3.position.set(0.35, 0, 0);
-    ball3.castShadow = true;
-    const ball4 = new THREE.Mesh(new THREE.SphereGeometry(0.42, 24, 24), brassBallMat);
-    ball4.position.set(1.1, 0, 0);
-    ball4.castShadow = true;
+      const pillar = new THREE.Mesh(
+        new THREE.CylinderGeometry(0.08, 0.12, 1.0, 16),
+        new THREE.MeshStandardMaterial({ color: 0x475569, metalness: 0.9 }),
+      );
+      pillar.position.set(sx, -0.6, 0);
+      sparkGapGroup.add(pillar);
+    });
 
-    sparkGapGroup.add(ball1);
-    sparkGapGroup.add(ball2);
-    sparkGapGroup.add(ball3);
-    sparkGapGroup.add(ball4);
+    // Central Spark Discharge Arc Line
+    const sparkArcMat = new THREE.LineBasicMaterial({
+      color: 0x38bdf8,
+      linewidth: 3,
+    });
+    const sparkArcGeo = new THREE.BufferGeometry();
+    const arcPositions = new Float32Array(15 * 3);
+    sparkArcGeo.setAttribute("position", new THREE.BufferAttribute(arcPositions, 3));
+    const sparkArc = new THREE.Line(sparkArcGeo, sparkArcMat);
+    sparkGapGroup.add(sparkArc);
+
     radioGroup.add(sparkGapGroup);
 
-    // Earth Grounding Plate (Buried in sea/soil - Marconi breakthrough)
-    const earthPlate = new THREE.Mesh(new THREE.BoxGeometry(4.2, 0.18, 4.2), groundEarthMat);
-    earthPlate.position.set(0, -3.2, 0);
-    earthPlate.receiveShadow = true;
-    radioGroup.add(earthPlate);
+    // Buried Earth Ground Plate
+    const groundPlate = new THREE.Mesh(new THREE.BoxGeometry(3.0, 0.08, 3.0), groundEarthMat);
+    groundPlate.position.set(0, -3.2, 0);
+    radioGroup.add(groundPlate);
 
-    // Grounding Cable from Spark Gap to Earth Plate
+    // Ground Wire
     const groundWire = new THREE.Mesh(
-      new THREE.CylinderGeometry(0.06, 0.06, 1.4, 8),
+      new THREE.CylinderGeometry(0.04, 0.04, 1.4, 8),
       copperAerialMat,
     );
-    groundWire.position.set(1.1, -2.5, 0);
+    groundWire.position.set(0, -2.5, 0);
     radioGroup.add(groundWire);
 
-    // Branly-Marconi Glass Coherer Tube with Silver Plugs (Receiver detector)
-    const cohererGroup = new THREE.Group();
-    cohererGroup.position.set(3.6, -2.4, 1.5);
-
-    const cohererTube = new THREE.Mesh(
-      new THREE.CylinderGeometry(0.15, 0.15, 1.8, 16),
-      new THREE.MeshPhysicalMaterial({ color: 0xffffff, transmission: 0.9, transparent: true }),
-    );
-    cohererTube.rotation.z = Math.PI / 2;
-    cohererGroup.add(cohererTube);
-
-    // Nickel/Silver Filings in Gap
-    const filings = new THREE.Mesh(
-      new THREE.CylinderGeometry(0.12, 0.12, 0.3, 12),
-      new THREE.MeshStandardMaterial({ color: 0x94a3b8, metalness: 0.95 }),
-    );
-    filings.rotation.z = Math.PI / 2;
-    cohererGroup.add(filings);
-
-    radioGroup.add(cohererGroup);
-
-    // --- EXPANDING 3D SPHERICAL ELECTROMAGNETIC WAVEFRONTS ---
+    // --- EXPANDING ELECTROMAGNETIC SPHERICAL WAVEFRONTS ---
     const waveCount = 5;
-    const waveSpheres: THREE.Mesh[] = [];
-
-    for (let w = 0; w < waveCount; w++) {
-      const sphereGeo = new THREE.SphereGeometry(1.5 + w * 2.2, 24, 24);
-      const sphereMat = new THREE.MeshBasicMaterial({
+    const waveRings: THREE.Mesh[] = [];
+    for (let i = 0; i < waveCount; i++) {
+      const ringGeo = new THREE.RingGeometry(1.2 + i * 1.5, 1.28 + i * 1.5, 48);
+      const ringMat = new THREE.MeshBasicMaterial({
         color: 0x38bdf8,
-        wireframe: true,
         transparent: true,
-        opacity: 0.6 - w * 0.1,
+        opacity: 0.7 - i * 0.12,
+        side: THREE.DoubleSide,
       });
-      const sphere = new THREE.Mesh(sphereGeo, sphereMat);
-      sphere.position.set(-3.2, 0.8, 0);
-      radioGroup.add(sphere);
-      waveSpheres.push(sphere);
+      const ring = new THREE.Mesh(ringGeo, ringMat);
+      ring.rotation.x = Math.PI / 2;
+      ring.position.set(-3.2, 1.0, 0);
+      radioGroup.add(ring);
+      waveRings.push(ring);
     }
 
-    // --- GLOWING HIGH-VOLTAGE SPARK PLASMA PARTICLES ---
-    const sparkCount = 80;
-    const sparkGeo = new THREE.BufferGeometry();
-    const sparkPos = new Float32Array(sparkCount * 3);
+    // --- GLOWING RF SPARK PHOTON PARTICLES ---
+    const sparkCount = 60;
+    const sparkParticleGeo = new THREE.BufferGeometry();
+    const sparkParticlePos = new Float32Array(sparkCount * 3);
     const glowTex = createGlowPointTexture();
 
     for (let i = 0; i < sparkCount; i++) {
       const idx = i * 3;
-      sparkPos[idx] = -0.35 + Math.random() * 0.7;
-      sparkPos[idx + 1] = -1.8 + (Math.random() - 0.5) * 0.3;
-      sparkPos[idx + 2] = (Math.random() - 0.5) * 0.3;
+      sparkParticlePos[idx] = (Math.random() - 0.5) * 0.8;
+      sparkParticlePos[idx + 1] = -1.8 + (Math.random() - 0.5) * 0.3;
+      sparkParticlePos[idx + 2] = (Math.random() - 0.5) * 0.4;
     }
+    sparkParticleGeo.setAttribute("position", new THREE.BufferAttribute(sparkParticlePos, 3));
 
-    sparkGeo.setAttribute("position", new THREE.BufferAttribute(sparkPos, 3));
     const sparkPoints = new THREE.Points(
-      sparkGeo,
+      sparkParticleGeo,
       new THREE.PointsMaterial({
-        size: 0.45,
+        size: 0.28,
         map: glowTex,
-        color: 0x60a5fa,
+        color: 0x67e8f9,
         transparent: true,
         opacity: 0.95,
         blending: THREE.AdditiveBlending,
@@ -246,7 +328,7 @@ export function MarconiRadio3D() {
     );
     radioGroup.add(sparkPoints);
 
-    // --- RENDER LOOP & REAL-TIME EM RADIATION DYNAMICS ---
+    // --- RENDER LOOP & REAL-TIME RF OSCILLATION DYNAMICS ---
     let reqId: number;
     const clock = new THREE.Clock();
 
@@ -256,35 +338,41 @@ export function MarconiRadio3D() {
       const elapsed = clock.getElapsedTime();
       const p = live.current;
 
-      // Dynamically scale mast height based on aerial height parameter
-      const mastScaleY = p.aerialHeightMeters / 30;
-      mast.scale.y = mastScaleY;
-      mast.position.y = (9.0 * mastScaleY) / 2 - 4.0;
-      aerialWire.scale.y = mastScaleY;
-      aerialWire.position.y = (8.5 * mastScaleY) / 2 - 3.45;
-
-      // Expanding Radio Wavefront Spheres (Speed of Light $c$)
-      for (let w = 0; w < waveCount; w++) {
-        const sphere = waveSpheres[w];
-        const radius = (elapsed * 5.0 + w * 2.8) % 15.0;
-        sphere.scale.set(radius, radius, radius);
-        (sphere.material as THREE.MeshBasicMaterial).opacity = Math.max(0, 0.7 - radius * 0.045);
-        sphere.visible = p.showEmWavefronts && p.isSparking;
-      }
-
-      // Spark Gap Plasma Jitter
       if (p.isSparking) {
-        const sPos = sparkPos;
+        sparkPoints.visible = true;
+        sparkArc.visible = Math.random() > 0.15;
+
+        const aPos = arcPositions;
+        for (let i = 0; i < 15; i++) {
+          const t = i / 14;
+          const idx = i * 3;
+          aPos[idx] = -0.4 + t * 0.8;
+          aPos[idx + 1] = (Math.random() - 0.5) * 0.12;
+          aPos[idx + 2] = (Math.random() - 0.5) * 0.12;
+        }
+        sparkArcGeo.attributes.position.needsUpdate = true;
+
+        const sPos = sparkParticlePos;
         for (let i = 0; i < sparkCount; i++) {
           const idx = i * 3;
-          sPos[idx] = -0.35 + Math.random() * 0.7;
-          sPos[idx + 1] = -1.8 + (Math.random() - 0.5) * 0.25;
-          sPos[idx + 2] = (Math.random() - 0.5) * 0.25;
+          sPos[idx] = (Math.random() - 0.5) * 0.8;
+          sPos[idx + 1] = -1.8 + (Math.random() - 0.5) * 0.3;
+          sPos[idx + 2] = (Math.random() - 0.5) * 0.4;
         }
-        sparkGeo.attributes.position.needsUpdate = true;
-        sparkPoints.visible = Math.random() > 0.1;
+        sparkParticleGeo.attributes.position.needsUpdate = true;
       } else {
         sparkPoints.visible = false;
+        sparkArc.visible = false;
+      }
+
+      for (let i = 0; i < waveCount; i++) {
+        const ring = waveRings[i];
+        if (ring) {
+          ring.visible = p.showEmWavefronts && p.isSparking;
+          const wavePhase = (elapsed * 2.5 + i * 0.7) % 3.0;
+          ring.scale.setScalar(1.0 + wavePhase * 0.6);
+          (ring.material as THREE.MeshBasicMaterial).opacity = Math.max(0, 0.75 - wavePhase * 0.24);
+        }
       }
 
       controls.update();
@@ -306,23 +394,17 @@ export function MarconiRadio3D() {
         <div ref={containerRef} className="absolute inset-0 w-full h-full" />
 
         {/* Live HUD Telemetry Overlay */}
-        <div className="absolute top-4 left-4 z-10 flex flex-col gap-2 pointer-events-none">
+        <div className="absolute top-4 left-4 z-10 flex flex-col gap-2 pointer-events-none max-w-[calc(100%-8rem)] sm:max-w-md">
           <div className="bg-white/90 dark:bg-ink-900/90 backdrop-blur-md px-3.5 py-2.5 rounded-xl border border-parchment-300 dark:border-ink-700 shadow-sm">
             <div className="text-[11px] font-sans text-amber-700 dark:text-amber-400 font-bold uppercase tracking-wider flex items-center gap-1.5">
               <Radio className="w-3.5 h-3.5 text-blue-500 animate-pulse" />
-              Marconi Wireless Radiotelegraphy
+              Electromagnetic Wireless Telemetry
             </div>
-            <div className="grid grid-cols-2 gap-x-4 gap-y-1 mt-1 text-xs font-sans">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-4 gap-y-1 mt-1 text-xs font-sans">
               <div>
-                <span className="text-ink-600 dark:text-ink-400">Carrier Frequency:</span>{" "}
+                <span className="text-ink-600 dark:text-ink-400">Resonant Wavelength:</span>{" "}
                 <span className="font-bold text-blue-600 dark:text-blue-400">
-                  {resonantFreqMhz} MHz (λ = {wavelengthMeters}m)
-                </span>
-              </div>
-              <div>
-                <span className="text-ink-600 dark:text-ink-400">Transmission Range:</span>{" "}
-                <span className="font-bold text-emerald-600 dark:text-emerald-400">
-                  {maxRangeMiles} miles (Marconi's Law $D \propto h^2$)
+                  {wavelengthMeters} m ({resonantFreqMhz} MHz)
                 </span>
               </div>
               <div>
@@ -332,130 +414,193 @@ export function MarconiRadio3D() {
                 </span>
               </div>
               <div>
-                <span className="text-ink-600 dark:text-ink-400">Aerial Mast Height:</span>{" "}
+                <span className="text-ink-600 dark:text-ink-400">Marconi Range:</span>{" "}
+                <span className="font-bold text-emerald-600 dark:text-emerald-400">
+                  {maxRangeMiles} Miles ($D \propto h^2$)
+                </span>
+              </div>
+              <div>
+                <span className="text-ink-600 dark:text-ink-400">Spark Potential:</span>{" "}
                 <span className="font-bold text-purple-600 dark:text-purple-400">
-                  {aerialHeightMeters} meters
+                  {inductionCoilKv} kV ({sparkGapMm} mm Gap)
                 </span>
               </div>
             </div>
           </div>
 
-          <div className="bg-white/90 dark:bg-ink-900/90 backdrop-blur-md px-3 py-1.5 rounded-lg border border-parchment-300 dark:border-ink-700 text-[11px] font-sans text-ink-700 dark:text-ink-300 flex items-center gap-2">
-            <Zap className="w-3.5 h-3.5 text-emerald-500 animate-pulse" />
-            <span>Elevated Monopole + Earth Grounding: Hertzian Waves over Horizon</span>
+          <div className="bg-white/90 dark:bg-ink-900/90 backdrop-blur-md px-3 py-1.5 rounded-lg border border-parchment-300 dark:border-ink-700 text-[11px] font-sans text-ink-700 dark:text-ink-300 flex items-center gap-2 max-w-full">
+            <Zap className="w-3.5 h-3.5 text-amber-500 animate-pulse shrink-0" />
+            <span className="truncate">
+              Guglielmo Marconi (US 586,193) — Transmitting Electrical Signals (1897)
+            </span>
           </div>
         </div>
 
-        {/* Toggle Controls */}
+        {/* Top Right Tool Bar (Audio, Pins, Reset) */}
         <div className="absolute top-4 right-4 z-10 flex gap-2">
           <button
             type="button"
-            onClick={() => setShowEmWavefronts(!showEmWavefronts)}
-            className={`px-3 py-1.5 rounded-lg text-xs font-sans font-semibold border transition-all ${
-              showEmWavefronts
-                ? "bg-blue-600 text-white border-blue-700 shadow-sm"
-                : "bg-white/80 dark:bg-ink-900/80 text-ink-700 dark:text-ink-300 border-parchment-300 dark:border-ink-700"
-            }`}
+            onClick={toggleSound}
+            className="p-2.5 rounded-xl bg-white/90 dark:bg-ink-900/90 backdrop-blur-md border border-parchment-300 dark:border-ink-700 text-ink-700 dark:text-parchment-300 hover:bg-parchment-100 dark:hover:bg-ink-800 transition-all shadow-sm"
+            title={isAudioMuted ? "Enable Sound" : "Mute Sound"}
           >
-            EM Wavefronts
+            {isAudioMuted ? (
+              <VolumeX className="w-4 h-4" />
+            ) : (
+              <Volume2 className="w-4 h-4 text-amber-600" />
+            )}
           </button>
           <button
             type="button"
-            onClick={() => setIsSparking(!isSparking)}
-            className={`px-3 py-1.5 rounded-lg text-xs font-sans font-semibold border transition-all ${
-              isSparking
-                ? "bg-emerald-600 text-white border-emerald-700 shadow-sm"
-                : "bg-white/80 dark:bg-ink-900/80 text-ink-700 dark:text-ink-300 border-parchment-300 dark:border-ink-700"
+            onClick={() => setShowCalloutPins(!showCalloutPins)}
+            className={`p-2.5 rounded-xl backdrop-blur-md border transition-all shadow-sm ${
+              showCalloutPins
+                ? "bg-amber-600 text-white border-amber-700 shadow-md"
+                : "bg-white/90 dark:bg-ink-900/90 border-parchment-300 dark:border-ink-700 text-ink-700 dark:text-parchment-300 hover:bg-parchment-100"
             }`}
+            title="Toggle Historical Patent Numeral Pins"
           >
-            {isSparking ? "Spark Active" : "Silence"}
+            <Zap className="w-4 h-4" />
           </button>
+          <button
+            type="button"
+            onClick={() => applyCameraPreset("iso")}
+            className="p-2.5 rounded-xl bg-white/90 dark:bg-ink-900/90 backdrop-blur-md border border-parchment-300 dark:border-ink-700 text-ink-700 dark:text-parchment-300 hover:bg-parchment-100 dark:hover:bg-ink-800 transition-all shadow-sm"
+            title="Reset Orbit Camera"
+          >
+            <RotateCcw className="w-4 h-4" />
+          </button>
+        </div>
+
+        {/* Camera Views Bar */}
+        <div className="absolute bottom-4 left-4 z-10 flex flex-wrap gap-1.5 bg-white/85 dark:bg-ink-900/85 backdrop-blur-md p-1.5 rounded-xl border border-parchment-300 dark:border-ink-700 shadow-sm text-xs">
+          <span className="px-2 py-1 text-ink-500 font-sans flex items-center gap-1">
+            <Camera className="w-3.5 h-3.5" /> View:
+          </span>
+          {(
+            [
+              ["iso", "Isometric"],
+              ["spark_gap", "Spark Gap"],
+              ["induction_coil", "Induction Coil"],
+              ["aerial_monopole", "Aerial Mast"],
+              ["top", "Radiation Axis"],
+            ] as const
+          ).map(([id, label]) => (
+            <button
+              key={id}
+              type="button"
+              onClick={() => applyCameraPreset(id)}
+              className={`px-2.5 py-1 rounded-lg font-sans transition-all ${
+                activeCamera === id
+                  ? "bg-amber-700 dark:bg-amber-600 text-white font-semibold shadow-xs"
+                  : "text-ink-700 dark:text-parchment-300 hover:bg-parchment-200 dark:hover:bg-ink-800"
+              }`}
+            >
+              {label}
+            </button>
+          ))}
         </div>
       </div>
 
-      {/* Parameter Sliders Panel */}
-      <div className="p-4 sm:p-5 bg-parchment-100/80 dark:bg-ink-900/90 border-t border-parchment-300 dark:border-ink-800 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 text-xs font-sans">
-        {/* Aerial Mast Height */}
+      {/* Interactive Controls & Scenario Bar */}
+      <div className="p-4 sm:p-5 bg-parchment-100/90 dark:bg-ink-900/90 border-t border-parchment-300 dark:border-ink-800 space-y-4">
+        {/* Scenario Presets */}
         <div className="space-y-1.5">
-          <div className="flex justify-between font-medium text-ink-900 dark:text-parchment-100">
-            <span>Antenna Mast Height ($h$):</span>
-            <span className="font-bold text-amber-700 dark:text-amber-400">
-              {aerialHeightMeters} m ({Math.round(aerialHeightMeters * 3.28)} ft)
-            </span>
+          <div className="text-xs font-sans font-bold text-ink-700 dark:text-ink-300 uppercase tracking-wider flex items-center gap-1.5">
+            <Sparkles className="w-3.5 h-3.5 text-amber-600" /> Historical Wireless Presets:
           </div>
-          <input
-            type="range"
-            min="10"
-            max="60"
-            step="5"
-            value={aerialHeightMeters}
-            onChange={(e) => setAerialHeightMeters(Number(e.target.value))}
-            className="w-full accent-amber-600 dark:accent-amber-400 cursor-pointer"
-          />
-          <span className="text-[10px] text-ink-500 dark:text-ink-400 block">
-            $\lambda = 4h$ quarter-wave resonance
-          </span>
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
+            {SCENARIOS.map((s) => (
+              <button
+                key={s.id}
+                type="button"
+                onClick={() => applyScenario(s)}
+                className="p-2.5 rounded-xl border border-parchment-300 dark:border-ink-700 bg-white/70 dark:bg-ink-950/70 hover:bg-parchment-50 dark:hover:bg-ink-800 text-left transition-all group"
+              >
+                <div className="text-xs font-serif font-bold text-ink-900 dark:text-parchment-100 group-hover:text-amber-700 dark:group-hover:text-amber-400">
+                  {s.name}
+                </div>
+                <div className="text-[10px] font-sans text-ink-500 dark:text-ink-400 line-clamp-2 mt-0.5">
+                  {s.desc}
+                </div>
+              </button>
+            ))}
+          </div>
         </div>
 
-        {/* Induction Coil Voltage */}
-        <div className="space-y-1.5">
-          <div className="flex justify-between font-medium text-ink-900 dark:text-parchment-100">
-            <span>Ruhmkorff Coil Voltage:</span>
-            <span className="font-bold text-blue-600 dark:text-blue-400">{inductionCoilKv} kV</span>
-          </div>
-          <input
-            type="range"
-            min="5"
-            max="50"
-            step="5"
-            value={inductionCoilKv}
-            onChange={(e) => setInductionCoilKv(Number(e.target.value))}
-            className="w-full accent-blue-600 dark:accent-blue-400 cursor-pointer"
-          />
-          <span className="text-[10px] text-ink-500 dark:text-ink-400 block">
-            High voltage charging aerial capacitance
-          </span>
-        </div>
-
-        {/* Spark Gap Distance */}
-        <div className="space-y-1.5">
-          <div className="flex justify-between font-medium text-ink-900 dark:text-parchment-100">
-            <span>Righi 4-Sphere Gap:</span>
-            <span className="font-bold text-emerald-600 dark:text-emerald-400">
-              {sparkGapMm} mm
-            </span>
-          </div>
-          <input
-            type="range"
-            min="2"
-            max="25"
-            step="1"
-            value={sparkGapMm}
-            onChange={(e) => setSparkGapMm(Number(e.target.value))}
-            className="w-full accent-emerald-600 dark:accent-emerald-400 cursor-pointer"
-          />
-          <span className="text-[10px] text-ink-500 dark:text-ink-400 block">
-            Oil-immersed central gap produces damped oscillation
-          </span>
-        </div>
-
-        {/* Transatlantic Range Margin */}
-        <div className="space-y-1.5">
-          <div className="flex justify-between font-medium text-ink-900 dark:text-parchment-100">
-            <span>Marconi Distance Scale:</span>
-            <span className="font-bold text-purple-600 dark:text-purple-400">
-              {maxRangeMiles} mi ({Math.round(Number(maxRangeMiles) * 1.609)} km)
-            </span>
-          </div>
-          <div className="w-full bg-parchment-300 dark:bg-ink-800 rounded-full h-3 overflow-hidden mt-2 border border-parchment-400 dark:border-ink-700">
-            <div
-              className="bg-gradient-to-r from-blue-500 via-emerald-500 to-amber-500 h-full transition-all duration-300"
-              style={{ width: `${Math.min(100, (Number(maxRangeMiles) / 100) * 100)}%` }}
+        {/* Sliders Grid */}
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 pt-1">
+          {/* Aerial Mast Height */}
+          <div className="space-y-1.5">
+            <div className="flex justify-between text-xs font-sans">
+              <span className="font-semibold text-ink-800 dark:text-parchment-200">
+                Aerial Antenna Height ($h$):
+              </span>
+              <span className="font-mono text-amber-700 dark:text-amber-400 font-bold">
+                {aerialHeightMeters} Meters
+              </span>
+            </div>
+            <input
+              type="range"
+              min="10"
+              max="60"
+              step="5"
+              value={aerialHeightMeters}
+              onChange={(e) => setAerialHeightMeters(Number(e.target.value))}
+              className="w-full accent-amber-600 cursor-pointer"
             />
+            <span className="text-[10px] text-ink-500 dark:text-ink-400 block">
+              {"Monopole resonance: λ = 4h"}
+            </span>
           </div>
-          <span className="text-[10px] text-ink-500 dark:text-ink-400 block">
-            December 1901: First transatlantic signal ("S" •••)
-          </span>
+
+          {/* Spark Gap Distance */}
+          <div className="space-y-1.5">
+            <div className="flex justify-between text-xs font-sans">
+              <span className="font-semibold text-ink-800 dark:text-parchment-200">
+                Righi Spark Gap ($d$):
+              </span>
+              <span className="font-mono text-blue-600 dark:text-blue-400 font-bold">
+                {sparkGapMm} mm
+              </span>
+            </div>
+            <input
+              type="range"
+              min="2"
+              max="25"
+              step="1"
+              value={sparkGapMm}
+              onChange={(e) => setSparkGapMm(Number(e.target.value))}
+              className="w-full accent-blue-600 cursor-pointer"
+            />
+            <span className="text-[10px] text-ink-500 dark:text-ink-400 block">
+              Breakdown dielectric gap distance
+            </span>
+          </div>
+
+          {/* Induction Coil Voltage */}
+          <div className="space-y-1.5">
+            <div className="flex justify-between text-xs font-sans">
+              <span className="font-semibold text-ink-800 dark:text-parchment-200">
+                Ruhmkorff Coil Potential:
+              </span>
+              <span className="font-mono text-emerald-600 dark:text-emerald-400 font-bold">
+                {inductionCoilKv} kV
+              </span>
+            </div>
+            <input
+              type="range"
+              min="5"
+              max="50"
+              step="2"
+              value={inductionCoilKv}
+              onChange={(e) => setInductionCoilKv(Number(e.target.value))}
+              className="w-full accent-emerald-600 cursor-pointer"
+            />
+            <span className="text-[10px] text-ink-500 dark:text-ink-400 block">
+              Step-up transformer excitation voltage
+            </span>
+          </div>
         </div>
       </div>
     </div>

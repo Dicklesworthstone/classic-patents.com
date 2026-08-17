@@ -1,11 +1,62 @@
 "use client";
 
-import { Mic, Volume2, VolumeX, Waves } from "lucide-react";
+import { Camera, Mic, RotateCcw, Sparkles, Volume2, VolumeX, Waves, Zap } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import * as THREE from "three";
 import { soundEngine } from "@/utils/soundEngine";
 import { createGlowPointTexture, createThreeStudioScene } from "./ThreeStudioScene";
 import { useLiveSimParams } from "./useLiveSimParams";
+
+type CameraPreset = "iso" | "speaking_horn" | "liquid_transmitter" | "battery_cells" | "top";
+
+interface ScenarioPreset {
+  id: string;
+  name: string;
+  desc: string;
+  freqHz: number;
+  amplitude: number;
+  voltage: number;
+  conductivity: number;
+}
+
+const SCENARIOS: ScenarioPreset[] = [
+  {
+    id: "bell_1876_first_words",
+    name: "March 10, 1876 Historic Transmission",
+    desc: "Alexander Graham Bell speaks to Thomas Watson: 'Mr. Watson—Come here—I want to see you' over a variable-resistance acid transmitter.",
+    freqHz: 300,
+    amplitude: 0.85,
+    voltage: 6.0,
+    conductivity: 1.2,
+  },
+  {
+    id: "vocal_speech_range",
+    name: "Human Voice Formant Frequency",
+    desc: "800 Hz acoustic resonance demonstrating undulating continuous electrical speech current waveform transmission.",
+    freqHz: 800,
+    amplitude: 0.65,
+    voltage: 6.0,
+    conductivity: 1.2,
+  },
+  {
+    id: "high_sensitivity_low_voltage",
+    name: "Subtle Whisper Sensitivity",
+    desc: "Delicate 0.25 amplitude acoustic wave modulating micro-currents in dilute acidulated water electrolyte.",
+    freqHz: 550,
+    amplitude: 0.3,
+    voltage: 3.0,
+    conductivity: 0.8,
+  },
+  {
+    id: "long_distance_boost",
+    name: "Long-Distance Line Battery",
+    desc: "12V Daniell gravity cell battery bank boosting current transmission along miles of copper telegraph wire.",
+    freqHz: 440,
+    amplitude: 0.75,
+    voltage: 12.0,
+    conductivity: 1.5,
+  },
+];
 
 export function BellTelephone3D() {
   const containerRef = useRef<HTMLDivElement>(null);
@@ -15,7 +66,9 @@ export function BellTelephone3D() {
   const [voiceAmplitude, setVoiceAmplitude] = useState<number>(0.65); // 0 to 1.0
   const [batteryVoltage, setBatteryVoltage] = useState<number>(6.0); // 1.5 to 12 V
   const [liquidConductivity, setLiquidConductivity] = useState<number>(1.2); // acidulated water S/m
-  const [showAcousticWaves, setShowAcousticWaves] = useState<boolean>(true);
+  const [showAcousticWaves, _setShowAcousticWaves] = useState<boolean>(true);
+  const [showCalloutPins, setShowCalloutPins] = useState<boolean>(false);
+  const [activeCamera, setActiveCamera] = useState<CameraPreset>("iso");
   const [isPlayingAudio, setIsPlayingAudio] = useState<boolean>(false);
 
   // Electrical Physics Calculations
@@ -33,6 +86,50 @@ export function BellTelephone3D() {
     currentBaselineAmps,
   });
 
+  const controlsRef = useRef<any>(null);
+  const cameraRef = useRef<THREE.PerspectiveCamera | null>(null);
+
+  const applyCameraPreset = (preset: CameraPreset) => {
+    setActiveCamera(preset);
+    const camera = cameraRef.current;
+    const controls = controlsRef.current;
+    if (!camera || !controls) return;
+
+    switch (preset) {
+      case "iso":
+        camera.position.set(11, 8, 14);
+        controls.target.set(0, 0, 0);
+        break;
+      case "speaking_horn":
+        camera.position.set(-4.5, 1.8, 4.0);
+        controls.target.set(-1.4, 0.5, 0);
+        break;
+      case "liquid_transmitter":
+        camera.position.set(3.5, 1.2, 3.8);
+        controls.target.set(2.0, -1.0, 0);
+        break;
+      case "battery_cells":
+        camera.position.set(-3.5, 0.5, 4.5);
+        controls.target.set(-2.5, -1.5, 1.8);
+        break;
+      case "top":
+        camera.position.set(0, 11.0, 0.1);
+        controls.target.set(0, 0, 0);
+        break;
+    }
+    controls.update();
+  };
+
+  const applyScenario = (s: ScenarioPreset) => {
+    setAcousticFrequencyHz(s.freqHz);
+    setVoiceAmplitude(s.amplitude);
+    setBatteryVoltage(s.voltage);
+    setLiquidConductivity(s.conductivity);
+    if (isPlayingAudio) {
+      soundEngine.playContinuousTone(s.freqHz, "sine", s.amplitude * 0.1);
+    }
+  };
+
   // Sound Engine Integration
   useEffect(() => {
     if (isPlayingAudio) {
@@ -49,7 +146,6 @@ export function BellTelephone3D() {
     const container = containerRef.current;
     if (!container) return;
 
-    // Create Studio Scene with High-Luminosity Studio Lighting
     const studio = createThreeStudioScene({
       container,
       cameraPos: [11, 8, 14],
@@ -57,6 +153,8 @@ export function BellTelephone3D() {
     });
 
     const { scene, camera, renderer, controls } = studio;
+    cameraRef.current = camera;
+    controlsRef.current = controls;
 
     // --- PBR MATERIALS ---
     const brassMaterial = new THREE.MeshStandardMaterial({
@@ -111,15 +209,15 @@ export function BellTelephone3D() {
     baseBoard.receiveShadow = true;
     phoneGroup.add(baseBoard);
 
-    // Flared Acoustic Speaking Horn with Rolled Bead Rim (Lathe Geometry)
+    // Flared Acoustic Speaking Horn
     const hornPoints: THREE.Vector2[] = [];
-    hornPoints.push(new THREE.Vector2(0.42, 0)); // Diaphragm throat connection
+    hornPoints.push(new THREE.Vector2(0.42, 0));
     hornPoints.push(new THREE.Vector2(0.45, 0.6));
     hornPoints.push(new THREE.Vector2(0.55, 1.4));
     hornPoints.push(new THREE.Vector2(0.85, 2.4));
     hornPoints.push(new THREE.Vector2(1.35, 3.2));
-    hornPoints.push(new THREE.Vector2(1.85, 3.7)); // Flared mouth
-    hornPoints.push(new THREE.Vector2(1.88, 3.8)); // Rolled brass lip
+    hornPoints.push(new THREE.Vector2(1.85, 3.7));
+    hornPoints.push(new THREE.Vector2(1.88, 3.8));
 
     const hornGeo = new THREE.LatheGeometry(hornPoints, 48);
     const hornMesh = new THREE.Mesh(hornGeo, brassMaterial);
@@ -128,7 +226,7 @@ export function BellTelephone3D() {
     hornMesh.castShadow = true;
     phoneGroup.add(hornMesh);
 
-    // Diaphragm Mounting Collar with Brass Clamping Screws
+    // Diaphragm Collar
     const collarMesh = new THREE.Mesh(new THREE.TorusGeometry(0.52, 0.08, 12, 32), brassMaterial);
     collarMesh.rotation.y = Math.PI / 2;
     collarMesh.position.set(-1.4, 0.5, 0);
@@ -142,7 +240,7 @@ export function BellTelephone3D() {
       phoneGroup.add(screw);
     }
 
-    // Flexible Parchment Diaphragm Disc
+    // Diaphragm Disc
     const diaphragmGeo = new THREE.CircleGeometry(0.48, 36);
     const diaphragmMesh = new THREE.Mesh(diaphragmGeo, diaphragmMaterial);
     diaphragmMesh.rotation.y = Math.PI / 2;
@@ -150,19 +248,19 @@ export function BellTelephone3D() {
     diaphragmMesh.castShadow = true;
     phoneGroup.add(diaphragmMesh);
 
-    // Vertical Acid Liquid Cup (Blown Glass Beaker with Lip)
+    // Glass Beaker Cup
     const beakerPoints: THREE.Vector2[] = [];
     beakerPoints.push(new THREE.Vector2(0, 0));
     beakerPoints.push(new THREE.Vector2(1.0, 0));
     beakerPoints.push(new THREE.Vector2(1.05, 0.1));
     beakerPoints.push(new THREE.Vector2(1.1, 1.8));
-    beakerPoints.push(new THREE.Vector2(1.22, 2.2)); // Flared rim
+    beakerPoints.push(new THREE.Vector2(1.22, 2.2));
     const beakerGeo = new THREE.LatheGeometry(beakerPoints, 36);
     const glassCup = new THREE.Mesh(beakerGeo, glassCupMaterial);
     glassCup.position.set(2.0, -2.4, 0);
     phoneGroup.add(glassCup);
 
-    // Acid Electrolyte Liquid Volume with Meniscus
+    // Liquid Electrolyte
     const liquidMesh = new THREE.Mesh(
       new THREE.CylinderGeometry(1.04, 0.98, 1.6, 36),
       liquidMaterial,
@@ -170,7 +268,7 @@ export function BellTelephone3D() {
     liquidMesh.position.set(2.0, -1.5, 0);
     phoneGroup.add(liquidMesh);
 
-    // Submerged Stationary Base Electrode (Gold/Platinum Button)
+    // Platinum Base Electrode
     const baseElectrode = new THREE.Mesh(
       new THREE.CylinderGeometry(0.4, 0.4, 0.12, 16),
       platinumRodMaterial,
@@ -178,7 +276,7 @@ export function BellTelephone3D() {
     baseElectrode.position.set(2.0, -2.3, 0);
     phoneGroup.add(baseElectrode);
 
-    // Variable-Resistance Platinum Dipping Needle Rod
+    // Dipping Needle Rod
     const rodGroup = new THREE.Group();
     rodGroup.position.set(2.0, 0.6, 0);
 
@@ -190,7 +288,7 @@ export function BellTelephone3D() {
     rodGroup.add(platinumRod);
     phoneGroup.add(rodGroup);
 
-    // Mechanical Linkage Arm with Pivot Fulcrum Post
+    // Linkage Arm
     const fulcrumPost = new THREE.Mesh(
       new THREE.CylinderGeometry(0.12, 0.15, 2.2, 16),
       brassMaterial,
@@ -204,7 +302,7 @@ export function BellTelephone3D() {
     linkArm.castShadow = true;
     phoneGroup.add(linkArm);
 
-    // Gravity Cell Battery Jars (Daniel Cell DC Supply)
+    // Battery Jars
     for (let b = 0; b < 2; b++) {
       const battery = new THREE.Mesh(
         new THREE.CylinderGeometry(0.7, 0.7, 1.6, 24),
@@ -249,18 +347,18 @@ export function BellTelephone3D() {
     const electronPoints = new THREE.Points(
       electronGeo,
       new THREE.PointsMaterial({
-        size: 0.35,
+        size: 0.32,
         map: glowTex,
         color: 0x38bdf8,
         transparent: true,
-        opacity: 0.8,
+        opacity: 0.85,
         blending: THREE.AdditiveBlending,
         depthWrite: false,
       }),
     );
-    scene.add(electronPoints);
+    phoneGroup.add(electronPoints);
 
-    // --- RENDER LOOP & REAL-TIME PHYSICS SIMULATION ---
+    // --- RENDER LOOP & REAL-TIME ACOUSTIC OSCILLATION ---
     let reqId: number;
     const clock = new THREE.Clock();
 
@@ -270,35 +368,30 @@ export function BellTelephone3D() {
       const elapsed = clock.getElapsedTime();
       const p = live.current;
 
-      // Diaphragm & Needle Rod Vibration: y(t) = A * sin(2 * pi * f * t)
-      const omega = 2 * Math.PI * (p.acousticFrequencyHz / 80); // Scaled for visual tracking
-      const displacement = Math.sin(elapsed * omega) * 0.35 * p.voiceAmplitude;
+      const omega = 2 * Math.PI * p.acousticFrequencyHz;
+      const oscillation = Math.sin(elapsed * omega * 0.05) * p.voiceAmplitude;
 
-      diaphragmMesh.position.x = -1.3 + displacement * 0.4;
-      rodGroup.position.y = 0.6 + displacement;
+      diaphragmMesh.position.x = -1.38 + oscillation * 0.04;
+      rodGroup.position.y = 0.6 - oscillation * 0.35;
+      linkArm.rotation.z = -oscillation * 0.12;
 
-      // Animate Acoustic Wavefronts expanding into speaking cone
       for (let i = 0; i < waveCount; i++) {
         const ring = waveRings[i];
-        const offset = (elapsed * 2.5 + i * 0.8) % 4.0;
-        ring.position.x = -4.8 - offset;
-        const scale = 1.0 + offset * 0.35;
-        ring.scale.set(scale, scale, scale);
-        (ring.material as THREE.MeshBasicMaterial).opacity =
-          Math.max(0, 0.7 - offset * 0.15) * (p.voiceAmplitude > 0.05 ? 1 : 0);
-        ring.visible = p.showAcousticWaves;
+        if (ring) {
+          ring.visible = p.showAcousticWaves;
+          const wavePhase = (elapsed * 3.0 + i * 0.8) % 3.0;
+          ring.scale.setScalar(1.0 + wavePhase * 0.4);
+          (ring.material as THREE.MeshBasicMaterial).opacity = Math.max(0, 0.8 - wavePhase * 0.25);
+        }
       }
 
-      // Animate Current Drift Velocity in Electrolyte
       const ePos = electronPos;
-      const driftSpeed = (p.currentBaselineAmps / 0.15) * delta * 2.0;
+      const currentSpeed = (p.currentBaselineAmps + oscillation * 0.05) * 12.0 * delta;
       for (let i = 0; i < electronCount; i++) {
         const idx = i * 3;
-        ePos[idx + 1] -= driftSpeed;
-        if (ePos[idx + 1] < -2.1) {
-          ePos[idx + 1] = -0.4;
-          ePos[idx] = 2.0 + (Math.random() - 0.5) * 0.5;
-          ePos[idx + 2] = (Math.random() - 0.5) * 0.5;
+        ePos[idx + 1] -= currentSpeed;
+        if (ePos[idx + 1] < -2.2) {
+          ePos[idx + 1] = -0.5;
         }
       }
       electronGeo.attributes.position.needsUpdate = true;
@@ -322,171 +415,229 @@ export function BellTelephone3D() {
         <div ref={containerRef} className="absolute inset-0 w-full h-full" />
 
         {/* Live HUD Telemetry Overlay */}
-        <div className="absolute top-4 left-4 z-10 flex flex-col gap-2 pointer-events-none">
+        <div className="absolute top-4 left-4 z-10 flex flex-col gap-2 pointer-events-none max-w-[calc(100%-8rem)] sm:max-w-md">
           <div className="bg-white/90 dark:bg-ink-900/90 backdrop-blur-md px-3.5 py-2.5 rounded-xl border border-parchment-300 dark:border-ink-700 shadow-sm">
             <div className="text-[11px] font-sans text-amber-700 dark:text-amber-400 font-bold uppercase tracking-wider flex items-center gap-1.5">
               <Waves className="w-3.5 h-3.5 text-blue-500 animate-pulse" />
-              Variable-Resistance Telephony
+              Acoustic-Electric Telemetry
             </div>
-            <div className="grid grid-cols-2 gap-x-4 gap-y-1 mt-1 text-xs font-sans">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-4 gap-y-1 mt-1 text-xs font-sans">
               <div>
-                <span className="text-ink-600 dark:text-ink-400">Baseline $R_0$:</span>{" "}
-                <span className="font-bold text-amber-600 dark:text-amber-400">
-                  {baseResistanceOhms.toFixed(1)} Ω
-                </span>
-              </div>
-              <div>
-                <span className="text-ink-600 dark:text-ink-400">Audio $\Delta R$:</span>{" "}
+                <span className="text-ink-600 dark:text-ink-400">Audio Frequency:</span>{" "}
                 <span className="font-bold text-blue-600 dark:text-blue-400">
-                  ±{resistanceModulationOhms.toFixed(1)} Ω
+                  {acousticFrequencyHz} Hz
                 </span>
               </div>
               <div>
-                <span className="text-ink-600 dark:text-ink-400">DC Bias Current:</span>{" "}
+                <span className="text-ink-600 dark:text-ink-400">Liquid Resistance:</span>{" "}
+                <span className="font-bold text-amber-600 dark:text-amber-400">
+                  {baseResistanceOhms.toFixed(1)} Ω (±{resistanceModulationOhms.toFixed(1)} Ω)
+                </span>
+              </div>
+              <div>
+                <span className="text-ink-600 dark:text-ink-400">Baseline DC:</span>{" "}
                 <span className="font-bold text-emerald-600 dark:text-emerald-400">
                   {(currentBaselineAmps * 1000).toFixed(1)} mA
                 </span>
               </div>
               <div>
-                <span className="text-ink-600 dark:text-ink-400">Audio Signal $\Delta I$:</span>{" "}
+                <span className="text-ink-600 dark:text-ink-400">AC Modulation:</span>{" "}
                 <span className="font-bold text-purple-600 dark:text-purple-400">
-                  ±{peakAudioCurrentMa.toFixed(1)} mA
+                  ±{peakAudioCurrentMa.toFixed(1)} mA Peak
                 </span>
               </div>
             </div>
           </div>
 
-          <div className="bg-white/90 dark:bg-ink-900/90 backdrop-blur-md px-3 py-1.5 rounded-lg border border-parchment-300 dark:border-ink-700 text-[11px] font-sans text-ink-700 dark:text-ink-300 flex items-center gap-2">
-            <Mic className="w-3.5 h-3.5 text-amber-600" />
-            <span>"Mr. Watson, come here — I want to see you." (March 10, 1876)</span>
+          <div className="bg-white/90 dark:bg-ink-900/90 backdrop-blur-md px-3 py-1.5 rounded-lg border border-parchment-300 dark:border-ink-700 text-[11px] font-sans text-ink-700 dark:text-ink-300 flex items-center gap-2 max-w-full">
+            <Mic className="w-3.5 h-3.5 text-amber-600 animate-pulse shrink-0" />
+            <span className="truncate">
+              Alexander Graham Bell (US 174,465) — Variable Resistance Transmitter (1876)
+            </span>
           </div>
         </div>
 
-        {/* Audio & Wave Toggles */}
+        {/* Top Right Tool Bar (Audio, Pins, Reset) */}
         <div className="absolute top-4 right-4 z-10 flex gap-2">
           <button
             type="button"
-            onClick={() => setShowAcousticWaves(!showAcousticWaves)}
-            className={`px-3 py-1.5 rounded-lg text-xs font-sans font-semibold border transition-all ${
-              showAcousticWaves
-                ? "bg-blue-600 text-white border-blue-700 shadow-sm"
-                : "bg-white/80 dark:bg-ink-900/80 text-ink-700 dark:text-ink-300 border-parchment-300 dark:border-ink-700"
-            }`}
+            onClick={() => setIsPlayingAudio(!isPlayingAudio)}
+            className="p-2.5 rounded-xl bg-white/90 dark:bg-ink-900/90 backdrop-blur-md border border-parchment-300 dark:border-ink-700 text-ink-700 dark:text-parchment-300 hover:bg-parchment-100 dark:hover:bg-ink-800 transition-all shadow-sm"
+            title={isPlayingAudio ? "Mute Acoustic Tone" : "Play Continuous Sine Audio"}
           >
-            Sound Waves
+            {isPlayingAudio ? (
+              <Volume2 className="w-4 h-4 text-emerald-600" />
+            ) : (
+              <VolumeX className="w-4 h-4" />
+            )}
           </button>
           <button
             type="button"
-            onClick={() => setIsPlayingAudio(!isPlayingAudio)}
-            className={`px-3 py-1.5 rounded-lg text-xs font-sans font-semibold border transition-all ${
-              isPlayingAudio
-                ? "bg-emerald-600 text-white border-emerald-700 shadow-sm"
-                : "bg-white/80 dark:bg-ink-900/80 text-ink-700 dark:text-ink-300 border-parchment-300 dark:border-ink-700"
+            onClick={() => setShowCalloutPins(!showCalloutPins)}
+            className={`p-2.5 rounded-xl backdrop-blur-md border transition-all shadow-sm ${
+              showCalloutPins
+                ? "bg-amber-600 text-white border-amber-700 shadow-md"
+                : "bg-white/90 dark:bg-ink-900/90 border-parchment-300 dark:border-ink-700 text-ink-700 dark:text-parchment-300 hover:bg-parchment-100"
             }`}
+            title="Toggle Historical Patent Numeral Pins"
           >
-            {isPlayingAudio ? (
-              <>
-                <Volume2 className="w-3.5 h-3.5 inline mr-1 animate-pulse" />
-                Tone ON
-              </>
-            ) : (
-              <>
-                <VolumeX className="w-3.5 h-3.5 inline mr-1" />
-                Tone OFF
-              </>
-            )}
+            <Zap className="w-4 h-4" />
           </button>
+          <button
+            type="button"
+            onClick={() => applyCameraPreset("iso")}
+            className="p-2.5 rounded-xl bg-white/90 dark:bg-ink-900/90 backdrop-blur-md border border-parchment-300 dark:border-ink-700 text-ink-700 dark:text-parchment-300 hover:bg-parchment-100 dark:hover:bg-ink-800 transition-all shadow-sm"
+            title="Reset Orbit Camera"
+          >
+            <RotateCcw className="w-4 h-4" />
+          </button>
+        </div>
+
+        {/* Camera Views Bar */}
+        <div className="absolute bottom-4 left-4 z-10 flex flex-wrap gap-1.5 bg-white/85 dark:bg-ink-900/85 backdrop-blur-md p-1.5 rounded-xl border border-parchment-300 dark:border-ink-700 shadow-sm text-xs">
+          <span className="px-2 py-1 text-ink-500 font-sans flex items-center gap-1">
+            <Camera className="w-3.5 h-3.5" /> View:
+          </span>
+          {(
+            [
+              ["iso", "Isometric"],
+              ["speaking_horn", "Speaking Horn"],
+              ["liquid_transmitter", "Liquid Cup"],
+              ["battery_cells", "Daniell Cell"],
+              ["top", "Acoustic Axis"],
+            ] as const
+          ).map(([id, label]) => (
+            <button
+              key={id}
+              type="button"
+              onClick={() => applyCameraPreset(id)}
+              className={`px-2.5 py-1 rounded-lg font-sans transition-all ${
+                activeCamera === id
+                  ? "bg-amber-700 dark:bg-amber-600 text-white font-semibold shadow-xs"
+                  : "text-ink-700 dark:text-parchment-300 hover:bg-parchment-200 dark:hover:bg-ink-800"
+              }`}
+            >
+              {label}
+            </button>
+          ))}
         </div>
       </div>
 
-      {/* Parameter Sliders Panel */}
-      <div className="p-4 sm:p-5 bg-parchment-100/80 dark:bg-ink-900/90 border-t border-parchment-300 dark:border-ink-800 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 text-xs font-sans">
-        {/* Acoustic Frequency */}
+      {/* Interactive Controls & Scenario Bar */}
+      <div className="p-4 sm:p-5 bg-parchment-100/90 dark:bg-ink-900/90 border-t border-parchment-300 dark:border-ink-800 space-y-4">
+        {/* Scenario Presets */}
         <div className="space-y-1.5">
-          <div className="flex justify-between font-medium text-ink-900 dark:text-parchment-100">
-            <span>Voice Frequency ($f$):</span>
-            <span className="font-bold text-amber-700 dark:text-amber-400">
-              {acousticFrequencyHz} Hz ({acousticFrequencyHz === 440 ? "Concert A" : "Formant"})
-            </span>
+          <div className="text-xs font-sans font-bold text-ink-700 dark:text-ink-300 uppercase tracking-wider flex items-center gap-1.5">
+            <Sparkles className="w-3.5 h-3.5 text-amber-600" /> Historical Telephone Presets:
           </div>
-          <input
-            type="range"
-            min="100"
-            max="1000"
-            step="20"
-            value={acousticFrequencyHz}
-            onChange={(e) => setAcousticFrequencyHz(Number(e.target.value))}
-            className="w-full accent-amber-600 dark:accent-amber-400 cursor-pointer"
-          />
-          <span className="text-[10px] text-ink-500 dark:text-ink-400 block">
-            Sets membrane vibration velocity $\omega = 2\pi f$
-          </span>
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
+            {SCENARIOS.map((s) => (
+              <button
+                key={s.id}
+                type="button"
+                onClick={() => applyScenario(s)}
+                className="p-2.5 rounded-xl border border-parchment-300 dark:border-ink-700 bg-white/70 dark:bg-ink-950/70 hover:bg-parchment-50 dark:hover:bg-ink-800 text-left transition-all group"
+              >
+                <div className="text-xs font-serif font-bold text-ink-900 dark:text-parchment-100 group-hover:text-amber-700 dark:group-hover:text-amber-400">
+                  {s.name}
+                </div>
+                <div className="text-[10px] font-sans text-ink-500 dark:text-ink-400 line-clamp-2 mt-0.5">
+                  {s.desc}
+                </div>
+              </button>
+            ))}
+          </div>
         </div>
 
-        {/* Voice Amplitude */}
-        <div className="space-y-1.5">
-          <div className="flex justify-between font-medium text-ink-900 dark:text-parchment-100">
-            <span>Sound Pressure (Volume):</span>
-            <span className="font-bold text-blue-600 dark:text-blue-400">
-              {(voiceAmplitude * 100).toFixed(0)}%
+        {/* Sliders Grid */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 text-xs font-sans pt-1">
+          {/* Frequency */}
+          <div className="space-y-1.5">
+            <div className="flex justify-between font-medium text-ink-900 dark:text-parchment-100">
+              <span>Voice Pitch:</span>
+              <span className="font-bold text-amber-700 dark:text-amber-400">
+                {acousticFrequencyHz} Hz
+              </span>
+            </div>
+            <input
+              type="range"
+              min="100"
+              max="1200"
+              step="20"
+              value={acousticFrequencyHz}
+              onChange={(e) => setAcousticFrequencyHz(Number(e.target.value))}
+              className="w-full accent-amber-600 cursor-pointer"
+            />
+            <span className="text-[10px] text-ink-500 dark:text-ink-400 block">
+              Vocal chord vibration frequency
             </span>
           </div>
-          <input
-            type="range"
-            min="0.1"
-            max="1.0"
-            step="0.05"
-            value={voiceAmplitude}
-            onChange={(e) => setVoiceAmplitude(Number(e.target.value))}
-            className="w-full accent-blue-600 dark:accent-blue-400 cursor-pointer"
-          />
-          <span className="text-[10px] text-ink-500 dark:text-ink-400 block">
-            Controls immersion depth of platinum needle
-          </span>
-        </div>
 
-        {/* Battery Voltage */}
-        <div className="space-y-1.5">
-          <div className="flex justify-between font-medium text-ink-900 dark:text-parchment-100">
-            <span>DC Battery Supply:</span>
-            <span className="font-bold text-emerald-600 dark:text-emerald-400">
-              {batteryVoltage.toFixed(1)} V
+          {/* Voice Amplitude */}
+          <div className="space-y-1.5">
+            <div className="flex justify-between font-medium text-ink-900 dark:text-parchment-100">
+              <span>Acoustic Loudness:</span>
+              <span className="font-bold text-blue-600 dark:text-blue-400">
+                {Math.round(voiceAmplitude * 100)}%
+              </span>
+            </div>
+            <input
+              type="range"
+              min="0.1"
+              max="1.0"
+              step="0.05"
+              value={voiceAmplitude}
+              onChange={(e) => setVoiceAmplitude(Number(e.target.value))}
+              className="w-full accent-blue-600 cursor-pointer"
+            />
+            <span className="text-[10px] text-ink-500 dark:text-ink-400 block">
+              Sound pressure wave amplitude
             </span>
           </div>
-          <input
-            type="range"
-            min="1.5"
-            max="12.0"
-            step="0.5"
-            value={batteryVoltage}
-            onChange={(e) => setBatteryVoltage(Number(e.target.value))}
-            className="w-full accent-emerald-600 dark:accent-emerald-400 cursor-pointer"
-          />
-          <span className="text-[10px] text-ink-500 dark:text-ink-400 block">
-            Daniel cells supplying constant electrical potential
-          </span>
-        </div>
 
-        {/* Liquid Conductivity */}
-        <div className="space-y-1.5">
-          <div className="flex justify-between font-medium text-ink-900 dark:text-parchment-100">
-            <span>Electrolyte Conductivity:</span>
-            <span className="font-bold text-purple-600 dark:text-purple-400">
-              {liquidConductivity.toFixed(2)} S/m
+          {/* Battery Voltage */}
+          <div className="space-y-1.5">
+            <div className="flex justify-between font-medium text-ink-900 dark:text-parchment-100">
+              <span>Battery DC Voltage:</span>
+              <span className="font-bold text-emerald-600 dark:text-emerald-400">
+                {batteryVoltage.toFixed(1)} V
+              </span>
+            </div>
+            <input
+              type="range"
+              min="1.5"
+              max="12.0"
+              step="0.5"
+              value={batteryVoltage}
+              onChange={(e) => setBatteryVoltage(Number(e.target.value))}
+              className="w-full accent-emerald-600 cursor-pointer"
+            />
+            <span className="text-[10px] text-ink-500 dark:text-ink-400 block">
+              Daniell gravity cell potential
             </span>
           </div>
-          <input
-            type="range"
-            min="0.4"
-            max="2.5"
-            step="0.1"
-            value={liquidConductivity}
-            onChange={(e) => setLiquidConductivity(Number(e.target.value))}
-            className="w-full accent-purple-600 dark:accent-purple-400 cursor-pointer"
-          />
-          <span className="text-[10px] text-ink-500 dark:text-ink-400 block">
-            Dilute sulfuric acid in water bath
-          </span>
+
+          {/* Liquid Conductivity */}
+          <div className="space-y-1.5">
+            <div className="flex justify-between font-medium text-ink-900 dark:text-parchment-100">
+              <span>Acid Electrolyte Conductivity:</span>
+              <span className="font-bold text-purple-600 dark:text-purple-400">
+                {liquidConductivity.toFixed(2)} S/m
+              </span>
+            </div>
+            <input
+              type="range"
+              min="0.4"
+              max="2.5"
+              step="0.1"
+              value={liquidConductivity}
+              onChange={(e) => setLiquidConductivity(Number(e.target.value))}
+              className="w-full accent-purple-600 cursor-pointer"
+            />
+            <span className="text-[10px] text-ink-500 dark:text-ink-400 block">
+              Acidulated water concentration
+            </span>
+          </div>
         </div>
       </div>
     </div>

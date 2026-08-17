@@ -27,6 +27,7 @@ export interface FlyerAirframe {
   lowerWing: THREE.Group;
   canardGroup: THREE.Group;
   rudderGroup: THREE.Group;
+  cradleGroup: THREE.Group;
   leftPropBlades: THREE.Group;
   rightPropBlades: THREE.Group;
   textures: THREE.Texture[];
@@ -578,31 +579,110 @@ export function buildWrightFlyerAirframe(): FlyerAirframe {
   group.add(engine);
 
   // Pilot Prone Hip Cradle & Orville Figure
-  const cradle = new THREE.Group();
-  cradle.position.set(-0.35, yLower + 0.08, 0.05);
-  cradle.add(new THREE.Mesh(new THREE.BoxGeometry(0.55, 0.05, 0.95), spruce));
-  const hipCradleBox = new THREE.Mesh(new THREE.BoxGeometry(0.44, 0.08, 0.28), ash);
+  const cradleGroup = new THREE.Group();
+  cradleGroup.position.set(-0.35, yLower + 0.08, 0.05);
+
+  // Guide rails on lower wing
+  const railL = new THREE.Mesh(new THREE.CylinderGeometry(0.01, 0.01, 0.98, 8), ash);
+  railL.rotation.x = Math.PI / 2;
+  railL.position.set(-0.25, 0.01, 0);
+  cradleGroup.add(railL);
+  const railR = new THREE.Mesh(new THREE.CylinderGeometry(0.01, 0.01, 0.98, 8), ash);
+  railR.rotation.x = Math.PI / 2;
+  railR.position.set(0.25, 0.01, 0);
+  cradleGroup.add(railR);
+
+  // Sliding carriage
+  const hipCradleBox = new THREE.Mesh(new THREE.BoxGeometry(0.46, 0.08, 0.32), ash);
   hipCradleBox.position.set(0, 0.06, 0.05);
-  cradle.add(hipCradleBox);
+  cradleGroup.add(hipCradleBox);
+
+  // Warping cable anchor attachments on cradle
+  const cableEyeL = new THREE.Mesh(new THREE.TorusGeometry(0.02, 0.005, 6, 8), brass);
+  cableEyeL.position.set(-0.24, 0.08, 0.05);
+  cradleGroup.add(cableEyeL);
+  const cableEyeR = new THREE.Mesh(new THREE.TorusGeometry(0.02, 0.005, 6, 8), brass);
+  cableEyeR.position.set(0.24, 0.08, 0.05);
+  cradleGroup.add(cableEyeR);
 
   const torso = new THREE.Mesh(new THREE.CapsuleGeometry(0.12, 0.52, 6, 8), darkWool);
   torso.rotation.x = Math.PI / 2;
   torso.position.set(0, 0.15, -0.05);
-  cradle.add(torso);
+  cradleGroup.add(torso);
 
   const head = new THREE.Mesh(new THREE.SphereGeometry(0.09, 10, 8), pilotSkin);
   head.position.set(0, 0.2, 0.42);
-  cradle.add(head);
+  cradleGroup.add(head);
 
   const cap = new THREE.Mesh(new THREE.CylinderGeometry(0.1, 0.1, 0.04, 10), darkWool);
   cap.position.set(0, 0.26, 0.42);
-  cradle.add(cap);
+  cradleGroup.add(cap);
 
   const elevatorLever = new THREE.Mesh(new THREE.CylinderGeometry(0.012, 0.012, 0.48, 8), spruce);
   elevatorLever.position.set(-0.26, 0.24, 0.25);
   elevatorLever.rotation.z = -0.2;
-  cradle.add(elevatorLever);
-  group.add(cradle);
+  cradleGroup.add(elevatorLever);
+  group.add(cradleGroup);
+
+  // Richard Anemometer & Stopwatch Instrument Cluster on Front Strut
+  const instrumentCluster = new THREE.Group();
+  instrumentCluster.position.set(-0.12, yLower + 0.55, zFront);
+  const instBase = new THREE.Mesh(new THREE.BoxGeometry(0.1, 0.14, 0.03), ash);
+  instrumentCluster.add(instBase);
+
+  // Vane anemometer wheel
+  const anemometerHub = new THREE.Mesh(new THREE.CylinderGeometry(0.015, 0.015, 0.04, 8), brass);
+  anemometerHub.rotation.x = Math.PI / 2;
+  anemometerHub.position.set(0, 0.04, 0.03);
+  instrumentCluster.add(anemometerHub);
+  for (let i = 0; i < 4; i++) {
+    const cupArm = new THREE.Mesh(new THREE.CylinderGeometry(0.003, 0.003, 0.06, 6), steel);
+    cupArm.rotation.z = (i * Math.PI) / 2;
+    cupArm.position.set(0, 0.04, 0.045);
+    instrumentCluster.add(cupArm);
+  }
+
+  // Stopwatch dial
+  const stopwatch = new THREE.Mesh(new THREE.CylinderGeometry(0.024, 0.024, 0.015, 12), brass);
+  stopwatch.rotation.x = Math.PI / 2;
+  stopwatch.position.set(0, -0.035, 0.02);
+  instrumentCluster.add(stopwatch);
+  group.add(instrumentCluster);
+
+  // Wing-Warping Rigging Pulleys & Claim 1 Interconnection Cables
+  const outerLeftX = strutXs[0];
+  const outerRightX = strutXs[strutXs.length - 1];
+
+  // Pulley blocks on rear upper/lower outer struts
+  for (const x of [outerLeftX, outerRightX]) {
+    for (const y of [yUpper, yLower]) {
+      const pulleyBlock = new THREE.Mesh(new THREE.BoxGeometry(0.04, 0.04, 0.04), brass);
+      pulleyBlock.position.set(x, y, zRear);
+      group.add(pulleyBlock);
+    }
+  }
+
+  // Claim 1 Warping-to-Rudder Cross Cables
+  addWire(
+    group,
+    outerLeftX,
+    yLower,
+    zRear,
+    -d.rudderSep / 2,
+    0.05,
+    -d.chord / 2 - d.rudderArm,
+    steel,
+  );
+  addWire(
+    group,
+    outerRightX,
+    yLower,
+    zRear,
+    d.rudderSep / 2,
+    0.05,
+    -d.chord / 2 - d.rudderArm,
+    steel,
+  );
 
   // Twin Counter-Rotating Pusher Propellers & Tubular Chain Casings
   const makeProp = (x: number, isPort: boolean) => {
@@ -611,6 +691,12 @@ export function buildWrightFlyerAirframe(): FlyerAirframe {
     const hub = new THREE.Mesh(new THREE.CylinderGeometry(0.06, 0.06, 0.12, 12), brass);
     hub.rotation.x = Math.PI / 2;
     p.add(hub);
+
+    // Driven sprocket on propeller shaft
+    const sprocket = new THREE.Mesh(new THREE.CylinderGeometry(0.09, 0.09, 0.02, 16), iron);
+    sprocket.rotation.x = Math.PI / 2;
+    sprocket.position.set(0, 0, 0.08);
+    p.add(sprocket);
 
     const blades = new THREE.Group();
     const b1 = scimitarBlade(d.propDiameter / 2, propWood);
@@ -641,6 +727,7 @@ export function buildWrightFlyerAirframe(): FlyerAirframe {
     lowerWing,
     canardGroup,
     rudderGroup,
+    cradleGroup,
     leftPropBlades,
     rightPropBlades,
     textures,

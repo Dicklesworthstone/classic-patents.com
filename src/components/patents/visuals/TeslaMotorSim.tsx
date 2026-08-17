@@ -12,9 +12,10 @@ export function TeslaMotorSim() {
   const [_activePedagogyStep, setActivePedagogyStep] = useState<number>(1);
   const [angle, setAngle] = useState<number>(0);
 
-  // Synchronous and Rotor Speed calculations
-  const totalPoles = phaseCount === 2 ? 4 : 6;
-  const syncSpeedRpm = (120 * frequencyHz) / totalPoles;
+  // This drawing is a 2-pole machine: 4 (or 6) coil sides around one N–S pair.
+  // ns = 120 f / P, P = 2 → 3600 RPM at 60 Hz for both 2-phase and 3-phase.
+  const fieldPoles = 2;
+  const syncSpeedRpm = (120 * frequencyHz) / fieldPoles;
   const slip = Math.min(0.25, (loadTorque / 100) * 0.2 + 0.02);
   const rotorSpeedRpm = Math.round(syncSpeedRpm * (1 - slip));
 
@@ -59,8 +60,20 @@ export function TeslaMotorSim() {
   };
 
   const rad = (angle * Math.PI) / 180;
-  const bVectorX = Math.cos(rad) * 60;
-  const bVectorY = Math.sin(rad) * 60;
+  const coilCount = phaseCount === 2 ? 4 : 6;
+  let fieldX = 0;
+  let fieldY = 0;
+  for (let i = 0; i < coilCount; i++) {
+    const a = (i * 2 * Math.PI) / coilCount - Math.PI / 2;
+    const phaseOff = (i % phaseCount) * (phaseCount === 2 ? Math.PI / 2 : (2 * Math.PI) / 3);
+    const polarity = i >= phaseCount ? -1 : 1;
+    const current = polarity * Math.sin(rad + phaseOff);
+    fieldX += current * Math.cos(a);
+    fieldY += current * Math.sin(a);
+  }
+  const fieldNorm = Math.hypot(fieldX, fieldY) || 1;
+  const bVectorX = (fieldX / fieldNorm) * 60;
+  const bVectorY = (fieldY / fieldNorm) * 60;
 
   return (
     <div className="rounded-2xl border border-amber-900/20 dark:border-ink-800 bg-parchment-50 dark:bg-ink-950 p-6 shadow-patent space-y-6">
@@ -133,7 +146,9 @@ export function TeslaMotorSim() {
               const a = (i * 2 * Math.PI) / poles - Math.PI / 2;
               const phaseOff =
                 (i % phaseCount) * (phaseCount === 2 ? Math.PI / 2 : (2 * Math.PI) / 3);
-              const current = Math.sin(rad + phaseOff);
+              // A and A′ are opposite sides of the same winding (N vs S), not the same polarity.
+              const polarity = i >= phaseCount ? -1 : 1;
+              const current = polarity * Math.sin(rad + phaseOff);
               const cx = 200 + Math.cos(a) * 108;
               const cy = 150 + Math.sin(a) * 108;
               const labels =

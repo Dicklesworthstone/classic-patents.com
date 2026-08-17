@@ -15,7 +15,7 @@ export function BellTelephoneSim() {
 
   useEffect(() => {
     const timer = setInterval(() => {
-      setTime((t) => (t + 1) % 100);
+      setTime((t) => t + 1);
     }, 40);
     return () => clearInterval(timer);
   }, []);

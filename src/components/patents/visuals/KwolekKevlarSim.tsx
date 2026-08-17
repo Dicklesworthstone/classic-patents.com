@@ -1,7 +1,7 @@
 "use client";
 
 import { Shield, ShieldAlert } from "lucide-react";
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 export function KwolekKevlarSim() {
   const [polymerAlignment, setPolymerAlignment] = useState<number>(90); // 0% (isotropic tangled) to 100% (liquid-crystal nematic)
@@ -17,9 +17,22 @@ export function KwolekKevlarSim() {
   const residualCapacityGPa = currentStrengthGPa * (1 - tensileTension / 220);
   const isArmorPenetrated = bulletFired && residualCapacityGPa < 1.6;
 
+  const impactTimerRef = useRef<number | null>(null);
+
+  useEffect(() => {
+    return () => {
+      if (impactTimerRef.current !== null) {
+        window.clearTimeout(impactTimerRef.current);
+      }
+    };
+  }, []);
+
   const fireBulletTest = () => {
+    if (impactTimerRef.current !== null) {
+      window.clearTimeout(impactTimerRef.current);
+    }
     setBulletFired(true);
-    setTimeout(() => setBulletFired(false), 2500);
+    impactTimerRef.current = window.setTimeout(() => setBulletFired(false), 2500);
   };
 
   return (

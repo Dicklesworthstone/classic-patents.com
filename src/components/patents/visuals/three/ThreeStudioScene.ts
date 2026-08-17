@@ -41,6 +41,8 @@ export interface StudioContext {
     update: () => void;
     dispose: () => void;
     setRadius: (r: number) => void;
+    setView: (pos: [number, number, number], target: [number, number, number]) => void;
+    target: { set: (x: number, y: number, z: number) => void };
   };
   updateEnvironment: () => void;
   dispose: () => void;
@@ -188,15 +190,26 @@ export function createThreeStudioScene(opts: StudioOptions): StudioContext {
     alpha: false,
     powerPreference: "high-performance",
   });
-  renderer.setSize(width, height);
   renderer.setPixelRatio(Math.min(typeof window !== "undefined" ? window.devicePixelRatio : 1, 2));
   renderer.toneMapping = THREE.ACESFilmicToneMapping;
   renderer.toneMappingExposure = isDark ? 1.4 : 1.35;
   renderer.shadowMap.enabled = true;
   renderer.shadowMap.type = THREE.PCFSoftShadowMap;
 
-  renderer.domElement.style.touchAction = "pan-y";
-  container.replaceChildren(renderer.domElement);
+  // Do not let setSize write inline pixel CSS — that fights the container and
+  // retriggers ResizeObserver (black flashes while the page scrolls).
+  renderer.setSize(width, height, false);
+  const canvas = renderer.domElement;
+  canvas.style.display = "block";
+  canvas.style.width = "100%";
+  canvas.style.height = "100%";
+  canvas.style.touchAction = "pan-y";
+  canvas.style.outline = "none";
+  canvas.style.transform = "translateZ(0)";
+  container.style.isolation = "isolate";
+  container.style.contain = "layout paint";
+  container.style.transform = "translateZ(0)";
+  container.replaceChildren(canvas);
 
   // 4. Studio & Sun Lighting Rig
   // A. Sky & Ground Hemisphere Light (Natural atmospheric fill)
@@ -302,6 +315,13 @@ export function createThreeStudioScene(opts: StudioOptions): StudioContext {
   };
 
   const onPointerDown = (e: MouseEvent | TouchEvent) => {
+    // One-finger touch must remain a page scroll (touch-action: pan-y).
+    // Orbit only from a mouse drag or an explicit two-finger gesture.
+    if ("touches" in e) {
+      if (e.touches.length < 2) return;
+    } else if (e.button !== 0) {
+      return;
+    }
     const point = pointerClient(e);
     if (!point) return;
     isDragging = true;
@@ -330,40 +350,54 @@ export function createThreeStudioScene(opts: StudioOptions): StudioContext {
   };
 
   const onWheel = (e: WheelEvent) => {
-    // Only capture wheel for 3D zoom if modifier is held (Ctrl/Cmd) or during active dragging
-    // to allow natural vertical document scrolling when hovering over 3D canvases
-    if (e.ctrlKey || e.metaKey || isDragging) {
-      e.preventDefault();
-      const zoomFactor = e.deltaY * 0.02;
-      targetSpherical.radius = Math.max(4, Math.min(55, targetSpherical.radius + zoomFactor));
-    }
+    // Trackpad pinch arrives as ctrl+wheel. Never steal ordinary two-finger scroll,
+    // and never keep preventDefault armed after a drag that failed to mouseup.
+    const isPinchZoom = e.ctrlKey || e.metaKey;
+    if (!isPinchZoom && !isDragging) return;
+    e.preventDefault();
+    const zoomFactor = e.deltaY * 0.02;
+    targetSpherical.radius = Math.max(4, Math.min(55, targetSpherical.radius + zoomFactor));
+  };
+
+  const onPointerCancel = () => {
+    isDragging = false;
   };
 
   const domEl = renderer.domElement;
   domEl.addEventListener("mousedown", onPointerDown);
   window.addEventListener("mousemove", onPointerMove);
   window.addEventListener("mouseup", onPointerUp);
+  window.addEventListener("blur", onPointerCancel);
   domEl.addEventListener("touchstart", onPointerDown, { passive: true });
   window.addEventListener("touchmove", onPointerMove, { passive: true });
   window.addEventListener("touchend", onPointerUp);
+  window.addEventListener("touchcancel", onPointerCancel);
   domEl.addEventListener("wheel", onWheel, { passive: false });
 
-  const onResize = () => {
+  let lastResizeW = width;
+  let lastResizeH = height;
+  const applyViewportSize = () => {
     if (!container) return;
-    const w = container.clientWidth || 600;
-    const h = container.clientHeight || 460;
+    const w = Math.max(1, Math.round(container.clientWidth || 600));
+    const h = Math.max(1, Math.round(container.clientHeight || 460));
+    if (Math.abs(w - lastResizeW) < 2 && Math.abs(h - lastResizeH) < 2) return;
+    lastResizeW = w;
+    lastResizeH = h;
     camera.aspect = w / h;
     camera.updateProjectionMatrix();
-    renderer.setSize(w, h);
+    renderer.setSize(w, h, false);
   };
-  window.addEventListener("resize", onResize);
   const resizeObserver =
     typeof ResizeObserver !== "undefined"
       ? new ResizeObserver(() => {
-          onResize();
+          applyViewportSize();
         })
       : null;
-  resizeObserver?.observe(container);
+  if (resizeObserver) {
+    resizeObserver.observe(container);
+  } else {
+    window.addEventListener("resize", applyViewportSize);
+  }
 
   const controls = {
     update: () => {
@@ -386,15 +420,43 @@ export function createThreeStudioScene(opts: StudioOptions): StudioContext {
       domEl.removeEventListener("mousedown", onPointerDown);
       window.removeEventListener("mousemove", onPointerMove);
       window.removeEventListener("mouseup", onPointerUp);
+      window.removeEventListener("blur", onPointerCancel);
       domEl.removeEventListener("touchstart", onPointerDown);
       window.removeEventListener("touchmove", onPointerMove);
       window.removeEventListener("touchend", onPointerUp);
+      window.removeEventListener("touchcancel", onPointerCancel);
       domEl.removeEventListener("wheel", onWheel);
-      window.removeEventListener("resize", onResize);
-      resizeObserver?.disconnect();
+      if (resizeObserver) {
+        resizeObserver.disconnect();
+      } else {
+        window.removeEventListener("resize", applyViewportSize);
+      }
     },
     setRadius: (r: number) => {
       targetSpherical.radius = r;
+    },
+    setView: (pos: [number, number, number], target: [number, number, number]) => {
+      centerTarget.set(target[0], target[1], target[2]);
+      camera.position.set(pos[0], pos[1], pos[2]);
+      const offset = camera.position.clone().sub(centerTarget);
+      if (offset.lengthSq() < 1e-8) {
+        offset.set(0, 0, 10);
+      }
+      spherical.setFromVector3(offset);
+      targetSpherical.copy(spherical);
+    },
+    // Compatibility for scenes that still call OrbitControls-style `controls.target.set`.
+    // Must run *after* camera.position.set so the spherical is rebuilt from the new pose.
+    target: {
+      set: (x: number, y: number, z: number) => {
+        centerTarget.set(x, y, z);
+        const offset = camera.position.clone().sub(centerTarget);
+        if (offset.lengthSq() < 1e-8) {
+          offset.set(0, 0, 10);
+        }
+        spherical.setFromVector3(offset);
+        targetSpherical.copy(spherical);
+      },
     },
   };
 
@@ -420,10 +482,15 @@ export function createThreeStudioScene(opts: StudioOptions): StudioContext {
       if (obj instanceof THREE.Mesh || obj instanceof THREE.Points || obj instanceof THREE.Line) {
         obj.geometry?.dispose();
         const material = obj.material;
+        const disposeMat = (mat: THREE.Material) => {
+          const mapped = mat as THREE.Material & { map?: THREE.Texture | null };
+          mapped.map?.dispose();
+          mat.dispose();
+        };
         if (Array.isArray(material)) {
-          for (const mat of material) mat.dispose();
-        } else {
-          material?.dispose();
+          for (const mat of material) disposeMat(mat);
+        } else if (material) {
+          disposeMat(material);
         }
       }
     });

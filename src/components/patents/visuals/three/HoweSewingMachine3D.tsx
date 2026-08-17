@@ -75,6 +75,7 @@ export function HoweSewingMachine3D() {
     isCranking,
     stitchPitchMm,
     clothFeedRateMmPerSec,
+    threadTensionGrams,
     isAudioMuted,
   });
 
@@ -347,6 +348,13 @@ export function HoweSewingMachine3D() {
         }
       }
 
+      // Tension tautens the needle thread; slack (<20 g) sags, over-tight (>80 g) goes wire-thin.
+      const tension = p.threadTensionGrams;
+      const taut = Math.min(1.8, Math.max(0.35, tension / 45));
+      threadMesh.scale.set(1, taut, taut);
+      threadMesh.position.y = tension < 22 ? -0.18 : 0;
+      needleThreadMat.color.setHex(tension > 80 ? 0xf97316 : 0xef4444);
+
       controls.update();
       renderer.render(scene, camera);
     };
@@ -501,7 +509,7 @@ export function HoweSewingMachine3D() {
         </div>
 
         {/* Sliders Grid */}
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 pt-1">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 pt-1">
           {/* Stitching Speed */}
           <div className="space-y-1.5">
             <div className="flex justify-between text-xs font-sans">
@@ -547,6 +555,30 @@ export function HoweSewingMachine3D() {
             />
             <span className="text-[10px] text-ink-500 dark:text-ink-400 block">
               Baster plate feed advance per stroke
+            </span>
+          </div>
+
+          {/* Needle-thread tension */}
+          <div className="space-y-1.5">
+            <div className="flex justify-between text-xs font-sans">
+              <span className="font-semibold text-ink-800 dark:text-parchment-200">
+                Needle-Thread Tension:
+              </span>
+              <span className="font-mono text-emerald-600 dark:text-emerald-400 font-bold">
+                {threadTensionGrams} g
+              </span>
+            </div>
+            <input
+              type="range"
+              min="15"
+              max="90"
+              step="5"
+              value={threadTensionGrams}
+              onChange={(e) => setThreadTensionGrams(Number(e.target.value))}
+              className="w-full accent-emerald-600 cursor-pointer"
+            />
+            <span className="text-[10px] text-ink-500 dark:text-ink-400 block">
+              Slack below 20 g · pucker above 80 g
             </span>
           </div>
 

@@ -80,8 +80,15 @@ export function WrightFlyer3D() {
     const flyerGroup = airframe.group;
     scene.add(flyerGroup);
 
-    const { upperWing, lowerWing, canardGroup, rudderGroup, leftPropBlades, rightPropBlades } =
-      airframe;
+    const {
+      upperWing,
+      lowerWing,
+      canardGroup,
+      rudderGroup,
+      cradleGroup,
+      leftPropBlades,
+      rightPropBlades,
+    } = airframe;
 
     // --- AERODYNAMIC AIRFLOW STREAMLINE PARTICLES ---
     const particleCount = 280;
@@ -184,6 +191,9 @@ export function WrightFlyer3D() {
         rightTipUpper.rotation.x = -warpRad * 0.6;
         rightTipLower.rotation.x = -warpRad * 0.6;
       }
+
+      // Pilot hip cradle sliding sideways during wing warping
+      cradleGroup.position.x = -0.35 + (p.wingWarpDeg / 15) * 0.12;
 
       // Animate Elevator & Rudder
       canardGroup.rotation.x = (-p.elevatorPitchDeg * Math.PI) / 180;

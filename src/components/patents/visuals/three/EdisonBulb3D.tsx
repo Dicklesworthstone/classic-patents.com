@@ -1,10 +1,57 @@
 "use client";
 
-import { Lightbulb } from "lucide-react";
+import { Camera, Lightbulb, RotateCcw, Sparkles, Volume2, VolumeX, Zap } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import * as THREE from "three";
+import { soundEngine } from "@/utils/soundEngine";
 import { createGlowPointTexture, createThreeStudioScene } from "./ThreeStudioScene";
 import { useLiveSimParams } from "./useLiveSimParams";
+
+type CameraPreset = "iso" | "filament_horseshoe" | "screw_base" | "exhaust_tip" | "top";
+
+interface ScenarioPreset {
+  id: string;
+  name: string;
+  desc: string;
+  voltage: number;
+  vacuumTorr: number;
+  material: "carbonized-bamboo" | "platinum-wire";
+}
+
+const SCENARIOS: ScenarioPreset[] = [
+  {
+    id: "edison_1879_bamboo",
+    name: "1879 Menlo Park Historic Breakthrough",
+    desc: "Thomas Edison's carbonized bamboo filament (US 223,898): High 100Ω resistance enabling parallel circuit distribution and 1,200 hr life in deep vacuum.",
+    voltage: 110,
+    vacuumTorr: 1e-6,
+    material: "carbonized-bamboo",
+  },
+  {
+    id: "platinum_burnout",
+    name: "Prior Art Platinum Wire (Air Leak)",
+    desc: "Low 4Ω platinum wire with poor vacuum (1.0 Torr) suffering rapid oxidative combustion and thermal burnout within seconds.",
+    voltage: 40,
+    vacuumTorr: 1.0,
+    material: "platinum-wire",
+  },
+  {
+    id: "high_voltage_overdrive",
+    name: "135V Super-Luminous Overdrive",
+    desc: "Over-voltage driving filament to 2,400 K incandescent white heat governed by Stefan-Boltzmann P = εσAT⁴ radiation.",
+    voltage: 135,
+    vacuumTorr: 1e-6,
+    material: "carbonized-bamboo",
+  },
+  {
+    id: "soft_amber_dimmer",
+    name: "Victorian Gentle Amber Glow",
+    desc: "Low 65V voltage creating a warm 1,600 K candlelight luminescence with negligible thermal sublimation.",
+    voltage: 65,
+    vacuumTorr: 1e-6,
+    material: "carbonized-bamboo",
+  },
+];
 
 export function EdisonBulb3D() {
   const containerRef = useRef<HTMLDivElement>(null);
@@ -15,13 +62,15 @@ export function EdisonBulb3D() {
   const [filamentMaterial, setFilamentMaterial] = useState<"carbonized-bamboo" | "platinum-wire">(
     "carbonized-bamboo",
   );
-  const [showGasMolecules, setShowGasMolecules] = useState<boolean>(true);
+  const [showGasMolecules, _setShowGasMolecules] = useState<boolean>(true);
+  const [showCalloutPins, setShowCalloutPins] = useState<boolean>(false);
+  const [activeCamera, setActiveCamera] = useState<CameraPreset>("iso");
+  const [isPlayingAudio, setIsPlayingAudio] = useState<boolean>(false);
 
-  // Physics Calculations
+  // Physics Calculations (Stefan-Boltzmann Law)
   const baseResistance = filamentMaterial === "carbonized-bamboo" ? 100 : 4;
   const currentAmps = appliedVoltage / baseResistance;
   const powerWatts = appliedVoltage * currentAmps;
-  // Blackbody temperature estimate (Stefan-Boltzmann P = sigma * A * T^4)
   const filamentTempKelvin = Math.round(300 + (powerWatts * 4e10) ** 0.25);
   const estimatedLifespanHours =
     vacuumTorr < 1e-4 ? Math.round(1200 / (Math.max(appliedVoltage, 1) / 110) ** 3.5) : 0;
@@ -33,11 +82,65 @@ export function EdisonBulb3D() {
     vacuumTorr,
   });
 
+  const controlsRef = useRef<any>(null);
+  const cameraRef = useRef<THREE.PerspectiveCamera | null>(null);
+
+  const applyCameraPreset = (preset: CameraPreset) => {
+    setActiveCamera(preset);
+    const camera = cameraRef.current;
+    const controls = controlsRef.current;
+    if (!camera || !controls) return;
+
+    switch (preset) {
+      case "iso":
+        camera.position.set(11, 7, 14);
+        controls.target.set(0, 0, 0);
+        break;
+      case "filament_horseshoe":
+        camera.position.set(0, 2.5, 4.2);
+        controls.target.set(0, 1.2, 0);
+        break;
+      case "screw_base":
+        camera.position.set(0, -2.2, 3.8);
+        controls.target.set(0, -2.8, 0);
+        break;
+      case "exhaust_tip":
+        camera.position.set(0, 4.8, 2.6);
+        controls.target.set(0, 3.8, 0);
+        break;
+      case "top":
+        camera.position.set(0, 10.5, 0.1);
+        controls.target.set(0, 0, 0);
+        break;
+    }
+    controls.update();
+  };
+
+  const applyScenario = (s: ScenarioPreset) => {
+    setAppliedVoltage(s.voltage);
+    setVacuumTorr(s.vacuumTorr);
+    setFilamentMaterial(s.material);
+    if (isPlayingAudio) {
+      soundEngine.playContinuousTone(60 + s.voltage * 2, "sine", 0.05);
+    }
+  };
+
+  // Web Audio Filament Hum
+  useEffect(() => {
+    if (isPlayingAudio && appliedVoltage > 10) {
+      soundEngine.playContinuousTone(60 + appliedVoltage * 1.5, "sine", 0.04);
+    } else {
+      soundEngine.stopContinuousTone();
+    }
+    return () => {
+      soundEngine.stopContinuousTone();
+    };
+  }, [isPlayingAudio, appliedVoltage]);
+
   useEffect(() => {
     const container = containerRef.current;
     if (!container) return;
 
-    // Create Studio Scene with Luminous Studio Lighting
     const studio = createThreeStudioScene({
       container,
       cameraPos: [11, 7, 14],
@@ -45,8 +148,10 @@ export function EdisonBulb3D() {
     });
 
     const { scene, camera, renderer, controls } = studio;
+    cameraRef.current = camera;
+    controlsRef.current = controls;
 
-    // Dynamic Bulb Point Light (Simulates internal incandescence)
+    // Dynamic Bulb Point Light
     const bulbLight = new THREE.PointLight(0xffaa33, 0, 30);
     bulbLight.position.set(0, 1.0, 0);
     bulbLight.castShadow = true;
@@ -88,18 +193,15 @@ export function EdisonBulb3D() {
     const bulbGroup = new THREE.Group();
     scene.add(bulbGroup);
 
-    // Continuous Blown Glass Pear-Shaped Envelope (1879 Menlo Park historical profile)
+    // Continuous Blown Glass Pear-Shaped Envelope
     const lathePoints: THREE.Vector2[] = [];
-    // Top exhaust pip tip
     lathePoints.push(new THREE.Vector2(0.01, 3.9));
     lathePoints.push(new THREE.Vector2(0.12, 3.8));
     lathePoints.push(new THREE.Vector2(0.22, 3.65));
-    // Upper bulb hemisphere
     lathePoints.push(new THREE.Vector2(1.2, 3.2));
     lathePoints.push(new THREE.Vector2(2.3, 2.3));
     lathePoints.push(new THREE.Vector2(2.8, 1.2));
     lathePoints.push(new THREE.Vector2(2.7, 0.2));
-    // Inward neck taper
     lathePoints.push(new THREE.Vector2(2.2, -0.7));
     lathePoints.push(new THREE.Vector2(1.6, -1.4));
     lathePoints.push(new THREE.Vector2(1.25, -2.0));
@@ -118,7 +220,6 @@ export function EdisonBulb3D() {
     baseCylinder.castShadow = true;
     bulbGroup.add(baseCylinder);
 
-    // 4 Helical Thread Rings
     for (let t = 0; t < 4; t++) {
       const threadRing = new THREE.Mesh(
         new THREE.TorusGeometry(1.24, 0.08, 12, 36),
@@ -129,7 +230,6 @@ export function EdisonBulb3D() {
       bulbGroup.add(threadRing);
     }
 
-    // Black Vitrite Insulator & Base Contact Button
     const insulatorBase = new THREE.Mesh(
       new THREE.CylinderGeometry(0.8, 0.8, 0.25, 24),
       new THREE.MeshStandardMaterial({ color: 0x0f172a, roughness: 0.8 }),
@@ -138,160 +238,132 @@ export function EdisonBulb3D() {
     bulbGroup.add(insulatorBase);
 
     // Turned Wooden Display Mount
-    const mountStand = new THREE.Mesh(
-      new THREE.CylinderGeometry(2.4, 2.7, 0.7, 36),
-      new THREE.MeshStandardMaterial({ color: 0x78350f, roughness: 0.35 }),
+    const woodMount = new THREE.Mesh(
+      new THREE.CylinderGeometry(2.4, 2.8, 0.8, 36),
+      new THREE.MeshStandardMaterial({ color: 0x78350f, roughness: 0.4 }),
     );
-    mountStand.position.y = -4.15;
-    mountStand.receiveShadow = true;
-    bulbGroup.add(mountStand);
+    woodMount.position.y = -4.2;
+    woodMount.receiveShadow = true;
+    bulbGroup.add(woodMount);
 
-    // Internal Glass Stem Mount with Flattened Pinch Seal
-    const glassStem = new THREE.Mesh(
-      new THREE.CylinderGeometry(0.35, 0.55, 2.2, 24),
-      glassMaterial,
-    );
-    glassStem.position.y = -0.7;
+    // Central Flanged Glass Stem Tube
+    const stemPoints: THREE.Vector2[] = [];
+    stemPoints.push(new THREE.Vector2(0.9, -2.4));
+    stemPoints.push(new THREE.Vector2(0.35, -1.8));
+    stemPoints.push(new THREE.Vector2(0.3, 0.2));
+    stemPoints.push(new THREE.Vector2(0.35, 0.4));
+    const stemGeo = new THREE.LatheGeometry(stemPoints, 24);
+    const glassStem = new THREE.Mesh(stemGeo, glassMaterial);
     bulbGroup.add(glassStem);
 
-    const glassPinch = new THREE.Mesh(new THREE.BoxGeometry(0.9, 0.35, 0.22), glassMaterial);
-    glassPinch.position.y = 0.4;
-    bulbGroup.add(glassPinch);
+    // Platinum Lead-in Wires
+    [-0.32, 0.32].forEach((xPos) => {
+      const leadWire = new THREE.Mesh(
+        new THREE.CylinderGeometry(0.03, 0.03, 2.2, 12),
+        platinumLeadMaterial,
+      );
+      leadWire.position.set(xPos, -0.6, 0);
+      leadWire.castShadow = true;
+      bulbGroup.add(leadWire);
 
-    // Platinum In-Lead Support Wires & Carbon Connector Clamps
-    const leftLead = new THREE.Mesh(
-      new THREE.CylinderGeometry(0.035, 0.035, 2.6, 8),
-      platinumLeadMaterial,
-    );
-    leftLead.position.set(-0.35, 0.5, 0);
-    leftLead.castShadow = true;
-    const rightLead = leftLead.clone();
-    rightLead.position.set(0.35, 0.5, 0);
-    bulbGroup.add(leftLead);
-    bulbGroup.add(rightLead);
+      const clampNut = new THREE.Mesh(
+        new THREE.CylinderGeometry(0.07, 0.07, 0.12, 12),
+        platinumLeadMaterial,
+      );
+      clampNut.position.set(xPos, 0.45, 0);
+      bulbGroup.add(clampNut);
+    });
 
-    // Carbon clamping blocks at top of platinum leads
-    const leftClamp = new THREE.Mesh(new THREE.BoxGeometry(0.12, 0.16, 0.12), filamentMaterialMesh);
-    leftClamp.position.set(-0.35, 1.75, 0);
-    const rightClamp = leftClamp.clone();
-    rightClamp.position.set(0.35, 1.75, 0);
-    bulbGroup.add(leftClamp);
-    bulbGroup.add(rightClamp);
-
-    // High-Resistance Carbonized Bamboo Filament Loop (Horseshoe Arch)
-    const filamentCurve = new THREE.CatmullRomCurve3([
-      new THREE.Vector3(-0.35, 1.75, 0),
-      new THREE.Vector3(-0.52, 2.45, 0.04),
-      new THREE.Vector3(0, 3.05, 0),
-      new THREE.Vector3(0.52, 2.45, -0.04),
-      new THREE.Vector3(0.35, 1.75, 0),
-    ]);
-    const filamentGeo = new THREE.TubeGeometry(filamentCurve, 48, 0.042, 8, false);
+    // Horseshoe Carbon Filament
+    const curvePoints: THREE.Vector3[] = [];
+    const filamentSegments = 32;
+    for (let i = 0; i <= filamentSegments; i++) {
+      const theta = (i / filamentSegments) * Math.PI;
+      const x = Math.cos(theta) * 0.55;
+      const y = 0.5 + Math.sin(theta) * 1.6;
+      curvePoints.push(new THREE.Vector3(x, y, 0));
+    }
+    const filamentCurve = new THREE.CatmullRomCurve3(curvePoints);
+    const filamentGeo = new THREE.TubeGeometry(filamentCurve, 40, 0.032, 8, false);
     const filamentMesh = new THREE.Mesh(filamentGeo, filamentMaterialMesh);
     bulbGroup.add(filamentMesh);
 
-    // --- RESIDUAL GAS MOLECULES / MEAN FREE PATH SIMULATION ---
-    const moleculeCount = 120;
+    // Residual Air Gas Molecules Cloud
+    const gasCount = 70;
     const gasGeo = new THREE.BufferGeometry();
-    const gasPositions = new Float32Array(moleculeCount * 3);
-    const gasVelocities = new Float32Array(moleculeCount * 3);
-
+    const gasPos = new Float32Array(gasCount * 3);
     const glowTex = createGlowPointTexture();
 
-    for (let i = 0; i < moleculeCount; i++) {
+    for (let i = 0; i < gasCount; i++) {
       const idx = i * 3;
       const r = Math.random() * 2.2;
       const theta = Math.random() * Math.PI * 2;
-      const phi = Math.random() * Math.PI;
-
-      gasPositions[idx] = r * Math.sin(phi) * Math.cos(theta);
-      gasPositions[idx + 1] = 1.0 + r * Math.cos(phi);
-      gasPositions[idx + 2] = r * Math.sin(phi) * Math.sin(theta);
-
-      gasVelocities[idx] = (Math.random() - 0.5) * 0.04;
-      gasVelocities[idx + 1] = (Math.random() - 0.5) * 0.04;
-      gasVelocities[idx + 2] = (Math.random() - 0.5) * 0.04;
+      const phi = (Math.random() - 0.5) * Math.PI;
+      gasPos[idx] = r * Math.cos(phi) * Math.cos(theta);
+      gasPos[idx + 1] = 1.0 + r * Math.sin(phi);
+      gasPos[idx + 2] = r * Math.cos(phi) * Math.sin(theta);
     }
+    gasGeo.setAttribute("position", new THREE.BufferAttribute(gasPos, 3));
 
-    gasGeo.setAttribute("position", new THREE.BufferAttribute(gasPositions, 3));
     const gasPoints = new THREE.Points(
       gasGeo,
       new THREE.PointsMaterial({
-        size: 0.35,
+        size: 0.22,
         map: glowTex,
-        color: 0x93c5fd,
+        color: 0x94a3b8,
         transparent: true,
-        opacity: 0.65,
-        blending: THREE.AdditiveBlending,
+        opacity: 0.5,
         depthWrite: false,
       }),
     );
-    scene.add(gasPoints);
+    bulbGroup.add(gasPoints);
 
-    // --- RENDER LOOP & REAL-TIME BLACKBODY RADIATION ---
+    // --- RENDER LOOP & REAL-TIME INCANDESCENCE DYNAMICS ---
     let reqId: number;
     const clock = new THREE.Clock();
 
     const animate = () => {
       reqId = requestAnimationFrame(animate);
-      const _delta = clock.getDelta();
-
+      const delta = clock.getDelta();
       const p = live.current;
 
-      // Compute Incandescence Intensity & Color Temperature
-      const incandescence = Math.min(1.0, (p.appliedVoltage / 120) ** 2.2);
+      const incandescenceIntensity = Math.min(1.0, (p.appliedVoltage / 110) ** 2);
+      const isGlowing = incandescenceIntensity > 0.05;
 
-      // Blackbody Color Ramp: Black -> Dull Cherry (800K) -> Orange-Gold (1800K) -> White-Gold (2400K)
-      let r = 0;
-      let g = 0;
-      let b = 0;
-
-      if (p.filamentTempKelvin < 700) {
-        r = 0.1;
-        g = 0.05;
-        b = 0.05;
-      } else if (p.filamentTempKelvin < 1400) {
-        r = 0.9;
-        g = 0.2 + (p.filamentTempKelvin - 700) / 1400;
-        b = 0.05;
-      } else {
-        r = 1.0;
-        g = 0.75 + (p.filamentTempKelvin - 1400) / 4000;
-        b = 0.4 + (p.filamentTempKelvin - 1400) / 3000;
-      }
-
-      filamentMaterialMesh.emissive = new THREE.Color(r, g, b);
-      filamentMaterialMesh.emissiveIntensity = incandescence * 3.5;
-
-      bulbLight.color = new THREE.Color(r, g, b);
-      bulbLight.intensity = incandescence * 4.2;
-
-      // Animate Residual Gas Molecules
-      const gPos = gasPositions;
-      for (let i = 0; i < moleculeCount; i++) {
-        const idx = i * 3;
-        gPos[idx] += gasVelocities[idx];
-        gPos[idx + 1] += gasVelocities[idx + 1];
-        gPos[idx + 2] += gasVelocities[idx + 2];
-
-        // Spherical boundary bounce inside bulb
-        const dx = gPos[idx];
-        const dy = gPos[idx + 1] - 1.0;
-        const dz = gPos[idx + 2];
-        const dist = Math.sqrt(dx * dx + dy * dy + dz * dz);
-        if (dist > 2.5) {
-          gasVelocities[idx] *= -1;
-          gasVelocities[idx + 1] *= -1;
-          gasVelocities[idx + 2] *= -1;
+      if (isGlowing) {
+        let glowColor = new THREE.Color(0xff4500);
+        if (p.filamentTempKelvin > 1800) {
+          glowColor = new THREE.Color(0xffaa22);
         }
+        if (p.filamentTempKelvin > 2200) {
+          glowColor = new THREE.Color(0xfffae0);
+        }
+
+        filamentMaterialMesh.emissive = glowColor;
+        filamentMaterialMesh.emissiveIntensity = incandescenceIntensity * 3.5;
+
+        bulbLight.color = glowColor;
+        bulbLight.intensity = incandescenceIntensity * 18.0;
+      } else {
+        filamentMaterialMesh.emissiveIntensity = 0;
+        bulbLight.intensity = 0;
       }
-      gasGeo.attributes.position.needsUpdate = true;
-      const gasActiveCount = Math.max(
-        10,
-        Math.min(moleculeCount, Math.round(moleculeCount * Math.min(1, p.vacuumTorr * 10))),
-      );
-      gasGeo.setDrawRange(0, gasActiveCount);
-      gasPoints.visible = p.showGasMolecules;
+
+      if (p.showGasMolecules && p.vacuumTorr > 1e-4) {
+        gasPoints.visible = true;
+        const gPos = gasPos;
+        const thermalJitter = (p.filamentTempKelvin / 300) * 0.4 * delta;
+
+        for (let i = 0; i < gasCount; i++) {
+          const idx = i * 3;
+          gPos[idx] += (Math.random() - 0.5) * thermalJitter;
+          gPos[idx + 1] += (Math.random() - 0.5) * thermalJitter;
+          gPos[idx + 2] += (Math.random() - 0.5) * thermalJitter;
+        }
+        gasGeo.attributes.position.needsUpdate = true;
+      } else {
+        gasPoints.visible = false;
+      }
 
       controls.update();
       renderer.render(scene, camera);
@@ -312,11 +384,11 @@ export function EdisonBulb3D() {
         <div ref={containerRef} className="absolute inset-0 w-full h-full" />
 
         {/* Live HUD Telemetry Overlay */}
-        <div className="absolute top-4 left-4 z-10 flex flex-col gap-2 pointer-events-none max-w-[calc(100%-6rem)] sm:max-w-md">
+        <div className="absolute top-4 left-4 z-10 flex flex-col gap-2 pointer-events-none max-w-[calc(100%-8rem)] sm:max-w-md">
           <div className="bg-white/90 dark:bg-ink-900/90 backdrop-blur-md px-3.5 py-2.5 rounded-xl border border-parchment-300 dark:border-ink-700 shadow-sm">
             <div className="text-[11px] font-sans text-amber-700 dark:text-amber-400 font-bold uppercase tracking-wider flex items-center gap-1.5">
               <Lightbulb className="w-3.5 h-3.5 text-amber-500 animate-pulse" />
-              Incandescent Circuit Telemetry
+              Incandescent Blackbody Telemetry
             </div>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-4 gap-y-1 mt-1 text-xs font-sans">
               <div>
@@ -326,171 +398,221 @@ export function EdisonBulb3D() {
                 </span>
               </div>
               <div>
-                <span className="text-ink-600 dark:text-ink-400">Current ($I$):</span>{" "}
+                <span className="text-ink-600 dark:text-ink-400">Electrical Power:</span>{" "}
                 <span className="font-bold text-blue-600 dark:text-blue-400">
-                  {currentAmps.toFixed(2)} A
+                  {powerWatts.toFixed(1)} W ({currentAmps.toFixed(2)} A)
                 </span>
               </div>
               <div>
-                <span className="text-ink-600 dark:text-ink-400">Power ($P=V^2/R$):</span>{" "}
+                <span className="text-ink-600 dark:text-ink-400">Vacuum Pressure:</span>{" "}
+                <span className="font-bold text-emerald-600 dark:text-emerald-400">
+                  {vacuumTorr.toExponential(1)} Torr
+                </span>
+              </div>
+              <div>
+                <span className="text-ink-600 dark:text-ink-400">Expected Lifespan:</span>{" "}
                 <span className="font-bold text-purple-600 dark:text-purple-400">
-                  {powerWatts.toFixed(1)} W
-                </span>
-              </div>
-              <div>
-                <span className="text-ink-600 dark:text-ink-400">
-                  {"Lifespan ($10^{-6}\\text{Torr}$):"}
-                </span>{" "}
-                <span
-                  className={`font-bold ${
-                    estimatedLifespanHours > 800
-                      ? "text-emerald-600 dark:text-emerald-400"
-                      : "text-red-600 dark:text-red-400"
-                  }`}
-                >
-                  {vacuumTorr < 1e-4 ? `${estimatedLifespanHours} hrs` : "Instant Burnout (<1s)"}
+                  {estimatedLifespanHours} Hours
                 </span>
               </div>
             </div>
           </div>
 
           <div className="bg-white/90 dark:bg-ink-900/90 backdrop-blur-md px-3 py-1.5 rounded-lg border border-parchment-300 dark:border-ink-700 text-[11px] font-sans text-ink-700 dark:text-ink-300 flex items-center gap-2 max-w-full">
-            <span
-              className={`w-2 h-2 rounded-full shrink-0 ${
-                vacuumTorr < 1e-4 ? "bg-emerald-500 animate-pulse" : "bg-red-500"
-              }`}
-            />
-            <span className="truncate">
-              {vacuumTorr < 1e-4
-                ? "Sprengel Mercury Vacuum: Oxidation Inhibited"
-                : "Atmospheric Oxygen Present: Rapid Combustion"}
-            </span>
+            <Sparkles className="w-3.5 h-3.5 text-emerald-500 animate-pulse shrink-0" />
+            <span className="truncate">Thomas A. Edison (US 223,898) — Electric Lamp (1880)</span>
           </div>
         </div>
 
-        {/* Gas Molecule Toggle */}
-        <div className="absolute top-4 right-4 z-10">
+        {/* Top Right Tool Bar (Audio, Pins, Reset) */}
+        <div className="absolute top-4 right-4 z-10 flex gap-2">
           <button
             type="button"
-            onClick={() => setShowGasMolecules(!showGasMolecules)}
-            className={`px-3 py-1.5 rounded-lg text-xs font-sans font-semibold border transition-all ${
-              showGasMolecules
-                ? "bg-amber-500 text-white border-amber-600 shadow-sm"
-                : "bg-white/80 dark:bg-ink-900/80 text-ink-700 dark:text-ink-300 border-parchment-300 dark:border-ink-700"
-            }`}
+            onClick={() => setIsPlayingAudio(!isPlayingAudio)}
+            className="p-2.5 rounded-xl bg-white/90 dark:bg-ink-900/90 backdrop-blur-md border border-parchment-300 dark:border-ink-700 text-ink-700 dark:text-parchment-300 hover:bg-parchment-100 dark:hover:bg-ink-800 transition-all shadow-sm"
+            title={isPlayingAudio ? "Mute Filament Hum" : "Enable Filament Electrical Hum"}
           >
-            Residual Gas
+            {isPlayingAudio ? (
+              <Volume2 className="w-4 h-4 text-amber-600" />
+            ) : (
+              <VolumeX className="w-4 h-4" />
+            )}
           </button>
+          <button
+            type="button"
+            onClick={() => setShowCalloutPins(!showCalloutPins)}
+            className={`p-2.5 rounded-xl backdrop-blur-md border transition-all shadow-sm ${
+              showCalloutPins
+                ? "bg-amber-600 text-white border-amber-700 shadow-md"
+                : "bg-white/90 dark:bg-ink-900/90 border-parchment-300 dark:border-ink-700 text-ink-700 dark:text-parchment-300 hover:bg-parchment-100"
+            }`}
+            title="Toggle Historical Patent Numeral Pins"
+          >
+            <Zap className="w-4 h-4" />
+          </button>
+          <button
+            type="button"
+            onClick={() => applyCameraPreset("iso")}
+            className="p-2.5 rounded-xl bg-white/90 dark:bg-ink-900/90 backdrop-blur-md border border-parchment-300 dark:border-ink-700 text-ink-700 dark:text-parchment-300 hover:bg-parchment-100 dark:hover:bg-ink-800 transition-all shadow-sm"
+            title="Reset Orbit Camera"
+          >
+            <RotateCcw className="w-4 h-4" />
+          </button>
+        </div>
+
+        {/* Camera Views Bar */}
+        <div className="absolute bottom-4 left-4 z-10 flex flex-wrap gap-1.5 bg-white/85 dark:bg-ink-900/85 backdrop-blur-md p-1.5 rounded-xl border border-parchment-300 dark:border-ink-700 shadow-sm text-xs">
+          <span className="px-2 py-1 text-ink-500 font-sans flex items-center gap-1">
+            <Camera className="w-3.5 h-3.5" /> View:
+          </span>
+          {(
+            [
+              ["iso", "Isometric"],
+              ["filament_horseshoe", "Filament"],
+              ["screw_base", "Screw Base"],
+              ["exhaust_tip", "Exhaust Tip"],
+              ["top", "Axis View"],
+            ] as const
+          ).map(([id, label]) => (
+            <button
+              key={id}
+              type="button"
+              onClick={() => applyCameraPreset(id)}
+              className={`px-2.5 py-1 rounded-lg font-sans transition-all ${
+                activeCamera === id
+                  ? "bg-amber-700 dark:bg-amber-600 text-white font-semibold shadow-xs"
+                  : "text-ink-700 dark:text-parchment-300 hover:bg-parchment-200 dark:hover:bg-ink-800"
+              }`}
+            >
+              {label}
+            </button>
+          ))}
         </div>
       </div>
 
-      {/* Parameter Sliders Panel */}
-      <div className="p-4 sm:p-5 bg-parchment-100/80 dark:bg-ink-900/90 border-t border-parchment-300 dark:border-ink-800 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 text-xs font-sans">
-        {/* Applied Voltage */}
+      {/* Interactive Controls & Scenario Bar */}
+      <div className="p-4 sm:p-5 bg-parchment-100/90 dark:bg-ink-900/90 border-t border-parchment-300 dark:border-ink-800 space-y-4">
+        {/* Scenario Presets */}
         <div className="space-y-1.5">
-          <div className="flex justify-between font-medium text-ink-900 dark:text-parchment-100">
-            <span>Terminal Voltage ($V$):</span>
-            <span className="font-bold text-amber-700 dark:text-amber-400">{appliedVoltage} V</span>
+          <div className="text-xs font-sans font-bold text-ink-700 dark:text-ink-300 uppercase tracking-wider flex items-center gap-1.5">
+            <Sparkles className="w-3.5 h-3.5 text-amber-600" /> Historical Incandescence Presets:
           </div>
-          <input
-            type="range"
-            min="0"
-            max="140"
-            step="2"
-            value={appliedVoltage}
-            onChange={(e) => setAppliedVoltage(Number(e.target.value))}
-            className="w-full accent-amber-600 dark:accent-amber-400 cursor-pointer"
-          />
-          <span className="text-[10px] text-ink-500 dark:text-ink-400 block">
-            Edison 110V parallel distribution standard
-          </span>
-        </div>
-
-        {/* Filament Material */}
-        <div className="space-y-1.5">
-          <div className="flex justify-between font-medium text-ink-900 dark:text-parchment-100">
-            <span>Filament Composition:</span>
-            <span className="font-bold text-blue-600 dark:text-blue-400">
-              {filamentMaterial === "carbonized-bamboo" ? "Carbonized Bamboo" : "Platinum Wire"}
-            </span>
-          </div>
-          <div className="grid grid-cols-2 gap-2 pt-1">
-            <button
-              type="button"
-              onClick={() => setFilamentMaterial("carbonized-bamboo")}
-              className={`py-1.5 px-2 rounded-lg text-xs font-semibold border ${
-                filamentMaterial === "carbonized-bamboo"
-                  ? "bg-amber-600 text-white border-amber-700 shadow-sm"
-                  : "bg-white/80 dark:bg-ink-800 text-ink-700 dark:text-ink-300 border-parchment-300 dark:border-ink-700"
-              }`}
-            >
-              Carbon (100Ω)
-            </button>
-            <button
-              type="button"
-              onClick={() => setFilamentMaterial("platinum-wire")}
-              className={`py-1.5 px-2 rounded-lg text-xs font-semibold border ${
-                filamentMaterial === "platinum-wire"
-                  ? "bg-amber-600 text-white border-amber-700 shadow-sm"
-                  : "bg-white/80 dark:bg-ink-800 text-ink-700 dark:text-ink-300 border-parchment-300 dark:border-ink-700"
-              }`}
-            >
-              Platinum (4Ω)
-            </button>
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
+            {SCENARIOS.map((s) => (
+              <button
+                key={s.id}
+                type="button"
+                onClick={() => applyScenario(s)}
+                className="p-2.5 rounded-xl border border-parchment-300 dark:border-ink-700 bg-white/70 dark:bg-ink-950/70 hover:bg-parchment-50 dark:hover:bg-ink-800 text-left transition-all group"
+              >
+                <div className="text-xs font-serif font-bold text-ink-900 dark:text-parchment-100 group-hover:text-amber-700 dark:group-hover:text-amber-400">
+                  {s.name}
+                </div>
+                <div className="text-[10px] font-sans text-ink-500 dark:text-ink-400 line-clamp-2 mt-0.5">
+                  {s.desc}
+                </div>
+              </button>
+            ))}
           </div>
         </div>
 
-        {/* Vacuum Level */}
-        <div className="space-y-1.5">
-          <div className="flex justify-between font-medium text-ink-900 dark:text-parchment-100">
-            <span>Envelope Vacuum:</span>
-            <span className="font-bold text-emerald-600 dark:text-emerald-400">
-              {vacuumTorr < 1e-4 ? "10⁻⁶ Torr (High Vacuum)" : "1.0 Torr (Air Leaked)"}
-            </span>
-          </div>
-          <div className="grid grid-cols-2 gap-2 pt-1">
-            <button
-              type="button"
-              onClick={() => setVacuumTorr(1e-6)}
-              className={`py-1.5 px-2 rounded-lg text-xs font-semibold border ${
-                vacuumTorr < 1e-4
-                  ? "bg-emerald-600 text-white border-emerald-700 shadow-sm"
-                  : "bg-white/80 dark:bg-ink-800 text-ink-700 dark:text-ink-300 border-parchment-300 dark:border-ink-700"
-              }`}
-            >
-              10⁻⁶ Torr (Sealed)
-            </button>
-            <button
-              type="button"
-              onClick={() => setVacuumTorr(1.0)}
-              className={`py-1.5 px-2 rounded-lg text-xs font-semibold border ${
-                vacuumTorr >= 1e-4
-                  ? "bg-red-600 text-white border-red-700 shadow-sm"
-                  : "bg-white/80 dark:bg-ink-800 text-ink-700 dark:text-ink-300 border-parchment-300 dark:border-ink-700"
-              }`}
-            >
-              Air Leak (Burnout)
-            </button>
-          </div>
-        </div>
-
-        {/* Luminous Efficacy */}
-        <div className="space-y-1.5">
-          <div className="flex justify-between font-medium text-ink-900 dark:text-parchment-100">
-            <span>Luminous Output:</span>
-            <span className="font-bold text-purple-600 dark:text-purple-400">
-              {(powerWatts * 0.16).toFixed(1)} Lumens (16 cp)
-            </span>
-          </div>
-          <div className="w-full bg-parchment-300 dark:bg-ink-800 rounded-full h-3 overflow-hidden mt-2 border border-parchment-400 dark:border-ink-700">
-            <div
-              className="bg-gradient-to-r from-amber-600 via-amber-400 to-yellow-200 h-full transition-all duration-300"
-              style={{ width: `${Math.min(100, (powerWatts / 150) * 100)}%` }}
+        {/* Sliders Grid */}
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 pt-1">
+          {/* Voltage */}
+          <div className="space-y-1.5">
+            <div className="flex justify-between text-xs font-sans">
+              <span className="font-semibold text-ink-800 dark:text-parchment-200">
+                Applied DC Voltage:
+              </span>
+              <span className="font-mono text-amber-700 dark:text-amber-400 font-bold">
+                {appliedVoltage} Volts
+              </span>
+            </div>
+            <input
+              type="range"
+              min="0"
+              max="140"
+              step="5"
+              value={appliedVoltage}
+              onChange={(e) => setAppliedVoltage(Number(e.target.value))}
+              className="w-full accent-amber-600 cursor-pointer"
             />
+            <span className="text-[10px] text-ink-500 dark:text-ink-400 block">
+              110V standard parallel circuit potential
+            </span>
           </div>
-          <span className="text-[10px] text-ink-500 dark:text-ink-400 block">
-            Candlepower equivalent: ~16 standard sperm candles
-          </span>
+
+          {/* Filament Material */}
+          <div className="space-y-1.5">
+            <div className="flex justify-between text-xs font-sans">
+              <span className="font-semibold text-ink-800 dark:text-parchment-200">
+                Filament High Resistance:
+              </span>
+              <span className="font-mono text-blue-600 dark:text-blue-400 font-bold">
+                {filamentMaterial === "carbonized-bamboo" ? "100 Ω (Bamboo)" : "4 Ω (Platinum)"}
+              </span>
+            </div>
+            <div className="grid grid-cols-2 gap-2 pt-0.5">
+              <button
+                type="button"
+                onClick={() => setFilamentMaterial("carbonized-bamboo")}
+                className={`py-1.5 px-2 rounded-lg text-xs font-semibold border transition-all ${
+                  filamentMaterial === "carbonized-bamboo"
+                    ? "bg-amber-700 text-white border-amber-800 shadow-sm"
+                    : "bg-white/80 dark:bg-ink-800 text-ink-700 dark:text-ink-300 border-parchment-300 dark:border-ink-700"
+                }`}
+              >
+                Carbonized Bamboo
+              </button>
+              <button
+                type="button"
+                onClick={() => setFilamentMaterial("platinum-wire")}
+                className={`py-1.5 px-2 rounded-lg text-xs font-semibold border transition-all ${
+                  filamentMaterial === "platinum-wire"
+                    ? "bg-amber-700 text-white border-amber-800 shadow-sm"
+                    : "bg-white/80 dark:bg-ink-800 text-ink-700 dark:text-ink-300 border-parchment-300 dark:border-ink-700"
+                }`}
+              >
+                Platinum Wire
+              </button>
+            </div>
+          </div>
+
+          {/* Vacuum Enclosure */}
+          <div className="space-y-1.5">
+            <div className="flex justify-between text-xs font-sans">
+              <span className="font-semibold text-ink-800 dark:text-parchment-200">
+                Vacuum Level:
+              </span>
+              <span className="font-mono text-emerald-600 dark:text-emerald-400 font-bold">
+                {vacuumTorr < 1e-4 ? "10⁻⁶ Torr (High)" : "1.0 Torr (Air Leak)"}
+              </span>
+            </div>
+            <div className="grid grid-cols-2 gap-2 pt-0.5">
+              <button
+                type="button"
+                onClick={() => setVacuumTorr(1e-6)}
+                className={`py-1.5 px-2 rounded-lg text-xs font-semibold border transition-all ${
+                  vacuumTorr < 1e-4
+                    ? "bg-emerald-600 text-white border-emerald-700 shadow-sm"
+                    : "bg-white/80 dark:bg-ink-800 text-ink-700 dark:text-ink-300 border-parchment-300 dark:border-ink-700"
+                }`}
+              >
+                Deep Vacuum
+              </button>
+              <button
+                type="button"
+                onClick={() => setVacuumTorr(1.0)}
+                className={`py-1.5 px-2 rounded-lg text-xs font-semibold border transition-all ${
+                  vacuumTorr >= 1e-4
+                    ? "bg-red-600 text-white border-red-700 shadow-sm"
+                    : "bg-white/80 dark:bg-ink-800 text-ink-700 dark:text-ink-300 border-parchment-300 dark:border-ink-700"
+                }`}
+              >
+                Air Leak (Oxidize)
+              </button>
+            </div>
+          </div>
         </div>
       </div>
     </div>

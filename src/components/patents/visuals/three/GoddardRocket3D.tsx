@@ -1,10 +1,62 @@
 "use client";
 
-import { Flame, Rocket } from "lucide-react";
+import { Camera, Flame, Rocket, RotateCcw, Sparkles, Volume2, VolumeX, Zap } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import * as THREE from "three";
+import { soundEngine } from "@/utils/soundEngine";
 import { createGlowPointTexture, createThreeStudioScene } from "./ThreeStudioScene";
 import { useLiveSimParams } from "./useLiveSimParams";
+
+type CameraPreset = "iso" | "de_laval_nozzle" | "combustion_chamber" | "gimbal_actuator" | "top";
+
+interface ScenarioPreset {
+  id: string;
+  name: string;
+  desc: string;
+  chamberPsi: number;
+  flowKgs: number;
+  stage: 1 | 2;
+  gimbalDeg: number;
+}
+
+const SCENARIOS: ScenarioPreset[] = [
+  {
+    id: "goddard_1914_patent",
+    name: "1914 Multi-Stage Apparatus (US 1,155,986)",
+    desc: "Robert Goddard's landmark patent: Multi-stage liquid fuel rocket with de Laval supersonic converging-diverging nozzle.",
+    chamberPsi: 300,
+    flowKgs: 1.8,
+    stage: 1,
+    gimbalDeg: 2,
+  },
+  {
+    id: "auburn_1926_launch",
+    name: "March 16, 1926 Historic Auburn Launch",
+    desc: "The 'Kitty Hawk of rocketry': First liquid-propellant flight (Gasoline + LOX) reaching 41 ft altitude in 2.5 seconds.",
+    chamberPsi: 240,
+    flowKgs: 1.2,
+    stage: 1,
+    gimbalDeg: 0,
+  },
+  {
+    id: "stage2_separation",
+    name: "High-Altitude Stage 2 Staging Separation",
+    desc: "Booster stage jettison with Stage 2 vacuum ignition demonstrating mass ratio optimization.",
+    chamberPsi: 380,
+    flowKgs: 2.4,
+    stage: 2,
+    gimbalDeg: 5,
+  },
+  {
+    id: "max_q_overpressure",
+    name: "Max-Q High Chamber Pressure Thrust",
+    desc: "550 psi high-pressure combustion driving Mach 3.4 supersonic exhaust velocity with 12,000 N thrust.",
+    chamberPsi: 550,
+    flowKgs: 4.5,
+    stage: 1,
+    gimbalDeg: 8,
+  },
+];
 
 export function GoddardRocket3D() {
   const containerRef = useRef<HTMLDivElement>(null);
@@ -14,13 +66,14 @@ export function GoddardRocket3D() {
   const [fuelFlowRateKgs, setFuelFlowRateKgs] = useState<number>(1.8); // 0.5 to 5.0 kg/s
   const [activeStage, setActiveStage] = useState<1 | 2>(1);
   const [gyroGimbalAngleDeg, setGyroGimbalAngleDeg] = useState<number>(3); // -15 to +15 deg
-  const [showExhaustPlume, setShowExhaustPlume] = useState<boolean>(true);
-  const [isLaunching, _setIsLaunching] = useState<boolean>(true);
+  const [showExhaustPlume, _setShowExhaustPlume] = useState<boolean>(true);
+  const [showCalloutPins, setShowCalloutPins] = useState<boolean>(false);
+  const [activeCamera, setActiveCamera] = useState<CameraPreset>("iso");
+  const [isAudioMuted, setIsAudioMuted] = useState<boolean>(true);
 
-  // Rocket Propulsion Physics (Tsiolkovsky Equation)
-  // Characteristic Exhaust Velocity: c = sqrt(2 * gamma / (gamma - 1) * R * T_c * (1 - (p_e/p_c)^((gamma-1)/gamma)))
+  // Rocket Propulsion Physics (Tsiolkovsky Equation & Isentropic Expansion)
   const specificImpulseSec = Math.round(180 + (chamberPressurePsi / 300) * 45);
-  const exhaustVelocityMps = specificImpulseSec * 9.80665;
+  const exhaustVelocityMps = Math.round(specificImpulseSec * 9.80665);
   const thrustNewtons = Math.round(fuelFlowRateKgs * exhaustVelocityMps);
   const thrustLbf = Math.round(thrustNewtons * 0.2248);
 
@@ -28,15 +81,66 @@ export function GoddardRocket3D() {
     activeStage,
     gyroGimbalAngleDeg,
     showExhaustPlume,
-    isLaunching,
     exhaustVelocityMps,
+    isAudioMuted,
   });
+
+  const controlsRef = useRef<any>(null);
+  const cameraRef = useRef<THREE.PerspectiveCamera | null>(null);
+
+  const applyCameraPreset = (preset: CameraPreset) => {
+    setActiveCamera(preset);
+    const camera = cameraRef.current;
+    const controls = controlsRef.current;
+    if (!camera || !controls) return;
+
+    switch (preset) {
+      case "iso":
+        camera.position.set(13, 10, 16);
+        controls.target.set(0, 0, 0);
+        break;
+      case "de_laval_nozzle":
+        camera.position.set(0, -3.2, 5.0);
+        controls.target.set(0, -3.0, 0);
+        break;
+      case "combustion_chamber":
+        camera.position.set(0, -0.5, 4.5);
+        controls.target.set(0, -1.0, 0);
+        break;
+      case "gimbal_actuator":
+        camera.position.set(2.8, -2.4, 3.5);
+        controls.target.set(0, -2.5, 0);
+        break;
+      case "top":
+        camera.position.set(0, 11.5, 0.1);
+        controls.target.set(0, 0, 0);
+        break;
+    }
+    controls.update();
+  };
+
+  const applyScenario = (s: ScenarioPreset) => {
+    setChamberPressurePsi(s.chamberPsi);
+    setFuelFlowRateKgs(s.flowKgs);
+    setActiveStage(s.stage);
+    setGyroGimbalAngleDeg(s.gimbalDeg);
+    if (!isAudioMuted) {
+      soundEngine.playSwitchClick();
+    }
+  };
+
+  const toggleSound = () => {
+    const isMuted = soundEngine.toggleMute();
+    setIsAudioMuted(isMuted);
+    if (!isMuted) {
+      soundEngine.playSwitchClick();
+    }
+  };
 
   useEffect(() => {
     const container = containerRef.current;
     if (!container) return;
 
-    // Create Studio Scene with High-Luminosity Studio Lighting
     const studio = createThreeStudioScene({
       container,
       cameraPos: [13, 10, 16],
@@ -44,24 +148,20 @@ export function GoddardRocket3D() {
     });
 
     const { scene, camera, renderer, controls } = studio;
+    cameraRef.current = camera;
+    controlsRef.current = controls;
 
     // --- PBR MATERIALS ---
     const aluminumHullMat = new THREE.MeshStandardMaterial({
-      color: 0xf1f5f9, // Duralumin rocket outer skin
+      color: 0xf1f5f9,
       roughness: 0.2,
       metalness: 0.9,
     });
 
     const copperNozzleMat = new THREE.MeshStandardMaterial({
-      color: 0xd97706, // Regeneratively cooled copper de Laval nozzle
+      color: 0xd97706,
       roughness: 0.3,
       metalness: 0.85,
-    });
-
-    const _steelGimbalMat = new THREE.MeshStandardMaterial({
-      color: 0x475569,
-      roughness: 0.35,
-      metalness: 0.8,
     });
 
     // --- 3D MULTI-STAGE ROCKET ASSEMBLY ---
@@ -78,7 +178,6 @@ export function GoddardRocket3D() {
     stage1Body.receiveShadow = true;
     stage1Group.add(stage1Body);
 
-    // Structural Stringer Rings along Stage 1
     for (let r = 0; r < 4; r++) {
       const ring = new THREE.Mesh(
         new THREE.TorusGeometry(1.21, 0.03, 8, 36),
@@ -89,7 +188,7 @@ export function GoddardRocket3D() {
       stage1Group.add(ring);
     }
 
-    // 4 Swept Aerodynamic Stabilizing Fins with Airfoil Profile
+    // 4 Swept Aerodynamic Stabilizing Fins
     for (let f = 0; f < 4; f++) {
       const fAngle = (f * Math.PI) / 2;
       const finShape = new THREE.Shape();
@@ -108,11 +207,10 @@ export function GoddardRocket3D() {
       stage1Group.add(fin);
     }
 
-    // De Laval Supersonic Converging-Diverging Exhaust Bell Nozzle (Smooth Lathe Geometry)
+    // De Laval Supersonic Converging-Diverging Nozzle
     const nozzleGroup = new THREE.Group();
     nozzleGroup.position.y = -2.75;
 
-    // Gyroscopic Gimbal Outer & Inner Ring
     const gimbalRing = new THREE.Mesh(
       new THREE.TorusGeometry(0.95, 0.06, 12, 32),
       new THREE.MeshStandardMaterial({ color: 0x475569, metalness: 0.85, roughness: 0.3 }),
@@ -121,25 +219,23 @@ export function GoddardRocket3D() {
     gimbalRing.position.y = 0.2;
     nozzleGroup.add(gimbalRing);
 
-    // De Laval Contour: Combustion Chamber (wide) -> Throat Constriction (narrow) -> Flared Expansion Bell
     const nozzlePoints: THREE.Vector2[] = [];
-    nozzlePoints.push(new THREE.Vector2(0.85, 0.3)); // Injector dome
-    nozzlePoints.push(new THREE.Vector2(0.82, 0.1)); // Combustion chamber wall
-    nozzlePoints.push(new THREE.Vector2(0.42, -0.2)); // Converging section
-    nozzlePoints.push(new THREE.Vector2(0.32, -0.35)); // Supersonic throat ($M = 1$)
-    nozzlePoints.push(new THREE.Vector2(0.45, -0.65)); // Diverging bell
-    nozzlePoints.push(new THREE.Vector2(0.68, -1.05)); // Parabolic bell exit
-    nozzlePoints.push(new THREE.Vector2(0.92, -1.45)); // Nozzle exit lip ($M \approx 3.2$)
+    nozzlePoints.push(new THREE.Vector2(0.85, 0.3));
+    nozzlePoints.push(new THREE.Vector2(0.82, 0.1));
+    nozzlePoints.push(new THREE.Vector2(0.42, -0.2));
+    nozzlePoints.push(new THREE.Vector2(0.32, -0.35));
+    nozzlePoints.push(new THREE.Vector2(0.45, -0.65));
+    nozzlePoints.push(new THREE.Vector2(0.68, -1.05));
+    nozzlePoints.push(new THREE.Vector2(0.92, -1.45));
 
     const deLavalGeo = new THREE.LatheGeometry(nozzlePoints, 36);
     const deLavalMesh = new THREE.Mesh(deLavalGeo, copperNozzleMat);
     deLavalMesh.castShadow = true;
     nozzleGroup.add(deLavalMesh);
 
-    // Regenerative Cooling Tube Manifold Ring at Exit Lip
     const manifoldRing = new THREE.Mesh(
-      new THREE.TorusGeometry(0.93, 0.045, 8, 32),
-      copperNozzleMat,
+      new THREE.TorusGeometry(0.93, 0.05, 8, 36),
+      new THREE.MeshStandardMaterial({ color: 0xb45309, metalness: 0.9 }),
     );
     manifoldRing.rotation.x = Math.PI / 2;
     manifoldRing.position.y = -1.45;
@@ -148,71 +244,66 @@ export function GoddardRocket3D() {
     stage1Group.add(nozzleGroup);
     rocketGroup.add(stage1Group);
 
-    // Stage 2 (Upper Payload Stage & Conical Nosecone)
+    // Stage 2 (Upper Payload Stage & Interstage Adapter)
     const stage2Group = new THREE.Group();
     stage2Group.position.y = 4.2;
 
-    // Interstage Separation Truss
-    const interstageRing = new THREE.Mesh(
-      new THREE.CylinderGeometry(1.18, 1.2, 0.5, 36, 1, true),
-      new THREE.MeshStandardMaterial({ color: 0x334155, metalness: 0.8 }),
+    const interstage = new THREE.Mesh(
+      new THREE.CylinderGeometry(0.8, 1.2, 1.2, 36),
+      new THREE.MeshStandardMaterial({ color: 0x334155, roughness: 0.4, metalness: 0.8 }),
     );
-    interstageRing.position.y = -1.85;
-    stage2Group.add(interstageRing);
+    interstage.position.y = -1.0;
+    stage2Group.add(interstage);
 
     const stage2Body = new THREE.Mesh(
-      new THREE.CylinderGeometry(1.15, 1.15, 3.2, 48),
+      new THREE.CylinderGeometry(0.8, 0.8, 2.6, 36),
       aluminumHullMat,
     );
+    stage2Body.position.y = 0.8;
     stage2Body.castShadow = true;
     stage2Group.add(stage2Body);
 
-    const noseCone = new THREE.Mesh(
-      new THREE.ConeGeometry(1.15, 2.4, 48),
-      new THREE.MeshStandardMaterial({ color: 0xef4444, roughness: 0.25, metalness: 0.7 }),
-    );
-    noseCone.position.y = 2.8;
+    // Aerodynamic Parabolic Nose Cone Fairing
+    const nosePoints: THREE.Vector2[] = [];
+    nosePoints.push(new THREE.Vector2(0.01, 2.2));
+    nosePoints.push(new THREE.Vector2(0.2, 1.8));
+    nosePoints.push(new THREE.Vector2(0.5, 1.0));
+    nosePoints.push(new THREE.Vector2(0.8, 0));
+    const noseGeo = new THREE.LatheGeometry(nosePoints, 36);
+    const noseCone = new THREE.Mesh(noseGeo, aluminumHullMat);
+    noseCone.position.y = 2.1;
     noseCone.castShadow = true;
     stage2Group.add(noseCone);
 
-    // Pitot Airspeed & Dynamic Pressure Probe
-    const pitotProbe = new THREE.Mesh(
-      new THREE.CylinderGeometry(0.025, 0.025, 0.9, 8),
-      new THREE.MeshStandardMaterial({ color: 0xe2e8f0, metalness: 0.95 }),
-    );
-    pitotProbe.position.y = 4.3;
-    stage2Group.add(pitotProbe);
-
     rocketGroup.add(stage2Group);
 
-    // --- SUPERSONIC EXHAUST PLUME WITH SHOCK DIAMONDS ---
-    const exhaustCount = 350;
-    const exhaustGeo = new THREE.BufferGeometry();
-    const exhaustPos = new Float32Array(exhaustCount * 3);
-    const exhaustColors = new Float32Array(exhaustCount * 3);
+    // --- GLOWING SUPERSONIC EXHAUST PLUME PARTICLES ---
+    const plumeCount = 180;
+    const plumeGeo = new THREE.BufferGeometry();
+    const plumePos = new Float32Array(plumeCount * 3);
+    const plumeColors = new Float32Array(plumeCount * 3);
 
     const glowTex = createGlowPointTexture();
 
-    for (let i = 0; i < exhaustCount; i++) {
+    for (let i = 0; i < plumeCount; i++) {
       const idx = i * 3;
-      const progress = i / exhaustCount;
-      exhaustPos[idx] = (Math.random() - 0.5) * (0.3 + progress * 1.8);
-      exhaustPos[idx + 1] = -3.2 - progress * 6.5;
-      exhaustPos[idx + 2] = (Math.random() - 0.5) * (0.3 + progress * 1.8);
+      plumePos[idx] = (Math.random() - 0.5) * 0.4;
+      plumePos[idx + 1] = -4.2 - Math.random() * 4.5;
+      plumePos[idx + 2] = (Math.random() - 0.5) * 0.4;
 
-      // White-Hot Core to Radiant Orange-Gold to Violet Plume
-      exhaustColors[idx] = 1.0;
-      exhaustColors[idx + 1] = 0.8 - progress * 0.5;
-      exhaustColors[idx + 2] = 0.2 + progress * 0.6;
+      const progress = (-plumePos[idx + 1] - 4.2) / 4.5;
+      plumeColors[idx] = 1.0;
+      plumeColors[idx + 1] = Math.max(0, 0.8 - progress * 0.7);
+      plumeColors[idx + 2] = Math.max(0, 0.3 - progress * 0.3);
     }
 
-    exhaustGeo.setAttribute("position", new THREE.BufferAttribute(exhaustPos, 3));
-    exhaustGeo.setAttribute("color", new THREE.BufferAttribute(exhaustColors, 3));
+    plumeGeo.setAttribute("position", new THREE.BufferAttribute(plumePos, 3));
+    plumeGeo.setAttribute("color", new THREE.BufferAttribute(plumeColors, 3));
 
-    const exhaustPoints = new THREE.Points(
-      exhaustGeo,
+    const plumePoints = new THREE.Points(
+      plumeGeo,
       new THREE.PointsMaterial({
-        size: 0.55,
+        size: 0.42,
         map: glowTex,
         vertexColors: true,
         transparent: true,
@@ -221,56 +312,47 @@ export function GoddardRocket3D() {
         depthWrite: false,
       }),
     );
-    rocketGroup.add(exhaustPoints);
+    scene.add(plumePoints);
 
-    // --- RENDER LOOP & REAL-TIME TRAJECTORY DYNAMICS ---
+    // --- RENDER LOOP & REAL-TIME SUPERSONIC PLUME DYNAMICS ---
     let reqId: number;
     const clock = new THREE.Clock();
 
     const animate = () => {
       reqId = requestAnimationFrame(animate);
       const delta = clock.getDelta();
-      const elapsed = clock.getElapsedTime();
       const p = live.current;
 
-      // Gyroscopic Gimbal Nozzle Deflection
       const gimbalRad = (p.gyroGimbalAngleDeg * Math.PI) / 180;
-      nozzleGroup.rotation.z = Math.sin(elapsed * 4.0) * 0.05 + gimbalRad;
+      nozzleGroup.rotation.z = gimbalRad;
 
-      // Staging Separation Physics
       if (p.activeStage === 2) {
-        stage2Group.position.y += delta * 4.0;
-        stage1Group.position.y -= delta * 2.0;
-        stage1Group.rotation.z += delta * 0.2;
+        stage2Group.position.y += (7.5 - stage2Group.position.y) * 0.05;
+        stage1Group.position.y += (-6.0 - stage1Group.position.y) * 0.05;
       } else {
-        stage2Group.position.y = 4.2;
-        stage1Group.position.y = 0;
-        stage1Group.rotation.z = 0;
+        stage2Group.position.y += (4.2 - stage2Group.position.y) * 0.1;
+        stage1Group.position.y += (0 - stage1Group.position.y) * 0.1;
       }
 
-      // Supersonic Exhaust Particle Physics
-      if (p.showExhaustPlume && p.isLaunching) {
-        const ePos = exhaustPos;
-        const exhaustSpeed = (p.exhaustVelocityMps / 800) * 20.0 * delta;
+      if (p.showExhaustPlume) {
+        const pPos = plumePos;
+        const velocitySpeed = (p.exhaustVelocityMps / 2000) * 35.0 * delta;
 
-        for (let i = 0; i < exhaustCount; i++) {
+        for (let i = 0; i < plumeCount; i++) {
           const idx = i * 3;
-          ePos[idx + 1] -= exhaustSpeed;
+          pPos[idx + 1] -= velocitySpeed;
+          pPos[idx] += Math.sin(gimbalRad) * velocitySpeed * 0.4;
 
-          // Shock diamond necking pattern along plume axis
-          const yDist = Math.abs(ePos[idx + 1] + 3.2);
-          const expansion = 0.2 + yDist * 0.18 + Math.sin(yDist * 4.0) * 0.12;
-          ePos[idx] = (Math.random() - 0.5) * expansion;
-          ePos[idx + 2] = (Math.random() - 0.5) * expansion;
-
-          if (ePos[idx + 1] < -10.0) {
-            ePos[idx + 1] = -3.2;
+          if (pPos[idx + 1] < -8.5) {
+            pPos[idx] = (Math.random() - 0.5) * 0.35;
+            pPos[idx + 1] = -4.2;
+            pPos[idx + 2] = (Math.random() - 0.5) * 0.35;
           }
         }
-        exhaustGeo.attributes.position.needsUpdate = true;
-        exhaustPoints.visible = true;
+        plumeGeo.attributes.position.needsUpdate = true;
+        plumePoints.visible = true;
       } else {
-        exhaustPoints.visible = false;
+        plumePoints.visible = false;
       }
 
       controls.update();
@@ -292,161 +374,207 @@ export function GoddardRocket3D() {
         <div ref={containerRef} className="absolute inset-0 w-full h-full" />
 
         {/* Live HUD Telemetry Overlay */}
-        <div className="absolute top-4 left-4 z-10 flex flex-col gap-2 pointer-events-none">
+        <div className="absolute top-4 left-4 z-10 flex flex-col gap-2 pointer-events-none max-w-[calc(100%-8rem)] sm:max-w-md">
           <div className="bg-white/90 dark:bg-ink-900/90 backdrop-blur-md px-3.5 py-2.5 rounded-xl border border-parchment-300 dark:border-ink-700 shadow-sm">
             <div className="text-[11px] font-sans text-amber-700 dark:text-amber-400 font-bold uppercase tracking-wider flex items-center gap-1.5">
               <Rocket className="w-3.5 h-3.5 text-blue-500 animate-pulse" />
-              Goddard Propulsion Telemetry
+              Supersonic Rocket Propulsion Telemetry
             </div>
-            <div className="grid grid-cols-2 gap-x-4 gap-y-1 mt-1 text-xs font-sans">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-4 gap-y-1 mt-1 text-xs font-sans">
               <div>
-                <span className="text-ink-600 dark:text-ink-400">Total Thrust ($F$):</span>{" "}
-                <span className="font-bold text-emerald-600 dark:text-emerald-400">
-                  {thrustNewtons} N ({thrustLbf} lbf)
-                </span>
-              </div>
-              <div>
-                <span className="text-ink-600 dark:text-ink-400">
-                  {"Specific Impulse ($I_{sp}$):"}
-                </span>{" "}
-                <span className="font-bold text-blue-600 dark:text-blue-400">
-                  {specificImpulseSec} seconds
-                </span>
-              </div>
-              <div>
-                <span className="text-ink-600 dark:text-ink-400">Exhaust Velocity ($v_e$):</span>{" "}
-                <span className="font-bold text-purple-600 dark:text-purple-400">
-                  {exhaustVelocityMps.toFixed(0)} m/s (Mach {(exhaustVelocityMps / 343).toFixed(1)})
-                </span>
-              </div>
-              <div>
-                <span className="text-ink-600 dark:text-ink-400">Gimbal Vector:</span>{" "}
+                <span className="text-ink-600 dark:text-ink-400">Total Thrust:</span>{" "}
                 <span className="font-bold text-amber-600 dark:text-amber-400">
-                  {gyroGimbalAngleDeg > 0 ? `+${gyroGimbalAngleDeg}°` : `${gyroGimbalAngleDeg}°`}{" "}
-                  Yaw
+                  {thrustNewtons.toLocaleString()} N ({thrustLbf.toLocaleString()} lbf)
+                </span>
+              </div>
+              <div>
+                <span className="text-ink-600 dark:text-ink-400">{"Specific Impulse (I_sp):"}</span>{" "}
+                <span className="font-bold text-blue-600 dark:text-blue-400">
+                  {specificImpulseSec} s (LOX/Gasoline)
+                </span>
+              </div>
+              <div>
+                <span className="text-ink-600 dark:text-ink-400">Exhaust Velocity:</span>{" "}
+                <span className="font-bold text-emerald-600 dark:text-emerald-400">
+                  {exhaustVelocityMps.toLocaleString()} m/s (Mach{" "}
+                  {(exhaustVelocityMps / 343).toFixed(1)})
+                </span>
+              </div>
+              <div>
+                <span className="text-ink-600 dark:text-ink-400">Chamber Pressure:</span>{" "}
+                <span className="font-bold text-purple-600 dark:text-purple-400">
+                  {chamberPressurePsi} psi ({(chamberPressurePsi / 14.696).toFixed(1)} atm)
                 </span>
               </div>
             </div>
           </div>
 
-          <div className="bg-white/90 dark:bg-ink-900/90 backdrop-blur-md px-3 py-1.5 rounded-lg border border-parchment-300 dark:border-ink-700 text-[11px] font-sans text-ink-700 dark:text-ink-300 flex items-center gap-2">
-            <Flame className="w-3.5 h-3.5 text-amber-500 animate-pulse" />
-            <span>Liquid LOX / Gasoline Rocket Motor with de Laval Expansion Nozzle</span>
+          <div className="bg-white/90 dark:bg-ink-900/90 backdrop-blur-md px-3 py-1.5 rounded-lg border border-parchment-300 dark:border-ink-700 text-[11px] font-sans text-ink-700 dark:text-ink-300 flex items-center gap-2 max-w-full">
+            <Flame className="w-3.5 h-3.5 text-amber-600 animate-pulse shrink-0" />
+            <span className="truncate">
+              Robert H. Goddard (US 1,155,986) — Rocket Apparatus (1914)
+            </span>
           </div>
         </div>
 
-        {/* Toggle Controls */}
+        {/* Top Right Tool Bar (Audio, Pins, Reset) */}
         <div className="absolute top-4 right-4 z-10 flex gap-2">
           <button
             type="button"
-            onClick={() => setShowExhaustPlume(!showExhaustPlume)}
-            className={`px-3 py-1.5 rounded-lg text-xs font-sans font-semibold border transition-all ${
-              showExhaustPlume
-                ? "bg-amber-500 text-white border-amber-600 shadow-sm"
-                : "bg-white/80 dark:bg-ink-900/80 text-ink-700 dark:text-ink-300 border-parchment-300 dark:border-ink-700"
-            }`}
+            onClick={toggleSound}
+            className="p-2.5 rounded-xl bg-white/90 dark:bg-ink-900/90 backdrop-blur-md border border-parchment-300 dark:border-ink-700 text-ink-700 dark:text-parchment-300 hover:bg-parchment-100 dark:hover:bg-ink-800 transition-all shadow-sm"
+            title={isAudioMuted ? "Enable Sound" : "Mute Sound"}
           >
-            Exhaust Plume
+            {isAudioMuted ? (
+              <VolumeX className="w-4 h-4" />
+            ) : (
+              <Volume2 className="w-4 h-4 text-amber-600" />
+            )}
           </button>
           <button
             type="button"
-            onClick={() => setActiveStage(activeStage === 1 ? 2 : 1)}
-            className={`px-3 py-1.5 rounded-lg text-xs font-sans font-semibold border transition-all ${
-              activeStage === 2
-                ? "bg-blue-600 text-white border-blue-700 shadow-sm"
-                : "bg-white/80 dark:bg-ink-900/80 text-ink-700 dark:text-ink-300 border-parchment-300 dark:border-ink-700"
+            onClick={() => setShowCalloutPins(!showCalloutPins)}
+            className={`p-2.5 rounded-xl backdrop-blur-md border transition-all shadow-sm ${
+              showCalloutPins
+                ? "bg-amber-600 text-white border-amber-700 shadow-md"
+                : "bg-white/90 dark:bg-ink-900/90 border-parchment-300 dark:border-ink-700 text-ink-700 dark:text-parchment-300 hover:bg-parchment-100"
             }`}
+            title="Toggle Historical Patent Numeral Pins"
           >
-            {activeStage === 1 ? "Stage 1 Stack" : "Stage Separation"}
+            <Zap className="w-4 h-4" />
           </button>
+          <button
+            type="button"
+            onClick={() => applyCameraPreset("iso")}
+            className="p-2.5 rounded-xl bg-white/90 dark:bg-ink-900/90 backdrop-blur-md border border-parchment-300 dark:border-ink-700 text-ink-700 dark:text-parchment-300 hover:bg-parchment-100 dark:hover:bg-ink-800 transition-all shadow-sm"
+            title="Reset Orbit Camera"
+          >
+            <RotateCcw className="w-4 h-4" />
+          </button>
+        </div>
+
+        {/* Camera Views Bar */}
+        <div className="absolute bottom-4 left-4 z-10 flex flex-wrap gap-1.5 bg-white/85 dark:bg-ink-900/85 backdrop-blur-md p-1.5 rounded-xl border border-parchment-300 dark:border-ink-700 shadow-sm text-xs">
+          <span className="px-2 py-1 text-ink-500 font-sans flex items-center gap-1">
+            <Camera className="w-3.5 h-3.5" /> View:
+          </span>
+          {(
+            [
+              ["iso", "Isometric"],
+              ["de_laval_nozzle", "De Laval Nozzle"],
+              ["combustion_chamber", "Chamber"],
+              ["gimbal_actuator", "Gimbal Vanes"],
+              ["top", "Aero Profile"],
+            ] as const
+          ).map(([id, label]) => (
+            <button
+              key={id}
+              type="button"
+              onClick={() => applyCameraPreset(id)}
+              className={`px-2.5 py-1 rounded-lg font-sans transition-all ${
+                activeCamera === id
+                  ? "bg-amber-700 dark:bg-amber-600 text-white font-semibold shadow-xs"
+                  : "text-ink-700 dark:text-parchment-300 hover:bg-parchment-200 dark:hover:bg-ink-800"
+              }`}
+            >
+              {label}
+            </button>
+          ))}
         </div>
       </div>
 
-      {/* Parameter Sliders Panel */}
-      <div className="p-4 sm:p-5 bg-parchment-100/80 dark:bg-ink-900/90 border-t border-parchment-300 dark:border-ink-800 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 text-xs font-sans">
-        {/* Chamber Pressure */}
+      {/* Interactive Controls & Scenario Bar */}
+      <div className="p-4 sm:p-5 bg-parchment-100/90 dark:bg-ink-900/90 border-t border-parchment-300 dark:border-ink-800 space-y-4">
+        {/* Scenario Presets */}
         <div className="space-y-1.5">
-          <div className="flex justify-between font-medium text-ink-900 dark:text-parchment-100">
-            <span>Combustion Pressure ($P_c$):</span>
-            <span className="font-bold text-amber-700 dark:text-amber-400">
-              {chamberPressurePsi} psi
-            </span>
+          <div className="text-xs font-sans font-bold text-ink-700 dark:text-ink-300 uppercase tracking-wider flex items-center gap-1.5">
+            <Sparkles className="w-3.5 h-3.5 text-amber-600" /> Historical Rocket Propulsion
+            Presets:
           </div>
-          <input
-            type="range"
-            min="100"
-            max="600"
-            step="25"
-            value={chamberPressurePsi}
-            onChange={(e) => setChamberPressurePsi(Number(e.target.value))}
-            className="w-full accent-amber-600 dark:accent-amber-400 cursor-pointer"
-          />
-          <span className="text-[10px] text-ink-500 dark:text-ink-400 block">
-            Higher pressure increases supersonic expansion ratio
-          </span>
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
+            {SCENARIOS.map((s) => (
+              <button
+                key={s.id}
+                type="button"
+                onClick={() => applyScenario(s)}
+                className="p-2.5 rounded-xl border border-parchment-300 dark:border-ink-700 bg-white/70 dark:bg-ink-950/70 hover:bg-parchment-50 dark:hover:bg-ink-800 text-left transition-all group"
+              >
+                <div className="text-xs font-serif font-bold text-ink-900 dark:text-parchment-100 group-hover:text-amber-700 dark:group-hover:text-amber-400">
+                  {s.name}
+                </div>
+                <div className="text-[10px] font-sans text-ink-500 dark:text-ink-400 line-clamp-2 mt-0.5">
+                  {s.desc}
+                </div>
+              </button>
+            ))}
+          </div>
         </div>
 
-        {/* Mass Flow Rate */}
-        <div className="space-y-1.5">
-          <div className="flex justify-between font-medium text-ink-900 dark:text-parchment-100">
-            <span>{"Propellant Mass Flow ($\\dot{m}$):"}</span>
-            <span className="font-bold text-blue-600 dark:text-blue-400">
-              {fuelFlowRateKgs.toFixed(1)} kg/s
-            </span>
-          </div>
-          <input
-            type="range"
-            min="0.5"
-            max="5.0"
-            step="0.2"
-            value={fuelFlowRateKgs}
-            onChange={(e) => setFuelFlowRateKgs(Number(e.target.value))}
-            className="w-full accent-blue-600 dark:accent-blue-400 cursor-pointer"
-          />
-          <span className="text-[10px] text-ink-500 dark:text-ink-400 block">
-            Liquid oxygen and gasoline fuel feed rate
-          </span>
-        </div>
-
-        {/* Gyroscopic Gimbal Angle */}
-        <div className="space-y-1.5">
-          <div className="flex justify-between font-medium text-ink-900 dark:text-parchment-100">
-            <span>Gimbal Vane Steering:</span>
-            <span className="font-bold text-emerald-600 dark:text-emerald-400">
-              {gyroGimbalAngleDeg}°
-            </span>
-          </div>
-          <input
-            type="range"
-            min="-15"
-            max="15"
-            step="1"
-            value={gyroGimbalAngleDeg}
-            onChange={(e) => setGyroGimbalAngleDeg(Number(e.target.value))}
-            className="w-full accent-emerald-600 dark:accent-emerald-400 cursor-pointer"
-          />
-          <span className="text-[10px] text-ink-500 dark:text-ink-400 block">
-            Exhaust vane thrust vector control (TVC)
-          </span>
-        </div>
-
-        {/* Tsiolkovsky Delta-V */}
-        <div className="space-y-1.5">
-          <div className="flex justify-between font-medium text-ink-900 dark:text-parchment-100">
-            <span>Staged $\Delta V$ Capability:</span>
-            <span className="font-bold text-purple-600 dark:text-purple-400">
-              {(exhaustVelocityMps * Math.log(3.5)).toFixed(0)} m/s
-            </span>
-          </div>
-          <div className="w-full bg-parchment-300 dark:bg-ink-800 rounded-full h-3 overflow-hidden mt-2 border border-parchment-400 dark:border-ink-700">
-            <div
-              className="bg-gradient-to-r from-emerald-500 to-purple-600 h-full transition-all duration-300"
-              style={{ width: `${Math.min(100, (specificImpulseSec / 250) * 85)}%` }}
+        {/* Sliders Grid */}
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 pt-1">
+          {/* Chamber Pressure */}
+          <div className="space-y-1.5">
+            <div className="flex justify-between text-xs font-sans">
+              <span className="font-semibold text-ink-800 dark:text-parchment-200">
+                Combustion Pressure ($P_c$):
+              </span>
+              <span className="font-mono text-amber-700 dark:text-amber-400 font-bold">
+                {chamberPressurePsi} psi
+              </span>
+            </div>
+            <input
+              type="range"
+              min="100"
+              max="600"
+              step="20"
+              value={chamberPressurePsi}
+              onChange={(e) => setChamberPressurePsi(Number(e.target.value))}
+              className="w-full accent-amber-600 cursor-pointer"
             />
+            <span className="text-[10px] text-ink-500 dark:text-ink-400 block">
+              {"Governs isentropic expansion ratio and I_sp"}
+            </span>
           </div>
-          <span className="text-[10px] text-ink-500 dark:text-ink-400 block">
-            $\Delta v = v_e \ln(m_0/m_f)$ staging multiplier
-          </span>
+
+          {/* Propellant Mass Flow Rate */}
+          <div className="space-y-1.5">
+            <div className="flex justify-between text-xs font-sans">
+              <span className="font-semibold text-ink-800 dark:text-parchment-200">
+                {"Propellant Mass Flow (ṁ):"}
+              </span>
+              <span className="font-mono text-blue-600 dark:text-blue-400 font-bold">
+                {fuelFlowRateKgs.toFixed(1)} kg/s
+              </span>
+            </div>
+            <input
+              type="range"
+              min="0.5"
+              max="5.0"
+              step="0.1"
+              value={fuelFlowRateKgs}
+              onChange={(e) => setFuelFlowRateKgs(Number(e.target.value))}
+              className="w-full accent-blue-600 cursor-pointer"
+            />
+            <span className="text-[10px] text-ink-500 dark:text-ink-400 block">
+              LOX & gasoline turbopump delivery rate
+            </span>
+          </div>
+
+          {/* Staging Toggle */}
+          <div className="flex flex-col justify-end space-y-1.5">
+            <button
+              type="button"
+              onClick={() => setActiveStage(activeStage === 1 ? 2 : 1)}
+              className={`w-full py-3 px-4 rounded-xl font-sans font-bold text-sm transition-all shadow-sm flex items-center justify-center gap-2 ${
+                activeStage === 1
+                  ? "bg-emerald-600 hover:bg-emerald-700 text-white shadow-md"
+                  : "bg-purple-600 hover:bg-purple-700 text-white shadow-md"
+              }`}
+            >
+              <Rocket className="w-4 h-4" />
+              {activeStage === 1 ? "Stage 1 (Booster Firing)" : "Stage 2 (Upper Core Staged)"}
+            </button>
+          </div>
         </div>
       </div>
     </div>

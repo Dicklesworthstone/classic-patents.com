@@ -320,13 +320,20 @@ export function LamarrFrequencyHopping3D() {
         const bar = barMeshes[c];
         const mat = bar.material as THREE.MeshStandardMaterial;
 
-        if (c === activeChan) {
+        const isJammerBar = p.isJammingActive && (c === 12 || c === 13 || c === 14);
+        if (c === activeChan && isJammerBar) {
+          bar.scale.y = 5.2;
+          bar.position.y = 1.05;
+          mat.color.setHex(0xef4444);
+          mat.emissive.setHex(0xef4444);
+          mat.emissiveIntensity = 1.0;
+        } else if (c === activeChan) {
           bar.scale.y = 4.5;
           bar.position.y = 0.9;
           mat.color.setHex(0x10b981);
           mat.emissive.setHex(0x10b981);
           mat.emissiveIntensity = 0.8;
-        } else if (p.isJammingActive && (c === 12 || c === 13 || c === 14)) {
+        } else if (isJammerBar) {
           bar.scale.y = 6.0;
           bar.position.y = 1.2;
           mat.color.setHex(0xef4444);

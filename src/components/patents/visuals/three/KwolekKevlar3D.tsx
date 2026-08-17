@@ -137,15 +137,29 @@ export function KwolekKevlar3D() {
     }
   };
 
+  const impactTimerRef = useRef<number | null>(null);
+
   const handleTriggerImpact = () => {
+    if (impactTimerRef.current !== null) {
+      window.clearTimeout(impactTimerRef.current);
+    }
     setIsImpactTesting(true);
     if (!isAudioMuted) {
       soundEngine.playSwitchClick();
     }
-    setTimeout(() => {
+    impactTimerRef.current = window.setTimeout(() => {
       setIsImpactTesting(false);
+      impactTimerRef.current = null;
     }, 1800);
   };
+
+  useEffect(() => {
+    return () => {
+      if (impactTimerRef.current !== null) {
+        window.clearTimeout(impactTimerRef.current);
+      }
+    };
+  }, []);
 
   useEffect(() => {
     const container = containerRef.current;

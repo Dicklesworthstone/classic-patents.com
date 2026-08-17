@@ -1,10 +1,57 @@
 "use client";
 
-import { Radio } from "lucide-react";
+import { Camera, Radio, RotateCcw, Sparkles, Volume2, VolumeX, Zap } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import * as THREE from "three";
+import { soundEngine } from "@/utils/soundEngine";
 import { createGlowPointTexture, createThreeStudioScene } from "./ThreeStudioScene";
 import { useLiveSimParams } from "./useLiveSimParams";
+
+type CameraPreset = "iso" | "cavity_resonator" | "electron_spokes" | "waveguide_launch" | "top";
+
+interface ScenarioPreset {
+  id: string;
+  name: string;
+  desc: string;
+  voltageKv: number;
+  magGauss: number;
+  powerW: number;
+}
+
+const SCENARIOS: ScenarioPreset[] = [
+  {
+    id: "spencer_1945_patent",
+    name: "1945 Raytheon Radarange Patent (US 2,495,429)",
+    desc: "Percy Spencer's discovery: 2.45 GHz cavity magnetron generating dense microwave radiation to heat food through dielectric loss.",
+    voltageKv: 4.2,
+    magGauss: 1450,
+    powerW: 850,
+  },
+  {
+    id: "popcorn_first_test",
+    name: "First Popcorn Kernel Test",
+    desc: "Historic Raytheon laboratory test where popcorn kernels burst instantaneously beside the open waveguide horn.",
+    voltageKv: 3.8,
+    magGauss: 1350,
+    powerW: 650,
+  },
+  {
+    id: "hull_cutoff_threshold",
+    name: "Hull Cutoff Field Transition",
+    desc: "Critical magnetic field $B_c$ trapping electrons into swirling cycloidal space-charge spokes rather than striking anode.",
+    voltageKv: 4.2,
+    magGauss: 1200,
+    powerW: 500,
+  },
+  {
+    id: "high_power_industrial",
+    name: "1,200W Commercial Radarange",
+    desc: "Full-power 1.2 kW continuous microwave emission with intense water molecule dipole rotation at 2.45 billion cycles/sec.",
+    voltageKv: 5.5,
+    magGauss: 1750,
+    powerW: 1200,
+  },
+];
 
 export function SpencerMicrowave3D() {
   const containerRef = useRef<HTMLDivElement>(null);
@@ -13,15 +60,14 @@ export function SpencerMicrowave3D() {
   const [anodeVoltageKv, setAnodeVoltageKv] = useState<number>(4.2); // 2.0 to 6.0 kV
   const [magneticFieldGauss, setMagneticFieldGauss] = useState<number>(1450); // 800 to 2200 Gauss
   const [rfPowerWatts, setRfPowerWatts] = useState<number>(850); // 200 to 1200 Watts
-  const [showSpokeWheel, setShowSpokeWheel] = useState<boolean>(true);
-  const [showWaterDipoles, setShowWaterDipoles] = useState<boolean>(true);
+  const [showSpokeWheel, _setShowSpokeWheel] = useState<boolean>(true);
+  const [showWaterDipoles, _setShowWaterDipoles] = useState<boolean>(true);
+  const [showCalloutPins, setShowCalloutPins] = useState<boolean>(false);
+  const [activeCamera, setActiveCamera] = useState<CameraPreset>("iso");
+  const [isPlayingAudio, setIsPlayingAudio] = useState<boolean>(false);
 
   // RF Cavity Physics Calculations
-  // Resonant Microwave Frequency: f = 2450 MHz (lambda = 12.2 cm)
-  const rfFreqMhz = 2450;
-  // Hull Cutoff Magnetic Field: B_c = sqrt(8 * m * V / (e * r_a^2 * (1 - r_c^2/r_a^2)^2))
-  // Hull cutoff B_c ∝ √V_a. Calibrated so B_c ≈ 1180 G at the default 4.2 kV anode.
-  const hullCutoffGauss = 1180 * Math.sqrt(anodeVoltageKv / 4.2);
+  const hullCutoffGauss = Math.round(1180 * Math.sqrt(anodeVoltageKv / 4.2));
   const isOscillating = magneticFieldGauss > hullCutoffGauss;
   const waterDielectricLossDensity = isOscillating ? (rfPowerWatts * 1.8).toFixed(0) : "0";
 
@@ -33,11 +79,65 @@ export function SpencerMicrowave3D() {
     isOscillating,
   });
 
+  const controlsRef = useRef<any>(null);
+  const cameraRef = useRef<THREE.PerspectiveCamera | null>(null);
+
+  const applyCameraPreset = (preset: CameraPreset) => {
+    setActiveCamera(preset);
+    const camera = cameraRef.current;
+    const controls = controlsRef.current;
+    if (!camera || !controls) return;
+
+    switch (preset) {
+      case "iso":
+        camera.position.set(12, 10, 15);
+        controls.target.set(0, 0, 0);
+        break;
+      case "cavity_resonator":
+        camera.position.set(0, 3.2, 5.5);
+        controls.target.set(0, 0, 0);
+        break;
+      case "electron_spokes":
+        camera.position.set(0, 7.5, 0.1);
+        controls.target.set(0, 0, 0);
+        break;
+      case "waveguide_launch":
+        camera.position.set(4.5, 2.5, 3.5);
+        controls.target.set(3.0, 0, 0);
+        break;
+      case "top":
+        camera.position.set(0, 13.0, 0.1);
+        controls.target.set(0, 0, 0);
+        break;
+    }
+    controls.update();
+  };
+
+  const applyScenario = (s: ScenarioPreset) => {
+    setAnodeVoltageKv(s.voltageKv);
+    setMagneticFieldGauss(s.magGauss);
+    setRfPowerWatts(s.powerW);
+    if (isPlayingAudio) {
+      soundEngine.playContinuousTone(120, "sawtooth", 0.04);
+    }
+  };
+
+  // Audio Magnetron Hum
+  useEffect(() => {
+    if (isPlayingAudio && isOscillating) {
+      soundEngine.playContinuousTone(120, "sawtooth", 0.035);
+    } else {
+      soundEngine.stopContinuousTone();
+    }
+    return () => {
+      soundEngine.stopContinuousTone();
+    };
+  }, [isPlayingAudio, isOscillating]);
+
   useEffect(() => {
     const container = containerRef.current;
     if (!container) return;
 
-    // Create Studio Scene with High-Luminosity Studio Lighting
     const studio = createThreeStudioScene({
       container,
       cameraPos: [12, 10, 15],
@@ -45,16 +145,18 @@ export function SpencerMicrowave3D() {
     });
 
     const { scene, camera, renderer, controls } = studio;
+    cameraRef.current = camera;
+    controlsRef.current = controls;
 
     // --- PBR MATERIALS ---
     const copperAnodeMat = new THREE.MeshStandardMaterial({
-      color: 0xca8a04, // Polished OFHC copper anode block
+      color: 0xca8a04,
       roughness: 0.22,
       metalness: 0.88,
     });
 
     const cathodeMat = new THREE.MeshStandardMaterial({
-      color: 0xef4444, // Heated thoriated tungsten oxide cathode
+      color: 0xef4444,
       roughness: 0.4,
       metalness: 0.5,
       emissive: 0xef4444,
@@ -62,7 +164,7 @@ export function SpencerMicrowave3D() {
     });
 
     const alnicoMagnetMat = new THREE.MeshStandardMaterial({
-      color: 0x334155, // Alnico permanent magnet pole piece
+      color: 0x334155,
       roughness: 0.35,
       metalness: 0.8,
     });
@@ -71,7 +173,7 @@ export function SpencerMicrowave3D() {
     const magnetronGroup = new THREE.Group();
     scene.add(magnetronGroup);
 
-    // Solid OFHC Copper Anode Block Outer Shell
+    // Anode Block Shell
     const anodeOuter = new THREE.Mesh(
       new THREE.CylinderGeometry(4.3, 4.3, 3.4, 48),
       copperAnodeMat,
@@ -80,18 +182,17 @@ export function SpencerMicrowave3D() {
     anodeOuter.receiveShadow = true;
     magnetronGroup.add(anodeOuter);
 
-    // Center Bore for Interaction Space
+    // Center Interaction Bore
     const centerBore = new THREE.Mesh(
       new THREE.CylinderGeometry(1.5, 1.5, 3.42, 36),
       new THREE.MeshStandardMaterial({ color: 0x1e293b, roughness: 0.6 }),
     );
     magnetronGroup.add(centerBore);
 
-    // 8 Radial Resonant Hole-and-Slot Cavities (Cylindrical Inductance + Slotted Capacitance)
+    // 8 Radial Resonant Cavities
     const numCavities = 8;
     for (let i = 0; i < numCavities; i++) {
       const angle = (i * 2 * Math.PI) / numCavities;
-      // Resonant Hole (Inductive volume)
       const hole = new THREE.Mesh(
         new THREE.CylinderGeometry(0.62, 0.62, 3.42, 24),
         new THREE.MeshStandardMaterial({ color: 0x0f172a, roughness: 0.7 }),
@@ -99,7 +200,6 @@ export function SpencerMicrowave3D() {
       hole.position.set(Math.cos(angle) * 2.8, 0, Math.sin(angle) * 2.8);
       magnetronGroup.add(hole);
 
-      // Slot opening to center interaction space (Capacitive gap)
       const slot = new THREE.Mesh(
         new THREE.BoxGeometry(1.3, 3.42, 0.18),
         new THREE.MeshStandardMaterial({ color: 0x0f172a, roughness: 0.7 }),
@@ -109,22 +209,20 @@ export function SpencerMicrowave3D() {
       magnetronGroup.add(slot);
     }
 
-    // Pi-Mode Anode Strapping Rings (Alternate Vane Phase Locking)
+    // Pi-Mode Strapping Rings
     [-1.6, 1.6].forEach((yPos) => {
-      // Inner Strapping Ring (connects even vanes)
       const innerRing = new THREE.Mesh(new THREE.TorusGeometry(1.8, 0.05, 8, 36), copperAnodeMat);
       innerRing.rotation.x = Math.PI / 2;
       innerRing.position.y = yPos;
       magnetronGroup.add(innerRing);
 
-      // Outer Strapping Ring (connects odd vanes)
       const outerRing = new THREE.Mesh(new THREE.TorusGeometry(2.3, 0.05, 8, 36), copperAnodeMat);
       outerRing.rotation.x = Math.PI / 2;
       outerRing.position.y = yPos;
       magnetronGroup.add(outerRing);
     });
 
-    // Central Thermionic Cathode & Spiral Heater with Molybdenum End Hats
+    // Central Thermionic Cathode
     const cathode = new THREE.Mesh(new THREE.CylinderGeometry(0.38, 0.38, 4.2, 24), cathodeMat);
     cathode.castShadow = true;
     magnetronGroup.add(cathode);
@@ -138,147 +236,63 @@ export function SpencerMicrowave3D() {
       magnetronGroup.add(endHat);
     });
 
-    // Top and Bottom Alnico Magnet Horseshoe Pole Pieces with Central Aperture
-    const topPole = new THREE.Mesh(new THREE.CylinderGeometry(4.4, 4.4, 0.75, 48), alnicoMagnetMat);
-    topPole.position.y = 2.1;
-    topPole.castShadow = true;
-    const bottomPole = topPole.clone();
-    bottomPole.position.y = -2.1;
-    magnetronGroup.add(topPole);
-    magnetronGroup.add(bottomPole);
+    // Alnico Permanent Magnet Shoes
+    [-3.2, 3.2].forEach((yMag) => {
+      const poleShoe = new THREE.Mesh(
+        new THREE.CylinderGeometry(3.5, 4.2, 1.8, 36),
+        alnicoMagnetMat,
+      );
+      poleShoe.position.y = yMag;
+      magnetronGroup.add(poleShoe);
+    });
 
-    // Output RF Antenna Coupling Loop inside Glass Vacuum Dome & Waveguide Horn
-    const rfDome = new THREE.Mesh(
-      new THREE.SphereGeometry(0.7, 24, 24),
-      new THREE.MeshPhysicalMaterial({ color: 0xffffff, transmission: 0.9, transparent: true }),
-    );
-    rfDome.position.set(4.2, 0, 0);
-    magnetronGroup.add(rfDome);
-
-    const waveguide = new THREE.Mesh(
-      new THREE.BoxGeometry(4.2, 1.8, 2.4),
-      new THREE.MeshStandardMaterial({ color: 0xd97706, roughness: 0.3, metalness: 0.85 }),
-    );
-    waveguide.position.set(6.2, 0, 0);
-    waveguide.castShadow = true;
-    magnetronGroup.add(waveguide);
-
-    // --- GLOWING ELECTRON SPOKE WHEEL PARTICLES ---
-    const electronCount = 280;
-    const electronGeo = new THREE.BufferGeometry();
-    const electronPos = new Float32Array(electronCount * 3);
-    const electronColors = new Float32Array(electronCount * 3);
-
+    // --- ROTATING ELECTRON SPOKE WHEEL PARTICLES ---
+    const spokeCount = 120;
+    const spokeGeo = new THREE.BufferGeometry();
+    const spokePos = new Float32Array(spokeCount * 3);
     const glowTex = createGlowPointTexture();
 
-    for (let i = 0; i < electronCount; i++) {
+    for (let i = 0; i < spokeCount; i++) {
       const idx = i * 3;
-      const spokeIdx = i % 4; // 4 rotating space-charge spokes
-      const baseAngle = (spokeIdx * Math.PI) / 2;
-      const r = 0.5 + Math.random() * 1.0;
-      const spread = (Math.random() - 0.5) * 0.4;
-      const theta = baseAngle + spread + r * 0.5;
-
-      electronPos[idx] = Math.cos(theta) * r;
-      electronPos[idx + 1] = (Math.random() - 0.5) * 2.2;
-      electronPos[idx + 2] = Math.sin(theta) * r;
-
-      electronColors[idx] = 0.2;
-      electronColors[idx + 1] = 0.8;
-      electronColors[idx + 2] = 1.0;
+      const spokeIndex = i % 4;
+      const baseAngle = (spokeIndex * Math.PI) / 2;
+      const r = 0.5 + Math.random() * 0.9;
+      const angle = baseAngle + (Math.random() - 0.5) * 0.3;
+      spokePos[idx] = Math.cos(angle) * r;
+      spokePos[idx + 1] = (Math.random() - 0.5) * 1.5;
+      spokePos[idx + 2] = Math.sin(angle) * r;
     }
-
-    electronGeo.setAttribute("position", new THREE.BufferAttribute(electronPos, 3));
-    electronGeo.setAttribute("color", new THREE.BufferAttribute(electronColors, 3));
+    spokeGeo.setAttribute("position", new THREE.BufferAttribute(spokePos, 3));
 
     const spokePoints = new THREE.Points(
-      electronGeo,
+      spokeGeo,
       new THREE.PointsMaterial({
-        size: 0.35,
+        size: 0.26,
         map: glowTex,
-        vertexColors: true,
+        color: 0x38bdf8,
         transparent: true,
         opacity: 0.9,
         blending: THREE.AdditiveBlending,
         depthWrite: false,
       }),
     );
-    scene.add(spokePoints);
+    magnetronGroup.add(spokePoints);
 
-    // --- WATER MOLECULE DIPOLE SIMULATOR ($H_2O$ DIELECTRIC HEATING) ---
-    const waterGroup = new THREE.Group();
-    waterGroup.position.set(6.2, 0, 0);
-    scene.add(waterGroup);
-
-    const waterMolecules: { group: THREE.Group; rotSpeed: number }[] = [];
-    for (let w = 0; w < 6; w++) {
-      const wMol = new THREE.Group();
-      wMol.position.set(
-        (Math.random() - 0.5) * 1.8,
-        (Math.random() - 0.5) * 1.0,
-        (Math.random() - 0.5) * 1.4,
-      );
-
-      // Central Oxygen Atom (Red)
-      const oxygen = new THREE.Mesh(
-        new THREE.SphereGeometry(0.22, 16, 16),
-        new THREE.MeshStandardMaterial({ color: 0xef4444, roughness: 0.3 }),
-      );
-      wMol.add(oxygen);
-
-      // Two Hydrogen Atoms (White) bonded at 104.5 degrees
-      const h1 = new THREE.Mesh(
-        new THREE.SphereGeometry(0.12, 12, 12),
-        new THREE.MeshStandardMaterial({ color: 0xf8fafc, roughness: 0.2 }),
-      );
-      h1.position.set(0.25, 0.18, 0);
-      const h2 = h1.clone();
-      h2.position.set(-0.25, 0.18, 0);
-      wMol.add(h1);
-      wMol.add(h2);
-
-      waterGroup.add(wMol);
-      waterMolecules.push({ group: wMol, rotSpeed: 4.0 + Math.random() * 8.0 });
-    }
-
-    // --- RENDER LOOP & REAL-TIME PHYSICS SIMULATION ---
+    // --- RENDER LOOP & REAL-TIME SPOKE WHEEL ROTATION ---
     let reqId: number;
     const clock = new THREE.Clock();
 
     const animate = () => {
       reqId = requestAnimationFrame(animate);
       const delta = clock.getDelta();
-      const elapsed = clock.getElapsedTime();
       const p = live.current;
 
-      // Cyclotron Electron Spoke Wheel Rotation: v_drift = E x B / B^2
       if (p.isOscillating) {
-        const driftAngularSpeed = (p.anodeVoltageKv / 4.0) * (1450 / p.magneticFieldGauss) * 8.0;
-        const ePos = electronPos;
-
-        for (let i = 0; i < electronCount; i++) {
-          const idx = i * 3;
-          const x = ePos[idx];
-          const z = ePos[idx + 2];
-          const r = Math.sqrt(x * x + z * z);
-          let angle = Math.atan2(z, x);
-          angle += driftAngularSpeed * delta;
-
-          ePos[idx] = Math.cos(angle) * r;
-          ePos[idx + 2] = Math.sin(angle) * r;
-        }
-        electronGeo.attributes.position.needsUpdate = true;
+        spokePoints.visible = p.showSpokeWheel;
+        spokePoints.rotation.y += delta * 4.5;
+      } else {
+        spokePoints.visible = false;
       }
-      spokePoints.visible = p.showSpokeWheel && p.isOscillating;
-
-      // Rotate and oscillate polar water dipoles to simulate dielectric friction heating
-      for (const mol of waterMolecules) {
-        if (p.isOscillating) {
-          mol.group.rotation.x = Math.sin(elapsed * mol.rotSpeed) * 1.8;
-          mol.group.rotation.y = Math.cos(elapsed * mol.rotSpeed) * 1.8;
-        }
-      }
-      waterGroup.visible = p.showWaterDipoles;
 
       controls.update();
       renderer.render(scene, camera);
@@ -299,166 +313,213 @@ export function SpencerMicrowave3D() {
         <div ref={containerRef} className="absolute inset-0 w-full h-full" />
 
         {/* Live HUD Telemetry Overlay */}
-        <div className="absolute top-4 left-4 z-10 flex flex-col gap-2 pointer-events-none">
+        <div className="absolute top-4 left-4 z-10 flex flex-col gap-2 pointer-events-none max-w-[calc(100%-8rem)] sm:max-w-md">
           <div className="bg-white/90 dark:bg-ink-900/90 backdrop-blur-md px-3.5 py-2.5 rounded-xl border border-parchment-300 dark:border-ink-700 shadow-sm">
             <div className="text-[11px] font-sans text-amber-700 dark:text-amber-400 font-bold uppercase tracking-wider flex items-center gap-1.5">
-              <Radio className="w-3.5 h-3.5 text-amber-500 animate-pulse" />
-              Cavity Magnetron Oscillation
+              <Radio className="w-3.5 h-3.5 text-blue-500 animate-pulse" />
+              Cavity Magnetron & Microwave Telemetry
             </div>
-            <div className="grid grid-cols-2 gap-x-4 gap-y-1 mt-1 text-xs font-sans">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-4 gap-y-1 mt-1 text-xs font-sans">
               <div>
-                <span className="text-ink-600 dark:text-ink-400">Resonant Frequency:</span>{" "}
+                <span className="text-ink-600 dark:text-ink-400">Microwave Freq:</span>{" "}
                 <span className="font-bold text-blue-600 dark:text-blue-400">
-                  {rfFreqMhz} MHz (λ = 12.2 cm)
+                  2,450 MHz (λ = 12.2 cm)
                 </span>
               </div>
               <div>
-                <span className="text-ink-600 dark:text-ink-400">RF Output Power:</span>{" "}
-                <span className="font-bold text-emerald-600 dark:text-emerald-400">
-                  {isOscillating ? `${rfPowerWatts} W CW` : "0 W (Cutoff)"}
-                </span>
-              </div>
-              <div>
-                <span className="text-ink-600 dark:text-ink-400">Hull Cutoff $B_c$:</span>{" "}
+                <span className="text-ink-600 dark:text-ink-400">RF Output:</span>{" "}
                 <span className="font-bold text-amber-600 dark:text-amber-400">
-                  {hullCutoffGauss} Gauss
+                  {rfPowerWatts} Watts CW
                 </span>
               </div>
               <div>
-                <span className="text-ink-600 dark:text-ink-400">Dielectric Heat Rate:</span>{" "}
+                <span className="text-ink-600 dark:text-ink-400">Hull Cutoff ($B_c$):</span>{" "}
+                <span className="font-bold text-emerald-600 dark:text-emerald-400">
+                  {hullCutoffGauss} G ({magneticFieldGauss} G Active)
+                </span>
+              </div>
+              <div>
+                <span className="text-ink-600 dark:text-ink-400">Heating Power:</span>{" "}
                 <span className="font-bold text-purple-600 dark:text-purple-400">
-                  {waterDielectricLossDensity} W/kg
+                  {waterDielectricLossDensity} W/dm³ Dielectric Loss
                 </span>
               </div>
             </div>
           </div>
 
-          <div className="bg-white/90 dark:bg-ink-900/90 backdrop-blur-md px-3 py-1.5 rounded-lg border border-parchment-300 dark:border-ink-700 text-[11px] font-sans text-ink-700 dark:text-ink-300 flex items-center gap-2">
-            <span
-              className={`w-2 h-2 rounded-full ${
-                isOscillating ? "bg-emerald-500 animate-pulse" : "bg-red-500"
-              }`}
-            />
-            <span>
-              {isOscillating
-                ? "Crossed-Field Cyclotron Resonance: Electron Spokes Trapped"
-                : "Sub-Critical Field: Electrons Anode-Colliding (No Resonance)"}
+          <div className="bg-white/90 dark:bg-ink-900/90 backdrop-blur-md px-3 py-1.5 rounded-lg border border-parchment-300 dark:border-ink-700 text-[11px] font-sans text-ink-700 dark:text-ink-300 flex items-center gap-2 max-w-full">
+            <Sparkles className="w-3.5 h-3.5 text-amber-500 animate-pulse shrink-0" />
+            <span className="truncate">
+              Percy L. Spencer (US 2,495,429) — Method of Treating Foodstuffs (1945)
             </span>
           </div>
         </div>
 
-        {/* Toggle Controls */}
+        {/* Top Right Tool Bar (Audio, Pins, Reset) */}
         <div className="absolute top-4 right-4 z-10 flex gap-2">
           <button
             type="button"
-            onClick={() => setShowSpokeWheel(!showSpokeWheel)}
-            className={`px-3 py-1.5 rounded-lg text-xs font-sans font-semibold border transition-all ${
-              showSpokeWheel
-                ? "bg-amber-500 text-white border-amber-600 shadow-sm"
-                : "bg-white/80 dark:bg-ink-900/80 text-ink-700 dark:text-ink-300 border-parchment-300 dark:border-ink-700"
-            }`}
+            onClick={() => setIsPlayingAudio(!isPlayingAudio)}
+            className="p-2.5 rounded-xl bg-white/90 dark:bg-ink-900/90 backdrop-blur-md border border-parchment-300 dark:border-ink-700 text-ink-700 dark:text-parchment-300 hover:bg-parchment-100 dark:hover:bg-ink-800 transition-all shadow-sm"
+            title={isPlayingAudio ? "Mute Magnetron Hum" : "Enable 120Hz Magnetron Hum"}
           >
-            Electron Spokes
+            {isPlayingAudio ? (
+              <Volume2 className="w-4 h-4 text-amber-600" />
+            ) : (
+              <VolumeX className="w-4 h-4" />
+            )}
           </button>
           <button
             type="button"
-            onClick={() => setShowWaterDipoles(!showWaterDipoles)}
-            className={`px-3 py-1.5 rounded-lg text-xs font-sans font-semibold border transition-all ${
-              showWaterDipoles
-                ? "bg-blue-600 text-white border-blue-700 shadow-sm"
-                : "bg-white/80 dark:bg-ink-900/80 text-ink-700 dark:text-ink-300 border-parchment-300 dark:border-ink-700"
+            onClick={() => setShowCalloutPins(!showCalloutPins)}
+            className={`p-2.5 rounded-xl backdrop-blur-md border transition-all shadow-sm ${
+              showCalloutPins
+                ? "bg-amber-600 text-white border-amber-700 shadow-md"
+                : "bg-white/90 dark:bg-ink-900/90 border-parchment-300 dark:border-ink-700 text-ink-700 dark:text-parchment-300 hover:bg-parchment-100"
             }`}
+            title="Toggle Historical Patent Numeral Pins"
           >
-            H₂O Dipoles
+            <Zap className="w-4 h-4" />
           </button>
+          <button
+            type="button"
+            onClick={() => applyCameraPreset("iso")}
+            className="p-2.5 rounded-xl bg-white/90 dark:bg-ink-900/90 backdrop-blur-md border border-parchment-300 dark:border-ink-700 text-ink-700 dark:text-parchment-300 hover:bg-parchment-100 dark:hover:bg-ink-800 transition-all shadow-sm"
+            title="Reset Orbit Camera"
+          >
+            <RotateCcw className="w-4 h-4" />
+          </button>
+        </div>
+
+        {/* Camera Views Bar */}
+        <div className="absolute bottom-4 left-4 z-10 flex flex-wrap gap-1.5 bg-white/85 dark:bg-ink-900/85 backdrop-blur-md p-1.5 rounded-xl border border-parchment-300 dark:border-ink-700 shadow-sm text-xs">
+          <span className="px-2 py-1 text-ink-500 font-sans flex items-center gap-1">
+            <Camera className="w-3.5 h-3.5" /> View:
+          </span>
+          {(
+            [
+              ["iso", "Isometric"],
+              ["cavity_resonator", "Cavity"],
+              ["electron_spokes", "Spokes"],
+              ["waveguide_launch", "Waveguide"],
+              ["top", "Interaction Space"],
+            ] as const
+          ).map(([id, label]) => (
+            <button
+              key={id}
+              type="button"
+              onClick={() => applyCameraPreset(id)}
+              className={`px-2.5 py-1 rounded-lg font-sans transition-all ${
+                activeCamera === id
+                  ? "bg-amber-700 dark:bg-amber-600 text-white font-semibold shadow-xs"
+                  : "text-ink-700 dark:text-parchment-300 hover:bg-parchment-200 dark:hover:bg-ink-800"
+              }`}
+            >
+              {label}
+            </button>
+          ))}
         </div>
       </div>
 
-      {/* Parameter Sliders Panel */}
-      <div className="p-4 sm:p-5 bg-parchment-100/80 dark:bg-ink-900/90 border-t border-parchment-300 dark:border-ink-800 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 text-xs font-sans">
-        {/* Anode Voltage */}
+      {/* Interactive Controls & Scenario Bar */}
+      <div className="p-4 sm:p-5 bg-parchment-100/90 dark:bg-ink-900/90 border-t border-parchment-300 dark:border-ink-800 space-y-4">
+        {/* Scenario Presets */}
         <div className="space-y-1.5">
-          <div className="flex justify-between font-medium text-ink-900 dark:text-parchment-100">
-            <span>Anode High Voltage ($V_a$):</span>
-            <span className="font-bold text-amber-700 dark:text-amber-400">
-              {anodeVoltageKv.toFixed(1)} kV
-            </span>
+          <div className="text-xs font-sans font-bold text-ink-700 dark:text-ink-300 uppercase tracking-wider flex items-center gap-1.5">
+            <Sparkles className="w-3.5 h-3.5 text-amber-600" /> Historical Microwave Presets:
           </div>
-          <input
-            type="range"
-            min="2.0"
-            max="6.0"
-            step="0.2"
-            value={anodeVoltageKv}
-            onChange={(e) => setAnodeVoltageKv(Number(e.target.value))}
-            className="w-full accent-amber-600 dark:accent-amber-400 cursor-pointer"
-          />
-          <span className="text-[10px] text-ink-500 dark:text-ink-400 block">
-            Radial electrostatic field acceleration $E_r$
-          </span>
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
+            {SCENARIOS.map((s) => (
+              <button
+                key={s.id}
+                type="button"
+                onClick={() => applyScenario(s)}
+                className="p-2.5 rounded-xl border border-parchment-300 dark:border-ink-700 bg-white/70 dark:bg-ink-950/70 hover:bg-parchment-50 dark:hover:bg-ink-800 text-left transition-all group"
+              >
+                <div className="text-xs font-serif font-bold text-ink-900 dark:text-parchment-100 group-hover:text-amber-700 dark:group-hover:text-amber-400">
+                  {s.name}
+                </div>
+                <div className="text-[10px] font-sans text-ink-500 dark:text-ink-400 line-clamp-2 mt-0.5">
+                  {s.desc}
+                </div>
+              </button>
+            ))}
+          </div>
         </div>
 
-        {/* Magnetic Field */}
-        <div className="space-y-1.5">
-          <div className="flex justify-between font-medium text-ink-900 dark:text-parchment-100">
-            <span>Axial Magnetic Field ($B_z$):</span>
-            <span className="font-bold text-blue-600 dark:text-blue-400">
-              {magneticFieldGauss} Gauss
-            </span>
-          </div>
-          <input
-            type="range"
-            min="800"
-            max="2200"
-            step="50"
-            value={magneticFieldGauss}
-            onChange={(e) => setMagneticFieldGauss(Number(e.target.value))}
-            className="w-full accent-blue-600 dark:accent-blue-400 cursor-pointer"
-          />
-          <span className="text-[10px] text-ink-500 dark:text-ink-400 block">
-            Alnico magnet flux curling electron trajectories
-          </span>
-        </div>
-
-        {/* RF Microwave Power */}
-        <div className="space-y-1.5">
-          <div className="flex justify-between font-medium text-ink-900 dark:text-parchment-100">
-            <span>Output Microwave Power:</span>
-            <span className="font-bold text-emerald-600 dark:text-emerald-400">
-              {rfPowerWatts} W
-            </span>
-          </div>
-          <input
-            type="range"
-            min="200"
-            max="1200"
-            step="50"
-            value={rfPowerWatts}
-            onChange={(e) => setRfPowerWatts(Number(e.target.value))}
-            className="w-full accent-emerald-600 dark:accent-emerald-400 cursor-pointer"
-          />
-          <span className="text-[10px] text-ink-500 dark:text-ink-400 block">
-            Energy delivered to waveguide aperture
-          </span>
-        </div>
-
-        {/* Dielectric Heating Efficiency */}
-        <div className="space-y-1.5">
-          <div className="flex justify-between font-medium text-ink-900 dark:text-parchment-100">
-            <span>Percy Spencer Popcorn Test:</span>
-            <span className="font-bold text-purple-600 dark:text-purple-400">
-              {isOscillating ? "Kernels Popping (100°C+)" : "Cold"}
-            </span>
-          </div>
-          <div className="w-full bg-parchment-300 dark:bg-ink-800 rounded-full h-3 overflow-hidden mt-2 border border-parchment-400 dark:border-ink-700">
-            <div
-              className="bg-gradient-to-r from-blue-500 via-amber-500 to-red-500 h-full transition-all duration-300"
-              style={{ width: `${isOscillating ? (rfPowerWatts / 1200) * 100 : 0}%` }}
+        {/* Sliders Grid */}
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 pt-1">
+          {/* Anode Voltage */}
+          <div className="space-y-1.5">
+            <div className="flex justify-between text-xs font-sans">
+              <span className="font-semibold text-ink-800 dark:text-parchment-200">
+                Anode Potential ($V_a$):
+              </span>
+              <span className="font-mono text-amber-700 dark:text-amber-400 font-bold">
+                {anodeVoltageKv.toFixed(1)} kV
+              </span>
+            </div>
+            <input
+              type="range"
+              min="2.0"
+              max="6.0"
+              step="0.2"
+              value={anodeVoltageKv}
+              onChange={(e) => setAnodeVoltageKv(Number(e.target.value))}
+              className="w-full accent-amber-600 cursor-pointer"
             />
+            <span className="text-[10px] text-ink-500 dark:text-ink-400 block">
+              High voltage DC acceleration potential
+            </span>
           </div>
-          <span className="text-[10px] text-ink-500 dark:text-ink-400 block">
-            Molecular rotation at 2.45 billion flips/sec
-          </span>
+
+          {/* Magnetic Field */}
+          <div className="space-y-1.5">
+            <div className="flex justify-between text-xs font-sans">
+              <span className="font-semibold text-ink-800 dark:text-parchment-200">
+                Axial Magnetic Field ($B$):
+              </span>
+              <span className="font-mono text-blue-600 dark:text-blue-400 font-bold">
+                {magneticFieldGauss} Gauss
+              </span>
+            </div>
+            <input
+              type="range"
+              min="800"
+              max="2200"
+              step="50"
+              value={magneticFieldGauss}
+              onChange={(e) => setMagneticFieldGauss(Number(e.target.value))}
+              className="w-full accent-blue-600 cursor-pointer"
+            />
+            <span className="text-[10px] text-ink-500 dark:text-ink-400 block">
+              Alnico magnet field strength
+            </span>
+          </div>
+
+          {/* Microwave Power */}
+          <div className="space-y-1.5">
+            <div className="flex justify-between text-xs font-sans">
+              <span className="font-semibold text-ink-800 dark:text-parchment-200">
+                Continuous RF Output:
+              </span>
+              <span className="font-mono text-emerald-600 dark:text-emerald-400 font-bold">
+                {rfPowerWatts} Watts
+              </span>
+            </div>
+            <input
+              type="range"
+              min="200"
+              max="1200"
+              step="50"
+              value={rfPowerWatts}
+              onChange={(e) => setRfPowerWatts(Number(e.target.value))}
+              className="w-full accent-emerald-600 cursor-pointer"
+            />
+            <span className="text-[10px] text-ink-500 dark:text-ink-400 block">
+              Continuous wave cooking radiation power
+            </span>
+          </div>
         </div>
       </div>
     </div>
