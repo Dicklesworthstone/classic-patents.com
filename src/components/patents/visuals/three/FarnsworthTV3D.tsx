@@ -1,10 +1,72 @@
 "use client";
 
-import { Radio, Tv } from "lucide-react";
+import {
+  Camera,
+  Layers,
+  Radio,
+  RotateCcw,
+  Sparkles,
+  Tv,
+  Volume2,
+  VolumeX,
+  Zap,
+} from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import * as THREE from "three";
+import { soundEngine } from "@/utils/soundEngine";
 import { createGlowPointTexture, createThreeStudioScene } from "./ThreeStudioScene";
 import { useLiveSimParams } from "./useLiveSimParams";
+
+type CameraPreset = "iso" | "photocathode" | "aperture" | "coils" | "top";
+
+interface ScenarioPreset {
+  id: string;
+  name: string;
+  desc: string;
+  voltageKv: number;
+  hFreqKhz: number;
+  vFreqHz: number;
+  lux: number;
+}
+
+const SCENARIOS: ScenarioPreset[] = [
+  {
+    id: "farnsworth_1927",
+    name: "1927 First All-Electronic Transmission",
+    desc: "Philo Farnsworth transmits the famous dollar sign ('$') at 202 Green St, San Francisco with 3.5 kV anode beam.",
+    voltageKv: 3.5,
+    hFreqKhz: 10.0,
+    vFreqHz: 60,
+    lux: 650,
+  },
+  {
+    id: "ntsc_525",
+    name: "Standard NTSC 525-Line Broadcast",
+    desc: "15.75 kHz horizontal sawtooth scan with 60 Hz vertical field rate scanning 30 interlaced frames per second.",
+    voltageKv: 4.5,
+    hFreqKhz: 15.75,
+    vFreqHz: 60,
+    lux: 500,
+  },
+  {
+    id: "high_intensity",
+    name: "Intense Carbon Arc Studio Illumination",
+    desc: "1500 Lux incandescent spotlight producing dense 67.5 µA photoelectron emission off the Cs-O photocathode.",
+    voltageKv: 5.0,
+    hFreqKhz: 15.75,
+    vFreqHz: 60,
+    lux: 1500,
+  },
+  {
+    id: "slow_scan",
+    name: "Slow-Motion Raster Breakdown",
+    desc: "5.0 kHz slow sweep showing Lorentz force F = q(v × B) shifting the entire electron image past the aperture hole.",
+    voltageKv: 2.5,
+    hFreqKhz: 5.0,
+    vFreqHz: 30,
+    lux: 400,
+  },
+];
 
 export function FarnsworthTV3D() {
   const containerRef = useRef<HTMLDivElement>(null);
@@ -15,14 +77,16 @@ export function FarnsworthTV3D() {
   const [verticalFreqHz, setVerticalFreqHz] = useState<number>(60); // 30 to 120 Hz
   const [lightIntensityLux, setLightIntensityLux] = useState<number>(500); // 100 to 2000 Lux
   const [showElectronBeam, setShowElectronBeam] = useState<boolean>(true);
-  const [_showMagneticFields, _setShowMagneticFields] = useState<boolean>(true);
+  const [showCalloutPins, setShowCalloutPins] = useState<boolean>(false);
+  const [activeCamera, setActiveCamera] = useState<CameraPreset>("iso");
+  const [isAudioMuted, setIsAudioMuted] = useState<boolean>(true);
 
   // Electron Optics Physics
   // Electron Velocity: v = sqrt(2 * e * V / m_e)
   const eCharge = 1.602e-19;
   const mElectron = 9.109e-31;
   const velocityMps = Math.sqrt((2 * eCharge * acceleratingVoltageKv * 1000) / mElectron);
-  const velocityFractionC = (velocityMps / 3e8) * 100;
+  const velocityFractionC = ((velocityMps / 3e8) * 100).toFixed(1);
   const photocathodeCurrentUa = (lightIntensityLux * 0.045).toFixed(1);
 
   const live = useLiveSimParams({
@@ -30,13 +94,65 @@ export function FarnsworthTV3D() {
     horizontalFreqKhz,
     verticalFreqHz,
     showElectronBeam,
+    isAudioMuted,
   });
+
+  const controlsRef = useRef<any>(null);
+  const cameraRef = useRef<THREE.PerspectiveCamera | null>(null);
+
+  const applyCameraPreset = (preset: CameraPreset) => {
+    setActiveCamera(preset);
+    const camera = cameraRef.current;
+    const controls = controlsRef.current;
+    if (!camera || !controls) return;
+
+    switch (preset) {
+      case "iso":
+        camera.position.set(13, 9, 15);
+        controls.target.set(0, 0, 0);
+        break;
+      case "photocathode":
+        camera.position.set(-5.8, 1.4, 2.5);
+        controls.target.set(-4.8, 0, 0);
+        break;
+      case "aperture":
+        camera.position.set(4.8, 1.5, 2.2);
+        controls.target.set(4.0, 0, 0);
+        break;
+      case "coils":
+        camera.position.set(0, 3.8, 3.2);
+        controls.target.set(0, 0, 0);
+        break;
+      case "top":
+        camera.position.set(0, 9.5, 0.1);
+        controls.target.set(0, 0, 0);
+        break;
+    }
+    controls.update();
+  };
+
+  const applyScenario = (s: ScenarioPreset) => {
+    setAcceleratingVoltageKv(s.voltageKv);
+    setHorizontalFreqKhz(s.hFreqKhz);
+    setVerticalFreqHz(s.vFreqHz);
+    setLightIntensityLux(s.lux);
+    if (!isAudioMuted) {
+      soundEngine.playSwitchClick();
+    }
+  };
+
+  const toggleSound = () => {
+    const isMuted = soundEngine.toggleMute();
+    setIsAudioMuted(isMuted);
+    if (!isMuted) {
+      soundEngine.playSwitchClick();
+    }
+  };
 
   useEffect(() => {
     const container = containerRef.current;
     if (!container) return;
 
-    // Create Studio Scene with High-Luminosity Studio Lighting
     const studio = createThreeStudioScene({
       container,
       cameraPos: [13, 9, 15],
@@ -44,6 +160,8 @@ export function FarnsworthTV3D() {
     });
 
     const { scene, camera, renderer, controls } = studio;
+    cameraRef.current = camera;
+    controlsRef.current = controls;
 
     // --- PBR MATERIALS ---
     const glassEnvelopeMat = new THREE.MeshPhysicalMaterial({
@@ -57,7 +175,7 @@ export function FarnsworthTV3D() {
     });
 
     const photocathodeMat = new THREE.MeshStandardMaterial({
-      color: 0x0284c7, // Cesium-oxide coated photoemissive silver disc
+      color: 0x0284c7,
       roughness: 0.35,
       metalness: 0.85,
       emissive: 0x0369a1,
@@ -107,15 +225,15 @@ export function FarnsworthTV3D() {
       tubeGroup.add(clampStandoff);
     });
 
-    // Blown Borosilicate Glass Image Dissector Envelope (Lathe Geometry)
+    // Blown Borosilicate Glass Image Dissector Envelope
     const tubePoints: THREE.Vector2[] = [];
     tubePoints.push(new THREE.Vector2(0, 0));
-    tubePoints.push(new THREE.Vector2(1.9, 0.2)); // Front curved optical window
+    tubePoints.push(new THREE.Vector2(1.9, 0.2));
     tubePoints.push(new THREE.Vector2(2.0, 0.8));
-    tubePoints.push(new THREE.Vector2(2.0, 9.8)); // Main cylindrical body
-    tubePoints.push(new THREE.Vector2(1.2, 10.4)); // Rear exhaust neck
+    tubePoints.push(new THREE.Vector2(2.0, 9.8));
+    tubePoints.push(new THREE.Vector2(1.2, 10.4));
     tubePoints.push(new THREE.Vector2(0.4, 10.9));
-    tubePoints.push(new THREE.Vector2(0.01, 11.2)); // Seal tip
+    tubePoints.push(new THREE.Vector2(0.01, 11.2));
 
     const tubeGeo = new THREE.LatheGeometry(tubePoints, 36);
     const glassTube = new THREE.Mesh(tubeGeo, glassEnvelopeMat);
@@ -123,7 +241,7 @@ export function FarnsworthTV3D() {
     glassTube.position.x = -5.4;
     tubeGroup.add(glassTube);
 
-    // Semi-Transparent Cesium-Oxide Photocathode Target Disc with Gold Rim
+    // Semi-Transparent Cesium-Oxide Photocathode Target Disc
     const photocathode = new THREE.Mesh(new THREE.CircleGeometry(1.7, 36), photocathodeMat);
     photocathode.rotation.y = Math.PI / 2;
     photocathode.position.x = -4.8;
@@ -137,7 +255,7 @@ export function FarnsworthTV3D() {
     goldRim.position.x = -4.8;
     tubeGroup.add(goldRim);
 
-    // Brass Optical Camera Lens Barrel (Projecting scene onto photocathode)
+    // Brass Optical Camera Lens Barrel
     const lensBarrel = new THREE.Mesh(new THREE.CylinderGeometry(1.1, 1.4, 2.2, 24), anodeBrassMat);
     lensBarrel.rotation.z = Math.PI / 2;
     lensBarrel.position.set(-6.8, 0, 0);
@@ -151,7 +269,7 @@ export function FarnsworthTV3D() {
     glassLens.position.set(-7.9, 0, 0);
     tubeGroup.add(glassLens);
 
-    // Anode Aperture Finger Target with Microscopic Scanning Hole (0.005" scale)
+    // Anode Aperture Finger Target
     const anodeFinger = new THREE.Mesh(
       new THREE.CylinderGeometry(0.22, 0.28, 1.8, 16),
       anodeBrassMat,
@@ -168,7 +286,7 @@ export function FarnsworthTV3D() {
     apertureTip.position.set(3.5, 0, 0);
     tubeGroup.add(apertureTip);
 
-    // Magnetic Focus Solenoid Outer Coil (Uniform longitudinal focusing field)
+    // Magnetic Focus Solenoid Outer Coil
     const focusCoil = new THREE.Mesh(
       new THREE.CylinderGeometry(2.15, 2.15, 7.2, 36, 1, true),
       new THREE.MeshStandardMaterial({
@@ -182,7 +300,7 @@ export function FarnsworthTV3D() {
     focusCoil.position.x = -0.2;
     tubeGroup.add(focusCoil);
 
-    // 2-Axis Orthogonal Saddle Deflection Yokes (Horizontal & Vertical Scanning)
+    // 2-Axis Orthogonal Saddle Deflection Yokes
     for (let d = 0; d < 4; d++) {
       const dAngle = (d * Math.PI) / 2;
       const saddleYoke = new THREE.Mesh(
@@ -209,7 +327,6 @@ export function FarnsworthTV3D() {
       beamPos[idx + 1] = 0;
       beamPos[idx + 2] = 0;
 
-      // Bright Blue-Violet Cathode Ray Glow
       beamColors[idx] = 0.3 + progress * 0.4;
       beamColors[idx + 1] = 0.8 + progress * 0.2;
       beamColors[idx + 2] = 1.0;
@@ -242,8 +359,6 @@ export function FarnsworthTV3D() {
       const elapsed = clock.getElapsedTime();
       const p = live.current;
 
-      // Electron Beam Deflection by Magnetic Lorentz Force: F = q(v x B)
-      // High-speed sawtooth deflection scaled with user scan frequencies
       const hFreq = p.horizontalFreqKhz * 0.25;
       const vFreq = p.verticalFreqHz * 0.015;
       const hSawtooth = ((elapsed * hFreq) % 1.0) * 2 - 1;
@@ -265,7 +380,6 @@ export function FarnsworthTV3D() {
           bPos[idx + 2] = (Math.random() - 0.5) * 0.06;
         }
 
-        // Particle propagation
         bPos[idx] += delta * beamVelocityScale;
         if (bPos[idx] > 4.8) {
           bPos[idx] = -4.5;
@@ -293,150 +407,201 @@ export function FarnsworthTV3D() {
         <div ref={containerRef} className="absolute inset-0 w-full h-full" />
 
         {/* Live HUD Telemetry Overlay */}
-        <div className="absolute top-4 left-4 z-10 flex flex-col gap-2 pointer-events-none">
+        <div className="absolute top-4 left-4 z-10 flex flex-col gap-2 pointer-events-none max-w-[calc(100%-8rem)] sm:max-w-md">
           <div className="bg-white/90 dark:bg-ink-900/90 backdrop-blur-md px-3.5 py-2.5 rounded-xl border border-parchment-300 dark:border-ink-700 shadow-sm">
             <div className="text-[11px] font-sans text-amber-700 dark:text-amber-400 font-bold uppercase tracking-wider flex items-center gap-1.5">
               <Tv className="w-3.5 h-3.5 text-blue-500 animate-pulse" />
-              Image Dissector Telemetry
+              Electron Dissector Optics Telemetry
             </div>
-            <div className="grid grid-cols-2 gap-x-4 gap-y-1 mt-1 text-xs font-sans">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-4 gap-y-1 mt-1 text-xs font-sans">
               <div>
-                <span className="text-ink-600 dark:text-ink-400">Electron Velocity:</span>{" "}
+                <span className="text-ink-600 dark:text-ink-400">Beam Velocity:</span>{" "}
                 <span className="font-bold text-blue-600 dark:text-blue-400">
-                  {(velocityMps / 1e6).toFixed(1)} × 10⁶ m/s ({velocityFractionC.toFixed(2)}% $c$)
+                  {(velocityMps / 1e6).toFixed(1)} × 10⁶ m/s ({velocityFractionC}% c)
                 </span>
               </div>
               <div>
-                <span className="text-ink-600 dark:text-ink-400">Photocathode Current:</span>{" "}
+                <span className="text-ink-600 dark:text-ink-400">Photo-Current:</span>{" "}
                 <span className="font-bold text-emerald-600 dark:text-emerald-400">
                   {photocathodeCurrentUa} µA
                 </span>
               </div>
               <div>
-                <span className="text-ink-600 dark:text-ink-400">Horizontal Scan Rate:</span>{" "}
+                <span className="text-ink-600 dark:text-ink-400">Horizontal Sweep:</span>{" "}
                 <span className="font-bold text-amber-600 dark:text-amber-400">
-                  {horizontalFreqKhz} kHz
+                  {horizontalFreqKhz.toFixed(2)} kHz
                 </span>
               </div>
               <div>
-                <span className="text-ink-600 dark:text-ink-400">Frame Refresh ($f_v$):</span>{" "}
+                <span className="text-ink-600 dark:text-ink-400">Vertical Field:</span>{" "}
                 <span className="font-bold text-purple-600 dark:text-purple-400">
-                  {verticalFreqHz} Hz Interlaced
+                  {verticalFreqHz} Hz
                 </span>
               </div>
             </div>
           </div>
 
-          <div className="bg-white/90 dark:bg-ink-900/90 backdrop-blur-md px-3 py-1.5 rounded-lg border border-parchment-300 dark:border-ink-700 text-[11px] font-sans text-ink-700 dark:text-ink-300 flex items-center gap-2">
-            <Radio className="w-3.5 h-3.5 text-emerald-500 animate-pulse" />
-            <span>Pure Electronic Video Scanning (No Mechanical Nipkow Disk)</span>
+          <div className="bg-white/90 dark:bg-ink-900/90 backdrop-blur-md px-3 py-1.5 rounded-lg border border-parchment-300 dark:border-ink-700 text-[11px] font-sans text-ink-700 dark:text-ink-300 flex items-center gap-2 max-w-full">
+            <Sparkles className="w-3.5 h-3.5 text-emerald-500 animate-pulse shrink-0" />
+            <span className="truncate">
+              Philo T. Farnsworth (US 1,773,980) — Television System (1927)
+            </span>
           </div>
         </div>
 
-        {/* Toggle Controls */}
+        {/* Top Right Tool Bar (Audio, Pins, Reset) */}
         <div className="absolute top-4 right-4 z-10 flex gap-2">
           <button
             type="button"
-            onClick={() => setShowElectronBeam(!showElectronBeam)}
-            className={`px-3 py-1.5 rounded-lg text-xs font-sans font-semibold border transition-all ${
-              showElectronBeam
-                ? "bg-blue-600 text-white border-blue-700 shadow-sm"
-                : "bg-white/80 dark:bg-ink-900/80 text-ink-700 dark:text-ink-300 border-parchment-300 dark:border-ink-700"
-            }`}
+            onClick={toggleSound}
+            className="p-2.5 rounded-xl bg-white/90 dark:bg-ink-900/90 backdrop-blur-md border border-parchment-300 dark:border-ink-700 text-ink-700 dark:text-parchment-300 hover:bg-parchment-100 dark:hover:bg-ink-800 transition-all shadow-sm"
+            title={isAudioMuted ? "Enable Sound Synthesis" : "Mute Sound"}
           >
-            Electron Beam
+            {isAudioMuted ? <VolumeX className="w-4 h-4" /> : <Volume2 className="w-4 h-4 text-amber-600" />}
           </button>
+          <button
+            type="button"
+            onClick={() => setShowCalloutPins(!showCalloutPins)}
+            className={`p-2.5 rounded-xl backdrop-blur-md border transition-all shadow-sm ${
+              showCalloutPins
+                ? "bg-amber-600 text-white border-amber-700 shadow-md"
+                : "bg-white/90 dark:bg-ink-900/90 border-parchment-300 dark:border-ink-700 text-ink-700 dark:text-parchment-300 hover:bg-parchment-100"
+            }`}
+            title="Toggle Historical Patent Numeral Pins"
+          >
+            <Zap className="w-4 h-4" />
+          </button>
+          <button
+            type="button"
+            onClick={() => applyCameraPreset("iso")}
+            className="p-2.5 rounded-xl bg-white/90 dark:bg-ink-900/90 backdrop-blur-md border border-parchment-300 dark:border-ink-700 text-ink-700 dark:text-parchment-300 hover:bg-parchment-100 dark:hover:bg-ink-800 transition-all shadow-sm"
+            title="Reset Orbit Camera"
+          >
+            <RotateCcw className="w-4 h-4" />
+          </button>
+        </div>
+
+        {/* Camera Views Bar */}
+        <div className="absolute bottom-4 left-4 z-10 flex flex-wrap gap-1.5 bg-white/85 dark:bg-ink-900/85 backdrop-blur-md p-1.5 rounded-xl border border-parchment-300 dark:border-ink-700 shadow-sm text-xs">
+          <span className="px-2 py-1 text-ink-500 font-sans flex items-center gap-1">
+            <Camera className="w-3.5 h-3.5" /> View:
+          </span>
+          {(
+            [
+              ["iso", "Isometric"],
+              ["photocathode", "Photocathode"],
+              ["aperture", "Anode Aperture"],
+              ["coils", "Deflection Coils"],
+              ["top", "Optical Axis"],
+            ] as const
+          ).map(([id, label]) => (
+            <button
+              key={id}
+              type="button"
+              onClick={() => applyCameraPreset(id)}
+              className={`px-2.5 py-1 rounded-lg font-sans transition-all ${
+                activeCamera === id
+                  ? "bg-amber-700 dark:bg-amber-600 text-white font-semibold shadow-xs"
+                  : "text-ink-700 dark:text-parchment-300 hover:bg-parchment-200 dark:hover:bg-ink-800"
+              }`}
+            >
+              {label}
+            </button>
+          ))}
         </div>
       </div>
 
-      {/* Parameter Sliders Panel */}
-      <div className="p-4 sm:p-5 bg-parchment-100/80 dark:bg-ink-900/90 border-t border-parchment-300 dark:border-ink-800 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 text-xs font-sans">
-        {/* Accelerating Voltage */}
+      {/* Interactive Controls & Scenario Bar */}
+      <div className="p-4 sm:p-5 bg-parchment-100/90 dark:bg-ink-900/90 border-t border-parchment-300 dark:border-ink-800 space-y-4">
+        {/* Scenario Presets */}
         <div className="space-y-1.5">
-          <div className="flex justify-between font-medium text-ink-900 dark:text-parchment-100">
-            <span>Anode Potential ($V_a$):</span>
-            <span className="font-bold text-amber-700 dark:text-amber-400">
-              {acceleratingVoltageKv.toFixed(1)} kV
-            </span>
+          <div className="text-xs font-sans font-bold text-ink-700 dark:text-ink-300 uppercase tracking-wider flex items-center gap-1.5">
+            <Sparkles className="w-3.5 h-3.5 text-amber-600" /> Historical Television Presets:
           </div>
-          <input
-            type="range"
-            min="1.0"
-            max="6.0"
-            step="0.2"
-            value={acceleratingVoltageKv}
-            onChange={(e) => setAcceleratingVoltageKv(Number(e.target.value))}
-            className="w-full accent-amber-600 dark:accent-amber-400 cursor-pointer"
-          />
-          <span className="text-[10px] text-ink-500 dark:text-ink-400 block">
-            Accelerates photoelectrons to optical aperture
-          </span>
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
+            {SCENARIOS.map((s) => (
+              <button
+                key={s.id}
+                type="button"
+                onClick={() => applyScenario(s)}
+                className="p-2.5 rounded-xl border border-parchment-300 dark:border-ink-700 bg-white/70 dark:bg-ink-950/70 hover:bg-parchment-50 dark:hover:bg-ink-800 text-left transition-all group"
+              >
+                <div className="text-xs font-serif font-bold text-ink-900 dark:text-parchment-100 group-hover:text-amber-700 dark:group-hover:text-amber-400">
+                  {s.name}
+                </div>
+                <div className="text-[10px] font-sans text-ink-500 dark:text-ink-400 line-clamp-2 mt-0.5">
+                  {s.desc}
+                </div>
+              </button>
+            ))}
+          </div>
         </div>
 
-        {/* Horizontal Scan Rate */}
-        <div className="space-y-1.5">
-          <div className="flex justify-between font-medium text-ink-900 dark:text-parchment-100">
-            <span>Horizontal Deflection ($f_h$):</span>
-            <span className="font-bold text-blue-600 dark:text-blue-400">
-              {horizontalFreqKhz} kHz
+        {/* Sliders Grid */}
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 pt-1">
+          {/* Anode Voltage */}
+          <div className="space-y-1.5">
+            <div className="flex justify-between text-xs font-sans">
+              <span className="font-semibold text-ink-800 dark:text-parchment-200">
+                Anode Accelerating Voltage:
+              </span>
+              <span className="font-mono text-amber-700 dark:text-amber-400 font-bold">
+                {acceleratingVoltageKv.toFixed(1)} kV
+              </span>
+            </div>
+            <input
+              type="range"
+              min="1.0"
+              max="6.0"
+              step="0.2"
+              value={acceleratingVoltageKv}
+              onChange={(e) => setAcceleratingVoltageKv(Number(e.target.value))}
+              className="w-full accent-amber-600 cursor-pointer"
+            />
+            <span className="text-[10px] text-ink-500 dark:text-ink-400 block">
+              Longitudinal electrostatic acceleration
             </span>
           </div>
-          <input
-            type="range"
-            min="5.0"
-            max="30.0"
-            step="1.0"
-            value={horizontalFreqKhz}
-            onChange={(e) => setHorizontalFreqKhz(Number(e.target.value))}
-            className="w-full accent-blue-600 dark:accent-blue-400 cursor-pointer"
-          />
-          <span className="text-[10px] text-ink-500 dark:text-ink-400 block">
-            Deflects entire electron image across aperture
-          </span>
-        </div>
 
-        {/* Vertical Refresh Rate */}
-        <div className="space-y-1.5">
-          <div className="flex justify-between font-medium text-ink-900 dark:text-parchment-100">
-            <span>Vertical Frame Rate ($f_v$):</span>
-            <span className="font-bold text-emerald-600 dark:text-emerald-400">
-              {verticalFreqHz} Hz
+          {/* Horizontal Frequency */}
+          <div className="space-y-1.5">
+            <div className="flex justify-between text-xs font-sans">
+              <span className="font-semibold text-ink-800 dark:text-parchment-200">
+                Horizontal Line Rate:
+              </span>
+              <span className="font-mono text-blue-600 dark:text-blue-400 font-bold">
+                {horizontalFreqKhz.toFixed(2)} kHz
+              </span>
+            </div>
+            <input
+              type="range"
+              min="5.0"
+              max="30.0"
+              step="0.5"
+              value={horizontalFreqKhz}
+              onChange={(e) => setHorizontalFreqKhz(Number(e.target.value))}
+              className="w-full accent-blue-600 cursor-pointer"
+            />
+            <span className="text-[10px] text-ink-500 dark:text-ink-400 block">
+              Sawtooth current in magnetic deflection yoke
             </span>
           </div>
-          <input
-            type="range"
-            min="30"
-            max="120"
-            step="10"
-            value={verticalFreqHz}
-            onChange={(e) => setVerticalFreqHz(Number(e.target.value))}
-            className="w-full accent-emerald-600 dark:accent-emerald-400 cursor-pointer"
-          />
-          <span className="text-[10px] text-ink-500 dark:text-ink-400 block">
-            Overcomes visual persistence threshold (flicker-free)
-          </span>
-        </div>
 
-        {/* Incident Illumination */}
-        <div className="space-y-1.5">
-          <div className="flex justify-between font-medium text-ink-900 dark:text-parchment-100">
-            <span>Subject Illumination:</span>
-            <span className="font-bold text-purple-600 dark:text-purple-400">
-              {lightIntensityLux} Lux
-            </span>
+          {/* Beam Render Toggle */}
+          <div className="flex flex-col justify-end space-y-1.5">
+            <button
+              type="button"
+              onClick={() => setShowElectronBeam(!showElectronBeam)}
+              className={`w-full py-3 px-4 rounded-xl font-sans font-bold text-sm transition-all shadow-sm flex items-center justify-center gap-2 ${
+                showElectronBeam
+                  ? "bg-emerald-600 hover:bg-emerald-700 text-white shadow-md"
+                  : "bg-amber-600 hover:bg-amber-700 text-white shadow-md"
+              }`}
+            >
+              <Radio className="w-4 h-4" />
+              {showElectronBeam ? "Electron Ray VISIBLE" : "Electron Ray HIDDEN"}
+            </button>
           </div>
-          <input
-            type="range"
-            min="100"
-            max="1500"
-            step="50"
-            value={lightIntensityLux}
-            onChange={(e) => setLightIntensityLux(Number(e.target.value))}
-            className="w-full accent-purple-600 dark:accent-purple-400 cursor-pointer"
-          />
-          <span className="text-[10px] text-ink-500 dark:text-ink-400 block">
-            Einstein photoelectric photoemission rate
-          </span>
         </div>
       </div>
     </div>

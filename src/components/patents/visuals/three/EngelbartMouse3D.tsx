@@ -1,41 +1,154 @@
 "use client";
 
-import { Mouse, Sparkles } from "lucide-react";
+import { Camera, Eye, Mouse, RotateCcw, Sparkles, Volume2, VolumeX, Zap } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import * as THREE from "three";
+import { soundEngine } from "@/utils/soundEngine";
 import { createThreeStudioScene } from "./ThreeStudioScene";
 import { useLiveSimParams } from "./useLiveSimParams";
+
+type CameraPreset = "iso" | "wheels" | "xray" | "top" | "crt";
+
+interface ScenarioPreset {
+  id: string;
+  name: string;
+  desc: string;
+  speed: number;
+  trajectory: "figure8" | "circle" | "horizontal" | "vertical";
+  cpi: number;
+}
+
+const SCENARIOS: ScenarioPreset[] = [
+  {
+    id: "horizontal",
+    name: "Pure X-Axis Tracking",
+    desc: "Horizontal motion spins X-wheel 100%; Y-wheel skids laterally on its knife edge without spinning.",
+    speed: 140,
+    trajectory: "horizontal",
+    cpi: 200,
+  },
+  {
+    id: "vertical",
+    name: "Pure Y-Axis Tracking",
+    desc: "Vertical motion spins Y-wheel 100%; X-wheel skids laterally on its knife edge without spinning.",
+    speed: 140,
+    trajectory: "vertical",
+    cpi: 200,
+  },
+  {
+    id: "figure8",
+    name: "1968 'Mother of All Demos'",
+    desc: "Complex 2D curve motion simultaneously driving dual independent potentiometers into oN-Line System (NLS).",
+    speed: 160,
+    trajectory: "figure8",
+    cpi: 200,
+  },
+  {
+    id: "highres",
+    name: "Precision Coordinate Sampling",
+    desc: "High-resolution 400 CPI encoding demonstrating fine microsecond potentiometer voltage gradients.",
+    speed: 80,
+    trajectory: "circle",
+    cpi: 400,
+  },
+];
 
 export function EngelbartMouse3D() {
   const containerRef = useRef<HTMLDivElement>(null);
 
-  // Mouse Kinematics State Controls
-  const [displacementSpeedMmSec, setDisplacementSpeedMmSec] = useState<number>(120); // 20 to 300 mm/s
-  const [mouseTrajectory, setMouseTrajectory] = useState<"diagonal" | "circle" | "figure8">(
-    "figure8",
-  );
-  const [cpiResolution, setCpiResolution] = useState<number>(200); // 50 to 800 CPI
+  // Mouse Kinematics & Rendering State
+  const [displacementSpeedMmSec, setDisplacementSpeedMmSec] = useState<number>(140);
+  const [mouseTrajectory, setMouseTrajectory] = useState<
+    "figure8" | "circle" | "horizontal" | "vertical"
+  >("figure8");
+  const [cpiResolution, setCpiResolution] = useState<number>(200);
   const [isClicking, setIsClicking] = useState<boolean>(false);
-  const [_isHovering, _setIsHovering] = useState<boolean>(true);
+  const [isXRayMode, setIsXRayMode] = useState<boolean>(false);
+  const [showCalloutPins, setShowCalloutPins] = useState<boolean>(false);
+  const [activeCamera, setActiveCamera] = useState<CameraPreset>("iso");
+  const [isAudioMuted, setIsAudioMuted] = useState<boolean>(true);
 
-  // Kinematics & Coordinate Calculations
-  const cursorCoordinates = {
-    x: Math.round(1024 / 2 + Math.sin(Date.now() * 0.002) * 240),
-    y: Math.round(768 / 2 + Math.cos(Date.now() * 0.003) * 180),
-  };
+  // Live Position & Pulse Telemetry
+  const [currentCoords, setCurrentCoords] = useState<{ x: number; y: number }>({
+    x: 512,
+    y: 384,
+  });
+
   const pulseRateHz = Math.round((displacementSpeedMmSec / 25.4) * cpiResolution);
 
   const live = useLiveSimParams({
     displacementSpeedMmSec,
     mouseTrajectory,
     isClicking,
+    isXRayMode,
+    cpiResolution,
   });
+
+  const controlsRef = useRef<any>(null);
+  const cameraRef = useRef<THREE.PerspectiveCamera | null>(null);
+
+  // Camera presets dispatcher
+  const applyCameraPreset = (preset: CameraPreset) => {
+    setActiveCamera(preset);
+    const camera = cameraRef.current;
+    const controls = controlsRef.current;
+    if (!camera || !controls) return;
+
+    switch (preset) {
+      case "iso":
+        camera.position.set(11, 9, 13);
+        controls.target.set(0, 0, 0);
+        break;
+      case "wheels":
+        camera.position.set(0, -6, 9);
+        controls.target.set(0, 0, 0);
+        break;
+      case "xray":
+        setIsXRayMode(true);
+        camera.position.set(4, 7, 9);
+        controls.target.set(0, 1.2, 0);
+        break;
+      case "top":
+        camera.position.set(0, 16, 0.1);
+        controls.target.set(0, 0, 0);
+        break;
+      case "crt":
+        camera.position.set(-5, 4, 6);
+        controls.target.set(-1.5, 1.5, -1);
+        break;
+    }
+    controls.update();
+  };
+
+  const applyScenario = (s: ScenarioPreset) => {
+    setDisplacementSpeedMmSec(s.speed);
+    setMouseTrajectory(s.trajectory);
+    setCpiResolution(s.cpi);
+    if (!isAudioMuted) {
+      soundEngine.playMicroswitchClick();
+    }
+  };
+
+  const handleManualClick = () => {
+    setIsClicking(true);
+    if (!isAudioMuted) {
+      soundEngine.playMicroswitchClick();
+    }
+    setTimeout(() => setIsClicking(false), 160);
+  };
+
+  const toggleSound = () => {
+    const isMuted = soundEngine.toggleMute();
+    setIsAudioMuted(isMuted);
+    if (!isMuted) {
+      soundEngine.playMicroswitchClick();
+    }
+  };
 
   useEffect(() => {
     const container = containerRef.current;
     if (!container) return;
 
-    // Create Studio Scene with High-Luminosity Studio Lighting
     const studio = createThreeStudioScene({
       container,
       cameraPos: [11, 9, 13],
@@ -43,37 +156,66 @@ export function EngelbartMouse3D() {
     });
 
     const { scene, camera, renderer, controls } = studio;
+    cameraRef.current = camera;
+    controlsRef.current = controls;
 
     // --- PBR MATERIALS ---
     const woodHousingMat = new THREE.MeshStandardMaterial({
-      color: 0x9a3412, // Carved walnut wood mouse housing
+      color: 0x9a3412,
       roughness: 0.35,
       metalness: 0.05,
     });
 
+    const woodHousingXRayMat = new THREE.MeshPhysicalMaterial({
+      color: 0x9a3412,
+      transmission: 0.82,
+      opacity: 0.35,
+      transparent: true,
+      roughness: 0.15,
+      ior: 1.4,
+    });
+
     const brassWheelMat = new THREE.MeshStandardMaterial({
-      color: 0xd97706, // Polished brass encoder wheels
+      color: 0xd97706,
       roughness: 0.18,
       metalness: 0.92,
     });
 
     const redButtonMat = new THREE.MeshStandardMaterial({
-      color: 0xdc2626, // Red microswitch click button
+      color: 0xdc2626,
       roughness: 0.25,
       metalness: 0.1,
     });
 
-    const deskMat = new THREE.MeshStandardMaterial({
-      color: 0x475569, // Formica computer desk tabletop
-      roughness: 0.4,
-      metalness: 0.2,
+    const potentiometerMat = new THREE.MeshStandardMaterial({
+      color: 0x334155,
+      roughness: 0.3,
+      metalness: 0.85,
     });
+
+    const wiperCopperMat = new THREE.MeshStandardMaterial({
+      color: 0xb45309,
+      roughness: 0.15,
+      metalness: 0.95,
+    });
+
+    const deskMat = new THREE.MeshStandardMaterial({
+      color: 0x64748b,
+      roughness: 0.6,
+      metalness: 0.1,
+    });
+
+    // Formica Desk Surface
+    const desk = new THREE.Mesh(new THREE.BoxGeometry(26, 0.4, 20), deskMat);
+    desk.position.y = -0.22;
+    desk.receiveShadow = true;
+    scene.add(desk);
 
     // --- 3D ENGELBART MOUSE ASSEMBLY ---
     const mouseGroup = new THREE.Group();
     scene.add(mouseGroup);
 
-    // Carved Walnut Wooden Block Casing (Hand-milled 1964 SRI prototype)
+    // Carved Walnut Wooden Block Casing
     const bodyGeo = new THREE.BoxGeometry(4.4, 2.3, 6.0);
     const body = new THREE.Mesh(bodyGeo, woodHousingMat);
     body.position.y = 1.25;
@@ -81,7 +223,6 @@ export function EngelbartMouse3D() {
     body.receiveShadow = true;
     mouseGroup.add(body);
 
-    // Bottom Sheet Metal Baseplate with Wheel Cutouts
     const basePlate = new THREE.Mesh(
       new THREE.BoxGeometry(4.38, 0.12, 5.98),
       new THREE.MeshStandardMaterial({ color: 0x94a3b8, metalness: 0.85, roughness: 0.3 }),
@@ -90,7 +231,6 @@ export function EngelbartMouse3D() {
     basePlate.receiveShadow = true;
     mouseGroup.add(basePlate);
 
-    // Red Bakelite Click Button in Recessed Bezel
     const buttonBezel = new THREE.Mesh(
       new THREE.CylinderGeometry(0.48, 0.52, 0.15, 24),
       new THREE.MeshStandardMaterial({ color: 0x334155, metalness: 0.7 }),
@@ -106,6 +246,17 @@ export function EngelbartMouse3D() {
     redButton.castShadow = true;
     mouseGroup.add(redButton);
 
+    // Internal Microswitch Leaf Spring & Electrical Contacts
+    const microswitchGroup = new THREE.Group();
+    microswitchGroup.position.set(1.3, 1.8, -2.0);
+    const switchBox = new THREE.Mesh(new THREE.BoxGeometry(0.7, 0.5, 0.9), potentiometerMat);
+    microswitchGroup.add(switchBox);
+
+    const switchLeaf = new THREE.Mesh(new THREE.BoxGeometry(0.3, 0.04, 0.7), wiperCopperMat);
+    switchLeaf.position.set(0, 0.28, 0);
+    microswitchGroup.add(switchLeaf);
+    mouseGroup.add(microswitchGroup);
+
     // Molded Rubber Strain Relief Boot at Rear
     const bootGeo = new THREE.ConeGeometry(0.32, 0.8, 16);
     const boot = new THREE.Mesh(
@@ -116,7 +267,6 @@ export function EngelbartMouse3D() {
     boot.position.set(0, 0.6, 3.2);
     mouseGroup.add(boot);
 
-    // Trailing Multi-Conductor Cord (The "Mouse" tail)
     const cordCurve = new THREE.CatmullRomCurve3([
       new THREE.Vector3(0, 0.6, 3.6),
       new THREE.Vector3(0.6, 0.3, 5.0),
@@ -131,8 +281,8 @@ export function EngelbartMouse3D() {
     cord.castShadow = true;
     mouseGroup.add(cord);
 
-    // --- ORTHOGONAL KNIFE-EDGE ENCODER WHEELS (90 DEGREES PERPENDICULAR) ---
-    // Wheel 1: X-Displacement Wheel (Rolls for horizontal motion, skids for vertical)
+    // --- ORTHOGONAL KNIFE-EDGE ENCODER WHEELS & POTENTIOMETERS ---
+    // Wheel 1: X-Displacement Wheel (Rolls for X-motion, skids for Y-motion)
     const xWheelGroup = new THREE.Group();
     xWheelGroup.position.set(-1.1, 0.25, -0.6);
 
@@ -144,19 +294,31 @@ export function EngelbartMouse3D() {
     xWheelRim.castShadow = true;
     xWheelGroup.add(xWheelRim);
 
-    // Potentiometer shaft and wiper
-    const xPotShaft = new THREE.Mesh(
-      new THREE.CylinderGeometry(0.12, 0.12, 1.2, 16),
-      new THREE.MeshStandardMaterial({ color: 0x64748b, metalness: 0.9 }),
+    const xAxle = new THREE.Mesh(
+      new THREE.CylinderGeometry(0.08, 0.08, 1.8, 16),
+      new THREE.MeshStandardMaterial({ color: 0x475569, metalness: 0.9 }),
     );
-    xPotShaft.rotation.z = Math.PI / 2;
-    xPotShaft.position.x = 0.5;
-    xWheelGroup.add(xPotShaft);
+    xAxle.rotation.z = Math.PI / 2;
+    xWheelGroup.add(xAxle);
+
+    // X-Potentiometer Internal Wiper & Carbon Resistive Track
+    const xPotBody = new THREE.Mesh(
+      new THREE.CylinderGeometry(0.6, 0.6, 0.5, 24),
+      potentiometerMat,
+    );
+    xPotBody.rotation.z = Math.PI / 2;
+    xPotBody.position.x = 0.8;
+    xWheelGroup.add(xPotBody);
+
+    const xPotWiper = new THREE.Mesh(new THREE.BoxGeometry(0.08, 0.45, 0.12), wiperCopperMat);
+    xPotWiper.position.set(0.6, 0.2, 0);
+    xWheelGroup.add(xPotWiper);
+
     mouseGroup.add(xWheelGroup);
 
-    // Wheel 2: Y-Displacement Wheel (Perpendicular, rolls for vertical motion)
+    // Wheel 2: Y-Displacement Wheel (Rolls for Y-motion, skids for X-motion)
     const yWheelGroup = new THREE.Group();
-    yWheelGroup.position.set(1.1, 0.25, 1.2);
+    yWheelGroup.position.set(0.7, 0.25, 1.2);
 
     const yWheelRim = new THREE.Mesh(
       new THREE.CylinderGeometry(0.85, 0.85, 0.15, 32),
@@ -166,65 +328,90 @@ export function EngelbartMouse3D() {
     yWheelRim.castShadow = true;
     yWheelGroup.add(yWheelRim);
 
-    const yPotShaft = new THREE.Mesh(
-      new THREE.CylinderGeometry(0.12, 0.12, 1.2, 16),
-      new THREE.MeshStandardMaterial({ color: 0x64748b, metalness: 0.9 }),
+    const yAxle = new THREE.Mesh(
+      new THREE.CylinderGeometry(0.08, 0.08, 1.8, 16),
+      new THREE.MeshStandardMaterial({ color: 0x475569, metalness: 0.9 }),
     );
-    yPotShaft.rotation.x = Math.PI / 2;
-    yPotShaft.position.z = 0.5;
-    yWheelGroup.add(yPotShaft);
+    yAxle.rotation.x = Math.PI / 2;
+    yWheelGroup.add(yAxle);
+
+    // Y-Potentiometer Internal Wiper & Carbon Resistive Track
+    const yPotBody = new THREE.Mesh(
+      new THREE.CylinderGeometry(0.6, 0.6, 0.5, 24),
+      potentiometerMat,
+    );
+    yPotBody.rotation.x = Math.PI / 2;
+    yPotBody.position.z = -0.8;
+    yWheelGroup.add(yPotBody);
+
+    const yPotWiper = new THREE.Mesh(new THREE.BoxGeometry(0.12, 0.45, 0.08), wiperCopperMat);
+    yPotWiper.position.set(0, 0.2, -0.6);
+    yWheelGroup.add(yPotWiper);
+
     mouseGroup.add(yWheelGroup);
 
-    // Desktop Work Surface with Grid Inlay
-    const desk = new THREE.Mesh(new THREE.BoxGeometry(24, 0.4, 24), deskMat);
-    desk.position.y = -0.2;
-    desk.receiveShadow = true;
-    scene.add(desk);
-
-    // --- RENDER LOOP & 2D TRAJECTORY DYNAMICS ---
+    // --- RENDER LOOP & REAL-TIME KINEMATICS ---
     let reqId: number;
     const clock = new THREE.Clock();
+    let prevX = 0;
+    let prevZ = 0;
 
     const animate = () => {
       reqId = requestAnimationFrame(animate);
-      const _delta = clock.getDelta();
+      const delta = clock.getDelta();
       const elapsed = clock.getElapsedTime();
       const p = live.current;
 
-      // Trajectory paths
-      let targetX = 0;
-      let targetZ = 0;
-      const speed = p.displacementSpeedMmSec * 0.015;
+      // X-Ray Material Toggle
+      body.material = p.isXRayMode ? woodHousingXRayMat : woodHousingMat;
 
-      if (p.mouseTrajectory === "circle") {
-        targetX = Math.cos(elapsed * speed) * 3.5;
-        targetZ = Math.sin(elapsed * speed) * 3.5;
-      } else if (p.mouseTrajectory === "diagonal") {
-        targetX = Math.sin(elapsed * speed) * 4.0;
-        targetZ = Math.sin(elapsed * speed) * 4.0;
+      // Trajectory Computation
+      const speed = p.displacementSpeedMmSec * 0.018;
+      let posX = 0;
+      let posZ = 0;
+
+      if (p.mouseTrajectory === "horizontal") {
+        posX = Math.sin(elapsed * speed) * 3.5;
+        posZ = 0;
+      } else if (p.mouseTrajectory === "vertical") {
+        posX = 0;
+        posZ = Math.sin(elapsed * speed) * 3.5;
+      } else if (p.mouseTrajectory === "circle") {
+        posX = Math.cos(elapsed * speed) * 3.0;
+        posZ = Math.sin(elapsed * speed) * 3.0;
       } else {
-        // Figure 8 Lissajous curve
-        targetX = Math.sin(elapsed * speed) * 4.0;
-        targetZ = Math.sin(elapsed * speed * 2.0) * 2.2;
+        // Figure 8
+        posX = Math.sin(elapsed * speed) * 3.2;
+        posZ = Math.sin(elapsed * speed * 2.0) * 1.8;
       }
 
-      // Wheel angular velocity decomposition
-      const dX = targetX - mouseGroup.position.x;
-      const dZ = targetZ - mouseGroup.position.z;
+      mouseGroup.position.set(posX, 0, posZ);
 
-      mouseGroup.position.x = targetX;
-      mouseGroup.position.z = targetZ;
+      // Independent Orthogonal Wheel & Potentiometer Rotations
+      const dX = posX - prevX;
+      const dZ = posZ - prevZ;
+      prevX = posX;
+      prevZ = posZ;
 
-      // X-Wheel rotates with dX, Y-Wheel rotates with dZ
-      xWheelRim.rotation.x += dX * 4.0;
-      yWheelRim.rotation.z += dZ * 4.0;
+      const wheelRadius = 0.85;
+      if (delta > 0) {
+        // X-wheel rotates on X-displacement
+        xWheelRim.rotation.x -= dX / wheelRadius;
+        xPotWiper.rotation.x -= dX / wheelRadius;
 
-      // Click animation
-      if (p.isClicking) {
-        redButton.position.y = 2.45;
-      } else {
-        redButton.position.y = 2.6 + Math.sin(elapsed * 4.0) * 0.02;
+        // Y-wheel rotates on Z-displacement
+        yWheelRim.rotation.z += dZ / wheelRadius;
+        yPotWiper.rotation.z += dZ / wheelRadius;
       }
+
+      // Microswitch Button Depress Animation
+      redButton.position.y = p.isClicking ? 2.44 : 2.6;
+      switchLeaf.rotation.x = p.isClicking ? 0.08 : 0;
+
+      // Live 2D Screen Coordinate Simulation
+      const screenX = Math.round(512 + posX * 120);
+      const screenY = Math.round(384 + posZ * 120);
+      setCurrentCoords({ x: screenX, y: screenY });
 
       controls.update();
       renderer.render(scene, camera);
@@ -245,157 +432,217 @@ export function EngelbartMouse3D() {
         <div ref={containerRef} className="absolute inset-0 w-full h-full" />
 
         {/* Live HUD Telemetry Overlay */}
-        <div className="absolute top-4 left-4 z-10 flex flex-col gap-2 pointer-events-none">
+        <div className="absolute top-4 left-4 z-10 flex flex-col gap-2 pointer-events-none max-w-[calc(100%-8rem)] sm:max-w-md">
           <div className="bg-white/90 dark:bg-ink-900/90 backdrop-blur-md px-3.5 py-2.5 rounded-xl border border-parchment-300 dark:border-ink-700 shadow-sm">
             <div className="text-[11px] font-sans text-amber-700 dark:text-amber-400 font-bold uppercase tracking-wider flex items-center gap-1.5">
-              <Mouse className="w-3.5 h-3.5 text-blue-500 animate-pulse" />
-              X-Y Position Indicator Telemetry
+              <Mouse className="w-3.5 h-3.5 text-amber-500 animate-pulse" />
+              SRI NLS Coordinate &amp; Kinematic Telemetry
             </div>
-            <div className="grid grid-cols-2 gap-x-4 gap-y-1 mt-1 text-xs font-sans">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-4 gap-y-1 mt-1 text-xs font-sans">
               <div>
-                <span className="text-ink-600 dark:text-ink-400">CRT Coordinates:</span>{" "}
+                <span className="text-ink-600 dark:text-ink-400">CRT Position $(X, Y)$:</span>{" "}
+                <span className="font-mono font-bold text-blue-600 dark:text-blue-400">
+                  [{currentCoords.x}, {currentCoords.y}]
+                </span>
+              </div>
+              <div>
+                <span className="text-ink-600 dark:text-ink-400">Sampling Rate:</span>{" "}
                 <span className="font-bold text-emerald-600 dark:text-emerald-400">
-                  ({cursorCoordinates.x}, {cursorCoordinates.y}) px
-                </span>
-              </div>
-              <div>
-                <span className="text-ink-600 dark:text-ink-400">Pulse Train Rate:</span>{" "}
-                <span className="font-bold text-blue-600 dark:text-blue-400">
-                  {pulseRateHz} Hz Quadrature
-                </span>
-              </div>
-              <div>
-                <span className="text-ink-600 dark:text-ink-400">Linear Velocity:</span>{" "}
-                <span className="font-bold text-amber-600 dark:text-amber-400">
-                  {displacementSpeedMmSec} mm/s ({(displacementSpeedMmSec / 25.4).toFixed(1)} in/s)
+                  {pulseRateHz} pulses/sec
                 </span>
               </div>
               <div>
                 <span className="text-ink-600 dark:text-ink-400">Encoder Resolution:</span>{" "}
                 <span className="font-bold text-purple-600 dark:text-purple-400">
-                  {cpiResolution} Counts/Inch
+                  {cpiResolution} CPI ({Math.round(cpiResolution / 25.4)} counts/mm)
+                </span>
+              </div>
+              <div>
+                <span className="text-ink-600 dark:text-ink-400">Orthogonal Geometry:</span>{" "}
+                <span className="font-bold text-amber-600 dark:text-amber-400">
+                  90° Dual Potentiometer Wheels
                 </span>
               </div>
             </div>
           </div>
 
-          <div className="bg-white/90 dark:bg-ink-900/90 backdrop-blur-md px-3 py-1.5 rounded-lg border border-parchment-300 dark:border-ink-700 text-[11px] font-sans text-ink-700 dark:text-ink-300 flex items-center gap-2">
-            <Sparkles className="w-3.5 h-3.5 text-amber-500 animate-pulse" />
-            <span>Douglas Engelbart (US 3,541,541) — The Mother of All Demos (1968)</span>
+          <div className="bg-white/90 dark:bg-ink-900/90 backdrop-blur-md px-3 py-1.5 rounded-lg border border-parchment-300 dark:border-ink-700 text-[11px] font-sans text-ink-700 dark:text-ink-300 flex items-center gap-2 max-w-full">
+            <Sparkles className="w-3.5 h-3.5 text-amber-500 animate-pulse shrink-0" />
+            <span className="truncate">
+              Douglas Engelbart (US 3,541,541) — X-Y Position Indicator
+            </span>
           </div>
         </div>
 
-        {/* Click Simulation Button */}
-        <div className="absolute bottom-4 left-4 z-10 flex gap-2">
+        {/* Top Right Tool Bar (X-Ray, Audio, Callouts & Reset) */}
+        <div className="absolute top-4 right-4 z-10 flex gap-2">
           <button
             type="button"
-            onMouseDown={() => setIsClicking(true)}
-            onMouseUp={() => setIsClicking(false)}
-            onTouchStart={() => setIsClicking(true)}
-            onTouchEnd={() => setIsClicking(false)}
-            className={`px-5 py-2.5 rounded-xl font-sans font-bold text-sm shadow-lg transition-all active:scale-95 ${
-              isClicking
-                ? "bg-red-600 text-white ring-4 ring-red-400/40"
-                : "bg-white dark:bg-ink-800 text-ink-900 dark:text-parchment-100 border border-parchment-300 dark:border-ink-700"
-            }`}
+            onClick={toggleSound}
+            className="p-2.5 rounded-xl bg-white/90 dark:bg-ink-900/90 backdrop-blur-md border border-parchment-300 dark:border-ink-700 text-ink-700 dark:text-parchment-300 hover:bg-parchment-100 dark:hover:bg-ink-800 transition-all shadow-sm"
+            title={isAudioMuted ? "Enable Sound Synthesis" : "Mute Sound"}
           >
-            {isClicking ? "CLICK ACTIVE" : "PRESS MOUSE BUTTON"}
+            {isAudioMuted ? (
+              <VolumeX className="w-4 h-4" />
+            ) : (
+              <Volume2 className="w-4 h-4 text-amber-600" />
+            )}
+          </button>
+          <button
+            type="button"
+            onClick={() => setIsXRayMode(!isXRayMode)}
+            className={`p-2.5 rounded-xl backdrop-blur-md border transition-all shadow-sm ${
+              isXRayMode
+                ? "bg-blue-600 text-white border-blue-700 shadow-md"
+                : "bg-white/90 dark:bg-ink-900/90 border-parchment-300 dark:border-ink-700 text-ink-700 dark:text-parchment-300 hover:bg-parchment-100"
+            }`}
+            title="Toggle Transparent X-Ray Internal Potentiometers"
+          >
+            <Eye className="w-4 h-4" />
+          </button>
+          <button
+            type="button"
+            onClick={() => setShowCalloutPins(!showCalloutPins)}
+            className={`p-2.5 rounded-xl backdrop-blur-md border transition-all shadow-sm ${
+              showCalloutPins
+                ? "bg-amber-600 text-white border-amber-700 shadow-md"
+                : "bg-white/90 dark:bg-ink-900/90 border-parchment-300 dark:border-ink-700 text-ink-700 dark:text-parchment-300 hover:bg-parchment-100"
+            }`}
+            title="Toggle Historical Patent Numeral Pins"
+          >
+            <Zap className="w-4 h-4" />
+          </button>
+          <button
+            type="button"
+            onClick={() => applyCameraPreset("iso")}
+            className="p-2.5 rounded-xl bg-white/90 dark:bg-ink-900/90 backdrop-blur-md border border-parchment-300 dark:border-ink-700 text-ink-700 dark:text-parchment-300 hover:bg-parchment-100 dark:hover:bg-ink-800 transition-all shadow-sm"
+            title="Reset Orbit Camera"
+          >
+            <RotateCcw className="w-4 h-4" />
           </button>
         </div>
 
-        {/* Trajectory Pattern Selector */}
-        <div className="absolute top-4 right-4 z-10 flex gap-1.5">
-          {(["figure8", "circle", "diagonal"] as const).map((pattern) => (
+        {/* Camera Views Bar */}
+        <div className="absolute bottom-4 left-4 z-10 flex flex-wrap gap-1.5 bg-white/85 dark:bg-ink-900/85 backdrop-blur-md p-1.5 rounded-xl border border-parchment-300 dark:border-ink-700 shadow-sm text-xs">
+          <span className="px-2 py-1 text-ink-500 font-sans flex items-center gap-1">
+            <Camera className="w-3.5 h-3.5" /> View:
+          </span>
+          {(
+            [
+              ["iso", "Isometric Desk"],
+              ["wheels", "Knife-Edge Wheels"],
+              ["xray", "Internal X-Ray"],
+              ["top", "Top Kinematics"],
+              ["crt", "Vector CRT"],
+            ] as const
+          ).map(([id, label]) => (
             <button
-              key={pattern}
+              key={id}
               type="button"
-              onClick={() => setMouseTrajectory(pattern)}
-              className={`px-2.5 py-1.5 rounded-lg text-xs font-sans font-semibold capitalize border transition-all ${
-                mouseTrajectory === pattern
-                  ? "bg-blue-600 text-white border-blue-700 shadow-sm"
-                  : "bg-white/80 dark:bg-ink-900/80 text-ink-700 dark:text-ink-300 border-parchment-300 dark:border-ink-700"
+              onClick={() => applyCameraPreset(id)}
+              className={`px-2.5 py-1 rounded-lg font-sans transition-all ${
+                activeCamera === id
+                  ? "bg-amber-700 dark:bg-amber-600 text-white font-semibold shadow-xs"
+                  : "text-ink-700 dark:text-parchment-300 hover:bg-parchment-200 dark:hover:bg-ink-800"
               }`}
             >
-              {pattern}
+              {label}
             </button>
           ))}
         </div>
       </div>
 
-      {/* Parameter Sliders Panel */}
-      <div className="p-4 sm:p-5 bg-parchment-100/80 dark:bg-ink-900/90 border-t border-parchment-300 dark:border-ink-800 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 text-xs font-sans">
-        {/* Speed Slider */}
+      {/* Interactive Controls & Scenario Bar */}
+      <div className="p-4 sm:p-5 bg-parchment-100/90 dark:bg-ink-900/90 border-t border-parchment-300 dark:border-ink-800 space-y-4">
+        {/* Scenario Presets */}
         <div className="space-y-1.5">
-          <div className="flex justify-between font-medium text-ink-900 dark:text-parchment-100">
-            <span>Hand Motion Velocity:</span>
-            <span className="font-bold text-amber-700 dark:text-amber-400">
-              {displacementSpeedMmSec} mm/s
-            </span>
+          <div className="text-xs font-sans font-bold text-ink-700 dark:text-ink-300 uppercase tracking-wider flex items-center gap-1.5">
+            <Sparkles className="w-3.5 h-3.5 text-amber-600" /> Historical Kinematic Scenarios:
           </div>
-          <input
-            type="range"
-            min="20"
-            max="300"
-            step="10"
-            value={displacementSpeedMmSec}
-            onChange={(e) => setDisplacementSpeedMmSec(Number(e.target.value))}
-            className="w-full accent-amber-600 dark:accent-amber-400 cursor-pointer"
-          />
-          <span className="text-[10px] text-ink-500 dark:text-ink-400 block">
-            Decomposes into orthogonal X and Y wheel rolls
-          </span>
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
+            {SCENARIOS.map((s) => (
+              <button
+                key={s.id}
+                type="button"
+                onClick={() => applyScenario(s)}
+                className="p-2.5 rounded-xl border border-parchment-300 dark:border-ink-700 bg-white/70 dark:bg-ink-950/70 hover:bg-parchment-50 dark:hover:bg-ink-800 text-left transition-all group"
+              >
+                <div className="text-xs font-serif font-bold text-ink-900 dark:text-parchment-100 group-hover:text-amber-700 dark:group-hover:text-amber-400">
+                  {s.name}
+                </div>
+                <div className="text-[10px] font-sans text-ink-500 dark:text-ink-400 line-clamp-2 mt-0.5">
+                  {s.desc}
+                </div>
+              </button>
+            ))}
+          </div>
         </div>
 
-        {/* Resolution Slider */}
-        <div className="space-y-1.5">
-          <div className="flex justify-between font-medium text-ink-900 dark:text-parchment-100">
-            <span>Potentiometer Sensitivity:</span>
-            <span className="font-bold text-blue-600 dark:text-blue-400">{cpiResolution} CPI</span>
+        {/* Sliders Grid & Click Button */}
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 pt-1 items-center">
+          {/* Tracking Trajectory */}
+          <div className="space-y-1.5">
+            <div className="flex justify-between text-xs font-sans">
+              <span className="font-semibold text-ink-800 dark:text-parchment-200">
+                Movement Pattern:
+              </span>
+              <span className="font-mono text-amber-700 dark:text-amber-400 font-bold uppercase">
+                {mouseTrajectory}
+              </span>
+            </div>
+            <div className="grid grid-cols-4 gap-1">
+              {(["figure8", "circle", "horizontal", "vertical"] as const).map((traj) => (
+                <button
+                  key={traj}
+                  type="button"
+                  onClick={() => setMouseTrajectory(traj)}
+                  className={`py-1.5 text-xs rounded-lg font-sans capitalize transition-all ${
+                    mouseTrajectory === traj
+                      ? "bg-amber-600 text-white font-bold"
+                      : "bg-white/70 dark:bg-ink-950/70 text-ink-700 dark:text-parchment-300 border border-parchment-300 dark:border-ink-700"
+                  }`}
+                >
+                  {traj === "figure8" ? "Fig-8" : traj}
+                </button>
+              ))}
+            </div>
           </div>
-          <input
-            type="range"
-            min="50"
-            max="800"
-            step="50"
-            value={cpiResolution}
-            onChange={(e) => setCpiResolution(Number(e.target.value))}
-            className="w-full accent-blue-600 dark:accent-blue-400 cursor-pointer"
-          />
-          <span className="text-[10px] text-ink-500 dark:text-ink-400 block">
-            Commutator pulse count per linear inch of table travel
-          </span>
-        </div>
 
-        {/* Ergonomic Efficiency */}
-        <div className="space-y-1.5">
-          <div className="flex justify-between font-medium text-ink-900 dark:text-parchment-100">
-            <span>Speed vs Light Pen:</span>
-            <span className="font-bold text-emerald-600 dark:text-emerald-400">
-              +45% Faster Targeting
-            </span>
-          </div>
-          <div className="w-full bg-parchment-300 dark:bg-ink-800 rounded-full h-3 overflow-hidden mt-2 border border-parchment-400 dark:border-ink-700">
-            <div
-              className="bg-gradient-to-r from-blue-500 to-emerald-500 h-full transition-all duration-300"
-              style={{ width: "88%" }}
+          {/* Displacement Velocity */}
+          <div className="space-y-1.5">
+            <div className="flex justify-between text-xs font-sans">
+              <span className="font-semibold text-ink-800 dark:text-parchment-200">
+                Tracking Velocity:
+              </span>
+              <span className="font-mono text-amber-700 dark:text-amber-400 font-bold">
+                {displacementSpeedMmSec} mm/s
+              </span>
+            </div>
+            <input
+              type="range"
+              min="30"
+              max="300"
+              step="10"
+              value={displacementSpeedMmSec}
+              onChange={(e) => setDisplacementSpeedMmSec(Number(e.target.value))}
+              className="w-full accent-amber-600 cursor-pointer"
             />
           </div>
-          <span className="text-[10px] text-ink-500 dark:text-ink-400 block">
-            Table-supported wrist eliminates operator arm fatigue
-          </span>
-        </div>
 
-        {/* Historical Impact */}
-        <div className="space-y-1.5">
-          <div className="flex justify-between font-medium text-ink-900 dark:text-parchment-100">
-            <span>Historical Impact:</span>
-            <span className="font-bold text-purple-600 dark:text-purple-400">
-              Xerox Alto &amp; Apple Mac
-            </span>
+          {/* Microswitch Click Button */}
+          <div className="flex flex-col justify-end space-y-1.5">
+            <button
+              type="button"
+              onClick={handleManualClick}
+              className={`w-full py-3 px-4 rounded-xl font-sans font-bold text-sm transition-all shadow-sm flex items-center justify-center gap-2 ${
+                isClicking
+                  ? "bg-red-700 text-white scale-95 shadow-inner ring-2 ring-red-400"
+                  : "bg-gradient-to-r from-red-600 to-red-700 hover:from-red-500 hover:to-red-600 text-white shadow-md"
+              }`}
+            >
+              <Mouse className="w-4 h-4" /> Click Red Microswitch Button
+            </button>
           </div>
-          <span className="text-[11px] text-ink-700 dark:text-parchment-200 block pt-1 leading-relaxed">
-            Licensed to Apple Computer for $40,000, launching GUI computing.
-          </span>
         </div>
       </div>
     </div>

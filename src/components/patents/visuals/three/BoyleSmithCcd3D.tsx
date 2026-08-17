@@ -1,10 +1,71 @@
 "use client";
 
-import { Camera, Sparkles } from "lucide-react";
+import {
+  Camera,
+  Layers,
+  RotateCcw,
+  Sparkles,
+  Sun,
+  Volume2,
+  VolumeX,
+  Zap,
+} from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import * as THREE from "three";
+import { soundEngine } from "@/utils/soundEngine";
 import { createGlowPointTexture, createThreeStudioScene } from "./ThreeStudioScene";
 import { useLiveSimParams } from "./useLiveSimParams";
+
+type CameraPreset = "iso" | "potential_well" | "sensing_node" | "gate_electrodes" | "top";
+
+interface ScenarioPreset {
+  id: string;
+  name: string;
+  desc: string;
+  phaseFreqHz: number;
+  lux: number;
+  voltageV: number;
+  ctePct: number;
+}
+
+const SCENARIOS: ScenarioPreset[] = [
+  {
+    id: "bell_1969",
+    name: "1969 Boyle & Smith Original (US 3,792,322)",
+    desc: "The breakthrough 3-phase charge packet bucket brigade shifting stored photoelectrons across MOS gates.",
+    phaseFreqHz: 2,
+    lux: 450,
+    voltageV: 10.0,
+    ctePct: 99.99,
+  },
+  {
+    id: "astronomy",
+    name: "Deep Space Astronomical CCD",
+    desc: "Cooled scientific detector capturing faint photon streams with 99.999% CTE and deep 14V potential wells.",
+    phaseFreqHz: 1,
+    lux: 80,
+    voltageV: 14.0,
+    ctePct: 99.999,
+  },
+  {
+    id: "high_speed",
+    name: "High-Speed Video Frame Readout",
+    desc: "Rapid multi-kilohertz 3-phase clocking dumping stored lines to floating diffusion sensing amplifier.",
+    phaseFreqHz: 8,
+    lux: 750,
+    voltageV: 11.5,
+    ctePct: 99.95,
+  },
+  {
+    id: "saturation",
+    name: "Full-Well Blooming Overexposure",
+    desc: "Extreme 1200 Lux illumination exceeding 160,000 electron capacity and spilling over channel barriers.",
+    phaseFreqHz: 3,
+    lux: 1200,
+    voltageV: 8.0,
+    ctePct: 99.85,
+  },
+];
 
 export function BoyleSmithCcd3D() {
   const containerRef = useRef<HTMLDivElement>(null);
@@ -13,27 +74,84 @@ export function BoyleSmithCcd3D() {
   const [clockPhase, setClockPhase] = useState<1 | 2 | 3>(1);
   const [incidentLux, setIncidentLux] = useState<number>(450); // 50 to 1200 Lux
   const [gateVoltageV, setGateVoltageV] = useState<number>(10); // 2 to 15 V
-  const [transferEfficiencyPct, _setTransferEfficiencyPct] = useState<number>(99.99); // 99.0 to 99.999%
-  const [_showPotentialWells, _setShowPotentialWells] = useState<boolean>(true);
+  const [transferEfficiencyPct, setTransferEfficiencyPct] = useState<number>(99.99); // 99.0 to 99.999%
   const [isAutoClocking, setIsAutoClocking] = useState<boolean>(true);
+  const [clockSpeedFactor, setClockSpeedFactor] = useState<number>(2); // 1 to 10 Hz
+  const [showCalloutPins, setShowCalloutPins] = useState<boolean>(false);
+  const [activeCamera, setActiveCamera] = useState<CameraPreset>("iso");
+  const [isAudioMuted, setIsAudioMuted] = useState<boolean>(true);
 
   // Charge-Coupled Physics Calculations
   // Full Well Capacity: N_sat = C_ox * (V_g - V_th) * Area / q
   const fullWellElectrons = Math.round((gateVoltageV - 1.2) * 12500);
   const collectedChargeElectrons = Math.round(fullWellElectrons * Math.min(1.0, incidentLux / 800));
-  const chargeTransferInneficiencyEpsilon = ((100 - transferEfficiencyPct) / 100).toExponential(2);
+  const chargeTransferInefficiencyEpsilon = ((100 - transferEfficiencyPct) / 100).toExponential(2);
 
   const live = useLiveSimParams({
     clockPhase,
     isAutoClocking,
     gateVoltageV,
+    clockSpeedFactor,
+    incidentLux,
+    isAudioMuted,
   });
+
+  const controlsRef = useRef<any>(null);
+  const cameraRef = useRef<THREE.PerspectiveCamera | null>(null);
+
+  const applyCameraPreset = (preset: CameraPreset) => {
+    setActiveCamera(preset);
+    const camera = cameraRef.current;
+    const controls = controlsRef.current;
+    if (!camera || !controls) return;
+
+    switch (preset) {
+      case "iso":
+        camera.position.set(11, 9, 14);
+        controls.target.set(0, 0, 0);
+        break;
+      case "potential_well":
+        camera.position.set(0, 1.4, 4.5);
+        controls.target.set(0, 0, 0);
+        break;
+      case "sensing_node":
+        camera.position.set(4.8, 1.8, 2.5);
+        controls.target.set(4.0, 0.2, 0);
+        break;
+      case "gate_electrodes":
+        camera.position.set(-1.5, 4.5, 3.0);
+        controls.target.set(0, 0.4, 0);
+        break;
+      case "top":
+        camera.position.set(0, 8.5, 0.1);
+        controls.target.set(0, 0, 0);
+        break;
+    }
+    controls.update();
+  };
+
+  const applyScenario = (s: ScenarioPreset) => {
+    setClockSpeedFactor(s.phaseFreqHz);
+    setIncidentLux(s.lux);
+    setGateVoltageV(s.voltageV);
+    setTransferEfficiencyPct(s.ctePct);
+    if (!isAudioMuted) {
+      soundEngine.playSwitchClick();
+    }
+  };
+
+  const toggleSound = () => {
+    const isMuted = soundEngine.toggleMute();
+    setIsAudioMuted(isMuted);
+    if (!isMuted) {
+      soundEngine.playSwitchClick();
+    }
+  };
 
   useEffect(() => {
     const container = containerRef.current;
     if (!container) return;
 
-    // Create Studio Scene with High-Luminosity Studio Lighting
     const studio = createThreeStudioScene({
       container,
       cameraPos: [11, 9, 14],
@@ -41,30 +159,32 @@ export function BoyleSmithCcd3D() {
     });
 
     const { scene, camera, renderer, controls } = studio;
+    cameraRef.current = camera;
+    controlsRef.current = controls;
 
     // --- PBR MATERIALS ---
     const pSiliconSubstrateMat = new THREE.MeshStandardMaterial({
-      color: 0x334155, // p-type Silicon substrate
+      color: 0x334155,
       roughness: 0.25,
       metalness: 0.85,
     });
 
     const gatePolySiliconMat = new THREE.MeshStandardMaterial({
-      color: 0xca8a04, // Polysilicon MOS transfer gates
+      color: 0xca8a04,
       roughness: 0.2,
       metalness: 0.9,
     });
 
     const gateActiveMat = new THREE.MeshStandardMaterial({
-      color: 0x3b82f6, // Positively biased gate (+Vg)
+      color: 0x3b82f6,
       roughness: 0.15,
       metalness: 0.8,
       emissive: 0x2563eb,
-      emissiveIntensity: 0.7,
+      emissiveIntensity: 0.85,
     });
 
     const oxideMat = new THREE.MeshPhysicalMaterial({
-      color: 0x38bdf8, // SiO2 insulating dielectric
+      color: 0x38bdf8,
       transmission: 0.85,
       opacity: 0.9,
       transparent: true,
@@ -83,7 +203,7 @@ export function BoyleSmithCcd3D() {
     substrate.receiveShadow = true;
     ccdGroup.add(substrate);
 
-    // Channel Stop $p^+$ Boron Isolation Barriers (Sides)
+    // Channel Stop Boron Isolation Barriers
     [-2.4, 2.4].forEach((sz) => {
       const channelStop = new THREE.Mesh(
         new THREE.BoxGeometry(9.4, 0.2, 0.4),
@@ -98,7 +218,7 @@ export function BoyleSmithCcd3D() {
     oxide.position.y = 0.12;
     ccdGroup.add(oxide);
 
-    // 3-Phase Clock Bus Lines (phi1 Cyan, phi2 Amber, phi3 Violet)
+    // 3-Phase Clock Bus Lines
     const busColors = [0x0284c7, 0xd97706, 0x9333ea];
     for (let b = 0; b < 3; b++) {
       const busLine = new THREE.Mesh(
@@ -109,7 +229,7 @@ export function BoyleSmithCcd3D() {
       ccdGroup.add(busLine);
     }
 
-    // 9 Transparent Polysilicon Gate Electrodes (3 Pixels x 3 Phases: phi_1, phi_2, phi_3)
+    // 9 Transparent Polysilicon Gate Electrodes
     const gates: { mesh: THREE.Mesh; phase: number; x: number }[] = [];
     const numGates = 9;
 
@@ -152,14 +272,13 @@ export function BoyleSmithCcd3D() {
 
     for (let i = 0; i < packetCount; i++) {
       const idx = i * 3;
-      const pixelIdx = Math.floor(i / (packetCount / 3)); // 3 active packets
-      const baseGateX = -3.6 + pixelIdx * 3 * 0.9;
+      const pixelIdx = Math.floor(i / (packetCount / 3));
+      const baseGateX = -3.6 + pixelIdx * 3 * 0.85;
 
       packetPos[idx] = baseGateX + (Math.random() - 0.5) * 0.5;
       packetPos[idx + 1] = -0.2 - Math.random() * 0.25;
       packetPos[idx + 2] = (Math.random() - 0.5) * 2.8;
 
-      // Electric Cyan Electron Packet Glow
       packetColors[idx] = 0.1;
       packetColors[idx + 1] = 0.9;
       packetColors[idx + 2] = 1.0;
@@ -194,10 +313,13 @@ export function BoyleSmithCcd3D() {
       const p = live.current;
 
       if (p.isAutoClocking) {
-        phaseTimer += delta;
-        if (phaseTimer > 0.6) {
+        phaseTimer += delta * p.clockSpeedFactor;
+        if (phaseTimer > 0.8) {
           phaseTimer = 0;
           currentActivePhase = ((currentActivePhase % 3) + 1) as 1 | 2 | 3;
+          if (!p.isAudioMuted && Math.random() < 0.3) {
+            soundEngine.playSwitchClick();
+          }
         }
       } else {
         currentActivePhase = p.clockPhase;
@@ -207,7 +329,7 @@ export function BoyleSmithCcd3D() {
       for (const g of gates) {
         if (g.phase === currentActivePhase) {
           g.mesh.material = gateActiveMat;
-          g.mesh.position.y = 0.38; // Slightly depressed in electrostatic field
+          g.mesh.position.y = 0.38;
         } else {
           g.mesh.material = gatePolySiliconMat;
           g.mesh.position.y = 0.42;
@@ -219,7 +341,7 @@ export function BoyleSmithCcd3D() {
       for (let i = 0; i < packetCount; i++) {
         const idx = i * 3;
         const pixelIdx = Math.floor(i / (packetCount / 3));
-        const targetGateX = -3.6 + (pixelIdx * 3 + (currentActivePhase - 1)) * 0.9;
+        const targetGateX = -3.6 + (pixelIdx * 3 + (currentActivePhase - 1)) * 0.85;
 
         pPos[idx] += (targetGateX + (Math.random() - 0.5) * 0.4 - pPos[idx]) * 0.15;
       }
@@ -244,180 +366,240 @@ export function BoyleSmithCcd3D() {
         <div ref={containerRef} className="absolute inset-0 w-full h-full" />
 
         {/* Live HUD Telemetry Overlay */}
-        <div className="absolute top-4 left-4 z-10 flex flex-col gap-2 pointer-events-none">
+        <div className="absolute top-4 left-4 z-10 flex flex-col gap-2 pointer-events-none max-w-[calc(100%-8rem)] sm:max-w-md">
           <div className="bg-white/90 dark:bg-ink-900/90 backdrop-blur-md px-3.5 py-2.5 rounded-xl border border-parchment-300 dark:border-ink-700 shadow-sm">
             <div className="text-[11px] font-sans text-amber-700 dark:text-amber-400 font-bold uppercase tracking-wider flex items-center gap-1.5">
               <Camera className="w-3.5 h-3.5 text-blue-500 animate-pulse" />
-              Charge-Coupled Device Telemetry
+              3-Phase CCD Potential Well Telemetry
             </div>
-            <div className="grid grid-cols-2 gap-x-4 gap-y-1 mt-1 text-xs font-sans">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-4 gap-y-1 mt-1 text-xs font-sans">
               <div>
-                <span className="text-ink-600 dark:text-ink-400">Full Well Capacity:</span>{" "}
+                <span className="text-ink-600 dark:text-ink-400">Full Well Depth:</span>{" "}
                 <span className="font-bold text-blue-600 dark:text-blue-400">
-                  {fullWellElectrons.toLocaleString()} $e^-$
+                  {fullWellElectrons.toLocaleString()} e⁻ / pixel
                 </span>
               </div>
               <div>
-                <span className="text-ink-600 dark:text-ink-400">Photo-Generated $Q$:</span>{" "}
+                <span className="text-ink-600 dark:text-ink-400">Collected Photoelectrons:</span>{" "}
                 <span className="font-bold text-emerald-600 dark:text-emerald-400">
-                  {collectedChargeElectrons.toLocaleString()} $e^-$ (
-                  {((collectedChargeElectrons / fullWellElectrons) * 100).toFixed(0)}%)
+                  {collectedChargeElectrons.toLocaleString()} e⁻
                 </span>
               </div>
               <div>
-                <span className="text-ink-600 dark:text-ink-400">
-                  Transfer Inefficiency ($\epsilon$):
-                </span>{" "}
+                <span className="text-ink-600 dark:text-ink-400">Transfer Efficiency (CTE):</span>{" "}
                 <span className="font-bold text-amber-600 dark:text-amber-400">
-                  {chargeTransferInneficiencyEpsilon}
+                  {transferEfficiencyPct}%
                 </span>
               </div>
               <div>
-                <span className="text-ink-600 dark:text-ink-400">3-Phase Clock Step:</span>{" "}
+                <span className="text-ink-600 dark:text-ink-400">Transfer Inefficiency (ε):</span>{" "}
                 <span className="font-bold text-purple-600 dark:text-purple-400">
-                  Phase $\phi_{clockPhase}$ Active
+                  {chargeTransferInefficiencyEpsilon}
                 </span>
               </div>
             </div>
           </div>
 
-          <div className="bg-white/90 dark:bg-ink-900/90 backdrop-blur-md px-3 py-1.5 rounded-lg border border-parchment-300 dark:border-ink-700 text-[11px] font-sans text-ink-700 dark:text-ink-300 flex items-center gap-2">
-            <Sparkles className="w-3.5 h-3.5 text-amber-500 animate-pulse" />
-            <span>Bucket-Brigade Charge Packet Shift (Boyle &amp; Smith 1969)</span>
+          <div className="bg-white/90 dark:bg-ink-900/90 backdrop-blur-md px-3 py-1.5 rounded-lg border border-parchment-300 dark:border-ink-700 text-[11px] font-sans text-ink-700 dark:text-ink-300 flex items-center gap-2 max-w-full">
+            <Sparkles className="w-3.5 h-3.5 text-emerald-500 animate-pulse shrink-0" />
+            <span className="truncate">
+              W. S. Boyle & G. E. Smith (US 3,792,322) — Charge Coupled Semiconductor Devices (1969)
+            </span>
           </div>
         </div>
 
-        {/* Auto-clock Toggle */}
+        {/* Top Right Tool Bar (Audio, Pins, Reset) */}
         <div className="absolute top-4 right-4 z-10 flex gap-2">
           <button
             type="button"
-            onClick={() => setIsAutoClocking(!isAutoClocking)}
-            className={`px-3 py-1.5 rounded-lg text-xs font-sans font-semibold border transition-all ${
-              isAutoClocking
-                ? "bg-blue-600 text-white border-blue-700 shadow-sm"
-                : "bg-white/80 dark:bg-ink-900/80 text-ink-700 dark:text-ink-300 border-parchment-300 dark:border-ink-700"
-            }`}
+            onClick={toggleSound}
+            className="p-2.5 rounded-xl bg-white/90 dark:bg-ink-900/90 backdrop-blur-md border border-parchment-300 dark:border-ink-700 text-ink-700 dark:text-parchment-300 hover:bg-parchment-100 dark:hover:bg-ink-800 transition-all shadow-sm"
+            title={isAudioMuted ? "Enable Sound Synthesis" : "Mute Sound"}
           >
-            {isAutoClocking ? "Auto Clocking" : "Manual Step"}
+            {isAudioMuted ? <VolumeX className="w-4 h-4" /> : <Volume2 className="w-4 h-4 text-amber-600" />}
           </button>
+          <button
+            type="button"
+            onClick={() => setShowCalloutPins(!showCalloutPins)}
+            className={`p-2.5 rounded-xl backdrop-blur-md border transition-all shadow-sm ${
+              showCalloutPins
+                ? "bg-amber-600 text-white border-amber-700 shadow-md"
+                : "bg-white/90 dark:bg-ink-900/90 border-parchment-300 dark:border-ink-700 text-ink-700 dark:text-parchment-300 hover:bg-parchment-100"
+            }`}
+            title="Toggle Historical Patent Numeral Pins"
+          >
+            <Zap className="w-4 h-4" />
+          </button>
+          <button
+            type="button"
+            onClick={() => applyCameraPreset("iso")}
+            className="p-2.5 rounded-xl bg-white/90 dark:bg-ink-900/90 backdrop-blur-md border border-parchment-300 dark:border-ink-700 text-ink-700 dark:text-parchment-300 hover:bg-parchment-100 dark:hover:bg-ink-800 transition-all shadow-sm"
+            title="Reset Orbit Camera"
+          >
+            <RotateCcw className="w-4 h-4" />
+          </button>
+        </div>
+
+        {/* Camera Views Bar */}
+        <div className="absolute bottom-4 left-4 z-10 flex flex-wrap gap-1.5 bg-white/85 dark:bg-ink-900/85 backdrop-blur-md p-1.5 rounded-xl border border-parchment-300 dark:border-ink-700 shadow-sm text-xs">
+          <span className="px-2 py-1 text-ink-500 font-sans flex items-center gap-1">
+            <Camera className="w-3.5 h-3.5" /> View:
+          </span>
+          {(
+            [
+              ["iso", "Isometric"],
+              ["potential_well", "Potential Well"],
+              ["sensing_node", "Sensing Amp"],
+              ["gate_electrodes", "3Φ Clock Bus"],
+              ["top", "Pixel Array"],
+            ] as const
+          ).map(([id, label]) => (
+            <button
+              key={id}
+              type="button"
+              onClick={() => applyCameraPreset(id)}
+              className={`px-2.5 py-1 rounded-lg font-sans transition-all ${
+                activeCamera === id
+                  ? "bg-amber-700 dark:bg-amber-600 text-white font-semibold shadow-xs"
+                  : "text-ink-700 dark:text-parchment-300 hover:bg-parchment-200 dark:hover:bg-ink-800"
+              }`}
+            >
+              {label}
+            </button>
+          ))}
         </div>
       </div>
 
-      {/* Parameter Sliders Panel */}
-      <div className="p-4 sm:p-5 bg-parchment-100/80 dark:bg-ink-900/90 border-t border-parchment-300 dark:border-ink-800 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 text-xs font-sans">
-        {/* Manual Phase Step Buttons */}
+      {/* Interactive Controls & Scenario Bar */}
+      <div className="p-4 sm:p-5 bg-parchment-100/90 dark:bg-ink-900/90 border-t border-parchment-300 dark:border-ink-800 space-y-4">
+        {/* Scenario Presets */}
         <div className="space-y-1.5">
-          <div className="flex justify-between font-medium text-ink-900 dark:text-parchment-100">
-            <span>3-Phase Clock Sequence:</span>
-            <span className="font-bold text-amber-700 dark:text-amber-400">
-              Phase $\phi_{clockPhase}$
-            </span>
+          <div className="text-xs font-sans font-bold text-ink-700 dark:text-ink-300 uppercase tracking-wider flex items-center gap-1.5">
+            <Sparkles className="w-3.5 h-3.5 text-amber-600" /> Charge-Coupled Physics Presets:
           </div>
-          <div className="grid grid-cols-3 gap-1.5 pt-1">
-            <button
-              type="button"
-              onClick={() => {
-                setIsAutoClocking(false);
-                setClockPhase(1);
-              }}
-              className={`py-1 px-2 rounded-md text-xs font-semibold border ${
-                clockPhase === 1
-                  ? "bg-blue-600 text-white border-blue-700 shadow-sm"
-                  : "bg-white/80 dark:bg-ink-800 text-ink-700 dark:text-ink-300 border-parchment-300 dark:border-ink-700"
-              }`}
-            >
-              {"Phase 1 ($\\phi_1$)"}
-            </button>
-            <button
-              type="button"
-              onClick={() => {
-                setIsAutoClocking(false);
-                setClockPhase(2);
-              }}
-              className={`py-1 px-2 rounded-md text-xs font-semibold border ${
-                clockPhase === 2
-                  ? "bg-blue-600 text-white border-blue-700 shadow-sm"
-                  : "bg-white/80 dark:bg-ink-800 text-ink-700 dark:text-ink-300 border-parchment-300 dark:border-ink-700"
-              }`}
-            >
-              {"Phase 2 ($\\phi_2$)"}
-            </button>
-            <button
-              type="button"
-              onClick={() => {
-                setIsAutoClocking(false);
-                setClockPhase(3);
-              }}
-              className={`py-1 px-2 rounded-md text-xs font-semibold border ${
-                clockPhase === 3
-                  ? "bg-blue-600 text-white border-blue-700 shadow-sm"
-                  : "bg-white/80 dark:bg-ink-800 text-ink-700 dark:text-ink-300 border-parchment-300 dark:border-ink-700"
-              }`}
-            >
-              {"Phase 3 ($\\phi_3$)"}
-            </button>
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
+            {SCENARIOS.map((s) => (
+              <button
+                key={s.id}
+                type="button"
+                onClick={() => applyScenario(s)}
+                className="p-2.5 rounded-xl border border-parchment-300 dark:border-ink-700 bg-white/70 dark:bg-ink-950/70 hover:bg-parchment-50 dark:hover:bg-ink-800 text-left transition-all group"
+              >
+                <div className="text-xs font-serif font-bold text-ink-900 dark:text-parchment-100 group-hover:text-amber-700 dark:group-hover:text-amber-400">
+                  {s.name}
+                </div>
+                <div className="text-[10px] font-sans text-ink-500 dark:text-ink-400 line-clamp-2 mt-0.5">
+                  {s.desc}
+                </div>
+              </button>
+            ))}
           </div>
         </div>
 
-        {/* Gate Voltage */}
-        <div className="space-y-1.5">
-          <div className="flex justify-between font-medium text-ink-900 dark:text-parchment-100">
-            <span>Gate Potential ($V_g$):</span>
-            <span className="font-bold text-blue-600 dark:text-blue-400">{gateVoltageV} V</span>
-          </div>
-          <input
-            type="range"
-            min="2"
-            max="15"
-            step="1"
-            value={gateVoltageV}
-            onChange={(e) => setGateVoltageV(Number(e.target.value))}
-            className="w-full accent-blue-600 dark:accent-blue-400 cursor-pointer"
-          />
-          <span className="text-[10px] text-ink-500 dark:text-ink-400 block">
-            Drives electrostatic potential well depth $\psi_s$
-          </span>
-        </div>
-
-        {/* Incident Illumination */}
-        <div className="space-y-1.5">
-          <div className="flex justify-between font-medium text-ink-900 dark:text-parchment-100">
-            <span>Optical Illumination:</span>
-            <span className="font-bold text-emerald-600 dark:text-emerald-400">
-              {incidentLux} Lux
-            </span>
-          </div>
-          <input
-            type="range"
-            min="50"
-            max="1200"
-            step="50"
-            value={incidentLux}
-            onChange={(e) => setIncidentLux(Number(e.target.value))}
-            className="w-full accent-emerald-600 dark:accent-emerald-400 cursor-pointer"
-          />
-          <span className="text-[10px] text-ink-500 dark:text-ink-400 block">
-            Photon absorption photo-generates electron packets
-          </span>
-        </div>
-
-        {/* Charge Transfer Efficiency (CTE) */}
-        <div className="space-y-1.5">
-          <div className="flex justify-between font-medium text-ink-900 dark:text-parchment-100">
-            <span>Transfer Efficiency (CTE):</span>
-            <span className="font-bold text-purple-600 dark:text-purple-400">
-              {transferEfficiencyPct}%
-            </span>
-          </div>
-          <div className="w-full bg-parchment-300 dark:bg-ink-800 rounded-full h-3 overflow-hidden mt-2 border border-parchment-400 dark:border-ink-700">
-            <div
-              className="bg-gradient-to-r from-blue-500 to-emerald-500 h-full transition-all duration-300"
-              style={{ width: `${Math.max(10, (transferEfficiencyPct - 99) * 100)}%` }}
+        {/* Sliders Grid */}
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 pt-1">
+          {/* Incident Lux */}
+          <div className="space-y-1.5">
+            <div className="flex justify-between text-xs font-sans">
+              <span className="font-semibold text-ink-800 dark:text-parchment-200">
+                Photon Flux (Lux):
+              </span>
+              <span className="font-mono text-amber-700 dark:text-amber-400 font-bold">
+                {incidentLux} Lux
+              </span>
+            </div>
+            <input
+              type="range"
+              min="50"
+              max="1200"
+              step="50"
+              value={incidentLux}
+              onChange={(e) => setIncidentLux(Number(e.target.value))}
+              className="w-full accent-amber-600 cursor-pointer"
             />
+            <span className="text-[10px] text-ink-500 dark:text-ink-400 block">
+              Photoelectric electron-hole pair generation
+            </span>
           </div>
-          <span className="text-[10px] text-ink-500 dark:text-ink-400 block">
-            Silicon surface state charge trapping fidelity
-          </span>
+
+          {/* Gate Voltage */}
+          <div className="space-y-1.5">
+            <div className="flex justify-between text-xs font-sans">
+              <span className="font-semibold text-ink-800 dark:text-parchment-200">
+                Gate Bias Voltage (Vg):
+              </span>
+              <span className="font-mono text-blue-600 dark:text-blue-400 font-bold">
+                {gateVoltageV.toFixed(1)} V
+              </span>
+            </div>
+            <input
+              type="range"
+              min="2.0"
+              max="15.0"
+              step="0.5"
+              value={gateVoltageV}
+              onChange={(e) => setGateVoltageV(Number(e.target.value))}
+              className="w-full accent-blue-600 cursor-pointer"
+            />
+            <span className="text-[10px] text-ink-500 dark:text-ink-400 block">
+              Depletion region potential well depth
+            </span>
+          </div>
+
+          {/* Clocking Drive Toggle */}
+          <div className="flex flex-col justify-end space-y-1.5">
+            <button
+              type="button"
+              onClick={() => setIsAutoClocking(!isAutoClocking)}
+              className={`w-full py-3 px-4 rounded-xl font-sans font-bold text-sm transition-all shadow-sm flex items-center justify-center gap-2 ${
+                isAutoClocking
+                  ? "bg-emerald-600 hover:bg-emerald-700 text-white shadow-md"
+                  : "bg-amber-600 hover:bg-amber-700 text-white shadow-md"
+              }`}
+            >
+              <Zap className="w-4 h-4" />
+              {isAutoClocking ? "3Φ Clock Active (Transferring)" : "Clock Paused (Inspect Charge)"}
+            </button>
+          </div>
+        </div>
+
+        {/* Phase Selectors & Well Level Indicator */}
+        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 pt-1 border-t border-parchment-200 dark:border-ink-800 text-xs font-sans">
+          <div className="flex items-center gap-2">
+            <span className="text-ink-600 dark:text-ink-400">Manual Phase Override:</span>
+            {([1, 2, 3] as const).map((pNum) => (
+              <button
+                key={pNum}
+                type="button"
+                onClick={() => {
+                  setIsAutoClocking(false);
+                  setClockPhase(pNum);
+                }}
+                className={`px-3 py-1 rounded-lg font-mono font-bold transition-all ${
+                  clockPhase === pNum && !isAutoClocking
+                    ? "bg-blue-600 text-white shadow-xs"
+                    : "bg-white/70 dark:bg-ink-800 text-ink-700 dark:text-parchment-200 hover:bg-parchment-200"
+                }`}
+              >
+                Φ{pNum}
+              </button>
+            ))}
+          </div>
+
+          <div className="flex items-center gap-2 w-full sm:w-auto">
+            <span className="text-ink-600 dark:text-ink-400 text-xs">Pixel Charge Capacity:</span>
+            <div className="w-28 sm:w-36 bg-parchment-300 dark:bg-ink-800 rounded-full h-2.5 overflow-hidden border border-parchment-400 dark:border-ink-700">
+              <div
+                className="bg-gradient-to-r from-blue-500 via-cyan-400 to-amber-500 h-full transition-all duration-300"
+                style={{
+                  width: `${Math.min(100, (collectedChargeElectrons / fullWellElectrons) * 100)}%`,
+                }}
+              />
+            </div>
+            <span className="font-bold text-xs text-ink-800 dark:text-parchment-200 font-mono">
+              {Math.round((collectedChargeElectrons / fullWellElectrons) * 100)}%
+            </span>
+          </div>
         </div>
       </div>
     </div>

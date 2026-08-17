@@ -195,6 +195,7 @@ export function createThreeStudioScene(opts: StudioOptions): StudioContext {
   renderer.shadowMap.enabled = true;
   renderer.shadowMap.type = THREE.PCFSoftShadowMap;
 
+  renderer.domElement.style.touchAction = "pan-y";
   container.replaceChildren(renderer.domElement);
 
   // 4. Studio & Sun Lighting Rig
@@ -216,8 +217,8 @@ export function createThreeStudioScene(opts: StudioOptions): StudioContext {
   );
   sunLight.position.set(28, 38, 22);
   sunLight.castShadow = true;
-  sunLight.shadow.mapSize.width = 2048;
-  sunLight.shadow.mapSize.height = 2048;
+  sunLight.shadow.mapSize.width = 1024;
+  sunLight.shadow.mapSize.height = 1024;
   sunLight.shadow.camera.near = 0.5;
   sunLight.shadow.camera.far = 120;
   sunLight.shadow.camera.left = -30;
@@ -286,9 +287,9 @@ export function createThreeStudioScene(opts: StudioOptions): StudioContext {
   let isDragging = false;
   let prevX = 0;
   let prevY = 0;
-  const spherical = new THREE.Spherical().setFromVector3(camera.position);
-  const targetSpherical = spherical.clone();
   const centerTarget = new THREE.Vector3(...targetPos);
+  const spherical = new THREE.Spherical().setFromVector3(camera.position.clone().sub(centerTarget));
+  const targetSpherical = spherical.clone();
   const isReducedMotion = checkPrefersReducedMotion();
 
   const pointerClient = (e: MouseEvent | TouchEvent) => {
@@ -329,9 +330,13 @@ export function createThreeStudioScene(opts: StudioOptions): StudioContext {
   };
 
   const onWheel = (e: WheelEvent) => {
-    e.preventDefault();
-    const zoomFactor = e.deltaY * 0.02;
-    targetSpherical.radius = Math.max(4, Math.min(55, targetSpherical.radius + zoomFactor));
+    // Only capture wheel for 3D zoom if modifier is held (Ctrl/Cmd) or during active dragging
+    // to allow natural vertical document scrolling when hovering over 3D canvases
+    if (e.ctrlKey || e.metaKey || isDragging) {
+      e.preventDefault();
+      const zoomFactor = e.deltaY * 0.02;
+      targetSpherical.radius = Math.max(4, Math.min(55, targetSpherical.radius + zoomFactor));
+    }
   };
 
   const domEl = renderer.domElement;

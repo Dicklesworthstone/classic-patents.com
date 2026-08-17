@@ -1,10 +1,66 @@
 "use client";
 
-import { Sparkles, Thermometer } from "lucide-react";
+import {
+  Camera,
+  Layers,
+  RotateCcw,
+  Sparkles,
+  Thermometer,
+  Volume2,
+  VolumeX,
+  Zap,
+} from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import * as THREE from "three";
+import { soundEngine } from "@/utils/soundEngine";
 import { createGlowPointTexture, createThreeStudioScene } from "./ThreeStudioScene";
 import { useLiveSimParams } from "./useLiveSimParams";
+
+type CameraPreset = "iso" | "generator" | "condenser" | "evaporator" | "absorber";
+
+interface ScenarioPreset {
+  id: string;
+  name: string;
+  desc: string;
+  heatWatts: number;
+  pressureAtm: number;
+  gasRatio: number;
+}
+
+const SCENARIOS: ScenarioPreset[] = [
+  {
+    id: "einstein_1930",
+    name: "1930 Einstein-Szilard Original (US 1,781,541)",
+    desc: "The single-pressure absorption refrigerator using butane, ammonia, and water with zero moving parts and no toxic seals.",
+    heatWatts: 220,
+    pressureAtm: 10.0,
+    gasRatio: 0.8,
+  },
+  {
+    id: "solar_thermal",
+    name: "Solar-Thermal Powered Cooling",
+    desc: "Harnessing 400W of focused rooftop solar heat to drive sub-zero refrigeration without grid electricity.",
+    heatWatts: 400,
+    pressureAtm: 12.0,
+    gasRatio: 0.85,
+  },
+  {
+    id: "waste_heat",
+    name: "Industrial Waste-Heat Recovery",
+    desc: "Gentle 120W low-grade thermal exhaust maintaining reliable +4°C cold-storage preservation.",
+    heatWatts: 120,
+    pressureAtm: 8.5,
+    gasRatio: 0.75,
+  },
+  {
+    id: "deep_freeze",
+    name: "Maximum Sub-Zero Deep Freezing",
+    desc: "High-intensity 500W burner input reducing butane partial pressure for -24°C ice production.",
+    heatWatts: 500,
+    pressureAtm: 14.0,
+    gasRatio: 0.9,
+  },
+];
 
 export function EinsteinRefrigerator3D() {
   const containerRef = useRef<HTMLDivElement>(null);
@@ -14,6 +70,9 @@ export function EinsteinRefrigerator3D() {
   const [systemPressureAtm, setSystemPressureAtm] = useState<number>(10); // 6 to 16 Atm
   const [auxiliaryGasRatio, setAuxiliaryGasRatio] = useState<number>(0.8); // 0.2 to 0.95 Ammonia/Butane
   const [isHeating, setIsHeating] = useState<boolean>(true);
+  const [showCalloutPins, setShowCalloutPins] = useState<boolean>(false);
+  const [activeCamera, setActiveCamera] = useState<CameraPreset>("iso");
+  const [isAudioMuted, setIsAudioMuted] = useState<boolean>(true);
 
   // Thermodynamic Physics (Dalton's Law of Partial Pressures)
   // P_butane = P_total * (1 - y_ammonia)
@@ -25,13 +84,64 @@ export function EinsteinRefrigerator3D() {
   const live = useLiveSimParams({
     heatInputWatts,
     isHeating,
+    isAudioMuted,
   });
+
+  const controlsRef = useRef<any>(null);
+  const cameraRef = useRef<THREE.PerspectiveCamera | null>(null);
+
+  const applyCameraPreset = (preset: CameraPreset) => {
+    setActiveCamera(preset);
+    const camera = cameraRef.current;
+    const controls = controlsRef.current;
+    if (!camera || !controls) return;
+
+    switch (preset) {
+      case "iso":
+        camera.position.set(11, 8, 14);
+        controls.target.set(0, 0, 0);
+        break;
+      case "generator":
+        camera.position.set(3.8, 0.4, 3.8);
+        controls.target.set(3.4, -0.8, 0);
+        break;
+      case "condenser":
+        camera.position.set(2.4, 3.6, 3.0);
+        controls.target.set(2.2, 2.6, 0);
+        break;
+      case "evaporator":
+        camera.position.set(-2.8, 2.8, 3.8);
+        controls.target.set(-2.8, 1.8, 0);
+        break;
+      case "absorber":
+        camera.position.set(-3.2, -0.6, 3.6);
+        controls.target.set(-2.8, -1.4, 0);
+        break;
+    }
+    controls.update();
+  };
+
+  const applyScenario = (s: ScenarioPreset) => {
+    setHeatInputWatts(s.heatWatts);
+    setSystemPressureAtm(s.pressureAtm);
+    setAuxiliaryGasRatio(s.gasRatio);
+    if (!isAudioMuted) {
+      soundEngine.playSwitchClick();
+    }
+  };
+
+  const toggleSound = () => {
+    const isMuted = soundEngine.toggleMute();
+    setIsAudioMuted(isMuted);
+    if (!isMuted) {
+      soundEngine.playSwitchClick();
+    }
+  };
 
   useEffect(() => {
     const container = containerRef.current;
     if (!container) return;
 
-    // Create Studio Scene with High-Luminosity Studio Lighting
     const studio = createThreeStudioScene({
       container,
       cameraPos: [11, 8, 14],
@@ -39,16 +149,18 @@ export function EinsteinRefrigerator3D() {
     });
 
     const { scene, camera, renderer, controls } = studio;
+    cameraRef.current = camera;
+    controlsRef.current = controls;
 
     // --- PBR MATERIALS ---
     const steelPipeMat = new THREE.MeshStandardMaterial({
-      color: 0x94a3b8, // Hermetically welded steel refrigeration tubing
+      color: 0x94a3b8,
       roughness: 0.15,
       metalness: 0.9,
     });
 
     const hotGeneratorMat = new THREE.MeshStandardMaterial({
-      color: 0xef4444, // Heated ammonia-water boiler vessel
+      color: 0xef4444,
       roughness: 0.2,
       metalness: 0.8,
       emissive: 0xd97706,
@@ -56,7 +168,7 @@ export function EinsteinRefrigerator3D() {
     });
 
     const coldEvaporatorMat = new THREE.MeshStandardMaterial({
-      color: 0x38bdf8, // Sub-zero butane evaporative cooling chamber
+      color: 0x38bdf8,
       roughness: 0.1,
       metalness: 0.85,
       emissive: 0x0284c7,
@@ -64,7 +176,7 @@ export function EinsteinRefrigerator3D() {
     });
 
     const condenserFinsMat = new THREE.MeshStandardMaterial({
-      color: 0x64748b, // Air-cooled condensing heat exchanger fins
+      color: 0x64748b,
       roughness: 0.3,
       metalness: 0.85,
     });
@@ -73,7 +185,7 @@ export function EinsteinRefrigerator3D() {
     const fridgeGroup = new THREE.Group();
     scene.add(fridgeGroup);
 
-    // 1. Hermetic Welded Steel Boiler / Bubble-Pump Generator (Lower Right)
+    // 1. Hermetic Welded Steel Boiler / Bubble-Pump Generator
     const generator = new THREE.Mesh(
       new THREE.CylinderGeometry(0.9, 0.9, 3.4, 24),
       hotGeneratorMat,
@@ -82,7 +194,6 @@ export function EinsteinRefrigerator3D() {
     generator.castShadow = true;
     fridgeGroup.add(generator);
 
-    // Vertical Bubble Pump Vapor-Lift Tube
     const bubbleTube = new THREE.Mesh(
       new THREE.CylinderGeometry(0.12, 0.12, 4.2, 16),
       condenserFinsMat,
@@ -90,7 +201,6 @@ export function EinsteinRefrigerator3D() {
     bubbleTube.position.set(3.4, 1.4, 0);
     fridgeGroup.add(bubbleTube);
 
-    // Electric Heating Element Collar at Base
     const heater = new THREE.Mesh(
       new THREE.CylinderGeometry(1.05, 1.05, 0.8, 24),
       new THREE.MeshStandardMaterial({ color: 0xef4444, emissive: 0xb91c1c, roughness: 0.3 }),
@@ -99,7 +209,7 @@ export function EinsteinRefrigerator3D() {
     heater.castShadow = true;
     fridgeGroup.add(heater);
 
-    // 2. Serpentine Condenser Coil Heat Exchanger (Top Right)
+    // 2. Serpentine Condenser Coil Heat Exchanger
     const condenserGroup = new THREE.Group();
     condenserGroup.position.set(2.2, 2.6, 0);
 
@@ -117,7 +227,6 @@ export function EinsteinRefrigerator3D() {
     condenserMesh.castShadow = true;
     condenserGroup.add(condenserMesh);
 
-    // Aluminum Cooling Fins across Condenser
     for (let f = 0; f < 8; f++) {
       const fin = new THREE.Mesh(new THREE.BoxGeometry(0.04, 2.2, 0.8), condenserFinsMat);
       fin.position.set(-1.0 + f * 0.28, 0, 0);
@@ -125,13 +234,12 @@ export function EinsteinRefrigerator3D() {
     }
     fridgeGroup.add(condenserGroup);
 
-    // 3. Evaporator Freezing Chamber (Top Left - Cold Box with Frost Ribs)
+    // 3. Evaporator Freezing Chamber
     const evaporator = new THREE.Mesh(new THREE.BoxGeometry(3.6, 2.6, 2.6), coldEvaporatorMat);
     evaporator.position.set(-2.8, 1.8, 0);
     evaporator.castShadow = true;
     fridgeGroup.add(evaporator);
 
-    // Internal Freezing Grid Shelves
     for (let s = 0; s < 3; s++) {
       const shelf = new THREE.Mesh(
         new THREE.BoxGeometry(3.2, 0.05, 2.2),
@@ -141,7 +249,7 @@ export function EinsteinRefrigerator3D() {
       fridgeGroup.add(shelf);
     }
 
-    // 4. Absorber Vessel with Horizontal Heat Radiating Rings (Lower Left)
+    // 4. Absorber Vessel with Horizontal Heat Radiating Rings
     const absorber = new THREE.Mesh(new THREE.CylinderGeometry(0.85, 0.85, 3.4, 24), steelPipeMat);
     absorber.position.set(-2.8, -1.4, 0);
     absorber.castShadow = true;
@@ -154,7 +262,7 @@ export function EinsteinRefrigerator3D() {
       fridgeGroup.add(ring);
     }
 
-    // 5. Counter-Flow Concentric Liquid Heat Exchanger Loop (Economizer)
+    // 5. Counter-Flow Concentric Liquid Heat Exchanger Loop
     const economizerCurve = new THREE.CatmullRomCurve3([
       new THREE.Vector3(3.4, -0.4, 0),
       new THREE.Vector3(1.2, -0.8, 0.4),
@@ -166,7 +274,7 @@ export function EinsteinRefrigerator3D() {
     economizer.castShadow = true;
     fridgeGroup.add(economizer);
 
-    // Return Hydrogen Gas Circulation Conduit
+    // Return Gas Conduit
     const h2PipeCurve = new THREE.CatmullRomCurve3([
       new THREE.Vector3(-2.8, 0.5, 0),
       new THREE.Vector3(0, 0.2, -0.5),
@@ -191,7 +299,6 @@ export function EinsteinRefrigerator3D() {
       fluidPos[idx + 1] = (Math.random() - 0.5) * 4.5;
       fluidPos[idx + 2] = (Math.random() - 0.5) * 0.4;
 
-      // Thermally dynamic particles: Warm red/orange near boiler, ice blue near evaporator
       const progressX = (fluidPos[idx] + 3.0) / 6.0;
       fluidColors[idx] = progressX;
       fluidColors[idx + 1] = 0.5 + (1 - progressX) * 0.4;
@@ -222,25 +329,22 @@ export function EinsteinRefrigerator3D() {
     const animate = () => {
       reqId = requestAnimationFrame(animate);
       const delta = clock.getDelta();
-      const _elapsed = clock.getElapsedTime();
       const p = live.current;
 
-      // Fluid Circulation Velocity driven purely by thermal buoyancy (Thermosiphon)
       const fPos = fluidPos;
       const circSpeed = (p.isHeating ? p.heatInputWatts / 220 : 0) * 3.5 * delta;
 
       for (let i = 0; i < fluidCount; i++) {
         const idx = i * 3;
 
-        // Loop circulating clockwise around the closed hermetic loop
         if (fPos[idx] > 2.0 && fPos[idx + 1] < 2.0) {
-          fPos[idx + 1] += circSpeed; // Rising ammonia vapor in generator
+          fPos[idx + 1] += circSpeed;
         } else if (fPos[idx + 1] >= 2.0 && fPos[idx] > -2.5) {
-          fPos[idx] -= circSpeed; // Butane vapor flowing to evaporator
+          fPos[idx] -= circSpeed;
         } else if (fPos[idx] <= -2.5 && fPos[idx + 1] > -2.0) {
-          fPos[idx + 1] -= circSpeed; // Cold liquid descending in absorber
+          fPos[idx + 1] -= circSpeed;
         } else {
-          fPos[idx] += circSpeed; // Rich ammonia solution returning to generator
+          fPos[idx] += circSpeed;
         }
       }
       fluidGeo.attributes.position.needsUpdate = true;
@@ -285,13 +389,13 @@ export function EinsteinRefrigerator3D() {
                 </span>
               </div>
               <div>
-                <span className="text-ink-600 dark:text-ink-400">Butane Partial $P$:</span>{" "}
+                <span className="text-ink-600 dark:text-ink-400">Butane Partial P:</span>{" "}
                 <span className="font-bold text-amber-600 dark:text-amber-400">
                   {butanePartialPressureAtm} atm (of {systemPressureAtm} atm Total)
                 </span>
               </div>
               <div>
-                <span className="text-ink-600 dark:text-ink-400">Mechanical Parts:</span>{" "}
+                <span className="text-ink-600 dark:text-ink-400">Moving Parts:</span>{" "}
                 <span className="font-bold text-purple-600 dark:text-purple-400">
                   0 (100% Hermetic / Silent)
                 </span>
@@ -300,114 +404,166 @@ export function EinsteinRefrigerator3D() {
           </div>
 
           <div className="bg-white/90 dark:bg-ink-900/90 backdrop-blur-md px-3 py-1.5 rounded-lg border border-parchment-300 dark:border-ink-700 text-[11px] font-sans text-ink-700 dark:text-ink-300 flex items-center gap-2 max-w-full">
-            <Sparkles className="w-3.5 h-3.5 text-amber-500 animate-pulse shrink-0" />
+            <Sparkles className="w-3.5 h-3.5 text-emerald-500 animate-pulse shrink-0" />
             <span className="truncate">
-              Einstein &amp; Szilard (US 1,781,541) — Dalton Absorption Cycle
+              Albert Einstein & Leo Szilard (US 1,781,541) — Refrigeration (1930)
             </span>
           </div>
         </div>
 
-        {/* Heat Toggle */}
+        {/* Top Right Tool Bar (Audio, Pins, Reset) */}
         <div className="absolute top-4 right-4 z-10 flex gap-2">
           <button
             type="button"
-            onClick={() => setIsHeating(!isHeating)}
-            className={`px-3 py-1.5 rounded-lg text-xs font-sans font-semibold border transition-all ${
-              isHeating
-                ? "bg-amber-600 text-white border-amber-700 shadow-sm"
-                : "bg-white/80 dark:bg-ink-900/80 text-ink-700 dark:text-ink-300 border-parchment-300 dark:border-ink-700"
-            }`}
+            onClick={toggleSound}
+            className="p-2.5 rounded-xl bg-white/90 dark:bg-ink-900/90 backdrop-blur-md border border-parchment-300 dark:border-ink-700 text-ink-700 dark:text-parchment-300 hover:bg-parchment-100 dark:hover:bg-ink-800 transition-all shadow-sm"
+            title={isAudioMuted ? "Enable Sound Synthesis" : "Mute Sound"}
           >
-            {isHeating ? "Heat Source ON" : "Flame Extinguished"}
+            {isAudioMuted ? <VolumeX className="w-4 h-4" /> : <Volume2 className="w-4 h-4 text-amber-600" />}
           </button>
+          <button
+            type="button"
+            onClick={() => setShowCalloutPins(!showCalloutPins)}
+            className={`p-2.5 rounded-xl backdrop-blur-md border transition-all shadow-sm ${
+              showCalloutPins
+                ? "bg-amber-600 text-white border-amber-700 shadow-md"
+                : "bg-white/90 dark:bg-ink-900/90 border-parchment-300 dark:border-ink-700 text-ink-700 dark:text-parchment-300 hover:bg-parchment-100"
+            }`}
+            title="Toggle Historical Patent Numeral Pins"
+          >
+            <Zap className="w-4 h-4" />
+          </button>
+          <button
+            type="button"
+            onClick={() => applyCameraPreset("iso")}
+            className="p-2.5 rounded-xl bg-white/90 dark:bg-ink-900/90 backdrop-blur-md border border-parchment-300 dark:border-ink-700 text-ink-700 dark:text-parchment-300 hover:bg-parchment-100 dark:hover:bg-ink-800 transition-all shadow-sm"
+            title="Reset Orbit Camera"
+          >
+            <RotateCcw className="w-4 h-4" />
+          </button>
+        </div>
+
+        {/* Camera Views Bar */}
+        <div className="absolute bottom-4 left-4 z-10 flex flex-wrap gap-1.5 bg-white/85 dark:bg-ink-900/85 backdrop-blur-md p-1.5 rounded-xl border border-parchment-300 dark:border-ink-700 shadow-sm text-xs">
+          <span className="px-2 py-1 text-ink-500 font-sans flex items-center gap-1">
+            <Camera className="w-3.5 h-3.5" /> View:
+          </span>
+          {(
+            [
+              ["iso", "Isometric"],
+              ["generator", "Boiler Generator"],
+              ["condenser", "Condenser Fins"],
+              ["evaporator", "Cold Evaporator"],
+              ["absorber", "Absorber Rings"],
+            ] as const
+          ).map(([id, label]) => (
+            <button
+              key={id}
+              type="button"
+              onClick={() => applyCameraPreset(id)}
+              className={`px-2.5 py-1 rounded-lg font-sans transition-all ${
+                activeCamera === id
+                  ? "bg-amber-700 dark:bg-amber-600 text-white font-semibold shadow-xs"
+                  : "text-ink-700 dark:text-parchment-300 hover:bg-parchment-200 dark:hover:bg-ink-800"
+              }`}
+            >
+              {label}
+            </button>
+          ))}
         </div>
       </div>
 
-      {/* Parameter Sliders Panel */}
-      <div className="p-4 sm:p-5 bg-parchment-100/80 dark:bg-ink-900/90 border-t border-parchment-300 dark:border-ink-800 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 text-xs font-sans">
-        {/* Heat Input */}
+      {/* Interactive Controls & Scenario Bar */}
+      <div className="p-4 sm:p-5 bg-parchment-100/90 dark:bg-ink-900/90 border-t border-parchment-300 dark:border-ink-800 space-y-4">
+        {/* Scenario Presets */}
         <div className="space-y-1.5">
-          <div className="flex justify-between font-medium text-ink-900 dark:text-parchment-100">
-            <span>Boiler Thermal Input:</span>
-            <span className="font-bold text-amber-700 dark:text-amber-400">
-              {heatInputWatts} Watts ($th$)
-            </span>
+          <div className="text-xs font-sans font-bold text-ink-700 dark:text-ink-300 uppercase tracking-wider flex items-center gap-1.5">
+            <Sparkles className="w-3.5 h-3.5 text-amber-600" /> Absorption Thermodynamics Presets:
           </div>
-          <input
-            type="range"
-            min="80"
-            max="500"
-            step="20"
-            value={heatInputWatts}
-            onChange={(e) => setHeatInputWatts(Number(e.target.value))}
-            className="w-full accent-amber-600 dark:accent-amber-400 cursor-pointer"
-          />
-          <span className="text-[10px] text-ink-500 dark:text-ink-400 block">
-            Drives thermosiphon bubble pump circulation
-          </span>
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
+            {SCENARIOS.map((s) => (
+              <button
+                key={s.id}
+                type="button"
+                onClick={() => applyScenario(s)}
+                className="p-2.5 rounded-xl border border-parchment-300 dark:border-ink-700 bg-white/70 dark:bg-ink-950/70 hover:bg-parchment-50 dark:hover:bg-ink-800 text-left transition-all group"
+              >
+                <div className="text-xs font-serif font-bold text-ink-900 dark:text-parchment-100 group-hover:text-amber-700 dark:group-hover:text-amber-400">
+                  {s.name}
+                </div>
+                <div className="text-[10px] font-sans text-ink-500 dark:text-ink-400 line-clamp-2 mt-0.5">
+                  {s.desc}
+                </div>
+              </button>
+            ))}
+          </div>
         </div>
 
-        {/* System Pressure */}
-        <div className="space-y-1.5">
-          <div className="flex justify-between font-medium text-ink-900 dark:text-parchment-100">
-            <span>Uniform Total Pressure:</span>
-            <span className="font-bold text-blue-600 dark:text-blue-400">
-              {systemPressureAtm} atm (Constant)
-            </span>
-          </div>
-          <input
-            type="range"
-            min="6"
-            max="16"
-            step="1"
-            value={systemPressureAtm}
-            onChange={(e) => setSystemPressureAtm(Number(e.target.value))}
-            className="w-full accent-blue-600 dark:accent-blue-400 cursor-pointer"
-          />
-          <span className="text-[10px] text-ink-500 dark:text-ink-400 block">
-            Equalized pressure eliminates rotary compressor seals
-          </span>
-        </div>
-
-        {/* Auxiliary Ammonia Gas Fraction */}
-        <div className="space-y-1.5">
-          <div className="flex justify-between font-medium text-ink-900 dark:text-parchment-100">
-            <span>Ammonia Gas Fraction:</span>
-            <span className="font-bold text-emerald-600 dark:text-emerald-400">
-              {(auxiliaryGasRatio * 100).toFixed(0)}% NH₃
-            </span>
-          </div>
-          <input
-            type="range"
-            min="0.2"
-            max="0.95"
-            step="0.05"
-            value={auxiliaryGasRatio}
-            onChange={(e) => setAuxiliaryGasRatio(Number(e.target.value))}
-            className="w-full accent-emerald-600 dark:accent-emerald-400 cursor-pointer"
-          />
-          <span className="text-[10px] text-ink-500 dark:text-ink-400 block">
-            Dalton's Law forces butane partial pressure reduction
-          </span>
-        </div>
-
-        {/* Safety & Reliability Score */}
-        <div className="space-y-1.5">
-          <div className="flex justify-between font-medium text-ink-900 dark:text-parchment-100">
-            <span>Safety &amp; Lifespan:</span>
-            <span className="font-bold text-purple-600 dark:text-purple-400">
-              Infinite (Zero Wear)
-            </span>
-          </div>
-          <div className="w-full bg-parchment-300 dark:bg-ink-800 rounded-full h-3 overflow-hidden mt-2 border border-parchment-400 dark:border-ink-700">
-            <div
-              className="bg-gradient-to-r from-blue-500 to-emerald-500 h-full transition-all duration-300"
-              style={{ width: "98%" }}
+        {/* Sliders Grid */}
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 pt-1">
+          {/* Heat Input */}
+          <div className="space-y-1.5">
+            <div className="flex justify-between text-xs font-sans">
+              <span className="font-semibold text-ink-800 dark:text-parchment-200">
+                Heat Source Input:
+              </span>
+              <span className="font-mono text-amber-700 dark:text-amber-400 font-bold">
+                {heatInputWatts} Watts
+              </span>
+            </div>
+            <input
+              type="range"
+              min="80"
+              max="500"
+              step="10"
+              value={heatInputWatts}
+              onChange={(e) => setHeatInputWatts(Number(e.target.value))}
+              className="w-full accent-amber-600 cursor-pointer"
             />
+            <span className="text-[10px] text-ink-500 dark:text-ink-400 block">
+              Boiler flame or electric element power
+            </span>
           </div>
-          <span className="text-[10px] text-ink-500 dark:text-ink-400 block">
-            Purchased by Electrolux in 1930 for $750
-          </span>
+
+          {/* System Pressure */}
+          <div className="space-y-1.5">
+            <div className="flex justify-between text-xs font-sans">
+              <span className="font-semibold text-ink-800 dark:text-parchment-200">
+                Total System Pressure:
+              </span>
+              <span className="font-mono text-blue-600 dark:text-blue-400 font-bold">
+                {systemPressureAtm.toFixed(1)} atm
+              </span>
+            </div>
+            <input
+              type="range"
+              min="6.0"
+              max="16.0"
+              step="0.5"
+              value={systemPressureAtm}
+              onChange={(e) => setSystemPressureAtm(Number(e.target.value))}
+              className="w-full accent-blue-600 cursor-pointer"
+            />
+            <span className="text-[10px] text-ink-500 dark:text-ink-400 block">
+              Constant hermetic equilibrium pressure
+            </span>
+          </div>
+
+          {/* Heat Drive Toggle */}
+          <div className="flex flex-col justify-end space-y-1.5">
+            <button
+              type="button"
+              onClick={() => setIsHeating(!isHeating)}
+              className={`w-full py-3 px-4 rounded-xl font-sans font-bold text-sm transition-all shadow-sm flex items-center justify-center gap-2 ${
+                isHeating
+                  ? "bg-emerald-600 hover:bg-emerald-700 text-white shadow-md"
+                  : "bg-amber-600 hover:bg-amber-700 text-white shadow-md"
+              }`}
+            >
+              <Thermometer className="w-4 h-4" />
+              {isHeating ? "Heat Source ACTIVE (Circulating)" : "Heat OFF (Cooling Halted)"}
+            </button>
+          </div>
         </div>
       </div>
     </div>

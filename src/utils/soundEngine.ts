@@ -144,7 +144,13 @@ class SoundEngine {
     filter.connect(gain);
     gain.connect(this.ctx.destination);
 
+    noise.onended = () => {
+      noise.disconnect();
+      filter.disconnect();
+      gain.disconnect();
+    };
     noise.start();
+    noise.stop(this.ctx.currentTime + 0.08);
   }
 
   /**
@@ -195,6 +201,106 @@ class SoundEngine {
 
     osc.start();
     osc.stop(this.ctx.currentTime + 0.03);
+  }
+
+  /**
+   * Authentic mechanical microswitch click (Engelbart Mouse)
+   */
+  public playMicroswitchClick() {
+    if (this.isMuted) return;
+    this.initContext();
+    if (!this.ctx) return;
+
+    const osc = this.ctx.createOscillator();
+    const gain = this.ctx.createGain();
+
+    osc.type = "triangle";
+    osc.frequency.setValueAtTime(1800, this.ctx.currentTime);
+    osc.frequency.exponentialRampToValueAtTime(450, this.ctx.currentTime + 0.012);
+
+    gain.gain.setValueAtTime(0.22, this.ctx.currentTime);
+    gain.gain.exponentialRampToValueAtTime(0.001, this.ctx.currentTime + 0.012);
+
+    osc.connect(gain);
+    gain.connect(this.ctx.destination);
+
+    osc.start();
+    osc.stop(this.ctx.currentTime + 0.015);
+  }
+
+  /**
+   * Mechanical shuttle & needle lockstitch clack (Howe Sewing Machine)
+   */
+  public playLockstitchClack() {
+    if (this.isMuted) return;
+    this.initContext();
+    if (!this.ctx) return;
+
+    const osc = this.ctx.createOscillator();
+    const gain = this.ctx.createGain();
+
+    osc.type = "square";
+    osc.frequency.setValueAtTime(320, this.ctx.currentTime);
+    osc.frequency.exponentialRampToValueAtTime(80, this.ctx.currentTime + 0.025);
+
+    gain.gain.setValueAtTime(0.08, this.ctx.currentTime);
+    gain.gain.exponentialRampToValueAtTime(0.001, this.ctx.currentTime + 0.025);
+
+    osc.connect(gain);
+    gain.connect(this.ctx.destination);
+
+    osc.start();
+    osc.stop(this.ctx.currentTime + 0.03);
+  }
+
+  /**
+   * Spread-spectrum carrier frequency hop chime (Lamarr Piano Roll)
+   */
+  public playPianoKeyHop(frequencyHz: number) {
+    if (this.isMuted) return;
+    this.initContext();
+    if (!this.ctx) return;
+
+    const osc = this.ctx.createOscillator();
+    const gain = this.ctx.createGain();
+
+    osc.type = "sine";
+    osc.frequency.setValueAtTime(Math.max(100, Math.min(2000, frequencyHz)), this.ctx.currentTime);
+
+    gain.gain.setValueAtTime(0.06, this.ctx.currentTime);
+    gain.gain.exponentialRampToValueAtTime(0.001, this.ctx.currentTime + 0.06);
+
+    osc.connect(gain);
+    gain.connect(this.ctx.destination);
+
+    osc.start();
+    osc.stop(this.ctx.currentTime + 0.07);
+  }
+
+  /**
+   * Elastic polymer snap / relaxation sound (Goodyear Rubber)
+   */
+  public playElastomerSnap(stretchFactor = 1.0) {
+    if (this.isMuted) return;
+    this.initContext();
+    if (!this.ctx) return;
+
+    const osc = this.ctx.createOscillator();
+    const gain = this.ctx.createGain();
+
+    const pitch = 200 + stretchFactor * 180;
+    osc.type = "sine";
+    osc.frequency.setValueAtTime(pitch, this.ctx.currentTime);
+    osc.frequency.exponentialRampToValueAtTime(60, this.ctx.currentTime + 0.04);
+
+    gain.gain.setValueAtTime(0.15, this.ctx.currentTime);
+    gain.gain.exponentialRampToValueAtTime(0.001, this.ctx.currentTime + 0.04);
+
+    osc.connect(gain);
+    gain.connect(this.ctx.destination);
+
+    osc.start();
+    osc.stop(this.ctx.currentTime + 0.05);
   }
 }
 

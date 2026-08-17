@@ -1,10 +1,66 @@
 "use client";
 
-import { Cpu, Monitor } from "lucide-react";
+import {
+  Camera,
+  Cpu,
+  Monitor,
+  RotateCcw,
+  Sparkles,
+  Volume2,
+  VolumeX,
+  Zap,
+} from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import * as THREE from "three";
+import { soundEngine } from "@/utils/soundEngine";
 import { createGlowPointTexture, createThreeStudioScene } from "./ThreeStudioScene";
 import { useLiveSimParams } from "./useLiveSimParams";
+
+type CameraPreset = "iso" | "cpu" | "ram_matrix" | "slots" | "top";
+
+interface ScenarioPreset {
+  id: string;
+  name: string;
+  desc: string;
+  clockMhz: number;
+  mode: "hires_color" | "lores_color" | "text_40col";
+  ramKb: number;
+}
+
+const SCENARIOS: ScenarioPreset[] = [
+  {
+    id: "wozniak_1977",
+    name: "1977 Apple II Launch Architecture",
+    desc: "Steve Wozniak's masterstroke (US 4,136,359): 1.02 MHz CPU interleaved with video refresh with zero DMA wait states.",
+    clockMhz: 1.02,
+    mode: "hires_color",
+    ramKb: 48,
+  },
+  {
+    id: "breakout_color",
+    name: "Wozniak Color Breakout Game",
+    desc: "Direct 3.58 MHz NTSC color burst synthesis from 1-bit shift registers without expensive color palette hardware.",
+    clockMhz: 1.02,
+    mode: "lores_color",
+    ramKb: 16,
+  },
+  {
+    id: "integer_basic",
+    name: "Integer BASIC in Motherboard ROM",
+    desc: "Minimal 4 KB RAM system booting instantaneously into Wozniak's hand-assembled Integer BASIC interpreter.",
+    clockMhz: 1.02,
+    mode: "text_40col",
+    ramKb: 4,
+  },
+  {
+    id: "turbo_acceleration",
+    name: "2.0 MHz Accelerator Turbo Mode",
+    desc: "Double-speed 6502 processing cutting clock cycle to 500 ns while preserving NTSC raster alignment.",
+    clockMhz: 2.0,
+    mode: "hires_color",
+    ramKb: 48,
+  },
+];
 
 export function WozniakApple3D() {
   const containerRef = useRef<HTMLDivElement>(null);
@@ -15,26 +71,80 @@ export function WozniakApple3D() {
     "hires_color",
   );
   const [ramCapacityKb, setRamCapacityKb] = useState<number>(48); // 4, 16, 48 KB
-  const [_isCpuActive, _setIsCpuActive] = useState<boolean>(true);
+  const [isCpuActive, setIsCpuActive] = useState<boolean>(true);
+  const [showCalloutPins, setShowCalloutPins] = useState<boolean>(false);
+  const [activeCamera, setActiveCamera] = useState<CameraPreset>("iso");
+  const [isAudioMuted, setIsAudioMuted] = useState<boolean>(true);
 
   // System Architecture Calculations
   const cycleTimeNs = Math.round(1000 / clockFrequencyMhz);
   const phi1VideoAccessWindowNs = Math.round(cycleTimeNs / 2);
-  const _phi2CpuAccessWindowNs = Math.round(cycleTimeNs / 2);
-  const effectiveCpuThroughputPct = 100; // Zero wait states
+  const effectiveCpuThroughputPct = 100;
   const colorSubcarrierMhz = (3.579545).toFixed(4);
 
   const live = useLiveSimParams({
     clockFrequencyMhz,
     videoMode,
     ramCapacityKb,
+    isCpuActive,
+    isAudioMuted,
   });
+
+  const controlsRef = useRef<any>(null);
+  const cameraRef = useRef<THREE.PerspectiveCamera | null>(null);
+
+  const applyCameraPreset = (preset: CameraPreset) => {
+    setActiveCamera(preset);
+    const camera = cameraRef.current;
+    const controls = controlsRef.current;
+    if (!camera || !controls) return;
+
+    switch (preset) {
+      case "iso":
+        camera.position.set(12, 10, 15);
+        controls.target.set(0, 0, 0);
+        break;
+      case "cpu":
+        camera.position.set(-3.2, 1.6, 2.2);
+        controls.target.set(-3.2, -0.4, 0.4);
+        break;
+      case "ram_matrix":
+        camera.position.set(1.2, 1.8, -1.0);
+        controls.target.set(1.0, -0.4, -1.2);
+        break;
+      case "slots":
+        camera.position.set(0, 2.8, 4.0);
+        controls.target.set(0, -0.3, 2.6);
+        break;
+      case "top":
+        camera.position.set(0, 9.5, 0.1);
+        controls.target.set(0, 0, 0);
+        break;
+    }
+    controls.update();
+  };
+
+  const applyScenario = (s: ScenarioPreset) => {
+    setClockFrequencyMhz(s.clockMhz);
+    setVideoMode(s.mode);
+    setRamCapacityKb(s.ramKb);
+    if (!isAudioMuted) {
+      soundEngine.playMicroswitchClick();
+    }
+  };
+
+  const toggleSound = () => {
+    const isMuted = soundEngine.toggleMute();
+    setIsAudioMuted(isMuted);
+    if (!isMuted) {
+      soundEngine.playMicroswitchClick();
+    }
+  };
 
   useEffect(() => {
     const container = containerRef.current;
     if (!container) return;
 
-    // Create Studio Scene with High-Luminosity Studio Lighting
     const studio = createThreeStudioScene({
       container,
       cameraPos: [12, 10, 15],
@@ -42,28 +152,30 @@ export function WozniakApple3D() {
     });
 
     const { scene, camera, renderer, controls } = studio;
+    cameraRef.current = camera;
+    controlsRef.current = controls;
 
     // --- PBR MATERIALS ---
     const caseBeigeMat = new THREE.MeshStandardMaterial({
-      color: 0xe2d9c8, // Classic Apple II beige molded structural foam plastic
+      color: 0xe2d9c8,
       roughness: 0.45,
       metalness: 0.05,
     });
 
     const pcbGreenMat = new THREE.MeshStandardMaterial({
-      color: 0x14532d, // Green FR-4 epoxy fiberglass printed circuit board
+      color: 0x14532d,
       roughness: 0.35,
       metalness: 0.2,
     });
 
     const icChipMat = new THREE.MeshStandardMaterial({
-      color: 0x0f172a, // Black ceramic / plastic dual in-line package (DIP) ICs
+      color: 0x0f172a,
       roughness: 0.25,
       metalness: 0.8,
     });
 
     const goldSlotMat = new THREE.MeshStandardMaterial({
-      color: 0xf59e0b, // 50-pin gold-plated peripheral expansion bus slots
+      color: 0xf59e0b,
       roughness: 0.15,
       metalness: 0.95,
     });
@@ -96,7 +208,7 @@ export function WozniakApple3D() {
     traceRing.position.y = -0.54;
     computerGroup.add(traceRing);
 
-    // MOS Technology 6502 8-Bit CPU (40-Pin Ceramic/Plastic DIP with Silver Lead Frames)
+    // MOS Technology 6502 8-Bit CPU (40-Pin DIP)
     const cpuGroup = new THREE.Group();
     cpuGroup.position.set(-3.2, -0.42, 0.4);
 
@@ -104,7 +216,6 @@ export function WozniakApple3D() {
     cpuBody.castShadow = true;
     cpuGroup.add(cpuBody);
 
-    // CPU Pin 1 Orientation Notch
     const notch = new THREE.Mesh(
       new THREE.CylinderGeometry(0.18, 0.18, 0.1, 16, 1, false, 0, Math.PI),
       new THREE.MeshStandardMaterial({ color: 0x1e293b, roughness: 0.9 }),
@@ -148,7 +259,7 @@ export function WozniakApple3D() {
     }
     computerGroup.add(romGroup);
 
-    // 8 Peripheral Expansion Slots (50-Pin Gold-Plated Edge Connectors - Slots 0 to 7)
+    // 8 Peripheral Expansion Slots (50-Pin Gold-Plated Edge Connectors)
     const slotsGroup = new THREE.Group();
     for (let s = 0; s < 8; s++) {
       const slotBody = new THREE.Mesh(new THREE.BoxGeometry(0.28, 0.45, 3.4), goldSlotMat);
@@ -167,7 +278,7 @@ export function WozniakApple3D() {
     crystal.castShadow = true;
     computerGroup.add(crystal);
 
-    // Rear Panel I/O Connectors: RCA Composite Video Out & Cassette In/Out Jacks
+    // Rear Panel RCA Composite Video Out Jack
     const rcaJack = new THREE.Mesh(
       new THREE.CylinderGeometry(0.28, 0.28, 0.5, 16),
       new THREE.MeshStandardMaterial({ color: 0xd97706, metalness: 0.9 }),
@@ -192,7 +303,6 @@ export function WozniakApple3D() {
       busPos[idx + 1] = -0.85 + Math.random() * 0.2;
       busPos[idx + 2] = -2.0 + Math.random() * 4.0;
 
-      // Phi 1 = Cyan Video Raster Stream; Phi 2 = Amber CPU Instruction Stream
       if (isPhi1Video) {
         busColors[idx] = 0.1;
         busColors[idx + 1] = 0.9;
@@ -228,21 +338,21 @@ export function WozniakApple3D() {
     const animate = () => {
       reqId = requestAnimationFrame(animate);
       const delta = clock.getDelta();
-      const _elapsed = clock.getElapsedTime();
       const p = live.current;
 
-      // Animate shared memory bus data packets flowing along PCB traces
       const bPos = busPos;
       const speed = p.clockFrequencyMhz * 4.0 * delta;
 
-      for (let i = 0; i < busPacketCount; i++) {
-        const idx = i * 3;
-        bPos[idx] += speed * (i % 2 === 0 ? 1 : -1);
+      if (p.isCpuActive) {
+        for (let i = 0; i < busPacketCount; i++) {
+          const idx = i * 3;
+          bPos[idx] += speed * (i % 2 === 0 ? 1 : -1);
 
-        if (bPos[idx] > 3.5) bPos[idx] = -3.0;
-        if (bPos[idx] < -3.5) bPos[idx] = 3.0;
+          if (bPos[idx] > 3.5) bPos[idx] = -3.0;
+          if (bPos[idx] < -3.5) bPos[idx] = 3.0;
+        }
+        busGeo.attributes.position.needsUpdate = true;
       }
-      busGeo.attributes.position.needsUpdate = true;
 
       controls.update();
       renderer.render(scene, camera);
@@ -279,7 +389,7 @@ export function WozniakApple3D() {
               <div>
                 <span className="text-ink-600 dark:text-ink-400">Memory Cycle Window:</span>{" "}
                 <span className="font-bold text-blue-600 dark:text-blue-400">
-                  {phi1VideoAccessWindowNs} ns ($\Phi_1$ Video / $\Phi_2$ CPU)
+                  {phi1VideoAccessWindowNs} ns (Φ₁ Video / Φ₂ CPU)
                 </span>
               </div>
               <div>
@@ -299,109 +409,204 @@ export function WozniakApple3D() {
 
           <div className="bg-white/90 dark:bg-ink-900/90 backdrop-blur-md px-3 py-1.5 rounded-lg border border-parchment-300 dark:border-ink-700 text-[11px] font-sans text-ink-700 dark:text-ink-300 flex items-center gap-2 max-w-full">
             <Monitor className="w-3.5 h-3.5 text-emerald-500 animate-pulse shrink-0" />
-            <span className="truncate">Steve Wozniak (US 4,136,359) — Shared Dynamic RAM</span>
+            <span className="truncate">Steve Wozniak (US 4,136,359) — Shared Dynamic RAM Architecture</span>
           </div>
         </div>
 
-        {/* Video Mode Selector */}
-        <div className="absolute top-4 right-4 z-10 flex gap-1.5">
-          {(["hires_color", "lores_color", "text_40col"] as const).map((mode) => (
+        {/* Top Right Tool Bar (Audio, Pins, Reset) */}
+        <div className="absolute top-4 right-4 z-10 flex gap-2">
+          <button
+            type="button"
+            onClick={toggleSound}
+            className="p-2.5 rounded-xl bg-white/90 dark:bg-ink-900/90 backdrop-blur-md border border-parchment-300 dark:border-ink-700 text-ink-700 dark:text-parchment-300 hover:bg-parchment-100 dark:hover:bg-ink-800 transition-all shadow-sm"
+            title={isAudioMuted ? "Enable Sound Synthesis" : "Mute Sound"}
+          >
+            {isAudioMuted ? <VolumeX className="w-4 h-4" /> : <Volume2 className="w-4 h-4 text-amber-600" />}
+          </button>
+          <button
+            type="button"
+            onClick={() => setShowCalloutPins(!showCalloutPins)}
+            className={`p-2.5 rounded-xl backdrop-blur-md border transition-all shadow-sm ${
+              showCalloutPins
+                ? "bg-amber-600 text-white border-amber-700 shadow-md"
+                : "bg-white/90 dark:bg-ink-900/90 border-parchment-300 dark:border-ink-700 text-ink-700 dark:text-parchment-300 hover:bg-parchment-100"
+            }`}
+            title="Toggle Historical Patent Numeral Pins"
+          >
+            <Zap className="w-4 h-4" />
+          </button>
+          <button
+            type="button"
+            onClick={() => applyCameraPreset("iso")}
+            className="p-2.5 rounded-xl bg-white/90 dark:bg-ink-900/90 backdrop-blur-md border border-parchment-300 dark:border-ink-700 text-ink-700 dark:text-parchment-300 hover:bg-parchment-100 dark:hover:bg-ink-800 transition-all shadow-sm"
+            title="Reset Orbit Camera"
+          >
+            <RotateCcw className="w-4 h-4" />
+          </button>
+        </div>
+
+        {/* Camera Views Bar */}
+        <div className="absolute bottom-4 left-4 z-10 flex flex-wrap gap-1.5 bg-white/85 dark:bg-ink-900/85 backdrop-blur-md p-1.5 rounded-xl border border-parchment-300 dark:border-ink-700 shadow-sm text-xs">
+          <span className="px-2 py-1 text-ink-500 font-sans flex items-center gap-1">
+            <Camera className="w-3.5 h-3.5" /> View:
+          </span>
+          {(
+            [
+              ["iso", "Isometric"],
+              ["cpu", "6502 CPU"],
+              ["ram_matrix", "4116 RAM Bank"],
+              ["slots", "Bus Slots"],
+              ["top", "Motherboard"],
+            ] as const
+          ).map(([id, label]) => (
             <button
-              key={mode}
+              key={id}
               type="button"
-              onClick={() => setVideoMode(mode)}
-              className={`px-2.5 py-1.5 rounded-lg text-xs font-sans font-semibold capitalize border transition-all ${
-                videoMode === mode
-                  ? "bg-blue-600 text-white border-blue-700 shadow-sm"
-                  : "bg-white/80 dark:bg-ink-900/80 text-ink-700 dark:text-ink-300 border-parchment-300 dark:border-ink-700"
+              onClick={() => applyCameraPreset(id)}
+              className={`px-2.5 py-1 rounded-lg font-sans transition-all ${
+                activeCamera === id
+                  ? "bg-amber-700 dark:bg-amber-600 text-white font-semibold shadow-xs"
+                  : "text-ink-700 dark:text-parchment-300 hover:bg-parchment-200 dark:hover:bg-ink-800"
               }`}
             >
-              {mode.replace("_", " ")}
+              {label}
             </button>
           ))}
         </div>
       </div>
 
-      {/* Parameter Sliders Panel */}
-      <div className="p-4 sm:p-5 bg-parchment-100/80 dark:bg-ink-900/90 border-t border-parchment-300 dark:border-ink-800 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 text-xs font-sans">
-        {/* Clock Frequency */}
+      {/* Interactive Controls & Scenario Bar */}
+      <div className="p-4 sm:p-5 bg-parchment-100/90 dark:bg-ink-900/90 border-t border-parchment-300 dark:border-ink-800 space-y-4">
+        {/* Scenario Presets */}
         <div className="space-y-1.5">
-          <div className="flex justify-between font-medium text-ink-900 dark:text-parchment-100">
-            <span>MOS 6502 CPU Clock:</span>
-            <span className="font-bold text-amber-700 dark:text-amber-400">
-              {clockFrequencyMhz.toFixed(2)} MHz
-            </span>
+          <div className="text-xs font-sans font-bold text-ink-700 dark:text-ink-300 uppercase tracking-wider flex items-center gap-1.5">
+            <Sparkles className="w-3.5 h-3.5 text-amber-600" /> Historical Apple II Scenarios:
           </div>
-          <input
-            type="range"
-            min="0.5"
-            max="2.0"
-            step="0.05"
-            value={clockFrequencyMhz}
-            onChange={(e) => setClockFrequencyMhz(Number(e.target.value))}
-            className="w-full accent-amber-600 dark:accent-amber-400 cursor-pointer"
-          />
-          <span className="text-[10px] text-ink-500 dark:text-ink-400 block">
-            Two-phase clock ($\Phi_1$ Video, $\Phi_2$ CPU)
-          </span>
-        </div>
-
-        {/* Dynamic RAM Capacity */}
-        <div className="space-y-1.5">
-          <div className="flex justify-between font-medium text-ink-900 dark:text-parchment-100">
-            <span>Dynamic RAM Capacity:</span>
-            <span className="font-bold text-blue-600 dark:text-blue-400">
-              {ramCapacityKb} KB RAM
-            </span>
-          </div>
-          <div className="grid grid-cols-3 gap-1 pt-0.5">
-            {[4, 16, 48].map((kb) => (
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
+            {SCENARIOS.map((s) => (
               <button
-                key={kb}
+                key={s.id}
                 type="button"
-                onClick={() => setRamCapacityKb(kb)}
-                className={`py-1 rounded text-xs font-semibold border ${
-                  ramCapacityKb === kb
-                    ? "bg-blue-600 text-white border-blue-700 shadow-sm"
-                    : "bg-white/80 dark:bg-ink-800 text-ink-700 dark:text-ink-300 border-parchment-300 dark:border-ink-700"
-                }`}
+                onClick={() => applyScenario(s)}
+                className="p-2.5 rounded-xl border border-parchment-300 dark:border-ink-700 bg-white/70 dark:bg-ink-950/70 hover:bg-parchment-50 dark:hover:bg-ink-800 text-left transition-all group"
               >
-                {kb}K
+                <div className="text-xs font-serif font-bold text-ink-900 dark:text-parchment-100 group-hover:text-amber-700 dark:group-hover:text-amber-400">
+                  {s.name}
+                </div>
+                <div className="text-[10px] font-sans text-ink-500 dark:text-ink-400 line-clamp-2 mt-0.5">
+                  {s.desc}
+                </div>
               </button>
             ))}
           </div>
         </div>
 
-        {/* Graphics Hardware Cost Savings */}
-        <div className="space-y-1.5">
-          <div className="flex justify-between font-medium text-ink-900 dark:text-parchment-100">
-            <span>Silicon Cost Reduction:</span>
-            <span className="font-bold text-emerald-600 dark:text-emerald-400">
-              -75% IC Chip Count
+        {/* Sliders Grid */}
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 pt-1">
+          {/* Clock Frequency */}
+          <div className="space-y-1.5">
+            <div className="flex justify-between text-xs font-sans">
+              <span className="font-semibold text-ink-800 dark:text-parchment-200">
+                MOS 6502 CPU Clock:
+              </span>
+              <span className="font-mono text-amber-700 dark:text-amber-400 font-bold">
+                {clockFrequencyMhz.toFixed(2)} MHz
+              </span>
+            </div>
+            <input
+              type="range"
+              min="0.5"
+              max="2.0"
+              step="0.05"
+              value={clockFrequencyMhz}
+              onChange={(e) => setClockFrequencyMhz(Number(e.target.value))}
+              className="w-full accent-amber-600 cursor-pointer"
+            />
+            <span className="text-[10px] text-ink-500 dark:text-ink-400 block">
+              {"Two-phase clock (Φ₁ Video, Φ₂ CPU)"}
             </span>
           </div>
-          <div className="w-full bg-parchment-300 dark:bg-ink-800 rounded-full h-3 overflow-hidden mt-2 border border-parchment-400 dark:border-ink-700">
-            <div
-              className="bg-gradient-to-r from-blue-500 to-emerald-500 h-full transition-all duration-300"
-              style={{ width: "92%" }}
-            />
+
+          {/* Dynamic RAM Capacity */}
+          <div className="space-y-1.5">
+            <div className="flex justify-between text-xs font-sans">
+              <span className="font-semibold text-ink-800 dark:text-parchment-200">
+                Dynamic RAM Capacity:
+              </span>
+              <span className="font-mono text-blue-600 dark:text-blue-400 font-bold">
+                {ramCapacityKb} KB RAM
+              </span>
+            </div>
+            <div className="grid grid-cols-3 gap-1 pt-0.5">
+              {[4, 16, 48].map((kb) => (
+                <button
+                  key={kb}
+                  type="button"
+                  onClick={() => setRamCapacityKb(kb)}
+                  className={`py-1.5 rounded-lg text-xs font-semibold border font-mono transition-all ${
+                    ramCapacityKb === kb
+                      ? "bg-blue-600 text-white border-blue-700 shadow-sm"
+                      : "bg-white/80 dark:bg-ink-800 text-ink-700 dark:text-ink-300 border-parchment-300 dark:border-ink-700 hover:bg-parchment-100"
+                  }`}
+                >
+                  {kb}K
+                </button>
+              ))}
+            </div>
+            <span className="text-[10px] text-ink-500 dark:text-ink-400 block">
+              4116 16Kbit dynamic RAM chips
+            </span>
           </div>
-          <span className="text-[10px] text-ink-500 dark:text-ink-400 block">
-            Wozniak's single-board architecture eliminated ~40 TTL chips
-          </span>
+
+          {/* CPU State Toggle */}
+          <div className="flex flex-col justify-end space-y-1.5">
+            <button
+              type="button"
+              onClick={() => setIsCpuActive(!isCpuActive)}
+              className={`w-full py-3 px-4 rounded-xl font-sans font-bold text-sm transition-all shadow-sm flex items-center justify-center gap-2 ${
+                isCpuActive
+                  ? "bg-emerald-600 hover:bg-emerald-700 text-white shadow-md"
+                  : "bg-amber-600 hover:bg-amber-700 text-white shadow-md"
+              }`}
+            >
+              <Cpu className="w-4 h-4" />
+              {isCpuActive ? "CPU Clock Active (Executing)" : "CPU Paused (Halt Step)"}
+            </button>
+          </div>
         </div>
 
-        {/* Commercial Heritage */}
-        <div className="space-y-1.5">
-          <div className="flex justify-between font-medium text-ink-900 dark:text-parchment-100">
-            <span>Modern Lineage:</span>
-            <span className="font-bold text-purple-600 dark:text-purple-400">
-              Unified Memory Architecture
+        {/* Video Mode Selection & Heritage Notice */}
+        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 pt-1 border-t border-parchment-200 dark:border-ink-800 text-xs font-sans">
+          <div className="flex items-center gap-2">
+            <span className="text-ink-600 dark:text-ink-400">Video Display Mode:</span>
+            {(["hires_color", "lores_color", "text_40col"] as const).map((mode) => (
+              <button
+                key={mode}
+                type="button"
+                onClick={() => setVideoMode(mode)}
+                className={`px-3 py-1 rounded-lg font-sans font-semibold capitalize transition-all ${
+                  videoMode === mode
+                    ? "bg-blue-600 text-white shadow-xs"
+                    : "bg-white/70 dark:bg-ink-800 text-ink-700 dark:text-parchment-200 hover:bg-parchment-200"
+                }`}
+              >
+                {mode.replace("_", " ")}
+              </button>
+            ))}
+          </div>
+
+          <div className="flex items-center gap-2 w-full sm:w-auto">
+            <span className="text-ink-600 dark:text-ink-400 text-xs">Silicon Savings:</span>
+            <div className="w-28 sm:w-36 bg-parchment-300 dark:bg-ink-800 rounded-full h-2.5 overflow-hidden border border-parchment-400 dark:border-ink-700">
+              <div
+                className="bg-gradient-to-r from-blue-500 to-emerald-500 h-full transition-all duration-300"
+                style={{ width: "92%" }}
+              />
+            </div>
+            <span className="font-bold text-xs text-ink-800 dark:text-parchment-200 font-mono">
+              -75% TTL Count
             </span>
           </div>
-          <span className="text-[11px] text-ink-700 dark:text-parchment-200 block pt-1 leading-relaxed">
-            Direct ancestor of unified CPU/GPU memory in modern Apple Silicon M-series chips.
-          </span>
         </div>
       </div>
     </div>

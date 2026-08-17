@@ -1,10 +1,68 @@
 "use client";
 
-import { Flame, Shield } from "lucide-react";
+import {
+  Activity,
+  Camera,
+  Flame,
+  Layers,
+  RotateCcw,
+  Shield,
+  Sparkles,
+  Volume2,
+  VolumeX,
+  Zap,
+} from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import * as THREE from "three";
+import { soundEngine } from "@/utils/soundEngine";
 import { createGlowPointTexture, createThreeStudioScene } from "./ThreeStudioScene";
 import { useLiveSimParams } from "./useLiveSimParams";
+
+type CameraPreset = "iso" | "control_rods" | "graphite_core" | "gantry" | "top";
+
+interface ScenarioPreset {
+  id: string;
+  name: string;
+  desc: string;
+  rodPct: number;
+  moderatorPct: number;
+  enrichmentPct: number;
+}
+
+const SCENARIOS: ScenarioPreset[] = [
+  {
+    id: "cp1_1942",
+    name: "Dec 2, 1942 First Criticality (CP-1)",
+    desc: "Enrico Fermi commands George Weil to withdraw the cadmium rod to 13 ft; k_eff reaches 1.0006 for the first self-sustaining chain reaction.",
+    rodPct: 65,
+    moderatorPct: 99.9,
+    enrichmentPct: 0.72,
+  },
+  {
+    id: "scram_safety",
+    name: "Emergency Cadmium ZIP Rod SCRAM",
+    desc: "Gravity-assisted cadmium safety rod plunges into the core, slashing k_eff to 0.880 and immediately quenching neutron multiplication.",
+    rodPct: 0,
+    moderatorPct: 99.9,
+    enrichmentPct: 0.72,
+  },
+  {
+    id: "power_run",
+    name: "Controlled 200 Watt Power Run",
+    desc: "Deliberate supercritical drift at k_eff = 1.003 governed safely within the 0.65% delayed neutron fraction window.",
+    rodPct: 78,
+    moderatorPct: 99.95,
+    enrichmentPct: 0.72,
+  },
+  {
+    id: "subcritical",
+    name: "Sub-Critical Fuel Assembly Loading",
+    desc: "Layer 40 construction phase: k_eff = 0.940 demonstrating 1/(1 - k_eff) sub-critical multiplication from spontaneous fission neutrons.",
+    rodPct: 30,
+    moderatorPct: 98.5,
+    enrichmentPct: 0.72,
+  },
+];
 
 export function FermiReactor3D() {
   const containerRef = useRef<HTMLDivElement>(null);
@@ -13,7 +71,10 @@ export function FermiReactor3D() {
   const [controlRodWithdrawalPct, setControlRodWithdrawalPct] = useState<number>(65); // 0 to 100%
   const [moderatorPurityPct, setModeratorPurityPct] = useState<number>(99.9); // 95 to 99.99%
   const [fuelEnrichmentPct, setFuelEnrichmentPct] = useState<number>(0.72); // 0.72% natural U
-  const [showNeutronCascade, _setShowNeutronCascade] = useState<boolean>(true);
+  const [showNeutronCascade, setShowNeutronCascade] = useState<boolean>(true);
+  const [showCalloutPins, setShowCalloutPins] = useState<boolean>(false);
+  const [activeCamera, setActiveCamera] = useState<CameraPreset>("iso");
+  const [isAudioMuted, setIsAudioMuted] = useState<boolean>(true);
 
   // Four-Factor Nuclear Physics Calculations
   // k_eff = eta * epsilon * p * f * P_NL
@@ -36,13 +97,64 @@ export function FermiReactor3D() {
     controlRodWithdrawalPct,
     showNeutronCascade,
     kEff,
+    isAudioMuted,
   });
+
+  const controlsRef = useRef<any>(null);
+  const cameraRef = useRef<THREE.PerspectiveCamera | null>(null);
+
+  const applyCameraPreset = (preset: CameraPreset) => {
+    setActiveCamera(preset);
+    const camera = cameraRef.current;
+    const controls = controlsRef.current;
+    if (!camera || !controls) return;
+
+    switch (preset) {
+      case "iso":
+        camera.position.set(13, 10, 16);
+        controls.target.set(0, 0, 0);
+        break;
+      case "control_rods":
+        camera.position.set(0, 3.2, 4.2);
+        controls.target.set(0, 1.0, 0);
+        break;
+      case "graphite_core":
+        camera.position.set(0, -0.6, 4.5);
+        controls.target.set(0, -1.2, 0);
+        break;
+      case "gantry":
+        camera.position.set(0, 7.5, 6.0);
+        controls.target.set(0, 4.0, 0);
+        break;
+      case "top":
+        camera.position.set(0, 11.0, 0.1);
+        controls.target.set(0, 0, 0);
+        break;
+    }
+    controls.update();
+  };
+
+  const applyScenario = (s: ScenarioPreset) => {
+    setControlRodWithdrawalPct(s.rodPct);
+    setModeratorPurityPct(s.moderatorPct);
+    setFuelEnrichmentPct(s.enrichmentPct);
+    if (!isAudioMuted) {
+      soundEngine.playSwitchClick();
+    }
+  };
+
+  const toggleSound = () => {
+    const isMuted = soundEngine.toggleMute();
+    setIsAudioMuted(isMuted);
+    if (!isMuted) {
+      soundEngine.playSwitchClick();
+    }
+  };
 
   useEffect(() => {
     const container = containerRef.current;
     if (!container) return;
 
-    // Create Studio Scene with High-Luminosity Studio Lighting
     const studio = createThreeStudioScene({
       container,
       cameraPos: [13, 10, 16],
@@ -50,28 +162,30 @@ export function FermiReactor3D() {
     });
 
     const { scene, camera, renderer, controls } = studio;
+    cameraRef.current = camera;
+    controlsRef.current = controls;
 
     // --- PBR MATERIALS ---
     const graphiteMat = new THREE.MeshStandardMaterial({
-      color: 0x1e293b, // High-purity graphite carbon moderator blocks
+      color: 0x1e293b,
       roughness: 0.5,
       metalness: 0.6,
     });
 
     const uraniumFuelMat = new THREE.MeshStandardMaterial({
-      color: 0xd97706, // Metallic natural uranium fuel cylinders
+      color: 0xd97706,
       roughness: 0.3,
       metalness: 0.85,
     });
 
     const cadmiumRodMat = new THREE.MeshStandardMaterial({
-      color: 0x64748b, // Cadmium neutron-absorbing control rods
+      color: 0x64748b,
       roughness: 0.15,
       metalness: 0.95,
     });
 
     const timberSupportMat = new THREE.MeshStandardMaterial({
-      color: 0x78350f, // Pine timber support framing (CP-1 squash court)
+      color: 0x78350f,
       roughness: 0.6,
       metalness: 0.1,
     });
@@ -80,11 +194,10 @@ export function FermiReactor3D() {
     const coreGroup = new THREE.Group();
     scene.add(coreGroup);
 
-    // Multi-Tier Pine & Douglas Fir Heavy Timber Scaffold (Stagg Field Squash Court framework)
+    // Multi-Tier Pine & Douglas Fir Heavy Timber Scaffold
     const timberGroup = new THREE.Group();
     timberGroup.position.y = -3.4;
 
-    // Heavy Horizontal Floor Beams
     for (let b = 0; b < 6; b++) {
       const beamX = new THREE.Mesh(new THREE.BoxGeometry(11.0, 0.45, 0.45), timberSupportMat);
       beamX.position.set(0, 0, -4.5 + b * 1.8);
@@ -95,7 +208,6 @@ export function FermiReactor3D() {
       timberGroup.add(beamZ);
     }
 
-    // 4 Heavy Upright Corner Posts
     [
       [-5.0, -5.0],
       [5.0, -5.0],
@@ -107,12 +219,10 @@ export function FermiReactor3D() {
       timberGroup.add(post);
     });
 
-    // Top Overhead Gantry Beam & Control Rod Cable Pulleys
     const gantryBeam = new THREE.Mesh(new THREE.BoxGeometry(11.0, 0.5, 0.5), timberSupportMat);
     gantryBeam.position.set(0, 6.2, 0);
     timberGroup.add(gantryBeam);
 
-    // Brass Cable Pulleys
     [-0.8, 0.8].forEach((px) => {
       const pulley = new THREE.Mesh(
         new THREE.CylinderGeometry(0.35, 0.35, 0.15, 16),
@@ -125,7 +235,7 @@ export function FermiReactor3D() {
 
     coreGroup.add(timberGroup);
 
-    // Graphite Moderator Brick Matrix (Machined AGOT High-Purity Graphite Blocks)
+    // Graphite Moderator Brick Matrix
     const pileGroup = new THREE.Group();
     const layerSize = 5;
     const blockSize = 1.4;
@@ -161,7 +271,7 @@ export function FermiReactor3D() {
     }
     coreGroup.add(fuelGroup);
 
-    // Movable Cadmium Control Rods (Vertical Safety "Zip" & Regulating "Shim" Rods)
+    // Movable Cadmium Control Rods
     const rodGroup = new THREE.Group();
     const rod1 = new THREE.Mesh(new THREE.CylinderGeometry(0.12, 0.12, 5.2, 16), cadmiumRodMat);
     rod1.position.set(-0.8, 0.4, 0);
@@ -195,7 +305,6 @@ export function FermiReactor3D() {
       neutronPos[idx + 1] = -2.6 + Math.random() * 3.2;
       neutronPos[idx + 2] = (Math.random() - 0.5) * 6.5;
 
-      // Radiant Electric Blue Cherenkov & Fast Yellow Neutrons
       neutronColors[idx] = 0.2;
       neutronColors[idx + 1] = 0.8;
       neutronColors[idx + 2] = 1.0;
@@ -221,29 +330,26 @@ export function FermiReactor3D() {
     // --- RENDER LOOP & REAL-TIME NEUTRON KINETICS ---
     let reqId: number;
     const clock = new THREE.Clock();
+    let geigerClickTimer = 0;
 
     const animate = () => {
       reqId = requestAnimationFrame(animate);
       const delta = clock.getDelta();
       const p = live.current;
 
-      // Control Rod Vertical Height Position
       const targetRodY = -0.5 + (p.controlRodWithdrawalPct / 100) * 3.2;
       rodGroup.position.y += (targetRodY - rodGroup.position.y) * 0.1;
 
-      // Animate Thermal Neutron Diffusion & Scattering
       if (p.showNeutronCascade) {
         const nPos = neutronPos;
         const speed = (Number(p.kEff) / 1.0) * 4.0 * delta;
 
         for (let i = 0; i < neutronCount; i++) {
           const idx = i * 3;
-          // Random Brownian elastic scattering step in graphite
           nPos[idx] += (Math.random() - 0.5) * speed;
           nPos[idx + 1] += (Math.random() - 0.5) * speed;
           nPos[idx + 2] += (Math.random() - 0.5) * speed;
 
-          // Boundary wrapping inside core volume
           if (
             Math.abs(nPos[idx]) > 3.5 ||
             nPos[idx + 1] < -3.0 ||
@@ -257,6 +363,16 @@ export function FermiReactor3D() {
         }
         neutronGeo.attributes.position.needsUpdate = true;
         neutronPoints.visible = true;
+
+        // Geiger counter acoustic feedback proportional to k_eff
+        geigerClickTimer += delta;
+        const clickInterval = Math.max(0.08, 0.4 / (Number(p.kEff) ** 2));
+        if (geigerClickTimer > clickInterval) {
+          geigerClickTimer = 0;
+          if (!p.isAudioMuted && Math.random() < 0.6) {
+            soundEngine.playSwitchClick();
+          }
+        }
       } else {
         neutronPoints.visible = false;
       }
@@ -280,15 +396,15 @@ export function FermiReactor3D() {
         <div ref={containerRef} className="absolute inset-0 w-full h-full" />
 
         {/* Live HUD Telemetry Overlay */}
-        <div className="absolute top-4 left-4 z-10 flex flex-col gap-2 pointer-events-none">
+        <div className="absolute top-4 left-4 z-10 flex flex-col gap-2 pointer-events-none max-w-[calc(100%-8rem)] sm:max-w-md">
           <div className="bg-white/90 dark:bg-ink-900/90 backdrop-blur-md px-3.5 py-2.5 rounded-xl border border-parchment-300 dark:border-ink-700 shadow-sm">
             <div className="text-[11px] font-sans text-amber-700 dark:text-amber-400 font-bold uppercase tracking-wider flex items-center gap-1.5">
               <Shield className="w-3.5 h-3.5 text-blue-500 animate-pulse" />
               Neutronic Criticality Telemetry
             </div>
-            <div className="grid grid-cols-2 gap-x-4 gap-y-1 mt-1 text-xs font-sans">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-4 gap-y-1 mt-1 text-xs font-sans">
               <div>
-                <span className="text-ink-600 dark:text-ink-400">{"Effective $k_{eff}$:"}</span>{" "}
+                <span className="text-ink-600 dark:text-ink-400">Effective $k_&#123;eff&#125;$:</span>{" "}
                 <span
                   className={`font-bold ${
                     isCritical
@@ -298,141 +414,191 @@ export function FermiReactor3D() {
                         : "text-amber-600 dark:text-amber-400"
                   }`}
                 >
-                  {kEff} (
-                  {isCritical ? "Critical" : isSupercritical ? "Supercritical" : "Subcritical"})
-                </span>
-              </div>
-              <div>
-                <span className="text-ink-600 dark:text-ink-400">Thermal Output:</span>{" "}
-                <span className="font-bold text-blue-600 dark:text-blue-400">
-                  {reactorPowerWatts} Watts ($th$)
+                  {kEff} ({isCritical ? "Critical" : isSupercritical ? "Supercritical" : "Sub-critical"})
                 </span>
               </div>
               <div>
                 <span className="text-ink-600 dark:text-ink-400">Reactivity ($\rho$):</span>{" "}
-                <span className="font-bold text-emerald-600 dark:text-emerald-400">
+                <span className="font-bold text-blue-600 dark:text-blue-400">
                   {reactivityDollars} $
                 </span>
               </div>
               <div>
-                <span className="text-ink-600 dark:text-ink-400">Cadmium Rods:</span>{" "}
+                <span className="text-ink-600 dark:text-ink-400">Core Power Output:</span>{" "}
                 <span className="font-bold text-amber-600 dark:text-amber-400">
+                  {reactorPowerWatts} Watts Thermal
+                </span>
+              </div>
+              <div>
+                <span className="text-ink-600 dark:text-ink-400">Cadmium ZIP Height:</span>{" "}
+                <span className="font-bold text-purple-600 dark:text-purple-400">
                   {controlRodWithdrawalPct}% Withdrawn
                 </span>
               </div>
             </div>
           </div>
 
-          <div className="bg-white/90 dark:bg-ink-900/90 backdrop-blur-md px-3 py-1.5 rounded-lg border border-parchment-300 dark:border-ink-700 text-[11px] font-sans text-ink-700 dark:text-ink-300 flex items-center gap-2">
-            <Flame className="w-3.5 h-3.5 text-amber-500 animate-pulse" />
-            <span>Chicago Pile-1 (CP-1): Fermi &amp; Szilard US 2,708,656 ($k \ge 1.0$)</span>
+          <div className="bg-white/90 dark:bg-ink-900/90 backdrop-blur-md px-3 py-1.5 rounded-lg border border-parchment-300 dark:border-ink-700 text-[11px] font-sans text-ink-700 dark:text-ink-300 flex items-center gap-2 max-w-full">
+            <Sparkles className="w-3.5 h-3.5 text-emerald-500 animate-pulse shrink-0" />
+            <span className="truncate">
+              Enrico Fermi & Leo Szilard (US 2,708,656) — Neutronic Reactor (1942)
+            </span>
           </div>
         </div>
 
-        {/* Scram Emergency Button */}
+        {/* Top Right Tool Bar (Audio, Pins, Reset) */}
         <div className="absolute top-4 right-4 z-10 flex gap-2">
           <button
             type="button"
-            onClick={() => setControlRodWithdrawalPct(0)}
-            className="px-3.5 py-1.5 rounded-lg text-xs font-sans font-bold bg-red-600 hover:bg-red-700 text-white border border-red-700 shadow-md transition-all active:scale-95 flex items-center gap-1.5"
+            onClick={toggleSound}
+            className="p-2.5 rounded-xl bg-white/90 dark:bg-ink-900/90 backdrop-blur-md border border-parchment-300 dark:border-ink-700 text-ink-700 dark:text-parchment-300 hover:bg-parchment-100 dark:hover:bg-ink-800 transition-all shadow-sm"
+            title={isAudioMuted ? "Enable Sound Synthesis" : "Mute Sound"}
           >
-            <Shield className="w-3.5 h-3.5" />
-            SCRAM (Insert Rods)
+            {isAudioMuted ? <VolumeX className="w-4 h-4" /> : <Volume2 className="w-4 h-4 text-amber-600" />}
           </button>
+          <button
+            type="button"
+            onClick={() => setShowCalloutPins(!showCalloutPins)}
+            className={`p-2.5 rounded-xl backdrop-blur-md border transition-all shadow-sm ${
+              showCalloutPins
+                ? "bg-amber-600 text-white border-amber-700 shadow-md"
+                : "bg-white/90 dark:bg-ink-900/90 border-parchment-300 dark:border-ink-700 text-ink-700 dark:text-parchment-300 hover:bg-parchment-100"
+            }`}
+            title="Toggle Historical Patent Numeral Pins"
+          >
+            <Zap className="w-4 h-4" />
+          </button>
+          <button
+            type="button"
+            onClick={() => applyCameraPreset("iso")}
+            className="p-2.5 rounded-xl bg-white/90 dark:bg-ink-900/90 backdrop-blur-md border border-parchment-300 dark:border-ink-700 text-ink-700 dark:text-parchment-300 hover:bg-parchment-100 dark:hover:bg-ink-800 transition-all shadow-sm"
+            title="Reset Orbit Camera"
+          >
+            <RotateCcw className="w-4 h-4" />
+          </button>
+        </div>
+
+        {/* Camera Views Bar */}
+        <div className="absolute bottom-4 left-4 z-10 flex flex-wrap gap-1.5 bg-white/85 dark:bg-ink-900/85 backdrop-blur-md p-1.5 rounded-xl border border-parchment-300 dark:border-ink-700 shadow-sm text-xs">
+          <span className="px-2 py-1 text-ink-500 font-sans flex items-center gap-1">
+            <Camera className="w-3.5 h-3.5" /> View:
+          </span>
+          {(
+            [
+              ["iso", "Isometric"],
+              ["control_rods", "Cadmium Rods"],
+              ["graphite_core", "Graphite Core"],
+              ["gantry", "Timber Rigging"],
+              ["top", "Core Grid"],
+            ] as const
+          ).map(([id, label]) => (
+            <button
+              key={id}
+              type="button"
+              onClick={() => applyCameraPreset(id)}
+              className={`px-2.5 py-1 rounded-lg font-sans transition-all ${
+                activeCamera === id
+                  ? "bg-amber-700 dark:bg-amber-600 text-white font-semibold shadow-xs"
+                  : "text-ink-700 dark:text-parchment-300 hover:bg-parchment-200 dark:hover:bg-ink-800"
+              }`}
+            >
+              {label}
+            </button>
+          ))}
         </div>
       </div>
 
-      {/* Parameter Sliders Panel */}
-      <div className="p-4 sm:p-5 bg-parchment-100/80 dark:bg-ink-900/90 border-t border-parchment-300 dark:border-ink-800 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 text-xs font-sans">
-        {/* Control Rod Height */}
+      {/* Interactive Controls & Scenario Bar */}
+      <div className="p-4 sm:p-5 bg-parchment-100/90 dark:bg-ink-900/90 border-t border-parchment-300 dark:border-ink-800 space-y-4">
+        {/* Scenario Presets */}
         <div className="space-y-1.5">
-          <div className="flex justify-between font-medium text-ink-900 dark:text-parchment-100">
-            <span>Cadmium Control Rods:</span>
-            <span className="font-bold text-amber-700 dark:text-amber-400">
-              {controlRodWithdrawalPct}% Withdrawn
-            </span>
+          <div className="text-xs font-sans font-bold text-ink-700 dark:text-ink-300 uppercase tracking-wider flex items-center gap-1.5">
+            <Sparkles className="w-3.5 h-3.5 text-amber-600" /> Historical Nuclear Criticality Presets:
           </div>
-          <input
-            type="range"
-            min="0"
-            max="100"
-            step="1"
-            value={controlRodWithdrawalPct}
-            onChange={(e) => setControlRodWithdrawalPct(Number(e.target.value))}
-            className="w-full accent-amber-600 dark:accent-amber-400 cursor-pointer"
-          />
-          <span className="text-[10px] text-ink-500 dark:text-ink-400 block">
-            Withdrawing reduces thermal neutron capture
-          </span>
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
+            {SCENARIOS.map((s) => (
+              <button
+                key={s.id}
+                type="button"
+                onClick={() => applyScenario(s)}
+                className="p-2.5 rounded-xl border border-parchment-300 dark:border-ink-700 bg-white/70 dark:bg-ink-950/70 hover:bg-parchment-50 dark:hover:bg-ink-800 text-left transition-all group"
+              >
+                <div className="text-xs font-serif font-bold text-ink-900 dark:text-parchment-100 group-hover:text-amber-700 dark:group-hover:text-amber-400">
+                  {s.name}
+                </div>
+                <div className="text-[10px] font-sans text-ink-500 dark:text-ink-400 line-clamp-2 mt-0.5">
+                  {s.desc}
+                </div>
+              </button>
+            ))}
+          </div>
         </div>
 
-        {/* Moderator Purity */}
-        <div className="space-y-1.5">
-          <div className="flex justify-between font-medium text-ink-900 dark:text-parchment-100">
-            <span>Graphite Carbon Purity:</span>
-            <span className="font-bold text-blue-600 dark:text-blue-400">
-              {moderatorPurityPct.toFixed(2)}%
-            </span>
-          </div>
-          <input
-            type="range"
-            min="95.0"
-            max="99.99"
-            step="0.05"
-            value={moderatorPurityPct}
-            onChange={(e) => setModeratorPurityPct(Number(e.target.value))}
-            className="w-full accent-blue-600 dark:accent-blue-400 cursor-pointer"
-          />
-          <span className="text-[10px] text-ink-500 dark:text-ink-400 block">
-            Szilard's boron impurity purification breakthrough
-          </span>
-        </div>
-
-        {/* Fuel Uranium Grade */}
-        <div className="space-y-1.5">
-          <div className="flex justify-between font-medium text-ink-900 dark:text-parchment-100">
-            <span>Uranium U-235 Ratio:</span>
-            <span className="font-bold text-emerald-600 dark:text-emerald-400">
-              {fuelEnrichmentPct.toFixed(2)}% (Natural)
-            </span>
-          </div>
-          <input
-            type="range"
-            min="0.5"
-            max="1.5"
-            step="0.05"
-            value={fuelEnrichmentPct}
-            onChange={(e) => setFuelEnrichmentPct(Number(e.target.value))}
-            className="w-full accent-emerald-600 dark:accent-emerald-400 cursor-pointer"
-          />
-          <span className="text-[10px] text-ink-500 dark:text-ink-400 block">
-            Heterogeneous lattice achieves $k &gt; 1$ with natural U
-          </span>
-        </div>
-
-        {/* Criticality Stability */}
-        <div className="space-y-1.5">
-          <div className="flex justify-between font-medium text-ink-900 dark:text-parchment-100">
-            <span>Criticality State:</span>
-            <span className="font-bold text-purple-600 dark:text-purple-400">
-              {isCritical
-                ? "k = 1.000 Steady"
-                : isSupercritical
-                  ? "Exponential Flux ↑"
-                  : "Decaying Subcritical"}
-            </span>
-          </div>
-          <div className="w-full bg-parchment-300 dark:bg-ink-800 rounded-full h-3 overflow-hidden mt-2 border border-parchment-400 dark:border-ink-700">
-            <div
-              className={`h-full transition-all duration-300 ${
-                isCritical ? "bg-emerald-500" : isSupercritical ? "bg-purple-600" : "bg-amber-500"
-              }`}
-              style={{ width: `${Math.min(100, Math.max(10, (Number(kEff) / 1.1) * 90))}%` }}
+        {/* Sliders Grid */}
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 pt-1">
+          {/* Cadmium Control Rods */}
+          <div className="space-y-1.5">
+            <div className="flex justify-between text-xs font-sans">
+              <span className="font-semibold text-ink-800 dark:text-parchment-200">
+                Cadmium ZIP Rod Height:
+              </span>
+              <span className="font-mono text-amber-700 dark:text-amber-400 font-bold">
+                {controlRodWithdrawalPct}% Withdrawn
+              </span>
+            </div>
+            <input
+              type="range"
+              min="0"
+              max="100"
+              step="1"
+              value={controlRodWithdrawalPct}
+              onChange={(e) => setControlRodWithdrawalPct(Number(e.target.value))}
+              className="w-full accent-amber-600 cursor-pointer"
             />
+            <span className="text-[10px] text-ink-500 dark:text-ink-400 block">
+              Thermal neutron poison absorption cross section
+            </span>
           </div>
-          <span className="text-[10px] text-ink-500 dark:text-ink-400 block">
-            Delayed neutron fraction $\beta = 0.0065$ enables safe control
-          </span>
+
+          {/* Moderator Purity */}
+          <div className="space-y-1.5">
+            <div className="flex justify-between text-xs font-sans">
+              <span className="font-semibold text-ink-800 dark:text-parchment-200">
+                AGOT Graphite Purity:
+              </span>
+              <span className="font-mono text-blue-600 dark:text-blue-400 font-bold">
+                {moderatorPurityPct.toFixed(2)}%
+              </span>
+            </div>
+            <input
+              type="range"
+              min="95.0"
+              max="99.99"
+              step="0.05"
+              value={moderatorPurityPct}
+              onChange={(e) => setModeratorPurityPct(Number(e.target.value))}
+              className="w-full accent-blue-600 cursor-pointer"
+            />
+            <span className="text-[10px] text-ink-500 dark:text-ink-400 block">
+              Minimizes boron impurity parasitic capture
+            </span>
+          </div>
+
+          {/* Neutron Cloud Toggle */}
+          <div className="flex flex-col justify-end space-y-1.5">
+            <button
+              type="button"
+              onClick={() => setShowNeutronCascade(!showNeutronCascade)}
+              className={`w-full py-3 px-4 rounded-xl font-sans font-bold text-sm transition-all shadow-sm flex items-center justify-center gap-2 ${
+                showNeutronCascade
+                  ? "bg-emerald-600 hover:bg-emerald-700 text-white shadow-md"
+                  : "bg-amber-600 hover:bg-amber-700 text-white shadow-md"
+              }`}
+            >
+              <Flame className="w-4 h-4" />
+              {showNeutronCascade ? "Neutron Flux VISIBLE" : "Neutron Flux HIDDEN"}
+            </button>
+          </div>
         </div>
       </div>
     </div>

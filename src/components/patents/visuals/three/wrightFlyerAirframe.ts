@@ -137,12 +137,18 @@ function loftWingPanel(opts: {
   }
 
   const vertsPerStation = ring + 2;
+  const flipWinding = opts.x1 < opts.x0;
   for (let i = 0; i < stations; i++) {
     const a = i * vertsPerStation;
     const b = (i + 1) * vertsPerStation;
     for (let k = 0; k < vertsPerStation - 1; k++) {
-      indices.push(a + k, b + k, a + k + 1);
-      indices.push(b + k, b + k + 1, a + k + 1);
+      if (flipWinding) {
+        indices.push(a + k, a + k + 1, b + k);
+        indices.push(b + k, a + k + 1, b + k + 1);
+      } else {
+        indices.push(a + k, b + k, a + k + 1);
+        indices.push(b + k, b + k + 1, a + k + 1);
+      }
     }
   }
 
@@ -176,6 +182,7 @@ function addWire(
   const dy = by - ay;
   const dz = bz - az;
   const len = Math.hypot(dx, dy, dz);
+  if (len < 1e-8) return;
   const mesh = new THREE.Mesh(new THREE.CylinderGeometry(0.006, 0.006, len, 5), mat);
   mesh.position.set((ax + bx) / 2, (ay + by) / 2, (az + bz) / 2);
   mesh.quaternion.setFromUnitVectors(
@@ -224,6 +231,22 @@ function scimitarBlade(radius: number, mat: THREE.Material): THREE.Mesh {
   return mesh;
 }
 
+function makeCamberedRib(chord: number, camberRatio: number, mat: THREE.Material): THREE.Mesh {
+  const pts: THREE.Vector3[] = [];
+  const n = 16;
+  for (let i = 0; i <= n; i++) {
+    const s = i / n;
+    const z = chord * 0.5 - s * chord;
+    const y = 4 * camberRatio * s * (1 - s) * chord;
+    pts.push(new THREE.Vector3(0, y, z));
+  }
+  const curve = new THREE.CatmullRomCurve3(pts);
+  const geo = new THREE.TubeGeometry(curve, 16, 0.012, 6, false);
+  const mesh = new THREE.Mesh(geo, mat);
+  mesh.castShadow = true;
+  return mesh;
+}
+
 export function buildWrightFlyerAirframe(): FlyerAirframe {
   const d = FLYER_DIM;
   const textures: THREE.Texture[] = [];
@@ -233,46 +256,46 @@ export function buildWrightFlyerAirframe(): FlyerAirframe {
 
   const muslin = new THREE.MeshPhysicalMaterial({
     map: muslinMap,
-    color: 0xf7edd4,
-    roughness: 0.88,
+    color: 0xf5ebd6,
+    roughness: 0.82,
     metalness: 0.0,
-    transmission: 0.08,
+    transmission: 0.06,
     thickness: 0.02,
     transparent: true,
-    opacity: 0.92,
+    opacity: 0.94,
     side: THREE.DoubleSide,
   });
   const spruce = new THREE.MeshStandardMaterial({
     map: woodMap,
-    color: 0xc4a06a,
-    roughness: 0.42,
+    color: 0xc9a46c,
+    roughness: 0.45,
     metalness: 0.04,
   });
   const ash = new THREE.MeshStandardMaterial({
     map: woodMap,
     color: 0x8b5a2b,
-    roughness: 0.5,
+    roughness: 0.52,
     metalness: 0.03,
   });
   const steel = new THREE.MeshStandardMaterial({
     color: 0x94a3b8,
-    metalness: 0.92,
-    roughness: 0.22,
+    metalness: 0.94,
+    roughness: 0.2,
   });
   const brass = new THREE.MeshStandardMaterial({
-    color: 0xd4a017,
+    color: 0xd4af37,
     metalness: 0.88,
-    roughness: 0.28,
+    roughness: 0.26,
   });
   const alum = new THREE.MeshStandardMaterial({
-    color: 0x8a93a0,
-    metalness: 0.82,
+    color: 0x9ca3af,
+    metalness: 0.84,
     roughness: 0.32,
   });
   const iron = new THREE.MeshStandardMaterial({
-    color: 0x3f4651,
-    metalness: 0.7,
-    roughness: 0.48,
+    color: 0x374151,
+    metalness: 0.72,
+    roughness: 0.46,
   });
   const copper = new THREE.MeshStandardMaterial({
     color: 0xb45309,
@@ -281,13 +304,17 @@ export function buildWrightFlyerAirframe(): FlyerAirframe {
   });
   const propWood = new THREE.MeshStandardMaterial({
     map: woodMap,
-    color: 0x6b3f14,
-    roughness: 0.28,
+    color: 0x6e401f,
+    roughness: 0.3,
     metalness: 0.08,
   });
-  const canvas = new THREE.MeshStandardMaterial({
-    color: 0xddd0b4,
-    roughness: 0.85,
+  const darkWool = new THREE.MeshStandardMaterial({
+    color: 0x1f2937,
+    roughness: 0.9,
+  });
+  const pilotSkin = new THREE.MeshStandardMaterial({
+    color: 0xd4a373,
+    roughness: 0.65,
   });
 
   const group = new THREE.Group();
@@ -310,67 +337,77 @@ export function buildWrightFlyerAirframe(): FlyerAirframe {
       camberRatio: d.camberRatio,
       thicknessRatio: d.thicknessRatio,
       anhedralRad: anhedral,
-      stations: 12,
+      stations: 14,
     });
     const center = new THREE.Mesh(centerGeo, muslin);
     center.castShadow = true;
     center.receiveShadow = true;
     wing.add(center);
 
+    const addRibsAndSpars = (
+      parent: THREE.Group,
+      xStart: number,
+      xEnd: number,
+      worldX0: number,
+    ) => {
+      const count = Math.max(4, Math.round(Math.abs(xEnd - xStart) / 0.38));
+      for (let i = 0; i <= count; i++) {
+        const x = xStart + (i / count) * (xEnd - xStart);
+        const droop = -Math.tan(anhedral) * Math.abs(worldX0 + x);
+        const rib = makeCamberedRib(d.chord, d.camberRatio, spruce);
+        rib.position.set(x, droop + 0.015, 0);
+        parent.add(rib);
+      }
+      const sparLen = Math.abs(xEnd - xStart);
+      const sparX = (xStart + xEnd) / 2;
+      const frontSpar = new THREE.Mesh(
+        new THREE.CylinderGeometry(0.026, 0.026, sparLen, 8),
+        spruce,
+      );
+      frontSpar.rotation.z = Math.PI / 2;
+      frontSpar.position.set(sparX, 0.018, zFront);
+      parent.add(frontSpar);
+      const rearSpar = new THREE.Mesh(new THREE.CylinderGeometry(0.022, 0.022, sparLen, 8), spruce);
+      rearSpar.rotation.z = Math.PI / 2;
+      rearSpar.position.set(sparX, 0.012, zRear);
+      parent.add(rearSpar);
+    };
+
+    addRibsAndSpars(wing, -centerHalf, centerHalf, 0);
+
     const addTip = (sign: -1 | 1) => {
       const tipG = new THREE.Group();
       tipG.position.x = sign * tipInboard;
+      const tipEnd = sign * (d.span / 2 - tipInboard);
       const tipGeo = loftWingPanel({
         x0: 0,
-        x1: sign * (d.span / 2 - tipInboard),
+        x1: tipEnd,
         chord: d.chord,
         camberRatio: d.camberRatio,
         thicknessRatio: d.thicknessRatio,
         anhedralRad: anhedral,
         worldX0: sign * tipInboard,
-        stations: 10,
+        stations: 12,
       });
       const tipMesh = new THREE.Mesh(tipGeo, muslin);
       tipMesh.castShadow = true;
       tipMesh.receiveShadow = true;
       tipG.add(tipMesh);
+      addRibsAndSpars(tipG, 0, tipEnd, sign * tipInboard);
 
       const bow = new THREE.Mesh(
-        new THREE.TorusGeometry(d.chord * 0.46, 0.022, 8, 18, Math.PI),
+        new THREE.TorusGeometry(d.chord * 0.46, 0.02, 8, 18, Math.PI),
         spruce,
       );
       bow.rotation.x = Math.PI / 2;
       bow.rotation.z = sign > 0 ? -Math.PI / 2 : Math.PI / 2;
-      bow.position.set(sign * (d.span / 2 - tipInboard), -Math.tan(anhedral) * (d.span / 2), 0);
+      bow.position.set(tipEnd, -Math.tan(anhedral) * (d.span / 2), 0);
       tipG.add(bow);
       tipG.name = sign < 0 ? "leftTip" : "rightTip";
       wing.add(tipG);
     };
     addTip(-1);
     addTip(1);
-
-    const ribCount = 22;
-    for (let i = 0; i <= ribCount; i++) {
-      const x = -d.span / 2 + (i / ribCount) * d.span;
-      const droop = -Math.tan(anhedral) * Math.abs(x);
-      const rib = new THREE.Mesh(new THREE.BoxGeometry(0.018, 0.028, d.chord * 0.96), spruce);
-      rib.position.set(x, droop + 0.03, 0);
-      wing.add(rib);
-    }
-    const frontSpar = new THREE.Mesh(
-      new THREE.CylinderGeometry(0.032, 0.032, d.span * 0.98, 10),
-      spruce,
-    );
-    frontSpar.rotation.z = Math.PI / 2;
-    frontSpar.position.set(0, 0.015, zFront);
-    wing.add(frontSpar);
-    const rearSpar = new THREE.Mesh(
-      new THREE.CylinderGeometry(0.028, 0.028, d.span * 0.98, 10),
-      spruce,
-    );
-    rearSpar.rotation.z = Math.PI / 2;
-    rearSpar.position.set(0, 0.01, zRear);
-    wing.add(rearSpar);
     return wing;
   };
 
@@ -378,17 +415,23 @@ export function buildWrightFlyerAirframe(): FlyerAirframe {
   const lowerWing = makeSurface(yLower);
   group.add(upperWing, lowerWing);
 
+  // Aerodynamic Interplane Struts & Warping Pulley Rigging
   const strutXs = [-0.48, -0.3, -0.12, 0.12, 0.3, 0.48].map((f) => f * d.span);
   for (const x of strutXs) {
     for (const z of [zFront, zRear]) {
       const strut = ellipticalStrut(d.gap, spruce);
       strut.position.set(x, 0, z);
       group.add(strut);
-      const cap = new THREE.Mesh(new THREE.SphereGeometry(0.03, 8, 6), brass);
+      const cap = new THREE.Mesh(new THREE.CylinderGeometry(0.024, 0.024, 0.04, 8), brass);
       cap.position.set(x, yUpper, z);
       group.add(cap);
+      const capLower = new THREE.Mesh(new THREE.CylinderGeometry(0.024, 0.024, 0.04, 8), brass);
+      capLower.position.set(x, yLower, z);
+      group.add(capLower);
     }
   }
+
+  // Cross-bracing piano wires
   for (let i = 0; i < strutXs.length - 1; i++) {
     const a = strutXs[i];
     const b = strutXs[i + 1];
@@ -400,27 +443,31 @@ export function buildWrightFlyerAirframe(): FlyerAirframe {
     addWire(group, a, yLower, zFront, a, yUpper, zRear, steel);
   }
 
+  // Forward Landing Skids with Curved Ash Runners
   const skid = (x: number) => {
     const g = new THREE.Group();
     const curve = new THREE.CatmullRomCurve3([
-      new THREE.Vector3(x, yLower - 0.12, zFront + 1.15),
-      new THREE.Vector3(x, yLower - 0.42, zFront + 0.35),
-      new THREE.Vector3(x, yLower - 0.48, 0),
-      new THREE.Vector3(x, yLower - 0.46, zRear - 0.15),
-      new THREE.Vector3(x, yLower - 0.38, zRear - 0.55),
+      new THREE.Vector3(x, yLower - 0.08, zFront + 1.25),
+      new THREE.Vector3(x, yLower - 0.38, zFront + 0.4),
+      new THREE.Vector3(x, yLower - 0.46, 0),
+      new THREE.Vector3(x, yLower - 0.45, zRear - 0.2),
+      new THREE.Vector3(x, yLower - 0.36, zRear - 0.6),
     ]);
-    const rail = new THREE.Mesh(new THREE.TubeGeometry(curve, 24, 0.032, 8, false), ash);
+    const rail = new THREE.Mesh(new THREE.TubeGeometry(curve, 28, 0.028, 8, false), ash);
     rail.castShadow = true;
     g.add(rail);
     for (const z of [zFront, zRear]) {
-      const post = new THREE.Mesh(new THREE.CylinderGeometry(0.022, 0.022, 0.48, 8), spruce);
-      post.position.set(x, yLower - 0.22, z);
+      const post = new THREE.Mesh(new THREE.CylinderGeometry(0.02, 0.02, 0.46, 8), spruce);
+      post.position.set(x, yLower - 0.23, z);
       g.add(post);
     }
+    // Diagonal brace to skid tip
+    addWire(g, x, yLower, zFront, x, yLower - 0.08, zFront + 1.25, steel);
     return g;
   };
   group.add(skid(-0.95), skid(0.95));
 
+  // Forward Biplane Canard Elevator (Pitch Control)
   const canardGroup = new THREE.Group();
   canardGroup.position.set(0, -0.05, d.chord / 2 + d.canardArm);
   const canardPanel = (y: number) => {
@@ -431,7 +478,7 @@ export function buildWrightFlyerAirframe(): FlyerAirframe {
       camberRatio: 0.04,
       thicknessRatio: 0.05,
       anhedralRad: 0,
-      stations: 8,
+      stations: 10,
       airfoilPts: 12,
     });
     const mesh = new THREE.Mesh(geo, muslin);
@@ -440,16 +487,17 @@ export function buildWrightFlyerAirframe(): FlyerAirframe {
     return mesh;
   };
   canardGroup.add(canardPanel(d.canardGap / 2), canardPanel(-d.canardGap / 2));
-  for (const x of [-d.canardSpan * 0.42, d.canardSpan * 0.42]) {
+  for (const x of [-d.canardSpan * 0.42, 0, d.canardSpan * 0.42]) {
     const s = ellipticalStrut(d.canardGap, spruce);
     s.position.set(x, 0, 0);
     canardGroup.add(s);
   }
+  // Canard Outriggers
   const boomXs = [-0.95, 0.95];
   for (const x of boomXs) {
     for (const y of [yLower + 0.08, 0.15]) {
       const boom = new THREE.Mesh(
-        new THREE.CylinderGeometry(0.02, 0.02, d.canardArm + 0.35, 8),
+        new THREE.CylinderGeometry(0.018, 0.018, d.canardArm + 0.35, 8),
         spruce,
       );
       boom.rotation.x = Math.PI / 2;
@@ -460,6 +508,7 @@ export function buildWrightFlyerAirframe(): FlyerAirframe {
   }
   group.add(canardGroup);
 
+  // Twin Vertical Rudders (Yaw Control)
   const rudderGroup = new THREE.Group();
   rudderGroup.position.set(0, 0.05, -d.chord / 2 - d.rudderArm);
   const makeRudder = (x: number) => {
@@ -469,7 +518,7 @@ export function buildWrightFlyerAirframe(): FlyerAirframe {
     fabric.castShadow = true;
     g.add(fabric);
     const frame = new THREE.Mesh(
-      new THREE.BoxGeometry(0.03, d.rudderHeight + 0.04, d.rudderChord + 0.04),
+      new THREE.BoxGeometry(0.024, d.rudderHeight + 0.02, d.rudderChord + 0.02),
       spruce,
     );
     g.add(frame);
@@ -479,7 +528,7 @@ export function buildWrightFlyerAirframe(): FlyerAirframe {
   rudderGroup.add(makeRudder(-d.rudderSep / 2), makeRudder(d.rudderSep / 2));
   for (const x of [-d.rudderSep / 2, d.rudderSep / 2]) {
     const boom = new THREE.Mesh(
-      new THREE.CylinderGeometry(0.02, 0.02, d.rudderArm + 0.3, 8),
+      new THREE.CylinderGeometry(0.018, 0.018, d.rudderArm + 0.3, 8),
       spruce,
     );
     boom.rotation.x = Math.PI / 2;
@@ -488,82 +537,103 @@ export function buildWrightFlyerAirframe(): FlyerAirframe {
   }
   group.add(rudderGroup);
 
+  // Wright 12-HP 4-Cylinder Inline Engine & Radiator
   const engine = new THREE.Group();
-  engine.position.set(0.82, yLower + 0.28, 0.05);
-  const crank = new THREE.Mesh(new THREE.BoxGeometry(0.42, 0.28, 0.95), alum);
+  engine.position.set(0.48, yLower + 0.22, 0.05);
+  const crank = new THREE.Mesh(new THREE.BoxGeometry(0.38, 0.24, 0.88), alum);
   crank.castShadow = true;
   engine.add(crank);
+
   for (let i = 0; i < 4; i++) {
-    const cyl = new THREE.Mesh(new THREE.CylinderGeometry(0.075, 0.075, 0.32, 14), iron);
+    const cylZ = -0.32 + i * 0.22;
+    const cyl = new THREE.Mesh(new THREE.CylinderGeometry(0.07, 0.07, 0.28, 14), iron);
     cyl.rotation.z = Math.PI / 2;
-    cyl.position.set(0.28, 0.04, -0.36 + i * 0.24);
+    cyl.position.set(0.24, 0.02, cylZ);
     cyl.castShadow = true;
     engine.add(cyl);
-    const head = new THREE.Mesh(new THREE.BoxGeometry(0.08, 0.1, 0.1), brass);
-    head.position.set(0.46, 0.04, -0.36 + i * 0.24);
-    engine.add(head);
+    const valve = new THREE.Mesh(new THREE.CylinderGeometry(0.02, 0.02, 0.08, 8), brass);
+    valve.position.set(0.36, 0.08, cylZ);
+    engine.add(valve);
   }
-  const flywheel = new THREE.Mesh(new THREE.CylinderGeometry(0.2, 0.2, 0.055, 28), iron);
+
+  const flywheel = new THREE.Mesh(new THREE.CylinderGeometry(0.19, 0.19, 0.045, 24), iron);
   flywheel.rotation.x = Math.PI / 2;
-  flywheel.position.set(-0.18, 0, -0.42);
+  flywheel.position.set(-0.16, 0, -0.38);
   engine.add(flywheel);
-  for (let i = 0; i < 9; i++) {
-    const tube = new THREE.Mesh(new THREE.CylinderGeometry(0.012, 0.012, d.gap * 0.62, 6), copper);
-    tube.position.set(-0.12, d.gap * 0.18, zFront - 0.02 + (i - 4) * 0.028);
+
+  // Tall vertical radiator on front wing strut
+  const radiatorLen = d.gap * 0.58;
+  const radiatorLocalY = yUpper - (yLower + 0.22) - radiatorLen * 0.18;
+  for (let i = 0; i < 8; i++) {
+    const tube = new THREE.Mesh(new THREE.CylinderGeometry(0.01, 0.01, radiatorLen, 6), copper);
+    tube.position.set(-0.1, radiatorLocalY, zFront - 0.02 + (i - 3.5) * 0.026);
     engine.add(tube);
   }
-  const tank = new THREE.Mesh(new THREE.CylinderGeometry(0.08, 0.08, 0.42, 14), brass);
+
+  // Brass gravity fuel tank mounted high on upper strut
+  const tank = new THREE.Mesh(new THREE.CylinderGeometry(0.065, 0.065, 0.36, 12), brass);
   tank.rotation.z = Math.PI / 2;
-  tank.position.set(0.05, d.gap * 0.42, 0.05);
+  tank.position.set(0.04, yUpper - (yLower + 0.22) - 0.16, 0.05);
   engine.add(tank);
   group.add(engine);
 
+  // Pilot Prone Hip Cradle & Orville Figure
   const cradle = new THREE.Group();
-  cradle.position.set(-0.78, yLower + 0.08, 0.05);
-  cradle.add(new THREE.Mesh(new THREE.BoxGeometry(0.72, 0.07, 1.15), spruce));
-  const hip = new THREE.Mesh(new THREE.BoxGeometry(0.55, 0.05, 0.32), canvas);
-  hip.position.set(0, 0.07, 0.05);
-  cradle.add(hip);
-  const torso = new THREE.Mesh(new THREE.CapsuleGeometry(0.13, 0.55, 6, 10), canvas);
+  cradle.position.set(-0.35, yLower + 0.08, 0.05);
+  cradle.add(new THREE.Mesh(new THREE.BoxGeometry(0.55, 0.05, 0.95), spruce));
+  const hipCradleBox = new THREE.Mesh(new THREE.BoxGeometry(0.44, 0.08, 0.28), ash);
+  hipCradleBox.position.set(0, 0.06, 0.05);
+  cradle.add(hipCradleBox);
+
+  const torso = new THREE.Mesh(new THREE.CapsuleGeometry(0.12, 0.52, 6, 8), darkWool);
   torso.rotation.x = Math.PI / 2;
-  torso.position.set(0, 0.16, -0.05);
+  torso.position.set(0, 0.15, -0.05);
   cradle.add(torso);
-  const head = new THREE.Mesh(
-    new THREE.SphereGeometry(0.1, 12, 10),
-    new THREE.MeshStandardMaterial({ color: 0xc4a484, roughness: 0.7 }),
-  );
-  head.position.set(0, 0.22, 0.48);
+
+  const head = new THREE.Mesh(new THREE.SphereGeometry(0.09, 10, 8), pilotSkin);
+  head.position.set(0, 0.2, 0.42);
   cradle.add(head);
-  const lever = new THREE.Mesh(new THREE.CylinderGeometry(0.014, 0.014, 0.55, 8), spruce);
-  lever.position.set(-0.32, 0.28, 0.28);
-  lever.rotation.z = -0.25;
-  cradle.add(lever);
+
+  const cap = new THREE.Mesh(new THREE.CylinderGeometry(0.1, 0.1, 0.04, 10), darkWool);
+  cap.position.set(0, 0.26, 0.42);
+  cradle.add(cap);
+
+  const elevatorLever = new THREE.Mesh(new THREE.CylinderGeometry(0.012, 0.012, 0.48, 8), spruce);
+  elevatorLever.position.set(-0.26, 0.24, 0.25);
+  elevatorLever.rotation.z = -0.2;
+  cradle.add(elevatorLever);
   group.add(cradle);
 
-  const makeProp = (x: number) => {
+  // Twin Counter-Rotating Pusher Propellers & Tubular Chain Casings
+  const makeProp = (x: number, isPort: boolean) => {
     const p = new THREE.Group();
     p.position.set(x, 0.02, zRear - 0.22);
-    const hub = new THREE.Mesh(new THREE.CylinderGeometry(0.07, 0.07, 0.14, 14), brass);
+    const hub = new THREE.Mesh(new THREE.CylinderGeometry(0.06, 0.06, 0.12, 12), brass);
     hub.rotation.x = Math.PI / 2;
     p.add(hub);
+
     const blades = new THREE.Group();
     const b1 = scimitarBlade(d.propDiameter / 2, propWood);
     const b2 = scimitarBlade(d.propDiameter / 2, propWood);
     b2.rotation.z = Math.PI;
     blades.add(b1, b2);
     p.add(blades);
-    const chain = new THREE.Mesh(
-      new THREE.CylinderGeometry(0.012, 0.012, Math.abs(x - 0.82), 6),
-      steel,
-    );
+
+    // Tubular steel chain guide casing (port chain crossed in figure-8 to reverse rotation)
+    const chainDist = Math.abs(x - 0.48);
+    const chain = new THREE.Mesh(new THREE.CylinderGeometry(0.012, 0.012, chainDist, 6), steel);
     chain.rotation.z = Math.PI / 2;
-    chain.position.set(-(x - 0.82) / 2, -0.12, 0.08);
+    chain.position.set(-(x - 0.48) / 2, -0.1, 0.06);
+    if (isPort) {
+      chain.rotation.y = 0.04;
+    }
     p.add(chain);
+
     group.add(p);
     return blades;
   };
-  const leftPropBlades = makeProp(-d.propX);
-  const rightPropBlades = makeProp(d.propX);
+  const leftPropBlades = makeProp(-d.propX, true);
+  const rightPropBlades = makeProp(d.propX, false);
 
   return {
     group,

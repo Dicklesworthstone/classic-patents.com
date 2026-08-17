@@ -19,7 +19,6 @@ export function WrightFlyer3D() {
   const [showVectors, setShowVectors] = useState<boolean>(true);
   const [isAutoFlying, setIsAutoFlying] = useState<boolean>(true);
   const [isCoupled, setIsCoupled] = useState<boolean>(true);
-  const [showMuseumScan, setShowMuseumScan] = useState<boolean>(false);
 
   // Aerodynamic Physics Calculations
   const airspeedFps = (airspeedMph * 5280) / 3600;
@@ -53,7 +52,6 @@ export function WrightFlyer3D() {
     baseCl,
     totalLiftLbs,
     totalDragLbs,
-    showMuseumScan,
   });
 
   const applyWarp = (val: number) => {
@@ -85,43 +83,10 @@ export function WrightFlyer3D() {
     const { upperWing, lowerWing, canardGroup, rudderGroup, leftPropBlades, rightPropBlades } =
       airframe;
 
-    const scanGroup = new THREE.Group();
-    scanGroup.visible = false;
-    scene.add(scanGroup);
-    void import("three/examples/jsm/loaders/STLLoader.js").then(({ STLLoader }) => {
-      const loader = new STLLoader();
-      loader.load("/models/wright-flyer/smithsonian-nasm-1903-flyer.cc0.stl", (geo) => {
-        geo.computeVertexNormals();
-        geo.center();
-        geo.computeBoundingBox();
-        const box = geo.boundingBox;
-        if (box) {
-          const size = new THREE.Vector3();
-          box.getSize(size);
-          const longest = Math.max(size.x, size.y, size.z);
-          if (longest > 0) {
-            geo.scale(FLYER_DIM.span / longest, FLYER_DIM.span / longest, FLYER_DIM.span / longest);
-          }
-        }
-        const mesh = new THREE.Mesh(
-          geo,
-          new THREE.MeshStandardMaterial({
-            color: 0xe7d8b8,
-            roughness: 0.72,
-            metalness: 0.04,
-          }),
-        );
-        mesh.castShadow = true;
-        mesh.receiveShadow = true;
-        scanGroup.add(mesh);
-      });
-    });
-
     // --- AERODYNAMIC AIRFLOW STREAMLINE PARTICLES ---
     const particleCount = 280;
     const particleGeo = new THREE.BufferGeometry();
     const particlePositions = new Float32Array(particleCount * 3);
-    const particleVelocities = new Float32Array(particleCount * 3);
     const particleColors = new Float32Array(particleCount * 3);
 
     const glowTex = createGlowPointTexture();
@@ -131,10 +96,6 @@ export function WrightFlyer3D() {
       particlePositions[idx] = (Math.random() - 0.5) * (FLYER_DIM.span + 2);
       particlePositions[idx + 1] = (Math.random() - 0.5) * (FLYER_DIM.gap + 1.4);
       particlePositions[idx + 2] = 8 + Math.random() * 5;
-
-      particleVelocities[idx] = 0;
-      particleVelocities[idx + 1] = 0;
-      particleVelocities[idx + 2] = -(0.3 + Math.random() * 0.25);
 
       // Color code by energy: Cyan-Blue (high speed/low pressure) to Amber (stagnation)
       particleColors[idx] = 0.2 + Math.random() * 0.4;
@@ -194,11 +155,9 @@ export function WrightFlyer3D() {
       const elapsed = clock.getElapsedTime();
 
       const p = live.current;
-      flyerGroup.visible = !p.showMuseumScan;
-      scanGroup.visible = p.showMuseumScan;
 
       // Auto-flight subtle atmospheric turbulence
-      if (p.isAutoFlying && !p.showMuseumScan) {
+      if (p.isAutoFlying) {
         flyerGroup.position.y = Math.sin(elapsed * 1.5) * 0.15;
         flyerGroup.rotation.z =
           Math.sin(elapsed * 0.9) * 0.03 + ((p.wingWarpDeg * Math.PI) / 180) * 0.4;
@@ -251,8 +210,8 @@ export function WrightFlyer3D() {
         }
       }
       particleGeo.attributes.position.needsUpdate = true;
-      streamlinePoints.visible = p.showStreamlines && !p.showMuseumScan;
-      vectorsGroup.visible = p.showVectors && !p.showMuseumScan;
+      streamlinePoints.visible = p.showStreamlines;
+      vectorsGroup.visible = p.showVectors;
 
       // Update Force Vector Scales
       liftVector.setLength(Math.max(0.5, p.totalLiftLbs / 250), 0.4, 0.25);
@@ -321,11 +280,9 @@ export function WrightFlyer3D() {
               className={`w-2 h-2 rounded-full ${isCoupled ? "bg-emerald-500 animate-pulse" : "bg-red-500"}`}
             />
             <span>
-              {showMuseumScan
-                ? "Smithsonian NASM scan · CC0 · restored artifact (static)"
-                : isCoupled
-                  ? "Claim 1 cable coupling: warp drives starboard rudder"
-                  : "Unlinked controls — adverse yaw is unopposed"}
+              {isCoupled
+                ? "Claim 1 cable coupling: warp drives starboard rudder"
+                : "Unlinked controls — adverse yaw is unopposed"}
             </span>
           </div>
         </div>
@@ -354,17 +311,6 @@ export function WrightFlyer3D() {
             }`}
           >
             Force Vectors
-          </button>
-          <button
-            type="button"
-            onClick={() => setShowMuseumScan(!showMuseumScan)}
-            className={`px-3 py-1.5 rounded-lg text-xs font-sans font-semibold border transition-all ${
-              showMuseumScan
-                ? "bg-ink-800 text-parchment-100 border-ink-900 shadow-sm"
-                : "bg-white/80 dark:bg-ink-900/80 text-ink-700 dark:text-ink-300 border-parchment-300 dark:border-ink-700"
-            }`}
-          >
-            {showMuseumScan ? "NASM Scan (CC0)" : "Interactive Airframe"}
           </button>
           <button
             type="button"
