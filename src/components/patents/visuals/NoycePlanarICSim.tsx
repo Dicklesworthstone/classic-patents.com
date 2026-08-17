@@ -4,288 +4,275 @@ import { Cpu } from "lucide-react";
 import { useState } from "react";
 
 export function NoycePlanarICSim() {
-  const [activeLayer, setActiveLayer] = useState<"all" | "silicon" | "oxide" | "metal">("all");
-  const [_showInterconnects, _setShowInterconnects] = useState<boolean>(true);
-  const [wireTech, setWireTech] = useState<"noyce-deposited-planar" | "kilby-flying-wires">(
-    "noyce-deposited-planar",
-  );
+  const [activeLayerStep, setActiveLayerStep] = useState<number>(4); // 0: Substrate, 1: Oxide, 2: Windows, 3: Junctions, 4: Aluminum Leads
+  const [_isBiased, _setIsBiased] = useState<boolean>(true);
+
+  const STEPS = [
+    {
+      step: 0,
+      title: "1. Monolithic P-Type Silicon Substrate",
+      desc: "A single continuous crystalline silicon wafer provides the physical foundation for all transistors.",
+    },
+    {
+      step: 1,
+      title: "2. Thermal Silicon Dioxide (SiO₂) Passivation",
+      desc: "Growing an insulating glass oxide layer prevents surface contamination and electrical short circuits.",
+    },
+    {
+      step: 2,
+      title: "3. Photolithographic Window Etching",
+      desc: "Selective chemical acid etching opens precise microscopic access ports directly into the silicon below.",
+    },
+    {
+      step: 3,
+      title: "4. N-Type Impurity Gas Diffusion",
+      desc: "High-temperature furnace dopant gas diffuses into the silicon to form self-isolated P-N diode junctions.",
+    },
+    {
+      step: 4,
+      title: "5. Vacuum Vapor-Deposited Aluminum Leads (The Breakthrough)",
+      desc: "Noyce's central patent claim: evaporating flat aluminum traces over the oxide eliminates fragile hand-soldered wires.",
+    },
+  ];
 
   return (
-    <div className="rounded-xl border border-parchment-300 dark:border-ink-800 bg-parchment-50 dark:bg-ink-950 p-5 shadow-patent">
+    <div className="rounded-2xl border border-amber-900/20 dark:border-ink-800 bg-parchment-50 dark:bg-ink-950 p-6 shadow-patent space-y-6">
+      {/* Header */}
       <div className="flex flex-wrap items-center justify-between gap-3 border-b border-parchment-200 dark:border-ink-800 pb-4">
         <div>
           <div className="flex items-center gap-2">
-            <Cpu className="w-4 h-4 text-cyan-500" />
-            <h3 className="font-serif text-lg font-bold text-ink-900 dark:text-parchment-100">
-              Noyce Planar Monolithic Silicon & Aluminum Interconnect Explorer
+            <Cpu className="w-5 h-5 text-blue-500" />
+            <h3 className="font-serif text-xl font-bold text-ink-900 dark:text-parchment-100">
+              Noyce Monolithic Planar Silicon Microchip Simulator (US 2,981,877)
             </h3>
           </div>
-          <p className="text-xs text-ink-600 dark:text-ink-400 mt-0.5">
-            Inspect the layer-by-layer architecture that eliminated flying hand-soldered wires to
-            create the microchip.
+          <p className="text-xs text-ink-600 dark:text-ink-400 mt-1">
+            Explore the layer-by-layer planar process that enabled billions of microscopic
+            transistors on a single silicon chip.
           </p>
+        </div>
+
+        {/* Manufacturing Step Pills */}
+        <div className="flex flex-wrap items-center gap-1.5 bg-parchment-200 dark:bg-ink-900 p-1 rounded-xl border border-parchment-300 dark:border-ink-800 text-xs font-mono">
+          {STEPS.map((s) => (
+            <button
+              key={s.step}
+              type="button"
+              onClick={() => setActiveLayerStep(s.step)}
+              className={`px-2.5 py-1 rounded-lg transition-colors ${
+                activeLayerStep === s.step
+                  ? "bg-blue-600 text-white font-bold shadow-sm"
+                  : "text-ink-700 dark:text-ink-400 hover:text-ink-900"
+              }`}
+            >
+              Layer {s.step + 1}
+            </button>
+          ))}
         </div>
       </div>
 
-      <div className="my-5 grid grid-cols-1 lg:grid-cols-12 gap-6">
-        {/* Layer Cross Section SVG View */}
-        <div className="lg:col-span-7 flex flex-col items-center justify-center rounded-xl bg-ink-950 p-6 border border-parchment-200 dark:border-ink-800 relative min-h-[300px]">
-          <svg viewBox="0 0 400 220" className="w-full max-w-md h-auto select-none">
+      {/* Layer Cross Section SVG View */}
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
+        <div className="lg:col-span-8 flex flex-col items-center justify-center rounded-2xl bg-ink-950 p-6 border border-parchment-200 dark:border-ink-800 relative min-h-[360px]">
+          {/* Blueprint Drafting Grid */}
+          <div className="absolute inset-0 bg-[linear-gradient(to_right,#1e293b_1px,transparent_1px),linear-gradient(to_bottom,#1e293b_1px,transparent_1px)] bg-[size:20px_20px] opacity-30 pointer-events-none" />
+
+          <svg viewBox="0 0 400 220" className="w-full max-w-md h-auto select-none relative z-10">
             {/* Base Monolithic Silicon Substrate (P-type) */}
             <rect
-              x="30"
-              y="120"
-              width="340"
-              height="70"
+              x="40"
+              y="110"
+              width="320"
+              height="80"
               rx="4"
-              fill="#334155"
-              stroke="#64748b"
-              strokeWidth="1.5"
+              fill="#1e293b"
+              stroke="#475569"
+              strokeWidth="2"
             />
             <text
-              x="50"
+              x="200"
               y="160"
-              fontSize="11"
+              textAnchor="middle"
+              fontSize="12"
               fill="#94a3b8"
               fontFamily="monospace"
               fontWeight="bold"
             >
-              P-type Monolithic Silicon Substrate (Base Die)
+              Monolithic P-Type Silicon Substrate (Base Die)
             </text>
 
-            {/* Diffused N-wells (Transistors & Diodes) */}
-            {(activeLayer === "all" || activeLayer === "silicon") && (
+            {/* Diffused N-wells (Active Transistor Collector/Emitters) */}
+            {activeLayerStep >= 3 && (
               <g>
                 <rect
                   x="70"
-                  y="120"
+                  y="110"
                   width="70"
                   height="35"
-                  fill="#0369a1"
+                  rx="3"
+                  fill="#0284c7"
                   stroke="#38bdf8"
-                  strokeWidth="1"
-                  rx="2"
+                  strokeWidth="1.5"
                 />
                 <text
                   x="105"
-                  y="142"
+                  y="132"
                   textAnchor="middle"
                   fontSize="10"
-                  fill="#e0f2fe"
+                  fill="#fff"
                   fontFamily="monospace"
                 >
-                  N-Collector
+                  N-Well #1
                 </text>
 
                 <rect
-                  x="230"
-                  y="120"
-                  width="80"
+                  x="180"
+                  y="110"
+                  width="70"
                   height="35"
-                  fill="#0369a1"
+                  rx="3"
+                  fill="#0284c7"
                   stroke="#38bdf8"
-                  strokeWidth="1"
-                  rx="2"
+                  strokeWidth="1.5"
                 />
                 <text
-                  x="270"
-                  y="142"
+                  x="215"
+                  y="132"
                   textAnchor="middle"
                   fontSize="10"
-                  fill="#e0f2fe"
+                  fill="#fff"
                   fontFamily="monospace"
                 >
-                  N-Emitter
+                  N-Well #2
+                </text>
+
+                <rect
+                  x="290"
+                  y="110"
+                  width="50"
+                  height="35"
+                  rx="3"
+                  fill="#0284c7"
+                  stroke="#38bdf8"
+                  strokeWidth="1.5"
+                />
+                <text
+                  x="315"
+                  y="132"
+                  textAnchor="middle"
+                  fontSize="10"
+                  fill="#fff"
+                  fontFamily="monospace"
+                >
+                  N-Well #3
                 </text>
               </g>
             )}
 
-            {/* Silicon Dioxide (SiO2) Protective Insulating Layer */}
-            {(activeLayer === "all" || activeLayer === "oxide") && (
+            {/* Thermal Silicon Dioxide (SiO2 Glass) Passivation Layer */}
+            {activeLayerStep >= 1 && (
               <g>
-                {/* Left Oxide Island */}
-                <rect
-                  x="30"
-                  y="95"
-                  width="55"
-                  height="25"
-                  fill="#0d9488"
-                  opacity="0.8"
-                  stroke="#14b8a6"
-                  strokeWidth="1"
-                />
-                {/* Center Oxide Island */}
-                <rect
-                  x="125"
-                  y="95"
-                  width="120"
-                  height="25"
-                  fill="#0d9488"
-                  opacity="0.8"
-                  stroke="#14b8a6"
-                  strokeWidth="1"
-                />
-                {/* Right Oxide Island */}
-                <rect
-                  x="295"
-                  y="95"
-                  width="75"
-                  height="25"
-                  fill="#0d9488"
-                  opacity="0.8"
-                  stroke="#14b8a6"
-                  strokeWidth="1"
-                />
-
+                {activeLayerStep === 1 || activeLayerStep === 2 ? (
+                  <rect
+                    x="40"
+                    y="90"
+                    width="320"
+                    height="20"
+                    fill="#065f46"
+                    stroke="#10b981"
+                    strokeWidth="1.5"
+                    opacity="0.9"
+                  />
+                ) : (
+                  // Windows etched through oxide
+                  <g fill="#065f46" stroke="#10b981" strokeWidth="1.5" opacity="0.9">
+                    <rect x="40" y="90" width="40" height="20" />
+                    <rect x="120" y="90" width="70" height="20" />
+                    <rect x="230" y="90" width="70" height="20" />
+                    <rect x="330" y="90" width="30" height="20" />
+                  </g>
+                )}
                 <text
-                  x="185"
-                  y="112"
+                  x="200"
+                  y="104"
                   textAnchor="middle"
                   fontSize="10"
-                  fill="#ccfbf1"
+                  fill="#a7f3d0"
                   fontFamily="monospace"
                   fontWeight="bold"
                 >
-                  SiO₂ Insulating Oxide Layer
+                  SiO₂ Silicon Dioxide Insulator Glass (Jean Hoerni Planar Oxide)
                 </text>
               </g>
             )}
 
-            {/* Metallization Layer (Deposited Aluminum or Flying Wires) */}
-            {(activeLayer === "all" || activeLayer === "metal") && (
+            {/* Vapor-Deposited Aluminum Interconnect Leads (Noyce Breakthrough) */}
+            {activeLayerStep >= 4 && (
               <g>
-                {wireTech === "noyce-deposited-planar" ? (
-                  /* Noyce Vapor-Deposited Planar Aluminum Traces */
-                  <g>
-                    {/* Aluminum Lead extending across oxide down into contact hole */}
-                    <path
-                      d="M 60,90 L 95,90 L 95,120 L 115,120 L 115,90 L 260,90 L 260,120 L 280,120 L 280,90 L 330,90"
-                      fill="none"
-                      stroke="#f1f5f9"
-                      strokeWidth="6"
-                      strokeLinecap="round"
-                    />
-                    <path
-                      d="M 60,90 L 95,90 L 95,120 L 115,120 L 115,90 L 260,90 L 260,120 L 280,120 L 280,90 L 330,90"
-                      fill="none"
-                      stroke="#38bdf8"
-                      strokeWidth="2"
-                    />
-                    <text
-                      x="185"
-                      y="78"
-                      textAnchor="middle"
-                      fontSize="10"
-                      fill="#38bdf8"
-                      fontFamily="monospace"
-                      fontWeight="bold"
-                    >
-                      Vapor-Deposited Aluminum Interconnect Trace (Noyce)
-                    </text>
-                  </g>
-                ) : (
-                  /* Kilby Hand-Soldered Flying Gold Wire */
-                  <g>
-                    <path
-                      d="M 105,120 Q 185,15 270,120"
-                      fill="none"
-                      stroke="#fbbf24"
-                      strokeWidth="2.5"
-                      strokeDasharray="4 2"
-                    />
-                    <circle cx="105" cy="120" r="4" fill="#d97706" />
-                    <circle cx="270" cy="120" r="4" fill="#d97706" />
-                    <text
-                      x="185"
-                      y="35"
-                      textAnchor="middle"
-                      fontSize="10"
-                      fill="#fbbf24"
-                      fontFamily="monospace"
-                      fontWeight="bold"
-                    >
-                      Flying Gold Solder Wire (Fragile Prior Art)
-                    </text>
-                  </g>
-                )}
+                {/* Continuous evaporated aluminum metal traces */}
+                <path
+                  d="M 90,110 L 90,75 L 195,75 L 195,110"
+                  fill="none"
+                  stroke="#fbbf24"
+                  strokeWidth="8"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                />
+                <path
+                  d="M 230,110 L 230,75 L 305,75 L 305,110"
+                  fill="none"
+                  stroke="#fbbf24"
+                  strokeWidth="8"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                />
+                <text
+                  x="200"
+                  y="65"
+                  textAnchor="middle"
+                  fontSize="11"
+                  fill="#fde68a"
+                  fontFamily="monospace"
+                  fontWeight="bold"
+                >
+                  Vapor-Deposited Aluminum Leads (No Flying Wires!)
+                </text>
               </g>
             )}
           </svg>
 
-          <div className="text-xs font-mono text-ink-300 mt-2">
-            {wireTech === "noyce-deposited-planar" ? (
-              <span className="text-cyan-400 font-bold">
-                ✓ Planar Mass Production: All transistors &amp; metal leads etched simultaneously
-                via photolithography!
-              </span>
-            ) : (
-              <span className="text-amber-400 font-bold">
-                ✗ Hand-Assembly: Individual fragile wires must be soldered under a microscope one by
-                one.
-              </span>
-            )}
+          {/* Real-Time Telemetry Bar */}
+          <div className="w-full text-center text-xs font-mono pt-3 border-t border-ink-800 text-ink-300">
+            Current Stage:{" "}
+            <span className="text-amber-400 font-bold">{STEPS[activeLayerStep].title}</span>
           </div>
         </div>
 
-        {/* Controls */}
-        <div className="lg:col-span-5 space-y-4">
-          <div className="bg-parchment-100/60 dark:bg-ink-900/60 p-4 rounded-xl border border-parchment-200 dark:border-ink-800 space-y-3">
-            <div>
-              <span className="text-xs font-mono block text-ink-700 dark:text-ink-300 font-semibold mb-1">
-                Interconnect Architecture
+        {/* Step Explanation Sidebar */}
+        <div className="lg:col-span-4 space-y-4">
+          <div className="rounded-2xl border border-parchment-300 dark:border-ink-800 bg-parchment-100/70 dark:bg-ink-900/60 p-5 space-y-4">
+            <span className="font-serif font-bold text-sm text-ink-900 dark:text-parchment-100 block">
+              Planar Process Architecture
+            </span>
+
+            <div className="p-4 rounded-xl bg-blue-500/10 border border-blue-500/30 text-ink-900 dark:text-parchment-100 space-y-2">
+              <span className="font-serif font-bold text-sm text-blue-900 dark:text-blue-300 block">
+                {STEPS[activeLayerStep].title}
               </span>
-              <div className="grid grid-cols-1 gap-2 text-xs font-mono">
-                <button
-                  type="button"
-                  onClick={() => setWireTech("noyce-deposited-planar")}
-                  className={`p-2 rounded border text-left transition-colors ${
-                    wireTech === "noyce-deposited-planar"
-                      ? "bg-cyan-700 text-white border-cyan-800 font-bold"
-                      : "bg-parchment-200 dark:bg-ink-800 text-ink-700 dark:text-ink-300 border-parchment-300"
-                  }`}
-                >
-                  <div>Noyce Planar Deposited Metal</div>
-                  <div className="text-[10px] opacity-80">
-                    Evaporated aluminum over oxide windows (Scalable)
-                  </div>
-                </button>
-                <button
-                  type="button"
-                  onClick={() => setWireTech("kilby-flying-wires")}
-                  className={`p-2 rounded border text-left transition-colors ${
-                    wireTech === "kilby-flying-wires"
-                      ? "bg-amber-700 text-white border-amber-800 font-bold"
-                      : "bg-parchment-200 dark:bg-ink-800 text-ink-700 dark:text-ink-300 border-parchment-300"
-                  }`}
-                >
-                  <div>Kilby Flying Gold Wires</div>
-                  <div className="text-[10px] opacity-80">
-                    Hand-soldered individual wires (Unscalable)
-                  </div>
-                </button>
-              </div>
+              <p className="text-xs font-sans text-ink-800 dark:text-parchment-200 leading-relaxed">
+                {STEPS[activeLayerStep].desc}
+              </p>
             </div>
 
-            <div>
-              <span className="text-xs font-mono block text-ink-700 dark:text-ink-300 font-semibold mb-1">
-                Layer Inspection Filter
+            <div className="space-y-2 text-xs font-mono">
+              <span className="font-bold text-ink-800 dark:text-parchment-200 block">
+                Why This Beat Jack Kilby&apos;s Hybrid IC:
               </span>
-              <div className="grid grid-cols-4 gap-1.5 text-xs font-mono">
-                {(["all", "silicon", "oxide", "metal"] as const).map((layer) => (
-                  <button
-                    key={layer}
-                    type="button"
-                    onClick={() => setActiveLayer(layer)}
-                    className={`py-1 rounded text-center capitalize ${
-                      activeLayer === layer
-                        ? "bg-ink-800 text-white font-bold"
-                        : "bg-parchment-200 dark:bg-ink-900 text-ink-600 dark:text-ink-400"
-                    }`}
-                  >
-                    {layer}
-                  </button>
-                ))}
-              </div>
+              <p className="text-ink-600 dark:text-ink-400 font-sans text-xs leading-relaxed">
+                Kilby&apos;s 1958 TI prototype required gold flying wires hand-soldered under
+                microscopes, making mass production impossible. Noyce&apos;s planar IC fabricated
+                all interconnects simultaneously using vacuum vapor-deposition.
+              </p>
             </div>
           </div>
         </div>

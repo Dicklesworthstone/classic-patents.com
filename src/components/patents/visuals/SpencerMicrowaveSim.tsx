@@ -2,6 +2,7 @@
 
 import { Radio } from "lucide-react";
 import { useEffect, useState } from "react";
+import { soundEngine } from "@/utils/soundEngine";
 
 export function SpencerMicrowaveSim() {
   const [powerWatts, setPowerWatts] = useState<number>(800); // 100 to 1200 W
@@ -17,7 +18,13 @@ export function SpencerMicrowaveSim() {
         setTempCelsius((t) => {
           const next = Math.min(180, t + (powerWatts / 1000) * 8);
           if (next > 100 && poppedCount < 12) {
-            setPoppedCount((c) => Math.min(12, c + 1));
+            setPoppedCount((c) => {
+              if (c < 12) {
+                soundEngine.playPopcornPop();
+                return c + 1;
+              }
+              return c;
+            });
           }
           return next;
         });
@@ -32,6 +39,7 @@ export function SpencerMicrowaveSim() {
   const resetHeating = () => {
     setTempCelsius(20);
     setPoppedCount(0);
+    soundEngine.playSwitchClick();
   };
 
   return (
@@ -53,9 +61,9 @@ export function SpencerMicrowaveSim() {
           <button
             type="button"
             onClick={resetHeating}
-            className="px-3 py-1.5 rounded-lg text-xs font-mono font-medium border border-parchment-300 dark:border-ink-700 bg-parchment-100 dark:bg-ink-800 text-ink-700 dark:text-ink-300"
+            className="px-3 py-1.5 rounded-lg text-xs font-mono font-medium border border-parchment-300 dark:border-ink-700 bg-parchment-100 dark:bg-ink-800 text-ink-700 dark:text-ink-300 hover:bg-parchment-200"
           >
-            Cool Down Food
+            Cool Down Food &amp; Reset
           </button>
         </div>
       </div>

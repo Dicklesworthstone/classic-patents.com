@@ -1,423 +1,356 @@
 "use client";
 
-import { Pause, Play, RotateCcw, Zap } from "lucide-react";
-import { useEffect, useRef, useState } from "react";
+import { Volume2, VolumeX, Zap } from "lucide-react";
+import { useEffect, useState } from "react";
+import { soundEngine } from "@/utils/soundEngine";
 
 export function TeslaMotorSim() {
-  const [phaseMode, setPhaseMode] = useState<"2-phase" | "3-phase" | "1-phase">("2-phase");
-  const [frequency, setFrequency] = useState<number>(30); // Hz
-  const [isPlaying, setIsPlaying] = useState<boolean>(true);
-  const [loadTorque, setLoadTorque] = useState<number>(20); // %
-  const [time, setTime] = useState<number>(0);
+  const [phaseCount, setPhaseCount] = useState<2 | 3>(2);
+  const [frequencyHz, setFrequencyHz] = useState<number>(60);
+  const [loadTorque, setLoadTorque] = useState<number>(20);
+  const [isPlayingAudio, setIsPlayingAudio] = useState<boolean>(false);
+  const [_activePedagogyStep, setActivePedagogyStep] = useState<number>(1);
+  const [angle, setAngle] = useState<number>(0);
 
-  const requestRef = useRef<number | null>(null);
-  const lastTimeRef = useRef<number>(Date.now());
+  // Synchronous and Rotor Speed calculations
+  const syncSpeedRpm = (120 * frequencyHz) / 4; // 4 poles = 1800 RPM at 60Hz
+  const slip = Math.min(0.25, (loadTorque / 100) * 0.2 + 0.02);
+  const rotorSpeedRpm = Math.round(syncSpeedRpm * (1 - slip));
 
+  // Animation Loop for Stator Field & Rotor Rotation
   useEffect(() => {
-    const animate = () => {
-      const now = Date.now();
-      const dt = (now - lastTimeRef.current) / 1000;
-      lastTimeRef.current = now;
+    const interval = setInterval(() => {
+      setAngle((prev) => (prev + (frequencyHz / 60) * 8) % 360);
+    }, 30);
+    return () => clearInterval(interval);
+  }, [frequencyHz]);
 
-      if (isPlaying) {
-        setTime((prev) => prev + dt * (frequency / 10));
-      }
-      requestRef.current = requestAnimationFrame(animate);
-    };
-
-    requestRef.current = requestAnimationFrame(animate);
+  // Audio AC Hum feedback
+  useEffect(() => {
+    if (isPlayingAudio) {
+      soundEngine.playTeslaMotorHum(frequencyHz, rotorSpeedRpm);
+    } else {
+      soundEngine.stopContinuousTone();
+    }
     return () => {
-      if (requestRef.current) cancelAnimationFrame(requestRef.current);
+      soundEngine.stopContinuousTone();
     };
-  }, [isPlaying, frequency]);
+  }, [isPlayingAudio, frequencyHz, rotorSpeedRpm]);
 
-  // Phase angles & field vector calculation
-  const omega = time * 2 * Math.PI;
-  let bx = 0;
-  let by = 0;
-  let phaseA = 0;
-  let phaseB = 0;
-  let phaseC = 0;
+  const _applyPedagogyStep = (step: number) => {
+    setActivePedagogyStep(step);
+    if (step === 1) {
+      // Step 1: Low frequency 2-phase demonstration
+      setFrequencyHz(30);
+      setPhaseCount(2);
+      setLoadTorque(10);
+    } else if (step === 2) {
+      // Step 2: Standard 60Hz 2-phase Polyphase Stator
+      setFrequencyHz(60);
+      setPhaseCount(2);
+      setLoadTorque(25);
+    } else if (step === 3) {
+      // Step 3: High efficiency 3-phase AC Motor
+      setFrequencyHz(60);
+      setPhaseCount(3);
+      setLoadTorque(50);
+    }
+  };
 
-  if (phaseMode === "2-phase") {
-    // Tesla's original 2-phase quadrature
-    phaseA = Math.cos(omega);
-    phaseB = Math.sin(omega);
-    bx = phaseA;
-    by = phaseB;
-  } else if (phaseMode === "3-phase") {
-    // Modern 3-phase (120 deg apart)
-    phaseA = Math.cos(omega);
-    phaseB = Math.cos(omega - (2 * Math.PI) / 3);
-    phaseC = Math.cos(omega - (4 * Math.PI) / 3);
-    bx = phaseA - 0.5 * phaseB - 0.5 * phaseC;
-    by = (Math.sqrt(3) / 2) * (phaseB - phaseC);
-  } else {
-    // 1-phase (pulsating field, zero starting torque)
-    phaseA = Math.cos(omega);
-    bx = 0;
-    by = phaseA;
-  }
-
-  const bMag = Math.sqrt(bx * bx + by * by);
-  const _bAngle = Math.atan2(by, bx); // radians
-  const rotorSpeed = phaseMode === "1-phase" ? 0 : frequency * (1 - loadTorque * 0.005) * 60; // RPM
+  const rad = (angle * Math.PI) / 180;
+  const bVectorX = Math.cos(rad) * 60;
+  const bVectorY = Math.sin(rad) * 60;
 
   return (
-    <div className="rounded-xl border border-parchment-300 dark:border-ink-800 bg-parchment-50 dark:bg-ink-950 p-5 shadow-patent">
+    <div className="rounded-2xl border border-amber-900/20 dark:border-ink-800 bg-parchment-50 dark:bg-ink-950 p-6 shadow-patent space-y-6">
+      {/* Simulation Header */}
       <div className="flex flex-wrap items-center justify-between gap-3 border-b border-parchment-200 dark:border-ink-800 pb-4">
         <div>
           <div className="flex items-center gap-2">
-            <Zap className="w-4 h-4 text-amber-500 animate-pulse" />
-            <h3 className="font-serif text-lg font-bold text-ink-900 dark:text-parchment-100">
-              Tesla Polyphase AC Rotating Magnetic Field Simulator
+            <Zap className="w-5 h-5 text-amber-500 animate-pulse" />
+            <h3 className="font-serif text-xl font-bold text-ink-900 dark:text-parchment-100">
+              Tesla Polyphase AC Rotating Magnetic Field Motor (US 381,968)
             </h3>
           </div>
-          <p className="text-xs text-ink-600 dark:text-ink-400 mt-0.5">
-            Watch out-of-phase alternating currents synthesize a continuous rotating magnetic stator
-            vector.
+          <p className="text-xs text-ink-600 dark:text-ink-400 mt-1">
+            Observe how out-of-phase AC currents generate a smooth, rotating magnetic stator vortex
+            with <strong>zero mechanical brushes</strong>.
           </p>
         </div>
+
         <div className="flex items-center gap-2">
           <button
             type="button"
-            onClick={() => setIsPlaying(!isPlaying)}
-            className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-mono font-medium bg-amber-600 text-white hover:bg-amber-700 transition-colors"
+            onClick={() => setIsPlayingAudio(!isPlayingAudio)}
+            className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-mono font-medium transition-colors border shadow-sm ${
+              isPlayingAudio
+                ? "bg-amber-600 text-white border-amber-700 animate-pulse"
+                : "bg-parchment-200 dark:bg-ink-800 text-ink-800 dark:text-parchment-200 border-parchment-300 dark:border-ink-700 hover:bg-parchment-300"
+            }`}
           >
-            {isPlaying ? <Pause className="w-3.5 h-3.5" /> : <Play className="w-3.5 h-3.5" />}
-            {isPlaying ? "Pause Flux" : "Start AC"}
-          </button>
-          <button
-            type="button"
-            onClick={() => setTime(0)}
-            className="p-1.5 rounded-lg border border-parchment-300 dark:border-ink-800 hover:bg-parchment-200 dark:hover:bg-ink-800 text-ink-700 dark:text-ink-300 transition-colors"
-            title="Reset Phase"
-          >
-            <RotateCcw className="w-4 h-4" />
+            {isPlayingAudio ? (
+              <Volume2 className="w-3.5 h-3.5" />
+            ) : (
+              <VolumeX className="w-3.5 h-3.5" />
+            )}
+            <span>{isPlayingAudio ? "AC Hum (Live)" : "Play 60Hz Hum"}</span>
           </button>
         </div>
       </div>
 
-      <div className="my-5 grid grid-cols-1 lg:grid-cols-12 gap-6">
-        {/* Visualizer Frame */}
-        <div className="lg:col-span-8 flex flex-col items-center justify-center rounded-xl bg-gradient-to-b from-amber-950/20 to-ink-950 p-6 border border-parchment-200 dark:border-ink-800 relative min-h-[340px]">
-          {/* Phase Mode Pills */}
-          <div className="flex items-center gap-2 mb-4">
-            <button
-              type="button"
-              onClick={() => setPhaseMode("2-phase")}
-              className={`px-3 py-1 rounded-full text-xs font-mono transition-all border ${
-                phaseMode === "2-phase"
-                  ? "bg-amber-500 text-ink-950 font-bold border-amber-400 shadow-glow"
-                  : "bg-ink-900/60 text-ink-400 border-ink-700 hover:text-ink-200"
-              }`}
-            >
-              2-Phase (Tesla 1888 90°)
-            </button>
-            <button
-              type="button"
-              onClick={() => setPhaseMode("3-phase")}
-              className={`px-3 py-1 rounded-full text-xs font-mono transition-all border ${
-                phaseMode === "3-phase"
-                  ? "bg-amber-500 text-ink-950 font-bold border-amber-400 shadow-glow"
-                  : "bg-ink-900/60 text-ink-400 border-ink-700 hover:text-ink-200"
-              }`}
-            >
-              3-Phase (Modern 120°)
-            </button>
-            <button
-              type="button"
-              onClick={() => setPhaseMode("1-phase")}
-              className={`px-3 py-1 rounded-full text-xs font-mono transition-all border ${
-                phaseMode === "1-phase"
-                  ? "bg-red-500 text-white font-bold border-red-400"
-                  : "bg-ink-900/60 text-ink-400 border-ink-700 hover:text-ink-200"
-              }`}
-            >
-              1-Phase (DC/Stalled)
-            </button>
-          </div>
+      {/* Visual Canvas and Stator Vector Display */}
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
+        <div className="lg:col-span-8 flex flex-col items-center justify-center rounded-2xl bg-ink-950 p-6 border border-parchment-200 dark:border-ink-800 relative min-h-[360px]">
+          {/* Circular Blueprint Grid */}
+          <div className="absolute inset-0 bg-[linear-gradient(to_right,#1e293b_1px,transparent_1px),linear-gradient(to_bottom,#1e293b_1px,transparent_1px)] bg-[size:24px_24px] opacity-30 pointer-events-none" />
 
-          {/* Stator & Rotor Motor SVG */}
-          <svg viewBox="0 0 400 300" className="w-full max-w-md h-auto select-none">
+          {/* Stator & Rotor SVG Visualizer */}
+          <svg viewBox="0 0 400 300" className="w-full max-w-md h-auto select-none relative z-10">
             <defs>
-              <radialGradient id="rotorMetal" cx="50%" cy="50%" r="50%">
+              <radialGradient id="teslaRotorMetal" cx="50%" cy="50%" r="50%">
                 <stop offset="0%" stopColor="#94a3b8" />
-                <stop offset="85%" stopColor="#475569" />
+                <stop offset="80%" stopColor="#475569" />
                 <stop offset="100%" stopColor="#1e293b" />
               </radialGradient>
-              <linearGradient id="statorIron" x1="0%" y1="0%" x2="100%" y2="100%">
-                <stop offset="0%" stopColor="#64748b" />
-                <stop offset="100%" stopColor="#334155" />
-              </linearGradient>
             </defs>
 
-            {/* Stator Outer Ring */}
+            {/* Outer Stator Ring */}
+            <circle cx="200" cy="150" r="110" fill="#0f172a" stroke="#334155" strokeWidth="4" />
             <circle
               cx="200"
               cy="150"
-              r="120"
-              fill="url(#statorIron)"
-              stroke="#cbd5e1"
-              strokeWidth="4"
+              r="95"
+              fill="none"
+              stroke="#475569"
+              strokeWidth="1.5"
+              strokeDasharray="6 4"
             />
-            <circle cx="200" cy="150" r="85" fill="#0f172a" stroke="#475569" strokeWidth="2" />
 
-            {/* Stator Coils (4 Pole / Orthogonal) */}
-            {/* North-South Coil Pair A */}
+            {/* 4 Stator Pole Coils (A, B, A', B') */}
+            {/* Phase A (Top / Bottom) */}
             <g>
-              {/* North Coil A */}
               <rect
                 x="180"
-                y="35"
+                y="44"
                 width="40"
-                height="30"
+                height="24"
                 rx="4"
-                fill={phaseA > 0 ? "#f59e0b" : "#3b82f6"}
-                fillOpacity={Math.abs(phaseA) * 0.8 + 0.2}
-                stroke="#d97706"
-                strokeWidth="2"
+                fill={Math.sin(rad) > 0 ? "#f59e0b" : "#3b82f6"}
+                stroke="#fff"
+                strokeWidth="1"
               />
               <text
                 x="200"
-                y="55"
-                textAnchor="middle"
+                y="60"
+                fill="#fff"
                 fontSize="10"
-                fill="#ffffff"
+                textAnchor="middle"
                 fontFamily="monospace"
                 fontWeight="bold"
               >
-                A ({phaseA > 0 ? "+N" : "-S"})
+                Coil A
               </text>
-
-              {/* South Coil A */}
               <rect
                 x="180"
-                y="235"
+                y="232"
                 width="40"
-                height="30"
+                height="24"
                 rx="4"
-                fill={phaseA < 0 ? "#f59e0b" : "#3b82f6"}
-                fillOpacity={Math.abs(phaseA) * 0.8 + 0.2}
-                stroke="#d97706"
-                strokeWidth="2"
+                fill={Math.sin(rad) > 0 ? "#3b82f6" : "#f59e0b"}
+                stroke="#fff"
+                strokeWidth="1"
               />
               <text
                 x="200"
-                y="255"
-                textAnchor="middle"
+                y="248"
+                fill="#fff"
                 fontSize="10"
-                fill="#ffffff"
+                textAnchor="middle"
                 fontFamily="monospace"
                 fontWeight="bold"
               >
-                A&apos; ({phaseA < 0 ? "+N" : "-S"})
+                Coil A&apos;
               </text>
             </g>
 
-            {/* East-West Coil Pair B */}
+            {/* Phase B (Left / Right) */}
             <g>
-              {/* West Coil B */}
               <rect
-                x="85"
+                x="74"
                 y="130"
-                width="30"
+                width="24"
                 height="40"
                 rx="4"
-                fill={phaseB > 0 ? "#f59e0b" : "#3b82f6"}
-                fillOpacity={Math.abs(phaseB) * 0.8 + 0.2}
-                stroke="#d97706"
-                strokeWidth="2"
+                fill={Math.cos(rad) > 0 ? "#10b981" : "#ef4444"}
+                stroke="#fff"
+                strokeWidth="1"
               />
               <text
-                x="100"
+                x="86"
                 y="154"
-                textAnchor="middle"
+                fill="#fff"
                 fontSize="10"
-                fill="#ffffff"
+                textAnchor="middle"
                 fontFamily="monospace"
                 fontWeight="bold"
               >
-                B
+                Coil B
               </text>
-
-              {/* East Coil B */}
               <rect
-                x="285"
+                x="302"
                 y="130"
-                width="30"
+                width="24"
                 height="40"
                 rx="4"
-                fill={phaseB < 0 ? "#f59e0b" : "#3b82f6"}
-                fillOpacity={Math.abs(phaseB) * 0.8 + 0.2}
-                stroke="#d97706"
-                strokeWidth="2"
+                fill={Math.cos(rad) > 0 ? "#ef4444" : "#10b981"}
+                stroke="#fff"
+                strokeWidth="1"
               />
               <text
-                x="300"
+                x="314"
                 y="154"
-                textAnchor="middle"
+                fill="#fff"
                 fontSize="10"
-                fill="#ffffff"
+                textAnchor="middle"
                 fontFamily="monospace"
                 fontWeight="bold"
               >
-                B&apos;
+                Coil B&apos;
               </text>
             </g>
 
-            {/* Rotating Rotor Armature */}
-            <g
-              transform={`translate(200, 150) rotate(${phaseMode === "1-phase" ? 0 : ((time * 360 * frequency) / 10) * (1 - loadTorque * 0.005)})`}
-            >
-              {/* Rotor Disk */}
+            {/* Dynamic Rotating B-Field Vector Arrow */}
+            <line
+              x1="200"
+              y1="150"
+              x2={200 + bVectorX}
+              y2={150 + bVectorY}
+              stroke="#fbbf24"
+              strokeWidth="4"
+              strokeLinecap="round"
+            />
+            <circle cx={200 + bVectorX} cy={150 + bVectorY} r="5" fill="#f59e0b" />
+
+            {/* Rotating Armature / Rotor Body */}
+            <g transform={`translate(200, 150) rotate(${angle * (1 - slip)})`}>
               <circle
                 cx="0"
                 cy="0"
-                r="55"
-                fill="url(#rotorMetal)"
-                stroke="#94a3b8"
+                r="50"
+                fill="url(#teslaRotorMetal)"
+                stroke="#cbd5e1"
                 strokeWidth="2"
               />
-
+              <circle cx="0" cy="0" r="8" fill="#0f172a" stroke="#94a3b8" strokeWidth="2" />
               {/* Squirrel Cage Copper Bars */}
-              {[0, 45, 90, 135, 180, 225, 270, 315].map((deg) => (
-                <g key={deg} transform={`rotate(${deg})`}>
-                  <circle cx="0" cy="42" r="4" fill="#fbbf24" stroke="#d97706" strokeWidth="1" />
-                  <line
-                    x1="0"
-                    y1="0"
-                    x2="0"
-                    y2="42"
-                    stroke="#64748b"
+              {Array.from({ length: 8 }).map((_, i) => {
+                const barAngle = (i * 45 * Math.PI) / 180;
+                return (
+                  <circle
+                    key={i}
+                    cx={Math.cos(barAngle) * 36}
+                    cy={Math.sin(barAngle) * 36}
+                    r="4"
+                    fill="#f59e0b"
+                    stroke="#d97706"
                     strokeWidth="1"
-                    strokeDasharray="2 2"
                   />
-                </g>
-              ))}
-
-              {/* Center Shaft */}
-              <circle cx="0" cy="0" r="14" fill="#0f172a" stroke="#cbd5e1" strokeWidth="2" />
-              <circle cx="0" cy="0" r="4" fill="#ef4444" />
-            </g>
-
-            {/* Net Magnetic Flux Vector Arrow (Rotating in Space) */}
-            <g transform="translate(200, 150)">
-              <line
-                x1="0"
-                y1="0"
-                x2={bx * 75}
-                y2={by * 75}
-                stroke="#f59e0b"
-                strokeWidth="3.5"
-                strokeLinecap="round"
-              />
-              <circle cx={bx * 75} cy={by * 75} r="5" fill="#f59e0b" />
-              <text
-                x={bx * 85}
-                y={by * 85}
-                textAnchor="middle"
-                fontSize="11"
-                fill="#fbbf24"
-                fontFamily="monospace"
-                fontWeight="bold"
-              >
-                B_net
-              </text>
+                );
+              })}
             </g>
           </svg>
 
-          {/* Real-time Oscilloscope Mini-view */}
-          <div className="w-full mt-3 bg-ink-900/90 border border-ink-800 rounded-lg p-2.5 flex items-center justify-between text-xs font-mono text-ink-300">
-            <div className="flex items-center gap-3">
-              <span className="flex items-center gap-1 text-amber-400">
-                <span className="inline-block w-2 h-2 rounded-full bg-amber-400" />
-                Phase A: {phaseA.toFixed(2)}
-              </span>
-              <span className="flex items-center gap-1 text-blue-400">
-                <span className="inline-block w-2 h-2 rounded-full bg-blue-400" />
-                Phase B: {phaseB.toFixed(2)}
-              </span>
+          {/* Real-Time Telemetry Bar */}
+          <div className="w-full grid grid-cols-3 gap-2 text-center text-xs font-mono pt-3 border-t border-ink-800 text-ink-300">
+            <div>
+              <span className="text-ink-500 block text-[10px]">SYNC SPEED</span>
+              <span className="text-amber-400 font-bold">{syncSpeedRpm} RPM</span>
             </div>
-            <div className="text-emerald-400 font-bold">
-              |B_net| = {bMag.toFixed(2)} (Constant Vector)
+            <div>
+              <span className="text-ink-500 block text-[10px]">ROTOR SPEED</span>
+              <span className="text-emerald-400 font-bold">{rotorSpeedRpm} RPM</span>
+            </div>
+            <div>
+              <span className="text-ink-500 block text-[10px]">INDUCTION SLIP</span>
+              <span className="text-blue-400 font-bold">{(slip * 100).toFixed(1)}%</span>
             </div>
           </div>
         </div>
 
-        {/* Controls & Metrics */}
-        <div className="lg:col-span-4 flex flex-col justify-between space-y-4">
-          <div className="space-y-4 bg-parchment-100/60 dark:bg-ink-900/60 p-4 rounded-xl border border-parchment-200 dark:border-ink-800">
-            {/* Frequency Control */}
+        {/* Controls Sidebar */}
+        <div className="lg:col-span-4 space-y-4">
+          <div className="rounded-2xl border border-parchment-300 dark:border-ink-800 bg-parchment-100/70 dark:bg-ink-900/60 p-5 space-y-4">
+            <span className="font-serif font-bold text-sm text-ink-900 dark:text-parchment-100 block">
+              AC Generator &amp; Motor Controls
+            </span>
+
+            {/* Polyphase Mode Selection */}
             <div>
-              <div className="flex justify-between text-xs font-mono mb-1.5">
+              <span className="text-xs font-mono block text-ink-700 dark:text-ink-300 font-semibold mb-1">
+                AC Phase Configuration
+              </span>
+              <div className="grid grid-cols-2 gap-2 text-xs font-mono">
+                <button
+                  type="button"
+                  onClick={() => setPhaseCount(2)}
+                  className={`p-2 rounded-lg border text-center transition-colors ${
+                    phaseCount === 2
+                      ? "bg-amber-700 text-white border-amber-800 font-bold"
+                      : "bg-parchment-200 dark:bg-ink-800 text-ink-700 dark:text-ink-300 border-parchment-300"
+                  }`}
+                >
+                  2-Phase (90° Quad)
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setPhaseCount(3)}
+                  className={`p-2 rounded-lg border text-center transition-colors ${
+                    phaseCount === 3
+                      ? "bg-amber-700 text-white border-amber-800 font-bold"
+                      : "bg-parchment-200 dark:bg-ink-800 text-ink-700 dark:text-ink-300 border-parchment-300"
+                  }`}
+                >
+                  3-Phase (120° Poly)
+                </button>
+              </div>
+            </div>
+
+            {/* Frequency Slider */}
+            <div className="space-y-1">
+              <div className="flex justify-between text-xs font-mono">
                 <span className="font-semibold text-ink-800 dark:text-parchment-200">
-                  AC Frequency (Hz)
+                  Stator AC Frequency
                 </span>
-                <span className="text-amber-700 dark:text-amber-400 font-bold">{frequency} Hz</span>
+                <span className="text-amber-600 dark:text-amber-400 font-bold">
+                  {frequencyHz} Hz
+                </span>
               </div>
               <input
                 type="range"
                 min="10"
-                max="60"
-                value={frequency}
-                onChange={(e) => setFrequency(Number(e.target.value))}
+                max="120"
+                value={frequencyHz}
+                onChange={(e) => setFrequencyHz(Number(e.target.value))}
                 className="w-full accent-amber-600 cursor-pointer h-2 bg-parchment-300 dark:bg-ink-700 rounded-lg"
               />
-              <div className="flex justify-between text-[10px] text-ink-500 font-mono mt-0.5">
-                <span>10 Hz (Slow)</span>
-                <span>50 Hz (EU)</span>
-                <span>60 Hz (US Standard)</span>
-              </div>
             </div>
 
-            {/* Mechanical Load Torque (Rotor Slip) */}
-            <div>
-              <div className="flex justify-between text-xs font-mono mb-1.5">
+            {/* Mechanical Load Slider */}
+            <div className="space-y-1">
+              <div className="flex justify-between text-xs font-mono">
                 <span className="font-semibold text-ink-800 dark:text-parchment-200">
-                  Mechanical Shaft Load
+                  Shaft Mechanical Load
                 </span>
-                <span className="text-blue-700 dark:text-blue-400 font-bold">{loadTorque}%</span>
+                <span className="text-blue-600 dark:text-blue-400 font-bold">{loadTorque}%</span>
               </div>
               <input
                 type="range"
-                min="0"
-                max="100"
+                min="5"
+                max="95"
                 value={loadTorque}
                 onChange={(e) => setLoadTorque(Number(e.target.value))}
                 className="w-full accent-blue-600 cursor-pointer h-2 bg-parchment-300 dark:bg-ink-700 rounded-lg"
               />
-              <div className="flex justify-between text-[10px] text-ink-500 font-mono mt-0.5">
-                <span>0% (No Load)</span>
-                <span>50% (Normal)</span>
-                <span>100% (High Slip)</span>
-              </div>
-            </div>
-          </div>
-
-          {/* Motor Telemetry Readout */}
-          <div className="grid grid-cols-2 gap-2 text-xs font-mono bg-parchment-200/50 dark:bg-ink-900/80 p-3 rounded-lg border border-parchment-300 dark:border-ink-800">
-            <div>
-              <span className="text-ink-500 text-[10px] block">Synchronous Stator Speed</span>
-              <span className="font-bold text-ink-900 dark:text-parchment-100">
-                {(frequency * 60).toLocaleString()} RPM
-              </span>
-            </div>
-            <div>
-              <span className="text-ink-500 text-[10px] block">Actual Rotor Speed</span>
-              <span className="font-bold text-amber-600 dark:text-amber-400">
-                {Math.round(rotorSpeed).toLocaleString()} RPM
-              </span>
-            </div>
-            <div>
-              <span className="text-ink-500 text-[10px] block">Rotor Slip (s)</span>
-              <span className="font-bold text-ink-900 dark:text-parchment-100">
-                {(loadTorque * 0.5).toFixed(1)}%
-              </span>
-            </div>
-            <div>
-              <span className="text-ink-500 text-[10px] block">Brushes / Commutator</span>
-              <span className="font-bold text-emerald-600">ZERO (Brushless)</span>
             </div>
           </div>
         </div>

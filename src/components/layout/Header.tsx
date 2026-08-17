@@ -53,6 +53,12 @@ export function Header() {
             Noyce Silicon IC
           </Link>
           <Link
+            href="/timeline"
+            className="text-ink-700 dark:text-parchment-200 hover:text-amber-800 dark:hover:text-amber-400 transition-colors"
+          >
+            Timeline
+          </Link>
+          <Link
             href="/about"
             className="text-ink-700 dark:text-parchment-200 hover:text-amber-800 dark:hover:text-amber-400 transition-colors"
           >

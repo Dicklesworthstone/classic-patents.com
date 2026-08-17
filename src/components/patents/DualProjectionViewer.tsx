@@ -1,10 +1,11 @@
 "use client";
 
-import { Activity, Columns, FileText, Scroll, Sparkles, Zap } from "lucide-react";
+import { Activity, Columns, Compass, FileText, Scroll, Sparkles, Zap } from "lucide-react";
 import { useState } from "react";
 import type { Patent } from "@/types/patent";
 import { ClaimsDecoder } from "./ClaimsDecoder";
 import { HistoricalContextPanel } from "./HistoricalContextPanel";
+import { InteractiveDiagramViewer } from "./InteractiveDiagramViewer";
 import { PatentVisualDispatcher } from "./visuals";
 
 interface DualProjectionViewerProps {
@@ -13,7 +14,7 @@ interface DualProjectionViewerProps {
 
 export function DualProjectionViewer({ patent }: DualProjectionViewerProps) {
   const [viewMode, setViewMode] = useState<
-    "plain-english" | "original-spec" | "interactive-sim" | "split-view"
+    "plain-english" | "original-spec" | "interactive-sim" | "schematic-sheet" | "split-view"
   >("plain-english");
 
   return (
@@ -31,7 +32,7 @@ export function DualProjectionViewer({ patent }: DualProjectionViewerProps) {
             }`}
           >
             <Sparkles className="w-4 h-4" />
-            <span>Plain English Engineering Face</span>
+            <span>Plain English Face</span>
           </button>
 
           <button
@@ -44,7 +45,7 @@ export function DualProjectionViewer({ patent }: DualProjectionViewerProps) {
             }`}
           >
             <Scroll className="w-4 h-4" />
-            <span>Verbatim Legal Specification Face</span>
+            <span>Verbatim Specification Face</span>
           </button>
 
           <button
@@ -58,6 +59,19 @@ export function DualProjectionViewer({ patent }: DualProjectionViewerProps) {
           >
             <Activity className="w-4 h-4" />
             <span>Interactive Simulator</span>
+          </button>
+
+          <button
+            type="button"
+            onClick={() => setViewMode("schematic-sheet")}
+            className={`px-3.5 py-2 rounded-lg flex items-center gap-1.5 transition-all ${
+              viewMode === "schematic-sheet"
+                ? "bg-amber-700 text-white font-bold shadow-sm dark:bg-amber-600"
+                : "text-ink-700 dark:text-parchment-300 hover:bg-parchment-200 dark:hover:bg-ink-800"
+            }`}
+          >
+            <Compass className="w-4 h-4" />
+            <span>Schematic &amp; Callouts</span>
           </button>
         </div>
 
@@ -81,6 +95,13 @@ export function DualProjectionViewer({ patent }: DualProjectionViewerProps) {
       {viewMode === "interactive-sim" && (
         <div className="space-y-6">
           <PatentVisualDispatcher patentId={patent.id} />
+        </div>
+      )}
+
+      {/* VIEW MODE: SCHEMATIC SHEET & NUMBERED CALLOUTS */}
+      {viewMode === "schematic-sheet" && (
+        <div className="space-y-6">
+          <InteractiveDiagramViewer drawings={patent.drawings} patentNumber={patent.patentNumber} />
         </div>
       )}
 

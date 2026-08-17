@@ -1,14 +1,16 @@
 "use client";
 
-import { Mic, Volume2, Waves } from "lucide-react";
+import { Mic, Volume2, VolumeX, Waves } from "lucide-react";
 import { useEffect, useState } from "react";
+import { soundEngine } from "@/utils/soundEngine";
 
 export function BellTelephoneSim() {
-  const [_acousticFrequency, _setAcousticFrequency] = useState<number>(440); // Hz
+  const [acousticFrequency, setAcousticFrequency] = useState<number>(440); // Hz
   const [voiceAmplitude, setVoiceAmplitude] = useState<number>(50); // %
   const [signalType, setSignalType] = useState<"continuous-undulating" | "intermittent-make-break">(
     "continuous-undulating",
   );
+  const [isPlayingAudio, setIsPlayingAudio] = useState<boolean>(false);
   const [time, setTime] = useState<number>(0);
 
   useEffect(() => {
@@ -17,6 +19,22 @@ export function BellTelephoneSim() {
     }, 40);
     return () => clearInterval(timer);
   }, []);
+
+  // Update real-time Web Audio synthesis when playing
+  useEffect(() => {
+    if (isPlayingAudio) {
+      if (signalType === "continuous-undulating") {
+        soundEngine.playContinuousTone(acousticFrequency, "sine", (voiceAmplitude / 100) * 0.1);
+      } else {
+        soundEngine.playContinuousTone(acousticFrequency, "square", (voiceAmplitude / 100) * 0.06);
+      }
+    } else {
+      soundEngine.stopContinuousTone();
+    }
+    return () => {
+      soundEngine.stopContinuousTone();
+    };
+  }, [isPlayingAudio, signalType, acousticFrequency, voiceAmplitude]);
 
   // Generate oscilloscope waveform points
   const points = Array.from({ length: 60 })
@@ -42,7 +60,7 @@ export function BellTelephoneSim() {
           <div className="flex items-center gap-2">
             <Waves className="w-4 h-4 text-blue-500" />
             <h3 className="font-serif text-lg font-bold text-ink-900 dark:text-parchment-100">
-              Bell Undulating Current & Acoustic Transducer Simulator
+              Bell Undulating Current &amp; Acoustic Transducer Simulator
             </h3>
           </div>
           <p className="text-xs text-ink-600 dark:text-ink-400 mt-0.5">
@@ -50,6 +68,23 @@ export function BellTelephoneSim() {
             make-and-break telegraph clicks.
           </p>
         </div>
+
+        <button
+          type="button"
+          onClick={() => setIsPlayingAudio(!isPlayingAudio)}
+          className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-mono font-medium transition-colors border shadow-sm ${
+            isPlayingAudio
+              ? "bg-emerald-600 text-white border-emerald-700 animate-pulse"
+              : "bg-parchment-200 dark:bg-ink-800 text-ink-800 dark:text-parchment-200 border-parchment-300 dark:border-ink-700 hover:bg-parchment-300"
+          }`}
+        >
+          {isPlayingAudio ? (
+            <Volume2 className="w-3.5 h-3.5" />
+          ) : (
+            <VolumeX className="w-3.5 h-3.5" />
+          )}
+          <span>{isPlayingAudio ? "Synthesizing Audio (Live)" : "Play Audio Synth"}</span>
+        </button>
       </div>
 
       <div className="my-5 grid grid-cols-1 lg:grid-cols-12 gap-6">
@@ -111,7 +146,7 @@ export function BellTelephoneSim() {
                 >
                   <div>Bell Undulating Current (Analog)</div>
                   <div className="text-[10px] opacity-80">
-                    Continuous variable resistance liquid transducer
+                    Continuous variable resistance liquid transducer (Speech)
                   </div>
                 </button>
                 <button
@@ -134,6 +169,26 @@ export function BellTelephoneSim() {
             <div>
               <div className="flex justify-between text-xs font-mono mb-1">
                 <span className="font-semibold text-ink-800 dark:text-parchment-200">
+                  Voice Acoustic Frequency
+                </span>
+                <span className="text-blue-600 dark:text-blue-400 font-bold">
+                  {acousticFrequency} Hz
+                </span>
+              </div>
+              <input
+                type="range"
+                min="200"
+                max="1000"
+                step="10"
+                value={acousticFrequency}
+                onChange={(e) => setAcousticFrequency(Number(e.target.value))}
+                className="w-full accent-blue-600 cursor-pointer h-2 bg-parchment-300 dark:bg-ink-700 rounded-lg"
+              />
+            </div>
+
+            <div>
+              <div className="flex justify-between text-xs font-mono mb-1">
+                <span className="font-semibold text-ink-800 dark:text-parchment-200">
                   Voice Acoustic Amplitude
                 </span>
                 <span className="text-amber-600 dark:text-amber-400 font-bold">
@@ -146,7 +201,7 @@ export function BellTelephoneSim() {
                 max="90"
                 value={voiceAmplitude}
                 onChange={(e) => setVoiceAmplitude(Number(e.target.value))}
-                className="w-full accent-blue-600 cursor-pointer h-2 bg-parchment-300 dark:bg-ink-700 rounded-lg"
+                className="w-full accent-amber-600 cursor-pointer h-2 bg-parchment-300 dark:bg-ink-700 rounded-lg"
               />
             </div>
           </div>

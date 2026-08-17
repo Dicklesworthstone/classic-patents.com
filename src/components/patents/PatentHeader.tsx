@@ -1,9 +1,10 @@
 "use client";
 
-import { Calendar, Check, FileDown, MapPin, Share2, User } from "lucide-react";
+import { BookOpen, Calendar, Check, FileDown, MapPin, Share2, User } from "lucide-react";
 import Link from "next/link";
 import { useState } from "react";
 import type { Patent } from "@/types/patent";
+import { ArchaicGlossaryModal } from "./ArchaicGlossaryModal";
 
 interface PatentHeaderProps {
   patent: Patent;
@@ -11,6 +12,7 @@ interface PatentHeaderProps {
 
 export function PatentHeader({ patent }: PatentHeaderProps) {
   const [copied, setCopied] = useState(false);
+  const [glossaryOpen, setGlossaryOpen] = useState(false);
 
   const handleShare = () => {
     if (typeof window !== "undefined") {
@@ -22,6 +24,13 @@ export function PatentHeader({ patent }: PatentHeaderProps) {
 
   return (
     <div className="space-y-4 pb-6 border-b border-parchment-300 dark:border-ink-800">
+      {/* Archaic Legal Glossary & Citation Modal */}
+      <ArchaicGlossaryModal
+        isOpen={glossaryOpen}
+        onClose={() => setGlossaryOpen(false)}
+        patent={patent}
+      />
+
       {/* Breadcrumb & Era badge */}
       <div className="flex flex-wrap items-center justify-between gap-2">
         <div className="flex items-center gap-2 text-xs font-mono text-ink-500">
@@ -38,6 +47,15 @@ export function PatentHeader({ patent }: PatentHeaderProps) {
         </div>
 
         <div className="flex items-center gap-2">
+          <button
+            type="button"
+            onClick={() => setGlossaryOpen(true)}
+            className="px-2.5 py-0.5 rounded-full text-xs font-mono font-semibold bg-amber-500/10 text-amber-800 dark:text-amber-300 border border-amber-500/30 hover:bg-amber-500/20 transition-colors flex items-center gap-1"
+          >
+            <BookOpen className="w-3 h-3" />
+            <span>Archaic Glossary &amp; Cite</span>
+          </button>
+
           <span className="px-2.5 py-0.5 rounded-full text-xs font-mono font-semibold bg-amber-100 text-amber-900 dark:bg-amber-950 dark:text-amber-200 border border-amber-300 dark:border-amber-800">
             {patent.era}
           </span>
