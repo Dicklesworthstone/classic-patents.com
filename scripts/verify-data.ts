@@ -8,6 +8,12 @@ import * as fs from "node:fs";
 import * as path from "node:path";
 import { allPatents } from "../src/data/patents";
 
+function isValidIsoDate(value: string): boolean {
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(value)) return false;
+  const date = new Date(`${value}T00:00:00.000Z`);
+  return !Number.isNaN(date.getTime()) && date.toISOString().slice(0, 10) === value;
+}
+
 async function main() {
   console.log("=== Classic Patents Data Verification Gate ===");
   console.log(`Checking ${allPatents.length} curated historical patents...\n`);
@@ -16,28 +22,34 @@ async function main() {
 
   for (const patent of allPatents) {
     const prefix = `[${patent.patentNumber} - ${patent.id}]`;
+    let patentErrorCount = 0;
+    const fail = (message: string) => {
+      console.error(`❌ ${prefix} ${message}`);
+      errorCount++;
+      patentErrorCount++;
+    };
 
     // 1. Check basic identity
     if (!patent.id || !patent.patentNumber || !patent.title || !patent.shortTitle) {
-      console.error(`❌ ${prefix} Missing essential identification metadata.`);
-      errorCount++;
+      fail("Missing essential identification metadata.");
     }
 
     // 2. Check dates
-    if (
-      !/^\d{4}-\d{2}-\d{2}$/.test(patent.grantDate) ||
-      !/^\d{4}-\d{2}-\d{2}$/.test(patent.filingDate)
-    ) {
-      console.error(
-        `❌ ${prefix} Invalid date format (expected YYYY-MM-DD). Grant: ${patent.grantDate}, Filing: ${patent.filingDate}`,
+    if (!isValidIsoDate(patent.grantDate) || !isValidIsoDate(patent.filingDate)) {
+      fail(
+        `Invalid date (expected a real YYYY-MM-DD). Grant: ${patent.grantDate}, Filing: ${patent.filingDate}`,
       );
-      errorCount++;
+    } else if (patent.filingDate > patent.grantDate) {
+      fail(`Filing date ${patent.filingDate} is after grant date ${patent.grantDate}.`);
     }
 
     // 3. Check inventors
     if (!patent.inventors || patent.inventors.length === 0) {
-      console.error(`❌ ${prefix} No inventors specified.`);
-      errorCount++;
+      fail("No inventors specified.");
+    }
+
+    if (path.posix.basename(patent.originalPdfUrl) !== `${patent.id}.pdf`) {
+      fail(`originalPdfUrl must name ${patent.id}.pdf; received ${patent.originalPdfUrl}.`);
     }
 
     // 4. Check PDF presence in public/
@@ -46,33 +58,35 @@ async function main() {
       "public",
       patent.originalPdfUrl.replace(/^\//, ""),
     );
+    let pdfSizeBytes: number | undefined;
     if (!fs.existsSync(localPdfPath)) {
-      console.error(`❌ ${prefix} Local PDF not found at ${localPdfPath}`);
-      errorCount++;
+      fail(`Local PDF not found at ${localPdfPath}`);
     } else {
       const stats = fs.statSync(localPdfPath);
+      pdfSizeBytes = stats.size;
       if (stats.size < 1000) {
-        console.error(`❌ ${prefix} Local PDF too small (${stats.size} bytes).`);
-        errorCount++;
+        fail(`Local PDF too small (${stats.size} bytes).`);
       }
     }
 
     // 5. Check claims
     if (!patent.claims || patent.claims.length === 0) {
-      console.error(`❌ ${prefix} No claims found.`);
-      errorCount++;
+      fail("No claims found.");
     } else {
       const independentClaims = patent.claims.filter((c) => c.isIndependent);
       if (independentClaims.length === 0) {
-        console.error(`❌ ${prefix} Patent has no independent claims.`);
-        errorCount++;
+        fail("Patent has no independent claims.");
       }
+      const claimNumbers = new Set(patent.claims.map((claim) => claim.number));
+      if (claimNumbers.size !== patent.claims.length) fail("Duplicate claim numbers found.");
       for (const claim of patent.claims) {
         if (!claim.number || !claim.originalText || !claim.plainEnglish) {
-          console.error(
-            `❌ ${prefix} Claim #${claim.number} missing originalText or plainEnglish explanation.`,
-          );
-          errorCount++;
+          fail(`Claim #${claim.number} missing originalText or plainEnglish explanation.`);
+        }
+        for (const dependency of claim.dependsOn ?? []) {
+          if (!claimNumbers.has(dependency)) {
+            fail(`Claim #${claim.number} depends on missing claim #${dependency}.`);
+          }
         }
       }
     }
@@ -83,8 +97,7 @@ async function main() {
       !patent.plainEnglishExplanation.coreMechanism ||
       patent.plainEnglishExplanation.mechanicalBreakdown.length === 0
     ) {
-      console.error(`❌ ${prefix} Incomplete plain English explanation.`);
-      errorCount++;
+      fail("Incomplete plain English explanation.");
     }
 
     // 7. Check historical context & patent wars
@@ -93,13 +106,16 @@ async function main() {
       !patent.historicalContext.breakthroughInsight ||
       patent.historicalContext.patentWars.length === 0
     ) {
-      console.error(`❌ ${prefix} Incomplete historical context or patent wars record.`);
-      errorCount++;
+      fail("Incomplete historical context or patent wars record.");
     }
 
-    console.log(
-      `✓ ${prefix} Passed all verification gates (PDF verified: ${(fs.statSync(localPdfPath).size / 1024).toFixed(1)} KB).`,
-    );
+    if (patentErrorCount === 0 && pdfSizeBytes !== undefined) {
+      console.log(
+        `✓ ${prefix} Passed all verification gates (PDF verified: ${(pdfSizeBytes / 1024).toFixed(1)} KB).`,
+      );
+    } else {
+      console.error(`✗ ${prefix} Failed ${patentErrorCount} verification gate(s).`);
+    }
   }
 
   console.log(
