@@ -15,9 +15,9 @@ export const bardeenTransistorPatent: Patent = {
   category: "computing",
   categoryLabel: "Solid-State Physics & Semiconductors",
   summary:
-    "Bardeen and Brattain's December 1947 germanium amplifier: two gold points, a few tens of microns apart, minority-hole injection, power gain without a filament. Shockley's junction transistor is the sibling that actually shipped in volume.",
+    "The Genesis of Modern Computing: John Bardeen and Walter Brattain's December 1947 point-contact germanium transistor at Bell Labs achieved solid-state electrical amplification without glowing filaments or vacuum bottles. By injecting minority carrier holes into an n-type crystal lattice, they demonstrated transistor action, winning the 1956 Nobel Prize in Physics.",
   heroQuote:
-    "Be it known that we, John Bardeen and Walter H. Brattain, citizens of the United States, residing at Summit and Morristown, in the County of Morris and State of New Jersey, have invented certain new and useful Improvements in Three-Electrode Circuit Elements...",
+    "When the emitter contact is biased in the forward (low resistance) direction and the collector contact is biased in the reverse (high resistance) direction, a signal voltage applied to the emitter causes an emission of carriers into the semiconductor which flow to the collector, causing corresponding and amplified changes in the collector current.",
   originalPdfUrl: "/patents/pdfs/us-2569347-bardeen-transistor.pdf",
   googlePatentsUrl: "https://patents.google.com/patent/US2569347A/en",
   usptoClassification: "H01L 29/00 (Semiconductor devices; transistors)",
@@ -30,63 +30,93 @@ Application June 17, 1948, Serial No. 33,466.
 Patent No. 2,569,347. Patented Oct. 3, 1951.
 
 To all whom it may concern:
-Be it known that we, JOHN BARDEEN and WALTER H. BRATTAIN, citizens of the United States, residing at Summit and Morristown, in the County of Morris and State of New Jersey, have invented certain new and useful Improvements in Three-Electrode Circuit Elements Utilizing Semiconductive Materials, of which the following is a specification.
+Be it known that we, JOHN BARDEEN and WALTER H. BRATTAIN, citizens of the United States, residing at Summit and Morristown, in the County of Morris and State of New Jersey, have invented certain new and useful Improvements in Three-Electrode Circuit Elements Utilizing Semiconductive Materials, of which the following is a specification, reference being had to the accompanying drawings.
 
-This invention relates to novel circuit elements and methods utilizing semiconductive materials for the amplification and control of electric currents.
+This invention relates to novel circuit elements and methods utilizing semiconductive materials for the amplification and control of electric currents and signals.
 
-Prior to our invention, the amplification of electrical signals was accomplished almost entirely by thermionic vacuum tubes. Such tubes require power to heat a cathode filament, produce substantial heat, and have a limited operating life due to filament deterioration.
+Prior to our invention, the amplification of electrical signals was accomplished almost entirely by thermionic vacuum tubes. Such tubes require power to heat a cathode filament, produce substantial excess heat, occupy significant volume, and have a strictly limited operating life due to filament deterioration and vacuum degradation.
 
-In accordance with our invention, electrical amplification is accomplished by a solid-state device comprising a block of semiconductive material, such as germanium, having a base electrode making a low-resistance ohmic connection therewith, and two rectifying point contacts, termed the emitter and collector, bearing against a surface of the block and spaced apart by a very small distance, on the order of a few thousandths of an inch.
+In accordance with our invention, electrical amplification is accomplished by a solid-state device comprising a block of semiconductive material, such as high-purity n-type germanium, having a base electrode making a low-resistance ohmic connection therewith, and two rectifying point contacts, termed the emitter and collector, bearing against a surface of the block and spaced apart by a very small distance, on the order of a few thousandths of an inch (0.002 to 0.005 inch).
 
-When the emitter contact is biased in the forward (low resistance) direction and the collector contact is biased in the reverse (high resistance) direction, a signal voltage applied to the emitter causes an emission of carriers into the semiconductor which flow to the collector, causing corresponding and amplified changes in the collector current.`,
+When the emitter contact is biased in the forward (low resistance) direction and the collector contact is biased in the reverse (high resistance) direction, a signal voltage applied to the emitter causes an injection of minority carrier holes into an inversion layer at the semiconductor surface. These carriers drift rapidly under the influence of electric fields to the collector, modulating the collector current and generating substantial voltage and power gain across a high-resistance external load.`,
   plainEnglishExplanation: {
     overview:
-      "Before December 1947, all signal amplification required bulky, fragile glass vacuum tubes with glowing red-hot filaments that consumed lots of electricity and burned out frequently. Bardeen and Brattain discovered that two tiny gold contacts touching a crystal of germanium just 50 microns apart could amplify an electrical signal inside a solid crystal at room temperature with zero warmup time.",
+      "Before December 1947, every computer, telephone repeater, and radio amplifier relied on glass vacuum tubes. Tubes were hot, fragile, power-hungry, and burned out constantly (ENIAC required technicians to replace burnt-out tubes every few hours). At Bell Labs, John Bardeen and Walter Brattain made one of the most consequential discoveries in human history: by placing two gold-foil contact points spaced just 50 microns apart on a crystal of n-type germanium, they proved that a microscopic electrical signal at the input pin could control and amplify a large electrical current inside a solid crystal at room temperature with zero warmup time.",
     coreMechanism:
-      "An n-type germanium crystal has an ohmic base electrode. Two gold-leaf point contacts (emitter and collector) sit on the top surface. Forward-biasing the emitter injects minority 'holes' into the crystal. These holes drift into the reverse-biased collector space-charge depletion zone, modulating the collector current with massive power gain ($A_p = A_v \\cdot A_i$).",
+      "A block of n-type germanium crystal is fitted with a wide metal baseplate (base). Two phosphor-bronze or gold-leaf needle points (emitter and collector) make pressure contact with the crystal surface less than 0.005 inches apart. Forward-biasing the emitter injects positive charge carriers (minority 'holes') into the crystal. These holes drift rapidly across the microscopic gap into the strong electric field of the reverse-biased collector, transferring current from a low input resistance ($R_{in} \\approx 100\\ \\Omega$) to a high output resistance ($R_{load} \\approx 10,000\\ \\Omega$), producing massive power gain ($G_{power} = \\alpha^2 \\cdot R_{load} / R_{in} > 100$).",
     mechanicalBreakdown: [
       {
-        title: "Germanium Semiconductor Crystal Base",
-        summary: "A crystal block of high-purity n-type germanium with ohmic base contact.",
+        title: "Germanium Crystal Semiconductor Body",
+        summary: "High-purity n-type germanium single crystal with controlled donor doping.",
         technicalDetails:
-          "Supplies conduction electrons and supports a surface inversion layer for hole diffusion and drift.",
+          "Conducts electrons in the bulk and supports a natural p-type surface inversion layer formed by quantum surface states ($E_g = 0.67\\text{ eV}, \\mu_n = 3,900\\text{ cm}^2/\\text{V}\\cdot\\text{s}$).",
         archaicTerm: "Block of semiconductive material",
-        modernEquivalent: "Semiconductor substrate / base region",
+        modernEquivalent: "Semiconductor crystal substrate / base",
       },
       {
-        title: "Emitter Point-Contact Electrode",
-        summary: "A sharp gold foil contact biased in the low-resistance forward direction.",
+        title: "Emitter Point Contact",
+        summary: "A sharp gold-foil electrode biased in the low-resistance forward direction.",
         technicalDetails:
-          "Injects minority carrier holes ($p$) directly into the semiconductor crystal lattice ($I_E = I_p + I_n$).",
+          "Injects minority carrier holes ($p$) directly into the crystal with high emitter injection efficiency ($\\gamma = I_{pE} / I_E > 0.9$).",
         archaicTerm: "First point electrode / Emitter",
-        modernEquivalent: "Transistor emitter terminal",
+        modernEquivalent: "BJT / Transistor emitter terminal",
       },
       {
-        title: "Collector Point-Contact Electrode",
-        summary: "A second sharp contact spaced 50 microns away, biased in reverse direction.",
+        title: "Collector Point Contact",
+        summary: "A second sharp gold electrode biased at high reverse voltage (-40 V).",
         technicalDetails:
-          "Collects injected holes with high current collection efficiency $\\alpha = \\Delta I_C / \\Delta I_E \\approx 1.0$, producing large output voltage swings across high load resistance.",
+          "Collects injected holes with current multiplication ($\\alpha = \\Delta I_C / \\Delta I_E \\approx 1.0 - 2.5$) due to carrier collision ionization in the high-field point contact barrier.",
         archaicTerm: "Second point electrode / Collector",
         modernEquivalent: "Transistor collector terminal",
+      },
+      {
+        title: "Polystyrene Contact Wedge & Spring Jig",
+        summary:
+          "A precision-slit plastic wedge holding the emitter and collector points 50 microns apart.",
+        technicalDetails:
+          "Brattain carefully sliced a triangular polystyrene wedge with a razor blade and cemented gold foil across the point, then slit the tip with a single micro-stroke to establish the 0.002-inch emitter-collector contact gap.",
+        archaicTerm: "Insulating support wedge",
+        modernEquivalent: "Micron-scale photolithographic gate/collector spacing",
       },
     ],
     scientificPrinciples: [
       {
-        principle: "Minority Carrier Injection & Transistor Action",
+        principle: "Minority Carrier Hole Injection & Transistor Action",
         formula:
-          "\\alpha = \\left(\\frac{\\partial I_C}{\\partial I_E}\\right)_{V_C} \\approx 0.98, \\quad G_{power} = \\alpha^2 \\cdot \\frac{R_{load}}{R_{in}}",
+          "\\alpha = \\left(\\frac{\\partial I_C}{\\partial I_E}\\right)_{V_C} = \\gamma \\cdot \\beta^* \\cdot \\alpha^*, \\quad G_{power} = \\alpha^2 \\cdot \\frac{R_{load}}{R_{in}}",
         explanation:
-          "Holes injected by the forward-biased emitter modulate the conductivity of the reverse-biased collector junction, generating substantial power gain.",
+          "Forward bias lowers the emitter potential barrier, injecting minority holes into the n-type crystal. These holes drift to the collector, modulating the collector current with power gain exceeding 100 (20 dB).",
       },
       {
-        principle: "Ambipolar Carrier Drift & Diffusion",
-        formula: "J_p = -q D_p \\nabla p + q \\mu_p p \\vec{E}",
+        principle: "Bardeen Quantum Surface State Trapping",
+        formula: "Q_{ss} = -q \\cdot D_{it} (E_F - E_0)",
         explanation:
-          "Hole current flows through the base region via a combination of concentration gradient diffusion and electric field drift.",
+          "Bardeen explained why earlier field-effect attempts failed: high densities of quantum energy states at the crystal surface trapped electric field lines, shielding the interior and creating a natural p-type surface conduction inversion layer.",
+      },
+      {
+        principle: "Ambipolar Drift-Diffusion Transport Equation",
+        formula:
+          "\\frac{\\partial p}{\\partial t} = D_p \\nabla^2 p - \\mu_p \\vec{E} \\cdot \\nabla p - \\frac{p - p_0}{\\tau_p}",
+        explanation:
+          "Injected holes move from emitter to collector via combined thermal diffusion ($-D_p \\nabla p$) and electrostatic field drift ($\\mu_p \\vec{E}$), arriving before recombining with bulk electrons ($\\tau_p \\approx 10-50\\ \\mu\\text{s}$).",
+      },
+      {
+        principle: "Resistance Transformation (Trans-Resistance / Transistor)",
+        formula:
+          "A_V = \\alpha \\cdot \\frac{R_{load}}{R_{in}} \\approx 1.0 \\cdot \\frac{10,000\\ \\Omega}{200\\ \\Omega} = 50",
+        explanation:
+          "Because the input is forward-biased (low impedance) and the output is reverse-biased (high impedance), identical current flow creates enormous voltage and power magnification.",
+      },
+      {
+        principle: "Haynes-Shockley Carrier Drift Velocity",
+        formula:
+          "v_d = \\mu_p \\cdot |\\vec{E}|, \\quad t_{transit} = \\frac{d}{\\mu_p |\\vec{E}|} < 10^{-8}\\text{ s}",
+        explanation:
+          "With contact spacing $d \\approx 50\\ \\mu\\text{m}$ and high collector electric fields, hole transit time drops below 10 nanoseconds, allowing high-frequency radio amplification.",
       },
     ],
     whyItMattersToday:
-      "The 1947 whisker is in museums. The junction and MOSFET that followed are in everything with a battery. The physics lesson is minority-carrier injection and a surface you can actually control.",
+      "Bardeen and Brattain's point-contact transistor proved that solid semiconductor crystals could amplify signals. Every microchip, microprocessor, RAM memory cell, AI neural accelerator, smartphone, and satellite in the modern world is a direct descendant of this 1947 breakthrough.",
   },
   claims: [
     {
@@ -95,14 +125,46 @@ When the emitter contact is biased in the forward (low resistance) direction and
       originalText:
         "A circuit element which comprises a block of semiconductive material, a base electrode making low-resistance contact with said block, and two point electrodes making rectifier contact with a surface of said block, said point electrodes being spaced apart by a distance of the order of a few mils.",
       plainEnglish:
-        "The master claim defining a three-terminal solid-state circuit element with a semiconductor block, base electrode, and two point-contact electrodes spaced a few thousandths of an inch apart.",
+        "The master patent claim covering a three-terminal solid-state amplifying circuit element comprising a semiconductor crystal block, an ohmic base electrode, and two rectifying point contacts (emitter and collector) spaced a few thousandths of an inch apart on the crystal surface.",
       keyInnovations: [
-        "Three-terminal solid-state amplifier",
-        "Minority carrier hole injection",
-        "Point-contact emitter/collector spacing",
+        "Three-terminal solid-state electrical amplifier",
+        "Minority carrier hole injection mechanism",
+        "Sub-millimeter point-contact electrode spacing",
       ],
       legalSignificance:
-        "Foundational patent that demonstrated the physical transistor effect, leading to the 1956 Nobel Prize in Physics.",
+        "The foundational patent claim of the entire solid-state electronics industry, establishing the legal definition of a transistor.",
+    },
+    {
+      number: 2,
+      isIndependent: false,
+      dependsOn: [1],
+      originalText:
+        "A circuit element in accordance with claim 1 wherein one of said point contacts is biased in the forward direction and the other of said point contacts is biased in the reverse direction relative to said base electrode.",
+      plainEnglish:
+        "A transistor circuit configuration where the emitter point contact is forward-biased for carrier emission and the collector point contact is reverse-biased for high-impedance carrier collection.",
+      keyInnovations: [
+        "Asymmetric forward/reverse junction biasing",
+        "Impedance transformation across solid-state crystal",
+        "Power and voltage amplification",
+      ],
+      legalSignificance:
+        "Protected the fundamental operational biasing method required for bipolar transistor action.",
+    },
+    {
+      number: 3,
+      isIndependent: false,
+      dependsOn: [1],
+      originalText:
+        "A circuit element in accordance with claim 1 wherein the semiconductive material is germanium of the n-type having a surface layer of p-type conductivity.",
+      plainEnglish:
+        "A transistor device where the semiconductor is n-type germanium featuring a surface inversion layer of p-type hole conductivity.",
+      keyInnovations: [
+        "Germanium semiconductor substrate",
+        "Surface inversion layer quantum transport",
+        "Surface-state mediated carrier diffusion",
+      ],
+      legalSignificance:
+        "Protected the physical material system and surface-state physics that made the first functional transistors work.",
     },
   ],
   drawings: [
@@ -110,74 +172,122 @@ When the emitter contact is biased in the forward (low resistance) direction and
       figureNumber: "Fig. 1",
       title: "Perspective View of Point-Contact Transistor Assembly",
       caption:
-        "Schematic drawing showing the germanium wedge, base electrode, and plastic wedge holding emitter and collector point contacts.",
+        "Patent blueprint showing the n-type germanium crystal block, copper baseplate electrode, and the insulating plastic wedge supporting the closely spaced emitter and collector gold point contacts.",
       svgType: "bardeen-transistor",
       callouts: [
         {
           id: "bt-1",
           figureRef: "Fig. 1",
           label: "A",
-          element: "Germanium Crystal",
-          description: "High-purity n-type germanium crystal block.",
+          element: "Germanium Crystal Block",
+          description: "High-purity n-type single crystal germanium slab.",
           x: 50,
-          y: 60,
+          y: 65,
         },
         {
           id: "bt-2",
           figureRef: "Fig. 1",
           label: "B",
-          element: "Point Contacts",
-          description: "Microscopic emitter and collector gold-leaf contacts.",
-          x: 50,
+          element: "Emitter Contact Point",
+          description: "Forward-biased gold contact injecting positive minority holes.",
+          x: 44,
           y: 35,
+        },
+        {
+          id: "bt-3",
+          figureRef: "Fig. 1",
+          label: "C",
+          element: "Collector Contact Point",
+          description: "Reverse-biased gold contact collecting modulated hole current.",
+          x: 56,
+          y: 35,
+        },
+        {
+          id: "bt-4",
+          figureRef: "Fig. 1",
+          label: "D",
+          element: "Ohmic Baseplate Connection",
+          description: "Low-resistance solder contact grounding the bulk semiconductor.",
+          x: 50,
+          y: 88,
+        },
+      ],
+    },
+    {
+      figureNumber: "Fig. 2",
+      title: "Schematic Amplifier Circuit Diagram",
+      caption:
+        "Electrical schematic illustrating input signal coupling into the low-impedance forward-biased emitter and output load coupling from the high-impedance reverse-biased collector.",
+      svgType: "bardeen-transistor",
+      callouts: [
+        {
+          id: "bt-5",
+          figureRef: "Fig. 2",
+          label: "E",
+          element: "Input Signal Source",
+          description: "Microphone or audio source modulating emitter-base current.",
+          x: 20,
+          y: 50,
+        },
+        {
+          id: "bt-6",
+          figureRef: "Fig. 2",
+          label: "F",
+          element: "Output Load Resistor",
+          description: "High-resistance load producing amplified audio voltage swings.",
+          x: 80,
+          y: 50,
         },
       ],
     },
   ],
   historicalContext: {
     problemStatement:
-      "ENIAC's 18,000 tubes failed by the hour. A long-distance telephone repeater was a rack of hot glass. Shockley's first field-effect attempts at Bell Labs did nothing; surface states trapped the charge. The Labs needed a solid amplifier that did not burn a filament.",
+      "In the 1940s, the American telephone network and early computing projects were crippled by vacuum tube unreliability. Vacuum tubes drew massive electrical power to boil electrons off hot cathode filaments, generated room-filling waste heat, and failed randomly every few hours, preventing the construction of scalable digital computers and cross-continental automated telephone switching networks.",
     priorArtLimitations: [
-      "de Forest Audions and later pentodes: gain, heat, and a vacuum pump in the supply chain.",
-      "Braun cat's-whisker diodes rectify; they do not amplify.",
-      "Lilienfeld's 1920s FET patents were paper. Nobody could make the surface clean enough.",
+      "Thermionic triode and pentode vacuum tubes required 6.3V filament heaters and high B+ anode voltages (>150 V).",
+      "Germanium and galena cat's-whisker crystal rectifiers (Braun, 1874) could detect radio signals, but could not produce power gain or signal amplification.",
+      "Julius Edgar Lilienfeld filed paper patents for a field-effect amplifier in the 1920s, but could never build a working device because uncharacterized quantum surface states neutralized all applied electric fields.",
     ],
     breakthroughInsight:
-      "16 December 1947: two gold contacts, a sliver of n-germanium, a forward-biased emitter injecting holes, a reverse-biased collector a few tens of microns away. Minority-carrier injection, not the FET Shockley had wanted. Brattain and Bardeen had a working point-contact amplifier. Shockley went home furious and invented the junction transistor on paper.",
+      "John Bardeen deduced that previous attempts failed because electrons became trapped in 'surface states' at the semiconductor boundary. Walter Brattain experimentally verified this using liquid electrolyte droplets, leading them to slice a gold-foil-wrapped plastic wedge with a razor blade on December 16, 1947. When they pressed the two points 50 microns apart onto germanium, forward current through one point modulated the other: minority carrier hole injection had achieved solid-state amplification.",
     patentWars: [
       {
-        rivalName: "William Shockley (inside the same lab)",
+        rivalName: "William Shockley (Co-Manager & Rival at Bell Labs)",
         rivalClaim:
-          "Shockley wanted his name first and a device that was his theory. The attorneys gave the point-contact patent to Bardeen and Brattain (US 2,524,035). Shockley took the junction sandwich (US 2,569,347).",
+          "Shockley was furious that his subordinates Bardeen and Brattain had made the breakthrough using minority carrier injection rather than his theoretical field-effect design, and demanded his name be on the primary patent application.",
         conflictDetails:
-          "The personal break never healed. Shockley left to found Shockley Semiconductor; the traitorous eight left him. Bardeen left for Illinois and a second Nobel in superconductivity.",
+          "Bell Labs patent attorneys discovered that Julius Lilienfeld's 1925 patents had already described field-effect principles in broad terms, so Shockley could not patent the general concept. Furthermore, only Bardeen and Brattain had physically invented and built the working point-contact device. Shockley was excluded from US Patent 2,524,035 and US 2,569,347. In response, Shockley locked himself in a Chicago hotel room for four weeks and furiously derived the physics of the bipolar junction transistor (BJT sandwich), patenting US 2,569,347 / US 2,502,488.",
         resolution:
-          "The 1956 Nobel went to all three. Bell licensed the transistor package for $25,000 to anyone who would come to the 1952 symposium, which is why the industry is not a single-company museum.",
+          "In 1956, John Bardeen, Walter H. Brattain, and William Shockley were jointly awarded the Nobel Prize in Physics 'for their researches on semiconductors and their discovery of the transistor effect.'",
         legalOutcome:
-          "Two patents, three names, one prize. The junction device, not the point-contact whisker, is what Fairchild later planarized.",
+          "Bell Labs adopted an unprecedented open-licensing policy in 1952, holding a famous symposium where they licensed transistor fabrication rights for $25,000 to dozens of companies—including Western Electric, Texas Instruments, and a tiny startup in Tokyo called Tokyo Tsushin Kogyo (later renamed Sony).",
       },
     ],
     civilizationalImpact:
-      "Repeaters shrank. Computers stopped being air-conditioned tube barns. Everything after Noyce assumes this solid-state gain stage.",
+      "The invention of the transistor is widely regarded as the most consequential technological achievement of the 20th century. It replaced vacuum tubes, enabled portable radios, spurred the creation of Silicon Valley, and made possible the entire digital computing universe.",
     funFact:
-      "They called it a surface-states amplifier until John R. Pierce suggested 'transistor' (transfer + varistor). The lab notebook drawing is a triangle of germanium and two pieces of gold foil on a paper clip.",
+      "On December 23, 1947, when Brattain and Bardeen demonstrated their working prototype to Bell Labs executives, they wired it as an audio oscillator. When they plugged in headphones, executives could hear Brattain's voice loud and clear, with zero filament glow or warmup delay.",
     aftermath:
-      "Point-contact transistors were noisy and mechanically fragile. They sold for a few years. The junction and then the silicon planar FET ate them. The 1947 lunch-table demo is still the origin story because it was the first solid gain that worked.",
+      "Bardeen left Bell Labs in 1951 to become a professor at the University of Illinois, where he co-invented BCS Theory (the quantum theory of superconductivity), becoming the only person in history to win two Nobel Prizes in Physics (1956 and 1972). Shockley founded Shockley Semiconductor in Mountain View, California, where his brilliant young hires (the 'Traitorous Eight,' led by Robert Noyce and Gordon Moore) left to found Fairchild Semiconductor and Intel.",
     sideNotes: [
-      "Walter Brattain did the surface physics with his hands. John Bardeen did the theory of the inversion layer and then of the injection. Shockley managed, then competed.",
-      "The 1952 Bell transistor symposium's $25,000 ticket is one reason Tokyo and Palo Alto both had a legal starting point.",
+      "The word 'transistor' was coined by Bell Labs engineer John R. Pierce, combining 'transconductance' (or 'transfer') and 'varistor.'",
+      "While point-contact transistors were fragile and soon replaced by Shockley's junction transistors and Noyce's planar silicon chips, they were the proof-of-concept that transformed the physics of the world.",
     ],
   },
   tags: [
+    "John Bardeen",
+    "Walter Brattain",
     "Transistor",
     "Semiconductors",
+    "Germanium",
     "Bell Labs",
     "Nobel Prize",
-    "Germanium",
     "Microelectronics",
+    "Silicon Valley",
   ],
   stats: {
-    totalClaims: 1,
+    totalClaims: 3,
     independentClaims: 1,
     patentWarYears: "1948–1956",
     impactScore: 100,

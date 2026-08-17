@@ -14,12 +14,16 @@ export const fermiReactorPatent: Patent = {
   category: "electricity",
   categoryLabel: "Nuclear Physics & Energy",
   summary:
-    "Fermi and Szilard's pile: lumps of natural uranium in boron-free graphite so neutrons thermalize in the carbon and miss U-238 resonances, with cadmium rods for $k$. CP-1 went critical on 2 December 1942 under Stagg Field.",
+    "The Dawn of the Atomic Age: On December 19, 1944, Enrico Fermi and Leo Szilard filed US Patent No. 2,708,656 for the world's first artificial nuclear fission reactor (Chicago Pile-1). Solving the central puzzle of nuclear physics—how to sustain an atomic chain reaction using natural, un-enriched uranium (0.7% U-235)—Fermi and Szilard invented the heterogeneous lattice. By embedding discrete lumps of uranium inside high-purity graphite carbon, fast 2 MeV fission neutrons were slowed to thermal energies (0.025 eV) without getting swallowed by U-238 resonance traps, achieving a self-sustaining neutron reproduction factor $k_{eff} \\ge 1.0$ on December 2, 1942.",
   heroQuote:
     "The Italian navigator has landed in the New World... The earthlings were very friendly.",
   originalPdfUrl: "/patents/pdfs/us-2708656-fermi-reactor.pdf",
   googlePatentsUrl: "https://patents.google.com/patent/US2708656A/en",
   usptoClassification: "G21C 1/00 (Nuclear reactors; Core structures and control)",
+  originalTextAsset: {
+    url: "/patents/transcripts/us-2708656-fermi-reactor.txt",
+    pageCount: 28,
+  },
   originalText: `UNITED STATES PATENT OFFICE
 2,708,656
 Patented May 17, 1955
@@ -55,60 +59,85 @@ WE CLAIM:
 3. A reactor as set forth in claim 1, further comprising neutron-absorbing control rods slidably disposed within said mass for movement into and out of said moderating material to selectively adjust the effective reproduction factor k_eff of the reactor.`,
   plainEnglishExplanation: {
     overview:
-      "Fermi and Szilard solved the central physics puzzle of nuclear fission: how to achieve a self-sustaining atomic chain reaction using un-enriched, natural uranium (which contains 99.3% non-fissionable U-238 and only 0.7% U-235). Their heterogeneous graphite matrix slowed neutrons down without letting them get trapped in U-238 resonance absorption bands.",
+      "Before Enrico Fermi and Leo Szilard, human energy came entirely from chemical combustion (rearranging outer electron shells, yielding ~4 eV per molecule). Nuclear fission unlocks the binding energy of the atomic nucleus, releasing 200,000,000 eV per uranium atom—50 million times more energy per kilogram than coal. However, natural uranium consists of 99.3% non-fissionable U-238 and only 0.7% fissionable U-235. In raw uranium, fast 2 MeV fission neutrons are instantly captured non-fissionably by U-238 atoms, snuffing out the reaction. Fermi and Szilard solved this by spacing uranium cylinders into a geometric lattice embedded within ultra-pure graphite carbon blocks, slowing neutrons down until they selectively split U-235 atoms in a self-sustaining chain reaction.",
     coreMechanism:
-      "Fast 2 MeV fission neutrons emitted inside discrete uranium lumps escape into surrounding graphite blocks. After ~114 elastic collisions with carbon nuclei, they slow down to thermal energies (0.025 eV) before diffusing back into a neighboring uranium lump, where they selectively trigger fission in U-235. Movable cadmium rods absorb neutrons to maintain $k_{eff} = 1.000$.",
+      "When a U-235 nucleus splits inside a fuel lump, it emits 2.5 fast neutrons with 2 MeV kinetic energy ($v \\approx 20,000\\text{ km/s}$). Because the fuel is clumped into discrete lumps rather than mixed uniformly, fast neutrons quickly escape the lump into the surrounding graphite moderator. Over ~114 elastic collisions with carbon-12 nuclei, the neutrons slow down to room-temperature thermal energy ($0.025\\text{ eV}$, $v \\approx 2.2\\text{ km/s}$), safely bypassing the dangerous 5–100 eV resonance absorption bands of U-238. The thermalized neutrons diffuse back into a neighboring uranium lump, where the U-235 fission cross-section is massive (584 barns), triggering new fissions. Motorized cadmium control rods absorb thermal neutrons ($\\sigma_a = 20,600\\text{ barns}$) to balance the effective multiplication factor at exactly $k_{eff} = 1.0000$.",
     mechanicalBreakdown: [
       {
-        title: "Heterogeneous Uranium Fuel Lattice",
-        summary: "Discrete uranium metal and oxide cylinders spaced in a 3D grid.",
+        title: "Heterogeneous Uranium-Graphite Fuel Lattice",
+        summary: "Discrete uranium metal and oxide cylinders arranged in a 3D cubic lattice.",
         technicalDetails:
-          "Lumping the fuel prevents fast neutrons from immediately colliding with U-238 atoms at resonance capture energies (5–100 eV). The resonance escape probability $p$ increases from ~0.5 in homogeneous mixtures to >0.85 in a lumped lattice.",
+          "Geometrically separating fuel lumps from the moderator increases the resonance escape probability ($p$) from ~0.5 in homogeneous mixtures to >0.87, enabling criticality ($k_\\infty = \\eta \\epsilon p f > 1.0$) in un-enriched natural uranium.",
         archaicTerm: "Bodies of fissionable material disposed in a spaced geometric lattice",
-        modernEquivalent: "Fuel assemblies / fuel rods in reactor core",
+        modernEquivalent: "Nuclear reactor core / Fuel rod assembly matrix",
       },
       {
-        title: "High-Purity Graphite Moderator Matrix",
-        summary: "Blocks of ultra-pure graphite carbon surrounding fuel channels.",
+        title: "High-Purity Carbon Graphite Moderator",
+        summary:
+          "Ultra-pure graphite blocks surrounding fuel channels with zero boron contamination.",
         technicalDetails:
-          "Carbon-12 has a low atomic mass (A=12) and an extraordinarily low thermal neutron absorption cross-section ($sigma_a = 0.0035$ barns), allowing fast neutrons to thermalize through elastic scattering without parasitic loss.",
+          "Carbon-12 has low mass ($A=12$) and an extraordinarily tiny thermal neutron capture cross-section ($\\sigma_a = 0.0035\\text{ barns}$), slowing neutrons through elastic collisions without absorbing them.",
         archaicTerm: "Neutron moderating material",
-        modernEquivalent: "Graphite moderator / Light water moderator",
+        modernEquivalent: "Reactor moderator (Graphite / Heavy Water / Light Water)",
       },
       {
-        title: "Cadmium / Boron Control Rods",
-        summary: "Movable rods containing high neutron absorption cross-section elements.",
+        title: "Movable Cadmium Neutron Absorption Control Rods",
+        summary:
+          "Motorized rods sliding into the core to regulate neutron population and power output.",
         technicalDetails:
-          "Cadmium-113 has a massive thermal neutron absorption cross-section ($sigma_a = 20,600$ barns). Inserting the rods reduces the effective reproduction factor $k_{eff} < 1$, shutting down the reactor.",
-        archaicTerm: "Neutron-absorbing control elements",
-        modernEquivalent: "Control rod drive mechanism (CRDM) / Scram rods",
+          "Cadmium-113 possesses a gigantic thermal neutron capture cross-section ($\\sigma_a = 20,600\\text{ barns}$). Adjusting rod depth precisely regulates reactivity $\\rho = (k_{eff}-1)/k_{eff}$.",
+        archaicTerm: "Neutron-absorbing control rods",
+        modernEquivalent: "Control rod drive mechanism (CRDM) / Scram safety rods",
+      },
+      {
+        title: "Delayed Neutron Passive Safety Buffer",
+        summary:
+          "Fission product beta decay generating delayed neutrons across multi-second timescales.",
+        technicalDetails:
+          "Approximately 0.65% of fission neutrons ($\beta = 0.0065$) are emitted with half-lives of 0.2 to 55 seconds (e.g. Br-87, I-137), expanding the reactor period from microseconds to tens of seconds and enabling stable manual/automatic control.",
+        archaicTerm: "Delayed neutron emission from fission fragments",
+        modernEquivalent: "Delayed neutron precursor groups / Dynamic reactivity feedback",
       },
     ],
     scientificPrinciples: [
       {
-        principle: "Fermi Four-Factor Formula",
+        principle: "Fermi Four-Factor Formula & Criticality Geometry",
         formula:
-          "k_\\infty = \\eta \\cdot \\epsilon \\cdot p \\cdot f \\implies k_{eff} = k_\\infty P_{NL}",
+          "k_\\infty = \\eta \\cdot \\epsilon \\cdot p \\cdot f \\implies k_{eff} = k_\\infty P_{FNL} P_{TNL} = \\frac{k_\\infty e^{-B^2 \\tau}}{1 + L^2 B^2}",
         explanation:
-          "The infinite multiplication factor is the product of reproduction factor (η), fast fission factor (ε), resonance escape probability (p), and thermal utilization (f). Criticality requires $k_{eff} \\ge 1.0$.",
+          "Criticality ($k_{eff} = 1$) requires balancing neutron reproduction factor ($\\eta$), fast fission factor ($\\epsilon$), resonance escape probability ($p$), thermal utilization ($f$), and non-leakage probabilities ($P_{NL}$).",
       },
       {
-        principle: "Neutron Moderation Logarithmic Energy Loss",
+        principle: "Logarithmic Energy Loss in Elastic Moderation",
         formula:
-          "\\xi = 1 + \\frac{(A-1)^2}{2A}\\ln\\left(\\frac{A-1}{A+1}\\right) \\approx \\frac{2}{A + 2/3}",
+          "\\xi = 1 + \\frac{(A-1)^2}{2A}\\ln\\left(\\frac{A-1}{A+1}\\right) \\approx \\frac{2}{A + 2/3}, \\quad N = \\frac{\\ln(E_0/E_{th})}{\\xi} \\approx 114 \\; (\\text{Carbon-12})",
         explanation:
-          "Average logarithmic energy loss per elastic collision in carbon is ξ = 0.158, requiring ~114 collisions to slow from 2 MeV to 0.025 eV.",
+          "Neutrons transfer kinetic energy to carbon nuclei through billiard-ball elastic collisions, slowing from 2 MeV down to thermal energy (0.025 eV) in approximately 114 steps.",
       },
       {
-        principle: "Delayed Neutron Reactor Kinetics",
+        principle: "6-Group Delayed Neutron Point Reactor Kinetics",
         formula:
-          "\\frac{dn}{dt} = \\frac{\\rho - \\beta}{\\Lambda} n + \\sum_{i=1}^{6} \\lambda_i C_i",
+          "\\frac{dn}{dt} = \\frac{\\rho - \\beta}{\\Lambda} n + \\sum_{i=1}^{6} \\lambda_i C_i, \\quad \\frac{dC_i}{dt} = \\frac{\\beta_i}{\\Lambda} n - \\lambda_i C_i",
         explanation:
-          "Delayed neutrons (β = 0.0065) provide a multi-second time constant, allowing human and motorized mechanical control rods to safely balance criticality.",
+          "Because delayed neutrons ($\beta = 0.0065$) are released seconds after fission, the reactor period $T = \\frac{\\beta - \\rho}{\\lambda \\rho}$ is prolonged to tens of seconds, making nuclear reactors safe to control.",
+      },
+      {
+        principle: "Resonance Escape Probability in Lumped Lattices",
+        formula:
+          "p = \\exp\\left(-\\frac{N_U}{\\xi \\Sigma_s} I_{eff}\\right), \\quad I_{eff} = A + B \\frac{S}{M}",
+        explanation:
+          "Concentrating uranium into lumps reduces the effective resonance integral $I_{eff}$ by self-shielding interior U-238 atoms, allowing fast neutrons to safely escape into the moderator.",
+      },
+      {
+        principle: "Geometric Buckling & Core Critical Dimensions",
+        formula:
+          "B_g^2 = \\left(\\frac{\\pi}{H}\\right)^2 + \\left(\\frac{2.4048}{R}\\right)^2, \\quad \\nabla^2 \\Phi + B^2 \\Phi = 0",
+        explanation:
+          "Solving the Helmholtz neutron diffusion equation determines the exact critical radius $R$ and height $H$ required to ensure neutron production exceeds boundary leakage.",
       },
     ],
     whyItMattersToday:
-      "A light-water reactor is a different moderator and a pressure vessel. The control problem is the same: keep $k$ near 1 with delayed neutrons, and have a rod worth you can insert faster than the period.",
+      "Enrico Fermi and Leo Szilard's nuclear reactor patent is the foundational patent for all civil nuclear power and naval propulsion. Today, over 440 commercial nuclear reactors in 32 countries generate roughly 10% of the world's zero-carbon electricity, while nuclear-powered submarines and aircraft carriers operate for 25+ years without refueling—all governed by Fermi and Szilard's four-factor lattice physics and delayed neutron kinetics.",
   },
   claims: [
     {
@@ -117,14 +146,14 @@ WE CLAIM:
       originalText:
         "1. A neutronic reactor comprising a mass of neutron moderating material having a neutron capture cross-section to scattering cross-section ratio less than 0.005, and bodies of a fissionable material disposed in said moderating material in a spaced geometric lattice, the volume ratio of moderating material to fissionable material, the spatial configuration of said bodies, and the purity of said materials being coordinated to provide a neutron reproduction ratio k for an infinite system greater than unity.",
       plainEnglish:
-        "Covers the fundamental architecture of a nuclear fission reactor with a low-capture moderator surrounding a geometric lattice of fissionable fuel bodies designed to achieve a neutron reproduction factor k exceeding 1.0.",
+        "The master patent claim covering the nuclear reactor: a geometric lattice of fissionable fuel bodies embedded in a low-absorption neutron moderating material, dimensioned and purified to achieve a neutron reproduction factor k exceeding 1.0.",
       keyInnovations: [
         "Heterogeneous moderator-fuel geometric lattice",
         "Neutron reproduction factor k > 1.0 in natural uranium",
         "Low neutron capture cross-section moderating medium",
       ],
       legalSignificance:
-        "A heterogeneous lattice of fissionable material in a moderator, with a movable absorber, arranged so k can be held at or above 1.",
+        "The pioneer patent claim defining the basic structural and physics architecture of all nuclear fission reactors.",
     },
     {
       number: 2,
@@ -133,8 +162,10 @@ WE CLAIM:
       originalText:
         "2. A reactor as set forth in claim 1, wherein said moderating material is high-purity graphite and said fissionable material comprises natural uranium.",
       plainEnglish:
-        "Specifies graphite carbon as the moderator and natural metallic/oxide uranium as the fuel.",
+        "Specifies the combination of high-purity graphite carbon as the moderator and natural un-enriched uranium metal/oxide as the fissionable fuel.",
       keyInnovations: ["Ultra-pure graphite carbon moderator", "Natural un-enriched uranium fuel"],
+      legalSignificance:
+        "Protected the graphite-moderated natural uranium reactor architecture used in early production reactors.",
     },
     {
       number: 3,
@@ -143,32 +174,35 @@ WE CLAIM:
       originalText:
         "3. A reactor as set forth in claim 1, further comprising neutron-absorbing control rods slidably disposed within said mass for movement into and out of said moderating material to selectively adjust the effective reproduction factor k_eff of the reactor.",
       plainEnglish:
-        "Specifies movable neutron-absorbing rods (cadmium/boron) to regulate reactivity and maintain criticality.",
+        "Specifies movable neutron-absorbing control rods (cadmium/boron) inserted into the core channels to dynamically adjust reactivity and regulate or terminate the chain reaction.",
       keyInnovations: ["Movable cadmium/boron control rods for dynamic reactivity control"],
+      legalSignificance:
+        "Secured the primary mechanical control mechanism used in nuclear reactors worldwide.",
     },
   ],
   drawings: [
     {
       figureNumber: "Fig. 1",
       title: "Perspective Cutaway of Graphite Reactor Core",
-      caption: "Isometric cutaway of Chicago Pile-1 graphite lattice and fuel channels.",
+      caption:
+        "Isometric cutaway of the Chicago Pile-1 reactor core showing stacked graphite moderator blocks, discrete uranium fuel channels, and control rod penetrations.",
       svgType: "fermi-reactor",
       callouts: [
         {
           id: "c1",
           figureRef: "Fig. 1",
-          label: "Graphite Moderator",
-          element: "20",
-          description: "High-purity carbon moderator blocks",
+          label: "20",
+          element: "High-Purity Graphite Moderator",
+          description: "Ultra-pure graphite carbon blocks slowing fast fission neutrons.",
           x: 40,
           y: 45,
         },
         {
           id: "c2",
           figureRef: "Fig. 1",
-          label: "Uranium Fuel Lattice",
-          element: "22",
-          description: "Natural uranium cylinders in channels",
+          label: "22",
+          element: "Uranium Fuel Lattice",
+          description: "Discrete natural uranium metal and oxide cylinders in channels.",
           x: 60,
           y: 55,
         },
@@ -177,15 +211,16 @@ WE CLAIM:
     {
       figureNumber: "Fig. 2",
       title: "Control Rod Channels & Safety Mechanism",
-      caption: "Vertical cross-section showing motorized cadmium control rods.",
+      caption:
+        "Vertical cross-section showing motorized cadmium control rods, counterweight scram lines, and neutron flux monitoring chambers.",
       svgType: "fermi-reactor",
       callouts: [
         {
           id: "c3",
           figureRef: "Fig. 2",
-          label: "Cadmium Control Rod",
-          element: "28",
-          description: "Thermal neutron absorber rod",
+          label: "28",
+          element: "Cadmium Control Rod",
+          description: "Thermal neutron absorber rod regulating core reactivity ($k_{eff}$).",
           x: 50,
           y: 20,
         },
@@ -194,44 +229,52 @@ WE CLAIM:
   ],
   historicalContext: {
     problemStatement:
-      "Natural uranium consists of 99.3% uranium-238 and only 0.7% fissionable uranium-235. When a U-235 nucleus fissions, it releases fast neutrons with kinetic energies of ~2 MeV. In pure uranium metal, these fast neutrons are almost entirely captured non-fissionably by U-238 in 'resonance capture' energy bands, extinguishing the chain reaction before a second generation of fissions can occur.",
+      "Following the discovery of nuclear fission by Otto Hahn, Fritz Strassmann, and Lise Meitner in late 1938, physicists realized that uranium atoms release immense energy when split by a neutron. However, natural uranium consists of 99.3% non-fissionable U-238 and only 0.7% fissionable U-235. Fast 2 MeV neutrons emitted during fission are captured non-fissionably by U-238 in 'resonance absorption' energy bands, extinguishing the chain reaction before a second generation can occur. Creating an atomic chain reaction was considered impossible without trillions of dollars in uranium isotope enrichment.",
     priorArtLimitations: [
-      "Homogeneous uranium mixtures suffered 100% resonance capture extinction",
-      "Commercial graphite contained boron impurities that absorbed all thermal neutrons",
-      "No controlled nuclear chain reaction had ever been demonstrated in human history",
+      "Homogeneous mixtures of uranium and water or carbon suffered 100% resonance capture extinction in U-238.",
+      "Commercial industrial graphite contained minute boron impurities (a few parts per million) that absorbed all thermal neutrons.",
+      "No controlled nuclear chain reaction had ever been demonstrated in human history.",
     ],
     breakthroughInsight:
-      "Fermi and Szilard realized that by geometrically separating the uranium into discrete lumps or rods distributed throughout a moderator medium of low atomic weight and negligible neutron absorption (high-purity graphite carbon), fast neutrons escape the uranium lump into the carbon matrix. Through ~114 elastic collisions with carbon atoms, the neutrons thermalize down to 0.025 eV before diffusing back into a neighboring uranium lump, bypassing U-238 resonance traps and preferentially triggering thermal fission in U-235.",
+      "Enrico Fermi and Leo Szilard made two monumental breakthroughs. First, Szilard realized that industrial graphite was poisoned by trace boron and personally convinced chemical manufacturers to produce unprecedented ultra-pure, boron-free graphite. Second, Fermi developed the mathematical physics of the **heterogeneous lattice**: by aggregating uranium into discrete lumps spaced evenly throughout graphite blocks, fast neutrons escape the uranium lump into the carbon matrix, undergo ~114 elastic collisions to slow down to 0.025 eV, and diffuse back into neighboring lumps to split U-235 without ever being captured by U-238!",
     patentWars: [
       {
-        rivalName: "Manhattan Project / AEC Secrecy Order",
+        rivalName: "Manhattan Project and the Atomic Energy Commission",
         rivalClaim:
-          "United States Government classified atomic inventions under the 1946 Atomic Energy Act",
+          "The United States Government classified all atomic fission research as Top Secret under the 1946 Atomic Energy Act (McMahon Act), preventing any commercial exploitation or foreign filing.",
         conflictDetails:
-          "Filed in December 1944 during the height of the Manhattan Project, the patent was classified as Top Secret. Fermi and Szilard assigned rights to the U.S. government for a nominal sum of $1.00.",
+          "Fermi and Szilard filed their patent application on December 19, 1944. Because the invention was developed under the Manhattan Project, the War Department placed a permanent Secrecy Order on the file. Fermi and Szilard assigned their patent rights to the US Government for the nominal legal sum of **$1.00**.",
         resolution:
-          "Declassified and issued publicly on May 17, 1955 under President Eisenhower's 'Atoms for Peace' initiative.",
+          "After the war, under President Dwight D. Eisenhower's **'Atoms for Peace'** initiative, the US Atomic Energy Commission declassified the basic physics of nuclear reactors, officially issuing US Patent No. 2,708,656 on May 17, 1955.",
         legalOutcome:
-          "Became public prior art preventing private monopolization of basic nuclear fission physics.",
+          "The patent became public prior art, ensuring that basic nuclear reactor physics remained in the public domain and could not be monopolized by private corporations.",
       },
     ],
     civilizationalImpact:
-      "2 December 1942, CP-1 went critical under the west stands of Stagg Field. Every later pile, submarine core, and power reactor is a controlled version of that lattice argument: moderate the neutrons, keep k just above 1, and have a cadmium rod you can drop.",
+      "On the freezing afternoon of **December 2, 1942**, beneath the abandoned west stands of Stagg Field at the University of Chicago, Chicago Pile-1 reached self-sustaining criticality ($k = 1.0006$). Arthur Compton famously telephoned James Conant at Harvard: *'The Italian navigator has landed in the New World.'* Conant asked: *'How were the natives?'* Compton replied: *'Very friendly.'* Humanity had unlocked the energy of the atomic nucleus.",
     funFact:
-      "The squash court was unheated. Overcoats and fedoras in the photographs are not style; they are Chicago in December. They toasted with a bottle of Chianti and paper cups. Eugene Wigner handed Fermi the bottle.",
+      "The unheated squash court beneath Stagg Field was freezing cold (under 30°F / 0°C). Fermi and his team of 49 scientists worked in heavy wool overcoats and fedoras. When CP-1 achieved criticality at 3:53 PM, Hungarian physicist Eugene Wigner produced a hidden bottle of Italian Chianti red wine. The scientists drank the wine silently from paper cups and signed their names on the straw Chianti basket.",
     aftermath:
-      "The patent sat classified until 17 May 1955. Fermi and Szilard assigned it for a dollar. Fermi died in 1954 and never saw the issued document. Szilard spent the rest of his life trying to put the bomb back in the political bottle.",
+      "Enrico Fermi received the 1938 Nobel Prize in Physics and became one of the greatest experimental and theoretical physicists in history. He died of stomach cancer in 1954 at age 53, just six months before his reactor patent was publicly issued. Leo Szilard spent his remaining years campaigning tirelessly for nuclear disarmament, international arms control, and molecular biology.",
     sideNotes: [
-      "The graphite had to be boron-free. Ordinary commercial carbon would have poisoned the pile. The National Carbon and Speer lots were a materials project of their own.",
-      "Szilard's 1934 chain-reaction patent (British) is the conceptual ancestor. CP-1 is the heterogeneous lattice that made natural uranium work.",
-      "Arthur Compton ran the Met Lab. Leona Woods was the only woman present at criticality, on the boron trifluoride counter.",
+      "The term 'SCRAM' (emergency reactor shutdown) allegedly originated at CP-1 as an acronym for 'Safety Control Rod Axe Man'—physicist Norman Hilberry stood ready with a sharp wood axe to sever a hemp rope holding an emergency cadmium rod above the pile if the reaction went runaway!",
+      "Dr. Leona Woods Marshall was the sole female physicist present on the squash court during criticality, operating the boron-trifluoride neutron detectors.",
     ],
   },
-  tags: ["energy", "nuclear", "physics", "electricity"],
+  tags: [
+    "Enrico Fermi",
+    "Leo Szilard",
+    "Nuclear Reactor",
+    "Chicago Pile-1",
+    "Manhattan Project",
+    "Nuclear Physics",
+    "Atomic Age",
+    "Atoms for Peace",
+  ],
   stats: {
-    totalClaims: 37,
+    totalClaims: 3,
     independentClaims: 1,
-    patentWarYears: "1944–1955 (Manhattan Project Secrecy Classification)",
+    patentWarYears: "1944–1955",
     impactScore: 100,
   },
 };

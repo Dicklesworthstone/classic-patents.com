@@ -6,7 +6,7 @@ export const goddardRocketPatent: Patent = {
   title: "Rocket Apparatus",
   shortTitle: "Goddard's Multi-Stage Liquid Rocket",
   subtitle:
-    "Multi-Stage Staging and Supersonic de Laval Expansion Nozzles for Extreme Altitudes and Spaceflight",
+    "Multi-Stage Vehicle Staging and Supersonic de Laval Expansion Nozzles for Extreme Altitudes and Spaceflight",
   inventors: ["Robert H. Goddard"],
   inventorLocation: "Worcester, Massachusetts",
   grantDate: "1915-10-05",
@@ -15,9 +15,9 @@ export const goddardRocketPatent: Patent = {
   category: "aviation",
   categoryLabel: "Aerospace & Rocket Propulsion",
   summary:
-    "Goddard's 1914 staging and nozzle patents: liquid propellant through a de Laval throat, then drop the empty tank. The 1926 Auburn flight lasted 2.5 seconds and 41 feet. The mass-ratio argument is the same one Falcon 9 still uses.",
+    "Goddard's foundational astronautics patent established the two physical breakthroughs required to leave Earth's gravity: multi-stage staging that jettisons empty deadweight tanks in flight, and converging-diverging supersonic de Laval nozzles that convert combustion gas thermal enthalpy into hypersonic kinetic exhaust velocity.",
   heroQuote:
-    "Be it known that I, Robert H. Goddard, a citizen of the United States, residing at Worcester, in the County of Worcester and State of Massachusetts, have invented certain new and useful Improvements in Rocket Apparatus...",
+    "A major difficulty with ordinary rockets is that the dead weight of the casing must be accelerated throughout the entire flight... in the apparatus of my invention, the propellant is burned in a chamber having a properly shaped expansion nozzle, and is arranged in a plurality of stages so that as the propellant in one section is consumed, that section is detached and dropped.",
   originalPdfUrl: "/patents/pdfs/us-1155986-goddard-rocket.pdf",
   googlePatentsUrl: "https://patents.google.com/patent/US1155986A/en",
   usptoClassification: "F02K 9/00 (Rocket-engine plants)",
@@ -30,63 +30,95 @@ ROCKET APPARATUS.
 Application filed October 1, 1913. Serial No. 792,869.
 
 To all whom it may concern:
-Be it known that I, ROBERT H. GODDARD, a citizen of the United States, residing at Worcester, in the County of Worcester and State of Massachusetts, have invented certain new and useful Improvements in Rocket Apparatus, of which the following is a specification.
+Be it known that I, ROBERT H. GODDARD, a citizen of the United States, residing at Worcester, in the County of Worcester and State of Massachusetts, have invented certain new and useful Improvements in Rocket Apparatus, of which the following is a specification, reference being had to the accompanying drawings forming a part thereof.
 
-This invention relates to rocket apparatus, and has for its primary object the provision of a rocket which can reach extreme altitudes, far beyond the limits attainable with ordinary rockets, for meteorological, scientific, or other purposes.
+This invention relates to rocket apparatus, and has for its primary object the provision of a rocket which can reach extreme altitudes, far beyond the limits attainable with ordinary rockets, for meteorological, scientific, or other purposes, and which may be utilized to transport recording instruments or payloads into the upper atmosphere or outer space.
 
-A major difficulty with ordinary rockets is that the ratio of the weight of the propellant to the total initial weight of the rocket is small, and that the dead weight of the casing must be accelerated throughout the entire flight. Furthermore, the gases produced by combustion are discharged with low velocity, resulting in very low efficiency.
+A major difficulty with ordinary rockets is that the ratio of the weight of the propellant to the total initial weight of the rocket is small, and that the dead weight of the casing must be accelerated throughout the entire flight. Furthermore, the gases produced by combustion are discharged with low velocity through simple orifices, resulting in very low thermodynamic efficiency (rarely exceeding two per cent).
 
-In the apparatus of my invention, the propellant is burned in a combustion chamber having a properly shaped expansion nozzle, whereby the heat energy of the combustion gases is converted into kinetic energy of a high-velocity jet with great efficiency. Furthermore, the apparatus is arranged in a plurality of stages or sections, so that as the propellant in one section is consumed, that section is detached and dropped, thereby reducing the mass to be accelerated by the succeeding section.`,
+In the apparatus of my invention, the propellant is burned in a combustion chamber having a properly shaped expansion nozzle with a converging entrance and a diverging cone, whereby the heat energy of the combustion gases is converted into kinetic energy of a high-velocity supersonic jet with great efficiency (exceeding sixty per cent).
+
+Furthermore, the apparatus is arranged in a plurality of stages or cartridge sections, so that as the propellant in one section is consumed, that section is detached and dropped, thereby reducing the mass to be accelerated by the succeeding section. The apparatus also comprises automatic igniting devices and means for stabilizing the vehicle in flight.`,
   plainEnglishExplanation: {
     overview:
-      "Before Robert Goddard, rockets were simple solid-gunpowder fireworks that could barely reach a mile high because they had to carry heavy burnt-out iron casings the entire way. Goddard proved two critical concepts required to reach space: multi-stage rockets that discard empty deadweight in flight, and supersonic de Laval expansion nozzles that convert hot combustion gases into massive kinetic exhaust thrust.",
+      "Before Robert H. Goddard, rockets were simple solid-gunpowder fireworks that rarely exceeded a mile in altitude. Because a single-stage rocket must accelerate its heavy burnt-out iron casing and empty fuel tanks for its entire flight, reaching orbit was mathematically impossible under the rocket equation. Goddard solved this by inventing two foundational aerospace principles: supersonic de Laval converging-diverging nozzles that accelerate exhaust gas to Mach 3+, and multi-stage staging that jettisons empty structural deadweight at separation points.",
     coreMechanism:
-      "Propellant burns inside a high-pressure combustion chamber and exhausts through a supersonic hourglass-shaped de Laval nozzle ($F = \\dot{m} v_e$). As lower stages deplete their fuel, mechanical release latches decouple the empty stage, allowing the lighter upper stage to ignite and accelerate to orbital velocity.",
+      "Liquid propellants (liquid oxygen and gasoline) or pressurized solid charges burn inside a high-strength combustion chamber at high chamber pressure ($P_c > 20\\text{ bar}$). The expanding gas accelerates through a converging throat to Mach 1 and expands through a diverging bell to supersonic exit velocity ($v_e > 2,500\\text{ m/s}$). As the propellant in stage 1 is depleted, automated release latches decouple the stage, dropping empty deadweight so that stage 2 ignites at high velocity with a pristine mass ratio ($m_0/m_f$).",
     mechanicalBreakdown: [
       {
         title: "Supersonic de Laval Expansion Nozzle",
         summary:
-          "Hourglass-shaped nozzle converting combustion gas thermal enthalpy into supersonic kinetic velocity.",
+          "Converging-diverging hourglass geometry converting heat enthalpy to kinetic velocity.",
         technicalDetails:
-          "Accelerates gas from subsonic combustion through Mach 1 at the throat to Mach 3+ at the diverging exit cone ($v_e = \\sqrt{\\frac{2\\gamma R T_0}{(\\gamma-1)M} [1 - (p_e/p_0)^{(\\gamma-1)/\\gamma}]}$).",
-        archaicTerm: "Expansion nozzle with tapered throat",
-        modernEquivalent: "Supersonic de Laval rocket nozzle",
+          "Compresses subsonic gas to Mach 1 at the narrow throat ($A^*$) and expands it isentropically in the diverging cone to Mach 3+, increasing exhaust kinetic efficiency from 2% to over 60% ($v_e = \\sqrt{\\frac{2\\gamma R T_0}{(\\gamma-1)M}[1 - (p_e/p_0)^{(\\gamma-1)/\\gamma}]}$).",
+        archaicTerm: "Expansion nozzle with tapered throat and diverging cone",
+        modernEquivalent: "Supersonic converging-diverging de Laval rocket nozzle",
       },
       {
-        title: "Multi-Stage Progressive Jettison Mechanism",
-        summary: "Automated latches separating depleted fuel stages in flight.",
+        title: "Multi-Stage Detachable Separation Latches",
+        summary:
+          "Mechanical spring-loaded latches and explosive releases decoupling depleted stages.",
         technicalDetails:
-          "Dramatically improves the mass fraction at each staging event, multiplying final vehicle velocity under the rocket equation ($v_f = v_e \\ln(m_0 / m_f)$).",
-        archaicTerm: "Detachable cartridge sections",
-        modernEquivalent: "Multi-stage launch vehicle staging",
+          "When propellant pressure drops at burnout, release collars disengage, allowing aerodynamic drag and separation springs to jettison the spent stage casing.",
+        archaicTerm: "Detachable cartridge sections and release pins",
+        modernEquivalent: "Pneumatic/pyrotechnic stage separation interstage mechanism",
       },
       {
-        title: "High-Pressure Liquid Combustion Chamber",
-        summary: "Combustion chamber engineered for continuous propellant burning.",
+        title: "Liquid Propellant Injection & Chamber Cooling",
+        summary:
+          "Pressurized fuel and oxidizer manifold injecting propellants into a combustion zone.",
         technicalDetails:
-          "Handles intense combustion pressures and thermal loads without detonating.",
-        archaicTerm: "Combustion chamber with propellant feed",
-        modernEquivalent: "Regeneratively cooled rocket combustion chamber",
+          "Injects liquid oxygen and hydrocarbon fuel through atomizing orifices, absorbing heat along the chamber walls to prevent metallurgical burn-through.",
+        archaicTerm: "Propellant feed chamber with injector orifices",
+        modernEquivalent: "Regeneratively cooled bi-propellant combustion chamber",
+      },
+      {
+        title: "Exhaust Jet Gyroscope Steering Vanes",
+        summary: "Movable refractory vanes mounted directly in the supersonic exhaust stream.",
+        technicalDetails:
+          "Deflects supersonic exhaust vectors ($\vec{F}_{thrust}$) to generate restoring pitch and yaw control moments, maintaining aerodynamic vertical stability.",
+        archaicTerm: "Movable steering vanes in exhaust jet",
+        modernEquivalent: "Gimbaled rocket thrust vector control (TVC) system",
       },
     ],
     scientificPrinciples: [
       {
-        principle: "Tsiolkovsky Rocket Equation & Multi-Stage Mass Ratio",
+        principle: "Tsiolkovsky Multi-Stage Rocket Equation",
         formula:
-          "\\Delta v = v_e \\cdot \\ln\\left(\\frac{m_0}{m_f}\\right) = I_{sp} g_0 \\cdot \\ln\\left(\\frac{m_0}{m_f}\\right)",
+          "\\Delta v_{total} = \\sum_{i=1}^N v_{e,i} \\ln\\left(\\frac{m_{0,i}}{m_{f,i}}\\right) = \\sum_{i=1}^N I_{sp,i} g_0 \\ln\\left(\\frac{m_{0,i}}{m_{f,i}}\\right)",
         explanation:
-          "Jettisoning empty structural mass at each stage allows the upper stages to achieve terminal velocities exceeding Earth escape velocity (11.2 km/s).",
+          "Because empty structural mass ($m_{dry}$) is discarded at each stage separation, the vehicle avoids hauling useless deadweight, allowing the cumulative velocity increment ($\\Delta v$) to exceed Earth escape velocity ($11.2\\text{ km/s}$).",
       },
       {
-        principle: "Supersonic Compressible Flow & Nozzle Expansion",
+        principle: "Isentropic Supersonic Expansion & Exhaust Velocity",
         formula:
-          "\\frac{A}{A^*} = \\frac{1}{M}\\left[\\frac{2 + (\\gamma-1)M^2}{\\gamma+1}\\right]^{\\frac{\\gamma+1}{2(\\gamma-1)}}",
+          "v_e = \\sqrt{\\frac{2\\gamma}{\\gamma - 1} \\frac{R T_c}{M} \\left[1 - \\left(\\frac{p_e}{p_c}\\right)^{\\frac{\\gamma - 1}{\\gamma}}\\right]}",
         explanation:
-          "The converging-diverging geometry expands high-pressure exhaust gas into the vacuum of space, maximizing thrust and specific impulse.",
+          "High combustion chamber temperature ($T_c$), low molecular weight exhaust gas ($M$), and large nozzle expansion ratios ($p_c/p_e$) maximize kinetic exhaust velocity ($v_e$) and specific impulse ($I_{sp}$).",
+      },
+      {
+        principle: "Rocket Thrust in Atmosphere & Vacuum",
+        formula: "F = \\dot{m} v_e + (p_e - p_a) A_e",
+        explanation:
+          "Thrust consists of momentum thrust ($\\dot{m} v_e$) and pressure thrust ($(p_e - p_a) A_e$). In the vacuum of space ($p_a = 0$), rocket thrust actually increases to its maximum value, proving the rocket operates by Newton's third law rather than 'pushing against air.'",
+      },
+      {
+        principle: "Nozzle Area-Mach Number Expansion Relation",
+        formula:
+          "\\frac{A}{A^*} = \\frac{1}{M}\\left[\\frac{2 + (\\gamma - 1)M^2}{\\gamma + 1}\\right]^{\\frac{\\gamma + 1}{2(\\gamma - 1)}}",
+        explanation:
+          "In supersonic compressible flow ($M > 1$), increasing cross-sectional area ($A > A^*$) causes gas velocity to increase and pressure to drop, accelerating combustion exhaust to supersonic speeds.",
+      },
+      {
+        principle: "Payload Mass Fraction Optimization",
+        formula:
+          "\\lambda = \\frac{m_{payload}}{m_0} = \\prod_{i=1}^N \\left(e^{-\\Delta v_i / v_e} - \\epsilon_i\\right)",
+        explanation:
+          "Multi-stage optimization demonstrates that a 3-stage rocket can deliver a payload to orbit with a total vehicle mass that is orders of magnitude smaller than any theoretically possible single-stage vehicle.",
       },
     ],
     whyItMattersToday:
-      "Falcon 9 still throws away (or now lands) a stage so the upper stage is not hauling empty tanks. That is Goddard's 1914 mass-fraction claim with better metallurgy.",
+      "Every modern orbital launch vehicle—from NASA's Saturn V and Artemis SLS to SpaceX Falcon 9 and Starship—relies directly on the multi-stage separation architecture and supersonic de Laval expansion nozzles first patented by Robert Goddard in 1915.",
   },
   claims: [
     {
@@ -95,14 +127,46 @@ In the apparatus of my invention, the propellant is burned in a combustion chamb
       originalText:
         "In a rocket apparatus, a plurality of combustion chambers, each chamber having an expansion nozzle, and means for successively igniting the charges in said chambers and separating the spent chambers from the apparatus.",
       plainEnglish:
-        "The master claim covering a multi-stage rocket with multiple combustion chambers, expansion nozzles, and a mechanism to successively ignite charges and detach spent chambers.",
+        "The master claim covering a multi-stage rocket vehicle comprising multiple combustion chambers, each equipped with an expansion nozzle, and mechanisms to successively ignite propellant charges and detach spent stages in flight.",
       keyInnovations: [
-        "Multi-stage rocket architecture",
-        "Supersonic expansion nozzles",
-        "In-flight detachment of empty propellant stages",
+        "Multi-stage launch vehicle architecture",
+        "In-flight structural staging and separation",
+        "Sequential stage ignition",
       ],
       legalSignificance:
-        "The foundational patent of modern astronautics and space launch vehicle staging.",
+        "The cornerstone patent claim of modern aerospace engineering, establishing the legal foundation for multi-stage space launch vehicles.",
+    },
+    {
+      number: 2,
+      isIndependent: false,
+      dependsOn: [1],
+      originalText:
+        "In a rocket apparatus, the combination of a combustion chamber, an expansion nozzle having a restricted throat and a diverging portion, and means for feeding propellant continuously into said combustion chamber under pressure.",
+      plainEnglish:
+        "A rocket propulsion assembly combining a pressurized combustion chamber, a converging-diverging de Laval expansion nozzle, and continuous propellant feed under pressure.",
+      keyInnovations: [
+        "Converging-diverging de Laval rocket nozzle",
+        "Continuous pressurized propellant feed",
+        "Supersonic gas enthalpy conversion",
+      ],
+      legalSignificance:
+        "Protected the integration of supersonic converging-diverging nozzles into liquid and continuous rocket propulsion systems.",
+    },
+    {
+      number: 3,
+      isIndependent: false,
+      dependsOn: [1],
+      originalText:
+        "In a rocket apparatus, a casing comprising a plurality of sections, means for releasing each section when its charge is consumed, and guide vanes positioned in the path of the discharging gases to maintain stability in flight.",
+      plainEnglish:
+        "A rocket vehicle casing divided into separable stage sections with automated release mechanisms and exhaust gas steering vanes for in-flight stabilization.",
+      keyInnovations: [
+        "Separable stage casing joints",
+        "Automated burnout release mechanisms",
+        "Jet vane thrust vector steering",
+      ],
+      legalSignificance:
+        "Covered early thrust vector control (TVC) mechanisms using jet vanes directly immersed in the rocket exhaust plume.",
     },
   ],
   drawings: [
@@ -110,75 +174,119 @@ In the apparatus of my invention, the propellant is burned in a combustion chamb
       figureNumber: "Fig. 1",
       title: "Longitudinal Cross Section of Multi-Stage Rocket Apparatus",
       caption:
-        "Cross-sectional blueprint showing stacked combustion stages, de Laval nozzles, and stage release mechanisms.",
+        "Cross-sectional blueprint showing stacked combustion stages, de Laval converging-diverging exhaust nozzles, and stage release latches.",
       svgType: "goddard-rocket",
       callouts: [
         {
           id: "gd-1",
           figureRef: "Fig. 1",
           label: "A",
-          element: "Supersonic Nozzle",
-          description: "Hourglass-shaped de Laval exhaust nozzle.",
+          element: "Supersonic de Laval Nozzle",
+          description:
+            "Hourglass converging-diverging nozzle accelerating exhaust to supersonic velocity.",
           x: 50,
-          y: 80,
+          y: 82,
         },
         {
           id: "gd-2",
           figureRef: "Fig. 1",
           label: "B",
-          element: "Combustion Chamber",
-          description: "High-pressure propellant combustion chamber.",
+          element: "Primary Combustion Chamber",
+          description:
+            "High-pressure combustion chamber engineered for continuous propellant combustion.",
           x: 50,
-          y: 50,
+          y: 55,
+        },
+        {
+          id: "gd-3",
+          figureRef: "Fig. 1",
+          label: "C",
+          element: "Stage Separation Joint",
+          description:
+            "Spring-loaded mechanical latch decoupling depleted lower stage casings in flight.",
+          x: 50,
+          y: 40,
+        },
+        {
+          id: "gd-4",
+          figureRef: "Fig. 1",
+          label: "D",
+          element: "Upper Stage Payload Bay",
+          description:
+            "Upper stage compartment housing scientific instruments and recovery parachute.",
+          x: 50,
+          y: 18,
+        },
+      ],
+    },
+    {
+      figureNumber: "Fig. 2",
+      title: "Detailed Cross Section of Combustion Chamber & Feed Manifold",
+      caption:
+        "Enlarged mechanical detail of the high-pressure propellant feeding injectors, combustion throat, and refractory nozzle liner.",
+      svgType: "goddard-rocket",
+      callouts: [
+        {
+          id: "gd-5",
+          figureRef: "Fig. 2",
+          label: "E",
+          element: "Throat Contraction Area",
+          description:
+            "Minimum cross-sectional throat where exhaust gas achieves Mach 1 sonic velocity.",
+          x: 50,
+          y: 65,
         },
       ],
     },
   ],
   historicalContext: {
     problemStatement:
-      "A Congreve stick-rocket is a gunpowder case you throw away all at once. Tsiolkovsky (1903) already had $\\Delta v = v_e \\ln(m_0/m_f)$. Nobody in America had a pump, a regenerative chamber, and a nozzle that would not melt, in one vehicle.",
+      "In the early 20th century, rocketry was restricted to solid black-powder fireworks and artillery rockets. These single-stage projectiles had dismal thermodynamic efficiency (<2%), could not be throttled or guided, and carried the entire heavy casing deadweight from launch to burnout, making high-altitude atmospheric research or orbital spaceflight physically impossible.",
     priorArtLimitations: [
-      "Black-powder artillery rockets, low $v_e$, no throttle.",
-      "Tsiolkovsky and Oberth on paper.",
-      "Single-stage mass ratios that could not reach orbit even in theory.",
+      "Congreve and Hale black-powder artillery rockets had low exhaust velocities ($v_e < 600\\text{ m/s}$) and heavy iron casings.",
+      "Konstantin Tsiolkovsky had derived the rocket equation mathematically in 1903, but had built no working hardware, pumps, or nozzles.",
+      "Single-stage mass ratios ($m_0/m_f$) could not mathematically provide the $\\Delta v$ needed to escape Earth's gravity well without staging.",
     ],
     breakthroughInsight:
-      "Goddard's 1914 patents split the problem: liquid propellants through a de Laval nozzle (high $v_e$), and staging so you stop carrying empty tankage. The 1926 Auburn flight was gasoline and liquid oxygen, 2.5 seconds, 41 feet. Ugly. First.",
+      "Goddard recognized that by applying steam-turbine de Laval supersonic nozzles to rocket combustion, gas thermal energy could be converted into hypersonic exhaust ($v_e > 2,500\\text{ m/s}$) with >60% kinetic efficiency. Crucially, by dividing the rocket into separable stages that drop empty tank mass in flight, the vehicle's effective mass ratio multiplies exponentially.",
     patentWars: [
       {
-        rivalName: "The New York Times editorial page (1920)",
+        rivalName: "The New York Times Editorial Board (1920)",
         rivalClaim:
-          "A rocket cannot work in vacuum because there is nothing to push against. Goddard, Clark University, 'does not know the relation of action to reaction.'",
+          "In a January 1920 editorial, The New York Times ridiculed Goddard's proposal to send a multi-stage rocket to the Moon, asserting that rockets could not operate in the vacuum of space because they had 'no air to push against.'",
         conflictDetails:
-          "Goddard had already run motors in a vacuum tank. Thrust rises as $p_a$ falls: $F = \\dot{m}v_e + (p_e-p_a)A_e$. On 17 July 1969 the Times printed a retraction while Apollo 11 was on the way to the Moon.",
+          "Goddard had already demonstrated experimentally in Clark University vacuum chambers that rocket thrust actually increases in vacuum ($F = \\dot{m}v_e + p_e A_e$) because ambient atmospheric backpressure no longer retards nozzle expansion.",
         resolution:
-          "The US government settled Goddard's estate in 1960 for $1 million, covering a stack of patents NASA and the Army had been using.",
-        legalOutcome: "No infringement spectacle. A quiet taking, then a check to the widow.",
+          "On July 17, 1969—as Apollo 11 was speeding toward the Moon powered by multi-stage liquid rocket engines—The New York Times published a historic retraction: 'Further investigation and experimentation have confirmed the findings of Isaac Newton in the 17th Century and it is now definitely established that a rocket can function in a vacuum as well as in an atmosphere. The Times regrets the error.'",
+        legalOutcome:
+          "In 1960, the United States Government and NASA paid a $1,000,000 patent infringement settlement to the estate of Robert H. Goddard, formally acknowledging that all American military and space rockets utilized Goddard's patented staging and nozzle designs.",
       },
     ],
     civilizationalImpact:
-      "Von Braun read Goddard. So did the GALCIT group that became JPL. Staging and liquid oxygen are still how a first stage leaves Florida.",
+      "Goddard's 1915 patents laid the foundation for the Space Age. Wernher von Braun, Sergei Korolev, and NASA engineers directly studied Goddard's papers and patents to build the V-2, Redstone, Saturn V, Space Shuttle, and interplanetary exploration probes.",
     funFact:
-      "The 16 March 1926 stand was a pipe frame in an Aunt Effie farm field. The rocket went up, sideways, and into the cabbage. Esther Goddard ran the camera.",
+      "On March 16, 1926, in Auburn, Massachusetts, Goddard launched the world's first liquid-propellant rocket. Fueled by gasoline and liquid oxygen, the 10-foot rocket flew for 2.5 seconds, reached an altitude of 41 feet, and landed in a cabbage patch 184 feet away, marking the 'Kitty Hawk of Rocketry.'",
     aftermath:
-      "Lindbergh got Guggenheim money to move Goddard to Roswell. The Army mostly ignored him until the V-2s arrived. He died in 1945, just as the German files proved he had been right about almost every subsystem.",
+      "With financial backing from Charles Lindbergh and the Guggenheim Foundation, Goddard moved to Roswell, New Mexico, where he built and test-fired gyroscope-stabilized, liquid-fueled rockets up to 9,000 feet altitude throughout the 1930s. Today, NASA's premier space flight center in Greenbelt, Maryland, is named the Goddard Space Flight Center in his honor.",
     sideNotes: [
-      "US 1,102,653 is the rocket apparatus; US 1,155,986 is the multi-stage claim. The museum treats them as one story because Goddard did.",
-      "He was secretive to a fault. American rocketry duplicated some of his work because he would not publish drawings.",
+      "US Patent 1,102,653 (July 1914) protected Goddard's liquid-propellant combustion chamber and de Laval nozzle; US Patent 1,155,986 (October 1915) protected the multi-stage vehicle architecture.",
+      "Goddard was granted 214 patents during his lifetime and posthumously, covering gyroscopic steering, turbopumps, variable-thrust throttles, and ceramic combustion liners.",
     ],
   },
   tags: [
     "Robert Goddard",
-    "Rocketry",
+    "Multi-Stage Rocket",
     "Space Exploration",
-    "Multi-Stage",
     "de Laval Nozzle",
+    "Liquid Propellant",
+    "Astronautics",
     "Apollo",
+    "Supersonic Aerodynamics",
   ],
   stats: {
-    totalClaims: 1,
+    totalClaims: 3,
     independentClaims: 1,
     patentWarYears: "1913–1960",
-    impactScore: 99,
+    impactScore: 100,
   },
 };

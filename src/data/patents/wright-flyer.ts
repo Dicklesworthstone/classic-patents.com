@@ -272,4 +272,20 @@ The operator lies prone in a movable cradle 6 upon the lower aeroplane. By shift
       "Charlie Taylor built the 12-horsepower four-cylinder engine in six weeks in the bicycle shop. The patent is silent on it because the invention, as Toulmin framed it, was the control system.",
     ],
   },
+  tags: [
+    "Wright Brothers",
+    "Orville Wright",
+    "Wilbur Wright",
+    "Aviation",
+    "Aerodynamics",
+    "Wing Warping",
+    "Flight Control",
+    "3-Axis Control",
+  ],
+  stats: {
+    totalClaims: 4,
+    independentClaims: 2,
+    patentWarYears: "1909–1917",
+    impactScore: 100,
+  },
 };

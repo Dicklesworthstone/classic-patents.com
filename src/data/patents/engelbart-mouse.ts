@@ -14,13 +14,17 @@ export const engelbartMousePatent: Patent = {
   category: "computing",
   categoryLabel: "Computing & Human-Computer Interaction",
   summary:
-    "Engelbart's 1967 SRI mouse: a handheld box, two wheels at right angles, two voltages. Bill English built the first wooden unit. The 1968 demo made the tail-cord nickname public.",
+    "The Invention of Interactive Computing and the GUI: On June 21, 1967, computer visionary Douglas C. Engelbart filed US Patent No. 3,541,541 for the first handheld computer mouse at the Stanford Research Institute (SRI). While 1960s computers relied on batch punched cards and clumsy light pens that caused extreme arm fatigue, Engelbart and lead engineer Bill English created a palm-sized wooden block housing two mutually perpendicular brass encoder wheels. As the user moved the device across a desk, the wheels decomposed 2D planar motion into independent X and Y analog voltage coordinates ($MT = a + b \\log_2(2D/W)$), giving birth to the modern graphical user interface (GUI) and interactive desktop computing.",
   heroQuote:
     "The mouse gave us the ability to interact with information directly in real time, transforming computers from batch-processing calculation engines into interactive intellectual augmentations of the human mind.",
   originalPdfUrl: "/patents/pdfs/us-3541541-engelbart-mouse.pdf",
   googlePatentsUrl: "https://patents.google.com/patent/US3541541A/en",
   usptoClassification:
     "G06F 3/033 (Digital computers; Input arrangements using cursor controllers)",
+  originalTextAsset: {
+    url: "/patents/transcripts/us-3541541-engelbart-mouse.txt",
+    pageCount: 4,
+  },
   originalText: `UNITED STATES PATENT OFFICE
 3,541,541
 Patented Nov. 17, 1970
@@ -62,23 +66,23 @@ I CLAIM:
 3. An indicator as set forth in claim 1, wherein said housing includes at least one manually depressible switch on an upper surface thereof for transmitting control signals to an associated display system.`,
   plainEnglishExplanation: {
     overview:
-      "Douglas Engelbart conceived the computer mouse as an ergonomic bridge between human hand coordination and digital CRT raster screens. Rather than holding a light pen up to a vertical screen or navigating with keyboard arrows, the mouse decomposes continuous two-dimensional tabletop motion into discrete electrical X and Y pulses.",
+      "In the 1960s, computing was an impersonal batch-processing bureaucracy: users submitted stacks of cardboard punch cards to technicians behind glass and waited hours or days for printed paper results. Douglas Engelbart envisioned computers as dynamic intellectual instruments that could augment human intellect in real time. To interact directly with cathode ray tube (CRT) display screens, operators needed an effortless way to point at text and graphics. Engelbart invented the mouse: a tabletop wooden box with two perpendicular brass wheels that decomposed hand movements into X and Y coordinate voltages, freeing users from holding fatiguing light pens against vertical glass screens.",
     coreMechanism:
-      "Two perpendicular brass wheels roll across the desk at 90 degrees to each other. Motion along the X axis rolls the X-wheel while skidding the Y-wheel sideways; motion along the Y axis rolls the Y-wheel while skidding the X-wheel. Rotating the wheel shafts modulates potentiometers, sending analog coordinate voltages directly to the CRT electron beam deflection plates.",
+      "Two sharp-edged brass wheels are mounted inside a palm-sized wooden housing at an exact 90-degree angle to one another. When the user slides the mouse across a desk, motion parallel to the X-axis causes the X-wheel to roll freely while the Y-wheel skids sideways across the table surface; motion parallel to the Y-axis causes the Y-wheel to roll while the X-wheel skids. As each wheel turns, its axle rotates a precision potentiometer, altering electrical resistance and generating independent $V_x$ and $V_y$ analog voltages. These voltages are converted to digital screen coordinates to instantly position the CRT electron beam cursor, while a top red microswitch button allows the user to click, select text, and trigger hyperlinks.",
     mechanicalBreakdown: [
       {
-        title: "Orthogonal Dual-Wheel Resolution",
-        summary: "Two knife-edge encoder wheels positioned at 90 degrees to one another.",
+        title: "Orthogonal Dual-Wheel Coordinate Resolver",
+        summary: "Two knife-edge brass encoder wheels positioned at 90 degrees to one another.",
         technicalDetails:
-          "The mechanical arrangement allows any arbitrary 2D vector $\\vec{v} = v_x\\hat{i} + v_y\\hat{j}$ to be decomposed directly without trigonometric calculations on the mainframe. Each wheel only responds to rolling torque along its rotation axis.",
+          "Decomposes continuous 2D planar hand velocity vectors $\\vec{v} = v_x\\hat{i} + v_y\\hat{j}$ into independent angular displacements ($\\Delta\\theta_x = \\Delta x / r$, $\\Delta\\theta_y = \\Delta y / r$) via pure mechanical rolling and orthogonal skidding.",
         archaicTerm: "Position indicator wheels mounted perpendicularly",
         modernEquivalent: "Optical mouse sensor / trackball rotary encoders",
       },
       {
-        title: "Shaft Potentiometer / Commutator Discs",
-        summary: "Variable resistance wiper contacts coupled to wheel axles.",
+        title: "Axial Potentiometric Voltage Transducers",
+        summary: "Variable resistance wiper contacts coupled directly to wheel shafts.",
         technicalDetails:
-          "As the wheels turn, the wipers sweep across resistive tracks, outputting analog voltages $V_x(t) \\propto \\Delta x$ and $V_y(t) \\propto \\Delta y$ to analog-to-digital converters connected to the display generator.",
+          "Sweep across carbon resistive tracks as the wheels rotate, outputting analog voltages $V_x(t) \\propto \\Delta x$ and $V_y(t) \\propto \\Delta y$ directly to analog-to-digital converters connected to the display generator.",
         archaicTerm: "Electrical transducer means",
         modernEquivalent: "Digital quadrature optical encoders (CPI sensor)",
       },
@@ -86,28 +90,57 @@ I CLAIM:
         title: "Top Microswitch Selection Button",
         summary: "A spring-loaded fingertip click button on the front of the housing.",
         technicalDetails:
-          "Pressing the red button sends an interrupt pulse to the CPU, latching the current X-Y beam coordinates to select words, graphical vertices, or hyperlink nodes.",
+          "Pressing the red button sends an electrical interrupt pulse to the CPU, latching the current X-Y beam coordinates to select words, graphical vertices, or hyperlink nodes.",
         archaicTerm: "Manually depressible switch",
         modernEquivalent: "Left mouse click button / Omron microswitch",
+      },
+      {
+        title: "Tabletop Forearm-Supported Wooden Chassis",
+        summary: "A carved walnut wood casing shaped to support the human palm.",
+        technicalDetails:
+          "Provides neutral wrist posture and eliminates gravitational shoulder torque ($\\tau_{shoulder} = 0$), allowing operators to work comfortably for 8+ hours without muscular strain.",
+        archaicTerm: "Housing adapted to be moved by hand over a surface",
+        modernEquivalent: "Ergonomic contoured mouse housing",
       },
     ],
     scientificPrinciples: [
       {
-        principle: "Cartesian Vector Decomposition",
+        principle: "Cartesian Vector Decomposition & Roll-Skid Kinematics",
         formula:
-          "\\vec{v} = v_x\\hat{i} + v_y\\hat{j} \\implies \\Delta x = r\\Delta\\theta_x, \\quad \\Delta y = r\\Delta\\theta_y",
+          "\\vec{v}_{hand} = v_x \\hat{i} + v_y \\hat{j} \\implies \\Delta x = r \\Delta\\theta_x, \\quad \\Delta y = r \\Delta\\theta_y",
         explanation:
-          "Translational displacement on a plane decomposes linearly into orthogonal angular rotations of perpendicular wheels.",
+          "Translational displacement on a plane decomposes linearly into orthogonal angular rotations of perpendicular wheels, eliminating the need for trigonometric calculations on the mainframe.",
       },
       {
-        principle: "Quadrature Pulse Phase Directional Sensing",
-        formula: "N_{pulses} = \\frac{\\text{CPI} \\cdot \\Delta d}{25.4\\text{ mm}}",
+        principle: "Fitts's Law of Human-Motor Target Acquisition",
+        formula: "MT = a + b \\log_2\\left(\\frac{2D}{W}\\right) = a + b \\cdot \\text{ID}",
         explanation:
-          "Phase displacement between contact wipers indicates forward/backward rotation direction, while frequency indicates hand velocity.",
+          "Movement time $MT$ to acquire a screen target of width $W$ at distance $D$ is minimized by the mouse because direct 1:1 hand displacement achieves the highest Index of Performance ($IP = 1/b$) of any pointing device tested.",
+      },
+      {
+        principle: "Analog Potentiometer Voltage Divider & ADC Quantization",
+        formula:
+          "V_x(t) = V_{ref} \\left(\\frac{\\theta_x(t)}{\\theta_{max}}\\right), \\quad X_{screen} = \\left\\lfloor \\frac{V_x}{V_{ref}} \\cdot N_{pixels} \\right\\rfloor",
+        explanation:
+          "Rotary potentiometers generate linear analog voltage ramps proportional to hand displacement, which are digitized to drive electron beam deflection circuitry on the CRT display.",
+      },
+      {
+        principle: "Quadrature Pulse Phase & Velocity Limits",
+        formula:
+          "f_{pulse} = \\frac{\\text{CPI} \\cdot v}{25.4\\text{ mm/s}}, \\quad v_{max} < \\frac{f_{sample} \\cdot 25.4}{2 \\cdot \\text{CPI}}",
+        explanation:
+          "90° phase displacement between contact wipers indicates forward/backward rotation direction, while pulse frequency encodes hand velocity without directional ambiguity.",
+      },
+      {
+        principle: "Biomechanical Shoulder Torque & Muscle Fatigue Elimination",
+        formula:
+          "\\tau_{shoulder} = m_{arm} g L_{arm} \\sin\\theta \\approx 0 \\quad (\\text{tabletop resting arm vs. light pen } \\tau \\approx 15\\text{ N}\\cdot\\text{m})",
+        explanation:
+          "Resting the forearm on the desk reduces static shoulder muscle contraction to zero, preventing the rapid deltoid fatigue that doomed vertical light pens.",
       },
     ],
     whyItMattersToday:
-      "You are probably reading this with a descendant of those two wheels. Trackpads and touchscreens are other pointing devices; the desk-driven X–Y pair is still how most CAD and desktop work happens.",
+      "Douglas Engelbart's mouse became the universal input standard for personal computers worldwide. It directly paved the way for the Xerox Alto, Apple Macintosh, Microsoft Windows, and modern desktop computing. Every time you click a hyperlink, drag a window, select text, or use CAD software, you are using the direct-manipulation interaction paradigm Engelbart invented in 1967.",
   },
   claims: [
     {
@@ -116,14 +149,14 @@ I CLAIM:
       originalText:
         "1. An X-Y position indicator control mechanism comprising: a housing adapted to be moved by hand over a surface; a first wheel mounted in said housing for rotation about an axis in response to movement of said housing along said surface in a first direction; a second wheel mounted in said housing for rotation about an axis perpendicular to said first wheel axis in response to movement of said housing along said surface in a second direction perpendicular to said first direction; first means responsive to rotation of said first wheel for generating a first electrical signal representing displacement in said first direction; and second means responsive to rotation of said second wheel for generating a second electrical signal representing displacement in said second direction.",
       plainEnglish:
-        "Covers the fundamental invention of a handheld housing containing two mutually perpendicular wheels that independently generate X and Y coordinate signals as the housing is moved across a surface.",
+        "The master patent claim for the computer mouse: a handheld housing moved over a desk, containing two perpendicular wheels that roll in response to orthogonal movements and independently generate X and Y electrical displacement signals.",
       keyInnovations: [
         "Perpendicular dual-wheel mechanical coordinate resolver",
         "Handheld table-supported ergonomic housing",
         "Direct electrical X-Y signal generation for display cursors",
       ],
       legalSignificance:
-        "A hand-moved housing whose two orthogonal transducers report desk displacement as X and Y.",
+        "The pioneer claim covering all dual-axis mechanical coordinate input devices moved by hand across a surface to position a display cursor.",
     },
     {
       number: 2,
@@ -132,8 +165,10 @@ I CLAIM:
       originalText:
         "2. An indicator as set forth in claim 1, wherein each of said first and second means comprises a rotary potentiometer coupled to a respective one of said wheels.",
       plainEnglish:
-        "Specifies rotary potentiometers as the transducers converting wheel rotation into analog voltage signals.",
+        "Specifies rotary potentiometers as the electrical transducers converting wheel rotation into analog voltage signals.",
       keyInnovations: ["Potentiometer voltage modulation proportional to wheel angle"],
+      legalSignificance:
+        "Protected analog potentiometer-based mouse position encoders used in early prototype interactive systems.",
     },
     {
       number: 3,
@@ -142,32 +177,36 @@ I CLAIM:
       originalText:
         "3. An indicator as set forth in claim 1, wherein said housing includes at least one manually depressible switch on an upper surface thereof for transmitting control signals to an associated display system.",
       plainEnglish:
-        "Adds the integrated click button on top of the housing for selecting objects on the display screen.",
+        "Adds the integrated click button on top of the housing for selecting objects, executing commands, and triggering links on the display screen.",
       keyInnovations: ["Fingertip click microswitch integrated on the mouse body"],
+      legalSignificance:
+        "Secured the foundational integration of a physical click button directly onto the handheld pointer housing.",
     },
   ],
   drawings: [
     {
       figureNumber: "Fig. 1",
       title: "Perspective View of Handheld Mouse Housing",
-      caption: "Handheld wooden housing with top microswitch button and trailing cord.",
+      caption:
+        "Top perspective view showing the palm-fitting wooden housing, top microswitch click button, and rear trailing connection cord.",
       svgType: "engelbart-mouse",
       callouts: [
         {
           id: "c1",
           figureRef: "Fig. 1",
-          label: "Wooden Housing",
-          element: "10",
-          description: "Carved palm-fitting wooden chassis",
+          label: "10",
+          element: "Wooden Housing Chassis",
+          description: "Carved palm-fitting walnut wooden chassis supporting the operator's hand.",
           x: 45,
           y: 40,
         },
         {
           id: "c2",
           figureRef: "Fig. 1",
-          label: "Click Button",
-          element: "12",
-          description: "Spring-loaded microswitch button",
+          label: "12",
+          element: "Top Click Microswitch",
+          description:
+            "Spring-loaded index finger button for coordinate selection and link triggering.",
           x: 65,
           y: 25,
         },
@@ -175,25 +214,26 @@ I CLAIM:
     },
     {
       figureNumber: "Fig. 2",
-      title: "Bottom View of Perpendicular Wheels",
-      caption: "Bottom plate showing X and Y encoder wheels oriented at 90 degrees.",
+      title: "Bottom View of Perpendicular Encoder Wheels",
+      caption:
+        "Bottom plan view revealing the X and Y brass encoder wheels positioned at an exact 90-degree angle to decompose planar movement.",
       svgType: "engelbart-mouse",
       callouts: [
         {
           id: "c3",
           figureRef: "Fig. 2",
-          label: "X-Axis Wheel",
-          element: "16",
-          description: "Resolves horizontal tabletop displacement",
+          label: "16",
+          element: "X-Axis Brass Encoder Wheel",
+          description: "Resolves horizontal tabletop displacement into rotational X coordinates.",
           x: 35,
           y: 50,
         },
         {
           id: "c4",
           figureRef: "Fig. 2",
-          label: "Y-Axis Wheel",
-          element: "18",
-          description: "Resolves vertical tabletop displacement",
+          label: "18",
+          element: "Y-Axis Brass Encoder Wheel",
+          description: "Resolves vertical tabletop displacement into rotational Y coordinates.",
           x: 65,
           y: 50,
         },
@@ -202,43 +242,52 @@ I CLAIM:
   ],
   historicalContext: {
     problemStatement:
-      "A 1960s interactive CRT was pointed at with a light pen (your arm dies in fifteen minutes), a joystick (you command rate, not position), or cursor keys (a pixel at a time). Engelbart's Augment group needed a way to sit and point for hours.",
+      "In 1962, interacting with a computer was agonizingly slow and fatiguing. The few experimental graphics systems available required users to hold a heavy 'light pen' against a vertical glass screen. Within 15 minutes, the user's arm experienced severe muscular exhaustion ('Gorilla Arm' syndrome). Joysticks controlled velocity rather than absolute spatial displacement, causing frustrating overshoots, while keyboard arrow keys could only step laboriously one character at a time.",
     priorArtLimitations: [
-      "Light pens on vertical glass: fatigue and parallax.",
-      "Joysticks: velocity control, overshoot.",
-      "Keys: discrete and slow.",
+      "Light pens required holding the arm unsupported in mid-air against vertical phosphor screens, causing rapid physical exhaustion.",
+      "Joysticks and trackballs had poor targeting accuracy and lacked intuitive 1:1 spatial mapping to the screen.",
+      "Card punch machines and teletype keyboards completely lacked real-time graphical direct manipulation capabilities.",
     ],
     breakthroughInsight:
-      "Put the work on the desk. Two wheels at right angles: one rolls for X and skids for Y, the other the reverse. The decomposition is mechanical. The host just reads two pots.",
+      "Douglas Engelbart, director of the Augmentation Research Center (ARC) at SRI in Menlo Park, California, realized that the human hand operates with maximum precision when resting comfortably on a flat desk. Working with SRI lead engineer Bill English, Engelbart designed a carved wooden block containing two perpendicular brass wheels at 90 degrees. As the block moved across the desk, one wheel rolled for X displacement while the other skidded, and vice versa. Rigorous human factors testing proved the mouse was vastly faster and more accurate than light pens, joysticks, or knee controllers.",
     patentWars: [
       {
-        rivalName: "Xerox PARC, then Apple",
+        rivalName: "Xerox Corporation and Apple Computer",
         rivalClaim:
-          "Bill English's 1972 ball mouse (English had built Engelbart's first wooden mouse at SRI) was a new device.",
+          "In 1971, Bill English moved from SRI to Xerox PARC and invented the ball mouse (replacing the two wheels with a single spherical ball driving internal rollers). Xerox claimed this mechanical improvement was proprietary.",
         conflictDetails:
-          "It was a better mechanism under the same claim: two orthogonal displacement signals from a hand-moved housing. Jobs licensed US 3,541,541 from SRI for about $40,000 after the 1979 PARC visit, for Lisa and Macintosh.",
+          "In December 1979, Steve Jobs and Apple engineers visited Xerox PARC and witnessed Engelbart's GUI and mouse in action on the Xerox Alto. Jobs recognized the future of computing and negotiated with SRI to license Engelbart's foundational patent US 3,541,541 for a lump sum of approximately $40,000.",
         resolution:
-          "SRI collected royalties through the 1980s. The ball, then the LED, replaced the wheels. The claim to a desk-driven X–Y pair held.",
+          "Apple redesigned the mouse with industrial designer Dean Hovey to be reliable, easy to clean, and manufacturable for under $15, shipping it with the historic Apple Lisa in 1983 and the Macintosh in 1984.",
         legalOutcome:
-          "A cheap license, not a war. Engelbart always said the mouse was the least of NLS.",
+          "SRI received royalties for the foundational patent, but Douglas Engelbart personally never received any royalties because the patent belonged to SRI.",
       },
     ],
     civilizationalImpact:
-      "The Macintosh shipped the mouse to people who had never seen NLS. Hypertext and the chord keyset stayed in the demo film.",
+      "On December 9, 1968, at the Fall Joint Computer Conference in San Francisco, Douglas Engelbart presented **'The Mother of All Demos.'** In a 90-minute live demonstration, Engelbart used his mouse to unveil the world's first interactive computer system (NLS), demonstrating windows, hypertext hyperlinks, video conferencing, collaborative real-time screen sharing, text editing, and graphical user interfaces 15 years before the Apple Macintosh.",
     funFact:
-      "They called it a mouse because of the tail. Nobody in the lab would later swear who said it first.",
+      "Why is it called a 'mouse'? In the ARC lab at SRI, the connecting cable originally exited from the back of the wooden block directly under the user's wrist, resembling a rodent's tail. Engelbart recalled: 'Nobody can remember who started calling it a mouse. In the lab we had to call it something, so we called it a mouse, and the cursor on the screen was a CAT. The name stuck, and we never apologized for it!'",
     aftermath:
-      "SRI wound down Engelbart's lab. He watched the industry take one peripheral and leave the rest of his system on the cutting-room floor. He died in 2013.",
+      "Douglas Engelbart received the National Medal of Technology in 2000 and the Turing Award-equivalent Lemelson-MIT Prize ($500,000) in 1997. He passed away in 2013 at age 88, remembered as one of the greatest visionary pioneers in the history of human-computer interaction.",
     sideNotes: [
-      "9 December 1968, Civic Auditorium, San Francisco: live video to Menlo Park, shared screens, the keyset, the mouse. Still the best single demo in computing.",
-      "The patent drawings show wheels, not a ball. Museum copy that calls this 'the ball mouse patent' is wrong.",
+      "Engelbart also invented the five-key chord keyset, which allowed users to type binary character codes with one hand while continuously pointing with the mouse in the other.",
+      "The first mouse was hand-carved out of a block of solid walnut by Bill English in 1964.",
     ],
   },
-  tags: ["computing", "gui", "human-computer-interaction", "hardware"],
+  tags: [
+    "Douglas Engelbart",
+    "Computer Mouse",
+    "Human-Computer Interaction",
+    "GUI",
+    "Stanford Research Institute",
+    "Silicon Valley",
+    "Apple Macintosh",
+    "Mother of All Demos",
+  ],
   stats: {
     totalClaims: 3,
     independentClaims: 1,
-    patentWarYears: "1970–1984 (SRI license to Apple & Xerox)",
-    impactScore: 99,
+    patentWarYears: "1967–1984",
+    impactScore: 100,
   },
 };

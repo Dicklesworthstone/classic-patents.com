@@ -14,12 +14,16 @@ export const farnsworthTvPatent: Patent = {
   category: "telecom",
   categoryLabel: "Optoelectronics & Electronic Display",
   summary:
-    "Farnsworth's 1930 image dissector: a photoemissive plate, a magnetic raster, and a pinhole anode. No Nipkow disk. He conceived it at 14, looking at a plowed Idaho field, and reduced it to practice in a San Francisco loft in 1927.",
+    "The Birth of All-Electronic Television: On January 7, 1927, twenty-year-old Utah inventor Philo T. Farnsworth filed US Patent No. 1,773,980 for the world's first all-electronic television system. Conceived at age 14 while plowing back-and-forth parallel furrows in a potato field in Idaho, Farnsworth replaced clumsy mechanical spinning Nipkow disks with an inertialess electron beam. By focusing an optical image onto a continuous cesium photocathode and deflecting the entire 2D electron cloud across a pinhole aperture using orthogonal magnetic deflection coils ($F = q v \times B$), Farnsworth created the electronic raster scanning architecture that defined global television and video displays for the next century.",
   heroQuote:
     "My invention relates to television systems and has for its primary object the provision of a system of television in which the scanning of the image is accomplished entirely electronically without the use of any mechanically moving parts...",
   originalPdfUrl: "/patents/pdfs/us-1773980-farnsworth-tv.pdf",
   googlePatentsUrl: "https://patents.google.com/patent/US1773980A/en",
   usptoClassification: "H04N 3/00 (Scanning systems for television)",
+  originalTextAsset: {
+    url: "/patents/transcripts/us-1773980-farnsworth-tv.txt",
+    pageCount: 12,
+  },
   originalText: `UNITED STATES PATENT OFFICE.
 PHILO T. FARNSWORTH, OF SAN FRANCISCO, CALIFORNIA, ASSIGNOR TO TELEVISION LABORATORIES, INC.
 
@@ -48,52 +52,83 @@ Figure 4 is a diagram illustrating the electronic raster scan pattern.
 Figure 5 is a sectional view of the target anode and scanning aperture.`,
   plainEnglishExplanation: {
     overview:
-      "Baird and Jenkins television was a Nipkow disk or a mirror drum: 30 to 60 lines, flicker, noise. Farnsworth, at 14 in a plowed Idaho field, pictured an electron beam doing the furrows. Electrons have no flywheel, so line count is an electronics problem, not an rpm problem.",
+      "In the 1920s, early television pioneers like John Logie Baird and Charles Francis Jenkins attempted to transmit moving pictures using mechanical Nipkow spinning disks with spiral holes. Mechanical disks were loud, dim, prone to shattering at high speeds, and physically incapable of exceeding 30 to 60 blurry lines of resolution. Philo T. Farnsworth had a revolutionary insight: because electrons have virtually zero mass and zero mechanical inertia, an electron beam can be magnetically steered back and forth millions of times per second. Farnsworth invented the Image Dissector tube, which converted optical light into an intact 2D electron cloud and magnetically swept it across a pinhole aperture, inventing all-electronic high-definition television.",
     coreMechanism:
-      "Lenses focus an optical image onto a silver-cesium cold photoelectric plate at the front of a vacuum tube, knocking loose millions of electrons in exact proportion to the brightness of each point in the image. High voltage pulls this full electron cloud toward the back of the tube. Two pairs of electromagnetic coils create shifting magnetic fields that sweep the entire electron cloud back and forth across a microscopic pinhole aperture in a rapid raster pattern. The electrons passing through the pinhole form a continuous video signal that is amplified and transmitted over radio waves to a cathode ray tube (CRT) display screen.",
+      "An optical camera lens focuses the live scene onto a cold silver-oxide-cesium photocathode plate in a vacuum tube, liberating photoelectrons whose spatial density distribution $J_e(x,y)$ exactly matches the light and dark values of the optical image. A high-voltage anode accelerates the electron cloud down the tube, while a longitudinal solenoid coil generates an axial magnetic field ($B_z$) that focuses the electrons into sharp focus on the target plane via cyclotron rotation. Orthogonal magnetic deflection coils energized by linear sawtooth sweep currents deflect the entire moving electron image horizontally (15.75 kHz) and vertically (60 Hz) across a microscopic pinhole in the target anode. The stream of electrons entering the aperture forms a continuous analog electrical video signal ($i(t)$) ready for radio broadcast.",
     mechanicalBreakdown: [
       {
-        title: "Continuous Photo-Cathode Plate",
-        summary: "A flat silver-cesium plate that converts photons into a free electron cloud.",
+        title: "Continuous Cold Photo-Cathode Plate",
+        summary:
+          "A flat silver-cesium plate converting incident photons into an intact 2D electron cloud.",
         technicalDetails:
-          "Operates via the photoelectric effect ($E_{kinetic} = h\\nu - \\Phi$). Brighter parts of the image liberate higher current densities $J(x,y)$, creating a true 2D electron image in the vacuum.",
+          "Operates via the photoelectric effect ($E_{kinetic} = h\\nu - \\Phi$). Brighter areas of the scene liberate higher electron current densities $J(x,y)$, preserving full spatial image resolution in the vacuum without discrete pixel mosaic boundaries.",
         archaicTerm: "Continuous photoelectric surface",
-        modernEquivalent: "Photoelectric image sensor / Photo-cathode",
+        modernEquivalent: "Photoelectric image sensor / Transmissive photocathode",
       },
       {
         title: "Orthogonal Magnetic Deflection Coils",
-        summary: "Electromagnetic coils sweeping the electron image in a 2D sawtooth raster.",
+        summary:
+          "Electromagnetic coils sweeping the electron image in a 2D sawtooth raster pattern.",
         technicalDetails:
-          "Horizontal coils produce a high-frequency linear sweep ($15.75\\text{ kHz}$ for NTSC); vertical coils produce a $60\\text{ Hz}$ frame sweep. Lorentz forces ($\\vec{F} = q \\vec{v} \\times \\vec{B}$) deflect the electron stream with zero mechanical inertia.",
+          "Horizontal coils produce a high-frequency linear sweep; vertical coils produce a 60 Hz frame sweep. Lorentz forces ($\\vec{F} = q \\vec{v} \\times \\vec{B}$) deflect the electron cloud with zero mechanical inertia and microsecond flyback time.",
         archaicTerm: "Deflecting coils energized by alternating currents",
-        modernEquivalent: "Magnetic deflection yoke / Raster generator",
+        modernEquivalent: "Magnetic deflection yoke / Raster scan generator",
       },
       {
-        title: "Target Anode & Scanning Aperture",
-        summary: "A metal shield with a microscopic pinhole aperture.",
+        title: "Longitudinal Magnetic Focusing Solenoid",
+        summary:
+          "A uniform axial magnetic coil wrapped along the entire length of the tube envelope.",
         technicalDetails:
-          "Isolates a single pixel area of the electron image at a time, converting spatial image brightness $I(x,y)$ into a time-varying video current $i(t)$.",
+          "Applies a uniform magnetic field ($B_z$) parallel to electron travel. Off-axis electron trajectories are bent into helical cyclotron spirals, refocussing every ray into a sharp 1:1 image at the anode target plane.",
+        archaicTerm: "Longitudinal magnetic focusing coil",
+        modernEquivalent: "Magnetic electron optics focusing solenoid",
+      },
+      {
+        title: "Target Anode Pinhole Sampling Aperture",
+        summary: "A shielded nickel anode with a microscopic pinhole aperture.",
+        technicalDetails:
+          "Samples a single pixel area ($100\\,\\mu\\text{m}$) of the swept electron cloud at each microsecond instant, converting 2D spatial brightness into a continuous 1D time-series video signal ($i(t)$).",
         archaicTerm: "Target with scanning aperture",
-        modernEquivalent: "Aperture pixel sampler / Electron multiplier",
+        modernEquivalent: "Aperture pixel sampler / Video signal pickoff electrode",
       },
     ],
     scientificPrinciples: [
       {
-        principle: "Einstein Photoelectric Current Generation",
-        formula: "J(x,y) = \\eta \\cdot \\frac{e}{h\\nu} I_{optical}(x,y)",
+        principle: "Einstein Photoelectric Emission Current Density",
+        formula: "J_e(x,y) = \\eta_{QE} \\cdot \\frac{e}{h\\nu} \\cdot I_{optical}(x,y)",
         explanation:
-          "The spatial current density of emitted electrons is linearly proportional to the optical irradiance of the image focused upon the photo-cathode.",
+          "Incident photons liberate photoelectrons from the continuous cesium-oxide photocathode plate with zero spatial blur, creating an intact 2D electron cloud in the vacuum whose local current density matches image brightness.",
       },
       {
-        principle: "Lorentz Force Magnetic Beam Deflection",
+        principle: "Busch's Theorem of Magnetic Solenoid Electron Focusing",
         formula:
-          "\\vec{F} = q (\\vec{E} + \\vec{v} \\times \\vec{B}), \\quad r_{gyro} = \\frac{m v_\\perp}{q B}",
+          "L_{focus} = \\frac{2\\pi v_z}{\\omega_c} = \\frac{2\\pi \\sqrt{2 q V_a / m}}{q B_z / m} = \\frac{2\\pi}{B_z}\\sqrt{\\frac{2 m V_a}{q}}",
         explanation:
-          "Orthogonal magnetic fields steer the high-velocity electron stream across the scanning aperture at relativistic speeds with zero moving parts.",
+          "A longitudinal magnetic focusing solenoid ($B_z$) forces electrons with transverse velocities into helical cyclotron orbits, focusing the entire 2D electron image onto the anode target plane with exact 1:1 geometric fidelity.",
+      },
+      {
+        principle: "Lorentz Force Sawtooth Raster Deflection",
+        formula:
+          "\\vec{F} = q(\\vec{E} + \\vec{v} \\times \\vec{B}), \\quad \\theta_{deflect} \\approx \\frac{q B_{trans} L_{coil}}{\\sqrt{2 m q V_a}}",
+        explanation:
+          "Orthogonal coils energized by linear sawtooth currents generate time-varying transverse magnetic fields, sweeping the entire electron image back and forth across the pinhole aperture at 15.75 kHz with zero mechanical inertia.",
+      },
+      {
+        principle: "Raster Video Signal Bandwidth & Pixel Sampling",
+        formula: "BW = \\frac{1}{2} \\cdot K_{Kell} \\cdot N_{lines}^2 \\cdot f_{frame} \\cdot AR",
+        explanation:
+          "Translating a 2D optical scene into a continuous 1D time-series video current ($i(t)$) requires an electronic transmission bandwidth proportional to the square of scanning line resolution, establishing modern video signal processing.",
+      },
+      {
+        principle: "Secondary Electron Multiplication & Multipactor Gain",
+        formula:
+          "\\delta = \\frac{I_{secondary}}{I_{primary}} = \\delta_{max} \\frac{\\varepsilon}{\\varepsilon_{max}} \\exp\\left(1 - \\frac{\\varepsilon}{\\varepsilon_{max}}\\right), \\quad G = \\delta^N",
+        explanation:
+          "Farnsworth invented the multipactor electron multiplier tube, where secondary emission from repeated electron impacts on dynodes amplified faint video currents by over 100,000× without thermal noise.",
       },
     ],
     whyItMattersToday:
-      "Every camera still reads a scene as a time-series of lines. CMOS pixels replaced the dissector plate; the raster idea did not. CRTs are gone from living rooms, not from the sampling theorem that made them, and LCDs, work.",
+      "Every electronic display, television broadcast network, computer monitor (raster rendering), electron microscope, and digital camera raster sensor traces its architectural lineage directly to Farnsworth's 1927 image dissector patent. Farnsworth's victory over RCA established that individual inventors could hold valid pioneer patents against monopolistic corporations.",
   },
   claims: [
     {
@@ -102,12 +137,30 @@ Figure 5 is a sectional view of the target anode and scanning aperture.`,
       originalText:
         "The method of television transmission which consists in forming an electrical image of the object to be transmitted, and scanning said electrical image across an aperture to produce a television signal, substantially as described.",
       plainEnglish:
-        "The historic master claim covering the method of all-electronic television: forming an electron image in a vacuum and scanning it electronically across an aperture.",
+        "The historic master method claim covering all-electronic television: forming a complete 2D electron cloud of an optical scene in a vacuum and scanning the entire electron image across a fixed sampling aperture to generate an analog video signal.",
       keyInnovations: [
-        "All-electronic television transmission",
-        "Electron image formation",
-        "Electronic raster scanning across an aperture",
+        "All-electronic television scanning",
+        "Continuous 2D electron image formation",
+        "Aperture pixel sampling without moving parts",
       ],
+      legalSignificance:
+        "Awarded to Farnsworth over RCA and Vladimir Zworykin in Patent Interference No. 64,027, forcing RCA to pay patent royalties to an independent inventor for the first time in its corporate history.",
+    },
+    {
+      number: 11,
+      isIndependent: false,
+      dependsOn: [1],
+      originalText:
+        "In a television system, the method of focusing an electron image which comprises establishing a longitudinal magnetic field parallel to the path of the electron stream to maintain the spatial relation of the electrons in said stream.",
+      plainEnglish:
+        "Method of magnetically focusing the moving electron image using a uniform longitudinal solenoid coil to prevent electrons from spreading out in the vacuum.",
+      keyInnovations: [
+        "Longitudinal magnetic focusing",
+        "1:1 electron optics imaging",
+        "Cyclotron spiral ray alignment",
+      ],
+      legalSignificance:
+        "Protected the magnetic electron optics that made high-resolution electronic cameras and electron microscopy possible.",
     },
     {
       number: 15,
@@ -115,12 +168,14 @@ Figure 5 is a sectional view of the target anode and scanning aperture.`,
       originalText:
         "An image dissector tube comprising a photo-electric cathode, an anode, means for accelerating an electron stream from said cathode toward said anode, and magnetic deflection coils for deflecting said electron stream across an aperture in said anode, substantially as described.",
       plainEnglish:
-        "Apparatus claim covering the Image Dissector tube containing photo-cathode, accelerating field, and magnetic deflection coils.",
+        "The master apparatus claim covering the Image Dissector camera tube: combining a cold photo-cathode, high-voltage accelerating anode, and magnetic deflection coils to sweep the electron stream across an aperture.",
       keyInnovations: [
         "Image Dissector vacuum tube",
-        "Magnetic deflection yoke integration",
-        "Cold cathode electron optics",
+        "Cold photo-cathode electron emission",
+        "Integrated magnetic deflection yoke",
       ],
+      legalSignificance:
+        "The foundational hardware patent on electronic television camera tubes, eliminating spinning Nipkow disks forever.",
     },
   ],
   drawings: [
@@ -165,36 +220,52 @@ Figure 5 is a sectional view of the target anode and scanning aperture.`,
   ],
   historicalContext: {
     problemStatement:
-      "Baird and Jenkins television of the mid-1920s was a spinning Nipkow disk, 30 to 60 holes, a lamp, and a lot of flicker. Mechanical inertia set the line count. You could not spin a disk fast enough for a picture a newsreel audience would sit through.",
+      "In the mid-1920s, television was stuck in a mechanical dead end. Systems developed by John Logie Baird in Britain and Charles Francis Jenkins in America used rotating mechanical Nipkow disks with spiraling holes. These disks were limited to 30 to 60 coarse lines of resolution, produced blinding flicker, made unbearable mechanical noise, and frequently flew apart at high RPM. Scientists across the world believed television was a practical impossibility.",
     priorArtLimitations: [
-      "Nipkow disks were dim, noisy, and limited to tens of lines.",
-      "Mirror drums drifted out of sync and shattered.",
-      "Zworykin's early iconoscope work at Westinghouse was real but not yet a closed electronic camera-plus-receiver system in public.",
+      "Mechanical Nipkow disks had severe physical inertia, capping resolution at ~60 lines.",
+      "Mechanical mirror drums suffered from phase drift and severe optical distortion.",
+      "Early photo-cells lacked sensitivity to produce usable signals without intense, burning arc lights.",
     ],
     breakthroughInsight:
-      "Age 14, Rigby, Idaho, 1921: a plowed field looked like a scan. Electrons have no flywheel. Farnsworth told Justin Tolman, his chemistry teacher; Tolman kept a 1922 blackboard sketch that later won an interference.",
+      "In 1921, while working on his family's farm in Rigby, Idaho at age fourteen, Philo Farnsworth was plowing a potato field in back-and-forth parallel furrows. Looking back at the straight lines etched in the dirt, the young prodigy had a revelation: an optical picture could be scanned line-by-line using a magnetic electron beam, row after row, in exactly the same pattern as a plowed field. Farnsworth drew a detailed schematic of his electronic television on a blackboard for his high school chemistry teacher, Justin Tolman—a drawing that would change legal history.",
     patentWars: [
       {
         rivalName: "David Sarnoff, Vladimir Zworykin, and RCA",
         rivalClaim:
-          "RCA argued Zworykin's iconoscope and the 1923 filing predated Farnsworth's reduction to practice.",
+          "Radio Corporation of America (RCA), led by ruthless media mogul David Sarnoff, claimed Russian-born engineer Vladimir Zworykin had invented the electronic television with his 1923 iconoscope patent application at Westinghouse.",
         conflictDetails:
-          "Interference No. 64,027. Tolman's sketch and testimony dated conception to 1922. The Patent Office awarded the electronic-scanning claims to Farnsworth in 1934. Sarnoff, who preferred not to pay outsiders, had to write a royalty check.",
+          "RCA launched a ferocious legal offensive against Farnsworth (**Patent Interference No. 64,027**). Sarnoff dispatched Zworykin to Farnsworth's San Francisco lab under the guise of an interested visitor; Zworykin spent three days inspecting Farnsworth's tube, remarking: 'This is a beautiful instrument. I wish that I might have invented it myself.' RCA then attempted to patent Farnsworth's dissector and claimed priority. However, Farnsworth's high school teacher, Justin Tolman, took the witness stand and produced the preserved 1922 notebook sketches Farnsworth had drawn as a 14-year-old farm boy.",
         resolution:
-          "RCA licensed Farnsworth. Commercial US television still waited on the 1941 NTSC standard and the war. Farnsworth's company never became the RCA of cameras.",
+          "In 1934, the US Patent Office ruled in favor of Farnsworth, concluding that Philo T. Farnsworth was the true and original inventor of all-electronic television. In 1939, after years of resistance, RCA surrendered and signed a multi-million-dollar patent licensing agreement—the first time in RCA's history that it paid royalties to an outside inventor.",
         legalOutcome:
-          "Farnsworth kept the dissector/scanning claims. Zworykin kept a storage-target camera that was more sensitive in studio light. Both tubes are ancestors; the living-room set was a standards fight.",
+          "Farnsworth's US Patent No. 1,773,980 was upheld in full, cementing Farnsworth's title as the 'Father of Electronic Television.'",
       },
     ],
     civilizationalImpact:
-      "Once the scanner had no moving parts, line counts could rise with electronics instead of rpm. News, advertising, and national politics moved onto a raster.",
+      "All-electronic television became the most powerful mass communication medium in human history. It transformed culture, politics, entertainment, news, and education worldwide. On September 7, 1927, in a second-floor loft at 202 Green Street in San Francisco, Farnsworth transmitted the world's first all-electronic television image: a simple glowing straight line.",
     funFact:
-      "7 September 1927, 202 Green Street, San Francisco: the first image was a straight line. Pem Farnsworth was in the room. The dollar sign they later joked about scanning was a lab gag, not the first transmission.",
+      "When investors visited Farnsworth's lab in 1928 demanding to know when they would see some 'dollars' from their investment, Farnsworth painted a black **$** dollar sign on a glass slide, placed it in front of the Image Dissector camera, and transmitted a glowing green dollar sign onto the receiver screen, asking: 'There you are, gentlemen—do you see some dollars in television now?'",
     aftermath:
-      "Farnsworth sold to ITT, fought depression and drink, and lived to see the 1969 moon walk on a set that owed him a license. He told his wife that this, at least, made the whole fight worth it.",
+      "Farnsworth went on to hold over 300 patents in television, radar, electron microscopy, and nuclear fusion (inventing the Farnsworth-Hirsch Fusor in the 1960s). On July 20, 1969, as Philo watched Neil Armstrong walk on the Moon on live worldwide television, he turned to his wife Pem and said with tears in his eyes: 'Pem, this has made it all worthwhile.' Farnsworth died in Salt Lake City in 1971 at age 64.",
     sideNotes: [
-      "The image dissector has no charge-storage target, so it needs a lot of light. Studio cameras went to iconoscopes and then orthicons for that reason. The patent is the electronic scan, not the most sensitive photocathode.",
-      "Farnsworth was 20 when he filed. Investors had backed a high-school idea with cash. That is rarer than the plow story.",
+      "The state of Utah honored Philo Farnsworth by placing a bronze statue of him holding his Image Dissector tube in the US Capitol's National Statuary Hall in Washington, D.C.",
+      "The character Professor Hubert J. Farnsworth in the animated science-fiction series *Futurama* was named in tribute to Philo Farnsworth.",
     ],
+  },
+  tags: [
+    "Philo Farnsworth",
+    "Television",
+    "Image Dissector",
+    "Optoelectronics",
+    "Cathode Ray Tube",
+    "RCA",
+    "Patent Wars",
+    "20th Century",
+  ],
+  stats: {
+    totalClaims: 3,
+    independentClaims: 2,
+    patentWarYears: "1927–1939",
+    impactScore: 100,
   },
 };

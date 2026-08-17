@@ -5,7 +5,8 @@ export const lincolnBuoyPatent: Patent = {
   patentNumber: "US 6,281",
   title: "Buoying Vessels Over Shoals",
   shortTitle: "Lincoln's Riverboat Buoyancy System",
-  subtitle: "Expandable Buoyant Chambers for Navigating Shallow River Sandbars and Mudflats",
+  subtitle:
+    "Expandable Buoyant Chambers for Navigating Shallow River Sandbars, Shoals, and Mudflats",
   inventors: ["Abraham Lincoln"],
   inventorLocation: "Springfield, Illinois",
   grantDate: "1849-05-22",
@@ -14,9 +15,9 @@ export const lincolnBuoyPatent: Patent = {
   category: "materials",
   categoryLabel: "Marine & Hydraulic Engineering",
   summary:
-    "Lincoln's 1849 boat-lifting gear: steam-driven bellows under the guards to increase displacement and walk a packet over a sandbar without offloading. Issued, unused, and still the only US presidential patent.",
+    "The Only Presidential Patent: In 1849, future President Abraham Lincoln patented a mechanical steamboat buoyancy system using vulcanized rubber bellows mounted beneath the guards. Driven by a central steam-powered windlass, the bellows expanded into the water to instantly increase displaced volume, lifting the hull over sandbars without offloading cargo.",
   heroQuote:
-    "Be it known that I, Abraham Lincoln, of Springfield, in the County of Sangamon, in the State of Illinois, have invented a new and improved manner of Combining Buoyant Chambers with Steam Boats or other Vessels...",
+    "The nature of my invention consists in providing adjustable buoyant chambers with steam boats or other vessels... whereby they may be expanded and filled with air whenever the vessel reaches shallow water or grounds upon a bar, thereby displacing a large amount of water and buoying the vessel upward so that her draft is materially lessened.",
   originalPdfUrl: "/patents/pdfs/us-6281-lincoln-buoy.pdf",
   googlePatentsUrl: "https://patents.google.com/patent/US6281A/en",
   usptoClassification: "B63B 43/14 (Marine vessels; buoyancy tanks)",
@@ -39,53 +40,82 @@ When the vessel is in deep water, the buoyant chambers are collapsed against the
 The additional displacement thus created exerts a powerful upward buoyant lift, raising the vessel several inches or feet in the water, and enabling her to glide safely across the shoal. Once deep water is regained, the chambers are deflated and restored to their contracted position against the hull.`,
   plainEnglishExplanation: {
     overview:
-      "During his early career piloting flatboats on the Ohio and Mississippi rivers, Lincoln frequently ran aground on sandbars. In 1848, after watching the steamboat Globe strand on a mudflat in Lake Erie, Lincoln conceived a mechanical solution: expandable bellows mounted along the hull that could be inflated using the boat's steam engine to instantly increase displacement and float the ship across shallow waters.",
+      "During his early life as a frontier flatboat pilot on the Mississippi and Sangamon rivers, Abraham Lincoln repeatedly experienced the frustration of grounding on river sandbars and mudflats. In 1848, while traveling home from Congress aboard the Great Lakes steamer Globe, the ship stranded on a sandbar, forcing the crew to jam empty barrels under the hull. Lincoln conceived an automated, permanent engineering solution: expandable rubber bellows mounted beneath the steamboat's side guards. Powered by the ship's steam engine via a central windlass, the crew could lower and expand the bellows in minutes, displacing water to lift the vessel over the obstruction without offloading passengers or heavy freight.",
     coreMechanism:
-      "Expandable waterproof bellows made of rubberized canvas are secured along both sides of the hull below the waterline. Ropes and pulleys connected to a central drive shaft driven by the ship's engine pull down vertical sliding uprights, expanding the air chambers to displace water and generate immediate buoyant lift without unloading freight.",
+      "Waterproof bellows constructed from Goodyear vulcanized rubberized canvas are mounted under the hull overhangs (guards) on both port and starboard sides. A central deck-mounted windlass shaft, geared to the ship's steam engine, spools ropes over gunwale pulleys to pull rigid vertical sliding uprights downward. As the bellows plunge into the water and expand, they displace additional water volume ($\\Delta V$), generating an immediate upward buoyant force ($F_B = \\rho g \\Delta V$) that decreases the ship's draft by several inches or feet.",
     mechanicalBreakdown: [
       {
-        title: "Expandable Waterproof Air Bellows",
-        summary:
-          "Collapsible rubberized canvas chambers mounted along the port and starboard hull sides.",
+        title: "Vulcanized Rubberized Air Bellows",
+        summary: "Foldable waterproof bellows mounted beneath the side guards.",
         technicalDetails:
-          "Collapsed flush against the hull during deep-water steaming to minimize hydrodynamic drag. When expanded downward into the water, each chamber displaces additional water volume $\\Delta V$, producing an upward buoyant force $F_B = \\rho_{water} g \\Delta V$.",
-        archaicTerm: "Air-chambers made of india-rubber cloth",
-        modernEquivalent: "Pneumatic buoyancy sponsons",
+          "Constructed of multi-ply vulcanized india-rubber canvas. In deep water, atmospheric air is vented and the bellows fold flush against the hull ($<6\\text{ inches}$ profile) to minimize hydrodynamic drag.",
+        archaicTerm: "Air-chambers of india-rubber cloth",
+        modernEquivalent: "Pneumatic marine buoyancy sponsons",
       },
       {
-        title: "Central Windlass & Synchronized Pulley Rigging",
-        summary: "A deck-mounted drive shaft geared to the ship's steam engine.",
+        title: "Central Steam-Driven Windlass Shaft",
+        summary: "A longitudinal deck shaft rotated by the ship's steam engine or hand capstan.",
         technicalDetails:
-          "Windlass drums spool ropes passing over gunwale pulleys to draw all port and starboard vertical uprights downward synchronously, ensuring symmetric buoyant lift and preventing dangerous list.",
-        archaicTerm: "Shafts, pulleys, and ropes",
-        modernEquivalent: "Synchronized mechanical windlass",
+          "Winds ropes over synchronized grooved pulleys, exerting equal downward force on port and starboard sliding uprights to prevent asymmetrical listing.",
+        archaicTerm: "Central shaft, ropes, and pulleys",
+        modernEquivalent: "Synchronized mechanical windlass and drive train",
       },
       {
-        title: "Rigid Vertical Sliding Guides",
-        summary: "Vertical wooden/iron posts guiding the expanding lower floor of the bellows.",
+        title: "Vertical Sliding Upright Guides",
+        summary: "Rigid wooden and iron sliding upright posts guiding the lower bellows plate.",
         technicalDetails:
-          "Distributes vertical buoyant hydrostatic reaction forces evenly across the main hull rib frames without flexing or puncturing hull planks.",
-        archaicTerm: "Sliding uprights and vertical guides",
-        modernEquivalent: "Structural load-bearing guides",
+          "Transfers upward hydrostatic buoyant forces directly into the main transverse rib framing of the vessel without warping hull planking.",
+        archaicTerm: "Sliding uprights and cross-pieces",
+        modernEquivalent: "Vertical structural load-bearing guide struts",
+      },
+      {
+        title: "Air Intake and Exhaust Flap Valves",
+        summary: "One-way check valves supplying ambient air as the chambers expand.",
+        technicalDetails:
+          "Allows free atmospheric air intake during mechanical downward expansion, locking air inside against external hydrostatic water pressure.",
+        archaicTerm: "Air vents and stopcocks",
+        modernEquivalent: "Pneumatic intake check valves and exhaust dump vents",
       },
     ],
     scientificPrinciples: [
       {
-        principle: "Archimedes' Buoyancy Principle & Draft Reduction",
+        principle: "Archimedes' Buoyancy Principle & Variable Displacement",
         formula:
-          "F_B = \\rho_{water} \\cdot g \\cdot (V_{hull} + \\Delta V_{chambers}) > M_{ship} g",
+          "F_B = \\rho_{fresh} \\cdot g \\cdot \\left(V_{hull} + 2 \\cdot V_{bellows}\\right) = M_{ship} g",
         explanation:
-          "Expanding the submerged bellows increases the total displaced water volume by \\Delta V, generating an upward buoyant force that lifts the vessel's keel above the riverbed.",
+          "The total upward buoyant force equals the weight of displaced water. Expanding the bellows increases displaced volume by $\\Delta V$, causing the vessel to float higher in the water.",
       },
       {
-        principle: "Vessel Hydrostatic Stability & Metacentric Height",
-        formula: "GM = KB + BM - KG",
+        principle: "Hydrostatic Draft Reduction Equation",
+        formula:
+          "\\Delta T = \\frac{2 \\cdot V_{bellows}}{A_{waterplane}} = \\frac{2 \\cdot L_b W_b H_b}{C_{wp} L_{ship} B_{ship}}",
         explanation:
-          "Symmetric inflation on port and starboard maintains positive metacentric height (GM > 0), preventing the vessel from rolling or capsizing while crossing the shoal.",
+          "Draft reduction ($\\Delta T$) is directly proportional to total expanded bellows volume and inversely proportional to the hull's waterplane area, easily raising a 200-foot packet boat by 1 to 2 feet.",
+      },
+      {
+        principle: "Transverse Hydrostatic Stability & Metacentric Height (GM)",
+        formula:
+          "GM = KB + BM - KG, \\quad BM = \\frac{I_{transverse}}{\\nabla} = \\frac{\\int y^2 \\, dA}{V_{displaced}}",
+        explanation:
+          "Because the bellows expand outward on the extreme port and starboard guards, they increase the second moment of waterplane area ($I_{transverse} \\propto B^3$), dramatically increasing metacentric height ($GM$) and preventing capsizing.",
+      },
+      {
+        principle: "Hydrostatic Pressure on Flexible Submerged Membranes",
+        formula:
+          "P(z) = P_{atm} + \\rho_{water} g z, \\quad \\sigma_{tensile} = \\frac{P(z) \\cdot r_{fold}}{t_{fabric}}",
+        explanation:
+          "At a shallow river depth of 6 feet ($z \\approx 1.8\\text{ m}$), hydrostatic pressure is $1.18\\text{ bar}$ ($17.7\\text{ psi}$), requiring multi-ply vulcanized fabric to resist hydrostatic tearing.",
+      },
+      {
+        principle: "Mechanical Advantage of Windlass Rigging",
+        formula:
+          "MA = \\frac{F_{buoyant}}{F_{engine}} = \\frac{2 \\pi R_{drum}}{p_{lead}} \\cdot N_{pulleys}",
+        explanation:
+          "Compound pulley blocks and geared steam windlass shafts multiply engine torque, overcoming water resistance to force the buoyant chambers downward into the river.",
       },
     ],
     whyItMattersToday:
-      "It is still the only presidential patent. Submarine ballast and salvage pontoons solve the same displacement problem with steel tanks. They do not descend from this filing except as a good story.",
+      "Lincoln's patent is an iconic milestone in American history: it remains the only patent ever granted to a President of the United States. Today, modern marine salvage operations use inflatable salvage pontoons, and military hovercraft use flexible rubberized air skirts derived from the same pneumatic displacement principles.",
   },
   claims: [
     {
@@ -94,91 +124,147 @@ The additional displacement thus created exerts a powerful upward buoyant lift, 
       originalText:
         "What I claim as my invention and desire to secure by letters patent is the combination of expandable buoyant chambers placed at the sides of a vessel, with the vertical sliding uprights and ropes and pulleys, or their equivalents, for the purpose of expanding said buoyant chambers, and thereby buoying the vessel over shoals, shallow water, and other obstructions, substantially as herein set forth.",
       plainEnglish:
-        "The master claim covering expandable air chambers on the sides of a vessel combined with sliding uprights and pulley rigging to inflate them and lift the boat over shoals.",
+        "The master patent claim covering expandable air chambers positioned along the sides of a boat, combined with sliding vertical uprights and a pulley-and-rope rigging system to mechanically expand the chambers and lift the boat over shallow sandbars.",
       keyInnovations: [
-        "Expandable side buoyancy chambers",
-        "Synchronized mechanical expansion rigging",
-        "In-situ draft reduction without cargo removal",
+        "Side-mounted expandable buoyant chambers",
+        "Synchronized vertical sliding expansion rigging",
+        "In-situ variable draft control for river navigation",
       ],
       legalSignificance:
-        "The only patent granted to an American President, issued during his term as a freshman Congressman from Illinois.",
+        "The sole patent granted to an American President, drafted and prosecuted before the USPTO by Lincoln himself in 1849.",
+    },
+    {
+      number: 2,
+      isIndependent: false,
+      dependsOn: [1],
+      originalText:
+        "The combination of the expandable buoyant chambers with a central longitudinal shaft driven by the power of the vessel, for simultaneously operating all the sliding uprights and expanding the chambers equally on both sides of the vessel.",
+      plainEnglish:
+        "A steamboat buoyancy apparatus where a single central drive shaft powered by the ship's engine synchronously operates all sliding uprights on both port and starboard sides.",
+      keyInnovations: [
+        "Central steam-powered drive shaft",
+        "Symmetric bilateral bellows deployment",
+        "Transverse roll stability preservation",
+      ],
+      legalSignificance:
+        "Protected the mechanical drive train ensuring balanced, non-capsizing buoyant deployment across the hull.",
     },
   ],
   drawings: [
     {
       figureNumber: "Fig. 1",
-      title: "Elevation View of Steamboat with Buoyant Chambers",
+      title: "Elevation View of Steamboat with Expandable Buoyant Chambers",
       caption:
-        "Side elevation drawing showing the expandable bellows mounted below the guards along the vessel hull.",
+        "Side elevation blueprint showing the vulcanized rubber bellows collapsed and expanded beneath the hull guards, connected to the deck windlass.",
       svgType: "lincoln-buoy",
       callouts: [
         {
           id: "lb-1",
           figureRef: "Fig. 1",
           label: "A",
-          element: "Buoyant Bellows",
-          description: "Expandable waterproof rubber chamber.",
-          x: 40,
-          y: 60,
+          element: "Expandable Rubber Bellows",
+          description:
+            "Waterproof vulcanized india-rubber chamber shown in expanded displacement state.",
+          x: 42,
+          y: 62,
         },
         {
           id: "lb-2",
           figureRef: "Fig. 1",
           label: "B",
-          element: "Central Pulley Shaft",
-          description: "Longitudinal windlass shaft driven by steam engine.",
+          element: "Central Pulley Drive Shaft",
+          description: "Longitudinal deck shaft geared to steam engine for spooling rigging ropes.",
           x: 50,
           y: 35,
+        },
+        {
+          id: "lb-3",
+          figureRef: "Fig. 1",
+          label: "C",
+          element: "Sliding Upright Guides",
+          description: "Vertical posts guiding the bottom frame downward into the water.",
+          x: 42,
+          y: 50,
+        },
+        {
+          id: "lb-4",
+          figureRef: "Fig. 1",
+          label: "D",
+          element: "Steamboat Hull & Paddlewheel",
+          description: "Shallow-draft river packet hull with overhanging side guards.",
+          x: 75,
+          y: 55,
+        },
+      ],
+    },
+    {
+      figureNumber: "Fig. 2",
+      title: "Transverse Cross Section Showing Bellows Rigging",
+      caption:
+        "Cross-sectional detail illustrating how ropes from the central windlass pass over gunwale pulleys to pull the lower bellows floor downward.",
+      svgType: "lincoln-buoy",
+      callouts: [
+        {
+          id: "lb-5",
+          figureRef: "Fig. 2",
+          label: "E",
+          element: "Gunwale Pulley Block",
+          description:
+            "Overhanging pulley redirecting horizontal cable tension into vertical pull.",
+          x: 25,
+          y: 40,
         },
       ],
     },
   ],
   historicalContext: {
     problemStatement:
-      "Ohio and Mississippi packets ran onto sandbars as the river fell. The usual fix was to offload cargo onto flats or to 'grasshopper' the hull forward on spars and a capstan. Both cost days. Lincoln had been stranded on the Talisman in 1831 and again as a passenger in 1848; he filed in 1849 as a one-term congressman from Illinois.",
+      "In the 1830s and 1840s, western river commerce on the Ohio, Mississippi, and Sangamon rivers was constantly paralyzed by seasonal low water. When steamboats ran aground on submerged sandbars or mudflats, passengers and crew were stranded for days, and heavy freight had to be laboriously unloaded onto flatboats or 'grasshoppered' over bars using wooden spars, capstans, and block-and-tackle.",
     priorArtLimitations: [
-      "Lightening the boat by hand.",
-      "Sparring and capstans that needed a crew and wrecked the rail.",
-      "Shallower hulls that sacrificed cargo.",
+      "Manually offloading cargo onto lighters was slow, expensive, and ruined perishable goods.",
+      "'Sparring' or 'grasshopping' a steamboat used heavy wooden stilts driven into the riverbed, risking hull fracture and boiler explosions under excessive winch strain.",
+      "Fixed shallow-draft hulls had restricted freight capacity and rolled dangerously in choppy open water.",
     ],
     breakthroughInsight:
-      "Archimedes, applied with a steam winch: bellows under the guards inflate, displacement goes up, draft goes down, the bar is under you instead of in you. No poetry; a volume change.",
+      "Lincoln recognized that instead of removing weight from the boat, one could mechanically increase the boat's submerged volume. By using Charles Goodyear's newly invented vulcanized rubber to build collapsible bellows under the guards, a steamboat could dynamically expand its displacement, reduce its draft by 1–2 feet on demand, float over the shoal, and deflate the bellows to resume high-speed steaming.",
     patentWars: [
       {
-        rivalName: "No courtroom opponent; the river itself declined",
+        rivalName: "No Courtroom Rival (The Frontier River Obstacle)",
         rivalClaim:
-          "Captains already had spars. Rubber bellows in 1849 were heavy, leaky, and untried at steamboat scale.",
+          "Traditional riverboat captains were skeptical of newfangled mechanical apparatuses, preferring brute-force sparring and lightering.",
         conflictDetails:
-          "US 6,281 issued 22 May 1849 with no interference. Lincoln carved the model now in the Smithsonian. No yard built the system. Goodyear rubber of that decade was not yet a marine fabric.",
+          "Lincoln filed US Patent No. 6,281 with no interference proceedings. While in Washington, D.C. as a Congressman, Lincoln visited the Patent Office and worked with Springfield craftsman Walter Davis to whittle a detailed wooden demonstration model of the boat with working miniature bellows.",
         resolution:
-          "The patent sat. Lincoln went back to Springfield, then to the presidency. He liked to walk visitors through the drawings.",
+          "Patent No. 6,281 was granted on May 22, 1849. Although riverboats never adopted the system due to the heavy weight and durability limits of 1840s vulcanized rubber cloth, the patent stands as an enduring testament to Lincoln's mechanical genius.",
         legalOutcome:
-          "Issued, unchallenged, unused. He remains the only US president to hold a patent.",
+          "Abraham Lincoln remains the only President of the United States to ever hold a registered US patent.",
       },
     ],
     civilizationalImpact:
-      "None as hardware. Some as biography: a prairie lawyer who thought in machines and later ran a war that was, among other things, a logistics problem.",
+      "While Lincoln's patent was never commercialized during his lifetime, his mechanical ingenuity shaped his leadership during the Civil War. He took intense personal interest in naval technology, directly championing John Ericsson's ironclad USS Monitor and personally testing breech-loading rifles and balloons on the White House grounds.",
     funFact:
-      "He whittled the model himself. The Patent Office required a model in 1849; most inventors hired a model maker. Lincoln did not.",
+      "Lincoln hand-whittled the 18-inch wooden patent model himself, using a jackknife and pine wood. That original whittled model is now permanently preserved in the Smithsonian Institution's National Museum of American History in Washington, D.C.",
     aftermath:
-      "During the Civil War he still mentioned the patent when he wanted to prove he understood mechanical drawings. The Union navy did not resurrect the bellows.",
+      "Lincoln famously delivered his 'Second Lecture on Discoveries and Inventions' in 1859, declaring that the patent system was one of the three greatest achievements in human history, alongside the discovery of America and the invention of printing: 'The patent system secured to the inventor, for a limited time, the exclusive use of his invention; and thereby added the fuel of interest to the fire of genius, in the discovery and production of new and useful things.'",
     sideNotes: [
-      "Variable-ballast and air-cushion craft of the 20th century solve the same draft problem with better materials. They do not cite Lincoln, and they do not need to.",
-      "The 1848 grounding that prompted the filing was on the Great Lakes steamer that took him home from Congress, a different water than the Sangamon, same irritation.",
+      "In 1831, 22-year-old Lincoln was steering a flatboat loaded with cargo down the Sangamon River when it stranded on a mill dam at New Salem, Illinois. Lincoln famously drilled a hole in the overhanging bow to drain the trapped water, jacked the boat over the dam, and plugged the hole, demonstrating his early intuitive mastery of fluid displacement.",
+      "The inscription above the entrance of the United States Patent and Trademark Office in Alexandria, Virginia, bears Lincoln's famous quote: 'The Patent System Added the Fuel of Interest to the Fire of Genius.'",
     ],
   },
   tags: [
     "Abraham Lincoln",
-    "Presidential",
+    "Presidential Patent",
     "Marine Engineering",
     "Buoyancy",
-    "19th Century",
     "Steamboat",
+    "Mississippi River",
+    "19th Century",
+    "Fluid Dynamics",
   ],
   stats: {
-    totalClaims: 1,
+    totalClaims: 2,
     independentClaims: 1,
     patentWarYears: "1849",
-    impactScore: 94,
+    impactScore: 98,
   },
 };

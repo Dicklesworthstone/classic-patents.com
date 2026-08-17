@@ -14,12 +14,16 @@ export const teslaMotorPatent: Patent = {
   category: "electricity",
   categoryLabel: "Electromagnetism & Power Generation",
   summary:
-    "Tesla's 1888 method for turning a motor with two or more alternating currents that differ in phase. Stationary stator coils produce a magnetic field that walks around the air gap; a closed rotor follows it by induction. No commutator, no brushes.",
+    "The Foundation of the Modern Power Grid: On May 1, 1888, Nikola Tesla patented the polyphase alternating current (AC) induction motor. By feeding two or more out-of-phase AC currents through stationary stator windings, Tesla created a continuously rotating magnetic field in the air gap without any mechanical movement. This traveling magnetic field induced powerful secondary currents in a closed brushless rotor, dragging it into smooth rotation. Tesla's induction motor solved the fundamental limitation of AC power, proving that alternating current could drive industrial machinery and sparking the victory of AC over DC in the War of the Currents.",
   heroQuote:
     "The subject of my present application is a new and useful improvement in electro-magnetic motors, having for its object to produce the rotation of the armature by the action of alternating currents differing in phase...",
   originalPdfUrl: "/patents/pdfs/us-381968-tesla-motor.pdf",
   googlePatentsUrl: "https://patents.google.com/patent/US381968A/en",
   usptoClassification: "H02K 17/00 (Asynchronous induction motors)",
+  originalTextAsset: {
+    url: "/patents/transcripts/us-381968-tesla-motor.txt",
+    pageCount: 9,
+  },
   originalText: `UNITED STATES PATENT OFFICE.
 NIKOLA TESLA, OF NEW YORK, N. Y., ASSIGNOR OF ONE-HALF TO CHARLES F. PECK, OF ENGLEWOOD, NEW JERSEY.
 
@@ -56,9 +60,9 @@ When the current in circuit 1 is at maximum and that in circuit 2 is zero, the m
 The armature consists of a laminated iron cylinder mounted on a central shaft and wrapped with closed coils of heavy copper wire. As the magnetic lines of force sweep across the armature, they induce powerful eddy currents in the closed coils, which according to Lenz's law generate magnetic poles opposing the field change, creating continuous rotational torque.`,
   plainEnglishExplanation: {
     overview:
-      "In 1887 a factory motor meant a DC machine with a split-ring commutator and carbon brushes. The brushes sparked, wore out, and confined useful DC transmission to about a mile. Tesla's answer was to leave the field coils still and let two (or three) alternating currents, shifted in phase, make the magnetic field itself walk around the stator. A closed rotor follows that field by induction.",
+      "In the 1880s, electric motors were direct current (DC) machines equipped with split-ring mechanical commutators and carbon brushes. The brushes sparked violently, wore out rapidly, generated severe electrical noise, and limited power transmission to a one-mile radius around local DC dynamos ($I^2R$ copper losses). Alternating current (AC) could be transformed to high voltages for hundreds of miles of transmission, but no practical AC motor existed—single-phase motors had zero starting torque and had to be spun up by hand. In a flash of mathematical genius, Nikola Tesla realized that passing multiple out-of-phase AC currents through stationary stator coils created a rotating magnetic field in the air gap. A closed rotor inside this field is dragged along purely by electromagnetic induction, eliminating all commutators, brushes, sparking, and wear.",
     coreMechanism:
-      "Two currents 90° apart in perpendicular coils on an iron ring give a net field $\\vec{B}_{net}(t) = B_0[\\cos(\\omega t)\\hat{i}+\\sin(\\omega t)\\hat{j}]$ of constant magnitude that rotates at $n_s = 120f/P$. That traveling field cuts closed copper on the rotor, induces current, and the rotor is dragged along a slip behind the field.",
+      "Two alternating currents in phase quadrature ($I_1 = I_0 \\cos(\\omega t)$ and $I_2 = I_0 \\sin(\\omega t)$) flow through orthogonal stator winding pairs. By vector addition of magnetic flux, this generates a constant-magnitude net magnetic field vector $\\vec{B}_{net}(t) = B_0 [\\cos(\\omega t)\\hat{i} + \\sin(\\omega t)\\hat{j}]$ that rotates at synchronous speed $n_s = 120f/P$. As the rotating magnetic flux sweeps across the closed copper conductors of the rotor, Faraday's Law of Induction induces large circulating rotor currents. By Lorentz force law ($\\vec{F} = I \\vec{L} \\times \\vec{B}$), the interaction between the induced rotor currents and the sweeping stator field exerts continuous rotational torque on the motor shaft.",
     mechanicalBreakdown: [
       {
         title: "Stationary Polyphase Stator Coils",
@@ -84,32 +88,54 @@ The armature consists of a laminated iron cylinder mounted on a central shaft an
         archaicTerm: "Laminated soft-iron ring",
         modernEquivalent: "Laminated stator core stack",
       },
+      {
+        title: "Brushless Solid Shaft Assembly",
+        summary: "Rotating drive shaft supported on low-friction sleeve bearings.",
+        technicalDetails:
+          "Because power is transferred across the air gap entirely by electromagnetic induction, the rotor requires zero slip rings, commutators, or carbon brushes, operating maintenance-free for decades.",
+        archaicTerm: "Shaft mounted in non-magnetic bearings",
+        modernEquivalent: "Brushless rotor shaft and bearing assembly",
+      },
     ],
     scientificPrinciples: [
       {
         principle: "Rotating Magnetic Field Vector Synthesis",
         formula:
-          "\\vec{B}_{net}(t) = B_0 \\cos(\\omega t)\\hat{i} + B_0 \\sin(\\omega t)\\hat{j} \\implies |\\vec{B}_{net}| = B_0",
+          "\\vec{B}_{net}(t) = B_0 \\cos(\\omega t)\\hat{i} + B_0 \\sin(\\omega t)\\hat{j} \\implies |\\vec{B}_{net}| = B_0, \\quad \\theta(t) = \\omega t",
         explanation:
-          "Two sinusoidal magnetic fields in space quadrature and time quadrature sum vectorially to produce a single rotating vector of constant magnitude.",
+          "Two sinusoidal magnetic fields in 90° spatial quadrature and 90° temporal phase quadrature sum vectorially to produce a single rotating vector of invariant magnitude $B_0$ revolving at $\\omega = 2\\pi f$.",
       },
       {
-        principle: "Faraday-Lenz Electromagnetic Induction",
+        principle: "Faraday-Lenz Electromagnetic Induction in Rotor",
         formula:
-          "\\mathcal{E}_{rotor} = -N \\frac{d\\Phi_B}{dt} = -N \\frac{d}{dt} \\int \\vec{B}_{rot} \\cdot d\\vec{A}",
+          "\\mathcal{E}_{rotor} = -N \\frac{d\\Phi_B}{dt} = -N \\frac{d}{dt} \\int \\vec{B}_{rot} \\cdot d\\vec{A}, \\quad I_r = \\frac{\\mathcal{E}_{rotor}}{\\sqrt{R_r^2 + (s \\omega_s L_r)^2}}",
         explanation:
-          "The time-varying magnetic flux through the closed rotor loops generates an electromotive force (EMF) that drives induced currents without electrical contacts.",
+          "The relative motion between the rotating stator field and the slower rotor bars induces an alternating voltage that drives high rotor currents proportional to slip $s$.",
       },
       {
-        principle: "Asynchronous Rotor Slip & Induction Torque",
+        principle: "Kloss Formula for Induction Motor Torque",
         formula:
-          "T_{em} = \\frac{3 V_{th}^2 R_r'/s}{\\omega_s [(R_{th} + R_r'/s)^2 + (X_{th} + X_r')^2]}",
+          "T_{em}(s) = \\frac{2 T_{max}}{\\frac{s}{s_{crit}} + \\frac{s_{crit}}{s}}, \\quad T_{max} = \\frac{3 V_{th}^2}{2 \\omega_s [R_{th} + \\sqrt{R_{th}^2 + (X_{th} + X_r')^2}]}",
         explanation:
-          "Induction motors operate with a small slip s between synchronous field speed and mechanical rotor speed; maximum torque (breakdown torque) occurs at critical slip.",
+          "Torque is zero at synchronous speed ($s=0$), reaches peak breakdown torque $T_{max}$ at critical slip $s_{crit}$, and provides high self-starting torque under heavy industrial loads.",
+      },
+      {
+        principle: "Synchronous Speed & Stator Pole Geometry",
+        formula:
+          "n_s = \\frac{120 f}{P} \\text{ RPM}, \\quad \\omega_s = \\frac{4\\pi f}{P} \\text{ rad/s}",
+        explanation:
+          "Synchronous rotational speed is strictly determined by grid frequency $f$ (60 Hz) and the number of magnetic stator poles $P$, establishing predictable motor speeds for factory automation.",
+      },
+      {
+        principle: "Laminated Core Eddy Current Loss Suppression",
+        formula:
+          "P_{eddy} = \\frac{\\pi^2 B_{max}^2 d_{lam}^2 f^2}{6 \\rho_{core} D_{iron}} \\propto d_{lam}^2",
+        explanation:
+          "Dividing the iron core into thin insulated laminations of thickness $d_{lam} \\approx 0.5\\text{ mm}$ reduces parasitic eddy current heating by a factor of 100, elevating efficiency above 90%.",
       },
     ],
     whyItMattersToday:
-      "Most of the electrical energy that becomes shaft work still goes through a three-phase induction machine: pumps, compressors, factory lines, locomotive traction. The name on a modern EV inverter is marketing; the physics is still $n_s = 120f/P$ and a squirrel cage chasing a rotating field.",
+      "Tesla's polyphase induction motor is the workhorse of industrial civilization. Today, polyphase induction machines consume over 45% of all global electrical energy generated worldwide—powering industrial pumps, compressors, factory robotics, HVAC systems, bullet trains, and modern electric vehicle powertrains. Tesla's polyphase system also established the worldwide 3-phase AC power transmission grid that supplies modern civilization.",
   },
   claims: [
     {
@@ -118,12 +144,14 @@ The armature consists of a laminated iron cylinder mounted on a central shaft an
       originalText:
         "The method of operating electro-magnetic motors herein described, which consists in producing a progressive shifting of the magnetic poles of the motor by directing through independent energizing-circuits alternating currents differing in phase, substantially as set forth.",
       plainEnglish:
-        "The master claim covering the method of turning any electric motor by using two or more alternating currents with shifted phases to create a rotating magnetic field.",
+        "The historic master process claim covering the method of operating an electric motor by producing a continuously rotating magnetic field in the stator using two or more phase-shifted alternating currents.",
       keyInnovations: [
         "Polyphase AC rotating magnetic field",
         "Phase-shifted alternating currents",
         "Progressive magnetic shifting without mechanical switching",
       ],
+      legalSignificance:
+        "The master patent claim of polyphase AC power. Upheld across dozens of federal court battles, giving George Westinghouse the exclusive monopoly to build the Niagara Falls AC hydroelectric plant.",
     },
     {
       number: 2,
@@ -131,12 +159,14 @@ The armature consists of a laminated iron cylinder mounted on a central shaft an
       originalText:
         "The combination, with an annular or other closed field-magnet, of two or more independent energizing-circuits and an armature mounted within the field, and connections for directing through the circuits alternating currents differing in phase, whereby a progressive shifting of the poles of the field-magnet is produced, substantially as set forth.",
       plainEnglish:
-        "Apparatus claim for the motor structure: a closed stator with multiple independent phase coils, a rotor mounted inside, and wiring for out-of-phase AC currents.",
+        "The master apparatus claim covering an AC motor structure consisting of a closed stator ring with multiple independent phase windings, a closed rotor mounted inside, and electrical connections for polyphase currents.",
       keyInnovations: [
         "Polyphase stator architecture",
         "Closed magnetic circuit",
         "Internal rotor geometry",
       ],
+      legalSignificance:
+        "Protected the physical machine architecture of every induction motor built worldwide.",
     },
     {
       number: 9,
@@ -144,12 +174,14 @@ The armature consists of a laminated iron cylinder mounted on a central shaft an
       originalText:
         "The combination, with a motor containing independent energizing-circuits, of an alternating-current generator with coils connected with the motor-circuits and adapted to produce alternating currents differing in phase, substantially as described.",
       plainEnglish:
-        "System claim covering the entire AC power grid: an alternating current generator producing polyphase electricity linked directly over transmission wires to polyphase induction motors.",
+        "The historic system claim covering the complete end-to-end polyphase AC power grid: an AC generator producing multiple phase-shifted currents linked directly over transmission wires to drive polyphase induction motors.",
       keyInnovations: [
         "End-to-end polyphase AC power system",
         "Synchronous AC generation and distribution",
         "Complete AC grid architecture",
       ],
+      legalSignificance:
+        "Broadest patent claim in electrical power history, covering the unified generation, long-distance transmission, and mechanical utilization of polyphase alternating current.",
     },
   ],
   drawings: [
@@ -192,41 +224,75 @@ The armature consists of a laminated iron cylinder mounted on a central shaft an
         },
       ],
     },
+    {
+      figureNumber: "Fig. 4",
+      title: "Rotating Magnetic Field Vector Progression",
+      caption:
+        "Vector diagrams showing the resultant magnetic field vector $\\vec{B}_{net}$ revolving through 360 degrees during one AC electrical cycle.",
+      svgType: "tesla-motor",
+      callouts: [
+        {
+          id: "tm-4",
+          figureRef: "Fig. 4",
+          label: "R",
+          element: "Rotating Magnetic Vector",
+          description:
+            "Constant-magnitude vector revolving around the air gap at synchronous speed $n_s$.",
+          x: 50,
+          y: 50,
+        },
+      ],
+    },
   ],
   historicalContext: {
     problemStatement:
-      "Edison's Pearl Street station (1882) sold 110-volt DC. $I^2R$ loss made that voltage useless beyond about a mile, so every neighborhood needed its own dynamo. Transformers could raise AC for long lines, but factories still wanted a motor that started under load and did not eat its own brushes. Until Tesla, AC was a lighting trick.",
+      "In the late 1880s, Thomas Edison's low-voltage DC grid was severely limited by $I^2R$ line resistance losses, requiring expensive coal dynamos every mile. George Westinghouse realized that alternating current (AC) could be transformed to thousands of volts for efficient long-distance transmission. However, AC had a fatal flaw: no practical AC motor existed. Without a motor to run factory machinery, elevator shafts, and streetcars, alternating current was confined strictly to nighttime incandescent lighting.",
     priorArtLimitations: [
-      "DC commutators sparked, needed constant turning, and failed in dusty mills.",
-      "Single-phase AC machines had no starting torque; they had to be spun up by hand.",
-      "Gaulard–Gibbs and Zipernowsky–Déri–Bláthy transformers served lamps, not shafts.",
-      "Niagara's 1880s hydraulic plans had no electrical load except arc lights.",
+      "DC commutators and carbon brushes sparked violently, wore out rapidly, and failed in dusty industrial mills.",
+      "Single-phase AC machines had zero starting torque, requiring operators to hand-crank the motor up to speed.",
+      "Early AC transformers could power lamps, but could not produce mechanical rotary motion.",
+      "The massive Niagara Falls hydroelectric project had no industrial power market without an efficient AC motor.",
     ],
     breakthroughInsight:
-      "Tesla later said the idea arrived in Budapest in 1882, walking and reciting Faust: two stationary coils, currents in quadrature, a field that rotates in empty iron. Ferraris in Turin published a similar rotating-field observation in 1888; Tesla had already filed. Priority fights followed, but Westinghouse bought Tesla's stack, not Ferraris's paper.",
+      "In February 1882, while walking in a Budapest city park reciting Goethe's *Faust*, Tesla experienced a legendary flash of insight: instead of mechanically spinning a physical magnetic pole, two stationary electromagnets energized by out-of-phase AC currents would produce a rotating magnetic field in empty space. Placing a closed copper armature inside would induce current and produce self-starting rotational torque without a single commutator or brush.",
     patentWars: [
       {
         rivalName: "Thomas Edison and General Electric (War of the Currents)",
         rivalClaim:
-          "Edison's camp argued high-voltage AC would kill customers. They funded public animal electrocutions and backed the first electric chair (1890) as a demonstration of AC danger.",
+          "Thomas Edison launched a fierce smear campaign against alternating current, calling it lethal and funding public animal electrocutions. When Westinghouse won the contract to power the 1893 World's Columbian Exposition in Chicago using Tesla's AC system, Edison's General Electric attempted to block Westinghouse from using Edison screw-base light bulbs.",
         conflictDetails:
-          "Westinghouse licensed Tesla's polyphase patents in 1888 (cash, stock, and a per-horsepower royalty). The 1893 Chicago fair ran on Westinghouse AC. In 1895 the Niagara Adams plant sent two-phase power to Buffalo. GE, after merging with Thomson-Houston, had to take AC licenses to stay in the transmission business.",
+          "George Westinghouse licensed Tesla's polyphase patents in July 1888 for $60,000 in cash and stock, plus a $2.50 per-horsepower royalty. In 1893, Westinghouse brilliantly demonstrated Tesla's polyphase motors at the Chicago World's Fair, illuminating 100,000 bulbs and running huge motors. In 1895, the Edward Dean Adams Power Plant at Niagara Falls went online, transmitting 15,000 horsepower of two-phase 25 Hz electricity 26 miles to Buffalo, New York.",
         resolution:
-          "By 1900 new urban plants were AC. Edison lost the system fight and left the day-to-day running of GE. DC lingered in elevator and traction pockets into the late 20th century.",
+          "General Electric conceded defeat in the War of the Currents and took cross-licenses to Tesla's AC patents. Within five years, virtually every new power grid in the world was constructed on Tesla's polyphase AC standard.",
         legalOutcome:
-          "Tesla's motor and system patents held. The commercial fight was decided by Niagara and the fair, not by a single decree.",
+          "Tesla's US Patent No. 381,968 was repeatedly upheld in federal circuit courts, affirming Tesla as the sole inventor of the polyphase induction motor.",
       },
     ],
     civilizationalImpact:
-      "Once a factory could hang an induction motor on a 60 Hz (or 50 Hz) feeder, the steam-shaft alley died. The same polyphase grammar still sets the frequency of every interconnected grid.",
+      "Tesla's induction motor and polyphase system built the electrical infrastructure of modern civilization. It enabled clean, centralized hydroelectric and thermal power generation, long-distance high-voltage transmission, and the complete electrification of factory manufacturing, mining, transportation, and domestic appliances.",
     funFact:
-      "During Westinghouse's 1890s cash crisis Tesla released the per-horsepower royalty. The often-quoted '$12 million torn up' figure is a later estimate, not a cancelled invoice, but the waiver was real and it kept the AC plant program alive.",
+      "During the financial panic of the 1890s, George Westinghouse was pushed to the brink of bankruptcy by New York bankers who demanded he cancel Tesla's royalty contract. Westinghouse explained the situation to Tesla in Pittsburgh. Recognizing that the future of AC power was at stake, Tesla famously tore up his multimillion-dollar royalty contract on the spot, telling Westinghouse: 'My gratitude to you is absolute. You believed in me when no one else did... I tear this contract to pieces!'",
     aftermath:
-      "Tesla left motor design for radio-frequency and wireless-power work. The induction machine became a GE and Westinghouse commodity. His name returned to consumer products a century later; the stator math did not need the branding.",
+      "Tesla's induction motor made Westinghouse Electric a global industrial empire. Tesla went on to pioneer high-frequency radio-frequency oscillators (Tesla Coils), wireless power transmission, radio remote control (the first RC teleautomaton boat in 1898), and early robotics. In 1960, the Conférence Générale des Poids et Mesures named the SI unit of magnetic flux density the **Tesla** (T) in his honor.",
     sideNotes: [
-      "US 381,968 is one of a cluster Tesla filed in October 1887. The companion generator and distribution patents are why Westinghouse could bid Niagara as a system, not a motor.",
-      "Galileo Ferraris demonstrated a two-phase rotating field in Turin in 1885 and published in 1888. He did not file in the United States. Historians now treat the physics as independently seen; the industrial system is Tesla–Westinghouse.",
-      "Early Niagara generators were two-phase. Utilities later standardized on three-phase because three wires carry more power for the copper. Tesla's claims already covered more than two phases.",
+      "Italian physicist Galileo Ferraris demonstrated a similar rotating magnetic field principle in 1885 and published a paper in April 1888, but did not file a patent and concluded the device had too low efficiency for practical use. Tesla filed his complete US patents six months before Ferraris published.",
+      "While early Niagara Falls generation used Tesla's 2-phase 4-wire system, German engineer Mikhail Dolivo-Dobrovolsky refined Tesla's concept in 1889 into the 3-phase 3-wire star/delta system, which requires 25% less copper and is the universal global standard today.",
     ],
+  },
+  tags: [
+    "Nikola Tesla",
+    "Induction Motor",
+    "Alternating Current",
+    "Polyphase",
+    "Rotating Magnetic Field",
+    "Electromagnetism",
+    "War of the Currents",
+    "Niagara Falls",
+  ],
+  stats: {
+    totalClaims: 3,
+    independentClaims: 3,
+    patentWarYears: "1888–1896",
+    impactScore: 100,
   },
 };
