@@ -1750,6 +1750,15 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
         defaultValue: 260,
         unit: "°C",
       },
+      {
+        id: "lineLengthPicas",
+        label: "Column Measure Width",
+        min: 8,
+        max: 26,
+        step: 1,
+        defaultValue: 13,
+        unit: "picas",
+      },
     ],
     computeMetrics: (p) => {
       const rate = p.matrixRate ?? 60;
@@ -3411,19 +3420,32 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
     controls: [
       {
         id: "headMeters",
-        label: "Hydraulic Head",
+        label: "Hydraulic Water Head",
         min: 50,
         max: 600,
         step: 25,
-        defaultValue: 250,
+        defaultValue: 450,
         unit: "m",
+      },
+      {
+        id: "runnerRpm",
+        label: "Runner Rotational Speed",
+        min: 100,
+        max: 900,
+        step: 25,
+        defaultValue: 600,
+        unit: "RPM",
       },
     ],
     computeMetrics: (p) => {
-      const h = p.headMeters ?? 250;
+      const h = p.headMeters ?? 450;
+      const rpm = p.runnerRpm ?? 600;
       const vJet = Math.round(Math.sqrt(2 * 9.81 * h));
-      const rpm = Math.round(((vJet * 0.47) / (Math.PI * 0.9)) * 60);
-      const kw = Math.round((0.88 * 1000 * 9.81 * 0.05 * h) / 1000);
+      const uBucket = (rpm * 2 * Math.PI * 0.75) / 60;
+      const speedRatio = uBucket / Math.max(1, vJet);
+      const eta = Math.max(40, Math.round(93 - Math.abs(speedRatio - 0.5) * 160));
+      const hydroKw = (45 * 9.81 * h) / 1000;
+      const kw = Math.round(hydroKw * (eta / 100));
       return [
         {
           label: "Jet Velocity",
@@ -3433,14 +3455,14 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
           progressPct: (vJet / 110) * 100,
         },
         {
-          label: "Runner Speed",
-          value: `${rpm} RPM`,
-          unit: "omega_runner",
-          badgeColor: "amber",
-          progressPct: (rpm / 1200) * 100,
+          label: "Turbine Efficiency",
+          value: `${eta}%`,
+          unit: "eta",
+          badgeColor: eta >= 85 ? "emerald" : "amber",
+          progressPct: eta,
         },
         {
-          label: "Turbine Power",
+          label: "Turbine Shaft Power",
           value: `${kw} kW`,
           unit: "P_hydro",
           badgeColor: "emerald",
@@ -3465,14 +3487,25 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
         min: 2000,
         max: 9000,
         step: 250,
-        defaultValue: 6000,
+        defaultValue: 6500,
         unit: "RPM",
+      },
+      {
+        id: "rawMilkFlowLph",
+        label: "Raw Milk Feed Rate",
+        min: 100,
+        max: 600,
+        step: 25,
+        defaultValue: 300,
+        unit: "L/h",
       },
     ],
     computeMetrics: (p) => {
-      const rpm = p.bowlRpm ?? 6000;
-      const g = Math.round((((rpm * 2 * Math.PI) / 60) ** 2 * 0.12) / 9.81);
-      const yieldFat = Math.min(99.4, 92 + (rpm / 6000) * 7.4).toFixed(1);
+      const rpm = p.bowlRpm ?? 6500;
+      const flow = p.rawMilkFlowLph ?? 300;
+      const g = Math.round((((rpm * 2 * Math.PI) / 60) ** 2 * 0.1) / 9.80665);
+      const yieldFat = Math.min(99.9, Number((95 + (g / 5000) * 4.5).toFixed(1)));
+      const creamFlow = Number((flow * 0.12).toFixed(1));
       return [
         {
           label: "Centrifugal G-Force",
@@ -3488,6 +3521,13 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
           badgeColor: "emerald",
           progressPct: Number(yieldFat),
         },
+        {
+          label: "Cream Discharge Rate",
+          value: `${creamFlow} L/h`,
+          unit: "Q_cream",
+          badgeColor: "cyan",
+          progressPct: (creamFlow / 75) * 100,
+        },
       ];
     },
     pedagogicalInsight:
@@ -3502,31 +3542,50 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
     controls: [
       {
         id: "weldCurrentAmps",
-        label: "Secondary Current",
+        label: "Secondary Welding Current",
         min: 1000,
-        max: 4500,
+        max: 6000,
         step: 100,
-        defaultValue: 2500,
+        defaultValue: 4500,
         unit: "A",
+      },
+      {
+        id: "clampPressureMpa",
+        label: "Mechanical Upset Pressure",
+        min: 10,
+        max: 60,
+        step: 5,
+        defaultValue: 35,
+        unit: "MPa",
       },
     ],
     computeMetrics: (p) => {
-      const i = p.weldCurrentAmps ?? 2500;
-      const kw = Math.round((i ** 2 * 0.0008) / 1000);
+      const i = p.weldCurrentAmps ?? 4500;
+      const press = p.clampPressureMpa ?? 35;
+      const kw = Math.round((i ** 2 * 0.00018) / 1000);
+      const tempC = Math.round(25 + (kw / 3.6) * 850);
+      const isForged = tempC >= 1150 && press >= 25;
       return [
         {
-          label: "Joule Heat Power",
+          label: "Joule Heat Rate",
           value: `${kw} kW`,
           unit: "P_joule",
           badgeColor: "rose",
-          progressPct: (kw / 16) * 100,
+          progressPct: (kw / 8) * 100,
         },
         {
-          label: "Interface Plastic State",
-          value: "1,350°C Fusion",
+          label: "Interface Temperature",
+          value: `${tempC}°C`,
           unit: "T_weld",
-          badgeColor: "amber",
-          progressPct: 90,
+          badgeColor: tempC >= 1150 ? "amber" : "cyan",
+          progressPct: Math.min(100, (tempC / 1500) * 100),
+        },
+        {
+          label: "Solid-State Weld Quality",
+          value: isForged ? "SOLID FORGE WELD" : "COLD / UNFORGED",
+          unit: "fusion",
+          badgeColor: isForged ? "emerald" : "rose",
+          progressPct: isForged ? 100 : 30,
         },
       ];
     },

@@ -2,12 +2,15 @@
 
 import { Play, RotateCcw, Volume2, VolumeX } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
+import { usePatentPhysics } from "@/physics/usePatentPhysics";
+import { usePatentAudio } from "./three/usePatentAudio";
 
 export function DeLavalSeparatorSim() {
-  const [bowlRpm, setBowlRpm] = useState<number>(6500);
-  const [rawMilkFlowLph, setRawMilkFlowLph] = useState<number>(300);
+  const { params, updateParam, resetParams } = usePatentPhysics("us-247804-delaval-separator");
+  const { isAudioMuted, toggleSound } = usePatentAudio();
+  const bowlRpm = params.bowlRpm ?? 6500;
+  const rawMilkFlowLph = params.rawMilkFlowLph ?? 300;
   const [isPlaying, setIsPlaying] = useState<boolean>(true);
-  const [isMuted, setIsMuted] = useState<boolean>(true);
   const [_angleDeg, setAngleDeg] = useState<number>(0);
   const animRef = useRef<number | null>(null);
 
@@ -62,11 +65,7 @@ export function DeLavalSeparatorSim() {
           </button>
           <button
             type="button"
-            onClick={() => {
-              setBowlRpm(6500);
-              setRawMilkFlowLph(300);
-              setAngleDeg(0);
-            }}
+            onClick={resetParams}
             aria-label="Reset Simulation"
             className="p-2 rounded-lg bg-parchment-200 dark:bg-ink-800 hover:bg-parchment-300 dark:hover:bg-ink-700 text-ink-800 dark:text-parchment-200 transition-colors"
           >
@@ -74,11 +73,11 @@ export function DeLavalSeparatorSim() {
           </button>
           <button
             type="button"
-            onClick={() => setIsMuted(!isMuted)}
-            aria-label={isMuted ? "Unmute Audio" : "Mute Audio"}
+            onClick={() => toggleSound()}
+            aria-label={isAudioMuted ? "Unmute Audio" : "Mute Audio"}
             className="p-2 rounded-lg bg-parchment-200 dark:bg-ink-800 hover:bg-parchment-300 dark:hover:bg-ink-700 text-ink-800 dark:text-parchment-200 transition-colors"
           >
-            {isMuted ? (
+            {isAudioMuted ? (
               <VolumeX className="w-4 h-4" />
             ) : (
               <Volume2 className="w-4 h-4 text-amber-600" />
@@ -233,11 +232,11 @@ export function DeLavalSeparatorSim() {
           </div>
           <input
             type="range"
-            min="3000"
+            min="2000"
             max="9000"
-            step="100"
+            step="250"
             value={bowlRpm}
-            onChange={(e) => setBowlRpm(Number(e.target.value))}
+            onChange={(e) => updateParam("bowlRpm", Number(e.target.value))}
             className="w-full accent-amber-600 cursor-pointer"
           />
         </div>
@@ -249,10 +248,10 @@ export function DeLavalSeparatorSim() {
           <input
             type="range"
             min="100"
-            max="800"
+            max="600"
             step="25"
             value={rawMilkFlowLph}
-            onChange={(e) => setRawMilkFlowLph(Number(e.target.value))}
+            onChange={(e) => updateParam("rawMilkFlowLph", Number(e.target.value))}
             className="w-full accent-amber-600 cursor-pointer"
           />
         </div>
