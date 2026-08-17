@@ -18,6 +18,7 @@ const CATEGORIES: { id: string; label: string }[] = [
   { id: "computing", label: "Computing & Silicon" },
   { id: "consumer", label: "Consumer Physics" },
   { id: "materials", label: "Materials Science" },
+  { id: "optics", label: "Optics & Imaging" },
 ];
 
 export function EraFilterBar({

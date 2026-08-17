@@ -5,6 +5,7 @@ import { useEffect, useRef, useState } from "react";
 import * as THREE from "three";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { createThreeStudioScene } from "./ThreeStudioScene";
+import { useLiveSimParams } from "./useLiveSimParams";
 
 export function DavenportMotor3D() {
   const containerRef = useRef<HTMLDivElement>(null);
@@ -14,6 +15,7 @@ export function DavenportMotor3D() {
   const batteryVoltage = params.batteryVoltage ?? 12;
   const loadTorque = params.loadTorque ?? 0.8;
   const motorRpm = Math.round((batteryVoltage / 12) * (450 / Math.max(0.5, loadTorque)));
+  const live = useLiveSimParams({ motorRpm, batteryVoltage, loadTorque });
 
   useEffect(() => {
     const container = containerRef.current;
@@ -145,7 +147,8 @@ export function DavenportMotor3D() {
 
     const animate = () => {
       animId = requestAnimationFrame(animate);
-      const omega = (motorRpm * 2 * Math.PI) / 60;
+      const rpm = live.current.motorRpm;
+      const omega = (rpm * 2 * Math.PI) / 60;
       rotorGroup.rotation.y += omega * 0.016;
 
       controls.update();
@@ -158,7 +161,7 @@ export function DavenportMotor3D() {
       cancelAnimationFrame(animId);
       studio.dispose();
     };
-  }, [motorRpm]);
+  }, [live]);
 
   return (
     <div className="relative w-full aspect-[16/9] min-h-[480px] rounded-2xl overflow-hidden border border-parchment-300 dark:border-ink-800 bg-neutral-950 shadow-2xl">

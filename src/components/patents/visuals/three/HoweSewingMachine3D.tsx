@@ -14,6 +14,7 @@ import {
 import { useEffect, useRef, useState } from "react";
 import * as THREE from "three";
 import { FrankenSimEngine } from "@/physics/engine";
+import { stepHoweLockstitch } from "@/physics/machineKernels";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { soundEngine } from "@/utils/soundEngine";
 import { createThreeStudioScene } from "./ThreeStudioScene";
@@ -405,14 +406,14 @@ export function HoweSewingMachine3D() {
 
       const omega = (p.stitchingSpeedRpm / 60) * 2 * Math.PI;
       const crankAngle = elapsed * omega;
+      const crankDeg = ((crankAngle * 180) / Math.PI) % 360;
+      const stitch = stepHoweLockstitch(crankDeg);
 
       if (p.isCranking) {
         flywheelGroup.rotation.x = crankAngle;
-        const needleAngle = Math.cos(crankAngle) * 0.45;
-        needleArmGroup.rotation.z = needleAngle;
-
-        const shuttleZ = Math.sin(crankAngle) * 1.2;
-        shuttleGroup.position.z = shuttleZ;
+        needleArmGroup.rotation.z = (stitch.needleY / 45) * 0.45;
+        shuttleGroup.position.z = (stitch.shuttleX / 60) * 1.2;
+        threadMesh.visible = stitch.loopOpen;
 
         cloth.position.x = 0.5 - ((elapsed * Number(p.clothFeedRateMmPerSec) * 0.1) % 2.0);
 

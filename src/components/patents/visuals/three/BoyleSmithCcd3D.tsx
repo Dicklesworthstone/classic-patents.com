@@ -4,6 +4,7 @@ import { Camera, Eye, EyeOff, RotateCcw, Sparkles, Volume2, VolumeX, Zap } from 
 import { useEffect, useRef, useState } from "react";
 import * as THREE from "three";
 import { FrankenSimEngine } from "@/physics/engine";
+import { stepCcdWells } from "@/physics/machineKernels";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { soundEngine } from "@/utils/soundEngine";
 import { createGlowPointTexture, createThreeStudioScene } from "./ThreeStudioScene";
@@ -319,16 +320,27 @@ export function BoyleSmithCcd3D() {
         currentActivePhase = p.clockPhase;
       }
 
+      const wells = stepCcdWells(
+        currentActivePhase,
+        p.incidentLux ?? 650,
+        p.clockSpeedFactor ?? 2.5,
+      );
+
       // Update Gate Colors & Potential Wells
       for (const g of gates) {
+        const wellE = wells.wells[g.phase - 1] ?? 0;
+        const fill = Math.min(1, wellE / 45000);
         if (g.phase === currentActivePhase) {
           g.mesh.material = gateActiveMat;
           g.mesh.position.y = 0.38;
+          g.mesh.scale.y = 1 + fill * 0.8;
         } else {
           g.mesh.material = gatePolySiliconMat;
           g.mesh.position.y = 0.42;
+          g.mesh.scale.y = 1 + fill * 0.25;
         }
       }
+      (packetPoints.material as THREE.PointsMaterial).opacity = 0.35 + wells.cte * 0.55;
 
       // Animate Electron Charge Packets shifting to active potential well
       const pPos = packetPos;

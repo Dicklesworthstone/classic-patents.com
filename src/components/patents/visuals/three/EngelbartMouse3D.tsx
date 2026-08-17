@@ -14,6 +14,7 @@ import {
 } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import * as THREE from "three";
+import { stepEngelbartResolver } from "@/physics/machineKernels";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { soundEngine } from "@/utils/soundEngine";
 import { createThreeStudioScene } from "./ThreeStudioScene";
@@ -90,6 +91,7 @@ export function EngelbartMouse3D() {
   });
 
   const pulseRateHz = Math.round((displacementSpeedMmSec / 25.4) * cpiResolution);
+  const wheelRadiusMm = params.wheelRadius ?? 10;
 
   const live = useLiveSimParams({
     displacementSpeedMmSec,
@@ -97,6 +99,7 @@ export function EngelbartMouse3D() {
     isClicking,
     isXRayMode,
     cpiResolution,
+    wheelRadiusMm,
   });
 
   const controlsRef = useRef<any>(null);
@@ -409,15 +412,13 @@ export function EngelbartMouse3D() {
       prevX = posX;
       prevZ = posZ;
 
-      const wheelRadius = 0.85;
+      const wheelRadiusMm = p.wheelRadiusMm ?? 10;
+      const resolved = stepEngelbartResolver(dX * 40, dZ * 40, wheelRadiusMm, 200);
       if (delta > 0) {
-        // X-wheel rotates on X-displacement
-        xWheelRim.rotation.x -= dX / wheelRadius;
-        xPotWiper.rotation.x -= dX / wheelRadius;
-
-        // Y-wheel rotates on Z-displacement
-        yWheelRim.rotation.z += dZ / wheelRadius;
-        yPotWiper.rotation.z += dZ / wheelRadius;
+        xWheelRim.rotation.x -= resolved.dThetaX;
+        xPotWiper.rotation.x -= resolved.dThetaX;
+        yWheelRim.rotation.z += resolved.dThetaY;
+        yPotWiper.rotation.z += resolved.dThetaY;
       }
 
       // Microswitch Button Depress Animation

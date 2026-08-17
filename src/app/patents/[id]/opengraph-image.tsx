@@ -1,5 +1,5 @@
 import { ImageResponse } from "next/og";
-import { allPatents, getPatentById } from "@/data/patents";
+import { getPatentById } from "@/data/patents";
 
 export const size = {
   width: 1200,
