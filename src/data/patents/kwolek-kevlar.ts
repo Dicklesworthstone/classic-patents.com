@@ -18,8 +18,7 @@ export const kwolekKevlarPatent: Patent = {
     "The pioneer patent for Kevlar. In 1965 at DuPont, Stephanie Kwolek was searching for lightweight fibers to reinforce radial car tires during anticipating petroleum shortages. She synthesized poly(p-phenylene terephthalamide) (PPTA), which formed an unusual cloudy, thin, buttermilk-like liquid-crystalline solution that technicians almost threw down the drain. When spun through a spinneret, the rigid aromatic polymer chains aligned in parallel perfection, producing a synthetic fiber five times stronger than steel on an equal-weight basis.",
   heroQuote:
     "This invention relates to high-tenacity, high-modulus fibers and yarns prepared from wholly aromatic polycarbonamides...",
-  originalPdfUrl:
-    "https://patentimages.storage.googleapis.com/b9/e7/bb/c29ceb4ec4fefc/US3671542.pdf",
+  originalPdfUrl: "/patents/pdfs/us-3671542-kwolek-kevlar.pdf",
   googlePatentsUrl: "https://patents.google.com/patent/US3671542A/en",
   usptoClassification: "D01F 6/60 (Polyamide synthetic filaments; Aromatic aramids)",
   originalText: `UNITED STATES PATENT OFFICE.

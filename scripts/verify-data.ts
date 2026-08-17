@@ -1,9 +1,11 @@
 /**
  * verify-data.ts
  *
- * Data verification and schema validation suite for Classic Patents.
+ * Data verification, schema validation, and PDF existence check for Classic Patents.
  */
 
+import * as fs from "node:fs";
+import * as path from "node:path";
 import { allPatents } from "../src/data/patents";
 
 async function main() {
@@ -38,7 +40,24 @@ async function main() {
       errorCount++;
     }
 
-    // 4. Check claims
+    // 4. Check PDF presence in public/
+    const localPdfPath = path.join(
+      process.cwd(),
+      "public",
+      patent.originalPdfUrl.replace(/^\//, ""),
+    );
+    if (!fs.existsSync(localPdfPath)) {
+      console.error(`❌ ${prefix} Local PDF not found at ${localPdfPath}`);
+      errorCount++;
+    } else {
+      const stats = fs.statSync(localPdfPath);
+      if (stats.size < 1000) {
+        console.error(`❌ ${prefix} Local PDF too small (${stats.size} bytes).`);
+        errorCount++;
+      }
+    }
+
+    // 5. Check claims
     if (!patent.claims || patent.claims.length === 0) {
       console.error(`❌ ${prefix} No claims found.`);
       errorCount++;
@@ -58,7 +77,7 @@ async function main() {
       }
     }
 
-    // 5. Check plain English explanations
+    // 6. Check plain English explanations
     if (
       !patent.plainEnglishExplanation?.overview ||
       !patent.plainEnglishExplanation.coreMechanism ||
@@ -68,7 +87,7 @@ async function main() {
       errorCount++;
     }
 
-    // 6. Check historical context & patent wars
+    // 7. Check historical context & patent wars
     if (
       !patent.historicalContext?.problemStatement ||
       !patent.historicalContext.breakthroughInsight ||
@@ -78,11 +97,13 @@ async function main() {
       errorCount++;
     }
 
-    console.log(`✓ ${prefix} Passed all verification gates.`);
+    console.log(
+      `✓ ${prefix} Passed all verification gates (PDF verified: ${(fs.statSync(localPdfPath).size / 1024).toFixed(1)} KB).`,
+    );
   }
 
   console.log(
-    `\nVerification Result: ${errorCount === 0 ? "ALL 8 PATENTS GREEN" : `${errorCount} ERRORS FOUND`}`,
+    `\nVerification Result: ${errorCount === 0 ? `ALL ${allPatents.length} PATENTS GREEN AND FULLY COMPLETE` : `${errorCount} ERRORS FOUND`}`,
   );
 
   if (errorCount > 0) {

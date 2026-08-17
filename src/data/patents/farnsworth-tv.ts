@@ -18,8 +18,7 @@ export const farnsworthTvPatent: Patent = {
     "The pioneer patent of all-electronic television. At the age of 21, Philo T. Farnsworth replaced the spinning mechanical Nipkow disks of early TV experiments with pure electron optics. His 'Image Dissector' focused an optical image onto a photoelectric cathode, liberating an electron cloud that was deflected magnetically line-by-line across a tiny anode aperture to generate a video signal, which was reconstructed on a cathode-ray tube screen.",
   heroQuote:
     "Be it known that I, Philo T. Farnsworth, a citizen of the United States, residing at San Francisco, in the county of San Francisco and State of California, have invented certain new and useful Improvements in Television Systems...",
-  originalPdfUrl:
-    "https://patentimages.storage.googleapis.com/66/d0/0d/180ce8fa73b5ad/US1773980.pdf",
+  originalPdfUrl: "/patents/pdfs/us-1773980-farnsworth-tv.pdf",
   googlePatentsUrl: "https://patents.google.com/patent/US1773980A/en",
   usptoClassification: "H04N 3/00 (Scanning details for electronic television)",
   originalText: `UNITED STATES PATENT OFFICE.

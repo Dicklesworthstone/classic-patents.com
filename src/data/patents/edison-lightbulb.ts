@@ -17,8 +17,7 @@ export const edisonLightbulbPatent: Patent = {
     "The patent that illuminated the modern world. Edison did not invent the first electric light, but he invented the first commercially viable incandescent lamp. By recognizing that practical central-station distribution required a high electrical resistance filament ($100\\ \\Omega$ instead of $1\\ \\Omega$) enclosed in a nearly complete Sprengel vacuum ($10^{-6}\\text{ atm}$) with sealed platinum lead-in wires, Edison solved the famous problem of the 'subdivision of the electric light.'",
   heroQuote:
     "Be it known that I, Thomas Alva Edison, of Menlo Park, in the State of New Jersey, United States of America, have invented an Improvement in Electric Lamps, and in the method of manufacturing the same...",
-  originalPdfUrl:
-    "https://patentimages.storage.googleapis.com/b9/62/77/89eb8fa0bb26ce/US223898.pdf",
+  originalPdfUrl: "/patents/pdfs/us-223898-edison-lightbulb.pdf",
   googlePatentsUrl: "https://patents.google.com/patent/US223898A/en",
   usptoClassification: "H01K 1/00 (Incandescent lamps; Filaments)",
   originalText: `UNITED STATES PATENT OFFICE.

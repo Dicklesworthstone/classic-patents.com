@@ -1,11 +1,11 @@
 "use client";
 
-import { Activity, ArrowRight, Compass, Layers, Scroll, Sparkles } from "lucide-react";
+import { ArrowRight, Box, Compass, Layers, Scroll, Sparkles } from "lucide-react";
 import Link from "next/link";
 import { useMemo, useState } from "react";
 import { EraFilterBar } from "@/components/layout/EraFilterBar";
 import { PatentCard } from "@/components/patents/PatentCard";
-import { getFeaturedPatents, searchPatents } from "@/data/patents";
+import { allPatents, getFeaturedPatents, searchPatents } from "@/data/patents";
 
 export default function HomePage() {
   const [selectedCategory, setSelectedCategory] = useState<string>("all");
@@ -35,23 +35,24 @@ export default function HomePage() {
         </h1>
 
         <p className="font-serif text-base sm:text-lg text-ink-700 dark:text-parchment-300 max-w-2xl mx-auto leading-relaxed">
-          Original USPTO patents restored with pure-Rust OCR, deconstructed into rigorous Plain
-          English engineering explanations, and brought to life through interactive physics and
-          mechanical simulations.
+          Original USPTO patents restored with verified archival transcripts, deconstructed into
+          rigorous Plain English engineering explanations, and brought to life through real-time 3D
+          Three.js physical simulations.
         </p>
 
         {/* Hero Badges */}
         <div className="flex flex-wrap items-center justify-center gap-3 pt-2 text-xs font-mono text-ink-600 dark:text-ink-400">
           <span className="flex items-center gap-1">
-            <Scroll className="w-3.5 h-3.5 text-amber-700" /> Verbatim OCR Specs
+            <Scroll className="w-3.5 h-3.5 text-amber-700" /> Verbatim Archival Transcripts &amp;
+            PDFs
           </span>
           <span>•</span>
           <span className="flex items-center gap-1">
-            <Sparkles className="w-3.5 h-3.5 text-emerald-600" /> Plain English Dual-Mode
+            <Sparkles className="w-3.5 h-3.5 text-emerald-600" /> Plain English Dual-Projection
           </span>
           <span>•</span>
           <span className="flex items-center gap-1">
-            <Activity className="w-3.5 h-3.5 text-blue-600" /> Real-Time Simulations
+            <Box className="w-3.5 h-3.5 text-blue-600" /> 3D WebGL Physics Engines
           </span>
         </div>
       </section>
@@ -68,7 +69,7 @@ export default function HomePage() {
           <span className="text-xs font-mono text-ink-500">Milestones of Modern Civilization</span>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
           {featuredPatents.map((patent) => (
             <PatentCard key={patent.id} patent={patent} />
           ))}
@@ -84,7 +85,9 @@ export default function HomePage() {
               Complete Patent Museum Collection
             </h2>
           </div>
-          <span className="text-xs font-mono text-ink-500">8 Curated Historic Masterpieces</span>
+          <span className="text-xs font-mono text-ink-500">
+            {allPatents.length} Curated Historic Masterpieces
+          </span>
         </div>
 
         {/* Filter and search bar */}
@@ -125,15 +128,16 @@ export default function HomePage() {
             Patents are the primary historical blueprints of human ingenuity, but 19th-century legal
             prose was engineered for lawyers and examiners, not for students, engineers, or curious
             minds. Classic Patents bridges this gap: we preserve every character of the original
-            legal text while providing a rigorous, first-principles engineering breakdown with the
-            real equations and interactive physics.
+            legal text and drawings while providing a rigorous, first-principles engineering
+            breakdown with the real equations, 3D WebGL simulations, and interactive physical
+            parameter dials.
           </p>
           <div className="pt-2">
             <Link
               href="/about"
               className="inline-flex items-center gap-1.5 text-xs font-mono font-semibold text-amber-800 dark:text-amber-400 hover:underline"
             >
-              Learn about our OCR pipeline and methodology <ArrowRight className="w-3.5 h-3.5" />
+              Learn about our architecture and methodology <ArrowRight className="w-3.5 h-3.5" />
             </Link>
           </div>
         </div>

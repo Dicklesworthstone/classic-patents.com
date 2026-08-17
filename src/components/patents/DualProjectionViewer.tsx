@@ -1,6 +1,16 @@
 "use client";
 
-import { Activity, Columns, Compass, FileText, Scroll, Sparkles, Zap } from "lucide-react";
+import {
+  Activity,
+  Columns,
+  Compass,
+  Download,
+  ExternalLink,
+  FileText,
+  Scroll,
+  Sparkles,
+  Zap,
+} from "lucide-react";
 import { useState } from "react";
 import type { Patent } from "@/types/patent";
 import { ClaimsDecoder } from "./ClaimsDecoder";
@@ -14,7 +24,12 @@ interface DualProjectionViewerProps {
 
 export function DualProjectionViewer({ patent }: DualProjectionViewerProps) {
   const [viewMode, setViewMode] = useState<
-    "plain-english" | "original-spec" | "interactive-sim" | "schematic-sheet" | "split-view"
+    | "plain-english"
+    | "original-spec"
+    | "interactive-sim"
+    | "schematic-sheet"
+    | "pdf-facsimile"
+    | "split-view"
   >("plain-english");
 
   return (
@@ -45,7 +60,7 @@ export function DualProjectionViewer({ patent }: DualProjectionViewerProps) {
             }`}
           >
             <Scroll className="w-4 h-4" />
-            <span>Verbatim Specification Face</span>
+            <span>OCR Transcript Face</span>
           </button>
 
           <button
@@ -71,7 +86,20 @@ export function DualProjectionViewer({ patent }: DualProjectionViewerProps) {
             }`}
           >
             <Compass className="w-4 h-4" />
-            <span>Schematic &amp; Callouts</span>
+            <span>Schematic &amp; Pins</span>
+          </button>
+
+          <button
+            type="button"
+            onClick={() => setViewMode("pdf-facsimile")}
+            className={`px-3.5 py-2 rounded-lg flex items-center gap-1.5 transition-all ${
+              viewMode === "pdf-facsimile"
+                ? "bg-amber-700 text-white font-bold shadow-sm dark:bg-amber-600"
+                : "text-ink-700 dark:text-parchment-300 hover:bg-parchment-200 dark:hover:bg-ink-800"
+            }`}
+          >
+            <FileText className="w-4 h-4" />
+            <span>Full Original PDF</span>
           </button>
         </div>
 
@@ -90,6 +118,48 @@ export function DualProjectionViewer({ patent }: DualProjectionViewerProps) {
           </button>
         </div>
       </div>
+
+      {/* VIEW MODE: FULL ORIGINAL PDF FACSIMILE */}
+      {viewMode === "pdf-facsimile" && (
+        <div className="rounded-2xl border border-parchment-300 dark:border-ink-800 bg-parchment-50 dark:bg-ink-950 p-6 shadow-patent space-y-4">
+          <div className="flex flex-wrap items-center justify-between gap-3 border-b border-parchment-200 dark:border-ink-800 pb-4">
+            <div>
+              <span className="text-xs font-mono text-amber-700 dark:text-amber-400 font-bold uppercase tracking-widest block">
+                Primary Archival Facsimile
+              </span>
+              <h3 className="font-serif text-xl font-bold text-ink-900 dark:text-parchment-100">
+                {patent.patentNumber} — Original Scanned USPTO Document
+              </h3>
+            </div>
+            <div className="flex items-center gap-2">
+              <a
+                href={patent.originalPdfUrl}
+                download
+                className="px-3.5 py-1.5 rounded-lg bg-amber-700 hover:bg-amber-800 text-white text-xs font-mono font-medium transition-colors flex items-center gap-1.5 shadow-sm"
+              >
+                <Download className="w-3.5 h-3.5" /> Download PDF
+              </a>
+              <a
+                href={patent.googlePatentsUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="px-3.5 py-1.5 rounded-lg bg-parchment-200 dark:bg-ink-800 hover:bg-parchment-300 text-ink-800 dark:text-parchment-200 text-xs font-mono font-medium transition-colors flex items-center gap-1.5 border border-parchment-300 dark:border-ink-700"
+              >
+                <ExternalLink className="w-3.5 h-3.5" /> Google Patents
+              </a>
+            </div>
+          </div>
+
+          {/* Embedded PDF Viewer */}
+          <div className="w-full h-[750px] rounded-xl overflow-hidden border border-parchment-300 dark:border-ink-800 bg-ink-900">
+            <iframe
+              src={`${patent.originalPdfUrl}#toolbar=1&navpanes=0`}
+              title={`${patent.patentNumber} PDF Facsimile`}
+              className="w-full h-full border-none"
+            />
+          </div>
+        </div>
+      )}
 
       {/* VIEW MODE: INTERACTIVE SIMULATOR */}
       {viewMode === "interactive-sim" && (

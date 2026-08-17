@@ -17,8 +17,7 @@ export const spencerMicrowavePatent: Patent = {
     "The accidental breakthrough that revolutionized cooking. While testing a high-power radar cavity magnetron at Raytheon in 1945, self-taught engineer Percy Spencer noticed a peanut candy bar in his pocket had completely melted. He investigated by placing popcorn kernels (which violently popped) and an egg (which exploded in a colleague's face) near the waveguide. Spencer patented the method of heating foodstuffs inside a metallic resonant cavity using electromagnetic microwave radiation.",
   heroQuote:
     "This invention relates to the treatment of foodstuffs, and more particularly to the cooking thereof by the use of electromagnetic energy...",
-  originalPdfUrl:
-    "https://patentimages.storage.googleapis.com/6c/d1/9d/28cfcf93d7c71d/US2495429.pdf",
+  originalPdfUrl: "/patents/pdfs/us-2495429-spencer-microwave.pdf",
   googlePatentsUrl: "https://patents.google.com/patent/US2495429A/en",
   usptoClassification: "H05B 6/64 (Heating by microwaves; Cooking ovens)",
   originalText: `UNITED STATES PATENT OFFICE.

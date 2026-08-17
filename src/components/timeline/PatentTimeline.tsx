@@ -17,13 +17,10 @@ export function PatentTimeline() {
 
   return (
     <div className="space-y-10">
-      {/* Horizontal / Stepped Interactive Timeline Ribbon */}
-      <div className="relative py-6">
-        {/* Connecting Axis Line */}
-        <div className="absolute top-1/2 left-0 right-0 h-1 bg-parchment-300 dark:bg-ink-800 -translate-y-1/2 z-0 hidden md:block" />
-
-        <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-8 gap-4 relative z-10">
-          {sortedPatents.map((p, _idx) => {
+      {/* Interactive Timeline Milestone Cards Grid */}
+      <div className="relative py-2">
+        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-3.5 relative z-10">
+          {sortedPatents.map((p) => {
             const isSelected = p.id === selectedPatentId;
             const year = p.grantDate.split("-")[0];
 
@@ -34,7 +31,7 @@ export function PatentTimeline() {
                 onClick={() => setSelectedPatentId(p.id)}
                 className={`p-3 rounded-xl border text-left flex flex-col justify-between transition-all duration-200 ${
                   isSelected
-                    ? "bg-amber-700 text-white border-amber-800 dark:bg-amber-600 dark:border-amber-500 scale-105 shadow-md"
+                    ? "bg-amber-700 text-white border-amber-800 dark:bg-amber-600 dark:border-amber-500 scale-105 shadow-md ring-2 ring-amber-400"
                     : "bg-parchment-100 dark:bg-ink-900 border-parchment-300 dark:border-ink-800 hover:bg-parchment-200 dark:hover:bg-ink-800 text-ink-800 dark:text-parchment-200"
                 }`}
               >

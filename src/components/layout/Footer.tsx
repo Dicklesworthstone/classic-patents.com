@@ -18,15 +18,11 @@ export function Footer() {
             </div>
             <p className="text-xs text-ink-600 dark:text-ink-400 max-w-md leading-relaxed">
               Preserving, restoring, and illuminating humanity&apos;s most consequential historical
-              patents through ultra-high-fidelity OCR, dual-projection engineering deconstructions,
-              and interactive physical simulations.
+              patents through verified archival transcripts, dual-projection engineering
+              deconstructions, and interactive 3D physical simulations.
             </p>
             <div className="pt-2 text-[11px] font-mono text-ink-500">
-              OCR Engine:{" "}
-              <span className="text-amber-700 dark:text-amber-400 font-semibold">
-                franken_ocr (focr)
-              </span>{" "}
-              · Pure-Rust CPU Inference
+              An open-source digital museum and research archive.
             </div>
           </div>
 
@@ -54,10 +50,10 @@ export function Footer() {
               </li>
               <li>
                 <Link
-                  href="/patents/us-223898-edison-lightbulb"
+                  href="/patents/us-2292387-lamarr-frequency-hopping"
                   className="hover:text-amber-700 dark:hover:text-amber-400 transition-colors"
                 >
-                  US 223,898 · Edison Light Bulb
+                  US 2,292,387 · Lamarr Spread Spectrum
                 </Link>
               </li>
               <li>
@@ -90,7 +86,15 @@ export function Footer() {
                   href="/about"
                   className="hover:text-amber-700 dark:hover:text-amber-400 transition-colors"
                 >
-                  Methodology &amp; OCR
+                  Mission &amp; Methodology
+                </Link>
+              </li>
+              <li>
+                <Link
+                  href="/timeline"
+                  className="hover:text-amber-700 dark:hover:text-amber-400 transition-colors"
+                >
+                  Historical Timeline
                 </Link>
               </li>
               <li>
@@ -104,17 +108,7 @@ export function Footer() {
                 </a>
               </li>
               <li>
-                <a
-                  href="https://github.com/Dicklesworthstone/franken_ocr"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="hover:text-amber-700 dark:hover:text-amber-400 transition-colors flex items-center gap-1"
-                >
-                  focr OCR Engine <ExternalLink className="w-3 h-3" />
-                </a>
-              </li>
-              <li>
-                <span className="text-ink-500">MIT + OpenAI/Anthropic Rider</span>
+                <span className="text-ink-500">MIT Open Source License</span>
               </li>
             </ul>
           </div>

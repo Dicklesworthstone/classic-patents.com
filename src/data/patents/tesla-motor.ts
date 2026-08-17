@@ -17,8 +17,7 @@ export const teslaMotorPatent: Patent = {
     "The crown jewel of the Second Industrial Revolution. Nikola Tesla discovered that two or more alternating currents out of phase with each other could generate a continuously rotating magnetic field in the stator. This induced electromagnetic currents in a brushless rotor, causing it to spin without any physical electrical connection, brushes, or commutators. This patent made modern AC power generation and distribution possible.",
   heroQuote:
     "Be it known that I, Nikola Tesla, from Smiljan, Lika, border country of Austria-Hungary, residing at New York, in the county and State of New York, have invented certain new and useful Improvements in Electro-Magnetic Motors...",
-  originalPdfUrl:
-    "https://patentimages.storage.googleapis.com/0f/c6/3e/2a8a479d2bf941/US381968.pdf",
+  originalPdfUrl: "/patents/pdfs/us-381968-tesla-motor.pdf",
   googlePatentsUrl: "https://patents.google.com/patent/US381968A/en",
   usptoClassification: "H02K 17/00 (Asynchronous induction motors)",
   originalText: `UNITED STATES PATENT OFFICE.

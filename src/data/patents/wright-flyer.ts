@@ -17,8 +17,7 @@ export const wrightFlyerPatent: Patent = {
     "The foundational patent of practical aviation. The Wright brothers solved the primary obstacle to human flight: dynamic equilibrium and aerodynamic control in three dimensions (pitch, roll, and yaw). Rather than relying on rigid wings and weight-shifting, they invented a mechanism to warp the flexible lateral tips of biplane wings while simultaneously coordinating a vertical movable rudder to counteract adverse yaw.",
   heroQuote:
     "Be it known that we, Orville Wright and Wilbur Wright, citizens of the United States, residing at Dayton, in the county of Montgomery and State of Ohio, have invented certain new and useful Improvements in Flying-Machines...",
-  originalPdfUrl:
-    "https://patentimages.storage.googleapis.com/e5/22/e1/e141a02936279f/US821393.pdf",
+  originalPdfUrl: "/patents/pdfs/us-821393-wright-flyer.pdf",
   googlePatentsUrl: "https://patents.google.com/patent/US821393A/en",
   usptoClassification: "B64C 13/00 (Aeronautics; Aircraft control systems)",
   originalText: `UNITED STATES PATENT OFFICE.

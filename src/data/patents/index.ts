@@ -2,20 +2,28 @@ import type { Patent } from "@/types/patent";
 import { bellTelephonePatent } from "./bell-telephone";
 import { edisonLightbulbPatent } from "./edison-lightbulb";
 import { farnsworthTvPatent } from "./farnsworth-tv";
+import { goodyearRubberPatent } from "./goodyear-rubber";
 import { kwolekKevlarPatent } from "./kwolek-kevlar";
+import { lamarrFrequencyHoppingPatent } from "./lamarr-frequency-hopping";
+import { marconiRadioPatent } from "./marconi-radio";
+import { morseTelegraphPatent } from "./morse-telegraph";
 import { noyceIcPatent } from "./noyce-ic";
 import { spencerMicrowavePatent } from "./spencer-microwave";
 import { teslaMotorPatent } from "./tesla-motor";
 import { wrightFlyerPatent } from "./wright-flyer";
 
 export const allPatents: Patent[] = [
-  wrightFlyerPatent,
-  teslaMotorPatent,
-  edisonLightbulbPatent,
+  morseTelegraphPatent,
+  goodyearRubberPatent,
   bellTelephonePatent,
+  edisonLightbulbPatent,
+  teslaMotorPatent,
+  marconiRadioPatent,
+  wrightFlyerPatent,
   farnsworthTvPatent,
-  noyceIcPatent,
+  lamarrFrequencyHoppingPatent,
   spencerMicrowavePatent,
+  noyceIcPatent,
   kwolekKevlarPatent,
 ];
 
@@ -24,7 +32,7 @@ export function getPatentById(id: string): Patent | undefined {
 }
 
 export function getFeaturedPatents(): Patent[] {
-  return [wrightFlyerPatent, teslaMotorPatent, noyceIcPatent];
+  return [wrightFlyerPatent, teslaMotorPatent, noyceIcPatent, lamarrFrequencyHoppingPatent];
 }
 
 export function getPatentsByCategory(category: string): Patent[] {

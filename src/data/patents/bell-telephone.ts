@@ -17,8 +17,7 @@ export const bellTelephonePatent: Patent = {
     "Commonly described as the single most valuable patent in history. Alexander Graham Bell realized that human vocal speech could not be transmitted using intermittent make-and-break telegraph clicks. Instead, he invented the method and apparatus for creating continuous 'undulating' electrical currents whose instantaneous amplitude and frequency match the acoustic pressure variations of the human voice in air.",
   heroQuote:
     "Be it known that I, Alexander Graham Bell, of Salem, Massachusetts, have invented certain new and useful Improvements in Telegraphy, of which the following is a specification...",
-  originalPdfUrl:
-    "https://patentimages.storage.googleapis.com/b2/84/c4/f70cf611c03930/US174465.pdf",
+  originalPdfUrl: "/patents/pdfs/us-174465-bell-telephone.pdf",
   googlePatentsUrl: "https://patents.google.com/patent/US174465A/en",
   usptoClassification: "H04M 1/00 (Telephonic systems; Transmitters)",
   originalText: `UNITED STATES PATENT OFFICE.

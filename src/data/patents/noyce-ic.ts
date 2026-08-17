@@ -17,8 +17,7 @@ export const noyceIcPatent: Patent = {
     "The birth certificate of Silicon Valley and the microchip. Robert Noyce solved the catastrophic 'tyranny of numbers' that threatened to stall the computer age. Instead of assembling individual transistors by hand-soldering fragile gold wires, Noyce invented a monolithic structure where multiple transistors, diodes, and resistors are formed within a single silicon crystal and interconnected by an evaporated, chemically etched aluminum metal layer laid directly over an insulating silicon dioxide coating.",
   heroQuote:
     "This invention relates to semiconductor devices and lead structures for making electrical connections to the various regions of semiconductor devices...",
-  originalPdfUrl:
-    "https://patentimages.storage.googleapis.com/6c/53/78/30d19213192087/US2981877.pdf",
+  originalPdfUrl: "/patents/pdfs/us-2981877-noyce-ic.pdf",
   googlePatentsUrl: "https://patents.google.com/patent/US2981877A/en",
   usptoClassification: "H01L 27/00 (Integrated circuits; Monolithic semiconductor structures)",
   originalText: `UNITED STATES PATENT OFFICE.
