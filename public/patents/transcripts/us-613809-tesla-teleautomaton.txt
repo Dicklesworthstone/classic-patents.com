@@ -1,0 +1,24 @@
+UNITED STATES PATENT OFFICE.
+NIKOLA TESLA, OF NEW YORK, N. Y.
+
+METHOD OF AND APPARATUS FOR CONTROLLING MECHANISM OF MOVING VESSELS OR VEHICLES.
+
+SPECIFICATION forming part of Letters Patent No. 613,809, dated November 8, 1898.
+Application filed July 1, 1898. Serial No. 684,934. (No model.)
+
+To all whom it may concern:
+Be it known that I, NIKOLA TESLA, a citizen of the United States, residing at New York, in the County and State of New York, have invented certain new and useful Improvements in Methods of and Apparatus for Controlling Mechanism of Moving Vessels or Vehicles; and I do hereby declare that the following is a full, clear, and exact description of the invention.
+
+The invention which I have described consists in a method of and apparatus for controlling from a distance the operation of the mechanism for propelling and steering a moving vessel or vehicle by means of waves, impulses, or radiations conveyed through the natural media to a receiving apparatus situated on the vessel.
+
+My invention comprises:
+First, a transmitting apparatus capable of generating and transmitting through the natural media (such as the air, water, or ground) electromagnetic waves or impulses of predetermined frequency and character.
+Second, a receiving conductor or antenna mounted on the vessel, connected to a sensitive electrical detector or coherer adapted to be acted upon by the received waves.
+Third, a local relay or circuit-controller actuated by the detector whenever an electromagnetic impulse is received.
+Fourth, a multi-position rotary switch or commutator device stepped sequentially by the relay, having contacts so arranged that successive impulses selectively close and open circuits controlling the electric steering-motor, the propulsion-motor, and signalling lights on the vessel.
+Fifth, an automatic mechanical tapper or decoherer synchronized with the relay mechanism to restore the detector to its sensitive, non-conducting condition immediately after each impulse is received.
+
+CLAIMS:
+1. The method of controlling the mechanism of a moving vessel or vehicle, which consists in producing electromagnetic waves or impulses at a distant station, receiving said waves upon a receiving-circuit on the vessel, and utilizing the energy of the received waves to actuate a sensitive electrical device which in turn controls the operation of the propelling or steering mechanism, substantially as described.
+2. In an apparatus for controlling moving vessels, the combination, with a receiving-antenna and a sensitive coherer device, of a local relay energized by the coherer, a rotary commutator stepped by said relay, and circuits controlled by said commutator for operating the steering-gear and propulsion-motor of the vessel.
+3. In a radio-controlled vessel, the combination, with the coherer, of an automatic tapper or decoherer operated synchronously with the stepping mechanism to restore the coherer to its high-resistance non-conducting state immediately after the reception of each control impulse.

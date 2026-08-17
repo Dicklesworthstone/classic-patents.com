@@ -1,0 +1,31 @@
+UNITED STATES PATENT OFFICE.
+OTTMAR MERGENTHALER, OF BALTIMORE, MARYLAND.
+
+MACHINE FOR PRODUCING PRINTING-BARS.
+
+SPECIFICATION forming part of Letters Patent No. 313,224, dated March 3, 1885.
+Application filed July 14, 1884. Serial No. 137,705. (No model.)
+
+To all whom it may concern:
+Be it known that I, OTTMAR MERGENTHALER, of Baltimore, in the State of Maryland, have invented certain new and useful Improvements in Machines for Producing Printing-Bars; and I do hereby declare that the following is a full, clear, and exact description of the invention.
+
+The object of my invention is to produce with great rapidity and precision cast metal bars or slugs containing upon their edges lines of type-characters ready for use in printing-presses, thereby doing away with the necessity for manual typesetting from type-cases and the subsequent distribution of type by hand.
+
+The invention consists, fundamentally:
+First, in a series of independent matrices or matrix-bars containing type dies or female characters, arranged to be stored in an inclined magazine and released individually by the action of key-levers.
+Second, in an assembling mechanism for gathering the released matrices into a line together with expanding wedge-spacers or spacebands.
+Third, in a line-justifying mechanism which drives the wedges upward to expand the spaces between words until the composed line completely fills the predetermined column measure between fixed jaws.
+Fourth, in a casting apparatus comprising a melting-pot containing molten lead-tin-antimony alloy, a pump plunger to inject the molten metal under pressure through a slotted throat into a water-cooled mold against the justified line of matrices, thereby producing a solid printing bar or slug bearing raised type characters.
+Fifth, in an automatic distributing mechanism whereby the matrices, after the slug has been cast, are elevated to the top of the machine and conveyed along a distributor bar provided with longitudinal ribs having varying combinations of teeth, matching corresponding notches in the matrix teeth, so that each matrix falls by gravity into its own proper channel in the magazine.
+
+Referring to the accompanying drawings:
+Figure 1 is a side elevation of the entire machine showing the magazine, keyboard, line assembler, casting apparatus, and matrix elevator.
+Figure 2 is a perspective view of an individual matrix showing the character die on its edge and the 7-bit binary tooth combination on its upper notch.
+Figure 3 is an elevation of the two-part sliding wedge spaceband.
+Figure 4 is a sectional view of the melting pot, pump plunger, and water-cooled mold disc.
+Figure 5 is a detailed view of the binary distributor rail showing the varying longitudinal ribs for disengaging matrix teeth.
+
+CLAIMS:
+1. The combination, with a magazine containing a series of independent matrix-bars and a series of key-levers for releasing said matrices, of an assembling mechanism for grouping the matrices in line, a casting mechanism for forming a cast slug or printing-bar from the assembled line of matrices, and an automatic distributing mechanism for returning the matrices to their respective channels in the magazine, substantially as described.
+2. In a machine for producing printing-bars, the combination of independent matrices and expansible wedge-shaped spacebands, with means for driving the wedges to justify the line before casting.
+3. In a machine for producing printing-bars, a distributor-bar having its exterior surface provided with longitudinal ribs having varying combinations of teeth, in combination with matrices having matching notched tooth combinations, whereby each matrix is conveyed along the bar until it reaches the point where its teeth disengage, and is there permitted to drop into its magazine channel.

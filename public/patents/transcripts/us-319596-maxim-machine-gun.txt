@@ -1,0 +1,24 @@
+UNITED STATES PATENT OFFICE.
+HIRAM S. MAXIM, OF LONDON, ENGLAND.
+
+AUTOMATIC GUN.
+
+SPECIFICATION forming part of Letters Patent No. 319,596, dated June 9, 1885.
+Application filed June 27, 1884. Serial No. 136,183. (No model.)
+
+To all whom it may concern:
+Be it known that I, HIRAM STEVENS MAXIM, of London, England, have invented certain new and useful Improvements in Automatic Guns; and I do hereby declare that the following is a full, clear, and exact description of the invention.
+
+The chief object of my invention is to utilize the recoil of a gun for opening the breech, extracting the empty cartridge-case, cocking the firing-pin or striker, feeding a fresh cartridge into the barrel, and closing and locking the breech, so that the gun will continue to fire automatically at a high rate of speed so long as the trigger is held back and ammunition supplied.
+
+In carrying my invention into practice:
+First, the barrel and breech-block are arranged to recoil together for a short distance after the discharge of a cartridge, the breech remaining firmly locked during this initial movement.
+Second, after the projectile has left the muzzle, a toggle-joint mechanism connecting the breech-block with the casing is caused to break its straight or locked alignment by an arm striking an inclined surface or stop, thereby unlocking the breech-block and accelerating it rearward relative to the barrel.
+Third, the rearward travel of the breech-block withdraws the fired cartridge-case from the barrel chamber and causes an extractor to deposit it into an ejection chute, while simultaneously drawing forward a cartridge-belt and positioning a new cartridge in alignment with the chamber.
+Fourth, a coiled volute spring is placed in tension by the rearward movement, which spring returns the breech-block, chambers the new round, locks the toggle joint into straight collinear alignment, and trips the striker if the trigger is depressed.
+Fifth, the barrel is enclosed within a water-jacket or casing containing cooling water to absorb the heat of continuous rapid firing and prevent the barrel from softening or losing accuracy.
+
+CLAIMS:
+1. The combination, with a gun barrel and a breech-block capable of recoiling together for a short distance upon the firing of a cartridge, of a toggle-joint mechanism connecting the breech-block with the stationary gun casing, and means for breaking the locked alignment of said toggle-joint after the initial recoil movement, whereby the breech-block is unlocked and moved rearward away from the barrel to open the breech, extract the empty case, and cock the firing mechanism.
+2. In an automatic gun, the combination, with the recoiling breech-block, of a cartridge-belt feed mechanism operated by the movement of said breech-block, whereby each recoil cycle automatically advances the belt and positions a fresh cartridge in front of the open barrel chamber.
+3. In an automatic gun, the combination, with the recoiling barrel, of a surrounding jacket or casing adapted to contain water for cooling the barrel during rapid and continuous firing.

@@ -1,0 +1,25 @@
+UNITED STATES PATENT OFFICE.
+RUDOLF DIESEL, OF BERLIN, GERMANY.
+
+INTERNAL-COMBUSTION ENGINE.
+
+SPECIFICATION forming part of Letters Patent No. 542,846, dated July 16, 1895.
+Application filed March 14, 1895. Serial No. 541,757. (No model.) Patented in Germany February 28, 1892, No. 67,207.
+
+To all whom it may concern:
+Be it known that I, RUDOLF DIESEL, a subject of the King of Bavaria, residing at Berlin, in the Kingdom of Prussia, German Empire, have invented certain new and useful Improvements in Internal-Combustion Engines; and I do hereby declare that the following is a full, clear, and exact description of the invention.
+
+The object of my invention is to increase the thermal efficiency of internal-combustion engines and approach more closely than has hitherto been possible the theoretical maximum efficiency of the Carnot cycle.
+
+In existing internal-combustion engines, a mixture of combustible gas or vapor and air is compressed within the cylinder and then ignited by a spark, flame, or hot tube, causing an instantaneous explosion with a sudden, violent rise in temperature and pressure. In such engines, the compression is strictly limited to prevent premature ignition or knocking, and large quantities of heat are lost to the water-cooled cylinder walls.
+
+According to my present invention:
+First, pure air is drawn into the working cylinder and compressed by the working piston to a degree far exceeding that used in ordinary engines—namely, to a pressure of from thirty to ninety atmospheres—whereby the temperature of the air is raised by the work of compression alone to a degree far above the ignition point of the fuel to be used.
+Second, into this highly compressed and red-hot air, finely divided liquid or pulverized solid fuel is gradually injected during a portion of the forward stroke of the piston, so that the fuel burns instantly and progressively upon its entry into the cylinder without an explosive rise in pressure.
+Third, the rate of fuel injection is so regulated in proportion to the piston displacement that the combustion takes place at substantially constant pressure or constant temperature.
+Fourth, after fuel injection ceases, the hot gases expand further down to near atmospheric pressure, converting their heat energy into useful mechanical work before being exhausted.
+
+CLAIMS:
+1. The method of operating internal-combustion engines, which consists in compressing pure air in the cylinder by the working piston to a pressure and temperature above the ignition-point of the fuel to be used, then injecting fuel gradually into said compressed and heated air, whereby the fuel ignites and burns spontaneously upon entry without explosive rise of pressure, and then allowing the resulting gases to expand against the piston, substantially as described.
+2. In an internal-combustion engine, the combination, with a working cylinder and piston adapted to compress air to a pressure of thirty atmospheres or more, of a fuel-injection nozzle communicating with the cylinder, and an air-pump delivering air under a pressure higher than the cylinder compression to inject fuel into the heated air in the cylinder.
+3. In an internal-combustion engine, the combination, with the fuel-injection valve, of a governor adapted to vary the duration of fuel injection according to the load on the engine, whereby combustion is maintained at substantially constant pressure regardless of load.

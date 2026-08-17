@@ -1,0 +1,23 @@
+UNITED STATES PATENT OFFICE.
+GOTTLIEB DAIMLER, OF CANNSTATT, GERMANY.
+
+MOTOR-CARRIAGE.
+
+SPECIFICATION forming part of Letters Patent No. 361,931, dated April 26, 1887.
+Application filed September 18, 1886. Serial No. 213,912. (No model.) Patented in Germany October 26, 1886, No. 39,367.
+
+To all whom it may concern:
+Be it known that I, GOTTLIEB DAIMLER, a subject of the King of Würtemberg, residing at Cannstatt, in the Kingdom of Würtemberg, German Empire, have invented certain new and useful Improvements in Motor-Carriages; and I do hereby declare that the following is a full, clear, and exact description of the invention.
+
+The object of my invention is to produce a light, compact, and efficient motor-vehicle capable of transporting passengers and goods upon ordinary roads at high speeds without requiring tracks or heavy steam-boilers.
+
+The invention consists essentially:
+First, in a high-speed gas or petroleum internal-combustion engine having an enclosed crankcase and an incandescent hot-tube ignition apparatus, whereby the engine can operate continuously at six hundred to nine hundred revolutions per minute.
+Second, in the arrangement and mounting of said engine vertically within or upon the frame of a carriage, with the driving-shaft connected by flexible belts, pulleys, and friction clutches to a countershaft.
+Third, in a differential gear mechanism transmitting power from said countershaft to the rear driving wheels, whereby the wheels can revolve at different speeds when turning corners while each receiving driving torque from the engine.
+Fourth, in a steering mechanism connected to the front carriage axle, controlled by a vertical steering spindle and handle convenient to the driver's seat.
+
+CLAIMS:
+1. The combination, with a carriage body and running-gear, of a high-speed gas or petroleum motor mounted thereon, a driving-shaft rotated by said motor, a countershaft connected by belts and friction-clutches with the driving-shaft, and differential gearing connecting said countershaft with the driving-wheels, substantially as and for the purpose set forth.
+2. In a motor-carriage, the combination, with the motor and the driving-wheels, of a friction-pulley transmission comprising belts of different diameters, and a belt-tightening lever for engaging and disengaging said belts to vary the speed of the carriage relative to the motor.
+3. In a motor-carriage, the combination, with the motor cylinder, of an incandescent ignition-tube extending into the combustion space, and an external burner for maintaining said tube at red heat, whereby ignition of the compressed charge is effected automatically at high speed.
