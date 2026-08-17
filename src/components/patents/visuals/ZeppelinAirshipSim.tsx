@@ -2,13 +2,16 @@
 
 import { Play, RotateCcw, Volume2, VolumeX } from "lucide-react";
 import { useEffect, useState } from "react";
+import { usePatentPhysics } from "@/physics/usePatentPhysics";
+import { usePatentAudio } from "./three/usePatentAudio";
 
 export function ZeppelinAirshipSim() {
-  const [flightSpeedKnots, setFlightSpeedKnots] = useState<number>(28);
-  const [gasCellPurityPct, setGasCellPurityPct] = useState<number>(98);
-  const [slidingTrimKg, setSlidingTrimKg] = useState<number>(0);
+  const { params, updateParam, resetParams } = usePatentPhysics("us-621195-zeppelin-airship");
+  const { isAudioMuted, toggleSound } = usePatentAudio();
+  const flightSpeedKnots = params.flightSpeedKnots ?? 28;
+  const gasCellPurityPct = params.gasInflation ?? 98;
+  const slidingTrimKg = (params.trimWeight ?? 0) * 33.3; // Scale -15..15m to -500..500kg equivalent
   const [isPlaying, setIsPlaying] = useState<boolean>(true);
-  const [isMuted, setIsMuted] = useState<boolean>(true);
   const [pitchDeg, setPitchDeg] = useState<number>(0);
 
   // Aerostatic & Aerodynamic physics
@@ -45,12 +48,7 @@ export function ZeppelinAirshipSim() {
           </button>
           <button
             type="button"
-            onClick={() => {
-              setFlightSpeedKnots(28);
-              setGasCellPurityPct(98);
-              setSlidingTrimKg(0);
-              setPitchDeg(0);
-            }}
+            onClick={resetParams}
             aria-label="Reset Simulation"
             className="p-2 rounded-lg bg-parchment-200 dark:bg-ink-800 hover:bg-parchment-300 dark:hover:bg-ink-700 text-ink-800 dark:text-parchment-200 transition-colors"
           >
@@ -58,11 +56,11 @@ export function ZeppelinAirshipSim() {
           </button>
           <button
             type="button"
-            onClick={() => setIsMuted(!isMuted)}
-            aria-label={isMuted ? "Unmute Audio" : "Mute Audio"}
+            onClick={() => toggleSound()}
+            aria-label={isAudioMuted ? "Unmute Audio" : "Mute Audio"}
             className="p-2 rounded-lg bg-parchment-200 dark:bg-ink-800 hover:bg-parchment-300 dark:hover:bg-ink-700 text-ink-800 dark:text-parchment-200 transition-colors"
           >
-            {isMuted ? (
+            {isAudioMuted ? (
               <VolumeX className="w-4 h-4" />
             ) : (
               <Volume2 className="w-4 h-4 text-amber-600" />
@@ -234,32 +232,32 @@ export function ZeppelinAirshipSim() {
           <div className="flex justify-between text-xs font-sans font-medium text-ink-700 dark:text-parchment-300 mb-1">
             <span>Sliding Trim Weight Position (Keel)</span>
             <span className="font-mono">
-              {slidingTrimKg} kg (
+              {slidingTrimKg.toFixed(0)} kg (
               {slidingTrimKg < 0 ? "Bow Down" : slidingTrimKg > 0 ? "Stern Down" : "Level"})
             </span>
           </div>
           <input
             type="range"
-            min="-500"
-            max="500"
-            step="25"
-            value={slidingTrimKg}
-            onChange={(e) => setSlidingTrimKg(Number(e.target.value))}
+            min="-15"
+            max="15"
+            step="1"
+            value={params.trimWeight ?? 0}
+            onChange={(e) => updateParam("trimWeight", Number(e.target.value))}
             className="w-full accent-amber-600 cursor-pointer"
           />
         </div>
         <div>
           <div className="flex justify-between text-xs font-sans font-medium text-ink-700 dark:text-parchment-300 mb-1">
-            <span>Gas Cell Hydrogen Purity</span>
+            <span>Gas Cell Hydrogen Purity / Inflation</span>
             <span className="font-mono">{gasCellPurityPct}%</span>
           </div>
           <input
             type="range"
-            min="90"
+            min="75"
             max="100"
             step="1"
             value={gasCellPurityPct}
-            onChange={(e) => setGasCellPurityPct(Number(e.target.value))}
+            onChange={(e) => updateParam("gasInflation", Number(e.target.value))}
             className="w-full accent-amber-600 cursor-pointer"
           />
         </div>

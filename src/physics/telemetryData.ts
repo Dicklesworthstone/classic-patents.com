@@ -2238,11 +2238,21 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
         defaultValue: 1.6,
         unit: "ratio",
       },
+      {
+        id: "engineRpm",
+        label: "Engine Shaft Speed",
+        min: 60,
+        max: 300,
+        step: 10,
+        defaultValue: 150,
+        unit: "RPM",
+      },
     ],
     computeMetrics: (p) => {
       const r = p.compRatio ?? 18;
       const pBlast = p.blastAirPressure ?? 65;
       const rc = p.cutoffRatio ?? 1.6;
+      const _rpm = p.engineRpm ?? 150;
       const tCompC = Math.round(300 * r ** 0.4 - 273);
       const pComp = (1.0 * r ** 1.4).toFixed(1);
       const idealEff = ((1 - (1 / r ** 0.4) * ((rc ** 1.4 - 1) / (1.4 * (rc - 1)))) * 100).toFixed(
@@ -2309,6 +2319,24 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
         step: 5,
         defaultValue: 15,
         unit: "°",
+      },
+      {
+        id: "pulseCount",
+        label: "RF Pulse Count",
+        min: 0,
+        max: 20,
+        step: 1,
+        defaultValue: 3,
+        unit: "pulses",
+      },
+      {
+        id: "propellerThrottlePct",
+        label: "Electric Motor Throttle",
+        min: 0,
+        max: 100,
+        step: 5,
+        defaultValue: 75,
+        unit: "%",
       },
     ],
     computeMetrics: (p) => {
@@ -2390,6 +2418,15 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
         step: 1,
         defaultValue: 5,
         unit: "m",
+      },
+      {
+        id: "flightSpeedKnots",
+        label: "Cruising Airspeed",
+        min: 10,
+        max: 45,
+        step: 1,
+        defaultValue: 28,
+        unit: "knots",
       },
     ],
     computeMetrics: (p) => {
@@ -3609,21 +3646,39 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
         defaultValue: 3000,
         unit: "RPM",
       },
+      {
+        id: "inletPressurePsi",
+        label: "Boiler Inlet Steam Pressure",
+        min: 60,
+        max: 300,
+        step: 10,
+        defaultValue: 180,
+        unit: "psi",
+      },
     ],
     computeMetrics: (p) => {
       const rpm = p.rotorRpm ?? 3000;
-      const kw = Math.round((rpm / 3000) * 750);
+      const psi = p.inletPressurePsi ?? 180;
+      const enthalpy = Math.round(550 * (psi / 180));
+      const kw = Math.round(28 * enthalpy * 0.84 * (rpm / 3000));
       return [
         {
           label: "Shaft Power Output",
-          value: `${kw} kW`,
+          value: `${kw.toLocaleString()} kW`,
           unit: "P_shaft",
           badgeColor: "emerald",
-          progressPct: (kw / 1500) * 100,
+          progressPct: (kw / 25000) * 100,
         },
         {
-          label: "Blade Stage Expansion",
-          value: "12 Stages",
+          label: "Inlet Pressure",
+          value: `${(psi * 0.00689476).toFixed(2)} MPa`,
+          unit: "P_inlet",
+          badgeColor: "amber",
+          progressPct: (psi / 300) * 100,
+        },
+        {
+          label: "Reaction Expansion",
+          value: "45 Compound Stages",
           unit: "stages",
           badgeColor: "cyan",
           progressPct: 100,

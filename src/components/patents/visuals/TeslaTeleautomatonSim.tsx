@@ -2,13 +2,16 @@
 
 import { RotateCcw, Volume2, VolumeX, Zap } from "lucide-react";
 import { useState } from "react";
+import { usePatentPhysics } from "@/physics/usePatentPhysics";
+import { usePatentAudio } from "./three/usePatentAudio";
 
 export function TeslaTeleautomatonSim() {
-  const [pulseCount, setPulseCount] = useState<number>(3);
-  const [rudderAngleDeg, setRudderAngleDeg] = useState<number>(15);
-  const [propellerThrottlePct, setPropellerThrottlePct] = useState<number>(75);
+  const { params, updateParam, resetParams } = usePatentPhysics("us-613809-tesla-teleautomaton");
+  const { isAudioMuted, toggleSound } = usePatentAudio();
+  const rudderAngleDeg = params.rudderAngle ?? 15;
+  const propellerThrottlePct = params.propellerThrottlePct ?? 75;
+  const pulseCount = params.pulseCount ?? 3;
   const [isTransmitting, setIsTransmitting] = useState<boolean>(false);
-  const [isMuted, setIsMuted] = useState<boolean>(true);
 
   // Radio & coherer kinematics
   const cohererSensitivityPct = 96;
@@ -32,7 +35,7 @@ export function TeslaTeleautomatonSim() {
 
   const handleSendPulse = () => {
     setIsTransmitting(true);
-    setPulseCount((prev) => prev + 1);
+    updateParam("pulseCount", (pulseCount + 1) % 20);
     setTimeout(() => setIsTransmitting(false), 400);
   };
 
@@ -60,23 +63,19 @@ export function TeslaTeleautomatonSim() {
           </button>
           <button
             type="button"
-            onClick={() => {
-              setPulseCount(0);
-              setRudderAngleDeg(0);
-              setIsTransmitting(false);
-            }}
-            aria-label="Reset Teleautomaton"
+            onClick={resetParams}
+            aria-label="Reset Teleautomaton Logic"
             className="p-2 rounded-lg bg-parchment-200 dark:bg-ink-800 hover:bg-parchment-300 dark:hover:bg-ink-700 text-ink-800 dark:text-parchment-200 transition-colors"
           >
             <RotateCcw className="w-4 h-4" />
           </button>
           <button
             type="button"
-            onClick={() => setIsMuted(!isMuted)}
-            aria-label={isMuted ? "Unmute Audio" : "Mute Audio"}
+            onClick={() => toggleSound()}
+            aria-label={isAudioMuted ? "Unmute Audio" : "Mute Audio"}
             className="p-2 rounded-lg bg-parchment-200 dark:bg-ink-800 hover:bg-parchment-300 dark:hover:bg-ink-700 text-ink-800 dark:text-parchment-200 transition-colors"
           >
-            {isMuted ? (
+            {isAudioMuted ? (
               <VolumeX className="w-4 h-4" />
             ) : (
               <Volume2 className="w-4 h-4 text-amber-600" />
@@ -279,11 +278,11 @@ export function TeslaTeleautomatonSim() {
           </div>
           <input
             type="range"
-            min="-30"
-            max="30"
+            min="-35"
+            max="35"
             step="5"
             value={rudderAngleDeg}
-            onChange={(e) => setRudderAngleDeg(Number(e.target.value))}
+            onChange={(e) => updateParam("rudderAngle", Number(e.target.value))}
             className="w-full accent-amber-600 cursor-pointer"
           />
         </div>
@@ -298,7 +297,7 @@ export function TeslaTeleautomatonSim() {
             max="100"
             step="5"
             value={propellerThrottlePct}
-            onChange={(e) => setPropellerThrottlePct(Number(e.target.value))}
+            onChange={(e) => updateParam("propellerThrottlePct", Number(e.target.value))}
             className="w-full accent-amber-600 cursor-pointer"
           />
         </div>

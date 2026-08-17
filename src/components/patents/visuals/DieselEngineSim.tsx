@@ -2,12 +2,15 @@
 
 import { Play, RotateCcw, Volume2, VolumeX } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
+import { usePatentPhysics } from "@/physics/usePatentPhysics";
+import { usePatentAudio } from "./three/usePatentAudio";
 
 export function DieselEngineSim() {
-  const [compressionRatio, setCompressionRatio] = useState<number>(16);
-  const [engineRpm, setEngineRpm] = useState<number>(150);
+  const { params, updateParam, resetParams } = usePatentPhysics("us-542846-diesel-engine");
+  const { isAudioMuted, toggleSound } = usePatentAudio();
+  const compressionRatio = params.compRatio ?? 18;
+  const engineRpm = params.engineRpm ?? 150;
   const [isPlaying, setIsPlaying] = useState<boolean>(true);
-  const [isMuted, setIsMuted] = useState<boolean>(true);
   const [crankAngleDeg, setCrankAngleDeg] = useState<number>(0);
   const animRef = useRef<number | null>(null);
 
@@ -64,11 +67,7 @@ export function DieselEngineSim() {
           </button>
           <button
             type="button"
-            onClick={() => {
-              setCompressionRatio(16);
-              setEngineRpm(150);
-              setCrankAngleDeg(0);
-            }}
+            onClick={resetParams}
             aria-label="Reset Simulation"
             className="p-2 rounded-lg bg-parchment-200 dark:bg-ink-800 hover:bg-parchment-300 dark:hover:bg-ink-700 text-ink-800 dark:text-parchment-200 transition-colors"
           >
@@ -76,11 +75,11 @@ export function DieselEngineSim() {
           </button>
           <button
             type="button"
-            onClick={() => setIsMuted(!isMuted)}
-            aria-label={isMuted ? "Unmute Audio" : "Mute Audio"}
+            onClick={() => toggleSound()}
+            aria-label={isAudioMuted ? "Unmute Audio" : "Mute Audio"}
             className="p-2 rounded-lg bg-parchment-200 dark:bg-ink-800 hover:bg-parchment-300 dark:hover:bg-ink-700 text-ink-800 dark:text-parchment-200 transition-colors"
           >
-            {isMuted ? (
+            {isAudioMuted ? (
               <VolumeX className="w-4 h-4" />
             ) : (
               <Volume2 className="w-4 h-4 text-amber-600" />
@@ -240,11 +239,11 @@ export function DieselEngineSim() {
           </div>
           <input
             type="range"
-            min="10"
+            min="12"
             max="22"
-            step="1"
+            step="0.5"
             value={compressionRatio}
-            onChange={(e) => setCompressionRatio(Number(e.target.value))}
+            onChange={(e) => updateParam("compRatio", Number(e.target.value))}
             className="w-full accent-amber-600 cursor-pointer"
           />
         </div>
@@ -255,11 +254,11 @@ export function DieselEngineSim() {
           </div>
           <input
             type="range"
-            min="80"
+            min="60"
             max="300"
             step="10"
             value={engineRpm}
-            onChange={(e) => setEngineRpm(Number(e.target.value))}
+            onChange={(e) => updateParam("engineRpm", Number(e.target.value))}
             className="w-full accent-amber-600 cursor-pointer"
           />
         </div>

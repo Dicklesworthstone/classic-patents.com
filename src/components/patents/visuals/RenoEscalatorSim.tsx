@@ -226,15 +226,17 @@ export function RenoEscalatorSim() {
         <div>
           <div className="flex justify-between text-xs font-sans font-medium text-ink-700 dark:text-parchment-300 mb-1">
             <span>Escalator Linear Speed</span>
-            <span className="font-mono">{beltSpeedFpm} Feet/Min</span>
+            <span className="font-mono">
+              {beltSpeedMps} m/s ({beltSpeedFpm} FPM)
+            </span>
           </div>
           <input
             type="range"
-            min="40"
-            max="120"
-            step="5"
-            value={beltSpeedFpm}
-            onChange={(e) => setBeltSpeedFpm(Number(e.target.value))}
+            min="0.3"
+            max="0.75"
+            step="0.05"
+            value={beltSpeedMps}
+            onChange={(e) => updateParam("beltSpeed", Number(e.target.value))}
             className="w-full accent-amber-600 cursor-pointer"
           />
         </div>
@@ -246,10 +248,10 @@ export function RenoEscalatorSim() {
           <input
             type="range"
             min="0"
-            max="50"
+            max="60"
             step="2"
             value={passengerLoad}
-            onChange={(e) => setPassengerLoad(Number(e.target.value))}
+            onChange={(e) => updateParam("passengerCount", Number(e.target.value))}
             className="w-full accent-amber-600 cursor-pointer"
           />
         </div>

@@ -2,17 +2,20 @@
 
 import { Play, RotateCcw, Volume2, VolumeX } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
+import { usePatentPhysics } from "@/physics/usePatentPhysics";
+import { usePatentAudio } from "./three/usePatentAudio";
 
 export function MaximMachineGunSim() {
-  const [cyclicRateRpm, setCyclicRateRpm] = useState<number>(600);
-  const [jacketWaterLiters, setJacketWaterLiters] = useState<number>(4.0);
+  const { params, updateParam, resetParams } = usePatentPhysics("us-319596-maxim-machine-gun");
+  const { isAudioMuted, toggleSound } = usePatentAudio();
+  const cyclicRateRpm = params.firingRate ?? 600;
+  const jacketWaterLiters = params.waterLevel ?? 4.0;
+  const recoilStrokeMm = params.recoilStroke ?? 19;
   const [isPlaying, setIsPlaying] = useState<boolean>(true);
-  const [isMuted, setIsMuted] = useState<boolean>(true);
   const [recoilPhase, setRecoilPhase] = useState<number>(0);
   const animRef = useRef<number | null>(null);
 
   // Recoil & thermal physics
-  const recoilStrokeMm = 19; // Short-recoil barrel stroke
   const _isWaterBoiling = jacketWaterLiters < 1.0;
   const barrelTempC = Math.round(80 + (600 - jacketWaterLiters * 100) * 0.15);
   const _muzzleEnergyJoules = 3400; // .303 British round
@@ -62,11 +65,7 @@ export function MaximMachineGunSim() {
           </button>
           <button
             type="button"
-            onClick={() => {
-              setCyclicRateRpm(600);
-              setJacketWaterLiters(4.0);
-              setRecoilPhase(0);
-            }}
+            onClick={resetParams}
             aria-label="Reset Simulation"
             className="p-2 rounded-lg bg-parchment-200 dark:bg-ink-800 hover:bg-parchment-300 dark:hover:bg-ink-700 text-ink-800 dark:text-parchment-200 transition-colors"
           >
@@ -74,11 +73,11 @@ export function MaximMachineGunSim() {
           </button>
           <button
             type="button"
-            onClick={() => setIsMuted(!isMuted)}
-            aria-label={isMuted ? "Unmute Audio" : "Mute Audio"}
+            onClick={() => toggleSound()}
+            aria-label={isAudioMuted ? "Unmute Audio" : "Mute Audio"}
             className="p-2 rounded-lg bg-parchment-200 dark:bg-ink-800 hover:bg-parchment-300 dark:hover:bg-ink-700 text-ink-800 dark:text-parchment-200 transition-colors"
           >
-            {isMuted ? (
+            {isAudioMuted ? (
               <VolumeX className="w-4 h-4" />
             ) : (
               <Volume2 className="w-4 h-4 text-amber-600" />
@@ -247,11 +246,11 @@ export function MaximMachineGunSim() {
           </div>
           <input
             type="range"
-            min="400"
-            max="800"
+            min="300"
+            max="750"
             step="25"
             value={cyclicRateRpm}
-            onChange={(e) => setCyclicRateRpm(Number(e.target.value))}
+            onChange={(e) => updateParam("firingRate", Number(e.target.value))}
             className="w-full accent-amber-600 cursor-pointer"
           />
         </div>
@@ -262,11 +261,11 @@ export function MaximMachineGunSim() {
           </div>
           <input
             type="range"
-            min="0.5"
-            max="5.0"
-            step="0.5"
+            min="0"
+            max="4.0"
+            step="0.2"
             value={jacketWaterLiters}
-            onChange={(e) => setJacketWaterLiters(Number(e.target.value))}
+            onChange={(e) => updateParam("waterLevel", Number(e.target.value))}
             className="w-full accent-amber-600 cursor-pointer"
           />
         </div>

@@ -6,7 +6,7 @@ import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { usePatentAudio } from "./three/usePatentAudio";
 
 export function HollerithTabulatingSim() {
-  const { params, updateParam, resetParams } = usePatentPhysics("us-395781-hollerith-tabulating");
+  const { params, resetParams } = usePatentPhysics("us-395781-hollerith-tabulating");
   const { isAudioMuted, toggleSound } = usePatentAudio();
   const circuitVoltageV = params.batteryVolts ?? 12.0;
   const cardsPerMinuteRate = params.cardsPerMin ?? 60;
