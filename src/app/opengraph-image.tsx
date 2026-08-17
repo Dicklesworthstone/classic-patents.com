@@ -117,8 +117,8 @@ export default async function Image() {
             fontStyle: "italic",
           }}
         >
-          Original USPTO specifications restored with pure-Rust OCR, plain-English engineering
-          deconstructions, and interactive physics simulations.
+          Verified USPTO specifications, plain-English engineering deconstructions, and interactive
+          3D physics simulations.
         </p>
       </div>
 
