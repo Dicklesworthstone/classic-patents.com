@@ -1,28 +1,39 @@
 import type { Metadata } from "next";
-import { EB_Garamond, Inter, JetBrains_Mono } from "next/font/google";
+import { IBM_Plex_Sans, JetBrains_Mono, Newsreader, Plus_Jakarta_Sans } from "next/font/google";
 import "./globals.css";
 import { Footer } from "@/components/layout/Footer";
 import { Header } from "@/components/layout/Header";
 
-const ebGaramond = EB_Garamond({
+const newsreader = Newsreader({
   subsets: ["latin"],
   variable: "--font-serif",
   display: "swap",
+  style: ["normal", "italic"],
 });
 
-const inter = Inter({
+const plusJakartaSans = Plus_Jakarta_Sans({
   subsets: ["latin"],
   variable: "--font-sans",
   display: "swap",
+  weight: ["400", "500", "600", "700", "800"],
+});
+
+const ibmPlexSans = IBM_Plex_Sans({
+  subsets: ["latin"],
+  variable: "--font-tech-sans",
+  display: "swap",
+  weight: ["400", "500", "600", "700"],
 });
 
 const jetbrainsMono = JetBrains_Mono({
   subsets: ["latin"],
   variable: "--font-mono",
   display: "swap",
+  weight: ["400", "500", "600"],
 });
 
 export const metadata: Metadata = {
+  metadataBase: new URL("https://classic-patents.com"),
   title: {
     default: "Classic Patents — Historical Technical Patent Museum & Dual-Projection Archive",
     template: "%s | Classic Patents",
@@ -41,6 +52,11 @@ export const metadata: Metadata = {
     "Charles Goodyear",
     "Guglielmo Marconi",
     "Hedy Lamarr",
+    "Abraham Lincoln",
+    "Elias Howe",
+    "Robert Goddard",
+    "John Bardeen",
+    "Willard Boyle",
     "Integrated Circuit",
     "Kevlar",
     "Microwave Oven",
@@ -62,7 +78,7 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     title: "Classic Patents — Historical Technical Patent Museum",
     description:
-      "Interactive 3-axis flight sims, polyphase AC vector fields, and plain-English deconstructions of history's greatest patents.",
+      "Explore history's most consequential patents decoded into plain English with interactive 3D physical simulations.",
   },
 };
 
@@ -74,12 +90,15 @@ export default function RootLayout({
   return (
     <html
       lang="en"
-      className={`${ebGaramond.variable} ${inter.variable} ${jetbrainsMono.variable} theme-parchment`}
+      className={`${newsreader.variable} ${plusJakartaSans.variable} ${ibmPlexSans.variable} ${jetbrainsMono.variable}`}
+      suppressHydrationWarning
     >
-      <body className="min-h-screen flex flex-col justify-between">
-        <Header />
-        <main className="flex-1">{children}</main>
-        <Footer />
+      <body className="antialiased selection:bg-amber-500/20 selection:text-amber-900 dark:selection:text-amber-200">
+        <div className="flex flex-col min-h-screen">
+          <Header />
+          <main className="flex-1">{children}</main>
+          <Footer />
+        </div>
       </body>
     </html>
   );

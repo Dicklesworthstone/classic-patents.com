@@ -12,7 +12,7 @@ export default function AboutPage() {
     <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-10 sm:py-16 space-y-12">
       {/* Header */}
       <div className="space-y-3 border-b border-parchment-300 dark:border-ink-800 pb-6">
-        <div className="flex items-center gap-2 text-xs font-mono uppercase tracking-widest text-amber-700 dark:text-amber-400 font-bold">
+        <div className="flex items-center gap-2 text-xs font-sans uppercase tracking-widest text-amber-700 dark:text-amber-400 font-bold">
           <Compass className="w-3.5 h-3.5" />
           Mission &amp; Philosophy
         </div>
@@ -39,7 +39,7 @@ export default function AboutPage() {
             public domain archives at the USPTO.
           </p>
           <p>However, original historical patents suffer from severe barriers to entry:</p>
-          <ul className="list-disc pl-5 space-y-1.5 font-mono text-xs">
+          <ul className="list-disc pl-5 space-y-1.5 font-sans text-xs sm:text-sm">
             <li>
               <strong>Microfilm Degradation:</strong> Most scanned PDFs are low-contrast, skewed
               raster scans from 19th-century microfilms.
@@ -126,13 +126,13 @@ export default function AboutPage() {
             href="https://github.com/Dicklesworthstone/classic-patents.com"
             target="_blank"
             rel="noopener noreferrer"
-            className="px-4 py-2 rounded-lg bg-amber-700 hover:bg-amber-800 text-white text-xs font-mono font-medium flex items-center gap-1.5 transition-colors"
+            className="px-4 py-2 rounded-lg bg-amber-700 hover:bg-amber-800 text-white text-xs font-sans font-medium flex items-center gap-1.5 transition-colors"
           >
             <ExternalLink className="w-3.5 h-3.5" /> View on GitHub
           </a>
           <Link
             href="/"
-            className="px-4 py-2 rounded-lg border border-parchment-300 dark:border-ink-700 bg-parchment-50 dark:bg-ink-950 text-ink-800 dark:text-parchment-200 text-xs font-mono hover:bg-parchment-200 dark:hover:bg-ink-800 transition-colors"
+            className="px-4 py-2 rounded-lg border border-parchment-300 dark:border-ink-700 bg-parchment-50 dark:bg-ink-950 text-ink-800 dark:text-parchment-200 text-xs font-sans hover:bg-parchment-200 dark:hover:bg-ink-800 transition-colors"
           >
             Return to Museum Catalog
           </Link>

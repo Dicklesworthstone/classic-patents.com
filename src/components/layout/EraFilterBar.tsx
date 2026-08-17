@@ -38,11 +38,11 @@ export function EraFilterBar({
             placeholder="Search patents by inventor, title, claim keyword, patent number..."
             value={searchQuery}
             onChange={(e) => onSearchChange(e.target.value)}
-            className="w-full pl-11 pr-4 py-3 bg-parchment-50 dark:bg-ink-950 border border-parchment-300 dark:border-ink-700 rounded-xl text-sm sm:text-base font-mono text-ink-950 dark:text-parchment-100 placeholder:text-ink-400 focus:outline-none focus:ring-2 focus:ring-amber-600 dark:focus:ring-amber-400 transition-all shadow-inner"
+            className="w-full pl-11 pr-4 py-3 bg-parchment-50 dark:bg-ink-950 border border-parchment-300 dark:border-ink-700 rounded-xl text-sm sm:text-base font-sans text-ink-950 dark:text-parchment-100 placeholder:text-ink-400 focus:outline-none focus:ring-2 focus:ring-amber-600 dark:focus:ring-amber-400 transition-all shadow-inner"
           />
         </div>
 
-        <div className="text-sm font-mono text-ink-600 dark:text-ink-300 whitespace-nowrap self-center sm:self-auto font-medium">
+        <div className="text-sm font-sans text-ink-600 dark:text-ink-300 whitespace-nowrap self-center sm:self-auto font-medium">
           Displaying{" "}
           <span className="font-bold text-amber-700 dark:text-amber-400 text-base">
             {resultCount}
@@ -58,7 +58,7 @@ export function EraFilterBar({
             key={cat.id}
             type="button"
             onClick={() => onSelectCategory(cat.id)}
-            className={`px-4 py-2 rounded-xl text-xs sm:text-sm font-mono font-semibold transition-all shadow-xs ${
+            className={`px-4 py-2 rounded-xl text-xs sm:text-sm font-sans font-semibold transition-all shadow-xs ${
               selectedCategory === cat.id
                 ? "bg-amber-700 text-white font-bold shadow dark:bg-amber-600"
                 : "bg-parchment-50 dark:bg-ink-950 text-ink-800 dark:text-parchment-200 border border-parchment-300 dark:border-ink-800 hover:bg-parchment-200 dark:hover:bg-ink-800"

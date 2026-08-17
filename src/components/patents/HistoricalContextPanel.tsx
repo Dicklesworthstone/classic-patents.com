@@ -70,26 +70,26 @@ export function HistoricalContextPanel({ context }: HistoricalContextPanelProps)
                 <span className="font-serif font-bold text-ink-950 dark:text-parchment-100 text-base sm:text-lg">
                   Vs. {war.rivalName}
                 </span>
-                <span className="text-xs sm:text-sm font-mono px-3 py-1 rounded-md bg-red-100 dark:bg-red-950 text-red-800 dark:text-red-300 border border-red-300 dark:border-red-800 font-semibold">
+                <span className="text-xs sm:text-sm font-sans px-3 py-1 rounded-md bg-red-100 dark:bg-red-950 text-red-800 dark:text-red-300 border border-red-300 dark:border-red-800 font-semibold">
                   Infringement Challenge
                 </span>
               </div>
 
               <div className="space-y-3 text-sm sm:text-base font-sans text-ink-800 dark:text-ink-200">
                 <div>
-                  <span className="font-bold text-ink-950 dark:text-parchment-100 block font-mono text-xs uppercase tracking-wider mb-1">
+                  <span className="font-bold text-ink-950 dark:text-parchment-100 block font-sans text-xs uppercase tracking-wider mb-1">
                     Rival Claim &amp; Defense:
                   </span>
                   <p className="leading-relaxed">{war.rivalClaim}</p>
                 </div>
                 <div>
-                  <span className="font-bold text-ink-950 dark:text-parchment-100 block font-mono text-xs uppercase tracking-wider mb-1">
+                  <span className="font-bold text-ink-950 dark:text-parchment-100 block font-sans text-xs uppercase tracking-wider mb-1">
                     Litigation Conflict:
                   </span>
                   <p className="leading-relaxed">{war.conflictDetails}</p>
                 </div>
                 <div>
-                  <span className="font-bold text-ink-950 dark:text-parchment-100 block font-mono text-xs uppercase tracking-wider mb-1">
+                  <span className="font-bold text-ink-950 dark:text-parchment-100 block font-sans text-xs uppercase tracking-wider mb-1">
                     Final Resolution &amp; Judicial Outcome:
                   </span>
                   <p className="text-emerald-800 dark:text-emerald-300 font-semibold leading-relaxed">

@@ -25,7 +25,7 @@ export default function HomePage() {
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 sm:py-16 space-y-16">
       {/* Hero Section */}
       <section className="text-center space-y-6 max-w-4xl mx-auto py-8 sm:py-12">
-        <div className="inline-flex items-center gap-2.5 px-4 py-1.5 rounded-full bg-amber-100/90 dark:bg-amber-950/90 border border-amber-300 dark:border-amber-700/80 text-sm font-mono text-amber-900 dark:text-amber-300 font-semibold shadow-xs">
+        <div className="inline-flex items-center gap-2.5 px-4 py-1.5 rounded-full bg-amber-100/90 dark:bg-amber-950/90 border border-amber-300 dark:border-amber-700/80 text-xs sm:text-sm font-sans text-amber-900 dark:text-amber-300 font-semibold shadow-xs">
           <Sparkles className="w-4 h-4 text-amber-600 animate-pulse" />
           <span>Curated Open-Source Historical Patent Museum</span>
         </div>
@@ -41,7 +41,7 @@ export default function HomePage() {
         </p>
 
         {/* Hero Badges */}
-        <div className="flex flex-wrap items-center justify-center gap-4 pt-3 text-sm font-mono text-ink-700 dark:text-ink-300 font-medium">
+        <div className="flex flex-wrap items-center justify-center gap-4 pt-3 text-sm font-sans text-ink-700 dark:text-ink-300 font-medium">
           <span className="flex items-center gap-1.5 px-3 py-1 bg-parchment-100/80 dark:bg-ink-900/80 rounded-lg border border-parchment-200 dark:border-ink-800">
             <Scroll className="w-4 h-4 text-amber-700 dark:text-amber-400" /> Verbatim Archival
             Transcripts &amp; PDFs
@@ -66,7 +66,7 @@ export default function HomePage() {
               Featured Breakthroughs
             </h2>
           </div>
-          <span className="text-sm font-mono text-ink-600 dark:text-ink-400 font-semibold">
+          <span className="text-sm font-sans text-ink-600 dark:text-ink-400 font-semibold">
             Milestones of Modern Civilization
           </span>
         </div>
@@ -87,7 +87,7 @@ export default function HomePage() {
               Complete Patent Museum Collection
             </h2>
           </div>
-          <span className="text-sm font-mono text-ink-600 dark:text-ink-400 font-semibold">
+          <span className="text-sm font-sans text-ink-600 dark:text-ink-400 font-semibold">
             {allPatents.length} Curated Historic Masterpieces
           </span>
         </div>
@@ -113,7 +113,7 @@ export default function HomePage() {
             <p className="font-serif text-2xl text-ink-900 dark:text-parchment-100 font-bold">
               No patents matched your query.
             </p>
-            <p className="text-sm font-mono text-ink-600 dark:text-ink-400">
+            <p className="text-sm font-sans text-ink-600 dark:text-ink-400">
               Try searching by inventor name, patent number, or technical keyword.
             </p>
           </div>
@@ -137,7 +137,7 @@ export default function HomePage() {
           <div className="pt-2">
             <Link
               href="/about"
-              className="inline-flex items-center gap-2 text-sm sm:text-base font-mono font-bold text-amber-800 dark:text-amber-400 hover:underline"
+              className="inline-flex items-center gap-2 text-sm sm:text-base font-sans font-bold text-amber-800 dark:text-amber-400 hover:underline"
             >
               Learn about our architecture and mission <ArrowRight className="w-4 h-4" />
             </Link>

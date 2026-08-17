@@ -17,7 +17,7 @@ export function PatentCard({ patent }: PatentCardProps) {
 
       <div className="space-y-4">
         {/* Top Header Row */}
-        <div className="flex items-center justify-between gap-2 text-xs sm:text-sm font-mono">
+        <div className="flex items-center justify-between gap-2 text-xs sm:text-sm font-sans">
           <span className="font-bold text-amber-800 dark:text-amber-300 bg-amber-100/90 dark:bg-amber-950/90 px-2.5 py-1 rounded-md border border-amber-300 dark:border-amber-700/80 shadow-xs">
             {patent.patentNumber}
           </span>
@@ -42,7 +42,7 @@ export function PatentCard({ patent }: PatentCardProps) {
         </p>
 
         {/* Inventors & Meta */}
-        <div className="pt-3 border-t border-parchment-200 dark:border-ink-800/80 space-y-2 text-xs sm:text-sm font-mono text-ink-700 dark:text-ink-300">
+        <div className="pt-3 border-t border-parchment-200 dark:border-ink-800/80 space-y-2 text-xs sm:text-sm font-sans text-ink-700 dark:text-ink-300">
           <div className="flex items-center gap-2 truncate">
             <User className="w-4 h-4 text-amber-700 dark:text-amber-400 flex-shrink-0" />
             <span className="truncate font-semibold">{patent.inventors.join(", ")}</span>
@@ -55,7 +55,7 @@ export function PatentCard({ patent }: PatentCardProps) {
       </div>
 
       {/* Footer tags & CTA */}
-      <div className="mt-6 pt-4 border-t border-parchment-200 dark:border-ink-800 flex items-center justify-between text-xs sm:text-sm font-mono">
+      <div className="mt-6 pt-4 border-t border-parchment-200 dark:border-ink-800 flex items-center justify-between text-xs sm:text-sm font-sans">
         <span className="inline-flex items-center gap-1.5 text-amber-800 dark:text-amber-400 font-bold group-hover:underline">
           <Activity className="w-4 h-4 text-amber-600" />
           Interactive Sim &amp; Claims

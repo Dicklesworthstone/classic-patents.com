@@ -12,7 +12,7 @@ export default function TimelinePage() {
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 sm:py-16 space-y-10">
       <div className="space-y-3 border-b border-parchment-300 dark:border-ink-800 pb-6 max-w-3xl">
-        <div className="flex items-center gap-2 text-xs font-mono uppercase tracking-widest text-amber-700 dark:text-amber-400 font-bold">
+        <div className="flex items-center gap-2 text-xs font-sans uppercase tracking-widest text-amber-700 dark:text-amber-400 font-bold">
           <History className="w-3.5 h-3.5" />
           Chronological Evolution of Technology
         </div>

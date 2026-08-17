@@ -37,7 +37,7 @@ export function DualProjectionViewer({ patent }: DualProjectionViewerProps) {
     <div className="space-y-8">
       {/* Mode Navigation Bar */}
       <div className="flex flex-wrap items-center justify-between gap-3 bg-parchment-100/90 dark:bg-ink-900/90 p-2.5 rounded-2xl border border-parchment-300 dark:border-ink-800 shadow-sm">
-        <div className="flex flex-wrap items-center gap-2 text-sm font-mono">
+        <div className="flex flex-wrap items-center gap-2 text-sm font-sans">
           <button
             type="button"
             onClick={() => setViewMode("plain-english")}
@@ -108,7 +108,7 @@ export function DualProjectionViewer({ patent }: DualProjectionViewerProps) {
           <button
             type="button"
             onClick={() => setViewMode(viewMode === "split-view" ? "plain-english" : "split-view")}
-            className={`px-4 py-2 rounded-xl text-xs sm:text-sm font-mono border flex items-center gap-2 transition-colors shadow-xs ${
+            className={`px-4 py-2 rounded-xl text-xs sm:text-sm font-sans border flex items-center gap-2 transition-colors shadow-xs ${
               viewMode === "split-view"
                 ? "bg-blue-600 text-white border-blue-700 font-bold"
                 : "border-parchment-300 dark:border-ink-700 hover:bg-parchment-200 dark:hover:bg-ink-800 text-ink-800 dark:text-ink-200 font-semibold"
@@ -207,7 +207,7 @@ export function DualProjectionViewer({ patent }: DualProjectionViewerProps) {
                 Face 2: Verbatim Historical Specification
               </h3>
             </div>
-            <div className="rounded-2xl border border-parchment-300 dark:border-ink-800 bg-parchment-100/70 dark:bg-ink-900/70 p-6 sm:p-7 shadow-patent max-h-[700px] overflow-y-auto font-mono text-sm text-ink-900 dark:text-parchment-100 space-y-4 whitespace-pre-wrap leading-relaxed">
+            <div className="rounded-2xl border border-parchment-300 dark:border-ink-800 bg-parchment-100/70 dark:bg-ink-900/70 p-6 sm:p-8 shadow-patent max-h-[700px] overflow-y-auto font-serif text-base sm:text-lg text-ink-900 dark:text-parchment-100 space-y-4 whitespace-pre-wrap leading-relaxed">
               {patent.originalText}
             </div>
           </div>
@@ -344,7 +344,7 @@ export function DualProjectionViewer({ patent }: DualProjectionViewerProps) {
             </div>
 
             {/* Verbatim Text Block */}
-            <div className="p-7 rounded-2xl bg-parchment-100/80 dark:bg-ink-900/80 border border-parchment-300 dark:border-ink-800 text-sm sm:text-base font-mono text-ink-950 dark:text-parchment-100 leading-relaxed whitespace-pre-wrap select-text shadow-xs">
+            <div className="p-8 sm:p-10 rounded-2xl bg-parchment-100/80 dark:bg-ink-900/80 border border-parchment-300 dark:border-ink-800 text-base sm:text-lg font-serif text-ink-950 dark:text-parchment-100 leading-relaxed whitespace-pre-wrap select-text shadow-xs">
               {patent.originalText}
             </div>
 

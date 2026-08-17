@@ -17,7 +17,7 @@ export function Header() {
             <div className="font-serif text-xl font-bold tracking-tight text-ink-950 dark:text-parchment-50 group-hover:text-amber-800 dark:group-hover:text-amber-400 transition-colors">
               CLASSIC PATENTS
             </div>
-            <div className="text-xs font-mono tracking-widest text-ink-500 uppercase -mt-0.5 font-semibold">
+            <div className="text-xs font-sans tracking-widest text-ink-500 uppercase -mt-0.5 font-semibold">
               Historical Technical Museum
             </div>
           </div>

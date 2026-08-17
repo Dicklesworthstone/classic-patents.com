@@ -21,7 +21,7 @@ export function Footer() {
               patents through verified archival transcripts, dual-projection engineering
               deconstructions, and interactive 3D physical simulations.
             </p>
-            <div className="pt-2 text-[11px] font-mono text-ink-500">
+            <div className="pt-2 text-[11px] font-sans text-ink-500">
               An open-source digital museum and research archive.
             </div>
           </div>
@@ -31,7 +31,7 @@ export function Footer() {
             <h4 className="font-serif text-xs font-bold uppercase tracking-widest text-ink-900 dark:text-parchment-200 mb-3">
               Curated Masterpieces
             </h4>
-            <ul className="space-y-2 text-xs font-mono">
+            <ul className="space-y-2 text-xs font-sans">
               <li>
                 <Link
                   href="/patents/us-821393-wright-flyer"
@@ -80,7 +80,7 @@ export function Footer() {
             <h4 className="font-serif text-xs font-bold uppercase tracking-widest text-ink-900 dark:text-parchment-200 mb-3">
               Architecture &amp; Docs
             </h4>
-            <ul className="space-y-2 text-xs font-mono">
+            <ul className="space-y-2 text-xs font-sans">
               <li>
                 <Link
                   href="/about"
@@ -114,7 +114,7 @@ export function Footer() {
           </div>
         </div>
 
-        <div className="mt-8 pt-6 border-t border-parchment-200 dark:border-ink-800 flex flex-col sm:flex-row items-center justify-between text-xs text-ink-500 font-mono gap-3">
+        <div className="mt-8 pt-6 border-t border-parchment-200 dark:border-ink-800 flex flex-col sm:flex-row items-center justify-between text-xs text-ink-500 font-sans gap-3">
           <div>
             © {new Date().getFullYear()} Classic Patents · Curated by Jeffrey Emanuel. Open Source.
           </div>
