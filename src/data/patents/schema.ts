@@ -78,6 +78,14 @@ const plainEnglishSchema = z.object({
   whyItMattersToday: z.string().min(1),
 });
 
+const originalTextAssetSchema = z.object({
+  url: z.string().startsWith("/patents/"),
+  pageCount: z.number().int().positive(),
+  kind: z
+    .enum(["reviewed-transcription", "source-pdf-text-layer"])
+    .default("reviewed-transcription"),
+});
+
 export const patentSchema: z.ZodType<Patent> = z.object({
   id: z.string().min(1),
   patentNumber: z.string().min(1),
@@ -106,6 +114,7 @@ export const patentSchema: z.ZodType<Patent> = z.object({
   googlePatentsUrl: z.url(),
   usptoClassification: z.string().min(1),
   originalText: z.string().min(1),
+  originalTextAsset: originalTextAssetSchema.optional(),
   plainEnglishExplanation: plainEnglishSchema,
   claims: z.array(patentClaimSchema).min(1),
   drawings: z.array(patentDrawingSchema).min(1),

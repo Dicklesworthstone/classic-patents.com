@@ -45,7 +45,6 @@ import { renoEscalatorPatent } from "./reno-escalator";
 import { parsePatentCatalog } from "./schema";
 import { sholesTypewriterPatent } from "./sholes-typewriter";
 import { spencerMicrowavePatent } from "./spencer-microwave";
-import { sourcePdfTextPageCounts } from "./sourceTextAssets";
 import { teslaCoilPatent } from "./tesla-coil";
 import { teslaMotorPatent } from "./tesla-motor";
 import { teslaTeleautomatonPatent } from "./tesla-teleautomaton";
@@ -56,7 +55,7 @@ import { wozniakApplePatent } from "./wozniak-apple";
 import { wrightFlyerPatent } from "./wright-flyer";
 import { zeppelinAirshipPatent } from "./zeppelin-airship";
 
-const parsedPatents = parsePatentCatalog([
+export const allPatents: Patent[] = parsePatentCatalog([
   whitneyCottonGinPatent,
   mccormickReaperPatent,
   coltRevolverPatent,
@@ -112,27 +111,6 @@ const parsedPatents = parsePatentCatalog([
   boyleSmithCcdPatent,
   wozniakApplePatent,
 ]);
-
-/**
- * The registry, rather than individual editorial records, controls whether a
- * detail page may present text as complete. This prevents a stale or missing
- * legacy asset from being rendered as a full specification.
- */
-export const allPatents: Patent[] = parsedPatents.map((patent) => {
-  const pageCount = sourcePdfTextPageCounts[patent.id];
-  if (!pageCount) {
-    return { ...patent, originalTextAsset: undefined };
-  }
-
-  return {
-    ...patent,
-    originalTextAsset: {
-      url: `/patents/source-text/${patent.id}.txt`,
-      pageCount,
-      kind: "source-pdf-text-layer",
-    },
-  };
-});
 
 export function getPatentById(id: string): Patent | undefined {
   return allPatents.find((p) => p.id === id);

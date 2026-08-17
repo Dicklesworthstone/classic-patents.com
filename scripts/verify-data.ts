@@ -20,6 +20,8 @@ async function main() {
   console.log(`Checking ${allPatents.length} curated historical patents...\n`);
 
   let errorCount = 0;
+  let completeSourceTextCount = 0;
+  const sourceTextGaps: string[] = [];
 
   for (const patent of allPatents) {
     const prefix = `[${patent.patentNumber} - ${patent.id}]`;
@@ -113,8 +115,10 @@ async function main() {
       }
     }
 
-    // 7. Check originalTextAsset existence
+    // 7. Check complete source-text asset integrity. A page is never allowed
+    // to imply that its editorial excerpt is a full specification.
     if (patent.originalTextAsset) {
+      completeSourceTextCount++;
       const assetPath = path.join(
         process.cwd(),
         "public",
@@ -131,6 +135,23 @@ async function main() {
       if (patent.originalTextAsset.pageCount <= 0) {
         fail(`originalTextAsset.pageCount must be > 0.`);
       }
+      if (!patent.originalTextAsset.kind) {
+        fail("originalTextAsset.kind is required before an asset may be shown as complete.");
+      }
+      if (patent.originalTextAsset.kind === "source-pdf-text-layer" && fs.existsSync(assetPath)) {
+        const sourceText = fs.readFileSync(assetPath, "utf8");
+        const pageMarkers = sourceText.match(/^--- SOURCE PDF PAGE \d+ OF \d+ ---$/gm) ?? [];
+        if (pageMarkers.length !== patent.originalTextAsset.pageCount) {
+          fail(
+            `source-PDF text layer has ${pageMarkers.length} page marker(s), expected ${patent.originalTextAsset.pageCount}.`,
+          );
+        }
+      }
+    } else {
+      sourceTextGaps.push(patent.id);
+      console.warn(
+        `⚠️  ${prefix} Complete source text is withheld: no asset has passed the completeness gate.`,
+      );
     }
 
     // 8. Check drawing callout coordinate bounds
@@ -191,8 +212,16 @@ async function main() {
     }
   }
 
+  console.log(`\nComplete source-text coverage: ${completeSourceTextCount}/${allPatents.length}.`);
+  if (sourceTextGaps.length > 0) {
+    console.warn(`Withheld pending source correction or OCR: ${sourceTextGaps.join(", ")}.`);
+  }
   console.log(
-    `\nVerification Result: ${errorCount === 0 ? `ALL ${allPatents.length} PATENTS GREEN AND FULLY COMPLETE` : `${errorCount} ERRORS FOUND`}`,
+    `Verification Result: ${
+      errorCount === 0
+        ? `ALL SOFTWARE AND PUBLISHED-ASSET CHECKS PASSED; ${completeSourceTextCount}/${allPatents.length} COMPLETE SOURCE-TEXT ASSETS PUBLISHED`
+        : `${errorCount} ERRORS FOUND`
+    }`,
   );
 
   if (errorCount > 0) {
