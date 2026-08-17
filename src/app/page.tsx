@@ -42,16 +42,16 @@ export default function HomePage() {
         </p>
 
         {/* Hero Badges */}
-        <div className="flex flex-wrap items-center justify-center gap-4 pt-3 text-sm font-sans text-ink-700 dark:text-ink-300 font-medium">
+        <div className="flex flex-wrap items-center justify-center gap-3 sm:gap-4 pt-3 text-xs sm:text-sm font-sans text-ink-700 dark:text-ink-300 font-medium">
           <span className="flex items-center gap-1.5 px-3 py-1 bg-parchment-100/80 dark:bg-ink-900/80 rounded-lg border border-parchment-200 dark:border-ink-800">
             <Scroll className="w-4 h-4 text-amber-700 dark:text-amber-400" /> Verbatim Archival
             Transcripts &amp; PDFs
           </span>
-          <span>•</span>
+          <span className="hidden sm:inline text-ink-400">•</span>
           <span className="flex items-center gap-1.5 px-3 py-1 bg-parchment-100/80 dark:bg-ink-900/80 rounded-lg border border-parchment-200 dark:border-ink-800">
             <Sparkles className="w-4 h-4 text-emerald-600" /> Plain English Dual-Projection
           </span>
-          <span>•</span>
+          <span className="hidden sm:inline text-ink-400">•</span>
           <span className="flex items-center gap-1.5 px-3 py-1 bg-parchment-100/80 dark:bg-ink-900/80 rounded-lg border border-parchment-200 dark:border-ink-800">
             <Box className="w-4 h-4 text-blue-600" /> 3D WebGL Physics Engines
           </span>
