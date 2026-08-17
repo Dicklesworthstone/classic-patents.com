@@ -937,7 +937,7 @@ export function InteractiveDiagramViewer({
           <div className="flex items-center gap-1.5">
             {drawings.map((draw, idx) => (
               <button
-                key={draw.figureNumber}
+                key={`${draw.figureNumber}-${idx}`}
                 type="button"
                 onClick={() => {
                   setActiveFigIndex(idx);

@@ -1,12 +1,13 @@
+import { ArrowLeft, ArrowRight } from "lucide-react";
 import type { Metadata } from "next";
+import Link from "next/link";
 import { notFound } from "next/navigation";
 import { DualProjectionViewer } from "@/components/patents/DualProjectionViewer";
 import { PatentHeader } from "@/components/patents/PatentHeader";
-import { allPatents, getPatentById } from "@/data/patents";
+import { allPatents, getAdjacentPatents, getPatentById } from "@/data/patents";
 
 interface PatentPageProps {
   params: Promise<{ id: string }>;
-  searchParams: Promise<{ view?: string }>;
 }
 
 export async function generateStaticParams() {
@@ -28,14 +29,15 @@ export async function generateMetadata({ params }: PatentPageProps): Promise<Met
   };
 }
 
-export default async function PatentDetailPage({ params, searchParams }: PatentPageProps) {
+export default async function PatentDetailPage({ params }: PatentPageProps) {
   const { id } = await params;
-  const { view } = await searchParams;
   const patent = getPatentById(id);
 
   if (!patent) {
     notFound();
   }
+
+  const { prev, next } = getAdjacentPatents(id);
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12 space-y-8">
@@ -43,7 +45,51 @@ export default async function PatentDetailPage({ params, searchParams }: PatentP
       <PatentHeader patent={patent} />
 
       {/* Dual Projection Viewer (Plain English + Original Spec + Interactive Simulator) */}
-      <DualProjectionViewer patent={patent} initialView={view} />
+      <DualProjectionViewer patent={patent} />
+
+      {/* Adjacent Patent Chronological Navigation */}
+      <nav
+        aria-label="Chronological Patent Navigation"
+        className="pt-8 border-t border-parchment-300 dark:border-ink-800 grid grid-cols-1 sm:grid-cols-2 gap-4"
+      >
+        {prev ? (
+          <Link
+            href={`/patents/${prev.id}`}
+            className="p-4 rounded-2xl border border-parchment-300 dark:border-ink-800 bg-parchment-50/80 dark:bg-ink-900/60 hover:bg-parchment-100 dark:hover:bg-ink-800/80 transition-colors flex items-center gap-3 group shadow-xs"
+          >
+            <ArrowLeft className="w-5 h-5 text-amber-700 dark:text-amber-400 group-hover:-translate-x-1 transition-transform flex-shrink-0" />
+            <div className="min-w-0">
+              <span className="text-[11px] font-sans text-ink-500 dark:text-ink-400 font-bold uppercase tracking-wider block">
+                Previous Invention ({prev.grantDate.slice(0, 4)})
+              </span>
+              <span className="font-serif font-bold text-sm text-ink-950 dark:text-parchment-100 truncate block">
+                {prev.shortTitle} ({prev.patentNumber})
+              </span>
+            </div>
+          </Link>
+        ) : (
+          <div />
+        )}
+
+        {next ? (
+          <Link
+            href={`/patents/${next.id}`}
+            className="p-4 rounded-2xl border border-parchment-300 dark:border-ink-800 bg-parchment-50/80 dark:bg-ink-900/60 hover:bg-parchment-100 dark:hover:bg-ink-800/80 transition-colors flex items-center justify-between gap-3 group shadow-xs sm:text-right"
+          >
+            <div className="min-w-0 flex-1">
+              <span className="text-[11px] font-sans text-ink-500 dark:text-ink-400 font-bold uppercase tracking-wider block">
+                Next Invention ({next.grantDate.slice(0, 4)})
+              </span>
+              <span className="font-serif font-bold text-sm text-ink-950 dark:text-parchment-100 truncate block">
+                {next.shortTitle} ({next.patentNumber})
+              </span>
+            </div>
+            <ArrowRight className="w-5 h-5 text-amber-700 dark:text-amber-400 group-hover:translate-x-1 transition-transform flex-shrink-0" />
+          </Link>
+        ) : (
+          <div />
+        )}
+      </nav>
     </div>
   );
 }

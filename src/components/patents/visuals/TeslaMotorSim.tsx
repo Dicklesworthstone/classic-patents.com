@@ -13,7 +13,8 @@ export function TeslaMotorSim() {
   const [angle, setAngle] = useState<number>(0);
 
   // Synchronous and Rotor Speed calculations
-  const syncSpeedRpm = (120 * frequencyHz) / 4; // 4 poles = 1800 RPM at 60Hz
+  const totalPoles = phaseCount === 2 ? 4 : 6;
+  const syncSpeedRpm = (120 * frequencyHz) / totalPoles;
   const slip = Math.min(0.25, (loadTorque / 100) * 0.2 + 0.02);
   const rotorSpeedRpm = Math.round(syncSpeedRpm * (1 - slip));
 
@@ -93,7 +94,7 @@ export function TeslaMotorSim() {
             ) : (
               <VolumeX className="w-3.5 h-3.5" />
             )}
-            <span>{isPlayingAudio ? "AC Hum (Live)" : "Play 60Hz Hum"}</span>
+            <span>{isPlayingAudio ? "AC Hum (Live)" : "Play AC Hum"}</span>
           </button>
         </div>
       </div>
@@ -165,7 +166,45 @@ export function TeslaMotorSim() {
               );
             })}
 
-            {/* Dynamic Rotating B-Field Vector Arrow */}
+            {/* Phase contribution vectors (the currents that sum to the rotating field) */}
+            {phaseCount === 2
+              ? [
+                  { x: Math.cos(rad) * 52, y: 0, color: "#f59e0b" },
+                  { x: 0, y: Math.sin(rad) * 52, color: "#3b82f6" },
+                ].map((comp, i) => (
+                  <line
+                    key={i}
+                    x1="200"
+                    y1="150"
+                    x2={200 + comp.x}
+                    y2={150 + comp.y}
+                    stroke={comp.color}
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                    opacity="0.55"
+                  />
+                ))
+              : [0, 1, 2].map((ph) => {
+                  const mag = Math.sin(rad - (ph * 2 * Math.PI) / 3) * 42;
+                  const ax = Math.cos((ph * 2 * Math.PI) / 3);
+                  const ay = Math.sin((ph * 2 * Math.PI) / 3);
+                  const colors = ["#f59e0b", "#3b82f6", "#10b981"];
+                  return (
+                    <line
+                      key={ph}
+                      x1="200"
+                      y1="150"
+                      x2={200 + ax * mag}
+                      y2={150 + ay * mag}
+                      stroke={colors[ph]}
+                      strokeWidth="2"
+                      strokeLinecap="round"
+                      opacity="0.5"
+                    />
+                  );
+                })}
+
+            {/* Resultant rotating B-field (constant magnitude for a balanced polyphase set) */}
             <line
               x1="200"
               y1="150"

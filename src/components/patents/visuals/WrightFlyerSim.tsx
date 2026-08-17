@@ -9,7 +9,7 @@ export function WrightFlyerSim() {
   const [rudderAngle, setRudderAngle] = useState<number>(11); // deg (-30 to +30)
   const [canardAngle, setCanardAngle] = useState<number>(5); // deg (-20 to +20)
   const [isCoupled, setIsCoupled] = useState<boolean>(true); // Wright Claim 1: Coordinated wing-warping + rudder
-  const [activeStep, setActiveStep] = useState<number>(1); // 1: Adverse Yaw, 2: Warping, 3: Coordinated Turn
+  const [activeStep, setActiveStep] = useState<number>(3); // matches default coupled cruise
 
   // Positive warp = right bank = more lift (and induced drag) on the RIGHT wing.
   const leftWingLift = 100 - wingWarpAngle * 2.2;

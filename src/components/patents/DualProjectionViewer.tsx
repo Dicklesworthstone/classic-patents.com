@@ -12,7 +12,7 @@ import {
   Sparkles,
   Zap,
 } from "lucide-react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { LatexRenderer, TextWithLatex } from "@/components/ui/LatexRenderer";
 import type { Patent } from "@/types/patent";
 import { ClaimsDecoder } from "./ClaimsDecoder";
@@ -50,6 +50,15 @@ export function DualProjectionViewer({ patent, initialView }: DualProjectionView
   const [viewMode, setViewModeState] = useState<PatentViewMode>(
     isPatentViewMode(initialView) ? initialView : "plain-english",
   );
+
+  // Hydration-safe: SSR stays on the default face; deep links apply after mount.
+  // Reading searchParams in the RSC page would force every patent route dynamic.
+  useEffect(() => {
+    const view = new URLSearchParams(window.location.search).get("view");
+    if (isPatentViewMode(view ?? undefined)) {
+      setViewModeState(view as PatentViewMode);
+    }
+  }, []);
 
   const setViewMode = (mode: PatentViewMode) => {
     setViewModeState(mode);
