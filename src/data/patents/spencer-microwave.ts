@@ -149,28 +149,36 @@ Figure 3 is a diagram illustrating the dielectric loss heating mechanism in pola
   ],
   historicalContext: {
     problemStatement:
-      "Conventional ovens were slow (requiring 30–60 minutes to bake potatoes or roast meat), wasted substantial energy heating oven air, and dried out the outer layers of food.",
+      "A 1940s oven cooked by heating air, then waiting for conduction ($k_{food} \\approx 0.5\\text{ W/m·K}$) to reach the center. Potatoes took the better part of an hour. Raytheon, flush with wartime magnetron contracts, needed a peacetime load for the same tube.",
     priorArtLimitations: [
-      "Thermal conduction from exterior to center is limited by low thermal conductivity ($k_{food} \\approx 0.5\\text{ W/m}\\cdot\\text{K}$).",
-      "Surface charring occurred before internal cooking was completed.",
+      "Surface heat arrives first; the middle is still cold when the crust burns.",
+      "Gas and electric ovens spend most of their energy on iron and air.",
+      "No one had packaged a 2.45 GHz cavity as a kitchen appliance.",
     ],
     breakthroughInsight:
-      "Spencer realized that radar magnetrons produce non-ionizing electromagnetic radiation that passes directly through air and glass but is strongly absorbed by polar water molecules in organic tissue.",
+      "Spencer noticed a chocolate bar in his pocket soften near a live radar set (1945, the popcorn-and-egg demos followed). Water is a dipole. A magnetron's non-ionizing field couples to that dipole through the volume, not through the crust.",
     patentWars: [
       {
-        rivalName: "Raytheon & Amana Refrigeration (Radarange)",
+        rivalName: "Nobody serious; the fight was productization",
         rivalClaim:
-          "Raytheon commercialized Spencer's patent, building the first commercial 'Radarange' in 1947 (standing 6 feet tall, weighing 750 pounds, and costing $5,000).",
+          "Raytheon owned the magnetron line and Spencer's heating claims. Competitors waited for the patents and for a box that fit on a counter.",
         conflictDetails:
-          "In 1967, Raytheon subsidiary Amana released the first affordable countertop home microwave oven (the 100V Radarange for $495), igniting a global consumer kitchen revolution.",
+          "The 1947 Radarange was about six feet tall, 750 lb, and $5,000, a restaurant machine. Amana, a Raytheon subsidiary, put a 115 V countertop Radarange on sale in 1967 for $495.",
         resolution:
-          "Spencer received a nominal $2 gratuity from Raytheon per company policy, but was rewarded with senior vice-presidency and induction into the National Inventors Hall of Fame.",
-        legalOutcome: "Dominant master patent for microwave heating.",
+          "Raytheon's employee-invention gratuity was $2. Spencer became a senior vice president. The Hall of Fame plaque came later.",
+        legalOutcome:
+          "US 2,495,429 held. The consumer market opened when the power supply shrank, not when the claim chart changed.",
       },
     ],
     civilizationalImpact:
-      "Revolutionized global food preparation, restaurant dining, frozen food logistics, and domestic kitchen convenience across the world.",
+      "Frozen dinners, office leftovers, and a restaurant pass that can reheat without a salamander. Microwave ovens also quietly trained a generation that 2.45 GHz leaks are a door-seal problem, not a death ray.",
     funFact:
-      "After the candy bar and popcorn, Spencer's third microwave test was an egg. He and a colleague watched closely through the glass as the internal steam pressure built up until the egg exploded in his colleague's face.",
+      "The third demo after candy and popcorn was an egg. It exploded in a colleague's face. Spencer kept going.",
+    aftermath:
+      "ISM-band 2.45 GHz exists in part because magnetron cooking needed a free slice of spectrum. Wi-Fi later moved in next door and has been arguing with popcorn ever since.",
+    sideNotes: [
+      "Percy Spencer had a fifth-grade formal education and more than 100 patents. Raytheon hired him as a plant expert, not as a university hire.",
+      "The cavity magnetron itself is Randall and Boot (Birmingham, 1940), brought to the US by the Tizard Mission. Spencer's patent is the kitchen use, not the tube.",
+    ],
   },
 };

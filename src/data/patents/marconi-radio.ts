@@ -168,27 +168,36 @@ Figure 4 is a longitudinal sectional view of the evacuated sensitive tube (coher
   ],
   historicalContext: {
     problemStatement:
-      "Ships at sea were completely cut off from the world once over the horizon. Maritime disasters occurred without any means of summoning help.",
+      "Once a ship dropped below the horizon it was mute. Hertz had shown sparks make waves; Lodge and Righi had tabletop range. Nobody had a coastal station that a liner could raise in weather.",
     priorArtLimitations: [
-      "Hertz and Oliver Lodge used small tabletop dipoles that could transmit only a few yards.",
-      "No aerial antennas or grounding used to boost radiated power.",
+      "Hertzian dipoles radiated a few yards.",
+      "No elevated aerial plus earth return, so little radiated power.",
+      "Untuned spark systems splattered across the band and jammed each other.",
     ],
     breakthroughInsight:
-      "In 1895 at his father's estate in Pontecchio, Italy, Marconi discovered that connecting a wire high in the air and grounding the other terminal in the dirt allowed signals to pass over hills and across miles.",
+      "At Pontecchio in 1895 Marconi put one terminal on a high wire and the other in the soil. Range jumped from garden to hill. The earth is the other half of the monopole; that is the cheap trick in US 586,193.",
     patentWars: [
       {
-        rivalName: "Nikola Tesla & Oliver Lodge",
+        rivalName: "Oliver Lodge, and later Tesla",
         rivalClaim:
-          "Tesla patented fundamental resonant tuning circuits (US 645,576) in 1897 and argued Marconi used his basic oscillator inventions.",
+          "Lodge had shown syntony (tuning). Tesla's 1897 US 645,576 covered resonant coupled circuits. Both said Marconi's system used their oscillators.",
         conflictDetails:
-          "The patent offices and courts battled for decades. In 1943, the U.S. Supreme Court (*Marconi Wireless Tel. Co. v. United States*, 320 U.S. 1) recognized Tesla's prior tuning patents while upholding Marconi's practical transmission achievements.",
-        resolution: "Marconi was awarded the 1909 Nobel Prize in Physics.",
-        legalOutcome: "International commercial triumph of Marconi's wireless network.",
+          "Marconi Wireless Tel. Co. v. United States, 320 U.S. 1 (1943), decided during a wartime government-contract fight, credited Tesla, Stone, and Lodge with key tuning ideas and knocked out some Marconi claims. It did not un-build the Marconi stations.",
+        resolution:
+          "Marconi shared the 1909 Nobel with Karl Ferdinand Braun. The company, not the 1943 opinion, had already wired the shipping lanes.",
+        legalOutcome:
+          "A split credit: Marconi for the working long-range system, others for tuning. Popular histories that crown a single inventor are doing PR.",
       },
     ],
     civilizationalImpact:
-      "Saved thousands of lives at sea (including 705 survivors of the *Titanic* in 1912) and inaugurated the global wireless era.",
+      "Titanic's 1912 distress traffic (705 people off in boats) is the example every textbook uses. The quieter fact is scheduled ship news and storm warnings, day after day.",
     funFact:
-      "On December 12, 1901, Marconi transmitted the first transatlantic radio signal—the Morse code letter 'S' (three dots)—2,200 miles across the Atlantic Ocean from Poldhu, Cornwall to Signal Hill, Newfoundland.",
+      "12 December 1901, Poldhu to Signal Hill, Newfoundland: Marconi reported the Morse letter S, three dots, across the Atlantic. Skeptics still argue about atmospheric noise versus a real signal. He bet the company on it either way.",
+    aftermath:
+      "Marconi became an Italian senator and, later, a fascist-era public figure. The wireless firm was absorbed into what became part of GEC/Marconi. The 1943 Supreme Court case is still cited more by Tesla fans than by radio engineers.",
+    sideNotes: [
+      "Braun's crystal detector and tuned circuits are why the Nobel was shared.",
+      "The 1901 transatlantic test used a kite-supported aerial at St. John's and a huge spark at Poldhu. It was not a pocket set.",
+    ],
   },
 };
