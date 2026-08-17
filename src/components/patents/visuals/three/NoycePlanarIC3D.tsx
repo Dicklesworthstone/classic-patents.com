@@ -367,9 +367,7 @@ export function NoycePlanarIC3D() {
 
             <div className="hidden sm:flex bg-white/90 dark:bg-ink-900/90 backdrop-blur-md px-3 py-1.5 rounded-lg border border-parchment-300 dark:border-ink-700 text-[11px] font-sans text-ink-700 dark:text-ink-300 items-center gap-2 max-w-full">
               <Sparkles className="w-3.5 h-3.5 text-emerald-500 animate-pulse shrink-0" />
-              <span className="truncate">
-                Robert N. Noyce (US 2,981,877) — Planar IC (1959)
-              </span>
+              <span className="truncate">Robert N. Noyce (US 2,981,877) — Planar IC (1959)</span>
             </div>
           </div>
         )}

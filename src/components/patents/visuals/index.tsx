@@ -222,27 +222,27 @@ export function PatentVisualDispatcher({ patentId }: PatentVisualDispatcherProps
           <button
             type="button"
             onClick={() => setRenderMode("3d-physics")}
-            className={`flex items-center gap-2 px-3.5 py-1.5 rounded-lg transition-all ${
+            className={`flex items-center gap-1.5 sm:gap-2 px-2.5 sm:px-3.5 py-1 sm:py-1.5 rounded-lg transition-all ${
               activeMode === "3d-physics"
                 ? "bg-amber-700 text-white font-bold shadow dark:bg-amber-600"
                 : "text-ink-700 dark:text-parchment-300 hover:text-ink-950 font-medium"
             }`}
           >
-            <Box className="w-4 h-4" />
-            <span>3D WebGL Physics Engine</span>
+            <Box className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
+            <span>3D Engine</span>
           </button>
           {hasVectorDiagram && (
             <button
               type="button"
               onClick={() => setRenderMode("vector-diagram")}
-              className={`flex items-center gap-2 px-3.5 py-1.5 rounded-lg transition-all ${
+              className={`flex items-center gap-1.5 sm:gap-2 px-2.5 sm:px-3.5 py-1 sm:py-1.5 rounded-lg transition-all ${
                 activeMode === "vector-diagram"
                   ? "bg-amber-700 text-white font-bold shadow dark:bg-amber-600"
                   : "text-ink-700 dark:text-parchment-300 hover:text-ink-950 font-medium"
               }`}
             >
-              <Layers className="w-4 h-4" />
-              <span>2D Vector Schematic</span>
+              <Layers className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
+              <span>2D Schematic</span>
             </button>
           )}
         </div>

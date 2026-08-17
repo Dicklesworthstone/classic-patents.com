@@ -1,6 +1,16 @@
 "use client";
 
-import { Activity, Camera, Eye, EyeOff, RotateCcw, Sparkles, Volume2, VolumeX, Zap } from "lucide-react";
+import {
+  Activity,
+  Camera,
+  Eye,
+  EyeOff,
+  RotateCcw,
+  Sparkles,
+  Volume2,
+  VolumeX,
+  Zap,
+} from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import * as THREE from "three";
 import { FrankenSimEngine } from "@/physics/engine";
@@ -59,7 +69,7 @@ export function TeslaMotor3D() {
 
   // Electrical & Mechanical Simulation State
   const [showUiOverlay, setShowUiOverlay] = useState<boolean>(true);
-  const [acFrequencyHz, setAcFrequencyHz] = useState<number>(60); // 10 to 120 Hz Hz
+  const [acFrequencyHz, setAcFrequencyHz] = useState<number>(60); // 10 to 120 Hz
   const [phaseCount, setPhaseCount] = useState<2 | 3>(2);
   const [appliedLoadTorqueNm, setAppliedLoadTorqueNm] = useState<number>(14.0); // 0 to 40 Nm
   const [showMagneticFlux, _setShowMagneticFlux] = useState<boolean>(true);
@@ -409,110 +419,131 @@ export function TeslaMotor3D() {
         <div ref={containerRef} className="absolute inset-0 w-full h-full" />
 
         {/* Live HUD Telemetry Overlay */}
-        <div className="absolute top-4 left-4 z-10 flex flex-col gap-2 pointer-events-none max-w-[calc(100%-8rem)] sm:max-w-md">
-          <div className="bg-white/90 dark:bg-ink-900/90 backdrop-blur-md px-3.5 py-2.5 rounded-xl border border-parchment-300 dark:border-ink-700 shadow-sm">
-            <div className="text-[11px] font-sans text-amber-700 dark:text-amber-400 font-bold uppercase tracking-wider flex items-center gap-1.5">
-              <Zap className="w-3.5 h-3.5 animate-pulse text-amber-500" />
-              Polyphase Induction Telemetry
+        {showUiOverlay && (
+          <div className="absolute top-3 left-3 sm:top-4 sm:left-4 z-10 flex flex-col gap-1.5 sm:gap-2 pointer-events-none max-w-[calc(100%-8rem)] sm:max-w-md transition-opacity duration-200">
+            <div className="bg-white/90 dark:bg-ink-900/90 backdrop-blur-md p-2 sm:px-3.5 sm:py-2.5 rounded-xl border border-parchment-300 dark:border-ink-700 shadow-sm">
+              <div className="text-[10px] sm:text-[11px] font-sans text-amber-700 dark:text-amber-400 font-bold uppercase tracking-wider flex items-center gap-1.5">
+                <Zap className="w-3 h-3 sm:w-3.5 sm:h-3.5 animate-pulse text-amber-500" />
+                Polyphase Induction Telemetry
+              </div>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-3 gap-y-0.5 sm:gap-y-1 mt-1 text-[10px] sm:text-xs font-sans">
+                <div>
+                  <span className="text-ink-600 dark:text-ink-400">Sync ($n_s$):</span>{" "}
+                  <span className="font-bold text-blue-600 dark:text-blue-400">
+                    {synchronousSpeedRpm} RPM
+                  </span>
+                </div>
+                <div>
+                  <span className="text-ink-600 dark:text-ink-400">Rotor ($n_r$):</span>{" "}
+                  <span className="font-bold text-emerald-600 dark:text-emerald-400">
+                    {rotorSpeedRpm} RPM
+                  </span>
+                </div>
+                <div>
+                  <span className="text-ink-600 dark:text-ink-400">Slip ($s$):</span>{" "}
+                  <span className="font-bold text-amber-600 dark:text-amber-400">
+                    {(slip * 100).toFixed(1)}%
+                  </span>
+                </div>
+                <div>
+                  <span className="text-ink-600 dark:text-ink-400">Power:</span>{" "}
+                  <span className="font-bold text-purple-600 dark:text-purple-400">
+                    {electricalPowerWatts} W ({(electricalPowerWatts / 745.7).toFixed(1)} HP)
+                  </span>
+                </div>
+              </div>
             </div>
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-4 gap-y-1 mt-1 text-xs font-sans">
-              <div>
-                <span className="text-ink-600 dark:text-ink-400">Sync Speed ($n_s$):</span>{" "}
-                <span className="font-bold text-blue-600 dark:text-blue-400">
-                  {synchronousSpeedRpm} RPM
-                </span>
-              </div>
-              <div>
-                <span className="text-ink-600 dark:text-ink-400">Rotor Speed ($n_r$):</span>{" "}
-                <span className="font-bold text-emerald-600 dark:text-emerald-400">
-                  {rotorSpeedRpm} RPM
-                </span>
-              </div>
-              <div>
-                <span className="text-ink-600 dark:text-ink-400">Rotor Slip ($s$):</span>{" "}
-                <span className="font-bold text-amber-600 dark:text-amber-400">
-                  {(slip * 100).toFixed(1)}%
-                </span>
-              </div>
-              <div>
-                <span className="text-ink-600 dark:text-ink-400">Shaft Power:</span>{" "}
-                <span className="font-bold text-purple-600 dark:text-purple-400">
-                  {electricalPowerWatts} W ({(electricalPowerWatts / 745.7).toFixed(2)} HP)
-                </span>
-              </div>
+
+            <div className="hidden sm:flex bg-white/90 dark:bg-ink-900/90 backdrop-blur-md px-3 py-1.5 rounded-lg border border-parchment-300 dark:border-ink-700 text-[11px] font-sans text-ink-700 dark:text-ink-300 items-center gap-2 max-w-full">
+              <Activity className="w-3.5 h-3.5 text-blue-500 animate-spin-slow shrink-0" />
+              <span className="truncate">Rotor Current: {rotorInducedCurrentAmps} A RMS</span>
             </div>
           </div>
+        )}
 
-          <div className="bg-white/90 dark:bg-ink-900/90 backdrop-blur-md px-3 py-1.5 rounded-lg border border-parchment-300 dark:border-ink-700 text-[11px] font-sans text-ink-700 dark:text-ink-300 flex items-center gap-2 max-w-full">
-            <Activity className="w-3.5 h-3.5 text-blue-500 animate-spin-slow shrink-0" />
-            <span className="truncate">Induced Rotor Current: {rotorInducedCurrentAmps} A RMS</span>
-          </div>
-        </div>
-
-        {/* Top Right Tool Bar (Audio, Pins, Reset) */}
-        <div className="absolute top-4 right-4 z-10 flex gap-2">
+        {/* Top Right Tool Bar (Toggle UI, Audio, Pins, Reset) */}
+        <div className="absolute top-3 right-3 sm:top-4 sm:right-4 z-10 flex gap-1.5 sm:gap-2">
+          <button
+            type="button"
+            onClick={() => setShowUiOverlay(!showUiOverlay)}
+            className={`p-1.5 sm:p-2.5 rounded-xl backdrop-blur-md border transition-all shadow-sm ${
+              showUiOverlay
+                ? "bg-white/90 dark:bg-ink-900/90 border-parchment-300 dark:border-ink-700 text-ink-700 dark:text-parchment-300 hover:bg-parchment-100"
+                : "bg-amber-600 text-white border-amber-700 shadow-md ring-2 ring-amber-500/30"
+            }`}
+            title={showUiOverlay ? "Hide Overlay UI (Clean 3D View)" : "Show Overlay UI"}
+            aria-label={showUiOverlay ? "Hide Overlay UI" : "Show Overlay UI"}
+          >
+            {showUiOverlay ? (
+              <EyeOff className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
+            ) : (
+              <Eye className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
+            )}
+          </button>
           <button
             type="button"
             onClick={() => setIsPlayingAudio(!isPlayingAudio)}
-            className="p-2.5 rounded-xl bg-white/90 dark:bg-ink-900/90 backdrop-blur-md border border-parchment-300 dark:border-ink-700 text-ink-700 dark:text-parchment-300 hover:bg-parchment-100 dark:hover:bg-ink-800 transition-all shadow-sm"
+            className="p-1.5 sm:p-2.5 rounded-xl bg-white/90 dark:bg-ink-900/90 backdrop-blur-md border border-parchment-300 dark:border-ink-700 text-ink-700 dark:text-parchment-300 hover:bg-parchment-100 dark:hover:bg-ink-800 transition-all shadow-sm"
             title={isPlayingAudio ? "Mute Motor Audio" : "Enable Motor Harmonic Sound"}
           >
             {isPlayingAudio ? (
-              <Volume2 className="w-4 h-4 text-emerald-600" />
+              <Volume2 className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-emerald-600" />
             ) : (
-              <VolumeX className="w-4 h-4" />
+              <VolumeX className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
             )}
           </button>
           <button
             type="button"
             onClick={() => setShowCalloutPins(!showCalloutPins)}
-            className={`p-2.5 rounded-xl backdrop-blur-md border transition-all shadow-sm ${
+            className={`p-1.5 sm:p-2.5 rounded-xl backdrop-blur-md border transition-all shadow-sm ${
               showCalloutPins
                 ? "bg-amber-600 text-white border-amber-700 shadow-md"
                 : "bg-white/90 dark:bg-ink-900/90 border-parchment-300 dark:border-ink-700 text-ink-700 dark:text-parchment-300 hover:bg-parchment-100"
             }`}
             title="Toggle Historical Patent Numeral Pins"
           >
-            <Zap className="w-4 h-4" />
+            <Zap className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
           </button>
           <button
             type="button"
             onClick={() => applyCameraPreset("iso")}
-            className="p-2.5 rounded-xl bg-white/90 dark:bg-ink-900/90 backdrop-blur-md border border-parchment-300 dark:border-ink-700 text-ink-700 dark:text-parchment-300 hover:bg-parchment-100 dark:hover:bg-ink-800 transition-all shadow-sm"
+            className="p-1.5 sm:p-2.5 rounded-xl bg-white/90 dark:bg-ink-900/90 backdrop-blur-md border border-parchment-300 dark:border-ink-700 text-ink-700 dark:text-parchment-300 hover:bg-parchment-100 dark:hover:bg-ink-800 transition-all shadow-sm"
             title="Reset Orbit Camera"
           >
-            <RotateCcw className="w-4 h-4" />
+            <RotateCcw className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
           </button>
         </div>
 
         {/* Camera Views Bar */}
-        <div className="absolute bottom-4 left-4 z-10 flex flex-wrap gap-1.5 bg-white/85 dark:bg-ink-900/85 backdrop-blur-md p-1.5 rounded-xl border border-parchment-300 dark:border-ink-700 shadow-sm text-xs">
-          <span className="px-2 py-1 text-ink-500 font-sans flex items-center gap-1">
-            <Camera className="w-3.5 h-3.5" /> View:
-          </span>
-          {(
-            [
-              ["iso", "Isometric"],
-              ["stator_coils", "Stator Poles"],
-              ["squirrel_cage", "Rotor Cage"],
-              ["shaft_drive", "Drive Shaft"],
-              ["top", "Air Gap"],
-            ] as const
-          ).map(([id, label]) => (
-            <button
-              key={id}
-              type="button"
-              onClick={() => applyCameraPreset(id)}
-              className={`px-2.5 py-1 rounded-lg font-sans transition-all ${
-                activeCamera === id
-                  ? "bg-amber-700 dark:bg-amber-600 text-white font-semibold shadow-xs"
-                  : "text-ink-700 dark:text-parchment-300 hover:bg-parchment-200 dark:hover:bg-ink-800"
-              }`}
-            >
-              {label}
-            </button>
-          ))}
-        </div>
+        {showUiOverlay && (
+          <div className="absolute bottom-3 left-3 sm:bottom-4 sm:left-4 z-10 flex flex-nowrap overflow-x-auto scrollbar-none max-w-[calc(100%-1.5rem)] sm:max-w-none gap-1 sm:gap-1.5 bg-white/85 dark:bg-ink-900/85 backdrop-blur-md p-1 sm:p-1.5 rounded-xl border border-parchment-300 dark:border-ink-700 shadow-sm text-[10px] sm:text-xs transition-opacity duration-200">
+            <span className="px-1.5 sm:px-2 py-0.5 sm:py-1 text-ink-500 font-sans flex items-center gap-1 shrink-0">
+              <Camera className="w-3 h-3 sm:w-3.5 sm:h-3.5" /> View:
+            </span>
+            {(
+              [
+                ["iso", "Isometric"],
+                ["stator_coils", "Stator Poles"],
+                ["squirrel_cage", "Rotor Cage"],
+                ["shaft_drive", "Drive Shaft"],
+                ["top", "Air Gap"],
+              ] as const
+            ).map(([id, label]) => (
+              <button
+                key={id}
+                type="button"
+                onClick={() => applyCameraPreset(id)}
+                className={`px-2 py-0.5 sm:px-2.5 sm:py-1 rounded-lg font-sans whitespace-nowrap shrink-0 transition-all ${
+                  activeCamera === id
+                    ? "bg-amber-700 dark:bg-amber-600 text-white font-semibold shadow-xs"
+                    : "text-ink-700 dark:text-parchment-300 hover:bg-parchment-200 dark:hover:bg-ink-800"
+                }`}
+              >
+                {label}
+              </button>
+            ))}
+          </div>
+        )}
       </div>
 
       {/* Interactive Controls & Scenario Bar */}
