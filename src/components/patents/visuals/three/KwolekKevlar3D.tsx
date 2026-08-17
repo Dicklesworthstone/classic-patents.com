@@ -3,18 +3,17 @@
 import { ShieldCheck } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import * as THREE from "three";
+import { createThreeStudioScene } from "./ThreeStudioScene";
 
 export function KwolekKevlar3D() {
   const containerRef = useRef<HTMLDivElement>(null);
 
   // Polymer Chain Parameters
-  const [shearFlowRate, setShearFlowRate] = useState<number>(0.8); // 0.0 (random coil) to 1.0 (nematic aligned liquid crystal)
+  const [shearFlowRate, setShearFlowRate] = useState<number>(0.8); // 0.0 to 1.0 (nematic aligned)
   const [tensileStressGpa, setTensileStressGpa] = useState<number>(3.6); // 0.5 to 5.0 GPa
   const [showHydrogenBonds, setShowHydrogenBonds] = useState<boolean>(true);
-  const [_showAromaticRings, _setShowAromaticRings] = useState<boolean>(true);
 
   // Physical Calculations
-  // Kevlar Tensile Modulus: E = 130 GPa
   const elasticModulusGpa = 130;
   const strainPercent = (tensileStressGpa / elasticModulusGpa) * 100;
   const hBondStrengthMpi = Math.round(tensileStressGpa * 280);
@@ -23,55 +22,35 @@ export function KwolekKevlar3D() {
     const container = containerRef.current;
     if (!container) return;
 
-    // --- THREE.JS SCENE SETUP ---
-    const scene = new THREE.Scene();
-    scene.background = new THREE.Color(0x0a0f1d);
+    // Create Studio Scene with Museum Studio Lighting
+    const studio = createThreeStudioScene({
+      container,
+      cameraPos: [15, 11, 19],
+      targetPos: [0, 0, 0],
+      bgBottomColor: 0x0f172a,
+      rimColor: 0x10b981,
+      ambientIntensity: 1.3,
+    });
 
-    const width = container.clientWidth || 600;
-    const height = container.clientHeight || 460;
+    const { scene, camera, renderer, controls } = studio;
 
-    const camera = new THREE.PerspectiveCamera(45, width / height, 0.1, 1000);
-    camera.position.set(16, 12, 22);
-    camera.lookAt(0, 0, 0);
-
-    const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
-    renderer.setSize(width, height);
-    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
-
-    container.replaceChildren(renderer.domElement);
-
-    // --- LIGHTING ---
-    scene.add(new THREE.AmbientLight(0xffffff, 0.8));
-    const pointLight = new THREE.PointLight(0x10b981, 3, 30);
-    pointLight.position.set(10, 15, 10);
-    scene.add(pointLight);
-
-    const amberLight = new THREE.PointLight(0xf59e0b, 2, 25);
-    amberLight.position.set(-10, -10, 10);
-    scene.add(amberLight);
-
-    // --- GRID ---
-    const grid = new THREE.GridHelper(30, 20, 0x10b981, 0x1e293b);
-    grid.position.y = -6;
-    scene.add(grid);
-
-    // --- MATERIALS ---
+    // --- PBR MATERIALS ---
     const carbonRingMaterial = new THREE.MeshStandardMaterial({
       color: 0xf59e0b,
-      metalness: 0.6,
-      roughness: 0.3,
+      metalness: 0.7,
+      roughness: 0.25,
     });
 
     const nitrogenMaterial = new THREE.MeshStandardMaterial({
       color: 0x38bdf8,
-      metalness: 0.5,
-      roughness: 0.3,
+      metalness: 0.6,
+      roughness: 0.25,
     });
 
     const oxygenMaterial = new THREE.MeshStandardMaterial({
       color: 0xef4444,
-      metalness: 0.5,
-      roughness: 0.3,
+      metalness: 0.6,
+      roughness: 0.25,
     });
 
     const hBondMaterial = new THREE.LineDashedMaterial({
@@ -105,7 +84,7 @@ export function KwolekKevlar3D() {
         ringMesh.rotation.x = Math.PI / 2;
         monomerGroup.add(ringMesh);
 
-        // Amide Group: C=O Carbonyl
+        // Amide Group: C=O Carbonyl Oxygen
         const oxygen = new THREE.Mesh(new THREE.SphereGeometry(0.35, 16, 16), oxygenMaterial);
         oxygen.position.set(1.4, 0.7, 0);
         monomerGroup.add(oxygen);
@@ -145,47 +124,7 @@ export function KwolekKevlar3D() {
       }
     }
 
-    // --- MOUSE ORBIT CONTROLS ---
-    let isDragging = false;
-    let prevMouseX = 0;
-    let prevMouseY = 0;
-    let sphericalTheta = 0.75;
-    let sphericalPhi = 0.5;
-    let sphericalRadius = 26;
-
-    const onMouseDown = (e: MouseEvent) => {
-      isDragging = true;
-      prevMouseX = e.clientX;
-      prevMouseY = e.clientY;
-    };
-
-    const onMouseMove = (e: MouseEvent) => {
-      if (!isDragging) return;
-      const deltaX = e.clientX - prevMouseX;
-      const deltaY = e.clientY - prevMouseY;
-      prevMouseX = e.clientX;
-      prevMouseY = e.clientY;
-
-      sphericalTheta -= deltaX * 0.006;
-      sphericalPhi = Math.max(0.1, Math.min(Math.PI / 2 - 0.05, sphericalPhi + deltaY * 0.006));
-    };
-
-    const onMouseUp = () => {
-      isDragging = false;
-    };
-
-    const onWheel = (e: WheelEvent) => {
-      e.preventDefault();
-      sphericalRadius = Math.max(10, Math.min(50, sphericalRadius + e.deltaY * 0.02));
-    };
-
-    const dom = renderer.domElement;
-    dom.addEventListener("mousedown", onMouseDown);
-    window.addEventListener("mousemove", onMouseMove);
-    window.addEventListener("mouseup", onMouseUp);
-    dom.addEventListener("wheel", onWheel, { passive: false });
-
-    // --- ANIMATION LOOP ---
+    // --- ANIMATION & PHYSICS INTEGRATION LOOP ---
     let animId: number;
     const clock = new THREE.Clock();
 
@@ -193,14 +132,10 @@ export function KwolekKevlar3D() {
       animId = requestAnimationFrame(animate);
       const time = clock.getElapsedTime();
 
-      // Camera Orbit
-      camera.position.x = sphericalRadius * Math.sin(sphericalTheta) * Math.cos(sphericalPhi);
-      camera.position.y = sphericalRadius * Math.sin(sphericalPhi);
-      camera.position.z = sphericalRadius * Math.cos(sphericalTheta) * Math.cos(sphericalPhi);
-      camera.lookAt(0, 0, 0);
+      controls.update();
 
       // Liquid Crystal Nematic Orientation vs Random Thermal Wiggle
-      const alignment = shearFlowRate; // 1.0 = perfectly rigid parallel rod; 0.0 = random isotropic coil
+      const alignment = shearFlowRate;
       chainGroups.forEach((chain, cIdx) => {
         chain.children.forEach((monomer, mIdx) => {
           const thermalWiggle = (1 - alignment) * Math.sin(time * 3.0 + mIdx + cIdx) * 0.4;
@@ -209,7 +144,6 @@ export function KwolekKevlar3D() {
         });
       });
 
-      // Hydrogen Bond Visibility and Vibration
       hBondLines.forEach((line) => {
         line.visible = showHydrogenBonds;
       });
@@ -219,25 +153,9 @@ export function KwolekKevlar3D() {
 
     animate();
 
-    const handleResize = () => {
-      if (!container) return;
-      const w = container.clientWidth;
-      const h = container.clientHeight;
-      camera.aspect = w / h;
-      camera.updateProjectionMatrix();
-      renderer.setSize(w, h);
-    };
-
-    window.addEventListener("resize", handleResize);
-
     return () => {
       cancelAnimationFrame(animId);
-      window.removeEventListener("resize", handleResize);
-      dom.removeEventListener("mousedown", onMouseDown);
-      window.removeEventListener("mousemove", onMouseMove);
-      window.removeEventListener("mouseup", onMouseUp);
-      dom.removeEventListener("wheel", onWheel);
-      renderer.dispose();
+      studio.dispose();
     };
   }, [shearFlowRate, showHydrogenBonds]);
 
@@ -253,7 +171,7 @@ export function KwolekKevlar3D() {
             </h3>
           </div>
           <p className="text-sm sm:text-base text-ink-700 dark:text-ink-300 mt-1">
-            Real-time Three.js molecular physics illustrating{" "}
+            Studio-illuminated Three.js molecular physics illustrating{" "}
             <strong>nematic liquid-crystalline chain alignment</strong> and{" "}
             <strong>inter-chain hydrogen bonding nets</strong>.
           </p>
@@ -268,10 +186,10 @@ export function KwolekKevlar3D() {
 
       {/* 3D WebGL Canvas & HUD */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
-        <div className="lg:col-span-8 flex flex-col items-center justify-center rounded-2xl bg-[#0a0f1d] border border-parchment-300 dark:border-ink-800 relative min-h-[460px] overflow-hidden">
+        <div className="lg:col-span-8 flex flex-col items-center justify-center rounded-2xl bg-[#0f172a] border border-parchment-300 dark:border-ink-800 relative min-h-[460px] overflow-hidden shadow-inner">
           {/* Top HUD */}
           <div className="absolute top-4 left-4 right-4 z-20 flex items-center justify-between pointer-events-none text-xs sm:text-sm font-mono">
-            <div className="px-3.5 py-1.5 bg-ink-900/90 border border-ink-800 text-emerald-300 rounded-xl shadow">
+            <div className="px-3.5 py-1.5 bg-ink-900/90 border border-ink-800 text-emerald-300 rounded-xl shadow-md">
               Polymer State:{" "}
               <span className="font-bold">
                 {shearFlowRate > 0.6 ? "Nematic Liquid Crystal" : "Isotropic Random Solution"}
@@ -308,7 +226,7 @@ export function KwolekKevlar3D() {
             </div>
             <div>
               <span className="text-ink-400 block text-xs font-semibold uppercase tracking-wider">
-                STRAIN ($\varepsilon$)
+                STRAIN (ε)
               </span>
               <span className="text-amber-400 font-bold text-sm sm:text-base">
                 {strainPercent.toFixed(2)}%
@@ -344,7 +262,7 @@ export function KwolekKevlar3D() {
             <div className="space-y-1.5">
               <div className="flex justify-between text-xs sm:text-sm font-mono">
                 <span className="font-semibold text-ink-800 dark:text-parchment-200">
-                  Spinneret Shear Alignment ($\dot&#123;\gamma&#125;$)
+                  {"Spinneret Shear Alignment (γ̇)"}
                 </span>
                 <span className="text-emerald-600 dark:text-emerald-400 font-bold">
                   {(shearFlowRate * 100).toFixed(0)}%
@@ -365,7 +283,7 @@ export function KwolekKevlar3D() {
             <div className="space-y-1.5">
               <div className="flex justify-between text-xs sm:text-sm font-mono">
                 <span className="font-semibold text-ink-800 dark:text-parchment-200">
-                  Applied Tensile Stress ($\sigma$)
+                  {"Applied Tensile Stress (σ)"}
                 </span>
                 <span className="text-amber-600 dark:text-amber-400 font-bold">
                   {tensileStressGpa} GPa

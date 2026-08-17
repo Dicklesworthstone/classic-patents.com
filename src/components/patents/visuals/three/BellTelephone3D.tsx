@@ -4,6 +4,7 @@ import { Phone, Volume2, VolumeX } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import * as THREE from "three";
 import { soundEngine } from "@/utils/soundEngine";
+import { createThreeStudioScene } from "./ThreeStudioScene";
 
 export function BellTelephone3D() {
   const containerRef = useRef<HTMLDivElement>(null);
@@ -15,7 +16,6 @@ export function BellTelephone3D() {
   const [isPlayingAudio, setIsPlayingAudio] = useState<boolean>(false);
 
   // Physical Calculations
-  // Resistance: R = rho * L / A
   const batteryVoltage = 6.0;
   const circuitResistanceOhms = 20 + electrolyteDepthMm * 8;
   const currentMilliamps = (batteryVoltage / circuitResistanceOhms) * 1000;
@@ -37,39 +37,19 @@ export function BellTelephone3D() {
     const container = containerRef.current;
     if (!container) return;
 
-    // --- THREE.JS SCENE SETUP ---
-    const scene = new THREE.Scene();
-    scene.background = new THREE.Color(0x0a0f1d);
+    // Create Studio Scene with Museum Studio Lighting
+    const studio = createThreeStudioScene({
+      container,
+      cameraPos: [15, 11, 18],
+      targetPos: [0, 0, 0],
+      bgBottomColor: 0x0f172a,
+      rimColor: 0x38bdf8,
+      ambientIntensity: 1.3,
+    });
 
-    const width = container.clientWidth || 600;
-    const height = container.clientHeight || 460;
+    const { scene, camera, renderer, controls } = studio;
 
-    const camera = new THREE.PerspectiveCamera(45, width / height, 0.1, 1000);
-    camera.position.set(16, 12, 20);
-    camera.lookAt(0, 0, 0);
-
-    const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
-    renderer.setSize(width, height);
-    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
-
-    container.replaceChildren(renderer.domElement);
-
-    // --- LIGHTING ---
-    scene.add(new THREE.AmbientLight(0xffeedd, 0.7));
-    const pointLight = new THREE.PointLight(0x38bdf8, 3, 30);
-    pointLight.position.set(10, 15, 10);
-    scene.add(pointLight);
-
-    const amberLight = new THREE.PointLight(0xf59e0b, 2, 25);
-    amberLight.position.set(-10, -5, -10);
-    scene.add(amberLight);
-
-    // --- GRID ---
-    const grid = new THREE.GridHelper(30, 20, 0xd97706, 0x1e293b);
-    grid.position.y = -6;
-    scene.add(grid);
-
-    // --- MATERIALS ---
+    // --- PBR MATERIALS ---
     const brassMaterial = new THREE.MeshStandardMaterial({
       color: 0xd97706,
       metalness: 0.9,
@@ -84,7 +64,7 @@ export function BellTelephone3D() {
 
     const liquidElectrolyteMaterial = new THREE.MeshPhysicalMaterial({
       color: 0x0284c7,
-      transmission: 0.8,
+      transmission: 0.82,
       opacity: 0.85,
       transparent: true,
       roughness: 0.1,
@@ -122,7 +102,7 @@ export function BellTelephone3D() {
     plungeNeedle.rotation.z = Math.PI / 4;
     transmitterGroup.add(plungeNeedle);
 
-    // 4. Acidulated Water Liquid Cup (Electrolyte Resistance Cell)
+    // 4. Acidulated Water Liquid Cup
     const cupMesh = new THREE.Mesh(new THREE.CylinderGeometry(1.6, 1.4, 2.5, 32), brassMaterial);
     cupMesh.position.set(0, -1.5, 0);
     transmitterGroup.add(cupMesh);
@@ -140,7 +120,7 @@ export function BellTelephone3D() {
 
     const coilMesh = new THREE.Mesh(
       new THREE.CylinderGeometry(1.4, 1.4, 2.8, 24),
-      new THREE.MeshStandardMaterial({ color: 0xd97706, roughness: 0.3 }),
+      new THREE.MeshStandardMaterial({ color: 0xd97706, roughness: 0.3, metalness: 0.8 }),
     );
     coilMesh.rotation.x = Math.PI / 2;
     receiverGroup.add(coilMesh);
@@ -175,47 +155,7 @@ export function BellTelephone3D() {
       transmitterGroup.add(ring);
     }
 
-    // --- MOUSE ORBIT CONTROLS ---
-    let isDragging = false;
-    let prevMouseX = 0;
-    let prevMouseY = 0;
-    let sphericalTheta = 0.85;
-    let sphericalPhi = 0.5;
-    let sphericalRadius = 24;
-
-    const onMouseDown = (e: MouseEvent) => {
-      isDragging = true;
-      prevMouseX = e.clientX;
-      prevMouseY = e.clientY;
-    };
-
-    const onMouseMove = (e: MouseEvent) => {
-      if (!isDragging) return;
-      const deltaX = e.clientX - prevMouseX;
-      const deltaY = e.clientY - prevMouseY;
-      prevMouseX = e.clientX;
-      prevMouseY = e.clientY;
-
-      sphericalTheta -= deltaX * 0.006;
-      sphericalPhi = Math.max(0.1, Math.min(Math.PI / 2 - 0.05, sphericalPhi + deltaY * 0.006));
-    };
-
-    const onMouseUp = () => {
-      isDragging = false;
-    };
-
-    const onWheel = (e: WheelEvent) => {
-      e.preventDefault();
-      sphericalRadius = Math.max(10, Math.min(45, sphericalRadius + e.deltaY * 0.02));
-    };
-
-    const dom = renderer.domElement;
-    dom.addEventListener("mousedown", onMouseDown);
-    window.addEventListener("mousemove", onMouseMove);
-    window.addEventListener("mouseup", onMouseUp);
-    dom.addEventListener("wheel", onWheel, { passive: false });
-
-    // --- ANIMATION LOOP ---
+    // --- ANIMATION & PHYSICS INTEGRATION LOOP ---
     let animId: number;
     const clock = new THREE.Clock();
 
@@ -223,11 +163,7 @@ export function BellTelephone3D() {
       animId = requestAnimationFrame(animate);
       const time = clock.getElapsedTime();
 
-      // Camera Orbit
-      camera.position.x = sphericalRadius * Math.sin(sphericalTheta) * Math.cos(sphericalPhi);
-      camera.position.y = sphericalRadius * Math.sin(sphericalPhi);
-      camera.position.z = sphericalRadius * Math.cos(sphericalTheta) * Math.cos(sphericalPhi);
-      camera.lookAt(0, 0, 0);
+      controls.update();
 
       // Acoustic Vibration Physics: x(t) = A sin(2pi f t)
       const omega = 2 * Math.PI * (acousticFrequencyHz / 100);
@@ -250,25 +186,9 @@ export function BellTelephone3D() {
 
     animate();
 
-    const handleResize = () => {
-      if (!container) return;
-      const w = container.clientWidth;
-      const h = container.clientHeight;
-      camera.aspect = w / h;
-      camera.updateProjectionMatrix();
-      renderer.setSize(w, h);
-    };
-
-    window.addEventListener("resize", handleResize);
-
     return () => {
       cancelAnimationFrame(animId);
-      window.removeEventListener("resize", handleResize);
-      dom.removeEventListener("mousedown", onMouseDown);
-      window.removeEventListener("mousemove", onMouseMove);
-      window.removeEventListener("mouseup", onMouseUp);
-      dom.removeEventListener("wheel", onWheel);
-      renderer.dispose();
+      studio.dispose();
     };
   }, [acousticFrequencyHz, speechAmplitudeDb]);
 
@@ -284,7 +204,7 @@ export function BellTelephone3D() {
             </h3>
           </div>
           <p className="text-sm sm:text-base text-ink-700 dark:text-ink-300 mt-1">
-            Real-time Three.js electroacoustic simulation of{" "}
+            Studio-illuminated Three.js electroacoustic simulation of{" "}
             <strong>variable-resistance liquid transmission</strong> and{" "}
             <strong>undulating electrical speech currents</strong>.
           </p>
@@ -308,10 +228,10 @@ export function BellTelephone3D() {
 
       {/* 3D WebGL Canvas & HUD */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
-        <div className="lg:col-span-8 flex flex-col items-center justify-center rounded-2xl bg-[#0a0f1d] border border-parchment-300 dark:border-ink-800 relative min-h-[460px] overflow-hidden">
+        <div className="lg:col-span-8 flex flex-col items-center justify-center rounded-2xl bg-[#0f172a] border border-parchment-300 dark:border-ink-800 relative min-h-[460px] overflow-hidden shadow-inner">
           {/* Top HUD */}
           <div className="absolute top-4 left-4 right-4 z-20 flex items-center justify-between pointer-events-none text-xs sm:text-sm font-mono">
-            <div className="px-3.5 py-1.5 bg-ink-900/90 border border-ink-800 text-amber-300 rounded-xl shadow">
+            <div className="px-3.5 py-1.5 bg-ink-900/90 border border-ink-800 text-amber-300 rounded-xl shadow-md">
               Circuit Resistance:{" "}
               <span className="font-bold">{circuitResistanceOhms.toFixed(1)} Ω</span> (
               {currentMilliamps.toFixed(1)} mA Undulating Current)

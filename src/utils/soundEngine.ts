@@ -146,6 +146,31 @@ class SoundEngine {
   }
 
   /**
+   * Morse telegraph key click sound
+   */
+  public playMorseClick() {
+    if (this.isMuted) return;
+    this.initContext();
+    if (!this.ctx) return;
+
+    const osc = this.ctx.createOscillator();
+    const gain = this.ctx.createGain();
+
+    osc.type = "triangle";
+    osc.frequency.setValueAtTime(800, this.ctx.currentTime);
+    osc.frequency.exponentialRampToValueAtTime(150, this.ctx.currentTime + 0.015);
+
+    gain.gain.setValueAtTime(0.2, this.ctx.currentTime);
+    gain.gain.exponentialRampToValueAtTime(0.001, this.ctx.currentTime + 0.015);
+
+    osc.connect(gain);
+    gain.connect(this.ctx.destination);
+
+    osc.start();
+    osc.stop(this.ctx.currentTime + 0.02);
+  }
+
+  /**
    * Filament click / contact switch sound
    */
   public playSwitchClick() {

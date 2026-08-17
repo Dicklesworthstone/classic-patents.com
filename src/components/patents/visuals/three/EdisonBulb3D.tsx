@@ -3,72 +3,56 @@
 import { Lightbulb } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import * as THREE from "three";
+import { createThreeStudioScene } from "./ThreeStudioScene";
 
 export function EdisonBulb3D() {
   const containerRef = useRef<HTMLDivElement>(null);
 
   // Electrical & Thermal Simulation State
   const [appliedVoltage, setAppliedVoltage] = useState<number>(110); // 0 to 140 Volts
-  const [vacuumTorr, setVacuumTorr] = useState<number>(1e-6); // 1.0 (Atmosphere) down to 1e-6 Torr (High Vacuum)
+  const [vacuumTorr, setVacuumTorr] = useState<number>(1e-6); // 1.0 down to 1e-6 Torr
   const [filamentMaterial, setFilamentMaterial] = useState<"carbonized-bamboo" | "platinum-wire">(
     "carbonized-bamboo",
   );
   const [showGasMolecules, setShowGasMolecules] = useState<boolean>(true);
 
   // Physics Calculations
-  // Resistance: R = 100 Ohms for carbonized bamboo; 4 Ohms for platinum
   const baseResistance = filamentMaterial === "carbonized-bamboo" ? 100 : 4;
   const currentAmps = appliedVoltage / baseResistance;
   const powerWatts = appliedVoltage * currentAmps;
   // Blackbody temperature estimate (Stefan-Boltzmann P = sigma * A * T^4)
   const filamentTempKelvin = Math.round(300 + (powerWatts * 4e10) ** 0.25);
-  // Filament Lifespan estimate (Torr dependent - oxidation degradation)
   const estimatedLifespanHours =
-    vacuumTorr < 1e-4
-      ? Math.round(1200 / (appliedVoltage / 110) ** 3.5)
-      : Math.round(0.2 / (vacuumTorr * 100));
+    vacuumTorr < 1e-4 ? Math.round(1200 / (appliedVoltage / 110) ** 3.5) : 0;
 
   useEffect(() => {
     const container = containerRef.current;
     if (!container) return;
 
-    // --- THREE.JS SCENE SETUP ---
-    const scene = new THREE.Scene();
-    scene.background = new THREE.Color(0x0a0f1d);
+    // Create Studio Scene with Museum Studio Lighting
+    const studio = createThreeStudioScene({
+      container,
+      cameraPos: [11, 7, 14],
+      targetPos: [0, 0, 0],
+      bgBottomColor: 0x0f172a,
+      rimColor: 0xf59e0b,
+      ambientIntensity: 1.2,
+    });
 
-    const width = container.clientWidth || 600;
-    const height = container.clientHeight || 460;
+    const { scene, camera, renderer, controls } = studio;
 
-    const camera = new THREE.PerspectiveCamera(45, width / height, 0.1, 1000);
-    camera.position.set(12, 10, 16);
-    camera.lookAt(0, 0, 0);
-
-    const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
-    renderer.setSize(width, height);
-    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
-
-    container.replaceChildren(renderer.domElement);
-
-    // --- LIGHTING ---
-    scene.add(new THREE.AmbientLight(0xffeedd, 0.4));
-
-    // Dynamic Bulb Radiance Light
+    // Dynamic Bulb Point Light
     const bulbLight = new THREE.PointLight(0xffaa33, 0, 25);
-    bulbLight.position.set(0, 0.5, 0);
+    bulbLight.position.set(0, 1.0, 0);
     scene.add(bulbLight);
 
-    // --- GRID ---
-    const grid = new THREE.GridHelper(30, 20, 0xd97706, 0x1e293b);
-    grid.position.y = -6;
-    scene.add(grid);
-
-    // --- MATERIALS ---
+    // --- PBR MATERIALS ---
     const glassMaterial = new THREE.MeshPhysicalMaterial({
       color: 0xffffff,
-      transmission: 0.92,
+      transmission: 0.94,
       opacity: 1,
       transparent: true,
-      roughness: 0.05,
+      roughness: 0.04,
       ior: 1.52,
       metalness: 0.05,
       side: THREE.DoubleSide,
@@ -98,13 +82,13 @@ export function EdisonBulb3D() {
     const bulbGroup = new THREE.Group();
     scene.add(bulbGroup);
 
-    // 1. Hand-blown Glass Bulb Envelope
-    const glassSphere = new THREE.Mesh(new THREE.SphereGeometry(3.6, 32, 24), glassMaterial);
+    // Hand-blown Glass Bulb Globe
+    const glassSphere = new THREE.Mesh(new THREE.SphereGeometry(3.6, 36, 28), glassMaterial);
     glassSphere.position.y = 1.0;
     bulbGroup.add(glassSphere);
 
-    // Glass exhaust seal tip at top (historical hand-evacuated pip)
-    const exhaustPip = new THREE.Mesh(new THREE.ConeGeometry(0.3, 0.6, 16), glassMaterial);
+    // Glass exhaust seal pip at top
+    const exhaustPip = new THREE.Mesh(new THREE.ConeGeometry(0.35, 0.7, 16), glassMaterial);
     exhaustPip.position.set(0, 4.7, 0);
     bulbGroup.add(exhaustPip);
 
@@ -113,7 +97,7 @@ export function EdisonBulb3D() {
     glassNeck.position.y = -2.2;
     bulbGroup.add(glassNeck);
 
-    // 2. Brass Screw Base (The universal Edison base E26)
+    // Brass Screw Base E26
     const baseScrew = new THREE.Mesh(
       new THREE.CylinderGeometry(1.6, 1.6, 2.0, 32),
       brassScrewBaseMaterial,
@@ -121,12 +105,11 @@ export function EdisonBulb3D() {
     baseScrew.position.y = -3.8;
     bulbGroup.add(baseScrew);
 
-    // 3. Central Glass Mount & Platinum Lead-in Wires
+    // Central Glass Mount & Platinum Lead-in Wires
     const innerStem = new THREE.Mesh(new THREE.CylinderGeometry(0.5, 0.7, 3.0, 16), glassMaterial);
     innerStem.position.y = -1.0;
     bulbGroup.add(innerStem);
 
-    // Twin Platinum Leads passing through glass seal
     const lead1 = new THREE.Mesh(
       new THREE.CylinderGeometry(0.06, 0.06, 3.0, 8),
       platinumLeadMaterial,
@@ -141,7 +124,7 @@ export function EdisonBulb3D() {
     lead2.position.set(0.6, 0, 0);
     bulbGroup.add(lead2);
 
-    // 4. Edison Horseshoe Carbonized Bamboo Filament (CatmullRom Curve)
+    // Horseshoe Carbonized Bamboo Filament
     const filamentCurve = new THREE.CatmullRomCurve3([
       new THREE.Vector3(-0.6, 1.5, 0),
       new THREE.Vector3(-0.8, 2.6, 0.2),
@@ -149,11 +132,11 @@ export function EdisonBulb3D() {
       new THREE.Vector3(0.8, 2.6, -0.2),
       new THREE.Vector3(0.6, 1.5, 0),
     ]);
-    const filamentGeo = new THREE.TubeGeometry(filamentCurve, 32, 0.08, 8, false);
+    const filamentGeo = new THREE.TubeGeometry(filamentCurve, 36, 0.09, 8, false);
     const filamentMesh = new THREE.Mesh(filamentGeo, filamentMaterialMesh);
     bulbGroup.add(filamentMesh);
 
-    // --- RESIDUAL GAS MOLECULES (Brownian Motion) ---
+    // --- RESIDUAL GAS MOLECULES ---
     const gasCount = 80;
     const gasGeo = new THREE.BufferGeometry();
     const gasPos = new Float32Array(gasCount * 3);
@@ -172,47 +155,7 @@ export function EdisonBulb3D() {
     );
     bulbGroup.add(gasPoints);
 
-    // --- MOUSE ORBIT CONTROLS ---
-    let isDragging = false;
-    let prevMouseX = 0;
-    let prevMouseY = 0;
-    let sphericalTheta = 0.8;
-    let sphericalPhi = 0.45;
-    let sphericalRadius = 20;
-
-    const onMouseDown = (e: MouseEvent) => {
-      isDragging = true;
-      prevMouseX = e.clientX;
-      prevMouseY = e.clientY;
-    };
-
-    const onMouseMove = (e: MouseEvent) => {
-      if (!isDragging) return;
-      const deltaX = e.clientX - prevMouseX;
-      const deltaY = e.clientY - prevMouseY;
-      prevMouseX = e.clientX;
-      prevMouseY = e.clientY;
-
-      sphericalTheta -= deltaX * 0.006;
-      sphericalPhi = Math.max(0.1, Math.min(Math.PI / 2 - 0.05, sphericalPhi + deltaY * 0.006));
-    };
-
-    const onMouseUp = () => {
-      isDragging = false;
-    };
-
-    const onWheel = (e: WheelEvent) => {
-      e.preventDefault();
-      sphericalRadius = Math.max(8, Math.min(40, sphericalRadius + e.deltaY * 0.02));
-    };
-
-    const dom = renderer.domElement;
-    dom.addEventListener("mousedown", onMouseDown);
-    window.addEventListener("mousemove", onMouseMove);
-    window.addEventListener("mouseup", onMouseUp);
-    dom.addEventListener("wheel", onWheel, { passive: false });
-
-    // --- ANIMATION LOOP ---
+    // --- ANIMATION & PHYSICS INTEGRATION LOOP ---
     let animId: number;
     const clock = new THREE.Clock();
 
@@ -220,15 +163,11 @@ export function EdisonBulb3D() {
       animId = requestAnimationFrame(animate);
       const _time = clock.getElapsedTime();
 
-      // Camera Orbit
-      camera.position.x = sphericalRadius * Math.sin(sphericalTheta) * Math.cos(sphericalPhi);
-      camera.position.y = sphericalRadius * Math.sin(sphericalPhi);
-      camera.position.z = sphericalRadius * Math.cos(sphericalTheta) * Math.cos(sphericalPhi);
-      camera.lookAt(0, 0, 0);
+      controls.update();
 
       // Incandescence Intensity & Color Temperature
-      const intensityNorm = Math.min(2.0, powerWatts / 60);
-      filamentMaterialMesh.emissiveIntensity = intensityNorm * 2.5;
+      const intensityNorm = Math.min(2.5, powerWatts / 50);
+      filamentMaterialMesh.emissiveIntensity = intensityNorm * 3.0;
 
       if (filamentTempKelvin < 1000) {
         filamentMaterialMesh.emissive.setHex(0x551100);
@@ -240,7 +179,7 @@ export function EdisonBulb3D() {
         filamentMaterialMesh.emissive.setHex(0xffffee);
       }
 
-      bulbLight.intensity = intensityNorm * 4.0;
+      bulbLight.intensity = intensityNorm * 5.0;
       bulbLight.color.copy(filamentMaterialMesh.emissive);
 
       // Gas Molecule Brownian Agitation
@@ -260,25 +199,9 @@ export function EdisonBulb3D() {
 
     animate();
 
-    const handleResize = () => {
-      if (!container) return;
-      const w = container.clientWidth;
-      const h = container.clientHeight;
-      camera.aspect = w / h;
-      camera.updateProjectionMatrix();
-      renderer.setSize(w, h);
-    };
-
-    window.addEventListener("resize", handleResize);
-
     return () => {
       cancelAnimationFrame(animId);
-      window.removeEventListener("resize", handleResize);
-      dom.removeEventListener("mousedown", onMouseDown);
-      window.removeEventListener("mousemove", onMouseMove);
-      window.removeEventListener("mouseup", onMouseUp);
-      dom.removeEventListener("wheel", onWheel);
-      renderer.dispose();
+      studio.dispose();
     };
   }, [vacuumTorr, powerWatts, filamentTempKelvin, showGasMolecules]);
 
@@ -294,9 +217,9 @@ export function EdisonBulb3D() {
             </h3>
           </div>
           <p className="text-sm sm:text-base text-ink-700 dark:text-ink-300 mt-1">
-            Real-time Three.js thermodynamic simulation of{" "}
-            <strong>high-resistance carbon filaments</strong>,{" "}
-            <strong>high-vacuum mean free path</strong>, and <strong>Planck incandescence</strong>.
+            Studio-illuminated Three.js thermodynamic simulation of{" "}
+            <strong>high-resistance carbon filaments ($R \approx 100\,\Omega$)</strong> and{" "}
+            <strong>high-vacuum incandescence</strong>.
           </p>
         </div>
 
@@ -309,10 +232,10 @@ export function EdisonBulb3D() {
 
       {/* 3D WebGL Canvas & HUD */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
-        <div className="lg:col-span-8 flex flex-col items-center justify-center rounded-2xl bg-[#0a0f1d] border border-parchment-300 dark:border-ink-800 relative min-h-[460px] overflow-hidden">
+        <div className="lg:col-span-8 flex flex-col items-center justify-center rounded-2xl bg-[#0f172a] border border-parchment-300 dark:border-ink-800 relative min-h-[460px] overflow-hidden shadow-inner">
           {/* Top HUD */}
           <div className="absolute top-4 left-4 right-4 z-20 flex items-center justify-between pointer-events-none text-xs sm:text-sm font-mono">
-            <div className="px-3.5 py-1.5 bg-ink-900/90 border border-ink-800 text-amber-300 rounded-xl shadow">
+            <div className="px-3.5 py-1.5 bg-ink-900/90 border border-ink-800 text-amber-300 rounded-xl shadow-md">
               Radiant Power: <span className="font-bold">{powerWatts.toFixed(1)} Watts</span> (
               {currentAmps.toFixed(2)} Amps)
             </div>

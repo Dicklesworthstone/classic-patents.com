@@ -3,12 +3,13 @@
 import { Zap } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import * as THREE from "three";
+import { createThreeStudioScene } from "./ThreeStudioScene";
 
 export function NoycePlanarIC3D() {
   const containerRef = useRef<HTMLDivElement>(null);
 
   // Semiconductor Parameter State
-  const [layerExplodeDistance, setLayerExplodeDistance] = useState<number>(2.5); // 0 to 6
+  const [layerExplodeDistance, setLayerExplodeDistance] = useState<number>(2.5); // 0 to 5
   const [activeStep, setActiveStep] = useState<number>(4); // 1: Substrate, 2: Oxidation, 3: Etch/Diff, 4: Aluminum Leads
   const [showElectronHoles, setShowElectronHoles] = useState<boolean>(true);
   const [biasVoltage, setBiasVoltage] = useState<number>(1.2); // 0 to 5 V
@@ -17,63 +18,43 @@ export function NoycePlanarIC3D() {
     const container = containerRef.current;
     if (!container) return;
 
-    // --- THREE.JS SCENE SETUP ---
-    const scene = new THREE.Scene();
-    scene.background = new THREE.Color(0x0a0f1d);
+    // Create Studio Scene with Museum Studio Lighting
+    const studio = createThreeStudioScene({
+      container,
+      cameraPos: [16, 14, 18],
+      targetPos: [0, 0, 0],
+      bgBottomColor: 0x0f172a,
+      rimColor: 0x38bdf8,
+      ambientIntensity: 1.3,
+    });
 
-    const width = container.clientWidth || 600;
-    const height = container.clientHeight || 460;
+    const { scene, camera, renderer, controls } = studio;
 
-    const camera = new THREE.PerspectiveCamera(45, width / height, 0.1, 1000);
-    camera.position.set(16, 16, 20);
-    camera.lookAt(0, 0, 0);
-
-    const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
-    renderer.setSize(width, height);
-    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
-
-    container.replaceChildren(renderer.domElement);
-
-    // --- LIGHTING ---
-    scene.add(new THREE.AmbientLight(0xffffff, 0.8));
-    const pointLight = new THREE.PointLight(0x38bdf8, 3, 30);
-    pointLight.position.set(10, 15, 10);
-    scene.add(pointLight);
-
-    const goldLight = new THREE.PointLight(0xf59e0b, 2, 25);
-    goldLight.position.set(-10, 10, -10);
-    scene.add(goldLight);
-
-    // --- GRID ---
-    const grid = new THREE.GridHelper(30, 20, 0x0284c7, 0x1e293b);
-    grid.position.y = -6;
-    scene.add(grid);
-
-    // --- MATERIALS ---
+    // --- PBR MATERIALS ---
     const pSubstrateMaterial = new THREE.MeshStandardMaterial({
       color: 0x334155,
-      metalness: 0.3,
-      roughness: 0.6,
+      metalness: 0.4,
+      roughness: 0.5,
     });
 
     const nWellMaterial = new THREE.MeshStandardMaterial({
       color: 0x0284c7,
-      metalness: 0.4,
-      roughness: 0.5,
+      metalness: 0.5,
+      roughness: 0.4,
     });
 
     const pPlusMaterial = new THREE.MeshStandardMaterial({
       color: 0xef4444,
-      metalness: 0.4,
-      roughness: 0.5,
+      metalness: 0.5,
+      roughness: 0.4,
     });
 
     const sio2Material = new THREE.MeshPhysicalMaterial({
       color: 0x38bdf8,
-      transmission: 0.85,
-      opacity: 0.8,
+      transmission: 0.88,
+      opacity: 0.85,
       transparent: true,
-      roughness: 0.1,
+      roughness: 0.08,
       ior: 1.45,
     });
 
@@ -93,6 +74,8 @@ export function NoycePlanarIC3D() {
       pSubstrateMaterial,
     );
     substrateMesh.position.y = -2.0;
+    substrateMesh.castShadow = true;
+    substrateMesh.receiveShadow = true;
     waferGroup.add(substrateMesh);
 
     // Layer 2: N-type Wells (Diffused collectors)
@@ -121,13 +104,10 @@ export function NoycePlanarIC3D() {
 
     // Layer 5: Vapor-Deposited Aluminum Interconnect Metallization Leads
     const leadsGroup = new THREE.Group();
-    // Lead 1 (Collector to Resistor)
     const lead1 = new THREE.Mesh(new THREE.BoxGeometry(6.0, 0.3, 0.8), aluminumLeadsMaterial);
     lead1.position.set(0, 0, -2.0);
-    // Lead 2 (Base interconnect)
     const lead2 = new THREE.Mesh(new THREE.BoxGeometry(0.8, 0.3, 5.0), aluminumLeadsMaterial);
     lead2.position.set(-3.0, 0, 0);
-    // Lead 3 (Emitter ground)
     const lead3 = new THREE.Mesh(new THREE.BoxGeometry(0.8, 0.3, 5.0), aluminumLeadsMaterial);
     lead3.position.set(3.5, 0, 0);
 
@@ -137,7 +117,7 @@ export function NoycePlanarIC3D() {
     waferGroup.add(leadsGroup);
 
     // --- 3D ELECTRON & HOLE PARTICLES ---
-    const carrierCount = 120;
+    const carrierCount = 140;
     const carrierGeo = new THREE.BufferGeometry();
     const carrierPos = new Float32Array(carrierCount * 3);
     const carrierCol = new Float32Array(carrierCount * 3);
@@ -148,12 +128,10 @@ export function NoycePlanarIC3D() {
       carrierPos[i * 3 + 2] = (Math.random() - 0.5) * 8;
 
       if (i % 2 === 0) {
-        // Electrons (Blue)
         carrierCol[i * 3] = 0.2;
         carrierCol[i * 3 + 1] = 0.7;
         carrierCol[i * 3 + 2] = 1.0;
       } else {
-        // Holes (Red/Orange)
         carrierCol[i * 3] = 1.0;
         carrierCol[i * 3 + 1] = 0.4;
         carrierCol[i * 3 + 2] = 0.2;
@@ -173,59 +151,15 @@ export function NoycePlanarIC3D() {
     );
     waferGroup.add(carrierPoints);
 
-    // --- MOUSE ORBIT CONTROLS ---
-    let isDragging = false;
-    let prevMouseX = 0;
-    let prevMouseY = 0;
-    let sphericalTheta = 0.85;
-    let sphericalPhi = 0.6;
-    let sphericalRadius = 26;
-
-    const onMouseDown = (e: MouseEvent) => {
-      isDragging = true;
-      prevMouseX = e.clientX;
-      prevMouseY = e.clientY;
-    };
-
-    const onMouseMove = (e: MouseEvent) => {
-      if (!isDragging) return;
-      const deltaX = e.clientX - prevMouseX;
-      const deltaY = e.clientY - prevMouseY;
-      prevMouseX = e.clientX;
-      prevMouseY = e.clientY;
-
-      sphericalTheta -= deltaX * 0.006;
-      sphericalPhi = Math.max(0.1, Math.min(Math.PI / 2 - 0.05, sphericalPhi + deltaY * 0.006));
-    };
-
-    const onMouseUp = () => {
-      isDragging = false;
-    };
-
-    const onWheel = (e: WheelEvent) => {
-      e.preventDefault();
-      sphericalRadius = Math.max(10, Math.min(50, sphericalRadius + e.deltaY * 0.02));
-    };
-
-    const dom = renderer.domElement;
-    dom.addEventListener("mousedown", onMouseDown);
-    window.addEventListener("mousemove", onMouseMove);
-    window.addEventListener("mouseup", onMouseUp);
-    dom.addEventListener("wheel", onWheel, { passive: false });
-
-    // --- ANIMATION LOOP ---
+    // --- ANIMATION & PHYSICS INTEGRATION LOOP ---
     let animId: number;
     const clock = new THREE.Clock();
 
     const animate = () => {
       animId = requestAnimationFrame(animate);
-      const _time = clock.getElapsedTime();
+      clock.getElapsedTime();
 
-      // Camera Orbit
-      camera.position.x = sphericalRadius * Math.sin(sphericalTheta) * Math.cos(sphericalPhi);
-      camera.position.y = sphericalRadius * Math.sin(sphericalPhi);
-      camera.position.z = sphericalRadius * Math.cos(sphericalTheta) * Math.cos(sphericalPhi);
-      camera.lookAt(0, 0, 0);
+      controls.update();
 
       // Layer Explosion Vertical Offsets
       const d = layerExplodeDistance;
@@ -259,25 +193,9 @@ export function NoycePlanarIC3D() {
 
     animate();
 
-    const handleResize = () => {
-      if (!container) return;
-      const w = container.clientWidth;
-      const h = container.clientHeight;
-      camera.aspect = w / h;
-      camera.updateProjectionMatrix();
-      renderer.setSize(w, h);
-    };
-
-    window.addEventListener("resize", handleResize);
-
     return () => {
       cancelAnimationFrame(animId);
-      window.removeEventListener("resize", handleResize);
-      dom.removeEventListener("mousedown", onMouseDown);
-      window.removeEventListener("mousemove", onMouseMove);
-      window.removeEventListener("mouseup", onMouseUp);
-      dom.removeEventListener("wheel", onWheel);
-      renderer.dispose();
+      studio.dispose();
     };
   }, [layerExplodeDistance, activeStep, showElectronHoles, biasVoltage]);
 
@@ -293,7 +211,7 @@ export function NoycePlanarIC3D() {
             </h3>
           </div>
           <p className="text-sm sm:text-base text-ink-700 dark:text-ink-300 mt-1">
-            Real-time Three.js semiconductor wafer physics illustrating{" "}
+            Studio-illuminated Three.js semiconductor wafer physics illustrating{" "}
             <strong>monolithic planar fabrication</strong> and{" "}
             <strong>vapor-deposited aluminum leads</strong>.
           </p>
@@ -308,10 +226,10 @@ export function NoycePlanarIC3D() {
 
       {/* 3D WebGL Canvas & HUD */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
-        <div className="lg:col-span-8 flex flex-col items-center justify-center rounded-2xl bg-[#0a0f1d] border border-parchment-300 dark:border-ink-800 relative min-h-[460px] overflow-hidden">
+        <div className="lg:col-span-8 flex flex-col items-center justify-center rounded-2xl bg-[#0f172a] border border-parchment-300 dark:border-ink-800 relative min-h-[460px] overflow-hidden shadow-inner">
           {/* Top HUD */}
           <div className="absolute top-4 left-4 right-4 z-20 flex items-center justify-between pointer-events-none text-xs sm:text-sm font-mono">
-            <div className="px-3.5 py-1.5 bg-ink-900/90 border border-ink-800 text-blue-300 rounded-xl shadow">
+            <div className="px-3.5 py-1.5 bg-ink-900/90 border border-ink-800 text-blue-300 rounded-xl shadow-md">
               Active Layer Step: <span className="font-bold">Step {activeStep} of 4</span> (Vapor
               Metallization)
             </div>

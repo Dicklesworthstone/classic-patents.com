@@ -3,6 +3,7 @@
 import { Flame } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import * as THREE from "three";
+import { createThreeStudioScene } from "./ThreeStudioScene";
 
 export function SpencerMicrowave3D() {
   const containerRef = useRef<HTMLDivElement>(null);
@@ -15,12 +16,10 @@ export function SpencerMicrowave3D() {
   const [showElectrons, setShowElectrons] = useState<boolean>(true);
 
   // Physics Calculations
-  // Cyclotron Frequency: f_c = qB / (2pi * m_e)
   const electronCharge = 1.602e-19;
   const electronMass = 9.109e-31;
   const cyclotronFreqGhz =
     (electronCharge * magneticFieldTesla) / (2 * Math.PI * electronMass * 1e9);
-  // RF Output Frequency (fixed 2.45 GHz resonant cavity)
   const rfPowerWatts = Math.round(anodeVoltageKv * 1000 * 0.3 * (foodMoisturePercent / 100));
   const heatingRateDegPerSec = (rfPowerWatts / 250).toFixed(1);
 
@@ -28,49 +27,29 @@ export function SpencerMicrowave3D() {
     const container = containerRef.current;
     if (!container) return;
 
-    // --- THREE.JS SCENE SETUP ---
-    const scene = new THREE.Scene();
-    scene.background = new THREE.Color(0x0a0f1d);
+    // Create Studio Scene with Museum Studio Lighting
+    const studio = createThreeStudioScene({
+      container,
+      cameraPos: [15, 11, 17],
+      targetPos: [0, 0, 0],
+      bgBottomColor: 0x0f172a,
+      rimColor: 0xf59e0b,
+      ambientIntensity: 1.3,
+    });
 
-    const width = container.clientWidth || 600;
-    const height = container.clientHeight || 460;
+    const { scene, camera, renderer, controls } = studio;
 
-    const camera = new THREE.PerspectiveCamera(45, width / height, 0.1, 1000);
-    camera.position.set(16, 14, 18);
-    camera.lookAt(0, 0, 0);
-
-    const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
-    renderer.setSize(width, height);
-    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
-
-    container.replaceChildren(renderer.domElement);
-
-    // --- LIGHTING ---
-    scene.add(new THREE.AmbientLight(0xffeedd, 0.7));
-    const pointLight = new THREE.PointLight(0xf59e0b, 3, 30);
-    pointLight.position.set(0, 5, 0);
-    scene.add(pointLight);
-
-    const blueLight = new THREE.PointLight(0x38bdf8, 2, 25);
-    blueLight.position.set(10, 8, 10);
-    scene.add(blueLight);
-
-    // --- GRID ---
-    const grid = new THREE.GridHelper(30, 20, 0xd97706, 0x1e293b);
-    grid.position.y = -6;
-    scene.add(grid);
-
-    // --- MATERIALS ---
+    // --- PBR MATERIALS ---
     const copperAnodeMaterial = new THREE.MeshStandardMaterial({
       color: 0xd97706,
-      metalness: 0.85,
-      roughness: 0.25,
+      metalness: 0.9,
+      roughness: 0.2,
     });
 
     const cathodeMaterial = new THREE.MeshStandardMaterial({
       color: 0xff4500,
       emissive: 0xff2200,
-      emissiveIntensity: 0.8,
+      emissiveIntensity: 0.9,
       metalness: 0.5,
       roughness: 0.3,
     });
@@ -79,7 +58,7 @@ export function SpencerMicrowave3D() {
       color: 0x38bdf8,
       wireframe: true,
       transparent: true,
-      opacity: 0.4,
+      opacity: 0.45,
     });
 
     // --- 3D CAVITY MAGNETRON ANODE BLOCK ---
@@ -125,7 +104,7 @@ export function SpencerMicrowave3D() {
     const antennaGroup = new THREE.Group();
     const probeMesh = new THREE.Mesh(
       new THREE.CylinderGeometry(0.2, 0.2, 6.0, 16),
-      new THREE.MeshStandardMaterial({ color: 0xfbbf24, metalness: 0.9 }),
+      new THREE.MeshStandardMaterial({ color: 0xfbbf24, metalness: 0.95 }),
     );
     probeMesh.position.set(4.0, 4.0, 0);
     antennaGroup.add(probeMesh);
@@ -136,7 +115,7 @@ export function SpencerMicrowave3D() {
     magnetronGroup.add(antennaGroup);
 
     // --- 3D ROTATING ELECTRON SPOKE WHEEL PARTICLES ---
-    const numElectrons = 300;
+    const numElectrons = 350;
     const electronGeo = new THREE.BufferGeometry();
     const electronPositions = new Float32Array(numElectrons * 3);
     const electronColors = new Float32Array(numElectrons * 3);
@@ -151,12 +130,7 @@ export function SpencerMicrowave3D() {
 
     const electronPoints = new THREE.Points(
       electronGeo,
-      new THREE.PointsMaterial({
-        size: 0.22,
-        vertexColors: true,
-        transparent: true,
-        opacity: 0.85,
-      }),
+      new THREE.PointsMaterial({ size: 0.2, vertexColors: true, transparent: true, opacity: 0.85 }),
     );
     magnetronGroup.add(electronPoints);
 
@@ -165,16 +139,15 @@ export function SpencerMicrowave3D() {
     waterGroup.position.set(-10, 0, 0);
     scene.add(waterGroup);
 
-    // Food Target Tray
     const foodPlate = new THREE.Mesh(
       new THREE.CylinderGeometry(3.5, 3.5, 0.4, 32),
-      new THREE.MeshStandardMaterial({ color: 0x475569, metalness: 0.2, roughness: 0.8 }),
+      new THREE.MeshStandardMaterial({ color: 0x475569, metalness: 0.3, roughness: 0.7 }),
     );
     foodPlate.position.y = -2.5;
     waterGroup.add(foodPlate);
 
     const dipoles: THREE.Group[] = [];
-    const dipoleCount = 12;
+    const dipoleCount = 14;
     for (let i = 0; i < dipoleCount; i++) {
       const dGroup = new THREE.Group();
       const radius = Math.random() * 2.6;
@@ -211,47 +184,7 @@ export function SpencerMicrowave3D() {
       waterGroup.add(dGroup);
     }
 
-    // --- MOUSE ORBIT CONTROLS ---
-    let isDragging = false;
-    let prevMouseX = 0;
-    let prevMouseY = 0;
-    let sphericalTheta = 0.8;
-    let sphericalPhi = 0.55;
-    let sphericalRadius = 24;
-
-    const onMouseDown = (e: MouseEvent) => {
-      isDragging = true;
-      prevMouseX = e.clientX;
-      prevMouseY = e.clientY;
-    };
-
-    const onMouseMove = (e: MouseEvent) => {
-      if (!isDragging) return;
-      const deltaX = e.clientX - prevMouseX;
-      const deltaY = e.clientY - prevMouseY;
-      prevMouseX = e.clientX;
-      prevMouseY = e.clientY;
-
-      sphericalTheta -= deltaX * 0.006;
-      sphericalPhi = Math.max(0.1, Math.min(Math.PI / 2 - 0.05, sphericalPhi + deltaY * 0.006));
-    };
-
-    const onMouseUp = () => {
-      isDragging = false;
-    };
-
-    const onWheel = (e: WheelEvent) => {
-      e.preventDefault();
-      sphericalRadius = Math.max(10, Math.min(45, sphericalRadius + e.deltaY * 0.02));
-    };
-
-    const dom = renderer.domElement;
-    dom.addEventListener("mousedown", onMouseDown);
-    window.addEventListener("mousemove", onMouseMove);
-    window.addEventListener("mouseup", onMouseUp);
-    dom.addEventListener("wheel", onWheel, { passive: false });
-
-    // --- ANIMATION LOOP ---
+    // --- ANIMATION & PHYSICS INTEGRATION LOOP ---
     let animId: number;
     const clock = new THREE.Clock();
 
@@ -259,17 +192,12 @@ export function SpencerMicrowave3D() {
       animId = requestAnimationFrame(animate);
       const time = clock.getElapsedTime();
 
-      // Camera Orbit
-      camera.position.x = sphericalRadius * Math.sin(sphericalTheta) * Math.cos(sphericalPhi);
-      camera.position.y = sphericalRadius * Math.sin(sphericalPhi);
-      camera.position.z = sphericalRadius * Math.cos(sphericalTheta) * Math.cos(sphericalPhi);
-      camera.lookAt(0, 0, 0);
+      controls.update();
 
       antennaGroup.visible = showWaveguide;
       electronPoints.visible = showElectrons;
 
-      // Crossed Electric and Magnetic Fields Spoke Rotation
-      // Drift velocity v_d = E / B
+      // Crossed Electric and Magnetic Fields Spoke Rotation: v_d = E / B
       const spokeAngularSpeed = (anodeVoltageKv / (magneticFieldTesla * 10)) * 2.5;
 
       const positions = electronGeo.attributes.position.array as Float32Array;
@@ -279,7 +207,7 @@ export function SpencerMicrowave3D() {
         const spokeIdx = i % spokeCount;
         const baseSpokeAngle = (spokeIdx * 2 * Math.PI) / spokeCount + time * spokeAngularSpeed;
         const radiusProgress = ((i * 7) % 100) / 100;
-        const r = 1.0 + radiusProgress * 2.5; // From cathode (1.0) to anode (3.5)
+        const r = 1.0 + radiusProgress * 2.5;
         const spiralOffset = radiusProgress * 0.8;
         const currentAngle = baseSpokeAngle + spiralOffset;
 
@@ -289,12 +217,11 @@ export function SpencerMicrowave3D() {
       }
       electronGeo.attributes.position.needsUpdate = true;
 
-      // Water Dipole Dielectric Oscillation (2.45 GHz Microwave Alternating Field)
+      // Water Dipole Dielectric Oscillation
       const rfPhase = time * 20.0;
       dipoles.forEach((d, idx) => {
         d.rotation.x = Math.sin(rfPhase + idx) * 1.2;
         d.rotation.y = Math.cos(rfPhase * 0.8 + idx) * 0.9;
-        // Thermal agitation vibration
         d.position.y = -2.0 + Math.sin(time * 30.0 + idx) * 0.1;
       });
 
@@ -303,25 +230,9 @@ export function SpencerMicrowave3D() {
 
     animate();
 
-    const handleResize = () => {
-      if (!container) return;
-      const w = container.clientWidth;
-      const h = container.clientHeight;
-      camera.aspect = w / h;
-      camera.updateProjectionMatrix();
-      renderer.setSize(w, h);
-    };
-
-    window.addEventListener("resize", handleResize);
-
     return () => {
       cancelAnimationFrame(animId);
-      window.removeEventListener("resize", handleResize);
-      dom.removeEventListener("mousedown", onMouseDown);
-      window.removeEventListener("mousemove", onMouseMove);
-      window.removeEventListener("mouseup", onMouseUp);
-      dom.removeEventListener("wheel", onWheel);
-      renderer.dispose();
+      studio.dispose();
     };
   }, [anodeVoltageKv, magneticFieldTesla, showWaveguide, showElectrons]);
 
@@ -337,7 +248,7 @@ export function SpencerMicrowave3D() {
             </h3>
           </div>
           <p className="text-sm sm:text-base text-ink-700 dark:text-ink-300 mt-1">
-            Real-time Three.js electrodynamic simulation of{" "}
+            Studio-illuminated Three.js electrodynamic simulation of{" "}
             <strong>
               crossed $\vec&#123;E&#125; \times \vec&#123;B&#125;$ electron wheel spokes
             </strong>{" "}
@@ -354,10 +265,10 @@ export function SpencerMicrowave3D() {
 
       {/* 3D WebGL Canvas & HUD */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
-        <div className="lg:col-span-8 flex flex-col items-center justify-center rounded-2xl bg-[#0a0f1d] border border-parchment-300 dark:border-ink-800 relative min-h-[460px] overflow-hidden">
+        <div className="lg:col-span-8 flex flex-col items-center justify-center rounded-2xl bg-[#0f172a] border border-parchment-300 dark:border-ink-800 relative min-h-[460px] overflow-hidden shadow-inner">
           {/* Top HUD */}
           <div className="absolute top-4 left-4 right-4 z-20 flex items-center justify-between pointer-events-none text-xs sm:text-sm font-mono">
-            <div className="px-3.5 py-1.5 bg-ink-900/90 border border-ink-800 text-amber-300 rounded-xl shadow">
+            <div className="px-3.5 py-1.5 bg-ink-900/90 border border-ink-800 text-amber-300 rounded-xl shadow-md">
               RF Thermal Power: <span className="font-bold">{rfPowerWatts} Watts</span> (
               {heatingRateDegPerSec} °C/sec)
             </div>
@@ -481,7 +392,7 @@ export function SpencerMicrowave3D() {
             <div className="space-y-1.5">
               <div className="flex justify-between text-xs sm:text-sm font-mono">
                 <span className="font-semibold text-ink-800 dark:text-parchment-200">
-                  Food Moisture ($\text&#123;H&#125;_2\text&#123;O&#125;$ Dipoles)
+                  {"Food Moisture (H₂O Dipoles)"}
                 </span>
                 <span className="text-emerald-600 dark:text-emerald-400 font-bold">
                   {foodMoisturePercent}%
