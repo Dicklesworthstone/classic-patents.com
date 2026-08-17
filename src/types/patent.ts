@@ -1,10 +1,12 @@
 export type PatentCategory =
   | "aviation"
+  | "aerospace"
   | "electricity"
   | "telecom"
   | "computing"
   | "consumer"
-  | "materials";
+  | "materials"
+  | "optics";
 
 export interface PatentClaim {
   number: number;
@@ -13,7 +15,7 @@ export interface PatentClaim {
   originalText: string;
   plainEnglish: string;
   keyInnovations: string[];
-  legalSignificance: string;
+  legalSignificance?: string;
 }
 
 export interface DrawingCallout {
@@ -30,15 +32,7 @@ export interface PatentDrawing {
   figureNumber: string;
   title: string;
   caption: string;
-  svgType:
-    | "wright-flyer"
-    | "tesla-motor"
-    | "edison-bulb"
-    | "bell-phone"
-    | "farnsworth-tv"
-    | "noyce-ic"
-    | "spencer-microwave"
-    | "kwolek-kevlar";
+  svgType: string;
   callouts: DrawingCallout[];
 }
 
@@ -104,11 +98,11 @@ export interface Patent {
   claims: PatentClaim[];
   drawings: PatentDrawing[];
   historicalContext: HistoricalContext;
-  tags: string[];
-  stats: {
+  tags?: string[];
+  stats?: {
     totalClaims: number;
     independentClaims: number;
-    patentWarYears: string;
-    impactScore: number; // 1-100
+    patentWarYears?: string;
+    impactScore?: number; // 1-100
   };
 }

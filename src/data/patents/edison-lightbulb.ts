@@ -1,25 +1,25 @@
 import type { Patent } from "@/types/patent";
 
-export const edisonLightbulbPatent: Patent = {
+export const edisonBulbPatent: Patent = {
   id: "us-223898-edison-lightbulb",
   patentNumber: "US 223,898",
   title: "Electric-Lamp",
-  shortTitle: "Edison Incandescent Light Bulb",
-  subtitle: "High-Resistance Carbonized Filament in High-Vacuum Glass Globe with Platinum Leads",
-  inventors: ["Thomas Alva Edison"],
+  shortTitle: "Edison High-Resistance Incandescent Lamp",
+  subtitle: "High-Resistance Carbonized Filament in a High-Vacuum Sealed Glass Globe",
+  inventors: ["Thomas A. Edison"],
   inventorLocation: "Menlo Park, New Jersey",
   grantDate: "1880-01-27",
   filingDate: "1879-11-04",
-  era: "Incandescent Lighting (1875–1885)",
+  era: "Electrification & Early Modern (1870–1920)",
   category: "electricity",
-  categoryLabel: "Lighting & Materials Science",
+  categoryLabel: "Illumination & Materials Science",
   summary:
-    "The patent that illuminated the modern world. Edison did not invent the first electric light, but he invented the first commercially viable incandescent lamp. By recognizing that practical central-station distribution required a high electrical resistance filament ($100\\ \\Omega$ instead of $1\\ \\Omega$) enclosed in a nearly complete Sprengel vacuum ($10^{-6}\\text{ atm}$) with sealed platinum lead-in wires, Edison solved the famous problem of the 'subdivision of the electric light.'",
+    "The invention that conquered the night: Thomas Edison's breakthrough realization that commercial electrical lighting required a high-resistance carbonized filament ($R \\approx 100\\,\\Omega$) sealed in a permanent high vacuum ($10^{-6}\\text{ Torr}$) with platinum lead-in wires, enabling economical parallel distribution grids.",
   heroQuote:
-    "Be it known that I, Thomas Alva Edison, of Menlo Park, in the State of New Jersey, United States of America, have invented an Improvement in Electric Lamps, and in the method of manufacturing the same...",
+    "The object of this invention is to produce electric lamps giving light by incandescence, which lamps shall have high resistance, so as to allow of the practical subdivision of the electric light...",
   originalPdfUrl: "/patents/pdfs/us-223898-edison-lightbulb.pdf",
   googlePatentsUrl: "https://patents.google.com/patent/US223898A/en",
-  usptoClassification: "H01K 1/00 (Incandescent lamps; Filaments)",
+  usptoClassification: "H01K 1/00 (Incandescent lamps)",
   originalText: `UNITED STATES PATENT OFFICE.
 THOMAS A. EDISON, OF MENLO PARK, NEW JERSEY.
 
@@ -31,180 +31,194 @@ Application filed November 4, 1879.
 To all whom it may concern:
 Be it known that I, THOMAS ALVA EDISON, of Menlo Park, in the State of New Jersey, United States of America, have invented an Improvement in Electric Lamps, and in the method of manufacturing the same, of which the following is a specification.
 
-The object of this invention is to produce electric lamps giving light by incandescence, which lamps shall have high resistance, so as to allow of the practical subdivision of the electric light and the use of small electrical conductors in the distribution of the current.
+The object of this invention is to produce electric lamps giving light by incandescence, which lamps shall have high resistance, so as to allow of the practical subdivision of the electric light and the distribution of current through main conductors of small diameter.
 
-The invention consists in a light-giving body of carbon wire or sheets coiled or arranged in such a manner as to offer great resistance to the passage of the electric current, and at the same time present but a slight surface from which radiation can take place.
+The invention consists in a light-giving body of carbon wire or filament made as a continuous piece and of high resistance, which is enclosed within a hermetically sealed all-glass globe from which the air has been exhausted to a high degree of vacuum, and provided with platinum leading-in wires passing through the glass and hermetically sealed therein by the fusion of the glass around them.
 
-The invention further consists in placing such light-giving body of great resistance in a nearly-perfect vacuum, so that there is no oxygen to put an end to the carbon during the continued passage of the current, and in sealing the carbon wire to platinum wires within a glass bulb exhausted by a mercury-pump...`,
+Heretofore light by incandescence has been obtained by using thick carbon rods of low resistance (from one to four ohms) in vessels from which the air was imperfectly exhausted. When many such lamps were connected in multiple circuit, the enormous current required necessitated copper conductors of impractical thickness and cost. Furthermore, in imperfect vacuums, carbon rods oxidized and deteriorated rapidly due to air-washing and chemical reactions.
+
+I have discovered that even a cotton thread properly carbonized and placed in a sealed glass receiver exhausted to one-millionth of an atmosphere offers a resistance of upwards of one hundred ohms, and remains stable when heated to incandescent luminosity by the electric current.
+
+The filament may be formed of cotton or linen thread, wood splint, paper, or fibers of bamboo carbonized in a closed iron mold at a high temperature. Leading-in wires of platinum are clamped to the ends of the carbon filament, and the whole is mounted upon a glass stem fused into the neck of a glass bulb. The bulb is then exhausted upon a Sprengel mercury pump while current is passed through the filament to drive out occluded gases from the carbon and glass walls, after which the tube is sealed off by the blow-pipe.
+
+Referring to the drawing:
+Figure 1 is a view of the lamp in elevation, showing the glass globe with the carbon filament mounted on platinum wires and sealed at the base.`,
   plainEnglishExplanation: {
     overview:
-      "Before Edison, dozens of inventors had created glowing incandescent wires in laboratories (including Humphry Davy, Warren de la Rue, and Joseph Swan). However, all prior lamps used thick, low-resistance carbon rods or platinum wires with resistances around $1\\ \\Omega$. In a city-wide power grid wired in parallel, low resistance meant massive current ($I = V/R$), which required copper power cables as thick as tree trunks to avoid catching fire ($P_{loss} = I^2 R_{wire}$). Edison’s mathematical breakthrough was understanding that high electrical resistance ($100\\ \\Omega$) was the only way to make electric lighting economically competitive with gas.",
+      "Before Edison, dozens of inventors (including Joseph Swan, Humphry Davy, and Warren de la Rue) had demonstrated incandescent light, but their lamps burned out within minutes or hours and used thick, low-resistance carbon or platinum rods (1–4 Ω). To run thousands of low-resistance lamps in parallel, a power grid would require massive, solid copper cables as thick as tree trunks ($I = V / R$). Edison solved both the physics and the economics: by making the filament a micro-thin, high-resistance carbonized thread (100–200 Ω) inside a millionth-of-an-atmosphere vacuum, he reduced the required current by 95% ($P = V^2 / R$), making thin copper home wiring financially feasible for the first time.",
     coreMechanism:
-      "A thin carbonized organic fiber (cotton thread, cardboard, or bamboo) with a cross-section of only a few thousandths of an inch was shaped into a hairpin or spiral loop. The filament was clamped to platinum lead-in wires hermetically sealed into a glass bulb. An advanced Sprengel mercury pump evacuated the bulb to one-millionth of an atmosphere. When electric current passed through the high-resistance carbon filament, Joule heating ($P = I^2 R$) raised its temperature to over $2000^\\circ\\text{C}$ ($2300\\text{ K}$), causing it to emit brilliant, warm blackbody incandescence without burning up because no oxygen remained in the glass envelope.",
+      "An electric current is passed through a micro-thin carbonized bamboo filament ($R \\approx 100\\,\\Omega$). Due to Joule heating ($P = I^2 R$), the filament reaches 2,200 Kelvin and radiates brilliant blackbody incandescence. Because the glass bulb is evacuated to a high vacuum ($10^{-6}\\text{ Torr}$), there are no oxygen molecules to burn the carbon, and no gas convection to cool the wire, allowing the filament to glow continuously for over 1,200 hours.",
     mechanicalBreakdown: [
       {
-        title: "High-Resistance Carbon Filament",
-        summary: "A slender carbonized thread possessing over 100 Ohms of resistance.",
+        title: "High-Resistance Carbonized Filament",
+        summary:
+          "A micro-thin thread of carbonized organic fiber (cotton, paper, Japanese bamboo).",
         technicalDetails:
-          "Formed by carbonizing cotton sewing thread or bristol board in an oxygen-free iron crucible. Its high electrical resistivity ($\\rho \\approx 3.5 \\times 10^{-5}\\ \\Omega\\cdot\\text{m}$) and minimal cross-sectional area ($A \\approx 0.05\\text{ mm}^2$) produced a cold resistance of $100\\ \\Omega$ and a hot operating resistance of $140\\ \\Omega$, drawing only $0.75\\text{ Amperes}$ at $110\\text{ Volts}$.",
+          "Offers an electrical resistance of 100–200 Ω at operational temperature. High resistance allows hundreds of lamps to be connected in parallel ($1/R_{total} = \\sum 1/R_i$) across a constant 110V supply without drawing destructive branch currents.",
         archaicTerm: "Carbon wire or filament of high resistance",
-        modernEquivalent: "Tungsten filament / incandescent emitter",
+        modernEquivalent: "High-resistance incandescent emitter",
       },
       {
-        title: "Ultra-High Vacuum Glass Envelope",
-        summary: "Hermetically sealed glass globe evacuated by mercury aspirators.",
+        title: "Hermetically Sealed High-Vacuum Glass Envelope",
+        summary: "An all-glass globe evacuated using Sprengel mercury vacuum pumps.",
         technicalDetails:
-          "Using Hermann Sprengel's multi-stage mercury vacuum pump, Edison achieved a vacuum pressure below $10^{-6}\\text{ atmospheres}$ ($0.1\\text{ Pa}$). In the absence of atmospheric oxygen and nitrogen, carbon cannot undergo chemical combustion ($\\text{C} + \\text{O}_2 \\rightarrow \\text{CO}_2$) and convective heat dissipation is virtually eliminated.",
-        archaicTerm: "Nearly-perfect vacuum exhausted by mercury-pump",
-        modernEquivalent: "High-vacuum hermetic glass envelope",
+          "Evacuation to $10^{-6}\\text{ Torr}$ eliminates oxygen (stopping oxidation combustion) and increases the mean free path of residual gas molecules, stopping molecular 'air washing' of carbon atoms and thermal conduction losses.",
+        archaicTerm: "Receiver exhausted to one-millionth of an atmosphere",
+        modernEquivalent: "High-vacuum glass envelope",
       },
       {
-        title: "Platinum Lead-In Wire Seals",
-        summary: "Platinum conductors fused directly through the glass stem.",
+        title: "Fused Platinum Leading-in Wires",
+        summary: "Platinum wire leads passing through the glass stem.",
         technicalDetails:
-          "Platinum was selected because its coefficient of thermal expansion ($\\alpha \\approx 9 \\times 10^{-6}\\text{ K}^{-1}$) nearly matches soda-lime and lead glass. When the hot glass cooled around the wire during glassblowing, the glass formed a gas-tight seal that did not crack as the lamp heated and cooled during operation.",
-        archaicTerm: "Platinum wires sealed into the glass",
-        modernEquivalent: "Hermetic glass-to-metal matched expansion seal",
+          "Platinum has nearly the identical coefficient of thermal expansion as soda-lime glass ($\\alpha \\approx 9 \\times 10^{-6}/\\text{K}$). As the lamp heats and cools, the glass and platinum expand together, preventing microscopic air leaks along the seal.",
+        archaicTerm: "Platinum leading-in wires sealed by fusion",
+        modernEquivalent: "Hermetic glass-to-metal matched seals",
       },
     ],
     scientificPrinciples: [
       {
-        principle: "Joule Heating & Power Loss in Parallel Grids",
-        formula: "P_{loss} = I^2 R_{wire} = \\left(\\frac{P_{lamp}}{V}\\right)^2 R_{wire}",
+        principle: "Joule Heating & High-Resistance Sub-Division",
+        formula: "P = \\frac{V^2}{R} = I^2 R, \\quad I = \\frac{V}{R}",
         explanation:
-          "Increasing the distribution voltage (110V) and filament resistance reduces the current I required for a given light output, drastically cutting power losses in distribution wires by the square of current.",
+          "By increasing filament resistance R from 1 Ω to 100 Ω, the current I required for identical radiant power drops by 90%, reducing power transmission losses in copper supply cables by 99% (P_{loss} = I^2 R_{wire}).",
       },
       {
-        principle: "Stefan-Boltzmann Law & Blackbody Radiation",
-        formula: "j^* = \\varepsilon \\sigma T^4, \\quad \\lambda_{peak} = \\frac{b}{T}",
+        principle: "Planck Blackbody Radiation & Color Temperature",
+        formula:
+          "u(\\lambda, T) = \\frac{8\\pi h c}{\\lambda^5} \\frac{1}{e^{\\frac{hc}{\\lambda k_B T}} - 1}",
         explanation:
-          "The luminous output of an incandescent filament scales with the fourth power of temperature T. Higher operating temperatures shift peak emission from infrared into visible light spectrum.",
+          "Heating the carbon filament to 2,200 K shifts its spectral emission curve into the visible spectrum, producing warm 2700K incandescent light.",
+      },
+      {
+        principle: "High-Vacuum Mean Free Path & Kinetic Gas Theory",
+        formula: "\\lambda_{mfp} = \\frac{k_B T}{\\sqrt{2} \\pi d^2 P}",
+        explanation:
+          "At 10⁻⁶ Torr, the molecular mean free path exceeds the dimensions of the glass bulb, preventing gas convection cooling and chemical degradation of the incandescent carbon.",
       },
     ],
     whyItMattersToday:
-      "Edison's patent launched the modern electrical utility industry. The 110V parallel distribution standard, the screw-base lamp socket (Edison base / E26), and central power stations (like Pearl Street Station in NYC) were all engineered directly around the requirements of this patent.",
+      "Edison's patent did not merely invent a bulb; it created the entire architecture of the modern electrical utility system—centralized generation, parallel distribution, meters, fuses, and sockets—that brought electric light and power to human civilization.",
   },
   claims: [
     {
       number: 1,
       isIndependent: true,
       originalText:
-        "An electric lamp for giving light by incandescence, consisting of a filament of carbon of high resistance, made as described, and secured to metallic wires, substantially as set forth.",
+        "An electric lamp for giving light by incandescence, consisting of a filament of carbon of high resistance, made as described, and secured to metallic wires, as set forth.",
       plainEnglish:
-        "Protects an incandescent electric lamp made with a high-resistance carbon filament connected to metal lead-in wires.",
+        "The master apparatus claim covering any electric incandescent lamp using a high-resistance carbon filament connected to metal lead wires.",
       keyInnovations: [
         "High-resistance carbon filament",
-        "Slender thread geometry",
-        "Incandescent light",
+        "Incandescent filament geometry",
+        "Mechanical lead-in wire clamping",
       ],
-      legalSignificance:
-        "The core claim that defeated competing gas lighting companies and established General Electric's monopoly on early electric illumination.",
     },
     {
       number: 2,
-      isIndependent: false,
-      dependsOn: [1],
+      isIndependent: true,
       originalText:
-        "The combination of carbon filaments with a receiver made entirely of glass and conductors passing through the glass, and from which receiver the air is exhausted, substantially as set forth.",
+        "The combination of carbon filaments with a receiver made entirely of glass and conductors passing through the glass, and from which receiver the air is exhausted, for the purposes set forth.",
       plainEnglish:
-        "Protects the combination of a carbon filament inside an all-glass exhausted vacuum receiver with lead-in wires passing through the glass.",
+        "Covers the combination of a carbon filament inside an all-glass vacuum bulb with sealed conductors passing through the glass.",
       keyInnovations: [
-        "All-glass vacuum envelope",
-        "Hermetic wire pass-through",
-        "High vacuum evacuation",
+        "All-glass vacuum enclosure",
+        "Hermetic glass-to-wire seal",
+        "High-vacuum preservation of carbon",
       ],
-      legalSignificance:
-        "Crucial claim upheld in federal courts in 1891 against the United States Electric Lighting Company and Westinghouse.",
+    },
+    {
+      number: 3,
+      isIndependent: false,
+      originalText:
+        "A carbon filament or strip coiled and connected to electric conductors so that only a portion of the surface radiates light, as set forth.",
+      plainEnglish:
+        "Covers coiled or folded filament configurations that concentrate heat and increase effective luminous efficacy.",
+      keyInnovations: [
+        "Coiled filament geometry",
+        "Reduced radiative surface cooling",
+        "Higher core temperature",
+      ],
+    },
+    {
+      number: 4,
+      isIndependent: false,
+      originalText:
+        "The method herein described of securing the conductors to the carbon filament and forming the malleable contact, as set forth.",
+      plainEnglish:
+        "The manufacturing method for securing platinum lead wires to fragile carbonized organic filaments.",
+      keyInnovations: [
+        "Carbon-to-metal junction engineering",
+        "Thermal expansion compatibility",
+        "Manufacturing process for mass production",
+      ],
     },
   ],
   drawings: [
     {
       figureNumber: "Fig. 1",
-      title: "Perspective View of the Electric Lamp",
+      title: "Elevation View of Edison Incandescent Lamp",
       caption:
-        "Drawing of the classic pear-shaped glass bulb with coiled carbon filament and platinum lead-in wires.",
+        "Full elevation showing the hand-blown glass globe, horseshoe carbon filament, inner glass stem mount, platinum lead-in wires, and sealed exhaust tip.",
       svgType: "edison-bulb",
       callouts: [
         {
           id: "eb-1",
           figureRef: "Fig. 1",
-          label: "c",
-          element: "Carbon Filament",
-          description: "High-resistance carbonized fiber hairpin loop.",
+          label: "A",
+          element: "Horseshoe Carbon Filament",
+          description:
+            "High-resistance carbonized organic fiber ($R \\approx 100\\,\\Omega$) glowing at 2,200 K.",
           x: 50,
-          y: 42,
+          y: 35,
         },
         {
           id: "eb-2",
           figureRef: "Fig. 1",
-          label: "d",
-          element: "Platinum Clamps",
+          label: "B",
+          element: "All-Glass Vacuum Globe",
           description:
-            "Small copper/platinum clamps connecting the carbon filament to the conductors.",
+            "Evacuated to $10^{-6}\\text{ Torr}$ with Sprengel mercury pumps to stop combustion.",
           x: 50,
-          y: 62,
+          y: 40,
         },
         {
           id: "eb-3",
           figureRef: "Fig. 1",
-          label: "a",
-          element: "Glass Globe",
-          description: "All-glass envelope evacuated to ultra-high vacuum.",
+          label: "C",
+          element: "Platinum Leading-in Wires",
+          description:
+            "Fused directly through glass stem; matching thermal expansion coefficient prevents vacuum leaks.",
           x: 50,
-          y: 48,
-        },
-        {
-          id: "eb-4",
-          figureRef: "Fig. 1",
-          label: "h",
-          element: "Sealed Exhaust Tip",
-          description: "Glass pip sealed shut after mercury-pump evacuation.",
-          x: 50,
-          y: 12,
+          y: 68,
         },
       ],
     },
   ],
   historicalContext: {
     problemStatement:
-      "In 1878, gas illumination ruled cities, spewing fumes, soot, and heat into homes. Arc lamps were blindingly bright (thousands of candlepower) and emitted choking carbon smoke, making them suitable only for street intersections and lighthouses. No one could 'subdivide' the electric light into gentle 16-candlepower lamps for domestic rooms without requiring astronomical quantities of copper wire.",
+      "Arc lamps were blindingly bright (thousands of candlepower), buzzed loudly, threw off toxic fumes, and could not be used indoors in homes or offices. Previous incandescent attempts with low resistance burned out in minutes and required impossible amounts of copper.",
     priorArtLimitations: [
-      "Humphry Davy (1802) demonstrated incandescent platinum wire, but platinum melted near its incandescence point ($1768^\\circ\\text{C}$) and cost a fortune.",
-      "Joseph Swan in England (1878) used thick carbon rods with very low resistance ($1\\ \\Omega$) in partial vacuums; the carbon quickly vaporized and blackened the glass bulb.",
-      "Heinrich Göbel and Warren de la Rue lacked the Sprengel mercury pump needed to achieve a durable $10^{-6}\\text{ atm}$ vacuum.",
+      "Low-resistance thick rods (1–4 Ω) required massive copper conductors.",
+      "Imperfect vacuums caused rapid oxidation and blackening of the glass.",
+      "Mismatched wire expansion caused glass to crack at the lead-in seals.",
     ],
     breakthroughInsight:
-      "Edison calculated mathematically that by boosting filament resistance from $1\\ \\Omega$ to $100+\\ \\Omega$, he could drop the operating current by 90%, reducing power losses in distribution wires by 99% ($I^2 R$) and making copper wiring thousands of times cheaper.",
+      "Edison realized that Ohm's Law and Joule's Law dictated the entire electrical power grid: by raising the resistance of each lamp to 100+ Ω, thousands of lamps could operate in parallel with modest, low-cost copper wire.",
     patentWars: [
       {
-        rivalName: "Sir Joseph Swan (Edison & Swan United Electric Light Co.)",
+        rivalName: "Sir Joseph Swan (United Kingdom) & Heinrich Göbel",
         rivalClaim:
-          "Swan demonstrated carbon incandescent lamps in England before Edison and held British patents.",
+          "Swan demonstrated carbon rod lamps in England and held earlier British patents. The Consolidated Electric Light Co. (Sawyer-Man) claimed prior carbon paper patents in the US.",
         conflictDetails:
-          "Rather than fight an all-out patent war in British courts that could have invalidated both claims, Edison and Swan merged their UK interests into the 'Ediswan' joint venture in 1883.",
+          "In England, Edison and Swan settled by merging into the Edison & Swan United Electric Light Company ('Ediswan'). In the United States, the Sawyer-Man patent challenged Edison in federal court.",
         resolution:
-          "In the United States, Edison’s US Patent 223,898 was relentlessly challenged by the Westinghouse-backed US Electric Lighting Co. (using Maxim and Sawyer-Man patents).",
-        legalOutcome:
-          "In 1891, the US Circuit Court of Appeals decisively ruled in Edison’s favor, holding that Edison was the first to invent a high-resistance carbon filament in an all-glass hermetically sealed vacuum.",
+          "In the landmark Supreme Court decision *The Incandescent Lamp Patent* (159 U.S. 465, 1895), the court ruled that Sawyer-Man's broad claim for 'fibrous material' was invalid, whereas Edison's specific disclosure of a high-resistance carbon filament in high vacuum was valid.",
+        legalOutcome: "Complete judicial validation of Edison's master patent.",
       },
     ],
     civilizationalImpact:
-      "Edison’s patent banished darkness from human dwellings, extended the productive working and leisure hours of civilization, eliminated open gas-lamp fire hazards in cities, and laid the cornerstone for the global electrical grid.",
+      "Ended human reliance on candles, kerosene, and gas lighting, doubling usable human productive hours, revolutionizing architecture, and launching the modern electric power industry.",
     funFact:
-      "Edison’s team tested over 6,000 different organic carbon materials—including cedar, coconut hair, fishline, cardboard, and even hair plucked from an assistant’s beard—before discovering that Japanese bamboo filaments lasted over 1,200 continuous hours!",
-  },
-  tags: [
-    "Lighting",
-    "Thomas Edison",
-    "Electricity",
-    "Vacuum Tube",
-    "Materials Science",
-    "Invention",
-  ],
-  stats: {
-    totalClaims: 4,
-    independentClaims: 2,
-    patentWarYears: "1880–1892",
-    impactScore: 100,
+      "Edison tested over 6,000 different vegetable and animal fibers from around the world—including boxwood, cedar, flax, spiderweb, horsehair, and his assistant's beard—before discovering that Japanese bamboo yielded the most durable 1,200-hour filament.",
   },
 };

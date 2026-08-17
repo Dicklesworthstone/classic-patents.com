@@ -32,7 +32,24 @@ Be it known that I, ALEXANDER GRAHAM BELL, of Salem, Massachusetts, have invente
 
 In Letters Patent granted to me April 6, 1875, No. 161,739, I have described a method of, and apparatus for, transmitting two or more telegraphic signals simultaneously along a single wire by the employment of transmitting-instruments, each of which occasions a succession of electrical impulses differing in rate from the others; and of receiving-instruments, each tuned to a pitch at which it will be put in vibration to produce its fundamental tone by one only of the transmitting-instruments.
 
-My present invention consists in the method of, and apparatus for, transmitting vocal or other sounds telegraphically, as hereinatter set forth, by causing electrical undulations, similar in form to the vibrations of the air accompanying the said vocal or other sounds...`,
+My present invention consists in the method of, and apparatus for, transmitting vocal or other sounds telegraphically, as hereinafter set forth, by causing electrical undulations, similar in form to the vibrations of the air accompanying the said vocal or other sounds.
+
+In illustration of my method of creating a continuous undulating current of electricity, I shall show and describe several forms of apparatus, although it will be understood that the method is not confined to the specific apparatus herein illustrated.
+
+One such method consists in causing an armature to vibrate in front of the poles of an electro-magnet in a closed circuit, thereby inducing undulating currents in the coils of the magnet corresponding in frequency and amplitude to the acoustic vibrations of the armature.
+
+Another method consists in causing a conducting wire or needle attached to a vibrating membrane to dip into a conducting liquid of variable resistance (such as acidulated water), whereby the vibration of the membrane causes the electrical resistance of the circuit to vary continuously without interrupting the current, generating undulating electrical currents that correspond in waveform to the acoustic pressure of the spoken words.
+
+At the receiving station, these undulating currents pass through the coils of an electro-magnet having an armature or membrane placed in proximity to its pole. The varying magnetic attraction of the electro-magnet causes the receiving membrane to vibrate in exact synchrony with the transmitter, reproducing the original vocal sounds to the human ear.
+
+Referring to the drawings:
+Figure 1 illustrates a battery and intermittent contact circuit producing pulsatory currents.
+Figure 2 represents an undulating current consisting of continuous sinusoidal waves.
+Figure 3 represents a compound undulating current resulting from simultaneous multiple frequencies.
+Figure 4 represents the waveform produced by human speech.
+Figure 5 illustrates an electromagnetic transmitting and receiving instrument.
+Figure 6 illustrates a variable-resistance liquid transmitter and membrane receiver connected in circuit.
+Figure 7 is a diagram showing the telephonic circuit including battery, transmitter, line wire, and receiver.`,
   plainEnglishExplanation: {
     overview:
       "In 1875, all telegraphy operated on binary pulses—circuit opened, circuit closed (Morse code). Inventors racing to build a 'speaking telegraph' tried using vibrating reeds that rapidly opened and closed a circuit. Bell realized that spoken words consist of complex acoustic timbre with multiple simultaneous harmonic frequencies ($f_1, f_2, f_3, \\dots$). Chopping the current on and off destroyed this continuous waveform. Bell’s monumental breakthrough was discovering that human speech could be transmitted only by continuous, analog 'undulating currents.'",
@@ -58,125 +75,140 @@ My present invention consists in the method of, and apparatus for, transmitting 
       },
       {
         title: "Continuous Undulating Electrical Current",
-        summary: "Continuous analog current waveform mirroring vocal acoustic wave shape.",
+        summary: "An unbroken analog electrical wave representing multi-frequency sound.",
         technicalDetails:
-          "Rather than pulse-width modulation or binary on/off switching, the current waveform $I(t)$ was a continuous harmonic Fourier series matching the spoken voice envelope.",
-        archaicTerm: "Electrical undulations similar in form to the vibrations of the air",
-        modernEquivalent: "Continuous analog audio signal",
+          "Unlike binary pulsed currents (on/off make-and-break), an undulating current varies smoothly in amplitude and frequency: $I(t) = I_{DC} + \\sum A_k \\sin(\\omega_k t + \\phi_k)$, preserving timbre, consonants, and vowels.",
+        archaicTerm: "Electrical undulations similar in form to vibrations of air",
+        modernEquivalent: "Analog audio signal transmission",
       },
     ],
     scientificPrinciples: [
       {
-        principle: "Acousto-Electric Resistance Modulation",
+        principle: "Acoustic Pressure to Electrical Resistance Transduction",
         formula:
-          "I(t) = \\frac{V_0}{R_0 + \\Delta R \\cdot \\sin(\\omega t)} \\approx I_0 - \\Delta I \\cdot \\sin(\\omega t)",
+          "R(t) = R_0 - k \\cdot x(t), \\quad I(t) = \\frac{V_{battery}}{R(t)} \\approx I_0 + \\frac{V_{battery} k}{R_0^2} x(t)",
         explanation:
-          "Vocal sound pressure waves modulate the electrical resistance of the transmitter circuit, causing the current I(t) to undulate continuously in shape and phase with the acoustic wave.",
+          "Small diaphragm displacements x(t) linearly modulate the electrical resistance and line current, creating an analog electrical replica of speech.",
       },
       {
-        principle: "Acoustic Wave Fourier Composition",
-        formula: "p(t) = \\sum_{n=1}^{\\infty} A_n \\sin(n\\omega_0 t + \\phi_n)",
+        principle: "Fourier Theorem & Acoustic Wave Synthesis",
+        formula: "p(t) = \\sum_{n=1}^{\\infty} P_n \\sin(n \\omega_0 t + \\theta_n)",
         explanation:
-          "Speech is composed of a fundamental vocal pitch and dozens of harmonic overtones. Only continuous undulating currents preserve the harmonic phases necessary for intelligible speech.",
+          "Human speech is a superposition of fundamental pitch and resonant vocal tract formants; only a continuous undulating current can transmit multiple Fourier components simultaneously.",
+      },
+      {
+        principle: "Electromagnetic Acoustic Transduction",
+        formula:
+          "F(t) = \\frac{(B_0 + \\Delta B(t))^2 A}{2\\mu_0} \\approx F_0 + \\frac{B_0 A \\mu_0 N}{\\mu_0 g} I(t)",
+        explanation:
+          "The receiver's permanent magnet bias B₀ linearizes the electromagnetic attraction force, preventing octave doubling of the reproduced voice.",
       },
     ],
     whyItMattersToday:
-      "US Patent 174,465 established the foundation for the entire global telecommunications industry—from landline telephone networks and AT&T (Bell System) to submarine transatlantic cables, cellular wireless networks, and modern VoIP / Internet communications.",
+      "Bell's patent was the foundation of the modern telecommunications industry, telephone networks, cell phones, radio broadcasting, sound recording, and the entire global telecommunications infrastructure.",
   },
   claims: [
+    {
+      number: 1,
+      isIndependent: true,
+      originalText:
+        "A system of telegraphy in which the receiver is set in vibration by the employment of undulatory currents of electricity, substantially as described.",
+      plainEnglish:
+        "Covers any telegraphic or communications system where a receiving diaphragm or armature is vibrated using continuous undulatory electric currents.",
+      keyInnovations: [
+        "Undulatory current signaling",
+        "Vibratory receiver actuation",
+        "Continuous wave telecommunication",
+      ],
+    },
     {
       number: 5,
       isIndependent: true,
       originalText:
         "The method of, and apparatus for, transmitting vocal or other sounds telegraphically, as herein described, by causing electrical undulations, similar in form to the vibrations of the air accompanying the said vocal or other sounds, substantially as set forth.",
       plainEnglish:
-        "Claim 5 is the legendary 'Telephone Claim.' It claims the universal method and apparatus for transmitting vocal sound telegraphically by creating continuous electrical undulations shaped like the vibrations of air.",
+        "The historic master claim 5: the method and apparatus for transmitting human voice by causing electrical waves in a wire that mirror the exact physical waveform of sound in air.",
       keyInnovations: [
-        "Continuous undulating currents",
-        "Vocal sound transmission",
-        "Acoustic-electric transduction",
+        "Acoustic-to-electric analog conversion",
+        "Waveform parity between sound and current",
+        "The foundational claim of telephony",
       ],
-      legalSignificance:
-        "The most litigated claim in USPTO history. Survived over 600 lawsuits all the way to the US Supreme Court (The Telephone Cases, 1888), which confirmed Bell’s exclusive monopoly over electronic voice transmission.",
     },
   ],
   drawings: [
     {
-      figureNumber: "Fig. 7",
-      title: "Variable Resistance Liquid Transmitter and Receiver",
+      figureNumber: "Fig. 6",
+      title: "Variable Resistance Liquid Transmitter & Receiver Circuit",
       caption:
-        "The famous Figure 7 showing the speaking cone, liquid transmitter cup, battery, and electromagnetic receiver.",
+        "Diagrammatic view of Bell's telephonic circuit showing speaking cone, diaphragm, needle in acidulated liquid cup, battery, and electromagnetic receiver.",
       svgType: "bell-phone",
       callouts: [
         {
           id: "bp-1",
-          figureRef: "Fig. 7",
+          figureRef: "Fig. 6",
           label: "A",
-          element: "Speaking Mouthpiece",
-          description: "Cone concentrating vocal acoustic waves onto the flexible membrane.",
+          element: "Acoustic Speaking Horn",
+          description:
+            "Cone that concentrates sound pressure waves onto the transmitting diaphragm.",
           x: 20,
-          y: 42,
+          y: 35,
         },
         {
           id: "bp-2",
-          figureRef: "Fig. 7",
-          label: "C",
-          element: "Conducting Needle",
-          description: "Platinum rod connected to diaphragm and dipping into liquid electrolyte.",
-          x: 32,
-          y: 60,
+          figureRef: "Fig. 6",
+          label: "B",
+          element: "Transmitting Diaphragm",
+          description: "Stretched membrane vibrating with voice sound waves.",
+          x: 35,
+          y: 45,
         },
         {
           id: "bp-3",
-          figureRef: "Fig. 7",
+          figureRef: "Fig. 6",
+          label: "C",
+          element: "Conducting Needle in Liquid Cup",
+          description:
+            "Platinum needle moving in acidulated water to vary circuit resistance continuously.",
+          x: 48,
+          y: 60,
+        },
+        {
+          id: "bp-4",
+          figureRef: "Fig. 6",
           label: "E",
-          element: "Electromagnet Receiver",
-          description: "Coil and soft-iron armature reproducing acoustic pressure waves.",
-          x: 78,
-          y: 48,
+          element: "Electromagnetic Receiver",
+          description:
+            "Iron-core electromagnet vibrating an iron diaphragm to reproduce voice sounds.",
+          x: 82,
+          y: 45,
         },
       ],
     },
   ],
   historicalContext: {
     problemStatement:
-      "In the 1870s, Western Union telegraph wires were saturated. Financial markets and railroads needed faster communication than Morse operators could tap out letter by letter. The holy grail was a method to send actual human speech instantaneously across electrical wires.",
+      "In the 1870s, Western Union and major industrial powers were desperate to increase telegraph wire capacity. Transmitting multiple messages or human speech over a single wire was considered the ultimate technical prize.",
     priorArtLimitations: [
-      "Philipp Reis in Germany (1861) built a 'telephon' that used an on/off contact; it could transmit musical tones and buzzing pitches, but could not transmit intelligible human words.",
-      "Elisha Gray and Thomas Edison were working on 'harmonic telegraphs' sending multiple Morse signals on distinct musical frequencies, but clung to binary circuit interruptions.",
+      "Telegraphs used make-and-break contacts that could only transmit binary clicks (Morse code).",
+      "Philipp Reis built a 'telephone' in 1861 that could transmit musical pitches but failed at human speech because its diaphragm broke electrical contact with every vibration.",
     ],
     breakthroughInsight:
-      "Bell, a teacher of the deaf who deeply understood the mechanics of the human ear, recognized that vowel sounds and consonants require subtle, continuous variations in wave shape, requiring an uninterrupted undulating current rather than intermittent make-and-break pulses.",
+      "Bell realized that speech is a composite harmonic wave: vowels and consonants require continuous variations in current. Transmitting voice required keeping the circuit closed 100% of the time and modulating current continuously.",
     patentWars: [
       {
-        rivalName: "Elisha Gray (Western Electric)",
+        rivalName: "Elisha Gray & Western Union",
         rivalClaim:
-          "Gray filed a patent caveat for a liquid transmitter on February 14, 1876—the exact same day Bell's attorney filed his patent application!",
+          "Gray filed a patent caveat for a variable-resistance liquid transmitter on the exact same day (February 14, 1876) just a few hours after Bell's patent application was submitted.",
         conflictDetails:
-          "A massive controversy arose over who arrived at the Patent Office first and whether Patent Examiner Zenas Fisk Wilber improperly allowed Bell to see Gray's caveat drawings.",
+          "Western Union acquired Gray and Thomas Edison's acoustic patents and formed an aggressive rival telephone network, claiming Bell's patent was invalid.",
         resolution:
-          "In 1888, the United States Supreme Court issued its landmark ruling in 'The Telephone Cases', ruling 4-3 in favor of Bell, holding that Bell conceived the undulating current method prior to Gray.",
-        legalOutcome:
-          "The Bell Telephone Company successfully defended the patent against over 600 separate legal challenges, forming the bedrock of AT&T.",
+          "The Bell Telephone Company sued in federal court. In the famous *Telephone Cases* (126 U.S. 1, 1888), the U.S. Supreme Court reviewed over 600 separate legal challenges and upheld Bell's Patent No. 174,465 in its entirety.",
+        legalOutcome: "Unanimous Supreme Court validation of Bell's master patent.",
       },
     ],
     civilizationalImpact:
-      "The telephone conquered geographical distance, transformed global diplomacy and commerce, connected families in real time, and created the modern connected world.",
+      "Created instant two-way voice communication across cities and continents, collapsing geographical distance and laying the groundwork for the modern global telecommunications network.",
     funFact:
-      "Three days after the patent was granted on March 7, 1876, Bell tested the liquid transmitter in his laboratory and uttered the most famous first words in tech history: 'Mr. Watson—come here—I want to see you!'",
-  },
-  tags: [
-    "Telecommunications",
-    "Alexander Graham Bell",
-    "Telephone",
-    "Acoustics",
-    "Audio",
-    "Supreme Court",
-  ],
-  stats: {
-    totalClaims: 5,
-    independentClaims: 2,
-    patentWarYears: "1876–1888",
-    impactScore: 100,
+      "Bell's first intelligible sentence spoken over the telephone on March 10, 1876—'Mr. Watson, come here, I want to see you'—was transmitted using the variable-resistance liquid transmitter described in his patent.",
   },
 };

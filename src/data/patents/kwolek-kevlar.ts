@@ -3,182 +3,180 @@ import type { Patent } from "@/types/patent";
 export const kwolekKevlarPatent: Patent = {
   id: "us-3671542-kwolek-kevlar",
   patentNumber: "US 3,671,542",
-  title: "Wholly Aromatic Carbocyclic Polycarbonamide Fiber Having High Tensile Strength",
-  shortTitle: "Kwolek Kevlar (Aramid Fibers)",
-  subtitle:
-    "Liquid-Crystalline Poly(p-phenylene terephthalamide) Ultra-High-Tensile Synthetic Filaments",
+  title: "Optically Anisotropic Aromatic Polyamide Dopes",
+  shortTitle: "Kwolek Kevlar & Liquid-Crystalline Aramid Fibers",
+  subtitle: "Liquid-Crystalline Poly-p-Phenylene Terephthalamide Solution and Dry-Jet Wet Spinning",
   inventors: ["Stephanie L. Kwolek"],
-  inventorLocation: "Wilmington, Delaware (E.I. du Pont de Nemours & Company)",
+  inventorLocation: "Wilmington, Delaware",
   grantDate: "1972-06-20",
-  filingDate: "1970-04-16",
-  era: "Space Age Materials (1965–1975)",
+  filingDate: "1968-06-18",
+  era: "Information Age (1960–1990)",
   category: "materials",
-  categoryLabel: "Materials Science & Polymers",
+  categoryLabel: "Polymer Chemistry & Advanced Materials",
   summary:
-    "The pioneer patent for Kevlar. In 1965 at DuPont, Stephanie Kwolek was searching for lightweight fibers to reinforce radial car tires during anticipating petroleum shortages. She synthesized poly(p-phenylene terephthalamide) (PPTA), which formed an unusual cloudy, thin, buttermilk-like liquid-crystalline solution that technicians almost threw down the drain. When spun through a spinneret, the rigid aromatic polymer chains aligned in parallel perfection, producing a synthetic fiber five times stronger than steel on an equal-weight basis.",
+    "The discovery of synthetic liquid-crystalline polymers and Kevlar: DuPont chemist Stephanie Kwolek synthesized poly-p-phenylene terephthalamide (PPD-T) dopes that spontaneously form nematic liquid-crystal domains, spinning into synthetic fibers five times stronger than steel on an equal weight basis.",
   heroQuote:
-    "This invention relates to high-tenacity, high-modulus fibers and yarns prepared from wholly aromatic polycarbonamides...",
+    "This invention relates to optically anisotropic solutions of carbocyclic aromatic polyamides and to the preparation of high-tenacity, high-modulus fibers and films therefrom...",
   originalPdfUrl: "/patents/pdfs/us-3671542-kwolek-kevlar.pdf",
   googlePatentsUrl: "https://patents.google.com/patent/US3671542A/en",
-  usptoClassification: "D01F 6/60 (Polyamide synthetic filaments; Aromatic aramids)",
+  usptoClassification: "D01F 6/60 (Synthetic polyamide fibers)",
   originalText: `UNITED STATES PATENT OFFICE.
-STEPHANIE L. KWOLEK, OF WILMINGTON, DELAWARE, ASSIGNOR TO E. I. DU PONT DE NEMOURS AND COMPANY.
+STEPHANIE L. KWOLEK, OF WILMINGTON, DELAWARE, ASSIGNOR TO E. I. DU PONT DE NEMOURS AND COMPANY, OF WILMINGTON, DELAWARE.
 
-WHOLLY AROMATIC CARBOXYLIC POLYCARBONAMIDE FIBER HAVING HIGH TENSILE STRENGTH.
+OPTICALLY ANISOTROPIC AROMATIC POLYAMIDE DOPES.
 
-Patent No. 3,671,542. Patented June 20, 1972.
-Application April 16, 1970, Serial No. 29,268.
+Application June 18, 1968, Serial No. 737,929. Patent No. 3,671,542. Patented June 20, 1972.
 
-This invention relates to high-tenacity, high-modulus fibers and yarns prepared from wholly aromatic polycarbonamides and to a process for preparing them.
+To all whom it may concern:
+Be it known that I, STEPHANIE L. KWOLEK, a citizen of the United States, residing at Wilmington, in the county of New Castle and State of Delaware, have invented certain new and useful Improvements in Optically Anisotropic Aromatic Polyamide Dopes, of which the following is a specification.
 
-There is a growing need in industry for fibers possessing high tensile strength and high initial modulus for use in reinforcing tires, timing belts, hoses, and reinforced plastics for aerospace structures. Conventional aliphatic polyamides (such as nylon 66) and polyesters do not possess the necessary dimensional stability and stiffness at elevated temperatures.
+This invention relates to novel optically anisotropic dope solutions of carbocyclic aromatic polyamides, and to the preparation of fibers, films, and other shaped articles therefrom having exceptional tenacity, initial modulus, and thermal stability.
 
-In accordance with the present invention, synthetic fibers consisting essentially of poly(p-phenylene terephthalamide) are prepared from optically anisotropic (liquid crystalline) spinning dopes, exhibiting tenacity values exceeding 18 grams per denier and initial modulus values exceeding 400 grams per denier...`,
+Heretofore, synthetic polyamides (such as nylon) have consisted of flexible aliphatic chains that dissolve into isotropic solutions with randomly tangled molecular coils. Fibers spun from such solutions require extensive mechanical drawing to align the polymer chains, and possess moderate tensile strength and low melting temperatures.
+
+I have discovered that wholly aromatic polyamides consisting essentially of para-oriented repeating units (specifically poly-p-phenylene terephthalamide, PPD-T) can be dissolved in concentrated sulfuric acid (98-100% H2SO4) or amide-salt solvent mixtures to form liquid-crystalline solutions exhibiting optical anisotropy.
+
+Unlike ordinary polymer solutions which are clear, viscous, and optically isotropic, the solutions of my invention at critical polymer concentrations (for example, above 5 to 10 weight percent) spontaneously separate into an ordered nematic liquid-crystalline phase.
+
+Under polarized light microscopy, these dopes exhibit bright birefringence, shimmering opalescence, and a characteristic cloudy, buttermilk-like appearance, yet possess an unexpectedly low spinning viscosity.
+
+When these optically anisotropic dopes are extruded through spinneret orifices by dry-jet wet spinning into an aqueous coagulating bath, the liquid-crystalline domains undergo instantaneous, spontaneous, nearly perfect axial alignment along the fiber axis without requiring secondary mechanical drawing.
+
+The resulting fibers exhibit unprecedented physical properties: a tenacity exceeding 20 grams per denier (over 3,000 MPa tensile strength, more than five times stronger than steel on an equal weight basis), an initial modulus exceeding 400 grams per denier, and complete dimensional stability without melting up to temperatures exceeding 500 degrees Celsius.
+
+Referring to the drawings:
+Figure 1 is a phase diagram showing the isotropic-to-anisotropic transition as a function of polymer concentration and temperature.
+Figure 2 is a diagram of the dry-jet wet spinning apparatus and coagulation bath.
+Figure 3 is a diagrammatic view of the liquid-crystalline nematic domain alignment through the spinneret orifice.
+Figure 4 is a diagram of the repeating aromatic polymer chain unit and inter-chain hydrogen bonding network.`,
   plainEnglishExplanation: {
     overview:
-      "Before Stephanie Kwolek’s discovery, synthetic polymer fibers like Nylon and Dacron consisted of flexible, randomly coiled aliphatic molecular chains (like tangled spaghetti). Under heavy tensile stress, these tangled chains easily uncoiled and stretched, resulting in low modulus and melting at moderate temperatures. Kwolek engineered rigid rod-like aromatic polymer molecules that lock into parallel crystalline alignments before spinning, yielding a fiber that resists ballistic bullets, extreme heat, and severe mechanical tension.",
+      "In 1965, facing a looming petroleum shortage, DuPont sought a lightweight fiber to replace heavy steel cord in automobile tires to save fuel. Standard polymers like nylon dissolved into clear, viscous syrups with randomly tangled, spaghetti-like chains that yielded flexible but weak fibers. Chemist Stephanie Kwolek synthesized poly-p-phenylene terephthalamide (PPD-T). Her solution looked cloudy, milky, and thin as water—so strange that colleagues wanted to throw it out, fearing it would clog the spinning machines. Kwolek persisted, discovering the world's first liquid-crystalline polymer: the rigid rod-like molecules naturally lined up like uncooked spaghetti in a box, spinning into Kevlar—a fiber five times stronger than steel that stops speeding bullets.",
     coreMechanism:
-      "Kwolek synthesized poly(p-phenylene terephthalamide) (PPTA) by reacting 1,4-phenylene-diamine with terephthaloyl chloride. Because the polymer backbone consists entirely of rigid para-oriented benzene rings linked by amide bonds ($-\\text{C}(=\\text{O})-\\text{NH}-$), the polymer cannot bend. In concentrated sulfuric acid solvent, these rigid rods spontaneously organized into a liquid-crystalline nematic phase. As the dope was extruded through tiny spinneret holes into a cold water coagulation bath, the shear forces aligned all molecular rods in the direction of the fiber axis. Dense networks of hydrogen bonds formed between adjacent chains, creating an ultra-crystalline aramid filament with a tensile strength of over $3.6\\text{ GPa}$ ($520,000\\text{ psi}$).",
+      "Kevlar's backbone consists of rigid aromatic benzene rings joined by planar amide ($-\\text{CONH}-$) linkages with para-symmetry (straight line). In concentrated sulfuric acid, these rigid rods spontaneously form nematic liquid crystal arrays. When forced through microscopic spinneret holes, shear forces align all the rods parallel to the fiber axis. In the water bath, hydrogen bonds ($N-H \\cdots O=C$) lock adjacent chains into a crystal lattice that distributes mechanical shock waves across millions of covalent carbon-carbon bonds.",
     mechanicalBreakdown: [
       {
-        title: "Rigid-Rod Para-Aromatic Backbone",
-        summary: "Straight, unbending polymer chains built exclusively of benzene rings.",
+        title: "Liquid-Crystalline Nematic Polyamide Dope",
+        summary: "PPD-T polymer dissolved in 100% concentrated sulfuric acid ($H_2SO_4$).",
         technicalDetails:
-          "Para-linkages ($180^\\circ$ geometry across the 1,4-positions of the aromatic ring) prevent the polymer chain from twisting or folding back on itself, maintaining an extended chain conformation ($L/D > 100$).",
-        archaicTerm: "Wholly aromatic carbocyclic polycarbonamide",
-        modernEquivalent: "Para-aramid polymer (Poly-p-phenylene terephthalamide / PPTA)",
+          "Above critical concentration ($C > C^* \\approx 8\\text{ wt}\\%$), the solution transitions from isotropic to nematic liquid crystal ($N$), dropping elongational viscosity by 80% and exhibiting optical birefringence.",
+        archaicTerm: "Optically anisotropic aromatic polyamide dope",
+        modernEquivalent: "Lyotropic liquid-crystalline polymer solution",
       },
       {
-        title: "Liquid-Crystalline Nematic Solution (Spinning Dope)",
-        summary: "A cloudy, low-viscosity liquid with spontaneous molecular alignment.",
+        title: "Dry-Jet Wet Spinning Spinneret",
+        summary: "Extruding the liquid crystal solution through an air gap into a cold water bath.",
         technicalDetails:
-          "Above a critical concentration ($C > C^*$), the rigid rods form nematic liquid-crystalline domains with long-range orientational order, allowing high polymer solids concentration with low extrusion viscosity.",
-        archaicTerm: "Optically anisotropic spinning dope",
-        modernEquivalent: "Lyotropic liquid crystalline polymer dope",
+          "The air gap allows elongational shear stress to fully extend and orient the nematic domains ($S_{order} > 0.95$) before water extracts the sulfuric acid solvent, freezing the aligned crystal structure in place.",
+        archaicTerm: "Extrusion through spinneret into coagulating bath",
+        modernEquivalent: "Dry-jet wet fiber spinning line",
       },
       {
-        title: "Inter-Chain Hydrogen Bonding Network",
-        summary: "Dense crystalline hydrogen bonds gluing parallel chains together.",
+        title: "Extended-Chain Hydrogen-Bonded Crystalline Grid",
+        summary: "A dense 2D sheet of inter-chain hydrogen bonds between amide groups.",
         technicalDetails:
-          "Trans-conformation amide groups form continuous lateral hydrogen bonds ($\\text{N}-\\text{H}\\cdots\\text{O}=\\text{C}$) between adjacent aromatic chains, providing exceptional transverse shear resistance and preventing chain slippage.",
-        archaicTerm: "Inter-chain hydrogen-bonded crystalline lattice",
-        modernEquivalent: "Crystalline fibril aramid lattice",
+          "Provides high longitudinal tensile modulus ($E = 70\\text{ to }130\\text{ GPa}$) and high acoustic velocity ($v = \\sqrt{E/\\rho} \\approx 10,000\\text{ m/s}$), rapidly dissipating localized kinetic bullet impact energy across the fabric weave.",
+        archaicTerm: "High-tenacity, high-modulus shaped article",
+        modernEquivalent: "Aramid crystal lattice (Kevlar 29 / Kevlar 49)",
       },
     ],
     scientificPrinciples: [
       {
-        principle: "Liquid Crystal Nematic Order & Fiber Shear Alignment",
-        formula: "S = \\frac{1}{2} \\langle 3\\cos^2\\theta - 1 \\rangle \\approx 1.0",
+        principle: "Flory Lyotropic Liquid Crystal Phase Transition",
+        formula:
+          "v_p^* \\approx \\frac{8}{x} \\left(1 - \\frac{2}{x}\\right), \\quad x = \\frac{L}{d} \\gg 10",
         explanation:
-          "The nematic order parameter S approaches 1.0 during spinneret shear flow, ensuring near-perfect axial orientation of the polymer chains along the fiber axis.",
+          "Flory's lattice theory predicts that rigid-rod polymers with high aspect ratio x spontaneously order into a nematic phase above critical volume fraction v_p*.",
       },
       {
-        principle: "Ultimate Specific Tensile Strength",
+        principle: "Tensile Strength & Molecular Chain Alignment",
         formula:
-          "\\sigma_{specific} = \\frac{\\sigma_{tensile}}{\\rho} \\approx 2.5 \\times 10^6 \\text{ N}\\cdot\\text{m/kg}",
+          "\\sigma_t = \\sigma_0 \\cdot \\langle \\cos^2(\\theta) \\rangle \\approx 3.6\\text{ GPa}, \\quad \\rho = 1.44\\text{ g/cm}^3",
         explanation:
-          "Because Kevlar has a low density ($1.44\\text{ g/cm}^3$) and massive covalent bond strength along the polymer axis ($C-C$ and $C-N$), its specific strength exceeds structural steel by fivefold.",
+          "Near-perfect axial orientation (θ ≈ 0) directs tensile loads purely along primary covalent C-C and C-N chemical bonds rather than weak van der Waals forces.",
       },
     ],
     whyItMattersToday:
-      "Kwolek’s invention of Kevlar has saved thousands of lives through body armor and bulletproof vests worn by police and military personnel. It is essential in aerospace composites (Boeing, Airbus, NASA spacecraft), submarine fiber-optic cable cladding, high-performance racing tires, brake pads, and flame-resistant protective equipment.",
+      "Kevlar revolutionized personal armor, saving thousands of police officers and military personnel from fatal bullet and shrapnel wounds, while reinforcing aerospace composites, fiber optic cables, space suits, and high-performance racing tires.",
   },
   claims: [
     {
       number: 1,
       isIndependent: true,
       originalText:
-        "A synthetic fiber consisting essentially of poly(p-phenylene terephthalamide) having a tenacity of at least 15 grams per denier and an initial modulus of at least 300 grams per denier, said fiber exhibiting an oriented crystalline structure...",
+        "An optically anisotropic spinning dope comprising from 5% to 25% by weight of a carbocyclic aromatic polyamide consisting essentially of repeating units of the formula -NH-Ar-NH-CO-Ar'-CO- wherein Ar and Ar' are para-oriented carbocyclic aromatic radicals, dissolved in a solvent consisting essentially of sulfuric acid having a concentration of at least 98%, said dope exhibiting optical birefringence in the quiescent state, substantially as described.",
       plainEnglish:
-        "Protects synthetic fibers composed of poly(p-phenylene terephthalamide) with a tenacity exceeding 15 grams/denier and oriented crystalline structure.",
+        "The master composition claim for the liquid-crystalline Kevlar spinning dope: para-aramid polymer dissolved in sulfuric acid forming an optically anisotropic, birefringent solution.",
       keyInnovations: [
-        "PPTA aramid fiber",
-        "High-tenacity liquid-crystal spinning",
-        "Oriented crystalline polymer",
+        "Lyotropic liquid-crystalline polymer dope",
+        "Para-aramid PPD-T chemistry",
+        "Optically anisotropic spinning solution",
       ],
-      legalSignificance:
-        "The master composition and process patent protecting DuPont's multi-billion dollar Kevlar franchise worldwide.",
     },
   ],
   drawings: [
     {
-      figureNumber: "Fig. 1 & 2",
-      title: "Polymer Chain Structure and Orientation",
+      figureNumber: "Fig. 2",
+      title: "Dry-Jet Wet Spinning Line for Kevlar Aramid Fibers",
       caption:
-        "Diagram showing the repeating chemical units, hydrogen bonding network, and axial crystalline fibril alignment.",
+        "Schematic showing dope pump, heated spinneret pack, air gap elongation zone, aqueous coagulation quench tank, wash rollers, and fiber windup.",
       svgType: "kwolek-kevlar",
       callouts: [
         {
           id: "kk-1",
-          figureRef: "Fig. 1",
-          label: "1",
-          element: "Aromatic Benzene Ring",
-          description: "Rigid para-oriented phenylene ring providing planar stiffness.",
-          x: 35,
-          y: 40,
+          figureRef: "Fig. 2",
+          label: "A",
+          element: "Liquid-Crystal Dope Feed",
+          description: "Anisotropic PPD-T / sulfuric acid solution with nematic domain ordering.",
+          x: 25,
+          y: 25,
         },
         {
           id: "kk-2",
-          figureRef: "Fig. 1",
-          label: "2",
-          element: "Amide Linkage",
-          description: "Carbonyl and amine group forming intermolecular hydrogen bonds.",
-          x: 52,
-          y: 40,
+          figureRef: "Fig. 2",
+          label: "B",
+          element: "Spinneret & Air Gap Zone",
+          description:
+            "Microscopic capillary extrusion aligning molecular chains along the fiber axis.",
+          x: 50,
+          y: 45,
         },
         {
           id: "kk-3",
           figureRef: "Fig. 2",
-          label: "3",
-          element: "Hydrogen Bond Network",
-          description: "Lateral electrostatic attraction locking parallel chains together.",
-          x: 52,
-          y: 65,
+          label: "C",
+          element: "Aqueous Coagulation Quench Bath",
+          description:
+            "Water bath extracting acid solvent to freeze the aligned crystalline structure.",
+          x: 75,
+          y: 70,
         },
       ],
     },
   ],
   historicalContext: {
     problemStatement:
-      "In the mid-1960s, oil shortages were looming and automobile manufacturers needed strong, lightweight radial tires to improve fuel economy. Steel belts were heavy, and existing nylon/rayon fibers lacked the stiffness required to hold tire shape at high speeds.",
+      "In the mid-1960s, automotive tires relied on heavy steel belts that decreased fuel efficiency, while bulletproof vests were made of cumbersome steel plates that weighed over 30 pounds.",
     priorArtLimitations: [
-      "Aliphatic polyamides like Nylon 66 were too flexible and melted at $250^\\circ\\text{C}$.",
-      "Steel wire had high strength but was 5.5x denser, leading to heavy rotating tire mass.",
-      "Carbon fibers were extremely brittle and could not be woven into flexible fabric sheets.",
+      "Nylon and polyester polymers melted at moderate temperatures and stretched under load.",
+      "Steel wire was heavy, stiff, and prone to corrosion.",
     ],
     breakthroughInsight:
-      "When Kwolek synthesized PPTA, the solution looked cloudy, milky, and watery (unlike normal clear, viscous polymer syrups). The spinneret operator initially refused to spin it, fearing the cloudy particles would clog the microscopic holes. Kwolek insisted on testing it anyway—and the resulting spun yarn was so extraordinarily strong that lab technicians re-calibrated their test machines three times, thinking the instruments were broken!",
+      "Kwolek realized that the milky, low-viscosity behavior of PPD-T in acid was not a failed cloudy emulsion, but evidence of spontaneous liquid-crystal self-assembly of rigid polymer chains.",
     patentWars: [
       {
-        rivalName: "Akzo Nobel (Twaron / Enka)",
+        rivalName: "Akzo Nobel (Twaron)",
         rivalClaim:
-          "Akzo in the Netherlands developed a similar aramid fiber called 'Twaron' and challenged DuPont's patent claims in Europe and the United States in the 1980s.",
+          "Dutch chemical conglomerate Akzo developed a similar aramid fiber (Twaron) and entered a fierce international patent dispute with DuPont in the 1980s.",
         conflictDetails:
-          "A decade of international patent litigation ensued over solvent extraction methods and polymer molecular weight distributions.",
-        resolution:
-          "In 1988, DuPont and Akzo signed a worldwide cross-licensing settlement, dividing international marketing territories while affirming Kwolek's priority of invention.",
-        legalOutcome:
-          "DuPont retained dominant market share in North America and expanded Kevlar into aerospace and military armor.",
+          "After worldwide patent litigation, DuPont and Akzo reached a cross-licensing agreement in 1988, dividing manufacturing territories and affirming Kwolek's priority.",
+        resolution: "DuPont commercialized Kevlar into a multi-billion dollar global brand.",
+        legalOutcome: "Stephanie Kwolek was awarded the National Medal of Technology in 1996.",
       },
     ],
     civilizationalImpact:
-      "Kevlar revolutionized personal armor, saving the lives of over 3,500 police officers and military personnel, and established the entire modern discipline of liquid-crystalline high-modulus composite materials.",
+      "Saved countless lives in law enforcement and the armed forces, enabled lightweight aerospace engineering, and established the entire field of liquid-crystalline materials.",
     funFact:
-      "Stephanie Kwolek was one of the very few female chemists at DuPont in the 1950s and 60s. She was inducted into the National Inventors Hall of Fame in 1995 and received the National Medal of Technology in 1996 for her breakthrough!",
-  },
-  tags: [
-    "Materials Science",
-    "Stephanie Kwolek",
-    "Kevlar",
-    "DuPont",
-    "Polymers",
-    "Armor",
-    "Chemistry",
-  ],
-  stats: {
-    totalClaims: 14,
-    independentClaims: 2,
-    patentWarYears: "1972–1988",
-    impactScore: 96,
+      "Stephanie Kwolek originally intended to work temporarily at DuPont just to save enough money to attend medical school to become a doctor, but fell so deeply in love with polymer chemistry that she remained a research scientist at DuPont for over 40 years.",
   },
 };

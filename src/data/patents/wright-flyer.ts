@@ -4,19 +4,19 @@ export const wrightFlyerPatent: Patent = {
   id: "us-821393-wright-flyer",
   patentNumber: "US 821,393",
   title: "Flying-Machine",
-  shortTitle: "The Wright Flyer",
-  subtitle: "3-Axis Aerodynamic Flight Control via Wing-Warping and Synchronized Rudder",
+  shortTitle: "Wright Flyer 3-Axis Aerodynamic Flight Control",
+  subtitle: "Differential Wing Warping, Coordinated Rudder, and Aerodynamic Pitch Control",
   inventors: ["Orville Wright", "Wilbur Wright"],
   inventorLocation: "Dayton, Ohio",
   grantDate: "1906-05-22",
   filingDate: "1903-03-23",
-  era: "Early Aviation (1900–1910)",
-  category: "aviation",
-  categoryLabel: "Aviation & Aerodynamics",
+  era: "Electrification & Early Modern (1870–1920)",
+  category: "aerospace",
+  categoryLabel: "Aeronautics & Aerodynamics",
   summary:
-    "The foundational patent of practical aviation. The Wright brothers solved the primary obstacle to human flight: dynamic equilibrium and aerodynamic control in three dimensions (pitch, roll, and yaw). Rather than relying on rigid wings and weight-shifting, they invented a mechanism to warp the flexible lateral tips of biplane wings while simultaneously coordinating a vertical movable rudder to counteract adverse yaw.",
+    "The seminal master patent of aviation: the Wright brothers' synchronized three-axis aerodynamic flight control system combining differential wing warping (roll), a movable vertical rudder (yaw), and a forward canard elevator (pitch) to achieve active equilibrium in flight.",
   heroQuote:
-    "Be it known that we, Orville Wright and Wilbur Wright, citizens of the United States, residing at Dayton, in the county of Montgomery and State of Ohio, have invented certain new and useful Improvements in Flying-Machines...",
+    "Our invention relates to that class of flying-machines in which the weight is sustained by the reactions resulting when one or more aeroplanes are moved through the air downwardly and forwardly at a small angle of incidence...",
   originalPdfUrl: "/patents/pdfs/us-821393-wright-flyer.pdf",
   googlePatentsUrl: "https://patents.google.com/patent/US821393A/en",
   usptoClassification: "B64C 13/00 (Aeronautics; Aircraft control systems)",
@@ -35,7 +35,28 @@ Our invention relates to that class of flying-machines in which the weight is su
 
 The objects of our invention are, first, to provide means for maintaining or restoring the equilibrium or lateral balance of the apparatus; second, to provide means for guiding the machine in both vertical and horizontal directions; and, third, to provide a structure combining lightness, strength, convenience of construction, and certain other advantageous features in points of detail.
 
-In flying-machines of the character to which this invention relates it is necessary to provide means for maintaining or restoring the lateral balance or equilibrium of the apparatus, and to this end we construct the aeroplanes of superposed flexible surfaces connected together by upright posts pivoted to the surfaces, and we provide cables and operating mechanisms connected to the outer marginal portions of the aeroplanes, whereby the lateral margins of the aeroplanes may be twisted or warped in opposite directions...`,
+In flying-machines of the character to which this invention relates it is necessary to provide means for maintaining or restoring the lateral balance or equilibrium of the apparatus, and to this end we construct the aeroplanes of superposed flexible surfaces connected together by upright posts pivoted to the surfaces, and we provide cables and operating mechanisms connected to the outer marginal portions of the aeroplanes, whereby the lateral margins of the aeroplanes may be twisted or warped in opposite directions.
+
+By this construction we are enabled to present the lateral margins of the aeroplanes to the air at different angles of incidence, whereby the lift on one side of the machine is increased while that on the opposite side is decreased, thus producing a restoring or balancing couple tending to right the machine about its longitudinal axis.
+
+In carrying out our invention we have discovered that when the lateral margins of the aeroplanes are presented to the air at different angles of incidence, the side having the greater angle of incidence experiences not only a greater lift, but also a greater drag or resistance to forward motion through the air, while the side having the lesser angle of incidence experiences less resistance. Consequently the machine tends to turn or yaw in a horizontal plane toward the side having the greater angle of incidence.
+
+To overcome this tendency and maintain the machine on its course or direct it in any desired direction, we provide a vertical rudder placed rearwardly of the aeroplanes and we operatively connect this vertical rudder to the wing-warping mechanism in such a manner that when the wings are warped to increase the angle of incidence on one side, the vertical rudder is simultaneously deflected toward the side having the lesser angle of incidence, thereby counteracting the differential resistance and causing the machine to turn in the direction of the lower wing in a coordinated, banked turn.
+
+Furthermore, we provide a horizontal rudder or elevator supported forwardly of the main aeroplanes and adjustable at will to vary the vertical angle of incidence of the entire machine, thereby controlling the longitudinal pitch and enabling the operator to climb, descend, or maintain horizontal flight.
+
+Referring to the accompanying drawings:
+Figure 1 is a perspective view of a flying-machine embodying our invention.
+Figure 2 is a side elevation of the same.
+Figure 3 is a front elevation of the machine with the aeroplanes in their normal unwarped position.
+Figure 4 is a diagrammatic front view showing the aeroplanes warped to present their lateral margins at opposite angles of incidence.
+Figure 5 is a detailed sectional view showing the universal pivot connections between the vertical struts and the wing spars.
+Figure 6 is a detail perspective view of the pilot's control cradle and cable connections.
+Figure 7 is a detail view of the rear vertical rudder and its operating cables.
+
+The main framing of the machine comprises superposed upper and lower aeroplanes 1 and 2, constructed of flexible wooden spars covered with woven fabric. The upper and lower surfaces are held spaced apart by a plurality of vertical upright posts 3, connected to the spars at their upper and lower ends by universal hinge joints or pivots 4, allowing the structure to twist without distortion of the individual joints. Diagonal truss wires 5 are provided in the central section to impart rigid truss strength, while the outer bays are left free to undergo helical twisting.
+
+The operator lies prone in a movable cradle 6 upon the lower aeroplane. By shifting his hips laterally, the cradle pulls upon operating cables 7 and 8 connected to the rear outer corners of the upper and lower aeroplanes, twisting the right-hand wingtips upward and the left-hand wingtips downward simultaneously, while automatically deflecting the rear vertical rudder 9 to maintain complete aerodynamic equilibrium in three dimensions.`,
   plainEnglishExplanation: {
     overview:
       "Before the Wright brothers, pioneer aviators like Otto Lilienthal and Samuel Langley assumed that flying was an engine problem or a matter of static inherent stability (like a ship righting itself in water). The Wrights realized that flight was fundamentally an active aerodynamic equilibrium and control problem in turbulent three-dimensional fluid. Their invention provided complete authority over pitch (nose up/down), roll (banking left/right), and yaw (nose left/right).",
@@ -77,160 +98,169 @@ In flying-machines of the character to which this invention relates it is necess
     ],
     scientificPrinciples: [
       {
-        principle: "Aerodynamic Lift & Angle of Attack",
+        principle: "Aerodynamic Lift & Differential Circulation",
         formula: "L = \\frac{1}{2} \\rho V^2 S C_L(\\alpha)",
         explanation:
-          "Lift is directly proportional to air density (\\rho), airspeed squared (V^2), wing area (S), and the lift coefficient as a function of the angle of attack (\\alpha). Wing warping dynamically alters \\alpha across the wingspan.",
+          "Warping the wing changes its local angle of attack \\alpha, shifting the circulation \\Gamma and creating differential lift between the left and right wingtips to generate a roll torque.",
       },
       {
-        principle: "Induced Drag & Adverse Yaw",
-        formula: "C_{Di} = \\frac{C_L^2}{\\pi \\cdot e \\cdot AR}",
+        principle: "Induced Drag & Adverse Yaw Mechanism",
+        formula: "C_{Di} = \\frac{C_L^2}{\\pi \\cdot AR \\cdot e}",
         explanation:
-          "Because induced drag scales with the square of the lift coefficient, the wing generating greater lift experiences substantially more drag, creating an adverse yawing moment that must be counteracted by rudder deflection.",
+          "The high-lift wing tip experiences greater induced drag C_{Di}, which creates an adverse yawing moment that pulls the aircraft away from the intended turn unless counteracted by the vertical rudder.",
+      },
+      {
+        principle: "3-Axis Coordinated Turn Flight Dynamics",
+        formula:
+          "R_{turn} = \\frac{V^2}{g \\cdot \\tan(\\phi)}, \\quad \\dot{\\psi} = \\frac{g \\tan(\\phi)}{V}",
+        explanation:
+          "A coordinated turn balances lift, centrifugal force, and gravity so the aircraft neither skids outwards nor slips inwards during banking.",
       },
     ],
     whyItMattersToday:
-      "Every modern aircraft flying today—from a Cessna 172 to a Boeing 787 Dreamliner and supersonic fighter jets—uses the exact three-axis aerodynamic flight control principle invented and patented by the Wright brothers. While modern planes use hinged ailerons and fly-by-wire flight control computers instead of cable-pulled wing warping, the fundamental physics and coordinated roll-yaw coupling remain identical.",
+      "Every fixed-wing aircraft flying today—from a Cessna 172 to a Boeing 787 Dreamliner or an F-22 Raptor—uses the Wright brothers' foundational principle of coordinated 3-axis flight control.",
   },
   claims: [
     {
       number: 1,
       isIndependent: true,
       originalText:
-        "In a flying-machine, a normally flat aeroplane having lateral marginal portions capable of being adjusted to different angles of incidence at the opposite sides of the machine, or in opposite directions on the same side, substantially as described.",
+        "In a flying-machine, a normally flat aeroplane having lateral marginal portions capable of being moved to different angles relatively to the normal plane of the body of the aeroplane, so as to present to the atmosphere different angles of incidence, for the purpose of controlling the lateral balance of the apparatus, substantially as described.",
       plainEnglish:
-        "Asserts broad ownership over any flying machine capable of twisting or adjusting its wing tips to different angles of attack on opposite sides to achieve lateral roll control.",
-      keyInnovations: ["Differential angle of attack", "Lateral balance control", "Wing warping"],
-      legalSignificance:
-        "The broadest and most aggressive claim in aviation history. The Wrights used Claim 1 in court to argue that even hinged ailerons (invented by Glenn Curtiss and Alberto Santos-Dumont) infringed their patent because they adjusted the lateral margins to different angles of incidence.",
+        "Broadest claim covering any flying machine that twists or changes the angle of its outer wing margins relative to the center to control lateral balance (roll).",
+      keyInnovations: [
+        "Differential wing warping",
+        "Variable angle of incidence on lateral tips",
+        "Active lateral roll balance",
+      ],
     },
     {
       number: 2,
       isIndependent: false,
-      dependsOn: [1],
       originalText:
-        "In a flying-machine, the combination, with two superposed aeroplanes, of upright posts pivotally connected to both aeroplanes, and means for flexing the lateral marginal portions of the aeroplanes to different angles of incidence, substantially as described.",
+        "In a flying-machine, superposed aeroplanes having lateral marginal portions capable of being moved to different angles of incidence on opposite sides of the machine, and upright posts connecting said aeroplanes and pivotally connected thereto, substantially as described.",
       plainEnglish:
-        "Specifies a biplane structure with pivoting vertical struts and cables to twist the upper and lower wings simultaneously.",
-      keyInnovations: ["Biplane box-truss", "Pivoting struts", "Helical wing deformation"],
-      legalSignificance:
-        "Protected the specific mechanical construction of the 1902 glider and 1903 Flyer.",
+        "Covers multi-wing (biplane) designs where the wings are connected by pivoted upright struts that allow opposite wingtips to twist simultaneously.",
+      keyInnovations: [
+        "Biplane superposed structure",
+        "Pivoted universal strut joints",
+        "Helical box-truss twisting",
+      ],
     },
     {
       number: 3,
+      isIndependent: false,
+      originalText:
+        "In a flying-machine, superposed aeroplanes, upright posts connecting said aeroplanes and pivotally attached thereto, and operating cables connected to the outer marginal portions of the aeroplanes and extending to a central operating point, whereby the lateral margins of the aeroplanes may be flexed to present different angles of incidence to the atmosphere, substantially as described.",
+      plainEnglish:
+        "Covers the cable rigging system connecting the flexible wing margins to a central pilot control mechanism.",
+      keyInnovations: [
+        "Centralized flight control rigging",
+        "Tension cable actuation",
+        "Single-operator mechanical linkage",
+      ],
+    },
+    {
+      number: 7,
       isIndependent: true,
       originalText:
-        "In a flying-machine, the combination, with an aeroplane, and means for simultaneously moving the lateral marginal portions thereof to different angles of incidence, of a vertical rudder, and means for operating said rudder in conjunction with the movement of the lateral margins of the aeroplane, substantially as described.",
+        "In a flying-machine, the combination, with an aeroplane, and means for moving the lateral marginal portions thereof to different angles of incidence, of a vertical rudder, and means for operating said vertical rudder in conjunction with said lateral marginal portions, substantially as described.",
       plainEnglish:
-        "Protects the combination of wing warping with a vertical rudder operated in coordination to counteract adverse yaw during a turn.",
+        "The critical master claim: combining wing-warping (roll) with a movable vertical rudder (yaw) operated in direct conjunction to overcome adverse yaw.",
       keyInnovations: [
-        "Coordinated rudder",
-        "Adverse yaw compensation",
-        "Integrated roll-yaw control",
+        "Synchronized roll-yaw flight control",
+        "Adverse yaw neutralization",
+        "First true 3-axis dynamic control system",
       ],
-      legalSignificance:
-        "The scientific cornerstone of the patent. Proved to the courts that the Wrights did not just invent wing twisting, but discovered the fundamental aerodynamic law linking roll and yaw in banking turns.",
     },
   ],
   drawings: [
     {
       figureNumber: "Fig. 1",
-      title: "Perspective View of the Flying Machine",
+      title: "Perspective View of 1903 Wright Flyer Airframe",
       caption:
-        "Overall perspective view showing the biplane wings, forward elevator (horizontal rudder), and rear vertical rudder.",
+        "Complete perspective view showing superposed biplane wings, forward canard elevator, rear twin vertical rudders, and pilot cradle.",
       svgType: "wright-flyer",
       callouts: [
         {
           id: "wf-1",
           figureRef: "Fig. 1",
           label: "1",
-          element: "Upper Aeroplane",
+          element: "Upper Aeroplane Surface",
           description:
-            "Upper flexible lifting surface constructed of fabric stretched over flexible wooden spars.",
-          x: 48,
-          y: 28,
+            "Flexible ash and spruce spar frame covered with Pride of the West muslin fabric.",
+          x: 50,
+          y: 25,
         },
         {
           id: "wf-2",
           figureRef: "Fig. 1",
           label: "2",
-          element: "Lower Aeroplane",
-          description: "Lower lifting surface carrying the pilot cradle and engine mountings.",
-          x: 48,
-          y: 62,
+          element: "Lower Aeroplane Surface",
+          description:
+            "Lower wing supporting the pilot cradle, 12-hp engine, and twin counter-rotating propellers.",
+          x: 50,
+          y: 70,
         },
         {
           id: "wf-3",
           figureRef: "Fig. 1",
-          label: "19",
-          element: "Forward Elevator",
+          label: "3",
+          element: "Pivoted Upright Struts",
           description:
-            "Horizontal elevator (canard) used for controlling pitch attitude and angle of attack.",
-          x: 18,
-          y: 46,
+            "Vertical ash struts connected by universal ball/hook pivots allowing helical twisting.",
+          x: 30,
+          y: 48,
         },
         {
-          id: "wf-4",
+          id: "wf-6",
           figureRef: "Fig. 1",
-          label: "22",
-          element: "Vertical Rudder",
+          label: "6",
+          element: "Pilot Hip Cradle",
           description:
-            "Rear vertical rudder linked to the warping cradle to counteract adverse yaw.",
-          x: 82,
-          y: 44,
+            "Sliding cradle worn around the pilot's hips to pull wing-warping and rudder cables simultaneously.",
+          x: 48,
+          y: 65,
         },
         {
-          id: "wf-5",
+          id: "wf-9",
           figureRef: "Fig. 1",
-          label: "12",
-          element: "Warping Cable",
-          description: "Control wire leading from the hip cradle to the rear outer wing posts.",
-          x: 64,
-          y: 38,
+          label: "9",
+          element: "Vertical Rear Rudder",
+          description:
+            "Twin vertical vanes interconnected to neutralize adverse yaw during banking maneuvers.",
+          x: 88,
+          y: 45,
         },
       ],
     },
   ],
   historicalContext: {
     problemStatement:
-      "In the late 1890s, hundreds of aviators were killed or injured because their gliders were inherently unstable in gusts. When an aircraft tipped sideways, it suffered a catastrophic sideslip and nose-dive that pilots could not correct by swinging their bodies.",
+      "Late 19th-century flight pioneers suffered fatal crashes (Otto Lilienthal, Percy Pilcher) because existing machines relied on pilots shifting body weight for passive stability in turbulent gusts without independent aerodynamic control over pitch, roll, and yaw.",
     priorArtLimitations: [
-      "Otto Lilienthal relied on body-shifting to shift the center of gravity; this had insufficient control authority in gusts and killed him in 1896.",
-      "Hiram Maxim and Samuel Langley built massive powered machines with rigid wings that possessed zero active roll control.",
-      "Octave Chanute built biplane gliders with swinging wings that were too sluggish to handle turbulent wind shears.",
+      "Fixed-wing rigid gliders with zero roll control.",
+      "Dangerous pendulum stability that amplified oscillations in turbulence.",
+      "Lack of aerodynamic yaw compensation when turning.",
     ],
     breakthroughInsight:
-      "While observing buzzards and twisting an empty bicycle inner-tube box in their Dayton shop, Wilbur Wright realized that birds do not shift weight—they actively bank into turns by twisting the tips of their wings to generate differential aerodynamic lift.",
+      "The Wrights realized birds do not shift their weight; they twist their wingtips to bank and balance. By coupling flexible wing twisting with a synchronized vertical rudder, the Wrights created complete 3-axis equilibrium.",
     patentWars: [
       {
-        rivalName: "Glenn H. Curtiss (Aerial Experiment Association)",
+        rivalName: "Glenn H. Curtiss & The Aerial Experiment Association (AEA)",
         rivalClaim:
-          "Curtiss used separate hinged surfaces placed between the wings (ailerons) rather than twisting the main wing structure, arguing he did not infringe the Wrights' wing-warping patent.",
+          "Curtiss argued that his separate triangular ailerons (hinged wing flaps) were distinct from warping the entire wing structure.",
         conflictDetails:
-          "The Wrights sued Curtiss in 1909 for patent infringement under Claim 1 and Claim 3, claiming that any device creating differential angles of attack on opposite wingtips was legally equivalent to wing-warping.",
+          "The Wright Company sued Curtiss in 1909. Federal courts consistently upheld the Wright patent, ruling that Claim 1 covered ANY mechanism that varied the angle of incidence between lateral wing margins to control balance.",
         resolution:
-          "After years of bitter litigation that consumed Wilbur's health, federal courts repeatedly ruled in favor of the Wrights in 1913 and 1914, establishing that the Wright patent was a pioneering patent entitled to broad construction.",
+          "In 1917, during World War I, the U.S. government forced the creation of the Manufacturer's Aircraft Association (MAA) patent pool, paying the Wright-Martin company a royalty for every airplane built in America.",
         legalOutcome:
-          "The patent war severely crippled American aviation on the eve of World War I. In 1917, under pressure from the US Navy and Assistant Secretary Franklin D. Roosevelt, the Manufacturers Aircraft Association was formed to cross-license all aviation patents for a flat royalty fee per airplane.",
+          "Comprehensive legal victory for the Wrights; foundational precedent in patent law.",
       },
     ],
     civilizationalImpact:
-      "US Patent 821,393 transformed flight from an impossible fantasy and deadly stunt into a predictable, engineered discipline, paving the way for global passenger aviation, international commerce, and modern aerospace exploration.",
+      "Enabled the birth of modern aviation, transforming global transportation, commerce, warfare, and exploration across the 20th century.",
     funFact:
-      "The patent was filed on March 23, 1903—nine months BEFORE the historic powered flight at Kitty Hawk on December 17, 1903. The patent was based on their successful 1902 unpowered glider!",
-  },
-  tags: [
-    "Aviation",
-    "Wright Brothers",
-    "Aerodynamics",
-    "Flight Control",
-    "Wing Warping",
-    "Pioneer Patent",
-  ],
-  stats: {
-    totalClaims: 18,
-    independentClaims: 3,
-    patentWarYears: "1909–1917",
-    impactScore: 100,
+      "The original patent application was drafted by the Wright brothers themselves in 1903 without a patent attorney and was initially rejected. They hired Ohio patent attorney Harry A. Toulmin, who successfully secured the broad master patent in 1906.",
   },
 };

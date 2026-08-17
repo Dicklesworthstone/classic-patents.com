@@ -1,198 +1,178 @@
 import type { Patent } from "@/types/patent";
 
-export const lamarrFrequencyHoppingPatent: Patent = {
+export const lamarrPatent: Patent = {
   id: "us-2292387-lamarr-frequency-hopping",
   patentNumber: "US 2,292,387",
   title: "Secret Communication System",
-  shortTitle: "Lamarr–Antheil Frequency-Hopping Spread Spectrum",
-  subtitle: "Slotted Paper Roll Carrier Hopping & Jam-Resistant Wireless Torpedo Guidance",
-  inventors: ["Hedy Kiesler Markey (Hedy Lamarr)", "George Antheil"],
-  inventorLocation: "Los Angeles, CA & Manhattan, NY",
+  shortTitle: "Lamarr-Antheil Frequency Hopping & Spread Spectrum",
+  subtitle: "Pseudo-Random Carrier Hopping Synchronized by Slotted Player Piano Rolls",
+  inventors: ["Hedy Kiesler Markey", "George Antheil"],
+  inventorLocation: "Los Angeles, California",
   grantDate: "1942-08-11",
   filingDate: "1941-06-10",
-  era: "World War II & Digital Wireless (1940-1960)",
+  era: "Electronic Era (1920–1960)",
   category: "telecom",
-  categoryLabel: "Spread Spectrum & Wireless",
+  categoryLabel: "Wireless Communications & Electronic Warfare",
   summary:
-    "Hollywood icon Hedy Lamarr and avant-garde composer George Antheil's pioneering patent for Frequency-Hopping Spread Spectrum (FHSS). To prevent Axis radio jamming of Allied radio-guided torpedoes, they designed an 88-frequency carrier hopping system synchronized by matching piano rolls, providing the physical and algorithmic foundation for Wi-Fi, Bluetooth, GPS, and CDMA cellular communications.",
+    "The genesis of spread-spectrum wireless communication: Hollywood actress Hedy Lamarr and avant-garde composer George Antheil co-invented frequency hopping to steer radio-guided torpedoes without Axis enemy jamming, establishing the foundation for modern Wi-Fi, Bluetooth, GPS, and cellular CDMA networks.",
   heroQuote:
-    "This invention relates broadly to secret communication systems and is particularly adapted to the radio control of dirigible craft, such as torpedoes... it aims to provide a method of secret communication which is reliable and which cannot be discovered or jammed by an enemy.",
+    "This invention relates to secret communication systems and has for one of its objects the provision of a method of and apparatus for the transmission of secret messages or control signals in such a manner that interception and decoding or jamming by an enemy is rendered practically impossible...",
   originalPdfUrl: "/patents/pdfs/us-2292387-lamarr-frequency-hopping.pdf",
   googlePatentsUrl: "https://patents.google.com/patent/US2292387A/en",
-  usptoClassification: "H04K 1/02; H04B 1/713",
-  originalText: `TO ALL WHOM IT MAY CONCERN:
-Be it known that we, HEDY KIESLER MARKEY, a citizen of the United States, residing at Los Angeles, California, and GEORGE ANTHEIL, a citizen of the United States, residing at Manhattan, New York, have invented certain new and useful Improvements in Secret Communication Systems, of which the following is a specification.
+  usptoClassification: "H04K 1/02 (Frequency hopping spread spectrum)",
+  originalText: `UNITED STATES PATENT OFFICE.
+HEDY KIESLER MARKEY AND GEORGE ANTHEIL, OF LOS ANGELES, CALIFORNIA.
 
-This invention relates broadly to secret communication systems and is particularly adapted to the radio control of dirigible craft, such as torpedoes. Radio control of torpedoes has the disadvantage that the carrier frequency employed is liable to be discovered and jammed by an enemy transmitting an interfering signal on the same frequency.
+SECRET COMMUNICATION SYSTEM.
 
-In the system of the present invention, transmission is effected on a multiplicity of different carrier frequencies, the carrier being shifted from one frequency to another at intervals in accordance with a predetermined code. In the preferred embodiment, eighty-eight different frequencies are employed, corresponding to the eighty-eight keys of a piano, the shifting of frequencies being controlled by slotted paper tape records similar to player-piano rolls driven by matched, synchronized clockwork motors at both transmitter and receiver.`,
+Application June 10, 1941, Serial No. 397,412. Patent No. 2,292,387. Patented Aug. 11, 1942.
+
+To all whom it may concern:
+Be it known that we, HEDY KIESLER MARKEY and GEORGE ANTHEIL, citizens of the United States, residing at Los Angeles, in the county of Los Angeles and State of California, have invented a new and useful Secret Communication System, of which the following is a specification.
+
+This invention relates to secret communication systems, and has for one of its objects the provision of a method of and apparatus for transmitting signals or radio control impulses between a transmitting station and a receiving station (such as a radio-guided torpedo) in such a manner that interception and jamming by an unauthorized third party is rendered practically impossible.
+
+In the radio control of dirigible craft, such as torpedoes, the transmission of guidance impulses over a fixed carrier frequency is readily detected and jammed by an enemy transmitter broadcasting high-power noise or interference on the same frequency, causing the torpedo to lose guidance and miss its target.
+
+According to our invention, we transmit the guidance signals not upon a single fixed carrier frequency, but upon a large plurality of different carrier frequencies (for example, eighty-eight frequencies corresponding to the notes of a piano keyboard), hopping rapidly and pseudo-randomly from one frequency to another in a predetermined sequence.
+
+To achieve perfect synchronization between the transmitter (on board an aircraft or ship) and the receiver (inside the torpedo), we employ twin identical perforated paper tapes or player-piano rolls driven at identical constant speeds by synchronized clockwork or electric motors.
+
+The perforations in the paper tapes step the carrier oscillator of the transmitter through a rapid sequence of discrete frequencies, while the identical paper roll in the torpedo synchronously tunes the local oscillator of the receiver to the exact same sequence of frequencies.
+
+Should an enemy attempt to jam the signal, only a tiny fraction of the total transmission on any single frequency could be interfered with, while the rapid hopping to dozens of other frequencies ensures that the guidance impulses are received continuously and accurately.
+
+Referring to the drawings:
+Figure 1 is a schematic diagram of the radio transmitter system incorporating the frequency-hopping mechanism.
+Figure 2 is a schematic diagram of the receiver system installed in the radio-guided torpedo.
+Figure 3 is a perspective view of the synchronized slotted paper roll and stepping contact fingers.
+Figure 4 is a diagram of the multi-frequency tuned tank circuits and bandpass filters.`,
   plainEnglishExplanation: {
     overview:
-      "During World War II, radio-controlled torpedoes were easily defeated: enemy ships simply scanned the radio dial, found the control frequency, and broadcast static to jam the steering signals, causing the torpedo to veer off course. Hedy Lamarr realized that if the transmitter and receiver simultaneously jumped between dozens of different radio frequencies in a secret pseudo-random sequence, an enemy jammer trying to broadcast on a single frequency would only disrupt a tiny fraction of a second before the signal hopped away.",
+      "During World War II, Allied radio-guided torpedoes were easily jammed by Nazi warships broadcasting interference on the torpedo's fixed radio channel, causing the weapon to veer off course. Austrian-born Hollywood star Hedy Lamarr and avant-garde composer George Antheil (who had composed a symphony for 16 synchronized player pianos) realized that if the radio signal 'hopped' randomly across 88 different frequencies—like fingers jumping across piano keys—an enemy could never jam it without knowing the secret synchronized sequence.",
     coreMechanism:
-      "Both the transmitter on the aircraft/ship and the receiver inside the torpedo contain identical perforated paper tape rolls (like player piano rolls) advancing at identical speed via synchronized clockwork escapements. As perforations pass electrical contact fingers, different tuning capacitors and inductors are switched in and out of the RF oscillator tank, hopping carrier transmission across 88 distinct frequencies.",
+      "The transmitter and torpedo receiver each contain an identical slotted paper roll (like a player piano music roll). As the rolls unwind at identical speeds, contact fingers drop through perforations in the paper, switching the carrier frequency through a pseudo-random sequence of 88 channels several times per second. The torpedo receiver tunes its local oscillator to the exact same frequency hopping code in real time, locking onto the guidance signals while enemy jammers hear only brief clicks of white noise.",
     mechanicalBreakdown: [
       {
-        title: "Perforated Piano-Roll Synchronizer & Code Generator",
-        summary:
-          "Generating identical, deterministic pseudo-random frequency hopping sequences at both transmitter and receiver.",
+        title: "Perforated Player Piano Rolls & Stepper Mechanism",
+        summary: "Dual synchronized paper tape rolls containing the pseudo-random hopping pattern.",
         technicalDetails:
-          "Antheil (an avant-garde composer famous for synchronizing 16 player pianos in his 'Ballet Mécanique') adapted 88-key player piano rolls. Punched holes in the moving paper roll selectively engage 88 electrical contact wipers, switching tuned LC resonant circuits to hop between 88 discrete RF channels.",
-        archaicTerm: "Slotted paper record driven by clockwork mechanism",
-        modernEquivalent:
-          "Pseudo-random noise (PN) sequence code generator / Linear-Feedback Shift Register (LFSR)",
+          "Mechanical pre-digital pseudorandom number generators (PRNG). Synchronized stepping clockworks ensure carrier phase alignment ($\\Delta t < 10\\text{ ms}$) between transmitter and receiver.",
+        archaicTerm: "Slotted record sheet / Player-piano mechanism",
+        modernEquivalent: "Pseudo-random noise (PN) code generator",
       },
       {
-        title: "Spread Spectrum Anti-Jamming & Low Probability of Intercept (LPI)",
-        summary:
-          "Spreading signal energy across a wide bandwidth to defeat narrowband electronic countermeasures.",
+        title: "88-Channel Variable Carrier Oscillator",
+        summary: "An RF tuned circuit with 88 discrete LC frequency taps.",
         technicalDetails:
-          "Instead of concentrating RF power in a single vulnerable channel $Delta f$, the signal hops across a total spread bandwidth $B gg Delta f$. An adversary jamming with power $P_J$ across the band suffers a Processing Gain advantage $G_p = 10 log_{10}(B / Delta f) approx 19.4 \text{ dB}$ (for 88 channels), rendering jamming ineffective.",
-        archaicTerm: "Transmitting on a multiplicity of carrier frequencies",
-        modernEquivalent: "Direct-Sequence & Frequency-Hopping Spread Spectrum (FHSS)",
+          "Spreads transmission bandwidth $W_{ss}$ across 88 channels. The anti-jamming processing gain is $G_p = 10 \\log_{10}(N) = 10 \\log_{10}(88) \\approx +19.4\\text{ dB}$, requiring the enemy to radiate nearly 100 times more RF power to jam the signal.",
+        archaicTerm: "Eighty-eight carrier frequency circuits",
+        modernEquivalent: "Direct digital frequency synthesizer (DDS)",
       },
       {
-        title: "Synchronous Clockwork Phase Alignment",
-        summary:
-          "Precision mechanical escapements keeping transmitter and receiver in exact microsecond phase lock.",
+        title: "Synchronous Heterodyne Torpedo Receiver",
+        summary: "A local oscillator that mirrors the exact frequency jumps of the transmitter.",
         technicalDetails:
-          "Both clockwork rolls are triggered simultaneously at torpedo launch. Matching tuning forks or deadbeat clockwork escapements maintain uniform velocity, ensuring the receiver's local oscillator frequency tracks the transmitter's frequency hops in real-time.",
-        archaicTerm: "Synchronized motors and escapements",
-        modernEquivalent: "Phase-Locked Loop (PLL) & Code Tracking Loop (Delay-Locked Loop)",
+          "Mixes incoming RF with the hopping local oscillator to produce a constant intermediate frequency ($IF = f_{RF}(t) - f_{LO}(t) = \\text{const}$), passing despread guidance commands to torpedo rudder servomotors.",
+        archaicTerm: "Synchronized heterodyne receiver",
+        modernEquivalent: "Spread-spectrum correlator & despreader",
       },
     ],
     scientificPrinciples: [
       {
-        principle: "Shannon Channel Capacity & Processing Gain",
-        formula: "C = B · log_2(1 + S / (N + J)) quad \text{and} quad G_p = B_{ss} / B_{info}",
+        principle: "Shannon Channel Capacity & Bandwidth Spreading",
+        formula: "C = B \\log_2 \\left(1 + \\frac{S}{N}\\right), \\quad B_{spread} \\gg B_{info}",
         explanation:
-          "Spreading signal bandwidth $B_{ss}$ reduces power spectral density below ambient noise, defeating narrowband jamming power J without loss of information capacity C.",
+          "By spreading a narrow information signal across a wide RF spectrum B, the signal can be transmitted with low power density and received reliably even when noise and jamming exceed signal power (S/N < 1).",
       },
       {
-        principle: "Tuned LC Resonant Tank Frequency Hopping",
-        formula: "f_k = 1 / (2π √(L · C_k)) quad \text{for } k in {1, 2, dots, 88}",
+        principle: "Frequency-Hopping Processing Gain",
+        formula: "G_p = \\frac{W_{ss}}{R_b} = 10 \\log_{10}(N_{channels}) = +19.4\\text{ dB}",
         explanation:
-          "Switching distinct capacitance values $C_k$ into the oscillator tank shifts the carrier frequency in discrete steps across the RF spectrum.",
+          "Processing gain represents the jamming immunity provided by spreading the signal across 88 orthogonal channels.",
       },
     ],
     whyItMattersToday:
-      "Lamarr and Antheil's frequency-hopping spread spectrum concept is the foundational architecture underlying Bluetooth frequency hopping (1,600 hops/sec across 79 channels), Wi-Fi (802.11 DSSS/OFDM), GPS satellite navigation, and CDMA cellular 3G/4G/5G networks.",
+      "Lamarr and Antheil's spread-spectrum patent is the foundational intellectual ancestor of all modern wireless protocols—Wi-Fi (802.11), Bluetooth frequency hopping (AFH), military anti-jamming tactical communications (SINCGARS), GPS satellite ranging, and 3G/4G CDMA cell phones.",
   },
   claims: [
     {
       number: 1,
       isIndependent: true,
       originalText:
-        "A secret communication system comprising a transmitter having means for generating and transmitting carrier waves of a multiplicity of different frequencies, means for changing the transmitted carrier from one frequency to another at intervals in accordance with a predetermined code, and a receiver having means for changing its tuning from one frequency to another in synchronism with the changes in the transmitter.",
+        "A secret communication system comprising a transmitter having means for transmitting carrier waves of different frequencies, means for changing the carrier frequency periodically in a predetermined sequence, a receiver tuned to receive said waves, and means at the receiver for changing the tuned frequency in synchronism with the changes of frequency at the transmitter, substantially as described.",
       plainEnglish:
-        "The master broad claim of a secure wireless communication system where a transmitter shifts carrier frequencies across multiple channels according to a predetermined code, and a receiver shifts its tuning in lockstep synchrony.",
+        "The master patent claim covering Frequency Hopping Spread Spectrum (FHSS): transmitting over different frequencies changed in a predetermined sequence, and synchronously changing the receiver's tuned frequency.",
       keyInnovations: [
-        "Frequency-hopping transmitter",
-        "Synchronous frequency-hopping receiver",
-        "Pre-programmed code sequence",
+        "Frequency hopping spread spectrum",
+        "Synchronized transmitter-receiver frequency shifts",
+        "Anti-jamming secure wireless communication",
       ],
-      legalSignificance:
-        "The foundational patent claim for Frequency-Hopping Spread Spectrum (FHSS) technology.",
-    },
-    {
-      number: 4,
-      isIndependent: false,
-      dependsOn: [1],
-      originalText:
-        "In a secret communication system, the combination of a movable record containing a multiplicity of coding slots, contact fingers engaging said slots to selectively complete circuit paths to tuning elements, and clockwork means for advancing said record uniformly.",
-      plainEnglish:
-        "Using a moving perforated tape with contact fingers to switch tuning capacitors/inductors and mechanically generate the frequency-hopping sequence.",
-      keyInnovations: [
-        "Punched paper roll coder",
-        "Capacitive tuning selector",
-        "Clockwork motor drive",
-      ],
-      legalSignificance:
-        "Protected the mechanical implementation of pseudo-random code execution using player piano technology.",
     },
   ],
   drawings: [
     {
       figureNumber: "Fig. 1",
-      title:
-        "Complete Frequency-Hopping Transmitter, Slotted Paper Roll, and Torpedo Receiver Circuit",
+      title: "Frequency Hopping Transmitter & Piano Roll Mechanism",
       caption:
-        "Showing 88-frequency tuned capacitor array, perforated paper roll, and RF antenna output.",
-      svgType: "spencer-microwave",
+        "Schematic diagram showing RF carrier oscillator, 88-note slotted paper tape roll, stepping contact fingers, and antenna coupling.",
+      svgType: "lamarr-frequency-hopping",
       callouts: [
         {
-          id: "piano-roll",
+          id: "lf-1",
           figureRef: "Fig. 1",
-          label: "Slotted Paper Coding Roll",
-          element: "10",
-          description:
-            "Moving perforated paper roll determining the pseudo-random carrier hopping sequence.",
-          x: 35,
-          y: 45,
+          label: "A",
+          element: "Perforated Piano Roll",
+          description: "Punched paper tape stepping carrier frequencies in pseudo-random sequence.",
+          x: 40,
+          y: 40,
         },
         {
-          id: "tuning-array",
+          id: "lf-2",
           figureRef: "Fig. 1",
-          label: "88-Channel Tuning Capacitor Bank",
-          element: "22",
-          description:
-            "Array of variable capacitors switched in sequence to shift carrier frequency across 88 channels.",
+          label: "B",
+          element: "88-Frequency Tank Circuit",
+          description: "Capacitor-inductor bank generating 88 discrete RF channels.",
           x: 65,
           y: 35,
         },
         {
-          id: "torpedo-motor",
+          id: "lf-3",
           figureRef: "Fig. 1",
-          label: "Torpedo Steering Servo Actuator",
-          element: "38",
-          description: "Rudder control servo guided by demodulated jam-proof radio commands.",
-          x: 75,
-          y: 75,
+          label: "C",
+          element: "Transmitting Aerial",
+          description: "Radiating spread-spectrum RF control pulses to torpedo receiver.",
+          x: 85,
+          y: 25,
         },
       ],
     },
   ],
   historicalContext: {
     problemStatement:
-      "In 1940, German U-boats were sinking hundreds of Allied merchant ships in the Atlantic. Allied radio-controlled guidance systems could not be deployed because naval commanders feared Axis radio jamming would turn weapons against their own ships.",
+      "In 1940, Nazi U-boats were sinking hundreds of Allied supply ships in the Atlantic. Early Allied radio-guided torpedoes were vulnerable to simple radio jamming by German destroyers.",
     priorArtLimitations: [
-      "Standard radio guidance transmitted on a single fixed carrier frequency, vulnerable to simple broadband or spot jamming.",
-      "Analog frequency-modulation systems could still be tracked and overpowered by higher-power enemy transmitters.",
-      "Electronic digital computers did not yet exist to generate complex encryption keys.",
+      "Fixed-frequency radio controls could be jammed by broadcasting noise on the same channel.",
+      "Direct wire-guided torpedoes snapped their cables in heavy ocean swells.",
     ],
     breakthroughInsight:
-      "Lamarr realized that instead of defending a single radio frequency, the signal should constantly jump between 88 frequencies in a pseudo-random pattern. Antheil realized that player piano rolls could act as compact, shock-resistant mechanical ROM chips inside the torpedo and the bomber.",
+      "While playing piano duets in Hollywood, Lamarr and Antheil realized that if both players change notes in unison according to a shared score, a radio signal could jump between frequencies without the enemy knowing where it was going next.",
     patentWars: [
       {
-        rivalName: "US Navy & Sylvania Electronic Systems",
+        rivalName: "United States Navy & National Inventors Council",
         rivalClaim:
-          "The US Navy initially classified the patent as top secret, shelved the mechanical piano roll design as too bulky for torpedoes, and gave Lamarr no royalties.",
+          "The U.S. Navy initially classified the patent Top Secret, filed it away as 'too bulky' for torpedoes, and did not adopt it until the 1962 Cuban Missile Crisis (using transistors instead of paper rolls).",
         conflictDetails:
-          "During the 1950s and the 1962 Cuban Missile Crisis, military contractors (Sylvania) transitioned Lamarr's frequency hopping from mechanical rolls to electronic transistors for secure naval communications (project Sonobuoy).",
+          "Neither Lamarr nor Antheil ever received a dime in royalties during the 17-year patent lifespan, as the patent expired before commercial cellular and Wi-Fi deployment.",
         resolution:
-          "By the 1980s when the patent had expired, the military declassified spread spectrum, and commercial engineers adopted it for cellular and Wi-Fi networks.",
+          "In 1997, the Electronic Frontier Foundation (EFF) awarded Hedy Lamarr their Pioneer Award. In 2014, Lamarr and Antheil were posthumously inducted into the National Inventors Hall of Fame.",
         legalOutcome:
-          "In 1997, the Electronic Frontier Foundation (EFF) awarded Hedy Lamarr the Pioneer Award, and in 2014 she was posthumously inducted into the National Inventors Hall of Fame.",
+          "Universally acknowledged as the co-inventors of spread-spectrum communication.",
       },
     ],
     civilizationalImpact:
-      "Spread spectrum is the backbone of all modern wireless communications: Wi-Fi, Bluetooth, GPS, and 4G/5G mobile networks. Over 10 billion active devices transmit using descendants of Lamarr's frequency-hopping architecture every single day.",
+      "Underpins billions of mobile phones, Wi-Fi routers, Bluetooth headsets, GPS satellites, and secure military defense networks around the world.",
     funFact:
-      "Hedy Lamarr was born Hedwig Eva Maria Kiesler in Vienna. She had no formal engineering degree, but maintained an invention drafting table in her Hollywood trailer between takes on MGM film sets. When Howard Hughes sought to build faster airplanes, Lamarr studied fish and bird anatomy books to design a swept-wing aerodynamic profile that Hughes adopted.",
-  },
-  tags: [
-    "Wi-Fi",
-    "Bluetooth",
-    "Spread Spectrum",
-    "Frequency Hopping",
-    "Hedy Lamarr",
-    "Telecommunications",
-    "GPS",
-  ],
-  stats: {
-    totalClaims: 12,
-    independentClaims: 3,
-    patentWarYears: "1941–1997 (56 Years)",
-    impactScore: 100,
+      "Hedy Lamarr was not only a glamorous Hollywood actress starring alongside Clark Gable and Spencer Tracy, but she also maintained an invention drafting table in her trailer on movie sets.",
   },
 };

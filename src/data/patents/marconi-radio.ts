@@ -3,186 +3,192 @@ import type { Patent } from "@/types/patent";
 export const marconiRadioPatent: Patent = {
   id: "us-586193-marconi-radio",
   patentNumber: "US 586,193",
-  title: "Transmitting Electrical Impulses and Signals, and Apparatus Therefor",
+  title: "Transmitting Electrical Impulses and Signals, and an Apparatus Therefor",
   shortTitle: "Marconi Wireless Radio Telegraphy",
-  subtitle: "Tuned Spark-Gap Radio Frequency Transmission & Earth-Grounded Antennas",
+  subtitle: "Elevated Monopole Antenna, Earth Grounding, and Tuned RF Spark Transmission",
   inventors: ["Guglielmo Marconi"],
-  inventorLocation: "London, England (transferred from Bologna, Italy)",
+  inventorLocation: "London, England",
   grantDate: "1897-07-13",
   filingDate: "1896-12-07",
-  era: "Wireless Telecommunications (1890-1910)",
+  era: "Electrification & Early Modern (1870–1920)",
   category: "telecom",
-  categoryLabel: "Wireless & Radio",
+  categoryLabel: "Telecommunications & RF Electromagnetism",
   summary:
-    "Guglielmo Marconi's seminal patent for wireless electromagnetic telegraphy. By combining an elevated vertical monopole antenna, earth ground, and a sensitive nickel-silver coherer detector, Marconi transmitted telegraph signals through free space across miles without intervening wires.",
+    "The world's first patent for wireless communication: Guglielmo Marconi's breakthrough system combining an elevated aerial antenna, an Earth ground plate, an optimized Righi spark gap, and an automated decohering receiver to transmit electromagnetic Morse signals across long distances without wires.",
   heroQuote:
-    "I have discovered that when an electrical spark discharge is produced between conductors connected to an elevated capacity and to earth, electromagnetic waves are propagated through the ether to immense distances.",
+    "Be it known that I, Guglielmo Marconi, of London, England, have invented certain new and useful Improvements in Transmitting Electrical Impulses and Signals, and in Apparatus therefor...",
   originalPdfUrl: "/patents/pdfs/us-586193-marconi-radio.pdf",
   googlePatentsUrl: "https://patents.google.com/patent/US586193A/en",
-  usptoClassification: "H04B 1/02; H04L 27/00",
-  originalText: `TO ALL WHOM IT MAY CONCERN:
+  usptoClassification: "H04B 1/02 (Radio transmitters)",
+  originalText: `UNITED STATES PATENT OFFICE.
+GUGLIELMO MARCONI, OF LONDON, ENGLAND.
+
+TRANSMITTING ELECTRICAL IMPULSES AND SIGNALS, AND AN APPARATUS THEREFOR.
+
+SPECIFICATION forming part of Letters Patent No. 586,193, dated July 13, 1897.
+Application filed December 7, 1896. Serial No. 614,838. (No model.) Patented in England June 2, 1896, No. 12,039.
+
+To all whom it may concern:
 Be it known that I, GUGLIELMO MARCONI, a subject of the King of Italy, residing at London, England, have invented certain new and useful Improvements in Transmitting Electrical Impulses and Signals, and in Apparatus therefor, of which the following is a specification.
 
-According to this invention signals are transmitted through the air, earth, or water by means of oscillations of high frequency produced by spark-discharges. The transmitter consists of an induction-coil having its secondary terminals connected to spark-gap balls, one of which is connected to an elevated conductor or aerial wire and the other to earth. When the primary circuit is interrupted by a Morse key, high-tension oscillatory discharges occur across the spark-gap, causing electromagnetic waves of high frequency to radiate from the aerial wire.
+This invention relates to the transmission of electrical signals through space by means of electromagnetic oscillations of high frequency, without the use of connecting wires.
 
-At the receiving station an elevated conductor and earth connection are connected to a sensitive tube containing metallic filings, termed a 'coherer.' Under the influence of the received high-frequency oscillations, the resistance of the coherer drops from thousands of ohms to a few hundred ohms, completing a local battery circuit which actuates a telegraphic relay and Morse inker. A mechanical tapper automatically decoheres the filings after each signal pulse.`,
+According to this invention, electrical signals, messages, or impulses are transmitted by producing oscillations of high frequency in a transmitter, which oscillations are radiated into space and act upon a distant receiver tuned or adapted to respond to the said oscillations.
+
+At the transmitting station I employ an induction coil or high-voltage transformer, the secondary terminals of which are connected to a spark gap consisting of four brass spheres immersed in vaseline oil (the Righi spark gap). One of the outer spark-gap spheres is connected to an elevated aerial conductor or plate mounted high upon a mast, while the other outer sphere is connected to an earth ground plate buried in the soil.
+
+When the transmitting key is depressed, high-frequency oscillatory electric sparks discharge across the gap, generating high-frequency electromagnetic waves that are launched from the elevated aerial into the ether, traveling through the atmosphere and ground.
+
+At the receiving station I employ an elevated aerial conductor and earth ground plate connected to the terminals of an improved sensitive detector or coherer. The coherer consists of a small glass tube exhausted of air, containing two silver plugs separated by a narrow gap filled with a fine mixture of nickel and silver filings.
+
+Under normal conditions the metallic filings offer high electrical resistance. When the electromagnetic waves from the transmitter strike the receiving aerial, high-frequency oscillatory currents are induced, causing the filings in the coherer to cohere or cling together, instantly dropping their electrical resistance from thousands of ohms to a few ohms.
+
+This sudden decrease in resistance allows current from a local battery to flow through a relay, which actuates a Morse sounder or paper tape register to record the signal, and simultaneously triggers an electromechanical tapper or trembler that lightly taps the glass tube of the coherer, shaking the filings apart (decohering them) so that the tube is restored to its high-resistance state ready to receive the next dot or dash.
+
+Referring to the drawings:
+Figure 1 is a diagrammatic view of the complete transmitting apparatus with elevated aerial and earth ground.
+Figure 2 is a diagrammatic view of the receiving station showing aerial, coherer, relay, Morse sounder, and automatic decohering tapper.
+Figure 3 is a detailed sectional view of the Righi spark gap.
+Figure 4 is a longitudinal sectional view of the evacuated sensitive tube (coherer).`,
   plainEnglishExplanation: {
     overview:
-      "Marconi transformed Heinrich Hertz's laboratory demonstration of electromagnetic radiation into a practical, long-distance communication system. His crucial engineering breakthroughs were connecting one side of the spark gap to an elevated vertical antenna wire and the other side directly to an earth ground, multiplying the transmission range from a few meters to hundreds of miles.",
+      "Heinrich Hertz proved the existence of electromagnetic radio waves in 1887, but scientists across Europe considered Hertzian waves a laboratory curiosity limited to a few yards. Twenty-one-year-old Guglielmo Marconi made the critical engineering breakthroughs that turned electromagnetic radiation into a global communication network: he added an elevated aerial antenna to launch waves into the air, grounded the base in the Earth to create a quarter-wave monopole, and designed an automated decohering receiver to print Morse code signals sent through thin air.",
     coreMechanism:
-      "A high-voltage induction coil charges an elevated antenna wire relative to earth ground. When the spark gap breaks down, the stored electrostatic charge discharges in a burst of damped high-frequency oscillatory current (radio frequency), radiating transverse electromagnetic waves through the atmosphere.",
+      "High voltage from an induction coil discharges across a spark gap connected between an elevated wire antenna and an Earth ground plate. The rapid discharge excites resonant radio-frequency oscillations ($100\\text{ kHz to }1\\text{ MHz}$) in the antenna, radiating toroidal electromagnetic waves ($E \\times B$) into the ether. At the receiving antenna, the incoming radio waves induce microvolt currents that cause conductive metal filings in a glass coherer to fuse together, completing a circuit to ring a telegraph bell or print Morse code.",
     mechanicalBreakdown: [
       {
-        title: "Elevated Monopole Aerial & Ground Plane",
+        title: "Elevated Monopole Aerial & Grounding",
         summary:
-          "Converting a dipole into a quarter-wave vertical monopole over an infinite conductive earth ground plane.",
+          "A vertical wire hoisted high on a mast with the lower terminal grounded in the Earth.",
         technicalDetails:
-          "Hertz's original spark dipoles had tiny radiation resistance and radiated in all directions with rapid attenuation. Marconi grounded one terminal to the conductive earth and elevated the other high into the air, creating an asymmetrical vertical dipole whose range scaled with the square of antenna height (Marconi's Law: D ∝ H²).",
-        archaicTerm: "Elevated capacity wire and earth plate",
-        modernEquivalent: "Quarter-wave vertical monopole antenna with ground reflection",
+          "Formed an asymmetric quarter-wave monopole antenna ($\\lambda / 4$). Earth ground acts as an electrical mirror, creating a virtual dipole that doubles the effective radiating aperture and increases radiated power ($P_{rad} \\propto (h/\\lambda)^2$).",
+        archaicTerm: "Elevated conductor / Earth connection",
+        modernEquivalent: "Grounded vertical monopole antenna",
       },
       {
-        title: "The Nickel-Silver Vacuum Coherer Detector",
-        summary:
-          "A microscopic metallic switch that triggers upon absorbing radio-frequency energy.",
+        title: "Evacuated Nickel-Silver Filings Coherer",
+        summary: "A vacuum glass tube with silver electrodes separated by metal dust.",
         technicalDetails:
-          "An evacuated glass tube containing 95% nickel and 5% silver filings between silver plugs. In its resting state, the oxide film on the powder particles creates a high resistance (100,000+ Ω). When an incoming RF wave induces even microvolts across the plugs, microscopic electrical micro-welds form between particles, dropping resistance to <500 Ω and closing a local DC relay circuit.",
-        archaicTerm: "Sensitive tube containing metallic powder",
-        modernEquivalent: "RF semiconductor diode / envelope detector",
+          "High-frequency radio currents cause micro-welding between adjacent metal particles via quantum tunneling and field emission, dropping resistance from $100\\,\\text{k}\\Omega$ to $500\\,\\Omega$.",
+        archaicTerm: "Sensitive tube / Coherer",
+        modernEquivalent: "RF threshold detector / Demodulator",
       },
       {
-        title: "The Automatic Electromagnetic Decoherer (Tapper)",
-        summary: "A mechanical bell-clapper that resets the detector after each Morse dot or dash.",
+        title: "Electromechanical Decohering Tapper",
+        summary: "A vibrating hammer that taps the glass tube after each signal.",
         technicalDetails:
-          "Once the coherer conducts, it remains conductive even after the RF wave ends. An electromagnet in series with the Morse relay taps the glass tube with a tiny hammer, shaking the filings loose and restoring high electrical resistance within milliseconds to receive the next incoming dot.",
-        archaicTerm: "Trembler or automatic tapper",
-        modernEquivalent: "Detector quench circuit / reset pulse generator",
+          "Mechanically dislodges the cohered metal filings, restoring high resistance within milliseconds so the receiver can detect the next incoming Morse dot or dash.",
+        archaicTerm: "Decohering tapper / Trembler",
+        modernEquivalent: "Automated reset circuit / Quencher",
       },
     ],
     scientificPrinciples: [
       {
-        principle: "Maxwell-Hertz Electromagnetic Radiation",
-        formula: "c = 1 / √(μ₀ ε₀) ≈ 3 × 10⁸ m/s",
+        principle: "Maxwell-Hertz Electromagnetic Wave Radiation",
+        formula:
+          "\\vec{S} = \\frac{1}{\\mu_0} (\\vec{E} \\times \\vec{B}), \\quad P_{rad} = \\frac{2}{3} \\frac{\\mu_0 q^2 \\omega^4}{4\\pi c}",
         explanation:
-          "Accelerating electrical charges in the spark gap produce coupled oscillating electric (E) and magnetic (B) fields that detach from the wire and propagate through free space at the speed of light.",
+          "Accelerating electrons in the elevated aerial radiate transverse electromagnetic waves propagating at the speed of light (c = 300,000 km/s).",
       },
       {
-        principle: "Marconi Antenna Range Law",
-        formula: "Range D ∝ H² (or D = k · H · √P)",
+        principle: "Antenna Radiation Resistance & Height Scaling",
+        formula: "R_{rad} = 40 \\pi^2 \\left(\\frac{h}{\\lambda}\\right)^2, \\quad D \\propto h^2",
         explanation:
-          "The effective radiated power and ground-wave propagation distance of a vertical monopole increases with the height H of the aerial wire above the conductive earth.",
+          "Marconi's empirical law: doubling antenna height h quadruples transmission distance D by increasing radiation resistance and lowering ground absorption.",
       },
     ],
     whyItMattersToday:
-      "Marconi's elevated antenna and grounded transmitter established the architecture for all wireless telecommunication: broadcast radio, television, cellular towers, Wi-Fi, satellite uplinks, and deep space exploration.",
+      "Marconi's patent was the foundation of all wireless technology—AM/FM radio, television broadcasting, radar, cellular networks, Wi-Fi, GPS navigation, and satellite communications.",
   },
   claims: [
     {
       number: 1,
       isIndependent: true,
       originalText:
-        "The combination, in an apparatus for transmitting electrical impulses, of an induction-coil, a spark-gap connected to the secondary winding, an elevated conductor connected to one side of said gap, and an earth connection to the other side of said gap, substantially as described.",
+        "The combination of a transmitter capable of producing electrical oscillations of high frequency, an elevated conductor connected thereto, an earth connection, a distant receiver containing a sensitive tube, and an elevated conductor and earth connection connected to said receiver, substantially as described.",
       plainEnglish:
-        "The master combination of a high-voltage spark induction coil with an elevated aerial antenna on one terminal and an earth ground connection on the other, creating a high-power wireless RF wave transmitter.",
+        "The master system claim covering wireless telegraphy using elevated antennas and earth ground connections at both the transmitter and receiver.",
       keyInnovations: [
-        "Elevated antenna wire",
-        "Earth ground connection",
-        "Spark-gap RF oscillator",
+        "Elevated aerial antenna",
+        "Earth grounding system",
+        "Complete wireless transmission architecture",
       ],
-      legalSignificance:
-        "The foundational claim that established Marconi's global patent monopoly over early maritime wireless telegraphy and coast station communications.",
     },
     {
       number: 2,
-      isIndependent: false,
-      dependsOn: [1],
+      isIndependent: true,
       originalText:
-        "In a receiver for electrical oscillations, the combination of an imperfect electrical contact device connected to an elevated conductor and to earth, a local battery circuit controlled by said contact device, and an automatic tapper to decohere said contact device after each impulse.",
-      plainEnglish:
-        "A radio receiver combining an elevated aerial and ground with a metallic filings coherer, a local battery relay for recording Morse code, and an automatic mechanical hammer to reset the filings between Morse pulses.",
+        "In an apparatus for transmitting electrical impulses, the combination, with a spark-gap, of an elevated aerial conductor connected to one terminal and an earth plate connected to the other terminal, substantially as described.",
+      plainEnglish: "Covers the quarter-wave monopole transmitting antenna architecture.",
       keyInnovations: [
-        "Metallic coherer tube",
-        "Local battery relay",
-        "Automatic mechanical decoherer",
+        "Monopole transmitter geometry",
+        "Earth-mirrored radiation",
+        "High-frequency spark excitation",
       ],
-      legalSignificance:
-        "Enabled automated printing of telegraph messages on paper tape from radio waves across miles of ocean.",
     },
   ],
   drawings: [
     {
       figureNumber: "Fig. 1",
-      title: "Complete Spark-Gap Wireless Transmitter and Aerial Monopole",
+      title: "Marconi Aerial Wireless Transmitter",
       caption:
-        "Showing induction coil, Morse operating key, spark discharge spheres, elevated wire, and earth ground plate.",
-      svgType: "spencer-microwave",
+        "Schematic diagram showing high-voltage induction coil, Morse key, Righi spark gap, elevated aerial mast, and buried Earth ground plate.",
+      svgType: "marconi-radio",
       callouts: [
         {
-          id: "aerial",
+          id: "mr-1",
           figureRef: "Fig. 1",
-          label: "Elevated Aerial Wire",
-          element: "A",
+          label: "A",
+          element: "Elevated Monopole Aerial",
           description:
-            "High vertical wire suspended from mast to radiate high-frequency electromagnetic waves.",
-          x: 25,
+            "Vertical wire antenna suspended from mast to radiate electromagnetic waves.",
+          x: 75,
           y: 20,
         },
         {
-          id: "spark-gap",
+          id: "mr-2",
           figureRef: "Fig. 1",
-          label: "Spark Discharge Spheres",
-          element: "d",
-          description:
-            "Brass spark gap terminals where dielectric breakdown produces damped radio frequency oscillations.",
-          x: 50,
-          y: 45,
+          label: "B",
+          element: "Righi 4-Sphere Spark Gap",
+          description: "Brass spheres discharging high-frequency oscillatory electric sparks.",
+          x: 40,
+          y: 65,
         },
         {
-          id: "earth-plate",
+          id: "mr-3",
           figureRef: "Fig. 1",
-          label: "Earth Ground Plate",
-          element: "E",
-          description:
-            "Buried metal plate establishing electrical contact with the conductive earth ground.",
-          x: 25,
-          y: 80,
+          label: "E",
+          element: "Buried Earth Ground Plate",
+          description: "Copper plate in moist soil creating electrical ground plane mirror.",
+          x: 75,
+          y: 85,
         },
       ],
     },
   ],
   historicalContext: {
     problemStatement:
-      "Prior to 1896, telegraphy and telephony required expensive physical copper cables strung on poles or laid under the sea. Ships at sea were completely isolated from communication once beyond line of sight from land.",
+      "Ships at sea were completely cut off from the world once over the horizon. Maritime disasters occurred without any means of summoning help.",
     priorArtLimitations: [
-      "Heinrich Hertz's lab spark gap only transmitted across a single room (10–20 meters).",
-      "Oliver Lodge's coherer lacked automatic decoherence and grounded antennas, failing at practical distances.",
-      "Scientific consensus believed electromagnetic waves could not travel beyond the geometric horizon due to the curvature of the Earth.",
+      "Hertz and Oliver Lodge used small tabletop dipoles that could transmit only a few yards.",
+      "No aerial antennas or grounding used to boost radiated power.",
     ],
     breakthroughInsight:
-      "Marconi discovered that grounding one side of the spark gap to the earth and raising the other side on a tall mast altered the wave impedance, creating ground-wave propagation that traveled beyond the horizon and across vast oceans.",
+      "In 1895 at his father's estate in Pontecchio, Italy, Marconi discovered that connecting a wire high in the air and grounding the other terminal in the dirt allowed signals to pass over hills and across miles.",
     patentWars: [
       {
         rivalName: "Nikola Tesla & Oliver Lodge",
         rivalClaim:
-          "Tesla claimed earlier invention of tuned 4-circuit RF wireless transmission (US 645,576), while Oliver Lodge patented syntonic resonance (US 609,154).",
+          "Tesla patented fundamental resonant tuning circuits (US 645,576) in 1897 and argued Marconi used his basic oscillator inventions.",
         conflictDetails:
-          "A 40-year epic legal battle between the Marconi Wireless Telegraph Company and the Tesla/Lodge estates over tuned RF syntony.",
-        resolution:
-          "In 1943, the US Supreme Court (Marconi Wireless Tel. Co. v. United States, 320 U.S. 1) invalidated key Marconi tuning claims, recognizing Tesla's fundamental priority in multi-circuit tuned radio.",
-        legalOutcome:
-          "Reaffirmed the importance of precise circuit tuning while cementing Marconi's commercial legacy.",
+          "The patent offices and courts battled for decades. In 1943, the U.S. Supreme Court (*Marconi Wireless Tel. Co. v. United States*, 320 U.S. 1) recognized Tesla's prior tuning patents while upholding Marconi's practical transmission achievements.",
+        resolution: "Marconi was awarded the 1909 Nobel Prize in Physics.",
+        legalOutcome: "International commercial triumph of Marconi's wireless network.",
       },
     ],
     civilizationalImpact:
-      "Marconi's wireless system saved hundreds of lives during the sinking of the RMS Republic (1909) and the Titanic (1912). It launched the global electronics, broadcasting, telecommunications, and defense radar industries.",
+      "Saved thousands of lives at sea (including 705 survivors of the *Titanic* in 1912) and inaugurated the global wireless era.",
     funFact:
-      "When the Italian Ministry of Posts and Telegraphs initially rejected Marconi's invention as useless, his mother (an Irish Jameson whiskey heiress) took him to London, where the British Post Office immediately backed his demonstrations across the Salisbury Plain.",
-  },
-  tags: ["Radio", "Wireless", "Electromagnetism", "Telecommunications", "Antennas", "Marconi"],
-  stats: {
-    totalClaims: 16,
-    independentClaims: 4,
-    patentWarYears: "1897–1943 (46 Years)",
-    impactScore: 99,
+      "On December 12, 1901, Marconi transmitted the first transatlantic radio signal—the Morse code letter 'S' (three dots)—2,200 miles across the Atlantic Ocean from Poldhu, Cornwall to Signal Hill, Newfoundland.",
   },
 };
