@@ -228,17 +228,26 @@ normal patent addition and do not run competing OCR jobs.
 1. Run `bun run pipeline:download`. For a local `originalPdfUrl`, it copies
    `public/patents/pdfs/<id>.pdf` to `artifacts/raw_pdfs/<id>.pdf`; it does not
    replace a cached file. Confirm the cached file matches the intended source.
-2. Run `bun run pipeline:ocr` only when machine capacity permits. The current
-   implementation renders each registered PDF as 300-DPI grayscale PNGs in
-   `artifacts/ocr_raster_cache/<id>/`, then uses one `focr ocr-batch` process
-   for the corpus and writes `artifacts/ocr_transcripts/<id>.md`. It currently
-   processes the full registry, not an individual id.
-3. Keep OCR serial and low impact. Use one process, a low CPU priority, and a
-   conservative `FOCR_THREADS`/batch setting; do not launch one command per
-   page or run batches concurrently. On macOS, `ionice` is unavailable; use
-   supported scheduling controls only if they do not starve the process.
-4. Review the generated transcript page-by-page against the PDF before copying
-   any text into `originalText` or claim data. OCR output carries an explicit
+2. Run `bun run pipeline:ocr` only when machine capacity permits. It renders
+   each registered PDF as 300-DPI grayscale PNGs in
+   `artifacts/ocr_raster_cache/<id>/`, reusing complete cached renders, then
+   runs serial, bounded `focr ocr-batch` chunks. The default is eight pages per
+   chunk (`OCR_PAGES_PER_BATCH`), so a completed chunk is durable even if a
+   later one is interrupted; do not run chunks concurrently.
+3. Every invocation creates (or resumes with `OCR_RUN_ID`) a separate ignored
+   `artifacts/ocr_runs/<run-id>/` directory. It contains per-page Markdown
+   checkpoints, partial assembled transcripts, and `progress.json` with the
+   completed/failed count, observed pages/hour, and an ETA. It deliberately
+   never overwrites the curated, tracked `artifacts/ocr_transcripts/` files.
+   Use `OCR_PAGE_LIMIT` for a small quality pilot before a full run when the
+   model or source scans are uncertain.
+4. Keep OCR serial and low impact. Launch the driver with a low CPU priority;
+   its one active child inherits that priority. On macOS, `ionice` is
+   unavailable; use supported scheduling controls only if they do not starve
+   the process. The installed `focr` batch JSON format delivers a chunk only
+   at the end, which is why chunk size is the durability/throughput tradeoff.
+5. Review checkpointed output page-by-page against the PDF before copying any
+   text into `originalText` or claim data. OCR output carries an explicit
    non-authoritative header and is a research artifact, not content that the
    site automatically serves.
 
