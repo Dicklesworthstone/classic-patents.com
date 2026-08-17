@@ -21,17 +21,17 @@ export function Header() {
     <header className="sticky top-0 z-40 w-full border-b border-parchment-300 dark:border-ink-800 bg-parchment-50 dark:bg-ink-950 isolate">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between gap-4">
         {/* Brand Logo */}
-        <Link href="/" className="flex items-center gap-3.5 group">
-          <div className="w-10 h-10 rounded-xl bg-linear-to-br from-amber-700 to-amber-900 dark:from-amber-600 dark:to-amber-800 flex items-center justify-center text-white shadow-sm group-hover:scale-105 transition-transform border border-amber-600/40">
-            <Compass className="w-6 h-6 group-hover:rotate-45 transition-transform duration-500" />
+        <Link href="/" className="flex items-center gap-3 group">
+          <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-xl bg-amber-700 dark:bg-amber-600 flex items-center justify-center text-amber-50 shadow-xs group-hover:scale-105 transition-transform border border-amber-800/20 dark:border-amber-500/40">
+            <Compass className="w-5 h-5 sm:w-6 sm:h-6 text-amber-100 dark:text-amber-50 group-hover:rotate-45 transition-transform duration-500" />
           </div>
-          <div>
-            <div className="font-serif text-xl font-bold tracking-tight text-ink-950 dark:text-parchment-50 group-hover:text-amber-800 dark:group-hover:text-amber-400 transition-colors">
+          <div className="flex flex-col">
+            <span className="font-serif text-lg sm:text-xl font-bold tracking-tight text-ink-950 dark:text-parchment-50 group-hover:text-amber-800 dark:group-hover:text-amber-400 transition-colors leading-tight">
               CLASSIC PATENTS
-            </div>
-            <div className="text-xs font-sans tracking-widest text-ink-500 uppercase -mt-0.5 font-semibold">
+            </span>
+            <span className="text-[10px] sm:text-[11px] font-sans tracking-widest text-amber-800 dark:text-amber-400 uppercase font-semibold">
               Historical Technical Museum
-            </div>
+            </span>
           </div>
         </Link>
 
