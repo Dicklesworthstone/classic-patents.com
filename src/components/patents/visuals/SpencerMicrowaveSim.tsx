@@ -7,7 +7,7 @@ import { soundEngine } from "@/utils/soundEngine";
 export function SpencerMicrowaveSim() {
   const [powerWatts, setPowerWatts] = useState<number>(800); // 100 to 1200 W
   const [foodType, setFoodType] = useState<"water-popcorn" | "dry-ice">("water-popcorn");
-  const [isEmitting, _setIsEmitting] = useState<boolean>(true);
+  const [isEmitting, setIsEmitting] = useState<boolean>(true);
   const [tempCelsius, setTempCelsius] = useState<number>(20);
   const [poppedCount, setPoppedCount] = useState<number>(0);
 
@@ -45,7 +45,9 @@ export function SpencerMicrowaveSim() {
       <div className="flex flex-wrap items-center justify-between gap-3 border-b border-parchment-200 dark:border-ink-800 pb-4">
         <div>
           <div className="flex items-center gap-2">
-            <Radio className="w-4 h-4 text-purple-500 animate-pulse" />
+            <Radio
+              className={`w-4 h-4 text-purple-500 ${isEmitting ? "animate-pulse" : "opacity-40"}`}
+            />
             <h3 className="font-serif text-lg font-bold text-ink-900 dark:text-parchment-100">
               Spencer Cavity Magnetron &amp; Dielectric Microwave Simulator
             </h3>
@@ -56,6 +58,20 @@ export function SpencerMicrowaveSim() {
           </p>
         </div>
         <div className="flex items-center gap-2">
+          <button
+            type="button"
+            onClick={() => {
+              setIsEmitting((e) => !e);
+              soundEngine.playSwitchClick();
+            }}
+            className={`px-3 py-1.5 rounded-lg text-xs font-mono font-medium border transition-colors ${
+              isEmitting
+                ? "bg-purple-700 text-white border-purple-800 font-bold"
+                : "bg-parchment-200 dark:bg-ink-800 text-ink-700 dark:text-ink-300 border-parchment-300 dark:border-ink-700"
+            }`}
+          >
+            {isEmitting ? "Magnetron: EMITTING" : "Magnetron: STANDBY"}
+          </button>
           <button
             type="button"
             onClick={resetHeating}

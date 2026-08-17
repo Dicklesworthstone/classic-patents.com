@@ -198,7 +198,7 @@ export function EdisonBulbSim() {
                     <span className="text-red-200">✗ Impractical</span>
                   </div>
                   <div className="text-[10px] opacity-80 mt-0.5">
-                    Draws huge 73.3 A; feeder wires overheat and burn (
+                    Draws {currentAmps.toFixed(1)} A; feeder wires overheat and burn (
                     {Math.round(feederPowerLossWatts)} W lost in copper).
                   </div>
                 </button>

@@ -130,11 +130,13 @@ export function TeslaMotorSim() {
             {Array.from({ length: phaseCount === 2 ? 4 : 6 }, (_, i) => {
               const poles = phaseCount === 2 ? 4 : 6;
               const a = (i * 2 * Math.PI) / poles - Math.PI / 2;
-              const phaseOff = (i % phaseCount) * (phaseCount === 2 ? Math.PI / 2 : (2 * Math.PI) / 3);
+              const phaseOff =
+                (i % phaseCount) * (phaseCount === 2 ? Math.PI / 2 : (2 * Math.PI) / 3);
               const current = Math.sin(rad + phaseOff);
               const cx = 200 + Math.cos(a) * 108;
               const cy = 150 + Math.sin(a) * 108;
-              const labels = phaseCount === 2 ? ["A", "B", "A'", "B'"] : ["A", "B", "C", "A'", "B'", "C'"];
+              const labels =
+                phaseCount === 2 ? ["A", "B", "A'", "B'"] : ["A", "B", "C", "A'", "B'", "C'"];
               return (
                 <g key={i}>
                   <rect

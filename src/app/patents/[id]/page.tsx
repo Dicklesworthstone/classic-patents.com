@@ -6,6 +6,7 @@ import { allPatents, getPatentById } from "@/data/patents";
 
 interface PatentPageProps {
   params: Promise<{ id: string }>;
+  searchParams: Promise<{ view?: string }>;
 }
 
 export async function generateStaticParams() {
@@ -27,8 +28,9 @@ export async function generateMetadata({ params }: PatentPageProps): Promise<Met
   };
 }
 
-export default async function PatentDetailPage({ params }: PatentPageProps) {
+export default async function PatentDetailPage({ params, searchParams }: PatentPageProps) {
   const { id } = await params;
+  const { view } = await searchParams;
   const patent = getPatentById(id);
 
   if (!patent) {
@@ -41,7 +43,7 @@ export default async function PatentDetailPage({ params }: PatentPageProps) {
       <PatentHeader patent={patent} />
 
       {/* Dual Projection Viewer (Plain English + Original Spec + Interactive Simulator) */}
-      <DualProjectionViewer patent={patent} />
+      <DualProjectionViewer patent={patent} initialView={view} />
     </div>
   );
 }

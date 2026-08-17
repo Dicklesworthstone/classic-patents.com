@@ -1000,22 +1000,23 @@ export function InteractiveDiagramViewer({
             </svg>
 
             {/* Interactive Numbered Callout Pins */}
-            {activeDrawing.callouts?.map((callout) => {
+            {activeDrawing.callouts?.map((callout, pinIdx) => {
               const isSelected = callout.id === activeCalloutId;
+              const pinText = callout.element.length <= 5 ? callout.element : String(pinIdx + 1);
               return (
                 <button
                   key={callout.id}
                   type="button"
                   onClick={() => setActiveCalloutId(isSelected ? null : callout.id)}
                   style={{ left: `${callout.x}%`, top: `${callout.y}%` }}
-                  className={`absolute -translate-x-1/2 -translate-y-1/2 min-w-[28px] h-7 px-1.5 rounded-full flex items-center justify-center text-xs font-mono font-bold transition-all duration-200 shadow-md ${
+                  className={`absolute -translate-x-1/2 -translate-y-1/2 min-w-[28px] max-w-[3.25rem] h-7 px-1.5 rounded-full flex items-center justify-center text-xs font-mono font-bold transition-all duration-200 shadow-md truncate ${
                     isSelected
                       ? "bg-amber-500 text-ink-950 ring-4 ring-amber-500/40 scale-125 z-20"
                       : "bg-ink-800 text-amber-300 border border-amber-500/60 hover:scale-110 hover:bg-amber-600 hover:text-white z-10"
                   }`}
                   title={`${callout.label}: ${callout.description}`}
                 >
-                  {callout.element}
+                  {pinText}
                 </button>
               );
             })}
@@ -1051,10 +1052,13 @@ export function InteractiveDiagramViewer({
                 </p>
                 <div className="p-2.5 rounded-lg bg-parchment-200/60 dark:bg-ink-950 text-[11px] font-sans text-ink-600 dark:text-ink-400 border border-parchment-300 dark:border-ink-800">
                   <span className="font-semibold text-amber-700 dark:text-amber-400 block mb-0.5">
-                    USPTO Specification Reference:
+                    Schematic Identification:
                   </span>
-                  &ldquo;Ref. Numeral {activePin.element} marks the {activePin.label.toLowerCase()}{" "}
-                  illustrated in {activeDrawing.figureNumber}.&rdquo;
+                  Reference numeral{" "}
+                  <span className="font-mono font-bold text-ink-800 dark:text-ink-200">
+                    {activePin.element}
+                  </span>{" "}
+                  designates the {activePin.label.toLowerCase()} in {activeDrawing.figureNumber}.
                 </div>
               </div>
             ) : (

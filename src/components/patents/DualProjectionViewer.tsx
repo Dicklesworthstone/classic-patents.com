@@ -12,7 +12,7 @@ import {
   Sparkles,
   Zap,
 } from "lucide-react";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { LatexRenderer, TextWithLatex } from "@/components/ui/LatexRenderer";
 import type { Patent } from "@/types/patent";
 import { ClaimsDecoder } from "./ClaimsDecoder";
@@ -22,6 +22,20 @@ import { PatentVisualDispatcher } from "./visuals";
 
 interface DualProjectionViewerProps {
   patent: Patent;
+  initialView?: string;
+}
+
+const PATENT_VIEW_MODES: PatentViewMode[] = [
+  "plain-english",
+  "original-spec",
+  "interactive-sim",
+  "schematic-sheet",
+  "pdf-facsimile",
+  "split-view",
+];
+
+function isPatentViewMode(value: string | undefined): value is PatentViewMode {
+  return !!value && (PATENT_VIEW_MODES as string[]).includes(value);
 }
 
 export type PatentViewMode =
@@ -32,29 +46,10 @@ export type PatentViewMode =
   | "pdf-facsimile"
   | "split-view";
 
-export function DualProjectionViewer({ patent }: DualProjectionViewerProps) {
-  const [viewMode, setViewModeState] = useState<PatentViewMode>("plain-english");
-
-  // Synchronize initial view mode from URL search query
-  useEffect(() => {
-    if (typeof window !== "undefined") {
-      const params = new URLSearchParams(window.location.search);
-      const view = params.get("view");
-      if (
-        view &&
-        [
-          "plain-english",
-          "original-spec",
-          "interactive-sim",
-          "schematic-sheet",
-          "pdf-facsimile",
-          "split-view",
-        ].includes(view)
-      ) {
-        setViewModeState(view as PatentViewMode);
-      }
-    }
-  }, []);
+export function DualProjectionViewer({ patent, initialView }: DualProjectionViewerProps) {
+  const [viewMode, setViewModeState] = useState<PatentViewMode>(
+    isPatentViewMode(initialView) ? initialView : "plain-english",
+  );
 
   const setViewMode = (mode: PatentViewMode) => {
     setViewModeState(mode);

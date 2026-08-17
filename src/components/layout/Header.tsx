@@ -7,7 +7,7 @@ import { ThemeToggle } from "./ThemeToggle";
 export function Header() {
   return (
     <header className="sticky top-0 z-40 w-full border-b border-parchment-300 dark:border-ink-800 bg-parchment-50/95 dark:bg-ink-950/95 backdrop-blur-md transition-colors shadow-2xs">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-18 flex items-center justify-between gap-4">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between gap-4">
         {/* Brand Logo */}
         <Link href="/" className="flex items-center gap-3.5 group">
           <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-amber-700 to-amber-900 dark:from-amber-600 dark:to-amber-800 flex items-center justify-center text-white shadow-sm group-hover:scale-105 transition-transform border border-amber-600/40">
@@ -23,8 +23,8 @@ export function Header() {
           </div>
         </Link>
 
-        {/* Desktop Navigation Links */}
-        <nav className="hidden md:flex items-center gap-7 text-base font-medium">
+        {/* Desktop & Tablet Navigation Links */}
+        <nav className="hidden lg:flex items-center gap-6 text-sm font-medium">
           <Link
             href="/"
             className="text-ink-800 dark:text-parchment-200 hover:text-amber-800 dark:hover:text-amber-400 transition-colors font-semibold"
@@ -58,6 +58,28 @@ export function Header() {
           <Link
             href="/about"
             className="text-ink-700 dark:text-parchment-300 hover:text-amber-800 dark:hover:text-amber-400 transition-colors"
+          >
+            Mission
+          </Link>
+        </nav>
+
+        {/* Medium Tablet Nav (768px - 1023px) */}
+        <nav className="hidden md:flex lg:hidden items-center gap-3.5 text-xs font-medium">
+          <Link
+            href="/"
+            className="text-ink-800 dark:text-parchment-200 hover:text-amber-800 dark:hover:text-amber-400 transition-colors font-semibold"
+          >
+            Catalog
+          </Link>
+          <Link
+            href="/timeline"
+            className="text-ink-700 dark:text-parchment-300 hover:text-amber-800 dark:hover:text-amber-400 transition-colors font-medium"
+          >
+            Timeline
+          </Link>
+          <Link
+            href="/about"
+            className="text-ink-700 dark:text-parchment-300 hover:text-amber-800 dark:hover:text-amber-400 transition-colors font-medium"
           >
             Mission
           </Link>
