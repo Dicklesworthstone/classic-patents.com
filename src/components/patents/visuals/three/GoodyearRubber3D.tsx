@@ -15,6 +15,7 @@ import { useEffect, useRef, useState } from "react";
 import * as THREE from "three";
 import { HudText } from "@/components/ui/LatexRenderer";
 import { FrankenSimEngine } from "@/physics/engine";
+import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { soundEngine } from "@/utils/soundEngine";
 import { createThreeStudioScene } from "./ThreeStudioScene";
 import { useLiveSimParams } from "./useLiveSimParams";
@@ -79,9 +80,10 @@ export function GoodyearRubber3D() {
   const containerRef = useRef<HTMLDivElement>(null);
 
   // Vulcanization Chemistry & Physics State
+  const { params, updateParam } = usePatentPhysics("us-3633-goodyear-rubber");
   const [showUiOverlay, setShowUiOverlay] = useState<boolean>(true);
-  const [sulfurWeightPct, setSulfurWeightPct] = useState<number>(4.5);
-  const [cureTemperatureCelsius, setCureTemperatureCelsius] = useState<number>(140);
+  const sulfurWeightPct = params.sulfurPct ?? 8;
+  const cureTemperatureCelsius = params.vulcanTemp ?? 145;
   const [appliedTensileStretch, setAppliedTensileStretch] = useState<number>(1.8);
   const [showSulfurCrosslinks, setShowSulfurCrosslinks] = useState<boolean>(true);
   const [showStressVectors, setShowStressVectors] = useState<boolean>(true);
@@ -172,8 +174,8 @@ export function GoodyearRubber3D() {
   };
 
   const applyScenario = (s: ScenarioPreset) => {
-    setSulfurWeightPct(s.sulfurPct);
-    setCureTemperatureCelsius(s.tempC);
+    updateParam("sulfurPct", s.sulfurPct);
+    updateParam("vulcanTemp", s.tempC);
     setAppliedTensileStretch(s.stretch);
     if (!isAudioMuted) {
       soundEngine.playElastomerSnap(s.stretch);
@@ -580,7 +582,7 @@ export function GoodyearRubber3D() {
               max="15.0"
               step="0.5"
               value={sulfurWeightPct}
-              onChange={(e) => setSulfurWeightPct(Number(e.target.value))}
+              onChange={(e) => updateParam("sulfurPct", Number(e.target.value))}
               className="w-full accent-amber-600 cursor-pointer"
             />
             <span className="text-[10px] text-ink-500 dark:text-ink-400 block">
@@ -605,7 +607,7 @@ export function GoodyearRubber3D() {
               max="190"
               step="5"
               value={cureTemperatureCelsius}
-              onChange={(e) => setCureTemperatureCelsius(Number(e.target.value))}
+              onChange={(e) => updateParam("vulcanTemp", Number(e.target.value))}
               className="w-full accent-amber-600 cursor-pointer"
             />
             <span className="text-[10px] text-ink-500 dark:text-ink-400 block">

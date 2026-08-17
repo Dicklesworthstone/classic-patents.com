@@ -341,6 +341,56 @@ class SoundEngine {
   }
 
   /**
+   * Heavy mechanical impact / ratchet arrest thud (Otis Elevator Safety Catch)
+   */
+  public playImpactThud(intensity = 1.0) {
+    if (this.isMuted) return;
+    this.initContext();
+    if (!this.ctx) return;
+
+    const osc = this.ctx.createOscillator();
+    const gain = this.ctx.createGain();
+
+    osc.type = "sawtooth";
+    osc.frequency.setValueAtTime(140 * intensity, this.ctx.currentTime);
+    osc.frequency.exponentialRampToValueAtTime(30, this.ctx.currentTime + 0.08);
+
+    gain.gain.setValueAtTime(0.3 * intensity, this.ctx.currentTime);
+    gain.gain.exponentialRampToValueAtTime(0.001, this.ctx.currentTime + 0.08);
+
+    osc.connect(gain);
+    gain.connect(this.ctx.destination);
+
+    osc.start();
+    osc.stop(this.ctx.currentTime + 0.1);
+  }
+
+  /**
+   * High-voltage spark gap discharge click / pop (Tesla Teleautomaton / Marconi Radio / Tesla Coil)
+   */
+  public playSparkDischarge(intensity = 1.0) {
+    if (this.isMuted) return;
+    this.initContext();
+    if (!this.ctx) return;
+
+    const osc = this.ctx.createOscillator();
+    const gain = this.ctx.createGain();
+
+    osc.type = "sawtooth";
+    osc.frequency.setValueAtTime(2400 * intensity, this.ctx.currentTime);
+    osc.frequency.exponentialRampToValueAtTime(120, this.ctx.currentTime + 0.02);
+
+    gain.gain.setValueAtTime(0.25 * intensity, this.ctx.currentTime);
+    gain.gain.exponentialRampToValueAtTime(0.001, this.ctx.currentTime + 0.02);
+
+    osc.connect(gain);
+    gain.connect(this.ctx.destination);
+
+    osc.start();
+    osc.stop(this.ctx.currentTime + 0.025);
+  }
+
+  /**
    * General-purpose parameterized tone synthesizer
    */
   public playTone(
@@ -367,6 +417,14 @@ class SoundEngine {
 
     osc.start();
     osc.stop(this.ctx.currentTime + durationSec + 0.02);
+  }
+
+  /**
+   * Camera shutter click (Eastman Kodak)
+   */
+  public playCameraClick() {
+    if (this.isMuted) return;
+    this.playMicroswitchClick();
   }
 }
 

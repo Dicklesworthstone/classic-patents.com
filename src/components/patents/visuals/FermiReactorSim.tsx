@@ -2,6 +2,7 @@
 
 import { Activity, RotateCcw, Shield, Sparkles } from "lucide-react";
 import { useEffect, useState } from "react";
+import { TwoClocksStrip } from "@/components/patents/TwoClocksStrip";
 import { FrankenSimEngine } from "@/physics/engine";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { soundEngine } from "@/utils/soundEngine";
@@ -253,6 +254,33 @@ export function FermiReactorSim() {
               </div>
             </div>
           </div>
+
+          <TwoClocksStrip
+            title="prompt lifetime vs delayed period"
+            fast={{
+              name: "Prompt neutrons",
+              period: "0.1",
+              scale: "ms",
+              detail:
+                "Mean lifetime of a fission neutron in the graphite lattice. Alone, this is too fast to control.",
+            }}
+            slow={{
+              name: "Delayed period",
+              period:
+                kEffective > 1.0001
+                  ? (0.084 / Math.max(0.0002, kEffective - 1)).toFixed(1)
+                  : kEffective < 0.999
+                    ? (0.084 / Math.max(0.0002, 1 - kEffective)).toFixed(1)
+                    : "∞",
+              scale: "s",
+              detail:
+                kEffective >= 0.998 && kEffective <= 1.002
+                  ? "At delayed critical, precursor decays (β ≈ 0.0065) set the pace Fermi could walk."
+                  : kEffective > 1
+                    ? "Supercritical: e-folding time of the delayed-neutron precursors, not the prompt flash."
+                    : "Subcritical: neutron population e-folds down on the delayed time scale.",
+            }}
+          />
 
           {/* Core Controls */}
           <div className="p-4 rounded-xl bg-white/90 dark:bg-ink-900/90 border border-parchment-300 dark:border-ink-800 shadow-sm space-y-4">

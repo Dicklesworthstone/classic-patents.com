@@ -35,6 +35,8 @@ export interface FlyerAirframe {
   cradleGroup: THREE.Group;
   leftPropBlades: THREE.Group;
   rightPropBlades: THREE.Group;
+  leftBayWireMat: THREE.MeshStandardMaterial;
+  rightBayWireMat: THREE.MeshStandardMaterial;
   textures: THREE.Texture[];
 }
 
@@ -465,6 +467,8 @@ export function buildWrightFlyerAirframe(): FlyerAirframe {
     metalness: 0.95,
     roughness: 0.18,
   });
+  const leftBayWireMat = steelMat.clone();
+  const rightBayWireMat = steelMat.clone();
 
   const brassMat = new THREE.MeshStandardMaterial({
     color: 0xd4af37,
@@ -639,13 +643,14 @@ export function buildWrightFlyerAirframe(): FlyerAirframe {
     const xA = strutXs[i];
     const xB = strutXs[i + 1];
 
+    const bayMat = (xA + xB) / 2 < 0 ? leftBayWireMat : rightBayWireMat;
     // Front bay X-wires
-    addRiggingWire(group, [xA, yUpper, zFront], [xB, yLower, zFront], steelMat, brassMat);
-    addRiggingWire(group, [xA, yLower, zFront], [xB, yUpper, zFront], steelMat, brassMat);
+    addRiggingWire(group, [xA, yUpper, zFront], [xB, yLower, zFront], bayMat, brassMat);
+    addRiggingWire(group, [xA, yLower, zFront], [xB, yUpper, zFront], bayMat, brassMat);
 
     // Rear bay X-wires
-    addRiggingWire(group, [xA, yUpper, zRear], [xB, yLower, zRear], steelMat, brassMat);
-    addRiggingWire(group, [xA, yLower, zRear], [xB, yUpper, zRear], steelMat, brassMat);
+    addRiggingWire(group, [xA, yUpper, zRear], [xB, yLower, zRear], bayMat, brassMat);
+    addRiggingWire(group, [xA, yLower, zRear], [xB, yUpper, zRear], bayMat, brassMat);
 
     // Fore-and-aft bay cross-wires
     addRiggingWire(group, [xA, yUpper, zFront], [xA, yLower, zRear], steelMat, brassMat);
@@ -978,6 +983,8 @@ export function buildWrightFlyerAirframe(): FlyerAirframe {
     cradleGroup,
     leftPropBlades,
     rightPropBlades,
+    leftBayWireMat,
+    rightBayWireMat,
     textures,
   };
 }

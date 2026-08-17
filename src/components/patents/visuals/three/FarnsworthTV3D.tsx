@@ -16,6 +16,7 @@ import { useEffect, useRef, useState } from "react";
 import * as THREE from "three";
 import { HudText } from "@/components/ui/LatexRenderer";
 import { FrankenSimEngine } from "@/physics/engine";
+import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { soundEngine } from "@/utils/soundEngine";
 import { createGlowPointTexture, createThreeStudioScene } from "./ThreeStudioScene";
 import { useLiveSimParams } from "./useLiveSimParams";
@@ -77,8 +78,9 @@ export function FarnsworthTV3D() {
   const containerRef = useRef<HTMLDivElement>(null);
 
   // Dissector Tube State Controls
+  const { params, updateParam } = usePatentPhysics("us-1773980-farnsworth-tv");
   const [showUiOverlay, setShowUiOverlay] = useState<boolean>(true);
-  const [acceleratingVoltageKv, setAcceleratingVoltageKv] = useState<number>(3.5); // 1.0 to 6.0 kV
+  const acceleratingVoltageKv = (params.anodeVoltage ?? 1500) / 1000;
   const [horizontalFreqKhz, setHorizontalFreqKhz] = useState<number>(15.75); // 5 to 30 kHz
   const [verticalFreqHz, setVerticalFreqHz] = useState<number>(60); // 30 to 120 Hz
   const [lightIntensityLux, setLightIntensityLux] = useState<number>(500); // 100 to 2000 Lux
@@ -136,7 +138,7 @@ export function FarnsworthTV3D() {
   };
 
   const applyScenario = (s: ScenarioPreset) => {
-    setAcceleratingVoltageKv(s.voltageKv);
+    updateParam("anodeVoltage", s.voltageKv * 1000);
     setHorizontalFreqKhz(s.hFreqKhz);
     setVerticalFreqHz(s.vFreqHz);
     setLightIntensityLux(s.lux);
@@ -586,7 +588,7 @@ export function FarnsworthTV3D() {
               max="6.0"
               step="0.2"
               value={acceleratingVoltageKv}
-              onChange={(e) => setAcceleratingVoltageKv(Number(e.target.value))}
+              onChange={(e) => updateParam("anodeVoltage", Number(e.target.value) * 1000)}
               className="w-full accent-amber-600 cursor-pointer"
             />
             <span className="text-[10px] text-ink-500 dark:text-ink-400 block">

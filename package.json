@@ -6,7 +6,7 @@
   "license": "SEE LICENSE IN LICENSE",
   "scripts": {
     "dev": "next dev --turbopack",
-    "build": "next build",
+    "build": "bun -e 'import fs from \"node:fs\"; if (fs.existsSync(\".next\")) fs.rmSync(\".next\", { recursive: true, force: true });' && next build",
     "start": "next start",
     "lint": "biome check .",
     "format": "biome format --write .",

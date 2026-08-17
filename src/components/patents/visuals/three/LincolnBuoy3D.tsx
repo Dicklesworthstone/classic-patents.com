@@ -15,6 +15,7 @@ import {
 import { useEffect, useRef, useState } from "react";
 import * as THREE from "three";
 import { HudText } from "@/components/ui/LatexRenderer";
+import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { soundEngine } from "@/utils/soundEngine";
 import { createThreeStudioScene } from "./ThreeStudioScene";
 import { useLiveSimParams } from "./useLiveSimParams";
@@ -79,10 +80,11 @@ export function LincolnBuoy3D() {
   const containerRef = useRef<HTMLDivElement>(null);
 
   // Marine Hydrostatic State Controls
+  const { params, updateParam } = usePatentPhysics("us-6281-lincoln-buoy");
   const [showUiOverlay, setShowUiOverlay] = useState<boolean>(true);
-  const [bellowsInflationPct, setBellowsInflationPct] = useState<number>(75); // 0 to 100%
+  const bellowsInflationPct = params.inflationPct ?? 75;
   const [steamboatWeightTons, setSteamboatWeightTons] = useState<number>(380); // 200 to 600 tons
-  const [riverShoalDepthFt, setRiverShoalDepthFt] = useState<number>(5.5); // 3 to 12 ft
+  const riverShoalDepthFt = params.shoalDepth ?? 3.5;
   const [showCalloutPins, setShowCalloutPins] = useState<boolean>(false);
   const [activeCamera, setActiveCamera] = useState<CameraPreset>("iso");
   const { isAudioMuted, toggleSound: toggleEngine } = usePatentAudio();
@@ -149,9 +151,9 @@ export function LincolnBuoy3D() {
   };
 
   const applyScenario = (s: ScenarioPreset) => {
-    setBellowsInflationPct(s.inflationPct);
+    updateParam("inflationPct", s.inflationPct);
     setSteamboatWeightTons(s.weightTons);
-    setRiverShoalDepthFt(s.shoalDepthFt);
+    updateParam("shoalDepth", s.shoalDepthFt);
     if (!isAudioMuted) {
       soundEngine.playSwitchClick();
     }
@@ -578,7 +580,7 @@ export function LincolnBuoy3D() {
               max="100"
               step="5"
               value={bellowsInflationPct}
-              onChange={(e) => setBellowsInflationPct(Number(e.target.value))}
+              onChange={(e) => updateParam("inflationPct", Number(e.target.value))}
               className="w-full accent-amber-600 cursor-pointer"
             />
             <span className="text-[10px] text-ink-500 dark:text-ink-400 block">
@@ -628,7 +630,7 @@ export function LincolnBuoy3D() {
               max="12.0"
               step="0.5"
               value={riverShoalDepthFt}
-              onChange={(e) => setRiverShoalDepthFt(Number(e.target.value))}
+              onChange={(e) => updateParam("shoalDepth", Number(e.target.value))}
               className="w-full accent-emerald-600 cursor-pointer"
             />
             <span className="text-[10px] text-ink-500 dark:text-ink-400 block">

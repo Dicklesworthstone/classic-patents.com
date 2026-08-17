@@ -13,6 +13,7 @@ import {
 } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import * as THREE from "three";
+import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { soundEngine } from "@/utils/soundEngine";
 import { createGlowPointTexture, createThreeStudioScene } from "./ThreeStudioScene";
 import { useLiveSimParams } from "./useLiveSimParams";
@@ -68,9 +69,10 @@ export function EinsteinRefrigerator3D() {
   const containerRef = useRef<HTMLDivElement>(null);
 
   // Absorption Thermodynamics State Controls
+  const { params, updateParam } = usePatentPhysics("us-1781541-einstein-refrigerator");
   const [showUiOverlay, setShowUiOverlay] = useState<boolean>(true);
-  const [heatInputWatts, setHeatInputWatts] = useState<number>(220); // 80 to 500 Wattsts
-  const [systemPressureAtm, setSystemPressureAtm] = useState<number>(10); // 6 to 16 Atm
+  const heatInputWatts = params.heatInput ?? 220;
+  const systemPressureAtm = params.totalPressure ?? 15;
   const [auxiliaryGasRatio, setAuxiliaryGasRatio] = useState<number>(0.8); // 0.2 to 0.95 Ammonia/Butane
   const [isHeating, setIsHeating] = useState<boolean>(true);
   const [showCalloutPins, setShowCalloutPins] = useState<boolean>(false);
@@ -125,8 +127,8 @@ export function EinsteinRefrigerator3D() {
   };
 
   const applyScenario = (s: ScenarioPreset) => {
-    setHeatInputWatts(s.heatWatts);
-    setSystemPressureAtm(s.pressureAtm);
+    updateParam("heatInput", s.heatWatts);
+    updateParam("totalPressure", s.pressureAtm);
     setAuxiliaryGasRatio(s.gasRatio);
     if (!isAudioMuted) {
       soundEngine.playSwitchClick();
@@ -547,7 +549,7 @@ export function EinsteinRefrigerator3D() {
               max="500"
               step="10"
               value={heatInputWatts}
-              onChange={(e) => setHeatInputWatts(Number(e.target.value))}
+              onChange={(e) => updateParam("heatInput", Number(e.target.value))}
               className="w-full accent-amber-600 cursor-pointer"
             />
             <span className="text-[10px] text-ink-500 dark:text-ink-400 block">
@@ -572,7 +574,7 @@ export function EinsteinRefrigerator3D() {
               max="16.0"
               step="0.5"
               value={systemPressureAtm}
-              onChange={(e) => setSystemPressureAtm(Number(e.target.value))}
+              onChange={(e) => updateParam("totalPressure", Number(e.target.value))}
               className="w-full accent-blue-600 cursor-pointer"
             />
             <span className="text-[10px] text-ink-500 dark:text-ink-400 block">

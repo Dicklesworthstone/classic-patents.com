@@ -5,6 +5,7 @@ import { useEffect, useRef, useState } from "react";
 import * as THREE from "three";
 import { HudText } from "@/components/ui/LatexRenderer";
 import { FrankenSimEngine } from "@/physics/engine";
+import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { soundEngine } from "@/utils/soundEngine";
 import { createGlowPointTexture, createThreeStudioScene } from "./ThreeStudioScene";
 import { useLiveSimParams } from "./useLiveSimParams";
@@ -64,8 +65,10 @@ export function TeslaCoil3D() {
   const containerRef = useRef<HTMLDivElement>(null);
 
   // Electrical Resonant State Controls
+  const { params, updateParam } = usePatentPhysics("us-533367-tesla-coil");
   const [showUiOverlay, setShowUiOverlay] = useState<boolean>(true);
-  const [resonantFreqKhz, setResonantFreqKhz] = useState<number>(180); // 50 to 500 kHz
+  const primaryCap = params.primaryCap ?? 45;
+  const resonantFreqKhz = Math.round(180 * Math.sqrt(45 / Math.max(10, primaryCap)));
   const [sparkGapDistanceMm, setSparkGapDistanceMm] = useState<number>(12); // 2 to 30 mm
   const [inputVoltageKv, setInputVoltageKv] = useState<number>(15); // 5 to 30 kV
   const [_toploadCapacitancePf, setToploadCapacitancePf] = useState<number>(35); // 10 to 80 pF
@@ -126,7 +129,10 @@ export function TeslaCoil3D() {
   };
 
   const applyScenario = (s: ScenarioPreset) => {
-    setResonantFreqKhz(s.freqKhz);
+    updateParam(
+      "primaryCap",
+      Math.min(90, Math.max(10, 45 * (180 / Math.max(50, s.freqKhz)) ** 2)),
+    );
     setSparkGapDistanceMm(s.gapMm);
     setInputVoltageKv(s.voltageKv);
     setToploadCapacitancePf(s.toploadPf);
@@ -567,7 +573,12 @@ export function TeslaCoil3D() {
               max="500"
               step="10"
               value={resonantFreqKhz}
-              onChange={(e) => setResonantFreqKhz(Number(e.target.value))}
+              onChange={(e) =>
+                updateParam(
+                  "primaryCap",
+                  Math.round(45 * (180 / Math.max(50, Number(e.target.value))) ** 2),
+                )
+              }
               className="w-full accent-amber-600 cursor-pointer"
             />
             <span className="text-[10px] text-ink-500 dark:text-ink-400 block">

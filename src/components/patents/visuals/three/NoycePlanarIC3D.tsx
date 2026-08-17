@@ -4,6 +4,7 @@ import { Camera, Cpu, Eye, EyeOff, RotateCcw, Sparkles, Volume2, VolumeX, Zap } 
 import { useEffect, useRef, useState } from "react";
 import * as THREE from "three";
 import { HudText } from "@/components/ui/LatexRenderer";
+import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { soundEngine } from "@/utils/soundEngine";
 import { createGlowPointTexture, createThreeStudioScene } from "./ThreeStudioScene";
 import { useLiveSimParams } from "./useLiveSimParams";
@@ -58,9 +59,10 @@ export function NoycePlanarIC3D() {
   const containerRef = useRef<HTMLDivElement>(null);
 
   // Microelectronics State Controls
+  const { params, updateParam } = usePatentPhysics("us-2981877-noyce-ic");
   const [showUiOverlay, setShowUiOverlay] = useState<boolean>(true);
   const [clockFrequencyMhz, setClockFrequencyMhz] = useState<number>(10); // 1 to 50 MHz
-  const [oxideLayerThicknessNm, setOxideLayerThicknessNm] = useState<number>(500); // 100 to 1000 nm
+  const oxideLayerThicknessNm = (params.oxideThickness ?? 0.5) * 1000;
   const [activeLayer, setActiveLayer] = useState<"all" | "silicon" | "oxide" | "metal">("all");
   const [showLogicSignals, _setShowLogicSignals] = useState<boolean>(true);
   const [showCalloutPins, setShowCalloutPins] = useState<boolean>(false);
@@ -115,7 +117,7 @@ export function NoycePlanarIC3D() {
 
   const applyScenario = (s: ScenarioPreset) => {
     setClockFrequencyMhz(s.clockMhz);
-    setOxideLayerThicknessNm(s.oxideNm);
+    updateParam("oxideThickness", s.oxideNm / 1000);
     setActiveLayer(s.layer);
     if (isPlayingAudio) {
       soundEngine.playContinuousTone(200 + s.clockMhz * 20, "square", 0.03);
@@ -533,7 +535,9 @@ export function NoycePlanarIC3D() {
               max="1000"
               step="50"
               value={oxideLayerThicknessNm}
-              onChange={(e) => setOxideLayerThicknessNm(Number(e.target.value))}
+              onChange={(e) =>
+                updateParam("oxideThickness", Number((Number(e.target.value) / 1000).toFixed(3)))
+              }
               className="w-full accent-blue-600 cursor-pointer"
             />
             <span className="text-[10px] text-ink-500 dark:text-ink-400 block">

@@ -15,6 +15,7 @@ import { useEffect, useRef, useState } from "react";
 import * as THREE from "three";
 import { HudText } from "@/components/ui/LatexRenderer";
 import { FrankenSimEngine } from "@/physics/engine";
+import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { soundEngine } from "@/utils/soundEngine";
 import { createGlowPointTexture, createThreeStudioScene } from "./ThreeStudioScene";
 import { useLiveSimParams } from "./useLiveSimParams";
@@ -69,10 +70,11 @@ export function SpencerMicrowave3D() {
   const containerRef = useRef<HTMLDivElement>(null);
 
   // Magnetron & Cavity Resonator State
+  const { params, updateParam } = usePatentPhysics("us-2495429-spencer-microwave");
   const [showUiOverlay, setShowUiOverlay] = useState<boolean>(true);
-  const [anodeVoltageKv, setAnodeVoltageKv] = useState<number>(4.2); // 2.0 to 6.0 kV
+  const anodeVoltageKv = (params.anodeVoltage ?? 2200) / 1000;
   const [magneticFieldGauss, setMagneticFieldGauss] = useState<number>(1450); // 800 to 2200 Gauss
-  const [rfPowerWatts, setRfPowerWatts] = useState<number>(850); // 200 to 1200 Watts
+  const rfPowerWatts = params.rfPowerSetting ?? 800;
   const [showSpokeWheel, _setShowSpokeWheel] = useState<boolean>(true);
   const [showWaterDipoles, _setShowWaterDipoles] = useState<boolean>(true);
   const [showCalloutPins, setShowCalloutPins] = useState<boolean>(false);
@@ -132,9 +134,9 @@ export function SpencerMicrowave3D() {
   };
 
   const applyScenario = (s: ScenarioPreset) => {
-    setAnodeVoltageKv(s.voltageKv);
+    updateParam("anodeVoltage", s.voltageKv * 1000);
     setMagneticFieldGauss(s.magGauss);
-    setRfPowerWatts(s.powerW);
+    updateParam("rfPowerSetting", s.powerW);
     if (isPlayingAudio) {
       soundEngine.playContinuousTone(120, "sawtooth", 0.04);
     }
@@ -510,7 +512,7 @@ export function SpencerMicrowave3D() {
               max="6.0"
               step="0.2"
               value={anodeVoltageKv}
-              onChange={(e) => setAnodeVoltageKv(Number(e.target.value))}
+              onChange={(e) => updateParam("anodeVoltage", Number(e.target.value) * 1000)}
               className="w-full accent-amber-600 cursor-pointer"
             />
             <span className="text-[10px] text-ink-500 dark:text-ink-400 block">
@@ -560,7 +562,7 @@ export function SpencerMicrowave3D() {
               max="1200"
               step="50"
               value={rfPowerWatts}
-              onChange={(e) => setRfPowerWatts(Number(e.target.value))}
+              onChange={(e) => updateParam("rfPowerSetting", Number(e.target.value))}
               className="w-full accent-emerald-600 cursor-pointer"
             />
             <span className="text-[10px] text-ink-500 dark:text-ink-400 block">

@@ -3,13 +3,7 @@
 import { Compass, Eye, EyeOff, Play, Wind } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import * as THREE from "three";
-import {
-  ensureFlyerWasm,
-  flyerKernelSource,
-  identityFlyerState,
-  stepFlyerHello,
-} from "@/physics/flyerWasm";
-import { TickScheduler } from "@/physics/tickScheduler";
+import { ensureFlyerWasm, flyerKernelSource } from "@/physics/flyerWasm";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import {
   coupledRudderDeg,
@@ -96,6 +90,8 @@ export function WrightFlyer3D() {
       cradleGroup,
       leftPropBlades,
       rightPropBlades,
+      leftBayWireMat,
+      rightBayWireMat,
     } = airframe;
 
     // --- AERODYNAMIC AIRFLOW STREAMLINE PARTICLES ---
@@ -163,33 +159,39 @@ export function WrightFlyer3D() {
     // --- RENDER LOOP & REAL-TIME PHYSICS SIMULATION ---
     let reqId: number;
     const clock = new THREE.Clock();
-    let hello = identityFlyerState();
-    const scheduler = new TickScheduler(1 / 120, 0, 3);
-    void ensureFlyerWasm().then((src) => {
-      setKernelLabel(src);
-    });
 
     const animate = () => {
       reqId = requestAnimationFrame(animate);
-      const delta = clock.getDelta();
+      const delta = Math.min(clock.getDelta(), 0.1);
       const elapsed = clock.getElapsedTime();
 
       const p = live.current;
 
+      // Stable 3-Axis Aerodynamic Flight Attitude based on Wright Patent Controls
+      // Pitch: Controlled by forward biplane canard elevator
+      const targetPitchRad = ((-p.elevatorPitchDeg * Math.PI) / 180) * 0.85;
+      // Roll: Controlled by differential wing warping lift
+      const targetRollRad = ((p.wingWarpDeg * Math.PI) / 180) * 0.95;
+      // Yaw: Controlled by coupled rear vertical rudder
+      const targetYawRad = ((-p.rudderYawDeg * Math.PI) / 180) * 0.75;
+
       if (p.isAutoFlying) {
-        scheduler.pump(elapsed, () => {
-          hello = stepFlyerHello(hello, 1 / 120);
-        });
-        flyerGroup.quaternion.set(
-          hello.quaternion[1],
-          hello.quaternion[2],
-          hello.quaternion[3],
-          hello.quaternion[0],
+        // Gentle atmospheric turbulence & phugoid oscillation (±0.04m, 1.2 rad/s)
+        const phugoidBob = Math.sin(elapsed * 1.4) * 0.05;
+        const rollBob = Math.sin(elapsed * 1.8) * 0.015;
+        const pitchBob = Math.cos(elapsed * 1.2) * 0.02;
+
+        flyerGroup.position.y = phugoidBob;
+        flyerGroup.rotation.set(
+          targetPitchRad + pitchBob,
+          targetYawRad,
+          targetRollRad + rollBob,
+          "YXZ",
         );
-        flyerGroup.position.y = Math.sin(elapsed * 1.5) * 0.08;
-        flyerGroup.rotateZ(((p.wingWarpDeg * Math.PI) / 180) * 0.25);
-        flyerGroup.rotateY(((-p.rudderYawDeg * Math.PI) / 180) * 0.2);
-        flyerGroup.rotateX(((-p.elevatorPitchDeg * Math.PI) / 180) * 0.2);
+      } else {
+        // Static ground/wind-tunnel mount with direct control surface response
+        flyerGroup.position.y = 0;
+        flyerGroup.rotation.set(targetPitchRad, targetYawRad, targetRollRad, "YXZ");
       }
 
       // Propellers Rotation (Counter-Rotating to eliminate gyroscopic torque)
@@ -245,6 +247,18 @@ export function WrightFlyer3D() {
       // Update Force Vector Scales
       liftVector.setLength(Math.max(0.5, p.liftNewtons / 1100), 0.4, 0.25);
       dragVector.setLength(Math.max(0.3, p.dragNewtons / 400), 0.3, 0.2);
+
+      // Interplane X-wires: the high-AoA tip carries extra lift, so that bay's
+      // piano wire goes amber, then red. Slack bay stays steel-grey.
+      const leftTension = Math.max(0, p.liftNewtons / 2200 + p.wingWarpDeg / 15);
+      const rightTension = Math.max(0, p.liftNewtons / 2200 - p.wingWarpDeg / 15);
+      const paintBay = (mat: THREE.MeshStandardMaterial, tension: number) => {
+        if (tension > 1.15) mat.color.setHex(0xef4444);
+        else if (tension > 0.55) mat.color.setHex(0xf59e0b);
+        else mat.color.setHex(0x94a3b8);
+      };
+      paintBay(leftBayWireMat, leftTension);
+      paintBay(rightBayWireMat, rightTension);
 
       controls.update();
       renderer.render(scene, camera);

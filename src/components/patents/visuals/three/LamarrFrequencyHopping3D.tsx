@@ -15,6 +15,7 @@ import {
 import { useEffect, useRef, useState } from "react";
 import * as THREE from "three";
 import { FrankenSimEngine } from "@/physics/engine";
+import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { soundEngine } from "@/utils/soundEngine";
 import { createGlowPointTexture, createThreeStudioScene } from "./ThreeStudioScene";
 import { useLiveSimParams } from "./useLiveSimParams";
@@ -70,9 +71,10 @@ export function LamarrFrequencyHopping3D() {
   const containerRef = useRef<HTMLDivElement>(null);
 
   // Spread Spectrum State Controls
+  const { params, updateParam } = usePatentPhysics("us-2292387-lamarr-frequency-hopping");
   const [showUiOverlay, setShowUiOverlay] = useState<boolean>(true);
-  const [carrierChannelsCount, setCarrierChannelsCount] = useState<number>(88);
-  const [hopRateHopsPerSec, setHopRateHopsPerSec] = useState<number>(12);
+  const carrierChannelsCount = params.channels ?? 88;
+  const hopRateHopsPerSec = params.hopRate ?? 4;
   const [isJammingActive, setIsJammingActive] = useState<boolean>(true);
   const [currentChannel, setCurrentChannel] = useState<number>(44);
   const [showCalloutPins, setShowCalloutPins] = useState<boolean>(false);
@@ -132,8 +134,8 @@ export function LamarrFrequencyHopping3D() {
   };
 
   const applyScenario = (s: ScenarioPreset) => {
-    setCarrierChannelsCount(s.channels);
-    setHopRateHopsPerSec(s.hopRate);
+    updateParam("channels", s.channels);
+    updateParam("hopRate", s.hopRate);
     setIsJammingActive(s.jamming);
     if (!isAudioMuted) {
       soundEngine.playPianoKeyHop(440);
@@ -591,7 +593,7 @@ export function LamarrFrequencyHopping3D() {
               max="30"
               step="2"
               value={hopRateHopsPerSec}
-              onChange={(e) => setHopRateHopsPerSec(Number(e.target.value))}
+              onChange={(e) => updateParam("hopRate", Number(e.target.value))}
               className="w-full accent-amber-600 cursor-pointer"
             />
             <span className="text-[10px] text-ink-500 dark:text-ink-400 block">
@@ -616,7 +618,7 @@ export function LamarrFrequencyHopping3D() {
               max="88"
               step="4"
               value={carrierChannelsCount}
-              onChange={(e) => setCarrierChannelsCount(Number(e.target.value))}
+              onChange={(e) => updateParam("channels", Number(e.target.value))}
               className="w-full accent-blue-600 cursor-pointer"
             />
             <span className="text-[10px] text-ink-500 dark:text-ink-400 block">

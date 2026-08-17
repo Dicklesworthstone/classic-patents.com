@@ -19,10 +19,12 @@ export function usePatentAudio() {
     };
   }, []);
 
-  const toggleSound = useCallback((onUnmute?: () => void) => {
+  const toggleSound = useCallback((onUnmute?: (() => void) | unknown) => {
     const muted = soundEngine.toggleMute();
     setIsAudioMuted(muted);
-    if (!muted) onUnmute?.();
+    if (!muted && typeof onUnmute === "function") {
+      (onUnmute as () => void)();
+    }
     return muted;
   }, []);
 
@@ -31,5 +33,11 @@ export function usePatentAudio() {
     setIsAudioMuted(muted);
   }, []);
 
-  return { isAudioMuted, toggleSound, setMuted };
+  return {
+    isAudioMuted,
+    toggleSound,
+    setMuted,
+    isMuted: isAudioMuted,
+    toggleMute: toggleSound,
+  };
 }

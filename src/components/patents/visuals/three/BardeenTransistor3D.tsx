@@ -16,6 +16,7 @@ import { useEffect, useRef, useState } from "react";
 import * as THREE from "three";
 import { HudText } from "@/components/ui/LatexRenderer";
 import { FrankenSimEngine } from "@/physics/engine";
+import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { soundEngine } from "@/utils/soundEngine";
 import { createGlowPointTexture, createThreeStudioScene } from "./ThreeStudioScene";
 import { useLiveSimParams } from "./useLiveSimParams";
@@ -72,10 +73,11 @@ export function BardeenTransistor3D() {
   const containerRef = useRef<HTMLDivElement>(null);
 
   // Semiconductor Point-Contact State Controls
+  const { params, updateParam } = usePatentPhysics("us-2569347-bardeen-transistor");
   const [showUiOverlay, setShowUiOverlay] = useState<boolean>(true);
-  const [emitterCurrentMa, setEmitterCurrentMa] = useState<number>(2.5);
-  const [collectorVoltageV, setCollectorVoltageV] = useState<number>(-40);
-  const [pointContactGapMicrons, setPointContactGapMicrons] = useState<number>(50);
+  const emitterCurrentMa = params.emitterCurrent ?? 1.5;
+  const collectorVoltageV = params.collectorBias ?? -40;
+  const pointContactGapMicrons = params.pointSpacing ?? 50;
   const [showHoleDrift, setShowHoleDrift] = useState<boolean>(true);
   const [showCalloutPins, setShowCalloutPins] = useState<boolean>(false);
   const [activeCamera, setActiveCamera] = useState<CameraPreset>("iso");
@@ -143,9 +145,9 @@ export function BardeenTransistor3D() {
   };
 
   const applyScenario = (s: ScenarioPreset) => {
-    setPointContactGapMicrons(s.gap);
-    setEmitterCurrentMa(s.emitterMa);
-    setCollectorVoltageV(s.collectorV);
+    updateParam("pointSpacing", s.gap);
+    updateParam("emitterCurrent", s.emitterMa);
+    updateParam("collectorBias", s.collectorV);
     if (!isAudioMuted) {
       soundEngine.playPianoKeyHop(Math.round(s.gap * 4));
     }
@@ -524,7 +526,7 @@ export function BardeenTransistor3D() {
               max="8.0"
               step="0.5"
               value={emitterCurrentMa}
-              onChange={(e) => setEmitterCurrentMa(Number(e.target.value))}
+              onChange={(e) => updateParam("emitterCurrent", Number(e.target.value))}
               className="w-full accent-amber-600 cursor-pointer"
             />
           </div>
@@ -540,7 +542,7 @@ export function BardeenTransistor3D() {
               max="-10"
               step="5"
               value={collectorVoltageV}
-              onChange={(e) => setCollectorVoltageV(Number(e.target.value))}
+              onChange={(e) => updateParam("collectorBias", Number(e.target.value))}
               className="w-full accent-blue-600 cursor-pointer"
             />
           </div>
@@ -556,7 +558,7 @@ export function BardeenTransistor3D() {
               max="150"
               step="5"
               value={pointContactGapMicrons}
-              onChange={(e) => setPointContactGapMicrons(Number(e.target.value))}
+              onChange={(e) => updateParam("pointSpacing", Number(e.target.value))}
               className="w-full accent-emerald-600 cursor-pointer"
             />
           </div>

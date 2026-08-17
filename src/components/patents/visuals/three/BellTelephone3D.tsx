@@ -14,6 +14,7 @@ import {
 } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import * as THREE from "three";
+import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { soundEngine } from "@/utils/soundEngine";
 import { createGlowPointTexture, createThreeStudioScene } from "./ThreeStudioScene";
 import { useLiveSimParams } from "./useLiveSimParams";
@@ -72,9 +73,10 @@ const SCENARIOS: ScenarioPreset[] = [
 export function BellTelephone3D() {
   const containerRef = useRef<HTMLDivElement>(null);
 
+  const { params, updateParam } = usePatentPhysics("us-174465-bell-telephone");
   const [showUiOverlay, setShowUiOverlay] = useState<boolean>(true);
   const [acousticFrequencyHz, setAcousticFrequencyHz] = useState<number>(440); // 100 to 1200 Hz
-  const [voiceAmplitude, setVoiceAmplitude] = useState<number>(0.65); // 0 to 1.0
+  const voiceAmplitude = ((params.voiceAmplitude ?? 75) - 40) / 55;
   const [batteryVoltage, setBatteryVoltage] = useState<number>(6.0); // 1.5 to 12 V
   const [liquidConductivity, setLiquidConductivity] = useState<number>(1.2); // acidulated water S/m
   const [showAcousticWaves, _setShowAcousticWaves] = useState<boolean>(true);
@@ -133,7 +135,7 @@ export function BellTelephone3D() {
 
   const applyScenario = (s: ScenarioPreset) => {
     setAcousticFrequencyHz(s.freqHz);
-    setVoiceAmplitude(s.amplitude);
+    updateParam("voiceAmplitude", 40 + s.amplitude * 55);
     setBatteryVoltage(s.voltage);
     setLiquidConductivity(s.conductivity);
     if (isPlayingAudio) {
@@ -624,7 +626,9 @@ export function BellTelephone3D() {
               max="1.0"
               step="0.05"
               value={voiceAmplitude}
-              onChange={(e) => setVoiceAmplitude(Number(e.target.value))}
+              onChange={(e) =>
+                updateParam("voiceAmplitude", Math.round(40 + Number(e.target.value) * 55))
+              }
               className="w-full accent-blue-600 cursor-pointer"
             />
             <span className="text-[10px] text-ink-500 dark:text-ink-400 block">

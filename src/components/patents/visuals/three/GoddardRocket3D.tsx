@@ -16,6 +16,7 @@ import { useEffect, useRef, useState } from "react";
 import * as THREE from "three";
 import { HudText } from "@/components/ui/LatexRenderer";
 import { FrankenSimEngine } from "@/physics/engine";
+import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { soundEngine } from "@/utils/soundEngine";
 import { createGlowPointTexture, createThreeStudioScene } from "./ThreeStudioScene";
 import { useLiveSimParams } from "./useLiveSimParams";
@@ -77,8 +78,9 @@ export function GoddardRocket3D() {
   const containerRef = useRef<HTMLDivElement>(null);
 
   // Propulsion & Staging State Controls
+  const { params, updateParam } = usePatentPhysics("us-1155986-goddard-rocket");
   const [showUiOverlay, setShowUiOverlay] = useState<boolean>(true);
-  const [chamberPressurePsi, setChamberPressurePsi] = useState<number>(300); // 100 to 600 psi
+  const chamberPressurePsi = params.chamberPressure ?? 350;
   const [fuelFlowRateKgs, setFuelFlowRateKgs] = useState<number>(1.8); // 0.5 to 5.0 kg/s
   const [activeStage, setActiveStage] = useState<1 | 2>(1);
   const [gyroGimbalAngleDeg, setGyroGimbalAngleDeg] = useState<number>(3); // -15 to +15 deg
@@ -137,7 +139,7 @@ export function GoddardRocket3D() {
   };
 
   const applyScenario = (s: ScenarioPreset) => {
-    setChamberPressurePsi(s.chamberPsi);
+    updateParam("chamberPressure", s.chamberPsi);
     setFuelFlowRateKgs(s.flowKgs);
     setActiveStage(s.stage);
     setGyroGimbalAngleDeg(s.gimbalDeg);
@@ -222,7 +224,7 @@ export function GoddardRocket3D() {
       stage1Group.add(fin);
     }
 
-    // De Laval Supersonic Converging-Diverging Nozzle
+    // De Laval Supersonic Converging-Diverging Nozzle with Regenerative Cooling Tubes
     const nozzleGroup = new THREE.Group();
     nozzleGroup.position.y = -2.75;
 
@@ -243,18 +245,47 @@ export function GoddardRocket3D() {
     nozzlePoints.push(new THREE.Vector2(0.68, -1.05));
     nozzlePoints.push(new THREE.Vector2(0.92, -1.45));
 
-    const deLavalGeo = new THREE.LatheGeometry(nozzlePoints, 36);
+    const deLavalGeo = new THREE.LatheGeometry(nozzlePoints, 48);
     const deLavalMesh = new THREE.Mesh(deLavalGeo, copperNozzleMat);
     deLavalMesh.castShadow = true;
     nozzleGroup.add(deLavalMesh);
 
+    // Regenerative Cooling Jacket Manifold Rings
     const manifoldRing = new THREE.Mesh(
-      new THREE.TorusGeometry(0.93, 0.05, 8, 36),
+      new THREE.TorusGeometry(0.93, 0.05, 12, 36),
       new THREE.MeshStandardMaterial({ color: 0xb45309, metalness: 0.9 }),
     );
     manifoldRing.rotation.x = Math.PI / 2;
     manifoldRing.position.y = -1.45;
     nozzleGroup.add(manifoldRing);
+
+    // Dual High-Pressure Propellant Feed Pipes (LOX & Gasoline)
+    [-0.65, 0.65].forEach((px) => {
+      const pipeCurve = new THREE.CatmullRomCurve3([
+        new THREE.Vector3(px, 1.8, 0.8),
+        new THREE.Vector3(px, 0.4, 0.8),
+        new THREE.Vector3(px * 0.6, -0.2, 0.4),
+        new THREE.Vector3(px * 0.4, -0.8, 0.2),
+      ]);
+      const pipeGeo = new THREE.TubeGeometry(pipeCurve, 20, 0.045, 8, false);
+      const pipeMesh = new THREE.Mesh(
+        pipeGeo,
+        new THREE.MeshStandardMaterial({ color: 0xd4af37, metalness: 0.9, roughness: 0.2 }),
+      );
+      nozzleGroup.add(pipeMesh);
+    });
+
+    // 4 Gyro-Stabilized Exhaust Jet Vanes (Steering in supersonic gas)
+    for (let v = 0; v < 4; v++) {
+      const vAngle = (v * Math.PI) / 2;
+      const vane = new THREE.Mesh(
+        new THREE.BoxGeometry(0.04, 0.35, 0.25),
+        new THREE.MeshStandardMaterial({ color: 0x1e293b, metalness: 0.9, roughness: 0.3 }),
+      );
+      vane.position.set(Math.cos(vAngle) * 0.65, -1.5, Math.sin(vAngle) * 0.65);
+      vane.rotation.y = -vAngle;
+      nozzleGroup.add(vane);
+    }
 
     stage1Group.add(nozzleGroup);
     rocketGroup.add(stage1Group);
@@ -568,7 +599,7 @@ export function GoddardRocket3D() {
               max="600"
               step="20"
               value={chamberPressurePsi}
-              onChange={(e) => setChamberPressurePsi(Number(e.target.value))}
+              onChange={(e) => updateParam("chamberPressure", Number(e.target.value))}
               className="w-full accent-amber-600 cursor-pointer"
             />
             <span className="text-[10px] text-ink-500 dark:text-ink-400 block">

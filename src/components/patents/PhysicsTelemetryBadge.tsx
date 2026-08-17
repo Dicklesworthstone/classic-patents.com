@@ -27,23 +27,27 @@ export function PhysicsTelemetryBadge({
 
   if (!data) return null;
 
+  const liveEnvelope = liveMetrics.map((m) => `${m.label} ${m.value} ${m.unit}`).join("; ");
+
   return (
-    <div className="rounded-2xl border border-parchment-300 dark:border-ink-800 bg-parchment-100/60 dark:bg-ink-950/90 p-4 sm:p-5 text-xs font-sans text-ink-800 dark:text-parchment-200 shadow-sm space-y-4">
+    <div className="rounded-2xl border border-parchment-300 dark:border-ink-800 bg-parchment-50/90 dark:bg-ink-950/90 p-4 sm:p-5 text-xs font-sans text-ink-800 dark:text-parchment-200 shadow-sm space-y-4">
+      <div className="sr-only" aria-live="polite" aria-atomic="true">
+        {data.domainTitle}. {liveEnvelope}
+      </div>
+
       {/* Header Bar */}
-      <div className="flex flex-wrap items-center justify-between gap-3 border-b border-parchment-300 dark:border-ink-800 pb-3">
+      <div className="flex flex-wrap items-center justify-between gap-3 border-b border-parchment-200 dark:border-ink-800 pb-3">
         <div className="flex items-center gap-2.5">
           <span className="flex h-2.5 w-2.5 relative">
             <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-500 opacity-75" />
-            <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-emerald-600" />
+            <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-emerald-600 dark:bg-emerald-400" />
           </span>
           <div>
             <div className="flex items-center gap-1.5 font-mono text-[11px] font-bold text-amber-800 dark:text-amber-400 uppercase tracking-widest">
               <Cpu className="w-3.5 h-3.5 text-amber-700 dark:text-amber-400" />
-              <span>FrankenSim SI kernel</span>
-              <span className="text-ink-400 dark:text-ink-600">/</span>
-              <span className="text-ink-900 dark:text-parchment-100 font-bold">
-                Live SI Telemetry
-              </span>
+              <span>FrankenSim Physics Core</span>
+              <span className="text-ink-300 dark:text-ink-600">/</span>
+              <span className="text-ink-950 dark:text-parchment-100 font-bold">Live Telemetry</span>
             </div>
             <div className="text-xs text-ink-600 dark:text-ink-400 font-serif italic mt-0.5">
               {data.domainTitle}
@@ -55,30 +59,30 @@ export function PhysicsTelemetryBadge({
           <button
             type="button"
             onClick={handleReset}
-            className="flex items-center gap-1 px-2.5 py-1 rounded-lg bg-parchment-200/80 dark:bg-ink-900 hover:bg-parchment-300 text-ink-700 dark:text-ink-300 hover:text-ink-950 font-mono text-[11px] transition-colors border border-parchment-300 dark:border-ink-700 shadow-2xs"
-            title="Reset to Canonical Baseline"
+            className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-parchment-100 dark:bg-ink-900 hover:bg-parchment-200 dark:hover:bg-ink-800 text-ink-700 dark:text-ink-300 hover:text-ink-950 dark:hover:text-white font-mono text-[11px] font-semibold transition-all border border-parchment-300 dark:border-ink-700 shadow-2xs cursor-pointer"
+            title="Reset to Baseline Parameters"
           >
             <RotateCcw className="w-3 h-3" />
-            <span className="hidden sm:inline">Reset Baseline</span>
+            <span>Reset Baseline</span>
           </button>
 
           <button
             type="button"
             onClick={() => setShowTheory((v) => !v)}
-            className={`flex items-center gap-1 px-3 py-1 rounded-lg font-mono text-[11px] font-bold transition-colors border shadow-2xs ${
+            className={`flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl font-mono text-[11px] font-bold transition-all border shadow-2xs cursor-pointer ${
               showTheory
-                ? "bg-amber-700 text-white border-amber-800 dark:bg-amber-600"
-                : "bg-parchment-200/80 dark:bg-ink-900 text-ink-700 dark:text-ink-300 border-parchment-300 dark:border-ink-700 hover:bg-parchment-300"
+                ? "bg-amber-700 text-white border-amber-800 dark:bg-amber-600 dark:border-amber-500"
+                : "bg-parchment-100 dark:bg-ink-900 text-ink-800 dark:text-ink-200 border-parchment-300 dark:border-ink-700 hover:bg-parchment-200 dark:hover:bg-ink-800"
             }`}
           >
-            <Zap className="w-3 h-3 text-amber-300" />
-            <span>{showTheory ? "Hide Theory" : "View Equation"}</span>
+            <Zap className="w-3 h-3 text-amber-400" />
+            <span>{showTheory ? "Hide Theory" : "Governing Law"}</span>
           </button>
         </div>
       </div>
 
       {/* Live SI Telemetry Metrics Grid */}
-      <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5">
+      <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
         {liveMetrics.map((metric) => {
           const barColor =
             metric.badgeColor === "rose"
@@ -89,20 +93,31 @@ export function PhysicsTelemetryBadge({
                   ? "bg-sky-600 dark:bg-sky-500"
                   : "bg-amber-600 dark:bg-amber-500";
 
+          const valColor =
+            metric.badgeColor === "rose"
+              ? "text-rose-700 dark:text-rose-400"
+              : metric.badgeColor === "emerald"
+                ? "text-emerald-700 dark:text-emerald-400"
+                : metric.badgeColor === "cyan" || metric.badgeColor === "indigo"
+                  ? "text-sky-700 dark:text-sky-400"
+                  : "text-amber-800 dark:text-amber-400";
+
           return (
             <div
               key={metric.label}
-              className="p-3.5 rounded-xl border border-parchment-300 dark:border-ink-800/90 bg-white/80 dark:bg-ink-900/80 text-ink-900 dark:text-parchment-100 flex flex-col justify-between shadow-2xs transition-colors"
+              className="p-3.5 rounded-xl border border-parchment-300/80 dark:border-ink-800 bg-white dark:bg-ink-900/90 text-ink-900 dark:text-parchment-100 flex flex-col justify-between shadow-2xs hover:border-amber-700/30 dark:hover:border-ink-700 transition-colors"
             >
               <div className="flex items-center justify-between">
-                <span className="text-[10px] uppercase font-mono tracking-wider font-semibold text-ink-600 dark:text-ink-400 truncate">
+                <span className="text-[10px] uppercase font-mono tracking-wider font-semibold text-ink-500 dark:text-ink-400 truncate">
                   {metric.label}
                 </span>
-                <Gauge className="w-3.5 h-3.5 text-amber-700 dark:text-amber-400 opacity-70" />
+                <Gauge className="w-3.5 h-3.5 text-amber-700/60 dark:text-amber-400/60" />
               </div>
 
-              <div className="flex items-baseline gap-1 my-1.5">
-                <span className="font-mono text-base sm:text-lg font-extrabold text-ink-950 dark:text-white tracking-tight">
+              <div className="flex items-baseline gap-1.5 my-2">
+                <span
+                  className={`font-mono text-base sm:text-lg font-extrabold tracking-tight ${valColor}`}
+                >
                   {metric.value}
                 </span>
                 <span className="font-mono text-[10px] text-ink-500 dark:text-ink-400 font-medium">
@@ -126,36 +141,36 @@ export function PhysicsTelemetryBadge({
 
       {/* Expanded Governing Equations & Deep Pedagogical Theory */}
       {showTheory && (
-        <div className="pt-3 border-t border-parchment-300 dark:border-ink-800 space-y-3">
+        <div className="pt-4 border-t border-parchment-200 dark:border-ink-800 space-y-3 animate-in fade-in duration-200">
           <div>
             <div className="flex items-center gap-1.5 text-[11px] font-mono font-bold text-amber-800 dark:text-amber-400 mb-1.5">
               <Zap className="w-3.5 h-3.5 text-amber-600 dark:text-amber-400" />
-              <span>Active Governing Formula: {data.equationName}</span>
+              <span>Governing Equation: {data.equationName}</span>
             </div>
-            <div className="p-3 rounded-xl bg-white/80 dark:bg-ink-950 border border-parchment-300 dark:border-ink-800 text-center font-mono text-sm overflow-x-auto text-ink-950 dark:text-parchment-100 shadow-inner">
+            <div className="p-3.5 rounded-xl bg-white dark:bg-ink-900 border border-parchment-300 dark:border-ink-800 text-center font-mono text-sm overflow-x-auto text-ink-950 dark:text-parchment-100 shadow-inner">
               <LatexRenderer math={data.governingEquation} block />
             </div>
           </div>
 
-          <div className="flex items-start gap-2 text-xs text-ink-800 dark:text-parchment-200 leading-relaxed font-sans bg-parchment-200/50 dark:bg-ink-900/50 p-3 rounded-xl border border-parchment-300 dark:border-ink-800 shadow-2xs">
+          <div className="flex items-start gap-2.5 text-xs text-ink-800 dark:text-parchment-200 leading-relaxed font-sans bg-parchment-100/70 dark:bg-ink-900/60 p-3.5 rounded-xl border border-parchment-300 dark:border-ink-800 shadow-2xs">
             <Info className="w-4 h-4 text-amber-700 dark:text-amber-400 shrink-0 mt-0.5" />
             <p>
               <strong className="text-ink-950 dark:text-white font-serif">
-                Computational Mechanics:
+                Physical Principle:
               </strong>{" "}
               {data.pedagogicalInsight}
             </p>
           </div>
 
           <div className="text-[10px] font-mono text-ink-500 dark:text-ink-400 flex flex-wrap items-center justify-between gap-2 pt-1">
-            <span className="flex items-center gap-1">
+            <span className="flex items-center gap-1.5">
               <Activity className="w-3 h-3 text-emerald-600 dark:text-emerald-400" />
-              Host fallback engine:{" "}
+              <span>WASM physics kernel:</span>{" "}
               <code className="text-amber-800 dark:text-amber-400 font-bold">
                 {data.engineMethod}()
               </code>
             </span>
-            <span className="text-ink-600 dark:text-ink-400">
+            <span className="text-ink-500 dark:text-ink-400">
               SI Telemetry Protocol · 6-DoF Synchronized
             </span>
           </div>

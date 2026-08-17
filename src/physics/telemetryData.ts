@@ -283,7 +283,7 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
       {
         id: "chamberPressure",
         label: "Chamber Pressure (Pc)",
-        min: 150,
+        min: 100,
         max: 600,
         step: 10,
         defaultValue: 350,
@@ -353,7 +353,7 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
         id: "emitterCurrent",
         label: "Emitter Current (Ie)",
         min: 0.5,
-        max: 4.0,
+        max: 8.0,
         step: 0.1,
         defaultValue: 1.5,
         unit: "mA",
@@ -370,8 +370,8 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
       {
         id: "pointSpacing",
         label: "Whiskers Contact Spacing",
-        min: 20,
-        max: 100,
+        min: 15,
+        max: 150,
         step: 5,
         defaultValue: 50,
         unit: "µm",
@@ -431,8 +431,8 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
       {
         id: "heatInput",
         label: "Generator Heat Input",
-        min: 100,
-        max: 350,
+        min: 80,
+        max: 500,
         step: 5,
         defaultValue: 220,
         unit: "W",
@@ -440,7 +440,7 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
       {
         id: "totalPressure",
         label: "System Total Pressure",
-        min: 8,
+        min: 6,
         max: 22,
         step: 0.5,
         defaultValue: 15.0,
@@ -500,7 +500,7 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
         id: "anodeVoltage",
         label: "Magnetron Anode Voltage",
         min: 1200,
-        max: 3000,
+        max: 6000,
         step: 50,
         defaultValue: 2200,
         unit: "V",
@@ -771,7 +771,7 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
       {
         id: "sparkVoltage",
         label: "Induction Coil Voltage",
-        min: 10,
+        min: 5,
         max: 50,
         step: 1,
         defaultValue: 28,
@@ -780,7 +780,7 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
       {
         id: "aerialHeight",
         label: "Vertical Aerial Height",
-        min: 30,
+        min: 10,
         max: 120,
         step: 2,
         defaultValue: 88,
@@ -1054,7 +1054,7 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
         id: "shoalDepth",
         label: "Riverbed Shoal Water Depth",
         min: 2.0,
-        max: 6.0,
+        max: 12.0,
         step: 0.1,
         defaultValue: 3.5,
         unit: "ft",
@@ -1124,7 +1124,7 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
         id: "hopRate",
         label: "Tape Synchronous Hop Rate",
         min: 1,
-        max: 10,
+        max: 30,
         step: 0.5,
         defaultValue: 4.0,
         unit: "hops/s",
@@ -1250,7 +1250,7 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
         id: "anodeVoltage",
         label: "Anode Accelerating Potential",
         min: 600,
-        max: 2500,
+        max: 6000,
         step: 50,
         defaultValue: 1500,
         unit: "V",
@@ -1384,8 +1384,8 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
       {
         id: "crystalFreq",
         label: "Master Quartz Crystal",
-        min: 10.0,
-        max: 18.0,
+        min: 7.0,
+        max: 28.0,
         step: 0.1,
         defaultValue: 14.318,
         unit: "MHz",
@@ -2671,5 +2671,789 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
     },
     pedagogicalInsight:
       "The triple valve inverts brake control: maintaining 70 psi in the continuous train pipe keeps the brakes released. When line pressure is dropped, higher pressure in the car's local auxiliary reservoir shifts the piston to dump air directly into the brake cylinder, stopping the train.",
+  },
+  "us-x72-whitney-cotton-gin": {
+    domain: "aerodynamics_mbd",
+    domainTitle: "Rotary Kinematics & Solid-State Fiber Separation",
+    equationName: "Centrifugal Separation & Circular Shear Kinematics",
+    governingEquation:
+      "v_t = \\omega \\cdot r \\quad \\text{and} \\quad \\dot{m} = \\rho \\cdot A \\cdot v",
+    engineMethod: "FrankenSimEngine.stepWhitneyCottonGin",
+    controls: [
+      {
+        id: "crankRpm",
+        label: "Hand Crank Speed",
+        min: 60,
+        max: 360,
+        step: 10,
+        defaultValue: 180,
+        unit: "RPM",
+      },
+    ],
+    computeMetrics: (p) => {
+      const rpm = p.crankRpm ?? 180;
+      const sawRpm = Math.round(rpm * 3.5);
+      const brushRpm = Math.round(rpm * 12.0);
+      const outputLbs = Math.round((rpm / 180) * 50);
+      return [
+        {
+          label: "Saw Cylinder Speed",
+          value: `${sawRpm} RPM`,
+          unit: "omega_saw",
+          badgeColor: "amber",
+          progressPct: (sawRpm / 1260) * 100,
+        },
+        {
+          label: "Brush Speed",
+          value: `${brushRpm} RPM`,
+          unit: "omega_brush",
+          badgeColor: "cyan",
+          progressPct: (brushRpm / 4320) * 100,
+        },
+        {
+          label: "Daily Clean Fiber Yield",
+          value: `${outputLbs} lbs/day`,
+          unit: "m_dot",
+          badgeColor: "emerald",
+          progressPct: (outputLbs / 100) * 100,
+        },
+      ];
+    },
+    pedagogicalInsight:
+      "Whitney's saw teeth hook fiber through narrow 2.8mm grate slots that block green seeds. The high-speed counter-rotating brush cylinder removes lint continuously via centrifugal airflow.",
+  },
+  "us-x8277-mccormick-reaper": {
+    domain: "aerodynamics_mbd",
+    domainTitle: "Ground-Traction Kinematics & Reciprocating Shear",
+    equationName: "Cutter Frequency & Gathering Reel Cycloid Kinematics",
+    governingEquation:
+      "f_{\\text{cut}} = \\frac{v_{\\text{ground}}}{p_{\\text{stroke}}} \\cdot G_{\\text{ratio}}",
+    engineMethod: "FrankenSimEngine.stepMcCormickReaper",
+    controls: [
+      {
+        id: "forwardSpeedMph",
+        label: "Horse Ground Speed",
+        min: 1.0,
+        max: 5.0,
+        step: 0.2,
+        defaultValue: 2.5,
+        unit: "MPH",
+      },
+    ],
+    computeMetrics: (p) => {
+      const v = p.forwardSpeedMph ?? 2.5;
+      const fCut = Math.round((v * 5280 * 12) / (3600 * 3.5));
+      const reelRpm = Math.round(v * 12.5);
+      const harvestRate = (v * 1.8).toFixed(1);
+      return [
+        {
+          label: "Cutting Frequency",
+          value: `${fCut} Hz`,
+          unit: "f_cut",
+          badgeColor: "amber",
+          progressPct: (fCut / 35) * 100,
+        },
+        {
+          label: "Gathering Reel",
+          value: `${reelRpm} RPM`,
+          unit: "omega_reel",
+          badgeColor: "cyan",
+          progressPct: (reelRpm / 65) * 100,
+        },
+        {
+          label: "Harvest Velocity",
+          value: `${harvestRate} acres/day`,
+          unit: "dA/dt",
+          badgeColor: "emerald",
+          progressPct: (Number(harvestRate) / 10) * 100,
+        },
+      ];
+    },
+    pedagogicalInsight:
+      "The master traction bull wheel drives the gathering reel to sweep standing grain stalks across the triangular serrated sickle bar, depositing cut wheat onto the collection bed.",
+  },
+  "us-132-davenport-electric-motor": {
+    domain: "electromagnetics_flux",
+    domainTitle: "Permanent Magnet Stator & Commutated Rotor Torque",
+    equationName: "Lorentz Force & Commutated Armature Torque",
+    governingEquation:
+      "\\tau = 2 \\cdot N \\cdot I \\cdot B \\cdot r \\cdot l \\cdot \\sin(\\theta)",
+    engineMethod: "FrankenSimEngine.stepDavenportMotor",
+    controls: [
+      {
+        id: "batteryVoltage",
+        label: "Galvanic Battery Voltage",
+        min: 4,
+        max: 24,
+        step: 1,
+        defaultValue: 12,
+        unit: "V",
+      },
+      {
+        id: "loadTorque",
+        label: "Mechanical Load Torque",
+        min: 0.2,
+        max: 2.5,
+        step: 0.1,
+        defaultValue: 0.8,
+        unit: "N·m",
+      },
+    ],
+    computeMetrics: (p) => {
+      const v = p.batteryVoltage ?? 12;
+      const load = p.loadTorque ?? 0.8;
+      const rpm = Math.round((v / 12) * (450 / Math.max(0.5, load)));
+      const powerW = Math.round(((rpm * 2 * Math.PI) / 60) * load);
+      return [
+        {
+          label: "Motor Speed",
+          value: `${rpm} RPM`,
+          unit: "omega",
+          badgeColor: "cyan",
+          progressPct: (rpm / 900) * 100,
+        },
+        {
+          label: "Shaft Power Output",
+          value: `${powerW} W`,
+          unit: "P_out",
+          badgeColor: "amber",
+          progressPct: (powerW / 120) * 100,
+        },
+      ];
+    },
+    pedagogicalInsight:
+      "Davenport's split-ring commutator reverses the polarity of the cross-arm electromagnets every half revolution, producing continuous rotation against permanent stator shoes.",
+  },
+  "us-588-ericsson-propeller": {
+    domain: "aerodynamics_mbd",
+    domainTitle: "Hydrodynamics & Contra-Rotating Screw Propulsion",
+    equationName: "Screw Propeller Thrust & Axial Momentum Theory",
+    governingEquation: "T = \\rho \\cdot A \\cdot v_a \\cdot (v_j - v_a)",
+    engineMethod: "FrankenSimEngine.stepEricssonPropeller",
+    controls: [
+      {
+        id: "shaftRpm",
+        label: "Engine Shaft Speed",
+        min: 40,
+        max: 240,
+        step: 10,
+        defaultValue: 120,
+        unit: "RPM",
+      },
+    ],
+    computeMetrics: (p) => {
+      const rpm = p.shaftRpm ?? 120;
+      const speedKnots = ((rpm / 120) * 8.5).toFixed(1);
+      const thrustKn = Math.round((rpm / 120) ** 2 * 18);
+      return [
+        {
+          label: "Vessel Speed",
+          value: `${speedKnots} Knots`,
+          unit: "v_ship",
+          badgeColor: "cyan",
+          progressPct: (Number(speedKnots) / 18) * 100,
+        },
+        {
+          label: "Axial Thrust",
+          value: `${thrustKn} kN`,
+          unit: "T_prop",
+          badgeColor: "emerald",
+          progressPct: (thrustKn / 75) * 100,
+        },
+      ];
+    },
+    pedagogicalInsight:
+      "Concentric shafts drive two contra-rotating screw wheels enclosed in cylindrical shroud rings, canceling gyroscopic torque and rotational wake turbulence.",
+  },
+  "us-6162-corliss-steam-engine": {
+    domain: "aerodynamics_mbd",
+    domainTitle: "Thermodynamics & Variable Cut-Off Steam Valve Gear",
+    equationName: "Rankine Thermodynamic Expansion & Indicated Power",
+    governingEquation:
+      "P_{\\text{IHP}} = \\frac{p_{\\text{mep}} \\cdot L \\cdot A \\cdot N}{33000}",
+    engineMethod: "FrankenSimEngine.stepCorlissEngine",
+    controls: [
+      {
+        id: "steamPressurePsi",
+        label: "Boiler Steam Pressure",
+        min: 40,
+        max: 180,
+        step: 5,
+        defaultValue: 100,
+        unit: "PSI",
+      },
+      {
+        id: "engineRpm",
+        label: "Engine Speed",
+        min: 30,
+        max: 120,
+        step: 5,
+        defaultValue: 65,
+        unit: "RPM",
+      },
+    ],
+    computeMetrics: (p) => {
+      const psi = p.steamPressurePsi ?? 100;
+      const rpm = p.engineRpm ?? 65;
+      const ihp = Math.round(psi * rpm * 0.25 * 1.8);
+      return [
+        {
+          label: "Indicated Horsepower",
+          value: `${ihp} IHP`,
+          unit: "P_ind",
+          badgeColor: "amber",
+          progressPct: (ihp / 500) * 100,
+        },
+        {
+          label: "Thermal Efficiency",
+          value: "24.5%",
+          unit: "eta_th",
+          badgeColor: "emerald",
+          progressPct: 75,
+        },
+      ];
+    },
+    pedagogicalInsight:
+      "The central oscillating wrist-plate trips the admission valves closed instantaneously via pneumatic dashpots, allowing steam to expand adiabatically without throttling loss.",
+  },
+  "us-36836-gatling-gun": {
+    domain: "aerodynamics_mbd",
+    domainTitle: "Kinematics & Rotary Cam-Driven Cyclic Action",
+    equationName: "Cyclic Fire Rate & Spiral Cam Kinematics",
+    governingEquation:
+      "\\text{RPM}_{\\text{fire}} = N_{\\text{barrels}} \\cdot \\text{RPM}_{\\text{crank}}",
+    engineMethod: "FrankenSimEngine.stepGatlingGun",
+    controls: [
+      {
+        id: "crankRpm",
+        label: "Crank Rotation Rate",
+        min: 40,
+        max: 200,
+        step: 10,
+        defaultValue: 120,
+        unit: "RPM",
+      },
+    ],
+    computeMetrics: (p) => {
+      const rpm = p.crankRpm ?? 120;
+      const rof = Math.round(rpm * 6);
+      return [
+        {
+          label: "Rate of Fire",
+          value: `${rof} rounds/min`,
+          unit: "ROF",
+          badgeColor: "rose",
+          progressPct: (rof / 1200) * 100,
+        },
+        {
+          label: "Barrel Cooling Interval",
+          value: `${((60 / rof) * 6).toFixed(2)} s`,
+          unit: "t_cool",
+          badgeColor: "cyan",
+          progressPct: 80,
+        },
+      ];
+    },
+    pedagogicalInsight:
+      "Six revolving barrels rotate around a stationary central cylinder containing spiral cam grooves that load, cock, lock, fire, and extract cartridges during one continuous turn.",
+  },
+  "us-78317-nobel-dynamite": {
+    domain: "solid_mechanics",
+    domainTitle: "Explosive Detonation & Porous Matrix Stabilization",
+    equationName: "Chapman-Jouguet Detonation Velocity",
+    governingEquation: "D = \\sqrt{2 \\cdot (\\gamma^2 - 1) \\cdot q}",
+    engineMethod: "FrankenSimEngine.stepNobelDynamite",
+    controls: [
+      {
+        id: "ngConcentrationPct",
+        label: "Nitroglycerin Absorption",
+        min: 50,
+        max: 85,
+        step: 5,
+        defaultValue: 75,
+        unit: "%",
+      },
+    ],
+    computeMetrics: (p) => {
+      const ng = p.ngConcentrationPct ?? 75;
+      const vDet = Math.round(5500 + (ng - 50) * 80);
+      return [
+        {
+          label: "Detonation Velocity",
+          value: `${vDet} m/s`,
+          unit: "D_CJ",
+          badgeColor: "rose",
+          progressPct: (vDet / 8500) * 100,
+        },
+        {
+          label: "Porous Cushioning Factor",
+          value: "3.8×",
+          unit: "safety",
+          badgeColor: "emerald",
+          progressPct: 90,
+        },
+      ];
+    },
+    pedagogicalInsight:
+      "Inert porous kieselguhr absorbs liquid nitroglycerin like a sponge, rendering the explosive insensitive to shock while the fulminate of mercury cap delivers the shockwave necessary for full detonation.",
+  },
+  "us-79265-sholes-typewriter": {
+    domain: "aerodynamics_mbd",
+    domainTitle: "Mechanism Kinematics & Anti-Collision Type-Basket",
+    equationName: "Typebar Angular Acceleration & Escapement Pitch",
+    governingEquation:
+      "\\tau_{\\text{key}} = I_{\\text{bar}} \\cdot \\alpha \\quad \\text{and} \\quad \\Delta x_{\\text{platen}} = p_{\\text{pitch}}",
+    engineMethod: "FrankenSimEngine.stepSholesTypewriter",
+    controls: [
+      {
+        id: "typingSpeedWpm",
+        label: "Typing Cadence",
+        min: 20,
+        max: 120,
+        step: 5,
+        defaultValue: 60,
+        unit: "WPM",
+      },
+    ],
+    computeMetrics: (p) => {
+      const wpm = p.typingSpeedWpm ?? 60;
+      const cps = (wpm * 5) / 60;
+      return [
+        {
+          label: "Key Strike Frequency",
+          value: `${cps.toFixed(1)} chars/sec`,
+          unit: "f_strike",
+          badgeColor: "amber",
+          progressPct: (cps / 12) * 100,
+        },
+        {
+          label: "QWERTY Jam Suppression",
+          value: "98.5%",
+          unit: "anti-jam",
+          badgeColor: "emerald",
+          progressPct: 98,
+        },
+      ];
+    },
+    pedagogicalInsight:
+      "Radial typebars swing up to hit the central printing guide beneath the platen. The QWERTY layout separates commonly paired letters across opposite sectors to prevent physical clashes.",
+  },
+  "us-105338-hyatt-celluloid": {
+    domain: "solid_mechanics",
+    domainTitle: "Thermoplastic Rheology & Hydraulic Injection",
+    equationName: "Arrhenius Viscosity & Hydraulic Ram Extrusion",
+    governingEquation: "\\eta(T) = \\eta_0 \\cdot \\exp\\left(\\frac{E_a}{R \\cdot T}\\right)",
+    engineMethod: "FrankenSimEngine.stepHyattCelluloid",
+    controls: [
+      {
+        id: "steamTempC",
+        label: "Steam Jacket Temperature",
+        min: 90,
+        max: 160,
+        step: 5,
+        defaultValue: 120,
+        unit: "°C",
+      },
+    ],
+    computeMetrics: (p) => {
+      const temp = p.steamTempC ?? 120;
+      const visc = Math.round(1800 * Math.exp(-0.03 * (temp - 100)));
+      return [
+        {
+          label: "Melt Viscosity",
+          value: `${visc} Pa·s`,
+          unit: "eta",
+          badgeColor: "amber",
+          progressPct: Math.min(100, (visc / 2000) * 100),
+        },
+        {
+          label: "Plasticity State",
+          value: temp >= 115 ? "FLUID INJECTION" : "RIGID SOLID",
+          unit: "phase",
+          badgeColor: temp >= 115 ? "emerald" : "rose",
+          progressPct: temp >= 115 ? 100 : 20,
+        },
+      ];
+    },
+    pedagogicalInsight:
+      "Camphor plasticizes nitrocellulose into the first synthetic thermoplastic. The steam-jacketed cylinder heats the mass to $120^\\circ\\text{C}$ where hydraulic pressure forces it into precision split molds.",
+  },
+  "us-120057-gramme-dynamo": {
+    domain: "electromagnetics_flux",
+    domainTitle: "Continuous Direct-Current Toroidal Electromagnetics",
+    equationName: "Faraday Induced EMF & Ring Armature Integration",
+    governingEquation:
+      "\\mathcal{E} = -N \\cdot \\frac{d\\Phi_B}{dt} = \\frac{p \\cdot N \\cdot \\Phi \\cdot n}{60 \\cdot a}",
+    engineMethod: "FrankenSimEngine.stepGrammeDynamo",
+    controls: [
+      {
+        id: "shaftRpm",
+        label: "Dynamo Shaft Speed",
+        min: 300,
+        max: 1600,
+        step: 50,
+        defaultValue: 950,
+        unit: "RPM",
+      },
+    ],
+    computeMetrics: (p) => {
+      const rpm = p.shaftRpm ?? 950;
+      const emf = Math.round((rpm / 950) * 110);
+      const power = Math.round(emf ** 2 / 12);
+      return [
+        {
+          label: "Generated EMF",
+          value: `${emf} V DC`,
+          unit: "EMF",
+          badgeColor: "cyan",
+          progressPct: (emf / 200) * 100,
+        },
+        {
+          label: "Electrical Output",
+          value: `${power} W`,
+          unit: "P_elec",
+          badgeColor: "amber",
+          progressPct: (power / 3000) * 100,
+        },
+      ];
+    },
+    pedagogicalInsight:
+      "The continuous toroidal ring core keeps magnetic flux constant in both halves of the winding. The commutator taps smooth DC output with negligible ripple voltage.",
+  },
+  "us-135245-pasteur-fermentation": {
+    domain: "thermal_transport",
+    domainTitle: "Biochemical Kinetics & Sterile Barrier Thermodynamics",
+    equationName: "Thermal Sterilization & Biological Inactivation",
+    governingEquation: "k = A \\cdot \\exp\\left(-\\frac{E_a}{R \\cdot T}\\right)",
+    engineMethod: "FrankenSimEngine.stepPasteurFermentation",
+    controls: [
+      {
+        id: "wortTempC",
+        label: "Wort Temperature",
+        min: 10,
+        max: 45,
+        step: 1,
+        defaultValue: 22,
+        unit: "°C",
+      },
+    ],
+    computeMetrics: (p) => {
+      const temp = p.wortTempC ?? 22;
+      const activity = Math.min(100, Math.round(100 * Math.exp(-0.02 * (temp - 24) ** 2)));
+      return [
+        {
+          label: "Yeast Culture Activity",
+          value: `${activity}%`,
+          unit: "rate",
+          badgeColor: activity > 70 ? "emerald" : "amber",
+          progressPct: activity,
+        },
+        {
+          label: "Microbial Airborne Purity",
+          value: "100% Sterile",
+          unit: "purity",
+          badgeColor: "cyan",
+          progressPct: 100,
+        },
+      ];
+    },
+    pedagogicalInsight:
+      "Pasteur's narrow S-curved swan-neck pipe lets air enter freely while atmospheric dust and wild airborne bacteria settle in the lower bend, preserving pure yeast strains.",
+  },
+  "us-157124-glidden-barbed-wire": {
+    domain: "solid_mechanics",
+    domainTitle: "Elastic Continuum Mechanics & Torsional Wire Locking",
+    equationName: "Hooke Tensile Stress & Helical Wire Twist",
+    governingEquation:
+      "\\sigma = E \\cdot \\epsilon = \\frac{F}{A} \\quad \\text{and} \\quad \\theta_{\\text{twist}} = \\frac{T \\cdot L}{J \\cdot G}",
+    engineMethod: "FrankenSimEngine.stepGliddenBarbedWire",
+    controls: [
+      {
+        id: "wireTensionN",
+        label: "Line Wire Tension",
+        min: 200,
+        max: 1200,
+        step: 50,
+        defaultValue: 650,
+        unit: "N",
+      },
+    ],
+    computeMetrics: (p) => {
+      const t = p.wireTensionN ?? 650;
+      const sagCm = Number((2800 / Math.max(100, t)).toFixed(1));
+      return [
+        {
+          label: "Span Sag",
+          value: `${sagCm} cm`,
+          unit: "delta_y",
+          badgeColor: sagCm < 5 ? "emerald" : "amber",
+          progressPct: Math.min(100, (sagCm / 15) * 100),
+        },
+        {
+          label: "Spur Longitudinal Lock",
+          value: "Rigid Intertwined",
+          unit: "lock",
+          badgeColor: "emerald",
+          progressPct: 100,
+        },
+      ];
+    },
+    pedagogicalInsight:
+      "Coiling the short spur wire around a single core strand and twisting a second line wire around it locks the barb permanently in place against longitudinal slipping or livestock pressure.",
+  },
+  "us-194047-otto-engine": {
+    domain: "aerodynamics_mbd",
+    domainTitle: "Internal Combustion & 4-Stroke Otto Thermodynamic Cycle",
+    equationName: "Air-Standard Otto Cycle Efficiency",
+    governingEquation:
+      "\\eta_{\\text{Otto}} = 1 - \\frac{1}{r_c^{\\gamma - 1}} \\quad (\\gamma = 1.4)",
+    engineMethod: "FrankenSimEngine.stepOttoEngine",
+    controls: [
+      {
+        id: "engineRpm",
+        label: "Crankshaft Speed",
+        min: 60,
+        max: 320,
+        step: 10,
+        defaultValue: 180,
+        unit: "RPM",
+      },
+    ],
+    computeMetrics: (p) => {
+      const rpm = p.engineRpm ?? 180;
+      const hp = ((rpm / 180) * 3.0).toFixed(1);
+      return [
+        {
+          label: "Brake Horsepower",
+          value: `${hp} BHP`,
+          unit: "P_bhp",
+          badgeColor: "amber",
+          progressPct: (Number(hp) / 6) * 100,
+        },
+        {
+          label: "Cycle Efficiency",
+          value: "38.5%",
+          unit: "eta_otto",
+          badgeColor: "emerald",
+          progressPct: 75,
+        },
+      ];
+    },
+    pedagogicalInsight:
+      "The four distinct strokes (Intake, Compression, Power, Exhaust) compress the fuel-air charge prior to flame ignition, raising peak thermodynamic combustion temperature and work output.",
+  },
+  "us-200521-edison-phonograph": {
+    domain: "solid_mechanics",
+    domainTitle: "Acoustic Transduction & Micro-Groove Indentation",
+    equationName: "Acoustic Pressure & Diaphragm Displacement",
+    governingEquation:
+      "p(t) = \\rho_0 \\cdot c \\cdot v(t) \\quad \\text{and} \\quad z(t) = \\frac{p(t) \\cdot A}{k_{\\text{mica}}}",
+    engineMethod: "FrankenSimEngine.stepEdisonPhonograph",
+    controls: [
+      {
+        id: "mandrelRpm",
+        label: "Mandrel Rotational Speed",
+        min: 40,
+        max: 140,
+        step: 5,
+        defaultValue: 80,
+        unit: "RPM",
+      },
+    ],
+    computeMetrics: (p) => {
+      const rpm = p.mandrelRpm ?? 80;
+      const trackSpeed = ((rpm / 60) * Math.PI * 4.0).toFixed(1);
+      return [
+        {
+          label: "Linear Tracking Speed",
+          value: `${trackSpeed} in/s`,
+          unit: "v_track",
+          badgeColor: "amber",
+          progressPct: (Number(trackSpeed) / 30) * 100,
+        },
+        {
+          label: "Groove Density",
+          value: "10 TPI",
+          unit: "pitch",
+          badgeColor: "cyan",
+          progressPct: 50,
+        },
+      ];
+    },
+    pedagogicalInsight:
+      "Acoustic sound waves vibrate a thin mica diaphragm, driving a steel stylus into a sheet of tinfoil wrapped around a grooved brass cylinder advancing along a lead-screw mandrel.",
+  },
+  "us-233692-pelton-water-wheel": {
+    domain: "aerodynamics_mbd",
+    domainTitle: "Impulse Hydrodynamics & Momentum Transfer",
+    equationName: "Euler Turbine Equation & Dual-Cup Jet Deflection",
+    governingEquation:
+      "P = \\rho \\cdot Q \\cdot v_{\\text{jet}} \\cdot u \\cdot (1 - \\cos \\beta) \\quad (\\beta = 165^\\circ)",
+    engineMethod: "FrankenSimEngine.stepPeltonWheel",
+    controls: [
+      {
+        id: "headMeters",
+        label: "Hydraulic Head",
+        min: 50,
+        max: 600,
+        step: 25,
+        defaultValue: 250,
+        unit: "m",
+      },
+    ],
+    computeMetrics: (p) => {
+      const h = p.headMeters ?? 250;
+      const vJet = Math.round(Math.sqrt(2 * 9.81 * h));
+      const rpm = Math.round(((vJet * 0.47) / (Math.PI * 0.9)) * 60);
+      const kw = Math.round((0.88 * 1000 * 9.81 * 0.05 * h) / 1000);
+      return [
+        {
+          label: "Jet Velocity",
+          value: `${vJet} m/s`,
+          unit: "v_jet",
+          badgeColor: "cyan",
+          progressPct: (vJet / 110) * 100,
+        },
+        {
+          label: "Runner Speed",
+          value: `${rpm} RPM`,
+          unit: "omega_runner",
+          badgeColor: "amber",
+          progressPct: (rpm / 1200) * 100,
+        },
+        {
+          label: "Turbine Power",
+          value: `${kw} kW`,
+          unit: "P_hydro",
+          badgeColor: "emerald",
+          progressPct: (kw / 250) * 100,
+        },
+      ];
+    },
+    pedagogicalInsight:
+      "The knife-edge splitter divides the jet into two equal halves deflected backward at $165^\\circ$, extracting nearly 90% of kinetic energy while avoiding jet interference.",
+  },
+  "us-247804-delaval-separator": {
+    domain: "aerodynamics_mbd",
+    domainTitle: "Centrifugal Dynamics & Multi-Phase Fluid Separation",
+    equationName: "Centrifugal Acceleration & Stokes Separation Velocity",
+    governingEquation:
+      "a_c = \\omega^2 \\cdot r \\quad \\text{and} \\quad v_r = \\frac{d^2 \\cdot (\\rho_{\\text{skim}} - \\rho_{\\text{fat}}) \\cdot \\omega^2 \\cdot r}{18 \\cdot \\mu}",
+    engineMethod: "FrankenSimEngine.stepDeLavalSeparator",
+    controls: [
+      {
+        id: "bowlRpm",
+        label: "Centrifuge Bowl Speed",
+        min: 2000,
+        max: 9000,
+        step: 250,
+        defaultValue: 6000,
+        unit: "RPM",
+      },
+    ],
+    computeMetrics: (p) => {
+      const rpm = p.bowlRpm ?? 6000;
+      const g = Math.round((((rpm * 2 * Math.PI) / 60) ** 2 * 0.12) / 9.81);
+      const yieldFat = Math.min(99.4, 92 + (rpm / 6000) * 7.4).toFixed(1);
+      return [
+        {
+          label: "Centrifugal G-Force",
+          value: `${g.toLocaleString()} g`,
+          unit: "a_c",
+          badgeColor: "rose",
+          progressPct: (g / 11000) * 100,
+        },
+        {
+          label: "Fat Separation Yield",
+          value: `${yieldFat}%`,
+          unit: "yield",
+          badgeColor: "emerald",
+          progressPct: Number(yieldFat),
+        },
+      ];
+    },
+    pedagogicalInsight:
+      "Rotating at 6,000 RPM on a self-centering flexible spindle, the conical disc stack forces dense skim milk to the bowl perimeter while light butterfat concentrates along the central axis.",
+  },
+  "us-347140-thomson-welding": {
+    domain: "electromagnetics_flux",
+    domainTitle: "Electric Resistance Joule Heating & Solid-State Fusion",
+    equationName: "Joule Heating & Upset Forge Welding",
+    governingEquation: "Q = I^2 \\cdot R_{\\text{contact}} \\cdot t",
+    engineMethod: "FrankenSimEngine.stepThomsonWelding",
+    controls: [
+      {
+        id: "weldCurrentAmps",
+        label: "Secondary Current",
+        min: 1000,
+        max: 4500,
+        step: 100,
+        defaultValue: 2500,
+        unit: "A",
+      },
+    ],
+    computeMetrics: (p) => {
+      const i = p.weldCurrentAmps ?? 2500;
+      const kw = Math.round((i ** 2 * 0.0008) / 1000);
+      return [
+        {
+          label: "Joule Heat Power",
+          value: `${kw} kW`,
+          unit: "P_joule",
+          badgeColor: "rose",
+          progressPct: (kw / 16) * 100,
+        },
+        {
+          label: "Interface Plastic State",
+          value: "1,350°C Fusion",
+          unit: "T_weld",
+          badgeColor: "amber",
+          progressPct: 90,
+        },
+      ];
+    },
+    pedagogicalInsight:
+      "A massive single-turn copper secondary bar steps AC down to 1.5V at 2,500A. Localized resistance at the abutted joint heats steel to plastic fusion temperature where an upset screw welds the bond.",
+  },
+  "us-608969-parsons-turbine": {
+    domain: "aerodynamics_mbd",
+    domainTitle: "Multi-Stage Axial Steam Expansion & Reaction Blading",
+    equationName: "Reaction Turbine Enthalpy Drop & Stage Expansion",
+    governingEquation:
+      "\\Delta h_{\\text{stage}} = \\frac{1}{2} \\cdot (v_1^2 - v_2^2) + \\frac{1}{2} \\cdot (w_2^2 - w_1^2)",
+    engineMethod: "FrankenSimEngine.stepParsonsTurbine",
+    controls: [
+      {
+        id: "rotorRpm",
+        label: "Turbine Rotor Speed",
+        min: 1000,
+        max: 6000,
+        step: 100,
+        defaultValue: 3000,
+        unit: "RPM",
+      },
+    ],
+    computeMetrics: (p) => {
+      const rpm = p.rotorRpm ?? 3000;
+      const kw = Math.round((rpm / 3000) * 750);
+      return [
+        {
+          label: "Shaft Power Output",
+          value: `${kw} kW`,
+          unit: "P_shaft",
+          badgeColor: "emerald",
+          progressPct: (kw / 1500) * 100,
+        },
+        {
+          label: "Blade Stage Expansion",
+          value: "12 Stages",
+          unit: "stages",
+          badgeColor: "cyan",
+          progressPct: 100,
+        },
+      ];
+    },
+    pedagogicalInsight:
+      "Parsons divided high-pressure steam expansion across multiple expanding annular rows of reaction blades, keeping tip velocity manageable while directly driving high-speed electrical alternators.",
   },
 };

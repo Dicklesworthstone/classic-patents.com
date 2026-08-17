@@ -15,6 +15,7 @@ import { useEffect, useRef, useState } from "react";
 import * as THREE from "three";
 import { HudText } from "@/components/ui/LatexRenderer";
 import { FrankenSimEngine } from "@/physics/engine";
+import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { soundEngine } from "@/utils/soundEngine";
 import { createGlowPointTexture, createThreeStudioScene } from "./ThreeStudioScene";
 import { useLiveSimParams } from "./useLiveSimParams";
@@ -71,10 +72,11 @@ export function MarconiRadio3D() {
   const containerRef = useRef<HTMLDivElement>(null);
 
   // Spark-Gap Radio State Controls
+  const { params, updateParam } = usePatentPhysics("us-586193-marconi-radio");
   const [showUiOverlay, setShowUiOverlay] = useState<boolean>(true);
-  const [aerialHeightMeters, setAerialHeightMeters] = useState<number>(30); // 10 to 60 meters
+  const aerialHeightMeters = params.aerialHeight ?? 88;
   const [sparkGapMm, setSparkGapMm] = useState<number>(10); // 2 to 25 mm
-  const [inductionCoilKv, setInductionCoilKv] = useState<number>(20); // 5 to 50 kV
+  const inductionCoilKv = params.sparkVoltage ?? 28;
   const [showEmWavefronts, _setShowEmWavefronts] = useState<boolean>(true);
   const [isSparking, _setIsSparking] = useState<boolean>(true);
   const [showCalloutPins, setShowCalloutPins] = useState<boolean>(false);
@@ -136,9 +138,9 @@ export function MarconiRadio3D() {
   };
 
   const applyScenario = (s: ScenarioPreset) => {
-    setAerialHeightMeters(s.heightM);
+    updateParam("aerialHeight", s.heightM);
     setSparkGapMm(s.gapMm);
-    setInductionCoilKv(s.coilKv);
+    updateParam("sparkVoltage", s.coilKv);
     if (!isAudioMuted) {
       soundEngine.playSwitchClick();
     }
@@ -583,7 +585,7 @@ export function MarconiRadio3D() {
               max="60"
               step="5"
               value={aerialHeightMeters}
-              onChange={(e) => setAerialHeightMeters(Number(e.target.value))}
+              onChange={(e) => updateParam("aerialHeight", Number(e.target.value))}
               className="w-full accent-amber-600 cursor-pointer"
             />
             <span className="text-[10px] text-ink-500 dark:text-ink-400 block">
@@ -608,7 +610,7 @@ export function MarconiRadio3D() {
               max="25"
               step="1"
               value={sparkGapMm}
-              onChange={(e) => setSparkGapMm(Number(e.target.value))}
+              onChange={(e) => updateParam("sparkGap", Number(e.target.value))}
               className="w-full accent-blue-600 cursor-pointer"
             />
             <span className="text-[10px] text-ink-500 dark:text-ink-400 block">
@@ -633,7 +635,7 @@ export function MarconiRadio3D() {
               max="50"
               step="2"
               value={inductionCoilKv}
-              onChange={(e) => setInductionCoilKv(Number(e.target.value))}
+              onChange={(e) => updateParam("sparkVoltage", Number(e.target.value))}
               className="w-full accent-emerald-600 cursor-pointer"
             />
             <span className="text-[10px] text-ink-500 dark:text-ink-400 block">

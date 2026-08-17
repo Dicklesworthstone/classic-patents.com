@@ -46,6 +46,7 @@ export interface StudioContext {
   };
   updateEnvironment: () => void;
   dispose: () => void;
+  cleanup: () => void;
 }
 
 /**
@@ -548,7 +549,7 @@ export function createThreeStudioScene(opts: StudioOptions): StudioContext {
     scene.clear();
   };
 
-  return { scene, camera, renderer, controls, updateEnvironment, dispose };
+  return { scene, camera, renderer, controls, updateEnvironment, dispose, cleanup: dispose };
 }
 
 /**

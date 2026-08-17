@@ -1,0 +1,491 @@
+"use client";
+
+import { Activity, Camera, Eye, EyeOff, Sparkles, Volume2, VolumeX, Zap } from "lucide-react";
+import { useEffect, useRef, useState } from "react";
+import * as THREE from "three";
+import { usePatentPhysics } from "@/physics/usePatentPhysics";
+import { soundEngine } from "@/utils/soundEngine";
+import { createThreeStudioScene, type StudioContext } from "./ThreeStudioScene";
+import { useLiveSimParams } from "./useLiveSimParams";
+import { usePatentAudio } from "./usePatentAudio";
+
+type CameraPreset = "iso" | "sickle_guards" | "grain_reel" | "platform" | "top";
+
+interface ScenarioPreset {
+  id: string;
+  name: string;
+  desc: string;
+  speedMph: number;
+  acresPerDay: number;
+}
+
+const SCENARIOS: ScenarioPreset[] = [
+  {
+    id: "mccormick_1834_virginia",
+    name: "1834 Virginia Harvest",
+    desc: "Cyrus McCormick's horse-drawn reaper harvesting 12 acres of ripe wheat per day with reciprocating sickle and 4-vane revolving reel (US X8277).",
+    speedMph: 2.5,
+    acresPerDay: 12.0,
+  },
+  {
+    id: "fast_prairie_run",
+    name: "Fast Midwest Prairie Run",
+    desc: "3.5 MPH trot across level ground delivering 18 acres/day—replacing the labor of 15 manual scythe cradlers.",
+    speedMph: 3.5,
+    acresPerDay: 17.5,
+  },
+  {
+    id: "heavy_damp_grain",
+    name: "Heavy Damp Lodged Wheat",
+    desc: "Slow 1.5 MPH careful cut through tangled stems testing the triangular divider shoe and pointed guard finger separation.",
+    speedMph: 1.5,
+    acresPerDay: 7.2,
+  },
+];
+
+export function McCormickReaper3D() {
+  const containerRef = useRef<HTMLDivElement>(null);
+
+  // Mechanical Reaper Simulation Parameters
+  const { params, updateParam } = usePatentPhysics("us-x8277-mccormick-reaper");
+  const [showUiOverlay, setShowUiOverlay] = useState<boolean>(true);
+  const groundSpeedMph = params.groundSpeedMph ?? 2.5;
+  const sickleCps = groundSpeedMph * 4.2; // Cycles per second
+  const reelRpm = groundSpeedMph * 12.0; // Revolutions per min
+  const [showStalks, setShowStalks] = useState<boolean>(true);
+  const [activeCamera, setActiveCamera] = useState<CameraPreset>("iso");
+  const { isAudioMuted, toggleSound: toggleEngine } = usePatentAudio();
+
+  const acresPerDay = (groundSpeedMph * 5.0).toFixed(1);
+  const laborRatio = (Number(acresPerDay) / 1.0).toFixed(0); // 1 acre/day per man with cradle scythe
+
+  const live = useLiveSimParams({
+    groundSpeedMph,
+    sickleCps,
+    reelRpm,
+    showStalks,
+    isAudioMuted,
+  });
+
+  const controlsRef = useRef<StudioContext["controls"] | null>(null);
+  const cameraRef = useRef<THREE.PerspectiveCamera | null>(null);
+
+  const applyCameraPreset = (preset: CameraPreset) => {
+    setActiveCamera(preset);
+    const camera = cameraRef.current;
+    const controls = controlsRef.current;
+    if (!camera || !controls) return;
+
+    switch (preset) {
+      case "iso":
+        camera.position.set(10.5, 7.0, 11.0);
+        controls.target.set(0, 0, 0);
+        break;
+      case "sickle_guards":
+        camera.position.set(-1.0, 1.0, 4.5);
+        controls.target.set(-0.5, -0.6, 1.8);
+        break;
+      case "grain_reel":
+        camera.position.set(2.8, 3.8, 4.0);
+        controls.target.set(0, 1.2, 0);
+        break;
+      case "platform":
+        camera.position.set(0, 5.0, 0);
+        controls.target.set(0, -0.5, -0.5);
+        break;
+      case "top":
+        camera.position.set(0, 13.0, 0.1);
+        controls.target.set(0, 0, 0);
+        break;
+    }
+    controls.update();
+  };
+
+  const applyScenario = (s: ScenarioPreset) => {
+    updateParam("groundSpeedMph", s.speedMph);
+    if (!isAudioMuted) {
+      soundEngine.playSwitchClick();
+    }
+  };
+
+  const toggleSound = () => {
+    toggleEngine(() => {
+      soundEngine.playSwitchClick();
+    });
+  };
+
+  // biome-ignore lint/correctness/useExhaustiveDependencies: Three.js studio lifecycle
+  useEffect(() => {
+    const container = containerRef.current;
+    if (!container) return;
+
+    const studio = createThreeStudioScene({
+      container,
+      cameraPos: [10.5, 7.0, 11.0],
+      targetPos: [0, 0, 0],
+    });
+
+    const { scene, camera, renderer, controls } = studio;
+    cameraRef.current = camera;
+    controlsRef.current = controls;
+
+    // Materials
+    const weatheredWoodMat = new THREE.MeshStandardMaterial({
+      color: 0x6b4226,
+      roughness: 0.8,
+      metalness: 0.05,
+    });
+
+    const ashWoodMat = new THREE.MeshStandardMaterial({
+      color: 0xa16207,
+      roughness: 0.6,
+      metalness: 0.05,
+    });
+
+    const castIronMat = new THREE.MeshStandardMaterial({
+      color: 0x27272a,
+      roughness: 0.4,
+      metalness: 0.85,
+    });
+
+    const sickleSteelMat = new THREE.MeshStandardMaterial({
+      color: 0xe2e8f0,
+      roughness: 0.15,
+      metalness: 0.95,
+    });
+
+    const brassGearsMat = new THREE.MeshStandardMaterial({
+      color: 0xd97706,
+      roughness: 0.25,
+      metalness: 0.9,
+    });
+
+    const strawMat = new THREE.MeshStandardMaterial({
+      color: 0xfde047,
+      roughness: 0.9,
+      metalness: 0.0,
+    });
+
+    const rootGroup = new THREE.Group();
+    scene.add(rootGroup);
+
+    // 1. Heavy Wooden Main Chassis & Grain Platform Deck
+    const platformGroup = new THREE.Group();
+    rootGroup.add(platformGroup);
+
+    // Wooden Grain Platform
+    const platformDeck = new THREE.Mesh(new THREE.BoxGeometry(6.5, 0.18, 4.5), weatheredWoodMat);
+    platformDeck.position.set(0.5, -0.6, -0.5);
+    platformDeck.castShadow = true;
+    platformDeck.receiveShadow = true;
+    platformGroup.add(platformDeck);
+
+    // Draft Tongue (Extending Forward to Horses)
+    const draftTongue = new THREE.Mesh(new THREE.BoxGeometry(0.3, 0.35, 7.5), ashWoodMat);
+    draftTongue.position.set(3.2, -0.5, 4.2);
+    draftTongue.castShadow = true;
+    platformGroup.add(draftTongue);
+
+    // Side Grain Divider Shoe (Triangular Wedge)
+    const dividerShoe = new THREE.Mesh(new THREE.ConeGeometry(0.6, 2.8, 4), weatheredWoodMat);
+    dividerShoe.rotation.x = Math.PI / 2;
+    dividerShoe.rotation.z = Math.PI / 4;
+    dividerShoe.position.set(-2.8, -0.5, 2.0);
+    dividerShoe.castShadow = true;
+    platformGroup.add(dividerShoe);
+
+    // 2. Large Spoked Ground Drive Wheel with Master Bull Gear
+    const driveWheelGroup = new THREE.Group();
+    driveWheelGroup.position.set(3.4, -0.2, 0);
+    rootGroup.add(driveWheelGroup);
+
+    // Outer Wooden / Iron Tire Rim
+    const wheelRim = new THREE.Mesh(new THREE.TorusGeometry(1.9, 0.14, 16, 36), castIronMat);
+    wheelRim.rotation.y = Math.PI / 2;
+    wheelRim.castShadow = true;
+    driveWheelGroup.add(wheelRim);
+
+    // Spoke Array
+    for (let sp = 0; sp < 8; sp++) {
+      const spAngle = (sp * Math.PI) / 4;
+      const spoke = new THREE.Mesh(new THREE.CylinderGeometry(0.06, 0.06, 3.7, 12), castIronMat);
+      spoke.rotation.x = spAngle;
+      driveWheelGroup.add(spoke);
+    }
+
+    // Master Bull Gear Hub
+    const bullGear = new THREE.Mesh(new THREE.CylinderGeometry(0.9, 0.9, 0.22, 24), brassGearsMat);
+    bullGear.rotation.z = Math.PI / 2;
+    driveWheelGroup.add(bullGear);
+
+    // 3. Pointed Guard Fingers & Reciprocating Serrated Sickle Bar (Claim 1)
+    const cutterAssembly = new THREE.Group();
+    cutterAssembly.position.set(0.5, -0.6, 1.8);
+    rootGroup.add(cutterAssembly);
+
+    // Stationary Pointed Guard Fingers
+    const fingerCount = 18;
+    for (let f = 0; f < fingerCount; f++) {
+      const fx = -2.8 + f * (5.6 / (fingerCount - 1));
+      const finger = new THREE.Mesh(new THREE.ConeGeometry(0.12, 0.75, 4), castIronMat);
+      finger.rotation.x = Math.PI / 2;
+      finger.position.set(fx, 0, 0.35);
+      finger.castShadow = true;
+      cutterAssembly.add(finger);
+    }
+
+    // Reciprocating Serrated Sickle Bar
+    const sickleBarGroup = new THREE.Group();
+    cutterAssembly.add(sickleBarGroup);
+
+    const sickleSteelBacking = new THREE.Mesh(
+      new THREE.BoxGeometry(5.8, 0.08, 0.12),
+      sickleSteelMat,
+    );
+    sickleBarGroup.add(sickleSteelBacking);
+
+    // Triangular Serrated Cutter Teeth
+    for (let t = 0; t < fingerCount; t++) {
+      const tx = -2.8 + t * (5.6 / (fingerCount - 1));
+      const tooth = new THREE.Mesh(new THREE.ConeGeometry(0.14, 0.45, 3), sickleSteelMat);
+      tooth.rotation.x = Math.PI / 2;
+      tooth.position.set(tx, 0.04, 0.2);
+      sickleBarGroup.add(tooth);
+    }
+
+    // Pitman Arm & Crank Drive
+    const pitmanArm = new THREE.Mesh(new THREE.BoxGeometry(0.12, 0.12, 1.8), castIronMat);
+    pitmanArm.position.set(3.0, 0, 0.8);
+    pitmanArm.rotation.y = -Math.PI / 8;
+    cutterAssembly.add(pitmanArm);
+
+    // 4. Revolving 4-Vane Grain Reel
+    const reelGroup = new THREE.Group();
+    reelGroup.position.set(0.5, 1.4, 0.8);
+    rootGroup.add(reelGroup);
+
+    // Reel Central Axle
+    const reelAxle = new THREE.Mesh(new THREE.CylinderGeometry(0.12, 0.12, 6.2, 16), ashWoodMat);
+    reelAxle.rotation.z = Math.PI / 2;
+    reelGroup.add(reelAxle);
+
+    // 4 Radial Vanes
+    for (let v = 0; v < 4; v++) {
+      const vAngle = (v * Math.PI) / 2;
+      const vaneGroup = new THREE.Group();
+      vaneGroup.rotation.x = vAngle;
+
+      // Radial Wooden Arms
+      [-2.4, 2.4].forEach((axPos) => {
+        const arm = new THREE.Mesh(new THREE.BoxGeometry(0.08, 1.8, 0.08), ashWoodMat);
+        arm.position.set(axPos, 0.9, 0);
+        vaneGroup.add(arm);
+      });
+
+      // Horizontal Sweep Slat
+      const slat = new THREE.Mesh(new THREE.BoxGeometry(6.0, 0.25, 0.04), ashWoodMat);
+      slat.position.set(0, 1.8, 0);
+      slat.castShadow = true;
+      vaneGroup.add(slat);
+
+      reelGroup.add(vaneGroup);
+    }
+
+    // 5. Standing Wheat Stalks Field & Falling Cut Stems
+    const stalkCount = 45;
+    const stalksInstanced = new THREE.InstancedMesh(
+      new THREE.CylinderGeometry(0.03, 0.03, 1.6, 6),
+      strawMat,
+      stalkCount,
+    );
+    const dummy = new THREE.Object3D();
+    for (let i = 0; i < stalkCount; i++) {
+      dummy.position.set(-2.5 + Math.random() * 5.0, 0.2, 2.2 + Math.random() * 2.5);
+      dummy.rotation.set((Math.random() - 0.5) * 0.2, 0, (Math.random() - 0.5) * 0.2);
+      dummy.updateMatrix();
+      stalksInstanced.setMatrixAt(i, dummy.matrix);
+    }
+    stalksInstanced.instanceMatrix.needsUpdate = true;
+    rootGroup.add(stalksInstanced);
+
+    // Cut Grain Sheaf on Deck
+    const sheafGeo = new THREE.CylinderGeometry(0.35, 0.5, 2.2, 8);
+    sheafGeo.rotateZ(Math.PI / 2);
+    const sheafMesh = new THREE.Mesh(sheafGeo, strawMat);
+    sheafMesh.position.set(0.6, -0.4, -0.6);
+    sheafMesh.castShadow = true;
+    platformGroup.add(sheafMesh);
+
+    // Animation Loop
+    let reqId: number;
+    const clock = new THREE.Clock();
+
+    const animate = () => {
+      reqId = requestAnimationFrame(animate);
+      const delta = clock.getDelta();
+      const p = live.current;
+
+      const wheelRadPerSec = (p.groundSpeedMph * 5280 * 12) / (3600 * 38); // 38" wheel diameter
+      const reelRadPerSec = (p.reelRpm * 2 * Math.PI) / 60;
+
+      driveWheelGroup.rotation.x += wheelRadPerSec * delta;
+      reelGroup.rotation.x += reelRadPerSec * delta;
+
+      // Reciprocate Sickle Bar
+      const sicklePhase = clock.getElapsedTime() * p.sickleCps * Math.PI * 2;
+      sickleBarGroup.position.x = Math.sin(sicklePhase) * 0.18; // 3.5-inch stroke
+
+      stalksInstanced.visible = p.showStalks;
+
+      renderer.render(scene, camera);
+    };
+
+    animate();
+
+    return () => {
+      cancelAnimationFrame(reqId);
+      studio.cleanup();
+    };
+  }, []);
+
+  return (
+    <div className="relative w-full h-[620px] bg-parchment-900 rounded-2xl overflow-hidden border border-parchment-700 shadow-2xl flex flex-col">
+      <div ref={containerRef} className="w-full h-full cursor-grab active:cursor-grabbing" />
+
+      {/* Top HUD Controls */}
+      <div className="absolute top-4 left-4 right-4 flex flex-wrap items-center justify-between gap-3 pointer-events-none z-10">
+        <div className="flex items-center gap-2 bg-parchment-950/80 backdrop-blur-md px-3.5 py-2 rounded-xl border border-parchment-700/60 shadow-lg pointer-events-auto">
+          <Activity className="w-4 h-4 text-amber-500 animate-pulse" />
+          <span className="text-xs font-mono font-bold text-parchment-100 uppercase tracking-wider">
+            McCormick Reaper 3D
+          </span>
+          <span className="text-[10px] font-mono px-2 py-0.5 rounded-full bg-amber-500/20 text-amber-300 border border-amber-500/30">
+            US Patent X8277 (1834)
+          </span>
+        </div>
+
+        {/* Camera Toolbar */}
+        <div className="flex items-center gap-1.5 bg-parchment-950/80 backdrop-blur-md p-1.5 rounded-xl border border-parchment-700/60 shadow-lg pointer-events-auto">
+          <Camera className="w-3.5 h-3.5 text-parchment-400 ml-1.5 mr-1" />
+          {(
+            [
+              ["iso", "Isometric"],
+              ["sickle_guards", "Sickle Bar"],
+              ["grain_reel", "Grain Reel"],
+              ["platform", "Platform"],
+              ["top", "Top"],
+            ] as [CameraPreset, string][]
+          ).map(([preset, label]) => (
+            <button
+              key={preset}
+              type="button"
+              onClick={() => applyCameraPreset(preset)}
+              className={`px-2.5 py-1 text-xs font-sans rounded-lg transition-colors ${
+                activeCamera === preset
+                  ? "bg-amber-600 text-white font-semibold shadow-sm"
+                  : "text-parchment-300 hover:text-white hover:bg-parchment-800/60"
+              }`}
+            >
+              {label}
+            </button>
+          ))}
+        </div>
+
+        {/* Toggles */}
+        <div className="flex items-center gap-1.5 bg-parchment-950/80 backdrop-blur-md p-1.5 rounded-xl border border-parchment-700/60 shadow-lg pointer-events-auto">
+          <button
+            type="button"
+            onClick={() => setShowStalks(!showStalks)}
+            title="Toggle Wheat Stalks"
+            className={`p-1.5 rounded-lg text-xs transition-colors ${
+              showStalks
+                ? "bg-amber-600/30 text-amber-300 border border-amber-500/40"
+                : "text-parchment-400 hover:text-white"
+            }`}
+          >
+            {showStalks ? <Eye className="w-4 h-4" /> : <EyeOff className="w-4 h-4" />}
+          </button>
+          <button
+            type="button"
+            onClick={toggleSound}
+            title={isAudioMuted ? "Unmute Sound" : "Mute Sound"}
+            className="p-1.5 rounded-lg text-xs text-parchment-400 hover:text-white hover:bg-parchment-800 transition-colors"
+          >
+            {isAudioMuted ? <VolumeX className="w-4 h-4" /> : <Volume2 className="w-4 h-4" />}
+          </button>
+          <button
+            type="button"
+            onClick={() => setShowUiOverlay(!showUiOverlay)}
+            className="p-1.5 rounded-lg text-xs text-parchment-400 hover:text-white hover:bg-parchment-800 transition-colors"
+          >
+            <Zap className="w-4 h-4 text-amber-400" />
+          </button>
+        </div>
+      </div>
+
+      {/* Bottom Telemetry Bar & Controls */}
+      {showUiOverlay && (
+        <div className="absolute bottom-4 left-4 right-4 bg-parchment-950/90 backdrop-blur-md rounded-2xl border border-parchment-700/70 p-4 shadow-2xl z-10 flex flex-col gap-3">
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5 pb-2 border-b border-parchment-800/80 text-xs font-mono">
+            <div className="bg-parchment-900/80 px-3 py-1.5 rounded-lg border border-parchment-700/50 flex flex-col">
+              <span className="text-[10px] text-parchment-400 uppercase">Ground Speed</span>
+              <span className="font-bold text-amber-400">{groundSpeedMph.toFixed(1)} MPH</span>
+            </div>
+            <div className="bg-parchment-900/80 px-3 py-1.5 rounded-lg border border-parchment-700/50 flex flex-col">
+              <span className="text-[10px] text-parchment-400 uppercase">Sickle Frequency</span>
+              <span className="font-bold text-blue-400">{sickleCps.toFixed(1)} Hz (Cycles/s)</span>
+            </div>
+            <div className="bg-parchment-900/80 px-3 py-1.5 rounded-lg border border-parchment-700/50 flex flex-col">
+              <span className="text-[10px] text-parchment-400 uppercase">Grain Reel Speed</span>
+              <span className="font-bold text-emerald-400">{reelRpm.toFixed(0)} RPM</span>
+            </div>
+            <div className="bg-parchment-900/80 px-3 py-1.5 rounded-lg border border-parchment-700/50 flex flex-col">
+              <span className="text-[10px] text-parchment-400 uppercase">Daily Reaping Rate</span>
+              <span className="font-bold text-amber-300">
+                {acresPerDay} Acres/Day ({laborRatio}× scythe)
+              </span>
+            </div>
+          </div>
+
+          <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
+            <div className="flex items-center gap-2 w-full sm:w-auto">
+              <span className="text-xs font-mono text-parchment-400 flex items-center gap-1 shrink-0">
+                <Sparkles className="w-3.5 h-3.5 text-amber-500" /> Presets:
+              </span>
+              <div className="flex gap-1.5 overflow-x-auto pb-1">
+                {SCENARIOS.map((sc) => (
+                  <button
+                    key={sc.id}
+                    type="button"
+                    onClick={() => applyScenario(sc)}
+                    className="px-2.5 py-1 text-xs font-sans rounded-lg bg-parchment-800/80 hover:bg-parchment-700 text-parchment-200 hover:text-white border border-parchment-600/50 transition-colors whitespace-nowrap"
+                  >
+                    {sc.name}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            <div className="flex items-center gap-3 w-full sm:w-72 shrink-0">
+              <span className="text-xs font-sans text-parchment-300 shrink-0 font-medium">
+                Ground Speed:
+              </span>
+              <input
+                type="range"
+                min="1.0"
+                max="5.0"
+                step="0.1"
+                value={groundSpeedMph}
+                onChange={(e) => updateParam("groundSpeedMph", Number(e.target.value))}
+                className="w-full accent-amber-500 cursor-pointer"
+              />
+              <span className="text-xs font-mono text-amber-400 w-16 text-right font-bold">
+                {groundSpeedMph.toFixed(1)} MPH
+              </span>
+            </div>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}

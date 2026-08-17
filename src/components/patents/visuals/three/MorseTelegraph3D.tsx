@@ -13,6 +13,7 @@ import {
 } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import * as THREE from "three";
+import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { soundEngine } from "@/utils/soundEngine";
 import { createGlowPointTexture, createThreeStudioScene } from "./ThreeStudioScene";
 import { useLiveSimParams } from "./useLiveSimParams";
@@ -67,6 +68,7 @@ export function MorseTelegraph3D() {
   const containerRef = useRef<HTMLDivElement>(null);
 
   // Telegraph Circuit State Controls
+  const { params, updateParam } = usePatentPhysics("us-1647-morse-telegraph");
   const [showUiOverlay, setShowUiOverlay] = useState<boolean>(true);
   const [lineVoltageV, setLineVoltageV] = useState<number>(24); // 6 to 48 VV
   const [lineLengthMiles, setLineLengthMiles] = useState<number>(44); // Baltimore to Washington (44 miles)
@@ -80,7 +82,8 @@ export function MorseTelegraph3D() {
   const lineResistanceOhms = Math.round(lineLengthMiles * 12.5);
   const coilResistanceOhms = 150;
   const totalResistanceOhms = lineResistanceOhms + coilResistanceOhms;
-  const loopCurrentMa = ((lineVoltageV / totalResistanceOhms) * 1000).toFixed(1);
+  const computedCurrentMa = (lineVoltageV / totalResistanceOhms) * 1000;
+  const loopCurrentMa = (params.currentMa ?? computedCurrentMa).toFixed(1);
   const magneticHoldForceN = (Number(loopCurrentMa) * 0.08).toFixed(2);
 
   const live = useLiveSimParams({
@@ -128,8 +131,14 @@ export function MorseTelegraph3D() {
     setLineVoltageV(s.voltageV);
     setLineLengthMiles(s.miles);
     setWpmSpeed(s.wpm);
+    const r = s.miles * 12.5 + 150;
+    updateParam("currentMa", (s.voltageV / r) * 1000);
     if (isPlayingAudio) soundEngine.playMorseClick();
   };
+
+  useEffect(() => {
+    updateParam("currentMa", computedCurrentMa);
+  }, [computedCurrentMa, updateParam]);
 
   const handleKeyDown = () => {
     setKeyIsDown(true);
@@ -551,7 +560,11 @@ export function MorseTelegraph3D() {
               max="250"
               step="5"
               value={lineLengthMiles}
-              onChange={(e) => setLineLengthMiles(Number(e.target.value))}
+              onChange={(e) => {
+                const miles = Number(e.target.value);
+                setLineLengthMiles(miles);
+                updateParam("currentMa", (lineVoltageV / (miles * 12.5 + 150)) * 1000);
+              }}
               className="w-full accent-blue-600 cursor-pointer"
             />
             <span className="text-[10px] text-ink-500 dark:text-ink-400 block">
@@ -576,7 +589,11 @@ export function MorseTelegraph3D() {
               max="48"
               step="2"
               value={lineVoltageV}
-              onChange={(e) => setLineVoltageV(Number(e.target.value))}
+              onChange={(e) => {
+                const volts = Number(e.target.value);
+                setLineVoltageV(volts);
+                updateParam("currentMa", (volts / totalResistanceOhms) * 1000);
+              }}
               className="w-full accent-emerald-600 cursor-pointer"
             />
             <span className="text-[10px] text-ink-500 dark:text-ink-400 block">

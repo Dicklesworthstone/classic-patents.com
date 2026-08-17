@@ -13,6 +13,7 @@ import {
 } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import * as THREE from "three";
+import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { soundEngine } from "@/utils/soundEngine";
 import { createThreeStudioScene } from "./ThreeStudioScene";
 import { useLiveSimParams } from "./useLiveSimParams";
@@ -73,8 +74,10 @@ export function KwolekKevlar3D() {
   const containerRef = useRef<HTMLDivElement>(null);
 
   // Polymer Chemistry State Controls
+  const { params, updateParam } = usePatentPhysics("us-3671542-kwolek-kevlar");
   const [showUiOverlay, setShowUiOverlay] = useState<boolean>(true);
-  const [shearRate, setShearRate] = useState<number>(450); // 50 to 1000 s^-1
+  const drawRatio = params.drawRatio ?? 6.5;
+  const shearRate = 50 + ((drawRatio - 2) / 7) * 950;
   const [polymerConcentrationPct, setPolymerConcentrationPct] = useState<number>(18.5); // 5 to 25 wt%
   const [temperatureCelsius, setTemperatureCelsius] = useState<number>(85); // 20 to 120 °C
   const [showHydrogenBonds, setShowHydrogenBonds] = useState<boolean>(true);
@@ -132,7 +135,7 @@ export function KwolekKevlar3D() {
   };
 
   const applyScenario = (s: ScenarioPreset) => {
-    setShearRate(s.shear);
+    updateParam("drawRatio", 2 + ((s.shear - 50) / 950) * 7);
     setPolymerConcentrationPct(s.conc);
     setTemperatureCelsius(s.temp);
     setIsImpactTesting(s.impact);
@@ -563,8 +566,12 @@ export function KwolekKevlar3D() {
               min="50"
               max="1000"
               step="50"
-              value={shearRate}
-              onChange={(e) => setShearRate(Number(e.target.value))}
+              value={Math.round(shearRate)}
+              onChange={(e) => {
+                const s = Number(e.target.value);
+                const dr = 2 + ((s - 50) / 950) * 7;
+                updateParam("drawRatio", dr);
+              }}
               className="w-full accent-amber-600 cursor-pointer"
             />
             <span className="text-[10px] text-ink-500 dark:text-ink-400 block">

@@ -14,6 +14,7 @@ import {
 } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import * as THREE from "three";
+import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { soundEngine } from "@/utils/soundEngine";
 import { createGlowPointTexture, createThreeStudioScene } from "./ThreeStudioScene";
 import { useLiveSimParams } from "./useLiveSimParams";
@@ -69,8 +70,9 @@ export function WozniakApple3D() {
   const containerRef = useRef<HTMLDivElement>(null);
 
   // Microcomputer Architecture State Controls
+  const { params, updateParam } = usePatentPhysics("us-4136359-wozniak-apple");
   const [showUiOverlay, setShowUiOverlay] = useState<boolean>(true);
-  const [clockFrequencyMhz, setClockFrequencyMhz] = useState<number>(1.02); // 0.5 to 2.0 MHz
+  const clockFrequencyMhz = (params.crystalFreq ?? 14.318) / 14;
   const [videoMode, setVideoMode] = useState<"hires_color" | "lores_color" | "text_40col">(
     "hires_color",
   );
@@ -129,7 +131,7 @@ export function WozniakApple3D() {
   };
 
   const applyScenario = (s: ScenarioPreset) => {
-    setClockFrequencyMhz(s.clockMhz);
+    updateParam("crystalFreq", s.clockMhz * 14);
     setVideoMode(s.mode);
     setRamCapacityKb(s.ramKb);
     if (!isAudioMuted) {
@@ -550,7 +552,7 @@ export function WozniakApple3D() {
               max="2.0"
               step="0.05"
               value={clockFrequencyMhz}
-              onChange={(e) => setClockFrequencyMhz(Number(e.target.value))}
+              onChange={(e) => updateParam("crystalFreq", Number(e.target.value) * 14)}
               className="w-full accent-amber-600 cursor-pointer"
             />
             <span className="text-[10px] text-ink-500 dark:text-ink-400 block">

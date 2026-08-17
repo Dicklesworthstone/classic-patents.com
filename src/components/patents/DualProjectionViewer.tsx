@@ -20,6 +20,7 @@ import { HistoricalContextPanel } from "./HistoricalContextPanel";
 import { InteractiveDiagramViewer } from "./InteractiveDiagramViewer";
 import { MuseumBroadsidePlaque } from "./MuseumBroadsidePlaque";
 import { PhysicsTelemetryBadge } from "./PhysicsTelemetryBadge";
+import { SpecClauseText } from "./SpecClauseText";
 import { PatentVisualDispatcher } from "./visuals";
 
 interface DualProjectionViewerProps {
@@ -318,9 +319,11 @@ export function DualProjectionViewer({ patent, initialView }: DualProjectionView
                   ? "Loading complete transcription…"
                   : originalTextLabel}
               </p>
-              <div className="font-serif text-sm sm:text-base leading-relaxed text-ink-950 dark:text-parchment-100 whitespace-pre-wrap select-text">
-                {originalText}
-              </div>
+              <SpecClauseText
+                patentId={patent.id}
+                text={originalText}
+                className="font-serif text-sm sm:text-base leading-relaxed text-ink-950 dark:text-parchment-100 whitespace-pre-wrap select-text"
+              />
             </div>
           </div>
         </div>
@@ -526,9 +529,11 @@ export function DualProjectionViewer({ patent, initialView }: DualProjectionView
             </div>
 
             {/* Verbatim Text Block */}
-            <div className="p-8 sm:p-10 rounded-2xl bg-parchment-100/80 dark:bg-ink-900/80 border border-parchment-300 dark:border-ink-800 text-base sm:text-lg font-serif text-ink-950 dark:text-parchment-100 leading-relaxed whitespace-pre-wrap select-text shadow-xs">
-              {originalText}
-            </div>
+            <SpecClauseText
+              patentId={patent.id}
+              text={originalText}
+              className="p-8 sm:p-10 rounded-2xl bg-parchment-100/80 dark:bg-ink-900/80 border border-parchment-300 dark:border-ink-800 text-base sm:text-lg font-serif text-ink-950 dark:text-parchment-100 leading-relaxed whitespace-pre-wrap select-text shadow-xs"
+            />
 
             {/* Claims section */}
             <div className="space-y-4 pt-5 border-t border-parchment-200 dark:border-ink-800">
