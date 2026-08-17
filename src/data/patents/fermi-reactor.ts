@@ -152,7 +152,7 @@ WE CLAIM:
       figureNumber: "Fig. 1",
       title: "Perspective Cutaway of Graphite Reactor Core",
       caption: "Isometric cutaway of Chicago Pile-1 graphite lattice and fuel channels.",
-      svgType: "three-interactive",
+      svgType: "fermi-reactor",
       callouts: [
         {
           id: "c1",
@@ -178,7 +178,7 @@ WE CLAIM:
       figureNumber: "Fig. 2",
       title: "Control Rod Channels & Safety Mechanism",
       caption: "Vertical cross-section showing motorized cadmium control rods.",
-      svgType: "three-interactive",
+      svgType: "fermi-reactor",
       callouts: [
         {
           id: "c3",

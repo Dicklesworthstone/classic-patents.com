@@ -108,7 +108,7 @@ In accordance with our invention, an improved three-phase electrode structure is
       title: "Cross Section of 3-Phase CCD Showing Potential Wells",
       caption:
         "Cross-sectional blueprint showing silicon substrate, oxide dielectric layer, and 3-phase gate electrodes shifting charge packets.",
-      svgType: "noyce-ic",
+      svgType: "boyle-smith-ccd",
       callouts: [
         {
           id: "ccd-1",

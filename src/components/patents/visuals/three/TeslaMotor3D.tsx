@@ -5,6 +5,7 @@ import { useEffect, useRef, useState } from "react";
 import * as THREE from "three";
 import { soundEngine } from "@/utils/soundEngine";
 import { createGlowPointTexture, createThreeStudioScene } from "./ThreeStudioScene";
+import { useLiveSimParams } from "./useLiveSimParams";
 
 export function TeslaMotor3D() {
   const containerRef = useRef<HTMLDivElement>(null);
@@ -30,6 +31,13 @@ export function TeslaMotor3D() {
     ((appliedLoadTorqueNm * (rotorSpeedRpm * 2 * Math.PI)) / 60) * 1.15,
   );
   const rotorInducedCurrentAmps = Math.round(slip * 65.0 * (acFrequencyHz / 60));
+
+  const live = useLiveSimParams({
+    acFrequencyHz,
+    polePairs,
+    slip,
+    showMagneticFlux,
+  });
 
   // Web Audio AC Motor 60Hz Harmonic Sound
   useEffect(() => {
@@ -229,8 +237,10 @@ export function TeslaMotor3D() {
       const delta = clock.getDelta();
       const elapsed = clock.getElapsedTime();
 
+      const p = live.current;
+
       // 1. Angular Velocity of Rotating Magnetic Field: omega_sync = 2 * pi * f / p
-      const omegaSync = (2 * Math.PI * acFrequencyHz) / polePairs;
+      const omegaSync = (2 * Math.PI * p.acFrequencyHz) / p.polePairs;
       bFieldAngle += omegaSync * delta * 0.08; // Scaled for visual tracking
 
       // 2. Rotate B-Field Vector
@@ -238,13 +248,13 @@ export function TeslaMotor3D() {
       bFieldArrow.setDirection(bDir);
 
       // 3. Rotor Mechanical Rotation: omega_rotor = omega_sync * (1 - slip)
-      const omegaRotor = omegaSync * (1 - slip) * 0.08;
+      const omegaRotor = omegaSync * (1 - p.slip) * 0.08;
       rotorGroup.rotation.y += omegaRotor * delta;
 
       // 4. Modulate Stator Coil Emissive Glow by Instantaneous Sinusoidal Phase Current
       for (const item of coilMeshes) {
         const phaseOffset = item.phaseIdx * (phaseCount === 2 ? Math.PI / 2 : (2 * Math.PI) / 3);
-        const currentI = Math.sin(elapsed * acFrequencyHz * 0.5 + phaseOffset);
+        const currentI = Math.sin(elapsed * p.acFrequencyHz * 0.5 + phaseOffset);
         const mat = item.mesh.material as THREE.MeshStandardMaterial;
         mat.emissive = new THREE.Color(0xf59e0b);
         mat.emissiveIntensity = Math.abs(currentI) * 0.9;
@@ -264,8 +274,8 @@ export function TeslaMotor3D() {
         fPos[idx + 2] = Math.sin(curAngle) * r;
       }
       fluxGeo.attributes.position.needsUpdate = true;
-      fluxPoints.visible = showMagneticFlux;
-      bFieldArrow.visible = showMagneticFlux;
+      fluxPoints.visible = p.showMagneticFlux;
+      bFieldArrow.visible = p.showMagneticFlux;
 
       controls.update();
       renderer.render(scene, camera);
@@ -277,7 +287,7 @@ export function TeslaMotor3D() {
       cancelAnimationFrame(reqId);
       studio.dispose();
     };
-  }, [acFrequencyHz, phaseCount, polePairs, showMagneticFlux, slip]);
+  }, [live, phaseCount]);
 
   return (
     <div className="flex flex-col h-full bg-parchment-50/60 dark:bg-ink-950/80 rounded-2xl overflow-hidden border border-parchment-300 dark:border-ink-800 shadow-patent">
@@ -294,19 +304,19 @@ export function TeslaMotor3D() {
             </div>
             <div className="grid grid-cols-2 gap-x-4 gap-y-1 mt-1 text-xs font-sans">
               <div>
-                <span className="text-ink-600 dark:text-ink-400">Sync Speed ($n_s$):</span>{" "}
+                <span className="text-ink-600 dark:text-ink-400">Sync Speed (nₛ):</span>{" "}
                 <span className="font-bold text-blue-600 dark:text-blue-400">
                   {synchronousSpeedRpm} RPM
                 </span>
               </div>
               <div>
-                <span className="text-ink-600 dark:text-ink-400">Rotor Speed ($n_r$):</span>{" "}
+                <span className="text-ink-600 dark:text-ink-400">Rotor Speed (nᵣ):</span>{" "}
                 <span className="font-bold text-emerald-600 dark:text-emerald-400">
                   {rotorSpeedRpm} RPM
                 </span>
               </div>
               <div>
-                <span className="text-ink-600 dark:text-ink-400">Rotor Slip ($s$):</span>{" "}
+                <span className="text-ink-600 dark:text-ink-400">Rotor Slip (s):</span>{" "}
                 <span className="font-bold text-amber-600 dark:text-amber-400">
                   {(slip * 100).toFixed(1)}%
                 </span>
@@ -369,7 +379,7 @@ export function TeslaMotor3D() {
         {/* AC Frequency */}
         <div className="space-y-1.5">
           <div className="flex justify-between font-medium text-ink-900 dark:text-parchment-100">
-            <span>AC Frequency ($f$):</span>
+            <span>AC Frequency (f):</span>
             <span className="font-bold text-amber-700 dark:text-amber-400">{acFrequencyHz} Hz</span>
           </div>
           <input
@@ -382,7 +392,7 @@ export function TeslaMotor3D() {
             className="w-full accent-amber-600 dark:accent-amber-400 cursor-pointer"
           />
           <span className="text-[10px] text-ink-500 dark:text-ink-400 block">
-            Sets rotating stator flux velocity $\omega_s = 2\pi f / P$
+            Sets rotating stator flux velocity ωₛ = 2πf / P
           </span>
         </div>
 
@@ -438,7 +448,7 @@ export function TeslaMotor3D() {
             className="w-full accent-emerald-600 dark:accent-emerald-400 cursor-pointer"
           />
           <span className="text-[10px] text-ink-500 dark:text-ink-400 block">
-            Higher load increases slip $s$ to induce torque
+            Higher load increases slip s to induce torque
           </span>
         </div>
 
@@ -457,7 +467,7 @@ export function TeslaMotor3D() {
             />
           </div>
           <span className="text-[10px] text-ink-500 dark:text-ink-400 block">
-            {"$\\eta \\approx (1-s)\\cdot\\eta_{mag}$ (Zero brush friction loss)"}
+            η ≈ (1 − s)·η_mag (zero brush friction loss)
           </span>
         </div>
       </div>

@@ -111,7 +111,7 @@ When the emitter contact is biased in the forward (low resistance) direction and
       title: "Perspective View of Point-Contact Transistor Assembly",
       caption:
         "Schematic drawing showing the germanium wedge, base electrode, and plastic wedge holding emitter and collector point contacts.",
-      svgType: "noyce-ic",
+      svgType: "bardeen-transistor",
       callouts: [
         {
           id: "bt-1",

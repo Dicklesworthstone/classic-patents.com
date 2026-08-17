@@ -107,7 +107,7 @@ The curved needle is mounted upon a vibrating arm actuated by a cam on the main 
       title: "Perspective View of Howe Lockstitch Sewing Machine",
       caption:
         "Schematic drawing showing the hand flywheel, cam drives, curved vibrating needle, and reciprocating shuttle.",
-      svgType: "wright-flyer",
+      svgType: "howe-sewing",
       callouts: [
         {
           id: "hw-1",

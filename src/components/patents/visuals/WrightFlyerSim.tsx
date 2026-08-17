@@ -6,24 +6,25 @@ import { useState } from "react";
 export function WrightFlyerSim() {
   // Flight control state
   const [wingWarpAngle, setWingWarpAngle] = useState<number>(15); // deg (-30 to +30)
-  const [rudderAngle, setRudderAngle] = useState<number>(-12); // deg (-30 to +30)
+  const [rudderAngle, setRudderAngle] = useState<number>(11); // deg (-30 to +30)
   const [canardAngle, setCanardAngle] = useState<number>(5); // deg (-20 to +20)
   const [isCoupled, setIsCoupled] = useState<boolean>(true); // Wright Claim 1: Coordinated wing-warping + rudder
   const [activeStep, setActiveStep] = useState<number>(1); // 1: Adverse Yaw, 2: Warping, 3: Coordinated Turn
 
-  // Aerodynamic vector calculations
-  const leftWingLift = 100 + wingWarpAngle * 2.2;
-  const rightWingLift = 100 - wingWarpAngle * 2.2;
+  // Positive warp = right bank = more lift (and induced drag) on the RIGHT wing.
+  const leftWingLift = 100 - wingWarpAngle * 2.2;
+  const rightWingLift = 100 + wingWarpAngle * 2.2;
   const leftInducedDrag = (leftWingLift / 100) ** 2 * 15;
   const rightInducedDrag = (rightWingLift / 100) ** 2 * 15;
 
-  // Adverse yaw torque vs Rudder restoring torque
-  const adverseYawTorque = (leftInducedDrag - rightInducedDrag) * 1.5; // Yawing into higher drag wing
-  const rudderRestoringTorque = rudderAngle * -3.2;
+  // Positive yaw moment = starboard (right). Extra right-wing drag yaws the nose left.
+  const adverseYawTorque = (leftInducedDrag - rightInducedDrag) * 1.5;
+  const rudderRestoringTorque = rudderAngle * 3.0;
   const netYawMoment = adverseYawTorque + rudderRestoringTorque;
 
-  const isCoordinatedTurn = Math.abs(netYawMoment) < 8 && Math.abs(wingWarpAngle) > 8;
-  const isAdverseYawCrash = netYawMoment > 18 && Math.abs(wingWarpAngle) > 15 && !isCoupled;
+  const isCoordinatedTurn = Math.abs(netYawMoment) < 10 && Math.abs(wingWarpAngle) > 8;
+  const isAdverseYawCrash =
+    Math.abs(netYawMoment) > 18 && Math.abs(wingWarpAngle) > 15 && !isCoupled;
 
   // Step presets for guided pedagogical walkthrough
   const applyPedagogyStep = (step: number) => {
@@ -41,7 +42,7 @@ export function WrightFlyerSim() {
     } else if (step === 3) {
       // Step 3: Wright Master Breakthrough (Claim 1: Coordinated Rudder)
       setWingWarpAngle(18);
-      setRudderAngle(-14);
+      setRudderAngle(13);
       setIsCoupled(true);
     }
   };
@@ -49,8 +50,8 @@ export function WrightFlyerSim() {
   const handleWarpChange = (val: number) => {
     setWingWarpAngle(val);
     if (isCoupled) {
-      // Automatic kinematic cable coupling: Rudder deflects to counter adverse yaw
-      setRudderAngle(-Math.round(val * 0.8));
+      // Hip-cradle cables: right bank pulls starboard rudder to cancel leftward adverse yaw
+      setRudderAngle(Math.round(val * 0.7));
     }
   };
 
@@ -119,7 +120,10 @@ export function WrightFlyerSim() {
           <div className="w-full flex items-center justify-between z-10 mb-4 px-2">
             {isAdverseYawCrash && (
               <div className="px-3 py-1 bg-red-950/90 border border-red-700 text-red-300 text-xs font-mono rounded-lg flex items-center gap-1.5 animate-pulse">
-                <span>⚠ ADVERSE YAW STALL: Higher drag on left wing turns airplane wrong way!</span>
+                <span>
+                  ⚠ ADVERSE YAW: The rising wing&apos;s extra induced drag yaws the nose opposite
+                  the roll!
+                </span>
               </div>
             )}
             {isCoordinatedTurn && (
@@ -145,6 +149,16 @@ export function WrightFlyerSim() {
                 <stop offset="0%" stopColor="#fef3c7" />
                 <stop offset="100%" stopColor="#d97706" />
               </linearGradient>
+              <marker
+                id="wright-lift-arrow"
+                markerWidth="6"
+                markerHeight="6"
+                refX="5"
+                refY="3"
+                orient="auto"
+              >
+                <path d="M0,0 L6,3 L0,6 Z" fill="#10b981" />
+              </marker>
             </defs>
 
             {/* Artificial Horizon Pitch Reference */}
@@ -160,7 +174,7 @@ export function WrightFlyerSim() {
 
             {/* Aircraft Group with 3-Axis Rotation */}
             <g
-              transform={`translate(250, 120) rotate(${-wingWarpAngle * 0.9}) translate(0, ${canardAngle * -1.2})`}
+              transform={`translate(250, 120) rotate(${wingWarpAngle * 0.9}) translate(0, ${canardAngle * -1.2})`}
               className="transition-transform duration-150 ease-out"
             >
               {/* Forward Elevator / Canard */}
@@ -307,7 +321,7 @@ export function WrightFlyerSim() {
                   y2={-leftWingLift * 0.4}
                   stroke="#10b981"
                   strokeWidth="3"
-                  markerEnd="url(#arrow)"
+                  markerEnd="url(#wright-lift-arrow)"
                 />
                 <text
                   x="-8"
@@ -347,6 +361,7 @@ export function WrightFlyerSim() {
                   y2={-rightWingLift * 0.4}
                   stroke="#10b981"
                   strokeWidth="3"
+                  markerEnd="url(#wright-lift-arrow)"
                 />
                 <text
                   x="-8"
@@ -487,7 +502,7 @@ export function WrightFlyerSim() {
                   onChange={(e) => {
                     setIsCoupled(e.target.checked);
                     if (e.target.checked) {
-                      setRudderAngle(-Math.round(wingWarpAngle * 0.8));
+                      setRudderAngle(Math.round(wingWarpAngle * 0.7));
                     }
                   }}
                   className="rounded accent-emerald-600 w-4 h-4"

@@ -110,7 +110,7 @@ The additional displacement thus created exerts a powerful upward buoyant lift, 
       title: "Elevation View of Steamboat with Buoyant Chambers",
       caption:
         "Side elevation drawing showing the expandable bellows mounted below the guards along the vessel hull.",
-      svgType: "wright-flyer",
+      svgType: "lincoln-buoy",
       callouts: [
         {
           id: "lb-1",

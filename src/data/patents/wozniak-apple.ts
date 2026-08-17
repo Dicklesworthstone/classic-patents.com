@@ -136,7 +136,7 @@ I CLAIM:
       title: "Microcomputer Architecture Block Diagram",
       caption:
         "Overall block diagram showing microprocessor, multiplexer, RAM, and video display generator.",
-      svgType: "three-interactive",
+      svgType: "wozniak-apple",
       callouts: [
         {
           id: "c1",
@@ -162,7 +162,7 @@ I CLAIM:
       figureNumber: "Fig. 2",
       title: "Two-Phase Bus Timing Diagram",
       caption: "Timing relationship of Phi 1 video scan access and Phi 2 CPU execution cycles.",
-      svgType: "three-interactive",
+      svgType: "wozniak-apple",
       callouts: [
         {
           id: "c3",

@@ -291,18 +291,29 @@ export function createThreeStudioScene(opts: StudioOptions): StudioContext {
   const centerTarget = new THREE.Vector3(...targetPos);
   const isReducedMotion = checkPrefersReducedMotion();
 
+  const pointerClient = (e: MouseEvent | TouchEvent) => {
+    if ("touches" in e) {
+      const touch = e.touches[0] ?? e.changedTouches[0];
+      if (!touch) return null;
+      return { x: touch.clientX, y: touch.clientY };
+    }
+    return { x: e.clientX, y: e.clientY };
+  };
+
   const onPointerDown = (e: MouseEvent | TouchEvent) => {
+    const point = pointerClient(e);
+    if (!point) return;
     isDragging = true;
-    const clientX = "touches" in e ? e.touches[0].clientX : e.clientX;
-    const clientY = "touches" in e ? e.touches[0].clientY : e.clientY;
-    prevX = clientX;
-    prevY = clientY;
+    prevX = point.x;
+    prevY = point.y;
   };
 
   const onPointerMove = (e: MouseEvent | TouchEvent) => {
     if (!isDragging) return;
-    const clientX = "touches" in e ? e.touches[0].clientX : e.clientX;
-    const clientY = "touches" in e ? e.touches[0].clientY : e.clientY;
+    const point = pointerClient(e);
+    if (!point) return;
+    const clientX = point.x;
+    const clientY = point.y;
     const dx = (clientX - prevX) * 0.006;
     const dy = (clientY - prevY) * 0.006;
 
@@ -341,6 +352,13 @@ export function createThreeStudioScene(opts: StudioOptions): StudioContext {
     renderer.setSize(w, h);
   };
   window.addEventListener("resize", onResize);
+  const resizeObserver =
+    typeof ResizeObserver !== "undefined"
+      ? new ResizeObserver(() => {
+          onResize();
+        })
+      : null;
+  resizeObserver?.observe(container);
 
   const controls = {
     update: () => {
@@ -368,17 +386,23 @@ export function createThreeStudioScene(opts: StudioOptions): StudioContext {
       window.removeEventListener("touchend", onPointerUp);
       domEl.removeEventListener("wheel", onWheel);
       window.removeEventListener("resize", onResize);
+      resizeObserver?.disconnect();
     },
     setRadius: (r: number) => {
       targetSpherical.radius = r;
     },
   };
 
+  let activeSkyTexture: THREE.CanvasTexture = skyTexture;
+
   const updateEnvironment = () => {
     const currentIsDark =
       document.documentElement.classList.contains("dark") ||
       document.documentElement.classList.contains("theme-blueprint");
-    scene.background = createProceduralSkyTexture(currentIsDark, environmentStyle);
+    const nextSky = createProceduralSkyTexture(currentIsDark, environmentStyle);
+    scene.background = nextSky;
+    activeSkyTexture.dispose();
+    activeSkyTexture = nextSky;
     scene.fog = new THREE.FogExp2(
       currentIsDark ? 0x162544 : 0xdbeafe,
       currentIsDark ? 0.008 : 0.004,
@@ -387,8 +411,20 @@ export function createThreeStudioScene(opts: StudioOptions): StudioContext {
 
   const dispose = () => {
     controls.dispose();
-    skyTexture.dispose();
+    scene.traverse((obj) => {
+      if (obj instanceof THREE.Mesh || obj instanceof THREE.Points || obj instanceof THREE.Line) {
+        obj.geometry?.dispose();
+        const material = obj.material;
+        if (Array.isArray(material)) {
+          for (const mat of material) mat.dispose();
+        } else {
+          material?.dispose();
+        }
+      }
+    });
+    activeSkyTexture.dispose();
     renderer.dispose();
+    renderer.forceContextLoss();
     scene.clear();
   };
 

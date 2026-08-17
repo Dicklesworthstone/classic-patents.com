@@ -107,7 +107,7 @@ In order to prevent electrical breakdown between the turns of the secondary, whe
       title: "Cross Section of Conical Resonant Transformer",
       caption:
         "Cross-sectional blueprint showing the outer primary coil and the concentric conical secondary winding.",
-      svgType: "tesla-motor",
+      svgType: "tesla-coil",
       callouts: [
         {
           id: "tc-1",

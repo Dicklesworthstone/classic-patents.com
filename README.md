@@ -12,7 +12,7 @@
 
 **An open-source digital museum and technical analysis platform restoring history's most consequential patents into verified transcripts, full original PDFs, rigorous "Plain English" engineering breakdowns, and interactive real-time 3D physical simulations.**
 
-[**Explore the Live Museum**](https://classic-patents.vercel.app) · [**Interactive Timeline**](https://classic-patents.vercel.app/timeline) · [**Comprehensive Plan**](./COMPREHENSIVE_PLAN_FOR_CLASSIC_PATENTS.md) · [**Agent Guidelines**](./AGENTS.md)
+[**Explore the Live Museum**](https://classic-patents.com) · [**Interactive Timeline**](https://classic-patents.com/timeline) · [**Comprehensive Plan**](./COMPREHENSIVE_PLAN_FOR_CLASSIC_PATENTS.md) · [**Agent Guidelines**](./AGENTS.md)
 
 </div>
 
@@ -25,27 +25,37 @@
 **The Solution:** **Classic Patents** restores these masterpieces:
 1. **Verified Archival Transcripts & Embedded PDFs**: High-fidelity digitized text alongside complete, high-resolution original USPTO facsimile documents.
 2. **Dual-Projection (Diptych Engine)**: Side-by-side synchronized views of the verbatim legal specification and a lucid, mathematically rigorous **"Plain English" engineering breakdown**.
-3. **Interactive 3D WebGL & Physics Visualizations**: Parameterized 3D Three.js modules allowing visitors to manipulate real physical parameters (e.g. twisting the Wright Flyer's wings to observe adverse yaw and vortex shedding, adjusting AC frequencies to witness Tesla's rotating magnetic stator field, or testing spread-spectrum frequency hopping against electronic jamming).
-4. **Historical & Legal Deconstructions**: Line-by-line claim decoders, patent litigation histories (Wright vs. Curtiss, Bell vs. Gray, Farnsworth vs. RCA, Goodyear vs. Day), and civilizational impact analyses.
+3. **Interactive 3D WebGL & Physics Visualizations**: Parameterized 3D Three.js modules with vibrant atmospheric blue skies, studio lighting, and interactive controls allowing visitors to manipulate real physical parameters (e.g. twisting the Wright Flyer's wings to observe adverse yaw and vortex shedding, adjusting AC frequencies to witness Tesla's rotating magnetic stator field, testing nuclear reactor cadmium rod criticality, or inspecting Wozniak's two-phase shared memory multiplexing).
+4. **Historical & Legal Deconstructions**: Line-by-line claim decoders, patent litigation histories (Wright vs. Curtiss, Bell vs. Gray, Farnsworth vs. RCA, Goodyear vs. Day, SRI vs. Xerox/Apple), and civilizational impact analyses.
 
 ---
 
-## Curated Historical Patents
+## Curated Historical Patents (22 Masterpieces)
 
-| Patent | Title | Inventors | Grant Date | Key Breakthrough | Interactive Sim |
+| Patent | Title | Inventors | Grant Date | Key Breakthrough | Interactive 3D Sim |
 |---|---|---|---|---|---|
-| **[US 1,647](./src/data/patents/morse-telegraph.ts)** | Electro-Magnetic Telegraph | Samuel F. B. Morse | Jun 20, 1840 | Regenerative relay amplifiers & variable-length binary prefix code | 📻 Morse Stream & Sounder |
-| **[US 3,633](./src/data/patents/goodyear-rubber.ts)** | India-Rubber Fabrics (Vulcanization) | Charles Goodyear | Jun 15, 1844 | Disulfide polymer cross-linking under heat creating elastic rubber | 🧪 Polymer Matrix Simulator |
-| **[US 174,465](./src/data/patents/bell-telephone.ts)** | Improvement in Telegraphy (Telephone) | Alexander Graham Bell | Mar 7, 1876 | Variable resistance undulating current acoustic speech transmission | 📞 Live Web Audio Transducer |
-| **[US 223,898](./src/data/patents/edison-lightbulb.ts)** | Electric-Lamp | Thomas A. Edison | Jan 27, 1880 | High-resistance carbon filament in high vacuum ($100\ \Omega$) | 💡 Thermal Vacuum Circuit |
-| **[US 381,968](./src/data/patents/tesla-motor.ts)** | Electro-Magnetic Motor | Nikola Tesla | May 1, 1888 | Brushless polyphase AC rotating magnetic stator field motor | ⚡ 3D WebGL Magnetic Motor |
-| **[US 586,193](./src/data/patents/marconi-radio.ts)** | Transmitting Electrical Signals | Guglielmo Marconi | Jul 13, 1897 | Elevated vertical aerial monopole & earth-grounded spark transmitter | 📡 Spark-Gap RF Wavefield |
-| **[US 821,393](./src/data/patents/wright-flyer.ts)** | Flying-Machine | Orville & Wilbur Wright | May 22, 1906 | 3-axis aerodynamic flight control via wing-warping & rudder coupling | 🛩️ 3D WebGL 6-DoF Flight Sim |
-| **[US 1,773,980](./src/data/patents/farnsworth-tv.ts)** | Television System | Philo T. Farnsworth | Aug 26, 1930 | All-electronic image dissector & magnetic electron beam raster | 📺 3D WebGL Dissector Tube |
-| **[US 2,292,387](./src/data/patents/lamarr-frequency-hopping.ts)** | Secret Communication System | Hedy Lamarr & George Antheil | Aug 11, 1942 | 88-frequency piano-roll spread-spectrum anti-jamming carrier hopping | 🎹 88-Channel RF Analyzer |
-| **[US 2,495,429](./src/data/patents/spencer-microwave.ts)** | Method of Treating Foodstuffs | Percy L. Spencer | Jan 24, 1950 | Cavity magnetron dielectric microwave electromagnetic heating | 🍕 Microwave Cavity & Pops |
-| **[US 2,981,877](./src/data/patents/noyce-ic.ts)** | Semiconductor Device-and-Lead Structure | Robert N. Noyce | Apr 25, 1961 | Monolithic planar silicon IC with vapor-deposited aluminum leads | 🔬 Layer Lithography Stepper |
-| **[US 3,671,542](./src/data/patents/kwolek-kevlar.ts)** | Wholly Aromatic Polycarbonamide Filaments | Stephanie L. Kwolek | Jun 20, 1972 | Liquid-crystalline aramid polymer chain alignment (Kevlar) | 🛡️ Tensile Stress & Chain Sim |
+| **[US 1,647](./src/data/patents/morse-telegraph.ts)** | Electro-Magnetic Telegraph | Samuel F. B. Morse | Jun 20, 1840 | Regenerative relay amplifiers & binary code | 📻 3D Telegraph Sounder |
+| **[US 3,633](./src/data/patents/goodyear-rubber.ts)** | India-Rubber Fabrics (Vulcanization) | Charles Goodyear | Jun 15, 1844 | Disulfide polymer cross-linking under heat | 🧪 3D Polymer Matrix Sim |
+| **[US 4,750](./src/data/patents/howe-sewing-machine.ts)** | Sewing Machine | Elias Howe Jr. | Sep 10, 1846 | Eye-pointed needle & reciprocating shuttle lockstitch | 🧵 3D Lockstitch Machine |
+| **[US 6,281](./src/data/patents/lincoln-buoy.ts)** | Buoying Vessels Over Shoals | Abraham Lincoln | May 22, 1849 | Synchronized expandable buoyant air chambers | ⛵ 3D River Shoal Lift Sim |
+| **[US 174,465](./src/data/patents/bell-telephone.ts)** | Improvement in Telegraphy (Telephone) | Alexander Graham Bell | Mar 7, 1876 | Variable resistance undulating acoustic speech transmission | 📞 3D Acoustic Transducer |
+| **[US 223,898](./src/data/patents/edison-lightbulb.ts)** | Electric-Lamp | Thomas A. Edison | Jan 27, 1880 | High-resistance carbon filament in high vacuum | 💡 3D Thermal Vacuum Bulb |
+| **[US 381,968](./src/data/patents/tesla-motor.ts)** | Electro-Magnetic Motor | Nikola Tesla | May 1, 1888 | Brushless polyphase AC rotating magnetic stator field | ⚡ 3D Magnetic Stator Motor |
+| **[US 533,367](./src/data/patents/tesla-coil.ts)** | Electrical Transformer | Nikola Tesla | Jan 29, 1895 | Dual-resonant air-core LC high-frequency transformer | ⚡ 3D High-Voltage Spark Coil |
+| **[US 586,193](./src/data/patents/marconi-radio.ts)** | Transmitting Electrical Signals | Guglielmo Marconi | Jul 13, 1897 | Elevated monopole aerial & earth-grounded spark system | 📡 3D RF Spark Transmitter |
+| **[US 821,393](./src/data/patents/wright-flyer.ts)** | Flying-Machine | Orville & Wilbur Wright | May 22, 1906 | 3-axis aerodynamic flight control via wing warping | 🛩️ 3D 6-DoF Flight Sim |
+| **[US 1,155,986](./src/data/patents/goddard-rocket.ts)** | Rocket Apparatus | Robert H. Goddard | Oct 5, 1915 | Bipropellant combustion chamber & de Laval nozzle | 🚀 3D Supersonic Rocket Nozzle |
+| **[US 1,781,541](./src/data/patents/einstein-refrigerator.ts)** | Refrigeration | Albert Einstein & Leo Szilard | Nov 11, 1930 | Zero-moving-parts hermetic Dalton partial pressure cooling | ❄️ 3D Absorption Refrigerator |
+| **[US 1,773,980](./src/data/patents/farnsworth-tv.ts)** | Television System | Philo T. Farnsworth | Aug 26, 1930 | All-electronic image dissector & magnetic raster | 📺 3D Dissector Tube Raster |
+| **[US 2,292,387](./src/data/patents/lamarr-frequency-hopping.ts)** | Secret Communication System | Hedy Lamarr & George Antheil | Aug 11, 1942 | 88-frequency piano-roll spread-spectrum carrier hopping | 🎹 3D 88-Channel RF Analyzer |
+| **[US 2,495,429](./src/data/patents/spencer-microwave.ts)** | Method of Treating Foodstuffs | Percy L. Spencer | Jan 24, 1950 | Cavity magnetron dielectric microwave heating | 🍕 3D Microwave Magnetron |
+| **[US 2,708,656](./src/data/patents/fermi-reactor.ts)** | Neutronic Reactor | Enrico Fermi & Leo Szilard | May 17, 1955 | Heterogeneous graphite lattice & cadmium criticality | ⚛️ 3D Criticality Pile Simulator |
+| **[US 2,569,347](./src/data/patents/bardeen-transistor.ts)** | Three-Electrode Circuit Element | John Bardeen & Walter Brattain | Oct 2, 1951 | Point-contact germanium semiconductor transistor | 🔬 3D Solid-State Transistor |
+| **[US 2,981,877](./src/data/patents/noyce-ic.ts)** | Semiconductor Device-and-Lead Structure | Robert N. Noyce | Apr 25, 1961 | Monolithic planar silicon IC with aluminum leads | 🔬 3D Planar Silicon Wafer |
+| **[US 3,541,541](./src/data/patents/engelbart-mouse.ts)** | X-Y Position Indicator | Douglas C. Engelbart | Nov 17, 1970 | Orthogonal dual-wheel coordinate encoder mouse | 🖱️ 3D Dual-Wheel Table Mouse |
+| **[US 3,671,542](./src/data/patents/kwolek-kevlar.ts)** | Wholly Aromatic Polycarbonamide Filaments | Stephanie L. Kwolek | Jun 20, 1972 | Liquid-crystalline aramid polymer chain alignment (Kevlar) | 🛡️ 3D Polymer Tensile Lattice |
+| **[US 3,923,554](./src/data/patents/boyle-smith-ccd.ts)** | 3-Phase Charge-Coupled Device | Willard Boyle & George Smith | Dec 2, 1975 | 3-phase MOS potential well charge packets | 📷 3D Digital Pixel CCD Well |
+| **[US 4,136,359](./src/data/patents/wozniak-apple.ts)** | Microcomputer for Use with Video Display | Steve Wozniak | Jan 23, 1979 | Two-phase shared-bus time-multiplexed DRAM | 💻 3D Apple II Bus Multiplexer |
 
 ---
 
@@ -67,11 +77,12 @@
 │  └─────────────────────────────────┴────────────────────────────────┘  │
 ├────────────────────────────────────────────────────────────────────────┤
 │             3D WEBGL & REAL-TIME PHYSICS SIMULATION RUNTIMES           │
+│  • Procedural Azure Sky & Drifting Volumetric Cumulus Clouds           │
 │  • 3D Wright Flyer 6-DoF Aerodynamics & Wingtip Vortex Shedding        │
 │  • 3D Tesla Induction Motor Rotating Stator Electromagnetic Flux Lines │
-│  • 3D Farnsworth All-Electronic Television Image Dissector Tube        │
-│  • Web Audio Procedural Acoustic & Harmonic Resonance Synthesizers     │
-│  • Lamarr 88-Channel Spread Spectrum Frequency Hopping Spectrum Engine │
+│  • 3D Fermi Nuclear Reactor Criticality Cascade & Cadmium Rod Damping  │
+│  • 3D Wozniak Apple II Interleaved Memory Bus & NTSC Color Burst       │
+│  • Dynamic On-Demand Code Splitting (198 kB Initial JS Payload)        │
 └────────────────────────────────────────────────────────────────────────┘
 ```
 
@@ -81,7 +92,7 @@
 
 ### Prerequisites
 - [Bun](https://bun.sh) (v1.2+) or Node.js (v20+)
-- [Vercel CLI](https://vercel.com/cli) (optional, for deployment)
+- [Vercel CLI](https://vercel.com/cli) (optional, for prebuilt deployment)
 
 ### Installation & Development
 
@@ -99,48 +110,31 @@ bun run dev
 
 Open [http://localhost:3000](http://localhost:3000) in your browser.
 
-### Quality & Verification Suite
+---
+
+## Verification & Deployment
 
 ```bash
-# Run TypeScript strict type-checking
+# Verify data integrity and original PDF sizes for all 22 patents
+bun run pipeline:verify
+
+# TypeScript typecheck
 bun run typecheck
 
-# Run Biome linter and formatter
+# Code formatting & linting
 bun run lint
 bun run format
 
-# Run data pipeline verification gate across all 12 patents and PDFs
-bun run pipeline:verify
-
-# Test production build
+# Production build
 bun run build
-```
 
----
-
-## Vercel Deployment
-
-```bash
-# 1. Pull project configuration & environment
-vercel pull --yes
-
-# 2. Build locally (prevents burning cloud build credits)
+# Deploy prebuilt artifact to Vercel production
 vercel build --prod
-
-# 3. Deploy prebuilt artifact to production
 vercel deploy --prebuilt --prod
 ```
 
 ---
 
-## About Outside Contributions
-
-Please don't take this the wrong way, but I do not accept outside contributions for any of my projects. I simply don't have the mental bandwidth to review anything, and it's my name on the thing, so I'm responsible for any problems it causes; thus, the risk-reward is highly asymmetric from my perspective. I'd also have to worry about other "stakeholders," which seems unwise for tools I mostly make for myself for free. Feel free to submit issues, and even PRs if you want to illustrate a proposed fix, but know I won't merge them directly. Instead, I'll have Claude or Codex review submissions via `gh` and independently decide whether and how to address them. Bug reports in particular are welcome. Sorry if this offends, but I want to avoid wasted time and hurt feelings. I understand this isn't in sync with the prevailing open-source ethos that seeks community contributions, but it's the only way I can move at this velocity and keep my sanity.
-
----
-
 ## License
 
-The Classic Patents source code is licensed under the **MIT License with an OpenAI/Anthropic Rider**, Copyright (c) 2026 Jeffrey Emanuel (see [`LICENSE`](./LICENSE)).
-
-Historical patent texts and drawings are in the public domain.
+This project is licensed under the MIT License with OpenAI/Anthropic Commercial Use Rider — see the [LICENSE](./LICENSE) file for details.

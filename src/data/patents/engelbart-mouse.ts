@@ -151,7 +151,7 @@ I CLAIM:
       figureNumber: "Fig. 1",
       title: "Perspective View of Handheld Mouse Housing",
       caption: "Handheld wooden housing with top microswitch button and trailing cord.",
-      svgType: "three-interactive",
+      svgType: "engelbart-mouse",
       callouts: [
         {
           id: "c1",
@@ -177,7 +177,7 @@ I CLAIM:
       figureNumber: "Fig. 2",
       title: "Bottom View of Perpendicular Wheels",
       caption: "Bottom plate showing X and Y encoder wheels oriented at 90 degrees.",
-      svgType: "three-interactive",
+      svgType: "engelbart-mouse",
       callouts: [
         {
           id: "c3",

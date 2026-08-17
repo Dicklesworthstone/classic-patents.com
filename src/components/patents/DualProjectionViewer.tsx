@@ -7,11 +7,12 @@ import {
   Download,
   ExternalLink,
   FileText,
+  Printer,
   Scroll,
   Sparkles,
   Zap,
 } from "lucide-react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { LatexRenderer, TextWithLatex } from "@/components/ui/LatexRenderer";
 import type { Patent } from "@/types/patent";
 import { ClaimsDecoder } from "./ClaimsDecoder";
@@ -23,20 +24,57 @@ interface DualProjectionViewerProps {
   patent: Patent;
 }
 
+export type PatentViewMode =
+  | "plain-english"
+  | "original-spec"
+  | "interactive-sim"
+  | "schematic-sheet"
+  | "pdf-facsimile"
+  | "split-view";
+
 export function DualProjectionViewer({ patent }: DualProjectionViewerProps) {
-  const [viewMode, setViewMode] = useState<
-    | "plain-english"
-    | "original-spec"
-    | "interactive-sim"
-    | "schematic-sheet"
-    | "pdf-facsimile"
-    | "split-view"
-  >("plain-english");
+  const [viewMode, setViewModeState] = useState<PatentViewMode>("plain-english");
+
+  // Synchronize initial view mode from URL search query
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      const params = new URLSearchParams(window.location.search);
+      const view = params.get("view");
+      if (
+        view &&
+        [
+          "plain-english",
+          "original-spec",
+          "interactive-sim",
+          "schematic-sheet",
+          "pdf-facsimile",
+          "split-view",
+        ].includes(view)
+      ) {
+        setViewModeState(view as PatentViewMode);
+      }
+    }
+  }, []);
+
+  const setViewMode = (mode: PatentViewMode) => {
+    setViewModeState(mode);
+    if (typeof window !== "undefined") {
+      const url = new URL(window.location.href);
+      url.searchParams.set("view", mode);
+      window.history.replaceState({}, "", url.toString());
+    }
+  };
+
+  const handlePrint = () => {
+    if (typeof window !== "undefined") {
+      window.print();
+    }
+  };
 
   return (
-    <div className="space-y-8">
-      {/* Mode Navigation Bar */}
-      <div className="flex flex-wrap items-center justify-between gap-3 bg-parchment-100/90 dark:bg-ink-900/90 p-2.5 rounded-2xl border border-parchment-300 dark:border-ink-800 shadow-sm">
+    <div className="space-y-8 print:space-y-4">
+      {/* Mode Navigation Bar (Hidden during print) */}
+      <div className="flex flex-wrap items-center justify-between gap-3 bg-parchment-100/90 dark:bg-ink-900/90 p-2.5 rounded-2xl border border-parchment-300 dark:border-ink-800 shadow-sm print:hidden">
         <div className="flex flex-wrap items-center gap-2 text-sm font-sans">
           <button
             type="button"
@@ -107,6 +145,16 @@ export function DualProjectionViewer({ patent }: DualProjectionViewerProps) {
         <div className="flex items-center gap-2">
           <button
             type="button"
+            onClick={handlePrint}
+            title="Print Museum Plaque & Broadside"
+            className="px-3.5 py-2 rounded-xl text-xs sm:text-sm font-sans border border-parchment-300 dark:border-ink-700 hover:bg-parchment-200 dark:hover:bg-ink-800 text-ink-800 dark:text-ink-200 font-medium flex items-center gap-1.5 transition-colors shadow-xs"
+          >
+            <Printer className="w-4 h-4 text-amber-700 dark:text-amber-400" />
+            <span className="hidden sm:inline">Print Broadside</span>
+          </button>
+
+          <button
+            type="button"
             onClick={() => setViewMode(viewMode === "split-view" ? "plain-english" : "split-view")}
             className={`px-4 py-2 rounded-xl text-xs sm:text-sm font-sans border flex items-center gap-2 transition-colors shadow-xs ${
               viewMode === "split-view"
@@ -172,7 +220,11 @@ export function DualProjectionViewer({ patent }: DualProjectionViewerProps) {
       {/* VIEW MODE: SCHEMATIC SHEET & NUMBERED CALLOUTS */}
       {viewMode === "schematic-sheet" && (
         <div className="space-y-6">
-          <InteractiveDiagramViewer drawings={patent.drawings} patentNumber={patent.patentNumber} />
+          <InteractiveDiagramViewer
+            drawings={patent.drawings}
+            patentNumber={patent.patentNumber}
+            patentId={patent.id}
+          />
         </div>
       )}
 
@@ -199,16 +251,18 @@ export function DualProjectionViewer({ patent }: DualProjectionViewerProps) {
             <PatentVisualDispatcher patentId={patent.id} />
           </div>
 
-          {/* Right Column: Original Legal Specification */}
+          {/* Right Column: Original Specification */}
           <div className="space-y-6">
             <div className="flex items-center gap-2.5 pb-3 border-b border-parchment-300 dark:border-ink-800">
-              <Scroll className="w-5 h-5 text-amber-600" />
+              <Scroll className="w-5 h-5 text-amber-700 dark:text-amber-500" />
               <h3 className="font-serif text-xl font-bold text-ink-950 dark:text-parchment-100">
-                Face 2: Verbatim Historical Specification
+                Face 2: Verbatim Archival Specification
               </h3>
             </div>
-            <div className="rounded-2xl border border-parchment-300 dark:border-ink-800 bg-parchment-100/70 dark:bg-ink-900/70 p-6 sm:p-8 shadow-patent max-h-[700px] overflow-y-auto font-serif text-base sm:text-lg text-ink-900 dark:text-parchment-100 space-y-4 whitespace-pre-wrap leading-relaxed">
-              {patent.originalText}
+            <div className="rounded-2xl border border-parchment-300 dark:border-ink-800 bg-parchment-50 dark:bg-ink-950 p-6 sm:p-7 shadow-patent space-y-4 max-h-[700px] overflow-y-auto">
+              <div className="font-serif text-sm sm:text-base leading-relaxed text-ink-950 dark:text-parchment-100 whitespace-pre-wrap select-text">
+                {patent.originalText}
+              </div>
             </div>
           </div>
         </div>
@@ -216,64 +270,83 @@ export function DualProjectionViewer({ patent }: DualProjectionViewerProps) {
 
       {/* VIEW MODE: PLAIN ENGLISH FACE */}
       {viewMode === "plain-english" && (
-        <div className="space-y-10">
-          {/* Top Interactive Sim Embed */}
-          <PatentVisualDispatcher patentId={patent.id} />
-
-          {/* Overview & Core Mechanism */}
-          <div className="rounded-2xl border border-parchment-300 dark:border-ink-800 bg-parchment-50/90 dark:bg-ink-950 p-7 sm:p-9 shadow-patent space-y-7">
-            <div className="space-y-2">
-              <div className="flex items-center gap-2 text-xs sm:text-sm font-mono uppercase tracking-widest text-amber-700 dark:text-amber-400 font-bold">
-                <Zap className="w-4 h-4" />
-                Physical &amp; Engineering Fundamentals
-              </div>
+        <div className="space-y-8">
+          {/* Main Plain English Card */}
+          <div className="rounded-2xl border border-parchment-300 dark:border-ink-800 bg-parchment-50/90 dark:bg-ink-950 p-7 sm:p-9 shadow-patent space-y-8">
+            <div>
+              <span className="text-xs sm:text-sm font-mono text-amber-700 dark:text-amber-400 font-bold uppercase tracking-widest block">
+                Engineering Analysis &amp; Physical Principles
+              </span>
               <h3 className="font-serif text-2xl sm:text-3xl font-bold text-ink-950 dark:text-parchment-50">
-                How It Actually Works (Without Dumbing Things Down)
+                How It Works: Step-by-Step Mechanical &amp; Physical Breakdown
               </h3>
             </div>
 
-            <p className="text-base sm:text-lg font-sans text-ink-800 dark:text-parchment-200 leading-relaxed">
-              {patent.plainEnglishExplanation.overview}
-            </p>
-
-            <div className="p-6 rounded-2xl bg-amber-500/10 border border-amber-500/30 text-ink-950 dark:text-parchment-100 space-y-2.5 shadow-xs">
-              <span className="font-serif font-bold text-base sm:text-lg text-amber-900 dark:text-amber-300 block">
-                The Core Mechanism:
-              </span>
-              <div className="text-sm sm:text-base font-sans leading-relaxed text-ink-800 dark:text-parchment-200">
-                <TextWithLatex text={patent.plainEnglishExplanation.coreMechanism} />
-              </div>
+            {/* Overview */}
+            <div className="prose dark:prose-invert max-w-none">
+              <p className="font-sans text-base sm:text-lg text-ink-900 dark:text-parchment-100 leading-relaxed">
+                {patent.plainEnglishExplanation.overview}
+              </p>
             </div>
 
-            {/* Step-by-Step Mechanical Deconstructions */}
+            {/* Core Mechanism Callout */}
+            <div className="p-6 rounded-2xl bg-amber-500/10 border border-amber-500/30 dark:bg-amber-950/20 space-y-2">
+              <div className="flex items-center gap-2 text-amber-800 dark:text-amber-400 font-serif font-bold text-lg">
+                <Zap className="w-5 h-5" />
+                <span>The Core Breakthrough Mechanism</span>
+              </div>
+              <p className="font-sans text-base text-ink-900 dark:text-parchment-100 leading-relaxed">
+                <TextWithLatex text={patent.plainEnglishExplanation.coreMechanism} />
+              </p>
+            </div>
+
+            {/* 3D Simulation Embedded in Plain English View */}
+            <div className="space-y-3 pt-2 print:hidden">
+              <div className="flex items-center justify-between">
+                <h4 className="font-serif font-bold text-xl text-ink-950 dark:text-parchment-50 flex items-center gap-2">
+                  <Activity className="w-5 h-5 text-amber-700 dark:text-amber-500" />
+                  <span>Interactive Real-Time 3D Physics Simulation</span>
+                </h4>
+                <span className="text-xs font-sans text-ink-500">
+                  Drag to rotate · Scroll to zoom
+                </span>
+              </div>
+              <PatentVisualDispatcher patentId={patent.id} />
+            </div>
+
+            {/* Step-by-Step Mechanical Breakdown Grid */}
             <div className="space-y-5 pt-5 border-t border-parchment-200 dark:border-ink-800">
               <h4 className="font-serif font-bold text-xl text-ink-950 dark:text-parchment-50">
-                Detailed Mechanical Deconstruction
+                Detailed Component Architecture
               </h4>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
                 {patent.plainEnglishExplanation.mechanicalBreakdown.map((item, idx) => (
                   <div
                     key={idx}
-                    className="p-5 rounded-2xl bg-parchment-100/80 dark:bg-ink-900/70 border border-parchment-200 dark:border-ink-800 space-y-3 shadow-xs"
+                    className="p-6 rounded-2xl bg-parchment-100/70 dark:bg-ink-900/60 border border-parchment-300 dark:border-ink-800 space-y-3 shadow-xs"
                   >
-                    <div className="flex items-start justify-between gap-2">
-                      <span className="font-serif font-bold text-lg text-ink-950 dark:text-parchment-50">
-                        {item.title}
+                    <h5 className="font-serif font-bold text-lg text-ink-950 dark:text-parchment-100 flex items-center gap-2">
+                      <span className="w-6 h-6 rounded-full bg-amber-700 text-white text-xs font-mono font-bold flex items-center justify-center">
+                        {idx + 1}
                       </span>
-                    </div>
-                    <p className="text-sm sm:text-base font-sans text-ink-800 dark:text-ink-200 leading-relaxed">
+                      {item.title}
+                    </h5>
+                    <p className="text-sm font-sans text-ink-800 dark:text-parchment-200 font-semibold leading-snug">
                       {item.summary}
                     </p>
-                    <div className="text-xs sm:text-sm font-mono text-ink-800 dark:text-ink-200 bg-parchment-200/60 dark:bg-ink-950/70 p-3 rounded-xl border border-parchment-300 dark:border-ink-800 leading-relaxed">
+                    <p className="text-xs sm:text-sm font-sans text-ink-700 dark:text-ink-300 leading-relaxed">
                       <TextWithLatex text={item.technicalDetails} />
-                    </div>
-                    {item.archaicTerm && (
-                      <div className="flex items-center justify-between text-xs font-mono pt-1 text-ink-600 dark:text-ink-400">
-                        <span>
-                          19th-C Term: <em>&ldquo;{item.archaicTerm}&rdquo;</em>
+                    </p>
+                    {item.archaicTerm && item.modernEquivalent && (
+                      <div className="pt-2 border-t border-parchment-200 dark:border-ink-800/80 flex items-center justify-between text-[11px] font-sans">
+                        <span className="text-ink-500">
+                          19th-C. Term:{" "}
+                          <span className="italic text-ink-700 dark:text-ink-300">
+                            {item.archaicTerm}
+                          </span>
                         </span>
-                        <span className="text-emerald-700 dark:text-emerald-400 font-semibold">
-                          → {item.modernEquivalent}
+                        <span className="text-amber-800 dark:text-amber-400 font-semibold">
+                          Modern: {item.modernEquivalent}
                         </span>
                       </div>
                     )}

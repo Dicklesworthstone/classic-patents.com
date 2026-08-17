@@ -126,98 +126,42 @@ export function TeslaMotorSim() {
               strokeDasharray="6 4"
             />
 
-            {/* 4 Stator Pole Coils (A, B, A', B') */}
-            {/* Phase A (Top / Bottom) */}
-            <g>
-              <rect
-                x="180"
-                y="44"
-                width="40"
-                height="24"
-                rx="4"
-                fill={Math.sin(rad) > 0 ? "#f59e0b" : "#3b82f6"}
-                stroke="#fff"
-                strokeWidth="1"
-              />
-              <text
-                x="200"
-                y="60"
-                fill="#fff"
-                fontSize="10"
-                textAnchor="middle"
-                fontFamily="monospace"
-                fontWeight="bold"
-              >
-                Coil A
-              </text>
-              <rect
-                x="180"
-                y="232"
-                width="40"
-                height="24"
-                rx="4"
-                fill={Math.sin(rad) > 0 ? "#3b82f6" : "#f59e0b"}
-                stroke="#fff"
-                strokeWidth="1"
-              />
-              <text
-                x="200"
-                y="248"
-                fill="#fff"
-                fontSize="10"
-                textAnchor="middle"
-                fontFamily="monospace"
-                fontWeight="bold"
-              >
-                Coil A&apos;
-              </text>
-            </g>
-
-            {/* Phase B (Left / Right) */}
-            <g>
-              <rect
-                x="74"
-                y="130"
-                width="24"
-                height="40"
-                rx="4"
-                fill={Math.cos(rad) > 0 ? "#10b981" : "#ef4444"}
-                stroke="#fff"
-                strokeWidth="1"
-              />
-              <text
-                x="86"
-                y="154"
-                fill="#fff"
-                fontSize="10"
-                textAnchor="middle"
-                fontFamily="monospace"
-                fontWeight="bold"
-              >
-                Coil B
-              </text>
-              <rect
-                x="302"
-                y="130"
-                width="24"
-                height="40"
-                rx="4"
-                fill={Math.cos(rad) > 0 ? "#ef4444" : "#10b981"}
-                stroke="#fff"
-                strokeWidth="1"
-              />
-              <text
-                x="314"
-                y="154"
-                fill="#fff"
-                fontSize="10"
-                textAnchor="middle"
-                fontFamily="monospace"
-                fontWeight="bold"
-              >
-                Coil B&apos;
-              </text>
-            </g>
+            {/* Stator poles: 4 coils at 90° (2-phase) or 6 coils at 60° (3-phase) */}
+            {Array.from({ length: phaseCount === 2 ? 4 : 6 }, (_, i) => {
+              const poles = phaseCount === 2 ? 4 : 6;
+              const a = (i * 2 * Math.PI) / poles - Math.PI / 2;
+              const phaseOff = (i % phaseCount) * (phaseCount === 2 ? Math.PI / 2 : (2 * Math.PI) / 3);
+              const current = Math.sin(rad + phaseOff);
+              const cx = 200 + Math.cos(a) * 108;
+              const cy = 150 + Math.sin(a) * 108;
+              const labels = phaseCount === 2 ? ["A", "B", "A'", "B'"] : ["A", "B", "C", "A'", "B'", "C'"];
+              return (
+                <g key={i}>
+                  <rect
+                    x={cx - 18}
+                    y={cy - 12}
+                    width="36"
+                    height="24"
+                    rx="4"
+                    transform={`rotate(${(a * 180) / Math.PI + 90} ${cx} ${cy})`}
+                    fill={current >= 0 ? "#f59e0b" : "#3b82f6"}
+                    stroke="#fff"
+                    strokeWidth="1"
+                  />
+                  <text
+                    x={cx}
+                    y={cy + 4}
+                    fill="#fff"
+                    fontSize="9"
+                    textAnchor="middle"
+                    fontFamily="monospace"
+                    fontWeight="bold"
+                  >
+                    {labels[i]}
+                  </text>
+                </g>
+              );
+            })}
 
             {/* Dynamic Rotating B-Field Vector Arrow */}
             <line

@@ -111,7 +111,7 @@ In the apparatus of my invention, the propellant is burned in a combustion chamb
       title: "Longitudinal Cross Section of Multi-Stage Rocket Apparatus",
       caption:
         "Cross-sectional blueprint showing stacked combustion stages, de Laval nozzles, and stage release mechanisms.",
-      svgType: "wright-flyer",
+      svgType: "goddard-rocket",
       callouts: [
         {
           id: "gd-1",

@@ -135,7 +135,7 @@ WE CLAIM:
       figureNumber: "Fig. 1",
       title: "Overall Closed Circuit Schematic",
       caption: "Schematic diagram of generator, condenser, evaporator, and absorber loop.",
-      svgType: "three-interactive",
+      svgType: "einstein-refrigerator",
       callouts: [
         {
           id: "c1",
@@ -161,7 +161,7 @@ WE CLAIM:
       figureNumber: "Fig. 2",
       title: "Bubble Pump Generator Detail",
       caption: "Thermosiphon bubble pump lifting conduit.",
-      svgType: "three-interactive",
+      svgType: "einstein-refrigerator",
       callouts: [
         {
           id: "c3",

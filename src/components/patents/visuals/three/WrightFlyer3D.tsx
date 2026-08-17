@@ -4,18 +4,20 @@ import { Compass, Play, Wind } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import * as THREE from "three";
 import { createGlowPointTexture, createThreeStudioScene } from "./ThreeStudioScene";
+import { useLiveSimParams } from "./useLiveSimParams";
 
 export function WrightFlyer3D() {
   const containerRef = useRef<HTMLDivElement>(null);
 
   // Aerodynamic State Controls
   const [wingWarpDeg, setWingWarpDeg] = useState<number>(8); // -15 to +15 deg
-  const [rudderYawDeg, setRudderYawDeg] = useState<number>(-4); // -25 to +25 deg
+  const [rudderYawDeg, setRudderYawDeg] = useState<number>(4); // -25 to +25 deg
   const [elevatorPitchDeg, setElevatorPitchDeg] = useState<number>(5); // -15 to +15 deg
   const [airspeedMph, setAirspeedMph] = useState<number>(28); // 15 to 45 mph
   const [showStreamlines, setShowStreamlines] = useState<boolean>(true);
   const [showVectors, setShowVectors] = useState<boolean>(true);
   const [isAutoFlying, setIsAutoFlying] = useState<boolean>(true);
+  const [isCoupled, setIsCoupled] = useState<boolean>(true);
 
   // Aerodynamic Physics Calculations
   const airspeedFps = (airspeedMph * 5280) / 3600;
@@ -31,10 +33,32 @@ export function WrightFlyer3D() {
   const cdParasite = 0.045;
   const totalDragLbs = Math.round(dynamicPressure * wingAreaSqFt * (cdParasite + cdInduced));
 
-  // Adverse Yaw Moment
-  const adverseYawMomentFtLbs = Math.round(wingWarpDeg * 12.5 * (airspeedMph / 30));
-  const rudderCorrectiveMomentFtLbs = Math.round(-rudderYawDeg * 28.0 * (airspeedMph / 30));
+  // Positive warp = more right-wing AoA. Extra right induced drag yaws the nose left (negative).
+  // Positive rudder = starboard, producing positive (right) yaw that cancels adverse yaw.
+  const speedRatio = airspeedMph / 30;
+  const adverseYawMomentFtLbs = Math.round(-wingWarpDeg * 12.5 * speedRatio);
+  const rudderCorrectiveMomentFtLbs = Math.round(rudderYawDeg * 28.0 * speedRatio);
   const netYawMoment = adverseYawMomentFtLbs + rudderCorrectiveMomentFtLbs;
+
+  const live = useLiveSimParams({
+    wingWarpDeg,
+    rudderYawDeg,
+    elevatorPitchDeg,
+    airspeedMph,
+    showStreamlines,
+    showVectors,
+    isAutoFlying,
+    baseCl,
+    totalLiftLbs,
+    totalDragLbs,
+  });
+
+  const applyWarp = (val: number) => {
+    setWingWarpDeg(val);
+    if (isCoupled) {
+      setRudderYawDeg(Math.round(val * 0.45));
+    }
+  };
 
   useEffect(() => {
     const container = containerRef.current;
@@ -329,23 +353,25 @@ export function WrightFlyer3D() {
       const delta = clock.getDelta();
       const elapsed = clock.getElapsedTime();
 
+      const p = live.current;
+
       // Auto-flight subtle atmospheric turbulence
-      if (isAutoFlying) {
+      if (p.isAutoFlying) {
         flyerGroup.position.y = Math.sin(elapsed * 1.5) * 0.15;
         flyerGroup.rotation.z =
-          Math.sin(elapsed * 0.9) * 0.03 + ((wingWarpDeg * Math.PI) / 180) * 0.4;
+          Math.sin(elapsed * 0.9) * 0.03 + ((p.wingWarpDeg * Math.PI) / 180) * 0.4;
         flyerGroup.rotation.y =
-          ((-rudderYawDeg * Math.PI) / 180) * 0.6 + Math.cos(elapsed * 0.7) * 0.02;
-        flyerGroup.rotation.x = ((-elevatorPitchDeg * Math.PI) / 180) * 0.4;
+          ((-p.rudderYawDeg * Math.PI) / 180) * 0.6 + Math.cos(elapsed * 0.7) * 0.02;
+        flyerGroup.rotation.x = ((-p.elevatorPitchDeg * Math.PI) / 180) * 0.4;
       }
 
       // Propellers Rotation (Counter-Rotating to eliminate gyroscopic torque)
-      const propSpeed = (airspeedMph / 25) * 45;
+      const propSpeed = (p.airspeedMph / 25) * 45;
       leftProp.rotation.z += propSpeed * delta;
       rightProp.rotation.z -= propSpeed * delta;
 
       // Animate Wing Warping Deflection on Mesh Tips
-      const warpRad = (wingWarpDeg * Math.PI) / 180;
+      const warpRad = (p.wingWarpDeg * Math.PI) / 180;
       const leftTipUpper = upperWing.getObjectByName("leftTip");
       const rightTipUpper = upperWing.getObjectByName("rightTip");
       const leftTipLower = lowerWing.getObjectByName("leftTip");
@@ -359,12 +385,12 @@ export function WrightFlyer3D() {
       }
 
       // Animate Elevator & Rudder
-      canardGroup.rotation.x = (-elevatorPitchDeg * Math.PI) / 180;
-      rudderGroup.rotation.y = (-rudderYawDeg * Math.PI) / 180;
+      canardGroup.rotation.x = (-p.elevatorPitchDeg * Math.PI) / 180;
+      rudderGroup.rotation.y = (-p.rudderYawDeg * Math.PI) / 180;
 
       // Streamline Flow Particle Physics
       const posArr = particlePositions;
-      const flowSpeed = (airspeedMph / 30) * 18 * delta;
+      const flowSpeed = (p.airspeedMph / 30) * 18 * delta;
 
       for (let i = 0; i < particleCount; i++) {
         const idx = i * 3;
@@ -372,7 +398,7 @@ export function WrightFlyer3D() {
 
         // Downwash deflection as airflow passes the wings
         if (posArr[idx + 2] < 1 && posArr[idx + 2] > -4) {
-          posArr[idx + 1] -= baseCl * 0.08 * delta;
+          posArr[idx + 1] -= p.baseCl * 0.08 * delta;
         }
 
         // Reset particle when it travels past the tail
@@ -383,12 +409,12 @@ export function WrightFlyer3D() {
         }
       }
       particleGeo.attributes.position.needsUpdate = true;
-      streamlinePoints.visible = showStreamlines;
-      vectorsGroup.visible = showVectors;
+      streamlinePoints.visible = p.showStreamlines;
+      vectorsGroup.visible = p.showVectors;
 
       // Update Force Vector Scales
-      liftVector.setLength(Math.max(0.5, totalLiftLbs / 250), 0.4, 0.25);
-      dragVector.setLength(Math.max(0.3, totalDragLbs / 90), 0.3, 0.2);
+      liftVector.setLength(Math.max(0.5, p.totalLiftLbs / 250), 0.4, 0.25);
+      dragVector.setLength(Math.max(0.3, p.totalDragLbs / 90), 0.3, 0.2);
 
       controls.update();
       renderer.render(scene, camera);
@@ -400,18 +426,7 @@ export function WrightFlyer3D() {
       cancelAnimationFrame(reqId);
       studio.dispose();
     };
-  }, [
-    wingWarpDeg,
-    rudderYawDeg,
-    elevatorPitchDeg,
-    airspeedMph,
-    showStreamlines,
-    showVectors,
-    isAutoFlying,
-    totalLiftLbs,
-    totalDragLbs,
-    baseCl,
-  ]);
+  }, [live]);
 
   return (
     <div className="flex flex-col h-full bg-parchment-50/60 dark:bg-ink-950/80 rounded-2xl overflow-hidden border border-parchment-300 dark:border-ink-800 shadow-patent">
@@ -459,13 +474,19 @@ export function WrightFlyer3D() {
           </div>
 
           <div className="bg-white/90 dark:bg-ink-900/90 backdrop-blur-md px-3 py-1.5 rounded-lg border border-parchment-300 dark:border-ink-700 text-[11px] font-sans text-ink-700 dark:text-ink-300 flex items-center gap-2">
-            <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
-            <span>3-Axis Coupled Roll-Yaw Flight Control Active</span>
+            <span
+              className={`w-2 h-2 rounded-full ${isCoupled ? "bg-emerald-500 animate-pulse" : "bg-red-500"}`}
+            />
+            <span>
+              {isCoupled
+                ? "Claim 1 cable coupling: warp drives starboard rudder"
+                : "Unlinked controls — adverse yaw is unopposed"}
+            </span>
           </div>
         </div>
 
         {/* Camera & Toggle Controls */}
-        <div className="absolute top-4 right-4 z-10 flex gap-2">
+        <div className="absolute top-4 right-4 z-10 flex flex-wrap justify-end gap-2 max-w-[55%]">
           <button
             type="button"
             onClick={() => setShowStreamlines(!showStreamlines)}
@@ -520,7 +541,7 @@ export function WrightFlyer3D() {
             max="15"
             step="1"
             value={wingWarpDeg}
-            onChange={(e) => setWingWarpDeg(Number(e.target.value))}
+            onChange={(e) => applyWarp(Number(e.target.value))}
             className="w-full accent-amber-600 dark:accent-amber-400 cursor-pointer"
           />
           <span className="text-[10px] text-ink-500 dark:text-ink-400 block">
@@ -542,12 +563,24 @@ export function WrightFlyer3D() {
             max="25"
             step="1"
             value={rudderYawDeg}
+            disabled={isCoupled}
             onChange={(e) => setRudderYawDeg(Number(e.target.value))}
-            className="w-full accent-blue-600 dark:accent-blue-400 cursor-pointer"
+            className={`w-full accent-blue-600 dark:accent-blue-400 ${isCoupled ? "opacity-50 cursor-not-allowed" : "cursor-pointer"}`}
           />
-          <span className="text-[10px] text-ink-500 dark:text-ink-400 block">
-            Counteracts adverse yaw induced by warping
-          </span>
+          <label className="flex items-center gap-1.5 text-[10px] text-ink-500 dark:text-ink-400">
+            <input
+              type="checkbox"
+              checked={isCoupled}
+              onChange={(e) => {
+                setIsCoupled(e.target.checked);
+                if (e.target.checked) {
+                  setRudderYawDeg(Math.round(wingWarpDeg * 0.45));
+                }
+              }}
+              className="rounded accent-emerald-600"
+            />
+            Claim 1 hip-cradle coupling
+          </label>
         </div>
 
         {/* Forward Canard (Pitch Angle) */}
@@ -590,8 +623,7 @@ export function WrightFlyer3D() {
             className="w-full accent-purple-600 dark:accent-purple-400 cursor-pointer"
           />
           <span className="text-[10px] text-ink-500 dark:text-ink-400 block">
-            Dynamic pressure $q = \frac{1}
-            {2}\rho V^2$ = {dynamicPressure.toFixed(2)} psf
+            Dynamic pressure q = ½ρV² = {dynamicPressure.toFixed(2)} psf
           </span>
         </div>
       </div>

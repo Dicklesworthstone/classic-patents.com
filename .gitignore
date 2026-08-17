@@ -45,6 +45,7 @@ bun.lockb
 
 # Caches & Artifacts
 artifacts/ocr_raster_cache/
+artifacts/e2e_screenshots/
 tsconfig.tsbuildinfo
 .ntm/
 .env*

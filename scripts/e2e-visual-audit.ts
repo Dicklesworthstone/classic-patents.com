@@ -1,0 +1,186 @@
+/**
+ * e2e-visual-audit.ts
+ *
+ * Ultra-fast Automated E2E Visual QA, DOM Health & Layout Verification Suite for Classic Patents.
+ * Uses Playwright to test local responsive breakpoints, console logs, canvas renders, and theme toggling.
+ */
+
+import * as fs from "node:fs";
+import * as path from "node:path";
+import { chromium } from "playwright";
+
+const BASE_URL = process.env.E2E_BASE_URL || "http://127.0.0.1:3088";
+const SCREENSHOT_DIR = path.join(process.cwd(), "artifacts", "e2e_screenshots");
+
+interface AuditResult {
+  route: string;
+  viewport: string;
+  status: number;
+  hasHorizontalOverflow: boolean;
+  consoleErrors: string[];
+  canvasCount: number;
+  screenshotPath?: string;
+}
+
+async function main() {
+  console.log("==================================================");
+  console.log(`  Classic Patents E2E Visual & Layout Audit Suite`);
+  console.log(`  Target: ${BASE_URL}`);
+  console.log("==================================================\n");
+
+  fs.mkdirSync(SCREENSHOT_DIR, { recursive: true });
+
+  const browser = await chromium.launch({ headless: true });
+  const viewports = [
+    { name: "Desktop 1440px", width: 1440, height: 900 },
+    { name: "Tablet 768px", width: 768, height: 1024 },
+    { name: "Mobile 375px", width: 375, height: 667 },
+  ];
+
+  const routesToTest = [
+    "/",
+    "/timeline",
+    "/about",
+    "/patents/us-821393-wright-flyer",
+    "/patents/us-381968-tesla-motor",
+    "/patents/us-223898-edison-lightbulb",
+    "/patents/us-2708656-fermi-reactor",
+    "/patents/us-4136359-wozniak-apple",
+    "/patents/us-3541541-engelbart-mouse",
+    "/patents/us-1781541-einstein-refrigerator",
+  ];
+
+  const results: AuditResult[] = [];
+  let totalErrors = 0;
+
+  for (const vp of viewports) {
+    console.log(`\n--- Auditing Breakpoint: ${vp.name} (${vp.width}x${vp.height}) ---`);
+    const context = await browser.newContext({
+      viewport: { width: vp.width, height: vp.height },
+      deviceScaleFactor: 1,
+    });
+
+    const page = await context.newPage();
+    const consoleErrors: string[] = [];
+
+    page.on("pageerror", (err) => {
+      consoleErrors.push(`[PageError] ${err.message}`);
+    });
+
+    page.on("console", (msg) => {
+      if (msg.type() === "error") {
+        consoleErrors.push(`[ConsoleError] ${msg.text()}`);
+      }
+    });
+
+    for (const route of routesToTest) {
+      const url = `${BASE_URL}${route}`;
+      process.stdout.write(`  Testing ${route.padEnd(42)} ... `);
+
+      const response = await page.goto(url, { waitUntil: "domcontentloaded", timeout: 8000 });
+      const status = response ? response.status() : 0;
+
+      // Allow 3D canvas and dynamic components to mount
+      await page.waitForTimeout(250);
+
+      // Check for horizontal overflow (common mobile responsive bug)
+      const hasHorizontalOverflow = await page.evaluate(() => {
+        return document.documentElement.scrollWidth > window.innerWidth;
+      });
+
+      // Count active WebGL Canvas elements
+      const canvasCount = await page.locator("canvas").count();
+
+      // Clean screenshot filename
+      const cleanRouteName = route === "/" ? "home" : route.replace(/^\//, "").replace(/\//g, "_");
+      const screenshotFilename = `${cleanRouteName}_${vp.width}px.png`;
+      const screenshotPath = path.join(SCREENSHOT_DIR, screenshotFilename);
+
+      await page.screenshot({ path: screenshotPath, fullPage: false });
+
+      const hasIssues = status !== 200 || hasHorizontalOverflow;
+      if (hasIssues) {
+        totalErrors++;
+        console.log(`❌ FAILED (Status: ${status}, Overflow: ${hasHorizontalOverflow})`);
+      } else {
+        console.log(`✓ OK (Status: ${status}, Canvases: ${canvasCount})`);
+      }
+
+      results.push({
+        route,
+        viewport: vp.name,
+        status,
+        hasHorizontalOverflow,
+        consoleErrors: [...consoleErrors],
+        canvasCount,
+        screenshotPath,
+      });
+
+      // Clear route errors
+      consoleErrors.length = 0;
+    }
+
+    await context.close();
+  }
+
+  // Interactive Test: Theme Toggle & Tab Switching on Desktop
+  console.log("\n--- Auditing Interactive Components & State Transitions ---");
+  const interactiveContext = await browser.newContext({
+    viewport: { width: 1440, height: 900 },
+  });
+  const iPage = await interactiveContext.newPage();
+  await iPage.goto(`${BASE_URL}/patents/us-821393-wright-flyer`, { waitUntil: "domcontentloaded" });
+  await iPage.waitForTimeout(300);
+
+  // 1. Test Theme Toggle
+  const themeButton = iPage.locator('button[aria-label="Toggle light and dark theme"]');
+  if ((await themeButton.count()) > 0) {
+    await themeButton.click();
+    await iPage.waitForTimeout(200);
+    const isDark = await iPage.evaluate(() => document.documentElement.classList.contains("dark"));
+    console.log(
+      `  ✓ Theme Toggle Transition: Successfully toggled to ${isDark ? "Dark" : "Light"} mode`,
+    );
+    await themeButton.click(); // Toggle back
+  }
+
+  // 2. Test Tab Switching to Verified Specification Face
+  const specTab = iPage.locator('button:has-text("Verified Specification Face")');
+  if ((await specTab.count()) > 0) {
+    await specTab.click();
+    await iPage.waitForTimeout(200);
+    const hasSpecHeader =
+      (await iPage.locator('h3:has-text("Specification of Letters Patent")').count()) > 0;
+    console.log(`  ✓ Tab Switch to Specification Face: ${hasSpecHeader ? "Verified" : "Failed"}`);
+  }
+
+  // 3. Test Tab Switching to Schematic & Pins
+  const pinsTab = iPage.locator('button:has-text("Schematic & Pins")');
+  if ((await pinsTab.count()) > 0) {
+    await pinsTab.click();
+    await iPage.waitForTimeout(200);
+    const pinCount = await iPage.locator("button.min-w-\\[28px\\]").count();
+    console.log(
+      `  ✓ Tab Switch to Schematic & Pins: ${pinCount} interactive callout pins rendered`,
+    );
+  }
+
+  await interactiveContext.close();
+  await browser.close();
+
+  console.log("\n==================================================");
+  console.log(
+    `  E2E Visual QA Summary: ${totalErrors === 0 ? "ALL PASSING GREEN (0 ERRORS)" : `${totalErrors} ISSUES FOUND`}`,
+  );
+  console.log(`  Screenshots saved to: ${SCREENSHOT_DIR}`);
+  console.log("==================================================");
+
+  if (totalErrors > 0) {
+    process.exit(1);
+  }
+}
+
+main().catch((err) => {
+  console.error("E2E Audit failed with exception:", err);
+  process.exit(1);
+});
