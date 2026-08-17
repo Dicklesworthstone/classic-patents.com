@@ -1,7 +1,7 @@
 "use client";
 
 import { Radio } from "lucide-react";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import { soundEngine } from "@/utils/soundEngine";
 
 export function SpencerMicrowaveSim() {
@@ -12,8 +12,10 @@ export function SpencerMicrowaveSim() {
   const [poppedCount, setPoppedCount] = useState<number>(0);
   const tempRef = useRef(tempCelsius);
   const poppedRef = useRef(poppedCount);
-  tempRef.current = tempCelsius;
-  poppedRef.current = poppedCount;
+  useLayoutEffect(() => {
+    tempRef.current = tempCelsius;
+    poppedRef.current = poppedCount;
+  });
 
   useEffect(() => {
     if (!isEmitting) return;
@@ -61,6 +63,7 @@ export function SpencerMicrowaveSim() {
         </div>
         <div className="flex items-center gap-2">
           <button
+            aria-label={isEmitting ? "Stand by magnetron" : "Emit microwaves"}
             type="button"
             onClick={() => {
               setIsEmitting((e) => !e);
@@ -247,6 +250,7 @@ export function SpencerMicrowaveSim() {
               </div>
               <input
                 type="range"
+                aria-label="Magnetron RF Power"
                 min="200"
                 max="1200"
                 step="100"

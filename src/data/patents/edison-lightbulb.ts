@@ -20,6 +20,10 @@ export const edisonBulbPatent: Patent = {
   originalPdfUrl: "/patents/pdfs/us-223898-edison-lightbulb.pdf",
   googlePatentsUrl: "https://patents.google.com/patent/US223898A/en",
   usptoClassification: "H01K 1/00 (Incandescent lamps)",
+  originalTextAsset: {
+    url: "/patents/transcripts/us-223898-edison-lightbulb.txt",
+    pageCount: 4,
+  },
   originalText: `UNITED STATES PATENT OFFICE.
 THOMAS A. EDISON, OF MENLO PARK, NEW JERSEY.
 
@@ -128,9 +132,9 @@ Figure 1 is a view of the lamp in elevation, showing the glass globe with the ca
     },
     {
       number: 3,
-      isIndependent: false,
+      isIndependent: true,
       originalText:
-        "A carbon filament or strip coiled and connected to electric conductors so that only a portion of the surface radiates light, as set forth.",
+        "A carbon filament or strip coiled and connected to electric conductors so that only a portion of the surface of such carbon conductors shall be exposed for radiating light, as set forth.",
       plainEnglish:
         "Covers coiled or folded filament configurations that concentrate heat and increase effective luminous efficacy.",
       keyInnovations: [
@@ -141,9 +145,9 @@ Figure 1 is a view of the lamp in elevation, showing the glass globe with the ca
     },
     {
       number: 4,
-      isIndependent: false,
+      isIndependent: true,
       originalText:
-        "The method herein described of securing the conductors to the carbon filament and forming the malleable contact, as set forth.",
+        "The method herein described of securing the platinum contact-wires to the carbon filament and carbonizing of the whole in a closed chamber, substantially as set forth.",
       plainEnglish:
         "The manufacturing method for securing platinum lead wires to fragile carbonized organic filaments.",
       keyInnovations: [

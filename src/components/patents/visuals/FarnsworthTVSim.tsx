@@ -74,7 +74,7 @@ export function FarnsworthTVSim() {
 
             {/* Moving Electron Beam Spot */}
             <div
-              className="absolute w-3 h-3 rounded-full bg-emerald-300 shadow-[0_0_12px_#34d399] transition-all duration-75"
+              className="absolute w-3 h-3 rounded-full bg-emerald-300 shadow-[0_0_12px_#34d399] transition-colors duration-75"
               style={{
                 left: `${beamPos.x}%`,
                 top: `${beamPos.y}%`,
@@ -153,6 +153,7 @@ export function FarnsworthTVSim() {
               </div>
               <input
                 type="range"
+                aria-label="Scan Line Resolution"
                 min="20"
                 max="240"
                 step="10"

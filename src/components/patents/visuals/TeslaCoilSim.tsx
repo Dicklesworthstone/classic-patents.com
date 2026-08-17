@@ -188,6 +188,7 @@ export function TeslaCoilSim() {
               </div>
               <input
                 type="range"
+                aria-label="Primary Tank Cap (C_p)"
                 min="5"
                 max="50"
                 step="2"
@@ -209,6 +210,7 @@ export function TeslaCoilSim() {
               </div>
               <input
                 type="range"
+                aria-label="Secondary Turns (N_s)"
                 min="400"
                 max="1400"
                 step="50"
@@ -230,6 +232,7 @@ export function TeslaCoilSim() {
               </div>
               <input
                 type="range"
+                aria-label="Rotary Spark Gap Rate"
                 min="30"
                 max="400"
                 step="10"

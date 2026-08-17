@@ -42,7 +42,7 @@ export function BoyleSmithCcdSim() {
           <button
             type="button"
             onClick={() => setIsPlaying(!isPlaying)}
-            className={`flex items-center gap-2 px-4 py-2 rounded-xl text-xs sm:text-sm font-mono font-bold transition-all border shadow-sm ${
+            className={`flex items-center gap-2 px-4 py-2 rounded-xl text-xs sm:text-sm font-mono font-bold transition-colors border shadow-sm ${
               isPlaying
                 ? "bg-blue-600 text-white border-blue-700 animate-pulse"
                 : "bg-parchment-200 dark:bg-ink-800 text-ink-800 dark:text-parchment-200 border-parchment-300 dark:border-ink-700 hover:bg-parchment-300"
@@ -291,6 +291,7 @@ export function BoyleSmithCcdSim() {
               </div>
               <input
                 type="range"
+                aria-label="Simulation parameter"
                 min="100"
                 max="2000"
                 step="50"

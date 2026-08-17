@@ -33,7 +33,7 @@ export function ClaimsDecoder({ claims }: ClaimsDecoderProps) {
             key={c.number}
             type="button"
             onClick={() => setActiveClaimNum(c.number)}
-            className={`px-4 py-2 rounded-xl text-xs sm:text-sm font-sans font-semibold transition-all border shadow-xs ${
+            className={`px-4 py-2 rounded-xl text-xs sm:text-sm font-sans font-semibold transition-colors border shadow-xs ${
               activeClaimNum === c.number
                 ? "bg-amber-700 text-white font-bold border-amber-800 dark:bg-amber-600 dark:border-amber-500 shadow"
                 : "bg-parchment-100 dark:bg-ink-900 text-ink-800 dark:text-ink-200 border-parchment-300 dark:border-ink-800 hover:bg-parchment-200 dark:hover:bg-ink-800"

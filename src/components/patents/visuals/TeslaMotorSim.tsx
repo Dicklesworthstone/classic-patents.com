@@ -94,6 +94,7 @@ export function TeslaMotorSim() {
 
         <div className="flex items-center gap-2">
           <button
+            aria-label="Toggle test tone"
             type="button"
             onClick={() => setIsPlayingAudio(!isPlayingAudio)}
             className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-mono font-medium transition-colors border shadow-sm ${
@@ -327,6 +328,7 @@ export function TeslaMotorSim() {
               </div>
               <input
                 type="range"
+                aria-label="Stator AC Frequency"
                 min="10"
                 max="120"
                 value={frequencyHz}
@@ -345,6 +347,7 @@ export function TeslaMotorSim() {
               </div>
               <input
                 type="range"
+                aria-label="Shaft Mechanical Load"
                 min="5"
                 max="95"
                 value={loadTorque}

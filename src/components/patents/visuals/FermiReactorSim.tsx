@@ -259,6 +259,7 @@ export function FermiReactorSim() {
               </div>
               <input
                 type="range"
+                aria-label="Control Rod Withdrawal"
                 min="0"
                 max="100"
                 step="1"
@@ -275,6 +276,7 @@ export function FermiReactorSim() {
               </div>
               <input
                 type="range"
+                aria-label="Graphite Moderator Purity"
                 min="80"
                 max="100"
                 step="1"

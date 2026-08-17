@@ -21,6 +21,10 @@ export const howeSewingMachinePatent: Patent = {
   originalPdfUrl: "/patents/pdfs/us-4750-howe-sewing-machine.pdf",
   googlePatentsUrl: "https://patents.google.com/patent/US4750A/en",
   usptoClassification: "D05B 1/02 (Sewing machines; lockstitch forming)",
+  originalTextAsset: {
+    url: "/patents/transcripts/us-4750-howe-sewing-machine.txt",
+    pageCount: 6,
+  },
   originalText: `UNITED STATES PATENT OFFICE.
 ELIAS HOWE, JR., OF CAMBRIDGE, MASSACHUSETTS.
 
@@ -89,7 +93,7 @@ The curved needle is mounted upon a vibrating arm actuated by a cam on the main 
       number: 1,
       isIndependent: true,
       originalText:
-        "The forming of the seam by carrying a thread through the cloth by means of a curved needle having the eye in its point, and the passing of a shuttle carrying a second thread through the loop formed by the needle-thread, substantially as described.",
+        "The forming of the seam by carrying a thread through the cloth by means of a curved needle on the end of a vibrating arm, and the passing of a shuttle furnished with its bobbin, in the manner set forth, between the needle and the thread which it carries under a combination and arrangement of parts substantially the same with that described.",
       plainEnglish:
         "The historic master claim protecting the creation of a seam using an eye-pointed needle to form a loop and a shuttle carrying a second thread passing through that loop.",
       keyInnovations: [
@@ -99,6 +103,50 @@ The curved needle is mounted upon a vibrating arm actuated by a cam on the main 
       ],
       legalSignificance:
         "Howe's lockstitch claim is what the 1856 Sewing Machine Combination licensed. That pool is the first large American patent pool.",
+    },
+    {
+      number: 2,
+      isIndependent: true,
+      originalText:
+        "The lifting of the thread that passes through the needle-eye by means of the lifting-rod W, for the purpose of forming a loop of loose thread that is to be subsequently drawn in by the passage of the shuttle, as herein fully described, said lifting-rod being furnished with a lifting-pin, u, and governed in its motions by the guide-pieces and other devices, arranged and operating substantially as described.",
+      plainEnglish:
+        "Claims the synchronized thread-lifting rod that creates enough slack for the shuttle to pass through the needle-thread loop.",
+      keyInnovations: [
+        "Thread-loop formation",
+        "Guided lifting rod",
+        "Synchronized shuttle clearance",
+      ],
+    },
+    {
+      number: 3,
+      isIndependent: true,
+      originalText:
+        "The holding of the thread that is given out by the shuttle, so as to prevent its unwinding from the shuttle-bobbin after the shuttle has passed through the loop, said thread being held by means of the lever or clipping-piece f, as herein made known, or in any other manner that is substantially the same in its operation and result.",
+      plainEnglish:
+        "Claims the thread clamp that stops the shuttle bobbin from giving up extra thread while the needle tightens the lockstitch.",
+      keyInnovations: ["Shuttle-thread tensioning", "Clipping lever", "Reliable stitch tightening"],
+    },
+    {
+      number: 4,
+      isIndependent: true,
+      originalText:
+        "The manner of arranging and combining the small lever m' n' with the sliding box M, in combination with the spring-piece z, for the purpose of tightening the stitch as the needle is retracted, as described.",
+      plainEnglish:
+        "Claims the spring-loaded lever at the shuttle box that makes the stitch tighten as the needle retreats.",
+      keyInnovations: [
+        "Spring-loaded stitch tightener",
+        "Sliding shuttle box linkage",
+        "Controlled thread release",
+      ],
+    },
+    {
+      number: 5,
+      isIndependent: true,
+      originalText:
+        "The holding of the cloth to be sewed by the use of a baster-plate furnished with points for that purpose, and with holes enabling it to operate as a rack in the manner set forth, thereby carrying the cloth forward and dispensing altogether with the necessity of basting the parts together.",
+      plainEnglish:
+        "Claims the pointed, rack-like feed plate that holds the cloth and advances it one stitch at a time without hand basting.",
+      keyInnovations: ["Pinned cloth holder", "Rack-and-pinion feed", "Automatic stitch pitch"],
     },
   ],
   drawings: [
@@ -174,8 +222,8 @@ The curved needle is mounted upon a vibrating arm actuated by a cam on the main 
     "Industrial Revolution",
   ],
   stats: {
-    totalClaims: 1,
-    independentClaims: 1,
+    totalClaims: 5,
+    independentClaims: 5,
     patentWarYears: "1846–1856",
     impactScore: 98,
   },

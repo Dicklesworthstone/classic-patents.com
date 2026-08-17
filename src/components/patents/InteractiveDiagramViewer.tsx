@@ -1007,9 +1007,10 @@ export function InteractiveDiagramViewer({
                 <button
                   key={callout.id}
                   type="button"
+                  aria-label={`${callout.label}: ${callout.description}`}
                   onClick={() => setActiveCalloutId(isSelected ? null : callout.id)}
                   style={{ left: `${callout.x}%`, top: `${callout.y}%` }}
-                  className={`absolute -translate-x-1/2 -translate-y-1/2 min-w-[28px] max-w-[3.25rem] h-7 px-1.5 rounded-full flex items-center justify-center text-xs font-mono font-bold transition-all duration-200 shadow-md truncate ${
+                  className={`absolute -translate-x-1/2 -translate-y-1/2 min-w-[28px] max-w-[3.25rem] h-7 px-1.5 rounded-full flex items-center justify-center text-xs font-mono font-bold transition-colors duration-200 shadow-md truncate ${
                     isSelected
                       ? "bg-amber-500 text-ink-950 ring-4 ring-amber-500/40 scale-125 z-20"
                       : "bg-ink-800 text-amber-300 border border-amber-500/60 hover:scale-110 hover:bg-amber-600 hover:text-white z-10"

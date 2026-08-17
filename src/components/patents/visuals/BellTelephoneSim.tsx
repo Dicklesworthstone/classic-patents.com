@@ -70,6 +70,7 @@ export function BellTelephoneSim() {
         </div>
 
         <button
+          aria-label="Toggle test tone"
           type="button"
           onClick={() => setIsPlayingAudio(!isPlayingAudio)}
           className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-mono font-medium transition-colors border shadow-sm ${
@@ -177,6 +178,7 @@ export function BellTelephoneSim() {
               </div>
               <input
                 type="range"
+                aria-label="Voice Acoustic Frequency"
                 min="200"
                 max="1000"
                 step="10"
@@ -197,6 +199,7 @@ export function BellTelephoneSim() {
               </div>
               <input
                 type="range"
+                aria-label="Voice Acoustic Amplitude"
                 min="10"
                 max="90"
                 value={voiceAmplitude}

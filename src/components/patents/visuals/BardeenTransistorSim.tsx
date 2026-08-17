@@ -247,6 +247,7 @@ export function BardeenTransistorSim() {
               </div>
               <input
                 type="range"
+                aria-label="Solid-State Transistor Controls"
                 min="0.5"
                 max="6.0"
                 step="0.2"
@@ -268,6 +269,7 @@ export function BardeenTransistorSim() {
               </div>
               <input
                 type="range"
+                aria-label="Simulation parameter"
                 min="20"
                 max="120"
                 step="5"
@@ -289,6 +291,7 @@ export function BardeenTransistorSim() {
               </div>
               <input
                 type="range"
+                aria-label="Simulation parameter"
                 min="10"
                 max="50"
                 step="5"

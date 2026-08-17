@@ -110,7 +110,7 @@ export function MorseTelegraphSim() {
           type="button"
           onClick={playMorseSequence}
           disabled={isPlaying}
-          className={`flex items-center gap-1.5 px-4 py-2 rounded-xl text-xs font-mono font-bold transition-all shadow-md ${
+          className={`flex items-center gap-1.5 px-4 py-2 rounded-xl text-xs font-mono font-bold transition-colors shadow-md ${
             isPlaying
               ? "bg-emerald-600 text-white animate-pulse"
               : "bg-amber-600 hover:bg-amber-700 text-white active:scale-95"
@@ -331,6 +331,7 @@ export function MorseTelegraphSim() {
               </div>
               <input
                 type="range"
+                aria-label="Line Wire Distance"
                 min="5"
                 max="100"
                 step="5"
@@ -363,7 +364,7 @@ export function MorseTelegraphSim() {
                 onMouseUp={handleKeyUp}
                 onTouchStart={handleKeyDown}
                 onTouchEnd={handleKeyUp}
-                className={`w-full py-4 rounded-xl border text-center font-mono font-bold text-xs shadow-md transition-all select-none ${
+                className={`w-full py-4 rounded-xl border text-center font-mono font-bold text-xs shadow-md transition-colors select-none ${
                   isKeyDepressed
                     ? "bg-amber-600 text-white border-amber-700 scale-95"
                     : "bg-parchment-200 dark:bg-ink-800 text-ink-900 dark:text-parchment-100 border-parchment-300 dark:border-ink-700"

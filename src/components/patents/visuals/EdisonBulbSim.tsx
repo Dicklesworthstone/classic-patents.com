@@ -217,6 +217,7 @@ export function EdisonBulbSim() {
               </div>
               <input
                 type="range"
+                aria-label="Generator Terminal Voltage"
                 min="0"
                 max="140"
                 value={voltage}

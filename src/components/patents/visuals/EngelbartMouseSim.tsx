@@ -278,6 +278,7 @@ export function EngelbartMouseSim() {
               </div>
               <input
                 type="range"
+                aria-label="Disc Pulses / Rev"
                 min="12"
                 max="72"
                 step="6"
@@ -294,6 +295,7 @@ export function EngelbartMouseSim() {
               </div>
               <input
                 type="range"
+                aria-label="Knife Wheel Dia"
                 min="15"
                 max="40"
                 step="1"

@@ -79,6 +79,13 @@ export interface PlainEnglishExplanation {
   whyItMattersToday: string;
 }
 
+export interface OriginalTextAsset {
+  /** Public, cleaned transcription of every page in the source facsimile. */
+  url: string;
+  /** Source-page count, including drawing sheets and post-grant records. */
+  pageCount: number;
+}
+
 export interface Patent {
   id: string;
   patentNumber: string; // e.g. "US 821,393"
@@ -98,6 +105,8 @@ export interface Patent {
   googlePatentsUrl: string;
   usptoClassification: string;
   originalText: string;
+  /** Complete source text loaded only when a reader opens the archival face. */
+  originalTextAsset?: OriginalTextAsset;
   plainEnglishExplanation: PlainEnglishExplanation;
   claims: PatentClaim[];
   drawings: PatentDrawing[];

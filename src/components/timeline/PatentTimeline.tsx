@@ -29,7 +29,7 @@ export function PatentTimeline() {
                 key={p.id}
                 type="button"
                 onClick={() => setSelectedPatentId(p.id)}
-                className={`p-3 rounded-xl border text-left flex flex-col justify-between transition-all duration-200 ${
+                className={`p-3 rounded-xl border text-left flex flex-col justify-between transition-colors duration-200 ${
                   isSelected
                     ? "bg-amber-700 text-white border-amber-800 dark:bg-amber-600 dark:border-amber-500 scale-105 shadow-md ring-2 ring-amber-400"
                     : "bg-parchment-100 dark:bg-ink-900 border-parchment-300 dark:border-ink-800 hover:bg-parchment-200 dark:hover:bg-ink-800 text-ink-800 dark:text-parchment-200"

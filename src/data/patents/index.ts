@@ -95,6 +95,7 @@ export function searchPatents(query: string): Patent[] {
       p.shortTitle.toLowerCase().includes(q) ||
       p.patentNumber.toLowerCase().includes(q) ||
       p.inventors.some((inv) => inv.toLowerCase().includes(q)) ||
+      p.inventorLocation.toLowerCase().includes(q) ||
       p.summary.toLowerCase().includes(q) ||
       p.tags?.some((t) => t.toLowerCase().includes(q))
     );

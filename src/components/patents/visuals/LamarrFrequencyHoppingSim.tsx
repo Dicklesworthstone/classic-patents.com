@@ -203,6 +203,7 @@ export function LamarrFrequencyHoppingSim() {
               </div>
               <input
                 type="range"
+                aria-label="Piano Roll Advance Speed"
                 min="2"
                 max="20"
                 step="1"
@@ -228,6 +229,7 @@ export function LamarrFrequencyHoppingSim() {
               </div>
               <input
                 type="range"
+                aria-label="Enemy Jammer Target Channel"
                 min="1"
                 max="88"
                 value={jammingFrequencyChannel}

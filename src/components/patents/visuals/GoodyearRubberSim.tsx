@@ -135,6 +135,7 @@ export function GoodyearRubberSim() {
               </div>
               <input
                 type="range"
+                aria-label="Sulfur Compounding Content"
                 min="0"
                 max="30"
                 value={sulfurPercent}
@@ -160,6 +161,7 @@ export function GoodyearRubberSim() {
               </div>
               <input
                 type="range"
+                aria-label="Ambient Temperature"
                 min="-20"
                 max="100"
                 value={temperatureCelsius}
@@ -178,6 +180,7 @@ export function GoodyearRubberSim() {
               </div>
               <input
                 type="range"
+                aria-label="Applied Tensile Strain"
                 min="0"
                 max="100"
                 value={appliedStress}

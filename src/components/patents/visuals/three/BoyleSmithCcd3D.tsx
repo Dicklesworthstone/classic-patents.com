@@ -408,7 +408,7 @@ export function BoyleSmithCcd3D() {
           <button
             type="button"
             onClick={() => setShowUiOverlay(!showUiOverlay)}
-            className={`p-1.5 sm:p-2.5 rounded-xl backdrop-blur-md border transition-all shadow-sm ${
+            className={`p-1.5 sm:p-2.5 rounded-xl backdrop-blur-md border transition-colors shadow-sm ${
               showUiOverlay
                 ? "bg-white/90 dark:bg-ink-900/90 border-parchment-300 dark:border-ink-700 text-ink-700 dark:text-parchment-300 hover:bg-parchment-100"
                 : "bg-amber-600 text-white border-amber-700 shadow-md ring-2 ring-amber-500/30"
@@ -423,9 +423,10 @@ export function BoyleSmithCcd3D() {
             )}
           </button>
           <button
+            aria-label={isAudioMuted ? "Unmute simulation audio" : "Mute simulation audio"}
             type="button"
             onClick={toggleSound}
-            className="p-1.5 sm:p-2.5 rounded-xl bg-white/90 dark:bg-ink-900/90 backdrop-blur-md border border-parchment-300 dark:border-ink-700 text-ink-700 dark:text-parchment-300 hover:bg-parchment-100 dark:hover:bg-ink-800 transition-all shadow-sm"
+            className="p-1.5 sm:p-2.5 rounded-xl bg-white/90 dark:bg-ink-900/90 backdrop-blur-md border border-parchment-300 dark:border-ink-700 text-ink-700 dark:text-parchment-300 hover:bg-parchment-100 dark:hover:bg-ink-800 transition-colors shadow-sm"
             title={isAudioMuted ? "Enable Sound Synthesis" : "Mute Sound"}
           >
             {isAudioMuted ? (
@@ -435,9 +436,10 @@ export function BoyleSmithCcd3D() {
             )}
           </button>
           <button
+            aria-label={showCalloutPins ? "Hide annotation pins" : "Show annotation pins"}
             type="button"
             onClick={() => setShowCalloutPins(!showCalloutPins)}
-            className={`p-1.5 sm:p-2.5 rounded-xl backdrop-blur-md border transition-all shadow-sm ${
+            className={`p-1.5 sm:p-2.5 rounded-xl backdrop-blur-md border transition-colors shadow-sm ${
               showCalloutPins
                 ? "bg-amber-600 text-white border-amber-700 shadow-md"
                 : "bg-white/90 dark:bg-ink-900/90 border-parchment-300 dark:border-ink-700 text-ink-700 dark:text-parchment-300 hover:bg-parchment-100"
@@ -447,9 +449,10 @@ export function BoyleSmithCcd3D() {
             <Zap className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
           </button>
           <button
+            aria-label="Reset camera view"
             type="button"
             onClick={() => applyCameraPreset("iso")}
-            className="p-1.5 sm:p-2.5 rounded-xl bg-white/90 dark:bg-ink-900/90 backdrop-blur-md border border-parchment-300 dark:border-ink-700 text-ink-700 dark:text-parchment-300 hover:bg-parchment-100 dark:hover:bg-ink-800 transition-all shadow-sm"
+            className="p-1.5 sm:p-2.5 rounded-xl bg-white/90 dark:bg-ink-900/90 backdrop-blur-md border border-parchment-300 dark:border-ink-700 text-ink-700 dark:text-parchment-300 hover:bg-parchment-100 dark:hover:bg-ink-800 transition-colors shadow-sm"
             title="Reset Orbit Camera"
           >
             <RotateCcw className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
@@ -475,7 +478,7 @@ export function BoyleSmithCcd3D() {
                 key={id}
                 type="button"
                 onClick={() => applyCameraPreset(id)}
-                className={`px-2 py-0.5 sm:px-2.5 sm:py-1 rounded-lg font-sans whitespace-nowrap shrink-0 transition-all ${
+                className={`px-2 py-0.5 sm:px-2.5 sm:py-1 rounded-lg font-sans whitespace-nowrap shrink-0 transition-colors ${
                   activeCamera === id
                     ? "bg-amber-700 dark:bg-amber-600 text-white font-semibold shadow-xs"
                     : "text-ink-700 dark:text-parchment-300 hover:bg-parchment-200 dark:hover:bg-ink-800"
@@ -501,7 +504,7 @@ export function BoyleSmithCcd3D() {
                 key={s.id}
                 type="button"
                 onClick={() => applyScenario(s)}
-                className="p-2.5 rounded-xl border border-parchment-300 dark:border-ink-700 bg-white/70 dark:bg-ink-950/70 hover:bg-parchment-50 dark:hover:bg-ink-800 text-left transition-all group"
+                className="p-2.5 rounded-xl border border-parchment-300 dark:border-ink-700 bg-white/70 dark:bg-ink-950/70 hover:bg-parchment-50 dark:hover:bg-ink-800 text-left transition-colors group"
               >
                 <div className="text-xs font-serif font-bold text-ink-900 dark:text-parchment-100 group-hover:text-amber-700 dark:group-hover:text-amber-400">
                   {s.name}
@@ -528,6 +531,7 @@ export function BoyleSmithCcd3D() {
             </div>
             <input
               type="range"
+              aria-label="Photon Flux (Lux)"
               min="50"
               max="1200"
               step="50"
@@ -552,6 +556,7 @@ export function BoyleSmithCcd3D() {
             </div>
             <input
               type="range"
+              aria-label="Gate Bias Voltage (Vg)"
               min="2.0"
               max="15.0"
               step="0.5"
@@ -569,7 +574,7 @@ export function BoyleSmithCcd3D() {
             <button
               type="button"
               onClick={() => setIsAutoClocking(!isAutoClocking)}
-              className={`w-full py-3 px-4 rounded-xl font-sans font-bold text-sm transition-all shadow-sm flex items-center justify-center gap-2 ${
+              className={`w-full py-3 px-4 rounded-xl font-sans font-bold text-sm transition-colors shadow-sm flex items-center justify-center gap-2 ${
                 isAutoClocking
                   ? "bg-emerald-600 hover:bg-emerald-700 text-white shadow-md"
                   : "bg-amber-600 hover:bg-amber-700 text-white shadow-md"
@@ -593,7 +598,7 @@ export function BoyleSmithCcd3D() {
                   setIsAutoClocking(false);
                   setClockPhase(pNum);
                 }}
-                className={`px-3 py-1 rounded-lg font-mono font-bold transition-all ${
+                className={`px-3 py-1 rounded-lg font-mono font-bold transition-colors ${
                   clockPhase === pNum && !isAutoClocking
                     ? "bg-blue-600 text-white shadow-xs"
                     : "bg-white/70 dark:bg-ink-800 text-ink-700 dark:text-parchment-200 hover:bg-parchment-200"
@@ -608,7 +613,7 @@ export function BoyleSmithCcd3D() {
             <span className="text-ink-600 dark:text-ink-400 text-xs">Pixel Charge Capacity:</span>
             <div className="w-28 sm:w-36 bg-parchment-300 dark:bg-ink-800 rounded-full h-2.5 overflow-hidden border border-parchment-400 dark:border-ink-700">
               <div
-                className="bg-gradient-to-r from-blue-500 via-cyan-400 to-amber-500 h-full transition-all duration-300"
+                className="bg-gradient-to-r from-blue-500 via-cyan-400 to-amber-500 h-full transition-colors duration-300"
                 style={{
                   width: `${Math.min(100, (collectedChargeElectrons / fullWellElectrons) * 100)}%`,
                 }}

@@ -309,7 +309,7 @@ export function WrightFlyer3D() {
           <button
             type="button"
             onClick={() => setShowUiOverlay(!showUiOverlay)}
-            className={`p-1.5 sm:px-2.5 sm:py-1.5 rounded-lg text-xs font-sans font-semibold border transition-all shadow-sm ${
+            className={`p-1.5 sm:px-2.5 sm:py-1.5 rounded-lg text-xs font-sans font-semibold border transition-colors shadow-sm ${
               showUiOverlay
                 ? "bg-white/85 dark:bg-ink-900/85 text-ink-700 dark:text-ink-300 border-parchment-300 dark:border-ink-700 hover:bg-parchment-100"
                 : "bg-amber-600 text-white border-amber-700 shadow-md ring-2 ring-amber-500/30"
@@ -327,7 +327,7 @@ export function WrightFlyer3D() {
           <button
             type="button"
             onClick={() => setShowStreamlines(!showStreamlines)}
-            className={`p-1.5 sm:px-3 sm:py-1.5 rounded-lg text-xs font-sans font-semibold border transition-all ${
+            className={`p-1.5 sm:px-3 sm:py-1.5 rounded-lg text-xs font-sans font-semibold border transition-colors ${
               showStreamlines
                 ? "bg-amber-500 text-white border-amber-600 shadow-sm"
                 : "bg-white/80 dark:bg-ink-900/80 text-ink-700 dark:text-ink-300 border-parchment-300 dark:border-ink-700"
@@ -339,7 +339,7 @@ export function WrightFlyer3D() {
           <button
             type="button"
             onClick={() => setShowVectors(!showVectors)}
-            className={`p-1.5 sm:px-3 sm:py-1.5 rounded-lg text-xs font-sans font-semibold border transition-all ${
+            className={`p-1.5 sm:px-3 sm:py-1.5 rounded-lg text-xs font-sans font-semibold border transition-colors ${
               showVectors
                 ? "bg-blue-600 text-white border-blue-700 shadow-sm"
                 : "bg-white/80 dark:bg-ink-900/80 text-ink-700 dark:text-ink-300 border-parchment-300 dark:border-ink-700"
@@ -348,9 +348,10 @@ export function WrightFlyer3D() {
             <span className="hidden sm:inline">Force </span>Vectors
           </button>
           <button
+            aria-label={isAutoFlying ? "Freeze flight" : "Resume live flight"}
             type="button"
             onClick={() => setIsAutoFlying(!isAutoFlying)}
-            className={`p-1.5 sm:px-3 sm:py-1.5 rounded-lg text-xs font-sans font-semibold border transition-all ${
+            className={`p-1.5 sm:px-3 sm:py-1.5 rounded-lg text-xs font-sans font-semibold border transition-colors ${
               isAutoFlying
                 ? "bg-emerald-600 text-white border-emerald-700 shadow-sm"
                 : "bg-white/80 dark:bg-ink-900/80 text-ink-700 dark:text-ink-300 border-parchment-300 dark:border-ink-700"
@@ -374,6 +375,7 @@ export function WrightFlyer3D() {
           </div>
           <input
             type="range"
+            aria-label="Wing Warping (Roll)"
             min="-15"
             max="15"
             step="1"
@@ -396,6 +398,7 @@ export function WrightFlyer3D() {
           </div>
           <input
             type="range"
+            aria-label="Rudder Angle (Yaw)"
             min="-25"
             max="25"
             step="1"
@@ -430,6 +433,7 @@ export function WrightFlyer3D() {
           </div>
           <input
             type="range"
+            aria-label="Canard Elevator (Pitch)"
             min="-15"
             max="15"
             step="1"
@@ -452,6 +456,7 @@ export function WrightFlyer3D() {
           </div>
           <input
             type="range"
+            aria-label="Relative Airspeed"
             min="15"
             max="45"
             step="1"

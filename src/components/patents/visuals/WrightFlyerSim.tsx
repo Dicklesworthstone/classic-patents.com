@@ -434,6 +434,7 @@ export function WrightFlyerSim() {
               </div>
               <input
                 type="range"
+                aria-label="Wing Warping (Hip Cradle)"
                 min="-30"
                 max="30"
                 value={wingWarpAngle}
@@ -457,6 +458,7 @@ export function WrightFlyerSim() {
               </div>
               <input
                 type="range"
+                aria-label="Vertical Rear Rudder"
                 min="-30"
                 max="30"
                 value={rudderAngle}
@@ -485,6 +487,7 @@ export function WrightFlyerSim() {
               </div>
               <input
                 type="range"
+                aria-label="Forward Canard Elevator (Pitch)"
                 min="-20"
                 max="20"
                 value={canardAngle}

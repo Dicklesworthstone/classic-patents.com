@@ -38,7 +38,7 @@ export function EraFilterBar({
             placeholder="Search patents by inventor, title, or patent number..."
             value={searchQuery}
             onChange={(e) => onSearchChange(e.target.value)}
-            className="w-full pl-11 pr-4 py-3 bg-parchment-50 dark:bg-ink-950 border border-parchment-300 dark:border-ink-700 rounded-xl text-sm sm:text-base font-sans text-ink-950 dark:text-parchment-100 placeholder:text-ink-400 focus:outline-none focus:ring-2 focus:ring-amber-600 dark:focus:ring-amber-400 transition-all shadow-inner"
+            className="w-full pl-11 pr-4 py-3 bg-parchment-50 dark:bg-ink-950 border border-parchment-300 dark:border-ink-700 rounded-xl text-sm sm:text-base font-sans text-ink-950 dark:text-parchment-100 placeholder:text-ink-400 focus:outline-none focus:ring-2 focus:ring-amber-600 dark:focus:ring-amber-400 transition-colors shadow-inner"
           />
         </div>
 
@@ -58,7 +58,7 @@ export function EraFilterBar({
             key={cat.id}
             type="button"
             onClick={() => onSelectCategory(cat.id)}
-            className={`px-4 py-2 rounded-xl text-xs sm:text-sm font-sans font-semibold transition-all shadow-xs ${
+            className={`px-4 py-2 rounded-xl text-xs sm:text-sm font-sans font-semibold transition-colors shadow-xs ${
               selectedCategory === cat.id
                 ? "bg-amber-700 text-white font-bold shadow dark:bg-amber-600"
                 : "bg-parchment-50 dark:bg-ink-950 text-ink-800 dark:text-parchment-200 border border-parchment-300 dark:border-ink-800 hover:bg-parchment-200 dark:hover:bg-ink-800"

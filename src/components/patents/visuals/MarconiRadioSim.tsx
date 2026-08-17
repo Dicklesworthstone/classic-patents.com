@@ -56,7 +56,7 @@ export function MarconiRadioSim() {
         <button
           type="button"
           onClick={triggerSpark}
-          className="flex items-center gap-1.5 px-4 py-2 rounded-xl text-xs font-mono font-bold bg-amber-600 hover:bg-amber-700 text-white shadow-md transition-all active:scale-95"
+          className="flex items-center gap-1.5 px-4 py-2 rounded-xl text-xs font-mono font-bold bg-amber-600 hover:bg-amber-700 text-white shadow-md transition-colors active:scale-95"
         >
           <Zap className="w-4 h-4" />
           <span>Fire Spark Transmitter</span>
@@ -242,6 +242,7 @@ export function MarconiRadioSim() {
               </div>
               <input
                 type="range"
+                aria-label="Aerial Mast Height"
                 min="10"
                 max="100"
                 step="5"
@@ -267,6 +268,7 @@ export function MarconiRadioSim() {
               </div>
               <input
                 type="range"
+                aria-label="Induction Coil Potential"
                 min="5"
                 max="50"
                 step="5"

@@ -39,8 +39,36 @@ export default async function PatentDetailPage({ params }: PatentPageProps) {
 
   const { prev, next } = getAdjacentPatents(id);
 
+  const jsonLd = {
+    "@context": "https://schema.org",
+    "@type": "TechArticle",
+    headline: `${patent.title} (${patent.patentNumber})`,
+    description: patent.summary,
+    inLanguage: "en-US",
+    author: patent.inventors.map((name) => ({
+      "@type": "Person",
+      name,
+      homeLocation: patent.inventorLocation,
+    })),
+    datePublished: patent.grantDate,
+    dateCreated: patent.filingDate,
+    publisher: {
+      "@type": "Organization",
+      name: "Classic Patents",
+      url: "https://classic-patents.com",
+    },
+    mainEntityOfPage: `https://classic-patents.com/patents/${patent.id}`,
+  };
+
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12 space-y-8">
+      {/* JSON-LD Structured Data */}
+      <script
+        type="application/ld+json"
+        // biome-ignore lint/security/noDangerouslySetInnerHtml: Validated JSON-LD scholarly article schema
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      />
+
       {/* Patent Header & Metadata Bar */}
       <PatentHeader patent={patent} />
 

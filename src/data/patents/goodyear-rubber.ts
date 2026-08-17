@@ -21,6 +21,10 @@ export const goodyearRubberPatent: Patent = {
   originalPdfUrl: "/patents/pdfs/us-3633-goodyear-rubber.pdf",
   googlePatentsUrl: "https://patents.google.com/patent/US3633A/en",
   usptoClassification: "C08J 3/24 (Crosslinking of rubber compounds)",
+  originalTextAsset: {
+    url: "/patents/transcripts/us-3633-goodyear-rubber.txt",
+    pageCount: 2,
+  },
   originalText: `UNITED STATES PATENT OFFICE.
 CHARLES GOODYEAR, OF NEW YORK, N. Y.
 
@@ -95,13 +99,39 @@ By this heating process, the sulfur combines chemically with the gum, producing 
       number: 1,
       isIndependent: true,
       originalText:
-        "The forming of the metallic gum-elastic composition of matter substantially as herein set forth, by the combining of sulfur and white lead with India-rubber, and heating the compound, as described.",
+        "The combining of the said gum with sulphur and with white lead, so as to form a triple compound, either in the proportions herein named or in any other within such limits as will produce a like result; and I will here remark that although I have obtained the best results from the carbonate of lead, other salts of lead or the oxides of that metal may be substituted therefor, and will produce a good effect. I therefore under this head claim the employment of either of the oxides or salts of lead in the place of the white lead in the above-named compound.",
       plainEnglish:
-        "Composition of matter claim covering vulcanized rubber made by combining raw rubber with sulfur, an inorganic metallic activator, and heat.",
+        "Claims the three-part compound: rubber, sulphur, and white lead (or another lead salt or oxide) in any proportion that gives the same result.",
       keyInnovations: [
         "Sulfur vulcanized rubber composition",
         "Heat-activated cross-linking",
         "Temperature-stable elastomer",
+      ],
+    },
+    {
+      number: 2,
+      isIndependent: true,
+      originalText:
+        "The formation of a fabric of the india-rubber by interposing layers of cotton-batting between those of the gum, in the manner and for the purpose above described.",
+      plainEnglish:
+        "Claims a layered composite: cotton batting sandwiched between rubber layers to make a thin, strong fabric.",
+      keyInnovations: [
+        "Layered rubber composite",
+        "Cotton-batting reinforcement",
+        "Thin flexible fabric",
+      ],
+    },
+    {
+      number: 3,
+      isIndependent: true,
+      originalText:
+        "In combination with the foregoing, the process of exposing the india-rubber fabric to the action of a high degree of heat, such as is herein specified, by means of which my improved compound is effectually changed in its properties so as to protect it from decomposition or deterioration by the action of those agents which have heretofore been found to produce that effect upon india-rubber goods.",
+      plainEnglish:
+        "Claims the high-heat treatment that gives the compounded fabric its resistance to the heat, cold, and solvents that previously ruined rubber goods.",
+      keyInnovations: [
+        "High-temperature cure",
+        "Durable rubber fabric",
+        "Resistance to weathering and solvents",
       ],
     },
   ],

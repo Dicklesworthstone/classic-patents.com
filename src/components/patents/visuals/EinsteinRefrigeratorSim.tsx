@@ -269,6 +269,7 @@ export function EinsteinRefrigeratorSim() {
               </div>
               <input
                 type="range"
+                aria-label="Burner Heat Input"
                 min="100"
                 max="400"
                 step="10"
@@ -285,6 +286,7 @@ export function EinsteinRefrigeratorSim() {
               </div>
               <input
                 type="range"
+                aria-label="Hermetic System Pressure"
                 min="8"
                 max="22"
                 step="1"

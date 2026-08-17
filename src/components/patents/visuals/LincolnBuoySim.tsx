@@ -230,6 +230,7 @@ export function LincolnBuoySim() {
               </div>
               <input
                 type="range"
+                aria-label="Bellows Expansion (\Delta V)"
                 min="0"
                 max="100"
                 step="5"
@@ -251,6 +252,7 @@ export function LincolnBuoySim() {
               </div>
               <input
                 type="range"
+                aria-label="Simulation parameter"
                 min="50"
                 max="200"
                 step="10"
@@ -272,6 +274,7 @@ export function LincolnBuoySim() {
               </div>
               <input
                 type="range"
+                aria-label="Simulation parameter"
                 min="2.0"
                 max="7.0"
                 step="0.2"

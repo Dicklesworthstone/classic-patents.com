@@ -144,6 +144,7 @@ export function KwolekKevlarSim() {
               </div>
               <input
                 type="range"
+                aria-label="Polymer Molecular Alignment (Nematicity)"
                 min="10"
                 max="100"
                 value={polymerAlignment}
@@ -167,6 +168,7 @@ export function KwolekKevlarSim() {
               </div>
               <input
                 type="range"
+                aria-label="Applied Tensile Strain"
                 min="0"
                 max="100"
                 value={tensileTension}

@@ -1,7 +1,7 @@
 "use client";
 
 import { BookOpen, Check, Copy, Search, X } from "lucide-react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import type { Patent } from "@/types/patent";
 
 interface ArchaicGlossaryModalProps {
@@ -97,6 +97,17 @@ export function ArchaicGlossaryModal({ isOpen, onClose, patent }: ArchaicGlossar
   const [activeTab, setActiveTab] = useState<"glossary" | "citation">("glossary");
   const [copiedCitation, setCopiedCitation] = useState(false);
 
+  useEffect(() => {
+    if (!isOpen) return;
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "Escape") {
+        onClose();
+      }
+    };
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [isOpen, onClose]);
+
   if (!isOpen) return null;
 
   const filteredGlossary = GLOSSARY_TERMS.filter(
@@ -105,9 +116,12 @@ export function ArchaicGlossaryModal({ isOpen, onClose, patent }: ArchaicGlossar
       g.modernEngineeringTranslation.toLowerCase().includes(searchTerm.toLowerCase()),
   );
 
+  const inventorNamesBibtex = patent ? patent.inventors.join(" and ") : "";
+  const inventorNamesApa = patent ? patent.inventors.join(", ") : "";
+
   const bibtexCitation = patent
     ? `@patent{${patent.id},
-  author    = {${patent.inventors.join(" and ")}},
+  author    = {${inventorNamesBibtex}},
   title     = {${patent.title}},
   number    = {${patent.patentNumber}},
   year      = {${patent.grantDate.split("-")[0]}},
@@ -127,8 +141,19 @@ export function ArchaicGlossaryModal({ isOpen, onClose, patent }: ArchaicGlossar
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-ink-950/80 backdrop-blur-sm animate-fade-in">
-      <div className="w-full max-w-2xl bg-parchment-50 dark:bg-ink-950 rounded-2xl border border-parchment-300 dark:border-ink-800 shadow-2xl overflow-hidden flex flex-col max-h-[85vh]">
+    <div
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="glossary-modal-title"
+      className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-ink-950/80 backdrop-blur-sm animate-fade-in"
+    >
+      <button
+        type="button"
+        className="fixed inset-0 w-full h-full cursor-default -z-10 focus:outline-none"
+        onClick={onClose}
+        aria-label="Close modal backdrop"
+      />
+      <div className="w-full max-w-2xl bg-parchment-50 dark:bg-ink-950 rounded-2xl border border-parchment-300 dark:border-ink-800 shadow-2xl overflow-hidden flex flex-col max-h-[85vh] relative z-10">
         {/* Modal Header */}
         <div className="p-4 sm:p-5 border-b border-parchment-200 dark:border-ink-800 flex items-center justify-between gap-3">
           <div className="flex items-center gap-2">
@@ -138,6 +163,7 @@ export function ArchaicGlossaryModal({ isOpen, onClose, patent }: ArchaicGlossar
             </h3>
           </div>
           <button
+            aria-label="Close"
             type="button"
             onClick={onClose}
             className="p-1.5 rounded-lg text-ink-500 hover:text-ink-800 dark:hover:text-ink-200 hover:bg-parchment-200 dark:hover:bg-ink-800 transition-colors"
@@ -254,9 +280,9 @@ export function ArchaicGlossaryModal({ isOpen, onClose, patent }: ArchaicGlossar
                   APA Format:
                 </span>
                 <p className="text-ink-700 dark:text-ink-300 italic font-serif text-sm">
-                  {patent.inventors.join(", ")}. ({patent.grantDate.split("-")[0]}).{" "}
-                  <em>{patent.title}</em> (U.S. Patent No. {patent.patentNumber}). U.S. Patent and
-                  Trademark Office. https://classic-patents.com/patents/{patent.id}
+                  {inventorNamesApa}. ({patent.grantDate.split("-")[0]}). <em>{patent.title}</em>{" "}
+                  (U.S. Patent No. {patent.patentNumber}). U.S. Patent and Trademark Office.
+                  https://classic-patents.com/patents/{patent.id}
                 </p>
               </div>
             </div>

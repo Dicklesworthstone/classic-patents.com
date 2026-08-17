@@ -296,62 +296,98 @@ export function createThreeStudioScene(opts: StudioOptions): StudioContext {
     scene.add(floorMesh);
   }
 
-  // 7. Inertial Orbit Controls
+  // 7. Inertial Orbit Controls (Mouse Drag, Single-Finger Touch Orbit & Two-Finger Pinch Zoom)
   let isDragging = false;
+  let isPinching = false;
   let prevX = 0;
   let prevY = 0;
+  let initialPinchDist = 0;
+  let initialPinchRadius = 0;
   const centerTarget = new THREE.Vector3(...targetPos);
   const spherical = new THREE.Spherical().setFromVector3(camera.position.clone().sub(centerTarget));
   const targetSpherical = spherical.clone();
   const isReducedMotion = checkPrefersReducedMotion();
 
-  const pointerClient = (e: MouseEvent | TouchEvent) => {
-    if ("touches" in e) {
-      const touch = e.touches[0] ?? e.changedTouches[0];
-      if (!touch) return null;
-      return { x: touch.clientX, y: touch.clientY };
-    }
-    return { x: e.clientX, y: e.clientY };
-  };
-
-  const onPointerDown = (e: MouseEvent | TouchEvent) => {
-    // One-finger touch must remain a page scroll (touch-action: pan-y).
-    // Orbit only from a mouse drag or an explicit two-finger gesture.
-    if ("touches" in e) {
-      if (e.touches.length < 2) return;
-    } else if (e.button !== 0) {
-      return;
-    }
-    const point = pointerClient(e);
-    if (!point) return;
+  const onMouseDown = (e: MouseEvent) => {
+    if (e.button !== 0) return;
     isDragging = true;
-    prevX = point.x;
-    prevY = point.y;
+    prevX = e.clientX;
+    prevY = e.clientY;
   };
 
-  const onPointerMove = (e: MouseEvent | TouchEvent) => {
+  const onMouseMove = (e: MouseEvent) => {
     if (!isDragging) return;
-    const point = pointerClient(e);
-    if (!point) return;
-    const clientX = point.x;
-    const clientY = point.y;
-    const dx = (clientX - prevX) * 0.006;
-    const dy = (clientY - prevY) * 0.006;
+    const dx = (e.clientX - prevX) * 0.006;
+    const dy = (e.clientY - prevY) * 0.006;
 
     targetSpherical.theta -= dx;
     targetSpherical.phi = Math.max(0.08, Math.min(Math.PI / 2 - 0.05, targetSpherical.phi - dy));
 
-    prevX = clientX;
-    prevY = clientY;
+    prevX = e.clientX;
+    prevY = e.clientY;
   };
 
-  const onPointerUp = () => {
+  const onMouseUp = () => {
     isDragging = false;
   };
 
+  const onTouchStart = (e: TouchEvent) => {
+    if (e.touches.length === 1) {
+      // Single finger touch drag (immediate 3D orbit)
+      isDragging = true;
+      isPinching = false;
+      const touch = e.touches[0];
+      prevX = touch.clientX;
+      prevY = touch.clientY;
+    } else if (e.touches.length === 2) {
+      // Two-finger pinch-to-zoom
+      isDragging = false;
+      isPinching = true;
+      const t1 = e.touches[0];
+      const t2 = e.touches[1];
+      initialPinchDist = Math.hypot(t1.clientX - t2.clientX, t1.clientY - t2.clientY);
+      initialPinchRadius = targetSpherical.radius;
+    }
+  };
+
+  const onTouchMove = (e: TouchEvent) => {
+    if (isDragging && e.touches.length === 1) {
+      if (e.cancelable) e.preventDefault();
+      const touch = e.touches[0];
+      const dx = (touch.clientX - prevX) * 0.007;
+      const dy = (touch.clientY - prevY) * 0.007;
+
+      targetSpherical.theta -= dx;
+      targetSpherical.phi = Math.max(0.08, Math.min(Math.PI / 2 - 0.05, targetSpherical.phi - dy));
+
+      prevX = touch.clientX;
+      prevY = touch.clientY;
+    } else if (isPinching && e.touches.length === 2) {
+      if (e.cancelable) e.preventDefault();
+      const t1 = e.touches[0];
+      const t2 = e.touches[1];
+      const currentDist = Math.hypot(t1.clientX - t2.clientX, t1.clientY - t2.clientY);
+      if (initialPinchDist > 0 && currentDist > 0) {
+        const pinchFactor = initialPinchDist / currentDist;
+        targetSpherical.radius = Math.max(4, Math.min(55, initialPinchRadius * pinchFactor));
+      }
+    }
+  };
+
+  const onTouchEnd = (e: TouchEvent) => {
+    if (e.touches.length === 0) {
+      isDragging = false;
+      isPinching = false;
+    } else if (e.touches.length === 1) {
+      isPinching = false;
+      isDragging = true;
+      const touch = e.touches[0];
+      prevX = touch.clientX;
+      prevY = touch.clientY;
+    }
+  };
+
   const onWheel = (e: WheelEvent) => {
-    // Trackpad pinch arrives as ctrl+wheel. Never steal ordinary two-finger scroll,
-    // and never keep preventDefault armed after a drag that failed to mouseup.
     const isPinchZoom = e.ctrlKey || e.metaKey;
     if (!isPinchZoom && !isDragging) return;
     e.preventDefault();
@@ -361,16 +397,18 @@ export function createThreeStudioScene(opts: StudioOptions): StudioContext {
 
   const onPointerCancel = () => {
     isDragging = false;
+    isPinching = false;
   };
 
   const domEl = renderer.domElement;
-  domEl.addEventListener("mousedown", onPointerDown);
-  window.addEventListener("mousemove", onPointerMove);
-  window.addEventListener("mouseup", onPointerUp);
+  domEl.style.touchAction = "none";
+  domEl.addEventListener("mousedown", onMouseDown);
+  window.addEventListener("mousemove", onMouseMove);
+  window.addEventListener("mouseup", onMouseUp);
   window.addEventListener("blur", onPointerCancel);
-  domEl.addEventListener("touchstart", onPointerDown, { passive: true });
-  window.addEventListener("touchmove", onPointerMove, { passive: true });
-  window.addEventListener("touchend", onPointerUp);
+  domEl.addEventListener("touchstart", onTouchStart, { passive: false });
+  window.addEventListener("touchmove", onTouchMove, { passive: false });
+  window.addEventListener("touchend", onTouchEnd);
   window.addEventListener("touchcancel", onPointerCancel);
   domEl.addEventListener("wheel", onWheel, { passive: false });
 
@@ -417,13 +455,13 @@ export function createThreeStudioScene(opts: StudioOptions): StudioContext {
       }
     },
     dispose: () => {
-      domEl.removeEventListener("mousedown", onPointerDown);
-      window.removeEventListener("mousemove", onPointerMove);
-      window.removeEventListener("mouseup", onPointerUp);
+      domEl.removeEventListener("mousedown", onMouseDown);
+      window.removeEventListener("mousemove", onMouseMove);
+      window.removeEventListener("mouseup", onMouseUp);
       window.removeEventListener("blur", onPointerCancel);
-      domEl.removeEventListener("touchstart", onPointerDown);
-      window.removeEventListener("touchmove", onPointerMove);
-      window.removeEventListener("touchend", onPointerUp);
+      domEl.removeEventListener("touchstart", onTouchStart);
+      window.removeEventListener("touchmove", onTouchMove);
+      window.removeEventListener("touchend", onTouchEnd);
       window.removeEventListener("touchcancel", onPointerCancel);
       domEl.removeEventListener("wheel", onWheel);
       if (resizeObserver) {

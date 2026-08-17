@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef, useState } from "react";
+import { useCallback, useLayoutEffect, useRef, useState } from "react";
 import { FrankenSimEngine } from "./engine";
 import type { UniversalPatentPhysicsTelemetry } from "./types";
 
@@ -13,17 +13,22 @@ export function useFrankenSimPhysics(
   );
 
   const telemetryRef = useRef(telemetry);
-  telemetryRef.current = telemetry;
+  useLayoutEffect(() => {
+    telemetryRef.current = telemetry;
+  });
 
-  const updateTelemetry = (
-    updater: (prev: UniversalPatentPhysicsTelemetry) => Partial<UniversalPatentPhysicsTelemetry>,
-  ) => {
-    setTelemetry((prev) => ({
-      ...prev,
-      ...updater(prev),
-      timestampMs: Date.now(),
-    }));
-  };
+  const updateTelemetry = useCallback(
+    (
+      updater: (prev: UniversalPatentPhysicsTelemetry) => Partial<UniversalPatentPhysicsTelemetry>,
+    ) => {
+      setTelemetry((prev) => ({
+        ...prev,
+        ...updater(prev),
+        timestampMs: Date.now(),
+      }));
+    },
+    [],
+  );
 
   return {
     telemetry,

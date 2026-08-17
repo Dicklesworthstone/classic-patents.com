@@ -5,7 +5,7 @@ import Link from "next/link";
 import { useMemo, useState } from "react";
 import { EraFilterBar } from "@/components/layout/EraFilterBar";
 import { PatentCard } from "@/components/patents/PatentCard";
-import { allPatents, getFeaturedPatents, searchPatents } from "@/data/patents";
+import { allPatents, getFeaturedPatents, getPatentsByCategory, searchPatents } from "@/data/patents";
 import type { Patent } from "@/types/patent";
 
 export default function HomePage() {
@@ -15,11 +15,10 @@ export default function HomePage() {
   const featuredPatents = useMemo(() => getFeaturedPatents(), []);
 
   const filteredPatents = useMemo(() => {
-    let list = searchPatents(searchQuery);
-    if (selectedCategory !== "all") {
-      list = list.filter((p: Patent) => p.category === selectedCategory);
-    }
-    return list;
+    const catalog = getPatentsByCategory(selectedCategory);
+    if (!searchQuery.trim()) return catalog;
+    const searched = new Set(searchPatents(searchQuery).map((p: Patent) => p.id));
+    return catalog.filter((p) => searched.has(p.id));
   }, [searchQuery, selectedCategory]);
 
   return (

@@ -279,6 +279,7 @@ export function GoddardRocketSim() {
               </div>
               <input
                 type="range"
+                aria-label="Simulation parameter"
                 min="150"
                 max="750"
                 step="25"
@@ -300,6 +301,7 @@ export function GoddardRocketSim() {
               </div>
               <input
                 type="range"
+                aria-label="Simulation parameter"
                 min="4"
                 max="25"
                 step="1"

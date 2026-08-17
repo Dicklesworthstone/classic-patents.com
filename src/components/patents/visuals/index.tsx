@@ -259,7 +259,7 @@ export function PatentVisualDispatcher({ patentId }: PatentVisualDispatcherProps
           <button
             type="button"
             onClick={() => setRenderMode("3d-physics")}
-            className={`flex items-center gap-1.5 sm:gap-2 px-2.5 sm:px-3.5 py-1 sm:py-1.5 rounded-lg transition-all ${
+            className={`flex items-center gap-1.5 sm:gap-2 px-2.5 sm:px-3.5 py-1 sm:py-1.5 rounded-lg transition-colors ${
               activeMode === "3d-physics"
                 ? "bg-amber-700 text-white font-bold shadow dark:bg-amber-600"
                 : "text-ink-700 dark:text-parchment-300 hover:text-ink-950 font-medium"
@@ -272,7 +272,7 @@ export function PatentVisualDispatcher({ patentId }: PatentVisualDispatcherProps
             <button
               type="button"
               onClick={() => setRenderMode("vector-diagram")}
-              className={`flex items-center gap-1.5 sm:gap-2 px-2.5 sm:px-3.5 py-1 sm:py-1.5 rounded-lg transition-all ${
+              className={`flex items-center gap-1.5 sm:gap-2 px-2.5 sm:px-3.5 py-1 sm:py-1.5 rounded-lg transition-colors ${
                 activeMode === "vector-diagram"
                   ? "bg-amber-700 text-white font-bold shadow dark:bg-amber-600"
                   : "text-ink-700 dark:text-parchment-300 hover:text-ink-950 font-medium"

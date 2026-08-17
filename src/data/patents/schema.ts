@@ -103,7 +103,7 @@ export const patentSchema: z.ZodType<Patent> = z.object({
   summary: z.string().min(1),
   heroQuote: z.string().min(1),
   originalPdfUrl: z.string().min(1),
-  googlePatentsUrl: z.string().url(),
+  googlePatentsUrl: z.url(),
   usptoClassification: z.string().min(1),
   originalText: z.string().min(1),
   plainEnglishExplanation: plainEnglishSchema,

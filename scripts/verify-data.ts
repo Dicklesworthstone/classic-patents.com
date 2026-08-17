@@ -6,7 +6,8 @@
 
 import * as fs from "node:fs";
 import * as path from "node:path";
-import { allPatents } from "../src/data/patents";
+import { allPatents, searchPatents } from "../src/data/patents";
+import { patentSchema } from "../src/data/patents/schema";
 
 function isValidIsoDate(value: string): boolean {
   if (!/^\d{4}-\d{2}-\d{2}$/.test(value)) return false;
@@ -28,6 +29,12 @@ async function main() {
       errorCount++;
       patentErrorCount++;
     };
+
+    const schemaResult = patentSchema.safeParse(patent);
+    if (!schemaResult.success) {
+      const issue = schemaResult.error.issues[0];
+      fail(`Zod ${issue?.path.join(".") || "(root)"}: ${issue?.message ?? "invalid record"}`);
+    }
 
     // 1. Check basic identity
     if (!patent.id || !patent.patentNumber || !patent.title || !patent.shortTitle) {
@@ -115,6 +122,16 @@ async function main() {
       );
     } else {
       console.error(`✗ ${prefix} Failed ${patentErrorCount} verification gate(s).`);
+    }
+  }
+
+  // 8. Test search queries
+  const testQueries = ["Tesla", "Wright", "821,393", "Transistor", "Kevlar", "Noyce", "Wozniak"];
+  for (const q of testQueries) {
+    const results = searchPatents(q);
+    if (results.length === 0) {
+      console.error(`❌ Search query "${q}" returned 0 results.`);
+      errorCount++;
     }
   }
 
