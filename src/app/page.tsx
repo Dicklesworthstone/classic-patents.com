@@ -126,7 +126,7 @@ export default function HomePage() {
       </section>
 
       {/* Why Classic Patents Callout */}
-      <section className="rounded-3xl border border-amber-300 dark:border-amber-900/50 bg-gradient-to-r from-amber-50/90 to-parchment-100/90 dark:from-ink-900 dark:to-ink-950 p-8 sm:p-12 shadow-patent space-y-5">
+      <section className="rounded-3xl border border-amber-300 dark:border-amber-900/50 bg-linear-to-r from-amber-50/90 to-parchment-100/90 dark:from-ink-900 dark:to-ink-950 p-8 sm:p-12 shadow-patent space-y-5">
         <div className="max-w-4xl space-y-4">
           <h3 className="font-serif text-3xl sm:text-4xl font-bold text-ink-950 dark:text-parchment-50">
             The Philosophy of Plain English Without Dumbing Down

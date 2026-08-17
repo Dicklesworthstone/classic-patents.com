@@ -41,7 +41,7 @@ export function HistoricalContextPanel({ context }: HistoricalContextPanelProps)
       </div>
 
       {/* The Breakthrough Insight */}
-      <div className="rounded-2xl border border-amber-300 dark:border-amber-900/50 bg-gradient-to-r from-amber-50 to-parchment-100 dark:from-ink-900 dark:to-ink-950 p-7 sm:p-8 shadow-patent space-y-3">
+      <div className="rounded-2xl border border-amber-300 dark:border-amber-900/50 bg-linear-to-r from-amber-50 to-parchment-100 dark:from-ink-900 dark:to-ink-950 p-7 sm:p-8 shadow-patent space-y-3">
         <div className="flex items-center gap-2.5 text-amber-900 dark:text-amber-300 font-serif font-bold text-lg sm:text-xl">
           <Lightbulb className="w-5 h-5 text-amber-600" />
           The Breakthrough Insight

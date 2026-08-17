@@ -13,7 +13,7 @@ export function PatentCard({ patent }: PatentCardProps) {
       className="group relative block rounded-2xl border border-parchment-300 dark:border-ink-800 bg-parchment-50 dark:bg-ink-950 p-6 sm:p-7 shadow-patent hover:shadow-patent-lg hover:border-amber-600/60 dark:hover:border-amber-500/60 transition-colors duration-300 flex flex-col justify-between kinetic-card overflow-hidden"
     >
       {/* Subtle Top Gold Accent Line on Hover */}
-      <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-amber-600 via-amber-400 to-amber-700 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+      <div className="absolute top-0 left-0 right-0 h-1 bg-linear-to-r from-amber-600 via-amber-400 to-amber-700 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
 
       <div className="space-y-4">
         {/* Top Header Row */}
