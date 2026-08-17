@@ -36,8 +36,9 @@ bun.lockb
 *.swp
 *.swo
 
-# Beads
+# Beads & Sessions
 .beads/*.db-journal
 .beads/*.db-wal
 .beads/*.db-shm
+.ntm/
 .env*
