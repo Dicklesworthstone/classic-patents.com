@@ -14,7 +14,7 @@ export const engelbartMousePatent: Patent = {
   category: "computing",
   categoryLabel: "Computing & Human-Computer Interaction",
   summary:
-    "The seminal master patent of human-computer interaction: Douglas Engelbart's handheld X-Y position indicator ('mouse') featuring mutually perpendicular encoder wheels that resolve tabletop displacement into Cartesian coordinate signals for real-time cursor targeting on CRT displays.",
+    "Engelbart's 1967 SRI mouse: a handheld box, two wheels at right angles, two voltages. Bill English built the first wooden unit. The 1968 demo made the tail-cord nickname public.",
   heroQuote:
     "The mouse gave us the ability to interact with information directly in real time, transforming computers from batch-processing calculation engines into interactive intellectual augmentations of the human mind.",
   originalPdfUrl: "/patents/pdfs/us-3541541-engelbart-mouse.pdf",
@@ -107,7 +107,7 @@ I CLAIM:
       },
     ],
     whyItMattersToday:
-      "Engelbart's mouse made graphical user interfaces (GUIs), desktop publishing, CAD engineering, and web browsing possible. It transformed computers from room-sized mainframes operated by punch cards into personal cognitive extensions.",
+      "You are probably reading this with a descendant of those two wheels. Trackpads and touchscreens are other pointing devices; the desk-driven X–Y pair is still how most CAD and desktop work happens.",
   },
   claims: [
     {
@@ -123,7 +123,7 @@ I CLAIM:
         "Direct electrical X-Y signal generation for display cursors",
       ],
       legalSignificance:
-        "The master patent claim for mechanical 2-axis computer pointing devices, establishing the foundation of all computer mice.",
+        "A hand-moved housing whose two orthogonal transducers report desk displacement as X and Y.",
     },
     {
       number: 2,
@@ -202,30 +202,37 @@ I CLAIM:
   ],
   historicalContext: {
     problemStatement:
-      "Early interactive computer displays required light pens, joysticks, or cursor arrow keys to navigate graphical screens. Light pens caused severe operator arm fatigue when held against vertical CRTs for hours; joysticks suffered from non-linear rate control issues; and keyboard cursor keys were agonizingly slow for arbitrary coordinate targeting.",
+      "A 1960s interactive CRT was pointed at with a light pen (your arm dies in fifteen minutes), a joystick (you command rate, not position), or cursor keys (a pixel at a time). Engelbart's Augment group needed a way to sit and point for hours.",
     priorArtLimitations: [
-      "Light pens caused intense arm fatigue after 15 minutes of use",
-      "Joysticks controlled velocity rather than absolute spatial displacement",
-      "Keyboard cursor keys required dozens of discrete keystrokes to reach a screen pixel",
+      "Light pens on vertical glass: fatigue and parallax.",
+      "Joysticks: velocity control, overshoot.",
+      "Keys: discrete and slow.",
     ],
     breakthroughInsight:
-      "Engelbart realized that a handheld control resting flat on a tabletop could exploit human fine-motor dexterity without fatigue. By housing two orthogonal wheels oriented at 90 degrees to one another, any diagonal continuous motion across the desk decomposes naturally into pure X and Y Cartesian vector components without requiring mathematical coordinate conversion in the host computer.",
+      "Put the work on the desk. Two wheels at right angles: one rolls for X and skids for Y, the other the reverse. The decomposition is mechanical. The host just reads two pots.",
     patentWars: [
       {
-        rivalName: "Xerox Corporation / Apple Computer",
+        rivalName: "Xerox PARC, then Apple",
         rivalClaim:
-          "Claimed independent invention of the rubber-ball mouse (Bill English at Xerox PARC)",
+          "Bill English's 1972 ball mouse (English had built Engelbart's first wooden mouse at SRI) was a new device.",
         conflictDetails:
-          "In 1972, Bill English replaced Engelbart's dual wheels with a single ball rolling on two internal shafts. In 1979, Steve Jobs visited Xerox PARC, saw the Alto mouse, and licensed Engelbart's patent from SRI for approximately $40,000 to bundle with the Apple Lisa and Macintosh.",
+          "It was a better mechanism under the same claim: two orthogonal displacement signals from a hand-moved housing. Jobs licensed US 3,541,541 from SRI for about $40,000 after the 1979 PARC visit, for Lisa and Macintosh.",
         resolution:
-          "SRI's patent was upheld as the definitive master patent for all 2-axis display mice.",
-        legalOutcome: "Apple and Logitech paid licensing royalties to SRI throughout the 1980s.",
+          "SRI collected royalties through the 1980s. The ball, then the LED, replaced the wheels. The claim to a desk-driven X–Y pair held.",
+        legalOutcome:
+          "A cheap license, not a war. Engelbart always said the mouse was the least of NLS.",
       },
     ],
     civilizationalImpact:
-      "Unveiled at the 1968 'Mother of All Demos', the mouse inaugurated graphical user interfaces, windowing, hypermedia, and real-time collaborative computing.",
+      "The Macintosh shipped the mouse to people who had never seen NLS. Hypertext and the chord keyset stayed in the demo film.",
     funFact:
-      "Douglas Engelbart said they called it a 'mouse' in the lab because the tail cord came out the back resembling a mouse tail, but no one could remember who first coined the name.",
+      "They called it a mouse because of the tail. Nobody in the lab would later swear who said it first.",
+    aftermath:
+      "SRI wound down Engelbart's lab. He watched the industry take one peripheral and leave the rest of his system on the cutting-room floor. He died in 2013.",
+    sideNotes: [
+      "9 December 1968, Civic Auditorium, San Francisco: live video to Menlo Park, shared screens, the keyset, the mouse. Still the best single demo in computing.",
+      "The patent drawings show wheels, not a ball. Museum copy that calls this 'the ball mouse patent' is wrong.",
+    ],
   },
   tags: ["computing", "gui", "human-computer-interaction", "hardware"],
   stats: {

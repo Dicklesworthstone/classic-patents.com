@@ -111,7 +111,7 @@ Figure 4 is a diagrammatic cross-section showing multiple diffused components an
       originalText:
         "A semiconductor device comprising a body of semiconductor material having a surface, a PN junction extending to said surface, an insulating layer on said surface covering said junction, and an electrical conductor adhering to said insulating layer and extending over said junction, said conductor making electrical contact with said body through an aperture in said insulating layer, substantially as described.",
       plainEnglish:
-        "The master patent claim of the microchip industry: an integrated circuit where a metal conductor adheres to an insulating layer and travels directly over a PN junction to connect semiconductor components.",
+        "A metal conductor on an insulator, crossing a p–n junction, contacting the die only through a window. That is the planar interconnect.",
       keyInnovations: [
         "Vapor-deposited metal interconnects",
         "Insulating layer covering PN junctions",

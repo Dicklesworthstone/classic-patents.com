@@ -1,6 +1,6 @@
 "use client";
 
-import { Activity, Camera, RotateCcw, Sparkles, Volume2, VolumeX, Zap } from "lucide-react";
+import { Activity, Camera, Eye, EyeOff, RotateCcw, Sparkles, Volume2, VolumeX, Zap } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import * as THREE from "three";
 import { FrankenSimEngine } from "@/physics/engine";
@@ -23,30 +23,30 @@ const SCENARIOS: ScenarioPreset[] = [
   {
     id: "tesla_1888_2phase",
     name: "1888 Tesla Original 2-Phase Motor",
-    desc: "Nikola Tesla's breakthrough (US 381,968): 2-phase 90° quadrature currents creating the first rotating magnetic field without brushes.",
+    desc: "Nikola Tesla's 4-pole two-phase motor operating on 90° quadrature AC current with a copper squirrel-cage rotor.",
     freqHz: 60,
     phases: 2,
     loadTorqueNm: 14.0,
   },
   {
-    id: "niagara_falls_3phase",
-    name: "1895 Niagara Falls Polyphase Grid",
-    desc: "3-phase 120° balanced power transmission driving heavy industrial induction machinery at Niagara Falls.",
-    freqHz: 60,
+    id: "high_torque_industrial",
+    name: "Heavy Industrial Induction Drive",
+    desc: "3-Phase 6-pole high-torque motor under heavy 28 Nm mechanical brake load with increased slip and induced current.",
+    freqHz: 50,
     phases: 3,
-    loadTorqueNm: 22.0,
+    loadTorqueNm: 28.0,
   },
   {
-    id: "high_torque_breakdown",
-    name: "Heavy Industrial High-Slip Load",
-    desc: "Near-maximum 35 N·m shaft resistance inducing high rotor current to generate massive counter-torque.",
+    id: "light_load_synchronous",
+    name: "Low Slip No-Load Run",
+    desc: "Motor running near synchronous speed with minimal slip ($s < 2\\%$) and low secondary rotor losses.",
     freqHz: 60,
-    phases: 3,
-    loadTorqueNm: 35.0,
+    phases: 2,
+    loadTorqueNm: 2.0,
   },
   {
-    id: "variable_freq_drive",
-    name: "Variable Frequency Turbo Mode",
+    id: "high_frequency_120hz",
+    name: "120 Hz High-Speed Rotation",
     desc: "120 Hz high-frequency excitation driving the synchronous magnetic field to 3,600 RPM.",
     freqHz: 120,
     phases: 3,
@@ -58,7 +58,8 @@ export function TeslaMotor3D() {
   const containerRef = useRef<HTMLDivElement>(null);
 
   // Electrical & Mechanical Simulation State
-  const [acFrequencyHz, setAcFrequencyHz] = useState<number>(60); // 10 to 120 Hz
+  const [showUiOverlay, setShowUiOverlay] = useState<boolean>(true);
+  const [acFrequencyHz, setAcFrequencyHz] = useState<number>(60); // 10 to 120 Hz Hz
   const [phaseCount, setPhaseCount] = useState<2 | 3>(2);
   const [appliedLoadTorqueNm, setAppliedLoadTorqueNm] = useState<number>(14.0); // 0 to 40 Nm
   const [showMagneticFlux, _setShowMagneticFlux] = useState<boolean>(true);

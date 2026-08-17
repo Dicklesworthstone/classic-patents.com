@@ -14,7 +14,7 @@ export const wozniakApplePatent: Patent = {
   category: "computing",
   categoryLabel: "Microcomputers & Digital Hardware",
   summary:
-    "The seminal master patent of personal computing: Steve Wozniak's Apple II architecture featuring two-phase interleaved shared-bus memory multiplexing (giving the video display and MOS 6502 CPU simultaneous zero-wait-state access to dynamic RAM) and digital NTSC color burst synthesis.",
+    "Wozniak's Apple II bus: video reads DRAM on 6502 Φ1, the CPU on Φ2, one set of chips, no wait states. Color on a stock TV comes from gating the 14.31818 MHz clock in 90° steps.",
   heroQuote:
     "I was designing the computer because I wanted to own a computer... but when I finished, I realized I had designed a device that would change how ordinary people lived and worked.",
   originalPdfUrl: "/patents/pdfs/us-4136359-wozniak-apple.pdf",
@@ -101,7 +101,7 @@ I CLAIM:
       },
     ],
     whyItMattersToday:
-      "Wozniak's shared memory architecture is the direct ancestor of modern unified memory architectures (UMA) used in Apple Silicon (M1/M2/M3/M4), GPUs, and game consoles worldwide.",
+      "Sharing one DRAM between a display and a CPU is still how a lot of small systems are built. Apple Silicon UMA is a distant cousin with a memory controller, not a 6502 clock phase, in the middle.",
   },
   claims: [
     {
@@ -117,7 +117,7 @@ I CLAIM:
         "Unified system and video RAM architecture",
       ],
       legalSignificance:
-        "The master patent claim for personal microcomputer shared memory display architectures.",
+        "Video and CPU take turns on the same DRAM, locked to the microprocessor clock phases.",
     },
     {
       number: 2,
@@ -187,31 +187,36 @@ I CLAIM:
   ],
   historicalContext: {
     problemStatement:
-      "In 1976, microcomputers like the Altair 8800 and IMSAI were expensive industrial boxes requiring blinking front-panel switches and teletype terminals. Video display generators existed, but they either required expensive dual-ported static RAM ($$$) or paused the CPU whenever the video beam scanned the screen, causing massive performance penalties and screen tearing.",
+      "An Altair or IMSAI in 1976 was switches and a teletype. Video boards either used dual-port RAM nobody could afford or stole the CPU bus during the scan, so the machine stuttered whenever the beam was live.",
     priorArtLimitations: [
-      "DMA video boards halted the CPU for 30–50% of operating time",
-      "Dedicated dual-port frame buffer memories cost more than the microcomputer itself",
-      "Color graphics required complex, expensive analog modulation circuits",
+      "DMA video: 30–50% of cycles gone.",
+      "Dual-port frame buffers: cost more than the computer.",
+      "Color on a TV usually meant a pile of analog parts.",
     ],
     breakthroughInsight:
-      "Wozniak observed that the MOS Technology 6502 microprocessor only accesses the external memory bus during the high half of its clock cycle (Phase 2, Phi 2). During the low half (Phase 1, Phi 1), the CPU bus is completely idle. Wozniak devised a shared-bus multiplexer that gives the video raster generator exclusive memory access during Phi 1, and the CPU exclusive access during Phi 2. The CPU runs at 100% full speed with zero wait states, while the video display receives continuous pixel data with zero flicker.",
+      "The MOS 6502 only talks to the bus on Φ2. Φ1 is idle. Wozniak gave Φ1 to the video counters and Φ2 to the CPU. One set of cheap DRAM, no wait states, no flicker. The NTSC color trick (14.31818 MHz ÷ 4, gated phases) was the encore.",
     patentWars: [
       {
-        rivalName: "Tandy / Commodore / IBM",
-        rivalClaim:
-          "Competitors attempted to replicate Apple II graphics without infringing shared-bus multiplexing",
+        rivalName: "Commodore, Tandy, IBM (by architecture, not a single suit)",
+        rivalClaim: "You can do home color without a shared-bus multiplexer.",
         conflictDetails:
-          "Commodore and Tandy initially used separate video character generator RAM, making bitmap graphics sluggish or impossible. IBM PC in 1981 used a separate Color Graphics Adapter (CGA) card that suffered from notorious visual 'snow' when the CPU accessed video RAM.",
+          "PET and TRS-80 started as character-generator machines. IBM CGA (1981) used separate video RAM and 'snowed' when the CPU touched it during active scan. Apple II hi-res was already in living rooms.",
         resolution:
-          "Wozniak's patent secured Apple's technological superiority throughout the 1970s and 1980s.",
+          "US 4,136,359 did not stop IBM. It did keep Apple's video design distinctive through the IIe era. VisiCalc shipped first on the II because the machine could update a screen without dying.",
         legalOutcome:
-          "Established Apple Computer as the preeminent personal computer maker of the early PC era.",
+          "A useful patent, not a blocking one. The business win was the disk and the spreadsheet.",
       },
     ],
     civilizationalImpact:
-      "The Apple II brought personal computers into millions of homes, classrooms, and businesses, launching software giants like VisiCalc (the first electronic spreadsheet) and sparking the personal computing revolution.",
+      "Classrooms and small businesses bought a computer that showed color on the TV they already owned. That, more than the 1976 garage myth, is why the II matters.",
     funFact:
-      "Steve Wozniak wrote the Apple II integer BASIC interpreter and the disk operating system (DOS) on paper by hand with pen, typing in hexadecimal machine codes directly into memory.",
+      "Wozniak wrote Integer BASIC and much of the early disk code by hand, hex on paper, then keyed it in. The Disk II controller is seven chips because he refused to use more.",
+    aftermath:
+      "Jobs sold the company as appliances. Wozniak crashed a plane in 1981, came back briefly, and left day-to-day engineering. The IIgs was the last machine that still felt like his.",
+    sideNotes: [
+      "The 14.31818 MHz crystal is four times the NTSC color burst. That is not a coincidence.",
+      "Mike Markkola and the Homebrew club saw the prototype before there was a company. The patent is the bus; the culture is the club.",
+    ],
   },
   tags: ["computing", "microprocessor", "apple", "graphics"],
   stats: {

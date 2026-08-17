@@ -14,7 +14,7 @@ export const marconiRadioPatent: Patent = {
   category: "telecom",
   categoryLabel: "Telecommunications & RF Electromagnetism",
   summary:
-    "The world's first patent for wireless communication: Guglielmo Marconi's breakthrough system combining an elevated aerial antenna, an Earth ground plate, an optimized Righi spark gap, and an automated decohering receiver to transmit electromagnetic Morse signals across long distances without wires.",
+    "Marconi's 1896–97 wireless set: a tall aerial, an earth plate, a Righi spark, and a coherer that a tapper resets after each pulse. Hertz had the wave; this filing is the station you could put on a coast.",
   heroQuote:
     "Be it known that I, Guglielmo Marconi, of London, England, have invented certain new and useful Improvements in Transmitting Electrical Impulses and Signals, and in Apparatus therefor...",
   originalPdfUrl: "/patents/pdfs/us-586193-marconi-radio.pdf",
@@ -98,7 +98,7 @@ Figure 4 is a longitudinal sectional view of the evacuated sensitive tube (coher
       },
     ],
     whyItMattersToday:
-      "Marconi's patent was the foundation of all wireless technology—AM/FM radio, television broadcasting, radar, cellular networks, Wi-Fi, GPS navigation, and satellite communications.",
+      "An elevated wire and a ground are still how a lot of HF and AM antennas start. Everything after 1900 added tuning, vacuum tubes, and then silicon. The 1897 claim is the monopole that made ship stations possible.",
   },
   claims: [
     {

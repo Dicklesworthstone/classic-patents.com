@@ -14,7 +14,7 @@ export const lincolnBuoyPatent: Patent = {
   category: "materials",
   categoryLabel: "Marine & Hydraulic Engineering",
   summary:
-    "The only patent ever granted to a U.S. President: Abraham Lincoln's ingenious mechanical system for buoying grounded riverboats over shallow Mississippi shoals using steam-actuated expandable waterproof bellows.",
+    "Lincoln's 1849 boat-lifting gear: steam-driven bellows under the guards to increase displacement and walk a packet over a sandbar without offloading. Issued, unused, and still the only US presidential patent.",
   heroQuote:
     "Be it known that I, Abraham Lincoln, of Springfield, in the County of Sangamon, in the State of Illinois, have invented a new and improved manner of Combining Buoyant Chambers with Steam Boats or other Vessels...",
   originalPdfUrl: "/patents/pdfs/us-6281-lincoln-buoy.pdf",
@@ -85,7 +85,7 @@ The additional displacement thus created exerts a powerful upward buoyant lift, 
       },
     ],
     whyItMattersToday:
-      "Lincoln's patent is the only patent issued to an American President. Its active buoyancy concept prefigures submarine ballast control tanks, marine salvage pontoons, and inflatable hovercraft skirts.",
+      "It is still the only presidential patent. Submarine ballast and salvage pontoons solve the same displacement problem with steel tanks. They do not descend from this filing except as a good story.",
   },
   claims: [
     {

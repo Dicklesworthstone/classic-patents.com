@@ -98,7 +98,7 @@ The curved needle is mounted upon a vibrating arm actuated by a cam on the main 
         "Reciprocating shuttle through needle loop",
       ],
       legalSignificance:
-        "The master patent that spawned the 1856 Sewing Machine Combination—America's very first industrial patent pool—and secured Howe's legacy.",
+        "Howe's lockstitch claim is what the 1856 Sewing Machine Combination licensed. That pool is the first large American patent pool.",
     },
   ],
   drawings: [

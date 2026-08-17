@@ -15,7 +15,7 @@ export const bardeenTransistorPatent: Patent = {
   category: "computing",
   categoryLabel: "Solid-State Physics & Semiconductors",
   summary:
-    "The most important electronic invention of the 20th century: John Bardeen and Walter Brattain's point-contact transistor at Bell Labs, which demonstrated solid-state current and power amplification in germanium with zero heated vacuum filaments.",
+    "Bardeen and Brattain's December 1947 germanium amplifier: two gold points, a few tens of microns apart, minority-hole injection, power gain without a filament. Shockley's junction transistor is the sibling that actually shipped in volume.",
   heroQuote:
     "Be it known that we, John Bardeen and Walter H. Brattain, citizens of the United States, residing at Summit and Morristown, in the County of Morris and State of New Jersey, have invented certain new and useful Improvements in Three-Electrode Circuit Elements...",
   originalPdfUrl: "/patents/pdfs/us-2569347-bardeen-transistor.pdf",
@@ -86,7 +86,7 @@ When the emitter contact is biased in the forward (low resistance) direction and
       },
     ],
     whyItMattersToday:
-      "The point-contact transistor is the ancestor of every modern bipolar junction transistor (BJT) and field-effect transistor (MOSFET) operating inside billions of microprocessors, AI accelerator chips, smartphones, and computers today.",
+      "The 1947 whisker is in museums. The junction and MOSFET that followed are in everything with a battery. The physics lesson is minority-carrier injection and a surface you can actually control.",
   },
   claims: [
     {

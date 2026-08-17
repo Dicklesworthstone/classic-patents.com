@@ -49,7 +49,7 @@ Figure 3 is a perspective view of the synchronized slotted paper roll and steppi
 Figure 4 is a diagram of the multi-frequency tuned tank circuits and bandpass filters.`,
   plainEnglishExplanation: {
     overview:
-      "During World War II, Allied radio-guided torpedoes were easily jammed by Nazi warships broadcasting interference on the torpedo's fixed radio channel, causing the weapon to veer off course. Austrian-born Hollywood star Hedy Lamarr and avant-garde composer George Antheil (who had composed a symphony for 16 synchronized player pianos) realized that if the radio signal 'hopped' randomly across 88 different frequencies—like fingers jumping across piano keys—an enemy could never jam it without knowing the secret synchronized sequence.",
+      "A radio-guided torpedo on one carrier is easy to jam: park noise on that frequency. Lamarr (who had sat through munitions-industry dinners in Vienna) and Antheil (who had scored Ballet Mécanique for sixteen synchronized player pianos) put a shared 88-slot sequence on both ends. The jammer, lacking the roll, hits only the slot it happens to occupy.",
     coreMechanism:
       "The transmitter and torpedo receiver each contain an identical slotted paper roll (like a player piano music roll). As the rolls unwind at identical speeds, contact fingers drop through perforations in the paper, switching the carrier frequency through a pseudo-random sequence of 88 channels several times per second. The torpedo receiver tunes its local oscillator to the exact same frequency hopping code in real time, locking onto the guidance signals while enemy jammers hear only brief clicks of white noise.",
     mechanicalBreakdown: [
@@ -102,7 +102,7 @@ Figure 4 is a diagram of the multi-frequency tuned tank circuits and bandpass fi
       originalText:
         "A secret communication system comprising a transmitter having means for transmitting carrier waves of different frequencies, means for changing the carrier frequency periodically in a predetermined sequence, a receiver tuned to receive said waves, and means at the receiver for changing the tuned frequency in synchronism with the changes of frequency at the transmitter, substantially as described.",
       plainEnglish:
-        "The master patent claim covering Frequency Hopping Spread Spectrum (FHSS): transmitting over different frequencies changed in a predetermined sequence, and synchronously changing the receiver's tuned frequency.",
+        "Transmitter and receiver step through the same predetermined frequency sequence so a listener on one channel sees only a slice of the message."
       keyInnovations: [
         "Frequency hopping spread spectrum",
         "Synchronized transmitter-receiver frequency shifts",

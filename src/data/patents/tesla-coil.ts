@@ -14,7 +14,7 @@ export const teslaCoilPatent: Patent = {
   category: "electricity",
   categoryLabel: "High-Frequency Electromagnetics",
   summary:
-    "Nikola Tesla's legendary air-core resonant transformer: by tuning primary and secondary LC circuits into electrical resonance, this apparatus steps up high-frequency alternating currents to millions of volts with zero iron-core magnetic losses.",
+    "Tesla's air-core transformer: two loosely coupled LC circuits tuned to the same $f_0$. Voltage piles up on the secondary until the air breaks down. No iron, so no hysteresis at spark frequencies.",
   heroQuote:
     "Be it known that I, Nikola Tesla, a citizen of the United States, residing at New York, in the County and State of New York, have invented certain new and useful Improvements in Electrical Transformers...",
   originalPdfUrl: "/patents/pdfs/us-533367-tesla-coil.pdf",
@@ -82,7 +82,7 @@ In order to prevent electrical breakdown between the turns of the secondary, whe
       },
     ],
     whyItMattersToday:
-      "Tesla's resonant transformer is the foundation of all radio-frequency tuned circuits, wireless charging systems (Qi inductive charging), semiconductor plasma etching chambers, and medical particle accelerators.",
+      "A Qi pad, an RF matching network, and a Tesla-coil show are the same coupled-resonator page. The show is louder.",
   },
   claims: [
     {
@@ -132,31 +132,36 @@ In order to prevent electrical breakdown between the turns of the secondary, whe
   ],
   historicalContext: {
     problemStatement:
-      "19th-century iron-core transformers could not operate at high frequencies without overheating and suffering catastrophic breakdown from magnetic hysteresis and eddy currents.",
+      "An iron-core transformer at spark frequencies cooks itself: hysteresis and eddy currents scale the wrong way with $f$. Ruhmkorff coils could make a spark for a lecture hall, not a tuned RF tank.",
     priorArtLimitations: [
-      "Closed iron-core transformers (Gaulard & Gibbs).",
-      "Ruhmkorff induction coils with mechanical interrupters.",
-      "Low-frequency power transmission grids.",
+      "Gaulard–Gibbs closed iron cores, built for lighting frequencies.",
+      "Ruhmkorff coils with a hammer interrupter and no designed secondary resonance.",
+      "Power grids at 25–60 Hz, useless as RF sources.",
     ],
     breakthroughInsight:
-      "Tesla discovered that discarding the iron core and operating two loosely coupled LC circuits in exact electrical resonance produced immense voltage step-up with minimal energy loss.",
+      "Throw the iron out. Couple two LC circuits loosely and tune them to the same $f_0 = 1/(2\\pi\\sqrt{LC})$. Energy sloshes into the secondary until the voltage is limited by corona, not by core loss.",
     patentWars: [
       {
-        rivalName: "Guglielmo Marconi & The Radio Patent Battles",
-        rivalClaim:
-          "Marconi claimed independent invention of tuned wireless transmission (US Patent No. 763,772).",
+        rivalName: "Marconi's four-circuit tuner",
+        rivalClaim: "Marconi's US 763,772 treated tuned coupled circuits as his radio system.",
         conflictDetails:
-          "Marconi's four-circuit tuned radio patent relied directly on Tesla's resonant transformer architecture. The legal battle lasted for decades.",
+          "Marconi Wireless v. United States, 320 U.S. 1 (1943), found Tesla (and Lodge, and Stone) had already taught the resonant coupling. Some Marconi claims fell. Radio as a business did not change hands.",
         resolution:
-          "In 1943, the U.S. Supreme Court overturned Marconi's master radio patent, ruling that Tesla had anticipated tuned resonant wireless transmission in US 645,576 and US 533,367.",
+          "Tesla's coil patents are prior art for RF transformers. They are not, by themselves, a complete radio system.",
         legalOutcome:
-          "Tesla was legally restored as the primary inventor of radio and tuned resonant circuits.",
+          "Credit split. Tesla fans over-read 1943; radio engineers still start from the coupled-circuit chapter.",
       },
     ],
     civilizationalImpact:
-      "Enabled the entire fields of radio-frequency engineering, wireless communications, high-voltage physics, and plasma technology.",
+      "Every tuned RF stage, from a crystal set to a klystron cavity, is two resonators talking. Tesla's coil is the theatrical version of that page.",
     funFact:
-      "Tesla used this transformer design in Colorado Springs to generate synthetic lightning bolts over 130 feet long, illuminating wireless light bulbs miles away.",
+      "The 1899 Colorado Springs photographs of 130-foot discharges are real experiments and also publicity. He did light bulbs at a distance; he did not replace the grid.",
+    aftermath:
+      "Wardenclyffe failed for money, not for a missing equation. Tesla died in 1943, months before the Supreme Court opinion that his advocates treat as vindication.",
+    sideNotes: [
+      "US 533,367 (1895) is the coil. US 645,576 (1900) is the more important radio-tuning companion.",
+      "Medical 'violet ray' wands and later neon-sign transformers are domesticated cousins, not cosmic power stations.",
+    ],
   },
   tags: [
     "Nikola Tesla",

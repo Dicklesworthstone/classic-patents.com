@@ -14,7 +14,7 @@ export const fermiReactorPatent: Patent = {
   category: "electricity",
   categoryLabel: "Nuclear Physics & Energy",
   summary:
-    "The seminal master patent of nuclear fission power: Enrico Fermi and Leo Szilard's Chicago Pile-1 design featuring a heterogeneous lattice of natural uranium fuel lumps embedded within a high-purity graphite moderator to achieve self-sustaining criticality ($k \\ge 1.0$) with cadmium control rods.",
+    "Fermi and Szilard's pile: lumps of natural uranium in boron-free graphite so neutrons thermalize in the carbon and miss U-238 resonances, with cadmium rods for $k$. CP-1 went critical on 2 December 1942 under Stagg Field.",
   heroQuote:
     "The Italian navigator has landed in the New World... The earthlings were very friendly.",
   originalPdfUrl: "/patents/pdfs/us-2708656-fermi-reactor.pdf",
@@ -108,7 +108,7 @@ WE CLAIM:
       },
     ],
     whyItMattersToday:
-      "Fermi and Szilard's patent provided the blueprint for all nuclear energy stations, naval nuclear propulsion, radioisotope cancer treatments, and research reactors operating worldwide today.",
+      "A light-water reactor is a different moderator and a pressure vessel. The control problem is the same: keep $k$ near 1 with delayed neutrons, and have a rod worth you can insert faster than the period.",
   },
   claims: [
     {
@@ -124,7 +124,7 @@ WE CLAIM:
         "Low neutron capture cross-section moderating medium",
       ],
       legalSignificance:
-        "The master patent claim for artificial nuclear chain reactions and nuclear energy generation.",
+        "A heterogeneous lattice of fissionable material in a moderator, with a movable absorber, arranged so k can be held at or above 1.",
     },
     {
       number: 2,
@@ -216,9 +216,16 @@ WE CLAIM:
       },
     ],
     civilizationalImpact:
-      "On December 2, 1942, CP-1 achieved criticality, proving that humanity could harness atomic energy and establishing the foundation for all modern nuclear power plants.",
+      "2 December 1942, CP-1 went critical under the west stands of Stagg Field. Every later pile, submarine core, and power reactor is a controlled version of that lattice argument: moderate the neutrons, keep k just above 1, and have a cadmium rod you can drop.",
     funFact:
-      "Because the squash court at Stagg Field was unheated, Fermi and Szilard wore heavy winter overcoats and fedora hats during the criticality experiment, celebrating with a bottle of Chianti wine in paper cups.",
+      "The squash court was unheated. Overcoats and fedoras in the photographs are not style; they are Chicago in December. They toasted with a bottle of Chianti and paper cups. Eugene Wigner handed Fermi the bottle.",
+    aftermath:
+      "The patent sat classified until 17 May 1955. Fermi and Szilard assigned it for a dollar. Fermi died in 1954 and never saw the issued document. Szilard spent the rest of his life trying to put the bomb back in the political bottle.",
+    sideNotes: [
+      "The graphite had to be boron-free. Ordinary commercial carbon would have poisoned the pile. The National Carbon and Speer lots were a materials project of their own.",
+      "Szilard's 1934 chain-reaction patent (British) is the conceptual ancestor. CP-1 is the heterogeneous lattice that made natural uranium work.",
+      "Arthur Compton ran the Met Lab. Leona Woods was the only woman present at criticality, on the boron trifluoride counter.",
+    ],
   },
   tags: ["energy", "nuclear", "physics", "electricity"],
   stats: {

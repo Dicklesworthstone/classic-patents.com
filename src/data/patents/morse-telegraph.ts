@@ -47,7 +47,7 @@ Figure 3 is a diagram of the relay circuit connecting the main line to the local
 Figure 4 illustrates the dictionary of signs composed of dots and lines.`,
   plainEnglishExplanation: {
     overview:
-      "Before Morse, optical semaphore towers (flashing flags or mechanical arms) were slow and blinded by fog or darkness. Previous electrical experimenters tried using 26 separate wires—one for every letter of the alphabet—which was hopelessly expensive. Samuel Morse reduced the entire English language to a binary time-duration code (dots and dashes) transmitted over a single iron wire, and invented the electromagnetic relay that refreshed electrical signals over thousands of miles.",
+      "Chappe semaphore died in fog. Some electrical schemes used a wire per letter. Morse (with Vail and Henry) put the alphabet on one pair as dots and dashes, and used a relay so the pulse could be rebuilt before line resistance killed it.",
     coreMechanism:
       "A spring-loaded brass key opens and closes an electrical circuit. Tapping the key momentarily sends a short pulse (a 'dot'); holding it down sends a pulse three times as long (a 'dash'). At the receiving end, the electric current energizes a horseshoe electromagnet, which pulls down an iron armature bar with a sharp stylus against a clockwork-driven paper tape ribbon, embossing the message directly onto paper.",
     mechanicalBreakdown: [

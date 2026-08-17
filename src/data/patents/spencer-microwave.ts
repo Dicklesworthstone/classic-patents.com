@@ -14,7 +14,7 @@ export const spencerMicrowavePatent: Patent = {
   category: "materials",
   categoryLabel: "Microwave Engineering & Thermodynamics",
   summary:
-    "The birth of microwave cooking: Percy Spencer's breakthrough invention using high-power electromagnetic energy from a cavity magnetron ($2.45\\text{ GHz}$) to heat food from within via high-frequency dielectric agitation of polar water molecules.",
+    "Spencer's 1945–49 Raytheon filing: put a cavity magnetron on a kitchen box so 2.45 GHz couples to water dipoles in the food instead of to a radar target. The first Radarange was a 750 lb restaurant cabinet.",
   heroQuote:
     "This invention relates to the treatment of foodstuffs, and more particularly to the cooking of food by means of high-frequency electromagnetic energy...",
   originalPdfUrl: "/patents/pdfs/us-2495429-spencer-microwave.pdf",
@@ -92,7 +92,7 @@ Figure 3 is a diagram illustrating the dielectric loss heating mechanism in pola
       },
     ],
     whyItMattersToday:
-      "Spencer's patent created the modern microwave oven found in over 90% of all households worldwide, along with industrial microwave drying, plasma processing, and medical hyperthermia cancer treatments.",
+      "The countertop oven is the obvious heir. Industrial drying and some medical hyperthermia use the same ISM band. Wi-Fi lives next door at 2.4 GHz and still loses to leftover chili.",
   },
   claims: [
     {

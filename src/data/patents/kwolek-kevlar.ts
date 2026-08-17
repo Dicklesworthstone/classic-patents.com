@@ -51,7 +51,7 @@ Figure 3 is a diagrammatic view of the liquid-crystalline nematic domain alignme
 Figure 4 is a diagram of the repeating aromatic polymer chain unit and inter-chain hydrogen bonding network.`,
   plainEnglishExplanation: {
     overview:
-      "In 1965, facing a looming petroleum shortage, DuPont sought a lightweight fiber to replace heavy steel cord in automobile tires to save fuel. Standard polymers like nylon dissolved into clear, viscous syrups with randomly tangled, spaghetti-like chains that yielded flexible but weak fibers. Chemist Stephanie Kwolek synthesized poly-p-phenylene terephthalamide (PPD-T). Her solution looked cloudy, milky, and thin as water—so strange that colleagues wanted to throw it out, fearing it would clog the spinning machines. Kwolek persisted, discovering the world's first liquid-crystalline polymer: the rigid rod-like molecules naturally lined up like uncooked spaghetti in a box, spinning into Kevlar—a fiber five times stronger than steel that stops speeding bullets.",
+      "In 1965 DuPont wanted a fiber to replace steel cord in tires. Nylon makes a clear, viscous syrup of tangled chains and a flexible, modestly strong yarn. Kwolek's poly-p-phenylene terephthalamide in sulfuric acid was cloudy and thin as water. Colleagues wanted it dumped before it clogged a spinneret. The cloud was a nematic liquid crystal: rigid rods already lined up, so the spun fiber came out oriented, with steel-beating tenacity for its weight.",
     coreMechanism:
       "Kevlar's backbone consists of rigid aromatic benzene rings joined by planar amide ($-\\text{CONH}-$) linkages with para-symmetry (straight line). In concentrated sulfuric acid, these rigid rods spontaneously form nematic liquid crystal arrays. When forced through microscopic spinneret holes, shear forces align all the rods parallel to the fiber axis. In the water bath, hydrogen bonds ($N-H \\cdots O=C$) lock adjacent chains into a crystal lattice that distributes mechanical shock waves across millions of covalent carbon-carbon bonds.",
     mechanicalBreakdown: [
@@ -97,7 +97,7 @@ Figure 4 is a diagram of the repeating aromatic polymer chain unit and inter-cha
       },
     ],
     whyItMattersToday:
-      "Kevlar revolutionized personal armor, saving thousands of police officers and military personnel from fatal bullet and shrapnel wounds, while reinforcing aerospace composites, fiber optic cables, space suits, and high-performance racing tires.",
+      "Soft armor, cut-resistant gloves, and a lot of sailcloth are still PPTA. The vest market is what people know; the original DuPont brief was tire cord.",
   },
   claims: [
     {

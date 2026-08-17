@@ -14,7 +14,7 @@ export const einsteinRefrigeratorPatent: Patent = {
   category: "consumer",
   categoryLabel: "Thermodynamics & Consumer Technology",
   summary:
-    "Albert Einstein and Leo Szilard's revolutionary absorption refrigerator: a hermetically welded cooling circuit operating at uniform internal pressure with zero moving mechanical parts, zero rotating shaft seals, and zero noise, driven by a continuous heat source utilizing Dalton's Law of Partial Pressures.",
+    "Einstein and Szilard's 1930 absorption fridge: one total pressure, no shaft seal, heat instead of a compressor. A third gas drops the refrigerant's partial pressure so it boils in the box. Written after newspaper reports of families killed by leaking SO₂.",
   heroQuote:
     "An entire family in Berlin died in their sleep when the toxic chemical seal in their refrigerator compressor ruptured... Leo and I resolved that no family should ever die from a refrigerator.",
   originalPdfUrl: "/patents/pdfs/us-1781541-einstein-refrigerator.pdf",
@@ -118,7 +118,7 @@ WE CLAIM:
         "Zero-moving-parts thermosiphon circulation",
       ],
       legalSignificance:
-        "The master patent claim for hermetic non-mechanical absorption cooling systems.",
+        "A sealed absorption loop at uniform total pressure, no shaft seal, heat-driven circulation.",
     },
     {
       number: 2,
@@ -177,31 +177,37 @@ WE CLAIM:
   ],
   historicalContext: {
     problemStatement:
-      "Mechanical refrigerators in the 1920s relied on reciprocating motor compressors driven through rotating crankshaft seals. Shaft seals inevitably wore down over time, leaking lethal pressurized toxic refrigerant gases (sulfur dioxide, methyl chloride) into residential homes while causing loud motor vibrations and frequent mechanical breakdown.",
+      "1920s kitchen refrigerators used SO₂ or methyl chloride behind a shaft seal. When the seal went, families died in their sleep. Einstein and Szilard read the Berlin newspaper accounts and decided the compressor was the wrong machine to put in a home.",
     priorArtLimitations: [
-      "Rotating compressor shaft seals inevitably leaked toxic chemical refrigerants",
-      "Compressor motor vibrations produced loud humming in domestic kitchens",
-      "Refrigerators required frequent mechanical servicing and valve replacements",
+      "Rotating shaft seals leak. Always, eventually.",
+      "The motor hummed and needed oil.",
+      "Service calls were part of the product.",
     ],
     breakthroughInsight:
-      "Einstein and Szilard realized that mechanical compressors could be eliminated entirely by keeping the entire closed system at a constant uniform total pressure (e.g. 10 atmospheres). By introducing a third inert gas (ammonia gas) into the evaporator alongside the liquid refrigerant (butane), Dalton's Law of Partial Pressures causes the local partial pressure of the butane to plummet, forcing it to boil and vaporize rapidly at sub-zero temperatures without requiring a mechanical vacuum pump.",
+      "Hold the whole loop at one total pressure (about 10 atm) so you need no shaft and no throttle. A third gas (ammonia) in the evaporator drops the partial pressure of the butane; Dalton's law does the work a vacuum pump would have done. Heat, not a crank, drives the circulation.",
     patentWars: [
       {
-        rivalName: "Electrolux / Platen-Munters",
+        rivalName: "Electrolux / Platen–Munters",
         rivalClaim:
-          "Swedish inventors Baltzar von Platen and Carl Munters had patented a continuous absorption cycle using water, ammonia, and hydrogen",
+          "von Platen and Munters already had a continuous absorption cycle (water, ammonia, hydrogen) that Electrolux owned.",
         conflictDetails:
-          "Electrolux had acquired the Platen-Munters patent. When Einstein and Szilard patented their butane/ammonia/water variation with an electromagnetic liquid metal pump in 1928–1930, Electrolux bought the Einstein-Szilard patent portfolio for $750 to protect its market dominance.",
+          "Einstein–Szilard's butane/ammonia/water variant, with a later electromagnetic liquid-metal pump, was close enough that Electrolux bought the portfolio (about $750 in the usual telling) rather than litigate.",
         resolution:
-          "Einstein and Szilard received patent royalties, and the patent became a classic thermodynamic benchmark.",
+          "Electrolux kept the silent-fridge market. Einstein and Szilard took the fee. The cycle became a thermodynamics homework problem.",
         legalOutcome:
-          "Prevented competing American appliance firms from designing non-mechanical refrigerators.",
+          "No famous infringement opinion. A purchase. Freon and sealed electric compressors later won the US kitchen anyway, once the refrigerant stopped being poison.",
       },
     ],
     civilizationalImpact:
-      "Demonstrated that theoretical physics principles (Dalton's law, thermodynamics) could eliminate mechanical failure modes, inspiring modern hermetic cooling technologies and spacecraft thermal management.",
+      "RV and off-grid absorption fridges still run a cousin of this cycle on a propane flame. The 1920s death-by-leak problem was actually solved by Midgley's CFCs plus a welded compressor; those CFCs then became their own crisis.",
     funFact:
-      "Albert Einstein used his earnings from the Electrolux refrigerator patent royalties to support impoverished physics students and refugees fleeing Nazi Germany in the early 1930s.",
+      "Einstein used the Electrolux money to help students and refugees leaving Germany. The sum was not a fortune. The gesture is why the story survives.",
+    aftermath:
+      "Szilard moved on to the chain reaction (see Fermi). Einstein's name on a fridge is a historical curiosity that still gets undergraduates to look up partial pressures.",
+    sideNotes: [
+      "The newspaper deaths were real. So was the later realization that a hermetic compressor plus a safer refrigerant was the mass-market path.",
+      "No moving parts is a slogan. The Einstein–Szilard pump, when they added one, moved liquid metal with a traveling magnetic field. Still no shaft seal.",
+    ],
   },
   tags: ["consumer", "thermodynamics", "einstein", "physics"],
   stats: {

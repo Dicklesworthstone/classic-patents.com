@@ -1,6 +1,16 @@
 "use client";
 
-import { Camera, Radio, RotateCcw, Sparkles, Volume2, VolumeX, Zap } from "lucide-react";
+import {
+  Camera,
+  Eye,
+  EyeOff,
+  Radio,
+  RotateCcw,
+  Sparkles,
+  Volume2,
+  VolumeX,
+  Zap,
+} from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import * as THREE from "three";
 import { soundEngine } from "@/utils/soundEngine";
@@ -25,28 +35,28 @@ const SCENARIOS: ScenarioPreset[] = [
     desc: "Samuel Morse transmits 'What hath God wrought' across 44 miles of single-wire telegraph line between DC and Baltimore.",
     voltageV: 24,
     miles: 44,
-    wpm: 15,
+    wpm: 16,
   },
   {
-    id: "long_line_relay_boost",
-    name: "200-Mile Long-Line Relay",
-    desc: "High-resistance 2,500Ω line requiring local battery relay sounder amplification to boost weak current pulses.",
+    id: "high_speed_dispatch",
+    name: "High-Speed Railroad Dispatching",
+    desc: "30 words-per-minute rapid train routing telegraphy over a 12-mile local junction wire.",
+    voltageV: 18,
+    miles: 12,
+    wpm: 30,
+  },
+  {
+    id: "transcontinental_long_line",
+    name: "Transcontinental High-Resistance Line",
+    desc: "Long 120-mile trunk line requiring 48V battery potential to overcome wire resistance and drive relay armature.",
     voltageV: 48,
-    miles: 200,
-    wpm: 20,
+    miles: 120,
+    wpm: 22,
   },
   {
-    id: "high_speed_35wpm_traffic",
-    name: "35 WPM High-Speed Commercial Stream",
-    desc: "Skilled railroad telegrapher transmitting rapid continuous Morse code packets with crisp contact breaking.",
-    voltageV: 32,
-    miles: 60,
-    wpm: 35,
-  },
-  {
-    id: "low_battery_weak_signal",
-    name: "Depleted Daniell Battery Cell",
-    desc: "Low 6V battery potential causing sluggish armature pull and weak paper tape stylus embossing.",
+    id: "low_voltage_demo",
+    name: "Local Depot Test Circuit",
+    desc: "Low-voltage 6V test line demonstrating relay spring tension calibration and armature air gap mechanics.",
     voltageV: 6,
     miles: 44,
     wpm: 10,
@@ -57,7 +67,8 @@ export function MorseTelegraph3D() {
   const containerRef = useRef<HTMLDivElement>(null);
 
   // Telegraph Circuit State Controls
-  const [lineVoltageV, setLineVoltageV] = useState<number>(24); // 6 to 48 V
+  const [showUiOverlay, setShowUiOverlay] = useState<boolean>(true);
+  const [lineVoltageV, setLineVoltageV] = useState<number>(24); // 6 to 48 VV
   const [lineLengthMiles, setLineLengthMiles] = useState<number>(44); // Baltimore to Washington (44 miles)
   const [keyIsDown, setKeyIsDown] = useState<boolean>(false);
   const [_wpmSpeed, setWpmSpeed] = useState<number>(20); // 5 to 35 WPM
@@ -305,6 +316,7 @@ export function MorseTelegraph3D() {
       if (p.keyIsDown) {
         keyLeverGroup.rotation.z = 0.06;
         armatureGroup.position.y = 1.85; // Pulled down onto pole faces
+        spool.rotation.z += 0.03; // Spool tape advances
       } else {
         keyLeverGroup.rotation.z = -0.02;
         armatureGroup.position.y = 2.05; // Released by antagonist spring
@@ -345,112 +357,131 @@ export function MorseTelegraph3D() {
         <div ref={containerRef} className="absolute inset-0 w-full h-full" />
 
         {/* Live HUD Telemetry Overlay */}
-        <div className="absolute top-4 left-4 z-10 flex flex-col gap-2 pointer-events-none max-w-[calc(100%-8rem)] sm:max-w-md">
-          <div className="bg-white/90 dark:bg-ink-900/90 backdrop-blur-md px-3.5 py-2.5 rounded-xl border border-parchment-300 dark:border-ink-700 shadow-sm">
-            <div className="text-[11px] font-sans text-amber-700 dark:text-amber-400 font-bold uppercase tracking-wider flex items-center gap-1.5">
-              <Radio className="w-3.5 h-3.5 text-blue-500 animate-pulse" />
-              Telegraph Loop Circuit Telemetry
+        {showUiOverlay && (
+          <div className="absolute top-3 left-3 sm:top-4 sm:left-4 z-10 flex flex-col gap-1.5 sm:gap-2 pointer-events-none max-w-[calc(100%-8rem)] sm:max-w-md transition-opacity duration-200">
+            <div className="bg-white/90 dark:bg-ink-900/90 backdrop-blur-md p-2 sm:px-3.5 sm:py-2.5 rounded-xl border border-parchment-300 dark:border-ink-700 shadow-sm">
+              <div className="text-[10px] sm:text-[11px] font-sans text-amber-700 dark:text-amber-400 font-bold uppercase tracking-wider flex items-center gap-1.5">
+                <Radio className="w-3 h-3 sm:w-3.5 sm:h-3.5 text-blue-500 animate-pulse" />
+                Telegraph Circuit Telemetry
+              </div>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-3 gap-y-0.5 sm:gap-y-1 mt-1 text-[10px] sm:text-xs font-sans">
+                <div>
+                  <span className="text-ink-600 dark:text-ink-400">Current:</span>{" "}
+                  <span className="font-bold text-blue-600 dark:text-blue-400">
+                    {keyIsDown ? `${loopCurrentMa} mA` : "0.0 mA (Open)"}
+                  </span>
+                </div>
+                <div>
+                  <span className="text-ink-600 dark:text-ink-400">Resistance:</span>{" "}
+                  <span className="font-bold text-amber-600 dark:text-amber-400">
+                    {totalResistanceOhms} Ω ({lineResistanceOhms} Ω line)
+                  </span>
+                </div>
+                <div>
+                  <span className="text-ink-600 dark:text-ink-400">Magnetic Pull:</span>{" "}
+                  <span className="font-bold text-emerald-600 dark:text-emerald-400">
+                    {keyIsDown ? `${magneticHoldForceN} N` : "0.00 N"}
+                  </span>
+                </div>
+                <div>
+                  <span className="text-ink-600 dark:text-ink-400">Line Distance:</span>{" "}
+                  <span className="font-bold text-purple-600 dark:text-purple-400">
+                    {lineLengthMiles} Mi ({lineVoltageV}V)
+                  </span>
+                </div>
+              </div>
             </div>
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-4 gap-y-1 mt-1 text-xs font-sans">
-              <div>
-                <span className="text-ink-600 dark:text-ink-400">Loop Current:</span>{" "}
-                <span className="font-bold text-blue-600 dark:text-blue-400">
-                  {keyIsDown ? `${loopCurrentMa} mA` : "0.0 mA (Open Key)"}
-                </span>
-              </div>
-              <div>
-                <span className="text-ink-600 dark:text-ink-400">Total Resistance:</span>{" "}
-                <span className="font-bold text-amber-600 dark:text-amber-400">
-                  {totalResistanceOhms} Ω ({lineResistanceOhms} Ω line)
-                </span>
-              </div>
-              <div>
-                <span className="text-ink-600 dark:text-ink-400">Magnetic Pull:</span>{" "}
-                <span className="font-bold text-emerald-600 dark:text-emerald-400">
-                  {keyIsDown ? `${magneticHoldForceN} N` : "0.00 N"}
-                </span>
-              </div>
-              <div>
-                <span className="text-ink-600 dark:text-ink-400">Line Distance:</span>{" "}
-                <span className="font-bold text-purple-600 dark:text-purple-400">
-                  {lineLengthMiles} Miles ({lineVoltageV}V Supply)
-                </span>
-              </div>
+
+            <div className="hidden sm:flex bg-white/90 dark:bg-ink-900/90 backdrop-blur-md px-3 py-1.5 rounded-lg border border-parchment-300 dark:border-ink-700 text-[11px] font-sans text-ink-700 dark:text-ink-300 items-center gap-2 max-w-full">
+              <Zap className="w-3.5 h-3.5 text-amber-500 animate-pulse shrink-0" />
+              <span className="truncate">Samuel F. B. Morse (US 1,647) — Telegraph (1840)</span>
             </div>
           </div>
+        )}
 
-          <div className="bg-white/90 dark:bg-ink-900/90 backdrop-blur-md px-3 py-1.5 rounded-lg border border-parchment-300 dark:border-ink-700 text-[11px] font-sans text-ink-700 dark:text-ink-300 flex items-center gap-2 max-w-full">
-            <Zap className="w-3.5 h-3.5 text-amber-500 animate-pulse shrink-0" />
-            <span className="truncate">
-              Samuel F. B. Morse (US 1,647) — Electro-Magnetic Telegraph (1840)
-            </span>
-          </div>
-        </div>
-
-        {/* Top Right Tool Bar (Audio, Pins, Reset) */}
-        <div className="absolute top-4 right-4 z-10 flex gap-2">
+        {/* Top Right Tool Bar (Toggle UI, Audio, Pins, Reset) */}
+        <div className="absolute top-3 right-3 sm:top-4 sm:right-4 z-10 flex gap-1.5 sm:gap-2">
+          <button
+            type="button"
+            onClick={() => setShowUiOverlay(!showUiOverlay)}
+            className={`p-1.5 sm:p-2.5 rounded-xl backdrop-blur-md border transition-all shadow-sm ${
+              showUiOverlay
+                ? "bg-white/90 dark:bg-ink-900/90 border-parchment-300 dark:border-ink-700 text-ink-700 dark:text-parchment-300 hover:bg-parchment-100"
+                : "bg-amber-600 text-white border-amber-700 shadow-md ring-2 ring-amber-500/30"
+            }`}
+            title={showUiOverlay ? "Hide Overlay UI (Clean 3D View)" : "Show Overlay UI"}
+            aria-label={showUiOverlay ? "Hide Overlay UI" : "Show Overlay UI"}
+          >
+            {showUiOverlay ? (
+              <EyeOff className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
+            ) : (
+              <Eye className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
+            )}
+          </button>
           <button
             type="button"
             onClick={() => setIsPlayingAudio(!isPlayingAudio)}
-            className="p-2.5 rounded-xl bg-white/90 dark:bg-ink-900/90 backdrop-blur-md border border-parchment-300 dark:border-ink-700 text-ink-700 dark:text-parchment-300 hover:bg-parchment-100 dark:hover:bg-ink-800 transition-all shadow-sm"
+            className="p-1.5 sm:p-2.5 rounded-xl bg-white/90 dark:bg-ink-900/90 backdrop-blur-md border border-parchment-300 dark:border-ink-700 text-ink-700 dark:text-parchment-300 hover:bg-parchment-100 dark:hover:bg-ink-800 transition-all shadow-sm"
             title={isPlayingAudio ? "Mute Telegraph Sounder Click" : "Enable Sounder Click"}
           >
             {isPlayingAudio ? (
-              <Volume2 className="w-4 h-4 text-amber-600" />
+              <Volume2 className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-amber-600" />
             ) : (
-              <VolumeX className="w-4 h-4" />
+              <VolumeX className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
             )}
           </button>
           <button
             type="button"
             onClick={() => setShowCalloutPins(!showCalloutPins)}
-            className={`p-2.5 rounded-xl backdrop-blur-md border transition-all shadow-sm ${
+            className={`p-1.5 sm:p-2.5 rounded-xl backdrop-blur-md border transition-all shadow-sm ${
               showCalloutPins
                 ? "bg-amber-600 text-white border-amber-700 shadow-md"
                 : "bg-white/90 dark:bg-ink-900/90 border-parchment-300 dark:border-ink-700 text-ink-700 dark:text-parchment-300 hover:bg-parchment-100"
             }`}
             title="Toggle Historical Patent Numeral Pins"
           >
-            <Zap className="w-4 h-4" />
+            <Zap className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
           </button>
           <button
             type="button"
             onClick={() => applyCameraPreset("iso")}
-            className="p-2.5 rounded-xl bg-white/90 dark:bg-ink-900/90 backdrop-blur-md border border-parchment-300 dark:border-ink-700 text-ink-700 dark:text-parchment-300 hover:bg-parchment-100 dark:hover:bg-ink-800 transition-all shadow-sm"
+            className="p-1.5 sm:p-2.5 rounded-xl bg-white/90 dark:bg-ink-900/90 backdrop-blur-md border border-parchment-300 dark:border-ink-700 text-ink-700 dark:text-parchment-300 hover:bg-parchment-100 dark:hover:bg-ink-800 transition-all shadow-sm"
             title="Reset Orbit Camera"
           >
-            <RotateCcw className="w-4 h-4" />
+            <RotateCcw className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
           </button>
         </div>
 
         {/* Camera Views Bar */}
-        <div className="absolute bottom-4 left-4 z-10 flex flex-wrap gap-1.5 bg-white/85 dark:bg-ink-900/85 backdrop-blur-md p-1.5 rounded-xl border border-parchment-300 dark:border-ink-700 shadow-sm text-xs">
-          <span className="px-2 py-1 text-ink-500 font-sans flex items-center gap-1">
-            <Camera className="w-3.5 h-3.5" /> View:
-          </span>
-          {(
-            [
-              ["iso", "Isometric"],
-              ["key_lever", "Camelback Key"],
-              ["electromagnet_relay", "Electromagnet"],
-              ["paper_tape_register", "Register Tape"],
-              ["top", "Overhead"],
-            ] as const
-          ).map(([id, label]) => (
-            <button
-              key={id}
-              type="button"
-              onClick={() => applyCameraPreset(id)}
-              className={`px-2.5 py-1 rounded-lg font-sans transition-all ${
-                activeCamera === id
-                  ? "bg-amber-700 dark:bg-amber-600 text-white font-semibold shadow-xs"
-                  : "text-ink-700 dark:text-parchment-300 hover:bg-parchment-200 dark:hover:bg-ink-800"
-              }`}
-            >
-              {label}
-            </button>
-          ))}
-        </div>
+        {showUiOverlay && (
+          <div className="absolute bottom-3 left-3 sm:bottom-4 sm:left-4 z-10 flex flex-nowrap overflow-x-auto scrollbar-none max-w-[calc(100%-1.5rem)] sm:max-w-none gap-1 sm:gap-1.5 bg-white/85 dark:bg-ink-900/85 backdrop-blur-md p-1 sm:p-1.5 rounded-xl border border-parchment-300 dark:border-ink-700 shadow-sm text-[10px] sm:text-xs transition-opacity duration-200">
+            <span className="px-1.5 sm:px-2 py-0.5 sm:py-1 text-ink-500 font-sans flex items-center gap-1 shrink-0">
+              <Camera className="w-3 h-3 sm:w-3.5 sm:h-3.5" /> View:
+            </span>
+            {(
+              [
+                ["iso", "Isometric"],
+                ["key_lever", "Camelback Key"],
+                ["electromagnet_relay", "Electromagnet"],
+                ["paper_tape_register", "Register Tape"],
+                ["top", "Overhead"],
+              ] as const
+            ).map(([id, label]) => (
+              <button
+                key={id}
+                type="button"
+                onClick={() => applyCameraPreset(id)}
+                className={`px-2 py-0.5 sm:px-2.5 sm:py-1 rounded-lg font-sans whitespace-nowrap shrink-0 transition-all ${
+                  activeCamera === id
+                    ? "bg-amber-700 dark:bg-amber-600 text-white font-semibold shadow-xs"
+                    : "text-ink-700 dark:text-parchment-300 hover:bg-parchment-200 dark:hover:bg-ink-800"
+                }`}
+              >
+                {label}
+              </button>
+            ))}
+          </div>
+        )}
       </div>
 
       {/* Interactive Controls & Scenario Bar */}
