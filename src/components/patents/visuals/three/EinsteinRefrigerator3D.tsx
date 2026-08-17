@@ -69,64 +69,113 @@ export function EinsteinRefrigerator3D() {
       metalness: 0.85,
     });
 
-    // --- 3D HERMETIC REFRIGERATOR CIRCUIT ASSEMBLY ---
+    // --- 3D EINSTEIN-SZILARD REFRIGERATOR ASSEMBLY ---
     const fridgeGroup = new THREE.Group();
     scene.add(fridgeGroup);
 
-    // 1. Boiler / Generator Vessel (Lower Right)
+    // 1. Hermetic Welded Steel Boiler / Bubble-Pump Generator (Lower Right)
     const generator = new THREE.Mesh(
-      new THREE.CylinderGeometry(0.7, 0.7, 3.2, 24),
+      new THREE.CylinderGeometry(0.9, 0.9, 3.4, 24),
       hotGeneratorMat,
     );
-    generator.position.set(3.2, -1.2, 0);
+    generator.position.set(3.4, -1.2, 0);
     generator.castShadow = true;
     fridgeGroup.add(generator);
 
-    // Bunsen Flame / Electric Heater under Generator
-    const heater = new THREE.Mesh(
-      new THREE.CylinderGeometry(0.35, 0.45, 0.8, 16),
-      new THREE.MeshStandardMaterial({ color: 0x1e293b, roughness: 0.4 }),
+    // Vertical Bubble Pump Vapor-Lift Tube
+    const bubbleTube = new THREE.Mesh(
+      new THREE.CylinderGeometry(0.12, 0.12, 4.2, 16),
+      condenserFinsMat,
     );
-    heater.position.set(3.2, -3.2, 0);
+    bubbleTube.position.set(3.4, 1.4, 0);
+    fridgeGroup.add(bubbleTube);
+
+    // Electric Heating Element Collar at Base
+    const heater = new THREE.Mesh(
+      new THREE.CylinderGeometry(1.05, 1.05, 0.8, 24),
+      new THREE.MeshStandardMaterial({ color: 0xef4444, emissive: 0xb91c1c, roughness: 0.3 }),
+    );
+    heater.position.set(3.4, -2.6, 0);
     heater.castShadow = true;
     fridgeGroup.add(heater);
 
-    // 2. Condenser Coil Heat Exchanger (Top Right)
-    const condenser = new THREE.Mesh(new THREE.BoxGeometry(2.4, 1.8, 1.2), condenserFinsMat);
-    condenser.position.set(2.4, 2.2, 0);
-    condenser.castShadow = true;
-    fridgeGroup.add(condenser);
+    // 2. Serpentine Condenser Coil Heat Exchanger (Top Right)
+    const condenserGroup = new THREE.Group();
+    condenserGroup.position.set(2.2, 2.6, 0);
 
-    // 3. Evaporator Freezing Chamber (Top Left - Cold Box)
-    const evaporator = new THREE.Mesh(new THREE.BoxGeometry(3.2, 2.4, 2.4), coldEvaporatorMat);
+    const condenserPts: THREE.Vector3[] = [];
+    for (let c = 0; c < 5; c++) {
+      const y = (c - 2) * 0.4;
+      const xLeft = -1.2;
+      const xRight = 1.2;
+      condenserPts.push(new THREE.Vector3(c % 2 === 0 ? xLeft : xRight, y, 0));
+      condenserPts.push(new THREE.Vector3(c % 2 === 0 ? xRight : xLeft, y, 0));
+    }
+    const condenserCurve = new THREE.CatmullRomCurve3(condenserPts);
+    const condenserGeo = new THREE.TubeGeometry(condenserCurve, 60, 0.09, 8, false);
+    const condenserMesh = new THREE.Mesh(condenserGeo, condenserFinsMat);
+    condenserMesh.castShadow = true;
+    condenserGroup.add(condenserMesh);
+
+    // Aluminum Cooling Fins across Condenser
+    for (let f = 0; f < 8; f++) {
+      const fin = new THREE.Mesh(new THREE.BoxGeometry(0.04, 2.2, 0.8), condenserFinsMat);
+      fin.position.set(-1.0 + f * 0.28, 0, 0);
+      condenserGroup.add(fin);
+    }
+    fridgeGroup.add(condenserGroup);
+
+    // 3. Evaporator Freezing Chamber (Top Left - Cold Box with Frost Ribs)
+    const evaporator = new THREE.Mesh(new THREE.BoxGeometry(3.6, 2.6, 2.6), coldEvaporatorMat);
     evaporator.position.set(-2.8, 1.8, 0);
     evaporator.castShadow = true;
     fridgeGroup.add(evaporator);
 
-    // 4. Absorber Vessel (Lower Left)
-    const absorber = new THREE.Mesh(new THREE.CylinderGeometry(0.8, 0.8, 3.4, 24), steelPipeMat);
+    // Internal Freezing Grid Shelves
+    for (let s = 0; s < 3; s++) {
+      const shelf = new THREE.Mesh(
+        new THREE.BoxGeometry(3.2, 0.05, 2.2),
+        new THREE.MeshStandardMaterial({ color: 0xe0f2fe, roughness: 0.1 }),
+      );
+      shelf.position.set(-2.8, 0.9 + s * 0.7, 0);
+      fridgeGroup.add(shelf);
+    }
+
+    // 4. Absorber Vessel with Horizontal Heat Radiating Rings (Lower Left)
+    const absorber = new THREE.Mesh(new THREE.CylinderGeometry(0.85, 0.85, 3.4, 24), steelPipeMat);
     absorber.position.set(-2.8, -1.4, 0);
     absorber.castShadow = true;
     fridgeGroup.add(absorber);
 
-    // Interconnecting Sealed Steel Conduits (Closed Hermetic Loop)
-    const pipe1 = new THREE.Mesh(new THREE.CylinderGeometry(0.12, 0.12, 2.4, 12), steelPipeMat);
-    pipe1.position.set(2.8, 0.6, 0);
-    fridgeGroup.add(pipe1);
+    for (let a = 0; a < 6; a++) {
+      const ring = new THREE.Mesh(new THREE.TorusGeometry(0.92, 0.05, 8, 24), steelPipeMat);
+      ring.rotation.x = Math.PI / 2;
+      ring.position.set(-2.8, -2.6 + a * 0.5, 0);
+      fridgeGroup.add(ring);
+    }
 
-    const pipe2 = new THREE.Mesh(new THREE.CylinderGeometry(0.12, 0.12, 5.2, 12), steelPipeMat);
-    pipe2.position.set(0, 2.6, 0);
-    pipe2.rotation.z = Math.PI / 2;
-    fridgeGroup.add(pipe2);
+    // 5. Counter-Flow Concentric Liquid Heat Exchanger Loop (Economizer)
+    const economizerCurve = new THREE.CatmullRomCurve3([
+      new THREE.Vector3(3.4, -0.4, 0),
+      new THREE.Vector3(1.2, -0.8, 0.4),
+      new THREE.Vector3(-1.0, -1.2, 0.4),
+      new THREE.Vector3(-2.8, -0.6, 0),
+    ]);
+    const economizerGeo = new THREE.TubeGeometry(economizerCurve, 32, 0.14, 8, false);
+    const economizer = new THREE.Mesh(economizerGeo, steelPipeMat);
+    economizer.castShadow = true;
+    fridgeGroup.add(economizer);
 
-    const pipe3 = new THREE.Mesh(new THREE.CylinderGeometry(0.12, 0.12, 2.2, 12), steelPipeMat);
-    pipe3.position.set(-2.8, 0.2, 0);
-    fridgeGroup.add(pipe3);
-
-    const pipe4 = new THREE.Mesh(new THREE.CylinderGeometry(0.12, 0.12, 6.0, 12), steelPipeMat);
-    pipe4.position.set(0.2, -2.4, 0);
-    pipe4.rotation.z = Math.PI / 2;
-    fridgeGroup.add(pipe4);
+    // Return Hydrogen Gas Circulation Conduit
+    const h2PipeCurve = new THREE.CatmullRomCurve3([
+      new THREE.Vector3(-2.8, 0.5, 0),
+      new THREE.Vector3(0, 0.2, -0.5),
+      new THREE.Vector3(2.4, 1.2, -0.5),
+      new THREE.Vector3(3.4, 0.8, 0),
+    ]);
+    const h2PipeGeo = new THREE.TubeGeometry(h2PipeCurve, 32, 0.09, 8, false);
+    const h2Pipe = new THREE.Mesh(h2PipeGeo, steelPipeMat);
+    fridgeGroup.add(h2Pipe);
 
     // --- GLOWING WORKING FLUID CONVECTION PARTICLES ---
     const fluidCount = 120;

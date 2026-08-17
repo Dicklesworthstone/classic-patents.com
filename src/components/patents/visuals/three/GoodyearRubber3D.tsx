@@ -73,18 +73,45 @@ export function GoodyearRubber3D() {
     const rubberGroup = new THREE.Group();
     scene.add(rubberGroup);
 
-    // Left and Right Tensile Grip Clamps
-    const leftClamp = new THREE.Mesh(new THREE.BoxGeometry(0.8, 4.2, 3.2), clampMat);
-    leftClamp.position.set(-4.5, 0, 0);
+    // Left and Right Tensile Grip Clamps with Knurled Thumbscrews
+    const leftClampG = new THREE.Group();
+    leftClampG.position.set(-4.5, 0, 0);
+
+    const leftClamp = new THREE.Mesh(new THREE.BoxGeometry(0.85, 4.4, 3.4), clampMat);
     leftClamp.castShadow = true;
-    rubberGroup.add(leftClamp);
+    leftClampG.add(leftClamp);
 
-    const rightClamp = new THREE.Mesh(new THREE.BoxGeometry(0.8, 4.2, 3.2), clampMat);
-    rightClamp.position.set(4.5, 0, 0);
+    // Knurled Brass Tightening Screws
+    [-1.4, 1.4].forEach((sy) => {
+      const screw = new THREE.Mesh(
+        new THREE.CylinderGeometry(0.35, 0.35, 0.6, 24),
+        new THREE.MeshStandardMaterial({ color: 0xd97706, metalness: 0.9, roughness: 0.2 }),
+      );
+      screw.rotation.z = Math.PI / 2;
+      screw.position.set(-0.6, sy, 0);
+      leftClampG.add(screw);
+    });
+    rubberGroup.add(leftClampG);
+
+    const rightClampG = new THREE.Group();
+    rightClampG.position.set(4.5, 0, 0);
+
+    const rightClamp = new THREE.Mesh(new THREE.BoxGeometry(0.85, 4.4, 3.4), clampMat);
     rightClamp.castShadow = true;
-    rubberGroup.add(rightClamp);
+    rightClampG.add(rightClamp);
 
-    // Entangled cis-1,4-Polyisoprene Chains (4 Parallel Chains)
+    [-1.4, 1.4].forEach((sy) => {
+      const screw = new THREE.Mesh(
+        new THREE.CylinderGeometry(0.35, 0.35, 0.6, 24),
+        new THREE.MeshStandardMaterial({ color: 0xd97706, metalness: 0.9, roughness: 0.2 }),
+      );
+      screw.rotation.z = Math.PI / 2;
+      screw.position.set(0.6, sy, 0);
+      rightClampG.add(screw);
+    });
+    rubberGroup.add(rightClampG);
+
+    // Entangled cis-1,4-Polyisoprene Chains (4 Polymer Chains)
     const chains: { curve: THREE.CatmullRomCurve3; mesh: THREE.Mesh; basePts: THREE.Vector3[] }[] =
       [];
     const numChains = 4;
@@ -110,18 +137,33 @@ export function GoodyearRubber3D() {
       chains.push({ curve, mesh, basePts: pts });
     }
 
-    // Sulfur Disulfide Bridge Atoms (-S_x-)
+    // Sulfur Disulfide Bridge Atoms & Covalent Crosslink Struts (-S-S-)
     const sulfurBridgesGroup = new THREE.Group();
     const numBridges = 8;
     const sulfurSpheres: THREE.Mesh[] = [];
 
     for (let b = 0; b < numBridges; b++) {
       const x = -3.0 + (b / numBridges) * 6.0;
-      const bridge = new THREE.Mesh(new THREE.SphereGeometry(0.24, 16, 16), sulfurBridgeMat);
-      bridge.position.set(x, (Math.random() - 0.5) * 1.6, (Math.random() - 0.5) * 0.8);
-      bridge.castShadow = true;
-      sulfurBridgesGroup.add(bridge);
-      sulfurSpheres.push(bridge);
+      const bridgeG = new THREE.Group();
+      bridgeG.position.set(x, (Math.random() - 0.5) * 1.6, (Math.random() - 0.5) * 0.8);
+
+      const sAtom1 = new THREE.Mesh(new THREE.SphereGeometry(0.2, 16, 16), sulfurBridgeMat);
+      sAtom1.position.y = -0.22;
+      bridgeG.add(sAtom1);
+
+      const sAtom2 = new THREE.Mesh(new THREE.SphereGeometry(0.2, 16, 16), sulfurBridgeMat);
+      sAtom2.position.y = 0.22;
+      bridgeG.add(sAtom2);
+
+      const sBond = new THREE.Mesh(
+        new THREE.CylinderGeometry(0.05, 0.05, 0.44, 8),
+        new THREE.MeshStandardMaterial({ color: 0xeab308, metalness: 0.5 }),
+      );
+      bridgeG.add(sBond);
+
+      bridgeG.castShadow = true;
+      sulfurBridgesGroup.add(bridgeG);
+      sulfurSpheres.push(sAtom1);
     }
     rubberGroup.add(sulfurBridgesGroup);
 

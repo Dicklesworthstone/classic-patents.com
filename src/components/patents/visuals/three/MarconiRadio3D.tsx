@@ -75,15 +75,39 @@ export function MarconiRadio3D() {
       metalness: 0.7,
     });
 
-    // --- 3D MARCONI WIRELESS TRANSMITTER ASSEMBLY ---
+    // --- 3D MARCONI WIRELESS TRANSMITTER & RECEIVER ASSEMBLY ---
     const radioGroup = new THREE.Group();
     scene.add(radioGroup);
 
-    // Pine Wood Aerial Mast (30-60m scale)
-    const mast = new THREE.Mesh(new THREE.CylinderGeometry(0.18, 0.35, 9.0, 16), woodMastMat);
-    mast.position.set(-3.5, 0.5, 0);
+    // Pine Wood Aerial Mast with Guy Wire Rigging
+    const mast = new THREE.Mesh(new THREE.CylinderGeometry(0.18, 0.35, 9.5, 16), woodMastMat);
+    mast.position.set(-3.5, 0.8, 0);
     mast.castShadow = true;
     radioGroup.add(mast);
+
+    // Top Aerial Capacity Plate (Elevated Sheet Reflector / Mesh Hat)
+    const capacityHat = new THREE.Mesh(
+      new THREE.CylinderGeometry(1.2, 1.2, 0.08, 24),
+      copperAerialMat,
+    );
+    capacityHat.position.set(-3.5, 5.5, 0);
+    radioGroup.add(capacityHat);
+
+    // Steel Guy Wires Bracing Mast
+    const guyWiresGeo = new THREE.BufferGeometry();
+    const guyPositions: number[] = [];
+    [-2.2, 2.2].forEach((gz) => {
+      guyPositions.push(-3.5, 5.2, 0, -6.5, -3.0, gz);
+      guyPositions.push(-3.5, 5.2, 0, -0.5, -3.0, gz);
+      guyPositions.push(-3.5, 3.0, 0, -5.5, -3.0, gz * 0.8);
+      guyPositions.push(-3.5, 3.0, 0, -1.5, -3.0, gz * 0.8);
+    });
+    guyWiresGeo.setAttribute("position", new THREE.Float32BufferAttribute(guyPositions, 3));
+    const guyLines = new THREE.LineSegments(
+      guyWiresGeo,
+      new THREE.LineBasicMaterial({ color: 0x94a3b8, transparent: true, opacity: 0.6 }),
+    );
+    radioGroup.add(guyLines);
 
     // Elevated Monopole Copper Aerial Wire
     const aerialWire = new THREE.Mesh(
@@ -94,21 +118,45 @@ export function MarconiRadio3D() {
     aerialWire.castShadow = true;
     radioGroup.add(aerialWire);
 
-    // Righi 4-Sphere Spark Gap Sub-Assembly
+    // Ruhmkorff Induction Spark Coil on Walnut Base
+    const coilBase = new THREE.Mesh(
+      new THREE.BoxGeometry(3.6, 0.35, 2.4),
+      new THREE.MeshStandardMaterial({ color: 0x78350f, roughness: 0.4 }),
+    );
+    coilBase.position.set(0, -2.8, -1.8);
+    radioGroup.add(coilBase);
+
+    const inductionCoil = new THREE.Mesh(
+      new THREE.CylinderGeometry(0.65, 0.65, 2.6, 24),
+      new THREE.MeshStandardMaterial({ color: 0x1e293b, roughness: 0.8 }),
+    );
+    inductionCoil.rotation.z = Math.PI / 2;
+    inductionCoil.position.set(0, -2.1, -1.8);
+    radioGroup.add(inductionCoil);
+
+    // Augusto Righi 4-Sphere Spark Gap in Vaseline Oil Bath
     const sparkGapGroup = new THREE.Group();
     sparkGapGroup.position.set(0, -1.8, 0);
 
-    const ball1 = new THREE.Mesh(new THREE.SphereGeometry(0.5, 24, 24), brassBallMat);
-    ball1.position.set(-1.2, 0, 0);
+    // Glass Oil Bath Cylinder
+    const oilBath = new THREE.Mesh(
+      new THREE.CylinderGeometry(1.6, 1.6, 1.2, 24),
+      new THREE.MeshPhysicalMaterial({ color: 0xfef08a, transmission: 0.8, roughness: 0.1 }),
+    );
+    oilBath.position.set(0, 0, 0);
+    sparkGapGroup.add(oilBath);
+
+    const ball1 = new THREE.Mesh(new THREE.SphereGeometry(0.42, 24, 24), brassBallMat);
+    ball1.position.set(-1.1, 0, 0);
     ball1.castShadow = true;
-    const ball2 = new THREE.Mesh(new THREE.SphereGeometry(0.7, 24, 24), brassBallMat);
+    const ball2 = new THREE.Mesh(new THREE.SphereGeometry(0.62, 24, 24), brassBallMat);
     ball2.position.set(-0.35, 0, 0);
     ball2.castShadow = true;
-    const ball3 = new THREE.Mesh(new THREE.SphereGeometry(0.7, 24, 24), brassBallMat);
+    const ball3 = new THREE.Mesh(new THREE.SphereGeometry(0.62, 24, 24), brassBallMat);
     ball3.position.set(0.35, 0, 0);
     ball3.castShadow = true;
-    const ball4 = new THREE.Mesh(new THREE.SphereGeometry(0.5, 24, 24), brassBallMat);
-    ball4.position.set(1.2, 0, 0);
+    const ball4 = new THREE.Mesh(new THREE.SphereGeometry(0.42, 24, 24), brassBallMat);
+    ball4.position.set(1.1, 0, 0);
     ball4.castShadow = true;
 
     sparkGapGroup.add(ball1);
@@ -118,18 +166,39 @@ export function MarconiRadio3D() {
     radioGroup.add(sparkGapGroup);
 
     // Earth Grounding Plate (Buried in sea/soil - Marconi breakthrough)
-    const earthPlate = new THREE.Mesh(new THREE.BoxGeometry(3.5, 0.2, 3.5), groundEarthMat);
+    const earthPlate = new THREE.Mesh(new THREE.BoxGeometry(4.2, 0.18, 4.2), groundEarthMat);
     earthPlate.position.set(0, -3.2, 0);
     earthPlate.receiveShadow = true;
     radioGroup.add(earthPlate);
 
     // Grounding Cable from Spark Gap to Earth Plate
     const groundWire = new THREE.Mesh(
-      new THREE.CylinderGeometry(0.05, 0.05, 1.4, 8),
+      new THREE.CylinderGeometry(0.06, 0.06, 1.4, 8),
       copperAerialMat,
     );
-    groundWire.position.set(1.2, -2.5, 0);
+    groundWire.position.set(1.1, -2.5, 0);
     radioGroup.add(groundWire);
+
+    // Branly-Marconi Glass Coherer Tube with Silver Plugs (Receiver detector)
+    const cohererGroup = new THREE.Group();
+    cohererGroup.position.set(3.6, -2.4, 1.5);
+
+    const cohererTube = new THREE.Mesh(
+      new THREE.CylinderGeometry(0.15, 0.15, 1.8, 16),
+      new THREE.MeshPhysicalMaterial({ color: 0xffffff, transmission: 0.9, transparent: true }),
+    );
+    cohererTube.rotation.z = Math.PI / 2;
+    cohererGroup.add(cohererTube);
+
+    // Nickel/Silver Filings in Gap
+    const filings = new THREE.Mesh(
+      new THREE.CylinderGeometry(0.12, 0.12, 0.3, 12),
+      new THREE.MeshStandardMaterial({ color: 0x94a3b8, metalness: 0.95 }),
+    );
+    filings.rotation.z = Math.PI / 2;
+    cohererGroup.add(filings);
+
+    radioGroup.add(cohererGroup);
 
     // --- EXPANDING 3D SPHERICAL ELECTROMAGNETIC WAVEFRONTS ---
     const waveCount = 5;

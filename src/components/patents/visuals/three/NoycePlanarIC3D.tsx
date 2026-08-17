@@ -80,45 +80,69 @@ export function NoycePlanarIC3D() {
     const chipGroup = new THREE.Group();
     scene.add(chipGroup);
 
-    // 1. P-Type Monocrystalline Silicon Substrate
+    // Ceramic DIP Package Header (White Alumina Ceramic Base)
+    const ceramicBase = new THREE.Mesh(
+      new THREE.BoxGeometry(12.4, 0.6, 12.4),
+      new THREE.MeshStandardMaterial({ color: 0xf8fafc, roughness: 0.35, metalness: 0.1 }),
+    );
+    ceramicBase.position.y = -1.0;
+    ceramicBase.receiveShadow = true;
+    chipGroup.add(ceramicBase);
+
+    // Gold Die-Attach Cavity Pocket
+    const goldPocket = new THREE.Mesh(new THREE.BoxGeometry(8.6, 0.08, 8.6), goldBondWireMat);
+    goldPocket.position.y = -0.68;
+    chipGroup.add(goldPocket);
+
+    // 14 Gold-Plated Kovar Leadframe Fingers around Perimeter
+    for (let f = 0; f < 7; f++) {
+      const fX = -4.2 + f * 1.4;
+      [-5.5, 5.5].forEach((fZ) => {
+        const lead = new THREE.Mesh(new THREE.BoxGeometry(0.65, 0.12, 1.8), goldBondWireMat);
+        lead.position.set(fX, -0.65, fZ);
+        chipGroup.add(lead);
+      });
+    }
+
+    // 1. P-Type Monocrystalline Silicon Substrate Die
     const substrateGeo = new THREE.BoxGeometry(8.0, 0.8, 8.0);
     const substrateMesh = new THREE.Mesh(substrateGeo, siliconSubstrateMat);
-    substrateMesh.position.y = -0.4;
+    substrateMesh.position.y = -0.3;
     substrateMesh.castShadow = true;
     substrateMesh.receiveShadow = true;
     chipGroup.add(substrateMesh);
 
-    // 2. N-Type Diffused Wells (Transistor Collector & Emitter regions)
+    // 2. N-Type Diffused Wells (Planar PN Junction Transistors)
     const nWellsGroup = new THREE.Group();
     for (let x = -2.2; x <= 2.2; x += 2.2) {
       for (let z = -2.2; z <= 2.2; z += 2.2) {
-        const well = new THREE.Mesh(new THREE.BoxGeometry(1.4, 0.2, 1.4), nDiffusedMat);
-        well.position.set(x, 0.02, z);
+        const well = new THREE.Mesh(new THREE.BoxGeometry(1.5, 0.18, 1.5), nDiffusedMat);
+        well.position.set(x, 0.12, z);
         nWellsGroup.add(well);
       }
     }
     chipGroup.add(nWellsGroup);
 
-    // 3. Thermally Grown SiO2 Dielectric Oxide Layer with Etched Contact Vias
+    // 3. Thermally Grown SiO2 Dielectric Passivation Layer
     const oxideLayer = new THREE.Mesh(new THREE.BoxGeometry(7.8, 0.35, 7.8), siliconDioxideMat);
-    oxideLayer.position.y = 0.25;
+    oxideLayer.position.y = 0.35;
     chipGroup.add(oxideLayer);
 
     // 4. Vapor-Deposited Aluminum Interconnect Traces (Planar Metallization)
     const metalGroup = new THREE.Group();
 
     // Cross-chip bus lines & interconnect bridges
-    const trace1 = new THREE.Mesh(new THREE.BoxGeometry(7.0, 0.12, 0.35), aluminumMetalMat);
-    trace1.position.set(0, 0.48, -1.8);
+    const trace1 = new THREE.Mesh(new THREE.BoxGeometry(7.2, 0.12, 0.45), aluminumMetalMat);
+    trace1.position.set(0, 0.58, -1.8);
     trace1.castShadow = true;
-    const trace2 = new THREE.Mesh(new THREE.BoxGeometry(7.0, 0.12, 0.35), aluminumMetalMat);
-    trace2.position.set(0, 0.48, 1.8);
+    const trace2 = new THREE.Mesh(new THREE.BoxGeometry(7.2, 0.12, 0.45), aluminumMetalMat);
+    trace2.position.set(0, 0.58, 1.8);
     trace2.castShadow = true;
-    const trace3 = new THREE.Mesh(new THREE.BoxGeometry(0.35, 0.12, 5.0), aluminumMetalMat);
-    trace3.position.set(-1.8, 0.48, 0);
+    const trace3 = new THREE.Mesh(new THREE.BoxGeometry(0.45, 0.12, 5.2), aluminumMetalMat);
+    trace3.position.set(-1.8, 0.58, 0);
     trace3.castShadow = true;
-    const trace4 = new THREE.Mesh(new THREE.BoxGeometry(0.35, 0.12, 5.0), aluminumMetalMat);
-    trace4.position.set(1.8, 0.48, 0);
+    const trace4 = new THREE.Mesh(new THREE.BoxGeometry(0.45, 0.12, 5.2), aluminumMetalMat);
+    trace4.position.set(1.8, 0.58, 0);
     trace4.castShadow = true;
 
     metalGroup.add(trace1);
@@ -133,28 +157,28 @@ export function NoycePlanarIC3D() {
           new THREE.CylinderGeometry(0.18, 0.18, 0.5, 12),
           aluminumMetalMat,
         );
-        via.position.set(x, 0.25, z);
+        via.position.set(x, 0.35, z);
         metalGroup.add(via);
       }
     }
     chipGroup.add(metalGroup);
 
-    // 5. Gold Bond Wires to External Leadframe
+    // 5. Gold Ball Bond Wires to External Leadframe Fingers
     const bondWiresGroup = new THREE.Group();
     const bondPoints = [
-      new THREE.Vector3(-3.5, 0.5, -1.8),
-      new THREE.Vector3(3.5, 0.5, -1.8),
-      new THREE.Vector3(-3.5, 0.5, 1.8),
-      new THREE.Vector3(3.5, 0.5, 1.8),
+      new THREE.Vector3(-3.5, 0.6, -1.8),
+      new THREE.Vector3(3.5, 0.6, -1.8),
+      new THREE.Vector3(-3.5, 0.6, 1.8),
+      new THREE.Vector3(3.5, 0.6, 1.8),
     ];
     for (const pt of bondPoints) {
       const curve = new THREE.CatmullRomCurve3([
         pt,
-        new THREE.Vector3(pt.x * 1.3, 1.5, pt.z * 1.3),
-        new THREE.Vector3(pt.x * 1.8, -0.4, pt.z * 1.8),
+        new THREE.Vector3(pt.x * 1.25, 1.5, pt.z * 1.25),
+        new THREE.Vector3(pt.x * 1.55, -0.55, pt.z * 1.55),
       ]);
       const wire = new THREE.Mesh(
-        new THREE.TubeGeometry(curve, 20, 0.05, 8, false),
+        new THREE.TubeGeometry(curve, 20, 0.045, 8, false),
         goldBondWireMat,
       );
       wire.castShadow = true;

@@ -84,71 +84,134 @@ export function LincolnBuoy3D() {
       ior: 1.333,
     });
 
-    // --- 3D STEAMBOAT & BELLOWS ASSEMBLY ---
+    // --- 3D STEAMBOAT & LINCOLN BELLOWS ASSEMBLY ---
     const boatGroup = new THREE.Group();
     scene.add(boatGroup);
 
-    // Flat-Bottom Steamboat Hull
-    const hullGeo = new THREE.BoxGeometry(14.0, 1.6, 4.4);
+    // Western River Steamboat Hull with Rake Bow
+    const hullShape = new THREE.Shape();
+    hullShape.moveTo(-8.0, 0.8);
+    hullShape.lineTo(7.5, 0.8);
+    hullShape.lineTo(6.8, -0.9);
+    hullShape.lineTo(-6.8, -0.9);
+    hullShape.closePath();
+
+    const hullGeo = new THREE.ExtrudeGeometry(hullShape, { depth: 4.6, bevelEnabled: false });
+    hullGeo.center();
     const hull = new THREE.Mesh(hullGeo, hullWoodMat);
     hull.position.y = 0;
     hull.castShadow = true;
     hull.receiveShadow = true;
     boatGroup.add(hull);
 
-    // Pointed Bow Chime
-    const bow = new THREE.Mesh(new THREE.ConeGeometry(2.2, 3.2, 4), hullWoodMat);
-    bow.position.set(-8.2, 0, 0);
-    bow.rotation.z = Math.PI / 2;
-    bow.rotation.y = Math.PI / 4;
-    bow.castShadow = true;
-    boatGroup.add(bow);
+    // Outrigger Guards Extending over Hull Sides
+    const guardDeck = new THREE.Mesh(new THREE.BoxGeometry(15.2, 0.15, 6.8), hullWoodMat);
+    guardDeck.position.y = 0.85;
+    guardDeck.castShadow = true;
+    boatGroup.add(guardDeck);
 
-    // Multi-Deck Passenger Cabins
-    const lowerCabin = new THREE.Mesh(new THREE.BoxGeometry(10.0, 1.2, 3.6), cabinWhiteMat);
-    lowerCabin.position.set(-1.0, 1.4, 0);
+    // Multi-Deck Passenger Cabins & Hurricane Deck
+    const lowerCabin = new THREE.Mesh(new THREE.BoxGeometry(10.5, 1.2, 3.8), cabinWhiteMat);
+    lowerCabin.position.set(-0.8, 1.5, 0);
     lowerCabin.castShadow = true;
     boatGroup.add(lowerCabin);
 
-    const upperCabin = new THREE.Mesh(new THREE.BoxGeometry(7.0, 1.0, 2.6), cabinWhiteMat);
-    upperCabin.position.set(-1.0, 2.5, 0);
-    upperCabin.castShadow = true;
-    boatGroup.add(upperCabin);
+    const texasDeck = new THREE.Mesh(new THREE.BoxGeometry(7.5, 1.0, 2.8), cabinWhiteMat);
+    texasDeck.position.set(-0.8, 2.6, 0);
+    texasDeck.castShadow = true;
+    boatGroup.add(texasDeck);
 
-    // Pilothouse with Lincoln Steering Wheel
-    const pilotHouse = new THREE.Mesh(new THREE.BoxGeometry(1.6, 1.2, 1.6), cabinWhiteMat);
-    pilotHouse.position.set(-3.0, 3.6, 0);
+    // Octagonal Pilothouse
+    const pilotHouse = new THREE.Mesh(new THREE.CylinderGeometry(0.9, 0.9, 1.1, 8), cabinWhiteMat);
+    pilotHouse.position.set(-3.2, 3.65, 0);
     pilotHouse.castShadow = true;
     boatGroup.add(pilotHouse);
 
-    // Twin Black Smoke Stacks with Spark Arrestors
-    const stack1 = new THREE.Mesh(
-      new THREE.CylinderGeometry(0.3, 0.3, 4.5, 16),
-      new THREE.MeshStandardMaterial({ color: 0x0f172a, roughness: 0.3, metalness: 0.8 }),
-    );
-    stack1.position.set(-2.0, 3.8, 0.9);
-    stack1.castShadow = true;
-    const stack2 = stack1.clone();
-    stack2.position.z = -0.9;
-    boatGroup.add(stack1);
-    boatGroup.add(stack2);
+    // Twin Fluted Smoke Stacks with Feathered Tops
+    [-1.0, 1.0].forEach((sz) => {
+      const stack = new THREE.Mesh(
+        new THREE.CylinderGeometry(0.28, 0.28, 4.8, 16),
+        new THREE.MeshStandardMaterial({ color: 0x0f172a, roughness: 0.35, metalness: 0.85 }),
+      );
+      stack.position.set(-2.0, 4.2, sz);
+      stack.castShadow = true;
+      boatGroup.add(stack);
 
-    // Stern Paddle Wheel
-    const paddleWheel = new THREE.Mesh(
-      new THREE.CylinderGeometry(1.6, 1.6, 3.8, 16, 1, true),
-      new THREE.MeshStandardMaterial({ color: 0x9a3412, roughness: 0.5, wireframe: true }),
-    );
-    paddleWheel.rotation.x = Math.PI / 2;
-    paddleWheel.position.set(7.6, 0.2, 0);
-    paddleWheel.castShadow = true;
-    boatGroup.add(paddleWheel);
+      // Feathered Crown Ring
+      const crown = new THREE.Mesh(
+        new THREE.TorusGeometry(0.36, 0.08, 8, 16),
+        new THREE.MeshStandardMaterial({ color: 0x0f172a, metalness: 0.9 }),
+      );
+      crown.rotation.x = Math.PI / 2;
+      crown.position.set(-2.0, 6.6, sz);
+      boatGroup.add(crown);
+    });
 
-    // --- EXPANDABLE RUBBERIZED BUOYANCY BELLOWS (PORT & STARBOARD) ---
-    const bellowsPort = new THREE.Mesh(new THREE.BoxGeometry(11.0, 1.4, 1.2), bellowsRubberMat);
-    bellowsPort.position.set(-0.5, -0.2, 2.7);
-    bellowsPort.castShadow = true;
-    const bellowsStarboard = bellowsPort.clone();
-    bellowsStarboard.position.z = -2.7;
+    // Stern Paddle Wheel with Radial Wooden Buckets
+    const paddleWheelGroup = new THREE.Group();
+    paddleWheelGroup.position.set(8.2, 0.4, 0);
+
+    const pShaft = new THREE.Mesh(
+      new THREE.CylinderGeometry(0.12, 0.12, 4.6, 12),
+      new THREE.MeshStandardMaterial({ color: 0x475569, metalness: 0.9 }),
+    );
+    pShaft.rotation.x = Math.PI / 2;
+    paddleWheelGroup.add(pShaft);
+
+    for (let p = 0; p < 12; p++) {
+      const pAngle = (p * Math.PI * 2) / 12;
+      const bucket = new THREE.Mesh(
+        new THREE.BoxGeometry(0.06, 0.55, 4.4),
+        new THREE.MeshStandardMaterial({ color: 0x9a3412, roughness: 0.45 }),
+      );
+      bucket.position.set(Math.cos(pAngle) * 1.6, Math.sin(pAngle) * 1.6, 0);
+      bucket.rotation.z = pAngle;
+      paddleWheelGroup.add(bucket);
+    }
+    boatGroup.add(paddleWheelGroup);
+
+    // --- LINCOLN'S EXPANDABLE PLEATED ACCORDION BELLOWS (PORT & STARBOARD) ---
+    // Multi-Pleat Accordion Geometry (Chambers A & B)
+    const createPleatedBellows = (isStarboard: boolean) => {
+      const bellowsG = new THREE.Group();
+      bellowsG.position.set(-0.5, -0.3, isStarboard ? 2.8 : -2.8);
+
+      // Upper fixed attachment board
+      const topBoard = new THREE.Mesh(new THREE.BoxGeometry(11.2, 0.12, 1.3), hullWoodMat);
+      topBoard.position.y = 0.65;
+      bellowsG.add(topBoard);
+
+      // Accordion Pleated Rubber Skin
+      const pleatCount = 6;
+      for (let p = 0; p < pleatCount; p++) {
+        const pleat = new THREE.Mesh(new THREE.BoxGeometry(11.0, 0.22, 1.25), bellowsRubberMat);
+        pleat.position.y = 0.5 - p * 0.22;
+        pleat.castShadow = true;
+        bellowsG.add(pleat);
+      }
+
+      // Lower movable sliding board pushed down into water
+      const bottomBoard = new THREE.Mesh(new THREE.BoxGeometry(11.2, 0.15, 1.3), hullWoodMat);
+      bottomBoard.position.y = -0.9;
+      bellowsG.add(bottomBoard);
+
+      // Vertical Guide Rods & Ropes (Lincoln Shaft C, Ropes D, Pulleys E)
+      for (let r = 0; r < 4; r++) {
+        const guideRod = new THREE.Mesh(
+          new THREE.CylinderGeometry(0.04, 0.04, 2.2, 8),
+          new THREE.MeshStandardMaterial({ color: 0x94a3b8, metalness: 0.9 }),
+        );
+        guideRod.position.set(-4.5 + r * 3.0, 0, 0);
+        bellowsG.add(guideRod);
+      }
+
+      return bellowsG;
+    };
+
+    const bellowsPort = createPleatedBellows(false);
+    const bellowsStarboard = createPleatedBellows(true);
+    bellowsPort.name = "bellowsPort";
+    bellowsStarboard.name = "bellowsStarboard";
     boatGroup.add(bellowsPort);
     boatGroup.add(bellowsStarboard);
 
@@ -200,7 +263,7 @@ export function LincolnBuoy3D() {
       boatGroup.rotation.z = Math.sin(elapsed * 1.2) * 0.015;
 
       // Rotate Paddle Wheel
-      paddleWheel.rotation.y += delta * 3.0;
+      paddleWheelGroup.rotation.z += delta * 3.0;
 
       // Water Ripple Oscillation
       waterPlane.position.y = -0.4 + Math.sin(elapsed * 2.0) * 0.04;

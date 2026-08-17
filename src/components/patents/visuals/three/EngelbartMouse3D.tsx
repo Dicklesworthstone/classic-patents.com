@@ -216,14 +216,14 @@ export function EngelbartMouse3D() {
       mouseGroup.position.z = targetZ;
 
       // X-Wheel rotates with dX, Y-Wheel rotates with dZ
-      xWheel.rotation.x += dX * 4.0;
-      yWheel.rotation.z += dZ * 4.0;
+      xWheelRim.rotation.x += dX * 4.0;
+      yWheelRim.rotation.z += dZ * 4.0;
 
       // Click animation
       if (p.isClicking) {
-        redButton.position.y = 2.15;
+        redButton.position.y = 2.45;
       } else {
-        redButton.position.y = 2.3 + Math.sin(elapsed * 4.0) * 0.03;
+        redButton.position.y = 2.6 + Math.sin(elapsed * 4.0) * 0.02;
       }
 
       controls.update();

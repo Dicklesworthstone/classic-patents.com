@@ -74,35 +74,76 @@ export function LamarrFrequencyHopping3D() {
     const apparatusGroup = new THREE.Group();
     scene.add(apparatusGroup);
 
-    // Transmitter & Receiver Dual Piano Roll Drums
-    const drum1 = new THREE.Mesh(new THREE.CylinderGeometry(1.2, 1.2, 5.2, 32), brassMat);
-    drum1.position.set(-3.2, 0, 0);
+    // Torpedo Guidance Bay Aluminum Housing Frame
+    const torpedoBay = new THREE.Mesh(
+      new THREE.CylinderGeometry(4.2, 4.2, 7.8, 36, 1, true),
+      new THREE.MeshStandardMaterial({
+        color: 0x334155,
+        metalness: 0.85,
+        roughness: 0.35,
+        wireframe: false,
+        side: THREE.BackSide,
+      }),
+    );
+    torpedoBay.rotation.z = Math.PI / 2;
+    torpedoBay.position.y = 0.5;
+    apparatusGroup.add(torpedoBay);
+
+    // Brass Sideplates & Gear Train Framework
+    [-2.6, 2.6].forEach((zPos) => {
+      const sidePlate = new THREE.Mesh(new THREE.BoxGeometry(7.2, 2.8, 0.15), brassMat);
+      sidePlate.position.set(0, 0.4, zPos);
+      apparatusGroup.add(sidePlate);
+    });
+
+    // Take-Up & Supply Flanged Brass Spools
+    const drum1 = new THREE.Mesh(new THREE.CylinderGeometry(0.8, 0.8, 5.0, 32), brassMat);
     drum1.rotation.x = Math.PI / 2;
+    drum1.position.set(-3.0, 0.4, 0);
     drum1.castShadow = true;
     apparatusGroup.add(drum1);
 
-    const drum2 = new THREE.Mesh(new THREE.CylinderGeometry(1.2, 1.2, 5.2, 32), brassMat);
-    drum2.position.set(3.2, 0, 0);
+    const drum2 = new THREE.Mesh(new THREE.CylinderGeometry(0.8, 0.8, 5.0, 32), brassMat);
     drum2.rotation.x = Math.PI / 2;
+    drum2.position.set(3.0, 0.4, 0);
     drum2.castShadow = true;
     apparatusGroup.add(drum2);
 
+    [-3.0, 3.0].forEach((xPos) => {
+      // Flanged End Discs
+      [-2.55, 2.55].forEach((fz) => {
+        const flange = new THREE.Mesh(new THREE.CylinderGeometry(1.6, 1.6, 0.08, 32), brassMat);
+        flange.rotation.x = Math.PI / 2;
+        flange.position.set(xPos, 0.4, fz);
+        apparatusGroup.add(flange);
+      });
+    });
+
     // Perforated 88-Key Paper Roll Tape Web between drums
-    const paperWeb = new THREE.Mesh(new THREE.PlaneGeometry(6.4, 4.8), pianoRollPaperMat);
-    paperWeb.position.set(0, 1.2, 0);
+    const paperWeb = new THREE.Mesh(new THREE.PlaneGeometry(6.0, 4.8), pianoRollPaperMat);
+    paperWeb.position.set(0, 1.45, 0);
     paperWeb.rotation.x = -Math.PI / 2;
     paperWeb.castShadow = true;
     paperWeb.receiveShadow = true;
     apparatusGroup.add(paperWeb);
 
-    // Contact Finger Sensing Comb (88 spring-loaded contact pins)
+    // 88-Key Spring Contact Sensing Comb with Gold Plunger Pins
     const comb = new THREE.Mesh(
-      new THREE.BoxGeometry(0.2, 0.4, 4.8),
-      new THREE.MeshStandardMaterial({ color: 0xca8a04, roughness: 0.2, metalness: 0.9 }),
+      new THREE.BoxGeometry(0.28, 0.45, 4.9),
+      new THREE.MeshStandardMaterial({ color: 0xca8a04, roughness: 0.2, metalness: 0.95 }),
     );
-    comb.position.set(0, 1.45, 0);
+    comb.position.set(0, 1.7, 0);
     comb.castShadow = true;
     apparatusGroup.add(comb);
+
+    for (let p = 0; p < 22; p++) {
+      const pin = new THREE.Mesh(
+        new THREE.CylinderGeometry(0.04, 0.04, 0.35, 8),
+        new THREE.MeshStandardMaterial({ color: 0xfef08a, metalness: 0.95 }),
+      );
+      pin.position.set(0, 1.48, -2.2 + p * 0.21);
+      apparatusGroup.add(pin);
+    }
 
     // --- 3D SPECTRAL WATERFALL FREQUENCY HOPPING BARS ---
     const spectrumBarsGroup = new THREE.Group();

@@ -67,13 +67,13 @@ export function SpencerMicrowave3D() {
       metalness: 0.8,
     });
 
-    // --- 3D 8-CAVITY MAGNETRON ANODE BLOCK ---
+    // --- 3D CAVITY MAGNETRON & MICROWAVE ASSEMBLY ---
     const magnetronGroup = new THREE.Group();
     scene.add(magnetronGroup);
 
-    // Central Anode Cylinder with 8 Cylindrical Resonant Cavities
+    // Solid OFHC Copper Anode Block Outer Shell
     const anodeOuter = new THREE.Mesh(
-      new THREE.CylinderGeometry(4.2, 4.2, 3.4, 48),
+      new THREE.CylinderGeometry(4.3, 4.3, 3.4, 48),
       copperAnodeMat,
     );
     anodeOuter.castShadow = true;
@@ -82,26 +82,26 @@ export function SpencerMicrowave3D() {
 
     // Center Bore for Interaction Space
     const centerBore = new THREE.Mesh(
-      new THREE.CylinderGeometry(1.6, 1.6, 3.42, 32),
+      new THREE.CylinderGeometry(1.5, 1.5, 3.42, 36),
       new THREE.MeshStandardMaterial({ color: 0x1e293b, roughness: 0.6 }),
     );
     magnetronGroup.add(centerBore);
 
-    // 8 Radial Resonant Hole-and-Slot Cavities
+    // 8 Radial Resonant Hole-and-Slot Cavities (Cylindrical Inductance + Slotted Capacitance)
     const numCavities = 8;
     for (let i = 0; i < numCavities; i++) {
       const angle = (i * 2 * Math.PI) / numCavities;
-      // Resonant Hole
+      // Resonant Hole (Inductive volume)
       const hole = new THREE.Mesh(
-        new THREE.CylinderGeometry(0.65, 0.65, 3.42, 16),
+        new THREE.CylinderGeometry(0.62, 0.62, 3.42, 24),
         new THREE.MeshStandardMaterial({ color: 0x0f172a, roughness: 0.7 }),
       );
       hole.position.set(Math.cos(angle) * 2.8, 0, Math.sin(angle) * 2.8);
       magnetronGroup.add(hole);
 
-      // Slot opening to center interaction space
+      // Slot opening to center interaction space (Capacitive gap)
       const slot = new THREE.Mesh(
-        new THREE.BoxGeometry(1.2, 3.42, 0.22),
+        new THREE.BoxGeometry(1.3, 3.42, 0.18),
         new THREE.MeshStandardMaterial({ color: 0x0f172a, roughness: 0.7 }),
       );
       slot.position.set(Math.cos(angle) * 2.1, 0, Math.sin(angle) * 2.1);
@@ -109,13 +109,37 @@ export function SpencerMicrowave3D() {
       magnetronGroup.add(slot);
     }
 
-    // Central Thermionic Cathode & Heater Filament
-    const cathode = new THREE.Mesh(new THREE.CylinderGeometry(0.42, 0.42, 4.4, 24), cathodeMat);
+    // Pi-Mode Anode Strapping Rings (Alternate Vane Phase Locking)
+    [-1.6, 1.6].forEach((yPos) => {
+      // Inner Strapping Ring (connects even vanes)
+      const innerRing = new THREE.Mesh(new THREE.TorusGeometry(1.8, 0.05, 8, 36), copperAnodeMat);
+      innerRing.rotation.x = Math.PI / 2;
+      innerRing.position.y = yPos;
+      magnetronGroup.add(innerRing);
+
+      // Outer Strapping Ring (connects odd vanes)
+      const outerRing = new THREE.Mesh(new THREE.TorusGeometry(2.3, 0.05, 8, 36), copperAnodeMat);
+      outerRing.rotation.x = Math.PI / 2;
+      outerRing.position.y = yPos;
+      magnetronGroup.add(outerRing);
+    });
+
+    // Central Thermionic Cathode & Spiral Heater with Molybdenum End Hats
+    const cathode = new THREE.Mesh(new THREE.CylinderGeometry(0.38, 0.38, 4.2, 24), cathodeMat);
     cathode.castShadow = true;
     magnetronGroup.add(cathode);
 
-    // Top and Bottom Alnico Magnet Horseshoe Pole Pieces
-    const topPole = new THREE.Mesh(new THREE.CylinderGeometry(4.4, 4.4, 0.8, 36), alnicoMagnetMat);
+    [-2.1, 2.1].forEach((yEnd) => {
+      const endHat = new THREE.Mesh(
+        new THREE.CylinderGeometry(0.65, 0.65, 0.12, 24),
+        new THREE.MeshStandardMaterial({ color: 0x64748b, metalness: 0.9 }),
+      );
+      endHat.position.y = yEnd;
+      magnetronGroup.add(endHat);
+    });
+
+    // Top and Bottom Alnico Magnet Horseshoe Pole Pieces with Central Aperture
+    const topPole = new THREE.Mesh(new THREE.CylinderGeometry(4.4, 4.4, 0.75, 48), alnicoMagnetMat);
     topPole.position.y = 2.1;
     topPole.castShadow = true;
     const bottomPole = topPole.clone();
@@ -123,12 +147,19 @@ export function SpencerMicrowave3D() {
     magnetronGroup.add(topPole);
     magnetronGroup.add(bottomPole);
 
-    // Output Antenna Coupling Loop & Rectangular Waveguide Horn
+    // Output RF Antenna Coupling Loop inside Glass Vacuum Dome & Waveguide Horn
+    const rfDome = new THREE.Mesh(
+      new THREE.SphereGeometry(0.7, 24, 24),
+      new THREE.MeshPhysicalMaterial({ color: 0xffffff, transmission: 0.9, transparent: true }),
+    );
+    rfDome.position.set(4.2, 0, 0);
+    magnetronGroup.add(rfDome);
+
     const waveguide = new THREE.Mesh(
-      new THREE.BoxGeometry(4.0, 1.8, 2.4),
+      new THREE.BoxGeometry(4.2, 1.8, 2.4),
       new THREE.MeshStandardMaterial({ color: 0xd97706, roughness: 0.3, metalness: 0.85 }),
     );
-    waveguide.position.set(5.5, 0, 0);
+    waveguide.position.set(6.2, 0, 0);
     waveguide.castShadow = true;
     magnetronGroup.add(waveguide);
 

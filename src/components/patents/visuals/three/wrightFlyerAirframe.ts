@@ -105,6 +105,7 @@ function loftWingPanel(opts: {
   camberRatio: number;
   thicknessRatio: number;
   anhedralRad: number;
+  worldX0?: number;
   stations?: number;
   airfoilPts?: number;
 }): THREE.BufferGeometry {
@@ -113,14 +114,14 @@ function loftWingPanel(opts: {
   const halfT = opts.thicknessRatio * opts.chord * 0.5;
   const ring = n * 2;
   const positions: number[] = [];
-  const normals: number[] = [];
   const uvs: number[] = [];
   const indices: number[] = [];
 
   for (let i = 0; i <= stations; i++) {
     const t = i / stations;
     const x = opts.x0 + (opts.x1 - opts.x0) * t;
-    const droop = -Math.tan(opts.anhedralRad) * Math.abs(x);
+    const worldX = (opts.worldX0 ?? 0) + x;
+    const droop = -Math.tan(opts.anhedralRad) * Math.abs(worldX);
     for (let k = 0; k <= n; k++) {
       const s = k / n;
       const u = airfoilPoint(s, opts.chord, opts.camberRatio, halfT, true);
@@ -150,7 +151,6 @@ function loftWingPanel(opts: {
   geo.setAttribute("uv", new THREE.Float32BufferAttribute(uvs, 2));
   geo.setIndex(indices);
   geo.computeVertexNormals();
-  void normals;
   return geo;
 }
 
@@ -327,6 +327,7 @@ export function buildWrightFlyerAirframe(): FlyerAirframe {
         camberRatio: d.camberRatio,
         thicknessRatio: d.thicknessRatio,
         anhedralRad: anhedral,
+        worldX0: sign * tipInboard,
         stations: 10,
       });
       const tipMesh = new THREE.Mesh(tipGeo, muslin);

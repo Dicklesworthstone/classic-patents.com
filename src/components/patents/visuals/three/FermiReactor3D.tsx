@@ -76,29 +76,68 @@ export function FermiReactor3D() {
       metalness: 0.1,
     });
 
-    // --- 3D REACTOR CORE LATTICE ASSEMBLY ---
+    // --- 3D FERMI-SZILARD CHICAGO PILE-1 ASSEMBLY ---
     const coreGroup = new THREE.Group();
     scene.add(coreGroup);
 
-    // Pine Timber Base Scaffold
-    const timberBase = new THREE.Mesh(new THREE.BoxGeometry(10.0, 0.8, 10.0), timberSupportMat);
-    timberBase.position.y = -3.4;
-    timberBase.receiveShadow = true;
-    coreGroup.add(timberBase);
+    // Multi-Tier Pine & Douglas Fir Heavy Timber Scaffold (Stagg Field Squash Court framework)
+    const timberGroup = new THREE.Group();
+    timberGroup.position.y = -3.4;
 
-    // Graphite Moderator Block Matrix (Layered Chicago Pile)
+    // Heavy Horizontal Floor Beams
+    for (let b = 0; b < 6; b++) {
+      const beamX = new THREE.Mesh(new THREE.BoxGeometry(11.0, 0.45, 0.45), timberSupportMat);
+      beamX.position.set(0, 0, -4.5 + b * 1.8);
+      timberGroup.add(beamX);
+
+      const beamZ = new THREE.Mesh(new THREE.BoxGeometry(0.45, 0.45, 11.0), timberSupportMat);
+      beamZ.position.set(-4.5 + b * 1.8, 0.45, 0);
+      timberGroup.add(beamZ);
+    }
+
+    // 4 Heavy Upright Corner Posts
+    [
+      [-5.0, -5.0],
+      [5.0, -5.0],
+      [-5.0, 5.0],
+      [5.0, 5.0],
+    ].forEach(([cx, cz]) => {
+      const post = new THREE.Mesh(new THREE.BoxGeometry(0.6, 6.2, 0.6), timberSupportMat);
+      post.position.set(cx, 3.1, cz);
+      timberGroup.add(post);
+    });
+
+    // Top Overhead Gantry Beam & Control Rod Cable Pulleys
+    const gantryBeam = new THREE.Mesh(new THREE.BoxGeometry(11.0, 0.5, 0.5), timberSupportMat);
+    gantryBeam.position.set(0, 6.2, 0);
+    timberGroup.add(gantryBeam);
+
+    // Brass Cable Pulleys
+    [-0.8, 0.8].forEach((px) => {
+      const pulley = new THREE.Mesh(
+        new THREE.CylinderGeometry(0.35, 0.35, 0.15, 16),
+        new THREE.MeshStandardMaterial({ color: 0xd97706, metalness: 0.85 }),
+      );
+      pulley.rotation.z = Math.PI / 2;
+      pulley.position.set(px, 5.8, 0);
+      timberGroup.add(pulley);
+    });
+
+    coreGroup.add(timberGroup);
+
+    // Graphite Moderator Brick Matrix (Machined AGOT High-Purity Graphite Blocks)
     const pileGroup = new THREE.Group();
     const layerSize = 5;
     const blockSize = 1.4;
 
     for (let x = 0; x < layerSize; x++) {
       for (let z = 0; z < layerSize; z++) {
-        for (let y = 0; y < 4; y++) {
+        for (let y = 0; y < 5; y++) {
           const block = new THREE.Mesh(
-            new THREE.BoxGeometry(blockSize * 0.95, 0.7, blockSize * 0.95),
+            new THREE.BoxGeometry(blockSize * 0.94, 0.68, blockSize * 0.94),
             graphiteMat,
           );
-          block.position.set((x - 2) * blockSize, -2.6 + y * 0.75, (z - 2) * blockSize);
+          block.position.set((x - 2) * blockSize, -2.6 + y * 0.72, (z - 2) * blockSize);
           block.castShadow = true;
           block.receiveShadow = true;
           pileGroup.add(block);
@@ -107,31 +146,40 @@ export function FermiReactor3D() {
     }
     coreGroup.add(pileGroup);
 
-    // Embedded Cylindrical Uranium Fuel Lumps
+    // Embedded Cylindrical Uranium Fuel Lumps & Oxide Cylinders
     const fuelGroup = new THREE.Group();
     for (let x = -1; x <= 1; x++) {
       for (let z = -1; z <= 1; z++) {
         const fuel = new THREE.Mesh(
-          new THREE.CylinderGeometry(0.22, 0.22, 2.8, 16),
+          new THREE.CylinderGeometry(0.24, 0.24, 3.2, 16),
           uraniumFuelMat,
         );
-        fuel.position.set(x * blockSize * 1.5, -1.4, z * blockSize * 1.5);
+        fuel.position.set(x * blockSize * 1.5, -1.2, z * blockSize * 1.5);
         fuel.castShadow = true;
         fuelGroup.add(fuel);
       }
     }
     coreGroup.add(fuelGroup);
 
-    // Movable Cadmium Control Rods (Vertical Channels)
+    // Movable Cadmium Control Rods (Vertical Safety "Zip" & Regulating "Shim" Rods)
     const rodGroup = new THREE.Group();
-    const rod1 = new THREE.Mesh(new THREE.CylinderGeometry(0.12, 0.12, 4.5, 16), cadmiumRodMat);
-    rod1.position.set(-0.8, 0, 0);
+    const rod1 = new THREE.Mesh(new THREE.CylinderGeometry(0.12, 0.12, 5.2, 16), cadmiumRodMat);
+    rod1.position.set(-0.8, 0.4, 0);
     rod1.castShadow = true;
     const rod2 = rod1.clone();
-    rod2.position.set(0.8, 0, 0);
+    rod2.position.set(0.8, 0.4, 0);
     rodGroup.add(rod1);
     rodGroup.add(rod2);
     coreGroup.add(rodGroup);
+
+    // Boron Trifluoride (BF3) Proportional Neutron Counter Chamber
+    const bf3Detector = new THREE.Mesh(
+      new THREE.CylinderGeometry(0.18, 0.18, 1.8, 16),
+      new THREE.MeshStandardMaterial({ color: 0x94a3b8, metalness: 0.95 }),
+    );
+    bf3Detector.position.set(3.8, -0.6, 3.8);
+    bf3Detector.castShadow = true;
+    coreGroup.add(bf3Detector);
 
     // --- GLOWING THERMAL NEUTRON DIFFUSION CASCADE ---
     const neutronCount = 300;

@@ -72,37 +72,75 @@ export function BoyleSmithCcd3D() {
       ior: 1.46,
     });
 
-    // --- 3D CCD REGISTRY ARRAY ASSEMBLY ---
+    // --- 3D CHARGE-COUPLED DEVICE (CCD) ASSEMBLY ---
     const ccdGroup = new THREE.Group();
     scene.add(ccdGroup);
 
-    // Silicon Substrate
-    const substrate = new THREE.Mesh(new THREE.BoxGeometry(9.0, 1.0, 5.0), pSiliconSubstrateMat);
+    // P-Type Silicon Substrate Ingot
+    const substrate = new THREE.Mesh(new THREE.BoxGeometry(9.6, 1.0, 5.4), pSiliconSubstrateMat);
     substrate.position.y = -0.5;
     substrate.castShadow = true;
     substrate.receiveShadow = true;
     ccdGroup.add(substrate);
 
-    // SiO2 Oxide Dielectric Layer
-    const oxide = new THREE.Mesh(new THREE.BoxGeometry(8.8, 0.3, 4.8), oxideMat);
-    oxide.position.y = 0.15;
+    // Channel Stop $p^+$ Boron Isolation Barriers (Sides)
+    [-2.4, 2.4].forEach((sz) => {
+      const channelStop = new THREE.Mesh(
+        new THREE.BoxGeometry(9.4, 0.2, 0.4),
+        new THREE.MeshStandardMaterial({ color: 0x1e1b4b, roughness: 0.8 }),
+      );
+      channelStop.position.set(0, 0.05, sz);
+      ccdGroup.add(channelStop);
+    });
+
+    // SiO2 Gate Dielectric Oxide Layer
+    const oxide = new THREE.Mesh(new THREE.BoxGeometry(9.4, 0.25, 4.4), oxideMat);
+    oxide.position.y = 0.12;
     ccdGroup.add(oxide);
 
-    // 9 MOS Gate Electrodes (3 Pixels x 3 Phases: phi_1, phi_2, phi_3)
+    // 3-Phase Clock Bus Lines (phi1 Cyan, phi2 Amber, phi3 Violet)
+    const busColors = [0x0284c7, 0xd97706, 0x9333ea];
+    for (let b = 0; b < 3; b++) {
+      const busLine = new THREE.Mesh(
+        new THREE.BoxGeometry(9.0, 0.12, 0.22),
+        new THREE.MeshStandardMaterial({ color: busColors[b], metalness: 0.9, roughness: 0.2 }),
+      );
+      busLine.position.set(0, 0.38, 2.0 - b * 0.35);
+      ccdGroup.add(busLine);
+    }
+
+    // 9 Transparent Polysilicon Gate Electrodes (3 Pixels x 3 Phases: phi_1, phi_2, phi_3)
     const gates: { mesh: THREE.Mesh; phase: number; x: number }[] = [];
     const numGates = 9;
 
     for (let g = 0; g < numGates; g++) {
-      const gX = -3.6 + g * 0.9;
+      const gX = -3.6 + g * 0.85;
       const phaseNum = (g % 3) + 1;
 
-      const gateMesh = new THREE.Mesh(new THREE.BoxGeometry(0.75, 0.25, 3.8), gatePolySiliconMat);
-      gateMesh.position.set(gX, 0.42, 0);
+      const gateMesh = new THREE.Mesh(new THREE.BoxGeometry(0.72, 0.24, 3.2), gatePolySiliconMat);
+      gateMesh.position.set(gX, 0.36, -0.4);
       gateMesh.castShadow = true;
       ccdGroup.add(gateMesh);
 
+      // Contact Via connecting to corresponding clock bus line
+      const busZ = 2.0 - (phaseNum - 1) * 0.35;
+      const via = new THREE.Mesh(
+        new THREE.BoxGeometry(0.12, 0.14, Math.abs(busZ - -0.4)),
+        new THREE.MeshStandardMaterial({ color: busColors[phaseNum - 1], metalness: 0.85 }),
+      );
+      via.position.set(gX, 0.36, (-0.4 + busZ) / 2);
+      ccdGroup.add(via);
+
       gates.push({ mesh: gateMesh, phase: phaseNum, x: gX });
     }
+
+    // Output Floating Diffusion Sensing Node & Reset Gate
+    const outputNode = new THREE.Mesh(
+      new THREE.BoxGeometry(0.65, 0.3, 3.2),
+      new THREE.MeshStandardMaterial({ color: 0x10b981, roughness: 0.3, metalness: 0.8 }),
+    );
+    outputNode.position.set(4.3, 0.38, -0.4);
+    ccdGroup.add(outputNode);
 
     // --- GLOWING ELECTRON CHARGE PACKETS ---
     const packetCount = 240;

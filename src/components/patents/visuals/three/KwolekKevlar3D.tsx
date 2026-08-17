@@ -71,47 +71,76 @@ export function KwolekKevlar3D() {
     // --- 3D POLYMER CHAIN ASSEMBLY (POLY-P-PHENYLENE TEREPHTHALAMIDE - PPTA) ---
     const polymerGroup = new THREE.Group();
     scene.add(polymerGroup);
+    // Stainless Steel Spinneret Extrusion Pack (Nematic Liquid Crystal Dope)
+    const spinneretPack = new THREE.Group();
+    spinneretPack.position.set(-6.0, 0, 0);
 
-    // Spinneret Extrusion Nozzle
-    const nozzle = new THREE.Mesh(
-      new THREE.CylinderGeometry(3.6, 2.2, 1.8, 36, 1, true),
-      spinneretSteelMat,
+    const nozzleBody = new THREE.Mesh(
+      new THREE.CylinderGeometry(2.4, 2.8, 1.4, 32),
+      spinneretMetalMat,
     );
-    nozzle.position.set(-5.5, 0, 0);
-    nozzle.rotation.z = -Math.PI / 2;
-    polymerGroup.add(nozzle);
+    nozzleBody.rotation.z = Math.PI / 2;
+    spinneretPack.add(nozzleBody);
 
-    // Parallel Rigid-Rod Polymer Chains (5 Chains)
+    // Multi-Capillary Extrusion Orifice Plate
+    for (let o = -2; o <= 2; o++) {
+      const hole = new THREE.Mesh(
+        new THREE.CylinderGeometry(0.1, 0.1, 0.2, 12),
+        new THREE.MeshStandardMaterial({ color: 0x0f172a, roughness: 0.8 }),
+      );
+      hole.rotation.z = Math.PI / 2;
+      hole.position.set(0.7, o * 0.9, 0);
+      spinneretPack.add(hole);
+    }
+    polymerGroup.add(spinneretPack);
+
+    // Parallel Rigid-Rod Polymer Chains (5 Extended PPTA Liquid-Crystal Chains)
     const chains: { group: THREE.Group; baseY: number; baseZ: number }[] = [];
     const numChains = 5;
 
     for (let c = 0; c < numChains; c++) {
       const chainG = new THREE.Group();
-      const yPos = (c - (numChains - 1) / 2) * 1.3;
+      const yPos = (c - (numChains - 1) / 2) * 1.35;
       chainG.position.set(0, yPos, 0);
 
       // Repeat Units along Chain (6 Monomer units)
       for (let u = 0; u < 6; u++) {
-        const xPos = -4.0 + u * 1.5;
+        const xPos = -4.2 + u * 1.55;
 
-        // Benzene Ring (Hexagonal Ring of Carbon Atoms)
+        // Benzene Ring (Hexagonal Carbon Ring with Covalent Bond Sticks)
         const ringG = new THREE.Group();
         ringG.position.x = xPos;
         for (let r = 0; r < 6; r++) {
           const angle = (r * Math.PI) / 3;
-          const atom = new THREE.Mesh(new THREE.SphereGeometry(0.12, 12, 12), carbonRingMat);
-          atom.position.set(Math.cos(angle) * 0.35, Math.sin(angle) * 0.35, 0);
+          const nextAngle = ((r + 1) * Math.PI) / 3;
+          const ax = Math.cos(angle) * 0.38;
+          const ay = Math.sin(angle) * 0.38;
+          const bx = Math.cos(nextAngle) * 0.38;
+          const by = Math.sin(nextAngle) * 0.38;
+
+          // Carbon Atom
+          const atom = new THREE.Mesh(new THREE.SphereGeometry(0.11, 12, 12), carbonRingMat);
+          atom.position.set(ax, ay, 0);
           ringG.add(atom);
+
+          // Covalent Bond Stick
+          const bondStick = new THREE.Mesh(
+            new THREE.CylinderGeometry(0.03, 0.03, 0.38, 8),
+            new THREE.MeshStandardMaterial({ color: 0x475569, metalness: 0.8 }),
+          );
+          bondStick.position.set((ax + bx) / 2, (ay + by) / 2, 0);
+          bondStick.rotation.z = angle + Math.PI / 6;
+          ringG.add(bondStick);
         }
         chainG.add(ringG);
 
-        // Amide Linkage (-CO-NH-)
-        const carbonyl = new THREE.Mesh(new THREE.SphereGeometry(0.13, 12, 12), carbonylOxygenMat);
-        carbonyl.position.set(xPos + 0.6, 0.28, 0);
+        // Trans-Amide Linkage (-CO-NH-)
+        const carbonyl = new THREE.Mesh(new THREE.SphereGeometry(0.14, 12, 12), carbonylOxygenMat);
+        carbonyl.position.set(xPos + 0.65, 0.3, 0);
         chainG.add(carbonyl);
 
-        const amideN = new THREE.Mesh(new THREE.SphereGeometry(0.13, 12, 12), amideNitrogenMat);
-        amideN.position.set(xPos + 0.9, -0.28, 0);
+        const amideN = new THREE.Mesh(new THREE.SphereGeometry(0.14, 12, 12), amideNitrogenMat);
+        amideN.position.set(xPos + 0.95, -0.3, 0);
         chainG.add(amideN);
       }
 

@@ -76,67 +76,123 @@ export function FarnsworthTV3D() {
       metalness: 0.9,
     });
 
-    // --- 3D DISSECTOR TUBE ASSEMBLY ---
+    // --- 3D FARNSWORTH IMAGE DISSECTOR ASSEMBLY ---
     const tubeGroup = new THREE.Group();
     scene.add(tubeGroup);
 
-    // Cylindrical Vacuum Glass Envelope
-    const glassTube = new THREE.Mesh(
-      new THREE.CylinderGeometry(1.8, 1.8, 10.0, 36, 1, true),
-      glassEnvelopeMat,
+    // Polished Mahogany Optical Bench Base
+    const bench = new THREE.Mesh(
+      new THREE.BoxGeometry(14.0, 0.6, 5.0),
+      new THREE.MeshStandardMaterial({ color: 0x78350f, roughness: 0.35 }),
     );
-    glassTube.rotation.z = Math.PI / 2;
+    bench.position.y = -2.8;
+    bench.receiveShadow = true;
+    tubeGroup.add(bench);
+
+    // Dual Brass Tube Saddle Clamps
+    [-3.5, 3.5].forEach((cx) => {
+      const clamp = new THREE.Mesh(
+        new THREE.CylinderGeometry(2.3, 2.3, 0.4, 24, 1, true),
+        anodeBrassMat,
+      );
+      clamp.rotation.z = Math.PI / 2;
+      clamp.position.set(cx, 0, 0);
+      tubeGroup.add(clamp);
+
+      const clampStandoff = new THREE.Mesh(
+        new THREE.CylinderGeometry(0.25, 0.3, 2.2, 12),
+        anodeBrassMat,
+      );
+      clampStandoff.position.set(cx, -1.4, 0);
+      tubeGroup.add(clampStandoff);
+    });
+
+    // Blown Borosilicate Glass Image Dissector Envelope (Lathe Geometry)
+    const tubePoints: THREE.Vector2[] = [];
+    tubePoints.push(new THREE.Vector2(0, 0));
+    tubePoints.push(new THREE.Vector2(1.9, 0.2)); // Front curved optical window
+    tubePoints.push(new THREE.Vector2(2.0, 0.8));
+    tubePoints.push(new THREE.Vector2(2.0, 9.8)); // Main cylindrical body
+    tubePoints.push(new THREE.Vector2(1.2, 10.4)); // Rear exhaust neck
+    tubePoints.push(new THREE.Vector2(0.4, 10.9));
+    tubePoints.push(new THREE.Vector2(0.01, 11.2)); // Seal tip
+
+    const tubeGeo = new THREE.LatheGeometry(tubePoints, 36);
+    const glassTube = new THREE.Mesh(tubeGeo, glassEnvelopeMat);
+    glassTube.rotation.z = -Math.PI / 2;
+    glassTube.position.x = -5.4;
     tubeGroup.add(glassTube);
 
-    // Front Flat Optical Window
-    const frontWindow = new THREE.Mesh(new THREE.CircleGeometry(1.8, 36), glassEnvelopeMat);
-    frontWindow.rotation.y = -Math.PI / 2;
-    frontWindow.position.x = -5.0;
-    tubeGroup.add(frontWindow);
-
-    // Photoelectric Cathode Plate (Backlit optical receiver)
-    const photocathode = new THREE.Mesh(new THREE.CircleGeometry(1.6, 36), photocathodeMat);
+    // Semi-Transparent Cesium-Oxide Photocathode Target Disc with Gold Rim
+    const photocathode = new THREE.Mesh(new THREE.CircleGeometry(1.7, 36), photocathodeMat);
     photocathode.rotation.y = Math.PI / 2;
-    photocathode.position.x = -4.7;
+    photocathode.position.x = -4.8;
     tubeGroup.add(photocathode);
 
-    // Anode Aperture Finger Target with Electron Multiplier Window
+    const goldRim = new THREE.Mesh(
+      new THREE.TorusGeometry(1.72, 0.04, 12, 36),
+      new THREE.MeshStandardMaterial({ color: 0xeab308, metalness: 0.95 }),
+    );
+    goldRim.rotation.y = Math.PI / 2;
+    goldRim.position.x = -4.8;
+    tubeGroup.add(goldRim);
+
+    // Brass Optical Camera Lens Barrel (Projecting scene onto photocathode)
+    const lensBarrel = new THREE.Mesh(new THREE.CylinderGeometry(1.1, 1.4, 2.2, 24), anodeBrassMat);
+    lensBarrel.rotation.z = Math.PI / 2;
+    lensBarrel.position.set(-6.8, 0, 0);
+    lensBarrel.castShadow = true;
+    tubeGroup.add(lensBarrel);
+
+    const glassLens = new THREE.Mesh(
+      new THREE.SphereGeometry(0.95, 24, 24),
+      new THREE.MeshPhysicalMaterial({ color: 0x93c5fd, transmission: 0.95, ior: 1.52 }),
+    );
+    glassLens.position.set(-7.9, 0, 0);
+    tubeGroup.add(glassLens);
+
+    // Anode Aperture Finger Target with Microscopic Scanning Hole (0.005" scale)
     const anodeFinger = new THREE.Mesh(
-      new THREE.CylinderGeometry(0.25, 0.25, 1.2, 16),
+      new THREE.CylinderGeometry(0.22, 0.28, 1.8, 16),
       anodeBrassMat,
     );
-    anodeFinger.position.set(4.8, 0, 0);
+    anodeFinger.position.set(4.4, 0, 0);
     anodeFinger.rotation.z = Math.PI / 2;
     tubeGroup.add(anodeFinger);
 
-    // Magnetic Focus Solenoid Outer Coil
+    const apertureTip = new THREE.Mesh(
+      new THREE.TorusGeometry(0.12, 0.04, 8, 16),
+      new THREE.MeshStandardMaterial({ color: 0x0f172a, metalness: 0.9 }),
+    );
+    apertureTip.rotation.y = Math.PI / 2;
+    apertureTip.position.set(3.5, 0, 0);
+    tubeGroup.add(apertureTip);
+
+    // Magnetic Focus Solenoid Outer Coil (Uniform longitudinal focusing field)
     const focusCoil = new THREE.Mesh(
-      new THREE.CylinderGeometry(2.1, 2.1, 6.5, 32, 1, true),
+      new THREE.CylinderGeometry(2.15, 2.15, 7.2, 36, 1, true),
       new THREE.MeshStandardMaterial({
         color: 0x475569,
-        roughness: 0.4,
-        metalness: 0.7,
+        roughness: 0.35,
+        metalness: 0.8,
         wireframe: true,
       }),
     );
     focusCoil.rotation.z = Math.PI / 2;
+    focusCoil.position.x = -0.2;
     tubeGroup.add(focusCoil);
 
-    // 2-Axis Orthogonal Magnetic Deflection Coils (Horizontal & Vertical)
-    const hCoil1 = new THREE.Mesh(
-      new THREE.TorusGeometry(2.2, 0.22, 12, 32),
-      copperDeflectionCoilMat,
-    );
-    hCoil1.position.set(0.5, 0, 0);
-    tubeGroup.add(hCoil1);
-
-    const vCoil1 = new THREE.Mesh(
-      new THREE.TorusGeometry(2.2, 0.22, 12, 32),
-      copperDeflectionCoilMat,
-    );
-    vCoil1.rotation.y = Math.PI / 2;
-    vCoil1.position.set(1.8, 0, 0);
-    tubeGroup.add(vCoil1);
+    // 2-Axis Orthogonal Saddle Deflection Yokes (Horizontal & Vertical Scanning)
+    for (let d = 0; d < 4; d++) {
+      const dAngle = (d * Math.PI) / 2;
+      const saddleYoke = new THREE.Mesh(
+        new THREE.BoxGeometry(2.4, 0.35, 1.2),
+        copperDeflectionCoilMat,
+      );
+      saddleYoke.position.set(0.5, Math.cos(dAngle) * 2.3, Math.sin(dAngle) * 2.3);
+      saddleYoke.rotation.x = dAngle;
+      tubeGroup.add(saddleYoke);
+    }
 
     // --- GLOWING ELECTRON BEAM PARTICLES ---
     const beamCount = 350;
