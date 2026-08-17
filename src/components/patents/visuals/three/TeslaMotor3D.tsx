@@ -479,12 +479,14 @@ export function TeslaMotor3D() {
       const elapsed = clock.getElapsedTime();
       const p = live.current;
 
-      const omegaSync = (2 * Math.PI * p.acFrequencyHz) / p.polePairs;
-      bFieldAngle += omegaSync * delta * 0.08;
+      // Electrical ω shown at 1/20 so a 60 Hz field is visible. HUD states ns.
+      const visualScale = 1 / 20;
+      const omegaElec = 2 * Math.PI * p.acFrequencyHz;
+      bFieldAngle += omegaElec * visualScale * delta;
       const field = teslaBAt(bFieldAngle, phaseCount);
       bFieldArrow.setDirection(new THREE.Vector3(field.bx, 0, field.by));
 
-      const omegaRotor = omegaSync * (1 - p.slip) * 0.08;
+      const omegaRotor = omegaElec * visualScale * (1 - p.slip);
       rotorGroup.rotation.y += omegaRotor * delta;
 
       for (const item of coilMeshes) {
@@ -502,7 +504,7 @@ export function TeslaMotor3D() {
         const z = fPos[idx + 2];
         const r = Math.sqrt(x * x + z * z);
         let curAngle = Math.atan2(z, x);
-        curAngle += omegaSync * delta * 0.08;
+        curAngle += omegaElec * visualScale * delta;
 
         fPos[idx] = Math.cos(curAngle) * r;
         fPos[idx + 2] = Math.sin(curAngle) * r;

@@ -346,7 +346,7 @@ export function WrightFlyer3D() {
                   </span>
                 </div>
                 <div className="col-span-2 text-[9px] font-mono text-ink-500 dark:text-ink-400 pt-1 border-t border-parchment-200 dark:border-ink-800/60">
-                  Attitude solver: {kernelLabel}
+                  Attitude: aero CG2 + SI wrenches · residual {kernelLabel}
                 </div>
                 <div className="col-span-2 text-[9px] font-mono text-ink-500 dark:text-ink-400">
                   Guy wires: steel slack · amber working · red peak (high-AoA bay)

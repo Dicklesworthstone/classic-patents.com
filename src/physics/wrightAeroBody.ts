@@ -4,8 +4,8 @@
  * must not claim Smithsonian mass moments.
  */
 
-import { type Quat, rigidBodyStep, type Vec3 } from "./lie";
 import { FLYER_INERTIA } from "./flyerWasm";
+import { type Quat, rigidBodyStep, type Vec3 } from "./lie";
 import type { WrightControls, WrightSiState } from "./wrightKernel";
 
 const DAMPING = 1.8;

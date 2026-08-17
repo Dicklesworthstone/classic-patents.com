@@ -13,6 +13,7 @@ import {
 } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import * as THREE from "three";
+import { blackbodyRgb } from "@/physics/blackbody";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { soundEngine } from "@/utils/soundEngine";
 import { createGlowPointTexture, createThreeStudioScene } from "./ThreeStudioScene";
@@ -370,15 +371,10 @@ export function EdisonBulb3D() {
       const isGlowing = incandescenceIntensity > 0.05;
 
       if (isGlowing) {
-        let glowColor = new THREE.Color(0xff4500);
-        if (p.filamentTempKelvin > 1800) {
-          glowColor = new THREE.Color(0xffaa22);
-        }
-        if (p.filamentTempKelvin > 2200) {
-          glowColor = new THREE.Color(0xfffae0);
-        }
+        const glowColor = new THREE.Color(blackbodyRgb(p.filamentTempKelvin));
 
         filamentMaterialMesh.emissive = glowColor;
+        filamentMaterialMesh.color.copy(glowColor);
         filamentMaterialMesh.emissiveIntensity = incandescenceIntensity * 3.5;
 
         bulbLight.color = glowColor;

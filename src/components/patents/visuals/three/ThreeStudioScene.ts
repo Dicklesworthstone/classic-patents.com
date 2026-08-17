@@ -193,6 +193,7 @@ export function createThreeStudioScene(opts: StudioOptions): StudioContext {
   renderer.setPixelRatio(Math.min(typeof window !== "undefined" ? window.devicePixelRatio : 1, 2));
   renderer.toneMapping = THREE.ACESFilmicToneMapping;
   renderer.toneMappingExposure = isDark ? 1.4 : 1.35;
+  renderer.outputColorSpace = THREE.SRGBColorSpace;
   renderer.shadowMap.enabled = true;
   renderer.shadowMap.type = THREE.PCFSoftShadowMap;
 
@@ -230,8 +231,8 @@ export function createThreeStudioScene(opts: StudioOptions): StudioContext {
   );
   sunLight.position.set(28, 38, 22);
   sunLight.castShadow = true;
-  sunLight.shadow.mapSize.width = 1024;
-  sunLight.shadow.mapSize.height = 1024;
+  sunLight.shadow.mapSize.width = 2048;
+  sunLight.shadow.mapSize.height = 2048;
   sunLight.shadow.camera.near = 0.5;
   sunLight.shadow.camera.far = 120;
   sunLight.shadow.camera.left = -30;

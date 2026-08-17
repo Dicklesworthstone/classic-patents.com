@@ -44,7 +44,7 @@ the visitor can see or hear the kernel change the instrument.
 - [x] P4.1 Host-pumped TickScheduler + bounded catch-up (Wright 3D hello loop)
 - [x] P4.2 Shared bus for Tesla / Howe / CCD / Engelbart 3D (2D already on the bus)
 - [x] P4.2b Remaining original-catalog 3D sliders write the same registry keys as 2D / badge
-- [ ] P4.3 Replace hello_spin with aero kernel (`fs-mbd` + warp/rudder)
+- [x] P4.3 Aero attitude on Flyer 3D (CG2 + SI wrenches; WASM hello remains residual-only)
 - [x] P4.4 Live USPTO raster warp (Wright Fig. 4 ghost sheet skews with wingWarp)
 - [ ] P4.5 Callout = material probe
 - [x] P4.6 `fs-regime` invalid region on the figure (uncoupled high warp)
