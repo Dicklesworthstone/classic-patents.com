@@ -11,7 +11,7 @@ export function EastmanKodakSim() {
 
   // Optics & Photographic Film Physics
   const totalExposures = 100;
-  const filmDiameterInches = 2.5; // Circular 2.5" frame
+  const _filmDiameterInches = 2.5; // Circular 2.5" frame
   const focalLengthMm = 57; // Rapid Rectilinear Lens
   const fNumber = 9.0;
   const filmWoundPct = Math.round((exposureCount / totalExposures) * 100);

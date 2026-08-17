@@ -13,9 +13,9 @@ export function MaximMachineGunSim() {
 
   // Recoil & thermal physics
   const recoilStrokeMm = 19; // Short-recoil barrel stroke
-  const isWaterBoiling = jacketWaterLiters < 1.0;
+  const _isWaterBoiling = jacketWaterLiters < 1.0;
   const barrelTempC = Math.round(80 + (600 - jacketWaterLiters * 100) * 0.15);
-  const muzzleEnergyJoules = 3400; // .303 British round
+  const _muzzleEnergyJoules = 3400; // .303 British round
   const cycleTimeMs = Math.round(60000 / (cyclicRateRpm + 1e-4));
 
   useEffect(() => {

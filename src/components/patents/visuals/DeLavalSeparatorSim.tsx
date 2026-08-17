@@ -8,7 +8,7 @@ export function DeLavalSeparatorSim() {
   const [rawMilkFlowLph, setRawMilkFlowLph] = useState<number>(300);
   const [isPlaying, setIsPlaying] = useState<boolean>(true);
   const [isMuted, setIsMuted] = useState<boolean>(true);
-  const [angleDeg, setAngleDeg] = useState<number>(0);
+  const [_angleDeg, setAngleDeg] = useState<number>(0);
   const animRef = useRef<number | null>(null);
 
   // Centrifugal fluid mechanics

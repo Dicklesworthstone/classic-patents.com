@@ -12,7 +12,7 @@ export function EdisonPhonographSim() {
   const animRef = useRef<number | null>(null);
 
   // Acoustic & Lead-Screw Kinematics
-  const threadsPerInch = 10;
+  const _threadsPerInch = 10;
   const leadScrewPitchMm = 2.54;
   const surfaceSpeedMps = Number(((crankRpm * 2 * Math.PI * 0.05) / 60).toFixed(2));
   const axialTravelMm = Number((((cylinderAngleDeg / 360) * leadScrewPitchMm) % 40).toFixed(1));

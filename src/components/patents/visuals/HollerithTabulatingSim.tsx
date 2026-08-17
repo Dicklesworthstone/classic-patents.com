@@ -10,7 +10,7 @@ export function HollerithTabulatingSim() {
   const [isMuted, setIsMuted] = useState<boolean>(true);
 
   // Electrical Tabulation Physics
-  const mercuryPoolResistanceOhms = 0.5;
+  const _mercuryPoolResistanceOhms = 0.5;
   const circuitVoltageV = 12.0;
   const currentPerPinAmps = Number((circuitVoltageV / 24).toFixed(2)); // 24 ohm solenoid
   const sortingPocketOpen = activeDemographic.includes("Male") ? 3 : 7;

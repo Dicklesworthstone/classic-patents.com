@@ -1173,7 +1173,7 @@ function renderHistoricalSchematic(
     case "westinghouse-air-brake": {
       const pipePsi = params?.trainPipePressure ?? 70;
       const isRel = pipePsi >= 65;
-      const isEmerg = pipePsi < 10;
+      const _isEmerg = pipePsi < 10;
       const cylPsi = Math.max(0, Math.min(55, Math.round((70 - pipePsi) * 1.1)));
       return (
         <g stroke="#38bdf8" strokeWidth="1.5" fill="none">

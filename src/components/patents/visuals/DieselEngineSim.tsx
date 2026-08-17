@@ -14,7 +14,7 @@ export function DieselEngineSim() {
   // Diesel Thermodynamic Cycle
   const peakAirTempKelvin = Math.round(293 * compressionRatio ** 0.4);
   const peakAirTempC = peakAirTempKelvin - 273;
-  const isAutoIgnition = peakAirTempC >= 550; // Diesel fuel autoignites ~210C, requires 500C+ for instant detonation
+  const _isAutoIgnition = peakAirTempC >= 550; // Diesel fuel autoignites ~210C, requires 500C+ for instant detonation
   const peakPressureAtm = Number((1.0 * compressionRatio ** 1.4).toFixed(1));
   const thermalEfficiencyPct = Math.round((1 - 1 / compressionRatio ** 0.38) * 100);
   const brakePowerKw = Number(((peakPressureAtm * 0.45 * engineRpm) / 30).toFixed(1));

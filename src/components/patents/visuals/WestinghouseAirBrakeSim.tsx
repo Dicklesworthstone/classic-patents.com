@@ -54,7 +54,7 @@ export function WestinghouseAirBrakeSim() {
     };
   }, [cylPressurePsi, trainSpeedMph]);
 
-  const setPreset = (psi: number, _mode?: string) => {
+  const setPreset = (psi: number, _label?: string) => {
     updateParam("trainPipePressure", psi);
     if (psi < 10) {
       // Violent pneumatic dump

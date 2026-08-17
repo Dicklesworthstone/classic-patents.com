@@ -1,6 +1,6 @@
 "use client";
 
-import { Play, RotateCcw, Volume2, VolumeX, Zap } from "lucide-react";
+import { RotateCcw, Volume2, VolumeX, Zap } from "lucide-react";
 import { useState } from "react";
 
 export function ThomsonWeldingSim() {

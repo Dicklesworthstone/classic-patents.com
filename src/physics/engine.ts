@@ -530,7 +530,7 @@ export const FrankenSimEngine = {
     const auxPsi = 70; // charged reservoir pressure
     const isEmergency = pipePsi < 10;
     const isService = pipePsi < 60 && !isEmergency;
-    const isRelease = pipePsi >= 65;
+    const _isRelease = pipePsi >= 65;
 
     // Cylinder pressure equalizes from aux reservoir as pipe pressure drops
     const cylPsi = Math.max(0, Math.min(55, Math.round((70 - pipePsi) * 1.1)));
