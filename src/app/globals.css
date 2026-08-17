@@ -1,0 +1,56 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --font-serif: "EB Garamond", "Georgia", "Cambria", serif;
+    --font-sans: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    --font-mono: "JetBrains Mono", "SF Mono", Menlo, Monaco, Consolas, monospace;
+  }
+
+  body {
+    @apply bg-parchment-50 text-ink-900 font-sans antialiased transition-colors duration-200 selection:bg-amber-200 selection:text-amber-900;
+  }
+
+  /* Archival Parchment Mode */
+  .theme-parchment body {
+    @apply bg-[#fbf9f5] text-[#2a1f18];
+  }
+
+  /* Engineering Blueprint Mode */
+  .theme-blueprint {
+    @apply bg-[#062447] text-[#e0effe];
+  }
+
+  .theme-blueprint body {
+    @apply bg-[#062447] text-[#e0effe];
+    background-image:
+      linear-gradient(rgba(12, 135, 235, 0.08) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(12, 135, 235, 0.08) 1px, transparent 1px);
+    background-size: 24px 24px;
+  }
+
+  /* Obsidian Dark Mode */
+  .dark body {
+    @apply bg-[#0f1113] text-[#e1e3e5] selection:bg-amber-900 selection:text-amber-100;
+  }
+}
+
+/* Custom crisp scrollbars */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  @apply bg-parchment-300 dark:bg-ink-800 rounded;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  @apply bg-parchment-400 dark:bg-ink-700;
+}

@@ -1,0 +1,163 @@
+"use client";
+
+import { Shield, ShieldAlert } from "lucide-react";
+import { useState } from "react";
+
+export function KwolekKevlarSim() {
+  const [polymerAlignment, setPolymerAlignment] = useState<number>(90); // 0% (isotropic tangled) to 100% (liquid-crystal nematic)
+  const [tensileTension, setTensileTension] = useState<number>(30); // 0 to 100%
+  const [bulletFired, setBulletFired] = useState<boolean>(false);
+
+  // Tensile strength in GPa
+  const baseStrength = 0.5; // Nylon
+  const maxStrength = 3.6; // Kevlar PPTA
+  const currentStrengthGPa = baseStrength + (maxStrength - baseStrength) * (polymerAlignment / 100);
+
+  const isArmorPenetrated = bulletFired && polymerAlignment < 50;
+
+  const fireBulletTest = () => {
+    setBulletFired(true);
+    setTimeout(() => setBulletFired(false), 2500);
+  };
+
+  return (
+    <div className="rounded-xl border border-parchment-300 dark:border-ink-800 bg-parchment-50 dark:bg-ink-950 p-5 shadow-patent">
+      <div className="flex flex-wrap items-center justify-between gap-3 border-b border-parchment-200 dark:border-ink-800 pb-4">
+        <div>
+          <div className="flex items-center gap-2">
+            <Shield className="w-4 h-4 text-amber-500" />
+            <h3 className="font-serif text-lg font-bold text-ink-900 dark:text-parchment-100">
+              Kwolek Liquid-Crystalline Aramid (Kevlar) Molecular Alignment Simulator
+            </h3>
+          </div>
+          <p className="text-xs text-ink-600 dark:text-ink-400 mt-0.5">
+            Discover how parallel alignment of rigid aromatic PPTA chains creates a fiber 5x
+            stronger than steel.
+          </p>
+        </div>
+        <div>
+          <button
+            type="button"
+            onClick={fireBulletTest}
+            className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-mono font-medium bg-amber-600 text-white hover:bg-amber-700 transition-colors shadow-sm"
+          >
+            <ShieldAlert className="w-3.5 h-3.5" />
+            Simulate Ballistic Impact
+          </button>
+        </div>
+      </div>
+
+      <div className="my-5 grid grid-cols-1 lg:grid-cols-12 gap-6">
+        {/* Molecular Fibril Visualization */}
+        <div className="lg:col-span-7 flex flex-col items-center justify-center rounded-xl bg-ink-950 p-6 border border-parchment-200 dark:border-ink-800 relative min-h-[300px]">
+          {bulletFired && (
+            <div
+              className={`absolute top-4 left-4 z-10 px-3 py-1 text-xs font-mono rounded flex items-center gap-1.5 ${
+                isArmorPenetrated
+                  ? "bg-red-950/90 border border-red-700 text-red-300 animate-bounce"
+                  : "bg-emerald-950/90 border border-emerald-700 text-emerald-300"
+              }`}
+            >
+              {isArmorPenetrated
+                ? "✗ BALLISTIC PENETRATION: Tangled chains failed under shear!"
+                : "✓ BULLET STOPPED: Crystalline hydrogen bonds dissipated impact energy!"}
+            </div>
+          )}
+
+          <svg viewBox="0 0 380 200" className="w-full max-w-md h-auto select-none">
+            {/* Molecular polymer chains */}
+            {[-60, -30, 0, 30, 60].map((offsetY, idx) => {
+              const waviness = (100 - polymerAlignment) * 0.25;
+              const yBase = 100 + offsetY;
+              return (
+                <g key={idx}>
+                  {/* PPTA Polymer Backbone */}
+                  <path
+                    d={`M 30,${yBase} Q 100,${yBase + (idx % 2 === 0 ? waviness : -waviness)} 200,${yBase} T 350,${yBase}`}
+                    fill="none"
+                    stroke="#f59e0b"
+                    strokeWidth="3.5"
+                    strokeLinecap="round"
+                  />
+
+                  {/* Inter-Chain Hydrogen Bonds (when aligned) */}
+                  {polymerAlignment > 60 && idx < 4 && (
+                    <g stroke="#38bdf8" strokeWidth="1" strokeDasharray="3 3">
+                      <line x1="80" y1={yBase} x2="80" y2={yBase + 30} />
+                      <line x1="140" y1={yBase} x2="140" y2={yBase + 30} />
+                      <line x1="200" y1={yBase} x2="200" y2={yBase + 30} />
+                      <line x1="260" y1={yBase} x2="260" y2={yBase + 30} />
+                      <line x1="320" y1={yBase} x2="320" y2={yBase + 30} />
+                    </g>
+                  )}
+                </g>
+              );
+            })}
+
+            {/* Benzene Rings on Central Chain */}
+            {polymerAlignment > 50 && (
+              <g fill="#d97706" opacity="0.9">
+                <polygon points="90,95 100,90 110,95 110,105 100,110 90,105" />
+                <polygon points="190,95 200,90 210,95 210,105 200,110 190,105" />
+                <polygon points="290,95 300,90 310,95 310,105 300,110 290,105" />
+              </g>
+            )}
+          </svg>
+
+          <div className="text-xs font-mono text-ink-300 mt-2">
+            Tensile Strength:{" "}
+            <span className="text-amber-400 font-bold">{currentStrengthGPa.toFixed(2)} GPa</span>{" "}
+            (Steel = 0.5 GPa)
+          </div>
+        </div>
+
+        {/* Controls */}
+        <div className="lg:col-span-5 space-y-4">
+          <div className="bg-parchment-100/60 dark:bg-ink-900/60 p-4 rounded-xl border border-parchment-200 dark:border-ink-800 space-y-3">
+            <div>
+              <div className="flex justify-between text-xs font-mono mb-1">
+                <span className="font-semibold text-ink-800 dark:text-parchment-200">
+                  Polymer Molecular Alignment (Nematicity)
+                </span>
+                <span className="text-amber-600 dark:text-amber-400 font-bold">
+                  {polymerAlignment}%
+                </span>
+              </div>
+              <input
+                type="range"
+                min="10"
+                max="100"
+                value={polymerAlignment}
+                onChange={(e) => setPolymerAlignment(Number(e.target.value))}
+                className="w-full accent-amber-600 cursor-pointer h-2 bg-parchment-300 dark:bg-ink-700 rounded-lg"
+              />
+              <div className="flex justify-between text-[10px] text-ink-500 font-mono mt-0.5">
+                <span>Isotropic Tangled (Nylon)</span>
+                <span>Oriented Nematic (Kevlar)</span>
+              </div>
+            </div>
+
+            <div>
+              <div className="flex justify-between text-xs font-mono mb-1">
+                <span className="font-semibold text-ink-800 dark:text-parchment-200">
+                  Applied Tensile Strain
+                </span>
+                <span className="text-blue-600 dark:text-blue-400 font-bold">
+                  {tensileTension}%
+                </span>
+              </div>
+              <input
+                type="range"
+                min="0"
+                max="100"
+                value={tensileTension}
+                onChange={(e) => setTensileTension(Number(e.target.value))}
+                className="w-full accent-blue-600 cursor-pointer h-2 bg-parchment-300 dark:bg-ink-700 rounded-lg"
+              />
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}

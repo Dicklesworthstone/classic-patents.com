@@ -1,0 +1,78 @@
+import type { Config } from "tailwindcss";
+
+const config: Config = {
+  darkMode: ["class"],
+  content: [
+    "./src/pages/**/*.{js,ts,jsx,tsx,mdx}",
+    "./src/components/**/*.{js,ts,jsx,tsx,mdx}",
+    "./src/app/**/*.{js,ts,jsx,tsx,mdx}",
+  ],
+  theme: {
+    extend: {
+      colors: {
+        parchment: {
+          50: "#faf8f5",
+          100: "#f4ede2",
+          200: "#eae0cf",
+          300: "#d9c8b0",
+          400: "#c4ab8c",
+          500: "#b0906f",
+          600: "#9c7959",
+          700: "#7d5f46",
+          800: "#644c3a",
+          900: "#4f3c2f",
+          950: "#2a1f18",
+        },
+        blueprint: {
+          50: "#f0f7ff",
+          100: "#e0effe",
+          200: "#bae0fd",
+          300: "#7cc5fb",
+          400: "#36a5f7",
+          500: "#0c87eb",
+          600: "#016bc9",
+          700: "#0255a2",
+          800: "#064885",
+          900: "#0b3d6f",
+          950: "#062447",
+        },
+        ink: {
+          50: "#f6f6f7",
+          100: "#e1e3e5",
+          200: "#c3c7cc",
+          300: "#9ba2ab",
+          400: "#727b87",
+          500: "#57606c",
+          600: "#444b56",
+          700: "#373c45",
+          800: "#2d3138",
+          900: "#1a1d21",
+          950: "#0f1113",
+        },
+        brass: {
+          300: "#e6c387",
+          400: "#d8ac60",
+          500: "#c4933f",
+          600: "#aa782f",
+          700: "#865a25",
+        },
+      },
+      fontFamily: {
+        serif: ["var(--font-serif)", "Georgia", "Cambria", "serif"],
+        sans: ["var(--font-sans)", "system-ui", "sans-serif"],
+        mono: ["var(--font-mono)", "JetBrains Mono", "monospace"],
+      },
+      boxShadow: {
+        patent: "0 4px 20px -2px rgba(0, 0, 0, 0.08), 0 2px 6px -1px rgba(0, 0, 0, 0.04)",
+        "patent-lg": "0 10px 30px -5px rgba(0, 0, 0, 0.12), 0 4px 10px -2px rgba(0, 0, 0, 0.06)",
+        glow: "0 0 25px rgba(12, 135, 235, 0.25)",
+      },
+      animation: {
+        "pulse-slow": "pulse 4s cubic-bezier(0.4, 0, 0.6, 1) infinite",
+        "spin-slow": "spin 20s linear infinite",
+      },
+    },
+  },
+  plugins: [],
+};
+export default config;
