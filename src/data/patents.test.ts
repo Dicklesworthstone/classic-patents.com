@@ -62,13 +62,16 @@ describe("FrankenSim Physics Telemetry Gate", () => {
     const wright = FrankenSimEngine.stepWrightFlyer(
       {
         airspeedMps: 13.4,
-        altitudeM: 3.5,
+        altitudeMeters: 3.5,
         angleOfAttackRad: 0.073,
+        sideslipRad: 0,
         wingWarpDeflectionDeg: 0,
         rudderDeflectionDeg: 0,
         elevatorDeflectionDeg: 0,
         liftNewtons: 3400,
-        dragNewtons: 480,
+        inducedDragNewtons: 480,
+        parasiticDragNewtons: 120,
+        thrustNewtons: 500,
         pitchRateRps: 0,
         rollRateRps: 0,
         yawRateRps: 0,

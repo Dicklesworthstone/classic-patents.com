@@ -30,5 +30,5 @@
     "src/**/*.tsx",
     ".next/types/**/*.ts"
   ],
-  "exclude": ["node_modules", ".next/server", ".next/cache", "doctor.config.ts", "src/**/*.test.ts"]
+  "exclude": ["node_modules", ".next", "doctor.config.ts"]
 }
