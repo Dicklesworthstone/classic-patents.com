@@ -3,46 +3,45 @@
 import { Compass, Eye, EyeOff, Play, Wind } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import * as THREE from "three";
+import {
+  ensureFlyerWasm,
+  flyerKernelSource,
+  identityFlyerState,
+  stepFlyerHello,
+} from "@/physics/flyerWasm";
+import { usePatentPhysics } from "@/physics/usePatentPhysics";
+import {
+  coupledRudderDeg,
+  readWrightControls,
+  stepWrightFlyerSi,
+  WRIGHT_PATENT_ID,
+} from "@/physics/wrightKernel";
 import { createGlowPointTexture, createThreeStudioScene } from "./ThreeStudioScene";
 import { useLiveSimParams } from "./useLiveSimParams";
 import { buildWrightFlyerAirframe, FLYER_DIM } from "./wrightFlyerAirframe";
 
 export function WrightFlyer3D() {
   const containerRef = useRef<HTMLDivElement>(null);
+  const { params, updateParam } = usePatentPhysics(WRIGHT_PATENT_ID);
+  const controls = readWrightControls(params);
+  const si = stepWrightFlyerSi(controls);
+  const {
+    wingWarpDeg,
+    rudderDeg: rudderYawDeg,
+    elevatorDeg: elevatorPitchDeg,
+    airspeedMph,
+    coupled: isCoupled,
+  } = controls;
 
-  // UI Visibility State
+  const airspeedFps = airspeedMph * 1.46667;
+  const dynamicPressure = 0.5 * 0.0023769 * airspeedFps ** 2;
+
   const [showUiOverlay, setShowUiOverlay] = useState<boolean>(true);
-
-  // Aerodynamic State Controls
-  const [wingWarpDeg, setWingWarpDeg] = useState<number>(8); // -15 to +15 deg
-  const [rudderYawDeg, setRudderYawDeg] = useState<number>(4); // -25 to +25 deg
-  const [elevatorPitchDeg, setElevatorPitchDeg] = useState<number>(5); // -15 to +15 deg
-  const [airspeedMph, setAirspeedMph] = useState<number>(28); // 15 to 45 mph
   const [showStreamlines, setShowStreamlines] = useState<boolean>(true);
   const [showVectors, setShowVectors] = useState<boolean>(true);
   const [isAutoFlying, setIsAutoFlying] = useState<boolean>(true);
-  const [isCoupled, setIsCoupled] = useState<boolean>(true);
-
-  // Aerodynamic Physics Calculations
-  const airspeedFps = (airspeedMph * 5280) / 3600;
-  const dynamicPressure = 0.5 * 0.002377 * airspeedFps * airspeedFps; // q = 1/2 rho V^2 (slugs/ft^3)
-  const wingAreaSqFt = 510; // 1903 Flyer wing area
+  const [kernelLabel, setKernelLabel] = useState(flyerKernelSource());
   const baseCl = 0.45 + elevatorPitchDeg * 0.04;
-  const totalLiftLbs = Math.round(dynamicPressure * wingAreaSqFt * Math.max(0.1, baseCl));
-
-  // Induced Drag: C_Di = C_L^2 / (pi * AR * e)
-  const aspectratio = 6.2;
-  const oswaldEfficiency = 0.75;
-  const cdInduced = (baseCl * baseCl) / (Math.PI * aspectratio * oswaldEfficiency);
-  const cdParasite = 0.045;
-  const totalDragLbs = Math.round(dynamicPressure * wingAreaSqFt * (cdParasite + cdInduced));
-
-  // Positive warp = more right-wing AoA. Extra right induced drag yaws the nose left (negative).
-  // Positive rudder = starboard, producing positive (right) yaw that cancels adverse yaw.
-  const speedRatio = airspeedMph / 30;
-  const adverseYawMomentFtLbs = Math.round(-wingWarpDeg * 12.5 * speedRatio);
-  const rudderCorrectiveMomentFtLbs = Math.round(rudderYawDeg * 28.0 * speedRatio);
-  const netYawMoment = adverseYawMomentFtLbs + rudderCorrectiveMomentFtLbs;
 
   const live = useLiveSimParams({
     wingWarpDeg,
@@ -52,19 +51,24 @@ export function WrightFlyer3D() {
     showStreamlines,
     showVectors,
     isAutoFlying,
-    baseCl,
-    totalLiftLbs,
-    totalDragLbs,
+    liftNewtons: si.liftNewtons,
+    dragNewtons: si.totalDragNewtons,
+    netYawNm: si.netYawNm,
+    cl: baseCl,
   });
 
   const applyWarp = (val: number) => {
-    setWingWarpDeg(val);
+    updateParam("wingWarp", val);
     if (isCoupled) {
-      setRudderYawDeg(Math.round(val * 0.45));
+      updateParam("rudder", coupledRudderDeg(val));
     }
   };
 
   useEffect(() => {
+    ensureFlyerWasm().then(() => {
+      setKernelLabel(flyerKernelSource());
+    });
+
     const container = containerRef.current;
     if (!container) return;
 
@@ -158,6 +162,10 @@ export function WrightFlyer3D() {
     // --- RENDER LOOP & REAL-TIME PHYSICS SIMULATION ---
     let reqId: number;
     const clock = new THREE.Clock();
+    let hello = identityFlyerState();
+    void ensureFlyerWasm().then((src) => {
+      setKernelLabel(src);
+    });
 
     const animate = () => {
       reqId = requestAnimationFrame(animate);
@@ -166,14 +174,18 @@ export function WrightFlyer3D() {
 
       const p = live.current;
 
-      // Auto-flight subtle atmospheric turbulence
       if (p.isAutoFlying) {
-        flyerGroup.position.y = Math.sin(elapsed * 1.5) * 0.15;
-        flyerGroup.rotation.z =
-          Math.sin(elapsed * 0.9) * 0.03 + ((p.wingWarpDeg * Math.PI) / 180) * 0.4;
-        flyerGroup.rotation.y =
-          ((-p.rudderYawDeg * Math.PI) / 180) * 0.6 + Math.cos(elapsed * 0.7) * 0.02;
-        flyerGroup.rotation.x = ((-p.elevatorPitchDeg * Math.PI) / 180) * 0.4;
+        hello = stepFlyerHello(hello, Math.min(0.05, Math.max(1 / 240, delta)));
+        flyerGroup.quaternion.set(
+          hello.quaternion[1],
+          hello.quaternion[2],
+          hello.quaternion[3],
+          hello.quaternion[0],
+        );
+        flyerGroup.position.y = Math.sin(elapsed * 1.5) * 0.08;
+        flyerGroup.rotateZ(((p.wingWarpDeg * Math.PI) / 180) * 0.25);
+        flyerGroup.rotateY(((-p.rudderYawDeg * Math.PI) / 180) * 0.2);
+        flyerGroup.rotateX(((-p.elevatorPitchDeg * Math.PI) / 180) * 0.2);
       }
 
       // Propellers Rotation (Counter-Rotating to eliminate gyroscopic torque)
@@ -212,7 +224,7 @@ export function WrightFlyer3D() {
 
         // Downwash deflection as airflow passes the wings
         if (posArr[idx + 2] < 1 && posArr[idx + 2] > -4) {
-          posArr[idx + 1] -= p.baseCl * 0.08 * delta;
+          posArr[idx + 1] -= p.cl * 0.08 * delta;
         }
 
         // Reset particle when it travels past the tail
@@ -227,8 +239,8 @@ export function WrightFlyer3D() {
       vectorsGroup.visible = p.showVectors;
 
       // Update Force Vector Scales
-      liftVector.setLength(Math.max(0.5, p.totalLiftLbs / 250), 0.4, 0.25);
-      dragVector.setLength(Math.max(0.3, p.totalDragLbs / 90), 0.3, 0.2);
+      liftVector.setLength(Math.max(0.5, p.liftNewtons / 1100), 0.4, 0.25);
+      dragVector.setLength(Math.max(0.3, p.dragNewtons / 400), 0.3, 0.2);
 
       controls.update();
       renderer.render(scene, camera);
@@ -249,88 +261,91 @@ export function WrightFlyer3D() {
       <div className="relative flex-1 min-h-[380px] sm:min-h-[460px] w-full cursor-grab active:cursor-grabbing">
         <div ref={containerRef} className="absolute inset-0 w-full h-full" />
 
-        {/* Live HUD Telemetry Overlay */}
+        {/* Live HUD Telemetry Overlay (Docked Bottom-Left to prevent overlap with top-right controls) */}
         {showUiOverlay && (
-          <div className="absolute top-3 left-3 sm:top-4 sm:left-4 z-10 flex flex-col gap-1.5 sm:gap-2 pointer-events-none max-w-[calc(100%-7rem)] sm:max-w-md transition-opacity duration-200">
-            <div className="bg-white/90 dark:bg-ink-900/90 backdrop-blur-md p-2 sm:px-3.5 sm:py-2.5 rounded-xl border border-parchment-300 dark:border-ink-700 shadow-sm">
-              <div className="text-[10px] sm:text-[11px] font-sans text-amber-700 dark:text-amber-400 font-bold uppercase tracking-wider flex items-center gap-1.5">
-                <Compass className="w-3 h-3 sm:w-3.5 sm:h-3.5 animate-spin-slow" />
-                Aerodynamic Equilibrium
+          <div className="absolute bottom-3 left-3 sm:bottom-4 sm:left-4 z-10 flex flex-col gap-1.5 sm:gap-2 pointer-events-none max-w-[calc(100%-1.5rem)] sm:max-w-sm transition-opacity duration-200">
+            <div className="bg-white/90 dark:bg-ink-900/90 backdrop-blur-md p-2 sm:px-3 sm:py-2 rounded-xl border border-parchment-300 dark:border-ink-700 shadow-sm">
+              <div className="text-[10px] sm:text-[11px] font-sans text-amber-800 dark:text-amber-400 font-bold uppercase tracking-wider flex items-center justify-between gap-1.5">
+                <span className="flex items-center gap-1">
+                  <Compass className="w-3 h-3 sm:w-3.5 sm:h-3.5 animate-spin-slow text-amber-600" />
+                  Aerodynamic Equilibrium
+                </span>
+                <span
+                  className={`text-[9px] font-mono px-1.5 py-0.5 rounded ${
+                    isCoupled
+                      ? "bg-emerald-100 dark:bg-emerald-950/60 text-emerald-800 dark:text-emerald-300 border border-emerald-400/40"
+                      : "bg-red-100 dark:bg-red-950/60 text-red-800 dark:text-red-300 border border-red-400/40"
+                  }`}
+                >
+                  {isCoupled ? "Coupled" : "Unlinked"}
+                </span>
               </div>
-              <div className="grid grid-cols-2 gap-x-2 gap-y-0.5 sm:gap-x-4 sm:gap-y-1 mt-1 text-[10px] sm:text-xs font-sans">
+              <div className="grid grid-cols-2 gap-x-2 gap-y-0.5 sm:gap-x-4 sm:gap-y-1 mt-1.5 text-[10px] sm:text-xs font-sans">
                 <div>
                   <span className="text-ink-600 dark:text-ink-400">Total Lift:</span>{" "}
-                  <span className="font-bold text-emerald-600 dark:text-emerald-400">
-                    {totalLiftLbs} lbs
+                  <span className="font-bold text-emerald-700 dark:text-emerald-400">
+                    {Math.round(si.liftNewtons)} N
                   </span>
                 </div>
                 <div>
                   <span className="text-ink-600 dark:text-ink-400">Total Drag:</span>{" "}
-                  <span className="font-bold text-red-600 dark:text-red-400">
-                    {totalDragLbs} lbs
+                  <span className="font-bold text-red-700 dark:text-red-400">
+                    {Math.round(si.totalDragNewtons)} N
                   </span>
                 </div>
                 <div>
                   <span className="text-ink-600 dark:text-ink-400">Lift/Drag (L/D):</span>{" "}
-                  <span className="font-bold text-blue-600 dark:text-blue-400">
-                    {(totalLiftLbs / Math.max(1, totalDragLbs)).toFixed(2)}
+                  <span className="font-bold text-blue-700 dark:text-blue-400">
+                    {si.liftToDrag.toFixed(2)}
                   </span>
                 </div>
                 <div>
                   <span className="text-ink-600 dark:text-ink-400">Net Yaw:</span>{" "}
                   <span
                     className={`font-bold ${
-                      Math.abs(netYawMoment) < 30
-                        ? "text-emerald-600 dark:text-emerald-400"
-                        : "text-amber-600 dark:text-amber-400"
+                      si.adverseYawDominant
+                        ? "text-red-700 dark:text-red-400"
+                        : "text-emerald-700 dark:text-emerald-400"
                     }`}
                   >
-                    {netYawMoment > 0 ? `+${netYawMoment}` : netYawMoment} ft-lb
+                    {si.netYawNm > 0 ? `+${si.netYawNm.toFixed(1)}` : si.netYawNm.toFixed(1)} N·m
                   </span>
                 </div>
+                <div className="col-span-2 text-[9px] font-mono text-ink-500">
+                  Attitude kernel: {kernelLabel}
+                </div>
               </div>
-            </div>
-
-            <div className="hidden sm:flex bg-white/90 dark:bg-ink-900/90 backdrop-blur-md px-3 py-1.5 rounded-lg border border-parchment-300 dark:border-ink-700 text-[11px] font-sans text-ink-700 dark:text-ink-300 items-center gap-2">
-              <span
-                className={`w-2 h-2 rounded-full ${isCoupled ? "bg-emerald-500 animate-pulse" : "bg-red-500"}`}
-              />
-              <span>
-                {isCoupled
-                  ? "Claim 1 cable coupling: warp drives starboard rudder"
-                  : "Unlinked controls — adverse yaw is unopposed"}
-              </span>
             </div>
           </div>
         )}
 
-        {/* Camera & Toggle Controls */}
-        <div className="absolute top-3 right-3 sm:top-4 sm:right-4 z-10 flex flex-wrap justify-end gap-1.5 sm:gap-2 max-w-[65%]">
+        {/* Camera & Toggle Controls (Top-Right) */}
+        <div className="absolute top-3 right-3 sm:top-4 sm:right-4 z-10 flex flex-wrap justify-end gap-1.5 sm:gap-2 max-w-[90%]">
           <button
             type="button"
             onClick={() => setShowUiOverlay(!showUiOverlay)}
-            className={`p-1.5 sm:px-2.5 sm:py-1.5 rounded-lg text-xs font-sans font-semibold border transition-colors shadow-sm ${
+            className={`p-1.5 sm:px-2.5 sm:py-1.5 rounded-lg text-xs font-sans font-semibold border transition-colors shadow-xs ${
               showUiOverlay
-                ? "bg-white/85 dark:bg-ink-900/85 text-ink-700 dark:text-ink-300 border-parchment-300 dark:border-ink-700 hover:bg-parchment-100"
-                : "bg-amber-600 text-white border-amber-700 shadow-md ring-2 ring-amber-500/30"
+                ? "bg-white/90 dark:bg-ink-900/90 text-ink-800 dark:text-ink-200 border-parchment-300 dark:border-ink-700 hover:bg-parchment-100"
+                : "bg-amber-700 text-white border-amber-800 shadow-md ring-2 ring-amber-500/30 dark:bg-amber-600"
             }`}
-            title={showUiOverlay ? "Hide Overlay UI (Full Canvas View)" : "Show Overlay UI"}
-            aria-label={showUiOverlay ? "Hide Overlay UI" : "Show Overlay UI"}
+            title={showUiOverlay ? "Hide Overlay Telemetry" : "Show Overlay Telemetry"}
+            aria-label={showUiOverlay ? "Hide Overlay Telemetry" : "Show Overlay Telemetry"}
           >
             {showUiOverlay ? (
               <EyeOff className="w-3.5 h-3.5 inline sm:mr-1" />
             ) : (
               <Eye className="w-3.5 h-3.5 inline sm:mr-1" />
             )}
-            <span className="hidden md:inline">{showUiOverlay ? "Hide UI" : "Show UI"}</span>
+            <span className="hidden md:inline">{showUiOverlay ? "Hide HUD" : "Show HUD"}</span>
           </button>
           <button
             type="button"
             onClick={() => setShowStreamlines(!showStreamlines)}
-            className={`p-1.5 sm:px-3 sm:py-1.5 rounded-lg text-xs font-sans font-semibold border transition-colors ${
+            className={`p-1.5 sm:px-3 sm:py-1.5 rounded-lg text-xs font-sans font-semibold border transition-colors shadow-xs ${
               showStreamlines
-                ? "bg-amber-500 text-white border-amber-600 shadow-sm"
-                : "bg-white/80 dark:bg-ink-900/80 text-ink-700 dark:text-ink-300 border-parchment-300 dark:border-ink-700"
+                ? "bg-amber-700 text-white border-amber-800 dark:bg-amber-600"
+                : "bg-white/90 dark:bg-ink-900/90 text-ink-800 dark:text-ink-200 border-parchment-300 dark:border-ink-700"
             }`}
           >
             <Wind className="w-3.5 h-3.5 inline sm:mr-1" />
@@ -339,10 +354,10 @@ export function WrightFlyer3D() {
           <button
             type="button"
             onClick={() => setShowVectors(!showVectors)}
-            className={`p-1.5 sm:px-3 sm:py-1.5 rounded-lg text-xs font-sans font-semibold border transition-colors ${
+            className={`p-1.5 sm:px-3 sm:py-1.5 rounded-lg text-xs font-sans font-semibold border transition-colors shadow-xs ${
               showVectors
-                ? "bg-blue-600 text-white border-blue-700 shadow-sm"
-                : "bg-white/80 dark:bg-ink-900/80 text-ink-700 dark:text-ink-300 border-parchment-300 dark:border-ink-700"
+                ? "bg-blue-700 text-white border-blue-800 dark:bg-blue-600"
+                : "bg-white/90 dark:bg-ink-900/90 text-ink-800 dark:text-ink-200 border-parchment-300 dark:border-ink-700"
             }`}
           >
             <span className="hidden sm:inline">Force </span>Vectors
@@ -351,10 +366,10 @@ export function WrightFlyer3D() {
             aria-label={isAutoFlying ? "Freeze flight" : "Resume live flight"}
             type="button"
             onClick={() => setIsAutoFlying(!isAutoFlying)}
-            className={`p-1.5 sm:px-3 sm:py-1.5 rounded-lg text-xs font-sans font-semibold border transition-colors ${
+            className={`p-1.5 sm:px-3 sm:py-1.5 rounded-lg text-xs font-sans font-semibold border transition-colors shadow-xs ${
               isAutoFlying
-                ? "bg-emerald-600 text-white border-emerald-700 shadow-sm"
-                : "bg-white/80 dark:bg-ink-900/80 text-ink-700 dark:text-ink-300 border-parchment-300 dark:border-ink-700"
+                ? "bg-emerald-700 text-white border-emerald-800 dark:bg-emerald-600"
+                : "bg-white/90 dark:bg-ink-900/90 text-ink-800 dark:text-ink-200 border-parchment-300 dark:border-ink-700"
             }`}
           >
             <Play className="w-3.5 h-3.5 inline sm:mr-1" />
@@ -404,7 +419,7 @@ export function WrightFlyer3D() {
             step="1"
             value={rudderYawDeg}
             disabled={isCoupled}
-            onChange={(e) => setRudderYawDeg(Number(e.target.value))}
+            onChange={(e) => updateParam("rudder", Number(e.target.value))}
             className={`w-full accent-blue-600 dark:accent-blue-400 ${isCoupled ? "opacity-50 cursor-not-allowed" : "cursor-pointer"}`}
           />
           <label className="flex items-center gap-1.5 text-[10px] text-ink-500 dark:text-ink-400">
@@ -412,9 +427,9 @@ export function WrightFlyer3D() {
               type="checkbox"
               checked={isCoupled}
               onChange={(e) => {
-                setIsCoupled(e.target.checked);
+                updateParam("coupled", e.target.checked ? 1 : 0);
                 if (e.target.checked) {
-                  setRudderYawDeg(Math.round(wingWarpDeg * 0.45));
+                  updateParam("rudder", coupledRudderDeg(wingWarpDeg));
                 }
               }}
               className="rounded accent-emerald-600"
@@ -438,7 +453,7 @@ export function WrightFlyer3D() {
             max="15"
             step="1"
             value={elevatorPitchDeg}
-            onChange={(e) => setElevatorPitchDeg(Number(e.target.value))}
+            onChange={(e) => updateParam("elevator", Number(e.target.value))}
             className="w-full accent-emerald-600 dark:accent-emerald-400 cursor-pointer"
           />
           <span className="text-[10px] text-ink-500 dark:text-ink-400 block">
@@ -461,7 +476,7 @@ export function WrightFlyer3D() {
             max="45"
             step="1"
             value={airspeedMph}
-            onChange={(e) => setAirspeedMph(Number(e.target.value))}
+            onChange={(e) => updateParam("airspeed", Number(e.target.value))}
             className="w-full accent-purple-600 dark:accent-purple-400 cursor-pointer"
           />
           <span className="text-[10px] text-ink-500 dark:text-ink-400 block">

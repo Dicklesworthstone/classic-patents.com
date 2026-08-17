@@ -1,14 +1,17 @@
-"use client";
-
 import { Cpu, Monitor, Sparkles, Zap } from "lucide-react";
 import { useEffect, useState } from "react";
+import { usePatentPhysics } from "@/physics/usePatentPhysics";
 
 export function WozniakAppleSim() {
+  const { params, updateParam } = usePatentPhysics("us-4136359-wozniak-apple");
+  const crystalFreq = params.crystalFreq ?? 14.318;
   const [clockPhase, setClockPhase] = useState<0 | 1>(0); // Phase 1: CPU, Phase 2: Video Shifter
   const [isClockRunning, setIsClockRunning] = useState<boolean>(true);
   const [rasterLine, setRasterLine] = useState<number>(42);
   const [colorMode, setColorMode] = useState<"color" | "monochrome">("color");
   const [dramAddress, setDramAddress] = useState<string>("0x0400");
+
+  const intervalMs = Math.max(50, Math.round(2100 / crystalFreq));
 
   // Dynamic Phase 1 / Phase 2 Interleaving Clock (14.31818 MHz master crystal divided down)
   useEffect(() => {
@@ -17,9 +20,9 @@ export function WozniakAppleSim() {
       setClockPhase((prev) => (prev === 0 ? 1 : 0));
       setRasterLine((prev) => (prev + 1) % 192);
       setDramAddress(`0x0${(400 + Math.floor(Math.random() * 0x03ff)).toString(16).toUpperCase()}`);
-    }, 150);
+    }, intervalMs);
     return () => clearInterval(interval);
-  }, [isClockRunning]);
+  }, [isClockRunning, intervalMs]);
 
   return (
     <div className="rounded-2xl border border-amber-900/20 dark:border-ink-800 bg-parchment-50 dark:bg-ink-950 p-4 sm:p-6 shadow-patent space-y-6">
@@ -284,9 +287,34 @@ export function WozniakAppleSim() {
             </div>
           </div>
 
-          {/* Video Controls */}
+          {/* Timing & Video Controls */}
           <div className="p-4 rounded-xl bg-white/90 dark:bg-ink-900/90 border border-parchment-300 dark:border-ink-800 shadow-sm space-y-4">
             <span className="text-xs font-mono font-bold uppercase tracking-wider text-ink-500 dark:text-ink-400 block">
+              Master Crystal Timing
+            </span>
+
+            <div className="space-y-1">
+              <div className="flex justify-between text-xs font-mono">
+                <span className="font-semibold text-ink-800 dark:text-parchment-200">
+                  Master Quartz Crystal
+                </span>
+                <span className="text-amber-600 dark:text-amber-400 font-bold">
+                  {crystalFreq.toFixed(3)} MHz
+                </span>
+              </div>
+              <input
+                type="range"
+                aria-label="Master Quartz Crystal"
+                min="10.0"
+                max="18.0"
+                step="0.1"
+                value={crystalFreq}
+                onChange={(e) => updateParam("crystalFreq", Number(e.target.value))}
+                className="w-full accent-amber-600 cursor-pointer h-2 bg-parchment-300 dark:bg-ink-700 rounded-lg"
+              />
+            </div>
+
+            <span className="text-xs font-mono font-bold uppercase tracking-wider text-ink-500 dark:text-ink-400 block pt-2 border-t border-parchment-200 dark:border-ink-800">
               Display & Color Matrix
             </span>
 

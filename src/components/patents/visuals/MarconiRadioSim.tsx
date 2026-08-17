@@ -1,12 +1,12 @@
-"use client";
-
 import { Radio, Zap } from "lucide-react";
 import { useEffect, useState } from "react";
+import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { soundEngine } from "@/utils/soundEngine";
 
 export function MarconiRadioSim() {
-  const [antennaHeightMeters, setAntennaHeightMeters] = useState<number>(50); // 10 to 100 meters
-  const [sparkPowerKv, setSparkPowerKv] = useState<number>(25); // 5 to 50 kV
+  const { params, updateParam } = usePatentPhysics("us-586193-marconi-radio");
+  const antennaHeightMeters = params.aerialHeight ?? 88; // 30 to 120 meters
+  const sparkPowerKv = params.sparkVoltage ?? 28; // 10 to 50 kV
   const [isSparking, setIsSparking] = useState<boolean>(false);
   const [waveRingRadius, setWaveRingRadius] = useState<number>(0);
 
@@ -242,17 +242,17 @@ export function MarconiRadioSim() {
               </div>
               <input
                 type="range"
-                aria-label="Aerial Mast Height"
-                min="10"
-                max="100"
-                step="5"
+                aria-label="Vertical Aerial Height"
+                min="30"
+                max="120"
+                step="2"
                 value={antennaHeightMeters}
-                onChange={(e) => setAntennaHeightMeters(Number(e.target.value))}
+                onChange={(e) => updateParam("aerialHeight", Number(e.target.value))}
                 className="w-full accent-amber-600 cursor-pointer h-2 bg-parchment-300 dark:bg-ink-700 rounded-lg"
               />
               <div className="flex justify-between text-[10px] text-ink-500 font-mono">
-                <span>10m (Short)</span>
-                <span>100m (Transatlantic Mast)</span>
+                <span>30m (Local)</span>
+                <span>120m (Transatlantic Poldhu Mast)</span>
               </div>
             </div>
 
@@ -268,12 +268,12 @@ export function MarconiRadioSim() {
               </div>
               <input
                 type="range"
-                aria-label="Induction Coil Potential"
-                min="5"
+                aria-label="Induction Coil Voltage"
+                min="10"
                 max="50"
-                step="5"
+                step="1"
                 value={sparkPowerKv}
-                onChange={(e) => setSparkPowerKv(Number(e.target.value))}
+                onChange={(e) => updateParam("sparkVoltage", Number(e.target.value))}
                 className="w-full accent-blue-600 cursor-pointer h-2 bg-parchment-300 dark:bg-ink-700 rounded-lg"
               />
             </div>

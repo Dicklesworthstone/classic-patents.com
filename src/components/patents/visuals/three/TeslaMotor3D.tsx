@@ -15,6 +15,7 @@ import { useEffect, useRef, useState } from "react";
 import * as THREE from "three";
 import { HudText } from "@/components/ui/LatexRenderer";
 import { FrankenSimEngine } from "@/physics/engine";
+import { teslaBAt } from "@/physics/teslaKernel";
 import { useFrankenSimPhysics } from "@/physics/useFrankenSimPhysics";
 import { soundEngine } from "@/utils/soundEngine";
 import { createGlowPointTexture, createThreeStudioScene } from "./ThreeStudioScene";
@@ -92,7 +93,7 @@ export function TeslaMotor3D() {
   );
   const rotorInducedCurrentAmps = Math.round(emPhysics.currentAmperes);
 
-  useFrankenSimPhysics("tesla-ac-motor", {
+  useFrankenSimPhysics("us-381968-tesla-motor", {
     domain: "electromagnetics_flux",
     em: {
       frequencyHz: acFrequencyHz,
@@ -387,9 +388,8 @@ export function TeslaMotor3D() {
 
       const omegaSync = (2 * Math.PI * p.acFrequencyHz) / p.polePairs;
       bFieldAngle += omegaSync * delta * 0.08;
-
-      const bDir = new THREE.Vector3(Math.cos(bFieldAngle), 0, Math.sin(bFieldAngle));
-      bFieldArrow.setDirection(bDir);
+      const field = teslaBAt(bFieldAngle, phaseCount);
+      bFieldArrow.setDirection(new THREE.Vector3(field.bx, 0, field.by));
 
       const omegaRotor = omegaSync * (1 - p.slip) * 0.08;
       rotorGroup.rotation.y += omegaRotor * delta;

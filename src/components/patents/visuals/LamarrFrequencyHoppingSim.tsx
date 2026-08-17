@@ -1,7 +1,6 @@
-"use client";
-
 import { Radio } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
+import { usePatentPhysics } from "@/physics/usePatentPhysics";
 
 /** 88 piano-roll slots: 37 is coprime with 88, so one revolution visits every key once. */
 const PIANO_KEYS = 88;
@@ -17,9 +16,9 @@ function channelFrequencyMhz(channel: number): number {
 }
 
 export function LamarrFrequencyHoppingSim() {
+  const { params, updateParam } = usePatentPhysics("us-2292387-lamarr-frequency-hopping");
   const [isHoppingActive, setIsHoppingActive] = useState<boolean>(true);
-  // Store hops/sec so the slider polarity matches the label (right = faster).
-  const [hopsPerSec, setHopsPerSec] = useState<number>(7);
+  const hopsPerSec = params.hopRate ?? 4.0;
   const [isEnemyJamming, setIsEnemyJamming] = useState<boolean>(true);
   const [jammingFrequencyChannel, setJammingFrequencyChannel] = useState<number>(44); // Spot jamming channel 1-88
   const [currentChannel, setCurrentChannel] = useState<number>(() => pianoRollChannel(0));
@@ -205,11 +204,11 @@ export function LamarrFrequencyHoppingSim() {
               <input
                 type="range"
                 aria-label="Piano Roll Advance Speed"
-                min="2"
-                max="20"
-                step="1"
+                min="1"
+                max="10"
+                step="0.5"
                 value={hopsPerSec}
-                onChange={(e) => setHopsPerSec(Number(e.target.value))}
+                onChange={(e) => updateParam("hopRate", Number(e.target.value))}
                 className="w-full accent-purple-600 cursor-pointer h-2 bg-parchment-300 dark:bg-ink-700 rounded-lg"
               />
               <div className="flex justify-between text-[10px] text-ink-500 font-mono">

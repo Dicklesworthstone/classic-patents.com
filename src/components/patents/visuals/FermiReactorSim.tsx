@@ -3,10 +3,12 @@
 import { Activity, RotateCcw, Shield, Sparkles } from "lucide-react";
 import { useEffect, useState } from "react";
 import { FrankenSimEngine } from "@/physics/engine";
+import { usePatentPhysics } from "@/physics/usePatentPhysics";
 
 export function FermiReactorSim() {
-  const [controlRodWithdrawalPct, setControlRodWithdrawalPct] = useState<number>(78);
-  const [moderatorPurityPct, setModeratorPurityPct] = useState<number>(95);
+  const { params, updateParam, resetParams } = usePatentPhysics("us-2708656-fermi-reactor");
+  const controlRodWithdrawalPct = params.rodWithdrawal ?? 83.5;
+  const moderatorPurityPct = params.moderatorPurity ?? 99.5;
   const [fuelEnrichmentPct, setFuelEnrichmentPct] = useState<number>(0.72);
   const [_neutronHistory, setNeutronHistory] = useState<number[]>([200, 200, 200, 200, 200]);
 
@@ -35,8 +37,7 @@ export function FermiReactorSim() {
   }, [thermalPowerWatts]);
 
   const resetToCriticality = () => {
-    setControlRodWithdrawalPct(78);
-    setModeratorPurityPct(95);
+    resetParams();
     setFuelEnrichmentPct(0.72);
   };
 
@@ -262,9 +263,9 @@ export function FermiReactorSim() {
                 aria-label="Control Rod Withdrawal"
                 min="0"
                 max="100"
-                step="1"
+                step="0.5"
                 value={controlRodWithdrawalPct}
-                onChange={(e) => setControlRodWithdrawalPct(Number(e.target.value))}
+                onChange={(e) => updateParam("rodWithdrawal", Number(e.target.value))}
                 className="w-full accent-amber-600"
               />
             </div>
@@ -279,9 +280,9 @@ export function FermiReactorSim() {
                 aria-label="Graphite Moderator Purity"
                 min="80"
                 max="100"
-                step="1"
+                step="0.5"
                 value={moderatorPurityPct}
-                onChange={(e) => setModeratorPurityPct(Number(e.target.value))}
+                onChange={(e) => updateParam("moderatorPurity", Number(e.target.value))}
                 className="w-full accent-amber-600"
               />
             </div>

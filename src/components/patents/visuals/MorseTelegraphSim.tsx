@@ -1,7 +1,6 @@
-"use client";
-
 import { Radio, Volume2 } from "lucide-react";
 import { useState } from "react";
+import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { soundEngine } from "@/utils/soundEngine";
 
 const MORSE_TABLE: Record<string, string> = {
@@ -34,11 +33,13 @@ const MORSE_TABLE: Record<string, string> = {
 };
 
 export function MorseTelegraphSim() {
+  const { params, updateParam } = usePatentPhysics("us-1647-morse-telegraph");
   const [inputMessage, setInputMessage] = useState<string>("WHAT HATH GOD WROUGHT");
   const [isPlaying, setIsPlaying] = useState<boolean>(false);
   const [activeSymbolIndex, setActiveSymbolIndex] = useState<number>(-1);
   const [isKeyDepressed, setIsKeyDepressed] = useState<boolean>(false);
-  const [lineLengthMiles, setLineLengthMiles] = useState<number>(40);
+  const currentMa = params.currentMa ?? 65;
+  const lineLengthMiles = Math.round(120 - currentMa);
   const [isRelayEnabled, setIsRelayEnabled] = useState<boolean>(true);
 
   // Encode message to Morse
@@ -323,20 +324,20 @@ export function MorseTelegraphSim() {
             <div className="space-y-1">
               <div className="flex justify-between text-xs font-mono">
                 <span className="font-semibold text-ink-800 dark:text-parchment-200">
-                  Line Wire Distance
+                  Line Loop Current (Line Distance)
                 </span>
                 <span className="text-amber-600 dark:text-amber-400 font-bold">
-                  {lineLengthMiles} Miles
+                  {currentMa.toFixed(0)} mA ({lineLengthMiles} mi)
                 </span>
               </div>
               <input
                 type="range"
-                aria-label="Line Wire Distance"
-                min="5"
+                aria-label="Telegraph Line Current"
+                min="20"
                 max="100"
-                step="5"
-                value={lineLengthMiles}
-                onChange={(e) => setLineLengthMiles(Number(e.target.value))}
+                step="2"
+                value={currentMa}
+                onChange={(e) => updateParam("currentMa", Number(e.target.value))}
                 className="w-full accent-amber-600 cursor-pointer h-2 bg-parchment-300 dark:bg-ink-700 rounded-lg"
               />
             </div>

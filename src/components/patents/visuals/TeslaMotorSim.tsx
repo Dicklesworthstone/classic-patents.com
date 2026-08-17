@@ -2,12 +2,15 @@
 
 import { Volume2, VolumeX, Zap } from "lucide-react";
 import { useEffect, useState } from "react";
+import { teslaBAt } from "@/physics/teslaKernel";
+import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { soundEngine } from "@/utils/soundEngine";
 
 export function TeslaMotorSim() {
+  const { params, updateParam } = usePatentPhysics("us-381968-tesla-motor");
   const [phaseCount, setPhaseCount] = useState<2 | 3>(2);
-  const [frequencyHz, setFrequencyHz] = useState<number>(60);
-  const [loadTorque, setLoadTorque] = useState<number>(20);
+  const frequencyHz = params.frequency ?? 60;
+  const loadTorque = params.loadTorque ?? 20;
   const [isPlayingAudio, setIsPlayingAudio] = useState<boolean>(false);
   const [_activePedagogyStep, setActivePedagogyStep] = useState<number>(1);
   const [angle, setAngle] = useState<number>(0);
@@ -22,10 +25,14 @@ export function TeslaMotorSim() {
   // Animation Loop for Stator Field & Rotor Rotation
   useEffect(() => {
     const interval = setInterval(() => {
-      setAngle((prev) => (prev + (frequencyHz / 60) * 8) % 360);
+      setAngle((prev) => {
+        const next = (prev + (frequencyHz / 60) * 8) % 360;
+        updateParam("omegaT", next);
+        return next;
+      });
     }, 30);
     return () => clearInterval(interval);
-  }, [frequencyHz]);
+  }, [frequencyHz, updateParam]);
 
   // Audio AC Hum feedback
   useEffect(() => {
@@ -43,37 +50,27 @@ export function TeslaMotorSim() {
     setActivePedagogyStep(step);
     if (step === 1) {
       // Step 1: Low frequency 2-phase demonstration
-      setFrequencyHz(30);
+      updateParam("frequency", 30);
       setPhaseCount(2);
-      setLoadTorque(10);
+      updateParam("loadTorque", 10);
     } else if (step === 2) {
       // Step 2: Standard 60Hz 2-phase Polyphase Stator
-      setFrequencyHz(60);
+      updateParam("frequency", 60);
       setPhaseCount(2);
-      setLoadTorque(25);
+      updateParam("loadTorque", 25);
     } else if (step === 3) {
       // Step 3: High efficiency 3-phase AC Motor
-      setFrequencyHz(60);
+      updateParam("frequency", 60);
       setPhaseCount(3);
-      setLoadTorque(50);
+      updateParam("loadTorque", 40);
     }
   };
 
   const rad = (angle * Math.PI) / 180;
-  const coilCount = phaseCount === 2 ? 4 : 6;
-  let fieldX = 0;
-  let fieldY = 0;
-  for (let i = 0; i < coilCount; i++) {
-    const a = (i * 2 * Math.PI) / coilCount - Math.PI / 2;
-    const phaseOff = (i % phaseCount) * (phaseCount === 2 ? Math.PI / 2 : (2 * Math.PI) / 3);
-    const polarity = i >= phaseCount ? -1 : 1;
-    const current = polarity * Math.sin(rad + phaseOff);
-    fieldX += current * Math.cos(a);
-    fieldY += current * Math.sin(a);
-  }
-  const fieldNorm = Math.hypot(fieldX, fieldY) || 1;
-  const bVectorX = (fieldX / fieldNorm) * 60;
-  const bVectorY = (fieldY / fieldNorm) * 60;
+  const field = teslaBAt(rad, phaseCount);
+  const coilCount = field.coilCount;
+  const bVectorX = field.bx * 60;
+  const bVectorY = field.by * 60;
 
   return (
     <div className="rounded-2xl border border-amber-900/20 dark:border-ink-800 bg-parchment-50 dark:bg-ink-950 p-6 shadow-patent space-y-6">
@@ -90,6 +87,43 @@ export function TeslaMotorSim() {
             Observe how out-of-phase AC currents generate a smooth, rotating magnetic stator vortex
             with <strong>zero mechanical brushes</strong>.
           </p>
+        </div>
+
+        {/* Guided Learning Stepper */}
+        <div className="flex flex-wrap items-center gap-1.5 bg-parchment-200 dark:bg-ink-900 p-1 rounded-xl border border-parchment-300 dark:border-ink-800 text-xs font-mono">
+          <button
+            type="button"
+            onClick={() => _applyPedagogyStep(1)}
+            className={`px-2.5 py-1 rounded-lg transition-colors ${
+              _activePedagogyStep === 1
+                ? "bg-amber-600 text-white font-bold"
+                : "text-ink-700 dark:text-ink-400 hover:text-ink-900"
+            }`}
+          >
+            1. 2-Phase 30Hz
+          </button>
+          <button
+            type="button"
+            onClick={() => _applyPedagogyStep(2)}
+            className={`px-2.5 py-1 rounded-lg transition-colors ${
+              _activePedagogyStep === 2
+                ? "bg-amber-600 text-white font-bold"
+                : "text-ink-700 dark:text-ink-400 hover:text-ink-900"
+            }`}
+          >
+            2. Standard 60Hz
+          </button>
+          <button
+            type="button"
+            onClick={() => _applyPedagogyStep(3)}
+            className={`px-2.5 py-1 rounded-lg transition-colors ${
+              _activePedagogyStep === 3
+                ? "bg-emerald-600 text-white font-bold"
+                : "text-ink-700 dark:text-ink-400 hover:text-ink-900"
+            }`}
+          >
+            3. 3-Phase Polyphase
+          </button>
         </div>
 
         <div className="flex items-center gap-2">
@@ -142,8 +176,8 @@ export function TeslaMotorSim() {
             />
 
             {/* Stator poles: 4 coils at 90° (2-phase) or 6 coils at 60° (3-phase) */}
-            {Array.from({ length: phaseCount === 2 ? 4 : 6 }, (_, i) => {
-              const poles = phaseCount === 2 ? 4 : 6;
+            {Array.from({ length: coilCount }, (_, i) => {
+              const poles = coilCount;
               const a = (i * 2 * Math.PI) / poles - Math.PI / 2;
               const phaseOff =
                 (i % phaseCount) * (phaseCount === 2 ? Math.PI / 2 : (2 * Math.PI) / 3);
@@ -329,10 +363,10 @@ export function TeslaMotorSim() {
               <input
                 type="range"
                 aria-label="Stator AC Frequency"
-                min="10"
+                min="20"
                 max="120"
                 value={frequencyHz}
-                onChange={(e) => setFrequencyHz(Number(e.target.value))}
+                onChange={(e) => updateParam("frequency", Number(e.target.value))}
                 className="w-full accent-amber-600 cursor-pointer h-2 bg-parchment-300 dark:bg-ink-700 rounded-lg"
               />
             </div>
@@ -341,17 +375,17 @@ export function TeslaMotorSim() {
             <div className="space-y-1">
               <div className="flex justify-between text-xs font-mono">
                 <span className="font-semibold text-ink-800 dark:text-parchment-200">
-                  Shaft Mechanical Load
+                  Shaft Load Torque
                 </span>
-                <span className="text-blue-600 dark:text-blue-400 font-bold">{loadTorque}%</span>
+                <span className="text-blue-600 dark:text-blue-400 font-bold">{loadTorque} N·m</span>
               </div>
               <input
                 type="range"
                 aria-label="Shaft Mechanical Load"
                 min="5"
-                max="95"
+                max="45"
                 value={loadTorque}
-                onChange={(e) => setLoadTorque(Number(e.target.value))}
+                onChange={(e) => updateParam("loadTorque", Number(e.target.value))}
                 className="w-full accent-blue-600 cursor-pointer h-2 bg-parchment-300 dark:bg-ink-700 rounded-lg"
               />
             </div>

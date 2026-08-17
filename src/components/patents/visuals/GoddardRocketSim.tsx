@@ -1,13 +1,13 @@
-"use client";
-
 import { Rocket } from "lucide-react";
 import { useState } from "react";
 import { TextWithLatex } from "@/components/ui/LatexRenderer";
+import { usePatentPhysics } from "@/physics/usePatentPhysics";
 
 export function GoddardRocketSim() {
+  const { params, updateParam } = usePatentPhysics("us-1155986-goddard-rocket");
   const [activeStage, setActiveStage] = useState<1 | 2 | 3>(1);
-  const [combustionPressurePsi, setCombustionPressurePsi] = useState<number>(350); // 150 to 800 psi
-  const [nozzleExpansionRatio, setNozzleExpansionRatio] = useState<number>(12); // 4 to 25
+  const combustionPressurePsi = params.chamberPressure ?? 350;
+  const nozzleExpansionRatio = params.expansionRatio ?? 3.5;
   const [altitudeMiles, setAltitudeMiles] = useState<number>(18);
 
   // Optimal expansion ratio rises as ambient pressure falls with altitude.
@@ -279,12 +279,12 @@ export function GoddardRocketSim() {
               </div>
               <input
                 type="range"
-                aria-label="Simulation parameter"
+                aria-label="Combustion Chamber Pressure"
                 min="150"
-                max="750"
-                step="25"
+                max="600"
+                step="10"
                 value={combustionPressurePsi}
-                onChange={(e) => setCombustionPressurePsi(Number(e.target.value))}
+                onChange={(e) => updateParam("chamberPressure", Number(e.target.value))}
                 className="w-full accent-amber-600 cursor-pointer h-2 bg-parchment-300 dark:bg-ink-700 rounded-lg"
               />
             </div>
@@ -296,17 +296,17 @@ export function GoddardRocketSim() {
                   <TextWithLatex text="de Laval Nozzle Ratio ($\epsilon$)" />
                 </span>
                 <span className="text-blue-600 dark:text-blue-400 font-bold">
-                  {nozzleExpansionRatio}:1
+                  {nozzleExpansionRatio.toFixed(1)}:1
                 </span>
               </div>
               <input
                 type="range"
-                aria-label="Simulation parameter"
-                min="4"
-                max="25"
-                step="1"
+                aria-label="Nozzle Expansion Ratio"
+                min="2.0"
+                max="8.0"
+                step="0.1"
                 value={nozzleExpansionRatio}
-                onChange={(e) => setNozzleExpansionRatio(Number(e.target.value))}
+                onChange={(e) => updateParam("expansionRatio", Number(e.target.value))}
                 className="w-full accent-blue-600 cursor-pointer h-2 bg-parchment-300 dark:bg-ink-700 rounded-lg"
               />
             </div>

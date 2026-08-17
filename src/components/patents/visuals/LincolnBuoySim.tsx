@@ -1,12 +1,12 @@
-"use client";
-
 import { Ship } from "lucide-react";
 import { useState } from "react";
+import { usePatentPhysics } from "@/physics/usePatentPhysics";
 
 export function LincolnBuoySim() {
-  const [bellowsExpansionPercent, setBellowsExpansionPercent] = useState<number>(65); // 0 to 100%
+  const { params, updateParam } = usePatentPhysics("us-6281-lincoln-buoy");
+  const bellowsExpansionPercent = params.inflationPct ?? 75;
   const [vesselCargoTons, setVesselCargoTons] = useState<number>(120); // 50 to 200 tons
-  const [riverDepthFeet, setRiverDepthFeet] = useState<number>(4.2); // 2.0 to 8.0 feet
+  const riverDepthFeet = params.shoalDepth ?? 3.5;
 
   // Hydrostatic calculations
   // Baseline draft = 3.0 ft + (cargo / 50) ft
@@ -235,7 +235,7 @@ export function LincolnBuoySim() {
                 max="100"
                 step="5"
                 value={bellowsExpansionPercent}
-                onChange={(e) => setBellowsExpansionPercent(Number(e.target.value))}
+                onChange={(e) => updateParam("inflationPct", Number(e.target.value))}
                 className="w-full accent-amber-600 cursor-pointer h-2 bg-parchment-300 dark:bg-ink-700 rounded-lg"
               />
             </div>
@@ -252,7 +252,7 @@ export function LincolnBuoySim() {
               </div>
               <input
                 type="range"
-                aria-label="Simulation parameter"
+                aria-label="Cargo Weight"
                 min="50"
                 max="200"
                 step="10"
@@ -274,12 +274,12 @@ export function LincolnBuoySim() {
               </div>
               <input
                 type="range"
-                aria-label="Simulation parameter"
+                aria-label="Shoal Water Depth"
                 min="2.0"
-                max="7.0"
-                step="0.2"
+                max="6.0"
+                step="0.1"
                 value={riverDepthFeet}
-                onChange={(e) => setRiverDepthFeet(Number(e.target.value))}
+                onChange={(e) => updateParam("shoalDepth", Number(e.target.value))}
                 className="w-full accent-emerald-600 cursor-pointer h-2 bg-parchment-300 dark:bg-ink-700 rounded-lg"
               />
             </div>

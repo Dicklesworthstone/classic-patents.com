@@ -2,56 +2,54 @@
 
 import { Wind } from "lucide-react";
 import { useState } from "react";
+import { usePatentPhysics } from "@/physics/usePatentPhysics";
+import {
+  coupledRudderDeg,
+  readWrightControls,
+  stepWrightFlyerSi,
+  WRIGHT_PATENT_ID,
+} from "@/physics/wrightKernel";
 
 export function WrightFlyerSim() {
-  // Flight control state
-  const [wingWarpAngle, setWingWarpAngle] = useState<number>(15); // deg (-30 to +30)
-  const [rudderAngle, setRudderAngle] = useState<number>(11); // deg (-30 to +30)
-  const [canardAngle, setCanardAngle] = useState<number>(5); // deg (-20 to +20)
-  const [isCoupled, setIsCoupled] = useState<boolean>(true); // Wright Claim 1: Coordinated wing-warping + rudder
-  const [activeStep, setActiveStep] = useState<number>(3); // matches default coupled cruise
+  const { params, updateParam } = usePatentPhysics(WRIGHT_PATENT_ID);
+  const controls = readWrightControls(params);
+  const si = stepWrightFlyerSi(controls);
+  const wingWarpAngle = controls.wingWarpDeg;
+  const rudderAngle = controls.rudderDeg;
+  const canardAngle = controls.elevatorDeg;
+  const isCoupled = controls.coupled;
+  const [activeStep, setActiveStep] = useState<number>(3);
 
-  // Positive warp = right bank = more lift (and induced drag) on the RIGHT wing.
   const leftWingLift = 100 - wingWarpAngle * 2.2;
   const rightWingLift = 100 + wingWarpAngle * 2.2;
   const leftInducedDrag = (leftWingLift / 100) ** 2 * 15;
   const rightInducedDrag = (rightWingLift / 100) ** 2 * 15;
-
-  // Positive yaw moment = starboard (right). Extra right-wing drag yaws the nose left.
-  const adverseYawTorque = (leftInducedDrag - rightInducedDrag) * 1.5;
-  const rudderRestoringTorque = rudderAngle * 3.0;
-  const netYawMoment = adverseYawTorque + rudderRestoringTorque;
-
-  const isCoordinatedTurn = Math.abs(netYawMoment) < 10 && Math.abs(wingWarpAngle) > 8;
-  const isAdverseYawCrash =
-    Math.abs(netYawMoment) > 18 && Math.abs(wingWarpAngle) > 15 && !isCoupled;
+  const netYawMoment = si.netYawNm;
+  const isCoordinatedTurn = si.coordinated;
+  const isAdverseYawCrash = si.adverseYawDominant;
 
   // Step presets for guided pedagogical walkthrough
   const applyPedagogyStep = (step: number) => {
     setActiveStep(step);
     if (step === 1) {
-      // Step 1: The Adverse Yaw Trap (Prior Art Failure)
-      setWingWarpAngle(22);
-      setRudderAngle(0);
-      setIsCoupled(false);
+      updateParam("coupled", 0);
+      updateParam("wingWarp", 14);
+      updateParam("rudder", 0);
     } else if (step === 2) {
-      // Step 2: Pure Wing Warping Roll
-      setWingWarpAngle(18);
-      setRudderAngle(0);
-      setIsCoupled(false);
+      updateParam("coupled", 0);
+      updateParam("wingWarp", 12);
+      updateParam("rudder", 0);
     } else if (step === 3) {
-      // Step 3: Wright Master Breakthrough (Claim 1: Coordinated Rudder)
-      setWingWarpAngle(18);
-      setRudderAngle(13);
-      setIsCoupled(true);
+      updateParam("coupled", 1);
+      updateParam("wingWarp", 12);
+      updateParam("rudder", coupledRudderDeg(12));
     }
   };
 
   const handleWarpChange = (val: number) => {
-    setWingWarpAngle(val);
+    updateParam("wingWarp", val);
     if (isCoupled) {
-      // Hip-cradle cables: right bank pulls starboard rudder to cancel leftward adverse yaw
-      setRudderAngle(Math.round(val * 0.7));
+      updateParam("rudder", coupledRudderDeg(val));
     }
   };
 
@@ -463,7 +461,7 @@ export function WrightFlyerSim() {
                 max="30"
                 value={rudderAngle}
                 disabled={isCoupled}
-                onChange={(e) => setRudderAngle(Number(e.target.value))}
+                onChange={(e) => updateParam("rudder", Number(e.target.value))}
                 className={`w-full accent-red-600 h-2 rounded-lg ${
                   isCoupled
                     ? "opacity-50 cursor-not-allowed bg-ink-800"
@@ -491,7 +489,7 @@ export function WrightFlyerSim() {
                 min="-20"
                 max="20"
                 value={canardAngle}
-                onChange={(e) => setCanardAngle(Number(e.target.value))}
+                onChange={(e) => updateParam("elevator", Number(e.target.value))}
                 className="w-full accent-blue-600 cursor-pointer h-2 bg-parchment-300 dark:bg-ink-700 rounded-lg"
               />
             </div>
@@ -503,9 +501,9 @@ export function WrightFlyerSim() {
                   type="checkbox"
                   checked={isCoupled}
                   onChange={(e) => {
-                    setIsCoupled(e.target.checked);
+                    updateParam("coupled", e.target.checked ? 1 : 0);
                     if (e.target.checked) {
-                      setRudderAngle(Math.round(wingWarpAngle * 0.7));
+                      updateParam("rudder", coupledRudderDeg(wingWarpAngle));
                     }
                   }}
                   className="rounded accent-emerald-600 w-4 h-4"

@@ -2,8 +2,12 @@
 
 import { Tv } from "lucide-react";
 import { useEffect, useState } from "react";
+import { usePatentPhysics } from "@/physics/usePatentPhysics";
 
 export function FarnsworthTVSim() {
+  const { params, updateParam } = usePatentPhysics("us-1773980-farnsworth-tv");
+  const anodeVoltage = params.anodeVoltage ?? 1500;
+  const coilCurrent = params.coilCurrent ?? 0.42;
   const [scanLines, setScanLines] = useState<number>(60); // 30 to 240 lines
   const [mode, setMode] = useState<"electronic-farnsworth" | "mechanical-nipkow">(
     "electronic-farnsworth",
@@ -11,17 +15,19 @@ export function FarnsworthTVSim() {
   const [isScanning, setIsScanning] = useState<boolean>(true);
   const [beamPos, setBeamPos] = useState<{ x: number; y: number }>({ x: 0, y: 0 });
 
+  const speedMultiplier = (anodeVoltage / 1500) * 8;
+
   useEffect(() => {
     if (!isScanning) return;
     const interval = setInterval(() => {
       setBeamPos((pos) => {
-        const nextX = (pos.x + 8) % 100;
+        const nextX = (pos.x + speedMultiplier) % 100;
         const nextY = nextX < pos.x ? (pos.y + 100 / scanLines) % 100 : pos.y;
         return { x: nextX, y: nextY };
       });
     }, 30);
     return () => clearInterval(interval);
-  }, [isScanning, scanLines]);
+  }, [isScanning, scanLines, speedMultiplier]);
 
   return (
     <div className="rounded-xl border border-parchment-300 dark:border-ink-800 bg-parchment-50 dark:bg-ink-950 p-5 shadow-patent">
@@ -160,6 +166,46 @@ export function FarnsworthTVSim() {
                 value={scanLines}
                 onChange={(e) => setScanLines(Number(e.target.value))}
                 className="w-full accent-emerald-600 cursor-pointer h-2 bg-parchment-300 dark:bg-ink-700 rounded-lg"
+              />
+            </div>
+
+            <div>
+              <div className="flex justify-between text-xs font-mono mb-1">
+                <span className="font-semibold text-ink-800 dark:text-parchment-200">
+                  Anode Accelerating Potential
+                </span>
+                <span className="text-cyan-600 dark:text-cyan-400 font-bold">{anodeVoltage} V</span>
+              </div>
+              <input
+                type="range"
+                aria-label="Anode Accelerating Potential"
+                min="600"
+                max="2500"
+                step="50"
+                value={anodeVoltage}
+                onChange={(e) => updateParam("anodeVoltage", Number(e.target.value))}
+                className="w-full accent-cyan-600 cursor-pointer h-2 bg-parchment-300 dark:bg-ink-700 rounded-lg"
+              />
+            </div>
+
+            <div>
+              <div className="flex justify-between text-xs font-mono mb-1">
+                <span className="font-semibold text-ink-800 dark:text-parchment-200">
+                  Deflection Coil Current
+                </span>
+                <span className="text-purple-600 dark:text-purple-400 font-bold">
+                  {coilCurrent.toFixed(2)} A
+                </span>
+              </div>
+              <input
+                type="range"
+                aria-label="Deflection Coil Current"
+                min="0.1"
+                max="0.8"
+                step="0.02"
+                value={coilCurrent}
+                onChange={(e) => updateParam("coilCurrent", Number(e.target.value))}
+                className="w-full accent-purple-600 cursor-pointer h-2 bg-parchment-300 dark:bg-ink-700 rounded-lg"
               />
             </div>
           </div>

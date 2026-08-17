@@ -1,11 +1,11 @@
-"use client";
-
 import { AlertCircle, Lightbulb } from "lucide-react";
 import { useState } from "react";
+import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { soundEngine } from "@/utils/soundEngine";
 
 export function EdisonBulbSim() {
-  const [voltage, setVoltage] = useState<number>(110); // Volts
+  const { params, updateParam } = usePatentPhysics("us-223898-edison-lightbulb");
+  const voltage = params.voltage ?? 110;
   const [resistanceMode, setResistanceMode] = useState<"high-resistance" | "low-resistance">(
     "high-resistance",
   );
@@ -218,10 +218,11 @@ export function EdisonBulbSim() {
               <input
                 type="range"
                 aria-label="Generator Terminal Voltage"
-                min="0"
-                max="140"
+                min="40"
+                max="130"
+                step="1"
                 value={voltage}
-                onChange={(e) => setVoltage(Number(e.target.value))}
+                onChange={(e) => updateParam("voltage", Number(e.target.value))}
                 className="w-full accent-amber-600 cursor-pointer h-2 bg-parchment-300 dark:bg-ink-700 rounded-lg"
               />
             </div>

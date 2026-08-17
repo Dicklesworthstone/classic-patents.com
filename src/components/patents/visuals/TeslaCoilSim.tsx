@@ -1,11 +1,11 @@
-"use client";
-
 import { Zap } from "lucide-react";
 import { useState } from "react";
+import { usePatentPhysics } from "@/physics/usePatentPhysics";
 
 export function TeslaCoilSim() {
+  const { params, updateParam } = usePatentPhysics("us-533367-tesla-coil");
+  const primaryCapacitanceNf = params.primaryCap ?? 45;
   const [sparkRateHz, setSparkRateHz] = useState<number>(120); // 30 to 400 sparks/sec
-  const [primaryCapacitanceNf, setPrimaryCapacitanceNf] = useState<number>(20); // 5 to 50 nF
   const [secondaryTurns, setSecondaryTurns] = useState<number>(850); // 400 to 1500 turns
   const [_breakoutArcLengthInches, _setBreakoutArcLengthInches] = useState<number>(36);
 
@@ -189,11 +189,11 @@ export function TeslaCoilSim() {
               <input
                 type="range"
                 aria-label="Primary Tank Cap (C_p)"
-                min="5"
-                max="50"
-                step="2"
+                min="10"
+                max="90"
+                step="5"
                 value={primaryCapacitanceNf}
-                onChange={(e) => setPrimaryCapacitanceNf(Number(e.target.value))}
+                onChange={(e) => updateParam("primaryCap", Number(e.target.value))}
                 className="w-full accent-purple-600 cursor-pointer h-2 bg-parchment-300 dark:bg-ink-700 rounded-lg"
               />
             </div>

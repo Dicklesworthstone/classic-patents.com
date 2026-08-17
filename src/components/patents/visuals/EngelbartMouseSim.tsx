@@ -1,15 +1,17 @@
-"use client";
-
 import { MousePointer, Move, RotateCcw, Sparkles } from "lucide-react";
 import { useRef, useState } from "react";
+import { stepEngelbartResolver } from "@/physics/machineKernels";
+import { usePatentPhysics } from "@/physics/usePatentPhysics";
 
 export function EngelbartMouseSim() {
+  const { params, updateParam } = usePatentPhysics("us-3541541-engelbart-mouse");
   const [posX, setPosX] = useState<number>(180);
   const [posY, setPosY] = useState<number>(140);
   const isDraggingRef = useRef(false);
   const [pulseCountX, setPulseCountX] = useState<number>(0);
   const [pulseCountY, setPulseCountY] = useState<number>(0);
-  const [wheelDiameterMm, setWheelDiameterMm] = useState<number>(25);
+  const wheelRadius = params.wheelRadius ?? 10.0;
+  const wheelDiameterMm = wheelRadius * 2;
   const [pulsesPerRev, setPulsesPerRev] = useState<number>(36);
 
   const prevPosRef = useRef<{ x: number; y: number }>({ x: posX, y: posY });
@@ -37,10 +39,11 @@ export function EngelbartMouseSim() {
     const dy = svgY - prevPosRef.current.y;
 
     if (Math.abs(dx) > 1 || Math.abs(dy) > 1) {
+      const rolled = stepEngelbartResolver(dx, dy, wheelRadius, pulsesPerRev);
       setPosX(svgX);
       setPosY(svgY);
-      setPulseCountX((prev) => prev + Math.round(dx * 1.5));
-      setPulseCountY((prev) => prev + Math.round(dy * 1.5));
+      setPulseCountX((prev) => prev + rolled.pulsesX);
+      setPulseCountY((prev) => prev + rolled.pulsesY);
       prevPosRef.current = { x: svgX, y: svgY };
     }
   };
@@ -291,16 +294,18 @@ export function EngelbartMouseSim() {
             <div className="space-y-2">
               <div className="flex justify-between text-xs">
                 <span className="text-ink-700 dark:text-ink-300">Knife Wheel Dia:</span>
-                <span className="font-mono font-bold text-amber-600">{wheelDiameterMm} mm</span>
+                <span className="font-mono font-bold text-amber-600">
+                  {wheelDiameterMm.toFixed(1)} mm
+                </span>
               </div>
               <input
                 type="range"
                 aria-label="Knife Wheel Dia"
-                min="15"
-                max="40"
+                min="12"
+                max="36"
                 step="1"
                 value={wheelDiameterMm}
-                onChange={(e) => setWheelDiameterMm(Number(e.target.value))}
+                onChange={(e) => updateParam("wheelRadius", Number(e.target.value) / 2)}
                 className="w-full accent-amber-600"
               />
             </div>

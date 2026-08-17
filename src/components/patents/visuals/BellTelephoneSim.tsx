@@ -1,12 +1,12 @@
-"use client";
-
 import { Mic, Volume2, VolumeX, Waves } from "lucide-react";
 import { useEffect, useState } from "react";
+import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { soundEngine } from "@/utils/soundEngine";
 
 export function BellTelephoneSim() {
+  const { params, updateParam } = usePatentPhysics("us-174465-bell-telephone");
   const [acousticFrequency, setAcousticFrequency] = useState<number>(440); // Hz
-  const [voiceAmplitude, setVoiceAmplitude] = useState<number>(50); // %
+  const voiceAmplitude = params.voiceAmplitude ?? 75;
   const [signalType, setSignalType] = useState<"continuous-undulating" | "intermittent-make-break">(
     "continuous-undulating",
   );
@@ -191,19 +191,20 @@ export function BellTelephoneSim() {
             <div>
               <div className="flex justify-between text-xs font-mono mb-1">
                 <span className="font-semibold text-ink-800 dark:text-parchment-200">
-                  Voice Acoustic Amplitude
+                  Voice Sound Pressure
                 </span>
                 <span className="text-amber-600 dark:text-amber-400 font-bold">
-                  {voiceAmplitude}%
+                  {voiceAmplitude} dB
                 </span>
               </div>
               <input
                 type="range"
-                aria-label="Voice Acoustic Amplitude"
-                min="10"
-                max="90"
+                aria-label="Voice Sound Pressure"
+                min="40"
+                max="95"
+                step="1"
                 value={voiceAmplitude}
-                onChange={(e) => setVoiceAmplitude(Number(e.target.value))}
+                onChange={(e) => updateParam("voiceAmplitude", Number(e.target.value))}
                 className="w-full accent-amber-600 cursor-pointer h-2 bg-parchment-300 dark:bg-ink-700 rounded-lg"
               />
             </div>

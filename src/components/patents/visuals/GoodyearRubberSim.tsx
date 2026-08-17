@@ -2,9 +2,11 @@
 
 import { Layers } from "lucide-react";
 import { useState } from "react";
+import { usePatentPhysics } from "@/physics/usePatentPhysics";
 
 export function GoodyearRubberSim() {
-  const [sulfurPercent, setSulfurPercent] = useState<number>(8); // 0 to 30%
+  const { params, updateParam } = usePatentPhysics("us-3633-goodyear-rubber");
+  const sulfurPercent = params.sulfurPct ?? 8;
   const [temperatureCelsius, setTemperatureCelsius] = useState<number>(35); // -30 to 120°C
   const [appliedStress, setAppliedStress] = useState<number>(50); // 0 to 100%
 
@@ -139,7 +141,7 @@ export function GoodyearRubberSim() {
                 min="0"
                 max="30"
                 value={sulfurPercent}
-                onChange={(e) => setSulfurPercent(Number(e.target.value))}
+                onChange={(e) => updateParam("sulfurPct", Number(e.target.value))}
                 className="w-full accent-amber-600 cursor-pointer h-2 bg-parchment-300 dark:bg-ink-700 rounded-lg"
               />
               <div className="flex justify-between text-[10px] text-ink-500 font-mono">

@@ -11,8 +11,9 @@ import {
   ZoomOut,
 } from "lucide-react";
 import { useCallback, useEffect, useMemo, useState } from "react";
+import { teslaBAt, teslaFig4Strobe } from "@/physics/teslaKernel";
+import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import type { PatentDrawing } from "@/types/patent";
-import { PhysicsTelemetryBadge } from "./PhysicsTelemetryBadge";
 
 interface InteractiveDiagramViewerProps {
   drawings: PatentDrawing[];
@@ -43,6 +44,38 @@ const SCHEMATIC_HINTS: Array<[RegExp, string]> = [
   [/fermi|reactor|2708656|2,708,656/, "fermi-reactor"],
   [/wozniak|apple|4136359|4,136,359/, "wozniak-apple"],
   [/einstein|refrigerator|1781541|1,781,541/, "einstein-refrigerator"],
+  [/colt|revolver|138/, "colt-revolver"],
+  [/otis|elevator|31128|31,128/, "otis-elevator"],
+  [/whitney|cotton[- ]gin|x72/, "whitney-cotton-gin"],
+  [/mccormick|reaper|x8277|4895|4,895/, "mccormick-reaper"],
+  [/davenport|132/, "davenport-motor"],
+  [/ericsson|propeller|588/, "ericsson-propeller"],
+  [/corliss|steam|6162|6,162/, "corliss-engine"],
+  [/gatling|battery|36836|36,836/, "gatling-gun"],
+  [/nobel|dynamite|78317|78,317/, "nobel-dynamite"],
+  [/sholes|typewriter|79265|79,265/, "sholes-typewriter"],
+  [/hyatt|celluloid|105338|105,338/, "hyatt-celluloid"],
+  [/gramme|dynamo|120057|120,057/, "gramme-dynamo"],
+  [/westinghouse|air[- ]brake|124404|124,404/, "westinghouse-air-brake"],
+  [/pasteur|fermentation|135245|135,245/, "pasteur-fermentation"],
+  [/glidden|barbed[- ]wire|157124|157,124/, "glidden-barbed-wire"],
+  [/otto|194047|194,047/, "otto-engine"],
+  [/phonograph|200521|200,521/, "edison-phonograph"],
+  [/pelton|water[- ]wheel|233692|233,692/, "pelton-water-wheel"],
+  [/delaval|separator|247804|247,804/, "delaval-separator"],
+  [/mergenthaler|linotype|313224|313,224/, "mergenthaler-linotype"],
+  [/maxim|machine[- ]gun|319596|319,596/, "maxim-machine-gun"],
+  [/thomson|welding|347140|347,140/, "thomson-welding"],
+  [/daimler|361931|361,931/, "daimler-engine"],
+  [/eastman|kodak|388850|388,850/, "eastman-kodak"],
+  [/hollerith|tabulating|395781|395,781/, "hollerith-tabulating"],
+  [/reno|escalator|470918|470,918/, "reno-escalator"],
+  [/diesel|542846|542,846/, "diesel-engine"],
+  [/parsons|turbine|608969|608,969/, "parsons-turbine"],
+  [/teleautomaton|613809|613,809/, "tesla-teleautomaton"],
+  [/zeppelin|airship|621195|621,195/, "zeppelin-airship"],
+  [/linde|liquefaction|727650|727,650/, "linde-air-liquefaction"],
+  [/carrier|condition|808897|808,897/, "carrier-air-conditioner"],
 ];
 
 function resolveSchematicKind(
@@ -70,29 +103,78 @@ function renderHistoricalSchematic(
   figureNumber: string,
   patentNumber: string,
   patentId?: string,
+  params?: Record<string, number>,
 ) {
   const kind = resolveSchematicKind(svgType, figureNumber, patentNumber, patentId);
   switch (kind) {
     case "wright-flyer": {
+      const warp = ((params?.wingWarp ?? 8) / 15) * 12;
+      const rudderAngle = (params?.rudder ?? params?.rudderAngle ?? 4) * 0.7;
       return (
         <g stroke="#38bdf8" strokeWidth="1.5" fill="none">
-          {/* Upper & Lower Biplane Wings */}
-          <path d="M 40 100 Q 200 80 360 100 Q 200 90 40 100 Z" fill="#0284c7" fillOpacity="0.15" />
+          {/* Upper & Lower Biplane Wings with Dynamic Warping Differential */}
           <path
-            d="M 40 190 Q 200 170 360 190 Q 200 180 40 190 Z"
+            d={`M 40 ${100 - warp} Q 200 80 360 ${100 + warp} Q 200 90 40 ${100 - warp} Z`}
+            fill="#0284c7"
+            fillOpacity="0.15"
+          />
+          <path
+            d={`M 40 ${190 - warp} Q 200 170 360 ${190 + warp} Q 200 180 40 ${190 - warp} Z`}
             fill="#0284c7"
             fillOpacity="0.15"
           />
           {/* Vertical Struts with Universal Pivots */}
-          <line x1="80" y1="95" x2="80" y2="185" strokeWidth="2" stroke="#bae6fd" />
+          <line
+            x1="80"
+            y1={95 - warp * 0.7}
+            x2="80"
+            y2={185 - warp * 0.7}
+            strokeWidth="2"
+            stroke="#bae6fd"
+          />
           <line x1="160" y1="90" x2="160" y2="180" strokeWidth="2" stroke="#bae6fd" />
           <line x1="240" y1="90" x2="240" y2="180" strokeWidth="2" stroke="#bae6fd" />
-          <line x1="320" y1="95" x2="320" y2="185" strokeWidth="2" stroke="#bae6fd" />
+          <line
+            x1="320"
+            y1={95 + warp * 0.7}
+            x2="320"
+            y2={185 + warp * 0.7}
+            strokeWidth="2"
+            stroke="#bae6fd"
+          />
           {/* Diagonal Guy-Wires */}
-          <line x1="80" y1="95" x2="160" y2="180" strokeDasharray="3 2" stroke="#7dd3fc" />
-          <line x1="160" y1="90" x2="80" y2="185" strokeDasharray="3 2" stroke="#7dd3fc" />
-          <line x1="240" y1="90" x2="320" y2="185" strokeDasharray="3 2" stroke="#7dd3fc" />
-          <line x1="320" y1="95" x2="240" y2="180" strokeDasharray="3 2" stroke="#7dd3fc" />
+          <line
+            x1="80"
+            y1={95 - warp * 0.7}
+            x2="160"
+            y2="180"
+            strokeDasharray="3 2"
+            stroke="#7dd3fc"
+          />
+          <line
+            x1="160"
+            y1="90"
+            x2="80"
+            y2={185 - warp * 0.7}
+            strokeDasharray="3 2"
+            stroke="#7dd3fc"
+          />
+          <line
+            x1="240"
+            y1="90"
+            x2="320"
+            y2={185 + warp * 0.7}
+            strokeDasharray="3 2"
+            stroke="#7dd3fc"
+          />
+          <line
+            x1="320"
+            y1={95 + warp * 0.7}
+            x2="240"
+            y2="180"
+            strokeDasharray="3 2"
+            stroke="#7dd3fc"
+          />
           {/* Forward Canard Elevator */}
           <rect
             x="140"
@@ -106,19 +188,21 @@ function renderHistoricalSchematic(
           />
           <line x1="150" y1="59" x2="180" y2="90" stroke="#bae6fd" />
           <line x1="250" y1="59" x2="220" y2="90" stroke="#bae6fd" />
-          {/* Rear Vertical Rudder */}
-          <rect
-            x="185"
-            y="225"
-            width="30"
-            height="55"
-            rx="2"
-            fill="#0369a1"
-            fillOpacity="0.3"
-            stroke="#38bdf8"
-          />
-          <line x1="190" y1="185" x2="190" y2="225" stroke="#bae6fd" strokeWidth="2" />
-          <line x1="210" y1="185" x2="210" y2="225" stroke="#bae6fd" strokeWidth="2" />
+          {/* Rear Vertical Rudder with Dynamic Coordinated Deflection */}
+          <g transform={`rotate(${rudderAngle} 200 225)`}>
+            <rect
+              x="185"
+              y="225"
+              width="30"
+              height="55"
+              rx="2"
+              fill="#0369a1"
+              fillOpacity="0.3"
+              stroke="#38bdf8"
+            />
+            <line x1="190" y1="185" x2="190" y2="225" stroke="#bae6fd" strokeWidth="2" />
+            <line x1="210" y1="185" x2="210" y2="225" stroke="#bae6fd" strokeWidth="2" />
+          </g>
           {/* Pilot Cradle */}
           <rect
             x="180"
@@ -133,7 +217,21 @@ function renderHistoricalSchematic(
         </g>
       );
     }
-    case "tesla-motor":
+    case "tesla-motor": {
+      const freq = params?.frequency ?? 60;
+      const fieldIntensity = Math.min(1, Math.max(0.3, freq / 60));
+      const omegaT = ((params?.omegaT ?? 0) * Math.PI) / 180;
+      const live = teslaBAt(omegaT, 2);
+      const strobe = teslaFig4Strobe(2);
+      const arrow = (bx: number, by: number, len: number, opacity: number, width: number) => {
+        const x2 = 200 + bx * len;
+        const y2 = 150 - by * len;
+        return (
+          <g key={`${bx.toFixed(3)}-${by.toFixed(3)}-${opacity}`} opacity={opacity}>
+            <line x1="200" y1="150" x2={x2} y2={y2} stroke="#ef4444" strokeWidth={width} />
+          </g>
+        );
+      };
       return (
         <g stroke="#38bdf8" strokeWidth="1.5" fill="none">
           <circle cx="200" cy="150" r="95" strokeWidth="2.5" stroke="#60a5fa" />
@@ -144,7 +242,7 @@ function renderHistoricalSchematic(
             strokeWidth="1.5"
             stroke="#3b82f6"
             fill="#1e3a8a"
-            fillOpacity="0.1"
+            fillOpacity={0.1 * fieldIntensity}
           />
           <rect
             x="180"
@@ -200,52 +298,53 @@ function renderHistoricalSchematic(
             strokeWidth="2"
           />
           <circle cx="200" cy="150" r="8" fill="#10b981" />
-          <line x1="200" y1="150" x2="232" y2="118" stroke="#ef4444" strokeWidth="2.5" />
-          <polygon points="232,118 220,122 228,130" fill="#ef4444" />
+          {strobe.map((s, i) => arrow(s.bx, s.by, 28, 0.18 + i * 0.04, 1.2))}
+          {arrow(live.bx, live.by, 44, 1, 2.5)}
         </g>
       );
+    }
     case "tesla-coil":
       return (
         <g stroke="#38bdf8" strokeWidth="1.5" fill="none">
           <rect x="70" y="230" width="260" height="18" rx="3" fill="#334155" stroke="#94a3b8" />
-          <circle cx="200" cy="92" r="28" fill="#7dd3fc" fillOpacity="0.15" stroke="#67e8f9" />
+          <line x1="100" y1="230" x2="100" y2="170" stroke="#f59e0b" strokeWidth="3" />
+          <line x1="300" y1="230" x2="300" y2="170" stroke="#f59e0b" strokeWidth="3" />
           <path
-            d="M 155 230 L 170 200 L 230 200 L 245 230"
+            d="M 120 170 C 120 120 160 80 200 80 C 240 80 280 120 280 170 Z"
             fill="#1e3a8a"
-            fillOpacity="0.25"
+            fillOpacity="0.3"
             stroke="#60a5fa"
+            strokeWidth="2"
           />
-          <path
-            d="M 175 200 L 185 120 L 215 120 L 225 200"
-            fill="#0f172a"
+          <ellipse
+            cx="200"
+            cy="70"
+            rx="50"
+            ry="18"
+            fill="#d97706"
             fillOpacity="0.4"
-            stroke="#38bdf8"
+            stroke="#f59e0b"
+            strokeWidth="2"
           />
-          <path d="M 178 195 Q 200 150 222 195" stroke="#f59e0b" strokeWidth="2" />
-          <path d="M 180 170 Q 200 135 220 170" stroke="#fbbf24" />
-          <line x1="200" y1="120" x2="200" y2="64" stroke="#fde68a" strokeWidth="2" />
+          <line x1="200" y1="88" x2="200" y2="170" stroke="#fbbf24" strokeWidth="2.5" />
+          <circle cx="160" cy="245" r="5" fill="#ef4444" />
+          <circle cx="240" cy="245" r="5" fill="#ef4444" />
+          <line x1="165" y1="245" x2="235" y2="245" stroke="#f87171" strokeDasharray="2 2" />
         </g>
       );
-    case "edison-bulb":
+    case "edison-bulb": {
+      const filamentTemp = params?.filamentTemp ?? 2100;
+      const glowOpacity = Math.min(0.9, Math.max(0.2, (filamentTemp - 1800) / 1000));
       return (
         <g stroke="#38bdf8" strokeWidth="1.5" fill="none">
           <path
-            d="M 160 230 C 140 180 120 150 120 110 C 120 60 155 30 200 30 C 245 30 280 60 280 110 C 280 150 260 180 240 230 Z"
-            fill="#38bdf8"
-            fillOpacity="0.08"
-            stroke="#7dd3fc"
+            d="M 150 190 C 120 160 120 100 160 70 C 200 40 240 70 280 100 C 280 160 250 190 230 210 L 170 210 Z"
+            fill="#fef08a"
+            fillOpacity={glowOpacity * 0.3}
+            stroke="#eab308"
             strokeWidth="2"
           />
-          <rect
-            x="160"
-            y="230"
-            width="80"
-            height="35"
-            rx="3"
-            fill="#64748b"
-            fillOpacity="0.4"
-            stroke="#94a3b8"
-          />
+          <path d="M 170 210 L 170 235 L 230 235 L 230 210 Z" fill="#64748b" stroke="#94a3b8" />
           <line x1="160" y1="245" x2="240" y2="245" stroke="#94a3b8" />
           <path
             d="M 185 220 L 185 140 C 185 90 215 90 215 140 L 215 220"
@@ -257,7 +356,13 @@ function renderHistoricalSchematic(
           <circle cx="215" cy="220" r="4" fill="#d97706" />
         </g>
       );
-    case "fermi-reactor":
+    }
+    case "fermi-reactor": {
+      const rodWithdrawal = params?.rodWithdrawal ?? 83.5;
+      const rodY = 20 + ((100 - rodWithdrawal) / 100) * 70;
+      const modPurity = params?.moderatorPurity ?? 99.5;
+      const keff = 0.85 + (rodWithdrawal / 100) * 0.18 * (modPurity / 100);
+      const fuelGlow = keff > 1.002 ? "#ef4444" : keff >= 0.998 ? "#10b981" : "#3b82f6";
       return (
         <g stroke="#38bdf8" strokeWidth="1.5" fill="none">
           <rect
@@ -277,27 +382,30 @@ function renderHistoricalSchematic(
           <line x1="140" y1="70" x2="140" y2="240" stroke="#475569" />
           <line x1="200" y1="70" x2="200" y2="240" stroke="#475569" />
           <line x1="260" y1="70" x2="260" y2="240" stroke="#475569" />
-          <circle cx="110" cy="90" r="9" fill="#10b981" stroke="#34d399" />
-          <circle cx="170" cy="90" r="9" fill="#10b981" stroke="#34d399" />
-          <circle cx="230" cy="90" r="9" fill="#10b981" stroke="#34d399" />
-          <circle cx="290" cy="90" r="9" fill="#10b981" stroke="#34d399" />
-          <circle cx="110" cy="170" r="9" fill="#10b981" stroke="#34d399" />
-          <circle cx="170" cy="170" r="9" fill="#10b981" stroke="#34d399" />
-          <circle cx="230" cy="170" r="9" fill="#10b981" stroke="#34d399" />
-          <circle cx="290" cy="170" r="9" fill="#10b981" stroke="#34d399" />
+          {/* Uranium fuel slug matrix with dynamic criticality color */}
+          <circle cx="110" cy="90" r="9" fill={fuelGlow} stroke="#34d399" />
+          <circle cx="170" cy="90" r="9" fill={fuelGlow} stroke="#34d399" />
+          <circle cx="230" cy="90" r="9" fill={fuelGlow} stroke="#34d399" />
+          <circle cx="290" cy="90" r="9" fill={fuelGlow} stroke="#34d399" />
+          <circle cx="110" cy="170" r="9" fill={fuelGlow} stroke="#34d399" />
+          <circle cx="170" cy="170" r="9" fill={fuelGlow} stroke="#34d399" />
+          <circle cx="230" cy="170" r="9" fill={fuelGlow} stroke="#34d399" />
+          <circle cx="290" cy="170" r="9" fill={fuelGlow} stroke="#34d399" />
+          {/* Cadmium Control Rod moving dynamically into core */}
           <rect
             x="195"
-            y="30"
+            y={rodY}
             width="10"
             height="160"
             rx="2"
             fill="#ef4444"
-            fillOpacity="0.8"
+            fillOpacity="0.9"
             stroke="#f87171"
             strokeWidth="1.5"
           />
         </g>
       );
+    }
     case "wozniak-apple":
       return (
         <g stroke="#38bdf8" strokeWidth="1.5" fill="none">
@@ -902,6 +1010,742 @@ function renderHistoricalSchematic(
           <line x1="115" y1="170" x2="115" y2="110" stroke="#a855f7" />
         </g>
       );
+    case "colt-revolver": {
+      const cockDeg = params?.cockingAngle ?? 45;
+      const rotDeg = (cockDeg / 45) * 60;
+      return (
+        <g stroke="#38bdf8" strokeWidth="1.5" fill="none">
+          {/* Revolver Frame & Barrel */}
+          <rect
+            x="220"
+            y="90"
+            width="140"
+            height="30"
+            stroke="#60a5fa"
+            strokeWidth="2"
+            fill="#1e3a8a"
+            fillOpacity="0.2"
+            rx="2"
+          />
+          <path
+            d="M 60 70 L 220 70 L 220 160 L 100 160 L 80 200 L 50 180 Z"
+            stroke="#38bdf8"
+            strokeWidth="2"
+            fill="#0369a1"
+            fillOpacity="0.2"
+          />
+
+          {/* Cylinder with chambers */}
+          <rect
+            x="130"
+            y="80"
+            width="85"
+            height="55"
+            stroke="#f59e0b"
+            strokeWidth="2"
+            fill="#78350f"
+            fillOpacity="0.25"
+            rx="3"
+          />
+          <rect x="130" y="86" width="80" height="12" stroke="#fbbf24" strokeDasharray="3,3" />
+          <rect x="130" y="116" width="80" height="12" stroke="#fbbf24" strokeDasharray="3,3" />
+
+          {/* Hammer & Pawl */}
+          <g transform={`translate(100, 125) rotate(${-cockDeg})`}>
+            <path
+              d="M 0 0 L -12 -35 L 4 -60 L 15 -55 L 8 -30 Z"
+              stroke="#cbd5e1"
+              strokeWidth="2"
+              fill="#334155"
+            />
+            <line x1="8" y1="-20" x2="28" y2="-15" stroke="#f59e0b" strokeWidth="3" />
+          </g>
+
+          {/* Ratchet Wheel */}
+          <circle cx="126" cy="108" r="10" stroke="#f59e0b" strokeWidth="1.5" />
+
+          {/* Detent Bolt */}
+          <rect
+            x="170"
+            y="136"
+            width="10"
+            height="12"
+            fill={cockDeg >= 44 ? "#34d399" : "#fbbf24"}
+            stroke="#10b981"
+          />
+
+          <text x="290" y="82" fill="#93c5fd" fontSize="9" textAnchor="middle">
+            Rifled Barrel
+          </text>
+          <text x="172" y="74" fill="#fbbf24" fontSize="9" textAnchor="middle">
+            6-Chamber Cylinder (Δθ={rotDeg.toFixed(0)}°)
+          </text>
+          <text x="65" y="55" fill="#bae6fd" fontSize="9">
+            Pawl & Hammer
+          </text>
+        </g>
+      );
+    }
+    case "otis-elevator": {
+      const tension = params?.cableTension ?? 100;
+      const isCut = tension < 15;
+      const springBow = isCut ? 0 : 15;
+      const pawlExt = isCut ? 15 : 4;
+      return (
+        <g stroke="#38bdf8" strokeWidth="1.5" fill="none">
+          {/* Guide Rail Ratchets */}
+          <line x1="80" y1="30" x2="80" y2="240" stroke="#64748b" strokeWidth="3" />
+          <line x1="320" y1="30" x2="320" y2="240" stroke="#64748b" strokeWidth="3" />
+          {[50, 80, 110, 140, 170, 200].map((y) => (
+            <g key={y}>
+              <polygon
+                points={`80,${y} 90,${y + 6} 80,${y + 12}`}
+                fill="#94a3b8"
+                stroke="#cbd5e1"
+              />
+              <polygon
+                points={`320,${y} 310,${y + 6} 320,${y + 12}`}
+                fill="#94a3b8"
+                stroke="#cbd5e1"
+              />
+            </g>
+          ))}
+
+          {/* Hoist Rope */}
+          {!isCut ? (
+            <line x1="200" y1="20" x2="200" y2={90 - springBow} stroke="#f59e0b" strokeWidth="3" />
+          ) : (
+            <path d="M 200 20 L 195 40 L 205 55" stroke="#ef4444" strokeWidth="2.5" />
+          )}
+
+          {/* Elevator Frame */}
+          <rect
+            x="100"
+            y="100"
+            width="200"
+            height="120"
+            stroke="#60a5fa"
+            strokeWidth="2"
+            fill="#1e3a8a"
+            fillOpacity="0.2"
+            rx="3"
+          />
+
+          {/* Transverse Leaf Spring */}
+          <path d={`M 110 100 Q 200 ${100 - springBow} 290 100`} stroke="#38bdf8" strokeWidth="4" />
+
+          {/* Safety Pawls */}
+          <line
+            x1="110"
+            y1="100"
+            x2={100 - pawlExt}
+            y2="105"
+            stroke={isCut ? "#34d399" : "#38bdf8"}
+            strokeWidth="3.5"
+          />
+          <line
+            x1="290"
+            y1="100"
+            x2={300 + pawlExt}
+            y2="105"
+            stroke={isCut ? "#34d399" : "#38bdf8"}
+            strokeWidth="3.5"
+          />
+
+          <text x="200" y="70" fill="#fbbf24" fontSize="9" textAnchor="middle">
+            {!isCut ? "Hoisting Cable" : "Rope Severed"}
+          </text>
+          <text x="200" y="140" fill="#93c5fd" fontSize="9" textAnchor="middle">
+            Cab Platform
+          </text>
+          <text
+            x="200"
+            y="180"
+            fill={isCut ? "#34d399" : "#38bdf8"}
+            fontSize="9"
+            textAnchor="middle"
+          >
+            {isCut ? "PAWLS LOCKED IN RATCHETS" : "Leaf Spring Bowed Under Tension"}
+          </text>
+        </g>
+      );
+    }
+    case "westinghouse-air-brake": {
+      const pipePsi = params?.trainPipePressure ?? 70;
+      const isRel = pipePsi >= 65;
+      const isEmerg = pipePsi < 10;
+      const cylPsi = Math.max(0, Math.min(55, Math.round((70 - pipePsi) * 1.1)));
+      return (
+        <g stroke="#38bdf8" strokeWidth="1.5" fill="none">
+          {/* Continuous Train Pipe */}
+          <line
+            x1="40"
+            y1="230"
+            x2="360"
+            y2="230"
+            stroke={pipePsi > 40 ? "#10b981" : "#ef4444"}
+            strokeWidth="5"
+          />
+          <text x="200" y="248" fill="#94a3b8" fontSize="8" textAnchor="middle">
+            Continuous Train Pipe ({pipePsi} PSI)
+          </text>
+
+          {/* Triple Valve Body */}
+          <rect
+            x="60"
+            y="70"
+            width="90"
+            height="110"
+            rx="4"
+            stroke="#60a5fa"
+            fill="#1e3a8a"
+            fillOpacity="0.2"
+          />
+          {/* Differential Piston (Up in release, down in apply) */}
+          <rect
+            x="70"
+            y={isRel ? 85 : 125}
+            width="70"
+            height="14"
+            fill="#f59e0b"
+            stroke="#d97706"
+            rx="2"
+          />
+          <text x="105" y="60" fill="#f59e0b" fontSize="8" textAnchor="middle">
+            Triple Valve
+          </text>
+
+          {/* Auxiliary Reservoir */}
+          <rect
+            x="180"
+            y="50"
+            width="100"
+            height="55"
+            rx="25"
+            stroke="#3b82f6"
+            fill="#1e3a8a"
+            fillOpacity="0.3"
+            strokeWidth="2"
+          />
+          <text x="230" y="82" fill="#93c5fd" fontSize="8" textAnchor="middle">
+            Aux Reservoir (70 PSI)
+          </text>
+
+          {/* Brake Cylinder */}
+          <rect
+            x="180"
+            y="130"
+            width="80"
+            height="45"
+            rx="3"
+            stroke="#f87171"
+            fill="#7f1d1d"
+            fillOpacity="0.2"
+          />
+          <rect x={190 + (cylPsi / 55) * 18} y="138" width="8" height="28" fill="#ef4444" />
+          <line
+            x1="200 + (cylPsi / 55) * 18"
+            y1="152"
+            x2="280"
+            y2="152"
+            stroke="#e2e8f0"
+            strokeWidth="4"
+          />
+          <text x="220" y="190" fill="#f87171" fontSize="8" textAnchor="middle">
+            Cylinder ({cylPsi} PSI)
+          </text>
+
+          {/* Wheel & Shoe */}
+          <circle cx="330" cy="152" r="35" stroke="#94a3b8" strokeWidth="3" />
+          <path d="M 285 130 Q 292 152 285 174" stroke="#f59e0b" strokeWidth="4" fill="none" />
+          <text x="330" y="200" fill="#94a3b8" fontSize="8" textAnchor="middle">
+            Rail Wheel
+          </text>
+        </g>
+      );
+    }
+    case "mergenthaler-linotype":
+      return (
+        <g stroke="#38bdf8" strokeWidth="1.5" fill="none">
+          {/* Magazine Chute */}
+          <polygon
+            points="120,40 240,40 210,130 90,130"
+            stroke="#60a5fa"
+            fill="#1e3a8a"
+            fillOpacity="0.2"
+          />
+          <line x1="140" y1="40" x2="110" y2="130" stroke="#38bdf8" strokeDasharray="3 3" />
+          <line x1="180" y1="40" x2="150" y2="130" stroke="#38bdf8" strokeDasharray="3 3" />
+          <line x1="220" y1="40" x2="190" y2="130" stroke="#38bdf8" strokeDasharray="3 3" />
+          {/* Assembler Front & Line of Matrices */}
+          <rect
+            x="70"
+            y="145"
+            width="160"
+            height="25"
+            rx="3"
+            stroke="#fbbf24"
+            fill="#78350f"
+            fillOpacity="0.25"
+          />
+          <text x="150" y="162" fill="#fbbf24" fontSize="9" textAnchor="middle">
+            Assembled Matrix Line + Spacebands
+          </text>
+          {/* Casting Mold Disk */}
+          <circle cx="280" cy="180" r="45" stroke="#f87171" strokeWidth="2" />
+          <rect
+            x="260"
+            y="172"
+            width="40"
+            height="16"
+            fill="#dc2626"
+            fillOpacity="0.4"
+            stroke="#f87171"
+          />
+          <text x="280" y="240" fill="#f87171" fontSize="9" textAnchor="middle">
+            Casting Mold & Lead Pump
+          </text>
+          {/* Distributor Bar Keyways */}
+          <line x1="80" y1="20" x2="320" y2="20" stroke="#4ade80" strokeWidth="3" />
+          <text x="200" y="15" fill="#4ade80" fontSize="9" textAnchor="middle">
+            7-Bit Binary Distributor Bar
+          </text>
+        </g>
+      );
+    case "maxim-machine-gun":
+      return (
+        <g stroke="#38bdf8" strokeWidth="1.5" fill="none">
+          {/* Water Jacket */}
+          <rect
+            x="40"
+            y="90"
+            width="180"
+            height="60"
+            rx="4"
+            stroke="#60a5fa"
+            fill="#0284c7"
+            fillOpacity="0.25"
+          />
+          <line x1="20" y1="120" x2="240" y2="120" stroke="#e2e8f0" strokeWidth="3" />
+          {/* Breech Casing & Toggle Knee Joint */}
+          <rect x="220" y="80" width="140" height="80" rx="3" stroke="#94a3b8" />
+          <line
+            x1="240"
+            y1="120"
+            x2="280"
+            y2="105"
+            stroke="#fbbf24"
+            strokeWidth="4"
+            strokeLinecap="round"
+          />
+          <line
+            x1="280"
+            y1="105"
+            x2="330"
+            y2="120"
+            stroke="#fbbf24"
+            strokeWidth="4"
+            strokeLinecap="round"
+          />
+          <circle cx="280" cy="105" r="4" fill="#fbbf24" />
+          {/* Fusee Spring */}
+          <path
+            d="M 330 140 Q 350 150, 330 160 T 310 170"
+            stroke="#4ade80"
+            strokeWidth="2"
+            strokeDasharray="3 2"
+          />
+          <text x="130" y="110" fill="#93c5fd" fontSize="9" textAnchor="middle">
+            Water Jacket (4L)
+          </text>
+          <text x="280" y="70" fill="#fbbf24" fontSize="9" textAnchor="middle">
+            Toggle-Lock Linkage
+          </text>
+        </g>
+      );
+    case "daimler-engine":
+      return (
+        <g stroke="#38bdf8" strokeWidth="1.5" fill="none">
+          {/* Cylinder Bore */}
+          <rect x="140" y="30" width="120" height="140" rx="4" stroke="#94a3b8" />
+          {/* Hot-Tube Igniter */}
+          <rect x="90" y="45" width="50" height="14" rx="2" fill="#f97316" stroke="#ea580c" />
+          <text x="60" y="56" fill="#f97316" fontSize="8" textAnchor="middle">
+            Hot Tube
+          </text>
+          {/* Piston & Connecting Rod */}
+          <rect
+            x="150"
+            y="70"
+            width="100"
+            height="45"
+            rx="3"
+            fill="#38bdf8"
+            fillOpacity="0.2"
+            stroke="#38bdf8"
+          />
+          <line
+            x1="200"
+            y1="115"
+            x2="200"
+            y2="210"
+            stroke="#e2e8f0"
+            strokeWidth="6"
+            strokeLinecap="round"
+          />
+          {/* Enclosed Flywheel Crankcase */}
+          <circle cx="200" cy="220" r="50" stroke="#fbbf24" strokeWidth="2" />
+          <circle cx="200" cy="210" r="6" fill="#fbbf24" />
+          <text x="200" y="285" fill="#fbbf24" fontSize="9" textAnchor="middle">
+            Balanced Crankcase Flywheels
+          </text>
+        </g>
+      );
+    case "eastman-kodak":
+      return (
+        <g stroke="#38bdf8" strokeWidth="1.5" fill="none">
+          {/* Box Camera Body */}
+          <rect
+            x="80"
+            y="50"
+            width="240"
+            height="180"
+            rx="8"
+            stroke="#94a3b8"
+            fill="#1e293b"
+            fillOpacity="0.3"
+          />
+          {/* Film Supply & Take-Up Spools */}
+          <circle cx="110" cy="90" r="22" stroke="#fbbf24" strokeWidth="2" />
+          <circle cx="110" cy="190" r="22" stroke="#fbbf24" strokeWidth="2" />
+          <line x1="132" y1="90" x2="132" y2="190" stroke="#fbbf24" strokeWidth="2" />
+          {/* Cone & Barrel Shutter */}
+          <polygon
+            points="150,140 260,100 260,180"
+            stroke="#60a5fa"
+            fill="#0284c7"
+            fillOpacity="0.15"
+          />
+          <circle cx="280" cy="140" r="20" stroke="#38bdf8" strokeWidth="2" />
+          <rect x="270" y="130" width="20" height="20" rx="2" fill="#38bdf8" fillOpacity="0.4" />
+          <text x="110" y="145" fill="#fbbf24" fontSize="8" textAnchor="middle">
+            100-Exposure Spool
+          </text>
+          <text x="280" y="175" fill="#38bdf8" fontSize="8" textAnchor="middle">
+            Rotary Barrel Shutter
+          </text>
+        </g>
+      );
+    case "hollerith-tabulating":
+      return (
+        <g stroke="#38bdf8" strokeWidth="1.5" fill="none">
+          {/* Press Head & Spring Pin Matrix */}
+          <rect x="60" y="40" width="280" height="30" rx="3" fill="#64748b" stroke="#94a3b8" />
+          {[80, 110, 140, 170, 200, 230, 260, 290, 320].map((x) => (
+            <line key={x} x1={x} y1="70" x2={x} y2="105" stroke="#fbbf24" strokeWidth="2" />
+          ))}
+          {/* Punched Card Interposed */}
+          <rect x="70" y="105" width="260" height="15" rx="2" fill="#d97706" stroke="#b45309" />
+          {/* Mercury Cup Bed */}
+          <rect x="60" y="125" width="280" height="35" rx="4" fill="#0284c7" stroke="#0369a1" />
+          {[80, 110, 140, 170, 200, 230, 260, 290, 320].map((x) => (
+            <circle key={x} cx={x} cy="142" r="5" fill="#38bdf8" />
+          ))}
+          {/* Counter Dials Array */}
+          <rect
+            x="100"
+            y="180"
+            width="200"
+            height="70"
+            rx="6"
+            stroke="#a855f7"
+            fill="#581c87"
+            fillOpacity="0.2"
+          />
+          <circle cx="140" cy="215" r="18" stroke="#c084fc" />
+          <circle cx="200" cy="215" r="18" stroke="#c084fc" />
+          <circle cx="260" cy="215" r="18" stroke="#c084fc" />
+          <text x="200" y="270" fill="#c084fc" fontSize="9" textAnchor="middle">
+            Solenoid Ratchet Dial Accumulators
+          </text>
+        </g>
+      );
+    case "reno-escalator":
+      return (
+        <g stroke="#38bdf8" strokeWidth="1.5" fill="none">
+          {/* 25-Degree Incline Frame */}
+          <line
+            x1="40"
+            y1="210"
+            x2="340"
+            y2="70"
+            stroke="#64748b"
+            strokeWidth="8"
+            strokeLinecap="round"
+          />
+          {/* Moving Grooved Cleats */}
+          {[0, 1, 2, 3, 4, 5, 6].map((i) => {
+            const x = 60 + i * 42;
+            const y = 200 - i * 20;
+            return (
+              <rect
+                key={i}
+                x={x}
+                y={y}
+                width="22"
+                height="10"
+                rx="2"
+                fill="#d97706"
+                stroke="#fbbf24"
+              />
+            );
+          })}
+          {/* Comb-Plate Landings */}
+          <polygon points="330,65 360,65 345,78" fill="#fbbf24" stroke="#b45309" />
+          <polygon points="30,205 60,205 45,218" fill="#fbbf24" stroke="#b45309" />
+          {/* Moving Handrail */}
+          <line
+            x1="40"
+            y1="170"
+            x2="340"
+            y2="30"
+            stroke="#38bdf8"
+            strokeWidth="4"
+            strokeLinecap="round"
+          />
+          <text x="190" y="110" fill="#38bdf8" fontSize="9" textAnchor="middle">
+            Synchronous Moving Handrail
+          </text>
+          <text x="310" y="55" fill="#fbbf24" fontSize="8" textAnchor="middle">
+            Comb-Plate Teeth
+          </text>
+        </g>
+      );
+    case "diesel-engine":
+      return (
+        <g stroke="#38bdf8" strokeWidth="1.5" fill="none">
+          {/* High-Pressure Cylinder */}
+          <rect x="130" y="30" width="140" height="170" rx="6" stroke="#94a3b8" />
+          {/* Blast-Air Injector */}
+          <rect x="185" y="15" width="30" height="30" rx="3" fill="#fbbf24" stroke="#d97706" />
+          <text x="200" y="10" fill="#fbbf24" fontSize="8" textAnchor="middle">
+            Blast-Air Injector (65 bar)
+          </text>
+          {/* Piston & Heavy Rod */}
+          <rect
+            x="140"
+            y="75"
+            width="120"
+            height="55"
+            rx="3"
+            fill="#38bdf8"
+            fillOpacity="0.2"
+            stroke="#38bdf8"
+          />
+          <line
+            x1="200"
+            y1="130"
+            x2="200"
+            y2="230"
+            stroke="#e2e8f0"
+            strokeWidth="8"
+            strokeLinecap="round"
+          />
+          {/* Crankshaft */}
+          <circle cx="200" cy="240" r="40" stroke="#fbbf24" strokeWidth="2" />
+          <text x="200" y="295" fill="#4ade80" fontSize="9" textAnchor="middle">
+            Adiabatic Compression Ratio 18:1 (680°C)
+          </text>
+        </g>
+      );
+    case "tesla-teleautomaton":
+      return (
+        <g stroke="#38bdf8" strokeWidth="1.5" fill="none">
+          {/* Submersible Boat Hull */}
+          <path
+            d="M 60 160 C 120 120, 280 120, 340 160 C 280 200, 120 200, 60 160 Z"
+            stroke="#60a5fa"
+            fill="#1e3a8a"
+            fillOpacity="0.2"
+          />
+          {/* Receiving Mast Antenna */}
+          <line x1="200" y1="140" x2="200" y2="60" stroke="#fbbf24" strokeWidth="2" />
+          <circle cx="200" cy="55" r="5" fill="#fbbf24" />
+          {/* Coherer & Decoherer */}
+          <rect
+            x="150"
+            y="150"
+            width="40"
+            height="15"
+            rx="2"
+            fill="#38bdf8"
+            fillOpacity="0.3"
+            stroke="#38bdf8"
+          />
+          {/* Rotary Commutator Drum */}
+          <circle cx="240" cy="160" r="16" stroke="#4ade80" strokeWidth="2" />
+          <text x="200" y="45" fill="#fbbf24" fontSize="9" textAnchor="middle">
+            RF Antenna (150 kHz Tuning)
+          </text>
+          <text x="170" y="180" fill="#38bdf8" fontSize="8" textAnchor="middle">
+            Coherer
+          </text>
+          <text x="240" y="190" fill="#4ade80" fontSize="8" textAnchor="middle">
+            6-State Drum
+          </text>
+        </g>
+      );
+    case "zeppelin-airship":
+      return (
+        <g stroke="#38bdf8" strokeWidth="1.5" fill="none">
+          {/* Streamlined Outer Hull */}
+          <ellipse
+            cx="200"
+            cy="140"
+            rx="170"
+            ry="50"
+            stroke="#94a3b8"
+            fill="#1e293b"
+            fillOpacity="0.2"
+          />
+          {/* 17 Internal Gas Cells */}
+          {Array.from({ length: 9 }).map((_, i) => (
+            <ellipse
+              key={i}
+              cx={70 + i * 32}
+              cy="140"
+              rx="12"
+              ry="42"
+              stroke="#38bdf8"
+              strokeOpacity="0.6"
+              strokeDasharray="3 2"
+            />
+          ))}
+          {/* Keel Corridor & Trim Weight */}
+          <line x1="60" y1="180" x2="340" y2="180" stroke="#fbbf24" strokeWidth="2" />
+          <circle cx="220" cy="180" r="5" fill="#fbbf24" />
+          {/* Gondolas */}
+          <rect x="120" y="190" width="30" height="12" rx="2" fill="#64748b" />
+          <rect x="250" y="190" width="30" height="12" rx="2" fill="#64748b" />
+          <text x="200" y="80" fill="#38bdf8" fontSize="9" textAnchor="middle">
+            Rigid Duralumin Space-Frame (128m)
+          </text>
+          <text x="200" y="215" fill="#fbbf24" fontSize="8" textAnchor="middle">
+            Sliding Keel Ballast & Twin Engine Cars
+          </text>
+        </g>
+      );
+    case "linde-air-liquefaction":
+      return (
+        <g stroke="#38bdf8" strokeWidth="1.5" fill="none">
+          {/* Compressor */}
+          <rect
+            x="40"
+            y="50"
+            width="70"
+            height="60"
+            rx="4"
+            stroke="#f87171"
+            fill="#7f1d1d"
+            fillOpacity="0.3"
+          />
+          <text x="75" y="85" fill="#f87171" fontSize="8" textAnchor="middle">
+            200-Bar Comp
+          </text>
+          {/* Counter-Current Column */}
+          <rect
+            x="160"
+            y="30"
+            width="80"
+            height="170"
+            rx="6"
+            stroke="#38bdf8"
+            fill="#0284c7"
+            fillOpacity="0.15"
+          />
+          <path
+            d="M 180 40 L 180 190 M 200 40 L 200 190 M 220 40 L 220 190"
+            stroke="#38bdf8"
+            strokeDasharray="4 2"
+          />
+          {/* JT Valve & Vacuum Vessel */}
+          <polygon points="200,195 190,210 210,210" fill="#fbbf24" stroke="#d97706" />
+          <rect
+            x="170"
+            y="215"
+            width="60"
+            height="40"
+            rx="4"
+            stroke="#38bdf8"
+            fill="#0369a1"
+            fillOpacity="0.4"
+          />
+          <text x="200" y="240" fill="#38bdf8" fontSize="8" textAnchor="middle">
+            Liquid Air (-193°C)
+          </text>
+          <text x="200" y="20" fill="#38bdf8" fontSize="9" textAnchor="middle">
+            Counter-Current Regenerator
+          </text>
+        </g>
+      );
+    case "carrier-air-conditioner":
+      return (
+        <g stroke="#38bdf8" strokeWidth="1.5" fill="none">
+          {/* Plenum Chamber */}
+          <rect
+            x="40"
+            y="60"
+            width="320"
+            height="140"
+            rx="6"
+            stroke="#94a3b8"
+            fill="#0f172a"
+            fillOpacity="0.3"
+          />
+          {/* Chilled Water Nozzle Sprays */}
+          <line x1="120" y1="70" x2="120" y2="190" stroke="#0284c7" strokeWidth="3" />
+          {[90, 120, 150, 180].map((y) => (
+            <polygon
+              key={y}
+              points={`120,${y} 150,${y - 12} 150,${y + 12}`}
+              fill="#38bdf8"
+              fillOpacity="0.4"
+            />
+          ))}
+          {/* Zigzag Baffles */}
+          {[190, 205, 220].map((x) => (
+            <polyline
+              key={x}
+              points={`${x},70 ${x + 8},100 ${x},130 ${x + 8},160 ${x},190`}
+              stroke="#94a3b8"
+              strokeWidth="2"
+            />
+          ))}
+          {/* Steam Reheat Coil */}
+          <rect
+            x="270"
+            y="70"
+            width="18"
+            height="120"
+            rx="2"
+            fill="#ef4444"
+            fillOpacity="0.3"
+            stroke="#ef4444"
+          />
+          <text x="120" y="50" fill="#38bdf8" fontSize="8" textAnchor="middle">
+            Chilled Spray
+          </text>
+          <text x="205" y="50" fill="#94a3b8" fontSize="8" textAnchor="middle">
+            Eliminators
+          </text>
+          <text x="280" y="50" fill="#ef4444" fontSize="8" textAnchor="middle">
+            Reheat
+          </text>
+          <text x="200" y="225" fill="#4ade80" fontSize="9" textAnchor="middle">
+            Psychrometric Dew-Point Control Cycle
+          </text>
+        </g>
+      );
     default:
       return (
         <g stroke="#64748b" strokeWidth="1.5" fill="none">
@@ -920,6 +1764,7 @@ export function InteractiveDiagramViewer({
   patentNumber,
   patentId,
 }: InteractiveDiagramViewerProps) {
+  const { params: livePhysicsParams } = usePatentPhysics(patentId || "");
   const [activeFigIndex, setActiveFigIndex] = useState<number>(0);
   const [activeCalloutId, setActiveCalloutId] = useState<string | null>(null);
   const [hoveredCalloutId, setHoveredCalloutId] = useState<string | null>(null);
@@ -1160,6 +2005,7 @@ export function InteractiveDiagramViewer({
                 activeDrawing.figureNumber,
                 patentNumber,
                 patentId,
+                livePhysicsParams,
               )}
 
               {/* Animated Radar Target Reticle on selected pin */}
@@ -1362,9 +2208,6 @@ export function InteractiveDiagramViewer({
           )}
         </div>
       </div>
-
-      {/* Embedded FrankenSim SI Physics Telemetry Readout */}
-      {patentId && <PhysicsTelemetryBadge patentId={patentId} />}
     </div>
   );
 }

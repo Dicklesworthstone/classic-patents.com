@@ -19,7 +19,6 @@ import { ClaimsDecoder } from "./ClaimsDecoder";
 import { HistoricalContextPanel } from "./HistoricalContextPanel";
 import { InteractiveDiagramViewer } from "./InteractiveDiagramViewer";
 import { MuseumBroadsidePlaque } from "./MuseumBroadsidePlaque";
-import { PhysicsTelemetryBadge } from "./PhysicsTelemetryBadge";
 import { PatentVisualDispatcher } from "./visuals";
 
 interface DualProjectionViewerProps {
@@ -108,11 +107,6 @@ export function DualProjectionViewer({ patent, initialView }: DualProjectionView
 
   const setViewMode = (mode: PatentViewMode) => {
     setViewModeState(mode);
-    if (typeof window !== "undefined") {
-      const url = new URL(window.location.href);
-      url.searchParams.set("view", mode);
-      window.history.replaceState({}, "", url.toString());
-    }
   };
 
   return (
@@ -375,7 +369,6 @@ export function DualProjectionViewer({ patent, initialView }: DualProjectionView
                 </span>
               </div>
               <PatentVisualDispatcher patentId={patent.id} />
-              <PhysicsTelemetryBadge patentId={patent.id} />
             </div>
 
             {/* Step-by-Step Mechanical Breakdown Grid */}
@@ -421,25 +414,35 @@ export function DualProjectionViewer({ patent, initialView }: DualProjectionView
 
             {/* Governing Scientific Equations & Principles */}
             {patent.plainEnglishExplanation.scientificPrinciples.length > 0 && (
-              <div className="space-y-5 pt-5 border-t border-parchment-200 dark:border-ink-800">
-                <h4 className="font-serif font-bold text-xl text-ink-950 dark:text-parchment-50">
-                  Governing Physical Equations &amp; Principles
-                </h4>
+              <div className="space-y-5 pt-6 border-t border-parchment-200 dark:border-ink-800">
+                <div>
+                  <span className="text-xs font-mono text-amber-700 dark:text-amber-400 font-bold uppercase tracking-widest block">
+                    Mathematical Physics &amp; Rigorous Mechanics
+                  </span>
+                  <h4 className="font-serif font-bold text-xl sm:text-2xl text-ink-950 dark:text-parchment-50">
+                    Governing Physical Equations &amp; Principles
+                  </h4>
+                </div>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-                  {patent.plainEnglishExplanation.scientificPrinciples.map((sci) => (
+                  {patent.plainEnglishExplanation.scientificPrinciples.map((sci, idx) => (
                     <div
                       key={sci.principle}
-                      className="p-5 rounded-2xl bg-ink-950 text-white border border-ink-800 space-y-3 font-mono text-sm shadow-md"
+                      className="p-6 rounded-2xl bg-parchment-100/80 dark:bg-ink-900/80 border border-parchment-300 dark:border-ink-800 space-y-4 shadow-sm hover:border-amber-700/40 transition-colors"
                     >
-                      <span className="text-amber-400 font-bold text-base block">
-                        {sci.principle}
-                      </span>
+                      <div className="flex items-center justify-between gap-2">
+                        <span className="text-amber-900 dark:text-amber-400 font-serif font-bold text-base sm:text-lg">
+                          {sci.principle}
+                        </span>
+                        <span className="text-[10px] font-mono font-bold px-2 py-0.5 rounded-md bg-amber-700/10 text-amber-800 dark:text-amber-400 border border-amber-700/20">
+                          Equation {idx + 1}
+                        </span>
+                      </div>
                       {sci.formula && (
-                        <div className="bg-ink-900/90 p-4 rounded-xl text-emerald-300 text-center text-sm sm:text-base border border-ink-800 overflow-x-auto">
+                        <div className="bg-white dark:bg-ink-950 p-4 rounded-xl text-ink-950 dark:text-parchment-100 text-center text-sm sm:text-base border border-parchment-300 dark:border-ink-800 font-mono overflow-x-auto shadow-inner">
                           <LatexRenderer math={sci.formula} block={true} />
                         </div>
                       )}
-                      <div className="text-xs sm:text-sm text-ink-300 font-sans leading-relaxed">
+                      <div className="text-xs sm:text-sm text-ink-800 dark:text-parchment-200 font-sans leading-relaxed">
                         <TextWithLatex text={sci.explanation} />
                       </div>
                     </div>

@@ -1,11 +1,11 @@
-"use client";
-
 import { Radio } from "lucide-react";
 import { useEffect, useLayoutEffect, useRef, useState } from "react";
+import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { soundEngine } from "@/utils/soundEngine";
 
 export function SpencerMicrowaveSim() {
-  const [powerWatts, setPowerWatts] = useState<number>(800); // 100 to 1200 W
+  const { params, updateParam } = usePatentPhysics("us-2495429-spencer-microwave");
+  const powerWatts = params.rfPowerSetting ?? 800;
   const [foodType, setFoodType] = useState<"water-popcorn" | "dry-ice">("water-popcorn");
   const [isEmitting, setIsEmitting] = useState<boolean>(true);
   const [tempCelsius, setTempCelsius] = useState<number>(20);
@@ -253,9 +253,9 @@ export function SpencerMicrowaveSim() {
                 aria-label="Magnetron RF Power"
                 min="200"
                 max="1200"
-                step="100"
+                step="50"
                 value={powerWatts}
-                onChange={(e) => setPowerWatts(Number(e.target.value))}
+                onChange={(e) => updateParam("rfPowerSetting", Number(e.target.value))}
                 className="w-full accent-purple-600 cursor-pointer h-2 bg-parchment-300 dark:bg-ink-700 rounded-lg"
               />
             </div>

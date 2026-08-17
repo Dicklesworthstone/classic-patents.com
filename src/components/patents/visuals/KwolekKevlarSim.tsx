@@ -1,10 +1,11 @@
-"use client";
-
 import { Shield, ShieldAlert } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
+import { usePatentPhysics } from "@/physics/usePatentPhysics";
 
 export function KwolekKevlarSim() {
-  const [polymerAlignment, setPolymerAlignment] = useState<number>(90); // 0% (isotropic tangled) to 100% (liquid-crystal nematic)
+  const { params, updateParam } = usePatentPhysics("us-3671542-kwolek-kevlar");
+  const drawRatio = params.drawRatio ?? 6.5;
+  const polymerAlignment = Math.min(100, Math.round((drawRatio / 8.0) * 100)); // 0% (isotropic tangled) to 100% (liquid-crystal nematic)
   const [tensileTension, setTensileTension] = useState<number>(30); // 0 to 100%
   const [bulletFired, setBulletFired] = useState<boolean>(false);
 
@@ -139,16 +140,17 @@ export function KwolekKevlarSim() {
                   Polymer Molecular Alignment (Nematicity)
                 </span>
                 <span className="text-amber-600 dark:text-amber-400 font-bold">
-                  {polymerAlignment}%
+                  {polymerAlignment}% (Draw {drawRatio.toFixed(1)}:1)
                 </span>
               </div>
               <input
                 type="range"
-                aria-label="Polymer Molecular Alignment (Nematicity)"
-                min="10"
-                max="100"
-                value={polymerAlignment}
-                onChange={(e) => setPolymerAlignment(Number(e.target.value))}
+                aria-label="Filament Draw Orientation Ratio"
+                min="2.0"
+                max="8.0"
+                step="0.2"
+                value={drawRatio}
+                onChange={(e) => updateParam("drawRatio", Number(e.target.value))}
                 className="w-full accent-amber-600 cursor-pointer h-2 bg-parchment-300 dark:bg-ink-700 rounded-lg"
               />
               <div className="flex justify-between text-[10px] text-ink-500 font-mono mt-0.5">

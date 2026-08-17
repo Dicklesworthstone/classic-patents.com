@@ -1,7 +1,6 @@
-"use client";
-
 import { Cpu } from "lucide-react";
 import { useState } from "react";
+import { usePatentPhysics } from "@/physics/usePatentPhysics";
 
 const STEPS = [
   {
@@ -32,6 +31,9 @@ const STEPS = [
 ];
 
 export function NoycePlanarICSim() {
+  const { params, updateParam } = usePatentPhysics("us-2981877-noyce-ic");
+  const oxideThickness = params.oxideThickness ?? 0.5;
+  const reverseBias = params.reverseBias ?? 5.0;
   const [activeLayerStep, setActiveLayerStep] = useState<number>(4); // 0: Substrate, 1: Oxide, 2: Windows, 3: Junctions, 4: Aluminum Leads
 
   return (
@@ -261,6 +263,50 @@ export function NoycePlanarICSim() {
               <p className="text-xs font-sans text-ink-800 dark:text-parchment-200 leading-relaxed">
                 {STEPS[activeLayerStep].desc}
               </p>
+            </div>
+
+            <div className="space-y-3 pt-2 border-t border-parchment-200 dark:border-ink-800">
+              <div className="space-y-1">
+                <div className="flex justify-between text-xs font-mono">
+                  <span className="font-semibold text-ink-800 dark:text-parchment-200">
+                    SiO₂ Oxide Thickness
+                  </span>
+                  <span className="text-emerald-600 dark:text-emerald-400 font-bold">
+                    {oxideThickness.toFixed(2)} µm
+                  </span>
+                </div>
+                <input
+                  type="range"
+                  aria-label="SiO2 Oxide Thickness"
+                  min="0.2"
+                  max="1.2"
+                  step="0.05"
+                  value={oxideThickness}
+                  onChange={(e) => updateParam("oxideThickness", Number(e.target.value))}
+                  className="w-full accent-emerald-600 cursor-pointer h-2 bg-parchment-300 dark:bg-ink-700 rounded-lg"
+                />
+              </div>
+
+              <div className="space-y-1">
+                <div className="flex justify-between text-xs font-mono">
+                  <span className="font-semibold text-ink-800 dark:text-parchment-200">
+                    P-N Isolation Reverse Bias
+                  </span>
+                  <span className="text-cyan-600 dark:text-cyan-400 font-bold">
+                    {reverseBias.toFixed(1)} V
+                  </span>
+                </div>
+                <input
+                  type="range"
+                  aria-label="P-N Isolation Reverse Bias"
+                  min="1"
+                  max="20"
+                  step="0.5"
+                  value={reverseBias}
+                  onChange={(e) => updateParam("reverseBias", Number(e.target.value))}
+                  className="w-full accent-cyan-600 cursor-pointer h-2 bg-parchment-300 dark:bg-ink-700 rounded-lg"
+                />
+              </div>
             </div>
 
             <div className="space-y-2 text-xs font-mono">

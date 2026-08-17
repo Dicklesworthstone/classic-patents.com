@@ -1,12 +1,12 @@
-"use client";
-
 import { RotateCcw, Sparkles, Thermometer, Waves } from "lucide-react";
 import { useState } from "react";
 import { FrankenSimEngine } from "@/physics/engine";
+import { usePatentPhysics } from "@/physics/usePatentPhysics";
 
 export function EinsteinRefrigeratorSim() {
-  const [heatInputWatts, setHeatInputWatts] = useState<number>(220);
-  const [systemPressureAtm, setSystemPressureAtm] = useState<number>(14);
+  const { params, updateParam } = usePatentPhysics("us-1781541-einstein-refrigerator");
+  const heatInputWatts = params.heatInput ?? 220;
+  const systemPressureAtm = params.totalPressure ?? 15.0;
   const [ammoniaRatio, setAmmoniaRatio] = useState<number>(0.65);
 
   // Thermodynamic absorption calculations via FrankenSimEngine
@@ -22,8 +22,8 @@ export function EinsteinRefrigeratorSim() {
   const partialPressureButaneAtm = thermo.partialPressureButaneAtm;
 
   const resetToStandardCycle = () => {
-    setHeatInputWatts(220);
-    setSystemPressureAtm(14);
+    updateParam("heatInput", 220);
+    updateParam("totalPressure", 15.0);
     setAmmoniaRatio(0.65);
   };
 
@@ -271,10 +271,10 @@ export function EinsteinRefrigeratorSim() {
                 type="range"
                 aria-label="Burner Heat Input"
                 min="100"
-                max="400"
-                step="10"
+                max="350"
+                step="5"
                 value={heatInputWatts}
-                onChange={(e) => setHeatInputWatts(Number(e.target.value))}
+                onChange={(e) => updateParam("heatInput", Number(e.target.value))}
                 className="w-full accent-amber-600"
               />
             </div>
@@ -282,16 +282,18 @@ export function EinsteinRefrigeratorSim() {
             <div className="space-y-2">
               <div className="flex justify-between text-xs">
                 <span className="text-ink-700 dark:text-ink-300">Hermetic System Pressure:</span>
-                <span className="font-mono font-bold text-amber-600">{systemPressureAtm} atm</span>
+                <span className="font-mono font-bold text-amber-600">
+                  {systemPressureAtm.toFixed(1)} atm
+                </span>
               </div>
               <input
                 type="range"
                 aria-label="Hermetic System Pressure"
                 min="8"
                 max="22"
-                step="1"
+                step="0.5"
                 value={systemPressureAtm}
-                onChange={(e) => setSystemPressureAtm(Number(e.target.value))}
+                onChange={(e) => updateParam("totalPressure", Number(e.target.value))}
                 className="w-full accent-amber-600"
               />
             </div>

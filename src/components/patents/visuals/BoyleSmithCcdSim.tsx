@@ -1,25 +1,30 @@
-"use client";
-
 import { Camera, Play } from "lucide-react";
 import { useEffect, useState } from "react";
+import { stepCcdWells } from "@/physics/machineKernels";
+import { usePatentPhysics } from "@/physics/usePatentPhysics";
 
 export function BoyleSmithCcdSim() {
+  const { params, updateParam } = usePatentPhysics("us-3923554-boyle-smith-ccd");
   const [clockPhase, setClockPhase] = useState<1 | 2 | 3>(1);
   const [lightIntensityLux, setLightIntensityLux] = useState<number>(850); // 100 to 2000 Lux
-  const [chargeTransferEfficiency, _setChargeTransferEfficiency] = useState<number>(0.9999);
+  const clockFreq = params.clockFreq ?? 2.5;
   const [isPlaying, setIsPlaying] = useState<boolean>(false);
 
   useEffect(() => {
     if (!isPlaying) return;
-    const interval = setInterval(() => {
-      setClockPhase((prev) => (prev === 1 ? 2 : prev === 2 ? 3 : 1));
-    }, 400);
+    const interval = setInterval(
+      () => {
+        setClockPhase((prev) => (prev === 1 ? 2 : prev === 2 ? 3 : 1));
+      },
+      Math.round(1000 / (clockFreq * 2)),
+    );
     return () => clearInterval(interval);
-  }, [isPlaying]);
+  }, [isPlaying, clockFreq]);
 
-  // Photo-charge packet calculations
-  const photoElectrons = Math.round((lightIntensityLux / 1000) * 45000);
+  const ccd = stepCcdWells(clockPhase, lightIntensityLux, clockFreq);
+  const photoElectrons = ccd.photoElectrons;
   const outputSignalMillivolts = ((photoElectrons * 1.602e-19) / 10e-15) * 1000;
+  const chargeTransferEfficiency = ccd.cte;
 
   return (
     <div className="rounded-2xl border border-amber-900/20 dark:border-ink-800 bg-parchment-50 dark:bg-ink-950 p-6 sm:p-7 shadow-patent space-y-6">
@@ -163,7 +168,8 @@ export function BoyleSmithCcdSim() {
                 d={`M 0 0 ${Array.from({ length: 9 })
                   .map((_, i) => {
                     const phaseNum = ((i % 3) + 1) as 1 | 2 | 3;
-                    const depth = phaseNum === clockPhase ? 65 : 18;
+                    const charge = ccd.wells[phaseNum - 1];
+                    const depth = 12 + Math.min(70, (charge / 45000) * 65);
                     const gx = i * 50;
                     return `L ${gx} 0 L ${gx} ${depth} L ${gx + 45} ${depth} L ${gx + 45} 0`;
                   })
@@ -298,6 +304,28 @@ export function BoyleSmithCcdSim() {
                 value={lightIntensityLux}
                 onChange={(e) => setLightIntensityLux(Number(e.target.value))}
                 className="w-full accent-amber-600 cursor-pointer h-2 bg-parchment-300 dark:bg-ink-700 rounded-lg"
+              />
+            </div>
+
+            {/* 3-Phase Clock Frequency Slider */}
+            <div className="space-y-1.5">
+              <div className="flex justify-between text-xs sm:text-sm font-mono">
+                <span className="font-semibold text-ink-800 dark:text-parchment-200">
+                  {"3-Phase Clock Speed"}
+                </span>
+                <span className="text-cyan-600 dark:text-cyan-400 font-bold">
+                  {clockFreq.toFixed(2)} MHz
+                </span>
+              </div>
+              <input
+                type="range"
+                aria-label="3-Phase Clock Frequency"
+                min="0.5"
+                max="8.0"
+                step="0.25"
+                value={clockFreq}
+                onChange={(e) => updateParam("clockFreq", Number(e.target.value))}
+                className="w-full accent-cyan-600 cursor-pointer h-2 bg-parchment-300 dark:bg-ink-700 rounded-lg"
               />
             </div>
 

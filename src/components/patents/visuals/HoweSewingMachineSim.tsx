@@ -1,12 +1,13 @@
-"use client";
-
 import { Play, Scissors } from "lucide-react";
 import { useEffect, useState } from "react";
+import { stepHoweLockstitch } from "@/physics/machineKernels";
+import { usePatentPhysics } from "@/physics/usePatentPhysics";
 
 export function HoweSewingMachineSim() {
+  const { params, updateParam } = usePatentPhysics("us-4750-howe-sewing-machine");
   const [crankAngleDeg, setCrankAngleDeg] = useState<number>(120); // 0 to 360 degrees
   const [isPlaying, setIsPlaying] = useState<boolean>(false);
-  const [sewingSpeedRpm, setSewingSpeedRpm] = useState<number>(180); // 60 to 300 rpm
+  const sewingSpeedRpm = params.crankRpm ?? 180; // 60 to 320 rpm
 
   useEffect(() => {
     if (!isPlaying) return;
@@ -16,15 +17,12 @@ export function HoweSewingMachineSim() {
     return () => clearInterval(interval);
   }, [isPlaying, sewingSpeedRpm]);
 
-  // Kinematics calculations
-  const rad = (crankAngleDeg * Math.PI) / 180;
-  // Needle position: oscillates vertically
-  const needleY = Math.sin(rad) * 45; // -45 to +45 px
-  // Shuttle position: oscillates horizontally across needle loop
-  const shuttleX = Math.cos(rad) * 60; // -60 to +60 px
-  // Loop dilation: maximum when needle begins upward stroke (around 90 to 180 deg)
-  const isLoopFormed = crankAngleDeg > 80 && crankAngleDeg < 220;
-  const loopWidth = isLoopFormed ? Math.sin((crankAngleDeg - 80) * (Math.PI / 140)) * 24 : 0;
+  const {
+    needleY,
+    shuttleX,
+    loopOpen: isLoopFormed,
+    loopWidth,
+  } = stepHoweLockstitch(crankAngleDeg);
 
   return (
     <div className="rounded-2xl border border-amber-900/20 dark:border-ink-800 bg-parchment-50 dark:bg-ink-950 p-6 sm:p-7 shadow-patent space-y-6">
@@ -219,12 +217,12 @@ export function HoweSewingMachineSim() {
               </div>
               <input
                 type="range"
-                aria-label="Simulation parameter"
+                aria-label="Flywheel Drive Velocity"
                 min="60"
-                max="360"
-                step="20"
+                max="320"
+                step="10"
                 value={sewingSpeedRpm}
-                onChange={(e) => setSewingSpeedRpm(Number(e.target.value))}
+                onChange={(e) => updateParam("crankRpm", Number(e.target.value))}
                 className="w-full accent-blue-600 cursor-pointer h-2 bg-parchment-300 dark:bg-ink-700 rounded-lg"
               />
             </div>

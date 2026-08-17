@@ -1,13 +1,12 @@
-"use client";
-
 import { Cpu } from "lucide-react";
-import { useState } from "react";
 import { TextWithLatex } from "@/components/ui/LatexRenderer";
+import { usePatentPhysics } from "@/physics/usePatentPhysics";
 
 export function BardeenTransistorSim() {
-  const [emitterCurrentMa, setEmitterCurrentMa] = useState<number>(2.5); // 0.1 to 8.0 mA
-  const [collectorVoltageV, setCollectorVoltageV] = useState<number>(30); // 5 to 60 V
-  const [pointSpacingMicrons, setPointSpacingMicrons] = useState<number>(50); // 20 to 150 um
+  const { params, updateParam } = usePatentPhysics("us-2569347-bardeen-transistor");
+  const emitterCurrentMa = params.emitterCurrent ?? 1.5;
+  const collectorVoltageV = Math.abs(params.collectorBias ?? -40);
+  const pointSpacingMicrons = params.pointSpacing ?? 50;
 
   // Solid-state calculations
   // Current transfer ratio alpha decreases with wider point spacing
@@ -247,12 +246,12 @@ export function BardeenTransistorSim() {
               </div>
               <input
                 type="range"
-                aria-label="Solid-State Transistor Controls"
+                aria-label="Emitter Input Current"
                 min="0.5"
-                max="6.0"
-                step="0.2"
+                max="4.0"
+                step="0.1"
                 value={emitterCurrentMa}
-                onChange={(e) => setEmitterCurrentMa(Number(e.target.value))}
+                onChange={(e) => updateParam("emitterCurrent", Number(e.target.value))}
                 className="w-full accent-emerald-600 cursor-pointer h-2 bg-parchment-300 dark:bg-ink-700 rounded-lg"
               />
             </div>
@@ -269,12 +268,12 @@ export function BardeenTransistorSim() {
               </div>
               <input
                 type="range"
-                aria-label="Simulation parameter"
+                aria-label="Point Contact Spacing"
                 min="20"
-                max="120"
+                max="100"
                 step="5"
                 value={pointSpacingMicrons}
-                onChange={(e) => setPointSpacingMicrons(Number(e.target.value))}
+                onChange={(e) => updateParam("pointSpacing", Number(e.target.value))}
                 className="w-full accent-amber-600 cursor-pointer h-2 bg-parchment-300 dark:bg-ink-700 rounded-lg"
               />
             </div>
@@ -286,17 +285,17 @@ export function BardeenTransistorSim() {
                   <TextWithLatex text="Reverse Collector Voltage ($V_C$)" />
                 </span>
                 <span className="text-blue-600 dark:text-blue-400 font-bold">
-                  {collectorVoltageV} V
+                  -{collectorVoltageV} V
                 </span>
               </div>
               <input
                 type="range"
-                aria-label="Simulation parameter"
+                aria-label="Reverse Collector Voltage"
                 min="10"
-                max="50"
+                max="80"
                 step="5"
                 value={collectorVoltageV}
-                onChange={(e) => setCollectorVoltageV(Number(e.target.value))}
+                onChange={(e) => updateParam("collectorBias", -Number(e.target.value))}
                 className="w-full accent-blue-600 cursor-pointer h-2 bg-parchment-300 dark:bg-ink-700 rounded-lg"
               />
             </div>
