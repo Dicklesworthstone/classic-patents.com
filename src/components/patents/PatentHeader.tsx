@@ -23,7 +23,7 @@ export function PatentHeader({ patent }: PatentHeaderProps) {
   };
 
   return (
-    <div className="space-y-5 pb-8 border-b border-parchment-300 dark:border-ink-800">
+    <div className="space-y-5 pb-8 border-b border-parchment-300 dark:border-ink-800 print:hidden">
       {/* Archaic Legal Glossary & Citation Modal */}
       <ArchaicGlossaryModal
         isOpen={glossaryOpen}

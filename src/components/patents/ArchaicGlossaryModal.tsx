@@ -1,7 +1,7 @@
 "use client";
 
 import { BookOpen, Check, Copy, Search, X } from "lucide-react";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import type { Patent } from "@/types/patent";
 
 interface ArchaicGlossaryModalProps {
@@ -96,19 +96,17 @@ export function ArchaicGlossaryModal({ isOpen, onClose, patent }: ArchaicGlossar
   const [searchTerm, setSearchTerm] = useState("");
   const [activeTab, setActiveTab] = useState<"glossary" | "citation">("glossary");
   const [copiedCitation, setCopiedCitation] = useState(false);
+  const dialogRef = useRef<HTMLDialogElement>(null);
 
   useEffect(() => {
-    if (!isOpen) return;
-    const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key === "Escape") {
-        onClose();
-      }
-    };
-    window.addEventListener("keydown", handleKeyDown);
-    return () => window.removeEventListener("keydown", handleKeyDown);
-  }, [isOpen, onClose]);
-
-  if (!isOpen) return null;
+    const dialog = dialogRef.current;
+    if (!dialog) return;
+    if (isOpen && !dialog.open) {
+      dialog.showModal();
+    } else if (!isOpen && dialog.open) {
+      dialog.close();
+    }
+  }, [isOpen]);
 
   const filteredGlossary = GLOSSARY_TERMS.filter(
     (g) =>
@@ -141,24 +139,21 @@ export function ArchaicGlossaryModal({ isOpen, onClose, patent }: ArchaicGlossar
   };
 
   return (
-    <div
-      role="dialog"
-      aria-modal="true"
+    <dialog
+      ref={dialogRef}
       aria-labelledby="glossary-modal-title"
-      className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-ink-950/80 backdrop-blur-sm animate-fade-in"
+      className="fixed inset-0 z-50 m-auto w-[min(42rem,calc(100vw-2rem))] max-h-[85vh] p-0 bg-transparent border-none open:flex open:items-center open:justify-center backdrop:bg-ink-950/80 backdrop:backdrop-blur-sm"
+      onClose={onClose}
     >
-      <button
-        type="button"
-        className="fixed inset-0 w-full h-full cursor-default -z-10 focus:outline-none"
-        onClick={onClose}
-        aria-label="Close modal backdrop"
-      />
-      <div className="w-full max-w-2xl bg-parchment-50 dark:bg-ink-950 rounded-2xl border border-parchment-300 dark:border-ink-800 shadow-2xl overflow-hidden flex flex-col max-h-[85vh] relative z-10">
+      <div className="w-full max-w-2xl bg-parchment-50 dark:bg-ink-950 rounded-2xl border border-parchment-300 dark:border-ink-800 shadow-2xl overflow-hidden flex flex-col max-h-[85vh] relative">
         {/* Modal Header */}
         <div className="p-4 sm:p-5 border-b border-parchment-200 dark:border-ink-800 flex items-center justify-between gap-3">
           <div className="flex items-center gap-2">
             <BookOpen className="w-5 h-5 text-amber-700 dark:text-amber-500" />
-            <h3 className="font-serif text-lg font-bold text-ink-900 dark:text-parchment-100">
+            <h3
+              id="glossary-modal-title"
+              className="font-serif text-lg font-bold text-ink-900 dark:text-parchment-100"
+            >
               Archaic Legal Glossary &amp; Citations
             </h3>
           </div>
@@ -293,6 +288,6 @@ export function ArchaicGlossaryModal({ isOpen, onClose, patent }: ArchaicGlossar
           )}
         </div>
       </div>
-    </div>
+    </dialog>
   );
 }

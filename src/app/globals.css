@@ -116,19 +116,40 @@
 
 /* Museum Broadside Print Stylesheet */
 @media print {
-  body {
+  @page {
+    margin: 1.2cm;
+    size: letter portrait;
+  }
+
+  html,
+  html.dark,
+  body,
+  html.dark body {
     background: #ffffff;
+    background-image: none;
     color: #111827;
-    font-size: 11pt;
-    line-height: 1.5;
+    font-size: 10pt;
+    line-height: 1.45;
   }
 
   header,
   footer,
   nav,
   button,
+  canvas,
+  input,
+  select,
+  [role="toolbar"],
+  [role="dialog"],
   .print\:hidden {
     display: none;
+  }
+
+  html body *,
+  html.dark body * {
+    color: #111827;
+    text-shadow: none;
+    box-shadow: none;
   }
 
   .shadow-patent,
@@ -136,6 +157,33 @@
   .glass-panel {
     box-shadow: none;
     border: 1px solid #d1d5db;
+    background: transparent;
+  }
+
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    page-break-after: avoid;
+    break-after: avoid;
+    color: #000000;
+  }
+
+  p,
+  blockquote,
+  .print-card,
+  .latex-container {
+    page-break-inside: avoid;
+    break-inside: avoid;
+  }
+
+  svg {
+    max-width: 100%;
+    height: auto;
+    page-break-inside: avoid;
+    break-inside: avoid;
   }
 
   a[href]:after {

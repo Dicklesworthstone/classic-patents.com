@@ -18,6 +18,7 @@ import type { Patent } from "@/types/patent";
 import { ClaimsDecoder } from "./ClaimsDecoder";
 import { HistoricalContextPanel } from "./HistoricalContextPanel";
 import { InteractiveDiagramViewer } from "./InteractiveDiagramViewer";
+import { MuseumBroadsidePlaque } from "./MuseumBroadsidePlaque";
 import { PatentVisualDispatcher } from "./visuals";
 
 interface DualProjectionViewerProps {
@@ -115,6 +116,9 @@ export function DualProjectionViewer({ patent, initialView }: DualProjectionView
 
   return (
     <div className="space-y-8 print:space-y-4">
+      {/* Archival Broadside Plaque Header (Active during print) */}
+      <MuseumBroadsidePlaque patent={patent} />
+
       {/* Mode Navigation Bar (Hidden during print) */}
       <div className="flex flex-wrap items-center justify-between gap-3 bg-parchment-100/90 dark:bg-ink-900/90 p-2.5 rounded-2xl border border-parchment-300 dark:border-ink-800 shadow-sm print:hidden">
         <div className="flex flex-wrap items-center gap-2 text-sm font-sans">
@@ -244,13 +248,21 @@ export function DualProjectionViewer({ patent, initialView }: DualProjectionView
 
           {/* Embedded PDF Viewer */}
           <div className="w-full h-[800px] rounded-2xl overflow-hidden border border-parchment-300 dark:border-ink-800 bg-ink-900 shadow-inner">
-            <iframe
-              src={`${patent.originalPdfUrl}#toolbar=1&navpanes=0`}
-              title={`${patent.patentNumber} PDF Facsimile`}
-              sandbox="allow-scripts allow-same-origin allow-popups allow-forms"
-              className="w-full h-full border-none"
-              referrerPolicy="no-referrer"
-            />
+            <object
+              data={`${patent.originalPdfUrl}#toolbar=1&navpanes=0`}
+              type="application/pdf"
+              aria-label={`${patent.patentNumber} PDF Facsimile`}
+              className="w-full h-full border-none bg-ink-900"
+            >
+              <a
+                href={patent.originalPdfUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex h-full items-center justify-center text-sm font-sans text-parchment-100 underline"
+              >
+                Open the {patent.patentNumber} PDF facsimile
+              </a>
+            </object>
           </div>
         </div>
       )}
@@ -431,6 +443,17 @@ export function DualProjectionViewer({ patent, initialView }: DualProjectionView
                     </div>
                   ))}
                 </div>
+              </div>
+            )}
+
+            {/* Historical Schematic Blueprint & Pin Inspector */}
+            {patent.drawings && patent.drawings.length > 0 && (
+              <div className="space-y-4 pt-5 border-t border-parchment-200 dark:border-ink-800">
+                <InteractiveDiagramViewer
+                  drawings={patent.drawings}
+                  patentNumber={patent.patentNumber}
+                  patentId={patent.id}
+                />
               </div>
             )}
 

@@ -66,7 +66,9 @@ export default async function PatentDetailPage({ params }: PatentPageProps) {
       <script
         type="application/ld+json"
         // biome-ignore lint/security/noDangerouslySetInnerHtml: Validated JSON-LD scholarly article schema
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify(jsonLd).replace(/</g, "\\u003c"),
+        }}
       />
 
       {/* Patent Header & Metadata Bar */}

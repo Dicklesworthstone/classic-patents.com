@@ -12,6 +12,7 @@ export default defineConfig({
       {
         files: [
           "src/components/patents/DualProjectionViewer.tsx",
+          "src/components/patents/InteractiveDiagramViewer.tsx",
           "src/components/patents/visuals/**/*.tsx",
         ],
         rules: ["react-doctor/no-giant-component"],

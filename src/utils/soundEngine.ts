@@ -11,6 +11,16 @@ class SoundEngine {
   private oscillator: OscillatorNode | null = null;
   private gainNode: GainNode | null = null;
   private isMuted: boolean = false;
+  private activeTimers: Set<number> = new Set();
+  private transientNodes: Set<AudioNode> = new Set();
+
+  constructor() {
+    if (typeof window !== "undefined") {
+      window.addEventListener("pagehide", () => this.stopAll());
+      window.addEventListener("beforeunload", () => this.stopAll());
+      window.addEventListener("popstate", () => this.stopAll());
+    }
+  }
 
   private initContext() {
     if (typeof window === "undefined") return;
@@ -34,13 +44,62 @@ class SoundEngine {
   public setMuted(muted: boolean): boolean {
     this.isMuted = muted;
     if (this.isMuted) {
-      this.stopContinuousTone();
+      this.stopAll();
     }
     return this.isMuted;
   }
 
   public getIsMuted(): boolean {
     return this.isMuted;
+  }
+
+  /**
+   * Stop ALL audio immediately and clean up all active oscillators and gain nodes.
+   * Called during page transitions, route changes, or component unmounting.
+   */
+  public stopAll() {
+    // Clear any scheduled audio release timers
+    for (const timer of this.activeTimers) {
+      window.clearTimeout(timer);
+    }
+    this.activeTimers.clear();
+
+    // Disconnect and stop continuous oscillator
+    if (this.oscillator) {
+      try {
+        this.oscillator.stop();
+      } catch {
+        // May already be stopped
+      }
+      try {
+        this.oscillator.disconnect();
+      } catch {
+        // Ignored
+      }
+      this.oscillator = null;
+    }
+
+    if (this.gainNode) {
+      try {
+        this.gainNode.disconnect();
+      } catch {
+        // Ignored
+      }
+      this.gainNode = null;
+    }
+
+    // Clean up any transient nodes
+    for (const node of this.transientNodes) {
+      try {
+        if ("stop" in node && typeof (node as { stop?: () => void }).stop === "function") {
+          (node as { stop: () => void }).stop();
+        }
+        node.disconnect();
+      } catch {
+        // Ignored
+      }
+    }
+    this.transientNodes.clear();
   }
 
   /**
@@ -78,33 +137,7 @@ class SoundEngine {
   }
 
   public stopContinuousTone() {
-    const oscillator = this.oscillator;
-    const gainNode = this.gainNode;
-    const ctx = this.ctx;
-
-    if (!oscillator || !ctx) return;
-
-    // Clear shared state before scheduling the release. A control change can start a
-    // replacement oscillator before this short fade completes; the timeout must only
-    // ever stop the oscillator it was created to retire.
-    this.oscillator = null;
-    this.gainNode = null;
-
-    try {
-      gainNode?.gain.setTargetAtTime(0, ctx.currentTime, 0.05);
-      window.setTimeout(() => {
-        try {
-          oscillator.stop();
-        } catch {
-          // The oscillator may already have been stopped while the context was closing.
-        }
-        oscillator.disconnect();
-        gainNode?.disconnect();
-      }, 100);
-    } catch {
-      oscillator.disconnect();
-      gainNode?.disconnect();
-    }
+    this.stopAll();
   }
 
   /**

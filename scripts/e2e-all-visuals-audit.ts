@@ -35,7 +35,6 @@ async function runVisualsAudit() {
     deviceScaleFactor: 1,
   });
 
-  const page = await context.newPage();
   const results: PatentTestResult[] = [];
   let failCount = 0;
 
@@ -44,6 +43,8 @@ async function runVisualsAudit() {
     const url = `${BASE_URL}/patents/${patent.id}`;
     const consoleErrors: string[] = [];
     const pageErrors: string[] = [];
+
+    const page = await context.newPage();
 
     const onPageError = (err: Error) => {
       pageErrors.push(err.message);
@@ -65,13 +66,13 @@ async function runVisualsAudit() {
     process.stdout.write(`[${i + 1}/22] Testing ${patent.patentNumber} (${patent.id}) ... `);
 
     try {
-      const response = await page.goto(url, { waitUntil: "domcontentloaded", timeout: 10000 });
-      if (response?.status() !== 200) {
+      const response = await page.goto(url, { waitUntil: "networkidle", timeout: 15000 });
+      if (!response || response.status() !== 200) {
         throw new Error(`HTTP Status ${response?.status()}`);
       }
 
       // 1. Check 3D WebGL Canvas Render
-      await page.waitForTimeout(600);
+      await page.waitForTimeout(500);
       const canvasCount = await page.locator("canvas").count();
       const canvasFound = canvasCount > 0;
 
@@ -85,7 +86,7 @@ async function runVisualsAudit() {
       const twoDButton = page.locator('button:has-text("2D Schematic")');
       if ((await twoDButton.count()) > 0) {
         await twoDButton.click();
-        await page.waitForTimeout(400);
+        await page.waitForTimeout(300);
 
         // Verify SVG vector schematic is present
         const svgCount = await page.locator("svg").count();
@@ -97,7 +98,7 @@ async function runVisualsAudit() {
         const threeDButton = page.locator('button:has-text("3D Engine")');
         if ((await threeDButton.count()) > 0) {
           await threeDButton.click();
-          await page.waitForTimeout(400);
+          await page.waitForTimeout(300);
         }
       }
 
@@ -117,9 +118,7 @@ async function runVisualsAudit() {
         console.log("✓ OK (3D: PASS, 2D: PASS, Errors: 0)");
       } else {
         failCount++;
-        console.log(
-          `❌ FAILED (3D: ${threeDStatus}, 2D: ${twoDStatus}, PageErrors: ${pageErrors.length}, ConsoleErrors: ${consoleErrors.length})`,
-        );
+        console.log(`❌ FAILED (3D: ${threeDStatus}, 2D: ${twoDStatus}, PageErrors: ${pageErrors.length}, ConsoleErrors: ${consoleErrors.length})`);
         if (pageErrors.length > 0) {
           console.log(`   [PageErrors]:`, pageErrors);
         }
@@ -154,8 +153,7 @@ async function runVisualsAudit() {
         hasOverflow: false,
       });
     } finally {
-      page.off("pageerror", onPageError);
-      page.off("console", onConsole);
+      await page.close();
     }
   }
 

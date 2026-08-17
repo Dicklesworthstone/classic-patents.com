@@ -1,7 +1,16 @@
 "use client";
 
-import { Compass, MapPin } from "lucide-react";
-import { useState } from "react";
+import {
+  ChevronLeft,
+  ChevronRight,
+  Compass,
+  Layers,
+  MapPin,
+  RotateCcw,
+  ZoomIn,
+  ZoomOut,
+} from "lucide-react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import type { PatentDrawing } from "@/types/patent";
 
 interface InteractiveDiagramViewerProps {
@@ -912,15 +921,83 @@ export function InteractiveDiagramViewer({
 }: InteractiveDiagramViewerProps) {
   const [activeFigIndex, setActiveFigIndex] = useState<number>(0);
   const [activeCalloutId, setActiveCalloutId] = useState<string | null>(null);
+  const [hoveredCalloutId, setHoveredCalloutId] = useState<string | null>(null);
+  const [zoomLevel, setZoomLevel] = useState<number>(1);
+  const [schematicTheme, setSchematicTheme] = useState<"blueprint" | "parchment" | "chalkboard">(
+    "blueprint",
+  );
 
   const activeDrawing = drawings[activeFigIndex] || drawings[0];
+  const callouts = useMemo(() => activeDrawing?.callouts ?? [], [activeDrawing]);
+  const activePin = callouts.find((c) => c.id === activeCalloutId);
+  const currentPinIndex = callouts.findIndex((c) => c.id === activeCalloutId);
+
+  const handlePrevPin = useCallback(() => {
+    if (callouts.length === 0) return;
+    if (currentPinIndex <= 0) {
+      setActiveCalloutId(callouts[callouts.length - 1].id);
+    } else {
+      setActiveCalloutId(callouts[currentPinIndex - 1].id);
+    }
+  }, [callouts, currentPinIndex]);
+
+  const handleNextPin = useCallback(() => {
+    if (callouts.length === 0) return;
+    if (currentPinIndex === -1 || currentPinIndex >= callouts.length - 1) {
+      setActiveCalloutId(callouts[0].id);
+    } else {
+      setActiveCalloutId(callouts[currentPinIndex + 1].id);
+    }
+  }, [callouts, currentPinIndex]);
+
+  // Keyboard navigation for pins
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.target instanceof HTMLInputElement || e.target instanceof HTMLTextAreaElement) return;
+      if (e.key === "ArrowLeft") {
+        e.preventDefault();
+        handlePrevPin();
+      } else if (e.key === "ArrowRight") {
+        e.preventDefault();
+        handleNextPin();
+      } else if (e.key === "Escape") {
+        setActiveCalloutId(null);
+      }
+    };
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [handlePrevPin, handleNextPin]);
+
   if (!activeDrawing) return null;
 
-  const activePin = activeDrawing.callouts?.find((c) => c.id === activeCalloutId);
+  // Theme palettes
+  const themeStyles = {
+    blueprint: {
+      bg: "bg-[#061121]",
+      grid: "bg-[linear-gradient(to_right,#0c2340_1px,transparent_1px),linear-gradient(to_bottom,#0c2340_1px,transparent_1px)] opacity-60",
+      borderStroke: "#0ea5e9",
+      textFill: "#7dd3fc",
+      badgeClass: "bg-cyan-950/80 text-cyan-400 border-cyan-800",
+    },
+    parchment: {
+      bg: "bg-[#fbf7ee]",
+      grid: "bg-[linear-gradient(to_right,#e7dec8_1px,transparent_1px),linear-gradient(to_bottom,#e7dec8_1px,transparent_1px)] opacity-70",
+      borderStroke: "#78350f",
+      textFill: "#451a03",
+      badgeClass: "bg-amber-100 text-amber-900 border-amber-300",
+    },
+    chalkboard: {
+      bg: "bg-[#090d16]",
+      grid: "bg-[linear-gradient(to_right,#1e293b_1px,transparent_1px),linear-gradient(to_bottom,#1e293b_1px,transparent_1px)] opacity-50",
+      borderStroke: "#10b981",
+      textFill: "#6ee7b7",
+      badgeClass: "bg-emerald-950/80 text-emerald-400 border-emerald-800",
+    },
+  }[schematicTheme];
 
   return (
-    <div className="rounded-2xl border border-parchment-300 dark:border-ink-800 bg-parchment-50 dark:bg-ink-950 p-6 shadow-patent space-y-6">
-      {/* Header & Figure Switcher */}
+    <div className="rounded-2xl border border-parchment-300 dark:border-ink-800 bg-parchment-50 dark:bg-ink-950 p-5 sm:p-6 shadow-patent space-y-5">
+      {/* Header, Figure Switcher & Viewport Toolbar */}
       <div className="flex flex-wrap items-center justify-between gap-3 border-b border-parchment-200 dark:border-ink-800 pb-4">
         <div>
           <div className="flex items-center gap-2">
@@ -932,39 +1009,123 @@ export function InteractiveDiagramViewer({
           <p className="text-xs text-ink-600 dark:text-ink-400 mt-0.5">{activeDrawing.caption}</p>
         </div>
 
-        {/* Figure tabs if multiple */}
-        {drawings.length > 1 && (
-          <div className="flex items-center gap-1.5">
-            {drawings.map((draw, idx) => (
-              <button
-                key={draw.figureNumber}
-                type="button"
-                onClick={() => {
-                  setActiveFigIndex(idx);
-                  setActiveCalloutId(null);
-                }}
-                className={`px-3 py-1 rounded-lg text-xs font-sans transition-colors border ${
-                  activeFigIndex === idx
-                    ? "bg-amber-700 text-white font-bold border-amber-800 dark:bg-amber-600 shadow-sm"
-                    : "bg-parchment-100 dark:bg-ink-900 text-ink-700 dark:text-ink-300 border-parchment-300 dark:border-ink-800 hover:bg-parchment-200"
-                }`}
-              >
-                {draw.figureNumber}
-              </button>
-            ))}
+        <div className="flex flex-wrap items-center gap-2">
+          {/* Theme Palette Switcher */}
+          <div className="flex items-center bg-parchment-200/80 dark:bg-ink-900 rounded-xl p-1 border border-parchment-300 dark:border-ink-800 text-xs">
+            <button
+              type="button"
+              onClick={() => setSchematicTheme("blueprint")}
+              className={`px-2.5 py-1 rounded-lg font-sans transition-colors ${
+                schematicTheme === "blueprint"
+                  ? "bg-cyan-700 text-white font-bold shadow-xs"
+                  : "text-ink-700 dark:text-ink-400 hover:text-ink-900"
+              }`}
+              title="Cyan Engineering Blueprint"
+            >
+              Blueprint
+            </button>
+            <button
+              type="button"
+              onClick={() => setSchematicTheme("parchment")}
+              className={`px-2.5 py-1 rounded-lg font-sans transition-colors ${
+                schematicTheme === "parchment"
+                  ? "bg-amber-700 text-white font-bold shadow-xs"
+                  : "text-ink-700 dark:text-ink-400 hover:text-ink-900"
+              }`}
+              title="Archival Sepia Parchment"
+            >
+              Parchment
+            </button>
+            <button
+              type="button"
+              onClick={() => setSchematicTheme("chalkboard")}
+              className={`px-2.5 py-1 rounded-lg font-sans transition-colors ${
+                schematicTheme === "chalkboard"
+                  ? "bg-emerald-700 text-white font-bold shadow-xs"
+                  : "text-ink-700 dark:text-ink-400 hover:text-ink-900"
+              }`}
+              title="Slate Technical Chalkboard"
+            >
+              Chalkboard
+            </button>
           </div>
-        )}
+
+          {/* Zoom controls */}
+          <div className="flex items-center bg-parchment-200/80 dark:bg-ink-900 rounded-xl p-1 border border-parchment-300 dark:border-ink-800 text-xs">
+            <button
+              type="button"
+              onClick={() => setZoomLevel((z) => (z > 1 ? z - 0.25 : 1))}
+              disabled={zoomLevel <= 1}
+              className="p-1 rounded hover:bg-parchment-300 dark:hover:bg-ink-800 disabled:opacity-40 text-ink-700 dark:text-ink-300"
+              aria-label="Zoom out schematic"
+            >
+              <ZoomOut className="w-3.5 h-3.5" />
+            </button>
+            <span className="px-2 font-mono text-[11px] font-bold text-ink-800 dark:text-ink-200">
+              {zoomLevel.toFixed(2)}x
+            </span>
+            <button
+              type="button"
+              onClick={() => setZoomLevel((z) => (z < 1.75 ? z + 0.25 : 1.75))}
+              disabled={zoomLevel >= 1.75}
+              className="p-1 rounded hover:bg-parchment-300 dark:hover:bg-ink-800 disabled:opacity-40 text-ink-700 dark:text-ink-300"
+              aria-label="Zoom in schematic"
+            >
+              <ZoomIn className="w-3.5 h-3.5" />
+            </button>
+            {zoomLevel !== 1 && (
+              <button
+                type="button"
+                onClick={() => setZoomLevel(1)}
+                className="ml-1 p-1 rounded hover:bg-parchment-300 dark:hover:bg-ink-800 text-ink-500"
+                aria-label="Reset zoom"
+              >
+                <RotateCcw className="w-3 h-3" />
+              </button>
+            )}
+          </div>
+
+          {/* Figure tabs if multiple */}
+          {drawings.length > 1 && (
+            <div className="flex items-center gap-1">
+              {drawings.map((draw, idx) => (
+                <button
+                  key={draw.figureNumber}
+                  type="button"
+                  onClick={() => {
+                    setActiveFigIndex(idx);
+                    setActiveCalloutId(null);
+                  }}
+                  className={`px-3 py-1 rounded-lg text-xs font-sans transition-colors border ${
+                    activeFigIndex === idx
+                      ? "bg-amber-700 text-white font-bold border-amber-800 dark:bg-amber-600 shadow-xs"
+                      : "bg-parchment-100 dark:bg-ink-900 text-ink-700 dark:text-ink-300 border-parchment-300 dark:border-ink-800 hover:bg-parchment-200"
+                  }`}
+                >
+                  {draw.figureNumber}
+                </button>
+              ))}
+            </div>
+          )}
+        </div>
       </div>
 
-      {/* Schematic Container with Interactive Pins */}
+      {/* Schematic Container with Interactive Pins & Pin Inspector */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
         {/* Drawing Artboard */}
-        <div className="lg:col-span-8 flex flex-col items-center justify-center rounded-2xl bg-ink-950 p-6 border border-parchment-200 dark:border-ink-800 relative min-h-[340px] shadow-inner">
+        <div
+          className={`lg:col-span-8 flex flex-col items-center justify-center rounded-2xl ${themeStyles.bg} p-4 sm:p-6 border border-parchment-300 dark:border-ink-800 relative min-h-[380px] shadow-inner overflow-hidden transition-colors duration-300`}
+        >
           {/* Blueprint background grid */}
-          <div className="absolute inset-0 bg-[linear-gradient(to_right,#1e293b_1px,transparent_1px),linear-gradient(to_bottom,#1e293b_1px,transparent_1px)] bg-[size:20px_20px] opacity-40 rounded-2xl pointer-events-none" />
+          <div
+            className={`absolute inset-0 ${themeStyles.grid} bg-[size:24px_24px] rounded-2xl pointer-events-none`}
+          />
 
           {/* Schematic SVG Vector Frame */}
-          <div className="relative w-full max-w-md aspect-[4/3] flex items-center justify-center">
+          <div
+            className="relative w-full max-w-2xl aspect-[4/3] flex items-center justify-center transition-transform duration-300"
+            style={{ transform: `scale(${zoomLevel})` }}
+          >
             <svg viewBox="0 0 400 300" className="w-full h-full select-none">
               {/* Outer drawing border */}
               <rect
@@ -973,21 +1134,23 @@ export function InteractiveDiagramViewer({
                 width="380"
                 height="280"
                 fill="none"
-                stroke="#334155"
+                stroke={themeStyles.borderStroke}
                 strokeWidth="1.5"
                 strokeDasharray="4 2"
+                strokeOpacity="0.4"
                 rx="4"
               />
               <text
                 x="200"
-                y="35"
+                y="32"
                 textAnchor="middle"
-                fontSize="12"
-                fill="#94a3b8"
+                fontSize="11"
+                fill={themeStyles.textFill}
                 fontFamily="serif"
                 fontWeight="bold"
+                letterSpacing="1"
               >
-                {patentNumber} · {activeDrawing.figureNumber}
+                {patentNumber} · {activeDrawing.figureNumber.toUpperCase()}
               </text>
 
               {/* Central authentic mechanical blueprint vectors */}
@@ -997,11 +1160,60 @@ export function InteractiveDiagramViewer({
                 patentNumber,
                 patentId,
               )}
+
+              {/* Animated Radar Target Reticle on selected pin */}
+              {activePin && (
+                <g className="pointer-events-none transition-opacity duration-300">
+                  <circle
+                    cx={activePin.x * 4}
+                    cy={activePin.y * 3}
+                    r="18"
+                    fill="none"
+                    stroke="#f59e0b"
+                    strokeWidth="1.5"
+                    strokeDasharray="3 3"
+                    className="animate-spin"
+                    style={{
+                      transformOrigin: `${activePin.x * 4}px ${activePin.y * 3}px`,
+                      animationDuration: "10s",
+                    }}
+                  />
+                  <circle
+                    cx={activePin.x * 4}
+                    cy={activePin.y * 3}
+                    r="28"
+                    fill="none"
+                    stroke="#f59e0b"
+                    strokeWidth="1"
+                    opacity="0.35"
+                  />
+                  {/* Crosshairs */}
+                  <line
+                    x1={activePin.x * 4 - 36}
+                    y1={activePin.y * 3}
+                    x2={activePin.x * 4 + 36}
+                    y2={activePin.y * 3}
+                    stroke="#f59e0b"
+                    strokeWidth="1"
+                    strokeOpacity="0.6"
+                  />
+                  <line
+                    x1={activePin.x * 4}
+                    y1={activePin.y * 3 - 36}
+                    x2={activePin.x * 4}
+                    y2={activePin.y * 3 + 36}
+                    stroke="#f59e0b"
+                    strokeWidth="1"
+                    strokeOpacity="0.6"
+                  />
+                </g>
+              )}
             </svg>
 
             {/* Interactive Numbered Callout Pins */}
-            {activeDrawing.callouts?.map((callout, pinIdx) => {
+            {callouts.map((callout, pinIdx) => {
               const isSelected = callout.id === activeCalloutId;
+              const isHovered = callout.id === hoveredCalloutId;
               const pinText = callout.element.length <= 5 ? callout.element : String(pinIdx + 1);
               return (
                 <button
@@ -1009,11 +1221,15 @@ export function InteractiveDiagramViewer({
                   type="button"
                   aria-label={`${callout.label}: ${callout.description}`}
                   onClick={() => setActiveCalloutId(isSelected ? null : callout.id)}
+                  onMouseEnter={() => setHoveredCalloutId(callout.id)}
+                  onMouseLeave={() => setHoveredCalloutId(null)}
                   style={{ left: `${callout.x}%`, top: `${callout.y}%` }}
-                  className={`absolute -translate-x-1/2 -translate-y-1/2 min-w-[28px] max-w-[3.25rem] h-7 px-1.5 rounded-full flex items-center justify-center text-xs font-mono font-bold transition-colors duration-200 shadow-md truncate ${
+                  className={`absolute -translate-x-1/2 -translate-y-1/2 min-w-[28px] max-w-[3.5rem] h-7 px-2 rounded-full flex items-center justify-center text-xs font-mono font-bold transition-all duration-200 shadow-md truncate ${
                     isSelected
-                      ? "bg-amber-500 text-ink-950 ring-4 ring-amber-500/40 scale-125 z-20"
-                      : "bg-ink-800 text-amber-300 border border-amber-500/60 hover:scale-110 hover:bg-amber-600 hover:text-white z-10"
+                      ? "bg-amber-500 text-ink-950 ring-4 ring-amber-500/50 scale-125 z-20 shadow-amber-500/30"
+                      : isHovered
+                        ? "bg-amber-600 text-white scale-115 ring-2 ring-amber-400 z-15"
+                        : "bg-ink-900/90 text-amber-300 border border-amber-500/60 hover:scale-110 hover:bg-amber-600 hover:text-white z-10"
                   }`}
                   title={`${callout.label}: ${callout.description}`}
                 >
@@ -1023,25 +1239,55 @@ export function InteractiveDiagramViewer({
             })}
           </div>
 
-          <div className="w-full flex items-center justify-between text-[11px] font-sans text-ink-400 mt-3 pt-3 border-t border-ink-800">
-            <span>Click any numbered callout pin to inspect its historical function</span>
-            <span className="text-amber-400 font-bold">
-              {activeDrawing.callouts?.length || 0} Numbered Pins
+          <div className="w-full flex items-center justify-between text-[11px] font-sans text-ink-400 mt-4 pt-3 border-t border-ink-800/80">
+            <span className="flex items-center gap-2">
+              <span className="hidden sm:inline">
+                Click any numbered callout pin or use arrow keys [← / →]
+              </span>
+              <span className="sm:hidden">Tap any numbered pin</span>
+            </span>
+            <span className="text-amber-400 font-bold font-mono">
+              {callouts.length} Curated Callouts
             </span>
           </div>
         </div>
 
         {/* Pin Inspector Sidebar */}
         <div className="lg:col-span-4 space-y-4">
-          <div className="rounded-xl border border-parchment-300 dark:border-ink-800 bg-parchment-100/70 dark:bg-ink-900/60 p-4 space-y-3">
-            <span className="font-serif font-bold text-sm text-ink-900 dark:text-parchment-100 block">
-              Callout Pin Inspector
-            </span>
+          <div className="rounded-xl border border-parchment-300 dark:border-ink-800 bg-parchment-100/70 dark:bg-ink-900/60 p-4 sm:p-5 space-y-3">
+            <div className="flex items-center justify-between">
+              <span className="font-serif font-bold text-sm text-ink-900 dark:text-parchment-100 flex items-center gap-1.5">
+                <Layers className="w-4 h-4 text-amber-600 dark:text-amber-400" />
+                Callout Pin Inspector
+              </span>
+              {callouts.length > 1 && (
+                <div className="flex items-center gap-1">
+                  <button
+                    type="button"
+                    onClick={handlePrevPin}
+                    className="p-1 rounded-md bg-parchment-200 dark:bg-ink-800 hover:bg-parchment-300 dark:hover:bg-ink-700 text-ink-700 dark:text-ink-300 transition-colors"
+                    title="Previous Pin (Arrow Left)"
+                    aria-label="Previous callout pin"
+                  >
+                    <ChevronLeft className="w-3.5 h-3.5" />
+                  </button>
+                  <button
+                    type="button"
+                    onClick={handleNextPin}
+                    className="p-1 rounded-md bg-parchment-200 dark:bg-ink-800 hover:bg-parchment-300 dark:hover:bg-ink-700 text-ink-700 dark:text-ink-300 transition-colors"
+                    title="Next Pin (Arrow Right)"
+                    aria-label="Next callout pin"
+                  >
+                    <ChevronRight className="w-3.5 h-3.5" />
+                  </button>
+                </div>
+              )}
+            </div>
 
             {activePin ? (
-              <div className="space-y-3">
+              <div className="space-y-3 animate-fade-in">
                 <div className="flex items-center gap-2">
-                  <span className="px-2 h-6 rounded-full bg-amber-600 text-white font-mono text-xs font-bold flex items-center justify-center">
+                  <span className="px-2.5 h-6 rounded-full bg-amber-600 text-white font-mono text-xs font-bold flex items-center justify-center shadow-xs">
                     {activePin.element}
                   </span>
                   <span className="font-serif font-bold text-sm text-ink-900 dark:text-parchment-100">
@@ -1053,7 +1299,7 @@ export function InteractiveDiagramViewer({
                 </p>
                 <div className="p-2.5 rounded-lg bg-parchment-200/60 dark:bg-ink-950 text-[11px] font-sans text-ink-600 dark:text-ink-400 border border-parchment-300 dark:border-ink-800">
                   <span className="font-semibold text-amber-700 dark:text-amber-400 block mb-0.5">
-                    Schematic Identification:
+                    Historical Specification Reference:
                   </span>
                   Reference numeral{" "}
                   <span className="font-mono font-bold text-ink-800 dark:text-ink-200">
@@ -1061,35 +1307,56 @@ export function InteractiveDiagramViewer({
                   </span>{" "}
                   designates the {activePin.label.toLowerCase()} in {activeDrawing.figureNumber}.
                 </div>
+                <button
+                  type="button"
+                  onClick={() => setActiveCalloutId(null)}
+                  className="w-full text-center py-1.5 text-xs text-amber-700 dark:text-amber-400 hover:underline font-sans"
+                >
+                  Clear Selection (Esc)
+                </button>
               </div>
             ) : (
-              <div className="text-xs text-ink-500 font-sans py-8 text-center space-y-1">
-                <MapPin className="w-5 h-5 mx-auto text-ink-400 mb-1" />
-                <p>Click any numbered pin on the schematic to read its legal specification.</p>
+              <div className="text-xs text-ink-500 font-sans py-8 text-center space-y-1.5">
+                <MapPin className="w-6 h-6 mx-auto text-amber-600/70 dark:text-amber-400/70 mb-1 animate-bounce" />
+                <p className="font-medium text-ink-800 dark:text-ink-200">
+                  Select Any Numbered Pin
+                </p>
+                <p className="text-ink-500 text-[11px]">
+                  Click pins on the schematic or select from the list below to inspect historical
+                  specifications.
+                </p>
               </div>
             )}
           </div>
 
           {/* Quick list of all callouts */}
-          {activeDrawing.callouts && (
-            <div className="space-y-1 max-h-44 overflow-y-auto pr-1">
-              {activeDrawing.callouts.map((callout) => (
-                <button
-                  key={callout.id}
-                  type="button"
-                  onClick={() => setActiveCalloutId(callout.id)}
-                  className={`w-full text-left p-2 rounded-lg text-xs font-sans flex items-center justify-between transition-colors ${
-                    activeCalloutId === callout.id
-                      ? "bg-amber-600 text-white font-bold"
-                      : "hover:bg-parchment-200 dark:hover:bg-ink-800 text-ink-700 dark:text-ink-300"
-                  }`}
-                >
-                  <span className="truncate">
-                    [{callout.element}] {callout.label}
-                  </span>
-                  <span className="text-[10px] opacity-70">Inspect →</span>
-                </button>
-              ))}
+          {callouts.length > 0 && (
+            <div className="space-y-1 max-h-48 overflow-y-auto pr-1">
+              {callouts.map((callout) => {
+                const isSelected = activeCalloutId === callout.id;
+                return (
+                  <button
+                    key={callout.id}
+                    type="button"
+                    onClick={() => setActiveCalloutId(isSelected ? null : callout.id)}
+                    onMouseEnter={() => setHoveredCalloutId(callout.id)}
+                    onMouseLeave={() => setHoveredCalloutId(null)}
+                    className={`w-full text-left p-2 rounded-lg text-xs font-sans flex items-center justify-between transition-colors ${
+                      isSelected
+                        ? "bg-amber-600 text-white font-bold shadow-xs"
+                        : "hover:bg-parchment-200 dark:hover:bg-ink-800 text-ink-700 dark:text-ink-300"
+                    }`}
+                  >
+                    <span className="truncate">
+                      <span className="font-mono font-bold mr-1">[{callout.element}]</span>{" "}
+                      {callout.label}
+                    </span>
+                    <span className="text-[10px] opacity-70 flex-shrink-0 ml-1">
+                      {isSelected ? "Active ✓" : "Inspect →"}
+                    </span>
+                  </button>
+                );
+              })}
             </div>
           )}
         </div>

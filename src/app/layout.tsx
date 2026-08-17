@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { IBM_Plex_Sans, JetBrains_Mono, Newsreader, Plus_Jakarta_Sans } from "next/font/google";
 import "./globals.css";
+import { AudioCleanupProvider } from "@/components/layout/AudioCleanupProvider";
 import { Footer } from "@/components/layout/Footer";
 import { Header } from "@/components/layout/Header";
 
@@ -94,6 +95,7 @@ export default function RootLayout({
       suppressHydrationWarning
     >
       <body className="antialiased selection:bg-amber-500/20 selection:text-amber-900 dark:selection:text-amber-200">
+        <AudioCleanupProvider />
         <div className="flex flex-col min-h-screen">
           <Header />
           <main className="flex-1 relative z-0 isolate">{children}</main>
