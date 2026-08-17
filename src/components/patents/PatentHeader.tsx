@@ -3,6 +3,7 @@
 import { BookOpen, Calendar, Check, FileDown, MapPin, Share2, User } from "lucide-react";
 import Link from "next/link";
 import { useState } from "react";
+import { TextWithLatex } from "@/components/ui/LatexRenderer";
 import type { Patent } from "@/types/patent";
 import { ArchaicGlossaryModal } from "./ArchaicGlossaryModal";
 
@@ -122,7 +123,7 @@ export function PatentHeader({ patent }: PatentHeaderProps) {
       {/* Summary and Action Bar */}
       <div className="flex flex-wrap items-center justify-between gap-4 pt-1">
         <div className="text-sm sm:text-base text-ink-800 dark:text-ink-200 font-sans max-w-3xl leading-relaxed">
-          {patent.summary}
+          <TextWithLatex text={patent.summary} />
         </div>
 
         <div className="flex items-center gap-2.5">

@@ -3,9 +3,9 @@ import type { Metadata } from "next";
 import { PatentTimeline } from "@/components/timeline/PatentTimeline";
 
 export const metadata: Metadata = {
-  title: "Historical Inventions Timeline (1840–1979) — Classic Patents",
+  title: "Historical Inventions Timeline (1794–1979) — Classic Patents",
   description:
-    "Interactive chronology of transformative patents from Morse's telegraph and Goodyear's vulcanized rubber to the Noyce silicon microchip, Kevlar, and Apple II.",
+    "Interactive chronology of transformative patents from Whitney's cotton gin and Morse's telegraph to the Noyce silicon microchip, Kevlar, and Apple II.",
 };
 
 export default function TimelinePage() {
@@ -17,11 +17,11 @@ export default function TimelinePage() {
           Chronological Evolution of Technology
         </div>
         <h1 className="font-serif text-3xl sm:text-4xl lg:text-5xl font-bold text-ink-950 dark:text-parchment-50">
-          A Century and a Half of Human Ingenuity (1840–1979)
+          Nearly Two Centuries of Human Ingenuity (1794–1979)
         </h1>
         <p className="font-serif text-base sm:text-lg text-ink-700 dark:text-parchment-300 italic">
-          Follow how telegraphy, materials science, electricity, telecommunications, aerodynamics,
-          microwave engineering, monolithic silicon, and molecular polymers built the modern world.
+          Follow how mechanical automation, telegraphy, materials science, electricity,
+          aerodynamics, nuclear physics, monolithic silicon, and computing built the modern world.
         </p>
       </div>
 

@@ -1,5 +1,6 @@
 import { Activity, ArrowRight, Calendar, User } from "lucide-react";
 import Link from "next/link";
+import { TextWithLatex } from "@/components/ui/LatexRenderer";
 import type { Patent } from "@/types/patent";
 
 interface PatentCardProps {
@@ -37,9 +38,9 @@ export function PatentCard({ patent }: PatentCardProps) {
         </div>
 
         {/* Summary */}
-        <p className="text-sm sm:text-base font-sans text-ink-800 dark:text-ink-200 line-clamp-3 leading-relaxed">
-          {patent.summary}
-        </p>
+        <div className="text-sm sm:text-base font-sans text-ink-800 dark:text-ink-200 line-clamp-3 leading-relaxed">
+          <TextWithLatex text={patent.summary} />
+        </div>
 
         {/* Inventors & Meta */}
         <div className="pt-3 border-t border-parchment-200 dark:border-ink-800/80 space-y-2 text-xs sm:text-sm font-sans text-ink-700 dark:text-ink-300">

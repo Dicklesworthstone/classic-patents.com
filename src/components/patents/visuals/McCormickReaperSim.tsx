@@ -2,18 +2,21 @@
 
 import { Play, RotateCcw, Volume2, VolumeX } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
+import { usePatentPhysics } from "@/physics/usePatentPhysics";
+import { usePatentAudio } from "./three/usePatentAudio";
 
 export function McCormickReaperSim() {
-  const [groundSpeedMph, setGroundSpeedMph] = useState<number>(3.5);
-  const [cutterStrokeRate, setCutterStrokeRate] = useState<number>(300);
+  const { params, updateParam, resetParams } = usePatentPhysics("us-x8277-mccormick-reaper");
+  const { isAudioMuted, toggleSound } = usePatentAudio();
+  const groundSpeedMph = params.groundSpeedMph ?? 3.0;
+  const cutterStrokeRate = params.cutterStrokeRate ?? 450;
   const [isPlaying, setIsPlaying] = useState<boolean>(true);
-  const [isMuted, setIsMuted] = useState<boolean>(true);
   const [phase, setPhase] = useState<number>(0);
   const animRef = useRef<number | null>(null);
 
   // Mechanical kinematics
   const groundSpeedMps = Number((groundSpeedMph * 0.44704).toFixed(2));
-  const reelRpm = groundSpeedMph * 8.5;
+  const reelRpm = params.reelSpeedRpm ?? groundSpeedMph * 8.5;
   const cuttingEfficiencyPct = Math.min(
     98,
     Math.round((cutterStrokeRate / (groundSpeedMph * 70 + 1e-4)) * 85),
@@ -63,10 +66,7 @@ export function McCormickReaperSim() {
           </button>
           <button
             type="button"
-            onClick={() => {
-              setGroundSpeedMph(3.5);
-              setCutterStrokeRate(300);
-            }}
+            onClick={resetParams}
             aria-label="Reset Simulation"
             className="p-2 rounded-lg bg-parchment-200 dark:bg-ink-800 hover:bg-parchment-300 dark:hover:bg-ink-700 text-ink-800 dark:text-parchment-200 transition-colors"
           >
@@ -74,11 +74,11 @@ export function McCormickReaperSim() {
           </button>
           <button
             type="button"
-            onClick={() => setIsMuted(!isMuted)}
-            aria-label={isMuted ? "Unmute Audio" : "Mute Audio"}
+            onClick={() => toggleSound()}
+            aria-label={isAudioMuted ? "Unmute Audio" : "Mute Audio"}
             className="p-2 rounded-lg bg-parchment-200 dark:bg-ink-800 hover:bg-parchment-300 dark:hover:bg-ink-700 text-ink-800 dark:text-parchment-200 transition-colors"
           >
-            {isMuted ? (
+            {isAudioMuted ? (
               <VolumeX className="w-4 h-4" />
             ) : (
               <Volume2 className="w-4 h-4 text-amber-600" />
@@ -247,15 +247,15 @@ export function McCormickReaperSim() {
         <div>
           <div className="flex justify-between text-xs font-sans font-medium text-ink-700 dark:text-parchment-300 mb-1">
             <span>Horse Ground Speed</span>
-            <span className="font-mono">{groundSpeedMph} mph</span>
+            <span className="font-mono">{groundSpeedMph.toFixed(1)} mph</span>
           </div>
           <input
             type="range"
-            min="1.0"
-            max="6.0"
+            min="1.5"
+            max="5.0"
             step="0.2"
             value={groundSpeedMph}
-            onChange={(e) => setGroundSpeedMph(Number(e.target.value))}
+            onChange={(e) => updateParam("groundSpeedMph", Number(e.target.value))}
             className="w-full accent-amber-600 cursor-pointer"
           />
         </div>
@@ -266,11 +266,11 @@ export function McCormickReaperSim() {
           </div>
           <input
             type="range"
-            min="150"
-            max="600"
-            step="10"
+            min="200"
+            max="800"
+            step="25"
             value={cutterStrokeRate}
-            onChange={(e) => setCutterStrokeRate(Number(e.target.value))}
+            onChange={(e) => updateParam("cutterStrokeRate", Number(e.target.value))}
             className="w-full accent-amber-600 cursor-pointer"
           />
         </div>

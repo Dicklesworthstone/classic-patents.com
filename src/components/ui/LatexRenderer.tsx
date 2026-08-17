@@ -39,7 +39,7 @@ export function TextWithLatex({ text, className = "" }: { text: string; classNam
     if (!text) return null;
 
     // Match $$block$$ or $inline$
-    const parts = text.split(/(\$\$[\s\S]+?\$\$|\$.+?\$)/g);
+    const parts = text.split(/(\$\$[\s\S]+?\$\$|\$[^$]+?\$)/g);
 
     const seen = new Map<string, number>();
     return parts.map((part) => {

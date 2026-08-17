@@ -65,9 +65,9 @@ export function specClausesFor(patentId: string, params: Record<string, number>)
         caption: `Stator B is rotating at ${freq} Hz.`,
       },
       {
-        id: "poles",
-        phrase: "number of poles",
-        active: poles === 2 || poles === 4 || poles === 6,
+        id: "polyphase",
+        phrase: "two or more alternating currents having a phase difference",
+        active: freq > 0,
         tone: poles === 2 ? "held" : "live",
         caption:
           poles === 2

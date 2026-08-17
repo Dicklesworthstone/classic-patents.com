@@ -2,6 +2,7 @@
 
 import { BookOpen, Scale, Sparkles } from "lucide-react";
 import { useState } from "react";
+import { TextWithLatex } from "@/components/ui/LatexRenderer";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { WRIGHT_PATENT_ID } from "@/physics/wrightKernel";
 import type { PatentClaim } from "@/types/patent";
@@ -112,7 +113,7 @@ export function ClaimsDecoder({ claims, patentId }: ClaimsDecoderProps) {
                   Plain English Engineering Translation
                 </div>
                 <div className="p-6 rounded-xl bg-emerald-50/70 dark:bg-emerald-950/30 border border-emerald-200 dark:border-emerald-800/60 text-base sm:text-lg text-ink-950 dark:text-emerald-100 leading-relaxed font-sans font-medium shadow-xs">
-                  {claim.plainEnglish}
+                  <TextWithLatex text={claim.plainEnglish} />
                 </div>
               </div>
             </div>
@@ -133,7 +134,7 @@ export function ClaimsDecoder({ claims, patentId }: ClaimsDecoderProps) {
                       key={`${claim.number}-${item}`}
                       className="px-2.5 py-1 rounded-md bg-amber-100 dark:bg-amber-950 text-amber-900 dark:text-amber-200 border border-amber-300 dark:border-amber-800 text-xs sm:text-sm font-semibold"
                     >
-                      {item}
+                      <TextWithLatex text={item} />
                     </span>
                   ))}
                 </div>
@@ -144,9 +145,9 @@ export function ClaimsDecoder({ claims, patentId }: ClaimsDecoderProps) {
                   <span className="font-bold text-ink-900 dark:text-parchment-100 block text-xs uppercase tracking-wider">
                     Historical Legal Impact:
                   </span>
-                  <p className="text-ink-800 dark:text-ink-200 font-sans text-xs sm:text-sm leading-relaxed">
-                    {claim.legalSignificance}
-                  </p>
+                  <div className="text-ink-800 dark:text-ink-200 font-sans text-xs sm:text-sm leading-relaxed">
+                    <TextWithLatex text={claim.legalSignificance} />
+                  </div>
                 </div>
               ) : null}
             </div>

@@ -2,23 +2,26 @@
 
 import { AlertTriangle, Play, RotateCcw, Volume2, VolumeX } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
+import { usePatentPhysics } from "@/physics/usePatentPhysics";
+import { usePatentAudio } from "./three/usePatentAudio";
 
 export function WhitneyCottonGinSim() {
-  const [crankRpm, setCrankRpm] = useState<number>(45);
-  const [grateClearanceMm, setGrateClearanceMm] = useState<number>(2.5);
+  const { params, updateParam, resetParams } = usePatentPhysics("us-x72-whitney-cotton-gin");
+  const { isAudioMuted, toggleSound } = usePatentAudio();
+  const crankRpm = params.crankRpm ?? 60;
+  const grateClearanceMm = params.seedGridClearance ?? 3.2;
   const [isPlaying, setIsPlaying] = useState<boolean>(true);
-  const [isMuted, setIsMuted] = useState<boolean>(true);
   const [angle, setAngle] = useState<number>(0);
   const animRef = useRef<number | null>(null);
 
   // Physics calculation
   const sawSpeedMps = Number(((crankRpm * 2 * Math.PI * 0.125) / 60).toFixed(2));
-  const brushRpm = crankRpm * 3.5;
+  const brushRpm = crankRpm * (params.brushRatio ?? 2.5);
   const ginningRateLbsPerHr = Number(
-    (crankRpm * 1.15 * (grateClearanceMm > 3.0 ? 0.4 : 1.0)).toFixed(1),
+    (crankRpm * 1.15 * (grateClearanceMm > 3.5 ? 0.4 : 1.0)).toFixed(1),
   );
   const isClogged = grateClearanceMm < 1.8;
-  const isSeedDamaged = grateClearanceMm > 3.2;
+  const isSeedDamaged = grateClearanceMm > 3.8;
 
   useEffect(() => {
     if (!isPlaying) return;
@@ -60,11 +63,7 @@ export function WhitneyCottonGinSim() {
           </button>
           <button
             type="button"
-            onClick={() => {
-              setCrankRpm(45);
-              setGrateClearanceMm(2.5);
-              setAngle(0);
-            }}
+            onClick={resetParams}
             aria-label="Reset Simulation"
             className="p-2 rounded-lg bg-parchment-200 dark:bg-ink-800 hover:bg-parchment-300 dark:hover:bg-ink-700 text-ink-800 dark:text-parchment-200 transition-colors"
           >
@@ -72,11 +71,11 @@ export function WhitneyCottonGinSim() {
           </button>
           <button
             type="button"
-            onClick={() => setIsMuted(!isMuted)}
-            aria-label={isMuted ? "Unmute Audio" : "Mute Audio"}
+            onClick={() => toggleSound()}
+            aria-label={isAudioMuted ? "Unmute Audio" : "Mute Audio"}
             className="p-2 rounded-lg bg-parchment-200 dark:bg-ink-800 hover:bg-parchment-300 dark:hover:bg-ink-700 text-ink-800 dark:text-parchment-200 transition-colors"
           >
-            {isMuted ? (
+            {isAudioMuted ? (
               <VolumeX className="w-4 h-4" />
             ) : (
               <Volume2 className="w-4 h-4 text-amber-600" />
@@ -271,26 +270,26 @@ export function WhitneyCottonGinSim() {
           </div>
           <input
             type="range"
-            min="10"
+            min="20"
             max="120"
             step="5"
             value={crankRpm}
-            onChange={(e) => setCrankRpm(Number(e.target.value))}
+            onChange={(e) => updateParam("crankRpm", Number(e.target.value))}
             className="w-full accent-amber-600 cursor-pointer"
           />
         </div>
         <div>
           <div className="flex justify-between text-xs font-sans font-medium text-ink-700 dark:text-parchment-300 mb-1">
             <span>Grate Slot Clearance</span>
-            <span className="font-mono">{grateClearanceMm} mm</span>
+            <span className="font-mono">{grateClearanceMm.toFixed(1)} mm</span>
           </div>
           <input
             type="range"
-            min="1.2"
-            max="4.0"
+            min="1.5"
+            max="6.0"
             step="0.1"
             value={grateClearanceMm}
-            onChange={(e) => setGrateClearanceMm(Number(e.target.value))}
+            onChange={(e) => updateParam("seedGridClearance", Number(e.target.value))}
             className="w-full accent-amber-600 cursor-pointer"
           />
         </div>

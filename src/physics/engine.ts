@@ -116,7 +116,7 @@ export const FrankenSimEngine = {
   stepFermiReactor(
     controlRodWithdrawalPct: number,
     moderatorPurityPct: number,
-    fuelEnrichmentPct: number,
+    fuelEnrichmentPct: number = 0.72,
   ): NuclearKineticsState {
     const kEffective =
       1.32 *

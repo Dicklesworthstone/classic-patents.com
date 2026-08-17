@@ -2,6 +2,7 @@
 
 import { Volume2, VolumeX, Zap } from "lucide-react";
 import { useEffect, useState } from "react";
+import { TwoClocksStrip } from "@/components/patents/TwoClocksStrip";
 import { teslaBAt } from "@/physics/teslaKernel";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { soundEngine } from "@/utils/soundEngine";
@@ -349,6 +350,22 @@ export function TeslaMotorSim() {
                 </button>
               </div>
             </div>
+
+            <TwoClocksStrip
+              title="electrical field vs shaft"
+              fast={{
+                name: "Stator B period",
+                period: (1000 / Math.max(1, frequencyHz)).toFixed(1),
+                scale: "ms",
+                detail: `One revolution of the air-gap field at ${frequencyHz} Hz.`,
+              }}
+              slow={{
+                name: "Rotor turn",
+                period: (60 / Math.max(1, rotorSpeedRpm)).toFixed(3),
+                scale: "s",
+                detail: `${rotorSpeedRpm} RPM. Slip keeps the field sweeping the copper so torque exists.`,
+              }}
+            />
 
             {/* Frequency Slider */}
             <div className="space-y-1">

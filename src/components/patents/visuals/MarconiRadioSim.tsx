@@ -2,6 +2,7 @@
 
 import { Radio, Zap } from "lucide-react";
 import { useEffect, useState } from "react";
+import { SparkWaterfall } from "@/components/patents/visuals/SparkWaterfall";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { soundEngine } from "@/utils/soundEngine";
 
@@ -227,6 +228,11 @@ export function MarconiRadioSim() {
 
         {/* Controls Sidebar */}
         <div className="lg:col-span-4 space-y-4">
+          <SparkWaterfall
+            fundamentalHz={3e8 / (4 * antennaHeightMeters)}
+            energy={Math.min(1, sparkPowerKv / 50)}
+            firing={isSparking}
+          />
           <div className="rounded-2xl border border-parchment-300 dark:border-ink-800 bg-parchment-100/70 dark:bg-ink-900/60 p-5 space-y-4">
             <span className="font-serif font-bold text-sm text-ink-900 dark:text-parchment-100 block">
               Transmitter Tuning Controls

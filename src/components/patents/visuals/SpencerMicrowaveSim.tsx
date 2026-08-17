@@ -2,6 +2,7 @@
 
 import { Radio } from "lucide-react";
 import { useEffect, useLayoutEffect, useRef, useState } from "react";
+import { TwoClocksStrip } from "@/components/patents/TwoClocksStrip";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { soundEngine } from "@/utils/soundEngine";
 
@@ -240,6 +241,22 @@ export function SpencerMicrowaveSim() {
                 </button>
               </div>
             </div>
+
+            <TwoClocksStrip
+              title="magnetron cycle vs water heat"
+              fast={{
+                name: "RF cycle",
+                period: "408",
+                scale: "ps",
+                detail: "2.45 GHz: one oscillation of the cavity field, far too fast to feel.",
+              }}
+              slow={{
+                name: "Thermal rise",
+                period: ((4180 * 0.25) / Math.max(50, powerWatts)).toFixed(1),
+                scale: "s / °C",
+                detail: `Time for ${powerWatts} W to lift 250 g of water one kelvin. Dipoles follow the field; heat does not.`,
+              }}
+            />
 
             <div>
               <div className="flex justify-between text-xs font-mono mb-1">

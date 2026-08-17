@@ -1,4 +1,5 @@
 import { AlertCircle, Globe, History, Lightbulb, Sparkles, Swords } from "lucide-react";
+import { TextWithLatex } from "@/components/ui/LatexRenderer";
 import type { HistoricalContext } from "@/types/patent";
 
 interface HistoricalContextPanelProps {
@@ -17,9 +18,9 @@ export function HistoricalContextPanel({ context }: HistoricalContextPanelProps)
               The Historical Bottleneck
             </h3>
           </div>
-          <p className="text-sm sm:text-base text-ink-800 dark:text-ink-200 leading-relaxed font-sans">
-            {context.problemStatement}
-          </p>
+          <div className="text-sm sm:text-base text-ink-800 dark:text-ink-200 leading-relaxed font-sans">
+            <TextWithLatex text={context.problemStatement} />
+          </div>
         </div>
 
         <div className="rounded-2xl border border-parchment-300 dark:border-ink-800 bg-parchment-50/90 dark:bg-ink-950 p-6 sm:p-7 shadow-patent space-y-3">
@@ -33,7 +34,9 @@ export function HistoricalContextPanel({ context }: HistoricalContextPanelProps)
             {context.priorArtLimitations.map((lim) => (
               <li key={lim} className="flex items-start gap-2.5">
                 <span className="text-red-500 font-bold mt-1 text-base">•</span>
-                <span className="leading-relaxed">{lim}</span>
+                <span className="leading-relaxed">
+                  <TextWithLatex text={lim} />
+                </span>
               </li>
             ))}
           </ul>
@@ -46,9 +49,11 @@ export function HistoricalContextPanel({ context }: HistoricalContextPanelProps)
           <Lightbulb className="w-5 h-5 text-amber-600" />
           The Breakthrough Insight
         </div>
-        <p className="text-base sm:text-lg text-ink-900 dark:text-parchment-100 leading-relaxed font-sans italic font-medium">
-          &ldquo;{context.breakthroughInsight}&rdquo;
-        </p>
+        <div className="text-base sm:text-lg text-ink-900 dark:text-parchment-100 leading-relaxed font-sans italic font-medium">
+          &ldquo;
+          <TextWithLatex text={context.breakthroughInsight} />
+          &rdquo;
+        </div>
       </div>
 
       {/* Patent Battles & Litigation Wars */}
@@ -80,21 +85,25 @@ export function HistoricalContextPanel({ context }: HistoricalContextPanelProps)
                   <span className="font-bold text-ink-950 dark:text-parchment-100 block font-sans text-xs uppercase tracking-wider mb-1">
                     Rival Claim &amp; Defense:
                   </span>
-                  <p className="leading-relaxed">{war.rivalClaim}</p>
+                  <div className="leading-relaxed">
+                    <TextWithLatex text={war.rivalClaim} />
+                  </div>
                 </div>
                 <div>
                   <span className="font-bold text-ink-950 dark:text-parchment-100 block font-sans text-xs uppercase tracking-wider mb-1">
                     Litigation Conflict:
                   </span>
-                  <p className="leading-relaxed">{war.conflictDetails}</p>
+                  <div className="leading-relaxed">
+                    <TextWithLatex text={war.conflictDetails} />
+                  </div>
                 </div>
                 <div>
                   <span className="font-bold text-ink-950 dark:text-parchment-100 block font-sans text-xs uppercase tracking-wider mb-1">
                     Final Resolution &amp; Judicial Outcome:
                   </span>
-                  <p className="text-emerald-800 dark:text-emerald-300 font-semibold leading-relaxed">
-                    {war.resolution}
-                  </p>
+                  <div className="text-emerald-800 dark:text-emerald-300 font-semibold leading-relaxed">
+                    <TextWithLatex text={war.resolution} />
+                  </div>
                 </div>
               </div>
             </div>
@@ -109,9 +118,9 @@ export function HistoricalContextPanel({ context }: HistoricalContextPanelProps)
             <History className="w-5 h-5 text-ink-600 dark:text-ink-400" />
             After the Grant
           </div>
-          <p className="text-sm sm:text-base text-ink-800 dark:text-ink-200 leading-relaxed font-sans">
-            {context.aftermath}
-          </p>
+          <div className="text-sm sm:text-base text-ink-800 dark:text-ink-200 leading-relaxed font-sans">
+            <TextWithLatex text={context.aftermath} />
+          </div>
         </div>
       )}
 
@@ -122,9 +131,9 @@ export function HistoricalContextPanel({ context }: HistoricalContextPanelProps)
             <Globe className="w-5 h-5 text-blue-500" />
             Civilizational Impact
           </div>
-          <p className="text-sm sm:text-base text-ink-800 dark:text-ink-200 leading-relaxed font-sans">
-            {context.civilizationalImpact}
-          </p>
+          <div className="text-sm sm:text-base text-ink-800 dark:text-ink-200 leading-relaxed font-sans">
+            <TextWithLatex text={context.civilizationalImpact} />
+          </div>
         </div>
 
         {context.funFact && (
@@ -133,9 +142,9 @@ export function HistoricalContextPanel({ context }: HistoricalContextPanelProps)
               <Sparkles className="w-5 h-5 text-amber-600" />
               Historical Fact
             </div>
-            <p className="text-sm sm:text-base text-ink-900 dark:text-parchment-100 leading-relaxed font-sans">
-              {context.funFact}
-            </p>
+            <div className="text-sm sm:text-base text-ink-900 dark:text-parchment-100 leading-relaxed font-sans">
+              <TextWithLatex text={context.funFact} />
+            </div>
           </div>
         )}
       </div>
@@ -149,7 +158,7 @@ export function HistoricalContextPanel({ context }: HistoricalContextPanelProps)
           <ul className="space-y-3 text-sm sm:text-base font-sans text-ink-800 dark:text-ink-200">
             {context.sideNotes.map((note) => (
               <li key={note} className="leading-relaxed">
-                {note}
+                <TextWithLatex text={note} />
               </li>
             ))}
           </ul>

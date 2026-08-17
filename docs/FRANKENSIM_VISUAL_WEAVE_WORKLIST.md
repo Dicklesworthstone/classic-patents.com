@@ -42,7 +42,8 @@ the visitor can see or hear the kernel change the instrument.
 ## P4 — Backlog (do not drop; not this slice's visitor-facing blocker)
 
 - [x] P4.1 Host-pumped TickScheduler + bounded catch-up (Wright 3D hello loop)
-- [x] P4.2 Shared bus for Tesla / Howe / CCD / Engelbart 3D (2D already on the bus; remaining 3D pairs still local)
+- [x] P4.2 Shared bus for Tesla / Howe / CCD / Engelbart 3D (2D already on the bus)
+- [x] P4.2b Remaining original-catalog 3D sliders write the same registry keys as 2D / badge
 - [ ] P4.3 Replace hello_spin with aero kernel (`fs-mbd` + warp/rudder)
 - [ ] P4.4 Live USPTO raster warp
 - [ ] P4.5 Callout = material probe
@@ -50,18 +51,18 @@ the visitor can see or hear the kernel change the instrument.
 - [ ] P4.7 `fs-ivl` interval ghosts
 - [ ] P4.8 Fidelity discrepancy field on the part
 - [ ] P4.9 `fs-qty` typed HUD
-- [ ] P4.10 `fs-truss` guy-wire force color
+- [x] P4.10 `fs-truss` guy-wire force color (left/right bay paint from lift + warp)
 - [ ] P4.11 `fs-lbm` / refuse cosmetic smoke
 - [ ] P4.12 `fs-feec` Whitney overlay
 - [ ] P4.13 `fs-spectral` mode scrubber
 - [ ] P4.14 `fs-psycho` Bell sones
 - [ ] P4.15 `fs-matdb` material cards
 - [ ] P4.16 Prior-art failure toggle (beyond Wright coupling — already P0.9)
-- [ ] P4.17 Two clocks (Fermi / Tesla RF / Spencer)
+- [x] P4.17 Two clocks (Fermi prompt vs delayed; Tesla field vs shaft; Spencer RF vs thermal)
 - [ ] P4.18 Pointer as source term
 - [ ] P4.19 Dated `fs-scenario` cards
 - [x] P4.20 Claim-satisfaction pills on ClaimsDecoder (Wright Claim 1 ↔ coupled)
-- [ ] P4.21 Spec-clause highlight from kernel predicates
+- [x] P4.21 Spec-clause highlight from kernel predicates (Wright / Tesla / Fermi / Marconi)
 - [ ] P4.22 Diptych split-view same tick
 - [ ] P4.23 `fs-phs` energy strip
 - [ ] P4.24 `fs-couple` after kernels are honest
@@ -71,11 +72,11 @@ the visitor can see or hear the kernel change the instrument.
 - [x] P4.28 Wozniak φ2 theft
 - [x] P4.29 Edison filament color from blackbody T
 - [x] P4.30 Fermi Geiger from k_eff (respects mute)
-- [ ] P4.31 `fs-fft` spark waterfall
+- [x] P4.31 `fs-fft` spark waterfall (Marconi 2D: odd-harmonic damped train)
 - [ ] P4.32 `fs-assimilate` Kitty Hawk residual
 - [ ] P4.33 `fs-surrogate` named phone rung
 - [ ] P4.34 `fs-mms` residual on schematic
-- [ ] P4.35 A11y live region for SI envelope
+- [x] P4.35 A11y live region for SI envelope (PhysicsTelemetryBadge)
 
 ## Explicitly out of scope
 

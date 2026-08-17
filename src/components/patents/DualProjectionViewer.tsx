@@ -294,12 +294,12 @@ export function DualProjectionViewer({ patent, initialView }: DualProjectionView
               </h3>
             </div>
             <div className="rounded-2xl border border-parchment-300 dark:border-ink-800 bg-parchment-50 dark:bg-ink-950 p-6 sm:p-7 shadow-patent space-y-4">
-              <p className="text-base font-sans leading-relaxed text-ink-900 dark:text-parchment-100">
-                {patent.plainEnglishExplanation.overview}
-              </p>
+              <div className="text-base font-sans leading-relaxed text-ink-900 dark:text-parchment-100">
+                <TextWithLatex text={patent.plainEnglishExplanation.overview} />
+              </div>
               <div className="p-4 rounded-xl bg-emerald-50/70 dark:bg-emerald-950/30 border border-emerald-200 dark:border-emerald-800 text-sm font-sans text-ink-900 dark:text-emerald-200 leading-relaxed">
                 <span className="font-bold block mb-1">Core Physical Mechanism:</span>
-                {patent.plainEnglishExplanation.coreMechanism}
+                <TextWithLatex text={patent.plainEnglishExplanation.coreMechanism} />
               </div>
             </div>
             <PatentVisualDispatcher patentId={patent.id} />
@@ -345,9 +345,9 @@ export function DualProjectionViewer({ patent, initialView }: DualProjectionView
 
             {/* Overview */}
             <div className="prose dark:prose-invert max-w-none">
-              <p className="font-sans text-base sm:text-lg text-ink-900 dark:text-parchment-100 leading-relaxed">
-                {patent.plainEnglishExplanation.overview}
-              </p>
+              <div className="font-sans text-base sm:text-lg text-ink-900 dark:text-parchment-100 leading-relaxed">
+                <TextWithLatex text={patent.plainEnglishExplanation.overview} />
+              </div>
             </div>
 
             {/* Core Mechanism Callout */}
@@ -393,9 +393,9 @@ export function DualProjectionViewer({ patent, initialView }: DualProjectionView
                       </span>
                       {item.title}
                     </h5>
-                    <p className="text-sm font-sans text-ink-800 dark:text-parchment-200 font-semibold leading-snug">
-                      {item.summary}
-                    </p>
+                    <div className="text-sm font-sans text-ink-800 dark:text-parchment-200 font-semibold leading-snug">
+                      <TextWithLatex text={item.summary} />
+                    </div>
                     <p className="text-xs sm:text-sm font-sans text-ink-700 dark:text-ink-300 leading-relaxed">
                       <TextWithLatex text={item.technicalDetails} />
                     </p>

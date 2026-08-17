@@ -207,15 +207,15 @@ export function LamarrFrequencyHoppingSim() {
                 type="range"
                 aria-label="Piano Roll Advance Speed"
                 min="1"
-                max="10"
+                max="30"
                 step="0.5"
                 value={hopsPerSec}
                 onChange={(e) => updateParam("hopRate", Number(e.target.value))}
                 className="w-full accent-purple-600 cursor-pointer h-2 bg-parchment-300 dark:bg-ink-700 rounded-lg"
               />
               <div className="flex justify-between text-[10px] text-ink-500 font-mono">
-                <span>2 hops/sec</span>
-                <span>20 hops/sec</span>
+                <span>1 hop/sec</span>
+                <span>30 hops/sec</span>
               </div>
             </div>
 
