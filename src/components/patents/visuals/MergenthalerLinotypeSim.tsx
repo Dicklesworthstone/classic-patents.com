@@ -2,12 +2,15 @@
 
 import { Play, RotateCcw, Volume2, VolumeX } from "lucide-react";
 import { useState } from "react";
+import { usePatentPhysics } from "@/physics/usePatentPhysics";
+import { usePatentAudio } from "./three/usePatentAudio";
 
 export function MergenthalerLinotypeSim() {
-  const [lineLengthPicas, setLineLengthPicas] = useState<number>(13);
-  const [potTempC, setPotTempC] = useState<number>(280);
+  const { params, updateParam, resetParams } = usePatentPhysics("us-313224-mergenthaler-linotype");
+  const { isAudioMuted, toggleSound } = usePatentAudio();
+  const lineLengthPicas = params.lineLengthPicas ?? 13;
+  const potTempC = params.potTemp ?? 260;
   const [isCast, setIsCast] = useState<boolean>(false);
-  const [isMuted, setIsMuted] = useState<boolean>(true);
 
   // Linotype casting & metallurgy
   const lineLengthMm = Number((lineLengthPicas * 4.2333).toFixed(1));
@@ -49,8 +52,7 @@ export function MergenthalerLinotypeSim() {
           <button
             type="button"
             onClick={() => {
-              setLineLengthPicas(13);
-              setPotTempC(280);
+              resetParams();
               setIsCast(false);
             }}
             aria-label="Reset Simulation"
@@ -60,11 +62,11 @@ export function MergenthalerLinotypeSim() {
           </button>
           <button
             type="button"
-            onClick={() => setIsMuted(!isMuted)}
-            aria-label={isMuted ? "Unmute Audio" : "Mute Audio"}
+            onClick={() => toggleSound()}
+            aria-label={isAudioMuted ? "Unmute Audio" : "Mute Audio"}
             className="p-2 rounded-lg bg-parchment-200 dark:bg-ink-800 hover:bg-parchment-300 dark:hover:bg-ink-700 text-ink-800 dark:text-parchment-200 transition-colors"
           >
-            {isMuted ? (
+            {isAudioMuted ? (
               <VolumeX className="w-4 h-4" />
             ) : (
               <Volume2 className="w-4 h-4 text-amber-600" />
@@ -267,11 +269,11 @@ export function MergenthalerLinotypeSim() {
           </div>
           <input
             type="range"
-            min="200"
-            max="340"
-            step="5"
+            min="220"
+            max="300"
+            step="2"
             value={potTempC}
-            onChange={(e) => setPotTempC(Number(e.target.value))}
+            onChange={(e) => updateParam("potTemp", Number(e.target.value))}
             className="w-full accent-amber-600 cursor-pointer"
           />
         </div>
@@ -286,7 +288,7 @@ export function MergenthalerLinotypeSim() {
             max="26"
             step="1"
             value={lineLengthPicas}
-            onChange={(e) => setLineLengthPicas(Number(e.target.value))}
+            onChange={(e) => updateParam("lineLengthPicas", Number(e.target.value))}
             className="w-full accent-amber-600 cursor-pointer"
           />
         </div>

@@ -2,12 +2,15 @@
 
 import { RotateCcw, Volume2, VolumeX, Zap } from "lucide-react";
 import { useState } from "react";
+import { usePatentPhysics } from "@/physics/usePatentPhysics";
+import { usePatentAudio } from "./three/usePatentAudio";
 
 export function ThomsonWeldingSim() {
-  const [weldCurrentAmps, setWeldCurrentAmps] = useState<number>(4500);
-  const [clampPressureMpa, setClampPressureMpa] = useState<number>(35);
+  const { params, updateParam, resetParams } = usePatentPhysics("us-347140-thomson-welding");
+  const { isAudioMuted, toggleSound } = usePatentAudio();
+  const weldCurrentAmps = params.weldCurrentAmps ?? 4500;
+  const clampPressureMpa = params.clampPressureMpa ?? 35;
   const [isWelding, setIsWelding] = useState<boolean>(false);
-  const [isMuted, setIsMuted] = useState<boolean>(true);
 
   // Joule heating physics
   const contactResistanceMicroOhms = 180;
@@ -46,8 +49,7 @@ export function ThomsonWeldingSim() {
           <button
             type="button"
             onClick={() => {
-              setWeldCurrentAmps(4500);
-              setClampPressureMpa(35);
+              resetParams();
               setIsWelding(false);
             }}
             aria-label="Reset Simulation"
@@ -57,11 +59,11 @@ export function ThomsonWeldingSim() {
           </button>
           <button
             type="button"
-            onClick={() => setIsMuted(!isMuted)}
-            aria-label={isMuted ? "Unmute Audio" : "Mute Audio"}
+            onClick={() => toggleSound()}
+            aria-label={isAudioMuted ? "Unmute Audio" : "Mute Audio"}
             className="p-2 rounded-lg bg-parchment-200 dark:bg-ink-800 hover:bg-parchment-300 dark:hover:bg-ink-700 text-ink-800 dark:text-parchment-200 transition-colors"
           >
-            {isMuted ? (
+            {isAudioMuted ? (
               <VolumeX className="w-4 h-4" />
             ) : (
               <Volume2 className="w-4 h-4 text-amber-600" />
@@ -247,10 +249,10 @@ export function ThomsonWeldingSim() {
           <input
             type="range"
             min="1000"
-            max="10000"
-            step="250"
+            max="6000"
+            step="100"
             value={weldCurrentAmps}
-            onChange={(e) => setWeldCurrentAmps(Number(e.target.value))}
+            onChange={(e) => updateParam("weldCurrentAmps", Number(e.target.value))}
             className="w-full accent-amber-600 cursor-pointer"
           />
         </div>
@@ -262,10 +264,10 @@ export function ThomsonWeldingSim() {
           <input
             type="range"
             min="10"
-            max="70"
+            max="60"
             step="5"
             value={clampPressureMpa}
-            onChange={(e) => setClampPressureMpa(Number(e.target.value))}
+            onChange={(e) => updateParam("clampPressureMpa", Number(e.target.value))}
             className="w-full accent-amber-600 cursor-pointer"
           />
         </div>

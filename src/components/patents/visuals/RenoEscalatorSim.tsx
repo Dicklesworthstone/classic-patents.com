@@ -2,19 +2,22 @@
 
 import { Play, RotateCcw, Volume2, VolumeX } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
+import { usePatentPhysics } from "@/physics/usePatentPhysics";
+import { usePatentAudio } from "./three/usePatentAudio";
 
 export function RenoEscalatorSim() {
-  const [beltSpeedFpm, setBeltSpeedFpm] = useState<number>(75);
-  const [passengerLoad, setPassengerLoad] = useState<number>(24);
+  const { params, updateParam, resetParams } = usePatentPhysics("us-470918-reno-escalator");
+  const { isAudioMuted, toggleSound } = usePatentAudio();
+  const beltSpeedMps = params.beltSpeed ?? 0.45;
+  const passengerLoad = params.passengerCount ?? 30;
+  const inclineAngleDeg = params.inclineAngle ?? 25;
   const [isPlaying, setIsPlaying] = useState<boolean>(true);
-  const [isMuted, setIsMuted] = useState<boolean>(true);
   const [treadOffset, setTreadOffset] = useState<number>(0);
   const animRef = useRef<number | null>(null);
 
   // Escalator kinematics
-  const inclineAngleDeg = 25; // Reno 25-degree incline
-  const beltSpeedMps = Number(((beltSpeedFpm * 0.3048) / 60).toFixed(2));
-  const passengersPerHour = Math.round((beltSpeedFpm / 75) * 3000);
+  const beltSpeedFpm = Math.round((beltSpeedMps * 60) / 0.3048);
+  const passengersPerHour = Math.round((beltSpeedMps / 0.38) * 3000);
   const driveMotorPowerKw = Number(
     (
       2.2 +
@@ -63,11 +66,7 @@ export function RenoEscalatorSim() {
           </button>
           <button
             type="button"
-            onClick={() => {
-              setBeltSpeedFpm(75);
-              setPassengerLoad(24);
-              setTreadOffset(0);
-            }}
+            onClick={resetParams}
             aria-label="Reset Simulation"
             className="p-2 rounded-lg bg-parchment-200 dark:bg-ink-800 hover:bg-parchment-300 dark:hover:bg-ink-700 text-ink-800 dark:text-parchment-200 transition-colors"
           >
@@ -75,11 +74,11 @@ export function RenoEscalatorSim() {
           </button>
           <button
             type="button"
-            onClick={() => setIsMuted(!isMuted)}
-            aria-label={isMuted ? "Unmute Audio" : "Mute Audio"}
+            onClick={() => toggleSound()}
+            aria-label={isAudioMuted ? "Unmute Audio" : "Mute Audio"}
             className="p-2 rounded-lg bg-parchment-200 dark:bg-ink-800 hover:bg-parchment-300 dark:hover:bg-ink-700 text-ink-800 dark:text-parchment-200 transition-colors"
           >
-            {isMuted ? (
+            {isAudioMuted ? (
               <VolumeX className="w-4 h-4" />
             ) : (
               <Volume2 className="w-4 h-4 text-amber-600" />

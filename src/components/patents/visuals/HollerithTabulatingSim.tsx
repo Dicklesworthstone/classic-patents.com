@@ -2,19 +2,22 @@
 
 import { Play, RotateCcw, Volume2, VolumeX } from "lucide-react";
 import { useState } from "react";
+import { usePatentPhysics } from "@/physics/usePatentPhysics";
+import { usePatentAudio } from "./three/usePatentAudio";
 
 export function HollerithTabulatingSim() {
+  const { params, updateParam, resetParams } = usePatentPhysics("us-395781-hollerith-tabulating");
+  const { isAudioMuted, toggleSound } = usePatentAudio();
+  const circuitVoltageV = params.batteryVolts ?? 12.0;
+  const cardsPerMinuteRate = params.cardsPerMin ?? 60;
   const [activeDemographic, setActiveDemographic] = useState<string>("Male, Age 20-30, Native");
   const [totalCardsProcessed, setTotalCardsProcessed] = useState<number>(450);
   const [isPressDown, setIsPressDown] = useState<boolean>(false);
-  const [isMuted, setIsMuted] = useState<boolean>(true);
 
   // Electrical Tabulation Physics
   const _mercuryPoolResistanceOhms = 0.5;
-  const circuitVoltageV = 12.0;
   const currentPerPinAmps = Number((circuitVoltageV / 24).toFixed(2)); // 24 ohm solenoid
   const sortingPocketOpen = activeDemographic.includes("Male") ? 3 : 7;
-  const cardsPerMinuteRate = 65;
 
   const handleTabulateCard = () => {
     setIsPressDown(true);
@@ -47,6 +50,7 @@ export function HollerithTabulatingSim() {
           <button
             type="button"
             onClick={() => {
+              resetParams();
               setTotalCardsProcessed(0);
               setIsPressDown(false);
             }}
@@ -57,11 +61,11 @@ export function HollerithTabulatingSim() {
           </button>
           <button
             type="button"
-            onClick={() => setIsMuted(!isMuted)}
-            aria-label={isMuted ? "Unmute Audio" : "Mute Audio"}
+            onClick={() => toggleSound()}
+            aria-label={isAudioMuted ? "Unmute Audio" : "Mute Audio"}
             className="p-2 rounded-lg bg-parchment-200 dark:bg-ink-800 hover:bg-parchment-300 dark:hover:bg-ink-700 text-ink-800 dark:text-parchment-200 transition-colors"
           >
-            {isMuted ? (
+            {isAudioMuted ? (
               <VolumeX className="w-4 h-4" />
             ) : (
               <Volume2 className="w-4 h-4 text-amber-600" />

@@ -2,18 +2,21 @@
 
 import { Camera, RotateCcw, Volume2, VolumeX } from "lucide-react";
 import { useState } from "react";
+import { usePatentPhysics } from "@/physics/usePatentPhysics";
+import { usePatentAudio } from "./three/usePatentAudio";
 
 export function EastmanKodakSim() {
-  const [shutterSpeedSec, setShutterSpeedSec] = useState<number>(0.02); // 1/50 sec
+  const { params, updateParam, resetParams } = usePatentPhysics("us-388850-eastman-kodak");
+  const { isAudioMuted, toggleSound } = usePatentAudio();
+  const shutterSpeedSec = params.shutterSpeed ?? 0.05;
   const [exposureCount, setExposureCount] = useState<number>(14);
   const [isShutterTriggered, setIsShutterTriggered] = useState<boolean>(false);
-  const [isMuted, setIsMuted] = useState<boolean>(true);
 
   // Optics & Photographic Film Physics
   const totalExposures = 100;
   const _filmDiameterInches = 2.5; // Circular 2.5" frame
   const focalLengthMm = 57; // Rapid Rectilinear Lens
-  const fNumber = 9.0;
+  const fNumber = params.apertureStop ?? 9.0;
   const filmWoundPct = Math.round((exposureCount / totalExposures) * 100);
 
   const handleTriggerShutter = () => {
@@ -29,7 +32,7 @@ export function EastmanKodakSim() {
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 border-b border-parchment-200 dark:border-ink-800 pb-3 mb-4">
         <div>
           <h3 className="font-serif text-lg font-bold text-ink-900 dark:text-parchment-100">
-            Eastman Kodak Box Camera & Roll Film (US 388,850)
+            Eastman Kodak Box Camera &amp; Roll Film (US 388,850)
           </h3>
           <p className="font-sans text-xs text-ink-500 dark:text-ink-400">
             Interactive 2D Optical Model — Cylindrical Barrel Shutter, 100-Exposure Flexible Roll
@@ -49,6 +52,7 @@ export function EastmanKodakSim() {
           <button
             type="button"
             onClick={() => {
+              resetParams();
               setExposureCount(0);
               setIsShutterTriggered(false);
             }}
@@ -59,11 +63,11 @@ export function EastmanKodakSim() {
           </button>
           <button
             type="button"
-            onClick={() => setIsMuted(!isMuted)}
-            aria-label={isMuted ? "Unmute Audio" : "Mute Audio"}
+            onClick={() => toggleSound()}
+            aria-label={isAudioMuted ? "Unmute Audio" : "Mute Audio"}
             className="p-2 rounded-lg bg-parchment-200 dark:bg-ink-800 hover:bg-parchment-300 dark:hover:bg-ink-700 text-ink-800 dark:text-parchment-200 transition-colors"
           >
-            {isMuted ? (
+            {isAudioMuted ? (
               <VolumeX className="w-4 h-4" />
             ) : (
               <Volume2 className="w-4 h-4 text-amber-600" />
@@ -227,10 +231,10 @@ export function EastmanKodakSim() {
           <input
             type="range"
             min="0.01"
-            max="0.05"
-            step="0.005"
+            max="0.1"
+            step="0.01"
             value={shutterSpeedSec}
-            onChange={(e) => setShutterSpeedSec(Number(e.target.value))}
+            onChange={(e) => updateParam("shutterSpeed", Number(e.target.value))}
             className="w-full accent-amber-600 cursor-pointer"
           />
         </div>
