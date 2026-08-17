@@ -53,12 +53,16 @@ function run(
 }
 
 function trackedWorkingTreeChanges(): string {
-  return run(
+  const status = run(
     "git",
     ["status", "--porcelain=v1", "--untracked-files=all"],
     true,
     false,
-  ).stdout.trim();
+  ).stdout;
+  return status
+    .split("\n")
+    .filter((line) => line && !line.endsWith(" tsconfig.tsbuildinfo"))
+    .join("\n");
 }
 
 function assertCleanTrackedWorkingTree(stage: string) {
