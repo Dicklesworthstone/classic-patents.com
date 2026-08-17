@@ -51,6 +51,10 @@ export interface HistoricalContext {
   patentWars: PatentWar[];
   civilizationalImpact: string;
   funFact?: string;
+  /** What happened after grant: money, later suits, later use. */
+  aftermath?: string;
+  /** Extra dated anecdotes that do not fit the bottleneck / war cards. */
+  sideNotes?: string[];
 }
 
 export interface MechanicalBreakdownSection {

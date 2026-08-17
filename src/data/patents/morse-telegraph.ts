@@ -15,7 +15,7 @@ export const morseTelegraphPatent: Patent = {
   category: "telecom",
   categoryLabel: "Telecommunications & Information Theory",
   summary:
-    "The Genesis patent of global telecommunications and information theory. Samuel Morse invented the electro-magnetic telegraph system combining the binary dot-and-dash variable-duration code, the spring-loaded electromagnetic receiver register, and long-distance relay circuits.",
+    "Morse's 1840 system: a single wire, a code of dots and dashes, an electromagnet that marks paper (later just clicks), and a relay that rebuilds the pulse before the line resistance kills it. Wheatstone needed five needles and five wires; Morse needed one pair and a trained ear.",
   heroQuote:
     "Be it known that I, Samuel F. B. Morse, have invented a new method of transmitting intelligence between distant points by means of electro-magnetic circuits and a system of signs composed of dots and lines...",
   originalPdfUrl: "/patents/pdfs/us-1647-morse-telegraph.pdf",
@@ -95,7 +95,7 @@ Figure 4 illustrates the dictionary of signs composed of dots and lines.`,
       },
     ],
     whyItMattersToday:
-      "Morse created the first digital information network in human history. The concept of encoding symbolic language into binary pulses transmitted over electrical conduits is the direct conceptual ancestor of ASCII, TCP/IP packets, and the Internet.",
+      "Variable-length codes for frequent letters (E is a single dot) are still how compression starts. O'Reilly v. Morse (1854) is the case first-year patent courses use when they teach that you cannot claim electromagnetism itself.",
   },
   claims: [
     {
@@ -164,28 +164,37 @@ Figure 4 illustrates the dictionary of signs composed of dots and lines.`,
   ],
   historicalContext: {
     problemStatement:
-      "Information traveled at the speed of a galloping horse or sailing ship. When Morse's wife Lucretia died suddenly in New Haven in 1825, the letter informing Morse in Washington arrived days after her funeral had already taken place.",
+      "In 1825 Morse, painting in Washington, learned by letter that his wife Lucretia had died in New Haven and been buried before he could start home. News moved at horse or packet speed. Chappe's optical towers were faster in clear French weather and useless at night or in fog.",
     priorArtLimitations: [
-      "Chappe optical semaphore arms were blocked by rain, night, and fog.",
-      "Wheatstone-Cooke 5-needle telegraph required multiple expensive wires.",
+      "Semaphore arms need line-of-sight and daylight.",
+      "Wheatstone and Cooke's five-needle British telegraph needed a wire per needle.",
+      "Steinheil and Gauss–Weber laboratory needles did not yet make a cheap American line.",
     ],
     breakthroughInsight:
-      "While returning from Europe on the packet ship *Sully* in 1832, Morse heard Dr. Charles Jackson discuss Faraday's discoveries and realized electricity travels instantaneously over wire and can be interrupted into coded symbols.",
+      "On the packet Sully in 1832, chemist Charles Jackson talked about Faraday. Morse, a painter, not an electrician, jumped to a practical picture: break a circuit in a pattern, mark paper at the other end. Alfred Vail later rebuilt the apparatus and the code. Joseph Henry's intensity magnet and relay made the long line possible. The patent issued in Morse's name; the shop was a trio.",
     patentWars: [
       {
-        rivalName: "Henry O'Reilly & The Telegraph Monopoly",
+        rivalName: "Henry O'Reilly",
         rivalClaim:
-          "Competitors claimed Morse could not patent the general idea of using electromagnetism to transmit letters.",
+          "O'Reilly's lines used Morse gear and then argued the patent claimed a force of nature.",
         conflictDetails:
-          "In the historic Supreme Court case *O'Reilly v. Morse* (56 U.S. 62, 1854), the Court established foundational modern patent jurisprudence, invalidating Morse's overly broad Claim 8 (claiming electromagnetism in the abstract) while upholding all his specific apparatus and code claims.",
-        resolution: "Morse received full legal protection for his system and code.",
+          "O'Reilly v. Morse, 56 U.S. 62 (1854), struck Claim 8, which tried to cover every use of electromagnetism for writing at a distance. The Court kept the specific register, the code, and the relayed circuit.",
+        resolution:
+          "Morse kept a working monopoly on the American recording telegraph. He did not keep a monopoly on electricity.",
         legalOutcome:
-          "Defined the boundary between abstract natural laws and patentable inventions.",
+          "The ancestor of every modern 'abstract idea' opinion. You may claim a machine. You may not claim a law of nature.",
       },
     ],
     civilizationalImpact:
-      "Connected the world instantaneously, synchronizing stock markets, dispatching trains safely on single-track railroads, and creating the first electronic communications revolution.",
+      "Single-track railroads could be dispatched without collisions. Prices in New York and Chicago began to move on the same afternoon. The 1866 Atlantic cable carried the same code.",
     funFact:
-      "On May 24, 1844, Morse sent the historic first intercity telegraph message from the Supreme Court chamber in Washington, D.C. to Baltimore: 'What hath God wrought!'",
+      "24 May 1844, Supreme Court chamber to the B&O depot in Baltimore: 'What hath God wrought!' Annie Ellsworth chose the Numbers 23:23 line. Congress had funded the 40-mile wire with $30,000 after years of Morse lobbying.",
+    aftermath:
+      "Morse spent the 1850s in court and on portrait commissions. He died rich enough, in 1872, and still angry at Vail and Henry's public credit. Historians now split the invention the way the shop actually split the work.",
+    sideNotes: [
+      "The original Morse code and the later International Morse used at sea are not the same table. American Morse lingered on US landlines into the 20th century.",
+      "Vail's family money built the first instruments. The 1840 patent does not name him.",
+      "Henry refused to fight Morse in court. He did tell every reporter that the relay was his.",
+    ],
   },
 };

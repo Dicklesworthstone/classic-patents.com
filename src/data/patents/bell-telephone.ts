@@ -14,7 +14,7 @@ export const bellTelephonePatent: Patent = {
   category: "telecom",
   categoryLabel: "Telecommunications & Acoustics",
   summary:
-    "Commonly described as the single most valuable patent in history. Alexander Graham Bell realized that human vocal speech could not be transmitted using intermittent make-and-break telegraph clicks. Instead, he invented the method and apparatus for creating continuous 'undulating' electrical currents whose instantaneous amplitude and frequency match the acoustic pressure variations of the human voice in air.",
+    "Bell's 14 February 1876 filing (granted 7 March, three days before the famous Watson sentence) covers a closed circuit whose current follows the air-pressure wave of speech. Make-and-break telegraph contacts destroy that wave; an undulating current keeps it.",
   heroQuote:
     "Be it known that I, Alexander Graham Bell, of Salem, Massachusetts, have invented certain new and useful Improvements in Telegraphy, of which the following is a specification...",
   originalPdfUrl: "/patents/pdfs/us-174465-bell-telephone.pdf",
@@ -52,7 +52,7 @@ Figure 6 illustrates a variable-resistance liquid transmitter and membrane recei
 Figure 7 is a diagram showing the telephonic circuit including battery, transmitter, line wire, and receiver.`,
   plainEnglishExplanation: {
     overview:
-      "In 1875, all telegraphy operated on binary pulses—circuit opened, circuit closed (Morse code). Inventors racing to build a 'speaking telegraph' tried using vibrating reeds that rapidly opened and closed a circuit. Bell realized that spoken words consist of complex acoustic timbre with multiple simultaneous harmonic frequencies ($f_1, f_2, f_3, \\dots$). Chopping the current on and off destroyed this continuous waveform. Bell’s monumental breakthrough was discovering that human speech could be transmitted only by continuous, analog 'undulating currents.'",
+      "In 1875 a telegraph was a switch: circuit open or closed. Philipp Reis and others tried to send speech by letting a vibrating reed make and break that switch. Vowels are stacks of harmonics ($f_1, f_2, f_3, \\ldots$); chopping the current into clicks throws those harmonics away. Bell kept the circuit closed and let the current rise and fall with the air-pressure wave.",
     coreMechanism:
       "When a speaker speaks into a mouthpiece, the acoustic sound pressure waves strike a flexible metallic or parchment diaphragm. The diaphragm is coupled to a small wire needle immersed in an electrically conductive liquid (acidified water) or an electromagnet. As the diaphragm vibrates back and forth with sound waves, the electrical resistance of the circuit modulates continuously in direct proportion to the diaphragm's position ($R(t) = R_0 + \\Delta R \\sin(\\omega t)$). By Ohm's Law ($I(t) = V / R(t)$), this generates a continuous undulating analog current that travels down the wire and causes an electromagnet in the receiver to vibrate an identical iron diaphragm, faithfully reconstructing the audible human voice.",
     mechanicalBreakdown: [
@@ -105,7 +105,7 @@ Figure 7 is a diagram showing the telephonic circuit including battery, transmit
       },
     ],
     whyItMattersToday:
-      "Bell's patent was the foundation of the modern telecommunications industry, telephone networks, cell phones, radio broadcasting, sound recording, and the entire global telecommunications infrastructure.",
+      "A microphone still maps air pressure onto a continuous electrical quantity. Codecs and VoIP quantize that quantity; they do not return to Reis's click. The 1876 fight was about keeping the circuit closed while the diaphragm moved.",
   },
   claims: [
     {
@@ -187,28 +187,37 @@ Figure 7 is a diagram showing the telephonic circuit including battery, transmit
   ],
   historicalContext: {
     problemStatement:
-      "In the 1870s, Western Union and major industrial powers were desperate to increase telegraph wire capacity. Transmitting multiple messages or human speech over a single wire was considered the ultimate technical prize.",
+      "Western Union's 1870s prize was more messages per wire, not a household voice service. Harmonic telegraphs (Bell's own earlier work, Gray's, La Cour's) tried to send several Morse channels as tuned reeds. Speech was the harder version of the same problem: many frequencies at once, on one pair.",
     priorArtLimitations: [
-      "Telegraphs used make-and-break contacts that could only transmit binary clicks (Morse code).",
-      "Philipp Reis built a 'telephone' in 1861 that could transmit musical pitches but failed at human speech because its diaphragm broke electrical contact with every vibration.",
+      "Morse keys and sounders are binary. They have no amplitude channel.",
+      "Reis's 1861 'Telephon' could carry a pitch; the contact opened on each cycle, so consonants died.",
+      "A vibrating-reed transmitter that breaks the circuit at acoustic frequency is a buzzer, not a microphone.",
     ],
     breakthroughInsight:
-      "Bell realized that speech is a composite harmonic wave: vowels and consonants require continuous variations in current. Transmitting voice required keeping the circuit closed 100% of the time and modulating current continuously.",
+      "Keep the circuit closed. Let resistance or induced voltage follow the diaphragm. The liquid transmitter in the patent (a needle in dilute acid) is that idea in wet form; the later carbon-button microphone is the same idea in packed granules.",
     patentWars: [
       {
-        rivalName: "Elisha Gray & Western Union",
+        rivalName: "Elisha Gray and Western Union",
         rivalClaim:
-          "Gray filed a patent caveat for a variable-resistance liquid transmitter on the exact same day (February 14, 1876) just a few hours after Bell's patent application was submitted.",
+          "Gray filed a caveat for a liquid transmitter on 14 February 1876, hours after Bell's application. Western Union later bought Gray's and Edison's acoustic patents and ran a rival network.",
         conflictDetails:
-          "Western Union acquired Gray and Thomas Edison's acoustic patents and formed an aggressive rival telephone network, claiming Bell's patent was invalid.",
+          "The caveat-versus-application timing has been picked over for 150 years, including charges (never proved in court) that examiner Zenas Wilber showed Gray's drawing to Bell. The Telephone Cases, 126 U.S. 1 (1888), reviewed a pile of interferences and upheld 174,465. More than 600 challenges were filed against Bell's patents in the life of the monopoly.",
         resolution:
-          "The Bell Telephone Company sued in federal court. In the famous *Telephone Cases* (126 U.S. 1, 1888), the U.S. Supreme Court reviewed over 600 separate legal challenges and upheld Bell's Patent No. 174,465 in its entirety.",
-        legalOutcome: "Unanimous Supreme Court validation of Bell's master patent.",
+          "Western Union exited the telephone business in 1879 (the Gould settlement) and stayed in telegraphy. Bell's company became AT&T.",
+        legalOutcome:
+          "The Supreme Court kept 174,465. Historians still argue about Gray's caveat; the legal title is not in doubt.",
       },
     ],
     civilizationalImpact:
-      "Created instant two-way voice communication across cities and continents, collapsing geographical distance and laying the groundwork for the modern global telecommunications network.",
+      "Once a pair of wires could carry a voice, cities grew switchboards, then long lines, then a regulated monopoly. The social fact (you can talk to a person who is not in the room) is older than the digital network that now carries it.",
     funFact:
-      "Bell's first intelligible sentence spoken over the telephone on March 10, 1876—'Mr. Watson, come here, I want to see you'—was transmitted using the variable-resistance liquid transmitter described in his patent.",
+      "The sentence 'Mr. Watson, come here, I want to see you' is 10 March 1876, three days after the grant, on the liquid transmitter. The instrument in the patent drawings is not the polished wooden box of later publicity photographs.",
+    aftermath:
+      "Bell sold most of his telephone stock early and spent later decades on tetrahedral kites, hydrofoils, and the National Geographic Society. The money and the litigation stayed with the company that bore his name.",
+    sideNotes: [
+      "Gardiner Hubbard, Bell's future father-in-law, was the business engine of the filing. Mabel Hubbard Bell, deaf from childhood scarlet fever, is why Bell was in visible speech and ear phonetics in the first place.",
+      "Edison's 1877 carbon-button transmitter made the telephone commercially loud enough. Bell's patent is the undulating-current claim; Edison's is the practical microphone. The 1879 settlement split those roles.",
+      "The US filing date, Valentine's Day 1876, is a coincidence that every popular account mentions and that the Supreme Court did not care about. Priority was decided on the written claims, not the calendar romance.",
+    ],
   },
 };

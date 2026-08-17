@@ -102,6 +102,19 @@ export function HistoricalContextPanel({ context }: HistoricalContextPanelProps)
         </div>
       </div>
 
+      {/* Aftermath */}
+      {context.aftermath && (
+        <div className="rounded-2xl border border-parchment-300 dark:border-ink-800 bg-parchment-50/90 dark:bg-ink-950 p-6 sm:p-7 shadow-patent space-y-3">
+          <div className="flex items-center gap-2.5 text-ink-950 dark:text-parchment-100 font-serif font-bold text-lg">
+            <History className="w-5 h-5 text-ink-600 dark:text-ink-400" />
+            After the Grant
+          </div>
+          <p className="text-sm sm:text-base text-ink-800 dark:text-ink-200 leading-relaxed font-sans">
+            {context.aftermath}
+          </p>
+        </div>
+      )}
+
       {/* Civilizational Impact & Fun Fact */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         <div className="rounded-2xl border border-parchment-300 dark:border-ink-800 bg-parchment-50/90 dark:bg-ink-950 p-6 sm:p-7 shadow-patent space-y-3">
@@ -126,6 +139,22 @@ export function HistoricalContextPanel({ context }: HistoricalContextPanelProps)
           </div>
         )}
       </div>
+
+      {context.sideNotes && context.sideNotes.length > 0 && (
+        <div className="rounded-2xl border border-parchment-300 dark:border-ink-800 bg-parchment-50/90 dark:bg-ink-950 p-6 sm:p-7 shadow-patent space-y-3">
+          <div className="flex items-center gap-2.5 text-ink-950 dark:text-parchment-100 font-serif font-bold text-lg">
+            <Sparkles className="w-5 h-5 text-amber-600" />
+            Further Context
+          </div>
+          <ul className="space-y-3 text-sm sm:text-base font-sans text-ink-800 dark:text-ink-200">
+            {context.sideNotes.map((note, idx) => (
+              <li key={idx} className="leading-relaxed">
+                {note}
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}
     </div>
   );
 }

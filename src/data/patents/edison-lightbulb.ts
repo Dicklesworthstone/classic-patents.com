@@ -14,7 +14,7 @@ export const edisonBulbPatent: Patent = {
   category: "electricity",
   categoryLabel: "Illumination & Materials Science",
   summary:
-    "The invention that conquered the night: Thomas Edison's breakthrough realization that commercial electrical lighting required a high-resistance carbonized filament ($R \\approx 100\\,\\Omega$) sealed in a permanent high vacuum ($10^{-6}\\text{ Torr}$) with platinum lead-in wires, enabling economical parallel distribution grids.",
+    "Edison's 1879 lamp is a high-resistance carbon filament ($R \\approx 100\\,\\Omega$) in a Sprengel vacuum, with platinum leads sealed through the glass. The resistance is the point: thousands of lamps can hang in parallel on modest copper instead of each needing a feeder the size of a gas main.",
   heroQuote:
     "The object of this invention is to produce electric lamps giving light by incandescence, which lamps shall have high resistance, so as to allow of the practical subdivision of the electric light...",
   originalPdfUrl: "/patents/pdfs/us-223898-edison-lightbulb.pdf",
@@ -97,7 +97,7 @@ Figure 1 is a view of the lamp in elevation, showing the glass globe with the ca
       },
     ],
     whyItMattersToday:
-      "Edison's patent did not merely invent a bulb; it created the entire architecture of the modern electrical utility system—centralized generation, parallel distribution, meters, fuses, and sockets—that brought electric light and power to human civilization.",
+      "The socket, the parallel feeder, the meter, and the fuse box are the lamp's companions. LEDs changed the burner; they still hang on the distribution geometry this patent forced Edison to invent.",
   },
   claims: [
     {
@@ -196,29 +196,38 @@ Figure 1 is a view of the lamp in elevation, showing the glass globe with the ca
   ],
   historicalContext: {
     problemStatement:
-      "Arc lamps were blindingly bright (thousands of candlepower), buzzed loudly, threw off toxic fumes, and could not be used indoors in homes or offices. Previous incandescent attempts with low resistance burned out in minutes and required impossible amounts of copper.",
+      "Brush and Jablochkoff arc lamps were street tools: thousands of candlepower, a hiss, and nitric fumes. They could not sit on a desk. Earlier incandescent rods (Starr, Sawyer, Swan) were a few ohms. Feeding a city of them in parallel would have required copper on the scale of a gasworks. The lamp and the feeder were one design problem.",
     priorArtLimitations: [
-      "Low-resistance thick rods (1–4 Ω) required massive copper conductors.",
-      "Imperfect vacuums caused rapid oxidation and blackening of the glass.",
-      "Mismatched wire expansion caused glass to crack at the lead-in seals.",
+      "Low-resistance carbon rods (1–4 Ω) demanded uneconomic copper sections.",
+      "Poor vacuums oxidized the carbon and blackened the bulb in minutes.",
+      "Platinum-to-glass seals cracked when the expansion coefficients missed.",
+      "Series arc circuits put every lamp on one failure chain.",
     ],
     breakthroughInsight:
-      "Edison realized that Ohm's Law and Joule's Law dictated the entire electrical power grid: by raising the resistance of each lamp to 100+ Ω, thousands of lamps could operate in parallel with modest, low-cost copper wire.",
+      "Raise each lamp to about 100 Ω. Then $I = V/R$ per lamp is small, $I^2R$ in the street mains stays tolerable, and you can hang lamps in parallel the way gas jets hang on a pipe. The Sprengel pump and the carbonized sewing-thread (later bamboo) filament were how he hit that resistance and kept it from burning.",
     patentWars: [
       {
-        rivalName: "Sir Joseph Swan (United Kingdom) & Heinrich Göbel",
+        rivalName: "Joseph Swan, Sawyer–Man, and Heinrich Goebel claimants",
         rivalClaim:
-          "Swan demonstrated carbon rod lamps in England and held earlier British patents. The Consolidated Electric Light Co. (Sawyer-Man) claimed prior carbon paper patents in the US.",
+          "Swan had British carbon-lamp patents and a working demonstration. Sawyer–Man claimed broad US rights in carbonized paper. Later litigants waved Goebel's 1850s bottles.",
         conflictDetails:
-          "In England, Edison and Swan settled by merging into the Edison & Swan United Electric Light Company ('Ediswan'). In the United States, the Sawyer-Man patent challenged Edison in federal court.",
+          "In Britain, Edison and Swan merged into Ediswan rather than litigate to death. In the United States the Sawyer–Man interest fought through to the Supreme Court.",
         resolution:
-          "In the landmark Supreme Court decision *The Incandescent Lamp Patent* (159 U.S. 465, 1895), the court ruled that Sawyer-Man's broad claim for 'fibrous material' was invalid, whereas Edison's specific disclosure of a high-resistance carbon filament in high vacuum was valid.",
-        legalOutcome: "Complete judicial validation of Edison's master patent.",
+          "The Incandescent Lamp Patent, 159 U.S. 465 (1895), held Sawyer–Man's claim to any 'fibrous or textile material' invalid as too broad. Edison's specific high-resistance carbon filament in high vacuum survived.",
+        legalOutcome:
+          "US 223,898 held. The British fight ended in a joint company, not a winner-take-all decree.",
       },
     ],
     civilizationalImpact:
-      "Ended human reliance on candles, kerosene, and gas lighting, doubling usable human productive hours, revolutionizing architecture, and launching the modern electric power industry.",
+      "Pearl Street (1882) sold light by the hour. Once the feeder math worked, generating stations had a load that paid for the copper. Gas mantles did not vanish overnight; they lost the indoor evening.",
     funFact:
-      "Edison tested over 6,000 different vegetable and animal fibers from around the world—including boxwood, cedar, flax, spiderweb, horsehair, and his assistant's beard—before discovering that Japanese bamboo yielded the most durable 1,200-hour filament.",
+      "The Menlo Park notebooks list thousands of carbonized candidates: woods, flax, horsehair, fishing line, and at least one assistant's beard. The 1,200-hour lamp that went on sale used Japanese bamboo, chosen after a worldwide fiber hunt, not after a single lucky night.",
+    aftermath:
+      "Edison General Electric merged into GE in 1892. The carbon lamp lasted commercially into the tungsten era (Coolidge, 1910). The parallel-feeder idea outlived every filament chemistry.",
+    sideNotes: [
+      "Francis Upton, a Princeton mathematician, did much of the Ohm's-law arithmetic that convinced Edison the high-resistance path was the only path that could be sold.",
+      "The first public Menlo Park demonstration was 31 December 1879. The US patent issued 27 January 1880. Pearl Street did not open until 4 September 1882.",
+      "Swan's British lamps were real. Treating Edison as the sole inventor of incandescence is American courtroom history, not laboratory history. His contribution is the high-R, high-vacuum, parallel-grid package.",
+    ],
   },
 };

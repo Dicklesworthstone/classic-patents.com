@@ -14,7 +14,7 @@ export const teslaMotorPatent: Patent = {
   category: "electricity",
   categoryLabel: "Electromagnetism & Power Generation",
   summary:
-    "The fundamental foundational patent of the modern electrical grid: Nikola Tesla's discovery that polyphase alternating currents out of phase produce a continuously rotating magnetic field capable of rotating a closed rotor through Faraday-Lenz induction with zero mechanical brushes or commutators.",
+    "Tesla's 1888 method for turning a motor with two or more alternating currents that differ in phase. Stationary stator coils produce a magnetic field that walks around the air gap; a closed rotor follows it by induction. No commutator, no brushes.",
   heroQuote:
     "The subject of my present application is a new and useful improvement in electro-magnetic motors, having for its object to produce the rotation of the armature by the action of alternating currents differing in phase...",
   originalPdfUrl: "/patents/pdfs/us-381968-tesla-motor.pdf",
@@ -56,9 +56,9 @@ When the current in circuit 1 is at maximum and that in circuit 2 is zero, the m
 The armature consists of a laminated iron cylinder mounted on a central shaft and wrapped with closed coils of heavy copper wire. As the magnetic lines of force sweep across the armature, they induce powerful eddy currents in the closed coils, which according to Lenz's law generate magnetic poles opposing the field change, creating continuous rotational torque.`,
   plainEnglishExplanation: {
     overview:
-      "In 1887, all electric motors were Direct Current (DC) machines relying on mechanical commutators—split copper rings with carbon brushes that sparked, wore out quickly, and limited DC power transmission to about one mile from generating stations. Nikola Tesla solved this by discovering that two or more alternating currents with shifted phases create a smoothly rotating magnetic field in empty space without any moving parts or commutators.",
+      "In 1887 a factory motor meant a DC machine with a split-ring commutator and carbon brushes. The brushes sparked, wore out, and confined useful DC transmission to about a mile. Tesla's answer was to leave the field coils still and let two (or three) alternating currents, shifted in phase, make the magnetic field itself walk around the stator. A closed rotor follows that field by induction.",
     coreMechanism:
-      "By passing two alternating currents 90° out of phase through pairs of coils arranged perpendicularly on an iron ring stator, the combined magnetic field vector does not simply oscillate back and forth—it sweeps in a continuous circle at the frequency of the AC current ($n_s = 120f / p$). This rotating field sweeps across closed copper bars in the rotor, inducing secondary electric currents that drag the rotor behind the rotating field through magnetic attraction.",
+      "Two currents 90° apart in perpendicular coils on an iron ring give a net field $\\vec{B}_{net}(t) = B_0[\\cos(\\omega t)\\hat{i}+\\sin(\\omega t)\\hat{j}]$ of constant magnitude that rotates at $n_s = 120f/P$. That traveling field cuts closed copper on the rotor, induces current, and the rotor is dragged along a slip behind the field.",
     mechanicalBreakdown: [
       {
         title: "Stationary Polyphase Stator Coils",
@@ -109,7 +109,7 @@ The armature consists of a laminated iron cylinder mounted on a central shaft an
       },
     ],
     whyItMattersToday:
-      "Tesla's polyphase induction motor powers the modern industrial world. Over 60% of all electric energy consumed on planet Earth today is converted into mechanical work by three-phase AC induction motors—driving factory robots, HVAC compressors, water pumps, bullet trains, and Tesla electric vehicles.",
+      "Most of the electrical energy that becomes shaft work still goes through a three-phase induction machine: pumps, compressors, factory lines, locomotive traction. The name on a modern EV inverter is marketing; the physics is still $n_s = 120f/P$ and a squirrel cage chasing a rotating field.",
   },
   claims: [
     {
@@ -195,30 +195,38 @@ The armature consists of a laminated iron cylinder mounted on a central shaft an
   ],
   historicalContext: {
     problemStatement:
-      "Thomas Edison's Direct Current (DC) system could not transmit electrical power farther than about one mile without massive voltage drop ($P_{loss} = I^2 R$). High-voltage Alternating Current (AC) could be stepped up and transmitted hundreds of miles, but there was no practical AC motor to do mechanical work in factories.",
+      "Edison's Pearl Street station (1882) sold 110-volt DC. $I^2R$ loss made that voltage useless beyond about a mile, so every neighborhood needed its own dynamo. Transformers could raise AC for long lines, but factories still wanted a motor that started under load and did not eat its own brushes. Until Tesla, AC was a lighting trick.",
     priorArtLimitations: [
-      "DC motors required complex copper commutators and carbon brushes that sparked and burned out.",
-      "Single-phase AC motors had zero starting torque and stalled when loaded.",
-      "Inability to transmit power from distant hydroelectric sources (like Niagara Falls) to cities.",
+      "DC commutators sparked, needed constant turning, and failed in dusty mills.",
+      "Single-phase AC machines had no starting torque; they had to be spun up by hand.",
+      "Gaulard–Gibbs and Zipernowsky–Déri–Bláthy transformers served lamps, not shafts.",
+      "Niagara's 1880s hydraulic plans had no electrical load except arc lights.",
     ],
     breakthroughInsight:
-      "While walking in a park in Budapest in February 1882 reciting Goethe's Faust, Tesla visualized the rotating magnetic field: by feeding two AC currents 90 degrees out of phase into stationary coils, a rotating magnetic vortex is formed in space, eliminating all commutators.",
+      "Tesla later said the idea arrived in Budapest in 1882, walking and reciting Faust: two stationary coils, currents in quadrature, a field that rotates in empty iron. Ferraris in Turin published a similar rotating-field observation in 1888; Tesla had already filed. Priority fights followed, but Westinghouse bought Tesla's stack, not Ferraris's paper.",
     patentWars: [
       {
-        rivalName: "Thomas Edison & General Electric (The War of the Currents)",
+        rivalName: "Thomas Edison and General Electric (War of the Currents)",
         rivalClaim:
-          "Edison campaigned aggressively against Tesla's AC system, electrocuting animals and promoting the electric chair to claim AC was too dangerous for domestic use.",
+          "Edison's camp argued high-voltage AC would kill customers. They funded public animal electrocutions and backed the first electric chair (1890) as a demonstration of AC danger.",
         conflictDetails:
-          "George Westinghouse bought Tesla's polyphase patents in 1888 for $60,000 plus stock and royalties. Westinghouse used Tesla's AC system to illuminate the 1893 Chicago World's Fair and build the monumental 1895 Niagara Falls hydroelectric project.",
+          "Westinghouse licensed Tesla's polyphase patents in 1888 (cash, stock, and a per-horsepower royalty). The 1893 Chicago fair ran on Westinghouse AC. In 1895 the Niagara Adams plant sent two-phase power to Buffalo. GE, after merging with Thomson-Houston, had to take AC licenses to stay in the transmission business.",
         resolution:
-          "Tesla's AC polyphase system completely triumphed over DC. General Electric was forced to license Tesla's patents to build AC transmission equipment.",
+          "By 1900 new urban plants were AC. Edison lost the system fight and left the day-to-day running of GE. DC lingered in elevator and traction pockets into the late 20th century.",
         legalOutcome:
-          "Federal courts repeatedly validated Tesla's master patents against all infringement claims.",
+          "Tesla's motor and system patents held. The commercial fight was decided by Niagara and the fair, not by a single decree.",
       },
     ],
     civilizationalImpact:
-      "Electrified human civilization. Tesla's polyphase AC system established the global 50Hz/60Hz high-voltage electrical grid that powers all modern factories, homes, computers, and electric vehicles.",
+      "Once a factory could hang an induction motor on a 60 Hz (or 50 Hz) feeder, the steam-shaft alley died. The same polyphase grammar still sets the frequency of every interconnected grid.",
     funFact:
-      "To save George Westinghouse's company from bankruptcy during the panic of 1897 and ensure AC power would be built across America, Tesla tore up his royalty contract worth an estimated $12 million (billions in today's dollars).",
+      "During Westinghouse's 1890s cash crisis Tesla released the per-horsepower royalty. The often-quoted '$12 million torn up' figure is a later estimate, not a cancelled invoice, but the waiver was real and it kept the AC plant program alive.",
+    aftermath:
+      "Tesla left motor design for radio-frequency and wireless-power work. The induction machine became a GE and Westinghouse commodity. His name returned to consumer products a century later; the stator math did not need the branding.",
+    sideNotes: [
+      "US 381,968 is one of a cluster Tesla filed in October 1887. The companion generator and distribution patents are why Westinghouse could bid Niagara as a system, not a motor.",
+      "Galileo Ferraris demonstrated a two-phase rotating field in Turin in 1885 and published in 1888. He did not file in the United States. Historians now treat the physics as independently seen; the industrial system is Tesla–Westinghouse.",
+      "Early Niagara generators were two-phase. Utilities later standardized on three-phase because three wires carry more power for the copper. Tesla's claims already covered more than two phases.",
+    ],
   },
 };

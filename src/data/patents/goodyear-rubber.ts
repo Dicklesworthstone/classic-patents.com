@@ -15,7 +15,7 @@ export const goodyearRubberPatent: Patent = {
   category: "materials",
   categoryLabel: "Materials Science & Chemical Engineering",
   summary:
-    "The birth of modern polymer chemistry and elastomers: Charles Goodyear discovered that heating natural raw gum elastic (India rubber) with sulfur transforms the soft, sticky polymer into a resilient, waterproof, non-sticky elastomer impervious to cold and heat.",
+    "Goodyear's 1844 process: heat raw Hevea gum with sulfur until the polyisoprene chains cross-link. The stuff stops melting in August and cracking in January. That is vulcanization; the rest of the rubber industry is process control around this reaction.",
   heroQuote:
     "Be it known that I, Charles Goodyear, have invented a new and useful manner of preparing compositions of India-rubber, whereby the property of said gum is so far altered as not to be softened by the action of the solar or artificial heat...",
   originalPdfUrl: "/patents/pdfs/us-3633-goodyear-rubber.pdf",
@@ -88,7 +88,7 @@ By this heating process, the sulfur combines chemically with the gum, producing 
       },
     ],
     whyItMattersToday:
-      "Goodyear's vulcanization process made the modern industrial and automotive age possible. Every car, truck, bicycle, and airplane tire on Earth—along with hydraulic seals, gaskets, waterproof conveyor belts, and medical gloves—relies on sulfur-vulcanized elastomer chemistry.",
+      "Sulfur still cross-links most natural-rubber and SBR tires. Peroxide and radiation cures exist for specialty elastomers; the passenger-car carcass is still Goodyear's chemistry with carbon black and accelerators his furnace never saw.",
   },
   claims: [
     {
@@ -136,29 +136,38 @@ By this heating process, the sulfur combines chemically with the gum, producing 
   ],
   historicalContext: {
     problemStatement:
-      "The 'Rubber Fever' of the 1830s collapsed after hundreds of thousands of rubber shoes, coats, and wagon covers turned to liquid sludge in the summer sun, bankrupting early manufacturers.",
+      "The 1830s 'rubber fever' sold shoes and wagon covers that melted into sludge above about 80°F and shattered below freezing. Roxbury India Rubber and its copyists went bankrupt. Untreated Hevea is a thermoplastic gum, not an engineering solid.",
     priorArtLimitations: [
-      "Natural latex became sticky and liquefied above 80°F.",
-      "Natural latex turned brittle like glass and cracked below 32°F.",
-      "Soluble in turpentine, camphene, and oils.",
+      "Raw latex is sticky above summer indoor temperatures.",
+      "The same gum is glass-brittle near 32°F.",
+      "Turpentine, camphene, and lamp oils dissolve it.",
+      "Nitric-acid 'cures' (Goodyear's own earlier method) only tanned the surface.",
     ],
     breakthroughInsight:
-      "In 1839 in Woburn, Massachusetts, Goodyear accidentally dropped a piece of rubber mixed with sulfur onto a hot wood stove. The charred piece did not melt; it remained elastic and resilient even after cooling in the winter snow.",
+      "The stove story is 1839, Woburn, in Nathaniel Hayward's shop: a sulfur-mixed scrap charred on the iron and stayed springy after it cooled. Whether the drop was accident or a leftover from Hayward's solarization experiments is still argued. The chemistry is not: heat plus sulfur cross-links polyisoprene.",
     patentWars: [
       {
-        rivalName: "Thomas Hancock (Great Britain) & Horace Day",
+        rivalName: "Thomas Hancock (Britain) and Horace H. Day",
         rivalClaim:
-          "Hancock examined Goodyear's samples in London, smelled sulfur, figured out the heat treatment, and filed a British patent weeks before Goodyear.",
+          "Hancock saw Goodyear samples in London, smelled sulfur, reproduced the heat treatment, and filed in Britain weeks ahead of Goodyear's English application. Day infringed in the United States and called Goodyear a crank.",
         conflictDetails:
-          "In the famous 'Great India-Rubber Case' of 1852 in Trenton, New Jersey, Goodyear was represented by legendary orator Daniel Webster against infringing manufacturers.",
+          "Goodyear v. Day (the Great India-Rubber Case, Trenton, 1852) put Daniel Webster, then Secretary of State, on Goodyear's brief for a large fee. Webster's speech is famous; the holding is narrower: US 3,633 is valid and Day infringed.",
         resolution:
-          "Webster's brilliant arguments won a decisive federal victory confirming Goodyear as the sole inventor.",
-        legalOutcome: "Federal validation of Goodyear's patent.",
+          "Goodyear won in New Jersey. He never collected a Hancock-scale British fortune. He died in 1860 still in debt.",
+        legalOutcome:
+          "US patent held. British priority went to Hancock. The word 'vulcanization' is Hancock's.",
       },
     ],
     civilizationalImpact:
-      "Created the entire synthetic and natural rubber industry, making automobile tires, pneumatic seals, electrical insulation, and waterproof gear possible.",
+      "Waterproof boots, then belts, then (after 1888–1895) pneumatic tires. Without a heat-stable elastomer the bicycle boom and the automobile have no contact patch.",
     funFact:
-      "Goodyear was so obsessed with rubber that he wore a suit, hat, and boots made entirely of his experimental vulcanized rubber to prove its durability.",
+      "Goodyear really did wear vulcanized coats and shoes as walking samples. Visitors found the costume as convincing as the chemistry.",
+    aftermath:
+      "The Goodyear Tire & Rubber Company (1898) licensed the name from the family; Charles had been dead 38 years. He did not found the Akron firm and did not get its dividends.",
+    sideNotes: [
+      "Hayward's US patent on sulfur-sunlight treatment was assigned to Goodyear. A fair account gives Hayward a piece of the invention and Goodyear the heat that finished it.",
+      "Charles Goodyear Jr. later worked on welt-sewing machinery. The family's talent ran to process, not to keeping money.",
+      "Modern accelerated vulcanization (aniline, then mercaptobenzothiazole) is 20th-century. The 1844 patent is heat, sulfur, and time.",
+    ],
   },
 };

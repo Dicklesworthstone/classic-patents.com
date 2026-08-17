@@ -14,7 +14,7 @@ export const farnsworthTvPatent: Patent = {
   category: "telecom",
   categoryLabel: "Optoelectronics & Electronic Display",
   summary:
-    "The genesis of modern electronic video: 20-year-old Philo Farnsworth's invention of the all-electronic television system, replacing clunky mechanical spinning Nipkow disks with a cold-cathode Image Dissector tube, orthogonal magnetic deflection coils, and electronic raster scanning.",
+    "Farnsworth's 1930 image dissector: a photoemissive plate, a magnetic raster, and a pinhole anode. No Nipkow disk. He conceived it at 14, looking at a plowed Idaho field, and reduced it to practice in a San Francisco loft in 1927.",
   heroQuote:
     "My invention relates to television systems and has for its primary object the provision of a system of television in which the scanning of the image is accomplished entirely electronically without the use of any mechanically moving parts...",
   originalPdfUrl: "/patents/pdfs/us-1773980-farnsworth-tv.pdf",
@@ -93,7 +93,7 @@ Figure 5 is a sectional view of the target anode and scanning aperture.`,
       },
     ],
     whyItMattersToday:
-      "Farnsworth's all-electronic raster scanning is the foundational technology behind modern television, computer monitors, video cameras, digital image processing, and CRT/LCD/OLED display technology.",
+      "Every camera still reads a scene as a time-series of lines. CMOS pixels replaced the dissector plate; the raster idea did not. CRTs are gone from living rooms, not from the sampling theorem that made them, and LCDs, work.",
   },
   claims: [
     {
@@ -165,29 +165,36 @@ Figure 5 is a sectional view of the target anode and scanning aperture.`,
   ],
   historicalContext: {
     problemStatement:
-      "Mechanical television systems were fundamentally bottlenecked by mechanical inertia: spinning metal disks could not spin fast enough to deliver flicker-free high-definition video.",
+      "Baird and Jenkins television of the mid-1920s was a spinning Nipkow disk, 30 to 60 holes, a lamp, and a lot of flicker. Mechanical inertia set the line count. You could not spin a disk fast enough for a picture a newsreel audience would sit through.",
     priorArtLimitations: [
-      "Nipkow spinning disks (30–60 lines) were dim, blurry, and mechanically noisy.",
-      "Mechanical mirror drums were fragile and went out of calibration constantly.",
+      "Nipkow disks were dim, noisy, and limited to tens of lines.",
+      "Mirror drums drifted out of sync and shattered.",
+      "Zworykin's early iconoscope work at Westinghouse was real but not yet a closed electronic camera-plus-receiver system in public.",
     ],
     breakthroughInsight:
-      "In 1921 at age 14 in Rigby, Idaho, Farnsworth looked at the parallel furrows left behind by his horse-drawn plow and realized electrons could scan an image line-by-line without any moving parts.",
+      "Age 14, Rigby, Idaho, 1921: a plowed field looked like a scan. Electrons have no flywheel. Farnsworth told Justin Tolman, his chemistry teacher; Tolman kept a 1922 blackboard sketch that later won an interference.",
     patentWars: [
       {
-        rivalName: "David Sarnoff, Vladimir Zworykin & Radio Corporation of America (RCA)",
+        rivalName: "David Sarnoff, Vladimir Zworykin, and RCA",
         rivalClaim:
-          "RCA and Zworykin filed for an electronic television patent and spent millions trying to prove Zworykin invented electronic television before Farnsworth.",
+          "RCA argued Zworykin's iconoscope and the 1923 filing predated Farnsworth's reduction to practice.",
         conflictDetails:
-          "The US Patent Office instituted Patent Interference No. 64,027. Farnsworth's high school chemistry teacher, Justin Tolman, produced a sketch Farnsworth drew on the blackboard in 1922 proving prior conception.",
+          "Interference No. 64,027. Tolman's sketch and testimony dated conception to 1922. The Patent Office awarded the electronic-scanning claims to Farnsworth in 1934. Sarnoff, who preferred not to pay outsiders, had to write a royalty check.",
         resolution:
-          "The Patent Office and federal courts ruled completely in Farnsworth's favor in 1934.",
+          "RCA licensed Farnsworth. Commercial US television still waited on the 1941 NTSC standard and the war. Farnsworth's company never became the RCA of cameras.",
         legalOutcome:
-          "RCA was forced to capitulate and pay Farnsworth patent royalties (a first for RCA).",
+          "Farnsworth kept the dissector/scanning claims. Zworykin kept a storage-target camera that was more sensitive in studio light. Both tubes are ancestors; the living-room set was a standards fight.",
       },
     ],
     civilizationalImpact:
-      "Created the medium of television and electronic visual communication, fundamentally reshaping global culture, politics, news, entertainment, and visual media.",
+      "Once the scanner had no moving parts, line counts could rise with electronics instead of rpm. News, advertising, and national politics moved onto a raster.",
     funFact:
-      "Farnsworth transmitted the first all-electronic television image in history on September 7, 1927 in his laboratory at 202 Green Street, San Francisco: a simple glowing straight line.",
+      "7 September 1927, 202 Green Street, San Francisco: the first image was a straight line. Pem Farnsworth was in the room. The dollar sign they later joked about scanning was a lab gag, not the first transmission.",
+    aftermath:
+      "Farnsworth sold to ITT, fought depression and drink, and lived to see the 1969 moon walk on a set that owed him a license. He told his wife that this, at least, made the whole fight worth it.",
+    sideNotes: [
+      "The image dissector has no charge-storage target, so it needs a lot of light. Studio cameras went to iconoscopes and then orthicons for that reason. The patent is the electronic scan, not the most sensitive photocathode.",
+      "Farnsworth was 20 when he filed. Investors had backed a high-school idea with cash. That is rarer than the plow story.",
+    ],
   },
 };

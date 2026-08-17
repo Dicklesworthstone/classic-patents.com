@@ -14,7 +14,7 @@ export const lamarrPatent: Patent = {
   category: "telecom",
   categoryLabel: "Wireless Communications & Electronic Warfare",
   summary:
-    "The genesis of spread-spectrum wireless communication: Hollywood actress Hedy Lamarr and avant-garde composer George Antheil co-invented frequency hopping to steer radio-guided torpedoes without Axis enemy jamming, establishing the foundation for modern Wi-Fi, Bluetooth, GPS, and cellular CDMA networks.",
+    "Lamarr and Antheil's 1942 'Secret Communication System': transmitter and receiver step together through a shared 88-slot sequence, modeled on player-piano rolls, so a spot jammer sitting on one carrier only hits 1/88 of the packets.",
   heroQuote:
     "This invention relates to secret communication systems and has for one of its objects the provision of a method of and apparatus for the transmission of secret messages or control signals in such a manner that interception and decoding or jamming by an enemy is rendered practically impossible...",
   originalPdfUrl: "/patents/pdfs/us-2292387-lamarr-frequency-hopping.pdf",
@@ -93,7 +93,7 @@ Figure 4 is a diagram of the multi-frequency tuned tank circuits and bandpass fi
       },
     ],
     whyItMattersToday:
-      "Lamarr and Antheil's spread-spectrum patent is the foundational intellectual ancestor of all modern wireless protocols—Wi-Fi (802.11), Bluetooth frequency hopping (AFH), military anti-jamming tactical communications (SINCGARS), GPS satellite ranging, and 3G/4G CDMA cell phones.",
+      "Bluetooth AFH still hops a pre-agreed set. GPS and CDMA spread energy so a narrow jammer is a small slice of the band. The Navy did not field the 1942 piano-roll box; the 1997 EFF Pioneer Award recognized the claim chart, not a wartime production run.",
   },
   claims: [
     {
@@ -150,29 +150,36 @@ Figure 4 is a diagram of the multi-frequency tuned tank circuits and bandpass fi
   ],
   historicalContext: {
     problemStatement:
-      "In 1940, Nazi U-boats were sinking hundreds of Allied supply ships in the Atlantic. Early Allied radio-guided torpedoes were vulnerable to simple radio jamming by German destroyers.",
+      "A radio-steered torpedo on one carrier is a gift to a destroyer's jammer: park noise on that frequency and the weapon goes deaf. Wire guidance snapped in a seaway. Lamarr, who had been married to Austrian munitions manufacturer Fritz Mandl, had sat through enough dinner talk about control links to know the failure mode.",
     priorArtLimitations: [
-      "Fixed-frequency radio controls could be jammed by broadcasting noise on the same channel.",
-      "Direct wire-guided torpedoes snapped their cables in heavy ocean swells.",
+      "Fixed-frequency command links die when the jammer finds the tone.",
+      "Wire-guided weapons lose the wire.",
+      "A spread signal without a shared hop schedule is just noise at both ends.",
     ],
     breakthroughInsight:
-      "While playing piano duets in Hollywood, Lamarr and Antheil realized that if both players change notes in unison according to a shared score, a radio signal could jump between frequencies without the enemy knowing where it was going next.",
+      "Antheil had scored *Ballet Mécanique* for synchronized player pianos. Sixteen pianos only work if they share a roll. Put that roll on the transmitter and the receiver: 88 slots, a punched sequence, a hop the jammer cannot predict without the paper.",
     patentWars: [
       {
-        rivalName: "United States Navy & National Inventors Council",
+        rivalName: "The US Navy (by neglect, not a courtroom)",
         rivalClaim:
-          "The U.S. Navy initially classified the patent Top Secret, filed it away as 'too bulky' for torpedoes, and did not adopt it until the 1962 Cuban Missile Crisis (using transistors instead of paper rolls).",
+          "The Navy classified the idea, called the piano-roll mechanism too bulky for a torpedo, and did not build it in 1942.",
         conflictDetails:
-          "Neither Lamarr nor Antheil ever received a dime in royalties during the 17-year patent lifespan, as the patent expired before commercial cellular and Wi-Fi deployment.",
+          "Lamarr and Antheil assigned the patent to the government. They were told to sell war bonds instead. The 17-year term ran out before cellular and Wi-Fi existed, so there were no commercial royalties.",
         resolution:
-          "In 1997, the Electronic Frontier Foundation (EFF) awarded Hedy Lamarr their Pioneer Award. In 2014, Lamarr and Antheil were posthumously inducted into the National Inventors Hall of Fame.",
+          "Sonobuoy and secure-radio work in the 1950s–60s used hopping with electronics instead of paper. The Cuban Missile Crisis-era story is often overstated; the documented through-line is classified Navy R&D, then public spread-spectrum papers. The EFF Pioneer Award (1997) and the National Inventors Hall of Fame (2014) are the civilian catch-up.",
         legalOutcome:
-          "Universally acknowledged as the co-inventors of spread-spectrum communication.",
+          "US 2,292,387 issued and expired quietly. Credit arrived 50 years late. They were not the only people to think about hopping; they filed the wartime US patent that popular histories can point to.",
       },
     ],
     civilizationalImpact:
-      "Underpins billions of mobile phones, Wi-Fi routers, Bluetooth headsets, GPS satellites, and secure military defense networks around the world.",
+      "A shared hopping sequence is still how a Bluetooth piconet stays out of a microwave oven's way. The Hollywood origin is unusual; the information-theory move is not.",
     funFact:
-      "Hedy Lamarr was not only a glamorous Hollywood actress starring alongside Clark Gable and Spencer Tracy, but she also maintained an invention drafting table in her trailer on movie sets.",
+      "Lamarr kept a drafting table on set. Antheil had been a concert provocateur in 1920s Paris. The patent office classified the pair as Hedy Kiesler Markey and George Antheil; MGM's publicity department was not involved.",
+    aftermath:
+      "Lamarr's later life was tabloid and difficult. She did not get rich from 2,292,387. Engineers who actually ship hoppers now cite her in the first slide and Shannon in the second.",
+    sideNotes: [
+      "The 88 keys are a metaphor that became a claim count. A real FHSS system picks the hop set from the band plan, not from a Steinway.",
+      "Spread spectrum as a field also runs through Hedy's contemporaries in radar and through Shannon, Price, and Green. Do not flatten that into one actress and one composer.",
+    ],
   },
 };

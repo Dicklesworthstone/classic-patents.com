@@ -15,7 +15,7 @@ export const noyceIcPatent: Patent = {
   category: "computing",
   categoryLabel: "Semiconductor Physics & Microelectronics",
   summary:
-    "The birth of the silicon microchip and modern Silicon Valley: Robert Noyce's monolithic planar integrated circuit patent, inventing vapor-deposited aluminum metallization leads directly adhering over thermally grown silicon dioxide insulation to interconnect all transistors on a single chip without flying wires.",
+    "Noyce's 1959 Fairchild filing: print aluminum interconnects on top of thermally grown SiO₂ so they can cross p–n junctions on a single silicon die. Kilby had already shown that components could share a semiconductor body; this patent is how you wire them without gold flying leads.",
   heroQuote:
     "In the manufacture of semiconductor devices it is frequently desirable to provide a unitary body of semiconductor material within which are formed a plurality of individual circuit components...",
   originalPdfUrl: "/patents/pdfs/us-2981877-noyce-ic.pdf",
@@ -102,7 +102,7 @@ Figure 4 is a diagrammatic cross-section showing multiple diffused components an
       },
     ],
     whyItMattersToday:
-      "Noyce's planar integrated circuit is the single most consequential hardware invention of the 20th century. It is the architectural parent of every microprocessor, memory chip, smartphone, supercomputer, GPU, and AI accelerator in the world today.",
+      "A modern SoC is still Noyce's stack: oxide on silicon, contact windows, metal that is allowed to run over junctions. Damascene copper and low-κ dielectrics changed the materials, not the topology. Intel, which Noyce co-founded in 1968, still ships that topology by the billion.",
   },
   claims: [
     {
@@ -161,28 +161,38 @@ Figure 4 is a diagrammatic cross-section showing multiple diffused components an
   ],
   historicalContext: {
     problemStatement:
-      "Building computers with discrete transistors wired by hand hit an impenetrable barrier in the late 1950s: a 100,000-transistor computer required 300,000 hand-soldered wire joints, guaranteeing constant system failures.",
+      "By 1958 a large computer was a reliability problem disguised as an electronics problem. A design with 10⁵ transistors implied on the order of 3×10⁵ soldered joints. Each joint was a failure site. The 'tyranny of numbers' (Jack Morton at Bell Labs popularized the phrase) said you could not wire your way to a million devices.",
     priorArtLimitations: [
-      "Jack Kilby's 1958 microchip used germanium with hand-glued gold flying wires.",
-      "Could not be mass-produced with reliable industrial yields.",
+      "Kilby's 1958 TI germanium bar still used gold flying wires for some connections.",
+      "Mesa transistors left junction edges exposed; contamination killed yield.",
+      "Hybrid modules (Minuteman, IBM SMS) only hid the wiring, they did not remove it.",
+      "Photolithography existed for transistors, not yet for chip-scale metal.",
     ],
     breakthroughInsight:
-      "In January 1959 at Fairchild, Noyce realized that Jean Hoerni's planar process left a layer of silicon dioxide glass on the wafer: why not use that glass to print aluminum wires directly onto the chip?",
+      "Jean Hoerni's planar process (Fairchild, 1959) left a sheet of SiO₂ over the wafer. Noyce's January 1959 note asked the obvious next question: evaporate aluminum on that glass, etch it into traces, and open windows only where you want contacts. The oxide is both passivation and the printed-circuit board.",
     patentWars: [
       {
-        rivalName: "Jack Kilby & Texas Instruments",
+        rivalName: "Jack Kilby and Texas Instruments",
         rivalClaim:
-          "Texas Instruments claimed Kilby's 1959 patent covered the broad idea of an integrated circuit. Fairchild argued Noyce invented the planar metallization that made real microchips possible.",
+          "TI said Kilby's US 3,138,743 already covered a plurality of components in one semiconductor body. Fairchild said that claim did not teach planar surface metal running over oxide.",
         conflictDetails:
-          "After a decade of federal litigation, the U.S. Court of Customs and Patent Appeals ruled in 1969 that Noyce was the sole inventor of planar integrated circuits with surface metallization.",
+          "Interference and infringement dragged through the 1960s. In 1969 the Court of Customs and Patent Appeals credited Noyce with the planar interconnect. Kilby kept the body-of-semiconductor idea. Neither company could ship legally without the other.",
         resolution:
-          "TI and Fairchild wisely agreed to cross-license their patents, allowing the microchip revolution to flourish. Noyce and Kilby are celebrated as equal co-inventors of the Integrated Circuit.",
-        legalOutcome: "Federal validation of Noyce's master patent.",
+          "TI and Fairchild cross-licensed. The industry treated both men as inventors of the IC. Kilby received the 2000 Nobel Prize in Physics; Noyce had died in 1990 and the Nobel is not given posthumously.",
+        legalOutcome:
+          "Noyce: planar metal over oxide. Kilby: multiple devices in one body. The product on your board needs both.",
       },
     ],
     civilizationalImpact:
-      "Spawned Silicon Valley, Intel (co-founded by Noyce and Gordon Moore), and the entire digital computer age.",
+      "Fairchild's 1961 micrologic parts, then Intel (Noyce, Moore, Grove, 1968), made the planar IC a product line instead of a lab trick. Moore's 1965 density essay is a yield and interconnect essay; it assumes this patent's wiring method.",
     funFact:
-      "Robert Noyce was nicknamed 'The Mayor of Silicon Valley' not only for co-founding Fairchild and Intel, but for cultivating the informal, meritocratic startup culture that came to define California's tech industry.",
+      "Colleagues called Noyce the Mayor of Silicon Valley. The title stuck because he left Fairchild to start Intel and because he ran meetings without the East Coast suit hierarchy the Shockley refugees had walked out on in 1957.",
+    aftermath:
+      "US 2,981,877 issued 25 April 1961. Planar TTL and then MOS memories made the flying-lead IC a museum piece within a decade. Noyce spent the 1980s at SEMATECH arguing that the same interconnect physics now needed a national process consortium.",
+    sideNotes: [
+      "The 'traitorous eight' left Shockley Semiconductor in 1957 and founded Fairchild. Hoerni, Noyce, Moore, and Last were in that group. The planar IC is a Fairchild invention in the narrow sense and a Shockley-lab diaspora invention in the wide one.",
+      "Early Fairchild metal was aluminum on SiO₂. Purple plague (Au–Al intermetallics) at the package bonds was a 1960s reliability crisis that this patent does not mention and that packaging groups spent a decade fixing.",
+      "Gordon Moore's 1965 Electronics article counts components per dollar and per chip. The curve only exists if the wires are printed with the transistors.",
+    ],
   },
 };

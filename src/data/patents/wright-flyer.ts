@@ -14,7 +14,7 @@ export const wrightFlyerPatent: Patent = {
   category: "aviation",
   categoryLabel: "Aeronautics & Aerodynamics",
   summary:
-    "The seminal master patent of aviation: the Wright brothers' synchronized three-axis aerodynamic flight control system combining differential wing warping (roll), a movable vertical rudder (yaw), and a forward canard elevator (pitch) to achieve active equilibrium in flight.",
+    "The 1906 flying-machine patent that first claimed coordinated three-axis control: hip-cradle wing warping for roll, a rear rudder linked to that same cradle to cancel adverse yaw, and a forward canard for pitch. Filed 23 March 1903, nine months before the first powered hops at Kitty Hawk.",
   heroQuote:
     "Our invention relates to that class of flying-machines in which the weight is sustained by the reactions resulting when one or more aeroplanes are moved through the air downwardly and forwardly at a small angle of incidence...",
   originalPdfUrl: "/patents/pdfs/us-821393-wright-flyer.pdf",
@@ -59,7 +59,7 @@ The main framing of the machine comprises superposed upper and lower aeroplanes 
 The operator lies prone in a movable cradle 6 upon the lower aeroplane. By shifting his hips laterally, the cradle pulls upon operating cables 7 and 8 connected to the rear outer corners of the upper and lower aeroplanes, twisting the right-hand wingtips upward and the left-hand wingtips downward simultaneously, while automatically deflecting the rear vertical rudder 9 to maintain complete aerodynamic equilibrium in three dimensions.`,
   plainEnglishExplanation: {
     overview:
-      "Before the Wright brothers, pioneer aviators like Otto Lilienthal and Samuel Langley assumed that flying was an engine problem or a matter of static inherent stability (like a ship righting itself in water). The Wrights realized that flight was fundamentally an active aerodynamic equilibrium and control problem in turbulent three-dimensional fluid. Their invention provided complete authority over pitch (nose up/down), roll (banking left/right), and yaw (nose left/right).",
+      "Otto Lilienthal and Samuel Langley treated flight as a problem of power or of built-in stability, the way a keel rights a boat. The Wrights treated it as a control problem in gusty air. A machine that could not be banked, pointed, and pitched on purpose would crash the first time the wind shifted. Their patent is the control system: warp the wings to roll, kick a linked rudder to stop the nose from swinging the wrong way, and use a forward elevator to hold pitch.",
     coreMechanism:
       "By twisting (warping) the trailing edges of the flexible wings in opposite directions, one wing generates more aerodynamic lift and more induced drag than the other, causing the aircraft to bank into a roll. To prevent the higher-drag wing from pulling the nose in the wrong direction (adverse yaw), the Wrights interconnected the wing-warping cables directly to a movable vertical rear rudder, creating the first synchronized 3-axis flight control system in history.",
     mechanicalBreakdown: [
@@ -75,7 +75,7 @@ The operator lies prone in a movable cradle 6 upon the lower aeroplane. By shift
         title: "Coordinated Vertical Rudder (Yaw Control & Adverse Yaw Solution)",
         summary: "A movable vertical rudder tied directly to the wing-warping mechanism.",
         technicalDetails:
-          "Increasing the angle of attack on the high-lift wing inherently increased induced drag ($C_{Di} = C_L^2 / \\pi AR$). This drag caused the airplane to yaw away from the turn—a dangerous phenomenon known as adverse yaw, which had caused previous glider crashes. The Wrights solved this by mechanically linking the wing-warping cradle to the rear vertical rudder, deflecting the rudder into the turn to neutralize adverse yaw.",
+          "Increasing the angle of attack on the high-lift wing inherently increased induced drag ($C_{Di} = C_L^2 / \\pi AR$). That extra drag yaws the nose away from the intended turn (adverse yaw); several earlier gliders had stalled or spun from the same coupling. The Wrights tied the hip cradle to the rear rudder so that a bank automatically deflected the rudder into the turn and cancelled the yaw.",
         archaicTerm: "Vertical rudder",
         modernEquivalent: "Movable vertical stabilizer / rudder",
       },
@@ -118,7 +118,7 @@ The operator lies prone in a movable cradle 6 upon the lower aeroplane. By shift
       },
     ],
     whyItMattersToday:
-      "Every fixed-wing aircraft flying today—from a Cessna 172 to a Boeing 787 Dreamliner or an F-22 Raptor—uses the Wright brothers' foundational principle of coordinated 3-axis flight control.",
+      'Ailerons replaced fabric warping, but the law of the turn did not. A Cessna 172, a 787, and an F-22 still bank with differential lift and use the rudder to keep the nose from swinging against the roll. Flight-school "coordinated flight" is Claim 1 plus the 1902 glider\'s rudder linkage, taught with a slip-skid ball.',
   },
   claims: [
     {
@@ -237,30 +237,39 @@ The operator lies prone in a movable cradle 6 upon the lower aeroplane. By shift
   ],
   historicalContext: {
     problemStatement:
-      "Late 19th-century flight pioneers suffered fatal crashes (Otto Lilienthal, Percy Pilcher) because existing machines relied on pilots shifting body weight for passive stability in turbulent gusts without independent aerodynamic control over pitch, roll, and yaw.",
+      "Otto Lilienthal died in 1896 when a gust stalled his hang glider and he had no roll control except shifting his hips. Percy Pilcher died the same way in 1899. Samuel Langley's Aerodrome, built with War Department money, dumped itself into the Potomac on 7 October and again on 8 December 1903, nine days before Kitty Hawk. The machines of the 1890s could lift; they could not be flown.",
     priorArtLimitations: [
-      "Fixed-wing rigid gliders with zero roll control.",
-      "Dangerous pendulum stability that amplified oscillations in turbulence.",
-      "Lack of aerodynamic yaw compensation when turning.",
+      "Rigid wings with no way to change left/right incidence in flight.",
+      "Pendulum 'inherently stable' tails that amplified phugoid oscillations in gusts.",
+      "No yaw surface linked to the roll control, so a bank produced a skidding spin.",
+      "Langley's houseboat catapult launches left no room to learn in small hops.",
+      "European 'more power' programs (Maxim, Ader) treated the air as a still fluid.",
     ],
     breakthroughInsight:
-      "The Wrights realized birds do not shift their weight; they twist their wingtips to bank and balance. By coupling flexible wing twisting with a synchronized vertical rudder, the Wrights created complete 3-axis equilibrium.",
+      "Watching buzzards over Huffman Prairie, the Wrights saw that a bird banks by twisting a wingtip, not by leaning. They built that twist into a muslin box kite, then tied the same hip cradle to a rear rudder after the 1901 glider yawed the wrong way every time they warped.",
     patentWars: [
       {
-        rivalName: "Glenn H. Curtiss & The Aerial Experiment Association (AEA)",
+        rivalName: "Glenn H. Curtiss and the Aerial Experiment Association",
         rivalClaim:
-          "Curtiss argued that his separate triangular ailerons (hinged wing flaps) were distinct from warping the entire wing structure.",
+          "Curtiss said hinged triangular 'ailerons' on the June Bug were a different invention from twisting the whole wing.",
         conflictDetails:
-          "The Wright Company sued Curtiss in 1909. Federal courts consistently upheld the Wright patent, ruling that Claim 1 covered ANY mechanism that varied the angle of incidence between lateral wing margins to control balance.",
+          "The Wright Company sued in 1909. Judge John R. Hazel (and later the Second Circuit) read Claim 1 as covering any scheme that presents the two wing margins at different angles of incidence. Curtiss kept flying and appealing; Wilbur spent his last healthy years in court rather than in a shop. He died of typhoid in 1912, exhausted by the suits.",
         resolution:
-          "In 1917, during World War I, the U.S. government forced the creation of the Manufacturer's Aircraft Association (MAA) patent pool, paying the Wright-Martin company a royalty for every airplane built in America.",
+          "In 1917 the War Department forced the Manufacturers Aircraft Association pool so that American factories could build trainers without an injunction. Wright-Martin took a lump payment plus a per-airframe royalty; Curtiss took a matching settlement. Ailerons, not warping, won the hardware fight. The legal fight had already been lost.",
         legalOutcome:
-          "Comprehensive legal victory for the Wrights; foundational precedent in patent law.",
+          "Claim 1 held. The pool ended the injunctions. Later courts treated hinged flaps as equivalents of warping.",
       },
     ],
     civilizationalImpact:
-      "Enabled the birth of modern aviation, transforming global transportation, commerce, warfare, and exploration across the 20th century.",
+      "Once a pilot could hold a coordinated bank, airplanes became tools instead of stunts. Mail, war, and passenger routes all assume the same three-axis grammar this patent first wrote down.",
     funFact:
-      "The original patent application was drafted by the Wright brothers themselves in 1903 without a patent attorney and was initially rejected. They hired Ohio patent attorney Harry A. Toulmin, who successfully secured the broad master patent in 1906.",
+      "They filed the application themselves on 23 March 1903 and the Patent Office bounced it. Dayton attorney Harry A. Toulmin rewrote the claims around the control method, not the engine, and US 821,393 issued on 22 May 1906. The first powered flights had already happened; the patent does not mention a motor.",
+    aftermath:
+      "Orville sold the Wright Company in 1915. He lived until 1948 and spent much of the 1920s arguing with the Smithsonian over whether Langley's 1903 machine had been 'capable of flight' (a reconstructed Aerodrome, heavily modified, flew in 1914). The original 1903 Flyer sat in London until the Smithsonian recanted in 1942.",
+    sideNotes: [
+      "The 1901 glider produced barely a third of the lift Lilienthal's tables predicted. The brothers built a bicycle-mounted balance, then a 6-foot wind tunnel, and remeasured about 200 wing sections in late 1901. Those numbers, not the patent drawings, are why the 1902 glider finally flew.",
+      "The hip cradle on the 1902–1903 machines pulled both warp cables and rudder cables. In 1904–1905 they split the rudder onto a hand lever after learning that a pilot sometimes wants yaw without roll.",
+      "Charlie Taylor built the 12-horsepower four-cylinder engine in six weeks in the bicycle shop. The patent is silent on it because the invention, as Toulmin framed it, was the control system.",
+    ],
   },
 };

@@ -15,7 +15,7 @@ export const howeSewingMachinePatent: Patent = {
   category: "consumer",
   categoryLabel: "Precision Mechanical Machinery",
   summary:
-    "The foundation of the modern garment industry: Elias Howe Jr.'s invention of the eye-pointed needle and synchronized reciprocating shuttle, producing an unbreakable two-thread lockstitch that replaced millennia of agonizing hand sewing.",
+    "Howe's 1846 lockstitch: an eye-pointed needle (eye at the tip) throws a loop; a shuttle carries a second thread through that loop; a feed plate steps the cloth. The knot sits inside the fabric. Hand sewing put the whole remaining thread through every stitch; this machine does not.",
   heroQuote:
     "Be it known that I, Elias Howe, Jr., of Cambridge, in the County of Middlesex and State of Massachusetts, have invented a new and useful Machine for Sewing Seams in Cloth, Leather, and other substances...",
   originalPdfUrl: "/patents/pdfs/us-4750-howe-sewing-machine.pdf",
@@ -82,7 +82,7 @@ The curved needle is mounted upon a vibrating arm actuated by a cam on the main 
       },
     ],
     whyItMattersToday:
-      "Howe's lockstitch is used in virtually all modern sewing machines, automated embroidery systems, robotic textile assemblers, and aerospace composite carbon-fiber preform stitchers.",
+      "Domestic and industrial lockstitch machines still use an eye-pointed needle and a second-thread hook (the shuttle became a rotary hook). The 1856 Sewing Machine Combination is the case study every patent-pool course still assigns.",
   },
   claims: [
     {
@@ -132,31 +132,38 @@ The curved needle is mounted upon a vibrating arm actuated by a cam on the main 
   ],
   historicalContext: {
     problemStatement:
-      "For millennia, all human clothing and textiles were stitched by hand needle. Hand sewing was agonizingly slow, physically debilitating, and severely restricted textile manufacturing productivity.",
+      "A tailor's needle carries the entire remaining thread through the cloth on every stitch. That motion does not scale. Ready-made clothing in the 1840s was still hand work; shirts were priced by the seamstress's hours, not by the yard of cloth.",
     priorArtLimitations: [
-      "Thomas Saint chain-stitch machine (1790, single thread, easily unraveled).",
-      "Barthélemy Thimonnier wooden machines (1830, destroyed by rioting French tailors).",
-      "Hand-sewing needles requiring the full thread length to pass through fabric on every stitch.",
+      "Thomas Saint's 1790 British patent is a chain-stitch drawing; it did not found an industry.",
+      "Thimonnier's 1830 wooden chain-stitchers sewed French army kit until Paris tailors wrecked the shop in 1831.",
+      "Walter Hunt built an eye-pointed needle and shuttle in the 1830s and never filed; that omission later became Howe's luck.",
     ],
     breakthroughInsight:
-      "Howe realized that mechanical sewing required two independent threads: an upper thread pushed through by an eye-pointed needle to form a loop, and a lower thread carried by a flying shuttle through the loop to cinch the seam permanently.",
+      "Two threads. The needle's eye is at the point so it can leave a loop below the cloth without pulling a spool through. A shuttle (borrowed from weaving) goes through that loop. The lock sits in the fabric, not on the surface, and does not ravel when you cut the end.",
     patentWars: [
       {
-        rivalName: "Isaac Merritt Singer & The Sewing Machine Combination",
+        rivalName: "Isaac Singer, and then the Sewing Machine Combination",
         rivalClaim:
-          "Singer argued his straight needle and foot treadle machine was an independent invention.",
+          "Singer's straight needle, presser foot, and treadle were presented as a new machine. Hunt's unfiled 1830s work was waved as prior art.",
         conflictDetails:
-          "In 1854, federal courts ruled that Singer and all competitors infringed Howe's master lockstitch claim. In 1856, Howe, Singer, Wheeler & Wilson, and Grover & Baker formed the Sewing Machine Combination—the first patent pool in U.S. history.",
+          "Howe v. Underwood (1854) and related cases held that the lockstitch with an eye-pointed needle was Howe's. Singer kept selling and paid. In 1856 Howe, Singer, Wheeler & Wilson, and Grover & Baker formed the Sewing Machine Combination, the first major US patent pool.",
         resolution:
-          "Manufacturers agreed to license Howe's master patent, paying him a royalty on every sewing machine sold in America.",
+          "Members cross-licensed and collected a per-machine royalty, of which Howe took a fixed slice. He made on the order of two million dollars before the patents expired, a 19th-century fortune.",
         legalOutcome:
-          "Howe earned over $2 million in royalties, becoming one of the wealthiest inventors of the 19th century.",
+          "Howe's claims held. Hunt was found to have abandoned. The pool taught later industries how to stop suing and start shipping.",
       },
     ],
     civilizationalImpact:
-      "Industrialized global garment manufacturing, drastically reduced the cost of clothing, transformed female employment, and established the legal blueprint for modern patent licensing pools.",
+      "Factory lockstitch dropped the price of a shirt and moved sewing from piecework rooms into plants (and later back into homes as a treadle appliance). The Combination is why 'patent pool' is a standard phrase.",
     funFact:
-      "Howe reportedly dreamed he was captured by a tribe of cannibals who brandished spears with holes at their tips—inspiring him to place the needle's eye at the point.",
+      "The cannibal-dream story (spears with holes at the tip) appears in later Howe lore. Treat it as family publicity. The mechanical argument for an eye at the point does not need the dream.",
+    aftermath:
+      "Howe served as a Union cavalry private and later officer, using some of the royalty money to equip the regiment. He died in 1867. Singer's name stayed on the domestic machine; Howe's stayed on the claim chart.",
+    sideNotes: [
+      "Howe built his first machine in Cambridge, pawned it, went to England to work for William Thomas, and came home poor. The US suits, not the first prototype, are how he was paid.",
+      "A lockstitch uses roughly twice the thread of a chain stitch and does not pull out. That trade (thread cost vs. seam security) is why jeans still lockstitch.",
+      "The Combination expired with the patents in the 1870s. After that, sewing-machine prices fell again.",
+    ],
   },
   tags: [
     "Elias Howe",
