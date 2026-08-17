@@ -32,10 +32,14 @@ export function EraFilterBar({
       <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-4">
         {/* Search input */}
         <div className="relative flex-1">
+          <label htmlFor="patent-catalog-search" className="sr-only">
+            Search patents by inventor, title, or patent number
+          </label>
           <Search className="w-5 h-5 text-ink-400 absolute left-3.5 top-1/2 -translate-y-1/2" />
           <input
-            type="text"
-            placeholder="Search patents by inventor, title, or patent number..."
+            id="patent-catalog-search"
+            type="search"
+            placeholder="e.g. Wright, US 821,393, magnetron"
             value={searchQuery}
             onChange={(e) => onSearchChange(e.target.value)}
             className="w-full pl-11 pr-4 py-3 bg-parchment-50 dark:bg-ink-950 border border-parchment-300 dark:border-ink-700 rounded-xl text-sm sm:text-base font-sans text-ink-950 dark:text-parchment-100 placeholder:text-ink-400 focus:outline-none focus:ring-2 focus:ring-amber-600 dark:focus:ring-amber-400 transition-colors shadow-inner"

@@ -6,7 +6,7 @@ import { useRef, useState } from "react";
 export function EngelbartMouseSim() {
   const [posX, setPosX] = useState<number>(180);
   const [posY, setPosY] = useState<number>(140);
-  const [isDragging, setIsDragging] = useState<boolean>(false);
+  const isDraggingRef = useRef(false);
   const [pulseCountX, setPulseCountX] = useState<number>(0);
   const [pulseCountY, setPulseCountY] = useState<number>(0);
   const [wheelDiameterMm, setWheelDiameterMm] = useState<number>(25);
@@ -20,15 +20,15 @@ export function EngelbartMouseSim() {
   const resolutionMmPerPulse = wheelCircumferenceMm / pulsesPerRev;
 
   const handlePointerDown = () => {
-    setIsDragging(true);
+    isDraggingRef.current = true;
   };
 
   const handlePointerUp = () => {
-    setIsDragging(false);
+    isDraggingRef.current = false;
   };
 
   const handlePointerMove = (e: React.PointerEvent<SVGSVGElement>) => {
-    if (!isDragging || !containerRef.current) return;
+    if (!isDraggingRef.current || !containerRef.current) return;
     const rect = containerRef.current.getBoundingClientRect();
     const svgX = Math.max(30, Math.min(370, ((e.clientX - rect.left) / rect.width) * 400));
     const svgY = Math.max(30, Math.min(270, ((e.clientY - rect.top) / rect.height) * 300));

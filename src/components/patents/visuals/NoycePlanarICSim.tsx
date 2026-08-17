@@ -3,36 +3,36 @@
 import { Cpu } from "lucide-react";
 import { useState } from "react";
 
+const STEPS = [
+  {
+    step: 0,
+    title: "1. Monolithic P-Type Silicon Substrate",
+    desc: "A single continuous crystalline silicon wafer provides the physical foundation for all transistors.",
+  },
+  {
+    step: 1,
+    title: "2. Thermal Silicon Dioxide (SiO₂) Passivation",
+    desc: "Growing an insulating glass oxide layer prevents surface contamination and electrical short circuits.",
+  },
+  {
+    step: 2,
+    title: "3. Photolithographic Window Etching",
+    desc: "Selective chemical acid etching opens precise microscopic access ports directly into the silicon below.",
+  },
+  {
+    step: 3,
+    title: "4. N-Type Impurity Gas Diffusion",
+    desc: "High-temperature furnace dopant gas diffuses into the silicon to form self-isolated P-N diode junctions.",
+  },
+  {
+    step: 4,
+    title: "5. Vacuum Vapor-Deposited Aluminum Leads (The Breakthrough)",
+    desc: "Noyce's central patent claim: evaporating flat aluminum traces over the oxide eliminates fragile hand-soldered wires.",
+  },
+];
+
 export function NoycePlanarICSim() {
   const [activeLayerStep, setActiveLayerStep] = useState<number>(4); // 0: Substrate, 1: Oxide, 2: Windows, 3: Junctions, 4: Aluminum Leads
-
-  const STEPS = [
-    {
-      step: 0,
-      title: "1. Monolithic P-Type Silicon Substrate",
-      desc: "A single continuous crystalline silicon wafer provides the physical foundation for all transistors.",
-    },
-    {
-      step: 1,
-      title: "2. Thermal Silicon Dioxide (SiO₂) Passivation",
-      desc: "Growing an insulating glass oxide layer prevents surface contamination and electrical short circuits.",
-    },
-    {
-      step: 2,
-      title: "3. Photolithographic Window Etching",
-      desc: "Selective chemical acid etching opens precise microscopic access ports directly into the silicon below.",
-    },
-    {
-      step: 3,
-      title: "4. N-Type Impurity Gas Diffusion",
-      desc: "High-temperature furnace dopant gas diffuses into the silicon to form self-isolated P-N diode junctions.",
-    },
-    {
-      step: 4,
-      title: "5. Vacuum Vapor-Deposited Aluminum Leads (The Breakthrough)",
-      desc: "Noyce's central patent claim: evaporating flat aluminum traces over the oxide eliminates fragile hand-soldered wires.",
-    },
-  ];
 
   return (
     <div className="rounded-2xl border border-amber-900/20 dark:border-ink-800 bg-parchment-50 dark:bg-ink-950 p-6 shadow-patent space-y-6">

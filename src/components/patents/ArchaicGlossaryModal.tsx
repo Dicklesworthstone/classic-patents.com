@@ -205,10 +205,14 @@ export function ArchaicGlossaryModal({ isOpen, onClose, patent }: ArchaicGlossar
           {activeTab === "glossary" && (
             <div className="space-y-4">
               <div className="relative">
+                <label htmlFor="archaic-glossary-search" className="sr-only">
+                  Search archaic legal terms or modern engineering equivalents
+                </label>
                 <Search className="w-4 h-4 text-ink-400 absolute left-3 top-1/2 -translate-y-1/2" />
                 <input
-                  type="text"
-                  placeholder="Search archaic legal terms or modern engineering equivalents..."
+                  id="archaic-glossary-search"
+                  type="search"
+                  placeholder="e.g. means, said, Letters Patent"
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
                   className="w-full pl-9 pr-4 py-2 bg-parchment-100 dark:bg-ink-900 border border-parchment-300 dark:border-ink-700 rounded-lg text-xs font-mono text-ink-900 dark:text-parchment-100 placeholder:text-ink-400 focus:outline-none focus:ring-1 focus:ring-amber-600"
@@ -216,9 +220,9 @@ export function ArchaicGlossaryModal({ isOpen, onClose, patent }: ArchaicGlossar
               </div>
 
               <div className="space-y-3">
-                {filteredGlossary.map((g, idx) => (
+                {filteredGlossary.map((g) => (
                   <div
-                    key={idx}
+                    key={g.term}
                     className="p-4 rounded-xl bg-parchment-100/60 dark:bg-ink-900/60 border border-parchment-200 dark:border-ink-800 space-y-2 text-xs"
                   >
                     <div className="flex items-baseline justify-between gap-2">

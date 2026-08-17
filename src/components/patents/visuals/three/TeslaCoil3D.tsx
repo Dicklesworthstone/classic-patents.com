@@ -278,7 +278,6 @@ export function TeslaCoil3D() {
       geo.setAttribute("position", new THREE.BufferAttribute(pos, 3));
       const mat = new THREE.LineBasicMaterial({
         color: 0x38bdf8,
-        linewidth: 2,
         transparent: true,
         opacity: 0.9,
       });

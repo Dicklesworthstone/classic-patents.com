@@ -15,6 +15,7 @@ import { useEffect, useRef, useState } from "react";
 import * as THREE from "three";
 import { HudText } from "@/components/ui/LatexRenderer";
 import { FrankenSimEngine } from "@/physics/engine";
+import { useFrankenSimPhysics } from "@/physics/useFrankenSimPhysics";
 import { soundEngine } from "@/utils/soundEngine";
 import { createGlowPointTexture, createThreeStudioScene } from "./ThreeStudioScene";
 import { useLiveSimParams } from "./useLiveSimParams";
@@ -90,6 +91,24 @@ export function TeslaMotor3D() {
     ((appliedLoadTorqueNm * (rotorSpeedRpm * 2 * Math.PI)) / 60) * 1.15,
   );
   const rotorInducedCurrentAmps = Math.round(emPhysics.currentAmperes);
+
+  useFrankenSimPhysics("tesla-ac-motor", {
+    domain: "electromagnetics_flux",
+    em: {
+      frequencyHz: acFrequencyHz,
+      magneticFluxDensityTesla: 0.8,
+      electricFieldVpm: 0,
+      phaseAngleRad: 0,
+      inductanceHenry: 0.12,
+      capacitanceFarad: 0,
+      currentAmperes: rotorInducedCurrentAmps,
+      voltageVolts: 110,
+      powerFactor: 0.85,
+      efficiencyPct: 78,
+      synchronousRpm: synchronousSpeedRpm,
+      slipFraction: slip,
+    },
+  });
 
   const live = useLiveSimParams({
     acFrequencyHz,

@@ -113,3 +113,32 @@
 ::-webkit-scrollbar-thumb:hover {
   @apply bg-amber-600 dark:bg-amber-500;
 }
+
+/* Museum Broadside Print Stylesheet */
+@media print {
+  body {
+    background: #ffffff;
+    color: #111827;
+    font-size: 11pt;
+    line-height: 1.5;
+  }
+
+  header,
+  footer,
+  nav,
+  button,
+  .print\:hidden {
+    display: none;
+  }
+
+  .shadow-patent,
+  .shadow-patent-lg,
+  .glass-panel {
+    box-shadow: none;
+    border: 1px solid #d1d5db;
+  }
+
+  a[href]:after {
+    content: none;
+  }
+}

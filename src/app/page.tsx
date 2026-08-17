@@ -5,7 +5,12 @@ import Link from "next/link";
 import { useMemo, useState } from "react";
 import { EraFilterBar } from "@/components/layout/EraFilterBar";
 import { PatentCard } from "@/components/patents/PatentCard";
-import { allPatents, getFeaturedPatents, getPatentsByCategory, searchPatents } from "@/data/patents";
+import {
+  allPatents,
+  getFeaturedPatents,
+  getPatentsByCategory,
+  searchPatents,
+} from "@/data/patents";
 import type { Patent } from "@/types/patent";
 
 export default function HomePage() {

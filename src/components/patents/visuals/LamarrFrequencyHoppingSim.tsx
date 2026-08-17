@@ -46,6 +46,7 @@ export function LamarrFrequencyHoppingSim() {
   // Is current carrier jammed?
   const isJammedThisInstant = isEnemyJamming && currentChannel === jammingFrequencyChannel;
   const jammingInterferencePercent = isEnemyJamming ? (1 / 88) * 100 : 0; // Only 1.14% packet loss!
+  const recentHopSet = new Set(historyChannels);
 
   return (
     <div className="rounded-2xl border border-amber-900/20 dark:border-ink-800 bg-parchment-50 dark:bg-ink-950 p-6 shadow-patent space-y-6">
@@ -119,7 +120,7 @@ export function LamarrFrequencyHoppingSim() {
               const xPos = 20 + i * 4.5;
               const isCurrent = channelNum === currentChannel;
               const isJammer = isEnemyJamming && channelNum === jammingFrequencyChannel;
-              const wasRecent = historyChannels.includes(channelNum);
+              const wasRecent = recentHopSet.has(channelNum);
 
               let barHeight = 15;
               let barColor = "#334155";

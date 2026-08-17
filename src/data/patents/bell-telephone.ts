@@ -20,6 +20,10 @@ export const bellTelephonePatent: Patent = {
   originalPdfUrl: "/patents/pdfs/us-174465-bell-telephone.pdf",
   googlePatentsUrl: "https://patents.google.com/patent/US174465A/en",
   usptoClassification: "H04M 1/00 (Telephonic systems; Transmitters)",
+  originalTextAsset: {
+    url: "/patents/transcripts/us-174465-bell-telephone.txt",
+    pageCount: 6,
+  },
   originalText: `UNITED STATES PATENT OFFICE.
 ALEXANDER GRAHAM BELL, OF SALEM, MASSACHUSETTS.
 
@@ -119,6 +123,45 @@ Figure 7 is a diagram showing the telephonic circuit including battery, transmit
         "Undulatory current signaling",
         "Vibratory receiver actuation",
         "Continuous wave telecommunication",
+      ],
+    },
+    {
+      number: 2,
+      isIndependent: true,
+      originalText:
+        "The combination, substantially as set forth, of a permanent magnet or other body capable of inductive action, with a closed circuit, so that the vibration of the one shall occasion electrical undulations in the other, or in itself, and this I claim, whether the permanent magnet be set in vibration in the neighborhood of the conducting-wire forming the circuit, or whether the conducting-wire be set in vibration in the neighborhood of the permanent magnet, or whether the conducting-wire and the permanent magnet both simultaneously be set in vibration in each other's neighborhood.",
+      plainEnglish:
+        "Claims a vibrating magnet or other inductive body coupled to a closed circuit so its motion creates electrical undulations.",
+      keyInnovations: [
+        "Magnetically induced signal",
+        "Closed-circuit transducer",
+        "Vibration-to-current conversion",
+      ],
+    },
+    {
+      number: 3,
+      isIndependent: true,
+      originalText:
+        "The method of producing undulations in a continuous voltaic current by the vibration or motion of bodies capable of inductive action, or by the vibration or motion of the conducting-wire itself, in the neighborhood of such bodies, as set forth.",
+      plainEnglish:
+        "Claims producing an analog electrical wave by moving an inductive object or conductor near the other.",
+      keyInnovations: [
+        "Continuous voltaic current",
+        "Inductive modulation",
+        "Analog waveform generation",
+      ],
+    },
+    {
+      number: 4,
+      isIndependent: true,
+      originalText:
+        "The method of producing undulations in a continuous voltaic circuit by gradually increasing and diminishing the resistance of the circuit, or by gradually increasing and diminishing the power of the battery, as set forth.",
+      plainEnglish:
+        "Claims smooth resistance or battery-power modulation rather than abrupt make-and-break signaling.",
+      keyInnovations: [
+        "Variable circuit resistance",
+        "Continuous modulation",
+        "Closed-circuit signaling",
       ],
     },
     {

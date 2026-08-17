@@ -30,8 +30,8 @@ export function HistoricalContextPanel({ context }: HistoricalContextPanelProps)
             </h3>
           </div>
           <ul className="space-y-2.5 text-sm sm:text-base font-sans text-ink-800 dark:text-ink-200">
-            {context.priorArtLimitations.map((lim, idx) => (
-              <li key={idx} className="flex items-start gap-2.5">
+            {context.priorArtLimitations.map((lim) => (
+              <li key={lim} className="flex items-start gap-2.5">
                 <span className="text-red-500 font-bold mt-1 text-base">•</span>
                 <span className="leading-relaxed">{lim}</span>
               </li>
@@ -61,9 +61,9 @@ export function HistoricalContextPanel({ context }: HistoricalContextPanelProps)
         </div>
 
         <div className="space-y-5">
-          {context.patentWars.map((war, idx) => (
+          {context.patentWars.map((war) => (
             <div
-              key={idx}
+              key={war.rivalName}
               className="rounded-2xl border border-parchment-300 dark:border-ink-800 bg-parchment-50/90 dark:bg-ink-950 p-6 sm:p-7 shadow-patent space-y-4"
             >
               <div className="flex flex-wrap items-center justify-between gap-2 border-b border-parchment-200 dark:border-ink-800 pb-3.5">
@@ -147,8 +147,8 @@ export function HistoricalContextPanel({ context }: HistoricalContextPanelProps)
             Further Context
           </div>
           <ul className="space-y-3 text-sm sm:text-base font-sans text-ink-800 dark:text-ink-200">
-            {context.sideNotes.map((note, idx) => (
-              <li key={idx} className="leading-relaxed">
+            {context.sideNotes.map((note) => (
+              <li key={note} className="leading-relaxed">
                 {note}
               </li>
             ))}

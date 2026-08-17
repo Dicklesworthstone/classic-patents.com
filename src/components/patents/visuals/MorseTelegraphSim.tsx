@@ -279,11 +279,11 @@ export function MorseTelegraphSim() {
               Morse Code Bitstream (Dots &amp; Dashes)
             </span>
             <div className="font-mono text-sm tracking-widest text-amber-300 font-bold overflow-x-auto whitespace-nowrap px-2">
-              {encodedSymbols.split("").map((sym, idx) => (
+              {encodedSymbols.split("").map((sym, position) => (
                 <span
-                  key={idx}
+                  key={`morse-${position}-${sym}`}
                   className={`inline-block px-0.5 transition-colors ${
-                    activeSymbolIndex === idx
+                    activeSymbolIndex === position
                       ? "text-emerald-400 scale-125 font-black bg-emerald-950 rounded"
                       : ""
                   }`}

@@ -272,7 +272,6 @@ export function MarconiRadio3D() {
     // Central Spark Discharge Arc Line
     const sparkArcMat = new THREE.LineBasicMaterial({
       color: 0x38bdf8,
-      linewidth: 3,
     });
     const sparkArcGeo = new THREE.BufferGeometry();
     const arcPositions = new Float32Array(15 * 3);

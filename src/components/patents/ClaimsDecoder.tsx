@@ -48,9 +48,10 @@ export function ClaimsDecoder({ claims }: ClaimsDecoderProps) {
       </div>
 
       {/* Selected Claim Deep Dive Card */}
-      {claims
-        .filter((c) => c.number === activeClaimNum)
-        .map((claim) => (
+      {(() => {
+        const claim = claims.find((c) => c.number === activeClaimNum);
+        if (!claim) return null;
+        return (
           <div
             key={claim.number}
             className="rounded-2xl border border-parchment-300 dark:border-ink-800 bg-parchment-50/90 dark:bg-ink-950 p-6 sm:p-8 shadow-patent space-y-6"
@@ -104,9 +105,9 @@ export function ClaimsDecoder({ claims }: ClaimsDecoderProps) {
                   Key Protected Innovations:
                 </span>
                 <div className="flex flex-wrap gap-2">
-                  {claim.keyInnovations.map((item, idx) => (
+                  {claim.keyInnovations.map((item) => (
                     <span
-                      key={idx}
+                      key={`${claim.number}-${item}`}
                       className="px-2.5 py-1 rounded-md bg-amber-100 dark:bg-amber-950 text-amber-900 dark:text-amber-200 border border-amber-300 dark:border-amber-800 text-xs sm:text-sm font-semibold"
                     >
                       {item}
@@ -127,7 +128,8 @@ export function ClaimsDecoder({ claims }: ClaimsDecoderProps) {
               ) : null}
             </div>
           </div>
-        ))}
+        );
+      })()}
     </div>
   );
 }

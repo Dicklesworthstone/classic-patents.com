@@ -17,13 +17,11 @@
   },
   "dependencies": {
     "@types/three": "^0.185.4",
-    "clsx": "^2.1.1",
     "katex": "^0.18.4",
     "lucide-react": "^0.475.0",
     "next": "^15.2.0",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
-    "tailwind-merge": "^3.0.1",
     "three": "^0.185.1",
     "zod": "^4.4.3"
   },
