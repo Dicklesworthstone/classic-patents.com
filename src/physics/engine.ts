@@ -5,6 +5,8 @@
  * semiconductor carrier transport, thermal absorption cycles, and point kinetics.
  */
 
+import { stepCcdWells, stepEngelbartResolver, stepHoweLockstitch } from "./machineKernels";
+import { teslaBAt, teslaFig4Strobe } from "./teslaKernel";
 import type {
   AerodynamicsState,
   ContinuumState,
@@ -70,6 +72,12 @@ export const FrankenSimEngine = {
   /**
    * Tesla Polyphase Induction Motor (US 381,968)
    */
+  teslaBAt,
+  teslaFig4Strobe,
+  stepCcdWells,
+  stepHoweLockstitch,
+  stepEngelbartResolver,
+
   stepTeslaMotor(
     freqHz: number,
     poles: number,
@@ -455,6 +463,434 @@ export const FrankenSimEngine = {
       spreadSpectrumBandwidthMhz,
       processingGainDb,
       antiJammingMarginDb,
+    };
+  },
+
+  /**
+   * Samuel Colt Revolving Gun (US 138)
+   * Single-Action Pawl-Ratchet Indexing & Hoop Stress Mechanics
+   */
+  stepColtRevolver(params: { chamberPressureMpa?: number; cockingAngleDeg?: number }) {
+    const pMpa = params.chamberPressureMpa ?? 85;
+    const cockDeg = params.cockingAngleDeg ?? 45;
+    const rInnerMm = 5.5; // .36 caliber chamber radius
+    const tWallMm = 3.8;
+    const hoopStressMpa = Number(((pMpa * rInnerMm) / tWallMm).toFixed(1));
+    const indexAngleDeg = Number(((cockDeg / 45) * 60).toFixed(1));
+    const isLocked = cockDeg >= 44;
+    const muzzleVelocityMps = Math.round(180 + Math.sqrt(pMpa) * 12.5);
+
+    return {
+      chamberPressureMpa: pMpa,
+      cockingAngleDeg: cockDeg,
+      hoopStressMpa,
+      indexAngleDeg,
+      isLocked,
+      muzzleVelocityMps,
+    };
+  },
+
+  /**
+   * Elisha Otis Safety Elevator (US 31,128)
+   * Fail-Safe Spring Deceleration & Guide-Rail Ratchet Catch Dynamics
+   */
+  stepOtisElevator(params: {
+    cabPayloadKg?: number;
+    cableTensionPct?: number; // 100% normal, 0% snapped
+  }) {
+    const massKg = 400 + (params.cabPayloadKg ?? 650);
+    const tensionPct = params.cableTensionPct ?? 100;
+    const isSnapped = tensionPct < 15;
+    const springDeflectionCm = Number(((tensionPct / 100) * 10).toFixed(1));
+    const isPawlEngaged = isSnapped;
+    const stoppingDistanceCm = isSnapped ? 4.5 : 0;
+    const peakArrestForceKn = isSnapped ? Number(((massKg * 9.81 * 1.8) / 1000).toFixed(1)) : 0;
+
+    return {
+      cabPayloadKg: params.cabPayloadKg ?? 650,
+      cableTensionPct: tensionPct,
+      isSnapped,
+      springDeflectionCm,
+      isPawlEngaged,
+      stoppingDistanceCm,
+      peakArrestForceKn,
+    };
+  },
+
+  /**
+   * George Westinghouse Automatic Air Brake (US 124,404)
+   * Differential Triple-Valve Pneumatics & Foundation Brake Clamping
+   */
+  stepWestinghouseAirBrake(params: {
+    trainPipePressurePsi?: number; // 0 to 70 psi
+    carMassTonnes?: number; // 20 to 60 tonnes
+  }) {
+    const pipePsi = params.trainPipePressurePsi ?? 70;
+    const carMass = params.carMassTonnes ?? 35;
+    const auxPsi = 70; // charged reservoir pressure
+    const isEmergency = pipePsi < 10;
+    const isService = pipePsi < 60 && !isEmergency;
+    const isRelease = pipePsi >= 65;
+
+    // Cylinder pressure equalizes from aux reservoir as pipe pressure drops
+    const cylPsi = Math.max(0, Math.min(55, Math.round((70 - pipePsi) * 1.1)));
+    const cylAreaSqIn = 78.5; // 10-inch cylinder
+    const pistonThrustLbf = cylPsi * cylAreaSqIn;
+    const shoeClampingForceKn = Number(((pistonThrustLbf * 5 * 4.44822) / 1000).toFixed(1));
+    const stoppingDistanceM =
+      cylPsi > 10 ? Math.round((500 * (carMass / 35)) / (cylPsi / 50)) : 1200;
+
+    return {
+      trainPipePressurePsi: pipePsi,
+      auxReservoirPressurePsi: auxPsi,
+      brakeCylinderPressurePsi: cylPsi,
+      shoeClampingForceKn,
+      stoppingDistanceM,
+      valveState: isEmergency ? "EMERGENCY" : isService ? "SERVICE" : "RELEASE",
+    };
+  },
+
+  /**
+   * Ottmar Mergenthaler Linotype Machine (US 313,224)
+   * Binary Matrix Keyway Sorting & Spaceband Justification
+   */
+  stepMergenthalerLinotype(params: {
+    matrixRatePerMin?: number;
+    spacebandWedgeMm?: number;
+    castingPressureBar?: number;
+    potTempC?: number;
+  }) {
+    const rate = params.matrixRatePerMin ?? 60;
+    const wedge = params.spacebandWedgeMm ?? 6.5;
+    const press = params.castingPressureBar ?? 30;
+    const temp = params.potTempC ?? 260;
+    const isEutecticTemp = temp >= 240 && temp <= 275;
+    const justificationWidthMm = Number((85 + wedge * 4.2).toFixed(1));
+    const solidificationTimeMs = Math.round(450 * (temp / 260) * (25 / press));
+    const brinellHardness = isEutecticTemp ? 24 : Math.round(16 + (temp / 260) * 5);
+    const distributorFreqHz = Number((rate / 60).toFixed(2));
+
+    return {
+      justificationWidthMm,
+      solidificationTimeMs,
+      brinellHardness,
+      distributorFreqHz,
+      isEutecticTemp,
+    };
+  },
+
+  /**
+   * Hiram Maxim Automatic Machine Gun (US 319,596)
+   * Short-Recoil Conservation of Momentum & Toggle-Lock Dynamics
+   */
+  stepMaximMachineGun(params: {
+    firingRateRpm?: number;
+    waterJacketLiters?: number;
+    recoilStrokeMm?: number;
+  }) {
+    const rpm = params.firingRateRpm ?? 600;
+    const water = params.waterJacketLiters ?? 4.0;
+    const stroke = params.recoilStrokeMm ?? 19;
+    const bulletMassKg = 0.014;
+    const bulletVelMps = 740;
+    const recoilMassKg = 3.2;
+    const recoilVelocityMps = Number(((bulletMassKg * bulletVelMps) / recoilMassKg).toFixed(2));
+    const recoilMomentumNs = Number((recoilMassKg * recoilVelocityMps).toFixed(2));
+    const toggleUnlockForceN = Math.round(180 * (19 / Math.max(5, stroke)));
+    const heatGeneratedWatts = Math.round((rpm / 60) * 45 * 1000 * 0.28);
+    const waterEvapRateGs = Number(((heatGeneratedWatts / 2260) * (water > 0 ? 1 : 0)).toFixed(2));
+    const barrelTempC = water > 0.5 ? 100 : Math.min(450, Math.round(100 + (rpm / 600) * 280));
+
+    return {
+      recoilVelocityMps,
+      recoilMomentumNs,
+      toggleUnlockForceN,
+      waterEvapRateGs,
+      barrelTempC,
+    };
+  },
+
+  /**
+   * Gottlieb Daimler High-Speed Motor Carriage (US 361,931)
+   * High-RPM ICE Powertrain & Bevel Gear Differential
+   */
+  stepDaimlerEngine(params: {
+    engineRpm?: number;
+    hotTubeTempC?: number;
+    differentialSlipAngleDeg?: number;
+  }) {
+    const rpm = params.engineRpm ?? 750;
+    const tubeTemp = params.hotTubeTempC ?? 850;
+    const slipDeg = params.differentialSlipAngleDeg ?? 15;
+    const bmepBar = tubeTemp >= 800 ? 4.5 : Number((4.5 * (tubeTemp / 800)).toFixed(2));
+    const brakeHorsepower = Number(((bmepBar * 100 * 0.000462 * rpm) / (120 * 0.7457)).toFixed(2));
+    const differentialCarrierRpm = Math.round(rpm / 4.5);
+    const speedDeltaRpm = Math.round(
+      differentialCarrierRpm * Math.sin((slipDeg * Math.PI) / 180) * 0.4,
+    );
+    const outerWheelRpm = differentialCarrierRpm + speedDeltaRpm;
+    const innerWheelRpm = differentialCarrierRpm - speedDeltaRpm;
+
+    return {
+      bmepBar,
+      brakeHorsepower,
+      differentialCarrierRpm,
+      outerWheelRpm,
+      innerWheelRpm,
+    };
+  },
+
+  /**
+   * George Eastman Kodak Box Camera (US 388,850)
+   * Hyperfocal Fixed-Focus Optics & Rotary Barrel Shutter
+   */
+  stepEastmanKodak(params: {
+    shutterSpeedSec?: number;
+    apertureFNumber?: number;
+    subjectDistanceM?: number;
+  }) {
+    const t = params.shutterSpeedSec ?? 0.05;
+    const n = params.apertureFNumber ?? 9;
+    const dist = params.subjectDistanceM ?? 3.0;
+    const f = 0.057; // 57mm focal length
+    const c = 0.00003; // 30 micron circle of confusion
+    const hyperfocalM = Number((f ** 2 / (n * c) + f).toFixed(2));
+    const dofNearM = Number(((hyperfocalM * dist) / (hyperfocalM + dist)).toFixed(2));
+    const dofFarM =
+      dist > hyperfocalM ? 999 : Number(((hyperfocalM * dist) / (hyperfocalM - dist)).toFixed(2));
+    const ev = Number(Math.log2(n ** 2 / t).toFixed(2));
+
+    return {
+      hyperfocalM,
+      dofNearM,
+      dofFarM,
+      exposureValueEv: ev,
+      isInFocus: dist >= dofNearM && (dofFarM === 999 || dist <= dofFarM),
+    };
+  },
+
+  /**
+   * Herman Hollerith Punched Card Tabulator (US 395,781)
+   * Mercury Contact Relays & Solenoid Counter Matrices
+   */
+  stepHollerithTabulating(params: {
+    cardsPerMin?: number;
+    supplyVoltageV?: number;
+    activeRelays?: number;
+  }) {
+    const cpm = params.cardsPerMin ?? 60;
+    const v = params.supplyVoltageV ?? 12;
+    const relays = params.activeRelays ?? 8;
+    const cycleTimeMs = Math.round(60000 / cpm);
+    const solenoidForceN = Number(
+      (((relays * (v / 12) * 45) ** 2 * 1.256e-6 * 0.0004) / (2 * 0.002 ** 2)).toFixed(2),
+    );
+    const inductiveTauMs = Number(((0.08 / (v / 2.4)) * 1000).toFixed(1));
+    const contactResistanceOhms = 0.08;
+
+    return {
+      cycleTimeMs,
+      solenoidForceN,
+      inductiveTauMs,
+      contactResistanceOhms,
+    };
+  },
+
+  /**
+   * Jesse Reno Inclined Elevator / Escalator (US 470,918)
+   * Continuous Moving Slats & Comb-Plate Safety Extraction
+   */
+  stepRenoEscalator(params: {
+    passengerCount?: number;
+    inclineAngleDeg?: number;
+    velocityMps?: number;
+  }) {
+    const passengers = params.passengerCount ?? 30;
+    const angleDeg = params.inclineAngleDeg ?? 25;
+    const v = params.velocityMps ?? 0.45;
+    const angleRad = (angleDeg * Math.PI) / 180;
+    const throughputPerHour = Math.round((v * 2 * 3600) / 0.5);
+    const avgPassWeightN = 700;
+    const gravityLoadN = passengers * avgPassWeightN * Math.sin(angleRad);
+    const frictionLoadN = passengers * avgPassWeightN * Math.cos(angleRad) * 0.03 + 800;
+    const motorTorqueNm = Math.round(((gravityLoadN + frictionLoadN) * 0.35) / 0.88);
+    const motorPowerKw = Number(((motorTorqueNm * (v / 0.35)) / 1000).toFixed(2));
+
+    return {
+      throughputPerHour,
+      motorTorqueNm,
+      motorPowerKw,
+      combPlateClearanceMm: 1.2,
+    };
+  },
+
+  /**
+   * Rudolf Diesel Compression-Ignition Engine (US 542,846)
+   * Extreme Adiabatic Compression & Constant-Pressure Combustion
+   */
+  stepDieselEngine(params: {
+    compressionRatio?: number;
+    blastAirPressureBar?: number;
+    cutoffRatio?: number;
+  }) {
+    const r = params.compressionRatio ?? 18;
+    const pBlast = params.blastAirPressureBar ?? 65;
+    const rc = params.cutoffRatio ?? 1.6;
+    const gamma = 1.4;
+    const tIntakeK = 300;
+    const tCompressionK = Math.round(tIntakeK * r ** (gamma - 1));
+    const tCompressionC = tCompressionK - 273;
+    const pCompBar = Number((1.0 * r ** gamma).toFixed(1));
+    const idealEfficiencyPct = Number(
+      ((1 - (1 / r ** (gamma - 1)) * ((rc ** gamma - 1) / (gamma * (rc - 1)))) * 100).toFixed(1),
+    );
+    const brakeEfficiencyPct = Number((idealEfficiencyPct * 0.68).toFixed(1));
+    const isAutoIgnition = tCompressionC > 210 && pBlast > pCompBar;
+
+    return {
+      tCompressionC,
+      pCompBar,
+      idealEfficiencyPct,
+      brakeEfficiencyPct,
+      isAutoIgnition,
+    };
+  },
+
+  /**
+   * Nikola Tesla Teleautomaton Radio-Controlled Boat (US 613,809)
+   * Tuned RF Resonant Tank & Rotary Logic State Machine
+   */
+  stepTeslaTeleautomaton(params: {
+    transmitterFreqKhz?: number;
+    cohererTapped?: boolean;
+    rudderAngleDeg?: number;
+  }) {
+    const fKhz = params.transmitterFreqKhz ?? 150;
+    const isTapped = params.cohererTapped ?? false;
+    const rudderDeg = params.rudderAngleDeg ?? 0;
+    const targetFreqKhz = 150;
+    const isResonant = Math.abs(fKhz - targetFreqKhz) <= 5;
+    const cohererOhms = isResonant && !isTapped ? 45 : 100000;
+    const relayEnergized = cohererOhms < 1000;
+    const motorThrustN = relayEnergized ? 85 : 0;
+    const turningRadiusM =
+      Math.abs(rudderDeg) > 0
+        ? Number((12.5 / Math.sin((Math.abs(rudderDeg) * Math.PI) / 180)).toFixed(1))
+        : 999;
+
+    return {
+      isResonant,
+      cohererOhms,
+      relayEnergized,
+      motorThrustN,
+      turningRadiusM,
+    };
+  },
+
+  /**
+   * Ferdinand von Zeppelin Rigid Airship (US 621,195)
+   * Archimedes Multi-Cell Hydrogen Buoyancy & Space-Frame Stress
+   */
+  stepZeppelinAirship(params: {
+    gasInflationPct?: number;
+    altitudeM?: number;
+    forwardSpeedKmh?: number;
+    trimWeightPosM?: number;
+  }) {
+    const inflation = params.gasInflationPct ?? 95;
+    const alt = params.altitudeM ?? 300;
+    const speedKmh = params.forwardSpeedKmh ?? 30;
+    const trimM = params.trimWeightPosM ?? 0;
+    const rhoAir = 1.225 * Math.exp(-alt / 8400);
+    const rhoH2 = 0.089 * Math.exp(-alt / 8400);
+    const totalVolumeM3 = 11300 * (inflation / 100);
+    const grossBuoyancyKn = Number(((totalVolumeM3 * 9.81 * (rhoAir - rhoH2)) / 1000).toFixed(1));
+    const structuralWeightKn = 98.0;
+    const netLiftKn = Number((grossBuoyancyKn - structuralWeightKn).toFixed(1));
+    const pitchTrimDeg = Number(((trimM * 300 * 9.81) / 15000).toFixed(1));
+    const parasiteDragKn = Number(
+      ((0.5 * rhoAir * (speedKmh / 3.6) ** 2 * 85 * 0.025) / 1000).toFixed(2),
+    );
+
+    return {
+      grossBuoyancyKn,
+      netLiftKn,
+      pitchTrimDeg,
+      parasiteDragKn,
+      ambientAirDensityKgM3: Number(rhoAir.toFixed(3)),
+    };
+  },
+
+  /**
+   * Carl Linde Air Liquefaction (US 727,650)
+   * Joule-Thomson Cryogenic Throttling & Counter-Current Recovery
+   */
+  stepLindeAirLiquefaction(params: {
+    compressorPressureBar?: number;
+    heatExchangerPasses?: number;
+    throttleOrificeMm?: number;
+  }) {
+    const pComp = params.compressorPressureBar ?? 200;
+    const passes = params.heatExchangerPasses ?? 45;
+    const jtDeltaTPerPass = 0.215 * (pComp - 20);
+    const coldEndTempK = Math.max(78, Math.round(293 - (passes / 50) * 215));
+    const coldEndTempC = coldEndTempK - 273;
+    const isLiquefying = coldEndTempK <= 80;
+    const liquidYieldPct = isLiquefying
+      ? Number((((80 - (coldEndTempK - 78)) / 80) * 8.5).toFixed(1))
+      : 0;
+    const liquidOutputLitersPerHr = Number(((pComp / 200) * liquidYieldPct * 0.45).toFixed(2));
+
+    return {
+      coldEndTempK,
+      coldEndTempC,
+      jtDeltaTPerPass: Number(jtDeltaTPerPass.toFixed(1)),
+      isLiquefying,
+      liquidYieldPct,
+      liquidOutputLitersPerHr,
+    };
+  },
+
+  /**
+   * Willis Carrier Psychrometric Air Conditioner (US 808,897)
+   * Chilled Spray Dew-Point Dehumidification & Moist Air Enthalpy
+   */
+  stepCarrierAirConditioner(params: {
+    inletTempC?: number;
+    inletRhPct?: number;
+    sprayWaterTempC?: number;
+    reheatTempC?: number;
+  }) {
+    const tIn = params.inletTempC ?? 35;
+    const rhIn = params.inletRhPct ?? 75;
+    const tSpray = params.sprayWaterTempC ?? 8;
+    const tReheat = params.reheatTempC ?? 22;
+    // Psychrometric dew point approximation
+    const a = 17.27;
+    const b = 237.7;
+    const alpha = (a * tIn) / (b + tIn) + Math.log(rhIn / 100);
+    const dewPointInC = Number(((b * alpha) / (a - alpha)).toFixed(1));
+    const isDehumidifying = tSpray < dewPointInC;
+    const moistureRemovedGPerKg = isDehumidifying
+      ? Number(((dewPointInC - tSpray) * 1.15).toFixed(1))
+      : 0;
+    const finalRhPct = Math.round(
+      Math.min(
+        100,
+        Math.max(
+          20,
+          (100 * Math.exp((17.27 * tSpray) / (237.7 + tSpray))) /
+            Math.exp((17.27 * tReheat) / (237.7 + tReheat)),
+        ),
+      ),
+    );
+
+    return {
+      dewPointInC,
+      isDehumidifying,
+      moistureRemovedGPerKg,
+      finalAirTempC: tReheat,
+      finalRhPct,
     };
   },
 

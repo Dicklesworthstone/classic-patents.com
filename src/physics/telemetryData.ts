@@ -6,6 +6,8 @@
  * interactive parameter controllers, and 60-FPS computed telemetry states for every classic patent.
  */
 
+import { readWrightControls, stepWrightFlyerSi } from "./wrightKernel";
+
 export interface PhysicsControl {
   id: string;
   label: string;
@@ -50,7 +52,7 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
         min: 15,
         max: 45,
         step: 0.5,
-        defaultValue: 31.5,
+        defaultValue: 28,
         unit: "mph",
       },
       {
@@ -59,60 +61,67 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
         min: -15,
         max: 15,
         step: 0.5,
-        defaultValue: 4.0,
+        defaultValue: 8,
         unit: "°",
       },
       {
         id: "rudder",
         label: "Rudder Deflection",
-        min: -20,
-        max: 20,
+        min: -25,
+        max: 25,
         step: 0.5,
-        defaultValue: -2.0,
+        defaultValue: 4,
         unit: "°",
+      },
+      {
+        id: "elevator",
+        label: "Canard Elevator",
+        min: -15,
+        max: 15,
+        step: 0.5,
+        defaultValue: 5,
+        unit: "°",
+      },
+      {
+        id: "coupled",
+        label: "Claim 1 hip-cradle coupling",
+        min: 0,
+        max: 1,
+        step: 1,
+        defaultValue: 1,
+        unit: "",
       },
     ],
     computeMetrics: (p) => {
-      const vMps = (p.airspeed ?? 31.5) * 0.44704;
-      const warp = p.wingWarp ?? 4.0;
-      const rudder = p.rudder ?? -2.0;
-
-      const baseLift = 0.5 * 1.225 * vMps ** 2 * 47.4 * 0.45;
-      const deltaLift = warp * 18.5;
-      const liftN = Math.max(0, baseLift + deltaLift);
-      const indDrag = liftN ** 2 / (Math.PI * 6.4 * 0.85 * 0.5 * 1.225 * vMps ** 2 * 47.4 + 1e-4);
-      const totalDrag = indDrag + 0.5 * 1.225 * vMps ** 2 * 4.2;
-      const ldRatio = totalDrag > 0 ? liftN / totalDrag : 0;
-      const netYaw = warp * 0.08 + rudder * 0.12;
-
+      const si = stepWrightFlyerSi(readWrightControls(p));
       return [
         {
           label: "Gross Lift",
-          value: Math.round(liftN).toLocaleString(),
+          value: Math.round(si.liftNewtons).toLocaleString(),
           unit: "N",
           badgeColor: "emerald",
-          progressPct: Math.min(100, (liftN / 2500) * 100),
+          progressPct: Math.min(100, (si.liftNewtons / 2500) * 100),
         },
         {
           label: "Induced Drag",
-          value: indDrag.toFixed(1),
+          value: si.inducedDragNewtons.toFixed(1),
           unit: "N",
           badgeColor: "amber",
-          progressPct: Math.min(100, (indDrag / 150) * 100),
+          progressPct: Math.min(100, (si.inducedDragNewtons / 150) * 100),
         },
         {
           label: "Lift-to-Drag (L/D)",
-          value: ldRatio.toFixed(2),
+          value: si.liftToDrag.toFixed(2),
           unit: "ratio",
           badgeColor: "indigo",
-          progressPct: Math.min(100, (ldRatio / 10) * 100),
+          progressPct: Math.min(100, (si.liftToDrag / 10) * 100),
         },
         {
-          label: "Net Yaw Stability",
-          value: netYaw >= 0 ? `+${netYaw.toFixed(2)}` : netYaw.toFixed(2),
+          label: "Net Yaw",
+          value: si.netYawNm >= 0 ? `+${si.netYawNm.toFixed(1)}` : si.netYawNm.toFixed(1),
           unit: "N·m",
-          badgeColor: Math.abs(netYaw) < 0.5 ? "cyan" : "rose",
-          progressPct: Math.max(0, 100 - Math.abs(netYaw) * 40),
+          badgeColor: si.adverseYawDominant ? "rose" : "cyan",
+          progressPct: Math.max(0, 100 - Math.abs(si.netYawNm) * 4),
         },
       ];
     },
@@ -1556,5 +1565,1111 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
     },
     pedagogicalInsight:
       "Air-core primary and secondary coils tuned to identical LC natural resonant frequencies transfer energy inductively over multiple cycles, building up electrostatic voltage until the air dielectric ionizes.",
+  },
+  "us-138-colt-revolver": {
+    domain: "continuum_elasticity",
+    domainTitle: "Pawl-Ratchet Angular Discretization & Internal Ballistic Hoop Stress",
+    equationName: "Hoop Stress Limit & 60° Cylinder Indexing",
+    governingEquation:
+      "\\sigma_{\\text{hoop}} = \\frac{P_{\\text{combustion}} \\cdot r}{t} \\quad \\text{and} \\quad \\Delta \\theta = \\frac{360^\\circ}{N_{\\text{chambers}}} = 60^\\circ",
+    engineMethod: "FrankenSimEngine.stepColtRevolver",
+    controls: [
+      {
+        id: "chamberPressure",
+        label: "Black Powder Combustion Peak Pressure",
+        min: 40,
+        max: 140,
+        step: 5,
+        defaultValue: 85,
+        unit: "MPa",
+      },
+      {
+        id: "cockingAngle",
+        label: "Hammer Cocking Arc Angle",
+        min: 0,
+        max: 45,
+        step: 1,
+        defaultValue: 45,
+        unit: "deg",
+      },
+    ],
+    computeMetrics: (p) => {
+      const pMpa = p.chamberPressure ?? 85;
+      const cockDeg = p.cockingAngle ?? 45;
+      const rInnerMm = 5.5;
+      const tWallMm = 3.8;
+      const hoopStressMpa = ((pMpa * rInnerMm) / tWallMm).toFixed(1);
+      const indexAngleDeg = ((cockDeg / 45) * 60).toFixed(1);
+      const isLocked = cockDeg >= 44;
+      const muzzleVelocityMps = Math.round(180 + Math.sqrt(pMpa) * 12.5);
+
+      return [
+        {
+          label: "Cylinder Hoop Stress",
+          value: hoopStressMpa,
+          unit: "MPa",
+          badgeColor: Number(hoopStressMpa) < 180 ? "emerald" : "amber",
+          progressPct: (Number(hoopStressMpa) / 250) * 100,
+        },
+        {
+          label: "Cylinder Index Rotation",
+          value: indexAngleDeg,
+          unit: "deg",
+          badgeColor: "cyan",
+          progressPct: (Number(indexAngleDeg) / 60) * 100,
+        },
+        {
+          label: "Bore Alignment Lock",
+          value: isLocked ? "LOCKED" : "INDEXING",
+          unit: "detent",
+          badgeColor: isLocked ? "emerald" : "purple",
+          progressPct: isLocked ? 100 : (cockDeg / 45) * 100,
+        },
+        {
+          label: "Muzzle Velocity",
+          value: muzzleVelocityMps.toString(),
+          unit: "m/s",
+          badgeColor: "amber",
+          progressPct: (muzzleVelocityMps / 360) * 100,
+        },
+      ];
+    },
+    pedagogicalInsight:
+      "Drawing back the hammer with the thumb lifts the pawl to advance the ratchet 60 degrees, while simultaneously withdrawing and re-engaging the perimeter bolt to lock the next chamber directly into concentric alignment with the rifled barrel.",
+  },
+  "us-31128-otis-elevator": {
+    domain: "continuum_elasticity",
+    domainTitle: "Transverse Leaf Spring Deflection & Ratchet Catch Kinematics",
+    equationName: "Elastic Release Time Constant & Deceleration Impulse",
+    governingEquation:
+      "t_{\\text{snap}} = \\frac{\\pi}{2} \\sqrt{\\frac{m_{\\text{pawl}}}{k_{\\text{spring}}}} \\quad \\text{and} \\quad F_{\\text{arrest}} = m_{\\text{cab}} (g + a_{\\text{stop}})",
+    engineMethod: "FrankenSimEngine.stepOtisElevator",
+    controls: [
+      {
+        id: "cabPayload",
+        label: "Elevator Passenger & Freight Payload",
+        min: 200,
+        max: 1500,
+        step: 50,
+        defaultValue: 650,
+        unit: "kg",
+      },
+      {
+        id: "cableTension",
+        label: "Hoisting Cable Tension",
+        min: 0,
+        max: 100,
+        step: 5,
+        defaultValue: 100,
+        unit: "%",
+      },
+    ],
+    computeMetrics: (p) => {
+      const payload = p.cabPayload ?? 650;
+      const tension = p.cableTension ?? 100;
+      const isSnapped = tension < 15;
+      const grossMassKg = 400 + payload;
+      const deflectionCm = ((tension / 100) * 10).toFixed(1);
+      const snapTimeMs = 38;
+      const arrestForceKn = isSnapped ? ((grossMassKg * 9.81 * 1.8) / 1000).toFixed(1) : "0.0";
+      const stopDistCm = isSnapped ? 4.5 : 0;
+
+      return [
+        {
+          label: "Spring Bow Deflection",
+          value: `${deflectionCm} cm`,
+          unit: "δ",
+          badgeColor: Number(deflectionCm) > 5 ? "emerald" : "amber",
+          progressPct: (Number(deflectionCm) / 10) * 100,
+        },
+        {
+          label: "Brake Release Speed",
+          value: `${snapTimeMs} ms`,
+          unit: "t_snap",
+          badgeColor: "cyan",
+          progressPct: 95,
+        },
+        {
+          label: "Arrest Catch Status",
+          value: isSnapped ? "LOCKED (ARRESTED)" : "RUNNING (FREE)",
+          unit: "state",
+          badgeColor: isSnapped ? "emerald" : "purple",
+          progressPct: isSnapped ? 100 : 0,
+        },
+        {
+          label: "Arrest Dynamic Force",
+          value: arrestForceKn,
+          unit: "kN",
+          badgeColor: isSnapped ? "amber" : "emerald",
+          progressPct: (Number(arrestForceKn) / 30) * 100,
+        },
+        {
+          label: "Arrest Catch Distance",
+          value: `${stopDistCm} cm`,
+          unit: "Δy",
+          badgeColor: isSnapped ? "emerald" : "cyan",
+          progressPct: isSnapped ? 45 : 0,
+        },
+      ];
+    },
+    pedagogicalInsight:
+      "Hoisting cable tension actively holds the safety pawls disengaged by bowing a heavy transverse leaf spring upward. If the cable snaps, the spring instantly straightens flat, firing pawls outward into the vertical guide-rail ratchets within 38 milliseconds.",
+  },
+  "us-313224-mergenthaler-linotype": {
+    domain: "materials_kinetics",
+    domainTitle: "Binary Matrix Keyway Demultiplexing & Eutectic Solidification",
+    equationName: "7-Bit Binary Matrix Address & Solidification Time",
+    governingEquation:
+      "B = \\sum_{i=0}^6 b_i 2^i \\quad \\text{and} \\quad t_{\\text{solid}} = C \\left(\\frac{V}{A}\\right)^2 \\left(T_{\\text{pour}} - T_{\\text{mold}}\\right)",
+    engineMethod: "FrankenSimEngine.stepMergenthalerLinotype",
+    controls: [
+      {
+        id: "matrixRate",
+        label: "Keyboard Typesetting Speed",
+        min: 20,
+        max: 120,
+        step: 5,
+        defaultValue: 60,
+        unit: "char/min",
+      },
+      {
+        id: "spacebandWedge",
+        label: "Spaceband Justification Wedge",
+        min: 2.0,
+        max: 12.0,
+        step: 0.5,
+        defaultValue: 6.5,
+        unit: "mm",
+      },
+      {
+        id: "potTemp",
+        label: "Lead Pot Temperature",
+        min: 220,
+        max: 300,
+        step: 2,
+        defaultValue: 260,
+        unit: "°C",
+      },
+    ],
+    computeMetrics: (p) => {
+      const rate = p.matrixRate ?? 60;
+      const wedge = p.spacebandWedge ?? 6.5;
+      const temp = p.potTemp ?? 260;
+      const justWidth = (85 + wedge * 4.2).toFixed(1);
+      const solidMs = Math.round(450 * (temp / 260));
+      const hardness = temp >= 240 && temp <= 275 ? "24 HB (Optimal)" : "18 HB (Sub-optimal)";
+
+      return [
+        {
+          label: "Justified Line Width",
+          value: `${justWidth} mm`,
+          unit: "width",
+          badgeColor: "emerald",
+          progressPct: (Number(justWidth) / 140) * 100,
+        },
+        {
+          label: "Slug Solidification",
+          value: `${solidMs} ms`,
+          unit: "t_solid",
+          badgeColor: "cyan",
+          progressPct: Math.min(100, (solidMs / 600) * 100),
+        },
+        {
+          label: "Lead-Alloy Hardness",
+          value: hardness,
+          unit: "HB",
+          badgeColor: temp >= 240 && temp <= 275 ? "emerald" : "amber",
+          progressPct: temp >= 240 && temp <= 275 ? 95 : 60,
+        },
+        {
+          label: "Distributor Sorting",
+          value: (rate / 60).toFixed(2),
+          unit: "Hz",
+          badgeColor: "indigo",
+          progressPct: (rate / 120) * 100,
+        },
+      ];
+    },
+    pedagogicalInsight:
+      "Wedge-shaped two-part spacebands expand between words until the composed line locks tightly against fixed column jaws, while a binary keyway rail sorts recirculating brass matrices back into 90 magazine channels.",
+  },
+  "us-319596-maxim-machine-gun": {
+    domain: "continuum_elasticity",
+    domainTitle: "Short-Recoil Momentum Conservation & Toggle-Lock Kinematics",
+    equationName: "Conservation of Linear Recoil Momentum",
+    governingEquation:
+      "m_{\\text{recoil}} v_{\\text{recoil}} = m_{\\text{bullet}} v_{\\text{bullet}} + m_{\\text{gas}} v_{\\text{gas}} \\quad \\text{and} \\quad F_{\\text{breech}} = \\frac{F_{\\text{toggle}}}{\\tan\\theta} \\to \\infty",
+    engineMethod: "FrankenSimEngine.stepMaximMachineGun",
+    controls: [
+      {
+        id: "firingRate",
+        label: "Cyclic Firing Rate",
+        min: 300,
+        max: 750,
+        step: 25,
+        defaultValue: 600,
+        unit: "RPM",
+      },
+      {
+        id: "waterLevel",
+        label: "Water Jacket Fill",
+        min: 0,
+        max: 4.0,
+        step: 0.2,
+        defaultValue: 4.0,
+        unit: "liters",
+      },
+      {
+        id: "recoilStroke",
+        label: "Short-Recoil Stroke",
+        min: 12,
+        max: 25,
+        step: 1,
+        defaultValue: 19,
+        unit: "mm",
+      },
+    ],
+    computeMetrics: (p) => {
+      const rpm = p.firingRate ?? 600;
+      const water = p.waterLevel ?? 4.0;
+      const _stroke = p.recoilStroke ?? 19;
+      const recoilVel = ((0.014 * 740) / 3.2).toFixed(2);
+      const recoilMom = (3.2 * Number(recoilVel)).toFixed(2);
+      const barrelTemp = water > 0.5 ? 100 : Math.min(450, Math.round(100 + (rpm / 600) * 280));
+      const boilRate = water > 0.5 ? (((rpm / 60) * 45 * 0.28) / 2.26).toFixed(1) : "0.0";
+
+      return [
+        {
+          label: "Recoil Velocity",
+          value: `${recoilVel} m/s`,
+          unit: "v_rec",
+          badgeColor: "emerald",
+          progressPct: (Number(recoilVel) / 5) * 100,
+        },
+        {
+          label: "Recoil Momentum",
+          value: `${recoilMom} N·s`,
+          unit: "p_rec",
+          badgeColor: "cyan",
+          progressPct: (Number(recoilMom) / 15) * 100,
+        },
+        {
+          label: "Barrel Temperature",
+          value: `${barrelTemp} °C`,
+          unit: "T_barrel",
+          badgeColor: barrelTemp <= 100 ? "emerald" : "rose",
+          progressPct: (barrelTemp / 450) * 100,
+        },
+        {
+          label: "Steam Vaporization",
+          value: `${boilRate} g/s`,
+          unit: "dm/dt",
+          badgeColor: "purple",
+          progressPct: (Number(boilRate) / 20) * 100,
+        },
+      ];
+    },
+    pedagogicalInsight:
+      "The exploding cartridge drives the barrel and breech block rearward; breaking the collinear toggle linkage unlocks the breech, ejects the casing, indexes a fresh cartridge from the cloth belt, and returns under spring tension.",
+  },
+  "us-361931-daimler-engine": {
+    domain: "thermodynamics_transport",
+    domainTitle: "High-RPM Internal Combustion & Epicyclic Bevel Differential",
+    equationName: "Engine Specific Power & Differential Kinematics",
+    governingEquation:
+      "P = \\frac{\\text{BMEP} \\cdot V_d \\cdot N}{120} \\quad \\text{and} \\quad \\omega_{\\text{left}} + \\omega_{\\text{right}} = 2\\omega_{\\text{carrier}}",
+    engineMethod: "FrankenSimEngine.stepDaimlerEngine",
+    controls: [
+      {
+        id: "engineRpm",
+        label: "Crankshaft Speed",
+        min: 400,
+        max: 950,
+        step: 25,
+        defaultValue: 750,
+        unit: "RPM",
+      },
+      {
+        id: "hotTubeTemp",
+        label: "Hot-Tube Igniter Temp",
+        min: 650,
+        max: 950,
+        step: 10,
+        defaultValue: 850,
+        unit: "°C",
+      },
+      {
+        id: "turnAngle",
+        label: "Steering Wheel Turn Angle",
+        min: 0,
+        max: 35,
+        step: 1,
+        defaultValue: 15,
+        unit: "°",
+      },
+    ],
+    computeMetrics: (p) => {
+      const rpm = p.engineRpm ?? 750;
+      const temp = p.hotTubeTemp ?? 850;
+      const turn = p.turnAngle ?? 15;
+      const bmep = temp >= 800 ? 4.5 : Number((4.5 * (temp / 800)).toFixed(2));
+      const hp = ((bmep * 100 * 0.000462 * rpm) / (120 * 0.7457)).toFixed(2);
+      const carrierRpm = Math.round(rpm / 4.5);
+      const deltaRpm = Math.round(carrierRpm * Math.sin((turn * Math.PI) / 180) * 0.4);
+
+      return [
+        {
+          label: "Brake Horsepower",
+          value: `${hp} hp`,
+          unit: "P_brake",
+          badgeColor: "emerald",
+          progressPct: (Number(hp) / 2.5) * 100,
+        },
+        {
+          label: "BMEP Pressure",
+          value: `${bmep} bar`,
+          unit: "BMEP",
+          badgeColor: "cyan",
+          progressPct: (bmep / 6.0) * 100,
+        },
+        {
+          label: "Outer Wheel Speed",
+          value: `${carrierRpm + deltaRpm} RPM`,
+          unit: "ω_outer",
+          badgeColor: "indigo",
+          progressPct: ((carrierRpm + deltaRpm) / 250) * 100,
+        },
+        {
+          label: "Inner Wheel Speed",
+          value: `${carrierRpm - deltaRpm} RPM`,
+          unit: "ω_inner",
+          badgeColor: "amber",
+          progressPct: ((carrierRpm - deltaRpm) / 250) * 100,
+        },
+      ];
+    },
+    pedagogicalInsight:
+      "Raising engine RPM by a factor of 4 using incandescent glow-tube ignition slashed weight per horsepower by 80%, while the bevel differential split torque across drive wheels during cornering.",
+  },
+  "us-388850-eastman-kodak": {
+    domain: "optics_waves",
+    domainTitle: "Hyperfocal Fixed-Focus Optics & Logarithmic Exposure Law",
+    equationName: "Hyperfocal Distance & Exposure Value (EV)",
+    governingEquation:
+      "H = \\frac{f^2}{N \\cdot c} + f \\quad \\text{and} \\quad \\text{EV} = \\log_2\\left(\\frac{N^2}{t}\\right)",
+    engineMethod: "FrankenSimEngine.stepEastmanKodak",
+    controls: [
+      {
+        id: "shutterSpeed",
+        label: "Barrel Shutter Speed",
+        min: 0.01,
+        max: 0.1,
+        step: 0.01,
+        defaultValue: 0.05,
+        unit: "s",
+      },
+      {
+        id: "apertureStop",
+        label: "Lens Aperture (f-number)",
+        min: 8,
+        max: 16,
+        step: 1,
+        defaultValue: 9,
+        unit: "f/#",
+      },
+      {
+        id: "subjectDist",
+        label: "Subject Distance",
+        min: 0.5,
+        max: 8.0,
+        step: 0.2,
+        defaultValue: 3.0,
+        unit: "m",
+      },
+    ],
+    computeMetrics: (p) => {
+      const t = p.shutterSpeed ?? 0.05;
+      const n = p.apertureStop ?? 9;
+      const dist = p.subjectDist ?? 3.0;
+      const h = (0.057 ** 2 / (n * 0.00003) + 0.057).toFixed(2);
+      const dofNear = ((Number(h) * dist) / (Number(h) + dist)).toFixed(2);
+      const ev = Math.log2(n ** 2 / t).toFixed(2);
+      const inFocus = dist >= Number(dofNear);
+
+      return [
+        {
+          label: "Hyperfocal Point",
+          value: `${h} m`,
+          unit: "H",
+          badgeColor: "emerald",
+          progressPct: (Number(h) / 15) * 100,
+        },
+        {
+          label: "Near Focus Limit",
+          value: `${dofNear} m`,
+          unit: "D_near",
+          badgeColor: "cyan",
+          progressPct: (Number(dofNear) / 5) * 100,
+        },
+        {
+          label: "Exposure Value (EV)",
+          value: `EV ${ev}`,
+          unit: "EV",
+          badgeColor: "indigo",
+          progressPct: (Number(ev) / 15) * 100,
+        },
+        {
+          label: "Focus Status",
+          value: inFocus ? "SHARP (IN FOCUS)" : "BLURRED (TOO CLOSE)",
+          unit: "status",
+          badgeColor: inFocus ? "emerald" : "rose",
+          progressPct: inFocus ? 100 : 25,
+        },
+      ];
+    },
+    pedagogicalInsight:
+      "A fixed 57mm f/9 doublet set at its hyperfocal distance renders everything from 1.2 meters to optical infinity in sharp focus, eliminating viewfinders and focusing bellows.",
+  },
+  "us-395781-hollerith-tabulating": {
+    domain: "electromagnetics_flux",
+    domainTitle: "Punched Card Matrix Logic & Electromagnetic Solenoid Accumulators",
+    equationName: "Electromagnetic Solenoid Force & Inductive Time Constant",
+    governingEquation:
+      "F_{\\text{mag}} = \\frac{(N I)^2 \\mu_0 A}{2 g^2} \\quad \\text{and} \\quad \\tau = \\frac{L}{R}",
+    engineMethod: "FrankenSimEngine.stepHollerithTabulating",
+    controls: [
+      {
+        id: "cardsPerMin",
+        label: "Tabulating Feed Speed",
+        min: 20,
+        max: 90,
+        step: 5,
+        defaultValue: 60,
+        unit: "cards/min",
+      },
+      {
+        id: "batteryVolts",
+        label: "Battery Bank Potential",
+        min: 6,
+        max: 24,
+        step: 1,
+        defaultValue: 12,
+        unit: "V",
+      },
+      {
+        id: "activeRelays",
+        label: "Parallel Accumulator Relays",
+        min: 1,
+        max: 40,
+        step: 1,
+        defaultValue: 16,
+        unit: "relays",
+      },
+    ],
+    computeMetrics: (p) => {
+      const cpm = p.cardsPerMin ?? 60;
+      const v = p.batteryVolts ?? 12;
+      const relays = p.activeRelays ?? 16;
+      const cycleMs = Math.round(60000 / cpm);
+      const forceN = (
+        ((relays * (v / 12) * 35) ** 2 * 1.256e-6 * 0.0004) /
+        (2 * 0.002 ** 2)
+      ).toFixed(2);
+      const tauMs = ((0.08 / (v / 2.4)) * 1000).toFixed(1);
+
+      return [
+        {
+          label: "Reading Cycle Time",
+          value: `${cycleMs} ms`,
+          unit: "t_cycle",
+          badgeColor: "cyan",
+          progressPct: (cycleMs / 3000) * 100,
+        },
+        {
+          label: "Solenoid Pull Force",
+          value: `${forceN} N`,
+          unit: "F_mag",
+          badgeColor: "emerald",
+          progressPct: Math.min(100, (Number(forceN) / 5) * 100),
+        },
+        {
+          label: "Circuit Time Constant",
+          value: `${tauMs} ms`,
+          unit: "τ",
+          badgeColor: "amber",
+          progressPct: (Number(tauMs) / 30) * 100,
+        },
+        {
+          label: "Parallel Accumulators",
+          value: `${relays} dials`,
+          unit: "active",
+          badgeColor: "purple",
+          progressPct: (relays / 40) * 100,
+        },
+      ];
+    },
+    pedagogicalInsight:
+      "Spring-loaded brass pins pass through card perforations into mercury pools, completing 12V circuits that advance dial accumulators and trigger sorting box lids in parallel.",
+  },
+  "us-470918-reno-escalator": {
+    domain: "continuum_elasticity",
+    domainTitle: "Inclined Passenger Throughput & Comb-Plate Safety Extraction",
+    equationName: "Continuous Transit Throughput & Motor Drive Torque",
+    governingEquation:
+      "\\dot{N}_{\\text{pass}} = \\frac{v \\cdot w_{\\text{step}}}{L_{\\text{pass}}} \\quad \\text{and} \\quad \\tau = \\frac{R}{\\eta} \\sum m_i g (\\sin\\theta + \\mu \\cos\\theta)",
+    engineMethod: "FrankenSimEngine.stepRenoEscalator",
+    controls: [
+      {
+        id: "passengerCount",
+        label: "Live Passenger Load",
+        min: 0,
+        max: 60,
+        step: 2,
+        defaultValue: 30,
+        unit: "riders",
+      },
+      {
+        id: "inclineAngle",
+        label: "Truss Incline Angle",
+        min: 20,
+        max: 35,
+        step: 1,
+        defaultValue: 25,
+        unit: "°",
+      },
+      {
+        id: "beltSpeed",
+        label: "Linear Tread Velocity",
+        min: 0.3,
+        max: 0.75,
+        step: 0.05,
+        defaultValue: 0.45,
+        unit: "m/s",
+      },
+    ],
+    computeMetrics: (p) => {
+      const count = p.passengerCount ?? 30;
+      const angle = p.inclineAngle ?? 25;
+      const v = p.beltSpeed ?? 0.45;
+      const throughput = Math.round((v * 2 * 3600) / 0.5);
+      const angleRad = (angle * Math.PI) / 180;
+      const torque = Math.round(
+        ((count * 700 * Math.sin(angleRad) + count * 700 * Math.cos(angleRad) * 0.03 + 800) *
+          0.35) /
+          0.88,
+      );
+      const powerKw = ((torque * (v / 0.35)) / 1000).toFixed(2);
+
+      return [
+        {
+          label: "Hourly Throughput",
+          value: `${throughput.toLocaleString()}/hr`,
+          unit: "passengers",
+          badgeColor: "emerald",
+          progressPct: (throughput / 10000) * 100,
+        },
+        {
+          label: "Drive Motor Torque",
+          value: `${torque} N·m`,
+          unit: "τ_motor",
+          badgeColor: "indigo",
+          progressPct: (torque / 6000) * 100,
+        },
+        {
+          label: "Motor Power Draw",
+          value: `${powerKw} kW`,
+          unit: "P_elec",
+          badgeColor: "amber",
+          progressPct: (Number(powerKw) / 10) * 100,
+        },
+        {
+          label: "Comb-Plate Clearance",
+          value: "1.2 mm",
+          unit: "δ_gap",
+          badgeColor: "cyan",
+          progressPct: 80,
+        },
+      ];
+    },
+    pedagogicalInsight:
+      "Longitudinally grooved treads pass smoothly under stationary comb-plate fingers with sub-millimeter clearance, lifting footwear off the incline without danger of pinching.",
+  },
+  "us-542846-diesel-engine": {
+    domain: "thermodynamics_transport",
+    domainTitle: "Adiabatic Compression Auto-Ignition & Constant-Pressure Expansion",
+    equationName: "Adiabatic Temperature Rise & Diesel Cycle Efficiency",
+    governingEquation:
+      "T_2 = T_1 r^{\\gamma - 1} \\quad \\text{and} \\quad \\eta = 1 - \\frac{1}{r^{\\gamma - 1}} \\left[\\frac{r_c^\\gamma - 1}{\\gamma (r_c - 1)}\\right]",
+    engineMethod: "FrankenSimEngine.stepDieselEngine",
+    controls: [
+      {
+        id: "compRatio",
+        label: "Compression Ratio (r)",
+        min: 12,
+        max: 22,
+        step: 0.5,
+        defaultValue: 18,
+        unit: ":1",
+      },
+      {
+        id: "blastAirPressure",
+        label: "Blast-Air Injector Pressure",
+        min: 45,
+        max: 85,
+        step: 2,
+        defaultValue: 65,
+        unit: "bar",
+      },
+      {
+        id: "cutoffRatio",
+        label: "Fuel Cutoff Ratio (rc)",
+        min: 1.2,
+        max: 2.2,
+        step: 0.1,
+        defaultValue: 1.6,
+        unit: "ratio",
+      },
+    ],
+    computeMetrics: (p) => {
+      const r = p.compRatio ?? 18;
+      const pBlast = p.blastAirPressure ?? 65;
+      const rc = p.cutoffRatio ?? 1.6;
+      const tCompC = Math.round(300 * r ** 0.4 - 273);
+      const pComp = (1.0 * r ** 1.4).toFixed(1);
+      const idealEff = ((1 - (1 / r ** 0.4) * ((rc ** 1.4 - 1) / (1.4 * (rc - 1)))) * 100).toFixed(
+        1,
+      );
+      const brakeEff = (Number(idealEff) * 0.68).toFixed(1);
+
+      return [
+        {
+          label: "Compression Temperature",
+          value: `${tCompC} °C`,
+          unit: "T_comp",
+          badgeColor: tCompC > 210 ? "emerald" : "amber",
+          progressPct: (tCompC / 800) * 100,
+        },
+        {
+          label: "Peak Cylinder Pressure",
+          value: `${pComp} bar`,
+          unit: "P_comp",
+          badgeColor: "cyan",
+          progressPct: (Number(pComp) / 80) * 100,
+        },
+        {
+          label: "Brake Thermal Efficiency",
+          value: `${brakeEff}%`,
+          unit: "η_brake",
+          badgeColor: "emerald",
+          progressPct: (Number(brakeEff) / 50) * 100,
+        },
+        {
+          label: "Auto-Ignition State",
+          value: tCompC > 210 && pBlast > Number(pComp) ? "SELF-IGNITING" : "NO IGNITION",
+          unit: "state",
+          badgeColor: tCompC > 210 && pBlast > Number(pComp) ? "emerald" : "rose",
+          progressPct: tCompC > 210 ? 100 : 0,
+        },
+      ];
+    },
+    pedagogicalInsight:
+      "Compressing pure air to 18:1 generates 680°C heat, causing atomized fuel droplets injected under high pressure to self-ignite instantaneously and expand at constant pressure.",
+  },
+  "us-613809-tesla-teleautomaton": {
+    domain: "electromagnetics_flux",
+    domainTitle: "Tuned RF Resonant Tank & Coherer Logic State Machine",
+    equationName: "LC Resonant Frequency & Coherer Demodulation",
+    governingEquation:
+      "f_0 = \\frac{1}{2\\pi \\sqrt{L C}} \\quad \\text{and} \\quad R_{\\text{coherer}} \\xrightarrow{E_{\\text{RF}}} 50\\,\\Omega",
+    engineMethod: "FrankenSimEngine.stepTeslaTeleautomaton",
+    controls: [
+      {
+        id: "rfFrequency",
+        label: "RF Transmitter Frequency",
+        min: 120,
+        max: 180,
+        step: 2,
+        defaultValue: 150,
+        unit: "kHz",
+      },
+      {
+        id: "rudderAngle",
+        label: "Rudder Steering Angle",
+        min: -35,
+        max: 35,
+        step: 5,
+        defaultValue: 15,
+        unit: "°",
+      },
+    ],
+    computeMetrics: (p) => {
+      const f = p.rfFrequency ?? 150;
+      const rudder = p.rudderAngle ?? 15;
+      const isRes = Math.abs(f - 150) <= 4;
+      const cohererR = isRes ? "50 Ω (Conducting)" : "100 kΩ (Open)";
+      const thrustN = isRes ? "85 N" : "0 N";
+      const turnRadiusM =
+        Math.abs(rudder) > 0
+          ? (12.5 / Math.sin((Math.abs(rudder) * Math.PI) / 180)).toFixed(1)
+          : "Straight";
+
+      return [
+        {
+          label: "Coherer Resistance",
+          value: cohererR,
+          unit: "R_det",
+          badgeColor: isRes ? "emerald" : "amber",
+          progressPct: isRes ? 95 : 10,
+        },
+        {
+          label: "Propulsion Motor",
+          value: thrustN,
+          unit: "Thrust",
+          badgeColor: isRes ? "cyan" : "purple",
+          progressPct: isRes ? 85 : 0,
+        },
+        {
+          label: "Turning Radius",
+          value: `${turnRadiusM} m`,
+          unit: "R_turn",
+          badgeColor: "indigo",
+          progressPct: Math.abs(rudder) > 0 ? 70 : 100,
+        },
+        {
+          label: "Carrier Resonance",
+          value: isRes ? "LOCKED (150 kHz)" : "DETUNED",
+          unit: "resonance",
+          badgeColor: isRes ? "emerald" : "rose",
+          progressPct: isRes ? 100 : 20,
+        },
+      ];
+    },
+    pedagogicalInsight:
+      "Tuned RF waves trigger metal filings in the coherer to fuse and drop resistance, stepping a motorized rotary commutator drum that decodes commands into propulsion and steering.",
+  },
+  "us-621195-zeppelin-airship": {
+    domain: "aerodynamics_mbd",
+    domainTitle: "Multi-Cell Archimedean Buoyancy & Space-Frame Bending",
+    equationName: "Net Aerostatic Buoyant Lift & Pitch Trim",
+    governingEquation:
+      "L_{\\text{buoyant}} = V_{\\text{gas}} g (\\rho_{\\text{air}} - \\rho_{\\text{H}_2}) - W_{\\text{struct}}",
+    engineMethod: "FrankenSimEngine.stepZeppelinAirship",
+    controls: [
+      {
+        id: "gasInflation",
+        label: "Hydrogen Cell Inflation",
+        min: 75,
+        max: 100,
+        step: 1,
+        defaultValue: 95,
+        unit: "%",
+      },
+      {
+        id: "flightAlt",
+        label: "Flight Altitude",
+        min: 0,
+        max: 2000,
+        step: 50,
+        defaultValue: 300,
+        unit: "m",
+      },
+      {
+        id: "trimWeight",
+        label: "Keel Sliding Ballast Position",
+        min: -15,
+        max: 15,
+        step: 1,
+        defaultValue: 5,
+        unit: "m",
+      },
+    ],
+    computeMetrics: (p) => {
+      const inflation = p.gasInflation ?? 95;
+      const alt = p.flightAlt ?? 300;
+      const trim = p.trimWeight ?? 5;
+      const rhoAir = 1.225 * Math.exp(-alt / 8400);
+      const rhoH2 = 0.089 * Math.exp(-alt / 8400);
+      const grossKn = ((11300 * (inflation / 100) * 9.81 * (rhoAir - rhoH2)) / 1000).toFixed(1);
+      const netKn = (Number(grossKn) - 98.0).toFixed(1);
+      const pitchDeg = ((trim * 300 * 9.81) / 15000).toFixed(1);
+
+      return [
+        {
+          label: "Net Aerostatic Lift",
+          value: `${netKn} kN`,
+          unit: "L_net",
+          badgeColor: Number(netKn) > 0 ? "emerald" : "rose",
+          progressPct: Math.min(100, (Number(netKn) / 40) * 100),
+        },
+        {
+          label: "Gross Buoyancy",
+          value: `${grossKn} kN`,
+          unit: "L_gross",
+          badgeColor: "cyan",
+          progressPct: (Number(grossKn) / 140) * 100,
+        },
+        {
+          label: "Pitch Trim Angle",
+          value: `${pitchDeg}°`,
+          unit: "α_trim",
+          badgeColor: "indigo",
+          progressPct: (Math.abs(Number(pitchDeg)) / 10) * 100,
+        },
+        {
+          label: "Air Density",
+          value: `${rhoAir.toFixed(3)} kg/m³`,
+          unit: "ρ_air",
+          badgeColor: "purple",
+          progressPct: (rhoAir / 1.225) * 100,
+        },
+      ];
+    },
+    pedagogicalInsight:
+      "Seventeen independent hydrogen gas cells enclosed inside a rigid duralumin space-frame provide 125 kN of aerostatic lift, protected from solar radiation and wind deformation.",
+  },
+  "us-727650-linde-air-liquefaction": {
+    domain: "thermodynamics_transport",
+    domainTitle: "Isenthalpic Joule-Thomson Cryogenic Throttling & Liquefaction",
+    equationName: "Joule-Thomson Throttling & Counter-Current Heat Exchange",
+    governingEquation:
+      "\\mu_{\\text{JT}} = \\left(\\frac{\\partial T}{\\partial P}\\right)_H = \\frac{1}{C_p}\\left[T\\left(\\frac{\\partial V}{\\partial T}\\right)_P - V\\right] \\quad \\text{and} \\quad \\dot{Q} = U A \\Delta T_{\\text{LMTD}}",
+    engineMethod: "FrankenSimEngine.stepLindeAirLiquefaction",
+    controls: [
+      {
+        id: "compressorPress",
+        label: "Multi-Stage Compressor Pressure",
+        min: 100,
+        max: 220,
+        step: 5,
+        defaultValue: 200,
+        unit: "bar",
+      },
+      {
+        id: "regenPasses",
+        label: "Regenerator Exchanger Cycles",
+        min: 10,
+        max: 50,
+        step: 2,
+        defaultValue: 45,
+        unit: "cycles",
+      },
+    ],
+    computeMetrics: (p) => {
+      const press = p.compressorPress ?? 200;
+      const passes = p.regenPasses ?? 45;
+      const coldK = Math.max(78, Math.round(293 - (passes / 50) * 215));
+      const coldC = coldK - 273;
+      const isLiq = coldK <= 80;
+      const yieldPct = isLiq ? (((80 - (coldK - 78)) / 80) * 8.5).toFixed(1) : "0.0";
+      const litersHr = ((press / 200) * Number(yieldPct) * 0.45).toFixed(2);
+
+      return [
+        {
+          label: "Nozzle Cryo Temp",
+          value: `${coldC} °C (${coldK} K)`,
+          unit: "T_nozzle",
+          badgeColor: isLiq ? "emerald" : "cyan",
+          progressPct: ((293 - coldK) / 215) * 100,
+        },
+        {
+          label: "Liquefaction Yield",
+          value: `${yieldPct}%`,
+          unit: "yield",
+          badgeColor: isLiq ? "emerald" : "amber",
+          progressPct: (Number(yieldPct) / 10) * 100,
+        },
+        {
+          label: "Liquid Air Production",
+          value: `${litersHr} L/hr`,
+          unit: "output",
+          badgeColor: isLiq ? "purple" : "indigo",
+          progressPct: (Number(litersHr) / 5) * 100,
+        },
+        {
+          label: "Cryogenic Phase",
+          value: isLiq ? "LIQUID CONDENSING" : "PRECOOLING GAS",
+          unit: "state",
+          badgeColor: isLiq ? "emerald" : "cyan",
+          progressPct: isLiq ? 100 : (passes / 50) * 80,
+        },
+      ];
+    },
+    pedagogicalInsight:
+      "Isenthalpic expansion through a stationary needle valve produces a temperature drop that accumulates regeneratively through coaxial heat exchangers until air condenses at -193°C.",
+  },
+  "us-808897-carrier-air-conditioner": {
+    domain: "thermodynamics_transport",
+    domainTitle: "Psychrometric Moist Air Enthalpy & Dew-Point Dehumidification",
+    equationName: "Moist Air Enthalpy & Dew-Point Condensation",
+    governingEquation:
+      "h = c_{pa} T + W(h_{fg0} + c_{pw}T) \\quad \\text{and} \\quad \\dot{m}_{\\text{cond}} = \\dot{m}_{\\text{air}}(W_{\\text{in}} - W_{\\text{dew}})",
+    engineMethod: "FrankenSimEngine.stepCarrierAirConditioner",
+    controls: [
+      {
+        id: "inletTemp",
+        label: "Summer Outdoor Temperature",
+        min: 25,
+        max: 42,
+        step: 1,
+        defaultValue: 35,
+        unit: "°C",
+      },
+      {
+        id: "inletRh",
+        label: "Outdoor Relative Humidity",
+        min: 40,
+        max: 95,
+        step: 5,
+        defaultValue: 75,
+        unit: "%",
+      },
+      {
+        id: "sprayTemp",
+        label: "Chilled Water Spray Temp",
+        min: 4,
+        max: 18,
+        step: 1,
+        defaultValue: 8,
+        unit: "°C",
+      },
+      {
+        id: "reheatTemp",
+        label: "Sensible Reheat Supply Temp",
+        min: 18,
+        max: 26,
+        step: 1,
+        defaultValue: 22,
+        unit: "°C",
+      },
+    ],
+    computeMetrics: (p) => {
+      const tIn = p.inletTemp ?? 35;
+      const rhIn = p.inletRh ?? 75;
+      const tSpray = p.sprayTemp ?? 8;
+      const tReheat = p.reheatTemp ?? 22;
+      const a = 17.27;
+      const b = 237.7;
+      const alpha = (a * tIn) / (b + tIn) + Math.log(rhIn / 100);
+      const dewPoint = ((b * alpha) / (a - alpha)).toFixed(1);
+      const moistureRemoved =
+        tSpray < Number(dewPoint) ? ((Number(dewPoint) - tSpray) * 1.15).toFixed(1) : "0.0";
+      const finalRh = Math.round(
+        Math.min(
+          100,
+          Math.max(
+            20,
+            (100 * Math.exp((17.27 * tSpray) / (237.7 + tSpray))) /
+              Math.exp((17.27 * tReheat) / (237.7 + tReheat)),
+          ),
+        ),
+      );
+
+      return [
+        {
+          label: "Intake Dew Point",
+          value: `${dewPoint} °C`,
+          unit: "T_dew",
+          badgeColor: "amber",
+          progressPct: (Number(dewPoint) / 40) * 100,
+        },
+        {
+          label: "Moisture Extracted",
+          value: `${moistureRemoved} g/kg`,
+          unit: "ΔW",
+          badgeColor: "emerald",
+          progressPct: (Number(moistureRemoved) / 25) * 100,
+        },
+        {
+          label: "Supply Air Temp",
+          value: `${tReheat} °C`,
+          unit: "T_supply",
+          badgeColor: "cyan",
+          progressPct: (tReheat / 30) * 100,
+        },
+        {
+          label: "Supply Room RH",
+          value: `${finalRh}%`,
+          unit: "RH_out",
+          badgeColor: finalRh >= 40 && finalRh <= 55 ? "emerald" : "indigo",
+          progressPct: finalRh,
+        },
+      ];
+    },
+    pedagogicalInsight:
+      "Atomized water chilled below the intake air dew point condenses humidity directly into the spray droplets; inertial eliminators trap mist before steam coils reheat air to comfortable humidity.",
+  },
+  "us-124404-westinghouse-air-brake": {
+    domain: "thermo_fluid",
+    domainTitle: "Continuous Pneumatic Train Line & Triple-Valve Differential Pressure Dynamics",
+    equationName: "Boyle's Equalization & Train Line Rarefaction Wave Speed",
+    governingEquation:
+      "c = \\sqrt{\\gamma R T} \\approx 340\\text{ m/s} \\quad \\text{and} \\quad P_{\\text{final}}(V_{\\text{aux}} + V_{\\text{cyl}}) = P_{\\text{aux}} V_{\\text{aux}}",
+    engineMethod: "FrankenSimEngine.stepWestinghouseAirBrake",
+    controls: [
+      {
+        id: "trainPipePressure",
+        label: "Brake Pipe Pressure (Locomotive Engineer Valve)",
+        min: 0,
+        max: 70,
+        step: 5,
+        defaultValue: 70,
+        unit: "psi",
+      },
+      {
+        id: "carMass",
+        label: "Railcar Gross Mass",
+        min: 20,
+        max: 80,
+        step: 5,
+        defaultValue: 35,
+        unit: "tonnes",
+      },
+    ],
+    computeMetrics: (p) => {
+      const pipePsi = p.trainPipePressure ?? 70;
+      const mass = p.carMass ?? 35;
+      const cylPsi = Math.max(0, Math.min(55, Math.round((70 - pipePsi) * 1.1)));
+      const pistonThrustKn = ((cylPsi * 78.5 * 5 * 4.44822) / 1000).toFixed(1);
+      const isEmergency = pipePsi < 10;
+      const isService = pipePsi < 60 && !isEmergency;
+      const stopDistM = cylPsi > 10 ? Math.round((500 * (mass / 35)) / (cylPsi / 50)) : 1200;
+
+      return [
+        {
+          label: "Brake Cylinder Pressure",
+          value: `${cylPsi} psi`,
+          unit: "P_cyl",
+          badgeColor: cylPsi > 30 ? "amber" : "emerald",
+          progressPct: (cylPsi / 55) * 100,
+        },
+        {
+          label: "Shoe Clamping Force",
+          value: `${pistonThrustKn} kN`,
+          unit: "F_clamp",
+          badgeColor: Number(pistonThrustKn) > 40 ? "rose" : "cyan",
+          progressPct: (Number(pistonThrustKn) / 85) * 100,
+        },
+        {
+          label: "Triple Valve State",
+          value: isEmergency
+            ? "EMERGENCY DUMP"
+            : isService
+              ? "SERVICE APPLICATION"
+              : "RUNNING / CHARGE",
+          unit: "mode",
+          badgeColor: isEmergency ? "rose" : isService ? "amber" : "emerald",
+          progressPct: isEmergency ? 100 : isService ? 60 : 10,
+        },
+        {
+          label: "Estimated Stop Distance",
+          value: `${stopDistM} m`,
+          unit: "d_stop",
+          badgeColor: stopDistM < 400 ? "emerald" : "amber",
+          progressPct: Math.min(100, (stopDistM / 1200) * 100),
+        },
+      ];
+    },
+    pedagogicalInsight:
+      "The triple valve inverts brake control: maintaining 70 psi in the continuous train pipe keeps the brakes released. When line pressure is dropped, higher pressure in the car's local auxiliary reservoir shifts the piston to dump air directly into the brake cylinder, stopping the train.",
   },
 };
