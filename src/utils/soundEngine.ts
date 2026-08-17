@@ -15,7 +15,9 @@ class SoundEngine {
   private initContext() {
     if (typeof window === "undefined") return;
     if (!this.ctx) {
-      const AudioCtxClass = window.AudioContext || (window as any).webkitAudioContext;
+      const AudioCtxClass =
+        window.AudioContext ||
+        (window as unknown as { webkitAudioContext?: typeof AudioContext }).webkitAudioContext;
       if (AudioCtxClass) {
         this.ctx = new AudioCtxClass();
       }

@@ -11,7 +11,7 @@ export const wrightFlyerPatent: Patent = {
   grantDate: "1906-05-22",
   filingDate: "1903-03-23",
   era: "Electrification & Early Modern (1870–1920)",
-  category: "aerospace",
+  category: "aviation",
   categoryLabel: "Aeronautics & Aerodynamics",
   summary:
     "The seminal master patent of aviation: the Wright brothers' synchronized three-axis aerodynamic flight control system combining differential wing warping (roll), a movable vertical rudder (yaw), and a forward canard elevator (pitch) to achieve active equilibrium in flight.",
