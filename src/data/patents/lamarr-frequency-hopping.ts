@@ -102,7 +102,7 @@ Figure 4 is a diagram of the multi-frequency tuned tank circuits and bandpass fi
       originalText:
         "A secret communication system comprising a transmitter having means for transmitting carrier waves of different frequencies, means for changing the carrier frequency periodically in a predetermined sequence, a receiver tuned to receive said waves, and means at the receiver for changing the tuned frequency in synchronism with the changes of frequency at the transmitter, substantially as described.",
       plainEnglish:
-        "Transmitter and receiver step through the same predetermined frequency sequence so a listener on one channel sees only a slice of the message."
+        "Transmitter and receiver step through the same predetermined frequency sequence so a listener on one channel sees only a slice of the message.",
       keyInnovations: [
         "Frequency hopping spread spectrum",
         "Synchronized transmitter-receiver frequency shifts",

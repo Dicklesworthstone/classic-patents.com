@@ -17,6 +17,7 @@ import * as THREE from "three";
 import { soundEngine } from "@/utils/soundEngine";
 import { createGlowPointTexture, createThreeStudioScene } from "./ThreeStudioScene";
 import { useLiveSimParams } from "./useLiveSimParams";
+import { usePatentAudio } from "./usePatentAudio";
 
 type CameraPreset = "iso" | "cpu" | "ram_matrix" | "slots" | "top";
 
@@ -77,7 +78,7 @@ export function WozniakApple3D() {
   const [isCpuActive, setIsCpuActive] = useState<boolean>(true);
   const [showCalloutPins, setShowCalloutPins] = useState<boolean>(false);
   const [activeCamera, setActiveCamera] = useState<CameraPreset>("iso");
-  const [isAudioMuted, setIsAudioMuted] = useState<boolean>(true);
+  const { isAudioMuted, toggleSound: toggleEngine } = usePatentAudio();
 
   // System Architecture Calculations
   const cycleTimeNs = Math.round(1000 / clockFrequencyMhz);
@@ -137,11 +138,9 @@ export function WozniakApple3D() {
   };
 
   const toggleSound = () => {
-    const isMuted = soundEngine.toggleMute();
-    setIsAudioMuted(isMuted);
-    if (!isMuted) {
+    toggleEngine(() => {
       soundEngine.playMicroswitchClick();
-    }
+    });
   };
 
   useEffect(() => {

@@ -14,9 +14,13 @@ import {
 } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import * as THREE from "three";
+import { HudText } from "@/components/ui/LatexRenderer";
+import { FrankenSimEngine } from "@/physics/engine";
 import { soundEngine } from "@/utils/soundEngine";
 import { createGlowPointTexture, createThreeStudioScene } from "./ThreeStudioScene";
 import { useLiveSimParams } from "./useLiveSimParams";
+
+import { usePatentAudio } from "./usePatentAudio";
 
 type CameraPreset = "iso" | "photocathode" | "aperture" | "coils" | "top";
 
@@ -74,21 +78,19 @@ export function FarnsworthTV3D() {
 
   // Dissector Tube State Controls
   const [showUiOverlay, setShowUiOverlay] = useState<boolean>(true);
-  const [acceleratingVoltageKv, setAcceleratingVoltageKv] = useState<number>(3.5); // 1.0 to 6.0 kVkV
+  const [acceleratingVoltageKv, setAcceleratingVoltageKv] = useState<number>(3.5); // 1.0 to 6.0 kV
   const [horizontalFreqKhz, setHorizontalFreqKhz] = useState<number>(15.75); // 5 to 30 kHz
   const [verticalFreqHz, setVerticalFreqHz] = useState<number>(60); // 30 to 120 Hz
   const [lightIntensityLux, setLightIntensityLux] = useState<number>(500); // 100 to 2000 Lux
   const [showElectronBeam, setShowElectronBeam] = useState<boolean>(true);
   const [showCalloutPins, setShowCalloutPins] = useState<boolean>(false);
   const [activeCamera, setActiveCamera] = useState<CameraPreset>("iso");
-  const [isAudioMuted, setIsAudioMuted] = useState<boolean>(true);
+  const { isAudioMuted, toggleSound: toggleEngine } = usePatentAudio();
 
-  // Electron Optics Physics
-  // Electron Velocity: v = sqrt(2 * e * V / m_e)
-  const eCharge = 1.602e-19;
-  const mElectron = 9.109e-31;
-  const velocityMps = Math.sqrt((2 * eCharge * acceleratingVoltageKv * 1000) / mElectron);
-  const velocityFractionC = ((velocityMps / 3e8) * 100).toFixed(1);
+  // Electron Optics Physics (FrankenSim Relativistic Electron Beam)
+  const beamState = FrankenSimEngine.stepFarnsworthTv(acceleratingVoltageKv, 120);
+  const velocityMps = beamState.electronVelocityMps;
+  const velocityFractionC = (beamState.relativisticBeta * 100).toFixed(1);
   const photocathodeCurrentUa = (lightIntensityLux * 0.045).toFixed(1);
 
   const live = useLiveSimParams({
@@ -144,11 +146,9 @@ export function FarnsworthTV3D() {
   };
 
   const toggleSound = () => {
-    const isMuted = soundEngine.toggleMute();
-    setIsAudioMuted(isMuted);
-    if (!isMuted) {
+    toggleEngine(() => {
       soundEngine.playSwitchClick();
-    }
+    });
   };
 
   useEffect(() => {
@@ -557,7 +557,7 @@ export function FarnsworthTV3D() {
                   {s.name}
                 </div>
                 <div className="text-[10px] font-sans text-ink-500 dark:text-ink-400 line-clamp-2 mt-0.5">
-                  {s.desc}
+                  <HudText text={s.desc} />
                 </div>
               </button>
             ))}

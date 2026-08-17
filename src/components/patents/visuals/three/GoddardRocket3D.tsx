@@ -14,9 +14,13 @@ import {
 } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import * as THREE from "three";
+import { HudText } from "@/components/ui/LatexRenderer";
+import { FrankenSimEngine } from "@/physics/engine";
 import { soundEngine } from "@/utils/soundEngine";
 import { createGlowPointTexture, createThreeStudioScene } from "./ThreeStudioScene";
 import { useLiveSimParams } from "./useLiveSimParams";
+
+import { usePatentAudio } from "./usePatentAudio";
 
 type CameraPreset = "iso" | "de_laval_nozzle" | "combustion_chamber" | "gimbal_actuator" | "top";
 
@@ -81,12 +85,13 @@ export function GoddardRocket3D() {
   const [showExhaustPlume, _setShowExhaustPlume] = useState<boolean>(true);
   const [showCalloutPins, setShowCalloutPins] = useState<boolean>(false);
   const [activeCamera, setActiveCamera] = useState<CameraPreset>("iso");
-  const [isAudioMuted, setIsAudioMuted] = useState<boolean>(true);
+  const { isAudioMuted, toggleSound: toggleEngine } = usePatentAudio();
 
-  // Rocket Propulsion Physics (Tsiolkovsky Equation & Isentropic Expansion)
-  const specificImpulseSec = Math.round(180 + (chamberPressurePsi / 300) * 45);
-  const exhaustVelocityMps = Math.round(specificImpulseSec * 9.80665);
-  const thrustNewtons = Math.round(fuelFlowRateKgs * exhaustVelocityMps);
+  // Rocket Propulsion Physics (FrankenSim de Laval Isentropic Expansion)
+  const rocketPhysics = FrankenSimEngine.stepGoddardRocket(chamberPressurePsi, fuelFlowRateKgs);
+  const specificImpulseSec = rocketPhysics.specificImpulseSec;
+  const exhaustVelocityMps = rocketPhysics.exhaustVelocityMps;
+  const thrustNewtons = rocketPhysics.thrustNewtons;
   const thrustLbf = Math.round(thrustNewtons * 0.2248);
 
   const live = useLiveSimParams({
@@ -142,11 +147,9 @@ export function GoddardRocket3D() {
   };
 
   const toggleSound = () => {
-    const isMuted = soundEngine.toggleMute();
-    setIsAudioMuted(isMuted);
-    if (!isMuted) {
+    toggleEngine(() => {
       soundEngine.playSwitchClick();
-    }
+    });
   };
 
   useEffect(() => {
@@ -536,7 +539,7 @@ export function GoddardRocket3D() {
                   {s.name}
                 </div>
                 <div className="text-[10px] font-sans text-ink-500 dark:text-ink-400 line-clamp-2 mt-0.5">
-                  {s.desc}
+                  <HudText text={s.desc} />
                 </div>
               </button>
             ))}
@@ -549,7 +552,7 @@ export function GoddardRocket3D() {
           <div className="space-y-1.5">
             <div className="flex justify-between text-xs font-sans">
               <span className="font-semibold text-ink-800 dark:text-parchment-200">
-                Combustion Pressure ($P_c$):
+                <HudText text="Combustion Pressure ($P_c$):" />
               </span>
               <span className="font-mono text-amber-700 dark:text-amber-400 font-bold">
                 {chamberPressurePsi} psi

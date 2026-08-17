@@ -14,9 +14,11 @@ import {
 } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import * as THREE from "three";
+import { FrankenSimEngine } from "@/physics/engine";
 import { soundEngine } from "@/utils/soundEngine";
 import { createGlowPointTexture, createThreeStudioScene } from "./ThreeStudioScene";
 import { useLiveSimParams } from "./useLiveSimParams";
+import { usePatentAudio } from "./usePatentAudio";
 
 type CameraPreset = "iso" | "roll" | "waterfall" | "escapement" | "torpedo";
 
@@ -75,11 +77,15 @@ export function LamarrFrequencyHopping3D() {
   const [currentChannel, setCurrentChannel] = useState<number>(44);
   const [showCalloutPins, setShowCalloutPins] = useState<boolean>(false);
   const [activeCamera, setActiveCamera] = useState<CameraPreset>("iso");
-  const [isAudioMuted, setIsAudioMuted] = useState<boolean>(true);
+  const { isAudioMuted, toggleSound } = usePatentAudio();
 
-  // Physics Calculations
-  const processingGainDb = (10 * Math.log10(carrierChannelsCount)).toFixed(1);
-  const antiJamMarginDb = (Number(processingGainDb) - 3.0).toFixed(1);
+  // Spread Spectrum Physics Calculations (FrankenSim Slotted Frequency-Hopping)
+  const fhPhysics = FrankenSimEngine.stepLamarrFrequencyHopping(
+    carrierChannelsCount,
+    hopRateHopsPerSec,
+  );
+  const processingGainDb = fhPhysics.processingGainDb.toFixed(1);
+  const antiJamMarginDb = fhPhysics.antiJammingMarginDb.toFixed(1);
   const activeFrequencyMhz = (302 + ((Math.max(1, currentChannel) - 1) * (520 - 302)) / 87).toFixed(
     1,
   );
@@ -134,12 +140,10 @@ export function LamarrFrequencyHopping3D() {
     }
   };
 
-  const toggleSound = () => {
-    const isMuted = soundEngine.toggleMute();
-    setIsAudioMuted(isMuted);
-    if (!isMuted) {
+  const handleToggleSound = () => {
+    toggleSound(() => {
       soundEngine.playPianoKeyHop(440);
-    }
+    });
   };
 
   useEffect(() => {
@@ -247,11 +251,11 @@ export function LamarrFrequencyHopping3D() {
     const spectrumBarsGroup = new THREE.Group();
     spectrumBarsGroup.position.set(0, -2.2, 0);
 
-    const numDisplayChannels = 44;
+    const maxDisplayChannels = 88;
     const barMeshes: THREE.Mesh[] = [];
 
-    for (let c = 0; c < numDisplayChannels; c++) {
-      const x = -5.0 + (c / numDisplayChannels) * 10.0;
+    for (let c = 0; c < maxDisplayChannels; c++) {
+      const x = -5.0 + (c / Math.max(1, maxDisplayChannels - 1)) * 10.0;
       const barGeo = new THREE.BoxGeometry(0.18, 0.4, 0.4);
       const barMat = new THREE.MeshStandardMaterial({
         color: 0x334155,
@@ -315,7 +319,11 @@ export function LamarrFrequencyHopping3D() {
         hopTimer = 0;
         rollStep += 1;
         const pianoKey = ((rollStep * PIANO_ROLL_STEP) % PIANO_KEYS) + 1;
-        activeChan = Math.floor(((pianoKey - 1) / PIANO_KEYS) * numDisplayChannels);
+        const liveChannels = Math.max(
+          8,
+          Math.min(maxDisplayChannels, Math.round(p.carrierChannelsCount)),
+        );
+        activeChan = Math.floor(((pianoKey - 1) / PIANO_KEYS) * liveChannels);
         setCurrentChannel(pianoKey);
 
         if (!p.isAudioMuted && rollStep % 3 === 0) {
@@ -327,12 +335,24 @@ export function LamarrFrequencyHopping3D() {
       drum1.rotation.y += delta * 1.5;
       drum2.rotation.y += delta * 1.5;
 
-      // Update Spectral Channel Waterfall
-      for (let c = 0; c < numDisplayChannels; c++) {
+      // Update Spectral Channel Waterfall — bar count tracks the channel slider.
+      const liveChannels = Math.max(
+        8,
+        Math.min(maxDisplayChannels, Math.round(p.carrierChannelsCount)),
+      );
+      const jamCenter = Math.floor((liveChannels * 13) / 44);
+      for (let c = 0; c < maxDisplayChannels; c++) {
         const bar = barMeshes[c];
+        if (c >= liveChannels) {
+          bar.visible = false;
+          continue;
+        }
+        bar.visible = true;
+        bar.position.x = -5.0 + (c / Math.max(1, liveChannels - 1)) * 10.0;
         const mat = bar.material as THREE.MeshStandardMaterial;
 
-        const isJammerBar = p.isJammingActive && (c === 12 || c === 13 || c === 14);
+        const isJammerBar =
+          p.isJammingActive && (c === jamCenter - 1 || c === jamCenter || c === jamCenter + 1);
         if (c === activeChan && isJammerBar) {
           bar.scale.y = 5.2;
           bar.position.y = 1.05;
@@ -366,7 +386,10 @@ export function LamarrFrequencyHopping3D() {
         hPos[idx + 1] += delta * 3.5;
         if (hPos[idx + 1] > 5.0) {
           hPos[idx + 1] = 1.5;
-          hPos[idx] = -5.0 + (activeChan / numDisplayChannels) * 10.0 + (Math.random() - 0.5) * 0.8;
+          hPos[idx] =
+            -5.0 +
+            (activeChan / Math.max(1, liveChannels - 1)) * 10.0 +
+            (Math.random() - 0.5) * 0.8;
         }
       }
       hopGeo.attributes.position.needsUpdate = true;
@@ -455,7 +478,7 @@ export function LamarrFrequencyHopping3D() {
           </button>
           <button
             type="button"
-            onClick={toggleSound}
+            onClick={handleToggleSound}
             className="p-1.5 sm:p-2.5 rounded-xl bg-white/90 dark:bg-ink-900/90 backdrop-blur-md border border-parchment-300 dark:border-ink-700 text-ink-700 dark:text-parchment-300 hover:bg-parchment-100 dark:hover:bg-ink-800 transition-all shadow-sm"
             title={isAudioMuted ? "Enable Sound Synthesis" : "Mute Sound"}
           >

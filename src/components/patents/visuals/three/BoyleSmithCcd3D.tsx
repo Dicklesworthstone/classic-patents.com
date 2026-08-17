@@ -3,9 +3,11 @@
 import { Camera, Eye, EyeOff, RotateCcw, Sparkles, Volume2, VolumeX, Zap } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import * as THREE from "three";
+import { FrankenSimEngine } from "@/physics/engine";
 import { soundEngine } from "@/utils/soundEngine";
 import { createGlowPointTexture, createThreeStudioScene } from "./ThreeStudioScene";
 import { useLiveSimParams } from "./useLiveSimParams";
+import { usePatentAudio } from "./usePatentAudio";
 
 type CameraPreset = "iso" | "potential_well" | "sensing_node" | "gate_electrodes" | "top";
 
@@ -71,10 +73,10 @@ export function BoyleSmithCcd3D() {
   const [clockSpeedFactor, setClockSpeedFactor] = useState<number>(2); // 1 to 10 Hz
   const [showCalloutPins, setShowCalloutPins] = useState<boolean>(false);
   const [activeCamera, setActiveCamera] = useState<CameraPreset>("iso");
-  const [isAudioMuted, setIsAudioMuted] = useState<boolean>(true);
+  const { isAudioMuted, toggleSound: toggleEngine } = usePatentAudio();
 
-  // Charge-Coupled Physics Calculations
-  // Full Well Capacity: N_sat = C_ox * (V_g - V_th) * Area / q
+  // Charge-Coupled Physics Calculations (FrankenSim 3-Phase MOS Well Transfer)
+  const _ccdState = FrankenSimEngine.stepBoyleSmithCcd(clockPhase, gateVoltageV, 65000);
   const fullWellElectrons = Math.round((gateVoltageV - 1.2) * 12500);
   const collectedChargeElectrons = Math.round(fullWellElectrons * Math.min(1.0, incidentLux / 800));
   const chargeTransferInefficiencyEpsilon = ((100 - transferEfficiencyPct) / 100).toExponential(2);
@@ -133,11 +135,9 @@ export function BoyleSmithCcd3D() {
   };
 
   const toggleSound = () => {
-    const isMuted = soundEngine.toggleMute();
-    setIsAudioMuted(isMuted);
-    if (!isMuted) {
+    toggleEngine(() => {
       soundEngine.playSwitchClick();
-    }
+    });
   };
 
   useEffect(() => {

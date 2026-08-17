@@ -17,6 +17,7 @@ import * as THREE from "three";
 import { soundEngine } from "@/utils/soundEngine";
 import { createThreeStudioScene } from "./ThreeStudioScene";
 import { useLiveSimParams } from "./useLiveSimParams";
+import { usePatentAudio } from "./usePatentAudio";
 
 type CameraPreset = "iso" | "wheels" | "xray" | "top" | "crt";
 
@@ -78,7 +79,7 @@ export function EngelbartMouse3D() {
   const [isXRayMode, setIsXRayMode] = useState<boolean>(false);
   const [showCalloutPins, setShowCalloutPins] = useState<boolean>(false);
   const [activeCamera, setActiveCamera] = useState<CameraPreset>("iso");
-  const [isAudioMuted, setIsAudioMuted] = useState<boolean>(true);
+  const { isAudioMuted, toggleSound: toggleEngine } = usePatentAudio();
 
   // Live Position & Pulse Telemetry
   const [currentCoords, setCurrentCoords] = useState<{ x: number; y: number }>({
@@ -150,11 +151,9 @@ export function EngelbartMouse3D() {
   };
 
   const toggleSound = () => {
-    const isMuted = soundEngine.toggleMute();
-    setIsAudioMuted(isMuted);
-    if (!isMuted) {
+    toggleEngine(() => {
       soundEngine.playMicroswitchClick();
-    }
+    });
   };
 
   useEffect(() => {

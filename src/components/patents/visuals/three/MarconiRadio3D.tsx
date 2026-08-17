@@ -13,9 +13,13 @@ import {
 } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import * as THREE from "three";
+import { HudText } from "@/components/ui/LatexRenderer";
+import { FrankenSimEngine } from "@/physics/engine";
 import { soundEngine } from "@/utils/soundEngine";
 import { createGlowPointTexture, createThreeStudioScene } from "./ThreeStudioScene";
 import { useLiveSimParams } from "./useLiveSimParams";
+
+import { usePatentAudio } from "./usePatentAudio";
 
 type CameraPreset = "iso" | "spark_gap" | "induction_coil" | "aerial_monopole" | "top";
 
@@ -75,18 +79,18 @@ export function MarconiRadio3D() {
   const [isSparking, _setIsSparking] = useState<boolean>(true);
   const [showCalloutPins, setShowCalloutPins] = useState<boolean>(false);
   const [activeCamera, setActiveCamera] = useState<CameraPreset>("iso");
-  const [isAudioMuted, setIsAudioMuted] = useState<boolean>(true);
+  const { isAudioMuted, toggleSound: toggleEngine } = usePatentAudio();
 
-  // Electromagnetic Wireless Physics (Maxwell-Hertz-Marconi Equation)
-  const wavelengthMeters = aerialHeightMeters * 4;
-  const resonantFreqMhz = (300 / wavelengthMeters).toFixed(2);
-  const maxRangeMiles = (
-    0.015 *
-    aerialHeightMeters *
-    aerialHeightMeters *
-    (inductionCoilKv / 20)
-  ).toFixed(1);
-  const peakRfPowerKw = ((inductionCoilKv * inductionCoilKv) / (sparkGapMm * 1.5)).toFixed(1);
+  // Electromagnetic Wireless Physics (FrankenSim Monopole Radiation)
+  const radioPhysics = FrankenSimEngine.stepMarconiRadio(
+    aerialHeightMeters,
+    sparkGapMm,
+    inductionCoilKv,
+  );
+  const wavelengthMeters = radioPhysics.wavelengthMeters;
+  const resonantFreqMhz = radioPhysics.resonantFreqMhz.toFixed(2);
+  const maxRangeMiles = radioPhysics.maxRangeMiles.toFixed(1);
+  const peakRfPowerKw = radioPhysics.peakRfPowerKw.toFixed(1);
 
   const live = useLiveSimParams({
     aerialHeightMeters,
@@ -141,11 +145,9 @@ export function MarconiRadio3D() {
   };
 
   const toggleSound = () => {
-    const isMuted = soundEngine.toggleMute();
-    setIsAudioMuted(isMuted);
-    if (!isMuted) {
+    toggleEngine(() => {
       soundEngine.playSwitchClick();
-    }
+    });
   };
 
   useEffect(() => {
@@ -428,7 +430,7 @@ export function MarconiRadio3D() {
                 <div>
                   <span className="text-ink-600 dark:text-ink-400">Range:</span>{" "}
                   <span className="font-bold text-emerald-600 dark:text-emerald-400">
-                    {maxRangeMiles} Mi ($D \propto h^2$)
+                    {maxRangeMiles} Mi <HudText text="($D \\propto h^2$)" />
                   </span>
                 </div>
                 <div>
@@ -553,7 +555,7 @@ export function MarconiRadio3D() {
                   {s.name}
                 </div>
                 <div className="text-[10px] font-sans text-ink-500 dark:text-ink-400 line-clamp-2 mt-0.5">
-                  {s.desc}
+                  <HudText text={s.desc} />
                 </div>
               </button>
             ))}
@@ -566,7 +568,7 @@ export function MarconiRadio3D() {
           <div className="space-y-1.5">
             <div className="flex justify-between text-xs font-sans">
               <span className="font-semibold text-ink-800 dark:text-parchment-200">
-                Aerial Antenna Height ($h$):
+                <HudText text="Aerial Antenna Height ($h$):" />
               </span>
               <span className="font-mono text-amber-700 dark:text-amber-400 font-bold">
                 {aerialHeightMeters} Meters
@@ -590,7 +592,7 @@ export function MarconiRadio3D() {
           <div className="space-y-1.5">
             <div className="flex justify-between text-xs font-sans">
               <span className="font-semibold text-ink-800 dark:text-parchment-200">
-                Righi Spark Gap ($d$):
+                <HudText text="Righi Spark Gap ($d$):" />
               </span>
               <span className="font-mono text-blue-600 dark:text-blue-400 font-bold">
                 {sparkGapMm} mm

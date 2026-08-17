@@ -57,3 +57,8 @@ export function TextWithLatex({ text, className = "" }: { text: string; classNam
 
   return <span className={className}>{elements}</span>;
 }
+
+/** HUD/slider copy that may contain $inline$ TeX. */
+export function HudText({ text, className = "" }: { text: string; className?: string }) {
+  return <TextWithLatex text={text} className={className} />;
+}

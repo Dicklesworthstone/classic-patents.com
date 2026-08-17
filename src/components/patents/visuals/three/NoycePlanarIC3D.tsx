@@ -3,6 +3,7 @@
 import { Camera, Cpu, Eye, EyeOff, RotateCcw, Sparkles, Volume2, VolumeX, Zap } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import * as THREE from "three";
+import { HudText } from "@/components/ui/LatexRenderer";
 import { soundEngine } from "@/utils/soundEngine";
 import { createGlowPointTexture, createThreeStudioScene } from "./ThreeStudioScene";
 import { useLiveSimParams } from "./useLiveSimParams";
@@ -476,7 +477,7 @@ export function NoycePlanarIC3D() {
                   {s.name}
                 </div>
                 <div className="text-[10px] font-sans text-ink-500 dark:text-ink-400 line-clamp-2 mt-0.5">
-                  {s.desc}
+                  <HudText text={s.desc} />
                 </div>
               </button>
             ))}

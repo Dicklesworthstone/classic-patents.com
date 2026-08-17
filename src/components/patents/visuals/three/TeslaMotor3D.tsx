@@ -13,6 +13,7 @@ import {
 } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import * as THREE from "three";
+import { HudText } from "@/components/ui/LatexRenderer";
 import { FrankenSimEngine } from "@/physics/engine";
 import { soundEngine } from "@/utils/soundEngine";
 import { createGlowPointTexture, createThreeStudioScene } from "./ThreeStudioScene";
@@ -78,9 +79,10 @@ export function TeslaMotor3D() {
   const [isPlayingAudio, setIsPlayingAudio] = useState<boolean>(false);
 
   // Electromechanical Induction Physics Calculations (FrankenSim Engine)
-  const totalPoles = phaseCount === 2 ? 4 : 6;
-  const polePairs = totalPoles / 2;
-  const emPhysics = FrankenSimEngine.stepTeslaMotor(acFrequencyHz, totalPoles, appliedLoadTorqueNm);
+  // Four/six coil sides around one N–S pair: a 2-pole rotating field.
+  const fieldPoles = 2;
+  const polePairs = fieldPoles / 2;
+  const emPhysics = FrankenSimEngine.stepTeslaMotor(acFrequencyHz, fieldPoles, appliedLoadTorqueNm);
   const synchronousSpeedRpm = emPhysics.synchronousRpm;
   const slip = emPhysics.slipFraction;
   const rotorSpeedRpm = Math.round(synchronousSpeedRpm * (1 - slip));
@@ -136,10 +138,7 @@ export function TeslaMotor3D() {
     setPhaseCount(s.phases);
     setAppliedLoadTorqueNm(s.loadTorqueNm);
     if (isPlayingAudio) {
-      soundEngine.playTeslaMotorHum(
-        s.freqHz,
-        Math.round(((120 * s.freqHz) / (s.phases === 2 ? 4 : 6)) * 0.95),
-      );
+      soundEngine.playTeslaMotorHum(s.freqHz, Math.round(((120 * s.freqHz) / 2) * 0.95));
     }
   };
 
@@ -428,19 +427,25 @@ export function TeslaMotor3D() {
               </div>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-3 gap-y-0.5 sm:gap-y-1 mt-1 text-[10px] sm:text-xs font-sans">
                 <div>
-                  <span className="text-ink-600 dark:text-ink-400">Sync ($n_s$):</span>{" "}
+                  <span className="text-ink-600 dark:text-ink-400">
+                    <HudText text="Sync ($n_s$):" />
+                  </span>{" "}
                   <span className="font-bold text-blue-600 dark:text-blue-400">
                     {synchronousSpeedRpm} RPM
                   </span>
                 </div>
                 <div>
-                  <span className="text-ink-600 dark:text-ink-400">Rotor ($n_r$):</span>{" "}
+                  <span className="text-ink-600 dark:text-ink-400">
+                    <HudText text="Rotor ($n_r$):" />
+                  </span>{" "}
                   <span className="font-bold text-emerald-600 dark:text-emerald-400">
                     {rotorSpeedRpm} RPM
                   </span>
                 </div>
                 <div>
-                  <span className="text-ink-600 dark:text-ink-400">Slip ($s$):</span>{" "}
+                  <span className="text-ink-600 dark:text-ink-400">
+                    <HudText text="Slip ($s$):" />
+                  </span>{" "}
                   <span className="font-bold text-amber-600 dark:text-amber-400">
                     {(slip * 100).toFixed(1)}%
                   </span>
@@ -565,7 +570,7 @@ export function TeslaMotor3D() {
                   {s.name}
                 </div>
                 <div className="text-[10px] font-sans text-ink-500 dark:text-ink-400 line-clamp-2 mt-0.5">
-                  {s.desc}
+                  <HudText text={s.desc} />
                 </div>
               </button>
             ))}
@@ -577,7 +582,9 @@ export function TeslaMotor3D() {
           {/* AC Frequency */}
           <div className="space-y-1.5">
             <div className="flex justify-between font-medium text-ink-900 dark:text-parchment-100">
-              <span>AC Frequency ($f$):</span>
+              <span>
+                <HudText text="AC Frequency ($f$):" />
+              </span>
               <span className="font-bold text-amber-700 dark:text-amber-400">
                 {acFrequencyHz} Hz
               </span>
@@ -592,7 +599,7 @@ export function TeslaMotor3D() {
               className="w-full accent-amber-600 dark:accent-amber-400 cursor-pointer"
             />
             <span className="text-[10px] text-ink-500 dark:text-ink-400 block">
-              Rotating flux velocity $\omega_s = 2\pi f / P$
+              <HudText text="Rotating flux velocity $\\omega_s = 4\\pi f / P$" />
             </span>
           </div>
 
@@ -648,7 +655,7 @@ export function TeslaMotor3D() {
               className="w-full accent-emerald-600 dark:accent-emerald-400 cursor-pointer"
             />
             <span className="text-[10px] text-ink-500 dark:text-ink-400 block">
-              Higher load increases slip $s$ to induce torque
+              <HudText text="Higher load increases slip $s$ to induce torque" />
             </span>
           </div>
 

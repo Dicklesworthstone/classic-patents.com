@@ -13,9 +13,13 @@ import {
 } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import * as THREE from "three";
+import { HudText } from "@/components/ui/LatexRenderer";
+import { FrankenSimEngine } from "@/physics/engine";
 import { soundEngine } from "@/utils/soundEngine";
 import { createThreeStudioScene } from "./ThreeStudioScene";
 import { useLiveSimParams } from "./useLiveSimParams";
+
+import { usePatentAudio } from "./usePatentAudio";
 
 type CameraPreset = "iso" | "chains" | "bridges" | "clamps" | "top";
 
@@ -83,9 +87,14 @@ export function GoodyearRubber3D() {
   const [showStressVectors, setShowStressVectors] = useState<boolean>(true);
   const [showCalloutPins, setShowCalloutPins] = useState<boolean>(false);
   const [activeCamera, setActiveCamera] = useState<CameraPreset>("iso");
-  const [isAudioMuted, setIsAudioMuted] = useState<boolean>(true);
+  const { isAudioMuted, toggleSound: toggleEngine } = usePatentAudio();
 
-  // Thermodynamic & Polymer Mechanics Calculations
+  // Thermodynamic & Polymer Mechanics Calculations (FrankenSim Polymer Cross-Linking Kinetics)
+  const _rubberPhysics = FrankenSimEngine.stepGoodyearRubber(
+    cureTemperatureCelsius,
+    sulfurWeightPct,
+    30,
+  );
   const isVulcanized = sulfurWeightPct >= 2.0 && cureTemperatureCelsius >= 115;
   const glassTransitionTempC = Math.round(-70 + sulfurWeightPct * 3.8);
   const isGlassy = cureTemperatureCelsius < glassTransitionTempC;
@@ -172,11 +181,9 @@ export function GoodyearRubber3D() {
   };
 
   const toggleSound = () => {
-    const isMuted = soundEngine.toggleMute();
-    setIsAudioMuted(isMuted);
-    if (!isMuted) {
+    toggleEngine(() => {
       soundEngine.playElastomerSnap(appliedTensileStretch);
-    }
+    });
   };
 
   useEffect(() => {
@@ -401,13 +408,17 @@ export function GoodyearRubber3D() {
               </div>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-3 gap-y-0.5 sm:gap-y-1 mt-1 text-[10px] sm:text-xs font-sans">
                 <div>
-                  <span className="text-ink-600 dark:text-ink-400">Modulus ($E$):</span>{" "}
+                  <span className="text-ink-600 dark:text-ink-400">
+                    <HudText text="Modulus ($E$):" />
+                  </span>{" "}
                   <span className="font-bold text-blue-600 dark:text-blue-400">
                     {tensileElasticModulusMpa} MPa
                   </span>
                 </div>
                 <div>
-                  <span className="text-ink-600 dark:text-ink-400">Stretch ($\lambda$):</span>{" "}
+                  <span className="text-ink-600 dark:text-ink-400">
+                    <HudText text="Stretch ($\\lambda$):" />
+                  </span>{" "}
                   <span className="font-bold text-emerald-600 dark:text-emerald-400">
                     {appliedTensileStretch.toFixed(2)}×
                   </span>
@@ -419,7 +430,9 @@ export function GoodyearRubber3D() {
                   </span>
                 </div>
                 <div>
-                  <span className="text-ink-600 dark:text-ink-400">Entropic $\Delta S$:</span>{" "}
+                  <span className="text-ink-600 dark:text-ink-400">
+                    <HudText text="Entropic $\\Delta S$:" />
+                  </span>{" "}
                   <span className="font-bold text-amber-600 dark:text-amber-400">
                     -{entropicEntropyReductionJ} J/K
                   </span>
@@ -538,7 +551,7 @@ export function GoodyearRubber3D() {
                   {s.name}
                 </div>
                 <div className="text-[10px] font-sans text-ink-500 dark:text-ink-400 line-clamp-2 mt-0.5">
-                  {s.desc}
+                  <HudText text={s.desc} />
                 </div>
               </button>
             ))}
@@ -599,7 +612,7 @@ export function GoodyearRubber3D() {
           <div className="space-y-1.5">
             <div className="flex justify-between text-xs font-sans">
               <span className="font-semibold text-ink-800 dark:text-parchment-200">
-                Applied Tensile Stretch ($\lambda$):
+                <HudText text="Applied Tensile Stretch ($\\lambda$):" />
               </span>
               <span className="font-mono text-amber-700 dark:text-amber-400 font-bold">
                 {appliedTensileStretch.toFixed(2)}×
@@ -621,7 +634,7 @@ export function GoodyearRubber3D() {
               className="w-full accent-amber-600 cursor-pointer"
             />
             <span className="text-[10px] text-ink-500 dark:text-ink-400 block">
-              Entropic elasticity $\sigma = G(\lambda - 1/\lambda^2)$
+              <HudText text="Entropic elasticity $\\sigma = G(\\lambda - 1/\\lambda^2)$" />
             </span>
           </div>
         </div>

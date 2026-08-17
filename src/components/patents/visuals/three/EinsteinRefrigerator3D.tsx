@@ -16,6 +16,7 @@ import * as THREE from "three";
 import { soundEngine } from "@/utils/soundEngine";
 import { createGlowPointTexture, createThreeStudioScene } from "./ThreeStudioScene";
 import { useLiveSimParams } from "./useLiveSimParams";
+import { usePatentAudio } from "./usePatentAudio";
 
 type CameraPreset = "iso" | "generator" | "condenser" | "evaporator" | "absorber";
 
@@ -74,7 +75,7 @@ export function EinsteinRefrigerator3D() {
   const [isHeating, setIsHeating] = useState<boolean>(true);
   const [showCalloutPins, setShowCalloutPins] = useState<boolean>(false);
   const [activeCamera, setActiveCamera] = useState<CameraPreset>("iso");
-  const [isAudioMuted, setIsAudioMuted] = useState<boolean>(true);
+  const { isAudioMuted, toggleSound: toggleEngine } = usePatentAudio();
 
   // Thermodynamic Physics (Dalton's Law of Partial Pressures)
   // P_butane = P_total * (1 - y_ammonia)
@@ -133,11 +134,9 @@ export function EinsteinRefrigerator3D() {
   };
 
   const toggleSound = () => {
-    const isMuted = soundEngine.toggleMute();
-    setIsAudioMuted(isMuted);
-    if (!isMuted) {
+    toggleEngine(() => {
       soundEngine.playSwitchClick();
-    }
+    });
   };
 
   useEffect(() => {

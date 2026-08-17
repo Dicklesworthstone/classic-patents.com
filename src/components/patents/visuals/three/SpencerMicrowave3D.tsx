@@ -13,6 +13,8 @@ import {
 } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import * as THREE from "three";
+import { HudText } from "@/components/ui/LatexRenderer";
+import { FrankenSimEngine } from "@/physics/engine";
 import { soundEngine } from "@/utils/soundEngine";
 import { createGlowPointTexture, createThreeStudioScene } from "./ThreeStudioScene";
 import { useLiveSimParams } from "./useLiveSimParams";
@@ -77,10 +79,15 @@ export function SpencerMicrowave3D() {
   const [activeCamera, setActiveCamera] = useState<CameraPreset>("iso");
   const [isPlayingAudio, setIsPlayingAudio] = useState<boolean>(false);
 
-  // RF Cavity Physics Calculations
-  const hullCutoffGauss = Math.round(1180 * Math.sqrt(anodeVoltageKv / 4.2));
-  const isOscillating = magneticFieldGauss > hullCutoffGauss;
-  const waterDielectricLossDensity = isOscillating ? (rfPowerWatts * 1.8).toFixed(0) : "0";
+  // RF Cavity Physics Calculations (FrankenSim Hull Cutoff & Microwave Emission)
+  const rfPhysics = FrankenSimEngine.stepSpencerMicrowave(
+    anodeVoltageKv,
+    magneticFieldGauss,
+    rfPowerWatts,
+  );
+  const hullCutoffGauss = rfPhysics.hullCutoffGauss;
+  const isOscillating = rfPhysics.isOscillating;
+  const waterDielectricLossDensity = rfPhysics.dielectricLossWattsPerDm3.toString();
 
   const live = useLiveSimParams({
     anodeVoltageKv,
@@ -345,7 +352,9 @@ export function SpencerMicrowave3D() {
                   </span>
                 </div>
                 <div>
-                  <span className="text-ink-600 dark:text-ink-400">Hull Cutoff ($B_c$):</span>{" "}
+                  <span className="text-ink-600 dark:text-ink-400">
+                    <HudText text="Hull Cutoff ($B_c$):" />
+                  </span>{" "}
                   <span className="font-bold text-emerald-600 dark:text-emerald-400">
                     {hullCutoffGauss} G ({magneticFieldGauss} G Active)
                   </span>
@@ -472,7 +481,7 @@ export function SpencerMicrowave3D() {
                   {s.name}
                 </div>
                 <div className="text-[10px] font-sans text-ink-500 dark:text-ink-400 line-clamp-2 mt-0.5">
-                  {s.desc}
+                  <HudText text={s.desc} />
                 </div>
               </button>
             ))}
@@ -485,7 +494,7 @@ export function SpencerMicrowave3D() {
           <div className="space-y-1.5">
             <div className="flex justify-between text-xs font-sans">
               <span className="font-semibold text-ink-800 dark:text-parchment-200">
-                Anode Potential ($V_a$):
+                <HudText text="Anode Potential ($V_a$):" />
               </span>
               <span className="font-mono text-amber-700 dark:text-amber-400 font-bold">
                 {anodeVoltageKv.toFixed(1)} kV
@@ -509,7 +518,7 @@ export function SpencerMicrowave3D() {
           <div className="space-y-1.5">
             <div className="flex justify-between text-xs font-sans">
               <span className="font-semibold text-ink-800 dark:text-parchment-200">
-                Axial Magnetic Field ($B$):
+                <HudText text="Axial Magnetic Field ($B$):" />
               </span>
               <span className="font-mono text-blue-600 dark:text-blue-400 font-bold">
                 {magneticFieldGauss} Gauss

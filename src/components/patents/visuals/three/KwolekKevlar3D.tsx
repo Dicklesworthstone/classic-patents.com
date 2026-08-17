@@ -16,6 +16,7 @@ import * as THREE from "three";
 import { soundEngine } from "@/utils/soundEngine";
 import { createThreeStudioScene } from "./ThreeStudioScene";
 import { useLiveSimParams } from "./useLiveSimParams";
+import { usePatentAudio } from "./usePatentAudio";
 
 type CameraPreset = "iso" | "ring" | "hbonds" | "spinneret" | "impact";
 
@@ -80,7 +81,7 @@ export function KwolekKevlar3D() {
   const [isImpactTesting, setIsImpactTesting] = useState<boolean>(false);
   const [showCalloutPins, setShowCalloutPins] = useState<boolean>(false);
   const [activeCamera, setActiveCamera] = useState<CameraPreset>("iso");
-  const [isAudioMuted, setIsAudioMuted] = useState<boolean>(true);
+  const { isAudioMuted, toggleSound } = usePatentAudio();
 
   // Liquid-Crystal Physics Calculations
   const isNematicLCP = polymerConcentrationPct >= 12.0 && temperatureCelsius < 105;
@@ -140,12 +141,10 @@ export function KwolekKevlar3D() {
     }
   };
 
-  const toggleSound = () => {
-    const isMuted = soundEngine.toggleMute();
-    setIsAudioMuted(isMuted);
-    if (!isMuted) {
+  const handleToggleSound = () => {
+    toggleSound(() => {
       soundEngine.playElastomerSnap(1.2);
-    }
+    });
   };
 
   const impactTimerRef = useRef<number | null>(null);
@@ -453,7 +452,7 @@ export function KwolekKevlar3D() {
           </button>
           <button
             type="button"
-            onClick={toggleSound}
+            onClick={handleToggleSound}
             className="p-1.5 sm:p-2.5 rounded-xl bg-white/90 dark:bg-ink-900/90 backdrop-blur-md border border-parchment-300 dark:border-ink-700 text-ink-700 dark:text-parchment-300 hover:bg-parchment-100 dark:hover:bg-ink-800 transition-all shadow-sm"
             title={isAudioMuted ? "Enable Sound Synthesis" : "Mute Sound"}
           >

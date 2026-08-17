@@ -14,9 +14,12 @@ import {
 } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import * as THREE from "three";
+import { HudText } from "@/components/ui/LatexRenderer";
 import { soundEngine } from "@/utils/soundEngine";
 import { createThreeStudioScene } from "./ThreeStudioScene";
 import { useLiveSimParams } from "./useLiveSimParams";
+
+import { usePatentAudio } from "./usePatentAudio";
 
 type CameraPreset = "iso" | "bellows_chambers" | "pilothouse" | "paddlewheel" | "top";
 
@@ -82,9 +85,9 @@ export function LincolnBuoy3D() {
   const [riverShoalDepthFt, setRiverShoalDepthFt] = useState<number>(5.5); // 3 to 12 ft
   const [showCalloutPins, setShowCalloutPins] = useState<boolean>(false);
   const [activeCamera, setActiveCamera] = useState<CameraPreset>("iso");
-  const [isAudioMuted, setIsAudioMuted] = useState<boolean>(true);
+  const { isAudioMuted, toggleSound: toggleEngine } = usePatentAudio();
 
-  // Hydrostatic Buoyancy Physics (Archimedes' Principle)
+  // Hydrostatic Buoyancy Physics (FrankenSim Archimedes Principles)
   const hullLengthFt = 160;
   const hullBeamFt = 32;
   const waterDensityLbsPerCuFt = 62.4;
@@ -155,11 +158,9 @@ export function LincolnBuoy3D() {
   };
 
   const toggleSound = () => {
-    const isMuted = soundEngine.toggleMute();
-    setIsAudioMuted(isMuted);
-    if (!isMuted) {
+    toggleEngine(() => {
       soundEngine.playSwitchClick();
-    }
+    });
   };
 
   useEffect(() => {
@@ -497,7 +498,7 @@ export function LincolnBuoy3D() {
                   {s.name}
                 </div>
                 <div className="text-[10px] font-sans text-ink-500 dark:text-ink-400 line-clamp-2 mt-0.5">
-                  {s.desc}
+                  <HudText text={s.desc} />
                 </div>
               </button>
             ))}
@@ -526,7 +527,7 @@ export function LincolnBuoy3D() {
               className="w-full accent-amber-600 cursor-pointer"
             />
             <span className="text-[10px] text-ink-500 dark:text-ink-400 block">
-              Displaced water volume $\Delta V$ under guards
+              <HudText text="Displaced water volume $\\Delta V$ under guards" />
             </span>
           </div>
 

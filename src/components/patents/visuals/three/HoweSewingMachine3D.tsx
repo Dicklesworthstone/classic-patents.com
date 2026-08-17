@@ -13,9 +13,11 @@ import {
 } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import * as THREE from "three";
+import { FrankenSimEngine } from "@/physics/engine";
 import { soundEngine } from "@/utils/soundEngine";
 import { createThreeStudioScene } from "./ThreeStudioScene";
 import { useLiveSimParams } from "./useLiveSimParams";
+import { usePatentAudio } from "./usePatentAudio";
 
 type CameraPreset = "iso" | "needle" | "shuttle" | "flywheel" | "top";
 
@@ -82,11 +84,12 @@ export function HoweSewingMachine3D() {
   const [isCranking, setIsCranking] = useState<boolean>(true);
   const [showCalloutPins, setShowCalloutPins] = useState<boolean>(false);
   const [activeCamera, setActiveCamera] = useState<CameraPreset>("iso");
-  const [isAudioMuted, setIsAudioMuted] = useState<boolean>(true);
+  const { isAudioMuted, toggleSound: toggleEngine } = usePatentAudio();
 
-  // Lockstitch Kinematics Calculations
-  const stitchesPerSecond = (stitchingSpeedRpm / 60).toFixed(1);
-  const clothFeedRateMmPerSec = ((stitchingSpeedRpm / 60) * stitchPitchMm).toFixed(1);
+  // Lockstitch Kinematics Calculations (FrankenSim 4-Bar Mechanism)
+  const stitchState = FrankenSimEngine.stepHoweSewingMachine(stitchingSpeedRpm, threadTensionGrams);
+  const stitchesPerSecond = stitchState.stitchFrequencyHz.toFixed(1);
+  const clothFeedRateMmPerSec = (stitchState.stitchFrequencyHz * stitchPitchMm).toFixed(1);
   const handSewingSpeedRatio = (Number(clothFeedRateMmPerSec) / 1.2).toFixed(1);
 
   const live = useLiveSimParams({
@@ -142,11 +145,9 @@ export function HoweSewingMachine3D() {
   };
 
   const toggleSound = () => {
-    const isMuted = soundEngine.toggleMute();
-    setIsAudioMuted(isMuted);
-    if (!isMuted) {
+    toggleEngine(() => {
       soundEngine.playLockstitchClack();
-    }
+    });
   };
 
   useEffect(() => {

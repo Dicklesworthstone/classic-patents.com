@@ -14,9 +14,13 @@ import {
 } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import * as THREE from "three";
+import { HudText } from "@/components/ui/LatexRenderer";
+import { FrankenSimEngine } from "@/physics/engine";
 import { soundEngine } from "@/utils/soundEngine";
 import { createGlowPointTexture, createThreeStudioScene } from "./ThreeStudioScene";
 import { useLiveSimParams } from "./useLiveSimParams";
+
+import { usePatentAudio } from "./usePatentAudio";
 
 type CameraPreset = "iso" | "apex" | "band" | "spring" | "base";
 
@@ -75,15 +79,17 @@ export function BardeenTransistor3D() {
   const [showHoleDrift, setShowHoleDrift] = useState<boolean>(true);
   const [showCalloutPins, setShowCalloutPins] = useState<boolean>(false);
   const [activeCamera, setActiveCamera] = useState<CameraPreset>("iso");
-  const [isAudioMuted, setIsAudioMuted] = useState<boolean>(true);
+  const { isAudioMuted, toggleSound: toggleEngine } = usePatentAudio();
   const [isToneActive, setIsToneActive] = useState<boolean>(false);
 
-  // Transistor Physics Calculations
-  const holeDiffusionLength = 80;
-  const alphaCurrentGain = (1.8 * Math.exp(-pointContactGapMicrons / holeDiffusionLength)).toFixed(
-    2,
+  // Transistor Physics Calculations (FrankenSim Germanium Minority Transport)
+  const semiState = FrankenSimEngine.stepBardeenTransistor(
+    emitterCurrentMa,
+    collectorVoltageV,
+    pointContactGapMicrons,
   );
-  const collectorCurrentMa = (Number(alphaCurrentGain) * emitterCurrentMa).toFixed(2);
+  const alphaCurrentGain = semiState.currentGainAlpha.toFixed(2);
+  const collectorCurrentMa = (semiState.currentGainAlpha * emitterCurrentMa).toFixed(2);
   const voltageGain = Math.round(Math.abs(collectorVoltageV) / 0.6);
   const powerGainDb = Math.max(
     0,
@@ -146,8 +152,7 @@ export function BardeenTransistor3D() {
   };
 
   const toggleSound = () => {
-    const isMuted = soundEngine.toggleMute();
-    setIsAudioMuted(isMuted);
+    toggleEngine();
   };
 
   const toggleAudioTone = () => {
@@ -158,7 +163,9 @@ export function BardeenTransistor3D() {
       // 1000 Hz test signal amplified through transistor
       soundEngine.playContinuousTone(1000, "sine", 0.12 * Math.min(1.0, powerGainDb / 20));
       setIsToneActive(true);
-      setIsAudioMuted(false);
+      if (isAudioMuted) {
+        toggleEngine();
+      }
     }
   };
 
@@ -457,7 +464,9 @@ export function BardeenTransistor3D() {
                 <div className="text-xs font-bold text-ink-900 dark:text-parchment-100">
                   {s.name}
                 </div>
-                <div className="text-[10px] text-ink-500 line-clamp-2">{s.desc}</div>
+                <div className="text-[10px] text-ink-500 line-clamp-2">
+                  <HudText text={s.desc} />
+                </div>
               </button>
             ))}
           </div>

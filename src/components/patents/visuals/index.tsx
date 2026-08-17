@@ -23,6 +23,15 @@ function VisualLoadingFallback() {
   );
 }
 
+function VectorLoadingFallback() {
+  return (
+    <div className="w-full min-h-[280px] rounded-2xl bg-parchment-100 dark:bg-ink-900 border border-parchment-300 dark:border-ink-800 flex flex-col items-center justify-center gap-3 text-ink-600 dark:text-parchment-300">
+      <Layers className="w-6 h-6 text-amber-600 animate-pulse" />
+      <p className="font-sans text-xs text-ink-500 dark:text-ink-400">Loading 2D schematic…</p>
+    </div>
+  );
+}
+
 // Dynamically lazy-loaded 3D WebGL Physics Simulators
 const WrightFlyer3D = dynamic(() => import("./three/WrightFlyer3D").then((m) => m.WrightFlyer3D), {
   loading: VisualLoadingFallback,
@@ -115,68 +124,92 @@ const EinsteinRefrigerator3D = dynamic(
 
 // Dynamically lazy-loaded 2D Vector Schematics
 const WrightFlyerSim = dynamic(() => import("./WrightFlyerSim").then((m) => m.WrightFlyerSim), {
+  loading: VectorLoadingFallback,
   ssr: false,
 });
 const TeslaMotorSim = dynamic(() => import("./TeslaMotorSim").then((m) => m.TeslaMotorSim), {
+  loading: VectorLoadingFallback,
   ssr: false,
 });
 const FarnsworthTVSim = dynamic(() => import("./FarnsworthTVSim").then((m) => m.FarnsworthTVSim), {
+  loading: VectorLoadingFallback,
   ssr: false,
 });
 const SpencerMicrowaveSim = dynamic(
   () => import("./SpencerMicrowaveSim").then((m) => m.SpencerMicrowaveSim),
-  { ssr: false },
+  { loading: VectorLoadingFallback, ssr: false },
 );
 const NoycePlanarICSim = dynamic(
   () => import("./NoycePlanarICSim").then((m) => m.NoycePlanarICSim),
-  { ssr: false },
+  { loading: VectorLoadingFallback, ssr: false },
 );
 const KwolekKevlarSim = dynamic(() => import("./KwolekKevlarSim").then((m) => m.KwolekKevlarSim), {
+  loading: VectorLoadingFallback,
   ssr: false,
 });
 const EdisonBulbSim = dynamic(() => import("./EdisonBulbSim").then((m) => m.EdisonBulbSim), {
+  loading: VectorLoadingFallback,
   ssr: false,
 });
 const BellTelephoneSim = dynamic(
   () => import("./BellTelephoneSim").then((m) => m.BellTelephoneSim),
-  { ssr: false },
+  { loading: VectorLoadingFallback, ssr: false },
 );
 const LincolnBuoySim = dynamic(() => import("./LincolnBuoySim").then((m) => m.LincolnBuoySim), {
+  loading: VectorLoadingFallback,
   ssr: false,
 });
 const HoweSewingMachineSim = dynamic(
   () => import("./HoweSewingMachineSim").then((m) => m.HoweSewingMachineSim),
-  { ssr: false },
+  { loading: VectorLoadingFallback, ssr: false },
 );
 const TeslaCoilSim = dynamic(() => import("./TeslaCoilSim").then((m) => m.TeslaCoilSim), {
+  loading: VectorLoadingFallback,
   ssr: false,
 });
 const GoddardRocketSim = dynamic(
   () => import("./GoddardRocketSim").then((m) => m.GoddardRocketSim),
-  { ssr: false },
+  { loading: VectorLoadingFallback, ssr: false },
 );
 const BardeenTransistorSim = dynamic(
   () => import("./BardeenTransistorSim").then((m) => m.BardeenTransistorSim),
-  { ssr: false },
+  { loading: VectorLoadingFallback, ssr: false },
 );
 const BoyleSmithCcdSim = dynamic(
   () => import("./BoyleSmithCcdSim").then((m) => m.BoyleSmithCcdSim),
-  { ssr: false },
+  { loading: VectorLoadingFallback, ssr: false },
 );
 const MarconiRadioSim = dynamic(() => import("./MarconiRadioSim").then((m) => m.MarconiRadioSim), {
+  loading: VectorLoadingFallback,
   ssr: false,
 });
 const MorseTelegraphSim = dynamic(
   () => import("./MorseTelegraphSim").then((m) => m.MorseTelegraphSim),
-  { ssr: false },
+  { loading: VectorLoadingFallback, ssr: false },
 );
 const GoodyearRubberSim = dynamic(
   () => import("./GoodyearRubberSim").then((m) => m.GoodyearRubberSim),
-  { ssr: false },
+  { loading: VectorLoadingFallback, ssr: false },
 );
 const LamarrFrequencyHoppingSim = dynamic(
   () => import("./LamarrFrequencyHoppingSim").then((m) => m.LamarrFrequencyHoppingSim),
-  { ssr: false },
+  { loading: VectorLoadingFallback, ssr: false },
+);
+const EngelbartMouseSim = dynamic(
+  () => import("./EngelbartMouseSim").then((m) => m.EngelbartMouseSim),
+  { loading: VectorLoadingFallback, ssr: false },
+);
+const FermiReactorSim = dynamic(() => import("./FermiReactorSim").then((m) => m.FermiReactorSim), {
+  loading: VectorLoadingFallback,
+  ssr: false,
+});
+const WozniakAppleSim = dynamic(() => import("./WozniakAppleSim").then((m) => m.WozniakAppleSim), {
+  loading: VectorLoadingFallback,
+  ssr: false,
+});
+const EinsteinRefrigeratorSim = dynamic(
+  () => import("./EinsteinRefrigeratorSim").then((m) => m.EinsteinRefrigeratorSim),
+  { loading: VectorLoadingFallback, ssr: false },
 );
 
 interface PatentVisualDispatcherProps {
@@ -207,6 +240,10 @@ const VECTOR_DIAGRAM_IDS = new Set([
   "us-1647-morse-telegraph",
   "us-3633-goodyear-rubber",
   "us-2292387-lamarr-frequency-hopping",
+  "us-3541541-engelbart-mouse",
+  "us-2708656-fermi-reactor",
+  "us-4136359-wozniak-apple",
+  "us-1781541-einstein-refrigerator",
 ]);
 
 export function PatentVisualDispatcher({ patentId }: PatentVisualDispatcherProps) {
@@ -297,13 +334,17 @@ export function PatentVisualDispatcher({ patentId }: PatentVisualDispatcherProps
               <LamarrFrequencyHoppingSim />
             );
           case "us-3541541-engelbart-mouse":
-            return <EngelbartMouse3D />;
+            return activeMode === "3d-physics" ? <EngelbartMouse3D /> : <EngelbartMouseSim />;
           case "us-2708656-fermi-reactor":
-            return <FermiReactor3D />;
+            return activeMode === "3d-physics" ? <FermiReactor3D /> : <FermiReactorSim />;
           case "us-4136359-wozniak-apple":
-            return <WozniakApple3D />;
+            return activeMode === "3d-physics" ? <WozniakApple3D /> : <WozniakAppleSim />;
           case "us-1781541-einstein-refrigerator":
-            return <EinsteinRefrigerator3D />;
+            return activeMode === "3d-physics" ? (
+              <EinsteinRefrigerator3D />
+            ) : (
+              <EinsteinRefrigeratorSim />
+            );
           default:
             return (
               <div className="w-full min-h-[240px] rounded-2xl border border-parchment-300 dark:border-ink-800 bg-parchment-100 dark:bg-ink-900 flex items-center justify-center p-6 text-center">

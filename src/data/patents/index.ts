@@ -16,13 +16,14 @@ import { lincolnBuoyPatent } from "./lincoln-buoy";
 import { marconiRadioPatent } from "./marconi-radio";
 import { morseTelegraphPatent } from "./morse-telegraph";
 import { noyceIcPatent } from "./noyce-ic";
+import { parsePatentCatalog } from "./schema";
 import { spencerMicrowavePatent } from "./spencer-microwave";
 import { teslaCoilPatent } from "./tesla-coil";
 import { teslaMotorPatent } from "./tesla-motor";
 import { wozniakApplePatent } from "./wozniak-apple";
 import { wrightFlyerPatent } from "./wright-flyer";
 
-export const allPatents: Patent[] = [
+export const allPatents: Patent[] = parsePatentCatalog([
   morseTelegraphPatent,
   goodyearRubberPatent,
   howeSewingMachinePatent,
@@ -45,7 +46,7 @@ export const allPatents: Patent[] = [
   kwolekKevlarPatent,
   boyleSmithCcdPatent,
   wozniakApplePatent,
-];
+]);
 
 export function getPatentById(id: string): Patent | undefined {
   return allPatents.find((p) => p.id === id);

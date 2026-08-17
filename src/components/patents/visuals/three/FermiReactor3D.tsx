@@ -14,9 +14,12 @@ import {
 } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import * as THREE from "three";
+import { HudText } from "@/components/ui/LatexRenderer";
 import { soundEngine } from "@/utils/soundEngine";
 import { createGlowPointTexture, createThreeStudioScene } from "./ThreeStudioScene";
 import { useLiveSimParams } from "./useLiveSimParams";
+
+import { usePatentAudio } from "./usePatentAudio";
 
 type CameraPreset = "iso" | "control_rods" | "graphite_core" | "gantry" | "top";
 
@@ -75,7 +78,7 @@ export function FermiReactor3D() {
   const [showNeutronCascade, setShowNeutronCascade] = useState<boolean>(true);
   const [showCalloutPins, setShowCalloutPins] = useState<boolean>(false);
   const [activeCamera, setActiveCamera] = useState<CameraPreset>("iso");
-  const [isAudioMuted, setIsAudioMuted] = useState<boolean>(true);
+  const { isAudioMuted, toggleSound: toggleEngine } = usePatentAudio();
 
   // Four-Factor Nuclear Physics Calculations
   // k_eff = eta * epsilon * p * f * P_NL
@@ -145,11 +148,9 @@ export function FermiReactor3D() {
   };
 
   const toggleSound = () => {
-    const isMuted = soundEngine.toggleMute();
-    setIsAudioMuted(isMuted);
-    if (!isMuted) {
+    toggleEngine(() => {
       soundEngine.playSwitchClick();
-    }
+    });
   };
 
   useEffect(() => {
@@ -406,7 +407,9 @@ export function FermiReactor3D() {
               </div>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-3 gap-y-0.5 sm:gap-y-1 mt-1 text-[10px] sm:text-xs font-sans">
                 <div>
-                  <span className="text-ink-600 dark:text-ink-400">Effective $k$:</span>{" "}
+                  <span className="text-ink-600 dark:text-ink-400">
+                    <HudText text="Effective $k$:" />
+                  </span>{" "}
                   <span
                     className={`font-bold ${
                       isCritical
@@ -554,7 +557,7 @@ export function FermiReactor3D() {
                   {s.name}
                 </div>
                 <div className="text-[10px] font-sans text-ink-500 dark:text-ink-400 line-clamp-2 mt-0.5">
-                  {s.desc}
+                  <HudText text={s.desc} />
                 </div>
               </button>
             ))}
