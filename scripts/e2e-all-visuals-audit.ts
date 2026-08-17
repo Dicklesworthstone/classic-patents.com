@@ -66,8 +66,8 @@ async function runVisualsAudit() {
     process.stdout.write(`[${i + 1}/22] Testing ${patent.patentNumber} (${patent.id}) ... `);
 
     try {
-      const response = await page.goto(url, { waitUntil: "networkidle", timeout: 15000 });
-      if (response?.status() !== 200) {
+      const response = await page.goto(url, { waitUntil: "domcontentloaded", timeout: 15000 });
+      if (!response || response.status() !== 200) {
         throw new Error(`HTTP Status ${response?.status()}`);
       }
 
