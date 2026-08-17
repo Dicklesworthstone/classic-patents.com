@@ -68,10 +68,9 @@ export function LamarrFrequencyHopping3D() {
   // Physics Calculations
   const processingGainDb = (10 * Math.log10(carrierChannelsCount)).toFixed(1);
   const antiJamMarginDb = (Number(processingGainDb) - 3.0).toFixed(1);
-  const activeFrequencyMhz = (
-    302 +
-    ((Math.max(1, currentChannel) - 1) * (520 - 302)) / 87
-  ).toFixed(1);
+  const activeFrequencyMhz = (302 + ((Math.max(1, currentChannel) - 1) * (520 - 302)) / 87).toFixed(
+    1,
+  );
 
   const live = useLiveSimParams({
     hopRateHopsPerSec,

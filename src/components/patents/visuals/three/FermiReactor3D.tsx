@@ -1,17 +1,6 @@
 "use client";
 
-import {
-  Activity,
-  Camera,
-  Flame,
-  Layers,
-  RotateCcw,
-  Shield,
-  Sparkles,
-  Volume2,
-  VolumeX,
-  Zap,
-} from "lucide-react";
+import { Camera, Flame, RotateCcw, Shield, Sparkles, Volume2, VolumeX, Zap } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import * as THREE from "three";
 import { soundEngine } from "@/utils/soundEngine";
@@ -366,7 +355,7 @@ export function FermiReactor3D() {
 
         // Geiger counter acoustic feedback proportional to k_eff
         geigerClickTimer += delta;
-        const clickInterval = Math.max(0.08, 0.4 / (Number(p.kEff) ** 2));
+        const clickInterval = Math.max(0.08, 0.4 / Number(p.kEff) ** 2);
         if (geigerClickTimer > clickInterval) {
           geigerClickTimer = 0;
           if (!p.isAudioMuted && Math.random() < 0.6) {
@@ -404,7 +393,9 @@ export function FermiReactor3D() {
             </div>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-4 gap-y-1 mt-1 text-xs font-sans">
               <div>
-                <span className="text-ink-600 dark:text-ink-400">Effective $k_&#123;eff&#125;$:</span>{" "}
+                <span className="text-ink-600 dark:text-ink-400">
+                  Effective $k_&#123;eff&#125;$:
+                </span>{" "}
                 <span
                   className={`font-bold ${
                     isCritical
@@ -414,7 +405,8 @@ export function FermiReactor3D() {
                         : "text-amber-600 dark:text-amber-400"
                   }`}
                 >
-                  {kEff} ({isCritical ? "Critical" : isSupercritical ? "Supercritical" : "Sub-critical"})
+                  {kEff} (
+                  {isCritical ? "Critical" : isSupercritical ? "Supercritical" : "Sub-critical"})
                 </span>
               </div>
               <div>
@@ -454,7 +446,11 @@ export function FermiReactor3D() {
             className="p-2.5 rounded-xl bg-white/90 dark:bg-ink-900/90 backdrop-blur-md border border-parchment-300 dark:border-ink-700 text-ink-700 dark:text-parchment-300 hover:bg-parchment-100 dark:hover:bg-ink-800 transition-all shadow-sm"
             title={isAudioMuted ? "Enable Sound Synthesis" : "Mute Sound"}
           >
-            {isAudioMuted ? <VolumeX className="w-4 h-4" /> : <Volume2 className="w-4 h-4 text-amber-600" />}
+            {isAudioMuted ? (
+              <VolumeX className="w-4 h-4" />
+            ) : (
+              <Volume2 className="w-4 h-4 text-amber-600" />
+            )}
           </button>
           <button
             type="button"
@@ -513,7 +509,8 @@ export function FermiReactor3D() {
         {/* Scenario Presets */}
         <div className="space-y-1.5">
           <div className="text-xs font-sans font-bold text-ink-700 dark:text-ink-300 uppercase tracking-wider flex items-center gap-1.5">
-            <Sparkles className="w-3.5 h-3.5 text-amber-600" /> Historical Nuclear Criticality Presets:
+            <Sparkles className="w-3.5 h-3.5 text-amber-600" /> Historical Nuclear Criticality
+            Presets:
           </div>
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
             {SCENARIOS.map((s) => (

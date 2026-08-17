@@ -1,15 +1,6 @@
 "use client";
 
-import {
-  Camera,
-  Cpu,
-  Monitor,
-  RotateCcw,
-  Sparkles,
-  Volume2,
-  VolumeX,
-  Zap,
-} from "lucide-react";
+import { Camera, Cpu, Monitor, RotateCcw, Sparkles, Volume2, VolumeX, Zap } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import * as THREE from "three";
 import { soundEngine } from "@/utils/soundEngine";
@@ -409,7 +400,9 @@ export function WozniakApple3D() {
 
           <div className="bg-white/90 dark:bg-ink-900/90 backdrop-blur-md px-3 py-1.5 rounded-lg border border-parchment-300 dark:border-ink-700 text-[11px] font-sans text-ink-700 dark:text-ink-300 flex items-center gap-2 max-w-full">
             <Monitor className="w-3.5 h-3.5 text-emerald-500 animate-pulse shrink-0" />
-            <span className="truncate">Steve Wozniak (US 4,136,359) — Shared Dynamic RAM Architecture</span>
+            <span className="truncate">
+              Steve Wozniak (US 4,136,359) — Shared Dynamic RAM Architecture
+            </span>
           </div>
         </div>
 
@@ -421,7 +414,11 @@ export function WozniakApple3D() {
             className="p-2.5 rounded-xl bg-white/90 dark:bg-ink-900/90 backdrop-blur-md border border-parchment-300 dark:border-ink-700 text-ink-700 dark:text-parchment-300 hover:bg-parchment-100 dark:hover:bg-ink-800 transition-all shadow-sm"
             title={isAudioMuted ? "Enable Sound Synthesis" : "Mute Sound"}
           >
-            {isAudioMuted ? <VolumeX className="w-4 h-4" /> : <Volume2 className="w-4 h-4 text-amber-600" />}
+            {isAudioMuted ? (
+              <VolumeX className="w-4 h-4" />
+            ) : (
+              <Volume2 className="w-4 h-4 text-amber-600" />
+            )}
           </button>
           <button
             type="button"
