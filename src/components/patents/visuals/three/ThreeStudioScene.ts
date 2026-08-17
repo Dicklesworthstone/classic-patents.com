@@ -1,18 +1,22 @@
 /**
  * ThreeStudioScene.ts
  *
- * Museum-grade architectural studio lighting, PBR environment, particle engines,
- * and responsive orbit controls for Classic Patents 3D WebGL physics simulations.
+ * Museum-grade architectural studio lighting, vibrant atmospheric blue sky with
+ * procedural cumulus clouds, high-luminosity sun illumination, and responsive orbit controls
+ * for Classic Patents 3D WebGL physics simulations.
  *
  * Provides:
- * - High-luminosity 3-Point Photography Studio Lighting (Key, Soft Fill, Edge Rim, Bounce)
- * - Auto-detecting Theme Studio Environments (Luminous Parchment & Deep Blueprint Slate)
- * - ACES Filmic Tone Mapping with High-Dynamic-Range Exposure (No dark or muddy renders)
- * - Procedural Glowing Particle Textures & Vector Field Visualizers
+ * - Vibrant Blue Sky with Procedural Fluffy 3D Cumulus Clouds
+ * - Warm Natural Sunlight with Soft Shadow Casting (PCF Soft Shadows)
+ * - ACES Filmic Tone Mapping with High Dynamic Range Exposure (Zero dark/muddy renders)
+ * - Auto-detecting Theme Studio & Sky Environments
  * - Smooth Touch/Mouse Orbit Controls with Inertial Damping
+ * - Reduced Motion Awareness
  */
 
 import * as THREE from "three";
+
+export type EnvironmentStyle = "sky" | "studio" | "laboratory" | "ocean";
 
 export interface StudioOptions {
   container: HTMLDivElement;
@@ -20,13 +24,13 @@ export interface StudioOptions {
   targetPos?: [number, number, number];
   fov?: number;
   isDark?: boolean;
-  bgTopColor?: number;
-  bgBottomColor?: number;
-  rimColor?: number;
-  ambientIntensity?: number;
+  environmentStyle?: EnvironmentStyle;
+  enableClouds?: boolean;
   enableFloorGrid?: boolean;
   floorColor?: number;
   gridColor?: number;
+  ambientIntensity?: number;
+  sunIntensity?: number;
 }
 
 export interface StudioContext {
@@ -38,16 +42,121 @@ export interface StudioContext {
     dispose: () => void;
     setRadius: (r: number) => void;
   };
+  updateEnvironment: () => void;
   dispose: () => void;
 }
 
 /**
- * Creates a high-luminosity, crisp Three.js studio environment.
+ * Generates a smooth procedural atmospheric sky canvas texture.
+ */
+function createProceduralSkyTexture(isDark: boolean, style: EnvironmentStyle): THREE.CanvasTexture {
+  const canvas = document.createElement("canvas");
+  canvas.width = 512;
+  canvas.height = 512;
+  const ctx = canvas.getContext("2d");
+
+  if (ctx) {
+    const gradient = ctx.createLinearGradient(0, 0, 0, 512);
+
+    if (isDark) {
+      // Crisp Twilight / Starlit Horizon
+      gradient.addColorStop(0.0, "#0b1329"); // Deep midnight zenith
+      gradient.addColorStop(0.4, "#162544"); // Navy mid-sky
+      gradient.addColorStop(0.7, "#1e3a5f"); // Cobalt lower sky
+      gradient.addColorStop(0.95, "#2563eb"); // Electric blue horizon glow
+      gradient.addColorStop(1.0, "#1d4ed8"); // Horizon haze
+    } else if (style === "studio" || style === "laboratory") {
+      // Bright Sunlit Architectural Studio
+      gradient.addColorStop(0.0, "#e0f2fe"); // Soft ice-blue ceiling
+      gradient.addColorStop(0.3, "#f0f9ff"); // Luminous daylight
+      gradient.addColorStop(0.7, "#f8fafc"); // Clean museum white
+      gradient.addColorStop(1.0, "#e2e8f0"); // Soft shadow floor
+    } else {
+      // Crisp Radiant Blue Sky with Horizon Haze
+      gradient.addColorStop(0.0, "#1d4ed8"); // Rich cerulean blue zenith
+      gradient.addColorStop(0.25, "#2563eb"); // Vibrant royal azure
+      gradient.addColorStop(0.55, "#3b82f6"); // Radiant sky blue
+      gradient.addColorStop(0.8, "#93c5fd"); // Soft daylight cyan
+      gradient.addColorStop(0.96, "#e0f2fe"); // Luminous golden-sun horizon haze
+      gradient.addColorStop(1.0, "#fef3c7"); // Warm sunlight horizon line
+    }
+
+    ctx.fillStyle = gradient;
+    ctx.fillRect(0, 0, 512, 512);
+
+    // Subtle sun flare on the sky canvas
+    if (!isDark) {
+      const sunGradient = ctx.createRadialGradient(380, 80, 0, 380, 80, 180);
+      sunGradient.addColorStop(0.0, "rgba(255, 255, 240, 0.45)");
+      sunGradient.addColorStop(0.4, "rgba(254, 240, 138, 0.2)");
+      sunGradient.addColorStop(1.0, "rgba(255, 255, 255, 0.0)");
+      ctx.fillStyle = sunGradient;
+      ctx.fillRect(0, 0, 512, 512);
+    }
+  }
+
+  const texture = new THREE.CanvasTexture(canvas);
+  texture.wrapS = THREE.ClampToEdgeWrapping;
+  texture.wrapT = THREE.ClampToEdgeWrapping;
+  return texture;
+}
+
+/**
+ * Creates 3D procedural fluffy cumulus clouds that float and drift in the sky.
+ */
+function createCumulusCloudPuff(
+  cloudGroup: THREE.Group,
+  baseX: number,
+  baseY: number,
+  baseZ: number,
+  scale = 1.0,
+  isDark = false,
+) {
+  const cloudMat = new THREE.MeshLambertMaterial({
+    color: isDark ? 0x93c5fd : 0xffffff,
+    transparent: true,
+    opacity: isDark ? 0.4 : 0.85,
+    depthWrite: false,
+  });
+
+  const puffCount = 6 + Math.floor(Math.random() * 4);
+  for (let i = 0; i < puffCount; i++) {
+    const radius = (2.2 + Math.random() * 2.8) * scale;
+    const geo = new THREE.SphereGeometry(radius, 12, 10);
+    const mesh = new THREE.Mesh(geo, cloudMat);
+
+    const ox = (Math.random() - 0.5) * 8 * scale;
+    const oy = (Math.random() - 0.5) * 2 * scale;
+    const oz = (Math.random() - 0.5) * 5 * scale;
+
+    mesh.position.set(baseX + ox, baseY + oy, baseZ + oz);
+    mesh.scale.set(1.4, 0.8, 1.0); // Flatten puffs into cumulus horizontal shape
+    cloudGroup.add(mesh);
+  }
+}
+
+/**
+ * Checks whether user prefers reduced motion in OS/browser.
+ */
+export function checkPrefersReducedMotion(): boolean {
+  if (typeof window === "undefined") return false;
+  return window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+}
+
+/**
+ * Creates a high-luminosity, beautiful blue sky & studio environment for Three.js.
  */
 export function createThreeStudioScene(opts: StudioOptions): StudioContext {
-  const { container, cameraPos = [14, 12, 16], targetPos = [0, 0, 0], fov = 42 } = opts;
+  const {
+    container,
+    cameraPos = [14, 12, 16],
+    targetPos = [0, 0, 0],
+    fov = 42,
+    environmentStyle = "sky",
+    enableClouds = true,
+  } = opts;
 
-  // Auto-detect theme from document if not explicitly passed
+  // Auto-detect theme
   const isDark =
     opts.isDark !== undefined
       ? opts.isDark
@@ -56,20 +165,14 @@ export function createThreeStudioScene(opts: StudioOptions): StudioContext {
           document.documentElement.classList.contains("theme-blueprint")
         : false;
 
-  // Dynamic Palette Configuration: High Clarity & Luminous Studio Lighting
-  const bgTopColor = opts.bgTopColor ?? (isDark ? 0x182438 : 0xfcfaf7);
-  const bgBottomColor = opts.bgBottomColor ?? (isDark ? 0x0c131f : 0xede4d4);
-  const floorColor = opts.floorColor ?? (isDark ? 0x111a2c : 0xf5eedf);
-  const gridColor = opts.gridColor ?? (isDark ? 0x223a5e : 0xcbbba2);
-  const rimColor = opts.rimColor ?? (isDark ? 0x38bdf8 : 0xd97706);
-  const ambientIntensity = opts.ambientIntensity ?? (isDark ? 1.6 : 2.0);
-
-  // 1. Scene & Background
+  // 1. Scene & Background Sky
   const scene = new THREE.Scene();
-  scene.background = new THREE.Color(bgBottomColor);
+  const skyTexture = createProceduralSkyTexture(isDark, environmentStyle);
+  scene.background = skyTexture;
 
-  // Gentle atmospheric fog to blend the horizon without obscuring models
-  scene.fog = new THREE.FogExp2(bgBottomColor, isDark ? 0.012 : 0.008);
+  // Atmospheric Fog: Matches horizon for soft atmospheric depth
+  const fogColor = isDark ? 0x162544 : 0xdbeafe;
+  scene.fog = new THREE.FogExp2(fogColor, isDark ? 0.008 : 0.004);
 
   const width = container.clientWidth || 600;
   const height = container.clientHeight || 460;
@@ -88,61 +191,88 @@ export function createThreeStudioScene(opts: StudioOptions): StudioContext {
   renderer.setSize(width, height);
   renderer.setPixelRatio(Math.min(typeof window !== "undefined" ? window.devicePixelRatio : 1, 2));
   renderer.toneMapping = THREE.ACESFilmicToneMapping;
-  renderer.toneMappingExposure = isDark ? 1.55 : 1.45;
+  renderer.toneMappingExposure = isDark ? 1.4 : 1.35;
   renderer.shadowMap.enabled = true;
   renderer.shadowMap.type = THREE.PCFSoftShadowMap;
 
   container.replaceChildren(renderer.domElement);
 
-  // 4. Multi-Point Studio Lighting Rig
-  // A. Sky & Ground Hemisphere Light
-  const hemiLight = new THREE.HemisphereLight(bgTopColor, floorColor, ambientIntensity);
+  // 4. Studio & Sun Lighting Rig
+  // A. Sky & Ground Hemisphere Light (Natural atmospheric fill)
+  const hemiSkyColor = isDark ? 0x60a5fa : 0x38bdf8;
+  const hemiGroundColor = isDark ? 0x1e293b : 0xfef3c7;
+  const hemiLight = new THREE.HemisphereLight(
+    hemiSkyColor,
+    hemiGroundColor,
+    opts.ambientIntensity ?? (isDark ? 1.8 : 2.2),
+  );
   hemiLight.position.set(0, 50, 0);
   scene.add(hemiLight);
 
-  // B. Powerful Warm Key Light (Studio Softbox)
-  const keyLight = new THREE.DirectionalLight(0xffffff, isDark ? 2.8 : 3.2);
-  keyLight.position.set(20, 30, 20);
-  keyLight.castShadow = true;
-  keyLight.shadow.mapSize.width = 2048;
-  keyLight.shadow.mapSize.height = 2048;
-  keyLight.shadow.camera.near = 0.5;
-  keyLight.shadow.camera.far = 100;
-  keyLight.shadow.camera.left = -25;
-  keyLight.shadow.camera.right = 25;
-  keyLight.shadow.camera.top = 25;
-  keyLight.shadow.camera.bottom = -25;
-  keyLight.shadow.bias = -0.0003;
-  scene.add(keyLight);
+  // B. Warm Golden Sun Key Light (Direct Sunbeam & Soft Shadows)
+  const sunLight = new THREE.DirectionalLight(
+    isDark ? 0xffffff : 0xfffaed,
+    opts.sunIntensity ?? (isDark ? 3.0 : 3.4),
+  );
+  sunLight.position.set(28, 38, 22);
+  sunLight.castShadow = true;
+  sunLight.shadow.mapSize.width = 2048;
+  sunLight.shadow.mapSize.height = 2048;
+  sunLight.shadow.camera.near = 0.5;
+  sunLight.shadow.camera.far = 120;
+  sunLight.shadow.camera.left = -30;
+  sunLight.shadow.camera.right = 30;
+  sunLight.shadow.camera.top = 30;
+  sunLight.shadow.camera.bottom = -30;
+  sunLight.shadow.bias = -0.0002;
+  scene.add(sunLight);
 
-  // C. Fill Light (Soft Cool Diffuse Fill from opposite quadrant)
-  const fillLight = new THREE.DirectionalLight(isDark ? 0x93c5fd : 0xfff8ee, isDark ? 1.5 : 1.8);
-  fillLight.position.set(-20, 15, -15);
+  // C. Fill Light (Soft cool diffuse fill from the opposite side)
+  const fillLight = new THREE.DirectionalLight(isDark ? 0x93c5fd : 0xeff6ff, isDark ? 1.4 : 1.6);
+  fillLight.position.set(-25, 18, -18);
   scene.add(fillLight);
 
-  // D. Front Uplight Bounce (Eliminates pitch-black underside shadows)
-  const bounceLight = new THREE.DirectionalLight(isDark ? 0x3b82f6 : 0xfde68a, 0.9);
-  bounceLight.position.set(0, -10, 15);
+  // D. Upward Daylight Bounce (Illuminates bottoms of wings, coils, and gears)
+  const bounceLight = new THREE.DirectionalLight(isDark ? 0x38bdf8 : 0xffedd5, 1.1);
+  bounceLight.position.set(0, -15, 12);
   scene.add(bounceLight);
 
-  // E. Edge Rim Light (Sharp Specular Silhouette Highlight)
-  const rimLight = new THREE.SpotLight(rimColor, isDark ? 3.0 : 2.2);
-  rimLight.position.set(-5, 22, -25);
+  // E. Specular Rim / Sunlight Edge Highlight
+  const rimLight = new THREE.SpotLight(isDark ? 0x38bdf8 : 0xfef08a, isDark ? 2.5 : 2.2);
+  rimLight.position.set(-15, 25, -28);
   rimLight.lookAt(0, 0, 0);
   scene.add(rimLight);
 
-  // 5. Studio Pedestal Floor & Concentric Grid
+  // 5. 3D Cumulus Clouds Layer
+  const cloudsGroup = new THREE.Group();
+  if (enableClouds) {
+    // Generate scattered puffy clouds across the sky background
+    createCumulusCloudPuff(cloudsGroup, -45, 18, -40, 1.2, isDark);
+    createCumulusCloudPuff(cloudsGroup, 20, 22, -50, 1.5, isDark);
+    createCumulusCloudPuff(cloudsGroup, -15, 26, -60, 1.8, isDark);
+    createCumulusCloudPuff(cloudsGroup, 50, 20, -35, 1.1, isDark);
+    createCumulusCloudPuff(cloudsGroup, -60, 24, -45, 1.4, isDark);
+    createCumulusCloudPuff(cloudsGroup, 5, 28, -70, 2.0, isDark);
+    scene.add(cloudsGroup);
+  }
+
+  // 6. Ground Pedestal / Architectural Floor & Grid
   if (opts.enableFloorGrid !== false) {
-    const gridHelper = new THREE.GridHelper(44, 32, isDark ? 0xf59e0b : 0xb45309, gridColor);
+    const gridHelper = new THREE.GridHelper(
+      48,
+      32,
+      isDark ? 0x38bdf8 : 0xd97706,
+      isDark ? 0x1e3a8a : 0x93c5fd,
+    );
     gridHelper.position.y = -4.5;
     scene.add(gridHelper);
 
-    // Reflective circular pedestal
-    const floorGeo = new THREE.CircleGeometry(26, 64);
+    // Luminous shadow-receiving circular pedestal ground
+    const floorGeo = new THREE.CircleGeometry(28, 64);
     const floorMat = new THREE.MeshStandardMaterial({
-      color: floorColor,
-      roughness: isDark ? 0.75 : 0.65,
-      metalness: isDark ? 0.25 : 0.1,
+      color: opts.floorColor ?? (isDark ? 0x0f172a : 0xf1f5f9),
+      roughness: 0.7,
+      metalness: 0.15,
       side: THREE.DoubleSide,
     });
     const floorMesh = new THREE.Mesh(floorGeo, floorMat);
@@ -152,13 +282,14 @@ export function createThreeStudioScene(opts: StudioOptions): StudioContext {
     scene.add(floorMesh);
   }
 
-  // 6. Inertial Orbit Controls
+  // 7. Inertial Orbit Controls
   let isDragging = false;
   let prevX = 0;
   let prevY = 0;
   const spherical = new THREE.Spherical().setFromVector3(camera.position);
   const targetSpherical = spherical.clone();
   const centerTarget = new THREE.Vector3(...targetPos);
+  const isReducedMotion = checkPrefersReducedMotion();
 
   const onPointerDown = (e: MouseEvent | TouchEvent) => {
     isDragging = true;
@@ -176,7 +307,7 @@ export function createThreeStudioScene(opts: StudioOptions): StudioContext {
     const dy = (clientY - prevY) * 0.006;
 
     targetSpherical.theta -= dx;
-    targetSpherical.phi = Math.max(0.1, Math.min(Math.PI / 2 - 0.05, targetSpherical.phi - dy));
+    targetSpherical.phi = Math.max(0.08, Math.min(Math.PI / 2 - 0.05, targetSpherical.phi - dy));
 
     prevX = clientX;
     prevY = clientY;
@@ -188,7 +319,8 @@ export function createThreeStudioScene(opts: StudioOptions): StudioContext {
 
   const onWheel = (e: WheelEvent) => {
     e.preventDefault();
-    targetSpherical.radius = Math.max(6, Math.min(60, targetSpherical.radius + e.deltaY * 0.02));
+    const zoomFactor = e.deltaY * 0.02;
+    targetSpherical.radius = Math.max(4, Math.min(55, targetSpherical.radius + zoomFactor));
   };
 
   const domEl = renderer.domElement;
@@ -218,6 +350,14 @@ export function createThreeStudioScene(opts: StudioOptions): StudioContext {
 
       camera.position.setFromSpherical(spherical).add(centerTarget);
       camera.lookAt(centerTarget);
+
+      // Cloud drift animation across the sky
+      if (enableClouds && !isReducedMotion) {
+        cloudsGroup.position.x += 0.012;
+        if (cloudsGroup.position.x > 80) {
+          cloudsGroup.position.x = -80;
+        }
+      }
     },
     dispose: () => {
       domEl.removeEventListener("mousedown", onPointerDown);
@@ -234,17 +374,29 @@ export function createThreeStudioScene(opts: StudioOptions): StudioContext {
     },
   };
 
+  const updateEnvironment = () => {
+    const currentIsDark =
+      document.documentElement.classList.contains("dark") ||
+      document.documentElement.classList.contains("theme-blueprint");
+    scene.background = createProceduralSkyTexture(currentIsDark, environmentStyle);
+    scene.fog = new THREE.FogExp2(
+      currentIsDark ? 0x162544 : 0xdbeafe,
+      currentIsDark ? 0.008 : 0.004,
+    );
+  };
+
   const dispose = () => {
     controls.dispose();
+    skyTexture.dispose();
     renderer.dispose();
     scene.clear();
   };
 
-  return { scene, camera, renderer, controls, dispose };
+  return { scene, camera, renderer, controls, updateEnvironment, dispose };
 }
 
 /**
- * Creates a soft glowing circular particle texture for flow streamlines and field lines.
+ * Creates a glowing circular point particle texture for streamlines and sparks.
  */
 export function createGlowPointTexture(): THREE.Texture {
   const canvas = document.createElement("canvas");
