@@ -5,7 +5,6 @@ import { useState } from "react";
 
 export function NoycePlanarICSim() {
   const [activeLayerStep, setActiveLayerStep] = useState<number>(4); // 0: Substrate, 1: Oxide, 2: Windows, 3: Junctions, 4: Aluminum Leads
-  const [_isBiased, _setIsBiased] = useState<boolean>(true);
 
   const STEPS = [
     {
@@ -172,7 +171,7 @@ export function NoycePlanarICSim() {
             {/* Thermal Silicon Dioxide (SiO2 Glass) Passivation Layer */}
             {activeLayerStep >= 1 && (
               <g>
-                {activeLayerStep === 1 || activeLayerStep === 2 ? (
+                {activeLayerStep === 1 ? (
                   <rect
                     x="40"
                     y="90"
@@ -184,7 +183,7 @@ export function NoycePlanarICSim() {
                     opacity="0.9"
                   />
                 ) : (
-                  // Windows etched through oxide
+                  // Windows appear at the etch step (layer 3 / step 2), not only after diffusion.
                   <g fill="#065f46" stroke="#10b981" strokeWidth="1.5" opacity="0.9">
                     <rect x="40" y="90" width="40" height="20" />
                     <rect x="120" y="90" width="70" height="20" />

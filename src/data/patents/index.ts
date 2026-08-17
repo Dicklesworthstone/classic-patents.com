@@ -75,11 +75,13 @@ export function getAdjacentPatents(currentId: string): {
   prev: Patent | null;
   next: Patent | null;
 } {
-  const index = allPatents.findIndex((p) => p.id === currentId);
+  // Catalog order is not strictly chronological (e.g. Fermi 1955 sits before Bardeen 1951).
+  const chronological = [...allPatents].sort((a, b) => a.grantDate.localeCompare(b.grantDate));
+  const index = chronological.findIndex((p) => p.id === currentId);
   if (index === -1) return { prev: null, next: null };
   return {
-    prev: index > 0 ? allPatents[index - 1] : null,
-    next: index < allPatents.length - 1 ? allPatents[index + 1] : null,
+    prev: index > 0 ? chronological[index - 1] : null,
+    next: index < chronological.length - 1 ? chronological[index + 1] : null,
   };
 }
 

@@ -13,7 +13,9 @@ export function KwolekKevlarSim() {
   const maxStrength = 3.6; // Kevlar PPTA
   const currentStrengthGPa = baseStrength + (maxStrength - baseStrength) * (polymerAlignment / 100);
 
-  const isArmorPenetrated = bulletFired && polymerAlignment < 50;
+  // Pre-stress consumes remaining ballistic capacity: a taut, poorly aligned mat fails first.
+  const residualCapacityGPa = currentStrengthGPa * (1 - tensileTension / 220);
+  const isArmorPenetrated = bulletFired && residualCapacityGPa < 1.6;
 
   const fireBulletTest = () => {
     setBulletFired(true);
@@ -67,13 +69,14 @@ export function KwolekKevlarSim() {
           <svg viewBox="0 0 380 200" className="w-full max-w-md h-auto select-none">
             {/* Molecular polymer chains */}
             {[-60, -30, 0, 30, 60].map((offsetY, idx) => {
-              const waviness = (100 - polymerAlignment) * 0.25;
+              const waviness = (100 - polymerAlignment) * 0.25 * (1 - tensileTension / 180);
               const yBase = 100 + offsetY;
+              const xEnd = 350 + tensileTension * 0.28;
               return (
                 <g key={idx}>
-                  {/* PPTA Polymer Backbone */}
+                  {/* PPTA Polymer Backbone — tension lengthens and straightens the chain */}
                   <path
-                    d={`M 30,${yBase} Q 100,${yBase + (idx % 2 === 0 ? waviness : -waviness)} 200,${yBase} T 350,${yBase}`}
+                    d={`M 30,${yBase} Q 100,${yBase + (idx % 2 === 0 ? waviness : -waviness)} 200,${yBase} T ${xEnd},${yBase}`}
                     fill="none"
                     stroke="#f59e0b"
                     strokeWidth="3.5"
@@ -108,6 +111,9 @@ export function KwolekKevlarSim() {
             Tensile Strength:{" "}
             <span className="text-amber-400 font-bold">{currentStrengthGPa.toFixed(2)} GPa</span>{" "}
             (Steel = 0.5 GPa)
+            {" · "}
+            Residual ballistic capacity:{" "}
+            <span className="text-emerald-400 font-bold">{residualCapacityGPa.toFixed(2)} GPa</span>
           </div>
         </div>
 

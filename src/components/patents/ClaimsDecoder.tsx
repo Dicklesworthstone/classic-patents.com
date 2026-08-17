@@ -94,7 +94,11 @@ export function ClaimsDecoder({ claims }: ClaimsDecoderProps) {
             </div>
 
             {/* Key Protected Innovations & Legal Significance */}
-            <div className="pt-2 grid grid-cols-1 md:grid-cols-2 gap-5 text-sm font-sans">
+            <div
+              className={`pt-2 grid grid-cols-1 gap-5 text-sm font-sans ${
+                claim.legalSignificance ? "md:grid-cols-2" : ""
+              }`}
+            >
               <div className="p-4 rounded-xl bg-parchment-200/50 dark:bg-ink-900/60 border border-parchment-300 dark:border-ink-800 space-y-2.5 shadow-xs">
                 <span className="font-bold text-ink-900 dark:text-parchment-100 block text-xs uppercase tracking-wider">
                   Key Protected Innovations:
@@ -111,14 +115,16 @@ export function ClaimsDecoder({ claims }: ClaimsDecoderProps) {
                 </div>
               </div>
 
-              <div className="p-4 rounded-xl bg-parchment-200/50 dark:bg-ink-900/60 border border-parchment-300 dark:border-ink-800 space-y-2 shadow-xs">
-                <span className="font-bold text-ink-900 dark:text-parchment-100 block text-xs uppercase tracking-wider">
-                  Historical Legal Impact:
-                </span>
-                <p className="text-ink-800 dark:text-ink-200 font-sans text-xs sm:text-sm leading-relaxed">
-                  {claim.legalSignificance}
-                </p>
-              </div>
+              {claim.legalSignificance ? (
+                <div className="p-4 rounded-xl bg-parchment-200/50 dark:bg-ink-900/60 border border-parchment-300 dark:border-ink-800 space-y-2 shadow-xs">
+                  <span className="font-bold text-ink-900 dark:text-parchment-100 block text-xs uppercase tracking-wider">
+                    Historical Legal Impact:
+                  </span>
+                  <p className="text-ink-800 dark:text-ink-200 font-sans text-xs sm:text-sm leading-relaxed">
+                    {claim.legalSignificance}
+                  </p>
+                </div>
+              ) : null}
             </div>
           </div>
         ))}

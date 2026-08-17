@@ -36,11 +36,11 @@ export function BellTelephoneSim() {
     };
   }, [isPlayingAudio, signalType, acousticFrequency, voiceAmplitude]);
 
-  // Generate oscilloscope waveform points
+  // Generate oscilloscope waveform points — spatial frequency tracks the voice-frequency slider.
   const points = Array.from({ length: 60 })
     .map((_, i) => {
       const x = i * 5;
-      const tVal = (i + time) * 0.2;
+      const tVal = (i + time) * 0.2 * (acousticFrequency / 440);
       let y = 50;
       if (signalType === "continuous-undulating") {
         // Harmonic undulating wave

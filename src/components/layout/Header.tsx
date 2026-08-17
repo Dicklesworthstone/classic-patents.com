@@ -1,10 +1,22 @@
 "use client";
 
-import { Compass, Github } from "lucide-react";
+import { Compass, Github, Menu, X } from "lucide-react";
 import Link from "next/link";
+import { useState } from "react";
 import { ThemeToggle } from "./ThemeToggle";
 
+const NAV_LINKS = [
+  { href: "/", label: "Museum Catalog", short: "Catalog" },
+  { href: "/patents/us-821393-wright-flyer", label: "Wright Flyer 3D", short: "Flyer" },
+  { href: "/patents/us-381968-tesla-motor", label: "Tesla AC Motor", short: "Tesla" },
+  { href: "/patents/us-2981877-noyce-ic", label: "Noyce Silicon IC", short: "Noyce" },
+  { href: "/timeline", label: "Timeline", short: "Timeline" },
+  { href: "/about", label: "Mission", short: "Mission" },
+] as const;
+
 export function Header() {
+  const [mobileOpen, setMobileOpen] = useState(false);
+
   return (
     <header className="sticky top-0 z-40 w-full border-b border-parchment-300 dark:border-ink-800 bg-parchment-50/95 dark:bg-ink-950/95 backdrop-blur-md transition-colors shadow-2xs transform-gpu">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between gap-4">
@@ -85,8 +97,8 @@ export function Header() {
           </Link>
         </nav>
 
-        {/* Right Actions: Theme Toggle & GitHub */}
-        <div className="flex items-center gap-3.5">
+        {/* Right Actions: Theme Toggle, GitHub, Mobile Menu */}
+        <div className="flex items-center gap-2 sm:gap-3.5">
           <ThemeToggle />
           <a
             href="https://github.com/Dicklesworthstone/classic-patents.com"
@@ -97,8 +109,36 @@ export function Header() {
           >
             <Github className="w-5 h-5" />
           </a>
+          <button
+            type="button"
+            className="md:hidden p-2.5 rounded-xl border border-parchment-300 dark:border-ink-800 hover:bg-parchment-200 dark:hover:bg-ink-800 text-ink-800 dark:text-parchment-200 transition-colors"
+            aria-expanded={mobileOpen}
+            aria-controls="mobile-museum-nav"
+            aria-label={mobileOpen ? "Close navigation" : "Open navigation"}
+            onClick={() => setMobileOpen((open) => !open)}
+          >
+            {mobileOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
+          </button>
         </div>
       </div>
+
+      {mobileOpen && (
+        <nav
+          id="mobile-museum-nav"
+          className="md:hidden border-t border-parchment-300 dark:border-ink-800 bg-parchment-50/98 dark:bg-ink-950/98 px-4 py-3 flex flex-col gap-1"
+        >
+          {NAV_LINKS.map((link) => (
+            <Link
+              key={link.href}
+              href={link.href}
+              onClick={() => setMobileOpen(false)}
+              className="px-3 py-2.5 rounded-xl text-sm font-medium text-ink-800 dark:text-parchment-200 hover:bg-parchment-200 dark:hover:bg-ink-800 transition-colors"
+            >
+              {link.label}
+            </Link>
+          ))}
+        </nav>
+      )}
     </header>
   );
 }

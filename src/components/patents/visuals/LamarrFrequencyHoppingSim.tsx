@@ -1,28 +1,47 @@
 "use client";
 
 import { Radio } from "lucide-react";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
+
+/** 88 piano-roll slots: 37 is coprime with 88, so one revolution visits every key once. */
+const PIANO_KEYS = 88;
+const PIANO_ROLL_STEP = 37;
+
+function pianoRollChannel(step: number): number {
+  return ((step * PIANO_ROLL_STEP) % PIANO_KEYS) + 1;
+}
+
+/** US 2,292,387 88-key span as labeled on the spectrum axis: 302–520 MHz. */
+function channelFrequencyMhz(channel: number): number {
+  return 302 + ((channel - 1) * (520 - 302)) / (PIANO_KEYS - 1);
+}
 
 export function LamarrFrequencyHoppingSim() {
-  const [isHoppingActive, _setIsHoppingActive] = useState<boolean>(true);
-  const [hopSpeedMs, setHopSpeedMs] = useState<number>(150); // 50 to 500ms
+  const [isHoppingActive, setIsHoppingActive] = useState<boolean>(true);
+  // Store hops/sec so the slider polarity matches the label (right = faster).
+  const [hopsPerSec, setHopsPerSec] = useState<number>(7);
   const [isEnemyJamming, setIsEnemyJamming] = useState<boolean>(true);
   const [jammingFrequencyChannel, setJammingFrequencyChannel] = useState<number>(44); // Spot jamming channel 1-88
-  const [currentChannel, setCurrentChannel] = useState<number>(12);
-  const [historyChannels, setHistoryChannels] = useState<number[]>([12, 45, 78, 23, 67, 10]);
+  const [currentChannel, setCurrentChannel] = useState<number>(() => pianoRollChannel(0));
+  const [historyChannels, setHistoryChannels] = useState<number[]>(() =>
+    [0, 1, 2, 3, 4, 5].map(pianoRollChannel),
+  );
+  const rollStepRef = useRef(0);
 
-  // Frequency Hopping Loop
+  // Shared player-piano roll — not Math.random. Transmitter and receiver share the same punched sequence.
   useEffect(() => {
     if (!isHoppingActive) return;
 
+    const intervalMs = Math.round(1000 / Math.max(1, hopsPerSec));
     const interval = setInterval(() => {
-      const nextChannel = Math.floor(Math.random() * 88) + 1;
+      rollStepRef.current += 1;
+      const nextChannel = pianoRollChannel(rollStepRef.current);
       setCurrentChannel(nextChannel);
-      setHistoryChannels((prev) => [nextChannel, ...prev.slice(0, 15)]);
-    }, hopSpeedMs);
+      setHistoryChannels((hist) => [nextChannel, ...hist.slice(0, 15)]);
+    }, intervalMs);
 
     return () => clearInterval(interval);
-  }, [isHoppingActive, hopSpeedMs]);
+  }, [isHoppingActive, hopsPerSec]);
 
   // Is current carrier jammed?
   const isJammedThisInstant = isEnemyJamming && currentChannel === jammingFrequencyChannel;
@@ -46,6 +65,17 @@ export function LamarrFrequencyHoppingSim() {
         </div>
 
         <div className="flex items-center gap-2">
+          <button
+            type="button"
+            onClick={() => setIsHoppingActive((active) => !active)}
+            className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-mono font-bold transition-colors border shadow-sm ${
+              isHoppingActive
+                ? "bg-purple-700 text-white border-purple-800"
+                : "bg-parchment-200 dark:bg-ink-800 text-ink-700 dark:text-ink-300 border-parchment-300"
+            }`}
+          >
+            {isHoppingActive ? "Piano Roll: Running" : "Piano Roll: Paused"}
+          </button>
           <button
             type="button"
             onClick={() => setIsEnemyJamming(!isEnemyJamming)}
@@ -72,7 +102,7 @@ export function LamarrFrequencyHoppingSim() {
             ) : (
               <span className="px-3 py-1 bg-emerald-950/90 border border-emerald-700 text-emerald-300 rounded-lg">
                 ✓ SIGNAL CLEAR: Active on Carrier Channel #{currentChannel} (
-                {(300 + currentChannel * 2.5).toFixed(1)} MHz)
+                {channelFrequencyMhz(currentChannel).toFixed(1)} MHz)
               </span>
             )}
 
@@ -143,9 +173,7 @@ export function LamarrFrequencyHoppingSim() {
             </div>
             <div>
               <span className="text-ink-500 block text-[10px]">HOP RATE</span>
-              <span className="text-amber-400 font-bold">
-                {Math.round(1000 / hopSpeedMs)} Hops/sec
-              </span>
+              <span className="text-amber-400 font-bold">{hopsPerSec} Hops/sec</span>
             </div>
             <div>
               <span className="text-ink-500 block text-[10px]">JAMMER IMPACT</span>
@@ -170,18 +198,22 @@ export function LamarrFrequencyHoppingSim() {
                   Piano Roll Advance Speed
                 </span>
                 <span className="text-purple-600 dark:text-purple-400 font-bold">
-                  {Math.round(1000 / hopSpeedMs)} hops/sec
+                  {hopsPerSec} hops/sec
                 </span>
               </div>
               <input
                 type="range"
-                min="50"
-                max="400"
-                step="25"
-                value={hopSpeedMs}
-                onChange={(e) => setHopSpeedMs(Number(e.target.value))}
+                min="2"
+                max="20"
+                step="1"
+                value={hopsPerSec}
+                onChange={(e) => setHopsPerSec(Number(e.target.value))}
                 className="w-full accent-purple-600 cursor-pointer h-2 bg-parchment-300 dark:bg-ink-700 rounded-lg"
               />
+              <div className="flex justify-between text-[10px] text-ink-500 font-mono">
+                <span>2 hops/sec</span>
+                <span>20 hops/sec</span>
+              </div>
             </div>
 
             {/* Enemy Jamming Spot Channel */}
