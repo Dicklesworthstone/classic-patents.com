@@ -167,8 +167,8 @@ export function GoodyearRubberSim() {
                 <span>30% (Ebonite)</span>
               </div>
               <div className="flex justify-between text-[10px] font-mono text-amber-700 dark:text-amber-400 pt-1">
-                <span>Crosslinks: {cure.crosslinkDensity.toFixed(2)}/nm³</span>
-                <span>t½: {cure.tHalfMin.toFixed(1)} min</span>
+                <span>Crosslinks: {cure.crosslinkMolCm3} mol/cm³</span>
+                <span className="capitalize">State: {cure.regime}</span>
               </div>
             </div>
 

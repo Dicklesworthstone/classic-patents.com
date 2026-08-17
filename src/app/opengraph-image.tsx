@@ -64,6 +64,7 @@ export default async function Image() {
               fontWeight: "bold",
               letterSpacing: "2px",
               color: "#2a1f18",
+              display: "flex",
             }}
           >
             CLASSIC PATENTS

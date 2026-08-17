@@ -41,22 +41,23 @@ export function rigidBodyStep(
   omega: Vec3,
   inertia: Vec3,
   h: number,
+  torque: Vec3 = [0, 0, 0],
 ): { q: Quat; omega: Vec3 } {
-  const torqueFree = (w: Vec3): Vec3 => {
+  const euler = (w: Vec3): Vec3 => {
     const l: Vec3 = [inertia[0] * w[0], inertia[1] * w[1], inertia[2] * w[2]];
     return [
-      (l[1] * w[2] - l[2] * w[1]) / inertia[0],
-      (l[2] * w[0] - l[0] * w[2]) / inertia[1],
-      (l[0] * w[1] - l[1] * w[0]) / inertia[2],
+      (torque[0] + (l[1] * w[2] - l[2] * w[1])) / inertia[0],
+      (torque[1] + (l[2] * w[0] - l[0] * w[2])) / inertia[1],
+      (torque[2] + (l[0] * w[1] - l[1] * w[0])) / inertia[2],
     ];
   };
-  const k1 = torqueFree(omega);
+  const k1 = euler(omega);
   const wMid: Vec3 = [
     omega[0] + 0.5 * h * k1[0],
     omega[1] + 0.5 * h * k1[1],
     omega[2] + 0.5 * h * k1[2],
   ];
-  const k2 = torqueFree(wMid);
+  const k2 = euler(wMid);
   const omegaNew: Vec3 = [omega[0] + h * k2[0], omega[1] + h * k2[1], omega[2] + h * k2[2]];
   return { q: quatExpStep(q, wMid, h), omega: omegaNew };
 }

@@ -11,7 +11,6 @@ export function generateStaticParams() {
   return allPatents.map((p) => ({ id: p.id }));
 }
 
-
 export default async function Image({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
   const patent = getPatentById(id);
@@ -62,6 +61,7 @@ export default async function Image({ params }: { params: Promise<{ id: string }
               fontWeight: "bold",
               letterSpacing: "2px",
               color: "#2a1f18",
+              display: "flex",
             }}
           >
             CLASSIC PATENTS MUSEUM
@@ -70,6 +70,7 @@ export default async function Image({ params }: { params: Promise<{ id: string }
 
         <div
           style={{
+            display: "flex",
             padding: "6px 16px",
             borderRadius: "999px",
             backgroundColor: "#fef3c7",
@@ -94,6 +95,7 @@ export default async function Image({ params }: { params: Promise<{ id: string }
       >
         <div
           style={{
+            display: "flex",
             fontSize: "52px",
             fontWeight: "bold",
             color: "#1c1917",
@@ -104,6 +106,7 @@ export default async function Image({ params }: { params: Promise<{ id: string }
         </div>
         <div
           style={{
+            display: "flex",
             fontSize: "24px",
             color: "#b45309",
             fontStyle: "italic",
@@ -126,13 +129,19 @@ export default async function Image({ params }: { params: Promise<{ id: string }
           fontFamily: "monospace",
         }}
       >
-        <div style={{ color: "#44403c" }}>
-          <strong>Inventors:</strong> {inventors}
+        <div style={{ display: "flex", color: "#44403c" }}>
+          <span style={{ display: "flex", fontWeight: "bold", marginRight: "6px" }}>
+            Inventors:
+          </span>
+          <span style={{ display: "flex" }}>{inventors}</span>
         </div>
-        <div style={{ color: "#78716c" }}>
-          <strong>Granted:</strong> {grantDate}
+        <div style={{ display: "flex", color: "#78716c" }}>
+          <span style={{ display: "flex", fontWeight: "bold", marginRight: "6px" }}>Granted:</span>
+          <span style={{ display: "flex" }}>{grantDate}</span>
         </div>
-        <div style={{ color: "#b45309", fontWeight: "bold" }}>classic-patents.com</div>
+        <div style={{ display: "flex", color: "#b45309", fontWeight: "bold" }}>
+          classic-patents.com
+        </div>
       </div>
     </div>,
     {

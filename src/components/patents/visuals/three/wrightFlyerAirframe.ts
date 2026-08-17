@@ -6,17 +6,17 @@ import * as THREE from "three";
  * 1 world unit = 1 metre.
  */
 export const FLYER_DIM = {
-  span: 12.29, // 40 ft 4 in
-  chord: 1.98, // 6 ft 6 in
-  gap: 1.83, // 6 ft 0 in
-  camberRatio: 0.05, // 1 in 20 parabolic camber (Kitty Hawk tunnel data)
+  span: 12.29, // Smithsonian NASM A19610048000 — 40 ft 4 in
+  chord: 1.981, // 6 ft 6 in rib chord
+  gap: 1.89, // 6.2 ft sourced interplane gap (wright-brothers.org Flyer I)
+  camberRatio: 0.05, // 1 in 20 as flown 1903
   thicknessRatio: 0.045, // 0.089m max wing thickness at 30% chord
-  anhedralDeg: 3.2, // 3.2° negative dihedral droop for stability in crosswinds
+  anhedralDeg: 2.37, // atan(10 in droop / half-span)
   length: 6.43, // 21 ft 1 in
   canardSpan: 3.66, // 12 ft 0 in
   canardChord: 0.76, // 2 ft 6 in
   canardGap: 0.55, // 1 ft 9.5 in
-  canardArm: 2.15, // Forward pivot distance from wing leading edge
+  canardArm: 2.23, // wing-to-canard, AIAA 2004-0211 / Culick
   rudderHeight: 1.35, // 4 ft 5 in
   rudderChord: 0.72, // 2 ft 4.5 in
   rudderSep: 0.72, // Distance between twin rudder fins

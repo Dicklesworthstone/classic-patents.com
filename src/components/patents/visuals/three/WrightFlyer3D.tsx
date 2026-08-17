@@ -4,7 +4,9 @@ import { Compass, Eye, EyeOff, Play, Wind } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import * as THREE from "three";
 import { ensureFlyerWasm, flyerKernelSource } from "@/physics/flyerWasm";
+import { TickScheduler } from "@/physics/tickScheduler";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
+import { identityAeroBody, stepWrightAeroBody } from "@/physics/wrightAeroBody";
 import {
   coupledRudderDeg,
   readWrightControls,
@@ -49,6 +51,7 @@ export function WrightFlyer3D() {
     liftNewtons: si.liftNewtons,
     dragNewtons: si.totalDragNewtons,
     netYawNm: si.netYawNm,
+    coupled: isCoupled ? 1 : 0,
     cl: baseCl,
   });
 
@@ -159,6 +162,8 @@ export function WrightFlyer3D() {
     // --- RENDER LOOP & REAL-TIME PHYSICS SIMULATION ---
     let reqId: number;
     const clock = new THREE.Clock();
+    let aero = identityAeroBody();
+    const scheduler = new TickScheduler(1 / 120, 0, 3);
 
     const animate = () => {
       reqId = requestAnimationFrame(animate);
@@ -166,32 +171,43 @@ export function WrightFlyer3D() {
       const elapsed = clock.getElapsedTime();
 
       const p = live.current;
-
-      // Stable 3-Axis Aerodynamic Flight Attitude based on Wright Patent Controls
-      // Pitch: Controlled by forward biplane canard elevator
-      const targetPitchRad = ((-p.elevatorPitchDeg * Math.PI) / 180) * 0.85;
-      // Roll: Controlled by differential wing warping lift
-      const targetRollRad = ((p.wingWarpDeg * Math.PI) / 180) * 0.95;
-      // Yaw: Controlled by coupled rear vertical rudder
-      const targetYawRad = ((-p.rudderYawDeg * Math.PI) / 180) * 0.75;
+      const siNow = {
+        airspeedMps: p.airspeedMph * 0.44704,
+        dynamicPressurePa: 0,
+        liftNewtons: p.liftNewtons,
+        inducedDragNewtons: 0,
+        parasiticDragNewtons: 0,
+        totalDragNewtons: p.dragNewtons,
+        liftToDrag: 0,
+        adverseYawNm: 0,
+        rudderYawNm: 0,
+        netYawNm: p.netYawNm,
+        coordinated: false,
+        adverseYawDominant: p.netYawNm < -8,
+      };
+      const controlsNow = {
+        airspeedMph: p.airspeedMph,
+        wingWarpDeg: p.wingWarpDeg,
+        rudderDeg: p.rudderYawDeg,
+        elevatorDeg: p.elevatorPitchDeg,
+        coupled: p.coupled >= 0.5,
+      };
 
       if (p.isAutoFlying) {
-        // Gentle atmospheric turbulence & phugoid oscillation (±0.04m, 1.2 rad/s)
-        const phugoidBob = Math.sin(elapsed * 1.4) * 0.05;
-        const rollBob = Math.sin(elapsed * 1.8) * 0.015;
-        const pitchBob = Math.cos(elapsed * 1.2) * 0.02;
-
-        flyerGroup.position.y = phugoidBob;
-        flyerGroup.rotation.set(
-          targetPitchRad + pitchBob,
-          targetYawRad,
-          targetRollRad + rollBob,
-          "YXZ",
+        scheduler.pump(elapsed, () => {
+          aero = stepWrightAeroBody(aero, siNow, controlsNow, 1 / 120);
+        });
+        flyerGroup.quaternion.set(
+          aero.quaternion[1],
+          aero.quaternion[2],
+          aero.quaternion[3],
+          aero.quaternion[0],
         );
+        flyerGroup.position.y = Math.sin(elapsed * 1.4) * 0.04;
       } else {
-        // Static ground/wind-tunnel mount with direct control surface response
+        aero = identityAeroBody();
+        flyerGroup.quaternion.identity();
         flyerGroup.position.y = 0;
-        flyerGroup.rotation.set(targetPitchRad, targetYawRad, targetRollRad, "YXZ");
       }
 
       // Propellers Rotation (Counter-Rotating to eliminate gyroscopic torque)

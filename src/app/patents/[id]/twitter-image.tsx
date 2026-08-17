@@ -11,7 +11,6 @@ export function generateStaticParams() {
   return allPatents.map((p) => ({ id: p.id }));
 }
 
-
 export default async function Image({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
   const patent = getPatentById(id);
@@ -61,6 +60,7 @@ export default async function Image({ params }: { params: Promise<{ id: string }
               fontWeight: "bold",
               letterSpacing: "2px",
               color: "#f8fafc",
+              display: "flex",
             }}
           >
             CLASSIC PATENTS MUSEUM
@@ -69,6 +69,7 @@ export default async function Image({ params }: { params: Promise<{ id: string }
 
         <div
           style={{
+            display: "flex",
             padding: "6px 16px",
             borderRadius: "999px",
             backgroundColor: "#1e293b",
@@ -76,7 +77,6 @@ export default async function Image({ params }: { params: Promise<{ id: string }
             color: "#fbbf24",
             fontSize: "16px",
             fontWeight: "bold",
-            display: "flex",
           }}
         >
           {patentNumber}
@@ -144,7 +144,14 @@ export default async function Image({ params }: { params: Promise<{ id: string }
           >
             Inventors
           </span>
-          <span style={{ fontSize: "18px", fontWeight: "bold", color: "#f8fafc", display: "flex" }}>
+          <span
+            style={{
+              fontSize: "18px",
+              fontWeight: "bold",
+              color: "#f8fafc",
+              display: "flex",
+            }}
+          >
             {inventors}
           </span>
         </div>
@@ -168,7 +175,14 @@ export default async function Image({ params }: { params: Promise<{ id: string }
           >
             USPTO Grant Date
           </span>
-          <span style={{ fontSize: "18px", fontWeight: "bold", color: "#fbbf24", display: "flex" }}>
+          <span
+            style={{
+              fontSize: "18px",
+              fontWeight: "bold",
+              color: "#fbbf24",
+              display: "flex",
+            }}
+          >
             {grantDate}
           </span>
         </div>
