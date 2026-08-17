@@ -2,6 +2,7 @@
 
 import { Cpu } from "lucide-react";
 import { useState } from "react";
+import { TextWithLatex } from "@/components/ui/LatexRenderer";
 
 export function BardeenTransistorSim() {
   const [emitterCurrentMa, setEmitterCurrentMa] = useState<number>(2.5); // 0.1 to 8.0 mA
@@ -238,7 +239,7 @@ export function BardeenTransistorSim() {
             <div className="space-y-1.5">
               <div className="flex justify-between text-xs sm:text-sm font-mono">
                 <span className="font-semibold text-ink-800 dark:text-parchment-200">
-                  Emitter Input Current ($I_E$)
+                  <TextWithLatex text="Emitter Input Current ($I_E$)" />
                 </span>
                 <span className="text-emerald-600 dark:text-emerald-400 font-bold">
                   {emitterCurrentMa} mA
@@ -259,7 +260,7 @@ export function BardeenTransistorSim() {
             <div className="space-y-1.5">
               <div className="flex justify-between text-xs sm:text-sm font-mono">
                 <span className="font-semibold text-ink-800 dark:text-parchment-200">
-                  Point Contact Spacing ($d$)
+                  <TextWithLatex text="Point Contact Spacing ($d$)" />
                 </span>
                 <span className="text-amber-600 dark:text-amber-400 font-bold">
                   {pointSpacingMicrons} µm
@@ -280,7 +281,7 @@ export function BardeenTransistorSim() {
             <div className="space-y-1.5">
               <div className="flex justify-between text-xs sm:text-sm font-mono">
                 <span className="font-semibold text-ink-800 dark:text-parchment-200">
-                  Reverse Collector Voltage ($V_C$)
+                  <TextWithLatex text="Reverse Collector Voltage ($V_C$)" />
                 </span>
                 <span className="text-blue-600 dark:text-blue-400 font-bold">
                   {collectorVoltageV} V

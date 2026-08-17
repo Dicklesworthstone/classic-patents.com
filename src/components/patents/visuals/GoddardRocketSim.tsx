@@ -2,6 +2,7 @@
 
 import { Rocket } from "lucide-react";
 import { useState } from "react";
+import { TextWithLatex } from "@/components/ui/LatexRenderer";
 
 export function GoddardRocketSim() {
   const [activeStage, setActiveStage] = useState<1 | 2 | 3>(1);
@@ -9,13 +10,18 @@ export function GoddardRocketSim() {
   const [nozzleExpansionRatio, setNozzleExpansionRatio] = useState<number>(12); // 4 to 25
   const [altitudeMiles, setAltitudeMiles] = useState<number>(18);
 
-  // Supersonic de Laval calculations
+  // Optimal expansion ratio rises as ambient pressure falls with altitude.
+  const optimalEpsilon = 8 + Math.min(22, altitudeMiles / 6);
+  const mismatch = Math.abs(Math.log(nozzleExpansionRatio / optimalEpsilon));
+  const expansionEfficiency = Math.max(0.55, Math.exp(-mismatch));
+
+  // Supersonic de Laval calculations, derated by over/under-expansion at this altitude
   const specificImpulseSec = Math.round(
-    180 + Math.sqrt(combustionPressurePsi) * 4 + nozzleExpansionRatio * 2,
+    (180 + Math.sqrt(combustionPressurePsi) * 4 + nozzleExpansionRatio * 2) * expansionEfficiency,
   );
   const exhaustVelocityMs = Math.round(specificImpulseSec * 9.80665);
   const thrustPounds = Math.round(
-    (combustionPressurePsi * 2.8 * nozzleExpansionRatio) / activeStage,
+    ((combustionPressurePsi * 2.8 * nozzleExpansionRatio) / activeStage) * expansionEfficiency,
   );
 
   return (
@@ -265,7 +271,7 @@ export function GoddardRocketSim() {
             <div className="space-y-1.5">
               <div className="flex justify-between text-xs sm:text-sm font-mono">
                 <span className="font-semibold text-ink-800 dark:text-parchment-200">
-                  Combustion Pressure ($P_c$)
+                  <TextWithLatex text="Combustion Pressure ($P_c$)" />
                 </span>
                 <span className="text-amber-600 dark:text-amber-400 font-bold">
                   {combustionPressurePsi} PSI
@@ -286,7 +292,7 @@ export function GoddardRocketSim() {
             <div className="space-y-1.5">
               <div className="flex justify-between text-xs sm:text-sm font-mono">
                 <span className="font-semibold text-ink-800 dark:text-parchment-200">
-                  de Laval Nozzle Ratio ($\epsilon$)
+                  <TextWithLatex text="de Laval Nozzle Ratio ($\epsilon$)" />
                 </span>
                 <span className="text-blue-600 dark:text-blue-400 font-bold">
                   {nozzleExpansionRatio}:1
@@ -309,8 +315,11 @@ export function GoddardRocketSim() {
               </span>
               <p className="leading-relaxed">
                 By jettisoning spent casing deadweight between stages, the remaining rocket
-                accelerates exponentially under the Tsiolkovsky equation ($v = v_e \\ln(m_0/m_f)$),
-                enabling payloads to escape Earth&apos;s gravitational well.
+                accelerates exponentially under the Tsiolkovsky equation{" "}
+                <TextWithLatex text={"$\\Delta v = v_e \\ln(m_0/m_f)$"} />, enabling payloads to
+                escape Earth&apos;s gravitational well. At {altitudeMiles} miles the optimum nozzle
+                ratio is ~{optimalEpsilon.toFixed(0)}:1 ({(expansionEfficiency * 100).toFixed(0)}%
+                expansion match).
               </p>
             </div>
           </div>

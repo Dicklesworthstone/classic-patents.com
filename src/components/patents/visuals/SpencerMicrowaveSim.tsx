@@ -1,7 +1,7 @@
 "use client";
 
 import { Radio } from "lucide-react";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { soundEngine } from "@/utils/soundEngine";
 
 export function SpencerMicrowaveSim() {
@@ -10,25 +10,27 @@ export function SpencerMicrowaveSim() {
   const [isEmitting, setIsEmitting] = useState<boolean>(true);
   const [tempCelsius, setTempCelsius] = useState<number>(20);
   const [poppedCount, setPoppedCount] = useState<number>(0);
+  const tempRef = useRef(tempCelsius);
+  const poppedRef = useRef(poppedCount);
+  tempRef.current = tempCelsius;
+  poppedRef.current = poppedCount;
 
   useEffect(() => {
     if (!isEmitting) return;
     const interval = setInterval(() => {
       if (foodType === "water-popcorn") {
-        setTempCelsius((t) => {
-          const next = Math.min(180, t + (powerWatts / 1000) * 8);
-          if (next > 100) {
-            setPoppedCount((c) => {
-              if (c >= 12) return c;
-              soundEngine.playPopcornPop();
-              return c + 1;
-            });
-          }
-          return next;
-        });
+        const nextTemp = Math.min(180, tempRef.current + (powerWatts / 1000) * 8);
+        tempRef.current = nextTemp;
+        setTempCelsius(nextTemp);
+        if (nextTemp > 100 && poppedRef.current < 12) {
+          poppedRef.current += 1;
+          setPoppedCount(poppedRef.current);
+          soundEngine.playPopcornPop();
+        }
       } else {
-        // Non-polar or low-loss materials barely heat
-        setTempCelsius((t) => Math.min(25, t + 0.1));
+        const nextTemp = Math.min(25, tempRef.current + 0.1);
+        tempRef.current = nextTemp;
+        setTempCelsius(nextTemp);
       }
     }, 200);
     return () => clearInterval(interval);
