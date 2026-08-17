@@ -339,6 +339,35 @@ class SoundEngine {
     osc.start();
     osc.stop(this.ctx.currentTime + 0.05);
   }
+
+  /**
+   * General-purpose parameterized tone synthesizer
+   */
+  public playTone(
+    frequencyHz = 440,
+    durationSec = 0.1,
+    type: OscillatorType = "sine",
+    gainLevel = 0.1,
+  ) {
+    if (this.isMuted) return;
+    this.initContext();
+    if (!this.ctx) return;
+
+    const osc = this.ctx.createOscillator();
+    const gain = this.ctx.createGain();
+
+    osc.type = type;
+    osc.frequency.setValueAtTime(Math.max(20, Math.min(8000, frequencyHz)), this.ctx.currentTime);
+
+    gain.gain.setValueAtTime(gainLevel, this.ctx.currentTime);
+    gain.gain.exponentialRampToValueAtTime(0.0001, this.ctx.currentTime + durationSec);
+
+    osc.connect(gain);
+    gain.connect(this.ctx.destination);
+
+    osc.start();
+    osc.stop(this.ctx.currentTime + durationSec + 0.02);
+  }
 }
 
 export const soundEngine = new SoundEngine();
