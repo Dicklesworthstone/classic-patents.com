@@ -4,6 +4,7 @@ import { Cpu, Sparkles } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import * as THREE from "three";
 import { createGlowPointTexture, createThreeStudioScene } from "./ThreeStudioScene";
+import { useLiveSimParams } from "./useLiveSimParams";
 
 export function BardeenTransistor3D() {
   const containerRef = useRef<HTMLDivElement>(null);
@@ -27,6 +28,12 @@ export function BardeenTransistor3D() {
         (Math.abs(collectorVoltageV) * Number(collectorCurrentMa)) / (0.6 * emitterCurrentMa),
       ),
   );
+
+  const live = useLiveSimParams({
+    emitterCurrentMa,
+    pointContactGapMicrons,
+    showHoleDrift,
+  });
 
   useEffect(() => {
     const container = containerRef.current;
@@ -73,52 +80,91 @@ export function BardeenTransistor3D() {
     const transistorGroup = new THREE.Group();
     scene.add(transistorGroup);
 
-    // 1. Germanium Crystal Block on Copper Baseplate
-    const geBlock = new THREE.Mesh(new THREE.BoxGeometry(6.0, 1.2, 5.0), germaniumCrystalMat);
-    geBlock.position.y = -0.6;
+    // 1. Polycrystalline n-Type Germanium Crystal Block on Heavy Copper Baseplate
+    const geBlock = new THREE.Mesh(new THREE.BoxGeometry(6.2, 1.1, 5.2), germaniumCrystalMat);
+    geBlock.position.y = -0.55;
     geBlock.castShadow = true;
     geBlock.receiveShadow = true;
     transistorGroup.add(geBlock);
 
-    const basePlate = new THREE.Mesh(
-      new THREE.BoxGeometry(7.0, 0.4, 6.0),
-      new THREE.MeshStandardMaterial({ color: 0xb45309, roughness: 0.3, metalness: 0.85 }),
+    // Etched Surface Inversion Layer Border (p-type thin surface inversion layer)
+    const inversionLayer = new THREE.Mesh(
+      new THREE.BoxGeometry(6.22, 0.05, 5.22),
+      new THREE.MeshStandardMaterial({ color: 0x38bdf8, roughness: 0.2, metalness: 0.6 }),
     );
-    basePlate.position.y = -1.4;
+    inversionLayer.position.y = 0.01;
+    transistorGroup.add(inversionLayer);
+
+    const basePlate = new THREE.Mesh(
+      new THREE.BoxGeometry(7.6, 0.45, 6.6),
+      new THREE.MeshStandardMaterial({ color: 0xb45309, roughness: 0.3, metalness: 0.88 }),
+    );
+    basePlate.position.y = -1.35;
     basePlate.receiveShadow = true;
     transistorGroup.add(basePlate);
 
-    // 2. Triangular Polystyrene Wedge Knife
-    const wedgeGeo = new THREE.ConeGeometry(1.8, 2.5, 3);
+    // Base Ohmic Solder Contact Terminal
+    const baseTerminal = new THREE.Mesh(
+      new THREE.CylinderGeometry(0.2, 0.2, 0.6, 12),
+      new THREE.MeshStandardMaterial({ color: 0x94a3b8, metalness: 0.95 }),
+    );
+    baseTerminal.position.set(-3.2, -0.6, 2.0);
+    transistorGroup.add(baseTerminal);
+
+    // 2. Brattain's Triangular Polystyrene Plastic Wedge (Extruded Triangle)
+    const wedgeShape = new THREE.Shape();
+    wedgeShape.moveTo(-0.9, 2.2);
+    wedgeShape.lineTo(0.9, 2.2);
+    wedgeShape.lineTo(0, 0.05); // Sharp apex pressing into Germanium
+    wedgeShape.closePath();
+
+    const wedgeGeo = new THREE.ExtrudeGeometry(wedgeShape, { depth: 0.9, bevelEnabled: false });
+    wedgeGeo.center();
     const wedge = new THREE.Mesh(wedgeGeo, polystyreneWedgeMat);
-    wedge.position.set(0, 1.6, 0);
-    wedge.rotation.y = Math.PI / 2;
+    wedge.position.set(0, 1.15, 0);
     transistorGroup.add(wedge);
 
-    // 3. Gold Foil Strips Slit at Apex into Emitter & Collector Micro-Contacts
-    const gapUnits = pointContactGapMicrons * 0.012;
+    // 3. Gold Foil Strips Slit at Apex with 50-Micron Razor Cut
+    const initialGapUnits = 50 * 0.012;
 
-    const emitterFoil = new THREE.Mesh(new THREE.BoxGeometry(0.12, 1.8, 0.45), goldFoilMat);
-    emitterFoil.position.set(-gapUnits / 2, 0.8, 0);
-    emitterFoil.rotation.z = -0.15;
+    const emitterFoil = new THREE.Mesh(new THREE.BoxGeometry(0.12, 1.9, 0.6), goldFoilMat);
+    emitterFoil.position.set(-initialGapUnits / 2 - 0.25, 1.05, 0);
+    emitterFoil.rotation.z = -0.38;
     emitterFoil.castShadow = true;
     transistorGroup.add(emitterFoil);
 
-    const collectorFoil = new THREE.Mesh(new THREE.BoxGeometry(0.12, 1.8, 0.45), goldFoilMat);
-    collectorFoil.position.set(gapUnits / 2, 0.8, 0);
-    collectorFoil.rotation.z = 0.15;
+    const collectorFoil = new THREE.Mesh(new THREE.BoxGeometry(0.12, 1.9, 0.6), goldFoilMat);
+    collectorFoil.position.set(initialGapUnits / 2 + 0.25, 1.05, 0);
+    collectorFoil.rotation.z = 0.38;
     collectorFoil.castShadow = true;
     transistorGroup.add(collectorFoil);
 
-    // Brass Contact Pressure Springs
-    const spring1 = new THREE.Mesh(new THREE.CylinderGeometry(0.08, 0.08, 2.0, 8), brassSpringMat);
-    spring1.position.set(-1.2, 2.2, 0);
-    spring1.rotation.z = -0.6;
-    const spring2 = spring1.clone();
-    spring2.position.x = 1.2;
-    spring2.rotation.z = 0.6;
-    transistorGroup.add(spring1);
-    transistorGroup.add(spring2);
+    // 4. Phosphor-Bronze Contact Leaf Springs & Brass Micrometer Post
+    const micrometerPost = new THREE.Mesh(
+      new THREE.CylinderGeometry(0.35, 0.4, 3.8, 16),
+      brassSpringMat,
+    );
+    micrometerPost.position.set(2.8, 0.8, -2.0);
+    micrometerPost.castShadow = true;
+    transistorGroup.add(micrometerPost);
+
+    const thumbScrew = new THREE.Mesh(
+      new THREE.CylinderGeometry(0.65, 0.65, 0.3, 24),
+      brassSpringMat,
+    );
+    thumbScrew.position.set(2.8, 2.8, -2.0);
+    transistorGroup.add(thumbScrew);
+
+    // Curved Phosphor-Bronze Leaf Spring pressing down on wedge
+    const springCurve = new THREE.CatmullRomCurve3([
+      new THREE.Vector3(2.8, 2.2, -2.0),
+      new THREE.Vector3(1.4, 2.5, -1.0),
+      new THREE.Vector3(0, 2.3, 0),
+    ]);
+    const springGeo = new THREE.TubeGeometry(springCurve, 20, 0.06, 8, false);
+    const leafSpring = new THREE.Mesh(springGeo, brassSpringMat);
+    leafSpring.castShadow = true;
+    transistorGroup.add(leafSpring);
 
     // --- GLOWING MINORITY CARRIER (HOLE) DRIFT PARTICLES ---
     const holeCount = 180;
@@ -130,7 +176,7 @@ export function BardeenTransistor3D() {
 
     for (let i = 0; i < holeCount; i++) {
       const idx = i * 3;
-      holePos[idx] = -gapUnits / 2 + Math.random() * gapUnits;
+      holePos[idx] = -initialGapUnits / 2 + Math.random() * initialGapUnits;
       holePos[idx + 1] = 0.05 - Math.random() * 0.4;
       holePos[idx + 2] = (Math.random() - 0.5) * 0.8;
 
@@ -164,22 +210,28 @@ export function BardeenTransistor3D() {
     const animate = () => {
       reqId = requestAnimationFrame(animate);
       const delta = clock.getDelta();
+      const p = live.current;
+
+      // Real-time microcontact gap geometry
+      const currentGapUnits = p.pointContactGapMicrons * 0.012;
+      emitterFoil.position.x = -currentGapUnits / 2;
+      collectorFoil.position.x = currentGapUnits / 2;
 
       // Animate Holes drifting from forward-biased Emitter (+) to reverse-biased Collector (-)
       const hPos = holePos;
-      const driftSpeed = (emitterCurrentMa / 2.5) * 4.0 * delta;
+      const driftSpeed = (p.emitterCurrentMa / 2.5) * 4.0 * delta;
 
       for (let i = 0; i < holeCount; i++) {
         const idx = i * 3;
         hPos[idx] += driftSpeed;
-        if (hPos[idx] > gapUnits / 2 + 0.1) {
-          hPos[idx] = -gapUnits / 2 - 0.05;
+        if (hPos[idx] > currentGapUnits / 2 + 0.1) {
+          hPos[idx] = -currentGapUnits / 2 - 0.05;
           hPos[idx + 1] = 0.05 - Math.random() * 0.35;
           hPos[idx + 2] = (Math.random() - 0.5) * 0.8;
         }
       }
       holeGeo.attributes.position.needsUpdate = true;
-      holePoints.visible = showHoleDrift;
+      holePoints.visible = p.showHoleDrift;
 
       controls.update();
       renderer.render(scene, camera);
@@ -191,7 +243,7 @@ export function BardeenTransistor3D() {
       cancelAnimationFrame(reqId);
       studio.dispose();
     };
-  }, [emitterCurrentMa, pointContactGapMicrons, showHoleDrift]);
+  }, [live]);
 
   return (
     <div className="flex flex-col h-full bg-parchment-50/60 dark:bg-ink-950/80 rounded-2xl overflow-hidden border border-parchment-300 dark:border-ink-800 shadow-patent">

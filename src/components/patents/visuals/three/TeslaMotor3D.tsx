@@ -13,14 +13,16 @@ export function TeslaMotor3D() {
   // Electrical & Mechanical Simulation State
   const [acFrequencyHz, setAcFrequencyHz] = useState<number>(60); // 10 to 120 Hz
   const [phaseCount, setPhaseCount] = useState<2 | 3>(2); // 2-Phase (90 deg) vs 3-Phase (120 deg)
-  const [polePairs, _setPolePairs] = useState<number>(2); // 2 poles (1 pair) or 4 poles (2 pairs)
+  // 2-phase 1888 machine is 4-pole; a 3-phase stator is drawn with 6 poles.
+  // Synchronous speed must track the visible pole count: n_s = 120 f / P.
   const [appliedLoadTorqueNm, setAppliedLoadTorqueNm] = useState<number>(14.0); // 0 to 40 Nm
   const [showMagneticFlux, setShowMagneticFlux] = useState<boolean>(true);
   const [isPlayingAudio, setIsPlayingAudio] = useState<boolean>(false);
 
   // Electromechanical Induction Physics Calculations
   // Synchronous Speed: n_s = (120 * f) / P (RPM)
-  const totalPoles = polePairs * 2;
+  const totalPoles = phaseCount === 2 ? 4 : 6;
+  const polePairs = totalPoles / 2;
   const synchronousSpeedRpm = (120 * acFrequencyHz) / totalPoles;
 
   // Rotor Slip: s = (n_s - n_r) / n_s = LoadTorque / MaxTorque
@@ -95,9 +97,30 @@ export function TeslaMotor3D() {
       metalness: 0.95,
     });
 
-    // --- 3D STATOR ASSEMBLY ---
+    // --- 3D STATOR & INDUSTRIAL CHASSIS ASSEMBLY ---
     const statorGroup = new THREE.Group();
     scene.add(statorGroup);
+
+    // Cast-Iron Industrial Bedplate & Mounting Feet
+    const bedplate = new THREE.Mesh(
+      new THREE.BoxGeometry(11.0, 0.7, 7.5),
+      new THREE.MeshStandardMaterial({ color: 0x1e293b, roughness: 0.6, metalness: 0.75 }),
+    );
+    bedplate.position.y = -4.2;
+    bedplate.receiveShadow = true;
+    statorGroup.add(bedplate);
+
+    // 4 Anchor Bolt Bosses
+    [
+      [-4.8, -3.0],
+      [4.8, -3.0],
+      [-4.8, 3.0],
+      [4.8, 3.0],
+    ].forEach(([bx, bz]) => {
+      const boss = new THREE.Mesh(new THREE.CylinderGeometry(0.35, 0.4, 0.4, 16), statorIronMat);
+      boss.position.set(bx, -3.7, bz);
+      statorGroup.add(boss);
+    });
 
     // Laminated Iron Stator Ring Outer Housing
     const statorGeo = new THREE.CylinderGeometry(5.2, 5.2, 3.8, 48, 1, true);
@@ -106,7 +129,52 @@ export function TeslaMotor3D() {
     statorMesh.receiveShadow = true;
     statorGroup.add(statorMesh);
 
-    // 4 Saliency Pole Projections & Phase Coils
+    // Stator Lamination Stacking Ribs
+    for (let l = 0; l < 8; l++) {
+      const lamRing = new THREE.Mesh(
+        new THREE.TorusGeometry(5.22, 0.04, 8, 48),
+        new THREE.MeshStandardMaterial({ color: 0x334155, metalness: 0.9 }),
+      );
+      lamRing.rotation.x = Math.PI / 2;
+      lamRing.position.y = -1.6 + l * 0.46;
+      statorGroup.add(lamRing);
+    }
+
+    // Cast-Iron End-Bell Shields with 4 Longitudinal Compression Tie-Rods
+    [-2.1, 2.1].forEach((yPos) => {
+      const endShield = new THREE.Mesh(
+        new THREE.CylinderGeometry(5.3, 5.3, 0.4, 48),
+        statorIronMat,
+      );
+      endShield.position.y = yPos;
+      statorGroup.add(endShield);
+
+      // Center Pillow Block Bearing Hub
+      const bearingHub = new THREE.Mesh(
+        new THREE.CylinderGeometry(1.2, 1.3, 0.7, 24),
+        statorIronMat,
+      );
+      bearingHub.position.y = yPos + (yPos > 0 ? 0.35 : -0.35);
+      statorGroup.add(bearingHub);
+
+      // Brass Flip-Top Oiler Cup
+      const oilerCup = new THREE.Mesh(
+        new THREE.CylinderGeometry(0.18, 0.14, 0.5, 12),
+        new THREE.MeshStandardMaterial({ color: 0xd97706, metalness: 0.9, roughness: 0.2 }),
+      );
+      oilerCup.position.set(0, yPos + (yPos > 0 ? 0.8 : -0.8), 1.2);
+      statorGroup.add(oilerCup);
+    });
+
+    // 4 Long Steel Tie-Rods with Hex Nuts
+    for (let r = 0; r < 4; r++) {
+      const rAngle = (r * Math.PI) / 2 + Math.PI / 4;
+      const rod = new THREE.Mesh(new THREE.CylinderGeometry(0.08, 0.08, 4.8, 12), shaftSteelMat);
+      rod.position.set(Math.cos(rAngle) * 5.0, 0, Math.sin(rAngle) * 5.0);
+      statorGroup.add(rod);
+    }
+
+    // Saliency Pole Projections & Hand-Wound Phase Coils
     const coilMeshes: { mesh: THREE.Mesh; phaseIdx: number }[] = [];
     const numPoles = phaseCount === 2 ? 4 : 6;
 
@@ -134,6 +202,16 @@ export function TeslaMotor3D() {
       coilMesh.castShadow = true;
       statorGroup.add(coilMesh);
 
+      // Brass Terminal Binding Posts on Stator Top
+      if (i < 4) {
+        const termPost = new THREE.Mesh(
+          new THREE.CylinderGeometry(0.12, 0.12, 0.45, 12),
+          new THREE.MeshStandardMaterial({ color: 0xd97706, metalness: 0.9 }),
+        );
+        termPost.position.set(-1.5 + i * 1.0, 3.0, 4.2);
+        statorGroup.add(termPost);
+      }
+
       coilMeshes.push({ mesh: coilMesh, phaseIdx: i % phaseCount });
     }
 
@@ -141,26 +219,28 @@ export function TeslaMotor3D() {
     const rotorGroup = new THREE.Group();
     scene.add(rotorGroup);
 
-    // Laminated Silicon Rotor Core
-    const rotorGeo = new THREE.CylinderGeometry(2.3, 2.3, 3.4, 32);
+    // Laminated Silicon Rotor Core with Axial Air Cooling Ducts
+    const rotorGeo = new THREE.CylinderGeometry(2.3, 2.3, 3.4, 36);
     const rotorMesh = new THREE.Mesh(rotorGeo, rotorCoreMat);
     rotorMesh.castShadow = true;
     rotorMesh.receiveShadow = true;
     rotorGroup.add(rotorMesh);
 
-    // Copper Conductor Bars embedded in Rotor Slots (16 Bars)
-    const numBars = 16;
+    // Copper Conductor Bars embedded in Skewed Rotor Slots (18 Bars)
+    const numBars = 18;
     for (let b = 0; b < numBars; b++) {
       const bAngle = (b * 2 * Math.PI) / numBars;
-      const barGeo = new THREE.CylinderGeometry(0.1, 0.1, 3.6, 12);
+      const barGeo = new THREE.CylinderGeometry(0.09, 0.09, 3.6, 12);
       const barMesh = new THREE.Mesh(barGeo, copperRotorBarMat);
+      // Skew bars by 5 degrees to eliminate slot cogging
+      barMesh.rotation.z = 0.09;
       barMesh.position.set(Math.cos(bAngle) * 2.2, 0, Math.sin(bAngle) * 2.2);
       barMesh.castShadow = true;
       rotorGroup.add(barMesh);
     }
 
     // Heavy Copper End Rings Short-Circuiting All Bars
-    const endRingGeo = new THREE.TorusGeometry(2.2, 0.18, 16, 32);
+    const endRingGeo = new THREE.TorusGeometry(2.2, 0.22, 16, 36);
     const topRing = new THREE.Mesh(endRingGeo, copperRotorBarMat);
     topRing.rotation.x = Math.PI / 2;
     topRing.position.y = 1.72;
@@ -170,10 +250,17 @@ export function TeslaMotor3D() {
     rotorGroup.add(bottomRing);
 
     // Steel Central Drive Shaft
-    const shaftGeo = new THREE.CylinderGeometry(0.4, 0.4, 7.8, 24);
+    const shaftGeo = new THREE.CylinderGeometry(0.4, 0.4, 9.4, 24);
     const shaftMesh = new THREE.Mesh(shaftGeo, shaftSteelMat);
     shaftMesh.castShadow = true;
     rotorGroup.add(shaftMesh);
+
+    // Keyed Crowned Flat-Belt Output Pulley
+    const pulleyGeo = new THREE.CylinderGeometry(1.6, 1.6, 1.2, 32);
+    const pulley = new THREE.Mesh(pulleyGeo, statorIronMat);
+    pulley.position.y = 3.8;
+    pulley.castShadow = true;
+    rotorGroup.add(pulley);
 
     // --- GLOWING ROTATING MAGNETIC FLUX STREAMLINES ---
     const fluxCount = 240;

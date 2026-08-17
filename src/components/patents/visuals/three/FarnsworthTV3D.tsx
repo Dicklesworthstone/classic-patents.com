@@ -4,6 +4,7 @@ import { Radio, Tv } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import * as THREE from "three";
 import { createGlowPointTexture, createThreeStudioScene } from "./ThreeStudioScene";
+import { useLiveSimParams } from "./useLiveSimParams";
 
 export function FarnsworthTV3D() {
   const containerRef = useRef<HTMLDivElement>(null);
@@ -23,6 +24,13 @@ export function FarnsworthTV3D() {
   const velocityMps = Math.sqrt((2 * eCharge * acceleratingVoltageKv * 1000) / mElectron);
   const velocityFractionC = (velocityMps / 3e8) * 100;
   const photocathodeCurrentUa = (lightIntensityLux * 0.045).toFixed(1);
+
+  const live = useLiveSimParams({
+    acceleratingVoltageKv,
+    horizontalFreqKhz,
+    verticalFreqHz,
+    showElectronBeam,
+  });
 
   useEffect(() => {
     const container = containerRef.current;
@@ -176,13 +184,18 @@ export function FarnsworthTV3D() {
       reqId = requestAnimationFrame(animate);
       const delta = clock.getDelta();
       const elapsed = clock.getElapsedTime();
+      const p = live.current;
 
       // Electron Beam Deflection by Magnetic Lorentz Force: F = q(v x B)
-      // High-speed sawtooth deflection in horizontal (X) and vertical (Y)
-      const hSawtooth = ((elapsed * 4.0) % 1.0) * 2 - 1; // Simulated horizontal line scan
-      const vSawtooth = ((elapsed * 0.8) % 1.0) * 2 - 1; // Simulated vertical frame scan
+      // High-speed sawtooth deflection scaled with user scan frequencies
+      const hFreq = p.horizontalFreqKhz * 0.25;
+      const vFreq = p.verticalFreqHz * 0.015;
+      const hSawtooth = ((elapsed * hFreq) % 1.0) * 2 - 1;
+      const vSawtooth = ((elapsed * vFreq) % 1.0) * 2 - 1;
 
       const bPos = beamPos;
+      const beamVelocityScale = Math.sqrt(p.acceleratingVoltageKv / 3.5) * 25.0;
+
       for (let i = 0; i < beamCount; i++) {
         const idx = i * 3;
         const progress = (bPos[idx] + 4.5) / 9.3;
@@ -197,13 +210,13 @@ export function FarnsworthTV3D() {
         }
 
         // Particle propagation
-        bPos[idx] += delta * 25.0;
+        bPos[idx] += delta * beamVelocityScale;
         if (bPos[idx] > 4.8) {
           bPos[idx] = -4.5;
         }
       }
       beamGeo.attributes.position.needsUpdate = true;
-      beamPoints.visible = showElectronBeam;
+      beamPoints.visible = p.showElectronBeam;
 
       controls.update();
       renderer.render(scene, camera);
@@ -215,7 +228,7 @@ export function FarnsworthTV3D() {
       cancelAnimationFrame(reqId);
       studio.dispose();
     };
-  }, [showElectronBeam]);
+  }, [live]);
 
   return (
     <div className="flex flex-col h-full bg-parchment-50/60 dark:bg-ink-950/80 rounded-2xl overflow-hidden border border-parchment-300 dark:border-ink-800 shadow-patent">

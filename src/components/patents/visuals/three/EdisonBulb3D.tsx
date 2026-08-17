@@ -24,12 +24,13 @@ export function EdisonBulb3D() {
   // Blackbody temperature estimate (Stefan-Boltzmann P = sigma * A * T^4)
   const filamentTempKelvin = Math.round(300 + (powerWatts * 4e10) ** 0.25);
   const estimatedLifespanHours =
-    vacuumTorr < 1e-4 ? Math.round(1200 / (appliedVoltage / 110) ** 3.5) : 0;
+    vacuumTorr < 1e-4 ? Math.round(1200 / (Math.max(appliedVoltage, 1) / 110) ** 3.5) : 0;
 
   const live = useLiveSimParams({
     appliedVoltage,
     filamentTempKelvin,
     showGasMolecules,
+    vacuumTorr,
   });
 
   useEffect(() => {
@@ -87,72 +88,110 @@ export function EdisonBulb3D() {
     const bulbGroup = new THREE.Group();
     scene.add(bulbGroup);
 
-    // Blown Glass Pear-Shaped Envelope
-    const glassSphere = new THREE.Mesh(new THREE.SphereGeometry(2.8, 48, 48), glassMaterial);
-    glassSphere.position.y = 1.0;
-    bulbGroup.add(glassSphere);
+    // Continuous Blown Glass Pear-Shaped Envelope (1879 Menlo Park historical profile)
+    const lathePoints: THREE.Vector2[] = [];
+    // Top exhaust pip tip
+    lathePoints.push(new THREE.Vector2(0.01, 3.9));
+    lathePoints.push(new THREE.Vector2(0.12, 3.8));
+    lathePoints.push(new THREE.Vector2(0.22, 3.65));
+    // Upper bulb hemisphere
+    lathePoints.push(new THREE.Vector2(1.2, 3.2));
+    lathePoints.push(new THREE.Vector2(2.3, 2.3));
+    lathePoints.push(new THREE.Vector2(2.8, 1.2));
+    lathePoints.push(new THREE.Vector2(2.7, 0.2));
+    // Inward neck taper
+    lathePoints.push(new THREE.Vector2(2.2, -0.7));
+    lathePoints.push(new THREE.Vector2(1.6, -1.4));
+    lathePoints.push(new THREE.Vector2(1.25, -2.0));
+    lathePoints.push(new THREE.Vector2(1.22, -2.4));
 
-    const glassNeck = new THREE.Mesh(
-      new THREE.CylinderGeometry(1.25, 2.7, 2.2, 36, 1, true),
-      glassMaterial,
-    );
-    glassNeck.position.y = -1.2;
-    bulbGroup.add(glassNeck);
+    const glassGeo = new THREE.LatheGeometry(lathePoints, 48);
+    const glassMesh = new THREE.Mesh(glassGeo, glassMaterial);
+    bulbGroup.add(glassMesh);
 
-    // Exhaust Pip on Top (Historical Edison detail)
-    const exhaustPip = new THREE.Mesh(new THREE.ConeGeometry(0.2, 0.45, 16), glassMaterial);
-    exhaustPip.position.y = 3.9;
-    bulbGroup.add(exhaustPip);
-
-    // Brass Screw Base
+    // Brass Screw Base with Thread Ridges
     const baseCylinder = new THREE.Mesh(
-      new THREE.CylinderGeometry(1.22, 1.22, 1.8, 36),
+      new THREE.CylinderGeometry(1.22, 1.22, 1.4, 36),
       brassScrewBaseMaterial,
     );
     baseCylinder.position.y = -2.9;
     baseCylinder.castShadow = true;
     bulbGroup.add(baseCylinder);
 
-    // Wooden Display Mount
-    const mountStand = new THREE.Mesh(
-      new THREE.CylinderGeometry(2.4, 2.6, 0.7, 32),
-      new THREE.MeshStandardMaterial({ color: 0x78350f, roughness: 0.4 }),
+    // 4 Helical Thread Rings
+    for (let t = 0; t < 4; t++) {
+      const threadRing = new THREE.Mesh(
+        new THREE.TorusGeometry(1.24, 0.08, 12, 36),
+        brassScrewBaseMaterial,
+      );
+      threadRing.rotation.x = Math.PI / 2 + 0.08;
+      threadRing.position.y = -2.4 - t * 0.32;
+      bulbGroup.add(threadRing);
+    }
+
+    // Black Vitrite Insulator & Base Contact Button
+    const insulatorBase = new THREE.Mesh(
+      new THREE.CylinderGeometry(0.8, 0.8, 0.25, 24),
+      new THREE.MeshStandardMaterial({ color: 0x0f172a, roughness: 0.8 }),
     );
-    mountStand.position.y = -4.1;
+    insulatorBase.position.y = -3.7;
+    bulbGroup.add(insulatorBase);
+
+    // Turned Wooden Display Mount
+    const mountStand = new THREE.Mesh(
+      new THREE.CylinderGeometry(2.4, 2.7, 0.7, 36),
+      new THREE.MeshStandardMaterial({ color: 0x78350f, roughness: 0.35 }),
+    );
+    mountStand.position.y = -4.15;
     mountStand.receiveShadow = true;
     bulbGroup.add(mountStand);
 
-    // Internal Glass Stem Mount
-    const glassStem = new THREE.Mesh(new THREE.CylinderGeometry(0.32, 0.5, 2.4, 16), glassMaterial);
-    glassStem.position.y = -0.6;
+    // Internal Glass Stem Mount with Flattened Pinch Seal
+    const glassStem = new THREE.Mesh(
+      new THREE.CylinderGeometry(0.35, 0.55, 2.2, 24),
+      glassMaterial,
+    );
+    glassStem.position.y = -0.7;
     bulbGroup.add(glassStem);
 
-    // Platinum In-Lead Support Wires
+    const glassPinch = new THREE.Mesh(new THREE.BoxGeometry(0.9, 0.35, 0.22), glassMaterial);
+    glassPinch.position.y = 0.4;
+    bulbGroup.add(glassPinch);
+
+    // Platinum In-Lead Support Wires & Carbon Connector Clamps
     const leftLead = new THREE.Mesh(
-      new THREE.CylinderGeometry(0.04, 0.04, 2.8, 8),
+      new THREE.CylinderGeometry(0.035, 0.035, 2.6, 8),
       platinumLeadMaterial,
     );
-    leftLead.position.set(-0.45, 0.3, 0);
+    leftLead.position.set(-0.35, 0.5, 0);
     leftLead.castShadow = true;
     const rightLead = leftLead.clone();
-    rightLead.position.set(0.45, 0.3, 0);
+    rightLead.position.set(0.35, 0.5, 0);
     bulbGroup.add(leftLead);
     bulbGroup.add(rightLead);
 
+    // Carbon clamping blocks at top of platinum leads
+    const leftClamp = new THREE.Mesh(new THREE.BoxGeometry(0.12, 0.16, 0.12), filamentMaterialMesh);
+    leftClamp.position.set(-0.35, 1.75, 0);
+    const rightClamp = leftClamp.clone();
+    rightClamp.position.set(0.35, 1.75, 0);
+    bulbGroup.add(leftClamp);
+    bulbGroup.add(rightClamp);
+
     // High-Resistance Carbonized Bamboo Filament Loop (Horseshoe Arch)
     const filamentCurve = new THREE.CatmullRomCurve3([
-      new THREE.Vector3(-0.45, 1.7, 0),
-      new THREE.Vector3(-0.55, 2.5, 0.05),
-      new THREE.Vector3(0, 3.0, 0),
-      new THREE.Vector3(0.55, 2.5, -0.05),
-      new THREE.Vector3(0.45, 1.7, 0),
+      new THREE.Vector3(-0.35, 1.75, 0),
+      new THREE.Vector3(-0.52, 2.45, 0.04),
+      new THREE.Vector3(0, 3.05, 0),
+      new THREE.Vector3(0.52, 2.45, -0.04),
+      new THREE.Vector3(0.35, 1.75, 0),
     ]);
-    const filamentGeo = new THREE.TubeGeometry(filamentCurve, 40, 0.045, 8, false);
+    const filamentGeo = new THREE.TubeGeometry(filamentCurve, 48, 0.042, 8, false);
     const filamentMesh = new THREE.Mesh(filamentGeo, filamentMaterialMesh);
     bulbGroup.add(filamentMesh);
 
     // --- RESIDUAL GAS MOLECULES / MEAN FREE PATH SIMULATION ---
-    const moleculeCount = vacuumTorr > 1e-4 ? 120 : 18;
+    const moleculeCount = 120;
     const gasGeo = new THREE.BufferGeometry();
     const gasPositions = new Float32Array(moleculeCount * 3);
     const gasVelocities = new Float32Array(moleculeCount * 3);
@@ -247,6 +286,11 @@ export function EdisonBulb3D() {
         }
       }
       gasGeo.attributes.position.needsUpdate = true;
+      const gasActiveCount = Math.max(
+        10,
+        Math.min(moleculeCount, Math.round(moleculeCount * Math.min(1, p.vacuumTorr * 10))),
+      );
+      gasGeo.setDrawRange(0, gasActiveCount);
       gasPoints.visible = p.showGasMolecules;
 
       controls.update();
@@ -268,13 +312,13 @@ export function EdisonBulb3D() {
         <div ref={containerRef} className="absolute inset-0 w-full h-full" />
 
         {/* Live HUD Telemetry Overlay */}
-        <div className="absolute top-4 left-4 z-10 flex flex-col gap-2 pointer-events-none">
+        <div className="absolute top-4 left-4 z-10 flex flex-col gap-2 pointer-events-none max-w-[calc(100%-6rem)] sm:max-w-md">
           <div className="bg-white/90 dark:bg-ink-900/90 backdrop-blur-md px-3.5 py-2.5 rounded-xl border border-parchment-300 dark:border-ink-700 shadow-sm">
             <div className="text-[11px] font-sans text-amber-700 dark:text-amber-400 font-bold uppercase tracking-wider flex items-center gap-1.5">
               <Lightbulb className="w-3.5 h-3.5 text-amber-500 animate-pulse" />
               Incandescent Circuit Telemetry
             </div>
-            <div className="grid grid-cols-2 gap-x-4 gap-y-1 mt-1 text-xs font-sans">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-4 gap-y-1 mt-1 text-xs font-sans">
               <div>
                 <span className="text-ink-600 dark:text-ink-400">Filament Temp:</span>{" "}
                 <span className="font-bold text-amber-600 dark:text-amber-400">
@@ -310,13 +354,13 @@ export function EdisonBulb3D() {
             </div>
           </div>
 
-          <div className="bg-white/90 dark:bg-ink-900/90 backdrop-blur-md px-3 py-1.5 rounded-lg border border-parchment-300 dark:border-ink-700 text-[11px] font-sans text-ink-700 dark:text-ink-300 flex items-center gap-2">
+          <div className="bg-white/90 dark:bg-ink-900/90 backdrop-blur-md px-3 py-1.5 rounded-lg border border-parchment-300 dark:border-ink-700 text-[11px] font-sans text-ink-700 dark:text-ink-300 flex items-center gap-2 max-w-full">
             <span
-              className={`w-2 h-2 rounded-full ${
+              className={`w-2 h-2 rounded-full shrink-0 ${
                 vacuumTorr < 1e-4 ? "bg-emerald-500 animate-pulse" : "bg-red-500"
               }`}
             />
-            <span>
+            <span className="truncate">
               {vacuumTorr < 1e-4
                 ? "Sprengel Mercury Vacuum: Oxidation Inhibited"
                 : "Atmospheric Oxygen Present: Rapid Combustion"}

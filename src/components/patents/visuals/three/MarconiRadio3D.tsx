@@ -4,6 +4,7 @@ import { Radio, Zap } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import * as THREE from "three";
 import { createGlowPointTexture, createThreeStudioScene } from "./ThreeStudioScene";
+import { useLiveSimParams } from "./useLiveSimParams";
 
 export function MarconiRadio3D() {
   const containerRef = useRef<HTMLDivElement>(null);
@@ -27,6 +28,14 @@ export function MarconiRadio3D() {
     (inductionCoilKv / 20)
   ).toFixed(1);
   const peakRfPowerKw = ((inductionCoilKv * inductionCoilKv) / (sparkGapMm * 1.5)).toFixed(1);
+
+  const live = useLiveSimParams({
+    aerialHeightMeters,
+    sparkGapMm,
+    inductionCoilKv,
+    showEmWavefronts,
+    isSparking,
+  });
 
   useEffect(() => {
     const container = containerRef.current;
@@ -176,6 +185,14 @@ export function MarconiRadio3D() {
       reqId = requestAnimationFrame(animate);
       const _delta = clock.getDelta();
       const elapsed = clock.getElapsedTime();
+      const p = live.current;
+
+      // Dynamically scale mast height based on aerial height parameter
+      const mastScaleY = p.aerialHeightMeters / 30;
+      mast.scale.y = mastScaleY;
+      mast.position.y = (9.0 * mastScaleY) / 2 - 4.0;
+      aerialWire.scale.y = mastScaleY;
+      aerialWire.position.y = (8.5 * mastScaleY) / 2 - 3.45;
 
       // Expanding Radio Wavefront Spheres (Speed of Light $c$)
       for (let w = 0; w < waveCount; w++) {
@@ -183,11 +200,11 @@ export function MarconiRadio3D() {
         const radius = (elapsed * 5.0 + w * 2.8) % 15.0;
         sphere.scale.set(radius, radius, radius);
         (sphere.material as THREE.MeshBasicMaterial).opacity = Math.max(0, 0.7 - radius * 0.045);
-        sphere.visible = showEmWavefronts && isSparking;
+        sphere.visible = p.showEmWavefronts && p.isSparking;
       }
 
       // Spark Gap Plasma Jitter
-      if (isSparking) {
+      if (p.isSparking) {
         const sPos = sparkPos;
         for (let i = 0; i < sparkCount; i++) {
           const idx = i * 3;
@@ -211,7 +228,7 @@ export function MarconiRadio3D() {
       cancelAnimationFrame(reqId);
       studio.dispose();
     };
-  }, [showEmWavefronts, isSparking]);
+  }, [live]);
 
   return (
     <div className="flex flex-col h-full bg-parchment-50/60 dark:bg-ink-950/80 rounded-2xl overflow-hidden border border-parchment-300 dark:border-ink-800 shadow-patent">

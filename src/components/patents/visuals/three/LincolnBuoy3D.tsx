@@ -4,6 +4,7 @@ import { Anchor } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import * as THREE from "three";
 import { createThreeStudioScene } from "./ThreeStudioScene";
+import { useLiveSimParams } from "./useLiveSimParams";
 
 export function LincolnBuoy3D() {
   const containerRef = useRef<HTMLDivElement>(null);
@@ -34,6 +35,13 @@ export function LincolnBuoy3D() {
   );
   const underKeelClearanceFt = (riverShoalDepthFt - effectiveDraftFt).toFixed(2);
   const isAground = Number(underKeelClearanceFt) <= 0;
+
+  const live = useLiveSimParams({
+    bellowsInflationPct,
+    riverShoalDepthFt,
+    baseDraftFt,
+    effectiveDraftFt,
+  });
 
   useEffect(() => {
     const container = containerRef.current;
@@ -164,7 +172,7 @@ export function LincolnBuoy3D() {
       new THREE.BoxGeometry(32, 1.2, 32),
       new THREE.MeshStandardMaterial({ color: 0xd97706, roughness: 0.85 }),
     );
-    sandBar.position.y = -0.4 - riverShoalDepthFt * 0.4;
+    sandBar.position.y = -2.6;
     sandBar.receiveShadow = true;
     scene.add(sandBar);
 
@@ -176,14 +184,18 @@ export function LincolnBuoy3D() {
       reqId = requestAnimationFrame(animate);
       const delta = clock.getDelta();
       const elapsed = clock.getElapsedTime();
+      const p = live.current;
+
+      // Dynamic Shoal Sandbar Depth
+      sandBar.position.y = -0.4 - p.riverShoalDepthFt * 0.4;
 
       // Dynamic Bellows Expansion / Contraction
-      const scaleZ = 0.2 + (bellowsInflationPct / 100) * 1.4;
+      const scaleZ = 0.2 + (p.bellowsInflationPct / 100) * 1.4;
       bellowsPort.scale.z = scaleZ;
       bellowsStarboard.scale.z = scaleZ;
 
       // Hydrostatic Hull Floating Height (Draft Equilibrium)
-      const targetY = (baseDraftFt - effectiveDraftFt) * 0.35 + Math.sin(elapsed * 1.5) * 0.06;
+      const targetY = (p.baseDraftFt - p.effectiveDraftFt) * 0.35 + Math.sin(elapsed * 1.5) * 0.06;
       boatGroup.position.y += (targetY - boatGroup.position.y) * 0.1;
       boatGroup.rotation.z = Math.sin(elapsed * 1.2) * 0.015;
 
@@ -203,7 +215,7 @@ export function LincolnBuoy3D() {
       cancelAnimationFrame(reqId);
       studio.dispose();
     };
-  }, [bellowsInflationPct, riverShoalDepthFt, effectiveDraftFt, baseDraftFt]);
+  }, [live]);
 
   return (
     <div className="flex flex-col h-full bg-parchment-50/60 dark:bg-ink-950/80 rounded-2xl overflow-hidden border border-parchment-300 dark:border-ink-800 shadow-patent">

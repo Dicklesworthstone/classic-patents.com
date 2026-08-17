@@ -4,6 +4,7 @@ import { Scissors, Sparkles } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import * as THREE from "three";
 import { createThreeStudioScene } from "./ThreeStudioScene";
+import { useLiveSimParams } from "./useLiveSimParams";
 
 export function HoweSewingMachine3D() {
   const containerRef = useRef<HTMLDivElement>(null);
@@ -19,6 +20,13 @@ export function HoweSewingMachine3D() {
   const stitchesPerSecond = (stitchingSpeedRpm / 60).toFixed(1);
   const clothFeedRateMmPerSec = ((stitchingSpeedRpm / 60) * stitchPitchMm).toFixed(1);
   const handSewingSpeedRatio = (Number(clothFeedRateMmPerSec) / 1.2).toFixed(1);
+
+  const live = useLiveSimParams({
+    stitchingSpeedRpm,
+    isCranking,
+    stitchPitchMm,
+    clothFeedRateMmPerSec,
+  });
 
   useEffect(() => {
     const container = containerRef.current;
@@ -67,65 +75,135 @@ export function HoweSewingMachine3D() {
       side: THREE.DoubleSide,
     });
 
-    // --- 3D HOWE SEWING MACHINE ASSEMBLY ---
+    // --- 3D HOWE LOCKSTITCH MACHINE ASSEMBLY ---
     const machineGroup = new THREE.Group();
     scene.add(machineGroup);
 
-    // Cast-Iron Base Plate & Cloth Bed
-    const bedPlate = new THREE.Mesh(new THREE.BoxGeometry(10.0, 0.8, 6.0), castIronMat);
+    // Cast-Iron Base Plate & Cloth Bed with Arch Stanchions
+    const bedPlate = new THREE.Mesh(new THREE.BoxGeometry(11.0, 0.7, 6.5), castIronMat);
     bedPlate.position.y = -2.2;
     bedPlate.castShadow = true;
     bedPlate.receiveShadow = true;
     machineGroup.add(bedPlate);
 
-    // Vertical Overhanging Arm Casting
-    const armColumn = new THREE.Mesh(new THREE.CylinderGeometry(0.8, 1.1, 4.2, 24), castIronMat);
+    // 4 Victorian Fluted Table Legs
+    [
+      [-4.8, -2.6],
+      [4.8, -2.6],
+      [-4.8, 2.6],
+      [4.8, 2.6],
+    ].forEach(([lx, lz]) => {
+      const leg = new THREE.Mesh(new THREE.CylinderGeometry(0.35, 0.28, 1.8, 16), castIronMat);
+      leg.position.set(lx, -3.45, lz);
+      machineGroup.add(leg);
+    });
+
+    // Vertical Overhanging Arm Casting (C-frame casting)
+    const armColumn = new THREE.Mesh(new THREE.CylinderGeometry(0.85, 1.2, 4.2, 24), castIronMat);
     armColumn.position.set(-3.2, 0, 0);
     armColumn.castShadow = true;
     machineGroup.add(armColumn);
 
-    const overhangingArm = new THREE.Mesh(new THREE.BoxGeometry(6.5, 1.0, 1.6), castIronMat);
+    const overhangingArm = new THREE.Mesh(new THREE.BoxGeometry(6.5, 0.9, 1.4), castIronMat);
     overhangingArm.position.set(0, 2.1, 0);
     overhangingArm.castShadow = true;
     machineGroup.add(overhangingArm);
 
-    // Brass Flywheel / Hand Crank
-    const flywheel = new THREE.Mesh(new THREE.CylinderGeometry(2.4, 2.4, 0.4, 32), brassMat);
-    flywheel.rotation.z = Math.PI / 2;
-    flywheel.position.set(-3.6, 2.1, 0);
-    flywheel.castShadow = true;
-    machineGroup.add(flywheel);
+    // Spoked Hand Flywheel with Wooden Turning Handle
+    const flywheelGroup = new THREE.Group();
+    flywheelGroup.position.set(-3.8, 2.1, 0);
 
-    // Needle Head Bar with Curved Eye-Pointed Needle
-    const needleBarGroup = new THREE.Group();
-    needleBarGroup.position.set(2.8, 1.2, 0);
+    const wheelRim = new THREE.Mesh(new THREE.TorusGeometry(2.3, 0.22, 16, 36), brassMat);
+    wheelRim.rotation.y = Math.PI / 2;
+    wheelRim.castShadow = true;
+    flywheelGroup.add(wheelRim);
 
-    const needleShaft = new THREE.Mesh(
-      new THREE.CylinderGeometry(0.08, 0.08, 3.2, 16),
+    // 6 Turned Wheel Spokes
+    for (let s = 0; s < 6; s++) {
+      const sAngle = (s * Math.PI) / 3;
+      const spoke = new THREE.Mesh(new THREE.CylinderGeometry(0.08, 0.08, 4.4, 12), brassMat);
+      spoke.position.set(0, Math.cos(sAngle) * 0, Math.sin(sAngle) * 0);
+      spoke.rotation.x = sAngle;
+      flywheelGroup.add(spoke);
+    }
+
+    // Wooden Crank Handle
+    const crankPin = new THREE.Mesh(
+      new THREE.CylinderGeometry(0.12, 0.12, 1.2, 12),
       polishedSteelMat,
     );
-    needleShaft.castShadow = true;
-    needleBarGroup.add(needleShaft);
+    crankPin.rotation.z = Math.PI / 2;
+    crankPin.position.set(-0.6, 1.7, 0);
+    flywheelGroup.add(crankPin);
 
-    // Curved Needle Tip with Eye at Point (Howe Claim 1)
-    const needleTip = new THREE.Mesh(new THREE.ConeGeometry(0.08, 0.6, 16), polishedSteelMat);
-    needleTip.position.y = -1.8;
-    needleTip.rotation.x = Math.PI;
-    needleTip.castShadow = true;
-    needleBarGroup.add(needleTip);
-    machineGroup.add(needleBarGroup);
+    const handleGrip = new THREE.Mesh(
+      new THREE.CylinderGeometry(0.22, 0.22, 0.9, 16),
+      new THREE.MeshStandardMaterial({ color: 0x78350f, roughness: 0.35 }),
+    );
+    handleGrip.rotation.z = Math.PI / 2;
+    handleGrip.position.set(-0.8, 1.7, 0);
+    flywheelGroup.add(handleGrip);
 
-    // Oscillating Boat Shuttle Carriage under Bed Plate
+    machineGroup.add(flywheelGroup);
+
+    // Elias Howe's Signature Curved Oscillating Needle Arm (Claim 1)
+    const needleArmGroup = new THREE.Group();
+    needleArmGroup.position.set(2.8, 1.2, 0);
+
+    const needleArmBeam = new THREE.Mesh(new THREE.BoxGeometry(0.22, 2.6, 0.35), polishedSteelMat);
+    needleArmBeam.castShadow = true;
+    needleArmGroup.add(needleArmBeam);
+
+    // Curved Eye-Pointed Steel Needle (Arc Radius matching arm stroke)
+    const needleCurve = new THREE.CatmullRomCurve3([
+      new THREE.Vector3(0, -1.2, 0),
+      new THREE.Vector3(0.08, -1.8, 0.05),
+      new THREE.Vector3(0, -2.4, 0),
+    ]);
+    const needleGeo = new THREE.TubeGeometry(needleCurve, 20, 0.045, 8, false);
+    const needleMesh = new THREE.Mesh(needleGeo, polishedSteelMat);
+    needleMesh.castShadow = true;
+    needleArmGroup.add(needleMesh);
+
+    // Eye at the point
+    const eyeMesh = new THREE.Mesh(new THREE.TorusGeometry(0.06, 0.02, 8, 12), polishedSteelMat);
+    eyeMesh.position.set(0, -2.35, 0);
+    needleArmGroup.add(eyeMesh);
+
+    machineGroup.add(needleArmGroup);
+
+    // Oscillating Boat Shuttle Carriage in Circular Race (Claim 2)
     const shuttleGroup = new THREE.Group();
-    shuttleGroup.position.set(2.8, -1.6, 0);
+    shuttleGroup.position.set(2.8, -1.5, 0);
 
-    const shuttleBody = new THREE.Mesh(new THREE.ConeGeometry(0.35, 1.8, 16), brassMat);
-    shuttleBody.rotation.z = -Math.PI / 2;
+    // Double-Pointed Boat Shuttle Body (Brass)
+    const shuttlePoints: THREE.Vector2[] = [];
+    shuttlePoints.push(new THREE.Vector2(0.01, 1.2)); // Bow point
+    shuttlePoints.push(new THREE.Vector2(0.28, 0.6));
+    shuttlePoints.push(new THREE.Vector2(0.32, 0)); // Center waist
+    shuttlePoints.push(new THREE.Vector2(0.28, -0.6));
+    shuttlePoints.push(new THREE.Vector2(0.01, -1.2)); // Stern point
+    const shuttleGeo = new THREE.LatheGeometry(shuttlePoints, 24);
+    const shuttleBody = new THREE.Mesh(shuttleGeo, brassMat);
+    shuttleBody.rotation.x = Math.PI / 2;
     shuttleBody.castShadow = true;
     shuttleGroup.add(shuttleBody);
+
+    // Internal Bobbin Spool inside Shuttle
+    const bobbin = new THREE.Mesh(
+      new THREE.CylinderGeometry(0.18, 0.18, 0.8, 16),
+      polishedSteelMat,
+    );
+    bobbin.rotation.z = Math.PI / 2;
+    shuttleGroup.add(bobbin);
+
     machineGroup.add(shuttleGroup);
 
-    // Cloth Workpiece on Bed
+    // Baster Clamping Plate & Cloth Feed Workpiece (Claim 3)
+    const basterPlate = new THREE.Mesh(new THREE.BoxGeometry(0.15, 1.2, 5.0), polishedSteelMat);
+    basterPlate.position.set(2.3, -1.2, 0);
+    machineGroup.add(basterPlate);
+
     const cloth = new THREE.Mesh(new THREE.BoxGeometry(8.0, 0.1, 4.0), clothFabricMat);
     cloth.position.set(0.5, -1.75, 0);
     cloth.castShadow = true;
@@ -151,23 +229,24 @@ export function HoweSewingMachine3D() {
       reqId = requestAnimationFrame(animate);
       const _delta = clock.getDelta();
       const elapsed = clock.getElapsedTime();
+      const p = live.current;
 
       // Crank Kinematics: Needle vertical stroke harmonic oscillation
-      const omega = (stitchingSpeedRpm / 60) * 2 * Math.PI;
+      const omega = (p.stitchingSpeedRpm / 60) * 2 * Math.PI;
       const crankAngle = elapsed * omega;
 
-      if (isCranking) {
-        flywheel.rotation.x = crankAngle;
-        // Needle plunges through cloth
-        const needleY = 1.2 + Math.cos(crankAngle) * 0.9;
-        needleBarGroup.position.y = needleY;
+      if (p.isCranking) {
+        flywheelGroup.rotation.x = crankAngle;
+        // Curved needle arm oscillates through cloth
+        const needleAngle = Math.cos(crankAngle) * 0.45;
+        needleArmGroup.rotation.z = needleAngle;
 
         // Shuttle oscillates in phase-locked quadrature through needle thread loop
         const shuttleZ = Math.sin(crankAngle) * 1.2;
         shuttleGroup.position.z = shuttleZ;
 
         // Animate cloth feeding step
-        cloth.position.x = 0.5 - ((elapsed * Number(clothFeedRateMmPerSec) * 0.1) % 2.0);
+        cloth.position.x = 0.5 - ((elapsed * Number(p.clothFeedRateMmPerSec) * 0.1) % 2.0);
       }
 
       controls.update();
@@ -180,7 +259,7 @@ export function HoweSewingMachine3D() {
       cancelAnimationFrame(reqId);
       studio.dispose();
     };
-  }, [stitchingSpeedRpm, isCranking, clothFeedRateMmPerSec]);
+  }, [live]);
 
   return (
     <div className="flex flex-col h-full bg-parchment-50/60 dark:bg-ink-950/80 rounded-2xl overflow-hidden border border-parchment-300 dark:border-ink-800 shadow-patent">

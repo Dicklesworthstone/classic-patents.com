@@ -4,6 +4,7 @@ import { Layers, Sparkles } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import * as THREE from "three";
 import { createThreeStudioScene } from "./ThreeStudioScene";
+import { useLiveSimParams } from "./useLiveSimParams";
 
 export function GoodyearRubber3D() {
   const containerRef = useRef<HTMLDivElement>(null);
@@ -27,6 +28,12 @@ export function GoodyearRubber3D() {
       : isVulcanized
         ? "Stable (-40°C to +120°C)"
         : "Melted Stickiness / Cold Embrittlement";
+
+  const live = useLiveSimParams({
+    appliedTensileStretch,
+    showSulfurCrosslinks,
+    isVulcanized,
+  });
 
   useEffect(() => {
     const container = containerRef.current;
@@ -126,33 +133,24 @@ export function GoodyearRubber3D() {
       reqId = requestAnimationFrame(animate);
       const _delta = clock.getDelta();
       const elapsed = clock.getElapsedTime();
+      const p = live.current;
 
       // Tensile Stretch Extension Factor
-      const stretch = appliedTensileStretch;
+      const stretch = p.appliedTensileStretch;
       rightClamp.position.x = 4.5 * stretch;
       leftClamp.position.x = -4.5 * stretch;
 
-      // Deform polymer chains according to entropic uncoiling
-      for (const item of chains) {
-        const newPts: THREE.Vector3[] = [];
-        for (let i = 0; i < item.basePts.length; i++) {
-          const pt = item.basePts[i];
-          const uncoilFactor = Math.max(0.1, 1.0 / stretch);
-          newPts.push(
-            new THREE.Vector3(
-              pt.x * stretch,
-              pt.y * uncoilFactor + Math.sin(elapsed * 3.0 + i) * (isVulcanized ? 0.04 : 0.12),
-              pt.z * uncoilFactor + Math.cos(elapsed * 3.0 + i) * (isVulcanized ? 0.04 : 0.12),
-            ),
-          );
-        }
-        item.curve.points = newPts;
-        item.mesh.geometry.dispose();
-        item.mesh.geometry = new THREE.TubeGeometry(item.curve, 40, 0.12, 8, false);
+      // Deform polymer chains smoothly with scale and oscillation
+      const uncoilFactor = Math.max(0.1, 1.0 / stretch);
+      for (let c = 0; c < chains.length; c++) {
+        const item = chains[c];
+        item.mesh.scale.set(stretch, uncoilFactor, uncoilFactor);
+        item.mesh.position.y = Math.sin(elapsed * 3.0 + c) * (p.isVulcanized ? 0.04 : 0.12);
+        item.mesh.position.z = Math.cos(elapsed * 3.0 + c) * (p.isVulcanized ? 0.04 : 0.12);
       }
 
       // Sulfur bridges visibility & positioning
-      sulfurBridgesGroup.visible = showSulfurCrosslinks && isVulcanized;
+      sulfurBridgesGroup.visible = p.showSulfurCrosslinks && p.isVulcanized;
       for (let b = 0; b < numBridges; b++) {
         const sphere = sulfurSpheres[b];
         sphere.position.x = (-3.0 + (b / numBridges) * 6.0) * stretch;
@@ -168,7 +166,7 @@ export function GoodyearRubber3D() {
       cancelAnimationFrame(reqId);
       studio.dispose();
     };
-  }, [appliedTensileStretch, showSulfurCrosslinks, isVulcanized]);
+  }, [live]);
 
   return (
     <div className="flex flex-col h-full bg-parchment-50/60 dark:bg-ink-950/80 rounded-2xl overflow-hidden border border-parchment-300 dark:border-ink-800 shadow-patent">

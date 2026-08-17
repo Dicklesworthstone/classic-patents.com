@@ -5,6 +5,7 @@ import { useEffect, useRef, useState } from "react";
 import * as THREE from "three";
 import { soundEngine } from "@/utils/soundEngine";
 import { createGlowPointTexture, createThreeStudioScene } from "./ThreeStudioScene";
+import { useLiveSimParams } from "./useLiveSimParams";
 
 export function BellTelephone3D() {
   const containerRef = useRef<HTMLDivElement>(null);
@@ -24,6 +25,13 @@ export function BellTelephone3D() {
   const currentBaselineAmps = batteryVoltage / baseResistanceOhms;
   const peakAudioCurrentMa =
     (batteryVoltage / (baseResistanceOhms - resistanceModulationOhms) - currentBaselineAmps) * 1000;
+
+  const live = useLiveSimParams({
+    acousticFrequencyHz,
+    voiceAmplitude,
+    showAcousticWaves,
+    currentBaselineAmps,
+  });
 
   // Sound Engine Integration
   useEffect(() => {
@@ -97,57 +105,101 @@ export function BellTelephone3D() {
     const phoneGroup = new THREE.Group();
     scene.add(phoneGroup);
 
-    // Walnut Instrument Base
+    // Beveled Walnut Instrument Base
     const baseBoard = new THREE.Mesh(new THREE.BoxGeometry(10.0, 0.6, 6.0), polishedWoodMaterial);
     baseBoard.position.y = -3.2;
     baseBoard.receiveShadow = true;
     phoneGroup.add(baseBoard);
 
-    // Speaking Cone / Acoustic Horn (Brass)
-    const hornGeo = new THREE.CylinderGeometry(1.6, 0.45, 3.8, 36, 1, true);
+    // Flared Acoustic Speaking Horn with Rolled Bead Rim (Lathe Geometry)
+    const hornPoints: THREE.Vector2[] = [];
+    hornPoints.push(new THREE.Vector2(0.42, 0)); // Diaphragm throat connection
+    hornPoints.push(new THREE.Vector2(0.45, 0.6));
+    hornPoints.push(new THREE.Vector2(0.55, 1.4));
+    hornPoints.push(new THREE.Vector2(0.85, 2.4));
+    hornPoints.push(new THREE.Vector2(1.35, 3.2));
+    hornPoints.push(new THREE.Vector2(1.85, 3.7)); // Flared mouth
+    hornPoints.push(new THREE.Vector2(1.88, 3.8)); // Rolled brass lip
+
+    const hornGeo = new THREE.LatheGeometry(hornPoints, 48);
     const hornMesh = new THREE.Mesh(hornGeo, brassMaterial);
     hornMesh.rotation.z = -Math.PI / 2;
-    hornMesh.position.set(-3.2, 0.5, 0);
+    hornMesh.position.set(-1.4, 0.5, 0);
     hornMesh.castShadow = true;
     phoneGroup.add(hornMesh);
 
+    // Diaphragm Mounting Collar with Brass Clamping Screws
+    const collarMesh = new THREE.Mesh(new THREE.TorusGeometry(0.52, 0.08, 12, 32), brassMaterial);
+    collarMesh.rotation.y = Math.PI / 2;
+    collarMesh.position.set(-1.4, 0.5, 0);
+    phoneGroup.add(collarMesh);
+
+    for (let s = 0; s < 6; s++) {
+      const sAngle = (s * Math.PI * 2) / 6;
+      const screw = new THREE.Mesh(new THREE.CylinderGeometry(0.04, 0.04, 0.15, 8), brassMaterial);
+      screw.rotation.z = Math.PI / 2;
+      screw.position.set(-1.4, 0.5 + Math.sin(sAngle) * 0.52, Math.cos(sAngle) * 0.52);
+      phoneGroup.add(screw);
+    }
+
     // Flexible Parchment Diaphragm Disc
-    const diaphragmGeo = new THREE.CircleGeometry(1.45, 36);
+    const diaphragmGeo = new THREE.CircleGeometry(0.48, 36);
     const diaphragmMesh = new THREE.Mesh(diaphragmGeo, diaphragmMaterial);
     diaphragmMesh.rotation.y = Math.PI / 2;
-    diaphragmMesh.position.set(-1.3, 0.5, 0);
+    diaphragmMesh.position.set(-1.38, 0.5, 0);
     diaphragmMesh.castShadow = true;
     phoneGroup.add(diaphragmMesh);
 
-    // Vertical Acid Liquid Cup (Glass + Electrolyte)
-    const glassCup = new THREE.Mesh(
-      new THREE.CylinderGeometry(1.1, 0.9, 2.2, 32),
-      glassCupMaterial,
-    );
-    glassCup.position.set(2.0, -1.2, 0);
+    // Vertical Acid Liquid Cup (Blown Glass Beaker with Lip)
+    const beakerPoints: THREE.Vector2[] = [];
+    beakerPoints.push(new THREE.Vector2(0, 0));
+    beakerPoints.push(new THREE.Vector2(1.0, 0));
+    beakerPoints.push(new THREE.Vector2(1.05, 0.1));
+    beakerPoints.push(new THREE.Vector2(1.1, 1.8));
+    beakerPoints.push(new THREE.Vector2(1.22, 2.2)); // Flared rim
+    const beakerGeo = new THREE.LatheGeometry(beakerPoints, 36);
+    const glassCup = new THREE.Mesh(beakerGeo, glassCupMaterial);
+    glassCup.position.set(2.0, -2.4, 0);
     phoneGroup.add(glassCup);
 
+    // Acid Electrolyte Liquid Volume with Meniscus
     const liquidMesh = new THREE.Mesh(
-      new THREE.CylinderGeometry(1.02, 0.82, 1.8, 32),
+      new THREE.CylinderGeometry(1.04, 0.98, 1.6, 36),
       liquidMaterial,
     );
-    liquidMesh.position.set(2.0, -1.3, 0);
+    liquidMesh.position.set(2.0, -1.5, 0);
     phoneGroup.add(liquidMesh);
+
+    // Submerged Stationary Base Electrode (Gold/Platinum Button)
+    const baseElectrode = new THREE.Mesh(
+      new THREE.CylinderGeometry(0.4, 0.4, 0.12, 16),
+      platinumRodMaterial,
+    );
+    baseElectrode.position.set(2.0, -2.3, 0);
+    phoneGroup.add(baseElectrode);
 
     // Variable-Resistance Platinum Dipping Needle Rod
     const rodGroup = new THREE.Group();
     rodGroup.position.set(2.0, 0.6, 0);
 
     const platinumRod = new THREE.Mesh(
-      new THREE.CylinderGeometry(0.06, 0.06, 2.4, 16),
+      new THREE.CylinderGeometry(0.045, 0.02, 2.4, 16),
       platinumRodMaterial,
     );
     platinumRod.castShadow = true;
     rodGroup.add(platinumRod);
     phoneGroup.add(rodGroup);
 
-    // Mechanical Linkage Arm Connecting Diaphragm to Rod
-    const linkArm = new THREE.Mesh(new THREE.BoxGeometry(3.4, 0.1, 0.1), brassMaterial);
+    // Mechanical Linkage Arm with Pivot Fulcrum Post
+    const fulcrumPost = new THREE.Mesh(
+      new THREE.CylinderGeometry(0.12, 0.15, 2.2, 16),
+      brassMaterial,
+    );
+    fulcrumPost.position.set(0.35, -0.6, 0);
+    fulcrumPost.castShadow = true;
+    phoneGroup.add(fulcrumPost);
+
+    const linkArm = new THREE.Mesh(new THREE.BoxGeometry(3.5, 0.08, 0.08), brassMaterial);
     linkArm.position.set(0.35, 0.5, 0);
     linkArm.castShadow = true;
     phoneGroup.add(linkArm);
@@ -216,10 +268,11 @@ export function BellTelephone3D() {
       reqId = requestAnimationFrame(animate);
       const delta = clock.getDelta();
       const elapsed = clock.getElapsedTime();
+      const p = live.current;
 
       // Diaphragm & Needle Rod Vibration: y(t) = A * sin(2 * pi * f * t)
-      const omega = 2 * Math.PI * (acousticFrequencyHz / 80); // Scaled for visual tracking
-      const displacement = Math.sin(elapsed * omega) * 0.35 * voiceAmplitude;
+      const omega = 2 * Math.PI * (p.acousticFrequencyHz / 80); // Scaled for visual tracking
+      const displacement = Math.sin(elapsed * omega) * 0.35 * p.voiceAmplitude;
 
       diaphragmMesh.position.x = -1.3 + displacement * 0.4;
       rodGroup.position.y = 0.6 + displacement;
@@ -232,13 +285,13 @@ export function BellTelephone3D() {
         const scale = 1.0 + offset * 0.35;
         ring.scale.set(scale, scale, scale);
         (ring.material as THREE.MeshBasicMaterial).opacity =
-          Math.max(0, 0.7 - offset * 0.15) * (voiceAmplitude > 0.05 ? 1 : 0);
-        ring.visible = showAcousticWaves;
+          Math.max(0, 0.7 - offset * 0.15) * (p.voiceAmplitude > 0.05 ? 1 : 0);
+        ring.visible = p.showAcousticWaves;
       }
 
       // Animate Current Drift Velocity in Electrolyte
       const ePos = electronPos;
-      const driftSpeed = (currentBaselineAmps / 0.15) * delta * 2.0;
+      const driftSpeed = (p.currentBaselineAmps / 0.15) * delta * 2.0;
       for (let i = 0; i < electronCount; i++) {
         const idx = i * 3;
         ePos[idx + 1] -= driftSpeed;
@@ -260,7 +313,7 @@ export function BellTelephone3D() {
       cancelAnimationFrame(reqId);
       studio.dispose();
     };
-  }, [acousticFrequencyHz, voiceAmplitude, showAcousticWaves, currentBaselineAmps]);
+  }, [live]);
 
   return (
     <div className="flex flex-col h-full bg-parchment-50/60 dark:bg-ink-950/80 rounded-2xl overflow-hidden border border-parchment-300 dark:border-ink-800 shadow-patent">

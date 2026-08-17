@@ -4,6 +4,7 @@ import { Flame, Shield } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import * as THREE from "three";
 import { createGlowPointTexture, createThreeStudioScene } from "./ThreeStudioScene";
+import { useLiveSimParams } from "./useLiveSimParams";
 
 export function FermiReactor3D() {
   const containerRef = useRef<HTMLDivElement>(null);
@@ -30,6 +31,12 @@ export function FermiReactor3D() {
       ? 200
       : Math.round(20 * (Number(kEff) / 0.99));
   const reactivityDollars = ((Number(kEff) - 1.0) / Number(kEff) / 0.0065).toFixed(2);
+
+  const live = useLiveSimParams({
+    controlRodWithdrawalPct,
+    showNeutronCascade,
+    kEff,
+  });
 
   useEffect(() => {
     const container = containerRef.current;
@@ -170,15 +177,16 @@ export function FermiReactor3D() {
     const animate = () => {
       reqId = requestAnimationFrame(animate);
       const delta = clock.getDelta();
+      const p = live.current;
 
       // Control Rod Vertical Height Position
-      const targetRodY = -0.5 + (controlRodWithdrawalPct / 100) * 3.2;
+      const targetRodY = -0.5 + (p.controlRodWithdrawalPct / 100) * 3.2;
       rodGroup.position.y += (targetRodY - rodGroup.position.y) * 0.1;
 
       // Animate Thermal Neutron Diffusion & Scattering
-      if (showNeutronCascade) {
+      if (p.showNeutronCascade) {
         const nPos = neutronPos;
-        const speed = (Number(kEff) / 1.0) * 4.0 * delta;
+        const speed = (Number(p.kEff) / 1.0) * 4.0 * delta;
 
         for (let i = 0; i < neutronCount; i++) {
           const idx = i * 3;
@@ -215,7 +223,7 @@ export function FermiReactor3D() {
       cancelAnimationFrame(reqId);
       studio.dispose();
     };
-  }, [controlRodWithdrawalPct, showNeutronCascade, kEff]);
+  }, [live]);
 
   return (
     <div className="flex flex-col h-full bg-parchment-50/60 dark:bg-ink-950/80 rounded-2xl overflow-hidden border border-parchment-300 dark:border-ink-800 shadow-patent">

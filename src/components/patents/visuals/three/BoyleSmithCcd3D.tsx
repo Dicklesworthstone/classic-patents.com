@@ -4,6 +4,7 @@ import { Camera, Sparkles } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import * as THREE from "three";
 import { createGlowPointTexture, createThreeStudioScene } from "./ThreeStudioScene";
+import { useLiveSimParams } from "./useLiveSimParams";
 
 export function BoyleSmithCcd3D() {
   const containerRef = useRef<HTMLDivElement>(null);
@@ -21,6 +22,12 @@ export function BoyleSmithCcd3D() {
   const fullWellElectrons = Math.round((gateVoltageV - 1.2) * 12500);
   const collectedChargeElectrons = Math.round(fullWellElectrons * Math.min(1.0, incidentLux / 800));
   const chargeTransferInneficiencyEpsilon = ((100 - transferEfficiencyPct) / 100).toExponential(2);
+
+  const live = useLiveSimParams({
+    clockPhase,
+    isAutoClocking,
+    gateVoltageV,
+  });
 
   useEffect(() => {
     const container = containerRef.current;
@@ -108,7 +115,7 @@ export function BoyleSmithCcd3D() {
     for (let i = 0; i < packetCount; i++) {
       const idx = i * 3;
       const pixelIdx = Math.floor(i / (packetCount / 3)); // 3 active packets
-      const baseGateX = -3.6 + (pixelIdx * 3 + (clockPhase - 1)) * 0.9;
+      const baseGateX = -3.6 + pixelIdx * 3 * 0.9;
 
       packetPos[idx] = baseGateX + (Math.random() - 0.5) * 0.5;
       packetPos[idx + 1] = -0.2 - Math.random() * 0.25;
@@ -141,20 +148,21 @@ export function BoyleSmithCcd3D() {
     let reqId: number;
     const clock = new THREE.Clock();
     let phaseTimer = 0;
-    let currentActivePhase = clockPhase;
+    let currentActivePhase: 1 | 2 | 3 = 1;
 
     const animate = () => {
       reqId = requestAnimationFrame(animate);
       const delta = clock.getDelta();
+      const p = live.current;
 
-      if (isAutoClocking) {
+      if (p.isAutoClocking) {
         phaseTimer += delta;
         if (phaseTimer > 0.6) {
           phaseTimer = 0;
           currentActivePhase = ((currentActivePhase % 3) + 1) as 1 | 2 | 3;
         }
       } else {
-        currentActivePhase = clockPhase;
+        currentActivePhase = p.clockPhase;
       }
 
       // Update Gate Colors & Potential Wells
@@ -189,7 +197,7 @@ export function BoyleSmithCcd3D() {
       cancelAnimationFrame(reqId);
       studio.dispose();
     };
-  }, [clockPhase, isAutoClocking]);
+  }, [live]);
 
   return (
     <div className="flex flex-col h-full bg-parchment-50/60 dark:bg-ink-950/80 rounded-2xl overflow-hidden border border-parchment-300 dark:border-ink-800 shadow-patent">

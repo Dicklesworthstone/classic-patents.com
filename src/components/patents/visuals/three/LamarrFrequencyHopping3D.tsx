@@ -4,6 +4,7 @@ import { Radio, Shield } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import * as THREE from "three";
 import { createGlowPointTexture, createThreeStudioScene } from "./ThreeStudioScene";
+import { useLiveSimParams } from "./useLiveSimParams";
 
 export function LamarrFrequencyHopping3D() {
   const containerRef = useRef<HTMLDivElement>(null);
@@ -19,6 +20,22 @@ export function LamarrFrequencyHopping3D() {
   const processingGainDb = (10 * Math.log10(carrierChannelsCount)).toFixed(1);
   const antiJamMarginDb = (Number(processingGainDb) - 3.0).toFixed(1);
   const activeFrequencyMhz = (140.0 + (currentChannel / 88) * 40.0).toFixed(2);
+
+  const live = useLiveSimParams({
+    hopRateHopsPerSec,
+    isJammingActive,
+  });
+
+  // Periodically refresh HUD channel display at hop frequency
+  useEffect(() => {
+    const interval = setInterval(
+      () => {
+        setCurrentChannel(Math.floor(Math.random() * 44) * 2 + 1);
+      },
+      1000 / Math.min(12, Math.max(2, hopRateHopsPerSec)),
+    );
+    return () => clearInterval(interval);
+  }, [hopRateHopsPerSec]);
 
   useEffect(() => {
     const container = containerRef.current;
@@ -147,16 +164,16 @@ export function LamarrFrequencyHopping3D() {
       reqId = requestAnimationFrame(animate);
       const delta = clock.getDelta();
       const _elapsed = clock.getElapsedTime();
+      const p = live.current;
 
       // Pseudo-Random Frequency Hopping Clocking
       hopTimer += delta;
-      const hopInterval = 1.0 / hopRateHopsPerSec;
+      const hopInterval = 1.0 / p.hopRateHopsPerSec;
 
       if (hopTimer >= hopInterval) {
         hopTimer = 0;
         // Pseudo-random pseudo-sequence step (Lamarr piano perforation tape)
         activeChan = Math.floor(Math.random() * numDisplayChannels);
-        setCurrentChannel(activeChan * 2);
       }
 
       // Rotate Piano Drums
@@ -175,7 +192,7 @@ export function LamarrFrequencyHopping3D() {
           mat.color = new THREE.Color(0x10b981);
           mat.emissive = new THREE.Color(0x10b981);
           mat.emissiveIntensity = 0.8;
-        } else if (isJammingActive && (c === 12 || c === 13 || c === 14)) {
+        } else if (p.isJammingActive && (c === 12 || c === 13 || c === 14)) {
           // Enemy Narrowband Jamming Spike (Red)
           bar.scale.y = 6.0;
           bar.position.y = 1.2;
@@ -213,7 +230,7 @@ export function LamarrFrequencyHopping3D() {
       cancelAnimationFrame(reqId);
       studio.dispose();
     };
-  }, [hopRateHopsPerSec, isJammingActive]);
+  }, [live]);
 
   return (
     <div className="flex flex-col h-full bg-parchment-50/60 dark:bg-ink-950/80 rounded-2xl overflow-hidden border border-parchment-300 dark:border-ink-800 shadow-patent">

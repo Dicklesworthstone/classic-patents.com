@@ -5,6 +5,7 @@ import { useEffect, useRef, useState } from "react";
 import * as THREE from "three";
 import { createGlowPointTexture, createThreeStudioScene } from "./ThreeStudioScene";
 import { useLiveSimParams } from "./useLiveSimParams";
+import { FLYER_DIM, buildWrightFlyerAirframe } from "./wrightFlyerAirframe";
 
 export function WrightFlyer3D() {
   const containerRef = useRef<HTMLDivElement>(null);
@@ -18,6 +19,7 @@ export function WrightFlyer3D() {
   const [showVectors, setShowVectors] = useState<boolean>(true);
   const [isAutoFlying, setIsAutoFlying] = useState<boolean>(true);
   const [isCoupled, setIsCoupled] = useState<boolean>(true);
+  const [showMuseumScan, setShowMuseumScan] = useState<boolean>(false);
 
   // Aerodynamic Physics Calculations
   const airspeedFps = (airspeedMph * 5280) / 3600;
@@ -51,6 +53,7 @@ export function WrightFlyer3D() {
     baseCl,
     totalLiftLbs,
     totalDragLbs,
+    showMuseumScan,
   });
 
   const applyWarp = (val: number) => {
@@ -67,46 +70,158 @@ export function WrightFlyer3D() {
     // Create Studio Scene with Museum Lighting
     const studio = createThreeStudioScene({
       container,
-      cameraPos: [14, 9, 15],
-      targetPos: [0, 0, 0],
+      cameraPos: [7.6, 3.2, 8.4],
+      targetPos: [0, 0.15, 0],
+      fov: 38,
     });
 
     const { scene, camera, renderer, controls } = studio;
+    controls.setRadius(11);
 
-    // --- PBR MATERIALS (Luminous & Museum Grade) ---
-    const wingFabricMat = new THREE.MeshStandardMaterial({
-      color: 0xfef9e7, // Pride of the West unbleached muslin cloth
-      roughness: 0.65,
-      metalness: 0.05,
-      side: THREE.DoubleSide,
-    });
-
-    const spruceWoodMat = new THREE.MeshStandardMaterial({
-      color: 0x9a3412, // Ash and West Virginia spruce spars
-      roughness: 0.4,
-      metalness: 0.15,
-    });
-
-    const _steelWireMat = new THREE.MeshStandardMaterial({
-      color: 0x94a3b8, // Piano brace wires
-      roughness: 0.2,
-      metalness: 0.9,
-    });
-
-    const propellerWoodMat = new THREE.MeshStandardMaterial({
-      color: 0x78350f,
-      roughness: 0.3,
-      metalness: 0.2,
-    });
-
-    // --- 3D BIPLANE AIRFRAME ASSEMBLY ---
-    const flyerGroup = new THREE.Group();
+    const airframe = buildWrightFlyerAirframe();
+    const flyerGroup = airframe.group;
     scene.add(flyerGroup);
 
-    // Biplane Wing Geometry (Span: 40ft = 14 units; Chord: 6.5ft = 2.6 units; Gap: 6ft = 2.3 units)
+    const {
+      upperWing,
+      lowerWing,
+      canardGroup,
+      rudderGroup,
+      leftPropBlades,
+      rightPropBlades,
+    } = airframe;
+
+    const scanGroup = new THREE.Group();
+    scanGroup.visible = false;
+    scene.add(scanGroup);
+    void import("three/addons/loaders/STLLoader.js").then(({ STLLoader }) => {
+      const loader = new STLLoader();
+      loader.load("/models/wright-flyer/smithsonian-nasm-1903-flyer.cc0.stl", (geo) => {
+        geo.computeVertexNormals();
+        geo.center();
+        geo.computeBoundingBox();
+        const box = geo.boundingBox;
+        if (box) {
+          const size = new THREE.Vector3();
+          box.getSize(size);
+          const longest = Math.max(size.x, size.y, size.z);
+          if (longest > 0) {
+            geo.scale(FLYER_DIM.span / longest, FLYER_DIM.span / longest, FLYER_DIM.span / longest);
+          }
+        }
+        const mesh = new THREE.Mesh(
+          geo,
+          new THREE.MeshStandardMaterial({
+            color: 0xe7d8b8,
+            roughness: 0.72,
+            metalness: 0.04,
+          }),
+        );
+        mesh.castShadow = true;
+        mesh.receiveShadow = true;
+        scanGroup.add(mesh);
+      });
+    });
+
+    // Dimensions: 40ft span (14 units), 6.5ft chord (2.6 units), 6ft gap (2.3 units)
     const spanUnits = 14;
     const chordUnits = 2.6;
     const gapUnits = 2.3;
+
+    // Helper: Create a Cambered Airfoil Section (1-in-20 Wright parabolic camber)
+    const createAirfoilShape = (chord: number, maxCamber: number, thickness: number) => {
+      const shape = new THREE.Shape();
+      const numPts = 24;
+      const ptsUpper: THREE.Vector2[] = [];
+      const ptsLower: THREE.Vector2[] = [];
+
+      for (let i = 0; i <= numPts; i++) {
+        const x = (i / numPts) * chord; // 0 to chord (leading edge to trailing edge)
+        const xNorm = x / chord;
+        // Parabolic camber equation
+        const camber = 4 * maxCamber * xNorm * (1 - xNorm);
+        // Thickness distribution tapering to trailing edge
+        const thick = 0.5 * thickness * (1 - xNorm) * Math.sqrt(Math.max(0, xNorm));
+
+        ptsUpper.push(new THREE.Vector2(x - chord / 2, camber + thick));
+        ptsLower.push(new THREE.Vector2(x - chord / 2, camber - thick));
+      }
+
+      // Start at leading edge
+      shape.moveTo(ptsUpper[0].x, ptsUpper[0].y);
+      for (let i = 1; i <= numPts; i++) {
+        shape.lineTo(ptsUpper[i].x, ptsUpper[i].y);
+      }
+      for (let i = numPts; i >= 0; i--) {
+        shape.lineTo(ptsLower[i].x, ptsLower[i].y);
+      }
+      shape.closePath();
+      return shape;
+    };
+
+    const airfoilShape = createAirfoilShape(chordUnits, 0.14, 0.12);
+    const extrudeSettings = { depth: 1, bevelEnabled: false, steps: 1 };
+
+    // Helper: Create a Cambered Wing Panel with Spruce Rib Battens
+    const createWingPanel = (width: number, isLeftTip = false, isRightTip = false) => {
+      const panelGroup = new THREE.Group();
+
+      // Fabric Skin
+      const geom = new THREE.ExtrudeGeometry(airfoilShape, {
+        ...extrudeSettings,
+        depth: width,
+      });
+      geom.center();
+      // Rotate so chord is along Z axis and width is along X axis
+      geom.rotateY(Math.PI / 2);
+
+      const fabricMesh = new THREE.Mesh(geom, wingFabricMat);
+      fabricMesh.castShadow = true;
+      fabricMesh.receiveShadow = true;
+      panelGroup.add(fabricMesh);
+
+      // Spruce Rib Battens across the panel
+      const numRibs = Math.max(3, Math.floor(width / 0.65));
+      const ribMat = spruceWoodMat;
+      for (let r = 0; r <= numRibs; r++) {
+        const ribX = -width / 2 + (r * width) / numRibs;
+        const ribMesh = new THREE.Mesh(
+          new THREE.BoxGeometry(0.04, 0.045, chordUnits * 0.98),
+          ribMat,
+        );
+        ribMesh.position.set(ribX, 0.08, 0);
+        panelGroup.add(ribMesh);
+      }
+
+      // Front Bullnose Spar & Rear Spar
+      const frontSpar = new THREE.Mesh(
+        new THREE.CylinderGeometry(0.045, 0.045, width, 8),
+        spruceWoodMat,
+      );
+      frontSpar.rotation.z = Math.PI / 2;
+      frontSpar.position.set(0, 0.02, chordUnits / 2 - 0.1);
+      panelGroup.add(frontSpar);
+
+      const rearSpar = new THREE.Mesh(
+        new THREE.CylinderGeometry(0.04, 0.04, width, 8),
+        spruceWoodMat,
+      );
+      rearSpar.rotation.z = Math.PI / 2;
+      rearSpar.position.set(0, 0.02, -chordUnits / 2 + 0.15);
+      panelGroup.add(rearSpar);
+
+      // Curved Elliptical Wingtip Bow
+      if (isLeftTip || isRightTip) {
+        const tipBowGeo = new THREE.TorusGeometry(chordUnits * 0.48, 0.04, 8, 16, Math.PI);
+        const tipBow = new THREE.Mesh(tipBowGeo, spruceWoodMat);
+        tipBow.rotation.x = Math.PI / 2;
+        tipBow.rotation.z = isLeftTip ? Math.PI / 2 : -Math.PI / 2;
+        tipBow.position.set(isLeftTip ? -width / 2 : width / 2, 0.04, 0);
+        panelGroup.add(tipBow);
+      }
+
+      return panelGroup;
+    };
 
     // Upper and Lower Wings with Articulated Wing Warping Tips
     const createWingSurface = (isUpper: boolean) => {
@@ -114,29 +229,26 @@ export function WrightFlyer3D() {
       wingG.position.y = isUpper ? gapUnits / 2 : -gapUnits / 2;
 
       // Center Wing Section (Rigid)
-      const centerGeo = new THREE.BoxGeometry(spanUnits * 0.4, 0.12, chordUnits);
-      const centerMesh = new THREE.Mesh(centerGeo, wingFabricMat);
-      centerMesh.castShadow = true;
-      centerMesh.receiveShadow = true;
+      const centerWidth = spanUnits * 0.44;
+      const centerMesh = createWingPanel(centerWidth);
       wingG.add(centerMesh);
 
-      // Left Wing Tip (Warpable)
-      const leftTipGeo = new THREE.BoxGeometry(spanUnits * 0.3, 0.1, chordUnits);
-      const leftTipMesh = new THREE.Mesh(leftTipGeo, wingFabricMat);
-      leftTipMesh.position.x = -spanUnits * 0.35;
+      // Left Wing Tip (Articulated for Wing Warping)
+      const tipWidth = spanUnits * 0.28;
+      const leftTipGroup = new THREE.Group();
+      leftTipGroup.position.set(-centerWidth / 2 - tipWidth / 2, 0, 0);
+      const leftTipMesh = createWingPanel(tipWidth, true, false);
       leftTipMesh.name = "leftTip";
-      leftTipMesh.castShadow = true;
-      leftTipMesh.receiveShadow = true;
-      wingG.add(leftTipMesh);
+      leftTipGroup.add(leftTipMesh);
+      wingG.add(leftTipGroup);
 
-      // Right Wing Tip (Warpable)
-      const rightTipGeo = new THREE.BoxGeometry(spanUnits * 0.3, 0.1, chordUnits);
-      const rightTipMesh = new THREE.Mesh(rightTipGeo, wingFabricMat);
-      rightTipMesh.position.x = spanUnits * 0.35;
+      // Right Wing Tip (Articulated for Wing Warping)
+      const rightTipGroup = new THREE.Group();
+      rightTipGroup.position.set(centerWidth / 2 + tipWidth / 2, 0, 0);
+      const rightTipMesh = createWingPanel(tipWidth, false, true);
       rightTipMesh.name = "rightTip";
-      rightTipMesh.castShadow = true;
-      rightTipMesh.receiveShadow = true;
-      wingG.add(rightTipMesh);
+      rightTipGroup.add(rightTipMesh);
+      wingG.add(rightTipGroup);
 
       return wingG;
     };
@@ -146,136 +258,283 @@ export function WrightFlyer3D() {
     flyerGroup.add(upperWing);
     flyerGroup.add(lowerWing);
 
-    // Vertical Ash Struts & Diagonal Truss Wires
-    const numBays = 4;
-    for (let i = 0; i <= numBays; i++) {
-      const bayX = -spanUnits / 2 + (i * spanUnits) / numBays;
-      // Front Strut
-      const fStrut = new THREE.Mesh(
-        new THREE.CylinderGeometry(0.06, 0.06, gapUnits, 8),
-        spruceWoodMat,
-      );
-      fStrut.position.set(bayX, 0, chordUnits / 2 - 0.2);
+    // --- STREAMLINED INTERPLANE STRUTS & TRUSS BRACING WIRES ---
+    const strutPositionsX = [
+      -spanUnits * 0.48,
+      -spanUnits * 0.24,
+      0,
+      spanUnits * 0.24,
+      spanUnits * 0.48,
+    ];
+    const wirePositions: number[] = [];
+
+    strutPositionsX.forEach((xPos, idx) => {
+      // Front Strut (Teardrop profile)
+      const fStrut = new THREE.Mesh(new THREE.BoxGeometry(0.06, gapUnits, 0.12), spruceWoodMat);
+      fStrut.position.set(xPos, 0, chordUnits / 2 - 0.2);
       fStrut.castShadow = true;
       flyerGroup.add(fStrut);
+
       // Rear Strut
-      const rStrut = new THREE.Mesh(
-        new THREE.CylinderGeometry(0.06, 0.06, gapUnits, 8),
-        spruceWoodMat,
-      );
-      rStrut.position.set(bayX, 0, -chordUnits / 2 + 0.2);
+      const rStrut = new THREE.Mesh(new THREE.BoxGeometry(0.06, gapUnits, 0.12), spruceWoodMat);
+      rStrut.position.set(xPos, 0, -chordUnits / 2 + 0.2);
       rStrut.castShadow = true;
       flyerGroup.add(rStrut);
-    }
 
-    // Forward Canard Elevator (Pitch Control)
+      // Diagonal Truss Bracing Wires across bays
+      if (idx < strutPositionsX.length - 1) {
+        const nextX = strutPositionsX[idx + 1];
+        const yTop = gapUnits / 2;
+        const yBot = -gapUnits / 2;
+        const zFront = chordUnits / 2 - 0.2;
+        const zRear = -chordUnits / 2 + 0.2;
+
+        // Front Bay X-bracing
+        wirePositions.push(xPos, yTop, zFront, nextX, yBot, zFront);
+        wirePositions.push(xPos, yBot, zFront, nextX, yTop, zFront);
+        // Rear Bay X-bracing
+        wirePositions.push(xPos, yTop, zRear, nextX, yBot, zRear);
+        wirePositions.push(xPos, yBot, zRear, nextX, yTop, zRear);
+        // Fore-Aft Diagonal Strut Bracing
+        wirePositions.push(xPos, yTop, zFront, xPos, yBot, zRear);
+        wirePositions.push(xPos, yBot, zFront, xPos, yTop, zRear);
+      }
+    });
+
+    const wireGeo = new THREE.BufferGeometry();
+    wireGeo.setAttribute("position", new THREE.Float32BufferAttribute(wirePositions, 3));
+    const wireLines = new THREE.LineSegments(wireGeo, steelWireMat);
+    flyerGroup.add(wireLines);
+
+    // --- STEAM-BENT ASH LANDING SKIDS (RUNNERS) ---
+    const createLandingSkid = (xPos: number) => {
+      const skidGroup = new THREE.Group();
+      skidGroup.position.set(xPos, -gapUnits / 2 - 0.45, 0);
+
+      // Horizontal runner rail
+      const railGeo = new THREE.BoxGeometry(0.09, 0.08, chordUnits + 1.8);
+      const rail = new THREE.Mesh(railGeo, ashSkidMat);
+      rail.castShadow = true;
+      skidGroup.add(rail);
+
+      // Upward-curved forward bow
+      const bowGeo = new THREE.TorusGeometry(1.2, 0.045, 8, 16, Math.PI / 3);
+      const bow = new THREE.Mesh(bowGeo, ashSkidMat);
+      bow.rotation.y = Math.PI / 2;
+      bow.position.set(0, 0.5, chordUnits / 2 + 0.9);
+      skidGroup.add(bow);
+
+      // Vertical Skid Uprights to Lower Wing
+      const u1 = new THREE.Mesh(new THREE.CylinderGeometry(0.04, 0.04, 0.45, 6), spruceWoodMat);
+      u1.position.set(0, 0.22, chordUnits / 2 - 0.2);
+      skidGroup.add(u1);
+      const u2 = new THREE.Mesh(new THREE.CylinderGeometry(0.04, 0.04, 0.45, 6), spruceWoodMat);
+      u2.position.set(0, 0.22, -chordUnits / 2 + 0.2);
+      skidGroup.add(u2);
+
+      return skidGroup;
+    };
+
+    const leftSkid = createLandingSkid(-1.2);
+    const rightSkid = createLandingSkid(1.2);
+    flyerGroup.add(leftSkid);
+    flyerGroup.add(rightSkid);
+
+    // --- FORWARD CANARD ELEVATOR (Pitch Control Stabilizer) ---
     const canardGroup = new THREE.Group();
-    canardGroup.position.set(0, 0, chordUnits + 3.2);
+    canardGroup.position.set(0, 0, chordUnits + 3.4);
 
-    const canardUpper = new THREE.Mesh(new THREE.BoxGeometry(5.0, 0.08, 1.2), wingFabricMat);
-    canardUpper.position.y = 0.5;
-    canardUpper.castShadow = true;
-    const canardLower = new THREE.Mesh(new THREE.BoxGeometry(5.0, 0.08, 1.2), wingFabricMat);
-    canardLower.position.y = -0.5;
-    canardLower.castShadow = true;
+    const canardSpan = 5.2;
+    const canardChord = 1.3;
+    const canardGap = 0.9;
+
+    const canardUpper = createWingPanel(canardSpan);
+    canardUpper.position.y = canardGap / 2;
+    canardUpper.scale.set(1, 0.8, canardChord / chordUnits);
+    const canardLower = createWingPanel(canardSpan);
+    canardLower.position.y = -canardGap / 2;
+    canardLower.scale.set(1, 0.8, canardChord / chordUnits);
     canardGroup.add(canardUpper);
     canardGroup.add(canardLower);
 
-    // Outrigger Struts to Canard
-    const outriggerL = new THREE.Mesh(
-      new THREE.CylinderGeometry(0.05, 0.05, 3.8, 6),
-      spruceWoodMat,
-    );
-    outriggerL.rotation.x = Math.PI / 2;
-    outriggerL.position.set(-1.8, 0, chordUnits / 2 + 1.6);
-    const outriggerR = outriggerL.clone();
-    outriggerR.position.x = 1.8;
-    flyerGroup.add(outriggerL);
-    flyerGroup.add(outriggerR);
+    // Canard Interplane End Struts
+    [-canardSpan * 0.45, canardSpan * 0.45].forEach((cx) => {
+      const cStrutF = new THREE.Mesh(
+        new THREE.CylinderGeometry(0.035, 0.035, canardGap, 6),
+        spruceWoodMat,
+      );
+      cStrutF.position.set(cx, 0, canardChord / 2 - 0.1);
+      canardGroup.add(cStrutF);
+      const cStrutR = new THREE.Mesh(
+        new THREE.CylinderGeometry(0.035, 0.035, canardGap, 6),
+        spruceWoodMat,
+      );
+      cStrutR.position.set(cx, 0, -canardChord / 2 + 0.1);
+      canardGroup.add(cStrutR);
+    });
+
+    // Forward Outrigger Booms to Canard
+    [-1.2, 1.2].forEach((ox) => {
+      const outrigger = new THREE.Mesh(
+        new THREE.CylinderGeometry(0.045, 0.045, 3.8, 6),
+        spruceWoodMat,
+      );
+      outrigger.rotation.x = Math.PI / 2;
+      outrigger.position.set(ox, -gapUnits / 4, chordUnits / 2 + 1.7);
+      flyerGroup.add(outrigger);
+    });
     flyerGroup.add(canardGroup);
 
-    // Rear Twin Vertical Rudder (Yaw Control)
+    // --- REAR TWIN VERTICAL RUDDER (Coupled Yaw Control) ---
     const rudderGroup = new THREE.Group();
-    rudderGroup.position.set(0, 0, -chordUnits - 3.2);
+    rudderGroup.position.set(0, 0, -chordUnits - 3.4);
 
-    const rudderV1 = new THREE.Mesh(new THREE.BoxGeometry(0.08, 2.6, 1.2), wingFabricMat);
-    rudderV1.position.x = -0.9;
-    rudderV1.castShadow = true;
-    const rudderV2 = new THREE.Mesh(new THREE.BoxGeometry(0.08, 2.6, 1.2), wingFabricMat);
-    rudderV2.position.x = 0.9;
-    rudderV2.castShadow = true;
+    const rudderV1 = createWingPanel(2.4);
+    rudderV1.rotation.z = Math.PI / 2;
+    rudderV1.position.x = -0.85;
+    rudderV1.scale.set(1, 0.7, 1.1 / chordUnits);
+    const rudderV2 = createWingPanel(2.4);
+    rudderV2.rotation.z = Math.PI / 2;
+    rudderV2.position.x = 0.85;
+    rudderV2.scale.set(1, 0.7, 1.1 / chordUnits);
     rudderGroup.add(rudderV1);
     rudderGroup.add(rudderV2);
 
-    const rearOutriggerL = new THREE.Mesh(
-      new THREE.CylinderGeometry(0.05, 0.05, 3.8, 6),
-      spruceWoodMat,
-    );
-    rearOutriggerL.rotation.x = Math.PI / 2;
-    rearOutriggerL.position.set(-0.9, 0, -chordUnits / 2 - 1.6);
-    const rearOutriggerR = rearOutriggerL.clone();
-    rearOutriggerR.position.x = 0.9;
-    flyerGroup.add(rearOutriggerL);
-    flyerGroup.add(rearOutriggerR);
+    // Rear Outrigger Booms
+    [-0.85, 0.85].forEach((rx) => {
+      const rearOutrigger = new THREE.Mesh(
+        new THREE.CylinderGeometry(0.045, 0.045, 3.8, 6),
+        spruceWoodMat,
+      );
+      rearOutrigger.rotation.x = Math.PI / 2;
+      rearOutrigger.position.set(rx, 0, -chordUnits / 2 - 1.7);
+      flyerGroup.add(rearOutrigger);
+    });
     flyerGroup.add(rudderGroup);
 
-    // 12hp 4-Cylinder Engine Crankcase (Positioned right of centerline)
-    const engineBlock = new THREE.Mesh(
-      new THREE.BoxGeometry(0.9, 0.7, 1.4),
-      new THREE.MeshStandardMaterial({ color: 0x475569, metalness: 0.8, roughness: 0.3 }),
-    );
-    engineBlock.position.set(0.9, -gapUnits / 2 + 0.45, 0);
-    engineBlock.castShadow = true;
-    flyerGroup.add(engineBlock);
+    // --- 1903 CHARLIE TAYLOR 12-HP 4-CYLINDER ENGINE & DRIVETRAIN ---
+    const engineGroup = new THREE.Group();
+    engineGroup.position.set(0.85, -gapUnits / 2 + 0.35, 0);
 
-    // Pilot Prone Hip Cradle (Positioned left of centerline to balance engine weight)
-    const pilotCradle = new THREE.Mesh(
-      new THREE.BoxGeometry(1.2, 0.2, 1.6),
-      new THREE.MeshStandardMaterial({ color: 0xb45309, roughness: 0.6 }),
-    );
-    pilotCradle.position.set(-0.9, -gapUnits / 2 + 0.2, 0);
-    flyerGroup.add(pilotCradle);
+    // Cast Aluminum Crankcase
+    const crankcase = new THREE.Mesh(new THREE.BoxGeometry(0.75, 0.5, 1.2), aluminumEngineMat);
+    crankcase.castShadow = true;
+    engineGroup.add(crankcase);
 
-    // Dual Counter-Rotating Pusher Propellers (8.5ft diameter)
-    const createPropeller = (xPos: number) => {
+    // 4 Horizontal Cast-Iron Cylinders
+    for (let c = 0; c < 4; c++) {
+      const cyl = new THREE.Mesh(new THREE.CylinderGeometry(0.14, 0.14, 0.45, 12), castIronMat);
+      cyl.rotation.z = Math.PI / 2;
+      cyl.position.set(0.48, 0.05, -0.45 + c * 0.3);
+      cyl.castShadow = true;
+      engineGroup.add(cyl);
+    }
+
+    // Heavy Engine Flywheel
+    const flywheel = new THREE.Mesh(new THREE.CylinderGeometry(0.42, 0.42, 0.12, 24), castIronMat);
+    flywheel.rotation.x = Math.PI / 2;
+    flywheel.position.set(-0.38, 0, -0.5);
+    flywheel.castShadow = true;
+    engineGroup.add(flywheel);
+
+    // Upright Radiator Tubes on Front Strut
+    const radiator = new THREE.Mesh(
+      new THREE.BoxGeometry(0.12, gapUnits * 0.75, 0.25),
+      copperRadiatorMat,
+    );
+    radiator.position.set(-0.65, gapUnits * 0.2, chordUnits / 2 - 0.2);
+    radiator.castShadow = true;
+    engineGroup.add(radiator);
+
+    // Gravity-Feed Gasoline Tank (Mounted on Upper Wing Strut)
+    const gasTank = new THREE.Mesh(
+      new THREE.CylinderGeometry(0.15, 0.15, 0.7, 16),
+      brassFittingMat,
+    );
+    gasTank.rotation.z = Math.PI / 2;
+    gasTank.position.set(0.2, gapUnits * 0.65, 0);
+    gasTank.castShadow = true;
+    engineGroup.add(gasTank);
+
+    flyerGroup.add(engineGroup);
+
+    // --- PILOT PRONE HIP CRADLE & PITCH CONTROL LEVER ---
+    const cradleGroup = new THREE.Group();
+    cradleGroup.position.set(-0.85, -gapUnits / 2 + 0.15, 0);
+
+    const cradleBase = new THREE.Mesh(new THREE.BoxGeometry(1.1, 0.12, 1.5), spruceWoodMat);
+    cradleBase.castShadow = true;
+    cradleGroup.add(cradleBase);
+
+    // Canvas hip strap
+    const hipStrap = new THREE.Mesh(new THREE.BoxGeometry(0.85, 0.06, 0.4), wingFabricMat);
+    hipStrap.position.set(0, 0.1, 0);
+    cradleGroup.add(hipStrap);
+
+    // Left-Hand Pitch Lever for Elevator
+    const pitchLever = new THREE.Mesh(
+      new THREE.CylinderGeometry(0.025, 0.025, 0.65, 8),
+      spruceWoodMat,
+    );
+    pitchLever.position.set(-0.45, 0.35, 0.4);
+    pitchLever.rotation.z = -0.2;
+    cradleGroup.add(pitchLever);
+
+    flyerGroup.add(cradleGroup);
+
+    // --- DUAL COUNTER-ROTATING PUSHER PROPELLERS WITH TWISTED SCIMITAR BLADES ---
+    const createPropeller = (xPos: number, _isPortCounterClockwise = false) => {
       const pGroup = new THREE.Group();
-      pGroup.position.set(xPos, 0, -chordUnits / 2 - 0.3);
+      pGroup.position.set(xPos, 0, -chordUnits / 2 - 0.32);
 
-      const hub = new THREE.Mesh(
-        new THREE.CylinderGeometry(0.18, 0.18, 0.3, 12),
-        new THREE.MeshStandardMaterial({ color: 0x334155, metalness: 0.85 }),
-      );
+      // Sprocket & Shaft Housing
+      const hub = new THREE.Mesh(new THREE.CylinderGeometry(0.16, 0.16, 0.28, 16), brassFittingMat);
       hub.rotation.x = Math.PI / 2;
+      hub.castShadow = true;
       pGroup.add(hub);
 
-      const blade1 = new THREE.Mesh(new THREE.BoxGeometry(0.22, 3.2, 0.06), propellerWoodMat);
-      blade1.rotation.z = 0.2;
-      blade1.castShadow = true;
-      const blade2 = blade1.clone();
-      blade2.rotation.z = 0.2 + Math.PI;
-      blade2.castShadow = true;
-      pGroup.add(blade1);
-      pGroup.add(blade2);
+      // Drive Chain Guide Tube leading from engine
+      const tubeGeo = new THREE.CylinderGeometry(0.03, 0.03, Math.abs(xPos - 0.85), 6);
+      const chainTube = new THREE.Mesh(tubeGeo, brassFittingMat);
+      chainTube.rotation.z = Math.PI / 2;
+      chainTube.position.set(-(xPos - 0.85) / 2, -0.15, 0.15);
+      pGroup.add(chainTube);
 
-      // Semi-transparent motion blur disk
+      // Twisted Aerodynamic Blades (8.5ft scale)
+      const bladeRadius = 1.65;
+      const bladeMeshGroup = new THREE.Group();
+
+      [-1, 1].forEach((dir) => {
+        const bladeGeo = new THREE.BoxGeometry(0.24, bladeRadius, 0.045);
+        const blade = new THREE.Mesh(bladeGeo, propellerWoodMat);
+        blade.position.y = (dir * bladeRadius) / 2;
+        blade.rotation.z = dir * 0.18;
+        blade.rotation.x = dir * 0.25; // Aerodynamic pitch angle
+        blade.castShadow = true;
+        bladeMeshGroup.add(blade);
+      });
+
+      pGroup.add(bladeMeshGroup);
+
+      // Semi-transparent rotational motion blur disk
       const blurDisk = new THREE.Mesh(
-        new THREE.CircleGeometry(1.6, 24),
+        new THREE.CircleGeometry(bladeRadius, 32),
         new THREE.MeshBasicMaterial({
           color: 0xfef08a,
           transparent: true,
-          opacity: 0.18,
+          opacity: 0.15,
           side: THREE.DoubleSide,
         }),
       );
       pGroup.add(blurDisk);
 
-      return pGroup;
+      return { pGroup, bladeMeshGroup };
     };
 
-    const leftProp = createPropeller(-2.4);
-    const rightProp = createPropeller(2.4);
-    flyerGroup.add(leftProp);
-    flyerGroup.add(rightProp);
+    const { pGroup: leftPropGroup, bladeMeshGroup: leftPropBlades } = createPropeller(-2.4, true);
+    const { pGroup: rightPropGroup, bladeMeshGroup: rightPropBlades } = createPropeller(2.4, false);
+    flyerGroup.add(leftPropGroup);
+    flyerGroup.add(rightPropGroup);
 
     // --- AERODYNAMIC AIRFLOW STREAMLINE PARTICLES ---
     const particleCount = 280;
@@ -367,8 +626,8 @@ export function WrightFlyer3D() {
 
       // Propellers Rotation (Counter-Rotating to eliminate gyroscopic torque)
       const propSpeed = (p.airspeedMph / 25) * 45;
-      leftProp.rotation.z += propSpeed * delta;
-      rightProp.rotation.z -= propSpeed * delta;
+      leftPropBlades.rotation.z += propSpeed * delta;
+      rightPropBlades.rotation.z -= propSpeed * delta;
 
       // Animate Wing Warping Deflection on Mesh Tips
       const warpRad = (p.wingWarpDeg * Math.PI) / 180;

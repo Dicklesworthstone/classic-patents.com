@@ -4,6 +4,7 @@ import { Shield } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import * as THREE from "three";
 import { createThreeStudioScene } from "./ThreeStudioScene";
+import { useLiveSimParams } from "./useLiveSimParams";
 
 export function KwolekKevlar3D() {
   const containerRef = useRef<HTMLDivElement>(null);
@@ -20,6 +21,14 @@ export function KwolekKevlar3D() {
   const isNematicLCP = polymerConcentrationPct >= 12.0 && temperatureCelsius < 105;
   const tensileStrengthGpa = (isNematicLCP ? 3.6 * (shearRate / 500) ** 0.35 : 0.8).toFixed(2);
   const modulusGpa = (isNematicLCP ? 130 * (shearRate / 500) ** 0.4 : 25).toFixed(0);
+
+  const live = useLiveSimParams({
+    shearRate,
+    temperatureCelsius,
+    showHydrogenBonds,
+    isImpactTesting,
+    isNematicLCP,
+  });
 
   useEffect(() => {
     const container = containerRef.current;
@@ -157,14 +166,15 @@ export function KwolekKevlar3D() {
       reqId = requestAnimationFrame(animate);
       const delta = clock.getDelta();
       const elapsed = clock.getElapsedTime();
+      const p = live.current;
 
       // Shear-induced Liquid Crystal Alignment
-      const shearAlignment = Math.min(1.0, shearRate / 600);
-      const thermalDisorder = Math.max(0, (temperatureCelsius - 60) / 60) * 0.3;
+      const shearAlignment = Math.min(1.0, p.shearRate / 600);
+      const thermalDisorder = Math.max(0, (p.temperatureCelsius - 60) / 60) * 0.3;
 
       for (let i = 0; i < numChains; i++) {
         const item = chains[i];
-        if (isNematicLCP) {
+        if (p.isNematicLCP) {
           // Rigid parallel orientation along fiber extrusion axis
           item.group.rotation.z =
             Math.sin(elapsed * 2.0 + i) * (0.05 * (1 - shearAlignment) + thermalDisorder);
@@ -176,10 +186,10 @@ export function KwolekKevlar3D() {
         }
       }
 
-      hBondMesh.visible = showHydrogenBonds && isNematicLCP;
+      hBondMesh.visible = p.showHydrogenBonds && p.isNematicLCP;
 
       // Ballistic Impact Stress Wave Propagation
-      if (isImpactTesting) {
+      if (p.isImpactTesting) {
         bullet.position.x -= delta * 18.0;
         if (bullet.position.x < 1.0) {
           // Decelerate & bounce back (Kevlar absorbs kinetic energy)
@@ -201,7 +211,7 @@ export function KwolekKevlar3D() {
       cancelAnimationFrame(reqId);
       studio.dispose();
     };
-  }, [shearRate, temperatureCelsius, showHydrogenBonds, isImpactTesting, isNematicLCP]);
+  }, [live]);
 
   return (
     <div className="flex flex-col h-full bg-parchment-50/60 dark:bg-ink-950/80 rounded-2xl overflow-hidden border border-parchment-300 dark:border-ink-800 shadow-patent">

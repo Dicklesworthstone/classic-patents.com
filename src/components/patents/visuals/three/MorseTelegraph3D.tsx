@@ -5,6 +5,7 @@ import { useEffect, useRef, useState } from "react";
 import * as THREE from "three";
 import { soundEngine } from "@/utils/soundEngine";
 import { createGlowPointTexture, createThreeStudioScene } from "./ThreeStudioScene";
+import { useLiveSimParams } from "./useLiveSimParams";
 
 export function MorseTelegraph3D() {
   const containerRef = useRef<HTMLDivElement>(null);
@@ -23,6 +24,13 @@ export function MorseTelegraph3D() {
   const totalResistanceOhms = lineResistanceOhms + coilResistanceOhms;
   const loopCurrentMa = ((lineVoltageV / totalResistanceOhms) * 1000).toFixed(1);
   const magneticHoldForceN = (Number(loopCurrentMa) * 0.08).toFixed(2);
+
+  const live = useLiveSimParams({
+    keyIsDown,
+    lineVoltageV,
+    lineLengthMiles,
+    loopCurrentMa,
+  });
 
   // Audio Click Trigger
   const handleKeyDown = () => {
@@ -84,79 +92,179 @@ export function MorseTelegraph3D() {
     const telegraphGroup = new THREE.Group();
     scene.add(telegraphGroup);
 
-    // Baseboard
-    const base = new THREE.Mesh(new THREE.BoxGeometry(11.0, 0.7, 7.0), mahoganyMat);
+    // Beveled Honduras Mahogany Baseboard
+    const base = new THREE.Mesh(new THREE.BoxGeometry(12.5, 0.7, 7.5), mahoganyMat);
     base.position.y = -2.4;
     base.castShadow = true;
     base.receiveShadow = true;
     telegraphGroup.add(base);
 
-    // --- SECTION 1: TRANSMITTING KEY LEVER (LEFT) ---
+    // 4 Turned Brass Bun Feet
+    [
+      [-5.6, -3.2],
+      [5.6, -3.2],
+      [-5.6, 3.2],
+      [5.6, 3.2],
+    ].forEach(([fx, fz]) => {
+      const foot = new THREE.Mesh(new THREE.CylinderGeometry(0.35, 0.25, 0.35, 16), brassMat);
+      foot.position.set(fx, -2.9, fz);
+      telegraphGroup.add(foot);
+    });
+
+    // --- SECTION 1: TRANSMITTING CAMELBACK KEY LEVER (LEFT) ---
     const keyGroup = new THREE.Group();
-    keyGroup.position.set(-3.2, -1.8, 0);
+    keyGroup.position.set(-3.5, -1.8, 0);
 
-    const keyTrunnion = new THREE.Mesh(new THREE.BoxGeometry(0.8, 0.8, 1.4), brassMat);
-    keyTrunnion.castShadow = true;
-    keyGroup.add(keyTrunnion);
+    // Cast-Brass Key Baseplate
+    const keyPlate = new THREE.Mesh(new THREE.BoxGeometry(4.8, 0.18, 2.2), brassMat);
+    keyPlate.castShadow = true;
+    keyGroup.add(keyPlate);
 
-    const keyLever = new THREE.Mesh(new THREE.BoxGeometry(4.2, 0.2, 0.35), brassMat);
-    keyLever.position.set(0.6, 0.3, 0);
-    keyLever.name = "keyLever";
+    // Conical Pivot Trunnion Posts & Screws
+    [-0.9, 0.9].forEach((zPos) => {
+      const post = new THREE.Mesh(new THREE.CylinderGeometry(0.18, 0.22, 0.85, 12), brassMat);
+      post.position.set(0, 0.45, zPos);
+      keyGroup.add(post);
+
+      const pivotScrew = new THREE.Mesh(new THREE.CylinderGeometry(0.08, 0.08, 0.4, 8), brassMat);
+      pivotScrew.rotation.x = Math.PI / 2;
+      pivotScrew.position.set(0, 0.65, zPos * 0.7);
+      keyGroup.add(pivotScrew);
+    });
+
+    // Camelback Curved Brass Key Lever
+    const keyLeverGroup = new THREE.Group();
+    keyLeverGroup.position.set(0, 0.65, 0);
+    keyLeverGroup.name = "keyLever";
+
+    const keyLever = new THREE.Mesh(new THREE.BoxGeometry(4.2, 0.16, 0.28), brassMat);
+    keyLever.position.set(0.6, 0, 0);
     keyLever.castShadow = true;
-    keyGroup.add(keyLever);
+    keyLeverGroup.add(keyLever);
 
-    const knob = new THREE.Mesh(
-      new THREE.CylinderGeometry(0.55, 0.45, 0.35, 24),
-      new THREE.MeshStandardMaterial({ color: 0x0f172a, roughness: 0.3 }),
+    // Turned Ebony Finger Knob with Finger Saucer
+    const knobSaucer = new THREE.Mesh(
+      new THREE.CylinderGeometry(0.65, 0.55, 0.12, 24),
+      new THREE.MeshStandardMaterial({ color: 0x0f172a, roughness: 0.25 }),
     );
-    knob.position.set(2.4, 0.5, 0);
-    knob.castShadow = true;
-    keyLever.add(knob);
+    knobSaucer.position.set(2.4, 0.15, 0);
+    knobSaucer.castShadow = true;
+    keyLeverGroup.add(knobSaucer);
+
+    const knobTop = new THREE.Mesh(
+      new THREE.SphereGeometry(0.38, 16, 16),
+      new THREE.MeshStandardMaterial({ color: 0x0f172a, roughness: 0.25 }),
+    );
+    knobTop.position.set(2.4, 0.42, 0);
+    knobTop.castShadow = true;
+    keyLeverGroup.add(knobTop);
+
+    // Platinum Electrical Contact Points
+    const contactUpper = new THREE.Mesh(
+      new THREE.CylinderGeometry(0.06, 0.06, 0.15, 8),
+      new THREE.MeshStandardMaterial({ color: 0xf8fafc, metalness: 0.95 }),
+    );
+    contactUpper.position.set(1.4, -0.12, 0);
+    keyLeverGroup.add(contactUpper);
+
+    // Key Return Spring
+    const returnSpring = new THREE.Mesh(
+      new THREE.CylinderGeometry(0.12, 0.12, 0.4, 12),
+      new THREE.MeshStandardMaterial({ color: 0xd97706, metalness: 0.85 }),
+    );
+    returnSpring.position.set(0.8, -0.25, 0);
+    keyGroup.add(returnSpring);
+
+    keyGroup.add(keyLeverGroup);
     telegraphGroup.add(keyGroup);
 
-    // --- SECTION 2: RELAY / SOUNDER ELECTROMAGNET (RIGHT) ---
+    // --- SECTION 2: RELAY / SOUNDER ELECTROMAGNET (CENTER-RIGHT) ---
     const sounderGroup = new THREE.Group();
-    sounderGroup.position.set(2.8, -1.8, 0);
+    sounderGroup.position.set(1.6, -1.8, -0.8);
 
-    // Dual Vertical Electromagnet Coils (Horseshoe)
+    // Soft-Iron Yoke Base Strap
+    const ironYoke = new THREE.Mesh(new THREE.BoxGeometry(0.8, 0.2, 2.4), ironCoreMat);
+    ironYoke.castShadow = true;
+    sounderGroup.add(ironYoke);
+
+    // Dual Vertical Electromagnet Coils (Horseshoe Magnet Wire Bobbins)
     for (let c = 0; c < 2; c++) {
       const zPos = (c - 0.5) * 1.6;
-      const coil = new THREE.Mesh(new THREE.CylinderGeometry(0.65, 0.65, 2.2, 24), copperCoilMat);
-      coil.position.set(0, 1.1, zPos);
+      // Black Vulcanized Fiber Flanges (top and bottom)
+      [-0.1, 2.1].forEach((yFlange) => {
+        const flange = new THREE.Mesh(
+          new THREE.CylinderGeometry(0.72, 0.72, 0.08, 24),
+          new THREE.MeshStandardMaterial({ color: 0x1e293b, roughness: 0.8 }),
+        );
+        flange.position.set(0, yFlange, zPos);
+        sounderGroup.add(flange);
+      });
+
+      const coil = new THREE.Mesh(new THREE.CylinderGeometry(0.65, 0.65, 2.0, 24), copperCoilMat);
+      coil.position.set(0, 1.0, zPos);
       coil.castShadow = true;
       sounderGroup.add(coil);
 
-      const core = new THREE.Mesh(new THREE.CylinderGeometry(0.28, 0.28, 2.4, 16), ironCoreMat);
-      core.position.set(0, 1.2, zPos);
+      const core = new THREE.Mesh(new THREE.CylinderGeometry(0.28, 0.28, 2.3, 16), ironCoreMat);
+      core.position.set(0, 1.15, zPos);
       sounderGroup.add(core);
     }
 
-    // Pivoted Sounder Armature Lever & Anvil Stop
-    const armatureGroup = new THREE.Group();
-    armatureGroup.position.set(0, 2.4, 0);
+    // Cast Brass Sounding Anvil Arch Bridge
+    const anvilArch = new THREE.Mesh(new THREE.BoxGeometry(0.6, 2.6, 2.2), brassMat);
+    anvilArch.position.set(1.4, 1.3, 0);
+    anvilArch.castShadow = true;
+    sounderGroup.add(anvilArch);
 
-    const softIronKeeper = new THREE.Mesh(new THREE.BoxGeometry(0.6, 0.3, 2.2), ironCoreMat);
+    // Sounder Armature Lever & Soft Iron Keeper
+    const armatureGroup = new THREE.Group();
+    armatureGroup.position.set(0, 2.35, 0);
+
+    const softIronKeeper = new THREE.Mesh(new THREE.BoxGeometry(0.65, 0.25, 2.2), ironCoreMat);
     softIronKeeper.castShadow = true;
     armatureGroup.add(softIronKeeper);
 
-    const sounderBar = new THREE.Mesh(new THREE.BoxGeometry(2.8, 0.25, 0.3), brassMat);
-    sounderBar.position.set(1.2, 0.1, 0);
+    const sounderBar = new THREE.Mesh(new THREE.BoxGeometry(2.6, 0.22, 0.28), brassMat);
+    sounderBar.position.set(1.1, 0.08, 0);
     sounderBar.castShadow = true;
     armatureGroup.add(sounderBar);
 
     sounderGroup.add(armatureGroup);
     telegraphGroup.add(sounderGroup);
 
-    // --- SECTION 3: EMBOSSING PAPER TAPE REGISTER ---
-    const tapeCurve = new THREE.CatmullRomCurve3([
-      new THREE.Vector3(4.5, -1.8, 2.2),
-      new THREE.Vector3(5.2, -0.6, 2.2),
-      new THREE.Vector3(5.2, 1.2, 2.2),
-      new THREE.Vector3(4.8, 2.4, 2.2),
-    ]);
-    const tapeGeo = new THREE.TubeGeometry(tapeCurve, 20, 0.15, 4, false);
-    const paperTape = new THREE.Mesh(tapeGeo, paperTapeMat);
-    telegraphGroup.add(paperTape);
+    // --- SECTION 3: CLOCKWORK PAPER TAPE EMBOSSING REGISTER (FAR RIGHT) ---
+    const registerGroup = new THREE.Group();
+    registerGroup.position.set(4.6, -1.8, 1.4);
+
+    // Clockwork Brass Sideplates & Spool Drum
+    const spoolDrum = new THREE.Mesh(
+      new THREE.CylinderGeometry(1.4, 1.4, 0.8, 32),
+      new THREE.MeshStandardMaterial({ color: 0xd97706, metalness: 0.85 }),
+    );
+    spoolDrum.rotation.x = Math.PI / 2;
+    spoolDrum.position.set(0, 1.2, 0);
+    registerGroup.add(spoolDrum);
+
+    // Paper Tape Roll Wounded on Drum
+    const tapeRoll = new THREE.Mesh(new THREE.CylinderGeometry(1.2, 1.2, 0.6, 32), paperTapeMat);
+    tapeRoll.rotation.x = Math.PI / 2;
+    tapeRoll.position.set(0, 1.2, 0);
+    registerGroup.add(tapeRoll);
+
+    // Friction Feed Rollers
+    const roller1 = new THREE.Mesh(new THREE.CylinderGeometry(0.25, 0.25, 0.7, 16), brassMat);
+    roller1.rotation.x = Math.PI / 2;
+    roller1.position.set(-1.2, 1.0, 0);
+    registerGroup.add(roller1);
+
+    telegraphGroup.add(registerGroup);
+
+    // --- BRASS TERMINAL BINDING POSTS ---
+    [-4.8, -4.0, 4.8].forEach((bx) => {
+      const post = new THREE.Mesh(new THREE.CylinderGeometry(0.16, 0.18, 0.6, 16), brassMat);
+      post.position.set(bx, -1.8, -2.8);
+      telegraphGroup.add(post);
+    });
 
     // --- GLOWING TELEGRAPH CURRENT WIRE PARTICLES ---
     const currentCount = 90;
@@ -194,11 +302,12 @@ export function MorseTelegraph3D() {
       reqId = requestAnimationFrame(animate);
       const delta = clock.getDelta();
       const elapsed = clock.getElapsedTime();
+      const p = live.current;
 
       // Automatic Morse Code Beacon: "WHAT HATH GOD WROUGHT"
       // Simulated periodic key presses if not manually held
       const autoPattern = Math.sin(elapsed * 6.0) > 0.3 && elapsed % 4.0 < 2.5;
-      const isEnergized = keyIsDown || autoPattern;
+      const isEnergized = p.keyIsDown || autoPattern;
 
       // Key Lever Dip
       const keyMesh = keyGroup.getObjectByName("keyLever");
@@ -212,9 +321,10 @@ export function MorseTelegraph3D() {
       // Pulse Wire Current Particles
       currentPoints.visible = isEnergized;
       const cPos = currentPos;
+      const currentSpeed = Math.min(25.0, Math.max(5.0, Number(p.loopCurrentMa) * 0.15));
       for (let i = 0; i < currentCount; i++) {
         const idx = i * 3;
-        cPos[idx] += delta * 12.0;
+        cPos[idx] += delta * currentSpeed;
         if (cPos[idx] > 2.8) {
           cPos[idx] = -3.2;
         }
@@ -231,7 +341,7 @@ export function MorseTelegraph3D() {
       cancelAnimationFrame(reqId);
       studio.dispose();
     };
-  }, [keyIsDown]);
+  }, [live]);
 
   return (
     <div className="flex flex-col h-full bg-parchment-50/60 dark:bg-ink-950/80 rounded-2xl overflow-hidden border border-parchment-300 dark:border-ink-800 shadow-patent">

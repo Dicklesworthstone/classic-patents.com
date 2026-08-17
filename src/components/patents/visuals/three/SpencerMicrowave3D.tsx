@@ -4,6 +4,7 @@ import { Radio } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import * as THREE from "three";
 import { createGlowPointTexture, createThreeStudioScene } from "./ThreeStudioScene";
+import { useLiveSimParams } from "./useLiveSimParams";
 
 export function SpencerMicrowave3D() {
   const containerRef = useRef<HTMLDivElement>(null);
@@ -19,9 +20,18 @@ export function SpencerMicrowave3D() {
   // Resonant Microwave Frequency: f = 2450 MHz (lambda = 12.2 cm)
   const rfFreqMhz = 2450;
   // Hull Cutoff Magnetic Field: B_c = sqrt(8 * m * V / (e * r_a^2 * (1 - r_c^2/r_a^2)^2))
-  const hullCutoffGauss = 1180;
+  // Hull cutoff B_c ∝ √V_a. Calibrated so B_c ≈ 1180 G at the default 4.2 kV anode.
+  const hullCutoffGauss = 1180 * Math.sqrt(anodeVoltageKv / 4.2);
   const isOscillating = magneticFieldGauss > hullCutoffGauss;
   const waterDielectricLossDensity = isOscillating ? (rfPowerWatts * 1.8).toFixed(0) : "0";
+
+  const live = useLiveSimParams({
+    anodeVoltageKv,
+    magneticFieldGauss,
+    showSpokeWheel,
+    showWaterDipoles,
+    isOscillating,
+  });
 
   useEffect(() => {
     const container = containerRef.current;
@@ -208,10 +218,11 @@ export function SpencerMicrowave3D() {
       reqId = requestAnimationFrame(animate);
       const delta = clock.getDelta();
       const elapsed = clock.getElapsedTime();
+      const p = live.current;
 
       // Cyclotron Electron Spoke Wheel Rotation: v_drift = E x B / B^2
-      if (isOscillating) {
-        const driftAngularSpeed = (anodeVoltageKv / 4.0) * (1450 / magneticFieldGauss) * 8.0;
+      if (p.isOscillating) {
+        const driftAngularSpeed = (p.anodeVoltageKv / 4.0) * (1450 / p.magneticFieldGauss) * 8.0;
         const ePos = electronPos;
 
         for (let i = 0; i < electronCount; i++) {
@@ -227,16 +238,16 @@ export function SpencerMicrowave3D() {
         }
         electronGeo.attributes.position.needsUpdate = true;
       }
-      spokePoints.visible = showSpokeWheel && isOscillating;
+      spokePoints.visible = p.showSpokeWheel && p.isOscillating;
 
       // Rotate and oscillate polar water dipoles to simulate dielectric friction heating
       for (const mol of waterMolecules) {
-        if (isOscillating) {
+        if (p.isOscillating) {
           mol.group.rotation.x = Math.sin(elapsed * mol.rotSpeed) * 1.8;
           mol.group.rotation.y = Math.cos(elapsed * mol.rotSpeed) * 1.8;
         }
       }
-      waterGroup.visible = showWaterDipoles;
+      waterGroup.visible = p.showWaterDipoles;
 
       controls.update();
       renderer.render(scene, camera);
@@ -248,7 +259,7 @@ export function SpencerMicrowave3D() {
       cancelAnimationFrame(reqId);
       studio.dispose();
     };
-  }, [anodeVoltageKv, magneticFieldGauss, showSpokeWheel, showWaterDipoles, isOscillating]);
+  }, [live]);
 
   return (
     <div className="flex flex-col h-full bg-parchment-50/60 dark:bg-ink-950/80 rounded-2xl overflow-hidden border border-parchment-300 dark:border-ink-800 shadow-patent">

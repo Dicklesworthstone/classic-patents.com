@@ -4,6 +4,7 @@ import { Cpu, Layers } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import * as THREE from "three";
 import { createGlowPointTexture, createThreeStudioScene } from "./ThreeStudioScene";
+import { useLiveSimParams } from "./useLiveSimParams";
 
 export function NoycePlanarIC3D() {
   const containerRef = useRef<HTMLDivElement>(null);
@@ -15,9 +16,18 @@ export function NoycePlanarIC3D() {
   const [showLogicSignals, setShowLogicSignals] = useState<boolean>(true);
 
   // Semiconductor Physics Calculations
-  const gateCapacitancePf = ((11.7 * 8.854e-12 * 1e-8) / (oxideLayerThicknessNm * 1e-9)) * 1e12;
+  // SiO₂ relative permittivity κ ≈ 3.9 (not silicon's 11.7). This is interconnect /
+  // field-oxide capacitance on Noyce's planar die, not a MOS gate.
+  const gateCapacitancePf = ((3.9 * 8.854e-12 * 1e-8) / (oxideLayerThicknessNm * 1e-9)) * 1e12;
   const gatePropagationDelayPs = Math.round(gateCapacitancePf * 45 * 10);
   const maxClockGhz = (1000 / (gatePropagationDelayPs * 4)).toFixed(2);
+
+  const live = useLiveSimParams({
+    clockFrequencyMhz,
+    oxideLayerThicknessNm,
+    activeLayer,
+    showLogicSignals,
+  });
 
   useEffect(() => {
     const container = containerRef.current;
@@ -195,16 +205,17 @@ export function NoycePlanarIC3D() {
     const animate = () => {
       reqId = requestAnimationFrame(animate);
       const delta = clock.getDelta();
+      const p = live.current;
 
       // Layer Visibility Controls
-      substrateMesh.visible = activeLayer === "all" || activeLayer === "silicon";
-      nWellsGroup.visible = activeLayer === "all" || activeLayer === "silicon";
-      oxideLayer.visible = activeLayer === "all" || activeLayer === "oxide";
-      metalGroup.visible = activeLayer === "all" || activeLayer === "metal";
+      substrateMesh.visible = p.activeLayer === "all" || p.activeLayer === "silicon";
+      nWellsGroup.visible = p.activeLayer === "all" || p.activeLayer === "silicon";
+      oxideLayer.visible = p.activeLayer === "all" || p.activeLayer === "oxide";
+      metalGroup.visible = p.activeLayer === "all" || p.activeLayer === "metal";
 
       // Animate Logic Current Packets flowing along Aluminum Traces
       const sPos = signalPos;
-      const speed = (clockFrequencyMhz / 10) * 8.0 * delta;
+      const speed = (p.clockFrequencyMhz / 10) * 8.0 * delta;
 
       for (let i = 0; i < signalCount; i++) {
         const idx = i * 3;
@@ -214,7 +225,8 @@ export function NoycePlanarIC3D() {
         }
       }
       signalGeo.attributes.position.needsUpdate = true;
-      signalPoints.visible = showLogicSignals && (activeLayer === "all" || activeLayer === "metal");
+      signalPoints.visible =
+        p.showLogicSignals && (p.activeLayer === "all" || p.activeLayer === "metal");
 
       controls.update();
       renderer.render(scene, camera);
@@ -226,7 +238,7 @@ export function NoycePlanarIC3D() {
       cancelAnimationFrame(reqId);
       studio.dispose();
     };
-  }, [clockFrequencyMhz, activeLayer, showLogicSignals]);
+  }, [live]);
 
   return (
     <div className="flex flex-col h-full bg-parchment-50/60 dark:bg-ink-950/80 rounded-2xl overflow-hidden border border-parchment-300 dark:border-ink-800 shadow-patent">

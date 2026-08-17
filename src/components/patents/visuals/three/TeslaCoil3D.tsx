@@ -5,6 +5,7 @@ import { useEffect, useRef, useState } from "react";
 import * as THREE from "three";
 import { soundEngine } from "@/utils/soundEngine";
 import { createGlowPointTexture, createThreeStudioScene } from "./ThreeStudioScene";
+import { useLiveSimParams } from "./useLiveSimParams";
 
 export function TeslaCoil3D() {
   const containerRef = useRef<HTMLDivElement>(null);
@@ -25,6 +26,14 @@ export function TeslaCoil3D() {
     (sparkGapDistanceMm / 15)
   ).toFixed(2);
   const streamerLengthInches = (Number(secondaryVoltageMv) * 28).toFixed(1);
+
+  const live = useLiveSimParams({
+    resonantFreqKhz,
+    sparkGapDistanceMm,
+    inputVoltageKv,
+    showLightningStreamers,
+    secondaryVoltageMv,
+  });
 
   // Audio synthesis
   useEffect(() => {
@@ -97,48 +106,80 @@ export function TeslaCoil3D() {
 
     // Secondary Helical Resonator Tube (1,000+ turns of fine magnet wire)
     const secondaryCylinder = new THREE.Mesh(
-      new THREE.CylinderGeometry(0.85, 0.85, 5.2, 36),
+      new THREE.CylinderGeometry(0.85, 0.85, 5.2, 48),
       secondaryCopperWireMat,
     );
     secondaryCylinder.position.y = -0.6;
     secondaryCylinder.castShadow = true;
     coilGroup.add(secondaryCylinder);
 
-    // Primary Flat Archimedean Spiral / Conical Coil
-    const primaryCoil = new THREE.Mesh(
-      new THREE.TorusGeometry(2.3, 0.28, 16, 36),
-      primaryHeavyCopperMat,
-    );
-    primaryCoil.rotation.x = Math.PI / 2;
-    primaryCoil.position.y = -2.8;
-    primaryCoil.castShadow = true;
-    coilGroup.add(primaryCoil);
+    // Continuous Archimedean Spiral Primary Coil (6 Heavy Copper Tubing Turns)
+    const spiralPts: THREE.Vector3[] = [];
+    const numSpiralTurns = 6.0;
+    const numSpiralPts = 160;
+    const innerRadius = 1.3;
+    const outerRadius = 3.6;
 
-    const primaryOuter = new THREE.Mesh(
-      new THREE.TorusGeometry(3.1, 0.28, 16, 36),
-      primaryHeavyCopperMat,
+    for (let i = 0; i <= numSpiralPts; i++) {
+      const t = i / numSpiralPts;
+      const angle = t * numSpiralTurns * Math.PI * 2;
+      const radius = innerRadius + t * (outerRadius - innerRadius);
+      const y = -2.8 + t * 0.45; // Subtle conical taper
+      spiralPts.push(new THREE.Vector3(Math.cos(angle) * radius, y, Math.sin(angle) * radius));
+    }
+
+    const spiralCurve = new THREE.CatmullRomCurve3(spiralPts);
+    const spiralGeo = new THREE.TubeGeometry(spiralCurve, 140, 0.09, 8, false);
+    const spiralMesh = new THREE.Mesh(spiralGeo, primaryHeavyCopperMat);
+    spiralMesh.castShadow = true;
+    coilGroup.add(spiralMesh);
+
+    // 6 Radial Slotted Mahogany Comb Standoffs
+    for (let s = 0; s < 6; s++) {
+      const sAngle = (s * Math.PI * 2) / 6;
+      const comb = new THREE.Mesh(
+        new THREE.BoxGeometry(outerRadius - innerRadius + 0.5, 0.35, 0.12),
+        baseMahoganyMat,
+      );
+      comb.position.set(
+        Math.cos(sAngle) * ((innerRadius + outerRadius) / 2),
+        -2.75,
+        Math.sin(sAngle) * ((innerRadius + outerRadius) / 2),
+      );
+      comb.rotation.y = -sAngle;
+      comb.castShadow = true;
+      coilGroup.add(comb);
+    }
+
+    // Rotary Spark Gap Motor Housing & Electrodes
+    const motorHousing = new THREE.Mesh(
+      new THREE.CylinderGeometry(0.55, 0.55, 0.65, 16),
+      new THREE.MeshStandardMaterial({ color: 0x334155, metalness: 0.8, roughness: 0.3 }),
     );
-    primaryOuter.rotation.x = Math.PI / 2;
-    primaryOuter.position.y = -2.5;
-    primaryOuter.castShadow = true;
-    coilGroup.add(primaryOuter);
+    motorHousing.position.set(-2.5, -3.4, 2.0);
+    motorHousing.castShadow = true;
+    coilGroup.add(motorHousing);
 
     // Rotary Spark Gap Discharge Electrodes
-    const sparkGapLeft = new THREE.Mesh(new THREE.SphereGeometry(0.35, 16, 16), sparkGapBrassMat);
-    sparkGapLeft.position.set(-2.5, -3.2, 2.0);
+    const sparkGapLeft = new THREE.Mesh(new THREE.SphereGeometry(0.25, 16, 16), sparkGapBrassMat);
+    sparkGapLeft.position.set(-2.5, -3.0, 2.0);
     const sparkGapRight = sparkGapLeft.clone();
-    sparkGapRight.position.x = -2.5 + sparkGapDistanceMm * 0.05;
+    sparkGapRight.position.x = -1.9;
     coilGroup.add(sparkGapLeft);
     coilGroup.add(sparkGapRight);
 
     // Spun Aluminum Toroid Top-Load Capacitance Terminal
-    const toroid = new THREE.Mesh(new THREE.TorusGeometry(2.1, 0.85, 24, 48), toroidAluminumMat);
+    const toroid = new THREE.Mesh(new THREE.TorusGeometry(2.1, 0.85, 32, 64), toroidAluminumMat);
     toroid.rotation.x = Math.PI / 2;
     toroid.position.y = 2.4;
     toroid.castShadow = true;
     coilGroup.add(toroid);
 
-    // Breakout Discharge Point Needle
+    // Top Center Brass Corona Sphere & Discharge Point Needle
+    const coronaSphere = new THREE.Mesh(new THREE.SphereGeometry(0.45, 24, 24), sparkGapBrassMat);
+    coronaSphere.position.y = 2.4;
+    coilGroup.add(coronaSphere);
+
     const breakoutPoint = new THREE.Mesh(new THREE.ConeGeometry(0.08, 0.6, 12), sparkGapBrassMat);
     breakoutPoint.position.set(2.1, 2.4, 0);
     breakoutPoint.rotation.z = -Math.PI / 2;
@@ -183,7 +224,7 @@ export function TeslaCoil3D() {
 
     for (let i = 0; i < sparkCount; i++) {
       const idx = i * 3;
-      sparkPos[idx] = -2.5 + Math.random() * (sparkGapDistanceMm * 0.05);
+      sparkPos[idx] = -2.5 + Math.random() * (12 * 0.05);
       sparkPos[idx + 1] = -3.2 + (Math.random() - 0.5) * 0.2;
       sparkPos[idx + 2] = 2.0 + (Math.random() - 0.5) * 0.2;
     }
@@ -196,7 +237,7 @@ export function TeslaCoil3D() {
         map: glowTex,
         color: 0x60a5fa,
         transparent: true,
-        opacity: 0.9,
+        opacity: 0.95,
         blending: THREE.AdditiveBlending,
         depthWrite: false,
       }),
@@ -211,9 +252,14 @@ export function TeslaCoil3D() {
       reqId = requestAnimationFrame(animate);
       const _delta = clock.getDelta();
       const elapsed = clock.getElapsedTime();
+      const p = live.current;
+
+      // Update physical spark gap electrode position
+      sparkGapRight.position.x = -2.5 + p.sparkGapDistanceMm * 0.05;
 
       // Animate Fractal Lightning Streamers
-      if (showLightningStreamers) {
+      if (p.showLightningStreamers) {
+        const streamerScale = Math.min(2.5, Math.max(0.5, Number(p.secondaryVoltageMv) * 0.8));
         for (let s = 0; s < streamerCount; s++) {
           const line = streamerLines[s];
           const pts: THREE.Vector3[] = [];
@@ -223,9 +269,9 @@ export function TeslaCoil3D() {
           const sAngle = (s * 2 * Math.PI) / streamerCount + Math.sin(elapsed * 12.0 + s) * 0.2;
           for (let j = 0; j < 8; j++) {
             const jitter = new THREE.Vector3(
-              Math.cos(sAngle) * 0.5 + (Math.random() - 0.5) * 0.4,
-              Math.sin(elapsed * 20.0 + j) * 0.35 + (Math.random() - 0.5) * 0.3,
-              Math.sin(sAngle) * 0.5 + (Math.random() - 0.5) * 0.4,
+              (Math.cos(sAngle) * 0.5 + (Math.random() - 0.5) * 0.4) * streamerScale,
+              (Math.sin(elapsed * 20.0 + j) * 0.35 + (Math.random() - 0.5) * 0.3) * streamerScale,
+              (Math.sin(sAngle) * 0.5 + (Math.random() - 0.5) * 0.4) * streamerScale,
             );
             cur = cur.clone().add(jitter);
             pts.push(cur);
@@ -243,7 +289,7 @@ export function TeslaCoil3D() {
       const sPos = sparkPos;
       for (let i = 0; i < sparkCount; i++) {
         const idx = i * 3;
-        sPos[idx] = -2.5 + Math.random() * (sparkGapDistanceMm * 0.05);
+        sPos[idx] = -2.5 + Math.random() * (p.sparkGapDistanceMm * 0.05);
         sPos[idx + 1] = -3.2 + (Math.random() - 0.5) * 0.15;
         sPos[idx + 2] = 2.0 + (Math.random() - 0.5) * 0.15;
       }
@@ -259,7 +305,7 @@ export function TeslaCoil3D() {
       cancelAnimationFrame(reqId);
       studio.dispose();
     };
-  }, [sparkGapDistanceMm, showLightningStreamers]);
+  }, [live]);
 
   return (
     <div className="flex flex-col h-full bg-parchment-50/60 dark:bg-ink-950/80 rounded-2xl overflow-hidden border border-parchment-300 dark:border-ink-800 shadow-patent">

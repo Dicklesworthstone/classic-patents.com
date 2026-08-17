@@ -4,6 +4,7 @@ import { Sparkles, Thermometer } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import * as THREE from "three";
 import { createGlowPointTexture, createThreeStudioScene } from "./ThreeStudioScene";
+import { useLiveSimParams } from "./useLiveSimParams";
 
 export function EinsteinRefrigerator3D() {
   const containerRef = useRef<HTMLDivElement>(null);
@@ -20,6 +21,11 @@ export function EinsteinRefrigerator3D() {
   const evaporatorTemperatureCelsius = Math.round(-18 + Number(butanePartialPressureAtm) * 6.5);
   const copEfficiency = (0.35 * (1 - Math.abs(evaporatorTemperatureCelsius) / 100)).toFixed(2);
   const coolingPowerWatts = Math.round(heatInputWatts * Number(copEfficiency));
+
+  const live = useLiveSimParams({
+    heatInputWatts,
+    isHeating,
+  });
 
   useEffect(() => {
     const container = containerRef.current;
@@ -168,10 +174,11 @@ export function EinsteinRefrigerator3D() {
       reqId = requestAnimationFrame(animate);
       const delta = clock.getDelta();
       const _elapsed = clock.getElapsedTime();
+      const p = live.current;
 
       // Fluid Circulation Velocity driven purely by thermal buoyancy (Thermosiphon)
       const fPos = fluidPos;
-      const circSpeed = (heatInputWatts / 220) * 3.5 * delta;
+      const circSpeed = (p.isHeating ? p.heatInputWatts / 220 : 0) * 3.5 * delta;
 
       for (let i = 0; i < fluidCount; i++) {
         const idx = i * 3;
@@ -199,7 +206,7 @@ export function EinsteinRefrigerator3D() {
       cancelAnimationFrame(reqId);
       studio.dispose();
     };
-  }, [heatInputWatts]);
+  }, [live]);
 
   return (
     <div className="flex flex-col h-full bg-parchment-50/60 dark:bg-ink-950/80 rounded-2xl overflow-hidden border border-parchment-300 dark:border-ink-800 shadow-patent">
@@ -208,13 +215,13 @@ export function EinsteinRefrigerator3D() {
         <div ref={containerRef} className="absolute inset-0 w-full h-full" />
 
         {/* Live HUD Telemetry Overlay */}
-        <div className="absolute top-4 left-4 z-10 flex flex-col gap-2 pointer-events-none">
+        <div className="absolute top-4 left-4 z-10 flex flex-col gap-2 pointer-events-none max-w-[calc(100%-8rem)] sm:max-w-md">
           <div className="bg-white/90 dark:bg-ink-900/90 backdrop-blur-md px-3.5 py-2.5 rounded-xl border border-parchment-300 dark:border-ink-700 shadow-sm">
             <div className="text-[11px] font-sans text-amber-700 dark:text-amber-400 font-bold uppercase tracking-wider flex items-center gap-1.5">
               <Thermometer className="w-3.5 h-3.5 text-blue-500 animate-pulse" />
               Einstein-Szilard Absorption Cycle
             </div>
-            <div className="grid grid-cols-2 gap-x-4 gap-y-1 mt-1 text-xs font-sans">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-4 gap-y-1 mt-1 text-xs font-sans">
               <div>
                 <span className="text-ink-600 dark:text-ink-400">Evaporator Temp:</span>{" "}
                 <span className="font-bold text-blue-600 dark:text-blue-400">
@@ -243,10 +250,10 @@ export function EinsteinRefrigerator3D() {
             </div>
           </div>
 
-          <div className="bg-white/90 dark:bg-ink-900/90 backdrop-blur-md px-3 py-1.5 rounded-lg border border-parchment-300 dark:border-ink-700 text-[11px] font-sans text-ink-700 dark:text-ink-300 flex items-center gap-2">
-            <Sparkles className="w-3.5 h-3.5 text-amber-500 animate-pulse" />
-            <span>
-              Albert Einstein &amp; Leo Szilard (US 1,781,541) — Dalton's Law Absorption Cycle
+          <div className="bg-white/90 dark:bg-ink-900/90 backdrop-blur-md px-3 py-1.5 rounded-lg border border-parchment-300 dark:border-ink-700 text-[11px] font-sans text-ink-700 dark:text-ink-300 flex items-center gap-2 max-w-full">
+            <Sparkles className="w-3.5 h-3.5 text-amber-500 animate-pulse shrink-0" />
+            <span className="truncate">
+              Einstein &amp; Szilard (US 1,781,541) — Dalton Absorption Cycle
             </span>
           </div>
         </div>
