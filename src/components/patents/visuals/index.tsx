@@ -53,12 +53,6 @@ import { TeslaCoilSim } from "./TeslaCoilSim";
 import { TeslaMotorSim } from "./TeslaMotorSim";
 import { TeslaTeleautomatonSim } from "./TeslaTeleautomatonSim";
 import { ThomsonWeldingSim } from "./ThomsonWeldingSim";
-import { WestinghouseAirBrakeSim } from "./WestinghouseAirBrakeSim";
-import { WhitneyCottonGinSim } from "./WhitneyCottonGinSim";
-import { WozniakAppleSim } from "./WozniakAppleSim";
-import { WrightFlyerSim } from "./WrightFlyerSim";
-import { ZeppelinAirshipSim } from "./ZeppelinAirshipSim";
-
 // 3D WebGL Physics Simulators
 import { BardeenTransistor3D } from "./three/BardeenTransistor3D";
 import { BellTelephone3D } from "./three/BellTelephone3D";
@@ -83,6 +77,11 @@ import { TeslaCoil3D } from "./three/TeslaCoil3D";
 import { TeslaMotor3D } from "./three/TeslaMotor3D";
 import { WozniakApple3D } from "./three/WozniakApple3D";
 import { WrightFlyer3D } from "./three/WrightFlyer3D";
+import { WestinghouseAirBrakeSim } from "./WestinghouseAirBrakeSim";
+import { WhitneyCottonGinSim } from "./WhitneyCottonGinSim";
+import { WozniakAppleSim } from "./WozniakAppleSim";
+import { WrightFlyerSim } from "./WrightFlyerSim";
+import { ZeppelinAirshipSim } from "./ZeppelinAirshipSim";
 
 interface PatentVisualDispatcherProps {
   patentId: string;
