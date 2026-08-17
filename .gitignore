@@ -40,3 +40,4 @@ bun.lockb
 .beads/*.db-journal
 .beads/*.db-wal
 .beads/*.db-shm
+.env*
