@@ -1,0 +1,250 @@
+--- SOURCE PDF PAGE 1 OF 6 ---
+
+
+
+--- SOURCE PDF PAGE 2 OF 6 ---
+
+                                    2. Sheets—-Sheet 2.
+                A. G. BELL.
+               TELEGRAPH-Y.
+N0.174,46~5.                  Patented March 7,1876.
+
+                Fig- 6'.
+
+
+
+
+                                    0 41am ?ea
+
+
+--- SOURCE PDF PAGE 3 OF 6 ---
+
+       UNITED STATES PATENT OFFICE.
+          ALEXANDER GRAHAM BELL, OF SALEM, MASSACHUSETTS.
+
+                         IMPROVEMENT m TELEGRAPHY.
+     Speci?cation forming part of Letters Patent No. 17!,‘65, dated March 7, 1876; application ?led
+                                            February 14, 1876.
+
+To all whom it may concern:                       ally breaking the circuit. The current pro
+   Be it known that I, ALEXANDER GRAHAM duced by the latter method I shall term, for
+BEL‘L,‘0f Salem, Massachusetts, have. invented distinction sake, a pnlsatory current.
+certain new and useful Improvements in Te           My present inventionconsists in the em
+iiia'graphy, of which the following is a speci?ca ployment of a vibratory or undulatory cur
+  on:      ,                                      rent of electricity in contradistinction to a.
+   In-Letters Patent granted to me April 6, merely intermittent or pulsatory current, and
+1875, No. 161,739, I have described a method of a method of, and apparatus for, producing
+of, and apparatus for, transmitting two or electrical undulations upon the line-wire.
+more telegraphic signals simultaneously along       The distinction between- an undulatory and
+a single wire by the employment of trans a pnlsatory current will be understood by con
+mitting-instruments, each of which occasions        sidering that electrical pulsations are caused
+a succession of electrical impulses di?ering        by sudden or instantaneous changes of inten
+in rate from the others; and of receiving           sity, and that electrical undulations result
+instruments, each tuned to a pitch at which         ‘from gradual changes of intensity exactly
+it will be pnt'in vibration to produce its          analogous to the changes in the density of air
+fundamental note by one only of‘ the trans          occasioned by simple pendulous vibrations.
+mitting'instruments; and of vibratcry'cir           The electrical movement, like the aerial mo
+cuit'breakers operating to convert the vi tion, can be represented by a sinusoidal curve
+ bratory movement of the receiving-instru or by the resultant of several sinusoidal
+ ment into a permanent make or break (as curves.
+.the case may be) of a local circuit, in which   Intermittent or pulsatory and nndulntory
+ is placed,a Morse sounder, register, or other currents may be of two kinds, accordingly as
+telegraphic apparatus. I have also‘therein the successive impulses have all the same po~
+describeda form of ant'ograph‘telegraph based 'larity or are alternately’ positive and negative.
+ upon-the action of the above-mentioned instru   The advantages I claim to derive from the use
+ments.                                        ofan undulatory currentin placeol‘a merely in -
+   Inillustrntion of my method or multiple termittent one are,?mt,that a very much larger
+telegraphy I have shown in the patent store number of signals can be transmitted siirnul
+said, as one form of transmitting-instrument, taneonsly on the same circuit; second, that a
+an electro-magnet havinga steel-spring arms» closed circuit and single main battery may be
+ture, which is kept in vibration by the action used; third, that communication in both direc
+of a local battery.   Thisarmature in vibrat        tions is established without the necessity of
+ing makes and breaks the main circuit, pro          special induction-coils; fourth, that cable dis
+ducing an intermittent current upon the line        patches may be transmitted more'rapidlythau '
+wire. I have found, however, that upon this         by means of an intermittent current or by the
+plan the limit to the number of signals thatmethods at present in use; for, as it is unnec
+can be sent simultaneously over the same    essary to discharge the cable before'a new sig
+_wire is very speedily reached; for, when a nal can be made, the lagging of cablesignals is
+number of transmitting-instruments, having prevented; ?fth,audthatas the circuit is never
+different rates of vibration, are simultaneously broken a spark-arrester becomes unnecessary.
+making and breaking the same circuit, the          It has long been known that when a perms‘
+c?'ect upon the main line is practically equiva. nent magnet is caused to approach the pole of
+lent to one continuous current.                  an electro-magnet a current of electricity is in
+   In a pending application-for Letters Patent, duced in the coils of the latter, and that when
+?led in the United States Patent O?ice Feb it is made to recede a current of opposite po
+ruary 25, 1875, I have described two ways of larity to the ?rst appears upon the wire.
+producing the intermittentcurrent-the one When,therefore,a permanent magnet is caused
+by actual make and break- of contact, the to vibrute in ‘front of the pole of an electro
+other by alternately increasing and diminish magnet an niidulstory current of electricity is
+ing the ‘intensity 0 the current without actu induced in the coils of the electro-magnet, the
+
+
+--- SOURCE PDF PAGE 4 OF 6 ---
+
+  a '                           '              174.465
+
+
+
+  undulations of which correspond, in rapidity        negative impulse at the part observed, and
+  of succession, to the vibrations ofthe magnet,      the horizontal distance a a indicates the dura
+  in polarity to the direction of its motion, and.    tion of the electrical oscillation. The vibra
+  in intensity to the amplitude of its vibration.     tions represented by the sinusoidal curves B
+    That the difference between an undulatory and'A, Fig. 4, are in the ratio aforesaid, of I
+  and an intermittentcurrcnt may be more clear‘ 4 to 5-that is, four oscillations of B are made
+  ly understood I shall describe the condition in the same time as five oscillations of A.
+  of the electrical current when the attempt is         The combined cil‘ect of A and B, when in
+  made to transmit two musical notes simulta         duced simultaneously on the same circuit, is
+  neously-?rstupon the one plan and then upon expressed by the curve A+B, Fig. 4, which
+  the other.   Let the interval between the two is the algebraical sum of the sinusoidal curves
+  sounds be a major thi rd; then their rates of vi-‘ A and B. This curve A+B also indicates
+  bration are in the ratio of4 to 5. Now, when the actual motion of the airwhen the two
+  the intermittent current is used .the circuit is   musical notes considered are sounded simul
+  made and broken four times by one transmit         taneously. ‘ Thus, when electrical undulations
+  tingdnstrnment in the_ same time that ?ve of different rates are simultaneously induced
+  makes and breaks are caused by the other.
+                                         A in the same circuit, an effect is produced ex:
+  and B, Figs. 1, 2, and 3, represent the inter      actl y analogous to that occasioned in theaair by
+ mittent currents produced, four impulses of B       the vibration of theindncing bodies. Hence,
+ being made in the same time as five impulses        the coexistence upon a telegraphic circuit of
+ of A. c c c, 810., show where and for how long  electrical yibrations of di ?‘erent pitch is mani
+ time the circuit is made, and d d d, &c., indi  fested, not by the obliteration of the vibra
+ cate the duration of the breaks of the circuit. tory character of the current, but by pecu~
+ The line A and B shows the total e?'ect upon liarities in the shapes of the electrical undu
+ the current when the transmitting-instruments lations, or, in other words, by peculiaritiesin
+ forAand B are caused simultaneously to make the shapes of the curves which represent those
+ and break the same circuit. The resultant ef~ undulations.
+ feet depends very much upon the duration of            There are many ways of producing undula
+ the makcrelativcly'to the break. In Fig. 1 the tory'cnrrents of electricity, dependent for ef
+ ratio is as1to4; in Fig. 2, as 1 to 2; and in_ Fig. feet- upon the vibrations or motions of bodies
+ 3the makes and breaks are of equal duration. capable of inductive action. A few of the
+ The combined effect, A and B, Fig. 3, is very methods that may be employed‘ I shall here
+ nearly eqnivalent'to-a continuous current.          specify. When a wire, through which a con
+   When many transmitting-instruments of dif tinuous current of'electricity is passing, is
+ ferent rates of vibration are simultaneously caused to vibrate in the neighborhood of an
+' making and breaking the same circuit the cnr~      other wire,an undulatory ‘current of electricity
+ rent uponI the main line becomes for all prac~ is induced in the latter. When a cylinder,
+ tical purposes continuous.         '                upon which are arranged bar-magnets, is made
+    Next, consider the e?‘ect when an undulatory     to rotate in front of the pole of an electro~
+ current is employed. Electrical undulations,        magpet, an undnlatory cnrrentof electricity is
+ induced by the vibration of a body capable of       induced in the coils of the electro-magnet.
+ inductive action, can be represented graphic          Undulations are caused in a continuous vol
+ ally, without error, by the same sinusoidal         taic current by the vibration or motion of
+ curve which expresses the vibration of the bodies capable of inductive action; or by the
+ inducing body itself, and the e?'ect of its vi     vibration of the conduetingwire itself in the
+  bration upon the air; for, as above stated,-the neighborhood of such bodies. Electrical un
+  rate of oscillation in the electrical current cor dulations may also be caused by alternately
+  responds to the rate of vibration of the in increasing and diminishing the resistance of
+  ducing body-that is, to the pitch of the sound the circuit, or by alternately increasingand
+  produced. The intensity of the current va diminishing the power of the battery. The
+  ries with the amplitude of the vibration-that internal resistance of a battery is diminished
+' is, with the loudness of the sound; and the‘ by bringing the voltaie elements nearer to
+a polarity of the current corresponds to the di'  gether, and increased by ‘placing them far
+ rection of the vibrating body-that is, to the ther apart. The _    reciprocal vibration of the
+ condeusatious' and rarefactions of air produced elements of a battery, therefore, occasions
+ by the vibration. Hence, the sinusoidal curve an undulatory action in the voltaic current.
+ A or B, Fig. 4, represcnts,graphically,the elec~ The external resistance may also be varied.
+ trical undulations induced in a. circuit by the For instance, let mercury or some other liq
+ vibration of a body capable of inductive ae~ uid form part of a voltaic circuit, then the
+ tion.   --             -               '          more deeply the conducting-wire is immersed
+   The horizontal line a d of, &c., represents in the mercury or other liquid, the less re
+ the zero of on rrcn t. The elevations b b b, &c., sistance does the liquid o?‘er to the passage
+ indicate impulses of positive electricity. The of the current. Hence, the vibration of the
+ depressions c c c, &c., show impulses of nega conducting-wire in mercury or other liquid
+ tive electricity. The vertical distance 6 d or included in the circuit occasions undulations
+ cf of any portion of ‘the curve from the zero- in the current. The vertical vibrations of the
+ line expresses the intensity of the positive or elements of a battery in the liquid in which
+
+
+--- SOURCE PDF PAGE 5 OF 6 ---
+
+                                              214,465                                            a
+
+they are immersed produces an nudnlatory         Ldesire here to remark that there are many
+action in thecurreut by alternately increasing other uses to which these instruments may be
+and diminishing the power of the battery.   put, such as the simultaneous transmission of
+  In illustration of the method of creating musical notes, differing in loudnessas well as
+electrical undulations, I shall show and de in pitch, and the telegraphic transmission of I
+scribe one form of apparatus for producing the noises or sounds of any kind.                    .
+effect. I prefer to employ for this purpose an      When the armature c, Fig. 5, is set in vi
+electro-magnet, A, Fig. 5, having a coil upon bratiou the armature h responds not only in
+only one of its legs b. A steel-spring arma pitch, but in loudness. Thus, when 0 vibrates
+ture, c, is ?rmly clamped by one extremity to with little amplitude, at very solt musical note
+the uncovered leg (I of the magnet, audits free proceeds from h,- and when 0 vibrates forcibl y
+,Glld isvallowed to project above the pole of the the amplitude of the vibration of his considera
+covered leg. The armature 0 can be set in    bly increased, and'the'resultingsound becomes
+vibration in a variety of ways, one of which louder. So, if A and B. Fig. 6, are sounded
+is by wind, and, in vibrating, it produces a simultaneously, (A loudly and B sql‘tly,) the
+musical note of a certain de?nite pitch.        instruments A‘ and A’ repeat loudly the sig
+  When the instrument A is placed in a vol-' nals of A, and B‘ B‘ repeat softly those-of B.
+taic circuit, 9 b e f g, the armature 0 becomes   One of the ways in which the armature c,
+magnetic, and the polarity of its free end-is Fig. 5, may be set in vibration has been stated
+opposed to that of the magnet underneath. So above to be by wind; Another mode is shown
+long as the armature 0 remains ‘at rest, no ef— in Fig. 7, whereby motion can be imparted to
+feet is produced upon the voltaic current, but the armature by- the human voice or by means
+    the moment it is set in vibration to produce of a musical instrument.
+its musical note a‘ powerful inductive action         The armature c, Fig. 7, is fastened loosely
+takes place,‘ and electrical undulations trav       by one extremity to the uncovered leg d of the
+erse the circuit 9 b c f g. The vibratory cur    eIectroTmagnet b, and its other extremity is at
+    rent passing through the coil of the-electro tached to the center of a stretched m'embrane,
+    magnet f causes vibration in its armature h a. A cone, A, is used to converge Sound-vi
+when the armatures c hof the twoinstruments brations upon the membrane. When a sound
+A I are normally in unison with one another; is uttered in the cone the membrane 4 is set
+'bnt'the armature h is unaffected by the pas in vibration, the armature c is forced to par
+sage of the nndulatory current when the take of the motion, and thus electrical undu-
+    pitches of the two instruments are different.   .lations are created upon the circuit E b e f g.
+‘     A. number of instruments may be placed         These undulations are similar in form to the
+    upon a telegraphic circuit,‘ as inFig. 6. When air vibrations caused by the sound-that is,
+    the armature of any one of the instruments is they are represented graphically by similar
+    set in vibration all the other instruments upon curves.
+    the circuit which are in unison with it respond,   The undulatory current passing through the
+    but those which have normally a di?'erent rate electro-magnet f in?uences its armature h to
+    of vibration remain silent. Thus, if A, Fig. 6, copy the motion of the armature c. _A simi
+    is set in vibration, the armatures of A‘ and A’ lar sound to that uttered into A is then heard
+    will vibrate also, but all the others ou'the cir to proceed from L.
+    cuit will remain still. So if B‘ is caused to      In this speci?cation the three words “oscil
+    emit its musical note the instruments B B‘ re   lation,” “vibration,” and “undulation,” are
+    spond. They continue sounding so long as the used synonymously, and in contradistinction
+    mechanical vibration of B‘ is continued, but to the terms “intermittent” and “pulsatory.”
+    become silent with the cessation of its motion. By the terms “body capable'of inductive ac
+    The duration of the sound may be used to in tion,” I mean a body which,'when in motion,
+    dicate the dot .or dash of the Morse alphabet, produces dynamical electricity. I include in
+    and thus a telegraphic dispatch may be indi the category of bodies capable of inductive ac
+    cated by alternately interrupting and renew tion-brass, copper, and ‘other metals; as well
+    in the sound'                                  as iron and steel.        ' _
+        hen two or more instruments of di?’erent       Having described my inventiou, __what I
+pi tchare simultaneously caused to vibrate, all claim, and desire to secure by Letters Patent
+the instruments of corresponding pitchesupon is as follows:                         I
+ the circuit are set in vibration, each respond’   1. A system of telegraphy in which the re
+ing to that one only of the transmittinginstrn ceiver is set in vibration by the employment
+ments with which it is in unison. Thus the of nndulatory currents of electricity, substan
+signals of A, Fig. (hare repeated by A‘ and tially as set forth.
+ A‘, but by no other instrument upon the cir       2. The combination, substantially as set
+ cuit; the signals of B’ by B and B‘; and the forth, of a permanent magnet or other body
+signals of C‘ by G and C’-—whetherA, 'B’, and wpable of inductive action, with a closed
+ G‘ are successively or simultaneously caused ‘circuit, so that the vibration of the one shall
+ to vibrate. Hence by these instruments two occasion electrical undulations in the other,
+ or more telegraphic signals or messages may or-in itself, and this I claim,'whether the
+ be sent‘slmultaneonsly over the same circuit permanent magnet beset in vibration in the
+ without interfering with one another.           neighborhood of the conducting-wire forml
+
+
+--- SOURCE PDF PAGE 6 OF 6 ---
+
+    "2                                             174,465
+
+    ing the circnit,or whether the conducting-wire circuit, or by gradually increasing and dimin
+    be set in vibration in the neighborhood of the ishing the power of the battery, as set forth.
+    permanent magnet, or whether the conduct             5. The method of; and apparatus for, trans
+    ing - wire and the permanent magnet both           mitting vocal or other sounds telegraphically,
+    simultaneously be set in vibration in each         as herein described, by causing eiectricalnn
+    other’s neighborhood.                              dulat-ions, similar in form to the vibrations of
+‘     3. The method of producing undulations in’ the air accompanying the said vocal or other
+    a continuous voltaic current by the vibration sound, substantially as set forth.    '
+    or mot-ion of bodies capable of inductive ac    In testimony whereof I have hereunto
+    tion, or by the vibration or motion of the signed my name this 20th day of J annary, A.
+    conductingwim itself, in the neighborhood of       D. 1876.                      ‘
+    such bodies, as set forth.                 /
+                                                                               ALEX. GRAiiAlri BELL.
+      4. 'I‘iie'niethod of producing undulations in      Witnesses:   _
+    a continuous voltaic circuit by gradually in             Tnonus E. BARRY,
+    creasing nnd diminishing the resistance of the           P. D. Rrcnnans.

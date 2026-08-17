@@ -13,6 +13,7 @@
     "typecheck": "tsc --noEmit",
     "pipeline:download": "bun scripts/download-patents.ts",
     "pipeline:ocr": "bun scripts/ocr-patents.ts",
+    "pipeline:source-text": "bun scripts/generate-pdf-text-transcripts.ts",
     "pipeline:verify": "bun scripts/verify-data.ts"
   },
   "dependencies": {

@@ -1,0 +1,420 @@
+--- SOURCE PDF PAGE 1 OF 8 ---
+
+  min 25, 1961                      R. N. NOYCE                            2,981,877
+                      SEMICONDUCTOR DEVICE-AND-LEAD STRUCTURE
+Filed July 30, 1959                                                 3 Sheets-Sheet J,
+
+
+                                       ‘06- i
+
+
+                                                ~ OXIDE
+                                                  [Mil/4.4 7/0A/~
+
+
+
+
+                      .                   W
+
+             9            I’   4'                7    f”
+
+
+
+
+         \\\\ \\\ \\\\\\\\\\\\\     \\\\'\\\-   \\\        \\\        \\
+
+
+
+
+                                         (6'52
+                                                                           ' JNVENTOR.
+                                                                 léaaiez/M A/ayar
+
+
+--- SOURCE PDF PAGE 2 OF 8 ---
+
+  will 25, 1961                   R. N. NOYCE          '        2,981,877
+                      SEMICONDUCTOR DEVICE-AND—LEAD STRUCTURE
+Filed July 30, 1959                                        3 Sheets-Sheet 2
+
+
+
+
+                        p 7     av ,             421/
+
+
+--- SOURCE PDF PAGE 3 OF 8 ---
+
+  prili 25, 119i                  R. N. NOYCE                   2,981,877
+                      SEMICONDUCTOR DEVICE-AND-LEAD STRUCTURE
+Filed July so, 1959                                       s Sheets-Sheet 5
+
+
+
+
+                                                           -/37
+
+
+
+
+                                                                  INVEN TOR.
+                                                         P085497 /V. A/arc:
+
+
+                                                                  Array/WK!
+
+
+--- SOURCE PDF PAGE 4 OF 8 ---
+
+                                                                                                                  .1‘ L77
+                                                                                           Patented Apr. 25, 196i
+                                                                                                it]
+
+
+                                                                 layer, in turn, overlies a still larger N~type region which
+                                                                 constitutes the collector layer of the transistor. Between
+                        2,981,877                                the emitter and base layers there is a dished, P~N junc
+                                                                 tion 3, having a circular edge which extends to surface 2
+      SEMICUUCTUR DlEVlllClE-AND-LIEAD                           and there completely surrounds the emitter. Between
+                      STRUCTURE
+                                                                 the base and collector layers there is a dished, P-N junc
+Robert N. Noyce, Los Altos, (Calif, assignor to Fair'child       tion 4, having a circular edge that extends to surface 2
+  Semiconductor (Iorporation, Mountain ‘View, Calif“, a          and there completely surrounds the base. The thick
+  corporation of Delaware                                        ness of the emitter and base layers has been exaggerated
+                                                              1O in the drawings: in actual practice each of these layers
+          lFiled .lluly 30, 1959, Ser. No. 830,507               is but a few microns thick.     The collector layer generally
+                ‘110 tjlaims. (Cl. 317-235)                      is considerably thicker, and in the example illustrated
+                                                                 extends completely through the body 1 so that contact
+                                                                 thereto may be made from the back side. Thus, the three
+   This invention relates to electrical circuit structures   extrinsic semiconductor layers described form a transistor
+incorporating semiconductor devices. Its principal ob        equivalent to previously known types of double-diffused
+jects are these: to provide improved device-and-lead         junction transistors.
+structures for making electrical connections to the various     During diffusion of the donor and acceptor impurities
+semiconductor regions; to make unitary circuit structures    into the semiconductor, at elevated temperature in an
+more compact and more easily fabricated in small sizes 20 oxidizing atmosphere, the surface of the silicon oxidizes
+than has heretofore been feasible; and to facilitate the     and forms an oxide layer 5, often one micron or more
+inclusion of numerous semiconductor devices within a         in thickness, congenitally united with and covering sur
+single body of material.                                ‘    face 2. This layer may consist chie?y of silicon dioxide,
+   In brief, the present invention utilizes dished junctions or of disproportionated silicon suboxide, depending upon
+extending to the surface of a body of extrinsic semicon       N Ct the temperature and conditions of formation.        In any
+ductor, an insulating surface layer consisting essentially       event, the oxide surface layer is durable and ?rmly adher
+of oxide of the same semiconductor extending across the       ent to the semiconductor body, and furthermore it is a
+junctions, and leads in the form of vacuum-deposited or       good electrical insulator.
+otherwise formed metal strips extending over and ad              According to common prior practice in manufacturing
+herent to the insulating oxide layer for making electrical 30 diffused-junction transistors, the semiconductor body was
+connections to and between various regions of the semi        deoxidized by chemical etching prior to deposition of
+conductor body without shorting the junctions.                metal contacts on the semiconductor surface. According
+   The invention may be'better understood from the fol—       to the present invention, only selected portions of the oxide
+lowing illustrative description and the accompanying          layer are removed, as illustrated in Figs. 1 and 2, for ex
+drawings.                                             I       ample, while other portions of the oxide layer are left
+   Fig. 1 of the drawings is a greatly enlarged plan view     in place to serve as insulation for electrical leads used
+of a transistor~and-lead structure embodying principles       in making connections to and between the several semi
+of this invention;                                              conductor regions.
+   Fig. 2 is a section taken along the line 2--2 of Fig._l;        In particular, portions of the remaining oxide ?lm
+   Fig. 3 is a greatly enlarged plan view of a multi-device 40 extend acrosstthe edges" of the P—N junctions at the sur
+semiconductor-and-lead structure embodying principles of        face of the semiconductor body. to facilitate the making
+this invention;                                                 of  electrical connections from one side of a junction to
+   Fig. 4 is a section taken along the line 4i——4l- of Fig. 3;  another without shorting the junction. Thus, as illus
+   Fig. 5 is a simpli?ed equivalent circuit of the structure    trated in Figs. 1 and 2, the remaining oxide ?lm com
+shown in Figs. 3 and 4, with additional circuit elements        prises a tongue 5’ that crosses the edge of junction 4, and
+external to said structure represented by broken lines;         another tongue 5" that crosses the edges of both junc
+   Fig. 6 is a greatly enlarged plan view of another tran       tions 3 and 4. On the other hand, at least a portion of
+sistor-and-lead structure embodying principles of the           the surface over each of the emitter and base layers must
+invention;                                                      be  cleared to permit the formation of base and emitter
+   Fig. 7 is a section taken along the line ‘7——7 of Fig. 6. 50 contacts.
+  Figs. 1 and 2 illustrate one example of a structure ac           A convenient and highly accurate way to remove only
+cording to this invention. A single-crystal body of semi   selected portions of the oxide ?lm is to use photoengraving
+conductor-grade silicon, represented at 1, has a high      techniques. The phiotoengraving resist is placed over the
+quality surface 2, prepared in accordance with known       oxide-coated surface, and this is then exposed through a
+transistor technology. Within the body 1 there are high 55 master photographic plate having opaque areas cor
+resistivity regions, designated I in the drawing, composed       responding to the areas from which the oxide is to be
+either of high-purity silicon having so few donor and            removed. In the usual photographic developing, the un
+acceptor impurities that it is a good insulator at ordinary      exposed resist is removed; and chemical etching can then
+temperatures and an intrinsic semiconductor at elevated          be employed to remove the oxide layer from the unex
+temperatures, or of somewhat less-pure silicon containing        posed areas, while the exposed and developed resist serves
+a trace of a material such as gold that diminishes the
+                                                                 as a mask to prevent chemical etching of the oxide areas
+effect of donor and acceptor impurities by greatly re
+                                                                 that are to be left on the semiconductor surface.
+ducing the carrier concentrations.
+   Elsewhere within body 1, there are extrinsic N-type and          A discoid, metal, emitter contact 6 is adherent to sur
+extrinsic P-type regions, designated N and P respectively,       face 2, wholly Within the edge of junction 3, centered
+formed in the well~known manner by diffusing N~type              upon and in electrical connection with the emitter re
+and P-type dopants through surface 2 into the crystal, with      gion of the transistor.       Electrical connections to this
+appropriate masking to limit the dopant to the desired           emitter contact are made through a metal strip 7 ex
+areas. The smallest and uppermost N-type region con              tending over and adherent to oxide layer 5. The strip
+stitutes an emitter layer of the transistor. This emitter        7 extends over the tongue 5" of the insulating oxide
+                                                              70 layer across the junctions 3 and 4, and thus provides
+layer overlies a somewhat larger P-type region which
+constitutes the base layer of the transistor. The base           an electrical connection extending from one side of the
+
+
+--- SOURCE PDF PAGE 5 OF 8 ---
+
+                                                       2,981,877
+                            3                                                               4
+composite structure inward to the central emitter con            Further advantages accrue when it is desired to in
+tact, without shorting any of the transistor junctions.        corporate more than one circuit device into a single body‘
+   The base contact is a C-shaped, metal strip 8, adherent     of semiconductor. In this way exceptionally compact
+to surface 2 wholly between the edges of junctions 3 and       and rugged circuits can be constructed. One example of
+4, substantially concentric with the emitter contact 6 and     such a multi-device structure is illustrated in Figs. 3
+substantially encircling the junction 3. It will be noted      and 4.
+that tongue 5" and lead 7 extend between the two ends          A single-crystal body 11 of silicon, largely P-type, has
+of the C-shaped contact 8, so that lead 7 and the emitter   a. high-quality surface 12 prepared in accordance with
+contact are effectively insulated from the base contact     well known transistor technology. The other side of body
+even though the base contact substantially surrounds the 10 11 is plated with a metal coating 13, which serves as an
+emitter junction. Electrical connection to contact 8 is     electrical contact to the largest P-type region and as a
+made through a metal strip 9 extending over and ad          ground plane for the electrical circuit. Various circuit
+herent to the insulating oxide layer 5. Strip 9 extends     elements may be formed within and on this body of sili
+over tongue 5’ across the collector junction 4, and thus    con' N-type and P-type dopants, restricted to speci?c
+provides an electrical connection from one side of the 15 areas by known masking techniques, are diffused through
+composite structure into the base layer, which in this em surface 12 to form a plurality of N-type and P-type ex
+bodiment is completely surrounded by the collector lay     trinsic semiconductor regions, separated from the under
+er at the surface 2, without shorting the collector junc   lying P-type region and from each other by a plurality
+tion 4.                                                    of dished, P-N junctions of various diameters and depths,
+   Various methods may be employed for forming the 20 all having, in this particular example, circular edges ex
+base and emitter contacts and leads. By way of example,    tending to surface 12 and there surrounding the over
+the contacts and leads can be deposited in the con?gura    lying semiconductor regions.
+tion shown by direct vacuum evaporation of aluminum,          Toward the left end of the structure illustrated in Figs.
+or other suitable contact metal, through a mask of suit    3 and 4, there will be found an N-type region overlying
+able size and shape. Alternatively, a metal coating may 25 a small P-type region and separated therefrom by a dished
+be deposited over the entire upper surface of the com      junction 14. The small P-type region overlies another
+posite structure, and the unwanted metal then removed      N-type region; and the underlying N-type region in turn
+by‘ known photoengraving techniques to leave only the          overlies the large, grounded P-type region and is sep
+contact-and-lead con?guration shown. After the contacts     arated therefrom by a dished junction 15. The junction
+have been deposited upon surface 2 of the semiconductor, 30 between the two intermediate layers is shorted by con
+the structure is usually heated to form an alloy at the     tact 17. Consequently, this structure provides two recti
+metal-silicon interface so that good, ohmic contact be      fying junctions connected in series, each equivalent to a
+tween the metal and the silicon is obtained.                   crystal diode.
+  It will be noted that regions of high-resistivity silicon       Electrical connection to the upper N-type region is
+are made to underlie portions of the leads 7 and 9. The 35 made through a discoid, metal contact 16, adherent to
+principal purpose in this is to reduce the shunt capacitance  surface 12, wholly within junction 14 and substantially
+between the leads and the semiconductor body. Other           centered upon the N-type region. Electrical contact to
+wise, an undesirably high shunt capacitance may exist         the two regions between junctions 14 and 15 is made
+in some cases since the extrinsic semiconductor regions       through a C-shaped metal contact 17, adherent to surface
+are fairly good conductors, and the insulating layer 5 40 12, wholly between the edges of junctions 14 and 15,
+has a thickness of only one to two microns. The high          concentric with contact 16 and substantially encircling
+resistivity regions act essentially as insulators rather than the edge of junction 14, which extends to the surface 12.
+as conductors, and thus reduce the area of closely spaced       Proceeding toward the right in the drawings, there will
+conductors that lead to high shunt capacitances. Of           be found another N-type region, separated from the
+course, in cases where the shunt capacitance is not ex 45 underlying, grounded, P-type region by a dished junc
+cessive for the purposes desired, use of high-resistivity     tion 18. Electrical connection to the N-type region in
+regions as disclosed is not required.                         this case is made through a discoid, metal contact 19,
+  The transistor structure is completed by' an electrical     adherent to surface 12 and substantially centered inside
+contact to the collector layer, which may take the form       the edge of junction 18, which extends to the surface of
+of a metal coating 10 plated over the entire back side 50 the semiconductor.                        ,
+of the silicon body.                                             Toward the right end of the structure illustrated, there
+   Even in a single transistor, as illustrated in Figs, 1 and ‘will be found a small N-type region overlying a P-type
+2, the composite semiconductor-and-lead structure pro         region and separated therefrom by a dished junction
+vided by this invention has signi?cant advantages. Ac         20. The. last-mentioned P-type region in turn overlies a
+cording to prior practice, electrical connection to the 55 larger N-type region and is separated therefrom by a
+base and emitter contacts had to be made by fastening         dished junction 21. The N-type region below junction
+wires directly to the contact areas. This led to certain      21 in turn overlies the grounded P-type region and is sep
+manufacturing di?iculties, particularly in the case of small  arated therefrom by a dished junction 22. In this case,
+devices wherein, for example, the emitter region might        the width of the P-type region between junctions 20 and
+be only a few mils in diameter and a few microns in 60 21 is less than a diffusion length, so that a substantial
+thickness. Merely to position the emitter lead on the          proportion of the electrons that cross junction 20 are
+emitter contact in such small structures required the          collected by junction 21. The result is an N-P-N
+use of microscopes and micro-manipulators; and the use         junction transistor, in which the small N-type region over
+of any considerable pressure or considerable heat in mak-      lying junction 20 acts as the emitter, the P-type region
+ing the joint permanent could cause suf?cient damage to 65 between junctions 20 and 21 acts as the base, and the
+destroy the transistor.                                        N-type region between junctions 21 and 22 acts as the
+   By means of the present invention, the leads 7 and          collector. The width of the last-menttioned N-type region
+9 can be deposited at the same time and in the same            is greater than a diffusion length, and consequently there
+manner as the contacts themselves. Furthermore, leads          is little interaction between junctions 21 and 22. As will
+'I and 9 can be made as large as may be desired at the 70 be explained hereinafter, junction 22 is normally reverse
+point where wires or other external circuit elements are       biased and acts much as a capacitor in the overall cir
+to be attached; and such attachments can be made at a          cuit. It serves the important function of isolating the
+distance from the active elements of the transistor proper,    collector of the transistor from the grounded, underlying,
+so that the chances of damage to the transistor are sig        P-type region.
+ni?cantly reduced.                                          75    Electrical connections to the three active regions of the
+
+
+--- SOURCE PDF PAGE 6 OF 8 ---
+
+                                                        2,981,877’
+                             5
+transistor are made as follows: A discoid, metal Contact            plane 13 of the physical structure shown in Figs. 3 and
+23 is adherent to surface 12, Wholly Within the edge of             4. Lead 28 conducts the signal through contact 17 into
+junction 20, centered upon and in electrical connection             the two layers between junctions 14 and 15. As herein
+with the emitter layer of the transistor. A C-shaped                before explained, each of the junctions 14 and 15 per
+contact 24 is a metal strip adherent to surface 12 between          forms essentially the functions of a crystal diode recti
+junctions 20 and 21, substantially surrounding the circu            ?er, as schematically represented at 14' and 15', Fig. 5.
+lar edge of junction 20 that extends to the surface of the             Thus, as is evident from the equivalent circuit shown in
+semiconductor body. This contact overlies and is in                 Fig. 5, the input signal is recti?ed or detected by the
+electrical connection with the base layer of the transistor.        junctions 14 and 15, to provide at contact 16 a signal
+Another and larger‘ C-shaped contact 25, which overlies 10 essentially corresponding to the modulation envelope of
+and is in’ electrical connection 'with the collector layer, the input signal. Because of its appreciable resistance,
+is likewise in the form of a metal strip, adherent to sur           lead 3!) acts as a circuit resistor, represented in Fig. 5 as
+face 12 between junctions 21 and 22, and surrounding                30'. It will be noted that the polarity of rectifying junc
+the circular edge of collector junction 21 that extends to    tions 14 and 15 is such that the signal supplied to con
+the surface.                                               15 tact 19 has a D.-C. component of the polarity required
+   Still another contact is provided upon and adherent to     to reverse-bias junction 18. Hence, the voltage across
+surface ‘12. This is the discoid, metal contact 26, di        junction 18 is always in the high-resistance direction of
+rectly upon and in electrical connection with the grounded    the junction, and there is no appreciable current ?ow
+P-type layer, for the purpose of providing a ground                 across this junction. However, there are charge layers
+terminal at the upper surface of the composite struc                on both sides of the junction which form a capacitance,
+ture.                                                               as is well known, and therefore the circuit function of
+   Except for the contacts described above, the entire   junction 18 is to provide a capacitance, represented in
+surface 12 is covered with an insulating layer 27 of     Fig. 5 at 18'. The value of this capacitance can be
+oxidized silicon, generally about one micron thick. This made greater or less, as desired, by increasing or de
+insulating layer may be formed upon the exposed sur 25 creasing the area of junction 18.
+face of the silicon during di?usion of the N-type and P     Lead 31 has an appreciable resistance and therefore
+type dopants into the silicon, at elevated temperatures  acts as a circuit resistor, represented at 31', Fig. 5. This
+and in an oxidizing atmosphere. The presence of water       leads to the base contact 24 of the transistor, shown at
+vapor will enhance oxidation of the silicon. Preferably,    24’ in Fig. 5. The emitter contact of the transistor is
+in accordance with this invention and contrary to prior  30 connected through lead 32 and contact 26 to the grounded
+practice, after diffusion is completed the oxide layer is           P-type semiconductor region.       This is represented in
+never removed from the silicon, except for the areas to             Fig. 5 by the emitter terminal 23' connected through
+be covered by the contacts herein described. The con                resistor 32' to the ground line 13’. The value of the
+tact areas are cleared by photoengraving, after which               resistor 32’ is the sum of the resistances of contacts 23
+the contact metal can be deposited by various known        and 26, lead 32, and the current path through the P-type
+processes, e.g., by the vacuum deposition of an alumi      layer between contact 26 and ground plane 1?».
+num ?lm covering both the cleared and oxide-coated            Normal operation of the N-P-N transistor requires
+areas. Afterwards, unwanted metal can be removed           that the N-type collector be supplied with a relatively
+from the oxide-coated areas by photoengraving. The         positive voltage, as is accomplished in the equivalent
+aluminum contacts may be alloyed to the silicon to make 40 circuit illustrated in Fig. 5 by the external voltage sup
+ohmic contacts in a known manner.                          ply 36 connected to the collector terminal 25’ through
+   The circuit structure is completed by providing metal   any appropriate load 35. It is evident that this supply
+strips extending over and adherent to the insulating oxide voltage reverse-biases junction 22, and therefore, for
+layer 27 and making electrical connections to and be       reasons already explained, the junction 22 acts essential~
+tween the various contacts heretofore described.     These 45 ly as a capacitor, represented at 22' of the equivalent
+metal strips may be deposited by vacuum evaporation                 circuit shown in Fig. 5.
+and deposition, and may conveniently be parts of the de        It should now be apparent that the structure shown
+posited ?lm from which contacts are made. The leads         in Figs. 3 and 4 comprises, within a single, rugged, com~
+come from portions of the film that are deposited onto      pact .unit, detector, ?ltering, and transistor-ampli?er
+the oxide ?lm and are thereby insulated from‘the semi 50 stages. It is believed to be evident that the principles
+conductor body. As hereinbefore explained, photoen          of this invention make feasible the construction of an
+graving can be used to remove the unwanted metal, leav      endless variety of circuit combinations, including com
+ing only the leads and contacts.                            binations much more elaborate and complex than the
+   In the structure illustrated, there is an input lead 28  simple circuit employed for purposes of illustration, all
+electrically connected to contact 17, and an output lead 55 within a highly compact and rugged, essentially unitary,
+29 electrically connected to contact 25. A lead 30 inter    solid body.
+connects contacts 16 and 19;‘ if desired, lead 30 can be       Figs. 6 and 7 show an example in which the emitter
+made sufliciently thin and narrow to have an appreciable
+resistance, and thereby serve as a resistance element in
+                                                                    and base contacts are parallel strips.     A single-crystal
+the circuit. A similar lead 31 interconnects contacts 19 60 body 37 of silicon contains a P-type, emitter layer over
+and 241, and still another lead 32, which may be made to      lying an N-type, base layer and separated therefrom by
+have an appreciable resistance if desired, interconnects      a dished junction 38, which extends to the upper surface
+contacts 23 and 26.                                           of the semiconductor and there surrounds the P-type,
+   The solid lines in Fi g. 5 represent the simpli?ed, equiva emitter layer. In this case, the edge of junction 38 does
+lent circuit for the structure shown in Figs. 3 and 4, while  not form a circle at the surface, but forms an elongated,
+                                                               65
+the broken lines in Fig. 5 represent typical external cir           closed ?gure. The N-type, base layer overlies a P-type,
+cuit components added for purposes of explanation.                  collector layer and is separated therefrom by a flat junc
+The solid-line parts are identi?ed by reference numbers      tion 39‘.
+identical to the reference numbers of corresponding parts       The emitter contact 40 is a straight strip of metal,
+in the structure of Figs. 3 and 4, with the addition of a 70 vacuum-deposited or otherwise placed upon the upper
+prime to the reference numbers in Fig. 5.                    surface of the silicon, and preferably alloyed thereto to
+  Any desired source of an amplitude~modulated, A.-C.               form an ohmic contact. The base contact 41 is a similar
+signal is represented at 34- in Fig. 5. This A.-C. signal strip of metal, parallel to contact 40. The edge of junc
+is applied between the input lead 28' and the ground      tion 38 extends between the two contacts, and around
+connection 13', corresponding to lead 2d and ground m contact 40, as shown. The collector contact 412. may be
+
+
+--- SOURCE PDF PAGE 7 OF 8 ---
+
+                                                      2,981,877
+                            7
+a metal layer plated onto the bottom surface of the           trical connection with said discoid contact but spaced and
+silicon.                                                      insulated from the ends of said C-shaped contact.
+   Except for the areas covered by contacts 40‘ and 41,          4. A diffused junction transistor comprising a body of
+the upper surface of the silicon is covered by an insulat     extrinsic silicon having a surface, said body containing
+ing oxide layer, congenitally united with the silicon and     adjacent base and emitter regions, with a discoid emitter
+actually formed by heating the silicon in an oxidizing at     junction therebetween having a substantially circular
+mosphere. The oxide layer completely covers the edge          edge at said surface encircling said emitter region, a
+of junction 38, and protects the junction against acci        discoid metal contact to said emitter region adherent to
+dental shorting in addition to providing insulation be        said surface wholly within said edge, a C-shaped metal
+tween the electrical leads and the silicon.               1,0 ‘contact to said base region adherent to said surface and
+   Electrical connection to contact 40 is made by a metal     substantially encircling said edge, said C-shaped contact
+strip 43, extending over and ?rmly adherent to the            having two ends de?ning a gap therebetween, an insulat
+oxide layer. Electrical connection to contact 41 is made      ing layer of oxidized silicon on said surface, said layer
+by a metal strip 44, similarly extending over and ?rmly       being congenitally united with said body and extending
+adherent to the oxide layer. These metal strips can be 15 across said junction, and a metal strip adherent to said
+formed by vacuum deposition through a mask, or by             layer, said strip extending from said discoid contact over
+plating the entire surface and then removing unwanted        said layer across said junction and between said ends
+metal by photoengraving, or by any other method pro          forming an electrical connection to said emitter region.
+viding metal strips that adhere securely to the oxide           5. A semiconductor device comprising a single-crystal
+surface.                                                  20 body of semiconductor material having a surface, said
+   The invention in its broader aspects is not limited to    body containing a high-resistivity region and extrinsic
+the speci?c examples illustrated and described. What         P-type and extrinsic N-type regions with a P-N junction
+is claimed is:                                               therebetween extending to said surface, a metal contact
+   1. A semiconductor device comprising a body of semi         to one of said extrinsic regions adherent to said surface,
+conductor having a surface, said body containing adja          an insulating layer consisting essentially of oxide of said
+cent P-type and N-type regions with a junction therebe         material on said surface, said layer being congenitally
+tween extending to said surface, two closely spaced con        united with said body and extending across said junction,
+tacts a adherent to said surface upon opposite sides of        and an electrical connection to said contact comprising
+and adjacent to one portion of said junction, an insulat     a metal strip adherent to said layer, said strip extending
+ing layer consisting essentially of oxide of said semicon 30 from said contact over said layer across said junction,
+ductor on and adherent to said surface, said layer ex        said high-resistivity region underlying a portion of said
+tending across a different portion of said junction, and     strip, reducing the shunt capacitance between said strip
+an electrical connection to one of said contacts com         and said body.
+prising a conductor adherent to said layer, said con        6. A semiconductor device comprising a body of semi
+ductor extending from said one contact over said layer 35 conductor having a surface, said body containing adjacent
+across said different portion of the junction, thereby    P-type and N-type regions, one overlying the other, with
+providing electrical connections to both of the closely   a junction therebetween extending to said surface, a ?rst
+spaced contacts.                                          metal contact adherent to said surface in electrical con
+   2. A semiconductor device comprising a body of ex      nection to said overlying region, a second metalcontact
+trinsic semiconductor having a surface, said body con 40 in electrical connection with the’underlying one of said
+taining adjacent P-type and N-type regions, one overly       regions, an insulating layer consisting essentially of oxide
+ing the other, with a junction therebetween extending to     of said semiconductor on-said surface, said layer being
+said surface and there completely encircling said over       congenitally united with said body and extending across
+lying region, the underlying one of said regions extend      said junction, an electrical connection to said ?rst con
+ing to said surface and there surrounding said junction, 45 tact comprising a metal strip adherent to said layer, said
+a ?rst metal contact adherent to said surface in ohmic       strip extending from said ?rst contact over said layer
+electrical connection with said overlying region, an in      across said junction, and circuit means for applying be
+sulating layer consisting essentially of oxide of said semi  tween said strip and second contact a DC. voltage of the
+conductor united with said surface and extending across      polarity that reverse-biases said junction, so that said
+said junction, a metal strip adherent to said layer, said 50 junction acts as a capacitor connected between said strip
+strip being electrically connected to said ?rst contact      and said second contact.
+and extending therefrom over said layer across said              7. A semiconductor device comprising a body of ex
+junction, and a second metal contact adherent to said         trinsic semiconductor having a surface, said body con
+surface in ohmic electrical connection with said underly      taining adjacent, ?rst, second and third regions, one over
+ing region, said second contact substantially encircling 55 lying the other, P-typc and N-type alternately, with a
+said junction from one side of said strip to the other.       ?rst, dished, P-N junction between said ?rst and second
+   3. A semiconductor device comprising a body of             regions having an edge extending to said surface and
+extrinsic semiconductor having a surface, said body con       there surrounding said ?rst region, and a second, dished,
+taining adjacent P-type and N-type regions with a dished      P-N junction between said second and third regions ex
+junction therebetween having a substantially circular 60 tending to said surface and there surrounding said second
+edge at said surface, a discoid metal contact adherent        region, a ?rst metal contact adherent to said surface in
+to said surface whollv within and substantially con           electrical connection with said ?rst region, a second metal
+centric with said ctlgc, a C-shaped metal contact ad          contact adherent to said surface in electrical connection
+herent to said surface and substantially concentric with      with said second region, a third metal contact in elec
+said discoid contact, said (;-shaped contact being wholly     trical connection with said third region, an insulating
+outside of and substantially encircling said edge, said       layer consisting essentially of an oxide of said semicon
+C-shaped contact having two ends de?ning a gap there          ductor on said surface, said layer being congenitally
+between, an insulating layer consisting of oxide of said      united with said body and extending across both of said
+semiconductor on said surface extending through said 70 junctions, an electrical connection to said ?rst contact
+gap and across said junction, and a metal strip over and      comprising a ?rst metal strip adherent to said layer, said
+adherent to said layer extending through said gap and         ?rst strip extending from said ?rst contact over said layer
+across said junction to said discoid contact, said contacts    across both of said junctions, and an electrical connection
+being in direct electrical connection with respective ones    to said second contact comprising a second metal Strip
+of said regions, and said metal strip being in direct elec 75 adherent to said layer, said second strip extending from
+
+
+--- SOURCE PDF PAGE 8 OF 8 ---
+
+                                                        2,981,877
+                                                                                              W
+said second contact over said layer across said second               10. A semiconductor device comprising a body of ex
+junction.                                                         trinsic semiconductor having a surface, said body con
+   8. A semiconductor device as in claim 7, wherein said          taining adjacent P-type and N-type regions with a dished
+second contact is a C-shaped metal strip substantially            junction therebetween, said junction having an edge that
+encircling said ?rst junction, and said third contact is a        extends to said surface and there forms an elongated,
+larger C-shaped metal strip adherent to said surface and          closed ?gure, ?rst and second contacts in the form of
+substantially encircling said second junction.                    parallel metal strips adherent to said surface, said ?rst
+   9. A semiconductor device comprising a body of ex              contact being wholly within and said second contact
+trinsic semiconductor having a surface, said body con             wholly without said edge of the junction, an insulating
+taining a plurality of dished, P~N junctions each having 10 layer consisting of oxide of said semiconductor on said
+an edge extending to said surface and there surrounding     surface and extending across said junction, and a metal
+and de?ning an enclosed region of said semiconductor, a     strip adherent to said insulating layer and extending there~
+plurality of metal contacts adherent to said surface in           over across said junction to connect physically and elec
+electrical connection with respective ones of said enclosed       trically with said ?rst contact.
+regions, an insulating layer consisting essentially of oxide 15            References Cited in the ?le of this patent
+of said semiconductor on said surface, said layer being
+congentially united with said body' and extending across a                     UNITED STATES PATENTS
+plurality of said junctions, and electrical interconnections       2,813,326     Liebowitz ____________ .._ Nov. 19, 1957
+between said contacts comprising metal strips adherent to          2,836,878     Shepard ______________ __ June 3, 1958
+said layer and extending over said layer across a plu 20           2,842,723      Koch et al. ___________ __ July 8, 1958
+rality of said junctions.                                          2,849,664      Beale _______________ .._ Aug. 26, 1958

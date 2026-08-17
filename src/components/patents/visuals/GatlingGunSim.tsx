@@ -2,12 +2,15 @@
 
 import { Play, RotateCcw, Volume2, VolumeX } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
+import { usePatentPhysics } from "@/physics/usePatentPhysics";
+import { usePatentAudio } from "./three/usePatentAudio";
 
 export function GatlingGunSim() {
-  const [crankRpm, setCrankRpm] = useState<number>(40);
-  const [barrelCount, setBarrelCount] = useState<number>(6);
+  const { params, updateParam, resetParams } = usePatentPhysics("us-36836-gatling-gun");
+  const { isAudioMuted, toggleSound } = usePatentAudio();
+  const crankRpm = params.crankRpm ?? 60;
+  const barrelCount = params.barrelCount ?? 6;
   const [isPlaying, setIsPlaying] = useState<boolean>(true);
-  const [isMuted, setIsMuted] = useState<boolean>(true);
   const [clusterAngleDeg, setClusterAngleDeg] = useState<number>(0);
   const animRef = useRef<number | null>(null);
 
@@ -57,11 +60,7 @@ export function GatlingGunSim() {
           </button>
           <button
             type="button"
-            onClick={() => {
-              setCrankRpm(40);
-              setBarrelCount(6);
-              setClusterAngleDeg(0);
-            }}
+            onClick={resetParams}
             aria-label="Reset Simulation"
             className="p-2 rounded-lg bg-parchment-200 dark:bg-ink-800 hover:bg-parchment-300 dark:hover:bg-ink-700 text-ink-800 dark:text-parchment-200 transition-colors"
           >
@@ -69,11 +68,11 @@ export function GatlingGunSim() {
           </button>
           <button
             type="button"
-            onClick={() => setIsMuted(!isMuted)}
-            aria-label={isMuted ? "Unmute Audio" : "Mute Audio"}
+            onClick={() => toggleSound()}
+            aria-label={isAudioMuted ? "Unmute Audio" : "Mute Audio"}
             className="p-2 rounded-lg bg-parchment-200 dark:bg-ink-800 hover:bg-parchment-300 dark:hover:bg-ink-700 text-ink-800 dark:text-parchment-200 transition-colors"
           >
-            {isMuted ? (
+            {isAudioMuted ? (
               <VolumeX className="w-4 h-4" />
             ) : (
               <Volume2 className="w-4 h-4 text-amber-600" />
@@ -289,11 +288,11 @@ export function GatlingGunSim() {
           </div>
           <input
             type="range"
-            min="10"
-            max="100"
+            min="20"
+            max="120"
             step="5"
             value={crankRpm}
-            onChange={(e) => setCrankRpm(Number(e.target.value))}
+            onChange={(e) => updateParam("crankRpm", Number(e.target.value))}
             className="w-full accent-amber-600 cursor-pointer"
           />
         </div>
@@ -308,7 +307,7 @@ export function GatlingGunSim() {
             max="10"
             step="2"
             value={barrelCount}
-            onChange={(e) => setBarrelCount(Number(e.target.value))}
+            onChange={(e) => updateParam("barrelCount", Number(e.target.value))}
             className="w-full accent-amber-600 cursor-pointer"
           />
         </div>

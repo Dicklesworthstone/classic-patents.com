@@ -2840,25 +2840,36 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
         defaultValue: 120,
         unit: "RPM",
       },
+      {
+        id: "bladePitchAngleDeg",
+        label: "Helical Blade Pitch Angle",
+        min: 20,
+        max: 55,
+        step: 1,
+        defaultValue: 35,
+        unit: "°",
+      },
     ],
     computeMetrics: (p) => {
       const rpm = p.shaftRpm ?? 120;
-      const speedKnots = ((rpm / 120) * 8.5).toFixed(1);
-      const thrustKn = Math.round((rpm / 120) ** 2 * 18);
+      const pitchDeg = p.bladePitchAngleDeg ?? 35;
+      const pitchFactor = Math.tan((pitchDeg * Math.PI) / 180) / Math.tan((35 * Math.PI) / 180);
+      const speedKnots = ((rpm / 120) * 8.5 * pitchFactor).toFixed(1);
+      const thrustKn = Math.round((rpm / 120) ** 2 * 18 * pitchFactor);
       return [
         {
           label: "Vessel Speed",
           value: `${speedKnots} Knots`,
           unit: "v_ship",
           badgeColor: "cyan",
-          progressPct: (Number(speedKnots) / 18) * 100,
+          progressPct: (Number(speedKnots) / 22) * 100,
         },
         {
           label: "Axial Thrust",
           value: `${thrustKn} kN`,
           unit: "T_prop",
           badgeColor: "emerald",
-          progressPct: (thrustKn / 75) * 100,
+          progressPct: (thrustKn / 90) * 100,
         },
       ];
     },
@@ -2926,17 +2937,27 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
     controls: [
       {
         id: "crankRpm",
-        label: "Crank Rotation Rate",
-        min: 40,
-        max: 200,
-        step: 10,
-        defaultValue: 120,
+        label: "Hand Crank Rotation Rate",
+        min: 20,
+        max: 120,
+        step: 5,
+        defaultValue: 60,
         unit: "RPM",
+      },
+      {
+        id: "barrelCount",
+        label: "Revolving Barrel Cluster Count",
+        min: 4,
+        max: 10,
+        step: 2,
+        defaultValue: 6,
+        unit: "barrels",
       },
     ],
     computeMetrics: (p) => {
-      const rpm = p.crankRpm ?? 120;
-      const rof = Math.round(rpm * 6);
+      const rpm = p.crankRpm ?? 60;
+      const count = p.barrelCount ?? 6;
+      const rof = Math.round(rpm * count);
       return [
         {
           label: "Rate of Fire",
@@ -2947,7 +2968,7 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
         },
         {
           label: "Barrel Cooling Interval",
-          value: `${((60 / rof) * 6).toFixed(2)} s`,
+          value: `${((60 / Math.max(1, rof)) * count).toFixed(2)} s`,
           unit: "t_cool",
           badgeColor: "cyan",
           progressPct: 80,
@@ -2966,24 +2987,35 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
     controls: [
       {
         id: "ngConcentrationPct",
-        label: "Nitroglycerin Absorption",
+        label: "Nitroglycerin Matrix Absorption",
         min: 50,
         max: 85,
         step: 5,
         defaultValue: 75,
         unit: "%",
       },
+      {
+        id: "capEnergyJoules",
+        label: "Blasting Cap Shock Energy",
+        min: 0.2,
+        max: 3.0,
+        step: 0.2,
+        defaultValue: 1.2,
+        unit: "J",
+      },
     ],
     computeMetrics: (p) => {
       const ng = p.ngConcentrationPct ?? 75;
+      const cap = p.capEnergyJoules ?? 1.2;
       const vDet = Math.round(5500 + (ng - 50) * 80);
+      const isInitiated = cap >= 0.4;
       return [
         {
           label: "Detonation Velocity",
-          value: `${vDet} m/s`,
+          value: isInitiated ? `${vDet} m/s` : "0 m/s (Sub-threshold)",
           unit: "D_CJ",
-          badgeColor: "rose",
-          progressPct: (vDet / 8500) * 100,
+          badgeColor: isInitiated ? "rose" : "amber",
+          progressPct: isInitiated ? (vDet / 8500) * 100 : 0,
         },
         {
           label: "Porous Cushioning Factor",
@@ -3048,16 +3080,27 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
       {
         id: "steamTempC",
         label: "Steam Jacket Temperature",
-        min: 90,
+        min: 70,
         max: 160,
         step: 5,
-        defaultValue: 120,
+        defaultValue: 95,
         unit: "°C",
+      },
+      {
+        id: "hydraulicPressureMpa",
+        label: "Hydraulic Ram Pressure",
+        min: 4,
+        max: 25,
+        step: 1,
+        defaultValue: 10,
+        unit: "MPa",
       },
     ],
     computeMetrics: (p) => {
-      const temp = p.steamTempC ?? 120;
-      const visc = Math.round(1800 * Math.exp(-0.03 * (temp - 100)));
+      const temp = p.steamTempC ?? 95;
+      const press = p.hydraulicPressureMpa ?? 10;
+      const visc = Math.round(1800 * Math.exp(-0.03 * (temp - 70)));
+      const isMelted = temp >= 80 && press >= 6;
       return [
         {
           label: "Melt Viscosity",
@@ -3068,10 +3111,10 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
         },
         {
           label: "Plasticity State",
-          value: temp >= 115 ? "FLUID INJECTION" : "RIGID SOLID",
+          value: isMelted ? "FLUID INJECTION" : "RIGID SOLID",
           unit: "phase",
-          badgeColor: temp >= 115 ? "emerald" : "rose",
-          progressPct: temp >= 115 ? 100 : 20,
+          badgeColor: isMelted ? "emerald" : "rose",
+          progressPct: isMelted ? 100 : 20,
         },
       ];
     },
@@ -3095,10 +3138,20 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
         defaultValue: 950,
         unit: "RPM",
       },
+      {
+        id: "coilSegments",
+        label: "Toroidal Coil Segments",
+        min: 12,
+        max: 48,
+        step: 4,
+        defaultValue: 32,
+        unit: "segments",
+      },
     ],
     computeMetrics: (p) => {
       const rpm = p.shaftRpm ?? 950;
-      const emf = Math.round((rpm / 950) * 110);
+      const segs = p.coilSegments ?? 32;
+      const emf = Math.round((rpm / 950) * 110 * (segs / 32));
       const power = Math.round(emf ** 2 / 12);
       return [
         {
@@ -3128,8 +3181,26 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
     engineMethod: "FrankenSimEngine.stepPasteurFermentation",
     controls: [
       {
+        id: "pasteurizationTempC",
+        label: "Pasteurization Bath Temperature",
+        min: 45,
+        max: 75,
+        step: 1,
+        defaultValue: 58,
+        unit: "°C",
+      },
+      {
+        id: "holdTimeMin",
+        label: "Thermal Hold Time",
+        min: 5,
+        max: 40,
+        step: 5,
+        defaultValue: 20,
+        unit: "min",
+      },
+      {
         id: "wortTempC",
-        label: "Wort Temperature",
+        label: "Fermentation Wort Temperature",
         min: 10,
         max: 45,
         step: 1,
@@ -3138,22 +3209,25 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
       },
     ],
     computeMetrics: (p) => {
+      const pTemp = p.pasteurizationTempC ?? 58;
+      const hold = p.holdTimeMin ?? 20;
       const temp = p.wortTempC ?? 22;
+      const logRed = Math.min(8.0, (hold / 20) * ((pTemp - 45) / 10) * 4.5);
       const activity = Math.min(100, Math.round(100 * Math.exp(-0.02 * (temp - 24) ** 2)));
       return [
+        {
+          label: "Bacterial Inactivation",
+          value: `${logRed.toFixed(1)} log reduction`,
+          unit: "log_N",
+          badgeColor: logRed >= 5 ? "emerald" : "amber",
+          progressPct: Math.min(100, (logRed / 6) * 100),
+        },
         {
           label: "Yeast Culture Activity",
           value: `${activity}%`,
           unit: "rate",
           badgeColor: activity > 70 ? "emerald" : "amber",
           progressPct: activity,
-        },
-        {
-          label: "Microbial Airborne Purity",
-          value: "100% Sterile",
-          unit: "purity",
-          badgeColor: "cyan",
-          progressPct: 100,
         },
       ];
     },
@@ -3177,10 +3251,32 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
         defaultValue: 650,
         unit: "N",
       },
+      {
+        id: "twistsPerFoot",
+        label: "Helical Twist Rate",
+        min: 2,
+        max: 10,
+        step: 1,
+        defaultValue: 5,
+        unit: "twists/ft",
+      },
+      {
+        id: "animalPushForceN",
+        label: "Livestock Push Force",
+        min: 20,
+        max: 300,
+        step: 10,
+        defaultValue: 120,
+        unit: "N",
+      },
     ],
     computeMetrics: (p) => {
       const t = p.wireTensionN ?? 650;
+      const twists = p.twistsPerFoot ?? 5;
+      const push = p.animalPushForceN ?? 120;
       const sagCm = Number((2800 / Math.max(100, t)).toFixed(1));
+      const barbSlipThresholdN = twists * 95;
+      const isLocked = barbSlipThresholdN >= push;
       return [
         {
           label: "Span Sag",
@@ -3190,11 +3286,11 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
           progressPct: Math.min(100, (sagCm / 15) * 100),
         },
         {
-          label: "Spur Longitudinal Lock",
-          value: "Rigid Intertwined",
+          label: "Barb Longitudinal Lock",
+          value: isLocked ? "LOCKED (No Slip)" : "SLIPPING (Insufficient Twist)",
           unit: "lock",
-          badgeColor: "emerald",
-          progressPct: 100,
+          badgeColor: isLocked ? "emerald" : "rose",
+          progressPct: isLocked ? 100 : 25,
         },
       ];
     },
@@ -3218,10 +3314,21 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
         defaultValue: 180,
         unit: "RPM",
       },
+      {
+        id: "compressionRatio",
+        label: "Geometric Compression Ratio",
+        min: 3.0,
+        max: 8.0,
+        step: 0.5,
+        defaultValue: 4.5,
+        unit: ":1",
+      },
     ],
     computeMetrics: (p) => {
       const rpm = p.engineRpm ?? 180;
-      const hp = ((rpm / 180) * 3.0).toFixed(1);
+      const cr = p.compressionRatio ?? 4.5;
+      const hp = ((rpm / 180) * (3.0 * (cr / 4.5) ** 0.5)).toFixed(1);
+      const etaPct = Math.round((1 - 1 / cr ** 0.4) * 100);
       return [
         {
           label: "Brake Horsepower",
@@ -3232,10 +3339,10 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
         },
         {
           label: "Cycle Efficiency",
-          value: "38.5%",
+          value: `${etaPct}%`,
           unit: "eta_otto",
           badgeColor: "emerald",
-          progressPct: 75,
+          progressPct: etaPct,
         },
       ];
     },
@@ -3256,13 +3363,24 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
         min: 40,
         max: 140,
         step: 5,
-        defaultValue: 80,
+        defaultValue: 60,
         unit: "RPM",
+      },
+      {
+        id: "voiceVolumeDb",
+        label: "Acoustic Voice Volume",
+        min: 40,
+        max: 100,
+        step: 5,
+        defaultValue: 75,
+        unit: "dB",
       },
     ],
     computeMetrics: (p) => {
-      const rpm = p.mandrelRpm ?? 80;
+      const rpm = p.mandrelRpm ?? 60;
+      const vol = p.voiceVolumeDb ?? 75;
       const trackSpeed = ((rpm / 60) * Math.PI * 4.0).toFixed(1);
+      const depthMicrons = ((vol / 75) * 25).toFixed(1);
       return [
         {
           label: "Linear Tracking Speed",
@@ -3272,11 +3390,11 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
           progressPct: (Number(trackSpeed) / 30) * 100,
         },
         {
-          label: "Groove Density",
-          value: "10 TPI",
-          unit: "pitch",
+          label: "Indentation Depth",
+          value: `${depthMicrons} µm`,
+          unit: "depth",
           badgeColor: "cyan",
-          progressPct: 50,
+          progressPct: Math.min(100, (Number(depthMicrons) / 35) * 100),
         },
       ];
     },

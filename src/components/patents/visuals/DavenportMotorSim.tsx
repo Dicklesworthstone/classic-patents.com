@@ -2,12 +2,16 @@
 
 import { Play, RotateCcw, Volume2, VolumeX } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
+import { usePatentPhysics } from "@/physics/usePatentPhysics";
+import { usePatentAudio } from "./three/usePatentAudio";
 
 export function DavenportMotorSim() {
-  const [batteryVoltageV, setBatteryVoltageV] = useState<number>(6.0);
-  const [loadTorqueMnm, setLoadTorqueMnm] = useState<number>(12);
+  const { params, updateParam, resetParams } = usePatentPhysics("us-132-davenport-electric-motor");
+  const { isAudioMuted, toggleSound } = usePatentAudio();
+  const batteryVoltageV = params.batteryVoltage ?? 12;
+  const loadTorqueNm = params.loadTorque ?? 0.8;
+  const loadTorqueMnm = Math.round(loadTorqueNm * 10);
   const [isPlaying, setIsPlaying] = useState<boolean>(true);
-  const [isMuted, setIsMuted] = useState<boolean>(true);
   const [rotorAngleDeg, setRotorAngleDeg] = useState<number>(0);
   const animRef = useRef<number | null>(null);
 
@@ -71,11 +75,7 @@ export function DavenportMotorSim() {
           </button>
           <button
             type="button"
-            onClick={() => {
-              setBatteryVoltageV(6.0);
-              setLoadTorqueMnm(12);
-              setRotorAngleDeg(0);
-            }}
+            onClick={resetParams}
             aria-label="Reset Simulation"
             className="p-2 rounded-lg bg-parchment-200 dark:bg-ink-800 hover:bg-parchment-300 dark:hover:bg-ink-700 text-ink-800 dark:text-parchment-200 transition-colors"
           >
@@ -83,11 +83,11 @@ export function DavenportMotorSim() {
           </button>
           <button
             type="button"
-            onClick={() => setIsMuted(!isMuted)}
-            aria-label={isMuted ? "Unmute Audio" : "Mute Audio"}
+            onClick={() => toggleSound()}
+            aria-label={isAudioMuted ? "Unmute Audio" : "Mute Audio"}
             className="p-2 rounded-lg bg-parchment-200 dark:bg-ink-800 hover:bg-parchment-300 dark:hover:bg-ink-700 text-ink-800 dark:text-parchment-200 transition-colors"
           >
-            {isMuted ? (
+            {isAudioMuted ? (
               <VolumeX className="w-4 h-4" />
             ) : (
               <Volume2 className="w-4 h-4 text-amber-600" />
@@ -293,26 +293,26 @@ export function DavenportMotorSim() {
           </div>
           <input
             type="range"
-            min="2.0"
-            max="12.0"
-            step="0.5"
+            min="4"
+            max="24"
+            step="1"
             value={batteryVoltageV}
-            onChange={(e) => setBatteryVoltageV(Number(e.target.value))}
+            onChange={(e) => updateParam("batteryVoltage", Number(e.target.value))}
             className="w-full accent-amber-600 cursor-pointer"
           />
         </div>
         <div>
           <div className="flex justify-between text-xs font-sans font-medium text-ink-700 dark:text-parchment-300 mb-1">
             <span>Mechanical Load Torque</span>
-            <span className="font-mono">{loadTorqueMnm} mN·m</span>
+            <span className="font-mono">{loadTorqueNm.toFixed(1)} N·m</span>
           </div>
           <input
             type="range"
-            min="2"
-            max="35"
-            step="1"
-            value={loadTorqueMnm}
-            onChange={(e) => setLoadTorqueMnm(Number(e.target.value))}
+            min="0.2"
+            max="2.5"
+            step="0.1"
+            value={loadTorqueNm}
+            onChange={(e) => updateParam("loadTorque", Number(e.target.value))}
             className="w-full accent-amber-600 cursor-pointer"
           />
         </div>

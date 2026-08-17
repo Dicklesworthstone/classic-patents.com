@@ -1,0 +1,264 @@
+UNITED STATES PATENT (OFFICE.
+GEO. H. CORLISS, OF PRO VIDENCE, RHODE ISLAND.
+C UT - 0 FF A ND W70 REKING THE VAT, WES 0F STEA REI- ER GINE S.
+
+Specification forming part of Letters Patent No. 6, 162, dated RIarch 1.0, 1849; Reissued May 18,
+1851, No. 200,
+
+prevented from workiig by the tension of 55
+To alluvhom it may concern:
+Be it known that I, GEoRGE H. CoRLIss, the diagonal tension braces. k
+of the city and county of Providence and In steam engines operated with slide
+State of Rhode Island, have invented cer valves, particularly the large condensingen
+tain new and useful Improvements in gines made in England, the valves are con 60
+Steam-Engines; and that the following is a nected and moved together in pairs, one at
+full, clear, and exact description of the each end of the cylinder, and therefore move
+principle or character which distinguishes together over the same extent of surface,
+them from all other things before known and as the power required to move them is
+10 and of the manner of making, constructing, due to the friction produced by the pressure
+and using the same, reference being had to of the steam on their surface and their 65
+the accompanying drawings, making part of range of motion under this pressure it fol
+this specification, in which
+lows that the valves while closed require the
+Figure 1 is a side elevation of an engine most power, for much of this friction is
+15 on my improved plan, Fig. 2, a longitudinal relieved the moment the valves are partly
+vertical section; Fig. 3, an elevation of the opened. One of the valves must always be 70
+valves and the arrangement of parts for closed while the other is being opened or
+working them, and Fig. 4, a plan thereof; closed, hence the closed valve is moved at an
+Fig. 5 is a separate section representing a entire sacrifice of power. To save this,
+20 latch used in the valve gear, and Figs. 6 and several devices have been resorted to, such
+7, a plan and section of an air cylinder and as cams, the irregular working of which, 75
+piston for checking the motions of the valve makes too much noise, and renders the
+whole liable to derangement, but by my in
+apparatus.
+The same letters indicate like parts in all vention I am enabled to reduce the motion
+of the closed valve relatively to that of the
+25 the figures.
+In constructing the frame work of what other valve, and thus greatly to reduce the 80
+are known as beam engines it is highly im amount of power heretofore required for
+portant to avoid the working or yielding of this purpose. This the second part of my
+the frame under the action of the varying invention therefore consists in communicat
+30 forces of the engine, for it is to such work ing motion to the two valves from one rack
+ing and yielding of the frame that the shaft by connecting each valve with a sepa 85
+breaking of engines is mainly due. The rate arm or crank wrist of the rocker, the
+numerous devices which have been essayed two arms making such an angle with each
+other dependent on the position of the
+to remove this evil establishes conclusively valves
+and the rocker so that the point of
+85 the importance of a practical remedy.
+The object of the first part of my inven connection of the closed valves shall vibrate 90
+tion relates to the miai of avoiding this near the dead point, and therefore give but
+dificulty and consists in supporting the a small amount of motion to that valve,
+shaft
+of the working beam on two vertical while the other which is being opened and
+standards that are erected on two horizontal closed is moving along that part of its cir
+beams secured and resting at the ends on the cuit which shall give the greatest longitudi 95
+bed, the upper end of the two standards be nal motion, and therefore giving to that
+ing connected to, and braced with the ends valve the greatest amount of motion. By
+of the horizontal beams by means of diago this means I. not only save much of the
+45 nal tension screw braces so that during the power due to the working of the valves
+upward motion of the piston the strain from when closed but at the same time I attain 100
+important advantage of greatly acceler
+the base of the cylinder to the bearings of the
+the working beam, shall be along one set of ated motion of the : whilst opening
+diagonal tension braces, and from these and closing the ports.
+The third part of my invention relates
+50 bearings to the support of the crank shaft
+along the set of diagonal braces on the other to the id of regulating the cut off, of 105
+side, and during the downward motion shall the steam in the main slide valves, and con
+be
+vertically along the line of the stand sists in effecting this by means of the gov
+ards onto the horizontal beams which are ernor which operates cams, so that when the
+
+2
+
+6,162
+
+velocity of the engine is too great these materially unless such force be sufficient to
+cams shall be moved by the centrifugal ac break the metal. The parts being thus
+tion of the regulator that a catch on the braced and under tension and pressure, in
+valve rods may the sooner come in contact dependently of the force of the engine, will
+with them to liberate the valves and admit effectually prevent that working of the 70
+of their being closed by the force of weights frame which in a short time causes some
+or springs, and thus cut of the steam in part or parts of the engine to break or be
+P:
+to the velocity of the engine this come deranged.
+eing done sooner when the velocity of the
+The steam and exhaust valves (l l) and
+10 engine is to be reduced and later when it is
+(m m) are arranged above and below the 75
+to be increased.
+top and bottom of the cylinder in steam
+In the accompanying drawings (a) repre chests (n) (o), the One (n) at top, and
+sents the bed of the engine which is elevated formed in the cylinder head, and the other
+at each end above the level of the plane of let into a recess in the bed plate. The ex
+15 the middle part. The cylinder (b) is se haust valves (m m) are attached to valve 80
+cured to one end, and the boxes (c, c) of rods (p, p,) provided with appropriate slide
+the crank shaft to the other. Two horizon heads (g, áll: one for each, which by con
+tal beams (d, d) are placed with their ends necting rods (r, r) are jointed to arms (s, s)
+resting on the two elevated parts of the bed of two levers (t t) that turn on fulcrum pins
+20 and then securely bolted, and on the middle
+(u, u,) the other arms (v, v) being in turn 85
+of these are erected the two standards (c, c) connected each with a wrist (u) of a rock
+which may however be cast with the hori shaft (ac), the two wrists being distant about
+zontal beams. And near the upper end, a quarter of a circle, so that when one is at
+these standards are formed with a hole or its greatest leverage the other is at the dead
+90
+25 hollow space (f) in part to reduce the point.
+weight but chiefly to form a bearing for As one valve must not be opened until the
+nuts (g, g) that are tapped onto the ends other is closed, or nearly so, and vice versa,
+of tension braces rods (h h and h" h") one and the two derive their motions from one
+on each side of each standard and extending and the same rock shaft, the wrists on the
+30 down diagonally to the ends of the hori rock shaft are so situated, relatively to the 95
+zontal beams through which they pass and valves, thatthey are each in turn opened and
+to which they are firmily secured by keys closed by that portion of the motion of the
+(i, i) in manner well known to engineers. wrist which communicatesthe greatestlongi
+The upperend of the standards are provided tudinal motion to the connecting rod, and
+85 with appropriate boxes for the journals of when one is performing this motion the 100
+the si (j) of the working beam (k) in other wrist is performing that portion of its
+the usual manner. The two standards are motion which communicates the least longi
+of course braced together in any desired tudinal motion to the connecting rod, hence
+manner to keep them parallel.
+while the two wrists are performing the
+40
+From the above arrangement it will be same length of rotation the one which op 105
+seen that by drawing the tension brace rods erates the opening and closing valve gives a
+by means of the nuts, the standards will be quick movement to its valve to open and
+forced down onto the horizontal beams, and close the port rapidly, whilst the other valve
+that the tension braces will be strained or which moves over the closed port and there
+45 drawn tight, so that during the upward ac fore under the full pressure of steam, moves 110
+tion of the piston the downward force of the very slowly, and vice versa. The rock shaft
+steam on the bed plate and the upward (ac) is provided with an arm (y) which re
+thrust in the boxes of the working beam ceives the required vibratory motion by a
+shaft will be exerted along the diagonal line connecting rod (z) from an eccentric (a”) in
+50 of the tension brace rods (h, h,) and from the usual manner ofoperating the valve gear 1 | 5
+the shaft of the beam along the other of steam engines.
+diagonal tension brace rods (h h*) to the The steam valves (l l) are provided with
+boxes of the crank shaft, and that these double valve rods (b'b') attached to sliding
+being fully strained by the nuts no force heads (c" c') and connected with, and op
+55 that is not sufficient to separate the connec erated by the rock shaft (ac) in mannersimi 120
+tion will be able to force these apart to any lar to the exhaust valves above described,
+injurious extent so that during this upward with this exception, that the levers (d" d')
+action the frame will not work or yield and that are connected with the rock shaft by
+on the return or downwardstroke of the pis means of connecting rods (e" e”), instead of
+60 ton the strain on the shaft of the beam will being jointed torods connected with the slide 125
+be exerted vertically on the standards and heads of the steam valve rods, as in the ex
+therefore on the horizontal beams which are haust valves, are each provided with a cogged
+held in a state of tension by the tension sector (f" f') which operate sliding racks
+braces and therefore this action of the steam (g" g"), and these racks instead of being
+85 will not cause the frame to work or yield jointed to the cross heads of the Valve stems 180
+
+6,162
+
+3
+
+are so formed as to be engaged and disen can have their full motion without striking
+gaged with the connecting rods (h" h”) by the cams. In this position of the parts the
+means of catches (i' i’) on the Valve rods steam valves will operate in manner similar
+which catch Onto corresponding lips on the to the exhaust valves, and the steam Will 70
+racks and there held by springs (i" i").
+not be cut of. All that is necessary there
+When the steam valves are closed the vi fore to work the engine full stroke is simply
+bration of the rock shaft (ae) alternately to literate the slide of the governor, or dis
+moves one of the racks sufficiently far to be connect the governor.
+come engaged with the catch (i’) of one of When the steam valves are not to be used
+10 the rods (h"), and on the return motion so as cut-off valves they are to be operated in 75
+Soon as the valve is sufficiently open a pro every particular like the exhaust valves. It
+jection (j') on the rod (h”) strikes against will be obvious from the foregoing that
+a cam (k") on a vertical rod (l') which dis when the valves are arranged to move in
+engages
+the catch from the sliding rack and planes parallel with the axis of the cylin
+15 permits the valve to be closed quickly to cut der, as is usual with slide valves, that the 30
+of the supply of steam, by means of a bent rock shaft by which they are operated is to
+lever (m') one arm of which bears against be differently located, and that whenever
+the back of a small air cylinder (n) at the location of the rock shaft is to be
+tached to the double valve rods, and the changed that the joints of connection of the
+20 other arm having a weight (o) suspended to connecting rods therewith are to be placed 35
+it, the moment the catch is liberated the nearer together or farther apart so as to
+gravity of the weight closes the valve to cut give the required range of motion to the
+of the supply of steam that it may com valves in accordance with the principle of
+plete the stroke of the engine by expansion. my invention.
+25 Toward the end of the closing motion of
+The best mode of arranging the parts 90
+the valve the small air cylinder (n") at when the valyes move in planes parallel with
+tached to the valve rods embraces a piston the axis of the cylinder is fully represented
+(p') attached to the frame which condenses in the additional Figs. 8 and 9–where the
+the air within the cylinder and thus acts as same letters are used to indicate correspond
+30 a buffer or elastic cushion to prevent the ing parts as in the figures described above. 95
+slamming of the machinery and breakage
+I wish it to be distinctly understood that
+consequent thereon.
+in the mode of regulating the cut off by the
+The two steam valves are arranged, governor I. do not limit myself to the use
+mounted and connected in the same man of the particular kind of cams described or
+35 ner, and are therefore operated in the same represented, as the form, position, and oper 100
+manner, and are alternately operated by the ation of these may be greatly varied with
+rock shaft; and their connection being made out changing the principle of this part of
+with the rock sihaft in the same manner, my invention; as for instance, stops or cams
+although at different points, as the exhaust connected with the slide of the governor by
+40 valves, they of necessity operate on the same levers may be made to slide in the direction 105
+principle, with the exception specified for of the plane of motion of the valve rods
+to vary the periods of liberating the catch
+cutting of the steam.
+The cams (k" k') are helical projections of the valverods; or wedge formed stopsor
+on the peripheries of two cylinders on a cams may be substituted for the helical cams
+45 sliding and rotating rod (l') attached to the and attached to the cam rod which in that ! 10
+slide (r’) of the governor (s') so that when case must mot turn.
+The mode of applying this principle which
+the governor, which receives its rotation
+from the crank shaft by a line shaft (t') I have first described is the one which I have
+and bevel wheels (u u u u"), moves too essayed with success and therefore I have
+50 fast the rising of the balls will elevate the described it minutely, but the two modifica 115
+rotating and slidingrod (l') and with itthe tions indicated will show clearly that the
+helical cams (k" k") which by their helical same principle is susceptible of various
+form and rotation come in contact with the modifications.
+projections (j' j') on the valve rods (h" h")
+What I claim as my invention and desire
+120
+55 to strike them the sooner and therefore to to secure by Letters Patentis–
+liberate the valves at a shorter part of the The method, substantially as described, of
+stroke of the piston and the sooner to cut off operating the slide valves of steam engines
+the steam which will reduce the power of by connecting the . valves that govern the
+the engine and consequently its velocity. Ín ports at opposite ends of the cylinder, with
+80 this way the motions of the engine are regu separate arms of the rock shaft, or theme 125
+lated.
+chanical equivalents thereof, so that from
+Whentheballs ofthegovernorareentirely the motion thereof the valve that keeps its
+down, as when the engine is at rest, the port or ports closed shall move over a less
+helical cams (k" k') are below the plane of space while its port (or ports) is closed than
+65 motion of the steam valve rods, so that these the one that is opening or closing its port, 180
+
+4
+
+6,162
+
+or ports, and vice versa, while at the same
+time the two arms by which they are op
+erated have the same range of motion, as
+described, whereby I am enabled to save
+5 much of the power heretofore required to
+work the slide valves of steam engines, and
+by which also I am enabled to give a greater
+range of motion to the valves at the periods
+of opening and closing the ports to facili
+10 tate the induction and eduction of steam, as
+specified. And lastly I claim the method of
+
+regulating the motion of steam engines by
+means of the centrifugal regulator g COII)-
+
+bining the said regulator with the catches
+that
+liberate the steam valves by means of
+movable cams or steps, substantially as de- 15
+scribed.
+
+GEORGE H. CORLISS.
+
+Witnesses:
+
+A. P. BoURNE,
+
+E. P. McCREA.
+
+(FIRST PRINTED 1913.)

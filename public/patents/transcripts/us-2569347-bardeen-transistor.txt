@@ -1,0 +1,1802 @@
+Sept. 25, 1951
+
+W. SHOCKLEY
+
+2,569,347
+
+CIRCUIT ELEMENT UTILIZING SEMICONDUCTIVE MATERIAL
+
+Filed June 26, 1948
+
+3. Sheets-Sheet
+
+63
+
+S SS3
+SS
+S
+
+S.
+
+3.SS.
+3.
+
+sS
+S
+
+N
+
+3-13
+
+SŠ3S
+St. S.
+SS 3. S. 3S s
+
+AO6
+
+2.2%
+As
+
+te
+
+A2
+
+//W/EW7 OA
+
+W SA/OCALAY
+
+or TA-4
+
+A77OARWAY
+
+Sept. 25, 1951
+
+W. SHOCKLEY
+
+2,569,347
+
+CIRCUIT ELEMENT UTILIZING SEMICONDUCTIVE MATERIAL
+Filed June 26, 1948
+
+3. Sheets-Sheet 2
+
+/07
+
+A/G. /O
+
+S3S
+
+22
+
+%
+
+S3
+W. SAOCA/AY
+
+TA-4-
+
+a77OAPAWAY
+
+Sept. 25, 1951
+
+W. SHOCKLEY
+
+2,569,347
+
+CIRCUIT ELEMENT UTILIZING SEMICONDUCTIVE MATERIAL
+
+Fied June 26, 1948
+
+3. Sheets-Sheet 3
+
+AW/EW7OAR
+
+M/SA/OCA/AY
+
+ef
+
+Patented Sept. 25, 1951
+
+2,569,347
+
+UNITED STATES PATENT OFFICE
+2,569,347
+CIRCUIT ELEMENT UTILIZNG SEMCON
+DUCTIVE MATERIAL
+
+William Shockley, Madison, N.J., assignor to Bell
+Telephone Laboratories, Incorporated, New
+York, N. Y., a corporation of New York
+
+Application June 26, 1948, Serial No. 35,423
+34 Claims. (C. 332-52)
+
+2
+ductive material comprising two zones of material
+of opposite conductivity type separated by a bar
+rier, means for making external electrical con
+
+This invention relates to means for and meth
+
+ods of translating or controlling electrical signals
+and more particularly to circuit elements utiliz
+ing semiconductors and to systems including such
+
+nections respectively to each zone and means for
+
+making a third connection to the body at the bar
+rier for controlling the flow of current between
+
+elements.
+
+One general object of this invention is to pro
+vide new and improved means for and methods
+of translating and controlling, for example am
+
+the other two connections.
+
+An additional feature pertains to a Semicon
+
+plifying, generating, modulating, intermodulating
+
+ductive body comprising two zones of material of
+0. like conductivity type with an intermediate Zone
+or converting, electric signals.
+of material of opposite conductivity type, the
+Another general object of this invention is to
+zones being separated respectively by barriers,
+enable the efficient, expeditious and economic
+translation or control of electrical energy.
+In accordance with one broad feature of this
+
+invention, translation and control of electric sig
+nals is effected by alteration or regulation of the
+conduction characteristics of a Semiconductive
+
+body. More specifically, in accordance with one
+broad feature of this invention, such translation
+
+and control is effected by control of the charac
+teristics, for example the impedance, of a layer
+or barrier intermediate two portions of a Semi
+conductive body in Such manner as to alter ad
+vantageously the flow of current between the two
+
+portions.
+
+One feature of this invention relates to the
+
+5
+
+means for making electrical connections respec
+tively to the two zones, and means for making a
+
+third connection to the intermediate zone for
+
+controlling the effectiveness of a barrier to there
+
+by control the flow of current between the zones
+of like material.
+
+Another feature of this invention involves a
+
+semiconductive body which may be used for volt
+
+age and power amplification when associated
+with means for introducing mobile carriers of
+charge to the body at relatively low voltage and
+
+extracting like carriers at a relatively high volt
+age.
+
+A further feature of the invention involves cre
+
+ation of voltage and barrier conditions adjacent
+body by means of carriers of charge of opposite
+an output connection or point of extraction of
+current whereby current amplification in addi
+sign to the carriers which convey the current
+through the body.
+30 tion to voltage amplification may be obtained.
+Other objects and features of this invention
+Another feature of the invention pertains to
+will appear more fully and clearly from the fol
+controlling the current flowing through a semi
+lowing description of illustrative embodiments
+conductive body by an electrical field or fields
+control of current flow through a Semiconductive
+
+thereof taken in connection with the appended
+in addition to those responsible for normal cur
+rent flow through the body.
+35 drawings in which:
+An additional feature of this invention relates
+Fig. 1 shows in section one embodiment of the
+invention with an appropriate circuit;
+to a body of semiconductive material, means for
+making electrical connection respectively to two
+Fig. 2 shows in section another embodiment of
+portions of said body, means for making a third
+the invention with illustrative circuit connec
+electrical connection to another portion of the 40 tions;
+body intermediate said portions and circuit
+Fig. 3 shows in section an embodiment some
+means including power sources whereby the in
+what similar to that of Fig. 2 with certain struc
+fluence of the third connection may be made
+tural differences and with a suitable circuit ar
+
+to control the flow of current between the other
+rangement;
+45
+connections.
+Figs. 3A and 3B show in fractional sections
+
+Another feature pertains to a semiconductive
+
+body comprising successive zones of material of
+opposite conductivity type each separated from
+the other by an electrical barrier, means for mak
+ing external connection respectively to two of
+said zones, and means for making other con
+
+nections intermediate to the two for controlling
+the flow of current across one or more of the
+electrical barriers.
+
+modifications of Fig. 3;
+
+Fig. 4 shows in section a modification of Fig.
+3 in which an embedded electrode is used;
+Fig. 5 shows in fractional section a further
+modification of the type of device shown in Fig.
+4 and including features of detail also applicable
+
+to other embodiments;
+
+Fig. 6 shows an embodiment of the invention
+
+A further feature resides in a body of Semicon 55 similar to that illustrated in Fig. 3 with a differ
+
+2,569,847
+4.
+3
+teristics.
+The
+term
+"impurities'
+1s intended to
+ent arrangement for making connection to part include intentionally added constituents
+as well
+of the device;
+as any which may be included in the basic ma
+Fig. 7 shows an assembled slab structure en
+terial as found in nature or as commercially avail
+bodying some particular structural details;
+and silicon are such basic ma
+Fig. 8 shows, with an appropriate circuit, a able. Germanium
+which, along with some representative in
+sectional view of an embodiment of the inven terials
+purities, will be noted in describing illustrative
+tion having more than one control portion;
+of the present invention. Lattice de
+Fig. 9 shows in section a device similar to that examples
+fects such as vacant lattice sites and interstitial
+of Fig. 8 with a different circuit arrangement.
+atoms when effective in producing holes or elec
+Fig. 10 shows a two-electrode device otherwise trons
+are to be included in "significant impuri
+similar to that of Fig. 3, adaptable as a transit
+time diode with energy level diagrams useful in
+explaining its operation;
+Fig. 11 is a diagrammatic showing of curves
+associated with circuit elements to aid in explain
+ing certain principles of the invention;
+Fig. 12 is a diagrammatic showing similar
+that of part a of Fig. 11 to illustrate the effect of
+using different materials for certain parts of the
+
+ties.'
+
+In semiconductors which are chemical con
+
+pounds, such as cuprous Oxide or silicon'carbide,
+deviations from stoichiometric compositions and
+lattice defects, such as missing atoms Or interst
+tial atoms, may constitute the significant im
+purities.
+Small amounts of impurities, such as phose
+phorus in silicon, and antimony and arsenic in
+devices contemplated by the invention; and
+germanium, are termed "donor' impurities be
+Fig. 13 is a diagrammatic illustration of con cause
+they contribute to the conductivity of the
+ditions in the output portion of devices made in
+basic material by donating electrons to an un
+accordance with current amplifying features of
+filled "conduction' energy band in the basic ma
+the invention.
+terial. The donated negative electrons in such
+As an aid to a full understanding of the de
+a case constitute the carriels of current and
+scription hereinafter of specific embodiments of
+the material and its conductivity are said to be
+the invention, a brief discussion of Some pertinent
+of the N-type. This is also known as conduc
+principles and phenomenon, and an explanation
+of certain terms employed in the description is 2) tion by the excess process. Small amounts of
+other impurities, for example boron in silicon or
+in Order.
+aluminum in germanium, are termed "acceptor"
+As is known, see, for example, "Crystal Recti
+impurities because they contribute to the con
+fiers' by H. C. Torrey and C. A. Whitmer, volume
+ductivity by "accepting' electrons from the atoms
+15 of the M. I. T. Radiation Laboratories series,
+of the basic material in the "filled band.' Such
+there are two kinds of semiconduction, referred
+an acceptance leaves a gap or "hole' in the "filled
+to as intrinsic and extrinsic. Although some of
+band.' By interchange of the remaining elec
+the semiconductive materials contemplated with
+trons in the "filled band," these positive "holes'
+in the purview of this invention may exhibit both
+effectively move about and constitute the carriers
+these kinds of semiconduction, the kind referred
+of current, and the material and its conductivity
+to as extrinsic is of principal import.
+are said to be of the P-type. The term defect
+Semiconduction may be classified also as of
+two types, one known as conduction by electrons process may be applied to this type of conduc
+tion.
+or the excess process of conduction and the other
+Methods of preparing silicon of either conduc
+known as conduction by holes or the defect proc
+tivity type or a body of silicon including both
+ess of conduction. The term "holes,' which re
+types are known. Such methods are disclosed
+fers to carriers of positive electric charges as
+in the application of J. H. Scaff and H. C.
+distinguished from carriers, such as electrons, of
+Theuerer filled December 24, 1947, Serial No.
+negative charges will be explained more fully
+793,744, and United States Patents 2,402,661 and
+hereinafter.
+2,402,662 to R. S. Ohl. Such materials are suit
+Semiconductive materials which have been
+able for use in connection with the present in
+found suitable for utilization in devices of this
+vention. Germanium material may also be made
+invention include germanium and silicon contain
+in either conductivity type or in bodies contain
+ing minute quantities of significant impurities
+ing both types and it may be so treated as to en
+which comprise one way of determining the con
+able it to withstand high voltages in the reverse
+ductivity type (either N or P-type) of the semi
+direction from the rectification viewpoint. This
+conductive material. The conductivity type may
+material may be prepared in accordance with
+also be determined by energy relations within
+the process disclosed in the application of J. H.
+the semiconductor. For a more detailed explana
+Scaff and H. C. Theuerer filed December 29, 1945,
+tion reference is made to the application of J.
+Bardeen and W. H. Brattain Serial No. 33,466, (j) Serial No. 638,351. Bodies of semiconductive na
+terial for use in the practice of this invention may
+filed June 17, 1948, now U. S. Patent No. 2,524,035,
+also be prepared by pyrolytic deposition of silicon
+granted October 3, 1950.
+The terms N-type and P-type are applied to or germanium with Suitable significant impuri
+ties. Methods of preparation are outlined in
+semiconductive materials which tend to pass cur
+United States patent applications of K. H. Storks
+rent easily when the material is respectively nega
+and G. K. Teal Serial No. 496,414, fled July 28,
+tive or positive with respect to a conductive con
+1943, now U. S. Patent No. 2,441,603, granted May
+tact thereto and with difficulty when the reverse
+18, 1948; G. K. Teal Serial No. 655,695, filed March
+is true, and which also have consistent Hall and
+20, 1946, now U. S. Patent No. 2,556,991, granted
+thermoelectric effects.
+
+The expression "significant impurities' is here
+used to denote those impurities which affect the
+electrical characteristics of the material such as
+its resistivity, photosensitivity, rectification, and
+the like, as distinguished from other impurities
+
+() June 12, 1951; and G. K. Teal Serial No. 782,729,
+
+filed October 29, 1947, now U. S. Patent No.
+2,556,711, granted June 12, 1951.
+
+The term "barrier' or electrical barrier used in
+
+the description and discussion of devices in ac
+which have no apparent effect on these charac 7 5 cordance with this invention is applied to a high
+
+2,569,847
+
+5
+resistance interfacial condition between contact
+
+ing semiconductors of respectively opposite con
+ductivity types or between a semiconductor and
+a metallic conductor whereby current passes with
+
+6
+
+with the electrodes. This film is exaggerated as
+to thickness in the figure. The electrode 32 may
+be made of an antimony or phosphorus bearing
+
+relative ease in one direction and with relative
+
+alloy, such as a copper-antimony alloy or phos
+phor bronze so that heat treatment will cause
+antimony or phosphorus to diffuse into the P-type
+
+energy level diagrams may be more clearly shown.
+The dimension in the direction perpendicular to
+
+ing the time of the heat treatment, that the ma
+
+difficulty in the other.
+germanium changing it to N-type in a zone 35 be
+The devices to be described are relatively small
+tween two P-type zones 36 and 37. The three
+which has necessitated some exaggeration of pro
+zones are separated by barriers 38 and 39, respec
+portions in the interest of clarity in the illustra
+tions which are mainly or essentially diagram 10 tively. The heat treatment for diffusing anti
+mony from the electrode 32 into the zone 35 may
+matic. This is particularly true of the inter
+mediate or intervening layers which are usually be at about 650 C. and for diffusing phosphorus
+from phosphor bronze at about the same tempera
+very thin. In some cases this layer, e. g. the P
+ture. The diffusion of the significant impurity
+layer in Fig. 11, has been shown wider than the
+flanking N layers in order that the accompanying 5 into the film may be so controlled, as by regulat
+
+the paper may vary in accordance with the cross
+sectional area required.
+
+terial at the surface of the zone 35 opposite to
+that contacted by the electrode 32 is substantially
+neutral or only slightly N-type or, on the other
+
+The device shown in Fig. comprises a body or 20 hand, left as P-type. Following nomenclature
+which has been used for devices of this type, the
+block of Semiconductive material, for example
+germanium, containing Significant impurities.
+electrodes 32, 33 and 34 may be called respec
+tively, base, emitter, and collector. The designa
+The block comprises two zones fo and respec
+
+tively of N and P-type materials separated by
+
+the barrier 2. The opposite ends of the block
+
+tions B, E and C have been applied to these and
+
+like electrodes in other figures to aid in under
+
+are provided with connections 3 and 4 which
+may be metallic coatings, such as cured silver
+paste, a vapor-deposited metal coating or the like.
+
+Standing the structure.
+
+wire loop 6, or other suitable means, such as a
+
+electrode 33 through input connections 43 and 44,
+the negative side of the battery 4 being connected
+to the base electrode 32. The output circuit in
+cludes a relatively high voltage source, for example
+of voltage between 10 and 100 volts, such as bat
+tery 45 with its negative pole connected to 34
+
+The device of Fig. 2 may be operated as an
+amplifier or control device by applying a rela
+
+tively Small positive bias, for example of the order
+Means for making connection to the barrier
+region of the block conprise a drop of electrolyte 30 of one volt, and a signal from sources such as
+battery 4 and signal source 42, respectively, to
+f5 such as glycol borate in which is innersed a
+
+disc of metal.
+Conductor f leads from connection f4 to a load
+
+RL and thence through a power source, such as
+battery 8, and back via conductor 9 to the body
+at connection f3. A source 2 of signal voltage
+
+and its positive pole to base electrode 32. In
+and a bias source 22 are connected from 6 at
+cluded in this circuit is a load represented by a
+the barrier to connection 3 by conductors 23, 24
+and 25. With N and P zones as shown in Fig. 4) resistance RL.
+If no P-type material remains in zone 35 the
+1, the negative pole of Source 8 is connected to
+Operation is as follows: A positive or hole cur
+the P zone and the positive pole to the N zone.
+rent will flow into the P zone 36 under the in
+The connection to the body at the barrier
+fiuence of Sources 4? and 42. The negative bias
+through the electrolyte 5 is a means of impressing
+on the N Zone 35 from battery 4 injects elec
+a field at this barrier and parallel thereto, and
+trons into this Zone and reduces the impedance
+is in the nature of a capacitative connection since
+there is substantial isolation between the elec
+
+trolyte and the surface of the body.
+The biasing Source 22 is shown with its nega
+tive pole connected to the barrier connection 6
+since better results have been obtained with such
+
+a connection. However, a positive bias may be
+used with good results.
+A successfully operated device of this type was
+
+to hole current therethrough. The negative bias
+of battery 45 on electrode 34 then causes a hole
+Current to flow to the output through electrode
+3. Enough of the electrons and holes remain
+uncombined So that a control analogous to that
+in a three-electrode vacuum tube is obtained.
+
+The input current is in the direction of easy
+flow across the barrier 38 so the impedance of
+this barrier thereto is relatively low. The out
+about 2 centimeters long, 0.5 centimeter wide and
+0.5 centimeter thick. The barrier was about mid
+put current is in the direction of difficult flow
+through reversely operated barrier 39 so the out
+way between the end faces and substantially
+put is of high impedance. The output current
+parallel to them. The bias voltages upon the
+is comparable to the input current but through
+electrodes 6 and 4 relative to electrode 3 were
+of the same order of magnitude, between 10 and (50 a much higher impedance; therefore, the out
+put power is higher than that at the input. A
+20 volts.
+more complete explanation of the operation of
+Using devices like that of Fig. 1, a current
+
+change of a few microamperes in the control cir
+
+this and the other devices will be given subse
+quent to a description of the other embodiments
+Cuit was made to produce a current change of
+Several milliamperes in the load circuit through 65 of the invention. If a thin layer of P-type ma
+terial is left at the surface opposite to where
+RL. Thus current amplification was obtained.
+The current gain was sufficient to produce power
+32 makes contact, the control field will vary the
+amplification at the voltages used.
+effective thickness of this layer to affect current
+
+The device disclosed in Fig. 2 comprises two
+blocks or bodies 30 and 3 of insulating material,
+Such as a ceramic, with an electrode 32 inter
+posed between these blocks and electrodes 33 and
+3 secured to their outer ends. A film of P
+type germanium is applied to one face of the elec
+
+flow.
+
+The device of Fig. 3 comprises a layer or zone
+5 of P-type material, such as germanium, in
+terposed between two layers or zones 52 and 53
+of N-type material which also may be ger
+manium, separated respectively by barriers 54
+trode-ceramic assembly making ohmic contact 75 and 55. Connections are made to each layer by
+
+2,569,847
+
+7
+
+electrodes 5,57, and 5, respectively, which may
+be termed as in the case of the device of Fig. 2,
+
+(SB) emitter, (ST) base, and (58) collector.
+These electrodes may be formed as in the device
+of Fig. 1. The circuit connections are similar to
+those in Fig. 2 with polarities reversed because
+of the interchanging of N and P zones. In this
+device, the Player 5 may be made amenable to
+control by making it very thin, e.g. 1x10 cen
+timeter or less or only slightly of P-type or
+both. The impedance of the P Zone to electron
+flow will be low enough so that introduction of
+holes into the P zone by the positive bias thereon
+
+will have a considerable control effect. Elec
+trons may thus be made to flow with compara
+tive ease through the P zone due to the effect
+of the voltage on the base electrode and will be
+drawn to the collector 58 and abstracted. Here
+as in the case of Fig. 2, in one way of operation,
+
+the input is of low impedance, the output of high
+impedance, and the input and output currents
+
+8
+
+Fig. 8 shows a configuration which may be used
+as a mixer or converter. Five layers or zones
+to 5, inclusive, are shown which are alter
+nately N and P. Layers and are similar
+to the emitter and collector layers of the three
+electrode device, e. g. of Fig. 3. However, there
+are two Players, 2 and 94, separated by N layer
+93. Separate electrodes 6 and 7 are connected
+respectively to the two Players, making a fouro
+
+O electrode device in which
+
+98 and 99 are the
+emitter and collector electrodes. The current
+
+reaching 99 will be a function of the voltages
+applied to 96, 97 and 99, 98 being regarded as
+grounded. This function will be non-linear in
+the voltages and will contain quadratic terms
+involving products of the voltages on 96 and 7.
+These product terms will play the same role as
+in other non-linear mixers or converters and will
+lead to collector current components having fre
+
+quencies which are combinations of those ap
+
+plied to 96 and 7.
+The voltages may be applied respectively to
+96 and 97 from sources 0, 04 and O2, OS,
+In Fig. 4 there is shown a device similar to
+these being bias and signal voltages as indicated.
+the one in Fig. 3 but with a different means for
+signal voltages could be from a local Oscil
+connecting to the intermediate zone of semi 5 The
+lator and an incoming signal, for example, or
+conductive material. In this modification, the
+be other signals to be mixed. The output is
+P zone 6 is interposed between N zones 62 and
+taken from O6 and O and source 03 provides
+63. A metallic grid, sections of which are shown
+the collector bias. Lc and CB are isolating
+at 64, is embedded in the PZone and has a pro
+jecting portion 65 to which external connection 3. chokes and blocking condensers, respectively.
+In Fig. 9 a device like that in Fig. 8 is provided
+may be made. This grid serves as the base elec
+with an additional electrode 08 on the middle
+trode. The emitter and collector electrodes 66
+N region and arranged so that layers 9, 92 and
+and 67, respectively, and the respective N zones
+93 with suitable connections as shown comprise
+are similar to those in the device of Fig. 3. This
+device may be operated like the device of Fig. 3.5 an oscillator. The input is applied to layer 94
+and the mixed output taken from 06 and 0.
+3 with appropriate connections to the emitter,
+The sources of energy correspond to those in
+base and collector electrodes.
+Fig. 8 with source O9 added as the "collector"
+The fractional view, Fig. 5, shows a portion of
+bias for the oscillator section. LT and CT are
+a device similar to that of Fig. 4 with modifica
+tuning elements of the oscillator section, Lc and
+tions in detail. In order to insure a good, Sub
+CB are the chokes and blocking condensers and
+stantially ohmic contact between the electrodes
+T the coupling transformer.
+and the semiconductive material, a relatively
+In addition to the voltage and thus power am
+thin layer of the semiconductive material ad
+
+comparable with resulting power amplification.
+
+plification which may be obtained with devices
+jacent each electrode is made of material hav
+ing a higher concentration of significant impuri 5 of this type, current amplification may be ob
+tained by setting up at the collector electrode a
+ties of the type characterizing the conductivity
+condition similar to that required for rectifica
+type. These high impurity layers will have
+tion. This may be done by making the collector
+higher conductivity than the rest of the Semi
+electrode a rectifer contact of the point or large
+conductive material in the given Zone and thus
+area type rather than a Substantially ohmic
+less tendency toward barrier formation at the
+contact. Another way of doing this is to leave
+electrode-semiconductor interface. These layers
+the actual contact at the electrode ohmic and
+are 68, 69, and 70 for the emitter, base (grid),
+to introduce a small region of Opposite type nna
+
+and collector electrode, respectively. Such high
+impurity layers may be used in the other em
+
+bodiments of the invention.
+
+In order to shield the grid or base electrode
+
+64 from the effects of the field of the emitter,
+
+terial to that of the collector Zone around the
+55 collector electrode.
+
+For example, in s, device
+
+like that of Fig. 3 a zone 80 of P-type material
+may be introduced between the collector elec
+trode 58 and the N zone 53, as shown in Fig. 3A
+
+a layer of insulation f, is applied to the side
+as shown in Fig. 3B, a point contact 8 may
+of the grid facing the emitter electrode. The 60 or,
+be substituted for electrode 58 or electrode 58
+flow of charge carriers is thus directed through
+may be applied in a manner to set up a barrier.
+the grid between its conductors.
+with collector connections of this type, the out
+The device shown in Fig. 6 is similar to the One
+put current may be made greater than the input
+shown in Fig. 3 with a layer 53a of reduced ex
+current
+as will be subsequently explained.
+tent allowing a contact 57 a on a face of the P 65 Structures
+similar to those described but hav
+layer 5.
+ing only two electrodes can be used as legative
+In Fig. 7 there are shown a plurality of as
+resistance elements at very high frequencies
+sembled semiconductive layers or slabs 0 to
+making use of transit time effects. Fig. 10 rep
+8, inclusive. An insulator slab fl is included
+resents such a device. It comprises threa sub
+in place of part of the intermediate Player and
+parallel layers Ne, P and Nc, of alter
+the N layer on the collector side is tapered to O stantially
+nating
+inpurity
+content with two metal elec
+ward the insulator to reduce sidewise flow of
+trodes, one at either side. In the example shown,
+electrons therein and thus path length from B
+the conductivity is supposed to be entirely due
+to the N layer on the collector side.
+to electrons. When voltages are applied as in
+Additional functions may be performed by de
+dicated at a in Fig. 10, there will be an electron
+75
+vices containing more layers and electrodes.
+
+2,569,847
+
+9.
+current flowing from Ne to Ne. This current will,
+of course, increase with increasing applied po
+tential. When the potential Wa is increased there
+will be a corresponding increase in the potential
+V. As a consequence of this, the electron flow
+from V through the P region of V will be in
+creased. However, there will be a time lag be
+tween the increase of V and the actual flow of
+electrons from P to Nc. As a consequence of
+
+O
+
+esses are (1) metallic conduction and (2) thermi
+
+onic emission followed by flow through space.
+
+When the voltage on the grid of the tube is
+changed, its charge is changed by a flow of Cur
+
+rent into its leads and wires by metallic conduc
+tion. This charge exerts a field which attracts or
+repels the thermionic electron Space charge about
+the cathode and thus the space current passing
+through the grid to the plate. An important and
+
+this, the electron current flowing between P and O useful feature of a vacuum tube is that these two
+Ne will be out of phase with the voltage W. With currents do not become mixed; the high work
+the type of structure shown, this phase lag will function and low temperature of the grid wires
+
+prevent the metallic conduction current from es
+caping from the grid and flowing to the plate.
+of phase with the voltage on V3. Under these con 5 The fact that the grid is negative with respect
+to the cathode prevents the Space current from
+ditions the impedance of the device as viewed
+reaching the grid. Thus the flow of electrons
+looking in on the V terminal will exhibit nega
+by metallic conduction in the grid controls the
+tivéresistance.
+space current from cathode to plate. However,
+The theory of somewhat related electronic
+devices involving negative resistance due to 20 practically no power is consumed by the grid
+since its charging current is separated from the
+transit time is known in the literature. See for
+space current which it controls. This discussion,
+example Bell System Technical Journal Janu
+which neglects some elements of vacuum tube
+ary 1934 (vol. 13) and October 1935 (vol. 14). In
+theory (such as displacement currents, transittine
+order for such devices to operate it is necessary
+that the transient response for a change in volt 25 effects, etc.) will serve as a basis for indicating
+how the two processes of conduction in semicon
+age on V have a suitable characteristic. The
+principal requirement of this characteristic is ductors may effect a similar useful control of one
+that the build-up in current following the change
+form of current by another.
+In Fig. 11 there is shown a representation of a
+in V should occur with a certain delay after
+the change in Vs. In the type of device shown 30 semiconductor structure which is analogous to a
+
+be sufficient so that the current flowing between
+P and N can be made more than 90 degrees out
+
+in Fig. 10, this desired feature will occur auto
+
+matically. The reason for this is that electrons
+drift relatively slowly through the P region,
+whereas they will traverse the P to Nc gap rapidly
+
+three-electrode vacuum tube. In this figure, dia
+
+grams a, c and d show the energies of electrons
+
+in the filled and conduction bands in the semi
+
+conductor in the customary way. The physical
+because of the high electric field present there. 35 Structure of the Semiconductor is represented at e
+and consists of three regions of Semiconductor
+As a consequence of this, electrons which flow
+With Connecting electrodes corresponding to the
+from Ne to P during one phase of Wis carry their
+principal current from P to Nc at a later time cathode, grid and plate of a vacuum tube as
+shown at f. The different parts of the senicon
+and can thus be made to flow more than 90 de
+grees out of phase with the voltage applied to W3 40 ductor are in intinate contact, so that there are
+no surface States (such as occur on the free Sur
+and in this way furnish negative resistance.
+
+These effects may be further enhanced by use
+ing a barrier as illustrated by the diagram Fig.
+10B. This shows a situation at the collector Sin
+
+faces of semiconductors) or other major imperfec
+tions at the boundaries. The principal variation
+in properties should arise from the varying con
+Centration of impurities as shown at b which rep
+
+Figs. 3A and 3B. In this case there is a barrier
+for electron flow from Ne to C. Electrons ac
+cumulating in the potential minimum to the
+
+concentration of acceptors.
+In a, there are no potentials applied to the elec
+trodes and the Fermi level is independent of posi
+
+of a structure of the form shown in Fig. 10 hav
+
+ilar to that described earlier in connection with
+left of C will enhance hole flow from C back to
+
+resents the concentration of donors minus the
+
+tion. (The "Ferni level,' Sometimes called the
+
+chemical potential for electrons, is the parameter
+
+P and hence to E. Transit time effects will occur
+both in the electron flow from P to Nc and in the
+
+e' in the Ferni-Dirac distribution function
+
+barrier in front of C due to electron accumula
+tion and to hole transmit time through the Nc
+
+as a potential by dividing by the charge on the
+carrier, in this case the neagtive charge of the
+
+region. These effects can again be utilized to
+produce a negative resistance for the device at
+a frequency properly adjusted to the over-all
+
+electron.) For the case illustrated, the conduc
+
+development of a potential difference across the
+
+f=1/(1--exp(e-e'/kT)). It can be interpreted
+
+tivity in the N layers is due to electrons and in the
+P layer to holes. The diagram has been drawn
+to show a much higher electron concentration in
+
+effective transit time and the shape of the cur
+60 N than holes in P. In fact, the N concentration
+rent response curve.
+is so high that a degenerate gas is formed as in a
+It is believed that a logical explanation of the
+
+operation of devices made in accordance with
+this invention may be given with respect to a
+
+metal.
+
+device like that of Fig. 3. Although the electri
+
+maintained at a potential V and C is made more
+positive to a potential V2, the situation shown in
+
+cal currents of interest in semiconductors are,
+
+If electrodes E and B (diagram e of Fig. 11 are
+
+according to theory, carried by electrons, it is
+
+diagram c occurs. This corresponds to applying
+
+also well known in accordance with Such theory
+
+voltage in the reverse direction across the Ne-P
+
+junction of diagram e. In this case, small current
+that the electrons may carry the current either
+by the excess process, called conduction by elec
+flows because the voltages are such as to pull elec
+trons, or by the defect process, called conduction 70 trons from left to right and holes from right to
+by holes.
+left. The electrons which can be pulled to the
+For purposes of explanation, consideration will
+right are those available in the P region. They
+represent a very Small number compared to the
+be given to how two processes of conduction by
+electrons enables a conventional vacuum tube to
+
+holes present, since the Fermi level lies much
+
+operate. In the vacuum tube case, the two proc 75 closer to the filled band than to the conduction
+
+2,569,847
+
+12
+
+band and (except for the degenerate case) the
+
+fact that there are two processes of conduction
+through the Pregion permits control to take place
+
+and the band concerned, and q is the electronic
+
+in a way similar to that in the vacuum tube,
+Before considering how the above description
+should be modified when neglected features are
+
+region, very small currents flow across the bar
+
+taken into account, consideration may be given
+to the feature common to devices which amplify
+alternating current power using a direct current
+power supply. Such devices have an input and
+
+number of carriers decreases as exp(-QAV/kT)
+where AV is the spacing between the Fermi level
+
+charge. As a consequence of the small number
+of holes in the Ne region and electrons in the P
+
+rer and the reverse direction has high resistance.
+In diagram d of Fig. 11, the additional effect of
+
+applying a voltage in the forward direction across 10 an output circuit, and for purposes of discussion
+may be regarded as four terminal devices. Into
+
+the Ne-P or left-hand barrier is shown. This is
+the forward direction for this barrier, and elec
+trons tend to flow from Ne to P. This current
+
+the pair of input terminals there flows direct cur
+rent and alternating current power (Pie and
+Plae) and into the output terminals there is a sim
+builds up exponentially with the voltage differ
+ence between Vi and Wa. At the same time holes 15 ilar flow (Pode and Pose). For a steady state con
+dition, the second law of thermodynamics re
+flow from P to Ne. However, for the structure
+quires that the sum of all these powers is positive.
+shown, the hole current will be much smaller than
+For an amplifier, however, Pose--Pac is negative,
+the electron current; the reason for this being
+meaning that the device gives out alternating cur
+essentially that since more electrons are available
+in Ne than holes in P as determined by the con 20 rent power. In a conventional circuit the power
+
+figuration of the device, more electrons will flow
+than holes for a given potential difference. The
+
+is taken out between plate and cathode and the
+
+ber of holes in region Ne is determined by the po
+tential energy difference U1. If the potential
+difference is applied between Ne and P in the for
+
+The Ne-P barrier acts in much the same way
+as the grid-plate region of the vacuum tube.
+
+alternating current and voltage under operating
+electrons which flow to P will diffuse thermally in
+conditions are like those of a negative re
+sistance. That is, when the plate potential swing
+P. Also they will drift in any field which is pres
+ent. As a result they will get Over the maximum 25 is negative, the plate current swing (i. e., cur
+in P and flow to Nc, and thence to electrode C.
+rent into the tube, or electrons out) is pos
+It should be noted that there are several other
+itive. The reason for this behavior is that the
+plate impedance is relatively high. Hence, when
+ways of reducing the hole current from P to Ne
+Two of these are illustrated in Fig. 12. Diagrams
+the grid swing is plus the plate current is in
+d and b of this figure correspond to equilibrium 30 creased over the direct current value and remains
+increased even though a negative plate swing oc
+or zero current situations for the device under
+curs. Hence, power can be delivered to the plate.
+consideration. Under these conditions the num
+ward direction across the barrier as is shown in
+
+Fig. 11D for example, then the concentration of
+crease exponentially with the voltage difference
+holes in N due to flow from P will tend to in
+
+There is a steady reversecurrent; however, this is
+relatively insensitive to plate potential. The elec
+tron current due to the difference in potential be
+
+tween E and B, is also relatively insensitive to
+
+collector voltage since once the electrons have
+Wa-V. Similarly the concentration of electrons 40 passed the maximum potential point in P they are
+practically certain to be drawn to C. Hence the
+flowing from Ne to P will tend to increase expo
+nentially in the same way starting with a value
+alternating current across the Ne-P barrier can
+be made out of phase with the voltage on C and
+determined by U2. Hence, if U2 is initially less
+output power can be delivered.
+than Ui the tendency of electrons to flow from
+N to P will be greater than the tendency of holes 45 Next there may be taken into account the fact
+that there is actually a current flowing to B which
+to foW from P to N.
+may absorb input power. This current arises
+All of the cases considered in Figs. 11 and 12
+
+are designed so as to produce this desirable dif from several sources. Holes from Ne will flow to
+P and also some holes from P willflow to Ne. Both
+this is accomplished by having different concen 50 of these currents tend to lower the impedance of
+B and require more power to drive it. Also, since
+trations of impurities in Ne and P in such a way
+B is positive some electrons entering P tend to
+that the net concentration of the electrons in Ne
+is greater than the concentration of holes in P. flow to the electrode B thus contributing still an
+In Fig. 11 the electron concentration is so high other Source of power absorption. Holes and elec
+that a degenerate situation exists whereas in Fig. 55 trons will also combine in P at an enhanced rate
+12a a non-degenerate situation is shown. In Fig. compared to thermal equilibrium because both
+the hole and the electron concentrations in P are
+12b this effect is further enhanced by using two appreciably
+greater than normal. This requires
+different semiconductors. The semiconductor
+used for Ne has a wider energy gap since it is
+an
+additional
+hole current into P from B. How
+N-type. This increases the value of U1 compared 60 ever, proper geometrical requirements can be met
+to Ua in the P region. For example the Ne Zone so that these currents are sufficiently minimized
+permit substantial power amplification.
+may be of N-type silicon and the other two zones to The
+reason for this is that so long as the Player
+of P and N-type germanium respectively.
+If we idealize the structure for the moment and 85 is not too thick, an appreciable fraction of the
+electrons flowing from Ne into P will continue
+neglect any resistances at the metal semiconduc to
+Ne. This means that the alternating current
+tor contacts, and the hole current between P and components
+of current in C will be comparable to
+N, the comparison between this device and a the alternating
+currents in E and B. As will be
+vacuum tube becomes clear. In place of the grid,
+there is the P region, which can be charged in pointed out later, a proper condition adjacent
+C may actually lead to larger alternat
+respect to N by holes. This modulates the flow 70 electrode
+ing current components in C than in either E or
+of electrons from Ne into P just as the charge
+Furthermore, the impedance between E and 8
+on the grid modulates the flow of electrons from isB. relatively
+low since the Ne-P junction is oper
+the cathode. The charging current to P, consist
+in the forward direction. Since power is IR,
+ing of holes, does not flow to Nc any more than ated
+does the charging current to the grid. Thus the 75 and since the input and output currents are con
+
+ference between Ua and U1. In Figs. 11 and 12d
+
+13
+
+2,569,847
+
+parable but the output impedance is much higher,
+
+the output power is also much higher.
+Consideration will next be given to a further
+means of utilizing the separability of the two con
+
+14
+
+This change in potential between Ne and C will
+increase the hole current from C to Pas described
+above.
+
+By means of this process the alternating cur
+
+duction processes in semiconductors in order to s rent part of the current Ic may be made much
+increase the alternating current Ie at C compared
+larger than that of the current Ie and, conse
+to the current Ie at E and Ib at B. In Fig. 13,
+quently, the ratio of powers in the output and
+
+diagram (a), the region just in front of the metal
+electrode C is shown, as if a layer of P-type ma
+terial Pe were inserted between Ne and C. This
+
+input circuits may be increased by current ampli
+fication as well as by voltage amplification.
+Certain limitations exist in regard to the di
+may be done by actually inserting a thin layer of
+mensions of parts of the units under discussion.
+P-type material between Ne and the electrode C
+These may be illustrated with respect to Figs. 3
+or by replacing the electrode C by a point contact
+and 3A. Under operating conditions, a certain
+such as has been shown in Fig. 3B. When the
+Current will be drawn by the Pzone 5. In order
+voltage on B is made positive, the Ne-Pe junction 5 that the potential of 5 be substantially uniform,
+is operated in the forward direction. Hence, an
+its resistance in the direction of current flow,
+appreciable fraction of the current between Pe
+namely from base electrode 5 upwards in the
+and Ne may be holes, and this fraction will in
+figure, must not be too great. For any given
+crease if P is made more P-type. For the effects
+width and conductivity in 5 this puts a limitation
+considered in this paragraph to be enhanced, a 2) upon the minimum thickness, i. e., distance be
+hole current from Pe into Nc and then to P is de
+tween barriers 54 and 55. Another closely related
+sirable. Hence the drawing is made as if Pe had . requirement on the thickness is that it present a
+more holes than Nc had electrons. The advantage
+of this structure is that it will lead to a multiplica
+
+Substantial resistance to electron flow from N
+
+Diagram b in Fig. 13 shows the situation for no
+applied voltages on an enlarged scale with the
+electrons and holes depicted. In this case the
+
+iunction 55 in the reverse direction will penetrate
+almost all of the PZone, thus eliminating its holes
+and its desired conductivity parallel to the bar
+
+net hole current and electron currents are each
+
+re.
+
+Zone 52 to N zone 53. If the P zone is too thin,
+tion of electron current arriving at the collector. 25 the space charge layer produced by operating
+
+zero. In diagram c, Fig. 13, the situation is shown 3) A maximum limitation on the thickness of the
+when an electron current is flowing in from P.
+P Zone is established by the recombination of
+holes and electrons. The P zone must not be so
+In order for this current to flow away to the
+right, the rotential hill between Nc and C must
+wire that electrons entering from the N zone 52
+be reduced. This is accomplished by electrons
+corbine with holes before passing through the
+35
+accumulating at X until their charge raises the
+P Zone and reaching the N zone 53. Experience
+with high-back-voltage germanium indicates that
+potential sufficiently. They then flow off to C.
+distanres at least as large as 10 centimeters are
+This shift in potential also increases the easiness
+acceptable 1 infer this limitation, although smaller
+with which holes from Pe can enter Nc and then
+ones are advantageous. A similar limitation is
+flow to P. The situation is entirely similar with
+the roles of holes and electrons reversed, to that
+Set by transit time effects. In the P Zone there
+will be electric fields tending to cause a drift of
+at the emitter. There the electron current is in
+creased by a charge of holes in the Pregion. Here
+electrons, also due to concentration gradients the
+electrons will diffuse. Because of these effects a
+the hole current is increased by an accumulation
+time will elapse between a change in potential
+of electrons in the Nc region. Also, as before, the
+on 5 and the change in flow of electrons from 5
+hole current may be much larger than the elec
+tron current since more holes are available in
+to 53. An additional time elapses before these
+this case. Hence, a small electron current may
+electrons reach the additional P zone (layer 80,
+induce a much larger hole current.
+Fig. 3A) and produce the hole flow back to 5. If
+It is not necessary, however, for the layer Pe to
+any
+of these "transit times' are comparable to
+have an excess of acceptors for the current en st) a period of the impressed signal, loss in amplifica
+hancement discussed above to be accomplished.
+The essential feature is that the contact between
+
+the metal and the Nc region presents a smaller
+barrier for hole flow than for electron flow. This
+
+can be accomplished as described above by adding
+a sufficient number of acceptors to Pe. However,
+it will also occur if the contact between C and Nc
+
+has a sufficiently high rectifying barrier, as is
+
+tion will result.
+
+The transit time and other capacitative ef
+fects may be reduced by increasing all acceptor
+and donator concentrations and reducing the
+Scale of the device. The general trend of the
+behavior may be seen by arguments of a dimen
+Sional character. Thus if every linear dimen
+Sion in the device is increased by a factor A and
+every charge density by a factor A-2, the poten
+
+shown in Fig. 13D and which may be produced
+for example by use of a rectifying contact as in 60 tial distribution will be unaltered in value but
+Fig. 3B. In this case electrons flowing from P
+merely extended in scale. (If po(ac, y, 2) is the
+will tend to accumulate to the left of the barrier
+old charge and pn(ac, y, 2) = Apo (ac/A, y/A, 2/A)
+
+until they produce a space charge which raises
+the potential energy for electrons, as in Fig. 13C.
+
+is the new one, then the new potential at a point
+
+Arco, Ajo, A20 is
+
+1
+P(a, y, 2) didydz
+enew (Aro, Ayo, Azo) i?e-Arif (y-Ayo)-- (z-Azo)
+
+8,669,847
+5
+
+-
+
+16
+
+which proves that the potential distribution is
+
+example, F. Seitz, "Modern Theory of Solids,"
+
+new structure. All transit times will be in
+
+reason all of the results discussed above will be
+
+simply magnified in its linear extent to fit the
+
+creased by a factor of A. This follows from the
+fact that both the diffusion constant and the
+nobility involve the length dimension to the plus
+two power, i.e., cm/sec. and cm./volt-Sec. All
+current densities increase as p times the electric
+field for drift current, i. e., as A, and as con
+
+McGraw-Hill, 1940, pp. 456 and 457.) For this
+applicable if donors are interchanged with
+
+acceptors and holes with electrons and the energy
+
+diagrams are considered to represent potential
+
+energies for holes rather than for electrons. It
+is evident that this change will in no way alter
+an important feature of this invention which is
+
+Centration gradient for diffusion current, i. e.,
+
+0 the change in difficulty of traversal by carriers of
+
+unit area vary as A. All capacities of N-P
+junctions, etc., vary as 1/4 per unit area, so that
+all charging time constants, capacity/conducts
+ance, vary as A. This same result may be ob
+tained for the unit as a whole, since resistivity
+is proportional to 1/p or to A and resistance is
+
+5 ments of the invention shown and described are
+
+as p/length or A. Hence all conductances per
+
+resistivity divided by length, the resistance of the
+unit varies as A. The Over-all capacity also
+
+one type of a region of the other conductivity
+type by varying electrically the concentration of
+carriers normally present in the region.
+It is to be understood that the specific embodi
+but illustrative and that various modifications
+may be made therein without departing from the
+Scope and spirit of this invention.
+Reference is made to applications Serial No.
+
+varies as A, again giving a time constant propor 20 91593, filled May 5, 1949, and Serial No. 91,594,
+filed May 5, 1949, each a division of this applica
+tional to A.
+tion wherein certain features of the devices and
+The result of this analysis is thus that all time
+methods described hereinabove are claimed.
+costants vary as A. If two units are produced,
+
+did ering by the scale factor A as described, their
+
+What is claimed is:
+
+external impedances should vary as A and their 25 1. A solid conductive device for controlling
+electrical energy that comprises a body of semi
+efective transit angles or the phase angles of
+
+their impedances should be equal at frequencies
+
+conductive material having two zones of one con
+
+ductivity type separated by a zone of the opposite
+varying as A.
+conductivity type, said two zones being contigu
+Effects of recombination of electrons and holes
+should not be altered in an important way by the 30 ous with opposite faces of said zone of opposite
+change in scale. This follows from the fact that
+conductivity type, and means for making electri
+the probability per unit time of an electron com
+cal connection to each zone.
+
+bining with a hole, either directly or by being
+2. A device as set forth in claim 1 in which one
+trapped by a donor or acceptor, is proportional
+of the separated zones is of a semiconductive
+to the concentration of holes, donors or acceptors,
+material having a wider energy gap than that of
+and hence to A. However, the time spent in
+the material in the other zones.
+any region is proportional to A. Hence the
+3. A device as set forth in claim 1 in which one
+probability of an electron, or hole, transversing of the separated zones is of silicon containing
+a certain layer without recombination is inde
+significant impurities and the other two zones
+pendent of A.
+4) are of germanium containing significant impur
+The temperature rise will depend on A. As
+suming that the thermal conductivity is inde ties.
+4. An electrical translating device comprising
+pendent of the electrical conductivity, a situation
+a body of Semiconductive material including
+which will be approximately true for semiconduc
+Zones of opposite conductivity type and an inter
+tors of reasonably high resistance, the thermal 5 vening barrier, means for establishing electrical
+conductance of the unit will vary as A. Since
+connections to said zones, and means including a
+the currents and consequently the power vary as
+third
+connection to said body for producing in
+A, the temperature rise will vary as A. This
+said
+body
+an electrical field substantially parallel
+variation must be considered in designing partic
+to said barrier.
+ular units and may require operating Small scale
+5. A device for controlling electric current that
+units at less favorable voltages than large scale
+comprises
+a body of semiconductive material in
+units in order to reduce temperature rises. Any
+thermal time effects, as is well known from
+
+cluding zones of opposite conductivity type sepa
+
+rated by a barrier, a pair of connections to said
+theory, and derivable as above vary as A and
+at regions on opposite sides of said barrier,
+thus change their frequency with scale just as do 5 55 abody
+load circuit connected between said connec
+the electrical effects.
+tions, and means including a third connection to
+This similitude theory shows that there will
+body for modifying the electron distribution
+be great advantages in dealing with materials said
+adjacent
+said barrier thereby to control the cur
+containing relatively high concentrations of rent in said
+circuit.
+donors or acceptors from the point of view of (0 6. A deviceload
+for controlling electric current that
+high frequency behavior. Even in principle, how
+comprises a conductive body including zones of
+ever, the change of scale cannot be pushed too
+opposite electrical conductivity type separated by
+far, because if the structures become too Small,
+a
+means for making electrical connection
+the essentially discrete character of the charge tobarrier,
+said body on opposite sides of said barrier, and
+density becomes more important. Also the mean
+means for establishing in said body an electric
+free path of the electron or hole becomes com
+field
+substantially parallel to said barrier for con
+parable with the thickness of the layers. Also,
+
+trolling the electron distribution in a region adja
+
+for sufficiently high concentrations, degenerate cent the barrier and thus the resistance of the
+electron or hole gases will form. However, al
+to current flow between said electrical
+though these will modify the details of the argu barrier
+connection
+means.
+rinent, they will not invalidate the conclusion
+7. A device for controlling electric current
+that operation at higher frequencies will result comprising
+a body of semiconductive material
+from increasing concentrations and decreasing
+having
+a
+pair
+of spaced zones of the same con
+Scal?.
+ductivity type and a third zone of the opposite
+There is a high degree of symmetry between
+the behavior of electrons and holes, (See, for 75 conductivity type, each of said pair of zones
+
+2,569,847
+18
+forming a barrier with said third zone, electrodes spectively separated by a barrier, means for
+17
+
+applying a relatively high voltage in the reverse
+direction across one barrier, and means for ap
+plying a variable bias across the other barrier.
+15. The method of amplifying electrical energy
+that comprises introducing carriers of charge of
+a given sign into a semiconductive body at one
+point at relatively low voltage, extracting car
+
+connected respectively to each of said zones, a
+
+load circuit connected between two of said elec
+
+trodes, and means for controlling the current in
+said load circuit comprising an input circuit con
+nected between One of said two electrodes and
+the third electrode.
+
+8. A method of controlling electric current that
+comprises producing at least three electrical
+
+riers of the same sign from the body at another
+
+point at relatively high voltage, said body includ
+fields in a semiconductive body comprising zones 10 ing
+a rectifying barrier and said points being
+
+of conductive material of respectively opposite
+conductivity types, two of said fields being of a
+
+respectively on opposite sides of the barrier, and
+controlling the resistance to passage of said
+
+sense to cause movement of carriers of charge to
+produce an electric current flow from one side to
+
+carriers in a portion of the body between said
+points by controlling the density of carriers of
+opposite sign in said portion of the body.
+16. The method of amplifying electrical energy
+to control the electron distribution between said
+that comprises introducing carriers of charge of
+sides so that the electric current is variable in
+a given sign into a semiconductive body at a
+response thereto.
+a
+9. A solid conductive device for controlling O connection offering low impedance to entry of
+said carriers, extracting like carriers from Said
+electric current that comprises a body of semi
+body at a connection offering high impedance to
+conductive material having zones of material of
+exit of said. carriers, said body including a recti
+one conductivity type separated by an interme
+fying barrier and said connections being respec
+diate zone of material of opposite conductivity
+type, means for applying electric fields to said 25 tively on opposite sides of the barrier, and con
+trolling the impedance to passage of Said carriers
+body by way of connections respectively to each
+
+the other of the body and from one zone to the
+other, and another of said fields being variable
+
+5
+
+zone, the fields associated with the connections
+to said separated zones being each in a sense to
+cause electric current flow in the same direction
+
+in a portion of the body intermediate said con
+
+zones for causing a current flow from one zone
+
+meters, and means for making electrical connec
+
+variable field producing means for controlling
+
+19. A solid conductive device for amplifying
+
+to thereby vary the current between the sepa
+
+manium having two zones of P-type material
+separated by and contiguous with opposite faces
+
+nections.
+
+17. A solid conductive device for amplifying
+through said body and the field associated with 30 electrical energy that comprises a body of ger
+manium having two zones of one con ductivity
+the barrier between the intermediate zone and
+type contiguous with opposite faces of and sepa
+one of said separated zones being variable to
+rated by a zone of the opposite conductivity type,
+control the current flow to the remaining zone.
+and means for making electrical connection to
+10. Means for controlling the flow of electric
+current comprising a Semiconductive body in 35 each Zone.
+18. A solid conductive device for amplifying
+cluding two zones of material of one conductivity
+electrical energy that comprises a body of ger
+type separated by a third zone of material of the
+manium having two zones of N-type material
+opposite conductivity type, means for making
+separated by a thin zone of P-type material and
+substantially ohmic contact to each of said Zones,
+means for interconnecting the contact means in 40 forming two spaced barriers therewith, said bar
+riers being spaced of the order of 1X10 centi
+cluding power sources connected to the separated
+
+to the other through the intermediate zone, and
+
+tion to each zone.
+
+the electron distribution in the intermediate zone 45 electrical energy that comprises a body of ger
+
+rated Zones.
+
+of a zone of N-type material, and means for
+11. Amplifying means comprising a semicon
+making electrical connection to each zone.
+ductive body including two zones of material of
+one conductivity type separated by an interme 50 20. A solid conductive device for amplifying
+electrical energy that comprises a body of silicon
+diate zone of material of the opposite conduc
+having two zones of one conductivity type sepa
+tivity type, means for making contact to each of
+rated by and contiguous with opposite faces of
+said zones, means for interconnecting the contact
+a zone of the opposite conductivity type, and
+means including a source of relatively low volt
+age connected to one of the separated Zones, a 55 means for making electrical connection to each
+ZOne.
+source of relatively high voltage connected to the
+21. A Solid conductive device Comprising a
+other of the separated zones, the sense of the
+body of. semiconductive material including an
+high voltage being such as to cause electric cur
+intermediate Zone of material of one conductivity
+rent flow toward the high voltage connection, and
+means for controlling the flow in the intermedi 60 type flanked by zones of material of the other
+conductivity type, a grid embedded in the inter
+ate Zone.
+mediate zone, and conductive coatings on por
+12. Amplifying means as set forth in claim 11
+tions of each flanking zone.
+in which the material in the Zone at the low
+22. A solid conductor comprising three super
+voltage end of the body has a different energy
+gap than that of the material in the other zones. 65 posed layers of semiconductive material of alter
+nately opposite conductivity type, means for
+13. Amplifying means as set forth in claim 11
+making electrical connection to each layer, and
+in which the material in the zone at the low
+means for externally interconnecting said con
+voltage end of the body is silicon containing sig
+necting means whereby electrical energy flow
+nificant impurities and that in the remaining
+zones is germanium containing significant im O between two of said connections may be cons
+trolled by interaction of electrical influences from
+purities.
+the third connection.
+14. Amplifying means comprising a semicon
+23. A circuit element comprising a semicon
+ductive body including two zones of material of
+ductive body having contiguous zones of opposite
+one conductivity type separated by a zone of the
+opposite conductivity type, said zones being re 75 conductivity types and characterized by high re
+
+2,669,847
+19
+
+sistance of the transition region between Said
+zones, means including a relatively low imped
+ance input connection for causing current to flow
+into one of said zones, and means including a
+
+20
+
+part being of opposité conductivity type, an elec
+trode in contact with each of said parts, another.
+electrode, a work circuit interconnecting two of
+said three electrodes, and connections for apply
+
+a Signal to the third of said electrodes,
+relatively high impedance output connection for ing
+the current in said work circuit is modi
+withdrawing current from another of said Zones. whereby
+under control of said signal.
+24. A circuit element for controlling the flow fied
+32. A translating device which comprises a
+of electric current that comprises a body of Semi
+body of semiconductive material having a barrier
+conductive material, means for making connec
+at least three electrodes connected to
+tions respectively to spaced portions of the body, O therein,
+said body, an output circuit including two of said
+additional means for making connection to a
+electrodes, said barrier and a biasing source, and
+current flow inhibiting portion of the body inter
+means including a source connected between one
+mediate said spaced portions, and means includ of
+said two electrodes and the third electrode for
+ing sources of electric energy for externally varying
+the electric gradient adjacent said bar
+interconnecting the connections whereby the 5 rier in conformity
+a signal to vary the cur
+inhibiting effect may be controlled by the addi rent flow between with
+said electrodes.
+tional means.
+
+33. A signal translating device comprising a
+25. A circuit element for controlling the flow.
+body of semiconductive material of one conduc
+of electric current comprising a body of Semi
+tivity type, emitter and collector connections to
+conductive material having alternate zones that 20 said
+body, a substantially ohmic base connection
+conduct electronically by the excess and the
+said body, an output circuit connected between
+defect processes respectively, the transition from to
+said collector and base connections and including
+zone to zone being characterized by high imped
+source biasing said collector connection in the
+ance, means for causing current to flow from areverse
+direction and an input circuit connected
+zone to zone through the body, and means for
+between said emitter and base connections and
+varying the transition impedance to control the including
+a source biasing said emitter connec
+current from Zone to 20ne.
+tion in the forward direction, one of said emitter
+26. A circuit element comprising a plurality of
+collector connections including a body of
+zones of semiconductive material of alternately and
+material of the opposite conduc
+opposite conductivity types including a first slab 30 semiconductive
+tivity type contiguous with and forming a barrier
+of one type, a slab of the other type and an
+
+said first body, and the other of said emitter
+insulating slab jointly covering one face of the with
+first slab, a tapered slab of said one type on said and collector connections being spaced from said
+barrier.
+last-named slabs with its thinner portion adja
+34. A signal translating device comprising a
+cent the insulating slab, a slab of said other type 35 body
+of semiconductive material having a first
+on the last-named slab, and means for making zone of
+conductivity type, said body having
+connections respectively to said first, second and a secondone
+zone
+of the opposite conductivity type
+last-named semiconductive slabs, said semicon
+a first junction with said first zone and
+ductive slabs being respectively separated by aforming
+third zone of said opposite conductivity type
+40
+barriers.
+27. An electrical translating device comprising forming a second junction with said first zone, a
+base connection to said first Zone, an emitter con
+a body of semiconductive material having two nection
+second zone, a collector connec
+zones of one conductivity type and a third Zone tion to tosaidsaidthird
+zone, and means including
+of the opposite conductivity type between and in 45 sources interconnecting
+said connections for ap
+contact with said two zones, an output circuit plying a bias in the forward
+direction across said
+connected between said third Zone and one of first junction and a bias in the
+reverse direction
+said two zones, and an input circuit connected across said second junction.
+between said third zone and the other of Said
+WILLIAM SHOCKLEY.
+tWO ZOneS.
+
+28. An electrical translating device in accord 50
+ance with claim 27 wherein said two and third
+REFERENCEs CITED
+zones are of germanium.
+The
+following
+references are of record in the
+29. An electrical translating device comprising file of this patent:
+a body of semiconductive material having two
+UNITED STATES PATENTS
+zones of unlike conductivity type separated by a 55
+Number
+Name
+Date
+barrier, means for establishing current flow be
+1,745,175
+Lilienfeld ---------- Jan. 28, 1930
+tween said two zones, and means separate from
+1877,140
+Lilienfeld ---------- Sept. 13, 1932
+said first means for controlling the impedance
+to such current flow introduced by said barrier. 0 1900,018 Lilienfeld ----------- Mar. 7, 1933
+1904,276
+Boer et al. ---------- Apr. 18, 1933
+30. A translating device comprising a body of
+1949,383
+Weber ------------- Feb. 27, 1934
+semiconductive material including three Succes
+2,173,904
+Holst et al. --------- Sept. 26, 1939
+sive zones of alternately opposite conductivity
+2,208,455
+Glaser et al. -------- July 16, 1940
+types and characterized by a relatively high
+
+transition impedance between the zones, a utili
+zation circut connected between the outer Zones
+and means for varying the transition impedance.
+31. A circuit element which comprises a block
+of semiconductive material, one part of Said
+block being of one conductivity type, an adjacent
+
+2,328,440
+2,402,661
+2,402,839
+2,476,323
+2,486,776
+
+Esseling et al. ------ Aug. 31, 1943
+Ohl --------------- June 25, 1946
+Ohl --------------- June 25, 1946
+Rack -------------- July 19, 1949
+Barney ------------- Nov. 1, 1949

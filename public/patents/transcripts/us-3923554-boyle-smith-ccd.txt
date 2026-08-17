@@ -1,0 +1,1941 @@
+0
+
+United States Patent 1191
+
+1111
+
+Boyle et a1.
+
+[45] Dec. 31, 1974
+
+[54]
+
+INFORMATION STORAGE DEVICES
+_
+
+_
+
+.
+
+[75] Inventory Wlllard S‘e?mg B011“, 511mm“; .
+
+3,621,283
+
+11/1971
+
+3,623,026
+
+11/1971
+
+R27,775
+
+George Elwood Smith, Murray H111,
+
+both of NJ.
+
+Teer et a1. ........................ .. 317/235
+En eler et al....
+
+10/1973
+
+Filed:
+
+FOREIGN PATENTS OR APPLICATIONS
+Netherlands ...................... ..
+_
+
+NJ‘
+
+Primary Examiner-Martm H. Edlow
+
+Nov. 9, 1971
+
+A "omey , A gen t, 0' F‘"m —-P. V. D. W'ld
+' e
+
+[21] Appl. No.: 196,933
+
+[57]
+
+Related US. Application Data
+
+[63]
+
+317/235
+
+Legovec ........................... .. 317/235
+
+Assignee: Incorporated,
+TelephoneBerkeley
+Laboratories’
+Heights,
+
+[22]
+
+3,858,232
+
+ABSTRACT
+
+The speci?cation describes devices based on the rec
+
+Continuation-in-part of Ser. No. 11,541, Feb. 16,
+
+Ognition that minority charge Carriers within a Semi‘
+
+1970, abandoned.
+
+conductor can be used to represent information. Stor
+
+age sites are provided by potential wells formed along
+[52]
+
+US. Cl ..................... .. 357/24, 357/23, 307/304
+
+[51]
+
+Int. Cl. .......................................... .. H011 ll/14
+
+an array of metal electrodes on an insulating layer,
+
+[58]
+
+Field of Search .... .. 317/235 B, 235 G; 307/304
+
+each electrode comprising an M15 device. A quantum
+
+[56]
+
+the semiconductor surface. The preferred structure is
+
+of charge carriers, representing an information bit, is
+generated within the semiconductor. This quantum
+can be translated along the semiconductor by succes
+
+References Cited
+UNITED STATES PATENTS
+
+3462 657
+
+8/1969
+
+Brown
+
+317/235
+
+sively biasing a row of electrodes. The potential well
+
+3,473,032
+
+10/1969
+
+Lehove'c..':l:::"HMMIIIIIIIII 317/235
+
+effectively “moves” through the Semiconductor
+
+314791572
+
+10/1969
+
+Pokornym...“
+
+3,543,032
+
+11/1970
+
+Kazan . . . . . . .
+
+317/235
+
+Sweeping the minority Carriers with it- The quantum
+
+. . . . . . . . . . .. 317/235
+
+can be detected by a Simple Capacitive couple, e-gh, 8
+
+3,546,490
+
+12/1970
+
+..
+
+3,576,392
+
+4/1971
+
+..
+
+3,591,836
+
+7/1971
+
+1'
+
+?oating gate FET.
+_
+
+Booher et al. .................... .. 317/235
+
+_
+
+___________________ _ _
+
+_—"_
+
+REGENERATION
+
+CIRCUIT
+
+||
+
+_ ____ _'“1
+
+~33
+
+I
+
+|
+
+1
+'
+
+\ F
+
+--_
+
+L221 ,'
+
+H
+
+mpg-[ii
+
+2241
+|
+
+-
+
+f231:
+
+j 1
+
+'—|
+
+241:
+1
+
+‘I
+
+1
+
+?2b
+
+?3 b
+
+*1
+
+1
+
+‘ELM:
+
+1
+.J'U'Ll'l.
+|—-——— OUTPUT
+3|
+
+22" in
+
+|—__‘
+
+,———
+
+,
+
+‘
+
+‘\\;1-_+_-l::\:fj>_++_//
+
+1+++ 1
+
++++j
+
+“_‘ 271’
+
+""127"
+
+270
+39
+
+(‘FL-D
+
+_
+
+32 Chums, 22 Drawmg Flgures
+
+N TYPE
+
+m;
+
+A
+
+24" 21
+
+[3O
+32
+
+elf
+
+29/
+
+‘
+
+P
+
+1
+
+\_i_,?
+28
+
+T
+
+PATENTED [1EC3 I I974
+
+3.858.232
+sum 1 [1F 8
+
+| 1
+
+N TYPE
+
+[\1 ——---_-...
+
+N TYPE
+
+N TYPE
+
+//\/VEN7'ORS
+BV
+
+W S. BOYLE
+G. E. SMITH
+
+ATTOP/VEV
+
+3,858,232
+
+1
+
+2
+
+INFORMATION STORAGE DEVICES
+CROSS REFERENCE TO RELATED APPLICATION
+This application is a continuation-in-part of our co
+
+pending application, Ser. No. 11,541, ?led Feb. 16,
+1970, now abandoned, by W. S. Boyle and G. E. Smith.
+I This invention relates to information storage devices
+
+known as charge coupled devices.
+
+necessarily be minority charge as, by definition, in
+these materials the distinction between majority and
+minority carriers is not critical. Preferred materials that
+have these characteristics are KTaOa ZnO, ZnS and,
+
+CdS, and other II-VI compound semiconductors. These
+materials are normally classed as high resistivity semi
+conductors. The references in this specification to,
+semiconductor storage media should be construed as
+encompassing these materials as well as other high re
+
+10 sistivity materials that meet the foregoing criteria. A
+BACKGROUND OF THE INVENTION
+more complete discussion of the properties of storage
+There is a wide variety of electrical devices in which
+media for charge coupled devices will be found in U.S.
+information storage is an essential feature. Memory
+patent application Ser. No. 47,205, ?led June 18, 1970
+and logic devices often rely on magnetic mechanisms
+by D. Kahng.
+in which the information is represented by the polarity
+The storage medium must also provide suf?cient car~
+of magnetic domains stored in a sheet, hollow core or
+rier mobility for charge carrier transfer. This consider
+wire.
+
+-
+
+ation is especially important for high speed operation.
+
+In the usual form of the video camera an optical
+
+With reference to silicon, the storage medium that is
+
+image is stored in the form of electrostatic charge on
+
+preferred at this stage of the development of charge
+
+‘a monolithic storage layer. The localized charge den
+
+20 coupled device technology, this requirement suggests
+
+sity of the electrostatic pattern is then “read” with a
+
+that the storage medium be p-type for electron mobility
+in depleted p-type material can be approximately three
+times the hole mobility in depleted n-type material.
+
+scanning electron beam.
+Information storage is also implicit in delay lines.
+
+These devices are typically acoustic or electromechan
+However, other considerations may favor the use of n
+ical with the information stored dynamically in a travel 25 type storage media. Another embodiment, in which
+ing elastic wave.
+charge is stored in an electrically depleted homogene
+
+Electrical storage devices commonly comprise arrays
+ous storage layer is described in U.S. application Ser.
+of devices connected in logic patterns in which binary
+No. 131,722, ?led Apr. 6, 1971 by W. S. Boyle and G.
+information is stored and processed by sequential
+E. Smith.
+.
+30
+switching of the devices.
+A potential well can be generated at a desired loca
+tion in the semiconductor by locally biasing the semi
+STATEMENT OF THE INVENTION
+The present invention involves an information stor
+
+conductor. This can be facilitated in a representative
+embodiment by forming an electric ?eld pattern over
+
+age mechanism that is unique and versatile. It offers
+the semiconductor surface. The pattern may be mono
+many of the advantages of the several forms of storage 35 lithic for certain forms of devices (to be described be
+devices mentioned above.
+
+.
+
+low) or may assume a speci?c geometry to perform a
+desired function, e.g., a logic function. In a preferred
+embodiment of the invention the devices comprise an
+tential minimum within a semiconductor; that the stor
+MIS array and the depletion region is formed via the
+age site within the semiconductor can be selected; and, 40 well-known ?eld effect.
+most importantly, that the storage site can be changed
+The potential wells can be charged initially by several
+within the semiconductor in at least two dimensions.
+methods. These will be treated in detail below along
+Thus electric charge, representing information, can be
+with detection or readout schemes. The translating
+
+The invention is based largely on the recognition that
+electric charge can be stored in a spatially de?ned po
+
+generated, translated and retrieved.
+
+function is achieved by moving the potential wells
+
+In a static sense, the sites used for storage according 45 along the desired translation path. This has the effect
+to the invention are well known. They are depletion
+of moving the charge accumulated in each well. Since
+layers that are capable of trapping and storing minority
+mobile charge in?uenced by more than one potential
+
+charge carriers. For the purpose of the description of
+this invention, these storage sites will be termed “po
+tential wells.” It is important to recognize that this em
+
+bodiment of the charge coupled device concept relies
+on minority carriers exclusively to represent the infor
+mation throughout the generation-transfer-detection
+
+well will accumulate in the deepest potential well, oper
+ation of some charge coupled device embodiments will
+focus on the deepest of more than one overlapping po
+tential well.
+DETAILED DESCRIPTION OF THE INVENTION
+
+The following detailed description sets forth various
+Altemately, materials are available in which the free 55 embodiments of the invention, all of which share the
+carrier concentration is very low and minority carrier
+basic information storage feature described above. In
+lifetime is high so that storage of minority carriers can
+the drawing:
+operations.
+
+occur in potential wells within the medium that may
+
+FIGS. 1A to ID are schematic diagrams illustrating
+
+not be considered by traditional standards to be deple
+the charge translating mechanism that is a fundamental
+tion layers. In a sense, such materials are inherently
+feature of the invention;
+.
+fully depleted so that when a potential is applied there
+FIG. 2 is a front sectional view, partly schematic, of
+is no recognizable interface between regionsof rela
+a shift register embodying the novel information stor
+tively high and low carrier concentration. Hence the
+age feature;
+explanation of the transfer mechanism in terms of de 65 FIG. 3 is a pulse program for the shift register of FIG.
+
+pleted regions no longer vigorously applies. It is impor
+
+tant to recognize that in such inherently depleted mate
+rials the charge being stored as information need not
+
+,FIG. 4 is a front sectional view partly schematic illus
+
+trating a preferred method of charge translation;
+
+3
+
+3,858,232
+4
+
+FIG. 5 is a sectional view of a buried channel charge
+coupled device;
+
+7
+
+a and b through n (as being part of a series terminating
+
+with 24n). Conductors designated 22', 23’, and 24’ join
+
+FIG. 6 is a front sectional view, partly schematic, il
+
+lustrating a preferred arrangement for introducing
+charge into a charge coupled device;
+FIGS. 7A, 7B and 7C are largely schematic represen
+tations of means for detecting the presence or absence
+
+of charge in the terminal translating stage;
+FIG. 8 is a sectional view showing, schematically, the
+transfer of stored charge between storage sites on op
+posite sides of a storage medium;
+FIGS. 9A and 9B are schematic representations of
+
+preferred techniques for enhancing charge translation;
+
+each third electrode. In this embodiment the input or
+generating stage shown at 25 is an MIS device driven
+to avalanche condition. The charge generated at 25 mi
+grates as shown to the potential well 27a. This ?gure
+
+illustrates the transmission of a sequential pulse train.
+The shift register can be operated in a recirculating
+mode either for increasing the storage duration, or for
+regenerating the signal to overcome noise or charge
+
+losses, by simply connecting the output signal back to
+the input stage through an appropriate regeneration
+
+circuit 33.
+FIG. 10 is a plan view of a multichannel shift register,
+In addition to providing necessary or desirable device
+an extension of the device of FIG. 2;
+15 functions for facilitating or improving the efficiency of
+FIG. 11 is a plan view of a preferred conductor ar
+the basic charge coupled device, recirculation and re
+rangement designed to avoid crossovers in the three
+generation of charge, with or without inversion, can be
+
+conductor storage control circuit;
+
+important in connection with the performanceof logic
+
+FIG. 12 is a perspective view of a portion of a charge
+
+functions.
+
+translating device‘ illustrating a preferred electrical
+
+Charge regeneration can be performed generally as
+shown in FIG. 2. State inversion may be accomplished
+by adapting a threshold gating means such that the
+amount of charge transferred away from the generation
+means is the logical negative of the amount of charge
+
+contact arrangement;
+FIG. 13 is a front sectional view of a charge translat
+
+ing device showing an alternative electricalvcontact ar
+rangement;
+
+FIG. 14 is a front section, largely schematic, of an 25 detected at the detection site.
+In one embodiment a pair of ?oating MIS-type elec~
+vention;
+trodes are conductively connected together, one of
+FIG. 15 is a front sectional view of an alternative
+them providing the sensing function and the other pro
+
+image detection device employing features of the in~
+
+means for transferring charge that does not require
+viding the gating function.
+30
+wire connections to each transfer stage; and
+Alternatively an electrically floating localized semi
+FIG. 16 is a front sectional view illustrating a struc
+conductive zone disposed within a charge coupled de
+ture alternative to that of FIG. 15.
+vice provides the sensing function. The induced voltage
+on this ?oating zone is coupled to an associated MIS
+DETAILED DESCRIPTION
+type electrode which provides the gating function.
+FIGS. 1A to 1D illustrate the charge transfer process 35 In both embodiments a reverse-biased rectifying bar
+
+according to one embodiment. The transfer mechanism
+of all embodiments herein is similar in concept. In FIG.
+1A the. semiconductor substrate 10 is covered with a
+thin insulating ?lm 11 and two metal electrodes 12 and
+13 which form part of an array. In FIG. 1A, electrode
+12 is biased while electrode 13 is not. A depletion re
+gion or potential well 14 forms under electrode 12. In
+
+rier can be used as a collector for disposing of the
+
+charge carriers after detection. The fresh supply of
+charge can be provided in a variety of ways, one suit
+able way being to draw them from a localized semicon
+
+ductive zone of the appropriate type semiconductivity
+or from a suitable injecting contact.
+
+In other described embodiments logical “FAN
+
+FIG. 1B, minority charges 15, created through, e.g.,
+hole-electron pair generation from photon absorption,
+
+OUT” is accomplished by connecting one sensing
+means to each of a plurality of gating means which con
+
+are shown migrating to the depletion region‘ 14 and 45 trol the transfer of charge away from one or a plurality
+stored there. When electrode 13 is biased simulta
+of generation means.
+'
+neously with electrode 12, the depletion region extends
+Logical NOR is provided by having a separate sens
+continuously below both electrodes as shown in FIG.
+ing means disposed in each of a plurality of separate
+1C. The charge redistributes across the enlarged layer.
+charge
+transfer device channels of information and
+As the bias on electrode 12 is removed, as shown in 50 having the sensing means coupled separately to a corre
+
+FIG. 1D, the portion of the depletion region under
+
+sponding plurality of gating means disposed serially
+
+electrode 12 collapses shifting all the charge to the po
+
+with respect to an injecting means. The gating means
+tential well 14’ that is now associated with electrode
+are arranged so that charge is allowed to transfer away
+13. In a like manner the charge entity represented in
+from the injecting means only if less than a predeter
+FIG. 1D can be shifted stepwise to any location in the 55 mined amount of charge exists simultaneously at each
+semiconductor. It will be recognized that the substrate
+of the sensed locations along the plurality of channels.
+10 of FIGS. 1A to 1D can be p-type and the charges re
+Logical NAND is provided by having a separate sens
+versed in sign.
+ing means disposed in each of a plurality of separate
+
+The utilization of this translating mechanism is illus
+charge transfer device channels of information and
+trated, according to one embodiment of the invention, 60 having the sensing means coupled separately to a corre~
+in connection with the shift register of FIG. 2. This de
+sponding plurality of gating means disposed in parallel
+vice is chosen for illustration because it is a fundamen
+with respect to an injecting means. The gating means
+tal structure from which many forms of logic and mem
+are arranged so that charge is prevented from transfer
+ory devices can be derived. The structure is similar to
+
+that of FIGS. 1A to 1D. A semiconductor substrate 20
+is covered with dielectric layer 21 on which is formed
+
+a sequence of electrodes 22 to 24, in triplets designated
+
+65
+
+ring away from the injecting means only if greater than
+a predetermined amount of charge exists simulta
+
+neously at each of the sensed locations along the plural
+ity of channels.
+
+5
+
+3,858,232
+
+A more detailed description of charge coupled de
+vices having these functional capabilities can be found
+
+in U.S. Application Ser. No. 114,625 ?led, Feb. 11,
+1971 by G. E. Smith and M. F. Tompsett.
+It should be appreciated that another important de
+vice application is implicit in the operation of the de
+vice of FIG. 2. That application is information or signal
+delay. Many forms of delay lines can make use of struc
+tures similar to that of FIG. 2. By sequentially biasing
+
+6
+The modi?cation just described is illustrated in FIG.
+4. The device corresponds to a middle portion of the
+
+shift register of FIG. 3. The semiconductor base layer
+40, which again is n~type, the insulating layer 41, and
+metal contacts 42a, 43a, 44a, 42b, 43b, and 44b and the
+associated conductors 42’, 43’, and 44' correspond to
+similar elements in FIG. 3. The essential distinction is
+
+the presence of a continuous bias voltage V’ on all con
+ductors to form a uniform depletion region 45 over the
+conductors 23', 24', and 22’, the charge will shift into pd 0 entire device. Potential wells 46 are formed under
+
+pocket 27b. In a like manner the charge is translated
+
+into pocket 27a and then into the depletion region 28
+accompanying the p-n junction 29 of the output stage.
+
+contacts 42a and 42b as the result of the pulse voltage
+Vp superimposed on the bias voltage V’. An alternative
+way of isolating the charge carriers from the adverse
+
+A pulse output is then detected across load 30 as
+effects of surface states is to store and transfer the
+shown. A bias source 31 is connected to electrode 32 5 charge within the bulk of the storage layer and electri
+to bias the junction.
+cally isolated from the surface. One means of achieving
+The output stage shown here utilizes a pm junction
+this object is to provide a barrier layer along both major
+to extract charge collected from the terminal stage 24n.
+boundaries of the storage layer so that stored charge is
+A directly analogous detector which is equally effective
+con?ned to the bulk of the semiconductor. When the
+is a Schottky barrier device. An appropriate Schottky
+isolated storage layer is biased with respect to the
+device is described in the Bell System Technical Jour
+boundary layers a potential minimum (for stored
+nal, Vol. XLIV, No. 7, Sept. 1965 at pp. 1525-1528.
+charge) exists within the bulk of the storage layer.
+
+For purposes of de?nition, the aforementioned charge
+
+Charge tends to be con?ned to the interior region of
+
+detecting devices can be characterized by the term
+
+the storage layer. ‘
+
+“barrier layer."
+25
+One embodiment of the buried storage layer charge
+An exemplary pulse program for the shift register of
+coupled device concept is shown in FIG. 5. In this ex
+FIG. 2 is shown in FIG. 3 (The ordinate is not to
+scale.) This diagram illustrates transmission of the bi~
+nary code 1 101. While it is not evident from this abbre
+viated representation, it is clear from FIG. 2 that each
+
+element 220 through 22n is simultaneously pulsed via
+conductor 22’, likewise for conductors 23’ and 24'.
+The pulses on each element are timed such that the
+
+time period between the initiation of sequential pulses,
+
+emplary con?guration the storage layer 150, which
+here is shown as p-type semiconductor, and in a pre
+
+ferred embodiment is silicon with a normal resistivity
+(0.1 to 100 ohm cm), is bounded on the surface with
+
+the usual insulating layer 151 and is further isolated at
+its lower boundary by p-n junction 152, formed in any
+appropriate and including n-layer 153. The device
+shown has control electrodes 154, 155 and 156 con
+
+At, is less than three times the pulse width, t,,. This en 35 nected to a three wire drive comprising wires 157, 158,
+sures that the pulse on each sequential stage overlaps
+and 159 (illustrated schematically). Bias means 160 is
+both the former and the subsequent stage. Otherwise
+shown schematically and is intended to bias, via elec
+one potential well may collapse before the next one is
+trode 161, the storage layer with respect to n-layer 153
+accessible to the charge.
+so that the free carriers in the storage layer are largely
+Referring back to FIG. 1C, it will be appreciated that 40 removed. Electrode 161 may comprise a Schottky
+the charge transfer time for that portion of charge situ
+contact or a p+ region 162 may be provided to allow
+ated under electrode 12 will be equal to the fall time of
+ohmic contact. The device is then in condition for nor
+
+the pulse in FIG. 3. Experimental evidence indicates
+
+mal charge coupled operation except that the informa
+
+that the transfer time under the conditions outlined is
+
+tion carriers will now be stored and‘transferred in the
+
+quite fast. However, if the pulse program of FIG. 3 is 45 bulk of the storage layer as indicated schematically in
+comparably fast, it may be advantageous to use a pulse
+the Figure. Further details of buried channel charge
+shape that gives a longer fall time. A convenient pulse
+coupled devices are contained in U.S. Pat. application,
+form serving this function is a sine wave.
+Ser. No. 131,722, ?led, Apr. 6, 1971 by W. S. Boyle
+A preferred’ modi?cation of the charge translating
+and G. E. Smith and Ser. No. 131,721, ?led Apr. 6,
+mechanism of this invention makes use of a continuous
+1971 by R. H. Krambeck.
+uniform bias on all conductors so as to maintain at least
+
+a shallow depletion layer over the entire surface of the
+device. This bias should be at least equal to the thresh
+
+Input Stage
+The shift register of FIG. 2 is described as having an
+
+old voltage for producing inversion under steady state
+
+avalanche device for creating charge at the input loca
+
+conditions. In this way the troublesome surface states,
+
+tion 25. There are several alternative methods for cre
+
+which are inevitably present at semiconductor
+insulator interfaces (and which cause adverse surface
+
+ating minority charge carriers. For example, if the input
+stage comprises a p-n junction, minority charge carriers
+
+recombination), can be maintained relatively free of
+majority carriers. That is, by isolating the bulk of the
+
+can be injected into the bulk region of the semiconduc
+tor by forward bias pulses corresponding to the desired
+
+majority carriers from the interface via a space-charge
+layer, the carriers in the surface states, having once re
+combined with minority carriers, cannot then be re
+
+input signal.
+
+plenished. This technique, which simply requires a
+
+The junction current can be modulated with informa
+tion or, alternativey, the p-n junction can be biased
+continuously to provide an in?nite source of minority
+
+prebias on every metal contact, insures a long lifetime
+
+carriers and the desired carriers can be gated into the
+
+for the minority carriers constituting the signal. In a de
+vice having many stages this expedient may be essen
+tial.
+
+an M18 gate as in the well-known ?eld effect device.
+
+charge transfer line through a channel formed adjacent
+
+These approaches are essentially equivalent in princi
+
+7
+
+3,858,232
+
+ple since the first transfer stage can be compared to the
+
+gating device except that the information signal is ap
+plied to the junction in the ?rst case and to the gate
+electrode in the second.
+
+A gated input stage in accordance with the descrip
+tion above is shown in FIG. 6. The storage medium 40"
+is shown with insulating layer 41" and three transfer
+electrodes 42", 43", and 44" as in the device of FIG.
+
+4. The input stage comprises p-n junction 45" continu
+ously biased via source 46". The information signal is
+gated with electrode 47 " as shown. The information
+
+8
+the manner of switch 54 of FIG. 7A. The speed of the
+erase function can be enhanced by providing a switch
+ing network to reverse the dc. bias rather than merely
+
+removing the bias.
+The detection stage of FIG. 7C relies on a direct volt
+age measurement to detect interface charge Q, accu
+mulated between semiconductor 20 and insulator 21.
+The electrode 63 is biased negatively via source 64
+
+connected in series with a blocking capacitance which
+is shown in the figure as a capacitor, 65, but may alter
+natively be a diode. A change in the charge level Q, is
+
+signal is clocked with the ?rst transfer electrode 42".
+re?ected by a change in the equivalent capacitance of
+Alternatively carriers can be injected by MIS surface
+the MIS device. This affects the capacitive division be
+avalanching as described in Journal of Applied Physics,
+Vol. 9, No. 12, p. 444. A hybrid structure employing a 15 tween that element and the capacitor 65 resulting in a
+change in V1,. The voltage VD can be measured in vari
+metal-oxide surface contact on a p-n junction is effec
+ous ways, e.g., at the gate of a ?eld-effect transistor.
+tive for the vsame purpose. Another alternative is to
+Shown in FIG. 7C is a ?eld-effect device integrated
+generate hole-electron pairs by photon absorption or
+with the semiconductor base 20 of the storage device.
+absorption of other ionizing radiation. This is treated
+A p-region 20A is shown representing isolation accord
+fully in US Pat. No. 3,523,208, issued Aug. 4, 1970 to
+ing to known integrated circuittechniques. The voltage
+E. l. Gordon-F. J. Morris. The minority charge carriers
+VD being measured is connected to the gate electrode
+will diffuse to nearby depletion region which in the case
+66.
+The insulating layer for the gate is .shown as an ex
+of the shift register of FIG. 2 is the ?rst stage 27a. A
+tension of insulating layer 21. Source and drain regions
+means for achievingthis is shown in phantom at 34 in
+FIG. 2. the element 34 is a light source - in this case, 25 67 and 68 are diffused through windows fonned in this
+a schematic representation of an electroluminescent
+
+diode. This mechanism for minority carrier generation
+is quite useful in imaging devices based upon the princi-.
+
+layer. Source and drain electrodes 69 and 70 are con
+nected through load 71 to bias source 72. Detector 73
+indicates the conduction state of the FET which reveals
+
+the presence or absence of charge Q, in the following
+ples of the invention. These will be described in more
+‘
+detail below.
+30 manner.
+A positive pulse delivered by power source 64 re
+
+Output Stage
+
+combines, any residual charge Q, and primes the device
+
+The output stage can also assume a variety of forms.
+FIGS. 7A to 7C illustrate a few alternative embodi
+
+for detection. A negative pulse places negative charge
+
+on plate 63 and depletes the region under that elec
+ments. These?gures show the terminal section of the 35 trode for collecting holes delivered (or not delivered)
+device of FIG. 2 including the last transfer stage 24n.
+from terminal stage 24n. The gate 66 isv biased at the
+same potential leaving the FET in an “ON” condition
+Each of these devices are charge detection devices con
+structed according to known principles. In FIG. 7A the
+indicated at 73. If charge Q, enters the region below
+plate 63, the negative potential on the plate will be re
+detector is an MIS device and is therefore especially
+convenient, from a processing standpoint, where an 40 duced. The corresponding reduction in potential at the
+MIS array comprises the transfer stages. With the semi
+gate electrode 66 will place the FET in an “OFF” con
+conductor depleted, the capacitance associated with
+dition. If there is no charge Q, the FET remains “ON.”
+detector electrode 50 will indicate the presence or ab
+The device of FIG. 7C is shown partly integrated.
+sence of externally introduced charge in the depleted
+The FET device can be used separately or the device
+region 51. The capacity across the MIS detector is mea
+can be further integrated, e.g., the elements 65, 71 and
+sured bya standard capacitive bridge as shown and the
+the electrical connections can be integrated.
+value indicated at detector 52. The bias source 53 is at
+The device geometries described so far have all their
+ranged via switch 54 to intermittently bias that portion
+active elements disposed on one surface of the storage
+of the semiconductor below electrode 50 ?rst to estab
+medium and all charge translation occurs in one dimen
+lish the depletion region for attracting the charge to be 50 sion. Charge translation in two dimensions is straight
+detected and then to collapse the depleted region to re
+forward. For example, the charge coupled line of FIG.
+combine the charge which may have accumulated. _
+In the detection stage of FIG. 78 an alternating cur
+rent source 55 is connected to two adjacent ?eld plates
+
+2 can be serpentined in two dimensions or can assume
+
+other x-y con?gurations speci?cally designed for vari
+ous logic functions. This concept can be extended
+
+56 and 57, the latter again comprising MIS devices with 55 along the lines suggested by the magnetic domain wall
+semiconductor 20 and insulating layer 21. A bias
+or “bubble” information storage technology.
+_
+
+source 58 maintains a depletion region 59 beneath both
+electrodes 56 and 57. If charge is present in the termi
+nal transfer stage 24n it is transferred to the potential
+
+well accompanying plate 56 on its negative half cycle
+and then toward the well of electrode 57 on the latter’s
+
+negative half cycle. This transfer of charge back and
+forth beneath electrodes 56 and 57 changes the a.c. im
+pedance of the circuit from its value without charge in
+the depletion layer. The presence or absence of charge
+is thus detectable across impedance 60 by potentiom
+eter 61. The switch 62 functions to erase the charge in
+
+‘The design of charge coupled devices can be ex
+tended yet further into a three-dimension regime to
+give a new dimension of design freedom that heretofore
+has not been utilized commercially in devices of this
+kind. With the appropriate application of electric
+?elds, charge can be made to transfer selectively
+through the thickness of the storage medium. The stor
+age medium is still envisioned as a relatively thin wafer
+in which the in?uence of electric ?elds applied at the
+surface can extend far enough along the thickness di
+mension that uncontrolled lateral movement of the
+
+3,858,232
+10
+charge does'not occur. It then becomes possible to uti
+lize both major faces of the storage medium.
+
+lines as potential pro?les along the surface of the semi
+conductor where the charge is stored. As a conse
+
+It can be inferred from the two-dimensional discus
+
+quence of making the size of the electrode comparable
+to, or less than, the thickness of the insulator, the field
+approaches the situation where it appears to emanate
+as if from a point rather than a plate (as in FIG. 1) and
+produces a continuous ?eld gradient along the surface.
+This ?eld gradient is aptly described as a potential well
+and tends to confine the charge at its center. When
+these wells are made to overlap (a condition implicit
+from the previous discussion, e.g., the pulse program of
+
+sion above that stepping of the charge at any reason
+
+able angle, usually 90°, in the plane of the storage me
+dium is straightforward. Likewise the movement of
+charge in any of three orthogonal dimensions can be
+achieved in the same manner. It is necessary in each
+
+case only that the potential wells from the transferring
+and receiving sites overlap, or so nearly overlap that
+carriers will diffuse to the receiving site and be cap
+tured in adequate amounts to achieve the objective de
+sired. In some cases the latter requirement is quite le
+
+FIG. 3) the composite ?eld profile is described by the
+dotted line 78 of FIG. 9A. Now it is intuitively obvious
+
+nient. For example, we known that in the case of mi
+
+that the charges will transport from the region directly
+
+nority carrier generation due to photon absorption near
+
+under electrode 72 toward electrode 73. After the de
+
+one surface of a silicon wafer 25 mils in thickness, the
+
+pletion ?eld represented by line 76 collapses, the
+charges will be swept to the surface region of highest
+potential in the well represented by line 77, or directly
+
+carriers can be captured in adequate numbers by space
+charge regions attending biasing means applied to the
+opposite side of the wafer.
+
+Transfer of charge through the thickness dimension 20
+of the storage medium is illustrated in FIG. 8. The de
+vice shown has a basic structure similar to that of FIG.
+2 except that transfer electrodes 184 are formed on
+
+both sides of the storage medium 180. Transfer of
+
+under electrode 73.
+Referring back to the buried channel device de
+scribed in connection with FIG. 5 it will be evident that
+one consequence of storing the charge in the interior
+of the storage layer is that charge is further removed
+from the ?eld plates than it is in the surface storage
+
+charge through the slice will be described as occurring 25 mode. From the point of view of the ?eld potential lines
+sequentially between the storage sites associated with
+this is roughly equivalent to making the insulating layer electrodes 185, 186, and 187. Electrode 186 is initially
+thick with respect to the size of the ?eld plates and re
+biased negatively (assuming an n-type storage me
+duces the electrode spacing requirements that occur
+dium), in sequence to the normal three-phase transfer
+with devices operating in the surface storage mode.
+bias on electrode 185, to transfer charge to its storage
+
+region. After a half-cycle of negative bias the'voltage
+is made more positive, or sufficient to inject the stored
+
+carriers into the bulk of medium 180. The transfer bias
+is shown by the schematic waveform designated V,.
+The positive portion of the cycle may be greater or
+smaller as desired and the duration may require adjust
+ment to ?t individual applications. Electrode 187 is bi
+ased with the normal transfer bias, ~V, in sequence.
+Charge will be trapped temporarily in the depletion re
+gion adjacent electrode 187 until transferred in the
+normal sequence to the storage site adjacent electrode
+188.
+
+Field enhancement can be made more effective by
+
+using a shaped pulse as described by FIG. 98. For ex
+
+ample, if a saw-tooth pulse is applied to electrodes 72
+- and 73, ‘then at a time-tl during the period of pulse
+
+overlap (the charge translating period), electrode 72
+will be biased at a lower voltage than electrode 73. This
+
+is indicated schematically by the arrows adjacent the
+respective pulse forms. The separate ?eld pro?les at t,
+are described by dashed lines 79 and 80 with the com
+
+posite pro?le appearing as dotted line 89. The ?eld gra
+dient in the direction of desired charge translation ex
+tends instantaneously all the way to the region immedi
+ately below electrode 73.v
+The schemes just described are but two of many pos
+Charge Translation Enhancement
+sibilities
+for producing a ?eld gradient or drive ?eld for
+The charge translating mechanism described in con 45 the charge (or absence of charge) accumulated at the
+nection with FIG. 1 relies in part on thermal diffusion
+initial storage location. All those arrangements which
+to transport carriers from potential well 14 to potential
+produce ?eld enhancement of charge translation are
+well 14'. While this transport mechanism is adequate,
+intended to be within the scope of this embodiment of
+the response time of devices using this mechanism can
+the invention.
+be signi?cantly reduced by using an electric ?eld to
+A closely related consideration and one which is
+drive the charge to the new location. In many cases the
+more basic to the operation of charge coupled devices
+use of the drive ?eld will improve the collection ef?
+is the mechanism whereby the directionality of charge
+ciency also. One means of achieving this is to shape the
+transfer is obtained. Two symmetrical drive electrodes
+potential well so that a ?eld gradient exists between ad
+with alternate equivalent voltages applied will cause
+jacent wells. This scheme, which for the purpose of this
+the charge to go back and forth under the two elec
+description will be termed “?eld enhancement,” is
+trodes, as occurs in the detector of FIG. 7B. When the
+shown in two illustrative embodiments in FIGS. 9A and
+third drive phase is added, as in FIG. 2, the drive ?eld
+98.
+becomes asymmetrical (as long as the three phases are
+FIG. 9A shows two conductors 72 and 73 situated on
+biased in a l-2-3-l rather than a I-2-3-2-sequence).
+insulating layer 74 which in turn covers semiconductor 60 The asymmetry is a necessary condition for controlled
+substrate 75. With the conductors 72 and 73 biased,
+directional transfer.
+their respective depletion layers appear to have shapes
+There are various ways of obtaining asymmetry in the
+indicated by dashed lines 76 and 77. These lines, which
+drive ?eld. For example, the ?eld pro?le under a given
+represent the boundaries of the depleted region of the 65 ?eld plate can be made asymmetrical by using a dual
+
+semiconductor also are a function of the ?eld potential
+at the semiconductor-insulator interface. Thus it is con
+
+posed on the forward side with respect to the direction
+
+venient in this discussion to consider these boundary
+
+of charge transfer. This is explained in detail in U.S.
+
+thickness insulating layer, the thinner portion being dis
+
+11
+
+3,858,232
+
+Pat. application Ser. No. 1 1,448, filed Feb. 16, 1970 by
+D. Kahng and E. H. Nicollian. It will be apparent that
+by using this expedient the number of essential drive
+phases reduces from three to two. Whenever the asym
+metry is incorporated into the semiconductor or the in
+sulator, the electrode pattern and bias sequence can be
+
+12
+H. Krambeck and C. H. Sequin. This device modifica
+tion recognizes that a region of localized charge in the
+storage medium will have the same in?uence on carri
+ers within the storage medium as a conventional drive
+electrode with a ?xed bias. If a storage site adjacent to
+
+for charge transfer. This is important because it elimi
+
+the fixed charge region has a lower surface potential
+then the site with the ?xed charge region will attract
+carriers. To effect charge transfer the surface potential
+
+nates the necessity for the crossovers that are necessary
+
+at the sites adjacent to the fixed charge site can be ad
+
+symmetrical. This usually implies two phase clocking
+
+in the three phase drive devices. It is possible to provide 10 justed alternately between values above and below the
+asymmetry in the drive electrodes themselves by using
+surface potential at the fixed charge site. An advantage
+electrode materials with different work functions or by
+
+shaping the electrodes.
+
+of this structure is that charge transfer can be made re~
+versible. Related embodiments are described and
+
+Asymmetry in the drive ?eld can also be supplied by
+claimed in U.S. Pat. application Ser. No. 157,507, ?led
+appropriate potentials applied to the drive electrodes in 15 June 28, 1971 by G. F. Amelio, R. H. Krambeck and
+a manner resembling the field enhanced transfer de
+
+K. A. Pickar. In one of these the substitution of ?xed
+charge for an active drive electrode in a two-phase de
+An alternative structure known in the art for obtain
+vice yields a device in which only one varying potential
+ing an assymetric potential to impart directionality to
+is necessary to effect charge transfer.
+the charge transfer is described and claimed in U.S. ap 20 Fixed charge can also be used to vary the storage po
+plication, Ser. No. 85,026, ?led Oct. 29, 1970, by G. E.
+tential at selected sites in accordance with a digital or
+Smith and R. .1. Strain. This structure can be driven
+analog code. Charge is then allowed to accumulate at
+
+scribed above.
+
+with either two or four phases and comprises a se
+
+each site to the predetermined capacity. Shifting out
+this charge yields a coded signal. Read-only memories
+from and partially overlapping the ?rst level electrodes. 25 in which the charge storage capacity of the storage sites
+An alternative technique for creating an asymmetri
+are selectively adjusted either permanently or semiper
+cal drive?eld is to vary the doping density along the
+manently are described and claimed in U.S. Pat. appli~
+surface region of the storage medium. With a bias ap
+cation Ser. No. 49,462, ?led June 24, 1970 by G. E.
+plied, the surface potential will vary with variations in
+Smith now U.S. Pat. No. 3,654,499, issued Apr. 4,
+the doping density. The charge carriers being stored 30 1972. Several other mechanisms for adjusting the
+quence including a ?rst level of electrodes insulated
+
+and transferred will ordinarily seek a state of lowest po
+charge storage capacity are given.
+tential energy, i.e., where the surface potential of oppo
+A device constructed without external connections
+site charge is greatest. Thus even though the potential
+and according to this driven with an electric ?eld ap
+on a given field plate is ordinarily spatially uniform the
+plied externally of the device is described in U.S. appli
+surface potential below that ?eld plate can be made 35 cation Ser. No. 128,999, ?led Mar. 29, 1971 by G. E.
+nonuniform so as to allow the ?ow of charge carriers
+
+Smith. A charge coupled device with a two-phase drive -
+
+only in one lateral direction. This concept, and several
+
+arrangement is placed between a large parallel plate ca
+pacitor. With only every other drive electrode biased,
+
+structures based on it, are described and claimed in
+
+U.S. Pat. application Ser. No. 157,509, ?led June 28,
+the depletion region under the remaining electrodes
+1971 by R. H. Krambeck, et al. Similar results from the 40 can be controlled by capacitive coupling to the external
+viewpoint of obtaining asymmetry in the drive ?eld can
+capacitor.
+be obtained if the charge placed along the transfer path
+The one dimension shift register shown in FIG. 2 can
+is graded. However the additional advantage of ?eld
+advantageously be incorporated in a multichannel reg
+
+enhancement results from graded charge if the grada
+
+ister as shown in FIG. 10. It is evident that the linear
+
+site. Device embodiments based upon this concept are
+described and claimed in U.S. Pat. application Ser. No.
+157,507, filed June 28, 1971 by G. F. Amelio-R. H.
+
+shows 3n-3 crossovers but a straightforward modi?ca
+tion reduces this number to n). Crossovers are used
+more economically in the arrangement of FIG. 10
+wherein the same number of crossovers may provide a
+
+tion extends along a signi?cant portion of the storage 45 array of FIG. 2 requires at least n crossovers (the ?gure
+
+Krambeck-K. A. Pickar. Similar effects can be pro
+
+duced by introducing charge into the insulating layer
+overlying the storage sites.
+
+large number of channels. FIG. 10 shows four channels
+but this number can be extended without adding addi
+
+Fixed charge can also be used to advantage to obtain
+tional crossover connections. The conductor arrange
+increased transfer ef?ciency and to reduce the number
+ment of conductors 81’, 82’, and 83' is the same as that
+of active transfer electrodes. The former expedient rec»
+in FIG. 2 with conductor 81' connected to contacts 81a
+ognizes the advantage in having a uniform or increasing
+through SD: in sheet 86 and likewise with conductors
+surface potential across the interelectrode gaps. This
+82', 83' and electrodes 82a to 82n and 83a‘to n.
+eliminates the potential barrier that exists normally due
+Input stages 84 and output stages 85 have been dis
+to the finite interelectrode spacing. If the surface po
+cussed previously.
+.
+tential is tailored to provide this result then the size of
+Another
+embodiment
+which
+is
+advantageous
+from
+the interelectrode gaps is no longer critical. The appro 60 the point of view of minimizing crossovers is illustrated
+priate charge concentration to achieve these results is
+by the electrode con?guration of FIG. 1 1. Shown there
+described in U.S. Pat. application Ser. No. 157,508,
+is a portion of a device which may, for example, be a
+?led June 28, 1971 by G. F. Amelio and R. H. Kram
+plan view of a device similar to that of FIG. 4 and in
+beck.
+65 which the conductors are so arranged as to avoid the
+The use of localized ?xed charge to replace an active
+necessity of crossover connections. Using numbers pre
+drive electrode is described and claimed in U.S. Pat.
+ceded by “1” to indicate elements corresponding with
+
+application Ser. No. 157,510, ?led June 28, 1971 by R.
+
+those of FIG. 4, the three conductors 142', 143' and
+
+13
+
+3,858,232
+
+144’ are deposited directly upon a raised portion of the
+
+insulating layer 140 and interconnect electrodes 142a,
+142b, 143a, 143b, and 1440, 144b, respectively. The
+path followed by the charge as it is stepped through this
+section is indicated by the dashed line 145. In this con
+
+nection it should be appreciated that the charge is
+being translated under conductor wires and thus forms
+a convenient “crossunder” arrangement.
+Other arrangements similar in concept to that of FIG.
+
+14
+nism of this invention. One form of this device is a
+video camera, an embodiment of which is illustrated
+
+schematically in FIG. 14. The essential characteristic of
+this class of device is parallel read-in of information.
+
+Light in the form of the optical image being recorded
+is incident on the side of the semiconductor 130 oppo
+site to the storage control elements. The latter again
+comprise metal-insualtor-semiconductor devices as in
+
+11 will occur to those skilled in the art. These can be
+
+FIG. 2. It bears repeating that these elements can be
+constructed according to any suitable embodiment de
+
+described broadly as electrode con?gurations having a
+plurality of electrodes in which every third electrode is
+
+scribed herein and may comprise other types of deple
+tion layer devices such as transistor-type structures.
+
+connected to one of three conductors and is adjacent
+to two electrodes, each of which is connected to a sepa
+
+The array shown contains three bit locations compris
+
+ing three electrodes designed 132a to 134a, l32b to
+rate conductor of the remaining two, with all of the 15 13412, and 1320 to 134c connected to conductors 132’,
+conductors and electrodes deposited on a single sub
+133’, and 134' in a manner similar to the arrangement
+strate surface. The disposition of the conductors along
+of FIG. 2. Except for the parallel read-in feature, the
+the sruface of the device can be an important consider
+charge translation and readout operation can follow
+ation. In a large array it is impractical to bond each lead
+the teachings described above. The linear array shown
+to its associated electrode. Consequently the charge 20 in FIG. 11 may represent one raster line in a video sys
+transfer circuit would ordinarily be printed directly on
+tem. The charge is stored at locations 132a-l32c dur
+the insulator covering the substrate. However, the ef
+ing the optical integration period. It is read out serially
+fectiveness of the invention often relies on careful con
+by translating the charge to the readout section (refer
+trol of the ?eld pro?le at the semiconductor insulator
+to FIG. 2). By sequentially reading each raster line, the
+interface. If the conductors are in direct contact with 25 video frame is constructed. One problem associated
+the insulator, the ?eld from each lead will perturb the
+with sensing optical images with a charge coupled line
+desired ?eld pro?le. To overcome this a dual thickness
+or x-y array is that the charge transfer time during read
+oxide can be formed over the semiconductor. Such an
+out is ?nite, meaning that the sensing elements con
+arrangement is shown in perspective in FIG. 12. The
+tinue to integrate during the readout operation. Intu- _
+semiconductor substrate 110 is ?rst coated with a thin 30 itively it is evident that smearing of the image will occur
+
+insulating layer 111. Next a thick layer of another insu
+
+unless the image sensing, or integration, function is sep
+
+lating material is formed on layer 111 and etched to
+form a grid 112 with openings for the metal ?eld plates
+113. The field plates can be deposited along with inter
+
+arated somehow from the readout operation. One obvi
+ous means for achieving this is to use an optical shutter.
+
+Another is to illuminate the subject being viewed only
+connections 114 using a single photolithographic step. 35 during the integration period so that readout occurs in
+Some overlap is shown in the ?gure to insure complete
+the dark. Another way of effecting readout occurs in
+covering of the site. The conductor paths 114 to the
+the dark is to transfer the integrated information to a
+electrodes 113 are isolated from the substrate by the
+parallel storage line or array which is maintained in the
+thick insulator 112. The dual thickness insulating layer
+dark and to effect readout while the sensing line or
+is conveniently made by selecting two different insulat
+array integrates the next frame. Since the transfer time
+ing materials, such as SiOz and Si3N4 that have different
+for the parallel shift operation is a small fraction of the
+etching characteristics. Thus when the second layer is
+readout time (the reciprocal of the number of line ele
+etched to form windows for the electrodes an etch can
+ments) smearing can effectively be. eliminated. Devices
+be selected which does not attack the ?rst insulating
+based upon this recognition are described fully in U.S.
+layer. An alternate procedure known in the art for 45 Pat. application Ser. No. 124,735, ?led Mar. 16, 1971
+forming a dual thickness layerv is to deposit a continu
+by M. F. Tompsett.
+ous ?rst layer, etch the windows, and deposit another
+Yet another solution to the smearing problem takes
+
+uniform layer.
+An especially convenient fabricating technique is il
+
+advantage of the three dimensional charge transfer
+concept described earlier. The image is sensed with a
+
+lustrated in FIG. 13. This is a front sectional view of a
+
+line or array situated on one side of the device, then the
+
+portion of a planar processed device. The semiconduc
+
+recorded information is shifted to the opposite side of
+
+tor substrate 120 is again covered with a suitable thin
+
+the device where it can be read out in the dark. This de
+
+insulating layer 121. A continuous metal layer is depos
+
+vice is more fully described in U.S. Pat. application,
+
+ited on layer 121 and etched to form discrete metal
+
+Ser. No. 211,514, ?led Dec. 23, 1971, by G. E. Smith
+
+electrodes 122-124. A continuous insulating layer 125
+
+and F.‘ Vratny.
+
+is then deposited over the electrodes 122-124. Win
+dows 127 are etched in layer 125 to the underlying
+metal. A ribbon or beam lead conductor 128 is then de
+
+It is evident at this point that the essential objective
+of the charge translation scheme is to create a traveling
+potential well along the surface of the semiconductor.
+
+,
+
+posited so as to contact electrodes 122-124. The pro
+60 The use of electrical connections for this purpose has
+cedure has a distinct advantage in that it is devoid of
+been described above. However other means of pro
+
+any critical photoresist alignment steps.
+
+The capability of producing minority charge carriers
+
+ducing a traveling potential will offer distinct advan
+tages. For example, the ?eld accompanying an acoustic
+
+in the semiconductor by photon absorption, as men
+wave traveling in a piezoelectric medium is an attrac
+tioned previously, and as treated fully in U.S. Pat. No. 65 tive alternative. An embodiment based upon this prin
+3,403,284, issued Sept. 24, 1968 to Buck, et al., intro
+ciple is shown in FIG. 15. This ?gure shows a portion
+duces another category of devices which make use of
+of the shift register of FIG. 2 with semicondcutor 159,
+
+the information storage and charge translation mecha
+
+insulator 160, and a series of metal contacts 161 corre
+
+15
+
+3,858,232
+
+sponding essentially to similar elements in FIG. 2. A pi~
+ezoelectric layer 162 is deposited over the metal
+contacts. This layer may be composed of a suitable pi
+
+16
+In assessing the contribution made to they art by the
+
+foregoing device descriptions it maybe useful to point
+
+ezoelectric material such as zinc oxide or cadmium sul
+
+out that devices made in accordance with the novel
+principles set forth will normally include a multiplicity '
+
+tide, and may be evaporated or sputtered onto the de
+vice. A piezoelectric transducer (not shown) or other
+
+of discrete storage sites. Recognizing that each storage
+
+suitable means creates an ultrasonic wave which propa
+
+drive, or two electrodes in a device with two phase
+
+gates through the layer 162 parallel to the surface of
+the device. The electric ?eld accompanying the elastic
+
+drive, and that a useful device would presumably have
+at least two bits, then the minimum number of elec
+
+deformation in the piezoelectric layer sequentially bi
+
+10 trodes that would be disposed between the input stage
+
+ases the electrodes 161 and creates potential wells 163
+that travel along the surface of semiconductor 159.
+i This is the same result that is achieved stepwise in FIG.
+2.
+
+and the ‘detection stage would be four. As a practical
+matter this number would be significantly greater, for
+example 288 in a 96 bit device actually developed.
+However, these considerations are useful in pointing
+out the qualitative difference between this device con
+
+By extending the traveling ?eld approach of FIG. 15
+the discrete electrodes can be eliminated. For example,
+FIG. 16 shows a device very simple in structure. The
+semiconductor 170 is coated directly with a piezoelec~
+tric layer 171'. In this device the field that propagated
+in associated with the'elastic wave in medium 171 (ini
+
+tiated by appropriate ultrasonic generator not shown)
+is used to form traveling potential wells 172. A metal
+electrode 173 may be used to create a uniform deple
+
+tion layer over the entire charge translating surface for
+the purpose described in connection with FIG. 4.
+
+site has three electrodes in a device with three phase
+
+figuration and gated MIS devices previously known.
+Even in efficiently integrated MIS arrays the signal is
+conventionally injected and removed from the semi
+conductor at each control element. The storage and
+transfer of electrical information carriers wholly within
+the storage medium according to the invention is a ba
+sically new approach to information handling.
+Another approach to this form of information han
+dling is described in U.S. Pat. No. 3,621,283, issued
+Nov. 16, 1971. The'device'described in connection
+
+While the several embodiments described above are
+set forth in terms of structure, a brief discussion of ma
+
+with that approach gates free charge between adjacent
+
+devices can be fabricated of silicon and silicon dioxide
+
+By contrast, the charge coupled devices described
+
+diffused regions in a semiconductor. The gate overlies
+terial considerations is warranted. A very distinct ad
+one of the diffused regions more than the other in order
+vantage of the novel device concept herein disclosed is 30 to impart directionality to the charge transfer. As a
+that materials suitable for each of the devices described
+consequence, the semiconductor area below each gate
+are available and well understood. For example, these
+electrode includes regions of both conductivity types.
+
+according to ‘well-established technology. Combina
+
+here are characterized in that the semiconductor areas
+tions of insulators such as SiO2 - Si3N4, SiO2-AI2O3, etc. 35 below the- transfer electrodes are of a single conductiv
+
+are especially useful in certain circumstances as the in
+
+ity type.
+
+_
+
+'
+
+sulating layer. Known electrode materials are gold, alu
+Various additional modi?cations and deviations will
+minum and doped-silicon. A useful structure for the de
+occur to those skilled in the art. All such variations
+vice of FIG. 2 could employ l0 ohm/cm. n-type silicon
+which basically rely on the teachings through which the
+as the base layer 20 and 1,000 Angstroms to 2,000 40 disclosure has advanced the art are properly consid
+Angstroms of thermally grown SiO2- as the layer 21. The
+ered within the scope of this invention.
+oxide which has given the best results so far is a dry
+
+What is claimed is:
+
+oxide 1,200 Angstroms thick grown in oxygen at 1,1000
+1. In a charge transfer apparatus of the type for stor
+C for 1 hour and annealed in a nitrogen atmosphere for
+age and serial transfer of charge carriers localized in a
+1 hour at 400° C. the. flatband potential for this oxide 45 plurality of induced potential energy minima along a
+is typically —_5 V. and the surface state density is of the
+portion of a semiconductor charge storage medium by
+order of 101° states/cm? Electrodes 22-24 may be gold
+sequentially applying different potentials to successive
+in any typical thickness, e.g., 0.1 to a few microns. An
+portions of the surface of the medium through a plural
+appropriate charge generator is a p-region, having a
+ity of electrodes, the invention characterized in that the 7
+boron concentration of 1018 atoms/cm.3, driven at ava 50 charge storage medium is of a single conductivity type.
+lanche, i.e., 'a few volts. The detector may be a similar
+2. In a charge transfer apparatus of the type for stor
+p-n junction. The creation and detection of minority
+age and serial transfer of charge carriers localized in a
+carriers in semiconductors can be accomplished by
+plurality of induced potential energy minima along a
+well-known techniques.
+portion of a semiconductor charge storage medium by
+
+The dimensions of the transfer array can vary widely. 55 sequentially applying different potentials to successive
+The spacing between electrodes depends upon the ex
+portions of the surface of the medium through a plural
+tent of the space charge region permitted. For example
+ity of electrodes, the invention characterized in that the
+if the semiconductor is 10 ohm/cm. silicon and a volt
+age of 10 volts is used, the depletion region will extend ‘
+
+portion of the charge storage medium in which charges
+are stored and transferred and which directly underlies
+
+approximately 5p“ This would suggest an electrode
+
+each electrode of said plurality of electrodes is of a sin
+
+spacing of the order of a few microns for the necessary
+
+gle conductivity type.
+
+overlap. The creation and detection of minority charge
+carriers in silicon are easily accomplished using known
+techniques. It should be understood, however, that the
+
+3. The apparatus of claim 2 in which the charge stor
+age medium is covered with an insulating layer and the
+plurality of electrodes are disposed on the insulating
+
+devices described herein are in no way limited to sili
+con and its associated technology although that is re
+
+lied on by way of example.
+
+layer.
+
+4. The apparatus of claim 3 in which the charge stor
+age medium is silicon.
+
+3,858,232
+
+17
+
+18
+
+5. The apparatus of claim 3 in which the insulating
+
+layer comprises SiO2.
+6. The apparatus of claim 2 including means for ex
+
+posing the device to light in order to form the charge
+carriers.
+7. The apparatus of claim 6 in which charge carriers
+are formed simultaneously in a plurality of potential en
+ergy minima.
+
+8. The apparatus of claim 2 further including a piezo
+electric layer formed on one surface of the device with
+means for creating an acoustic wave in the layer so that
+
+an electrical field is created by the acoustic wave prop
+
+agating in the piezoelectric layer.
+9. The apparatus of claim 2 in which the portion of
+the charge storage medium in which charges are stored
+and transferred is a surface portion.
+
+10. A charge coupled device comprising a charge
+storage medium, a charge input region at a ?rst loca
+tion in the charge storage medium at which charge car
+riers representing signal information can be introduced
+into the medium, a charge detection region at a second
+
+location in the charge storage medium at which charge
+carriers can be detected and a charge storage and
+
+transfer channel interconnecting the input region and
+
+for applying pulses sequentially to each of the plurality
+of electrodes.
+18. The device of claim 17 in which the pulses are
+square wave pulses.
+
+19. The device of claim 17 in which the pulses are
+sine wave pulses.
+20. The device of claim 17 in which the pulses are
+
+sawtooth pulses.
+21. The device of claim 14 including electrical circuit
+means for biasing all of the electrodes at a uniform po
+tential so that the surface of the semiconductive charge
+
+storage layer can be maintained depleted during opera
+tion of the device.
+22. The devicelof claim 14 in which the space be
+tween each of the plurality of electrodes is approxi
+mately 3 microns.
+23. The device of claim 14 in which the length of
+each of the plurality of electrodes as measured in the
+predetermined direction is comparable to or less than
+
+the thickness of the insulating layer.
+24. The device of claim 14 including charge detec
+tion means at a charge detection region for detecting
+the presence, absence or amount of charge in the
+
+the detection region, the charge storage and transfer 25 charge detection region.
+25. The device of claim 24 in which the charge detec
+channel consisting of a single conductivity type semi
+tion means comprises a metal-insulator-semiconductor
+conductor, an insulating layer overlying the charge
+device.
+storage medium, and at least four discrete electrodes
+
+disposed on the insulating layer overlying the charge
+storage and transfer channel.
+
+11. The device of claim 10 in which the charge input
+region for introducing charge carriers comprises a p-n
+
+junction.
+
+26. The device of ‘claim 25 in which the
+30 metal-insulator-semiconductor device is connected to
+
+the gate of a field-effect transistor for measuring the ca
+pacitance of the metal-insulator-semiconductor device.
+27. The device of claim 24 in which the charge detec
+tion means is coupled to a charge input means to recir
+
+12. The device of claim 10 in which the charge input
+region for introducing charge carriers comprises a
+
+culate charge.
+
+metal-insulator-semiconductor device.
+13. A semiconductive device comprising a semicon
+
+generating the charge detected by the charge detection
+
+ductive charge storage layer having a major surface, an
+insulating layer overlying said major surface, an elec
+trode assembly on the insulating layer including a plu
+rality of electrodes, means for forming a succession of
+spaced storage sites for the storage of charge carriers
+in the charge storage layer and for transferring stored
+charge carriers between successive sites in a predeter
+
+mined direction, and wherein the charge storage and
+transfer layer consists of a material that is of a single
+conductivity type.
+
+A
+
+14. A semiconductive device comprising a semicon
+
+ductive charge layer having a major surface, an insulat
+ing layer overlying said major surface, an electrode as
+sembly on the insulating layer including a plurality of
+
+28. The device of claim 24 including means for re
+means.
+
+29. The device of claim 24 in which the charge detec
+tion means comprises a capacitive bridge circuit elec~
+
+trically coupled to the charge detection region for mea
+suring changes in the capacitance of the charge detec
+tion region.
+30. The device of claim 24 in which the charge detec
+tion means comprises two adjacent electrodes overly
+ing the charge detection region with means for con
+necting an alternating current to the electrodes and
+
+means for measuring the power dissipation of the alter
+nating current.
+
+v
+
+31. A multichannel shift register comprising a body
+
+of semiconductor material of a uniform conductivity
+type, a thin insulating layer covering at least a portion
+of one surface of said body, a plurality of series of metal
+charge storage layer and for transferring stored charge 55 electrodes formed on the insulating layer, each series
+carriers between successive sites in a predetermined
+constituting one channel-of the shift register and de?n
+
+electrodes, means for forming a succession of spaced
+storage sites for the storage of charge carriers in the
+
+ing a path along the subjacent surface of the semicon
+
+direction, and wherein the portion of the charge stor
+age and transfer layer that directly underlies each elec
+trode is of a single conductivity type.
+
+means for establishing charge carriers in the body of
+
+15. The device of claim 14 further including three I
+separate conductors each connected to a different one
+
+ries, electrical circuit means interconnecting the elec
+
+of every third electrode of the plurality of electrodes.
+16. The device of claim 15 in which the electrodes
+
+ductor body, the path having a single conductivity type,
+the semiconductor beneath a ?rst electrode of each se
+
+trodes to sequentially vary the bias on each series of
+
+electrodes and propagate a potential well stepwise
+
+are shaped and placed so that the three separate con
+along said path below the electrodes thereby translat
+ductors extend parallel to one another.
+65 ing the charge carriers through the semiconductor
+17. The device of claim 14 in which the means for
+along said path, and detector means in each series asso
+forming a succession of spaced storage sites includes
+ciated with an electrode removed in the series from
+circuit means connected to the plurality of electrodes
+said ?rst electrode for detecting the presence or ab
+
+19
+
+3,858,232
+20
+
+sence of charge carriers in the semiconductor below its
+
+series being less than the spacing between electrodes in
+adjacent series, each group of electrodes comprising a
+
+associated electrode.
+32. A multichannel shift register comprising a semi
+conductor body, a thin insulating layer covering at least
+
+first electrode, a second electrode, and a third elec
+
+trode in sequence, ?rst, second and third conductors,
+a portion of one surface of said body, an array of metal 5
+respectively connected to every first, second and third
+electrodes formed on the insulating layer, a plurality of
+electrodes, and electrical circuit means interconnected
+input electrodes arranged along one side of the array,
+to vary sequentially the bias on the first, second and
+a plurality of output electrodes arranged along the op
+third conductors with electrical pulses which overlap,
+posite side of the array and a series of groups of transfer
+the shift register characterized in that the regions of the
+electrodes extending between each input electrode and
+semiconductor body directly beneath each transfer
+an output electrode, each series comprising with its as
+sociated input and output electrodesone channel of the
+electrode are of a single conductivity type.
+
+shift register, the spacing between electrodes in each
+
+*
+
+15
+
+20
+
+25
+
+35
+
+4o,
+
+45
+
+50
+
+55
+
+60
+
+65
+
+*
+
+*
+
+*
+
+*

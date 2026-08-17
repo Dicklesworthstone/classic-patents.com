@@ -1,12 +1,14 @@
 "use client";
 
 import { RotateCcw, Volume2, VolumeX } from "lucide-react";
-import { useState } from "react";
+import { usePatentPhysics } from "@/physics/usePatentPhysics";
+import { usePatentAudio } from "./three/usePatentAudio";
 
 export function HyattCelluloidSim() {
-  const [moldTempC, setMoldTempC] = useState<number>(95);
-  const [hydraulicPressureMpa, setHydraulicPressureMpa] = useState<number>(10);
-  const [isMuted, setIsMuted] = useState<boolean>(true);
+  const { params, updateParam, resetParams } = usePatentPhysics("us-105338-hyatt-celluloid");
+  const { isAudioMuted, toggleSound } = usePatentAudio();
+  const moldTempC = params.steamTempC ?? 95;
+  const hydraulicPressureMpa = params.hydraulicPressureMpa ?? 10;
 
   // Polymer thermodynamics
   const glassTransitionTempC = 65;
@@ -33,10 +35,7 @@ export function HyattCelluloidSim() {
         <div className="flex items-center gap-2 self-end sm:self-auto">
           <button
             type="button"
-            onClick={() => {
-              setMoldTempC(95);
-              setHydraulicPressureMpa(10);
-            }}
+            onClick={resetParams}
             aria-label="Reset Simulation"
             className="p-2 rounded-lg bg-parchment-200 dark:bg-ink-800 hover:bg-parchment-300 dark:hover:bg-ink-700 text-ink-800 dark:text-parchment-200 transition-colors"
           >
@@ -44,11 +43,11 @@ export function HyattCelluloidSim() {
           </button>
           <button
             type="button"
-            onClick={() => setIsMuted(!isMuted)}
-            aria-label={isMuted ? "Unmute Audio" : "Mute Audio"}
+            onClick={() => toggleSound()}
+            aria-label={isAudioMuted ? "Unmute Audio" : "Mute Audio"}
             className="p-2 rounded-lg bg-parchment-200 dark:bg-ink-800 hover:bg-parchment-300 dark:hover:bg-ink-700 text-ink-800 dark:text-parchment-200 transition-colors"
           >
-            {isMuted ? (
+            {isAudioMuted ? (
               <VolumeX className="w-4 h-4" />
             ) : (
               <Volume2 className="w-4 h-4 text-amber-600" />
@@ -224,11 +223,11 @@ export function HyattCelluloidSim() {
           </div>
           <input
             type="range"
-            min="40"
-            max="140"
-            step="2"
+            min="70"
+            max="160"
+            step="5"
             value={moldTempC}
-            onChange={(e) => setMoldTempC(Number(e.target.value))}
+            onChange={(e) => updateParam("steamTempC", Number(e.target.value))}
             className="w-full accent-amber-600 cursor-pointer"
           />
         </div>
@@ -239,11 +238,11 @@ export function HyattCelluloidSim() {
           </div>
           <input
             type="range"
-            min="1"
-            max="20"
+            min="4"
+            max="25"
             step="1"
             value={hydraulicPressureMpa}
-            onChange={(e) => setHydraulicPressureMpa(Number(e.target.value))}
+            onChange={(e) => updateParam("hydraulicPressureMpa", Number(e.target.value))}
             className="w-full accent-amber-600 cursor-pointer"
           />
         </div>

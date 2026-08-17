@@ -2,12 +2,15 @@
 
 import { RotateCcw, Volume2, VolumeX, Zap } from "lucide-react";
 import { useState } from "react";
+import { usePatentPhysics } from "@/physics/usePatentPhysics";
+import { usePatentAudio } from "./three/usePatentAudio";
 
 export function NobelDynamiteSim() {
-  const [nitroglycerinRatioPct, setNitroglycerinRatioPct] = useState<number>(75);
-  const [capEnergyJoules, setCapEnergyJoules] = useState<number>(1.2);
+  const { params, updateParam, resetParams } = usePatentPhysics("us-78317-nobel-dynamite");
+  const { isAudioMuted, toggleSound } = usePatentAudio();
+  const nitroglycerinRatioPct = params.ngConcentrationPct ?? 75;
+  const capEnergyJoules = params.capEnergyJoules ?? 1.2;
   const [isDetonated, setIsDetonated] = useState<boolean>(false);
-  const [isMuted, setIsMuted] = useState<boolean>(true);
 
   // Energetic physics
   const detonationVelocityMps = Math.round(4200 + (nitroglycerinRatioPct / 75) * 2100);
@@ -47,11 +50,7 @@ export function NobelDynamiteSim() {
           </button>
           <button
             type="button"
-            onClick={() => {
-              setNitroglycerinRatioPct(75);
-              setCapEnergyJoules(1.2);
-              setIsDetonated(false);
-            }}
+            onClick={resetParams}
             aria-label="Reset Simulation"
             className="p-2 rounded-lg bg-parchment-200 dark:bg-ink-800 hover:bg-parchment-300 dark:hover:bg-ink-700 text-ink-800 dark:text-parchment-200 transition-colors"
           >
@@ -59,11 +58,11 @@ export function NobelDynamiteSim() {
           </button>
           <button
             type="button"
-            onClick={() => setIsMuted(!isMuted)}
-            aria-label={isMuted ? "Unmute Audio" : "Mute Audio"}
+            onClick={() => toggleSound()}
+            aria-label={isAudioMuted ? "Unmute Audio" : "Mute Audio"}
             className="p-2 rounded-lg bg-parchment-200 dark:bg-ink-800 hover:bg-parchment-300 dark:hover:bg-ink-700 text-ink-800 dark:text-parchment-200 transition-colors"
           >
-            {isMuted ? (
+            {isAudioMuted ? (
               <VolumeX className="w-4 h-4" />
             ) : (
               <Volume2 className="w-4 h-4 text-amber-600" />
@@ -210,7 +209,7 @@ export function NobelDynamiteSim() {
             max="85"
             step="1"
             value={nitroglycerinRatioPct}
-            onChange={(e) => setNitroglycerinRatioPct(Number(e.target.value))}
+            onChange={(e) => updateParam("nitroglycerinRatioPct", Number(e.target.value))}
             className="w-full accent-amber-600 cursor-pointer"
           />
         </div>
@@ -225,7 +224,7 @@ export function NobelDynamiteSim() {
             max="2.5"
             step="0.1"
             value={capEnergyJoules}
-            onChange={(e) => setCapEnergyJoules(Number(e.target.value))}
+            onChange={(e) => updateParam("capEnergyJoules", Number(e.target.value))}
             className="w-full accent-amber-600 cursor-pointer"
           />
         </div>

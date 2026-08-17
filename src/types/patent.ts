@@ -79,11 +79,18 @@ export interface PlainEnglishExplanation {
   whyItMattersToday: string;
 }
 
+export type OriginalTextAssetKind = "reviewed-transcription" | "source-pdf-text-layer";
+
 export interface OriginalTextAsset {
   /** Public, cleaned transcription of every page in the source facsimile. */
   url: string;
   /** Source-page count, including drawing sheets and post-grant records. */
   pageCount: number;
+  /**
+   * Provenance of the public text. Absent only on legacy records; legacy assets
+   * are intentionally not treated as complete by the reader.
+   */
+  kind?: OriginalTextAssetKind;
 }
 
 export interface Patent {

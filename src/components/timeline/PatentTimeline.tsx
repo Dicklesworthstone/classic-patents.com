@@ -3,6 +3,7 @@
 import { ArrowRight, Zap } from "lucide-react";
 import Link from "next/link";
 import { useState } from "react";
+import { TextWithLatex } from "@/components/ui/LatexRenderer";
 import { allPatents } from "@/data/patents";
 
 export function PatentTimeline() {
@@ -101,9 +102,9 @@ export function PatentTimeline() {
             <div className="font-mono text-[11px] text-amber-700 dark:text-amber-400 font-semibold">
               {selectedPatent.inventors.join(", ")}
             </div>
-            <p className="text-ink-700 dark:text-ink-300 leading-relaxed">
-              {selectedPatent.historicalContext.problemStatement}
-            </p>
+            <div className="text-ink-700 dark:text-ink-300 leading-relaxed">
+              <TextWithLatex text={selectedPatent.historicalContext.problemStatement} />
+            </div>
           </div>
 
           {/* Col 2 */}
@@ -111,9 +112,11 @@ export function PatentTimeline() {
             <span className="font-serif font-bold text-sm text-amber-900 dark:text-amber-300 block flex items-center gap-1">
               <Zap className="w-3.5 h-3.5" /> The Breakthrough Insight
             </span>
-            <p className="text-ink-800 dark:text-parchment-200 leading-relaxed italic">
-              &ldquo;{selectedPatent.historicalContext.breakthroughInsight}&rdquo;
-            </p>
+            <div className="text-ink-800 dark:text-parchment-200 leading-relaxed italic">
+              &ldquo;
+              <TextWithLatex text={selectedPatent.historicalContext.breakthroughInsight} />
+              &rdquo;
+            </div>
           </div>
 
           {/* Col 3 */}
@@ -121,9 +124,9 @@ export function PatentTimeline() {
             <span className="font-serif font-bold text-sm text-ink-900 dark:text-parchment-100 block">
               Civilizational Impact
             </span>
-            <p className="text-ink-700 dark:text-ink-300 leading-relaxed">
-              {selectedPatent.historicalContext.civilizationalImpact}
-            </p>
+            <div className="text-ink-700 dark:text-ink-300 leading-relaxed">
+              <TextWithLatex text={selectedPatent.historicalContext.civilizationalImpact} />
+            </div>
           </div>
         </div>
       </div>

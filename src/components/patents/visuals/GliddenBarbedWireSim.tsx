@@ -1,16 +1,18 @@
 "use client";
 
 import { RotateCcw, Volume2, VolumeX } from "lucide-react";
-import { useState } from "react";
+import { usePatentPhysics } from "@/physics/usePatentPhysics";
+import { usePatentAudio } from "./three/usePatentAudio";
 
 export function GliddenBarbedWireSim() {
-  const [wireTensionLbs, setWireTensionLbs] = useState<number>(250);
-  const [twistsPerFoot, setTwistsPerFoot] = useState<number>(5);
-  const [animalPushForceN, setAnimalPushForceN] = useState<number>(120);
-  const [isMuted, setIsMuted] = useState<boolean>(true);
+  const { params, updateParam, resetParams } = usePatentPhysics("us-157124-glidden-barbed-wire");
+  const { isAudioMuted, toggleSound } = usePatentAudio();
+  const twistsPerFoot = params.twistsPerFoot ?? 5;
+  const animalPushForceN = params.animalPushForceN ?? 120;
+  const wireTensionNewtons = params.wireTensionN ?? 650;
+  const wireTensionLbs = Math.round(wireTensionNewtons / 4.44822);
 
   // Structural & contact mechanics
-  const wireTensionNewtons = Math.round(wireTensionLbs * 4.44822);
   const contactAreaMm2 = 0.25; // Sharp chisel point
   const contactStressMpa = Number((animalPushForceN / contactAreaMm2).toFixed(0));
   const barbSlipForceN = Number((twistsPerFoot * 95).toFixed(0));
@@ -32,11 +34,7 @@ export function GliddenBarbedWireSim() {
         <div className="flex items-center gap-2 self-end sm:self-auto">
           <button
             type="button"
-            onClick={() => {
-              setWireTensionLbs(250);
-              setTwistsPerFoot(5);
-              setAnimalPushForceN(120);
-            }}
+            onClick={resetParams}
             aria-label="Reset Simulation"
             className="p-2 rounded-lg bg-parchment-200 dark:bg-ink-800 hover:bg-parchment-300 dark:hover:bg-ink-700 text-ink-800 dark:text-parchment-200 transition-colors"
           >
@@ -44,11 +42,11 @@ export function GliddenBarbedWireSim() {
           </button>
           <button
             type="button"
-            onClick={() => setIsMuted(!isMuted)}
-            aria-label={isMuted ? "Unmute Audio" : "Mute Audio"}
+            onClick={() => toggleSound()}
+            aria-label={isAudioMuted ? "Unmute Audio" : "Mute Audio"}
             className="p-2 rounded-lg bg-parchment-200 dark:bg-ink-800 hover:bg-parchment-300 dark:hover:bg-ink-700 text-ink-800 dark:text-parchment-200 transition-colors"
           >
-            {isMuted ? (
+            {isAudioMuted ? (
               <VolumeX className="w-4 h-4" />
             ) : (
               <Volume2 className="w-4 h-4 text-amber-600" />
@@ -211,10 +209,10 @@ export function GliddenBarbedWireSim() {
           <input
             type="range"
             min="2"
-            max="8"
+            max="10"
             step="1"
             value={twistsPerFoot}
-            onChange={(e) => setTwistsPerFoot(Number(e.target.value))}
+            onChange={(e) => updateParam("twistsPerFoot", Number(e.target.value))}
             className="w-full accent-amber-600 cursor-pointer"
           />
         </div>
@@ -229,7 +227,7 @@ export function GliddenBarbedWireSim() {
             max="300"
             step="10"
             value={animalPushForceN}
-            onChange={(e) => setAnimalPushForceN(Number(e.target.value))}
+            onChange={(e) => updateParam("animalPushForceN", Number(e.target.value))}
             className="w-full accent-amber-600 cursor-pointer"
           />
         </div>

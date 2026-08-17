@@ -2,24 +2,26 @@
 
 import { Play, RotateCcw, Volume2, VolumeX } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
-
-const ENGINE_RPM = 60;
+import { usePatentPhysics } from "@/physics/usePatentPhysics";
+import { usePatentAudio } from "./three/usePatentAudio";
 
 export function CorlissEngineSim() {
-  const [boilerPressurePsi, setBoilerPressurePsi] = useState<number>(100);
-  const [cutoffFractionPct, setCutoffFractionPct] = useState<number>(25);
+  const { params, updateParam, resetParams } = usePatentPhysics("us-6162-corliss-steam-engine");
+  const { isAudioMuted, toggleSound } = usePatentAudio();
+  const boilerPressurePsi = params.boilerPressurePsi ?? 100;
+  const cutoffFractionPct = params.cutoffRatioPct ?? 25;
+  const engineRpm = params.rpm ?? 60;
   const [isPlaying, setIsPlaying] = useState<boolean>(true);
-  const [isMuted, setIsMuted] = useState<boolean>(true);
   const [crankAngleDeg, setCrankAngleDeg] = useState<number>(0);
   const animRef = useRef<number | null>(null);
 
   // Thermodynamics & Corliss kinematics
   const pBoilerMpa = Number((boilerPressurePsi * 0.00689476).toFixed(2));
-  const expansionRatio = Number((100 / cutoffFractionPct).toFixed(1));
+  const expansionRatio = Number((100 / Math.max(5, cutoffFractionPct)).toFixed(1));
   const imepPsi = Math.round(
     boilerPressurePsi * ((1 + Math.log(expansionRatio)) / expansionRatio - 0.15),
   );
-  const indicatedHorsepower = Number(((imepPsi * 1.5 * 2.2 * 2 * ENGINE_RPM) / 33000).toFixed(1));
+  const indicatedHorsepower = Number(((imepPsi * 1.5 * 2.2 * 2 * engineRpm) / 33000).toFixed(1));
   const thermalEfficiencyPct = Math.round(18 + expansionRatio * 1.6);
 
   useEffect(() => {
@@ -29,7 +31,7 @@ export function CorlissEngineSim() {
     const loop = (time: number) => {
       const dt = (time - lastTime) / 1000;
       lastTime = time;
-      setCrankAngleDeg((prev) => (prev + ENGINE_RPM * 6 * dt) % 360);
+      setCrankAngleDeg((prev) => (prev + engineRpm * 6 * dt) % 360);
       animRef.current = requestAnimationFrame(loop);
     };
 
@@ -37,7 +39,7 @@ export function CorlissEngineSim() {
     return () => {
       if (animRef.current) cancelAnimationFrame(animRef.current);
     };
-  }, [isPlaying]);
+  }, [isPlaying, engineRpm]);
 
   // Kinematic calculations for piston & wrist-plate
   const pistonStroke = Math.sin((crankAngleDeg * Math.PI) / 180) * 45;
@@ -67,11 +69,7 @@ export function CorlissEngineSim() {
           </button>
           <button
             type="button"
-            onClick={() => {
-              setBoilerPressurePsi(100);
-              setCutoffFractionPct(25);
-              setCrankAngleDeg(0);
-            }}
+            onClick={resetParams}
             aria-label="Reset Simulation"
             className="p-2 rounded-lg bg-parchment-200 dark:bg-ink-800 hover:bg-parchment-300 dark:hover:bg-ink-700 text-ink-800 dark:text-parchment-200 transition-colors"
           >
@@ -79,11 +77,11 @@ export function CorlissEngineSim() {
           </button>
           <button
             type="button"
-            onClick={() => setIsMuted(!isMuted)}
-            aria-label={isMuted ? "Unmute Audio" : "Mute Audio"}
+            onClick={() => toggleSound()}
+            aria-label={isAudioMuted ? "Unmute Audio" : "Mute Audio"}
             className="p-2 rounded-lg bg-parchment-200 dark:bg-ink-800 hover:bg-parchment-300 dark:hover:bg-ink-700 text-ink-800 dark:text-parchment-200 transition-colors"
           >
-            {isMuted ? (
+            {isAudioMuted ? (
               <VolumeX className="w-4 h-4" />
             ) : (
               <Volume2 className="w-4 h-4 text-amber-600" />
@@ -298,7 +296,7 @@ export function CorlissEngineSim() {
             max="180"
             step="5"
             value={boilerPressurePsi}
-            onChange={(e) => setBoilerPressurePsi(Number(e.target.value))}
+            onChange={(e) => updateParam("boilerPressurePsi", Number(e.target.value))}
             className="w-full accent-amber-600 cursor-pointer"
           />
         </div>
@@ -313,7 +311,7 @@ export function CorlissEngineSim() {
             max="60"
             step="2"
             value={cutoffFractionPct}
-            onChange={(e) => setCutoffFractionPct(Number(e.target.value))}
+            onChange={(e) => updateParam("cutoffRatioPct", Number(e.target.value))}
             className="w-full accent-amber-600 cursor-pointer"
           />
         </div>

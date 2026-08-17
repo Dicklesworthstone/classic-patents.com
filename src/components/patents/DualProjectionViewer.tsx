@@ -47,6 +47,42 @@ function handlePrint() {
   }
 }
 
+function TranscriptUnavailable({
+  patent,
+  loadError,
+}: {
+  patent: Patent;
+  loadError: string | null;
+}) {
+  return (
+    <div
+      className="rounded-2xl border border-amber-300 bg-amber-50/80 p-6 text-ink-900 dark:border-amber-800 dark:bg-amber-950/20 dark:text-parchment-100"
+      role="status"
+    >
+      <h4 className="font-serif text-xl font-bold">
+        Complete machine-readable text is unavailable
+      </h4>
+      <p className="mt-2 font-sans text-sm leading-relaxed">
+        {loadError
+          ? `${loadError} This is a publishing failure, so the page will not substitute a short editorial excerpt.`
+          : "This record does not yet have a complete source-text asset that passed the catalogue gate. The page intentionally does not substitute its short editorial excerpt for the full legal instrument."}
+      </p>
+      <p className="mt-3 font-sans text-sm leading-relaxed">
+        The complete primary source is available as the scanned patent PDF. It remains the
+        authoritative comparison document until a complete text asset is published.
+      </p>
+      <a
+        href={patent.originalPdfUrl}
+        target="_blank"
+        rel="noopener noreferrer"
+        className="mt-5 inline-flex items-center gap-2 rounded-xl bg-amber-700 px-4 py-2 text-sm font-mono font-bold text-white shadow-sm transition-colors hover:bg-amber-800"
+      >
+        <FileText className="h-4 w-4" /> Open Complete Original PDF
+      </a>
+    </div>
+  );
+}
+
 export type PatentViewMode =
   | "plain-english"
   | "original-spec"
@@ -61,22 +97,32 @@ export function DualProjectionViewer({ patent, initialView }: DualProjectionView
   );
   const [completeOriginalText, setCompleteOriginalText] = useState<string | null>(null);
   const [isLoadingCompleteOriginalText, setIsLoadingCompleteOriginalText] = useState(false);
+  const [completeOriginalTextError, setCompleteOriginalTextError] = useState<string | null>(null);
 
-  const originalText = completeOriginalText ?? patent.originalText;
-  const originalTextLabel = patent.originalTextAsset
-    ? `Complete transcription · ${patent.originalTextAsset.pageCount} source page${patent.originalTextAsset.pageCount === 1 ? "" : "s"}`
-    : "Curated specification excerpt";
+  // Legacy `originalTextAsset` records predate the completeness gate. Only
+  // assets with an explicit provenance kind may be presented as full text.
+  const completeTextAsset = patent.originalTextAsset?.kind ? patent.originalTextAsset : undefined;
+  const hasCompleteOriginalText = completeOriginalText !== null;
+  const originalTextLabel = completeTextAsset
+    ? `${
+        completeTextAsset.kind === "reviewed-transcription"
+          ? "Reviewed complete transcription"
+          : "Complete source-PDF text layer · unreviewed"
+      } · ${completeTextAsset.pageCount} source page${completeTextAsset.pageCount === 1 ? "" : "s"}`
+    : "Complete machine-readable text unavailable";
 
   useEffect(() => {
-    const asset = patent.originalTextAsset;
+    const asset = completeTextAsset;
     if (!asset) {
       setCompleteOriginalText(null);
+      setCompleteOriginalTextError(null);
       setIsLoadingCompleteOriginalText(false);
       return;
     }
 
     const controller = new AbortController();
     setCompleteOriginalText(null);
+    setCompleteOriginalTextError(null);
     setIsLoadingCompleteOriginalText(true);
 
     fetch(asset.url, { signal: controller.signal })
@@ -86,17 +132,24 @@ export function DualProjectionViewer({ patent, initialView }: DualProjectionView
         }
         return response.text();
       })
-      .then((text) => setCompleteOriginalText(text.trim()))
+      .then((text) => {
+        const completeText = text.trim();
+        if (!completeText) throw new Error("The complete transcript asset is empty.");
+        setCompleteOriginalText(completeText);
+      })
       .catch((error: unknown) => {
         if (error instanceof DOMException && error.name === "AbortError") return;
         console.error(error);
+        setCompleteOriginalTextError(
+          error instanceof Error ? error.message : "Could not load the complete transcript asset.",
+        );
       })
       .finally(() => {
         if (!controller.signal.aborted) setIsLoadingCompleteOriginalText(false);
       });
 
     return () => controller.abort();
-  }, [patent.originalTextAsset]);
+  }, [completeTextAsset]);
 
   // Hydration-safe: SSR stays on the default face; deep links apply after mount.
   // Reading searchParams in the RSC page would force every patent route dynamic.
@@ -142,7 +195,7 @@ export function DualProjectionViewer({ patent, initialView }: DualProjectionView
             }`}
           >
             <Scroll className="w-4 h-4 text-amber-300" />
-            <span>Verified Specification Face</span>
+            <span>{completeTextAsset ? "Complete Source Text" : "Original Source Status"}</span>
           </button>
 
           <button
@@ -310,7 +363,7 @@ export function DualProjectionViewer({ patent, initialView }: DualProjectionView
             <div className="flex items-center gap-2.5 pb-3 border-b border-parchment-300 dark:border-ink-800">
               <Scroll className="w-5 h-5 text-amber-700 dark:text-amber-500" />
               <h3 className="font-serif text-xl font-bold text-ink-950 dark:text-parchment-100">
-                Face 2: Verbatim Archival Specification
+                Face 2: Complete Archival Source Text
               </h3>
             </div>
             <div className="rounded-2xl border border-parchment-300 dark:border-ink-800 bg-parchment-50 dark:bg-ink-950 p-6 sm:p-7 shadow-patent space-y-4 max-h-[700px] overflow-y-auto overscroll-contain">
@@ -319,11 +372,19 @@ export function DualProjectionViewer({ patent, initialView }: DualProjectionView
                   ? "Loading complete transcription…"
                   : originalTextLabel}
               </p>
-              <SpecClauseText
-                patentId={patent.id}
-                text={originalText}
-                className="font-serif text-sm sm:text-base leading-relaxed text-ink-950 dark:text-parchment-100 whitespace-pre-wrap select-text"
-              />
+              {isLoadingCompleteOriginalText ? (
+                <p className="font-sans text-sm text-ink-700 dark:text-ink-300" aria-live="polite">
+                  Loading complete source text…
+                </p>
+              ) : hasCompleteOriginalText ? (
+                <SpecClauseText
+                  patentId={patent.id}
+                  text={completeOriginalText}
+                  className="font-serif text-sm sm:text-base leading-relaxed text-ink-950 dark:text-parchment-100 whitespace-pre-wrap select-text"
+                />
+              ) : (
+                <TranscriptUnavailable patent={patent} loadError={completeOriginalTextError} />
+              )}
             </div>
           </div>
         </div>
@@ -494,9 +555,11 @@ export function DualProjectionViewer({ patent, initialView }: DualProjectionView
             <div className="flex flex-wrap items-center justify-between gap-3 border-b border-parchment-200 dark:border-ink-800 pb-4">
               <div>
                 <span className="text-xs sm:text-sm font-mono text-amber-700 dark:text-amber-400 font-bold uppercase tracking-widest block">
-                  {patent.originalTextAsset
-                    ? "Complete Primary-Source Transcription"
-                    : "Curated Historical Record"}
+                  {completeTextAsset?.kind === "reviewed-transcription"
+                    ? "Reviewed Complete Primary-Source Transcription"
+                    : completeTextAsset
+                      ? "Complete Source-PDF Text Layer"
+                      : "Original-Source Transcript Status"}
                 </span>
                 <h3 className="font-serif text-2xl sm:text-3xl font-bold text-ink-950 dark:text-parchment-50">
                   {patent.patentNumber} · Specification of Letters Patent
@@ -508,9 +571,9 @@ export function DualProjectionViewer({ patent, initialView }: DualProjectionView
                 </p>
               </div>
               <div className="flex flex-wrap gap-2">
-                {patent.originalTextAsset && (
+                {completeTextAsset && (
                   <a
-                    href={patent.originalTextAsset.url}
+                    href={completeTextAsset.url}
                     download
                     className="px-4 py-2 rounded-xl border border-parchment-300 dark:border-ink-700 text-ink-900 dark:text-parchment-100 text-sm font-mono font-bold transition-colors flex items-center gap-2 hover:bg-parchment-200 dark:hover:bg-ink-800 shadow-sm"
                   >
@@ -528,12 +591,23 @@ export function DualProjectionViewer({ patent, initialView }: DualProjectionView
               </div>
             </div>
 
-            {/* Verbatim Text Block */}
-            <SpecClauseText
-              patentId={patent.id}
-              text={originalText}
-              className="p-8 sm:p-10 rounded-2xl bg-parchment-100/80 dark:bg-ink-900/80 border border-parchment-300 dark:border-ink-800 text-base sm:text-lg font-serif text-ink-950 dark:text-parchment-100 leading-relaxed whitespace-pre-wrap select-text shadow-xs"
-            />
+            {/* Never replace unavailable complete text with an editorial excerpt. */}
+            {isLoadingCompleteOriginalText ? (
+              <p
+                className="p-8 font-sans text-sm text-ink-700 dark:text-ink-300"
+                aria-live="polite"
+              >
+                Loading complete source text…
+              </p>
+            ) : hasCompleteOriginalText ? (
+              <SpecClauseText
+                patentId={patent.id}
+                text={completeOriginalText}
+                className="p-8 sm:p-10 rounded-2xl bg-parchment-100/80 dark:bg-ink-900/80 border border-parchment-300 dark:border-ink-800 text-base sm:text-lg font-serif text-ink-950 dark:text-parchment-100 leading-relaxed whitespace-pre-wrap select-text shadow-xs"
+              />
+            ) : (
+              <TranscriptUnavailable patent={patent} loadError={completeOriginalTextError} />
+            )}
 
             {/* Claims section */}
             <div className="space-y-4 pt-5 border-t border-parchment-200 dark:border-ink-800">

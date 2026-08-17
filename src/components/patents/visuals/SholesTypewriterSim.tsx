@@ -2,11 +2,14 @@
 
 import { RotateCcw, Volume2, VolumeX } from "lucide-react";
 import { useState } from "react";
+import { usePatentPhysics } from "@/physics/usePatentPhysics";
+import { usePatentAudio } from "./three/usePatentAudio";
 
 export function SholesTypewriterSim() {
+  const { resetParams } = usePatentPhysics("us-79265-sholes-typewriter");
+  const { isAudioMuted, toggleSound } = usePatentAudio();
   const [typedText, setTypedText] = useState<string>("THE QUICK BROWN FOX");
   const [activeKey, setActiveKey] = useState<string>("T");
-  const [isMuted, setIsMuted] = useState<boolean>(true);
 
   // Escapement kinematics
   const characterPitchMm = 2.54; // Monospace 10-pitch
@@ -26,7 +29,7 @@ export function SholesTypewriterSim() {
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 border-b border-parchment-200 dark:border-ink-800 pb-3 mb-4">
         <div>
           <h3 className="font-serif text-lg font-bold text-ink-900 dark:text-parchment-100">
-            Sholes & Glidden Typewriter & Escapement (US 79,265)
+            Sholes &amp; Glidden Typewriter &amp; Escapement (US 79,265)
           </h3>
           <p className="font-sans text-xs text-ink-500 dark:text-ink-400">
             Interactive 2D Mechanical Model — Circular Typebar Basket, Escapement Carriage Advance,
@@ -39,6 +42,7 @@ export function SholesTypewriterSim() {
             onClick={() => {
               setTypedText("");
               setActiveKey("A");
+              resetParams();
             }}
             aria-label="Clear Typewriter Text"
             className="p-2 rounded-lg bg-parchment-200 dark:bg-ink-800 hover:bg-parchment-300 dark:hover:bg-ink-700 text-ink-800 dark:text-parchment-200 transition-colors"
@@ -47,11 +51,11 @@ export function SholesTypewriterSim() {
           </button>
           <button
             type="button"
-            onClick={() => setIsMuted(!isMuted)}
-            aria-label={isMuted ? "Unmute Audio" : "Mute Audio"}
+            onClick={() => toggleSound()}
+            aria-label={isAudioMuted ? "Unmute Audio" : "Mute Audio"}
             className="p-2 rounded-lg bg-parchment-200 dark:bg-ink-800 hover:bg-parchment-300 dark:hover:bg-ink-700 text-ink-800 dark:text-parchment-200 transition-colors"
           >
-            {isMuted ? (
+            {isAudioMuted ? (
               <VolumeX className="w-4 h-4" />
             ) : (
               <Volume2 className="w-4 h-4 text-amber-600" />

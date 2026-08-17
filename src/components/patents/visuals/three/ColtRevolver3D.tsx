@@ -5,17 +5,18 @@ import {
   Camera,
   Eye,
   EyeOff,
-  Sparkles,
+  Flame,
+  Layers,
   Target,
   Volume2,
   VolumeX,
-  Zap,
 } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import * as THREE from "three";
 import { FrankenSimEngine } from "@/physics/engine";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { soundEngine } from "@/utils/soundEngine";
+import { buildColtRevolverModel } from "./coltRevolverModel";
 import { createThreeStudioScene, type StudioContext } from "./ThreeStudioScene";
 import { useLiveSimParams } from "./useLiveSimParams";
 import { usePatentAudio } from "./usePatentAudio";
@@ -59,7 +60,7 @@ const SCENARIOS: ScenarioPreset[] = [
   {
     id: "slow_motion_lockwork",
     name: "Slow-Motion Lockwork Inspection",
-    desc: "Examine the 3-stage mechanical hand pawl advancing the cylinder ratchet exactly 60° while the bolt locks.",
+    desc: "Examine the 3-stage mechanical hand pawl advancing the cylinder ratchet exactly 72° while the bolt locks.",
     powderGrain: 28,
     chamberPressureMpa: 85,
     cockingAngleDeg: 22,
@@ -76,9 +77,10 @@ export function ColtRevolver3D() {
     params.chamberPressure ?? 85,
   );
   const [powderGrains, setPowderGrains] = useState<number>(28);
-  const [cockingAngleDeg, setCockingAngleDeg] = useState<number>(45); // 0 (hammer down) to 45 (full cock)
+  const [cockingAngleDeg, setCockingAngleDeg] = useState<number>(45); // 0 (down) to 45 (full cock)
   const [currentChamberIndex, setCurrentChamberIndex] = useState<number>(1);
   const [isFiring, setIsFiring] = useState<boolean>(false);
+  const [showLockworkCutaway, setShowLockworkCutaway] = useState<boolean>(false);
   const [showCalloutPins, setShowCalloutPins] = useState<boolean>(false);
   const [activeCamera, setActiveCamera] = useState<CameraPreset>("iso");
   const { isAudioMuted, toggleSound: toggleEngine } = usePatentAudio();
@@ -99,6 +101,7 @@ export function ColtRevolver3D() {
     cockingAngleDeg,
     currentChamberIndex,
     isFiring,
+    showLockworkCutaway,
     isAudioMuted,
   });
 
@@ -114,23 +117,23 @@ export function ColtRevolver3D() {
 
     switch (preset) {
       case "iso":
-        camera.position.set(9, 5, 11);
+        camera.position.set(8.5, 4.5, 9.5);
         controls.target.set(0, 0, 0);
         break;
       case "cylinder":
-        camera.position.set(0.5, 2.5, 5.5);
-        controls.target.set(-0.2, 0.3, 0);
+        camera.position.set(-0.6, 2.2, 4.8);
+        controls.target.set(-0.8, 0.4, 0);
         break;
       case "lockwork":
-        camera.position.set(-2.8, 1.2, 4.2);
-        controls.target.set(-1.8, -0.2, 0);
+        camera.position.set(-2.8, 1.2, 3.8);
+        controls.target.set(-2.2, 0.2, 0);
         break;
       case "sightline":
-        camera.position.set(-6.5, 1.8, 0);
-        controls.target.set(4.0, 0.8, 0);
+        camera.position.set(-6.2, 1.6, 0);
+        controls.target.set(3.5, 0.8, 0);
         break;
       case "top":
-        camera.position.set(0, 12, 0.1);
+        camera.position.set(0, 11, 0.05);
         controls.target.set(0, 0, 0);
         break;
     }
@@ -148,7 +151,7 @@ export function ColtRevolver3D() {
     setCockingAngleDeg(0);
     updateParam("cockingAngle", 0);
 
-    // Blast sound & smoke
+    // Gunshot percussion blast & lockwork clack
     soundEngine.playLockstitchClack();
 
     if (fireTimerRef.current !== null) {
@@ -156,8 +159,8 @@ export function ColtRevolver3D() {
     }
     fireTimerRef.current = window.setTimeout(() => {
       setIsFiring(false);
-      setCurrentChamberIndex((prev) => (prev % 6) + 1);
-    }, 900);
+      setCurrentChamberIndex((prev) => (prev % 5) + 1);
+    }, 850);
   };
 
   const applyScenario = (sc: ScenarioPreset) => {
@@ -183,285 +186,38 @@ export function ColtRevolver3D() {
 
     const studio = createThreeStudioScene({
       container,
-      cameraPos: [9, 5, 11],
+      cameraPos: [8.5, 4.5, 9.5],
       targetPos: [0, 0, 0],
-      fov: 38,
+      fov: 36,
       isDark: true,
-      environmentStyle: "studio",
+      environmentStyle: "sky",
       enableFloorGrid: true,
+      enableClouds: true,
       floorColor: 0x0f172a,
       gridColor: 0x334155,
       ambientIntensity: 1.4,
-      sunIntensity: 2.2,
+      sunIntensity: 2.4,
     });
 
     const { scene, camera, renderer, controls } = studio;
     cameraRef.current = camera;
     controlsRef.current = controls;
 
-    // Materials
-    const bluedSteelMat = new THREE.MeshStandardMaterial({
-      color: 0x243242,
-      metalness: 0.88,
-      roughness: 0.22,
-    });
-
-    const brassFrameMat = new THREE.MeshStandardMaterial({
-      color: 0xc8963e,
-      metalness: 0.92,
-      roughness: 0.28,
-    });
-
-    const cylinderSteelMat = new THREE.MeshStandardMaterial({
-      color: 0x334155,
-      metalness: 0.85,
-      roughness: 0.25,
-    });
-
-    const walnutGripMat = new THREE.MeshStandardMaterial({
-      color: 0x5c3218,
-      metalness: 0.05,
-      roughness: 0.65,
-    });
-
-    const blastFireMat = new THREE.MeshBasicMaterial({
-      color: 0xffaa22,
-      transparent: true,
-      opacity: 0,
-    });
-
-    const rootGroup = new THREE.Group();
-    scene.add(rootGroup);
-
-    // 1. Octagonal Rifled Barrel (Forward)
-    const barrelGeo = new THREE.CylinderGeometry(0.38, 0.44, 5.5, 8);
-    barrelGeo.rotateZ(Math.PI / 2);
-    const barrelMesh = new THREE.Mesh(barrelGeo, bluedSteelMat);
-    barrelMesh.position.set(2.4, 0.55, 0);
-    barrelMesh.castShadow = true;
-    barrelMesh.receiveShadow = true;
-    rootGroup.add(barrelMesh);
-
-    // Rifled Muzzle Crown Bore (Recessed .36 caliber bore with rifling lands)
-    const muzzleBoreGeo = new THREE.CylinderGeometry(0.18, 0.18, 0.4, 16);
-    muzzleBoreGeo.rotateZ(Math.PI / 2);
-    const muzzleBoreMesh = new THREE.Mesh(
-      muzzleBoreGeo,
-      new THREE.MeshStandardMaterial({ color: 0x050505, roughness: 0.9 }),
-    );
-    muzzleBoreMesh.position.set(5.15, 0.55, 0);
-    rootGroup.add(muzzleBoreMesh);
-
-    // Front Sight Brass Bead Post
-    const sightGeo = new THREE.ConeGeometry(0.06, 0.18, 8);
-    const sightMesh = new THREE.Mesh(sightGeo, brassFrameMat);
-    sightMesh.position.set(4.9, 0.96, 0);
-    rootGroup.add(sightMesh);
-
-    // Under-Barrel Creeping Loading Lever Assembly
-    const leverGroup = new THREE.Group();
-    leverGroup.position.set(2.2, 0.08, 0);
-
-    const leverArmGeo = new THREE.CylinderGeometry(0.07, 0.08, 3.6, 10);
-    leverArmGeo.rotateZ(Math.PI / 2);
-    const leverArm = new THREE.Mesh(leverArmGeo, bluedSteelMat);
-    leverArm.position.set(0, 0, 0);
-    leverGroup.add(leverArm);
-
-    const leverPivot = new THREE.Mesh(
-      new THREE.CylinderGeometry(0.09, 0.09, 0.35, 12),
-      brassFrameMat,
-    );
-    leverPivot.position.set(-1.4, 0.12, 0);
-    leverGroup.add(leverPivot);
-
-    const rammerPlunger = new THREE.Mesh(
-      new THREE.CylinderGeometry(0.14, 0.14, 1.2, 10),
-      bluedSteelMat,
-    );
-    rammerPlunger.rotateZ(Math.PI / 2);
-    rammerPlunger.position.set(-1.6, 0.42, 0);
-    leverGroup.add(rammerPlunger);
-    rootGroup.add(leverGroup);
-
-    // Transverse Barrel Wedge Key (Takedown Slot)
-    const wedgeSlotGeo = new THREE.BoxGeometry(0.65, 0.22, 0.75);
-    const wedgeSlotMesh = new THREE.Mesh(
-      wedgeSlotGeo,
-      new THREE.MeshStandardMaterial({ color: 0x111827, roughness: 0.6 }),
-    );
-    wedgeSlotMesh.position.set(0.45, 0.42, 0);
-    rootGroup.add(wedgeSlotMesh);
-
-    const wedgeKeyGeo = new THREE.BoxGeometry(0.55, 0.18, 0.95);
-    const wedgeKeyMesh = new THREE.Mesh(wedgeKeyGeo, bluedSteelMat);
-    wedgeKeyMesh.position.set(0.45, 0.42, 0.05);
-    rootGroup.add(wedgeKeyMesh);
-
-    // 2. Revolving 5-Chamber Cylinder (Authentic 1836 Paterson)
-    const cylinderGroup = new THREE.Group();
-    cylinderGroup.position.set(-0.65, 0.55, 0);
-
-    const cylinderBodyGeo = new THREE.CylinderGeometry(1.05, 1.05, 2.1, 32);
-    cylinderBodyGeo.rotateZ(Math.PI / 2);
-    const cylinderBodyMesh = new THREE.Mesh(cylinderBodyGeo, cylinderSteelMat);
-    cylinderBodyMesh.castShadow = true;
-    cylinderGroup.add(cylinderBodyMesh);
-
-    // Rear Ratchet Indexing Star (5-Tooth Geneva Cam)
-    const ratchetStarGeo = new THREE.CylinderGeometry(0.48, 0.52, 0.24, 10);
-    ratchetStarGeo.rotateZ(Math.PI / 2);
-    const ratchetStarMesh = new THREE.Mesh(ratchetStarGeo, bluedSteelMat);
-    ratchetStarMesh.position.set(-1.12, 0, 0);
-    cylinderGroup.add(ratchetStarMesh);
-
-    // 5 Chamber Bores, Flutes, & Percussion Nipples
-    const chamberCount = 5;
-    for (let i = 0; i < chamberCount; i++) {
-      const angle = (i * Math.PI * 2) / chamberCount;
-      const boreY = Math.cos(angle) * 0.58;
-      const boreZ = Math.sin(angle) * 0.58;
-
-      // Deep Chamber Bore
-      const boreGeo = new THREE.CylinderGeometry(0.24, 0.24, 2.15, 16);
-      boreGeo.rotateZ(Math.PI / 2);
-      const boreMat = new THREE.MeshStandardMaterial({
-        color: 0x0a0f1d,
-        metalness: 0.95,
-        roughness: 0.4,
-      });
-      const boreMesh = new THREE.Mesh(boreGeo, boreMat);
-      boreMesh.position.set(0, boreY, boreZ);
-      cylinderGroup.add(boreMesh);
-
-      // Threaded Brass Percussion Nipple (at rear of each chamber)
-      const nippleGeo = new THREE.CylinderGeometry(0.06, 0.08, 0.28, 8);
-      nippleGeo.rotateZ(Math.PI / 2);
-      const nippleMesh = new THREE.Mesh(nippleGeo, brassFrameMat);
-      nippleMesh.position.set(-1.12, boreY, boreZ);
-      cylinderGroup.add(nippleMesh);
-
-      // Exterior Cylinder Flutes (Scalloped grooves between chambers)
-      const fluteAngle = angle + Math.PI / chamberCount;
-      const fluteY = Math.cos(fluteAngle) * 1.02;
-      const fluteZ = Math.sin(fluteAngle) * 1.02;
-      const fluteGeo = new THREE.CylinderGeometry(0.22, 0.22, 1.45, 10);
-      fluteGeo.rotateZ(Math.PI / 2);
-      const fluteMesh = new THREE.Mesh(
-        fluteGeo,
-        new THREE.MeshStandardMaterial({ color: 0x1e293b, metalness: 0.9, roughness: 0.35 }),
-      );
-      fluteMesh.position.set(0, fluteY, fluteZ);
-      cylinderGroup.add(fluteMesh);
-
-      // Cylinder Locking Stop Notches (Rectangular detents for cylinder bolt)
-      const notchGeo = new THREE.BoxGeometry(0.18, 0.08, 0.15);
-      const notchMesh = new THREE.Mesh(
-        notchGeo,
-        new THREE.MeshStandardMaterial({ color: 0x0f172a, roughness: 0.8 }),
-      );
-      notchMesh.position.set(0.65, Math.cos(angle) * 1.04, Math.sin(angle) * 1.04);
-      cylinderGroup.add(notchMesh);
-    }
-    rootGroup.add(cylinderGroup);
-
-    // 3. Center Hardened Steel Arbor Axis Pin
-    const arborGeo = new THREE.CylinderGeometry(0.18, 0.18, 4.8, 16);
-    arborGeo.rotateZ(Math.PI / 2);
-    const arborMesh = new THREE.Mesh(arborGeo, bluedSteelMat);
-    arborMesh.position.set(0.2, 0.55, 0);
-    rootGroup.add(arborMesh);
-
-    // 4. Brass Receiver & Recoil Shield with Capping Cutout
-    const receiverGeo = new THREE.BoxGeometry(2.4, 2.2, 1.4);
-    const receiverMesh = new THREE.Mesh(receiverGeo, brassFrameMat);
-    receiverMesh.position.set(-1.9, 0.2, 0);
-    receiverMesh.castShadow = true;
-    rootGroup.add(receiverMesh);
-
-    // Recoil Shield Curved Cap with Percussion Cap Channel
-    const shieldGeo = new THREE.SphereGeometry(1.2, 24, 24, 0, Math.PI, 0, Math.PI / 2);
-    shieldGeo.rotateY(Math.PI / 2);
-    const shieldMesh = new THREE.Mesh(shieldGeo, brassFrameMat);
-    shieldMesh.position.set(-1.75, 0.55, 0);
-    rootGroup.add(shieldMesh);
-
-    // 5. Walnut Grip Handle with Brass Grip Frame Backstrap
-    const gripGeo = new THREE.CylinderGeometry(0.65, 0.95, 2.8, 16);
-    gripGeo.rotateZ(Math.PI / 7);
-    const gripMesh = new THREE.Mesh(gripGeo, walnutGripMat);
-    gripMesh.position.set(-3.2, -1.2, 0);
-    gripMesh.castShadow = true;
-    rootGroup.add(gripMesh);
-
-    // Brass Grip Strap & Butt Plate
-    const strapGeo = new THREE.TorusGeometry(1.4, 0.14, 10, 24, Math.PI * 0.8);
-    strapGeo.rotateZ(-Math.PI / 4);
-    const strapMesh = new THREE.Mesh(strapGeo, brassFrameMat);
-    strapMesh.position.set(-2.8, -1.0, 0);
-    rootGroup.add(strapMesh);
-
-    const buttPlate = new THREE.Mesh(
-      new THREE.CylinderGeometry(0.85, 0.85, 0.12, 16),
-      brassFrameMat,
-    );
-    buttPlate.rotation.z = Math.PI / 3;
-    buttPlate.position.set(-3.85, -2.45, 0);
-    rootGroup.add(buttPlate);
-
-    // 6. Folding Trigger & Cylinder Hand Pawl / Bolt Linkage
-    const triggerGroup = new THREE.Group();
-    triggerGroup.position.set(-1.5, -0.6, 0);
-
-    const triggerBlade = new THREE.Mesh(new THREE.BoxGeometry(0.12, 0.55, 0.12), bluedSteelMat);
-    triggerBlade.position.set(0, -0.2, 0);
-    triggerGroup.add(triggerBlade);
-    rootGroup.add(triggerGroup);
-
-    // 7. Revolver Hammer (Single-Action Spur with Checkered Thumb Grip)
-    const hammerGroup = new THREE.Group();
-    hammerGroup.position.set(-2.6, 1.1, 0);
-
-    const hammerBodyGeo = new THREE.BoxGeometry(0.4, 1.2, 0.28);
-    const hammerBodyMesh = new THREE.Mesh(hammerBodyGeo, bluedSteelMat);
-    hammerBodyMesh.position.set(0, 0.4, 0);
-    hammerGroup.add(hammerBodyMesh);
-
-    // Hammer Nose Striker (strikes percussion nipples)
-    const strikerNose = new THREE.Mesh(
-      new THREE.CylinderGeometry(0.08, 0.12, 0.35, 8),
-      bluedSteelMat,
-    );
-    strikerNose.rotateZ(Math.PI / 2);
-    strikerNose.position.set(0.28, 0.72, 0);
-    hammerGroup.add(strikerNose);
-
-    // Thumb Cocking Spur with Checkered Knurling
-    const spurGeo = new THREE.BoxGeometry(0.38, 0.35, 0.26);
-    spurGeo.rotateZ(Math.PI / 5);
-    const spurMesh = new THREE.Mesh(spurGeo, bluedSteelMat);
-    spurMesh.position.set(-0.25, 0.95, 0);
-    hammerGroup.add(spurMesh);
-
-    rootGroup.add(hammerGroup);
-
-    // 8. Muzzle Blast Spark Particles & Flash Flare
-    const blastGeo = new THREE.ConeGeometry(0.8, 2.5, 12);
-    blastGeo.rotateZ(-Math.PI / 2);
-    const blastMesh = new THREE.Mesh(blastGeo, blastFireMat);
-    blastMesh.position.set(6.2, 0.55, 0);
-    rootGroup.add(blastMesh);
+    // Build Museum-Quality Blueprint Colt Model
+    const model = buildColtRevolverModel();
+    scene.add(model.group);
 
     // Callout Pins
     const pinGroup = new THREE.Group();
     pinGroup.visible = showCalloutPins;
 
     const callouts = [
-      { pos: [2.5, 1.2, 0], text: "1. Octagonal Rifled Barrel" },
-      { pos: [-0.65, 1.9, 0], text: "2. 6-Chamber Revolving Cylinder" },
-      { pos: [-2.6, 2.4, 0], text: "3. Single-Action Spur Hammer" },
-      { pos: [-1.6, -1.7, 0], text: "4. Trigger & Hand Pawl Linkage" },
-      { pos: [-3.2, -2.6, 0], text: "5. Walnut Bird's-Head Grip" },
+      { pos: [2.6, 1.2, 0], text: "1. Octagonal Rifled Barrel (.36 Caliber)" },
+      { pos: [-0.95, 1.9, 0], text: "2. 5-Chamber Roll-Engraved Cylinder" },
+      { pos: [-3.1, 2.4, 0], text: "3. Single-Action Spur Hammer" },
+      { pos: [-2.0, -1.2, 0], text: "4. Paterson Folding Trigger" },
+      { pos: [-3.7, -2.4, 0], text: "5. Black Walnut Plowhandle Grip" },
+      { pos: [2.4, -0.6, 0], text: "6. Creeping Loading Lever & Rammer" },
     ];
 
     for (const c of callouts) {
@@ -472,39 +228,68 @@ export function ColtRevolver3D() {
       pinAnchor.position.set(c.pos[0], c.pos[1], c.pos[2]);
       pinGroup.add(pinAnchor);
     }
-    rootGroup.add(pinGroup);
+    model.group.add(pinGroup);
 
     // Animation Loop
     let reqId = 0;
     let targetCylinderAngle = 0;
     let currentCylinderAngle = 0;
+    let smokePuffScale = 1.0;
 
     const animate = () => {
       reqId = requestAnimationFrame(animate);
+      const p = live.current;
 
-      // Animate Hammer Pivot Angle
-      const targetHammerRot = (live.current.cockingAngleDeg / 45) * 0.65;
-      hammerGroup.rotation.z += (targetHammerRot - hammerGroup.rotation.z) * 0.15;
+      // 1. Animate Hammer Cocking Rotation
+      // 0 deg = hammer resting against percussion nipple; 45 deg = full cock
+      const hammerTargetAngle = (p.cockingAngleDeg / 45) * 0.72;
+      model.hammerGroup.rotation.z += (hammerTargetAngle - model.hammerGroup.rotation.z) * 0.16;
 
-      // Animate Cylinder Rotation Index
+      // 2. Animate Paterson Folding Trigger
+      // Trigger drops out of the frame only when cocked!
+      const triggerDeployFraction = Math.min(1.0, p.cockingAngleDeg / 40);
+      model.triggerGroup.rotation.z = -triggerDeployFraction * 0.45;
+      model.triggerGroup.position.y = -0.4 - triggerDeployFraction * 0.28;
+
+      // 3. Animate 5-Chamber Cylinder Indexing
+      // Each shot steps 360 / 5 = 72 degrees (2 * PI / 5)
+      const chamberStepRad = (2 * Math.PI) / 5;
       targetCylinderAngle =
-        ((live.current.currentChamberIndex - 1) * Math.PI) / 3 +
-        ((live.current.cockingAngleDeg / 45) * Math.PI) / 3;
-      currentCylinderAngle += (targetCylinderAngle - currentCylinderAngle) * 0.12;
-      cylinderGroup.rotation.x = currentCylinderAngle;
+        (p.currentChamberIndex - 1) * chamberStepRad + (p.cockingAngleDeg / 45) * chamberStepRad;
+      currentCylinderAngle += (targetCylinderAngle - currentCylinderAngle) * 0.14;
+      model.cylinderGroup.rotation.x = currentCylinderAngle;
 
-      // Firing Recoil & Muzzle Blast Flash
-      if (live.current.isFiring) {
-        blastFireMat.opacity = Math.max(
-          0,
-          blastFireMat.opacity + (0.95 - blastFireMat.opacity) * 0.4,
-        );
-        rootGroup.rotation.z = Math.min(0.25, rootGroup.rotation.z + 0.08);
-        rootGroup.position.x = Math.max(-0.4, rootGroup.position.x - 0.08);
+      // 4. Lockwork Cutaway Visibility
+      model.lockworkCutawayGroup.visible = p.showLockworkCutaway;
+
+      // 5. Muzzle Blast, Flash Flare, Smoke Cloud & Recoil Kick
+      const blastMat = model.blastMesh.material as THREE.MeshBasicMaterial;
+      const smokeMat = model.smokeMesh.material as THREE.PointsMaterial;
+      const sparkMat = model.sparkPoints.material as THREE.PointsMaterial;
+
+      if (p.isFiring) {
+        // Flash flash
+        blastMat.opacity = Math.max(0, blastMat.opacity + (0.95 - blastMat.opacity) * 0.45);
+        smokeMat.opacity = Math.min(0.75, smokeMat.opacity + 0.2);
+        sparkMat.opacity = 0.9;
+
+        // Expanding smoke puff
+        smokePuffScale += 0.08;
+        model.smokeMesh.scale.set(smokePuffScale, smokePuffScale, smokePuffScale);
+
+        // Recoil muzzle rise & backwards frame push
+        model.group.rotation.z = Math.min(0.22, model.group.rotation.z + 0.09);
+        model.group.position.x = Math.max(-0.35, model.group.position.x - 0.07);
       } else {
-        blastFireMat.opacity *= 0.75;
-        rootGroup.rotation.z *= 0.85;
-        rootGroup.position.x *= 0.85;
+        blastMat.opacity *= 0.72;
+        smokeMat.opacity *= 0.88;
+        sparkMat.opacity *= 0.82;
+        smokePuffScale = 1.0;
+        model.smokeMesh.scale.set(1, 1, 1);
+
+        // Return to rest position
+        model.group.rotation.z *= 0.84;
+        model.group.position.x *= 0.84;
       }
 
       pinGroup.visible = showCalloutPins;
@@ -517,6 +302,9 @@ export function ColtRevolver3D() {
 
     return () => {
       cancelAnimationFrame(reqId);
+      for (const tex of model.textures) {
+        tex.dispose();
+      }
       studio.dispose();
     };
   }, [showCalloutPins, live]);
@@ -537,7 +325,7 @@ export function ColtRevolver3D() {
                   Chamber Ballistics
                 </span>
                 <span className="px-1.5 py-0.5 rounded bg-amber-100 dark:bg-amber-950/60 text-amber-800 dark:text-amber-300 text-[10px]">
-                  Chamber #{currentChamberIndex} / 6
+                  Chamber #{currentChamberIndex} / 5
                 </span>
               </div>
               <div className="grid grid-cols-2 gap-x-4 gap-y-1 text-xs font-sans">
@@ -548,21 +336,21 @@ export function ColtRevolver3D() {
                   </span>
                 </div>
                 <div>
-                  <span className="text-ink-600 dark:text-ink-400">Muzzle Vel:</span>{" "}
-                  <span className="font-mono font-bold text-emerald-600 dark:text-emerald-400">
+                  <span className="text-ink-600 dark:text-ink-400">Muzzle Velocity:</span>{" "}
+                  <span className="font-mono font-bold text-blue-600 dark:text-blue-400">
                     {muzzleVelocityMps} m/s
                   </span>
                 </div>
                 <div>
-                  <span className="text-ink-600 dark:text-ink-400">Bolt Lock:</span>{" "}
-                  <span className="font-mono font-bold text-blue-600 dark:text-blue-400">
-                    {isFullCock || cockingAngleDeg === 0 ? "Engaged ✓" : "Retracted ⚙"}
+                  <span className="text-ink-600 dark:text-ink-400">Powder Load:</span>{" "}
+                  <span className="font-mono font-bold text-amber-700 dark:text-amber-300">
+                    {powderGrains} Grains
                   </span>
                 </div>
                 <div>
-                  <span className="text-ink-600 dark:text-ink-400">Action:</span>{" "}
-                  <span className="font-mono font-bold text-amber-600 dark:text-amber-400">
-                    {isFullCock ? "Full Cock" : isFiring ? "Striking" : "Resting"}
+                  <span className="text-ink-600 dark:text-ink-400">Lock State:</span>{" "}
+                  <span className="font-mono font-bold text-emerald-600 dark:text-emerald-400">
+                    {isFullCock ? "Full Cock" : cockingAngleDeg > 0 ? "Half Cock" : "Hammer Down"}
                   </span>
                 </div>
               </div>
@@ -570,94 +358,25 @@ export function ColtRevolver3D() {
           </div>
         )}
 
-        {/* Camera and Mode Controls */}
-        <div className="absolute top-3 right-3 sm:top-4 sm:right-4 z-10 flex flex-wrap justify-end gap-1.5 sm:gap-2 max-w-[90%]">
-          <button
-            type="button"
-            onClick={() => setShowUiOverlay(!showUiOverlay)}
-            className={`p-1.5 sm:px-2.5 sm:py-1.5 rounded-lg text-xs font-sans font-semibold border transition-colors shadow-xs ${
-              showUiOverlay
-                ? "bg-white/90 dark:bg-ink-900/90 text-ink-800 dark:text-ink-200 border-parchment-300 dark:border-ink-700"
-                : "bg-amber-700 text-white border-amber-800 shadow-md ring-2 ring-amber-500/30"
-            }`}
-            title="Toggle HUD Telemetry"
-          >
-            {showUiOverlay ? (
-              <EyeOff className="w-3.5 h-3.5 inline sm:mr-1" />
-            ) : (
-              <Eye className="w-3.5 h-3.5 inline sm:mr-1" />
-            )}
-            <span className="hidden md:inline">{showUiOverlay ? "Hide HUD" : "Show HUD"}</span>
-          </button>
-          <button
-            type="button"
-            onClick={() => setShowCalloutPins(!showCalloutPins)}
-            className={`p-1.5 sm:px-3 sm:py-1.5 rounded-lg text-xs font-sans font-semibold border transition-colors shadow-xs ${
-              showCalloutPins
-                ? "bg-amber-700 text-white border-amber-800 dark:bg-amber-600"
-                : "bg-white/90 dark:bg-ink-900/90 text-ink-800 dark:text-ink-200 border-parchment-300 dark:border-ink-700"
-            }`}
-          >
-            <Sparkles className="w-3.5 h-3.5 inline sm:mr-1" />
-            <span className="hidden sm:inline">Callout Pins</span>
-          </button>
-          <button
-            type="button"
-            onClick={() => toggleEngine()}
-            className={`p-1.5 sm:px-3 sm:py-1.5 rounded-lg text-xs font-sans font-semibold border transition-colors shadow-xs ${
-              !isAudioMuted
-                ? "bg-emerald-700 text-white border-emerald-800 dark:bg-emerald-600"
-                : "bg-white/90 dark:bg-ink-900/90 text-ink-800 dark:text-ink-200 border-parchment-300 dark:border-ink-700"
-            }`}
-          >
-            {!isAudioMuted ? (
-              <Volume2 className="w-3.5 h-3.5 inline sm:mr-1" />
-            ) : (
-              <VolumeX className="w-3.5 h-3.5 inline sm:mr-1" />
-            )}
-            <span className="hidden sm:inline">{!isAudioMuted ? "Sound On" : "Muted"}</span>
-          </button>
-        </div>
-      </div>
-
-      {/* Preset Scenarios */}
-      <div className="p-3 sm:px-5 sm:py-3 bg-parchment-200/80 dark:bg-ink-900/90 border-t border-parchment-300 dark:border-ink-800 flex flex-wrap items-center gap-2 text-xs font-sans">
-        <span className="text-amber-900 dark:text-amber-300 font-serif font-bold flex items-center gap-1 mr-1">
-          <Activity className="w-3.5 h-3.5 text-amber-600" /> Historic Loads:
-        </span>
-        {SCENARIOS.map((sc) => (
-          <button
-            key={sc.id}
-            type="button"
-            onClick={() => applyScenario(sc)}
-            className="px-2.5 py-1 rounded-lg border border-parchment-300 dark:border-ink-700 bg-white/80 dark:bg-ink-800/80 hover:bg-amber-600 hover:text-white dark:hover:bg-amber-600 transition-colors font-medium text-[11px]"
-          >
-            {sc.name}
-          </button>
-        ))}
-      </div>
-
-      {/* Camera Perspectives & Action Buttons */}
-      <div className="p-3 sm:px-5 sm:py-3 bg-parchment-100 dark:bg-ink-950 border-t border-parchment-200 dark:border-ink-800/70 flex flex-wrap items-center justify-between gap-3 text-xs font-sans">
-        <div className="flex flex-wrap items-center gap-1.5">
-          <Camera className="w-3.5 h-3.5 text-amber-700 dark:text-amber-400 mr-1" />
+        {/* Camera Preset Toolbar */}
+        <div className="absolute top-3 left-3 sm:top-4 sm:left-4 z-10 flex flex-wrap gap-1.5 max-w-[calc(100%-6rem)]">
           {(
             [
-              ["iso", "Isometric 3D"],
-              ["cylinder", "Cylinder Bores"],
-              ["lockwork", "Pawl Ratchet"],
+              ["iso", "Perspective"],
+              ["cylinder", "Cylinder"],
+              ["lockwork", "Lockwork"],
               ["sightline", "Sightline"],
-              ["top", "Top Profile"],
-            ] as const
-          ).map(([key, label]) => (
+              ["top", "Top"],
+            ] as [CameraPreset, string][]
+          ).map(([preset, label]) => (
             <button
-              key={key}
+              key={preset}
               type="button"
-              onClick={() => applyCameraPreset(key)}
-              className={`px-2.5 py-1 rounded-lg font-mono text-[11px] transition-colors border ${
-                activeCamera === key
-                  ? "bg-amber-700 text-white border-amber-800 font-bold"
-                  : "bg-parchment-200/80 dark:bg-ink-900 text-ink-700 dark:text-ink-300 border-parchment-300 dark:border-ink-800 hover:bg-parchment-300"
+              onClick={() => applyCameraPreset(preset)}
+              className={`px-2.5 py-1 text-xs font-mono rounded-lg transition-all border ${
+                activeCamera === preset
+                  ? "bg-amber-600 text-white border-amber-500 shadow-sm"
+                  : "bg-white/80 dark:bg-ink-900/80 backdrop-blur-md text-ink-700 dark:text-parchment-200 border-parchment-300 dark:border-ink-700 hover:bg-parchment-100 dark:hover:bg-ink-800"
               }`}
             >
               {label}
@@ -665,93 +384,159 @@ export function ColtRevolver3D() {
           ))}
         </div>
 
-        <div className="flex items-center gap-2">
+        {/* Floating View Actions */}
+        <div className="absolute top-3 right-3 sm:top-4 sm:right-4 z-10 flex items-center gap-1.5">
+          <button
+            type="button"
+            onClick={() => setShowLockworkCutaway(!showLockworkCutaway)}
+            className={`p-2 rounded-xl backdrop-blur-md border transition-all ${
+              showLockworkCutaway
+                ? "bg-amber-600 text-white border-amber-500 shadow-sm"
+                : "bg-white/80 dark:bg-ink-900/80 text-ink-700 dark:text-parchment-200 border-parchment-300 dark:border-ink-700 hover:bg-parchment-100 dark:hover:bg-ink-800"
+            }`}
+            title="Toggle Internal Lockwork Cutaway"
+          >
+            <Layers className="w-4 h-4" />
+          </button>
+          <button
+            type="button"
+            onClick={() => setShowCalloutPins(!showCalloutPins)}
+            className="p-2 rounded-xl bg-white/80 dark:bg-ink-900/80 backdrop-blur-md text-ink-700 dark:text-parchment-200 border border-parchment-300 dark:border-ink-700 hover:bg-parchment-100 dark:hover:bg-ink-800 transition-colors shadow-sm"
+            title={showCalloutPins ? "Hide Part Labels" : "Show Part Labels"}
+          >
+            <Camera className="w-4 h-4" />
+          </button>
+          <button
+            type="button"
+            onClick={() => setShowUiOverlay(!showUiOverlay)}
+            className="p-2 rounded-xl bg-white/80 dark:bg-ink-900/80 backdrop-blur-md text-ink-700 dark:text-parchment-200 border border-parchment-300 dark:border-ink-700 hover:bg-parchment-100 dark:hover:bg-ink-800 transition-colors shadow-sm"
+            title={showUiOverlay ? "Hide Overlay" : "Show Overlay"}
+          >
+            {showUiOverlay ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+          </button>
+          <button
+            type="button"
+            onClick={toggleEngine}
+            className="p-2 rounded-xl bg-white/80 dark:bg-ink-900/80 backdrop-blur-md text-ink-700 dark:text-parchment-200 border border-parchment-300 dark:border-ink-700 hover:bg-parchment-100 dark:hover:bg-ink-800 transition-colors shadow-sm"
+            title={isAudioMuted ? "Enable Audio" : "Mute Audio"}
+          >
+            {isAudioMuted ? <VolumeX className="w-4 h-4" /> : <Volume2 className="w-4 h-4" />}
+          </button>
+        </div>
+      </div>
+
+      {/* Interactive Controls & Historical Scenarios Panel */}
+      <div className="p-4 sm:p-5 bg-parchment-100/70 dark:bg-ink-900/70 border-t border-parchment-300 dark:border-ink-800 space-y-4">
+        {/* Scenario Presets */}
+        <div className="space-y-1.5">
+          <span className="text-[11px] font-mono uppercase tracking-wider text-ink-500 dark:text-ink-400 font-semibold block">
+            Historical Scenarios & Mechanical Modes
+          </span>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-2">
+            {SCENARIOS.map((sc) => (
+              <button
+                key={sc.id}
+                type="button"
+                onClick={() => applyScenario(sc)}
+                className="p-2 text-left rounded-lg bg-white/80 dark:bg-ink-950/60 border border-parchment-300/80 dark:border-ink-800 hover:border-amber-500 dark:hover:border-amber-500 transition-all text-xs group"
+              >
+                <div className="font-semibold text-ink-900 dark:text-parchment-100 group-hover:text-amber-700 dark:group-hover:text-amber-400">
+                  {sc.name}
+                </div>
+                <div className="text-[11px] text-ink-500 dark:text-ink-400 line-clamp-2 mt-0.5">
+                  {sc.desc}
+                </div>
+              </button>
+            ))}
+          </div>
+        </div>
+
+        {/* Firing Mechanism Action Buttons */}
+        <div className="flex flex-wrap items-center gap-3 pt-2 border-t border-parchment-200 dark:border-ink-800">
           <button
             type="button"
             onClick={handleCockHammer}
-            disabled={isFullCock || isFiring}
-            className="px-3.5 py-1.5 rounded-lg border border-amber-600 bg-amber-50 dark:bg-amber-950/40 text-amber-800 dark:text-amber-300 font-bold text-xs hover:bg-amber-100 disabled:opacity-40 transition-colors"
+            className="flex items-center gap-2 px-4 py-2 bg-amber-600 hover:bg-amber-700 active:scale-95 text-white font-mono text-xs font-bold rounded-xl shadow transition-all cursor-pointer"
           >
-            1. Cock Hammer
+            <Activity className="w-4 h-4" />
+            Cock Hammer (72° Index)
           </button>
           <button
             type="button"
             onClick={handlePullTrigger}
             disabled={!isFullCock || isFiring}
-            className="flex items-center gap-1 px-4 py-1.5 rounded-lg bg-amber-700 hover:bg-amber-800 text-white font-bold text-xs disabled:opacity-40 transition-colors shadow-sm"
+            className={`flex items-center gap-2 px-4 py-2 font-mono text-xs font-bold rounded-xl shadow transition-all cursor-pointer ${
+              isFullCock && !isFiring
+                ? "bg-red-600 hover:bg-red-700 active:scale-95 text-white animate-pulse"
+                : "bg-ink-200 dark:bg-ink-800 text-ink-400 dark:text-ink-600 cursor-not-allowed opacity-60"
+            }`}
           >
-            <Zap className="w-3.5 h-3.5" />
-            2. Pull Trigger
+            <Flame className="w-4 h-4" />
+            {isFiring ? "Discharging..." : "Pull Trigger (Fire)"}
+          </button>
+          <button
+            type="button"
+            onClick={() => setShowLockworkCutaway(!showLockworkCutaway)}
+            className={`flex items-center gap-2 px-3.5 py-2 font-mono text-xs font-semibold rounded-xl border transition-all cursor-pointer ${
+              showLockworkCutaway
+                ? "bg-amber-50 dark:bg-amber-950/40 text-amber-800 dark:text-amber-300 border-amber-400"
+                : "bg-white dark:bg-ink-950 text-ink-700 dark:text-parchment-200 border-parchment-300 dark:border-ink-700"
+            }`}
+          >
+            <Layers className="w-4 h-4" />
+            {showLockworkCutaway ? "Hide Lockwork" : "Inspect Hand Pawl Lockwork"}
           </button>
         </div>
-      </div>
 
-      {/* Parameter Sliders Panel */}
-      <div className="p-4 sm:p-5 bg-parchment-100/80 dark:bg-ink-900/90 border-t border-parchment-300 dark:border-ink-800 grid grid-cols-1 sm:grid-cols-3 gap-4 text-xs font-sans">
-        <div className="space-y-1.5">
-          <div className="flex justify-between font-mono">
-            <span className="font-semibold text-ink-800 dark:text-parchment-200">
-              Chamber Pressure:
-            </span>
-            <span className="text-red-700 dark:text-red-400 font-bold">
-              {chamberPressureMpa} MPa
-            </span>
+        {/* Parameter Sliders */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-1 text-xs">
+          <div className="space-y-1.5">
+            <div className="flex justify-between font-sans font-semibold text-ink-800 dark:text-parchment-200">
+              <span>Black Powder Charge:</span>
+              <span className="font-mono text-amber-700 dark:text-amber-400 font-bold">
+                {powderGrains} Grains ({(powderGrains * 0.0648).toFixed(2)} g)
+              </span>
+            </div>
+            <input
+              type="range"
+              aria-label="Black Powder Charge"
+              min="15"
+              max="50"
+              step="1"
+              value={powderGrains}
+              onChange={(e) => {
+                const gr = Number(e.target.value);
+                setPowderGrains(gr);
+                const pMpa = Math.round(40 + gr * 1.5);
+                setChamberPressureMpa(pMpa);
+                updateParam("chamberPressure", pMpa);
+              }}
+              className="w-full accent-amber-600 cursor-pointer"
+            />
           </div>
-          <input
-            type="range"
-            aria-label="Chamber Combustion Pressure"
-            min="40"
-            max="130"
-            value={chamberPressureMpa}
-            onChange={(e) => {
-              const val = Number(e.target.value);
-              setChamberPressureMpa(val);
-              updateParam("chamberPressure", val);
-            }}
-            className="w-full accent-red-600 cursor-pointer h-2 bg-parchment-300 dark:bg-ink-700 rounded-lg"
-          />
-        </div>
 
-        <div className="space-y-1.5">
-          <div className="flex justify-between font-mono">
-            <span className="font-semibold text-ink-800 dark:text-parchment-200">
-              Hammer Cocking:
-            </span>
-            <span className="text-amber-700 dark:text-amber-400 font-bold">{cockingAngleDeg}°</span>
+          <div className="space-y-1.5">
+            <div className="flex justify-between font-sans font-semibold text-ink-800 dark:text-parchment-200">
+              <span>Hammer Cocking Angle:</span>
+              <span className="font-mono text-blue-600 dark:text-blue-400 font-bold">
+                {cockingAngleDeg}° ({isFullCock ? "Full Cock" : "Half Cock"})
+              </span>
+            </div>
+            <input
+              type="range"
+              aria-label="Hammer Cocking Angle"
+              min="0"
+              max="45"
+              step="1"
+              value={cockingAngleDeg}
+              onChange={(e) => {
+                const angle = Number(e.target.value);
+                setCockingAngleDeg(angle);
+                updateParam("cockingAngle", angle);
+              }}
+              className="w-full accent-blue-600 cursor-pointer"
+            />
           </div>
-          <input
-            type="range"
-            aria-label="Hammer Cocking Angle"
-            min="0"
-            max="45"
-            value={cockingAngleDeg}
-            onChange={(e) => {
-              const val = Number(e.target.value);
-              setCockingAngleDeg(val);
-              updateParam("cockingAngle", val);
-            }}
-            className="w-full accent-amber-600 cursor-pointer h-2 bg-parchment-300 dark:bg-ink-700 rounded-lg"
-          />
-        </div>
-
-        <div className="space-y-1.5">
-          <div className="flex justify-between font-mono">
-            <span className="font-semibold text-ink-800 dark:text-parchment-200">
-              Black Powder Charge:
-            </span>
-            <span className="text-emerald-700 dark:text-emerald-400 font-bold">
-              {powderGrains} Grains
-            </span>
-          </div>
-          <input
-            type="range"
-            aria-label="Black Powder Charge"
-            min="15"
-            max="50"
-            value={powderGrains}
-            onChange={(e) => setPowderGrains(Number(e.target.value))}
-            className="w-full accent-emerald-600 cursor-pointer h-2 bg-parchment-300 dark:bg-ink-700 rounded-lg"
-          />
         </div>
       </div>
     </div>

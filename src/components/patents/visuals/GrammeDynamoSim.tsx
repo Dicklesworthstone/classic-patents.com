@@ -2,12 +2,15 @@
 
 import { Play, RotateCcw, Volume2, VolumeX } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
+import { usePatentPhysics } from "@/physics/usePatentPhysics";
+import { usePatentAudio } from "./three/usePatentAudio";
 
 export function GrammeDynamoSim() {
-  const [rotorRpm, setRotorRpm] = useState<number>(800);
-  const [coilSections, setCoilSections] = useState<number>(32);
+  const { params, updateParam, resetParams } = usePatentPhysics("us-120057-gramme-dynamo");
+  const { isAudioMuted, toggleSound } = usePatentAudio();
+  const rotorRpm = params.shaftRpm ?? 950;
+  const coilSections = params.coilSegments ?? 32;
   const [isPlaying, setIsPlaying] = useState<boolean>(true);
-  const [isMuted, setIsMuted] = useState<boolean>(true);
   const [angleDeg, setAngleDeg] = useState<number>(0);
   const animRef = useRef<number | null>(null);
 
@@ -60,11 +63,7 @@ export function GrammeDynamoSim() {
           </button>
           <button
             type="button"
-            onClick={() => {
-              setRotorRpm(800);
-              setCoilSections(32);
-              setAngleDeg(0);
-            }}
+            onClick={resetParams}
             aria-label="Reset Simulation"
             className="p-2 rounded-lg bg-parchment-200 dark:bg-ink-800 hover:bg-parchment-300 dark:hover:bg-ink-700 text-ink-800 dark:text-parchment-200 transition-colors"
           >
@@ -72,11 +71,11 @@ export function GrammeDynamoSim() {
           </button>
           <button
             type="button"
-            onClick={() => setIsMuted(!isMuted)}
-            aria-label={isMuted ? "Unmute Audio" : "Mute Audio"}
+            onClick={() => toggleSound()}
+            aria-label={isAudioMuted ? "Unmute Audio" : "Mute Audio"}
             className="p-2 rounded-lg bg-parchment-200 dark:bg-ink-800 hover:bg-parchment-300 dark:hover:bg-ink-700 text-ink-800 dark:text-parchment-200 transition-colors"
           >
-            {isMuted ? (
+            {isAudioMuted ? (
               <VolumeX className="w-4 h-4" />
             ) : (
               <Volume2 className="w-4 h-4 text-amber-600" />
@@ -252,11 +251,11 @@ export function GrammeDynamoSim() {
           </div>
           <input
             type="range"
-            min="200"
-            max="1800"
+            min="300"
+            max="1600"
             step="50"
             value={rotorRpm}
-            onChange={(e) => setRotorRpm(Number(e.target.value))}
+            onChange={(e) => updateParam("shaftRpm", Number(e.target.value))}
             className="w-full accent-amber-600 cursor-pointer"
           />
         </div>
@@ -267,11 +266,11 @@ export function GrammeDynamoSim() {
           </div>
           <input
             type="range"
-            min="16"
-            max="64"
-            step="8"
+            min="12"
+            max="48"
+            step="4"
             value={coilSections}
-            onChange={(e) => setCoilSections(Number(e.target.value))}
+            onChange={(e) => updateParam("coilSegments", Number(e.target.value))}
             className="w-full accent-amber-600 cursor-pointer"
           />
         </div>

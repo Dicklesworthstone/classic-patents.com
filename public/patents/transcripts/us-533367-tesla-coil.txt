@@ -1,0 +1,223 @@
+(No Model.)
+
+N.TESLA.A
+
+2 Sheets-Sheet 2.~
+
+ELECTRICAL TRANSFORMER.
+
+No. 593,138:
+
+Patented Nov. 2, 1897.
+
+mvsw TOR
+
+WITNESSES
+
+‘4, /K. Kim;
+,4 rromvm-S',
+
+‘me NORRIS PFTERs comwomuwo, WASHINGTON, n c.
+
+‘ airs
+
+Status
+
+iarnnrr @rrrcn.
+
+NIKOLA TESLA, OF NEWV YORK, N.'Y.
+
+ELECTRECAL TRANSFORM Ea.
+SPEGIFIGATION forming part of Letters, Patent No. 593,138, dated November 2, 1897.
+Application ?led March 20, 1897. Serial ll'o. 628,453‘. on) model.)
+To aZZ whom it may concern:
+
+_
+
+proximately one-quarter of the wave length
+
+Be it known that I, NIKOLA TESLA, a citi of the electrical disturbance in the circuit in
+zen of the United States, residing at New cluding the secondary coil, based on the ve 55
+York, in the county and State of New York, locity of propagation of electrical disturb
+have invented certain new and useful Im ances through such circuit, or, in general, of
+provements in Electrical Transformers, of such length that the potential at the terminal
+which the following is a speci?cation, refer of the secondary which is the more remote
+ence- being had to the drawings accompany from the primary shall be at its maximum.
+ing and forming a part of the same.
+In using these coils I connect one end of the
+10.
+The present application is based upon an secondary, or that in proximity to the pri
+apparatus which I have devised and employed mary,to earth, and in order to more effectually
+for the purpose of developing electrical cur provide against injury to persons or to the
+rents of high potential, which transformers apparatus I also connect it with the primary.
+or induction-coils constructed on the princi
+In the accompanying drawings, Figure l is a
+ples heretofore followed in the'manufacture diagram illustrating the plan of winding and
+of such instrument-s are wholly incapable of connection which I employ in constructing
+producing or practically utilizing, at least my improved coils and the manner of using
+without serious liability of the destruction of them for the transmission of energy over long
+the apparatus itself and danger to persons distances. Fig. 2 is a side elevation, and Fig.
+29 approaching or handling it.
+3 a side elevation and part section, of modi
+The improvement involves a novel form of ?ed forms of induction-coil made ‘in accord
+
+75
+
+transformer or induction-coil and a system
+
+ance with my invention.~
+
+for the transmission of electrical energy by
+
+A designates a core, which may be magnetic 75
+when so desired.
+
+means of the same in which the energy of the
+25 source is raised to a much higher potential
+for transmission over the line than has ever
+
+B is the secondary coil, wound upon said
+core in generally spiral form.
+C is the primary, which is wound around
+been practically employed heretofore, and the
+apparatus is constructed with reference to the in proximity to the secondary. One terminal 80
+
+production of such a potential and so as to
+
+of the latter will be at the center of the spiral >
+
+be not only free from the danger of injury coil, and from this the current is taken to
+from the destruction of insulation, but safe line or for other purposes. The other termi
+to handle. To this end I construct an induc nal of the secondary is connected to earth
+tion-coil or transformer in which the primary and preferably also to the primary.
+_
+85
+and secondary coils are wound or arranged
+“Then two coils are used in a transmission
+35 in such manner that the convolutions of the system in which the currents are raised to a
+conductor of the latter will be farther removed high potential and then reconverted to a lower
+
+from the primary as the liability of injury potential, the receiving-transformer will be
+from the effects of potential increases, the constructed and connected in the same man 9O
+terminal or point of highest potential being ner as the ?rst-that is to say, the inner or cen
+the most remote, and so that between adja ter end of what corresponds to the secondary
+cent convolutions there shall be the least pos
+
+of the first Will be connected to line and the
+
+sible difference of potential.
+other end to earth and to the local circuit or
+The type of coil in which the last-named that which corresponds to the primary of the 95
+
+features are present is the ?at spiral, and this
+45 form I generally employ, winding the primary
+on the outside of the secondary and taking
+off the current from the latter at the center
+or inner end of the spiral. I may depart from
+or vary this form, however, in the particulars
+'
+50 hereinafter speci?ed.
+
+?rst. In such case also the line-wire should
+be supported in such manner as to avoid loss
+
+by the current jumping from line to objects
+in its vicinity and in contact with earth-as,
+for example, by means of ‘long insulators,
+mounted, preferably, on metal poles, so that
+in case of leakage from the line it will pass
+
+In constructing my improved transformers harmlessly to earth. In Fig. 1, where such
+I employ a length of secondary which is ap a system is illustrated, a dynamo G is con
+
+g
+
+593,138
+
+veniently represented as supplying the pri
+
+As the secondary is electrically connected
+
+mary of the sending or “step-up” trans~ with the primary the latter will be at sub
+former, and lamps II and motors K are shown stantially the same potential as the adjacent
+as connected with the corresponding circuit portions of the secondary, so that there will 55
+of the receiving or “ step-down ” transformer. be no tendency for sparks to jump from one
+Instead of winding the coils in the form of to the other and destroy the insulation.
+a flat spiral the secondary may be wound on
+a support in the shape of a frustum of a cone
+
+and the primary wound around its base, as
+IO shown in Fig. 2.
+In practice for apparatus designed for or
+dinary usage the coil is preferably constructed
+on the plan illustrated in Fig. 3. In this ?g
+ure L L are spools of insulating material upon
+
+Moreover, as both primary and secondary are
+
+grounded and the line-terminal of the coil
+carried and protected to a point remote from
+the apparatus the danger of a- discharge
+through the body of a person handling or ap
+proaching the apparatus is reduced to a mini—
+mum.
+
+I am aware that an induction-coil in the 65
+
+which the secondary is wound-in the present form of a flat spiral is not in itself new, and
+case, however, in two sections, so as to con this I do not claim; but
+stitute really two secondaries. The primary
+lVhat I claim as my invention is
+C is a spirally-wound flat strip surrounding
+1. A transformer for developing or convert
+both secondaries B.
+ing currents of high potential, comprising a
+20
+The inner terminals of the secondaries are primary and secondary coil, one terminal of
+led out through tubes of insulating material the secondary being electrically connected
+M, while the other or outside terminals are
+
+with the primary, and with earth when the
+connected with the primary.
+transformer is in use, as set forth.
+The length of the secondary coil B or of
+2. A transformer for developing or con vcrt~ 75
+25 each secondary coil when two are used, as in ing currents of high potential, comprising a
+3, is, as before stated, approximately one primary and secondary wound in the form of
+quarter of the wave length of the electrical a ?at spiral, the end of the secondary adja
+disturbance in the secondary circuit, based cent to the primary being electrically com
+on the velocity of propagation of the elec nected therewith and with earth when the
+trical disturbance through the coil itself and transformer is in use, as set forth.
+the circuit with which it is designed to be
+A transformer for developing or co nvert~
+used—that is to say, if the rate at which a ing currents of high potential comprising a
+current traverses the circuit, including the primary and secondary wound in the form of
+coil, be one hundred and eighty-live thousand a spiral, the secondary being inside of, and
+35 miles per second, then a frequency of nine surrounded by, the convolutions of the pri
+hundred and twenty-five per second would mary and having ‘its adjacent terminal elec
+maintain nine hundred and twenty-?ve sta trically connected therewith and with earth
+tionary waves in a circuit one hundred and
+
+eighty-?ve thousand miles long, and each
+
+when the transformer is in use, as set forth.
+4:. In a system for the conversion and trans
+
+wave length would be two hundred miles in mission of electrical energy, the combination
+length. Forsuch a frequencyl should usea of two transformers, one for raising, the other
+secondary fifty miles in length, so that at one for lowering, the potential of the currents,
+terminal the potential would be zero and at the said transformers having one terminal of
+the other maximum.
+the longer or ?ne~wire coils connected to line, 95
+Coils of the character herein described have and the other terminals adjacent to the
+45
+several important advantages. As the po shorter coils electrically connected therewith
+tential increases with the number of turns , and to the earth, as set forth.
+the difference of potential between adjacent
+NIKOLA il‘lilriiln‘i.
+turns is comparatively small, an d hence a very
+\Vitnesses:
+50 high potential, impracticable with ordinary
+M. Lawson Dvnn,
+coils, may be successfully maintained.
+G. W. lliliin'rnmc.

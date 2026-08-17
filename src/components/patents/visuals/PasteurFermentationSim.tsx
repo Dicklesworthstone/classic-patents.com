@@ -2,12 +2,15 @@
 
 import { Play, RotateCcw, Volume2, VolumeX } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
+import { usePatentPhysics } from "@/physics/usePatentPhysics";
+import { usePatentAudio } from "./three/usePatentAudio";
 
 export function PasteurFermentationSim() {
-  const [bathTempC, setBathTempC] = useState<number>(58);
-  const [holdTimeMinutes, setHoldTimeMinutes] = useState<number>(20);
+  const { params, updateParam, resetParams } = usePatentPhysics("us-135245-pasteur-fermentation");
+  const { isAudioMuted, toggleSound } = usePatentAudio();
+  const bathTempC = params.pasteurizationTempC ?? 58;
+  const holdTimeMinutes = params.holdTimeMin ?? 20;
   const [isPlaying, setIsPlaying] = useState<boolean>(true);
-  const [isMuted, setIsMuted] = useState<boolean>(true);
   const [timerSeconds, setTimerSeconds] = useState<number>(0);
   const animRef = useRef<number | null>(null);
 
@@ -43,7 +46,7 @@ export function PasteurFermentationSim() {
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 border-b border-parchment-200 dark:border-ink-800 pb-3 mb-4">
         <div>
           <h3 className="font-serif text-lg font-bold text-ink-900 dark:text-parchment-100">
-            Pasteur Thermal Fermentation & Pasteurization (US 135,245)
+            Pasteur Thermal Fermentation &amp; Pasteurization (US 135,245)
           </h3>
           <p className="font-sans text-xs text-ink-500 dark:text-ink-400">
             Interactive 2D Biochemical Model — Sub-Boiling Thermal Inactivation, Aseptic Filtered
@@ -61,11 +64,7 @@ export function PasteurFermentationSim() {
           </button>
           <button
             type="button"
-            onClick={() => {
-              setBathTempC(58);
-              setHoldTimeMinutes(20);
-              setTimerSeconds(0);
-            }}
+            onClick={resetParams}
             aria-label="Reset Simulation"
             className="p-2 rounded-lg bg-parchment-200 dark:bg-ink-800 hover:bg-parchment-300 dark:hover:bg-ink-700 text-ink-800 dark:text-parchment-200 transition-colors"
           >
@@ -73,11 +72,11 @@ export function PasteurFermentationSim() {
           </button>
           <button
             type="button"
-            onClick={() => setIsMuted(!isMuted)}
-            aria-label={isMuted ? "Unmute Audio" : "Mute Audio"}
+            onClick={() => toggleSound()}
+            aria-label={isAudioMuted ? "Unmute Audio" : "Mute Audio"}
             className="p-2 rounded-lg bg-parchment-200 dark:bg-ink-800 hover:bg-parchment-300 dark:hover:bg-ink-700 text-ink-800 dark:text-parchment-200 transition-colors"
           >
-            {isMuted ? (
+            {isAudioMuted ? (
               <VolumeX className="w-4 h-4" />
             ) : (
               <Volume2 className="w-4 h-4 text-amber-600" />
@@ -240,10 +239,10 @@ export function PasteurFermentationSim() {
           <input
             type="range"
             min="45"
-            max="85"
+            max="75"
             step="1"
             value={bathTempC}
-            onChange={(e) => setBathTempC(Number(e.target.value))}
+            onChange={(e) => updateParam("pasteurizationTempC", Number(e.target.value))}
             className="w-full accent-amber-600 cursor-pointer"
           />
         </div>
@@ -255,10 +254,10 @@ export function PasteurFermentationSim() {
           <input
             type="range"
             min="5"
-            max="45"
-            step="1"
+            max="40"
+            step="5"
             value={holdTimeMinutes}
-            onChange={(e) => setHoldTimeMinutes(Number(e.target.value))}
+            onChange={(e) => updateParam("holdTimeMin", Number(e.target.value))}
             className="w-full accent-amber-600 cursor-pointer"
           />
         </div>

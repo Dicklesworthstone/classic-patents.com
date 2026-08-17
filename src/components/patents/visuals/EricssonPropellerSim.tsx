@@ -2,12 +2,15 @@
 
 import { Play, RotateCcw, Volume2, VolumeX } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
+import { usePatentPhysics } from "@/physics/usePatentPhysics";
+import { usePatentAudio } from "./three/usePatentAudio";
 
 export function EricssonPropellerSim() {
-  const [shaftRpm, setShaftRpm] = useState<number>(60);
-  const [bladePitchAngleDeg, setBladePitchAngleDeg] = useState<number>(35);
+  const { params, updateParam, resetParams } = usePatentPhysics("us-588-ericsson-propeller");
+  const { isAudioMuted, toggleSound } = usePatentAudio();
+  const shaftRpm = params.shaftRpm ?? 120;
+  const bladePitchAngleDeg = params.bladePitchAngleDeg ?? 35;
   const [isPlaying, setIsPlaying] = useState<boolean>(true);
-  const [isMuted, setIsMuted] = useState<boolean>(true);
   const [angleDeg, setAngleDeg] = useState<number>(0);
   const animRef = useRef<number | null>(null);
 
@@ -62,11 +65,7 @@ export function EricssonPropellerSim() {
           </button>
           <button
             type="button"
-            onClick={() => {
-              setShaftRpm(60);
-              setBladePitchAngleDeg(35);
-              setAngleDeg(0);
-            }}
+            onClick={resetParams}
             aria-label="Reset Simulation"
             className="p-2 rounded-lg bg-parchment-200 dark:bg-ink-800 hover:bg-parchment-300 dark:hover:bg-ink-700 text-ink-800 dark:text-parchment-200 transition-colors"
           >
@@ -74,11 +73,11 @@ export function EricssonPropellerSim() {
           </button>
           <button
             type="button"
-            onClick={() => setIsMuted(!isMuted)}
-            aria-label={isMuted ? "Unmute Audio" : "Mute Audio"}
+            onClick={() => toggleSound()}
+            aria-label={isAudioMuted ? "Unmute Audio" : "Mute Audio"}
             className="p-2 rounded-lg bg-parchment-200 dark:bg-ink-800 hover:bg-parchment-300 dark:hover:bg-ink-700 text-ink-800 dark:text-parchment-200 transition-colors"
           >
-            {isMuted ? (
+            {isAudioMuted ? (
               <VolumeX className="w-4 h-4" />
             ) : (
               <Volume2 className="w-4 h-4 text-amber-600" />
@@ -274,7 +273,7 @@ export function EricssonPropellerSim() {
             max="150"
             step="5"
             value={shaftRpm}
-            onChange={(e) => setShaftRpm(Number(e.target.value))}
+            onChange={(e) => updateParam("shaftRpm", Number(e.target.value))}
             className="w-full accent-amber-600 cursor-pointer"
           />
         </div>
@@ -289,7 +288,7 @@ export function EricssonPropellerSim() {
             max="50"
             step="1"
             value={bladePitchAngleDeg}
-            onChange={(e) => setBladePitchAngleDeg(Number(e.target.value))}
+            onChange={(e) => updateParam("bladePitchAngleDeg", Number(e.target.value))}
             className="w-full accent-amber-600 cursor-pointer"
           />
         </div>
