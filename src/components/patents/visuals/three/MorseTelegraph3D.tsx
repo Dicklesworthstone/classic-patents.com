@@ -1,333 +1,412 @@
 "use client";
 
-import { Radio, Volume2, VolumeX } from "lucide-react";
+import { Radio, Volume2, VolumeX, Zap } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import * as THREE from "three";
 import { soundEngine } from "@/utils/soundEngine";
-import { createThreeStudioScene } from "./ThreeStudioScene";
+import { createGlowPointTexture, createThreeStudioScene } from "./ThreeStudioScene";
 
 export function MorseTelegraph3D() {
   const containerRef = useRef<HTMLDivElement>(null);
 
-  // Telegraph Parameters
-  const [wpmSpeed, setWpmSpeed] = useState<number>(20); // 5 to 40 WPM
-  const [lineCurrentMa, setLineCurrentMa] = useState<number>(85); // 20 to 150 mA
-  const [isKeyDown, setIsKeyDown] = useState<boolean>(false);
-  const [isPlayingAudio, setIsPlayingAudio] = useState<boolean>(false);
+  // Telegraph Circuit State Controls
+  const [lineVoltageV, setLineVoltageV] = useState<number>(24); // 6 to 48 V
+  const [lineLengthMiles, setLineLengthMiles] = useState<number>(44); // Baltimore to Washington (44 miles)
+  const [keyIsDown, setKeyIsDown] = useState<boolean>(false);
+  const [wpmSpeed, setWpmSpeed] = useState<number>(20); // 5 to 35 WPM
+  const [isPlayingAudio, setIsPlayingAudio] = useState<boolean>(true);
 
-  // Physics Calculations
-  const dotDurationMs = Math.round(1200 / wpmSpeed);
-  const dashDurationMs = dotDurationMs * 3;
-  const electromagnetForceNewtons = ((lineCurrentMa / 100) * 4.2).toFixed(2);
+  // Telegraph Circuit Physics Calculations
+  // Line Resistance: R_line = 12 ohms/mile
+  const lineResistanceOhms = Math.round(lineLengthMiles * 12.5);
+  const coilResistanceOhms = 150;
+  const totalResistanceOhms = lineResistanceOhms + coilResistanceOhms;
+  const loopCurrentMa = ((lineVoltageV / totalResistanceOhms) * 1000).toFixed(1);
+  const magneticHoldForceN = (Number(loopCurrentMa) * 0.08).toFixed(2);
 
-  // Live Sound for Morse Clicks
-  const handleKeyClick = (down: boolean) => {
-    setIsKeyDown(down);
-    if (isPlayingAudio) {
-      if (down) {
-        soundEngine.playMorseClick();
-      } else {
-        soundEngine.playMorseClick();
-      }
-    }
+  // Audio Click Trigger
+  const handleKeyDown = () => {
+    setKeyIsDown(true);
+    if (isPlayingAudio) soundEngine.playMorseClick();
+  };
+
+  const handleKeyUp = () => {
+    setKeyIsDown(false);
+    if (isPlayingAudio) soundEngine.playMorseClick();
   };
 
   useEffect(() => {
     const container = containerRef.current;
     if (!container) return;
 
-    // Create Studio Scene with Museum Studio Lighting
+    // Create Studio Scene with High-Luminosity Studio Lighting
     const studio = createThreeStudioScene({
       container,
-      cameraPos: [14, 11, 16],
+      cameraPos: [11, 8, 13],
       targetPos: [0, 0, 0],
-      bgBottomColor: 0x0f172a,
-      rimColor: 0xd97706,
-      ambientIntensity: 1.3,
     });
 
     const { scene, camera, renderer, controls } = studio;
 
     // --- PBR MATERIALS ---
-    const brassMat = new THREE.MeshStandardMaterial({
-      color: 0xd97706,
-      metalness: 0.9,
-      roughness: 0.2,
+    const mahoganyMat = new THREE.MeshStandardMaterial({
+      color: 0x78350f, // Rich mahogany wood baseboard
+      roughness: 0.35,
+      metalness: 0.08,
     });
 
-    const ironCoreMat = new THREE.MeshStandardMaterial({
-      color: 0x334155,
-      metalness: 0.85,
-      roughness: 0.35,
+    const brassMat = new THREE.MeshStandardMaterial({
+      color: 0xd97706, // Polished instrument brass
+      roughness: 0.18,
+      metalness: 0.92,
     });
 
     const copperCoilMat = new THREE.MeshStandardMaterial({
-      color: 0xb45309,
+      color: 0xca8a04, // Silk-insulated copper wire windings
+      roughness: 0.28,
+      metalness: 0.85,
+    });
+
+    const ironCoreMat = new THREE.MeshStandardMaterial({
+      color: 0x334155, // Soft iron electromagnet poles
+      roughness: 0.4,
       metalness: 0.8,
-      roughness: 0.3,
     });
 
-    const mahoganyBaseMat = new THREE.MeshStandardMaterial({
-      color: 0x78350f,
-      roughness: 0.6,
-      metalness: 0.1,
+    const paperTapeMat = new THREE.MeshStandardMaterial({
+      color: 0xfef9e7, // Paper register tape
+      roughness: 0.8,
+      metalness: 0.02,
+      side: THREE.DoubleSide,
     });
 
-    // --- 3D MORSE TELEGRAPH KEY & SOUNDER ASSEMBLY ---
+    // --- 3D MORSE TELEGRAPH APPARATUS ---
     const telegraphGroup = new THREE.Group();
     scene.add(telegraphGroup);
 
-    // Polished Mahogany Table Base
-    const tableBase = new THREE.Mesh(new THREE.BoxGeometry(16, 0.8, 10), mahoganyBaseMat);
-    tableBase.position.y = -3.0;
-    tableBase.receiveShadow = true;
-    telegraphGroup.add(tableBase);
+    // Baseboard
+    const base = new THREE.Mesh(new THREE.BoxGeometry(11.0, 0.7, 7.0), mahoganyMat);
+    base.position.y = -2.4;
+    base.castShadow = true;
+    base.receiveShadow = true;
+    telegraphGroup.add(base);
 
-    // 1. Sending Key Mechanism (Left Side)
+    // --- SECTION 1: TRANSMITTING KEY LEVER (LEFT) ---
     const keyGroup = new THREE.Group();
-    keyGroup.position.set(-4.5, -2.4, 0);
+    keyGroup.position.set(-3.2, -1.8, 0);
 
-    // Brass Base Pillar Supports
-    const keyPillars = new THREE.Mesh(new THREE.BoxGeometry(2.0, 1.4, 1.2), brassMat);
-    keyGroup.add(keyPillars);
+    const keyTrunnion = new THREE.Mesh(new THREE.BoxGeometry(0.8, 0.8, 1.4), brassMat);
+    keyTrunnion.castShadow = true;
+    keyGroup.add(keyTrunnion);
 
-    // Pivoting Brass Lever Arm
-    const leverArm = new THREE.Mesh(new THREE.BoxGeometry(6.5, 0.35, 0.6), brassMat);
-    leverArm.position.set(0.5, 0.9, 0);
-    keyGroup.add(leverArm);
+    const keyLever = new THREE.Mesh(new THREE.BoxGeometry(4.2, 0.2, 0.35), brassMat);
+    keyLever.position.set(0.6, 0.3, 0);
+    keyLever.name = "keyLever";
+    keyLever.castShadow = true;
+    keyGroup.add(keyLever);
 
-    // Bakelite / Hard Rubber Finger Knob
     const knob = new THREE.Mesh(
-      new THREE.CylinderGeometry(0.8, 0.6, 0.5, 24),
-      new THREE.MeshStandardMaterial({ color: 0x0f172a, roughness: 0.3, metalness: 0.2 }),
+      new THREE.CylinderGeometry(0.55, 0.45, 0.35, 24),
+      new THREE.MeshStandardMaterial({ color: 0x0f172a, roughness: 0.3 }),
     );
-    knob.position.set(3.4, 1.3, 0);
-    keyGroup.add(knob);
-
-    // Platinum Contact Anvil
-    const keyContact = new THREE.Mesh(
-      new THREE.CylinderGeometry(0.2, 0.2, 0.4, 16),
-      new THREE.MeshStandardMaterial({ color: 0xf1f5f9, metalness: 0.95, roughness: 0.1 }),
-    );
-    keyContact.position.set(2.4, 0.2, 0);
-    keyGroup.add(keyContact);
-
+    knob.position.set(2.4, 0.5, 0);
+    knob.castShadow = true;
+    keyLever.add(knob);
     telegraphGroup.add(keyGroup);
 
-    // 2. Receiving Electromagnet Sounder (Right Side)
+    // --- SECTION 2: RELAY / SOUNDER ELECTROMAGNET (RIGHT) ---
     const sounderGroup = new THREE.Group();
-    sounderGroup.position.set(4.5, -2.4, 0);
+    sounderGroup.position.set(2.8, -1.8, 0);
 
-    // Dual Horseshoe Electromagnet Coils
-    const coil1 = new THREE.Mesh(new THREE.CylinderGeometry(0.9, 0.9, 2.6, 24), copperCoilMat);
-    coil1.position.set(-1.0, 1.3, 0);
-    const coil2 = new THREE.Mesh(new THREE.CylinderGeometry(0.9, 0.9, 2.6, 24), copperCoilMat);
-    coil2.position.set(1.0, 1.3, 0);
-    sounderGroup.add(coil1);
-    sounderGroup.add(coil2);
+    // Dual Vertical Electromagnet Coils (Horseshoe)
+    for (let c = 0; c < 2; c++) {
+      const zPos = (c - 0.5) * 1.6;
+      const coil = new THREE.Mesh(new THREE.CylinderGeometry(0.65, 0.65, 2.2, 24), copperCoilMat);
+      coil.position.set(0, 1.1, zPos);
+      coil.castShadow = true;
+      sounderGroup.add(coil);
 
-    // Soft Iron Armature Bar
-    const armatureBar = new THREE.Mesh(new THREE.BoxGeometry(3.6, 0.4, 0.8), ironCoreMat);
-    armatureBar.position.set(0, 2.8, 0);
-    sounderGroup.add(armatureBar);
+      const core = new THREE.Mesh(new THREE.CylinderGeometry(0.28, 0.28, 2.4, 16), ironCoreMat);
+      core.position.set(0, 1.2, zPos);
+      sounderGroup.add(core);
+    }
 
-    // Brass Sounder Anvil Frame
-    const sounderFrame = new THREE.Mesh(new THREE.BoxGeometry(4.2, 4.2, 0.4), brassMat);
-    sounderFrame.position.set(0, 2.4, -1.2);
-    sounderGroup.add(sounderFrame);
+    // Pivoted Sounder Armature Lever & Anvil Stop
+    const armatureGroup = new THREE.Group();
+    armatureGroup.position.set(0, 2.4, 0);
 
+    const softIronKeeper = new THREE.Mesh(new THREE.BoxGeometry(0.6, 0.3, 2.2), ironCoreMat);
+    softIronKeeper.castShadow = true;
+    armatureGroup.add(softIronKeeper);
+
+    const sounderBar = new THREE.Mesh(new THREE.BoxGeometry(2.8, 0.25, 0.3), brassMat);
+    sounderBar.position.set(1.2, 0.1, 0);
+    sounderBar.castShadow = true;
+    armatureGroup.add(sounderBar);
+
+    sounderGroup.add(armatureGroup);
     telegraphGroup.add(sounderGroup);
 
-    // --- ANIMATION & PHYSICS INTEGRATION LOOP ---
-    let animId: number;
+    // --- SECTION 3: EMBOSSING PAPER TAPE REGISTER ---
+    const tapeCurve = new THREE.CatmullRomCurve3([
+      new THREE.Vector3(4.5, -1.8, 2.2),
+      new THREE.Vector3(5.2, -0.6, 2.2),
+      new THREE.Vector3(5.2, 1.2, 2.2),
+      new THREE.Vector3(4.8, 2.4, 2.2),
+    ]);
+    const tapeGeo = new THREE.TubeGeometry(tapeCurve, 20, 0.15, 4, false);
+    const paperTape = new THREE.Mesh(tapeGeo, paperTapeMat);
+    telegraphGroup.add(paperTape);
+
+    // --- GLOWING TELEGRAPH CURRENT WIRE PARTICLES ---
+    const currentCount = 90;
+    const currentGeo = new THREE.BufferGeometry();
+    const currentPos = new Float32Array(currentCount * 3);
+    const glowTex = createGlowPointTexture();
+
+    for (let i = 0; i < currentCount; i++) {
+      const idx = i * 3;
+      currentPos[idx] = -3.2 + (i / currentCount) * 6.0;
+      currentPos[idx + 1] = -2.0;
+      currentPos[idx + 2] = 0;
+    }
+
+    currentGeo.setAttribute("position", new THREE.BufferAttribute(currentPos, 3));
+    const currentPoints = new THREE.Points(
+      currentGeo,
+      new THREE.PointsMaterial({
+        size: 0.35,
+        map: glowTex,
+        color: 0x38bdf8,
+        transparent: true,
+        opacity: 0.85,
+        blending: THREE.AdditiveBlending,
+        depthWrite: false,
+      }),
+    );
+    scene.add(currentPoints);
+
+    // --- RENDER LOOP & REAL-TIME MORSE DYNAMICS ---
+    let reqId: number;
     const clock = new THREE.Clock();
 
     const animate = () => {
-      animId = requestAnimationFrame(animate);
-      const time = clock.getElapsedTime();
+      reqId = requestAnimationFrame(animate);
+      const delta = clock.getDelta();
+      const elapsed = clock.getElapsedTime();
+
+      // Automatic Morse Code Beacon: "WHAT HATH GOD WROUGHT"
+      // Simulated periodic key presses if not manually held
+      const autoPattern = Math.sin(elapsed * 6.0) > 0.3 && elapsed % 4.0 < 2.5;
+      const isEnergized = keyIsDown || autoPattern;
+
+      // Key Lever Dip
+      const keyMesh = keyGroup.getObjectByName("keyLever");
+      if (keyMesh) {
+        keyMesh.rotation.z = isEnergized ? 0.08 : 0;
+      }
+
+      // Armature Sounder Click Down toward electromagnet pole shoes
+      armatureGroup.position.y = isEnergized ? 2.25 : 2.45;
+
+      // Pulse Wire Current Particles
+      currentPoints.visible = isEnergized;
+      const cPos = currentPos;
+      for (let i = 0; i < currentCount; i++) {
+        const idx = i * 3;
+        cPos[idx] += delta * 12.0;
+        if (cPos[idx] > 2.8) {
+          cPos[idx] = -3.2;
+        }
+      }
+      currentGeo.attributes.position.needsUpdate = true;
 
       controls.update();
-
-      // Lever depression and Armature snap
-      const isPressed = isKeyDown || Math.sin(time * (wpmSpeed * 0.4)) > 0.4;
-      leverArm.rotation.z = isPressed ? -0.06 : 0;
-      armatureBar.position.y = isPressed ? 2.65 : 2.95;
-
       renderer.render(scene, camera);
     };
 
     animate();
 
     return () => {
-      cancelAnimationFrame(animId);
+      cancelAnimationFrame(reqId);
       studio.dispose();
     };
-  }, [wpmSpeed, isKeyDown]);
+  }, [keyIsDown]);
 
   return (
-    <div className="rounded-2xl border border-amber-900/20 dark:border-ink-800 bg-parchment-50 dark:bg-ink-950 p-6 sm:p-7 shadow-patent space-y-6">
-      {/* Header */}
-      <div className="flex flex-wrap items-center justify-between gap-3 border-b border-parchment-200 dark:border-ink-800 pb-4">
-        <div>
-          <div className="flex items-center gap-2.5">
-            <Radio className="w-6 h-6 text-amber-500 animate-pulse" />
-            <h3 className="font-serif text-2xl font-bold text-ink-950 dark:text-parchment-50">
-              3D Real-Time Morse Electro-Magnetic Telegraph Simulator (US 1,647)
-            </h3>
+    <div className="flex flex-col h-full bg-parchment-50/60 dark:bg-ink-950/80 rounded-2xl overflow-hidden border border-parchment-300 dark:border-ink-800 shadow-patent">
+      {/* 3D WebGL Canvas Viewport */}
+      <div className="relative flex-1 min-h-[380px] sm:min-h-[460px] w-full cursor-grab active:cursor-grabbing">
+        <div ref={containerRef} className="absolute inset-0 w-full h-full" />
+
+        {/* Live HUD Telemetry Overlay */}
+        <div className="absolute top-4 left-4 z-10 flex flex-col gap-2 pointer-events-none">
+          <div className="bg-white/90 dark:bg-ink-900/90 backdrop-blur-md px-3.5 py-2.5 rounded-xl border border-parchment-300 dark:border-ink-700 shadow-sm">
+            <div className="text-[11px] font-sans text-amber-700 dark:text-amber-400 font-bold uppercase tracking-wider flex items-center gap-1.5">
+              <Radio className="w-3.5 h-3.5 text-blue-500 animate-pulse" />
+              Morse Telegraph Circuit Telemetry
+            </div>
+            <div className="grid grid-cols-2 gap-x-4 gap-y-1 mt-1 text-xs font-sans">
+              <div>
+                <span className="text-ink-600 dark:text-ink-400">Loop Current ($I$):</span>{" "}
+                <span className="font-bold text-emerald-600 dark:text-emerald-400">
+                  {loopCurrentMa} mA DC
+                </span>
+              </div>
+              <div>
+                <span className="text-ink-600 dark:text-ink-400">Line Resistance:</span>{" "}
+                <span className="font-bold text-blue-600 dark:text-blue-400">
+                  {totalResistanceOhms} Ω ({lineLengthMiles} miles)
+                </span>
+              </div>
+              <div>
+                <span className="text-ink-600 dark:text-ink-400">Armature Force ($F$):</span>{" "}
+                <span className="font-bold text-amber-600 dark:text-amber-400">
+                  {magneticHoldForceN} N
+                </span>
+              </div>
+              <div>
+                <span className="text-ink-600 dark:text-ink-400">Transmission Rate:</span>{" "}
+                <span className="font-bold text-purple-600 dark:text-purple-400">
+                  {wpmSpeed} WPM (PARIS standard)
+                </span>
+              </div>
+            </div>
           </div>
-          <p className="text-sm sm:text-base text-ink-700 dark:text-ink-300 mt-1">
-            Studio-illuminated Three.js electromagnetic simulation of the{" "}
-            <strong>spring-loaded brass telegraph key</strong> and{" "}
-            <strong>electromagnetic sounder click</strong>.
-          </p>
+
+          <div className="bg-white/90 dark:bg-ink-900/90 backdrop-blur-md px-3 py-1.5 rounded-lg border border-parchment-300 dark:border-ink-700 text-[11px] font-sans text-ink-700 dark:text-ink-300 flex items-center gap-2">
+            <Zap className="w-3.5 h-3.5 text-emerald-500 animate-pulse" />
+            <span>"What hath God wrought" (May 24, 1844 — Washington to Baltimore)</span>
+          </div>
         </div>
 
-        <div className="flex items-center gap-2">
+        {/* Interactive Morse Key Tap Button */}
+        <div className="absolute bottom-4 left-4 z-10 flex gap-2">
+          <button
+            type="button"
+            onMouseDown={handleKeyDown}
+            onMouseUp={handleKeyUp}
+            onTouchStart={handleKeyDown}
+            onTouchEnd={handleKeyUp}
+            className={`px-5 py-2.5 rounded-xl font-sans font-bold text-sm shadow-lg transition-all active:scale-95 ${
+              keyIsDown
+                ? "bg-amber-500 text-white ring-4 ring-amber-400/40"
+                : "bg-white dark:bg-ink-800 text-ink-900 dark:text-parchment-100 border border-parchment-300 dark:border-ink-700"
+            }`}
+          >
+            {keyIsDown ? "KEY CLOSED (CIRCUIT ON)" : "TAP MORSE KEY"}
+          </button>
+        </div>
+
+        {/* Audio Toggle */}
+        <div className="absolute top-4 right-4 z-10">
           <button
             type="button"
             onClick={() => setIsPlayingAudio(!isPlayingAudio)}
-            className={`flex items-center gap-2 px-3.5 py-1.5 rounded-xl text-xs sm:text-sm font-mono font-bold transition-all border shadow-2xs ${
+            className={`px-3 py-1.5 rounded-lg text-xs font-sans font-semibold border transition-all ${
               isPlayingAudio
-                ? "bg-amber-600 text-white border-amber-700 shadow-sm"
-                : "bg-parchment-200 dark:bg-ink-800 text-ink-800 dark:text-parchment-200 border-parchment-300 dark:border-ink-700"
+                ? "bg-emerald-600 text-white border-emerald-700 shadow-sm"
+                : "bg-white/80 dark:bg-ink-900/80 text-ink-700 dark:text-ink-300 border-parchment-300 dark:border-ink-700"
             }`}
           >
             {isPlayingAudio ? (
-              <Volume2 className="w-3.5 h-3.5" />
+              <>
+                <Volume2 className="w-3.5 h-3.5 inline mr-1 animate-pulse" />
+                Sounder Click ON
+              </>
             ) : (
-              <VolumeX className="w-3.5 h-3.5" />
+              <>
+                <VolumeX className="w-3.5 h-3.5 inline mr-1" />
+                Sounder Click OFF
+              </>
             )}
-            <span>Click Sound: {isPlayingAudio ? "LIVE" : "MUTED"}</span>
           </button>
         </div>
       </div>
 
-      {/* 3D WebGL Canvas & HUD */}
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
-        <div className="lg:col-span-8 flex flex-col items-center justify-center rounded-2xl bg-[#0f172a] border border-parchment-300 dark:border-ink-800 relative min-h-[460px] overflow-hidden shadow-inner">
-          {/* Top HUD */}
-          <div className="absolute top-4 left-4 right-4 z-20 flex items-center justify-between pointer-events-none text-xs sm:text-sm font-mono">
-            <div className="px-3.5 py-1.5 bg-ink-900/90 border border-ink-800 text-amber-300 rounded-xl shadow-md">
-              Sounder Pull: <span className="font-bold">{electromagnetForceNewtons} N</span> (Dot:{" "}
-              {dotDurationMs} ms · Dash: {dashDurationMs} ms)
-            </div>
-
-            <div className="flex items-center gap-2 pointer-events-auto">
-              <button
-                type="button"
-                onMouseDown={() => handleKeyClick(true)}
-                onMouseUp={() => handleKeyClick(false)}
-                onTouchStart={() => handleKeyClick(true)}
-                onTouchEnd={() => handleKeyClick(false)}
-                className={`px-4 py-1.5 rounded-xl border font-mono font-bold text-xs transition-colors shadow-sm ${
-                  isKeyDown
-                    ? "bg-amber-600 text-white border-amber-500 scale-95"
-                    : "bg-ink-900 text-amber-400 border-ink-700 hover:bg-ink-800"
-                }`}
-              >
-                PRESS TELEGRAPH KEY (TAP)
-              </button>
-            </div>
+      {/* Parameter Sliders Panel */}
+      <div className="p-4 sm:p-5 bg-parchment-100/80 dark:bg-ink-900/90 border-t border-parchment-300 dark:border-ink-800 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 text-xs font-sans">
+        {/* Line Voltage */}
+        <div className="space-y-1.5">
+          <div className="flex justify-between font-medium text-ink-900 dark:text-parchment-100">
+            <span>Battery Bank Voltage ($V$):</span>
+            <span className="font-bold text-amber-700 dark:text-amber-400">{lineVoltageV} V</span>
           </div>
-
-          {/* 3D Canvas */}
-          <div ref={containerRef} className="w-full h-[460px] cursor-grab active:cursor-grabbing" />
-
-          {/* Bottom Telemetry */}
-          <div className="w-full grid grid-cols-4 gap-3 text-center text-sm font-mono p-4 bg-ink-950/95 border-t border-ink-800 text-ink-300 z-10">
-            <div>
-              <span className="text-ink-400 block text-xs font-semibold uppercase tracking-wider">
-                CODE SPEED
-              </span>
-              <span className="text-amber-400 font-bold text-sm sm:text-base">{wpmSpeed} WPM</span>
-            </div>
-            <div>
-              <span className="text-ink-400 block text-xs font-semibold uppercase tracking-wider">
-                LOOP CURRENT
-              </span>
-              <span className="text-emerald-400 font-bold text-sm sm:text-base">
-                {lineCurrentMa} mA
-              </span>
-            </div>
-            <div>
-              <span className="text-ink-400 block text-xs font-semibold uppercase tracking-wider">
-                CIRCUIT STATE
-              </span>
-              <span
-                className={`font-bold text-sm sm:text-base ${isKeyDown ? "text-amber-400" : "text-blue-400"}`}
-              >
-                {isKeyDown ? "CLOSED (MARK)" : "OPEN (SPACE)"}
-              </span>
-            </div>
-            <div>
-              <span className="text-ink-400 block text-xs font-semibold uppercase tracking-wider">
-                3D INTERACTION
-              </span>
-              <span className="text-purple-400 font-semibold text-xs sm:text-sm">
-                Drag Orbit / Zoom
-              </span>
-            </div>
-          </div>
+          <input
+            type="range"
+            min="6"
+            max="48"
+            step="6"
+            value={lineVoltageV}
+            onChange={(e) => setLineVoltageV(Number(e.target.value))}
+            className="w-full accent-amber-600 dark:accent-amber-400 cursor-pointer"
+          />
+          <span className="text-[10px] text-ink-500 dark:text-ink-400 block">
+            Grove nitric acid battery cells in series
+          </span>
         </div>
 
-        {/* Controls Sidebar */}
-        <div className="lg:col-span-4 space-y-4">
-          <div className="rounded-2xl border border-parchment-300 dark:border-ink-800 bg-parchment-100/80 dark:bg-ink-900/70 p-6 space-y-5 shadow-sm">
-            <span className="font-serif font-bold text-base sm:text-lg text-ink-950 dark:text-parchment-50 block">
-              Telegraph Line Controls
+        {/* Transmission Line Length */}
+        <div className="space-y-1.5">
+          <div className="flex justify-between font-medium text-ink-900 dark:text-parchment-100">
+            <span>Telegraph Wire Span:</span>
+            <span className="font-bold text-blue-600 dark:text-blue-400">
+              {lineLengthMiles} miles ({lineResistanceOhms} Ω)
             </span>
-
-            {/* WPM Speed Slider */}
-            <div className="space-y-1.5">
-              <div className="flex justify-between text-xs sm:text-sm font-mono">
-                <span className="font-semibold text-ink-800 dark:text-parchment-200">
-                  Transmission Speed (WPM)
-                </span>
-                <span className="text-amber-600 dark:text-amber-400 font-bold">{wpmSpeed} WPM</span>
-              </div>
-              <input
-                type="range"
-                min="5"
-                max="40"
-                step="1"
-                value={wpmSpeed}
-                onChange={(e) => setWpmSpeed(Number(e.target.value))}
-                className="w-full accent-amber-600 cursor-pointer h-2 bg-parchment-300 dark:bg-ink-700 rounded-lg"
-              />
-            </div>
-
-            {/* Loop Current Slider */}
-            <div className="space-y-1.5">
-              <div className="flex justify-between text-xs sm:text-sm font-mono">
-                <span className="font-semibold text-ink-800 dark:text-parchment-200">
-                  {"Telegraph Loop Current ($I_{line}$)"}
-                </span>
-                <span className="text-emerald-600 dark:text-emerald-400 font-bold">
-                  {lineCurrentMa} mA
-                </span>
-              </div>
-              <input
-                type="range"
-                min="20"
-                max="150"
-                step="5"
-                value={lineCurrentMa}
-                onChange={(e) => setLineCurrentMa(Number(e.target.value))}
-                className="w-full accent-emerald-600 cursor-pointer h-2 bg-parchment-300 dark:bg-ink-700 rounded-lg"
-              />
-            </div>
-
-            <div className="p-4 rounded-xl bg-amber-500/10 border border-amber-500/30 text-ink-950 dark:text-parchment-100 text-xs sm:text-sm font-sans space-y-1.5">
-              <span className="font-bold text-amber-900 dark:text-amber-300 block font-mono text-xs uppercase tracking-wider">
-                Morse&apos;s Protocol &amp; Hardware:
-              </span>
-              <p className="leading-relaxed">
-                Samuel Morse solved long-distance electric communication through two inventions: the
-                binary dot-and-dash variable-duration code, and the relay-repeater electromagnet
-                that refreshed degraded signals across continent-spanning copper lines.
-              </p>
-            </div>
           </div>
+          <input
+            type="range"
+            min="10"
+            max="150"
+            step="5"
+            value={lineLengthMiles}
+            onChange={(e) => setLineLengthMiles(Number(e.target.value))}
+            className="w-full accent-blue-600 dark:accent-blue-400 cursor-pointer"
+          />
+          <span className="text-[10px] text-ink-500 dark:text-ink-400 block">
+            Galvanized iron telegraph wire on cedar poles
+          </span>
+        </div>
+
+        {/* Transmission Speed */}
+        <div className="space-y-1.5">
+          <div className="flex justify-between font-medium text-ink-900 dark:text-parchment-100">
+            <span>Operator Keying Speed:</span>
+            <span className="font-bold text-emerald-600 dark:text-emerald-400">
+              {wpmSpeed} Words/Min
+            </span>
+          </div>
+          <input
+            type="range"
+            min="5"
+            max="35"
+            step="1"
+            value={wpmSpeed}
+            onChange={(e) => setWpmSpeed(Number(e.target.value))}
+            className="w-full accent-emerald-600 dark:accent-emerald-400 cursor-pointer"
+          />
+          <span className="text-[10px] text-ink-500 dark:text-ink-400 block">
+            Dot = 1 unit, Dash = 3 units, Word space = 7 units
+          </span>
+        </div>
+
+        {/* Relay Margin */}
+        <div className="space-y-1.5">
+          <div className="flex justify-between font-medium text-ink-900 dark:text-parchment-100">
+            <span>Relay Sensitivity Margin:</span>
+            <span className="font-bold text-purple-600 dark:text-purple-400">
+              {Number(loopCurrentMa) > 20 ? "Strong Click (>20mA)" : "Marginal Signal"}
+            </span>
+          </div>
+          <div className="w-full bg-parchment-300 dark:bg-ink-800 rounded-full h-3 overflow-hidden mt-2 border border-parchment-400 dark:border-ink-700">
+            <div
+              className="bg-gradient-to-r from-blue-500 via-emerald-500 to-amber-500 h-full transition-all duration-300"
+              style={{ width: `${Math.min(100, (Number(loopCurrentMa) / 60) * 100)}%` }}
+            />
+          </div>
+          <span className="text-[10px] text-ink-500 dark:text-ink-400 block">
+            Morse relay amplifier allows thousands of miles span
+          </span>
         </div>
       </div>
     </div>

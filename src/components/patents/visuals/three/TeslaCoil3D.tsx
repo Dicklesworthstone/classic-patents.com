@@ -1,348 +1,438 @@
 "use client";
 
-import { Zap } from "lucide-react";
+import { Sparkles, Volume2, VolumeX, Zap } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import * as THREE from "three";
-import { createThreeStudioScene } from "./ThreeStudioScene";
+import { soundEngine } from "@/utils/soundEngine";
+import { createGlowPointTexture, createThreeStudioScene } from "./ThreeStudioScene";
 
 export function TeslaCoil3D() {
   const containerRef = useRef<HTMLDivElement>(null);
 
-  // Electrical Parameters
-  const [sparkRateHz, setSparkRateHz] = useState<number>(120);
-  const [primaryCapacitanceNf, setPrimaryCapacitanceNf] = useState<number>(20);
-  const [secondaryTurns, setSecondaryTurns] = useState<number>(850);
-  const [showLightning, setShowLightning] = useState<boolean>(true);
+  // Electrical Resonant State Controls
+  const [resonantFreqKhz, setResonantFreqKhz] = useState<number>(180); // 50 to 500 kHz
+  const [sparkGapDistanceMm, setSparkGapDistanceMm] = useState<number>(12); // 2 to 30 mm
+  const [inputVoltageKv, setInputVoltageKv] = useState<number>(15); // 5 to 30 kV
+  const [toploadCapacitancePf, setToploadCapacitancePf] = useState<number>(35); // 10 to 80 pF
+  const [showLightningStreamers, setShowLightningStreamers] = useState<boolean>(true);
+  const [isPlayingAudio, setIsPlayingAudio] = useState<boolean>(false);
 
-  // Resonant Calculations
-  const resonantFreqKhz = 1 / (2 * Math.PI * Math.sqrt(15e-6 * primaryCapacitanceNf * 1e-9)) / 1000;
-  const secondaryVoltageKv = Math.round(
-    15 * Math.sqrt(secondaryTurns / 10) * (primaryCapacitanceNf / 20),
-  );
+  // High-Frequency Resonant Physics Calculations
+  // Secondary Output Voltage: V_sec = V_pri * sqrt(L_sec / L_pri) * Q
+  const qFactor = 145;
+  const secondaryVoltageMv = (
+    ((inputVoltageKv * 1000 * Math.sqrt(85 / 0.012) * qFactor) / 1e6) *
+    (sparkGapDistanceMm / 15)
+  ).toFixed(2);
+  const streamerLengthInches = (Number(secondaryVoltageMv) * 28).toFixed(1);
+
+  // Audio synthesis
+  useEffect(() => {
+    if (isPlayingAudio) {
+      soundEngine.playContinuousTone(resonantFreqKhz * 2.5, "sawtooth", 0.05);
+    } else {
+      soundEngine.stopContinuousTone();
+    }
+    return () => {
+      soundEngine.stopContinuousTone();
+    };
+  }, [isPlayingAudio, resonantFreqKhz]);
 
   useEffect(() => {
     const container = containerRef.current;
     if (!container) return;
 
-    // Create Studio Scene with Museum Studio Lighting
+    // Create Studio Scene with High-Luminosity Studio Lighting
     const studio = createThreeStudioScene({
       container,
-      cameraPos: [14, 10, 16],
+      cameraPos: [11, 9, 14],
       targetPos: [0, 0, 0],
-      bgBottomColor: 0x0f172a,
-      rimColor: 0xc084fc,
-      ambientIntensity: 1.3,
     });
 
     const { scene, camera, renderer, controls } = studio;
 
     // --- PBR MATERIALS ---
-    const primaryCopperMat = new THREE.MeshStandardMaterial({
-      color: 0xf59e0b,
+    const toroidAluminumMat = new THREE.MeshStandardMaterial({
+      color: 0xf1f5f9, // Spun aluminum toroidal breakout terminal
+      roughness: 0.1,
       metalness: 0.95,
-      roughness: 0.15,
     });
 
-    const secondaryWireMat = new THREE.MeshStandardMaterial({
-      color: 0x818cf8,
-      metalness: 0.8,
+    const secondaryCopperWireMat = new THREE.MeshStandardMaterial({
+      color: 0xd97706, // High-density magnet wire secondary turns
       roughness: 0.3,
+      metalness: 0.85,
     });
 
-    const toploadToroidMat = new THREE.MeshStandardMaterial({
-      color: 0xf1f5f9,
-      metalness: 0.98,
-      roughness: 0.05,
+    const primaryHeavyCopperMat = new THREE.MeshStandardMaterial({
+      color: 0xca8a04, // Flat-spiral heavy copper strap primary
+      roughness: 0.18,
+      metalness: 0.9,
     });
 
-    const mahoganyBaseMat = new THREE.MeshStandardMaterial({
-      color: 0x78350f,
-      roughness: 0.6,
-      metalness: 0.1,
+    const baseMahoganyMat = new THREE.MeshStandardMaterial({
+      color: 0x78350f, // Heavy mahogany insulated support table
+      roughness: 0.35,
+      metalness: 0.05,
     });
 
-    // --- 3D TESLA RESONANT TRANSFORMER ASSEMBLY ---
+    const sparkGapBrassMat = new THREE.MeshStandardMaterial({
+      color: 0xf59e0b, // Rotary brass tungsten electrode balls
+      roughness: 0.12,
+      metalness: 0.95,
+    });
+
+    // --- 3D TESLA COIL APPARATUS ---
     const coilGroup = new THREE.Group();
     scene.add(coilGroup);
 
-    // Polished Mahogany Heavy Insulator Base Table
-    const baseTable = new THREE.Mesh(new THREE.BoxGeometry(12, 0.8, 12), mahoganyBaseMat);
-    baseTable.position.y = -4.0;
-    baseTable.receiveShadow = true;
-    coilGroup.add(baseTable);
-
-    // Outer Heavy Copper Flat Spiral / Inverted Conical Primary Coil
-    const numPrimaryTurns = 6;
-    for (let i = 0; i < numPrimaryTurns; i++) {
-      const r = 3.2 + i * 0.45;
-      const turn = new THREE.Mesh(new THREE.TorusGeometry(r, 0.12, 16, 48), primaryCopperMat);
-      turn.rotation.x = Math.PI / 2;
-      turn.position.y = -3.2 + i * 0.15;
-      turn.castShadow = true;
-      coilGroup.add(turn);
-    }
-
-    // Central Conical / Helical Secondary Resonator Spool
-    const secondarySpool = new THREE.Mesh(
-      new THREE.CylinderGeometry(1.2, 1.8, 6.5, 32),
-      secondaryWireMat,
+    // Insulated Base Table
+    const tableBase = new THREE.Mesh(
+      new THREE.CylinderGeometry(4.2, 4.5, 0.8, 36),
+      baseMahoganyMat,
     );
-    secondarySpool.position.y = 0.2;
-    secondarySpool.castShadow = true;
-    coilGroup.add(secondarySpool);
+    tableBase.position.y = -3.8;
+    tableBase.receiveShadow = true;
+    coilGroup.add(tableBase);
 
-    // Topload Aluminum Spun Toroid Terminal
-    const topload = new THREE.Mesh(new THREE.TorusGeometry(2.4, 0.9, 24, 48), toploadToroidMat);
-    topload.rotation.x = Math.PI / 2;
-    topload.position.y = 3.8;
-    topload.castShadow = true;
-    coilGroup.add(topload);
+    // Secondary Helical Resonator Tube (1,000+ turns of fine magnet wire)
+    const secondaryCylinder = new THREE.Mesh(
+      new THREE.CylinderGeometry(0.85, 0.85, 5.2, 36),
+      secondaryCopperWireMat,
+    );
+    secondaryCylinder.position.y = -0.6;
+    secondaryCylinder.castShadow = true;
+    coilGroup.add(secondaryCylinder);
 
-    // Top Breakout Pin
-    const breakoutPin = new THREE.Mesh(new THREE.ConeGeometry(0.12, 1.2, 16), toploadToroidMat);
-    breakoutPin.position.set(0, 5.0, 0);
-    coilGroup.add(breakoutPin);
+    // Primary Flat Archimedean Spiral / Conical Coil
+    const primaryCoil = new THREE.Mesh(
+      new THREE.TorusGeometry(2.3, 0.28, 16, 36),
+      primaryHeavyCopperMat,
+    );
+    primaryCoil.rotation.x = Math.PI / 2;
+    primaryCoil.position.y = -2.8;
+    primaryCoil.castShadow = true;
+    coilGroup.add(primaryCoil);
 
-    // --- 3D DYNAMIC PLASMA LIGHTNING ARCS ---
-    const lightningGroup = new THREE.Group();
-    scene.add(lightningGroup);
+    const primaryOuter = new THREE.Mesh(
+      new THREE.TorusGeometry(3.1, 0.28, 16, 36),
+      primaryHeavyCopperMat,
+    );
+    primaryOuter.rotation.x = Math.PI / 2;
+    primaryOuter.position.y = -2.5;
+    primaryOuter.castShadow = true;
+    coilGroup.add(primaryOuter);
 
-    const arcCount = 8;
-    const arcLines: THREE.Line[] = [];
-    const plasmaMat = new THREE.LineBasicMaterial({ color: 0xc084fc, linewidth: 2.5 });
+    // Rotary Spark Gap Discharge Electrodes
+    const sparkGapLeft = new THREE.Mesh(new THREE.SphereGeometry(0.35, 16, 16), sparkGapBrassMat);
+    sparkGapLeft.position.set(-2.5, -3.2, 2.0);
+    const sparkGapRight = sparkGapLeft.clone();
+    sparkGapRight.position.x = -2.5 + sparkGapDistanceMm * 0.05;
+    coilGroup.add(sparkGapLeft);
+    coilGroup.add(sparkGapRight);
 
-    for (let a = 0; a < arcCount; a++) {
-      const segments = 12;
-      const pts = [];
-      for (let s = 0; s <= segments; s++) {
-        pts.push(new THREE.Vector3(0, 5.0, 0));
+    // Spun Aluminum Toroid Top-Load Capacitance Terminal
+    const toroid = new THREE.Mesh(new THREE.TorusGeometry(2.1, 0.85, 24, 48), toroidAluminumMat);
+    toroid.rotation.x = Math.PI / 2;
+    toroid.position.y = 2.4;
+    toroid.castShadow = true;
+    coilGroup.add(toroid);
+
+    // Breakout Discharge Point Needle
+    const breakoutPoint = new THREE.Mesh(new THREE.ConeGeometry(0.08, 0.6, 12), sparkGapBrassMat);
+    breakoutPoint.position.set(2.1, 2.4, 0);
+    breakoutPoint.rotation.z = -Math.PI / 2;
+    coilGroup.add(breakoutPoint);
+
+    // --- 3D FRACTAL LIGHTNING PLASMA STREAMERS ---
+    const streamerCount = 12;
+    const streamerLines: THREE.Line[] = [];
+    const glowTex = createGlowPointTexture();
+
+    for (let s = 0; s < streamerCount; s++) {
+      const pts: THREE.Vector3[] = [];
+      const numSegments = 8;
+      let currentPt = new THREE.Vector3(2.1, 2.4, 0);
+      pts.push(currentPt.clone());
+
+      for (let j = 0; j < numSegments; j++) {
+        const branchDir = new THREE.Vector3(
+          0.4 + Math.random() * 0.5,
+          (Math.random() - 0.5) * 0.6,
+          (Math.random() - 0.5) * 0.6,
+        ).normalize();
+        currentPt = currentPt.clone().add(branchDir.multiplyScalar(0.55));
+        pts.push(currentPt);
       }
-      const geo = new THREE.BufferGeometry().setFromPoints(pts);
-      const line = new THREE.Line(geo, plasmaMat);
-      arcLines.push(line);
-      lightningGroup.add(line);
+
+      const lineGeo = new THREE.BufferGeometry().setFromPoints(pts);
+      const lineMat = new THREE.LineBasicMaterial({
+        color: 0x93c5fd,
+        transparent: true,
+        opacity: 0.9,
+      });
+      const line = new THREE.Line(lineGeo, lineMat);
+      coilGroup.add(line);
+      streamerLines.push(line);
     }
 
-    // --- ANIMATION & PHYSICS INTEGRATION LOOP ---
-    let animId: number;
+    // --- GLOWING SPARK DISCHARGE PARTICLES ---
+    const sparkCount = 60;
+    const sparkGeo = new THREE.BufferGeometry();
+    const sparkPos = new Float32Array(sparkCount * 3);
+
+    for (let i = 0; i < sparkCount; i++) {
+      const idx = i * 3;
+      sparkPos[idx] = -2.5 + Math.random() * (sparkGapDistanceMm * 0.05);
+      sparkPos[idx + 1] = -3.2 + (Math.random() - 0.5) * 0.2;
+      sparkPos[idx + 2] = 2.0 + (Math.random() - 0.5) * 0.2;
+    }
+
+    sparkGeo.setAttribute("position", new THREE.BufferAttribute(sparkPos, 3));
+    const sparkPoints = new THREE.Points(
+      sparkGeo,
+      new THREE.PointsMaterial({
+        size: 0.45,
+        map: glowTex,
+        color: 0x60a5fa,
+        transparent: true,
+        opacity: 0.9,
+        blending: THREE.AdditiveBlending,
+        depthWrite: false,
+      }),
+    );
+    scene.add(sparkPoints);
+
+    // --- RENDER LOOP & REAL-TIME PLASMA DISCHARGE ---
+    let reqId: number;
     const clock = new THREE.Clock();
 
     const animate = () => {
-      animId = requestAnimationFrame(animate);
-      const time = clock.getElapsedTime();
+      reqId = requestAnimationFrame(animate);
+      const _delta = clock.getDelta();
+      const elapsed = clock.getElapsedTime();
 
-      controls.update();
+      // Animate Fractal Lightning Streamers
+      if (showLightningStreamers) {
+        for (let s = 0; s < streamerCount; s++) {
+          const line = streamerLines[s];
+          const pts: THREE.Vector3[] = [];
+          let cur = new THREE.Vector3(2.1, 2.4, 0);
+          pts.push(cur.clone());
 
-      // Dynamic 3D Lightning Discharge Fractal Branching
-      lightningGroup.visible = showLightning;
-      if (showLightning) {
-        arcLines.forEach((line, aIdx) => {
-          const theta = (aIdx * 2 * Math.PI) / arcCount + Math.sin(time * 8.0 + aIdx) * 0.4;
-          const arcLength = 4.5 + Math.sin(time * 15.0 + aIdx * 2) * 1.5;
-          const targetX = Math.cos(theta) * arcLength;
-          const targetY = 5.0 + (Math.random() - 0.3) * 3.0;
-          const targetZ = Math.sin(theta) * arcLength;
-
-          const pos = line.geometry.attributes.position.array as Float32Array;
-          const segCount = 12;
-          for (let s = 0; s <= segCount; s++) {
-            const frac = s / segCount;
-            const jitterX = s > 0 && s < segCount ? (Math.random() - 0.5) * 0.6 : 0;
-            const jitterY = s > 0 && s < segCount ? (Math.random() - 0.5) * 0.6 : 0;
-            const jitterZ = s > 0 && s < segCount ? (Math.random() - 0.5) * 0.6 : 0;
-
-            pos[s * 3] = frac * targetX + jitterX;
-            pos[s * 3 + 1] = 5.0 + frac * (targetY - 5.0) + jitterY;
-            pos[s * 3 + 2] = frac * targetZ + jitterZ;
+          const sAngle = (s * 2 * Math.PI) / streamerCount + Math.sin(elapsed * 12.0 + s) * 0.2;
+          for (let j = 0; j < 8; j++) {
+            const jitter = new THREE.Vector3(
+              Math.cos(sAngle) * 0.5 + (Math.random() - 0.5) * 0.4,
+              Math.sin(elapsed * 20.0 + j) * 0.35 + (Math.random() - 0.5) * 0.3,
+              Math.sin(sAngle) * 0.5 + (Math.random() - 0.5) * 0.4,
+            );
+            cur = cur.clone().add(jitter);
+            pts.push(cur);
           }
-          line.geometry.attributes.position.needsUpdate = true;
-        });
+          line.geometry.setFromPoints(pts);
+          line.visible = Math.random() > 0.15; // Realistic plasma flicker
+        }
+      } else {
+        for (const line of streamerLines) {
+          line.visible = false;
+        }
       }
 
+      // Animate Spark Gap plasma
+      const sPos = sparkPos;
+      for (let i = 0; i < sparkCount; i++) {
+        const idx = i * 3;
+        sPos[idx] = -2.5 + Math.random() * (sparkGapDistanceMm * 0.05);
+        sPos[idx + 1] = -3.2 + (Math.random() - 0.5) * 0.15;
+        sPos[idx + 2] = 2.0 + (Math.random() - 0.5) * 0.15;
+      }
+      sparkGeo.attributes.position.needsUpdate = true;
+
+      controls.update();
       renderer.render(scene, camera);
     };
 
     animate();
 
     return () => {
-      cancelAnimationFrame(animId);
+      cancelAnimationFrame(reqId);
       studio.dispose();
     };
-  }, [showLightning]);
+  }, [sparkGapDistanceMm, showLightningStreamers]);
 
   return (
-    <div className="rounded-2xl border border-amber-900/20 dark:border-ink-800 bg-parchment-50 dark:bg-ink-950 p-6 sm:p-7 shadow-patent space-y-6">
-      {/* Header */}
-      <div className="flex flex-wrap items-center justify-between gap-3 border-b border-parchment-200 dark:border-ink-800 pb-4">
-        <div>
-          <div className="flex items-center gap-2.5">
-            <Zap className="w-6 h-6 text-purple-500 animate-pulse" />
-            <h3 className="font-serif text-2xl font-bold text-ink-950 dark:text-parchment-50">
-              3D Real-Time Tesla Resonant Transformer &amp; Plasma Discharge Simulator (US 533,367)
-            </h3>
+    <div className="flex flex-col h-full bg-parchment-50/60 dark:bg-ink-950/80 rounded-2xl overflow-hidden border border-parchment-300 dark:border-ink-800 shadow-patent">
+      {/* 3D WebGL Canvas Viewport */}
+      <div className="relative flex-1 min-h-[380px] sm:min-h-[460px] w-full cursor-grab active:cursor-grabbing">
+        <div ref={containerRef} className="absolute inset-0 w-full h-full" />
+
+        {/* Live HUD Telemetry Overlay */}
+        <div className="absolute top-4 left-4 z-10 flex flex-col gap-2 pointer-events-none">
+          <div className="bg-white/90 dark:bg-ink-900/90 backdrop-blur-md px-3.5 py-2.5 rounded-xl border border-parchment-300 dark:border-ink-700 shadow-sm">
+            <div className="text-[11px] font-sans text-amber-700 dark:text-amber-400 font-bold uppercase tracking-wider flex items-center gap-1.5">
+              <Zap className="w-3.5 h-3.5 text-blue-500 animate-pulse" />
+              High-Frequency Resonator Telemetry
+            </div>
+            <div className="grid grid-cols-2 gap-x-4 gap-y-1 mt-1 text-xs font-sans">
+              <div>
+                <span className="text-ink-600 dark:text-ink-400">Resonant Frequency:</span>{" "}
+                <span className="font-bold text-blue-600 dark:text-blue-400">
+                  {resonantFreqKhz} kHz
+                </span>
+              </div>
+              <div>
+                <span className="text-ink-600 dark:text-ink-400">Secondary Output:</span>{" "}
+                <span className="font-bold text-amber-600 dark:text-amber-400">
+                  {secondaryVoltageMv} Megavolts
+                </span>
+              </div>
+              <div>
+                <span className="text-ink-600 dark:text-ink-400">Plasma Streamers:</span>{" "}
+                <span className="font-bold text-emerald-600 dark:text-emerald-400">
+                  {streamerLengthInches} inches
+                </span>
+              </div>
+              <div>
+                <span className="text-ink-600 dark:text-ink-400">Resonator Q-Factor:</span>{" "}
+                <span className="font-bold text-purple-600 dark:text-purple-400">
+                  {qFactor} (Tuned)
+                </span>
+              </div>
+            </div>
           </div>
-          <p className="text-sm sm:text-base text-ink-700 dark:text-ink-300 mt-1">
-            Studio-illuminated Three.js high-frequency electromagnetic simulation of{" "}
-            <strong>air-core dual LC resonance</strong> and{" "}
-            <strong>million-volt plasma streamers</strong>.
-          </p>
+
+          <div className="bg-white/90 dark:bg-ink-900/90 backdrop-blur-md px-3 py-1.5 rounded-lg border border-parchment-300 dark:border-ink-700 text-[11px] font-sans text-ink-700 dark:text-ink-300 flex items-center gap-2">
+            <Sparkles className="w-3.5 h-3.5 text-blue-500 animate-pulse" />
+            <span>Air-Core Resonant Transformer (Zero Iron Core Saturation)</span>
+          </div>
         </div>
 
-        <div className="flex items-center gap-2">
-          <div className="px-3.5 py-1.5 rounded-xl bg-purple-100 dark:bg-purple-950 text-purple-900 dark:text-purple-300 text-xs sm:text-sm font-mono font-bold border border-purple-300 dark:border-purple-800 shadow-2xs">
-            {secondaryVoltageKv} kV Peak Potential
-          </div>
+        {/* Audio & Streamer Toggles */}
+        <div className="absolute top-4 right-4 z-10 flex gap-2">
+          <button
+            type="button"
+            onClick={() => setShowLightningStreamers(!showLightningStreamers)}
+            className={`px-3 py-1.5 rounded-lg text-xs font-sans font-semibold border transition-all ${
+              showLightningStreamers
+                ? "bg-blue-600 text-white border-blue-700 shadow-sm"
+                : "bg-white/80 dark:bg-ink-900/80 text-ink-700 dark:text-ink-300 border-parchment-300 dark:border-ink-700"
+            }`}
+          >
+            Plasma Streamers
+          </button>
+          <button
+            type="button"
+            onClick={() => setIsPlayingAudio(!isPlayingAudio)}
+            className={`px-3 py-1.5 rounded-lg text-xs font-sans font-semibold border transition-all ${
+              isPlayingAudio
+                ? "bg-emerald-600 text-white border-emerald-700 shadow-sm"
+                : "bg-white/80 dark:bg-ink-900/80 text-ink-700 dark:text-ink-300 border-parchment-300 dark:border-ink-700"
+            }`}
+          >
+            {isPlayingAudio ? (
+              <>
+                <Volume2 className="w-3.5 h-3.5 inline mr-1 animate-pulse" />
+                Discharge Audio ON
+              </>
+            ) : (
+              <>
+                <VolumeX className="w-3.5 h-3.5 inline mr-1" />
+                Audio OFF
+              </>
+            )}
+          </button>
         </div>
       </div>
 
-      {/* 3D WebGL Canvas & HUD */}
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
-        <div className="lg:col-span-8 flex flex-col items-center justify-center rounded-2xl bg-[#0f172a] border border-parchment-300 dark:border-ink-800 relative min-h-[460px] overflow-hidden shadow-inner">
-          {/* Top HUD */}
-          <div className="absolute top-4 left-4 right-4 z-20 flex items-center justify-between pointer-events-none text-xs sm:text-sm font-mono">
-            <div className="px-3.5 py-1.5 bg-ink-900/90 border border-ink-800 text-purple-300 rounded-xl shadow-md">
-              Resonant Frequency:{" "}
-              <span className="font-bold">{resonantFreqKhz.toFixed(1)} kHz</span> · Topload Peak:{" "}
-              <span className="text-amber-300 font-bold">{secondaryVoltageKv} kV</span>
-            </div>
-
-            <div className="flex items-center gap-2 pointer-events-auto">
-              <button
-                type="button"
-                onClick={() => setShowLightning(!showLightning)}
-                className={`px-3 py-1 rounded-lg border text-xs font-mono transition-colors ${
-                  showLightning
-                    ? "bg-purple-600 text-white border-purple-500"
-                    : "bg-ink-900 text-ink-400 border-ink-800"
-                }`}
-              >
-                Plasma Streamers: {showLightning ? "ON" : "OFF"}
-              </button>
-            </div>
+      {/* Parameter Sliders Panel */}
+      <div className="p-4 sm:p-5 bg-parchment-100/80 dark:bg-ink-900/90 border-t border-parchment-300 dark:border-ink-800 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 text-xs font-sans">
+        {/* Resonant Frequency */}
+        <div className="space-y-1.5">
+          <div className="flex justify-between font-medium text-ink-900 dark:text-parchment-100">
+            <span>Tuned LC Frequency ($f_0$):</span>
+            <span className="font-bold text-amber-700 dark:text-amber-400">
+              {resonantFreqKhz} kHz
+            </span>
           </div>
-
-          {/* 3D Canvas */}
-          <div ref={containerRef} className="w-full h-[460px] cursor-grab active:cursor-grabbing" />
-
-          {/* Bottom Telemetry */}
-          <div className="w-full grid grid-cols-4 gap-3 text-center text-sm font-mono p-4 bg-ink-950/95 border-t border-ink-800 text-ink-300 z-10">
-            <div>
-              <span className="text-ink-400 block text-xs font-semibold uppercase tracking-wider">
-                RESONANCE
-              </span>
-              <span className="text-purple-400 font-bold text-sm sm:text-base">
-                {resonantFreqKhz.toFixed(1)} kHz
-              </span>
-            </div>
-            <div>
-              <span className="text-ink-400 block text-xs font-semibold uppercase tracking-wider">
-                PRIMARY CAP
-              </span>
-              <span className="text-emerald-400 font-bold text-sm sm:text-base">
-                {primaryCapacitanceNf} nF
-              </span>
-            </div>
-            <div>
-              <span className="text-ink-400 block text-xs font-semibold uppercase tracking-wider">
-                SPARK REPETITION
-              </span>
-              <span className="text-amber-400 font-bold text-sm sm:text-base">
-                {sparkRateHz} PPS
-              </span>
-            </div>
-            <div>
-              <span className="text-ink-400 block text-xs font-semibold uppercase tracking-wider">
-                3D INTERACTION
-              </span>
-              <span className="text-purple-400 font-semibold text-xs sm:text-sm">
-                Drag Orbit / Zoom
-              </span>
-            </div>
-          </div>
+          <input
+            type="range"
+            min="50"
+            max="400"
+            step="10"
+            value={resonantFreqKhz}
+            onChange={(e) => setResonantFreqKhz(Number(e.target.value))}
+            className="w-full accent-amber-600 dark:accent-amber-400 cursor-pointer"
+          />
+          <span className="text-[10px] text-ink-500 dark:text-ink-400 block">
+            {"$f_0 = 1 / (2\\pi\\sqrt{L_{sec}C_{top}})$ resonant matching"}
+          </span>
         </div>
 
-        {/* Controls Sidebar */}
-        <div className="lg:col-span-4 space-y-4">
-          <div className="rounded-2xl border border-parchment-300 dark:border-ink-800 bg-parchment-100/80 dark:bg-ink-900/70 p-6 space-y-5 shadow-sm">
-            <span className="font-serif font-bold text-base sm:text-lg text-ink-950 dark:text-parchment-50 block">
-              Resonant LC Parameters
+        {/* Spark Gap Distance */}
+        <div className="space-y-1.5">
+          <div className="flex justify-between font-medium text-ink-900 dark:text-parchment-100">
+            <span>Quenched Spark Gap:</span>
+            <span className="font-bold text-blue-600 dark:text-blue-400">
+              {sparkGapDistanceMm} mm
             </span>
-
-            {/* Primary Tank Capacitance Slider */}
-            <div className="space-y-1.5">
-              <div className="flex justify-between text-xs sm:text-sm font-mono">
-                <span className="font-semibold text-ink-800 dark:text-parchment-200">
-                  Primary Tank Cap ($C_p$)
-                </span>
-                <span className="text-purple-600 dark:text-purple-400 font-bold">
-                  {primaryCapacitanceNf} nF
-                </span>
-              </div>
-              <input
-                type="range"
-                min="5"
-                max="50"
-                step="2"
-                value={primaryCapacitanceNf}
-                onChange={(e) => setPrimaryCapacitanceNf(Number(e.target.value))}
-                className="w-full accent-purple-600 cursor-pointer h-2 bg-parchment-300 dark:bg-ink-700 rounded-lg"
-              />
-            </div>
-
-            {/* Secondary Turns Slider */}
-            <div className="space-y-1.5">
-              <div className="flex justify-between text-xs sm:text-sm font-mono">
-                <span className="font-semibold text-ink-800 dark:text-parchment-200">
-                  Secondary Turns ($N_s$)
-                </span>
-                <span className="text-amber-600 dark:text-amber-400 font-bold">
-                  {secondaryTurns} turns
-                </span>
-              </div>
-              <input
-                type="range"
-                min="400"
-                max="1400"
-                step="50"
-                value={secondaryTurns}
-                onChange={(e) => setSecondaryTurns(Number(e.target.value))}
-                className="w-full accent-amber-600 cursor-pointer h-2 bg-parchment-300 dark:bg-ink-700 rounded-lg"
-              />
-            </div>
-
-            {/* Spark Gap Rate Slider */}
-            <div className="space-y-1.5">
-              <div className="flex justify-between text-xs sm:text-sm font-mono">
-                <span className="font-semibold text-ink-800 dark:text-parchment-200">
-                  Rotary Spark Gap Rate
-                </span>
-                <span className="text-emerald-600 dark:text-emerald-400 font-bold">
-                  {sparkRateHz} Hz
-                </span>
-              </div>
-              <input
-                type="range"
-                min="30"
-                max="400"
-                step="10"
-                value={sparkRateHz}
-                onChange={(e) => setSparkRateHz(Number(e.target.value))}
-                className="w-full accent-emerald-600 cursor-pointer h-2 bg-parchment-300 dark:bg-ink-700 rounded-lg"
-              />
-            </div>
-
-            <div className="p-4 rounded-xl bg-purple-500/10 border border-purple-500/30 text-ink-950 dark:text-parchment-100 text-xs sm:text-sm font-sans space-y-1.5">
-              <span className="font-bold text-purple-900 dark:text-purple-300 block font-mono text-xs uppercase tracking-wider">
-                Quarter-Wave Resonance:
-              </span>
-              <p className="leading-relaxed">
-                By tuning the primary capacitor tank circuit to match the secondary coil&apos;s
-                natural resonant frequency ({resonantFreqKhz.toFixed(1)} kHz), standing
-                electromagnetic waves build up massive electrical potential at the ungrounded toroid
-                terminal.
-              </p>
-            </div>
           </div>
+          <input
+            type="range"
+            min="2"
+            max="30"
+            step="1"
+            value={sparkGapDistanceMm}
+            onChange={(e) => setSparkGapDistanceMm(Number(e.target.value))}
+            className="w-full accent-blue-600 dark:accent-blue-400 cursor-pointer"
+          />
+          <span className="text-[10px] text-ink-500 dark:text-ink-400 block">
+            Air breakdown dielectric: 3 kV/mm
+          </span>
+        </div>
+
+        {/* Primary Input Voltage */}
+        <div className="space-y-1.5">
+          <div className="flex justify-between font-medium text-ink-900 dark:text-parchment-100">
+            <span>Primary Tank Voltage ($V_p$):</span>
+            <span className="font-bold text-emerald-600 dark:text-emerald-400">
+              {inputVoltageKv} kV
+            </span>
+          </div>
+          <input
+            type="range"
+            min="5"
+            max="30"
+            step="1"
+            value={inputVoltageKv}
+            onChange={(e) => setInputVoltageKv(Number(e.target.value))}
+            className="w-full accent-emerald-600 dark:accent-emerald-400 cursor-pointer"
+          />
+          <span className="text-[10px] text-ink-500 dark:text-ink-400 block">
+            Charged capacitor bank potential
+          </span>
+        </div>
+
+        {/* Top-load Capacitance */}
+        <div className="space-y-1.5">
+          <div className="flex justify-between font-medium text-ink-900 dark:text-parchment-100">
+            <span>Toroid Terminal Capacitance:</span>
+            <span className="font-bold text-purple-600 dark:text-purple-400">
+              {toploadCapacitancePf} pF
+            </span>
+          </div>
+          <input
+            type="range"
+            min="10"
+            max="80"
+            step="5"
+            value={toploadCapacitancePf}
+            onChange={(e) => setToploadCapacitancePf(Number(e.target.value))}
+            className="w-full accent-purple-600 dark:accent-purple-400 cursor-pointer"
+          />
+          <span className="text-[10px] text-ink-500 dark:text-ink-400 block">
+            Smooth radius prevents premature corona discharge
+          </span>
         </div>
       </div>
     </div>

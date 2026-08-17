@@ -1,413 +1,373 @@
 "use client";
 
-import { Tv } from "lucide-react";
+import { Radio, Tv } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import * as THREE from "three";
-import { createThreeStudioScene } from "./ThreeStudioScene";
+import { createGlowPointTexture, createThreeStudioScene } from "./ThreeStudioScene";
 
 export function FarnsworthTV3D() {
   const containerRef = useRef<HTMLDivElement>(null);
 
-  // Television Electron Dissector Parameters
-  const [scanLines, setScanLines] = useState<number>(220); // 60 to 525 lines
-  const [anodeVoltageKv, setAnodeVoltageKv] = useState<number>(3.5); // 1.0 to 6.0 kV
-  const [deflectionCurrentMa, setDeflectionCurrentMa] = useState<number>(180); // 50 to 300 mA
-  const [showElectrons, setShowElectrons] = useState<boolean>(true);
-  const [showCoils, setShowCoils] = useState<boolean>(true);
+  // Dissector Tube State Controls
+  const [acceleratingVoltageKv, setAcceleratingVoltageKv] = useState<number>(3.5); // 1.0 to 6.0 kV
+  const [horizontalFreqKhz, setHorizontalFreqKhz] = useState<number>(15.75); // 5 to 30 kHz
+  const [verticalFreqHz, setVerticalFreqHz] = useState<number>(60); // 30 to 120 Hz
+  const [lightIntensityLux, setLightIntensityLux] = useState<number>(500); // 100 to 2000 Lux
+  const [showElectronBeam, setShowElectronBeam] = useState<boolean>(true);
+  const [_showMagneticFields, _setShowMagneticFields] = useState<boolean>(true);
 
-  // Electron Optics Calculations
-  const electronSpeedKms = Math.round(
-    Math.sqrt((2 * 1.602e-19 * anodeVoltageKv * 1000) / 9.109e-31) / 1000,
-  );
-  const horizontalScanRateKhz = ((scanLines * 30) / 1000).toFixed(2);
-  const electronMultiplierGain = Math.round((anodeVoltageKv * 1.8) ** 3.2);
+  // Electron Optics Physics
+  // Electron Velocity: v = sqrt(2 * e * V / m_e)
+  const eCharge = 1.602e-19;
+  const mElectron = 9.109e-31;
+  const velocityMps = Math.sqrt((2 * eCharge * acceleratingVoltageKv * 1000) / mElectron);
+  const velocityFractionC = (velocityMps / 3e8) * 100;
+  const photocathodeCurrentUa = (lightIntensityLux * 0.045).toFixed(1);
 
   useEffect(() => {
     const container = containerRef.current;
     if (!container) return;
 
-    // Create Studio Scene with Museum Studio Lighting
+    // Create Studio Scene with High-Luminosity Studio Lighting
     const studio = createThreeStudioScene({
       container,
-      cameraPos: [16, 9, 14],
+      cameraPos: [13, 9, 15],
       targetPos: [0, 0, 0],
-      bgBottomColor: 0x0f172a,
-      rimColor: 0x38bdf8,
-      ambientIntensity: 1.3,
     });
 
     const { scene, camera, renderer, controls } = studio;
 
     // --- PBR MATERIALS ---
-    const glassEnvelopeMaterial = new THREE.MeshPhysicalMaterial({
+    const glassEnvelopeMat = new THREE.MeshPhysicalMaterial({
       color: 0xffffff,
-      transmission: 0.92,
+      transmission: 0.94,
       opacity: 1,
       transparent: true,
-      roughness: 0.05,
+      roughness: 0.04,
       ior: 1.5,
       side: THREE.DoubleSide,
     });
 
-    const cathodeMaterial = new THREE.MeshStandardMaterial({
-      color: 0x1e293b,
-      metalness: 0.8,
-      roughness: 0.3,
-      emissive: 0x0284c7,
-      emissiveIntensity: 0.3,
+    const photocathodeMat = new THREE.MeshStandardMaterial({
+      color: 0x0284c7, // Cesium-oxide coated photoemissive silver disc
+      roughness: 0.35,
+      metalness: 0.85,
+      emissive: 0x0369a1,
+      emissiveIntensity: 0.5,
     });
 
-    const copperCoilMaterial = new THREE.MeshStandardMaterial({
+    const copperDeflectionCoilMat = new THREE.MeshStandardMaterial({
       color: 0xd97706,
-      metalness: 0.9,
       roughness: 0.25,
+      metalness: 0.85,
     });
 
-    const anodeApertureMaterial = new THREE.MeshStandardMaterial({
-      color: 0xf1f5f9,
-      metalness: 0.95,
-      roughness: 0.1,
+    const anodeBrassMat = new THREE.MeshStandardMaterial({
+      color: 0xca8a04,
+      roughness: 0.2,
+      metalness: 0.9,
     });
 
-    // --- 3D FARNSWORTH DISSECTOR TUBE ASSEMBLY ---
+    // --- 3D DISSECTOR TUBE ASSEMBLY ---
     const tubeGroup = new THREE.Group();
     scene.add(tubeGroup);
 
-    // 1. Long Cylindrical Glass Vacuum Envelope
+    // Cylindrical Vacuum Glass Envelope
     const glassTube = new THREE.Mesh(
-      new THREE.CylinderGeometry(2.4, 2.4, 16.0, 36, 1, true),
-      glassEnvelopeMaterial,
+      new THREE.CylinderGeometry(1.8, 1.8, 10.0, 36, 1, true),
+      glassEnvelopeMat,
     );
     glassTube.rotation.z = Math.PI / 2;
     tubeGroup.add(glassTube);
 
-    // Front Optical Faceplate Window
-    const frontWindow = new THREE.Mesh(new THREE.CircleGeometry(2.4, 36), glassEnvelopeMaterial);
-    frontWindow.position.x = -8.0;
-    frontWindow.rotation.y = Math.PI / 2;
+    // Front Flat Optical Window
+    const frontWindow = new THREE.Mesh(new THREE.CircleGeometry(1.8, 36), glassEnvelopeMat);
+    frontWindow.rotation.y = -Math.PI / 2;
+    frontWindow.position.x = -5.0;
     tubeGroup.add(frontWindow);
 
-    // Rear Stem Exhaust Pip
-    const rearWindow = new THREE.Mesh(new THREE.CircleGeometry(2.4, 36), glassEnvelopeMaterial);
-    rearWindow.position.x = 8.0;
-    rearWindow.rotation.y = -Math.PI / 2;
-    tubeGroup.add(rearWindow);
+    // Photoelectric Cathode Plate (Backlit optical receiver)
+    const photocathode = new THREE.Mesh(new THREE.CircleGeometry(1.6, 36), photocathodeMat);
+    photocathode.rotation.y = Math.PI / 2;
+    photocathode.position.x = -4.7;
+    tubeGroup.add(photocathode);
 
-    // 2. Continuous Photoelectric Cold Cathode Plate (Cesium Oxide on Silver)
-    const cathodePlate = new THREE.Mesh(new THREE.CircleGeometry(2.1, 32), cathodeMaterial);
-    cathodePlate.position.x = -7.8;
-    cathodePlate.rotation.y = Math.PI / 2;
-    tubeGroup.add(cathodePlate);
-
-    // 3. Orthogonal Horizontal & Vertical Magnetic Deflection Coils
-    const coilGroup = new THREE.Group();
-    // Horizontal Deflection Coils (Top and Bottom)
-    const coilH1 = new THREE.Mesh(new THREE.BoxGeometry(4.0, 0.4, 3.2), copperCoilMaterial);
-    coilH1.position.set(0, 2.8, 0);
-    const coilH2 = new THREE.Mesh(new THREE.BoxGeometry(4.0, 0.4, 3.2), copperCoilMaterial);
-    coilH2.position.set(0, -2.8, 0);
-
-    // Vertical Deflection Coils (Front and Back)
-    const coilV1 = new THREE.Mesh(new THREE.BoxGeometry(4.0, 3.2, 0.4), copperCoilMaterial);
-    coilV1.position.set(0, 0, 2.8);
-    const coilV2 = new THREE.Mesh(new THREE.BoxGeometry(4.0, 3.2, 0.4), copperCoilMaterial);
-    coilV2.position.set(0, 0, -2.8);
-
-    coilGroup.add(coilH1);
-    coilGroup.add(coilH2);
-    coilGroup.add(coilV1);
-    coilGroup.add(coilV2);
-    tubeGroup.add(coilGroup);
-
-    // 4. Target Anode Aperture & Electron Multiplier Box
-    const anodeTarget = new THREE.Mesh(
-      new THREE.CylinderGeometry(2.1, 2.1, 0.4, 32),
-      anodeApertureMaterial,
+    // Anode Aperture Finger Target with Electron Multiplier Window
+    const anodeFinger = new THREE.Mesh(
+      new THREE.CylinderGeometry(0.25, 0.25, 1.2, 16),
+      anodeBrassMat,
     );
-    anodeTarget.rotation.z = Math.PI / 2;
-    anodeTarget.position.x = 7.6;
-    tubeGroup.add(anodeTarget);
+    anodeFinger.position.set(4.8, 0, 0);
+    anodeFinger.rotation.z = Math.PI / 2;
+    tubeGroup.add(anodeFinger);
 
-    // Target Scanning Aperture Pin-Hole
-    const pinHole = new THREE.Mesh(
-      new THREE.CircleGeometry(0.25, 16),
-      new THREE.MeshBasicMaterial({ color: 0xef4444 }),
-    );
-    pinHole.rotation.y = -Math.PI / 2;
-    pinHole.position.x = 7.39;
-    tubeGroup.add(pinHole);
-
-    // --- 3D ELECTRON BEAM PARTICLES ---
-    const electronCount = 350;
-    const electronGeo = new THREE.BufferGeometry();
-    const electronPositions = new Float32Array(electronCount * 3);
-    const electronColors = new Float32Array(electronCount * 3);
-
-    for (let i = 0; i < electronCount; i++) {
-      electronColors[i * 3] = 0.2;
-      electronColors[i * 3 + 1] = 0.8;
-      electronColors[i * 3 + 2] = 1.0;
-    }
-    electronGeo.setAttribute("position", new THREE.BufferAttribute(electronPositions, 3));
-    electronGeo.setAttribute("color", new THREE.BufferAttribute(electronColors, 3));
-
-    const electronPoints = new THREE.Points(
-      electronGeo,
-      new THREE.PointsMaterial({
-        size: 0.16,
-        vertexColors: true,
-        transparent: true,
-        opacity: 0.85,
+    // Magnetic Focus Solenoid Outer Coil
+    const focusCoil = new THREE.Mesh(
+      new THREE.CylinderGeometry(2.1, 2.1, 6.5, 32, 1, true),
+      new THREE.MeshStandardMaterial({
+        color: 0x475569,
+        roughness: 0.4,
+        metalness: 0.7,
+        wireframe: true,
       }),
     );
-    tubeGroup.add(electronPoints);
+    focusCoil.rotation.z = Math.PI / 2;
+    tubeGroup.add(focusCoil);
 
-    // --- ANIMATION & PHYSICS INTEGRATION LOOP ---
-    let animId: number;
+    // 2-Axis Orthogonal Magnetic Deflection Coils (Horizontal & Vertical)
+    const hCoil1 = new THREE.Mesh(
+      new THREE.TorusGeometry(2.2, 0.22, 12, 32),
+      copperDeflectionCoilMat,
+    );
+    hCoil1.position.set(0.5, 0, 0);
+    tubeGroup.add(hCoil1);
+
+    const vCoil1 = new THREE.Mesh(
+      new THREE.TorusGeometry(2.2, 0.22, 12, 32),
+      copperDeflectionCoilMat,
+    );
+    vCoil1.rotation.y = Math.PI / 2;
+    vCoil1.position.set(1.8, 0, 0);
+    tubeGroup.add(vCoil1);
+
+    // --- GLOWING ELECTRON BEAM PARTICLES ---
+    const beamCount = 350;
+    const beamGeo = new THREE.BufferGeometry();
+    const beamPos = new Float32Array(beamCount * 3);
+    const beamColors = new Float32Array(beamCount * 3);
+
+    const glowTex = createGlowPointTexture();
+
+    for (let i = 0; i < beamCount; i++) {
+      const idx = i * 3;
+      const progress = i / beamCount;
+      beamPos[idx] = -4.5 + progress * 9.3;
+      beamPos[idx + 1] = 0;
+      beamPos[idx + 2] = 0;
+
+      // Bright Blue-Violet Cathode Ray Glow
+      beamColors[idx] = 0.3 + progress * 0.4;
+      beamColors[idx + 1] = 0.8 + progress * 0.2;
+      beamColors[idx + 2] = 1.0;
+    }
+
+    beamGeo.setAttribute("position", new THREE.BufferAttribute(beamPos, 3));
+    beamGeo.setAttribute("color", new THREE.BufferAttribute(beamColors, 3));
+
+    const beamPoints = new THREE.Points(
+      beamGeo,
+      new THREE.PointsMaterial({
+        size: 0.4,
+        map: glowTex,
+        vertexColors: true,
+        transparent: true,
+        opacity: 0.9,
+        blending: THREE.AdditiveBlending,
+        depthWrite: false,
+      }),
+    );
+    scene.add(beamPoints);
+
+    // --- RENDER LOOP & REAL-TIME ELECTRON RASTER DYNAMICS ---
+    let reqId: number;
     const clock = new THREE.Clock();
 
     const animate = () => {
-      animId = requestAnimationFrame(animate);
-      const time = clock.getElapsedTime();
+      reqId = requestAnimationFrame(animate);
+      const delta = clock.getDelta();
+      const elapsed = clock.getElapsedTime();
+
+      // Electron Beam Deflection by Magnetic Lorentz Force: F = q(v x B)
+      // High-speed sawtooth deflection in horizontal (X) and vertical (Y)
+      const hSawtooth = ((elapsed * 4.0) % 1.0) * 2 - 1; // Simulated horizontal line scan
+      const vSawtooth = ((elapsed * 0.8) % 1.0) * 2 - 1; // Simulated vertical frame scan
+
+      const bPos = beamPos;
+      for (let i = 0; i < beamCount; i++) {
+        const idx = i * 3;
+        const progress = (bPos[idx] + 4.5) / 9.3;
+
+        if (progress > 0.4) {
+          const deflectFactor = (progress - 0.4) / 0.6;
+          bPos[idx + 1] = vSawtooth * 0.9 * deflectFactor;
+          bPos[idx + 2] = hSawtooth * 0.9 * deflectFactor;
+        } else {
+          bPos[idx + 1] = (Math.random() - 0.5) * 0.06;
+          bPos[idx + 2] = (Math.random() - 0.5) * 0.06;
+        }
+
+        // Particle propagation
+        bPos[idx] += delta * 25.0;
+        if (bPos[idx] > 4.8) {
+          bPos[idx] = -4.5;
+        }
+      }
+      beamGeo.attributes.position.needsUpdate = true;
+      beamPoints.visible = showElectronBeam;
 
       controls.update();
-
-      coilGroup.visible = showCoils;
-      electronPoints.visible = showElectrons;
-
-      // 2D Sawtooth Raster Scanning
-      const hFreq = 8.0;
-      const vFreq = 0.6;
-      const deflScale = (deflectionCurrentMa / 200) * 1.5;
-      const rasterX = (((time * hFreq) % 1.0) - 0.5) * deflScale;
-      const rasterY = (((time * vFreq) % 1.0) - 0.5) * deflScale;
-
-      // Electron Stream Advection from Cathode (-7.8) to Anode (+7.6)
-      const positions = electronGeo.attributes.position.array as Float32Array;
-      for (let i = 0; i < electronCount; i++) {
-        const progress = ((i * 3.5 + time * 65.0) % 100) / 100;
-        const x = -7.8 + progress * 15.4;
-        const initialRadius = ((i % 17) / 17) * 1.8;
-        const initialAngle = ((i * 29) % 360) * (Math.PI / 180);
-
-        const deflFactor = Math.max(0, (x + 2.0) / 9.6);
-        const y = Math.sin(initialAngle) * initialRadius + rasterY * deflFactor;
-        const z = Math.cos(initialAngle) * initialRadius + rasterX * deflFactor;
-
-        positions[i * 3] = x;
-        positions[i * 3 + 1] = y;
-        positions[i * 3 + 2] = z;
-      }
-      electronGeo.attributes.position.needsUpdate = true;
-
       renderer.render(scene, camera);
     };
 
     animate();
 
     return () => {
-      cancelAnimationFrame(animId);
+      cancelAnimationFrame(reqId);
       studio.dispose();
     };
-  }, [deflectionCurrentMa, showElectrons, showCoils]);
+  }, [showElectronBeam]);
 
   return (
-    <div className="rounded-2xl border border-amber-900/20 dark:border-ink-800 bg-parchment-50 dark:bg-ink-950 p-6 sm:p-7 shadow-patent space-y-6">
-      {/* Header */}
-      <div className="flex flex-wrap items-center justify-between gap-3 border-b border-parchment-200 dark:border-ink-800 pb-4">
-        <div>
-          <div className="flex items-center gap-2.5">
-            <Tv className="w-6 h-6 text-blue-500 animate-pulse" />
-            <h3 className="font-serif text-2xl font-bold text-ink-950 dark:text-parchment-50">
-              3D Real-Time Farnsworth Image Dissector Tube Simulator (US 1,773,980)
-            </h3>
+    <div className="flex flex-col h-full bg-parchment-50/60 dark:bg-ink-950/80 rounded-2xl overflow-hidden border border-parchment-300 dark:border-ink-800 shadow-patent">
+      {/* 3D WebGL Canvas Viewport */}
+      <div className="relative flex-1 min-h-[380px] sm:min-h-[460px] w-full cursor-grab active:cursor-grabbing">
+        <div ref={containerRef} className="absolute inset-0 w-full h-full" />
+
+        {/* Live HUD Telemetry Overlay */}
+        <div className="absolute top-4 left-4 z-10 flex flex-col gap-2 pointer-events-none">
+          <div className="bg-white/90 dark:bg-ink-900/90 backdrop-blur-md px-3.5 py-2.5 rounded-xl border border-parchment-300 dark:border-ink-700 shadow-sm">
+            <div className="text-[11px] font-sans text-amber-700 dark:text-amber-400 font-bold uppercase tracking-wider flex items-center gap-1.5">
+              <Tv className="w-3.5 h-3.5 text-blue-500 animate-pulse" />
+              Image Dissector Telemetry
+            </div>
+            <div className="grid grid-cols-2 gap-x-4 gap-y-1 mt-1 text-xs font-sans">
+              <div>
+                <span className="text-ink-600 dark:text-ink-400">Electron Velocity:</span>{" "}
+                <span className="font-bold text-blue-600 dark:text-blue-400">
+                  {(velocityMps / 1e6).toFixed(1)} × 10⁶ m/s ({velocityFractionC.toFixed(2)}% $c$)
+                </span>
+              </div>
+              <div>
+                <span className="text-ink-600 dark:text-ink-400">Photocathode Current:</span>{" "}
+                <span className="font-bold text-emerald-600 dark:text-emerald-400">
+                  {photocathodeCurrentUa} µA
+                </span>
+              </div>
+              <div>
+                <span className="text-ink-600 dark:text-ink-400">Horizontal Scan Rate:</span>{" "}
+                <span className="font-bold text-amber-600 dark:text-amber-400">
+                  {horizontalFreqKhz} kHz
+                </span>
+              </div>
+              <div>
+                <span className="text-ink-600 dark:text-ink-400">Frame Refresh ($f_v$):</span>{" "}
+                <span className="font-bold text-purple-600 dark:text-purple-400">
+                  {verticalFreqHz} Hz Interlaced
+                </span>
+              </div>
+            </div>
           </div>
-          <p className="text-sm sm:text-base text-ink-700 dark:text-ink-300 mt-1">
-            Studio-illuminated Three.js electron optics simulating{" "}
-            <strong>continuous photo-emission</strong>,{" "}
-            <strong>orthogonal magnetic deflection</strong>, and{" "}
-            <strong>electronic raster scanning</strong>.
-          </p>
+
+          <div className="bg-white/90 dark:bg-ink-900/90 backdrop-blur-md px-3 py-1.5 rounded-lg border border-parchment-300 dark:border-ink-700 text-[11px] font-sans text-ink-700 dark:text-ink-300 flex items-center gap-2">
+            <Radio className="w-3.5 h-3.5 text-emerald-500 animate-pulse" />
+            <span>Pure Electronic Video Scanning (No Mechanical Nipkow Disk)</span>
+          </div>
         </div>
 
-        <div className="flex items-center gap-2">
-          <div className="px-3.5 py-1.5 rounded-xl bg-blue-100 dark:bg-blue-950 text-blue-900 dark:text-blue-300 text-xs sm:text-sm font-mono font-bold border border-blue-300 dark:border-blue-800 shadow-2xs">
-            {scanLines} Scan Lines ({horizontalScanRateKhz} kHz)
-          </div>
+        {/* Toggle Controls */}
+        <div className="absolute top-4 right-4 z-10 flex gap-2">
+          <button
+            type="button"
+            onClick={() => setShowElectronBeam(!showElectronBeam)}
+            className={`px-3 py-1.5 rounded-lg text-xs font-sans font-semibold border transition-all ${
+              showElectronBeam
+                ? "bg-blue-600 text-white border-blue-700 shadow-sm"
+                : "bg-white/80 dark:bg-ink-900/80 text-ink-700 dark:text-ink-300 border-parchment-300 dark:border-ink-700"
+            }`}
+          >
+            Electron Beam
+          </button>
         </div>
       </div>
 
-      {/* 3D WebGL Canvas & HUD */}
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
-        <div className="lg:col-span-8 flex flex-col items-center justify-center rounded-2xl bg-[#0f172a] border border-parchment-300 dark:border-ink-800 relative min-h-[460px] overflow-hidden shadow-inner">
-          {/* Top HUD */}
-          <div className="absolute top-4 left-4 right-4 z-20 flex items-center justify-between pointer-events-none text-xs sm:text-sm font-mono">
-            <div className="px-3.5 py-1.5 bg-ink-900/90 border border-ink-800 text-blue-300 rounded-xl shadow-md">
-              Electron Velocity:{" "}
-              <span className="font-bold">{electronSpeedKms.toLocaleString()} km/s</span> ·
-              Multiplier Gain:{" "}
-              <span className="text-emerald-300 font-bold">
-                {electronMultiplierGain.toLocaleString()}x
-              </span>
-            </div>
-
-            <div className="flex items-center gap-2 pointer-events-auto">
-              <button
-                type="button"
-                onClick={() => setShowCoils(!showCoils)}
-                className={`px-3 py-1 rounded-lg border text-xs font-mono transition-colors ${
-                  showCoils
-                    ? "bg-amber-600 text-white border-amber-500"
-                    : "bg-ink-900 text-ink-400 border-ink-800"
-                }`}
-              >
-                Coils: {showCoils ? "ON" : "OFF"}
-              </button>
-              <button
-                type="button"
-                onClick={() => setShowElectrons(!showElectrons)}
-                className={`px-3 py-1 rounded-lg border text-xs font-mono transition-colors ${
-                  showElectrons
-                    ? "bg-blue-600 text-white border-blue-500"
-                    : "bg-ink-900 text-ink-400 border-ink-800"
-                }`}
-              >
-                Electrons: {showElectrons ? "ON" : "OFF"}
-              </button>
-            </div>
+      {/* Parameter Sliders Panel */}
+      <div className="p-4 sm:p-5 bg-parchment-100/80 dark:bg-ink-900/90 border-t border-parchment-300 dark:border-ink-800 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 text-xs font-sans">
+        {/* Accelerating Voltage */}
+        <div className="space-y-1.5">
+          <div className="flex justify-between font-medium text-ink-900 dark:text-parchment-100">
+            <span>Anode Potential ($V_a$):</span>
+            <span className="font-bold text-amber-700 dark:text-amber-400">
+              {acceleratingVoltageKv.toFixed(1)} kV
+            </span>
           </div>
-
-          {/* 3D Canvas */}
-          <div ref={containerRef} className="w-full h-[460px] cursor-grab active:cursor-grabbing" />
-
-          {/* Bottom Telemetry */}
-          <div className="w-full grid grid-cols-4 gap-3 text-center text-sm font-mono p-4 bg-ink-950/95 border-t border-ink-800 text-ink-300 z-10">
-            <div>
-              <span className="text-ink-400 block text-xs font-semibold uppercase tracking-wider">
-                ANODE VOLTAGE
-              </span>
-              <span className="text-amber-400 font-bold text-sm sm:text-base">
-                {anodeVoltageKv.toFixed(1)} kV
-              </span>
-            </div>
-            <div>
-              <span className="text-ink-400 block text-xs font-semibold uppercase tracking-wider">
-                DEFLECTION CURRENT
-              </span>
-              <span className="text-blue-400 font-bold text-sm sm:text-base">
-                {deflectionCurrentMa} mA
-              </span>
-            </div>
-            <div>
-              <span className="text-ink-400 block text-xs font-semibold uppercase tracking-wider">
-                FRAME RATE
-              </span>
-              <span className="text-emerald-400 font-bold text-sm sm:text-base">
-                30 FPS Progressive
-              </span>
-            </div>
-            <div>
-              <span className="text-ink-400 block text-xs font-semibold uppercase tracking-wider">
-                3D INTERACTION
-              </span>
-              <span className="text-purple-400 font-semibold text-xs sm:text-sm">
-                Drag Orbit / Zoom
-              </span>
-            </div>
-          </div>
+          <input
+            type="range"
+            min="1.0"
+            max="6.0"
+            step="0.2"
+            value={acceleratingVoltageKv}
+            onChange={(e) => setAcceleratingVoltageKv(Number(e.target.value))}
+            className="w-full accent-amber-600 dark:accent-amber-400 cursor-pointer"
+          />
+          <span className="text-[10px] text-ink-500 dark:text-ink-400 block">
+            Accelerates photoelectrons to optical aperture
+          </span>
         </div>
 
-        {/* Controls Sidebar */}
-        <div className="lg:col-span-4 space-y-4">
-          <div className="rounded-2xl border border-parchment-300 dark:border-ink-800 bg-parchment-100/80 dark:bg-ink-900/70 p-6 space-y-5 shadow-sm">
-            <span className="font-serif font-bold text-base sm:text-lg text-ink-950 dark:text-parchment-50 block">
-              Electron Optics Controls
+        {/* Horizontal Scan Rate */}
+        <div className="space-y-1.5">
+          <div className="flex justify-between font-medium text-ink-900 dark:text-parchment-100">
+            <span>Horizontal Deflection ($f_h$):</span>
+            <span className="font-bold text-blue-600 dark:text-blue-400">
+              {horizontalFreqKhz} kHz
             </span>
-
-            {/* Anode Voltage Slider */}
-            <div className="space-y-1.5">
-              <div className="flex justify-between text-xs sm:text-sm font-mono">
-                <span className="font-semibold text-ink-800 dark:text-parchment-200">
-                  Anode Accelerating Potential ($V_a$)
-                </span>
-                <span className="text-amber-600 dark:text-amber-400 font-bold">
-                  {anodeVoltageKv.toFixed(1)} kV
-                </span>
-              </div>
-              <input
-                type="range"
-                min="1.0"
-                max="6.0"
-                step="0.2"
-                value={anodeVoltageKv}
-                onChange={(e) => setAnodeVoltageKv(Number(e.target.value))}
-                className="w-full accent-amber-600 cursor-pointer h-2 bg-parchment-300 dark:bg-ink-700 rounded-lg"
-              />
-            </div>
-
-            {/* Deflection Current Slider */}
-            <div className="space-y-1.5">
-              <div className="flex justify-between text-xs sm:text-sm font-mono">
-                <span className="font-semibold text-ink-800 dark:text-parchment-200">
-                  {"Magnetic Deflection Sweep ($I_{defl}$)"}
-                </span>
-                <span className="text-blue-600 dark:text-blue-400 font-bold">
-                  {deflectionCurrentMa} mA
-                </span>
-              </div>
-              <input
-                type="range"
-                min="60"
-                max="300"
-                step="10"
-                value={deflectionCurrentMa}
-                onChange={(e) => setDeflectionCurrentMa(Number(e.target.value))}
-                className="w-full accent-blue-600 cursor-pointer h-2 bg-parchment-300 dark:bg-ink-700 rounded-lg"
-              />
-            </div>
-
-            {/* Scan Resolution Selector */}
-            <div className="space-y-1.5">
-              <span className="text-xs sm:text-sm font-mono block text-ink-800 dark:text-ink-200 font-semibold mb-1">
-                Scan Line Standard
-              </span>
-              <div className="grid grid-cols-2 gap-2 text-xs sm:text-sm font-mono">
-                <button
-                  type="button"
-                  onClick={() => setScanLines(220)}
-                  className={`p-2.5 rounded-xl border text-center transition-colors shadow-2xs ${
-                    scanLines === 220
-                      ? "bg-blue-700 text-white font-bold"
-                      : "bg-parchment-200 dark:bg-ink-800 text-ink-800 dark:text-ink-200"
-                  }`}
-                >
-                  220 Lines (1930 Historic)
-                </button>
-                <button
-                  type="button"
-                  onClick={() => setScanLines(525)}
-                  className={`p-2.5 rounded-xl border text-center transition-colors shadow-2xs ${
-                    scanLines === 525
-                      ? "bg-blue-700 text-white font-bold"
-                      : "bg-parchment-200 dark:bg-ink-800 text-ink-800 dark:text-ink-200"
-                  }`}
-                >
-                  525 Lines (NTSC Broadcast)
-                </button>
-              </div>
-            </div>
-
-            <div className="p-4 rounded-xl bg-blue-500/10 border border-blue-500/30 text-ink-950 dark:text-parchment-100 text-xs sm:text-sm font-sans space-y-1.5">
-              <span className="font-bold text-blue-900 dark:text-blue-300 block font-mono text-xs uppercase tracking-wider">
-                Farnsworth&apos;s &ldquo;All-Electronic&rdquo; Vision:
-              </span>
-              <p className="leading-relaxed">
-                While plowing potato fields in Rigby, Idaho at age 14, Philo Farnsworth saw the
-                parallel back-and-forth furrows in the soil and realized an electron beam could scan
-                an image line by line with zero spinning mechanical disks.
-              </p>
-            </div>
           </div>
+          <input
+            type="range"
+            min="5.0"
+            max="30.0"
+            step="1.0"
+            value={horizontalFreqKhz}
+            onChange={(e) => setHorizontalFreqKhz(Number(e.target.value))}
+            className="w-full accent-blue-600 dark:accent-blue-400 cursor-pointer"
+          />
+          <span className="text-[10px] text-ink-500 dark:text-ink-400 block">
+            Deflects entire electron image across aperture
+          </span>
+        </div>
+
+        {/* Vertical Refresh Rate */}
+        <div className="space-y-1.5">
+          <div className="flex justify-between font-medium text-ink-900 dark:text-parchment-100">
+            <span>Vertical Frame Rate ($f_v$):</span>
+            <span className="font-bold text-emerald-600 dark:text-emerald-400">
+              {verticalFreqHz} Hz
+            </span>
+          </div>
+          <input
+            type="range"
+            min="30"
+            max="120"
+            step="10"
+            value={verticalFreqHz}
+            onChange={(e) => setVerticalFreqHz(Number(e.target.value))}
+            className="w-full accent-emerald-600 dark:accent-emerald-400 cursor-pointer"
+          />
+          <span className="text-[10px] text-ink-500 dark:text-ink-400 block">
+            Overcomes visual persistence threshold (flicker-free)
+          </span>
+        </div>
+
+        {/* Incident Illumination */}
+        <div className="space-y-1.5">
+          <div className="flex justify-between font-medium text-ink-900 dark:text-parchment-100">
+            <span>Subject Illumination:</span>
+            <span className="font-bold text-purple-600 dark:text-purple-400">
+              {lightIntensityLux} Lux
+            </span>
+          </div>
+          <input
+            type="range"
+            min="100"
+            max="1500"
+            step="50"
+            value={lightIntensityLux}
+            onChange={(e) => setLightIntensityLux(Number(e.target.value))}
+            className="w-full accent-purple-600 dark:accent-purple-400 cursor-pointer"
+          />
+          <span className="text-[10px] text-ink-500 dark:text-ink-400 block">
+            Einstein photoelectric photoemission rate
+          </span>
         </div>
       </div>
     </div>

@@ -1,286 +1,361 @@
 "use client";
 
-import { Radio } from "lucide-react";
+import { Radio, Shield } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import * as THREE from "three";
-import { createThreeStudioScene } from "./ThreeStudioScene";
+import { createGlowPointTexture, createThreeStudioScene } from "./ThreeStudioScene";
 
 export function LamarrFrequencyHopping3D() {
   const containerRef = useRef<HTMLDivElement>(null);
 
-  // Frequency Hopping Parameters
-  const [hopRateHps, setHopRateHps] = useState<number>(15); // 4 to 40 hops/sec
-  const [carrierChannels, _setCarrierChannels] = useState<number>(88); // 88 Piano Keys
+  // Spread Spectrum State Controls
+  const [carrierChannelsCount, setCarrierChannelsCount] = useState<number>(88); // 88 Piano keys
+  const [hopRateHopsPerSec, setHopRateHopsPerSec] = useState<number>(12); // 4 to 30 hops/sec
   const [isJammingActive, setIsJammingActive] = useState<boolean>(true);
-  const [showSpectrumWaterfall, _setShowSpectrumWaterfall] = useState<boolean>(true);
+  const [currentChannel, setCurrentChannel] = useState<number>(44);
 
-  // Spread Spectrum Electronic Warfare Physics
-  const jammingImmunityDb = Math.round(10 * Math.log10(carrierChannels)); // Processing Gain = 10 log10(N) = +19.4 dB
-  const interceptionProbabilityPct = ((1 / carrierChannels) * 100).toFixed(1);
+  // Spread Spectrum Physics Calculations
+  // Processing Gain: PG = 10 * log10(Total Bandwidth / Channel Bandwidth)
+  const processingGainDb = (10 * Math.log10(carrierChannelsCount)).toFixed(1);
+  const antiJamMarginDb = (Number(processingGainDb) - 3.0).toFixed(1);
+  const activeFrequencyMhz = (140.0 + (currentChannel / 88) * 40.0).toFixed(2);
 
   useEffect(() => {
     const container = containerRef.current;
     if (!container) return;
 
-    // Create Studio Scene with Museum Studio Lighting
+    // Create Studio Scene with High-Luminosity Studio Lighting
     const studio = createThreeStudioScene({
       container,
-      cameraPos: [15, 12, 17],
+      cameraPos: [12, 9, 15],
       targetPos: [0, 0, 0],
-      bgBottomColor: 0x0f172a,
-      rimColor: 0x38bdf8,
-      ambientIntensity: 1.3,
     });
 
     const { scene, camera, renderer, controls } = studio;
 
     // --- PBR MATERIALS ---
-    const brassRollersMat = new THREE.MeshStandardMaterial({
-      color: 0xd97706,
-      metalness: 0.95,
-      roughness: 0.15,
+    const brassMat = new THREE.MeshStandardMaterial({
+      color: 0xd97706, // Polished instrument brass
+      roughness: 0.18,
+      metalness: 0.92,
     });
 
-    const punchedPaperMat = new THREE.MeshStandardMaterial({
-      color: 0xfef3c7,
+    const pianoRollPaperMat = new THREE.MeshStandardMaterial({
+      color: 0xfef9e7, // Perforated paper piano roll
       roughness: 0.8,
       metalness: 0.05,
+      side: THREE.DoubleSide,
     });
 
     const _torpedoSteelMat = new THREE.MeshStandardMaterial({
-      color: 0x475569,
-      metalness: 0.9,
+      color: 0x475569, // Radio-controlled naval torpedo hull
       roughness: 0.25,
+      metalness: 0.85,
     });
 
-    const activeRfMat = new THREE.MeshBasicMaterial({ color: 0x38bdf8 });
-    const _jammingRfMat = new THREE.MeshBasicMaterial({ color: 0xef4444 });
+    // --- 3D PIANO ROLL & SPREAD SPECTRUM ASSEMBLY ---
+    const apparatusGroup = new THREE.Group();
+    scene.add(apparatusGroup);
 
-    // --- 3D PLAYER PIANO ROLL MECHANISM ASSEMBLY ---
-    const hoppingGroup = new THREE.Group();
-    scene.add(hoppingGroup);
+    // Transmitter & Receiver Dual Piano Roll Drums
+    const drum1 = new THREE.Mesh(new THREE.CylinderGeometry(1.2, 1.2, 5.2, 32), brassMat);
+    drum1.position.set(-3.2, 0, 0);
+    drum1.rotation.x = Math.PI / 2;
+    drum1.castShadow = true;
+    apparatusGroup.add(drum1);
 
-    // Dual Brass Slotted Paper Rollers (Transmitter & Torpedo Receiver)
-    const roller1 = new THREE.Mesh(new THREE.CylinderGeometry(0.8, 0.8, 9.0, 32), brassRollersMat);
-    roller1.rotation.z = Math.PI / 2;
-    roller1.position.set(0, 2.5, -2.5);
-    hoppingGroup.add(roller1);
+    const drum2 = new THREE.Mesh(new THREE.CylinderGeometry(1.2, 1.2, 5.2, 32), brassMat);
+    drum2.position.set(3.2, 0, 0);
+    drum2.rotation.x = Math.PI / 2;
+    drum2.castShadow = true;
+    apparatusGroup.add(drum2);
 
-    const roller2 = new THREE.Mesh(new THREE.CylinderGeometry(0.8, 0.8, 9.0, 32), brassRollersMat);
-    roller2.rotation.z = Math.PI / 2;
-    roller2.position.set(0, -2.5, 2.5);
-    hoppingGroup.add(roller2);
+    // Perforated 88-Key Paper Roll Tape Web between drums
+    const paperWeb = new THREE.Mesh(new THREE.PlaneGeometry(6.4, 4.8), pianoRollPaperMat);
+    paperWeb.position.set(0, 1.2, 0);
+    paperWeb.rotation.x = -Math.PI / 2;
+    paperWeb.castShadow = true;
+    paperWeb.receiveShadow = true;
+    apparatusGroup.add(paperWeb);
 
-    // Perforated 88-Note Slotted Paper Roll
-    const paperPlane = new THREE.Mesh(new THREE.PlaneGeometry(8.5, 7.5), punchedPaperMat);
-    paperPlane.rotation.x = -Math.PI / 4;
-    hoppingGroup.add(paperPlane);
+    // Contact Finger Sensing Comb (88 spring-loaded contact pins)
+    const comb = new THREE.Mesh(
+      new THREE.BoxGeometry(0.2, 0.4, 4.8),
+      new THREE.MeshStandardMaterial({ color: 0xca8a04, roughness: 0.2, metalness: 0.9 }),
+    );
+    comb.position.set(0, 1.45, 0);
+    comb.castShadow = true;
+    apparatusGroup.add(comb);
 
-    // 88 Piano Key Contact Finger Array (Sensing roll perforations)
-    const numPins = 16;
-    const pinGroup = new THREE.Group();
-    for (let i = 0; i < numPins; i++) {
-      const pin = new THREE.Mesh(
-        new THREE.CylinderGeometry(0.06, 0.06, 1.2, 8),
-        new THREE.MeshStandardMaterial({ color: 0xf1f5f9, metalness: 0.95, roughness: 0.1 }),
-      );
-      pin.position.set(-3.8 + (i * 7.6) / numPins, 0.5, 0);
-      pin.rotation.x = Math.PI / 4;
-      pinGroup.add(pin);
+    // --- 3D SPECTRAL WATERFALL FREQUENCY HOPPING BARS ---
+    const spectrumBarsGroup = new THREE.Group();
+    spectrumBarsGroup.position.set(0, -2.2, 0);
+
+    const numDisplayChannels = 44;
+    const barMeshes: THREE.Mesh[] = [];
+
+    for (let c = 0; c < numDisplayChannels; c++) {
+      const x = -5.0 + (c / numDisplayChannels) * 10.0;
+      const barGeo = new THREE.BoxGeometry(0.18, 0.4, 0.4);
+      const barMat = new THREE.MeshStandardMaterial({
+        color: 0x334155,
+        roughness: 0.3,
+        metalness: 0.7,
+      });
+      const bar = new THREE.Mesh(barGeo, barMat);
+      bar.position.set(x, 0.2, 0);
+      spectrumBarsGroup.add(bar);
+      barMeshes.push(bar);
     }
-    hoppingGroup.add(pinGroup);
+    apparatusGroup.add(spectrumBarsGroup);
 
-    // --- 3D FREQUENCY HOPPING SPECTRUM WATERFALL ---
-    const spectrumBars: THREE.Mesh[] = [];
-    const spectrumGroup = new THREE.Group();
-    spectrumGroup.position.set(0, -3.8, 0);
+    // --- GLOWING RF CARRIER HOPPING PARTICLES ---
+    const hopCount = 80;
+    const hopGeo = new THREE.BufferGeometry();
+    const hopPos = new Float32Array(hopCount * 3);
+    const glowTex = createGlowPointTexture();
 
-    for (let i = 0; i < 32; i++) {
-      const bar = new THREE.Mesh(new THREE.BoxGeometry(0.2, 2.0, 0.2), activeRfMat.clone());
-      bar.position.set(-4.0 + (i * 8.0) / 32, 0, 0);
-      spectrumBars.push(bar);
-      spectrumGroup.add(bar);
+    for (let i = 0; i < hopCount; i++) {
+      const idx = i * 3;
+      hopPos[idx] = (Math.random() - 0.5) * 8.0;
+      hopPos[idx + 1] = 2.0 + Math.random() * 2.5;
+      hopPos[idx + 2] = (Math.random() - 0.5) * 3.0;
     }
-    scene.add(spectrumGroup);
 
-    // --- ANIMATION & PHYSICS INTEGRATION LOOP ---
-    let animId: number;
+    hopGeo.setAttribute("position", new THREE.BufferAttribute(hopPos, 3));
+    const hopPoints = new THREE.Points(
+      hopGeo,
+      new THREE.PointsMaterial({
+        size: 0.4,
+        map: glowTex,
+        color: 0x38bdf8,
+        transparent: true,
+        opacity: 0.9,
+        blending: THREE.AdditiveBlending,
+        depthWrite: false,
+      }),
+    );
+    scene.add(hopPoints);
+
+    // --- RENDER LOOP & REAL-TIME SPREAD SPECTRUM HOPPING ---
+    let reqId: number;
     const clock = new THREE.Clock();
+    let hopTimer = 0;
+    let activeChan = 44;
 
     const animate = () => {
-      animId = requestAnimationFrame(animate);
-      const time = clock.getElapsedTime();
+      reqId = requestAnimationFrame(animate);
+      const delta = clock.getDelta();
+      const _elapsed = clock.getElapsedTime();
 
-      controls.update();
+      // Pseudo-Random Frequency Hopping Clocking
+      hopTimer += delta;
+      const hopInterval = 1.0 / hopRateHopsPerSec;
 
-      // Synchronized Roll Rotation
-      const rollSpeed = (hopRateHps / 10) * 1.5;
-      roller1.rotation.y = time * rollSpeed;
-      roller2.rotation.y = time * rollSpeed;
-
-      // Pseudo-random frequency channel hopping
-      const currentChannel = Math.floor((time * hopRateHps) % 32);
-      const jamChannel = Math.floor((time * (hopRateHps * 0.2)) % 32);
-
-      spectrumGroup.visible = showSpectrumWaterfall;
-      if (showSpectrumWaterfall) {
-        spectrumBars.forEach((bar, idx) => {
-          if (idx === currentChannel) {
-            bar.scale.y = 2.5;
-            (bar.material as THREE.MeshBasicMaterial).color.setHex(0x38bdf8); // True signal
-          } else if (isJammingActive && (idx === jamChannel || idx === (jamChannel + 1) % 32)) {
-            bar.scale.y = 2.0;
-            (bar.material as THREE.MeshBasicMaterial).color.setHex(0xef4444); // Enemy jamming
-          } else {
-            bar.scale.y = 0.2;
-            (bar.material as THREE.MeshBasicMaterial).color.setHex(0x334155);
-          }
-        });
+      if (hopTimer >= hopInterval) {
+        hopTimer = 0;
+        // Pseudo-random pseudo-sequence step (Lamarr piano perforation tape)
+        activeChan = Math.floor(Math.random() * numDisplayChannels);
+        setCurrentChannel(activeChan * 2);
       }
 
+      // Rotate Piano Drums
+      drum1.rotation.y += delta * 1.5;
+      drum2.rotation.y += delta * 1.5;
+
+      // Update Spectral Channel Waterfall
+      for (let c = 0; c < numDisplayChannels; c++) {
+        const bar = barMeshes[c];
+        const mat = bar.material as THREE.MeshStandardMaterial;
+
+        if (c === activeChan) {
+          // Active Hopping Signal (Radiant Cyan/Green)
+          bar.scale.y = 4.5;
+          bar.position.y = 0.9;
+          mat.color = new THREE.Color(0x10b981);
+          mat.emissive = new THREE.Color(0x10b981);
+          mat.emissiveIntensity = 0.8;
+        } else if (isJammingActive && (c === 12 || c === 13 || c === 14)) {
+          // Enemy Narrowband Jamming Spike (Red)
+          bar.scale.y = 6.0;
+          bar.position.y = 1.2;
+          mat.color = new THREE.Color(0xef4444);
+          mat.emissive = new THREE.Color(0xef4444);
+          mat.emissiveIntensity = 0.9;
+        } else {
+          bar.scale.y = 1.0;
+          bar.position.y = 0.2;
+          mat.color = new THREE.Color(0x334155);
+          mat.emissive = new THREE.Color(0x000000);
+          mat.emissiveIntensity = 0;
+        }
+      }
+
+      // Animate Hopping Particles
+      const hPos = hopPos;
+      for (let i = 0; i < hopCount; i++) {
+        const idx = i * 3;
+        hPos[idx + 1] += delta * 3.5;
+        if (hPos[idx + 1] > 5.0) {
+          hPos[idx + 1] = 1.5;
+          hPos[idx] = -5.0 + (activeChan / numDisplayChannels) * 10.0 + (Math.random() - 0.5) * 0.8;
+        }
+      }
+      hopGeo.attributes.position.needsUpdate = true;
+
+      controls.update();
       renderer.render(scene, camera);
     };
 
     animate();
 
     return () => {
-      cancelAnimationFrame(animId);
+      cancelAnimationFrame(reqId);
       studio.dispose();
     };
-  }, [hopRateHps, isJammingActive, showSpectrumWaterfall]);
+  }, [hopRateHopsPerSec, isJammingActive]);
 
   return (
-    <div className="rounded-2xl border border-amber-900/20 dark:border-ink-800 bg-parchment-50 dark:bg-ink-950 p-6 sm:p-7 shadow-patent space-y-6">
-      {/* Header */}
-      <div className="flex flex-wrap items-center justify-between gap-3 border-b border-parchment-200 dark:border-ink-800 pb-4">
-        <div>
-          <div className="flex items-center gap-2.5">
-            <Radio className="w-6 h-6 text-purple-500 animate-pulse" />
-            <h3 className="font-serif text-2xl font-bold text-ink-950 dark:text-parchment-50">
-              3D Real-Time Lamarr-Antheil Spread-Spectrum Secret Communication Simulator (US
-              2,292,387)
-            </h3>
+    <div className="flex flex-col h-full bg-parchment-50/60 dark:bg-ink-950/80 rounded-2xl overflow-hidden border border-parchment-300 dark:border-ink-800 shadow-patent">
+      {/* 3D WebGL Canvas Viewport */}
+      <div className="relative flex-1 min-h-[380px] sm:min-h-[460px] w-full cursor-grab active:cursor-grabbing">
+        <div ref={containerRef} className="absolute inset-0 w-full h-full" />
+
+        {/* Live HUD Telemetry Overlay */}
+        <div className="absolute top-4 left-4 z-10 flex flex-col gap-2 pointer-events-none">
+          <div className="bg-white/90 dark:bg-ink-900/90 backdrop-blur-md px-3.5 py-2.5 rounded-xl border border-parchment-300 dark:border-ink-700 shadow-sm">
+            <div className="text-[11px] font-sans text-amber-700 dark:text-amber-400 font-bold uppercase tracking-wider flex items-center gap-1.5">
+              <Shield className="w-3.5 h-3.5 text-blue-500 animate-pulse" />
+              Frequency-Hopping Spread Spectrum
+            </div>
+            <div className="grid grid-cols-2 gap-x-4 gap-y-1 mt-1 text-xs font-sans">
+              <div>
+                <span className="text-ink-600 dark:text-ink-400">Active Carrier:</span>{" "}
+                <span className="font-bold text-emerald-600 dark:text-emerald-400">
+                  {activeFrequencyMhz} MHz (Key #{currentChannel})
+                </span>
+              </div>
+              <div>
+                <span className="text-ink-600 dark:text-ink-400">Processing Gain ($G_p$):</span>{" "}
+                <span className="font-bold text-blue-600 dark:text-blue-400">
+                  +{processingGainDb} dB (88 Channels)
+                </span>
+              </div>
+              <div>
+                <span className="text-ink-600 dark:text-ink-400">Anti-Jam Margin:</span>{" "}
+                <span className="font-bold text-purple-600 dark:text-purple-400">
+                  +{antiJamMarginDb} dB Immunity
+                </span>
+              </div>
+              <div>
+                <span className="text-ink-600 dark:text-ink-400">Hop Rate:</span>{" "}
+                <span className="font-bold text-amber-600 dark:text-amber-400">
+                  {hopRateHopsPerSec} hops/second
+                </span>
+              </div>
+            </div>
           </div>
-          <p className="text-sm sm:text-base text-ink-700 dark:text-ink-300 mt-1">
-            Studio-illuminated Three.js electronic warfare simulation of{" "}
-            <strong>synchronized 88-channel perforated player piano rolls</strong> and{" "}
-            <strong>jamming-proof torpedo guidance</strong>.
-          </p>
+
+          <div className="bg-white/90 dark:bg-ink-900/90 backdrop-blur-md px-3 py-1.5 rounded-lg border border-parchment-300 dark:border-ink-700 text-[11px] font-sans text-ink-700 dark:text-ink-300 flex items-center gap-2">
+            <Radio className="w-3.5 h-3.5 text-emerald-500 animate-pulse" />
+            <span>
+              Hedy Lamarr &amp; George Antheil (US 2,292,387) — Basis of Wi-Fi &amp; Bluetooth
+            </span>
+          </div>
         </div>
 
-        <div className="flex items-center gap-2">
-          <div className="px-3.5 py-1.5 rounded-xl bg-purple-100 dark:bg-purple-950 text-purple-900 dark:text-purple-300 text-xs sm:text-sm font-mono font-bold border border-purple-300 dark:border-purple-800 shadow-2xs">
-            +{jammingImmunityDb} dB Anti-Jamming Gain (88 Frequencies)
-          </div>
+        {/* Jamming Toggle */}
+        <div className="absolute top-4 right-4 z-10 flex gap-2">
+          <button
+            type="button"
+            onClick={() => setIsJammingActive(!isJammingActive)}
+            className={`px-3 py-1.5 rounded-lg text-xs font-sans font-semibold border transition-all ${
+              isJammingActive
+                ? "bg-red-600 text-white border-red-700 shadow-sm"
+                : "bg-white/80 dark:bg-ink-900/80 text-ink-700 dark:text-ink-300 border-parchment-300 dark:border-ink-700"
+            }`}
+          >
+            {isJammingActive ? "Enemy Jamming ON" : "Jamming Inactive"}
+          </button>
         </div>
       </div>
 
-      {/* 3D WebGL Canvas & HUD */}
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
-        <div className="lg:col-span-8 flex flex-col items-center justify-center rounded-2xl bg-[#0f172a] border border-parchment-300 dark:border-ink-800 relative min-h-[460px] overflow-hidden shadow-inner">
-          {/* Top HUD */}
-          <div className="absolute top-4 left-4 right-4 z-20 flex items-center justify-between pointer-events-none text-xs sm:text-sm font-mono">
-            <div className="px-3.5 py-1.5 bg-ink-900/90 border border-ink-800 text-purple-300 rounded-xl shadow-md">
-              Anti-Jamming Processing Gain:{" "}
-              <span className="font-bold">+{jammingImmunityDb} dB</span> (Interception:{" "}
-              <span className="text-emerald-300 font-bold">{interceptionProbabilityPct}%</span>)
-            </div>
-
-            <div className="flex items-center gap-2 pointer-events-auto">
-              <button
-                type="button"
-                onClick={() => setIsJammingActive(!isJammingActive)}
-                className={`px-3 py-1 rounded-lg border text-xs font-mono transition-colors ${
-                  isJammingActive
-                    ? "bg-red-600 text-white border-red-500"
-                    : "bg-ink-900 text-ink-400 border-ink-800"
-                }`}
-              >
-                Enemy Jamming: {isJammingActive ? "ACTIVE" : "OFF"}
-              </button>
-            </div>
+      {/* Parameter Sliders Panel */}
+      <div className="p-4 sm:p-5 bg-parchment-100/80 dark:bg-ink-900/90 border-t border-parchment-300 dark:border-ink-800 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 text-xs font-sans">
+        {/* Hop Rate */}
+        <div className="space-y-1.5">
+          <div className="flex justify-between font-medium text-ink-900 dark:text-parchment-100">
+            <span>Hopping Velocity:</span>
+            <span className="font-bold text-amber-700 dark:text-amber-400">
+              {hopRateHopsPerSec} Hops/Sec
+            </span>
           </div>
-
-          {/* 3D Canvas */}
-          <div ref={containerRef} className="w-full h-[460px] cursor-grab active:cursor-grabbing" />
-
-          {/* Bottom Telemetry */}
-          <div className="w-full grid grid-cols-4 gap-3 text-center text-sm font-mono p-4 bg-ink-950/95 border-t border-ink-800 text-ink-300 z-10">
-            <div>
-              <span className="text-ink-400 block text-xs font-semibold uppercase tracking-wider">
-                HOPPING RATE
-              </span>
-              <span className="text-purple-400 font-bold text-sm sm:text-base">
-                {hopRateHps} Hops / sec
-              </span>
-            </div>
-            <div>
-              <span className="text-ink-400 block text-xs font-semibold uppercase tracking-wider">
-                CHANNELS
-              </span>
-              <span className="text-emerald-400 font-bold text-sm sm:text-base">
-                88 Frequencies
-              </span>
-            </div>
-            <div>
-              <span className="text-ink-400 block text-xs font-semibold uppercase tracking-wider">
-                SYNCHRONIZATION
-              </span>
-              <span className="text-blue-400 font-bold text-sm sm:text-base">
-                Punched Paper Tape
-              </span>
-            </div>
-            <div>
-              <span className="text-ink-400 block text-xs font-semibold uppercase tracking-wider">
-                3D INTERACTION
-              </span>
-              <span className="text-purple-400 font-semibold text-xs sm:text-sm">
-                Drag Orbit / Zoom
-              </span>
-            </div>
-          </div>
+          <input
+            type="range"
+            min="4"
+            max="30"
+            step="2"
+            value={hopRateHopsPerSec}
+            onChange={(e) => setHopRateHopsPerSec(Number(e.target.value))}
+            className="w-full accent-amber-600 dark:accent-amber-400 cursor-pointer"
+          />
+          <span className="text-[10px] text-ink-500 dark:text-ink-400 block">
+            Slotted player piano roll tape feed rate
+          </span>
         </div>
 
-        {/* Controls Sidebar */}
-        <div className="lg:col-span-4 space-y-4">
-          <div className="rounded-2xl border border-parchment-300 dark:border-ink-800 bg-parchment-100/80 dark:bg-ink-900/70 p-6 space-y-5 shadow-sm">
-            <span className="font-serif font-bold text-base sm:text-lg text-ink-950 dark:text-parchment-50 block">
-              Spread-Spectrum Controls
+        {/* Carrier Channels Count */}
+        <div className="space-y-1.5">
+          <div className="flex justify-between font-medium text-ink-900 dark:text-parchment-100">
+            <span>Piano Keys / Channels:</span>
+            <span className="font-bold text-blue-600 dark:text-blue-400">
+              88 Discrete Frequencies
             </span>
-
-            {/* Hopping Rate Slider */}
-            <div className="space-y-1.5">
-              <div className="flex justify-between text-xs sm:text-sm font-mono">
-                <span className="font-semibold text-ink-800 dark:text-parchment-200">
-                  {"Carrier Hopping Frequency Rate ($f_{hop}$)"}
-                </span>
-                <span className="text-purple-600 dark:text-purple-400 font-bold">
-                  {hopRateHps} Hops/s
-                </span>
-              </div>
-              <input
-                type="range"
-                min="4"
-                max="40"
-                step="2"
-                value={hopRateHps}
-                onChange={(e) => setHopRateHps(Number(e.target.value))}
-                className="w-full accent-purple-600 cursor-pointer h-2 bg-parchment-300 dark:bg-ink-700 rounded-lg"
-              />
-            </div>
-
-            <div className="p-4 rounded-xl bg-purple-500/10 border border-purple-500/30 text-ink-950 dark:text-parchment-100 text-xs sm:text-sm font-sans space-y-1.5">
-              <span className="font-bold text-purple-900 dark:text-purple-300 block font-mono text-xs uppercase tracking-wider">
-                Hedy Lamarr&apos;s Spread Spectrum:
-              </span>
-              <p className="leading-relaxed">
-                Hollywood actress Hedy Lamarr and avant-garde composer George Antheil co-invented
-                frequency hopping to steer radio-guided Allied torpedoes without Axis enemy
-                interception. Their patent became the foundation of modern Wi-Fi, Bluetooth, GPS,
-                and CDMA cell networks.
-              </p>
-            </div>
           </div>
+          <input
+            type="range"
+            min="20"
+            max="88"
+            step="4"
+            value={carrierChannelsCount}
+            onChange={(e) => setCarrierChannelsCount(Number(e.target.value))}
+            className="w-full accent-blue-600 dark:accent-blue-400 cursor-pointer"
+          />
+          <span className="text-[10px] text-ink-500 dark:text-ink-400 block">
+            Total spread spectrum bandwidth allocation
+          </span>
+        </div>
+
+        {/* Torpedo Guidance Immunity */}
+        <div className="space-y-1.5">
+          <div className="flex justify-between font-medium text-ink-900 dark:text-parchment-100">
+            <span>Radio Torpedo Guidance:</span>
+            <span className="font-bold text-emerald-600 dark:text-emerald-400">
+              Unjammable (FHSS)
+            </span>
+          </div>
+          <div className="w-full bg-parchment-300 dark:bg-ink-800 rounded-full h-3 overflow-hidden mt-2 border border-parchment-400 dark:border-ink-700">
+            <div
+              className="bg-gradient-to-r from-blue-500 via-emerald-500 to-amber-500 h-full transition-all duration-300"
+              style={{ width: "96%" }}
+            />
+          </div>
+          <span className="text-[10px] text-ink-500 dark:text-ink-400 block">
+            Narrowband jammers affect only 1/88th of transmission
+          </span>
+        </div>
+
+        {/* Modern Heritage */}
+        <div className="space-y-1.5">
+          <div className="flex justify-between font-medium text-ink-900 dark:text-parchment-100">
+            <span>Modern Technology Lineage:</span>
+            <span className="font-bold text-purple-600 dark:text-purple-400">
+              CDMA / Wi-Fi / GPS / Bluetooth
+            </span>
+          </div>
+          <span className="text-[11px] text-ink-700 dark:text-parchment-200 block pt-1 leading-relaxed">
+            Patented in 1942 as "Secret Communication System" by Hollywood actress Hedy Lamarr.
+          </span>
         </div>
       </div>
     </div>

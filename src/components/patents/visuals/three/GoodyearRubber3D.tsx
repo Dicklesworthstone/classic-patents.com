@@ -1,6 +1,6 @@
 "use client";
 
-import { Flame } from "lucide-react";
+import { Layers, Sparkles } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import * as THREE from "three";
 import { createThreeStudioScene } from "./ThreeStudioScene";
@@ -8,318 +8,329 @@ import { createThreeStudioScene } from "./ThreeStudioScene";
 export function GoodyearRubber3D() {
   const containerRef = useRef<HTMLDivElement>(null);
 
-  // Polymer Vulcanization State
-  const [temperatureCelsius, setTemperatureCelsius] = useState<number>(140); // 20 to 200 C
-  const [sulfurWeightPct, setSulfurWeightPct] = useState<number>(8); // 0 to 25%
-  const [tensileStrain, setTensileStrain] = useState<number>(1.2); // 1.0 to 2.5x stretch
-  const [showSulfurBridges, setShowSulfurBridges] = useState<boolean>(true);
+  // Vulcanization Chemistry State Controls
+  const [sulfurWeightPct, setSulfurWeightPct] = useState<number>(4.5); // 0.5 to 15%
+  const [cureTemperatureCelsius, setCureTemperatureCelsius] = useState<number>(140); // 20 to 180 °C
+  const [appliedTensileStretch, setAppliedTensileStretch] = useState<number>(1.6); // 1.0 to 3.5×
+  const [showSulfurCrosslinks, setShowSulfurCrosslinks] = useState<boolean>(true);
 
-  // Cross-linking Network Density & Elasticity Physics
-  const crosslinkDensityMols = (
-    sulfurWeightPct *
-    (temperatureCelsius > 120 ? 1.0 : 0.05) *
-    1.8
-  ).toFixed(1);
-  const elasticModulusMpa = Math.max(0.2, Number(crosslinkDensityMols) * 0.45).toFixed(2);
-  const isStickyViscous = temperatureCelsius > 80 && sulfurWeightPct < 2;
-  const isBrittleGlassy = temperatureCelsius < 0 && sulfurWeightPct < 2;
+  // Vulcanization Physics & Polymer Mechanics Calculations
+  // Crosslink Density: nu = rho * (sulfur% / 100) / M_sulfur
+  const isVulcanized = sulfurWeightPct >= 2.0 && cureTemperatureCelsius >= 120;
+  const tensileElasticModulusMpa = isVulcanized
+    ? (1.2 * (sulfurWeightPct / 3.0) ** 1.3).toFixed(2)
+    : "0.15";
+  const glassTransitionTempC = Math.round(-70 + sulfurWeightPct * 4.5);
+  const thermalStability =
+    cureTemperatureCelsius > 165
+      ? "Degradation (Overcured)"
+      : isVulcanized
+        ? "Stable (-40°C to +120°C)"
+        : "Melted Stickiness / Cold Embrittlement";
 
   useEffect(() => {
     const container = containerRef.current;
     if (!container) return;
 
-    // Create Studio Scene with Museum Studio Lighting
+    // Create Studio Scene with High-Luminosity Studio Lighting
     const studio = createThreeStudioScene({
       container,
-      cameraPos: [15, 11, 18],
+      cameraPos: [11, 8, 13],
       targetPos: [0, 0, 0],
-      bgBottomColor: 0x0f172a,
-      rimColor: 0xf59e0b,
-      ambientIntensity: 1.3,
     });
 
     const { scene, camera, renderer, controls } = studio;
 
     // --- PBR MATERIALS ---
-    const isopreneCarbonMat = new THREE.MeshStandardMaterial({
-      color: 0x334155, // Polyisoprene polymer chain backbone
-      roughness: 0.6,
-      metalness: 0.2,
+    const polyisopreneCarbonMat = new THREE.MeshStandardMaterial({
+      color: 0x1e293b, // Polyisoprene polymer backbone (Carbon)
+      roughness: 0.5,
+      metalness: 0.3,
     });
 
     const sulfurBridgeMat = new THREE.MeshStandardMaterial({
-      color: 0xfacc15, // Sulfur cross-linking bridge atoms (Yellow)
-      roughness: 0.3,
-      metalness: 0.8,
-      emissive: 0xca8a04,
+      color: 0xfacc15, // Elemental sulfur cross-linking bridge (-S-S-)
+      roughness: 0.2,
+      metalness: 0.7,
+      emissive: 0xeab308,
       emissiveIntensity: 0.4,
     });
 
-    // --- 3D POLYMER CHAIN MESH ---
+    const clampMat = new THREE.MeshStandardMaterial({
+      color: 0x475569, // Tensile test steel tensile grips
+      roughness: 0.15,
+      metalness: 0.9,
+    });
+
+    // --- 3D POLYMER NETWORK ASSEMBLY ---
     const rubberGroup = new THREE.Group();
     scene.add(rubberGroup);
 
+    // Left and Right Tensile Grip Clamps
+    const leftClamp = new THREE.Mesh(new THREE.BoxGeometry(0.8, 4.2, 3.2), clampMat);
+    leftClamp.position.set(-4.5, 0, 0);
+    leftClamp.castShadow = true;
+    rubberGroup.add(leftClamp);
+
+    const rightClamp = new THREE.Mesh(new THREE.BoxGeometry(0.8, 4.2, 3.2), clampMat);
+    rightClamp.position.set(4.5, 0, 0);
+    rightClamp.castShadow = true;
+    rubberGroup.add(rightClamp);
+
+    // Entangled cis-1,4-Polyisoprene Chains (4 Parallel Chains)
+    const chains: { curve: THREE.CatmullRomCurve3; mesh: THREE.Mesh; basePts: THREE.Vector3[] }[] =
+      [];
     const numChains = 4;
-    const segmentsPerChain = 10;
-    const chainMeshes: THREE.Mesh[][] = [];
 
     for (let c = 0; c < numChains; c++) {
-      const chainNodes: THREE.Mesh[] = [];
-      const baseY = (c - (numChains - 1) / 2) * 2.5;
+      const yBase = (c - (numChains - 1) / 2) * 1.0;
+      const pts: THREE.Vector3[] = [];
+      const numSegments = 10;
 
-      for (let s = 0; s < segmentsPerChain; s++) {
-        const sphere = new THREE.Mesh(new THREE.SphereGeometry(0.38, 16, 16), isopreneCarbonMat);
-        const baseX = (s - (segmentsPerChain - 1) / 2) * 1.6;
-        sphere.position.set(baseX, baseY, 0);
-        chainNodes.push(sphere);
-        rubberGroup.add(sphere);
+      for (let s = 0; s <= numSegments; s++) {
+        const x = -4.0 + (s / numSegments) * 8.0;
+        const y = yBase + Math.sin(s * 1.5 + c) * 0.4;
+        const z = Math.cos(s * 1.8 + c) * 0.6;
+        pts.push(new THREE.Vector3(x, y, z));
       }
-      chainMeshes.push(chainNodes);
+
+      const curve = new THREE.CatmullRomCurve3(pts);
+      const geo = new THREE.TubeGeometry(curve, 40, 0.12, 8, false);
+      const mesh = new THREE.Mesh(geo, polyisopreneCarbonMat);
+      mesh.castShadow = true;
+      rubberGroup.add(mesh);
+
+      chains.push({ curve, mesh, basePts: pts });
     }
 
-    // Dynamic Sulfur Cross-linking Bridge Cylinders
-    const bridgeGroup = new THREE.Group();
-    const bridgeCylinders: THREE.Mesh[] = [];
+    // Sulfur Disulfide Bridge Atoms (-S_x-)
+    const sulfurBridgesGroup = new THREE.Group();
+    const numBridges = 8;
+    const sulfurSpheres: THREE.Mesh[] = [];
 
-    for (let c = 0; c < numChains - 1; c++) {
-      for (let s = 1; s < segmentsPerChain - 1; s += 2) {
-        const bridge = new THREE.Mesh(
-          new THREE.CylinderGeometry(0.14, 0.14, 2.5, 12),
-          sulfurBridgeMat,
-        );
-        bridge.position.set(
-          (s - (segmentsPerChain - 1) / 2) * 1.6,
-          (c - (numChains - 2) / 2) * 2.5,
-          0,
-        );
-        bridgeCylinders.push(bridge);
-        bridgeGroup.add(bridge);
-      }
+    for (let b = 0; b < numBridges; b++) {
+      const x = -3.0 + (b / numBridges) * 6.0;
+      const bridge = new THREE.Mesh(new THREE.SphereGeometry(0.24, 16, 16), sulfurBridgeMat);
+      bridge.position.set(x, (Math.random() - 0.5) * 1.6, (Math.random() - 0.5) * 0.8);
+      bridge.castShadow = true;
+      sulfurBridgesGroup.add(bridge);
+      sulfurSpheres.push(bridge);
     }
-    rubberGroup.add(bridgeGroup);
+    rubberGroup.add(sulfurBridgesGroup);
 
-    // --- ANIMATION & PHYSICS INTEGRATION LOOP ---
-    let animId: number;
+    // --- RENDER LOOP & REAL-TIME ENTROPIC ELASTICITY ---
+    let reqId: number;
     const clock = new THREE.Clock();
 
     const animate = () => {
-      animId = requestAnimationFrame(animate);
-      const time = clock.getElapsedTime();
+      reqId = requestAnimationFrame(animate);
+      const _delta = clock.getDelta();
+      const elapsed = clock.getElapsedTime();
+
+      // Tensile Stretch Extension Factor
+      const stretch = appliedTensileStretch;
+      rightClamp.position.x = 4.5 * stretch;
+      leftClamp.position.x = -4.5 * stretch;
+
+      // Deform polymer chains according to entropic uncoiling
+      for (const item of chains) {
+        const newPts: THREE.Vector3[] = [];
+        for (let i = 0; i < item.basePts.length; i++) {
+          const pt = item.basePts[i];
+          const uncoilFactor = Math.max(0.1, 1.0 / stretch);
+          newPts.push(
+            new THREE.Vector3(
+              pt.x * stretch,
+              pt.y * uncoilFactor + Math.sin(elapsed * 3.0 + i) * (isVulcanized ? 0.04 : 0.12),
+              pt.z * uncoilFactor + Math.cos(elapsed * 3.0 + i) * (isVulcanized ? 0.04 : 0.12),
+            ),
+          );
+        }
+        item.curve.points = newPts;
+        item.mesh.geometry.dispose();
+        item.mesh.geometry = new THREE.TubeGeometry(item.curve, 40, 0.12, 8, false);
+      }
+
+      // Sulfur bridges visibility & positioning
+      sulfurBridgesGroup.visible = showSulfurCrosslinks && isVulcanized;
+      for (let b = 0; b < numBridges; b++) {
+        const sphere = sulfurSpheres[b];
+        sphere.position.x = (-3.0 + (b / numBridges) * 6.0) * stretch;
+      }
 
       controls.update();
-
-      // Tensile Strain Deformation
-      const stretch = tensileStrain;
-      rubberGroup.scale.set(stretch, 1 / Math.sqrt(stretch), 1 / Math.sqrt(stretch));
-
-      // Thermal Polymer Segment Jiggle
-      const thermalWiggle = (temperatureCelsius / 100) * 0.12;
-      chainMeshes.forEach((chain, cIdx) => {
-        chain.forEach((node, sIdx) => {
-          const wobble = Math.sin(time * 6.0 + sIdx + cIdx) * thermalWiggle;
-          node.position.z = wobble;
-        });
-      });
-
-      // Cross-linking visibility based on sulfur and toggle
-      bridgeGroup.visible = showSulfurBridges && sulfurWeightPct > 1;
-      const numActiveBridges = Math.min(
-        bridgeCylinders.length,
-        Math.floor((sulfurWeightPct / 25) * bridgeCylinders.length),
-      );
-      bridgeCylinders.forEach((b, idx) => {
-        b.visible = idx < numActiveBridges;
-      });
-
       renderer.render(scene, camera);
     };
 
     animate();
 
     return () => {
-      cancelAnimationFrame(animId);
+      cancelAnimationFrame(reqId);
       studio.dispose();
     };
-  }, [temperatureCelsius, sulfurWeightPct, tensileStrain, showSulfurBridges]);
+  }, [appliedTensileStretch, showSulfurCrosslinks, isVulcanized]);
 
   return (
-    <div className="rounded-2xl border border-amber-900/20 dark:border-ink-800 bg-parchment-50 dark:bg-ink-950 p-6 sm:p-7 shadow-patent space-y-6">
-      {/* Header */}
-      <div className="flex flex-wrap items-center justify-between gap-3 border-b border-parchment-200 dark:border-ink-800 pb-4">
-        <div>
-          <div className="flex items-center gap-2.5">
-            <Flame className="w-6 h-6 text-amber-500 animate-pulse" />
-            <h3 className="font-serif text-2xl font-bold text-ink-950 dark:text-parchment-50">
-              3D Real-Time Goodyear Vulcanized Rubber &amp; Cross-Linking Simulator (US 3,633)
-            </h3>
+    <div className="flex flex-col h-full bg-parchment-50/60 dark:bg-ink-950/80 rounded-2xl overflow-hidden border border-parchment-300 dark:border-ink-800 shadow-patent">
+      {/* 3D WebGL Canvas Viewport */}
+      <div className="relative flex-1 min-h-[380px] sm:min-h-[460px] w-full cursor-grab active:cursor-grabbing">
+        <div ref={containerRef} className="absolute inset-0 w-full h-full" />
+
+        {/* Live HUD Telemetry Overlay */}
+        <div className="absolute top-4 left-4 z-10 flex flex-col gap-2 pointer-events-none">
+          <div className="bg-white/90 dark:bg-ink-900/90 backdrop-blur-md px-3.5 py-2.5 rounded-xl border border-parchment-300 dark:border-ink-700 shadow-sm">
+            <div className="text-[11px] font-sans text-amber-700 dark:text-amber-400 font-bold uppercase tracking-wider flex items-center gap-1.5">
+              <Layers className="w-3.5 h-3.5 text-amber-500 animate-pulse" />
+              Vulcanized Elastomer Telemetry
+            </div>
+            <div className="grid grid-cols-2 gap-x-4 gap-y-1 mt-1 text-xs font-sans">
+              <div>
+                <span className="text-ink-600 dark:text-ink-400">Tensile Modulus ($E$):</span>{" "}
+                <span className="font-bold text-blue-600 dark:text-blue-400">
+                  {tensileElasticModulusMpa} MPa
+                </span>
+              </div>
+              <div>
+                <span className="text-ink-600 dark:text-ink-400">Applied Elongation:</span>{" "}
+                <span className="font-bold text-emerald-600 dark:text-emerald-400">
+                  {(appliedTensileStretch * 100).toFixed(0)}% (λ ={" "}
+                  {appliedTensileStretch.toFixed(2)})
+                </span>
+              </div>
+              <div>
+                <span className="text-ink-600 dark:text-ink-400">Thermal Property:</span>{" "}
+                <span
+                  className={`font-bold ${
+                    isVulcanized
+                      ? "text-emerald-600 dark:text-emerald-400"
+                      : "text-red-600 dark:text-red-400"
+                  }`}
+                >
+                  {thermalStability}
+                </span>
+              </div>
+              <div>
+                <span className="text-ink-600 dark:text-ink-400">Glass Transition ($T_g$):</span>{" "}
+                <span className="font-bold text-purple-600 dark:text-purple-400">
+                  {glassTransitionTempC}°C
+                </span>
+              </div>
+            </div>
           </div>
-          <p className="text-sm sm:text-base text-ink-700 dark:text-ink-300 mt-1">
-            Studio-illuminated Three.js polymer physics illustrating{" "}
-            <strong>sulfur atom cross-linking bridges</strong> and{" "}
-            <strong>temperature-stable elasticity</strong>.
-          </p>
+
+          <div className="bg-white/90 dark:bg-ink-900/90 backdrop-blur-md px-3 py-1.5 rounded-lg border border-parchment-300 dark:border-ink-700 text-[11px] font-sans text-ink-700 dark:text-ink-300 flex items-center gap-2">
+            <Sparkles className="w-3.5 h-3.5 text-amber-500 animate-pulse" />
+            <span>
+              {isVulcanized
+                ? "Sulfur Cross-Links Transform Liquid Viscous Flow into True Rubber Elasticity"
+                : "Unvulcanized Raw Hevea Gum (Subject to Thermal Breakdown)"}
+            </span>
+          </div>
         </div>
 
-        <div className="flex items-center gap-2">
-          <div className="px-3.5 py-1.5 rounded-xl bg-amber-100 dark:bg-amber-950 text-amber-900 dark:text-amber-300 text-xs sm:text-sm font-mono font-bold border border-amber-300 dark:border-amber-800 shadow-2xs">
-            Elastic Modulus: {elasticModulusMpa} MPa
-          </div>
+        {/* Toggle Controls */}
+        <div className="absolute top-4 right-4 z-10 flex gap-2">
+          <button
+            type="button"
+            onClick={() => setShowSulfurCrosslinks(!showSulfurCrosslinks)}
+            className={`px-3 py-1.5 rounded-lg text-xs font-sans font-semibold border transition-all ${
+              showSulfurCrosslinks
+                ? "bg-amber-500 text-white border-amber-600 shadow-sm"
+                : "bg-white/80 dark:bg-ink-900/80 text-ink-700 dark:text-ink-300 border-parchment-300 dark:border-ink-700"
+            }`}
+          >
+            Sulfur Bridges
+          </button>
         </div>
       </div>
 
-      {/* 3D WebGL Canvas & HUD */}
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
-        <div className="lg:col-span-8 flex flex-col items-center justify-center rounded-2xl bg-[#0f172a] border border-parchment-300 dark:border-ink-800 relative min-h-[460px] overflow-hidden shadow-inner">
-          {/* Top HUD */}
-          <div className="absolute top-4 left-4 right-4 z-20 flex items-center justify-between pointer-events-none text-xs sm:text-sm font-mono">
-            <div className="px-3.5 py-1.5 bg-ink-900/90 border border-ink-800 text-amber-300 rounded-xl shadow-md">
-              Polymer State:{" "}
-              <span className="font-bold">
-                {isStickyViscous
-                  ? "Sticky Slime (Rotting)"
-                  : isBrittleGlassy
-                    ? "Brittle Solid (Cracking)"
-                    : "Vulcanized Elastomer (Stable)"}
-              </span>
-            </div>
-
-            <div className="flex items-center gap-2 pointer-events-auto">
-              <button
-                type="button"
-                onClick={() => setShowSulfurBridges(!showSulfurBridges)}
-                className={`px-3 py-1 rounded-lg border text-xs font-mono transition-colors ${
-                  showSulfurBridges
-                    ? "bg-amber-600 text-white border-amber-500"
-                    : "bg-ink-900 text-ink-400 border-ink-800"
-                }`}
-              >
-                Sulfur Bridges: {showSulfurBridges ? "ON" : "OFF"}
-              </button>
-            </div>
+      {/* Parameter Sliders Panel */}
+      <div className="p-4 sm:p-5 bg-parchment-100/80 dark:bg-ink-900/90 border-t border-parchment-300 dark:border-ink-800 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 text-xs font-sans">
+        {/* Sulfur Proportion */}
+        <div className="space-y-1.5">
+          <div className="flex justify-between font-medium text-ink-900 dark:text-parchment-100">
+            <span>Sulfur Cross-Linker:</span>
+            <span className="font-bold text-amber-700 dark:text-amber-400">
+              {sulfurWeightPct.toFixed(1)} wt%
+            </span>
           </div>
-
-          {/* 3D Canvas */}
-          <div ref={containerRef} className="w-full h-[460px] cursor-grab active:cursor-grabbing" />
-
-          {/* Bottom Telemetry */}
-          <div className="w-full grid grid-cols-4 gap-3 text-center text-sm font-mono p-4 bg-ink-950/95 border-t border-ink-800 text-ink-300 z-10">
-            <div>
-              <span className="text-ink-400 block text-xs font-semibold uppercase tracking-wider">
-                CURE TEMP
-              </span>
-              <span className="text-amber-400 font-bold text-sm sm:text-base">
-                {temperatureCelsius} °C
-              </span>
-            </div>
-            <div>
-              <span className="text-ink-400 block text-xs font-semibold uppercase tracking-wider">
-                SULFUR BRIDGES
-              </span>
-              <span className="text-emerald-400 font-bold text-sm sm:text-base">
-                {sulfurWeightPct}% Weight
-              </span>
-            </div>
-            <div>
-              <span className="text-ink-400 block text-xs font-semibold uppercase tracking-wider">
-                STRETCH RATIO
-              </span>
-              <span className="text-blue-400 font-bold text-sm sm:text-base">
-                {tensileStrain.toFixed(1)}x Elongation
-              </span>
-            </div>
-            <div>
-              <span className="text-ink-400 block text-xs font-semibold uppercase tracking-wider">
-                3D INTERACTION
-              </span>
-              <span className="text-purple-400 font-semibold text-xs sm:text-sm">
-                Drag Orbit / Zoom
-              </span>
-            </div>
-          </div>
+          <input
+            type="range"
+            min="0.5"
+            max="15.0"
+            step="0.5"
+            value={sulfurWeightPct}
+            onChange={(e) => setSulfurWeightPct(Number(e.target.value))}
+            className="w-full accent-amber-600 dark:accent-amber-400 cursor-pointer"
+          />
+          <span className="text-[10px] text-ink-500 dark:text-ink-400 block">
+            Forms covalent disulfide cross-links (-S_x-)
+          </span>
         </div>
 
-        {/* Controls Sidebar */}
-        <div className="lg:col-span-4 space-y-4">
-          <div className="rounded-2xl border border-parchment-300 dark:border-ink-800 bg-parchment-100/80 dark:bg-ink-900/70 p-6 space-y-5 shadow-sm">
-            <span className="font-serif font-bold text-base sm:text-lg text-ink-950 dark:text-parchment-50 block">
-              Vulcanization Chemistry Controls
+        {/* Vulcanization Cure Temperature */}
+        <div className="space-y-1.5">
+          <div className="flex justify-between font-medium text-ink-900 dark:text-parchment-100">
+            <span>{"Stove Heating ($T_{cure}$):"}</span>
+            <span className="font-bold text-blue-600 dark:text-blue-400">
+              {cureTemperatureCelsius}°C
             </span>
-
-            {/* Cure Temperature Slider */}
-            <div className="space-y-1.5">
-              <div className="flex justify-between text-xs sm:text-sm font-mono">
-                <span className="font-semibold text-ink-800 dark:text-parchment-200">
-                  Heat Curing Temperature ($T$)
-                </span>
-                <span className="text-amber-600 dark:text-amber-400 font-bold">
-                  {temperatureCelsius} °C
-                </span>
-              </div>
-              <input
-                type="range"
-                min="20"
-                max="200"
-                step="10"
-                value={temperatureCelsius}
-                onChange={(e) => setTemperatureCelsius(Number(e.target.value))}
-                className="w-full accent-amber-600 cursor-pointer h-2 bg-parchment-300 dark:bg-ink-700 rounded-lg"
-              />
-            </div>
-
-            {/* Sulfur Additive Slider */}
-            <div className="space-y-1.5">
-              <div className="flex justify-between text-xs sm:text-sm font-mono">
-                <span className="font-semibold text-ink-800 dark:text-parchment-200">
-                  Sulfur Content Ratio (%wt)
-                </span>
-                <span className="text-emerald-600 dark:text-emerald-400 font-bold">
-                  {sulfurWeightPct}%
-                </span>
-              </div>
-              <input
-                type="range"
-                min="0"
-                max="25"
-                step="1"
-                value={sulfurWeightPct}
-                onChange={(e) => setSulfurWeightPct(Number(e.target.value))}
-                className="w-full accent-emerald-600 cursor-pointer h-2 bg-parchment-300 dark:bg-ink-700 rounded-lg"
-              />
-            </div>
-
-            {/* Tensile Stretch Slider */}
-            <div className="space-y-1.5">
-              <div className="flex justify-between text-xs sm:text-sm font-mono">
-                <span className="font-semibold text-ink-800 dark:text-parchment-200">
-                  Applied Tensile Elongation ($\lambda$)
-                </span>
-                <span className="text-blue-600 dark:text-blue-400 font-bold">
-                  {tensileStrain.toFixed(1)}x
-                </span>
-              </div>
-              <input
-                type="range"
-                min="1.0"
-                max="2.5"
-                step="0.1"
-                value={tensileStrain}
-                onChange={(e) => setTensileStrain(Number(e.target.value))}
-                className="w-full accent-blue-600 cursor-pointer h-2 bg-parchment-300 dark:bg-ink-700 rounded-lg"
-              />
-            </div>
-
-            <div className="p-4 rounded-xl bg-amber-500/10 border border-amber-500/30 text-ink-950 dark:text-parchment-100 text-xs sm:text-sm font-sans space-y-1.5">
-              <span className="font-bold text-amber-900 dark:text-amber-300 block font-mono text-xs uppercase tracking-wider">
-                Goodyear&apos;s Hot Stove Accidental Cure:
-              </span>
-              <p className="leading-relaxed">
-                Raw natural rubber melted into sticky goo in summer and cracked into glass in
-                winter. In 1839, Charles Goodyear accidentally dropped a mixture of India rubber and
-                sulfur onto a red-hot wood stove. Instead of melting, it charred into a resilient,
-                waterproof, elastic solid.
-              </p>
-            </div>
           </div>
+          <input
+            type="range"
+            min="20"
+            max="180"
+            step="5"
+            value={cureTemperatureCelsius}
+            onChange={(e) => setCureTemperatureCelsius(Number(e.target.value))}
+            className="w-full accent-blue-600 dark:accent-blue-400 cursor-pointer"
+          />
+          <span className="text-[10px] text-ink-500 dark:text-ink-400 block">
+            Goodyear's potbelly stove accidental heating (1839)
+          </span>
+        </div>
+
+        {/* Tensile Stretch Pull */}
+        <div className="space-y-1.5">
+          <div className="flex justify-between font-medium text-ink-900 dark:text-parchment-100">
+            <span>Tensile Stretch (Extension):</span>
+            <span className="font-bold text-emerald-600 dark:text-emerald-400">
+              {appliedTensileStretch.toFixed(2)}×
+            </span>
+          </div>
+          <input
+            type="range"
+            min="1.0"
+            max="3.0"
+            step="0.1"
+            value={appliedTensileStretch}
+            onChange={(e) => setAppliedTensileStretch(Number(e.target.value))}
+            className="w-full accent-emerald-600 dark:accent-emerald-400 cursor-pointer"
+          />
+          <span className="text-[10px] text-ink-500 dark:text-ink-400 block">
+            Entropic spring recovery $\sigma = G(\lambda - 1/\lambda^2)$
+          </span>
+        </div>
+
+        {/* Elastic Memory Retentivity */}
+        <div className="space-y-1.5">
+          <div className="flex justify-between font-medium text-ink-900 dark:text-parchment-100">
+            <span>Elastic Memory Snap:</span>
+            <span className="font-bold text-purple-600 dark:text-purple-400">
+              {isVulcanized ? "100% Snapback" : "Permanent Plastic Deformation"}
+            </span>
+          </div>
+          <div className="w-full bg-parchment-300 dark:bg-ink-800 rounded-full h-3 overflow-hidden mt-2 border border-parchment-400 dark:border-ink-700">
+            <div
+              className={`h-full transition-all duration-300 ${
+                isVulcanized ? "bg-gradient-to-r from-blue-500 to-emerald-500" : "bg-amber-500"
+              }`}
+              style={{ width: `${isVulcanized ? 95 : 20}%` }}
+            />
+          </div>
+          <span className="text-[10px] text-ink-500 dark:text-ink-400 block">
+            US 3,633 created the modern global rubber industry
+          </span>
         </div>
       </div>
     </div>

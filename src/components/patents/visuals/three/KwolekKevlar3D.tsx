@@ -1,6 +1,6 @@
 "use client";
 
-import { ShieldCheck } from "lucide-react";
+import { Shield } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import * as THREE from "three";
 import { createThreeStudioScene } from "./ThreeStudioScene";
@@ -8,310 +8,370 @@ import { createThreeStudioScene } from "./ThreeStudioScene";
 export function KwolekKevlar3D() {
   const containerRef = useRef<HTMLDivElement>(null);
 
-  // Polymer Chain Parameters
-  const [shearFlowRate, setShearFlowRate] = useState<number>(0.8); // 0.0 to 1.0 (nematic aligned)
-  const [tensileStressGpa, setTensileStressGpa] = useState<number>(3.6); // 0.5 to 5.0 GPa
+  // Polymer Chemistry State Controls
+  const [shearRate, setShearRate] = useState<number>(450); // 50 to 1000 s^-1
+  const [polymerConcentrationPct, setPolymerConcentrationPct] = useState<number>(18.5); // 5 to 25 wt%
+  const [temperatureCelsius, setTemperatureCelsius] = useState<number>(85); // 20 to 120 °C
   const [showHydrogenBonds, setShowHydrogenBonds] = useState<boolean>(true);
+  const [isImpactTesting, setIsImpactTesting] = useState<boolean>(false);
 
-  // Physical Calculations
-  const elasticModulusGpa = 130;
-  const strainPercent = (tensileStressGpa / elasticModulusGpa) * 100;
-  const hBondStrengthMpi = Math.round(tensileStressGpa * 280);
+  // Liquid-Crystal Physics Calculations
+  // Nematic Liquid Crystalline Phase Transition at critical concentration ~12-14%
+  const isNematicLCP = polymerConcentrationPct >= 12.0 && temperatureCelsius < 105;
+  const tensileStrengthGpa = (isNematicLCP ? 3.6 * (shearRate / 500) ** 0.35 : 0.8).toFixed(2);
+  const modulusGpa = (isNematicLCP ? 130 * (shearRate / 500) ** 0.4 : 25).toFixed(0);
 
   useEffect(() => {
     const container = containerRef.current;
     if (!container) return;
 
-    // Create Studio Scene with Museum Studio Lighting
+    // Create Studio Scene with High-Luminosity Studio Lighting
     const studio = createThreeStudioScene({
       container,
-      cameraPos: [15, 11, 19],
+      cameraPos: [11, 8, 14],
       targetPos: [0, 0, 0],
-      bgBottomColor: 0x0f172a,
-      rimColor: 0x10b981,
-      ambientIntensity: 1.3,
     });
 
     const { scene, camera, renderer, controls } = studio;
 
     // --- PBR MATERIALS ---
-    const carbonRingMaterial = new THREE.MeshStandardMaterial({
-      color: 0xf59e0b,
-      metalness: 0.7,
+    const carbonRingMat = new THREE.MeshStandardMaterial({
+      color: 0xf59e0b, // Aromatic 1,4-phenylene benzene ring (Golden Aramid)
       roughness: 0.25,
+      metalness: 0.85,
     });
 
-    const nitrogenMaterial = new THREE.MeshStandardMaterial({
-      color: 0x38bdf8,
+    const amideNitrogenMat = new THREE.MeshStandardMaterial({
+      color: 0x3b82f6, // Nitrogen (-NH-)
+      roughness: 0.2,
       metalness: 0.6,
-      roughness: 0.25,
     });
 
-    const oxygenMaterial = new THREE.MeshStandardMaterial({
-      color: 0xef4444,
+    const carbonylOxygenMat = new THREE.MeshStandardMaterial({
+      color: 0xef4444, // Carbonyl Oxygen (=O)
+      roughness: 0.2,
       metalness: 0.6,
-      roughness: 0.25,
     });
 
-    const hBondMaterial = new THREE.LineDashedMaterial({
-      color: 0x10b981,
-      dashSize: 0.3,
-      gapSize: 0.2,
-      linewidth: 2,
+    const spinneretSteelMat = new THREE.MeshStandardMaterial({
+      color: 0x475569, // Stainless steel spinneret die plate
+      roughness: 0.15,
+      metalness: 0.95,
     });
 
-    // --- 3D PPTA POLYMER CHAINS GROUP ---
+    // --- 3D POLYMER CHAIN ASSEMBLY (POLY-P-PHENYLENE TEREPHTHALAMIDE - PPTA) ---
     const polymerGroup = new THREE.Group();
     scene.add(polymerGroup);
 
-    const chainCount = 5;
-    const monomersPerChain = 6;
-    const chainGroups: THREE.Group[] = [];
-    const hBondLines: THREE.Line[] = [];
+    // Spinneret Extrusion Nozzle
+    const nozzle = new THREE.Mesh(
+      new THREE.CylinderGeometry(3.6, 2.2, 1.8, 36, 1, true),
+      spinneretSteelMat,
+    );
+    nozzle.position.set(-5.5, 0, 0);
+    nozzle.rotation.z = -Math.PI / 2;
+    polymerGroup.add(nozzle);
 
-    for (let c = 0; c < chainCount; c++) {
-      const chain = new THREE.Group();
-      chain.position.y = (c - (chainCount - 1) / 2) * 2.8;
+    // Parallel Rigid-Rod Polymer Chains (5 Chains)
+    const chains: { group: THREE.Group; baseY: number; baseZ: number }[] = [];
+    const numChains = 5;
 
-      for (let m = 0; m < monomersPerChain; m++) {
-        const monomerGroup = new THREE.Group();
-        const mX = (m - (monomersPerChain - 1) / 2) * 4.2;
-        monomerGroup.position.x = mX;
+    for (let c = 0; c < numChains; c++) {
+      const chainG = new THREE.Group();
+      const yPos = (c - (numChains - 1) / 2) * 1.3;
+      chainG.position.set(0, yPos, 0);
 
-        // P-Phenylene Aromatic Benzene Ring (Hexagon)
-        const ringGeo = new THREE.CylinderGeometry(0.9, 0.9, 0.2, 6);
-        const ringMesh = new THREE.Mesh(ringGeo, carbonRingMaterial);
-        ringMesh.rotation.x = Math.PI / 2;
-        monomerGroup.add(ringMesh);
+      // Repeat Units along Chain (6 Monomer units)
+      for (let u = 0; u < 6; u++) {
+        const xPos = -4.0 + u * 1.5;
 
-        // Amide Group: C=O Carbonyl Oxygen
-        const oxygen = new THREE.Mesh(new THREE.SphereGeometry(0.35, 16, 16), oxygenMaterial);
-        oxygen.position.set(1.4, 0.7, 0);
-        monomerGroup.add(oxygen);
+        // Benzene Ring (Hexagonal Ring of Carbon Atoms)
+        const ringG = new THREE.Group();
+        ringG.position.x = xPos;
+        for (let r = 0; r < 6; r++) {
+          const angle = (r * Math.PI) / 3;
+          const atom = new THREE.Mesh(new THREE.SphereGeometry(0.12, 12, 12), carbonRingMat);
+          atom.position.set(Math.cos(angle) * 0.35, Math.sin(angle) * 0.35, 0);
+          ringG.add(atom);
+        }
+        chainG.add(ringG);
 
-        // Amide Group: N-H Nitrogen
-        const nitrogen = new THREE.Mesh(new THREE.SphereGeometry(0.35, 16, 16), nitrogenMaterial);
-        nitrogen.position.set(-1.4, -0.7, 0);
-        monomerGroup.add(nitrogen);
+        // Amide Linkage (-CO-NH-)
+        const carbonyl = new THREE.Mesh(new THREE.SphereGeometry(0.13, 12, 12), carbonylOxygenMat);
+        carbonyl.position.set(xPos + 0.6, 0.28, 0);
+        chainG.add(carbonyl);
 
-        chain.add(monomerGroup);
+        const amideN = new THREE.Mesh(new THREE.SphereGeometry(0.13, 12, 12), amideNitrogenMat);
+        amideN.position.set(xPos + 0.9, -0.28, 0);
+        chainG.add(amideN);
       }
 
-      chainGroups.push(chain);
-      polymerGroup.add(chain);
+      polymerGroup.add(chainG);
+      chains.push({ group: chainG, baseY: yPos, baseZ: 0 });
     }
 
-    // Hydrogen Bonds Between Adjacent Chains (N-H ... O=C)
-    for (let c = 0; c < chainCount - 1; c++) {
-      for (let m = 0; m < monomersPerChain; m++) {
-        const points = [
-          new THREE.Vector3(
-            (m - (monomersPerChain - 1) / 2) * 4.2 - 1.4,
-            (c - (chainCount - 1) / 2) * 2.8 - 0.7,
-            0,
-          ),
-          new THREE.Vector3(
-            (m - (monomersPerChain - 1) / 2) * 4.2 + 1.4,
-            (c + 1 - (chainCount - 1) / 2) * 2.8 + 0.7,
-            0,
-          ),
-        ];
-        const hGeo = new THREE.BufferGeometry().setFromPoints(points);
-        const hLine = new THREE.Line(hGeo, hBondMaterial);
-        hLine.computeLineDistances();
-        hBondLines.push(hLine);
-        polymerGroup.add(hLine);
+    // --- INTER-CHAIN HYDROGEN BONDING LATTICE ($N-H \cdots O=C$) ---
+    const _hBondLines: THREE.LineSegments[] = [];
+    const hBondGeo = new THREE.BufferGeometry();
+    const hBondPos: number[] = [];
+
+    for (let c = 0; c < numChains - 1; c++) {
+      const y1 = chains[c].baseY;
+      const y2 = chains[c + 1].baseY;
+      for (let u = 0; u < 6; u++) {
+        const xPos = -4.0 + u * 1.5 + 0.75;
+        hBondPos.push(xPos, y1 + 0.28, 0);
+        hBondPos.push(xPos, y2 - 0.28, 0);
       }
     }
 
-    // --- ANIMATION & PHYSICS INTEGRATION LOOP ---
-    let animId: number;
+    hBondGeo.setAttribute("position", new THREE.Float32BufferAttribute(hBondPos, 3));
+    const hBondMesh = new THREE.LineSegments(
+      hBondGeo,
+      new THREE.LineDashedMaterial({
+        color: 0x38bdf8,
+        dashSize: 0.15,
+        gapSize: 0.1,
+        transparent: true,
+        opacity: 0.75,
+      }),
+    );
+    hBondMesh.computeLineDistances();
+    polymerGroup.add(hBondMesh);
+
+    // --- BALLISTIC PROJECTILE IMPACT SIMULATOR ---
+    const bullet = new THREE.Mesh(
+      new THREE.ConeGeometry(0.35, 1.2, 16),
+      new THREE.MeshStandardMaterial({ color: 0x94a3b8, roughness: 0.15, metalness: 0.95 }),
+    );
+    bullet.rotation.z = Math.PI / 2;
+    bullet.position.set(7.0, 0, 0);
+    bullet.castShadow = true;
+    scene.add(bullet);
+
+    // --- RENDER LOOP & REAL-TIME POLYMER NEMATIC DYNAMICS ---
+    let reqId: number;
     const clock = new THREE.Clock();
 
     const animate = () => {
-      animId = requestAnimationFrame(animate);
-      const time = clock.getElapsedTime();
+      reqId = requestAnimationFrame(animate);
+      const delta = clock.getDelta();
+      const elapsed = clock.getElapsedTime();
+
+      // Shear-induced Liquid Crystal Alignment
+      const shearAlignment = Math.min(1.0, shearRate / 600);
+      const thermalDisorder = Math.max(0, (temperatureCelsius - 60) / 60) * 0.3;
+
+      for (let i = 0; i < numChains; i++) {
+        const item = chains[i];
+        if (isNematicLCP) {
+          // Rigid parallel orientation along fiber extrusion axis
+          item.group.rotation.z =
+            Math.sin(elapsed * 2.0 + i) * (0.05 * (1 - shearAlignment) + thermalDisorder);
+          item.group.position.y = item.baseY + Math.cos(elapsed * 2.0 + i) * 0.04;
+        } else {
+          // Isotropic tangled coil disorder
+          item.group.rotation.z = Math.sin(elapsed * 1.5 + i) * 0.45;
+          item.group.position.y = item.baseY + Math.sin(elapsed * 1.5 + i) * 0.3;
+        }
+      }
+
+      hBondMesh.visible = showHydrogenBonds && isNematicLCP;
+
+      // Ballistic Impact Stress Wave Propagation
+      if (isImpactTesting) {
+        bullet.position.x -= delta * 18.0;
+        if (bullet.position.x < 1.0) {
+          // Decelerate & bounce back (Kevlar absorbs kinetic energy)
+          bullet.position.x = 1.0;
+          polymerGroup.position.x = -Math.sin(elapsed * 30.0) * 0.25;
+        }
+      } else {
+        bullet.position.x = 6.5;
+        polymerGroup.position.x = 0;
+      }
 
       controls.update();
-
-      // Liquid Crystal Nematic Orientation vs Random Thermal Wiggle
-      const alignment = shearFlowRate;
-      chainGroups.forEach((chain, cIdx) => {
-        chain.children.forEach((monomer, mIdx) => {
-          const thermalWiggle = (1 - alignment) * Math.sin(time * 3.0 + mIdx + cIdx) * 0.4;
-          monomer.rotation.z = thermalWiggle;
-          monomer.position.z = (1 - alignment) * Math.cos(time * 2.5 + mIdx) * 1.5;
-        });
-      });
-
-      hBondLines.forEach((line) => {
-        line.visible = showHydrogenBonds;
-      });
-
       renderer.render(scene, camera);
     };
 
     animate();
 
     return () => {
-      cancelAnimationFrame(animId);
+      cancelAnimationFrame(reqId);
       studio.dispose();
     };
-  }, [shearFlowRate, showHydrogenBonds]);
+  }, [shearRate, temperatureCelsius, showHydrogenBonds, isImpactTesting, isNematicLCP]);
 
   return (
-    <div className="rounded-2xl border border-amber-900/20 dark:border-ink-800 bg-parchment-50 dark:bg-ink-950 p-6 sm:p-7 shadow-patent space-y-6">
-      {/* Header */}
-      <div className="flex flex-wrap items-center justify-between gap-3 border-b border-parchment-200 dark:border-ink-800 pb-4">
-        <div>
-          <div className="flex items-center gap-2.5">
-            <ShieldCheck className="w-6 h-6 text-emerald-500 animate-pulse" />
-            <h3 className="font-serif text-2xl font-bold text-ink-950 dark:text-parchment-50">
-              3D Real-Time Kwolek Kevlar Aramid Liquid-Crystal Simulator (US 3,671,542)
-            </h3>
+    <div className="flex flex-col h-full bg-parchment-50/60 dark:bg-ink-950/80 rounded-2xl overflow-hidden border border-parchment-300 dark:border-ink-800 shadow-patent">
+      {/* 3D WebGL Canvas Viewport */}
+      <div className="relative flex-1 min-h-[380px] sm:min-h-[460px] w-full cursor-grab active:cursor-grabbing">
+        <div ref={containerRef} className="absolute inset-0 w-full h-full" />
+
+        {/* Live HUD Telemetry Overlay */}
+        <div className="absolute top-4 left-4 z-10 flex flex-col gap-2 pointer-events-none">
+          <div className="bg-white/90 dark:bg-ink-900/90 backdrop-blur-md px-3.5 py-2.5 rounded-xl border border-parchment-300 dark:border-ink-700 shadow-sm">
+            <div className="text-[11px] font-sans text-amber-700 dark:text-amber-400 font-bold uppercase tracking-wider flex items-center gap-1.5">
+              <Shield className="w-3.5 h-3.5 text-amber-500 animate-pulse" />
+              Liquid Crystal Aramid Telemetry
+            </div>
+            <div className="grid grid-cols-2 gap-x-4 gap-y-1 mt-1 text-xs font-sans">
+              <div>
+                <span className="text-ink-600 dark:text-ink-400">Tensile Strength:</span>{" "}
+                <span className="font-bold text-emerald-600 dark:text-emerald-400">
+                  {tensileStrengthGpa} GPa (5× Steel)
+                </span>
+              </div>
+              <div>
+                <span className="text-ink-600 dark:text-ink-400">Young's Modulus ($E$):</span>{" "}
+                <span className="font-bold text-blue-600 dark:text-blue-400">{modulusGpa} GPa</span>
+              </div>
+              <div>
+                <span className="text-ink-600 dark:text-ink-400">Polymer Phase:</span>{" "}
+                <span
+                  className={`font-bold ${
+                    isNematicLCP
+                      ? "text-purple-600 dark:text-purple-400"
+                      : "text-amber-600 dark:text-amber-400"
+                  }`}
+                >
+                  {isNematicLCP ? "Nematic Liquid Crystal" : "Isotropic Solution"}
+                </span>
+              </div>
+              <div>
+                <span className="text-ink-600 dark:text-ink-400">Specific Strength:</span>{" "}
+                <span className="font-bold text-amber-600 dark:text-amber-400">
+                  2.5 × 10⁶ N·m/kg
+                </span>
+              </div>
+            </div>
           </div>
-          <p className="text-sm sm:text-base text-ink-700 dark:text-ink-300 mt-1">
-            Studio-illuminated Three.js molecular physics illustrating{" "}
-            <strong>nematic liquid-crystalline chain alignment</strong> and{" "}
-            <strong>inter-chain hydrogen bonding nets</strong>.
-          </p>
+
+          <div className="bg-white/90 dark:bg-ink-900/90 backdrop-blur-md px-3 py-1.5 rounded-lg border border-parchment-300 dark:border-ink-700 text-[11px] font-sans text-ink-700 dark:text-ink-300 flex items-center gap-2">
+            <span
+              className={`w-2 h-2 rounded-full ${
+                isNematicLCP ? "bg-emerald-500 animate-pulse" : "bg-amber-500"
+              }`}
+            />
+            <span>
+              {isNematicLCP
+                ? "Self-Assembling Rigid-Rod PPTA Chains Aligned Under Extrusion Shear"
+                : "Disordered Solution: Sub-critical Concentration"}
+            </span>
+          </div>
         </div>
 
-        <div className="flex items-center gap-2">
-          <div className="px-3.5 py-1.5 rounded-xl bg-emerald-100 dark:bg-emerald-950 text-emerald-900 dark:text-emerald-300 text-xs sm:text-sm font-mono font-bold border border-emerald-300 dark:border-emerald-800 shadow-2xs">
-            5x Stronger Than Steel (Weight Basis)
-          </div>
+        {/* Toggle Controls */}
+        <div className="absolute top-4 right-4 z-10 flex gap-2">
+          <button
+            type="button"
+            onClick={() => setShowHydrogenBonds(!showHydrogenBonds)}
+            className={`px-3 py-1.5 rounded-lg text-xs font-sans font-semibold border transition-all ${
+              showHydrogenBonds
+                ? "bg-blue-600 text-white border-blue-700 shadow-sm"
+                : "bg-white/80 dark:bg-ink-900/80 text-ink-700 dark:text-ink-300 border-parchment-300 dark:border-ink-700"
+            }`}
+          >
+            H-Bonds
+          </button>
+          <button
+            type="button"
+            onClick={() => setIsImpactTesting(!isImpactTesting)}
+            className={`px-3 py-1.5 rounded-lg text-xs font-sans font-semibold border transition-all ${
+              isImpactTesting
+                ? "bg-red-600 text-white border-red-700 shadow-sm"
+                : "bg-white/80 dark:bg-ink-900/80 text-ink-700 dark:text-ink-300 border-parchment-300 dark:border-ink-700"
+            }`}
+          >
+            {isImpactTesting ? "Impact Active" : "Test Impact"}
+          </button>
         </div>
       </div>
 
-      {/* 3D WebGL Canvas & HUD */}
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
-        <div className="lg:col-span-8 flex flex-col items-center justify-center rounded-2xl bg-[#0f172a] border border-parchment-300 dark:border-ink-800 relative min-h-[460px] overflow-hidden shadow-inner">
-          {/* Top HUD */}
-          <div className="absolute top-4 left-4 right-4 z-20 flex items-center justify-between pointer-events-none text-xs sm:text-sm font-mono">
-            <div className="px-3.5 py-1.5 bg-ink-900/90 border border-ink-800 text-emerald-300 rounded-xl shadow-md">
-              Polymer State:{" "}
-              <span className="font-bold">
-                {shearFlowRate > 0.6 ? "Nematic Liquid Crystal" : "Isotropic Random Solution"}
-              </span>
-            </div>
-
-            <div className="flex items-center gap-2 pointer-events-auto">
-              <button
-                type="button"
-                onClick={() => setShowHydrogenBonds(!showHydrogenBonds)}
-                className={`px-3 py-1 rounded-lg border text-xs font-mono transition-colors ${
-                  showHydrogenBonds
-                    ? "bg-emerald-600 text-white border-emerald-500"
-                    : "bg-ink-900 text-ink-400 border-ink-800"
-                }`}
-              >
-                H-Bonds (N-H···O): {showHydrogenBonds ? "ON" : "OFF"}
-              </button>
-            </div>
+      {/* Parameter Sliders Panel */}
+      <div className="p-4 sm:p-5 bg-parchment-100/80 dark:bg-ink-900/90 border-t border-parchment-300 dark:border-ink-800 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 text-xs font-sans">
+        {/* Shear Rate */}
+        <div className="space-y-1.5">
+          <div className="flex justify-between font-medium text-ink-900 dark:text-parchment-100">
+            <span>{"Spinneret Shear Rate ($\\dot{\\gamma}$):"}</span>
+            <span className="font-bold text-amber-700 dark:text-amber-400">{shearRate} s⁻¹</span>
           </div>
-
-          {/* 3D Canvas */}
-          <div ref={containerRef} className="w-full h-[460px] cursor-grab active:cursor-grabbing" />
-
-          {/* Bottom Telemetry */}
-          <div className="w-full grid grid-cols-4 gap-3 text-center text-sm font-mono p-4 bg-ink-950/95 border-t border-ink-800 text-ink-300 z-10">
-            <div>
-              <span className="text-ink-400 block text-xs font-semibold uppercase tracking-wider">
-                TENSILE STRESS
-              </span>
-              <span className="text-emerald-400 font-bold text-sm sm:text-base">
-                {tensileStressGpa} GPa
-              </span>
-            </div>
-            <div>
-              <span className="text-ink-400 block text-xs font-semibold uppercase tracking-wider">
-                STRAIN (ε)
-              </span>
-              <span className="text-amber-400 font-bold text-sm sm:text-base">
-                {strainPercent.toFixed(2)}%
-              </span>
-            </div>
-            <div>
-              <span className="text-ink-400 block text-xs font-semibold uppercase tracking-wider">
-                H-BOND NET
-              </span>
-              <span className="text-blue-400 font-bold text-sm sm:text-base">
-                {hBondStrengthMpi} MPa
-              </span>
-            </div>
-            <div>
-              <span className="text-ink-400 block text-xs font-semibold uppercase tracking-wider">
-                3D INTERACTION
-              </span>
-              <span className="text-purple-400 font-semibold text-xs sm:text-sm">
-                Drag Orbit / Zoom
-              </span>
-            </div>
-          </div>
+          <input
+            type="range"
+            min="50"
+            max="1000"
+            step="50"
+            value={shearRate}
+            onChange={(e) => setShearRate(Number(e.target.value))}
+            className="w-full accent-amber-600 dark:accent-amber-400 cursor-pointer"
+          />
+          <span className="text-[10px] text-ink-500 dark:text-ink-400 block">
+            Hydrodynamic alignment through spinning orifice
+          </span>
         </div>
 
-        {/* Controls Sidebar */}
-        <div className="lg:col-span-4 space-y-4">
-          <div className="rounded-2xl border border-parchment-300 dark:border-ink-800 bg-parchment-100/80 dark:bg-ink-900/70 p-6 space-y-5 shadow-sm">
-            <span className="font-serif font-bold text-base sm:text-lg text-ink-950 dark:text-parchment-50 block">
-              Polymer Rheology &amp; Shear Alignment
+        {/* PPTA Polymer Concentration */}
+        <div className="space-y-1.5">
+          <div className="flex justify-between font-medium text-ink-900 dark:text-parchment-100">
+            <span>PPTA in Sulfuric Acid:</span>
+            <span className="font-bold text-blue-600 dark:text-blue-400">
+              {polymerConcentrationPct.toFixed(1)} wt%
             </span>
-
-            {/* Shear Flow Spinneret Alignment Slider */}
-            <div className="space-y-1.5">
-              <div className="flex justify-between text-xs sm:text-sm font-mono">
-                <span className="font-semibold text-ink-800 dark:text-parchment-200">
-                  {"Spinneret Shear Alignment (γ̇)"}
-                </span>
-                <span className="text-emerald-600 dark:text-emerald-400 font-bold">
-                  {(shearFlowRate * 100).toFixed(0)}%
-                </span>
-              </div>
-              <input
-                type="range"
-                min="0.0"
-                max="1.0"
-                step="0.05"
-                value={shearFlowRate}
-                onChange={(e) => setShearFlowRate(Number(e.target.value))}
-                className="w-full accent-emerald-600 cursor-pointer h-2 bg-parchment-300 dark:bg-ink-700 rounded-lg"
-              />
-            </div>
-
-            {/* Tensile Stress Load Slider */}
-            <div className="space-y-1.5">
-              <div className="flex justify-between text-xs sm:text-sm font-mono">
-                <span className="font-semibold text-ink-800 dark:text-parchment-200">
-                  {"Applied Tensile Stress (σ)"}
-                </span>
-                <span className="text-amber-600 dark:text-amber-400 font-bold">
-                  {tensileStressGpa} GPa
-                </span>
-              </div>
-              <input
-                type="range"
-                min="0.5"
-                max="5.0"
-                step="0.1"
-                value={tensileStressGpa}
-                onChange={(e) => setTensileStressGpa(Number(e.target.value))}
-                className="w-full accent-amber-600 cursor-pointer h-2 bg-parchment-300 dark:bg-ink-700 rounded-lg"
-              />
-            </div>
-
-            <div className="p-4 rounded-xl bg-emerald-500/10 border border-emerald-500/30 text-ink-950 dark:text-parchment-100 text-xs sm:text-sm font-sans space-y-1.5">
-              <span className="font-bold text-emerald-900 dark:text-emerald-300 block font-mono text-xs uppercase tracking-wider">
-                Kwolek&apos;s Lyotropic Liquid Crystals:
-              </span>
-              <p className="leading-relaxed">
-                Most polymer solutions become thick like molasses, but Kwolek discovered that
-                poly-p-phenylene terephthalamide at high concentrations abruptly turns into a
-                cloudy, water-thin liquid. The rigid rod molecules self-assemble into parallel
-                nematic liquid crystals that spin into ultra-high-tenacity Kevlar fibers.
-              </p>
-            </div>
           </div>
+          <input
+            type="range"
+            min="5.0"
+            max="25.0"
+            step="0.5"
+            value={polymerConcentrationPct}
+            onChange={(e) => setPolymerConcentrationPct(Number(e.target.value))}
+            className="w-full accent-blue-600 dark:accent-blue-400 cursor-pointer"
+          />
+          <span className="text-[10px] text-ink-500 dark:text-ink-400 block">
+            Critical nematic threshold: ~12.5 wt%
+          </span>
+        </div>
+
+        {/* Temperature */}
+        <div className="space-y-1.5">
+          <div className="flex justify-between font-medium text-ink-900 dark:text-parchment-100">
+            <span>Dope Temperature ($T$):</span>
+            <span className="font-bold text-emerald-600 dark:text-emerald-400">
+              {temperatureCelsius}°C
+            </span>
+          </div>
+          <input
+            type="range"
+            min="20"
+            max="120"
+            step="5"
+            value={temperatureCelsius}
+            onChange={(e) => setTemperatureCelsius(Number(e.target.value))}
+            className="w-full accent-emerald-600 dark:accent-emerald-400 cursor-pointer"
+          />
+          <span className="text-[10px] text-ink-500 dark:text-ink-400 block">
+            Liquid crystalline melting point behavior
+          </span>
+        </div>
+
+        {/* Bullet Energy Absorption */}
+        <div className="space-y-1.5">
+          <div className="flex justify-between font-medium text-ink-900 dark:text-parchment-100">
+            <span>Kinetic Energy Dissipation:</span>
+            <span className="font-bold text-purple-600 dark:text-purple-400">
+              {isNematicLCP ? "450 Joules (9mm Stopped)" : "120 Joules (Penetrated)"}
+            </span>
+          </div>
+          <div className="w-full bg-parchment-300 dark:bg-ink-800 rounded-full h-3 overflow-hidden mt-2 border border-parchment-400 dark:border-ink-700">
+            <div
+              className="bg-gradient-to-r from-blue-500 via-emerald-500 to-amber-500 h-full transition-all duration-300"
+              style={{ width: `${isNematicLCP ? 95 : 25}%` }}
+            />
+          </div>
+          <span className="text-[10px] text-ink-500 dark:text-ink-400 block">
+            {"Longitudinal sound speed $c = \\sqrt{E/\\rho} \\approx 10{,}000\\text{ m/s}$"}
+          </span>
         </div>
       </div>
     </div>

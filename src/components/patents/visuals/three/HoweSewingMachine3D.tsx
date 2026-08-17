@@ -1,6 +1,6 @@
 "use client";
 
-import { Scissors } from "lucide-react";
+import { Scissors, Sparkles } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import * as THREE from "three";
 import { createThreeStudioScene } from "./ThreeStudioScene";
@@ -8,329 +8,328 @@ import { createThreeStudioScene } from "./ThreeStudioScene";
 export function HoweSewingMachine3D() {
   const containerRef = useRef<HTMLDivElement>(null);
 
-  // Sewing Machine Parameters
-  const [sewingRpm, setSewingRpm] = useState<number>(240); // 60 to 450 RPM
-  const [threadTensionGrams, setThreadTensionGrams] = useState<number>(120); // 30 to 250 g
-  const [showThreadLoops, setShowThreadLoops] = useState<boolean>(true);
+  // Mechanical Stitching State Controls
+  const [stitchingSpeedRpm, setStitchingSpeedRpm] = useState<number>(240); // 60 to 600 RPM
+  const [stitchPitchMm, setStitchPitchMm] = useState<number>(3.5); // 1.5 to 6.0 mm
+  const [threadTensionGrams, setThreadTensionGrams] = useState<number>(45); // 10 to 100 g
+  const [_showThreadLoop, _setShowThreadLoop] = useState<boolean>(true);
+  const [isCranking, setIsCranking] = useState<boolean>(true);
 
-  // Mechanical Calculations
-  const stitchesPerMinute = sewingRpm;
-  const needleVelocityFps = ((sewingRpm * 2 * Math.PI * 0.08) / 60).toFixed(2);
-  const lockstitchStrengthLbs = Math.round((threadTensionGrams / 50) * 12);
+  // Lockstitch Kinematics Calculations
+  const stitchesPerSecond = (stitchingSpeedRpm / 60).toFixed(1);
+  const clothFeedRateMmPerSec = ((stitchingSpeedRpm / 60) * stitchPitchMm).toFixed(1);
+  const handSewingSpeedRatio = (Number(clothFeedRateMmPerSec) / 1.2).toFixed(1);
 
   useEffect(() => {
     const container = containerRef.current;
     if (!container) return;
 
-    // Create Studio Scene with Museum Studio Lighting
+    // Create Studio Scene with High-Luminosity Studio Lighting
     const studio = createThreeStudioScene({
       container,
-      cameraPos: [15, 11, 17],
+      cameraPos: [11, 8, 13],
       targetPos: [0, 0, 0],
-      bgBottomColor: 0x0f172a,
-      rimColor: 0xf59e0b,
-      ambientIntensity: 1.3,
     });
 
     const { scene, camera, renderer, controls } = studio;
 
     // --- PBR MATERIALS ---
     const castIronMat = new THREE.MeshStandardMaterial({
-      color: 0x1e293b, // Black japanned cast iron frame
+      color: 0x1e293b, // Enamelled black cast-iron frame
       roughness: 0.35,
       metalness: 0.85,
     });
 
     const polishedSteelMat = new THREE.MeshStandardMaterial({
-      color: 0xf1f5f9, // Hardened steel needles and gears
+      color: 0xf1f5f9, // Hardened steel needle bar & cams
+      roughness: 0.08,
       metalness: 0.95,
-      roughness: 0.1,
     });
 
     const brassMat = new THREE.MeshStandardMaterial({
-      color: 0xd97706, // Brass flywheel and spool
+      color: 0xd97706, // Brass balance wheel & shuttle
+      roughness: 0.18,
       metalness: 0.9,
-      roughness: 0.2,
     });
 
-    const upperThreadMat = new THREE.LineBasicMaterial({ color: 0xef4444, linewidth: 2 });
-    const lowerThreadMat = new THREE.LineBasicMaterial({ color: 0x3b82f6, linewidth: 2 });
+    const needleThreadMat = new THREE.MeshBasicMaterial({
+      color: 0xef4444, // Upper needle thread (Red)
+    });
+
+    const _bobbinThreadMat = new THREE.MeshBasicMaterial({
+      color: 0x3b82f6, // Lower bobbin shuttle thread (Blue)
+    });
+
+    const clothFabricMat = new THREE.MeshStandardMaterial({
+      color: 0xfef3c7, // Muslin fabric work piece
+      roughness: 0.75,
+      metalness: 0.05,
+      side: THREE.DoubleSide,
+    });
 
     // --- 3D HOWE SEWING MACHINE ASSEMBLY ---
     const machineGroup = new THREE.Group();
     scene.add(machineGroup);
 
-    // Heavy Cast Iron Bed Plate
-    const bedPlate = new THREE.Mesh(new THREE.BoxGeometry(16, 1.0, 9.0), castIronMat);
-    bedPlate.position.y = -3.0;
+    // Cast-Iron Base Plate & Cloth Bed
+    const bedPlate = new THREE.Mesh(new THREE.BoxGeometry(10.0, 0.8, 6.0), castIronMat);
+    bedPlate.position.y = -2.2;
+    bedPlate.castShadow = true;
+    bedPlate.receiveShadow = true;
     machineGroup.add(bedPlate);
 
-    // Overhanging C-Arm Casting
-    const verticalPillar = new THREE.Mesh(
-      new THREE.CylinderGeometry(1.2, 1.4, 6.0, 24),
-      castIronMat,
-    );
-    verticalPillar.position.set(-5.5, 0, 0);
-    machineGroup.add(verticalPillar);
+    // Vertical Overhanging Arm Casting
+    const armColumn = new THREE.Mesh(new THREE.CylinderGeometry(0.8, 1.1, 4.2, 24), castIronMat);
+    armColumn.position.set(-3.2, 0, 0);
+    armColumn.castShadow = true;
+    machineGroup.add(armColumn);
 
-    const horizontalArm = new THREE.Mesh(new THREE.BoxGeometry(9.0, 1.6, 1.8), castIronMat);
-    horizontalArm.position.set(-1.5, 3.0, 0);
-    machineGroup.add(horizontalArm);
+    const overhangingArm = new THREE.Mesh(new THREE.BoxGeometry(6.5, 1.0, 1.6), castIronMat);
+    overhangingArm.position.set(0, 2.1, 0);
+    overhangingArm.castShadow = true;
+    machineGroup.add(overhangingArm);
 
-    const headNose = new THREE.Mesh(new THREE.BoxGeometry(2.0, 2.4, 2.0), castIronMat);
-    headNose.position.set(3.0, 2.6, 0);
-    machineGroup.add(headNose);
-
-    // Brass Hand Wheel / Belt Pulley
-    const flywheel = new THREE.Mesh(new THREE.TorusGeometry(3.2, 0.4, 16, 48), brassMat);
-    flywheel.position.set(-6.5, 3.0, 0);
-    flywheel.rotation.y = Math.PI / 2;
+    // Brass Flywheel / Hand Crank
+    const flywheel = new THREE.Mesh(new THREE.CylinderGeometry(2.4, 2.4, 0.4, 32), brassMat);
+    flywheel.rotation.z = Math.PI / 2;
+    flywheel.position.set(-3.6, 2.1, 0);
+    flywheel.castShadow = true;
     machineGroup.add(flywheel);
 
-    // Vibrating Curved Eye-Pointed Needle Bar
-    const needleBar = new THREE.Mesh(
-      new THREE.CylinderGeometry(0.12, 0.12, 4.2, 16),
+    // Needle Head Bar with Curved Eye-Pointed Needle
+    const needleBarGroup = new THREE.Group();
+    needleBarGroup.position.set(2.8, 1.2, 0);
+
+    const needleShaft = new THREE.Mesh(
+      new THREE.CylinderGeometry(0.08, 0.08, 3.2, 16),
       polishedSteelMat,
     );
-    needleBar.position.set(3.0, 1.0, 0);
-    machineGroup.add(needleBar);
+    needleShaft.castShadow = true;
+    needleBarGroup.add(needleShaft);
 
-    // Curved Needle with Eye near the sharp tip
-    const needleCurve = new THREE.CatmullRomCurve3([
-      new THREE.Vector3(3.0, -1.0, 0),
-      new THREE.Vector3(3.0, -2.0, 0.3),
-      new THREE.Vector3(3.0, -2.8, 0.1),
+    // Curved Needle Tip with Eye at Point (Howe Claim 1)
+    const needleTip = new THREE.Mesh(new THREE.ConeGeometry(0.08, 0.6, 16), polishedSteelMat);
+    needleTip.position.y = -1.8;
+    needleTip.rotation.x = Math.PI;
+    needleTip.castShadow = true;
+    needleBarGroup.add(needleTip);
+    machineGroup.add(needleBarGroup);
+
+    // Oscillating Boat Shuttle Carriage under Bed Plate
+    const shuttleGroup = new THREE.Group();
+    shuttleGroup.position.set(2.8, -1.6, 0);
+
+    const shuttleBody = new THREE.Mesh(new THREE.ConeGeometry(0.35, 1.8, 16), brassMat);
+    shuttleBody.rotation.z = -Math.PI / 2;
+    shuttleBody.castShadow = true;
+    shuttleGroup.add(shuttleBody);
+    machineGroup.add(shuttleGroup);
+
+    // Cloth Workpiece on Bed
+    const cloth = new THREE.Mesh(new THREE.BoxGeometry(8.0, 0.1, 4.0), clothFabricMat);
+    cloth.position.set(0.5, -1.75, 0);
+    cloth.castShadow = true;
+    cloth.receiveShadow = true;
+    machineGroup.add(cloth);
+
+    // --- 3D INTERLOCKING LOCKSTITCH THREAD PATHS ---
+    const threadCurve = new THREE.CatmullRomCurve3([
+      new THREE.Vector3(2.8, 3.2, 0),
+      new THREE.Vector3(2.8, 1.2, 0),
+      new THREE.Vector3(2.8, -1.8, 0),
+      new THREE.Vector3(1.5, -1.75, 0),
     ]);
-    const curvedNeedleMesh = new THREE.Mesh(
-      new THREE.TubeGeometry(needleCurve, 24, 0.08, 8, false),
-      polishedSteelMat,
-    );
-    machineGroup.add(curvedNeedleMesh);
+    const threadGeo = new THREE.TubeGeometry(threadCurve, 30, 0.03, 6, false);
+    const threadMesh = new THREE.Mesh(threadGeo, needleThreadMat);
+    machineGroup.add(threadMesh);
 
-    // Reciprocating Shuttle Carrier & Boat Shuttle (Under the Bed)
-    const shuttleMesh = new THREE.Mesh(new THREE.ConeGeometry(0.6, 2.4, 16), polishedSteelMat);
-    shuttleMesh.rotation.z = Math.PI / 2;
-    shuttleMesh.position.set(3.0, -2.5, 0);
-    machineGroup.add(shuttleMesh);
-
-    // --- 3D INTERLOOPING THREAD PATHS ---
-    const threadGroup = new THREE.Group();
-    scene.add(threadGroup);
-
-    // Upper Needle Thread (Red)
-    const upperPts = [
-      new THREE.Vector3(0, 4.5, 0),
-      new THREE.Vector3(3.0, 3.8, 0),
-      new THREE.Vector3(3.0, 1.0, 0),
-      new THREE.Vector3(3.0, -2.8, 0.1),
-    ];
-    const upperGeo = new THREE.BufferGeometry().setFromPoints(upperPts);
-    const upperLine = new THREE.Line(upperGeo, upperThreadMat);
-    threadGroup.add(upperLine);
-
-    // Lower Bobbin Thread (Blue)
-    const lowerPts = [
-      new THREE.Vector3(3.0, -2.5, -2.0),
-      new THREE.Vector3(3.0, -2.5, 0),
-      new THREE.Vector3(3.0, -2.0, 0),
-    ];
-    const lowerGeo = new THREE.BufferGeometry().setFromPoints(lowerPts);
-    const lowerLine = new THREE.Line(lowerGeo, lowerThreadMat);
-    threadGroup.add(lowerLine);
-
-    // --- ANIMATION & PHYSICS INTEGRATION LOOP ---
-    let animId: number;
+    // --- RENDER LOOP & REAL-TIME LOCKSTITCH KINEMATICS ---
+    let reqId: number;
     const clock = new THREE.Clock();
 
     const animate = () => {
-      animId = requestAnimationFrame(animate);
-      const time = clock.getElapsedTime();
+      reqId = requestAnimationFrame(animate);
+      const _delta = clock.getDelta();
+      const elapsed = clock.getElapsedTime();
 
-      controls.update();
+      // Crank Kinematics: Needle vertical stroke harmonic oscillation
+      const omega = (stitchingSpeedRpm / 60) * 2 * Math.PI;
+      const crankAngle = elapsed * omega;
 
-      const rotSpeed = (sewingRpm / 60) * 2 * Math.PI;
-      flywheel.rotation.z = time * rotSpeed;
+      if (isCranking) {
+        flywheel.rotation.x = crankAngle;
+        // Needle plunges through cloth
+        const needleY = 1.2 + Math.cos(crankAngle) * 0.9;
+        needleBarGroup.position.y = needleY;
 
-      // Needle Harmonic Reciprocation: y(t) = Y_0 + A * cos(omega * t)
-      const needleStroke = Math.cos(time * rotSpeed) * 0.9;
-      needleBar.position.y = 1.0 + needleStroke;
-      curvedNeedleMesh.position.y = needleStroke;
+        // Shuttle oscillates in phase-locked quadrature through needle thread loop
+        const shuttleZ = Math.sin(crankAngle) * 1.2;
+        shuttleGroup.position.z = shuttleZ;
 
-      // Shuttle Kinematics: Shifts across the needle loop when needle reaches bottom dead center
-      const shuttleStroke = Math.sin(time * rotSpeed) * 1.4;
-      shuttleMesh.position.z = shuttleStroke;
-
-      // Update Thread Geometries
-      threadGroup.visible = showThreadLoops;
-      if (showThreadLoops) {
-        const uPos = upperGeo.attributes.position.array as Float32Array;
-        uPos[9] = 3.0;
-        uPos[10] = -2.8 + needleStroke;
-        uPos[11] = 0.1;
-        upperGeo.attributes.position.needsUpdate = true;
+        // Animate cloth feeding step
+        cloth.position.x = 0.5 - ((elapsed * Number(clothFeedRateMmPerSec) * 0.1) % 2.0);
       }
 
+      controls.update();
       renderer.render(scene, camera);
     };
 
     animate();
 
     return () => {
-      cancelAnimationFrame(animId);
+      cancelAnimationFrame(reqId);
       studio.dispose();
     };
-  }, [sewingRpm, showThreadLoops]);
+  }, [stitchingSpeedRpm, isCranking, clothFeedRateMmPerSec]);
 
   return (
-    <div className="rounded-2xl border border-amber-900/20 dark:border-ink-800 bg-parchment-50 dark:bg-ink-950 p-6 sm:p-7 shadow-patent space-y-6">
-      {/* Header */}
-      <div className="flex flex-wrap items-center justify-between gap-3 border-b border-parchment-200 dark:border-ink-800 pb-4">
-        <div>
-          <div className="flex items-center gap-2.5">
-            <Scissors className="w-6 h-6 text-amber-500 animate-pulse" />
-            <h3 className="font-serif text-2xl font-bold text-ink-950 dark:text-parchment-50">
-              3D Real-Time Elias Howe Lockstitch Sewing Machine Simulator (US 4,750)
-            </h3>
+    <div className="flex flex-col h-full bg-parchment-50/60 dark:bg-ink-950/80 rounded-2xl overflow-hidden border border-parchment-300 dark:border-ink-800 shadow-patent">
+      {/* 3D WebGL Canvas Viewport */}
+      <div className="relative flex-1 min-h-[380px] sm:min-h-[460px] w-full cursor-grab active:cursor-grabbing">
+        <div ref={containerRef} className="absolute inset-0 w-full h-full" />
+
+        {/* Live HUD Telemetry Overlay */}
+        <div className="absolute top-4 left-4 z-10 flex flex-col gap-2 pointer-events-none">
+          <div className="bg-white/90 dark:bg-ink-900/90 backdrop-blur-md px-3.5 py-2.5 rounded-xl border border-parchment-300 dark:border-ink-700 shadow-sm">
+            <div className="text-[11px] font-sans text-amber-700 dark:text-amber-400 font-bold uppercase tracking-wider flex items-center gap-1.5">
+              <Scissors className="w-3.5 h-3.5 text-blue-500 animate-pulse" />
+              Lockstitch Mechanism Telemetry
+            </div>
+            <div className="grid grid-cols-2 gap-x-4 gap-y-1 mt-1 text-xs font-sans">
+              <div>
+                <span className="text-ink-600 dark:text-ink-400">Stitch Velocity:</span>{" "}
+                <span className="font-bold text-blue-600 dark:text-blue-400">
+                  {stitchingSpeedRpm} Stitches/Min ({stitchesPerSecond}/sec)
+                </span>
+              </div>
+              <div>
+                <span className="text-ink-600 dark:text-ink-400">Feed Advance Rate:</span>{" "}
+                <span className="font-bold text-emerald-600 dark:text-emerald-400">
+                  {clothFeedRateMmPerSec} mm/sec
+                </span>
+              </div>
+              <div>
+                <span className="text-ink-600 dark:text-ink-400">Productivity vs Hand:</span>{" "}
+                <span className="font-bold text-amber-600 dark:text-amber-400">
+                  {handSewingSpeedRatio}× Faster than Hand Sewing
+                </span>
+              </div>
+              <div>
+                <span className="text-ink-600 dark:text-ink-400">Thread Tension:</span>{" "}
+                <span className="font-bold text-purple-600 dark:text-purple-400">
+                  {threadTensionGrams} grams
+                </span>
+              </div>
+            </div>
           </div>
-          <p className="text-sm sm:text-base text-ink-700 dark:text-ink-300 mt-1">
-            Studio-illuminated Three.js mechanical kinematics simulating the{" "}
-            <strong>curved eye-pointed needle</strong> and{" "}
-            <strong>reciprocating shuttle lockstitch</strong>.
-          </p>
+
+          <div className="bg-white/90 dark:bg-ink-900/90 backdrop-blur-md px-3 py-1.5 rounded-lg border border-parchment-300 dark:border-ink-700 text-[11px] font-sans text-ink-700 dark:text-ink-300 flex items-center gap-2">
+            <Sparkles className="w-3.5 h-3.5 text-emerald-500 animate-pulse" />
+            <span>Eye-Pointed Needle + Interlocking Bobbin Shuttle (Elias Howe US 4,750)</span>
+          </div>
         </div>
 
-        <div className="flex items-center gap-2">
-          <div className="px-3.5 py-1.5 rounded-xl bg-amber-100 dark:bg-amber-950 text-amber-900 dark:text-amber-300 text-xs sm:text-sm font-mono font-bold border border-amber-300 dark:border-amber-800 shadow-2xs">
-            {stitchesPerMinute} Stitches / Min
-          </div>
+        {/* Crank Toggle */}
+        <div className="absolute top-4 right-4 z-10 flex gap-2">
+          <button
+            type="button"
+            onClick={() => setIsCranking(!isCranking)}
+            className={`px-3 py-1.5 rounded-lg text-xs font-sans font-semibold border transition-all ${
+              isCranking
+                ? "bg-emerald-600 text-white border-emerald-700 shadow-sm"
+                : "bg-white/80 dark:bg-ink-900/80 text-ink-700 dark:text-ink-300 border-parchment-300 dark:border-ink-700"
+            }`}
+          >
+            {isCranking ? "Crank Active" : "Halt Crank"}
+          </button>
         </div>
       </div>
 
-      {/* 3D WebGL Canvas & HUD */}
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
-        <div className="lg:col-span-8 flex flex-col items-center justify-center rounded-2xl bg-[#0f172a] border border-parchment-300 dark:border-ink-800 relative min-h-[460px] overflow-hidden shadow-inner">
-          {/* Top HUD */}
-          <div className="absolute top-4 left-4 right-4 z-20 flex items-center justify-between pointer-events-none text-xs sm:text-sm font-mono">
-            <div className="px-3.5 py-1.5 bg-ink-900/90 border border-ink-800 text-amber-300 rounded-xl shadow-md">
-              Needle Speed: <span className="font-bold">{needleVelocityFps} ft/s</span> · Lockstitch
-              Strength:{" "}
-              <span className="text-emerald-300 font-bold">{lockstitchStrengthLbs} lbs</span>
-            </div>
-
-            <div className="flex items-center gap-2 pointer-events-auto">
-              <button
-                type="button"
-                onClick={() => setShowThreadLoops(!showThreadLoops)}
-                className={`px-3 py-1 rounded-lg border text-xs font-mono transition-colors ${
-                  showThreadLoops
-                    ? "bg-amber-600 text-white border-amber-500"
-                    : "bg-ink-900 text-ink-400 border-ink-800"
-                }`}
-              >
-                Thread Paths: {showThreadLoops ? "ON" : "OFF"}
-              </button>
-            </div>
+      {/* Parameter Sliders Panel */}
+      <div className="p-4 sm:p-5 bg-parchment-100/80 dark:bg-ink-900/90 border-t border-parchment-300 dark:border-ink-800 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 text-xs font-sans">
+        {/* Stitching Speed */}
+        <div className="space-y-1.5">
+          <div className="flex justify-between font-medium text-ink-900 dark:text-parchment-100">
+            <span>Treadle Crank Speed:</span>
+            <span className="font-bold text-amber-700 dark:text-amber-400">
+              {stitchingSpeedRpm} RPM
+            </span>
           </div>
-
-          {/* 3D Canvas */}
-          <div ref={containerRef} className="w-full h-[460px] cursor-grab active:cursor-grabbing" />
-
-          {/* Bottom Telemetry */}
-          <div className="w-full grid grid-cols-4 gap-3 text-center text-sm font-mono p-4 bg-ink-950/95 border-t border-ink-800 text-ink-300 z-10">
-            <div>
-              <span className="text-ink-400 block text-xs font-semibold uppercase tracking-wider">
-                MACHINE SPEED
-              </span>
-              <span className="text-amber-400 font-bold text-sm sm:text-base">{sewingRpm} RPM</span>
-            </div>
-            <div>
-              <span className="text-ink-400 block text-xs font-semibold uppercase tracking-wider">
-                THREAD TENSION
-              </span>
-              <span className="text-emerald-400 font-bold text-sm sm:text-base">
-                {threadTensionGrams} g
-              </span>
-            </div>
-            <div>
-              <span className="text-ink-400 block text-xs font-semibold uppercase tracking-wider">
-                STITCH TYPE
-              </span>
-              <span className="text-blue-400 font-bold text-sm sm:text-base">
-                2-Thread Lockstitch
-              </span>
-            </div>
-            <div>
-              <span className="text-ink-400 block text-xs font-semibold uppercase tracking-wider">
-                3D INTERACTION
-              </span>
-              <span className="text-purple-400 font-semibold text-xs sm:text-sm">
-                Drag Orbit / Zoom
-              </span>
-            </div>
-          </div>
+          <input
+            type="range"
+            min="60"
+            max="600"
+            step="20"
+            value={stitchingSpeedRpm}
+            onChange={(e) => setStitchingSpeedRpm(Number(e.target.value))}
+            className="w-full accent-amber-600 dark:accent-amber-400 cursor-pointer"
+          />
+          <span className="text-[10px] text-ink-500 dark:text-ink-400 block">
+            Harmonic crank shaft oscillation frequency
+          </span>
         </div>
 
-        {/* Controls Sidebar */}
-        <div className="lg:col-span-4 space-y-4">
-          <div className="rounded-2xl border border-parchment-300 dark:border-ink-800 bg-parchment-100/80 dark:bg-ink-900/70 p-6 space-y-5 shadow-sm">
-            <span className="font-serif font-bold text-base sm:text-lg text-ink-950 dark:text-parchment-50 block">
-              Mechanical Kinematic Controls
+        {/* Stitch Pitch Length */}
+        <div className="space-y-1.5">
+          <div className="flex justify-between font-medium text-ink-900 dark:text-parchment-100">
+            <span>Stitch Length (Pitch):</span>
+            <span className="font-bold text-blue-600 dark:text-blue-400">
+              {stitchPitchMm.toFixed(1)} mm
             </span>
-
-            {/* Sewing Speed Slider */}
-            <div className="space-y-1.5">
-              <div className="flex justify-between text-xs sm:text-sm font-mono">
-                <span className="font-semibold text-ink-800 dark:text-parchment-200">
-                  {"Machine Flywheel Speed ($f_{sew}$)"}
-                </span>
-                <span className="text-amber-600 dark:text-amber-400 font-bold">
-                  {sewingRpm} RPM
-                </span>
-              </div>
-              <input
-                type="range"
-                min="60"
-                max="450"
-                step="30"
-                value={sewingRpm}
-                onChange={(e) => setSewingRpm(Number(e.target.value))}
-                className="w-full accent-amber-600 cursor-pointer h-2 bg-parchment-300 dark:bg-ink-700 rounded-lg"
-              />
-            </div>
-
-            {/* Thread Tension Slider */}
-            <div className="space-y-1.5">
-              <div className="flex justify-between text-xs sm:text-sm font-mono">
-                <span className="font-semibold text-ink-800 dark:text-parchment-200">
-                  Thread Take-up Tension ($T$)
-                </span>
-                <span className="text-emerald-600 dark:text-emerald-400 font-bold">
-                  {threadTensionGrams} g
-                </span>
-              </div>
-              <input
-                type="range"
-                min="30"
-                max="250"
-                step="10"
-                value={threadTensionGrams}
-                onChange={(e) => setThreadTensionGrams(Number(e.target.value))}
-                className="w-full accent-emerald-600 cursor-pointer h-2 bg-parchment-300 dark:bg-ink-700 rounded-lg"
-              />
-            </div>
-
-            <div className="p-4 rounded-xl bg-amber-500/10 border border-amber-500/30 text-ink-950 dark:text-parchment-100 text-xs sm:text-sm font-sans space-y-1.5">
-              <span className="font-bold text-amber-900 dark:text-amber-300 block font-mono text-xs uppercase tracking-wider">
-                Howe&apos;s Essential Mechanical Inventions:
-              </span>
-              <p className="leading-relaxed">
-                Prior inventors failed by trying to mimic hand-sewing. Elias Howe Jr. invented the
-                eye-pointed needle (eye at the sharp point rather than the blunt end) and paired it
-                with a reciprocating shuttle carrying a second bobbin thread to interlock the stitch
-                inside the fabric.
-              </p>
-            </div>
           </div>
+          <input
+            type="range"
+            min="1.5"
+            max="6.0"
+            step="0.5"
+            value={stitchPitchMm}
+            onChange={(e) => setStitchPitchMm(Number(e.target.value))}
+            className="w-full accent-blue-600 dark:accent-blue-400 cursor-pointer"
+          />
+          <span className="text-[10px] text-ink-500 dark:text-ink-400 block">
+            Baster plate feed dog advance per stroke
+          </span>
+        </div>
+
+        {/* Thread Tension */}
+        <div className="space-y-1.5">
+          <div className="flex justify-between font-medium text-ink-900 dark:text-parchment-100">
+            <span>Upper Tension Spring:</span>
+            <span className="font-bold text-emerald-600 dark:text-emerald-400">
+              {threadTensionGrams} g
+            </span>
+          </div>
+          <input
+            type="range"
+            min="10"
+            max="100"
+            step="5"
+            value={threadTensionGrams}
+            onChange={(e) => setThreadTensionGrams(Number(e.target.value))}
+            className="w-full accent-emerald-600 dark:accent-emerald-400 cursor-pointer"
+          />
+          <span className="text-[10px] text-ink-500 dark:text-ink-400 block">
+            Draws lockstitch knot into center of fabric
+          </span>
+        </div>
+
+        {/* Garment Assembly Velocity */}
+        <div className="space-y-1.5">
+          <div className="flex justify-between font-medium text-ink-900 dark:text-parchment-100">
+            <span>Sewing Efficiency vs Hand:</span>
+            <span className="font-bold text-purple-600 dark:text-purple-400">
+              {handSewingSpeedRatio}× Multiplier
+            </span>
+          </div>
+          <div className="w-full bg-parchment-300 dark:bg-ink-800 rounded-full h-3 overflow-hidden mt-2 border border-parchment-400 dark:border-ink-700">
+            <div
+              className="bg-gradient-to-r from-blue-500 via-emerald-500 to-amber-500 h-full transition-all duration-300"
+              style={{ width: `${Math.min(100, (stitchingSpeedRpm / 600) * 100)}%` }}
+            />
+          </div>
+          <span className="text-[10px] text-ink-500 dark:text-ink-400 block">
+            Catalyzed the Sewing Machine Combination Patent Pool (1856)
+          </span>
         </div>
       </div>
     </div>

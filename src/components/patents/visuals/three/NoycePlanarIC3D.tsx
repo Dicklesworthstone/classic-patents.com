@@ -1,402 +1,415 @@
 "use client";
 
-import { Zap } from "lucide-react";
+import { Cpu, Layers } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import * as THREE from "three";
-import { createThreeStudioScene } from "./ThreeStudioScene";
+import { createGlowPointTexture, createThreeStudioScene } from "./ThreeStudioScene";
 
 export function NoycePlanarIC3D() {
   const containerRef = useRef<HTMLDivElement>(null);
 
-  // Semiconductor Parameter State
-  const [layerExplodeDistance, setLayerExplodeDistance] = useState<number>(2.5); // 0 to 5
-  const [activeStep, setActiveStep] = useState<number>(4); // 1: Substrate, 2: Oxidation, 3: Etch/Diff, 4: Aluminum Leads
-  const [showElectronHoles, setShowElectronHoles] = useState<boolean>(true);
-  const [biasVoltage, setBiasVoltage] = useState<number>(1.2); // 0 to 5 V
+  // Microelectronics State Controls
+  const [clockFrequencyMhz, setClockFrequencyMhz] = useState<number>(10); // 1 to 50 MHz
+  const [oxideLayerThicknessNm, setOxideLayerThicknessNm] = useState<number>(500); // 100 to 1000 nm
+  const [activeLayer, setActiveLayer] = useState<"all" | "silicon" | "oxide" | "metal">("all");
+  const [showLogicSignals, setShowLogicSignals] = useState<boolean>(true);
+
+  // Semiconductor Physics Calculations
+  const gateCapacitancePf = ((11.7 * 8.854e-12 * 1e-8) / (oxideLayerThicknessNm * 1e-9)) * 1e12;
+  const gatePropagationDelayPs = Math.round(gateCapacitancePf * 45 * 10);
+  const maxClockGhz = (1000 / (gatePropagationDelayPs * 4)).toFixed(2);
 
   useEffect(() => {
     const container = containerRef.current;
     if (!container) return;
 
-    // Create Studio Scene with Museum Studio Lighting
+    // Create Studio Scene with High-Luminosity Studio Lighting
     const studio = createThreeStudioScene({
       container,
-      cameraPos: [16, 14, 18],
+      cameraPos: [10, 8, 12],
       targetPos: [0, 0, 0],
-      bgBottomColor: 0x0f172a,
-      rimColor: 0x38bdf8,
-      ambientIntensity: 1.3,
     });
 
     const { scene, camera, renderer, controls } = studio;
 
     // --- PBR MATERIALS ---
-    const pSubstrateMaterial = new THREE.MeshStandardMaterial({
-      color: 0x334155,
-      metalness: 0.4,
-      roughness: 0.5,
+    const siliconSubstrateMat = new THREE.MeshStandardMaterial({
+      color: 0x334155, // Monocrystalline p-type silicon wafer
+      roughness: 0.25,
+      metalness: 0.85,
     });
 
-    const nWellMaterial = new THREE.MeshStandardMaterial({
-      color: 0x0284c7,
-      metalness: 0.5,
-      roughness: 0.4,
+    const nDiffusedMat = new THREE.MeshStandardMaterial({
+      color: 0x0284c7, // n-type diffused phosphorus well
+      roughness: 0.3,
+      metalness: 0.75,
     });
 
-    const pPlusMaterial = new THREE.MeshStandardMaterial({
-      color: 0xef4444,
-      metalness: 0.5,
-      roughness: 0.4,
-    });
-
-    const sio2Material = new THREE.MeshPhysicalMaterial({
-      color: 0x38bdf8,
-      transmission: 0.88,
+    const siliconDioxideMat = new THREE.MeshPhysicalMaterial({
+      color: 0x38bdf8, // Thermally grown SiO2 insulating glass
+      transmission: 0.82,
       opacity: 0.85,
       transparent: true,
+      roughness: 0.05,
+      ior: 1.46,
+    });
+
+    const aluminumMetalMat = new THREE.MeshStandardMaterial({
+      color: 0xf8fafc, // Vapor-deposited aluminum film interconnect
       roughness: 0.08,
-      ior: 1.45,
+      metalness: 0.98,
     });
 
-    const aluminumLeadsMaterial = new THREE.MeshStandardMaterial({
-      color: 0xf1f5f9,
+    const goldBondWireMat = new THREE.MeshStandardMaterial({
+      color: 0xf59e0b, // Thermosonic ball bond gold wire
+      roughness: 0.15,
       metalness: 0.95,
-      roughness: 0.1,
     });
 
-    // --- 3D MONOLITHIC PLANAR IC WAFER STACK ---
-    const waferGroup = new THREE.Group();
-    scene.add(waferGroup);
+    // --- 3D MONOLITHIC PLANAR IC CHIP ASSEMBLY ---
+    const chipGroup = new THREE.Group();
+    scene.add(chipGroup);
 
-    // Layer 1: P-type Silicon Monolithic Substrate
-    const substrateMesh = new THREE.Mesh(
-      new THREE.BoxGeometry(14.0, 1.2, 10.0),
-      pSubstrateMaterial,
-    );
-    substrateMesh.position.y = -2.0;
+    // 1. P-Type Monocrystalline Silicon Substrate
+    const substrateGeo = new THREE.BoxGeometry(8.0, 0.8, 8.0);
+    const substrateMesh = new THREE.Mesh(substrateGeo, siliconSubstrateMat);
+    substrateMesh.position.y = -0.4;
     substrateMesh.castShadow = true;
     substrateMesh.receiveShadow = true;
-    waferGroup.add(substrateMesh);
+    chipGroup.add(substrateMesh);
 
-    // Layer 2: N-type Wells (Diffused collectors)
-    const nWellGroup = new THREE.Group();
-    const nWell1 = new THREE.Mesh(new THREE.BoxGeometry(5.0, 0.8, 4.0), nWellMaterial);
-    nWell1.position.set(-3.0, 0, 0);
-    const nWell2 = new THREE.Mesh(new THREE.BoxGeometry(4.5, 0.8, 4.0), nWellMaterial);
-    nWell2.position.set(3.5, 0, 0);
-    nWellGroup.add(nWell1);
-    nWellGroup.add(nWell2);
-    waferGroup.add(nWellGroup);
-
-    // Layer 3: P+ Base and N+ Emitter Diffusion Pockets
-    const pPlusGroup = new THREE.Group();
-    const pBase1 = new THREE.Mesh(new THREE.BoxGeometry(2.5, 0.5, 2.5), pPlusMaterial);
-    pBase1.position.set(-3.0, 0, 0);
-    const pBase2 = new THREE.Mesh(new THREE.BoxGeometry(2.5, 0.5, 2.5), pPlusMaterial);
-    pBase2.position.set(3.5, 0, 0);
-    pPlusGroup.add(pBase1);
-    pPlusGroup.add(pBase2);
-    waferGroup.add(pPlusGroup);
-
-    // Layer 4: Thermally Grown Silicon Dioxide (SiO2) Passivation Layer
-    const oxideMesh = new THREE.Mesh(new THREE.BoxGeometry(14.0, 0.4, 10.0), sio2Material);
-    waferGroup.add(oxideMesh);
-
-    // Layer 5: Vapor-Deposited Aluminum Interconnect Metallization Leads
-    const leadsGroup = new THREE.Group();
-    const lead1 = new THREE.Mesh(new THREE.BoxGeometry(6.0, 0.3, 0.8), aluminumLeadsMaterial);
-    lead1.position.set(0, 0, -2.0);
-    const lead2 = new THREE.Mesh(new THREE.BoxGeometry(0.8, 0.3, 5.0), aluminumLeadsMaterial);
-    lead2.position.set(-3.0, 0, 0);
-    const lead3 = new THREE.Mesh(new THREE.BoxGeometry(0.8, 0.3, 5.0), aluminumLeadsMaterial);
-    lead3.position.set(3.5, 0, 0);
-
-    leadsGroup.add(lead1);
-    leadsGroup.add(lead2);
-    leadsGroup.add(lead3);
-    waferGroup.add(leadsGroup);
-
-    // --- 3D ELECTRON & HOLE PARTICLES ---
-    const carrierCount = 140;
-    const carrierGeo = new THREE.BufferGeometry();
-    const carrierPos = new Float32Array(carrierCount * 3);
-    const carrierCol = new Float32Array(carrierCount * 3);
-
-    for (let i = 0; i < carrierCount; i++) {
-      carrierPos[i * 3] = (Math.random() - 0.5) * 12;
-      carrierPos[i * 3 + 1] = (Math.random() - 0.5) * 1.5;
-      carrierPos[i * 3 + 2] = (Math.random() - 0.5) * 8;
-
-      if (i % 2 === 0) {
-        carrierCol[i * 3] = 0.2;
-        carrierCol[i * 3 + 1] = 0.7;
-        carrierCol[i * 3 + 2] = 1.0;
-      } else {
-        carrierCol[i * 3] = 1.0;
-        carrierCol[i * 3 + 1] = 0.4;
-        carrierCol[i * 3 + 2] = 0.2;
+    // 2. N-Type Diffused Wells (Transistor Collector & Emitter regions)
+    const nWellsGroup = new THREE.Group();
+    for (let x = -2.2; x <= 2.2; x += 2.2) {
+      for (let z = -2.2; z <= 2.2; z += 2.2) {
+        const well = new THREE.Mesh(new THREE.BoxGeometry(1.4, 0.2, 1.4), nDiffusedMat);
+        well.position.set(x, 0.02, z);
+        nWellsGroup.add(well);
       }
     }
-    carrierGeo.setAttribute("position", new THREE.BufferAttribute(carrierPos, 3));
-    carrierGeo.setAttribute("color", new THREE.BufferAttribute(carrierCol, 3));
+    chipGroup.add(nWellsGroup);
 
-    const carrierPoints = new THREE.Points(
-      carrierGeo,
+    // 3. Thermally Grown SiO2 Dielectric Oxide Layer with Etched Contact Vias
+    const oxideLayer = new THREE.Mesh(new THREE.BoxGeometry(7.8, 0.35, 7.8), siliconDioxideMat);
+    oxideLayer.position.y = 0.25;
+    chipGroup.add(oxideLayer);
+
+    // 4. Vapor-Deposited Aluminum Interconnect Traces (Planar Metallization)
+    const metalGroup = new THREE.Group();
+
+    // Cross-chip bus lines & interconnect bridges
+    const trace1 = new THREE.Mesh(new THREE.BoxGeometry(7.0, 0.12, 0.35), aluminumMetalMat);
+    trace1.position.set(0, 0.48, -1.8);
+    trace1.castShadow = true;
+    const trace2 = new THREE.Mesh(new THREE.BoxGeometry(7.0, 0.12, 0.35), aluminumMetalMat);
+    trace2.position.set(0, 0.48, 1.8);
+    trace2.castShadow = true;
+    const trace3 = new THREE.Mesh(new THREE.BoxGeometry(0.35, 0.12, 5.0), aluminumMetalMat);
+    trace3.position.set(-1.8, 0.48, 0);
+    trace3.castShadow = true;
+    const trace4 = new THREE.Mesh(new THREE.BoxGeometry(0.35, 0.12, 5.0), aluminumMetalMat);
+    trace4.position.set(1.8, 0.48, 0);
+    trace4.castShadow = true;
+
+    metalGroup.add(trace1);
+    metalGroup.add(trace2);
+    metalGroup.add(trace3);
+    metalGroup.add(trace4);
+
+    // Contact Via Plugs connecting Metal Traces through SiO2 to Silicon
+    for (let x = -1.8; x <= 1.8; x += 1.8) {
+      for (let z = -1.8; z <= 1.8; z += 1.8) {
+        const via = new THREE.Mesh(
+          new THREE.CylinderGeometry(0.18, 0.18, 0.5, 12),
+          aluminumMetalMat,
+        );
+        via.position.set(x, 0.25, z);
+        metalGroup.add(via);
+      }
+    }
+    chipGroup.add(metalGroup);
+
+    // 5. Gold Bond Wires to External Leadframe
+    const bondWiresGroup = new THREE.Group();
+    const bondPoints = [
+      new THREE.Vector3(-3.5, 0.5, -1.8),
+      new THREE.Vector3(3.5, 0.5, -1.8),
+      new THREE.Vector3(-3.5, 0.5, 1.8),
+      new THREE.Vector3(3.5, 0.5, 1.8),
+    ];
+    for (const pt of bondPoints) {
+      const curve = new THREE.CatmullRomCurve3([
+        pt,
+        new THREE.Vector3(pt.x * 1.3, 1.5, pt.z * 1.3),
+        new THREE.Vector3(pt.x * 1.8, -0.4, pt.z * 1.8),
+      ]);
+      const wire = new THREE.Mesh(
+        new THREE.TubeGeometry(curve, 20, 0.05, 8, false),
+        goldBondWireMat,
+      );
+      wire.castShadow = true;
+      bondWiresGroup.add(wire);
+    }
+    chipGroup.add(bondWiresGroup);
+
+    // --- GLOWING LOGIC SIGNAL PULSE PARTICLES ---
+    const signalCount = 120;
+    const signalGeo = new THREE.BufferGeometry();
+    const signalPos = new Float32Array(signalCount * 3);
+    const signalColors = new Float32Array(signalCount * 3);
+
+    const glowTex = createGlowPointTexture();
+
+    for (let i = 0; i < signalCount; i++) {
+      const idx = i * 3;
+      signalPos[idx] = (Math.random() - 0.5) * 6.5;
+      signalPos[idx + 1] = 0.56;
+      signalPos[idx + 2] = Math.random() > 0.5 ? -1.8 : 1.8;
+
+      signalColors[idx] = 0.2;
+      signalColors[idx + 1] = 1.0;
+      signalColors[idx + 2] = 0.4;
+    }
+
+    signalGeo.setAttribute("position", new THREE.BufferAttribute(signalPos, 3));
+    signalGeo.setAttribute("color", new THREE.BufferAttribute(signalColors, 3));
+
+    const signalPoints = new THREE.Points(
+      signalGeo,
       new THREE.PointsMaterial({
-        size: 0.18,
+        size: 0.35,
+        map: glowTex,
         vertexColors: true,
         transparent: true,
-        opacity: 0.85,
+        opacity: 0.9,
+        blending: THREE.AdditiveBlending,
+        depthWrite: false,
       }),
     );
-    waferGroup.add(carrierPoints);
+    scene.add(signalPoints);
 
-    // --- ANIMATION & PHYSICS INTEGRATION LOOP ---
-    let animId: number;
+    // --- RENDER LOOP & REAL-TIME LOGIC PROPAGATION ---
+    let reqId: number;
     const clock = new THREE.Clock();
 
     const animate = () => {
-      animId = requestAnimationFrame(animate);
-      clock.getElapsedTime();
+      reqId = requestAnimationFrame(animate);
+      const delta = clock.getDelta();
+
+      // Layer Visibility Controls
+      substrateMesh.visible = activeLayer === "all" || activeLayer === "silicon";
+      nWellsGroup.visible = activeLayer === "all" || activeLayer === "silicon";
+      oxideLayer.visible = activeLayer === "all" || activeLayer === "oxide";
+      metalGroup.visible = activeLayer === "all" || activeLayer === "metal";
+
+      // Animate Logic Current Packets flowing along Aluminum Traces
+      const sPos = signalPos;
+      const speed = (clockFrequencyMhz / 10) * 8.0 * delta;
+
+      for (let i = 0; i < signalCount; i++) {
+        const idx = i * 3;
+        sPos[idx] += speed;
+        if (sPos[idx] > 3.4) {
+          sPos[idx] = -3.4;
+        }
+      }
+      signalGeo.attributes.position.needsUpdate = true;
+      signalPoints.visible = showLogicSignals && (activeLayer === "all" || activeLayer === "metal");
 
       controls.update();
-
-      // Layer Explosion Vertical Offsets
-      const d = layerExplodeDistance;
-      substrateMesh.position.y = -2.0 - d * 0.8;
-      nWellGroup.position.y = -0.5 - d * 0.4;
-      pPlusGroup.position.y = 0.5 + d * 0.2;
-      oxideMesh.position.y = 1.5 + d * 0.8;
-      leadsGroup.position.y = 2.5 + d * 1.4;
-
-      // Visibility based on Active Step
-      nWellGroup.visible = activeStep >= 2;
-      pPlusGroup.visible = activeStep >= 3;
-      oxideMesh.visible = activeStep >= 2;
-      leadsGroup.visible = activeStep >= 4;
-      carrierPoints.visible = showElectronHoles;
-
-      // Carrier drift velocity under bias
-      if (showElectronHoles) {
-        const positions = carrierGeo.attributes.position.array as Float32Array;
-        for (let i = 0; i < carrierCount; i++) {
-          const speed = biasVoltage * 0.05 + 0.02;
-          positions[i * 3] += (i % 2 === 0 ? 1 : -1) * speed;
-          if (positions[i * 3] > 6) positions[i * 3] = -6;
-          if (positions[i * 3] < -6) positions[i * 3] = 6;
-        }
-        carrierGeo.attributes.position.needsUpdate = true;
-      }
-
       renderer.render(scene, camera);
     };
 
     animate();
 
     return () => {
-      cancelAnimationFrame(animId);
+      cancelAnimationFrame(reqId);
       studio.dispose();
     };
-  }, [layerExplodeDistance, activeStep, showElectronHoles, biasVoltage]);
+  }, [clockFrequencyMhz, activeLayer, showLogicSignals]);
 
   return (
-    <div className="rounded-2xl border border-amber-900/20 dark:border-ink-800 bg-parchment-50 dark:bg-ink-950 p-6 sm:p-7 shadow-patent space-y-6">
-      {/* Header */}
-      <div className="flex flex-wrap items-center justify-between gap-3 border-b border-parchment-200 dark:border-ink-800 pb-4">
-        <div>
-          <div className="flex items-center gap-2.5">
-            <Zap className="w-6 h-6 text-blue-500 animate-pulse" />
-            <h3 className="font-serif text-2xl font-bold text-ink-950 dark:text-parchment-50">
-              3D Real-Time Noyce Monolithic Silicon Planar IC Simulator (US 2,981,877)
-            </h3>
+    <div className="flex flex-col h-full bg-parchment-50/60 dark:bg-ink-950/80 rounded-2xl overflow-hidden border border-parchment-300 dark:border-ink-800 shadow-patent">
+      {/* 3D WebGL Canvas Viewport */}
+      <div className="relative flex-1 min-h-[380px] sm:min-h-[460px] w-full cursor-grab active:cursor-grabbing">
+        <div ref={containerRef} className="absolute inset-0 w-full h-full" />
+
+        {/* Live HUD Telemetry Overlay */}
+        <div className="absolute top-4 left-4 z-10 flex flex-col gap-2 pointer-events-none">
+          <div className="bg-white/90 dark:bg-ink-900/90 backdrop-blur-md px-3.5 py-2.5 rounded-xl border border-parchment-300 dark:border-ink-700 shadow-sm">
+            <div className="text-[11px] font-sans text-amber-700 dark:text-amber-400 font-bold uppercase tracking-wider flex items-center gap-1.5">
+              <Cpu className="w-3.5 h-3.5 text-blue-500 animate-pulse" />
+              Planar Microchip Telemetry
+            </div>
+            <div className="grid grid-cols-2 gap-x-4 gap-y-1 mt-1 text-xs font-sans">
+              <div>
+                <span className="text-ink-600 dark:text-ink-400">Clock Frequency:</span>{" "}
+                <span className="font-bold text-blue-600 dark:text-blue-400">
+                  {clockFrequencyMhz} MHz
+                </span>
+              </div>
+              <div>
+                <span className="text-ink-600 dark:text-ink-400">Gate Propagation:</span>{" "}
+                <span className="font-bold text-emerald-600 dark:text-emerald-400">
+                  {gatePropagationDelayPs} ps
+                </span>
+              </div>
+              <div>
+                <span className="text-ink-600 dark:text-ink-400">SiO₂ Dielectric:</span>{" "}
+                <span className="font-bold text-amber-600 dark:text-amber-400">
+                  {oxideLayerThicknessNm} nm (k = 3.9)
+                </span>
+              </div>
+              <div>
+                <span className="text-ink-600 dark:text-ink-400">f_max Limit:</span>{" "}
+                <span className="font-bold text-purple-600 dark:text-purple-400">
+                  {maxClockGhz} GHz
+                </span>
+              </div>
+            </div>
           </div>
-          <p className="text-sm sm:text-base text-ink-700 dark:text-ink-300 mt-1">
-            Studio-illuminated Three.js semiconductor wafer physics illustrating{" "}
-            <strong>monolithic planar fabrication</strong> and{" "}
-            <strong>vapor-deposited aluminum leads</strong>.
-          </p>
+
+          <div className="bg-white/90 dark:bg-ink-900/90 backdrop-blur-md px-3 py-1.5 rounded-lg border border-parchment-300 dark:border-ink-700 text-[11px] font-sans text-ink-700 dark:text-ink-300 flex items-center gap-2">
+            <Layers className="w-3.5 h-3.5 text-emerald-500 animate-pulse" />
+            <span>Monolithic Planar Structure (Eliminated Hand-Wired Flying Leads)</span>
+          </div>
         </div>
 
-        <div className="flex items-center gap-2">
-          <div className="px-3.5 py-1.5 rounded-xl bg-blue-100 dark:bg-blue-950 text-blue-900 dark:text-blue-300 text-xs sm:text-sm font-mono font-bold border border-blue-300 dark:border-blue-800 shadow-2xs">
-            Planar Process (Fairchild 1959)
-          </div>
+        {/* Layer View Toggles */}
+        <div className="absolute top-4 right-4 z-10 flex gap-2">
+          <button
+            type="button"
+            onClick={() => setShowLogicSignals(!showLogicSignals)}
+            className={`px-3 py-1.5 rounded-lg text-xs font-sans font-semibold border transition-all ${
+              showLogicSignals
+                ? "bg-emerald-600 text-white border-emerald-700 shadow-sm"
+                : "bg-white/80 dark:bg-ink-900/80 text-ink-700 dark:text-ink-300 border-parchment-300 dark:border-ink-700"
+            }`}
+          >
+            Logic Signals
+          </button>
         </div>
       </div>
 
-      {/* 3D WebGL Canvas & HUD */}
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
-        <div className="lg:col-span-8 flex flex-col items-center justify-center rounded-2xl bg-[#0f172a] border border-parchment-300 dark:border-ink-800 relative min-h-[460px] overflow-hidden shadow-inner">
-          {/* Top HUD */}
-          <div className="absolute top-4 left-4 right-4 z-20 flex items-center justify-between pointer-events-none text-xs sm:text-sm font-mono">
-            <div className="px-3.5 py-1.5 bg-ink-900/90 border border-ink-800 text-blue-300 rounded-xl shadow-md">
-              Active Layer Step: <span className="font-bold">Step {activeStep} of 4</span> (Vapor
-              Metallization)
-            </div>
-
-            <div className="flex items-center gap-2 pointer-events-auto">
-              <button
-                type="button"
-                onClick={() => setShowElectronHoles(!showElectronHoles)}
-                className={`px-3 py-1 rounded-lg border text-xs font-mono transition-colors ${
-                  showElectronHoles
-                    ? "bg-blue-600 text-white border-blue-500"
-                    : "bg-ink-900 text-ink-400 border-ink-800"
-                }`}
-              >
-                Carriers (e⁻/h⁺): {showElectronHoles ? "ON" : "OFF"}
-              </button>
-            </div>
+      {/* Parameter Sliders Panel */}
+      <div className="p-4 sm:p-5 bg-parchment-100/80 dark:bg-ink-900/90 border-t border-parchment-300 dark:border-ink-800 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 text-xs font-sans">
+        {/* Layer Filter Buttons */}
+        <div className="space-y-1.5">
+          <div className="flex justify-between font-medium text-ink-900 dark:text-parchment-100">
+            <span>Exploded Layer View:</span>
+            <span className="font-bold text-amber-700 dark:text-amber-400 uppercase">
+              {activeLayer}
+            </span>
           </div>
-
-          {/* 3D Canvas */}
-          <div ref={containerRef} className="w-full h-[460px] cursor-grab active:cursor-grabbing" />
-
-          {/* Bottom Telemetry */}
-          <div className="w-full grid grid-cols-4 gap-3 text-center text-sm font-mono p-4 bg-ink-950/95 border-t border-ink-800 text-ink-300 z-10">
-            <div>
-              <span className="text-ink-400 block text-xs font-semibold uppercase tracking-wider">
-                SUBSTRATE
-              </span>
-              <span className="text-blue-400 font-bold text-sm sm:text-base">p-Type Silicon</span>
-            </div>
-            <div>
-              <span className="text-ink-400 block text-xs font-semibold uppercase tracking-wider">
-                DIELECTRIC
-              </span>
-              <span className="text-emerald-400 font-bold text-sm sm:text-base">SiO₂ Glass</span>
-            </div>
-            <div>
-              <span className="text-ink-400 block text-xs font-semibold uppercase tracking-wider">
-                INTERCONNECT
-              </span>
-              <span className="text-amber-400 font-bold text-sm sm:text-base">Vapor Aluminum</span>
-            </div>
-            <div>
-              <span className="text-ink-400 block text-xs font-semibold uppercase tracking-wider">
-                3D INTERACTION
-              </span>
-              <span className="text-purple-400 font-semibold text-xs sm:text-sm">
-                Drag Orbit / Zoom
-              </span>
-            </div>
+          <div className="grid grid-cols-2 gap-1.5 pt-1">
+            <button
+              type="button"
+              onClick={() => setActiveLayer("all")}
+              className={`py-1 px-2 rounded-md text-[11px] font-semibold border ${
+                activeLayer === "all"
+                  ? "bg-amber-600 text-white border-amber-700 shadow-sm"
+                  : "bg-white/80 dark:bg-ink-800 text-ink-700 dark:text-ink-300 border-parchment-300 dark:border-ink-700"
+              }`}
+            >
+              All Layers
+            </button>
+            <button
+              type="button"
+              onClick={() => setActiveLayer("silicon")}
+              className={`py-1 px-2 rounded-md text-[11px] font-semibold border ${
+                activeLayer === "silicon"
+                  ? "bg-amber-600 text-white border-amber-700 shadow-sm"
+                  : "bg-white/80 dark:bg-ink-800 text-ink-700 dark:text-ink-300 border-parchment-300 dark:border-ink-700"
+              }`}
+            >
+              Silicon Base
+            </button>
+            <button
+              type="button"
+              onClick={() => setActiveLayer("oxide")}
+              className={`py-1 px-2 rounded-md text-[11px] font-semibold border ${
+                activeLayer === "oxide"
+                  ? "bg-amber-600 text-white border-amber-700 shadow-sm"
+                  : "bg-white/80 dark:bg-ink-800 text-ink-700 dark:text-ink-300 border-parchment-300 dark:border-ink-700"
+              }`}
+            >
+              SiO₂ Oxide
+            </button>
+            <button
+              type="button"
+              onClick={() => setActiveLayer("metal")}
+              className={`py-1 px-2 rounded-md text-[11px] font-semibold border ${
+                activeLayer === "metal"
+                  ? "bg-amber-600 text-white border-amber-700 shadow-sm"
+                  : "bg-white/80 dark:bg-ink-800 text-ink-700 dark:text-ink-300 border-parchment-300 dark:border-ink-700"
+              }`}
+            >
+              Al Interconnect
+            </button>
           </div>
         </div>
 
-        {/* Controls Sidebar */}
-        <div className="lg:col-span-4 space-y-4">
-          <div className="rounded-2xl border border-parchment-300 dark:border-ink-800 bg-parchment-100/80 dark:bg-ink-900/70 p-6 space-y-5 shadow-sm">
-            <span className="font-serif font-bold text-base sm:text-lg text-ink-950 dark:text-parchment-50 block">
-              Wafer Planar Layer Controls
+        {/* Clock Frequency */}
+        <div className="space-y-1.5">
+          <div className="flex justify-between font-medium text-ink-900 dark:text-parchment-100">
+            <span>{"Master Clock ($f_{clk}$):"}</span>
+            <span className="font-bold text-blue-600 dark:text-blue-400">
+              {clockFrequencyMhz} MHz
             </span>
-
-            {/* Explode Distance Slider */}
-            <div className="space-y-1.5">
-              <div className="flex justify-between text-xs sm:text-sm font-mono">
-                <span className="font-semibold text-ink-800 dark:text-parchment-200">
-                  Exploded Layer Separation
-                </span>
-                <span className="text-blue-600 dark:text-blue-400 font-bold">
-                  {layerExplodeDistance.toFixed(1)}x
-                </span>
-              </div>
-              <input
-                type="range"
-                min="0.0"
-                max="5.0"
-                step="0.1"
-                value={layerExplodeDistance}
-                onChange={(e) => setLayerExplodeDistance(Number(e.target.value))}
-                className="w-full accent-blue-600 cursor-pointer h-2 bg-parchment-300 dark:bg-ink-700 rounded-lg"
-              />
-            </div>
-
-            {/* Bias Voltage Slider */}
-            <div className="space-y-1.5">
-              <div className="flex justify-between text-xs sm:text-sm font-mono">
-                <span className="font-semibold text-ink-800 dark:text-parchment-200">
-                  Forward PN Bias Voltage ($V_f$)
-                </span>
-                <span className="text-emerald-600 dark:text-emerald-400 font-bold">
-                  {biasVoltage} V
-                </span>
-              </div>
-              <input
-                type="range"
-                min="0.0"
-                max="5.0"
-                step="0.2"
-                value={biasVoltage}
-                onChange={(e) => setBiasVoltage(Number(e.target.value))}
-                className="w-full accent-emerald-600 cursor-pointer h-2 bg-parchment-300 dark:bg-ink-700 rounded-lg"
-              />
-            </div>
-
-            {/* Process Fabrication Stepper */}
-            <div className="space-y-1.5">
-              <span className="text-xs sm:text-sm font-mono block text-ink-800 dark:text-ink-200 font-semibold mb-1">
-                Fabrication Process Step
-              </span>
-              <div className="grid grid-cols-2 gap-2 text-xs sm:text-sm font-mono">
-                <button
-                  type="button"
-                  onClick={() => setActiveStep(1)}
-                  className={`p-2.5 rounded-xl border text-center transition-colors shadow-2xs ${
-                    activeStep === 1
-                      ? "bg-blue-700 text-white font-bold"
-                      : "bg-parchment-200 dark:bg-ink-800 text-ink-800 dark:text-ink-200"
-                  }`}
-                >
-                  1. Substrate
-                </button>
-                <button
-                  type="button"
-                  onClick={() => setActiveStep(2)}
-                  className={`p-2.5 rounded-xl border text-center transition-colors shadow-2xs ${
-                    activeStep === 2
-                      ? "bg-blue-700 text-white font-bold"
-                      : "bg-parchment-200 dark:bg-ink-800 text-ink-800 dark:text-ink-200"
-                  }`}
-                >
-                  2. Oxidation
-                </button>
-                <button
-                  type="button"
-                  onClick={() => setActiveStep(3)}
-                  className={`p-2.5 rounded-xl border text-center transition-colors shadow-2xs ${
-                    activeStep === 3
-                      ? "bg-blue-700 text-white font-bold"
-                      : "bg-parchment-200 dark:bg-ink-800 text-ink-800 dark:text-ink-200"
-                  }`}
-                >
-                  3. Diffusion
-                </button>
-                <button
-                  type="button"
-                  onClick={() => setActiveStep(4)}
-                  className={`p-2.5 rounded-xl border text-center transition-colors shadow-2xs ${
-                    activeStep === 4
-                      ? "bg-blue-700 text-white font-bold"
-                      : "bg-parchment-200 dark:bg-ink-800 text-ink-800 dark:text-ink-200"
-                  }`}
-                >
-                  4. Aluminum Leads
-                </button>
-              </div>
-            </div>
-
-            <div className="p-4 rounded-xl bg-blue-500/10 border border-blue-500/30 text-ink-950 dark:text-parchment-100 text-xs sm:text-sm font-sans space-y-1.5">
-              <span className="font-bold text-blue-900 dark:text-blue-300 block font-mono text-xs uppercase tracking-wider">
-                Noyce&apos;s &ldquo;Monolithic Idea&rdquo;:
-              </span>
-              <p className="leading-relaxed">
-                Rather than hand-soldering fragile gold fly-wires between discrete components (Jack
-                Kilby&apos;s approach), Noyce evaporated aluminum lines directly over thermally
-                grown silicon dioxide insulation, creating all transistors and wiring in a single
-                monolithic crystal.
-              </p>
-            </div>
           </div>
+          <input
+            type="range"
+            min="1"
+            max="50"
+            step="1"
+            value={clockFrequencyMhz}
+            onChange={(e) => setClockFrequencyMhz(Number(e.target.value))}
+            className="w-full accent-blue-600 dark:accent-blue-400 cursor-pointer"
+          />
+          <span className="text-[10px] text-ink-500 dark:text-ink-400 block">
+            Planar metal tracks eliminate parasitic inductance
+          </span>
+        </div>
+
+        {/* Oxide Thickness */}
+        <div className="space-y-1.5">
+          <div className="flex justify-between font-medium text-ink-900 dark:text-parchment-100">
+            <span>{"Oxide Thickness ($t_{ox}$):"}</span>
+            <span className="font-bold text-emerald-600 dark:text-emerald-400">
+              {oxideLayerThicknessNm} nm
+            </span>
+          </div>
+          <input
+            type="range"
+            min="100"
+            max="1000"
+            step="50"
+            value={oxideLayerThicknessNm}
+            onChange={(e) => setOxideLayerThicknessNm(Number(e.target.value))}
+            className="w-full accent-emerald-600 dark:accent-emerald-400 cursor-pointer"
+          />
+          <span className="text-[10px] text-ink-500 dark:text-ink-400 block">
+            Thermal oxidation passivation barrier
+          </span>
+        </div>
+
+        {/* Moore's Law Scaling */}
+        <div className="space-y-1.5">
+          <div className="flex justify-between font-medium text-ink-900 dark:text-parchment-100">
+            <span>Transistor Integration Density:</span>
+            <span className="font-bold text-purple-600 dark:text-purple-400">
+              {(1 / (oxideLayerThicknessNm / 500) ** 2).toFixed(1)}× Base
+            </span>
+          </div>
+          <div className="w-full bg-parchment-300 dark:bg-ink-800 rounded-full h-3 overflow-hidden mt-2 border border-parchment-400 dark:border-ink-700">
+            <div
+              className="bg-gradient-to-r from-blue-500 to-purple-600 h-full transition-all duration-300"
+              style={{ width: `${Math.min(100, (1 / (oxideLayerThicknessNm / 500) ** 2) * 45)}%` }}
+            />
+          </div>
+          <span className="text-[10px] text-ink-500 dark:text-ink-400 block">
+            Noyce monolithic architecture enabled modern VLSI
+          </span>
         </div>
       </div>
     </div>

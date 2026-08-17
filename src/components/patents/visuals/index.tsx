@@ -23,7 +23,10 @@ import { BardeenTransistor3D } from "./three/BardeenTransistor3D";
 import { BellTelephone3D } from "./three/BellTelephone3D";
 import { BoyleSmithCcd3D } from "./three/BoyleSmithCcd3D";
 import { EdisonBulb3D } from "./three/EdisonBulb3D";
+import { EinsteinRefrigerator3D } from "./three/EinsteinRefrigerator3D";
+import { EngelbartMouse3D } from "./three/EngelbartMouse3D";
 import { FarnsworthTV3D } from "./three/FarnsworthTV3D";
+import { FermiReactor3D } from "./three/FermiReactor3D";
 import { GoddardRocket3D } from "./three/GoddardRocket3D";
 import { GoodyearRubber3D } from "./three/GoodyearRubber3D";
 import { HoweSewingMachine3D } from "./three/HoweSewingMachine3D";
@@ -36,6 +39,7 @@ import { NoycePlanarIC3D } from "./three/NoycePlanarIC3D";
 import { SpencerMicrowave3D } from "./three/SpencerMicrowave3D";
 import { TeslaCoil3D } from "./three/TeslaCoil3D";
 import { TeslaMotor3D } from "./three/TeslaMotor3D";
+import { WozniakApple3D } from "./three/WozniakApple3D";
 import { WrightFlyer3D } from "./three/WrightFlyer3D";
 import { WrightFlyerSim } from "./WrightFlyerSim";
 
@@ -50,7 +54,7 @@ export function PatentVisualDispatcher({ patentId }: PatentVisualDispatcherProps
     <div className="space-y-4">
       {/* 3D vs 2D Toggle Switcher for All Patents */}
       <div className="flex justify-end">
-        <div className="flex items-center gap-1 bg-parchment-200 dark:bg-ink-900 p-1 rounded-xl border border-parchment-300 dark:border-ink-800 text-xs sm:text-sm font-mono shadow-sm">
+        <div className="flex items-center gap-1 bg-parchment-200 dark:bg-ink-900 p-1 rounded-xl border border-parchment-300 dark:border-ink-800 text-xs sm:text-sm font-sans shadow-sm">
           <button
             type="button"
             onClick={() => setRenderMode("3d-physics")}
@@ -92,6 +96,7 @@ export function PatentVisualDispatcher({ patentId }: PatentVisualDispatcherProps
           case "us-2981877-noyce-ic":
             return renderMode === "3d-physics" ? <NoycePlanarIC3D /> : <NoycePlanarICSim />;
           case "us-3671542-kwolek-kevlar":
+          case "us-3819786-kwolek-kevlar":
             return renderMode === "3d-physics" ? <KwolekKevlar3D /> : <KwolekKevlarSim />;
           case "us-223898-edison-lightbulb":
             return renderMode === "3d-physics" ? <EdisonBulb3D /> : <EdisonBulbSim />;
@@ -102,12 +107,16 @@ export function PatentVisualDispatcher({ patentId }: PatentVisualDispatcherProps
           case "us-4750-howe-sewing-machine":
             return renderMode === "3d-physics" ? <HoweSewingMachine3D /> : <HoweSewingMachineSim />;
           case "us-533367-tesla-coil":
+          case "us-593138-tesla-coil":
             return renderMode === "3d-physics" ? <TeslaCoil3D /> : <TeslaCoilSim />;
           case "us-1155986-goddard-rocket":
+          case "us-1102653-goddard-rocket":
             return renderMode === "3d-physics" ? <GoddardRocket3D /> : <GoddardRocketSim />;
           case "us-2569347-bardeen-transistor":
+          case "us-2524191-bardeen-transistor":
             return renderMode === "3d-physics" ? <BardeenTransistor3D /> : <BardeenTransistorSim />;
           case "us-3923554-boyle-smith-ccd":
+          case "us-3792322-boyle-smith-ccd":
             return renderMode === "3d-physics" ? <BoyleSmithCcd3D /> : <BoyleSmithCcdSim />;
           case "us-586193-marconi-radio":
             return renderMode === "3d-physics" ? <MarconiRadio3D /> : <MarconiRadioSim />;
@@ -121,6 +130,14 @@ export function PatentVisualDispatcher({ patentId }: PatentVisualDispatcherProps
             ) : (
               <LamarrFrequencyHoppingSim />
             );
+          case "us-3541541-engelbart-mouse":
+            return <EngelbartMouse3D />;
+          case "us-2708656-fermi-reactor":
+            return <FermiReactor3D />;
+          case "us-4136359-wozniak-apple":
+            return <WozniakApple3D />;
+          case "us-1781541-einstein-refrigerator":
+            return <EinsteinRefrigerator3D />;
           default:
             return <WrightFlyer3D />;
         }

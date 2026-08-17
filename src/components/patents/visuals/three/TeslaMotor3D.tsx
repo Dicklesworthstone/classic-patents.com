@@ -1,10 +1,10 @@
 "use client";
 
-import { Volume2, VolumeX, Zap } from "lucide-react";
+import { Activity, Volume2, VolumeX, Zap } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import * as THREE from "three";
 import { soundEngine } from "@/utils/soundEngine";
-import { createThreeStudioScene } from "./ThreeStudioScene";
+import { createGlowPointTexture, createThreeStudioScene } from "./ThreeStudioScene";
 
 export function TeslaMotor3D() {
   const containerRef = useRef<HTMLDivElement>(null);
@@ -15,7 +15,6 @@ export function TeslaMotor3D() {
   const [polePairs, _setPolePairs] = useState<number>(2); // 2 poles (1 pair) or 4 poles (2 pairs)
   const [appliedLoadTorqueNm, setAppliedLoadTorqueNm] = useState<number>(14.0); // 0 to 40 Nm
   const [showMagneticFlux, setShowMagneticFlux] = useState<boolean>(true);
-  const [_showRotorCurrents, _setShowRotorCurrents] = useState<boolean>(true);
   const [isPlayingAudio, setIsPlayingAudio] = useState<boolean>(false);
 
   // Electromechanical Induction Physics Calculations
@@ -48,46 +47,43 @@ export function TeslaMotor3D() {
     const container = containerRef.current;
     if (!container) return;
 
-    // Create Studio Scene with Museum Studio Lighting
+    // Create Studio Scene with High-Luminosity Studio Lighting
     const studio = createThreeStudioScene({
       container,
       cameraPos: [13, 10, 15],
       targetPos: [0, 0, 0],
-      bgBottomColor: 0x0f172a,
-      rimColor: 0xf59e0b,
-      ambientIntensity: 1.3,
     });
 
     const { scene, camera, renderer, controls } = studio;
 
-    // --- PBR MATERIALS ---
+    // --- PBR MATERIALS (Luminous & Rich Specular Highlights) ---
     const statorIronMat = new THREE.MeshStandardMaterial({
-      color: 0x334155, // Laminated silicon steel stator core
-      roughness: 0.45,
+      color: 0x475569, // Laminated silicon steel stator core
+      roughness: 0.35,
       metalness: 0.85,
     });
 
-    const copperCoilMat = new THREE.MeshStandardMaterial({
-      color: 0xd97706, // Magnet wire copper coils
-      roughness: 0.25,
-      metalness: 0.9,
+    const _copperCoilMat = new THREE.MeshStandardMaterial({
+      color: 0xe07a10, // Magnet wire copper coils
+      roughness: 0.2,
+      metalness: 0.85,
     });
 
     const copperRotorBarMat = new THREE.MeshStandardMaterial({
       color: 0xf59e0b, // Pure copper squirrel-cage conductor bars
-      roughness: 0.2,
+      roughness: 0.15,
       metalness: 0.95,
     });
 
     const rotorCoreMat = new THREE.MeshStandardMaterial({
-      color: 0x475569, // Laminated rotor cylinder
-      roughness: 0.5,
-      metalness: 0.7,
+      color: 0x64748b, // Laminated rotor cylinder
+      roughness: 0.4,
+      metalness: 0.6,
     });
 
     const shaftSteelMat = new THREE.MeshStandardMaterial({
-      color: 0xf1f5f9, // Polished steel drive shaft
-      roughness: 0.1,
+      color: 0xf8fafc, // Polished steel drive shaft
+      roughness: 0.08,
       metalness: 0.95,
     });
 
@@ -95,345 +91,374 @@ export function TeslaMotor3D() {
     const statorGroup = new THREE.Group();
     scene.add(statorGroup);
 
-    // Laminated Iron Stator Ring
-    const statorGeo = new THREE.CylinderGeometry(5.2, 5.2, 3.8, 36, 1, true);
+    // Laminated Iron Stator Ring Outer Housing
+    const statorGeo = new THREE.CylinderGeometry(5.2, 5.2, 3.8, 48, 1, true);
     const statorMesh = new THREE.Mesh(statorGeo, statorIronMat);
+    statorMesh.castShadow = true;
+    statorMesh.receiveShadow = true;
     statorGroup.add(statorMesh);
 
-    // Salient Stator Poles and Electromagnetic Coils
-    const poleCount = phaseCount === 2 ? 4 : 6;
-    const coilMeshes: THREE.Mesh[] = [];
+    // 4 Saliency Pole Projections & Phase Coils
+    const coilMeshes: { mesh: THREE.Mesh; phaseIdx: number }[] = [];
+    const numPoles = phaseCount === 2 ? 4 : 6;
 
-    for (let i = 0; i < poleCount; i++) {
-      const angle = (i * 2 * Math.PI) / poleCount;
-      const poleGroup = new THREE.Group();
-      poleGroup.rotation.y = angle;
+    for (let i = 0; i < numPoles; i++) {
+      const angle = (i * 2 * Math.PI) / numPoles;
+      const poleGeo = new THREE.BoxGeometry(1.6, 3.2, 1.4);
+      const poleMesh = new THREE.Mesh(poleGeo, statorIronMat);
+      poleMesh.position.set(Math.cos(angle) * 3.8, 0, Math.sin(angle) * 3.8);
+      poleMesh.rotation.y = -angle;
+      poleMesh.castShadow = true;
+      statorGroup.add(poleMesh);
 
-      // Iron Pole Shoe
-      const shoeMesh = new THREE.Mesh(new THREE.BoxGeometry(1.6, 3.6, 1.2), statorIronMat);
-      shoeMesh.position.set(4.1, 0, 0);
-      poleGroup.add(shoeMesh);
+      // Wound Copper Coil on Pole Shoe
+      const coilGeo = new THREE.TorusGeometry(1.0, 0.42, 16, 32);
+      const coilMesh = new THREE.Mesh(
+        coilGeo,
+        new THREE.MeshStandardMaterial({
+          color: 0xca8a04,
+          roughness: 0.25,
+          metalness: 0.8,
+        }),
+      );
+      coilMesh.position.set(Math.cos(angle) * 3.5, 0, Math.sin(angle) * 3.5);
+      coilMesh.rotation.y = -angle;
+      coilMesh.castShadow = true;
+      statorGroup.add(coilMesh);
 
-      // Copper Coil Spool around Pole
-      const coilMesh = new THREE.Mesh(new THREE.BoxGeometry(1.2, 3.2, 1.8), copperCoilMat.clone());
-      coilMesh.position.set(3.9, 0, 0);
-      poleGroup.add(coilMesh);
-      coilMeshes.push(coilMesh);
-
-      statorGroup.add(poleGroup);
+      coilMeshes.push({ mesh: coilMesh, phaseIdx: i % phaseCount });
     }
 
     // --- 3D SQUIRREL-CAGE INDUCTION ROTOR ---
     const rotorGroup = new THREE.Group();
     scene.add(rotorGroup);
 
-    // Laminated Cylindrical Rotor Core
-    const rotorCore = new THREE.Mesh(new THREE.CylinderGeometry(2.8, 2.8, 3.6, 32), rotorCoreMat);
-    rotorGroup.add(rotorCore);
+    // Laminated Silicon Rotor Core
+    const rotorGeo = new THREE.CylinderGeometry(2.3, 2.3, 3.4, 32);
+    const rotorMesh = new THREE.Mesh(rotorGeo, rotorCoreMat);
+    rotorMesh.castShadow = true;
+    rotorMesh.receiveShadow = true;
+    rotorGroup.add(rotorMesh);
 
-    // Drive Shaft
-    const driveShaft = new THREE.Mesh(new THREE.CylinderGeometry(0.5, 0.5, 9.0, 24), shaftSteelMat);
-    rotorGroup.add(driveShaft);
-
-    // Copper End-Rings (Shorting the squirrel cage)
-    const topEndRing = new THREE.Mesh(
-      new THREE.TorusGeometry(2.6, 0.22, 16, 32),
-      copperRotorBarMat,
-    );
-    topEndRing.rotation.x = Math.PI / 2;
-    topEndRing.position.y = 1.8;
-    const bottomEndRing = new THREE.Mesh(
-      new THREE.TorusGeometry(2.6, 0.22, 16, 32),
-      copperRotorBarMat,
-    );
-    bottomEndRing.rotation.x = Math.PI / 2;
-    bottomEndRing.position.y = -1.8;
-    rotorGroup.add(topEndRing);
-    rotorGroup.add(bottomEndRing);
-
-    // Longitudinal Copper Rotor Conductor Bars
-    const numRotorBars = 16;
-    for (let i = 0; i < numRotorBars; i++) {
-      const angle = (i * 2 * Math.PI) / numRotorBars;
-      const bar = new THREE.Mesh(new THREE.CylinderGeometry(0.12, 0.12, 3.6, 8), copperRotorBarMat);
-      bar.position.set(Math.cos(angle) * 2.6, 0, Math.sin(angle) * 2.6);
-      rotorGroup.add(bar);
+    // Copper Conductor Bars embedded in Rotor Slots (16 Bars)
+    const numBars = 16;
+    for (let b = 0; b < numBars; b++) {
+      const bAngle = (b * 2 * Math.PI) / numBars;
+      const barGeo = new THREE.CylinderGeometry(0.1, 0.1, 3.6, 12);
+      const barMesh = new THREE.Mesh(barGeo, copperRotorBarMat);
+      barMesh.position.set(Math.cos(bAngle) * 2.2, 0, Math.sin(bAngle) * 2.2);
+      barMesh.castShadow = true;
+      rotorGroup.add(barMesh);
     }
 
-    // --- 3D ROTATING MAGNETIC FLUX STREAMLINES ---
-    const fluxCount = 140;
+    // Heavy Copper End Rings Short-Circuiting All Bars
+    const endRingGeo = new THREE.TorusGeometry(2.2, 0.18, 16, 32);
+    const topRing = new THREE.Mesh(endRingGeo, copperRotorBarMat);
+    topRing.rotation.x = Math.PI / 2;
+    topRing.position.y = 1.72;
+    const bottomRing = topRing.clone();
+    bottomRing.position.y = -1.72;
+    rotorGroup.add(topRing);
+    rotorGroup.add(bottomRing);
+
+    // Steel Central Drive Shaft
+    const shaftGeo = new THREE.CylinderGeometry(0.4, 0.4, 7.8, 24);
+    const shaftMesh = new THREE.Mesh(shaftGeo, shaftSteelMat);
+    shaftMesh.castShadow = true;
+    rotorGroup.add(shaftMesh);
+
+    // --- GLOWING ROTATING MAGNETIC FLUX STREAMLINES ---
+    const fluxCount = 240;
     const fluxGeo = new THREE.BufferGeometry();
-    const fluxPos = new Float32Array(fluxCount * 3);
-    const fluxCol = new Float32Array(fluxCount * 3);
+    const fluxPositions = new Float32Array(fluxCount * 3);
+    const fluxColors = new Float32Array(fluxCount * 3);
+
+    const glowTex = createGlowPointTexture();
 
     for (let i = 0; i < fluxCount; i++) {
-      fluxCol[i * 3] = 0.2;
-      fluxCol[i * 3 + 1] = 0.8;
-      fluxCol[i * 3 + 2] = 1.0;
+      const idx = i * 3;
+      const r = 0.5 + Math.random() * 2.6;
+      const theta = Math.random() * Math.PI * 2;
+      const y = (Math.random() - 0.5) * 3.0;
+
+      fluxPositions[idx] = Math.cos(theta) * r;
+      fluxPositions[idx + 1] = y;
+      fluxPositions[idx + 2] = Math.sin(theta) * r;
+
+      // Electric Cyan to Bright Amber Vector Gradient
+      fluxColors[idx] = 0.1 + Math.random() * 0.3;
+      fluxColors[idx + 1] = 0.7 + Math.random() * 0.3;
+      fluxColors[idx + 2] = 1.0;
     }
-    fluxGeo.setAttribute("position", new THREE.BufferAttribute(fluxPos, 3));
-    fluxGeo.setAttribute("color", new THREE.BufferAttribute(fluxCol, 3));
+
+    fluxGeo.setAttribute("position", new THREE.BufferAttribute(fluxPositions, 3));
+    fluxGeo.setAttribute("color", new THREE.BufferAttribute(fluxColors, 3));
 
     const fluxPoints = new THREE.Points(
       fluxGeo,
       new THREE.PointsMaterial({
-        size: 0.18,
+        size: 0.45,
+        map: glowTex,
         vertexColors: true,
         transparent: true,
         opacity: 0.85,
+        blending: THREE.AdditiveBlending,
+        depthWrite: false,
       }),
     );
     scene.add(fluxPoints);
 
-    // --- ANIMATION & PHYSICS INTEGRATION LOOP ---
-    let animId: number;
+    // --- ROTATING B-FIELD VECTOR ARROW ---
+    const bFieldArrow = new THREE.ArrowHelper(
+      new THREE.Vector3(1, 0, 0),
+      new THREE.Vector3(0, 2.2, 0),
+      3.2,
+      0x38bdf8,
+      0.6,
+      0.35,
+    );
+    scene.add(bFieldArrow);
+
+    // --- RENDER LOOP & REAL-TIME PHYSICS SIMULATION ---
+    let reqId: number;
     const clock = new THREE.Clock();
+    let bFieldAngle = 0;
 
     const animate = () => {
-      animId = requestAnimationFrame(animate);
-      const time = clock.getElapsedTime();
+      reqId = requestAnimationFrame(animate);
+      const delta = clock.getDelta();
+      const elapsed = clock.getElapsedTime();
 
-      controls.update();
-
-      // Synchronous B-Field Angular Frequency: omega_s = 2pi * f / p
+      // 1. Angular Velocity of Rotating Magnetic Field: omega_sync = 2 * pi * f / p
       const omegaSync = (2 * Math.PI * acFrequencyHz) / polePairs;
-      const fluxAngle = time * omegaSync;
+      bFieldAngle += omegaSync * delta * 0.08; // Scaled for visual tracking
 
-      // Rotor Mechanical Angular Speed: omega_r = omega_s * (1 - s)
-      const omegaRotor = omegaSync * (1 - slip);
-      rotorGroup.rotation.y = time * omegaRotor;
+      // 2. Rotate B-Field Vector
+      const bDir = new THREE.Vector3(Math.cos(bFieldAngle), 0, Math.sin(bFieldAngle));
+      bFieldArrow.setDirection(bDir);
 
-      // Pulsing Stator Coils Emissive Current Glow
-      coilMeshes.forEach((mesh, idx) => {
-        const phaseOffset = (idx * 2 * Math.PI) / poleCount;
-        const currentPhase = Math.sin(time * 2 * Math.PI * acFrequencyHz - phaseOffset);
-        const intensity = Math.abs(currentPhase);
-        (mesh.material as THREE.MeshStandardMaterial).emissive.setHex(0xd97706);
-        (mesh.material as THREE.MeshStandardMaterial).emissiveIntensity = intensity * 1.5;
-      });
+      // 3. Rotor Mechanical Rotation: omega_rotor = omega_sync * (1 - slip)
+      const omegaRotor = omegaSync * (1 - slip) * 0.08;
+      rotorGroup.rotation.y += omegaRotor * delta;
 
-      // Rotating Magnetic Flux Streamlines Vector Field
-      fluxPoints.visible = showMagneticFlux;
-      if (showMagneticFlux) {
-        const positions = fluxGeo.attributes.position.array as Float32Array;
-        for (let i = 0; i < fluxCount; i++) {
-          const progress = ((i * 7 + time * 60) % 100) / 100;
-          const r = 0.8 + progress * 2.8;
-          const theta = fluxAngle + (i % 8) * (Math.PI / 4) + (progress - 0.5) * 0.5;
-          positions[i * 3] = Math.cos(theta) * r;
-          positions[i * 3 + 1] = ((i % 13) - 6) * 0.25;
-          positions[i * 3 + 2] = Math.sin(theta) * r;
-        }
-        fluxGeo.attributes.position.needsUpdate = true;
+      // 4. Modulate Stator Coil Emissive Glow by Instantaneous Sinusoidal Phase Current
+      for (const item of coilMeshes) {
+        const phaseOffset = item.phaseIdx * (phaseCount === 2 ? Math.PI / 2 : (2 * Math.PI) / 3);
+        const currentI = Math.sin(elapsed * acFrequencyHz * 0.5 + phaseOffset);
+        const mat = item.mesh.material as THREE.MeshStandardMaterial;
+        mat.emissive = new THREE.Color(0xf59e0b);
+        mat.emissiveIntensity = Math.abs(currentI) * 0.9;
       }
 
+      // 5. Rotate Flux Particles
+      const fPos = fluxPositions;
+      for (let i = 0; i < fluxCount; i++) {
+        const idx = i * 3;
+        const x = fPos[idx];
+        const z = fPos[idx + 2];
+        const r = Math.sqrt(x * x + z * z);
+        let curAngle = Math.atan2(z, x);
+        curAngle += omegaSync * delta * 0.08;
+
+        fPos[idx] = Math.cos(curAngle) * r;
+        fPos[idx + 2] = Math.sin(curAngle) * r;
+      }
+      fluxGeo.attributes.position.needsUpdate = true;
+      fluxPoints.visible = showMagneticFlux;
+      bFieldArrow.visible = showMagneticFlux;
+
+      controls.update();
       renderer.render(scene, camera);
     };
 
     animate();
 
     return () => {
-      cancelAnimationFrame(animId);
+      cancelAnimationFrame(reqId);
       studio.dispose();
     };
-  }, [acFrequencyHz, phaseCount, polePairs, slip, showMagneticFlux]);
+  }, [acFrequencyHz, phaseCount, polePairs, showMagneticFlux, slip]);
 
   return (
-    <div className="rounded-2xl border border-amber-900/20 dark:border-ink-800 bg-parchment-50 dark:bg-ink-950 p-6 sm:p-7 shadow-patent space-y-6">
-      {/* Header */}
-      <div className="flex flex-wrap items-center justify-between gap-3 border-b border-parchment-200 dark:border-ink-800 pb-4">
-        <div>
-          <div className="flex items-center gap-2.5">
-            <Zap className="w-6 h-6 text-amber-500 animate-pulse" />
-            <h3 className="font-serif text-2xl font-bold text-ink-950 dark:text-parchment-50">
-              3D Real-Time Tesla Polyphase AC Induction Motor Simulator (US 381,968)
-            </h3>
+    <div className="flex flex-col h-full bg-parchment-50/60 dark:bg-ink-950/80 rounded-2xl overflow-hidden border border-parchment-300 dark:border-ink-800 shadow-patent">
+      {/* 3D WebGL Canvas Viewport */}
+      <div className="relative flex-1 min-h-[380px] sm:min-h-[460px] w-full cursor-grab active:cursor-grabbing">
+        <div ref={containerRef} className="absolute inset-0 w-full h-full" />
+
+        {/* Live HUD Telemetry Overlay */}
+        <div className="absolute top-4 left-4 z-10 flex flex-col gap-2 pointer-events-none">
+          <div className="bg-white/90 dark:bg-ink-900/90 backdrop-blur-md px-3.5 py-2.5 rounded-xl border border-parchment-300 dark:border-ink-700 shadow-sm">
+            <div className="text-[11px] font-sans text-amber-700 dark:text-amber-400 font-bold uppercase tracking-wider flex items-center gap-1.5">
+              <Zap className="w-3.5 h-3.5 animate-pulse text-amber-500" />
+              Polyphase Induction Telemetry
+            </div>
+            <div className="grid grid-cols-2 gap-x-4 gap-y-1 mt-1 text-xs font-sans">
+              <div>
+                <span className="text-ink-600 dark:text-ink-400">Sync Speed ($n_s$):</span>{" "}
+                <span className="font-bold text-blue-600 dark:text-blue-400">
+                  {synchronousSpeedRpm} RPM
+                </span>
+              </div>
+              <div>
+                <span className="text-ink-600 dark:text-ink-400">Rotor Speed ($n_r$):</span>{" "}
+                <span className="font-bold text-emerald-600 dark:text-emerald-400">
+                  {rotorSpeedRpm} RPM
+                </span>
+              </div>
+              <div>
+                <span className="text-ink-600 dark:text-ink-400">Rotor Slip ($s$):</span>{" "}
+                <span className="font-bold text-amber-600 dark:text-amber-400">
+                  {(slip * 100).toFixed(1)}%
+                </span>
+              </div>
+              <div>
+                <span className="text-ink-600 dark:text-ink-400">Shaft Power:</span>{" "}
+                <span className="font-bold text-purple-600 dark:text-purple-400">
+                  {electricalPowerWatts} W ({(electricalPowerWatts / 745.7).toFixed(2)} HP)
+                </span>
+              </div>
+            </div>
           </div>
-          <p className="text-sm sm:text-base text-ink-700 dark:text-ink-300 mt-1">
-            Studio-illuminated Three.js electromagnetic physics simulating the{" "}
-            <strong>rotating magnetic field $\vec&#123;B&#125;_(net)$</strong> and{" "}
-            <strong>Faraday-Lenz squirrel-cage induction torque</strong>.
-          </p>
+
+          <div className="bg-white/90 dark:bg-ink-900/90 backdrop-blur-md px-3 py-1.5 rounded-lg border border-parchment-300 dark:border-ink-700 text-[11px] font-sans text-ink-700 dark:text-ink-300 flex items-center gap-2">
+            <Activity className="w-3.5 h-3.5 text-blue-500 animate-spin-slow" />
+            <span>Induced Rotor Current: {rotorInducedCurrentAmps} A RMS</span>
+          </div>
         </div>
 
-        <div className="flex items-center gap-2">
+        {/* Audio & Field Toggles */}
+        <div className="absolute top-4 right-4 z-10 flex gap-2">
+          <button
+            type="button"
+            onClick={() => setShowMagneticFlux(!showMagneticFlux)}
+            className={`px-3 py-1.5 rounded-lg text-xs font-sans font-semibold border transition-all ${
+              showMagneticFlux
+                ? "bg-amber-500 text-white border-amber-600 shadow-sm"
+                : "bg-white/80 dark:bg-ink-900/80 text-ink-700 dark:text-ink-300 border-parchment-300 dark:border-ink-700"
+            }`}
+          >
+            <Zap className="w-3.5 h-3.5 inline mr-1" />
+            B-Field Flux
+          </button>
           <button
             type="button"
             onClick={() => setIsPlayingAudio(!isPlayingAudio)}
-            className={`flex items-center gap-2 px-3.5 py-1.5 rounded-xl text-xs sm:text-sm font-mono font-bold transition-all border shadow-2xs ${
+            className={`px-3 py-1.5 rounded-lg text-xs font-sans font-semibold border transition-all ${
               isPlayingAudio
-                ? "bg-amber-600 text-white border-amber-700 shadow-sm animate-pulse"
-                : "bg-parchment-200 dark:bg-ink-800 text-ink-800 dark:text-parchment-200 border-parchment-300 dark:border-ink-700"
+                ? "bg-emerald-600 text-white border-emerald-700 shadow-sm"
+                : "bg-white/80 dark:bg-ink-900/80 text-ink-700 dark:text-ink-300 border-parchment-300 dark:border-ink-700"
             }`}
           >
             {isPlayingAudio ? (
-              <Volume2 className="w-3.5 h-3.5" />
+              <>
+                <Volume2 className="w-3.5 h-3.5 inline mr-1 animate-pulse" />
+                Audio ON
+              </>
             ) : (
-              <VolumeX className="w-3.5 h-3.5" />
+              <>
+                <VolumeX className="w-3.5 h-3.5 inline mr-1" />
+                Audio OFF
+              </>
             )}
-            <span>60Hz AC Hum: {isPlayingAudio ? "LIVE" : "MUTED"}</span>
           </button>
         </div>
       </div>
 
-      {/* 3D WebGL Canvas & HUD */}
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
-        <div className="lg:col-span-8 flex flex-col items-center justify-center rounded-2xl bg-[#0f172a] border border-parchment-300 dark:border-ink-800 relative min-h-[460px] overflow-hidden shadow-inner">
-          {/* Top HUD */}
-          <div className="absolute top-4 left-4 right-4 z-20 flex items-center justify-between pointer-events-none text-xs sm:text-sm font-mono">
-            <div className="px-3.5 py-1.5 bg-ink-900/90 border border-ink-800 text-amber-300 rounded-xl shadow-md">
-              Rotor Speed: <span className="font-bold">{rotorSpeedRpm} RPM</span> (Slip:{" "}
-              {(slip * 100).toFixed(1)}%) · Power:{" "}
-              <span className="text-emerald-300 font-bold">{electricalPowerWatts} W</span>
-            </div>
-
-            <div className="flex items-center gap-2 pointer-events-auto">
-              <button
-                type="button"
-                onClick={() => setShowMagneticFlux(!showMagneticFlux)}
-                className={`px-3 py-1 rounded-lg border text-xs font-mono transition-colors ${
-                  showMagneticFlux
-                    ? "bg-blue-600 text-white border-blue-500"
-                    : "bg-ink-900 text-ink-400 border-ink-800"
-                }`}
-              >
-                B-Field: {showMagneticFlux ? "ON" : "OFF"}
-              </button>
-            </div>
+      {/* Parameter Sliders Panel */}
+      <div className="p-4 sm:p-5 bg-parchment-100/80 dark:bg-ink-900/90 border-t border-parchment-300 dark:border-ink-800 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 text-xs font-sans">
+        {/* AC Frequency */}
+        <div className="space-y-1.5">
+          <div className="flex justify-between font-medium text-ink-900 dark:text-parchment-100">
+            <span>AC Frequency ($f$):</span>
+            <span className="font-bold text-amber-700 dark:text-amber-400">{acFrequencyHz} Hz</span>
           </div>
+          <input
+            type="range"
+            min="10"
+            max="120"
+            step="5"
+            value={acFrequencyHz}
+            onChange={(e) => setAcFrequencyHz(Number(e.target.value))}
+            className="w-full accent-amber-600 dark:accent-amber-400 cursor-pointer"
+          />
+          <span className="text-[10px] text-ink-500 dark:text-ink-400 block">
+            Sets rotating stator flux velocity $\omega_s = 2\pi f / P$
+          </span>
+        </div>
 
-          {/* 3D Canvas */}
-          <div ref={containerRef} className="w-full h-[460px] cursor-grab active:cursor-grabbing" />
-
-          {/* Bottom Telemetry */}
-          <div className="w-full grid grid-cols-4 gap-3 text-center text-sm font-mono p-4 bg-ink-950/95 border-t border-ink-800 text-ink-300 z-10">
-            <div>
-              <span className="text-ink-400 block text-xs font-semibold uppercase tracking-wider">
-                SYNC SPEED (n_s)
-              </span>
-              <span className="text-emerald-400 font-bold text-sm sm:text-base">
-                {synchronousSpeedRpm} RPM
-              </span>
-            </div>
-            <div>
-              <span className="text-ink-400 block text-xs font-semibold uppercase tracking-wider">
-                ROTOR CURRENT
-              </span>
-              <span className="text-amber-400 font-bold text-sm sm:text-base">
-                {rotorInducedCurrentAmps} Amps
-              </span>
-            </div>
-            <div>
-              <span className="text-ink-400 block text-xs font-semibold uppercase tracking-wider">
-                LOAD TORQUE
-              </span>
-              <span className="text-blue-400 font-bold text-sm sm:text-base">
-                {appliedLoadTorqueNm.toFixed(1)} N·m
-              </span>
-            </div>
-            <div>
-              <span className="text-ink-400 block text-xs font-semibold uppercase tracking-wider">
-                3D INTERACTION
-              </span>
-              <span className="text-purple-400 font-semibold text-xs sm:text-sm">
-                Drag Orbit / Zoom
-              </span>
-            </div>
+        {/* Phase System */}
+        <div className="space-y-1.5">
+          <div className="flex justify-between font-medium text-ink-900 dark:text-parchment-100">
+            <span>Phase Configuration:</span>
+            <span className="font-bold text-blue-600 dark:text-blue-400">
+              {phaseCount === 2 ? "2-Phase (90° Quadrature)" : "3-Phase (120° Balanced)"}
+            </span>
+          </div>
+          <div className="grid grid-cols-2 gap-2 pt-1">
+            <button
+              type="button"
+              onClick={() => setPhaseCount(2)}
+              className={`py-1.5 px-2 rounded-lg text-xs font-semibold border ${
+                phaseCount === 2
+                  ? "bg-blue-600 text-white border-blue-700 shadow-sm"
+                  : "bg-white/80 dark:bg-ink-800 text-ink-700 dark:text-ink-300 border-parchment-300 dark:border-ink-700"
+              }`}
+            >
+              2-Phase (Tesla 1888)
+            </button>
+            <button
+              type="button"
+              onClick={() => setPhaseCount(3)}
+              className={`py-1.5 px-2 rounded-lg text-xs font-semibold border ${
+                phaseCount === 3
+                  ? "bg-blue-600 text-white border-blue-700 shadow-sm"
+                  : "bg-white/80 dark:bg-ink-800 text-ink-700 dark:text-ink-300 border-parchment-300 dark:border-ink-700"
+              }`}
+            >
+              3-Phase Modern
+            </button>
           </div>
         </div>
 
-        {/* Controls Sidebar */}
-        <div className="lg:col-span-4 space-y-4">
-          <div className="rounded-2xl border border-parchment-300 dark:border-ink-800 bg-parchment-100/80 dark:bg-ink-900/70 p-6 space-y-5 shadow-sm">
-            <span className="font-serif font-bold text-base sm:text-lg text-ink-950 dark:text-parchment-50 block">
-              AC Polyphase Motor Controls
+        {/* Mechanical Load Torque */}
+        <div className="space-y-1.5">
+          <div className="flex justify-between font-medium text-ink-900 dark:text-parchment-100">
+            <span>Shaft Load Torque:</span>
+            <span className="font-bold text-emerald-600 dark:text-emerald-400">
+              {appliedLoadTorqueNm.toFixed(1)} N·m
             </span>
-
-            {/* AC Frequency Slider */}
-            <div className="space-y-1.5">
-              <div className="flex justify-between text-xs sm:text-sm font-mono">
-                <span className="font-semibold text-ink-800 dark:text-parchment-200">
-                  {"Line Frequency ($f_{ac}$)"}
-                </span>
-                <span className="text-amber-600 dark:text-amber-400 font-bold">
-                  {acFrequencyHz} Hz
-                </span>
-              </div>
-              <input
-                type="range"
-                min="10"
-                max="120"
-                step="5"
-                value={acFrequencyHz}
-                onChange={(e) => setAcFrequencyHz(Number(e.target.value))}
-                className="w-full accent-amber-600 cursor-pointer h-2 bg-parchment-300 dark:bg-ink-700 rounded-lg"
-              />
-            </div>
-
-            {/* Load Torque Slider */}
-            <div className="space-y-1.5">
-              <div className="flex justify-between text-xs sm:text-sm font-mono">
-                <span className="font-semibold text-ink-800 dark:text-parchment-200">
-                  {"Mechanical Shaft Load ($\\tau_{load}$)"}
-                </span>
-                <span className="text-blue-600 dark:text-blue-400 font-bold">
-                  {appliedLoadTorqueNm.toFixed(1)} N·m
-                </span>
-              </div>
-              <input
-                type="range"
-                min="0"
-                max="38"
-                step="1"
-                value={appliedLoadTorqueNm}
-                onChange={(e) => setAppliedLoadTorqueNm(Number(e.target.value))}
-                className="w-full accent-blue-600 cursor-pointer h-2 bg-parchment-300 dark:bg-ink-700 rounded-lg"
-              />
-            </div>
-
-            {/* Polyphase Mode Switcher */}
-            <div className="space-y-1.5">
-              <span className="text-xs sm:text-sm font-mono block text-ink-800 dark:text-ink-200 font-semibold mb-1">
-                AC Phase Configuration
-              </span>
-              <div className="grid grid-cols-2 gap-2 text-xs sm:text-sm font-mono">
-                <button
-                  type="button"
-                  onClick={() => setPhaseCount(2)}
-                  className={`p-2.5 rounded-xl border text-center transition-colors shadow-2xs ${
-                    phaseCount === 2
-                      ? "bg-amber-700 text-white font-bold"
-                      : "bg-parchment-200 dark:bg-ink-800 text-ink-800 dark:text-ink-200"
-                  }`}
-                >
-                  2-Phase Quadrature (90°)
-                </button>
-                <button
-                  type="button"
-                  onClick={() => setPhaseCount(3)}
-                  className={`p-2.5 rounded-xl border text-center transition-colors shadow-2xs ${
-                    phaseCount === 3
-                      ? "bg-amber-700 text-white font-bold"
-                      : "bg-parchment-200 dark:bg-ink-800 text-ink-800 dark:text-ink-200"
-                  }`}
-                >
-                  3-Phase Polyphase (120°)
-                </button>
-              </div>
-            </div>
-
-            <div className="p-4 rounded-xl bg-amber-500/10 border border-amber-500/30 text-ink-950 dark:text-parchment-100 text-xs sm:text-sm font-sans space-y-1.5">
-              <span className="font-bold text-amber-900 dark:text-amber-300 block font-mono text-xs uppercase tracking-wider">
-                Tesla&apos;s Induction Principle:
-              </span>
-              <p className="leading-relaxed">
-                By passing alternating currents with different phases through independent stator
-                coils, Tesla created a smoothly rotating magnetic field vector of constant magnitude
-                ($\vec&#123;B&#125;_(net)$). This drags the closed rotor without any commutators,
-                sparks, or brushes.
-              </p>
-            </div>
           </div>
+          <input
+            type="range"
+            min="0"
+            max="38"
+            step="1"
+            value={appliedLoadTorqueNm}
+            onChange={(e) => setAppliedLoadTorqueNm(Number(e.target.value))}
+            className="w-full accent-emerald-600 dark:accent-emerald-400 cursor-pointer"
+          />
+          <span className="text-[10px] text-ink-500 dark:text-ink-400 block">
+            Higher load increases slip $s$ to induce torque
+          </span>
+        </div>
+
+        {/* Rotor Induction Efficiency */}
+        <div className="space-y-1.5">
+          <div className="flex justify-between font-medium text-ink-900 dark:text-parchment-100">
+            <span>Electromechanical Efficiency:</span>
+            <span className="font-bold text-purple-600 dark:text-purple-400">
+              {((1 - slip) * 94).toFixed(1)}%
+            </span>
+          </div>
+          <div className="w-full bg-parchment-300 dark:bg-ink-800 rounded-full h-3 overflow-hidden mt-2 border border-parchment-400 dark:border-ink-700">
+            <div
+              className="bg-gradient-to-r from-emerald-500 to-amber-500 h-full transition-all duration-300"
+              style={{ width: `${Math.max(5, (1 - slip) * 94)}%` }}
+            />
+          </div>
+          <span className="text-[10px] text-ink-500 dark:text-ink-400 block">
+            {"$\\eta \\approx (1-s)\\cdot\\eta_{mag}$ (Zero brush friction loss)"}
+          </span>
         </div>
       </div>
     </div>

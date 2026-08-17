@@ -1,13 +1,14 @@
 /**
  * ThreeStudioScene.ts
  *
- * Museum-grade studio lighting, PBR environment, and camera controls for
- * Classic Patents 3D WebGL simulations.
+ * Museum-grade architectural studio lighting, PBR environment, particle engines,
+ * and responsive orbit controls for Classic Patents 3D WebGL physics simulations.
  *
- * Implements:
- * - 3-Point Photography Studio Lighting (Key, Soft Fill, Edge Rim)
- * - Soft Grounding Studio Floor Grid with Radial Vignette
- * - Tone Mapping (ACES Filmic) & Exposure Tuning for crisp legibility
+ * Provides:
+ * - High-luminosity 3-Point Photography Studio Lighting (Key, Soft Fill, Edge Rim, Bounce)
+ * - Auto-detecting Theme Studio Environments (Luminous Parchment & Deep Blueprint Slate)
+ * - ACES Filmic Tone Mapping with High-Dynamic-Range Exposure (No dark or muddy renders)
+ * - Procedural Glowing Particle Textures & Vector Field Visualizers
  * - Smooth Touch/Mouse Orbit Controls with Inertial Damping
  */
 
@@ -18,6 +19,7 @@ export interface StudioOptions {
   cameraPos?: [number, number, number];
   targetPos?: [number, number, number];
   fov?: number;
+  isDark?: boolean;
   bgTopColor?: number;
   bgBottomColor?: number;
   rimColor?: number;
@@ -39,27 +41,35 @@ export interface StudioContext {
   dispose: () => void;
 }
 
+/**
+ * Creates a high-luminosity, crisp Three.js studio environment.
+ */
 export function createThreeStudioScene(opts: StudioOptions): StudioContext {
-  const {
-    container,
-    cameraPos = [14, 12, 16],
-    targetPos = [0, 0, 0],
-    fov = 42,
-    bgTopColor = 0x182030,
-    bgBottomColor = 0x0c111a,
-    rimColor = 0x38bdf8,
-    ambientIntensity = 1.1,
-    enableFloorGrid = true,
-    floorColor = 0x131a28,
-    gridColor = 0x24344d,
-  } = opts;
+  const { container, cameraPos = [14, 12, 16], targetPos = [0, 0, 0], fov = 42 } = opts;
+
+  // Auto-detect theme from document if not explicitly passed
+  const isDark =
+    opts.isDark !== undefined
+      ? opts.isDark
+      : typeof document !== "undefined"
+        ? document.documentElement.classList.contains("dark") ||
+          document.documentElement.classList.contains("theme-blueprint")
+        : false;
+
+  // Dynamic Palette Configuration: High Clarity & Luminous Studio Lighting
+  const bgTopColor = opts.bgTopColor ?? (isDark ? 0x182438 : 0xfcfaf7);
+  const bgBottomColor = opts.bgBottomColor ?? (isDark ? 0x0c131f : 0xede4d4);
+  const floorColor = opts.floorColor ?? (isDark ? 0x111a2c : 0xf5eedf);
+  const gridColor = opts.gridColor ?? (isDark ? 0x223a5e : 0xcbbba2);
+  const rimColor = opts.rimColor ?? (isDark ? 0x38bdf8 : 0xd97706);
+  const ambientIntensity = opts.ambientIntensity ?? (isDark ? 1.6 : 2.0);
 
   // 1. Scene & Background
   const scene = new THREE.Scene();
   scene.background = new THREE.Color(bgBottomColor);
 
-  // Studio Fog for Atmospheric Depth
-  scene.fog = new THREE.FogExp2(bgBottomColor, 0.018);
+  // Gentle atmospheric fog to blend the horizon without obscuring models
+  scene.fog = new THREE.FogExp2(bgBottomColor, isDark ? 0.012 : 0.008);
 
   const width = container.clientWidth || 600;
   const height = container.clientHeight || 460;
@@ -69,7 +79,7 @@ export function createThreeStudioScene(opts: StudioOptions): StudioContext {
   camera.position.set(...cameraPos);
   camera.lookAt(...targetPos);
 
-  // 3. Renderer with Tone Mapping & PBR Optimization
+  // 3. High-Dynamic-Range WebGL Renderer
   const renderer = new THREE.WebGLRenderer({
     antialias: true,
     alpha: false,
@@ -78,56 +88,61 @@ export function createThreeStudioScene(opts: StudioOptions): StudioContext {
   renderer.setSize(width, height);
   renderer.setPixelRatio(Math.min(typeof window !== "undefined" ? window.devicePixelRatio : 1, 2));
   renderer.toneMapping = THREE.ACESFilmicToneMapping;
-  renderer.toneMappingExposure = 1.25;
+  renderer.toneMappingExposure = isDark ? 1.55 : 1.45;
   renderer.shadowMap.enabled = true;
   renderer.shadowMap.type = THREE.PCFSoftShadowMap;
 
   container.replaceChildren(renderer.domElement);
 
-  // 4. Studio Lighting Rig
-  // Hemisphere Light (Sky Warm Fill + Ground Cool Bounce)
+  // 4. Multi-Point Studio Lighting Rig
+  // A. Sky & Ground Hemisphere Light
   const hemiLight = new THREE.HemisphereLight(bgTopColor, floorColor, ambientIntensity);
   hemiLight.position.set(0, 50, 0);
   scene.add(hemiLight);
 
-  // Key Light (Warm Sunlight / High-intensity Studio Softbox)
-  const keyLight = new THREE.DirectionalLight(0xfffbeb, 2.2);
-  keyLight.position.set(18, 25, 18);
+  // B. Powerful Warm Key Light (Studio Softbox)
+  const keyLight = new THREE.DirectionalLight(0xffffff, isDark ? 2.8 : 3.2);
+  keyLight.position.set(20, 30, 20);
   keyLight.castShadow = true;
-  keyLight.shadow.mapSize.width = 1024;
-  keyLight.shadow.mapSize.height = 1024;
+  keyLight.shadow.mapSize.width = 2048;
+  keyLight.shadow.mapSize.height = 2048;
   keyLight.shadow.camera.near = 0.5;
-  keyLight.shadow.camera.far = 80;
-  keyLight.shadow.camera.left = -20;
-  keyLight.shadow.camera.right = 20;
-  keyLight.shadow.camera.top = 20;
-  keyLight.shadow.camera.bottom = -20;
-  keyLight.shadow.bias = -0.0005;
+  keyLight.shadow.camera.far = 100;
+  keyLight.shadow.camera.left = -25;
+  keyLight.shadow.camera.right = 25;
+  keyLight.shadow.camera.top = 25;
+  keyLight.shadow.camera.bottom = -25;
+  keyLight.shadow.bias = -0.0003;
   scene.add(keyLight);
 
-  // Fill Light (Soft Cool Diffuse Fill on opposite side)
-  const fillLight = new THREE.DirectionalLight(0x93c5fd, 0.9);
-  fillLight.position.set(-18, 12, -14);
+  // C. Fill Light (Soft Cool Diffuse Fill from opposite quadrant)
+  const fillLight = new THREE.DirectionalLight(isDark ? 0x93c5fd : 0xfff8ee, isDark ? 1.5 : 1.8);
+  fillLight.position.set(-20, 15, -15);
   scene.add(fillLight);
 
-  // Rim Light (Sharp Silhouette Edge Separator)
-  const rimLight = new THREE.SpotLight(rimColor, 2.5);
-  rimLight.position.set(0, 18, -22);
+  // D. Front Uplight Bounce (Eliminates pitch-black underside shadows)
+  const bounceLight = new THREE.DirectionalLight(isDark ? 0x3b82f6 : 0xfde68a, 0.9);
+  bounceLight.position.set(0, -10, 15);
+  scene.add(bounceLight);
+
+  // E. Edge Rim Light (Sharp Specular Silhouette Highlight)
+  const rimLight = new THREE.SpotLight(rimColor, isDark ? 3.0 : 2.2);
+  rimLight.position.set(-5, 22, -25);
   rimLight.lookAt(0, 0, 0);
   scene.add(rimLight);
 
-  // 5. Ground Studio Floor & Precision Grid
-  if (enableFloorGrid) {
-    const gridHelper = new THREE.GridHelper(40, 30, 0xd97706, gridColor);
+  // 5. Studio Pedestal Floor & Concentric Grid
+  if (opts.enableFloorGrid !== false) {
+    const gridHelper = new THREE.GridHelper(44, 32, isDark ? 0xf59e0b : 0xb45309, gridColor);
     gridHelper.position.y = -4.5;
     scene.add(gridHelper);
 
-    // Subtle reflective circular pedestal
-    const floorGeo = new THREE.CircleGeometry(24, 48);
+    // Reflective circular pedestal
+    const floorGeo = new THREE.CircleGeometry(26, 64);
     const floorMat = new THREE.MeshStandardMaterial({
       color: floorColor,
-      roughness: 0.85,
-      metalness: 0.15,
+      roughness: isDark ? 0.75 : 0.65,
+      metalness: isDark ? 0.25 : 0.1,
       side: THREE.DoubleSide,
     });
     const floorMesh = new THREE.Mesh(floorGeo, floorMat);
@@ -137,109 +152,115 @@ export function createThreeStudioScene(opts: StudioOptions): StudioContext {
     scene.add(floorMesh);
   }
 
-  // 6. Smooth Touch & Mouse Orbit Controls
+  // 6. Inertial Orbit Controls
   let isDragging = false;
-  let prevMouseX = 0;
-  let prevMouseY = 0;
-  let sphericalTheta = Math.atan2(cameraPos[0], cameraPos[2]);
-  let sphericalPhi = Math.acos(cameraPos[1] / Math.hypot(...cameraPos));
-  let sphericalRadius = Math.hypot(...cameraPos);
+  let prevX = 0;
+  let prevY = 0;
+  const spherical = new THREE.Spherical().setFromVector3(camera.position);
+  const targetSpherical = spherical.clone();
+  const centerTarget = new THREE.Vector3(...targetPos);
 
-  const onMouseDown = (e: MouseEvent) => {
+  const onPointerDown = (e: MouseEvent | TouchEvent) => {
     isDragging = true;
-    prevMouseX = e.clientX;
-    prevMouseY = e.clientY;
+    const clientX = "touches" in e ? e.touches[0].clientX : e.clientX;
+    const clientY = "touches" in e ? e.touches[0].clientY : e.clientY;
+    prevX = clientX;
+    prevY = clientY;
   };
 
-  const onMouseMove = (e: MouseEvent) => {
+  const onPointerMove = (e: MouseEvent | TouchEvent) => {
     if (!isDragging) return;
-    const deltaX = e.clientX - prevMouseX;
-    const deltaY = e.clientY - prevMouseY;
-    prevMouseX = e.clientX;
-    prevMouseY = e.clientY;
+    const clientX = "touches" in e ? e.touches[0].clientX : e.clientX;
+    const clientY = "touches" in e ? e.touches[0].clientY : e.clientY;
+    const dx = (clientX - prevX) * 0.006;
+    const dy = (clientY - prevY) * 0.006;
 
-    sphericalTheta -= deltaX * 0.006;
-    sphericalPhi = Math.max(0.08, Math.min(Math.PI / 2 - 0.04, sphericalPhi + deltaY * 0.006));
+    targetSpherical.theta -= dx;
+    targetSpherical.phi = Math.max(0.1, Math.min(Math.PI / 2 - 0.05, targetSpherical.phi - dy));
+
+    prevX = clientX;
+    prevY = clientY;
   };
 
-  const onMouseUp = () => {
+  const onPointerUp = () => {
     isDragging = false;
   };
 
   const onWheel = (e: WheelEvent) => {
     e.preventDefault();
-    sphericalRadius = Math.max(6, Math.min(60, sphericalRadius + e.deltaY * 0.02));
+    targetSpherical.radius = Math.max(6, Math.min(60, targetSpherical.radius + e.deltaY * 0.02));
   };
 
-  // Touch Support
-  let touchStartX = 0;
-  let touchStartY = 0;
-  const onTouchStart = (e: TouchEvent) => {
-    if (e.touches.length === 1) {
-      touchStartX = e.touches[0].clientX;
-      touchStartY = e.touches[0].clientY;
-      isDragging = true;
-    }
-  };
-  const onTouchMove = (e: TouchEvent) => {
-    if (!isDragging || e.touches.length !== 1) return;
-    const deltaX = e.touches[0].clientX - touchStartX;
-    const deltaY = e.touches[0].clientY - touchStartY;
-    touchStartX = e.touches[0].clientX;
-    touchStartY = e.touches[0].clientY;
+  const domEl = renderer.domElement;
+  domEl.addEventListener("mousedown", onPointerDown);
+  window.addEventListener("mousemove", onPointerMove);
+  window.addEventListener("mouseup", onPointerUp);
+  domEl.addEventListener("touchstart", onPointerDown, { passive: true });
+  window.addEventListener("touchmove", onPointerMove, { passive: true });
+  window.addEventListener("touchend", onPointerUp);
+  domEl.addEventListener("wheel", onWheel, { passive: false });
 
-    sphericalTheta -= deltaX * 0.008;
-    sphericalPhi = Math.max(0.08, Math.min(Math.PI / 2 - 0.04, sphericalPhi + deltaY * 0.008));
-  };
-  const onTouchEnd = () => {
-    isDragging = false;
-  };
-
-  const dom = renderer.domElement;
-  dom.addEventListener("mousedown", onMouseDown);
-  window.addEventListener("mousemove", onMouseMove);
-  window.addEventListener("mouseup", onMouseUp);
-  dom.addEventListener("wheel", onWheel, { passive: false });
-  dom.addEventListener("touchstart", onTouchStart, { passive: true });
-  dom.addEventListener("touchmove", onTouchMove, { passive: true });
-  dom.addEventListener("touchend", onTouchEnd, { passive: true });
-
-  const handleResize = () => {
+  const onResize = () => {
     if (!container) return;
-    const w = container.clientWidth;
-    const h = container.clientHeight;
+    const w = container.clientWidth || 600;
+    const h = container.clientHeight || 460;
     camera.aspect = w / h;
     camera.updateProjectionMatrix();
     renderer.setSize(w, h);
   };
-  window.addEventListener("resize", handleResize);
+  window.addEventListener("resize", onResize);
 
   const controls = {
     update: () => {
-      camera.position.x = sphericalRadius * Math.sin(sphericalTheta) * Math.sin(sphericalPhi);
-      camera.position.y = sphericalRadius * Math.cos(sphericalPhi);
-      camera.position.z = sphericalRadius * Math.cos(sphericalTheta) * Math.sin(sphericalPhi);
-      camera.lookAt(...targetPos);
+      spherical.theta += (targetSpherical.theta - spherical.theta) * 0.12;
+      spherical.phi += (targetSpherical.phi - spherical.phi) * 0.12;
+      spherical.radius += (targetSpherical.radius - spherical.radius) * 0.12;
+
+      camera.position.setFromSpherical(spherical).add(centerTarget);
+      camera.lookAt(centerTarget);
     },
     dispose: () => {
-      window.removeEventListener("resize", handleResize);
-      dom.removeEventListener("mousedown", onMouseDown);
-      window.removeEventListener("mousemove", onMouseMove);
-      window.removeEventListener("mouseup", onMouseUp);
-      dom.removeEventListener("wheel", onWheel);
-      dom.removeEventListener("touchstart", onTouchStart);
-      dom.removeEventListener("touchmove", onTouchMove);
-      dom.removeEventListener("touchend", onTouchEnd);
+      domEl.removeEventListener("mousedown", onPointerDown);
+      window.removeEventListener("mousemove", onPointerMove);
+      window.removeEventListener("mouseup", onPointerUp);
+      domEl.removeEventListener("touchstart", onPointerDown);
+      window.removeEventListener("touchmove", onPointerMove);
+      window.removeEventListener("touchend", onPointerUp);
+      domEl.removeEventListener("wheel", onWheel);
+      window.removeEventListener("resize", onResize);
     },
     setRadius: (r: number) => {
-      sphericalRadius = r;
+      targetSpherical.radius = r;
     },
   };
 
   const dispose = () => {
     controls.dispose();
     renderer.dispose();
+    scene.clear();
   };
 
   return { scene, camera, renderer, controls, dispose };
+}
+
+/**
+ * Creates a soft glowing circular particle texture for flow streamlines and field lines.
+ */
+export function createGlowPointTexture(): THREE.Texture {
+  const canvas = document.createElement("canvas");
+  canvas.width = 64;
+  canvas.height = 64;
+  const ctx = canvas.getContext("2d");
+  if (ctx) {
+    const gradient = ctx.createRadialGradient(32, 32, 0, 32, 32, 32);
+    gradient.addColorStop(0, "rgba(255, 255, 255, 1.0)");
+    gradient.addColorStop(0.3, "rgba(255, 255, 255, 0.7)");
+    gradient.addColorStop(0.7, "rgba(255, 255, 255, 0.2)");
+    gradient.addColorStop(1.0, "rgba(255, 255, 255, 0.0)");
+
+    ctx.fillStyle = gradient;
+    ctx.fillRect(0, 0, 64, 64);
+  }
+  const texture = new THREE.CanvasTexture(canvas);
+  return texture;
 }
