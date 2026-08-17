@@ -12,6 +12,29 @@ import { PATENT_PHYSICS_REGISTRY, type PhysicsMetric } from "./telemetryData";
 type Listener = (params: Record<string, number>) => void;
 const listenersMap = new Map<string, Set<Listener>>();
 const stateMap = new Map<string, Record<string, number>>();
+const tickMap = new Map<string, number>();
+const changeMap = new Map<string, ParamChange | null>();
+
+export interface ParamChange {
+  id: string;
+  from: number;
+  to: number;
+  ratePerSec: number;
+  atMs: number;
+}
+
+export function getPhysicsTick(patentId: string): number {
+  return tickMap.get(patentId) ?? 0;
+}
+
+export function getLastParamChange(patentId: string): ParamChange | null {
+  return changeMap.get(patentId) ?? null;
+}
+
+function bumpTick(patentId: string, change: ParamChange | null) {
+  tickMap.set(patentId, (tickMap.get(patentId) ?? 0) + 1);
+  changeMap.set(patentId, change);
+}
 
 export function getPatentPhysicsParams(patentId: string): Record<string, number> {
   if (stateMap.has(patentId)) {
@@ -29,6 +52,20 @@ export function getPatentPhysicsParams(patentId: string): Record<string, number>
 
 export function setPatentPhysicsParam(patentId: string, paramId: string, value: number) {
   const current = getPatentPhysicsParams(patentId);
+  const from = current[paramId] ?? value;
+  const now =
+    typeof performance !== "undefined" && typeof performance.now === "function"
+      ? performance.now()
+      : Date.now();
+  const prev = changeMap.get(patentId);
+  const dtSec = prev ? Math.max(0.016, (now - prev.atMs) / 1000) : 0.05;
+  bumpTick(patentId, {
+    id: paramId,
+    from,
+    to: value,
+    ratePerSec: (value - from) / dtSec,
+    atMs: now,
+  });
   const updated = { ...current, [paramId]: value };
   stateMap.set(patentId, updated);
   const listeners = listenersMap.get(patentId);
@@ -47,6 +84,7 @@ export function resetPatentPhysicsParams(patentId: string) {
     initial[c.id] = c.defaultValue;
   }
   stateMap.set(patentId, initial);
+  bumpTick(patentId, null);
   const listeners = listenersMap.get(patentId);
   if (listeners) {
     for (const listener of listeners) {
@@ -59,10 +97,16 @@ export function usePatentPhysics(patentId: string) {
   const [params, setParams] = useState<Record<string, number>>(() =>
     getPatentPhysicsParams(patentId),
   );
+  const [tick, setTick] = useState(() => getPhysicsTick(patentId));
+  const [lastChange, setLastChange] = useState<ParamChange | null>(() =>
+    getLastParamChange(patentId),
+  );
   const meta = PATENT_PHYSICS_REGISTRY[patentId];
 
   useEffect(() => {
     setParams(getPatentPhysicsParams(patentId));
+    setTick(getPhysicsTick(patentId));
+    setLastChange(getLastParamChange(patentId));
     let set = listenersMap.get(patentId);
     if (!set) {
       set = new Set();
@@ -70,6 +114,8 @@ export function usePatentPhysics(patentId: string) {
     }
     const listener: Listener = (newParams) => {
       setParams(newParams);
+      setTick(getPhysicsTick(patentId));
+      setLastChange(getLastParamChange(patentId));
     };
     set.add(listener);
     return () => {
@@ -97,6 +143,8 @@ export function usePatentPhysics(patentId: string) {
     meta,
     params,
     metrics,
+    tick,
+    lastChange,
     updateParam,
     setParam: updateParam,
     resetParams,

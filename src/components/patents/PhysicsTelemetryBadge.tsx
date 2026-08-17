@@ -1,8 +1,11 @@
 "use client";
 
 import { Activity, Cpu, Gauge, Info, RotateCcw, Zap } from "lucide-react";
-import { useCallback, useState } from "react";
+import { useCallback, useMemo, useState } from "react";
+import { EnergyFlowStrip } from "@/components/patents/EnergyFlowStrip";
 import { LatexRenderer } from "@/components/ui/LatexRenderer";
+import { energyChannelsFor } from "@/physics/energyChannels";
+import { qtyDimension } from "@/physics/qty";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { soundEngine } from "@/utils/soundEngine";
 
@@ -15,7 +18,13 @@ export function PhysicsTelemetryBadge({
   patentId,
   defaultExpanded = false,
 }: PhysicsTelemetryBadgeProps) {
-  const { meta: data, metrics: liveMetrics, resetParams } = usePatentPhysics(patentId);
+  const {
+    meta: data,
+    metrics: liveMetrics,
+    params,
+    lastChange,
+    resetParams,
+  } = usePatentPhysics(patentId);
   const [showTheory, setShowTheory] = useState(defaultExpanded);
 
   const handleReset = useCallback(() => {
@@ -25,9 +34,10 @@ export function PhysicsTelemetryBadge({
     }
   }, [resetParams]);
 
-  if (!data) return null;
-
+  const energy = useMemo(() => energyChannelsFor(patentId, params), [patentId, params]);
   const liveEnvelope = liveMetrics.map((m) => `${m.label} ${m.value} ${m.unit}`).join("; ");
+
+  if (!data) return null;
 
   return (
     <div className="rounded-2xl border border-parchment-300 dark:border-ink-800 bg-parchment-50/90 dark:bg-ink-950/90 p-4 sm:p-5 text-xs font-sans text-ink-800 dark:text-parchment-200 shadow-sm space-y-4">
@@ -122,6 +132,7 @@ export function PhysicsTelemetryBadge({
                 </span>
                 <span className="font-mono text-[10px] text-ink-500 dark:text-ink-400 font-medium">
                   {metric.unit}
+                  <span className="ml-1 opacity-70">[{qtyDimension(metric.unit)}]</span>
                 </span>
               </div>
 
@@ -138,6 +149,15 @@ export function PhysicsTelemetryBadge({
           );
         })}
       </div>
+
+      {lastChange && (
+        <div className="font-mono text-[10px] text-ink-600 dark:text-ink-400">
+          d({lastChange.id})/dt = {lastChange.ratePerSec >= 0 ? "+" : ""}
+          {lastChange.ratePerSec.toFixed(2)} /s
+        </div>
+      )}
+
+      {energy.length > 0 && <EnergyFlowStrip title={data.domain} channels={energy} />}
 
       {/* Expanded Governing Equations & Deep Pedagogical Theory */}
       {showTheory && (

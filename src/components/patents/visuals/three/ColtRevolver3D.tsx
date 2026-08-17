@@ -7,6 +7,7 @@ import {
   EyeOff,
   Flame,
   Layers,
+  RotateCcw,
   Target,
   Volume2,
   VolumeX,
@@ -69,15 +70,13 @@ const SCENARIOS: ScenarioPreset[] = [
 
 export function ColtRevolver3D() {
   const containerRef = useRef<HTMLDivElement>(null);
-  const { params, updateParam } = usePatentPhysics("us-138-colt-revolver");
+  const { params, updateParam, resetParams } = usePatentPhysics("us-138-colt-revolver");
 
-  // Mechanical State
+  // Reactive Physics & Mechanical State
+  const chamberPressureMpa = params.chamberPressure ?? 85;
+  const cockingAngleDeg = params.cockingAngle ?? 45; // 0 (down) to 45 (full cock)
+  const powderGrains = Math.round((chamberPressureMpa - 40) / 1.5);
   const [showUiOverlay, setShowUiOverlay] = useState<boolean>(true);
-  const [chamberPressureMpa, setChamberPressureMpa] = useState<number>(
-    params.chamberPressure ?? 85,
-  );
-  const [powderGrains, setPowderGrains] = useState<number>(28);
-  const [cockingAngleDeg, setCockingAngleDeg] = useState<number>(45); // 0 (down) to 45 (full cock)
   const [currentChamberIndex, setCurrentChamberIndex] = useState<number>(1);
   const [isFiring, setIsFiring] = useState<boolean>(false);
   const [showLockworkCutaway, setShowLockworkCutaway] = useState<boolean>(false);
@@ -117,30 +116,29 @@ export function ColtRevolver3D() {
 
     switch (preset) {
       case "iso":
-        camera.position.set(8.5, 4.5, 9.5);
-        controls.target.set(0, 0, 0);
+        camera.position.set(3.5, 2.8, 10.5);
+        controls.target.set(1.5, 0.4, 0);
         break;
       case "cylinder":
-        camera.position.set(-0.6, 2.2, 4.8);
-        controls.target.set(-0.8, 0.4, 0);
+        camera.position.set(0.2, 1.8, 4.2);
+        controls.target.set(0.0, 0.4, 0);
         break;
       case "lockwork":
-        camera.position.set(-2.8, 1.2, 3.8);
-        controls.target.set(-2.2, 0.2, 0);
+        camera.position.set(-2.2, 0.8, 3.6);
+        controls.target.set(-1.8, 0.0, 0);
         break;
       case "sightline":
-        camera.position.set(-6.2, 1.6, 0);
-        controls.target.set(3.5, 0.8, 0);
+        camera.position.set(-5.5, 1.35, 0);
+        controls.target.set(5.5, 1.15, 0);
         break;
       case "top":
-        camera.position.set(0, 11, 0.05);
-        controls.target.set(0, 0, 0);
+        camera.position.set(1.5, 9.5, 0.05);
+        controls.target.set(1.5, 0.4, 0);
         break;
     }
   };
 
   const handleCockHammer = () => {
-    setCockingAngleDeg(45);
     updateParam("cockingAngle", 45);
     soundEngine.playMicroswitchClick();
   };
@@ -148,7 +146,6 @@ export function ColtRevolver3D() {
   const handlePullTrigger = () => {
     if (!isFullCock || isFiring) return;
     setIsFiring(true);
-    setCockingAngleDeg(0);
     updateParam("cockingAngle", 0);
 
     // Gunshot percussion blast & lockwork clack
@@ -164,9 +161,6 @@ export function ColtRevolver3D() {
   };
 
   const applyScenario = (sc: ScenarioPreset) => {
-    setPowderGrains(sc.powderGrain);
-    setChamberPressureMpa(sc.chamberPressureMpa);
-    setCockingAngleDeg(sc.cockingAngleDeg);
     updateParam("chamberPressure", sc.chamberPressureMpa);
     updateParam("cockingAngle", sc.cockingAngleDeg);
   };
@@ -186,9 +180,9 @@ export function ColtRevolver3D() {
 
     const studio = createThreeStudioScene({
       container,
-      cameraPos: [8.5, 4.5, 9.5],
-      targetPos: [0, 0, 0],
-      fov: 36,
+      cameraPos: [3.5, 2.8, 10.5],
+      targetPos: [1.5, 0.4, 0],
+      fov: 38,
       isDark: true,
       environmentStyle: "sky",
       enableFloorGrid: true,
@@ -212,12 +206,12 @@ export function ColtRevolver3D() {
     pinGroup.visible = showCalloutPins;
 
     const callouts = [
-      { pos: [2.6, 1.2, 0], text: "1. Octagonal Rifled Barrel (.36 Caliber)" },
-      { pos: [-0.95, 1.9, 0], text: "2. 5-Chamber Roll-Engraved Cylinder" },
-      { pos: [-3.1, 2.4, 0], text: "3. Single-Action Spur Hammer" },
-      { pos: [-2.0, -1.2, 0], text: "4. Paterson Folding Trigger" },
-      { pos: [-3.7, -2.4, 0], text: "5. Black Walnut Plowhandle Grip" },
-      { pos: [2.4, -0.6, 0], text: "6. Creeping Loading Lever & Rammer" },
+      { pos: [4.8, 0.82, 0], text: "1. Octagonal Rifled Barrel (.36 Caliber)" },
+      { pos: [0.0, 0.82, 0], text: "2. 5-Chamber Roll-Engraved Cylinder" },
+      { pos: [-2.8, 1.6, 0], text: "3. Single-Action Spur Hammer" },
+      { pos: [-2.1, -1.8, 0], text: "4. Paterson Folding Trigger" },
+      { pos: [-3.4, -1.8, 0], text: "5. Black Walnut Plowhandle Grip" },
+      { pos: [3.8, -0.4, 0], text: "6. Creeping Loading Lever & Rammer" },
     ];
 
     for (const c of callouts) {
@@ -243,20 +237,20 @@ export function ColtRevolver3D() {
       // 1. Animate Hammer Cocking Rotation
       // 0 deg = hammer resting against percussion nipple; 45 deg = full cock
       const hammerTargetAngle = (p.cockingAngleDeg / 45) * 0.72;
-      model.hammerGroup.rotation.z += (hammerTargetAngle - model.hammerGroup.rotation.z) * 0.16;
+      model.hammerGroup.rotation.z += (hammerTargetAngle - model.hammerGroup.rotation.z) * 0.18;
 
       // 2. Animate Paterson Folding Trigger
-      // Trigger drops out of the frame only when cocked!
+      // Trigger drops out of the frame mortise automatically as the hammer is cocked!
       const triggerDeployFraction = Math.min(1.0, p.cockingAngleDeg / 40);
       model.triggerGroup.rotation.z = -triggerDeployFraction * 0.45;
-      model.triggerGroup.position.y = -0.4 - triggerDeployFraction * 0.28;
+      model.triggerGroup.position.y = -1.42 - triggerDeployFraction * 0.32;
 
       // 3. Animate 5-Chamber Cylinder Indexing
-      // Each shot steps 360 / 5 = 72 degrees (2 * PI / 5)
+      // Each shot steps 360° / 5 = 72° (2 * PI / 5)
       const chamberStepRad = (2 * Math.PI) / 5;
       targetCylinderAngle =
         (p.currentChamberIndex - 1) * chamberStepRad + (p.cockingAngleDeg / 45) * chamberStepRad;
-      currentCylinderAngle += (targetCylinderAngle - currentCylinderAngle) * 0.14;
+      currentCylinderAngle += (targetCylinderAngle - currentCylinderAngle) * 0.16;
       model.cylinderGroup.rotation.x = currentCylinderAngle;
 
       // 4. Lockwork Cutaway Visibility
@@ -268,13 +262,13 @@ export function ColtRevolver3D() {
       const sparkMat = model.sparkPoints.material as THREE.PointsMaterial;
 
       if (p.isFiring) {
-        // Flash flash
-        blastMat.opacity = Math.max(0, blastMat.opacity + (0.95 - blastMat.opacity) * 0.45);
-        smokeMat.opacity = Math.min(0.75, smokeMat.opacity + 0.2);
-        sparkMat.opacity = 0.9;
+        // Flash flare
+        blastMat.opacity = Math.max(0, blastMat.opacity + (0.95 - blastMat.opacity) * 0.5);
+        smokeMat.opacity = Math.min(0.8, smokeMat.opacity + 0.25);
+        sparkMat.opacity = 0.95;
 
         // Expanding smoke puff
-        smokePuffScale += 0.08;
+        smokePuffScale += 0.09;
         model.smokeMesh.scale.set(smokePuffScale, smokePuffScale, smokePuffScale);
 
         // Recoil muzzle rise & backwards frame push
@@ -416,6 +410,14 @@ export function ColtRevolver3D() {
           </button>
           <button
             type="button"
+            onClick={resetParams}
+            className="p-2 rounded-xl bg-white/80 dark:bg-ink-900/80 backdrop-blur-md text-ink-700 dark:text-parchment-200 border border-parchment-300 dark:border-ink-700 hover:bg-parchment-100 dark:hover:bg-ink-800 transition-colors shadow-sm"
+            title="Reset Simulation"
+          >
+            <RotateCcw className="w-4 h-4" />
+          </button>
+          <button
+            type="button"
             onClick={toggleEngine}
             className="p-2 rounded-xl bg-white/80 dark:bg-ink-900/80 backdrop-blur-md text-ink-700 dark:text-parchment-200 border border-parchment-300 dark:border-ink-700 hover:bg-parchment-100 dark:hover:bg-ink-800 transition-colors shadow-sm"
             title={isAudioMuted ? "Enable Audio" : "Mute Audio"}
@@ -438,7 +440,7 @@ export function ColtRevolver3D() {
                 key={sc.id}
                 type="button"
                 onClick={() => applyScenario(sc)}
-                className="p-2 text-left rounded-lg bg-white/80 dark:bg-ink-950/60 border border-parchment-300/80 dark:border-ink-800 hover:border-amber-500 dark:hover:border-amber-500 transition-all text-xs group"
+                className="p-2 text-left rounded-lg bg-white/80 dark:bg-ink-950/60 border border-parchment-300/80 dark:border-ink-800 hover:border-amber-500 dark:hover:border-amber-500 transition-all text-xs group cursor-pointer"
               >
                 <div className="font-semibold text-ink-900 dark:text-parchment-100 group-hover:text-amber-700 dark:group-hover:text-amber-400">
                   {sc.name}
@@ -459,7 +461,7 @@ export function ColtRevolver3D() {
             className="flex items-center gap-2 px-4 py-2 bg-amber-600 hover:bg-amber-700 active:scale-95 text-white font-mono text-xs font-bold rounded-xl shadow transition-all cursor-pointer"
           >
             <Activity className="w-4 h-4" />
-            Cock Hammer (72° Index)
+            1. Cock Hammer (72° Index)
           </button>
           <button
             type="button"
@@ -472,7 +474,7 @@ export function ColtRevolver3D() {
             }`}
           >
             <Flame className="w-4 h-4" />
-            {isFiring ? "Discharging..." : "Pull Trigger (Fire)"}
+            {isFiring ? "Discharging..." : "2. Pull Trigger (Fire)"}
           </button>
           <button
             type="button"
@@ -492,23 +494,20 @@ export function ColtRevolver3D() {
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-1 text-xs">
           <div className="space-y-1.5">
             <div className="flex justify-between font-sans font-semibold text-ink-800 dark:text-parchment-200">
-              <span>Black Powder Charge:</span>
+              <span>Black Powder Combustion Pressure:</span>
               <span className="font-mono text-amber-700 dark:text-amber-400 font-bold">
-                {powderGrains} Grains ({(powderGrains * 0.0648).toFixed(2)} g)
+                {chamberPressureMpa} MPa ({powderGrains} Grains)
               </span>
             </div>
             <input
               type="range"
               aria-label="Black Powder Charge"
-              min="15"
-              max="50"
-              step="1"
-              value={powderGrains}
+              min="50"
+              max="120"
+              step="5"
+              value={chamberPressureMpa}
               onChange={(e) => {
-                const gr = Number(e.target.value);
-                setPowderGrains(gr);
-                const pMpa = Math.round(40 + gr * 1.5);
-                setChamberPressureMpa(pMpa);
+                const pMpa = Number(e.target.value);
                 updateParam("chamberPressure", pMpa);
               }}
               className="w-full accent-amber-600 cursor-pointer"
@@ -531,7 +530,6 @@ export function ColtRevolver3D() {
               value={cockingAngleDeg}
               onChange={(e) => {
                 const angle = Number(e.target.value);
-                setCockingAngleDeg(angle);
                 updateParam("cockingAngle", angle);
               }}
               className="w-full accent-blue-600 cursor-pointer"

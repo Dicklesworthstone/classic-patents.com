@@ -2,6 +2,7 @@
 
 import { Mic, Volume2, VolumeX, Waves } from "lucide-react";
 import { useEffect, useState } from "react";
+import { formatSones, sonesFromDbSpl } from "@/physics/psycho";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { soundEngine } from "@/utils/soundEngine";
 
@@ -9,6 +10,7 @@ export function BellTelephoneSim() {
   const { params, updateParam } = usePatentPhysics("us-174465-bell-telephone");
   const [acousticFrequency, setAcousticFrequency] = useState<number>(440); // Hz
   const voiceAmplitude = params.voiceAmplitude ?? 75;
+  const loudnessSones = sonesFromDbSpl(voiceAmplitude);
   const [signalType, setSignalType] = useState<"continuous-undulating" | "intermittent-make-break">(
     "continuous-undulating",
   );
@@ -196,7 +198,7 @@ export function BellTelephoneSim() {
                   Voice Sound Pressure
                 </span>
                 <span className="text-amber-600 dark:text-amber-400 font-bold">
-                  {voiceAmplitude} dB
+                  {voiceAmplitude} dB · {formatSones(loudnessSones)} sone
                 </span>
               </div>
               <input

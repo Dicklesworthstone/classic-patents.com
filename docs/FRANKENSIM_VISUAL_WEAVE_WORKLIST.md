@@ -45,29 +45,29 @@ the visitor can see or hear the kernel change the instrument.
 - [x] P4.2 Shared bus for Tesla / Howe / CCD / Engelbart 3D (2D already on the bus)
 - [x] P4.2b Remaining original-catalog 3D sliders write the same registry keys as 2D / badge
 - [ ] P4.3 Replace hello_spin with aero kernel (`fs-mbd` + warp/rudder)
-- [ ] P4.4 Live USPTO raster warp
+- [x] P4.4 Live USPTO raster warp (Wright Fig. 4 ghost sheet skews with wingWarp)
 - [ ] P4.5 Callout = material probe
-- [ ] P4.6 `fs-regime` invalid region on the figure
+- [x] P4.6 `fs-regime` invalid region on the figure (uncoupled high warp)
 - [ ] P4.7 `fs-ivl` interval ghosts
 - [ ] P4.8 Fidelity discrepancy field on the part
-- [ ] P4.9 `fs-qty` typed HUD
+- [x] P4.9 `fs-qty` typed HUD (SI dimension tags on telemetry units)
 - [x] P4.10 `fs-truss` guy-wire force color (left/right bay paint from lift + warp)
 - [ ] P4.11 `fs-lbm` / refuse cosmetic smoke
 - [ ] P4.12 `fs-feec` Whitney overlay
 - [ ] P4.13 `fs-spectral` mode scrubber
-- [ ] P4.14 `fs-psycho` Bell sones
-- [ ] P4.15 `fs-matdb` material cards
+- [x] P4.14 `fs-psycho` Bell sones (Stevens 2^((phon-40)/10) on voice slider)
+- [x] P4.15 `fs-matdb` material cards (Edison carbon vs platinum)
 - [ ] P4.16 Prior-art failure toggle (beyond Wright coupling — already P0.9)
 - [x] P4.17 Two clocks (Fermi prompt vs delayed; Tesla field vs shaft; Spencer RF vs thermal)
 - [ ] P4.18 Pointer as source term
 - [ ] P4.19 Dated `fs-scenario` cards
 - [x] P4.20 Claim-satisfaction pills on ClaimsDecoder (Wright Claim 1 ↔ coupled)
 - [x] P4.21 Spec-clause highlight from kernel predicates (Wright / Tesla / Fermi / Marconi)
-- [ ] P4.22 Diptych split-view same tick
-- [ ] P4.23 `fs-phs` energy strip
+- [x] P4.22 Diptych split-view same tick (plain + spec chips share tick N)
+- [x] P4.23 `fs-phs` energy strip (Wright / Edison / Goddard / Einstein / Tesla)
 - [ ] P4.24 `fs-couple` after kernels are honest
-- [ ] P4.25 `fs-ad` slider derivatives
-- [ ] P4.26 `fs-thermochem` Goddard / Einstein / Goodyear
+- [x] P4.25 `fs-ad` slider derivatives (d(param)/dt on badge + tick chips)
+- [x] P4.26 `fs-thermochem` Goddard / Einstein / Goodyear (T_c/T_e, COP strip, Arrhenius cure)
 - [ ] P4.27 Visitor as transducer (mic / device roll / typed Morse / Lamarr grid)
 - [x] P4.28 Wozniak φ2 theft
 - [x] P4.29 Edison filament color from blackbody T

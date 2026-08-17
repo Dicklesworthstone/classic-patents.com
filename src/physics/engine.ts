@@ -473,12 +473,12 @@ export const FrankenSimEngine = {
   stepColtRevolver(params: { chamberPressureMpa?: number; cockingAngleDeg?: number }) {
     const pMpa = params.chamberPressureMpa ?? 85;
     const cockDeg = params.cockingAngleDeg ?? 45;
-    const rInnerMm = 5.5; // .36 caliber chamber radius
+    const rInnerMm = 4.5; // .36 caliber chamber radius
     const tWallMm = 3.8;
     const hoopStressMpa = Number(((pMpa * rInnerMm) / tWallMm).toFixed(1));
-    const indexAngleDeg = Number(((cockDeg / 45) * 60).toFixed(1));
+    const indexAngleDeg = Number(((cockDeg / 45) * 72).toFixed(1));
     const isLocked = cockDeg >= 44;
-    const muzzleVelocityMps = Math.round(180 + Math.sqrt(pMpa) * 12.5);
+    const muzzleVelocityMps = Math.round(180 + Math.sqrt(pMpa) * 13.5);
 
     return {
       chamberPressureMpa: pMpa,

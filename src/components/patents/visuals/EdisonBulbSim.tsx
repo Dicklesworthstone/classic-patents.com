@@ -2,6 +2,7 @@
 
 import { AlertCircle, Lightbulb } from "lucide-react";
 import { useState } from "react";
+import { MaterialCard } from "@/components/patents/MaterialCard";
 import { blackbodyRgb } from "@/physics/blackbody";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { soundEngine } from "@/utils/soundEngine";
@@ -204,6 +205,22 @@ export function EdisonBulbSim() {
                 </button>
               </div>
             </div>
+
+            <MaterialCard
+              name={resistanceMode === "high-resistance" ? "Carbonized bamboo" : "Platinum wire"}
+              formula={resistanceMode === "high-resistance" ? "C (bamboo)" : "Pt"}
+              role={
+                resistanceMode === "high-resistance"
+                  ? "High-resistance carbon thread: enough ohms that a 110 V feeder can light many lamps in parallel."
+                  : "Low-resistance metal: needs huge current. Feeder I²R eats the station."
+              }
+              numbers={[
+                { label: "Hot T", value: `${tempKelvin} K` },
+                { label: "R", value: `${resistanceOhms.toFixed(1)} Ω` },
+                { label: "P_rad", value: `${powerWatts.toFixed(1)} W` },
+                { label: "Color", value: getFilamentColor() },
+              ]}
+            />
 
             {/* Voltage Slider */}
             <div className="space-y-1">

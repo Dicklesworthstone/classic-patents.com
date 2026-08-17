@@ -14,7 +14,7 @@ export const coltRevolverPatent: Patent = {
   category: "consumer",
   categoryLabel: "Mechanical Indexing & Ballistics",
   summary:
-    "The 1836 firearm breakthrough that created the repeating handgun: Samuel Colt's single-action revolver integrating a mechanical link between the cocking hammer and cylinder pawl, automatically rotating the six-chambered cylinder by exactly 60 degrees while lifting a spring bolt into a locking recess to align each chamber bore with the barrel in a single fluid motion.",
+    "The 1836 firearm breakthrough that created the repeating handgun: Samuel Colt's single-action revolver integrating a mechanical link between the cocking hammer and cylinder pawl, automatically rotating the 5-chambered cylinder by exactly 72 degrees while lifting a spring bolt into a locking recess to align each chamber bore with the stationary rifled barrel in a single fluid motion.",
   heroQuote:
     "By drawing back the hammer to cock the lock, the cylinder is revolved through the space of one chamber and held immovably in line with the barrel by the locking bolt during discharge...",
   originalPdfUrl: "/patents/pdfs/us-138-colt-revolver.pdf",
@@ -39,7 +39,7 @@ The principle of my invention consists in combining a revolving cylinder contain
 
 The construction of the apparatus comprises:
 1. A revolving cylinder mounted upon a central arbor or pin, having five or six chambers drilled longitudinally through it. At the rear face of the cylinder is formed a ratchet having a number of teeth corresponding to the number of chambers.
-2. A hand or pawl pivoted to the breast of the hammer, which, as the hammer is drawn back by the thumb, rises and engages the ratchet teeth, rotating the cylinder through sixty degrees.
+2. A hand or pawl pivoted to the breast of the hammer, which, as the hammer is drawn back by the thumb, rises and engages the ratchet teeth, rotating the cylinder through sixty to seventy-two degrees.
 3. A spring bolt or locking lever engaging notches in the periphery of the cylinder. As the hammer begins its cocking movement, a cam on the hammer withdraws the locking bolt from the notch; as full cock is reached, the bolt snaps back into the next notch, locking the cylinder rigidly in line with the barrel.
 4. Partitions or recoil shields separating each percussion nipple from its neighbors, preventing the flash of one cap from communicating laterally to adjacent charges.
 
@@ -53,13 +53,13 @@ I claim as my invention:
     overview:
       "Before Samuel Colt, repeating firearms were dangerous, bulky 'pepperbox' guns that rotated multiple heavy barrels by hand or were prone to catastrophic 'chain-fires' (where one shot ignited all neighboring chambers simultaneously). Colt invented a compact mechanism that linked the single thumb cocking of the hammer to a pawl and ratchet, automatically indexing a lightweight multi-chambered cylinder into precision alignment with a single rifled barrel while locking it rigidly against firing recoil.",
     coreMechanism:
-      "Drawing the hammer back with the thumb performs three synchronized mechanical operations simultaneously: (1) A cam on the lower hammer body pushes the cylinder locking bolt downward out of its cylinder notch; (2) A pivoted vertical hand (pawl) on the hammer face pushes upward against a ratchet tooth on the cylinder arbor, rotating the cylinder exactly $60^\\circ$; (3) At full cock, the sear drops into the hammer notch, and the spring bolt snaps upward into the next cylinder perimeter recess, locking the chamber in alignment ($<0.05\\text{ mm}$ concentricity) with the barrel bore. Deep steel partitions between the percussion caps physically shield adjacent nipples from spark flashback.",
+      "Drawing the hammer back with the thumb performs three synchronized mechanical operations simultaneously: (1) A cam on the lower hammer body pushes the cylinder locking bolt downward out of its perimeter notch; (2) A pivoted vertical hand (pawl) on the hammer face pushes upward against a ratchet tooth on the cylinder arbor, rotating the cylinder exactly $72^\\circ$; (3) At full cock, the sear drops into the hammer notch, and the spring bolt snaps upward into the next cylinder perimeter recess, locking the chamber in alignment ($<0.05\\text{ mm}$ concentricity) with the barrel bore. Deep steel partitions between the percussion caps physically shield adjacent nipples from spark flashback.",
     mechanicalBreakdown: [
       {
         title: "Pawl & Ratchet Cylinder Indexer",
-        summary: "Pivoted vertical hand on hammer rotating cylinder by exactly 60 degrees.",
+        summary: "Pivoted vertical hand on hammer rotating cylinder by exactly 72 degrees.",
         technicalDetails:
-          "The hand is pinned to the hammer below the main pivot axis. During the $45^\\circ$ hammer cocking arc, the hand travels upward along an involute curve, imparting angular momentum to the ratchet ($\\Delta \\theta = \\frac{2\\pi}{N_{\\text{chambers}}} = 60^\\circ$).",
+          "The hand is pinned to the hammer below the main pivot axis. During the $45^\\circ$ hammer cocking arc, the hand travels upward along an involute curve, imparting angular momentum to the ratchet ($\\Delta \\theta = \\frac{2\\pi}{N_{\\text{chambers}}} = 72^\\circ$).",
         archaicTerm: "Hand or pawl engaging the ratchet on the arbor",
         modernEquivalent: "Cylinder hand / Indexing pawl",
       },
@@ -107,11 +107,11 @@ I claim as my invention:
           "Peak black powder combustion pressures ($70\\text{ to }120\\text{ MPa}$) generate extreme tensile hoop stresses in the cylinder walls, requiring forged carbon steel with thickness $t \\ge 3.5\\text{ mm}$ to prevent chamber rupture.",
       },
       {
-        principle: "Kinematic Angular Discretization (Index Geneva Analogy)",
+        principle: "Kinematic Angular Discretization (5-Step Ratchet Geneva)",
         formula:
-          "\\theta_{\\text{step}} = \\frac{360^\\circ}{N} = 60^\\circ, \\quad \\omega(t) = \\dot{\\theta}_{\\text{hammer}}(t) \\cdot \\frac{r_{\\text{pawl}}}{r_{\\text{ratchet}}}",
+          "\\theta_{\\text{step}} = \\frac{360^\\circ}{N} = 72^\\circ, \\quad \\omega(t) = \\dot{\\theta}_{\\text{hammer}}(t) \\cdot \\frac{r_{\\text{pawl}}}{r_{\\text{ratchet}}}",
         explanation:
-          "The continuous angular rotation of the thumb hammer is converted into a discrete $60^\\circ$ stepwise rotation of the cylinder via pawl-ratchet geometry.",
+          "The continuous angular rotation of the thumb hammer is converted into a discrete $72^\\circ$ stepwise rotation of the 5-chamber cylinder via pawl-ratchet geometry.",
       },
       {
         principle: "Gas Expansion Pressure & Barrel Sealing",
@@ -183,7 +183,7 @@ I claim as my invention:
       figureNumber: "Fig. 1",
       title: "Longitudinal Section of Colt Paterson Revolver Lockwork",
       caption:
-        "Cutaway view showing hammer, mainspring, pawl (hand), cylinder ratchet, locking bolt, and multi-chambered cylinder.",
+        "Cutaway view showing hammer, mainspring, pawl (hand), cylinder ratchet, locking bolt, and 5-chambered cylinder.",
       svgType: "colt-revolver",
       callouts: [
         {
@@ -200,7 +200,7 @@ I claim as my invention:
           figureRef: "Fig. 1",
           label: "B",
           element: "Cylinder Hand / Pawl",
-          description: "Vertical lever rotating ratchet teeth on cylinder arbor by 60 degrees.",
+          description: "Vertical lever rotating ratchet teeth on cylinder arbor by 72 degrees.",
           x: 35,
           y: 50,
         },
@@ -208,7 +208,7 @@ I claim as my invention:
           id: "cr-3",
           figureRef: "Fig. 1",
           label: "C",
-          element: "Revolving 6-Chamber Cylinder",
+          element: "Revolving 5-Chamber Cylinder",
           description: "Forged steel cylinder with bored chambers and locking notches.",
           x: 55,
           y: 45,

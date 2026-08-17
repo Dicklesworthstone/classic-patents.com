@@ -3,6 +3,7 @@
 import { Rocket } from "lucide-react";
 import { useState } from "react";
 import { TextWithLatex } from "@/components/ui/LatexRenderer";
+import { goddardThermo } from "@/physics/thermochem";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 
 export function GoddardRocketSim() {
@@ -25,6 +26,7 @@ export function GoddardRocketSim() {
   const thrustPounds = Math.round(
     ((combustionPressurePsi * 2.8 * nozzleExpansionRatio) / activeStage) * expansionEfficiency,
   );
+  const thermo = goddardThermo(combustionPressurePsi, nozzleExpansionRatio);
 
   return (
     <div className="rounded-2xl border border-amber-900/20 dark:border-ink-800 bg-parchment-50 dark:bg-ink-950 p-6 sm:p-7 shadow-patent space-y-6">
@@ -266,6 +268,28 @@ export function GoddardRocketSim() {
                     Stage {stage}
                   </button>
                 ))}
+              </div>
+            </div>
+
+            <div className="rounded-xl border border-parchment-200 dark:border-ink-800 bg-parchment-50/80 dark:bg-ink-950/60 p-3 text-[11px] font-mono space-y-1">
+              <div className="uppercase tracking-wider text-ink-500">
+                Isentropic thermochemistry
+              </div>
+              <div className="flex justify-between">
+                <span>T_c</span>
+                <span className="font-bold">{thermo.chamberTempK} K</span>
+              </div>
+              <div className="flex justify-between">
+                <span>T_e</span>
+                <span className="font-bold">{thermo.exhaustTempK} K</span>
+              </div>
+              <div className="flex justify-between">
+                <span>γ</span>
+                <span className="font-bold">{thermo.gamma.toFixed(2)}</span>
+              </div>
+              <div className="flex justify-between">
+                <span>I_sp</span>
+                <span className="font-bold">{thermo.ispSec} s</span>
               </div>
             </div>
 

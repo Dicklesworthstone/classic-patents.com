@@ -14,10 +14,12 @@ import {
 } from "lucide-react";
 import { useEffect, useState } from "react";
 import { LatexRenderer, TextWithLatex } from "@/components/ui/LatexRenderer";
+import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import type { Patent } from "@/types/patent";
 import { ClaimsDecoder } from "./ClaimsDecoder";
 import { HistoricalContextPanel } from "./HistoricalContextPanel";
 import { InteractiveDiagramViewer } from "./InteractiveDiagramViewer";
+import { KernelTickChip } from "./KernelTickChip";
 import { MuseumBroadsidePlaque } from "./MuseumBroadsidePlaque";
 import { PhysicsTelemetryBadge } from "./PhysicsTelemetryBadge";
 import { SpecClauseText } from "./SpecClauseText";
@@ -92,6 +94,7 @@ export type PatentViewMode =
   | "split-view";
 
 export function DualProjectionViewer({ patent, initialView }: DualProjectionViewerProps) {
+  const { tick, lastChange } = usePatentPhysics(patent.id);
   const [viewMode, setViewModeState] = useState<PatentViewMode>(
     isPatentViewMode(initialView) ? initialView : "plain-english",
   );
@@ -340,11 +343,14 @@ export function DualProjectionViewer({ patent, initialView }: DualProjectionView
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
           {/* Left Column: Plain English */}
           <div className="space-y-6">
-            <div className="flex items-center gap-2.5 pb-3 border-b border-parchment-300 dark:border-ink-800">
-              <Sparkles className="w-5 h-5 text-emerald-600" />
-              <h3 className="font-serif text-xl font-bold text-ink-950 dark:text-parchment-100">
-                Face 1: Plain English Breakdown
-              </h3>
+            <div className="flex flex-wrap items-center justify-between gap-2 pb-3 border-b border-parchment-300 dark:border-ink-800">
+              <div className="flex items-center gap-2.5">
+                <Sparkles className="w-5 h-5 text-emerald-600" />
+                <h3 className="font-serif text-xl font-bold text-ink-950 dark:text-parchment-100">
+                  Face 1: Plain English Breakdown
+                </h3>
+              </div>
+              <KernelTickChip tick={tick} lastChange={lastChange} face="plain" />
             </div>
             <div className="rounded-2xl border border-parchment-300 dark:border-ink-800 bg-parchment-50 dark:bg-ink-950 p-6 sm:p-7 shadow-patent space-y-4">
               <div className="text-base font-sans leading-relaxed text-ink-900 dark:text-parchment-100">
@@ -360,11 +366,14 @@ export function DualProjectionViewer({ patent, initialView }: DualProjectionView
 
           {/* Right Column: Original Specification */}
           <div className="space-y-6">
-            <div className="flex items-center gap-2.5 pb-3 border-b border-parchment-300 dark:border-ink-800">
-              <Scroll className="w-5 h-5 text-amber-700 dark:text-amber-500" />
-              <h3 className="font-serif text-xl font-bold text-ink-950 dark:text-parchment-100">
-                Face 2: Complete Archival Source Text
-              </h3>
+            <div className="flex flex-wrap items-center justify-between gap-2 pb-3 border-b border-parchment-300 dark:border-ink-800">
+              <div className="flex items-center gap-2.5">
+                <Scroll className="w-5 h-5 text-amber-700 dark:text-amber-500" />
+                <h3 className="font-serif text-xl font-bold text-ink-950 dark:text-parchment-100">
+                  Face 2: Complete Archival Source Text
+                </h3>
+              </div>
+              <KernelTickChip tick={tick} lastChange={lastChange} face="spec" />
             </div>
             <div className="rounded-2xl border border-parchment-300 dark:border-ink-800 bg-parchment-50 dark:bg-ink-950 p-6 sm:p-7 shadow-patent space-y-4 max-h-[700px] overflow-y-auto overscroll-contain">
               <p className="text-[11px] font-mono uppercase tracking-wider text-amber-800 dark:text-amber-400">

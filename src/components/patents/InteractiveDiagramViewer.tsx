@@ -110,8 +110,39 @@ function renderHistoricalSchematic(
     case "wright-flyer": {
       const warp = ((params?.wingWarp ?? 8) / 15) * 12;
       const rudderAngle = (params?.rudder ?? params?.rudderAngle ?? 4) * 0.7;
+      const coupled = (params?.coupled ?? 1) >= 0.5;
+      const adverse = !coupled && Math.abs(params?.wingWarp ?? 8) > 6;
+      const rasterSkew = ((params?.wingWarp ?? 8) / 15) * 8;
       return (
         <g stroke="#38bdf8" strokeWidth="1.5" fill="none">
+          <g
+            opacity="0.28"
+            transform={`skewX(${rasterSkew})`}
+            stroke="#94a3b8"
+            strokeDasharray="1 2"
+          >
+            <rect x="24" y="28" width="352" height="250" fill="none" strokeWidth="1" />
+            <text x="32" y="42" fill="#94a3b8" fontSize="8" fontFamily="monospace">
+              USPTO Fig. 4 raster · live warp
+            </text>
+          </g>
+          {adverse && (
+            <g>
+              <rect
+                x="250"
+                y="70"
+                width="120"
+                height="140"
+                fill="#f43f5e"
+                fillOpacity="0.12"
+                stroke="#f43f5e"
+                strokeDasharray="4 3"
+              />
+              <text x="258" y="88" fill="#fb7185" fontSize="8" fontFamily="monospace">
+                invalid: uncoupled yaw
+              </text>
+            </g>
+          )}
           {/* Upper & Lower Biplane Wings with Dynamic Warping Differential */}
           <path
             d={`M 40 ${100 - warp} Q 200 80 360 ${100 + warp} Q 200 90 40 ${100 - warp} Z`}
@@ -1012,76 +1043,130 @@ function renderHistoricalSchematic(
       );
     case "colt-revolver": {
       const cockDeg = params?.cockingAngle ?? 45;
-      const rotDeg = (cockDeg / 45) * 60;
+      const rotDeg = (cockDeg / 45) * 72;
+      const isFullCock = cockDeg >= 44;
+      const boltRetractY = cockDeg > 2 && cockDeg < 44 ? 8 : 0;
       return (
         <g stroke="#38bdf8" strokeWidth="1.5" fill="none">
-          {/* Revolver Frame & Barrel */}
+          {/* Central Arbor Pin Axis */}
+          <line x1="80" y1="110" x2="340" y2="110" stroke="#475569" strokeWidth="3" />
+          <line
+            x1="80"
+            y1="110"
+            x2="340"
+            y2="110"
+            stroke="#94a3b8"
+            strokeWidth="1"
+            strokeDasharray="4,3"
+          />
+
+          {/* Octagonal Rifled Barrel (Top Chamber alignment Y = 82) */}
           <rect
-            x="220"
-            y="90"
-            width="140"
-            height="30"
+            x="210"
+            y="68"
+            width="150"
+            height="28"
             stroke="#60a5fa"
             strokeWidth="2"
             fill="#1e3a8a"
-            fillOpacity="0.2"
+            fillOpacity="0.25"
             rx="2"
           />
+          <line x1="210" y1="82" x2="360" y2="82" stroke="#93c5fd" strokeWidth="6" />
+          <line x1="210" y1="82" x2="360" y2="82" stroke="#0369a1" strokeWidth="3" />
+
+          {/* Barrel Under-Lug Anchoring */}
           <path
-            d="M 60 70 L 220 70 L 220 160 L 100 160 L 80 200 L 50 180 Z"
+            d="M 210 96 L 250 96 L 250 128 L 210 128 Z"
+            stroke="#60a5fa"
+            strokeWidth="1.5"
+            fill="#1e3a8a"
+            fillOpacity="0.3"
+          />
+          <rect x="224" y="104" width="12" height="16" fill="#94a3b8" stroke="#cbd5e1" />
+
+          {/* Receiver Frame & Recoil Shield */}
+          <path
+            d="M 50 50 L 125 50 L 125 155 L 85 155 L 60 190 L 30 170 L 45 110 Z"
             stroke="#38bdf8"
             strokeWidth="2"
             fill="#0369a1"
             fillOpacity="0.2"
           />
 
-          {/* Cylinder with chambers */}
+          {/* 5-Chamber Cylinder (Center Y = 110) */}
           <rect
-            x="130"
-            y="80"
+            x="125"
+            y="60"
             width="85"
-            height="55"
+            height="100"
             stroke="#f59e0b"
             strokeWidth="2"
             fill="#78350f"
             fillOpacity="0.25"
-            rx="3"
+            rx="4"
           />
-          <rect x="130" y="86" width="80" height="12" stroke="#fbbf24" strokeDasharray="3,3" />
-          <rect x="130" y="116" width="80" height="12" stroke="#fbbf24" strokeDasharray="3,3" />
+          {/* Top Chamber Bore (Alings with barrel at Y = 82) */}
+          <rect x="125" y="74" width="80" height="16" stroke="#fbbf24" strokeWidth="1.5" />
+          <circle cx="195" cy="82" r="5" fill="#94a3b8" />
+          {/* Bottom Chamber Bore */}
+          <rect
+            x="125"
+            y="130"
+            width="80"
+            height="16"
+            stroke="#fbbf24"
+            strokeWidth="1"
+            strokeDasharray="3,3"
+          />
 
-          {/* Hammer & Pawl */}
-          <g transform={`translate(100, 125) rotate(${-cockDeg})`}>
+          {/* Flash Partition Barrier (Claim 3) */}
+          <line x1="120" y1="65" x2="120" y2="100" stroke="#38bdf8" strokeWidth="3" />
+
+          {/* Hammer & Hand Pawl */}
+          <g transform={`translate(80, 110) rotate(${-cockDeg})`}>
             <path
-              d="M 0 0 L -12 -35 L 4 -60 L 15 -55 L 8 -30 Z"
+              d="M 0 0 L -15 -35 L 6 -62 L 20 -58 L 10 -30 Z"
               stroke="#cbd5e1"
               strokeWidth="2"
               fill="#334155"
             />
-            <line x1="8" y1="-20" x2="28" y2="-15" stroke="#f59e0b" strokeWidth="3" />
+            {/* Pawl Link */}
+            <line x1="8" y1="-20" x2="48" y2="-16" stroke="#f59e0b" strokeWidth="3" />
+            <circle cx="8" cy="-20" r="2.5" fill="#ffffff" />
           </g>
 
           {/* Ratchet Wheel */}
-          <circle cx="126" cy="108" r="10" stroke="#f59e0b" strokeWidth="1.5" />
+          <circle cx="120" cy="110" r="10" stroke="#f59e0b" strokeWidth="1.5" fill="#334155" />
 
-          {/* Detent Bolt */}
+          {/* Detent Bolt beneath cylinder */}
           <rect
-            x="170"
-            y="136"
-            width="10"
-            height="12"
-            fill={cockDeg >= 44 ? "#34d399" : "#fbbf24"}
-            stroke="#10b981"
+            x="160"
+            y={158 + boltRetractY}
+            width="12"
+            height="14"
+            fill={isFullCock || cockDeg <= 2 ? "#34d399" : "#fbbf24"}
+            stroke={isFullCock || cockDeg <= 2 ? "#10b981" : "#d97706"}
           />
 
-          <text x="290" y="82" fill="#93c5fd" fontSize="9" textAnchor="middle">
-            Rifled Barrel
+          {/* Folding Trigger */}
+          <rect
+            x="95"
+            y={isFullCock ? 155 : 145}
+            width="6"
+            height={isFullCock ? 20 : 8}
+            fill={isFullCock ? "#f59e0b" : "#64748b"}
+            stroke="#cbd5e1"
+          />
+
+          <text x="285" y="60" fill="#93c5fd" fontSize="9" textAnchor="middle">
+            Rifled Barrel (Bore Axis)
           </text>
-          <text x="172" y="74" fill="#fbbf24" fontSize="9" textAnchor="middle">
-            6-Chamber Cylinder (Δθ={rotDeg.toFixed(0)}°)
+          <text x="168" y="52" fill="#fbbf24" fontSize="9" textAnchor="middle">
+            5-Chamber Cylinder (Δθ={rotDeg.toFixed(0)}°)
           </text>
-          <text x="65" y="55" fill="#bae6fd" fontSize="9">
-            Pawl & Hammer
+          <text x="50" y="42" fill="#bae6fd" fontSize="9">
+            Pawl & Hammer (US 138)
           </text>
         </g>
       );

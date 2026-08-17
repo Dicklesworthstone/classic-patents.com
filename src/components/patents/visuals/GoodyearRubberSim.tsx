@@ -2,6 +2,7 @@
 
 import { Layers } from "lucide-react";
 import { useState } from "react";
+import { vulcanKinetics } from "@/physics/thermochem";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 
 export function GoodyearRubberSim() {
@@ -20,6 +21,7 @@ export function GoodyearRubberSim() {
 
   const isMelted = isRaw && temperatureCelsius > 35;
   const isBrittle = isRaw && temperatureCelsius < 0;
+  const cure = vulcanKinetics(params.vulcanTemp ?? 145, sulfurPercent);
 
   return (
     <div className="rounded-2xl border border-amber-900/20 dark:border-ink-800 bg-parchment-50 dark:bg-ink-950 p-6 shadow-patent space-y-6">
@@ -124,6 +126,21 @@ export function GoodyearRubberSim() {
             <span className="font-serif font-bold text-sm text-ink-900 dark:text-parchment-100 block">
               Vulcanization Parameters
             </span>
+            <div className="rounded-lg border border-parchment-200 dark:border-ink-800 p-2.5 text-[11px] font-mono space-y-1">
+              <div className="uppercase tracking-wider text-ink-500">Cure kinetics</div>
+              <div className="flex justify-between">
+                <span>regime</span>
+                <span className="font-bold">{cure.regime}</span>
+              </div>
+              <div className="flex justify-between">
+                <span>relative rate</span>
+                <span className="font-bold">{cure.rateRel.toFixed(2)}</span>
+              </div>
+              <div className="flex justify-between">
+                <span>cross-link</span>
+                <span className="font-bold">{cure.crosslinkMolCm3} mol/cm³</span>
+              </div>
+            </div>
 
             {/* Sulfur Percentage Slider */}
             <div className="space-y-1">
@@ -148,6 +165,10 @@ export function GoodyearRubberSim() {
                 <span>0% (Raw Gum)</span>
                 <span>8% (Tire)</span>
                 <span>30% (Ebonite)</span>
+              </div>
+              <div className="flex justify-between text-[10px] font-mono text-amber-700 dark:text-amber-400 pt-1">
+                <span>Crosslinks: {cure.crosslinkDensity.toFixed(2)}/nm³</span>
+                <span>t½: {cure.tHalfMin.toFixed(1)} min</span>
               </div>
             </div>
 

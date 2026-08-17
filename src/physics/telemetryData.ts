@@ -1569,9 +1569,9 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
   "us-138-colt-revolver": {
     domain: "continuum_elasticity",
     domainTitle: "Pawl-Ratchet Angular Discretization & Internal Ballistic Hoop Stress",
-    equationName: "Hoop Stress Limit & 60° Cylinder Indexing",
+    equationName: "Hoop Stress Limit & 72° Cylinder Indexing",
     governingEquation:
-      "\\sigma_{\\text{hoop}} = \\frac{P_{\\text{combustion}} \\cdot r}{t} \\quad \\text{and} \\quad \\Delta \\theta = \\frac{360^\\circ}{N_{\\text{chambers}}} = 60^\\circ",
+      "\\sigma_{\\text{hoop}} = \\frac{P_{\\text{combustion}} \\cdot r}{t} \\quad \\text{and} \\quad \\Delta \\theta = \\frac{360^\\circ}{N_{\\text{chambers}}} = 72^\\circ",
     engineMethod: "FrankenSimEngine.stepColtRevolver",
     controls: [
       {
@@ -1596,12 +1596,12 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
     computeMetrics: (p) => {
       const pMpa = p.chamberPressure ?? 85;
       const cockDeg = p.cockingAngle ?? 45;
-      const rInnerMm = 5.5;
+      const rInnerMm = 4.5;
       const tWallMm = 3.8;
       const hoopStressMpa = ((pMpa * rInnerMm) / tWallMm).toFixed(1);
-      const indexAngleDeg = ((cockDeg / 45) * 60).toFixed(1);
+      const indexAngleDeg = ((cockDeg / 45) * 72).toFixed(1);
       const isLocked = cockDeg >= 44;
-      const muzzleVelocityMps = Math.round(180 + Math.sqrt(pMpa) * 12.5);
+      const muzzleVelocityMps = Math.round(180 + Math.sqrt(pMpa) * 13.5);
 
       return [
         {
@@ -1613,29 +1613,29 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
         },
         {
           label: "Cylinder Index Rotation",
-          value: indexAngleDeg,
-          unit: "deg",
+          value: `${indexAngleDeg}°`,
+          unit: "deg (72° step)",
           badgeColor: "cyan",
-          progressPct: (Number(indexAngleDeg) / 60) * 100,
+          progressPct: (Number(indexAngleDeg) / 72) * 100,
         },
         {
-          label: "Bore Alignment Lock",
-          value: isLocked ? "LOCKED" : "INDEXING",
-          unit: "detent",
-          badgeColor: isLocked ? "emerald" : "purple",
-          progressPct: isLocked ? 100 : (cockDeg / 45) * 100,
-        },
-        {
-          label: "Muzzle Velocity",
+          label: "Muzzle Exit Velocity",
           value: muzzleVelocityMps.toString(),
           unit: "m/s",
           badgeColor: "amber",
           progressPct: (muzzleVelocityMps / 360) * 100,
         },
+        {
+          label: "Cylinder Bolt Lock",
+          value: isLocked ? "LOCKED (0.02 mm)" : "INDEXING (72°)",
+          unit: "detent",
+          badgeColor: isLocked ? "emerald" : "amber",
+          progressPct: isLocked ? 100 : 30,
+        },
       ];
     },
     pedagogicalInsight:
-      "Drawing back the hammer with the thumb lifts the pawl to advance the ratchet 60 degrees, while simultaneously withdrawing and re-engaging the perimeter bolt to lock the next chamber directly into concentric alignment with the rifled barrel.",
+      "Drawing back the hammer with the thumb lifts the pawl to advance the ratchet 72 degrees, while simultaneously withdrawing and re-engaging the perimeter bolt to lock the next chamber directly into concentric alignment with the stationary rifled barrel.",
   },
   "us-31128-otis-elevator": {
     domain: "continuum_elasticity",
