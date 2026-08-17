@@ -40,8 +40,9 @@ pipeline stages are `scripts/download-patents.ts`, `scripts/ocr-patents.ts`, and
 `scripts/verify-data.ts`; public PDFs are served from `public/patents/pdfs/` and source artifacts
 are retained under `artifacts/`.
 
-At the pipeline-verification snapshot, the project contained 18 patent records; the shared tree
-continued to expand afterward. Its product promise depends on a strict distinction
+At the initial pipeline-verification snapshot, the project contained 18 patent records; the shared
+tree continued to expand and was reverified at 22 records before this report was finished. Its
+product promise depends on a strict distinction
 between a primary-source facsimile, any machine-derived transcription, and editorial Plain English
 analysis. The reviewers agreed that preserving that distinction is more urgent than expanding
 visual features.
@@ -134,7 +135,7 @@ underspecified:
 
 - The generic drawing renderer still does not consume patent-specific `svgType` data; a generic
   schematic must not be described as a reconstructed historical drawing.
-- Patent detail pages currently report a 383 kB first-load JavaScript footprint in the successful
+- Patent detail pages currently report a 389 kB first-load JavaScript footprint in the successful
   production build. The all-visual static import pattern remains a measured follow-up candidate.
 - OCR output is not a substitute for human-reviewed transcription or provenance metadata.
 - `ubs --diff` found zero critical issues, but reported broad static warnings in concurrent 3D
@@ -143,8 +144,8 @@ underspecified:
 ## Verification completed
 
 - `bun run pipeline:download` — passed for 18 records; exercised the bundled-PDF copy path.
-- `bun run pipeline:verify` — passed all 18 records with the corrected verifier.
-- `bun run typecheck` — passed.
-- `bun run lint` — passed.
-- `bun run build` — passed; generated all 18 patent routes.
+- `bun run pipeline:verify` — passed at 18 records, then again at the final 22-record snapshot.
+- `bun run typecheck` — passed at the final snapshot.
+- `bun run lint` — passed at the final snapshot.
+- `bun run build` — passed at the final snapshot; generated all 22 patent routes.
 - `ubs --diff` — 0 critical findings; warnings reported as above.
