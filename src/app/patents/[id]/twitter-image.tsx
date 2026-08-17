@@ -3,7 +3,7 @@ import { getPatentById } from "@/data/patents";
 
 export const size = {
   width: 1200,
-  height: 630,
+  height: 600,
 };
 export const contentType = "image/png";
 
@@ -26,13 +26,12 @@ export default async function Image({ params }: { params: Promise<{ id: string }
         flexDirection: "column",
         alignItems: "flex-start",
         justifyContent: "space-between",
-        backgroundColor: "#fbf9f5",
+        backgroundColor: "#0b0f17",
         backgroundImage:
-          "linear-gradient(to right, rgba(217, 119, 6, 0.05) 1px, transparent 1px), linear-gradient(to bottom, rgba(217, 119, 6, 0.05) 1px, transparent 1px)",
-        backgroundSize: "32px 32px",
-        padding: "60px 70px",
-        border: "16px solid #b45309",
-        fontFamily: "serif",
+          "radial-gradient(circle at 20% 20%, rgba(217, 119, 6, 0.12) 0%, transparent 50%), radial-gradient(circle at 80% 80%, rgba(59, 130, 246, 0.08) 0%, transparent 50%)",
+        padding: "50px 65px",
+        border: "12px solid #d97706",
+        fontFamily: "system-ui, -apple-system, sans-serif",
       }}
     >
       {/* Top Header Row */}
@@ -53,10 +52,10 @@ export default async function Image({ params }: { params: Promise<{ id: string }
         >
           <span
             style={{
-              fontSize: "24px",
+              fontSize: "22px",
               fontWeight: "bold",
               letterSpacing: "2px",
-              color: "#2a1f18",
+              color: "#f8fafc",
             }}
           >
             CLASSIC PATENTS MUSEUM
@@ -67,12 +66,12 @@ export default async function Image({ params }: { params: Promise<{ id: string }
           style={{
             padding: "6px 16px",
             borderRadius: "999px",
-            backgroundColor: "#fef3c7",
-            border: "2px solid #f59e0b",
-            color: "#92400e",
-            fontSize: "18px",
-            fontFamily: "monospace",
+            backgroundColor: "#1e293b",
+            border: "1px solid #475569",
+            color: "#fbbf24",
+            fontSize: "16px",
             fontWeight: "bold",
+            display: "flex",
           }}
         >
           {patentNumber}
@@ -89,49 +88,87 @@ export default async function Image({ params }: { params: Promise<{ id: string }
       >
         <div
           style={{
-            fontSize: "52px",
+            fontSize: "46px",
             fontWeight: "bold",
-            color: "#1c1917",
+            color: "#ffffff",
             lineHeight: 1.15,
+            display: "flex",
           }}
         >
           {title}
         </div>
         <div
           style={{
-            fontSize: "24px",
-            color: "#b45309",
-            fontStyle: "italic",
+            fontSize: "20px",
+            color: "#94a3b8",
+            lineHeight: 1.4,
+            maxWidth: "960px",
+            display: "flex",
           }}
         >
           {subtitle}
         </div>
       </div>
 
-      {/* Bottom Meta Bar */}
+      {/* Bottom Metadata Bar */}
       <div
         style={{
           display: "flex",
           alignItems: "center",
           justifyContent: "space-between",
           width: "100%",
-          borderTop: "2px solid #e7e5e4",
           paddingTop: "20px",
-          fontSize: "18px",
-          fontFamily: "monospace",
+          borderTop: "1px solid #334155",
         }}
       >
-        <div style={{ color: "#44403c" }}>
-          <strong>Inventors:</strong> {inventors}
+        <div
+          style={{
+            display: "flex",
+            flexDirection: "column",
+            gap: "4px",
+          }}
+        >
+          <span
+            style={{
+              fontSize: "13px",
+              color: "#64748b",
+              textTransform: "uppercase",
+              letterSpacing: "1px",
+              display: "flex",
+            }}
+          >
+            Inventors
+          </span>
+          <span style={{ fontSize: "18px", fontWeight: "bold", color: "#f8fafc", display: "flex" }}>
+            {inventors}
+          </span>
         </div>
-        <div style={{ color: "#78716c" }}>
-          <strong>Granted:</strong> {grantDate}
+
+        <div
+          style={{
+            display: "flex",
+            flexDirection: "column",
+            gap: "4px",
+            alignItems: "flex-end",
+          }}
+        >
+          <span
+            style={{
+              fontSize: "13px",
+              color: "#64748b",
+              textTransform: "uppercase",
+              letterSpacing: "1px",
+              display: "flex",
+            }}
+          >
+            USPTO Grant Date
+          </span>
+          <span style={{ fontSize: "18px", fontWeight: "bold", color: "#fbbf24", display: "flex" }}>
+            {grantDate}
+          </span>
         </div>
-        <div style={{ color: "#b45309", fontWeight: "bold" }}>classic-patents.com</div>
       </div>
     </div>,
-    {
-      ...size,
-    },
+    { ...size },
   );
 }

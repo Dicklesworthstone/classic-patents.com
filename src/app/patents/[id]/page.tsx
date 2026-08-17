@@ -24,11 +24,6 @@ export async function generateMetadata({ params }: PatentPageProps): Promise<Met
   return {
     title: `${patent.shortTitle} (${patent.patentNumber}) — Plain English & Interactive Sim`,
     description: `${patent.subtitle}. ${patent.summary}`,
-    openGraph: {
-      title: `${patent.shortTitle} (${patent.patentNumber}) | Classic Patents`,
-      description: patent.summary,
-      url: `https://classic-patents.com/patents/${patent.id}`,
-    },
   };
 }
 

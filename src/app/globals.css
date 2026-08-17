@@ -33,40 +33,22 @@
     background-image: url("data:image/svg+xml,%3Csvg%20xmlns%3D%27http%3A//www.w3.org/2000/svg%27%20width%3D%27120%27%20height%3D%27120%27%3E%3Cfilter%20id%3D%27n%27%3E%3CfeTurbulence%20type%3D%27fractalNoise%27%20baseFrequency%3D%270.85%27%20numOctaves%3D%272%27%20stitchTiles%3D%27stitch%27%20seed%3D%272%27/%3E%3C/filter%3E%3Crect%20width%3D%27120%27%20height%3D%27120%27%20filter%3D%27url(%23n)%27/%3E%3C/svg%3E");
   }
 
-  /* Archival Parchment Mode (Default) */
-  .theme-parchment body {
-    background-color: #fbf9f5;
-    color: #2a1f18;
-  }
-
-  /* Engineering Blueprint Mode */
-  .theme-blueprint {
-    --shadow-brand: 0 0 40px -10px rgba(56, 189, 248, 0.3);
-  }
-
-  .theme-blueprint body {
-    background-color: #061e38;
-    color: #e0effe;
-    background-image:
-      radial-gradient(circle at 15% 15%, rgba(56, 189, 248, 0.06), transparent 45%),
-      radial-gradient(circle at 85% 25%, rgba(14, 165, 233, 0.05), transparent 45%),
-      linear-gradient(rgba(56, 189, 248, 0.08) 1px, transparent 1px),
-      linear-gradient(90deg, rgba(56, 189, 248, 0.08) 1px, transparent 1px);
-    background-size:
-      100% 100%,
-      100% 100%,
-      28px 28px,
-      28px 28px;
+  /* Crisp Museum Light Mode (Default) */
+  body {
+    @apply bg-[#fbf9f5] text-[#2a1f18] font-sans antialiased selection:bg-amber-200 selection:text-amber-900;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    min-height: 100vh;
   }
 
   /* Obsidian Dark Mode */
   .dark body {
-    background-color: #0a0802;
-    color: #e6e4df;
+    background-color: #0b0f17;
+    color: #f1f5f9;
     background-image:
       radial-gradient(circle at 15% 15%, rgba(245, 158, 11, 0.04), transparent 45%),
-      radial-gradient(circle at 85% 25%, rgba(251, 191, 36, 0.03), transparent 45%),
-      linear-gradient(to bottom, #0a0802, #050401);
+      radial-gradient(circle at 85% 25%, rgba(59, 130, 246, 0.03), transparent 45%),
+      linear-gradient(to bottom, #0b0f17, #070a10);
   }
 }
 

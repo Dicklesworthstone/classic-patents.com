@@ -6,6 +6,7 @@ import { useMemo, useState } from "react";
 import { EraFilterBar } from "@/components/layout/EraFilterBar";
 import { PatentCard } from "@/components/patents/PatentCard";
 import { allPatents, getFeaturedPatents, searchPatents } from "@/data/patents";
+import type { Patent } from "@/types/patent";
 
 export default function HomePage() {
   const [selectedCategory, setSelectedCategory] = useState<string>("all");
@@ -16,7 +17,7 @@ export default function HomePage() {
   const filteredPatents = useMemo(() => {
     let list = searchPatents(searchQuery);
     if (selectedCategory !== "all") {
-      list = list.filter((p) => p.category === selectedCategory);
+      list = list.filter((p: Patent) => p.category === selectedCategory);
     }
     return list;
   }, [searchQuery, selectedCategory]);
@@ -104,7 +105,7 @@ export default function HomePage() {
         {/* Grid of All Patents */}
         {filteredPatents.length > 0 ? (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-7">
-            {filteredPatents.map((patent) => (
+            {filteredPatents.map((patent: Patent) => (
               <PatentCard key={patent.id} patent={patent} />
             ))}
           </div>

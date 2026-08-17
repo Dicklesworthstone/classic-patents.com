@@ -38,6 +38,8 @@ bun.lockb
 
 # Beads & Sessions
 .beads/*.db-journal
+.ntm/
+*.tsbuildinfo
 .beads/*.db-wal
 .beads/*.db-shm
 

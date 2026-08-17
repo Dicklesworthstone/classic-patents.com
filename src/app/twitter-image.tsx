@@ -3,7 +3,7 @@ import { ImageResponse } from "next/og";
 export const alt = "Classic Patents — Historical Technical Patent Museum";
 export const size = {
   width: 1200,
-  height: 630,
+  height: 600,
 };
 export const contentType = "image/png";
 
@@ -17,13 +17,12 @@ export default async function Image() {
         flexDirection: "column",
         alignItems: "flex-start",
         justifyContent: "space-between",
-        backgroundColor: "#fbf9f5",
+        backgroundColor: "#0b0f17",
         backgroundImage:
-          "linear-gradient(to right, rgba(217, 119, 6, 0.05) 1px, transparent 1px), linear-gradient(to bottom, rgba(217, 119, 6, 0.05) 1px, transparent 1px)",
-        backgroundSize: "32px 32px",
-        padding: "60px 70px",
-        border: "16px solid #d97706",
-        fontFamily: "serif",
+          "radial-gradient(circle at 20% 20%, rgba(217, 119, 6, 0.12) 0%, transparent 50%), radial-gradient(circle at 80% 80%, rgba(59, 130, 246, 0.08) 0%, transparent 50%)",
+        padding: "50px 65px",
+        border: "12px solid #d97706",
+        fontFamily: "system-ui, -apple-system, sans-serif",
       }}
     >
       {/* Top Header Row */}
@@ -44,15 +43,15 @@ export default async function Image() {
         >
           <div
             style={{
-              width: "44px",
-              height: "44px",
+              width: "42px",
+              height: "42px",
               borderRadius: "10px",
-              backgroundColor: "#b45309",
+              backgroundColor: "#d97706",
               display: "flex",
               alignItems: "center",
               justifyContent: "center",
               color: "#ffffff",
-              fontSize: "24px",
+              fontSize: "22px",
               fontWeight: "bold",
             }}
           >
@@ -60,10 +59,10 @@ export default async function Image() {
           </div>
           <span
             style={{
-              fontSize: "26px",
+              fontSize: "24px",
               fontWeight: "bold",
               letterSpacing: "2px",
-              color: "#2a1f18",
+              color: "#f8fafc",
             }}
           >
             CLASSIC PATENTS
@@ -74,15 +73,15 @@ export default async function Image() {
           style={{
             padding: "6px 16px",
             borderRadius: "999px",
-            backgroundColor: "#fef3c7",
-            border: "2px solid #f59e0b",
-            color: "#92400e",
-            fontSize: "16px",
-            fontFamily: "monospace",
+            backgroundColor: "#1e293b",
+            border: "1px solid #475569",
+            color: "#fbbf24",
+            fontSize: "14px",
             fontWeight: "bold",
+            display: "flex",
           }}
         >
-          HISTORICAL TECHNICAL ARCHIVE
+          22 HISTORICAL MILESTONES
         </div>
       </div>
 
@@ -91,93 +90,92 @@ export default async function Image() {
         style={{
           display: "flex",
           flexDirection: "column",
-          gap: "16px",
+          gap: "14px",
         }}
       >
         <h1
           style={{
-            fontSize: "56px",
+            fontSize: "50px",
             fontWeight: "bold",
-            color: "#1c1917",
+            color: "#ffffff",
             lineHeight: 1.15,
             margin: 0,
+            display: "flex",
           }}
         >
-          History&apos;s Greatest Inventions,
-          <br />
-          Decoded &amp; Simulated.
+          History&apos;s Greatest Inventions, Decoded &amp; Simulated.
         </h1>
         <p
           style={{
-            fontSize: "22px",
-            color: "#57534e",
-            maxWidth: "900px",
+            fontSize: "20px",
+            color: "#94a3b8",
+            lineHeight: 1.4,
+            maxWidth: "960px",
             margin: 0,
-            fontStyle: "italic",
+            display: "flex",
           }}
         >
-          Verified USPTO specifications, plain-English engineering deconstructions, and interactive
-          3D physics simulations.
+          Original USPTO patents restored with full transcripts, Plain English engineering
+          breakdowns, and interactive 3D WebGL physics engines.
         </p>
       </div>
 
-      {/* Bottom Catalog Pills */}
+      {/* Bottom Badges */}
       <div
         style={{
           display: "flex",
           alignItems: "center",
           gap: "16px",
           width: "100%",
-          borderTop: "2px solid #e7e5e4",
-          paddingTop: "24px",
         }}
       >
         <div
           style={{
-            fontSize: "16px",
-            fontFamily: "monospace",
-            color: "#b45309",
-            fontWeight: "bold",
+            display: "flex",
+            alignItems: "center",
+            gap: "8px",
+            padding: "8px 16px",
+            borderRadius: "8px",
+            backgroundColor: "#1e293b",
+            color: "#38bdf8",
+            fontSize: "14px",
+            fontWeight: "600",
           }}
         >
-          Wright Flyer (US 821,393)
+          <span>3D WebGL Simulations</span>
         </div>
-        <span style={{ color: "#a8a29e" }}>•</span>
         <div
           style={{
-            fontSize: "16px",
-            fontFamily: "monospace",
-            color: "#b45309",
-            fontWeight: "bold",
+            display: "flex",
+            alignItems: "center",
+            gap: "8px",
+            padding: "8px 16px",
+            borderRadius: "8px",
+            backgroundColor: "#1e293b",
+            color: "#4ade80",
+            fontSize: "14px",
+            fontWeight: "600",
           }}
         >
-          Tesla AC Motor (US 381,968)
+          <span>100% Unabbreviated Transcripts</span>
         </div>
-        <span style={{ color: "#a8a29e" }}>•</span>
         <div
           style={{
-            fontSize: "16px",
-            fontFamily: "monospace",
-            color: "#b45309",
-            fontWeight: "bold",
+            display: "flex",
+            alignItems: "center",
+            gap: "8px",
+            padding: "8px 16px",
+            borderRadius: "8px",
+            backgroundColor: "#1e293b",
+            color: "#f59e0b",
+            fontSize: "14px",
+            fontWeight: "600",
           }}
         >
-          Noyce Microchip (US 2,981,877)
-        </div>
-        <span style={{ color: "#a8a29e" }}>•</span>
-        <div
-          style={{
-            fontSize: "16px",
-            fontFamily: "monospace",
-            color: "#78716c",
-          }}
-        >
-          classic-patents.com
+          <span>classic-patents.com</span>
         </div>
       </div>
     </div>,
-    {
-      ...size,
-    },
+    { ...size },
   );
 }
