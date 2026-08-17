@@ -21,7 +21,6 @@ const interval = setInterval(() => {
   } catch {}
 }, 100);
 
-
 try {
   // Run clean production Next.js build
   execSync("npx next build", {
@@ -34,5 +33,3 @@ try {
 } finally {
   clearInterval(interval);
 }
-
-

@@ -27,6 +27,22 @@ export function goddardThermo(chamberPsi: number, expansionRatio: number): Godda
   };
 }
 
+/** Chamber → sonic throat → exit meridian for a lathe nozzle. Radii in metres of the 3D stage. */
+export function deLavalMeridian(expansionRatio: number): [number, number][] {
+  const rt = 0.32;
+  const re = rt * Math.sqrt(Math.max(2, Math.min(12, expansionRatio)));
+  const rc = 0.85;
+  return [
+    [rc, 0.3],
+    [rc * 0.96, 0.1],
+    [rt * 1.35, -0.18],
+    [rt, -0.35],
+    [rt + (re - rt) * 0.28, -0.65],
+    [rt + (re - rt) * 0.68, -1.05],
+    [re, -1.45],
+  ];
+}
+
 export interface VulcanKinetics {
   rateRel: number;
   crosslinkMolCm3: number;

@@ -68,6 +68,7 @@ the visitor can see or hear the kernel change the instrument.
 - [ ] P4.24 `fs-couple` after kernels are honest
 - [x] P4.25 `fs-ad` slider derivatives (d(param)/dt on badge + tick chips)
 - [x] P4.26 `fs-thermochem` Goddard / Einstein / Goodyear (T_c/T_e, COP strip, Arrhenius cure)
+- [x] P4.26b Goddard 3D de Laval lathe + plume rebuild from Ae/At and Te
 - [ ] P4.27 Visitor as transducer (mic / device roll / typed Morse / Lamarr grid)
 - [x] P4.28 Wozniak φ2 theft
 - [x] P4.29 Edison filament color from blackbody T

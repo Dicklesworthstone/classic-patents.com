@@ -16,6 +16,7 @@ import { useEffect, useRef, useState } from "react";
 import * as THREE from "three";
 import { HudText } from "@/components/ui/LatexRenderer";
 import { FrankenSimEngine } from "@/physics/engine";
+import { deLavalMeridian, goddardThermo } from "@/physics/thermochem";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { soundEngine } from "@/utils/soundEngine";
 import { createGlowPointTexture, createThreeStudioScene } from "./ThreeStudioScene";
@@ -81,6 +82,7 @@ export function GoddardRocket3D() {
   const { params, updateParam } = usePatentPhysics("us-1155986-goddard-rocket");
   const [showUiOverlay, setShowUiOverlay] = useState<boolean>(true);
   const chamberPressurePsi = params.chamberPressure ?? 350;
+  const expansionRatio = params.expansionRatio ?? 3.5;
   const [fuelFlowRateKgs, setFuelFlowRateKgs] = useState<number>(1.8); // 0.5 to 5.0 kg/s
   const [activeStage, setActiveStage] = useState<1 | 2>(1);
   const [gyroGimbalAngleDeg, setGyroGimbalAngleDeg] = useState<number>(3); // -15 to +15 deg
@@ -91,8 +93,9 @@ export function GoddardRocket3D() {
 
   // Rocket Propulsion Physics (FrankenSim de Laval Isentropic Expansion)
   const rocketPhysics = FrankenSimEngine.stepGoddardRocket(chamberPressurePsi, fuelFlowRateKgs);
-  const specificImpulseSec = rocketPhysics.specificImpulseSec;
-  const exhaustVelocityMps = rocketPhysics.exhaustVelocityMps;
+  const thermo = goddardThermo(chamberPressurePsi, expansionRatio);
+  const specificImpulseSec = thermo.ispSec;
+  const exhaustVelocityMps = thermo.veMps;
   const thrustNewtons = rocketPhysics.thrustNewtons;
   const thrustLbf = Math.round(thrustNewtons * 0.2248);
 
@@ -101,6 +104,8 @@ export function GoddardRocket3D() {
     gyroGimbalAngleDeg,
     showExhaustPlume,
     exhaustVelocityMps,
+    expansionRatio,
+    exhaustTempK: thermo.exhaustTempK,
     isAudioMuted,
   });
 
@@ -249,6 +254,7 @@ export function GoddardRocket3D() {
     const deLavalMesh = new THREE.Mesh(deLavalGeo, copperNozzleMat);
     deLavalMesh.castShadow = true;
     nozzleGroup.add(deLavalMesh);
+    let lastExpansion = 3.5;
 
     // Regenerative Cooling Jacket Manifold Rings
     const manifoldRing = new THREE.Mesh(
@@ -372,6 +378,16 @@ export function GoddardRocket3D() {
       const gimbalRad = (p.gyroGimbalAngleDeg * Math.PI) / 180;
       nozzleGroup.rotation.z = gimbalRad;
 
+      const ar = p.expansionRatio ?? 3.5;
+      if (Math.abs(ar - lastExpansion) > 0.04) {
+        lastExpansion = ar;
+        deLavalMesh.geometry.dispose();
+        deLavalMesh.geometry = new THREE.LatheGeometry(
+          deLavalMeridian(ar).map(([r, y]) => new THREE.Vector2(r, y)),
+          48,
+        );
+      }
+
       if (p.activeStage === 2) {
         stage2Group.position.y += (7.5 - stage2Group.position.y) * 0.05;
         stage1Group.position.y += (-6.0 - stage1Group.position.y) * 0.05;
@@ -383,6 +399,7 @@ export function GoddardRocket3D() {
       if (p.showExhaustPlume) {
         const pPos = plumePos;
         const velocitySpeed = (p.exhaustVelocityMps / 2000) * 35.0 * delta;
+        const exitSpread = 0.22 * Math.sqrt(Math.max(2, p.expansionRatio ?? 3.5));
 
         for (let i = 0; i < plumeCount; i++) {
           const idx = i * 3;
@@ -390,9 +407,9 @@ export function GoddardRocket3D() {
           pPos[idx] += Math.sin(gimbalRad) * velocitySpeed * 0.4;
 
           if (pPos[idx + 1] < -8.5) {
-            pPos[idx] = (Math.random() - 0.5) * 0.35;
+            pPos[idx] = (Math.random() - 0.5) * exitSpread;
             pPos[idx + 1] = -4.2;
-            pPos[idx + 2] = (Math.random() - 0.5) * 0.35;
+            pPos[idx + 2] = (Math.random() - 0.5) * exitSpread;
           }
         }
         plumeGeo.attributes.position.needsUpdate = true;
@@ -607,28 +624,28 @@ export function GoddardRocket3D() {
             </span>
           </div>
 
-          {/* Propellant Mass Flow Rate */}
+          {/* Nozzle expansion — same Ae/At as the badge / 2D face */}
           <div className="space-y-1.5">
             <div className="flex justify-between text-xs font-sans">
               <span className="font-semibold text-ink-800 dark:text-parchment-200">
-                {"Propellant Mass Flow (ṁ):"}
+                Nozzle expansion Ae/At
               </span>
               <span className="font-mono text-blue-600 dark:text-blue-400 font-bold">
-                {fuelFlowRateKgs.toFixed(1)} kg/s
+                {expansionRatio.toFixed(1)}
               </span>
             </div>
             <input
               type="range"
-              aria-label="Simulation parameter"
-              min="0.5"
-              max="5.0"
+              aria-label="Nozzle expansion ratio Ae/At"
+              min="2.0"
+              max="8.0"
               step="0.1"
-              value={fuelFlowRateKgs}
-              onChange={(e) => setFuelFlowRateKgs(Number(e.target.value))}
+              value={expansionRatio}
+              onChange={(e) => updateParam("expansionRatio", Number(e.target.value))}
               className="w-full accent-blue-600 cursor-pointer"
             />
             <span className="text-[10px] text-ink-500 dark:text-ink-400 block">
-              LOX & gasoline turbopump delivery rate
+              Exit flare rebuilds the de Laval lathe. Te = {thermo.exhaustTempK} K
             </span>
           </div>
 

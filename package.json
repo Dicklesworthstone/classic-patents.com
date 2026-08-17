@@ -6,7 +6,7 @@
   "license": "SEE LICENSE IN LICENSE",
   "scripts": {
     "dev": "next dev --turbopack",
-    "build": "next build",
+    "build": "bun scripts/build.ts",
     "start": "next start",
     "lint": "biome check .",
     "format": "biome format --write .",

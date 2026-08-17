@@ -200,6 +200,7 @@ export function MarconiRadio3D() {
     mast.position.set(-3.5, 0.8, 0);
     mast.castShadow = true;
     radioGroup.add(mast);
+    const mastBaseY = -3.95;
 
     // Top Aerial Capacity Plate
     const capacityHat = new THREE.Mesh(
@@ -351,6 +352,11 @@ export function MarconiRadio3D() {
       const _delta = clock.getDelta();
       const elapsed = clock.getElapsedTime();
       const p = live.current;
+
+      const mastScale = Math.max(0.25, (p.aerialHeightMeters ?? 88) / 88);
+      mast.scale.y = mastScale;
+      mast.position.y = mastBaseY + 4.75 * mastScale;
+      capacityHat.position.y = mastBaseY + 9.5 * mastScale;
 
       if (p.isSparking) {
         sparkPoints.visible = true;

@@ -7,9 +7,7 @@ export const size = {
 };
 export const contentType = "image/png";
 
-export function generateStaticParams() {
-  return allPatents.map((p) => ({ id: p.id }));
-}
+export const runtime = "edge";
 
 export default async function Image({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
