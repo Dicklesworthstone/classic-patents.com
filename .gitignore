@@ -40,5 +40,9 @@ bun.lockb
 .beads/*.db-journal
 .beads/*.db-wal
 .beads/*.db-shm
+
+# Caches & Artifacts
+artifacts/ocr_raster_cache/
+tsconfig.tsbuildinfo
 .ntm/
 .env*
