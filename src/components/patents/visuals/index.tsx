@@ -1,47 +1,183 @@
 "use client";
 
 import { Box, Layers } from "lucide-react";
+import dynamic from "next/dynamic";
 import { useState } from "react";
-import { BardeenTransistorSim } from "./BardeenTransistorSim";
-import { BellTelephoneSim } from "./BellTelephoneSim";
-import { BoyleSmithCcdSim } from "./BoyleSmithCcdSim";
-import { EdisonBulbSim } from "./EdisonBulbSim";
-import { FarnsworthTVSim } from "./FarnsworthTVSim";
-import { GoddardRocketSim } from "./GoddardRocketSim";
-import { GoodyearRubberSim } from "./GoodyearRubberSim";
-import { HoweSewingMachineSim } from "./HoweSewingMachineSim";
-import { KwolekKevlarSim } from "./KwolekKevlarSim";
-import { LamarrFrequencyHoppingSim } from "./LamarrFrequencyHoppingSim";
-import { LincolnBuoySim } from "./LincolnBuoySim";
-import { MarconiRadioSim } from "./MarconiRadioSim";
-import { MorseTelegraphSim } from "./MorseTelegraphSim";
-import { NoycePlanarICSim } from "./NoycePlanarICSim";
-import { SpencerMicrowaveSim } from "./SpencerMicrowaveSim";
-import { TeslaCoilSim } from "./TeslaCoilSim";
-import { TeslaMotorSim } from "./TeslaMotorSim";
-import { BardeenTransistor3D } from "./three/BardeenTransistor3D";
-import { BellTelephone3D } from "./three/BellTelephone3D";
-import { BoyleSmithCcd3D } from "./three/BoyleSmithCcd3D";
-import { EdisonBulb3D } from "./three/EdisonBulb3D";
-import { EinsteinRefrigerator3D } from "./three/EinsteinRefrigerator3D";
-import { EngelbartMouse3D } from "./three/EngelbartMouse3D";
-import { FarnsworthTV3D } from "./three/FarnsworthTV3D";
-import { FermiReactor3D } from "./three/FermiReactor3D";
-import { GoddardRocket3D } from "./three/GoddardRocket3D";
-import { GoodyearRubber3D } from "./three/GoodyearRubber3D";
-import { HoweSewingMachine3D } from "./three/HoweSewingMachine3D";
-import { KwolekKevlar3D } from "./three/KwolekKevlar3D";
-import { LamarrFrequencyHopping3D } from "./three/LamarrFrequencyHopping3D";
-import { LincolnBuoy3D } from "./three/LincolnBuoy3D";
-import { MarconiRadio3D } from "./three/MarconiRadio3D";
-import { MorseTelegraph3D } from "./three/MorseTelegraph3D";
-import { NoycePlanarIC3D } from "./three/NoycePlanarIC3D";
-import { SpencerMicrowave3D } from "./three/SpencerMicrowave3D";
-import { TeslaCoil3D } from "./three/TeslaCoil3D";
-import { TeslaMotor3D } from "./three/TeslaMotor3D";
-import { WozniakApple3D } from "./three/WozniakApple3D";
-import { WrightFlyer3D } from "./three/WrightFlyer3D";
-import { WrightFlyerSim } from "./WrightFlyerSim";
+
+function VisualLoadingFallback() {
+  return (
+    <div className="w-full h-[520px] rounded-2xl bg-parchment-100 dark:bg-ink-900 border border-parchment-300 dark:border-ink-800 flex flex-col items-center justify-center gap-4 text-ink-600 dark:text-parchment-300 shadow-inner">
+      <div className="relative w-12 h-12">
+        <div className="absolute inset-0 rounded-xl border-2 border-amber-600/30 border-t-amber-600 animate-spin" />
+        <Box className="w-6 h-6 text-amber-600 absolute inset-0 m-auto animate-pulse" />
+      </div>
+      <div className="text-center space-y-1">
+        <p className="font-serif font-bold text-sm text-ink-900 dark:text-parchment-100">
+          Initializing 3D WebGL Physics Engine
+        </p>
+        <p className="font-sans text-xs text-ink-500 dark:text-ink-400">
+          Calibrating studio lighting, shaders &amp; telemetry...
+        </p>
+      </div>
+    </div>
+  );
+}
+
+// Dynamically lazy-loaded 3D WebGL Physics Simulators
+const WrightFlyer3D = dynamic(() => import("./three/WrightFlyer3D").then((m) => m.WrightFlyer3D), {
+  loading: VisualLoadingFallback,
+  ssr: false,
+});
+const TeslaMotor3D = dynamic(() => import("./three/TeslaMotor3D").then((m) => m.TeslaMotor3D), {
+  loading: VisualLoadingFallback,
+  ssr: false,
+});
+const FarnsworthTV3D = dynamic(
+  () => import("./three/FarnsworthTV3D").then((m) => m.FarnsworthTV3D),
+  { loading: VisualLoadingFallback, ssr: false },
+);
+const SpencerMicrowave3D = dynamic(
+  () => import("./three/SpencerMicrowave3D").then((m) => m.SpencerMicrowave3D),
+  { loading: VisualLoadingFallback, ssr: false },
+);
+const NoycePlanarIC3D = dynamic(
+  () => import("./three/NoycePlanarIC3D").then((m) => m.NoycePlanarIC3D),
+  { loading: VisualLoadingFallback, ssr: false },
+);
+const KwolekKevlar3D = dynamic(
+  () => import("./three/KwolekKevlar3D").then((m) => m.KwolekKevlar3D),
+  { loading: VisualLoadingFallback, ssr: false },
+);
+const EdisonBulb3D = dynamic(() => import("./three/EdisonBulb3D").then((m) => m.EdisonBulb3D), {
+  loading: VisualLoadingFallback,
+  ssr: false,
+});
+const BellTelephone3D = dynamic(
+  () => import("./three/BellTelephone3D").then((m) => m.BellTelephone3D),
+  { loading: VisualLoadingFallback, ssr: false },
+);
+const LincolnBuoy3D = dynamic(() => import("./three/LincolnBuoy3D").then((m) => m.LincolnBuoy3D), {
+  loading: VisualLoadingFallback,
+  ssr: false,
+});
+const HoweSewingMachine3D = dynamic(
+  () => import("./three/HoweSewingMachine3D").then((m) => m.HoweSewingMachine3D),
+  { loading: VisualLoadingFallback, ssr: false },
+);
+const TeslaCoil3D = dynamic(() => import("./three/TeslaCoil3D").then((m) => m.TeslaCoil3D), {
+  loading: VisualLoadingFallback,
+  ssr: false,
+});
+const GoddardRocket3D = dynamic(
+  () => import("./three/GoddardRocket3D").then((m) => m.GoddardRocket3D),
+  { loading: VisualLoadingFallback, ssr: false },
+);
+const BardeenTransistor3D = dynamic(
+  () => import("./three/BardeenTransistor3D").then((m) => m.BardeenTransistor3D),
+  { loading: VisualLoadingFallback, ssr: false },
+);
+const BoyleSmithCcd3D = dynamic(
+  () => import("./three/BoyleSmithCcd3D").then((m) => m.BoyleSmithCcd3D),
+  { loading: VisualLoadingFallback, ssr: false },
+);
+const MarconiRadio3D = dynamic(
+  () => import("./three/MarconiRadio3D").then((m) => m.MarconiRadio3D),
+  { loading: VisualLoadingFallback, ssr: false },
+);
+const MorseTelegraph3D = dynamic(
+  () => import("./three/MorseTelegraph3D").then((m) => m.MorseTelegraph3D),
+  { loading: VisualLoadingFallback, ssr: false },
+);
+const GoodyearRubber3D = dynamic(
+  () => import("./three/GoodyearRubber3D").then((m) => m.GoodyearRubber3D),
+  { loading: VisualLoadingFallback, ssr: false },
+);
+const LamarrFrequencyHopping3D = dynamic(
+  () => import("./three/LamarrFrequencyHopping3D").then((m) => m.LamarrFrequencyHopping3D),
+  { loading: VisualLoadingFallback, ssr: false },
+);
+const EngelbartMouse3D = dynamic(
+  () => import("./three/EngelbartMouse3D").then((m) => m.EngelbartMouse3D),
+  { loading: VisualLoadingFallback, ssr: false },
+);
+const FermiReactor3D = dynamic(
+  () => import("./three/FermiReactor3D").then((m) => m.FermiReactor3D),
+  { loading: VisualLoadingFallback, ssr: false },
+);
+const WozniakApple3D = dynamic(
+  () => import("./three/WozniakApple3D").then((m) => m.WozniakApple3D),
+  { loading: VisualLoadingFallback, ssr: false },
+);
+const EinsteinRefrigerator3D = dynamic(
+  () => import("./three/EinsteinRefrigerator3D").then((m) => m.EinsteinRefrigerator3D),
+  { loading: VisualLoadingFallback, ssr: false },
+);
+
+// Dynamically lazy-loaded 2D Vector Schematics
+const WrightFlyerSim = dynamic(() => import("./WrightFlyerSim").then((m) => m.WrightFlyerSim), {
+  ssr: false,
+});
+const TeslaMotorSim = dynamic(() => import("./TeslaMotorSim").then((m) => m.TeslaMotorSim), {
+  ssr: false,
+});
+const FarnsworthTVSim = dynamic(() => import("./FarnsworthTVSim").then((m) => m.FarnsworthTVSim), {
+  ssr: false,
+});
+const SpencerMicrowaveSim = dynamic(
+  () => import("./SpencerMicrowaveSim").then((m) => m.SpencerMicrowaveSim),
+  { ssr: false },
+);
+const NoycePlanarICSim = dynamic(
+  () => import("./NoycePlanarICSim").then((m) => m.NoycePlanarICSim),
+  { ssr: false },
+);
+const KwolekKevlarSim = dynamic(() => import("./KwolekKevlarSim").then((m) => m.KwolekKevlarSim), {
+  ssr: false,
+});
+const EdisonBulbSim = dynamic(() => import("./EdisonBulbSim").then((m) => m.EdisonBulbSim), {
+  ssr: false,
+});
+const BellTelephoneSim = dynamic(
+  () => import("./BellTelephoneSim").then((m) => m.BellTelephoneSim),
+  { ssr: false },
+);
+const LincolnBuoySim = dynamic(() => import("./LincolnBuoySim").then((m) => m.LincolnBuoySim), {
+  ssr: false,
+});
+const HoweSewingMachineSim = dynamic(
+  () => import("./HoweSewingMachineSim").then((m) => m.HoweSewingMachineSim),
+  { ssr: false },
+);
+const TeslaCoilSim = dynamic(() => import("./TeslaCoilSim").then((m) => m.TeslaCoilSim), {
+  ssr: false,
+});
+const GoddardRocketSim = dynamic(
+  () => import("./GoddardRocketSim").then((m) => m.GoddardRocketSim),
+  { ssr: false },
+);
+const BardeenTransistorSim = dynamic(
+  () => import("./BardeenTransistorSim").then((m) => m.BardeenTransistorSim),
+  { ssr: false },
+);
+const BoyleSmithCcdSim = dynamic(
+  () => import("./BoyleSmithCcdSim").then((m) => m.BoyleSmithCcdSim),
+  { ssr: false },
+);
+const MarconiRadioSim = dynamic(() => import("./MarconiRadioSim").then((m) => m.MarconiRadioSim), {
+  ssr: false,
+});
+const MorseTelegraphSim = dynamic(
+  () => import("./MorseTelegraphSim").then((m) => m.MorseTelegraphSim),
+  { ssr: false },
+);
+const GoodyearRubberSim = dynamic(
+  () => import("./GoodyearRubberSim").then((m) => m.GoodyearRubberSim),
+  { ssr: false },
+);
+const LamarrFrequencyHoppingSim = dynamic(
+  () => import("./LamarrFrequencyHoppingSim").then((m) => m.LamarrFrequencyHoppingSim),
+  { ssr: false },
+);
 
 interface PatentVisualDispatcherProps {
   patentId: string;
@@ -52,7 +188,7 @@ export function PatentVisualDispatcher({ patentId }: PatentVisualDispatcherProps
 
   return (
     <div className="space-y-4">
-      {/* 3D vs 2D Toggle Switcher for All Patents */}
+      {/* 3D vs 2D Toggle Switcher */}
       <div className="flex justify-end">
         <div className="flex items-center gap-1 bg-parchment-200 dark:bg-ink-900 p-1 rounded-xl border border-parchment-300 dark:border-ink-800 text-xs sm:text-sm font-sans shadow-sm">
           <button
@@ -82,7 +218,7 @@ export function PatentVisualDispatcher({ patentId }: PatentVisualDispatcherProps
         </div>
       </div>
 
-      {/* Render Specific Simulation */}
+      {/* Render Specific Dynamic Simulation */}
       {(() => {
         switch (patentId) {
           case "us-821393-wright-flyer":
