@@ -22,8 +22,9 @@ export const engelbartMousePatent: Patent = {
   usptoClassification:
     "G06F 3/033 (Digital computers; Input arrangements using cursor controllers)",
   originalTextAsset: {
-    url: "/patents/transcripts/us-3541541-engelbart-mouse.txt",
-    pageCount: 4,
+    url: "/patents/source-text/us-3541541-engelbart-mouse.txt",
+    pageCount: 7,
+    kind: "source-pdf-text-layer",
   },
   originalText: `UNITED STATES PATENT OFFICE
 3,541,541

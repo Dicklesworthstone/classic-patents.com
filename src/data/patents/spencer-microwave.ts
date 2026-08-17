@@ -21,8 +21,9 @@ export const spencerMicrowavePatent: Patent = {
   googlePatentsUrl: "https://patents.google.com/patent/US2495429A/en",
   usptoClassification: "H05B 6/64 (Dielectric heating / Microwave ovens)",
   originalTextAsset: {
-    url: "/patents/transcripts/us-2495429-spencer-microwave.txt",
+    url: "/patents/source-text/us-2495429-spencer-microwave.txt",
     pageCount: 3,
+    kind: "source-pdf-text-layer",
   },
   originalText: `UNITED STATES PATENT OFFICE
 

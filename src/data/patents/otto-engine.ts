@@ -21,6 +21,11 @@ export const ottoEnginePatent: Patent = {
   originalPdfUrl: "/patents/pdfs/us-194047-otto-engine.pdf",
   googlePatentsUrl: "https://patents.google.com/patent/US194047/en",
   usptoClassification: "F02B 75/02 (Four-stroke engines; Otto thermodynamic cycle)",
+  originalTextAsset: {
+    url: "/patents/source-text/us-194047-otto-engine.txt",
+    pageCount: 8,
+    kind: "source-pdf-text-layer",
+  },
   originalText: `UNITED STATES PATENT OFFICE.
 NICOLAUS AUGUST OTTO, OF DEUTZ, GERMANY, ASSIGNOR TO THE GAS-MOTOREN-FABRIK DEUTZ.
 

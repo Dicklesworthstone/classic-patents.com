@@ -20,6 +20,11 @@ export const wrightFlyerPatent: Patent = {
   originalPdfUrl: "/patents/pdfs/us-821393-wright-flyer.pdf",
   googlePatentsUrl: "https://patents.google.com/patent/US821393A/en",
   usptoClassification: "B64C 13/00 (Aeronautics; Aircraft control systems)",
+  originalTextAsset: {
+    url: "/patents/source-text/us-821393-wright-flyer.txt",
+    pageCount: 10,
+    kind: "source-pdf-text-layer",
+  },
   originalText: `UNITED STATES PATENT OFFICE.
 ORVILLE WRIGHT AND WILBUR WRIGHT, OF DAYTON, OHIO.
 

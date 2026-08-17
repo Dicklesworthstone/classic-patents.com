@@ -22,8 +22,9 @@ export const eastmanKodakPatent: Patent = {
   googlePatentsUrl: "https://patents.google.com/patent/US388850A/en",
   usptoClassification: "G03B 19/04 (Box cameras / Roll-film holders)",
   originalTextAsset: {
-    url: "/patents/transcripts/us-388850-eastman-kodak.txt",
+    url: "/patents/source-text/us-388850-eastman-kodak.txt",
     pageCount: 9,
+    kind: "source-pdf-text-layer",
   },
   originalText: `UNITED STATES PATENT OFFICE.
 GEORGE EASTMAN, OF ROCHESTER, NEW YORK.

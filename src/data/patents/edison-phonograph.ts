@@ -21,6 +21,11 @@ export const edisonPhonographPatent: Patent = {
   originalPdfUrl: "/patents/pdfs/us-200521-edison-phonograph.pdf",
   googlePatentsUrl: "https://patents.google.com/patent/US200521/en",
   usptoClassification: "G11B 3/00 (Mechanical recording or reproducing; Cylinder phonographs)",
+  originalTextAsset: {
+    url: "/patents/source-text/us-200521-edison-phonograph.txt",
+    pageCount: 3,
+    kind: "source-pdf-text-layer",
+  },
   originalText: `UNITED STATES PATENT OFFICE.
 THOMAS A. EDISON, OF MENLO PARK, NEW JERSEY.
 

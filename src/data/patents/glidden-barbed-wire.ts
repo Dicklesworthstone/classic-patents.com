@@ -20,6 +20,11 @@ export const gliddenBarbedWirePatent: Patent = {
   originalPdfUrl: "/patents/pdfs/us-157124-glidden-barbed-wire.pdf",
   googlePatentsUrl: "https://patents.google.com/patent/US157124/en",
   usptoClassification: "B21F 25/00 (Making barbed wire; Barbed wire construction)",
+  originalTextAsset: {
+    url: "/patents/source-text/us-157124-glidden-barbed-wire.txt",
+    pageCount: 2,
+    kind: "source-pdf-text-layer",
+  },
   originalText: `UNITED STATES PATENT OFFICE.
 JOSEPH F. GLIDDEN, OF DeKALB, ILLINOIS.
 

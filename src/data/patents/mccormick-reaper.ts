@@ -20,6 +20,11 @@ export const mccormickReaperPatent: Patent = {
   originalPdfUrl: "/patents/pdfs/us-x8277-mccormick-reaper.pdf",
   googlePatentsUrl: "https://patents.google.com/patent/USX8277/en",
   usptoClassification: "A01D 34/02 (Mowers; Harvesting machines; Cutters)",
+  originalTextAsset: {
+    url: "/patents/source-text/us-x8277-mccormick-reaper.txt",
+    pageCount: 3,
+    kind: "source-pdf-text-layer",
+  },
   originalText: `UNITED STATES PATENT OFFICE.
 CYRUS H. McCORMICK, OF ROCKBRIDGE COUNTY, VIRGINIA.
 

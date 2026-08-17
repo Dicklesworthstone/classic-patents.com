@@ -21,6 +21,11 @@ export const grammeDynamoPatent: Patent = {
   originalPdfUrl: "/patents/pdfs/us-120057-gramme-dynamo.pdf",
   googlePatentsUrl: "https://patents.google.com/patent/US120057/en",
   usptoClassification: "H02K 3/04 (Windings for dynamos; Toroidal ring armatures)",
+  originalTextAsset: {
+    url: "/patents/source-text/us-120057-gramme-dynamo.txt",
+    pageCount: 9,
+    kind: "source-pdf-text-layer",
+  },
   originalText: `UNITED STATES PATENT OFFICE.
 ZÉNOBE THÉOPHILE GRAMME, OF PARIS, FRANCE.
 

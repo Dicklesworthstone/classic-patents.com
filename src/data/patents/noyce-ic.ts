@@ -22,8 +22,9 @@ export const noyceIcPatent: Patent = {
   googlePatentsUrl: "https://patents.google.com/patent/US2981877A/en",
   usptoClassification: "H01L 27/06 (Monolithic integrated circuits)",
   originalTextAsset: {
-    url: "/patents/transcripts/us-2981877-noyce-ic.txt",
-    pageCount: 5,
+    url: "/patents/source-text/us-2981877-noyce-ic.txt",
+    pageCount: 8,
+    kind: "source-pdf-text-layer",
   },
   originalText: `UNITED STATES PATENT OFFICE.
 ROBERT N. NOYCE, OF LOS ALTOS, CALIFORNIA, ASSIGNOR TO FAIRCHILD SEMICONDUCTOR CORPORATION, OF MOUNTAIN VIEW, CALIFORNIA.
