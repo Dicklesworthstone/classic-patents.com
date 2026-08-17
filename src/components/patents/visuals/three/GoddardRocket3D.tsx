@@ -1,6 +1,17 @@
 "use client";
 
-import { Camera, Eye, EyeOff, Flame, Rocket, RotateCcw, Sparkles, Volume2, VolumeX, Zap } from "lucide-react";
+import {
+  Camera,
+  Eye,
+  EyeOff,
+  Flame,
+  Rocket,
+  RotateCcw,
+  Sparkles,
+  Volume2,
+  VolumeX,
+  Zap,
+} from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import * as THREE from "three";
 import { soundEngine } from "@/utils/soundEngine";
@@ -398,7 +409,8 @@ export function GoddardRocket3D() {
                 <div>
                   <span className="text-ink-600 dark:text-ink-400">Exhaust V:</span>{" "}
                   <span className="font-bold text-emerald-600 dark:text-emerald-400">
-                    {exhaustVelocityMps.toLocaleString()} m/s (M{(exhaustVelocityMps / 343).toFixed(1)})
+                    {exhaustVelocityMps.toLocaleString()} m/s (M
+                    {(exhaustVelocityMps / 343).toFixed(1)})
                   </span>
                 </div>
                 <div>

@@ -1,6 +1,17 @@
 "use client";
 
-import { Anchor, Camera, RotateCcw, Sparkles, Volume2, VolumeX, Waves, Zap } from "lucide-react";
+import {
+  Anchor,
+  Camera,
+  Eye,
+  EyeOff,
+  RotateCcw,
+  Sparkles,
+  Volume2,
+  VolumeX,
+  Waves,
+  Zap,
+} from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import * as THREE from "three";
 import { soundEngine } from "@/utils/soundEngine";
@@ -28,20 +39,28 @@ const SCENARIOS: ScenarioPreset[] = [
     shoalDepthFt: 5.5,
   },
   {
-    id: "shoal_sandbar_grounding",
-    name: "Mississippi Sandbar Grounding",
-    desc: "Deflated bellows causing the 380-ton hull to draw 6.0 ft in a 4.5 ft shoal, firmly grounding the steamboat on the riverbed.",
+    id: "sangamon_river_shoal",
+    name: "Sangamon River Shoal Grounding",
+    desc: "A shallow sandbar with zero bellows inflation causing the heavy wooden hull to ground out with zero underkeel clearance.",
     inflationPct: 0,
-    weightTons: 380,
-    shoalDepthFt: 4.5,
+    weightTons: 420,
+    shoalDepthFt: 4.2,
   },
   {
-    id: "steam_winch_inflation",
-    name: "Steam Winch Buoyant Lift",
-    desc: "Full 100% pneumatic expansion generating 118 tons of buoyant lift, reducing draft to 4.1 ft to float free of the obstruction.",
+    id: "deep_water_cruise",
+    name: "Mississippi Deep Channel Navigation",
+    desc: "Cruising down the Mississippi River with deflated, tucked bellows for maximum hydrodynamic efficiency.",
+    inflationPct: 0,
+    weightTons: 350,
+    shoalDepthFt: 10.0,
+  },
+  {
+    id: "max_buoyant_lift",
+    name: "Maximum 118-Ton Pneumatic Lift",
+    desc: "100% steam-powered bellows expansion lifting the keel 2.4 feet to clear a treacherous 3.8-foot limestone ledge.",
     inflationPct: 100,
-    weightTons: 380,
-    shoalDepthFt: 4.5,
+    weightTons: 450,
+    shoalDepthFt: 3.8,
   },
   {
     id: "heavy_cargo_rapids",
@@ -57,6 +76,7 @@ export function LincolnBuoy3D() {
   const containerRef = useRef<HTMLDivElement>(null);
 
   // Marine Hydrostatic State Controls
+  const [showUiOverlay, setShowUiOverlay] = useState<boolean>(true);
   const [bellowsInflationPct, setBellowsInflationPct] = useState<number>(75); // 0 to 100%
   const [steamboatWeightTons, setSteamboatWeightTons] = useState<number>(380); // 200 to 600 tons
   const [riverShoalDepthFt, setRiverShoalDepthFt] = useState<number>(5.5); // 3 to 12 ft

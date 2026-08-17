@@ -1,6 +1,17 @@
 "use client";
 
-import { Camera, Cpu, Monitor, RotateCcw, Sparkles, Volume2, VolumeX, Zap } from "lucide-react";
+import {
+  Camera,
+  Cpu,
+  Eye,
+  EyeOff,
+  Monitor,
+  RotateCcw,
+  Sparkles,
+  Volume2,
+  VolumeX,
+  Zap,
+} from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import * as THREE from "three";
 import { soundEngine } from "@/utils/soundEngine";
@@ -57,6 +68,7 @@ export function WozniakApple3D() {
   const containerRef = useRef<HTMLDivElement>(null);
 
   // Microcomputer Architecture State Controls
+  const [showUiOverlay, setShowUiOverlay] = useState<boolean>(true);
   const [clockFrequencyMhz, setClockFrequencyMhz] = useState<number>(1.02); // 0.5 to 2.0 MHz
   const [videoMode, setVideoMode] = useState<"hires_color" | "lores_color" | "text_40col">(
     "hires_color",
@@ -364,50 +376,65 @@ export function WozniakApple3D() {
         <div ref={containerRef} className="absolute inset-0 w-full h-full" />
 
         {/* Live HUD Telemetry Overlay */}
-        <div className="absolute top-4 left-4 z-10 flex flex-col gap-2 pointer-events-none max-w-[calc(100%-8rem)] sm:max-w-md">
-          <div className="bg-white/90 dark:bg-ink-900/90 backdrop-blur-md px-3.5 py-2.5 rounded-xl border border-parchment-300 dark:border-ink-700 shadow-sm">
-            <div className="text-[11px] font-sans text-amber-700 dark:text-amber-400 font-bold uppercase tracking-wider flex items-center gap-1.5">
-              <Cpu className="w-3.5 h-3.5 text-blue-500 animate-pulse" />
-              Apple II Shared-Bus Architecture Telemetry
+        {showUiOverlay && (
+          <div className="absolute top-4 left-4 z-10 flex flex-col gap-2 pointer-events-none max-w-[calc(100%-8rem)] sm:max-w-md">
+            <div className="bg-white/90 dark:bg-ink-900/90 backdrop-blur-md px-3.5 py-2.5 rounded-xl border border-parchment-300 dark:border-ink-700 shadow-sm">
+              <div className="text-[11px] font-sans text-amber-700 dark:text-amber-400 font-bold uppercase tracking-wider flex items-center gap-1.5">
+                <Cpu className="w-3.5 h-3.5 text-blue-500 animate-pulse" />
+                Apple II Shared-Bus Architecture Telemetry
+              </div>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-4 gap-y-1 mt-1 text-xs font-sans">
+                <div>
+                  <span className="text-ink-600 dark:text-ink-400">CPU Throughput:</span>{" "}
+                  <span className="font-bold text-emerald-600 dark:text-emerald-400">
+                    {effectiveCpuThroughputPct}% (Zero DMA Halts)
+                  </span>
+                </div>
+                <div>
+                  <span className="text-ink-600 dark:text-ink-400">Memory Cycle Window:</span>{" "}
+                  <span className="font-bold text-blue-600 dark:text-blue-400">
+                    {phi1VideoAccessWindowNs} ns (Φ₁ Video / Φ₂ CPU)
+                  </span>
+                </div>
+                <div>
+                  <span className="text-ink-600 dark:text-ink-400">NTSC Color Burst:</span>{" "}
+                  <span className="font-bold text-amber-600 dark:text-amber-400">
+                    {colorSubcarrierMhz} MHz (14.318 MHz ÷ 4)
+                  </span>
+                </div>
+                <div>
+                  <span className="text-ink-600 dark:text-ink-400">Installed RAM Bank:</span>{" "}
+                  <span className="font-bold text-purple-600 dark:text-purple-400">
+                    {ramCapacityKb} KB (Auto-Refreshed by Video Scan)
+                  </span>
+                </div>
+              </div>
             </div>
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-4 gap-y-1 mt-1 text-xs font-sans">
-              <div>
-                <span className="text-ink-600 dark:text-ink-400">CPU Throughput:</span>{" "}
-                <span className="font-bold text-emerald-600 dark:text-emerald-400">
-                  {effectiveCpuThroughputPct}% (Zero DMA Halts)
-                </span>
-              </div>
-              <div>
-                <span className="text-ink-600 dark:text-ink-400">Memory Cycle Window:</span>{" "}
-                <span className="font-bold text-blue-600 dark:text-blue-400">
-                  {phi1VideoAccessWindowNs} ns (Φ₁ Video / Φ₂ CPU)
-                </span>
-              </div>
-              <div>
-                <span className="text-ink-600 dark:text-ink-400">NTSC Color Burst:</span>{" "}
-                <span className="font-bold text-amber-600 dark:text-amber-400">
-                  {colorSubcarrierMhz} MHz (14.318 MHz ÷ 4)
-                </span>
-              </div>
-              <div>
-                <span className="text-ink-600 dark:text-ink-400">Installed RAM Bank:</span>{" "}
-                <span className="font-bold text-purple-600 dark:text-purple-400">
-                  {ramCapacityKb} KB (Auto-Refreshed by Video Scan)
-                </span>
-              </div>
+
+            <div className="bg-white/90 dark:bg-ink-900/90 backdrop-blur-md px-3 py-1.5 rounded-lg border border-parchment-300 dark:border-ink-700 text-[11px] font-sans text-ink-700 dark:text-ink-300 flex items-center gap-2 max-w-full">
+              <Monitor className="w-3.5 h-3.5 text-emerald-500 animate-pulse shrink-0" />
+              <span className="truncate">
+                Steve Wozniak (US 4,136,359) — Shared Dynamic RAM Architecture
+              </span>
             </div>
           </div>
+        )}
 
-          <div className="bg-white/90 dark:bg-ink-900/90 backdrop-blur-md px-3 py-1.5 rounded-lg border border-parchment-300 dark:border-ink-700 text-[11px] font-sans text-ink-700 dark:text-ink-300 flex items-center gap-2 max-w-full">
-            <Monitor className="w-3.5 h-3.5 text-emerald-500 animate-pulse shrink-0" />
-            <span className="truncate">
-              Steve Wozniak (US 4,136,359) — Shared Dynamic RAM Architecture
-            </span>
-          </div>
-        </div>
-
-        {/* Top Right Tool Bar (Audio, Pins, Reset) */}
+        {/* Top Right Tool Bar (Toggle UI, Audio, Pins, Reset) */}
         <div className="absolute top-4 right-4 z-10 flex gap-2">
+          <button
+            type="button"
+            onClick={() => setShowUiOverlay(!showUiOverlay)}
+            className={`p-2.5 rounded-xl backdrop-blur-md border transition-all shadow-sm ${
+              showUiOverlay
+                ? "bg-white/90 dark:bg-ink-900/90 border-parchment-300 dark:border-ink-700 text-ink-700 dark:text-parchment-300 hover:bg-parchment-100 dark:hover:bg-ink-800"
+                : "bg-amber-600 text-white border-amber-700 shadow-md ring-2 ring-amber-500/30"
+            }`}
+            title={showUiOverlay ? "Hide Overlay UI (Clean 3D View)" : "Show Overlay UI"}
+            aria-label={showUiOverlay ? "Hide Overlay UI" : "Show Overlay UI"}
+          >
+            {showUiOverlay ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+          </button>
           <button
             type="button"
             onClick={toggleSound}

@@ -1,6 +1,16 @@
 "use client";
 
-import { Camera, Eye, EyeOff, Layers, RotateCcw, Sparkles, Volume2, VolumeX, Zap } from "lucide-react";
+import {
+  Camera,
+  Eye,
+  EyeOff,
+  Layers,
+  RotateCcw,
+  Sparkles,
+  Volume2,
+  VolumeX,
+  Zap,
+} from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import * as THREE from "three";
 import { soundEngine } from "@/utils/soundEngine";
@@ -419,9 +429,7 @@ export function GoodyearRubber3D() {
 
             <div className="hidden sm:flex bg-white/90 dark:bg-ink-900/90 backdrop-blur-md px-3 py-1.5 rounded-lg border border-parchment-300 dark:border-ink-700 text-[11px] font-sans text-ink-700 dark:text-ink-300 items-center gap-2 max-w-full">
               <Sparkles className="w-3.5 h-3.5 text-amber-500 animate-pulse shrink-0" />
-              <span className="truncate">
-                Charles Goodyear (US 3,633) — Vulcanization (1844)
-              </span>
+              <span className="truncate">Charles Goodyear (US 3,633) — Vulcanization (1844)</span>
             </div>
           </div>
         )}
