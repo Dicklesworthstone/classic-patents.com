@@ -98,7 +98,53 @@ async function main() {
       }
     }
 
-    // 6. Check plain English explanations
+    // 6. Check stats consistency with claims
+    const indClaims = patent.claims.filter((c) => c.isIndependent);
+    if (patent.stats) {
+      if (patent.stats.totalClaims !== patent.claims.length) {
+        fail(
+          `stats.totalClaims (${patent.stats.totalClaims}) does not match claims.length (${patent.claims.length}).`,
+        );
+      }
+      if (patent.stats.independentClaims !== indClaims.length) {
+        fail(
+          `stats.independentClaims (${patent.stats.independentClaims}) does not match independent claims count (${indClaims.length}).`,
+        );
+      }
+    }
+
+    // 7. Check originalTextAsset existence
+    if (patent.originalTextAsset) {
+      const assetPath = path.join(
+        process.cwd(),
+        "public",
+        patent.originalTextAsset.url.replace(/^\//, ""),
+      );
+      if (!fs.existsSync(assetPath)) {
+        fail(`originalTextAsset file not found at ${assetPath}`);
+      } else {
+        const assetStat = fs.statSync(assetPath);
+        if (assetStat.size === 0) {
+          fail(`originalTextAsset file at ${assetPath} is empty.`);
+        }
+      }
+      if (patent.originalTextAsset.pageCount <= 0) {
+        fail(`originalTextAsset.pageCount must be > 0.`);
+      }
+    }
+
+    // 8. Check drawing callout coordinate bounds
+    for (const drawing of patent.drawings ?? []) {
+      for (const callout of drawing.callouts ?? []) {
+        if (callout.x < 0 || callout.x > 100 || callout.y < 0 || callout.y > 100) {
+          fail(
+            `Drawing ${drawing.figureNumber} callout ${callout.id} coordinates (${callout.x}, ${callout.y}) out of [0, 100] bounds.`,
+          );
+        }
+      }
+    }
+
+    // 9. Check plain English explanations
     if (
       !patent.plainEnglishExplanation?.overview ||
       !patent.plainEnglishExplanation.coreMechanism ||
@@ -107,7 +153,7 @@ async function main() {
       fail("Incomplete plain English explanation.");
     }
 
-    // 7. Check historical context & patent wars
+    // 10. Check historical context & patent wars
     if (
       !patent.historicalContext?.problemStatement ||
       !patent.historicalContext.breakthroughInsight ||
@@ -125,7 +171,17 @@ async function main() {
     }
   }
 
-  // 8. Test search queries
+  // 11. Check chronological ordering of allPatents
+  for (let i = 1; i < allPatents.length; i++) {
+    if (allPatents[i].grantDate < allPatents[i - 1].grantDate) {
+      console.error(
+        `❌ Chronological ordering error: ${allPatents[i].id} (${allPatents[i].grantDate}) precedes ${allPatents[i - 1].id} (${allPatents[i - 1].grantDate})`,
+      );
+      errorCount++;
+    }
+  }
+
+  // 12. Test search queries
   const testQueries = ["Tesla", "Wright", "821,393", "Transistor", "Kevlar", "Noyce", "Wozniak"];
   for (const q of testQueries) {
     const results = searchPatents(q);

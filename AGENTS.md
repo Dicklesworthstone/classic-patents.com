@@ -220,6 +220,167 @@ dispatcher case; its controls model the patented roll/yaw/pitch relationship.
    new visual must give controls accessible names, a keyboard-operable textual
    relationship/telemetry fallback, visible focus, and a reduced-motion path.
 
+### 5a. Patent completeness bar (Wright / Tesla / Edison quality)
+
+A new record is unfinished until it matches the depth of the best existing
+entries (`wright-flyer.ts`, `tesla-motor.ts`, `edison-lightbulb.ts`,
+`fermi-reactor.ts`, `noyce-ic.ts`). Filling the TypeScript type is not enough.
+The visitor must be able to read the legal instrument, the physics, the fight
+over priority, and a working model of the claimed mechanism without another
+round of "make it not suck."
+
+**Identity and catalog**
+
+- `id` is `us-<digits>-<kebab>` and matches the PDF filename, transcript
+  filename, and route. `patentNumber` keeps historical punctuation (`US 821,393`).
+- `title` is the granted title. `shortTitle` names the mechanism, not a slogan.
+  `subtitle` names the physical principle. `era` and `category` match the
+  museum taxonomy; aviation is not "consumer."
+- `heroQuote` is a sentence from the specification or an attributable primary
+  source, never invented color. `summary` is one tight paragraph of what the
+  patent actually claimed and when it was filed/granted.
+- `stats.totalClaims` / `independentClaims` must equal the typed `claims`
+  array. Do not invent `patentWarYears` or `impactScore`.
+
+**Specification and claims**
+
+- Ship a reviewed complete transcription as `originalTextAsset`
+  (`public/patents/transcripts/<id>.txt` plus `pageCount`) whenever the
+  facsimile is more than a short excerpt. `originalText` may remain a curated
+  on-page excerpt; never label an excerpt "verbatim complete."
+- Every numbered claim in the grant is present. Each claim has exact
+  `originalText`, a `plainEnglish` decoder that names the physical part and
+  the legal work it does, `keyInnovations` as concrete nouns, and
+  `legalSignificance` when the claim was the one that mattered in court or in
+  later practice.
+- Independent vs dependent is historically correct. `dependsOn` points at
+  included claim numbers only.
+
+**Plain English engineering face**
+
+- `overview` states the prior-art failure and the inventor's actual move.
+- `coreMechanism` is the causal chain in SI units (warp → ΔCL → induced drag
+  → adverse yaw → coupled rudder). Analogies are allowed only after the
+  mechanism is stated.
+- `mechanicalBreakdown` is one card per claimed organ. Each card has a
+  summary, technical details that include the governing relation in readable
+  prose plus `$...$` TeX, and `archaicTerm` / `modernEquivalent` when the
+  specification uses a period word (`aeroplane`, `undulating current`,
+  `letters patent`).
+- `scientificPrinciples` are real named laws with `formula` and an
+  explanation that a working engineer can check. HUD copy uses `HudText` /
+  `TextWithLatex`; never leave raw `$LaTeX$` visible.
+- `whyItMattersToday` is specific (which later machine, grid, process, or
+  doctrine inherited this) and is not a TED-talk coda.
+
+**Historical context**
+
+- `problemStatement` is the bottleneck in the inventors' world, not a
+  Wikipedia lede.
+- `priorArtLimitations` are named failures of named prior machines.
+- `breakthroughInsight` is the one idea that made the rest possible.
+- `patentWars` only when the record supports them: rival, rival claim,
+  conflict, resolution, judicial outcome. Empty array if there was no fight.
+- `aftermath` is money, later suits, later use, expiration, or eclipse.
+- `sideNotes` are dated anecdotes that do not fit the cards.
+- `civilizationalImpact` is causal, not civic poetry. `funFact` is
+  attributable or omitted.
+
+**Visitor-facing prose (de-slopify)**
+
+- No em dashes, no "seminal / pivotal / groundbreaking / it's not X, it's Y,"
+  no "unlock the future," no listicles of vibes.
+- Prefer the inventors' nouns. Prefer dates, units, case names, and figure
+  numbers. Never dumb down; never inflate.
+
+**Visuals and dual projection**
+
+- Unique 2D pedagogical instrument and, when the mechanism is spatial, a 3D
+  Three.js instrument. Explicit dispatcher case. Unique `svgType` plus
+  `SCHEMATIC_HINTS` so the schematic is not another patent's drawing.
+- Callouts match facsimile figure letters/numbers; coordinates are 0–100.
+- 2D and 3D share one physics bus (see §5b). Mute defaults to silent; the
+  global audio singleton remutes on mount.
+- Controls have accessible names, SI readouts, and a reduced-motion path.
+
+### 5b. FrankenSim binding (how visuals stay honest)
+
+The TypeScript `FrankenSimEngine` in `src/physics/engine.ts` is a **host
+fallback**: closed-form SI toys for when WASM is not loaded. It is not
+FrankenSim. The real engine is `~/projects/frankensim` compiled to WASM
+(`fs-time`, `fs-mbd`, `fs-flux`, `fs-lattice`, `fs-conduction`, `fs-truss`,
+`fs-solid`, Blake3 digests, typed refusal). The Wright Flyer host-pumped
+app in `~/projects/frankensim/apps/wright-flyer` is the transport reference:
+capability probe, leased-ring / transferable fallback, host-fed clock,
+bounded catch-up, no `std::time` on wasm32.
+
+Do not label a HUD "WASM Core" unless a WASM instance actually stepped
+the state. A closed-form TypeScript evaluation must say so.
+
+**One bus, three faces.** For every patent, sliders on the 2D sim, sliders
+on the 3D sim, schematic callouts, `PhysicsTelemetryBadge`, and any audio
+tone read and write the same `patentId` parameter map (`usePatentPhysics`)
+and the same latest telemetry envelope (`useFrankenSimPhysics` /
+WASM `step`). Dragging the Wright warp on the 3D HUD must move the 2D
+wing tips, highlight Fig. 4's warped margins, and change induced-drag
+newtons in the badge on the same frame.
+
+**Kernel owns the law; React owns presentation.** The rAF / `TickScheduler`
+pumps `step(dt, controls) → telemetry`. React does not re-derive lift,
+slip, k_eff, or Stefan–Boltzmann in the component. 2D is an orthographic
+reduction of the same bodies/fields as 3D, not a second formula.
+
+**Claim-linked probes.** At least one independent claim is a live switch
+or readout: enable/disable hip-cradle coupling and watch adverse yaw
+appear; open Tesla's 2-phase vs 3-phase circuits and watch the B-vector
+locus become a circle; withdraw Fermi's cadmium rods and watch the
+kernel refuse past a documented k_eff bound. The visual argues the
+claim. Decorative particles that ignore the claim are a failed visual.
+
+**Field and body samples, not stickers.** Where the domain is a field
+(Tesla flux, Farnsworth raster, Spencer cavity, Noyce depletion,
+Kwolek nematic), WASM writes a flat f32 buffer once per tick and the
+renderer drains it once into a `DataTexture`, SVG path, or line
+segments. Where the domain is a machine (Howe shuttle, Engelbart
+wheels, Lincoln bellows, Wright airframe), WASM writes joint angles /
+rigid poses and the mesh follows. Do not keyframe a lookalike motion
+and print a formula beside it.
+
+**Refusal is a museum label.** When the kernel refuses (stall, Hull
+cutoff, supercritical pile, ruptured aramid, vacuum loss), freeze the
+illegal step, show the reason and Blake3 digest, and keep the last
+legal pose. Do not silently clamp and keep animating.
+
+**Sound is a transducer.** Bell, Morse, Marconi, Tesla coil, Spencer,
+and Lamarr tones come from the latest current / voltage / hop / spark
+sample. They are not canned one-shots. Default muted.
+
+**Deterministic replay.** Control history is a tape. A visitor can
+scrub "the same Kitty Hawk warp sequence" or "the same 88-key hop
+roll" and get the same digest. That is the point of Blake3 and
+host-fed time; do not throw it away.
+
+**Capability honesty.** Probe `crossOriginIsolated` / SharedArrayBuffer
+the way `apps/wright-flyer` does. Isolated tabs may use shared-memory
+transport; everyone else gets transferable buffers and a visible
+"compatibility mode" line. Never require COOP/COEP to render the page.
+
+**New-patent physics checklist**
+
+1. Register `PATENT_PHYSICS_REGISTRY[id]` with SI controls, one governing
+   equation, and `computeMetrics` that call the shared step (WASM if
+   present, TS fallback otherwise).
+2. Bind 2D, 3D, schematic, badge, and audio to that registry. No private
+   `useState` copies of the same slider.
+3. Map each independent claim to a probe, constraint, or readout.
+4. Name the FrankenSim crate that *should* own the law (`fs-mbd`,
+   `fs-flux`, …) in the registry even while only the TS fallback exists.
+5. Document the refusal boundary (what the kernel will not pretend to
+   simulate).
+
+See [`docs/FRANKENSIM_WASM_INTEGRATION_TODO.md`](./docs/FRANKENSIM_WASM_INTEGRATION_TODO.md)
+for the per-patent crate map and the visual-weaving backlog.
+
 ### 6. Acquire and review OCR artifacts
 
 The repository already has local `focr` weights. Do not pull weights during a
