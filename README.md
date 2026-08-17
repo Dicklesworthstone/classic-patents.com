@@ -137,23 +137,17 @@ Open [http://localhost:3000](http://localhost:3000) in your browser.
 ## Verification & Deployment
 
 ```bash
-# Verify data integrity and original PDF sizes for all 22 patents
-bun run pipeline:verify
-
-# TypeScript typecheck
-bun run typecheck
-
-# Code formatting & linting
-bun run lint
-bun run format
-
-# Production build
-bun run build
-
-# Deploy prebuilt artifact to Vercel production
-vercel build --prod
-vercel deploy --prebuilt --prod
+# Verified production release. This serializes shared builds, runs the quality
+# gates, validates a full prebuilt artifact and critical live routes, then
+# promotes classic-patents.com, www.classic-patents.com, and the stable Vercel
+# platform alias.
+bun scripts/verified-production-deploy.ts
 ```
+
+Do not invoke `vercel deploy --prebuilt --prod` directly. The verified release
+entry point uses `--skip-domain` until the deployed Wright page and its complete
+source-text endpoint have passed checks, so a stale or partial `.vercel/output`
+directory cannot replace the public site.
 
 ---
 

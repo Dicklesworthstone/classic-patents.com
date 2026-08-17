@@ -443,14 +443,23 @@ In a shared session, create/update the Beads task, reserve the exact paths via
 Agent Mail before editing, preserve others' changes, and release the
 reservation once complete. Do not create a branch unless explicitly asked.
 Before deployment, ensure the checks above are green. Deploy only with the
-local prebuilt Vercel workflow and only when deployment is within the requested
-scope:
+verified local prebuilt Vercel workflow and only when deployment is within the
+requested scope:
 
 ```bash
-vercel pull --yes
-vercel build --prod
-vercel deploy --prebuilt --prod
+bun scripts/verified-production-deploy.ts
 ```
+
+Never call `vercel deploy --prebuilt --prod` directly. The verified entry point
+takes an exclusive local deployment lock, refuses a dirty worktree or any other
+active build, runs the quality gates, checks that `vercel build` created a full
+Build Output API artifact, deploys with `--skip-domain`, exercises the Wright
+detail page and its complete source-text endpoint on that isolated deployment,
+and only then aliases both `classic-patents.com` and
+`www.classic-patents.com`, plus `classic-patents.vercel.app`. A failed check
+leaves the existing public aliases unchanged. The shared `.next` and
+`.vercel/output` directories make concurrent builds and direct prebuilt deploys
+unsafe.
 
 Report the source provenance, files added/changed, OCR boundary, verification
 results, and any remaining review or deployment step. Never delete PDFs,
@@ -464,17 +473,15 @@ user's explicit written permission.
 Vercel CLI is installed and authenticated as `dicklesworthstone`.
 
 ```bash
-# Pull settings + env
-vercel pull --yes
-
-# Build locally (saves Vercel build credits)
-vercel build --prod
-
-# Deploy prebuilt artifact
-vercel deploy --prebuilt --prod
+# Runs the local quality gates, creates a fresh prebuilt artifact, validates an
+# isolated production deployment, then promotes both public hostnames.
+bun scripts/verified-production-deploy.ts
 ```
 
-**Rule**: Always use the `--prebuilt` workflow to avoid burning cloud build minutes. `vercel.json` has `{"git": {"deploymentEnabled": false}}`.
+**Rule**: Always use the verified `--prebuilt` workflow to avoid burning cloud
+build minutes and to prevent a stale `.vercel/output` directory from becoming
+live. Do not run a direct Vercel build or deploy while another build is active.
+`vercel.json` has `{"git": {"deploymentEnabled": false}}`.
 
 ---
 

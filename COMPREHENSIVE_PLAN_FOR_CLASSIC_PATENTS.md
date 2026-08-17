@@ -311,12 +311,17 @@ export interface Patent {
 4. **Data Integrity**: `bun run pipeline:verify` validates that every patent contains complete claims, valid dates, interactive drawings, and non-empty plain-English explanations.
 
 ### 8.2 Vercel Deployment Workflow
-- CLI-managed via prebuilt workflow:
+- CLI-managed via the verified prebuilt workflow:
   ```bash
-  vercel pull --yes
-  vercel build --prod
-  vercel deploy --prebuilt --prod
+  bun scripts/verified-production-deploy.ts
   ```
+- The release entry point takes a machine-local exclusive lock, refuses to run
+  alongside another Next/Vercel build or with an uncommitted worktree, runs the
+  quality gates, validates the generated Build Output API artifact, deploys it
+  with `--skip-domain`, tests the Wright detail and complete source-text routes,
+  then aliases both public hostnames and the stable Vercel platform alias.
+  Direct `vercel deploy --prebuilt --prod` is prohibited because it can upload
+  a stale or partial `.vercel/output`.
 - Cost & build credit defense: `vercel.json` configured with `{"git": {"deploymentEnabled": false}}`.
 
 ---
