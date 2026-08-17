@@ -156,27 +156,36 @@ Figure 4 is a diagram of the repeating aromatic polymer chain unit and inter-cha
   ],
   historicalContext: {
     problemStatement:
-      "In the mid-1960s, automotive tires relied on heavy steel belts that decreased fuel efficiency, while bulletproof vests were made of cumbersome steel plates that weighed over 30 pounds.",
+      "DuPont in 1964 wanted a fiber to replace steel cord in tires and save gasoline. Nylon melts and creeps. Steel is heavy and rusts. The vest problem (flak jackets as steel plates) was a later market, not the original brief.",
     priorArtLimitations: [
-      "Nylon and polyester polymers melted at moderate temperatures and stretched under load.",
-      "Steel wire was heavy, stiff, and prone to corrosion.",
+      "Flexible-chain nylons and polyesters give toughness, not 3+ GPa tenacity.",
+      "Steel cord adds unsprung mass and corrosion.",
+      "A cloudy, watery dope was, in every spinner's experience, a failed batch.",
     ],
     breakthroughInsight:
-      "Kwolek realized that the milky, low-viscosity behavior of PPD-T in acid was not a failed cloudy emulsion, but evidence of spontaneous liquid-crystal self-assembly of rigid polymer chains.",
+      "Kwolek's poly-p-phenylene terephthalamide in concentrated sulfuric acid was opalescent and thin. Colleagues wanted it thrown out before it clogged a spinneret. She insisted it be spun. The cloudiness was a nematic liquid crystal: rigid rods already aligned, so the fiber came out oriented.",
     patentWars: [
       {
-        rivalName: "Akzo Nobel (Twaron)",
+        rivalName: "Akzo (Twaron)",
         rivalClaim:
-          "Dutch chemical conglomerate Akzo developed a similar aramid fiber (Twaron) and entered a fierce international patent dispute with DuPont in the 1980s.",
+          "Akzo's aramid (later Twaron) was close enough that both companies sued over process and composition through the 1980s.",
         conflictDetails:
-          "After worldwide patent litigation, DuPont and Akzo reached a cross-licensing agreement in 1988, dividing manufacturing territories and affirming Kwolek's priority.",
-        resolution: "DuPont commercialized Kevlar into a multi-billion dollar global brand.",
-        legalOutcome: "Stephanie Kwolek was awarded the National Medal of Technology in 1996.",
+          "The 1988 settlement cross-licensed and split territories. DuPont kept the Kevlar trademark. Kwolek's priority on the liquid-crystal spinning route stood.",
+        resolution:
+          "Two suppliers, one chemistry class. Kwolek received the National Medal of Technology in 1996.",
+        legalOutcome:
+          "DuPont's composition and process patents held in the US. Europe was messier; the settlement ended it.",
       },
     ],
     civilizationalImpact:
-      "Saved countless lives in law enforcement and the armed forces, enabled lightweight aerospace engineering, and established the entire field of liquid-crystalline materials.",
+      "Soft armor, sailcloth, brake pads, and the occasional suspension bridge cable. The tire-cord brief succeeded; the vest market became the public face.",
     funFact:
-      "Stephanie Kwolek originally intended to work temporarily at DuPont just to save enough money to attend medical school to become a doctor, but fell so deeply in love with polymer chemistry that she remained a research scientist at DuPont for over 40 years.",
+      "Kwolek took the DuPont job to save for medical school and stayed 40 years. She did not become a physician. She became the reason a patrol officer's vest can be worn all shift.",
+    aftermath:
+      "She retired in 1986 and spent decades visiting classrooms. She died in 2014. DuPont still spins PPTA in Richmond, Virginia, and elsewhere.",
+    sideNotes: [
+      "The dope is sulfuric acid. That is why Kevlar plants look like chemical works, not textile mills.",
+      "Ballistic fabric works because the sonic velocity in the fiber is high (~8–10 km/s), so the strain wave spreads sideways before the yarn breaks. Alignment is the whole game.",
+    ],
   },
 };

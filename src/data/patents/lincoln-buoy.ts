@@ -135,29 +135,37 @@ The additional displacement thus created exerts a powerful upward buoyant lift, 
   ],
   historicalContext: {
     problemStatement:
-      "Western river steamboats navigating the shallow, shifting sandbars of the Ohio and Mississippi rivers routinely grounded, causing catastrophic delays, expensive cargo lightening, and vessel damage.",
+      "Ohio and Mississippi packets ran onto sandbars as the river fell. The usual fix was to offload cargo onto flats or to 'grasshopper' the hull forward on spars and a capstan. Both cost days. Lincoln had been stranded on the Talisman in 1831 and again as a passenger in 1848; he filed in 1849 as a one-term congressman from Illinois.",
     priorArtLimitations: [
-      "Manual offloading of cargo onto auxiliary barges.",
-      "Grasshoppering over mudflats using heavy wooden spars and capstans.",
-      "Restricted hull designs with compromised cargo-carrying capacity.",
+      "Lightening the boat by hand.",
+      "Sparring and capstans that needed a crew and wrecked the rail.",
+      "Shallower hulls that sacrificed cargo.",
     ],
     breakthroughInsight:
-      "Lincoln realized that variable displacement could be actuated directly from the vessel's steam engine: expanding waterproof bellows below the waterline increases buoyant displacement and lifts the boat over sandbars without unloading cargo.",
+      "Archimedes, applied with a steam winch: bellows under the guards inflate, displacement goes up, draft goes down, the bar is under you instead of in you. No poetry; a volume change.",
     patentWars: [
       {
-        rivalName: "Mississippi River Freight Lobby",
+        rivalName: "No courtroom opponent; the river itself declined",
         rivalClaim:
-          "Claimed mechanical chambers were unnecessary compared to steam-powered derrick spars.",
+          "Captains already had spars. Rubber bellows in 1849 were heavy, leaky, and untried at steamboat scale.",
         conflictDetails:
-          "While Lincoln personally carved the scale wooden model now housed in the Smithsonian, the system was not commercially adopted due to the weight of 1840s vulcanized rubber.",
-        resolution: "Lincoln was granted US Patent No. 6,281 without legal challenge.",
-        legalOutcome: "Patent issued in full on May 22, 1849.",
+          "US 6,281 issued 22 May 1849 with no interference. Lincoln carved the model now in the Smithsonian. No yard built the system. Goodyear rubber of that decade was not yet a marine fabric.",
+        resolution:
+          "The patent sat. Lincoln went back to Springfield, then to the presidency. He liked to walk visitors through the drawings.",
+        legalOutcome:
+          "Issued, unchallenged, unused. He remains the only US president to hold a patent.",
       },
     ],
     civilizationalImpact:
-      "Stands as a legendary historical artifact demonstrating the analytical, mechanical inventiveness of Abraham Lincoln prior to his presidency and leadership during the American Civil War.",
+      "None as hardware. Some as biography: a prairie lawyer who thought in machines and later ran a war that was, among other things, a logistics problem.",
     funFact:
-      "Lincoln is the only United States President to ever hold a patent. He whittled the working scale model of the steamboat out of wood by hand.",
+      "He whittled the model himself. The Patent Office required a model in 1849; most inventors hired a model maker. Lincoln did not.",
+    aftermath:
+      "During the Civil War he still mentioned the patent when he wanted to prove he understood mechanical drawings. The Union navy did not resurrect the bellows.",
+    sideNotes: [
+      "Variable-ballast and air-cushion craft of the 20th century solve the same draft problem with better materials. They do not cite Lincoln, and they do not need to.",
+      "The 1848 grounding that prompted the filing was on the Great Lakes steamer that took him home from Congress, a different water than the Sangamon, same irritation.",
+    ],
   },
   tags: [
     "Abraham Lincoln",

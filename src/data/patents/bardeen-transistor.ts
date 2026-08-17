@@ -136,30 +136,37 @@ When the emitter contact is biased in the forward (low resistance) direction and
   ],
   historicalContext: {
     problemStatement:
-      "Telecommunication repeaters and early computers like ENIAC required thousands of fragile vacuum tubes that generated tremendous heat, consumed huge amounts of power, and failed constantly due to filament burnout.",
+      "ENIAC's 18,000 tubes failed by the hour. A long-distance telephone repeater was a rack of hot glass. Shockley's first field-effect attempts at Bell Labs did nothing; surface states trapped the charge. The Labs needed a solid amplifier that did not burn a filament.",
     priorArtLimitations: [
-      "Thermionic triode vacuum tubes (Lee de Forest Audion).",
-      "Point-contact crystal diode rectifiers (Ferdinand Braun cat's whisker, zero amplification).",
-      "Field-effect theoretical concepts that could not be fabricated due to surface state traps.",
+      "de Forest Audions and later pentodes: gain, heat, and a vacuum pump in the supply chain.",
+      "Braun cat's-whisker diodes rectify; they do not amplify.",
+      "Lilienfeld's 1920s FET patents were paper. Nobody could make the surface clean enough.",
     ],
     breakthroughInsight:
-      "Bardeen and Brattain discovered that forward-biasing a microscopic emitter point contact on germanium injected minority holes directly into the crystal, allowing a nearby reverse-biased collector point contact to collect the carriers with substantial power gain.",
+      "16 December 1947: two gold contacts, a sliver of n-germanium, a forward-biased emitter injecting holes, a reverse-biased collector a few tens of microns away. Minority-carrier injection, not the FET Shockley had wanted. Brattain and Bardeen had a working point-contact amplifier. Shockley went home furious and invented the junction transistor on paper.",
     patentWars: [
       {
-        rivalName: "William Shockley & The Junction Transistor",
+        rivalName: "William Shockley (inside the same lab)",
         rivalClaim:
-          "Shockley sought sole patent credit for the transistor, leading to internal friction at Bell Labs.",
+          "Shockley wanted his name first and a device that was his theory. The attorneys gave the point-contact patent to Bardeen and Brattain (US 2,524,035). Shockley took the junction sandwich (US 2,569,347).",
         conflictDetails:
-          "Bell Labs patent attorneys determined that Bardeen and Brattain were the legal inventors of the physical point-contact device. Shockley subsequently invented the theoretical junction sandwich transistor (US Patent No. 2,569,347 vs US 2,502,488).",
-        resolution: "All three shared the 1956 Nobel Prize in Physics in Stockholm.",
+          "The personal break never healed. Shockley left to found Shockley Semiconductor; the traitorous eight left him. Bardeen left for Illinois and a second Nobel in superconductivity.",
+        resolution:
+          "The 1956 Nobel went to all three. Bell licensed the transistor package for $25,000 to anyone who would come to the 1952 symposium, which is why the industry is not a single-company museum.",
         legalOutcome:
-          "Bell Labs licensed the transistor patent widely for a nominal $25,000 fee, fostering the Silicon Valley semiconductor boom.",
+          "Two patents, three names, one prize. The junction device, not the point-contact whisker, is what Fairchild later planarized.",
       },
     ],
     civilizationalImpact:
-      "Replaced vacuum tubes, launched solid-state electronics, enabled digital computing, satellite communications, and modern microprocessors.",
+      "Repeaters shrank. Computers stopped being air-conditioned tube barns. Everything after Noyce assumes this solid-state gain stage.",
     funFact:
-      "The team initially called their invention a 'surface states amplifier'. The name 'transistor' was coined by Bell Labs engineer John R. Pierce as a portmanteau of 'transconductance' (or 'transfer') and 'varistor'.",
+      "They called it a surface-states amplifier until John R. Pierce suggested 'transistor' (transfer + varistor). The lab notebook drawing is a triangle of germanium and two pieces of gold foil on a paper clip.",
+    aftermath:
+      "Point-contact transistors were noisy and mechanically fragile. They sold for a few years. The junction and then the silicon planar FET ate them. The 1947 lunch-table demo is still the origin story because it was the first solid gain that worked.",
+    sideNotes: [
+      "Walter Brattain did the surface physics with his hands. John Bardeen did the theory of the inversion layer and then of the injection. Shockley managed, then competed.",
+      "The 1952 Bell transistor symposium's $25,000 ticket is one reason Tokyo and Palo Alto both had a legal starting point.",
+    ],
   },
   tags: [
     "Transistor",

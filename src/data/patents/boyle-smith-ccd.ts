@@ -133,31 +133,37 @@ In accordance with our invention, an improved three-phase electrode structure is
   ],
   historicalContext: {
     problemStatement:
-      "Photography required chemical silver-halide films with slow chemical darkroom processing, while vacuum television camera tubes (Vidicons) were bulky, fragile, and prone to image burning and distortion.",
+      "A 1969 camera was either silver halide (hours in a darkroom) or a vidicon (a hot glass bottle that burned in highlights). Photodiode arrays needed an amplifier per pixel, which did not scale.",
     priorArtLimitations: [
-      "Chemical silver-halide film emulsions.",
-      "Vidicon and plumbicon vacuum camera pickup tubes.",
-      "Early photodiode arrays requiring amplifiers at every single pixel.",
+      "Film: beautiful, slow, wet.",
+      "Vidicons and plumbicons: bulky, laggy, burn-in.",
+      "XY-addressed photodiodes: a transistor budget that exploded with resolution.",
     ],
     breakthroughInsight:
-      "Boyle and Smith realized that photo-generated electrical charges could be stored in surface potential wells in silicon and moved along the surface like a bucket brigade by clocking electrode voltages.",
+      "17 October 1969, one hour at a Bell Labs blackboard: store photocharge in MOS potential wells and march it to a single output amplifier by clocking the gates, a bucket brigade. No per-pixel amp.",
     patentWars: [
       {
-        rivalName: "Texas Instruments & Fairchild Camera",
+        rivalName: "Fairchild, TI, and the later CMOS crowd",
         rivalClaim:
-          "Fairchild and TI developed competing frame-transfer and interline CCD architectures.",
+          "Fairchild and TI shipped frame-transfer and interline CCDs and argued architecture, not the transfer idea.",
         conflictDetails:
-          "Bell Labs defended Boyle and Smith's foundational priority for the charge-coupled transfer mechanism.",
+          "Bell kept the charge-coupling claim. The commercial cameras came from Japan and from Fairchild's space line. CMOS active-pixel sensors (Fossum and others, 1990s) later took the phone market by putting the amplifier back at the pixel, cheaply.",
         resolution:
-          "Boyle and Smith were recognized as the primary inventors and awarded the 2009 Nobel Prize in Physics.",
+          "Boyle and Smith received the 2009 Nobel Prize in Physics. Hubble's WFPC and a generation of camcorders were CCD.",
         legalOutcome:
-          "CCDs became the universal standard for digital astronomical imaging, camcorders, and digital cameras.",
+          "The 1974 Boyle–Smith patent is the transfer device. CMOS did not invalidate it; it out-economized it in consumer volumes.",
       },
     ],
     civilizationalImpact:
-      "Democratized visual documentation, enabled digital cameras, medical endoscopes, space telescopes, and modern camera phones.",
+      "Astronomy went digital first (you cannot develop a plate on Mauna Kea as fast as you can read a chip). Then camcorders, then, after CMOS, everyone's pocket.",
     funFact:
-      "Boyle and Smith sketched the entire CCD concept on a chalkboard at Bell Labs during a single brainstorming session lasting just one hour on October 17, 1969.",
+      "The chalkboard session is well attested. They were supposed to be thinking about magnetic bubble memory. They walked out with an imager.",
+    aftermath:
+      "Bell Labs did not become a camera company. Kodak, Sony, and later every phone vendor did. Boyle retired to Nova Scotia; Smith stayed in device physics.",
+    sideNotes: [
+      "A CCD is a shift register that happens to be light-sensitive. That is why early video cameras had 'smear': the charge had to walk through other pixels.",
+      "Hubble's original WFPC used Texas Instruments CCDs. The 1993 repair mission swapped in WFPC2, still CCD.",
+    ],
   },
   tags: ["CCD", "Digital Photography", "Nobel Prize", "Bell Labs", "Semiconductors", "Hubble"],
   stats: {
