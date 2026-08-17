@@ -83,6 +83,14 @@ Fourth, after fuel injection ceases, the hot gases expand further down to near a
         archaicTerm: "Air-admission and exhaust puppet-valves",
         modernEquivalent: "Overhead camshaft poppet valvetrain",
       },
+      {
+        title: "Multi-Stage Auxiliary Blast Air Compressor",
+        summary: "Crankshaft-driven two-stage reciprocating pump generating 80 bar injection air.",
+        technicalDetails:
+          "A two-stage reciprocating air pump with interstage cooling water jackets ($D_1 = 80\\text{ mm}, D_2 = 35\\text{ mm}$). Powered by an eccentric link from the main connecting rod, it supplies dry compressed air to an external forged steel receiver flask ($V = 30\\text{ L}, P = 80\\text{ bar}$) for blast-air fuel injection and cold pneumatic starting.",
+        archaicTerm: "Air-compressing pump driven by the engine",
+        modernEquivalent: "Auxiliary multi-stage blast injection compressor / Common rail pump",
+      },
     ],
     scientificPrinciples: [
       {
@@ -105,6 +113,20 @@ Fourth, after fuel injection ceases, the hot gases expand further down to near a
           "d_{32} \\propto \\left(\\frac{\\sigma_{\\text{fuel}}}{\\rho_{\\text{gas}} v_{\\text{rel}}^2}\\right)^{0.5} \\cdot \\left(\\frac{\\mu_{\\text{fuel}}}{\\sqrt{\\sigma_{\\text{fuel}} \\rho_{\\text{fuel}} D_{\\text{orifice}}}}\\right)^{0.1}",
         explanation:
           "High blast-air velocity through the injection orifice creates intense aerodynamic shear, shattering viscous liquid fuel into a fine aerosol with enormous specific surface area ($A/V = 6 / d_{32}$), enabling rapid droplet evaporation and smokeless combustion.",
+      },
+      {
+        principle: "Carnot Thermodynamic Theoretical Upper Bound",
+        formula:
+          "\\eta_{\\text{Carnot}} = 1 - \\frac{T_L}{T_H} = 1 - \\frac{300\\text{ K}}{2100\\text{ K}} \\approx 85.7\\%",
+        explanation:
+          "Diesel's core intellectual thesis was to approach Carnot theoretical efficiency as closely as physical materials allow by maximizing the combustion peak temperature $T_H$ through extreme pre-compression.",
+      },
+      {
+        principle: "Droplet Evaporation & D-Squared Combustion Law",
+        formula:
+          "d^2(t) = d_0^2 - K t, \\quad K = \\frac{8 k_{\\text{gas}}}{\\rho_{\\text{fuel}} C_{p,\\text{gas}}} \\ln(1 + B_q)",
+        explanation:
+          "Micro-droplets evaporating in the $950\\text{ K}$ cylinder air undergo steady quasi-steady regression, where the burning rate constant $K$ governs the transition from diffusive evaporation to turbulent deflagration.",
       },
     ],
     whyItMattersToday:

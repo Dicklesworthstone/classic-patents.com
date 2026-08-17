@@ -75,6 +75,22 @@ I claim as my invention:
         archaicTerm: "Water-tight stuffing box and thrust pillow block",
         modernEquivalent: "Stern tube bearing & Kingsbury/Mitchell thrust block",
       },
+      {
+        title: "Blade Camber, Skew, and Hub Boss Streamlining",
+        summary: "Hydrodynamically faired root sections minimizing turbulent eddy shedding.",
+        technicalDetails:
+          "The blade roots transition smoothly into a tapered ellipsoidal hub boss ($d_{\\text{hub}}/D_{\\text{prop}} \\approx 0.20$), preventing flow separation at the inner radii. Backwards rake angles ($\theta_{\\text{rake}} \\approx 6^\\circ\\text{ to }10^\\circ$) increase clearance between the blade tips and the ship's stern frame, suppressing propeller-induced hull pressure pulses.",
+        archaicTerm: "Boss or central nave of the propeller wheel",
+        modernEquivalent: "Streamlined hub fairing & raked blade geometry",
+      },
+      {
+        title: "Bevel Reversing Geartrain & Disengaging Clutch",
+        summary: "Mechanical transmission linking reciprocating steam pistons to dual shafts.",
+        technicalDetails:
+          "A pair of heavy cast-iron bevel gears with crowned teeth links the primary engine crank to the outer sleeve shaft and inner core shaft. The gear assembly maintains precise $1:1$ counter-rotational synchronization while absorbing peak torque pulsations ($\\tau_{\\text{peak}} / \\tau_{\\text{mean}} \\approx 1.4$) from single-expansion steam cylinders.",
+        archaicTerm: "Bevel gear wheels and reversing clutch mechanism",
+        modernEquivalent: "Marine planetary reduction gearbox & synchronizer",
+      },
     ],
     scientificPrinciples: [
       {
@@ -97,6 +113,13 @@ I claim as my invention:
           "\\sigma = \\frac{P_{\\text{ambient}} + \\rho g h - P_{\\text{vapor}}}{\\frac{1}{2} \\rho v_{\\text{tip}}^2} > \\sigma_{\\text{critical}}",
         explanation:
           "Submerging the propeller at depth $h$ below the waterline increases hydrostatic pressure, preventing blade suction pressure from dropping below water vapor pressure ($P_{\\text{vap}} \\approx 2.3\\text{ kPa}$ at $20^\\circ\\text{C}$), suppressing cavitation.",
+      },
+      {
+        principle: "Froude-Rankine Actuator Disk Ideal Efficiency",
+        formula:
+          "\\eta_{\\text{ideal}} = \\frac{2}{1 + \\sqrt{1 + C_T}}, \\quad C_T = \\frac{T}{\\frac{1}{2} \\rho v_{\\text{ship}}^2 A_{\\text{disk}}}",
+        explanation:
+          "Actuator disk momentum theory sets the theoretical upper limit on propeller efficiency by modeling the acceleration of the slipstream jet column through disk area $A_{\\text{disk}} = \\frac{\\pi}{4} D^2$.",
       },
     ],
     whyItMattersToday:

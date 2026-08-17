@@ -82,6 +82,14 @@ Fifth, this cycle is continued continuously until the temperature at the throttl
         archaicTerm: "Vacuum-jacketed liquid-receptacle",
         modernEquivalent: "Vacuum-insulated cryogenic collection vessel",
       },
+      {
+        title: "Chemical Adsorption Moisture & CO2 Purifier Scrubbers",
+        summary: "Twin chemical desiccant towers eliminating ice-forming trace contaminants.",
+        technicalDetails:
+          "High-pressure steel cylinders packed with potassium hydroxide ($KOH$) pellets and anhydrous calcium chloride ($CaCl_2$). Strips water vapor (dew point $<-60^\\circ\\text{C}$) and carbon dioxide ($<5\\text{ ppm}$) from the $200\\text{ bar}$ air stream before entering the heat exchanger, preventing catastrophic cryogenic ice blockages in the throttle orifice.",
+        archaicTerm: "Purifying apparatus containing chemical desiccants",
+        modernEquivalent: "Molecular sieve desiccant bed & cryogenic purification column",
+      },
     ],
     scientificPrinciples: [
       {
@@ -104,6 +112,20 @@ Fifth, this cycle is continued continuously until the temperature at the throttl
           "\\alpha_{\\text{sep}} = \\frac{y_{\\text{N}_2} / x_{\\text{N}_2}}{y_{\\text{O}_2} / x_{\\text{O}_2}} = \\frac{P_{\\text{sat, N}_2}(T)}{P_{\\text{sat, O}_2}(T)} \\approx 3.2 \\quad (T = 80\\text{ K})",
         explanation:
           "Because nitrogen boils at $-195.8^\\circ\\text{C}$ while oxygen boils at a warmer $-182.9^\\circ\\text{C}$, the liquid air can be separated in a distillation column, enabling pure industrial gaseous oxygen and nitrogen production.",
+      },
+      {
+        principle: "Linde-Hampson Steady-State Liquefaction Yield",
+        formula:
+          "y = \\frac{\\dot{m}_{\\text{liquid}}}{\\dot{m}_{\\text{compressor}}} = \\frac{h_{\\text{return}}(P_{\\text{low}}, T_1) - h_{\\text{inlet}}(P_{\\text{high}}, T_1)}{h_{\\text{return}}(P_{\\text{low}}, T_1) - h_{\\text{liquid}}} \\approx 8.2\\%",
+        explanation:
+          "At steady-state equilibrium, the fraction $y$ of compressed air converted to liquid is dictated by the enthalpy difference of non-ideal gas at room temperature between 200 bar and 1 bar, yielding approximately 8% liquid per pass.",
+      },
+      {
+        principle: "Stefan-Boltzmann Cryogenic Radiation Insulation Shielding",
+        formula:
+          "q_{\\text{rad}} = \\frac{\\sigma (T_{\\text{room}}^4 - T_{\\text{cryo}}^4)}{\\frac{1}{\\epsilon_{\\text{outer}}} + \\frac{1}{\\epsilon_{\\text{inner}}} - 1}, \\quad \\epsilon_{\\text{silver}} \\approx 0.02 \\implies q_{\\text{rad}} < 5\\text{ W/m}^2",
+        explanation:
+          "High-vacuum insulation ($P < 10^{-4}\\text{ Torr}$) eliminates gas conduction and convection, while silver mirror coatings on the Dewar walls reduce emissivity $\\epsilon$ to $0.02$, minimizing thermal radiation boil-off.",
       },
     ],
     whyItMattersToday:

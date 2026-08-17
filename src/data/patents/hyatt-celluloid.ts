@@ -76,6 +76,24 @@ I claim as our invention:
         archaicTerm: "Strong mold subjected to heat and heavy pressure",
         modernEquivalent: "Heated hydraulic compression molding press / Transfer mold",
       },
+      {
+        title: "Solventless High-Shear Differential Roll Mill",
+        summary:
+          "Opposed heated cast-iron rollers masticating dry powder into clear consolidated sheets.",
+        technicalDetails:
+          "Two counter-rotating heated rollers ($D = 250\\text{ mm}$) operated with a $1.25:1$ surface speed differential. The combination of intense mechanical shear strain ($\\dot{\\gamma} > 120\\text{ s}^{-1}$) and surface contact heat ($T_{\\text{roll}} = 95^\\circ\\text{C}$) fuses the dry powder into a plasticized, bubble-free sheet within 180 seconds without requiring volatile alcohol/ether solvents.",
+        archaicTerm: "Masticating rollers for homogenizing the mixture",
+        modernEquivalent: "Two-roll differential polymer compounding mill",
+      },
+      {
+        title: "Chilled Die Platens & Positive Pin Ejector Matrix",
+        summary:
+          "Water-quenched steel tooling freezing polymer chains into crystalline-clear molded geometries.",
+        technicalDetails:
+          "Following high-pressure consolidation, internal mold cooling channels switch instantaneously from live steam to chilled water ($T_{\\text{water}} = 12^\\circ\\text{C}$). Rapid quenching through the glass transition zone ($T_g \\approx 65^\\circ\\text{C}$) locks in molecular alignment and suppresses camphor bloom, while spring-driven ejector pins pop finished billiard ball hemispheres out of the polished tool steel cavity.",
+        archaicTerm: "Cooled matrix and knock-out plungers",
+        modernEquivalent: "Rapid thermal cycling injection tooling & mechanical ejector pins",
+      },
     ],
     scientificPrinciples: [
       {
@@ -98,6 +116,13 @@ I claim as our invention:
           "\\Delta G_{\\text{mixing}} = \\Delta H_{\\text{mixing}} - T \\Delta S_{\\text{mixing}} < 0",
         explanation:
           "The favorable dipolar interaction between the camphor carbonyl group ($C=O$) and the cellulose hydroxyl/nitrate groups yields a negative enthalpy of mixing, driving spontaneous molecular solvation upon heating.",
+      },
+      {
+        principle: "Flory-Huggins Polymer Solution Miscibility Thermodynamics",
+        formula:
+          "\\frac{\\Delta G_m}{R T} = \\frac{\\phi_1}{x_1} \\ln\\phi_1 + \\frac{\\phi_2}{x_2} \\ln\\phi_2 + \\chi_{12} \\phi_1 \\phi_2, \\quad \\chi_{12} < \\chi_{\\text{critical}}",
+        explanation:
+          "The Flory-Huggins interaction parameter $\\chi_{12}$ between camphor and nitrocellulose is negative ($\\chi \\approx -0.15$), ensuring thermodynamic miscibility and single-phase amorphous transparency across wide operational temperature ranges.",
       },
     ],
     whyItMattersToday:

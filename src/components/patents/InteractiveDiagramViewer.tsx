@@ -1746,6 +1746,900 @@ function renderHistoricalSchematic(
           </text>
         </g>
       );
+    case "whitney-cotton-gin":
+      return (
+        <g stroke="#38bdf8" strokeWidth="1.5" fill="none">
+          {/* Hopper Frame */}
+          <polygon
+            points="60,40 180,40 160,110 80,110"
+            stroke="#94a3b8"
+            fill="#1e293b"
+            fillOpacity="0.2"
+          />
+          {/* Slotted Grate Ribs */}
+          <path d="M 160 80 C 180 120, 180 170, 160 210" stroke="#fbbf24" strokeWidth="3" />
+          <path
+            d="M 165 80 C 185 120, 185 170, 165 210"
+            stroke="#fbbf24"
+            strokeWidth="2"
+            strokeDasharray="3 3"
+          />
+          {/* Saw Cylinder */}
+          <circle
+            cx="210"
+            cy="145"
+            r="48"
+            stroke="#38bdf8"
+            strokeWidth="2"
+            fill="#0369a1"
+            fillOpacity="0.2"
+          />
+          {[0, 30, 60, 90, 120, 150, 180, 210, 240, 270, 300, 330].map((deg) => {
+            const rad = (deg * Math.PI) / 180;
+            const x1 = 210 + Math.cos(rad) * 44;
+            const y1 = 145 + Math.sin(rad) * 44;
+            const x2 = 210 + Math.cos(rad + 0.15) * 52;
+            const y2 = 145 + Math.sin(rad + 0.15) * 52;
+            return (
+              <line key={deg} x1={x1} y1={y1} x2={x2} y2={y2} stroke="#38bdf8" strokeWidth="2.5" />
+            );
+          })}
+          {/* Revolving Clearing Brush */}
+          <circle
+            cx="300"
+            cy="145"
+            r="36"
+            stroke="#4ade80"
+            strokeWidth="2"
+            fill="#15803d"
+            fillOpacity="0.2"
+          />
+          {[0, 45, 90, 135, 180, 225, 270, 315].map((deg) => {
+            const rad = (deg * Math.PI) / 180;
+            const x1 = 300 + Math.cos(rad) * 15;
+            const y1 = 145 + Math.sin(rad) * 15;
+            const x2 = 300 + Math.cos(rad) * 38;
+            const y2 = 145 + Math.sin(rad) * 38;
+            return (
+              <line key={deg} x1={x1} y1={y1} x2={x2} y2={y2} stroke="#4ade80" strokeWidth="2" />
+            );
+          })}
+          <text x="120" y="30" fill="#94a3b8" fontSize="8" textAnchor="middle">
+            Seed Cotton Feed
+          </text>
+          <text x="175" y="65" fill="#fbbf24" fontSize="8" textAnchor="middle">
+            Grate Ribs
+          </text>
+          <text x="210" y="210" fill="#38bdf8" fontSize="8" textAnchor="middle">
+            Saw Cylinder
+          </text>
+          <text x="300" y="200" fill="#4ade80" fontSize="8" textAnchor="middle">
+            Clearing Brush
+          </text>
+        </g>
+      );
+    case "mccormick-reaper":
+      return (
+        <g stroke="#38bdf8" strokeWidth="1.5" fill="none">
+          {/* Master Bull Wheel */}
+          <circle cx="100" cy="180" r="45" stroke="#94a3b8" strokeWidth="3" />
+          <circle cx="100" cy="180" r="12" fill="#64748b" />
+          {/* Gathering Reel */}
+          <circle cx="210" cy="100" r="50" stroke="#fbbf24" strokeWidth="2" strokeDasharray="4 3" />
+          {[0, 90, 180, 270].map((deg) => {
+            const rad = (deg * Math.PI) / 180;
+            const x = 210 + Math.cos(rad) * 50;
+            const y = 100 + Math.sin(rad) * 50;
+            return (
+              <g key={deg}>
+                <line x1="210" y1="100" x2={x} y2={y} stroke="#fbbf24" strokeWidth="2" />
+                <rect x={x - 12} y={y - 4} width="24" height="8" fill="#d97706" rx="2" />
+              </g>
+            );
+          })}
+          {/* Cutting Sickle Bar */}
+          <line x1="160" y1="210" x2="320" y2="210" stroke="#ef4444" strokeWidth="4" />
+          {[170, 190, 210, 230, 250, 270, 290, 310].map((x) => (
+            <polygon key={x} points={`${x},210 ${x + 6},200 ${x + 12},210`} fill="#ef4444" />
+          ))}
+          {/* Platform */}
+          <polygon
+            points="160,210 320,210 300,245 140,245"
+            fill="#1e293b"
+            fillOpacity="0.4"
+            stroke="#64748b"
+          />
+          <text x="100" y="240" fill="#94a3b8" fontSize="8" textAnchor="middle">
+            Bull Wheel Drive
+          </text>
+          <text x="210" y="40" fill="#fbbf24" fontSize="8" textAnchor="middle">
+            4-Vane Gathering Reel
+          </text>
+          <text x="240" y="225" fill="#ef4444" fontSize="8" textAnchor="middle">
+            Reciprocating Sickle
+          </text>
+        </g>
+      );
+    case "davenport-motor":
+      return (
+        <g stroke="#38bdf8" strokeWidth="1.5" fill="none">
+          {/* Permanent Stator Poles */}
+          <path
+            d="M 60 70 A 90 90 0 0 1 120 70 L 120 230 A 90 90 0 0 1 60 230 Z"
+            stroke="#38bdf8"
+            fill="#0369a1"
+            fillOpacity="0.25"
+            strokeWidth="2"
+          />
+          <path
+            d="M 340 70 A 90 90 0 0 0 280 70 L 280 230 A 90 90 0 0 0 340 230 Z"
+            stroke="#ef4444"
+            fill="#b91c1c"
+            fillOpacity="0.25"
+            strokeWidth="2"
+          />
+          <text x="90" y="155" fill="#38bdf8" fontSize="14" fontWeight="bold" textAnchor="middle">
+            N
+          </text>
+          <text x="310" y="155" fill="#ef4444" fontSize="14" fontWeight="bold" textAnchor="middle">
+            S
+          </text>
+          {/* Rotating Electromagnet Armature */}
+          <rect
+            x="160"
+            y="138"
+            width="80"
+            height="24"
+            rx="4"
+            stroke="#fbbf24"
+            fill="#78350f"
+            fillOpacity="0.3"
+            strokeWidth="2"
+          />
+          <circle cx="200" cy="150" r="14" stroke="#4ade80" fill="#15803d" fillOpacity="0.4" />
+          {/* Commutator Segment Brushes */}
+          <line x1="180" y1="150" x2="150" y2="150" stroke="#f59e0b" strokeWidth="3" />
+          <line x1="220" y1="150" x2="250" y2="150" stroke="#f59e0b" strokeWidth="3" />
+          <text x="200" y="120" fill="#fbbf24" fontSize="8" textAnchor="middle">
+            Rotating Armature
+          </text>
+          <text x="200" y="190" fill="#4ade80" fontSize="8" textAnchor="middle">
+            Split Commutator
+          </text>
+        </g>
+      );
+    case "ericsson-propeller":
+      return (
+        <g stroke="#38bdf8" strokeWidth="1.5" fill="none">
+          {/* Hull Sternpost */}
+          <path d="M 60 80 L 140 140 L 140 160 L 60 220" stroke="#64748b" strokeWidth="3" />
+          {/* Coaxial Propeller Shaft */}
+          <line x1="140" y1="150" x2="340" y2="150" stroke="#94a3b8" strokeWidth="4" />
+          {/* Forward Helical Screw */}
+          <ellipse
+            cx="210"
+            cy="150"
+            rx="14"
+            ry="50"
+            stroke="#38bdf8"
+            strokeWidth="2"
+            fill="#0284c7"
+            fillOpacity="0.2"
+          />
+          <path d="M 196 100 Q 210 150 224 200" stroke="#38bdf8" strokeWidth="3" />
+          {/* Aft Contra-Rotating Screw */}
+          <ellipse
+            cx="280"
+            cy="150"
+            rx="14"
+            ry="46"
+            stroke="#4ade80"
+            strokeWidth="2"
+            fill="#15803d"
+            fillOpacity="0.2"
+          />
+          <path d="M 294 104 Q 280 150 266 196" stroke="#4ade80" strokeWidth="3" />
+          <text x="210" y="85" fill="#38bdf8" fontSize="8" textAnchor="middle">
+            Forward Screw (CW)
+          </text>
+          <text x="280" y="85" fill="#4ade80" fontSize="8" textAnchor="middle">
+            Aft Screw (CCW)
+          </text>
+          <text x="200" y="235" fill="#94a3b8" fontSize="9" textAnchor="middle">
+            Submerged Coaxial Drive
+          </text>
+        </g>
+      );
+    case "corliss-engine":
+      return (
+        <g stroke="#38bdf8" strokeWidth="1.5" fill="none">
+          {/* Engine Cylinder Body */}
+          <rect
+            x="70"
+            y="60"
+            width="260"
+            height="180"
+            rx="6"
+            stroke="#94a3b8"
+            fill="#1e293b"
+            fillOpacity="0.2"
+          />
+          {/* 4 Oscillating Rotary Valves */}
+          <circle
+            cx="100"
+            cy="85"
+            r="16"
+            stroke="#ef4444"
+            fill="#7f1d1d"
+            fillOpacity="0.3"
+            strokeWidth="2"
+          />
+          <circle
+            cx="300"
+            cy="85"
+            r="16"
+            stroke="#ef4444"
+            fill="#7f1d1d"
+            fillOpacity="0.3"
+            strokeWidth="2"
+          />
+          <circle
+            cx="100"
+            cy="215"
+            r="16"
+            stroke="#38bdf8"
+            fill="#0369a1"
+            fillOpacity="0.3"
+            strokeWidth="2"
+          />
+          <circle
+            cx="300"
+            cy="215"
+            r="16"
+            stroke="#38bdf8"
+            fill="#0369a1"
+            fillOpacity="0.3"
+            strokeWidth="2"
+          />
+          {/* Central Wrist-Plate */}
+          <circle
+            cx="200"
+            cy="150"
+            r="32"
+            stroke="#fbbf24"
+            strokeWidth="2.5"
+            fill="#78350f"
+            fillOpacity="0.2"
+          />
+          {/* Kinematic Linkage Rods */}
+          <line x1="200" y1="130" x2="108" y2="92" stroke="#fbbf24" strokeWidth="2" />
+          <line x1="200" y1="130" x2="292" y2="92" stroke="#fbbf24" strokeWidth="2" />
+          <line x1="200" y1="170" x2="108" y2="208" stroke="#fbbf24" strokeWidth="2" />
+          <line x1="200" y1="170" x2="292" y2="208" stroke="#fbbf24" strokeWidth="2" />
+          <text x="200" y="154" fill="#fbbf24" fontSize="8" textAnchor="middle">
+            Wrist Plate
+          </text>
+          <text x="200" y="70" fill="#ef4444" fontSize="8" textAnchor="middle">
+            Trip Drop Steam Admission
+          </text>
+          <text x="200" y="235" fill="#38bdf8" fontSize="8" textAnchor="middle">
+            Rotary Exhaust Ports
+          </text>
+        </g>
+      );
+    case "gatling-gun":
+      return (
+        <g stroke="#38bdf8" strokeWidth="1.5" fill="none">
+          {/* 6 Revolving Barrels */}
+          {[0, 60, 120, 180, 240, 300].map((deg) => {
+            const rad = (deg * Math.PI) / 180;
+            const y = 150 + Math.sin(rad) * 28;
+            return (
+              <line
+                key={deg}
+                x1="180"
+                y1={y}
+                x2="350"
+                y2={y}
+                stroke="#94a3b8"
+                strokeWidth="3"
+                strokeLinecap="round"
+              />
+            );
+          })}
+          {/* Breech Casing & Cam Track */}
+          <rect
+            x="70"
+            y="105"
+            width="110"
+            height="90"
+            rx="4"
+            stroke="#60a5fa"
+            fill="#1e3a8a"
+            fillOpacity="0.2"
+            strokeWidth="2"
+          />
+          <path
+            d="M 80 120 Q 120 160 170 120"
+            stroke="#fbbf24"
+            strokeWidth="2.5"
+            strokeDasharray="3 3"
+          />
+          {/* Gravity Hopper */}
+          <polygon
+            points="100,50 140,50 130,105 110,105"
+            stroke="#4ade80"
+            fill="#15803d"
+            fillOpacity="0.2"
+            strokeWidth="2"
+          />
+          {/* Hand Crank */}
+          <line x1="70" y1="150" x2="40" y2="150" stroke="#f59e0b" strokeWidth="3" />
+          <line x1="40" y1="150" x2="40" y2="190" stroke="#f59e0b" strokeWidth="3" />
+          <circle cx="40" cy="190" r="5" fill="#f59e0b" />
+          <text x="120" y="42" fill="#4ade80" fontSize="8" textAnchor="middle">
+            Gravity Feed Hopper
+          </text>
+          <text x="125" y="180" fill="#fbbf24" fontSize="8" textAnchor="middle">
+            Spiral Cam Track
+          </text>
+          <text x="265" y="110" fill="#94a3b8" fontSize="8" textAnchor="middle">
+            6 Revolving Barrels
+          </text>
+        </g>
+      );
+    case "nobel-dynamite":
+      return (
+        <g stroke="#38bdf8" strokeWidth="1.5" fill="none">
+          {/* Cartridge Cylinder */}
+          <rect
+            x="70"
+            y="110"
+            width="220"
+            height="80"
+            rx="8"
+            stroke="#f59e0b"
+            fill="#78350f"
+            fillOpacity="0.3"
+            strokeWidth="2"
+          />
+          {/* Kieselguhr Porous Matrix Pattern */}
+          {[90, 120, 150, 180, 210, 240, 270].map((x) =>
+            [125, 150, 175].map((y) => (
+              <circle
+                key={`${x}-${y}`}
+                cx={x}
+                cy={y}
+                r="4"
+                fill="#fbbf24"
+                fillOpacity="0.4"
+                stroke="#d97706"
+              />
+            )),
+          )}
+          {/* Blasting Cap */}
+          <rect
+            x="260"
+            y="138"
+            width="45"
+            height="24"
+            rx="3"
+            fill="#ef4444"
+            stroke="#dc2626"
+            strokeWidth="2"
+          />
+          {/* Safety Fuse */}
+          <path
+            d="M 305 150 Q 330 130 350 150 T 380 140"
+            stroke="#e2e8f0"
+            strokeWidth="2"
+            strokeDasharray="3 2"
+          />
+          <text x="175" y="100" fill="#fbbf24" fontSize="9" textAnchor="middle">
+            Kieselguhr Matrix (75% NG)
+          </text>
+          <text x="282" y="175" fill="#ef4444" fontSize="8" textAnchor="middle">
+            Fulminate Cap
+          </text>
+          <text x="345" y="125" fill="#e2e8f0" fontSize="8" textAnchor="middle">
+            Safety Fuse
+          </text>
+        </g>
+      );
+    case "sholes-typewriter":
+      return (
+        <g stroke="#38bdf8" strokeWidth="1.5" fill="none">
+          {/* Circular Type Basket */}
+          <circle
+            cx="200"
+            cy="170"
+            r="65"
+            stroke="#94a3b8"
+            strokeWidth="2"
+            fill="#1e293b"
+            fillOpacity="0.2"
+          />
+          {/* Radial Typebars Converging to Center */}
+          {[20, 45, 70, 95, 120, 145, 170, 195, 220, 245, 270, 295, 320, 345].map((deg) => {
+            const rad = (deg * Math.PI) / 180;
+            const x = 200 + Math.cos(rad) * 60;
+            const y = 170 + Math.sin(rad) * 60;
+            return (
+              <line key={deg} x1={x} y1={y} x2="200" y2="170" stroke="#38bdf8" strokeWidth="1.5" />
+            );
+          })}
+          <circle
+            cx="200"
+            cy="170"
+            r="10"
+            stroke="#ef4444"
+            strokeWidth="2"
+            fill="#991b1b"
+            fillOpacity="0.4"
+          />
+          {/* Platen Cylinder */}
+          <rect
+            x="130"
+            y="60"
+            width="140"
+            height="30"
+            rx="5"
+            stroke="#fbbf24"
+            fill="#78350f"
+            fillOpacity="0.3"
+            strokeWidth="2"
+          />
+          <text x="200" y="50" fill="#fbbf24" fontSize="8" textAnchor="middle">
+            Platen Cylinder
+          </text>
+          <text x="200" y="195" fill="#ef4444" fontSize="8" textAnchor="middle">
+            Striking Center
+          </text>
+          <text x="200" y="255" fill="#94a3b8" fontSize="9" textAnchor="middle">
+            QWERTY Radial Type-Basket
+          </text>
+        </g>
+      );
+    case "hyatt-celluloid":
+      return (
+        <g stroke="#38bdf8" strokeWidth="1.5" fill="none">
+          {/* Steam-Jacketed Cylinder */}
+          <rect
+            x="70"
+            y="100"
+            width="180"
+            height="80"
+            rx="4"
+            stroke="#94a3b8"
+            fill="#1e293b"
+            fillOpacity="0.2"
+          />
+          <rect
+            x="80"
+            y="110"
+            width="160"
+            height="60"
+            fill="#f59e0b"
+            fillOpacity="0.3"
+            stroke="#d97706"
+          />
+          {/* Hydraulic Ram */}
+          <rect x="40" y="125" width="60" height="30" rx="2" fill="#64748b" stroke="#94a3b8" />
+          {/* Extrusion Nozzle */}
+          <polygon points="250,120 290,135 290,145 250,160" fill="#38bdf8" stroke="#0284c7" />
+          {/* Split Mold */}
+          <rect
+            x="295"
+            y="110"
+            width="60"
+            height="60"
+            rx="3"
+            stroke="#4ade80"
+            fill="#15803d"
+            fillOpacity="0.2"
+          />
+          <text x="160" y="90" fill="#f59e0b" fontSize="8" textAnchor="middle">
+            Steam Heating Jacket (120°C)
+          </text>
+          <text x="70" y="170" fill="#94a3b8" fontSize="8" textAnchor="middle">
+            Hydraulic Ram
+          </text>
+          <text x="325" y="100" fill="#4ade80" fontSize="8" textAnchor="middle">
+            Split Mold
+          </text>
+        </g>
+      );
+    case "gramme-dynamo":
+      return (
+        <g stroke="#38bdf8" strokeWidth="1.5" fill="none">
+          {/* Continuous Ring Armature */}
+          <circle cx="200" cy="150" r="55" stroke="#fbbf24" strokeWidth="10" fill="none" />
+          <circle cx="200" cy="150" r="48" stroke="#38bdf8" strokeWidth="2" fill="#0f172a" />
+          {/* Commutator segments */}
+          {[0, 30, 60, 90, 120, 150, 180, 210, 240, 270, 300, 330].map((deg) => {
+            const rad = (deg * Math.PI) / 180;
+            const x1 = 200 + Math.cos(rad) * 22;
+            const y1 = 150 + Math.sin(rad) * 22;
+            const x2 = 200 + Math.cos(rad) * 32;
+            const y2 = 150 + Math.sin(rad) * 32;
+            return (
+              <line key={deg} x1={x1} y1={y1} x2={x2} y2={y2} stroke="#fbbf24" strokeWidth="2" />
+            );
+          })}
+          {/* Bipolar Field Magnet Poles */}
+          <path d="M 60 100 Q 130 150 60 200" stroke="#38bdf8" strokeWidth="6" fill="none" />
+          <path d="M 340 100 Q 270 150 340 200" stroke="#ef4444" strokeWidth="6" fill="none" />
+          <text x="90" y="155" fill="#38bdf8" fontSize="12" fontWeight="bold">
+            N
+          </text>
+          <text x="300" y="155" fill="#ef4444" fontSize="12" fontWeight="bold">
+            S
+          </text>
+          {/* Brushes */}
+          <rect x="194" y="112" width="12" height="6" fill="#4ade80" />
+          <rect x="194" y="182" width="12" height="6" fill="#4ade80" />
+          <text x="200" y="85" fill="#fbbf24" fontSize="8" textAnchor="middle">
+            Continuous Ring Armature
+          </text>
+          <text x="200" y="235" fill="#4ade80" fontSize="8" textAnchor="middle">
+            Smooth DC Commutator Brushes
+          </text>
+        </g>
+      );
+    case "pasteur-fermentation":
+      return (
+        <g stroke="#38bdf8" strokeWidth="1.5" fill="none">
+          {/* Glass Fermentation Vessel */}
+          <path
+            d="M 120 100 L 120 210 C 120 235 280 235 280 210 L 280 100 Z"
+            stroke="#38bdf8"
+            fill="#0284c7"
+            fillOpacity="0.15"
+            strokeWidth="2"
+          />
+          {/* Swan-Neck Sterile Trap */}
+          <path
+            d="M 200 100 L 200 60 C 200 35 250 35 250 65 C 250 90 290 90 290 60"
+            stroke="#4ade80"
+            strokeWidth="2.5"
+          />
+          {/* Yeast Culture Layer */}
+          <rect
+            x="130"
+            y="195"
+            width="140"
+            height="25"
+            rx="3"
+            fill="#f59e0b"
+            fillOpacity="0.35"
+            stroke="#d97706"
+          />
+          {/* Anaerobic CO2 Bubbles */}
+          {[145, 170, 195, 220, 245].map((x) => (
+            <circle key={x} cx={x} cy="160" r="4" fill="#38bdf8" fillOpacity="0.5" />
+          ))}
+          <text x="250" y="30" fill="#4ade80" fontSize="8" textAnchor="middle">
+            Sterile Swan-Neck
+          </text>
+          <text x="200" y="130" fill="#38bdf8" fontSize="8" textAnchor="middle">
+            Anaerobic Fermenter
+          </text>
+          <text x="200" y="212" fill="#f59e0b" fontSize="8" textAnchor="middle">
+            Pure Yeast Strain Bed
+          </text>
+        </g>
+      );
+    case "glidden-barbed-wire":
+      return (
+        <g stroke="#38bdf8" strokeWidth="1.5" fill="none">
+          {/* Twin Twisted Line Wires */}
+          <path d="M 40 140 Q 120 120 200 140 T 360 140" stroke="#94a3b8" strokeWidth="3" />
+          <path d="M 40 160 Q 120 180 200 160 T 360 160" stroke="#64748b" strokeWidth="3" />
+          {/* Coiled Wire Spurs Locked on One Strand */}
+          {[110, 200, 290].map((x) => (
+            <g key={x}>
+              <ellipse
+                cx={x}
+                cy="140"
+                rx="8"
+                ry="14"
+                stroke="#fbbf24"
+                strokeWidth="3"
+                fill="#78350f"
+                fillOpacity="0.4"
+              />
+              <line
+                x1={x - 12}
+                y1="120"
+                x2={x + 12}
+                y2="160"
+                stroke="#ef4444"
+                strokeWidth="2.5"
+                strokeLinecap="round"
+              />
+              <line
+                x1={x + 12}
+                y1="120"
+                x2={x - 12}
+                y2="160"
+                stroke="#ef4444"
+                strokeWidth="2.5"
+                strokeLinecap="round"
+              />
+            </g>
+          ))}
+          <text x="200" y="95" fill="#94a3b8" fontSize="8" textAnchor="middle">
+            Dual Twisted Core Strands
+          </text>
+          <text x="200" y="195" fill="#ef4444" fontSize="8" textAnchor="middle">
+            Locked Coiled Spurs (4-Point Barbs)
+          </text>
+        </g>
+      );
+    case "otto-engine":
+      return (
+        <g stroke="#38bdf8" strokeWidth="1.5" fill="none">
+          {/* Water-Cooled Cylinder */}
+          <rect
+            x="80"
+            y="70"
+            width="160"
+            height="120"
+            rx="4"
+            stroke="#94a3b8"
+            fill="#1e293b"
+            fillOpacity="0.2"
+          />
+          {/* Slide Valve Ignition */}
+          <rect x="50" y="90" width="30" height="40" fill="#f97316" stroke="#ea580c" rx="2" />
+          {/* Trunk Piston & Connecting Rod */}
+          <rect
+            x="120"
+            y="95"
+            width="70"
+            height="70"
+            rx="3"
+            fill="#38bdf8"
+            fillOpacity="0.3"
+            stroke="#38bdf8"
+          />
+          <line
+            x1="170"
+            y1="130"
+            x2="280"
+            y2="130"
+            stroke="#e2e8f0"
+            strokeWidth="5"
+            strokeLinecap="round"
+          />
+          {/* Crank & Flywheel */}
+          <circle cx="280" cy="130" r="45" stroke="#fbbf24" strokeWidth="2.5" />
+          <circle cx="280" cy="130" r="6" fill="#fbbf24" />
+          <text x="65" y="80" fill="#f97316" fontSize="8" textAnchor="middle">
+            Slide-Valve Igniter
+          </text>
+          <text x="155" y="135" fill="#38bdf8" fontSize="8" textAnchor="middle">
+            Trunk Piston
+          </text>
+          <text x="280" y="195" fill="#fbbf24" fontSize="8" textAnchor="middle">
+            Four-Stroke Flywheel
+          </text>
+        </g>
+      );
+    case "edison-phonograph":
+      return (
+        <g stroke="#38bdf8" strokeWidth="1.5" fill="none">
+          {/* Threaded Mandrel & Cylinder */}
+          <rect
+            x="100"
+            y="110"
+            width="180"
+            height="70"
+            rx="4"
+            stroke="#fbbf24"
+            fill="#78350f"
+            fillOpacity="0.3"
+            strokeWidth="2"
+          />
+          {[120, 140, 160, 180, 200, 220, 240, 260].map((x) => (
+            <line key={x} x1={x} y1="110" x2={x} y2="180" stroke="#fbbf24" strokeDasharray="2 2" />
+          ))}
+          {/* Lead Screw Shaft */}
+          <line x1="60" y1="145" x2="320" y2="145" stroke="#94a3b8" strokeWidth="4" />
+          {/* Diaphragm & Stylus Tracking Arm */}
+          <circle cx="190" cy="90" r="16" stroke="#38bdf8" fill="#0369a1" fillOpacity="0.4" />
+          <line x1="190" y1="90" x2="190" y2="114" stroke="#ef4444" strokeWidth="2.5" />
+          {/* Speaking Horn */}
+          <polygon
+            points="190,80 150,30 230,30"
+            stroke="#4ade80"
+            fill="#15803d"
+            fillOpacity="0.2"
+          />
+          <text x="190" y="22" fill="#4ade80" fontSize="8" textAnchor="middle">
+            Acoustic Horn
+          </text>
+          <text x="190" y="70" fill="#38bdf8" fontSize="8" textAnchor="middle">
+            Mica Diaphragm & Stylus
+          </text>
+          <text x="190" y="205" fill="#fbbf24" fontSize="8" textAnchor="middle">
+            Grooved Brass Cylinder (Tinfoil)
+          </text>
+        </g>
+      );
+    case "pelton-water-wheel":
+      return (
+        <g stroke="#38bdf8" strokeWidth="1.5" fill="none">
+          {/* Wheel Rim */}
+          <circle cx="200" cy="130" r="60" stroke="#94a3b8" strokeWidth="2" />
+          {/* Double Split-Buckets */}
+          {[0, 45, 90, 135, 180, 225, 270, 315].map((deg) => {
+            const rad = (deg * Math.PI) / 180;
+            const x = 200 + Math.cos(rad) * 60;
+            const y = 130 + Math.sin(rad) * 60;
+            return (
+              <g key={deg}>
+                <ellipse cx={x} cy={y} rx="8" ry="6" stroke="#fbbf24" fill="#d97706" />
+                <line x1={x - 4} y1={y} x2={x + 4} y2={y} stroke="#ef4444" strokeWidth="1.5" />
+              </g>
+            );
+          })}
+          {/* Needle Nozzle High-Pressure Water Jet */}
+          <polygon points="40,185 100,180 100,200 40,195" fill="#0284c7" stroke="#38bdf8" />
+          <line
+            x1="100"
+            y1="190"
+            x2="200"
+            y2="190"
+            stroke="#38bdf8"
+            strokeWidth="4"
+            strokeDasharray="4 2"
+          />
+          <text x="70" y="175" fill="#38bdf8" fontSize="8" textAnchor="middle">
+            Needle Nozzle
+          </text>
+          <text x="200" y="55" fill="#fbbf24" fontSize="8" textAnchor="middle">
+            Split-Bucket Runner
+          </text>
+          <text x="200" y="220" fill="#4ade80" fontSize="8" textAnchor="middle">
+            165° Jet Energy Extraction
+          </text>
+        </g>
+      );
+    case "delaval-separator":
+      return (
+        <g stroke="#38bdf8" strokeWidth="1.5" fill="none">
+          {/* Conical Centrifuge Bowl */}
+          <polygon
+            points="140,80 260,80 230,200 170,200"
+            stroke="#94a3b8"
+            fill="#1e293b"
+            fillOpacity="0.3"
+            strokeWidth="2"
+          />
+          {/* Conical Disc Stack */}
+          {[100, 120, 140, 160, 180].map((y) => (
+            <polyline
+              key={y}
+              points={`180,${y} 200,${y - 10} 220,${y}`}
+              stroke="#fbbf24"
+              strokeWidth="1.5"
+            />
+          ))}
+          {/* Flexible Spindle */}
+          <line x1="200" y1="200" x2="200" y2="250" stroke="#4ade80" strokeWidth="3" />
+          {/* Cream & Skim Outlets */}
+          <line x1="200" y1="80" x2="200" y2="50" stroke="#fef08a" strokeWidth="2.5" />
+          <line x1="150" y1="80" x2="120" y2="60" stroke="#38bdf8" strokeWidth="2.5" />
+          <text x="200" y="40" fill="#fef08a" fontSize="8" textAnchor="middle">
+            Cream (Light Core)
+          </text>
+          <text x="100" y="55" fill="#38bdf8" fontSize="8" textAnchor="middle">
+            Skim Milk (Heavy Wall)
+          </text>
+          <text x="200" y="265" fill="#4ade80" fontSize="8" textAnchor="middle">
+            6,000 RPM Flexible Spindle
+          </text>
+        </g>
+      );
+    case "thomson-welding":
+      return (
+        <g stroke="#38bdf8" strokeWidth="1.5" fill="none">
+          {/* Single-Turn Secondary Bar */}
+          <path
+            d="M 90 90 L 90 200 L 310 200 L 310 90"
+            stroke="#f59e0b"
+            strokeWidth="8"
+            fill="none"
+          />
+          {/* Primary Windings Core */}
+          <rect
+            x="170"
+            y="160"
+            width="60"
+            height="60"
+            rx="4"
+            stroke="#60a5fa"
+            fill="#1e3a8a"
+            fillOpacity="0.4"
+          />
+          {/* Water-Cooled Clamping Jaws */}
+          <rect
+            x="140"
+            y="70"
+            width="40"
+            height="35"
+            rx="3"
+            fill="#38bdf8"
+            fillOpacity="0.3"
+            stroke="#0284c7"
+            strokeWidth="2"
+          />
+          <rect
+            x="220"
+            y="70"
+            width="40"
+            height="35"
+            rx="3"
+            fill="#38bdf8"
+            fillOpacity="0.3"
+            stroke="#0284c7"
+            strokeWidth="2"
+          />
+          {/* Incandescent Weld Interface */}
+          <line x1="200" y1="72" x2="200" y2="102" stroke="#ef4444" strokeWidth="4" />
+          <circle cx="200" cy="87" r="6" fill="#f97316" />
+          {/* Upsetting Force Arrows */}
+          <line x1="120" y1="87" x2="135" y2="87" stroke="#fbbf24" strokeWidth="2" />
+          <line x1="280" y1="87" x2="265" y2="87" stroke="#fbbf24" strokeWidth="2" />
+          <text x="200" y="55" fill="#ef4444" fontSize="8" textAnchor="middle">
+            Plastic Fusion Interface ($I^2Rt$)
+          </text>
+          <text x="200" y="145" fill="#f59e0b" fontSize="8" textAnchor="middle">
+            Massive Secondary Transformer Bar
+          </text>
+        </g>
+      );
+    case "parsons-turbine":
+      return (
+        <g stroke="#38bdf8" strokeWidth="1.5" fill="none">
+          {/* Stepped Rotor Core */}
+          <polygon
+            points="80,120 150,120 150,110 240,110 240,95 320,95 320,185 240,185 240,170 150,170 150,160 80,160"
+            stroke="#94a3b8"
+            fill="#1e293b"
+            fillOpacity="0.3"
+            strokeWidth="2"
+          />
+          {/* Multi-Stage Blade Rings */}
+          {[100, 120, 140, 170, 190, 210, 230, 260, 280, 300].map((x) => (
+            <line
+              key={x}
+              x1={x}
+              y1="85"
+              x2={x}
+              y2="195"
+              stroke="#38bdf8"
+              strokeWidth="2"
+              strokeDasharray="3 2"
+            />
+          ))}
+          {/* Expanding Casing */}
+          <line x1="60" y1="80" x2="340" y2="65" stroke="#60a5fa" strokeWidth="2.5" />
+          <line x1="60" y1="200" x2="340" y2="215" stroke="#60a5fa" strokeWidth="2.5" />
+          {/* Steam Expansion Arrows */}
+          <line x1="40" y1="140" x2="75" y2="140" stroke="#fbbf24" strokeWidth="3" />
+          <text x="55" y="130" fill="#fbbf24" fontSize="8" textAnchor="middle">
+            HP Steam In
+          </text>
+          <text x="200" y="50" fill="#38bdf8" fontSize="8" textAnchor="middle">
+            Continuous Axial Expansion
+          </text>
+          <text x="200" y="235" fill="#4ade80" fontSize="8" textAnchor="middle">
+            Stepped Multi-Stage Reaction Rotor
+          </text>
+        </g>
+      );
     default:
       return (
         <g stroke="#64748b" strokeWidth="1.5" fill="none">

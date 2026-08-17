@@ -148,13 +148,7 @@ export function HyattCelluloidSim() {
               const yPos = 150 + Math.floor(i / 4) * 25;
               return (
                 <g key={`polymer-node-${xPos}-${yPos}`}>
-                  <circle
-                    cx={xPos}
-                    cy={yPos}
-                    r={isMelted ? "8" : "5"}
-                    fill="#D69E2E"
-                    opacity="0.8"
-                  />
+                  <circle cx={xPos} cy={yPos} r={isMelted ? 8 : 5} fill="#D69E2E" opacity="0.8" />
                   <circle cx={xPos + 12} cy={yPos - 6} r="4" fill="#3182CE" opacity="0.7" />
                   {isMelted && (
                     <line

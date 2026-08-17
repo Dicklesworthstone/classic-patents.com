@@ -1,3 +1,5 @@
+"use client";
+
 import { Cpu } from "lucide-react";
 import { TextWithLatex } from "@/components/ui/LatexRenderer";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";

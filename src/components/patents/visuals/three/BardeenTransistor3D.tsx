@@ -216,14 +216,40 @@ export function BardeenTransistor3D() {
       metalness: 0.92,
     });
 
+    const copperPlatenMat = new THREE.MeshStandardMaterial({
+      color: 0xc25e1a,
+      roughness: 0.25,
+      metalness: 0.9,
+    });
+
+    const brassMat = new THREE.MeshStandardMaterial({
+      color: 0xd97706,
+      roughness: 0.22,
+      metalness: 0.92,
+    });
+
     const transistorGroup = new THREE.Group();
     scene.add(transistorGroup);
 
+    // Heavy Copper Grounding Base Platen (Ohmic base contact)
+    const basePlaten = new THREE.Mesh(new THREE.BoxGeometry(8.2, 0.5, 6.8), copperPlatenMat);
+    basePlaten.position.y = -1.35;
+    basePlaten.receiveShadow = true;
+    transistorGroup.add(basePlaten);
+
+    // Soldered Base Terminal Lug
+    const baseLug = new THREE.Mesh(new THREE.CylinderGeometry(0.12, 0.12, 1.4, 12), brassMat);
+    baseLug.rotation.z = Math.PI / 2;
+    baseLug.position.set(-3.8, -1.35, 0);
+    transistorGroup.add(baseLug);
+
+    // Etched High-Purity n-Type Germanium Crystal Slab
     const geBlock = new THREE.Mesh(new THREE.BoxGeometry(6.2, 1.1, 5.2), germaniumCrystalMat);
     geBlock.position.y = -0.55;
     geBlock.castShadow = true;
     transistorGroup.add(geBlock);
 
+    // Triangular Polystyrene Plastic Wedge (Brattain's shaped wedge)
     const wedgeShape = new THREE.Shape();
     wedgeShape.moveTo(-0.9, 2.2);
     wedgeShape.lineTo(0.9, 2.2);
@@ -236,16 +262,25 @@ export function BardeenTransistor3D() {
     wedge.position.set(0, 1.25, 0);
     transistorGroup.add(wedge);
 
+    // Phosphor-Bronze Cantilever Spring & Knurled Micrometer Pressure Screw
     const springGroup = new THREE.Group();
     springGroup.position.set(0, 2.6, 0);
-    const springArm = new THREE.Mesh(new THREE.BoxGeometry(0.3, 0.06, 2.6), phosphorBronzeMat);
+
+    const springArm = new THREE.Mesh(new THREE.BoxGeometry(0.35, 0.08, 3.2), phosphorBronzeMat);
     springGroup.add(springArm);
+
     const adjustmentScrew = new THREE.Mesh(
-      new THREE.CylinderGeometry(0.22, 0.22, 0.8, 16),
-      phosphorBronzeMat,
+      new THREE.CylinderGeometry(0.24, 0.24, 0.9, 24),
+      brassMat,
     );
-    adjustmentScrew.position.set(0, 0.35, 1.1);
+    adjustmentScrew.position.set(0, 0.45, 1.2);
     springGroup.add(adjustmentScrew);
+
+    // Spring Retaining Post
+    const post = new THREE.Mesh(new THREE.CylinderGeometry(0.18, 0.18, 3.6, 16), brassMat);
+    post.position.set(0, -1.2, 1.2);
+    springGroup.add(post);
+
     transistorGroup.add(springGroup);
 
     const emitterGroup = new THREE.Group();

@@ -95,6 +95,15 @@ The operator lies prone in a movable cradle 6 upon the lower aeroplane. By shift
         archaicTerm: "Upright posts pivoted to the surfaces",
         modernEquivalent: "Articulated wing spar trusses",
       },
+      {
+        title: "Pilot Hip Cradle & Closed-Loop Control Rigging",
+        summary:
+          "Prone sliding pilot cradle mechanically multiplexing roll and yaw commands through endless steel cables.",
+        technicalDetails:
+          "The pilot lies prone in a padded ash wood cradle ($m_{\\text{cradle}} \\approx 4\\text{ kg}$) that slides laterally $\\pm 10\\text{ cm}$ across low-friction steel guide bars on the lower wing spar. Heavy $1.5\\text{ mm}$ braided piano wire cables run from the cradle horns around corner pulleys to the top rear outer wingtips and the rudder tiller horn, ensuring continuous kinematic synchronization with zero backlash ($e_{\\text{backlash}} < 2\\text{ mm}$).",
+        archaicTerm: "Movable cradle receiving the body of the operator",
+        modernEquivalent: "Pilot control yoke / Flight control mixer linkage",
+      },
     ],
     scientificPrinciples: [
       {
@@ -112,9 +121,23 @@ The operator lies prone in a movable cradle 6 upon the lower aeroplane. By shift
       {
         principle: "3-Axis Coordinated Turn Flight Dynamics",
         formula:
-          "R_{turn} = \\frac{V^2}{g \\cdot \\tan(\\phi)}, \\quad \\dot{\\psi} = \\frac{g \\tan(\\phi)}{V}",
+          "R_{\\text{turn}} = \\frac{V^2}{g \\cdot \\tan(\\phi)}, \\quad \\dot{\\psi} = \\frac{g \\tan(\\phi)}{V}",
         explanation:
           "A coordinated turn balances lift, centrifugal force, and gravity so the aircraft neither skids outwards nor slips inwards during banking.",
+      },
+      {
+        principle: "Prandtl Lifting-Line Spanwise Circulation Distribution",
+        formula:
+          "\\Gamma(y) = \\Gamma_0 \\sqrt{1 - \\left(\\frac{2y}{b}\\right)^2} + \\Delta \\Gamma_{\\text{warp}} \\sin\\left(\\frac{\\pi y}{b}\\right)",
+        explanation:
+          "Wing warping alters the spanwise vortex sheet distribution $\\Gamma(y)$, producing an asymmetric downwash profile $w(y) = \\frac{1}{4\\pi}\\int_{-b/2}^{b/2}\\frac{d\\Gamma/d\\eta}{y - \\eta}d\\eta$ that governs both rolling torque and induced yaw.",
+      },
+      {
+        principle: "Canard Longitudinal Static Stability & Pitch Equilibrium",
+        formula:
+          "C_{m} = C_{m0} + \\left(\\frac{x_{\\text{cg}} - x_{\\text{ac}}}{c}\\right) C_L - V_{\\text{canard}} C_{L,\\text{canard}}(\\delta_e)",
+        explanation:
+          "Placing the lifting elevator canard ahead of the center of gravity ($x_{\\text{canard}} > x_{\\text{cg}}$) ensures that pulling up increases pitch without downloading the aircraft, giving crisp stall margin recovery.",
       },
     ],
     whyItMattersToday:

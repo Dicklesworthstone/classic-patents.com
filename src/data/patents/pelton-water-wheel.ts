@@ -78,6 +78,24 @@ I claim as my invention:
         archaicTerm: "Periphery of the wheel with double-cup buckets",
         modernEquivalent: "Pelton turbine runner / Impulse turbine wheel",
       },
+      {
+        title: "Bucket Entrance Cutout Notch",
+        summary:
+          "Angled lip notch permitting incoming bucket to enter jet without chopping the stream.",
+        technicalDetails:
+          "A parabolic cutout notch ($w = 0.35 B_{\\text{bucket}}$) machined into the leading lip of each bucket. As the bucket rotates into the jet path, the notch allows the water jet to impinge uninterrupted on the preceding bucket until the central splitter takes over smoothly, preventing parasitic back-splashing against the bucket underside.",
+        archaicTerm: "Recess in the front lip of the bucket",
+        modernEquivalent: "Bucket entrance notch / Jet clearance cutout",
+      },
+      {
+        title: "Emergency Jet Deflector & Servomotor Actuator",
+        summary:
+          "Fast-acting hydraulic shield slicing into the jet to protect against grid load dump.",
+        technicalDetails:
+          "A curved steel deflector blade pivoted between the nozzle tip and bucket perimeter. During sudden full electrical load rejection, a hydraulic servomotor flips the deflector into the jet path within $0.2\\text{ seconds}$, diverting the stream into the tailrace without closing the penstock needle suddenly and causing catastrophic water hammer ($P_{\\text{hammer}} = \\rho c \\Delta v$).",
+        archaicTerm: "Deflecting shield for cutting off the stream",
+        modernEquivalent: "Jet deflector blade & hydraulic governor servo",
+      },
     ],
     scientificPrinciples: [
       {
@@ -100,6 +118,12 @@ I claim as my invention:
           "v_{\\text{jet}} = C_v \\sqrt{2 g H}, \\quad \\dot{m} = \\rho A_{\\text{jet}} v_{\\text{jet}}",
         explanation:
           "Under alpine water heads of $H = 500\\text{ to }1,500\\text{ meters}$, water jet velocities exceed $100\\text{ to }170\\text{ m/s}$ ($360\\text{ to }600\\text{ km/h}$), generating megawatt power densities in compact turbine housings.",
+      },
+      {
+        principle: "Specific Speed & High-Head Hydraulic Efficiency Regime",
+        formula: "N_s = \\frac{N \\sqrt{P}}{H^{5/4}} \\approx 5\\text{ to }30\\text{ (metric)}",
+        explanation:
+          "The low specific speed $N_s$ classification of the Pelton impulse turbine makes it thermodynamically superior to reaction turbines (Francis/Kaplan) for high hydraulic heads ($H > 200\\text{ m}$) with low volumetric flow rates.",
       },
     ],
     whyItMattersToday:

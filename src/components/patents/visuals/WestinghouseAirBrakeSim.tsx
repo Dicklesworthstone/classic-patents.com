@@ -58,13 +58,13 @@ export function WestinghouseAirBrakeSim() {
     updateParam("trainPipePressure", psi);
     if (psi < 10) {
       // Violent pneumatic dump
-      soundEngine.playTone(180, 400, "sawtooth", 0.4);
+      soundEngine.playTone(180, 0.4, "sawtooth", 0.4);
     } else if (psi < 60) {
       // Service hiss
-      soundEngine.playTone(400, 200, "sine", 0.25);
+      soundEngine.playTone(400, 0.2, "sine", 0.25);
     } else {
       // Release recharge
-      soundEngine.playTone(600, 150, "triangle", 0.2);
+      soundEngine.playTone(600, 0.15, "triangle", 0.2);
     }
   };
 

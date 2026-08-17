@@ -75,6 +75,23 @@ I claim as my invention:
         archaicTerm: "Feed hopper and cocking ring",
         modernEquivalent: "Gravity feed magazine & spring-striker firing sear",
       },
+      {
+        title: "Spring-Hook Shell Case Extractor Claw",
+        summary: "Pivoted hook riding on bolt head snapping over rim to extract fired cases.",
+        technicalDetails:
+          "A tempered spring-steel hook mounted on the forward face of each bolt. As the bolt chambers the round, the hook ramps over the copper cartridge rim; during the rearward cam stroke, it pulls the spent casing ($F_{\\text{extract}} > 180\\text{ N}$) clear of the chamber until an ejector blade flips it downward through the bottom discharge port.",
+        archaicTerm: "Extractor hook attached to each breech-pin",
+        modernEquivalent: "Bolt-mounted claw extractor & fixed ejector spur",
+      },
+      {
+        title: "Bevel Gear Reduction & Hand Crank Flywheel",
+        summary:
+          "Transverse bevel gearset providing steady mechanical advantage and dampening torque ripple.",
+        technicalDetails:
+          "A manual side crank turns a 45-tooth crown bevel gear meshing with a 15-tooth pinion on the central main shaft ($3:1$ step-up ratio). A balanced brass flywheel ring dampens cyclic cocking torque variations ($\\tau_{\\text{ripple}} < 12\\%$), preventing crank shudder as successive strikers engage the cam ramps.",
+        archaicTerm: "Crank and gearing communicating rotary motion",
+        modernEquivalent: "Bevel gear rotor drive & inertia flywheel",
+      },
     ],
     scientificPrinciples: [
       {
@@ -97,6 +114,13 @@ I claim as my invention:
           "a_{\\text{bolt}}(\\theta) = \\omega^2 \\frac{d^2 z}{d\\theta^2}, \\quad F_{\\text{cam}} = m_{\\text{bolt}} a_{\\text{bolt}} + F_{\\text{friction}} + F_{\\text{spring}}",
         explanation:
           "The helical cam profile is contoured with cycloidal ramps to minimize peak jerk ($da/dt$), preventing bolt binding and reducing hand crank operating torque.",
+      },
+      {
+        principle: "Recoil Impulse Gyroscopic Precession & Mount Stability",
+        formula:
+          "\\vec{\\tau}_{\\text{gyro}} = \\vec{\\omega}_{\\text{cluster}} \\times \\vec{L}_{\\text{rotor}}, \\quad \\Delta \\theta_{\\text{muzzle}} = \\frac{\\int F_{\\text{recoil}} r_{\\text{offset}} \\, dt}{I_{\\text{mount}}}",
+        explanation:
+          "Because each shot fires from the bottom center barrel ($180^\\circ$ offset from axle), the recoil force is directed below the pivot line, while rotor angular momentum stabilizes the carriage against muzzle climb.",
       },
     ],
     whyItMattersToday:

@@ -51,7 +51,10 @@ export interface StudioContext {
 /**
  * Generates a smooth procedural atmospheric sky canvas texture.
  */
-function createProceduralSkyTexture(isDark: boolean, style: EnvironmentStyle): THREE.CanvasTexture {
+function createProceduralSkyTexture(
+  isDark: boolean,
+  _style: EnvironmentStyle,
+): THREE.CanvasTexture {
   const canvas = document.createElement("canvas");
   canvas.width = 512;
   canvas.height = 512;
@@ -67,14 +70,8 @@ function createProceduralSkyTexture(isDark: boolean, style: EnvironmentStyle): T
       gradient.addColorStop(0.7, "#1e3a5f"); // Cobalt lower sky
       gradient.addColorStop(0.95, "#2563eb"); // Electric blue horizon glow
       gradient.addColorStop(1.0, "#1d4ed8"); // Horizon haze
-    } else if (style === "studio" || style === "laboratory") {
-      // Bright Sunlit Architectural Studio
-      gradient.addColorStop(0.0, "#e0f2fe"); // Soft ice-blue ceiling
-      gradient.addColorStop(0.3, "#f0f9ff"); // Luminous daylight
-      gradient.addColorStop(0.7, "#f8fafc"); // Clean museum white
-      gradient.addColorStop(1.0, "#e2e8f0"); // Soft shadow floor
     } else {
-      // Crisp Radiant Blue Sky with Horizon Haze
+      // Signature Radiant Cerulean Blue Sky with Sunlight Horizon Haze
       gradient.addColorStop(0.0, "#1d4ed8"); // Rich cerulean blue zenith
       gradient.addColorStop(0.25, "#2563eb"); // Vibrant royal azure
       gradient.addColorStop(0.55, "#3b82f6"); // Radiant sky blue

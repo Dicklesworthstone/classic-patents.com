@@ -9,6 +9,7 @@ import {
   identityFlyerState,
   stepFlyerHello,
 } from "@/physics/flyerWasm";
+import { TickScheduler } from "@/physics/tickScheduler";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import {
   coupledRudderDeg,
@@ -163,6 +164,7 @@ export function WrightFlyer3D() {
     let reqId: number;
     const clock = new THREE.Clock();
     let hello = identityFlyerState();
+    const scheduler = new TickScheduler(1 / 120, 0, 3);
     void ensureFlyerWasm().then((src) => {
       setKernelLabel(src);
     });
@@ -175,7 +177,9 @@ export function WrightFlyer3D() {
       const p = live.current;
 
       if (p.isAutoFlying) {
-        hello = stepFlyerHello(hello, Math.min(0.05, Math.max(1 / 240, delta)));
+        scheduler.pump(elapsed, () => {
+          hello = stepFlyerHello(hello, 1 / 120);
+        });
         flyerGroup.quaternion.set(
           hello.quaternion[1],
           hello.quaternion[2],
@@ -264,55 +268,55 @@ export function WrightFlyer3D() {
         {/* Live HUD Telemetry Overlay (Docked Bottom-Left to prevent overlap with top-right controls) */}
         {showUiOverlay && (
           <div className="absolute bottom-3 left-3 sm:bottom-4 sm:left-4 z-10 flex flex-col gap-1.5 sm:gap-2 pointer-events-none max-w-[calc(100%-1.5rem)] sm:max-w-sm transition-opacity duration-200">
-            <div className="bg-white/90 dark:bg-ink-900/90 backdrop-blur-md p-2 sm:px-3 sm:py-2 rounded-xl border border-parchment-300 dark:border-ink-700 shadow-sm">
-              <div className="text-[10px] sm:text-[11px] font-sans text-amber-800 dark:text-amber-400 font-bold uppercase tracking-wider flex items-center justify-between gap-1.5">
-                <span className="flex items-center gap-1">
-                  <Compass className="w-3 h-3 sm:w-3.5 sm:h-3.5 animate-spin-slow text-amber-600" />
-                  Aerodynamic Equilibrium
+            <div className="bg-parchment-50/95 dark:bg-ink-950/95 backdrop-blur-md p-2.5 sm:px-3.5 sm:py-2.5 rounded-xl border border-parchment-300 dark:border-ink-800 shadow-md">
+              <div className="text-[10px] sm:text-[11px] font-sans text-amber-800 dark:text-amber-400 font-bold uppercase tracking-wider flex items-center justify-between gap-1.5 border-b border-parchment-200 dark:border-ink-800/80 pb-1.5 mb-1.5">
+                <span className="flex items-center gap-1.5">
+                  <Compass className="w-3.5 h-3.5 text-amber-600 dark:text-amber-400" />
+                  Aerodynamic State Vector
                 </span>
                 <span
-                  className={`text-[9px] font-mono px-1.5 py-0.5 rounded ${
+                  className={`text-[9px] font-mono font-bold px-2 py-0.5 rounded-md ${
                     isCoupled
-                      ? "bg-emerald-100 dark:bg-emerald-950/60 text-emerald-800 dark:text-emerald-300 border border-emerald-400/40"
-                      : "bg-red-100 dark:bg-red-950/60 text-red-800 dark:text-red-300 border border-red-400/40"
+                      ? "bg-emerald-100 dark:bg-emerald-950/60 text-emerald-800 dark:text-emerald-300 border border-emerald-500/30"
+                      : "bg-rose-100 dark:bg-rose-950/60 text-rose-800 dark:text-rose-300 border border-rose-500/30"
                   }`}
                 >
-                  {isCoupled ? "Coupled" : "Unlinked"}
+                  {isCoupled ? "Claim 1 Coupled" : "Unlinked Cables"}
                 </span>
               </div>
-              <div className="grid grid-cols-2 gap-x-2 gap-y-0.5 sm:gap-x-4 sm:gap-y-1 mt-1.5 text-[10px] sm:text-xs font-sans">
-                <div>
-                  <span className="text-ink-600 dark:text-ink-400">Total Lift:</span>{" "}
-                  <span className="font-bold text-emerald-700 dark:text-emerald-400">
+              <div className="grid grid-cols-2 gap-x-3 gap-y-1 text-[11px] font-sans">
+                <div className="flex justify-between">
+                  <span className="text-ink-600 dark:text-ink-400">Total Lift:</span>
+                  <span className="font-mono font-bold text-emerald-800 dark:text-emerald-400">
                     {Math.round(si.liftNewtons)} N
                   </span>
                 </div>
-                <div>
-                  <span className="text-ink-600 dark:text-ink-400">Total Drag:</span>{" "}
-                  <span className="font-bold text-red-700 dark:text-red-400">
+                <div className="flex justify-between">
+                  <span className="text-ink-600 dark:text-ink-400">Total Drag:</span>
+                  <span className="font-mono font-bold text-rose-800 dark:text-rose-400">
                     {Math.round(si.totalDragNewtons)} N
                   </span>
                 </div>
-                <div>
-                  <span className="text-ink-600 dark:text-ink-400">Lift/Drag (L/D):</span>{" "}
-                  <span className="font-bold text-blue-700 dark:text-blue-400">
+                <div className="flex justify-between">
+                  <span className="text-ink-600 dark:text-ink-400">Lift/Drag (L/D):</span>
+                  <span className="font-mono font-bold text-amber-800 dark:text-amber-400">
                     {si.liftToDrag.toFixed(2)}
                   </span>
                 </div>
-                <div>
-                  <span className="text-ink-600 dark:text-ink-400">Net Yaw:</span>{" "}
+                <div className="flex justify-between">
+                  <span className="text-ink-600 dark:text-ink-400">Net Yaw:</span>
                   <span
-                    className={`font-bold ${
+                    className={`font-mono font-bold ${
                       si.adverseYawDominant
-                        ? "text-red-700 dark:text-red-400"
+                        ? "text-rose-700 dark:text-rose-400"
                         : "text-emerald-700 dark:text-emerald-400"
                     }`}
                   >
                     {si.netYawNm > 0 ? `+${si.netYawNm.toFixed(1)}` : si.netYawNm.toFixed(1)} N·m
                   </span>
                 </div>
-                <div className="col-span-2 text-[9px] font-mono text-ink-500">
-                  Attitude kernel: {kernelLabel}
+                <div className="col-span-2 text-[9px] font-mono text-ink-500 dark:text-ink-400 pt-1 border-t border-parchment-200 dark:border-ink-800/60">
+                  Attitude solver: {kernelLabel}
                 </div>
               </div>
             </div>
@@ -326,7 +330,7 @@ export function WrightFlyer3D() {
             onClick={() => setShowUiOverlay(!showUiOverlay)}
             className={`p-1.5 sm:px-2.5 sm:py-1.5 rounded-lg text-xs font-sans font-semibold border transition-colors shadow-xs ${
               showUiOverlay
-                ? "bg-white/90 dark:bg-ink-900/90 text-ink-800 dark:text-ink-200 border-parchment-300 dark:border-ink-700 hover:bg-parchment-100"
+                ? "bg-parchment-50/90 dark:bg-ink-900/90 text-ink-800 dark:text-ink-200 border-parchment-300 dark:border-ink-700 hover:bg-parchment-100"
                 : "bg-amber-700 text-white border-amber-800 shadow-md ring-2 ring-amber-500/30 dark:bg-amber-600"
             }`}
             title={showUiOverlay ? "Hide Overlay Telemetry" : "Show Overlay Telemetry"}
@@ -345,7 +349,7 @@ export function WrightFlyer3D() {
             className={`p-1.5 sm:px-3 sm:py-1.5 rounded-lg text-xs font-sans font-semibold border transition-colors shadow-xs ${
               showStreamlines
                 ? "bg-amber-700 text-white border-amber-800 dark:bg-amber-600"
-                : "bg-white/90 dark:bg-ink-900/90 text-ink-800 dark:text-ink-200 border-parchment-300 dark:border-ink-700"
+                : "bg-parchment-50/90 dark:bg-ink-900/90 text-ink-800 dark:text-ink-200 border-parchment-300 dark:border-ink-700"
             }`}
           >
             <Wind className="w-3.5 h-3.5 inline sm:mr-1" />
@@ -356,8 +360,8 @@ export function WrightFlyer3D() {
             onClick={() => setShowVectors(!showVectors)}
             className={`p-1.5 sm:px-3 sm:py-1.5 rounded-lg text-xs font-sans font-semibold border transition-colors shadow-xs ${
               showVectors
-                ? "bg-blue-700 text-white border-blue-800 dark:bg-blue-600"
-                : "bg-white/90 dark:bg-ink-900/90 text-ink-800 dark:text-ink-200 border-parchment-300 dark:border-ink-700"
+                ? "bg-sky-700 text-white border-sky-800 dark:bg-sky-600"
+                : "bg-parchment-50/90 dark:bg-ink-900/90 text-ink-800 dark:text-ink-200 border-parchment-300 dark:border-ink-700"
             }`}
           >
             <span className="hidden sm:inline">Force </span>Vectors
@@ -369,7 +373,7 @@ export function WrightFlyer3D() {
             className={`p-1.5 sm:px-3 sm:py-1.5 rounded-lg text-xs font-sans font-semibold border transition-colors shadow-xs ${
               isAutoFlying
                 ? "bg-emerald-700 text-white border-emerald-800 dark:bg-emerald-600"
-                : "bg-white/90 dark:bg-ink-900/90 text-ink-800 dark:text-ink-200 border-parchment-300 dark:border-ink-700"
+                : "bg-parchment-50/90 dark:bg-ink-900/90 text-ink-800 dark:text-ink-200 border-parchment-300 dark:border-ink-700"
             }`}
           >
             <Play className="w-3.5 h-3.5 inline sm:mr-1" />
@@ -381,10 +385,10 @@ export function WrightFlyer3D() {
       {/* Parameter Sliders Panel */}
       <div className="p-4 sm:p-5 bg-parchment-100/80 dark:bg-ink-900/90 border-t border-parchment-300 dark:border-ink-800 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 text-xs font-sans">
         {/* Wing Warping (Roll & Adverse Yaw) */}
-        <div className="space-y-1.5">
+        <div className="space-y-1.5 p-3 rounded-xl bg-parchment-50/60 dark:bg-ink-950/60 border border-parchment-200 dark:border-ink-800/80">
           <div className="flex justify-between font-medium text-ink-900 dark:text-parchment-100">
             <span>Wing Warping (Roll):</span>
-            <span className="font-bold text-amber-700 dark:text-amber-400">
+            <span className="font-mono font-bold text-amber-700 dark:text-amber-400">
               {wingWarpDeg > 0 ? `+${wingWarpDeg}°` : `${wingWarpDeg}°`}
             </span>
           </div>
@@ -404,10 +408,10 @@ export function WrightFlyer3D() {
         </div>
 
         {/* Vertical Rudder (Yaw Compensation) */}
-        <div className="space-y-1.5">
+        <div className="space-y-1.5 p-3 rounded-xl bg-parchment-50/60 dark:bg-ink-950/60 border border-parchment-200 dark:border-ink-800/80">
           <div className="flex justify-between font-medium text-ink-900 dark:text-parchment-100">
             <span>Rudder Angle (Yaw):</span>
-            <span className="font-bold text-blue-600 dark:text-blue-400">
+            <span className="font-mono font-bold text-sky-700 dark:text-sky-400">
               {rudderYawDeg > 0 ? `+${rudderYawDeg}°` : `${rudderYawDeg}°`}
             </span>
           </div>
@@ -420,9 +424,9 @@ export function WrightFlyer3D() {
             value={rudderYawDeg}
             disabled={isCoupled}
             onChange={(e) => updateParam("rudder", Number(e.target.value))}
-            className={`w-full accent-blue-600 dark:accent-blue-400 ${isCoupled ? "opacity-50 cursor-not-allowed" : "cursor-pointer"}`}
+            className={`w-full accent-sky-600 dark:accent-sky-400 ${isCoupled ? "opacity-50 cursor-not-allowed" : "cursor-pointer"}`}
           />
-          <label className="flex items-center gap-1.5 text-[10px] text-ink-500 dark:text-ink-400">
+          <label className="flex items-center gap-1.5 text-[10px] text-ink-600 dark:text-ink-400 font-mono">
             <input
               type="checkbox"
               checked={isCoupled}
@@ -439,10 +443,10 @@ export function WrightFlyer3D() {
         </div>
 
         {/* Forward Canard (Pitch Angle) */}
-        <div className="space-y-1.5">
+        <div className="space-y-1.5 p-3 rounded-xl bg-parchment-50/60 dark:bg-ink-950/60 border border-parchment-200 dark:border-ink-800/80">
           <div className="flex justify-between font-medium text-ink-900 dark:text-parchment-100">
-            <span>Canard Elevator (Pitch):</span>
-            <span className="font-bold text-emerald-600 dark:text-emerald-400">
+            <span>Canard Pitch (Elevator):</span>
+            <span className="font-mono font-bold text-emerald-700 dark:text-emerald-400">
               {elevatorPitchDeg > 0 ? `+${elevatorPitchDeg}°` : `${elevatorPitchDeg}°`}
             </span>
           </div>
@@ -462,10 +466,10 @@ export function WrightFlyer3D() {
         </div>
 
         {/* Airspeed (Dynamic Pressure) */}
-        <div className="space-y-1.5">
+        <div className="space-y-1.5 p-3 rounded-xl bg-parchment-50/60 dark:bg-ink-950/60 border border-parchment-200 dark:border-ink-800/80">
           <div className="flex justify-between font-medium text-ink-900 dark:text-parchment-100">
             <span>Relative Airspeed:</span>
-            <span className="font-bold text-purple-600 dark:text-purple-400">
+            <span className="font-mono font-bold text-amber-800 dark:text-amber-400">
               {airspeedMph} mph ({airspeedFps.toFixed(1)} ft/s)
             </span>
           </div>
@@ -477,7 +481,7 @@ export function WrightFlyer3D() {
             step="1"
             value={airspeedMph}
             onChange={(e) => updateParam("airspeed", Number(e.target.value))}
-            className="w-full accent-purple-600 dark:accent-purple-400 cursor-pointer"
+            className="w-full accent-amber-600 dark:accent-amber-400 cursor-pointer"
           />
           <span className="text-[10px] text-ink-500 dark:text-ink-400 block">
             Dynamic pressure q = ½ρV² = {dynamicPressure.toFixed(2)} psf

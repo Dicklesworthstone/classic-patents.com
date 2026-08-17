@@ -78,6 +78,23 @@ I claim as my invention:
         archaicTerm: "Slide valve with flame ignition port",
         modernEquivalent: "Electric spark plug / Electronic ignition system",
       },
+      {
+        title: "Dual Cast-Iron Inertial Flywheels",
+        summary:
+          "Twin high-inertia spoked wheels storing kinetic energy across three non-power strokes.",
+        technicalDetails:
+          "Two counter-balanced spoked cast-iron flywheels ($D = 1.4\\text{ m}, M = 220\\text{ kg}$ each) mounted on the crankshaft ends. The flywheel system stores $E_k = \\frac{1}{2} I \\omega^2 \\approx 18\\text{ kJ}$ of kinetic energy, driving the piston smoothly through the three non-power strokes (exhaust, intake, compression) with a coefficient of speed fluctuation $\\delta = \\frac{\\omega_{\\text{max}} - \\omega_{\\text{min}}}{\\omega_{\\text{mean}}} < 0.025$.",
+        archaicTerm: "Heavy fly-wheels on the crank-shaft",
+        modernEquivalent: "Engine flywheel & torsional harmonic damper",
+      },
+      {
+        title: "Poppet Exhaust Valve & Cam-Driven Rocker Arm",
+        summary: "Spring-loaded conical poppet valve sealing against combustion pressure.",
+        technicalDetails:
+          "A mushroom-shaped forged steel poppet valve located in the cylinder bottom head. Combustion pressure ($P > 30\\text{ bar}$) pushes the valve tighter against its $45^\\circ$ conical iron seat; at $520^\\circ$ crank angle, the half-speed cam lobe trips a pushrod rocker lever to unseat the valve against a $450\\text{ N}$ coil spring, exhausting spent gases before bottom dead center.",
+        archaicTerm: "Exhaust poppet valve operated by a lever from the side-shaft",
+        modernEquivalent: "Mushroom exhaust poppet valve & cam-rocker train",
+      },
     ],
     scientificPrinciples: [
       {
@@ -100,6 +117,13 @@ I claim as my invention:
           "P_{\\text{indicated}} = \\frac{\\text{IMEP} \\cdot V_{\\text{displacement}} \\cdot N_{\\text{rpm}}}{120}",
         explanation:
           "Because a four-stroke engine produces one power stroke for every two revolutions, indicated power is calculated with a divisor of 120, delivering smooth, balanced high-speed power.",
+      },
+      {
+        principle: "Volumetric Efficiency & Gas Exchange Dynamics",
+        formula:
+          "\\eta_v = \\frac{\\dot{m}_{\\text{charge}}}{\\rho_{\\text{inlet}} V_d \\left(\\frac{N_{\\text{rpm}}}{120}\\right)} = \\frac{1}{V_d} \\int_{\\text{intake}} C_d A_{\\text{valve}}(t) v(t) \\, dt",
+        explanation:
+          "Optimizing intake valve opening area and slide valve port timing maximizes the mass of fresh combustible charge ingested into the cylinder per cycle, directly dictating brake mean effective pressure (BMEP).",
       },
     ],
     whyItMattersToday:

@@ -79,6 +79,24 @@ I claim as my invention:
         archaicTerm: "Yielding material such as tinfoil or sheet-lead",
         modernEquivalent: "Analog recording substrate (wax / lacquer master)",
       },
+      {
+        title: "Exponential Acoustic Funnel & Voice Concentrator",
+        summary:
+          "Conical brass horn transforming free-field air velocity into acoustic pressure at the diaphragm.",
+        technicalDetails:
+          "A flaring conical brass funnel ($D_{\\text{mouth}} = 120\\text{ mm}, D_{\\text{throat}} = 15\\text{ mm}$) couples acoustic voice energy to the diaphragm. By acting as an acoustic impedance transformer, the horn increases particle pressure amplitude at the diaphragm center by $+18\\text{ dB}$, overcoming the mechanical stiffness of the clamped mica disc.",
+        archaicTerm: "Mouth-piece or speaking-tube for directing sound waves",
+        modernEquivalent: "Acoustic megaphone / Exponential horn transformer",
+      },
+      {
+        title: "Split Half-Nut Lead-Screw Carriage & Tracking Sled",
+        summary:
+          "Engageable bronze half-nut advancing the diaphragm assembly in true pitch synchronization.",
+        technicalDetails:
+          "The reproducer carriage carries a threaded bronze half-nut that drops onto the rotating central lead screw ($p = 2.54\\text{ mm}$). This provides positive kinematic tracking ($x(t) = p \\cdot \\frac{\\omega t}{2\\pi}$) along the mandrel without risking stylus deflection or groove skip during high-amplitude voice transients.",
+        archaicTerm: "Movable carriage guided by a screw-thread",
+        modernEquivalent: "Lead-screw feed carriage & half-nut tracker",
+      },
     ],
     scientificPrinciples: [
       {
@@ -101,6 +119,13 @@ I claim as my invention:
           "F_{\\text{indent}} = H_{\\text{Vickers}} \\cdot A_{\\text{contact}} \\propto z(t)",
         explanation:
           "The stylus creates a permanent plastic furrow in the ductile tinfoil without tearing through into the clearance groove underneath.",
+      },
+      {
+        principle: "Acoustic Horn Impedance Transformation",
+        formula:
+          "Z_{\\text{horn}}(f) = \\frac{\\rho_0 c}{S_{\\text{throat}}} \\cdot \\frac{1}{\\sqrt{1 - (f_c / f)^2}}, \\quad f_c = \\frac{m c}{4\\pi}",
+        explanation:
+          "The flaring geometry matching the acoustic impedance of the free air to the high mechanical impedance of the diaphragm boosts energy transfer efficiency by two orders of magnitude.",
       },
     ],
     whyItMattersToday:

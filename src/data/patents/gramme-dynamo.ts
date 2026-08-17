@@ -76,6 +76,24 @@ I claim as my invention:
         archaicTerm: "Commutator sectors and collecting rub-contacts",
         modernEquivalent: "Multi-bar commutator & neutral plane brushes",
       },
+      {
+        title: "Self-Excited Horseshoe Field Electromagnet",
+        summary:
+          "Massive cast-iron stator core wound with series/shunt coils producing intense working flux.",
+        technicalDetails:
+          "Two curved cast-iron pole pieces embrace the toroidal ring with a narrow $3.0\\text{ mm}$ air gap. Residual magnetism in the iron core bootstraps self-excitation upon spin-up, building the magnetic field up to saturation ($B_{\\text{gap}} \\approx 0.95\\text{ Tesla}$) without requiring separate battery excitation.",
+        archaicTerm: "Electro-magnets forming the stationary magnetic field",
+        modernEquivalent: "Self-excited stator field poles & shunt field coils",
+      },
+      {
+        title: "Non-Magnetic Brass Spider Hub & Central Shaft",
+        summary:
+          "Phosphor-bronze multi-arm spider mounting the iron ring without magnetic short-circuits.",
+        technicalDetails:
+          "The soft-iron wire ring is clamped by an eight-armed cast-brass spider hub keyed to the steel drive shaft. Using non-ferromagnetic bronze prevents the shaft from shunting magnetic flux away from the working copper coils, preserving $98\\%$ of the pole flux within the active copper winding envelope.",
+        archaicTerm: "Brass spider or carrier securing the ring to the shaft",
+        modernEquivalent: "Non-magnetic rotor carrier spider & drive shaft hub",
+      },
     ],
     scientificPrinciples: [
       {
@@ -98,6 +116,13 @@ I claim as my invention:
           "P_{\\text{mech}} = \\tau \\cdot \\omega \\longleftrightarrow P_{\\text{elec}} = V \\cdot I - I^2 R",
         explanation:
           "The Gramme ring revealed that the dynamo is completely reversible: supplying mechanical shaft work generates electrical power, while feeding battery current into the brushes generates powerful mechanical torque.",
+      },
+      {
+        principle: "Armature Reaction & Neutral Plane Angular Shift",
+        formula:
+          "\\theta_{\\text{brush}} = \\arctan\\left(\\frac{\\mathcal{F}_{\\text{armature}}}{\\mathcal{F}_{\\text{field}}}\\right) = \\arctan\\left(\\frac{Z I_a / 2 a}{2 N_f I_f}\\right)",
+        explanation:
+          "Current circulating in the armature conductors generates a cross-magnetizing MMF that distorts the main stator field, shifting the sparkless commutation neutral axis forward in generators and backward in motors.",
       },
     ],
     whyItMattersToday:

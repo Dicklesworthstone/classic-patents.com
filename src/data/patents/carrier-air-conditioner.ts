@@ -83,6 +83,14 @@ Fourth, in a series of baffle-plates or eliminators located in the chamber beyon
         archaicTerm: "Tempering-coils and radiator pipes",
         modernEquivalent: "Sensible reheat heating coil",
       },
+      {
+        title: "Centrifugal Air Handling Blower Fan & Variable Plenum",
+        summary: "Forward-curved multi-blade squirrel-cage fan delivering constant volume airflow.",
+        technicalDetails:
+          "A double-inlet centrifugal fan ($D = 1.2\\text{ m}$) powered by an electric motor. It pulls airflow through the spray and baffle bank ($Q = 150\\text{ m}^3/\\text{min}$) against $350\\text{ Pa}$ static pressure, maintaining uniform velocity distribution ($v_{\\text{face}} = 2.5\\text{ m/s}$) across the spray cross-section.",
+        archaicTerm: "Centrifugal fan or blower drawing the air",
+        modernEquivalent: "Centrifugal air handling unit (AHU) supply fan",
+      },
     ],
     scientificPrinciples: [
       {
@@ -105,6 +113,20 @@ Fourth, in a series of baffle-plates or eliminators located in the chamber beyon
           "\\text{SHR} = \\frac{\\dot{Q}_{\\text{sensible}}}{\\dot{Q}_{\\text{total}}} = \\frac{\\dot{m} c_{pa} (T_{\\text{in}} - T_{\\text{out}})}{\\dot{m} (h_{\\text{in}} - h_{\\text{out}})}",
         explanation:
           "Carrier's apparatus simultaneously extracts sensible heat (dropping dry-bulb temperature) and latent heat (condensing humidity), allowing independent adjustment of the Sensible Heat Ratio to match building occupancy loads.",
+      },
+      {
+        principle: "Clausius-Clapeyron Vapor Pressure Saturation Curve",
+        formula:
+          "\\ln\\left(\\frac{P_{\\text{sat}}(T)}{P_0}\\right) = -\\frac{\\Delta H_{\\text{vap}}}{R} \\left(\\frac{1}{T} - \\frac{1}{T_0}\\right) \\implies P_{\\text{sat}}(8^\\circ\\text{C}) = 10.72\\text{ mbar}",
+        explanation:
+          "Chilling the air to $8^\\circ\\text{C}$ slashes the water-holding capacity of air by $75\\%$ compared to $35^\\circ\\text{C}$ ($P_{\\text{sat}} = 56.2\\text{ mbar}$), forcing liquid phase separation by pure chemical thermodynamics.",
+      },
+      {
+        principle: "Inertial Mist Impaction Stokes Number",
+        formula:
+          "\\text{Stk} = \\frac{\\rho_{\\text{water}} d_{\\text{droplet}}^2 v_{\\text{air}}}{18 \\mu_{\\text{air}} L_{\\text{baffle}}} > 1.0",
+        explanation:
+          "The zigzag baffle plates turn the airflow abruptly; water droplets with $\\text{Stk} > 1$ cannot negotiate the aerodynamic streamlines and impact the wet baffle surfaces by momentum inertia, capturing $>99\\%$ of liquid carryover.",
       },
     ],
     whyItMattersToday:

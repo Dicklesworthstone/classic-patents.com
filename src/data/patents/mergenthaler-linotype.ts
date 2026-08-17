@@ -82,6 +82,15 @@ Fifth, in an automatic distributing mechanism whereby the matrices, after the sl
         archaicTerm: "Distributor-bar with combinational ribs",
         modernEquivalent: "7-bit mechanical binary demultiplexer",
       },
+      {
+        title: "First & Second Transfer Dual Mechanical Elevators",
+        summary:
+          "Articulated counter-balanced elevator levers transferring matrices between levels.",
+        technicalDetails:
+          "Two intermeshing vertical elevator arms driven by peripheral box cams on the main rear camshaft. The first elevator lowers the assembled line into the casting jaw ($z = 180\\text{ mm}$); after casting, the second elevator lifts the matrices $650\\text{ mm}$ to the top distributor rail while a sliding shifter separates the steel spacebands and drops them into their dedicated storage box.",
+        archaicTerm: "First and second elevators for transferring matrices",
+        modernEquivalent: "Synchronized dual-axis mechanical transfer elevator",
+      },
     ],
     scientificPrinciples: [
       {
@@ -102,6 +111,20 @@ Fifth, in an automatic distributing mechanism whereby the matrices, after the sl
         formula: "F_{\\text{clamp}} = \\frac{F_{\\text{upward}}}{2 \\tan(\\theta) + \\mu_s}",
         explanation:
           "Driving the spaceband wedges upward converts vertical elevator force into lateral clamping thrust with high mechanical advantage, compressing all word spaces equally until the line meets the rigid column stop.",
+      },
+      {
+        principle: "Chvorinov Rule of Rapid Mold Solidification",
+        formula:
+          "t_{\\text{freeze}} = B \\cdot \\left(\\frac{V_{\\text{slug}}}{A_{\\text{mold}}}\\right)^2 \\approx 150\\text{ ms}",
+        explanation:
+          "The high surface-area-to-volume ratio of the thin type slug ($V/A < 1.5\\text{ mm}$) combined with water-cooled steel mold disc conduction extracts the latent heat of fusion in under 200 ms, enabling high-cadence casting cycles.",
+      },
+      {
+        principle: "Multi-Axis Synchronous Camshaft Kinematics",
+        formula:
+          "\\theta_{\\text{subsystem}}(t) = f_i(\\omega_{\\text{main}} t), \\quad \\sum_{i=1}^8 T_{\\text{cam}, i}(\\theta) = \\text{Bounded Torque}",
+        explanation:
+          "A single central camshaft carrying 8 radial and groove box cams sequences the entire 12-second cycle (elevator descent, vise lock, pump stroke, mold disc rotation, knife trim, elevator ascent, and distributor feed) without electronic synchronization.",
       },
     ],
     whyItMattersToday:

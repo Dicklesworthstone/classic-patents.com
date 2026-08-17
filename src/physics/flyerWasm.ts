@@ -44,11 +44,17 @@ export async function ensureFlyerWasm(): Promise<FlyerKernelSource> {
   try {
     const jsUrl = "/wasm/fs-flyer/fs_flyer_wasm.js";
     const wasmUrl = "/wasm/fs-flyer/fs_flyer_wasm_bg.wasm";
-    const mod = (await import(/* webpackIgnore: true */ jsUrl)) as {
+    const jsText = await fetch(jsUrl).then((r) => {
+      if (!r.ok) throw new Error(`flyer wasm glue ${r.status}`);
+      return r.text();
+    });
+    const blobUrl = URL.createObjectURL(new Blob([jsText], { type: "text/javascript" }));
+    const mod = (await import(/* webpackIgnore: true */ blobUrl)) as {
       default: (module_or_path?: unknown) => Promise<unknown>;
       flyer_hello_spin: HelloFn;
     };
     await mod.default({ module_or_path: wasmUrl });
+    URL.revokeObjectURL(blobUrl);
     if (typeof mod.flyer_hello_spin !== "function") {
       throw new Error("flyer_hello_spin missing from wasm module");
     }

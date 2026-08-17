@@ -1,5 +1,8 @@
+"use client";
+
 import { AlertCircle, Lightbulb } from "lucide-react";
 import { useState } from "react";
+import { blackbodyRgb } from "@/physics/blackbody";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { soundEngine } from "@/utils/soundEngine";
 
@@ -26,11 +29,8 @@ export function EdisonBulbSim() {
   const tempKelvin = isBurnedOut ? 300 : Math.round(300 + powerWatts ** 0.45 * 160);
 
   const getFilamentColor = () => {
-    if (isBurnedOut) return "#475569"; // Ash
-    if (tempKelvin < 800) return "#78350f"; // Dull red
-    if (tempKelvin < 1500) return "#f97316"; // Bright orange
-    if (tempKelvin < 2200) return "#fbbf24"; // Warm golden
-    return "#fef08a"; // Incandescent white
+    if (isBurnedOut) return "#475569";
+    return blackbodyRgb(tempKelvin);
   };
 
   const getGlowOpacity = () => {

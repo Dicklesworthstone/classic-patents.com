@@ -119,7 +119,7 @@ const DUAL_MODE_3D_PATENT_IDS = new Set([
 ]);
 
 export function PatentVisualDispatcher({ patentId }: PatentVisualDispatcherProps) {
-  const [renderMode, setRenderMode] = useState<"3d-physics" | "vector-diagram">("vector-diagram");
+  const [renderMode, setRenderMode] = useState<"3d-physics" | "vector-diagram">("3d-physics");
   const has3DMode = DUAL_MODE_3D_PATENT_IDS.has(patentId);
   const activeMode = has3DMode ? renderMode : "vector-diagram";
 

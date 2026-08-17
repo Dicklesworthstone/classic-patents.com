@@ -1,3 +1,5 @@
+"use client";
+
 import { Radio, Zap } from "lucide-react";
 import { useEffect, useState } from "react";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";

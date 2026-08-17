@@ -17,6 +17,7 @@ import { HudText } from "@/components/ui/LatexRenderer";
 import { FrankenSimEngine } from "@/physics/engine";
 import { teslaBAt } from "@/physics/teslaKernel";
 import { useFrankenSimPhysics } from "@/physics/useFrankenSimPhysics";
+import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { soundEngine } from "@/utils/soundEngine";
 import { createGlowPointTexture, createThreeStudioScene } from "./ThreeStudioScene";
 import { useLiveSimParams } from "./useLiveSimParams";
@@ -71,10 +72,11 @@ export function TeslaMotor3D() {
   const containerRef = useRef<HTMLDivElement>(null);
 
   // Electrical & Mechanical Simulation State
+  const { params, updateParam } = usePatentPhysics("us-381968-tesla-motor");
   const [showUiOverlay, setShowUiOverlay] = useState<boolean>(true);
-  const [acFrequencyHz, setAcFrequencyHz] = useState<number>(60); // 10 to 120 Hz
+  const acFrequencyHz = params.frequency ?? 60;
   const [phaseCount, setPhaseCount] = useState<2 | 3>(2);
-  const [appliedLoadTorqueNm, setAppliedLoadTorqueNm] = useState<number>(14.0); // 0 to 40 Nm
+  const appliedLoadTorqueNm = params.loadTorque ?? 14;
   const [showMagneticFlux, _setShowMagneticFlux] = useState<boolean>(true);
   const [showCalloutPins, setShowCalloutPins] = useState<boolean>(false);
   const [activeCamera, setActiveCamera] = useState<CameraPreset>("iso");
@@ -154,9 +156,9 @@ export function TeslaMotor3D() {
   };
 
   const applyScenario = (s: ScenarioPreset) => {
-    setAcFrequencyHz(s.freqHz);
+    updateParam("frequency", s.freqHz);
     setPhaseCount(s.phases);
-    setAppliedLoadTorqueNm(s.loadTorqueNm);
+    updateParam("loadTorque", s.loadTorqueNm);
     if (isPlayingAudio) {
       soundEngine.playTeslaMotorHum(s.freqHz, Math.round(((120 * s.freqHz) / 2) * 0.95));
     }
@@ -217,7 +219,7 @@ export function TeslaMotor3D() {
     const statorGroup = new THREE.Group();
     scene.add(statorGroup);
 
-    // Bedplate
+    // Heavy Cast-Iron Bedplate with Mounting Flanges
     const bedplate = new THREE.Mesh(
       new THREE.BoxGeometry(11.0, 0.7, 7.5),
       new THREE.MeshStandardMaterial({ color: 0x1e293b, roughness: 0.6, metalness: 0.75 }),
@@ -226,7 +228,7 @@ export function TeslaMotor3D() {
     bedplate.receiveShadow = true;
     statorGroup.add(bedplate);
 
-    // 4 Anchor Bosses
+    // 4 Anchor Bosses with Hexagonal Hold-Down Bolts
     [
       [-4.8, -3.0],
       [4.8, -3.0],
@@ -236,16 +238,51 @@ export function TeslaMotor3D() {
       const boss = new THREE.Mesh(new THREE.CylinderGeometry(0.35, 0.4, 0.4, 16), statorIronMat);
       boss.position.set(bx, -3.7, bz);
       statorGroup.add(boss);
+
+      const bolt = new THREE.Mesh(new THREE.CylinderGeometry(0.14, 0.14, 0.35, 6), shaftSteelMat);
+      bolt.position.set(bx, -3.4, bz);
+      statorGroup.add(bolt);
     });
 
-    // Stator Outer Ring
+    // Twin Cast-Iron Pillow Block Bearing Pedestals (Fore & Aft)
+    [-3.8, 3.8].forEach((pedZ) => {
+      const pedestalGroup = new THREE.Group();
+      pedestalGroup.position.set(0, -1.8, pedZ);
+
+      // Flanged Pedestal Base
+      const pedBase = new THREE.Mesh(new THREE.BoxGeometry(3.2, 3.8, 0.8), statorIronMat);
+      pedBase.position.y = -1.2;
+      pedBase.castShadow = true;
+      pedestalGroup.add(pedBase);
+
+      // Bronze Split Sleeve Bearing Bushing
+      const bushing = new THREE.Mesh(
+        new THREE.CylinderGeometry(0.72, 0.72, 0.95, 24),
+        new THREE.MeshStandardMaterial({ color: 0xd97706, metalness: 0.9, roughness: 0.2 }),
+      );
+      bushing.rotation.x = Math.PI / 2;
+      bushing.castShadow = true;
+      pedestalGroup.add(bushing);
+
+      // Brass Grease / Oil Cup Reservoirs
+      const oilCup = new THREE.Mesh(
+        new THREE.CylinderGeometry(0.18, 0.14, 0.45, 12),
+        new THREE.MeshStandardMaterial({ color: 0xc8963e, metalness: 0.92, roughness: 0.25 }),
+      );
+      oilCup.position.set(0, 0.95, 0);
+      pedestalGroup.add(oilCup);
+
+      statorGroup.add(pedestalGroup);
+    });
+
+    // Stator Outer Ring Core with Lamination Clamp Studs
     const statorGeo = new THREE.CylinderGeometry(5.2, 5.2, 3.8, 48, 1, true);
     const statorMesh = new THREE.Mesh(statorGeo, statorIronMat);
     statorMesh.castShadow = true;
     statorMesh.receiveShadow = true;
     statorGroup.add(statorMesh);
 
-    // Stator Lamination Ribs
+    // Stator Lamination Stack Ribs
     for (let l = 0; l < 8; l++) {
       const lamRing = new THREE.Mesh(
         new THREE.TorusGeometry(5.22, 0.04, 8, 48),
@@ -254,6 +291,40 @@ export function TeslaMotor3D() {
       lamRing.rotation.x = Math.PI / 2;
       lamRing.position.y = -1.6 + l * 0.46;
       statorGroup.add(lamRing);
+    }
+
+    // 4 Longitudinal Stator Through-Bolts with Hex Nuts
+    for (let tb = 0; tb < 4; tb++) {
+      const tbAngle = (tb * Math.PI) / 2 + Math.PI / 4;
+      const tbX = Math.cos(tbAngle) * 5.0;
+      const tbZ = Math.sin(tbAngle) * 5.0;
+      const rod = new THREE.Mesh(new THREE.CylinderGeometry(0.08, 0.08, 4.4, 8), shaftSteelMat);
+      rod.position.set(tbX, 0, tbZ);
+      statorGroup.add(rod);
+
+      [-2.15, 2.15].forEach((nutY) => {
+        const nut = new THREE.Mesh(new THREE.CylinderGeometry(0.16, 0.16, 0.18, 6), shaftSteelMat);
+        nut.position.set(tbX, nutY, tbZ);
+        statorGroup.add(nut);
+      });
+    }
+
+    // Terminal Connection Board with Knurled Brass Binding Posts
+    const termBoard = new THREE.Mesh(
+      new THREE.BoxGeometry(2.4, 1.2, 0.35),
+      new THREE.MeshStandardMaterial({ color: 0x78350f, roughness: 0.5 }),
+    );
+    termBoard.position.set(0, 3.8, 4.2);
+    statorGroup.add(termBoard);
+
+    for (let post = 0; post < 4; post++) {
+      const postMesh = new THREE.Mesh(
+        new THREE.CylinderGeometry(0.12, 0.12, 0.35, 12),
+        new THREE.MeshStandardMaterial({ color: 0xd97706, metalness: 0.95, roughness: 0.2 }),
+      );
+      postMesh.rotation.x = Math.PI / 2;
+      postMesh.position.set(-0.75 + post * 0.5, 3.8, 4.45);
+      statorGroup.add(postMesh);
     }
 
     // Salient Stator Poles & Copper Windings
@@ -295,10 +366,32 @@ export function TeslaMotor3D() {
     rotorCore.receiveShadow = true;
     rotorGroup.add(rotorCore);
 
-    // Polished Drive Shaft
-    const shaft = new THREE.Mesh(new THREE.CylinderGeometry(0.55, 0.55, 9.2, 24), shaftSteelMat);
+    // Polished Drive Shaft with Keyway Slot
+    const shaft = new THREE.Mesh(new THREE.CylinderGeometry(0.55, 0.55, 9.8, 24), shaftSteelMat);
+    shaft.rotation.x = Math.PI / 2;
     shaft.castShadow = true;
     rotorGroup.add(shaft);
+
+    // Crowned Output Belt Pulley on Shaft Extension
+    const pulleyGroup = new THREE.Group();
+    pulleyGroup.position.set(0, 0, 4.4);
+
+    const pulleyRim = new THREE.Mesh(
+      new THREE.CylinderGeometry(1.45, 1.45, 1.1, 24),
+      new THREE.MeshStandardMaterial({ color: 0x334155, metalness: 0.8, roughness: 0.35 }),
+    );
+    pulleyRim.rotation.x = Math.PI / 2;
+    pulleyRim.castShadow = true;
+    pulleyGroup.add(pulleyRim);
+
+    // Pulley Hub & Locking Setscrew
+    const pulleyHub = new THREE.Mesh(
+      new THREE.CylinderGeometry(0.75, 0.75, 1.3, 16),
+      shaftSteelMat,
+    );
+    pulleyHub.rotation.x = Math.PI / 2;
+    pulleyGroup.add(pulleyHub);
+    rotorGroup.add(pulleyGroup);
 
     // 16 Skewed Pure-Copper Squirrel-Cage Conductor Bars
     const barCount = 16;
@@ -618,7 +711,7 @@ export function TeslaMotor3D() {
               max="120"
               step="5"
               value={acFrequencyHz}
-              onChange={(e) => setAcFrequencyHz(Number(e.target.value))}
+              onChange={(e) => updateParam("frequency", Number(e.target.value))}
               className="w-full accent-amber-600 dark:accent-amber-400 cursor-pointer"
             />
             <span className="text-[10px] text-ink-500 dark:text-ink-400 block">
@@ -675,7 +768,7 @@ export function TeslaMotor3D() {
               max="38"
               step="1"
               value={appliedLoadTorqueNm}
-              onChange={(e) => setAppliedLoadTorqueNm(Number(e.target.value))}
+              onChange={(e) => updateParam("loadTorque", Number(e.target.value))}
               className="w-full accent-emerald-600 dark:accent-emerald-400 cursor-pointer"
             />
             <span className="text-[10px] text-ink-500 dark:text-ink-400 block">

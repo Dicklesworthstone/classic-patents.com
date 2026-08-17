@@ -80,6 +80,15 @@ Third, in a moving hand-rail traveling at the same velocity and in the same dire
         archaicTerm: "Inclined supporting-frame and trackways",
         modernEquivalent: "Structural escalator truss & guide rails",
       },
+      {
+        title: "Endless Precision Link Roller Chains & Drive Sprockets",
+        summary:
+          "Dual heavy-duty forged pitch chains pulling the tread deck around upper drive sprockets.",
+        technicalDetails:
+          "Twin bushed roller chains ($p = 75\\text{ mm}$) link the cleat ends. Two $16$-tooth cast-steel drive sprockets at the upper machine landing ($D = 380\\text{ mm}$) mesh with the chain rollers, driven by an electric motor via worm reduction gearing, while a hydraulic emergency band brake arrests the shaft in $<0.4\\text{ s}$ if power is lost.",
+        archaicTerm: "Driving sprockets and endless linked chain",
+        modernEquivalent: "Escalator step chains & main drive machine",
+      },
     ],
     scientificPrinciples: [
       {
@@ -102,6 +111,20 @@ Third, in a moving hand-rail traveling at the same velocity and in the same dire
           "\\delta_{\\text{gap}} = y_{\\text{finger}} - y_{\\text{groove}} \\le 1.5\\text{ mm} < w_{\\text{footwear}}",
         explanation:
           "Maintaining sub-millimeter clearance between the comb fingers and the moving grooved tread prevents thin footwear edges, fabric, or shoelaces from being drawn into the turning pinch point at the landing sprockets.",
+      },
+      {
+        principle: "Transition Curve Kinematics & Centrifugal Acceleration",
+        formula:
+          "F_{\\text{normal}}(\\theta) = m \\left(g \\cos\\theta + \\frac{v^2}{R_{\\text{curve}}}\\right), \\quad R_{\\text{curve}} \\ge 1.5\\text{ m}",
+        explanation:
+          "The parabolic curve transitioning from the horizontal landing to the $25^\\circ$ incline is profiled with a radius $R \\ge 1.5\\text{ m}$ to keep vertical jerk below $0.3\\text{ m/s}^3$, ensuring passenger balance and footing stability.",
+      },
+      {
+        principle: "Frictional Handrail Capstan Drive Equation",
+        formula:
+          "T_{\\text{drive}} = T_{\\text{slack}} e^{\\mu \\beta}, \\quad \\beta = \\pi\\text{ rad} \\implies \\frac{T_{\\text{drive}}}{T_{\\text{slack}}} > 3.0",
+        explanation:
+          "The flexible rubber handrail wraps $180^\\circ$ around the upper drive wheel, utilizing capstan friction ($\\mu \\approx 0.35$) to drive the handrail in exact 1:1 speed synchrony with the passenger steps.",
       },
     ],
     whyItMattersToday:

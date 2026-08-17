@@ -13,6 +13,7 @@ import {
 } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import * as THREE from "three";
+import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { soundEngine } from "@/utils/soundEngine";
 import { createGlowPointTexture, createThreeStudioScene } from "./ThreeStudioScene";
 import { useLiveSimParams } from "./useLiveSimParams";
@@ -67,8 +68,9 @@ export function EdisonBulb3D() {
   const containerRef = useRef<HTMLDivElement>(null);
 
   // Electrical & Thermal Simulation State
+  const { params, updateParam } = usePatentPhysics("us-223898-edison-lightbulb");
   const [showUiOverlay, setShowUiOverlay] = useState<boolean>(true);
-  const [appliedVoltage, setAppliedVoltage] = useState<number>(110); // 0 to 140 Volts Volts
+  const appliedVoltage = params.voltage ?? 110;
   const [vacuumTorr, setVacuumTorr] = useState<number>(1e-6); // 1.0 down to 1e-6 Torr
   const [filamentMaterial, setFilamentMaterial] = useState<"carbonized-bamboo" | "platinum-wire">(
     "carbonized-bamboo",
@@ -128,7 +130,7 @@ export function EdisonBulb3D() {
   };
 
   const applyScenario = (s: ScenarioPreset) => {
-    setAppliedVoltage(s.voltage);
+    updateParam("voltage", s.voltage);
     setVacuumTorr(s.vacuumTorr);
     setFilamentMaterial(s.material);
     if (isPlayingAudio) {
@@ -204,99 +206,125 @@ export function EdisonBulb3D() {
     const bulbGroup = new THREE.Group();
     scene.add(bulbGroup);
 
-    // Continuous Blown Glass Pear-Shaped Envelope
+    // Continuous Blown Glass Pear-Shaped Envelope with Exhaust Seal Pip
     const lathePoints: THREE.Vector2[] = [];
-    lathePoints.push(new THREE.Vector2(0.01, 3.9));
-    lathePoints.push(new THREE.Vector2(0.12, 3.8));
-    lathePoints.push(new THREE.Vector2(0.22, 3.65));
-    lathePoints.push(new THREE.Vector2(1.2, 3.2));
-    lathePoints.push(new THREE.Vector2(2.3, 2.3));
-    lathePoints.push(new THREE.Vector2(2.8, 1.2));
-    lathePoints.push(new THREE.Vector2(2.7, 0.2));
-    lathePoints.push(new THREE.Vector2(2.2, -0.7));
-    lathePoints.push(new THREE.Vector2(1.6, -1.4));
-    lathePoints.push(new THREE.Vector2(1.25, -2.0));
+    lathePoints.push(new THREE.Vector2(0.001, 4.35)); // Top pointed exhaust seal pip
+    lathePoints.push(new THREE.Vector2(0.08, 4.18));
+    lathePoints.push(new THREE.Vector2(0.18, 3.92));
+    lathePoints.push(new THREE.Vector2(0.65, 3.55));
+    lathePoints.push(new THREE.Vector2(1.55, 3.05));
+    lathePoints.push(new THREE.Vector2(2.45, 2.2));
+    lathePoints.push(new THREE.Vector2(2.85, 1.15));
+    lathePoints.push(new THREE.Vector2(2.72, 0.15));
+    lathePoints.push(new THREE.Vector2(2.2, -0.75));
+    lathePoints.push(new THREE.Vector2(1.6, -1.45));
+    lathePoints.push(new THREE.Vector2(1.25, -2.05));
     lathePoints.push(new THREE.Vector2(1.22, -2.4));
 
-    const glassGeo = new THREE.LatheGeometry(lathePoints, 48);
+    const glassGeo = new THREE.LatheGeometry(lathePoints, 64);
     const glassMesh = new THREE.Mesh(glassGeo, glassMaterial);
+    glassMesh.castShadow = true;
     bulbGroup.add(glassMesh);
 
-    // Brass Screw Base with Thread Ridges
+    // Glass Exhaust Seal Tip Pip (where Sprengel pump sealed off the vacuum)
+    const exhaustPip = new THREE.Mesh(
+      new THREE.CylinderGeometry(0.02, 0.08, 0.35, 16),
+      glassMaterial,
+    );
+    exhaustPip.position.y = 4.25;
+    bulbGroup.add(exhaustPip);
+
+    // Brass Screw Base with Precision Rolled Thread Ridges
     const baseCylinder = new THREE.Mesh(
-      new THREE.CylinderGeometry(1.22, 1.22, 1.4, 36),
+      new THREE.CylinderGeometry(1.22, 1.22, 1.4, 48),
       brassScrewBaseMaterial,
     );
     baseCylinder.position.y = -2.9;
     baseCylinder.castShadow = true;
     bulbGroup.add(baseCylinder);
 
-    for (let t = 0; t < 4; t++) {
+    for (let t = 0; t < 5; t++) {
       const threadRing = new THREE.Mesh(
-        new THREE.TorusGeometry(1.24, 0.08, 12, 36),
+        new THREE.TorusGeometry(1.24, 0.09, 16, 48),
         brassScrewBaseMaterial,
       );
       threadRing.rotation.x = Math.PI / 2 + 0.08;
-      threadRing.position.y = -2.4 - t * 0.32;
+      threadRing.position.y = -2.3 - t * 0.28;
       bulbGroup.add(threadRing);
     }
 
-    const insulatorBase = new THREE.Mesh(
-      new THREE.CylinderGeometry(0.8, 0.8, 0.25, 24),
-      new THREE.MeshStandardMaterial({ color: 0x0f172a, roughness: 0.8 }),
+    // Plaster-of-Paris Ceramic Insulator Ring
+    const plasterInsulator = new THREE.Mesh(
+      new THREE.CylinderGeometry(1.15, 1.15, 0.2, 32),
+      new THREE.MeshStandardMaterial({ color: 0xe2e8f0, roughness: 0.9 }),
     );
-    insulatorBase.position.y = -3.7;
-    bulbGroup.add(insulatorBase);
+    plasterInsulator.position.y = -3.55;
+    bulbGroup.add(plasterInsulator);
 
-    // Turned Wooden Display Mount
+    const centerContactPlate = new THREE.Mesh(
+      new THREE.CylinderGeometry(0.55, 0.55, 0.15, 24),
+      brassScrewBaseMaterial,
+    );
+    centerContactPlate.position.y = -3.72;
+    bulbGroup.add(centerContactPlate);
+
+    // Turned Mahogany/Walnut Archival Display Stand
     const woodMount = new THREE.Mesh(
-      new THREE.CylinderGeometry(2.4, 2.8, 0.8, 36),
-      new THREE.MeshStandardMaterial({ color: 0x78350f, roughness: 0.4 }),
+      new THREE.CylinderGeometry(2.4, 2.8, 0.8, 48),
+      new THREE.MeshStandardMaterial({ color: 0x5c2b0c, roughness: 0.35, metalness: 0.05 }),
     );
     woodMount.position.y = -4.2;
     woodMount.receiveShadow = true;
     bulbGroup.add(woodMount);
 
-    // Central Flanged Glass Stem Tube
+    // Central Flanged Lead-Glass Stem Tube
     const stemPoints: THREE.Vector2[] = [];
-    stemPoints.push(new THREE.Vector2(0.9, -2.4));
-    stemPoints.push(new THREE.Vector2(0.35, -1.8));
-    stemPoints.push(new THREE.Vector2(0.3, 0.2));
-    stemPoints.push(new THREE.Vector2(0.35, 0.4));
-    const stemGeo = new THREE.LatheGeometry(stemPoints, 24);
+    stemPoints.push(new THREE.Vector2(0.95, -2.4));
+    stemPoints.push(new THREE.Vector2(0.38, -1.8));
+    stemPoints.push(new THREE.Vector2(0.32, 0.2));
+    stemPoints.push(new THREE.Vector2(0.38, 0.45));
+    const stemGeo = new THREE.LatheGeometry(stemPoints, 32);
     const glassStem = new THREE.Mesh(stemGeo, glassMaterial);
     bulbGroup.add(glassStem);
 
-    // Platinum Lead-in Wires
-    [-0.32, 0.32].forEach((xPos) => {
+    // Platinum Lead-in Wires with Glass Fusion Pinch Beads
+    [-0.34, 0.34].forEach((xPos) => {
       const leadWire = new THREE.Mesh(
-        new THREE.CylinderGeometry(0.03, 0.03, 2.2, 12),
+        new THREE.CylinderGeometry(0.032, 0.032, 2.3, 16),
         platinumLeadMaterial,
       );
       leadWire.position.set(xPos, -0.6, 0);
       leadWire.castShadow = true;
       bulbGroup.add(leadWire);
 
+      // Glass seal pinch bead (where platinum coefficient of expansion matches glass)
+      const glassPinchBead = new THREE.Mesh(new THREE.SphereGeometry(0.12, 16, 16), glassMaterial);
+      glassPinchBead.position.set(xPos, -1.1, 0);
+      bulbGroup.add(glassPinchBead);
+
+      // Copper / Carbon Clamping Sleeves
       const clampNut = new THREE.Mesh(
-        new THREE.CylinderGeometry(0.07, 0.07, 0.12, 12),
+        new THREE.CylinderGeometry(0.075, 0.075, 0.16, 16),
         platinumLeadMaterial,
       );
-      clampNut.position.set(xPos, 0.45, 0);
+      clampNut.position.set(xPos, 0.48, 0);
       bulbGroup.add(clampNut);
     });
 
-    // Horseshoe Carbon Filament
+    // Carbonized Bamboo Filament Horseshoe Loop (US Patent 223,898)
     const curvePoints: THREE.Vector3[] = [];
-    const filamentSegments = 32;
+    const filamentSegments = 48;
     for (let i = 0; i <= filamentSegments; i++) {
       const theta = (i / filamentSegments) * Math.PI;
-      const x = Math.cos(theta) * 0.55;
-      const y = 0.5 + Math.sin(theta) * 1.6;
-      curvePoints.push(new THREE.Vector3(x, y, 0));
+      const x = Math.cos(theta) * 0.58;
+      const y = 0.55 + Math.sin(theta) * 1.75;
+      const z = Math.sin(theta * 2) * 0.04; // Authentic slight twist
+      curvePoints.push(new THREE.Vector3(x, y, z));
     }
     const filamentCurve = new THREE.CatmullRomCurve3(curvePoints);
-    const filamentGeo = new THREE.TubeGeometry(filamentCurve, 40, 0.032, 8, false);
+    const filamentGeo = new THREE.TubeGeometry(filamentCurve, 56, 0.035, 12, false);
     const filamentMesh = new THREE.Mesh(filamentGeo, filamentMaterialMesh);
+    filamentMesh.castShadow = true;
     bulbGroup.add(filamentMesh);
 
     // Residual Air Gas Molecules Cloud
@@ -570,7 +598,7 @@ export function EdisonBulb3D() {
               max="140"
               step="5"
               value={appliedVoltage}
-              onChange={(e) => setAppliedVoltage(Number(e.target.value))}
+              onChange={(e) => updateParam("voltage", Number(e.target.value))}
               className="w-full accent-amber-600 cursor-pointer"
             />
             <span className="text-[10px] text-ink-500 dark:text-ink-400 block">

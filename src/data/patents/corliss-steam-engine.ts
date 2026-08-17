@@ -74,6 +74,24 @@ I claim as my invention:
         archaicTerm: "Catch-hook trip mechanism and pneumatic dashpot",
         modernEquivalent: "Pneumatic dashpot trip-cutoff valve gear",
       },
+      {
+        title: "Pneumatic Vacuum Dashpot & Compression Snubber",
+        summary:
+          "Dual-chamber springless actuator slamming valves shut and providing hydraulic cushioning.",
+        technicalDetails:
+          "A vertical cylinder containing a close-fitting bronze plunger. The upper chamber pulls a high vacuum ($P < 20\\text{ kPa}$) during valve opening to supply rapid closing acceleration, while the lower chamber compresses entrapped air through an adjustable needle orifice to cushion the final $5\\text{ mm}$ of travel without seat bounce.",
+        archaicTerm: "Air-cushion dash-pot or closing cylinder",
+        modernEquivalent: "Pneumatic vacuum return actuator & air snubber",
+      },
+      {
+        title: "Steam-Jacketed Cylinder Casting & Corner Ports",
+        summary:
+          "Double-walled iron jacket maintaining cylinder temperature and isolating thermal domains.",
+        technicalDetails:
+          "Live boiler steam circulates through an outer annular jacket ($t = 25\\text{ mm}$) encasing the working cylinder, keeping the inner iron walls above saturation temperature ($T_{\\text{wall}} \\approx 175^\\circ\\text{C}$). Independent short corner ports reduce internal clearance volume to $<2.0\\%$, minimizing wasted re-compression work.",
+        archaicTerm: "Steam-casing or jacket surrounding the cylinder",
+        modernEquivalent: "Steam-jacketed cylinder barrel & low-clearance porting",
+      },
     ],
     scientificPrinciples: [
       {
@@ -96,6 +114,13 @@ I claim as my invention:
           "\\eta = \\frac{W_{\\text{net}}}{Q_{\\text{in}}} = 1 - \\frac{h_{\\text{exhaust}} - h_{\\text{condensate}}}{h_{\\text{boiler}} - h_{\\text{feedwater}}}",
         explanation:
           "Admitting steam at full boiler pressure without throttling avoids irreversible throttling entropy generation ($\\Delta s_{\\text{throttle}} = -R \\ln(P_2/P_1)$), increasing overall thermal efficiency by $30\\text{ to }40\\%$.",
+      },
+      {
+        principle: "Wall Condensation Irreversibility & Heat Transfer Barrier",
+        formula:
+          "\\dot{Q}_{\\text{loss}} = h_{\\text{film}} A_{\\text{wall}} (T_{\\text{steam}} - T_{\\text{wall}}), \\quad m_{\\text{condensed}} = \\frac{\\dot{Q}_{\\text{loss}} \\Delta t}{h_{fg}}",
+        explanation:
+          "Separating cold exhaust passage routes from hot intake ports prevents cyclic cooling of cylinder head surfaces, eliminating initial condensation where up to 40% of fresh boiler steam would otherwise liquefy uselessly on cold iron.",
       },
     ],
     whyItMattersToday:

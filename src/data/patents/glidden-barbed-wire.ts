@@ -78,6 +78,23 @@ I claim as my invention:
         archaicTerm: "Firmly locking and holding the spur-wire",
         modernEquivalent: "Helical interference-fit barb lock",
       },
+      {
+        title: "Diagonal Chisel-Shear Wire Spur Tips",
+        summary: "High-angle transverse shear cutting creating razor lancet tips.",
+        technicalDetails:
+          "The wire ends are sheared at compound acute bevel angles of $35^\\circ\\text{ to }45^\\circ$ during automated coiling. The resultant chisel edge exhibits a tip radius of curvature $r_{\\text{tip}} < 80\\;\\mu\\text{m}$, creating concentrated mechanical stress concentrations that pierce cattle hide ($E_{\\text{skin}} \\approx 20\\text{ MPa}$) with minimal normal force.",
+        archaicTerm: "Sharp projecting spur-points",
+        modernEquivalent: "Chisel-cut lancet points / Razor barb tips",
+      },
+      {
+        title: "Zinc Galvanic Passivation & Atmospheric Barrier",
+        summary:
+          "Hot-dip zinc coating offering sacrificial cathodic protection across prairie weather.",
+        technicalDetails:
+          "A hot-dip metallurgically bonded zinc layer ($50\\text{ to }70\\;\\mu\\text{m}$ thickness, density $350\\text{ g/m}^2$) encases the drawn carbon steel core. In the presence of atmospheric electrolyte moisture, zinc acts as a sacrificial anode ($E^\\circ = -0.76\\text{ V}$ vs $\\text{SHE}$), galvanically shielding exposed steel cuts from iron oxide rust.",
+        archaicTerm: "Galvanized or zinc-coated fencing wire",
+        modernEquivalent: "Class 3 hot-dip galvanized sacrificial coating",
+      },
     ],
     scientificPrinciples: [
       {
@@ -100,6 +117,13 @@ I claim as my invention:
           "\\Delta L_{\\text{thermal}} = \\alpha \\cdot L \\cdot \\Delta T, \\quad k_{\\text{helix}} = \\frac{G d^4}{64 R^3 n}",
         explanation:
           "In extreme winter temperatures ($\\Delta T = -50^\\circ\\text{C}$), thermal contraction strain ($\\epsilon = 6 \\times 10^{-4}$) is absorbed by slight elastic untwisting of the double helix rather than generating destructive tensile stress that would snap straight single wire.",
+      },
+      {
+        principle: "Helical Interference Clamping & Normal Force",
+        formula:
+          "F_{\\text{clamp}} = \\frac{2 T_{\\text{twist}} \\sin\\phi}{R_{\\text{strand}}}, \\quad F_{\\text{slip}} = 2 \\mu F_{\\text{clamp}} > 450\\text{ N}",
+        explanation:
+          "The mechanical twist helix converts axial wire tension and torsion into radial compressive clamping forces that permanently pinch the coiled barb loops against the primary strand without requiring solder or welds.",
       },
     ],
     whyItMattersToday:

@@ -82,6 +82,15 @@ Fourth, I mount engines and propellers upon rigid cars suspended below or attach
         archaicTerm: "Keel running-weight and connecting-bridge",
         modernEquivalent: "Internal structural keel & dynamic pitch ballast system",
       },
+      {
+        title: "Suspended Engine Gondolas & Outrigger Propeller Drives",
+        summary:
+          "Twin aluminum passenger cars with Daimler engines driving geared thrust propellers.",
+        technicalDetails:
+          "Two boat-shaped aluminum gondolas suspended fore and aft below the keel. Each car houses a 16-horsepower Daimler internal combustion engine driving twin side-mounted two-bladed aluminum propellers ($D = 1.25\\text{ m}$) via bevel gearboxes and hollow steel outrigger drive shafts, delivering $2.4\\text{ kN}$ of forward thrust at $1,100\\text{ RPM}$.",
+        archaicTerm: "Suspended cars containing the motors and propellers",
+        modernEquivalent: "Underslung engine nacelles & cross-shaft propeller outriggers",
+      },
     ],
     scientificPrinciples: [
       {
@@ -104,6 +113,20 @@ Fourth, I mount engines and propellers upon rigid cars suspended below or attach
           "P(z) = P_0 e^{-M g z / (R T)}, \\quad V_{\\text{gas}}(z) = V_0 \\frac{P_0}{P(z)} \\implies \\text{Vent Threshold at } z_{\\text{pressure-height}}",
         explanation:
           "As the airship ascends, external atmospheric pressure drops and the internal gasbags expand. Automatic spring-loaded relief valves vent excess hydrogen once the cells reach $100\\%$ full volume (the pressure height), preventing structural over-pressurization.",
+      },
+      {
+        principle: "Solar Radiation Superheating & Gas Density Shift",
+        formula:
+          "\\Delta T_{\\text{superheat}} = \\frac{\\alpha_{\\text{absorp}} I_{\\text{sun}} - \\epsilon \\sigma (T_{\\text{envelope}}^4 - T_{\\text{sky}}^4)}{h_{\\text{conv}}}, \\quad \\Delta L_{\\text{thermal}} = V_{\\text{gas}} g \\rho_{\\text{air}} \\left(\\frac{\\Delta T}{T_{\\text{air}} + \\Delta T}\\right)",
+        explanation:
+          "Solar heating warms the contained hydrogen above ambient air temperature ($+10^\\circ\\text{C}$ superheat), temporarily increasing net buoyancy by hundreds of kilograms during daytime flight.",
+      },
+      {
+        principle: "Longitudinal Aerostatic Metacentric Pitch Righting Moment",
+        formula:
+          "M_{\\text{righting}}(\\theta) = -m_{\\text{structure}} g \\cdot \\overline{BG} \\sin\\theta + \\frac{1}{2} \\rho V^2 S_{\\text{elev}} l_{\\text{tail}} C_{L,\\text{elev}}(\\delta_e)",
+        explanation:
+          "Suspending heavy gondolas and engine machinery well below the center of buoyancy ($z_B > z_G$, where $\\overline{BG} \\approx 3.2\\text{ m}$) creates an inherent pendulum righting moment that stabilizes pitch attitude against aerodynamic gusts.",
       },
     ],
     whyItMattersToday:

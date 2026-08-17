@@ -81,6 +81,14 @@ Fourth, a string-cocking device whereby the shutter spring can be rewound from t
         archaicTerm: "Measuring roller and indicator dial",
         modernEquivalent: "Mechanical frame indexer and shot counter",
       },
+      {
+        title: "Pull-String Shutter Cocking Cord & Cam Interlock",
+        summary: "Flexible braided linen pull-cord winding the flat spiral shutter spring.",
+        technicalDetails:
+          "A flexible linen cord protruding from the top corner of the wooden body. Pulling the cord upward rotates the shutter barrel $180^\\circ$ against a flat spiral clockwork spring ($k = 0.045\\text{ N}\\cdot\\text{m/rad}$), engaging a spring-loaded sear detent. An internal sliding blind plate shields the lens during the cocking stroke to prevent pre-exposure fogging.",
+        archaicTerm: "Operating cord or string extending through the casing",
+        modernEquivalent: "Shutter cocking linkage & non-capping blind interlock",
+      },
     ],
     scientificPrinciples: [
       {
@@ -103,6 +111,20 @@ Fourth, a string-cocking device whereby the shutter spring can be rewound from t
           "\\text{EV} = \\log_2\\left(\\frac{N^2}{t}\\right) = \\log_2\\left(\\frac{9^2}{0.050}\\right) = \\log_2(1620) \\approx 10.66",
         explanation:
           "The Kodak's optical combination of $f/9$ aperture and $1/20\\text{ s}$ shutter yield an exposure value $\\text{EV} \\approx 10.7$, matched to bright outdoor daylight illumination for ISO 25 gelatin emulsion.",
+      },
+      {
+        principle: "Hurter & Driffield Emulsion Sensitometry Curve",
+        formula:
+          "D = \\log_{10}\\left(\\frac{I_0}{I_{\\text{transmitted}}}\\right) = \\gamma \\cdot \\left[\\log_{10}(E) - \\log_{10}(i)\\right]",
+        explanation:
+          "The characteristic S-shaped H&D curve relates photochemical optical density $D$ to the logarithm of exposure $E = I \\cdot t$, where development contrast $\\gamma \\approx 0.8$ produces linear tonal gradation across highlights and shadows.",
+      },
+      {
+        principle: "Cosine Fourth Law of Lens Field Illumination",
+        formula:
+          "E(\\theta) = E_0 \\cos^4\\theta = \\frac{\\Phi_0 \\tau_{\\text{lens}}}{4 N^2 (1 + m)^2} \\cos^4\\theta",
+        explanation:
+          "Illuminance falls off toward the periphery with the fourth power of the off-axis angle $\\theta$, producing the classic vignetted circular 2.5-inch circular frame geometry unique to the 1888 original Kodak.",
       },
     ],
     whyItMattersToday:

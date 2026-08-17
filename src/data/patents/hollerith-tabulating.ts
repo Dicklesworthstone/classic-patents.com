@@ -81,6 +81,14 @@ Fourth, in a sorting box containing separate compartments whose covers are opene
         archaicTerm: "Pantograph punching apparatus",
         modernEquivalent: "Manual keypunch card encoder",
       },
+      {
+        title: "Spring-Loaded Sorting Box Compartment Latch Matrix",
+        summary: "Multi-compartment sorter with electromagnetic trigger latches.",
+        technicalDetails:
+          "A 24-compartment wooden sorting bin with hinged spring-loaded lids ($k = 0.12\\text{ N}\\cdot\\text{m}$). Each lid is held shut by an armature catch. When a specific demographic relay logic circuit fires, its solenoid retracts the catch ($t_{\\text{release}} < 8\\text{ ms}$), causing the designated bin lid to fly open automatically, directing the human operator where to file the card.",
+        archaicTerm: "Sorting-box having a series of compartments with lids",
+        modernEquivalent: "Electromagnetic card sorter / Automated bin selector",
+      },
     ],
     scientificPrinciples: [
       {
@@ -102,6 +110,20 @@ Fourth, in a sorting box containing separate compartments whose covers are opene
           "Y_{\\text{bin}} = \\prod_{i \\in \\text{AND}} X_i \\cdot \\sum_{j \\in \\text{OR}} X_j",
         explanation:
           "Wiring electromagnetic relays in series performed hardware logical AND operations, while parallel paths performed logical OR, allowing multi-attribute cross-tabulation without software computation.",
+      },
+      {
+        principle: "Information Entropy & Tabulation Bandwidth",
+        formula:
+          "H_{\\text{census}} = -\\sum_{i=1}^K p_i \\log_2(p_i), \\quad C = \\frac{\\text{Bits}}{\\text{Card}} \\cdot f_{\\text{read}} \\approx 288 \\times 1.33 = 384\\text{ bps}",
+        explanation:
+          "Hollerith's system increased demographic data tabulation bandwidth by a factor of 100 over manual tally sheets, completing the 1890 Census of 62.9 million citizens in months rather than an entire decade.",
+      },
+      {
+        principle: "Mercury-Wetted Micro-Contact Interface Conduction",
+        formula:
+          "R_{\\text{contact}} = \\frac{\\rho_{\\text{brass}} + \\rho_{\\text{Hg}}}{4 a} \\ll R_{\\text{dry contact}}",
+        explanation:
+          "Dipping brass pins into liquid mercury pools created liquid-metal meniscus wetting that eliminated dry-contact bounce, oxide film resistance, and contact degradation across hundreds of thousands of daily actuations.",
       },
     ],
     whyItMattersToday:

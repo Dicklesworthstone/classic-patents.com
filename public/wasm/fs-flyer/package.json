@@ -1,0 +1,16 @@
+{
+  "name": "fs-flyer-wasm",
+  "type": "module",
+  "description": "Browser (WASM) surface for the Wright Flyer simulation — real FrankenSim physics in the browser, typed refusals at the JS boundary, no mocks.",
+  "version": "0.0.1",
+  "files": [
+    "fs_flyer_wasm_bg.wasm",
+    "fs_flyer_wasm.js",
+    "fs_flyer_wasm.d.ts"
+  ],
+  "main": "fs_flyer_wasm.js",
+  "types": "fs_flyer_wasm.d.ts",
+  "sideEffects": [
+    "./snippets/*"
+  ]
+}

@@ -79,6 +79,23 @@ I claim as my invention:
         archaicTerm: "Means for forcing the clamping jaws toward each other",
         modernEquivalent: "Upset forging actuator / Pneumatic weld cylinder",
       },
+      {
+        title: "Laminated Silicon-Steel Shell Transformer Core",
+        summary:
+          "Interleaved magnetic iron core enclosing the primary and secondary loops with minimal core loss.",
+        technicalDetails:
+          "Constructed of insulated electrical sheet steel laminations ($t = 0.35\\text{ mm}$) forming a closed magnetic circuit ($\\mu_r > 3,500$). The shell-type core encloses both the primary coil and the solid copper secondary loop, reducing magnetic leakage flux to $<1.5\\%$ and delivering a peak power factor $\\cos\\phi > 0.85$ under heavy welding loads.",
+        archaicTerm: "Laminated iron core enclosing the coils",
+        modernEquivalent: "Laminated electrical steel transformer core",
+      },
+      {
+        title: "Foot-Pedal Contactor & Auto-Cutoff Interrupter",
+        summary: "Heavy-duty magnetic primary contactor terminating current upon upset completion.",
+        technicalDetails:
+          "A spring-loaded foot switch actuates a magnetic primary contactor. An adjustable microswitch trigger on the moving jaw automatically cuts off the 220V primary supply the precise millisecond the axial forging upset distance ($\\Delta x = 4.5\\text{ mm}$) is reached, preventing molten metal blowout and excessive grain coarsening.",
+        archaicTerm: "Circuit-breaker or switch actuated by the movement of the jaw",
+        modernEquivalent: "Synchronous weld timer & automatic upset cutoff switch",
+      },
     ],
     scientificPrinciples: [
       {
@@ -101,6 +118,13 @@ I claim as my invention:
           "\\mathcal{E}_s = -N_s \\frac{d\\Phi}{dt} = \\frac{N_s}{N_p} \\mathcal{E}_p, \\quad I_s = \\frac{N_p}{N_s} I_p",
         explanation:
           "Faraday induction allows safe stepping from lethal high-voltage distribution lines ($2,200\\text{ V}$) down to an touch-safe potential ($1.5\\text{ V}$) while multiplying current by a factor of over 100 for heavy thermal metallurgy.",
+      },
+      {
+        principle: "Transient Thermal Conduction & Heat-Affected Zone (HAZ)",
+        formula:
+          "T(x, t) - T_0 = \\frac{q'' \\sqrt{\\alpha t}}{k} \\cdot 2 \\text{ierfc}\\left(\\frac{x}{2\\sqrt{\\alpha t}}\\right), \\quad \\alpha = \\frac{k}{\\rho C_p}",
+        explanation:
+          "Because the intense Joule heat is generated in less than 2 seconds, thermal diffusivity $\\alpha$ restricts the heat-affected zone to a narrow band ($x_{\\text{HAZ}} < 3\\text{ mm}$), preventing annealing or distortion of the parent metal.",
       },
     ],
     whyItMattersToday:

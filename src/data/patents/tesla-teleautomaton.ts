@@ -82,6 +82,15 @@ Fifth, an automatic mechanical tapper or decoherer synchronized with the relay m
         archaicTerm: "Steering-motor, rudder-gear, and propelling-motor",
         modernEquivalent: "Electric propulsion motor & rudder servo actuator",
       },
+      {
+        title: "High-Voltage Spark-Gap Transmitter & Telegraph Key",
+        summary:
+          "Ground station induction coil and rotary spark discharger generating damped RF bursts.",
+        technicalDetails:
+          "A Ruhmkorff induction coil powered by a 50V battery bank, stepping voltage up to $>30\\text{ kV}$ across zinc spherical electrodes. A heavy brass telegraph key gates the primary current, discharging a high-Q tuned Leyden jar capacitor tank to radiate high-power damped electromagnetic wave packets (pulse power $>15\\text{ kW}$).",
+        archaicTerm: "Transmitting apparatus generating electrical oscillations",
+        modernEquivalent: "Spark-gap RF transmitter & pulsed power oscillator",
+      },
     ],
     scientificPrinciples: [
       {
@@ -102,6 +111,20 @@ Fifth, an automatic mechanical tapper or decoherer synchronized with the relay m
         formula: "S_{n+1} = \\delta(S_n, X_{\\text{pulse}}), \\quad Y_n = \\lambda(S_n)",
         explanation:
           "Each received radio pulse $X$ advances the rotary commutator drum from state $S_n$ to state $S_{n+1}$, where output vector $Y_n$ (rudder port, rudder starboard, throttle on, throttle off) is uniquely determined by the contact pattern.",
+      },
+      {
+        principle: "Hertzian Dipole Far-Field Radiation Equation",
+        formula:
+          "E_{\\theta}(r, t) = \\frac{\\mu_0 \\omega I_0 L}{4\\pi r} \\sin\\theta \\cos\\left(\\omega\\left(t - \\frac{r}{c}\\right)\\right), \\quad P_{\\text{rad}} = \\frac{2\\pi}{3} \\eta_0 \\left(\\frac{I_0 L}{\\lambda}\\right)^2",
+        explanation:
+          "The transmitter antenna radiates electromagnetic power into space proportional to $(L/\\lambda)^2$, where the electric field propagates across the water surface at the speed of light $c$ to induce displacement current in the vessel mast.",
+      },
+      {
+        principle: "Hydrostatic Submergence & Metacentric Stability",
+        formula:
+          "GM = \\frac{I_{\\text{waterplane}}}{V_{\\text{disp}}} + KB - KG > 0, \\quad F_{\\text{buoyancy}} = \\rho_{\\text{water}} g V_{\\text{hull}} \\approx m_{\\text{vessel}} g",
+        explanation:
+          "Tesla designed the vessel with a low freeboard (semi-submersible profile) and heavy low-slung lead-acid battery ballast, maximizing metacentric height $GM$ to stabilize the boat against wave rolling and protect the receiving antenna verticality.",
       },
     ],
     whyItMattersToday:

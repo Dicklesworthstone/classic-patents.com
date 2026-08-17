@@ -80,16 +80,25 @@ export function PhysicsTelemetryBadge({
       {/* Live SI Telemetry Metrics Grid */}
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5">
         {liveMetrics.map((metric) => {
+          const barColor =
+            metric.badgeColor === "rose"
+              ? "bg-rose-600 dark:bg-rose-500"
+              : metric.badgeColor === "emerald"
+                ? "bg-emerald-600 dark:bg-emerald-500"
+                : metric.badgeColor === "cyan" || metric.badgeColor === "indigo"
+                  ? "bg-sky-600 dark:bg-sky-500"
+                  : "bg-amber-600 dark:bg-amber-500";
+
           return (
             <div
               key={metric.label}
-              className="p-3 rounded-xl border border-parchment-300 dark:border-ink-800 bg-white/70 dark:bg-ink-900/70 text-ink-900 dark:text-parchment-100 flex flex-col justify-between shadow-2xs"
+              className="p-3.5 rounded-xl border border-parchment-300 dark:border-ink-800/90 bg-white/80 dark:bg-ink-900/80 text-ink-900 dark:text-parchment-100 flex flex-col justify-between shadow-2xs transition-colors"
             >
               <div className="flex items-center justify-between">
                 <span className="text-[10px] uppercase font-mono tracking-wider font-semibold text-ink-600 dark:text-ink-400 truncate">
                   {metric.label}
                 </span>
-                <Gauge className="w-3 h-3 text-amber-700 dark:text-amber-400 opacity-80" />
+                <Gauge className="w-3.5 h-3.5 text-amber-700 dark:text-amber-400 opacity-70" />
               </div>
 
               <div className="flex items-baseline gap-1 my-1.5">
@@ -103,9 +112,9 @@ export function PhysicsTelemetryBadge({
 
               {/* Mini visual progress bar */}
               {typeof metric.progressPct === "number" && (
-                <div className="w-full bg-parchment-200 dark:bg-ink-800 h-1 rounded-full overflow-hidden mt-0.5">
+                <div className="w-full bg-parchment-200 dark:bg-ink-800 h-1.5 rounded-full overflow-hidden mt-0.5">
                   <div
-                    className="h-full bg-amber-600 dark:bg-amber-400 transition-all duration-150 rounded-full"
+                    className={`h-full ${barColor} transition-all duration-200 rounded-full`}
                     style={{ width: `${Math.max(3, Math.min(100, metric.progressPct))}%` }}
                   />
                 </div>

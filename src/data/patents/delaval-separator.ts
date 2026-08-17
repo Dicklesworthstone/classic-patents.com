@@ -81,6 +81,22 @@ I claim as my invention:
         archaicTerm: "Belt pulley or hand gearing communicating motion",
         modernEquivalent: "Speed-increasing worm gear drive / Centrifuge transmission",
       },
+      {
+        title: "Central Axial Feed Tube & Bottom Distributor Cone",
+        summary: "Stationary feed pipe introducing raw fluid gently at the bowl rotation axis.",
+        technicalDetails:
+          "Incoming raw milk enters through a central stationary stainless/tinned pipe ($D = 16\\text{ mm}$) and discharges against a rotating conical distributor hub. Radial wings accelerate the fluid up to bowl angular velocity with minimal shear turbulence, preventing mechanical shearing and rupture of delicate fat globule membranes.",
+        archaicTerm: "Central supply pipe and distributing chamber",
+        modernEquivalent: "Inlet feed pipe & accelerating distributor hub",
+      },
+      {
+        title: "Spring-Loaded Damped Footstep Thrust Bearing",
+        summary: "Hardened steel pivot ball resting on bronze cup with radial elastomer dampers.",
+        technicalDetails:
+          "The lower end of the vertical spindle terminates in a polished convex steel pivot ball resting in a concave phosphor-bronze bearing cup. The entire footstep assembly is floated on nested Belleville springs and oiled felt rings, damping gyroscopic precessional oscillations ($M_{\\text{gyro}} = I_z \\omega \\times \\Omega_{\\text{precess}}$) during run-up through critical speeds.",
+        archaicTerm: "Elastic bottom bearing supporting the spindle pivot",
+        modernEquivalent: "Elastomer-damped footstep bearing & pivot damper",
+      },
     ],
     scientificPrinciples: [
       {
@@ -103,6 +119,13 @@ I claim as my invention:
           "\\omega > \\omega_{\\text{critical}} = \\sqrt{\\frac{k_{\\text{bearing}}}{M_{\\text{bowl}}}}",
         explanation:
           "By operating well above the shaft critical resonant frequency on a flexible spindle, the rotating bowl naturally pivots about its true mass centroid, automatically compensating for slight fluid imbalances.",
+      },
+      {
+        principle: "Phase Boundary Neutral Zone Equilibrium",
+        formula:
+          "r_{\\text{neutral}} = \\sqrt{\\frac{\\rho_{\\text{heavy}} r_{\\text{heavy}}^2 - \\rho_{\\text{light}} r_{\\text{light}}^2}{\\rho_{\\text{heavy}} - \\rho_{\\text{light}}}}",
+        explanation:
+          "Hydrostatic pressure balance in a two-phase rotating fluid system fixes the location of the neutral cylindrical interface between heavy skim and light cream based entirely on the selected outlet weir radii.",
       },
     ],
     whyItMattersToday:

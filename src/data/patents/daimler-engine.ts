@@ -81,6 +81,14 @@ Fourth, in a steering mechanism connected to the front carriage axle, controlled
         archaicTerm: "Compensating differential gearing",
         modernEquivalent: "Open bevel-gear differential axle",
       },
+      {
+        title: "Surface Float Petroleum Vaporizer Carburetor",
+        summary: "Warm-air bubbling carburetor generating homogeneous combustible vapor.",
+        technicalDetails:
+          "A cylindrical brass fuel vessel containing volatile petroleum spirit ($0.68\\text{ g/cm}^3$). Engine exhaust warms the bottom jacket ($T = 45^\\circ\\text{C}$), while an annular copper float maintains a shallow liquid pool; intake manifold vacuum draws ambient air through a submerged perforated bell, creating rich gasoline vapor mixed with secondary air via a rotary barrel valve.",
+        archaicTerm: "Surface carburetor and float apparatus",
+        modernEquivalent: "Constant-level float carburetor & air-fuel mixer",
+      },
     ],
     scientificPrinciples: [
       {
@@ -103,6 +111,20 @@ Fourth, in a steering mechanism connected to the front carriage axle, controlled
           "t_{\\text{ignition}} = \\frac{\\ln(T_{\\text{auto}} / T_0)}{k_{\\text{thermal}}}, \\quad T_{\\text{tube}} \\ge 850^\\circ\\text{C} > T_{\\text{auto-gasoline}} (280^\\circ\\text{C})",
         explanation:
           "Ignition timing is governed by the compression wave driving the combustible mixture past the unburned boundary layer into the incandescent hot zone, causing instantaneous thermal detonation at maximum cylinder density.",
+      },
+      {
+        principle: "Stoichiometric Hydrocarbon Combustion Thermochemistry",
+        formula:
+          "\\text{C}_8\\text{H}_{18} + 12.5 (\\text{O}_2 + 3.76 \\text{N}_2) \\to 8 \\text{CO}_2 + 9 \\text{H}_2\\text{O} + 47 \\text{N}_2 + \\Delta H_c \\; (44.4\\text{ MJ/kg})",
+        explanation:
+          "Maintaining an air-fuel mass ratio near stoichiometric ($\\text{AFR} \\approx 14.7:1$) maximizes adiabatic flame temperature ($T_{\\text{flame}} > 2,200\\text{ K}$) and combustion pressure without hydrocarbon unburnt fouling.",
+      },
+      {
+        principle: "Capstan Belt Traction Friction Limit",
+        formula:
+          "\\frac{T_{\\text{tight}}}{T_{\\text{slack}}} \\le e^{\\mu \\theta_{\\text{wrap}}}, \\quad P_{\\text{trans}} = (T_{\\text{tight}} - T_{\\text{slack}}) v_{\\text{belt}}",
+        explanation:
+          "The leather belt transmission transfers engine power via capstan friction around the drive pulley ($\\mu \\approx 0.30$), slipping safely when vehicle torque demands exceed the adhesion limit to protect internal gears.",
       },
     ],
     whyItMattersToday:

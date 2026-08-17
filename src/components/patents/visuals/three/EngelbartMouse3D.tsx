@@ -14,6 +14,7 @@ import {
 } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import * as THREE from "three";
+import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { soundEngine } from "@/utils/soundEngine";
 import { createThreeStudioScene } from "./ThreeStudioScene";
 import { useLiveSimParams } from "./useLiveSimParams";
@@ -69,8 +70,9 @@ export function EngelbartMouse3D() {
   const containerRef = useRef<HTMLDivElement>(null);
 
   // Mouse Kinematics & Rendering State
+  const { params, updateParam } = usePatentPhysics("us-3541541-engelbart-mouse");
   const [showUiOverlay, setShowUiOverlay] = useState<boolean>(true);
-  const [displacementSpeedMmSec, setDisplacementSpeedMmSec] = useState<number>(140);
+  const displacementSpeedMmSec = params.mouseSpeed ?? 140;
   const [mouseTrajectory, setMouseTrajectory] = useState<
     "figure8" | "circle" | "horizontal" | "vertical"
   >("figure8");
@@ -134,7 +136,7 @@ export function EngelbartMouse3D() {
   };
 
   const applyScenario = (s: ScenarioPreset) => {
-    setDisplacementSpeedMmSec(s.speed);
+    updateParam("mouseSpeed", s.speed);
     setMouseTrajectory(s.trajectory);
     setCpiResolution(s.cpi);
     if (!isAudioMuted) {
@@ -671,7 +673,7 @@ export function EngelbartMouse3D() {
               max="300"
               step="10"
               value={displacementSpeedMmSec}
-              onChange={(e) => setDisplacementSpeedMmSec(Number(e.target.value))}
+              onChange={(e) => updateParam("mouseSpeed", Number(e.target.value))}
               className="w-full accent-amber-600 cursor-pointer"
             />
           </div>

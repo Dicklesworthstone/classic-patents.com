@@ -1,3 +1,5 @@
+"use client";
+
 import { RotateCcw, Sparkles, Thermometer, Waves } from "lucide-react";
 import { useState } from "react";
 import { FrankenSimEngine } from "@/physics/engine";

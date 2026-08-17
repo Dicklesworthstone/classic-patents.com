@@ -175,7 +175,7 @@ export function ThomsonWeldingSim() {
             <circle
               cx="0"
               cy="0"
-              r={isWelding ? "18" : "8"}
+              r={isWelding ? 18 : 8}
               fill={isWelding ? "#FFFFFF" : interfaceTempC > 800 ? "#ECC94B" : "#718096"}
               opacity="0.95"
             />

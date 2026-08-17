@@ -21,7 +21,7 @@ the visitor can see or hear the kernel change the instrument.
 - [x] P1.2 Loader tries `fs-flyer-wasm` `flyer_hello_spin` from `/wasm/fs-flyer/`
 - [x] P1.3 Each rAF tick advances 1 hello step; apply quaternion to airframe
 - [x] P1.4 HUD states `WASM` vs `TS lie fallback` honestly
-- [ ] P1.5 Build/copy `fs_flyer_wasm_bg.wasm` + JS glue into `public/wasm/fs-flyer/` (wasm-pack still compiling asupersync; TS lie is live until the artifact lands)
+- [x] P1.5 Built `fs-flyer-wasm` locally (RCH has no wasm32) into `public/wasm/fs-flyer/`
 - [x] P1.6 Wing/rudder/canard remain local articulations on that body attitude
 
 ## P2 — Tesla Fig. 4 strobe + B-field from the kernel
@@ -41,8 +41,8 @@ the visitor can see or hear the kernel change the instrument.
 
 ## P4 — Backlog (do not drop; not this slice's visitor-facing blocker)
 
-- [ ] P4.1 Host-pumped TickScheduler + bounded catch-up
-- [ ] P4.2 Shared bus for remaining 18 patents' 2D/3D pairs
+- [x] P4.1 Host-pumped TickScheduler + bounded catch-up (Wright 3D hello loop)
+- [x] P4.2 Shared bus for Tesla / Howe / CCD / Engelbart 3D (2D already on the bus; remaining 3D pairs still local)
 - [ ] P4.3 Replace hello_spin with aero kernel (`fs-mbd` + warp/rudder)
 - [ ] P4.4 Live USPTO raster warp
 - [ ] P4.5 Callout = material probe
@@ -60,7 +60,7 @@ the visitor can see or hear the kernel change the instrument.
 - [ ] P4.17 Two clocks (Fermi / Tesla RF / Spencer)
 - [ ] P4.18 Pointer as source term
 - [ ] P4.19 Dated `fs-scenario` cards
-- [ ] P4.20 Claim-satisfaction pills on ClaimsDecoder
+- [x] P4.20 Claim-satisfaction pills on ClaimsDecoder (Wright Claim 1 ↔ coupled)
 - [ ] P4.21 Spec-clause highlight from kernel predicates
 - [ ] P4.22 Diptych split-view same tick
 - [ ] P4.23 `fs-phs` energy strip
@@ -68,9 +68,9 @@ the visitor can see or hear the kernel change the instrument.
 - [ ] P4.25 `fs-ad` slider derivatives
 - [ ] P4.26 `fs-thermochem` Goddard / Einstein / Goodyear
 - [ ] P4.27 Visitor as transducer (mic / device roll / typed Morse / Lamarr grid)
-- [ ] P4.28 Wozniak φ2 theft
-- [ ] P4.29 Edison blackbody spectrum
-- [ ] P4.30 Fermi Geiger from flux
+- [x] P4.28 Wozniak φ2 theft
+- [x] P4.29 Edison filament color from blackbody T
+- [x] P4.30 Fermi Geiger from k_eff (respects mute)
 - [ ] P4.31 `fs-fft` spark waterfall
 - [ ] P4.32 `fs-assimilate` Kitty Hawk residual
 - [ ] P4.33 `fs-surrogate` named phone rung

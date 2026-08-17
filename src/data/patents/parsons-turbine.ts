@@ -78,6 +78,23 @@ I claim as my invention:
         archaicTerm: "Dummy balance pistons to equalize axial steam thrust",
         modernEquivalent: "Labyrinth-sealed dummy balance piston & axial thrust collar",
       },
+      {
+        title: "Labyrinth Multi-Fin Steam Shaft Seals",
+        summary: "Non-contacting annular bronze fins creating progressive pressure throttling.",
+        technicalDetails:
+          "A series of 20 to 30 sharp brass knife-edge rings projecting with $0.25\\text{ mm}$ radial clearance against a grooved rotor sleeve. Steam rushing through each constriction undergoes repeated isenthalpic kinetic expansion and vortex dissipation ($P_{k+1} = P_k - \\frac{\\rho v^2}{2}$), sealing high-pressure casing glands without frictional contact wear.",
+        archaicTerm: "Labyrinth packing or grooved shaft seals",
+        modernEquivalent: "Labyrinth non-contact shaft gland seals",
+      },
+      {
+        title: "Centrifugal Governor & Steam Puff Valve",
+        summary:
+          "Pulsing relay valve throttling steam admission in intermittent high-pressure bursts.",
+        technicalDetails:
+          "A centrifugal flyball governor linked to a steam relay puff valve that pulses steam admission to the first stage at $2\\text{ to }4\\text{ Hz}$. Throttling via pulse-width modulation rather than continuous restriction preserves full boiler pressure ($P_{\\text{inlet}} = 20\\text{ bar}$) even under partial grid load, maintaining high stage efficiency.",
+        archaicTerm: "Governor regulating the intermittent admission of steam",
+        modernEquivalent: "Pulse-width steam governor & electro-hydraulic servo throttle",
+      },
     ],
     scientificPrinciples: [
       {
@@ -100,6 +117,13 @@ I claim as my invention:
           "\\tau = \\dot{m} R_{\\text{mean}} (C_{u1} - C_{u2}), \\quad \\text{Power} = \\tau \\cdot \\omega = \\dot{m} (h_1 - h_2) \\cdot \\eta_{\\text{isentropic}}",
         explanation:
           "Pure fluid momentum transfer converts thermal enthalpy directly into smooth continuous rotational shaft work without reciprocating pistons, linkages, or vibration.",
+      },
+      {
+        principle: "Rankine Cycle Condenser Vacuum Power Multiplication",
+        formula:
+          "W_{\\text{expansion}} = \\int_{P_{\\text{condenser}}}^{P_{\\text{boiler}}} v(P) \\, dP, \\quad P_{\\text{vacuum}} = 0.05\\text{ bar} \\implies +40\\% \\text{ Work Output}",
+        explanation:
+          "Unlike reciprocating steam engines that choked at high specific volumes, the Parsons turbine can expand steam down to a deep condenser vacuum ($0.05\\text{ bar}, 33^\\circ\\text{C}$), harvesting massive low-pressure expansion work that was previously discarded.",
       },
     ],
     whyItMattersToday:

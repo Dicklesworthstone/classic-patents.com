@@ -1,3 +1,5 @@
+"use client";
+
 import { Rocket } from "lucide-react";
 import { useState } from "react";
 import { TextWithLatex } from "@/components/ui/LatexRenderer";

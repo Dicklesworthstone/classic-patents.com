@@ -84,6 +84,14 @@ I claim as my invention:
         archaicTerm: "Grain divider and offset shaft",
         modernEquivalent: "Crop divider snout and offset drawbar",
       },
+      {
+        title: "Catch Platform & Manual Gavel Rake Deck",
+        summary: "Smooth pine deck supporting severed grain until raked into binding sheaves.",
+        technicalDetails:
+          "A planar pine platform ($2.2\\text{ m} \\times 1.2\\text{ m}$) directly behind the cutter bar catches falling stalks horizontally. A low rear lip prevents stalks from spilling into the stubble while allowing a standing operator with a hand rake to sweep accumulated bunches (gavels of $15\\text{ to }20\\text{ kg}$) sideways onto the ground in discrete piles for hand tying.",
+        archaicTerm: "Platform to receive the cut grain",
+        modernEquivalent: "Header draper table / Combine cutterbar platform",
+      },
     ],
     scientificPrinciples: [
       {
@@ -106,6 +114,13 @@ I claim as my invention:
           "x(t) = v_{\\text{ground}} t + R \\sin(\\omega_{\\text{reel}} t), \\quad y(t) = R \\cos(\\omega_{\\text{reel}} t)",
         explanation:
           "The tip of each reel bat traces a curtate cycloid curve through the air, entering the standing grain from above and pulling it gently backward onto the deck.",
+      },
+      {
+        principle: "Ground-Wheel Traction & Soil Slip-Limit Torque",
+        formula:
+          "\\tau_{\\text{avail}} = \\mu_{\\text{soil}} W_{\\text{machine}} R_{\\text{wheel}} > \\tau_{\\text{cutter}} + \\tau_{\\text{reel}} + \\tau_{\\text{friction}}",
+        explanation:
+          "The cast-iron master drive wheel is equipped with radial cleats that grip the soil, delivering sufficient non-slip torque to drive both the high-speed reciprocating sickle and the overhead reel without stalling.",
       },
     ],
     whyItMattersToday:

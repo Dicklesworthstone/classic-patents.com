@@ -1,3 +1,5 @@
+"use client";
+
 import { Cpu, Monitor, Sparkles, Zap } from "lucide-react";
 import { useEffect, useState } from "react";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
@@ -5,6 +7,7 @@ import { usePatentPhysics } from "@/physics/usePatentPhysics";
 export function WozniakAppleSim() {
   const { params, updateParam } = usePatentPhysics("us-4136359-wozniak-apple");
   const crystalFreq = params.crystalFreq ?? 14.318;
+  const phi2Steal = params.phi2Steal ?? 0;
   const [clockPhase, setClockPhase] = useState<0 | 1>(0); // Phase 1: CPU, Phase 2: Video Shifter
   const [isClockRunning, setIsClockRunning] = useState<boolean>(true);
   const [rasterLine, setRasterLine] = useState<number>(42);
@@ -17,12 +20,17 @@ export function WozniakAppleSim() {
   useEffect(() => {
     if (!isClockRunning) return;
     const interval = setInterval(() => {
-      setClockPhase((prev) => (prev === 0 ? 1 : 0));
-      setRasterLine((prev) => (prev + 1) % 192);
+      setClockPhase((prev) => {
+        if (phi2Steal > 0 && Math.random() < phi2Steal) return 0;
+        return prev === 0 ? 1 : 0;
+      });
+      setRasterLine((prev) =>
+        phi2Steal > 0.6 && Math.random() < phi2Steal ? prev : (prev + 1) % 192,
+      );
       setDramAddress(`0x0${(400 + Math.floor(Math.random() * 0x03ff)).toString(16).toUpperCase()}`);
     }, intervalMs);
     return () => clearInterval(interval);
-  }, [isClockRunning, intervalMs]);
+  }, [isClockRunning, intervalMs, phi2Steal]);
 
   return (
     <div className="rounded-2xl border border-amber-900/20 dark:border-ink-800 bg-parchment-50 dark:bg-ink-950 p-4 sm:p-6 shadow-patent space-y-6">
@@ -50,6 +58,19 @@ export function WozniakAppleSim() {
           <Zap className="w-3.5 h-3.5" />
           <span>{isClockRunning ? "Pause Clock" : "Resume Clock"}</span>
         </button>
+        <label className="flex items-center gap-2 text-[10px] font-mono text-ink-600 dark:text-ink-400">
+          Steal Φ2
+          <input
+            type="range"
+            min="0"
+            max="0.9"
+            step="0.05"
+            aria-label="Steal phase-two video cycles"
+            value={phi2Steal}
+            onChange={(e) => updateParam("phi2Steal", Number(e.target.value))}
+            className="w-24 accent-amber-600"
+          />
+        </label>
       </div>
 
       {/* Grid: 2D Bus Architecture Flow + Waveform */}

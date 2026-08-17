@@ -1,3 +1,5 @@
+"use client";
+
 import { Camera, Play } from "lucide-react";
 import { useEffect, useState } from "react";
 import { stepCcdWells } from "@/physics/machineKernels";

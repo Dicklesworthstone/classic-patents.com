@@ -19,6 +19,7 @@ import { ClaimsDecoder } from "./ClaimsDecoder";
 import { HistoricalContextPanel } from "./HistoricalContextPanel";
 import { InteractiveDiagramViewer } from "./InteractiveDiagramViewer";
 import { MuseumBroadsidePlaque } from "./MuseumBroadsidePlaque";
+import { PhysicsTelemetryBadge } from "./PhysicsTelemetryBadge";
 import { PatentVisualDispatcher } from "./visuals";
 
 interface DualProjectionViewerProps {
@@ -357,18 +358,19 @@ export function DualProjectionViewer({ patent, initialView }: DualProjectionView
               </p>
             </div>
 
-            {/* 3D Simulation Embedded in Plain English View */}
-            <div className="space-y-3 pt-2 print:hidden">
+            {/* 3D / 2D Simulation Embedded in Plain English View */}
+            <div className="space-y-4 pt-2 print:hidden">
               <div className="flex items-center justify-between">
                 <h4 className="font-serif font-bold text-xl text-ink-950 dark:text-parchment-50 flex items-center gap-2">
                   <Activity className="w-5 h-5 text-amber-700 dark:text-amber-500" />
-                  <span>Interactive Real-Time 3D Physics Simulation</span>
+                  <span>Interactive Real-Time Physical Simulation</span>
                 </h4>
                 <span className="text-xs font-sans text-ink-500 hidden sm:inline">
-                  Drag to rotate · Scroll to zoom · Switch to 2D for the annotated schematic
+                  Drag to rotate · Scroll to zoom · Parameters synchronize with live SI telemetry
                 </span>
               </div>
               <PatentVisualDispatcher patentId={patent.id} />
+              <PhysicsTelemetryBadge patentId={patent.id} />
             </div>
 
             {/* Step-by-Step Mechanical Breakdown Grid */}
@@ -475,7 +477,7 @@ export function DualProjectionViewer({ patent, initialView }: DualProjectionView
           </div>
 
           {/* Line-by-Line Claims Decoder */}
-          <ClaimsDecoder claims={patent.claims} />
+          <ClaimsDecoder claims={patent.claims} patentId={patent.id} />
 
           {/* Historical Context & Patent Wars */}
           <HistoricalContextPanel context={patent.historicalContext} />

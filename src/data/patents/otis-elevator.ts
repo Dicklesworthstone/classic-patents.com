@@ -74,6 +74,23 @@ I claim as my invention:
         archaicTerm: "Ratchet racks having teeth on the uprights",
         modernEquivalent: "Toothed guide rails / Guide rail safety tracks",
       },
+      {
+        title: "Retraction Rods & Bellcrank Mechanical Linkage",
+        summary:
+          "Kinematic lever train translating vertical spring deflection into horizontal pawl motion.",
+        technicalDetails:
+          "Dual vertical tie-rods link the bowed center of the leaf spring to opposed forged bellcrank rocker arms. Under normal rope load, the tie-rods exert continuous upward tension ($F_{\\text{tie}} \\approx 2.4\\text{ kN}$), pulling the pawl tips inward with $15\\text{ mm}$ of clear running margin from the rack face.",
+        archaicTerm: "Rods or connecting links between spring and catches",
+        modernEquivalent: "Safety actuator linkage rods & bellcrank rocker arms",
+      },
+      {
+        title: "Guide Shoes & Hoistway Stanchion Alignment Framing",
+        summary: "Milled iron guide shoes constraining lateral and torsional cab sway.",
+        technicalDetails:
+          "Four heavy bronze-lined iron guide shoes clamp around the outer flanges of the vertical hoistway stanchions. The shoes constrain lateral sway to $<\\pm 2.0\\text{ mm}$, ensuring that the safety pawls remain in precise axial alignment with the ratchet tooth roots regardless of unbalanced passenger loading in the cab.",
+        archaicTerm: "Guides or slides embracing the upright posts",
+        modernEquivalent: "Elevator car guide shoes & hoistway rail brackets",
+      },
     ],
     scientificPrinciples: [
       {
@@ -96,6 +113,13 @@ I claim as my invention:
           "F_{\\text{retract}} = T_{\\text{cable}} - F_{\\text{spring}} > 0 \\implies \\text{Running}; \\quad T_{\\text{cable}} = 0 \\implies F_{\\text{brake}} = F_{\\text{spring}}",
         explanation:
           "The system is inherently safe: any failure mode of the suspension medium (snapped rope, broken pulley, slack drum) immediately engages the maximum braking force without requiring external power or human intervention.",
+      },
+      {
+        principle: "Tooth Root Bending Stress & Shear Fracture Limit",
+        formula:
+          "\\sigma_{\\text{bending}} = \\frac{6 F_{\\text{stop}} L_{\\text{tooth}}}{w t_{\\text{root}}^2} < \\sigma_{\\text{yield}}, \\quad \\tau_{\\text{shear}} = \\frac{F_{\\text{stop}}}{w t_{\\text{root}}} < \\tau_{\\text{ultimate}}",
+        explanation:
+          "The ratchet tooth root geometry is sized with a 6:1 structural safety factor to sustain instantaneous shock arrest forces without plastic deformation or brittle shear fracture of the cast iron teeth.",
       },
     ],
     whyItMattersToday:

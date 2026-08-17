@@ -15,10 +15,14 @@ import {
 import { useEffect, useRef, useState } from "react";
 import * as THREE from "three";
 import { HudText } from "@/components/ui/LatexRenderer";
+import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { soundEngine } from "@/utils/soundEngine";
-import { createGlowPointTexture, createThreeStudioScene } from "./ThreeStudioScene";
+import {
+  createGlowPointTexture,
+  createThreeStudioScene,
+  type StudioContext,
+} from "./ThreeStudioScene";
 import { useLiveSimParams } from "./useLiveSimParams";
-
 import { usePatentAudio } from "./usePatentAudio";
 
 type CameraPreset = "iso" | "control_rods" | "graphite_core" | "gantry" | "top";
@@ -71,9 +75,10 @@ export function FermiReactor3D() {
   const containerRef = useRef<HTMLDivElement>(null);
 
   // Nuclear Reactor Kinetics State Controls
+  const { params, updateParam } = usePatentPhysics("us-2708656-fermi-reactor");
   const [showUiOverlay, setShowUiOverlay] = useState<boolean>(true);
-  const [controlRodWithdrawalPct, setControlRodWithdrawalPct] = useState<number>(65); // 0 to 100%
-  const [moderatorPurityPct, setModeratorPurityPct] = useState<number>(99.9); // 95 to 99.99%
+  const controlRodWithdrawalPct = params.rodWithdrawal ?? 65;
+  const moderatorPurityPct = params.moderatorPurity ?? 99.9;
   const [fuelEnrichmentPct, setFuelEnrichmentPct] = useState<number>(0.72); // 0.72% natural U
   const [showNeutronCascade, setShowNeutronCascade] = useState<boolean>(true);
   const [showCalloutPins, setShowCalloutPins] = useState<boolean>(false);
@@ -104,7 +109,7 @@ export function FermiReactor3D() {
     isAudioMuted,
   });
 
-  const controlsRef = useRef<any>(null);
+  const controlsRef = useRef<StudioContext["controls"] | null>(null);
   const cameraRef = useRef<THREE.PerspectiveCamera | null>(null);
 
   const applyCameraPreset = (preset: CameraPreset) => {
@@ -139,8 +144,8 @@ export function FermiReactor3D() {
   };
 
   const applyScenario = (s: ScenarioPreset) => {
-    setControlRodWithdrawalPct(s.rodPct);
-    setModeratorPurityPct(s.moderatorPct);
+    updateParam("rodWithdrawal", s.rodPct);
+    updateParam("moderatorPurity", s.moderatorPct);
     setFuelEnrichmentPct(s.enrichmentPct);
     if (!isAudioMuted) {
       soundEngine.playSwitchClick();
@@ -586,7 +591,7 @@ export function FermiReactor3D() {
               max="100"
               step="1"
               value={controlRodWithdrawalPct}
-              onChange={(e) => setControlRodWithdrawalPct(Number(e.target.value))}
+              onChange={(e) => updateParam("rodWithdrawal", Number(e.target.value))}
               className="w-full accent-amber-600 cursor-pointer"
             />
             <span className="text-[10px] text-ink-500 dark:text-ink-400 block">
@@ -611,7 +616,7 @@ export function FermiReactor3D() {
               max="99.99"
               step="0.05"
               value={moderatorPurityPct}
-              onChange={(e) => setModeratorPurityPct(Number(e.target.value))}
+              onChange={(e) => updateParam("moderatorPurity", Number(e.target.value))}
               className="w-full accent-blue-600 cursor-pointer"
             />
             <span className="text-[10px] text-ink-500 dark:text-ink-400 block">

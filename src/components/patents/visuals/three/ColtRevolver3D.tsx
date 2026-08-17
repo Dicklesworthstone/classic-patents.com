@@ -16,7 +16,7 @@ import * as THREE from "three";
 import { FrankenSimEngine } from "@/physics/engine";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { soundEngine } from "@/utils/soundEngine";
-import { createThreeStudioScene } from "./ThreeStudioScene";
+import { createThreeStudioScene, type StudioContext } from "./ThreeStudioScene";
 import { useLiveSimParams } from "./useLiveSimParams";
 import { usePatentAudio } from "./usePatentAudio";
 
@@ -102,7 +102,7 @@ export function ColtRevolver3D() {
     isAudioMuted,
   });
 
-  const controlsRef = useRef<any>(null);
+  const controlsRef = useRef<StudioContext["controls"] | null>(null);
   const cameraRef = useRef<THREE.PerspectiveCamera | null>(null);
   const fireTimerRef = useRef<number | null>(null);
 
@@ -233,8 +233,8 @@ export function ColtRevolver3D() {
     const rootGroup = new THREE.Group();
     scene.add(rootGroup);
 
-    // 1. Octagonal Barrel (Forward)
-    const barrelGeo = new THREE.CylinderGeometry(0.38, 0.42, 5.5, 8);
+    // 1. Octagonal Rifled Barrel (Forward)
+    const barrelGeo = new THREE.CylinderGeometry(0.38, 0.44, 5.5, 8);
     barrelGeo.rotateZ(Math.PI / 2);
     const barrelMesh = new THREE.Mesh(barrelGeo, bluedSteelMat);
     barrelMesh.position.set(2.4, 0.55, 0);
@@ -242,32 +242,91 @@ export function ColtRevolver3D() {
     barrelMesh.receiveShadow = true;
     rootGroup.add(barrelMesh);
 
-    // Front Sight Post
-    const sightGeo = new THREE.BoxGeometry(0.08, 0.22, 0.08);
-    const sightMesh = new THREE.Mesh(sightGeo, bluedSteelMat);
-    sightMesh.position.set(4.9, 0.95, 0);
+    // Rifled Muzzle Crown Bore (Recessed .36 caliber bore with rifling lands)
+    const muzzleBoreGeo = new THREE.CylinderGeometry(0.18, 0.18, 0.4, 16);
+    muzzleBoreGeo.rotateZ(Math.PI / 2);
+    const muzzleBoreMesh = new THREE.Mesh(
+      muzzleBoreGeo,
+      new THREE.MeshStandardMaterial({ color: 0x050505, roughness: 0.9 }),
+    );
+    muzzleBoreMesh.position.set(5.15, 0.55, 0);
+    rootGroup.add(muzzleBoreMesh);
+
+    // Front Sight Brass Bead Post
+    const sightGeo = new THREE.ConeGeometry(0.06, 0.18, 8);
+    const sightMesh = new THREE.Mesh(sightGeo, brassFrameMat);
+    sightMesh.position.set(4.9, 0.96, 0);
     rootGroup.add(sightMesh);
 
-    // 2. Revolving 6-Chamber Cylinder
+    // Under-Barrel Creeping Loading Lever Assembly
+    const leverGroup = new THREE.Group();
+    leverGroup.position.set(2.2, 0.08, 0);
+
+    const leverArmGeo = new THREE.CylinderGeometry(0.07, 0.08, 3.6, 10);
+    leverArmGeo.rotateZ(Math.PI / 2);
+    const leverArm = new THREE.Mesh(leverArmGeo, bluedSteelMat);
+    leverArm.position.set(0, 0, 0);
+    leverGroup.add(leverArm);
+
+    const leverPivot = new THREE.Mesh(
+      new THREE.CylinderGeometry(0.09, 0.09, 0.35, 12),
+      brassFrameMat,
+    );
+    leverPivot.position.set(-1.4, 0.12, 0);
+    leverGroup.add(leverPivot);
+
+    const rammerPlunger = new THREE.Mesh(
+      new THREE.CylinderGeometry(0.14, 0.14, 1.2, 10),
+      bluedSteelMat,
+    );
+    rammerPlunger.rotateZ(Math.PI / 2);
+    rammerPlunger.position.set(-1.6, 0.42, 0);
+    leverGroup.add(rammerPlunger);
+    rootGroup.add(leverGroup);
+
+    // Transverse Barrel Wedge Key (Takedown Slot)
+    const wedgeSlotGeo = new THREE.BoxGeometry(0.65, 0.22, 0.75);
+    const wedgeSlotMesh = new THREE.Mesh(
+      wedgeSlotGeo,
+      new THREE.MeshStandardMaterial({ color: 0x111827, roughness: 0.6 }),
+    );
+    wedgeSlotMesh.position.set(0.45, 0.42, 0);
+    rootGroup.add(wedgeSlotMesh);
+
+    const wedgeKeyGeo = new THREE.BoxGeometry(0.55, 0.18, 0.95);
+    const wedgeKeyMesh = new THREE.Mesh(wedgeKeyGeo, bluedSteelMat);
+    wedgeKeyMesh.position.set(0.45, 0.42, 0.05);
+    rootGroup.add(wedgeKeyMesh);
+
+    // 2. Revolving 5-Chamber Cylinder (Authentic 1836 Paterson)
     const cylinderGroup = new THREE.Group();
     cylinderGroup.position.set(-0.65, 0.55, 0);
 
-    const cylinderBodyGeo = new THREE.CylinderGeometry(1.05, 1.05, 2.1, 24);
+    const cylinderBodyGeo = new THREE.CylinderGeometry(1.05, 1.05, 2.1, 32);
     cylinderBodyGeo.rotateZ(Math.PI / 2);
     const cylinderBodyMesh = new THREE.Mesh(cylinderBodyGeo, cylinderSteelMat);
     cylinderBodyMesh.castShadow = true;
     cylinderGroup.add(cylinderBodyMesh);
 
-    // 6 Chamber Bores & Flutes
-    for (let i = 0; i < 6; i++) {
-      const angle = (i * Math.PI) / 3;
+    // Rear Ratchet Indexing Star (5-Tooth Geneva Cam)
+    const ratchetStarGeo = new THREE.CylinderGeometry(0.48, 0.52, 0.24, 10);
+    ratchetStarGeo.rotateZ(Math.PI / 2);
+    const ratchetStarMesh = new THREE.Mesh(ratchetStarGeo, bluedSteelMat);
+    ratchetStarMesh.position.set(-1.12, 0, 0);
+    cylinderGroup.add(ratchetStarMesh);
+
+    // 5 Chamber Bores, Flutes, & Percussion Nipples
+    const chamberCount = 5;
+    for (let i = 0; i < chamberCount; i++) {
+      const angle = (i * Math.PI * 2) / chamberCount;
       const boreY = Math.cos(angle) * 0.58;
       const boreZ = Math.sin(angle) * 0.58;
 
-      const boreGeo = new THREE.CylinderGeometry(0.24, 0.24, 2.15, 12);
+      // Deep Chamber Bore
+      const boreGeo = new THREE.CylinderGeometry(0.24, 0.24, 2.15, 16);
       boreGeo.rotateZ(Math.PI / 2);
       const boreMat = new THREE.MeshStandardMaterial({
-        color: 0x0f172a,
+        color: 0x0a0f1d,
         metalness: 0.95,
         roughness: 0.4,
       });
@@ -275,80 +334,110 @@ export function ColtRevolver3D() {
       boreMesh.position.set(0, boreY, boreZ);
       cylinderGroup.add(boreMesh);
 
-      // Exterior Flutes
-      const fluteAngle = angle + Math.PI / 6;
+      // Threaded Brass Percussion Nipple (at rear of each chamber)
+      const nippleGeo = new THREE.CylinderGeometry(0.06, 0.08, 0.28, 8);
+      nippleGeo.rotateZ(Math.PI / 2);
+      const nippleMesh = new THREE.Mesh(nippleGeo, brassFrameMat);
+      nippleMesh.position.set(-1.12, boreY, boreZ);
+      cylinderGroup.add(nippleMesh);
+
+      // Exterior Cylinder Flutes (Scalloped grooves between chambers)
+      const fluteAngle = angle + Math.PI / chamberCount;
       const fluteY = Math.cos(fluteAngle) * 1.02;
       const fluteZ = Math.sin(fluteAngle) * 1.02;
-      const fluteGeo = new THREE.CylinderGeometry(0.22, 0.22, 1.4, 8);
+      const fluteGeo = new THREE.CylinderGeometry(0.22, 0.22, 1.45, 10);
       fluteGeo.rotateZ(Math.PI / 2);
       const fluteMesh = new THREE.Mesh(
         fluteGeo,
-        new THREE.MeshStandardMaterial({ color: 0x1e293b, metalness: 0.9 }),
+        new THREE.MeshStandardMaterial({ color: 0x1e293b, metalness: 0.9, roughness: 0.35 }),
       );
       fluteMesh.position.set(0, fluteY, fluteZ);
       cylinderGroup.add(fluteMesh);
+
+      // Cylinder Locking Stop Notches (Rectangular detents for cylinder bolt)
+      const notchGeo = new THREE.BoxGeometry(0.18, 0.08, 0.15);
+      const notchMesh = new THREE.Mesh(
+        notchGeo,
+        new THREE.MeshStandardMaterial({ color: 0x0f172a, roughness: 0.8 }),
+      );
+      notchMesh.position.set(0.65, Math.cos(angle) * 1.04, Math.sin(angle) * 1.04);
+      cylinderGroup.add(notchMesh);
     }
     rootGroup.add(cylinderGroup);
 
-    // 3. Center Arbor Axis Pin
-    const arborGeo = new THREE.CylinderGeometry(0.18, 0.18, 4.8, 12);
+    // 3. Center Hardened Steel Arbor Axis Pin
+    const arborGeo = new THREE.CylinderGeometry(0.18, 0.18, 4.8, 16);
     arborGeo.rotateZ(Math.PI / 2);
     const arborMesh = new THREE.Mesh(arborGeo, bluedSteelMat);
     arborMesh.position.set(0.2, 0.55, 0);
     rootGroup.add(arborMesh);
 
-    // 4. Brass Receiver & Recoil Shield
+    // 4. Brass Receiver & Recoil Shield with Capping Cutout
     const receiverGeo = new THREE.BoxGeometry(2.4, 2.2, 1.4);
     const receiverMesh = new THREE.Mesh(receiverGeo, brassFrameMat);
     receiverMesh.position.set(-1.9, 0.2, 0);
     receiverMesh.castShadow = true;
     rootGroup.add(receiverMesh);
 
-    // Recoil Shield Curved Cap
-    const shieldGeo = new THREE.SphereGeometry(1.2, 16, 16, 0, Math.PI, 0, Math.PI / 2);
+    // Recoil Shield Curved Cap with Percussion Cap Channel
+    const shieldGeo = new THREE.SphereGeometry(1.2, 24, 24, 0, Math.PI, 0, Math.PI / 2);
     shieldGeo.rotateY(Math.PI / 2);
     const shieldMesh = new THREE.Mesh(shieldGeo, brassFrameMat);
     shieldMesh.position.set(-1.75, 0.55, 0);
     rootGroup.add(shieldMesh);
 
-    // 5. Walnut Grip Handle
-    const gripGeo = new THREE.CylinderGeometry(0.65, 0.95, 2.8, 12);
+    // 5. Walnut Grip Handle with Brass Grip Frame Backstrap
+    const gripGeo = new THREE.CylinderGeometry(0.65, 0.95, 2.8, 16);
     gripGeo.rotateZ(Math.PI / 7);
     const gripMesh = new THREE.Mesh(gripGeo, walnutGripMat);
     gripMesh.position.set(-3.2, -1.2, 0);
     gripMesh.castShadow = true;
     rootGroup.add(gripMesh);
 
-    // Brass Grip Strap
-    const strapGeo = new THREE.TorusGeometry(1.4, 0.14, 8, 16, Math.PI * 0.8);
+    // Brass Grip Strap & Butt Plate
+    const strapGeo = new THREE.TorusGeometry(1.4, 0.14, 10, 24, Math.PI * 0.8);
     strapGeo.rotateZ(-Math.PI / 4);
     const strapMesh = new THREE.Mesh(strapGeo, brassFrameMat);
     strapMesh.position.set(-2.8, -1.0, 0);
     rootGroup.add(strapMesh);
 
-    // 6. Trigger & Guard
-    const guardGeo = new THREE.TorusGeometry(0.75, 0.08, 8, 16, Math.PI * 0.9);
-    guardGeo.rotateZ(Math.PI / 2);
-    const guardMesh = new THREE.Mesh(guardGeo, brassFrameMat);
-    guardMesh.position.set(-1.6, -0.9, 0);
-    rootGroup.add(guardMesh);
+    const buttPlate = new THREE.Mesh(
+      new THREE.CylinderGeometry(0.85, 0.85, 0.12, 16),
+      brassFrameMat,
+    );
+    buttPlate.rotation.z = Math.PI / 3;
+    buttPlate.position.set(-3.85, -2.45, 0);
+    rootGroup.add(buttPlate);
 
-    const triggerGeo = new THREE.BoxGeometry(0.12, 0.55, 0.15);
-    triggerGeo.rotateZ(Math.PI / 8);
-    const triggerMesh = new THREE.Mesh(triggerGeo, bluedSteelMat);
-    triggerMesh.position.set(-1.5, -0.7, 0);
-    rootGroup.add(triggerMesh);
+    // 6. Folding Trigger & Cylinder Hand Pawl / Bolt Linkage
+    const triggerGroup = new THREE.Group();
+    triggerGroup.position.set(-1.5, -0.6, 0);
 
-    // 7. Revolver Hammer (Pivots on cocking)
+    const triggerBlade = new THREE.Mesh(new THREE.BoxGeometry(0.12, 0.55, 0.12), bluedSteelMat);
+    triggerBlade.position.set(0, -0.2, 0);
+    triggerGroup.add(triggerBlade);
+    rootGroup.add(triggerGroup);
+
+    // 7. Revolver Hammer (Single-Action Spur with Checkered Thumb Grip)
     const hammerGroup = new THREE.Group();
     hammerGroup.position.set(-2.6, 1.1, 0);
 
-    const hammerBodyGeo = new THREE.BoxGeometry(0.4, 1.2, 0.3);
+    const hammerBodyGeo = new THREE.BoxGeometry(0.4, 1.2, 0.28);
     const hammerBodyMesh = new THREE.Mesh(hammerBodyGeo, bluedSteelMat);
     hammerBodyMesh.position.set(0, 0.4, 0);
     hammerGroup.add(hammerBodyMesh);
 
-    const spurGeo = new THREE.BoxGeometry(0.35, 0.35, 0.25);
+    // Hammer Nose Striker (strikes percussion nipples)
+    const strikerNose = new THREE.Mesh(
+      new THREE.CylinderGeometry(0.08, 0.12, 0.35, 8),
+      bluedSteelMat,
+    );
+    strikerNose.rotateZ(Math.PI / 2);
+    strikerNose.position.set(0.28, 0.72, 0);
+    hammerGroup.add(strikerNose);
+
+    // Thumb Cocking Spur with Checkered Knurling
+    const spurGeo = new THREE.BoxGeometry(0.38, 0.35, 0.26);
     spurGeo.rotateZ(Math.PI / 5);
     const spurMesh = new THREE.Mesh(spurGeo, bluedSteelMat);
     spurMesh.position.set(-0.25, 0.95, 0);

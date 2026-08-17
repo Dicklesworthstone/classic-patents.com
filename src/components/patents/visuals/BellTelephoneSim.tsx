@@ -1,3 +1,5 @@
+"use client";
+
 import { Mic, Volume2, VolumeX, Waves } from "lucide-react";
 import { useEffect, useState } from "react";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";

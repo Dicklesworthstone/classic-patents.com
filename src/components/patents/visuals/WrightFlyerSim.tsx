@@ -75,9 +75,9 @@ export function WrightFlyerSim() {
           <button
             type="button"
             onClick={() => applyPedagogyStep(1)}
-            className={`px-2.5 py-1 rounded-lg transition-colors ${
+            className={`px-3 py-1.5 rounded-lg transition-colors ${
               activeStep === 1
-                ? "bg-red-600 text-white font-bold"
+                ? "bg-rose-700 text-white font-bold shadow-sm dark:bg-rose-600"
                 : "text-ink-700 dark:text-ink-400 hover:text-ink-900"
             }`}
           >
@@ -86,9 +86,9 @@ export function WrightFlyerSim() {
           <button
             type="button"
             onClick={() => applyPedagogyStep(2)}
-            className={`px-2.5 py-1 rounded-lg transition-colors ${
+            className={`px-3 py-1.5 rounded-lg transition-colors ${
               activeStep === 2
-                ? "bg-amber-600 text-white font-bold"
+                ? "bg-amber-700 text-white font-bold shadow-sm dark:bg-amber-600"
                 : "text-ink-700 dark:text-ink-400 hover:text-ink-900"
             }`}
           >
@@ -97,9 +97,9 @@ export function WrightFlyerSim() {
           <button
             type="button"
             onClick={() => applyPedagogyStep(3)}
-            className={`px-2.5 py-1 rounded-lg transition-colors ${
+            className={`px-3 py-1.5 rounded-lg transition-colors ${
               activeStep === 3
-                ? "bg-emerald-600 text-white font-bold"
+                ? "bg-emerald-700 text-white font-bold shadow-sm dark:bg-emerald-600"
                 : "text-ink-700 dark:text-ink-400 hover:text-ink-900"
             }`}
           >
@@ -421,12 +421,12 @@ export function WrightFlyerSim() {
             </span>
 
             {/* Wing Warping Slider */}
-            <div className="space-y-1">
+            <div className="space-y-1.5 p-3 rounded-xl bg-parchment-50/60 dark:bg-ink-950/60 border border-parchment-200 dark:border-ink-800/80">
               <div className="flex justify-between text-xs font-mono">
                 <span className="font-semibold text-ink-800 dark:text-parchment-200">
                   Wing Warping (Hip Cradle)
                 </span>
-                <span className="text-amber-600 dark:text-amber-400 font-bold">
+                <span className="text-amber-700 dark:text-amber-400 font-bold">
                   {wingWarpAngle}°
                 </span>
               </div>
@@ -447,12 +447,12 @@ export function WrightFlyerSim() {
             </div>
 
             {/* Rudder Control Slider */}
-            <div className="space-y-1">
+            <div className="space-y-1.5 p-3 rounded-xl bg-parchment-50/60 dark:bg-ink-950/60 border border-parchment-200 dark:border-ink-800/80">
               <div className="flex justify-between text-xs font-mono">
                 <span className="font-semibold text-ink-800 dark:text-parchment-200">
                   Vertical Rear Rudder
                 </span>
-                <span className="text-red-600 dark:text-red-400 font-bold">{rudderAngle}°</span>
+                <span className="text-sky-700 dark:text-sky-400 font-bold">{rudderAngle}°</span>
               </div>
               <input
                 type="range"
@@ -462,7 +462,7 @@ export function WrightFlyerSim() {
                 value={rudderAngle}
                 disabled={isCoupled}
                 onChange={(e) => updateParam("rudder", Number(e.target.value))}
-                className={`w-full accent-red-600 h-2 rounded-lg ${
+                className={`w-full accent-sky-600 h-2 rounded-lg ${
                   isCoupled
                     ? "opacity-50 cursor-not-allowed bg-ink-800"
                     : "cursor-pointer bg-parchment-300 dark:bg-ink-700"
@@ -476,12 +476,14 @@ export function WrightFlyerSim() {
             </div>
 
             {/* Forward Canard Pitch Slider */}
-            <div className="space-y-1">
+            <div className="space-y-1.5 p-3 rounded-xl bg-parchment-50/60 dark:bg-ink-950/60 border border-parchment-200 dark:border-ink-800/80">
               <div className="flex justify-between text-xs font-mono">
                 <span className="font-semibold text-ink-800 dark:text-parchment-200">
                   Forward Canard Elevator (Pitch)
                 </span>
-                <span className="text-blue-600 dark:text-blue-400 font-bold">{canardAngle}°</span>
+                <span className="text-emerald-700 dark:text-emerald-400 font-bold">
+                  {canardAngle}°
+                </span>
               </div>
               <input
                 type="range"
@@ -490,12 +492,12 @@ export function WrightFlyerSim() {
                 max="20"
                 value={canardAngle}
                 onChange={(e) => updateParam("elevator", Number(e.target.value))}
-                className="w-full accent-blue-600 cursor-pointer h-2 bg-parchment-300 dark:bg-ink-700 rounded-lg"
+                className="w-full accent-emerald-600 cursor-pointer h-2 bg-parchment-300 dark:bg-ink-700 rounded-lg"
               />
             </div>
 
             {/* Coupling Toggle (Wright Claim 1) */}
-            <div className="pt-2 border-t border-parchment-300 dark:border-ink-800">
+            <div className="pt-3 border-t border-parchment-200 dark:border-ink-800">
               <label className="flex items-center gap-2 cursor-pointer text-xs font-mono">
                 <input
                   type="checkbox"

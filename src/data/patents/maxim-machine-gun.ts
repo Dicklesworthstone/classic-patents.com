@@ -82,6 +82,14 @@ Fifth, the barrel is enclosed within a water-jacket or casing containing cooling
         archaicTerm: "Water-jacket or cooling casing",
         modernEquivalent: "Evaporative water cooling jacket",
       },
+      {
+        title: "Fusee Spiral Spring & Variable Lever Return Chain",
+        summary: "Eccentric fusee cam equalizing spring tension across the entire recoil travel.",
+        technicalDetails:
+          "A heavy flat-coil recoil spring connects to the outer crank arm via a miniature bicycle-type roller chain winding around an eccentric spiral fusee cam. As the spring extends and stiffness increases ($F = k x$), the chain wraps onto a smaller radius $r(\\theta)$, keeping the return torque approximately constant ($\\tau = F \\cdot r(\\theta) \\approx \\text{const}$) and preventing bolt bounce at lockup.",
+        archaicTerm: "Fusee spring and connecting chain for closing the breech",
+        modernEquivalent: "Non-linear fusee return spring & recoil buffer",
+      },
     ],
     scientificPrinciples: [
       {
@@ -104,6 +112,20 @@ Fifth, the barrel is enclosed within a water-jacket or casing containing cooling
           "\\dot{Q}_{\\text{boil}} = \\dot{m}_{\\text{steam}} L_v, \\quad L_v = 2.26 \\times 10^6 \\text{ J/kg}",
         explanation:
           "Continuous firing dumps approximately $45\\text{ J}$ of thermal energy into the barrel steel per round. The surrounding 4-liter water jacket absorbs this heat through boiling heat transfer, holding barrel temperature clamp at $100^\\circ\\text{C}$ and preventing barrel rifling erosion.",
+      },
+      {
+        principle: "Fusee Cam Constant-Torque Mechanics",
+        formula:
+          "\\tau_{\\text{return}}(\\theta) = k (x_0 + r_0 \\theta) \\cdot R_{\\text{fusee}}(\\theta) = \\text{Constant}",
+        explanation:
+          "The tapering spiral radius of the fusee cam counteracts Hooke's law spring stiffness accumulation, delivering a smooth, uniform closing stroke that prevents primer inertia slam-fires.",
+      },
+      {
+        principle: "Bore Travel Residence Time vs Unlock Delay",
+        formula:
+          "t_{\\text{bullet exit}} = \\int_0^{L_{\\text{barrel}}} \\frac{dx}{v(x)} \\approx 1.2\\text{ ms} \\ll t_{\\text{unlock}} \\approx 4.8\\text{ ms}",
+        explanation:
+          "The $19\\text{ mm}$ short-recoil stroke guarantees that the bullet exits the muzzle and residual barrel gas pressure drops to 1 atmosphere well before the toggle joint breaks collinearity, eliminating case blowout risk.",
       },
     ],
     whyItMattersToday:

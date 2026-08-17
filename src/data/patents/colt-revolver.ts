@@ -74,6 +74,24 @@ I claim as my invention:
         archaicTerm: "Partitions separating the nipples",
         modernEquivalent: "Recoil shield / Flash-barrier cylinder partitions",
       },
+      {
+        title: "Central Center-Pin Arbor & Transverse Barrel Wedge",
+        summary:
+          "Rigid longitudinal axle absorbing axial recoil tension and enabling modular takedown.",
+        technicalDetails:
+          "A solid hardened-steel central arbor pin ($d = 9.5\\text{ mm}$) threads into the frame and passes completely through the cylinder axis. A tapered transverse steel wedge through the forward arbor extension clamps the barrel assembly rigidly against the lower frame lugs, withstanding axial tensile thrust forces ($F_{\\text{thrust}} > 8.5\\text{ kN}$) without stretching.",
+        archaicTerm: "Center pin and key or wedge securing the barrel",
+        modernEquivalent: "Cylinder arbor shaft & barrel clamping wedge",
+      },
+      {
+        title: "Sear Notches, Half-Cock Safety, & Laminated Mainspring",
+        summary:
+          "Three-position tumbler lock delivering crisp trigger release and fall-safe loading.",
+        technicalDetails:
+          "The lower hammer hub features two EDM-style precision ground notches: a deep half-cock safety notch that captures the sear nose and locks the trigger while freeing the cylinder for hand rotation during loading, and a full-cock notch engaging at $4.2\\text{ N}$ trigger pull. A heavy V-shaped leaf mainspring stores $12.5\\text{ J}$ of strain energy, accelerating the hammer into the percussion nipple in $<8.0\\text{ ms}$.",
+        archaicTerm: "Tumbler notches and main-spring for cocking and releasing",
+        modernEquivalent: "Sear-tumbler fire control group & leaf mainspring",
+      },
     ],
     scientificPrinciples: [
       {
@@ -96,6 +114,13 @@ I claim as my invention:
           "v_{\\text{muzzle}} = \\sqrt{\\frac{2}{m_{\\text{bullet}}} \\int_{x_0}^{x_1} P(x) A_{\\text{bore}} \\, dx}",
         explanation:
           "Expanding propellant gases accelerate the conical lead bullet through the barrel; minimizing the cylinder-to-barrel gap ($<0.15\\text{ mm}$) prevents gas pressure blow-by and maintains high muzzle velocity.",
+      },
+      {
+        principle: "Recoil Momentum Conservation & Arbor Tensile Shear",
+        formula:
+          "m_{\\text{bullet}} v_{\\text{bullet}} + m_{\\text{gas}} v_{\\text{gas}} = M_{\\text{gun}} V_{\\text{recoil}}, \\quad \\sigma_{\\text{arbor}} = \\frac{F_{\\text{thrust}}}{\\frac{\\pi}{4} d_{\\text{arbor}}^2}",
+        explanation:
+          "Conservation of linear momentum governs firearm recoil dynamics, while the central arbor pin bears the entire forward gas separation impulse without yielding or shearing the barrel locking wedge.",
       },
     ],
     whyItMattersToday:

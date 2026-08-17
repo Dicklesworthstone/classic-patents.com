@@ -77,6 +77,24 @@ I claim as my invention:
         archaicTerm: "Pure yeast free from diseased microscopic ferments",
         modernEquivalent: "Axenic monoculture yeast propagator & aseptic fermenter",
       },
+      {
+        title: "Swan-Neck Gravity Siphon & Tortuous Dust Traps",
+        summary:
+          "Sinuous glass and copper exit tubes permitting outgassing while blocking airborne particulate entry.",
+        technicalDetails:
+          "A curved downward-sloping swan-neck conduit ($L = 350\\text{ mm}, D = 12\\text{ mm}$) through which positive fermentation pressure discharges $\\text{CO}_2$. Gravity forces ambient dust particles ($v_{\\text{settling}} = \\frac{\\rho d^2 g}{18\\mu}$) to deposit in the outer low bend of the tube, creating an aseptic sterile airlock without chemical sanitizers.",
+        archaicTerm: "Curved exit tube preventing ingress of atmospheric air",
+        modernEquivalent: "Aseptic swan-neck breather & sterile gravity trap",
+      },
+      {
+        title: "Counter-Flow Chilling Jacket & Plate Exchanger",
+        summary:
+          "Dual-wall cooling jacket rapidly quenching pasteurized liquid to arrest thermal cooking.",
+        technicalDetails:
+          "Immediately following the 20-minute holding duration, cold spring water ($T_{\\text{cool}} = 8^\\circ\\text{C}$) is pumped through the annular outer jacket in counter-current flow ($U \\approx 850\\text{ W}/(\\text{m}^2\\cdot\\text{K})$). This cools the liquid from $60^\\circ\\text{C}$ to $<18^\\circ\\text{C}$ in under 120 seconds, preventing Maillard caramelization and thermal protein haze.",
+        archaicTerm: "Cooling apparatus for suddenly lowering the temperature",
+        modernEquivalent: "Counterflow plate heat exchanger (PHE) & chilling loop",
+      },
     ],
     scientificPrinciples: [
       {
@@ -98,6 +116,13 @@ I claim as my invention:
           "P_i = x_i \\gamma_i P_i^{\\text{sat}}(T) \\ll P_{\\text{ambient}} \\; (T < 60^\\circ\\text{C})",
         explanation:
           "Keeping the processing temperature below $60^\\circ\\text{C}$ in a closed, pressurized container prevents the partial pressure of volatile aroma compounds (esters, aldehydes) from exceeding bubble-point thresholds, preventing flavor degradation.",
+      },
+      {
+        principle: "Thermal Death Time z-Value & Pasteurized F-Unit Lethality",
+        formula:
+          "F_0 = \\int_0^t 10^{\\frac{T(t) - T_{\\text{ref}}}{z}} \\, dt, \\quad z = \\frac{T_2 - T_1}{\\log_{10}(D_1 / D_2)} \\approx 5.5^\\circ\\text{C}",
+        explanation:
+          "The thermal death curve relates temperature elevation to logarithmic D-value reduction, establishing the standardized Pasteurization Unit (PU) scale used worldwide in continuous aseptic food processing.",
       },
     ],
     whyItMattersToday:

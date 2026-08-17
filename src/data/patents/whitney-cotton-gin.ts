@@ -74,6 +74,23 @@ I claim as my invention:
         archaicTerm: "Clearing cylinder armed with bristles",
         modernEquivalent: "Doffing brush cylinder / Pneumatic doffer",
       },
+      {
+        title: "Seed Hopper Roll Box & Gravity Discharge",
+        summary: "Tumbling chamber maintaining continuous seed-roll circulation.",
+        technicalDetails:
+          "The raw seed cotton rests in a hopper whose curved floor forces the seed mass into a revolving vortex roll ($30\\text{ to }50\\text{ RPM}$) driven by the peripheral drag of the saw teeth. As each seed is denuded of lint, its friction coefficient drops, allowing it to fall by gravity through a calibrated bottom slit ($w_{\\text{bottom}} \\approx 6.5\\text{ mm}$) while remaining un-crushed.",
+        archaicTerm: "Hopper or box holding the raw cotton",
+        modernEquivalent: "Roll box & seed discharge apron",
+      },
+      {
+        title: "Step-Up Gear Train & Inertial Drive",
+        summary:
+          "Counter-shaft gearing converting manual crank torque into dual differential velocities.",
+        technicalDetails:
+          "A manual crank coupled to a heavy wooden flywheel drives the saw cylinder shaft at $\\omega_1$, while an internal spur gear mesh ($\text{Gear Ratio } i = 4.0$) accelerates the doffing brush cylinder to $\\omega_2 = 4\\omega_1$. The mechanical advantage $MA = \\frac{r_{\\text{crank}}}{r_{\\text{saw}}} \\approx 2.5$ ensures uniform fiber extraction without stalling when dense cotton locks enter the rib slots.",
+        archaicTerm: "Wheels and bands communicating motion",
+        modernEquivalent: "Speed-increasing spur geartrain & flywheel transmission",
+      },
     ],
     scientificPrinciples: [
       {
@@ -94,6 +111,13 @@ I claim as my invention:
           "F_c = m_{\\text{fiber}} \\omega_{\\text{brush}}^2 r_{\\text{brush}} > F_{\\text{bristle friction}}",
         explanation:
           "High rotational angular velocity of the brush cylinder imparts centrifugal momentum to the cotton tufts, lofting them into the discharge airstream.",
+      },
+      {
+        principle: "Roll Box Circulation & Friction Coupling",
+        formula:
+          "\\tau_{\\text{vortex}} = \\mu_{\\text{lint}} N_{\\text{teeth}} F_{\\text{drag}} R_{\\text{saw}} - I_{\\text{roll}} \\alpha",
+        explanation:
+          "The raw cotton mass forms a self-sustaining rotating vortex inside the hopper box driven by interfacial friction against the saw teeth, continuously exposing fresh un-ginned fiber locks to the rib slots without human intervention.",
       },
     ],
     whyItMattersToday:

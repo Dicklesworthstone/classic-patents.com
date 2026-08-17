@@ -281,16 +281,67 @@ export function LincolnBuoy3D() {
     }
     boatGroup.add(paddleGroup);
 
-    // Abraham Lincoln's Expandable Air Bellows Chambers (Port & Starboard under guards)
-    const portBellows = new THREE.Mesh(new THREE.BoxGeometry(11.0, 1.2, 1.0), bellowsRubberMat);
-    portBellows.position.set(-0.5, -0.4, 2.8);
-    portBellows.castShadow = true;
-    boatGroup.add(portBellows);
+    // Abraham Lincoln's Expandable Air Bellows Chambers (Port & Starboard with Concertina Ribs)
+    const makeBellowsAssembly = (zPos: number) => {
+      const bGroup = new THREE.Group();
+      bGroup.position.set(-0.5, -0.4, zPos);
 
-    const stbdBellows = new THREE.Mesh(new THREE.BoxGeometry(11.0, 1.2, 1.0), bellowsRubberMat);
-    stbdBellows.position.set(-0.5, -0.4, -2.8);
-    stbdBellows.castShadow = true;
-    boatGroup.add(stbdBellows);
+      // Main Flexible Rubberized Canvas Chamber Body
+      const bellowsBody = new THREE.Mesh(new THREE.BoxGeometry(11.0, 1.2, 1.0), bellowsRubberMat);
+      bellowsBody.castShadow = true;
+      bGroup.add(bellowsBody);
+
+      // Concertina Folding Pleat Ribs (Elastic structural frames)
+      for (let rib = 0; rib < 12; rib++) {
+        const ribX = -5.0 + rib * 0.9;
+        const ribMesh = new THREE.Mesh(
+          new THREE.BoxGeometry(0.08, 1.3, 1.08),
+          new THREE.MeshStandardMaterial({ color: 0x1e293b, roughness: 0.8 }),
+        );
+        ribMesh.position.set(ribX, 0, 0);
+        bGroup.add(ribMesh);
+      }
+
+      // Vertical Rack Guide Rods (sliding through hull outriggers)
+      for (let r = 0; r < 4; r++) {
+        const rackX = -4.0 + r * 2.6;
+        const rack = new THREE.Mesh(
+          new THREE.CylinderGeometry(0.06, 0.06, 2.8, 12),
+          new THREE.MeshStandardMaterial({ color: 0x94a3b8, metalness: 0.9, roughness: 0.2 }),
+        );
+        rack.position.set(rackX, 0.8, 0);
+        bGroup.add(rack);
+      }
+
+      boatGroup.add(bGroup);
+      return bGroup;
+    };
+
+    const portBellows = makeBellowsAssembly(2.8);
+    const stbdBellows = makeBellowsAssembly(-2.8);
+
+    // Horizontal Synchronizing Gear Shafts across Deck (Claim 1 Rack-and-Pinion Drive)
+    for (let s = 0; s < 4; s++) {
+      const shaftX = -4.5 + s * 2.6;
+      const crossShaft = new THREE.Mesh(
+        new THREE.CylinderGeometry(0.08, 0.08, 6.2, 12),
+        new THREE.MeshStandardMaterial({ color: 0x64748b, metalness: 0.85 }),
+      );
+      crossShaft.rotation.x = Math.PI / 2;
+      crossShaft.position.set(shaftX, 1.1, 0);
+      boatGroup.add(crossShaft);
+
+      // Pinion Gears at Ends
+      [-2.8, 2.8].forEach((gearZ) => {
+        const pinion = new THREE.Mesh(
+          new THREE.CylinderGeometry(0.24, 0.24, 0.2, 16),
+          new THREE.MeshStandardMaterial({ color: 0xd97706, metalness: 0.9 }),
+        );
+        pinion.rotation.x = Math.PI / 2;
+        pinion.position.set(shaftX, 1.1, gearZ);
+        boatGroup.add(pinion);
+      });
+    }
 
     // River Water Plane & Sandbar Bed
     const waterMesh = new THREE.Mesh(new THREE.PlaneGeometry(36, 24), riverWaterMat);

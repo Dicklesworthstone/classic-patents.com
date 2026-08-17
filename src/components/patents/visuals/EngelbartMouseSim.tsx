@@ -1,3 +1,5 @@
+"use client";
+
 import { MousePointer, Move, RotateCcw, Sparkles } from "lucide-react";
 import { useRef, useState } from "react";
 import { stepEngelbartResolver } from "@/physics/machineKernels";

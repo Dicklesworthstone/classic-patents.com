@@ -1,3 +1,5 @@
+"use client";
+
 import { Play, Scissors } from "lucide-react";
 import { useEffect, useState } from "react";
 import { stepHoweLockstitch } from "@/physics/machineKernels";

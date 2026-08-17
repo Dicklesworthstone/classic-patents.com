@@ -72,6 +72,24 @@ I claim as our invention:
         archaicTerm: "Inked ribbon mechanism moving by spooling ratchet",
         modernEquivalent: "Typewriter ribbon transport / Ribbon vibrator & spool drive",
       },
+      {
+        title: "Cylindrical Hard-Rubber Platen & Feed Rollers",
+        summary:
+          "Rotatable anvil cylinder backing the paper sheet and providing line feed indexing.",
+        technicalDetails:
+          "A vulcanized hard rubber cylindrical roller ($D = 45\\text{ mm}$) serves as the rigid printing anvil. Spring-loaded feed rollers grip the paper sheet against the platen with $12\\text{ N}$ normal force, while a ratchet wheel on the platen axis allows instantaneous line spacing advancement ($h_{\\text{line}} = 4.2\\text{ mm}$) upon carriage return.",
+        archaicTerm: "Cylinder platen and paper feeding rollers",
+        modernEquivalent: "Platen roller & line-feed detent ratchet",
+      },
+      {
+        title: "Piano-Wire Pull Links & Cantilever Keylevers",
+        summary:
+          "Parallel four-bar wire linkage transmitting key depression into radial typebar snap.",
+        technicalDetails:
+          "Individual forged spring-steel piano wires link the midpoint of each $25\\text{ cm}$ wooden keylever to the crank horn of its corresponding typebar. Pivot friction is minimized by hardened steel knife-edge bearings, yielding a clean, snappy key return in under $20\\text{ ms}$ under the tension of coiled return springs.",
+        archaicTerm: "Wire connections linking key levers to type levers",
+        modernEquivalent: "Typebar pull wires & fulcrum keylever assembly",
+      },
     ],
     scientificPrinciples: [
       {
@@ -94,6 +112,13 @@ I claim as our invention:
           "t_{\\text{flight}} = \\int_0^{\\pi/2} \\frac{d\\theta}{\\omega(\\theta)}, \\quad |\\theta_A - \\theta_B| > \\theta_{\\text{interference threshold}}",
         explanation:
           "If two adjacent typebars are actuated within $\\Delta t < t_{\\text{return}}$, their mechanical flight envelopes intersect and they jam at the guide slot. The QWERTY layout geometrically separates common English digraphs (TH, ER, IN, ON) around opposite sides of the circular basket.",
+      },
+      {
+        principle: "Hertzian Impact Contact Pressure & Ink Transfer",
+        formula:
+          "P_{\\text{contact}} = \\frac{F_{\\text{strike}}}{A_{\\text{face}}} = \\frac{12\\text{ N}}{0.6\\text{ mm}^2} = 20\\text{ MPa} > P_{\\text{ink yield}}",
+        explanation:
+          "The impact of the steel character face produces peak localized contact pressures exceeding $20\\text{ MPa}$, forcing oily pigment from the woven silk ribbon matrix directly into the cellulose fibers of the paper sheet.",
       },
     ],
     whyItMattersToday:

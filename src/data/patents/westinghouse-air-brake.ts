@@ -78,6 +78,23 @@ I claim as my invention:
         archaicTerm: "Brake cylinder and brake shoes",
         modernEquivalent: "Brake cylinder & foundation brake rigging",
       },
+      {
+        title: "Feed-Groove Bypass Metering Channel",
+        summary:
+          "Narrow calibrated channel in valve wall permitting slow reservoir charging without braking.",
+        technicalDetails:
+          "A micro-milled bypass groove ($w = 1.2\\text{ mm}, d = 0.8\\text{ mm}$) cut into the upper cylinder wall of the triple valve. When the piston is fully raised in the release position, compressed air slowly bypasses the piston seal ($q = 15\\text{ L/min}$) to charge the auxiliary tank to $70\\text{ psi}$ over 60 seconds without creating differential pressure across the valve.",
+        archaicTerm: "Small groove or passage in the side of the chamber",
+        modernEquivalent: "Triple valve charging feed groove / Metering orifice",
+      },
+      {
+        title: "Flexible Gladhand Inter-Car Coupling Hoses",
+        summary: "Hermetic quick-connect hose couplers with self-sealing rubber gasket faces.",
+        technicalDetails:
+          "Reinforced vulcanized rubber hoses ($ID = 32\\text{ mm}$) terminating in cast-iron intermeshing gladhand lugs. Internal air pressure ($P = 480\\text{ kPa}$) forces opposed annular rubber gasket rings against each other in a self-energizing seal; if cars accidentally uncouple during a derailment, the gladhands swivel apart, dumping line air to atmosphere and stopping both train halves instantly.",
+        archaicTerm: "Couplings connecting the pipes of adjacent carriages",
+        modernEquivalent: "Gladhand pneumatic hose coupling / Trainline air disconnect",
+      },
     ],
     scientificPrinciples: [
       {
@@ -100,6 +117,13 @@ I claim as my invention:
           "F_{\\text{retarding}} = \\mu_{\\text{shoe}}(v) \\cdot F_{\\text{clamping}} \\le \\mu_{\\text{adhesion}} \\cdot m_{\\text{car}} g",
         explanation:
           "Braking force is limited by the steel-on-steel adhesion coefficient between the wheel tread and rail ($\\mu_{\\text{rail}} \\approx 0.20$). If brake clamping force exceeds this limit, the wheel locks and skids, causing flat spots and reducing stopping distance.",
+      },
+      {
+        principle: "Isentropic Choked Gas Orifice Flow",
+        formula:
+          "\\dot{m} = C_d A_{\\text{port}} P_{\\text{aux}} \\sqrt{\\frac{\\gamma}{R T}\\left(\\frac{2}{\\gamma + 1}\\right)^{\\frac{\\gamma + 1}{\\gamma - 1}}} \\quad (P_{\\text{cyl}} / P_{\\text{aux}} < 0.528)",
+        explanation:
+          "During emergency application, the triple valve port area admits compressed air at sonic velocity into the brake cylinder, reaching maximum clamping force in under 1.5 seconds.",
       },
     ],
     whyItMattersToday:

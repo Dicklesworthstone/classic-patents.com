@@ -4,6 +4,7 @@ import { Activity, RotateCcw, Shield, Sparkles } from "lucide-react";
 import { useEffect, useState } from "react";
 import { FrankenSimEngine } from "@/physics/engine";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
+import { soundEngine } from "@/utils/soundEngine";
 
 export function FermiReactorSim() {
   const { params, updateParam, resetParams } = usePatentPhysics("us-2708656-fermi-reactor");
@@ -28,13 +29,21 @@ export function FermiReactorSim() {
   const isCritical = kEffective >= 0.998 && kEffective <= 1.002;
   const _isSubcritical = kEffective < 0.998;
 
-  // Neutron history tracker
   useEffect(() => {
     const timer = setInterval(() => {
       setNeutronHistory((prev) => [...prev.slice(1), Math.min(1000, thermalPowerWatts)]);
     }, 500);
     return () => clearInterval(timer);
   }, [thermalPowerWatts]);
+
+  useEffect(() => {
+    if (kEffective <= 1.0 || soundEngine.getIsMuted()) return;
+    const periodMs = Math.max(50, Math.round(280 / Math.max(0.05, kEffective - 0.98)));
+    const timer = setInterval(() => {
+      soundEngine.playMorseClick();
+    }, periodMs);
+    return () => clearInterval(timer);
+  }, [kEffective]);
 
   const resetToCriticality = () => {
     resetParams();

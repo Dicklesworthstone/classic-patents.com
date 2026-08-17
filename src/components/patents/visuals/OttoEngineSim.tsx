@@ -121,7 +121,7 @@ export function OttoEngineSim() {
           <rect
             x="95"
             y="115"
-            width="50 + pistonDisplacement"
+            width={50 + pistonDisplacement}
             height="110"
             fill={
               isSparkFiring

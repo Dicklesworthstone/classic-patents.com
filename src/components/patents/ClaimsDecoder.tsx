@@ -2,14 +2,29 @@
 
 import { BookOpen, Scale, Sparkles } from "lucide-react";
 import { useState } from "react";
+import { usePatentPhysics } from "@/physics/usePatentPhysics";
+import { WRIGHT_PATENT_ID } from "@/physics/wrightKernel";
 import type { PatentClaim } from "@/types/patent";
 
 interface ClaimsDecoderProps {
   claims: PatentClaim[];
+  patentId?: string;
 }
 
-export function ClaimsDecoder({ claims }: ClaimsDecoderProps) {
+function claimLiveState(
+  patentId: string | undefined,
+  claimNum: number,
+  params: Record<string, number>,
+): "held" | "broken" | null {
+  if (patentId === WRIGHT_PATENT_ID && claimNum === 1) {
+    return (params.coupled ?? 1) >= 0.5 ? "held" : "broken";
+  }
+  return null;
+}
+
+export function ClaimsDecoder({ claims, patentId }: ClaimsDecoderProps) {
   const [activeClaimNum, setActiveClaimNum] = useState<number>(claims[0]?.number || 1);
+  const { params } = usePatentPhysics(patentId || "");
 
   return (
     <div className="space-y-5">
@@ -28,23 +43,31 @@ export function ClaimsDecoder({ claims }: ClaimsDecoderProps) {
 
       {/* Claim Selector Pills */}
       <div className="flex flex-wrap gap-2.5">
-        {claims.map((c) => (
-          <button
-            key={c.number}
-            type="button"
-            onClick={() => setActiveClaimNum(c.number)}
-            className={`px-4 py-2 rounded-xl text-xs sm:text-sm font-sans font-semibold transition-colors border shadow-xs ${
-              activeClaimNum === c.number
-                ? "bg-amber-700 text-white font-bold border-amber-800 dark:bg-amber-600 dark:border-amber-500 shadow"
-                : "bg-parchment-100 dark:bg-ink-900 text-ink-800 dark:text-ink-200 border-parchment-300 dark:border-ink-800 hover:bg-parchment-200 dark:hover:bg-ink-800"
-            }`}
-          >
-            Claim #{c.number}{" "}
-            <span className="font-normal opacity-80">
-              {c.isIndependent ? "(Master Claim)" : `(Dep on #${c.dependsOn?.join(", ")})`}
-            </span>
-          </button>
-        ))}
+        {claims.map((c) => {
+          const live = claimLiveState(patentId, c.number, params);
+          return (
+            <button
+              key={c.number}
+              type="button"
+              onClick={() => setActiveClaimNum(c.number)}
+              className={`px-4 py-2 rounded-xl text-xs sm:text-sm font-sans font-semibold transition-colors border shadow-xs ${
+                activeClaimNum === c.number
+                  ? "bg-amber-700 text-white font-bold border-amber-800 dark:bg-amber-600 dark:border-amber-500 shadow"
+                  : live === "broken"
+                    ? "bg-red-50 dark:bg-red-950/40 text-red-900 dark:text-red-200 border-red-400 dark:border-red-800"
+                    : live === "held"
+                      ? "bg-emerald-50 dark:bg-emerald-950/40 text-emerald-900 dark:text-emerald-200 border-emerald-400 dark:border-emerald-800"
+                      : "bg-parchment-100 dark:bg-ink-900 text-ink-800 dark:text-ink-200 border-parchment-300 dark:border-ink-800 hover:bg-parchment-200 dark:hover:bg-ink-800"
+              }`}
+            >
+              Claim #{c.number}{" "}
+              <span className="font-normal opacity-80">
+                {c.isIndependent ? "(Master Claim)" : `(Dep on #${c.dependsOn?.join(", ")})`}
+                {live === "broken" ? " · uncoupled" : live === "held" ? " · held" : ""}
+              </span>
+            </button>
+          );
+        })}
       </div>
 
       {/* Selected Claim Deep Dive Card */}

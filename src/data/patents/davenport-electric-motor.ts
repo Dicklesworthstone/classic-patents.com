@@ -74,6 +74,22 @@ I claim as my invention:
         archaicTerm: "Stationary semi-circular magnets",
         modernEquivalent: "Stator field pole shoes / Permanent magnet stator",
       },
+      {
+        title: "Copper Leaf Spring Commutator Brushes",
+        summary: "Flexible phosphor-copper wiper springs riding on the split commutator ring.",
+        technicalDetails:
+          "Two opposed cantilevered copper leaves maintain resilient mechanical contact ($F_{\\text{contact}} \\approx 0.8\\text{ N}$) on the revolving commutator segments. The brush angular width is calibrated strictly narrower than the segment insulation gap to prevent short-circuiting the battery cells during cross-over switching.",
+        archaicTerm: "Spring conductors pressing against the commutator plates",
+        modernEquivalent: "Commutator brush holders & copper-leaf wiper contacts",
+      },
+      {
+        title: "Radial Air-Gap Flux Concentrator & Soft-Iron Pole Shoes",
+        summary: "Curved soft-iron shoes minimizing reluctance in the magnetic circuit.",
+        technicalDetails:
+          "The outer tips of the rotor arms expand into flared cylindrical arc pole faces ($w_{\\text{shoe}} = 38\\text{ mm}$) concentric with the stator bore. This geometry maximizes the permeance $\\mathcal{P} = \\frac{\\mu_0 A_{\\text{gap}}}{g}$, reducing reluctance and concentrating peak radial magnetic flux density ($B_{\\text{gap}} \\approx 0.65\\text{ T}$) across the narrow $2.5\\text{ mm}$ working air gap.",
+        archaicTerm: "Soft iron pole pieces at the ends of the cross-arms",
+        modernEquivalent: "Salient rotor pole shoes & low-reluctance magnetic circuit",
+      },
     ],
     scientificPrinciples: [
       {
@@ -95,6 +111,13 @@ I claim as my invention:
           "I = \\frac{V_{\\text{battery}} - \\mathcal{E}_{\\text{back}}}{R} = \\frac{V_{\\text{battery}} - k_e \\omega}{R}",
         explanation:
           "As the rotor accelerates to higher angular velocity $\\omega$, Faraday induction generates a counter-electromotive force (back-EMF) that opposes battery voltage, self-regulating the motor's top no-load speed.",
+      },
+      {
+        principle: "Electromechanical Power Conversion & Torque Balance",
+        formula:
+          "P_{\\text{elec}} = \\mathcal{E}_{\\text{back}} I = P_{\\text{mech}} = \\tau \\omega, \\quad k_t = k_e = \\frac{p N \\Phi}{2\\pi}",
+        explanation:
+          "In an ideal electromechanical machine, the torque constant $k_t$ (N·m/A) is numerically equal to the back-EMF constant $k_e$ (V·s/rad), linking electrical energy absorbed directly to shaft mechanical output.",
       },
     ],
     whyItMattersToday:

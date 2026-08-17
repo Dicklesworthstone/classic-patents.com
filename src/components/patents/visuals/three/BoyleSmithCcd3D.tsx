@@ -4,6 +4,7 @@ import { Camera, Eye, EyeOff, RotateCcw, Sparkles, Volume2, VolumeX, Zap } from 
 import { useEffect, useRef, useState } from "react";
 import * as THREE from "three";
 import { FrankenSimEngine } from "@/physics/engine";
+import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { soundEngine } from "@/utils/soundEngine";
 import { createGlowPointTexture, createThreeStudioScene } from "./ThreeStudioScene";
 import { useLiveSimParams } from "./useLiveSimParams";
@@ -64,10 +65,11 @@ export function BoyleSmithCcd3D() {
   const containerRef = useRef<HTMLDivElement>(null);
 
   // CCD Physics & Clocking State Controls
+  const { params, updateParam } = usePatentPhysics("us-3923554-boyle-smith-ccd");
   const [showUiOverlay, setShowUiOverlay] = useState<boolean>(true);
   const [clockPhase, setClockPhase] = useState<1 | 2 | 3>(1);
   const [incidentLux, setIncidentLux] = useState<number>(450); // 50 to 1200 Lux
-  const [gateVoltageV, setGateVoltageV] = useState<number>(10); // 2 to 15 V
+  const gateVoltageV = params.gateVoltage ?? 10;
   const [transferEfficiencyPct, setTransferEfficiencyPct] = useState<number>(99.99); // 99.0 to 99.999%
   const [isAutoClocking, setIsAutoClocking] = useState<boolean>(true);
   const [clockSpeedFactor, setClockSpeedFactor] = useState<number>(2); // 1 to 10 Hz
@@ -127,7 +129,7 @@ export function BoyleSmithCcd3D() {
   const applyScenario = (s: ScenarioPreset) => {
     setClockSpeedFactor(s.phaseFreqHz);
     setIncidentLux(s.lux);
-    setGateVoltageV(s.voltageV);
+    updateParam("gateVoltage", s.voltageV);
     setTransferEfficiencyPct(s.ctePct);
     if (!isAudioMuted) {
       soundEngine.playSwitchClick();
@@ -561,7 +563,7 @@ export function BoyleSmithCcd3D() {
               max="15.0"
               step="0.5"
               value={gateVoltageV}
-              onChange={(e) => setGateVoltageV(Number(e.target.value))}
+              onChange={(e) => updateParam("gateVoltage", Number(e.target.value))}
               className="w-full accent-blue-600 cursor-pointer"
             />
             <span className="text-[10px] text-ink-500 dark:text-ink-400 block">
