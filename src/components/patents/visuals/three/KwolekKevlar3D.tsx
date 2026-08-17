@@ -1,6 +1,6 @@
 "use client";
 
-import { Camera, RotateCcw, Shield, Sparkles, Volume2, VolumeX, Zap } from "lucide-react";
+import { Camera, Eye, EyeOff, RotateCcw, Shield, Sparkles, Volume2, VolumeX, Zap } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import * as THREE from "three";
 import { soundEngine } from "@/utils/soundEngine";
@@ -21,31 +21,31 @@ interface ScenarioPreset {
 
 const SCENARIOS: ScenarioPreset[] = [
   {
-    id: "kwolek_1965",
-    name: "1965 Stephanie Kwolek Discovery",
-    desc: "DuPont breakthrough: cloudy opalescent nematic dope of PPTA in concentrated sulfuric acid yielding 5× steel strength.",
+    id: "kwolek_1971",
+    name: "1971 Stephanie Kwolek (US 3,819,587)",
+    desc: "Stephanie Kwolek's discovery: Liquid-crystal nematic dopes yielding ultra-high tensile PPTA fibers.",
     shear: 450,
-    conc: 18.5,
+    conc: 19.5,
     temp: 85,
     impact: false,
   },
   {
-    id: "ballistic",
-    name: "Ballistic Kinetic Shock Dissipation",
-    desc: "High sonic velocity (10,000 m/s) dispersing projectile energy across transverse hydrogen-bonded sheets.",
+    id: "isotropic_poor",
+    name: "Isotropic Solution (Disordered)",
+    desc: "Low-concentration solution lacking nematic ordering, producing weak random-coil filaments.",
+    shear: 100,
+    conc: 8.0,
+    temp: 45,
+    impact: false,
+  },
+  {
+    id: "ballistic_impact",
+    name: "Ballistic Impact Absorption",
+    desc: "High-speed projectile impact testing transverse wave dispersion across hydrogen-bonded aromatic sheets.",
     shear: 600,
     conc: 20.0,
     temp: 75,
     impact: true,
-  },
-  {
-    id: "isotropic_low",
-    name: "Sub-Critical Isotropic Solution",
-    desc: "Below 12 wt% critical threshold: chains remain randomly entangled with poor tensile modulus (25 GPa).",
-    shear: 200,
-    conc: 8.0,
-    temp: 90,
-    impact: false,
   },
   {
     id: "high_shear",
@@ -62,7 +62,8 @@ export function KwolekKevlar3D() {
   const containerRef = useRef<HTMLDivElement>(null);
 
   // Polymer Chemistry State Controls
-  const [shearRate, setShearRate] = useState<number>(450); // 50 to 1000 s^-1
+  const [showUiOverlay, setShowUiOverlay] = useState<boolean>(true);
+  const [shearRate, setShearRate] = useState<number>(450); // 50 to 1000 s^-1s^-1
   const [polymerConcentrationPct, setPolymerConcentrationPct] = useState<number>(18.5); // 5 to 25 wt%
   const [temperatureCelsius, setTemperatureCelsius] = useState<number>(85); // 20 to 120 °C
   const [showHydrogenBonds, setShowHydrogenBonds] = useState<boolean>(true);
