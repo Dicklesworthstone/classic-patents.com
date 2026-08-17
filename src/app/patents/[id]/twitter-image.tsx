@@ -1,7 +1,6 @@
 import { ImageResponse } from "next/og";
 import { getPatentById } from "@/data/patents";
 
-export const runtime = "nodejs";
 export const size = {
   width: 1200,
   height: 600,
