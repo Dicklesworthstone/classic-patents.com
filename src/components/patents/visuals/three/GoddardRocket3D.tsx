@@ -396,7 +396,8 @@ export function GoddardRocket3D() {
         stage1Group.position.y += (0 - stage1Group.position.y) * 0.1;
       }
 
-      if (p.showExhaustPlume) {
+      const plumeOk = (p.exhaustVelocityMps ?? 0) >= 800;
+      if (p.showExhaustPlume && plumeOk) {
         const pPos = plumePos;
         const velocitySpeed = (p.exhaustVelocityMps / 2000) * 35.0 * delta;
         const exitSpread = 0.22 * Math.sqrt(Math.max(2, p.expansionRatio ?? 3.5));

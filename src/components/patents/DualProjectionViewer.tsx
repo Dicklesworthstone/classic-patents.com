@@ -24,6 +24,7 @@ import { MuseumBroadsidePlaque } from "./MuseumBroadsidePlaque";
 import { PhysicsTelemetryBadge } from "./PhysicsTelemetryBadge";
 import { SpecClauseText } from "./SpecClauseText";
 import { PatentVisualDispatcher } from "./visuals";
+import { WeaveInstrument } from "./WeaveInstrument";
 
 interface DualProjectionViewerProps {
   patent: Patent;
@@ -444,6 +445,7 @@ export function DualProjectionViewer({ patent, initialView }: DualProjectionView
               </div>
               <PatentVisualDispatcher patentId={patent.id} />
               <PhysicsTelemetryBadge patentId={patent.id} />
+              <WeaveInstrument patentId={patent.id} />
             </div>
 
             {/* Step-by-Step Mechanical Breakdown Grid */}

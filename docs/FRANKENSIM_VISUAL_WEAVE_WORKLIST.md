@@ -44,39 +44,39 @@ the visitor can see or hear the kernel change the instrument.
 - [x] P4.1 Host-pumped TickScheduler + bounded catch-up (Wright 3D hello loop)
 - [x] P4.2 Shared bus for Tesla / Howe / CCD / Engelbart 3D (2D already on the bus)
 - [x] P4.2b Remaining original-catalog 3D sliders write the same registry keys as 2D / badge
-- [x] P4.3 Aero attitude on Flyer 3D (CG2 + SI wrenches; WASM hello remains residual-only)
+- [x] P4.3 Aero kernel (`stepFlyerAero` CG2 + SI torque; hello_spin is not the attitude law)
 - [x] P4.4 Live USPTO raster warp (Wright Fig. 4 ghost sheet skews with wingWarp)
-- [ ] P4.5 Callout = material probe
+- [x] P4.5 Callout = material probe (live SI on pin inspector)
 - [x] P4.6 `fs-regime` invalid region on the figure (uncoupled high warp)
-- [ ] P4.7 `fs-ivl` interval ghosts
-- [ ] P4.8 Fidelity discrepancy field on the part
+- [x] P4.7 `fs-ivl` interval ghosts (lift / yaw / k_eff / v_e envelopes)
+- [x] P4.8 Fidelity discrepancy field on the part (model vs Kitty Hawk / 3600 rpm)
 - [x] P4.9 `fs-qty` typed HUD (SI dimension tags on telemetry units)
 - [x] P4.10 `fs-truss` guy-wire force color (left/right bay paint from lift + warp)
-- [ ] P4.11 `fs-lbm` / refuse cosmetic smoke
-- [ ] P4.12 `fs-feec` Whitney overlay
-- [ ] P4.13 `fs-spectral` mode scrubber
+- [x] P4.11 `fs-lbm` / refuse cosmetic smoke (Goddard plume gated on v_e; Spencer RF)
+- [x] P4.12 `fs-feec` Whitney overlay (Tesla Fig. 4 discrete 1-forms on stator)
+- [x] P4.13 `fs-spectral` mode scrubber (Marconi odd harmonics; Tesla coil LC)
 - [x] P4.14 `fs-psycho` Bell sones (Stevens 2^((phon-40)/10) on voice slider)
 - [x] P4.15 `fs-matdb` material cards (Edison carbon vs platinum)
-- [ ] P4.16 Prior-art failure toggle (beyond Wright coupling — already P0.9)
+- [x] P4.16 Prior-art failure toggle (1901 uncoupled warp on the instrument)
 - [x] P4.17 Two clocks (Fermi prompt vs delayed; Tesla field vs shaft; Spencer RF vs thermal)
-- [ ] P4.18 Pointer as source term
-- [ ] P4.19 Dated `fs-scenario` cards
+- [x] P4.18 Pointer as source term (Wright schematic click sets wingWarp)
+- [x] P4.19 Dated `fs-scenario` cards (Kitty Hawk, CP-1, Auburn, Centennial)
 - [x] P4.20 Claim-satisfaction pills on ClaimsDecoder (Wright Claim 1 ↔ coupled)
 - [x] P4.21 Spec-clause highlight from kernel predicates (Wright / Tesla / Fermi / Marconi)
 - [x] P4.22 Diptych split-view same tick (plain + spec chips share tick N)
 - [x] P4.23 `fs-phs` energy strip (Wright / Edison / Goddard / Einstein / Tesla)
-- [ ] P4.24 `fs-couple` after kernels are honest
+- [x] P4.24 `fs-couple` after kernels are honest (warp→yaw, stator→shaft, I²R→radiation)
 - [x] P4.25 `fs-ad` slider derivatives (d(param)/dt on badge + tick chips)
 - [x] P4.26 `fs-thermochem` Goddard / Einstein / Goodyear (T_c/T_e, COP strip, Arrhenius cure)
 - [x] P4.26b Goddard 3D de Laval lathe + plume rebuild from Ae/At and Te
-- [ ] P4.27 Visitor as transducer (mic / device roll / typed Morse / Lamarr grid)
+- [x] P4.27 Visitor as transducer (mic / device roll / typed Morse / Lamarr grid)
 - [x] P4.28 Wozniak φ2 theft
 - [x] P4.29 Edison filament color from blackbody T
 - [x] P4.30 Fermi Geiger from k_eff (respects mute)
 - [x] P4.31 `fs-fft` spark waterfall (Marconi 2D: odd-harmonic damped train)
-- [ ] P4.32 `fs-assimilate` Kitty Hawk residual
-- [ ] P4.33 `fs-surrogate` named phone rung
-- [ ] P4.34 `fs-mms` residual on schematic
+- [x] P4.32 `fs-assimilate` Kitty Hawk residual (lift − 750 lbf, speed − 30 mph)
+- [x] P4.33 `fs-surrogate` named phone rung (A440 / C5 / Ahoy / Watson)
+- [x] P4.34 `fs-mms` residual on schematic (same residual card as fidelity)
 - [x] P4.35 A11y live region for SI envelope (PhysicsTelemetryBadge)
 
 ## Explicitly out of scope

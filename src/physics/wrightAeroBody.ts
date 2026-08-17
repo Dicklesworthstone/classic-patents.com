@@ -4,8 +4,8 @@
  * must not claim Smithsonian mass moments.
  */
 
-import { FLYER_INERTIA } from "./flyerWasm";
-import { type Quat, rigidBodyStep, type Vec3 } from "./lie";
+import { stepFlyerAero } from "./flyerWasm";
+import type { Quat, Vec3 } from "./lie";
 import type { WrightControls, WrightSiState } from "./wrightKernel";
 
 const DAMPING = 1.8;
@@ -35,8 +35,8 @@ export function stepWrightAeroBody(
     torque[1] - DAMPING * state.omega[1],
     torque[2] - DAMPING * state.omega[2],
   ];
-  const next = rigidBodyStep(state.quaternion, state.omega, FLYER_INERTIA, dtS, damped);
-  return { quaternion: next.q, omega: next.omega };
+  const next = stepFlyerAero(state, damped, dtS);
+  return { quaternion: next.quaternion, omega: next.omega };
 }
 
 export function identityAeroBody(): AeroBodyState {

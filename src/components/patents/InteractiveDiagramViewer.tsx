@@ -13,6 +13,7 @@ import {
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { teslaBAt, teslaFig4Strobe } from "@/physics/teslaKernel";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
+import { materialProbe, whitneySamples } from "@/physics/weaveSurfaces";
 import type { PatentDrawing } from "@/types/patent";
 
 interface InteractiveDiagramViewerProps {
@@ -254,6 +255,7 @@ function renderHistoricalSchematic(
       const omegaT = ((params?.omegaT ?? 0) * Math.PI) / 180;
       const live = teslaBAt(omegaT, 2);
       const strobe = teslaFig4Strobe(2);
+      const whitney = whitneySamples(omegaT);
       const arrow = (bx: number, by: number, len: number, opacity: number, width: number) => {
         const x2 = 200 + bx * len;
         const y2 = 150 - by * len;
@@ -331,6 +333,18 @@ function renderHistoricalSchematic(
           <circle cx="200" cy="150" r="8" fill="#10b981" />
           {strobe.map((s, i) => arrow(s.bx, s.by, 28, 0.18 + i * 0.04, 1.2))}
           {arrow(live.bx, live.by, 44, 1, 2.5)}
+          {whitney.map((w, i) => (
+            <line
+              key={`wh-${i}`}
+              x1={200 + w.x * 70}
+              y1={150 - w.y * 70}
+              x2={200 + w.x * 70 + w.bx * 80}
+              y2={150 - w.y * 70 - w.by * 80}
+              stroke="#a78bfa"
+              strokeWidth="1.2"
+              opacity="0.7"
+            />
+          ))}
         </g>
       );
     }
@@ -2743,7 +2757,7 @@ export function InteractiveDiagramViewer({
   patentNumber,
   patentId,
 }: InteractiveDiagramViewerProps) {
-  const { params: livePhysicsParams } = usePatentPhysics(patentId || "");
+  const { params: livePhysicsParams, updateParam } = usePatentPhysics(patentId || "");
   const [activeFigIndex, setActiveFigIndex] = useState<number>(0);
   const [activeCalloutId, setActiveCalloutId] = useState<string | null>(null);
   const [hoveredCalloutId, setHoveredCalloutId] = useState<string | null>(null);
@@ -2756,6 +2770,8 @@ export function InteractiveDiagramViewer({
   const callouts = useMemo(() => activeDrawing?.callouts ?? [], [activeDrawing]);
   const activePin = callouts.find((c) => c.id === activeCalloutId);
   const currentPinIndex = callouts.findIndex((c) => c.id === activeCalloutId);
+  const probe =
+    activePin && patentId ? materialProbe(patentId, activePin.label, livePhysicsParams) : null;
 
   const handlePrevPin = useCallback(() => {
     if (callouts.length === 0) return;
@@ -2951,7 +2967,16 @@ export function InteractiveDiagramViewer({
             className="relative w-full max-w-2xl aspect-[4/3] flex items-center justify-center transition-transform duration-300"
             style={{ transform: `scale(${zoomLevel})` }}
           >
-            <svg viewBox="0 0 400 300" className="w-full h-full select-none">
+            <svg
+              viewBox="0 0 400 300"
+              className="w-full h-full select-none"
+              onPointerDown={(e) => {
+                if (!patentId?.includes("wright")) return;
+                const rect = e.currentTarget.getBoundingClientRect();
+                const nx = (e.clientX - rect.left) / rect.width;
+                updateParam("wingWarp", Math.max(-15, Math.min(15, (nx - 0.5) * 30)));
+              }}
+            >
               {/* Outer drawing border */}
               <rect
                 x="10"
@@ -3123,6 +3148,18 @@ export function InteractiveDiagramViewer({
                 <p className="text-xs font-sans text-ink-700 dark:text-ink-300 leading-relaxed">
                   {activePin.description}
                 </p>
+                {probe && (
+                  <div className="p-2.5 rounded-lg bg-emerald-50/80 dark:bg-emerald-950/30 border border-emerald-300 dark:border-emerald-800 text-[11px] font-mono space-y-0.5">
+                    <div className="uppercase tracking-wider text-emerald-800 dark:text-emerald-300">
+                      Material probe
+                    </div>
+                    <div>{probe.material}</div>
+                    <div className="font-bold">
+                      {probe.qty} = {probe.value} {probe.unit}
+                    </div>
+                    <div className="font-sans text-ink-600 dark:text-ink-400">{probe.note}</div>
+                  </div>
+                )}
                 <div className="p-2.5 rounded-lg bg-parchment-200/60 dark:bg-ink-950 text-[11px] font-sans text-ink-600 dark:text-ink-400 border border-parchment-300 dark:border-ink-800">
                   <span className="font-semibold text-amber-700 dark:text-amber-400 block mb-0.5">
                     Historical Specification Reference:

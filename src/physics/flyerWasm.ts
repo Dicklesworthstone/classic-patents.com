@@ -44,22 +44,25 @@ export async function ensureFlyerWasm(): Promise<FlyerKernelSource> {
   try {
     const jsUrl = "/wasm/fs-flyer/fs_flyer_wasm.js";
     const wasmUrl = "/wasm/fs-flyer/fs_flyer_wasm_bg.wasm";
-    const jsText = await fetch(jsUrl).then((r) => {
+    const jsText = await fetch(jsUrl, { signal: AbortSignal.timeout(10_000) }).then((r) => {
       if (!r.ok) throw new Error(`flyer wasm glue ${r.status}`);
       return r.text();
     });
     const blobUrl = URL.createObjectURL(new Blob([jsText], { type: "text/javascript" }));
-    const mod = (await import(/* webpackIgnore: true */ blobUrl)) as {
-      default: (module_or_path?: unknown) => Promise<unknown>;
-      flyer_hello_spin: HelloFn;
-    };
-    await mod.default({ module_or_path: wasmUrl });
-    URL.revokeObjectURL(blobUrl);
-    if (typeof mod.flyer_hello_spin !== "function") {
-      throw new Error("flyer_hello_spin missing from wasm module");
+    try {
+      const mod = (await import(/* webpackIgnore: true */ blobUrl)) as {
+        default: (module_or_path?: unknown) => Promise<unknown>;
+        flyer_hello_spin: HelloFn;
+      };
+      await mod.default({ module_or_path: wasmUrl });
+      if (typeof mod.flyer_hello_spin !== "function") {
+        throw new Error("flyer_hello_spin missing from wasm module");
+      }
+      helloFn = mod.flyer_hello_spin;
+      source = "wasm";
+    } finally {
+      URL.revokeObjectURL(blobUrl);
     }
-    helloFn = mod.flyer_hello_spin;
-    source = "wasm";
   } catch {
     helloFn = null;
     source = "ts-lie-fallback";
@@ -89,13 +92,17 @@ export function stepFlyerHello(state: HelloState, dtS: number): HelloState {
       dt,
       1,
     );
-    const parsed = JSON.parse(raw) as {
-      ok?: { quaternion: number[]; omega_body: number[] };
-    };
-    if (parsed.ok?.quaternion && parsed.ok.omega_body) {
+    let parsed: { ok?: { quaternion: number[]; omega_body: number[] } } | undefined;
+    try {
+      parsed = JSON.parse(raw) as { ok?: { quaternion: number[]; omega_body: number[] } };
+    } catch {
+      parsed = undefined;
+    }
+    const ok = parsed?.ok;
+    if (ok?.quaternion && ok.omega_body) {
       return {
-        quaternion: parsed.ok.quaternion as unknown as Quat,
-        omega: parsed.ok.omega_body as unknown as Vec3,
+        quaternion: ok.quaternion as unknown as Quat,
+        omega: ok.omega_body as unknown as Vec3,
       };
     }
   }
@@ -108,4 +115,11 @@ export function identityFlyerState(): HelloState {
     quaternion: [1, 0, 0, 0],
     omega: [...FLYER_OMEGA0],
   };
+}
+
+/** CG2 step with body torque. hello_spin is torque-free; this is the aero kernel. */
+export function stepFlyerAero(state: HelloState, torque: Vec3, dtS: number): HelloState {
+  const dt = Math.min(1, Math.max(1e-9, dtS));
+  const next = rigidBodyStep(state.quaternion, state.omega, FLYER_INERTIA, dt, torque);
+  return { quaternion: next.q, omega: next.omega };
 }
