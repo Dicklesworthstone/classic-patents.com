@@ -28,7 +28,11 @@ class SoundEngine {
   }
 
   public toggleMute(): boolean {
-    this.isMuted = !this.isMuted;
+    return this.setMuted(!this.isMuted);
+  }
+
+  public setMuted(muted: boolean): boolean {
+    this.isMuted = muted;
     if (this.isMuted) {
       this.stopContinuousTone();
     }

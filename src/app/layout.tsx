@@ -96,7 +96,7 @@ export default function RootLayout({
       <body className="antialiased selection:bg-amber-500/20 selection:text-amber-900 dark:selection:text-amber-200">
         <div className="flex flex-col min-h-screen">
           <Header />
-          <main className="flex-1">{children}</main>
+          <main className="flex-1 relative z-0 isolate">{children}</main>
           <Footer />
         </div>
       </body>

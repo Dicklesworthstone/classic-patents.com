@@ -14,11 +14,25 @@
     --shadow-brand: 0 0 40px -10px rgba(217, 119, 6, 0.25);
   }
 
+  html {
+    overflow-x: clip;
+    overscroll-behavior-x: none;
+  }
+
   body {
     @apply bg-[#fbf9f5] text-[#2a1f18] font-sans antialiased selection:bg-amber-200 selection:text-amber-900;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
     min-height: 100vh;
+    overflow-x: clip;
+    overscroll-behavior-x: none;
+  }
+
+  /* Keep WebGL canvases on their own compositor layer so they do not flash
+     when a sticky header or other content scrolls over them. */
+  canvas {
+    display: block;
+    max-width: 100%;
   }
 
   /* Obsidian Dark Mode */
@@ -47,17 +61,27 @@
     inset 0 1px 1px rgba(255, 255, 255, 0.04);
 }
 
-/* Kinetic Card Lift */
-.kinetic-card {
-  transition:
-    transform var(--duration-normal) var(--ease-stripe),
-    box-shadow var(--duration-normal) var(--ease-stripe),
-    border-color var(--duration-normal) var(--ease-stripe);
+/* Kinetic Card Lift — only on real hover pointers so scroll-over does not jank. */
+@media (hover: hover) and (pointer: fine) {
+  .kinetic-card {
+    transition:
+      transform var(--duration-normal) var(--ease-stripe),
+      box-shadow var(--duration-normal) var(--ease-stripe),
+      border-color var(--duration-normal) var(--ease-stripe);
+  }
+
+  .kinetic-card:hover {
+    transform: translateY(-4px);
+    box-shadow: var(--shadow-brand);
+  }
 }
 
-.kinetic-card:hover {
-  transform: translateY(-4px) scale(1.008);
-  box-shadow: var(--shadow-brand);
+@media (prefers-reduced-motion: reduce) {
+  .kinetic-card,
+  .kinetic-card:hover {
+    transition: none;
+    transform: none;
+  }
 }
 
 /* KaTeX custom sizing and contrast */

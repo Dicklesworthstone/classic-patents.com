@@ -263,7 +263,7 @@ export function DualProjectionViewer({ patent, initialView }: DualProjectionView
                 Face 2: Verbatim Archival Specification
               </h3>
             </div>
-            <div className="rounded-2xl border border-parchment-300 dark:border-ink-800 bg-parchment-50 dark:bg-ink-950 p-6 sm:p-7 shadow-patent space-y-4 max-h-[700px] overflow-y-auto">
+            <div className="rounded-2xl border border-parchment-300 dark:border-ink-800 bg-parchment-50 dark:bg-ink-950 p-6 sm:p-7 shadow-patent space-y-4 max-h-[700px] overflow-y-auto overscroll-contain">
               <div className="font-serif text-sm sm:text-base leading-relaxed text-ink-950 dark:text-parchment-100 whitespace-pre-wrap select-text">
                 {patent.originalText}
               </div>
@@ -385,6 +385,17 @@ export function DualProjectionViewer({ patent, initialView }: DualProjectionView
                     </div>
                   ))}
                 </div>
+              </div>
+            )}
+
+            {patent.plainEnglishExplanation.whyItMattersToday && (
+              <div className="space-y-3 pt-5 border-t border-parchment-200 dark:border-ink-800">
+                <h4 className="font-serif font-bold text-xl text-ink-950 dark:text-parchment-50">
+                  Why It Still Matters
+                </h4>
+                <p className="text-base sm:text-lg text-ink-800 dark:text-parchment-200 leading-relaxed font-sans">
+                  <TextWithLatex text={patent.plainEnglishExplanation.whyItMattersToday} />
+                </p>
               </div>
             )}
           </div>
