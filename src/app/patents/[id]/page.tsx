@@ -10,6 +10,8 @@ interface PatentPageProps {
   params: Promise<{ id: string }>;
 }
 
+export const dynamicParams = false;
+
 export async function generateStaticParams() {
   return allPatents.map((p) => ({
     id: p.id,
