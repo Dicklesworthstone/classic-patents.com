@@ -3,19 +3,28 @@ import { createHash } from "node:crypto";
 import { existsSync, readFileSync } from "node:fs";
 import { resolve } from "node:path";
 import { validateCuratedSpecificationEdition } from "@/data/archivalEditionValidation";
-import { validateReviewedTranscription } from "@/data/patents/sourceTextValidation";
 import { farnsworthTvPatent } from "@/data/patents/farnsworth-tv";
+import { validateReviewedTranscription } from "@/data/patents/sourceTextValidation";
 import { farnsworthTvArchivalEdition, farnsworthTvParallelReadings } from "./farnsworthTvEdition";
 
 describe("US 1,773,980 manual source edition", () => {
   test("pins the inspected 13-page facsimile and its full printed claim sequence", () => {
-    expect(validateCuratedSpecificationEdition(farnsworthTvArchivalEdition)).toEqual({ valid: true, errors: [] });
+    expect(validateCuratedSpecificationEdition(farnsworthTvArchivalEdition)).toEqual({
+      valid: true,
+      errors: [],
+    });
     const pdf = readFileSync(`${process.cwd()}/public${farnsworthTvPatent.originalPdfUrl}`);
-    expect(createHash("sha256").update(pdf).digest("hex")).toBe(farnsworthTvArchivalEdition.sourcePdfSha256);
+    expect(createHash("sha256").update(pdf).digest("hex")).toBe(
+      farnsworthTvArchivalEdition.sourcePdfSha256,
+    );
     expect(farnsworthTvPatent.filingDate).toBe("1927-01-07");
-    expect(farnsworthTvPatent.claims.map((claim) => claim.number)).toEqual(Array.from({ length: 18 }, (_, index) => index + 1));
+    expect(farnsworthTvPatent.claims.map((claim) => claim.number)).toEqual(
+      Array.from({ length: 18 }, (_, index) => index + 1),
+    );
     expect(farnsworthTvPatent.claims.map((claim) => claim.originalText)).toEqual(
-      farnsworthTvArchivalEdition.blocks.filter((block) => block.kind === "claim").map((block) => block.inlines.map((inline) => inline.text).join("")),
+      farnsworthTvArchivalEdition.blocks
+        .filter((block) => block.kind === "claim")
+        .map((block) => block.inlines.map((inline) => inline.text).join("")),
     );
   });
 
@@ -37,9 +46,16 @@ describe("US 1,773,980 manual source edition", () => {
   });
 
   test("covers each authored prose block with a direct companion and has a page-marked ledger", () => {
-    const paragraphs = farnsworthTvArchivalEdition.blocks.flatMap((block, index) => block.kind === "paragraph" ? [index] : []);
-    expect(Object.keys(farnsworthTvParallelReadings).map(Number).sort((a, b) => a - b)).toEqual(paragraphs);
-    for (const index of paragraphs) expect(farnsworthTvParallelReadings[index].join(" ").length).toBeGreaterThan(40);
+    const paragraphs = farnsworthTvArchivalEdition.blocks.flatMap((block, index) =>
+      block.kind === "paragraph" ? [index] : [],
+    );
+    expect(
+      Object.keys(farnsworthTvParallelReadings)
+        .map(Number)
+        .sort((a, b) => a - b),
+    ).toEqual(paragraphs);
+    for (const index of paragraphs)
+      expect(farnsworthTvParallelReadings[index].join(" ").length).toBeGreaterThan(40);
     const asset = farnsworthTvPatent.originalTextAsset;
     if (!asset) throw new Error("Farnsworth reviewed ledger asset is missing.");
     const ledger = readFileSync(`${process.cwd()}/public${asset.url}`, "utf8");

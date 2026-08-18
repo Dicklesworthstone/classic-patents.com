@@ -87,7 +87,12 @@ export const teslaMotorArchivalEdition: CuratedSpecificationEdition = {
       title: "Two-phase machine arrangements",
       description: [
         figure("Fig. 9"),
-        { kind: "text", text: " shows the first motor-generator system; " },
+        { kind: "text", text: " shows the first motor-generator system, including generator " },
+        term(
+          "collector rings",
+          "Insulated rings carried by the generator shaft. In Fig. 9 each ring is contacted by a collector or brush so a corresponding circuit can carry alternating current to the motor; this source arrangement is not universally brushless.",
+        ),
+        { kind: "text", text: " and brushes; " },
         figure("Figs. 10 to 12"),
         { kind: "text", text: " show a second arrangement and its connections." },
       ],
@@ -146,7 +151,15 @@ export const teslaMotorArchivalEdition: CuratedSpecificationEdition = {
       ),
       {
         kind: "text",
-        text: "” in accordance with the well-known theory, and a consequent action of the motor. It is obvious that a proper progressive shifting of the lines of force may be utilized to set up a movement or rotation of either element of the motor, the armature, or the field-magnet, and that if the currents directed through the several circuits of the motor are in the proper direction no ",
+        text: "” in accordance with the well-known theory, and a consequent action of the motor. It is obvious that a proper progressive shifting of the lines of force may be utilized to set up a movement or rotation of either element of the motor, the ",
+      },
+      term(
+        "armature",
+        "The motor member Tesla identifies as capable of movement. Depending on the illustrated form, it may be a free magnetic disk, a cylindrical wound core, or a ring element; the word does not mean one fixed modern rotor construction.",
+      ),
+      {
+        kind: "text",
+        text: ", or the field-magnet, and that if the currents directed through the several circuits of the motor are in the proper direction no ",
       },
       term(
         "commutator",
@@ -441,11 +454,17 @@ export const teslaMotorArchivalEdition: CuratedSpecificationEdition = {
         text: ", for example, the terminals of each set of field-coils are connected with the wires to the two armature-coils in such way that the field-coils will maintain opposite poles in advance of the poles of the armature.",
       },
     ]),
-    p(
-      text(
-        "In the drawings the field-coils are in shunts to the armature, but they may be in series or in independent circuits. It is obvious that the same principle may be applied to the various typical forms of motor hereinbefore described.",
+    p([
+      { kind: "text", text: "In the drawings the field-coils are in " },
+      term(
+        "shunts",
+        "Parallel circuit branches. Tesla says the field coils are drawn in shunt with the armature but may instead be series or independent circuits in the described motor forms.",
       ),
-    ),
+      {
+        kind: "text",
+        text: " to the armature, but they may be in series or in independent circuits. It is obvious that the same principle may be applied to the various typical forms of motor hereinbefore described.",
+      },
+    ]),
     p(
       text(
         "Having now described the nature of my invention and some of the various ways in which it is or may be carried into effect, I would call attention to certain characteristics which the applications of the invention possess and the advantages which the invention secures.",
@@ -488,11 +507,17 @@ export const teslaMotorArchivalEdition: CuratedSpecificationEdition = {
         "It will now be more readily seen from the above description how far the requirements of a practical system of electrical transmission of power are realized in my invention. I secure, first, a uniform speed under all loads within the normal-working limits of the motor without the use of any auxiliary regulator; second, synchronism between the motor and generator; third, greater efficiency by the more direct application of the current, no commutating devices being required on either the motor or generator; fourth, cheapness and simplicity of mechanical construction and economy in maintenance; fifth, the capability of being very easily managed or controlled; and, sixth, diminution of danger from injury to persons and apparatus.",
       ),
     ),
-    p(
-      text(
-        "These motors may be run in series, multiple arc or multiple series, under conditions well understood by those skilled in the art.",
+    p([
+      { kind: "text", text: "These motors may be run in series, " },
+      term(
+        "multiple arc",
+        "Tesla's period name for a parallel connection of multiple circuit branches. It is distinct from series and multiple-series arrangements named in the same sentence.",
       ),
-    ),
+      {
+        kind: "text",
+        text: " or multiple series, under conditions well understood by those skilled in the art.",
+      },
+    ]),
     p([
       {
         kind: "text",
@@ -516,10 +541,24 @@ export const teslaMotorArchivalEdition: CuratedSpecificationEdition = {
       1,
       "The combination, with a motor containing separate or independent circuits on the armature or field-magnet, or both, of an alternating-current generator containing induced circuits connected independently to corresponding circuits in the motor, whereby a rotation of the generator produces a progressive shifting of the poles of the motor, as herein described.",
     ),
-    claim(
-      2,
-      "In a system for the electrical transmission of power, the combination of a motor provided with two or more independent magnetizing-coils and an alternating-current generator containing induced coils corresponding to the motor-coils, and circuits connecting directly the motor and generator coils in such order that the currents developed by the generator will be passed through the corresponding motor-coils, and thereby produce a progressive shifting of the poles of the motor, as herein set forth.",
-    ),
+    {
+      kind: "claim",
+      number: 2,
+      inlines: [
+        {
+          kind: "text",
+          text: "In a system for the electrical transmission of power, the combination of a motor provided with two or more independent ",
+        },
+        term(
+          "magnetizing-coils",
+          "Coils whose current establishes the motor's magnetic poles. Claim 2 requires two or more independently connected coils and matching induced generator coils arranged to shift those poles progressively.",
+        ),
+        {
+          kind: "text",
+          text: " and an alternating-current generator containing induced coils corresponding to the motor-coils, and circuits connecting directly the motor and generator coils in such order that the currents developed by the generator will be passed through the corresponding motor-coils, and thereby produce a progressive shifting of the poles of the motor, as herein set forth.",
+        },
+      ],
+    },
     claim(
       3,
       "The combination, with a motor having an annular or ring-shaped field-magnet and a cylindrical or equivalent armature, and independent coils on the field-magnet or armature, or both, of an alternating-current generator having correspondingly independent coils, and circuits including the generator-coils and corresponding motor-coils in such manner that the rotation of the generator causes a progressive shifting of the poles of the motor in the manner set forth.",

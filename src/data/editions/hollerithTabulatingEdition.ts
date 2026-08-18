@@ -1001,6 +1001,20 @@ export const hollerithTabulatingSignatureParallelReading: Readonly<
   ],
 };
 
+export const hollerithTabulatingParallelReadings: Readonly<Record<number, readonly string[]>> = {
+  ...hollerithTabulatingPages7To9ParallelReadings,
+  ...hollerithTabulatingPage9ParallelReadings,
+  ...hollerithTabulatingPages10To14ParallelReadings,
+  ...hollerithTabulatingSignatureParallelReading,
+};
+
+export const hollerithTabulatingClaims: readonly string[] = hollerithTabulatingManualClaimDraft.map(
+  (block) => {
+    if (block.kind !== "claim") return "";
+    return block.inlines.map((inline) => inline.text).join("");
+  },
+);
+
 /**
  * The complete, continuous, manually authored source face. Root integration
  * alone may attach this unbound edition to the public Hollerith record.

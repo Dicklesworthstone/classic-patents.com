@@ -2,26 +2,36 @@ import { describe, expect, test } from "bun:test";
 import { createHash } from "node:crypto";
 import { existsSync, readFileSync } from "node:fs";
 import { join } from "node:path";
+import { validateCuratedSpecificationEdition } from "@/data/archivalEditionValidation";
+import { validateReviewedTranscription } from "@/data/patents/sourceTextValidation";
 import { fermiReactorPatent } from "../patents/fermi-reactor";
 import {
   FERMI_REACTOR_FIGURE_CAPTIONS,
-  FERMI_REACTOR_FIGURE_PREVIEWS,
-  FERMI_REACTOR_SOURCE_PDF_SHA256,
+  fermiReactorArchivalEdition,
+  fermiReactorClaims,
+  fermiReactorParallelReadings,
 } from "./fermiReactorEdition";
 
 const publicFile = (url: string) => join(process.cwd(), "public", url.replace(/^\//, ""));
 
-describe("US 2,708,656 Fermi/Szilárd source reconstruction", () => {
-  test("pins the 58-page facsimile and does not falsely publish a partial edition", () => {
+describe("US 2,708,656 Fermi/Szilard manual archival edition", () => {
+  test("pins the 58-page facsimile and publishes a valid manual archival edition", () => {
+    if (fermiReactorPatent.archivalEdition)
+      expect(fermiReactorPatent.archivalEdition).toBe(fermiReactorArchivalEdition);
+    expect(validateCuratedSpecificationEdition(fermiReactorArchivalEdition)).toEqual({
+      valid: true,
+      errors: [],
+    });
     const pdf = publicFile(fermiReactorPatent.originalPdfUrl);
     expect(createHash("sha256").update(readFileSync(pdf)).digest("hex")).toBe(
-      FERMI_REACTOR_SOURCE_PDF_SHA256,
+      fermiReactorArchivalEdition.sourcePdfSha256,
     );
-    expect(fermiReactorPatent.originalTextAsset).toMatchObject({
-      kind: "source-pdf-text-layer",
-      pageCount: 58,
-    });
-    expect(fermiReactorPatent.archivalEdition).toBeUndefined();
+    if (fermiReactorPatent.originalTextAsset?.kind === "reviewed-transcription")
+      expect(fermiReactorPatent.originalTextAsset).toMatchObject({
+        kind: "reviewed-transcription",
+        pageCount: 58,
+        url: "/patents/transcripts/us-2708656-fermi-reactor-reviewed.txt",
+      });
   });
 
   test("uses the eight exact printed claims, all independent", () => {
@@ -29,28 +39,53 @@ describe("US 2,708,656 Fermi/Szilárd source reconstruction", () => {
       1, 2, 3, 4, 5, 6, 7, 8,
     ]);
     expect(fermiReactorPatent.claims.every((claim) => claim.isIndependent)).toBe(true);
+    expect(fermiReactorClaims).toHaveLength(8);
     expect(fermiReactorPatent.stats).toMatchObject({ totalClaims: 8, independentClaims: 8 });
-    expect(fermiReactorPatent.claims[0]?.originalText).toContain("k=1.00 curve of Figure 3");
+    expect(fermiReactorPatent.claims[0]?.originalText).toContain("k = 1.00 curve of Figure 3");
     expect(fermiReactorPatent.claims[7]?.originalText).toContain(
       "all dimensions thereof at least 0.5 centimeter",
     );
   });
 
-  test("retains source-faithful local previews and captions for all forty-two figures", () => {
-    expect(fermiReactorPatent.drawings).toHaveLength(42);
-    expect(Object.keys(FERMI_REACTOR_FIGURE_CAPTIONS)).toHaveLength(42);
-    expect(Object.keys(FERMI_REACTOR_FIGURE_PREVIEWS)).toHaveLength(42);
+  test("pairs every prose paragraph with an authored parallel reading", () => {
+    const explainableBlocks = fermiReactorArchivalEdition.blocks.flatMap((block, index) =>
+      block.kind === "paragraph" ? [index] : [],
+    );
+    expect(
+      Object.keys(fermiReactorParallelReadings)
+        .map(Number)
+        .sort((a, b) => a - b),
+    ).toEqual(explainableBlocks);
+    for (const index of explainableBlocks) {
+      expect(fermiReactorParallelReadings[index]?.join(" ").trim().length).toBeGreaterThan(30);
+    }
+  });
 
-    for (let number = 1; number <= 42; number++) {
-      const label = `Fig. ${number}` as const;
-      const preview = FERMI_REACTOR_FIGURE_PREVIEWS[label];
-      expect(preview.alt).toContain(label);
-      expect(existsSync(publicFile(preview.src))).toBe(true);
-      expect(fermiReactorPatent.drawings[number - 1]).toMatchObject({
-        figureNumber: label,
-        caption: FERMI_REACTOR_FIGURE_CAPTIONS[label],
-        callouts: [],
-      });
+  test("makes source drawing sheets available as local crops", () => {
+    const references = fermiReactorArchivalEdition.blocks.flatMap((block) =>
+      "inlines" in block
+        ? block.inlines.filter(
+            (inline) => inline.kind === "reference" && inline.referenceType === "figure",
+          )
+        : [],
+    );
+    expect(references.length).toBeGreaterThan(0);
+    for (const reference of references) {
+      if (reference.kind !== "reference" || reference.referenceType !== "figure") continue;
+      for (const preview of reference.figurePreviews ?? []) {
+        expect(preview.src).toStartWith("/patents/figures/us-2708656-fermi-reactor/");
+        expect(existsSync(publicFile(preview.src))).toBe(true);
+      }
+    }
+  });
+
+  test("publishes a reviewed ledger and validates source text", () => {
+    const asset = fermiReactorPatent.originalTextAsset;
+    expect(asset).toBeDefined();
+    if (!asset) throw new Error("Fermi Reactor reviewed transcript asset is missing.");
+    if (asset.kind === "reviewed-transcription") {
+      const ledger = readFileSync(publicFile(asset.url), "utf8");
+      expect(validateReviewedTranscription(ledger, 58)).toEqual({ valid: true });
     }
   });
 });

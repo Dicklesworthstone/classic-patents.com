@@ -26,7 +26,7 @@ const crop = (file: string, width: number, height: number, label: string) => ({
 const FIGURES = {
   "Fig. 1": crop("fig-1-source-crop", 1700, 820, "Fig. 1"),
   "Fig. 2": crop("fig-2-tight-source-crop", 1400, 800, "Fig. 2"),
-  "Fig. 3": crop("fig-3-source-crop", 650, 450, "Fig. 3"),
+  "Fig. 3": crop("fig-3-complete-source-crop-v2", 700, 620, "Fig. 3"),
   "Fig. 4": crop("fig-4-source-crop", 700, 550, "Fig. 4"),
 } as const;
 
@@ -50,9 +50,8 @@ const claim = (number: number, value: string) => ({
 
 /**
  * Continuous, manually prepared reading edition of the three-page US 200,521
- * facsimile. The first source page is a drawing sheet; its figure numbers are
- * presented as source-specific hover previews, while the visitor reads the
- * specification as one uninterrupted historical argument.
+ * facsimile. The first source page is a drawing sheet with a printed identity
+ * and execution block, followed by the uninterrupted specification.
  */
 export const edisonPhonographArchivalEdition: CuratedSpecificationEdition = {
   kind: "manual-react-edition",
@@ -72,10 +71,14 @@ export const edisonPhonographArchivalEdition: CuratedSpecificationEdition = {
     },
     {
       kind: "figure-sheet",
-      figureLabel: "FIGURES 1–4",
-      title: "Edison phonograph: recording, plan, thread, and ink variants",
+      figureLabel: "T. A. EDISON. — PHONOGRAPH OR SPEAKING MACHINE.",
+      title: "No. 200,521. Patented Feb. 19, 1878. — FIGURES 1–4.",
       description: [
-        { kind: "text", text: "The pinned drawing sheet contains " },
+        { kind: "small-caps", text: "Witnesses: Chas. H. Smith." },
+        { kind: "small-caps", text: "Inventor: Thomas A. Edison." },
+        { kind: "text", text: " for " },
+        { kind: "small-caps", text: "Lemuel W. Serrell, atty." },
+        { kind: "text", text: " The drawing sheet contains " },
         figure("Fig. 1"),
         { kind: "text", text: ", " },
         figure("Fig. 2"),
@@ -83,12 +86,14 @@ export const edisonPhonographArchivalEdition: CuratedSpecificationEdition = {
         figure("Fig. 3"),
         { kind: "text", text: ", and " },
         figure("Fig. 4"),
-        {
-          kind: "text",
-          text: ". Each preview is cropped directly from the corresponding printed figure.",
-        },
+        { kind: "text", text: "." },
       ],
     },
+    paragraph(
+      text(
+        "T. A. EDISON. Phonograph or Speaking Machine. No. 200,521. Patented Feb. 19, 1878. Witnesses: Chas. H. Smith. Inventor: Thomas A. Edison. for Lemuel W. Serrell, atty.",
+      ),
+    ),
     paragraph(text("To all whom it may concern:")),
     paragraph(
       text(
@@ -137,16 +142,31 @@ export const edisonPhonographArchivalEdition: CuratedSpecificationEdition = {
         "The shaft X passes into the tube L, and it is rotated by a pin, 2, secured to the shaft, and passing through the slot on the tube L, the object of the long slot being to allow the shaft X to pass endwise through the center or support P by the action of the screw on X. At the same time that the cylinder is rotated it passes toward the support O.",
       ),
     ),
-    paragraph(
-      text(
-        "B is the speaking-tube or mouth-piece, which may be of any desired character, so long as proper slots or holes are provided to re-enforce the hissing consonants. Devices to effect this object are shown in my application, No. 143, filed August 28, 1877. Hence they are not shown or further described herein.",
+    paragraph([
+      {
+        kind: "text",
+        text: "B is the speaking-tube or mouth-piece, which may be of any desired character, so long as proper slots or holes are provided to ",
+      },
+      term(
+        "re-enforce",
+        "A period spelling of reinforce: the openings are intended to strengthen the audible hissing consonants rather than to supply an unspecified electrical effect.",
       ),
-    ),
-    paragraph(
-      text(
-        "Upon the end of the tube or mouth-piece is a diaphragm, having an indenting-point of hard material secured to its center, and so arranged in relation to the cylinder A that the point will be exactly opposite the groove in the cylinder at any position the cylinder may occupy in its forward rotary movement. The speaking-tube is arranged upon a standard, which, in practice, I provide with devices for causing the tube to approach and recede from the cylinder.",
+      {
+        kind: "text",
+        text: " the hissing consonants. Devices to effect this object are shown in my application, No. 143, filed August 28, 1877. Hence they are not shown or further described herein.",
+      },
+    ]),
+    paragraph([
+      { kind: "text", text: "Upon the end of the tube or mouth-piece is a diaphragm, having an " },
+      term(
+        "indenting-point",
+        "The hard central point attached to the diaphragm that presses the yielding recording surface, producing the physical marks used for later reproduction.",
       ),
-    ),
+      {
+        kind: "text",
+        text: " of hard material secured to its center, and so arranged in relation to the cylinder A that the point will be exactly opposite the groove in the cylinder at any position the cylinder may occupy in its forward rotary movement. The speaking-tube is arranged upon a standard, which, in practice, I provide with devices for causing the tube to approach and recede from the cylinder.",
+      },
+    ]),
     paragraph(text("The operation of recording is as follows:")),
     paragraph(
       text(
@@ -173,35 +193,81 @@ export const edisonPhonographArchivalEdition: CuratedSpecificationEdition = {
         "The indented material may be detached from the machine and preserved for any length of time, and by replacing the foil in a proper manner the original speaker's voice can be reproduced, and the same may be repeated frequently, as the foil is not changed in shape if the apparatus is properly adjusted.",
       ),
     ),
-    paragraph(
-      text(
-        "The record, if it be upon tin-foil, may be stereotyped by means of the plaster-of-paris process, and from the stereotype multiple copies may be made expeditiously and cheaply by casting or by pressing tin-foil or other material upon it. This is valuable when musical compositions are required for numerous machines.",
+    paragraph([
+      { kind: "text", text: "The record, if it be upon tin-foil, may be " },
+      term(
+        "stereotyped",
+        "Made into a plaster-of-Paris mold or stereotype so that multiple copies of the recorded foil can be cast or pressed from it.",
       ),
-    ),
-    paragraph(
-      text(
-        "It is obvious that many forms of mechanism may be used to give motion to the material to be indented. For instance, a revolving plate may have a volute spiral cut both on its upper and lower surfaces, on the top of which the foil or indenting material is laid and secured in a proper manner.",
+      {
+        kind: "text",
+        text: " by means of the plaster-of-paris process, and from the stereotype multiple copies may be made expeditiously and cheaply by casting or by pressing tin-foil or other material upon it. This is valuable when musical compositions are required for numerous machines.",
+      },
+    ]),
+    paragraph([
+      {
+        kind: "text",
+        text: "It is obvious that many forms of mechanism may be used to give motion to the material to be indented. For instance, a revolving plate may have a ",
+      },
+      term(
+        "volute spiral",
+        "A spiral groove whose changing radius guides a follower gradually between the center and rim of a rotating plate.",
       ),
-    ),
-    paragraph(
-      text(
-        "A two-part arm is used with this disk, the portion beneath the disk having a point in the lower groove, and the portion above the disk carrying the speaking and receiving diaphragmic devices, which arm is caused, by the volute spiral groove upon the lower surface, to swing gradually from near the center to the outer circumference of the plate as it is revolved, or vice versa.",
+      {
+        kind: "text",
+        text: " cut both on its upper and lower surfaces, on the top of which the foil or indenting material is laid and secured in a proper manner.",
+      },
+    ]),
+    paragraph([
+      {
+        kind: "text",
+        text: "A two-part arm is used with this disk, the portion beneath the disk having a point in the lower groove, and the portion above the disk carrying the speaking and receiving ",
+      },
+      term(
+        "diaphragmic",
+        "An adjective meaning associated with a diaphragm: here, the sound-receiving and sound-reproducing devices carried by the upper arm.",
       ),
-    ),
+      { kind: "text", text: " devices, which arm is caused, by the " },
+      term(
+        "volute spiral",
+        "The same varying-radius spiral groove on the lower face that mechanically sweeps the two-part arm across the plate.",
+      ),
+      {
+        kind: "text",
+        text: " groove upon the lower surface, to swing gradually from near the center to the outer circumference of the plate as it is revolved, or vice versa.",
+      },
+    ]),
     paragraph(
       text(
         "An apparatus of this general character adapted to a magnet that indents the paper is shown in my application for a patent, No. 128, filed March 26, 1877; hence no claim is made herein to such apparatus, and further description of the same is unnecessary.",
       ),
     ),
-    paragraph(
-      text(
-        "A wide continuous roll of material may be used, the diaphragmic devices being reciprocated by proper mechanical devices backward and forward over the roll as it passes forward; or a narrow strip like that in a Morse register may be moved in contact with the indenting-point, and from this the sounds may be reproduced.",
-      ),
-    ),
     paragraph([
       {
         kind: "text",
-        text: "The material employed for this purpose may be soft paper saturated or coated with paraffine or similar material, with a sheet of metal foil on the surface thereof to receive the impression from the indenting-point. I do not wish to confine myself to reproducing sound by indentations only, as the transmitting or recording device may be in a ",
+        text: "A wide continuous roll of material may be used, the diaphragmic devices being reciprocated by proper mechanical devices backward and forward over the roll as it passes forward; or a narrow strip like that in a ",
+      },
+      term(
+        "Morse register",
+        "A telegraph recording instrument that moves a narrow strip past a marking point; Edison invokes it as the physical form of an alternative sound-record carrier.",
+      ),
+      {
+        kind: "text",
+        text: " may be moved in contact with the indenting-point, and from this the sounds may be reproduced.",
+      },
+    ]),
+    paragraph([
+      {
+        kind: "text",
+        text: "The material employed for this purpose may be soft paper saturated or coated with ",
+      },
+      term(
+        "paraffine",
+        "A period spelling of paraffin, a wax-like coating material proposed for the paper carrier beneath its metal-foil surface.",
+      ),
+      {
+        kind: "text",
+        text: " or similar material, with a sheet of metal foil on the surface thereof to receive the impression from the indenting-point. I do not wish to confine myself to reproducing sound by indentations only, as the transmitting or recording device may be in a ",
       },
       term(
         "sinuous form",
@@ -227,6 +293,7 @@ export const edisonPhonographArchivalEdition: CuratedSpecificationEdition = {
         "These ink-marks serve to give motion to a second diaphragm when the paper containing such marks is drawn along beneath the end of a lever resting upon them and connected to such diaphragm, the lever and diaphragm being moved by the friction between the point being greatest, or the thickness of the ink being greater where there is a large quantity of ink than where there is a small quantity. Thus the original sound-vibrations are reproduced upon the second diaphragm.",
       ),
     ),
+    paragraph(text("I claim as my invention—")),
     { kind: "heading", level: 2, text: "Claims" },
     claim(
       1,
@@ -253,85 +320,91 @@ export const edisonPhonographArchivalEdition: CuratedSpecificationEdition = {
 /** Each entry is a specific, non-lossy reading of its matching source paragraph. */
 export const edisonPhonographParallelReadings: Readonly<Record<number, readonly string[]>> = {
   2: [
-    "This conventional address opens the public specification. It is legal framing, not part of the mechanism.",
+    "The first sheet is part of the patent instrument, not a decorative cover. It prints Edison’s abbreviated name, the title, patent number and grant date, the drawing signatures, and the attorney notation before showing Figs. 1 through 4.",
   ],
   3: [
-    "Edison names himself, Menlo Park, and an improvement in phonograph or speaking machines. He says the document is the specification that explains it.",
+    "This conventional address opens the public specification. It is legal framing, not part of the mechanism.",
   ],
   4: [
-    "The stated job is durable recording: turn a voice or other sound into marks that can later make the sound audible again.",
+    "Edison names himself, Menlo Park, and an improvement in phonograph or speaking machines. He says the document is the specification that explains it.",
   ],
   5: [
-    "The broad idea is a chain of motion. A voice moves one flexible body; that body alters a yielding surface; the resulting marks later move a second flexible body in the same pattern.",
+    "The stated job is durable recording: turn a voice or other sound into marks that can later make the sound audible again.",
   ],
   6: [
-    "Edison also claims particular mechanisms that carry out that general record-and-reproduce chain.",
+    "The broad idea is a chain of motion. A voice moves one flexible body; that body alters a yielding surface; the resulting marks later move a second flexible body in the same pattern.",
   ],
   7: [
-    "He reports an experimental premise: voice-driven diaphragm motion can be treated as separate vibrations rather than an inseparable blur. That premise makes a physical record and later replay conceivable in his account.",
+    "Edison also claims particular mechanisms that carry out that general record-and-reproduce chain.",
   ],
   8: [
-    "Figure 1 is the vertical sectional construction. Figure 2 is the plan view of the same machine. The links show the actual source drawing, not a reconstructed schematic.",
+    "He reports an experimental premise: voice-driven diaphragm motion can be treated as separate vibrations rather than an inseparable blur. That premise makes a physical record and later replay conceivable in his account.",
   ],
   9: [
-    "Cylinder A has ten helical grooves per inch and sits on shaft X, which also has ten threads per inch. Turning it therefore gives rotation and a matched axial advance. A foil sheet is the preferred recording surface.",
+    "Figure 1 is the vertical sectional construction. Figure 2 is the plan view of the same machine. The links show the actual source drawing, not a reconstructed schematic.",
   ],
   10: [
-    "Tube L is the clock-work-driven slotted member. Its long slot lets the shaft transmit rotation while still moving endwise through the support.",
+    "Cylinder A has ten helical grooves per inch and sits on shaft X, which also has ten threads per inch. Turning it therefore gives rotation and a matched axial advance. A foil sheet is the preferred recording surface.",
   ],
   11: [
-    "Pin Z couples shaft X to the rotating slotted tube. The screw thread makes the cylinder travel toward support O while it turns, so the stylus reaches successive parts of the foil.",
+    "Tube L is the clock-work-driven slotted member. Its long slot lets the shaft transmit rotation while still moving endwise through the support.",
   ],
   12: [
-    "The mouthpiece may vary, but Edison requires passages that preserve sibilant consonants. He points to a separate 1877 application for those passages rather than claiming or redrawing them here.",
+    "Pin 2 couples shaft X to the rotating slotted tube. The screw thread makes the cylinder travel toward support O while it turns, so the stylus reaches successive parts of the foil.",
   ],
   13: [
-    "A hard point at the speaking diaphragm is kept opposite the cylinder groove as the cylinder advances. The mount can move the speaking tube closer to or farther from the cylinder to set contact.",
+    "The mouthpiece may vary, but Edison requires passages that preserve sibilant consonants. He points to a separate 1877 application for those passages rather than claiming or redrawing them here.",
   ],
   14: [
-    "This sentence announces the recording procedure that the next paragraph sets out: position the cylinder, touch the foil, rotate, and speak.",
+    "A hard point at the speaking diaphragm is kept opposite the cylinder groove as the cylinder advances. The mount can move the speaking tube closer to or farther from the cylinder to set contact.",
   ],
   15: [
-    "The operator first puts the stylus at the first groove near pillar P, fits foil or another yielding sheet, and barely indents it. Running the clock-work while speaking makes diaphragm G carry each vibration into a foil indentation.",
+    "This sentence announces the recording procedure that the next paragraph sets out: position the cylinder, touch the foil, rotate, and speak.",
   ],
   16: [
-    "After a recording reaches its limit toward O, the cylinder returns toward P. The same marked material is then positioned for replay instead of recording.",
+    "The operator first puts the stylus at the first groove near pillar P, fits foil or another yielding sheet, and barely indents it. Running the clock-work while speaking makes diaphragm G carry each vibration into a foil indentation.",
   ],
   17: [
-    "Tube C is the reproducer. Its lighter diaphragm carries spring D and a finer point that follows the recorded indentations. A thread or direct connection carries that point's motion to diaphragm F.",
+    "After a recording reaches its limit toward O, the cylinder returns toward P. The same marked material is then positioned for replay instead of recording.",
   ],
   18: [
-    "As the cylinder turns beneath the tracer, the depth and length of each mark move spring D. That motion reaches the reproducing diaphragm and makes it repeat the pattern attributed to the first diaphragm.",
+    "Tube C is the reproducer. Its lighter diaphragm carries spring D and a finer point that follows the recorded indentations. A thread or direct connection carries that point's motion to diaphragm F.",
   ],
   19: [
-    "Edison says the marked foil can be removed, stored, replaced, and played repeatedly if the apparatus is adjusted so that the foil is not deformed during replay.",
+    "As the cylinder turns beneath the tracer, the depth and length of each mark move spring D. That motion reaches the reproducing diaphragm and makes it repeat the pattern attributed to the first diaphragm.",
   ],
   20: [
-    "He proposes making a plaster-of-Paris stereotype from tinfoil and pressing or casting multiple foil copies. His stated use case is supplying the same musical composition to many machines.",
+    "Edison says the marked foil can be removed, stored, replaced, and played repeatedly if the apparatus is adjusted so that the foil is not deformed during replay.",
   ],
   21: [
-    "The cylinder is not the only possible carrier. A plate with an upper and lower volute spiral can hold foil while its groove controls the path of the recording and reproducing arm.",
+    "He proposes making a plaster-of-Paris stereotype from tinfoil and pressing or casting multiple foil copies. His stated use case is supplying the same musical composition to many machines.",
   ],
   22: [
-    "The lower member of the two-part arm follows the lower spiral. The upper member carries the speaking and receiving devices, so the groove slowly sweeps them from the center to the rim or back again.",
+    "The cylinder is not the only possible carrier. A plate with an upper and lower volute spiral can hold foil while its groove controls the path of the recording and reproducing arm.",
   ],
   23: [
-    "Edison deliberately excludes this magnet-paper apparatus because he says it belongs to another application filed March 26, 1877. The exclusion marks a boundary of this specification rather than an omitted construction.",
+    "The lower member of the two-part arm follows the lower spiral. The upper member carries the speaking and receiving devices, so the groove slowly sweeps them from the center to the rim or back again.",
   ],
   24: [
-    "He also allows a wide advancing roll with a reciprocating head, or a narrow Morse-register-like strip that touches an indenting point and can later drive reproduction.",
+    "Edison deliberately excludes this magnet-paper apparatus because he says it belongs to another application filed March 26, 1877. The exclusion marks a boundary of this specification rather than an omitted construction.",
   ],
   25: [
-    "Here Edison adds two alternatives beyond foil embossing. A paraffine-coated paper and metal-foil surface can take the first impression. A thread can trace a side-to-side line beside a straight line in Figure 3; or an inking pen in Figure 4 can lay down more or less ink as the diaphragm moves. In both cases the later reader uses the trace or ink thickness to move another diaphragm.",
+    "He also allows a wide advancing roll with a reciprocating head, or a narrow Morse-register-like strip that touches an indenting point and can later drive reproduction.",
   ],
   26: [
+    "Here Edison adds two alternatives beyond foil embossing. A paraffine-coated paper and metal-foil surface can take the first impression. A thread can trace a side-to-side line beside a straight line in Figure 3; or an inking pen in Figure 4 can lay down more or less ink as the diaphragm moves. In both cases the later reader uses the trace or ink thickness to move another diaphragm.",
+  ],
+  27: [
     "The ink version is a mechanical reader: a lever rides over the drawn marks, moving more where the point's friction or the ink thickness is greater. Edison presents that varying motion as another way to recreate the original sound vibrations.",
   ],
-  32: [
+  28: [
+    "This is the exact transition from the descriptive specification to the numbered claims. Edison declares the following claims as his invention before Claim 1 begins.",
+  ],
+  34: [
     "Edison signs the completed specification on December 15, 1877. That execution date is distinct from the stated December 24 application filing date and February 19 grant date.",
   ],
-  33: ["The initials and surname identify Edison as the signing inventor."],
-  34: [
+  35: ["The initials and surname identify Edison as the signing inventor."],
+  36: [
     "George T. Pinckney and Charles H. Smith are printed as witnesses to the signed instrument.",
   ],
 };

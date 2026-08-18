@@ -17,8 +17,7 @@ function sourceTextFromEdition(patent: (typeof allPatents)[number]): string {
 
   const inlineText = (
     inlines: readonly { kind: string; label?: string; text?: string }[],
-  ): string =>
-    inlines.map((inline) => (inline.kind === "reference" ? inline.label : inline.text)).join(" ");
+  ): string => inlines.map((inline) => inline.text ?? "").join(" ");
 
   return edition.blocks
     .flatMap((block) => {
@@ -94,6 +93,55 @@ describe("manual-edition publication contract", () => {
         violations.push(
           `${patent.id}: reviewed-transcription digest does not match its source PDF.`,
         );
+      }
+    }
+
+    expect(violations).toEqual([]);
+  });
+
+  test("requires a distinct editorial decoder and innovation set for every published claim", () => {
+    const violations: string[] = [];
+
+    for (const patent of allPatents.filter((candidate) =>
+      archivalEditionForPublication(candidate),
+    )) {
+      const decoderClaims = new Map<string, number[]>();
+      const innovationClaims = new Map<string, number[]>();
+
+      for (const claim of patent.claims) {
+        const decoder = claim.plainEnglish.replace(/\s+/g, " ").trim();
+        const innovations = claim.keyInnovations
+          .map((innovation) => innovation.replace(/\s+/g, " ").trim())
+          .join(" | ");
+
+        if (!decoder || !innovations) {
+          violations.push(
+            `${patent.id}: Claim #${claim.number} lacks authored editorial metadata.`,
+          );
+          continue;
+        }
+
+        decoderClaims.set(decoder, [...(decoderClaims.get(decoder) ?? []), claim.number]);
+        innovationClaims.set(innovations, [
+          ...(innovationClaims.get(innovations) ?? []),
+          claim.number,
+        ]);
+      }
+
+      for (const [decoder, claimNumbers] of decoderClaims) {
+        if (claimNumbers.length > 1) {
+          violations.push(
+            `${patent.id}: claims ${claimNumbers.join(", ")} reuse the same plain-English decoder (${decoder.slice(0, 80)}…).`,
+          );
+        }
+      }
+
+      for (const [innovations, claimNumbers] of innovationClaims) {
+        if (claimNumbers.length > 1) {
+          violations.push(
+            `${patent.id}: claims ${claimNumbers.join(", ")} reuse the same innovation set (${innovations}).`,
+          );
+        }
       }
     }
 

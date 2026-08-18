@@ -3,31 +3,50 @@ import type { CuratedSpecificationEdition, CuratedSpecificationInlines } from "@
 const literal = (text: string): CuratedSpecificationInlines => [{ kind: "text", text }];
 
 /** Measured with ImageMagick identify against the committed local PNG crops. */
-const GATLING_FIGURE_PREVIEW_DIMENSIONS: Record<number, readonly [number, number]> = {
-  1: [560, 830],
-  2: [420, 1580],
-  3: [800, 760],
-  4: [420, 420],
-  5: [260, 290],
-  6: [180, 400],
-  7: [180, 170],
+const previews: Record<number, { src: string; alt: string; width: number; height: number }> = {
+  1: {
+    src: "/patents/figures/us-36836-gatling-gun-fig-1-preview.png",
+    alt: "Figure 1 from US 36,836, Improvement in Revolving Battery-Guns.",
+    width: 560,
+    height: 830,
+  },
+  2: {
+    src: "/patents/figures/us-36836-gatling-gun-fig-2-preview.png",
+    alt: "Figure 2 from US 36,836, Improvement in Revolving Battery-Guns.",
+    width: 420,
+    height: 1580,
+  },
+  3: {
+    src: "/patents/figures/us-36836-gatling-gun-fig-3-preview.png",
+    alt: "Figure 3 from US 36,836, Improvement in Revolving Battery-Guns.",
+    width: 800,
+    height: 760,
+  },
+  4: {
+    src: "/patents/figures/us-36836-gatling-gun-fig-4-preview.png",
+    alt: "Figure 4 from US 36,836, Improvement in Revolving Battery-Guns.",
+    width: 420,
+    height: 420,
+  },
+  5: {
+    src: "/patents/figures/us-36836-gatling-gun-fig-5-preview.png",
+    alt: "Figure 5 from US 36,836, Improvement in Revolving Battery-Guns.",
+    width: 260,
+    height: 290,
+  },
+  6: {
+    src: "/patents/figures/us-36836-gatling-gun-fig-6-preview.png",
+    alt: "Figure 6 from US 36,836, Improvement in Revolving Battery-Guns.",
+    width: 180,
+    height: 400,
+  },
+  7: {
+    src: "/patents/figures/us-36836-gatling-gun-fig-7-preview.png",
+    alt: "Figure 7 from US 36,836, Improvement in Revolving Battery-Guns.",
+    width: 180,
+    height: 170,
+  },
 };
-
-const previews = Object.fromEntries(
-  Array.from({ length: 7 }, (_, index) => {
-    const figure = index + 1;
-    const [width, height] = GATLING_FIGURE_PREVIEW_DIMENSIONS[figure];
-    return [
-      figure,
-      {
-        src: `/patents/figures/us-36836-gatling-gun-fig-${figure}-preview.png`,
-        alt: `Figure ${figure} from US 36,836, Improvement in Revolving Battery-Guns.`,
-        width,
-        height,
-      },
-    ];
-  }),
-) as Record<number, { src: string; alt: string; width: number; height: number }>;
 
 const figure = (number: number) => ({
   kind: "reference" as const,
@@ -157,7 +176,7 @@ export const gatlingGunArchivalEdition: CuratedSpecificationEdition = {
         figure(6),
         { kind: "text", text: ", and " },
         figure(7),
-        { kind: "text", text: ". It is the first sheet of the pinned facsimile." },
+        { kind: "text", text: ". Each preview is cropped directly from the pinned facsimile." },
       ],
     },
     { kind: "paragraph", inlines: literal("To all whom it may concern:") },

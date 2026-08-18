@@ -40,6 +40,71 @@ describe("US 388,850 Eastman Camera manual source edition", () => {
     ).toBe(true);
   });
 
+  test("gives every printed claim a distinct, source-anchored decoder and innovation set", () => {
+    const sourceAndEditorialAnchors = [
+      ["tubular case", "tubular case", "front-chamber"],
+      ["coincident openings", "coincident openings", "front chamber"],
+      ["cap or end piece", "cap", "diaphragm"],
+      ["shutter surrounding", "surrounds the lens", "encircling"],
+      ["opposite faces", "opposite faces", "opposite-face"],
+      ["covering-plates", "covering plates", "covering plates"],
+      ["double shutter", "double shutter", "double shutter"],
+      ["axis transverse", "transverse", "transverse-axis"],
+      ["hollow shutter", "hollow", "hollow"],
+      ["complete lens and shutter attachment", "detachable article", "detachable"],
+      ["sustained wholly", "wholly", "self-supporting"],
+      ["releasing and arresting", "release and arrest", "release-and-arrest"],
+      ["stopping and releasing", "stopping and releasing", "stopping"],
+      ["inclosing-walls", "chamber walls", "chamber-wall"],
+      ["closed at both ends", "closed at both ends", "closed-end"],
+      ["one end", "one shutter end", "opposite-end"],
+      ["also mounted upon the lens support", "same lens-support", "lens-support-mounted"],
+      ["plane of the axis", "plane of the lens axis", "axial-plane"],
+      ["ratchet", "ratchet", "ratchet-coupled"],
+      ["winding-drum", "winding drum", "winding motor"],
+      ["abutments", "abutments", "abutments"],
+      ["between the heads", "between the retaining heads", "support-head"],
+      ["sustaining-heads", "sustaining heads", "post-journaled"],
+      ["tension device", "tension device", "tension-regulated"],
+      ["cam-plate", "cam-plate", "cam-plate"],
+      ["both as a brake and stop", "brake and stop", "brake spring"],
+      ["transverse groove", "transverse groove", "transverse shutter"],
+      ["sectional block", "sectional", "sectional"],
+      ["flexible connection", "flexible connection", "flexible winding"],
+      ["single supporting-frame", "single supporting frame", "single-frame"],
+      ["transverse aperture", "transverse lens aperture", "transversely apertured"],
+      ["supply-spool", "supply spool", "supply"],
+      ["flush with or below", "flush", "flush removable"],
+      ["socket", "socket", "socket-and-pin"],
+      ["camera-box", "camera-box wall", "camera-wall"],
+      ["indicator and winding-key", "indicator and winding key", "indicator and winding-key"],
+      ["longitudinal movement", "longitudinal movement", "longitudinal holder"],
+      ["front and rear", "front and rear", "front-and-rear"],
+      ["light-excluding media", "light-excluding media", "light-excluding media"],
+      ["two light-excluding media", "two separately positioned", "separately positioned"],
+      ["open at both ends", "open-ended", "open-ended"],
+    ] as const;
+
+    expect(sourceAndEditorialAnchors).toHaveLength(eastmanKodakPatent.claims.length);
+    const innovationSignatures = eastmanKodakPatent.claims.map((claim) =>
+      claim.keyInnovations.join(" | ").toLowerCase(),
+    );
+    expect(new Set(innovationSignatures).size).toBe(eastmanKodakPatent.claims.length);
+    expect(innovationSignatures).not.toContain("lens-support and cylindrical shutter mechanism");
+    expect(innovationSignatures).not.toContain("removable roller-holder and film transport");
+
+    for (const [
+      index,
+      [legalAnchor, decoderAnchor, innovationAnchor],
+    ] of sourceAndEditorialAnchors.entries()) {
+      const claim = eastmanKodakPatent.claims[index];
+      expect(claim.originalText.toLowerCase()).toContain(legalAnchor);
+      expect(claim.plainEnglish.toLowerCase()).toContain(decoderAnchor);
+      expect(innovationSignatures[index]).toContain(innovationAnchor);
+      expect(claim.plainEnglish.split(/\s+/).length).toBeGreaterThanOrEqual(24);
+    }
+  });
+
   test("provides a local source crop for every authored figure reference", () => {
     const references = eastmanKodakArchivalEdition.blocks.flatMap((block) =>
       "inlines" in block
@@ -57,6 +122,19 @@ describe("US 388,850 Eastman Camera manual source edition", () => {
       );
       expect(existsSync(resolve(process.cwd(), "public", preview?.src.slice(1) ?? ""))).toBe(true);
     }
+  });
+
+  test("keeps the visitor-facing source face free of generated drawing-sheet placeholders", () => {
+    const editionSource = readFileSync(
+      resolve(process.cwd(), "src/data/editions/eastmanKodakEdition.ts"),
+      "utf8",
+    );
+
+    expect(editionSource).not.toContain("Array.from");
+    expect(editionSource).not.toContain("Source drawing for Fig.");
+    expect(eastmanKodakArchivalEdition.blocks.some((block) => block.kind === "figure-sheet")).toBe(
+      false,
+    );
   });
 
   test("covers every authored paragraph with a non-lossy local companion", () => {

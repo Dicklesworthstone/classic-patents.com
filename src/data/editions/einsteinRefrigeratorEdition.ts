@@ -59,17 +59,6 @@ export const einsteinRefrigeratorArchivalEdition: CuratedSpecificationEdition = 
         "Application filed December 16, 1927, Serial No. 240,566, and in Germany December 16, 1926.",
       ],
     },
-    {
-      kind: "figure-sheet",
-      figureLabel: "SOURCE DRAWING",
-      title: "The sole apparatus drawing",
-      description: [
-        {
-          kind: "text",
-          text: "The facsimile's only drawing is available as a local source crop. It depicts the evaporator, condenser, generator, container, conduits, cooling-water jacket, and the liquid-head heights described below.",
-        },
-      ],
-    },
     paragraph(
       text(
         "Our invention relates to the art of refrigeration and particularly to an apparatus and method for producing refrigeration wherein the refrigerant evaporates in the presence of an inert gas and more particularly to the type disclosed in Patent No. 1,685,764 granted September 25th, 1928, to Von Platen and Munters and our British Patent No. 282,428.",
@@ -186,48 +175,48 @@ export const einsteinRefrigeratorArchivalEdition: CuratedSpecificationEdition = 
 
 /** A source-paragraph-by-source-paragraph engineering reading, not a summary. */
 export const einsteinRefrigeratorParallelReadings: Readonly<Record<number, readonly string[]>> = {
-  2: [
+  1: [
     "Einstein and Szilard place this apparatus in the absorption-refrigeration family. They expressly cite Von Platen and Munters' US 1,685,764 and their own British Patent 282,428; the patent does not present the general use of an inert gas as invented from nothing.",
   ],
-  3: [
-    "The drawing is an explanatory diagram of a preferred arrangement. It identifies the particular vessel and conduit layout used in the following description; it is not a claim by itself.",
+  2: [
+    "The accompanying drawing is an explanatory diagram of a preferred arrangement. It identifies the particular vessel and conduit layout used in the following description; it is not a claim by itself.",
   ],
-  4: [
+  3: [
     "Evaporator 1 sits in the space to be cooled. Conduit 5 carries vapor from its upper part toward condenser 6, while conduit 11 returns condensed liquid from the condenser at a lower level. Water jacket 12 removes heat from condenser 6.",
   ],
-  5: [
+  4: [
     "Condenser 6 feeds the lower part of heat-exchanger jacket 28 through conduit 27. The jacket leads to generator 29. Heated generator 29 sends gas through conduit 30 to distributor 31 near the bottom of evaporator 1; conduit 30 runs inside conduit 5 so the opposing streams exchange heat.",
   ],
-  6: [
+  5: [
     "A separate heated riser, conduit 32, lifts liquid from generator 29 to elevated container 33. From there conduit 37 descends through heat exchanger 28, then rises to distributor 35 in condenser 6; it also crosses water jacket 12. Vent 34 carries vapor from container 33 to the condenser.",
   ],
-  7: [
+  6: [
     "The document now traces one complete circulation cycle. It is a description of the illustrated arrangement, not a permission to supply unprinted pressures, temperatures, or compressor parts.",
   ],
-  8: [
+  7: [
     "Liquid butane in evaporator 1 is mixed with ammonia delivered through conduit 30. The ammonia lowers butane's partial pressure, so butane evaporates. The vapor mixture travels through conduit 5 to condenser 6, where water introduced through conduit 37 dissolves ammonia far more readily than butane. The freed butane then carries most of the condenser pressure and condenses under cooling-water heat removal.",
   ],
-  9: [
+  8: [
     "Butane is less dense than the ammonia-water solution, so it floats above it in condenser 6. The butane layer returns by conduit 11 to evaporator 1, where the lower partial pressure causes it to evaporate again.",
   ],
-  10: [
+  9: [
     "The ammonia-rich water flows by gravity through conduit 27 and heat-exchanger jacket 28 into generator 29. Applied heat expels ammonia gas, which returns through conduit 30 to lower butane's partial pressure in evaporator 1. This paragraph completes the gas-and-liquid separation loop.",
   ],
-  11: [
+  10: [
     "Water leaving generator 29 with little ammonia is the weak absorption liquid. Heat at 36 makes vapor in riser 32, lifting that liquid to container 33 without a mechanically driven pump. It descends through 37, exchanges heat with the cool strong liquid in jacket 28, is cooled again by jacket 12, and arrives at condenser 6 able to absorb ammonia quickly.",
   ],
-  12: [
+  11: [
     "Any vapor that enters container 33 through riser 32 does not stay there: vent conduit 34 returns it to condenser 6.",
   ],
-  13: [
+  12: [
     "The apparatus is nearly, not perfectly, uniform in pressure. Liquid columns create the small differences that drive flow. Generator 29 must exceed the upper evaporator pressure enough to overcome head h₂; the elevation difference represented by h₁ balances that excess. The stated operating requirement is h₂ less than h₁.",
   ],
-  14: [
+  13: [
     "They identify the shown apparatus as a preferred form and reserve ordinary variations. The legal boundary is the five printed claims read against the prior art, not an unrestricted promise covering every absorption refrigerator.",
   ],
-  21: [
+  20: [
     "This line records that both named inventors execute the specification. It does not add a technical limitation.",
   ],
-  22: ["Albert Einstein is one of the two signing inventors printed on the grant."],
-  23: ["Leo Szilard is the second signing inventor printed on the grant."],
+  21: ["Albert Einstein is one of the two signing inventors printed on the grant."],
+  22: ["Leo Szilard is the second signing inventor printed on the grant."],
 };

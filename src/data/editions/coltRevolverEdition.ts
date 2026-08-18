@@ -2,11 +2,23 @@ import type { CuratedSpecificationEdition, CuratedSpecificationInlines } from "@
 
 const literal = (text: string): CuratedSpecificationInlines => [{ kind: "text", text }];
 
+const coltFigureDims: Record<number, { width: number; height: number }> = {
+  1: { width: 470, height: 550 },
+  2: { width: 230, height: 220 },
+  3: { width: 190, height: 180 },
+  4: { width: 160, height: 150 },
+  5: { width: 550, height: 550 },
+  6: { width: 140, height: 90 },
+  7: { width: 350, height: 250 },
+  8: { width: 600, height: 770 },
+  9: { width: 260, height: 250 },
+};
+
 const individualFigurePreview = (number: number) => ({
   src: `/patents/figures/us-x9430-colt-revolver/fig-${number}-source-crop-v1.png`,
   alt: `Source-facsimile crop of Fig. ${number} from US X9430.`,
-  width: 600,
-  height: 600,
+  width: coltFigureDims[number]?.width ?? 600,
+  height: coltFigureDims[number]?.height ?? 600,
 });
 
 const individualFigurePreviews: Readonly<

@@ -59,6 +59,13 @@ describe("gatlingGunArchivalEdition", () => {
     ).toBe(true);
   });
 
+  test("uses manually declared preview records without scan-sheet framing", () => {
+    const source = readFileSync(`${process.cwd()}/src/data/editions/gatlingGunEdition.ts`, "utf8");
+    expect(source).not.toContain("Object.fromEntries(");
+    expect(source).not.toContain("Array.from({ length: 7 }");
+    expect(JSON.stringify(gatlingGunArchivalEdition)).not.toContain("first sheet of the pinned");
+  });
+
   test("does not leave a source figure citation stranded in a plain text node", () => {
     const bareFigureCitation = /\bFig(?:s)?\.\s*\d+/i;
 

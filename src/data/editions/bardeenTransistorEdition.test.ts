@@ -55,6 +55,59 @@ describe("US 2,524,035 manual source edition", () => {
     }
   });
 
+  test("uses forty explicit claim records with claim-specific innovations and the printed Rf relation", () => {
+    const recordSource = readFileSync(
+      resolve(process.cwd(), "src/data/patents/bardeen-transistor-2524035.ts"),
+      "utf8",
+    );
+    expect(recordSource).not.toContain("Array.from({ length: 40 }");
+    expect(recordSource).not.toContain("const claimText =");
+    expect(recordSource).not.toContain("claimText(");
+    expect(recordSource).not.toContain("block.inlines.map");
+    expect(recordSource).toContain("const MANUALLY_REVIEWED_CLAIM_TEXT");
+    expect(recordSource).not.toContain("Semiconductor carrier control");
+    expect(recordSource).not.toContain(`Claim \${number} limitation`);
+    for (const claim of bardeenTransistor2524035Patent.claims) {
+      expect(recordSource).toContain(
+        `originalText: MANUALLY_REVIEWED_CLAIM_TEXT[${claim.number}],`,
+      );
+      expect(claim.keyInnovations.length).toBeGreaterThan(0);
+      expect(claim.keyInnovations).not.toContain(`Claim ${claim.number} limitation`);
+    }
+    const carrierPrinciple =
+      bardeenTransistor2524035Patent.plainEnglishExplanation.scientificPrinciples.find(
+        ({ principle }) => principle === "Carrier injection and collection",
+      );
+    expect(carrierPrinciple?.formula).toBe("I_E = f(V_E + R_f I_C); I_C = I_C^0(V_C) + a I_E");
+    expect(carrierPrinciple?.formula).not.toContain("R_s");
+  });
+
+  test("keeps all forty printed claim blocks in the reviewed ledger", () => {
+    const normalize = (value: string) => value.replace(/\s+/g, " ").trim();
+    const ledger = normalize(
+      readFileSync(
+        resolve(
+          process.cwd(),
+          "public/patents/transcripts/us-2524035-bardeen-transistor-reviewed.txt",
+        ),
+        "utf8",
+      ),
+    );
+    const claims = bardeenTransistorArchivalEdition.blocks.filter(
+      (
+        block,
+      ): block is Extract<
+        (typeof bardeenTransistorArchivalEdition.blocks)[number],
+        { kind: "claim" }
+      > => block.kind === "claim",
+    );
+    expect(claims).toHaveLength(40);
+    for (const claim of claims)
+      expect(ledger).toContain(
+        normalize(`${claim.number}. ${claim.inlines.map((inline) => inline.text).join("")}`),
+      );
+  });
+
   test("maps every printed figure to its own locally derived source crop", () => {
     const figureReferences = (inlines: readonly CuratedSpecificationInline[]) =>
       inlines.filter(
@@ -133,7 +186,7 @@ describe("US 2,524,035 manual source edition", () => {
       ),
     );
     const sourceBlocks = bardeenTransistorArchivalEdition.blocks
-      .slice(4, 11)
+      .slice(4, 14)
       .filter(
         (
           block,
@@ -144,6 +197,78 @@ describe("US 2,524,035 manual source edition", () => {
       );
     for (const block of sourceBlocks)
       expect(ledger).toContain(normalize(block.inlines.map((inline) => inline.text).join("")));
+  });
+
+  test("keeps the printed grant masthead and each omitted page-four opening paragraph literal", () => {
+    const normalize = (value: string) => value.replace(/\s+/g, " ").trim();
+    const ledger = readFileSync(
+      resolve(
+        process.cwd(),
+        "public/patents/transcripts/us-2524035-bardeen-transistor-reviewed.txt",
+      ),
+      "utf8",
+    );
+    const pageFour = ledger
+      .split("--- REVIEWED TRANSCRIPTION PAGE 4 OF 14 ---\n")[1]
+      ?.split("--- REVIEWED TRANSCRIPTION PAGE 5 OF 14 ---")[0];
+    const masthead = bardeenTransistorArchivalEdition.blocks.find(
+      (
+        block,
+      ): block is Extract<
+        (typeof bardeenTransistorArchivalEdition.blocks)[number],
+        { kind: "masthead" }
+      > => block.kind === "masthead",
+    );
+    expect(masthead?.lines).toEqual(
+      expect.arrayContaining(["Patented Oct. 3, 1950", "2,524,035", "UNITED STATES PATENT OFFICE"]),
+    );
+
+    const opening = [
+      "This invention relates to a novel method of and means for translating electrical variations for such purposes as amplification, wave generation, and the like.",
+      "The principal object of the invention is to amplify or otherwise translate electric signals or variations by use of compact, simple, and rugged apparatus of novel type.",
+      "Another object is to provide a circuit element for use as an amplifier or the like which does not require a heated thermionic cathode for its operation, and which therefore is immediately operative when turned on. A related object is to provide such a circuit element which requires no evacuated or gas-filled envelope.",
+    ];
+    const paragraphText = bardeenTransistorArchivalEdition.blocks
+      .filter(
+        (
+          block,
+        ): block is Extract<
+          (typeof bardeenTransistorArchivalEdition.blocks)[number],
+          { kind: "paragraph" }
+        > => block.kind === "paragraph",
+      )
+      .map((block) => block.inlines.map((inline) => inline.text).join(""));
+    for (const sourceText of opening) {
+      expect(paragraphText).toContain(sourceText);
+      expect(normalize(pageFour ?? "")).toContain(normalize(sourceText));
+    }
+  });
+
+  test("authors specialized source terms at their printed occurrences", () => {
+    const terms = bardeenTransistorArchivalEdition.blocks.flatMap((block) =>
+      "inlines" in block
+        ? block.inlines.filter(
+            (inline): inline is Extract<CuratedSpecificationInline, { kind: "term" }> =>
+              inline.kind === "term",
+          )
+        : [],
+    );
+    const expectedTerms = [
+      "high resistance rectifying barrier",
+      "space charge",
+      "inversion region",
+      "high resistance barrier",
+      '"physical layer"',
+      '"physical barrier"',
+      '"chemical layer"',
+      '"chemical barrier"',
+      '"back voltage,"',
+    ];
+    for (const value of expectedTerms) {
+      const occurrence = terms.find((term) => term.text === value);
+      expect(occurrence).toBeDefined();
+      expect(occurrence?.definition.length).toBeGreaterThan(80);
+    }
   });
 
   test("keeps every literal page-five source block in its page-marked ledger section", () => {
@@ -211,7 +336,7 @@ describe("US 2,524,035 manual source edition", () => {
     expect(pageSix).toBeDefined();
 
     const pageSixBlocks = bardeenTransistorArchivalEdition.blocks
-      .slice(24, 31)
+      .slice(27, 34)
       .filter(
         (
           block,
@@ -249,7 +374,7 @@ describe("US 2,524,035 manual source edition", () => {
     expect(pageSeven).toBeDefined();
 
     const pageSevenBlocks = bardeenTransistorArchivalEdition.blocks
-      .slice(31, 39)
+      .slice(34, 42)
       .filter(
         (
           block,
@@ -282,7 +407,7 @@ describe("US 2,524,035 manual source edition", () => {
     const pageEight = ledger
       .split("--- REVIEWED TRANSCRIPTION PAGE 8 OF 14 ---\n")[1]
       ?.split("--- REVIEWED TRANSCRIPTION PAGE 9 OF 14 ---")[0];
-    const figureOneApparatus = bardeenTransistorArchivalEdition.blocks[39];
+    const figureOneApparatus = bardeenTransistorArchivalEdition.blocks[42];
     expect(figureOneApparatus.kind).toBe("paragraph");
     if (figureOneApparatus.kind !== "paragraph")
       throw new Error("Missing continuous Fig. 1 apparatus paragraph.");
@@ -306,7 +431,7 @@ describe("US 2,524,035 manual source edition", () => {
       ?.split("--- REVIEWED TRANSCRIPTION PAGE 9 OF 14 ---")[0];
     expect(pageEight).toBeDefined();
     const pageEightBlocks = bardeenTransistorArchivalEdition.blocks
-      .slice(40, 45)
+      .slice(43, 48)
       .filter(
         (
           block,
@@ -380,9 +505,9 @@ describe("US 2,524,035 manual source edition", () => {
       return block.inlines.map((inline) => inline.text).join("");
     };
     expect(normalize(`${pageEight ?? ""} ${pageNine ?? ""}`)).toContain(
-      normalize(paragraphText(48)),
+      normalize(paragraphText(51)),
     );
-    for (let index = 49; index <= 57; index += 1)
+    for (let index = 52; index <= 60; index += 1)
       expect(normalize(pageNine ?? "")).toContain(normalize(paragraphText(index)));
   });
 
@@ -413,8 +538,8 @@ describe("US 2,524,035 manual source edition", () => {
         throw new Error(`Missing expected p.10 paragraph at block ${index}.`);
       return block.inlines.map((inline) => inline.text).join("");
     };
-    expect(normalize(`${pageNine ?? ""} ${pageTen ?? ""}`)).toContain(normalize(paragraphText(58)));
-    for (const index of [59, 61, 62, 63])
+    expect(normalize(`${pageNine ?? ""} ${pageTen ?? ""}`)).toContain(normalize(paragraphText(61)));
+    for (const index of [62, 64, 65, 66])
       expect(normalize(pageTen ?? "")).toContain(normalize(paragraphText(index)));
   });
 
@@ -446,10 +571,155 @@ describe("US 2,524,035 manual source edition", () => {
       return block.inlines.map((inline) => inline.text).join("");
     };
     expect(normalize(`${pageTen ?? ""} ${pageEleven ?? ""}`)).toContain(
-      normalize(paragraphText(64)),
+      normalize(paragraphText(67)),
     );
-    for (const index of [65, 66, 67, 68, 69, 71, 72, 75, 77, 79, 80, 81, 82, 83, 84, 85])
+    for (const index of [68, 69, 70, 71, 72, 74, 75, 78, 80, 82, 83, 84, 85, 86, 87, 88])
       expect(normalize(pageEleven ?? "")).toContain(normalize(paragraphText(index)));
+  });
+
+  test("keeps the p.10/p.11 displayed equations literal in both edition and ledger", () => {
+    const normalize = (value: string) => value.replace(/\s+/g, " ").trim();
+    const ledger = readFileSync(
+      resolve(
+        process.cwd(),
+        "public/patents/transcripts/us-2524035-bardeen-transistor-reviewed.txt",
+      ),
+      "utf8",
+    );
+    const pageTen = ledger
+      .split("--- REVIEWED TRANSCRIPTION PAGE 10 OF 14 ---\n")[1]
+      ?.split("--- REVIEWED TRANSCRIPTION PAGE 11 OF 14 ---")[0];
+    const pageEleven = ledger
+      .split("--- REVIEWED TRANSCRIPTION PAGE 11 OF 14 ---\n")[1]
+      ?.split("--- REVIEWED TRANSCRIPTION PAGE 12 OF 14 ---")[0];
+    const editionEquations = bardeenTransistorArchivalEdition.blocks
+      .filter(
+        (
+          block,
+        ): block is Extract<
+          (typeof bardeenTransistorArchivalEdition.blocks)[number],
+          { kind: "equation" }
+        > => block.kind === "equation",
+      )
+      .map((block) => block.text);
+    const pageTenEquations = ["d²V/dx² = −4πρ/ε     (2)"];
+    const pageElevenEquations = [
+      "C = n₁e₁μ₁ + n₂e₂μ₂     (3)",
+      "n₁ = A₁e^(−eVₑ/KT)     (4a)",
+      "n₂ = A₂e^(eVₕ/KT)     (4b)",
+      "C = A₁μ₁e₁e^(−eVₑ/KT) + A₂μ₂e₂e^(e(Eg−Vₑ)/KT)     (5)",
+      "Vₑ = Vₕ = Eg/2     (6)",
+    ];
+    for (const equation of [...pageTenEquations, ...pageElevenEquations])
+      expect(editionEquations).toContain(equation);
+    for (const equation of pageTenEquations)
+      expect(normalize(pageTen ?? "")).toContain(normalize(equation));
+    for (const equation of pageElevenEquations)
+      expect(normalize(pageEleven ?? "")).toContain(normalize(equation));
+  });
+
+  test("authors every p.8–p.11 figure citation at its printed occurrence", () => {
+    const referenceText = [
+      49, 52, 53, 56, 57, 58, 59, 60, 61, 62, 66, 67, 68, 69, 78, 82, 83, 86, 87,
+    ].flatMap((index) => {
+      const block = bardeenTransistorArchivalEdition.blocks[index];
+      if (block?.kind !== "paragraph")
+        throw new Error(`Missing expected figure-bearing paragraph at block ${index}.`);
+      return block.inlines
+        .filter(
+          (inline): inline is FigureReference =>
+            inline.kind === "reference" && inline.referenceType === "figure",
+        )
+        .map((inline) => inline.text);
+    });
+    expect(referenceText).toEqual([
+      "Fig. 12",
+      "Fig. 1a",
+      "Fig. 1a",
+      "Fig. 1a",
+      "Fig. 3",
+      "Fig. 3a",
+      "Fig. 4",
+      "Fig. 5",
+      "Fig. 6",
+      "Fig. 7",
+      "Fig. 6",
+      "Fig. 11",
+      "Fig. 10",
+      "Fig. 8",
+      "Fig. 9",
+      "Fig. 13",
+      "Fig. 14",
+      "Fig. 15",
+      "Fig. 15",
+      "Fig. 1",
+      "Fig. 15",
+      "Fig. 15",
+      "Fig. 15",
+      "Fig. 15",
+      "Fig. 16",
+      "Fig. 15",
+      "Figs. 13",
+      "15",
+      "Figs. 1",
+      "10",
+      "11",
+      "12",
+    ]);
+  });
+
+  test("keeps the inventor signatures, cited references, and certificate of correction in the source face and ledger", () => {
+    const ledger = readFileSync(
+      resolve(
+        process.cwd(),
+        "public/patents/transcripts/us-2524035-bardeen-transistor-reviewed.txt",
+      ),
+      "utf8",
+    );
+    const pageFourteen = ledger.split("--- REVIEWED TRANSCRIPTION PAGE 14 OF 14 ---\n")[1];
+    const paragraphs = bardeenTransistorArchivalEdition.blocks
+      .filter(
+        (
+          block,
+        ): block is Extract<
+          (typeof bardeenTransistorArchivalEdition.blocks)[number],
+          { kind: "paragraph" }
+        > => block.kind === "paragraph",
+      )
+      .map((block) => block.inlines.map((inline) => inline.text).join(""));
+    expect(paragraphs).toEqual(
+      expect.arrayContaining([
+        "JOHN BARDEEN.",
+        "WALTER H. BRATTAIN.",
+        "Patent No. 2,524,035. October 3, 1950. JOHN BARDEEN ET AL.",
+        "It is hereby certified that error appears in the printed specification of the above numbered patent requiring correction as follows: Column 6, line 54, for “ar” read are; column 8, line 73, for “and” read end; column 17, line 51, for the word “side” read sign; and that the said Letters Patent should be read as corrected above, so that the same may conform to the record of the case in the Patent Office.",
+        "Signed and sealed this 2nd day of January, A. D. 1951.",
+        "[SEAL]",
+        "THOMAS F. MURPHY, Assistant Commissioner of Patents.",
+      ]),
+    );
+    const tables = bardeenTransistorArchivalEdition.blocks.filter(
+      (
+        block,
+      ): block is Extract<
+        (typeof bardeenTransistorArchivalEdition.blocks)[number],
+        { kind: "table" }
+      > => block.kind === "table",
+    );
+    expect(
+      tables.some((table) =>
+        table.rows.some(
+          (row) =>
+            row.map((cell) => cell.map((inline) => inline.text).join("")).join("|") ===
+            "439,457|Great Britain|Dec. 6, 1935",
+        ),
+      ),
+    ).toBe(true);
+    expect(pageFourteen).toContain("Column 6, line 54, for “ar” read are");
+    expect(pageFourteen).toContain("column 8, line 73, for “and” read end");
+    expect(pageFourteen).not.toContain("for “an” read are");
+    expect(pageFourteen).not.toContain("for “and” read and");
+    expect(pageFourteen).toContain("THOMAS F. MURPHY, Assistant Commissioner of Patents.");
   });
 
   test("authors every page-five and continued figure citation as a distinct source node", () => {
@@ -475,15 +745,21 @@ describe("US 2,524,035 manual source edition", () => {
     expect(figureLabels).toEqual([
       "Fig. 1",
       "Fig. 1a",
+      "Fig. 1",
       "Fig. 2",
+      "Fig. 1",
       "Fig. 3",
+      "Fig. 1",
       "Fig. 3a",
+      "Fig. 3",
       "4",
       "5",
       "6",
       "7",
+      "Fig. 1",
       "8",
       "9",
+      "Fig. 1",
       "Fig. 10",
       "Fig. 11",
       "Fig. 12",
@@ -509,6 +785,6 @@ describe("US 2,524,035 manual source edition", () => {
       continuedGuide[0].inlines
         .filter((inline) => inline.kind === "reference" && inline.referenceType === "figure")
         .map((inline) => inline.text),
-    ).toEqual(["Fig. 13", "Fig. 14", "Fig. 15", "Fig. 16"]);
+    ).toEqual(["Fig. 13", "Fig. 14", "Fig. 15", "Fig. 16", "Fig. 15"]);
   });
 });

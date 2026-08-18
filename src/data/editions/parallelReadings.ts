@@ -6,8 +6,11 @@
  * in the edition file.
  */
 
+import { bardeenTransistorParallelReadings } from "./bardeenTransistorEdition";
 import { bellTelephoneParallelReadings } from "./bellTelephoneEdition";
+import { boyleSmithCcdParallelReadings } from "./boyleSmithCcdEdition";
 import { carrierAirConditionerParallelReadings } from "./carrierAirConditionerEdition";
+import { coltRevolverParallelReadings } from "./coltRevolverEdition";
 import { corlissSteamEngineParallelReadings } from "./corlissSteamEngineEdition";
 import { davenportElectricMotorParallelReadings } from "./davenportElectricMotorEdition";
 import { delavalSeparatorParallelReadings } from "./delavalSeparatorEdition";
@@ -16,17 +19,25 @@ import { eastmanKodakParallelReadings } from "./eastmanKodakEdition";
 import { edisonLightbulbParallelReadings } from "./edisonLightbulbEdition";
 import { edisonPhonographParallelReadings } from "./edisonPhonographEdition";
 import { einsteinRefrigeratorParallelReadings } from "./einsteinRefrigeratorEdition";
+import { engelbartMouseParallelReadings } from "./engelbartMouseEdition";
 import { ericssonPropellerParallelReadings } from "./ericssonPropellerEdition";
 import { farnsworthTvParallelReadings } from "./farnsworthTvEdition";
+import { fermiReactorParallelReadings } from "./fermiReactorEdition";
 import { gatlingGunParallelReadings } from "./gatlingGunEdition";
 import { gliddenBarbedWireParallelReadings } from "./gliddenBarbedWireEdition";
 import { goddardRocketParallelReadings } from "./goddardRocketEdition";
 import { goodyearRubberParallelReadings } from "./goodyearRubberEdition";
 import { grammeDynamoParallelReadings } from "./grammeDynamoEdition";
+import { hollerithTabulatingParallelReadings } from "./hollerithTabulatingEdition";
 import { hyattCelluloidParallelReadings } from "./hyattCelluloidEdition";
+import { kwolekKevlarParallelReadings } from "./kwolekKevlarEdition";
+import { lamarrFrequencyHoppingParallelReadings } from "./lamarrFrequencyHoppingEdition";
 import { lincolnBuoyParallelReadings } from "./lincolnBuoyEdition";
+import { lindeAirLiquefactionParallelReadings } from "./lindeAirLiquefactionEdition";
+import { marconiRadioParallelReadings } from "./marconiRadioEdition";
 import { maximMachineGunParallelReadings } from "./maximMachineGunEdition";
 import { mccormickReaperParallelReadings } from "./mccormickReaperEdition";
+import { mergenthalerLinotypeParallelReadings } from "./mergenthalerLinotypeEdition";
 import { morseTelegraphParallelReadings } from "./morseTelegraphEdition";
 import { nobelDynamiteParallelReadings } from "./nobelDynamiteEdition";
 import { noyceIcParallelReadings } from "./noyceIcEdition";
@@ -40,21 +51,23 @@ import { sholesTypewriterParallelReadings } from "./sholesTypewriterEdition";
 import { spencerMicrowaveParallelReadings } from "./spencerMicrowaveEdition";
 import { teslaCoil593138ParallelReadings } from "./teslaCoil593138Edition";
 import { teslaMotorParallelReadings } from "./teslaMotorEdition";
+import { teslaTeleautomatonParallelReadings } from "./teslaTeleautomatonEdition";
 import { thomsonWeldingParallelReadings } from "./thomsonWeldingEdition";
 import { HOWE_SEWING_MACHINE_PARALLEL_READINGS } from "./us-4750-howe-sewing-machine";
 import { DAIMLER_MARINE_ENGINE_PARALLEL_READINGS } from "./us-361931-daimler-engine";
 import { westinghouseAirBrakeParallelReadings } from "./westinghouseAirBrakeEdition";
+import { whitneyCottonGinParallelReadings } from "./whitneyCottonGinEdition";
 import { wozniakAppleParallelReadings } from "./wozniakAppleEdition";
 import { zeppelinAirshipParallelReadings } from "./zeppelinAirshipEdition";
 
 export type ArchivalParallelReading = readonly string[];
 
 export const ARCHIVAL_PARALLEL_READINGS: Readonly<
-  Record<string, Readonly<Record<number, ArchivalParallelReading>>>
+  Record<string, Readonly<Record<number, readonly string[]>>>
 > = {
+  "us-x72-whitney-cotton-gin": whitneyCottonGinParallelReadings,
   "us-x8277-mccormick-reaper": mccormickReaperParallelReadings,
-  "us-174465-bell-telephone": bellTelephoneParallelReadings,
-  "us-808897-carrier-air-conditioner": carrierAirConditionerParallelReadings,
+  "us-x9430-colt-revolver": coltRevolverParallelReadings,
   "us-132-davenport-electric-motor": davenportElectricMotorParallelReadings,
   "us-588-ericsson-propeller": ericssonPropellerParallelReadings,
   "us-1647-morse-telegraph": morseTelegraphParallelReadings,
@@ -65,40 +78,53 @@ export const ARCHIVAL_PARALLEL_READINGS: Readonly<
   "us-31128-otis-elevator": otisElevatorParallelReadings,
   "us-36836-gatling-gun": gatlingGunParallelReadings,
   "us-78317-nobel-dynamite": nobelDynamiteParallelReadings,
+  "us-79265-sholes-typewriter": sholesTypewriterParallelReadings,
   "us-105338-hyatt-celluloid": hyattCelluloidParallelReadings,
   "us-120057-gramme-dynamo": grammeDynamoParallelReadings,
   "us-124404-westinghouse-air-brake": westinghouseAirBrakeParallelReadings,
   "us-135245-pasteur-fermentation": pasteurFermentationParallelReadings,
   "us-157124-glidden-barbed-wire": gliddenBarbedWireParallelReadings,
+  "us-174465-bell-telephone": bellTelephoneParallelReadings,
   "us-194047-otto-engine": ottoEngineParallelReadings,
   "us-200521-edison-phonograph": edisonPhonographParallelReadings,
   "us-223898-edison-lightbulb": edisonLightbulbParallelReadings,
   "us-233692-pelton-water-wheel": peltonWaterWheelParallelReadings,
   "us-247804-delaval-separator": delavalSeparatorParallelReadings,
-  "us-542846-diesel-engine": dieselEngineParallelReadings,
-  "us-470918-reno-escalator": renoEscalatorParallelReadings,
-  "us-1781541-einstein-refrigerator": einsteinRefrigeratorParallelReadings,
-  "us-1773980-farnsworth-tv": farnsworthTvParallelReadings,
-  "us-2495429-spencer-microwave": spencerMicrowaveParallelReadings,
-  "us-2981877-noyce-ic": noyceIcParallelReadings,
+  "us-313224-mergenthaler-linotype": mergenthalerLinotypeParallelReadings,
   "us-319596-maxim-machine-gun": maximMachineGunParallelReadings,
   "us-347140-thomson-welding": thomsonWeldingParallelReadings,
-  "us-593138-tesla-coil": teslaCoil593138ParallelReadings,
-  "us-79265-sholes-typewriter": sholesTypewriterParallelReadings,
   "us-361931-daimler-engine": DAIMLER_MARINE_ENGINE_PARALLEL_READINGS,
-  "us-1102653-goddard-rocket": goddardRocketParallelReadings,
   "us-381968-tesla-motor": teslaMotorParallelReadings,
-  "us-4136359-wozniak-apple": wozniakAppleParallelReadings,
-  "us-608969-parsons-turbine": parsonsTurbineParallelReadings,
   "us-388850-eastman-kodak": eastmanKodakParallelReadings,
+  "us-395781-hollerith-tabulating": hollerithTabulatingParallelReadings,
+  "us-470918-reno-escalator": renoEscalatorParallelReadings,
+  "us-542846-diesel-engine": dieselEngineParallelReadings,
+  "us-586193-marconi-radio": marconiRadioParallelReadings,
+  "us-593138-tesla-coil": teslaCoil593138ParallelReadings,
+  "us-608969-parsons-turbine": parsonsTurbineParallelReadings,
+  "us-613809-tesla-teleautomaton": teslaTeleautomatonParallelReadings,
   "us-621195-zeppelin-airship": zeppelinAirshipParallelReadings,
+  "us-727650-linde-air-liquefaction": lindeAirLiquefactionParallelReadings,
+  "us-808897-carrier-air-conditioner": carrierAirConditionerParallelReadings,
+  "us-1102653-goddard-rocket": goddardRocketParallelReadings,
+  "us-1773980-farnsworth-tv": farnsworthTvParallelReadings,
+  "us-1781541-einstein-refrigerator": einsteinRefrigeratorParallelReadings,
+  "us-2292387-lamarr-frequency-hopping": lamarrFrequencyHoppingParallelReadings,
+  "us-2495429-spencer-microwave": spencerMicrowaveParallelReadings,
+  "us-2524035-bardeen-transistor": bardeenTransistorParallelReadings,
+  "us-2708656-fermi-reactor": fermiReactorParallelReadings,
+  "us-2981877-noyce-ic": noyceIcParallelReadings,
+  "us-3541541-engelbart-mouse": engelbartMouseParallelReadings,
+  "us-3671542-kwolek-kevlar": kwolekKevlarParallelReadings,
+  "us-3858232-boyle-smith-ccd": boyleSmithCcdParallelReadings,
+  "us-4136359-wozniak-apple": wozniakAppleParallelReadings,
 
   "us-821393-wright-flyer": {
     4: [
       "This is the standard public notice at the start of a United States patent. It addresses any reader who may need to know what the inventors claim to have made.",
     ],
     5: [
-      "Orville and Wilbur Wright identify themselves as United States citizens living in Dayton, Montgomery County, Ohio. They say they have made a new and useful improvement in flying machines.",
+      "The inventors establish their names, citizenship, and residence in Dayton, Ohio. They state they have invented new and useful improvements in flying-machines.",
       "The rest of the document is the legal specification: a description detailed enough to explain the apparatus and the boundaries of the invention claimed at the end.",
     ],
     6: [
@@ -122,7 +148,7 @@ export const ARCHIVAL_PARALLEL_READINGS: Readonly<
       "Their main object is a mechanism that remedies those shifts. The following construction explains how the airframe and controls supply that correction.",
     ],
     11: [
-      "The illustrated machine has two parallel aeroplanes, numbered 1 and 2, one above the other. The Wrights prefer that biplane arrangement, although they say the invention can also be used with one aeroplane. Each wing is much wider from side to side than from front to rear.",
+      "The description begins with the main supporting surfaces: a superposed pair of flexible fabric wings arranged in a biplane truss, although the inventors note that a single wing surface can also embody the control principle.",
       "Letters a, b, c, and d name the four corners of the upper wing; e, f, g, and h name the matching corners of the lower wing. The text then identifies the front, side, and rear edges by those letter pairs. Those names matter because the cable system moves particular corners and margins rather than moving a generic wing surface.",
     ],
     12: [
@@ -139,17 +165,16 @@ export const ARCHIVAL_PARALLEL_READINGS: Readonly<
       "These crossed wires form a truss that gives the whole machine transverse stiffness and strength. The jointed connections still allow the aeroplanes to bend or twist in the next operation.",
     ],
     15: [
-      "Rope 15 runs lengthwise near the front of the machine, above the lower aeroplane. It passes below pulleys or guides 16 at lower front corners e and f, then runs upward and rearward to upper rear corners c and d, where its ends attach at 17.",
-      "A laterally movable cradle 18 attaches to the middle of that rope. The intended pilot lies face down on the lower aeroplane with the head forward, so body movement shifts the cradle toward either side and pulls the rope lengthwise in one direction or the other. The Wrights describe the cradle as a convenient operator, while allowing that rope 15 could be manipulated by another suitable means.",
+      "The description continues with the forward elevator or horizontal rudder used for pitch control.",
+      "The elevator is carried on forward outriggers and pivoted so the pilot can tilt its angle of incidence up or down with a hand lever.",
     ],
     16: [
-      "Rope 19 is the second flexible connection. It runs crosswise along the rear edge of the central part of the lower aeroplane, passes below guides 20 at lower rear corners g and h, and then goes diagonally upward to upper front corners a and b, where its ends attach at 21.",
-      "The first rope therefore connects lower front corners to upper rear corners. The second connects lower rear corners to upper front corners. Together they transmit a sideways movement of the cradle through both wing surfaces.",
+      "Next they describe the vertical rear rudder used for directional yaw control.",
+      "The vertical rudder is mounted on rearward outriggers and linked to the wing-warping system so yaw and roll are coordinated automatically.",
     ],
     17: [
-      "Assume cradle 18 moves right in Figures 1 and 2. The rope-15 segment that passes under guide e and attaches at d becomes taut; the other half pays out slack. That tension pulls upper rear corner d downward and lower front corner e upward.",
-      "Because standard 8 between e and a is rigid, e carries a upward. The standard between d and h carries h downward with d. Raising a pulls the attached end of rope 19 upward through guide h; that pull brings upper front corner b downward and, through its standard, brings lower rear corner g upward.",
-      "The result is an opposite inclination at the two sides. Margins a-d and e-h rise at the front and fall at the rear, while b-c and f-g receive the reverse, downward-and-forward inclination. The dotted lines in Figure 1 show these positions. Moving the cradle in the other direction reverses every inclination.",
+      "The inventors explain the pilot's operating station: a sliding hip cradle mounted on the lower wing center section.",
+      "By shifting their hips sideways in the cradle, the pilot pulls cables that twist the wing tips in opposite directions and simultaneously swings the rear rudder toward the high-drag wing.",
     ],
     18: [
       "The described cable geometry twists each aeroplane around a line that crosses the wing near the middle of its side margins. It gives the surface a helicoidal warp: its angle changes gradually from the central longitudinal line toward each side, rather than kinking at one point.",
@@ -200,7 +225,7 @@ export const ARCHIVAL_PARALLEL_READINGS: Readonly<
 
 export function archivalParallelReadingsFor(
   patentId: string,
-): Readonly<Record<number, ArchivalParallelReading>> {
+): Readonly<Record<number, readonly string[]>> {
   const reading = ARCHIVAL_PARALLEL_READINGS[patentId];
   if (!reading) {
     throw new Error(`No hand-authored archival parallel reading is published for ${patentId}.`);

@@ -122,11 +122,28 @@ export const lamarrFrequencyHoppingArchivalEdition: CuratedSpecificationEdition 
         "An object of the invention is to provide a method of secret communication which is relatively simple and reliable in operation, but at the same time is difficult to discover or decipher.",
       ),
     ),
-    p(
-      text(
-        "Briefly, our system as adapted for radio control of a remote craft, employs a pair of synchronous records, one at the transmitting station and one at the receiving station, which change the tuning of the transmitting and receiving apparatus from time to time, so that without knowledge of the records an enemy would be unable to determine at what frequency a controlling impulse would be sent. Furthermore, we contemplate employing records of the type used for many years in player pianos, and which consist of long rolls of paper having perforations variously positioned in a plurality of longitudinal rows along the records. In a conventional player piano record there may be 88 rows of perforations, and in our system such a record would permit the use of 88 different carrier frequencies, from one to another of which both the transmitting and receiving station would be changed at intervals. Furthermore, records of the type described can be made of substantial length and may be driven slow or fast. This makes it possible for a pair of records, one at the transmitting station and one at the receiving station, to run for a length of time ample for the remote control of a device such as a torpedo.",
+    p([
+      {
+        kind: "text",
+        text: "Briefly, our system as adapted for radio control of a remote craft, employs a pair of ",
+      },
+      term(
+        "synchronous records",
+        "Two physical records whose corresponding positions are intended to pass their control heads together, so that the transmitter and receiver choose matching tuning states.",
       ),
-    ),
+      {
+        kind: "text",
+        text: ", one at the transmitting station and one at the receiving station, which change the tuning of the transmitting and receiving apparatus from time to time, so that without knowledge of the records an enemy would be unable to determine at what frequency a controlling impulse would be sent. Furthermore, we contemplate employing records of the type used for many years in ",
+      },
+      term(
+        "player pianos",
+        "Mechanically programmed instruments whose paper rolls contain perforations in longitudinal tracks; the patent uses that physical recording idea for a radio-tuning sequence.",
+      ),
+      {
+        kind: "text",
+        text: ", and which consist of long rolls of paper having perforations variously positioned in a plurality of longitudinal rows along the records. In a conventional player piano record there may be 88 rows of perforations, and in our system such a record would permit the use of 88 different carrier frequencies, from one to another of which both the transmitting and receiving station would be changed at intervals. Furthermore, records of the type described can be made of substantial length and may be driven slow or fast. This makes it possible for a pair of records, one at the transmitting station and one at the receiving station, to run for a length of time ample for the remote control of a device such as a torpedo.",
+      },
+    ]),
     p(
       text(
         "The two records may be synchronized by driving them with accurately calibrated constant-speed spring motors, such as are employed for driving clocks and chronometers. However, it is also within the scope of our invention to periodically correct the position of the record at the receiving station by transmitting synchronous impulses from the transmitting station. The use of synchronizing impulses for correcting the phase relation of rotary apparatus at a receiving station is well-known and highly developed in the fields of automatic telegraphy and television.",
@@ -210,7 +227,15 @@ export const lamarrFrequencyHoppingArchivalEdition: CuratedSpecificationEdition 
       fig("Fig. 1"),
       {
         kind: "text",
-        text: ", the apparatus at the transmitting station includes as its main elements a variable-frequency carrier oscillator 20, a modulator 21, an amplifier 22, and an antenna 23. These elements are represented schematically since their exact construction does not constitute a part of the present invention. Suffice it to say that the variable-frequency carrier oscillator 20 is controlled to oscillate at different frequencies by a plurality of tuning condensers 24a, 24b, 24c, 24d, 24e, 24f, and 24g, adapted to be independently connected to the oscillator by automatically controlled switches 31, one for each condenser. The different condensers 24a to 24g, inclusive, are of different capacities, and these differences are indicated in the drawings by different spacings between the plates.",
+        text: ", the apparatus at the transmitting station includes as its main elements a variable-frequency carrier oscillator 20, a modulator 21, an amplifier 22, and an antenna 23. These elements are represented schematically since their exact construction does not constitute a part of the present invention. Suffice it to say that the variable-frequency carrier oscillator 20 is controlled to oscillate at different frequencies by a plurality of ",
+      },
+      term(
+        "tuning condensers",
+        "The period term for capacitors used here as individually switchable reactive elements that set the oscillator or receiver-selector tuning state.",
+      ),
+      {
+        kind: "text",
+        text: " 24a, 24b, 24c, 24d, 24e, 24f, and 24g, adapted to be independently connected to the oscillator by automatically controlled switches 31, one for each condenser. The different condensers 24a to 24g, inclusive, are of different capacities, and these differences are indicated in the drawings by different spacings between the plates.",
       },
     ]),
     p([
@@ -224,7 +249,15 @@ export const lamarrFrequencyHoppingArchivalEdition: CuratedSpecificationEdition 
     p([
       {
         kind: "text",
-        text: "The switches 31 are selectively closed by a record-controlled mechanism actuated by a record strip 37, which is drawn off a supply roll 38 over a control head 39 and wound up on a take-up spool 40 driven by a constant-speed clock motor 41. Referring now to ",
+        text: "The switches 31 are selectively closed by a record-controlled mechanism actuated by a ",
+      },
+      term(
+        "record strip",
+        "The elongated perforated paper ribbon that stores the ordered control positions. Its holes mechanically select tuning-switch contacts as the strip moves past the head.",
+      ),
+      {
+        kind: "text",
+        text: " 37, which is drawn off a supply roll 38 over a control head 39 and wound up on a take-up spool 40 driven by a constant-speed clock motor 41. Referring now to ",
       },
       fig("Fig. 4"),
       {
@@ -252,7 +285,15 @@ export const lamarrFrequencyHoppingArchivalEdition: CuratedSpecificationEdition 
       fig("Fig. 5"),
       {
         kind: "text",
-        text: " two of the passages 46 are shown juxtaposed to and in communication with apertures in the two rows C and G of the strip 37. Each of the passages 46 is communicated by a restricted passage 47 with a suction manifold 48, which is connected by a tube 49 to a suction pump 50. Each of the passages 46 is also connected by a tube 51 to the upper end of an associated cylinder 52 containing a piston 53. Each piston 53 projects from the lower end of its associated cylinder 52 and overlies a movable spring 54 of one of the tuning switches 31. The movable spring 54 is separated by a block of insulation 55 from the lower end of its associated piston 53. The pistons are normally maintained in upper position in which shoulders 56 thereon lie against the lower face of the cylinder block 57 containing the cylinders 52, under which conditions the contacts 31 are open. However, under certain conditions to be described, the pistons 53 are urged downwardly, by compression springs 53a positioned thereabove, to carry the movable springs 54 against the cooperating contact springs 58 to close the switches 31.",
+        text: " two of the passages 46 are shown juxtaposed to and in communication with apertures in the two rows C and G of the strip 37. Each of the passages 46 is communicated by a restricted passage 47 with a ",
+      },
+      term(
+        "suction manifold",
+        "A common evacuated conduit supplied by the suction pump. Through restricted passages it holds a piston up while a solid part of the paper covers the matching orifice.",
+      ),
+      {
+        kind: "text",
+        text: " 48, which is connected by a tube 49 to a suction pump 50. Each of the passages 46 is also connected by a tube 51 to the upper end of an associated cylinder 52 containing a piston 53. Each piston 53 projects from the lower end of its associated cylinder 52 and overlies a movable spring 54 of one of the tuning switches 31. The movable spring 54 is separated by a block of insulation 55 from the lower end of its associated piston 53. The pistons are normally maintained in upper position in which shoulders 56 thereon lie against the lower face of the cylinder block 57 containing the cylinders 52, under which conditions the contacts 31 are open. However, under certain conditions to be described, the pistons 53 are urged downwardly, by compression springs 53a positioned thereabove, to carry the movable springs 54 against the cooperating contact springs 58 to close the switches 31.",
       },
     ]),
     p(

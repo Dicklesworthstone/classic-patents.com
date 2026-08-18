@@ -30,6 +30,16 @@ describe("wrightFlyerArchivalEdition", () => {
     expect(publicText).not.toContain("Drawing sheet");
   });
 
+  test("declares every source-figure preview at its authored occurrence", () => {
+    const source = readFileSync(`${process.cwd()}/src/data/editions/wrightFlyerEdition.ts`, "utf8");
+
+    expect(source).not.toContain("figureNumbers.map");
+    expect(source).not.toContain("figurePreviews: figureNumbers");
+    expect(source).toContain(
+      'figureReference("Figs. 4 and 5", WRIGHT_FIGURE_PREVIEWS[4], WRIGHT_FIGURE_PREVIEWS[5])',
+    );
+  });
+
   test("preserves the simultaneous warp linkage in printed claim 2", () => {
     const claim2 = wrightFlyerArchivalEdition.blocks.find(
       (block) => block.kind === "claim" && block.number === 2,

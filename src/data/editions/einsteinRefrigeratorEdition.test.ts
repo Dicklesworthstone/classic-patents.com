@@ -47,6 +47,12 @@ describe("einsteinRefrigeratorArchivalEdition", () => {
     }
   });
 
+  test("presents the source as continuous prose rather than a scan-sheet card", () => {
+    expect(
+      einsteinRefrigeratorArchivalEdition.blocks.some((block) => block.kind === "figure-sheet"),
+    ).toBe(false);
+  });
+
   test("keeps the canonical claim set and parallel reading map source-faithful", () => {
     expect(einsteinRefrigeratorPatent.archivalEdition).toBe(einsteinRefrigeratorArchivalEdition);
     expect(einsteinRefrigeratorPatent.stats).toMatchObject({
@@ -101,6 +107,6 @@ describe("einsteinRefrigeratorArchivalEdition", () => {
         .map(Number)
         .sort((left, right) => left - right),
     ).toEqual(paragraphIndexes);
-    expect(einsteinRefrigeratorParallelReadings[13]?.join(" ")).toContain("h₂");
+    expect(einsteinRefrigeratorParallelReadings[12]?.join(" ")).toContain("h₂");
   });
 });

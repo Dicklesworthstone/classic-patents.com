@@ -389,14 +389,6 @@ export const eastmanKodakArchivalEdition: CuratedSpecificationEdition = {
     ),
     p([{ kind: "small-caps", text: "GEO. EASTMAN." }]),
     p(text("Witnesses: EDWIN O. SAGO, GEO. W. DEMING.")),
-    ...Array.from({ length: 11 }, (_, index) => ({
-      kind: "figure-sheet" as const,
-      figureLabel: `Fig. ${index + 1}`,
-      title: `Source drawing for Fig. ${index + 1}`,
-      description: text(
-        `Source-faithful crop from the pinned drawing sheets for Fig. ${index + 1} of US 388,850.`,
-      ),
-    })),
   ],
 };
 

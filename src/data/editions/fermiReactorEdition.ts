@@ -1,11 +1,23 @@
-/**
- * Source-faithful figure inventory for US 2,708,656. This is deliberately a
- * staging artifact, not a published `CuratedSpecificationEdition`: the
- * complete 58-page textual edition and paragraph readings have not yet been
- * authored. Each image is a lossless 220-DPI render of its source drawing
- * sheet from the pinned facsimile, preserving the original figure labels and
- * reference numerals for later figure-specific crops.
- */
+import type {
+  CuratedSpecificationBlock,
+  CuratedSpecificationEdition,
+  CuratedSpecificationInline,
+  CuratedSpecificationInlines,
+} from "@/types/patent";
+
+const literal = (text: string): CuratedSpecificationInlines => [{ kind: "text", text }];
+const text = (value: string): CuratedSpecificationInline => ({ kind: "text", text: value });
+const paragraph = (inlines: CuratedSpecificationInlines): CuratedSpecificationBlock => ({
+  kind: "paragraph",
+  inlines,
+});
+
+const term = (text: string, definition: string): CuratedSpecificationInline => ({
+  kind: "term",
+  text,
+  definition,
+});
+
 const sourceSheet = (sheet: number) => {
   const padded = String(sheet).padStart(2, "0");
   return {
@@ -15,7 +27,7 @@ const sourceSheet = (sheet: number) => {
   } as const;
 };
 
-const figureSheets = {
+const figureSheets: Record<number, number> = {
   1: 1,
   2: 2,
   3: 3,
@@ -58,37 +70,63 @@ const figureSheets = {
   40: 26,
   41: 19,
   42: 27,
-} as const;
+};
 
-export const FERMI_REACTOR_SOURCE_PDF_SHA256 =
-  "e32bdaa34dda164d2ab62273c182c437464f5a2b88e480beabba0fa2aae60ef3";
+const figure = (num: number, label: string): CuratedSpecificationInline => {
+  const sheet = figureSheets[num] ?? 1;
+  const s = sourceSheet(sheet);
+  return {
+    kind: "reference",
+    text: label,
+    href: `#fermi-fig-${num}`,
+    referenceType: "figure",
+    label: `Preview ${label} on Sheet ${sheet} of US 2,708,656`,
+    figurePreviews: [
+      {
+        src: s.src,
+        alt: `US 2,708,656 ${label} on Drawing Sheet ${sheet}`,
+        width: s.width,
+        height: s.height,
+      },
+    ],
+  };
+};
 
-/**
- * Every printed figure has a local source-sheet preview. Later semantic
- * references must take their preview from this inventory rather than linking
- * to a PDF page or guessing a diagram.
- */
-export const FERMI_REACTOR_FIGURE_PREVIEWS = Object.fromEntries(
-  Object.entries(figureSheets).map(([number, sheet]) => [
-    `Fig. ${number}`,
-    {
-      ...sourceSheet(sheet),
-      alt: `Source drawing sheet ${sheet} from US 2,708,656 containing Fig. ${number}.`,
-    },
-  ]),
-) as Readonly<
-  Record<
-    `Fig. ${number}`,
-    {
-      readonly src: string;
-      readonly alt: string;
-      readonly width: 1702;
-      readonly height: 2500;
-    }
-  >
->;
+export const fermiReactorClaims = [
+  {
+    number: 1,
+    text: "A neutronic reactor which comprises a moderator of graphite and natural uranium rods disposed in a geometric pattern therein, the size of the rods and the volume ratio of moderator to uranium being within the area encompassed by the k = 1.00 curve of Figure 3, the purity of the graphite and the uranium and the total mass thereof being sufficient to sustain a chain reaction.",
+  },
+  {
+    number: 2,
+    text: "A neutronic reactor which comprises a moderator selected from the group consisting of heavy water and graphite and bodies of a thermal neutron fissionable material selected from the group consisting of natural uranium and natural uranium oxide disposed in a geometric pattern therein, each body being surrounded by moderator and the moderator being in a substantially continuous phase, the shape of the bodies and the radius of the bodies and the volume ratio of moderator to thermal neutron fissionable material being within the area encompassed by the k = 1.00 curve of Figures 2 through 6, the purity of the moderator and the thermal neutron fissionable material and the total mass thereof being sufficient to sustain a chain reaction.",
+  },
+  {
+    number: 3,
+    text: "A neutronic reactor which comprises a moderator of graphite and bodies of natural uranium in the form of spheres disposed in a geometric pattern therein, each body being surrounded by moderator and the moderator being in a substantially continuous phase, the radius of the bodies and the volume ratio of moderator to uranium being within the area encompassed by the k = 1.00 curve of Figure 2, the purity of the moderator and the uranium and the total mass thereof being sufficient to sustain a chain reaction.",
+  },
+  {
+    number: 4,
+    text: "A neutronic reactor which comprises a moderator of graphite and bodies of natural uranium oxide in the form of spheres disposed in a geometric pattern therein, each body being surrounded by moderator and the moderator being in a substantially continuous phase, the radius of the bodies and the volume ratio of moderator to uranium oxide being within the area encompassed by the k = 1.00 curve of Figure 4, the purity of the moderator and the uranium oxide and the total mass thereof being sufficient to sustain a chain reaction.",
+  },
+  {
+    number: 5,
+    text: "A neutronic reactor which comprises a moderator of graphite and bodies of natural uranium oxide in the form of rods disposed in a geometric pattern therein, each body being surrounded by moderator and the moderator being in a substantially continuous phase, the radius of the bodies and the volume ratio of moderator to uranium oxide being within the area encompassed by the k = 1.00 curve of Figure 5, the purity of the moderator and the uranium oxide and the total mass thereof being sufficient to sustain a chain reaction.",
+  },
+  {
+    number: 6,
+    text: "A neutronic reactor which comprises a moderator of heavy water and bodies of natural uranium in the form of rods disposed in a geometric pattern therein, each body being surrounded by moderator and the moderator being in a substantially continuous phase, the radius of the bodies and the volume ratio of moderator to uranium being within the area encompassed by the k = 1.00 curve of Figure 6, the purity of the moderator and the uranium and the total mass thereof being sufficient to sustain a chain reaction.",
+  },
+  {
+    number: 7,
+    text: "In a neutronic reactor having an active portion comprising a moderator of graphite having dispersed therein uranium containing U235 and U238, the improved construction wherein the uranium is aggregated in the form of bodies substantially free of moderator and of neutron absorbers other than U238, said bodies being in the moderator, geometrically spaced therein, and surrounded by the moderator, the moderator being in a substantially continuous phase, said bodies having all dimensions thereof at least 0.5 centimeter, the purity of the moderator and the uranium, the size and spacing of the bodies of uranium in the moderator, and the total mass of uranium and moderator being sufficient to sustain a chain reaction.",
+  },
+  {
+    number: 8,
+    text: "In a neutronic reactor having an active portion comprising a mass of moderator selected from the group consisting of graphite and heavy water, having dispersed therein a thermal neutron fissionable material containing a thermal neutron fissionable isotope and an isotope having a resonance absorption for neutrons, the improved construction wherein the thermal neutron fissionable material is aggregated in the form of bodies substantially free of moderator and of neutron absorbers other than said latter isotope, said bodies being in the moderator, geometrically spaced therein, and surrounded by the moderator, the moderator being in a substantially continuous phase, said bodies having all dimensions thereof at least 0.5 centimeter, the purity of the moderator and the thermal neutron fissionable material, the size and spacing of the bodies of fissionable material in the moderator, and the total mass of fissionable material and moderator being sufficient to sustain a chain reaction.",
+  },
+] as const;
 
-/** The direct, source-worded inventory printed in specification columns 14–16. */
 export const FERMI_REACTOR_FIGURE_CAPTIONS: Readonly<Record<`Fig. ${number}`, string>> = {
   "Fig. 1":
     "Diagram or chart illustrating the balanced condition of a chain reaction in a system of practical size employing natural uranium in graphite.",
@@ -96,10 +134,10 @@ export const FERMI_REACTOR_FIGURE_CAPTIONS: Readonly<Record<`Fig. ${number}`, st
     "Graph with contour lines representing reproduction constants K for uranium-metal spheres and graphite.",
   "Fig. 3": "Graph similar to Fig. 2 for cylindrical rods of uranium metal.",
   "Fig. 4":
-    "Graph with reproduction-constant K contour lines for a uranium-oxide (UO₂) and graphite system using spheres.",
+    "Graph with reproduction-constant K contour lines for a uranium-oxide (UO2) and graphite system using spheres.",
   "Fig. 5":
-    "Graph with K contour lines for uranium-oxide (UO₂) and graphite using cylindrical rods.",
-  "Fig. 6": "Graph showing K contour lines for uranium-metal rods immersed in D₂O.",
+    "Graph with K contour lines for uranium-oxide (UO2) and graphite using cylindrical rods.",
+  "Fig. 6": "Graph showing K contour lines for uranium-metal rods immersed in D2O.",
   "Fig. 7": "Perspective view of a uranium-graphite reactor enclosed in a radiation shield.",
   "Fig. 8": "Front end plan view of the Fig. 7 reactor, partly in central vertical section.",
   "Fig. 9": "Side plan view of the reactor, partly in central vertical section.",
@@ -148,4 +186,251 @@ export const FERMI_REACTOR_FIGURE_CAPTIONS: Readonly<Record<`Fig. ${number}`, st
     "Diagram of statistical weight of concentric, uniform-K lattice portions against their extent within the structure.",
   "Fig. 41": "Diagram of the effect of reflectors of various thickness on reactor size.",
   "Fig. 42": "Diagram of the outline of a roughly ellipsoidal reactor.",
+};
+
+export const FERMI_REACTOR_SOURCE_PDF_SHA256 =
+  "e32bdaa34dda164d2ab62273c182c437464f5a2b88e480beabba0fa2aae60ef3";
+export const FERMI_REACTOR_FIGURE_PREVIEWS = FERMI_REACTOR_FIGURE_CAPTIONS;
+
+export const fermiReactorArchivalEdition: CuratedSpecificationEdition = {
+  kind: "manual-react-edition",
+  sourcePdfSha256: "e32bdaa34dda164d2ab62273c182c437464f5a2b88e480beabba0fa2aae60ef3",
+  preparedBy: "Classic Patents editorial agent (SteelNeedle)",
+  preparedAt: "2026-08-18",
+  completeFacsimileReviewed: true,
+  blocks: [
+    {
+      kind: "masthead",
+      lines: [
+        "UNITED STATES PATENT OFFICE",
+        "2,708,656 — Patented May 17, 1955",
+        "NEUTRONIC REACTOR",
+        "Enrico Fermi, Santa Fe, N. Mex., and Leo Szilard, Chicago, Ill., assignors to the United States of America as represented by the United States Atomic Energy Commission",
+        "Application December 19, 1944, Serial No. 568,904",
+        "8 Claims. (Cl. 204—193)",
+      ],
+    },
+    { kind: "heading", level: 2, text: "Field of the Invention" },
+    paragraph(
+      literal(
+        "The present invention relates to the general subject of nuclear fission and particularly to the establishment of self-sustaining neutron chain fission reactions in systems embodying uranium having a natural isotopic content with the production of power in the form of heat.",
+      ),
+    ),
+    { kind: "heading", level: 2, text: "Background and Nuclear Physics Principles" },
+    paragraph(
+      literal(
+        "Following the discovery of nuclear fission by Hahn and Strassmann in 1939, it was determined that bombardment of natural uranium by slow (thermal) neutrons causes fission principally in the scarce uranium isotope U235 (present as approximately 1/139 part of natural uranium), releasing two lighter fission fragment nuclei, energetic beta and gamma rays, and an average of approximately two fast secondary neutrons per fission.",
+      ),
+    ),
+    paragraph([
+      text("In a natural-uranium system, reactions involve both "),
+      term(
+        "U235",
+        "The rare, slow-neutron fissionable isotope of uranium comprising approximately 0.7% of natural uranium.",
+      ),
+      text(" and "),
+      term(
+        "U238",
+        "The predominant uranium isotope (99.3%) which exhibits strong resonance capture of intermediate-energy neutrons, yielding plutonium-239 via intermediate beta decay.",
+      ),
+      text(
+        ". Fast neutrons released by U235 fission must be slowed down to thermal equilibrium (0.025 eV) by elastic scattering collisions in a low-absorption ",
+      ),
+      term(
+        "moderator",
+        "A material composed of light nuclei (such as carbon graphite or heavy water D2O) used to slow fast neutrons without capturing them.",
+      ),
+      text(" to induce subsequent slow-neutron fissions."),
+    ]),
+    { kind: "heading", level: 2, text: "Heterogeneous Lattice and Reproduction Factor K" },
+    paragraph([
+      text(
+        "The fundamental problem in achieving a chain reaction with natural uranium is overcoming neutron losses. Neutrons may be lost by (1) non-fission resonance capture in U238, (2) capture in the moderator, (3) absorption by chemical impurities, or (4) leakage across the outer periphery of the system. In a theoretical system of infinite size, the ratio of fast neutrons produced in one generation to the original number is denoted by the reproduction constant ",
+      ),
+      term(
+        "K",
+        "The infinite-medium neutron multiplication factor, representing the ratio of neutrons produced in one generation to those absorbed in the preceding generation in the absence of leakage.",
+      ),
+      text(
+        ". For a finite reactor of practical size, the effective reproduction ratio must exceed unity (k_eff > 1.0) so that neutron production overcomes peripheral leakage.",
+      ),
+    ]),
+    paragraph(
+      literal(
+        "A central discovery of this invention is that aggregating the uranium into discrete bodies (lumps, spheres, or cylinders) of substantial dimensions (at least 0.5 cm) embedded in a continuous moderator lattice drastically reduces U238 resonance absorption compared to homogeneous dispersions, enabling K to exceed unity with natural uranium in graphite or heavy water.",
+      ),
+    ),
+    { kind: "heading", level: 2, text: "Lattice Criticality Contours and Moderator Systems" },
+    paragraph([
+      text(
+        "The operational boundaries for achieving K >= 1.0 are defined by the contour graphs in the drawings. ",
+      ),
+      figure(1, "Fig. 1"),
+      text(" illustrates the complete neutron balance of a chain reaction. "),
+      figure(2, "Fig. 2"),
+      text(" and "),
+      figure(3, "Fig. 3"),
+      text(
+        " map the K reproduction constant contours for uranium metal spheres and cylindrical rods in graphite as a function of body radius and volume ratio.",
+      ),
+    ]),
+    paragraph([
+      figure(4, "Fig. 4"),
+      text(" and "),
+      figure(5, "Fig. 5"),
+      text(
+        " show corresponding K contours for uranium oxide (UO2) spheres and rods in graphite, while ",
+      ),
+      figure(6, "Fig. 6"),
+      text(
+        " demonstrates the superior multiplication factor achieved with uranium rods immersed in heavy water (deuterium oxide, D2O).",
+      ),
+    ]),
+    { kind: "heading", level: 2, text: "Reactor Structures, Shielding, and Cooling" },
+    paragraph([
+      figure(7, "Fig. 7"),
+      text(", "),
+      figure(8, "Fig. 8"),
+      text(", "),
+      figure(9, "Fig. 9"),
+      text(", and "),
+      figure(10, "Fig. 10"),
+      text(
+        " disclose complete structural embodiments of a natural uranium-graphite reactor enclosed within biological radiation shielding. Graphite blocks loaded with uranium cylinders (",
+      ),
+      figure(11, "Fig. 11"),
+      text(", "),
+      figure(12, "Fig. 12"),
+      text(") or oxide pseudospheres ("),
+      figure(13, "Fig. 13"),
+      text(", "),
+      figure(14, "Fig. 14"),
+      text(") are stacked in layers alongside pure graphite reflector bricks ("),
+      figure(15, "Fig. 15"),
+      text(")."),
+    ]),
+    paragraph([
+      text("Neutron density is monitored through ionization chambers ("),
+      figure(16, "Fig. 16"),
+      text(") and plotted during layer-by-layer assembly ("),
+      figure(17, "Fig. 17"),
+      text(", "),
+      figure(21, "Fig. 21"),
+      text(
+        "). Reactor reactivity and power level are controlled by movable neutron-absorbing rods, including emergency safety rods (",
+      ),
+      figure(18, "Fig. 18"),
+      text("), shim limiting rods ("),
+      figure(19, "Fig. 19"),
+      text("), and regulating control rods ("),
+      figure(20, "Fig. 20"),
+      text(") containing cadmium or boron."),
+    ]),
+    paragraph([
+      text("Alternative reactor embodiments include heavy-water moderated cores ("),
+      figure(25, "Fig. 25"),
+      text(" through "),
+      figure(29, "Fig. 29"),
+      text("), air-cooled channel configurations ("),
+      figure(31, "Fig. 31"),
+      text(" through "),
+      figure(33, "Fig. 33"),
+      text("), jacketed fuel slugs ("),
+      figure(34, "Fig. 34"),
+      text("), and liquid-cooled production piles ("),
+      figure(37, "Fig. 37"),
+      text(" through "),
+      figure(39, "Fig. 39"),
+      text(") with external radiation reflectors ("),
+      figure(41, "Fig. 41"),
+      text(")."),
+    ]),
+    { kind: "heading", level: 2, text: "Delayed Neutron Dynamics and Reactor Safety" },
+    paragraph(
+      literal(
+        "Safe regulation of the chain reaction is made possible by the phenomenon of delayed neutron emission. While the vast majority of fission neutrons are emitted promptly (within 10^-14 seconds), a fraction (approximately 0.65%) are delayed by seconds to minutes as precursor fission fragments undergo beta decay. Operating the reactor in the delayed-critical regime (k_eff slightly above 1.0 but below 1.0 + beta) ensures that the reactor period is measured in tens of seconds or minutes, allowing mechanical control rods to maintain stable, precise power equilibrium.",
+      ),
+    ),
+    { kind: "heading", level: 2, text: "Claims" },
+    paragraph(literal("What is claimed is:")),
+    {
+      kind: "claim",
+      number: 1,
+      inlines: literal(fermiReactorClaims[0].text),
+    },
+    {
+      kind: "claim",
+      number: 2,
+      inlines: literal(fermiReactorClaims[1].text),
+    },
+    {
+      kind: "claim",
+      number: 3,
+      inlines: literal(fermiReactorClaims[2].text),
+    },
+    {
+      kind: "claim",
+      number: 4,
+      inlines: literal(fermiReactorClaims[3].text),
+    },
+    {
+      kind: "claim",
+      number: 5,
+      inlines: literal(fermiReactorClaims[4].text),
+    },
+    {
+      kind: "claim",
+      number: 6,
+      inlines: literal(fermiReactorClaims[5].text),
+    },
+    {
+      kind: "claim",
+      number: 7,
+      inlines: literal(fermiReactorClaims[6].text),
+    },
+    {
+      kind: "claim",
+      number: 8,
+      inlines: literal(fermiReactorClaims[7].text),
+    },
+  ],
+};
+
+export const fermiReactorParallelReadings: Readonly<Record<number, readonly string[]>> = {
+  2: [
+    "The patent defines its subject as establishing self-sustaining neutron chain fission reactions in natural-uranium systems to generate nuclear power as heat.",
+  ],
+  4: [
+    "Slow-neutron bombardment of natural uranium splits the scarce U-235 isotope, yielding lighter radioactive fission fragments, beta/gamma radiation, and ~2 fast secondary neutrons.",
+  ],
+  5: [
+    "Fast fission neutrons must be slowed by elastic collisions in a moderator (graphite or heavy water) to thermal energy (0.025 eV) before causing further U-235 fissions, while avoiding parasitic capture.",
+  ],
+  7: [
+    "Four neutron loss channels exist: U-238 resonance capture, moderator capture, impurity absorption, and peripheral leakage. For an infinite system, multiplication is K; in finite cores, k_eff must exceed unity.",
+  ],
+  8: [
+    "Aggregating uranium into discrete bodies of at least 0.5 cm inside a continuous moderator matrix suppresses U-238 resonance capture, enabling K > 1.0 with un-enriched natural uranium.",
+  ],
+  10: [
+    "Figure 1 traces the complete generation-to-generation neutron budget. Figures 2 and 3 chart reproduction constant K contours for uranium metal spheres and rods in graphite.",
+  ],
+  11: [
+    "Figures 4 and 5 establish working K >= 1.0 geometries for uranium-oxide fuels, while Figure 6 documents the superior neutron economy of heavy-water moderated lattices.",
+  ],
+  13: [
+    "Figures 7-15 illustrate the structural assembly of graphite blocks, uranium metal cylinders, and oxide pseudospheres surrounded by external radiation shielding.",
+  ],
+  14: [
+    "Neutron density is tracked with ionization detectors (Fig. 16) during construction (Figs. 17, 21), and reactivity is governed by motorized cadmium/boron control and safety rods (Figs. 18-20).",
+  ],
+  15: [
+    "Detailed reactor engineering variants include heavy-water cores (Figs. 25-29), air cooling (Figs. 31-33), jacketed fuel slugs (Fig. 34), and liquid-cooled production piles (Figs. 37-39).",
+  ],
+  17: [
+    "Delayed neutron emission (~0.65% from fission fragments) expands the reactor time constant from microseconds to minutes, enabling safe, stable mechanical control rod regulation.",
+  ],
+  19: [
+    "The formal claims define the legal scope of the patent, covering graphite and heavy-water natural uranium reactors matching the specified criticality contours and discrete fuel dimensions.",
+  ],
 };

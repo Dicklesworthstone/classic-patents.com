@@ -1,29 +1,89 @@
 import { describe, expect, test } from "bun:test";
 import { createHash } from "node:crypto";
-import { readFileSync } from "node:fs";
-import { mergenthalerLinotypeClaims } from "./mergenthalerLinotypeEdition";
+import { existsSync, readFileSync } from "node:fs";
+import { join } from "node:path";
+import { validateCuratedSpecificationEdition } from "@/data/archivalEditionValidation";
+import { validateReviewedTranscription } from "@/data/patents/sourceTextValidation";
+import { mergenthalerLinotypePatent } from "../patents/mergenthaler-linotype";
+import {
+  mergenthalerLinotypeArchivalEdition,
+  mergenthalerLinotypeClaims,
+  mergenthalerLinotypeParallelReadings,
+} from "./mergenthalerLinotypeEdition";
 
-describe("US 313,224 source-led edition staging", () => {
-  test("pins the reviewed 35-page facsimile and preserves every printed claim", () => {
-    const pdf = readFileSync(
-      `${process.cwd()}/public/patents/pdfs/us-313224-mergenthaler-linotype.pdf`,
-    );
+const publicFile = (url: string) => join(process.cwd(), "public", url.replace(/^\//, ""));
+
+describe("US 313,224 Mergenthaler Linotype published archival edition", () => {
+  test("pins the reviewed 35-page facsimile and publishes a valid manual archival edition", () => {
+    expect(mergenthalerLinotypePatent.archivalEdition).toBe(mergenthalerLinotypeArchivalEdition);
+    expect(validateCuratedSpecificationEdition(mergenthalerLinotypeArchivalEdition)).toEqual({
+      valid: true,
+      errors: [],
+    });
+    const pdf = readFileSync(publicFile(mergenthalerLinotypePatent.originalPdfUrl));
     expect(createHash("sha256").update(pdf).digest("hex")).toBe(
-      "d85530ab4302e8be7e4c0ac280d438756f1dd21dabc844f2c5b2e76861d7444a",
+      mergenthalerLinotypeArchivalEdition.sourcePdfSha256,
     );
-    expect(mergenthalerLinotypeClaims.map((claim) => claim.number)).toEqual(
-      Array.from({ length: 70 }, (_, index) => index + 1),
-    );
-    expect(mergenthalerLinotypeClaims.every((claim) => claim.isIndependent)).toBe(true);
+    expect(mergenthalerLinotypePatent.originalTextAsset).toMatchObject({
+      kind: "reviewed-transcription",
+      pageCount: 35,
+      url: "/patents/transcripts/us-313224-mergenthaler-linotype-reviewed.txt",
+    });
   });
 
-  test("keeps the source-specific apparatus vocabulary instead of legacy inventions", () => {
-    const claims = mergenthalerLinotypeClaims.map((claim) => claim.originalText).join(" ");
-    expect(claims).toContain("intaglio");
-    expect(claims).toContain("stop-pins");
-    expect(claims).toContain("melting-pot");
-    expect(claims).toContain("force-pump");
-    expect(claims).not.toContain("binary");
-    expect(claims).not.toContain("spaceband");
+  test("uses all 70 exact printed claims", () => {
+    expect(mergenthalerLinotypePatent.claims.map((claim) => claim.number)).toEqual(
+      Array.from({ length: 70 }, (_, index) => index + 1),
+    );
+    expect(mergenthalerLinotypePatent.claims.every((claim) => claim.isIndependent)).toBe(true);
+    expect(mergenthalerLinotypeClaims).toHaveLength(70);
+    expect(mergenthalerLinotypePatent.stats).toMatchObject({
+      totalClaims: 70,
+      independentClaims: 70,
+    });
+  });
+
+  test("pairs every prose paragraph with an authored parallel reading", () => {
+    const explainableBlocks = mergenthalerLinotypeArchivalEdition.blocks.flatMap((block, index) =>
+      block.kind === "paragraph" ? [index] : [],
+    );
+    expect(
+      Object.keys(mergenthalerLinotypeParallelReadings)
+        .map(Number)
+        .sort((a, b) => a - b),
+    ).toEqual(explainableBlocks);
+    for (const index of explainableBlocks) {
+      expect(mergenthalerLinotypeParallelReadings[index]?.join(" ").trim().length).toBeGreaterThan(
+        30,
+      );
+    }
+  });
+
+  test("makes source drawing sheets available as local crops", () => {
+    const references = mergenthalerLinotypeArchivalEdition.blocks.flatMap((block) =>
+      "inlines" in block
+        ? block.inlines.filter(
+            (inline) => inline.kind === "reference" && inline.referenceType === "figure",
+          )
+        : [],
+    );
+    expect(references.length).toBeGreaterThan(0);
+    for (const reference of references) {
+      if (reference.kind !== "reference" || reference.referenceType !== "figure") continue;
+      for (const preview of reference.figurePreviews ?? []) {
+        expect(preview.src).toStartWith("/patents/figures/us-313224-mergenthaler-linotype/");
+        expect(existsSync(publicFile(preview.src))).toBe(true);
+      }
+    }
+  });
+
+  test("publishes a reviewed ledger and validates source text", () => {
+    const asset = mergenthalerLinotypePatent.originalTextAsset;
+    expect(asset).toBeDefined();
+    if (!asset) throw new Error("Linotype reviewed transcript asset is missing.");
+    if (asset.kind === "reviewed-transcription") {
+      const ledger = readFileSync(publicFile(asset.url), "utf8");
+      expect(validateReviewedTranscription(ledger, 35)).toEqual({ valid: true });
+    }
   });
 });

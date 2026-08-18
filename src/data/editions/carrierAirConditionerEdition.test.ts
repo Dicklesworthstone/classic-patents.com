@@ -43,6 +43,29 @@ describe("carrierAirConditionerArchivalEdition", () => {
     }
   });
 
+  test("keeps the archival face and canonical drawings explicitly authored", () => {
+    const editionSource = readFileSync(
+      resolve(process.cwd(), "src/data/editions/carrierAirConditionerEdition.ts"),
+      "utf8",
+    );
+    const recordSource = readFileSync(
+      resolve(process.cwd(), "src/data/patents/carrier-air-conditioner.ts"),
+      "utf8",
+    );
+
+    expect(editionSource).not.toContain("SOURCE DRAWING SHEET");
+    expect(editionSource).not.toContain('kind: "figure-sheet"');
+    expect(recordSource).not.toContain("drawings: [1, 2, 3, 4, 5, 6].map");
+    expect(carrierAirConditionerPatent.drawings.map((drawing) => drawing.figureNumber)).toEqual([
+      "Fig. 1",
+      "Fig. 2",
+      "Fig. 3",
+      "Fig. 4",
+      "Fig. 5",
+      "Fig. 6",
+    ]);
+  });
+
   test("corrects the former unrelated humidity-control record", () => {
     expect(carrierAirConditionerPatent.archivalEdition).toBe(carrierAirConditionerArchivalEdition);
     expect(carrierAirConditionerPatent.filingDate).toBe("1904-09-16");
@@ -58,6 +81,43 @@ describe("carrierAirConditionerArchivalEdition", () => {
     expect(JSON.stringify(carrierAirConditionerPatent)).not.toContain("123,618");
     expect(JSON.stringify(carrierAirConditionerPatent)).not.toContain("dew-point regulator");
     expect(JSON.stringify(carrierAirConditionerPatent)).not.toContain("Sackett-Wilhelms");
+  });
+
+  test("gives every printed claim a distinct, source-specific decoder and innovation set", () => {
+    const claims = carrierAirConditionerPatent.claims;
+    expect(claims).toHaveLength(5);
+    expect(new Set(claims.map((claim) => claim.plainEnglish)).size).toBe(5);
+    expect(new Set(claims.map((claim) => claim.keyInnovations.join(" | "))).size).toBe(5);
+
+    expect(claims[0]).toMatchObject({
+      number: 1,
+      plainEnglish: expect.stringContaining("unobstructed"),
+      keyInnovations: expect.arrayContaining([
+        "Two-zone plate surface with unobstructed wet front portion",
+      ]),
+    });
+    expect(claims[1]).toMatchObject({
+      number: 2,
+      plainEnglish: expect.stringContaining("air-moistening"),
+      keyInnovations: expect.arrayContaining(["Air-moistening means coupled to the separator"]),
+    });
+    expect(claims[2]).toMatchObject({
+      number: 3,
+      plainEnglish: expect.stringContaining("projecting flanges"),
+      keyInnovations: expect.arrayContaining(["Upright gutters formed by the flanges"]),
+    });
+    expect(claims[3]).toMatchObject({
+      number: 4,
+      plainEnglish: expect.stringContaining("zigzig"),
+      keyInnovations: expect.arrayContaining(["Gutters located at salient surface portions"]),
+    });
+    expect(claims[4]).toMatchObject({
+      number: 5,
+      plainEnglish: expect.stringContaining("separate angled sections"),
+      keyInnovations: expect.arrayContaining([
+        "Junction gutter created by overlapping section geometry",
+      ]),
+    });
   });
 
   test("pins every published source block to the reviewed ledger and source PDF", () => {
@@ -96,6 +156,6 @@ describe("carrierAirConditionerArchivalEdition", () => {
         .map(Number)
         .sort((left, right) => left - right),
     ).toEqual(paragraphIndexes);
-    expect(carrierAirConditionerParallelReadings[10]?.join(" ")).toContain("trap J");
+    expect(carrierAirConditionerParallelReadings[9]?.join(" ")).toContain("trap J");
   });
 });

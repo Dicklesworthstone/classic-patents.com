@@ -17,6 +17,31 @@ const term = (text: string, definition: string): CuratedSpecificationInline => (
   definition,
 });
 
+const ccdFigureDims: Record<string, { width: number; height: number }> = {
+  "1a": { width: 720, height: 369 },
+  "1b": { width: 720, height: 369 },
+  "1c": { width: 720, height: 369 },
+  "1d": { width: 720, height: 388 },
+  "2": { width: 456, height: 720 },
+  "3": { width: 456, height: 720 },
+  "4": { width: 720, height: 320 },
+  "5": { width: 720, height: 328 },
+  "6": { width: 720, height: 264 },
+  "7a": { width: 430, height: 350 },
+  "7b": { width: 430, height: 350 },
+  "7c": { width: 720, height: 336 },
+  "8": { width: 720, height: 312 },
+  "9a": { width: 720, height: 279 },
+  "9b": { width: 720, height: 297 },
+  "10": { width: 720, height: 360 },
+  "11": { width: 720, height: 304 },
+  "12": { width: 720, height: 344 },
+  "13": { width: 720, height: 280 },
+  "14": { width: 720, height: 320 },
+  "15": { width: 720, height: 248 },
+  "16": { width: 720, height: 360 },
+};
+
 const figure = (id: string, label: string): CuratedSpecificationInline => ({
   kind: "reference",
   text: label,
@@ -27,8 +52,8 @@ const figure = (id: string, label: string): CuratedSpecificationInline => ({
     {
       src: `/patents/figures/us-3858232-boyle-smith-ccd-fig-${id}-preview.png`,
       alt: `${label} from US 3,858,232, Information Storage Devices.`,
-      width: 720,
-      height: 720,
+      width: ccdFigureDims[id]?.width ?? 720,
+      height: ccdFigureDims[id]?.height ?? 720,
     },
   ],
 });
@@ -1039,10 +1064,209 @@ export const boyleSmithCcdArchivalEdition: CuratedSpecificationEdition = {
   ],
 };
 
-/**
- * Kept deliberately empty until every source paragraph and claim has a
- * hand-authored, block-indexed non-lossy companion.  A generic map would
- * falsely imply review coverage, so this WIP edition is intentionally not
- * registered with the shared parallel-reading map.
- */
-export const boyleSmithCcdParallelReadings: Readonly<Record<number, readonly string[]>> = {};
+export const boyleSmithCcdParallelReadings: Readonly<Record<number, readonly string[]>> = {
+  2: [
+    "The application establishes its priority timeline as a continuation-in-part of abandoned application Ser. No. 11,541 filed February 16, 1970, formally defining the device category as charge coupled devices.",
+  ],
+  4: [
+    "The inventors summarize prior magnetic storage systems, noting that magnetic memories and logic circuits represent binary states via magnetic domain polarities in ferrite sheets, cores, or plated wires.",
+  ],
+  5: [
+    "Conventional television camera tubes store visual images as electrostatic charge patterns across a target plate, which must be scanned and discharged sequentially using a focused vacuum electron beam.",
+  ],
+  6: [
+    "Delay lines achieve dynamic data storage by encoding information into acoustic or electromechanical traveling waves propagating through an elastic medium.",
+  ],
+  7: [
+    "Standard digital electronic storage employs discrete semiconductor logic elements interconnected in arrays where binary data is stored and manipulated through repetitive active device switching.",
+  ],
+  9: [
+    "The inventors state that their charge-coupling mechanism provides a versatile information storage system combining high density, simplified fabrication, and dynamic shifting without internal active switches.",
+  ],
+  10: [
+    "The fundamental concept is that electric charge packets representing information can be confined in spatially defined potential energy minima in a semiconductor and translated across the substrate in multiple dimensions.",
+  ],
+  11: [
+    "In standard operation, the potential wells are localized depletion regions induced beneath surface electrodes that trap minority carriers representing signal packets throughout generation, transfer, and detection.",
+  ],
+  12: [
+    "In high-resistivity or inherently depleted semiconductor materials with low carrier concentrations, potential wells confine charges without requiring conventional depletion layer boundaries.",
+  ],
+  13: [
+    "Alternative suitable high-resistivity storage media include potassium tantalate (KTaO3), zinc oxide (ZnO), zinc sulfide (ZnS), cadmium sulfide (CdS), and other II-VI compound semiconductors.",
+  ],
+  14: [
+    "High carrier mobility is required for rapid charge transfer. In silicon, p-type substrates are often preferred because electron mobility in depleted p-type silicon exceeds hole mobility in n-type silicon.",
+  ],
+  15: [
+    "A potential well is formed by locally biasing an electrode to create an electric field across the semiconductor surface, using a metal-insulator-semiconductor (MIS) structure operating in deep depletion.",
+  ],
+  16: [
+    "Initial charge packets can be generated electrically or optically. Information is translated across the chip by shifting the deepest potential well sequentially along the desired transfer path.",
+  ],
+  18: [
+    "The detailed description introduces Figures 1A through 4, outlining the fundamental charge transfer step, the shift register architecture, the clock waveforms, and uniform depletion biasing.",
+  ],
+  19: [
+    "The description further introduces Figures 5 through 16, covering buried channels, input/output structures, three-dimensional bulk transfer, field enhancement, multichannel arrays, optical imaging, and acoustic drive.",
+  ],
+  20: [
+    "The basic transfer mechanism creates a localized potential well beneath an initial electrode, accumulates minority carriers, and then establishes a deeper adjacent well to induce lateral charge transit.",
+  ],
+  21: [
+    "Figure 2 illustrates a three-phase shift register constructed on a single-conductivity substrate covered with an oxide insulator and three interleaved sets of metal transfer electrodes.",
+  ],
+  22: [
+    "The output stage utilizes a reverse-biased p-n junction to collect transferred minority carrier packets, which flow through an external load resistor and can be regenerated into subsequent stages.",
+  ],
+  23: [
+    "The three-phase clock program in Figure 3 applies overlapping voltage pulses (phi-1, phi-2, phi-3) to ensure a forward potential well is fully established before the trailing well collapses.",
+  ],
+  24: [
+    "Charge transfer speed is governed by carrier diffusion and drift across the overlapping depletion regions, requiring minimal spacing between adjacent transfer electrodes.",
+  ],
+  25: [
+    "A preferred operating mode applies a uniform background depletion bias across all electrodes, superimposing localized clock pulses to form deep moving potential wells for charge packet transport.",
+  ],
+  26: [
+    "Figure 4 demonstrates this uniform depletion mode, where background voltage V0 maintains a continuous surface depletion layer while transfer pulse V1 drives localized charge packet migration.",
+  ],
+  27: [
+    "Figure 5 illustrates a buried-channel CCD where charge is stored and transferred within an electrically depleted bulk layer, avoiding surface traps at the semiconductor-insulator interface.",
+  ],
+  29: [
+    "Input charge packets can be introduced by avalanche injection from a localized p-n junction diode driven into temporary breakdown near the first transfer electrode.",
+  ],
+  30: [
+    "The injected input current can be analog-modulated by the input signal voltage or digital-pulsed to represent binary ones and zeros as discrete charge packets.",
+  ],
+  31: [
+    "Figure 6 shows a gated input arrangement comprising an input diffusion, a gate electrode, and the initial transfer electrode for precise metering of charge packets into the channel.",
+  ],
+  32: [
+    "Alternatively, minority carriers can be injected without p-n junctions by surface avalanche breakdown induced directly beneath a high-voltage metal-insulator-semiconductor electrode.",
+  ],
+  34: [
+    "Output detection can take several forms, including the capacitive bridge circuit of Figure 7A which detects charge packets by measuring the resulting change in surface depletion capacitance.",
+  ],
+  35: [
+    "Figure 7B illustrates an AC output detection stage where radio-frequency power dissipation is measured across adjacent sensing electrodes as minority carriers modulate channel conductance.",
+  ],
+  36: [
+    "Figure 7C shows direct voltage sensing where collected charge charges an output diode node connected directly to the gate of an on-chip field-effect transistor amplifier.",
+  ],
+  37: [
+    "A periodic positive reset pulse delivered to the output diode node clears residual signal charge and restores the sense node to a known reference potential before the next packet arrives.",
+  ],
+  38: [
+    "The field-effect transistor sensing amplifier can be integrated directly onto the same silicon substrate as the charge-transfer array, minimizing parasitic node capacitance and maximizing sensitivity.",
+  ],
+  39: [
+    "While planar surface transfer is standard, charge-coupled devices can also transfer charge packets across multiple orthogonal directions or between opposite surfaces of the substrate.",
+  ],
+  40: [
+    "Three-dimensional charge transfer extends device density by shifting charge packets through the bulk thickness dimension of the semiconductor wafer between upper and lower electrode arrays.",
+  ],
+  41: [
+    "Vertical stepping allows multi-layer charge routing, where charge packets are transferred downward into the substrate, shifted laterally, and returned to the upper surface.",
+  ],
+  42: [
+    "Figure 8 shows bidirectional charge transfer through the semiconductor thickness, where opposing surface electrodes establish overlapping depletion fields across the bulk wafer.",
+  ],
+  44: [
+    "Charge transfer efficiency and speed are substantially enhanced by fringe electric fields that extend laterally into the gap between adjacent transfer electrodes.",
+  ],
+  45: [
+    "Figure 9A demonstrates that when inter-electrode gaps are comparable to insulator thickness, overlapping fringing fields accelerate minority carriers into the advancing potential well.",
+  ],
+  46: [
+    "In buried-channel structures, fringing fields penetrate deeper and more uniformly through the bulk channel, resulting in faster charge transit and higher clock frequencies.",
+  ],
+  47: [
+    "Figure 9B illustrates shaped clock waveforms with ramped trailing edges that create asymmetric drift fields, driving carriers forward and preventing backward diffusion spills.",
+  ],
+  48: [
+    "Additional field-enhancement techniques include asymmetric gate lengths, tapered dielectric layers, and non-uniform surface dopings along the transfer direction.",
+  ],
+  49: [
+    "Asymmetric potential profiles allow two-phase clock operation by ensuring that charge packets can only move in one direction even when adjacent electrodes receive identical phase clocks.",
+  ],
+  50: [
+    "Figure 12 shows a stepped-oxide structure where each electrode spans thick and thin dielectric regions, creating a built-in potential step that enforces unidirectional transfer.",
+  ],
+  51: [
+    "Two-phase clocking simplifies clock generation circuitry, reduces clock line count, and eliminates overlapping phase timing constraints required by three-phase systems.",
+  ],
+  52: [
+    "Asymmetric drive fields can also be generated by applying multi-level staircase voltage waveforms to uniform electrodes, establishing directional potential gradients.",
+  ],
+  53: [
+    "Built-in potential asymmetry can alternatively be produced by localized ion implantation or differential surface doping beneath one portion of each transfer electrode.",
+  ],
+  54: [
+    "Varying the dielectric constant or work function across the gate area similarly establishes a built-in lateral potential step to guide charge flow unidirectionally.",
+  ],
+  55: [
+    "Fixed electrostatic charge embedded in the insulator or at the semiconductor interface can permanently shift local surface potential and enforce directional charge transfer.",
+  ],
+  56: [
+    "Localized fixed charge can replace every alternate active clock electrode, halving the number of active gates and clock lines needed for a multi-stage shift register.",
+  ],
+  57: [
+    "Patterned fixed charge can also be used to define custom potential barriers and storage well capacities for programmable logic and signal processing applications.",
+  ],
+  58: [
+    "Electrodeless passive transfer channels can be constructed where traveling potential wells are sustained entirely by external acoustic waves or fringing fields.",
+  ],
+  59: [
+    "Figure 10 illustrates a multichannel shift register where parallel charge transfer channels are isolated from one another by heavily doped channel-stop diffusion barriers.",
+  ],
+  60: [
+    "Figure 11 shows a clock bus layout that connects three-phase drive lines to transfer electrodes along channel edges without requiring multilayer conductor crossovers.",
+  ],
+  61: [
+    "Multilevel metallization schemes enable dense two-dimensional imaging and memory arrays with minimal parasitic capacitance and high packing density.",
+  ],
+  62: [
+    "Figure 12 provides a perspective view of the stepped-oxide two-phase electrode arrangement, showing the contact busbars and the underlying asymmetric oxide profiles.",
+  ],
+  63: [
+    "Figure 13 illustrates a two-level overlapping gate fabrication technique using refractory polysilicon and aluminum to achieve zero-gap electrode spacing without short circuits.",
+  ],
+  64: [
+    "Figure 14 shows an optical image sensor where incident photons generate electron-hole pairs, accumulating photoelectrons in potential wells in proportion to local light intensity.",
+  ],
+  65: [
+    "Linear and area image sensors integrate optical charge packets during an exposure period, then rapidly shift the packets line-by-line into an output register for serial video readout.",
+  ],
+  66: [
+    "Backside illumination with three-dimensional bulk transfer allows optical photons to enter the backside of the wafer while charge packets are shifted and read out on the frontside in the dark.",
+  ],
+  67: [
+    "Figure 15 illustrates acoustic-wave charge translation where a piezoelectric layer (ZnO or CdS) carries an ultrasonic surface wave whose electric field sequentially biases surface electrodes.",
+  ],
+  68: [
+    "Figure 16 shows an electrodeless acoustic device where traveling acoustic waves in a piezoelectric layer directly induce and propagate potential wells through the adjacent silicon substrate.",
+  ],
+  69: [
+    "The inventors detail preferred fabrication parameters: 10 ohm-cm n-type silicon, 1,200 Angstrom dry thermal SiO2 grown at 1,100°C, and gold or aluminum gate electrodes.",
+  ],
+  70: [
+    "Array geometry requires electrode gaps of a few microns to match the approximately 5-micron lateral depletion width created by a 10-volt gate bias in 10 ohm-cm silicon.",
+  ],
+  71: [
+    "The core architectural distinction from prior MIS devices is that charge packets representing information are stored and transferred continuously within the semiconductor without intermediate wiring.",
+  ],
+  72: [
+    "The disclosure contrasts itself with prior gated shift registers (such as U.S. Pat. 3,621,283) that transferred charge between isolated opposite-conductivity diffused p-n regions.",
+  ],
+  73: [
+    "By contrast, the charge-coupled device is defined by transferring and storing charge packets in a continuous channel consisting entirely of a single conductivity type.",
+  ],
+  74: [
+    "The inventors conclude by noting that numerous structural and material variations relying on these charge-coupling principles fall within the broad scope of the invention.",
+  ],
+  76: [
+    "The formal legal claims define the exclusive scope of the patent, reciting the combination of potential wells, sequential transfer electrodes, single-conductivity channels, and detection means.",
+  ],
+};

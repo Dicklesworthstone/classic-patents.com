@@ -67,9 +67,10 @@ export const noyceIcArchivalEdition: CuratedSpecificationEdition = {
     {
       kind: "masthead",
       lines: [
-        "UNITED STATES PATENT OFFICE.",
-        "ROBERT N. NOYCE, LOS ALTOS, CALIF., ASSIGNOR TO FAIRCHILD SEMICONDUCTOR CORPORATION, MOUNTAIN VIEW, CALIF., A CORPORATION OF DELAWARE.",
+        "UNITED STATES PATENT OFFICE",
+        "2,981,877.",
         "SEMICONDUCTOR DEVICE-AND-LEAD STRUCTURE.",
+        "Robert N. Noyce, Los Altos, Calif., assignor to Fairchild Semiconductor Corporation, Mountain View, Calif., a corporation of Delaware.",
         "Filed July 30, 1959, Ser. No. 830,507. 10 Claims. (Cl. 317-235.) Patented Apr. 25, 1961.",
       ],
     },
@@ -106,7 +107,15 @@ export const noyceIcArchivalEdition: CuratedSpecificationEdition = {
       ),
       {
         kind: "text",
-        text: " extending to the surface of a body of extrinsic semiconductor, an insulating surface layer consisting essentially of oxide of the same semiconductor extending across the junctions, and leads in the form of vacuum-deposited or otherwise formed metal strips extending over and adherent to the insulating oxide layer for making electrical connections to and between various regions of the semiconductor body without shorting the junctions.",
+        text: " extending to the surface of a body of ",
+      },
+      term(
+        "extrinsic semiconductor",
+        "Semiconductor deliberately doped with donor or acceptor impurities so that its carrier population and conductivity differ from those of intrinsic material.",
+      ),
+      {
+        kind: "text",
+        text: ", an insulating surface layer consisting essentially of oxide of the same semiconductor extending across the junctions, and leads in the form of vacuum-deposited or otherwise formed metal strips extending over and adherent to the insulating oxide layer for making electrical connections to and between various regions of the semiconductor body without shorting the junctions.",
       },
     ]),
     paragraph([
@@ -160,7 +169,15 @@ export const noyceIcArchivalEdition: CuratedSpecificationEdition = {
       figure("Fig. 2", "2"),
       {
         kind: "text",
-        text: " illustrate one example of a structure according to this invention. A single-crystal body of semiconductor-grade silicon, represented at 1, has a high-quality surface 2, prepared in accordance with known transistor technology. Within the body 1 there are high-resistivity regions, designated I in the drawing, composed either of high-purity silicon having so few donor and acceptor impurities that it is a good insulator at ordinary temperatures and an intrinsic semiconductor at elevated temperatures, or of somewhat less-pure silicon containing a trace of a material such as gold that diminishes the effect of donor and acceptor impurities by greatly reducing the carrier concentrations.",
+        text: " illustrate one example of a structure according to this invention. A single-crystal body of semiconductor-grade silicon, represented at 1, has a high-quality surface 2, prepared in accordance with known transistor technology. Within the body 1 there are ",
+      },
+      term(
+        "high-resistivity regions",
+        "Regions made sufficiently pure or compensated that they supply few mobile charge carriers and electrically behave more like an insulator than the adjacent doped regions.",
+      ),
+      {
+        kind: "text",
+        text: ", designated I in the drawing, composed either of high-purity silicon having so few donor and acceptor impurities that it is a good insulator at ordinary temperatures and an intrinsic semiconductor at elevated temperatures, or of somewhat less-pure silicon containing a trace of a material such as gold that diminishes the effect of donor and acceptor impurities by greatly reducing the carrier concentrations.",
       },
     ]),
     paragraph([
@@ -207,7 +224,15 @@ export const noyceIcArchivalEdition: CuratedSpecificationEdition = {
     paragraph([
       {
         kind: "text",
-        text: "A convenient and highly accurate way to remove only selected portions of the oxide film is to use photoengraving techniques. The photoengraving resist is placed over the oxide-coated surface, and this is then exposed through a master photographic plate having opaque areas corresponding to the areas from which the oxide is to be removed. In the usual photographic developing, the unexposed resist is removed; and chemical etching can then be employed to remove the oxide layer from the unexposed areas, while the exposed and developed resist serves as a mask to prevent chemical etching of the oxide areas that are to be left on the semiconductor surface.",
+        text: "A convenient and highly accurate way to remove only selected portions of the oxide film is to use ",
+      },
+      term(
+        "photoengraving techniques",
+        "A photographic-resist and etching process that transfers a patterned mask into selected regions of a surface.",
+      ),
+      {
+        kind: "text",
+        text: ". The photoengraving resist is placed over the oxide-coated surface, and this is then exposed through a master photographic plate having opaque areas corresponding to the areas from which the oxide is to be removed. In the usual photographic developing, the unexposed resist is removed; and chemical etching can then be employed to remove the oxide layer from the unexposed areas, while the exposed and developed resist serves as a mask to prevent chemical etching of the oxide areas that are to be left on the semiconductor surface.",
       },
     ]),
     paragraph([
@@ -216,9 +241,17 @@ export const noyceIcArchivalEdition: CuratedSpecificationEdition = {
         text: "A discoid, metal, emitter contact 6 is adherent to surface 2, wholly within the edge of junction 3, centered upon and in electrical connection with the emitter region of the transistor. Electrical connections to this emitter contact are made through a metal strip 7 extending over and adherent to oxide layer 5. The strip 7 extends over the tongue 5″ of the insulating oxide layer across the junctions 3 and 4, and thus provides an electrical connection extending from one side of the composite structure inward to the central emitter contact, without shorting any of the transistor junctions.",
       },
     ]),
-    p(
-      "The base contact is a C-shaped, metal strip 8, adherent to surface 2 wholly between the edges of junctions 3 and 4, substantially concentric with the emitter contact 6 and substantially encircling the junction 3. It will be noted that tongue 5″ and lead 7 extend between the two ends of the C-shaped contact 8, so that lead 7 and the emitter contact are effectively insulated from the base contact even though the base contact substantially surrounds the emitter junction. Electrical connection to contact 8 is made through a metal strip 9 extending over and adherent to the insulating oxide layer 5. Strip 9 extends over tongue 5′ across the collector junction 4, and thus provides an electrical connection from one side of the composite structure into the base layer, which in this embodiment is completely surrounded by the collector layer at the surface 2, without shorting the collector junction 4.",
-    ),
+    paragraph([
+      { kind: "text", text: "The base contact is a " },
+      term(
+        "C-shaped, metal strip",
+        "A metal contact formed as an open ring: its two ends leave a gap through which an insulated lead can pass without touching the ring.",
+      ),
+      {
+        kind: "text",
+        text: " 8, adherent to surface 2 wholly between the edges of junctions 3 and 4, substantially concentric with the emitter contact 6 and substantially encircling the junction 3. It will be noted that tongue 5″ and lead 7 extend between the two ends of the C-shaped contact 8, so that lead 7 and the emitter contact are effectively insulated from the base contact even though the base contact substantially surrounds the emitter junction. Electrical connection to contact 8 is made through a metal strip 9 extending over and adherent to the insulating oxide layer 5. Strip 9 extends over tongue 5′ across the collector junction 4, and thus provides an electrical connection from one side of the composite structure into the base layer, which in this embodiment is completely surrounded by the collector layer at the surface 2, without shorting the collector junction 4.",
+      },
+    ]),
     p(
       "Various methods may be employed for forming the base and emitter contacts and leads. By way of example, the contacts and leads can be deposited in the configuration shown by direct vacuum evaporation of aluminum, or other suitable contact metal, through a mask of suitable size and shape. Alternatively, a metal coating may be deposited over the entire upper surface of the composite structure, and the unwanted metal then removed by known photoengraving techniques to leave only the contact-and-lead configuration shown. After the contacts have been deposited upon surface 2 of the semiconductor, the structure is usually heated to form an alloy at the metal-silicon interface so that good, ohmic contact between the metal and the silicon is obtained.",
     ),
@@ -358,7 +391,15 @@ export const noyceIcArchivalEdition: CuratedSpecificationEdition = {
     paragraph([
       {
         kind: "text",
-        text: "It will be noted that the polarity of rectifying junctions 14 and 15 is such that the signal supplied to contact 19 has a D.-C. component of the polarity required to reverse-bias junction 18. Hence, the voltage across junction 18 is always in the high-resistance direction of the junction, and there is no appreciable current flow across this junction. However, there are charge layers on both sides of the junction which form a capacitance, as is well known, and therefore the circuit function of junction 18 is to provide a capacitance, represented in ",
+        text: "It will be noted that the polarity of rectifying junctions 14 and 15 is such that the signal supplied to contact 19 has a D.-C. component of the polarity required to ",
+      },
+      term(
+        "reverse-bias junction 18",
+        "Apply a voltage polarity that widens a P-N junction's depleted charge region and suppresses ordinary conduction, allowing its junction capacitance to be used.",
+      ),
+      {
+        kind: "text",
+        text: ". Hence, the voltage across junction 18 is always in the high-resistance direction of the junction, and there is no appreciable current flow across this junction. However, there are charge layers on both sides of the junction which form a capacitance, as is well known, and therefore the circuit function of junction 18 is to provide a capacitance, represented in ",
       },
       figure("Fig. 5"),
       {
@@ -410,7 +451,15 @@ export const noyceIcArchivalEdition: CuratedSpecificationEdition = {
       figure("Fig. 7", "7"),
       {
         kind: "text",
-        text: " show an example in which the emitter and base contacts are parallel strips. A single-crystal body 37 of silicon contains a P-type, emitter layer overlying an N-type, base layer and separated therefrom by a dished junction 38, which extends to the upper surface of the semiconductor and there surrounds the P-type, emitter layer. In this case, the edge of junction 38 does not form a circle at the surface, but forms an elongated, closed figure. The N-type, base layer overlies a P-type, collector layer and is separated therefrom by a flat junction 39. The emitter contact 40 is a straight strip of metal, vacuum-deposited or otherwise placed upon the upper surface of the silicon, and preferably alloyed thereto to form an ohmic contact. The base contact 41 is a similar strip of metal, parallel to contact 40. The edge of junction 38 extends between the two contacts, and around contact 40, as shown. The collector contact 42 may be a metal layer plated onto the bottom surface of the silicon.",
+        text: " show an example in which the emitter and base contacts are ",
+      },
+      term(
+        "parallel strips",
+        "Straight, side-by-side metal contacts whose spacing and path are chosen so an oxide-protected junction can run between them.",
+      ),
+      {
+        kind: "text",
+        text: ". A single-crystal body 37 of silicon contains a P-type, emitter layer overlying an N-type, base layer and separated therefrom by a dished junction 38, which extends to the upper surface of the semiconductor and there surrounds the P-type, emitter layer. In this case, the edge of junction 38 does not form a circle at the surface, but forms an elongated, closed figure. The N-type, base layer overlies a P-type, collector layer and is separated therefrom by a flat junction 39. The emitter contact 40 is a straight strip of metal, vacuum-deposited or otherwise placed upon the upper surface of the silicon, and preferably alloyed thereto to form an ohmic contact. The base contact 41 is a similar strip of metal, parallel to contact 40. The edge of junction 38 extends between the two contacts, and around contact 40, as shown. The collector contact 42 may be a metal layer plated onto the bottom surface of the silicon.",
       },
     ]),
     p(
@@ -574,30 +623,198 @@ const claims = blocks.filter(
   (block): block is Extract<(typeof blocks)[number], { kind: "claim" }> => block.kind === "claim",
 );
 
+function manualClaimText(number: number): string {
+  const sourceClaim = claims.find((candidate) => candidate.number === number);
+  if (!sourceClaim) throw new Error(`Noyce manual edition is missing claim ${number}.`);
+  return sourceClaim.inlines.map((inline) => inline.text).join("");
+}
+
 export const noyceIcRecordCorrections: Pick<
   Patent,
   "originalText" | "claims" | "drawings" | "stats"
 > = {
   originalText:
     "This catalogue excerpt is not the archival edition. Open Original Patent Text for the complete manually prepared specification, all ten claims, all seven figures, and the source-cited references.",
-  claims: claims.map((sourceClaim) => ({
-    number: sourceClaim.number,
-    isIndependent: sourceClaim.number !== 8,
-    ...(sourceClaim.number === 8 ? { dependsOn: [7] } : {}),
-    originalText: sourceClaim.inlines.map((inline) => inline.text).join(""),
-    plainEnglish: `Claim ${sourceClaim.number} keeps the source's named semiconductor regions, oxide insulation, metal contact geometry, and electrical relationship. It protects that stated combination rather than every integrated circuit generally.`,
-    keyInnovations: [
-      "Oxide-insulated planar metal lead",
-      "Surface-reaching P-N junction",
-      "Semiconductor contact geometry",
-    ],
-  })),
-  drawings: [1, 2, 3, 4, 5, 6, 7].map((number) => ({
-    figureNumber: `Fig. ${number}`,
-    title: `Source Fig. ${number}`,
-    caption: `Direct source-facsimile crop of Fig. ${number}; see the manually authored Original Patent Text references for its role in the specification.`,
-    svgType: "noyce-ic",
-    callouts: [],
-  })),
+  claims: [
+    {
+      number: 1,
+      isIndependent: true,
+      originalText: manualClaimText(1),
+      plainEnglish:
+        "Claim 1 protects the basic crossing: two closely spaced contacts on opposite sides of a surface-reaching P-N junction, with oxide retained across a different part of that junction so an adherent conductor can cross there and reach one contact. The legal function is to preserve separate contact access without shorting the junction.",
+      keyInnovations: [
+        "Oxide bridge across a P-N junction",
+        "Two-sided contact access",
+        "Adherent crossing conductor",
+      ],
+    },
+    {
+      number: 2,
+      isIndependent: true,
+      originalText: manualClaimText(2),
+      plainEnglish:
+        "Claim 2 narrows the crossing arrangement to nested extrinsic P and N regions. It requires ohmic contacts to the overlying and underlying regions, an oxide layer across their enclosing junction, and a metal strip that crosses the oxide while the second contact encircles the junction on both sides of that strip.",
+      keyInnovations: [
+        "Nested extrinsic regions",
+        "Encircling second contact",
+        "Ohmic oxide-crossing lead",
+      ],
+    },
+    {
+      number: 3,
+      isIndependent: true,
+      originalText: manualClaimText(3),
+      plainEnglish:
+        "Claim 3 specifies the concentric geometry shown in the drawings: a circular dished junction, a central discoid contact, and a surrounding C-shaped contact. The oxide passes through the C's gap, allowing a strip to cross the junction to the central contact while remaining insulated from the two C ends.",
+      keyInnovations: [
+        "Concentric discoid contact",
+        "C-shaped surrounding contact",
+        "Insulated gap-crossing strip",
+      ],
+    },
+    {
+      number: 4,
+      isIndependent: true,
+      originalText: manualClaimText(4),
+      plainEnglish:
+        "Claim 4 applies that geometry to a diffused silicon transistor. It calls for an emitter contact inside a circular emitter junction, a C-shaped base contact around it, oxidized silicon grown with the body, and a metal strip that reaches the emitter across the oxide and between the base contact's ends.",
+      keyInnovations: [
+        "Diffused silicon transistor",
+        "Congenitally united oxide",
+        "Emitter lead through base-contact gap",
+      ],
+    },
+    {
+      number: 5,
+      isIndependent: true,
+      originalText: manualClaimText(5),
+      plainEnglish:
+        "Claim 5 adds a high-resistivity region beneath part of an oxide-supported metal strip. Its legal contribution is not simply the lead: the underlying resistive silicon reduces the unwanted lead-to-body shunt capacitance while the strip crosses the surface-reaching P-N junction.",
+      keyInnovations: [
+        "High-resistivity underlay",
+        "Reduced shunt capacitance",
+        "Oxide-supported metal strip",
+      ],
+    },
+    {
+      number: 6,
+      isIndependent: true,
+      originalText: manualClaimText(6),
+      plainEnglish:
+        "Claim 6 claims a circuit use of the structure. A DC voltage between the strip connected to the overlying region and the second contact reverse-biases their junction, so the junction is used as a capacitor rather than as a conducting path.",
+      keyInnovations: [
+        "Reverse-biased junction capacitor",
+        "DC bias circuit means",
+        "Oxide-crossing first-contact strip",
+      ],
+    },
+    {
+      number: 7,
+      isIndependent: true,
+      originalText: manualClaimText(7),
+      plainEnglish:
+        "Claim 7 expands the unit from one junction to three alternating P/N regions. It requires two surface-reaching dished junctions, three contacts, oxide over both junctions, a first strip crossing both junctions, and a second strip crossing the second junction to connect the second region.",
+      keyInnovations: [
+        "Three alternating semiconductor regions",
+        "Two dished P-N junctions",
+        "Independently routed first and second strips",
+      ],
+    },
+    {
+      number: 8,
+      isIndependent: false,
+      dependsOn: [7],
+      originalText: manualClaimText(8),
+      plainEnglish:
+        "Claim 8 depends on Claim 7 and fixes the second and third contacts as nested C-shaped metal strips. The smaller C substantially encircles the first junction, while the larger C substantially encircles the second junction, preserving the concentric contact architecture of the illustrated circuit.",
+      keyInnovations: [
+        "Nested C-shaped contacts",
+        "First-junction enclosure",
+        "Second-junction enclosure",
+      ],
+    },
+    {
+      number: 9,
+      isIndependent: true,
+      originalText: manualClaimText(9),
+      plainEnglish:
+        "Claim 9 generalizes to many dished P-N junctions and their enclosed semiconductor regions. It claims the combination of respective surface contacts, an oxide layer extending across multiple junctions, and metal strips over that oxide that provide multiple electrical interconnections.",
+      keyInnovations: [
+        "Plurality of dished junctions",
+        "Multiple enclosed regions",
+        "Multi-junction planar interconnections",
+      ],
+    },
+    {
+      number: 10,
+      isIndependent: true,
+      originalText: manualClaimText(10),
+      plainEnglish:
+        "Claim 10 covers the Fig. 6 and 7 variant: an elongated closed junction outline with parallel metal-strip contacts, one inside and one outside the outline. An oxide layer crosses the junction, and a further metal strip on that oxide reaches the inner contact both physically and electrically.",
+      keyInnovations: [
+        "Elongated closed junction",
+        "Parallel strip contacts",
+        "Oxide-crossing connection to inner contact",
+      ],
+    },
+  ],
+  drawings: [
+    {
+      figureNumber: "Fig. 1",
+      title: "Transistor-and-lead structure",
+      caption:
+        "Greatly enlarged plan view of one transistor-and-lead structure described in the specification.",
+      svgType: "noyce-ic",
+      callouts: [],
+    },
+    {
+      figureNumber: "Fig. 2",
+      title: "Section through Fig. 1",
+      caption:
+        "Section taken along the line 2-2 of Fig. 1, showing the relationship of the semiconductor body, oxide, and leads.",
+      svgType: "noyce-ic",
+      callouts: [],
+    },
+    {
+      figureNumber: "Fig. 3",
+      title: "Multi-device semiconductor-and-lead structure",
+      caption:
+        "Greatly enlarged plan view of a semiconductor body carrying multiple transistor structures and their leads.",
+      svgType: "noyce-ic",
+      callouts: [],
+    },
+    {
+      figureNumber: "Fig. 4",
+      title: "Section through Fig. 3",
+      caption:
+        "Section taken along the line 4-4 of Fig. 3, showing the depth relationship of the semiconductor regions and contact structure.",
+      svgType: "noyce-ic",
+      callouts: [],
+    },
+    {
+      figureNumber: "Fig. 5",
+      title: "Equivalent circuit of the multi-device structure",
+      caption:
+        "Simplified equivalent circuit corresponding to the multi-device semiconductor structure of Figs. 3 and 4.",
+      svgType: "noyce-ic",
+      callouts: [],
+    },
+    {
+      figureNumber: "Fig. 6",
+      title: "Alternate transistor-and-lead structure",
+      caption:
+        "Plan view of the alternate transistor-and-lead construction discussed in the specification.",
+      svgType: "noyce-ic",
+      callouts: [],
+    },
+    {
+      figureNumber: "Fig. 7",
+      title: "Section through Fig. 6",
+      caption:
+        "Section taken along the line 7-7 of Fig. 6, showing the alternate structure in cross section.",
+      svgType: "noyce-ic",
+      callouts: [],
+    },
+  ],
   stats: { totalClaims: 10, independentClaims: 9 },
 };

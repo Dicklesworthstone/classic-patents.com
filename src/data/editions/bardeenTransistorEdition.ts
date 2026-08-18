@@ -72,6 +72,8 @@ export const bardeenTransistorArchivalEdition: CuratedSpecificationEdition = {
     {
       kind: "masthead",
       lines: [
+        "Patented Oct. 3, 1950",
+        "2,524,035",
         "UNITED STATES PATENT OFFICE",
         "JOHN BARDEEN, SUMMIT, AND WALTER H. BRATTAIN, MORRISTOWN, N. J., ASSIGNORS TO BELL TELEPHONE LABORATORIES, INCORPORATED, NEW YORK, N. Y., A CORPORATION OF NEW YORK.",
         "THREE-ELECTRODE CIRCUIT ELEMENT UTILIZING SEMICONDUCTIVE MATERIALS.",
@@ -145,6 +147,21 @@ export const bardeenTransistorArchivalEdition: CuratedSpecificationEdition = {
     ),
     p(
       text(
+        "This invention relates to a novel method of and means for translating electrical variations for such purposes as amplification, wave generation, and the like.",
+      ),
+    ),
+    p(
+      text(
+        "The principal object of the invention is to amplify or otherwise translate electric signals or variations by use of compact, simple, and rugged apparatus of novel type.",
+      ),
+    ),
+    p(
+      text(
+        "Another object is to provide a circuit element for use as an amplifier or the like which does not require a heated thermionic cathode for its operation, and which therefore is immediately operative when turned on. A related object is to provide such a circuit element which requires no evacuated or gas-filled envelope.",
+      ),
+    ),
+    p(
+      text(
         "Attempts have been made in the past to convert solid rectifiers utilizing selenium, copper sulphide, or other semi-conductive materials into amplifiers by the direct expedient of embedding a grid-like electrode in a dielectric layer disposed between the cathode and the anode of the rectifier. The grid is supposed, by exerting an electric force at the surface of the cathode, to modify its emission and so alter the cathode-anode current. As a practical matter it is impossible to embed a grid in a layer which is so thick as to insulate the grid from the other electrodes and yet so thin as to permit current to flow between them.",
       ),
     ),
@@ -187,11 +204,20 @@ export const bardeenTransistorArchivalEdition: CuratedSpecificationEdition = {
         "As the emitter is biased in the direction of easy flow, the emitter current is sensitive to small changes in potential between the emitter and the body of the semiconductor, or between the emitter and the base electrode. Application of a small voltage variation between the base electrode and emitter causes a relatively large change in the current entering the semiconductor from the emitter, and a correspondingly large change in the current to the collector. One effect of the change in emitter current is to modify the total current flowing to the collector, so that the overall change in collector current may be greater than the change in the emitter current. The collector circuit may contain a load of high impedance matched to the internal impedance of the collector, which, because of the high resistance rectifier contact of the collector, is high. As a result, voltage amplification, current amplification, and power amplification of the input signal are obtained.",
       ),
     ),
-    p(
-      text(
-        "In one form, the device utilizes a block of semiconductor material of which the main body is of one conductivity type while a very thin surface layer or film is of opposite conductivity type. The surface layer is separated from the body by a high resistance rectifying barrier. The emitter and collector electrodes make contact with this surface layer sufficiently close together for mutual influence in the manner described above. The base electrode makes a low resistance contact with the body of the semiconductor. When suitable bias potentials are applied to the various electrodes, a current flows from the emitter into the thin layer. Owing to the conductivity of the layer and to the nature of the barrier, this current tends to flow laterally in the thin layer, rather than following the most direct path across the barrier to the base electrode. This current is composed of carriers whose signs are opposite to the signs of the mobile charges normally in excess in the body of the semiconductor.",
+    p([
+      {
+        kind: "text",
+        text: "In one form, the device utilizes a block of semiconductor material of which the main body is of one conductivity type while a very thin surface layer or film is of opposite conductivity type. The surface layer is separated from the body by a ",
+      },
+      term(
+        "high resistance rectifying barrier",
+        "The source uses this phrase for the high-resistance region that separates the surface layer from the supporting body while retaining a bias-dependent rectifying junction between them.",
       ),
-    ),
+      {
+        kind: "text",
+        text: ". The emitter and collector electrodes make contact with this surface layer sufficiently close together for mutual influence in the manner described above. The base electrode makes a low resistance contact with the body of the semiconductor. When suitable bias potentials are applied to the various electrodes, a current flows from the emitter into the thin layer. Owing to the conductivity of the layer and to the nature of the barrier, this current tends to flow laterally in the thin layer, rather than following the most direct path across the barrier to the base electrode. This current is composed of carriers whose signs are opposite to the signs of the mobile charges normally in excess in the body of the semiconductor.",
+      },
+    ]),
     p(
       text(
         "In other words, when there is a thin layer of opposite conductivity type immediately under the emitter electrode, the current flowing into the block in the direction of easy flow consists largely of carriers of opposite sign to those of the mobile charges normally present in excess in the body of the block; and the presence of these carriers increases the conductivity of the block. The bias voltage on the collector which, as stated above, is biased in the reverse or high resistance direction relative to the block, produces a strong electrostatic field in a region surrounding the collector so that the current from the emitter which enters this region is drawn in to the collector. Thus, the collector current, and hence the conductance of the unit as a whole, are increased. The size of the region in which this strong field exists is comparatively insensitive to variations in the collector potential so that the impedance of the collector circuit is high. On the other hand, the current from the emitter to the layer is extremely sensitive to variations of the emitter potential, so that the impedance of the emitter circuit is low.",
@@ -243,19 +269,30 @@ export const bardeenTransistorArchivalEdition: CuratedSpecificationEdition = {
       figure("Fig. 1a", "Fig. 1a"),
       {
         kind: "text",
-        text: " is a cross-section of a part of Fig. 1 to a greatly enlarged scale; ",
+        text: " is a cross-section of a part of ",
       },
+      figure("Fig. 1", "Fig. 1"),
+      { kind: "text", text: " to a greatly enlarged scale; " },
       figure("Fig. 2", "Fig. 2"),
-      { kind: "text", text: " is the equivalent vacuum tube schematic circuit of Fig. 1; " },
+      { kind: "text", text: " is the equivalent vacuum tube schematic circuit of " },
+      figure("Fig. 1", "Fig. 1"),
+      { kind: "text", text: "; " },
       figure("Fig. 3", "Fig. 3"),
       {
         kind: "text",
-        text: " is a plan view of the block of Fig. 1, showing the disposition of the electrodes; ",
+        text: " is a plan view of the block of ",
       },
+      figure("Fig. 1", "Fig. 1"),
+      { kind: "text", text: ", showing the disposition of the electrodes; " },
       figure("Fig. 3a", "Fig. 3a"),
       {
         kind: "text",
-        text: " is like Fig. 3 but shows the influence of the collector in modifying the emitter current; Figs. ",
+        text: " is like ",
+      },
+      figure("Fig. 3", "Fig. 3"),
+      {
+        kind: "text",
+        text: " but shows the influence of the collector in modifying the emitter current; Figs. ",
       },
       figure("Fig. 4", "4"),
       { kind: "text", text: ", " },
@@ -264,11 +301,15 @@ export const bardeenTransistorArchivalEdition: CuratedSpecificationEdition = {
       figure("Fig. 6", "6"),
       { kind: "text", text: " and " },
       figure("Fig. 7", "7"),
-      { kind: "text", text: " show electrode dispositions alternative to those of Fig. 1; Figs. " },
+      { kind: "text", text: " show electrode dispositions alternative to those of " },
+      figure("Fig. 1", "Fig. 1"),
+      { kind: "text", text: "; Figs. " },
       figure("Fig. 8", "8"),
       { kind: "text", text: " and " },
       figure("Fig. 9", "9"),
-      { kind: "text", text: " show electrode structures alternative to those of Fig. 1; " },
+      { kind: "text", text: " show electrode structures alternative to those of " },
+      figure("Fig. 1", "Fig. 1"),
+      { kind: "text", text: "; " },
       figure("Fig. 10", "Fig. 10"),
       {
         kind: "text",
@@ -304,8 +345,10 @@ export const bardeenTransistorArchivalEdition: CuratedSpecificationEdition = {
       figure("Fig. 16", "Fig. 16"),
       {
         kind: "text",
-        text: " is a diagram showing the variation of the potential distribution of curve D of Fig. 15 as a function of distance from the emitter to the collector.",
+        text: " is a diagram showing the variation of the potential distribution of curve D of ",
       },
+      figure("Fig. 15", "Fig. 15"),
+      { kind: "text", text: " as a function of distance from the emitter to the collector." },
     ]),
     p(
       text(
@@ -317,21 +360,70 @@ export const bardeenTransistorArchivalEdition: CuratedSpecificationEdition = {
         'Small amounts, i. e., up to 0.1 per cent of impurities, generally of higher valency than the basic semiconductor material, e. g., phosphorus in silicon, antimony and arsenic in germanium, are termed "donor" impurities because they contribute to the conductivity of the basic material by donating electrons to an unfilled "conduction energy band" in the basic material. In such case the donated negative electrons constitute the carriers of current and the material and its conductivity are said to be of the N-type. Similar small amounts of impurities, generally of lower valency than the basic material, e. g., boron in silicon or aluminum in germanium, are termed "acceptor" impurities because they contribute to the conductivity by "accepting" electrons from the atoms of the basic material in the filled band. Such an acceptance leaves a gap or "hole" in the filled band. By interchange of the borrowed electrons from atom to atom, these positive "holes" effectively move about and constitute the carriers of current, and the material and its conductivity are said to be of the P-type. Under equilibrium conditions, the conductivity of an electrically neutral region or zone of such a semiconductor material is directly related to the concentration of significant impurities. Donor impurities which have given up electrons to an unfilled band are positively charged, and may be thought of as fixed positive ions. In a region of a semiconductor which has only donor type impurities, the concentration of conduction electrons is equal to the concentration of ionized donors. Similarly, in a region of a semiconductor which has only acceptor impurities, the concentration of holes is equal to the concentration of the negatively charged acceptor ions.',
       ),
     ),
-    p(
-      text(
-        "If for any reason there is a departure from electrical neutrality in a region, giving a resultant space charge, the magnitude of the conductivity, and even the conductivity type may differ from that indicated by the significant impurities. It was once thought that the high resistance barrier layer in a rectifier differs somehow in chemical constitution or in the nature of the significant impurities from the main body of the semiconductor. W. Schottky, in Zeits. f. Phys., volume 113, page 367 (1939), has shown that this is not necessary. While the concentration of carriers (mobile charges) in the barrier layer is small, the concentration of ionized impurities (fixed charges) may be the same as in the body of the semiconductor. The fixed charges in the barrier layer act in concert with induced charges of opposite sign on the metal electrode to produce a potential drop between the electrode and the body of the semiconductor. The concentration of carriers at a point depends on the electrostatic potential at that point, and is small compared with the equilibrium concentration in the body of the semiconductor if the potential differs from that in the body by more than a small fraction of a volt. The mathematical theory has been developed by W. Schottky and E. Spenke in Wiss. Veroff. Siemens Werke, vol. 18, page 225 (1939). These authors show that if the variation in electrostatic potential with depth below the surface is sufficiently large, the conductivity passes through a minimum for a certain potential and depth and the conductivity is of opposite type for larger values of the potential corresponding to smaller values of depth. They call the region of opposite conductivity type an inversion region. It is thus possible to have at a rectifier contact a thin layer of one conductivity type next to the metal electrode, separated by a high resistance barrier from the body of opposite conductivity type.",
+    p([
+      {
+        kind: "text",
+        text: "If for any reason there is a departure from electrical neutrality in a region, giving a resultant ",
+      },
+      term(
+        "space charge",
+        "A local net electric charge produced when mobile carriers and fixed ionized impurities no longer balance. The patent uses it to explain a conductivity type that can differ from the bulk impurity indication.",
       ),
-    ),
+      {
+        kind: "text",
+        text: ", the magnitude of the conductivity, and even the conductivity type may differ from that indicated by the significant impurities. It was once thought that the high resistance barrier layer in a rectifier differs somehow in chemical constitution or in the nature of the significant impurities from the main body of the semiconductor. W. Schottky, in Zeits. f. Phys., volume 113, page 367 (1939), has shown that this is not necessary. While the concentration of carriers (mobile charges) in the barrier layer is small, the concentration of ionized impurities (fixed charges) may be the same as in the body of the semiconductor. The fixed charges in the barrier layer act in concert with induced charges of opposite sign on the metal electrode to produce a potential drop between the electrode and the body of the semiconductor. The concentration of carriers at a point depends on the electrostatic potential at that point, and is small compared with the equilibrium concentration in the body of the semiconductor if the potential differs from that in the body by more than a small fraction of a volt. The mathematical theory has been developed by W. Schottky and E. Spenke in Wiss. Veroff. Siemens Werke, vol. 18, page 225 (1939). These authors show that if the variation in electrostatic potential with depth below the surface is sufficiently large, the conductivity passes through a minimum for a certain potential and depth and the conductivity is of opposite type for larger values of the potential corresponding to smaller values of depth. They call the region of opposite conductivity type an ",
+      },
+      term(
+        "inversion region",
+        "The locally opposite-conductivity region created by a sufficient electrostatic potential variation near the surface. In the cited account it need not result from a changed chemical impurity composition.",
+      ),
+      {
+        kind: "text",
+        text: ". It is thus possible to have at a rectifier contact a thin layer of one conductivity type next to the metal electrode, separated by a ",
+      },
+      term(
+        "high resistance barrier",
+        "A high-resistance intervening region between the near-surface layer and the opposite-type body. The source distinguishes its electrical effect from an automatically different chemical constitution.",
+      ),
+      { kind: "text", text: " from the body of opposite conductivity type." },
+    ]),
     p(
       text(
         "It has been pointed out by J. Bardeen in Phys. Rev., vol. 71, page 717 (1947), that the same sort of barrier layer that Schottky found for rectifying contacts may exist beneath the free surface of a semiconductor, the space charge of the barrier layer being balanced by a charge of opposite sign on the surface atoms. It is possible, for example, to have a thin layer of P-type conductivity at the free surface of a block which has a uniform concentration of donor impurities and which, therefore, has N-type conductivity in the body of the block, even though there are no actual acceptor impurities.",
       ),
     ),
-    p(
-      text(
-        'To distinguish such a situation from the similar one which depends on the presence of significant chemical impurities of opposite type in a thin surface layer, the terms "physical" and "chemical" are employed. Thus the terms "physical layer" and "physical barrier" refer to the layer of opposite conductivity type next to the surface and the high resistance barrier which separates it from the body of the semiconductor, both of which exist as a result of surface conditions and not as a result of a variation in the nature or concentration of significant impurities. The terms "chemical layer" and "chemical barrier" refer to the corresponding situation which does depend on a variation in significant impurities.',
+    p([
+      {
+        kind: "text",
+        text: 'To distinguish such a situation from the similar one which depends on the presence of significant chemical impurities of opposite type in a thin surface layer, the terms "physical" and "chemical" are employed. Thus the terms ',
+      },
+      term(
+        '"physical layer"',
+        "The patent's name for an opposite-type surface layer caused by surface conditions rather than a changed concentration or nature of significant chemical impurities.",
       ),
-    ),
+      { kind: "text", text: " and " },
+      term(
+        '"physical barrier"',
+        "The associated high-resistance barrier created by those surface conditions. It separates the physical layer from the semiconductor body without being attributed to a changed impurity profile.",
+      ),
+      {
+        kind: "text",
+        text: " refer to the layer of opposite conductivity type next to the surface and the high resistance barrier which separates it from the body of the semiconductor, both of which exist as a result of surface conditions and not as a result of a variation in the nature or concentration of significant impurities. The terms ",
+      },
+      term(
+        '"chemical layer"',
+        "The corresponding opposite-type surface layer when the source attributes the condition to a variation in significant chemical impurities rather than to surface conditions alone.",
+      ),
+      { kind: "text", text: " and " },
+      term(
+        '"chemical barrier"',
+        "The corresponding high-resistance barrier where the source attributes the layer-and-barrier condition to a variation in significant chemical impurities.",
+      ),
+      {
+        kind: "text",
+        text: " refer to the corresponding situation which does depend on a variation in significant impurities.",
+      },
+    ]),
     p(text("Both physical layers and chemical layers are suitable for the invention.")),
     p(
       text(
@@ -348,11 +440,20 @@ export const bardeenTransistorArchivalEdition: CuratedSpecificationEdition = {
         "The ingot is next soaked at a low heat of about 500° C. for 24 hours in a neutral atmosphere, for example of helium after which it is allowed to cool to room temperature.",
       ),
     ),
-    p(
-      text(
-        'In the resulting heat-treated ingot, various parts or zones are of various characteristics. In particular, the central part of the ingot is of N-type material capable of withstanding a "back voltage," in the sense in which this term is employed in the rectifier art, of 100-200 volts. It is this material which it is preferred to employ in connection with the present invention.',
+    p([
+      {
+        kind: "text",
+        text: "In the resulting heat-treated ingot, various parts or zones are of various characteristics. In particular, the central part of the ingot is of N-type material capable of withstanding a ",
+      },
+      term(
+        '"back voltage,"',
+        "The rectifier-art term used here for the reverse-voltage tolerance of the selected N-type germanium. The stated 100-200 volts describes the preferred material-selection property.",
       ),
-    ),
+      {
+        kind: "text",
+        text: " in the sense in which this term is employed in the rectifier art, of 100-200 volts. It is this material which it is preferred to employ in connection with the present invention.",
+      },
+    ]),
     p(
       text(
         "This material is next cut into blocks of suitable size and shape for use in connection with the invention. A suitable shape is a disc shaped block of about 1/4 inch diameter, and 3/32 inch thickness. The block is then ground flat on both sides, first with 280 mesh abrasive dust, for example, carborundum, and then with 600 mesh. It is then etched for one minute. The etching solution may consist of 10 c. c. of concentrated nitric acid, 5 c. c. of commercial standard (50 per cent) hydrofluoric acid, and 10 c. c. of water, in which a small amount, e. g. 0.2 gram, of copper nitrate has been dissolved. This etching treatment enables the block to withstand high (rectifier) back voltages. Next, one side of the block is provided with a coating of metal, for example copper or gold, which constitutes a low resistance electric contact. This may be done by evaporation or electroplating in accordance with well-known techniques. As a precaution against contamination of the other (unplated) side of the block which may have occurred in the course of the plating process, the unplated side may be subjected to a repetition of the etching process.",
@@ -907,6 +1008,42 @@ export const bardeenTransistorArchivalEdition: CuratedSpecificationEdition = {
       40,
       "A circuit element comprising a body of semiconductor material, one portion of which is of one conductivity type and another portion of which is of different conductivity type, an emitter electrode engaging the first portion of the body, a collector electrode engaging the body to collect current flowing to the body by way of said emitter electrode, and a base electrode providing a low-resistance connection to said other portion of the body to vary the magnitude of said current.",
     ),
+    { kind: "heading", level: 2, text: "Signatures" },
+    p(text("JOHN BARDEEN.")),
+    p(text("WALTER H. BRATTAIN.")),
+    { kind: "heading", level: 2, text: "REFERENCES CITED" },
+    { kind: "heading", level: 3, text: "UNITED STATES PATENTS" },
+    {
+      kind: "table",
+      headers: [text("Number"), text("Name"), text("Date")],
+      rows: [
+        [text("1,745,175"), text("Lilienfeld"), text("Jan. 28, 1930")],
+        [text("1,900,018"), text("Lilienfeld"), text("Mar. 7, 1933")],
+        [text("1,949,383"), text("Weber"), text("Feb. 27, 1934")],
+        [text("2,173,904"), text("Holst"), text("Sept. 26, 1939")],
+        [text("2,402,662"), text("Ohl"), text("June 25, 1946")],
+        [text("2,438,893"), text("Bieling"), text("Apr. 6, 1943")],
+        [text("2,441,603"), text("Storks et al."), text("May 18, 1948")],
+        [text("2,447,829"), text("Whaley"), text("Aug. 24, 1948")],
+        [text("2,464,807"), text("Hansen"), text("Mar. 22, 1949")],
+      ],
+    },
+    { kind: "heading", level: 3, text: "FOREIGN PATENTS" },
+    {
+      kind: "table",
+      headers: [text("Number"), text("Country"), text("Date")],
+      rows: [[text("439,457"), text("Great Britain"), text("Dec. 6, 1935")]],
+    },
+    { kind: "heading", level: 2, text: "Certificate of Correction" },
+    p(text("Patent No. 2,524,035. October 3, 1950. JOHN BARDEEN ET AL.")),
+    p(
+      text(
+        "It is hereby certified that error appears in the printed specification of the above numbered patent requiring correction as follows: Column 6, line 54, for “ar” read are; column 8, line 73, for “and” read end; column 17, line 51, for the word “side” read sign; and that the said Letters Patent should be read as corrected above, so that the same may conform to the record of the case in the Patent Office.",
+      ),
+    ),
+    p(text("Signed and sealed this 2nd day of January, A. D. 1951.")),
+    p(text("[SEAL]")),
+    p(text("THOMAS F. MURPHY, Assistant Commissioner of Patents.")),
   ],
 };
 
@@ -916,219 +1053,249 @@ export const bardeenTransistorParallelReadings: Readonly<Record<number, readonly
     "This records the application lineage only: the present grant continues an earlier, abandoned filing and does not claim that the abandoned application was itself a completed device.",
   ],
   5: [
-    "The stated objective is a practical signal-translating element without the warm-up, vacuum envelope, or fragile heated cathode required by thermionic hardware.",
+    "This opening statement defines the subject broadly as translating electrical variations for amplification, wave generation, and related uses. It precedes the later material, contact, and bias limitations of the illustrated device.",
   ],
   6: [
-    "The period vocabulary establishes the carrier model used throughout: electrons and holes are mobile charge carriers, and rectifying contact means that bias polarity controls which direction conducts readily.",
+    "The principal stated objective is practical amplification or translation using compact, simple, rugged apparatus. It is an object clause, not an independent claim that every signal translator is within the grant.",
   ],
   7: [
-    "This is the three-terminal operating chain: the forward-biased emitter changes injected carrier current, the reverse-biased collector draws a portion of it into a high-impedance output, and the low-resistance base completes the reference path.",
+    "This second objective contrasts the source device with thermionic equipment: it requires neither a heated cathode nor an evacuated or gas-filled envelope, so it is immediately operative when switched on.",
   ],
   8: [
-    "The passage distinguishes a surface inversion caused by electrostatic surface conditions from one produced by changed impurities; both can place opposite-type mobile carriers beside the supporting body and barrier.",
+    "The source reviews earlier solid-rectifier amplifier proposals that put a grid-like electrode inside a dielectric layer. It says the necessary layer cannot both insulate the grid and remain thin enough to pass current between the other electrodes.",
   ],
   9: [
-    "This is an exact guide to the drawings, separating the physical point-contact circuit, field-line sketches, collector geometries, alternative connections, and potential diagrams rather than treating them as interchangeable illustrations.",
+    "A second earlier proposal controlled the resistance of a homogeneous semiconductor strip with a transverse electrostatic field. The source says those devices could not be fabricated finely enough for amplification and were not commercially successful.",
   ],
   10: [
-    "The impurity discussion explains why donor and acceptor additions matter: they determine which carrier is normally in excess. It does not limit the invention to germanium, though germanium supplies the worked example.",
+    "This paragraph establishes the carrier vocabulary used throughout the specification: conduction electrons and holes have opposite effective charges, and N-type or P-type names which mobile charge is normally in excess.",
   ],
   11: [
-    "The fabrication example supplies a low-resistance plated base and two close rectifying contacts on the treated upper surface; it is an embodiment, not a substitution of a modern junction-transistor process into the historical text.",
+    "The source defines a rectifying contact by its preferred current direction. An N-type contact conducts readily when the semiconductor is negative relative to the metal; a P-type contact has the opposite sign convention.",
   ],
   12: [
-    "The stated bias arrangement is asymmetric: a small forward emitter bias supplies the controllable current and a larger reverse collector bias creates a high-impedance output. The named tube circuits are analogies, not identity claims.",
+    "Different semiconductor compositions can meet at a boundary, but so can different conductivity regions within chemically and stoichiometrically uniform material. The source therefore separates conductivity behavior from an automatic claim of differing material composition.",
   ],
   13: [
-    "The collector field captures carriers that initially spread through the surface layer. The alternative geometries increase capture without letting the collector field simply engulf the emitter, which would sacrifice control.",
+    "This is the core three-electrode arrangement: emitter and collector are rectifying contacts, the base is low resistance, forward emitter bias supplies opposite-sign carriers, and reverse collector bias draws a fraction into the collector.",
   ],
   14: [
-    "Input and output impedance are presented as design variables: semiconductor bulk and surface preparation set the contact behavior, while the selected bias potentials complete the operating choice.",
+    "Small emitter-voltage changes create larger changes in emitter and collector current. Because the collector contact has high internal impedance, the source says a matched high-impedance load can obtain voltage, current, and power amplification.",
   ],
   15: [
-    "The tube names describe external wiring analogies only. The source limits the correspondence to emitter with cathode, base with grid, and collector with anode; it does not make the solid-state device a vacuum tube.",
+    "This form puts an opposite-type thin surface layer above the semiconductor body and separates it with a high-resistance rectifying barrier. Emitter current spreads laterally in the layer before the base returns it across the barrier.",
   ],
   16: [
-    "Positive feedback returns part of the output in phase to the input. With an external frequency-selecting circuit, that loop can sustain oscillation; the authors cite that oscillation as an experimental confirmation of power amplification.",
+    "The authors restate the transport mechanism: opposite-sign carriers injected under the emitter raise local conductivity, while the reverse-biased collector field draws current from its surrounding region and creates high collector impedance but low emitter impedance.",
   ],
   17: [
-    "The authors next give a compact empirical description of the device, rather than claiming the relations are a complete microscopic theory. The following two displayed relations define the quantities used in their feedback interpretation.",
+    "Input and output impedance are presented as design variables: semiconductor bulk and surface preparation set the contact behavior, while the selected bias potentials complete the operating choice.",
+  ],
+  18: [
+    "The tube names describe external wiring analogies only. The source limits the correspondence to emitter with cathode, base with grid, and collector with anode; it does not make the solid-state device a vacuum tube.",
+  ],
+  19: [
+    "Positive feedback returns part of the output in phase to the input. With an external frequency-selecting circuit, that loop can sustain oscillation; the authors cite that oscillation as an experimental confirmation of power amplification.",
   ],
   20: [
-    "The definitions distinguish the emitter current from the collector current and its disconnected-emitter value. They also state which electrode voltages are measured against the base and identify Rf, a, and the open-collector function f(Ve).",
-  ],
-  21: [
-    "Equation 1 is read as positive feedback: collector current lowers the nearby surface potential, increasing the effective emitter bias by RfIc. That added emitter bias reinforces the current change rather than merely recording it.",
-  ],
-  22: [
-    "This sentence introduces the drawings as part of the detailed embodiment. It does not claim that every later figure is a separate invention; the figures are the source's ordered evidence for one described form and its alternatives.",
+    "The authors next give a compact empirical description of the device, rather than claiming the relations are a complete microscopic theory. The following two displayed relations define the quantities used in their feedback interpretation.",
   ],
   23: [
-    "The first twelve figures distinguish the preferred device, its enlarged section and tube analogy, current-flow plans, alternative electrode layouts, and three external circuit uses. Each figure number remains a separate source-cited reference.",
+    "The definitions distinguish the emitter current from the collector current and its disconnected-emitter value. They also state which electrode voltages are measured against the base and identify Rf, a, and the open-collector function f(Ve).",
   ],
   24: [
-    "The final four figures are potential-distribution diagrams: N-type and P-type metal contacts, a thin P-type layer against N-type material, and the variation along the emitter-to-collector path. This completes the printed Fig. 1 through Fig. 16 guide.",
+    "Equation 1 is read as positive feedback: collector current lowers the nearby surface potential, increasing the effective emitter bias by RfIc. That added emitter bias reinforces the current change rather than merely recording it.",
   ],
   25: [
-    "This paragraph fixes the patent's material vocabulary. Significant impurities are those with electrical consequences, whether deliberately added or already present; germanium supplies the example, but silicon, cuprous oxide, and silicon carbide remain within the stated discussion.",
+    "This sentence introduces the drawings as part of the detailed embodiment. It does not claim that every later figure is a separate invention; the figures are the source's ordered evidence for one described form and its alternatives.",
   ],
   26: [
-    "Donors leave excess mobile electrons and acceptors leave mobile holes. The source explains both carrier types, their N-type or P-type classification, and the neutral-region relation between each mobile carrier concentration and the corresponding fixed ionized impurity concentration.",
+    "The first twelve figures distinguish the preferred device, its enlarged section and tube analogy, current-flow plans, alternative electrode layouts, and three external circuit uses. Each figure number remains a separate source-cited reference.",
   ],
   27: [
-    "Space charge can make local conductivity differ from the impurity indication. The cited Schottky and Spenke account explains how a rectifying contact can create a high-resistance barrier and an opposite-type inversion region through electrostatic potential rather than a changed chemical composition.",
+    "The final four figures are potential-distribution diagrams: N-type and P-type metal contacts, a thin P-type layer against N-type material, and the variation along the emitter-to-collector path. This completes the printed Fig. 1 through Fig. 16 guide.",
   ],
   28: [
-    "Bardeen's cited surface analysis extends the rectifying-contact barrier to a free semiconductor surface. A uniformly donor-doped block can therefore carry a thin P-type surface layer without actual acceptor impurities in that layer.",
+    "This paragraph fixes the patent's material vocabulary. Significant impurities are those with electrical consequences, whether deliberately added or already present; germanium supplies the example, but silicon, cuprous oxide, and silicon carbide remain within the stated discussion.",
   ],
   29: [
-    "The source distinguishes a physical layer or barrier, created by surface conditions, from a chemical layer or barrier, created by a variation in significant impurities. The distinction concerns cause, not merely the observed conductivity type.",
+    "Donors leave excess mobile electrons and acceptors leave mobile holes. The source explains both carrier types, their N-type or P-type classification, and the neutral-region relation between each mobile carrier concentration and the corresponding fixed ionized impurity concentration.",
   ],
   30: [
-    "This short conclusion states that either the surface-condition route or the impurity-variation route can provide a layer suitable for the invention; it does not prefer one as the only permissible embodiment.",
+    "Space charge can make local conductivity differ from the impurity indication. The cited Schottky and Spenke account explains how a rectifying contact can create a high-resistance barrier and an opposite-type inversion region through electrostatic potential rather than a changed chemical composition.",
   ],
   31: [
-    "The source permits an impurity-controlled silicon surface layer, but identifies its preferred worked material as high-back-voltage N-type germanium. The distinction is between a possible chemical-layer embodiment and the material actually used for the reported discovery.",
+    "Bardeen's cited surface analysis extends the rectifying-contact barrier to a free semiconductor surface. A uniformly donor-doped block can therefore carry a thin P-type surface layer without actual acceptor impurities in that layer.",
   ],
   32: [
-    "This is a historical preparation sequence: reduction of germanium dioxide, controlled melting and directional solidification in helium, then cooling. It supplies the source's material provenance and does not claim that every later transistor must be produced by this route.",
+    "The source distinguishes a physical layer or barrier, created by surface conditions, from a chemical layer or barrier, created by a variation in significant impurities. The distinction concerns cause, not merely the observed conductivity type.",
   ],
   33: [
-    "The stated low-temperature helium soak is a separate heat-treatment step after solidification, followed by cooling to room temperature before the material is selected and cut.",
+    "This short conclusion states that either the surface-condition route or the impurity-variation route can provide a layer suitable for the invention; it does not prefer one as the only permissible embodiment.",
   ],
   34: [
-    "The preferred central zone is N-type germanium that can withstand 100 to 200 volts of reverse rectifier bias. The period phrase back voltage names this reverse-bias tolerance, not an operating collector voltage asserted for every device.",
+    "The source permits an impurity-controlled silicon surface layer, but identifies its preferred worked material as high-back-voltage N-type germanium. The distinction is between a possible chemical-layer embodiment and the material actually used for the reported discovery.",
   ],
   35: [
-    "This block-preparation paragraph specifies cutting, two-stage grinding, an acid etch, and a plated low-resistance contact. Its numerical dimensions and chemical quantities describe the illustrated preparation, including a repeated etch when plating may contaminate the opposite face.",
+    "This is a historical preparation sequence: reduction of germanium dioxide, controlled melting and directional solidification in helium, then cooling. It supplies the source's material provenance and does not claim that every later transistor must be produced by this route.",
   ],
   36: [
-    "The anodic treatment gives a staged negative-bias schedule through an inert electrode in a viscous electrolyte. The source states the current densities and decay times so the treatment is a reproducible historical process rather than a generic claim that any oxide will work.",
+    "The stated low-temperature helium soak is a separate heat-treatment step after solidification, followed by cooling to room temperature before the material is selected and cut.",
   ],
   37: [
-    "After the anodic treatment, the block is washed and dried. Vacuum and radiant heat are named as successful finishing methods, and spot electrodes may be evaporated during drying; this is the source's preparation path before electrical use.",
+    "The preferred central zone is N-type germanium that can withstand 100 to 200 volts of reverse rectifier bias. The period phrase back voltage names this reverse-bias tolerance, not an operating collector voltage asserted for every device.",
   ],
   38: [
-    "The authors explicitly say the oxidation is optional. They report amplification after an etch without later surface treatment except electrical forming, so this example does not turn anodic oxidation into a universal prerequisite.",
+    "This block-preparation paragraph specifies cutting, two-stage grinding, an acid etch, and a plated low-resistance contact. Its numerical dimensions and chemical quantities describe the illustrated preparation, including a repeated etch when plating may contaminate the opposite face.",
   ],
   39: [
-    "This continuous apparatus paragraph ties the figure to the prepared block: plated N-type base, thin P-type surface layer, rectifying barrier, and a springy point emitter. It also records the stated point-contact force and ductile-wire examples without replacing them with a modern junction fabrication account.",
+    "The anodic treatment gives a staged negative-bias schedule through an inert electrode in a viscous electrolyte. The source states the current densities and decay times so the treatment is a reproducible historical process rather than a generic claim that any oxide will work.",
   ],
   40: [
-    "The collector is a second close, rectifying contact. The source gives the one-to-ten-mil spacing and two constructions: a spring wire or a pierced or slotted evaporated-metal spot, each tied to its own printed figure citation.",
+    "After the anodic treatment, the block is washed and dried. Vacuum and radiant heat are named as successful finishing methods, and spot electrodes may be evaporated during drying; this is the source's preparation path before electrical use.",
   ],
   41: [
-    "The third connection is the low-resistance base path through the plated lower film. This sentence fixes the historical connection point instead of treating base as an abstract circuit symbol.",
+    "The authors explicitly say the oxidation is optional. They report amplification after an etch without later surface treatment except electrical forming, so this example does not turn anodic oxidation into a universal prerequisite.",
   ],
   42: [
-    "Electrical forming applies a potential above peak back voltage to one or both point contacts through a series resistor. The stated explanation is localized field and heat that improve the contact; it is not presented as a complete microscopic proof.",
+    "This continuous apparatus paragraph ties the figure to the prepared block: plated N-type base, thin P-type surface layer, rectifying barrier, and a springy point emitter. It also records the stated point-contact force and ductile-wire examples without replacing them with a modern junction fabrication account.",
   ],
   43: [
-    "The operating bias is asymmetrical: a small usually positive emitter bias and a larger negative collector bias, each referenced to the semiconductor body. The source gives the stated collector range and identifies the two batteries without collapsing them into a modern transistor bias convention.",
+    "The collector is a second close, rectifying contact. The source gives the one-to-ten-mil spacing and two constructions: a spring wire or a pierced or slotted evaporated-metal spot, each tied to its own printed figure citation.",
   ],
   44: [
-    "This paragraph identifies the load and signal transformers, then distinguishes the three named tube analogies. The reported more-than-75 power gain belongs specifically to the grounded-base arrangement and the source cautions that its current path differs from a vacuum-tube grounded-grid circuit.",
+    "The third connection is the low-resistance base path through the plated lower film. This sentence fixes the historical connection point instead of treating base as an abstract circuit symbol.",
+  ],
+  45: [
+    "Electrical forming applies a potential above peak back voltage to one or both point contacts through a series resistor. The stated explanation is localized field and heat that improve the contact; it is not presented as a complete microscopic proof.",
   ],
   46: [
-    "This reports the feedback experiment used to confirm power amplification. Returning output voltage through transformer 12 produced sustained oscillation, so the source treats oscillation as evidence of a loop with sufficient power gain.",
+    "The operating bias is asymmetrical: a small usually positive emitter bias and a larger negative collector bias, each referenced to the semiconductor body. The source gives the stated collector range and identifies the two batteries without collapsing them into a modern transistor bias convention.",
   ],
   47: [
-    "For sample 1, the table’s power gain divided by voltage gain gives a current gain of 1.3. The calculation is an explicit inference from the listed operating data, not a claim that every sample has that current gain.",
-  ],
-  48: [
-    "The authors mark this as a hypothesis, then relate their preparation and contact observations to a thin P-type layer, an N-type supporting body, and a barrier. They distinguish physical and chemical-layer explanations without pretending the layer’s chemical nature was settled.",
+    "This paragraph identifies the load and signal transformers, then distinguishes the three named tube analogies. The reported more-than-75 power gain belongs specifically to the grounded-base arrangement and the source cautions that its current path differs from a vacuum-tube grounded-grid circuit.",
   ],
   49: [
-    "With an open collector circuit, holes injected at the emitter spread in the surface layer and eventually reach the plated base path. The potential-probe result is the stated reason for treating the surface current as P-type rather than ordinary N-type bulk-electron current.",
+    "This reports the feedback experiment used to confirm power amplification. Returning output voltage through transformer 12 produced sustained oscillation, so the source treats oscillation as evidence of a loop with sufficient power gain.",
   ],
   50: [
-    "A reverse-biased collector creates a strong local field across the thin layer and barrier. The cited dimensions and 10-volt example give an order-of-magnitude field estimate; the fixed positive charge in the N-type body maintains that field near the collector.",
+    "For sample 1, the table’s power gain divided by voltage gain gives a current gain of 1.3. The calculation is an explicit inference from the listed operating data, not a claim that every sample has that current gain.",
   ],
   51: [
-    "High-back-voltage material is preferred because the collector region must support a substantial voltage drop. This is the material-selection reason supplied by the source, not a new independent circuit requirement.",
+    "The authors mark this as a hypothesis, then relate their preparation and contact observations to a thin P-type layer, an N-type supporting body, and a barrier. They distinguish physical and chemical-layer explanations without pretending the layer’s chemical nature was settled.",
   ],
   52: [
-    "The collector attracts laterally spreading holes into the external load while operating near saturation, which gives its circuit a high alternating-current impedance. A small emitter-base signal therefore changes collector current and produces an amplified load voltage.",
+    "With an open collector circuit, holes injected at the emitter spread in the surface layer and eventually reach the plated base path. The potential-probe result is the stated reason for treating the surface current as P-type rather than ordinary N-type bulk-electron current.",
   ],
   53: [
-    "The point contacts are deliberately broad relative to the thin surface layer. This lowers contact resistance compared with the lateral spreading resistance in that layer, preserving the source’s distinction between contact and sheet resistance.",
+    "A reverse-biased collector creates a strong local field across the thin layer and barrier. The cited dimensions and 10-volt example give an order-of-magnitude field estimate; the fixed positive charge in the N-type body maintains that field near the collector.",
   ],
   54: [
-    "The source’s plan views contrast straight hole-current stream lines without collector field and distorted lines with it. The field can collect more than half, and in favorable cases up to 90 percent, of the emitter current at a single collector.",
+    "High-back-voltage material is preferred because the collector region must support a substantial voltage drop. This is the material-selection reason supplied by the source, not a new independent circuit requirement.",
   ],
   55: [
-    "Multiple symmetric collectors increase capture without allowing a single collector field to engulf the emitter, which would remove useful control. The field boundaries remain explicitly drawn as broken lines and the collectors may be tied together.",
+    "The collector attracts laterally spreading holes into the external load while operating near saturation, which gives its circuit a high alternating-current impedance. A small emitter-base signal therefore changes collector current and produces an amplified load voltage.",
   ],
   56: [
-    "The ring collector and paired semicircular spots are source-described alternatives for extending the collector field. Their geometry is tied to the facsimile figures, not substituted with a later transistor layout.",
+    "The point contacts are deliberately broad relative to the thin surface layer. This lowers contact resistance compared with the lateral spreading resistance in that layer, preserving the source’s distinction between contact and sheet resistance.",
   ],
   57: [
-    "Restricting the treated or machined region confines the high-resistance barrier around the emitter and collector. The source gives both a bowl-shaped treated layer and a truncated-pyramid geometry as ways to raise resistance and collector-current ratio.",
+    "The source’s plan views contrast straight hole-current stream lines without collector field and distorted lines with it. The field can collect more than half, and in favorable cases up to 90 percent, of the emitter current at a single collector.",
   ],
   58: [
-    "The wedge and cone structures replace spring points with plated insulating forms while maintaining close electrodes and low interelectrode capacitance. The central wire and surrounding metal film retain the stated emitter and collector roles.",
+    "Multiple symmetric collectors increase capture without allowing a single collector field to engulf the emitter, which would remove useful control. The field boundaries remain explicitly drawn as broken lines and the collectors may be tied together.",
   ],
   59: [
-    "The potential plot for an N-type semiconductor explains how fixed positive charge and balancing electrons create a depth-dependent electrostatic potential. The displayed Poisson relation is part of the printed source argument for the chemical surface layer.",
+    "The ring collector and paired semicircular spots are source-described alternatives for extending the collector field. Their geometry is tied to the facsimile figures, not substituted with a later transistor layout.",
+  ],
+  60: [
+    "Restricting the treated or machined region confines the high-resistance barrier around the emitter and collector. The source gives both a bowl-shaped treated layer and a truncated-pyramid geometry as ways to raise resistance and collector-current ratio.",
   ],
   61: [
-    "This is the source’s definition list for the Poisson-equation symbols: potential, distance into the semiconductor, charge density, and dielectric constant. It preserves the variables rather than treating the formula as decorative notation.",
+    "The wedge and cone structures replace spring points with plated insulating forms while maintaining close electrodes and low interelectrode capacitance. The central wire and surrounding metal film retain the stated emitter and collector roles.",
   ],
   62: [
-    "Assuming uniform charge density yields a parabolic potential curve. The vertical rise from the Fermi level is identified as the electron-transfer energy, with the cited Joffe article offered as the contemporary explanatory reference.",
-  ],
-  63: [
-    "The companion hole-potential diagram defines Eh as the energy needed for a positive hole to leave the metal and enter the P-type semiconductor. It parallels, but does not duplicate, the preceding electron-potential case.",
+    "The potential plot for an N-type semiconductor explains how fixed positive charge and balancing electrons create a depth-dependent electrostatic potential. The displayed Poisson relation is part of the printed source argument for the chemical surface layer.",
   ],
   64: [
-    "The composite figure joins electron and hole energy curves for a thin P-type layer against N-type material. Bias shifts the curves, changing effective layer thickness, hole density, and conductivity in the direction reported by the probe measurements.",
+    "This is the source’s definition list for the Poisson-equation symbols: potential, distance into the semiconductor, charge density, and dielectric constant. It preserves the variables rather than treating the formula as decorative notation.",
   ],
   65: [
-    "The layer must be thick enough to conduct laterally but thin enough to admit holes readily and let collector rectification be dominated by the supporting body. Reverse collector bias localizes most voltage drop near the collector and keeps its impedance high.",
+    "Assuming uniform charge density yields a parabolic potential curve. The vertical rise from the Fermi level is identified as the electron-transfer energy, with the cited Joffe article offered as the contemporary explanatory reference.",
   ],
   66: [
-    "The preferred layer thickness lies between poor injection and poor lateral conduction. Holes gather near the potential peak and diffuse outward; the source explicitly locates their spreading in the two figure geometries before some enter the collector field.",
+    "The companion hole-potential diagram defines Eh as the energy needed for a positive hole to leave the metal and enter the P-type semiconductor. It parallels, but does not duplicate, the preceding electron-potential case.",
   ],
   67: [
-    "The source explains that the barrier impedes hole crossing while a thin P-type layer still permits easy entry from the positively biased emitter. The air-bubble comparison is the historical text’s own analogy for accumulation and lateral motion.",
+    "The composite figure joins electron and hole energy curves for a thin P-type layer against N-type material. Bias shifts the curves, changing effective layer thickness, hole density, and conductivity in the direction reported by the probe measurements.",
   ],
   68: [
-    "This paragraph frames the remaining mathematical treatment: a P-type region can be separated from an N-type region even where the semiconductor’s chemical composition and stoichiometry are uniform, so the barrier is an electrical-state phenomenon.",
+    "The layer must be thick enough to conduct laterally but thin enough to admit holes readily and let collector rectification be dominated by the supporting body. Reverse collector bias localizes most voltage drop near the collector and keeps its impedance high.",
   ],
   69: [
-    "The conductivity expression separates electron and positive-hole contributions. Its variables define carrier density, charge, and mobility for each carrier population rather than reducing the result to a modern shorthand conductivity label.",
+    "The preferred layer thickness lies between poor injection and poor lateral conduction. Holes gather near the potential peak and diffuse outward; the source explicitly locates their spreading in the two figure geometries before some enter the collector field.",
+  ],
+  70: [
+    "The source explains that the barrier impedes hole crossing while a thin P-type layer still permits easy entry from the positively biased emitter. The air-bubble comparison is the historical text’s own analogy for accumulation and lateral motion.",
   ],
   71: [
-    "This definition list identifies the electron and hole densities, charges, and mobilities that appear in the conductivity equation. It keeps the two carrier populations distinct, as the historical explanation requires.",
+    "This paragraph frames the remaining mathematical treatment: a P-type region can be separated from an N-type region even where the semiconductor’s chemical composition and stoichiometry are uniform, so the barrier is an electrical-state phenomenon.",
   ],
   72: [
-    "The two exponential relations describe the equilibrium carrier populations that feed the conductivity calculation. They are printed as part of the physical explanation, not asserted as separate patent claims.",
+    "The conductivity expression separates electron and positive-hole contributions. Its variables define carrier density, charge, and mobility for each carrier population rather than reducing the result to a modern shorthand conductivity label.",
+  ],
+  74: [
+    "This definition list identifies the electron and hole densities, charges, and mobilities that appear in the conductivity equation. It keeps the two carrier populations distinct, as the historical explanation requires.",
   ],
   75: [
+    "The two exponential relations describe the equilibrium carrier populations that feed the conductivity calculation. They are printed as part of the physical explanation, not asserted as separate patent claims.",
+  ],
+  78: [
     "Ve and Vh are defined geometrically relative to the Fermi level and the two Figure 15 curves. The constant Eg lets the source rewrite conductivity using one potential variable while keeping the two carrier contributions explicit.",
   ],
-  77: [
+  80: [
     "The rewritten conductivity expression makes the competing electron and hole terms visible in one equation. The accompanying text then seeks the potential depth at which the material’s resistivity reaches its maximum.",
   ],
-  79: [
+  82: [
     "Equal electron and hole potential heights give the maximum-resistivity point. Departing to either side changes which carrier contribution dominates, yielding the source’s N-type or P-type conductivity classification.",
   ],
-  80: [
+  83: [
     "The three-dimensional diagram follows holes from emitter toward collector. The potential peak diminishes near the collector until the collector itself is the lowest-potential withdrawal point, tying the energy picture back to current collection.",
   ],
-  81: [
+  84: [
     "Some emitter-originated current crosses the barrier and then crosses back near the collector, becoming collector current. The authors state that their amplification hypothesis covers this path as well as current that remains entirely in the surface layer.",
   ],
-  82: [
+  85: [
     "A second collector-current component is electron flow from collector to base across the barrier once. The next paragraph gives the source’s proposed mechanism by which this component changes together with emitter-originated collector current.",
   ],
-  83: [
+  86: [
     "The collector contact has an electron-energy hill whose reverse-bias field lowers its effective height. Accumulated holes steepen the potential fall, further lower contact impedance, and therefore make the electron-to-base component rise with the emitter-originated component.",
   ],
-  84: [
+  87: [
     "The authors permit the conductivity types and bias polarities to be reversed, and permit different semiconductor materials for the layer and body. They retain the dependence of best bias on material and processing while declaring these variants within the invention’s spirit.",
   ],
-  85: [
+  88: [
     "This is the formal non-limitation sentence immediately before the claims. It preserves the distinction between the disclosed examples and the legal scope to be defined by the following numbered claims.",
+  ],
+  131: [
+    "This printed signature identifies John Bardeen as a named inventor on the grant. It is preserved as formal patent matter, not treated as an editorial attribution added by the archive.",
+  ],
+  132: [
+    "This printed signature identifies Walter H. Brattain as the other named inventor on the grant. The source face keeps the signature distinct from the later correction certificate’s administrative signature.",
+  ],
+  139: [
+    "This correction-certificate masthead identifies the affected patent, its printed date, and the inventor group. It begins a formal correction record rather than a new specification paragraph or claim.",
+  ],
+  140: [
+    "The certificate directs three exact readings of the printed specification: column 6 substitutes are for an, column 8 substitutes and for and, and column 17 substitutes sign for side. The historical source must be read subject to those stated corrections.",
+  ],
+  141: [
+    "This is the certificate’s sealing date. It records the Patent Office action on January 2, 1951, after the October 3, 1950 patent date shown in the certificate heading.",
+  ],
+  142: [
+    "The facsimile prints a seal marker beneath the certificate. It is retained as formal documentary matter even though it carries no additional specification prose.",
+  ],
+  143: [
+    "Thomas F. Murphy is printed as Assistant Commissioner of Patents beneath the certificate. This is the official administrative signature line for the correction certificate, not an inventor signature.",
   ],
 };

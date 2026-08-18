@@ -49,6 +49,60 @@ describe("edisonPhonographArchivalEdition", () => {
         expect(existsSync(resolve(process.cwd(), "public", preview.src.slice(1)))).toBe(true);
       }
     }
+    const fig3Reference = figureReferences.find((reference) => reference.text === "Fig. 3");
+    expect(fig3Reference?.figurePreviews?.[0]?.src).toBe(
+      "/patents/figures/us-200521-edison-phonograph-fig-3-complete-source-crop-v2.png",
+    );
+  });
+
+  test("preserves drawing-sheet formal matter, the claim preamble, and source-only terminology", () => {
+    const asset = edisonPhonographPatent.originalTextAsset;
+    if (!asset) throw new Error("US 200,521 is missing its reviewed ledger.");
+    const ledger = readFileSync(`${process.cwd()}/public${asset.url}`, "utf8");
+    const editionText = edisonPhonographArchivalEdition.blocks
+      .flatMap((block) => {
+        if (block.kind === "masthead") return block.lines;
+        if ("inlines" in block) return [block.inlines.map((inline) => inline.text).join("")];
+        if (block.kind === "figure-sheet") return [block.figureLabel, block.title];
+        return [];
+      })
+      .join("\n");
+
+    for (const sourceLine of [
+      "T. A. EDISON.",
+      "Phonograph or Speaking Machine.",
+      "No. 200,521. Patented Feb. 19, 1878.",
+      "Witnesses: Chas. H. Smith.",
+      "Inventor: Thomas A. Edison.",
+      "for Lemuel W. Serrell, atty.",
+      "I claim as my invention—",
+      "pin, 2",
+    ]) {
+      expect(ledger).toContain(sourceLine);
+      expect(editionText).toContain(sourceLine);
+    }
+    expect(edisonPhonographParallelReadings[12]?.join(" ")).toContain("Pin 2");
+    expect(edisonPhonographParallelReadings[12]?.join(" ")).not.toContain("Pin Z");
+
+    const termInlines = edisonPhonographArchivalEdition.blocks.flatMap((block) => {
+      if (!("inlines" in block)) return [];
+      return block.inlines.filter(
+        (inline): inline is Extract<(typeof block.inlines)[number], { kind: "term" }> =>
+          inline.kind === "term",
+      );
+    });
+    for (const sourceTerm of [
+      "re-enforce",
+      "indenting-point",
+      "stereotyped",
+      "volute spiral",
+      "diaphragmic",
+      "Morse register",
+      "paraffine",
+    ]) {
+      const annotation = termInlines.find((inline) => inline.text === sourceTerm);
+      expect(annotation?.definition.length).toBeGreaterThan(80);
+    }
   });
 
   test("keeps the canonical record synchronized to the corrected source claim set", () => {
@@ -102,7 +156,7 @@ describe("edisonPhonographArchivalEdition", () => {
         .map(Number)
         .sort((left, right) => left - right),
     ).toEqual(paragraphIndexes);
-    expect(edisonPhonographParallelReadings[25]?.join(" ")).toContain("Figure 3");
-    expect(edisonPhonographParallelReadings[25]?.join(" ")).toContain("Figure 4");
+    expect(edisonPhonographParallelReadings[26]?.join(" ")).toContain("Figure 3");
+    expect(edisonPhonographParallelReadings[26]?.join(" ")).toContain("Figure 4");
   });
 });

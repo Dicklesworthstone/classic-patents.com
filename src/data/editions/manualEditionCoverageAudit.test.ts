@@ -2,13 +2,14 @@ import { describe, expect, test } from "bun:test";
 import { createHash } from "node:crypto";
 import { existsSync, readFileSync } from "node:fs";
 import { join } from "node:path";
+import { archivalEditionForPublication } from "@/components/patents/DualProjectionViewer";
 import { allPatents } from "@/data/patents";
 import { validateReviewedTranscription } from "@/data/patents/sourceTextValidation";
 
 const BARE_DRAWING_REFERENCE =
   /\b(?:(?:fig(?:s)?\.?|figure)\s+\d+[a-z′′]*|(?:section|division)\s+\d+)\b/i;
 
-const manualPatents = () => allPatents.filter((patent) => patent.archivalEdition);
+const manualPatents = () => allPatents.filter((patent) => archivalEditionForPublication(patent));
 
 describe("manual edition coverage audit", () => {
   test("covers every registered manual edition, not one exemplar", () => {

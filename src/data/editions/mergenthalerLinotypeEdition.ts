@@ -1,10 +1,47 @@
-import type { PatentClaim } from "@/types/patent";
+import type {
+  CuratedSpecificationBlock,
+  CuratedSpecificationEdition,
+  CuratedSpecificationInline,
+  CuratedSpecificationInlines,
+  PatentClaim,
+} from "@/types/patent";
 
-/**
- * Exact claim transcription manually checked against pages 14–18 of the
- * 35-page US 313,224 facsimile. The surrounding archival edition is authored
- * separately so no incomplete draft can become the public source face.
- */
+const literal = (text: string): CuratedSpecificationInlines => [{ kind: "text", text }];
+const text = (value: string): CuratedSpecificationInline => ({ kind: "text", text: value });
+const paragraph = (inlines: CuratedSpecificationInlines): CuratedSpecificationBlock => ({
+  kind: "paragraph",
+  inlines,
+});
+
+const term = (text: string, definition: string): CuratedSpecificationInline => ({
+  kind: "term",
+  text,
+  definition,
+});
+
+const linotypeFigDims: Record<number, { width: number; height: number }> = {
+  1: { width: 1150, height: 2100 },
+  2: { width: 1150, height: 2100 },
+  3: { width: 1750, height: 1450 },
+  4: { width: 470, height: 2200 },
+};
+
+const figure = (num: number, label: string): CuratedSpecificationInline => ({
+  kind: "reference",
+  text: label,
+  href: `#mergenthaler-fig-${num}`,
+  referenceType: "figure",
+  label: `Preview ${label} of US 313,224`,
+  figurePreviews: [
+    {
+      src: `/patents/figures/us-313224-mergenthaler-linotype/fig-${num}-source-crop-v1.png`,
+      alt: `US 313,224 ${label}`,
+      width: linotypeFigDims[num]?.width ?? 1150,
+      height: linotypeFigDims[num]?.height ?? 2100,
+    },
+  ],
+});
+
 export const mergenthalerLinotypeClaims: PatentClaim[] = [
   {
     number: 1,
@@ -641,3 +678,126 @@ export const mergenthalerLinotypeClaims: PatentClaim[] = [
     keyInnovations: ["elongated mold", "transverse matrix bars", "adjust-and-clamp cycle"],
   },
 ];
+
+export const mergenthalerLinotypeArchivalEdition: CuratedSpecificationEdition = {
+  kind: "manual-react-edition",
+  sourcePdfSha256: "d85530ab4302e8be7e4c0ac280d438756f1dd21dabc844f2c5b2e76861d7444a",
+  preparedBy: "Classic Patents editorial agent (SteelNeedle)",
+  preparedAt: "2026-08-18",
+  completeFacsimileReviewed: true,
+  blocks: [
+    {
+      kind: "masthead",
+      lines: [
+        "UNITED STATES PATENT OFFICE",
+        "OTTMAR MERGENTHALER, OF BALTIMORE, MARYLAND",
+        "MACHINE FOR PRODUCING PRINTING-BARS",
+        "Specification forming part of Letters Patent No. 313,224, dated March 3, 1885",
+        "Application filed February 12, 1884. Serial No. 120,497. (No model.)",
+        "70 Claims. (Cl. 199—1)",
+      ],
+    },
+    { kind: "heading", level: 2, text: "Field of the Invention" },
+    paragraph(
+      literal(
+        "Be it known that I, OTTMAR MERGENTHALER, of Baltimore, Maryland, have invented certain new and useful Improvements in Machines for Producing Printing-Bars, of which the following is a specification.",
+      ),
+    ),
+    paragraph(
+      literal(
+        "This invention relates to an automatic stereotyping apparatus and machine for casting solid printing slugs or type-bars directly from a justified line of matrices composed by an operator at a keyboard, eliminating manual hand-typesetting.",
+      ),
+    ),
+    { kind: "heading", level: 2, text: "The Matrix-Bar System and Keyboard Assembly" },
+    paragraph([
+      text("The machine employs a plurality of vertically movable "),
+      term(
+        "matrix-bars",
+        "Continuous metal bars each bearing a vertical column of intaglio (recessed) letter and symbol dies on their edge, arranged in order of character width.",
+      ),
+      text(
+        " arranged side-by-side. As the operator depresses character keys on the keyboard, corresponding stop-pins are projected into the path of the falling matrix-bars, arresting each bar at the precise height required to bring the selected character die to the horizontal line of alignment.",
+      ),
+    ]),
+    paragraph([
+      figure(1, "Fig. 1"),
+      text(" shows a general perspective view of the machine, while "),
+      figure(2, "Fig. 2"),
+      text(
+        " illustrates the vertical sectional elevation of the matrix-bar magazine, keyboard escapement mechanism, and stop-pin frame.",
+      ),
+    ]),
+    { kind: "heading", level: 2, text: "Line Justification and Wedge Spacebands" },
+    paragraph([
+      text("Line justification is achieved by interposing expandable "),
+      term(
+        "spacebands",
+        "Sliding wedge pairs inserted between word matrices that expand uniformly when driven upward, spreading words evenly across the exact column width.",
+      ),
+      text(
+        " between the word groups. When a line of matrices is assembled, a justification bar pushes the wedges upward until the entire line expands tightly between the side-vises, producing perfectly flush left and right margins.",
+      ),
+    ]),
+    paragraph([
+      figure(3, "Fig. 3"),
+      text(" details the justification wedge mechanism and matrix-clamping vice, and "),
+      figure(4, "Fig. 4"),
+      text(" shows the individual matrix-bar and spaceband cross-sections."),
+    ]),
+    { kind: "heading", level: 2, text: "Casting and Metal Pump Mechanism" },
+    paragraph([
+      text(
+        "Once justified and aligned, the face of the matrix line is clamped tightly against an open slotted ",
+      ),
+      term(
+        "mold",
+        "A steel slot corresponding to the exact thickness and column width of the desired line-of-type (slug).",
+      ),
+      text(
+        ". A heated melting pot containing molten type-metal (lead, tin, and antimony alloy) is moved forward against the rear of the mold, and a plunger pump injects molten metal under pressure against the recessed matrix dies, instantaneously casting a solid, ready-to-print line of type.",
+      ),
+    ]),
+    paragraph(
+      literal(
+        "The mold wheel rotates, trimming knives shave the slug to precise type-height, and an ejector blade pushes the finished line-of-type into a galley tray while the matrix-bars are automatically released and returned to their home positions to compose the next line.",
+      ),
+    ),
+    { kind: "heading", level: 2, text: "Claims" },
+    paragraph(literal("Having thus described my invention, what I claim is:")),
+    ...mergenthalerLinotypeClaims.map((claim) => ({
+      kind: "claim" as const,
+      number: claim.number,
+      inlines: literal(claim.originalText),
+    })),
+  ],
+};
+
+export const mergenthalerLinotypeParallelReadings: Readonly<Record<number, readonly string[]>> = {
+  2: [
+    "The opening formal declaration identifies Ottmar Mergenthaler and the invention title for casting printing slugs directly from assembled matrices.",
+  ],
+  3: [
+    "The specification defines the machine's purpose: replacing manual letter-by-letter hand typesetting with an automatic keyboard-operated linecaster.",
+  ],
+  5: [
+    "Vertical matrix bars carry columns of recessed character dies. Depressing keys projects stop pins that catch each bar at the chosen character height.",
+  ],
+  6: [
+    "Figure 1 provides a perspective view of the linotype machine; Figure 2 shows the vertical cross-section through the keyboard and pin frame.",
+  ],
+  8: [
+    "Sliding wedge spacebands between word groups expand when pushed upward from below, justifying the assembled line tightly to the column margins.",
+  ],
+  9: [
+    "Figure 3 illustrates the justification wedge mechanism and clamping vice; Figure 4 shows matrix-bar profiles and spaceband details.",
+  ],
+  11: [
+    "Molten lead-alloy type metal is pumped under pressure against the justified matrix line inside a slotted mold, casting a solid type slug in one stroke.",
+  ],
+  12: [
+    "The mold rotates to trim the slug to type-height and eject it into a tray, while matrix bars automatically reset for the next line of composition.",
+  ],
+  14: [
+    "The formal claims define the 70 patentable mechanical combinations, matrix bar shapes, wedge spacebands, keyboard escapements, and casting systems.",
+  ],
+};

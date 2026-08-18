@@ -94,14 +94,6 @@ export const carrierAirConditionerArchivalEdition: CuratedSpecificationEdition =
         "Application filed September 16, 1904. Serial No. 224,758.",
       ],
     },
-    {
-      kind: "figure-sheet",
-      figureLabel: "SOURCE DRAWING SHEET",
-      title: "Air washer, separator plates, and spray-nozzle sections",
-      description: text(
-        "The sole drawing sheet contains Figs. 1–6: the complete air-treatment apparatus, the plate separator in section and diagram, one plate in perspective, and two spray-nozzle sections. Each printed figure reference below opens its corresponding locally cropped source image.",
-      ),
-    },
     paragraph(
       text(
         "To all whom it may concern: Be it known that I, WILLIS H. CARRIER, a citizen of the United States, residing at Buffalo, in the county of Erie and State of New York, have invented a new and useful Improvement in Apparatus for Treating Air, of which the following is a specification.",
@@ -232,45 +224,45 @@ export const carrierAirConditionerArchivalEdition: CuratedSpecificationEdition =
 
 /** Non-lossy paragraph companions for the authored Carrier source blocks. */
 export const carrierAirConditionerParallelReadings: Readonly<Record<number, readonly string[]>> = {
-  2: [
+  1: [
     "Carrier identifies himself, his Buffalo residence, and the document as the specification for his apparatus. This is formal notice, not an additional mechanical limitation.",
   ],
-  3: [
+  2: [
     "The scope begins with air treatment before ventilation, heating, drying, refrigeration, or related uses. The specific apparatus is an air washer: a liquid is atomized into the current, then baffle plates remove the liquid together with the particles captured in it.",
   ],
-  4: [
+  3: [
     "The stated objective is particulate and noxious-material removal with a simple apparatus. Temperature and humidity may be changed, but the claim is not a claim to controlling them; the apparatus may also operate without changing either.",
   ],
-  5: [
+  4: [
     "The drawing sheet has six distinct source views. Figure 1 shows the whole machine; Figures 2 through 4 isolate the separator geometry; Figures 5 and 6 cut through the nozzle in two planes. The figure links preserve that source relationship without sending a visitor to a PDF's first page.",
   ],
-  6: [
+  5: [
     "The same letters identify the same physical parts in every drawing. The text relies on those letters, so they are part of the engineering description rather than decorative labels.",
   ],
-  7: [
+  6: [
     "M is the air casing and K supplies the moving current. H introduces water or another treating liquid as a fine spray. The printed nozzle construction uses a vertical head, supply pipe F, and nozzles h whose swirling outlet action makes a fine spray. This grant does not specify a chilled-water temperature, a dew-point controller, or a compressor.",
   ],
-  8: [
+  7: [
     "Downstream of the spray, upright plates make the air turn repeatedly through a zigzag path. Liquid can drain down the plates while the changing air direction sends particles and droplets toward the plate faces. The front faces i and bend j begin the wet-contact stage; the rear faces f and g, with flanges b and c, add the droplet-separation stage.",
   ],
-  9: [
+  8: [
     "Carrier describes one preferred manufacturing method: a bent one-piece front section plus joined rear sections whose overlapping edges form flanges b and c. He expressly allows a single continuous plate with separate strips instead. The rear lip makes gutter a.",
   ],
-  10: [
+  9: [
     "The plate has two functional zones. In front, the intent is to keep a wet film on faces i so inertia and turning motion throw airborne dirt into it; the collected liquid runs to trap J and leaves through filter or sieve L. In back, flanges b and c interrupt liquid flow across each bend, so that free droplets can be removed. More rear faces and flanges allow a stronger moisture-removal effect.",
   ],
-  11: [
+  10: [
     "Bars e and projecting ears d are one mounting arrangement for the plates. Carrier leaves other ways of securing them open; this description identifies the drawing's hardware rather than making a separate claimed mechanism.",
   ],
-  12: [
+  11: [
     "B is a heat-exchange coil in the airflow. It can heat or cool the air, but Carrier explicitly disclaims it as part of this invention. Its presence explains why the apparatus may be used with altered temperature, yet the printed claims concern the separator plates.",
   ],
-  13: [
+  12: [
     "Carrier's claimed plate path seeks both large wet contact area and low resistance. Because the passages are continuous and sinuous, the air follows the intended turns instead of bypassing them; that makes contact and droplet separation more reliable.",
   ],
-  20: [
+  19: [
     "This is the execution date printed in the grant: September 14, 1904. It is distinct from the September 16 filing date shown in the masthead.",
   ],
-  21: ["Willis H. Carrier is the inventor who signs the specification."],
-  22: ["Chas. W. Parker and G. B. Hornbeck are the two printed witnesses."],
+  20: ["Willis H. Carrier is the inventor who signs the specification."],
+  21: ["Chas. W. Parker and G. B. Hornbeck are the two printed witnesses."],
 };

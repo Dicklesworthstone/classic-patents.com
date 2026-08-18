@@ -80,70 +80,6 @@ export const zeppelinAirshipArchivalEdition: CuratedSpecificationEdition = {
         "Specification forming part of Letters Patent No. 621,195, dated March 14, 1899. Application filed December 29, 1897. Serial No. 664,295. (No model.)",
       ],
     },
-    {
-      kind: "figure-sheet",
-      figureLabel: "SOURCE DRAWING SHEET 1 OF 4",
-      title: "Side and front elevations",
-      description: [
-        figure("Fig. 1"),
-        { kind: "text", text: " is the side elevation and " },
-        figure("Fig. 2"),
-        { kind: "text", text: " the front elevation printed on the first drawing sheet." },
-      ],
-    },
-    {
-      kind: "figure-sheet",
-      figureLabel: "SOURCE DRAWING SHEET 2 OF 4",
-      title: "Structure and gas-bag arrangements",
-      description: [
-        figure("Fig. 3"),
-        { kind: "text", text: " is the longitudinal section, " },
-        figure("Fig. 4"),
-        { kind: "text", text: " the transverse section, and " },
-        figure("Fig. 5"),
-        { kind: "text", text: " the first gas-bag arrangement." },
-      ],
-    },
-    {
-      kind: "figure-sheet",
-      figureLabel: "SOURCE DRAWING SHEET 3 OF 4",
-      title: "Gas bags and trim-weight arrangements",
-      description: [
-        figure("Fig. 6"),
-        { kind: "text", text: " shows the companion gas-bag arrangement; " },
-        figure("Fig. 7"),
-        { kind: "text", text: " and " },
-        figure("Fig. 8"),
-        { kind: "text", text: " show the adjustable running-weight arrangement." },
-      ],
-    },
-    {
-      kind: "figure-sheet",
-      figureLabel: "SOURCE DRAWING SHEET 4 OF 4",
-      title: "Trailing-rope and balloon-train arrangements",
-      description: [
-        figure("Fig. 9"),
-        { kind: "text", text: " is the trailing-rope modification and " },
-        figure("Fig. 10"),
-        { kind: "text", text: " the connected balloon train." },
-      ],
-    },
-    {
-      kind: "figure-sheet",
-      figureLabel: "SOURCE OMISSION NOTE",
-      title: "Printed Figs. 11 and 12 are not supplied in this facsimile",
-      description: [
-        {
-          kind: "text",
-          text: "The printed specification cites ",
-        },
-        missingFigures(),
-        {
-          kind: "text",
-          text: ". The immutable seven-page PDF contains Sheets 1-4, visibly labelled only Figs. 1-10. No substitute drawing or preview is asserted here.",
-        },
-      ],
-    },
     p(text("To all whom it may concern:")),
     p(
       text(
@@ -363,47 +299,47 @@ export const zeppelinAirshipArchivalEdition: CuratedSpecificationEdition = {
 };
 
 export const zeppelinAirshipParallelReadings: Readonly<Record<number, readonly string[]>> = {
-  6: ["The formal salutation begins the legal instrument without adding a technical limitation."],
-  7: [
+  1: ["The formal salutation begins the legal instrument without adding a technical limitation."],
+  2: [
     "Zeppelin identifies himself, his Stuttgart location, and his military title, then states that the following text is the complete enabling description required for the patent.",
   ],
-  8: [
+  3: [
     "The invention treats a navigable balloon as a long, narrow powered vessel. Separating motors allows a smaller hull diameter for a given propulsive capability, and the text also contemplates a powered leading craft towing or coupling load-carrying balloons.",
   ],
-  9: [
+  4: [
     "This paragraph maps the document’s figures: elevation and cross-section views, gas-bag compartments, a movable trim weight, a trailing-rope alternative, and a train of connected balloons. The printed references to Figures 11 and 12 remain, but their panels are absent from the served facsimile.",
   ],
-  10: [
+  5: [
     "The rigid hull is a tube, wire-rope, and mesh framework under a silk-like outer casing. Partitions, vertical stays, rings, and diagonal stays create chambers for folded gas bags; leaving free volume lets the gas expand at altitude or when heated while valves handle exceptional release.",
   ],
-  11: [
+  6: [
     "Auxiliary maneuvering bags are filled before the main bags. Releasing gas from those auxiliary bags lets the main bags expand upward into the chamber, preserving the main lifting gas instead of admitting air to compensate for fuel consumed on a long journey.",
   ],
-  12: [
+  7: [
     "A rigid gangway gives access to the hull and supports cars for crew, fuel, passengers, and cargo. Each driving mechanism turns two propellers placed laterally near the craft’s center of resistance, the source’s aerodynamic reference for a force application point.",
   ],
-  13: [
+  8: [
     "Two rudders, above and below the hull at either end, provide lateral steering through suitable operating gear. The passage states placement and function but does not claim a later three-axis aircraft-control system.",
   ],
-  14: [
+  9: [
     "A suspended running weight shifts longitudinally on a traveler to trim the balloon level or inclined. The paired drums and shaped fusees keep the two supporting ropes under light tension, so the weight’s gravity supplies a restoring pull as the craft’s attitude changes.",
   ],
-  15: [
+  10: [
     "The trim weight may be disconnected from the drum mechanism when used simply as a hanging weight. Alternatively, adjustable towing or trailing ropes can be moved along the hull and tied together in flight so their geometry helps keep the vehicle in its selected position.",
   ],
-  16: [
+  11: [
     "A powered balloon can tow similarly built but unpowered load balloons as a train. The claim-side description uses movable couplings and an extensible cover over the gap to keep wind from catching the intermediate space; the cited Figures 11 and 12 are missing from the supplied drawing sheets.",
   ],
-  17: [
+  12: [
     "Zeppelin proposes balancing unequal buoyancy among balloons in a train by transferring liquids, heavy cargo, or by condensing gas or atmospheric air. These are operating options for compensating mass or gas changes, not a quantified performance guarantee.",
   ],
-  18: [
+  13: [
     "This sentence marks the transition from the descriptive specification to the four legal claims that define the asserted combinations.",
   ],
-  23: [
+  18: [
     "This closing attestation says that Zeppelin signed in the presence of two subscribing witnesses, making the signature and witness lines that follow part of the printed legal formalities.",
   ],
-  24: [
+  19: [
     "The printed signature identifies Ferdinand Graf Zeppelin and gives the two witnesses as Wm. Hahn and H. Wagner; the bracketed L. S. is the printed seal notation.",
   ],
 };

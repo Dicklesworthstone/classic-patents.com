@@ -76,19 +76,24 @@ describe("US 381,968 manual source edition", () => {
   });
 
   test("makes historical technical terms explicit authored annotations", () => {
-    const terms = teslaMotorArchivalEdition.blocks.flatMap((block) =>
-      "inlines" in block
-        ? block.inlines.filter(
-            (inline): inline is Extract<(typeof block.inlines)[number], { kind: "term" }> =>
-              inline.kind === "term",
-          )
-        : [],
-    );
+    const terms = teslaMotorArchivalEdition.blocks.flatMap((block) => {
+      const inlines =
+        "inlines" in block ? block.inlines : block.kind === "figure-sheet" ? block.description : [];
+      return inlines.filter(
+        (inline): inline is Extract<(typeof inlines)[number], { kind: "term" }> =>
+          inline.kind === "term",
+      );
+    });
     expect(terms.map((term) => term.text)).toEqual([
+      "collector rings",
       "independent circuits",
       "lines of force",
+      "armature",
       "commutator",
       "annulus",
+      "shunts",
+      "multiple arc",
+      "magnetizing-coils",
     ]);
     for (const term of terms) {
       expect(term.definition.trim().length).toBeGreaterThan(80);

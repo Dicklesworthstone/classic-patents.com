@@ -382,3 +382,5 @@ export const whitneyCottonGinArchivalEdition: CuratedSpecificationEdition = {
     },
   ],
 };
+
+export { whitneyCottonGinParallelReadings } from "./whitneyCottonGinParallelReading";

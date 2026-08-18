@@ -55,20 +55,22 @@ const WRIGHT_FIGURE_PREVIEWS = {
   },
 } as const;
 
+type WrightFigurePreview = (typeof WRIGHT_FIGURE_PREVIEWS)[keyof typeof WRIGHT_FIGURE_PREVIEWS];
+
 /**
  * Each call chooses the exact facsimile crop by hand. The helper does no text
  * recognition or reference inference.
  */
 const figureReference = (
   text: string,
-  figureNumbers: readonly (keyof typeof WRIGHT_FIGURE_PREVIEWS)[],
+  ...figurePreviews: readonly WrightFigurePreview[]
 ): CuratedSpecificationInline => ({
   kind: "reference",
   text,
   href: "#",
   referenceType: "figure",
   label: `Preview ${text} from the original patent facsimile`,
-  figurePreviews: figureNumbers.map((figureNumber) => WRIGHT_FIGURE_PREVIEWS[figureNumber]),
+  figurePreviews,
 });
 
 const claimsReference: CuratedSpecificationInline = {
@@ -164,19 +166,19 @@ export const wrightFlyerArchivalEdition: CuratedSpecificationEdition = {
       kind: "paragraph",
       inlines: [
         { kind: "text", text: "In the accompanying drawings, " },
-        figureReference("Figure 1", [1]),
+        figureReference("Figure 1", WRIGHT_FIGURE_PREVIEWS[1]),
         {
           kind: "text",
           text: " is a perspective view of an apparatus embodying our invention in one form. ",
         },
-        figureReference("Fig. 2", [2]),
+        figureReference("Fig. 2", WRIGHT_FIGURE_PREVIEWS[2]),
         {
           kind: "text",
           text: " is a plan view of the same, partly in horizontal section and partly broken away. ",
         },
-        figureReference("Fig. 3", [3]),
+        figureReference("Fig. 3", WRIGHT_FIGURE_PREVIEWS[3]),
         { kind: "text", text: " is a side elevation; and " },
-        figureReference("Figs. 4 and 5", [4, 5]),
+        figureReference("Figs. 4 and 5", WRIGHT_FIGURE_PREVIEWS[4], WRIGHT_FIGURE_PREVIEWS[5]),
         {
           kind: "text",
           text: " are detail views, of one form of flexible joint for connecting the upright standards with the aeroplanes.",
@@ -219,7 +221,7 @@ export const wrightFlyerArchivalEdition: CuratedSpecificationEdition = {
           kind: "text",
           text: " of the aeroplane is secured, the frame being inclosed in the cloth. The cloth for each aeroplane previously to its attachment to its frame is cut on the bias and made up into a single piece approximately the size and shape of the aeroplane, having the threads of the fabric arranged diagonally to the transverse spars and longitudinal ribs, as indicated at 6 in ",
         },
-        figureReference("Fig. 2", [2]),
+        figureReference("Fig. 2", WRIGHT_FIGURE_PREVIEWS[2]),
         {
           kind: "text",
           text: ". Thus the diagonal threads of the cloth form truss systems with the spars and ribs, the threads constituting the diagonal members. A hem is formed at the rear edge of the cloth to receive a wire 7, which is connected to the ends of the rear spar and supported by the rearwardly-extending ends of the longitudinal ribs 5, thus forming a rearwardly-extending flap or portion of the aeroplane. This construction of the aeroplanes gives a surface which has very great strength to withstand lateral and longitudinal strains, at the same time being capable of being bent or twisted in the manner hereinafter described.",
@@ -233,7 +235,7 @@ export const wrightFlyerArchivalEdition: CuratedSpecificationEdition = {
           kind: "text",
           text: "When two aeroplanes are employed, as in the construction illustrated, they are connected together by upright standards 8. These standards are substantially rigid, being preferably constructed of wood and of equal length, equally spaced along the front and rear edges of the aeroplane, to which they are connected at their top and bottom ends by hinged joints or universal joints of any suitable description. We have shown one form of connection which may be used for this purpose in ",
         },
-        figureReference("Figs. 4 and 5", [4, 5]),
+        figureReference("Figs. 4 and 5", WRIGHT_FIGURE_PREVIEWS[4], WRIGHT_FIGURE_PREVIEWS[5]),
         {
           kind: "text",
           text: " of the drawings. In this construction each end of the standard 8 has secured to it an eye 9, which engages with a hook 10, secured to a bracket-plate 11, which latter plate is in turn fastened to the spar 3. Diagonal braces or stay-wires 12 extend from each end of each standard to the opposite ends of the adjacent standards, and as a convenient mode of attaching these parts I have shown a hook 13, made integral with the hook 10 to receive the end of one of the stay-wires, the other stay-wire being mounted on the hook 10. The hook 13 is shown as bent down to retain the stay-wire in connection to it, while the hook 10 is shown as provided with a pin 14 to hold the stay-wire 12 and eye 9 in position thereon. It will be seen that this construction forms a truss system which gives the whole machine great transverse rigidity and strength, while at the same time the jointed connections of the parts permit the aeroplanes to be bent or twisted in the manner which we will now proceed to describe.",
@@ -259,21 +261,21 @@ export const wrightFlyerArchivalEdition: CuratedSpecificationEdition = {
           kind: "text",
           text: "Considering the structure so far as we have now described it and assuming that the cradle 18 be moved to the right in ",
         },
-        figureReference("Figs. 1 and 2", [1, 2]),
+        figureReference("Figs. 1 and 2", WRIGHT_FIGURE_PREVIEWS[1], WRIGHT_FIGURE_PREVIEWS[2]),
         { kind: "text", text: ", as indicated by the arrows applied to the cradle in " },
-        figureReference("Fig. 1", [1]),
+        figureReference("Fig. 1", WRIGHT_FIGURE_PREVIEWS[1]),
         { kind: "text", text: " and by the dotted lines in " },
-        figureReference("Fig. 2", [2]),
+        figureReference("Fig. 2", WRIGHT_FIGURE_PREVIEWS[2]),
         {
           kind: "text",
           text: ", it will be seen that that portion of the rope 15 passing under the guide-pulley at the corner e and secured to the corner d will be under tension, while slack is paid out throughout the other side or half of the rope 15. The part of the rope 15 under tension exercises a downward pull upon the rear upper corner d of the structure and an upward pull upon the front lower corner e, as indicated by the arrows. This causes the corner d to move downward and the corner e to move upward. As the corner e moves upward it carries the corner a upward with it, since the intermediate standard 8 is substantially rigid and maintains an equal distance between the corners a and e at all times. Similarly, the standard 8, connecting the corners d and h, causes the corner h to move downward in unison with the corner d. Since the corner a thus moves upward and the corner h moves downward, that portion of the rope 19 connected to the corner a will be pulled upward through the pulley 20 at the corner h, and the pull thus exerted on the rope 19 will pull the corner b on the other side of the machine downward and at the same time pull the corner g at said other side of the machine upward. This results in a downward movement of the corner b and an upward movement of the corner c. Thus it results from a lateral movement of the cradle 18 to the right in ",
         },
-        figureReference("Fig. 1", [1]),
+        figureReference("Fig. 1", WRIGHT_FIGURE_PREVIEWS[1]),
         {
           kind: "text",
           text: " that the lateral margins a d and e h at one side of the machine are moved from their normal positions, in which they lie in the normal planes of their respective aeroplanes, into angular relations with said normal planes, each lateral margin on this side of the machine being raised above said normal plane at its forward end and depressed below said normal plane at its rear end, said lateral margins being thus inclined upward and forward. At the same time a reverse inclination is imparted to the lateral margins b c and f g at the other side of the machine, their inclination being downward and forward. These positions are indicated in dotted lines in ",
         },
-        figureReference("Fig. 1", [1]),
+        figureReference("Fig. 1", WRIGHT_FIGURE_PREVIEWS[1]),
         {
           kind: "text",
           text: " of the drawings. A movement of the cradle 18 in the opposite direction from its normal position will reverse the angular inclination of the lateral margins of the aeroplanes in an obvious manner.",
@@ -297,7 +299,7 @@ export const wrightFlyerArchivalEdition: CuratedSpecificationEdition = {
           kind: "text",
           text: "Turning now to the purpose of this provision for moving the lateral margins of the aeroplanes in the manner described, it should be premised that owing to various conditions of wind-pressure and other causes the body of the machine is apt to become unbalanced laterally, one side tending to sink and the other side tending to rise, the machine turning around its central longitudinal axis. The provision which we have just described enables the operator to meet this difficulty and preserve the lateral balance of the machine. Assuming that for some cause that side of the machine which lies to the left of the observer in ",
         },
-        figureReference("Figs. 1 and 2", [1, 2]),
+        figureReference("Figs. 1 and 2", WRIGHT_FIGURE_PREVIEWS[1], WRIGHT_FIGURE_PREVIEWS[2]),
         {
           kind: "text",
           text: " has shown a tendency to drop downward, a movement of the cradle 18 to the right of said figures, as hereinbefore assumed, will move the lateral margins of the aeroplanes in the manner already described, so that the margins a d and e h will be inclined downward and rearward and the lateral margins b c and f g will be inclined upward and rearward with respect to the normal planes of the bodies of the aeroplanes. With the parts of the machine in this position it will be seen that the lateral margins a d and e h present a larger angle of incidence to the resisting air, while the lateral margins on the other side of the machine present a smaller angle of incidence. Owing to this fact, the side of the machine presenting the larger angle of incidence will tend to lift or move upward, and this upward movement will restore the lateral balance of the machine. When the other side of the machine tends to drop, a movement of the cradle 18 in the reverse direction will restore the machine to its normal lateral equilibrium. Of course the same effect will be produced in the same way in the case of a machine employing only a single aeroplane.",
@@ -311,7 +313,7 @@ export const wrightFlyerArchivalEdition: CuratedSpecificationEdition = {
           kind: "text",
           text: "In connection with the body of the machine as thus operated we employ a vertical rudder, or tail 22, so supported as to turn around a vertical axis. This rudder is supported at the rear ends of supports or arms 23, pivoted at their forward ends to the rear margins of the upper and lower aeroplanes, respectively. These supports are preferably V-shaped, as shown, so that their forward ends are comparatively widely separated, their pivots being indicated at 24. Said supports are free to swing upward at their free rear ends, as indicated in dotted lines in ",
         },
-        figureReference("Fig. 3", [3]),
+        figureReference("Fig. 3", WRIGHT_FIGURE_PREVIEWS[3]),
         {
           kind: "text",
           text: ", their downward movement being limited in any suitable manner. The vertical pivots of the rudder 22 are indicated at 25, and one of these pivots has mounted thereon a sheave or pulley 26, around which passes a ",
@@ -327,7 +329,7 @@ export const wrightFlyerArchivalEdition: CuratedSpecificationEdition = {
           kind: "text",
           text: " 27, the ends of which are extended out laterally and secured to the rope 19 on opposite sides of the central point of said rope. By reason of this construction the lateral shifting of the cradle 18 serves to turn the rudder to one side or the other of the line of flight. It will be observed in this connection that the construction is such that the rudder will always be so turned as to present its resisting-surface on that side of the machine on which the lateral margins of the aeroplanes present the least angle of resistance. The reason of this construction is that when the lateral margins of the aeroplanes are so turned in the manner hereinbefore described as to present different angles of incidence to the atmosphere that side presenting the largest angle of incidence, although being lifted or moved upward in the manner already described, at the same time meets with an increased resistance to its forward motion, and is therefore retarded in its forward motion, while at the same time the other side of the machine, presenting a smaller angle of incidence, meets with less resistance to its forward motion and tends to move forward more rapidly than the retarded side. This gives the machine a tendency to turn around its vertical axis, and this tendency if not properly met will not only change the direction of the front of the machine, but will ultimately permit one side thereof to drop into a position vertically below the other side with the aeroplanes in vertical position, thus causing the machine to fall. The movement of the rudder hereinbefore described prevents this action, since it exerts a retarding influence on that side of the machine which tends to move forward too rapidly and keeps the machine with its front properly presented to the direction of flight and with its body properly balanced around its central longitudinal axis. The pivoting of the supports 23 so as to permit them to swing upward prevents injury to the rudder and its supports in case the machine alights at such an angle as to cause the rudder to strike the ground first, the parts yielding upward, as indicated in dotted lines in ",
         },
-        figureReference("Fig. 3", [3]),
+        figureReference("Fig. 3", WRIGHT_FIGURE_PREVIEWS[3]),
         {
           kind: "text",
           text: ", and thus preventing injury or breakage. We wish it to be understood, however, that we do not limit ourselves to the particular description of rudder set forth, the essential being that the rudder shall be vertical and shall be so moved as to present its resisting-surface on that side of the machine which offers the least resistance to the atmosphere, so as to counteract the tendency of the machine to turn around a vertical axis when the two sides thereof offer different resistances to the air.",
@@ -367,7 +369,7 @@ export const wrightFlyerArchivalEdition: CuratedSpecificationEdition = {
           kind: "text",
           text: "” in this specification and the appended claims to indicate the supporting-surface or supporting-surfaces by means of which the machine is sustained in the air; and by this term we wish it to be understood as including any suitable supporting-surface which normally is substantially flat, although of course when constructed of cloth or other flexible fabric, as we prefer to construct them, these surfaces may receive more or less curvature from the resistance of the air, as indicated in ",
         },
-        figureReference("Fig. 3", [3]),
+        figureReference("Fig. 3", WRIGHT_FIGURE_PREVIEWS[3]),
         { kind: "text", text: "." },
       ],
     },
