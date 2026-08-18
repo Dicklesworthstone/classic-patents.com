@@ -1,50 +1,34 @@
 "use client";
 
-import { AlertTriangle, RotateCcw } from "lucide-react";
-import { useEffect } from "react";
+import { AlertTriangle, RefreshCw } from "lucide-react";
 
-export default function GlobalError({
+export default function GlobalErrorBoundary({
   error,
   reset,
 }: {
-  error: Error & { digest?: string };
+  error: globalThis.Error & { digest?: string };
   reset: () => void;
 }) {
-  useEffect(() => {
-    console.error("Museum global render error:", error);
-  }, [error]);
-
   return (
     <html lang="en">
-      <body className="bg-neutral-950 text-neutral-100 min-h-screen flex items-center justify-center p-6">
-        <div className="max-w-xl mx-auto text-center space-y-6">
-          <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-rose-500/10 border border-rose-500/30 text-rose-400 mb-2">
+      <body className="bg-[#FAF7F0] text-[#1A1A1A] dark:bg-[#0D1117] dark:text-[#E6EDF3]">
+        <div className="min-h-screen flex flex-col items-center justify-center p-8 text-center space-y-4">
+          <div className="p-3 rounded-full bg-red-100 dark:bg-red-950/60 text-red-700 dark:text-red-400 border border-red-300 dark:border-red-800">
             <AlertTriangle className="w-8 h-8" />
           </div>
-
-          <div className="space-y-2">
-            <div className="text-xs font-mono font-bold uppercase tracking-widest text-rose-400">
-              System Error (500)
-            </div>
-            <h1 className="font-serif text-3xl sm:text-4xl font-bold text-neutral-100">
-              Archival Display Interrupted
-            </h1>
-            <p className="font-sans text-sm text-neutral-400 max-w-md mx-auto">
-              An unexpected error occurred while rendering the patent projection or physical
-              simulation engine.
-            </p>
-          </div>
-
-          <div className="pt-4 flex items-center justify-center gap-4">
-            <button
-              type="button"
-              onClick={() => reset()}
-              className="px-5 py-2.5 rounded-xl bg-amber-600 hover:bg-amber-500 text-neutral-950 font-sans text-sm font-bold transition-colors shadow-lg flex items-center gap-2"
-            >
-              <RotateCcw className="w-4 h-4" />
-              Reload Exhibition
-            </button>
-          </div>
+          <h2 className="font-serif text-2xl font-bold">Critical Application Error</h2>
+          <p className="font-sans text-sm text-ink-600 dark:text-ink-300 max-w-md">
+            {error.message ||
+              "A critical error occurred while rendering the digital museum application."}
+          </p>
+          <button
+            type="button"
+            onClick={() => reset()}
+            className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-amber-700 hover:bg-amber-800 text-white font-sans text-sm font-bold transition-colors shadow-sm cursor-pointer"
+          >
+            <RefreshCw className="w-4 h-4" />
+            <span>Reload Application</span>
+          </button>
         </div>
       </body>
     </html>

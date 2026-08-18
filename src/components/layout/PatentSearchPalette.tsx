@@ -1,6 +1,6 @@
 "use client";
 
-import { ArrowRight, BookOpen, Calendar, Compass, Search, Sparkles, User, X } from "lucide-react";
+import { ArrowRight, BookOpen, Compass, Search, Sparkles, User, X } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect, useMemo, useRef, useState } from "react";
