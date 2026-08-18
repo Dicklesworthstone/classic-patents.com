@@ -66,6 +66,7 @@ src/pages/
 out.txt
 run_test.js
 test-*.ts
+check_*.ts
 test_output.txt
 *.wip.txt
 
