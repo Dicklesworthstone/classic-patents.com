@@ -208,6 +208,7 @@ export function MergenthalerLinotype3D() {
 
     const animate = () => {
       reqId = requestAnimationFrame(animate);
+      renderedSteps += 1;
       const p = live.current;
       const step = stepMergenthalerLinotype({
         matrixRatePerMin: p.matrixRate,

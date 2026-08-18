@@ -2,7 +2,7 @@
 
 import { Activity, Camera, Eye, EyeOff } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
-import * as THREE from "three";
+import type * as THREE from "three";
 import { stepGatlingGun } from "@/physics/catalogKernels";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { soundEngine } from "@/utils/soundEngine";

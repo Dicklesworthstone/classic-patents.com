@@ -635,7 +635,7 @@ export function materialProbe(
       qty: "g",
       value: sep.gForce.toString(),
       unit: "×g",
-      note: `${sep.fatYieldPct}% fat yield · cream ${sep.creamFlowLph} L/h.`,
+      note: `${sep.fatYieldPct}% fat yield · cream ${sep.creamFlowLph} L/h · ω ${sep.bowlOmegaRadPerS} rad/s.`,
     };
   }
   if (patentId.includes("hyatt") || patentId.includes("105338")) {
@@ -679,7 +679,7 @@ export function materialProbe(
       qty: "P",
       value: parsons.shaftPowerKw.toString(),
       unit: "kW",
-      note: `${parsons.enthalpyKjKg} kJ/kg at ${parsons.inletMpa} MPa.`,
+      note: `${parsons.enthalpyKjKg} kJ/kg at ${parsons.inletMpa} MPa · u ${parsons.bladeSpeedMps} m/s · ω×${parsons.displaySlowdown}.`,
     };
   }
   if (patentId.includes("ericsson") || patentId.includes("us-588")) {
@@ -693,7 +693,7 @@ export function materialProbe(
       qty: "T",
       value: screw.thrustKn.toString(),
       unit: "kN",
-      note: `${screw.shipSpeedKnots} kn at ${params.shaftRpm ?? 120} rpm.`,
+      note: `${screw.shipSpeedKnots} kn at ${params.shaftRpm ?? 120} rpm · ω ${screw.shaftOmegaRadPerS} rad/s.`,
     };
   }
   if (patentId.includes("pasteur") || patentId.includes("135245")) {

@@ -30,8 +30,9 @@ export function MaximMachineGunSim() {
     let lastTime = performance.now();
 
     const loop = (time: number) => {
-      const dt = (time - lastTime) / 1000;
+      const dt = Math.min(0.1, (time - lastTime) / 1000);
       lastTime = time;
+      
       setRecoilPhase((prev) => (prev + (cyclicRateRpm / 60) * 2 * Math.PI * dt) % (2 * Math.PI));
       animRef.current = requestAnimationFrame(loop);
     };

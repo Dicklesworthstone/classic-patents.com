@@ -196,6 +196,7 @@ the visitor can see or hear the kernel change the instrument.
 - [x] P5.103 Kevlar 3D fly-in integrates impactVelocityMps (25 m/s per studio unit). Engelbart 2D HUD shows pulseRateHz and clickDisplayMs from the same step.
 - [x] P5.104 CCD 3-phase gate step is phasePeriodNs = 1/(3f) on stepCcdWells. Visible φ dwell is phaseDisplayMs = 500/f (not leftover 1/(2f) or 0.8/f). 2D interval, 3D phase timer, badge, engine clockPeriodNs, and weave share it. Kodak barrel ω = 2π/t lives on the step; 3D rotates from barrelOmegaRadPerS. Edison low-R Swan/Maxim I, P, T, and feeder loss live on stepEdisonBulb.
 - [x] P5.105 Howe crank ω (rad/s and deg/s) lives on stepHoweSewingMachine. 2D no longer does leftover rpm/60×12; 3D integrates crankOmegaRadPerS. Tesla 2D/3D share teslaFieldDisplayOmega (electrical ω / 20). Spencer heatTickMs is 200 on the step.
+- [x] P5.106 De Laval bowl ω and 0.15 display ω live on the step; 2D disc vanes and 3D bowl integrate displayOmega, not leftover rpm×2π×0.15. Parsons rotor ω, blade u, steam c, and 0.08 display ω live on the step; 2D shaft-end and 3D drum share it. Ericsson shaft ω and wakeSwirlScale 0.4 live on the step; 2D blades and 3D screw use shaftOmegaDegPerS / shaftOmegaRadPerS.
 
 ## Explicitly out of scope
 

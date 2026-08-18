@@ -27,11 +27,12 @@ export function ParsonsTurbineSim() {
 
   useEffect(() => {
     if (!isPlaying) return;
-    let lastTime = performance.now();
+    const renderedSteps = 0;
 
     const loop = (time: number) => {
-      const dt = (time - lastTime) / 1000;
-      lastTime = time;
+      renderedSteps += 1;
+      const dt = 1/60;
+
       setAngleDeg((prev) => (prev + parsons.displayOmegaDegPerS * dt) % 360);
       animRef.current = requestAnimationFrame(loop);
     };

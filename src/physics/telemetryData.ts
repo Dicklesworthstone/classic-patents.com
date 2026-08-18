@@ -3831,6 +3831,13 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
           progressPct: (thrustKn / 90) * 100,
         },
         {
+          label: "Shaft ω",
+          value: `${ericson.shaftOmegaRadPerS}`,
+          unit: "rad/s",
+          badgeColor: "purple",
+          progressPct: Math.min(100, (ericson.shaftOmegaRadPerS / 30) * 100),
+        },
+        {
           label: "Geometric Pitch",
           value: `${ericson.pitchMeters} m`,
           unit: "p",
@@ -4647,6 +4654,20 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
           progressPct: Number(yieldFat),
         },
         {
+          label: "Bowl ω",
+          value: `${sep.bowlOmegaRadPerS}`,
+          unit: "rad/s",
+          badgeColor: "amber",
+          progressPct: Math.min(100, (sep.bowlOmegaRadPerS / 1000) * 100),
+        },
+        {
+          label: "Display ω",
+          value: `${sep.displayOmegaDegPerS} °/s`,
+          unit: "ω×0.15",
+          badgeColor: "cyan",
+          progressPct: Math.min(100, (sep.displaySlowdown / 0.2) * 100),
+        },
+        {
           label: "Cream Discharge Rate",
           value: `${creamFlow} L/h`,
           unit: "Q_cream",
@@ -4794,6 +4815,20 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
           unit: "u/c",
           badgeColor: "purple",
           progressPct: (parsons.steamBladeSpeedRatio / 0.8) * 100,
+        },
+        {
+          label: "Blade u",
+          value: `${parsons.bladeSpeedMps} m/s`,
+          unit: "u",
+          badgeColor: "amber",
+          progressPct: Math.min(100, (parsons.bladeSpeedMps / 200) * 100),
+        },
+        {
+          label: "Display ω",
+          value: `${parsons.displayOmegaDegPerS} °/s`,
+          unit: "ω×0.08",
+          badgeColor: "cyan",
+          progressPct: Math.min(100, (parsons.displaySlowdown / 0.2) * 100),
         },
       ];
     },

@@ -26,8 +26,9 @@ export function PeltonWheelSim() {
     let lastTime = performance.now();
 
     const loop = (time: number) => {
-      const dt = (time - lastTime) / 1000;
+      const dt = Math.min(0.1, (time - lastTime) / 1000);
       lastTime = time;
+      
       setWheelAngleDeg((prev) => (prev + wheelRpm * 6 * dt) % 360);
       animRef.current = requestAnimationFrame(loop);
     };

@@ -31,8 +31,9 @@ export function PasteurFermentationSim() {
     let lastTime = performance.now();
 
     const loop = (time: number) => {
-      const dt = (time - lastTime) / 1000;
+      const dt = Math.min(0.1, (time - lastTime) / 1000);
       lastTime = time;
+      
       setTimerSeconds((prev) => (prev + dt) % 60);
       animRef.current = requestAnimationFrame(loop);
     };
