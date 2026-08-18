@@ -65,6 +65,16 @@ describe("US 361,931 Daimler manual marine-engine edition", () => {
     ]);
   });
 
+  test("keeps every source figure citation as an authored preview node", () => {
+    const bareFigureReference = /\b(?:fig(?:s)?\.?|figure)\s+\d+/i;
+    for (const block of daimlerMarineEngineArchivalEdition.blocks) {
+      if (block.kind !== "paragraph" && block.kind !== "claim") continue;
+      for (const inline of block.inlines) {
+        if (inline.kind === "text") expect(inline.text).not.toMatch(bareFigureReference);
+      }
+    }
+  });
+
   test("has a reviewed full transcription with the source title, ten claims, and no carriage heading", () => {
     const transcript = readFileSync(
       join(process.cwd(), "public/patents/transcripts/us-361931-daimler-engine.txt"),

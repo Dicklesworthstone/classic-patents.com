@@ -29,3 +29,11 @@
 ## Editorial boundary
 
 The published continuous edition in `src/data/editions/mccormickReaperEdition.ts` is hand-authored typed content. It is not sourced from the existing OCR-like source-text layer or the former summary transcript. The source-text layer remains a private comparison artifact and is not evidence of transcription completeness. The new `public/patents/transcripts/us-x8277-mccormick-reaper.txt` is a reviewed plain-text companion to the typed edition; the typed edition remains the public reader's authoritative source layer.
+
+## Historical-context research packet
+
+- **Source identity and museum history:** [Smithsonian National Museum of American History, *McCormick Reaper Model (1834)*](https://americanhistory.si.edu/collections/object/nmah_864874), reviewed 2026-08-18. Used for the 1847 Chicago-factory, Crystal Palace model, and later sales-context statements; it is not used to alter the pinned patent text.
+- **Litigation primary report:** [*McCormick v. Manny*, 15 F. Cas. 1314](https://law.resource.org/pub/us/case/reporter/F.Cas/0015.f.cas/0015.f.cas.1314.3.pdf), reviewed 2026-08-18. Used for the 1854 bill, 1855 Cincinnati hearing, judges, counsel, and the fact that the dispute concerned later reaper patents.
+- **Supreme Court disposition:** [*McCormick v. Talcott*, 61 U.S. 402 (1858)](https://www.govinfo.gov/content/pkg/USREPORTS-61/pdf/USREPORTS-61-402.pdf), reviewed 2026-08-18. Used for the appeal posture and the affirmance of the Circuit Court's dismissal.
+
+The historical-context fields distinguish these later sources from US X8277 itself. No alleged performance number, crop capacity, labor multiplier, or modern mechanical dimension is attributed to the 1834 specification unless it appears in the source-sheet map above.

@@ -34,23 +34,23 @@ export const mccormickReaperPatent: Patent = {
   archivalEdition: mccormickReaperArchivalEdition,
   plainEnglishExplanation: {
     overview:
-      "Since the dawn of agriculture, harvesting grain was strictly limited by the human arm swinging a sickle or cradle scythe. Because ripe wheat spoils or shatters within a brief 10-day window, farm size and world food supply were constrained by how much grain could be cut by hand. Cyrus McCormick combined a fast-reciprocating serrated knife, stationary spear fingers, a rotating reel, and a side-delivery table into a continuous horse-drawn machine that harvested grain ten times faster than human labor.",
+      "McCormick's specification treats reaping as a coordinated mechanical problem: bring standing grain to a cutter, keep it supported while it is cut, carry the severed stalks onto a platform, keep the cut swath apart from standing grain, and transmit the ground wheel's motion through gears, cranks, and a belt. It describes a horse-drawn machine rather than asserting a particular yield or speed of work.",
     coreMechanism:
-      "As horses pull the machine across a wheat field, the large main ground wheel drives a gear train and pitman crank that oscillates a serrated steel blade back and forth at over $600\\text{ strokes per minute}$. The blade slides inside stationary iron fingers that pinch each wheat stalk against the scissor-like cutting edge, preventing it from bending or flattening. Simultaneously, an overhead wooden reel sweeps the standing stalks inward against the cutter bar, causing the cut wheat to fall backwards onto a wooden platform where it is raked into bundles (gavels) for binding.",
+      "As the horses advance, the ground wheel turns a 30-tooth gear on its axle. The printed 30:9 and 27:9 gear engagements turn the double crank, while a belt from a roughly 13-inch pulley drives the reel's roughly 12-inch pulley. The lower cutter is a grooved or toothed steel blade; the source also describes an upper sliding plate with longer teeth and an alternative fixed upper support. The reel guides stalks to the cutter and the platform receives them until a worker rakes them away. The source does not give a measured cutter cadence, power, or field capacity.",
     mechanicalBreakdown: [
       {
         title: "Reciprocating Serrated Sickle Bar",
-        summary: "High-speed oscillating blade with triangular serrated teeth.",
+        summary: "Crank-driven moving blade with a smooth or toothed cutting edge.",
         technicalDetails:
-          "Driven by a pitman slider-crank from the main ground wheel at a stroke frequency of $f = \\frac{N_{\\text{teeth}} \\cdot v_{\\text{ground}}}{2 \\pi r_{\\text{wheel}} \\cdot r_{\\text{pitman}}} \\approx 10\\text{ Hz}$. The triangular serrations grip tough wheat straw and exert clean double-shear cutting action.",
+          "The lower cutter is connected near the crank by a joint and wooden pin. McCormick says its grooved or toothed lower edge moves through part of a circle. A second upper plate may slide in the opposite direction with longer teeth, or those upper teeth may be fixed. The facsimile supplies gear tooth counts but not the blade's stroke length, force, or a measured cutting frequency.",
         archaicTerm: "Straight cutting blade with serrated teeth",
         modernEquivalent: "Reciprocating cutter bar / Sickle section knife",
       },
       {
         title: "Stationary Slotted Guard Fingers",
-        summary: "Spear-shaped iron teeth providing an anvil support for each stalk.",
+        summary: "Upper teeth or supports that hold stalks at the cutter.",
         technicalDetails:
-          "Projecting forward $10\\text{ cm}$ ahead of the knife, each guard finger has a horizontal slot through which the sickle passes. The finger acts as a stationary counter-blade, supporting the stalk in cantilever shear ($V = \\tau A$) so it cannot deflect away from the blade.",
+          "The source describes upper teeth about one and a half inches long and about the same distance apart. They may move contrary to the lower cutter or be fixed and bent over its edge. Their stated job is to gather stalks and force them across the lower teeth. It does not specify modern guard geometry, a slot size, or a material stress value.",
         archaicTerm: "Spear-shaped fingers or guards",
         modernEquivalent: "Sickle guard fingers / Rock guards",
       },
@@ -58,7 +58,7 @@ export const mccormickReaperPatent: Patent = {
         title: "Revolving Gathering Reel",
         summary: "Rotating radial paddle vanes sweeping stalks into the cutter.",
         technicalDetails:
-          "Geared from the main axle to rotate with a tangential velocity slightly exceeding the forward ground velocity ($v_{\\text{reel, tip}} \\approx 1.25 \\cdot v_{\\text{ground}}$). The vanes gently capture leaning or tangled grain, hold it against the knife during severance, and push it evenly onto the deck.",
+          "The reel axle moves vertically in grooved posts by an adjusting pin. Its approximately twelve-inch pulley is belt-driven from the approximately thirteen-inch wheel on the ground-wheel axle. The source says the cross-arms project about three feet and carry a thin band about six inches wide. It describes the reel bearing stalks to the cutter and then laying severed grain on the platform; it does not state a reel-to-ground-speed target.",
         archaicTerm: "Revolving reel with radial vanes",
         modernEquivalent: "Pickup reel / Bat reel",
       },
@@ -74,7 +74,7 @@ export const mccormickReaperPatent: Patent = {
         title: "Catch Platform & Manual Gavel Rake Deck",
         summary: "Smooth pine deck supporting severed grain until raked into binding sheaves.",
         technicalDetails:
-          "A planar pine platform ($2.2\\text{ m} \\times 1.2\\text{ m}$) directly behind the cutter bar catches falling stalks horizontally. A low rear lip prevents stalks from spilling into the stubble while allowing a standing operator with a hand rake to sweep accumulated bunches (gavels of $15\\text{ to }20\\text{ kg}$) sideways onto the ground in discrete piles for hand tying.",
+          "The specification begins with a wooden platform about six feet wide and four or five feet long. It says the reel lands separated stalks on that platform and a hand with a rake discharges them from its right end when enough has accumulated. It does not identify a wood species, a rear-lip geometry, or a mass for a gavel.",
         archaicTerm: "Platform to receive the cut grain",
         modernEquivalent: "Header draper table / Combine cutterbar platform",
       },
@@ -82,35 +82,32 @@ export const mccormickReaperPatent: Patent = {
     scientificPrinciples: [
       {
         principle: "Double-Shear Mechanics in Stalk Cutting",
-        formula:
-          "\\tau_{\\text{shear}} = \\frac{F_{\\text{knife}}}{2 A_{\\text{stalk}}} < \\tau_{\\text{ultimate}}",
+        formula: "\\tau = \\frac{F}{A}",
         explanation:
-          "The scissor action between the moving sickle section and the stationary guard ledger plate cuts the stalk in pure shear rather than bending, requiring less than 15% of the cutting energy of a dull impact blade.",
+          "Shear stress is force divided by the cut area. The source's engineering point is mechanical support: its upper teeth gather and hold stalks at the lower cutter. The patent gives no force measurement or energy comparison, so this relation explains the category of loading without assigning a historical performance value.",
       },
       {
         principle: "Kinematics of the Ground-Wheel Pitman Crank",
         formula:
-          "v_{\\text{blade}}(t) = r \\omega \\left[\\sin(\\omega t) + \\frac{r}{2L} \\sin(2\\omega t)\\right]",
+          "n_{\\mathrm{crank}} = n_{\\mathrm{wheel}}\\left(\\frac{30}{9}\\right)\\left(\\frac{27}{9}\\right)",
         explanation:
-          "Ground wheel rotation directly drives the pitman crank, automatically matching the cutting stroke rate to the forward walking speed of the horses.",
+          "For a no-slip reading of the stated gear train, the two printed tooth ratios multiply the ground-wheel speed by ten at the crank. This is a source-dimension estimate, not a claim that the historical machine held that speed under crop load.",
       },
       {
         principle: "Cycloidal Trajectory of the Reel Vane",
-        formula:
-          "x(t) = v_{\\text{ground}} t + R \\sin(\\omega_{\\text{reel}} t), \\quad y(t) = R \\cos(\\omega_{\\text{reel}} t)",
+        formula: "n_{\\mathrm{reel}} = n_{\\mathrm{wheel}}\\left(\\frac{13}{12}\\right)",
         explanation:
-          "The tip of each reel bat traces a curtate cycloid curve through the air, entering the standing grain from above and pulling it gently backward onto the deck.",
+          "The thirteen-inch pulley on the ground-wheel axle and the approximately twelve-inch reel pulley establish the indicated no-slip speed ratio. The visible reel model uses that ratio to show the order of operations, not to recover a surveyed vane trajectory from the patent drawing.",
       },
       {
         principle: "Ground-Wheel Traction & Soil Slip-Limit Torque",
-        formula:
-          "\\tau_{\\text{avail}} = \\mu_{\\text{soil}} W_{\\text{machine}} R_{\\text{wheel}} > \\tau_{\\text{cutter}} + \\tau_{\\text{reel}} + \\tau_{\\text{friction}}",
+        formula: "v = n_{\\mathrm{wheel}}\\pi d",
         explanation:
-          "The cast-iron master drive wheel is equipped with radial cleats that grip the soil, delivering sufficient non-slip torque to drive both the high-speed reciprocating sickle and the overhead reel without stalling.",
+          "The source states a ground wheel about two feet in diameter with teeth on its circumference to hold the ground. The equation relates forward speed, wheel speed, and diameter under a no-slip assumption. It does not establish soil friction, torque, or a stall threshold.",
       },
     ],
     whyItMattersToday:
-      "McCormick's synchronized combination of sickle bar, guard fingers, reel, divider, and platform forms the harvesting header of every modern combine harvester operating across the world's grain belts today. It transformed the American Midwest into the breadbasket of the world and freed millions of farm workers for the industrial revolution.",
+      "The specification shows why a reaper is a system rather than a single blade: draft, crop division, cutting support, reel, platform, and motion transmission have to work together. Modern harvesters use very different machinery, but the problem decomposition remains recognizable. This page does not use the patent alone to quantify its economic or labor effects.",
   },
   claims: [
     {
@@ -211,33 +208,33 @@ export const mccormickReaperPatent: Patent = {
   ],
   historicalContext: {
     problemStatement:
-      "For thousands of years, grain harvesting was the ultimate bottleneck in agriculture: wheat ripens simultaneously across hundreds of acres and must be cut within 10 to 14 days before grains shatter onto the ground. Using hand sickles, a farmer could cut barely one acre per day, capping the possible size of family farms and keeping humanity constantly vulnerable to famine.",
+      "The specification's practical problem is keeping a horse-drawn cutting machine coordinated with standing grain: the stalks must be divided, brought to the cutter, supported during cutting, and deposited where a worker can rake them away. Its proposed solution makes the ground wheel transmit motion to both the crank-driven cutter and the belt-driven reel.",
     priorArtLimitations: [
-      "Hand scythes and cradles required intense physical labor and could not harvest more than 1.5 to 2 acres per worker per day.",
-      "Obed Hussey's 1833 machine lacked a gathering reel and jammed constantly in tangled or lodged grain.",
-      "Earlier English rotary reap-hooks knocked grain heads off the stalks before cutting them.",
+      "A cutter alone would not solve the handling problem described here: McCormick specifies a divider, a reel, a platform, and an arrangement that keeps grain to be cut apart from grain left standing.",
+      "The source explicitly gives alternatives for the upper cutter support, which shows that the inventor was addressing both the cutting action and the way stalks were held at the blade.",
+      "The facsimile provides no comparative trials of rival machines or quantified failure rates, so this record does not infer them from the patent alone.",
     ],
     breakthroughInsight:
-      "McCormick recognized that a reaper required a complete system of seven coordinated mechanisms working together: cutting in shear (sickle + guard fingers), gathering (reel), separating (divider), supporting (platform), powering (ground wheel), and avoiding crop damage (offset draft).",
+      "The patent joins a divider, platform, crank-driven cutter, adjustable reel, draft arrangement, and gear-and-belt transmission into one working sequence. Its detailed dimensions and tooth counts make the machinery's dependency chain inspectable rather than treating the reaper as a single invention-shaped object.",
     patentWars: [
       {
-        rivalName: "Obed Hussey and John H. Manny",
+        rivalName: "John H. Manny and his partners",
         rivalClaim:
-          "Hussey patented a cutter bar in 1833; Manny manufactured reapers claiming the guard finger and sickle combination was in the public domain.",
+          "The later litigation concerned McCormick's 1845 and 1847 reaper improvements, including the divider, reel support, and raker's-seat/reel arrangements; it did not determine the scope of the 1834 X8277 specification shown here.",
         conflictDetails:
-          "McCormick sued Manny in the famous 1855 patent trial McCormick v. Manny in Cincinnati. Manny hired future President Abraham Lincoln and Edwin M. Stanton as defense counsel. Stanton famously insulted Lincoln and took over the defense, convincing the court that Manny's machine did not infringe McCormick's expired 1834 claims.",
+          "McCormick filed a bill against Manny in the United States Circuit Court for the Northern District of Illinois in 1854. The record reports a hearing in Cincinnati in September 1855 before Circuit Judge John McLean and District Judge Thomas Drummond; Edwin M. Stanton and George Harding argued for the defendants.",
         resolution:
-          "McCormick lost the specific suit in the Supreme Court, but his superior manufacturing factory in Chicago, deferred payment credit, and money-back guarantees allowed McCormick Harvesting Machine Company to dominate the market worldwide.",
+          "The Circuit Court dismissed McCormick's bill. The Supreme Court later affirmed the dismissal and assessed costs against McCormick in 1858.",
         legalOutcome:
-          "Narrowed the scope of agricultural patent reissues and stimulated massive competitive innovation in farm machinery.",
+          "The court treated Manny's arrangements as materially different and found relevant features had appeared before McCormick's later patents. It is an infringement decision about those later improvements, not evidence that the 1834 patent was void or that every reaper feature was free for use.",
       },
     ],
     civilizationalImpact:
-      "During the American Civil War, Secretary of War Edwin Stanton stated: 'The reaper is to the North what the gunboat is to the South. It releases our young men to the battlefront while keeping our armies and Europe fed.' It turned the American Great Plains into the world's breadbasket and laid the foundation for International Harvester.",
+      "The Smithsonian's McCormick reaper collection record describes a path from the 1834 machine to a Chicago factory opened in 1847, where standardized parts and manufacturing process were developed. That institutional history supports treating the reaper as both a mechanical system and a manufactured product, without assigning the patent a single-cause role in agricultural or labor history.",
     funFact:
-      "McCormick first demonstrated his reaper in 1831 at age 22 in a field of oats at John Ruff's farm near Steeles Tavern, Virginia. The field was rough and hilly, and the machine rattled violently, but by afternoon it had cleanly harvested 6 acres!",
+      "The Smithsonian collection record identifies its 1834 reaper model as a model shown at London's 1851 Crystal Palace Exhibition, where it received the Council Medal.",
     aftermath:
-      "McCormick moved west to the muddy frontier town of Chicago in 1847, building a massive lakeside factory that produced over 50,000 reapers per year. After the Great Chicago Fire of 1871 destroyed the works, McCormick rebuilt an even larger facility that merged in 1902 to become International Harvester.",
+      "The Smithsonian record says McCormick opened a factory outside Chicago in 1847 and that the McCormick Harvesting Machine Company's advertising helped it sell more than 50,000 reapers per year by the mid-1880s. This record does not attach that later figure to the 1834 patent's output or claim scope.",
   },
   tags: [
     "Cyrus McCormick",

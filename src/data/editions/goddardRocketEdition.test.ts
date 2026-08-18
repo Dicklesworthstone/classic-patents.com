@@ -44,6 +44,17 @@ describe("goddardRocketArchivalEdition", () => {
     }
   });
 
+  test("turns every source figure citation into an authored preview node", () => {
+    const bareFigureReference = /\b(?:fig(?:s)?\.?|figure)\s+\d+/i;
+
+    for (const block of goddardRocketArchivalEdition.blocks) {
+      if (block.kind !== "paragraph" && block.kind !== "claim") continue;
+      for (const inline of block.inlines) {
+        if (inline.kind === "text") expect(inline.text).not.toMatch(bareFigureReference);
+      }
+    }
+  });
+
   test("provides a complete-coverage, non-lossy companion for every source paragraph", () => {
     for (const [index, block] of goddardRocketArchivalEdition.blocks.entries()) {
       if (block.kind !== "paragraph") continue;

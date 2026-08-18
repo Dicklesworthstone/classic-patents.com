@@ -1,3 +1,5 @@
+--- REVIEWED TRANSCRIPTION PAGE 1 OF 3 ---
+
 REVIEWED TRANSCRIPTION — US 31,128
 E. G. OTIS. HOISTING APPARATUS. Patented Jan. 15, 1861.
 
@@ -20,6 +22,8 @@ To enable those skilled in the art to fully understand and construct my inventio
 
 A represents a base or platform, to which two uprights B B are secured, said uprights having each a rack C at its inner side. These racks C have teeth of hook form, or the teeth may be described as having an inclination upward, as shown clearly in Fig. 2.
 
+--- REVIEWED TRANSCRIPTION PAGE 2 OF 3 ---
+
 Between the uprights B B a platform D is placed, the platform being secured to two uprights a a, which are grooved vertically to receive the racks C C. To each upright a a a bent lever E is attached by a fulcrum-pin b, and the inner ends of the levers E E overlap each other and are fitted in an eye c at the lower end of a vertical bar F, which passes loosely through a rail or bar d, that connects the upper ends of the uprights a a. To the lower end of the bar F a spring e is attached, said spring having a tendency to keep the pawls f, which are attached to the lower ends of the levers E E, in gear with the racks C C.
 
 This will be fully understood by referring to Fig. 2, in which it will be seen that the pawls f are connected to the ends of the levers E by pivots, and have springs g attached, which springs have a tendency to keep the pawls pressed down into or between the teeth of the racks C. The pawls, it will be seen, fit or work in mortises h in the uprights a a.
@@ -37,6 +41,8 @@ The operation, which will be readily seen, is as follows: When the drum N is tur
 The rope U forms the stop, and when pulled down both parts u u of the branched end V of the rope U have their upper ends brought in the same horizontal plane, and the slide S will be so actuated that the belt O will be on the idle-pulley J and belt P on the idle-pulley K, the shoe Z being at the same time pressed down on the working-pulley L and serving as a brake. The branched end V of the rope U actuates the rope T when the machine is in operation, but will have no effect on said rope when the brake is applied, as the upper ends of both parts u u of the end V will be in a horizontal line with each other.
 
 In order to raise the platform D, the rope T is moved by hand so as to throw the belt O on the working-pulley L, the shoe Z being simultaneously raised, and in order to reverse the movement of the platform D and allow it to descend, the rope T is moved so as to shift the cross-belt P on the working-pulley L.
+
+--- REVIEWED TRANSCRIPTION PAGE 3 OF 3 ---
 
 In case the rope G should break in hoisting the loaded platform D, the pawls f f, in consequence of being released from the pull of said rope, will immediately be thrown in connection with the racks C C by the springs e g g, and in consequence of the teeth of the racks being of hook form or pointed upward the pawls f f, under the weight of the load on the platform, will have a tendency to draw the uprights B B toward each other instead of forcing them apart, and the pawls lock themselves with the racks, so that casual disengagement is impossible. By having the counterpoise R attached to the drum H instead of to the platform D the platform or load-sustaining mechanism is not at all interfered with, as would be the case were the rope Q attached directly to the cross-piece d.
 

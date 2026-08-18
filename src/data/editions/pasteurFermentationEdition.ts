@@ -94,7 +94,12 @@ export const pasteurFermentationArchivalEdition: CuratedSpecificationEdition = {
       inlines: [
         {
           kind: "text",
-          text: "To enable those skilled in the art to fully understand and practice my improved process for the manufacture of beer, I will proceed to more fully describe it, referring at the same time by letters to the accompanying drawing, in which I have shown an apparatus adapted to carry on my said improved process. At Figure 1, A A A represent three casks or tanks, which may be made of galvanized iron, wood, or other suitable material, and which are supported on suitable stands b, as represented. Above the series of cylinders or vessels A is arranged a water-supply pipe, E, from which depend branch pipes, (one over each of the vessels A,) provided with cocks r, and having attached to their lower ends flexible tubes or hoses, which in turn carry at their lower extremities spray-nozzles P. ",
+          text: "To enable those skilled in the art to fully understand and practice my improved process for the manufacture of beer, I will proceed to more fully describe it, referring at the same time by letters to the accompanying drawing, in which I have shown an apparatus adapted to carry on my said improved process. At ",
+        },
+        figure(1),
+        {
+          kind: "text",
+          text: ", A A A represent three casks or tanks, which may be made of galvanized iron, wood, or other suitable material, and which are supported on suitable stands b, as represented. Above the series of cylinders or vessels A is arranged a water-supply pipe, E, from which depend branch pipes, (one over each of the vessels A,) provided with cocks r, and having attached to their lower ends flexible tubes or hoses, which in turn carry at their lower extremities spray-nozzles P. ",
         },
         figure(1),
         { kind: "text", text: " shows the three vessels and the spray arrangement." },

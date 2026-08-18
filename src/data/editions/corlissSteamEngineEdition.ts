@@ -6,21 +6,34 @@ import type {
 
 const literal = (text: string): CuratedSpecificationInlines => [{ kind: "text", text }];
 
-const figure = (number: number): CuratedSpecificationInline => ({
-  kind: "reference",
-  text: `Fig. ${number}`,
-  href: `#corliss-fig-${number}`,
-  referenceType: "figure",
-  label: `Open the source-faithful crop for Figure ${number} of US 6,162`,
-  figurePreviews: [
-    {
-      src: `/patents/figures/us-6162-corliss-steam-engine-fig-${number}-preview.png`,
-      alt: `Figure ${number} from George H. Corliss's US 6,162 steam-engine patent.`,
-      width: 720,
-      height: 720,
-    },
-  ],
-});
+const dims: Record<string, [number, number]> = {
+  "1": [720, 840],
+  "2": [720, 936],
+  "3": [720, 823],
+  "4": [720, 1057],
+  "5": [720, 1057],
+  "8": [720, 1057],
+  "9": [720, 1057],
+};
+
+const figure = (number: number | string): CuratedSpecificationInline => {
+  const [w, h] = dims[number.toString()] || [720, 720];
+  return {
+    kind: "reference",
+    text: `Fig. ${number}`,
+    href: `#corliss-fig-${number}`,
+    referenceType: "figure",
+    label: `Open the source-faithful crop for Figure ${number} of US 6,162`,
+    figurePreviews: [
+      {
+        src: `/patents/figures/us-6162-corliss-steam-engine-fig-${number}-preview.png`,
+        alt: `Figure ${number} from George H. Corliss's US 6,162 steam-engine patent.`,
+        width: w,
+        height: h,
+      },
+    ],
+  };
+};
 
 const term = (
   before: string,
@@ -97,23 +110,23 @@ export const corlissSteamEngineArchivalEdition: CuratedSpecificationEdition = {
           figurePreviews: [
             {
               src: "/patents/figures/us-6162-corliss-steam-engine-fig-1-preview.png",
-              alt: "Figure 1 from George H. Corliss's US 6,162 steam-engine patent.",
+              alt: "Figure 1 from US 6,162.",
               width: 720,
-              height: 720,
+              height: 840,
             },
           ],
         },
         { kind: "text", text: " is a side elevation of an engine on my improved plan, " },
-        figure(2),
+        figure("2"),
         { kind: "text", text: ", a longitudinal vertical section; " },
-        figure(3),
+        figure("3"),
         {
           kind: "text",
           text: ", an elevation of the valves and the arrangement of parts for working them, and ",
         },
-        figure(4),
+        figure("4"),
         { kind: "text", text: ", a plan thereof; " },
-        figure(5),
+        figure("5"),
         {
           kind: "text",
           text: " is a separate section representing a latch used in the valve gear, and ",
@@ -127,13 +140,13 @@ export const corlissSteamEngineArchivalEdition: CuratedSpecificationEdition = {
           figurePreviews: [
             {
               src: "/patents/figures/us-6162-corliss-steam-engine-fig-6-preview.png",
-              alt: "Figure 6, latch detail, from US 6,162.",
+              alt: "Figure 6 from US 6,162.",
               width: 720,
               height: 720,
             },
             {
               src: "/patents/figures/us-6162-corliss-steam-engine-fig-7-preview.png",
-              alt: "Figure 7, air-cylinder detail, from US 6,162.",
+              alt: "Figure 7 from US 6,162.",
               width: 720,
               height: 720,
             },
@@ -234,15 +247,15 @@ export const corlissSteamEngineArchivalEdition: CuratedSpecificationEdition = {
           figurePreviews: [
             {
               src: "/patents/figures/us-6162-corliss-steam-engine-fig-8-preview.png",
-              alt: "Figure 8 alternative valve arrangement from US 6,162.",
+              alt: "Figure 8 from US 6,162.",
               width: 720,
-              height: 720,
+              height: 1057,
             },
             {
               src: "/patents/figures/us-6162-corliss-steam-engine-fig-9-preview.png",
-              alt: "Figure 9 alternative valve arrangement from US 6,162.",
+              alt: "Figure 9 from US 6,162.",
               width: 720,
-              height: 720,
+              height: 1057,
             },
           ],
         },

@@ -10,21 +10,35 @@ import type {
  */
 const text = (value: string): CuratedSpecificationInlines => [{ kind: "text", text: value }];
 
-const preview = (number: number, label: string): CuratedSpecificationInline => ({
-  kind: "reference",
-  text: label,
-  href: `#figure-${number}`,
-  referenceType: "figure",
-  label: `Open the source-derived Whitney cotton-gin drawing crop ${number}`,
-  figurePreviews: [
-    {
-      src: `/patents/figures/us-x72-whitney-cotton-gin-fig-${number}-preview.png`,
-      alt: `Source-derived crop ${number} from the Whitney cotton-gin facsimile drawing sheets.`,
-      width: 1078,
-      height: 1600,
-    },
-  ],
-});
+const dims: Record<string, [number, number]> = {
+  "2": [1078, 887],
+  "10": [618, 1050],
+  "8": [1078, 783],
+  "3": [1078, 783],
+  "13": [1013, 737], // Fig. 11
+  "14": [1000, 778], // Fig. 12
+  "11": [471, 1061], // Fig. 6
+  "9": [713, 1300], // Fig. 4
+};
+
+const preview = (number: number | string, label: string): CuratedSpecificationInline => {
+  const [w, h] = dims[number.toString()] || [1078, 1600];
+  return {
+    kind: "reference",
+    text: label,
+    href: `#figure-${number}`,
+    referenceType: "figure",
+    label: `Open the source-derived Whitney cotton-gin drawing crop ${number}`,
+    figurePreviews: [
+      {
+        src: `/patents/figures/us-x72-whitney-cotton-gin-fig-${number}-preview.png`,
+        alt: `Source-derived crop ${number} from the Whitney cotton-gin facsimile drawing sheets.`,
+        width: w,
+        height: h,
+      },
+    ],
+  };
+};
 
 const fig = (
   before: string,

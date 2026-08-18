@@ -149,8 +149,10 @@ export const goddardRocketArchivalEdition: CuratedSpecificationEdition = {
       fig("Figs. 3 and 4"),
       {
         kind: "text",
-        text: " are enlarged transverse sectional views taken along the lines 3-3 and 4-4 respectively, in Fig. 2; and ",
+        text: " are enlarged transverse sectional views taken along the lines 3-3 and 4-4 respectively, in ",
       },
+      fig("Fig. 2"),
+      { kind: "text", text: "; and " },
       fig("Fig. 5"),
       {
         kind: "text",
@@ -207,21 +209,30 @@ export const goddardRocketArchivalEdition: CuratedSpecificationEdition = {
         "A fuse 28 extends from the explosive material 27 through an opening in the casting 13 and projects a short distance into the last disk 12 of explosive material in the chamber 10. Thus when the propelling charge in the main rocket apparatus is substantially exhausted, the fuse 28 will be ignited and the firing tube 24 will act as a gun from which the auxiliary rocket will be projected for further flight. As the auxiliary rocket is of much less weight than the combined weight of the primary and auxiliary rockets, a given amount of explosive in the auxiliary rocket will give a much greater increase in flight than the same amount of explosive would produce if burned in the primary rocket.",
       ),
     ),
-    p(
-      text(
-        "To provide for maintaining the speed of rotation of the auxiliary apparatus, which will have been somewhat reduced by the friction of the atmosphere during the flight, I provide in the head 29 of the auxiliary rocket a plurality of transverse backwardly curved tubes or recesses 30, similar to the recesses 15 shown in Fig. 3. The recesses 30 are provided with explosive charges 31 and within the recesses are also mounted a series of small tubes 32 extending inwardly to the axis of the apparatus where they unite and are further extended downwardly into the explosive charge 27. These tubes are filled with a rapidly burning compound which is ignited when the explosive charge 27 has been consumed to a predetermined extent and by which the charges 31 are thereafter ignited to increase or restore the speed of rotation of the auxiliary rocket.",
-      ),
-    ),
+    p([
+      {
+        kind: "text",
+        text: "To provide for maintaining the speed of rotation of the auxiliary apparatus, which will have been somewhat reduced by the friction of the atmosphere during the flight, I provide in the head 29 of the auxiliary rocket a plurality of transverse backwardly curved tubes or recesses 30, similar to the recesses 15 shown in ",
+      },
+      fig("Fig. 3"),
+      {
+        kind: "text",
+        text: ". The recesses 30 are provided with explosive charges 31 and within the recesses are also mounted a series of small tubes 32 extending inwardly to the axis of the apparatus where they unite and are further extended downwardly into the explosive charge 27. These tubes are filled with a rapidly burning compound which is ignited when the explosive charge 27 has been consumed to a predetermined extent and by which the charges 31 are thereafter ignited to increase or restore the speed of rotation of the auxiliary rocket.",
+      },
+    ]),
     p(
       text(
         "Within the apparatus head 29 is pivotally mounted a support 33 upon which is mounted any desired form of recording apparatus. In the particular embodiment of my invention shown in the drawings this apparatus is indicated as a camera 34. The head 29 is provided with a series of openings 35 separated by narrow supports 36. The speed of rotation of the head is so great that the passage of the supports 36 in front of the camera does not interfere with the taking of photographs thereby.",
       ),
     ),
-    p(
-      text(
-        "In order that the support 33 may not partake of the rotation of the head 29, I provide within the support a gyroscope 37 mounted in bearings 38 upon said support and to provide the high initial speed of rotation necessary for the operation of the gyroscope, I construct the latter as the armature of a three-phase induction motor having field coils 39, mounted on a frame 40 also secured to the support 33. The field coils are connected to wires 41 secured within an insulating plug 42 in the support 38. Wires 43 may be introduced through an opening 44 in the head 29 and caused to make contact with the wires 41 in the plug 42, the wires 43 being connected to any suitable source of three-phase current. When the gyroscope has attained the requisite speed of rotation, the wires 43 may be withdrawn and the opening 44 may be closed with the screw 45 shown in Fig. 1.",
-      ),
-    ),
+    p([
+      {
+        kind: "text",
+        text: "In order that the support 33 may not partake of the rotation of the head 29, I provide within the support a gyroscope 37 mounted in bearings 38 upon said support and to provide the high initial speed of rotation necessary for the operation of the gyroscope, I construct the latter as the armature of a three-phase induction motor having field coils 39, mounted on a frame 40 also secured to the support 33. The field coils are connected to wires 41 secured within an insulating plug 42 in the support 38. Wires 43 may be introduced through an opening 44 in the head 29 and caused to make contact with the wires 41 in the plug 42, the wires 43 being connected to any suitable source of three-phase current. When the gyroscope has attained the requisite speed of rotation, the wires 43 may be withdrawn and the opening 44 may be closed with the screw 45 shown in ",
+      },
+      fig("Fig. 1"),
+      { kind: "text", text: "." },
+    ]),
     p(
       text(
         "In order that the apparatus may be brought back to earth without damage thereto, a parachute arrangement may be provided but as such arrangements are well known and form no part of my invention, I have omitted the same from the drawings for the sake of showing other features more clearly. It is also within the scope of my invention to provide the auxiliary rocket with a firing tube from which a third rocket may be discharged and to continue this arrangement to any desired extent. Several features of my invention are also applicable to a structure in which the apparatus head is secured directly to the casing 13, the auxiliary rocket being omitted, and this construction I also consider within the scope of my invention.",

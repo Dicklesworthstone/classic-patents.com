@@ -1,3 +1,5 @@
+--- REVIEWED TRANSCRIPTION PAGE 1 OF 7 ---
+
 UNITED STATES PATENT OFFICE.
 
 SAMUEL COLT, OF HARTFORD, CONNECTICUT.
@@ -12,6 +14,8 @@ Revolving Gun.
 
 9430X.
 
+--- REVIEWED TRANSCRIPTION PAGE 2 OF 7 ---
+
 Patented Feb. 25, 1836.
 
 S. COLT.
@@ -25,6 +29,8 @@ Patented Feb. 25, 1836.
 S. COLT.
 
 Revolving Gun.
+
+--- REVIEWED TRANSCRIPTION PAGE 3 OF 7 ---
 
 9430X.
 
@@ -40,6 +46,8 @@ Patented Feb. 25, 1836.
 
 To all whom it may concern:
 
+--- REVIEWED TRANSCRIPTION PAGE 4 OF 7 ---
+
 Be it known that I, SAMUEL COLT, of Hartford, in the county of Hartford and State of Connecticut, have invented a new and useful Improvement in Fire-Arms; and I hereby declare that the following, with the accompanying drawings, is a full and exact description of the construction and operation of the said improvements as invented by me.
 
 Division 1 of the drawings represents a pistol. Division 2 represents Division 1 in four sections, as 1, 2, 3, and 4. Division 3 represents all the parts in Section 1 of Division 2. Division 4 represents all the parts of Section 2 of Division 2. Division 5 represents the mechanical combination of the entire instrument.
@@ -53,6 +61,8 @@ Figure 3 is the key that holds the cylinder in its place by the arm a when each 
 Figure 4 is the lifter or hand, with a spring on the left side to allow it to move laterally to the left when acted on at a by each tooth of the ratchet. At b is a joint, which connects it with the pin c, which acts in the hole e in Figure 1.
 
 Figure 5 is the connecting-rod. The end a serves as a catch to the hammer when the lock is set, and when the hammer is pulled back the rod moves forward horizontally in consequence of the hammer's coming in contact with it, and the end b operates upon the trigger, Figure 6, at the catch a and throws down the end b, by which means the claw c hooks into the end b of Figure 5, and is held in its place by the spring, Figure 7, acting upon it at the pin d. Figure 8 is the pin which holds in their places the spring, Figure 7, at a and the connecting-rod, Figure 5, at c. Figure 6 moves on the pin c at f. Figure 9 is a spring, which holds the rod, Figure 5, toward the hammer, that the connecting-rod may catch in a notch at the bottom of the hammer to hold it when set.
+
+--- REVIEWED TRANSCRIPTION PAGE 5 OF 7 ---
 
 Division 4 is a dissection of Section 2. Figure 1 is the arbor on which the cylinder revolves. a a' are the bearings on which the cylinder rests. b is the slot through which a key enters to connect Section 4 with it. The part C passes through the shackle, Figure 2, which is keyed to the cylinder, Section 3, Figure 1, at the groove a by means of the tongue or projections A on the shackle. e is the part which receives the nut, Figure 3, when it is connected with the shackle, Figure 4, as seen at a, Section 2 in Division 2.
 
@@ -68,6 +78,8 @@ By drawing back the hammer the pin p operates upon the after end of the key (tha
 
 To discharge the pistol, by pulling the trigger the connecting-rod is drawn from the catch of the hammer, when the mainspring forces the hammer forward, the upper end of which strikes the percussion-cap, during which the lifter, by means of lateral motion to the left, falls below a succeeding tooth on the ratchet, when, by means of the lateral motion of the after end q of the key which holds the cylinder, the pin p of the hammer is permitted to fall below it again. By repetitions of the same motion of the hammer the same effect is produced until each succeeding chamber is discharged.
 
+--- REVIEWED TRANSCRIPTION PAGE 6 OF 7 ---
+
 Plate 2 represents the principle of the invention as applicable to rifles, muskets, and other fire-arms, differing from what has already been described, first, in the manner of setting the lock; secondly, in the use of the adopter for communicating the force of the hammer to the percussion-cap; thirdly, in the situation of the mainspring and trigger; and, fourthly, in the construction of the lock-plate and guards that hold the stock. Figure 1 represents the mainspring. Figure 2 is the stirrup to connect the mainspring with the hammer. Figure 3 is the hammer. Figure 4 is the lever for setting the lock. Figure 5 is the discharging-trigger. Figure 6 is the adopter. Figure 7 is the spiral spring to draw back the adopter. Figure 8 represents all the parts combined.
 
 To set the lock, the fulcrum of the lever being at a, by drawing down on the end b the end c operates upon the end d of the hammer, whose fulcrum, being at e, throws back its end f, when the trigger at g (whose fulcrum is at h) operates upon the catches of the hammer at i, to hold the lock when set. When the end f of the hammer is removed from the adopter (whose bearings are at j j) it is drawn back by means of the coiled spring k until its end l is drawn back sufficient to allow the cylinder to turn, which is effected as described in the pistol. After the finger is relieved from the lever (when the lock is set) a small spring draws it back to its former place to make room for the end d of the hammer, so that its force may not be impaired. By pulling the trigger from the catch of the hammer, the mainspring (which is connected to the hammer by the stirrup o) forces its end f forward against the end m of the adopter, the end l of which is brought in contact with the percussion-cap placed upon the tube n, which discharges the load. To load, it is only requisite to draw the key j, which will liberate Section 4. Then by drawing the key that locks the cylinder (which may be effected by drawing back the hammer) the cylinder may be taken from the arbor.
@@ -81,6 +93,8 @@ I claim as new—
 2. The application of a partition between the caps.
 
 3. The application of a shield over the caps as a security against moisture and the action of the smoke upon the works of the lock.
+
+--- REVIEWED TRANSCRIPTION PAGE 7 OF 7 ---
 
 4. The principle of the connecting-rod between the hammer and the trigger.
 

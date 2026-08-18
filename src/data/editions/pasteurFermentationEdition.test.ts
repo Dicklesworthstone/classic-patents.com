@@ -47,7 +47,7 @@ describe("pasteurFermentationArchivalEdition", () => {
           )
         : [],
     );
-    expect(figureReferences).toHaveLength(3);
+    expect(figureReferences).toHaveLength(4);
     for (const reference of figureReferences) {
       expect(reference.figurePreviews?.[0]?.src).toStartWith(
         "/patents/figures/us-135245-pasteur-fermentation/",

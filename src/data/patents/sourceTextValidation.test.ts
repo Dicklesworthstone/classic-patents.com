@@ -38,4 +38,20 @@ describe("source-PDF text layer validation", () => {
     ).toEqual({ valid: true });
     expect(validateReviewedTranscription("Complete reviewed text", 1).valid).toBeFalse();
   });
+
+  it("rejects content before a source or reviewed page-one marker", () => {
+    const source = validateSourcePdfTextLayer(
+      "Editorial preface\n\n--- SOURCE PDF PAGE 1 OF 1 ---\n\nSource text",
+      1,
+    );
+    const reviewed = validateReviewedTranscription(
+      "Editorial preface\n\n--- REVIEWED TRANSCRIPTION PAGE 1 OF 1 ---\n\nReviewed text",
+      1,
+    );
+
+    expect(source.valid).toBeFalse();
+    expect(source.error).toContain("begin");
+    expect(reviewed.valid).toBeFalse();
+    expect(reviewed.error).toContain("begin");
+  });
 });

@@ -160,7 +160,9 @@ export const daimlerMarineEngineArchivalEdition: CuratedSpecificationEdition = {
           text: ", a broken longitudinal sectional view showing one of the high-pressure gas-holders, and ",
         },
         figure("Fig. 6", [2]),
-        { kind: "text", text: " a transverse sectional view of Fig. 5." },
+        { kind: "text", text: " a transverse sectional view of " },
+        figure("Fig. 5", [2]),
+        { kind: "text", text: "." },
       ],
     },
     {

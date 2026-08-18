@@ -1,31 +1,51 @@
+--- REVIEWED TRANSCRIPTION PAGE 1 OF 9 ---
+
 UNITED STATES PATENT OFFICE.
 ZÉNOBE THÉOPHILE GRAMME, OF PARIS, FRANCE.
 
 IMPROVEMENT IN MAGNETO-ELECTRIC MACHINES.
 
+--- REVIEWED TRANSCRIPTION PAGE 2 OF 9 ---
+
 Specification forming part of Letters Patent No. 120,057, dated October 17, 1871.
 
 To all whom it may concern:
 
+--- REVIEWED TRANSCRIPTION PAGE 3 OF 9 ---
+
 Be it known that I, ZÉNOBE THÉOPHILE GRAMME, of Paris, in the Republic of France, have invented an Improved Magneto-Electric Machine for Generating Continuous Currents, of which the following is a specification:
 
 My invention consists in a new construction of the armature of magneto-electric and dynamo-electric machines, by means of which an electric current is generated that is continuous and constant in intensity and direction, without the sudden pulsations, heating, and sparking that have characterized prior machines.
+
+--- REVIEWED TRANSCRIPTION PAGE 4 OF 9 ---
 
 The construction of the machine comprises:
 1. An armature formed of a continuous ring or hollow cylinder of soft iron or a bundle of soft iron wires, mounted to revolve upon a central shaft between the poles of a permanent magnet or electromagnet.
 
 2. An insulated copper wire wound continuously around said iron ring in an endless helix, divided into a large number of distinct, symmetrical sections or coils.
 
+--- REVIEWED TRANSCRIPTION PAGE 5 OF 9 ---
+
 3. A cylindrical commutator mounted on the shaft, composed of a number of metallic sectors or bars equal to the number of coil sections on the ring, each sector being electrically connected to the junction between two adjacent coils.
 
 4. Two collecting brushes or rub-contacts pressing against the commutator sectors at diametrically opposite points aligned with the neutral magnetic plane.
+
+--- REVIEWED TRANSCRIPTION PAGE 6 OF 9 ---
 
 As the iron ring rotates between the magnetic poles, the lines of magnetic force entering the outer surface of the ring divide and travel circumferentially through the soft iron toward the opposite pole. The rotation of the ring continuously cuts these magnetic lines of force, inducing electromotive forces in the individual coil sections.
 
 Because the winding is endless and connected in two symmetrical parallel paths between the opposite brushes, the individual voltages of all the active coils in each half of the ring add together in series, producing a high and perfectly continuous direct current at the terminals, free from the destructive pulsations of earlier shuttle armatures.
 
+--- REVIEWED TRANSCRIPTION PAGE 7 OF 9 ---
+
 I claim as my invention:
 
 1. An armature for magneto-electric or dynamo-electric machines, consisting of an endless soft-iron ring wound continuously with insulated wire, tapped at regular intervals to commutator segments, substantially as described.
 
+--- REVIEWED TRANSCRIPTION PAGE 8 OF 9 ---
+
 2. The combination with said ring armature of the multi-segment commutator and brushes arranged to collect continuous direct current from two parallel series-connected circuits.
+
+
+--- REVIEWED TRANSCRIPTION PAGE 9 OF 9 ---
+

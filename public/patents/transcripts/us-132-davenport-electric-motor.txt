@@ -1,3 +1,5 @@
+--- REVIEWED TRANSCRIPTION PAGE 1 OF 3 ---
+
 T. DAVENPORT. Electric Motor. No. 132. Patented Feb. 25, 1837.
 
 UNITED STATES PATENT OFFICE.
@@ -13,6 +15,8 @@ Be it known that I, THOMAS DAVENPORT, of the town of Brandon, in the county of R
 
 The machine for applying the power of magnetism and electro-magnetism is described as follows:
 
+--- REVIEWED TRANSCRIPTION PAGE 2 OF 3 ---
+
 The frame A may be made of a circular or any other figure, divided into two or more platforms, B and C, upon which the apparatus rests, of a size and strength adapted for the purpose intended.
 
 The galvanic battery D is constructed by placing plates of copper and zinc E and F, alternately of any figure, in a vessel of diluted acid, G. From each vessel are two conductors, H and I, one from the copper and one from the zinc, leading to and in contact with copper plates K and L placed upon the lower platform. These plates or conductors are made in the form of a segment of a circle corresponding in number with the artificial magnets hereinafter described, placed around the shaft detached from one another and from the shaft, having a conductor leading from the copper plate of the battery to one of said plates on the lower platform, and another conductor leading from the zinc plate of the battery to the next plate on said lower platform, and so on alternately (if there be more than two plates on said lower platform) around the circle.
@@ -26,6 +30,8 @@ Having arranged these artificial magnets on the top of the upper circular platfo
 There being a corresponding number of copper plates or conductors placed below the artificial magnets around the shaft, but detached from it as well as from each other, with wires leading from the galvanic magnets to these plates and in contact with them, as before described, these wires will stand in the same position in relation to the copper plates that the galvanic magnets stand to the artificial magnets, but in contact with the plates.
 
 Now, in order to put the machine in motion, the galvanic magnet No. 2, being changed by the galvanic current passing from the copper plate of the battery along the conductors and wires, becomes a north pole, while at the same time the magnet No. 4 is changed by the galvanic current passing from the zinc plate of the battery, and becomes a south pole. Of course the south pole of the artificial magnet No. 6 will attract the north pole of the galvanic magnet No. 2 and will move it a quarter of a circle. The south pole of the galvanic magnet No. 4, being at the same time attracted by the north pole No. 5, causes the said magnet No. 4 also to perform a quarter of a circle. The momentum of the galvanic arms will carry them past the centers of the poles Nos. 5 and 6, at which time the several wires from the galvanic magnets will have changed their positions in relation to the copper plates or conductors.
+
+--- REVIEWED TRANSCRIPTION PAGE 3 OF 3 ---
 
 For instance, the north pole No. 2 having now become a south pole by reason of its wire being brought in contact with the conductors of the zinc plate, and No. 4 having in like manner become a north pole, its wire having changed its position from the zinc plate to the copper plate, the poles of the galvanic magnets are, of course, now repelled by the poles that before attracted them; and in this manner the operation is continued, producing a rotary motion in the shaft, which motion is conveyed to machinery for the purpose of propelling the same.
 
