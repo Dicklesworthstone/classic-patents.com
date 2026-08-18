@@ -472,7 +472,7 @@ export function updateMaximMachineGunKinematics(
   fireOmegaRadPerS: number,
   recoilStrokeM: number,
   barrelTempC: number,
-  waterEvapRateGs: number,
+  steamOpacity: number,
   showMuzzleFlash: boolean,
   isCutaway: boolean,
 ): { isMuzzleFlash: boolean } {
@@ -497,9 +497,8 @@ export function updateMaximMachineGunKinematics(
   model.muzzleFlashMesh.visible = isMuzzleFlash;
 
   // 5. Water jacket thermal heating & steam emission ($T >= 95 deg C)
-  const isBoiling = barrelTempC >= 95;
   const steamMat = model.steamPoints.material as THREE.PointsMaterial;
-  steamMat.opacity = isBoiling ? Math.min(0.85, (waterEvapRateGs / 15) * 0.75) : 0;
+  steamMat.opacity = steamOpacity;
 
   // Water jacket color thermal shift
   model.materials.jacketMat.color.setHex(

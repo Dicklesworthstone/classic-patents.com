@@ -330,9 +330,8 @@ export function updateParsonsTurbineKinematics(
   dt: number,
   _timeSec: number,
   displayOmegaRadPerS: number,
-  enthalpyKjKg: number,
-  turbineRpm: number,
-  shaftPowerKw: number,
+  steamAdvancePerS: number,
+  steamOpacity: number,
   showSteamFlow: boolean,
   isCutaway: boolean,
 ) {
@@ -343,7 +342,7 @@ export function updateParsonsTurbineKinematics(
   const pos = nodes.steamPositions;
   for (let i = 0; i < nodes.steamCount; i++) {
     const idx = i * 3;
-    pos[idx] += (enthalpyKjKg / 550) * (turbineRpm / 3000) * 12 * dt;
+    pos[idx] += steamAdvancePerS * dt;
     let x = pos[idx];
 
     if (x > 5.0) {
@@ -373,7 +372,7 @@ export function updateParsonsTurbineKinematics(
 
   // 3. Steam Streamline Visibility and Opacity
   nodes.steamPoints.visible = showSteamFlow;
-  materials.steamPoints.opacity = Math.min(0.95, 0.25 + (shaftPowerKw / 14000) * 0.7);
+  materials.steamPoints.opacity = steamOpacity;
 
   // 4. Cutaway Casing Transparency
   materials.castIronCasing.opacity = isCutaway ? 0.35 : 1.0;

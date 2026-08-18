@@ -63,3 +63,9 @@ list_missing.ts
 test-compile.mjs
 src/pages/
 .pages-backup/
+out.txt
+run_test.js
+test-*.ts
+test_output.txt
+*.wip.txt
+

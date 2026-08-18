@@ -49,6 +49,7 @@ export function MaximMachineGun3D() {
     waterEvapRateGs: maxim.waterEvapRateGs,
     recoilMomentumNs: maxim.recoilMomentumNs,
     fireOmegaRadPerS: maxim.fireOmegaRadPerS,
+    steamOpacity: maxim.steamOpacity,
   });
 
   const controlsRef = useRef<StudioContext["controls"] | null>(null);
@@ -140,7 +141,7 @@ export function MaximMachineGun3D() {
         p.fireOmegaRadPerS,
         p.recoilStrokeM,
         p.barrelTempC,
-        p.waterEvapRateGs,
+        p.steamOpacity,
         p.showMuzzleFlash,
         p.isCutaway,
       );
