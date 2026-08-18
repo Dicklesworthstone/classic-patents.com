@@ -29,7 +29,13 @@ describe("Colorized Equations Master Registry Integrity", () => {
 
     const teslaEqs = ALL_COLORIZED_EQUATIONS["us-381968-tesla-motor"];
     expect(teslaEqs).toBeDefined();
-    expect(teslaEqs[0].title).toContain("Rotating Stator");
+    expect(teslaEqs[0].title).toContain("Two-Circuit Figure 9");
+
+    const teslaEddyCard = teslaEqs.find(
+      (equation) => equation.id === "tesla-eddy-current-subdivision",
+    );
+    expect(teslaEddyCard?.pedagogicalNote).not.toContain("inventing the laminated");
+    expect(teslaEddyCard?.historicalSignificance).not.toContain("over 92%");
 
     const fermiEqs = ALL_COLORIZED_EQUATIONS["us-2708656-fermi-reactor"];
     expect(fermiEqs).toBeDefined();

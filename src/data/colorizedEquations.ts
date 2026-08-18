@@ -463,396 +463,612 @@ export const ALL_COLORIZED_EQUATIONS: Record<string, ColorizedEquation[]> = {
     },
   ],
 
-  // 2. Tesla Induction Motor (US 381,968)
+  // 2. Tesla Electro-Magnetic Motor (US 381,968): source-specific teaching relations
   "us-381968-tesla-motor": [
     {
-        "id": "tesla-stator-bfield",
-        "patentId": "us-381968-tesla-motor",
-        "title": "Rotating Stator Magnetic Flux Vector",
-        "category": "Electromagnetics & Induction",
-        "rawLatex": "\\vec{B}(t) = B_0 \\left( \\cos(\\omega t)\\,\\hat{i} + \\sin(\\omega t)\\,\\hat{j} \\right)",
-        "colorizedLatex": "\\textcolor{#9333ea}{\\vec{B}(t)} = \\textcolor{#0891b2}{B_0} \\left( \\textcolor{#059669}{\\cos(\\omega t)}\\,\\hat{i} + \\textcolor{#d97706}{\\sin(\\omega t)}\\,\\hat{j} \\right)",
-        "plainEnglishSentence": [
-            {
-                "text": "The "
-            },
-            {
-                "text": "resultant rotating magnetic field vector",
-                "variableId": "b_vec"
-            },
-            {
-                "text": " maintains constant "
-            },
-            {
-                "text": "peak flux amplitude",
-                "variableId": "b_0"
-            },
-            {
-                "text": " through the sum of "
-            },
-            {
-                "text": "in-phase horizontal coil flux",
-                "variableId": "b_x"
-            },
-            {
-                "text": " and "
-            },
-            {
-                "text": "quadrature vertical coil flux",
-                "variableId": "b_y"
-            },
-            {
-                "text": "."
-            }
-        ],
-        "variables": [
-            {
-                "id": "b_vec",
-                "symbol": "\\vec{B}(t)",
-                "name": "Resultant Rotating Magnetic Field",
-                "color": "amethyst",
-                "role": "Total electromagnetic stator vector that sweeps continuously in space without mechanical brushes",
-                "unit": "Tesla (T)",
-                "dimension": "[M T^-2 I^-1]",
-                "explanation": "By superimposing two out-of-phase AC magnetic fields, Tesla created a constant-magnitude vector that rotates in space at the electrical line frequency, dragging the rotor along via Faraday induction.",
-                "telemetryMetricLabel": "Stator Field (B)"
-            },
-            {
-                "id": "b_0",
-                "symbol": "B_0",
-                "name": "Peak Magnetic Field Strength",
-                "color": "cyan",
-                "role": "Maximum magnetic flux density produced by stator electromagnet pole windings",
-                "unit": "Tesla (T)",
-                "dimension": "[M T^-2 I^-1]",
-                "explanation": "Determined by the number of coil turns, core magnetic permeability, and excitation current ($B_0 = \\mu N I / g$)."
-            },
-            {
-                "id": "b_x",
-                "symbol": "\\cos(\\omega t)",
-                "name": "Phase-A Horizontal Flux",
-                "color": "emerald",
-                "role": "Sinusoidal magnetic flux generated across the primary stator pole pair",
-                "unit": "Normalized sinusoid [-1, 1]",
-                "dimension": "[1]",
-                "explanation": "Phase A is energized by AC current $I_A(t) = I_0 \\cos(\\omega t)$, generating a pulsating horizontal field along the x-axis.",
-                "telemetryKey": "freqHz"
-            },
-            {
-                "id": "b_y",
-                "symbol": "\\sin(\\omega t)",
-                "name": "Phase-B Quadrature Flux",
-                "color": "amber",
-                "role": "90-degree phase-shifted magnetic flux along the orthogonal vertical pole pair",
-                "unit": "Normalized sinusoid [-1, 1]",
-                "dimension": "[1]",
-                "explanation": "Phase B is energized 90 degrees out of phase ($I_B(t) = I_0 \\sin(\\omega t)$). The trigonometric identity $\\cos^2(\\omega t) + \\sin^2(\\omega t) = 1$ ensures constant field magnitude and smooth, vibration-free rotation."
-            }
-        ],
-        "pedagogicalNote": "Before Tesla, electric motors required mechanical commutators with sparking carbon brushes that wore out rapidly and could not run on AC power. Tesla proved that multi-phase AC currents synthesize a continuous rotating spatial vector with zero physical contact.",
-        "claimRef": 1,
-        "historicalSignificance": "The polyphase AC motor made long-distance alternating current transmission commercially viable and powers over 90% of all industrial motors worldwide today."
+      id: "tesla-stator-bfield",
+      patentId: "us-381968-tesla-motor",
+      title: "Resultant Magnetic Direction in the Two-Circuit Figure 9 Arrangement",
+      category: "Electromagnetics & Induction",
+      rawLatex:
+        "\\vec{B}(t) = B_0 \\left( \\cos(\\omega t)\\,\\hat{i} + \\sin(\\omega t)\\,\\hat{j} \\right)",
+      colorizedLatex:
+        "\\textcolor{#9333ea}{\\vec{B}(t)} = \\textcolor{#0891b2}{B_0} \\left( \\textcolor{#059669}{\\cos(\\omega t)}\\,\\hat{i} + \\textcolor{#d97706}{\\sin(\\omega t)}\\,\\hat{j} \\right)",
+      plainEnglishSentence: [
+        {
+          text: "The ",
+        },
+        {
+          text: "resultant rotating magnetic field vector",
+          variableId: "b_vec",
+        },
+        {
+          text: " maintains constant ",
+        },
+        {
+          text: "peak flux amplitude",
+          variableId: "b_0",
+        },
+        {
+          text: " through the sum of ",
+        },
+        {
+          text: "in-phase horizontal coil flux",
+          variableId: "b_x",
+        },
+        {
+          text: " and ",
+        },
+        {
+          text: "quadrature vertical coil flux",
+          variableId: "b_y",
+        },
+        {
+          text: ".",
+        },
+      ],
+      variables: [
+        {
+          id: "b_vec",
+          symbol: "\\vec{B}(t)",
+          name: "Resultant Rotating Magnetic Field",
+          color: "amethyst",
+          role: "Modern vector shorthand for the resultant magnetic direction formed by the two Fig. 9 motor-coil pairs",
+          unit: "Tesla (T)",
+          dimension: "[M T^-2 I^-1]",
+          explanation:
+            "The source diagrams show two changing generator currents whose magnetizing effects combine. The shorthand describes their resultant direction; the patent itself explains the effect through eight generator positions.",
+          telemetryMetricLabel: "Stator Field (B)",
+        },
+        {
+          id: "b_0",
+          symbol: "B_0",
+          name: "Peak Magnetic Field Strength",
+          color: "cyan",
+          role: "Maximum magnetic flux density produced by stator electromagnet pole windings",
+          unit: "Tesla (T)",
+          dimension: "[M T^-2 I^-1]",
+          explanation:
+            "Determined by the number of coil turns, core magnetic permeability, and excitation current ($B_0 = \\mu N I / g$).",
+        },
+        {
+          id: "b_x",
+          symbol: "\\cos(\\omega t)",
+          name: "Phase-A Horizontal Flux",
+          color: "emerald",
+          role: "Sinusoidal magnetic flux generated across the primary stator pole pair",
+          unit: "Normalized sinusoid [-1, 1]",
+          dimension: "[1]",
+          explanation:
+            "Phase A is energized by AC current $I_A(t) = I_0 \\cos(\\omega t)$, generating a pulsating horizontal field along the x-axis.",
+          telemetryKey: "freqHz",
+        },
+        {
+          id: "b_y",
+          symbol: "\\sin(\\omega t)",
+          name: "Phase-B Quadrature Flux",
+          color: "amber",
+          role: "90-degree phase-shifted magnetic flux along the orthogonal vertical pole pair",
+          unit: "Normalized sinusoid [-1, 1]",
+          dimension: "[1]",
+          explanation:
+            "Phase B is energized 90 degrees out of phase ($I_B(t) = I_0 \\sin(\\omega t)$). The trigonometric identity $\\cos^2(\\omega t) + \\sin^2(\\omega t) = 1$ ensures constant field magnitude and smooth, vibration-free rotation.",
+        },
+      ],
+      pedagogicalNote:
+        "Figure 9 uses insulated collector rings and brushes on the generator to connect corresponding circuits. Tesla's stated distinction is that the motor needs no commutator; Figure 15–16 separately gives an arrangement without sliding contacts.",
+      claimRef: 1,
+      historicalSignificance:
+        "The card isolates the historical idea this grant actually illustrates: independently connected generator and motor circuits can make the motor's points of attraction progress around a ring.",
     },
     {
-        "id": "tesla-sync-speed",
-        "patentId": "us-381968-tesla-motor",
-        "title": "Synchronous Stator Field Angular Velocity",
-        "category": "Electromagnetics & Kinematics",
-        "rawLatex": "\\omega_s = \\frac{2\\pi f}{P}",
-        "colorizedLatex": "\\textcolor{#2563eb}{\\omega_s} = \\frac{2\\pi \\textcolor{#059669}{f}}{\\textcolor{#ea580c}{P}}",
-        "plainEnglishSentence": [
-            {
-                "text": "The "
-            },
-            {
-                "text": "synchronous angular velocity",
-                "variableId": "omega_s"
-            },
-            {
-                "text": " of the stator magnetic field is proportional to the "
-            },
-            {
-                "text": "alternating current line frequency",
-                "variableId": "line_freq"
-            },
-            {
-                "text": " divided by the "
-            },
-            {
-                "text": "number of magnetic pole pairs",
-                "variableId": "pole_pairs"
-            },
-            {
-                "text": "."
-            }
-        ],
-        "variables": [
-            {
-                "id": "omega_s",
-                "symbol": "\\omega_s",
-                "name": "Synchronous Angular Velocity",
-                "color": "sapphire",
-                "role": "Rotational speed of the magnetic field sweeping around the stator perimeter",
-                "unit": "rad/s (or RPM = 120f / (2P))",
-                "dimension": "[T^-1]",
-                "explanation": "The speed at which the magnetic poles travel around the stator ring. In a 2-pole 60 Hz motor, synchronous speed is exactly 3600 RPM (377 rad/s).",
-                "telemetryKey": "shaftRate",
-                "telemetryMetricLabel": "Sync Speed"
-            },
-            {
-                "id": "line_freq",
-                "symbol": "f",
-                "name": "AC Line Frequency",
-                "color": "emerald",
-                "role": "Frequency of alternating current generated by the polyphase dynamo",
-                "unit": "Hertz (Hz = s^-1)",
-                "dimension": "[T^-1]",
-                "explanation": "Tesla standardized Westinghouse grids at 60 Hz, balancing transformer core size against line inductance losses."
-            },
-            {
-                "id": "pole_pairs",
-                "symbol": "P",
-                "name": "Number of Pole Pairs",
-                "color": "coral",
-                "role": "Count of North-South magnetic pole pairs distributed around the stator ring",
-                "unit": "Dimensionless integer",
-                "dimension": "[1]",
-                "explanation": "Figure 9 of the patent illustrates a 2-pole arrangement ($P = 1$), producing one full magnetic rotation per electrical cycle."
-            }
-        ],
-        "pedagogicalNote": "Unlike steam engines whose speed depends on throttle opening and load, an AC induction motor's field speed is locked precisely to the frequency of the power grid.",
-        "claimRef": 1,
-        "historicalSignificance": "Established the foundation of modern synchronous grids and multi-speed pole-changing induction motors."
+      id: "tesla-sync-speed",
+      patentId: "us-381968-tesla-motor",
+      title: "Figure 9 Pole Shift per Generator Revolution",
+      category: "Electromagnetics & Kinematics",
+      rawLatex:
+        "\\Delta\\theta_{\\mathrm{poles}} = 2\\pi \\quad \\text{per generator revolution in Fig. 9}",
+      colorizedLatex:
+        "\\textcolor{#2563eb}{\\Delta\\theta_{\\mathrm{poles}}} = 2\\pi \\quad \\text{per generator revolution in Fig. 9}",
+      plainEnglishSentence: [
+        {
+          text: "The ",
+        },
+        {
+          text: "progressive pole shift",
+          variableId: "omega_s",
+        },
+        {
+          text: " follows the ",
+        },
+        {
+          text: "generator's rotation",
+          variableId: "line_freq",
+        },
+        {
+          text: " once around ring R in the Figure 9 demonstration.",
+        },
+      ],
+      variables: [
+        {
+          id: "omega_s",
+          symbol: "\\omega_s",
+          name: "Progressive Pole Shift",
+          color: "sapphire",
+          role: "The source-stated once-around shift of the motor's attractive region for one Fig. 9 generator revolution",
+          unit: "one revolution per generator revolution",
+          dimension: "[T^-1]",
+          explanation:
+            "Tesla describes this relation for the illustrated Figure 9 arrangement. It is not a general modern line-frequency speed formula for every motor construction.",
+          telemetryKey: "frequency",
+          telemetryMetricLabel: "Pole shift rate",
+        },
+        {
+          id: "line_freq",
+          symbol: "f",
+          name: "Generator Phase-Cycle Rate",
+          color: "emerald",
+          role: "Frequency of alternating current generated by the polyphase dynamo",
+          unit: "Hertz (Hz = s^-1)",
+          dimension: "[T^-1]",
+          explanation:
+            "The visitor control changes a teaching-model rate so the phase sequence can be seen. The patent prints generator geometry and connections, not a modern utility-grid standard.",
+        },
+      ],
+      pedagogicalNote:
+        "Tesla says Figure 9's disk follows the moving points of greatest attraction synchronously with the generator armature under normal working conditions.",
+      claimRef: 1,
+      historicalSignificance:
+        "The figure establishes the patent's source-specific correspondence between generator rotation and a progressive shift of the motor poles.",
     },
     {
-        "id": "tesla-rotor-slip-emf",
-        "patentId": "us-381968-tesla-motor",
-        "title": "Induced Rotor Electromotive Force & Slip",
-        "category": "Electromagnetics & Induction",
-        "rawLatex": "\\mathcal{E}_r = s \\cdot \\mathcal{E}_{r0} = \\left( \\frac{\\omega_s - \\omega_r}{\\omega_s} \\right) \\mathcal{E}_{r0}",
-        "colorizedLatex": "\\textcolor{#dc2626}{\\mathcal{E}_r} = \\textcolor{#d97706}{s} \\cdot \\textcolor{#0891b2}{\\mathcal{E}_{r0}} = \\left( \\frac{\\textcolor{#2563eb}{\\omega_s} - \\textcolor{#059669}{\\omega_r}}{\\textcolor{#2563eb}{\\omega_s}} \\right) \\textcolor{#0891b2}{\\mathcal{E}_{r0}}",
-        "plainEnglishSentence": [
-            {
-                "text": "The "
-            },
-            {
-                "text": "induced rotor electromotive force",
-                "variableId": "rotor_emf"
-            },
-            {
-                "text": " is governed by the "
-            },
-            {
-                "text": "fractional slip",
-                "variableId": "slip_s"
-            },
-            {
-                "text": " times the "
-            },
-            {
-                "text": "standstill locked-rotor EMF",
-                "variableId": "emf_locked"
-            },
-            {
-                "text": ", defined by the difference between "
-            },
-            {
-                "text": "synchronous field speed",
-                "variableId": "omega_sync"
-            },
-            {
-                "text": " and "
-            },
-            {
-                "text": "actual mechanical rotor speed",
-                "variableId": "omega_rotor"
-            },
-            {
-                "text": "."
-            }
-        ],
-        "variables": [
-            {
-                "id": "rotor_emf",
-                "symbol": "\\mathcal{E}_r",
-                "name": "Induced Rotor Electromotive Force",
-                "color": "crimson",
-                "role": "Voltage induced in the closed rotor conductor bars by cutting the rotating stator flux lines",
-                "unit": "Volts (V)",
-                "dimension": "[M L^2 T^-3 I^-1]",
-                "explanation": "By Faraday's law, voltage is induced only when there is relative motion between the rotor conductors and the rotating magnetic field.",
-                "telemetryMetricLabel": "Rotor Induced EMF"
-            },
-            {
-                "id": "slip_s",
-                "symbol": "s",
-                "name": "Fractional Slip Ratio",
-                "color": "amber",
-                "role": "Normalized relative speed difference between stator field and rotating armature",
-                "unit": "Dimensionless ratio [0, 1]",
-                "dimension": "[1]",
-                "explanation": "At standstill ($s=1$), maximum voltage is induced to start the motor. At synchronous speed ($s=0$), relative motion ceases, induced voltage drops to zero, and torque vanishes. Typical loaded slip is 2% to 5%.",
-                "telemetryKey": "loadTorque"
-            },
-            {
-                "id": "emf_locked",
-                "symbol": "\\mathcal{E}_{r0}",
-                "name": "Standstill Locked-Rotor EMF",
-                "color": "cyan",
-                "role": "Maximum theoretical voltage induced in the rotor winding when held stationary at rest",
-                "unit": "Volts (V)",
-                "dimension": "[M L^2 T^-3 I^-1]",
-                "explanation": "Equal to the stator-to-rotor transformer turns ratio multiplied by the primary stator magnetizing flux."
-            },
-            {
-                "id": "omega_sync",
-                "symbol": "\\omega_s",
-                "name": "Stator Synchronous Velocity",
-                "color": "sapphire",
-                "role": "Angular velocity of the stator magnetic flux wave",
-                "unit": "rad/s",
-                "dimension": "[T^-1]",
-                "explanation": "Constant velocity set by line frequency ($2\\pi f / P$)."
-            },
-            {
-                "id": "omega_rotor",
-                "symbol": "\\omega_r",
-                "name": "Mechanical Rotor Velocity",
-                "color": "emerald",
-                "role": "Actual rotational speed of the motor shaft delivering mechanical shaft power",
-                "unit": "rad/s",
-                "dimension": "[T^-1]",
-                "explanation": "As mechanical load increases, the rotor slows down slightly, increasing slip $s$, which increases induced rotor current and torque to balance the load."
-            }
-        ],
-        "pedagogicalNote": "An induction motor is self-regulating: when mechanical resistance increases, the rotor slips further behind the magnetic wave, automatically drawing more current and generating more torque without any electronic controller.",
-        "claimRef": 2,
-        "historicalSignificance": "Explains the asynchronous self-governing torque mechanism that made Tesla induction motors the workhorses of the Industrial Revolution."
+      id: "tesla-fig9-disk-following",
+      patentId: "us-381968-tesla-motor",
+      title: "Figure 9 Disk Following the Moving Attractive Region",
+      category: "Electromagnetics & Induction",
+      rawLatex: "\\theta_D \\approx \\theta_{\\mathrm{attraction}}",
+      colorizedLatex:
+        "\\textcolor{#059669}{\\theta_D} \\approx \\textcolor{#2563eb}{\\theta_{\\mathrm{attraction}}}",
+      plainEnglishSentence: [
+        {
+          text: "The ",
+        },
+        {
+          text: "magnetic disk D",
+          variableId: "disk_d",
+        },
+        {
+          text: " follows the ",
+        },
+        {
+          text: "moving points of greatest attraction",
+          variableId: "attraction_points",
+        },
+        {
+          text: " in Tesla's Figure 9 explanation.",
+        },
+      ],
+      variables: [
+        {
+          id: "disk_d",
+          symbol: "\\theta_D",
+          name: "Magnetic Disk D Position",
+          color: "crimson",
+          role: "Angular position of the free magnetic disk mounted inside ring R in Figure 9",
+          unit: "radians (rad)",
+          dimension: "[1]",
+          explanation:
+            "Tesla says the disk tends to take the position that embraces the greatest possible number of magnetic lines and follows the moving attractive region.",
+          telemetryMetricLabel: "Disk D relation",
+        },
+        {
+          id: "attraction_points",
+          symbol: "\\theta_{\\mathrm{attraction}}",
+          name: "Moving Attractive Region",
+          color: "amber",
+          role: "Position of the ring's strongest resultant attraction as the corresponding generator currents change",
+          unit: "radians (rad)",
+          dimension: "[1]",
+          explanation:
+            "The teaching model uses this source relation for the Fig. 9 apparatus. It does not substitute an unprinted modern torque curve for the patent's mechanism.",
+          telemetryKey: "frequency",
+        },
+      ],
+      pedagogicalNote:
+        "The source describes a disk and moving attraction pattern. The card keeps the historical relation visible without claiming unprinted electrical parameters.",
+      claimRef: 2,
+      historicalSignificance:
+        "It directs attention to the free disk D and the progressive motion of the ring poles that Claims 1 through 4 require the generator-motor combination to produce.",
     },
     {
-        "id": "tesla-eddy-current-subdivision",
-        "patentId": "us-381968-tesla-motor",
-        "title": "Core Subdivision & Eddy Current Power Loss",
-        "category": "Electromagnetics & Materials",
-        "rawLatex": "P_{\\text{eddy}} = \\frac{\\pi^2 \\cdot d^2 \\cdot B_{\\text{max}}^2 \\cdot f^2}{6 \\cdot \\rho_{\\text{Fe}} \\cdot D}",
-        "colorizedLatex": "\\textcolor{#dc2626}{P_{\\text{eddy}}} = \\frac{\\pi^2 \\cdot \\textcolor{#2563eb}{d^2} \\cdot \\textcolor{#9333ea}{B_{\\text{max}}^2} \\cdot \\textcolor{#059669}{f^2}}{6 \\cdot \\textcolor{#0891b2}{\\rho_{\\text{Fe}}} \\cdot \\textcolor{#d97706}{D}}",
-        "plainEnglishSentence": [
-            {
-                "text": "The parasitic "
-            },
-            {
-                "text": "eddy current thermal power loss",
-                "variableId": "p_eddy"
-            },
-            {
-                "text": " in the iron core scales with the square of "
-            },
-            {
-                "text": "lamination sheet thickness",
-                "variableId": "lam_thick"
-            },
-            {
-                "text": ", square of "
-            },
-            {
-                "text": "peak magnetic flux density",
-                "variableId": "b_peak"
-            },
-            {
-                "text": ", and square of "
-            },
-            {
-                "text": "electrical frequency",
-                "variableId": "freq"
-            },
-            {
-                "text": ", inversely proportional to "
-            },
-            {
-                "text": "iron electrical resistivity",
-                "variableId": "rho_fe"
-            },
-            {
-                "text": " and "
-            },
-            {
-                "text": "mass density",
-                "variableId": "density_fe"
-            },
-            {
-                "text": "."
-            }
-        ],
-        "variables": [
-            {
-                "id": "p_eddy",
-                "symbol": "P_{\\text{eddy}}",
-                "name": "Specific Eddy Current Loss",
-                "color": "crimson",
-                "role": "Heat energy wasted by circulating parasitic currents induced within the magnetic iron core",
-                "unit": "Watts per kilogram (W/kg)",
-                "dimension": "[L^2 T^-3]",
-                "explanation": "Alternating magnetic flux induces miniature circulating vortex currents in solid iron that waste power as resistive Joule heat ($I^2 R$)."
-            },
-            {
-                "id": "lam_thick",
-                "symbol": "d",
-                "name": "Lamination Sheet Thickness",
-                "color": "sapphire",
-                "role": "Thickness of individual insulated iron plates forming the subdivided core",
-                "unit": "meters (m, typically 0.35 to 0.5 mm in modern silicon steel)",
-                "dimension": "[L]",
-                "explanation": "Because eddy loss is proportional to $d^2$, subdividing a solid 10 mm iron core into twenty 0.5 mm laminated sheets reduces eddy current losses by a factor of $20^2 = 400\\times$ (99.75% loss reduction)."
-            },
-            {
-                "id": "b_peak",
-                "symbol": "B_{\\text{max}}",
-                "name": "Peak Core Magnetic Flux Density",
-                "color": "amethyst",
-                "role": "Maximum magnetic operating point in the core before magnetic saturation",
-                "unit": "Tesla (T, typically 1.2 to 1.6 T)",
-                "dimension": "[M T^-2 I^-1]",
-                "explanation": "Higher flux density enables more compact motors, but losses grow with $B_{\\text{max}}^2$."
-            },
-            {
-                "id": "freq",
-                "symbol": "f",
-                "name": "Operating Alternating Frequency",
-                "color": "emerald",
-                "role": "Rate of magnetic reversal per second",
-                "unit": "Hertz (Hz)",
-                "dimension": "[T^-1]",
-                "explanation": "Losses increase quadratically with frequency ($f^2$), making core lamination essential at 60 Hz."
-            },
-            {
-                "id": "rho_fe",
-                "symbol": "\\rho_{\\text{Fe}}",
-                "name": "Core Electrical Resistivity",
-                "color": "cyan",
-                "role": "Electrical resistance of the ferromagnetic alloy to circulating eddy currents",
-                "unit": "\\Omega \\cdot \\text{m}",
-                "dimension": "[M L^3 T^-3 I^-2]",
-                "explanation": "Tesla specified subdivided iron; modern electrical steels add 3% silicon to increase $\\rho_{\\text{Fe}}$ fourfold and suppress eddy currents further."
-            },
-            {
-                "id": "density_fe",
-                "symbol": "D",
-                "name": "Iron Mass Density",
-                "color": "amber",
-                "role": "Mass density of the ferromagnetic core material",
-                "unit": "kg/m^3 (~7850 kg/m^3)",
-                "dimension": "[M L^-3]",
-                "explanation": "Converts volumetric loss to specific power loss per unit mass."
-            }
-        ],
-        "pedagogicalNote": "Tesla explicitly required in the specification that the iron core be 'split up as far as practicable to prevent circulating currents of induction'—inventing the laminated electrical steel core standard used in every modern transformer and electric motor.",
-        "claimRef": 1,
-        "historicalSignificance": "Solved the severe core overheating problem that plagued early alternating current machinery, raising electrical motor efficiency from under 50% to over 92%."
-    }
-],
+      id: "tesla-eddy-current-subdivision",
+      patentId: "us-381968-tesla-motor",
+      title: "Core Subdivision & Eddy Current Power Loss",
+      category: "Electromagnetics & Materials",
+      rawLatex:
+        "P_{\\text{eddy}} = \\frac{\\pi^2 \\cdot d^2 \\cdot B_{\\text{max}}^2 \\cdot f^2}{6 \\cdot \\rho_{\\text{Fe}} \\cdot D}",
+      colorizedLatex:
+        "\\textcolor{#dc2626}{P_{\\text{eddy}}} = \\frac{\\pi^2 \\cdot \\textcolor{#2563eb}{d^2} \\cdot \\textcolor{#9333ea}{B_{\\text{max}}^2} \\cdot \\textcolor{#059669}{f^2}}{6 \\cdot \\textcolor{#0891b2}{\\rho_{\\text{Fe}}} \\cdot \\textcolor{#d97706}{D}}",
+      plainEnglishSentence: [
+        {
+          text: "The parasitic ",
+        },
+        {
+          text: "eddy current thermal power loss",
+          variableId: "p_eddy",
+        },
+        {
+          text: " in the iron core scales with the square of ",
+        },
+        {
+          text: "lamination sheet thickness",
+          variableId: "lam_thick",
+        },
+        {
+          text: ", square of ",
+        },
+        {
+          text: "peak magnetic flux density",
+          variableId: "b_peak",
+        },
+        {
+          text: ", and square of ",
+        },
+        {
+          text: "electrical frequency",
+          variableId: "freq",
+        },
+        {
+          text: ", inversely proportional to ",
+        },
+        {
+          text: "iron electrical resistivity",
+          variableId: "rho_fe",
+        },
+        {
+          text: " and ",
+        },
+        {
+          text: "mass density",
+          variableId: "density_fe",
+        },
+        {
+          text: ".",
+        },
+      ],
+      variables: [
+        {
+          id: "p_eddy",
+          symbol: "P_{\\text{eddy}}",
+          name: "Specific Eddy Current Loss",
+          color: "crimson",
+          role: "Heat energy wasted by circulating parasitic currents induced within the magnetic iron core",
+          unit: "Watts per kilogram (W/kg)",
+          dimension: "[L^2 T^-3]",
+          explanation:
+            "Alternating magnetic flux induces miniature circulating vortex currents in solid iron that waste power as resistive Joule heat ($I^2 R$).",
+        },
+        {
+          id: "lam_thick",
+          symbol: "d",
+          name: "Lamination Sheet Thickness",
+          color: "sapphire",
+          role: "Thickness of individual insulated iron plates forming the subdivided core",
+          unit: "meters (m, typically 0.35 to 0.5 mm in modern silicon steel)",
+          dimension: "[L]",
+          explanation:
+            "For a given material and field waveform, thinner insulated subdivisions shorten the circulating-current paths. The numerical relation is a modern teaching relation, not a performance figure printed in US 381,968.",
+        },
+        {
+          id: "b_peak",
+          symbol: "B_{\\text{max}}",
+          name: "Peak Core Magnetic Flux Density",
+          color: "amethyst",
+          role: "Maximum magnetic operating point in the core before magnetic saturation",
+          unit: "Tesla (T, typically 1.2 to 1.6 T)",
+          dimension: "[M T^-2 I^-1]",
+          explanation:
+            "Higher flux density enables more compact motors, but losses grow with $B_{\\text{max}}^2$.",
+        },
+        {
+          id: "freq",
+          symbol: "f",
+          name: "Operating Alternating Frequency",
+          color: "emerald",
+          role: "Rate of magnetic reversal per second",
+          unit: "Hertz (Hz)",
+          dimension: "[T^-1]",
+          explanation:
+            "Losses increase quadratically with frequency ($f^2$), making core lamination essential at 60 Hz.",
+        },
+        {
+          id: "rho_fe",
+          symbol: "\\rho_{\\text{Fe}}",
+          name: "Core Electrical Resistivity",
+          color: "cyan",
+          role: "Electrical resistance of the ferromagnetic alloy to circulating eddy currents",
+          unit: "\\Omega \\cdot \\text{m}",
+          dimension: "[M L^3 T^-3 I^-2]",
+          explanation:
+            "Tesla's Fig. 10 text calls for a drum-armature core split up as far as practicable to prevent circulating induction currents. Later electrical-steel compositions are outside this patent's stated construction.",
+        },
+        {
+          id: "density_fe",
+          symbol: "D",
+          name: "Iron Mass Density",
+          color: "amber",
+          role: "Mass density of the ferromagnetic core material",
+          unit: "kg/m^3 (~7850 kg/m^3)",
+          dimension: "[M L^-3]",
+          explanation: "Converts volumetric loss to specific power loss per unit mass.",
+        },
+      ],
+      pedagogicalNote:
+        "In the Fig. 10 discussion, Tesla says the drum-armature core should be split up as far as practicable to prevent circulating induction currents. This card explains that stated construction with a later engineering loss relation; it does not attribute the universal laminated-core practice to this grant.",
+      claimRef: 1,
+      historicalSignificance:
+        "The passage records a practical concern about circulating induction currents in the illustrated drum armature. The grant does not supply a before-and-after motor-efficiency measurement.",
+    },
+  ],
 
   // 3. Edison Light Bulb (US 223,898)
   "us-223898-edison-lightbulb": [
+    {
+      id: "edison-high-resistance-carbon-filament",
+      patentId: "us-223898-edison-lightbulb",
+      title: "High-Resistance Carbon Filament & Parallel Distribution Law",
+      category: "Thermodynamics & Electrical Distribution",
+      rawLatex:
+        "R_{\\text{filament}} = \\rho_{\\text{carbon}} \\frac{L}{A} = \\rho_{\\text{carbon}} \\frac{4 L}{\\pi d^2} = \\frac{V_{\\text{grid}}^2}{P_{\\text{lamp}}} \\approx 100\\,\\Omega",
+      colorizedLatex:
+        "\\textcolor{#059669}{R_{\\text{filament}}} = \\textcolor{#9333ea}{\\rho_{\\text{carbon}}} \\frac{\\textcolor{#2563eb}{L}}{\\textcolor{#ea580c}{A}} = \\textcolor{#9333ea}{\\rho_{\\text{carbon}}} \\frac{4 \\textcolor{#2563eb}{L}}{\\pi \\textcolor{#ea580c}{d^2}} = \\frac{\\textcolor{#dc2626}{V_{\\text{grid}}^2}}{\\textcolor{#0891b2}{P_{\\text{lamp}}}} \\approx 100\\,\\Omega",
+      plainEnglishSentence: [
+        {
+          text: "The ",
+        },
+        {
+          text: "filament electrical resistance",
+          variableId: "r_filament",
+        },
+        {
+          text: " is determined by carbonized thread ",
+        },
+        {
+          text: "resistivity",
+          variableId: "rho_carbon",
+        },
+        {
+          text: ", length ",
+        },
+        {
+          text: "L",
+          variableId: "len_l",
+        },
+        {
+          text: ", and cross-sectional diameter ",
+        },
+        {
+          text: "d",
+          variableId: "diam_d",
+        },
+        {
+          text: ", engineered to match ",
+        },
+        {
+          text: "distribution grid voltage squared",
+          variableId: "v_grid",
+        },
+        {
+          text: " over ",
+        },
+        {
+          text: "lamp power rating",
+          variableId: "p_lamp",
+        },
+        {
+          text: ".",
+        },
+      ],
+      variables: [
+        {
+          id: "r_filament",
+          symbol: "R_{\\text{filament}}",
+          name: "Hot Filament Electrical Resistance",
+          color: "emerald",
+          role: "Ohmic resistance of the incandescent carbon horseshoe thread at $1900\\text{ K}$ ($~100\\,\\Omega$)",
+          unit: "Ohms (\\Omega)",
+          dimension: "[M L^2 T^-3 I^-2]",
+          explanation:
+            "Edison's genius insight: other inventors used thick rods ($1\\,\\Omega$) requiring massive copper cables; Edison engineered high-resistance ($100\\,\\Omega$) filaments requiring only $1\\text{ A}$ at $110\\text{ V}$.",
+          telemetryMetricLabel: "Filament Resistance",
+        },
+        {
+          id: "rho_carbon",
+          symbol: "\\rho_{\\text{carbon}}",
+          name: "Carbonized Cellulose Resistivity",
+          color: "amethyst",
+          role: "Specific resistivity of carbonized cotton or Japanese bamboo fiber ($~4 \\times 10^{-5}\\,\\Omega\\cdot\\text{m}$)",
+          unit: "\\Omega * m",
+          dimension: "[M L^3 T^-3 I^-2]",
+          explanation:
+            "Carbon maintains high electrical resistance and withstands temperatures exceeding $2,000^\\circ\\text{C}$ without melting.",
+        },
+        {
+          id: "len_l",
+          symbol: "L",
+          name: "Filament Horseshoe Length",
+          color: "sapphire",
+          role: "Total length of the looping carbon thread ($10 - 15\\text{ cm}$)",
+          unit: "cm or meters",
+          dimension: "[L]",
+          explanation: "Longer thread increases resistance and radiating surface area.",
+        },
+        {
+          id: "diam_d",
+          symbol: "d",
+          name: "Filament Wire Diameter",
+          color: "coral",
+          role: "Cross-sectional diameter of carbonized filament ($0.15 - 0.25\\text{ mm}$)",
+          unit: "mm or meters",
+          dimension: "[L]",
+          explanation:
+            "Because resistance scales inversely with $d^2$, drawing an ultra-thin thread was the key manufacturing breakthrough.",
+        },
+        {
+          id: "v_grid",
+          symbol: "V_{\\text{grid}}",
+          name: "Central Station Distribution Voltage",
+          color: "crimson",
+          role: "Standardized DC electrical distribution potential ($110\\text{ V}$)",
+          unit: "Volts (V)",
+          dimension: "[M L^2 T^-3 I^-1]",
+          explanation:
+            "High voltage minimized $I^2 R$ transmission losses across neighborhood street mains.",
+        },
+        {
+          id: "p_lamp",
+          symbol: "P_{\\text{lamp}}",
+          name: "Lamp Thermal Power Consumption",
+          color: "cyan",
+          role: "Power consumed to produce 16 candlepower illumination ($~100\\text{ W}$ at $1\\text{ A}$)",
+          unit: "Watts (W)",
+          dimension: "[M L^2 T^-3]",
+          explanation: "Electrical energy converted to incandescent radiant heat and light.",
+        },
+      ],
+      pedagogicalNote:
+        "The 'subdivision of electric light' was deemed mathematically impossible by British scientists until Edison realized Joule heating losses ($P_{\\text{loss}} = I^2 R_{\\text{wire}}$) drop with the square of current. By multiplying lamp resistance by 100x, line current dropped by 10x and copper cable weight dropped by 100x.",
+      claimRef: 1,
+      historicalSignificance:
+        "US 223,898 established the commercial electric power grid, making domestic electric lighting economically viable.",
+    },
+    {
+      id: "edison-vacuum-mean-free-path",
+      patentId: "us-223898-edison-lightbulb",
+      title: "Sprengel High-Vacuum Mean Free Path & Oxidation Suppression",
+      category: "Thermodynamics & Vacuum Physics",
+      rawLatex:
+        "\\lambda_{\\text{mfp}} = \\frac{k_B \\cdot T}{\\sqrt{2} \\pi d_{\\text{mol}}^2 \\cdot P_{\\text{vac}}} \\gg r_{\\text{bulb}}",
+      colorizedLatex:
+        "\\textcolor{#059669}{\\lambda_{\\text{mfp}}} = \\frac{\\textcolor{#d97706}{k_B} \\cdot \\textcolor{#dc2626}{T}}{\\sqrt{2} \\pi \\textcolor{#9333ea}{d_{\\text{mol}}^2} \\cdot \\textcolor{#2563eb}{P_{\\text{vac}}}} \\gg \\textcolor{#0891b2}{r_{\\text{bulb}}}",
+      plainEnglishSentence: [
+        {
+          text: "The ",
+        },
+        {
+          text: "molecular mean free path",
+          variableId: "lambda_mfp",
+        },
+        {
+          text: " depends on ",
+        },
+        {
+          text: "Boltzmann's constant",
+          variableId: "k_boltzmann",
+        },
+        {
+          text: ", gas ",
+        },
+        {
+          text: "temperature",
+          variableId: "temp_t",
+        },
+        {
+          text: ", ",
+        },
+        {
+          text: "molecular collision diameter",
+          variableId: "d_mol",
+        },
+        {
+          text: ", and ",
+        },
+        {
+          text: "residual vacuum pressure",
+          variableId: "p_vac",
+        },
+        {
+          text: ", exceeding ",
+        },
+        {
+          text: "glass bulb envelope radius",
+          variableId: "r_bulb",
+        },
+        {
+          text: ".",
+        },
+      ],
+      variables: [
+        {
+          id: "lambda_mfp",
+          symbol: "\\lambda_{\\text{mfp}}",
+          name: "Molecular Mean Free Path",
+          color: "emerald",
+          role: "Average distance a residual gas molecule travels before colliding with another molecule ($> 10\\text{ cm}$ in high vacuum)",
+          unit: "meters (m)",
+          dimension: "[L]",
+          explanation:
+            "When $\\lambda_{\\text{mfp}}$ exceeds bulb radius ($r_{\\text{bulb}} \\approx 3\\text{ cm}$), gas thermal convection ceases entirely.",
+          telemetryMetricLabel: "Mean Free Path",
+        },
+        {
+          id: "k_boltzmann",
+          symbol: "k_B",
+          name: "Boltzmann Constant",
+          color: "amber",
+          role: "Fundamental physical constant ($1.380649 \\times 10^{-23}\\text{ J/K}$)",
+          unit: "J/K",
+          dimension: "[M L^2 T^-2 \\Theta^-1]",
+          explanation: "Relates kinetic thermal energy to absolute temperature.",
+        },
+        {
+          id: "temp_t",
+          symbol: "T",
+          name: "Enclosure Absolute Temperature",
+          color: "crimson",
+          role: "Temperature of residual gas molecules inside the glass globe ($~300 - 500\\text{ K}$)",
+          unit: "Kelvin (K)",
+          dimension: "[\\Theta]",
+          explanation: "Heated by radiation from the incandescent filament.",
+        },
+        {
+          id: "d_mol",
+          symbol: "d_{\\text{mol}}",
+          name: "Gas Molecular Collision Diameter",
+          color: "amethyst",
+          role: "Effective diameter of oxygen and nitrogen molecules ($~0.37\\text{ nm}$)",
+          unit: "meters (m)",
+          dimension: "[L]",
+          explanation: "Determines hard-sphere scattering cross-section.",
+        },
+        {
+          id: "p_vac",
+          symbol: "P_{\\text{vac}}",
+          name: "Residual Vacuum Pressure",
+          color: "sapphire",
+          role: "Pressure achieved by Sprengel mercury fall-pumps ($< 10^{-6}\\text{ atm} \\approx 0.1\\text{ Pa}$)",
+          unit: "Pascals (Pa) / Torr",
+          dimension: "[M L^-1 T^-2]",
+          explanation:
+            "Eliminating oxygen stops the white-hot carbon filament from combusting, extending operating lifespan to over 1,200 hours.",
+        },
+        {
+          id: "r_bulb",
+          symbol: "r_{\\text{bulb}}",
+          name: "Glass Bulb Inner Radius",
+          color: "cyan",
+          role: "Radius of the sealed spherical glass envelope ($~3.5\\text{ cm}$)",
+          unit: "meters (m)",
+          dimension: "[L]",
+          explanation: "All-glass one-piece envelope sealed with fused platinum lead-in wires.",
+        },
+      ],
+      pedagogicalNote:
+        "Earlier vacuum bulbs failed because multi-piece glass-and-brass joints leaked. Edison used all-glass hermetic fusion with platinum leads (which match glass's thermal expansion coefficient) evacuated to one-millionth of an atmosphere.",
+      claimRef: 2,
+      historicalSignificance:
+        "Demonstrated the necessity of ultra-high vacuum techniques that later enabled vacuum tubes, X-ray tubes, and cathode ray tubes.",
+    },
     {
       id: "edison-blackbody-radiation",
       patentId: "us-223898-edison-lightbulb",
@@ -959,6 +1175,133 @@ export const ALL_COLORIZED_EQUATIONS: Record<string, ColorizedEquation[]> = {
 
   // 4. Alexander Graham Bell Telephone (US 174,465)
   "us-174465-bell-telephone": [
+    {
+      id: "bell-undulatory-current-modulation",
+      patentId: "us-174465-bell-telephone",
+      title: "Undulatory Current Audio Waveform Modulation & Speech Transmission",
+      category: "Acoustics & Telephony",
+      rawLatex:
+        "i(t) = \\frac{V_{\\text{battery}}}{R_0 + \\Delta R \\cdot \\sin(\\omega_{\\text{voice}} t)} \\approx I_0 - I_0 \\left( \\frac{\\Delta R}{R_0} \\right) \\sin(\\omega_{\\text{voice}} t)",
+      colorizedLatex:
+        "\\textcolor{#059669}{i(t)} = \\frac{\\textcolor{#2563eb}{V_{\\text{battery}}}}{\\textcolor{#0891b2}{R_0} + \\textcolor{#dc2626}{\\Delta R} \\cdot \\sin(\\textcolor{#d97706}{\\omega_{\\text{voice}}} t)} \\approx \\textcolor{#9333ea}{I_0} - \\textcolor{#9333ea}{I_0} \\left( \\frac{\\textcolor{#dc2626}{\\Delta R}}{\\textcolor{#0891b2}{R_0}} \\right) \\sin(\\textcolor{#d97706}{\\omega_{\\text{voice}}} t)",
+      plainEnglishSentence: [
+        {
+          text: "The ",
+        },
+        {
+          text: "instantaneous undulatory voice current",
+          variableId: "i_t",
+        },
+        {
+          text: " created by the transmitter is modulated by ",
+        },
+        {
+          text: "battery voltage",
+          variableId: "v_bat",
+        },
+        {
+          text: " over ",
+        },
+        {
+          text: "quiescent line resistance",
+          variableId: "r_zero",
+        },
+        {
+          text: " and acoustic ",
+        },
+        {
+          text: "resistance modulation delta",
+          variableId: "delta_r",
+        },
+        {
+          text: " at ",
+        },
+        {
+          text: "voice acoustic frequency",
+          variableId: "omega_voice",
+        },
+        {
+          text: ", producing an analog electrical wave proportional to ",
+        },
+        {
+          text: "baseline direct current",
+          variableId: "i_zero",
+        },
+        {
+          text: ".",
+        },
+      ],
+      variables: [
+        {
+          id: "i_t",
+          symbol: "i(t)",
+          name: "Undulatory Signaling Current",
+          color: "emerald",
+          role: "Continuous, smooth analog current whose electrical wave shape mirrors acoustic sound vibrations ($10 - 50\\text{ mA}$)",
+          unit: "Milliamperes (mA)",
+          dimension: "[I]",
+          explanation:
+            "Bell's fundamental insight: pulsatory intermittent currents (make-and-break Morse telegraphs) could only send clicks; transmitting complex human speech required an unbroken 'undulatory current' whose amplitude varied continuously with sound pressure.",
+          telemetryMetricLabel: "Speech Current",
+        },
+        {
+          id: "v_bat",
+          symbol: "V_{\\text{battery}}",
+          name: "DC Supply Battery Potential",
+          color: "sapphire",
+          role: "Constant electrochemical voltage energizing the speech circuit ($6 - 24\\text{ V}$)",
+          unit: "Volts (V)",
+          dimension: "[M L^2 T^-3 I^-1]",
+          explanation: "Powers the circuit.",
+        },
+        {
+          id: "r_zero",
+          symbol: "R_0",
+          name: "Quiescent Circuit Resistance",
+          color: "cyan",
+          role: "Baseline DC electrical resistance of acid cup, line wire, and receiver electromagnet ($100 - 500\\,\\Omega$)",
+          unit: "Ohms (\\Omega)",
+          dimension: "[M L^2 T^-3 I^-2]",
+          explanation: "Steady-state resistance with diaphragm at rest.",
+        },
+        {
+          id: "delta_r",
+          symbol: "\\Delta R",
+          name: "Acoustic Resistance Variation",
+          color: "crimson",
+          role: "Change in electrical resistance caused by a platinum needle dipping deeper into conducting acid as the voice diaphragm vibrates ($5 - 50\\,\\Omega$)",
+          unit: "Ohms (\\Omega)",
+          dimension: "[M L^2 T^-3 I^-2]",
+          explanation:
+            "Sound wave pressure moves the parchment diaphragm, varying the liquid immersion depth and modulating circuit resistance.",
+        },
+        {
+          id: "omega_voice",
+          symbol: "\\omega_{\\text{voice}}",
+          name: "Voice Acoustic Angular Frequency",
+          color: "amber",
+          role: "Vocal frequency components of human speech ($2\\pi \\times 300 - 3,400\\text{ rad/s}$)",
+          unit: "rad/s or Hz",
+          dimension: "[T^-1]",
+          explanation: "Vocal formant spectrum.",
+        },
+        {
+          id: "i_zero",
+          symbol: "I_0",
+          name: "Quiescent Baseline DC Bias Current",
+          color: "amethyst",
+          role: "Steady-state direct current with diaphragm at rest ($I_0 = V_{\\text{battery}} / R_0$)",
+          unit: "Milliamperes (mA)",
+          dimension: "[I]",
+          explanation: "Carries the modulated AC audio signal.",
+        },
+      ],
+      pedagogicalNote:
+        "Bell realized that while Morse telegraphs interrupted current completely, transmitting the human voice required an undulatory current that varied continuously in intensity, creating the world's first analog telecommunications channel.",
+      claimRef: 5,
+      historicalSignificance:
+        "US 174,465 is widely regarded as the most valuable single patent in history, giving birth to AT&T, the global telephone network, and the telecommunications industry.",
+    },
     {
       id: "bell-undulating-current",
       patentId: "us-174465-bell-telephone",
@@ -1287,11 +1630,11 @@ export const ALL_COLORIZED_EQUATIONS: Record<string, ColorizedEquation[]> = {
     },
   ],
 
-  // 7. John Bardeen & Walter Brattain Point-Contact Transistor (US 2,569,347)
-  "us-2569347-bardeen-transistor": [
+  // 7. John Bardeen & Walter Brattain Point-Contact Transistor (US 2,524,035)
+  "us-2524035-bardeen-transistor": [
     {
       id: "bardeen-point-contact-gain",
-      patentId: "us-2569347-bardeen-transistor",
+      patentId: "us-2524035-bardeen-transistor",
       title: "Point-Contact Minority Hole Injection & Dynamic Current Amplification",
       category: "Solid-State Semiconductor Physics",
       rawLatex:
@@ -1389,7 +1732,92 @@ export const ALL_COLORIZED_EQUATIONS: Record<string, ColorizedEquation[]> = {
         "Bardeen and Brattain discovered that pressing two gold-leaf contacts onto a germanium crystal just 0.002 inches apart allowed holes injected by the emitter to control the reverse current of the collector, creating the world's first solid-state amplifier.",
       claimRef: 1,
       historicalSignificance:
-        "US 2569347 replaced bulky, fragile, power-hungry vacuum tubes and launched the semiconductor revolution.",
+        "US 2,524,035 describes a three-electrode semiconductor circuit element using close emitter and collector contacts to translate an input variation into a collector-current variation.",
+    },
+    {
+      id: "bardeen-einstein-diffusion-relation",
+      patentId: "us-2524035-bardeen-transistor",
+      title: "Einstein Relation for Semiconductor Carrier Diffusion",
+      category: "Solid-State Physics & Thermodynamics",
+      rawLatex: "D_p = \\mu_p \\frac{k_B T}{q}",
+      colorizedLatex:
+        "\\textcolor{#d97706}{D_p} = \\textcolor{#2563eb}{\\mu_p} \\frac{\\textcolor{#0891b2}{k_B} \\textcolor{#dc2626}{T}}{\\textcolor{#059669}{q}}",
+      plainEnglishSentence: [
+        { text: "The " },
+        { text: "hole diffusion coefficient", variableId: "diff_coeff" },
+        { text: " is directly proportional to " },
+        { text: "hole carrier mobility", variableId: "mobility_p" },
+        { text: " and " },
+        { text: "absolute thermal temperature", variableId: "temp_k" },
+        { text: ", scaled by the ratio of " },
+        { text: "Boltzmann's constant", variableId: "k_boltz" },
+        { text: " to " },
+        { text: "elementary electronic charge", variableId: "elem_charge" },
+        { text: "." },
+      ],
+      variables: [
+        {
+          id: "diff_coeff",
+          symbol: "D_p",
+          name: "Minority Hole Diffusivity",
+          color: "amber",
+          role: "Rate at which injected holes spread thermally through the crystal lattice (~49 cm^2/s in Ge at 300 K)",
+          unit: "cm^2/s",
+          dimension: "[L^2 T^-1]",
+          explanation:
+            "Determines how quickly minority holes transit the space-charge inversion layer between emitter and collector.",
+          telemetryMetricLabel: "Diffusivity (Dp)",
+        },
+        {
+          id: "mobility_p",
+          symbol: "\\mu_p",
+          name: "Hole Drift Mobility",
+          color: "sapphire",
+          role: "Terminal drift velocity per unit applied electric field (1900 cm^2 / (V * s))",
+          unit: "cm^2/(V*s)",
+          dimension: "[M^-1 T^2 I]",
+          explanation:
+            "High mobility in crystalline germanium allowed high frequency response compared to early silicon in the 1950s.",
+        },
+        {
+          id: "temp_k",
+          symbol: "T",
+          name: "Absolute Operating Temperature",
+          color: "crimson",
+          role: "Thermal temperature of the germanium crystal ingot (300 K)",
+          unit: "Kelvin (K)",
+          dimension: "[\\Theta]",
+          explanation:
+            "Thermal energy k_B * T drives stochastic Brownian motion of charge carriers through the crystal.",
+        },
+        {
+          id: "k_boltz",
+          symbol: "k_B",
+          name: "Boltzmann Constant",
+          color: "cyan",
+          role: "Fundamental thermodynamic constant (1.380649e-23 J/K)",
+          unit: "J/K",
+          dimension: "[M L^2 T^-2 \\Theta^-1]",
+          explanation:
+            "Relates thermal kinetic energy of charge carriers to macroscopic temperature.",
+        },
+        {
+          id: "elem_charge",
+          symbol: "q",
+          name: "Elementary Electric Charge",
+          color: "emerald",
+          role: "Fundamental quantum of electrical charge (1.602176634e-19 C)",
+          unit: "Coulombs (C)",
+          dimension: "[I T]",
+          explanation:
+            "The magnitude of charge carried by each positive hole or conduction electron.",
+        },
+      ],
+      pedagogicalNote:
+        "The Einstein relation bridges thermodynamics and electromagnetism, proving that charge carriers diffuse at a rate dictated solely by their mobility and thermal kinetic energy.",
+      claimRef: 2,
+      historicalSignificance:
+        "Enabled accurate analytical modeling of bipolar junction and point-contact transistor frequency response.",
     },
   ],
 
@@ -1694,232 +2122,250 @@ export const ALL_COLORIZED_EQUATIONS: Record<string, ColorizedEquation[]> = {
   // 11. Enrico Fermi & Leo Szilard Neutronic Reactor (US 2,708,656)
   "us-2708656-fermi-reactor": [
     {
-        "id": "fermi-delayed-neutron-kinetics",
-        "patentId": "us-2708656-fermi-reactor",
-        "title": "Point Reactor Kinetics with Delayed Neutrons",
-        "category": "Nuclear Physics & Kinetics",
-        "rawLatex": "\\frac{dn(t)}{dt} = \\frac{\\rho(t) - \\beta}{\\Lambda} n(t) + \\sum_{i=1}^{6} \\lambda_i C_i(t)",
-        "colorizedLatex": "\\frac{d\\textcolor{#059669}{n(t)}}{dt} = \\frac{\\textcolor{#dc2626}{\\rho(t)} - \\textcolor{#d97706}{\\beta}}{\\textcolor{#0891b2}{\\Lambda}} \\textcolor{#059669}{n(t)} + \\sum_{i=1}^{6} \\textcolor{#9333ea}{\\lambda_i} \\textcolor{#2563eb}{C_i(t)}",
-        "plainEnglishSentence": [
-            {
-                "text": "The "
-            },
-            {
-                "text": "rate of change of neutron density",
-                "variableId": "dn_dt"
-            },
-            {
-                "text": " depends on the "
-            },
-            {
-                "text": "net reactivity",
-                "variableId": "rho_reactivity"
-            },
-            {
-                "text": " minus the "
-            },
-            {
-                "text": "delayed neutron precursor fraction",
-                "variableId": "beta_delayed"
-            },
-            {
-                "text": ", divided by the "
-            },
-            {
-                "text": "neutron generation time",
-                "variableId": "prompt_lifetime"
-            },
-            {
-                "text": ", plus the sum of "
-            },
-            {
-                "text": "precursor decay rates",
-                "variableId": "lambda_decay"
-            },
-            {
-                "text": " releasing "
-            },
-            {
-                "text": "delayed emitter concentrations",
-                "variableId": "precursor_conc"
-            },
-            {
-                "text": "."
-            }
-        ],
-        "variables": [
-            {
-                "id": "dn_dt",
-                "symbol": "n(t)",
-                "name": "Thermal Neutron Population Density",
-                "color": "emerald",
-                "role": "Instantaneous concentration of thermalized neutrons driving sustained uranium-235 chain reactions",
-                "unit": "neutrons/cm^3",
-                "dimension": "[L^-3]",
-                "explanation": "Proportional to instantaneous thermal reactor power ($P_{\\text{th}} = \\Sigma_f \\Phi E_f V$).",
-                "telemetryKey": "controlRodInches",
-                "telemetryMetricLabel": "Neutron Population"
-            },
-            {
-                "id": "rho_reactivity",
-                "symbol": "\\rho(t)",
-                "name": "Net Core Reactivity",
-                "color": "crimson",
-                "role": "Relative departure of effective multiplication factor $k_{\\text{eff}}$ from exact criticality ($(k-1)/k$)",
-                "unit": "pcm (or dollars $ where $\\rho = \\$1$ is prompt critical)",
-                "dimension": "[1]",
-                "explanation": "Regulated by sliding cadmium control rods into the graphite pile. When $\\rho = 0$, $k_{\\text{eff}} = 1.000$ (steady-state criticality)."
-            },
-            {
-                "id": "beta_delayed",
-                "symbol": "\\beta",
-                "name": "Total Delayed Neutron Fraction",
-                "color": "amber",
-                "role": "Fraction of fission neutrons emitted by radioactive precursor decay rather than prompt fission (~0.65% in U-235)",
-                "unit": "Dimensionless fraction (0.0065 for U-235)",
-                "dimension": "[1]",
-                "explanation": "Delayed neutrons extend reactor response time from microseconds ($10^{-5}\\text{ s}$) to seconds (~0.1 s), making human and automatic control physically possible."
-            },
-            {
-                "id": "prompt_lifetime",
-                "symbol": "\\Lambda",
-                "name": "Prompt Neutron Generation Time",
-                "color": "cyan",
-                "role": "Mean time elapsed between neutron emission in fission and subsequent absorption causing fission",
-                "unit": "seconds (s, ~$10^{-4}\\text{ s}$ in graphite pile)",
-                "dimension": "[T]",
-                "explanation": "Without delayed neutrons, a supercritical prompt excursion would double power in milliseconds."
-            },
-            {
-                "id": "lambda_decay",
-                "symbol": "\\lambda_i",
-                "name": "Precursor Group Decay Constant",
-                "color": "amethyst",
-                "role": "Decay probability per second of the $i$-th delayed neutron precursor group ($i = 1\\dots 6$)",
-                "unit": "s^-1",
-                "dimension": "[T^-1]",
-                "explanation": "Precursors like Bromine-87 and Iodine-137 emit neutrons with half-lives ranging from 0.2 seconds to 56 seconds."
-            },
-            {
-                "id": "precursor_conc",
-                "symbol": "C_i(t)",
-                "name": "Delayed Precursor Concentration",
-                "color": "sapphire",
-                "role": "Population of delayed neutron emitter fission fragments in the uranium fuel matrix",
-                "unit": "nuclei/cm^3",
-                "dimension": "[L^-3]",
-                "explanation": "Acts as a physical thermal kinetic reservoir dampening core reactivity transients."
-            }
-        ],
-        "pedagogicalNote": "Chicago Pile-1 operated at the West Stands of Stagg Field at the University of Chicago on December 2, 1942, achieving the world's first self-sustaining controlled nuclear chain reaction ($k_{\\text{eff}} = 1.0006$).",
-        "claimRef": 1,
-        "historicalSignificance": "Proved nuclear energy could be released in a controlled, continuous, and safe manner, birthing the atomic power industry."
+      id: "fermi-delayed-neutron-kinetics",
+      patentId: "us-2708656-fermi-reactor",
+      title: "Point Reactor Kinetics with Delayed Neutrons",
+      category: "Nuclear Physics & Kinetics",
+      rawLatex:
+        "\\frac{dn(t)}{dt} = \\frac{\\rho(t) - \\beta}{\\Lambda} n(t) + \\sum_{i=1}^{6} \\lambda_i C_i(t)",
+      colorizedLatex:
+        "\\frac{d\\textcolor{#059669}{n(t)}}{dt} = \\frac{\\textcolor{#dc2626}{\\rho(t)} - \\textcolor{#d97706}{\\beta}}{\\textcolor{#0891b2}{\\Lambda}} \\textcolor{#059669}{n(t)} + \\sum_{i=1}^{6} \\textcolor{#9333ea}{\\lambda_i} \\textcolor{#2563eb}{C_i(t)}",
+      plainEnglishSentence: [
+        {
+          text: "The ",
+        },
+        {
+          text: "rate of change of neutron density",
+          variableId: "dn_dt",
+        },
+        {
+          text: " depends on the ",
+        },
+        {
+          text: "net reactivity",
+          variableId: "rho_reactivity",
+        },
+        {
+          text: " minus the ",
+        },
+        {
+          text: "delayed neutron precursor fraction",
+          variableId: "beta_delayed",
+        },
+        {
+          text: ", divided by the ",
+        },
+        {
+          text: "neutron generation time",
+          variableId: "prompt_lifetime",
+        },
+        {
+          text: ", plus the sum of ",
+        },
+        {
+          text: "precursor decay rates",
+          variableId: "lambda_decay",
+        },
+        {
+          text: " releasing ",
+        },
+        {
+          text: "delayed emitter concentrations",
+          variableId: "precursor_conc",
+        },
+        {
+          text: ".",
+        },
+      ],
+      variables: [
+        {
+          id: "dn_dt",
+          symbol: "n(t)",
+          name: "Thermal Neutron Population Density",
+          color: "emerald",
+          role: "Instantaneous concentration of thermalized neutrons driving sustained uranium-235 chain reactions",
+          unit: "neutrons/cm^3",
+          dimension: "[L^-3]",
+          explanation:
+            "Proportional to instantaneous thermal reactor power ($P_{\\text{th}} = \\Sigma_f \\Phi E_f V$).",
+          telemetryKey: "controlRodInches",
+          telemetryMetricLabel: "Neutron Population",
+        },
+        {
+          id: "rho_reactivity",
+          symbol: "\\rho(t)",
+          name: "Net Core Reactivity",
+          color: "crimson",
+          role: "Relative departure of effective multiplication factor $k_{\\text{eff}}$ from exact criticality ($(k-1)/k$)",
+          unit: "pcm (or dollars $ where $\\rho = \\$1$ is prompt critical)",
+          dimension: "[1]",
+          explanation:
+            "Regulated by sliding cadmium control rods into the graphite pile. When $\\rho = 0$, $k_{\\text{eff}} = 1.000$ (steady-state criticality).",
+        },
+        {
+          id: "beta_delayed",
+          symbol: "\\beta",
+          name: "Total Delayed Neutron Fraction",
+          color: "amber",
+          role: "Fraction of fission neutrons emitted by radioactive precursor decay rather than prompt fission (~0.65% in U-235)",
+          unit: "Dimensionless fraction (0.0065 for U-235)",
+          dimension: "[1]",
+          explanation:
+            "Delayed neutrons extend reactor response time from microseconds ($10^{-5}\\text{ s}$) to seconds (~0.1 s), making human and automatic control physically possible.",
+        },
+        {
+          id: "prompt_lifetime",
+          symbol: "\\Lambda",
+          name: "Prompt Neutron Generation Time",
+          color: "cyan",
+          role: "Mean time elapsed between neutron emission in fission and subsequent absorption causing fission",
+          unit: "seconds (s, ~$10^{-4}\\text{ s}$ in graphite pile)",
+          dimension: "[T]",
+          explanation:
+            "Without delayed neutrons, a supercritical prompt excursion would double power in milliseconds.",
+        },
+        {
+          id: "lambda_decay",
+          symbol: "\\lambda_i",
+          name: "Precursor Group Decay Constant",
+          color: "amethyst",
+          role: "Decay probability per second of the $i$-th delayed neutron precursor group ($i = 1\\dots 6$)",
+          unit: "s^-1",
+          dimension: "[T^-1]",
+          explanation:
+            "Precursors like Bromine-87 and Iodine-137 emit neutrons with half-lives ranging from 0.2 seconds to 56 seconds.",
+        },
+        {
+          id: "precursor_conc",
+          symbol: "C_i(t)",
+          name: "Delayed Precursor Concentration",
+          color: "sapphire",
+          role: "Population of delayed neutron emitter fission fragments in the uranium fuel matrix",
+          unit: "nuclei/cm^3",
+          dimension: "[L^-3]",
+          explanation:
+            "Acts as a physical thermal kinetic reservoir dampening core reactivity transients.",
+        },
+      ],
+      pedagogicalNote:
+        "Chicago Pile-1 operated at the West Stands of Stagg Field at the University of Chicago on December 2, 1942, achieving the world's first self-sustaining controlled nuclear chain reaction ($k_{\\text{eff}} = 1.0006$).",
+      claimRef: 1,
+      historicalSignificance:
+        "Proved nuclear energy could be released in a controlled, continuous, and safe manner, birthing the atomic power industry.",
     },
     {
-        "id": "fermi-four-factor-formula",
-        "patentId": "us-2708656-fermi-reactor",
-        "title": "Fermi Four-Factor Criticality Formula",
-        "category": "Nuclear Reactor Physics",
-        "rawLatex": "k_\\infty = \\eta \\cdot \\varepsilon \\cdot p \\cdot f",
-        "colorizedLatex": "\\textcolor{#dc2626}{k_\\infty} = \\textcolor{#2563eb}{\\eta} \\cdot \\textcolor{#0891b2}{\\varepsilon} \\cdot \\textcolor{#059669}{p} \\cdot \\textcolor{#d97706}{f}",
-        "plainEnglishSentence": [
-            {
-                "text": "The "
-            },
-            {
-                "text": "infinite multiplication factor",
-                "variableId": "k_inf"
-            },
-            {
-                "text": " is the product of "
-            },
-            {
-                "text": "thermal neutron yield per absorption",
-                "variableId": "eta_yield"
-            },
-            {
-                "text": ", "
-            },
-            {
-                "text": "fast fission factor",
-                "variableId": "eps_fast"
-            },
-            {
-                "text": ", "
-            },
-            {
-                "text": "resonance escape probability",
-                "variableId": "p_resonance"
-            },
-            {
-                "text": ", and "
-            },
-            {
-                "text": "thermal utilization factor",
-                "variableId": "f_thermal"
-            },
-            {
-                "text": "."
-            }
-        ],
-        "variables": [
-            {
-                "id": "k_inf",
-                "symbol": "k_\\infty",
-                "name": "Infinite Medium Multiplication Factor",
-                "color": "crimson",
-                "role": "Ratio of neutrons produced by fission in one generation to neutrons absorbed in the preceding generation in an infinite lattice",
-                "unit": "Dimensionless ratio",
-                "dimension": "[1]",
-                "explanation": "Must exceed 1.000 so that when geometric leakage losses are subtracted, effective $k_{\\text{eff}} = k_\\infty \\cdot P_{\\text{FNL}} \\cdot P_{\\text{TNL}} \\ge 1.000$.",
-                "telemetryMetricLabel": "k_infinity"
-            },
-            {
-                "id": "eta_yield",
-                "symbol": "\\eta",
-                "name": "Neutron Reproduction Factor",
-                "color": "sapphire",
-                "role": "Average number of fission neutrons emitted per thermal neutron absorbed in natural uranium (~1.34 in natural U)",
-                "unit": "neutrons per absorption",
-                "dimension": "[1]",
-                "explanation": "Determined by the ratio of fission to capture cross sections in uranium isotopes ($eta = \nu Sigma_f^U / Sigma_a^U$)."
-            },
-            {
-                "id": "eps_fast",
-                "symbol": "\\varepsilon",
-                "name": "Fast Fission Factor",
-                "color": "cyan",
-                "role": "Ratio of total fissions (fast + thermal) to fissions caused by thermal neutrons alone (~1.03)",
-                "unit": "Dimensionless factor",
-                "dimension": "[1]",
-                "explanation": "Accounts for high-energy prompt neutrons causing immediate fission in Uranium-238 before slowing down."
-            },
-            {
-                "id": "p_resonance",
-                "symbol": "p",
-                "name": "Resonance Escape Probability",
-                "color": "emerald",
-                "role": "Probability that a fast fission neutron slows down to thermal energy without being captured in U-238 resonance absorption peaks (~0.89)",
-                "unit": "Dimensionless probability [0, 1]",
-                "dimension": "[1]",
-                "explanation": "Fermi and Szilard's breakthrough: clustering uranium into lumped slugs embedded inside graphite blocks kept neutrons inside moderator while traversing resonance energies, maximizing $p$."
-            },
-            {
-                "id": "f_thermal",
-                "symbol": "f",
-                "name": "Thermal Utilization Factor",
-                "color": "amber",
-                "role": "Fraction of thermal neutrons absorbed in uranium fuel compared to total absorption in fuel, graphite moderator, and structural timber (~0.88)",
-                "unit": "Dimensionless fraction [0, 1]",
-                "dimension": "[1]",
-                "explanation": "Requires ultra-pure graphite free of neutron-poison boron impurities to minimize parasitic moderator capture."
-            }
-        ],
-        "pedagogicalNote": "Fermi and Szilard solved the natural uranium paradox: pure natural uranium mixed homogeneously with graphite cannot achieve criticality ($k_\\infty < 1$). By spacing uranium lumps in a discrete 3D matrix (Claim 1), resonance capture was suppressed, achieving $k_\\infty \\approx 1.07$.",
-        "claimRef": 1,
-        "historicalSignificance": "The cornerstone equation of nuclear reactor physics, enabling natural uranium nuclear reactors without isotopic enrichment."
-    }
-],
+      id: "fermi-four-factor-formula",
+      patentId: "us-2708656-fermi-reactor",
+      title: "Fermi Four-Factor Criticality Formula",
+      category: "Nuclear Reactor Physics",
+      rawLatex: "k_\\infty = \\eta \\cdot \\varepsilon \\cdot p \\cdot f",
+      colorizedLatex:
+        "\\textcolor{#dc2626}{k_\\infty} = \\textcolor{#2563eb}{\\eta} \\cdot \\textcolor{#0891b2}{\\varepsilon} \\cdot \\textcolor{#059669}{p} \\cdot \\textcolor{#d97706}{f}",
+      plainEnglishSentence: [
+        {
+          text: "The ",
+        },
+        {
+          text: "infinite multiplication factor",
+          variableId: "k_inf",
+        },
+        {
+          text: " is the product of ",
+        },
+        {
+          text: "thermal neutron yield per absorption",
+          variableId: "eta_yield",
+        },
+        {
+          text: ", ",
+        },
+        {
+          text: "fast fission factor",
+          variableId: "eps_fast",
+        },
+        {
+          text: ", ",
+        },
+        {
+          text: "resonance escape probability",
+          variableId: "p_resonance",
+        },
+        {
+          text: ", and ",
+        },
+        {
+          text: "thermal utilization factor",
+          variableId: "f_thermal",
+        },
+        {
+          text: ".",
+        },
+      ],
+      variables: [
+        {
+          id: "k_inf",
+          symbol: "k_\\infty",
+          name: "Infinite Medium Multiplication Factor",
+          color: "crimson",
+          role: "Ratio of neutrons produced by fission in one generation to neutrons absorbed in the preceding generation in an infinite lattice",
+          unit: "Dimensionless ratio",
+          dimension: "[1]",
+          explanation:
+            "Must exceed 1.000 so that when geometric leakage losses are subtracted, effective $k_{\\text{eff}} = k_\\infty \\cdot P_{\\text{FNL}} \\cdot P_{\\text{TNL}} \\ge 1.000$.",
+          telemetryMetricLabel: "k_infinity",
+        },
+        {
+          id: "eta_yield",
+          symbol: "\\eta",
+          name: "Neutron Reproduction Factor",
+          color: "sapphire",
+          role: "Average number of fission neutrons emitted per thermal neutron absorbed in natural uranium (~1.34 in natural U)",
+          unit: "neutrons per absorption",
+          dimension: "[1]",
+          explanation:
+            "Determined by the ratio of fission to capture cross sections in uranium isotopes ($eta = \nu Sigma_f^U / Sigma_a^U$).",
+        },
+        {
+          id: "eps_fast",
+          symbol: "\\varepsilon",
+          name: "Fast Fission Factor",
+          color: "cyan",
+          role: "Ratio of total fissions (fast + thermal) to fissions caused by thermal neutrons alone (~1.03)",
+          unit: "Dimensionless factor",
+          dimension: "[1]",
+          explanation:
+            "Accounts for high-energy prompt neutrons causing immediate fission in Uranium-238 before slowing down.",
+        },
+        {
+          id: "p_resonance",
+          symbol: "p",
+          name: "Resonance Escape Probability",
+          color: "emerald",
+          role: "Probability that a fast fission neutron slows down to thermal energy without being captured in U-238 resonance absorption peaks (~0.89)",
+          unit: "Dimensionless probability [0, 1]",
+          dimension: "[1]",
+          explanation:
+            "Fermi and Szilard's breakthrough: clustering uranium into lumped slugs embedded inside graphite blocks kept neutrons inside moderator while traversing resonance energies, maximizing $p$.",
+        },
+        {
+          id: "f_thermal",
+          symbol: "f",
+          name: "Thermal Utilization Factor",
+          color: "amber",
+          role: "Fraction of thermal neutrons absorbed in uranium fuel compared to total absorption in fuel, graphite moderator, and structural timber (~0.88)",
+          unit: "Dimensionless fraction [0, 1]",
+          dimension: "[1]",
+          explanation:
+            "Requires ultra-pure graphite free of neutron-poison boron impurities to minimize parasitic moderator capture.",
+        },
+      ],
+      pedagogicalNote:
+        "Fermi and Szilard solved the natural uranium paradox: pure natural uranium mixed homogeneously with graphite cannot achieve criticality ($k_\\infty < 1$). By spacing uranium lumps in a discrete 3D matrix (Claim 1), resonance capture was suppressed, achieving $k_\\infty \\approx 1.07$.",
+      claimRef: 1,
+      historicalSignificance:
+        "The cornerstone equation of nuclear reactor physics, enabling natural uranium nuclear reactors without isotopic enrichment.",
+    },
+  ],
 
   "us-2981877-noyce-ic": [
     {
@@ -2046,10 +2492,242 @@ export const ALL_COLORIZED_EQUATIONS: Record<string, ColorizedEquation[]> = {
       historicalSignificance:
         "US 2981877 birthed Silicon Valley and the entire modern computer age (microprocessors, RAM, and GPUs).",
     },
+    {
+      id: "noyce-pn-junction-isolation-capacitance",
+      patentId: "us-2981877-noyce-ic",
+      title: "Planar p-n Junction Dielectric Isolation Capacitance",
+      category: "Solid-State Device Physics",
+      rawLatex:
+        "C_j = A \\sqrt{\\frac{q \\cdot \\epsilon_{\\text{Si}} \\cdot N_a \\cdot N_d}{2 (N_a + N_d)(V_{\\text{bi}} + V_R)}}",
+      colorizedLatex:
+        "\\textcolor{#059669}{C_j} = \\textcolor{#9333ea}{A} \\sqrt{\\frac{\\textcolor{#0891b2}{q} \\cdot \\textcolor{#2563eb}{\\epsilon_{\\text{Si}}} \\cdot \\textcolor{#d97706}{N_a N_d}}{2 (\\textcolor{#d97706}{N_a + N_d})(\\textcolor{#dc2626}{V_{\\text{bi}} + V_R})}}",
+      plainEnglishSentence: [
+        { text: "The " },
+        { text: "junction isolation capacitance", variableId: "cap_j" },
+        { text: " of the reverse-biased p-n boundary scales with " },
+        { text: "junction area", variableId: "area_a" },
+        { text: ", silicon " },
+        { text: "permittivity", variableId: "eps_si" },
+        { text: ", and " },
+        { text: "dopant concentrations", variableId: "dopants" },
+        { text: ", inversely proportional to the square root of " },
+        { text: "total reverse barrier potential", variableId: "pot_barrier" },
+        { text: "." },
+      ],
+      variables: [
+        {
+          id: "cap_j",
+          symbol: "C_j",
+          name: "Depletion Layer Junction Capacitance",
+          color: "emerald",
+          role: "Parasitic high-frequency capacitive coupling across the electrical isolation barrier",
+          unit: "picofarads (pF)",
+          dimension: "[M^-1 L^-2 T^4 I^2]",
+          explanation:
+            "Under reverse bias, mobile carriers are swept out, forming an insulating depletion zone that isolates adjacent transistors on the same silicon die.",
+          telemetryMetricLabel: "Junction Cap",
+        },
+        {
+          id: "area_a",
+          symbol: "A",
+          name: "p-n Junction Cross-Sectional Area",
+          color: "amethyst",
+          role: "Area of the diffused isolation tub defined by oxide masking",
+          unit: "\\mu m^2",
+          dimension: "[L^2]",
+          explanation:
+            "Photolithographic miniaturization reduces A, drastically reducing parasitic capacitive loading.",
+        },
+        {
+          id: "eps_si",
+          symbol: "\\epsilon_{\\text{Si}}",
+          name: "Silicon Dielectric Permittivity",
+          color: "sapphire",
+          role: "Electric permittivity of crystalline silicon (11.7 * eps0 = 1.036e-10 F/m)",
+          unit: "Farads per meter (F/m)",
+          dimension: "[M^-1 L^-3 T^4 I^2]",
+          explanation: "Determines space-charge electric field intensity in the depletion region.",
+        },
+        {
+          id: "dopants",
+          symbol: "N_a, N_d",
+          name: "Acceptor & Donor Dopant Densities",
+          color: "amber",
+          role: "Concentrations of boron (p-type) and phosphorus (n-type) impurity atoms",
+          unit: "atoms/cm^3",
+          dimension: "[L^-3]",
+          explanation:
+            "Asymmetrical doping (Nd >> Na) forces the depletion width primarily into the lightly doped substrate.",
+        },
+        {
+          id: "pot_barrier",
+          symbol: "V_{\\text{bi}} + V_R",
+          name: "Total Reverse Barrier Voltage",
+          color: "crimson",
+          role: "Built-in potential plus external reverse bias voltage maintaining electrical isolation",
+          unit: "Volts (V)",
+          dimension: "[M L^2 T^-3 I^-1]",
+          explanation:
+            "Higher reverse bias widens the depletion layer, reducing parasitic capacitance.",
+        },
+      ],
+      pedagogicalNote:
+        "Noyce utilized reverse-biased p-n junctions as built-in electrical insulators (Claim 2), allowing thousands of distinct transistors to coexist on a single conducting silicon crystal without interfering with each other.",
+      claimRef: 2,
+      historicalSignificance:
+        "Established the p-n junction isolation technique that made monolithic silicon ICs physically and commercially viable.",
+    },
   ],
 
   // 13. Percy Spencer Microwave Oven (US 2,495,429)
   "us-2495429-spencer-microwave": [
+    {
+      id: "spencer-dielectric-microwave-heating",
+      patentId: "us-2495429-spencer-microwave",
+      title: "Microwave Volumetric Dielectric Heating & Loss Factor",
+      category: "Electromagnetics & Food Science",
+      rawLatex:
+        "P_v = 2\\pi f \\cdot \\varepsilon_0 \\cdot \\varepsilon_r'' \\cdot |\\vec{E}|^2 = 2\\pi f \\cdot \\varepsilon_0 \\cdot (\\varepsilon_r' \\tan\\delta) \\cdot |\\vec{E}|^2",
+      colorizedLatex:
+        "\\textcolor{#059669}{P_v} = 2\\pi \\textcolor{#2563eb}{f} \\cdot \\textcolor{#0891b2}{\\varepsilon_0} \\cdot \\textcolor{#9333ea}{\\varepsilon_r''} \\cdot \\textcolor{#dc2626}{|\\vec{E}|^2} = 2\\pi \\textcolor{#2563eb}{f} \\cdot \\textcolor{#0891b2}{\\varepsilon_0} \\cdot (\\textcolor{#d97706}{\\varepsilon_r'} \\textcolor{#ea580c}{\\tan\\delta}) \\cdot \\textcolor{#dc2626}{|\\vec{E}|^2}",
+      plainEnglishSentence: [
+        {
+          text: "The ",
+        },
+        {
+          text: "volumetric heat dissipation power",
+          variableId: "power_pv",
+        },
+        {
+          text: " inside the foodstuff is proportional to ",
+        },
+        {
+          text: "microwave frequency",
+          variableId: "freq_f",
+        },
+        {
+          text: ", ",
+        },
+        {
+          text: "free space permittivity",
+          variableId: "eps_zero",
+        },
+        {
+          text: ", the water molecule ",
+        },
+        {
+          text: "dielectric loss factor",
+          variableId: "eps_loss",
+        },
+        {
+          text: " (or ",
+        },
+        {
+          text: "relative dielectric constant",
+          variableId: "eps_rel",
+        },
+        {
+          text: " times ",
+        },
+        {
+          text: "loss tangent",
+          variableId: "tan_delta",
+        },
+        {
+          text: "), and the ",
+        },
+        {
+          text: "microwave electric field amplitude squared",
+          variableId: "e_field_sq",
+        },
+        {
+          text: ".",
+        },
+      ],
+      variables: [
+        {
+          id: "power_pv",
+          symbol: "P_v",
+          name: "Volumetric Heating Power Density",
+          color: "emerald",
+          role: "Rate of electromagnetic energy absorption and thermal conversion per unit volume of food ($~1 - 10\\text{ W/cm}^3$)",
+          unit: "W/m^3 or W/cm^3",
+          dimension: "[M L^-1 T^-3]",
+          explanation:
+            "Unlike conventional ovens that heat slowly from the surface via conduction, microwaves penetrate centimeters deep to heat volumetrically.",
+          telemetryMetricLabel: "Heating Density",
+        },
+        {
+          id: "freq_f",
+          symbol: "f",
+          name: "Magnetron Microwave Frequency",
+          color: "sapphire",
+          role: "Operating frequency of the resonant cavity magnetron ($2.45\\text{ GHz} = 2.45 \\times 10^9\\text{ Hz}$)",
+          unit: "Hertz (Hz) / Gigahertz (GHz)",
+          dimension: "[T^-1]",
+          explanation:
+            "At $2.45\\text{ GHz}$, electric field oscillates 2.45 billion times per second, torque-rotating polar water molecules.",
+        },
+        {
+          id: "eps_zero",
+          symbol: "\\varepsilon_0",
+          name: "Permittivity of Free Space",
+          color: "cyan",
+          role: "Physical constant ($8.854 \\times 10^{-12}\\text{ F/m}$)",
+          unit: "Farads/meter (F/m)",
+          dimension: "[M^-1 L^-3 T^4 I^2]",
+          explanation: "Electric permittivity of vacuum.",
+        },
+        {
+          id: "eps_loss",
+          symbol: "\\varepsilon_r''",
+          name: "Relative Dielectric Loss Factor",
+          color: "amethyst",
+          role: "Imaginary component of complex permittivity quantifying molecular friction ($\\,\\varepsilon_r'' \\approx 12\\text{ for liquid water at }20^\\circ\\text{C}$)",
+          unit: "Dimensionless loss factor",
+          dimension: "[1]",
+          explanation:
+            "High loss factor in liquid water makes food heat rapidly, while dry ceramic plates ($\\varepsilon_r'' \\approx 0.01$) remain cool.",
+        },
+        {
+          id: "eps_rel",
+          symbol: "\\varepsilon_r'",
+          name: "Relative Dielectric Permittivity",
+          color: "amber",
+          role: "Real permittivity measuring electric dipole polarization capability ($\\approx 80\\text{ for water}$)",
+          unit: "Dimensionless constant",
+          dimension: "[1]",
+          explanation: "Quantifies how strongly water dipoles align with the electric field.",
+        },
+        {
+          id: "tan_delta",
+          symbol: "\\tan\\delta",
+          name: "Dielectric Loss Tangent",
+          color: "coral",
+          role: "Ratio of dissipative loss to stored energy ($\\tan\\delta = \\varepsilon_r'' / \\varepsilon_r'$)",
+          unit: "Dimensionless loss tangent",
+          dimension: "[1]",
+          explanation:
+            "Phase lag between alternating electric field and molecular dipole orientation.",
+        },
+        {
+          id: "e_field_sq",
+          symbol: "|\\vec{E}|^2",
+          name: "Electric Field Intensity Squared",
+          color: "crimson",
+          role: "Square of the standing-wave RF electric field inside the metallic cavity ($10^4 - 10^5\\text{ (V/m)}^2$)",
+          unit: "(V/m)^2",
+          dimension: "[M^2 L^2 T^-6 I^-2]",
+          explanation:
+            "Resonant cavity standing waves create high field concentrations, requiring rotating turntables or mode stirrers to prevent hot and cold spots.",
+        },
+      ],
+      pedagogicalNote:
+        "Percy Spencer famously discovered microwave heating when a magnetron melted a peanut candy bar in his pocket at Raytheon. He proved that high-frequency microwaves oscillate polar water molecules ($H_2O$), generating rapid thermal agitation without scorching the food surface.",
+      claimRef: 1,
+      historicalSignificance:
+        "US 2,495,429 created the microwave oven, transforming consumer culinary preparation and commercial food processing across the globe.",
+    },
     {
       id: "spencer-dielectric-heating",
       patentId: "us-2495429-spencer-microwave",
@@ -2357,6 +3035,264 @@ export const ALL_COLORIZED_EQUATIONS: Record<string, ColorizedEquation[]> = {
 
   // 16. Robert Goddard Liquid-Fuel Rocket (US 1,102,653)
   "us-1102653-goddard-rocket": [
+    {
+      id: "goddard-tsiolkovsky-rocket-equation",
+      patentId: "us-1102653-goddard-rocket",
+      title: "Ideal Rocket Velocity Increment & Mass Ratio Law",
+      category: "Aerospace & Gas Dynamics",
+      rawLatex:
+        "\\Delta v = v_e \\ln\\left( \\frac{m_0}{m_f} \\right) = I_{\\text{sp}} \\cdot g_0 \\cdot \\ln\\left( \\frac{m_0}{m_f} \\right)",
+      colorizedLatex:
+        "\\textcolor{#059669}{\\Delta v} = \\textcolor{#2563eb}{v_e} \\ln\\left( \\frac{\\textcolor{#dc2626}{m_0}}{\\textcolor{#0891b2}{m_f}} \\right) = \\textcolor{#d97706}{I_{\\text{sp}}} \\cdot \\textcolor{#9333ea}{g_0} \\cdot \\ln\\left( \\frac{\\textcolor{#dc2626}{m_0}}{\\textcolor{#0891b2}{m_f}} \\right)",
+      plainEnglishSentence: [
+        {
+          text: "The ",
+        },
+        {
+          text: "total rocket velocity increment",
+          variableId: "delta_v",
+        },
+        {
+          text: " is proportional to ",
+        },
+        {
+          text: "effective exhaust gas velocity",
+          variableId: "v_exhaust",
+        },
+        {
+          text: " multiplied by the natural logarithm of ",
+        },
+        {
+          text: "initial wet launch mass",
+          variableId: "m_initial",
+        },
+        {
+          text: " over ",
+        },
+        {
+          text: "final dry burnout mass",
+          variableId: "m_final",
+        },
+        {
+          text: ", or ",
+        },
+        {
+          text: "specific impulse",
+          variableId: "isp_prop",
+        },
+        {
+          text: " times ",
+        },
+        {
+          text: "standard gravitational acceleration",
+          variableId: "g_zero",
+        },
+        {
+          text: ".",
+        },
+      ],
+      variables: [
+        {
+          id: "delta_v",
+          symbol: "\\Delta v",
+          name: "Ideal Velocity Increment (Delta-V)",
+          color: "emerald",
+          role: "Total speed change imparted to the rocket stage in gravity-free vacuum",
+          unit: "m/s or km/s",
+          dimension: "[L T^-1]",
+          explanation:
+            "Must exceed $7.9\\text{ km/s}$ for low Earth orbit and $11.2\\text{ km/s}$ for lunar escape velocity.",
+          telemetryMetricLabel: "Delta-V",
+        },
+        {
+          id: "v_exhaust",
+          symbol: "v_e",
+          name: "Effective Exhaust Velocity",
+          color: "sapphire",
+          role: "Speed of supersonic combustion gases escaping the De Laval divergent nozzle ($2,000 - 4,500\\text{ m/s}$)",
+          unit: "m/s",
+          dimension: "[L T^-1]",
+          explanation:
+            "Goddard proved De Laval expanding nozzles converted heat to directed kinetic velocity, raising exhaust speed from 1,000 m/s to 2,400 m/s (63% efficiency).",
+        },
+        {
+          id: "m_initial",
+          symbol: "m_0",
+          name: "Initial Wet Launch Mass",
+          color: "crimson",
+          role: "Total rocket mass at ignition including propellants, tanks, engine, and payload",
+          unit: "kg",
+          dimension: "[M]",
+          explanation: "Typically 85% to 92% of launch mass is liquid propellant.",
+        },
+        {
+          id: "m_final",
+          symbol: "m_f",
+          name: "Final Dry Burnout Mass",
+          color: "cyan",
+          role: "Residual rocket mass after all propellants are consumed (structure + engine + payload)",
+          unit: "kg",
+          dimension: "[M]",
+          explanation:
+            "Because $\\Delta v$ scales with $\\ln(m_0 / m_f)$, discarding dead empty tank weight is vital.",
+        },
+        {
+          id: "isp_prop",
+          symbol: "I_{\\text{sp}}",
+          name: "Propellant Specific Impulse",
+          color: "amber",
+          role: "Thrust delivered per unit weight flow rate of propellant ($I_{\\text{sp}} = v_e / g_0$)",
+          unit: "seconds (s, $250 - 450\\text{ s}$)",
+          dimension: "[T]",
+          explanation:
+            "Measures rocket engine fuel economy: liquid oxygen/gasoline delivers ~$300\\text{ s}$, while liquid oxygen/hydrogen delivers ~$450\\text{ s}$.",
+        },
+        {
+          id: "g_zero",
+          symbol: "g_0",
+          name: "Standard Earth Gravitational Acceleration",
+          color: "amethyst",
+          role: "Standard gravity constant ($9.80665\\text{ m/s}^2$)",
+          unit: "m/s^2",
+          dimension: "[L T^-2]",
+          explanation: "Standard conversion factor between mass and weight force.",
+        },
+      ],
+      pedagogicalNote:
+        "The New York Times famously ridiculed Goddard in 1920, falsely claiming rockets could not function in a vacuum without air to push against. Goddard proved experimentally that rockets push purely against their own expanding reaction mass by Newton's Third Law ($F = \\dot{m} v_e$).",
+      claimRef: 1,
+      historicalSignificance:
+        "US 1,102,653 patented both liquid-propellant rocketry and multi-stage step rockets, establishing the engineering blueprint that carried humanity to the Moon.",
+    },
+    {
+      id: "goddard-nozzle-thrust",
+      patentId: "us-1102653-goddard-rocket",
+      title: "De Laval Supersonic Nozzle Thrust & Momentum Flux",
+      category: "Gas Dynamics & Compressible Flow",
+      rawLatex: "F_{\\text{thrust}} = \\dot{m} \\cdot v_e + (p_e - p_a) \\cdot A_e",
+      colorizedLatex:
+        "\\textcolor{#059669}{F_{\\text{thrust}}} = \\textcolor{#dc2626}{\\dot{m}} \\cdot \\textcolor{#2563eb}{v_e} + (\\textcolor{#d97706}{p_e} - \\textcolor{#0891b2}{p_a}) \\cdot \\textcolor{#9333ea}{A_e}",
+      plainEnglishSentence: [
+        {
+          text: "The ",
+        },
+        {
+          text: "total gross rocket thrust",
+          variableId: "thrust_f",
+        },
+        {
+          text: " is the sum of ",
+        },
+        {
+          text: "propellant mass flow rate",
+          variableId: "m_dot",
+        },
+        {
+          text: " times ",
+        },
+        {
+          text: "supersonic exit velocity",
+          variableId: "v_exit",
+        },
+        {
+          text: ", plus the pressure difference between ",
+        },
+        {
+          text: "nozzle exit pressure",
+          variableId: "p_exit",
+        },
+        {
+          text: " and ",
+        },
+        {
+          text: "ambient atmospheric pressure",
+          variableId: "p_ambient",
+        },
+        {
+          text: " acting on ",
+        },
+        {
+          text: "nozzle exit area",
+          variableId: "area_exit",
+        },
+        {
+          text: ".",
+        },
+      ],
+      variables: [
+        {
+          id: "thrust_f",
+          symbol: "F_{\\text{thrust}}",
+          name: "Total Reaction Thrust Force",
+          color: "emerald",
+          role: "Net upward forward thrust accelerating the rocket vehicle",
+          unit: "Newtons (N)",
+          dimension: "[M L T^-2]",
+          explanation:
+            "Must exceed total vehicle weight ($F > m_0 g$) to achieve positive liftoff acceleration.",
+          telemetryMetricLabel: "Thrust Force",
+        },
+        {
+          id: "m_dot",
+          symbol: "\\dot{m}",
+          name: "Propellant Mass Flow Rate",
+          color: "crimson",
+          role: "Rate at which fuel and oxidizer liquids are pumped into the combustion chamber ($dm/dt$)",
+          unit: "kg/s",
+          dimension: "[M T^-1]",
+          explanation:
+            "Goddard used pressurized gas and centrifugal turbopumps to inject liquid oxygen and gasoline at steady flow rates.",
+        },
+        {
+          id: "v_exit",
+          symbol: "v_e",
+          name: "Nozzle Exit Gas Velocity",
+          color: "sapphire",
+          role: "Supersonic gas velocity at the nozzle exit plane ($M > 3$)",
+          unit: "m/s",
+          dimension: "[L T^-1]",
+          explanation:
+            "The converging-diverging De Laval nozzle accelerates subsonic high-pressure combustion gas to supersonic speeds at the throat and bell.",
+        },
+        {
+          id: "p_exit",
+          symbol: "p_e",
+          name: "Nozzle Exit Plane Pressure",
+          color: "amber",
+          role: "Static pressure of the expanding gas at the nozzle rim",
+          unit: "Pascals (Pa)",
+          dimension: "[M L^-1 T^-2]",
+          explanation: "Maximum thrust efficiency occurs when $p_e = p_a$ (perfect expansion).",
+        },
+        {
+          id: "p_ambient",
+          symbol: "p_a",
+          name: "Ambient Atmospheric Pressure",
+          color: "cyan",
+          role: "Surrounding atmospheric pressure ($101.3\\text{ kPa}$ at sea level, $0\\text{ Pa}$ in space vacuum)",
+          unit: "Pascals (Pa)",
+          dimension: "[M L^-1 T^-2]",
+          explanation:
+            "As the rocket ascends into vacuum ($p_a \\to 0$), thrust increases because ambient back-pressure is eliminated.",
+        },
+        {
+          id: "area_exit",
+          symbol: "A_e",
+          name: "Nozzle Exit Cross-Sectional Area",
+          color: "amethyst",
+          role: "Cross-sectional area of the bell nozzle opening",
+          unit: "m^2",
+          dimension: "[L^2]",
+          explanation:
+            "Area ratio $A_e / A_{\\text{throat}}$ determines expansion ratio ($10:1$ for sea-level, $100:1+$ for vacuum).",
+        },
+      ],
+      pedagogicalNote:
+        "Goddard was the first to adapt steam turbine De Laval nozzles to rocket combustion chambers, converting high-pressure thermal chaos into aligned hypersonic kinetic momentum.",
+      claimRef: 2,
+      historicalSignificance:
+        "The convergent-divergent supersonic nozzle remains the core thrust chamber architecture of every space launch vehicle.",
+    },
     {
       id: "goddard-rocket-equation",
       patentId: "us-1102653-goddard-rocket",
@@ -2737,180 +3673,194 @@ export const ALL_COLORIZED_EQUATIONS: Record<string, ColorizedEquation[]> = {
   // 19. Rudolf Diesel Internal Combustion Engine (US 542,846)
   "us-542846-diesel-engine": [
     {
-        "id": "diesel-carnot-ideal-efficiency",
-        "patentId": "us-542846-diesel-engine",
-        "title": "Diesel Carnot Cycle Thermodynamic Efficiency",
-        "category": "Thermodynamics & Heat Engines",
-        "rawLatex": "\\eta_{\\text{Carnot}} = 1 - \\frac{T_C}{T_H} = 1 - \\frac{1}{r^{\\gamma - 1}}",
-        "colorizedLatex": "\\textcolor{#059669}{\\eta_{\\text{Carnot}}} = 1 - \\frac{\\textcolor{#0891b2}{T_C}}{\\textcolor{#dc2626}{T_H}} = 1 - \\frac{1}{\\textcolor{#2563eb}{r^{\\gamma - 1}}}",
-        "plainEnglishSentence": [
-            {
-                "text": "The "
-            },
-            {
-                "text": "theoretical maximum thermal efficiency",
-                "variableId": "eta_carnot"
-            },
-            {
-                "text": " is determined by the ratio of "
-            },
-            {
-                "text": "cold exhaust temperature",
-                "variableId": "t_cold"
-            },
-            {
-                "text": " to "
-            },
-            {
-                "text": "peak hot combustion temperature",
-                "variableId": "t_hot"
-            },
-            {
-                "text": ", scaling with "
-            },
-            {
-                "text": "adiabatic compression ratio",
-                "variableId": "comp_ratio"
-            },
-            {
-                "text": "."
-            }
-        ],
-        "variables": [
-            {
-                "id": "eta_carnot",
-                "symbol": "\\eta_{\\text{Carnot}}",
-                "name": "Maximum Thermodynamic Thermal Efficiency",
-                "color": "emerald",
-                "role": "Upper theoretical limit of heat energy conversion into mechanical shaft work",
-                "unit": "Dimensionless percentage (%)",
-                "dimension": "[1]",
-                "explanation": "Diesel designed his engine specifically to approach the Carnot limit by raising compression temperature above fuel ignition threshold without premature knocking.",
-                "telemetryMetricLabel": "Thermal Efficiency"
-            },
-            {
-                "id": "t_cold",
-                "symbol": "T_C",
-                "name": "Cold Reservoir / Ambient Intake Temperature",
-                "color": "cyan",
-                "role": "Temperature of intake air inducted into the working cylinder ($300\\text{ K} = 27^\\circ\\text{C}$)",
-                "unit": "Kelvin (K)",
-                "dimension": "[Theta]",
-                "explanation": "Lower ambient temperature increases air density and thermodynamic expansion delta."
-            },
-            {
-                "id": "t_hot",
-                "symbol": "T_H",
-                "name": "Peak Combustion Temperature",
-                "color": "crimson",
-                "role": "Maximum gas temperature during progressive constant-pressure fuel burning ($1800\\text{ K} - 2200\\text{ K}$)",
-                "unit": "Kelvin (K)",
-                "dimension": "[Theta]",
-                "explanation": "Controlled by progressive fuel injection rate so peak temperature does not cause dissociation or mechanical failure."
-            },
-            {
-                "id": "comp_ratio",
-                "symbol": "r",
-                "name": "Volumetric Compression Ratio",
-                "color": "sapphire",
-                "role": "Ratio of maximum cylinder volume at bottom dead center to minimum clearance volume at top dead center ($V_1 / V_2 = 14:1\\text{ to }22:1$)",
-                "unit": "Dimensionless ratio",
-                "dimension": "[1]",
-                "explanation": "High compression ($r=18:1$) produces over $40\\text{ bar}$ pressure, heating air to $>900\\text{ K}$ for instant auto-ignition.",
-                "telemetryKey": "compressionRatio"
-            }
-        ],
-        "pedagogicalNote": "Steam engines converted barely 10% of coal energy to work. Rudolf Diesel proved that compressing pure air to 40+ atmospheres eliminated spark plugs and doubled thermal efficiency to 42%.",
-        "claimRef": 1,
-        "historicalSignificance": "Created the primary power source for global maritime shipping, heavy rail freight, long-haul trucking, and electrical generation."
+      id: "diesel-carnot-ideal-efficiency",
+      patentId: "us-542846-diesel-engine",
+      title: "Diesel Carnot Cycle Thermodynamic Efficiency",
+      category: "Thermodynamics & Heat Engines",
+      rawLatex: "\\eta_{\\text{Carnot}} = 1 - \\frac{T_C}{T_H} = 1 - \\frac{1}{r^{\\gamma - 1}}",
+      colorizedLatex:
+        "\\textcolor{#059669}{\\eta_{\\text{Carnot}}} = 1 - \\frac{\\textcolor{#0891b2}{T_C}}{\\textcolor{#dc2626}{T_H}} = 1 - \\frac{1}{\\textcolor{#2563eb}{r^{\\gamma - 1}}}",
+      plainEnglishSentence: [
+        {
+          text: "The ",
+        },
+        {
+          text: "theoretical maximum thermal efficiency",
+          variableId: "eta_carnot",
+        },
+        {
+          text: " is determined by the ratio of ",
+        },
+        {
+          text: "cold exhaust temperature",
+          variableId: "t_cold",
+        },
+        {
+          text: " to ",
+        },
+        {
+          text: "peak hot combustion temperature",
+          variableId: "t_hot",
+        },
+        {
+          text: ", scaling with ",
+        },
+        {
+          text: "adiabatic compression ratio",
+          variableId: "comp_ratio",
+        },
+        {
+          text: ".",
+        },
+      ],
+      variables: [
+        {
+          id: "eta_carnot",
+          symbol: "\\eta_{\\text{Carnot}}",
+          name: "Maximum Thermodynamic Thermal Efficiency",
+          color: "emerald",
+          role: "Upper theoretical limit of heat energy conversion into mechanical shaft work",
+          unit: "Dimensionless percentage (%)",
+          dimension: "[1]",
+          explanation:
+            "Diesel designed his engine specifically to approach the Carnot limit by raising compression temperature above fuel ignition threshold without premature knocking.",
+          telemetryMetricLabel: "Thermal Efficiency",
+        },
+        {
+          id: "t_cold",
+          symbol: "T_C",
+          name: "Cold Reservoir / Ambient Intake Temperature",
+          color: "cyan",
+          role: "Temperature of intake air inducted into the working cylinder ($300\\text{ K} = 27^\\circ\\text{C}$)",
+          unit: "Kelvin (K)",
+          dimension: "[Theta]",
+          explanation:
+            "Lower ambient temperature increases air density and thermodynamic expansion delta.",
+        },
+        {
+          id: "t_hot",
+          symbol: "T_H",
+          name: "Peak Combustion Temperature",
+          color: "crimson",
+          role: "Maximum gas temperature during progressive constant-pressure fuel burning ($1800\\text{ K} - 2200\\text{ K}$)",
+          unit: "Kelvin (K)",
+          dimension: "[Theta]",
+          explanation:
+            "Controlled by progressive fuel injection rate so peak temperature does not cause dissociation or mechanical failure.",
+        },
+        {
+          id: "comp_ratio",
+          symbol: "r",
+          name: "Volumetric Compression Ratio",
+          color: "sapphire",
+          role: "Ratio of maximum cylinder volume at bottom dead center to minimum clearance volume at top dead center ($V_1 / V_2 = 14:1\\text{ to }22:1$)",
+          unit: "Dimensionless ratio",
+          dimension: "[1]",
+          explanation:
+            "High compression ($r=18:1$) produces over $40\\text{ bar}$ pressure, heating air to $>900\\text{ K}$ for instant auto-ignition.",
+          telemetryKey: "compressionRatio",
+        },
+      ],
+      pedagogicalNote:
+        "Steam engines converted barely 10% of coal energy to work. Rudolf Diesel proved that compressing pure air to 40+ atmospheres eliminated spark plugs and doubled thermal efficiency to 42%.",
+      claimRef: 1,
+      historicalSignificance:
+        "Created the primary power source for global maritime shipping, heavy rail freight, long-haul trucking, and electrical generation.",
     },
     {
-        "id": "diesel-compression-ignition-temp",
-        "patentId": "us-542846-diesel-engine",
-        "title": "Adiabatic Compression Auto-Ignition Temperature",
-        "category": "Thermodynamics & Gas Dynamics",
-        "rawLatex": "T_2 = T_1 \\cdot r^{\\gamma - 1}",
-        "colorizedLatex": "\\textcolor{#dc2626}{T_2} = \\textcolor{#0891b2}{T_1} \\cdot \\textcolor{#2563eb}{r}^{\\textcolor{#d97706}{\\gamma - 1}}",
-        "plainEnglishSentence": [
-            {
-                "text": "The "
-            },
-            {
-                "text": "top dead center compressed air temperature",
-                "variableId": "t_comp"
-            },
-            {
-                "text": " equals "
-            },
-            {
-                "text": "ambient intake air temperature",
-                "variableId": "t_ambient"
-            },
-            {
-                "text": " multiplied by "
-            },
-            {
-                "text": "compression ratio",
-                "variableId": "r_ratio"
-            },
-            {
-                "text": " raised to the power of "
-            },
-            {
-                "text": "specific heat ratio minus one",
-                "variableId": "gamma_poly"
-            },
-            {
-                "text": "."
-            }
-        ],
-        "variables": [
-            {
-                "id": "t_comp",
-                "symbol": "T_2",
-                "name": "Compression Temperature at Top Dead Center",
-                "color": "crimson",
-                "role": "Peak air temperature achieved entirely by mechanical work of piston compression ($~953\\text{ K} = 680^\\circ\\text{C}$)",
-                "unit": "Kelvin (K)",
-                "dimension": "[Theta]",
-                "explanation": "Far exceeds the auto-ignition temperature of heavy petroleum oil ($~210^\\circ\\text{C}$), ensuring instantaneous spontaneous combustion upon fuel atomization.",
-                "telemetryMetricLabel": "TDC Temperature"
-            },
-            {
-                "id": "t_ambient",
-                "symbol": "T_1",
-                "name": "Intake Air Temperature",
-                "color": "cyan",
-                "role": "Initial ambient temperature of fresh air inducted on the downward intake stroke ($300\\text{ K}$)",
-                "unit": "Kelvin (K)",
-                "dimension": "[Theta]",
-                "explanation": "Diesel engines draw in pure air rather than an explosive fuel-air vapor, eliminating pre-ignition knock."
-            },
-            {
-                "id": "r_ratio",
-                "symbol": "r",
-                "name": "Compression Ratio",
-                "color": "sapphire",
-                "role": "Volumetric ratio of cylinder displacement ($V_1 / V_2 = 18:1$)",
-                "unit": "Dimensionless ratio",
-                "dimension": "[1]",
-                "explanation": "Diesel engines operate at compression ratios 3x higher than gasoline spark-ignition engines."
-            },
-            {
-                "id": "gamma_poly",
-                "symbol": "\\gamma",
-                "name": "Adiabatic Heat Capacity Ratio",
-                "color": "amber",
-                "role": "Ratio of specific heat at constant pressure to constant volume ($c_p / c_v = 1.40$ for diatomic air)",
-                "unit": "Dimensionless constant (1.40)",
-                "dimension": "[1]",
-                "explanation": "Governs the steep exponential rise in temperature as molecular kinetic energy is concentrated in a tight combustion bowl."
-            }
-        ],
-        "pedagogicalNote": "Because only pure air is compressed, there is zero fuel present to prematurely ignite. This allowed Diesel to raise compression to extreme levels impossible in Otto-cycle gasoline engines.",
-        "claimRef": 1,
-        "historicalSignificance": "Eliminated electrical ignition systems, magnetos, and spark plugs, creating an inherently reliable all-mechanical heat engine."
-    }
+      id: "diesel-compression-ignition-temp",
+      patentId: "us-542846-diesel-engine",
+      title: "Adiabatic Compression Auto-Ignition Temperature",
+      category: "Thermodynamics & Gas Dynamics",
+      rawLatex: "T_2 = T_1 \\cdot r^{\\gamma - 1}",
+      colorizedLatex:
+        "\\textcolor{#dc2626}{T_2} = \\textcolor{#0891b2}{T_1} \\cdot \\textcolor{#2563eb}{r}^{\\textcolor{#d97706}{\\gamma - 1}}",
+      plainEnglishSentence: [
+        {
+          text: "The ",
+        },
+        {
+          text: "top dead center compressed air temperature",
+          variableId: "t_comp",
+        },
+        {
+          text: " equals ",
+        },
+        {
+          text: "ambient intake air temperature",
+          variableId: "t_ambient",
+        },
+        {
+          text: " multiplied by ",
+        },
+        {
+          text: "compression ratio",
+          variableId: "r_ratio",
+        },
+        {
+          text: " raised to the power of ",
+        },
+        {
+          text: "specific heat ratio minus one",
+          variableId: "gamma_poly",
+        },
+        {
+          text: ".",
+        },
+      ],
+      variables: [
+        {
+          id: "t_comp",
+          symbol: "T_2",
+          name: "Compression Temperature at Top Dead Center",
+          color: "crimson",
+          role: "Peak air temperature achieved entirely by mechanical work of piston compression ($~953\\text{ K} = 680^\\circ\\text{C}$)",
+          unit: "Kelvin (K)",
+          dimension: "[Theta]",
+          explanation:
+            "Far exceeds the auto-ignition temperature of heavy petroleum oil ($~210^\\circ\\text{C}$), ensuring instantaneous spontaneous combustion upon fuel atomization.",
+          telemetryMetricLabel: "TDC Temperature",
+        },
+        {
+          id: "t_ambient",
+          symbol: "T_1",
+          name: "Intake Air Temperature",
+          color: "cyan",
+          role: "Initial ambient temperature of fresh air inducted on the downward intake stroke ($300\\text{ K}$)",
+          unit: "Kelvin (K)",
+          dimension: "[Theta]",
+          explanation:
+            "Diesel engines draw in pure air rather than an explosive fuel-air vapor, eliminating pre-ignition knock.",
+        },
+        {
+          id: "r_ratio",
+          symbol: "r",
+          name: "Compression Ratio",
+          color: "sapphire",
+          role: "Volumetric ratio of cylinder displacement ($V_1 / V_2 = 18:1$)",
+          unit: "Dimensionless ratio",
+          dimension: "[1]",
+          explanation:
+            "Diesel engines operate at compression ratios 3x higher than gasoline spark-ignition engines.",
+        },
+        {
+          id: "gamma_poly",
+          symbol: "\\gamma",
+          name: "Adiabatic Heat Capacity Ratio",
+          color: "amber",
+          role: "Ratio of specific heat at constant pressure to constant volume ($c_p / c_v = 1.40$ for diatomic air)",
+          unit: "Dimensionless constant (1.40)",
+          dimension: "[1]",
+          explanation:
+            "Governs the steep exponential rise in temperature as molecular kinetic energy is concentrated in a tight combustion bowl.",
+        },
+      ],
+      pedagogicalNote:
+        "Because only pure air is compressed, there is zero fuel present to prematurely ignite. This allowed Diesel to raise compression to extreme levels impossible in Otto-cycle gasoline engines.",
+      claimRef: 1,
+      historicalSignificance:
+        "Eliminated electrical ignition systems, magnetos, and spark plugs, creating an inherently reliable all-mechanical heat engine.",
+    },
   ],
 
   // 20. Lester Pelton Split-Bucket Impulse Water Wheel (US 233,692)
@@ -3214,6 +4164,167 @@ export const ALL_COLORIZED_EQUATIONS: Record<string, ColorizedEquation[]> = {
   // 23. George Westinghouse Automatic Air Brake (US 124,404)
   "us-124404-westinghouse-air-brake": [
     {
+      id: "westinghouse-triple-valve-brake-pressure",
+      patentId: "us-124404-westinghouse-air-brake",
+      title: "Fail-Safe Triple Valve Cylinder Charging & Clamping Force",
+      category: "Pneumatics & Railroad Braking",
+      rawLatex:
+        "F_{\\text{clamping}} = 2 \\cdot \\mu_{\\text{shoe}} \\cdot \\left( \\frac{V_{\\text{aux}}}{V_{\\text{aux}} + V_{\\text{cyl}}} \\cdot (P_{\\text{aux}} - P_{\\text{pipe}}) \\right) \\cdot A_{\\text{piston}} \\cdot \\text{MA}_{\\text{rigging}}",
+      colorizedLatex:
+        "\\textcolor{#059669}{F_{\\text{clamping}}} = 2 \\cdot \\textcolor{#2563eb}{\\mu_{\\text{shoe}}} \\cdot \\left( \\frac{\\textcolor{#9333ea}{V_{\\text{aux}}}}{\\textcolor{#9333ea}{V_{\\text{aux}}} + \\textcolor{#0891b2}{V_{\\text{cyl}}}} \\cdot (\\textcolor{#d97706}{P_{\\text{aux}}} - \\textcolor{#dc2626}{P_{\\text{pipe}}}) \\right) \\cdot \\textcolor{#ea580c}{A_{\\text{piston}}} \\cdot \\textcolor{#059669}{\\text{MA}_{\\text{rigging}}}",
+      plainEnglishSentence: [
+        {
+          text: "The ",
+        },
+        {
+          text: "wheel brake shoe frictional clamping force",
+          variableId: "f_clamp",
+        },
+        {
+          text: " is determined by ",
+        },
+        {
+          text: "cast-iron shoe friction coefficient",
+          variableId: "mu_shoe",
+        },
+        {
+          text: ", ",
+        },
+        {
+          text: "auxiliary reservoir volume",
+          variableId: "v_aux",
+        },
+        {
+          text: " over ",
+        },
+        {
+          text: "brake cylinder volume",
+          variableId: "v_cyl",
+        },
+        {
+          text: ", the pressure drop in the ",
+        },
+        {
+          text: "train brake pipe",
+          variableId: "p_pipe",
+        },
+        {
+          text: " below ",
+        },
+        {
+          text: "auxiliary reservoir pressure",
+          variableId: "p_aux",
+        },
+        {
+          text: ", ",
+        },
+        {
+          text: "brake piston area",
+          variableId: "a_piston",
+        },
+        {
+          text: ", and ",
+        },
+        {
+          text: "mechanical brake rigging leverage ratio",
+          variableId: "ma_rigging",
+        },
+        {
+          text: ".",
+        },
+      ],
+      variables: [
+        {
+          id: "f_clamp",
+          symbol: "F_{\\text{clamping}}",
+          name: "Brake Shoe Clamping Retarding Force",
+          color: "emerald",
+          role: "Total frictional retarding force exerted against the steel rail car wheels ($30 - 60\\text{ kN}$ per car)",
+          unit: "kiloNewtons (kN)",
+          dimension: "[M L T^-2]",
+          explanation:
+            "Brings high-speed passenger and freight trains from $60\\text{ mph}$ to a safe stop within hundreds of yards.",
+          telemetryMetricLabel: "Braking Force",
+        },
+        {
+          id: "mu_shoe",
+          symbol: "\\mu_{\\text{shoe}}",
+          name: "Cast-Iron Shoe Friction Coefficient",
+          color: "sapphire",
+          role: "Kinetic friction coefficient between brake shoe and steel wheel tread ($0.15 - 0.25$)",
+          unit: "Dimensionless friction coefficient",
+          dimension: "[1]",
+          explanation: "Frictional drag converts train kinetic energy into heat.",
+        },
+        {
+          id: "v_aux",
+          symbol: "V_{\\text{aux}}",
+          name: "Auxiliary Air Reservoir Volume",
+          color: "amethyst",
+          role: "Volume of individual compressed air storage tank mounted on each railroad car ($~40\\text{ liters}$)",
+          unit: "liters or m^3",
+          dimension: "[L^3]",
+          explanation: "Stores energy locally under each car.",
+        },
+        {
+          id: "v_cyl",
+          symbol: "V_{\\text{cyl}}",
+          name: "Brake Cylinder Volume",
+          color: "cyan",
+          role: "Volume of brake actuator cylinder at full piston stroke ($~15\\text{ liters}$)",
+          unit: "liters or m^3",
+          dimension: "[L^3]",
+          explanation: "Actuates brake levers.",
+        },
+        {
+          id: "p_aux",
+          symbol: "P_{\\text{aux}}",
+          name: "Auxiliary Reservoir Stored Pressure",
+          color: "amber",
+          role: "Nominal charged compressed air pressure ($70\\text{ psi} \\approx 4.8\\text{ bar}$)",
+          unit: "Bar or psi",
+          dimension: "[M L^-1 T^-2]",
+          explanation: "Charged from locomotive main air compressor.",
+        },
+        {
+          id: "p_pipe",
+          symbol: "P_{\\text{pipe}}",
+          name: "Continuous Trainline Brake Pipe Pressure",
+          color: "crimson",
+          role: "Pneumatic pressure throughout the train line ($70\\text{ psi}$ when running; $0\\text{ psi}$ during emergency stop)",
+          unit: "Bar or psi",
+          dimension: "[M L^-1 T^-2]",
+          explanation:
+            "If a train breaks apart or a hose ruptures, $P_{\\text{pipe}}$ drops to zero instantly, triggering automatic maximum emergency braking on every car.",
+        },
+        {
+          id: "a_piston",
+          symbol: "A_{\\text{piston}}",
+          name: "Brake Actuator Piston Area",
+          color: "coral",
+          role: "Cross-sectional area of 10-inch brake piston ($~500\\text{ cm}^2$)",
+          unit: "m^2",
+          dimension: "[L^2]",
+          explanation: "Pneumatic pressure multiplied by area yields thrust.",
+        },
+        {
+          id: "ma_rigging",
+          symbol: "\\text{MA}_{\\text{rigging}}",
+          name: "Mechanical Rigging Lever Ratio",
+          color: "emerald",
+          role: "Mechanical advantage of foundation brake levers ($6:1 - 10:1$ multiplication)",
+          unit: "Dimensionless ratio",
+          dimension: "[1]",
+          explanation: "Multiplies piston rod force onto all 8 brake shoes.",
+        },
+      ],
+      pedagogicalNote:
+        "Before Westinghouse, if a brake line broke, the entire train lost braking capability. Westinghouse inverted the paradigm with the triple valve: continuous high pressure in the brake pipe holds the brakes OFF. Any pressure drop (or broken hose) automatically slams the brakes ON at full force.",
+      claimRef: 1,
+      historicalSignificance:
+        "US 124,404 eliminated train derailments and runaway train disasters, enabling railroads to run longer, heavier trains at vastly higher speeds.",
+    },
+    {
       id: "westinghouse-triple-valve-balance",
       patentId: "us-124404-westinghouse-air-brake",
       title: "Fail-Safe Pneumatic Triple-Valve Differential Pressure & Reservoir Equilibrium",
@@ -3306,6 +4417,145 @@ export const ALL_COLORIZED_EQUATIONS: Record<string, ColorizedEquation[]> = {
 
   // 24. Charles Parsons Multi-Stage Reaction Steam Turbine (US 608,969)
   "us-608969-parsons-turbine": [
+    {
+      id: "parsons-multistage-enthalpy-drop",
+      patentId: "us-608969-parsons-turbine",
+      title: "Multistage Reaction Enthalpy Expansion & Velocity Compounding",
+      category: "Thermodynamics & Turbomachinery",
+      rawLatex:
+        "\\Delta h_{\\text{total}} = h_{\\text{inlet}} - h_{\\text{exhaust}} = \\sum_{i=1}^{n} \\Delta h_i = \\sum_{i=1}^{n} \\frac{v_{i,\\text{exit}}^2 - v_{i,\\text{inlet}}^2}{2}",
+      colorizedLatex:
+        "\\textcolor{#059669}{\\Delta h_{\\text{total}}} = \\textcolor{#2563eb}{h_{\\text{inlet}}} - \\textcolor{#0891b2}{h_{\\text{exhaust}}} = \\sum_{i=1}^{\\textcolor{#d97706}{n}} \\textcolor{#dc2626}{\\Delta h_i} = \\sum_{i=1}^{\\textcolor{#d97706}{n}} \\frac{\\textcolor{#9333ea}{v_{i,\\text{exit}}^2} - \\textcolor{#ea580c}{v_{i,\\text{inlet}}^2}}{2}",
+      plainEnglishSentence: [
+        {
+          text: "The ",
+        },
+        {
+          text: "total steam enthalpy drop",
+          variableId: "delta_h_tot",
+        },
+        {
+          text: " from ",
+        },
+        {
+          text: "inlet enthalpy",
+          variableId: "h_inlet",
+        },
+        {
+          text: " to ",
+        },
+        {
+          text: "exhaust enthalpy",
+          variableId: "h_exhaust",
+        },
+        {
+          text: " is divided across ",
+        },
+        {
+          text: "n consecutive blade stages",
+          variableId: "n_stages",
+        },
+        {
+          text: ", limiting each ",
+        },
+        {
+          text: "stage enthalpy drop",
+          variableId: "delta_h_stage",
+        },
+        {
+          text: " and corresponding ",
+        },
+        {
+          text: "relative exit steam velocity",
+          variableId: "v_exit_stage",
+        },
+        {
+          text: ".",
+        },
+      ],
+      variables: [
+        {
+          id: "delta_h_tot",
+          symbol: "\\Delta h_{\\text{total}}",
+          name: "Total Isentropic Enthalpy Drop",
+          color: "emerald",
+          role: "Total thermal energy available from high-pressure boiler steam expanding to condenser vacuum ($~800\\text{ kJ/kg}$)",
+          unit: "kJ/kg",
+          dimension: "[L^2 T^-2]",
+          explanation:
+            "Expanding in a single stage would yield a supersonic jet ($v > 1200\\text{ m/s}$) requiring an impossible $30,000\\text{ RPM}$ rotor.",
+          telemetryMetricLabel: "Total Enthalpy Drop",
+        },
+        {
+          id: "h_inlet",
+          symbol: "h_{\\text{inlet}}",
+          name: "Boiler Superheated Steam Enthalpy",
+          color: "sapphire",
+          role: "Initial enthalpy at $15\\text{ bar}$ and $250^\\circ\\text{C}$ ($2,900\\text{ kJ/kg}$)",
+          unit: "kJ/kg",
+          dimension: "[L^2 T^-2]",
+          explanation: "High pressure and temperature entering the first stage.",
+        },
+        {
+          id: "h_exhaust",
+          symbol: "h_{\\text{exhaust}}",
+          name: "Condenser Exhaust Enthalpy",
+          color: "cyan",
+          role: "Residual enthalpy at $0.05\\text{ bar}$ condenser vacuum ($2,100\\text{ kJ/kg}$)",
+          unit: "kJ/kg",
+          dimension: "[L^2 T^-2]",
+          explanation:
+            "Turbines expand steam down to deep vacuum far beyond reciprocating piston limits.",
+        },
+        {
+          id: "n_stages",
+          symbol: "n",
+          name: "Turbine Expansion Stage Count",
+          color: "amber",
+          role: "Number of pairs of fixed guide stator vanes and rotating rotor rows ($40 - 80\\text{ stages}$)",
+          unit: "Stages (integer)",
+          dimension: "[1]",
+          explanation:
+            "Parsons' fundamental breakthrough: subdividing expansion into dozens of small drops lowered rotor peripheral speed to manageable levels ($100 - 150\\text{ m/s}$).",
+        },
+        {
+          id: "delta_h_stage",
+          symbol: "\\Delta h_i",
+          name: "Per-Stage Enthalpy Drop",
+          color: "crimson",
+          role: "Fraction of energy converted per blade row ($\\approx 10 - 20\\text{ kJ/kg}$ per stage)",
+          unit: "kJ/kg",
+          dimension: "[L^2 T^-2]",
+          explanation: "Keeps steam velocities moderate across each stage.",
+        },
+        {
+          id: "v_exit_stage",
+          symbol: "v_{i,\\text{exit}}",
+          name: "Stage Relative Exit Velocity",
+          color: "amethyst",
+          role: "Steam velocity leaving the airfoil blade channel ($150 - 250\\text{ m/s}$)",
+          unit: "m/s",
+          dimension: "[L T^-1]",
+          explanation:
+            "Reaction blading expands steam in both fixed and moving blades (50% reaction degree).",
+        },
+        {
+          id: "v_inlet_stage",
+          symbol: "v_{i,\\text{inlet}}",
+          name: "Stage Relative Inlet Velocity",
+          color: "coral",
+          role: "Steam velocity entering the blade passage",
+          unit: "m/s",
+          dimension: "[L T^-1]",
+          explanation: "Flow enters smoothly without shock losses.",
+        },
+      ],
+      pedagogicalNote:
+        "De Laval's single-stage turbine ran at an unmanageable 30,000 RPM, requiring fragile reduction gears. Parsons invented multistage reaction expansion, creating a smooth, high-efficiency machine that could directly drive electrical generators and ship propellers.",
+      claimRef: 1,
+      historicalSignificance:
+        "US 608,969 powered HMS Turbinia (the fastest vessel in the world at 34 knots in 1897) and revolutionized global power generation; steam turbines still generate ~80% of the world's electricity.",
+    },
     {
       id: "parsons-reaction-stage-enthalpy",
       patentId: "us-608969-parsons-turbine",
@@ -3503,6 +4753,294 @@ export const ALL_COLORIZED_EQUATIONS: Record<string, ColorizedEquation[]> = {
   // 26. Samuel Morse Electro-Magnetic Telegraph (US 1,647)
   "us-1647-morse-telegraph": [
     {
+      id: "morse-electromagnet-attraction",
+      patentId: "us-1647-morse-telegraph",
+      title: "Electromagnetic Armature Tractive Holding Force",
+      category: "Electromagnetics & Relays",
+      rawLatex:
+        "F = \\frac{B^2 \\cdot A_{\\text{core}}}{2 \\mu_0} = \\frac{(\\mu_0 \\cdot N \\cdot I)^2 \\cdot A_{\\text{core}}}{2 \\mu_0 \\cdot g^2}",
+      colorizedLatex:
+        "\\textcolor{#059669}{F} = \\frac{\\textcolor{#2563eb}{B^2} \\cdot \\textcolor{#9333ea}{A_{\\text{core}}}}{2 \\textcolor{#0891b2}{\\mu_0}} = \\frac{(\\textcolor{#0891b2}{\\mu_0} \\cdot \\textcolor{#d97706}{N} \\cdot \\textcolor{#dc2626}{I})^2 \\cdot \\textcolor{#9333ea}{A_{\\text{core}}}}{2 \\textcolor{#0891b2}{\\mu_0} \\cdot \\textcolor{#ea580c}{g^2}}",
+      plainEnglishSentence: [
+        {
+          text: "The ",
+        },
+        {
+          text: "tractive mechanical force",
+          variableId: "force_f",
+        },
+        {
+          text: " pulling the iron sounder armature depends on ",
+        },
+        {
+          text: "magnetic flux density squared",
+          variableId: "b_field",
+        },
+        {
+          text: " and ",
+        },
+        {
+          text: "pole core cross-sectional area",
+          variableId: "core_area",
+        },
+        {
+          text: ", scaling with the square of ",
+        },
+        {
+          text: "coil turn count",
+          variableId: "coil_turns",
+        },
+        {
+          text: " and ",
+        },
+        {
+          text: "loop signaling current",
+          variableId: "loop_current",
+        },
+        {
+          text: ", inversely proportional to the square of ",
+        },
+        {
+          text: "air-gap spacing",
+          variableId: "air_gap",
+        },
+        {
+          text: ".",
+        },
+      ],
+      variables: [
+        {
+          id: "force_f",
+          symbol: "F",
+          name: "Electromagnetic Tractive Force",
+          color: "emerald",
+          role: "Downward magnetic pulling force driving the steel stylus into paper tape",
+          unit: "Newtons (N)",
+          dimension: "[M L T^-2]",
+          explanation:
+            "Must overcome the return spring tension to emboss clean, unambiguous indentations onto moving paper tape.",
+          telemetryMetricLabel: "Holding Force",
+        },
+        {
+          id: "b_field",
+          symbol: "B",
+          name: "Core Magnetic Flux Density",
+          color: "sapphire",
+          role: "Magnetic field concentrated within the soft iron horseshoe electromagnet core",
+          unit: "Tesla (T)",
+          dimension: "[M T^-2 I^-1]",
+          explanation:
+            "Soft iron cores provide high permeability ($\\mu_r > 1000$), multiplying holding force over air-core coils.",
+        },
+        {
+          id: "core_area",
+          symbol: "A_{\\text{core}}",
+          name: "Iron Pole Cross-Sectional Area",
+          color: "amethyst",
+          role: "Contact face area of the dual electromagnet poles ($~4\\text{ cm}^2$)",
+          unit: "m^2",
+          dimension: "[L^2]",
+          explanation:
+            "Larger pole faces increase total magnetic flux coupling to the pivoted armature.",
+        },
+        {
+          id: "mu_0",
+          symbol: "\\mu_0",
+          name: "Permeability of Free Space",
+          color: "cyan",
+          role: "Fundamental physical constant ($4\\pi \\times 10^{-7}\\text{ N/A}^2$)",
+          unit: "H/m",
+          dimension: "[M L T^-2 I^-2]",
+          explanation: "Magnetic permeability of the non-magnetic gap.",
+        },
+        {
+          id: "coil_turns",
+          symbol: "N",
+          name: "Electromagnet Winding Turns",
+          color: "amber",
+          role: "Number of insulated copper wire wraps around the iron limbs ($500 - 2,000\\text{ turns}$)",
+          unit: "Turns (integer)",
+          dimension: "[1]",
+          explanation:
+            "Morse wrapped hundreds of turns of fine silk-insulated wire to maximize magnetomotive force ($N \\cdot I$) from weak long-distance currents.",
+        },
+        {
+          id: "loop_current",
+          symbol: "I",
+          name: "Signaling Circuit Current",
+          color: "crimson",
+          role: "Current flowing through the telegraph wire loop ($20 - 50\\text{ mA}$)",
+          unit: "Amperes (A) / Milliamperes (mA)",
+          dimension: "[I]",
+          explanation:
+            "Switched on and off by the telegraph sending key to transmit dots and dashes.",
+          telemetryKey: "loopCurrentMa",
+        },
+        {
+          id: "air_gap",
+          symbol: "g",
+          name: "Armature Air Gap Clearance",
+          color: "coral",
+          role: "Physical distance between iron core poles and the movable armature lever ($0.5 - 1.5\\text{ mm}$)",
+          unit: "meters (m) / millimeters (mm)",
+          dimension: "[L]",
+          explanation:
+            "Because force drops with $g^2$, precise mechanical stop-screw adjustment is required for sensitive operation.",
+        },
+      ],
+      pedagogicalNote:
+        "Morse discovered that increasing coil turns ($N$) allowed tiny currents ($I$) transported over 40 miles of iron wire to pull a heavy mechanical armature, proving electrical intelligence could span continents.",
+      claimRef: 1,
+      historicalSignificance:
+        "US 1,647 laid the foundation for global electrical telecommunications, standardizing the relay-repeater architecture that preceded modern digital packet routing.",
+    },
+    {
+      id: "morse-line-loop-attenuation",
+      patentId: "us-1647-morse-telegraph",
+      title: "Transmission Line Resistance & Current Attenuation Law",
+      category: "Circuit Analysis & Transmission Lines",
+      rawLatex:
+        "I_{\\text{loop}} = \\frac{V_{\\text{battery}}}{R_{\\text{internal}} + R_{\\text{coils}} + \\rho_{\\text{Fe}} \\frac{2L}{A_{\\text{wire}}}}",
+      colorizedLatex:
+        "\\textcolor{#dc2626}{I_{\\text{loop}}} = \\frac{\\textcolor{#2563eb}{V_{\\text{battery}}}}{\\textcolor{#0891b2}{R_{\\text{internal}}} + \\textcolor{#d97706}{R_{\\text{coils}}} + \\textcolor{#9333ea}{\\rho_{\\text{Fe}}} \\frac{2\\textcolor{#059669}{L}}{\\textcolor{#ea580c}{A_{\\text{wire}}}}}",
+      plainEnglishSentence: [
+        {
+          text: "The ",
+        },
+        {
+          text: "signaling loop current",
+          variableId: "i_loop",
+        },
+        {
+          text: " equals the ",
+        },
+        {
+          text: "battery chemical EMF",
+          variableId: "v_bat",
+        },
+        {
+          text: " divided by ",
+        },
+        {
+          text: "internal cell resistance",
+          variableId: "r_int",
+        },
+        {
+          text: ", ",
+        },
+        {
+          text: "sounder coil resistance",
+          variableId: "r_coils",
+        },
+        {
+          text: ", and iron wire ",
+        },
+        {
+          text: "resistivity",
+          variableId: "rho_wire",
+        },
+        {
+          text: " across ",
+        },
+        {
+          text: "transmission distance",
+          variableId: "dist_l",
+        },
+        {
+          text: " over ",
+        },
+        {
+          text: "wire gauge cross-section",
+          variableId: "area_wire",
+        },
+        {
+          text: ".",
+        },
+      ],
+      variables: [
+        {
+          id: "i_loop",
+          symbol: "I_{\\text{loop}}",
+          name: "Loop Current",
+          color: "crimson",
+          role: "Electrical current traversing the entire telegraph line circuit",
+          unit: "Milliamperes (mA)",
+          dimension: "[I]",
+          explanation:
+            "Must remain above the minimum threshold ($~15\\text{ mA}$) required to pull the electromagnetic sounder.",
+          telemetryMetricLabel: "Line Current",
+        },
+        {
+          id: "v_bat",
+          symbol: "V_{\\text{battery}}",
+          name: "Grove Battery Bank EMF",
+          color: "sapphire",
+          role: "Total electrochemical potential produced by series-connected zinc-platinum nitric acid cells ($50 - 200\\text{ V}$)",
+          unit: "Volts (V)",
+          dimension: "[M L^2 T^-3 I^-1]",
+          explanation:
+            "Higher voltage was required to overcome the massive electrical resistance of long iron wires.",
+        },
+        {
+          id: "r_int",
+          symbol: "R_{\\text{internal}}",
+          name: "Battery Internal Resistance",
+          color: "cyan",
+          role: "Electrolyte and electrode ohmic resistance within the battery cells",
+          unit: "Ohms (\\Omega)",
+          dimension: "[M L^2 T^-3 I^-2]",
+          explanation: "Kept low by using large electrode surface areas.",
+        },
+        {
+          id: "r_coils",
+          symbol: "R_{\\text{coils}}",
+          name: "Electromagnet Coil Resistance",
+          color: "amber",
+          role: "Lumped resistance of all sounder and relay electromagnets connected in series",
+          unit: "Ohms (\\Omega)",
+          dimension: "[M L^2 T^-3 I^-2]",
+          explanation: "High-turn coils add $100 - 500\\,\\Omega$ to the circuit.",
+        },
+        {
+          id: "rho_wire",
+          symbol: "\\rho_{\\text{Fe}}",
+          name: "Iron Wire Electrical Resistivity",
+          color: "amethyst",
+          role: "Specific resistivity of galvanized iron telegraph wire ($9.71 \\times 10^{-8}\\,\\Omega\\cdot\\text{m}$)",
+          unit: "\\Omega * m",
+          dimension: "[M L^3 T^-3 I^-2]",
+          explanation:
+            "Iron was 6x more resistive than copper but provided the tensile strength needed to string overhead poles.",
+        },
+        {
+          id: "dist_l",
+          symbol: "L",
+          name: "One-Way Line Distance",
+          color: "emerald",
+          role: "Geographic distance between telegraph stations (e.g., 40 miles between Washington and Baltimore)",
+          unit: "meters (m) / kilometers (km)",
+          dimension: "[L]",
+          explanation:
+            "Total wire loop length is $2L$ (or $L$ when using Earth ground return, which Morse adopted).",
+        },
+        {
+          id: "area_wire",
+          symbol: "A_{\\text{wire}}",
+          name: "Wire Cross-Sectional Area",
+          color: "coral",
+          role: "Cross-sectional area of No. 14 gauge galvanized iron wire ($~2.0\\text{ mm}^2$)",
+          unit: "m^2",
+          dimension: "[L^2]",
+          explanation: "Thicker wire reduces total loop resistance.",
+        },
+      ],
+      pedagogicalNote:
+        "Morse's crucial invention was not just the code, but the intermediate electro-magnetic relay: when signal current attenuated over distance, an ultra-sensitive relay closed a fresh local battery loop, regenerating the signal for the next segment.",
+      claimRef: 4,
+      historicalSignificance:
+        "The relay repeater solved the long-distance signal decay problem, enabling telegraph networks to span continents and oceans.",
+    },
+    {
       id: "morse-telegraph-relay-attenuation",
       patentId: "us-1647-morse-telegraph",
       title: "Distributed Transmission Line Current & Solenoid Armature Magnetic Pull",
@@ -3644,6 +5182,211 @@ export const ALL_COLORIZED_EQUATIONS: Record<string, ColorizedEquation[]> = {
 
   // 27. Nikolaus Otto Four-Stroke Gas Engine (US 194,047)
   "us-194047-otto-engine": [
+    {
+      id: "otto-cycle-efficiency",
+      patentId: "us-194047-otto-engine",
+      title: "Otto Cycle Air-Standard Thermal Efficiency",
+      category: "Thermodynamics & Heat Engines",
+      rawLatex: "\\eta_{\\text{Otto}} = 1 - \\frac{1}{r^{\\gamma - 1}}",
+      colorizedLatex:
+        "\\textcolor{#059669}{\\eta_{\\text{Otto}}} = 1 - \\frac{1}{\\textcolor{#2563eb}{r}^{\\textcolor{#d97706}{\\gamma - 1}}}",
+      plainEnglishSentence: [
+        {
+          text: "The ",
+        },
+        {
+          text: "air-standard thermal efficiency",
+          variableId: "eta_otto",
+        },
+        {
+          text: " of the four-stroke cycle depends solely on ",
+        },
+        {
+          text: "volumetric compression ratio",
+          variableId: "comp_r",
+        },
+        {
+          text: " and ",
+        },
+        {
+          text: "working gas specific heat ratio",
+          variableId: "gamma_air",
+        },
+        {
+          text: ".",
+        },
+      ],
+      variables: [
+        {
+          id: "eta_otto",
+          symbol: "\\eta_{\\text{Otto}}",
+          name: "Otto Cycle Thermal Efficiency",
+          color: "emerald",
+          role: "Fraction of combustion heat converted into mechanical shaft work ($~25\\% - 35\\%$ in early engines)",
+          unit: "Dimensionless percentage (%)",
+          dimension: "[1]",
+          explanation:
+            "Otto proved that pre-compressing the charge prior to ignition raised thermal efficiency from 4% (Lenoir non-compression engine) to over 20%.",
+          telemetryMetricLabel: "Thermal Eff",
+        },
+        {
+          id: "comp_r",
+          symbol: "r",
+          name: "Volumetric Compression Ratio",
+          color: "sapphire",
+          role: "Ratio of cylinder maximum volume at BDC to minimum clearance volume at TDC ($V_1 / V_2 \\approx 4:1 - 6:1$)",
+          unit: "Dimensionless ratio",
+          dimension: "[1]",
+          explanation:
+            "Limited by fuel knock/auto-ignition in spark engines, but higher $r$ increases thermodynamic expansion work.",
+          telemetryKey: "compressionRatio",
+        },
+        {
+          id: "gamma_air",
+          symbol: "\\gamma",
+          name: "Adiabatic Heat Capacity Ratio",
+          color: "amber",
+          role: "Ratio of specific heats for atmospheric air ($c_p / c_v = 1.40$)",
+          unit: "Dimensionless constant (1.40)",
+          dimension: "[1]",
+          explanation:
+            "Dictates the steepness of adiabatic compression and expansion curves on the $P-V$ diagram.",
+        },
+      ],
+      pedagogicalNote:
+        "Before Otto, gas engines ignited uncompressed gas at atmospheric pressure, wasting 90% of heat into water jackets. Otto's four strokes (Intake, Compression, Power, Exhaust) established the architecture of all modern automotive engines.",
+      claimRef: 1,
+      historicalSignificance:
+        "US 194,047 created the four-stroke spark-ignition internal combustion engine that powered the rise of the automobile, aviation, and motorized transport.",
+    },
+    {
+      id: "otto-peak-combustion-pressure",
+      patentId: "us-194047-otto-engine",
+      title: "Isochoric Combustion Pressure & Heat Release",
+      category: "Thermodynamics & Combustion",
+      rawLatex:
+        "P_3 = P_1 \\cdot r^\\gamma \\left( 1 + \\frac{Q_{\\text{in}}}{c_v \\cdot T_1 \\cdot r^{\\gamma - 1}} \\right)",
+      colorizedLatex:
+        "\\textcolor{#dc2626}{P_3} = \\textcolor{#0891b2}{P_1} \\cdot \\textcolor{#2563eb}{r^\\gamma} \\left( 1 + \\frac{\\textcolor{#ea580c}{Q_{\\text{in}}}}{\\textcolor{#9333ea}{c_v} \\cdot \\textcolor{#0891b2}{T_1} \\cdot \\textcolor{#2563eb}{r}^{\\textcolor{#d97706}{\\gamma - 1}}} \\right)",
+      plainEnglishSentence: [
+        {
+          text: "The ",
+        },
+        {
+          text: "peak combustion cylinder pressure",
+          variableId: "p_peak",
+        },
+        {
+          text: " equals ",
+        },
+        {
+          text: "ambient intake pressure",
+          variableId: "p_intake",
+        },
+        {
+          text: " multiplied by ",
+        },
+        {
+          text: "compression ratio",
+          variableId: "r_ratio",
+        },
+        {
+          text: " scaled by ",
+        },
+        {
+          text: "fuel heat release",
+          variableId: "q_combust",
+        },
+        {
+          text: " over ",
+        },
+        {
+          text: "constant-volume heat capacity",
+          variableId: "cv_air",
+        },
+        {
+          text: " and ",
+        },
+        {
+          text: "adiabatic temperature rise",
+          variableId: "t_intake",
+        },
+        {
+          text: ".",
+        },
+      ],
+      variables: [
+        {
+          id: "p_peak",
+          symbol: "P_3",
+          name: "Peak Combustion Pressure at Top Dead Center",
+          color: "crimson",
+          role: "Maximum gas pressure driving the piston downward on the power stroke ($15 - 30\\text{ bar}$)",
+          unit: "Bar / Pascals (Pa)",
+          dimension: "[M L^-1 T^-2]",
+          explanation:
+            "Occurs immediately following spark ignition at constant volume (isochoric combustion).",
+          telemetryMetricLabel: "Peak Pressure",
+        },
+        {
+          id: "p_intake",
+          symbol: "P_1",
+          name: "Ambient Intake Pressure",
+          color: "cyan",
+          role: "Atmospheric pressure of fresh fuel-air charge drawn during intake stroke ($1.013\\text{ bar}$)",
+          unit: "Bar / Pascals (Pa)",
+          dimension: "[M L^-1 T^-2]",
+          explanation: "Initial pressure before compression starts.",
+        },
+        {
+          id: "r_ratio",
+          symbol: "r",
+          name: "Compression Ratio",
+          color: "sapphire",
+          role: "Displacement volume ratio ($V_{\\text{BDC}} / V_{\\text{TDC}} = 4.0$)",
+          unit: "Dimensionless ratio",
+          dimension: "[1]",
+          explanation:
+            "Pre-compression elevates pressure by $r^\\gamma = 4^{1.4} = 6.96\\text{ bar}$ prior to ignition.",
+        },
+        {
+          id: "q_combust",
+          symbol: "Q_{\\text{in}}",
+          name: "Fuel Specific Heat Release",
+          color: "coral",
+          role: "Chemical energy liberated by coal gas or gasoline combustion per kg of air charge ($1.8\\text{ MJ/kg}$)",
+          unit: "J/kg",
+          dimension: "[L^2 T^-2]",
+          explanation:
+            "Instantaneous burning of stratified charge releases thermal energy rapidly.",
+        },
+        {
+          id: "cv_air",
+          symbol: "c_v",
+          name: "Constant-Volume Specific Heat",
+          color: "amethyst",
+          role: "Specific heat capacity of air at constant volume ($718\\text{ J}/(\\text{kg}\\cdot\\text{K})$)",
+          unit: "J / (kg * K)",
+          dimension: "[L^2 T^-2 \\Theta^-1]",
+          explanation: "Determines temperature rise resulting from fuel chemical energy release.",
+        },
+        {
+          id: "t_intake",
+          symbol: "T_1",
+          name: "Intake Charge Temperature",
+          color: "cyan",
+          role: "Ambient temperature of inducted gas ($293\\text{ K} = 20^\\circ\\text{C}$)",
+          unit: "Kelvin (K)",
+          dimension: "[\\Theta]",
+          explanation: "Starting temperature before compression.",
+        },
+      ],
+      pedagogicalNote:
+        "Because pressure spikes instantaneously at TDC while the piston is stationary, the gas performs maximum expansion work as it drives the piston down the entire stroke length.",
+      claimRef: 1,
+      historicalSignificance:
+        "Established the pressure-volume cycle analysis that engineers still use to design internal combustion engines.",
+    },
     {
       id: "otto-four-stroke-thermal-efficiency",
       patentId: "us-194047-otto-engine",
@@ -3868,6 +5611,132 @@ export const ALL_COLORIZED_EQUATIONS: Record<string, ColorizedEquation[]> = {
   // 29. Joseph Glidden Barbed Wire (US 157,124)
   "us-157124-glidden-barbed-wire": [
     {
+      id: "glidden-torsional-lock-moment",
+      patentId: "us-157124-glidden-barbed-wire",
+      title: "Dual-Strand Torsional Interlock & Barb Axial Fixation",
+      category: "Mechanics & Elasticity",
+      rawLatex:
+        "M_{\\text{lock}} = 2 G \\cdot J_{\\text{wire}} \\cdot \\frac{\\theta_{\\text{twist}}}{L} = 2 G \\cdot \\left( \\frac{\\pi d^4}{32} \\right) \\cdot \\frac{\\theta_{\\text{twist}}}{L}",
+      colorizedLatex:
+        "\\textcolor{#059669}{M_{\\text{lock}}} = 2 \\textcolor{#2563eb}{G} \\cdot \\textcolor{#9333ea}{J_{\\text{wire}}} \\cdot \\frac{\\textcolor{#d97706}{\\theta_{\\text{twist}}}}{\\textcolor{#0891b2}{L}} = 2 \\textcolor{#2563eb}{G} \\cdot \\left( \\frac{\\pi \\textcolor{#ea580c}{d^4}}{32} \\right) \\cdot \\frac{\\textcolor{#d97706}{\\theta_{\\text{twist}}}}{\\textcolor{#0891b2}{L}}",
+      plainEnglishSentence: [
+        {
+          text: "The ",
+        },
+        {
+          text: "torsional clamping moment locking each spur in place",
+          variableId: "m_lock",
+        },
+        {
+          text: " depends on steel wire ",
+        },
+        {
+          text: "shear modulus",
+          variableId: "g_steel",
+        },
+        {
+          text: ", ",
+        },
+        {
+          text: "polar moment of inertia",
+          variableId: "j_wire",
+        },
+        {
+          text: ", and ",
+        },
+        {
+          text: "twist angle per unit length",
+          variableId: "theta_twist",
+        },
+        {
+          text: ", scaling with ",
+        },
+        {
+          text: "wire diameter to the fourth power",
+          variableId: "diam_wire",
+        },
+        {
+          text: " over ",
+        },
+        {
+          text: "spacing pitch length",
+          variableId: "len_pitch",
+        },
+        {
+          text: ".",
+        },
+      ],
+      variables: [
+        {
+          id: "m_lock",
+          symbol: "M_{\\text{lock}}",
+          name: "Torsional Interlock Clamping Moment",
+          color: "emerald",
+          role: "Torsional grip preventing short coiled wire barbs from sliding along the strand ($12 - 25\\text{ N}\\cdot\\text{m}$)",
+          unit: "N * m",
+          dimension: "[M L^2 T^-2]",
+          explanation:
+            "Earlier single-strand barbed wires failed because livestock pushed the loose barbs along the smooth wire. Glidden twisted a second wire around the first, permanently clamping each barb at fixed intervals.",
+          telemetryMetricLabel: "Locking Moment",
+        },
+        {
+          id: "g_steel",
+          symbol: "G",
+          name: "Drawn Steel Shear Modulus",
+          color: "sapphire",
+          role: "Elastic shear modulus of galvanized mild steel wire ($79\\text{ GPa}$)",
+          unit: "GigaPascals (GPa)",
+          dimension: "[M L^-1 T^-2]",
+          explanation: "High elastic stiffness prevents untwisting under animal impact.",
+        },
+        {
+          id: "j_wire",
+          symbol: "J_{\\text{wire}}",
+          name: "Polar Moment of Inertia",
+          color: "amethyst",
+          role: "Torsional section modulus of circular wire cross-section ($J = \\frac{\\pi d^4}{32}$)",
+          unit: "m^4",
+          dimension: "[L^4]",
+          explanation: "Resists twisting deformation.",
+        },
+        {
+          id: "theta_twist",
+          symbol: "\\theta_{\\text{twist}}",
+          name: "Strand Helical Twist Angle",
+          color: "amber",
+          role: "Total rotation applied to intertwine the two strands ($1\\text{ full twist per }7.5\\text{ cm}$)",
+          unit: "radians",
+          dimension: "[1]",
+          explanation: "Tensioned twist during manufacturing.",
+        },
+        {
+          id: "diam_wire",
+          symbol: "d",
+          name: "Strand Wire Diameter",
+          color: "coral",
+          role: "Thickness of No. 12 gauge galvanized steel fence wire ($2.64\\text{ mm}$)",
+          unit: "meters (m) or mm",
+          dimension: "[L]",
+          explanation: "Torsional stiffness scales with $d^4$.",
+        },
+        {
+          id: "len_pitch",
+          symbol: "L",
+          name: "Helical Pitch Spacing Length",
+          color: "cyan",
+          role: "Distance between consecutive barb spurs ($7.5 - 12.5\\text{ cm}$)",
+          unit: "meters (m)",
+          dimension: "[L]",
+          explanation: "Uniform spacing across pasture fence lines.",
+        },
+      ],
+      pedagogicalNote:
+        "Joseph Glidden used an old coffee mill to coil short pieces of wire into two-pointed spurs, threaded them onto a single wire, and then twisted a second wire around it using a modified grindstone wheel. The helical interlock locked the barbs rigidly in place forever.",
+      claimRef: 1,
+      historicalSignificance:
+        "US 157,124 fenced the American Great Plains, ending the open-range cattle era and enabling prairie farming and private property boundaries.",
+    },
+    {
       id: "glidden-torsional-interlock-friction",
       patentId: "us-157124-glidden-barbed-wire",
       title: "Dual-Strand Torsional Friction Interlock & Tensile Breaking Load",
@@ -3984,6 +5853,98 @@ export const ALL_COLORIZED_EQUATIONS: Record<string, ColorizedEquation[]> = {
 
   // 30. Elias Howe Sewing Machine (US 4,750)
   "us-4750-howe-sewing-machine": [
+    {
+      id: "howe-lockstitch-tension-equilibrium",
+      patentId: "us-4750-howe-sewing-machine",
+      title: "Two-Thread Lockstitch Tension Equilibrium & Seam Interlock",
+      category: "Kinematics & Textile Mechanics",
+      rawLatex:
+        "T_{\\text{needle}} \\cdot \\sin(\\theta_{\\text{upper}}) = T_{\\text{shuttle}} \\cdot \\sin(\\theta_{\\text{lower}})",
+      colorizedLatex:
+        "\\textcolor{#059669}{T_{\\text{needle}}} \\cdot \\sin(\\textcolor{#2563eb}{\\theta_{\\text{upper}}}) = \\textcolor{#dc2626}{T_{\\text{shuttle}}} \\cdot \\sin(\\textcolor{#d97706}{\\theta_{\\text{lower}}})",
+      plainEnglishSentence: [
+        {
+          text: "The ",
+        },
+        {
+          text: "upper needle thread tension force",
+          variableId: "t_needle",
+        },
+        {
+          text: " resolved at ",
+        },
+        {
+          text: "upper fabric entry angle",
+          variableId: "theta_upper",
+        },
+        {
+          text: " must balance ",
+        },
+        {
+          text: "lower shuttle thread tension force",
+          variableId: "t_shuttle",
+        },
+        {
+          text: " at ",
+        },
+        {
+          text: "lower fabric exit angle",
+          variableId: "theta_lower",
+        },
+        {
+          text: " to lock the stitch knot precisely in the fabric core.",
+        },
+      ],
+      variables: [
+        {
+          id: "t_needle",
+          symbol: "T_{\\text{needle}}",
+          name: "Upper Needle Thread Tension",
+          color: "emerald",
+          role: "Tension regulated by spring friction disks on the upper spool thread ($2.0 - 5.0\\text{ N}$)",
+          unit: "Newtons (N)",
+          dimension: "[M L T^-2]",
+          explanation:
+            "Must be balanced with the shuttle tension: too high pulls the knot to the top surface, too low leaves loose loops below.",
+          telemetryMetricLabel: "Needle Tension",
+        },
+        {
+          id: "theta_upper",
+          symbol: "\\theta_{\\text{upper}}",
+          name: "Upper Thread Fabric Angle",
+          color: "sapphire",
+          role: "Entry angle of needle thread into the punched needle hole",
+          unit: "degrees / radians",
+          dimension: "[1]",
+          explanation: "Geometry of thread passage.",
+        },
+        {
+          id: "t_shuttle",
+          symbol: "T_{\\text{shuttle}}",
+          name: "Lower Shuttle Bobbin Tension",
+          color: "crimson",
+          role: "Tension exerted by the reciprocating shuttle bobbin spring leaf ($2.0 - 5.0\\text{ N}$)",
+          unit: "Newtons (N)",
+          dimension: "[M L T^-2]",
+          explanation: "The shuttle carries the second thread through the needle loop.",
+        },
+        {
+          id: "theta_lower",
+          symbol: "\\theta_{\\text{lower}}",
+          name: "Lower Thread Fabric Angle",
+          color: "amber",
+          role: "Exit angle of shuttle thread from the underside of the seam",
+          unit: "degrees / radians",
+          dimension: "[1]",
+          explanation: "Underside lockstitch geometry.",
+        },
+      ],
+      pedagogicalNote:
+        "Howe's breakthrough was using an eye-pointed needle (with the eye at the point rather than the tail) combined with a reciprocating shuttle carrying a second thread, locking both threads inside the fabric to form a seam that would not unravel.",
+      claimRef: 1,
+      historicalSignificance:
+        "US 4,750 established the lockstitch mechanism found in every domestic and industrial sewing machine manufactured to this day.",
+    },
     {
       id: "howe-lockstitch-capstan-tension",
       patentId: "us-4750-howe-sewing-machine",
@@ -4337,6 +6298,98 @@ export const ALL_COLORIZED_EQUATIONS: Record<string, ColorizedEquation[]> = {
   // 33. Eli Whitney Cotton Gin (US X72)
   "us-x72-whitney-cotton-gin": [
     {
+      id: "whitney-clearer-brush-velocity",
+      patentId: "us-x72-whitney-cotton-gin",
+      title: "Centrifugal Clearer Brush Kinematic Velocity & Fiber Throw",
+      category: "Mechanics & Aerodynamics",
+      rawLatex:
+        "v_{\\text{clearer,tip}} = \\omega_{\\text{clearer}} \\cdot r_{\\text{brush}} = 4 \\cdot \\omega_{\\text{saw}} \\cdot r_{\\text{brush}}",
+      colorizedLatex:
+        "\\textcolor{#059669}{v_{\\text{clearer,tip}}} = \\textcolor{#2563eb}{\\omega_{\\text{clearer}}} \\cdot \\textcolor{#9333ea}{r_{\\text{brush}}} = 4 \\cdot \\textcolor{#dc2626}{\\omega_{\\text{saw}}} \\cdot \\textcolor{#9333ea}{r_{\\text{brush}}}",
+      plainEnglishSentence: [
+        {
+          text: "The ",
+        },
+        {
+          text: "tangential tip velocity of the clearer brush bristles",
+          variableId: "v_tip",
+        },
+        {
+          text: " equals the ",
+        },
+        {
+          text: "rotational angular speed of the clearer",
+          variableId: "omega_c",
+        },
+        {
+          text: " times ",
+        },
+        {
+          text: "bristle cylinder radius",
+          variableId: "r_brush",
+        },
+        {
+          text: ", geared to four times the ",
+        },
+        {
+          text: "saw cylinder angular velocity",
+          variableId: "omega_s",
+        },
+        {
+          text: ".",
+        },
+      ],
+      variables: [
+        {
+          id: "v_tip",
+          symbol: "v_{\\text{clearer,tip}}",
+          name: "Clearer Bristle Tip Speed",
+          color: "emerald",
+          role: "Peripheral velocity of the horsehair brush tips sweeping the saw teeth ($> 12\\text{ m/s}$)",
+          unit: "m/s",
+          dimension: "[L T^-1]",
+          explanation:
+            "Must exceed tooth linear speed to strip sticky lint off the wire teeth and project it into the lint room via centrifugal air draft.",
+          telemetryMetricLabel: "Brush Tip Speed",
+        },
+        {
+          id: "omega_c",
+          symbol: "\\omega_{\\text{clearer}}",
+          name: "Clearer Cylinder Angular Velocity",
+          color: "sapphire",
+          role: "Rotational rate of the brush mandrel spinning in the opposite direction ($320 - 480\\text{ RPM}$)",
+          unit: "rad/s",
+          dimension: "[T^-1]",
+          explanation: "Driven via pulley belt from the main crank.",
+        },
+        {
+          id: "r_brush",
+          symbol: "r_{\\text{brush}}",
+          name: "Brush Cylinder Radius",
+          color: "amethyst",
+          role: "Radial distance from center axis to the outer tips of the hog-bristle slats ($0.12 - 0.18\\text{ m}$)",
+          unit: "meters (m)",
+          dimension: "[L]",
+          explanation: "Radius of the rotary brush cylinder.",
+        },
+        {
+          id: "omega_s",
+          symbol: "\\omega_{\\text{saw}}",
+          name: "Saw Cylinder Angular Velocity",
+          color: "crimson",
+          role: "Rotational rate of the wire-toothed ginning mandrel ($80 - 120\\text{ RPM}$)",
+          unit: "rad/s",
+          dimension: "[T^-1]",
+          explanation: "Hand-cranked or water-wheel driven input speed.",
+        },
+      ],
+      pedagogicalNote:
+        "Whitney's essential breakthrough was the four-to-one counter-rotating clearer cylinder: rotating four times faster in the reverse direction, the stiff hog bristles create an induced fan vortex that sweeps ginned lint free, preventing the teeth from clogging.",
+      claimRef: 1,
+      historicalSignificance:
+        "US X72 multiplied agricultural cotton cleaning productivity 50-fold, transforming global textile manufacturing.",
+    },
+    {
       id: "whitney-fiber-extraction-shear",
       patentId: "us-x72-whitney-cotton-gin",
       title: "Saw Tooth Fiber Separation Tensile Threshold & Clearer Brush Velocity",
@@ -4467,6 +6520,134 @@ export const ALL_COLORIZED_EQUATIONS: Record<string, ColorizedEquation[]> = {
 
   // 34. Elisha Graves Otis Safety Elevator (US 31,128)
   "us-31128-otis-elevator": [
+    {
+      id: "otis-safety-pawl-engagement-force",
+      patentId: "us-31128-otis-elevator",
+      title: "Spring-Loaded Safety Pawl Ratchet Engagement & Gravitational Arrest",
+      category: "Mechanics & Safety Engineering",
+      rawLatex:
+        "F_{\\text{arrest}} = N_{\\text{pawls}} \\cdot F_{\\text{spring}} \\cdot \\tan(\\alpha_{\\text{tooth}}) - m_{\\text{cab}} \\cdot g",
+      colorizedLatex:
+        "\\textcolor{#059669}{F_{\\text{arrest}}} = \\textcolor{#d97706}{N_{\\text{pawls}}} \\cdot \\textcolor{#2563eb}{F_{\\text{spring}}} \\cdot \\tan(\\textcolor{#9333ea}{\\alpha_{\\text{tooth}}}) - \\textcolor{#dc2626}{m_{\\text{cab}}} \\cdot \\textcolor{#0891b2}{g}",
+      plainEnglishSentence: [
+        {
+          text: "The ",
+        },
+        {
+          text: "net vertical deceleration force",
+          variableId: "f_arrest",
+        },
+        {
+          text: " arresting the falling elevator platform equals ",
+        },
+        {
+          text: "number of safety pawls",
+          variableId: "n_pawls",
+        },
+        {
+          text: " times ",
+        },
+        {
+          text: "wagon-spring outward extension force",
+          variableId: "f_spring",
+        },
+        {
+          text: " multiplied by the tangent of ",
+        },
+        {
+          text: "ratchet tooth wedge angle",
+          variableId: "alpha_tooth",
+        },
+        {
+          text: ", overcoming ",
+        },
+        {
+          text: "elevator cab mass",
+          variableId: "m_cab",
+        },
+        {
+          text: " under ",
+        },
+        {
+          text: "gravitational acceleration",
+          variableId: "g_grav",
+        },
+        {
+          text: ".",
+        },
+      ],
+      variables: [
+        {
+          id: "f_arrest",
+          symbol: "F_{\\text{arrest}}",
+          name: "Net Vertical Deceleration Force",
+          color: "emerald",
+          role: "Upward braking force halting the severed elevator cab within inches ($15 - 40\\text{ kN}$)",
+          unit: "kiloNewtons (kN)",
+          dimension: "[M L T^-2]",
+          explanation:
+            "When the hoisting cable snaps, upward cable tension ceases, allowing the heavy elliptical bow spring to uncoil and drive steel pawls into cast-iron vertical ratchet racks.",
+          telemetryMetricLabel: "Arrest Force",
+        },
+        {
+          id: "n_pawls",
+          symbol: "N_{\\text{pawls}}",
+          name: "Safety Pawl Count",
+          color: "amber",
+          role: "Dual hardened cast-iron locking pawls on opposite vertical guide rails ($N = 2$)",
+          unit: "Pawls (integer)",
+          dimension: "[1]",
+          explanation: "Distributes arrest force symmetrically to prevent cab jamming.",
+        },
+        {
+          id: "f_spring",
+          symbol: "F_{\\text{spring}}",
+          name: "Wagon-Spring Outward Restoring Force",
+          color: "sapphire",
+          role: "Transverse force exerted by laminated steel leaf spring when released from cable tension ($5 - 10\\text{ kN}$)",
+          unit: "Newtons (N)",
+          dimension: "[M L T^-2]",
+          explanation:
+            "During normal hoisting, cable tension holds the spring arched flat; when tension drops to zero, the spring instantly expands outward.",
+        },
+        {
+          id: "alpha_tooth",
+          symbol: "\\alpha_{\\text{tooth}}",
+          name: "Ratchet Tooth Undercut Angle",
+          color: "amethyst",
+          role: "Angle of saw-tooth ratchet bars bolted along the timber hoistway guides ($15^\\circ - 25^\\circ$)",
+          unit: "degrees / radians",
+          dimension: "[1]",
+          explanation:
+            "Downward weight of the cab cams the pawls deeper into the rack (self-locking wedge).",
+        },
+        {
+          id: "m_cab",
+          symbol: "m_{\\text{cab}}",
+          name: "Elevator Platform & Passenger Mass",
+          color: "crimson",
+          role: "Total loaded mass of hoisting platform ($1,000 - 2,500\\text{ kg}$)",
+          unit: "kg",
+          dimension: "[M]",
+          explanation: "Total suspended payload mass.",
+        },
+        {
+          id: "g_grav",
+          symbol: "g",
+          name: "Gravitational Acceleration",
+          color: "cyan",
+          role: "Standard gravity constant ($9.81\\text{ m/s}^2$)",
+          unit: "m/s^2",
+          dimension: "[L T^-2]",
+          explanation: "Downward gravitational pull.",
+        },
+      ],
+      pedagogicalNote:
+        "At the 1854 Crystal Palace Exhibition in New York, Elisha Otis stood on a hoisting platform high above the crowd and ordered the hoisting rope slashed with an axe. The platform dropped only a few inches before his safety pawls snapped into the ratchet racks, making passenger skyscrapers possible.",
+      claimRef: 1,
+      historicalSignificance:
+        "US 31,128 created the safety elevator, enabling vertical urbanization and the birth of modern skyscraper architecture.",
+    },
     {
       id: "otis-safety-leaf-spring-arrest",
       patentId: "us-31128-otis-elevator",
@@ -4675,6 +6856,82 @@ export const ALL_COLORIZED_EQUATIONS: Record<string, ColorizedEquation[]> = {
   // 36. Cyrus McCormick Grain Reaper (US X8277)
   "us-x8277-mccormick-reaper": [
     {
+      id: "mccormick-sickle-cutting-velocity",
+      patentId: "us-x8277-mccormick-reaper",
+      title: "Reciprocating Sickle Bar Harmonic Velocity & Shear Rate",
+      category: "Kinematics & Crop Shear",
+      rawLatex:
+        "v_{\\text{sickle}}(t) = \\omega_{\\text{crank}} \\cdot r_{\\text{pitman}} \\cdot \\sin(\\omega_{\\text{crank}} t)",
+      colorizedLatex:
+        "\\textcolor{#059669}{v_{\\text{sickle}}(t)} = \\textcolor{#2563eb}{\\omega_{\\text{crank}}} \\cdot \\textcolor{#d97706}{r_{\\text{pitman}}} \\cdot \\sin(\\textcolor{#2563eb}{\\omega_{\\text{crank}}} t)",
+      plainEnglishSentence: [
+        {
+          text: "The ",
+        },
+        {
+          text: "instantaneous cutting velocity of the serrated sickle",
+          variableId: "v_sickle",
+        },
+        {
+          text: " varies harmonically with ",
+        },
+        {
+          text: "ground wheel crank angular speed",
+          variableId: "omega_crank",
+        },
+        {
+          text: " and ",
+        },
+        {
+          text: "pitman arm crank radius",
+          variableId: "r_pitman",
+        },
+        {
+          text: ".",
+        },
+      ],
+      variables: [
+        {
+          id: "v_sickle",
+          symbol: "v_{\\text{sickle}}(t)",
+          name: "Sickle Bar Cutting Speed",
+          color: "emerald",
+          role: "Transverse cutting speed of triangular serrated steel sections sliding through slotted guard fingers ($> 2.5\\text{ m/s}$ peak)",
+          unit: "m/s",
+          dimension: "[L T^-1]",
+          explanation:
+            "Must exceed critical shear velocity to cleanly sever tough wheat stalks against the stationary guard fingers without buckling or uprooting them.",
+          telemetryMetricLabel: "Sickle Velocity",
+        },
+        {
+          id: "omega_crank",
+          symbol: "\\omega_{\\text{crank}}",
+          name: "Ground Wheel Geared Crank Speed",
+          color: "sapphire",
+          role: "Rotational angular speed of the pitman bevel gear ($~40 - 60\\text{ rad/s}$)",
+          unit: "rad/s",
+          dimension: "[T^-1]",
+          explanation:
+            "Geared up 16:1 from the main traction wheel rolling forward at horse-walking speed ($1.2\\text{ m/s}$).",
+        },
+        {
+          id: "r_pitman",
+          symbol: "r_{\\text{pitman}}",
+          name: "Pitman Crank Throw Radius",
+          color: "amber",
+          role: "Offset of the crank pin determining sickle stroke travel ($3.8\\text{ cm} = 7.6\\text{ cm stroke}$)",
+          unit: "meters (m)",
+          dimension: "[L]",
+          explanation: "Stroke equals spacing between guard fingers.",
+        },
+      ],
+      pedagogicalNote:
+        "McCormick combined a reciprocating serrated sickle with stationary slotted iron guard fingers, creating a shearing scissor action that severed stalks cleanly regardless of dampness or crop density.",
+      claimRef: 1,
+      historicalSignificance:
+        "US X8277 revolutionized mechanized agriculture, allowing one farmer to harvest 12 acres of grain per day instead of 2 acres by hand scythe.",
+    },
+    {
       id: "mccormick-reaper-sickle-kinematics",
       patentId: "us-x8277-mccormick-reaper",
       title: "Reciprocating Sickle Cutting Dynamics & Grain Reel Intake Cadence",
@@ -4779,6 +7036,133 @@ export const ALL_COLORIZED_EQUATIONS: Record<string, ColorizedEquation[]> = {
 
   // 37. Thomas Davenport Electric Motor (US 132)
   "us-132-davenport-electric-motor": [
+    {
+      id: "davenport-electromechanical-torque",
+      patentId: "us-132-davenport-electric-motor",
+      title: "Commutated Magnetic Torque & Electromagnetic Pole Attraction",
+      category: "Electromagnetics & DC Machines",
+      rawLatex:
+        "\\tau(t) = 2 \\cdot N_{\\text{arm}} \\cdot B_{\\text{stator}} \\cdot I_{\\text{battery}} \\cdot A_{\\text{pole}} \\cdot |\\sin(\\theta(t))|",
+      colorizedLatex:
+        "\\textcolor{#059669}{\\tau(t)} = 2 \\cdot \\textcolor{#d97706}{N_{\\text{arm}}} \\cdot \\textcolor{#2563eb}{B_{\\text{stator}}} \\cdot \\textcolor{#dc2626}{I_{\\text{battery}}} \\cdot \\textcolor{#9333ea}{A_{\\text{pole}}} \\cdot |\\sin(\\textcolor{#ea580c}{\\theta(t)})|",
+      plainEnglishSentence: [
+        {
+          text: "The ",
+        },
+        {
+          text: "rotational shaft torque",
+          variableId: "tau_motor",
+        },
+        {
+          text: " generated by the revolving electromagnets is proportional to ",
+        },
+        {
+          text: "armature winding turns",
+          variableId: "n_arm",
+        },
+        {
+          text: ", ",
+        },
+        {
+          text: "permanent stator magnetic field",
+          variableId: "b_stator",
+        },
+        {
+          text: ", ",
+        },
+        {
+          text: "battery drive current",
+          variableId: "i_bat",
+        },
+        {
+          text: ", ",
+        },
+        {
+          text: "magnetic pole face area",
+          variableId: "a_pole",
+        },
+        {
+          text: ", and the sine of ",
+        },
+        {
+          text: "rotor angular displacement",
+          variableId: "theta_t",
+        },
+        {
+          text: ".",
+        },
+      ],
+      variables: [
+        {
+          id: "tau_motor",
+          symbol: "\\tau(t)",
+          name: "Instantaneous Electromagnetic Torque",
+          color: "emerald",
+          role: "Rotational mechanical torque driving the motor shaft ($1.5 - 5.0\\text{ N}\\cdot\\text{m}$)",
+          unit: "N * m",
+          dimension: "[M L^2 T^-2]",
+          explanation:
+            "Produced by magnetic attraction and repulsion between rotating electromagnets and fixed permanent magnets.",
+          telemetryMetricLabel: "Shaft Torque",
+        },
+        {
+          id: "n_arm",
+          symbol: "N_{\\text{arm}}",
+          name: "Armature Coil Turn Count",
+          color: "amber",
+          role: "Number of turns of silk-insulated copper wire wrapped on each rotating iron pole ($100 - 300\\text{ turns}$)",
+          unit: "Turns (integer)",
+          dimension: "[1]",
+          explanation: "Multiplies magnetomotive force ($N \\cdot I$).",
+        },
+        {
+          id: "b_stator",
+          symbol: "B_{\\text{stator}}",
+          name: "Stator Permanent Magnet Field",
+          color: "sapphire",
+          role: "Magnetic flux density from horseshoe permanent magnets surrounding the rotor ($0.3 - 0.6\\text{ T}$)",
+          unit: "Tesla (T)",
+          dimension: "[M T^-2 I^-1]",
+          explanation: "Fixed magnetic field interacting with the rotor poles.",
+        },
+        {
+          id: "i_bat",
+          symbol: "I_{\\text{battery}}",
+          name: "Battery Armature Current",
+          color: "crimson",
+          role: "Current drawn from galvanic battery cells ($2 - 8\\text{ A}$)",
+          unit: "Amperes (A)",
+          dimension: "[I]",
+          explanation: "Switched by the rotary commutator twice per revolution.",
+        },
+        {
+          id: "a_pole",
+          symbol: "A_{\\text{pole}}",
+          name: "Pole Cross-Sectional Area",
+          color: "amethyst",
+          role: "Area of the soft iron electromagnet core faces ($~6\\text{ cm}^2$)",
+          unit: "m^2",
+          dimension: "[L^2]",
+          explanation: "Core area concentrating magnetic flux.",
+        },
+        {
+          id: "theta_t",
+          symbol: "\\theta(t)",
+          name: "Rotor Angular Position",
+          color: "coral",
+          role: "Angle between rotating electromagnet axis and stator pole axis",
+          unit: "radians (rad)",
+          dimension: "[1]",
+          explanation:
+            "At dead center ($\theta = 0$), the split-ring commutator reverses current polarity, preventing torque stalling.",
+        },
+      ],
+      pedagogicalNote:
+        "Thomas Davenport built the first patented practical DC electric motor in America. His key invention was the split-ring rotary commutator, which automatically reversed rotor magnetic polarity every half-turn just as the poles aligned, producing continuous rotary motion.",
+      claimRef: 1,
+      historicalSignificance:
+        "US 132 was the first patent granted for an electric motor, demonstrating that electricity could propel rotary machinery, printing presses, and model electric railways.",
+    },
     {
       id: "davenport-motor-electromagnetic-torque",
       patentId: "us-132-davenport-electric-motor",
@@ -4913,6 +7297,295 @@ export const ALL_COLORIZED_EQUATIONS: Record<string, ColorizedEquation[]> = {
   // 38. John Ericsson Screw Propeller (US 588)
   "us-588-ericsson-propeller": [
     {
+      id: "ericsson-propeller-axial-thrust",
+      patentId: "us-588-ericsson-propeller",
+      title: "Propeller Momentum Disk & Hydrodynamic Thrust Law",
+      category: "Hydrodynamics & Propulsion",
+      rawLatex:
+        "T_{\\text{thrust}} = \\dot{m} (v_{\\text{slipstream}} - v_{\\text{ship}}) = \\rho_{\\text{water}} \\cdot A_{\\text{disk}} \\cdot v_{\\text{axial}} (v_{\\text{slipstream}} - v_{\\text{ship}})",
+      colorizedLatex:
+        "\\textcolor{#059669}{T_{\\text{thrust}}} = \\textcolor{#dc2626}{\\dot{m}} (\\textcolor{#2563eb}{v_{\\text{slipstream}}} - \\textcolor{#0891b2}{v_{\\text{ship}}}) = \\textcolor{#9333ea}{\\rho_{\\text{water}}} \\cdot \\textcolor{#d97706}{A_{\\text{disk}}} \\cdot \\textcolor{#ea580c}{v_{\\text{axial}}} (\\textcolor{#2563eb}{v_{\\text{slipstream}}} - \\textcolor{#0891b2}{v_{\\text{ship}}})",
+      plainEnglishSentence: [
+        {
+          text: "The ",
+        },
+        {
+          text: "forward axial propeller thrust",
+          variableId: "thrust_t",
+        },
+        {
+          text: " equals the ",
+        },
+        {
+          text: "mass flow rate of accelerated water",
+          variableId: "m_dot_w",
+        },
+        {
+          text: " times the velocity difference between ",
+        },
+        {
+          text: "accelerated slipstream velocity",
+          variableId: "v_slip",
+        },
+        {
+          text: " and ",
+        },
+        {
+          text: "ship advance speed",
+          variableId: "v_ship",
+        },
+        {
+          text: ", scaling with ",
+        },
+        {
+          text: "seawater density",
+          variableId: "rho_water",
+        },
+        {
+          text: ", ",
+        },
+        {
+          text: "propeller disk sweep area",
+          variableId: "a_disk",
+        },
+        {
+          text: ", and ",
+        },
+        {
+          text: "mean axial water inflow velocity",
+          variableId: "v_inflow",
+        },
+        {
+          text: ".",
+        },
+      ],
+      variables: [
+        {
+          id: "thrust_t",
+          symbol: "T_{\\text{thrust}}",
+          name: "Propeller Axial Thrust Force",
+          color: "emerald",
+          role: "Net forward thrust force transmitted through the propeller thrust bearing into the ship's keel",
+          unit: "Newtons (N) or kiloNewtons (kN)",
+          dimension: "[M L T^-2]",
+          explanation:
+            "Must overcome hull hydrodynamic drag resistance to propel the steam vessel forward.",
+          telemetryMetricLabel: "Axial Thrust",
+        },
+        {
+          id: "m_dot_w",
+          symbol: "\\dot{m}",
+          name: "Mass Flow Rate of Displaced Water",
+          color: "crimson",
+          role: "Mass of water passing through the propeller disk per second ($> 5,000\\text{ kg/s}$)",
+          unit: "kg/s",
+          dimension: "[M T^-1]",
+          explanation: "Submerged helical blades continuously ingest and accelerate water aft.",
+        },
+        {
+          id: "v_slip",
+          symbol: "v_{\\text{slipstream}}",
+          name: "Aft Water Jet Exit Velocity",
+          color: "sapphire",
+          role: "Velocity of the water column propelled aft by the helical blades",
+          unit: "m/s or knots",
+          dimension: "[L T^-1]",
+          explanation:
+            "Higher blade pitch increases slipstream exit speed for a given rotational RPM.",
+        },
+        {
+          id: "v_ship",
+          symbol: "v_{\\text{ship}}",
+          name: "Vessel Forward Advance Speed",
+          color: "cyan",
+          role: "Forward speed of the vessel through undisturbed water ($10 - 15\\text{ knots}$)",
+          unit: "m/s or knots",
+          dimension: "[L T^-1]",
+          explanation: "Speed through the water.",
+        },
+        {
+          id: "rho_water",
+          symbol: "\\rho_{\\text{water}}",
+          name: "Seawater Mass Density",
+          color: "amethyst",
+          role: "Density of seawater ($1,025\\text{ kg/m}^3$)",
+          unit: "kg/m^3",
+          dimension: "[M L^-3]",
+          explanation:
+            "Because water is ~800x denser than air, a relatively compact submerged wheel generates enormous thrust.",
+        },
+        {
+          id: "a_disk",
+          symbol: "A_{\\text{disk}}",
+          name: "Propeller Disk Swept Area",
+          color: "amber",
+          role: "Frontal circular area swept by blade tips ($A = \\frac{\\pi D^2}{4}$)",
+          unit: "m^2",
+          dimension: "[L^2]",
+          explanation:
+            "Submerged completely below the waterline to prevent cavitation and air suction.",
+        },
+        {
+          id: "v_inflow",
+          symbol: "v_{\\text{axial}}",
+          name: "Mean Disk Inflow Velocity",
+          color: "coral",
+          role: "Average water velocity crossing the propeller disk plane ($v_{\\text{axial}} = \\frac{v_{\\text{ship}} + v_{\\text{slipstream}}}{2}$)",
+          unit: "m/s",
+          dimension: "[L T^-1]",
+          explanation: "Froude momentum theory inflow velocity.",
+        },
+      ],
+      pedagogicalNote:
+        "Paddle wheels were vulnerable to enemy cannon fire, lost traction in rolling seas, and created immense drag. Ericsson placed helical screw blades completely underwater below the waterline, protected from gunfire and delivering continuous thrust in any sea state.",
+      claimRef: 1,
+      historicalSignificance:
+        "US 588 enabled modern naval architecture and powered the famous ironclad USS Monitor during the American Civil War.",
+    },
+    {
+      id: "ericsson-contra-rotating-torque-cancel",
+      patentId: "us-588-ericsson-propeller",
+      title: "Contra-Rotating Propeller Torque Balance & Swirl Recovery",
+      category: "Hydrodynamics & Mechanical Power",
+      rawLatex:
+        "\\sum \\vec{\\tau}_{\\text{hull}} = \\vec{\\tau}_{\\text{forward}} + \\vec{\\tau}_{\\text{aft}} = I_1 \\dot{\\vec{\\omega}}_1 + I_2 \\dot{\\vec{\\omega}}_2 = 0",
+      colorizedLatex:
+        "\\sum \\textcolor{#059669}{\\vec{\\tau}_{\\text{hull}}} = \\textcolor{#2563eb}{\\vec{\\tau}_{\\text{forward}}} + \\textcolor{#dc2626}{\\vec{\\tau}_{\\text{aft}}} = \\textcolor{#9333ea}{I_1} \\textcolor{#d97706}{\\dot{\\vec{\\omega}}_1} + \\textcolor{#0891b2}{I_2} \\textcolor{#ea580c}{\\dot{\\vec{\\omega}}_2} = 0",
+      plainEnglishSentence: [
+        {
+          text: "The ",
+        },
+        {
+          text: "net reaction torque exerted on the ship hull",
+          variableId: "tau_net",
+        },
+        {
+          text: " cancels to zero when ",
+        },
+        {
+          text: "forward propeller torque",
+          variableId: "tau_fwd",
+        },
+        {
+          text: " equals and opposes ",
+        },
+        {
+          text: "aft propeller torque",
+          variableId: "tau_aft",
+        },
+        {
+          text: ", balancing moments of inertia ",
+        },
+        {
+          text: "I_1",
+          variableId: "i_one",
+        },
+        {
+          text: " and ",
+        },
+        {
+          text: "I_2",
+          variableId: "i_two",
+        },
+        {
+          text: " with angular accelerations ",
+        },
+        {
+          text: "alpha_1",
+          variableId: "alpha_one",
+        },
+        {
+          text: " and ",
+        },
+        {
+          text: "alpha_2",
+          variableId: "alpha_two",
+        },
+        {
+          text: ".",
+        },
+      ],
+      variables: [
+        {
+          id: "tau_net",
+          symbol: "\\sum \\vec{\\tau}_{\\text{hull}}",
+          name: "Net Hull Roll Torque",
+          color: "emerald",
+          role: "Heeling torque attempting to roll or veer the vessel off course ($0\\text{ N}\\cdot\\text{m}$ when balanced)",
+          unit: "N * m",
+          dimension: "[M L^2 T^-2]",
+          explanation: "Eliminates rudder trim drag and unwanted ship listing.",
+          telemetryMetricLabel: "Net Torque",
+        },
+        {
+          id: "tau_fwd",
+          symbol: "\\vec{\\tau}_{\\text{forward}}",
+          name: "Forward Wheel Reaction Torque",
+          color: "sapphire",
+          role: "Clockwise torque exerted by the inner propeller shaft",
+          unit: "N * m",
+          dimension: "[M L^2 T^-2]",
+          explanation: "Imparts rotational swirl into the water slipstream.",
+        },
+        {
+          id: "tau_aft",
+          symbol: "\\vec{\\tau}_{\\text{aft}}",
+          name: "Aft Wheel Counter-Torque",
+          color: "crimson",
+          role: "Counter-clockwise torque exerted by the concentric outer propeller shaft",
+          unit: "N * m",
+          dimension: "[M L^2 T^-2]",
+          explanation:
+            "The second wheel straightens the rotational slipstream, converting wasted rotational energy into axial thrust (15% efficiency gain).",
+        },
+        {
+          id: "i_one",
+          symbol: "I_1",
+          name: "Forward Wheel Moment of Inertia",
+          color: "amethyst",
+          role: "Rotational mass distribution of the forward propeller assembly",
+          unit: "kg * m^2",
+          dimension: "[M L^2]",
+          explanation: "Inertial resistance to angular acceleration.",
+        },
+        {
+          id: "i_two",
+          symbol: "I_2",
+          name: "Aft Wheel Moment of Inertia",
+          color: "cyan",
+          role: "Rotational mass distribution of the aft propeller assembly",
+          unit: "kg * m^2",
+          dimension: "[M L^2]",
+          explanation: "Matched to wheel 1.",
+        },
+        {
+          id: "alpha_one",
+          symbol: "\\dot{\\vec{\\omega}}_1",
+          name: "Forward Angular Acceleration",
+          color: "amber",
+          role: "Rate of change of forward shaft angular velocity",
+          unit: "rad/s^2",
+          dimension: "[T^-2]",
+          explanation: "Driven through internal concentric shaft.",
+        },
+        {
+          id: "alpha_two",
+          symbol: "\\dot{\\vec{\\omega}}_2",
+          name: "Aft Angular Acceleration",
+          color: "coral",
+          role: "Rate of change of aft shaft angular velocity",
+          unit: "rad/s^2",
+          dimension: "[T^-2]",
+          explanation: "Driven in reverse via bevel gear transmission.",
+        },
+      ],
+      pedagogicalNote:
+        "Ericsson's concentric contra-rotating shaft design eliminated paddle wheel heeling moments while simultaneously extracting energy from slipstream rotation, anticipating modern torpedo and turboprop propulsion.",
+      claimRef: 2,
+      historicalSignificance:
+        "Pioneered concentric contra-rotating shafts and underwater propulsion efficiency.",
+    },
+    {
       id: "ericsson-propeller-hydrodynamic-thrust",
       patentId: "us-588-ericsson-propeller",
       title: "Hydrodynamic Screw Thrust & Axial Momentum Velocity Slip",
@@ -5030,6 +7703,82 @@ export const ALL_COLORIZED_EQUATIONS: Record<string, ColorizedEquation[]> = {
   // 39. Alfred Nobel Dynamite (US 78,317)
   "us-78317-nobel-dynamite": [
     {
+      id: "nobel-chapman-jouguet-detonation-velocity",
+      patentId: "us-78317-nobel-dynamite",
+      title: "Chapman-Jouguet Supersonic Detonation Wave Velocity",
+      category: "Thermodynamics & Explosives Chemistry",
+      rawLatex:
+        "D_{\\text{CJ}} = \\sqrt{2 (\\gamma^2 - 1) \\cdot q_{\\text{detonation}}} \\approx 6,500\\text{ m/s}",
+      colorizedLatex:
+        "\\textcolor{#059669}{D_{\\text{CJ}}} = \\sqrt{2 (\\textcolor{#2563eb}{\\gamma^2} - 1) \\cdot \\textcolor{#dc2626}{q_{\\text{detonation}}}} \\approx 6,500\\text{ m/s}",
+      plainEnglishSentence: [
+        {
+          text: "The ",
+        },
+        {
+          text: "supersonic detonation wave velocity",
+          variableId: "d_cj",
+        },
+        {
+          text: " traversing the dynamite cartridge depends on the explosive gas ",
+        },
+        {
+          text: "polytropic exponent",
+          variableId: "gamma_exp",
+        },
+        {
+          text: " and the ",
+        },
+        {
+          text: "specific chemical reaction enthalpy",
+          variableId: "q_det",
+        },
+        {
+          text: ".",
+        },
+      ],
+      variables: [
+        {
+          id: "d_cj",
+          symbol: "D_{\\text{CJ}}",
+          name: "Detonation Velocity",
+          color: "emerald",
+          role: "Speed of the self-sustaining shockwave through nitroglycerin-kieselguhr matrix ($6,000 - 7,000\\text{ m/s}$)",
+          unit: "m/s",
+          dimension: "[L T^-1]",
+          explanation:
+            "Unlike black powder which deflagrates subsonically at $300\\text{ m/s}$, dynamite detonates supersonically, generating peak pressures exceeding $100,000\\text{ atmospheres}$ ($10\\text{ GPa}$) to shatter solid rock.",
+          telemetryMetricLabel: "Detonation Speed",
+        },
+        {
+          id: "gamma_exp",
+          symbol: "\\gamma",
+          name: "Detonation Product Adiabatic Exponent",
+          color: "sapphire",
+          role: "Effective heat capacity ratio of high-pressure gas products ($N_2, CO_2, H_2O, O_2$) under extreme compression ($\\gamma \\approx 2.8 - 3.0$)",
+          unit: "Dimensionless constant",
+          dimension: "[1]",
+          explanation: "Dictates shock Hugoniot curve steepness.",
+        },
+        {
+          id: "q_det",
+          symbol: "q_{\\text{detonation}}",
+          name: "Specific Detonation Energy Release",
+          color: "crimson",
+          role: "Chemical enthalpy liberated by rapid scission of ester bonds in glyceryl trinitrate ($6.3\\text{ MJ/kg}$)",
+          unit: "MJ/kg",
+          dimension: "[L^2 T^-2]",
+          explanation:
+            "Complete stoichiometric decomposition into gaseous nitrogen, carbon dioxide, water vapor, and oxygen.",
+        },
+      ],
+      pedagogicalNote:
+        "Liquid nitroglycerin was too sensitive to shock, friction, or thermal fluctuation for safe transport. Alfred Nobel discovered that absorbing three parts nitroglycerin into one part calcined diatomaceous earth (kieselguhr) produced a stable putty-like dough that could only be detonated by a mercury fulminate blasting cap.",
+      claimRef: 1,
+      historicalSignificance:
+        "US 78,317 made heavy civil engineering possible, blasting tunnels through the Alps, carving the Panama Canal, and founding modern mining.",
+    },
+    {
       id: "nobel-dynamite-detonation-kinetics",
       patentId: "us-78317-nobel-dynamite",
       title: "Nitroglycerin Kieselguhr Capillary Adsorption & Supersonic Detonation Wave Pressure",
@@ -5133,6 +7882,204 @@ export const ALL_COLORIZED_EQUATIONS: Record<string, ColorizedEquation[]> = {
 
   // 40. George Corliss Steam Engine (US 6,162)
   "us-6162-corliss-steam-engine": [
+    {
+      id: "corliss-variable-cutoff-work",
+      patentId: "us-6162-corliss-steam-engine",
+      title: "Variable Cut-Off Indicator Work & Steam Expansion Law",
+      category: "Thermodynamics & Steam Engines",
+      rawLatex:
+        "W_{\\text{stroke}} = P_1 V_{\\text{cutoff}} \\left( 1 + \\ln\\left( \\frac{V_2}{V_{\\text{cutoff}}} \\right) \\right) - P_{\\text{condenser}} \\cdot V_2",
+      colorizedLatex:
+        "\\textcolor{#059669}{W_{\\text{stroke}}} = \\textcolor{#2563eb}{P_1} \\textcolor{#dc2626}{V_{\\text{cutoff}}} \\left( 1 + \\ln\\left( \\frac{\\textcolor{#0891b2}{V_2}}{\\textcolor{#dc2626}{V_{\\text{cutoff}}}} \\right) \\right) - \\textcolor{#9333ea}{P_{\\text{condenser}}} \\cdot \\textcolor{#0891b2}{V_2}",
+      plainEnglishSentence: [
+        {
+          text: "The ",
+        },
+        {
+          text: "indicated mechanical work per piston stroke",
+          variableId: "w_stroke",
+        },
+        {
+          text: " equals boiler pressure ",
+        },
+        {
+          text: "P_1",
+          variableId: "p_boiler",
+        },
+        {
+          text: " times ",
+        },
+        {
+          text: "cutoff volume",
+          variableId: "v_cutoff",
+        },
+        {
+          text: " multiplied by one plus the natural log of expansion ratio ",
+        },
+        {
+          text: "V_2 / V_cutoff",
+          variableId: "v_stroke",
+        },
+        {
+          text: ", minus back-pressure work against ",
+        },
+        {
+          text: "condenser pressure",
+          variableId: "p_cond",
+        },
+        {
+          text: ".",
+        },
+      ],
+      variables: [
+        {
+          id: "w_stroke",
+          symbol: "W_{\\text{stroke}}",
+          name: "Mechanical Work Delivered per Stroke",
+          color: "emerald",
+          role: "Net boundary work performed on the piston head by expanding steam during one stroke ($P-V$ diagram area)",
+          unit: "Joules (J) or kiloJoules (kJ)",
+          dimension: "[M L^2 T^-2]",
+          explanation:
+            "Corliss cut steam consumption by 30% to 50% compared to slide-valve engines by expanding steam isothermally/adiabatically rather than throttling.",
+          telemetryMetricLabel: "Stroke Work",
+        },
+        {
+          id: "p_boiler",
+          symbol: "P_1",
+          name: "Boiler Admission Pressure",
+          color: "sapphire",
+          role: "Full steam pressure admitted directly without throttling loss ($6 - 10\\text{ bar}$)",
+          unit: "Bar or Pascals (Pa)",
+          dimension: "[M L^-1 T^-2]",
+          explanation:
+            "Unlike throttle-governed engines, Corliss valves stay wide open during admission to avoid wire-drawing pressure drops.",
+        },
+        {
+          id: "v_cutoff",
+          symbol: "V_{\\text{cutoff}}",
+          name: "Cylinder Volume at Valve Cut-Off",
+          color: "crimson",
+          role: "Displaced volume when governor trips the trip-hook to snap the steam valve shut ($10\\% - 40\\%$ of stroke)",
+          unit: "m^3 or liters",
+          dimension: "[L^3]",
+          explanation:
+            "Under light loads, cutoff happens early ($10\\%$); under heavy factory loads, cutoff happens late ($40\\%$).",
+        },
+        {
+          id: "v_stroke",
+          symbol: "V_2",
+          name: "Total Cylinder Stroke Volume",
+          color: "cyan",
+          role: "Maximum volume swept by piston at end of stroke ($V_2 = A_{\\text{piston}} \\cdot L_{\\text{stroke}}$)",
+          unit: "m^3 or liters",
+          dimension: "[L^3]",
+          explanation: "Full cylinder displacement volume.",
+        },
+        {
+          id: "p_cond",
+          symbol: "P_{\\text{condenser}}",
+          name: "Exhaust Back-Pressure",
+          color: "amethyst",
+          role: "Pressure in exhaust condenser or atmospheric vent ($0.1 - 1.0\\text{ bar}$)",
+          unit: "Bar or Pascals (Pa)",
+          dimension: "[M L^-1 T^-2]",
+          explanation: "Parasitic resistance opposing piston return stroke.",
+        },
+      ],
+      pedagogicalNote:
+        "James Watt throttled steam pressure with a restrictor valve to regulate engine speed, which wasted enormous thermodynamic energy. Corliss kept full boiler pressure and varied the exact point of cut-off dynamically via centrifugal governor trip-gear.",
+      claimRef: 1,
+      historicalSignificance:
+        "US 6,162 revolutionized 19th-century industrial manufacturing; the giant 1,400-horsepower Corliss Centennial Engine powered all 8,000 machines at the 1876 World's Fair in Philadelphia.",
+    },
+    {
+      id: "corliss-dashpot-damping-force",
+      patentId: "us-6162-corliss-steam-engine",
+      title: "Air Dashpot Damping & Rapid Valve Closure Law",
+      category: "Kinematics & Valve Dynamics",
+      rawLatex:
+        "F_{\\text{dashpot}} = -c_{\\text{damping}} \\cdot \\frac{dx}{dt} = -c_{\\text{damping}} \\cdot v_{\\text{valve}}",
+      colorizedLatex:
+        "\\textcolor{#059669}{F_{\\text{dashpot}}} = -\\textcolor{#2563eb}{c_{\\text{damping}}} \\cdot \\frac{d\\textcolor{#dc2626}{x}}{dt} = -\\textcolor{#2563eb}{c_{\\text{damping}}} \\cdot \\textcolor{#dc2626}{v_{\\text{valve}}}",
+      plainEnglishSentence: [
+        {
+          text: "The ",
+        },
+        {
+          text: "resistive cushioning force",
+          variableId: "f_dash",
+        },
+        {
+          text: " exerted by the pneumatic dashpot is proportional to ",
+        },
+        {
+          text: "air damping coefficient",
+          variableId: "c_damp",
+        },
+        {
+          text: " and ",
+        },
+        {
+          text: "valve closure descent velocity",
+          variableId: "v_valv",
+        },
+        {
+          text: ".",
+        },
+      ],
+      variables: [
+        {
+          id: "f_dash",
+          symbol: "F_{\\text{dashpot}}",
+          name: "Pneumatic Cushioning Force",
+          color: "emerald",
+          role: "Braking force exerted on the descending dashpot piston during the final millimeters of travel",
+          unit: "Newtons (N)",
+          dimension: "[M L T^-2]",
+          explanation:
+            "Prevents violent metal-on-metal impact shock while allowing instantaneous valve closure (under 20 milliseconds).",
+          telemetryMetricLabel: "Dashpot Force",
+        },
+        {
+          id: "c_damp",
+          symbol: "c_{\\text{damping}}",
+          name: "Dashpot Pneumatic Damping Coefficient",
+          color: "sapphire",
+          role: "Viscous air damping parameter governed by adjustable needle escape valve ($N\\cdot s/m$)",
+          unit: "N * s / m",
+          dimension: "[M T^-1]",
+          explanation:
+            "As the piston drops into the pocket, trapped air compresses and escapes through a small petcock.",
+        },
+        {
+          id: "v_valv",
+          symbol: "v_{\\text{valve}}",
+          name: "Rotary Valve Closure Velocity",
+          color: "crimson",
+          role: "Speed at which the rotary oscillating valve snaps closed under gravity and vacuum spring pull ($> 2\\text{ m/s}$)",
+          unit: "m/s",
+          dimension: "[L T^-1]",
+          explanation:
+            "Rapid cutoff eliminates wire-drawing (steam condensation and erosion from partly opened ports).",
+        },
+        {
+          id: "pos_x",
+          symbol: "x",
+          name: "Dashpot Piston Displacement",
+          color: "crimson",
+          role: "Vertical displacement of the pneumatic dashpot piston ($0 - 5\\text{ cm}$)",
+          unit: "meters (m)",
+          dimension: "[L]",
+          explanation: "Stroke of the dashpot.",
+        },
+      ],
+      pedagogicalNote:
+        "When the trip lever releases the rotary steam valve, gravity and atmospheric vacuum pull the valve closed almost instantaneously. The air dashpot cushions the fall at the last fraction of an inch, preventing wear and noise.",
+      claimRef: 2,
+      historicalSignificance:
+        "The Corliss dashpot trip-valve made industrial engines nearly silent, highly efficient, and capable of maintaining perfectly constant RPM under fluctuating factory loads.",
+    },
     {
       id: "corliss-engine-expansion-work",
       patentId: "us-6162-corliss-steam-engine",
@@ -5369,6 +8316,212 @@ export const ALL_COLORIZED_EQUATIONS: Record<string, ColorizedEquation[]> = {
   // 42. Zénobe Gramme Ring Dynamo (US 120,057)
   "us-120057-gramme-dynamo": [
     {
+      id: "gramme-continuous-dc-smoothing",
+      patentId: "us-120057-gramme-dynamo",
+      title: "Continuous DC Generation & Multi-Segment Commutator Smoothing",
+      category: "Electromagnetics & Generators",
+      rawLatex:
+        "V_{\\text{DC}} = \\frac{2 N_{\\text{turns}} \\cdot \\Phi_{\\text{pole}} \\cdot \\omega}{\\pi} \\left( 1 - \\frac{2}{4m^2 - 1} \\cos(2m\\omega t) \\right)",
+      colorizedLatex:
+        "\\textcolor{#059669}{V_{\\text{DC}}} = \\frac{2 \\textcolor{#d97706}{N_{\\text{turns}}} \\cdot \\textcolor{#2563eb}{\\Phi_{\\text{pole}}} \\cdot \\textcolor{#dc2626}{\\omega}}{\\pi} \\left( 1 - \\frac{2}{4\\textcolor{#9333ea}{m^2} - 1} \\cos(2\\textcolor{#9333ea}{m}\\textcolor{#dc2626}{\\omega} t) \\right)",
+      plainEnglishSentence: [
+        {
+          text: "The ",
+        },
+        {
+          text: "continuous DC output voltage",
+          variableId: "v_dc",
+        },
+        {
+          text: " generated by the ring armature equals the product of ",
+        },
+        {
+          text: "total winding turns",
+          variableId: "n_turns",
+        },
+        {
+          text: ", ",
+        },
+        {
+          text: "magnetic field pole flux",
+          variableId: "phi_pole",
+        },
+        {
+          text: ", and ",
+        },
+        {
+          text: "rotational angular speed",
+          variableId: "omega_speed",
+        },
+        {
+          text: ", with voltage ripple suppressed by the number of ",
+        },
+        {
+          text: "commutator commutator segments squared",
+          variableId: "m_segments",
+        },
+        {
+          text: ".",
+        },
+      ],
+      variables: [
+        {
+          id: "v_dc",
+          symbol: "V_{\\text{DC}}",
+          name: "Direct Current Output Voltage",
+          color: "emerald",
+          role: "Steady direct electromotive force delivered to external load circuit without AC fluctuation",
+          unit: "Volts (V)",
+          dimension: "[M L^2 T^-3 I^-1]",
+          explanation:
+            "Gramme was the first to achieve pure, ripple-free direct current suitable for industrial arc lighting and electroplating.",
+          telemetryMetricLabel: "DC Voltage",
+        },
+        {
+          id: "n_turns",
+          symbol: "N_{\\text{turns}}",
+          name: "Armature Active Turns",
+          color: "amber",
+          role: "Total count of insulated copper coils wound around the soft iron ring ($24 - 48\\text{ bobbins}$)",
+          unit: "Turns (integer)",
+          dimension: "[1]",
+          explanation:
+            "Dividing the winding into many short series coils keeps the commutator segment voltage delta low ($< 10\\text{ V}$), preventing destructive commutator sparking.",
+        },
+        {
+          id: "phi_pole",
+          symbol: "\\Phi_{\\text{pole}}",
+          name: "Magnetic Pole Flux",
+          color: "sapphire",
+          role: "Total magnetic flux entering the ring from the stationary horseshoe electromagnet poles",
+          unit: "Webers (Wb)",
+          dimension: "[M L^2 T^-2 I^-1]",
+          explanation:
+            "High-permeability field magnets channel flux directly through the annular iron ring.",
+        },
+        {
+          id: "omega_speed",
+          symbol: "\\omega",
+          name: "Armature Shaft Angular Velocity",
+          color: "crimson",
+          role: "Mechanical rotational speed of the armature driven by steam engine or water turbine ($600 - 1,200\\text{ RPM}$)",
+          unit: "rad/s",
+          dimension: "[T^-1]",
+          explanation: "Voltage scales directly with rotational speed.",
+        },
+        {
+          id: "m_segments",
+          symbol: "m",
+          name: "Commutator Bar Count",
+          color: "amethyst",
+          role: "Number of isolated copper sector plates in the commutator ring ($m \\ge 24$)",
+          unit: "Segments (integer)",
+          dimension: "[1]",
+          explanation:
+            "Because ripple amplitude drops with $1/(4m^2 - 1)$, 24 segments reduce voltage ripple to under 0.1%.",
+        },
+      ],
+      pedagogicalNote:
+        "Prior dynamos (like Pixii or Siemens shuttles) produced violent pulsating spikes that destroyed contacts. Gramme's toroidal ring acted as a continuous closed loop tapped at radial intervals, producing the world's first true smooth DC current.",
+      claimRef: 1,
+      historicalSignificance:
+        "US 120,057 transformed electricity from a laboratory curiosity into an industrial utility, launching the commercial electrical generation industry.",
+    },
+    {
+      id: "gramme-toroidal-flux-division",
+      patentId: "us-120057-gramme-dynamo",
+      title: "Toroidal Core Magnetic Flux Division Law",
+      category: "Electromagnetics & Magnetic Circuits",
+      rawLatex:
+        "\\Phi_{\\text{ring}} = \\frac{1}{2} \\Phi_{\\text{pole}} = \\frac{B_{\\text{gap}} \\cdot A_{\\text{pole}}}{2}",
+      colorizedLatex:
+        "\\textcolor{#059669}{\\Phi_{\\text{ring}}} = \\frac{1}{2} \\textcolor{#2563eb}{\\Phi_{\\text{pole}}} = \\frac{\\textcolor{#dc2626}{B_{\\text{gap}}} \\cdot \\textcolor{#9333ea}{A_{\\text{pole}}}}{2}",
+      plainEnglishSentence: [
+        {
+          text: "The ",
+        },
+        {
+          text: "magnetic flux traversing each half of the iron ring",
+          variableId: "phi_ring",
+        },
+        {
+          text: " is exactly half the ",
+        },
+        {
+          text: "total pole flux",
+          variableId: "phi_tot",
+        },
+        {
+          text: ", determined by ",
+        },
+        {
+          text: "air-gap magnetic flux density",
+          variableId: "b_gap",
+        },
+        {
+          text: " across ",
+        },
+        {
+          text: "pole shoe contact area",
+          variableId: "a_pole",
+        },
+        {
+          text: ".",
+        },
+      ],
+      variables: [
+        {
+          id: "phi_ring",
+          symbol: "\\Phi_{\\text{ring}}",
+          name: "Toroidal Semicircle Flux",
+          color: "emerald",
+          role: "Magnetic flux conducted through the upper and lower semi-annular iron ring branches",
+          unit: "Webers (Wb)",
+          dimension: "[M L^2 T^-2 I^-1]",
+          explanation:
+            "Flux splits symmetrically at the neutral entry axis and recombines at the exit pole.",
+          telemetryMetricLabel: "Core Flux",
+        },
+        {
+          id: "phi_tot",
+          symbol: "\\Phi_{\\text{pole}}",
+          name: "Total Field Pole Flux",
+          color: "sapphire",
+          role: "Total magnetic flux emitted by the stationary north pole",
+          unit: "Webers (Wb)",
+          dimension: "[M L^2 T^-2 I^-1]",
+          explanation: "Directly generated by the DC excitation current in the field windings.",
+        },
+        {
+          id: "b_gap",
+          symbol: "B_{\\text{gap}}",
+          name: "Air Gap Flux Density",
+          color: "crimson",
+          role: "Magnetic induction across the narrow mechanical clearance between pole shoe and spinning ring ($0.6 - 1.2\\text{ T}$)",
+          unit: "Tesla (T)",
+          dimension: "[M T^-2 I^-1]",
+          explanation:
+            "Minimizing air gap thickness maximizes magnetic flux transfer into the ring.",
+        },
+        {
+          id: "a_pole",
+          symbol: "A_{\\text{pole}}",
+          name: "Pole Shoe Face Area",
+          color: "amethyst",
+          role: "Curved cast-iron pole face area enveloping the outer circumference of the ring",
+          unit: "m^2",
+          dimension: "[L^2]",
+          explanation:
+            "Curved shoes ensure uniform flux distribution into the outer active conductors.",
+        },
+      ],
+      pedagogicalNote:
+        "The soft iron wire ring serves dual functions: it is the mechanical armature supporting the rotating copper windings, and simultaneously the magnetic yoke guiding flux around the interior void.",
+      claimRef: 2,
+      historicalSignificance:
+        "Gramme's machine was also reversible: feeding it DC current turned it into an electric motor, establishing the principle of electromechanical reversibility at the 1873 Vienna World's Fair.",
+    },
+    {
       id: "gramme-dynamo-continuous-emf",
       patentId: "us-120057-gramme-dynamo",
       title: "Continuous Ring Armature Faraday Induction & Commutated Direct Current",
@@ -5603,6 +8756,144 @@ export const ALL_COLORIZED_EQUATIONS: Record<string, ColorizedEquation[]> = {
 
   // 44. Charles Goodyear Vulcanized Rubber (US 3,633)
   "us-3633-goodyear-rubber": [
+    {
+      id: "goodyear-affine-network-shear-modulus",
+      patentId: "us-3633-goodyear-rubber",
+      title: "Sulfur Cross-Linked Polymer Network Elastic Shear Modulus",
+      category: "Polymer Physics & Thermodynamics",
+      rawLatex:
+        "G = \\nu_{\\text{cross}} \\cdot k_B \\cdot T = \\frac{\\rho_{\\text{rubber}} \\cdot R \\cdot T}{M_c}",
+      colorizedLatex:
+        "\\textcolor{#059669}{G} = \\textcolor{#dc2626}{\\nu_{\\text{cross}}} \\cdot \\textcolor{#d97706}{k_B} \\cdot \\textcolor{#2563eb}{T} = \\frac{\\textcolor{#9333ea}{\\rho_{\\text{rubber}}} \\cdot \\textcolor{#0891b2}{R} \\cdot \\textcolor{#2563eb}{T}}{\\textcolor{#ea580c}{M_c}}",
+      plainEnglishSentence: [
+        {
+          text: "The ",
+        },
+        {
+          text: "shear modulus of vulcanized rubber",
+          variableId: "g_modulus",
+        },
+        {
+          text: " is directly proportional to ",
+        },
+        {
+          text: "sulfur cross-link volumetric density",
+          variableId: "nu_cross",
+        },
+        {
+          text: ", ",
+        },
+        {
+          text: "Boltzmann's constant",
+          variableId: "k_boltz",
+        },
+        {
+          text: ", and absolute ",
+        },
+        {
+          text: "temperature",
+          variableId: "temp_t",
+        },
+        {
+          text: ", or ",
+        },
+        {
+          text: "rubber polymer density",
+          variableId: "rho_poly",
+        },
+        {
+          text: " times the gas constant over ",
+        },
+        {
+          text: "mean molecular weight between sulfur cross-links",
+          variableId: "mc_weight",
+        },
+        {
+          text: ".",
+        },
+      ],
+      variables: [
+        {
+          id: "g_modulus",
+          symbol: "G",
+          name: "Elastic Shear Modulus",
+          color: "emerald",
+          role: "Stiffness and elastic restoring resistance of vulcanized rubber matrix ($0.5 - 2.0\\text{ MPa}$)",
+          unit: "Pascals (Pa) or MegaPascals (MPa)",
+          dimension: "[M L^-1 T^-2]",
+          explanation:
+            "Unlike raw unvulcanized rubber which melts into sticky gum in summer heat and freezes brittle in winter, vulcanized rubber retains elastic springiness across $-30^\\circ\\text{C}$ to $+150^\\circ\\text{C}$.",
+          telemetryMetricLabel: "Shear Modulus",
+        },
+        {
+          id: "nu_cross",
+          symbol: "\\nu_{\\text{cross}}",
+          name: "Cross-Link Volumetric Density",
+          color: "crimson",
+          role: "Number of covalent disulfide bridge junctions per cubic meter of rubber ($~10^{26}\\text{ m}^{-3}$)",
+          unit: "Cross-links / m^3",
+          dimension: "[L^-3]",
+          explanation:
+            "Sulfur atoms ($S_8$) reacted at $140^\\circ\\text{C}$ bridge adjacent polyisoprene chains, preventing plastic flow.",
+        },
+        {
+          id: "k_boltz",
+          symbol: "k_B",
+          name: "Boltzmann Constant",
+          color: "amber",
+          role: "Physical constant ($1.380649 \\times 10^{-23}\\text{ J/K}$)",
+          unit: "J/K",
+          dimension: "[M L^2 T^-2 \\Theta^-1]",
+          explanation: "Relates thermodynamic entropic spring force to temperature.",
+        },
+        {
+          id: "temp_t",
+          symbol: "T",
+          name: "Absolute Operating Temperature",
+          color: "sapphire",
+          role: "Ambient temperature of the rubber material ($~295\\text{ K} = 22^\\circ\\text{C}$)",
+          unit: "Kelvin (K)",
+          dimension: "[\\Theta]",
+          explanation:
+            "Because rubber elasticity is purely entropic (chains resist uncoiling into low-entropy straight lines), rubber contracts when heated under tension (Gough-Joule effect).",
+        },
+        {
+          id: "rho_poly",
+          symbol: "\\rho_{\\text{rubber}}",
+          name: "Polyisoprene Polymer Density",
+          color: "amethyst",
+          role: "Mass density of natural latex rubber ($920\\text{ kg/m}^3$)",
+          unit: "kg/m^3",
+          dimension: "[M L^-3]",
+          explanation: "Bulk mass density.",
+        },
+        {
+          id: "r_gas",
+          symbol: "R",
+          name: "Universal Gas Constant",
+          color: "cyan",
+          role: "Thermodynamic constant ($8.314\\text{ J}/(\\text{mol}\\cdot\\text{K})$)",
+          unit: "J / (mol * K)",
+          dimension: "[M L^2 T^-2 \\Theta^-1 N^-1]",
+          explanation: "Molar gas constant.",
+        },
+        {
+          id: "mc_weight",
+          symbol: "M_c",
+          name: "Molecular Weight Between Cross-Links",
+          color: "coral",
+          role: "Average mass of polymer backbone between adjacent sulfur covalent bonds ($3,000 - 10,000\\text{ g/mol}$)",
+          unit: "g/mol or kg/mol",
+          dimension: "[M N^-1]",
+          explanation: "Lower $M_c$ (more sulfur) creates harder rubber (ebonite).",
+        },
+      ],
+      pedagogicalNote:
+        "Charles Goodyear accidentally dropped a mixture of raw rubber and sulfur onto a hot stove and discovered that rather than melting, the compound charred into a resilient, waterproof, thermally stable elastic substance.",
+      claimRef: 1,
+      historicalSignificance:
+        "US 3,633 created the modern elastomer industry, enabling pneumatic tires, waterproof apparel, electrical insulation, and high-pressure steam gaskets.",
+    },
     {
       id: "goodyear-rubber-vulcanization-elasticity",
       patentId: "us-3633-goodyear-rubber",
