@@ -2,6 +2,7 @@
 
 import { Play, RotateCcw, Volume2, VolumeX } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
+import { stepOttoEngine } from "@/physics/catalogKernels";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { usePatentAudio } from "./three/usePatentAudio";
 
@@ -10,6 +11,7 @@ export function OttoEngineSim() {
   const { isAudioMuted, toggleSound } = usePatentAudio();
   const engineRpm = params.engineRpm ?? 180;
   const compressionRatio = params.compressionRatio ?? 4.5;
+  const otto = stepOttoEngine({ engineRpm, compressionRatio });
   const [isPlaying, setIsPlaying] = useState<boolean>(true);
   const [crankAngleDeg, setCrankAngleDeg] = useState<number>(0);
   const animRef = useRef<number | null>(null);
@@ -26,7 +28,7 @@ export function OttoEngineSim() {
           : "4. EXHAUST (Scavenging Stroke)";
 
   const isSparkFiring = cycleAngleDeg >= 350 && cycleAngleDeg <= 370;
-  const thermalEfficiencyPct = Math.round((1 - 1 / compressionRatio ** 0.4) * 100);
+  const thermalEfficiencyPct = otto.thermalEfficiencyPct;
   const peakPressureBar = Number(
     (
       1.0 *
@@ -34,7 +36,7 @@ export function OttoEngineSim() {
       (cycleAngleDeg >= 360 && cycleAngleDeg < 450 ? 3.8 : 1.0)
     ).toFixed(1),
   );
-  const indicatedHorsepower = Number(((peakPressureBar * 0.85 * 3.5 * engineRpm) / 120).toFixed(1));
+  const indicatedHorsepower = otto.brakeHorsepower;
 
   useEffect(() => {
     if (!isPlaying) return;

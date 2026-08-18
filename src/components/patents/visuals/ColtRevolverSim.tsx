@@ -2,6 +2,7 @@
 
 import { Activity, Flame, RotateCcw, Sparkles, Target, Volume2, VolumeX } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
+import { FrankenSimEngine } from "@/physics/engine";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { soundEngine } from "@/utils/soundEngine";
 import { usePatentAudio } from "./three/usePatentAudio";
@@ -22,12 +23,13 @@ export function ColtRevolverSim() {
   const isBoltLocked = cockingAngleDeg >= 44 || cockingAngleDeg <= 2;
   const boltRetractionY = cockingAngleDeg > 2 && cockingAngleDeg < 44 ? 12 : 0;
 
-  // Ballistics & Hoop Stress Calculations
-  const rInnerMm = 4.5; // .36 caliber chamber radius (9.14 mm bore / 2)
-  const tWallMm = 3.8;
-  const hoopStressMpa = ((chamberPressureMpa * rInnerMm) / tWallMm).toFixed(1);
-  const bulletMassKg = 0.0052; // 80-grain .36 cal round lead ball
-  const muzzleVelocityMps = Math.round(180 + Math.sqrt(chamberPressureMpa) * 13.5);
+  const colt = FrankenSimEngine.stepColtRevolver({
+    chamberPressureMpa,
+    cockingAngleDeg,
+  });
+  const hoopStressMpa = colt.hoopStressMpa.toFixed(1);
+  const bulletMassKg = 0.0052;
+  const muzzleVelocityMps = colt.muzzleVelocityMps;
   const muzzleEnergyJoules = Math.round(0.5 * bulletMassKg * muzzleVelocityMps * muzzleVelocityMps);
 
   const fireTimerRef = useRef<number | null>(null);

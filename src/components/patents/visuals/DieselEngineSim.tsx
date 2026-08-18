@@ -2,6 +2,7 @@
 
 import { Play, RotateCcw, Volume2, VolumeX } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
+import { FrankenSimEngine } from "@/physics/engine";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { usePatentAudio } from "./three/usePatentAudio";
 
@@ -14,13 +15,17 @@ export function DieselEngineSim() {
   const [crankAngleDeg, setCrankAngleDeg] = useState<number>(0);
   const animRef = useRef<number | null>(null);
 
-  // Diesel Thermodynamic Cycle
-  const peakAirTempKelvin = Math.round(293 * compressionRatio ** 0.4);
-  const peakAirTempC = peakAirTempKelvin - 273;
-  const _isAutoIgnition = peakAirTempC >= 550; // Diesel fuel autoignites ~210C, requires 500C+ for instant detonation
-  const peakPressureAtm = Number((1.0 * compressionRatio ** 1.4).toFixed(1));
-  const thermalEfficiencyPct = Math.round((1 - 1 / compressionRatio ** 0.38) * 100);
-  const brakePowerKw = Number(((peakPressureAtm * 0.45 * engineRpm) / 30).toFixed(1));
+  const diesel = FrankenSimEngine.stepDieselEngine({
+    compressionRatio,
+    blastAirPressureBar: params.blastAirPressure ?? 65,
+    cutoffRatio: params.cutoffRatio ?? 1.6,
+  });
+  const peakAirTempC = diesel.tCompressionC;
+  const peakAirTempKelvin = peakAirTempC + 273;
+  const isAutoIgnition = diesel.isAutoIgnition;
+  const peakPressureAtm = diesel.pCompBar;
+  const thermalEfficiencyPct = diesel.idealEfficiencyPct;
+  const brakeEfficiencyPct = diesel.brakeEfficiencyPct;
 
   useEffect(() => {
     if (!isPlaying) return;
@@ -214,10 +219,10 @@ export function DieselEngineSim() {
         </div>
         <div className="bg-parchment-100 dark:bg-ink-900 border border-parchment-200 dark:border-ink-800 p-2.5 rounded-xl text-center">
           <span className="text-[10px] uppercase tracking-wider text-ink-500 dark:text-ink-400 block font-sans">
-            Brake Power
+            Brake η / Fire
           </span>
           <span className="font-mono text-sm sm:text-base font-bold text-emerald-700 dark:text-emerald-500">
-            {brakePowerKw} kW
+            {brakeEfficiencyPct}% {isAutoIgnition ? "FIRE" : "NO FIRE"}
           </span>
         </div>
         <div className="bg-parchment-100 dark:bg-ink-900 border border-parchment-200 dark:border-ink-800 p-2.5 rounded-xl text-center">

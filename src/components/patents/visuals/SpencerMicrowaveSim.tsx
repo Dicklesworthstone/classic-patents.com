@@ -3,12 +3,18 @@
 import { Radio } from "lucide-react";
 import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import { TwoClocksStrip } from "@/components/patents/TwoClocksStrip";
+import { FrankenSimEngine } from "@/physics/engine";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { soundEngine } from "@/utils/soundEngine";
 
 export function SpencerMicrowaveSim() {
   const { params, updateParam } = usePatentPhysics("us-2495429-spencer-microwave");
   const powerWatts = params.rfPowerSetting ?? 800;
+  const rf = FrankenSimEngine.stepSpencerMicrowave(
+    (params.anodeVoltage ?? 2200) / 1000,
+    params.magneticFieldGauss ?? 1450,
+    powerWatts,
+  );
   const [foodType, setFoodType] = useState<"water-popcorn" | "dry-ice">("water-popcorn");
   const [isEmitting, setIsEmitting] = useState<boolean>(true);
   const [tempCelsius, setTempCelsius] = useState<number>(20);
@@ -24,7 +30,8 @@ export function SpencerMicrowaveSim() {
     if (!isEmitting) return;
     const interval = setInterval(() => {
       if (foodType === "water-popcorn") {
-        const nextTemp = Math.min(180, tempRef.current + (powerWatts / 1000) * 8);
+        const heatStep = rf.isOscillating ? rf.dielectricLossWattsPerDm3 / 450 : 0;
+        const nextTemp = Math.min(180, tempRef.current + heatStep);
         tempRef.current = nextTemp;
         setTempCelsius(nextTemp);
         if (nextTemp > 100 && poppedRef.current < 12) {
@@ -39,7 +46,7 @@ export function SpencerMicrowaveSim() {
       }
     }, 200);
     return () => clearInterval(interval);
-  }, [isEmitting, powerWatts, foodType]);
+  }, [isEmitting, foodType, rf.isOscillating, rf.dielectricLossWattsPerDm3]);
 
   const resetHeating = () => {
     setTempCelsius(20);

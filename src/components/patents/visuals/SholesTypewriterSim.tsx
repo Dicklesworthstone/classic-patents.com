@@ -2,20 +2,21 @@
 
 import { RotateCcw, Volume2, VolumeX } from "lucide-react";
 import { useState } from "react";
+import { stepSholesTypewriter } from "@/physics/machineKernels";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { usePatentAudio } from "./three/usePatentAudio";
 
 export function SholesTypewriterSim() {
-  const { resetParams } = usePatentPhysics("us-79265-sholes-typewriter");
+  const { params, resetParams } = usePatentPhysics("us-79265-sholes-typewriter");
   const { isAudioMuted, toggleSound } = usePatentAudio();
   const [typedText, setTypedText] = useState<string>("THE QUICK BROWN FOX");
   const [activeKey, setActiveKey] = useState<string>("T");
 
-  // Escapement kinematics
-  const characterPitchMm = 2.54; // Monospace 10-pitch
+  const sholes = stepSholesTypewriter(params.typingSpeedWpm ?? 60, 0);
+  const characterPitchMm = sholes.pitchMm;
   const carriagePositionMm = Number((typedText.length * characterPitchMm).toFixed(2));
   const typebarStrikeAngleDeg = 90;
-  const isJamDanger = activeKey === "T" || activeKey === "H"; // Illustrating digraph geometry
+  const isJamDanger = activeKey === "T" || activeKey === "H";
 
   const handleKeyPress = (char: string) => {
     setActiveKey(char);

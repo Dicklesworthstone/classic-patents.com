@@ -2,6 +2,7 @@
 
 import { Play, RotateCcw, Volume2, VolumeX } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
+import { FrankenSimEngine } from "@/physics/engine";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { usePatentAudio } from "./three/usePatentAudio";
 
@@ -15,10 +16,14 @@ export function MaximMachineGunSim() {
   const [recoilPhase, setRecoilPhase] = useState<number>(0);
   const animRef = useRef<number | null>(null);
 
-  // Recoil & thermal physics
-  const _isWaterBoiling = jacketWaterLiters < 1.0;
-  const barrelTempC = Math.round(80 + (600 - jacketWaterLiters * 100) * 0.15);
-  const _muzzleEnergyJoules = 3400; // .303 British round
+  const maxim = FrankenSimEngine.stepMaximMachineGun({
+    firingRateRpm: cyclicRateRpm,
+    waterJacketLiters: jacketWaterLiters,
+    recoilStrokeMm,
+  });
+  const _isWaterBoiling = jacketWaterLiters < 0.5;
+  const barrelTempC = maxim.barrelTempC;
+  const _muzzleEnergyJoules = 3400;
   const cycleTimeMs = Math.round(60000 / (cyclicRateRpm + 1e-4));
 
   useEffect(() => {
