@@ -4,7 +4,6 @@ import {
   Camera,
   Eye,
   EyeOff,
-  Flame,
   RotateCcw,
   Shield,
   Sparkles,
@@ -15,6 +14,8 @@ import {
 import { useEffect, useRef, useState } from "react";
 import * as THREE from "three";
 import { HudText } from "@/components/ui/LatexRenderer";
+import { FrankenSimEngine } from "@/physics/engine";
+import { useFrankenSimPhysics } from "@/physics/useFrankenSimPhysics";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { soundEngine } from "@/utils/soundEngine";
 import {
@@ -36,7 +37,7 @@ interface ScenarioPreset {
   enrichmentPct: number;
 }
 
-const SCENARIOS: ScenarioPreset[] = [
+const _SCENARIOS: ScenarioPreset[] = [
   {
     id: "cp1_1942_criticality",
     name: "Dec 2, 1942 CP-1 First Criticality",
@@ -80,27 +81,29 @@ export function FermiReactor3D() {
   const controlRodWithdrawalPct = params.rodWithdrawal ?? 65;
   const moderatorPurityPct = params.moderatorPurity ?? 99.9;
   const [fuelEnrichmentPct, setFuelEnrichmentPct] = useState<number>(0.72); // 0.72% natural U
-  const [showNeutronCascade, setShowNeutronCascade] = useState<boolean>(true);
+  const [showNeutronCascade, _setShowNeutronCascade] = useState<boolean>(true);
   const [showCalloutPins, setShowCalloutPins] = useState<boolean>(false);
   const [activeCamera, setActiveCamera] = useState<CameraPreset>("iso");
   const { isAudioMuted, toggleSound: toggleEngine } = usePatentAudio();
 
   // Four-Factor Nuclear Physics Calculations
-  // k_eff = eta * epsilon * p * f * P_NL
-  const kEff = (
-    1.32 *
-    (fuelEnrichmentPct / 0.72) ** 0.5 *
-    (moderatorPurityPct / 100) ** 2 *
-    (0.65 + (controlRodWithdrawalPct / 100) * 0.42)
-  ).toFixed(3);
+  const reactorKinetics = FrankenSimEngine.stepFermiReactor(
+    controlRodWithdrawalPct,
+    moderatorPurityPct,
+    fuelEnrichmentPct,
+  );
+
+  const kEff = reactorKinetics.kEffective.toFixed(3);
   const isSupercritical = Number(kEff) > 1.002;
   const isCritical = Number(kEff) >= 0.998 && Number(kEff) <= 1.002;
-  const reactorPowerWatts = isSupercritical
-    ? Math.round(500 * (Number(kEff) / 1.002) ** 4)
-    : isCritical
-      ? 200
-      : Math.round(20 * (Number(kEff) / 0.99));
-  const reactivityDollars = ((Number(kEff) - 1.0) / Number(kEff) / 0.0065).toFixed(2);
+  const reactorPowerWatts = reactorKinetics.thermalPowerWatts;
+  const reactivityDollars = reactorKinetics.reactivityDollars.toFixed(2);
+
+  useFrankenSimPhysics("us-2708656-fermi-reactor", {
+    domain: "nuclear_kinetics",
+    refusal: { isRefused: false },
+    nuclear: reactorKinetics,
+  });
 
   const live = useLiveSimParams({
     controlRodWithdrawalPct,
@@ -144,7 +147,7 @@ export function FermiReactor3D() {
     controls.update();
   };
 
-  const applyScenario = (s: ScenarioPreset) => {
+  const _applyScenario = (s: ScenarioPreset) => {
     updateParam("rodWithdrawal", s.rodPct);
     updateParam("moderatorPurity", s.moderatorPct);
     setFuelEnrichmentPct(s.enrichmentPct);
@@ -348,6 +351,12 @@ export function FermiReactor3D() {
       const targetRodY = -0.5 + (p.controlRodWithdrawalPct / 100) * 3.2;
       rodGroup.position.y += (targetRodY - rodGroup.position.y) * 0.1;
 
+      const ke = Number(p.kEff);
+      const purity = (p.moderatorPurityPct ?? 99.9) / 100;
+      graphiteMat.color.setRGB(0.12 * purity, 0.13 * purity, 0.15 * purity);
+      uraniumFuelMat.emissiveIntensity = Math.max(0, (ke - 0.98) * 8);
+      uraniumFuelMat.emissive = new THREE.Color(ke > 1.002 ? 0xf97316 : 0x22c55e);
+
       if (p.showNeutronCascade) {
         const nPos = neutronPos;
         const speed = (Number(p.kEff) / 1.0) * 4.0 * delta;
@@ -544,103 +553,6 @@ export function FermiReactor3D() {
             ))}
           </div>
         )}
-      </div>
-
-      {/* Interactive Controls & Scenario Bar */}
-      <div className="p-4 sm:p-5 bg-parchment-100/90 dark:bg-ink-900/90 border-t border-parchment-300 dark:border-ink-800 space-y-4">
-        {/* Scenario Presets */}
-        <div className="space-y-1.5">
-          <div className="text-xs font-sans font-bold text-ink-700 dark:text-ink-300 uppercase tracking-wider flex items-center gap-1.5">
-            <Sparkles className="w-3.5 h-3.5 text-amber-600" /> Historical Nuclear Criticality
-            Presets:
-          </div>
-          <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
-            {SCENARIOS.map((s) => (
-              <button
-                key={s.id}
-                type="button"
-                onClick={() => applyScenario(s)}
-                className="p-2.5 rounded-xl border border-parchment-300 dark:border-ink-700 bg-white/70 dark:bg-ink-950/70 hover:bg-parchment-50 dark:hover:bg-ink-800 text-left transition-colors group"
-              >
-                <div className="text-xs font-serif font-bold text-ink-900 dark:text-parchment-100 group-hover:text-amber-700 dark:group-hover:text-amber-400">
-                  {s.name}
-                </div>
-                <div className="text-[10px] font-sans text-ink-500 dark:text-ink-400 line-clamp-2 mt-0.5">
-                  <HudText text={s.desc} />
-                </div>
-              </button>
-            ))}
-          </div>
-        </div>
-
-        {/* Sliders Grid */}
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 pt-1">
-          {/* Cadmium Control Rods */}
-          <div className="space-y-1.5">
-            <div className="flex justify-between text-xs font-sans">
-              <span className="font-semibold text-ink-800 dark:text-parchment-200">
-                Cadmium ZIP Rod Height:
-              </span>
-              <span className="font-mono text-amber-700 dark:text-amber-400 font-bold">
-                {controlRodWithdrawalPct}% Withdrawn
-              </span>
-            </div>
-            <input
-              type="range"
-              aria-label="Cadmium ZIP Rod Height"
-              min="0"
-              max="100"
-              step="1"
-              value={controlRodWithdrawalPct}
-              onChange={(e) => updateParam("rodWithdrawal", Number(e.target.value))}
-              className="w-full accent-amber-600 cursor-pointer"
-            />
-            <span className="text-[10px] text-ink-500 dark:text-ink-400 block">
-              Thermal neutron poison absorption cross section
-            </span>
-          </div>
-
-          {/* Moderator Purity */}
-          <div className="space-y-1.5">
-            <div className="flex justify-between text-xs font-sans">
-              <span className="font-semibold text-ink-800 dark:text-parchment-200">
-                AGOT Graphite Purity:
-              </span>
-              <span className="font-mono text-blue-600 dark:text-blue-400 font-bold">
-                {moderatorPurityPct.toFixed(2)}%
-              </span>
-            </div>
-            <input
-              type="range"
-              aria-label="AGOT Graphite Purity"
-              min="95.0"
-              max="99.99"
-              step="0.05"
-              value={moderatorPurityPct}
-              onChange={(e) => updateParam("moderatorPurity", Number(e.target.value))}
-              className="w-full accent-blue-600 cursor-pointer"
-            />
-            <span className="text-[10px] text-ink-500 dark:text-ink-400 block">
-              Minimizes boron impurity parasitic capture
-            </span>
-          </div>
-
-          {/* Neutron Cloud Toggle */}
-          <div className="flex flex-col justify-end space-y-1.5">
-            <button
-              type="button"
-              onClick={() => setShowNeutronCascade(!showNeutronCascade)}
-              className={`w-full py-3 px-4 rounded-xl font-sans font-bold text-sm transition-colors shadow-sm flex items-center justify-center gap-2 ${
-                showNeutronCascade
-                  ? "bg-emerald-600 hover:bg-emerald-700 text-white shadow-md"
-                  : "bg-amber-600 hover:bg-amber-700 text-white shadow-md"
-              }`}
-            >
-              <Flame className="w-4 h-4" />
-              {showNeutronCascade ? "Neutron Flux VISIBLE" : "Neutron Flux HIDDEN"}
-            </button>
-          </div>
-        </div>
       </div>
     </div>
   );

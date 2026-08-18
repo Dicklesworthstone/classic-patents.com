@@ -30,7 +30,7 @@ interface ScenarioPreset {
   gasRatio: number;
 }
 
-const SCENARIOS: ScenarioPreset[] = [
+const _SCENARIOS: ScenarioPreset[] = [
   {
     id: "einstein_1930_nominal",
     name: "1930 Berlin Prototype (Nominal)",
@@ -74,7 +74,7 @@ export function EinsteinRefrigerator3D() {
   const heatInputWatts = params.heatInput ?? 220;
   const systemPressureAtm = params.totalPressure ?? 15;
   const [auxiliaryGasRatio, setAuxiliaryGasRatio] = useState<number>(0.8); // 0.2 to 0.95 Ammonia/Butane
-  const [isHeating, setIsHeating] = useState<boolean>(true);
+  const [isHeating, _setIsHeating] = useState<boolean>(true);
   const [showCalloutPins, setShowCalloutPins] = useState<boolean>(false);
   const [activeCamera, setActiveCamera] = useState<CameraPreset>("iso");
   const { isAudioMuted, toggleSound: toggleEngine } = usePatentAudio();
@@ -126,7 +126,7 @@ export function EinsteinRefrigerator3D() {
     controls.update();
   };
 
-  const applyScenario = (s: ScenarioPreset) => {
+  const _applyScenario = (s: ScenarioPreset) => {
     updateParam("heatInput", s.heatWatts);
     updateParam("totalPressure", s.pressureAtm);
     setAuxiliaryGasRatio(s.gasRatio);
@@ -502,102 +502,6 @@ export function EinsteinRefrigerator3D() {
             ))}
           </div>
         )}
-      </div>
-
-      {/* Interactive Controls & Scenario Bar */}
-      <div className="p-4 sm:p-5 bg-parchment-100/90 dark:bg-ink-900/90 border-t border-parchment-300 dark:border-ink-800 space-y-4">
-        {/* Scenario Presets */}
-        <div className="space-y-1.5">
-          <div className="text-xs font-sans font-bold text-ink-700 dark:text-ink-300 uppercase tracking-wider flex items-center gap-1.5">
-            <Sparkles className="w-3.5 h-3.5 text-amber-600" /> Absorption Thermodynamics Presets:
-          </div>
-          <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
-            {SCENARIOS.map((s) => (
-              <button
-                key={s.id}
-                type="button"
-                onClick={() => applyScenario(s)}
-                className="p-2.5 rounded-xl border border-parchment-300 dark:border-ink-700 bg-white/70 dark:bg-ink-950/70 hover:bg-parchment-50 dark:hover:bg-ink-800 text-left transition-colors group"
-              >
-                <div className="text-xs font-serif font-bold text-ink-900 dark:text-parchment-100 group-hover:text-amber-700 dark:group-hover:text-amber-400">
-                  {s.name}
-                </div>
-                <div className="text-[10px] font-sans text-ink-500 dark:text-ink-400 line-clamp-2 mt-0.5">
-                  {s.desc}
-                </div>
-              </button>
-            ))}
-          </div>
-        </div>
-
-        {/* Sliders Grid */}
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 pt-1">
-          {/* Heat Input */}
-          <div className="space-y-1.5">
-            <div className="flex justify-between text-xs font-sans">
-              <span className="font-semibold text-ink-800 dark:text-parchment-200">
-                Heat Source Input:
-              </span>
-              <span className="font-mono text-amber-700 dark:text-amber-400 font-bold">
-                {heatInputWatts} Watts
-              </span>
-            </div>
-            <input
-              type="range"
-              aria-label="Heat Source Input"
-              min="80"
-              max="500"
-              step="10"
-              value={heatInputWatts}
-              onChange={(e) => updateParam("heatInput", Number(e.target.value))}
-              className="w-full accent-amber-600 cursor-pointer"
-            />
-            <span className="text-[10px] text-ink-500 dark:text-ink-400 block">
-              Boiler flame or electric element power
-            </span>
-          </div>
-
-          {/* System Pressure */}
-          <div className="space-y-1.5">
-            <div className="flex justify-between text-xs font-sans">
-              <span className="font-semibold text-ink-800 dark:text-parchment-200">
-                Total System Pressure:
-              </span>
-              <span className="font-mono text-blue-600 dark:text-blue-400 font-bold">
-                {systemPressureAtm.toFixed(1)} atm
-              </span>
-            </div>
-            <input
-              type="range"
-              aria-label="Total System Pressure"
-              min="6.0"
-              max="16.0"
-              step="0.5"
-              value={systemPressureAtm}
-              onChange={(e) => updateParam("totalPressure", Number(e.target.value))}
-              className="w-full accent-blue-600 cursor-pointer"
-            />
-            <span className="text-[10px] text-ink-500 dark:text-ink-400 block">
-              Constant hermetic equilibrium pressure
-            </span>
-          </div>
-
-          {/* Heat Drive Toggle */}
-          <div className="flex flex-col justify-end space-y-1.5">
-            <button
-              type="button"
-              onClick={() => setIsHeating(!isHeating)}
-              className={`w-full py-3 px-4 rounded-xl font-sans font-bold text-sm transition-colors shadow-sm flex items-center justify-center gap-2 ${
-                isHeating
-                  ? "bg-emerald-600 hover:bg-emerald-700 text-white shadow-md"
-                  : "bg-amber-600 hover:bg-amber-700 text-white shadow-md"
-              }`}
-            >
-              <Thermometer className="w-4 h-4" />
-              {isHeating ? "Heat Source ACTIVE (Circulating)" : "Heat OFF (Cooling Halted)"}
-            </button>
-          </div>
-        </div>
       </div>
     </div>
   );

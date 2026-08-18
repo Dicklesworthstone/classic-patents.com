@@ -1,16 +1,6 @@
 "use client";
 
-import {
-  Camera,
-  Eye,
-  EyeOff,
-  Radio,
-  RotateCcw,
-  Sparkles,
-  Volume2,
-  VolumeX,
-  Zap,
-} from "lucide-react";
+import { Camera, Eye, EyeOff, Radio, RotateCcw, Volume2, VolumeX, Zap } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import * as THREE from "three";
 import { HudText } from "@/components/ui/LatexRenderer";
@@ -33,7 +23,7 @@ interface ScenarioPreset {
   coilKv: number;
 }
 
-const SCENARIOS: ScenarioPreset[] = [
+const _SCENARIOS: ScenarioPreset[] = [
   {
     id: "marconi_1896_patent",
     name: "1896 Wireless Patent (US 586,193)",
@@ -137,7 +127,7 @@ export function MarconiRadio3D() {
     controls.update();
   };
 
-  const applyScenario = (s: ScenarioPreset) => {
+  const _applyScenario = (s: ScenarioPreset) => {
     updateParam("aerialHeight", s.heightM);
     setSparkGapMm(s.gapMm);
     updateParam("sparkVoltage", s.coilKv);
@@ -544,111 +534,6 @@ export function MarconiRadio3D() {
             ))}
           </div>
         )}
-      </div>
-
-      {/* Interactive Controls & Scenario Bar */}
-      <div className="p-4 sm:p-5 bg-parchment-100/90 dark:bg-ink-900/90 border-t border-parchment-300 dark:border-ink-800 space-y-4">
-        {/* Scenario Presets */}
-        <div className="space-y-1.5">
-          <div className="text-xs font-sans font-bold text-ink-700 dark:text-ink-300 uppercase tracking-wider flex items-center gap-1.5">
-            <Sparkles className="w-3.5 h-3.5 text-amber-600" /> Historical Wireless Presets:
-          </div>
-          <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
-            {SCENARIOS.map((s) => (
-              <button
-                key={s.id}
-                type="button"
-                onClick={() => applyScenario(s)}
-                className="p-2.5 rounded-xl border border-parchment-300 dark:border-ink-700 bg-white/70 dark:bg-ink-950/70 hover:bg-parchment-50 dark:hover:bg-ink-800 text-left transition-colors group"
-              >
-                <div className="text-xs font-serif font-bold text-ink-900 dark:text-parchment-100 group-hover:text-amber-700 dark:group-hover:text-amber-400">
-                  {s.name}
-                </div>
-                <div className="text-[10px] font-sans text-ink-500 dark:text-ink-400 line-clamp-2 mt-0.5">
-                  <HudText text={s.desc} />
-                </div>
-              </button>
-            ))}
-          </div>
-        </div>
-
-        {/* Sliders Grid */}
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 pt-1">
-          {/* Aerial Mast Height */}
-          <div className="space-y-1.5">
-            <div className="flex justify-between text-xs font-sans">
-              <span className="font-semibold text-ink-800 dark:text-parchment-200">
-                <HudText text="Aerial Antenna Height ($h$):" />
-              </span>
-              <span className="font-mono text-amber-700 dark:text-amber-400 font-bold">
-                {aerialHeightMeters} Meters
-              </span>
-            </div>
-            <input
-              type="range"
-              aria-label="Aerial Antenna Height (h)"
-              min="10"
-              max="60"
-              step="5"
-              value={aerialHeightMeters}
-              onChange={(e) => updateParam("aerialHeight", Number(e.target.value))}
-              className="w-full accent-amber-600 cursor-pointer"
-            />
-            <span className="text-[10px] text-ink-500 dark:text-ink-400 block">
-              {"Monopole resonance: λ = 4h"}
-            </span>
-          </div>
-
-          {/* Spark Gap Distance */}
-          <div className="space-y-1.5">
-            <div className="flex justify-between text-xs font-sans">
-              <span className="font-semibold text-ink-800 dark:text-parchment-200">
-                <HudText text="Righi Spark Gap ($d$):" />
-              </span>
-              <span className="font-mono text-blue-600 dark:text-blue-400 font-bold">
-                {sparkGapMm} mm
-              </span>
-            </div>
-            <input
-              type="range"
-              aria-label="Righi Spark Gap (d)"
-              min="2"
-              max="25"
-              step="1"
-              value={sparkGapMm}
-              onChange={(e) => updateParam("sparkGap", Number(e.target.value))}
-              className="w-full accent-blue-600 cursor-pointer"
-            />
-            <span className="text-[10px] text-ink-500 dark:text-ink-400 block">
-              Breakdown dielectric gap distance
-            </span>
-          </div>
-
-          {/* Induction Coil Voltage */}
-          <div className="space-y-1.5">
-            <div className="flex justify-between text-xs font-sans">
-              <span className="font-semibold text-ink-800 dark:text-parchment-200">
-                Ruhmkorff Coil Potential:
-              </span>
-              <span className="font-mono text-emerald-600 dark:text-emerald-400 font-bold">
-                {inductionCoilKv} kV
-              </span>
-            </div>
-            <input
-              type="range"
-              aria-label="Ruhmkorff Coil Potential"
-              min="5"
-              max="50"
-              step="2"
-              value={inductionCoilKv}
-              onChange={(e) => updateParam("sparkVoltage", Number(e.target.value))}
-              className="w-full accent-emerald-600 cursor-pointer"
-            />
-            <span className="text-[10px] text-ink-500 dark:text-ink-400 block">
-              Step-up transformer excitation voltage
-            </span>
-          </div>
-        </div>
       </div>
     </div>
   );

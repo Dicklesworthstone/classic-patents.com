@@ -23,7 +23,7 @@ interface ScenarioPreset {
   ctePct: number;
 }
 
-const SCENARIOS: ScenarioPreset[] = [
+const _SCENARIOS: ScenarioPreset[] = [
   {
     id: "bell_1969_first_device",
     name: "1969 Bell Labs 8-Bit Line Shift Register",
@@ -68,11 +68,11 @@ export function BoyleSmithCcd3D() {
   // CCD Physics & Clocking State Controls
   const { params, updateParam } = usePatentPhysics("us-3923554-boyle-smith-ccd");
   const [showUiOverlay, setShowUiOverlay] = useState<boolean>(true);
-  const [clockPhase, setClockPhase] = useState<1 | 2 | 3>(1);
+  const [clockPhase, _setClockPhase] = useState<1 | 2 | 3>(1);
   const [incidentLux, setIncidentLux] = useState<number>(450); // 50 to 1200 Lux
   const gateVoltageV = params.gateVoltage ?? 10;
   const [transferEfficiencyPct, setTransferEfficiencyPct] = useState<number>(99.99); // 99.0 to 99.999%
-  const [isAutoClocking, setIsAutoClocking] = useState<boolean>(true);
+  const [isAutoClocking, _setIsAutoClocking] = useState<boolean>(true);
   const [clockSpeedFactor, setClockSpeedFactor] = useState<number>(2); // 1 to 10 Hz
   const [showCalloutPins, setShowCalloutPins] = useState<boolean>(false);
   const [activeCamera, setActiveCamera] = useState<CameraPreset>("iso");
@@ -127,7 +127,7 @@ export function BoyleSmithCcd3D() {
     controls.update();
   };
 
-  const applyScenario = (s: ScenarioPreset) => {
+  const _applyScenario = (s: ScenarioPreset) => {
     setClockSpeedFactor(s.phaseFreqHz);
     setIncidentLux(s.lux);
     updateParam("gateVoltage", s.voltageV);
@@ -503,141 +503,6 @@ export function BoyleSmithCcd3D() {
             ))}
           </div>
         )}
-      </div>
-
-      {/* Interactive Controls & Scenario Bar */}
-      <div className="p-4 sm:p-5 bg-parchment-100/90 dark:bg-ink-900/90 border-t border-parchment-300 dark:border-ink-800 space-y-4">
-        {/* Scenario Presets */}
-        <div className="space-y-1.5">
-          <div className="text-xs font-sans font-bold text-ink-700 dark:text-ink-300 uppercase tracking-wider flex items-center gap-1.5">
-            <Sparkles className="w-3.5 h-3.5 text-amber-600" /> Charge-Coupled Physics Presets:
-          </div>
-          <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
-            {SCENARIOS.map((s) => (
-              <button
-                key={s.id}
-                type="button"
-                onClick={() => applyScenario(s)}
-                className="p-2.5 rounded-xl border border-parchment-300 dark:border-ink-700 bg-white/70 dark:bg-ink-950/70 hover:bg-parchment-50 dark:hover:bg-ink-800 text-left transition-colors group"
-              >
-                <div className="text-xs font-serif font-bold text-ink-900 dark:text-parchment-100 group-hover:text-amber-700 dark:group-hover:text-amber-400">
-                  {s.name}
-                </div>
-                <div className="text-[10px] font-sans text-ink-500 dark:text-ink-400 line-clamp-2 mt-0.5">
-                  {s.desc}
-                </div>
-              </button>
-            ))}
-          </div>
-        </div>
-
-        {/* Sliders Grid */}
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 pt-1">
-          {/* Incident Lux */}
-          <div className="space-y-1.5">
-            <div className="flex justify-between text-xs font-sans">
-              <span className="font-semibold text-ink-800 dark:text-parchment-200">
-                Photon Flux (Lux):
-              </span>
-              <span className="font-mono text-amber-700 dark:text-amber-400 font-bold">
-                {incidentLux} Lux
-              </span>
-            </div>
-            <input
-              type="range"
-              aria-label="Photon Flux (Lux)"
-              min="50"
-              max="1200"
-              step="50"
-              value={incidentLux}
-              onChange={(e) => setIncidentLux(Number(e.target.value))}
-              className="w-full accent-amber-600 cursor-pointer"
-            />
-            <span className="text-[10px] text-ink-500 dark:text-ink-400 block">
-              Photoelectric electron-hole pair generation
-            </span>
-          </div>
-
-          {/* Gate Voltage */}
-          <div className="space-y-1.5">
-            <div className="flex justify-between text-xs font-sans">
-              <span className="font-semibold text-ink-800 dark:text-parchment-200">
-                Gate Bias Voltage (Vg):
-              </span>
-              <span className="font-mono text-blue-600 dark:text-blue-400 font-bold">
-                {gateVoltageV.toFixed(1)} V
-              </span>
-            </div>
-            <input
-              type="range"
-              aria-label="Gate Bias Voltage (Vg)"
-              min="2.0"
-              max="15.0"
-              step="0.5"
-              value={gateVoltageV}
-              onChange={(e) => updateParam("gateVoltage", Number(e.target.value))}
-              className="w-full accent-blue-600 cursor-pointer"
-            />
-            <span className="text-[10px] text-ink-500 dark:text-ink-400 block">
-              Depletion region potential well depth
-            </span>
-          </div>
-
-          {/* Clocking Drive Toggle */}
-          <div className="flex flex-col justify-end space-y-1.5">
-            <button
-              type="button"
-              onClick={() => setIsAutoClocking(!isAutoClocking)}
-              className={`w-full py-3 px-4 rounded-xl font-sans font-bold text-sm transition-colors shadow-sm flex items-center justify-center gap-2 ${
-                isAutoClocking
-                  ? "bg-emerald-600 hover:bg-emerald-700 text-white shadow-md"
-                  : "bg-amber-600 hover:bg-amber-700 text-white shadow-md"
-              }`}
-            >
-              <Zap className="w-4 h-4" />
-              {isAutoClocking ? "3Φ Clock Active (Transferring)" : "Clock Paused (Inspect Charge)"}
-            </button>
-          </div>
-        </div>
-
-        {/* Phase Selectors & Well Level Indicator */}
-        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 pt-1 border-t border-parchment-200 dark:border-ink-800 text-xs font-sans">
-          <div className="flex items-center gap-2">
-            <span className="text-ink-600 dark:text-ink-400">Manual Phase Override:</span>
-            {([1, 2, 3] as const).map((pNum) => (
-              <button
-                key={pNum}
-                type="button"
-                onClick={() => {
-                  setIsAutoClocking(false);
-                  setClockPhase(pNum);
-                }}
-                className={`px-3 py-1 rounded-lg font-mono font-bold transition-colors ${
-                  clockPhase === pNum && !isAutoClocking
-                    ? "bg-blue-600 text-white shadow-xs"
-                    : "bg-white/70 dark:bg-ink-800 text-ink-700 dark:text-parchment-200 hover:bg-parchment-200"
-                }`}
-              >
-                Φ{pNum}
-              </button>
-            ))}
-          </div>
-
-          <div className="flex items-center gap-2 w-full sm:w-auto">
-            <span className="text-ink-600 dark:text-ink-400 text-xs">Pixel Charge Capacity:</span>
-            <div className="w-28 sm:w-36 bg-parchment-300 dark:bg-ink-800 rounded-full h-2.5 overflow-hidden border border-parchment-400 dark:border-ink-700">
-              <div
-                className="bg-gradient-to-r from-blue-500 via-cyan-400 to-amber-500 h-full transition-colors duration-300"
-                style={{
-                  width: `${Math.min(100, (collectedChargeElectrons / fullWellElectrons) * 100)}%`,
-                }}
-              />
-            </div>
-            <span className="font-bold text-xs text-ink-800 dark:text-parchment-200 font-mono">
-              {Math.round((collectedChargeElectrons / fullWellElectrons) * 100)}%
-            </span>
-          </div>
-        </div>
       </div>
     </div>
   );

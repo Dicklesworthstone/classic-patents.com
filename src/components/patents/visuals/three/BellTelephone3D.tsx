@@ -1,17 +1,6 @@
 "use client";
 
-import {
-  Camera,
-  Eye,
-  EyeOff,
-  Mic,
-  RotateCcw,
-  Sparkles,
-  Volume2,
-  VolumeX,
-  Waves,
-  Zap,
-} from "lucide-react";
+import { Camera, Eye, EyeOff, Mic, RotateCcw, Volume2, VolumeX, Waves, Zap } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import * as THREE from "three";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
@@ -31,7 +20,7 @@ interface ScenarioPreset {
   conductivity: number;
 }
 
-const SCENARIOS: ScenarioPreset[] = [
+const _SCENARIOS: ScenarioPreset[] = [
   {
     id: "bell_1876_first_words",
     name: "March 10, 1876 Historic Transmission",
@@ -133,7 +122,7 @@ export function BellTelephone3D() {
     controls.update();
   };
 
-  const applyScenario = (s: ScenarioPreset) => {
+  const _applyScenario = (s: ScenarioPreset) => {
     setAcousticFrequencyHz(s.freqHz);
     updateParam("voiceAmplitude", 40 + s.amplitude * 55);
     setBatteryVoltage(s.voltage);
@@ -558,130 +547,6 @@ export function BellTelephone3D() {
             ))}
           </div>
         )}
-      </div>
-
-      {/* Interactive Controls & Scenario Bar */}
-      <div className="p-4 sm:p-5 bg-parchment-100/90 dark:bg-ink-900/90 border-t border-parchment-300 dark:border-ink-800 space-y-4">
-        {/* Scenario Presets */}
-        <div className="space-y-1.5">
-          <div className="text-xs font-sans font-bold text-ink-700 dark:text-ink-300 uppercase tracking-wider flex items-center gap-1.5">
-            <Sparkles className="w-3.5 h-3.5 text-amber-600" /> Historical Telephone Presets:
-          </div>
-          <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
-            {SCENARIOS.map((s) => (
-              <button
-                key={s.id}
-                type="button"
-                onClick={() => applyScenario(s)}
-                className="p-2.5 rounded-xl border border-parchment-300 dark:border-ink-700 bg-white/70 dark:bg-ink-950/70 hover:bg-parchment-50 dark:hover:bg-ink-800 text-left transition-colors group"
-              >
-                <div className="text-xs font-serif font-bold text-ink-900 dark:text-parchment-100 group-hover:text-amber-700 dark:group-hover:text-amber-400">
-                  {s.name}
-                </div>
-                <div className="text-[10px] font-sans text-ink-500 dark:text-ink-400 line-clamp-2 mt-0.5">
-                  {s.desc}
-                </div>
-              </button>
-            ))}
-          </div>
-        </div>
-
-        {/* Sliders Grid */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 text-xs font-sans pt-1">
-          {/* Frequency */}
-          <div className="space-y-1.5">
-            <div className="flex justify-between font-medium text-ink-900 dark:text-parchment-100">
-              <span>Voice Pitch:</span>
-              <span className="font-bold text-amber-700 dark:text-amber-400">
-                {acousticFrequencyHz} Hz
-              </span>
-            </div>
-            <input
-              type="range"
-              aria-label="Voice Pitch"
-              min="100"
-              max="1200"
-              step="20"
-              value={acousticFrequencyHz}
-              onChange={(e) => setAcousticFrequencyHz(Number(e.target.value))}
-              className="w-full accent-amber-600 cursor-pointer"
-            />
-            <span className="text-[10px] text-ink-500 dark:text-ink-400 block">
-              Vocal chord vibration frequency
-            </span>
-          </div>
-
-          {/* Voice Amplitude */}
-          <div className="space-y-1.5">
-            <div className="flex justify-between font-medium text-ink-900 dark:text-parchment-100">
-              <span>Acoustic Loudness:</span>
-              <span className="font-bold text-blue-600 dark:text-blue-400">
-                {Math.round(voiceAmplitude * 100)}%
-              </span>
-            </div>
-            <input
-              type="range"
-              aria-label="Acoustic Loudness"
-              min="0.1"
-              max="1.0"
-              step="0.05"
-              value={voiceAmplitude}
-              onChange={(e) =>
-                updateParam("voiceAmplitude", Math.round(40 + Number(e.target.value) * 55))
-              }
-              className="w-full accent-blue-600 cursor-pointer"
-            />
-            <span className="text-[10px] text-ink-500 dark:text-ink-400 block">
-              Sound pressure wave amplitude
-            </span>
-          </div>
-
-          {/* Battery Voltage */}
-          <div className="space-y-1.5">
-            <div className="flex justify-between font-medium text-ink-900 dark:text-parchment-100">
-              <span>Battery DC Voltage:</span>
-              <span className="font-bold text-emerald-600 dark:text-emerald-400">
-                {batteryVoltage.toFixed(1)} V
-              </span>
-            </div>
-            <input
-              type="range"
-              aria-label="Battery DC Voltage"
-              min="1.5"
-              max="12.0"
-              step="0.5"
-              value={batteryVoltage}
-              onChange={(e) => setBatteryVoltage(Number(e.target.value))}
-              className="w-full accent-emerald-600 cursor-pointer"
-            />
-            <span className="text-[10px] text-ink-500 dark:text-ink-400 block">
-              Daniell gravity cell potential
-            </span>
-          </div>
-
-          {/* Liquid Conductivity */}
-          <div className="space-y-1.5">
-            <div className="flex justify-between font-medium text-ink-900 dark:text-parchment-100">
-              <span>Acid Electrolyte Conductivity:</span>
-              <span className="font-bold text-purple-600 dark:text-purple-400">
-                {liquidConductivity.toFixed(2)} S/m
-              </span>
-            </div>
-            <input
-              type="range"
-              aria-label="Acid Electrolyte Conductivity"
-              min="0.4"
-              max="2.5"
-              step="0.1"
-              value={liquidConductivity}
-              onChange={(e) => setLiquidConductivity(Number(e.target.value))}
-              className="w-full accent-purple-600 cursor-pointer"
-            />
-            <span className="text-[10px] text-ink-500 dark:text-ink-400 block">
-              Acidulated water concentration
-            </span>
-          </div>
-        </div>
       </div>
     </div>
   );

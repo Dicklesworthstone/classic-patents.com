@@ -1,17 +1,6 @@
 "use client";
 
-import {
-  Camera,
-  Eye,
-  EyeOff,
-  Radio,
-  RotateCcw,
-  Shield,
-  Sparkles,
-  Volume2,
-  VolumeX,
-  Zap,
-} from "lucide-react";
+import { Camera, Eye, EyeOff, Radio, RotateCcw, Shield, Volume2, VolumeX, Zap } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import * as THREE from "three";
 import { FrankenSimEngine } from "@/physics/engine";
@@ -32,7 +21,7 @@ interface ScenarioPreset {
   jamming: boolean;
 }
 
-const SCENARIOS: ScenarioPreset[] = [
+const _SCENARIOS: ScenarioPreset[] = [
   {
     id: "secret_1942",
     name: "1942 Secret System (US 2,292,387)",
@@ -133,7 +122,7 @@ export function LamarrFrequencyHopping3D() {
     controls.update();
   };
 
-  const applyScenario = (s: ScenarioPreset) => {
+  const _applyScenario = (s: ScenarioPreset) => {
     updateParam("channels", s.channels);
     updateParam("hopRate", s.hopRate);
     setIsJammingActive(s.jamming);
@@ -545,103 +534,6 @@ export function LamarrFrequencyHopping3D() {
             ))}
           </div>
         )}
-      </div>
-
-      {/* Interactive Controls & Scenario Bar */}
-      <div className="p-4 sm:p-5 bg-parchment-100/90 dark:bg-ink-900/90 border-t border-parchment-300 dark:border-ink-800 space-y-4">
-        {/* Scenario Presets */}
-        <div className="space-y-1.5">
-          <div className="text-xs font-sans font-bold text-ink-700 dark:text-ink-300 uppercase tracking-wider flex items-center gap-1.5">
-            <Sparkles className="w-3.5 h-3.5 text-amber-600" /> Historical &amp; Technical
-            Scenarios:
-          </div>
-          <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
-            {SCENARIOS.map((s) => (
-              <button
-                key={s.id}
-                type="button"
-                onClick={() => applyScenario(s)}
-                className="p-2.5 rounded-xl border border-parchment-300 dark:border-ink-700 bg-white/70 dark:bg-ink-950/70 hover:bg-parchment-50 dark:hover:bg-ink-800 text-left transition-colors group"
-              >
-                <div className="text-xs font-serif font-bold text-ink-900 dark:text-parchment-100 group-hover:text-amber-700 dark:group-hover:text-amber-400">
-                  {s.name}
-                </div>
-                <div className="text-[10px] font-sans text-ink-500 dark:text-ink-400 line-clamp-2 mt-0.5">
-                  {s.desc}
-                </div>
-              </button>
-            ))}
-          </div>
-        </div>
-
-        {/* Sliders Grid */}
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 pt-1">
-          {/* Hop Rate */}
-          <div className="space-y-1.5">
-            <div className="flex justify-between text-xs font-sans">
-              <span className="font-semibold text-ink-800 dark:text-parchment-200">
-                Hopping Velocity:
-              </span>
-              <span className="font-mono text-amber-700 dark:text-amber-400 font-bold">
-                {hopRateHopsPerSec} Hops/Sec
-              </span>
-            </div>
-            <input
-              type="range"
-              aria-label="Hopping Velocity"
-              min="4"
-              max="30"
-              step="2"
-              value={hopRateHopsPerSec}
-              onChange={(e) => updateParam("hopRate", Number(e.target.value))}
-              className="w-full accent-amber-600 cursor-pointer"
-            />
-            <span className="text-[10px] text-ink-500 dark:text-ink-400 block">
-              Slotted player piano roll tape feed rate
-            </span>
-          </div>
-
-          {/* Carrier Channels Count */}
-          <div className="space-y-1.5">
-            <div className="flex justify-between text-xs font-sans">
-              <span className="font-semibold text-ink-800 dark:text-parchment-200">
-                Channels / Piano Keys:
-              </span>
-              <span className="font-mono text-blue-600 dark:text-blue-400 font-bold">
-                {carrierChannelsCount} Frequencies
-              </span>
-            </div>
-            <input
-              type="range"
-              aria-label="Channels / Piano Keys"
-              min="20"
-              max="88"
-              step="4"
-              value={carrierChannelsCount}
-              onChange={(e) => updateParam("channels", Number(e.target.value))}
-              className="w-full accent-blue-600 cursor-pointer"
-            />
-            <span className="text-[10px] text-ink-500 dark:text-ink-400 block">
-              Total spread spectrum bandwidth allocation
-            </span>
-          </div>
-
-          {/* Jamming Toggle Button */}
-          <div className="flex flex-col justify-end space-y-1.5">
-            <button
-              type="button"
-              onClick={() => setIsJammingActive(!isJammingActive)}
-              className={`w-full py-3 px-4 rounded-xl font-sans font-bold text-sm transition-colors shadow-sm flex items-center justify-center gap-2 ${
-                isJammingActive
-                  ? "bg-red-600 text-white shadow-md ring-2 ring-red-400/50"
-                  : "bg-emerald-600 text-white hover:bg-emerald-700"
-              }`}
-            >
-              <Shield className="w-4 h-4" />
-              {isJammingActive ? "Enemy Barrage Jamming ACTIVE" : "No Hostile Jamming"}
-            </button>
-          </div>
-        </div>
       </div>
     </div>
   );

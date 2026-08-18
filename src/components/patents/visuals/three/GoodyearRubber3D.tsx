@@ -33,7 +33,7 @@ interface ScenarioPreset {
   stretch: number;
 }
 
-const SCENARIOS: ScenarioPreset[] = [
+const _SCENARIOS: ScenarioPreset[] = [
   {
     id: "goodyear_1844",
     name: "1844 Goodyear Vulcanized Rubber (US 3,633)",
@@ -85,8 +85,8 @@ export function GoodyearRubber3D() {
   const sulfurWeightPct = params.sulfurPct ?? 8;
   const cureTemperatureCelsius = params.vulcanTemp ?? 145;
   const [appliedTensileStretch, setAppliedTensileStretch] = useState<number>(1.8);
-  const [showSulfurCrosslinks, setShowSulfurCrosslinks] = useState<boolean>(true);
-  const [showStressVectors, setShowStressVectors] = useState<boolean>(true);
+  const [showSulfurCrosslinks, _setShowSulfurCrosslinks] = useState<boolean>(true);
+  const [showStressVectors, _setShowStressVectors] = useState<boolean>(true);
   const [showCalloutPins, setShowCalloutPins] = useState<boolean>(false);
   const [activeCamera, setActiveCamera] = useState<CameraPreset>("iso");
   const { isAudioMuted, toggleSound: toggleEngine } = usePatentAudio();
@@ -173,7 +173,7 @@ export function GoodyearRubber3D() {
     controls.update();
   };
 
-  const applyScenario = (s: ScenarioPreset) => {
+  const _applyScenario = (s: ScenarioPreset) => {
     updateParam("sulfurPct", s.sulfurPct);
     updateParam("vulcanTemp", s.tempC);
     setAppliedTensileStretch(s.stretch);
@@ -535,156 +535,6 @@ export function GoodyearRubber3D() {
             ))}
           </div>
         )}
-      </div>
-
-      {/* Interactive Controls & Scenario Bar */}
-      <div className="p-4 sm:p-5 bg-parchment-100/90 dark:bg-ink-900/90 border-t border-parchment-300 dark:border-ink-800 space-y-4">
-        {/* Scenario Presets */}
-        <div className="space-y-1.5">
-          <div className="text-xs font-sans font-bold text-ink-700 dark:text-ink-300 uppercase tracking-wider flex items-center gap-1.5">
-            <Sparkles className="w-3.5 h-3.5 text-amber-600" /> Historical &amp; Physical Scenarios:
-          </div>
-          <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
-            {SCENARIOS.map((s) => (
-              <button
-                key={s.id}
-                type="button"
-                onClick={() => applyScenario(s)}
-                className="p-2.5 rounded-xl border border-parchment-300 dark:border-ink-700 bg-white/70 dark:bg-ink-950/70 hover:bg-parchment-50 dark:hover:bg-ink-800 text-left transition-colors group"
-              >
-                <div className="text-xs font-serif font-bold text-ink-900 dark:text-parchment-100 group-hover:text-amber-700 dark:group-hover:text-amber-400">
-                  {s.name}
-                </div>
-                <div className="text-[10px] font-sans text-ink-500 dark:text-ink-400 line-clamp-2 mt-0.5">
-                  <HudText text={s.desc} />
-                </div>
-              </button>
-            ))}
-          </div>
-        </div>
-
-        {/* Sliders Grid */}
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 pt-1">
-          {/* Sulfur Content */}
-          <div className="space-y-1.5">
-            <div className="flex justify-between text-xs font-sans">
-              <span className="font-semibold text-ink-800 dark:text-parchment-200">
-                Sulfur Additive (wt%):
-              </span>
-              <span className="font-mono text-amber-700 dark:text-amber-400 font-bold">
-                {sulfurWeightPct.toFixed(1)}% S
-              </span>
-            </div>
-            <input
-              type="range"
-              aria-label="Sulfur Additive (wt%)"
-              min="0.5"
-              max="15.0"
-              step="0.5"
-              value={sulfurWeightPct}
-              onChange={(e) => updateParam("sulfurPct", Number(e.target.value))}
-              className="w-full accent-amber-600 cursor-pointer"
-            />
-            <span className="text-[10px] text-ink-500 dark:text-ink-400 block">
-              Forms covalent disulfide cross-links (-S_x-)
-            </span>
-          </div>
-
-          {/* Cure Temperature */}
-          <div className="space-y-1.5">
-            <div className="flex justify-between text-xs font-sans">
-              <span className="font-semibold text-ink-800 dark:text-parchment-200">
-                Curing Temperature:
-              </span>
-              <span className="font-mono text-amber-700 dark:text-amber-400 font-bold">
-                {cureTemperatureCelsius}°C ({Math.round((cureTemperatureCelsius * 9) / 5 + 32)}°F)
-              </span>
-            </div>
-            <input
-              type="range"
-              aria-label="Curing Temperature"
-              min="-40"
-              max="190"
-              step="5"
-              value={cureTemperatureCelsius}
-              onChange={(e) => updateParam("vulcanTemp", Number(e.target.value))}
-              className="w-full accent-amber-600 cursor-pointer"
-            />
-            <span className="text-[10px] text-ink-500 dark:text-ink-400 block">
-              Goodyear stove thermal cure (1839)
-            </span>
-          </div>
-
-          {/* Tensile Stretch */}
-          <div className="space-y-1.5">
-            <div className="flex justify-between text-xs font-sans">
-              <span className="font-semibold text-ink-800 dark:text-parchment-200">
-                <HudText text="Applied Tensile Stretch ($\\lambda$):" />
-              </span>
-              <span className="font-mono text-amber-700 dark:text-amber-400 font-bold">
-                {appliedTensileStretch.toFixed(2)}×
-              </span>
-            </div>
-            <input
-              type="range"
-              aria-label="Applied Tensile Stretch (\\lambda)"
-              min="1.0"
-              max="3.2"
-              step="0.05"
-              value={appliedTensileStretch}
-              onChange={(e) => {
-                const val = Number(e.target.value);
-                setAppliedTensileStretch(val);
-                if (!isAudioMuted && Math.random() < 0.2) {
-                  soundEngine.playElastomerSnap(val);
-                }
-              }}
-              className="w-full accent-amber-600 cursor-pointer"
-            />
-            <span className="text-[10px] text-ink-500 dark:text-ink-400 block">
-              <HudText text="Entropic elasticity $\\sigma = G(\\lambda - 1/\\lambda^2)$" />
-            </span>
-          </div>
-        </div>
-
-        {/* Checkbox Toggles & Elastic Memory Bar */}
-        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 pt-1 border-t border-parchment-200 dark:border-ink-800 text-xs font-sans">
-          <div className="flex flex-wrap gap-4 text-ink-700 dark:text-parchment-300">
-            <label className="flex items-center gap-2 cursor-pointer select-none">
-              <input
-                type="checkbox"
-                checked={showSulfurCrosslinks}
-                onChange={(e) => setShowSulfurCrosslinks(e.target.checked)}
-                className="rounded accent-amber-600 cursor-pointer"
-              />
-              <span>Highlight Disulfide Bridges (-S-S-)</span>
-            </label>
-            <label className="flex items-center gap-2 cursor-pointer select-none">
-              <input
-                type="checkbox"
-                checked={showStressVectors}
-                onChange={(e) => setShowStressVectors(e.target.checked)}
-                className="rounded accent-amber-600 cursor-pointer"
-              />
-              <span>Render Tensile Force Vectors</span>
-            </label>
-          </div>
-
-          <div className="flex items-center gap-2 w-full sm:w-auto">
-            <span className="text-ink-600 dark:text-ink-400 text-xs">Elastic Memory:</span>
-            <div className="w-28 sm:w-36 bg-parchment-300 dark:bg-ink-800 rounded-full h-2.5 overflow-hidden border border-parchment-400 dark:border-ink-700">
-              <div
-                className={`h-full transition-colors duration-300 ${
-                  isVulcanized ? "bg-gradient-to-r from-blue-500 to-emerald-500" : "bg-amber-500"
-                }`}
-                style={{ width: `${isVulcanized ? 95 : 20}%` }}
-              />
-            </div>
-            <span className="font-bold text-xs text-ink-800 dark:text-parchment-200">
-              {isVulcanized ? "100% Snap" : "Plastic Flow"}
-            </span>
-          </div>
-        </div>
       </div>
     </div>
   );

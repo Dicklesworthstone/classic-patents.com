@@ -1,20 +1,8 @@
 "use client";
 
-import {
-  Camera,
-  Eye,
-  EyeOff,
-  Flame,
-  Rocket,
-  RotateCcw,
-  Sparkles,
-  Volume2,
-  VolumeX,
-  Zap,
-} from "lucide-react";
+import { Camera, Eye, EyeOff, Flame, Rocket, RotateCcw, Volume2, VolumeX, Zap } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import * as THREE from "three";
-import { HudText } from "@/components/ui/LatexRenderer";
 import { FrankenSimEngine } from "@/physics/engine";
 import { deLavalMeridian, goddardThermo } from "@/physics/thermochem";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
@@ -36,7 +24,7 @@ interface ScenarioPreset {
   gimbalDeg: number;
 }
 
-const SCENARIOS: ScenarioPreset[] = [
+const _SCENARIOS: ScenarioPreset[] = [
   {
     id: "goddard_1926_auburn",
     name: "March 16, 1926 Auburn Launch",
@@ -143,7 +131,7 @@ export function GoddardRocket3D() {
     controls.update();
   };
 
-  const applyScenario = (s: ScenarioPreset) => {
+  const _applyScenario = (s: ScenarioPreset) => {
     updateParam("chamberPressure", s.chamberPsi);
     setFuelFlowRateKgs(s.flowKgs);
     setActiveStage(s.stage);
@@ -569,103 +557,6 @@ export function GoddardRocket3D() {
             ))}
           </div>
         )}
-      </div>
-
-      {/* Interactive Controls & Scenario Bar */}
-      <div className="p-4 sm:p-5 bg-parchment-100/90 dark:bg-ink-900/90 border-t border-parchment-300 dark:border-ink-800 space-y-4">
-        {/* Scenario Presets */}
-        <div className="space-y-1.5">
-          <div className="text-xs font-sans font-bold text-ink-700 dark:text-ink-300 uppercase tracking-wider flex items-center gap-1.5">
-            <Sparkles className="w-3.5 h-3.5 text-amber-600" /> Historical Rocket Propulsion
-            Presets:
-          </div>
-          <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
-            {SCENARIOS.map((s) => (
-              <button
-                key={s.id}
-                type="button"
-                onClick={() => applyScenario(s)}
-                className="p-2.5 rounded-xl border border-parchment-300 dark:border-ink-700 bg-white/70 dark:bg-ink-950/70 hover:bg-parchment-50 dark:hover:bg-ink-800 text-left transition-colors group"
-              >
-                <div className="text-xs font-serif font-bold text-ink-900 dark:text-parchment-100 group-hover:text-amber-700 dark:group-hover:text-amber-400">
-                  {s.name}
-                </div>
-                <div className="text-[10px] font-sans text-ink-500 dark:text-ink-400 line-clamp-2 mt-0.5">
-                  <HudText text={s.desc} />
-                </div>
-              </button>
-            ))}
-          </div>
-        </div>
-
-        {/* Sliders Grid */}
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 pt-1">
-          {/* Chamber Pressure */}
-          <div className="space-y-1.5">
-            <div className="flex justify-between text-xs font-sans">
-              <span className="font-semibold text-ink-800 dark:text-parchment-200">
-                <HudText text="Combustion Pressure ($P_c$):" />
-              </span>
-              <span className="font-mono text-amber-700 dark:text-amber-400 font-bold">
-                {chamberPressurePsi} psi
-              </span>
-            </div>
-            <input
-              type="range"
-              aria-label="Combustion Pressure (P_c)"
-              min="100"
-              max="600"
-              step="20"
-              value={chamberPressurePsi}
-              onChange={(e) => updateParam("chamberPressure", Number(e.target.value))}
-              className="w-full accent-amber-600 cursor-pointer"
-            />
-            <span className="text-[10px] text-ink-500 dark:text-ink-400 block">
-              {"Governs isentropic expansion ratio and I_sp"}
-            </span>
-          </div>
-
-          {/* Nozzle expansion — same Ae/At as the badge / 2D face */}
-          <div className="space-y-1.5">
-            <div className="flex justify-between text-xs font-sans">
-              <span className="font-semibold text-ink-800 dark:text-parchment-200">
-                Nozzle expansion Ae/At
-              </span>
-              <span className="font-mono text-blue-600 dark:text-blue-400 font-bold">
-                {expansionRatio.toFixed(1)}
-              </span>
-            </div>
-            <input
-              type="range"
-              aria-label="Nozzle expansion ratio Ae/At"
-              min="2.0"
-              max="8.0"
-              step="0.1"
-              value={expansionRatio}
-              onChange={(e) => updateParam("expansionRatio", Number(e.target.value))}
-              className="w-full accent-blue-600 cursor-pointer"
-            />
-            <span className="text-[10px] text-ink-500 dark:text-ink-400 block">
-              Exit flare rebuilds the de Laval lathe. Te = {thermo.exhaustTempK} K
-            </span>
-          </div>
-
-          {/* Staging Toggle */}
-          <div className="flex flex-col justify-end space-y-1.5">
-            <button
-              type="button"
-              onClick={() => setActiveStage(activeStage === 1 ? 2 : 1)}
-              className={`w-full py-3 px-4 rounded-xl font-sans font-bold text-sm transition-colors shadow-sm flex items-center justify-center gap-2 ${
-                activeStage === 1
-                  ? "bg-emerald-600 hover:bg-emerald-700 text-white shadow-md"
-                  : "bg-purple-600 hover:bg-purple-700 text-white shadow-md"
-              }`}
-            >
-              <Rocket className="w-4 h-4" />
-              {activeStage === 1 ? "Stage 1 (Booster Firing)" : "Stage 2 (Upper Core Staged)"}
-            </button>
-          </div>
-        </div>
       </div>
     </div>
   );

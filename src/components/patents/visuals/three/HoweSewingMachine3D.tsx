@@ -32,7 +32,7 @@ interface ScenarioPreset {
   tension: number;
 }
 
-const SCENARIOS: ScenarioPreset[] = [
+const _SCENARIOS: ScenarioPreset[] = [
   {
     id: "howe_1846_patent",
     name: "1846 Howe Lockstitch Demonstration",
@@ -84,7 +84,7 @@ export function HoweSewingMachine3D() {
   const stitchingSpeedRpm = params.crankRpm ?? 240;
   const [stitchPitchMm, setStitchPitchMm] = useState<number>(3.5);
   const [threadTensionGrams, setThreadTensionGrams] = useState<number>(45);
-  const [isCranking, setIsCranking] = useState<boolean>(true);
+  const [isCranking, _setIsCranking] = useState<boolean>(true);
   const [showCalloutPins, setShowCalloutPins] = useState<boolean>(false);
   const [activeCamera, setActiveCamera] = useState<CameraPreset>("iso");
   const { isAudioMuted, toggleSound: toggleEngine } = usePatentAudio();
@@ -138,7 +138,7 @@ export function HoweSewingMachine3D() {
     controls.update();
   };
 
-  const applyScenario = (s: ScenarioPreset) => {
+  const _applyScenario = (s: ScenarioPreset) => {
     updateParam("crankRpm", s.rpm);
     setStitchPitchMm(s.pitch);
     setThreadTensionGrams(s.tension);
@@ -412,8 +412,11 @@ export function HoweSewingMachine3D() {
       if (p.isCranking) {
         flywheelGroup.rotation.x = crankAngle;
         needleArmGroup.rotation.z = (stitch.needleY / 45) * 0.45;
+        needleArmGroup.position.y = 1.2 + stitch.needleY / 90;
         shuttleGroup.position.z = (stitch.shuttleX / 60) * 1.2;
+        shuttleGroup.position.x = 2.8 + (stitch.loopOpen ? stitch.loopWidth / 80 : 0);
         threadMesh.visible = stitch.loopOpen;
+        threadMesh.scale.z = stitch.loopOpen ? 1 + stitch.loopWidth / 24 : 1;
 
         cloth.position.x = 0.5 - ((elapsed * Number(p.clothFeedRateMmPerSec) * 0.1) % 2.0);
 
@@ -581,127 +584,6 @@ export function HoweSewingMachine3D() {
             ))}
           </div>
         )}
-      </div>
-
-      {/* Interactive Controls & Scenario Bar */}
-      <div className="p-4 sm:p-5 bg-parchment-100/90 dark:bg-ink-900/90 border-t border-parchment-300 dark:border-ink-800 space-y-4">
-        {/* Scenario Presets */}
-        <div className="space-y-1.5">
-          <div className="text-xs font-sans font-bold text-ink-700 dark:text-ink-300 uppercase tracking-wider flex items-center gap-1.5">
-            <Sparkles className="w-3.5 h-3.5 text-amber-600" /> Historical Stitching Presets:
-          </div>
-          <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
-            {SCENARIOS.map((s) => (
-              <button
-                key={s.id}
-                type="button"
-                onClick={() => applyScenario(s)}
-                className="p-2.5 rounded-xl border border-parchment-300 dark:border-ink-700 bg-white/70 dark:bg-ink-950/70 hover:bg-parchment-50 dark:hover:bg-ink-800 text-left transition-colors group"
-              >
-                <div className="text-xs font-serif font-bold text-ink-900 dark:text-parchment-100 group-hover:text-amber-700 dark:group-hover:text-amber-400">
-                  {s.name}
-                </div>
-                <div className="text-[10px] font-sans text-ink-500 dark:text-ink-400 line-clamp-2 mt-0.5">
-                  {s.desc}
-                </div>
-              </button>
-            ))}
-          </div>
-        </div>
-
-        {/* Sliders Grid */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 pt-1">
-          {/* Stitching Speed */}
-          <div className="space-y-1.5">
-            <div className="flex justify-between text-xs font-sans">
-              <span className="font-semibold text-ink-800 dark:text-parchment-200">
-                Treadle Crank Speed:
-              </span>
-              <span className="font-mono text-amber-700 dark:text-amber-400 font-bold">
-                {stitchingSpeedRpm} RPM
-              </span>
-            </div>
-            <input
-              type="range"
-              aria-label="Treadle Crank Speed"
-              min="60"
-              max="600"
-              step="20"
-              value={stitchingSpeedRpm}
-              onChange={(e) => updateParam("crankRpm", Number(e.target.value))}
-              className="w-full accent-amber-600 cursor-pointer"
-            />
-            <span className="text-[10px] text-ink-500 dark:text-ink-400 block">
-              Harmonic crank shaft oscillation frequency
-            </span>
-          </div>
-
-          {/* Stitch Pitch Length */}
-          <div className="space-y-1.5">
-            <div className="flex justify-between text-xs font-sans">
-              <span className="font-semibold text-ink-800 dark:text-parchment-200">
-                Stitch Length (Pitch):
-              </span>
-              <span className="font-mono text-blue-600 dark:text-blue-400 font-bold">
-                {stitchPitchMm.toFixed(1)} mm
-              </span>
-            </div>
-            <input
-              type="range"
-              aria-label="Stitch Length (Pitch)"
-              min="1.5"
-              max="6.0"
-              step="0.5"
-              value={stitchPitchMm}
-              onChange={(e) => setStitchPitchMm(Number(e.target.value))}
-              className="w-full accent-blue-600 cursor-pointer"
-            />
-            <span className="text-[10px] text-ink-500 dark:text-ink-400 block">
-              Baster plate feed advance per stroke
-            </span>
-          </div>
-
-          {/* Needle-thread tension */}
-          <div className="space-y-1.5">
-            <div className="flex justify-between text-xs font-sans">
-              <span className="font-semibold text-ink-800 dark:text-parchment-200">
-                Needle-Thread Tension:
-              </span>
-              <span className="font-mono text-emerald-600 dark:text-emerald-400 font-bold">
-                {threadTensionGrams} g
-              </span>
-            </div>
-            <input
-              type="range"
-              aria-label="Needle-Thread Tension"
-              min="15"
-              max="90"
-              step="5"
-              value={threadTensionGrams}
-              onChange={(e) => setThreadTensionGrams(Number(e.target.value))}
-              className="w-full accent-emerald-600 cursor-pointer"
-            />
-            <span className="text-[10px] text-ink-500 dark:text-ink-400 block">
-              Slack below 20 g · pucker above 80 g
-            </span>
-          </div>
-
-          {/* Crank Pause Toggle */}
-          <div className="flex flex-col justify-end space-y-1.5">
-            <button
-              type="button"
-              onClick={() => setIsCranking(!isCranking)}
-              className={`w-full py-3 px-4 rounded-xl font-sans font-bold text-sm transition-colors shadow-sm flex items-center justify-center gap-2 ${
-                isCranking
-                  ? "bg-emerald-600 hover:bg-emerald-700 text-white shadow-md"
-                  : "bg-amber-600 hover:bg-amber-700 text-white shadow-md"
-              }`}
-            >
-              <Scissors className="w-4 h-4" />
-              {isCranking ? "Crank Drive RUNNING" : "Crank PAUSED (Inspect Mechanism)"}
-            </button>
-          </div>
-        </div>
       </div>
     </div>
   );

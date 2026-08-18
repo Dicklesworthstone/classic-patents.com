@@ -1,5 +1,5 @@
 import { ImageResponse } from "next/og";
-import { getPatentById } from "@/data/patents";
+import { allPatents, getPatentById } from "@/data/patents";
 
 export const size = {
   width: 1200,
@@ -7,7 +7,11 @@ export const size = {
 };
 export const contentType = "image/png";
 
-export const runtime = "edge";
+export async function generateStaticParams() {
+  return allPatents.map((p) => ({
+    id: p.id,
+  }));
+}
 
 export default async function Image({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;

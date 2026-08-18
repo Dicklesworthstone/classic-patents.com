@@ -9,9 +9,15 @@ export type PhysicsDomain =
   | "aerodynamics_mbd"
   | "electromagnetics_flux"
   | "semiconductor_microarch"
+  | "semiconductor_carrier"
   | "thermodynamics_transport"
+  | "thermo_fluid"
   | "nuclear_kinetics"
-  | "continuum_polymers";
+  | "continuum_polymers"
+  | "continuum_elasticity"
+  | "materials_kinetics"
+  | "optics_waves"
+  | "solid_mechanics";
 
 export interface RefusalBoundary {
   isRefused: boolean;

@@ -1,16 +1,6 @@
 "use client";
 
-import {
-  Camera,
-  Eye,
-  EyeOff,
-  Radio,
-  RotateCcw,
-  Sparkles,
-  Volume2,
-  VolumeX,
-  Zap,
-} from "lucide-react";
+import { Camera, Eye, EyeOff, Radio, RotateCcw, Volume2, VolumeX, Zap } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import * as THREE from "three";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
@@ -29,7 +19,7 @@ interface ScenarioPreset {
   wpm: number;
 }
 
-const SCENARIOS: ScenarioPreset[] = [
+const _SCENARIOS: ScenarioPreset[] = [
   {
     id: "morse_1844_what_hath_god_wrought",
     name: "May 24, 1844 Historic Transmission",
@@ -127,7 +117,7 @@ export function MorseTelegraph3D() {
     controls.update();
   };
 
-  const applyScenario = (s: ScenarioPreset) => {
+  const _applyScenario = (s: ScenarioPreset) => {
     setLineVoltageV(s.voltageV);
     setLineLengthMiles(s.miles);
     setWpmSpeed(s.wpm);
@@ -140,12 +130,12 @@ export function MorseTelegraph3D() {
     updateParam("currentMa", computedCurrentMa);
   }, [computedCurrentMa, updateParam]);
 
-  const handleKeyDown = () => {
+  const _handleKeyDown = () => {
     setKeyIsDown(true);
     if (isPlayingAudio) soundEngine.playMorseClick();
   };
 
-  const handleKeyUp = () => {
+  const _handleKeyUp = () => {
     setKeyIsDown(false);
     if (isPlayingAudio) soundEngine.playMorseClick();
   };
@@ -494,113 +484,6 @@ export function MorseTelegraph3D() {
             ))}
           </div>
         )}
-      </div>
-
-      {/* Interactive Controls & Scenario Bar */}
-      <div className="p-4 sm:p-5 bg-parchment-100/90 dark:bg-ink-900/90 border-t border-parchment-300 dark:border-ink-800 space-y-4">
-        {/* Scenario Presets */}
-        <div className="space-y-1.5">
-          <div className="text-xs font-sans font-bold text-ink-700 dark:text-ink-300 uppercase tracking-wider flex items-center gap-1.5">
-            <Sparkles className="w-3.5 h-3.5 text-amber-600" /> Historical Telegraph Presets:
-          </div>
-          <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
-            {SCENARIOS.map((s) => (
-              <button
-                key={s.id}
-                type="button"
-                onClick={() => applyScenario(s)}
-                className="p-2.5 rounded-xl border border-parchment-300 dark:border-ink-700 bg-white/70 dark:bg-ink-950/70 hover:bg-parchment-50 dark:hover:bg-ink-800 text-left transition-colors group"
-              >
-                <div className="text-xs font-serif font-bold text-ink-900 dark:text-parchment-100 group-hover:text-amber-700 dark:group-hover:text-amber-400">
-                  {s.name}
-                </div>
-                <div className="text-[10px] font-sans text-ink-500 dark:text-ink-400 line-clamp-2 mt-0.5">
-                  {s.desc}
-                </div>
-              </button>
-            ))}
-          </div>
-        </div>
-
-        {/* Sliders Grid & Direct Key Press Trigger */}
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 pt-1 items-center">
-          {/* Direct Key Press */}
-          <div className="space-y-1.5">
-            <button
-              type="button"
-              onMouseDown={handleKeyDown}
-              onMouseUp={handleKeyUp}
-              onTouchStart={handleKeyDown}
-              onTouchEnd={handleKeyUp}
-              className={`w-full py-3.5 px-4 rounded-xl font-sans font-bold text-sm transition-colors shadow-sm flex items-center justify-center gap-2 select-none ${
-                keyIsDown
-                  ? "bg-amber-600 text-white scale-[0.98] shadow-inner"
-                  : "bg-amber-700 hover:bg-amber-800 text-white shadow-md active:scale-95"
-              }`}
-            >
-              <Zap className="w-4 h-4" />
-              {keyIsDown ? "CIRCUIT CLOSED (TAP)" : "PRESS & HOLD KEY"}
-            </button>
-          </div>
-
-          {/* Line Length */}
-          <div className="space-y-1.5">
-            <div className="flex justify-between text-xs font-sans">
-              <span className="font-semibold text-ink-800 dark:text-parchment-200">
-                Line Distance:
-              </span>
-              <span className="font-mono text-blue-600 dark:text-blue-400 font-bold">
-                {lineLengthMiles} Miles
-              </span>
-            </div>
-            <input
-              type="range"
-              aria-label="Line Distance"
-              min="5"
-              max="250"
-              step="5"
-              value={lineLengthMiles}
-              onChange={(e) => {
-                const miles = Number(e.target.value);
-                setLineLengthMiles(miles);
-                updateParam("currentMa", (lineVoltageV / (miles * 12.5 + 150)) * 1000);
-              }}
-              className="w-full accent-blue-600 cursor-pointer"
-            />
-            <span className="text-[10px] text-ink-500 dark:text-ink-400 block">
-              12.5 Ω/mile galvanised iron wire
-            </span>
-          </div>
-
-          {/* Line Voltage */}
-          <div className="space-y-1.5">
-            <div className="flex justify-between text-xs font-sans">
-              <span className="font-semibold text-ink-800 dark:text-parchment-200">
-                Battery Potential:
-              </span>
-              <span className="font-mono text-emerald-600 dark:text-emerald-400 font-bold">
-                {lineVoltageV} Volts DC
-              </span>
-            </div>
-            <input
-              type="range"
-              aria-label="Battery Potential"
-              min="6"
-              max="48"
-              step="2"
-              value={lineVoltageV}
-              onChange={(e) => {
-                const volts = Number(e.target.value);
-                setLineVoltageV(volts);
-                updateParam("currentMa", (volts / totalResistanceOhms) * 1000);
-              }}
-              className="w-full accent-emerald-600 cursor-pointer"
-            />
-            <span className="text-[10px] text-ink-500 dark:text-ink-400 block">
-              Gravity Daniell battery stack
-            </span>
-          </div>
-        </div>
       </div>
     </div>
   );

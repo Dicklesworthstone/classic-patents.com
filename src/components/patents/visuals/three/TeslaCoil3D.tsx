@@ -5,6 +5,7 @@ import { useEffect, useRef, useState } from "react";
 import * as THREE from "three";
 import { HudText } from "@/components/ui/LatexRenderer";
 import { FrankenSimEngine } from "@/physics/engine";
+import { useFrankenSimPhysics } from "@/physics/useFrankenSimPhysics";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { soundEngine } from "@/utils/soundEngine";
 import { createGlowPointTexture, createThreeStudioScene } from "./ThreeStudioScene";
@@ -22,7 +23,7 @@ interface ScenarioPreset {
   toploadPf: number;
 }
 
-const SCENARIOS: ScenarioPreset[] = [
+const _SCENARIOS: ScenarioPreset[] = [
   {
     id: "tesla_1891_patent",
     name: "1891 Resonant Transformer (US 512,340)",
@@ -86,6 +87,25 @@ export function TeslaCoil3D() {
   const secondaryVoltageMv = coilPhysics.secondaryPotentialMv.toFixed(2);
   const streamerLengthInches = coilPhysics.streamerLengthInches.toFixed(1);
 
+  useFrankenSimPhysics("us-533367-tesla-coil", {
+    domain: "electromagnetics_flux",
+    refusal: { isRefused: false },
+    em: {
+      frequencyHz: resonantFreqKhz * 1000,
+      magneticFluxDensityTesla: 0,
+      electricFieldVpm: Number(secondaryVoltageMv) * 1e6,
+      phaseAngleRad: 0,
+      inductanceHenry: 0,
+      capacitanceFarad: 0,
+      currentAmperes: 0,
+      voltageVolts: inputVoltageKv * 1000,
+      powerFactor: 0,
+      efficiencyPct: 0,
+      synchronousRpm: 0,
+      slipFraction: 0,
+    },
+  });
+
   const live = useLiveSimParams({
     resonantFreqKhz,
     sparkGapDistanceMm,
@@ -128,7 +148,7 @@ export function TeslaCoil3D() {
     controls.update();
   };
 
-  const applyScenario = (s: ScenarioPreset) => {
+  const _applyScenario = (s: ScenarioPreset) => {
     updateParam(
       "primaryCap",
       Math.min(90, Math.max(10, 45 * (180 / Math.max(50, s.freqKhz)) ** 2)),
@@ -526,116 +546,6 @@ export function TeslaCoil3D() {
             ))}
           </div>
         )}
-      </div>
-
-      {/* Interactive Controls & Scenario Bar */}
-      <div className="p-4 sm:p-5 bg-parchment-100/90 dark:bg-ink-900/90 border-t border-parchment-300 dark:border-ink-800 space-y-4">
-        {/* Scenario Presets */}
-        <div className="space-y-1.5">
-          <div className="text-xs font-sans font-bold text-ink-700 dark:text-ink-300 uppercase tracking-wider flex items-center gap-1.5">
-            <Sparkles className="w-3.5 h-3.5 text-amber-600" /> Historical Tesla Coil Presets:
-          </div>
-          <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
-            {SCENARIOS.map((s) => (
-              <button
-                key={s.id}
-                type="button"
-                onClick={() => applyScenario(s)}
-                className="p-2.5 rounded-xl border border-parchment-300 dark:border-ink-700 bg-white/70 dark:bg-ink-950/70 hover:bg-parchment-50 dark:hover:bg-ink-800 text-left transition-colors group"
-              >
-                <div className="text-xs font-serif font-bold text-ink-900 dark:text-parchment-100 group-hover:text-amber-700 dark:group-hover:text-amber-400">
-                  {s.name}
-                </div>
-                <div className="text-[10px] font-sans text-ink-500 dark:text-ink-400 line-clamp-2 mt-0.5">
-                  <HudText text={s.desc} />
-                </div>
-              </button>
-            ))}
-          </div>
-        </div>
-
-        {/* Sliders Grid */}
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 pt-1">
-          {/* Resonant Frequency */}
-          <div className="space-y-1.5">
-            <div className="flex justify-between text-xs font-sans">
-              <span className="font-semibold text-ink-800 dark:text-parchment-200">
-                <HudText text="Resonant Frequency ($f_0$):" />
-              </span>
-              <span className="font-mono text-amber-700 dark:text-amber-400 font-bold">
-                {resonantFreqKhz} kHz
-              </span>
-            </div>
-            <input
-              type="range"
-              aria-label="Resonant Frequency (f_0)"
-              min="50"
-              max="500"
-              step="10"
-              value={resonantFreqKhz}
-              onChange={(e) =>
-                updateParam(
-                  "primaryCap",
-                  Math.round(45 * (180 / Math.max(50, Number(e.target.value))) ** 2),
-                )
-              }
-              className="w-full accent-amber-600 cursor-pointer"
-            />
-            <span className="text-[10px] text-ink-500 dark:text-ink-400 block">
-              {"Tuned LC resonant frequency: 1 / (2π√LC)"}
-            </span>
-          </div>
-
-          {/* Spark Gap Distance */}
-          <div className="space-y-1.5">
-            <div className="flex justify-between text-xs font-sans">
-              <span className="font-semibold text-ink-800 dark:text-parchment-200">
-                Spark Gap Distance:
-              </span>
-              <span className="font-mono text-blue-600 dark:text-blue-400 font-bold">
-                {sparkGapDistanceMm} mm
-              </span>
-            </div>
-            <input
-              type="range"
-              aria-label="Spark Gap Distance"
-              min="2"
-              max="30"
-              step="1"
-              value={sparkGapDistanceMm}
-              onChange={(e) => setSparkGapDistanceMm(Number(e.target.value))}
-              className="w-full accent-blue-600 cursor-pointer"
-            />
-            <span className="text-[10px] text-ink-500 dark:text-ink-400 block">
-              Breakdown capacitor discharge voltage
-            </span>
-          </div>
-
-          {/* Primary Voltage */}
-          <div className="space-y-1.5">
-            <div className="flex justify-between text-xs font-sans">
-              <span className="font-semibold text-ink-800 dark:text-parchment-200">
-                Primary Supply:
-              </span>
-              <span className="font-mono text-emerald-600 dark:text-emerald-400 font-bold">
-                {inputVoltageKv} kV AC
-              </span>
-            </div>
-            <input
-              type="range"
-              aria-label="Primary Supply"
-              min="5"
-              max="30"
-              step="1"
-              value={inputVoltageKv}
-              onChange={(e) => setInputVoltageKv(Number(e.target.value))}
-              className="w-full accent-emerald-600 cursor-pointer"
-            />
-            <span className="text-[10px] text-ink-500 dark:text-ink-400 block">
-              Step-up line transformer potential
-            </span>
-          </div>
-        </div>
       </div>
     </div>
   );

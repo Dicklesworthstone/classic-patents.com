@@ -1,21 +1,10 @@
 "use client";
 
-import {
-  Camera,
-  Eye,
-  EyeOff,
-  Radio,
-  RotateCcw,
-  Sparkles,
-  Tv,
-  Volume2,
-  VolumeX,
-  Zap,
-} from "lucide-react";
+import { Camera, Eye, EyeOff, RotateCcw, Sparkles, Tv, Volume2, VolumeX, Zap } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import * as THREE from "three";
-import { HudText } from "@/components/ui/LatexRenderer";
 import { FrankenSimEngine } from "@/physics/engine";
+import { useFrankenSimPhysics } from "@/physics/useFrankenSimPhysics";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { soundEngine } from "@/utils/soundEngine";
 import { createGlowPointTexture, createThreeStudioScene } from "./ThreeStudioScene";
@@ -35,7 +24,7 @@ interface ScenarioPreset {
   lux: number;
 }
 
-const SCENARIOS: ScenarioPreset[] = [
+const _SCENARIOS: ScenarioPreset[] = [
   {
     id: "farnsworth_1927_nominal",
     name: "1927 Green Street Lab Transmission",
@@ -84,7 +73,7 @@ export function FarnsworthTV3D() {
   const [horizontalFreqKhz, setHorizontalFreqKhz] = useState<number>(15.75); // 5 to 30 kHz
   const [verticalFreqHz, setVerticalFreqHz] = useState<number>(60); // 30 to 120 Hz
   const [lightIntensityLux, setLightIntensityLux] = useState<number>(500); // 100 to 2000 Lux
-  const [showElectronBeam, setShowElectronBeam] = useState<boolean>(true);
+  const [showElectronBeam, _setShowElectronBeam] = useState<boolean>(true);
   const [showCalloutPins, setShowCalloutPins] = useState<boolean>(false);
   const [activeCamera, setActiveCamera] = useState<CameraPreset>("iso");
   const { isAudioMuted, toggleSound: toggleEngine } = usePatentAudio();
@@ -95,12 +84,28 @@ export function FarnsworthTV3D() {
   const velocityFractionC = (beamState.relativisticBeta * 100).toFixed(1);
   const photocathodeCurrentUa = (lightIntensityLux * 0.045).toFixed(1);
 
+  useFrankenSimPhysics("us-1773980-farnsworth-tv", {
+    domain: "semiconductor_microarch",
+    refusal: { isRefused: false },
+    semi: {
+      biasVoltageVolts: acceleratingVoltageKv * 1000,
+      currentGainAlpha: 0,
+      holeDiffusionCoefficientCm2ps: 0,
+      chargeTransferEfficiencyPct: 0,
+      clockPeriodNs: 0,
+      busBandwidthMbps: 0,
+      electronVelocityMps: velocityMps,
+      relativisticFractionC: Number(velocityFractionC),
+    },
+  });
+
   const live = useLiveSimParams({
     acceleratingVoltageKv,
     horizontalFreqKhz,
     verticalFreqHz,
     showElectronBeam,
     isAudioMuted,
+    velocityMps,
   });
 
   const controlsRef = useRef<any>(null);
@@ -137,7 +142,7 @@ export function FarnsworthTV3D() {
     controls.update();
   };
 
-  const applyScenario = (s: ScenarioPreset) => {
+  const _applyScenario = (s: ScenarioPreset) => {
     updateParam("anodeVoltage", s.voltageKv * 1000);
     setHorizontalFreqKhz(s.hFreqKhz);
     setVerticalFreqHz(s.vFreqHz);
@@ -369,7 +374,7 @@ export function FarnsworthTV3D() {
       const vSawtooth = ((elapsed * vFreq) % 1.0) * 2 - 1;
 
       const bPos = beamPos;
-      const beamVelocityScale = Math.sqrt(p.acceleratingVoltageKv / 3.5) * 25.0;
+      const beamVelocityScale = (p.velocityMps / 1e6) * 0.71;
 
       for (let i = 0; i < beamCount; i++) {
         const idx = i * 3;
@@ -541,102 +546,6 @@ export function FarnsworthTV3D() {
             ))}
           </div>
         )}
-      </div>
-
-      {/* Interactive Controls & Scenario Bar */}
-      <div className="p-4 sm:p-5 bg-parchment-100/90 dark:bg-ink-900/90 border-t border-parchment-300 dark:border-ink-800 space-y-4">
-        {/* Scenario Presets */}
-        <div className="space-y-1.5">
-          <div className="text-xs font-sans font-bold text-ink-700 dark:text-ink-300 uppercase tracking-wider flex items-center gap-1.5">
-            <Sparkles className="w-3.5 h-3.5 text-amber-600" /> Historical Television Presets:
-          </div>
-          <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
-            {SCENARIOS.map((s) => (
-              <button
-                key={s.id}
-                type="button"
-                onClick={() => applyScenario(s)}
-                className="p-2.5 rounded-xl border border-parchment-300 dark:border-ink-700 bg-white/70 dark:bg-ink-950/70 hover:bg-parchment-50 dark:hover:bg-ink-800 text-left transition-colors group"
-              >
-                <div className="text-xs font-serif font-bold text-ink-900 dark:text-parchment-100 group-hover:text-amber-700 dark:group-hover:text-amber-400">
-                  {s.name}
-                </div>
-                <div className="text-[10px] font-sans text-ink-500 dark:text-ink-400 line-clamp-2 mt-0.5">
-                  <HudText text={s.desc} />
-                </div>
-              </button>
-            ))}
-          </div>
-        </div>
-
-        {/* Sliders Grid */}
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 pt-1">
-          {/* Anode Voltage */}
-          <div className="space-y-1.5">
-            <div className="flex justify-between text-xs font-sans">
-              <span className="font-semibold text-ink-800 dark:text-parchment-200">
-                Anode Accelerating Voltage:
-              </span>
-              <span className="font-mono text-amber-700 dark:text-amber-400 font-bold">
-                {acceleratingVoltageKv.toFixed(1)} kV
-              </span>
-            </div>
-            <input
-              type="range"
-              aria-label="Anode Accelerating Voltage"
-              min="1.0"
-              max="6.0"
-              step="0.2"
-              value={acceleratingVoltageKv}
-              onChange={(e) => updateParam("anodeVoltage", Number(e.target.value) * 1000)}
-              className="w-full accent-amber-600 cursor-pointer"
-            />
-            <span className="text-[10px] text-ink-500 dark:text-ink-400 block">
-              Longitudinal electrostatic acceleration
-            </span>
-          </div>
-
-          {/* Horizontal Frequency */}
-          <div className="space-y-1.5">
-            <div className="flex justify-between text-xs font-sans">
-              <span className="font-semibold text-ink-800 dark:text-parchment-200">
-                Horizontal Line Rate:
-              </span>
-              <span className="font-mono text-blue-600 dark:text-blue-400 font-bold">
-                {horizontalFreqKhz.toFixed(2)} kHz
-              </span>
-            </div>
-            <input
-              type="range"
-              aria-label="Horizontal Line Rate"
-              min="5.0"
-              max="30.0"
-              step="0.5"
-              value={horizontalFreqKhz}
-              onChange={(e) => setHorizontalFreqKhz(Number(e.target.value))}
-              className="w-full accent-blue-600 cursor-pointer"
-            />
-            <span className="text-[10px] text-ink-500 dark:text-ink-400 block">
-              Sawtooth current in magnetic deflection yoke
-            </span>
-          </div>
-
-          {/* Beam Render Toggle */}
-          <div className="flex flex-col justify-end space-y-1.5">
-            <button
-              type="button"
-              onClick={() => setShowElectronBeam(!showElectronBeam)}
-              className={`w-full py-3 px-4 rounded-xl font-sans font-bold text-sm transition-colors shadow-sm flex items-center justify-center gap-2 ${
-                showElectronBeam
-                  ? "bg-emerald-600 hover:bg-emerald-700 text-white shadow-md"
-                  : "bg-amber-600 hover:bg-amber-700 text-white shadow-md"
-              }`}
-            >
-              <Radio className="w-4 h-4" />
-              {showElectronBeam ? "Electron Ray VISIBLE" : "Electron Ray HIDDEN"}
-            </button>
-          </div>
-        </div>
       </div>
     </div>
   );

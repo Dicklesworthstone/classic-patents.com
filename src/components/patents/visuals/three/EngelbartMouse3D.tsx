@@ -32,7 +32,7 @@ interface ScenarioPreset {
   cpi: number;
 }
 
-const SCENARIOS: ScenarioPreset[] = [
+const _SCENARIOS: ScenarioPreset[] = [
   {
     id: "horizontal",
     name: "Pure X-Axis Tracking",
@@ -138,7 +138,7 @@ export function EngelbartMouse3D() {
     controls.update();
   };
 
-  const applyScenario = (s: ScenarioPreset) => {
+  const _applyScenario = (s: ScenarioPreset) => {
     updateParam("mouseSpeed", s.speed);
     setMouseTrajectory(s.trajectory);
     setCpiResolution(s.cpi);
@@ -147,7 +147,7 @@ export function EngelbartMouse3D() {
     }
   };
 
-  const handleManualClick = () => {
+  const _handleManualClick = () => {
     setIsClicking(true);
     if (!isAudioMuted) {
       soundEngine.playMicroswitchClick();
@@ -599,101 +599,6 @@ export function EngelbartMouse3D() {
             ))}
           </div>
         )}
-      </div>
-
-      {/* Interactive Controls & Scenario Bar */}
-      <div className="p-4 sm:p-5 bg-parchment-100/90 dark:bg-ink-900/90 border-t border-parchment-300 dark:border-ink-800 space-y-4">
-        {/* Scenario Presets */}
-        <div className="space-y-1.5">
-          <div className="text-xs font-sans font-bold text-ink-700 dark:text-ink-300 uppercase tracking-wider flex items-center gap-1.5">
-            <Sparkles className="w-3.5 h-3.5 text-amber-600" /> Historical Kinematic Scenarios:
-          </div>
-          <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
-            {SCENARIOS.map((s) => (
-              <button
-                key={s.id}
-                type="button"
-                onClick={() => applyScenario(s)}
-                className="p-2.5 rounded-xl border border-parchment-300 dark:border-ink-700 bg-white/70 dark:bg-ink-950/70 hover:bg-parchment-50 dark:hover:bg-ink-800 text-left transition-colors group"
-              >
-                <div className="text-xs font-serif font-bold text-ink-900 dark:text-parchment-100 group-hover:text-amber-700 dark:group-hover:text-amber-400">
-                  {s.name}
-                </div>
-                <div className="text-[10px] font-sans text-ink-500 dark:text-ink-400 line-clamp-2 mt-0.5">
-                  {s.desc}
-                </div>
-              </button>
-            ))}
-          </div>
-        </div>
-
-        {/* Sliders Grid & Click Button */}
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 pt-1 items-center">
-          {/* Tracking Trajectory */}
-          <div className="space-y-1.5">
-            <div className="flex justify-between text-xs font-sans">
-              <span className="font-semibold text-ink-800 dark:text-parchment-200">
-                Movement Pattern:
-              </span>
-              <span className="font-mono text-amber-700 dark:text-amber-400 font-bold uppercase">
-                {mouseTrajectory}
-              </span>
-            </div>
-            <div className="grid grid-cols-4 gap-1">
-              {(["figure8", "circle", "horizontal", "vertical"] as const).map((traj) => (
-                <button
-                  key={traj}
-                  type="button"
-                  onClick={() => setMouseTrajectory(traj)}
-                  className={`py-1.5 text-xs rounded-lg font-sans capitalize transition-colors ${
-                    mouseTrajectory === traj
-                      ? "bg-amber-600 text-white font-bold"
-                      : "bg-white/70 dark:bg-ink-950/70 text-ink-700 dark:text-parchment-300 border border-parchment-300 dark:border-ink-700"
-                  }`}
-                >
-                  {traj === "figure8" ? "Fig-8" : traj}
-                </button>
-              ))}
-            </div>
-          </div>
-
-          {/* Displacement Velocity */}
-          <div className="space-y-1.5">
-            <div className="flex justify-between text-xs font-sans">
-              <span className="font-semibold text-ink-800 dark:text-parchment-200">
-                Tracking Velocity:
-              </span>
-              <span className="font-mono text-amber-700 dark:text-amber-400 font-bold">
-                {displacementSpeedMmSec} mm/s
-              </span>
-            </div>
-            <input
-              type="range"
-              aria-label="Tracking Velocity"
-              min="30"
-              max="300"
-              step="10"
-              value={displacementSpeedMmSec}
-              onChange={(e) => updateParam("mouseSpeed", Number(e.target.value))}
-              className="w-full accent-amber-600 cursor-pointer"
-            />
-          </div>
-
-          {/* Microswitch Click Button */}
-          <div className="flex flex-col justify-end space-y-1.5">
-            <button
-              type="button"
-              onClick={handleManualClick}
-              className={`w-full py-3 px-4 rounded-xl font-sans font-bold text-sm transition-colors shadow-sm flex items-center justify-center gap-2 ${
-                isClicking
-                  ? "bg-red-700 text-white scale-95 shadow-inner ring-2 ring-red-400"
-                  : "bg-gradient-to-r from-red-600 to-red-700 hover:from-red-500 hover:to-red-600 text-white shadow-md"
-              }`}
-            >
-              <Mouse className="w-4 h-4" /> Click Red Microswitch Button
-            </button>
-          </div>
-        </div>
       </div>
     </div>
   );

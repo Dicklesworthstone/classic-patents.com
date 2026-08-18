@@ -20,7 +20,7 @@ interface ScenarioPreset {
   layer: "all" | "silicon" | "oxide" | "metal";
 }
 
-const SCENARIOS: ScenarioPreset[] = [
+const _SCENARIOS: ScenarioPreset[] = [
   {
     id: "noyce_1959_patent",
     name: "1959 Planar Monolithic Patent (US 2,981,877)",
@@ -115,7 +115,7 @@ export function NoycePlanarIC3D() {
     controls.update();
   };
 
-  const applyScenario = (s: ScenarioPreset) => {
+  const _applyScenario = (s: ScenarioPreset) => {
     setClockFrequencyMhz(s.clockMhz);
     updateParam("oxideThickness", s.oxideNm / 1000);
     setActiveLayer(s.layer);
@@ -463,120 +463,6 @@ export function NoycePlanarIC3D() {
             ))}
           </div>
         )}
-      </div>
-
-      {/* Interactive Controls & Scenario Bar */}
-      <div className="p-4 sm:p-5 bg-parchment-100/90 dark:bg-ink-900/90 border-t border-parchment-300 dark:border-ink-800 space-y-4">
-        {/* Scenario Presets */}
-        <div className="space-y-1.5">
-          <div className="text-xs font-sans font-bold text-ink-700 dark:text-ink-300 uppercase tracking-wider flex items-center gap-1.5">
-            <Sparkles className="w-3.5 h-3.5 text-amber-600" /> Historical Planar IC Presets:
-          </div>
-          <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
-            {SCENARIOS.map((s) => (
-              <button
-                key={s.id}
-                type="button"
-                onClick={() => applyScenario(s)}
-                className="p-2.5 rounded-xl border border-parchment-300 dark:border-ink-700 bg-white/70 dark:bg-ink-950/70 hover:bg-parchment-50 dark:hover:bg-ink-800 text-left transition-colors group"
-              >
-                <div className="text-xs font-serif font-bold text-ink-900 dark:text-parchment-100 group-hover:text-amber-700 dark:group-hover:text-amber-400">
-                  {s.name}
-                </div>
-                <div className="text-[10px] font-sans text-ink-500 dark:text-ink-400 line-clamp-2 mt-0.5">
-                  <HudText text={s.desc} />
-                </div>
-              </button>
-            ))}
-          </div>
-        </div>
-
-        {/* Sliders Grid & Layer Selector */}
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 pt-1">
-          {/* Clock Rate */}
-          <div className="space-y-1.5">
-            <div className="flex justify-between text-xs font-sans">
-              <span className="font-semibold text-ink-800 dark:text-parchment-200">
-                Clock Rate:
-              </span>
-              <span className="font-mono text-amber-700 dark:text-amber-400 font-bold">
-                {clockFrequencyMhz} MHz
-              </span>
-            </div>
-            <input
-              type="range"
-              aria-label="Clock Rate"
-              min="1"
-              max="50"
-              step="1"
-              value={clockFrequencyMhz}
-              onChange={(e) => setClockFrequencyMhz(Number(e.target.value))}
-              className="w-full accent-amber-600 cursor-pointer"
-            />
-            <span className="text-[10px] text-ink-500 dark:text-ink-400 block">
-              Logic gate switching frequency
-            </span>
-          </div>
-
-          {/* Oxide Thickness */}
-          <div className="space-y-1.5">
-            <div className="flex justify-between text-xs font-sans">
-              <span className="font-semibold text-ink-800 dark:text-parchment-200">
-                SiO₂ Oxide Thickness:
-              </span>
-              <span className="font-mono text-blue-600 dark:text-blue-400 font-bold">
-                {oxideLayerThicknessNm} nm
-              </span>
-            </div>
-            <input
-              type="range"
-              aria-label="SiO₂ Oxide Thickness"
-              min="100"
-              max="1000"
-              step="50"
-              value={oxideLayerThicknessNm}
-              onChange={(e) =>
-                updateParam("oxideThickness", Number((Number(e.target.value) / 1000).toFixed(3)))
-              }
-              className="w-full accent-blue-600 cursor-pointer"
-            />
-            <span className="text-[10px] text-ink-500 dark:text-ink-400 block">
-              Passivation dielectric layer depth
-            </span>
-          </div>
-
-          {/* Planar Layer View Filter */}
-          <div className="space-y-1.5">
-            <div className="flex justify-between text-xs font-sans">
-              <span className="font-semibold text-ink-800 dark:text-parchment-200">
-                Exploded Layer View:
-              </span>
-            </div>
-            <div className="grid grid-cols-4 gap-1 pt-0.5">
-              {(
-                [
-                  ["all", "All"],
-                  ["silicon", "Si"],
-                  ["oxide", "SiO₂"],
-                  ["metal", "Al Metal"],
-                ] as const
-              ).map(([lKey, lLabel]) => (
-                <button
-                  key={lKey}
-                  type="button"
-                  onClick={() => setActiveLayer(lKey)}
-                  className={`py-1.5 px-1 rounded-lg text-xs font-semibold border transition-colors text-center ${
-                    activeLayer === lKey
-                      ? "bg-amber-700 text-white border-amber-800 shadow-sm"
-                      : "bg-white/80 dark:bg-ink-800 text-ink-700 dark:text-ink-300 border-parchment-300 dark:border-ink-700"
-                  }`}
-                >
-                  {lLabel}
-                </button>
-              ))}
-            </div>
-          </div>
-        </div>
       </div>
     </div>
   );
