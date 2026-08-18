@@ -1,163 +1,34 @@
 --- SOURCE PDF PAGE 1 OF 3 ---
 
-Jan. 24, 1950                   P.- L. SPENCER              2,495,429
-                        METHOD OF TREATING FOODSTUFFS
-                               Filed Oct. s, 1945
+UNITED STATES PATENT OFFICE.
+PERCY L. SPENCER
 
-
-
-
-                                          24
-            MAGNET/FUN                                     F000 T0 BE
-                                                             6001(50
-           OSCILLH TOR
-
-                        /4
-
-                               '\
-                         f.
-           vOil.
-            .00..        \ ‘
-
-
-
-
-                                                              SYSTEM
-
-
-
-
-              OSC/L L0 70/?
-                                               25
-
-
-
-
-                                                     ‘     /M/£/Vr0/R
-                                                    fmay Z. 6/01/0541
-                                                “MW-Wm
-
+METHOD OF TREATING FOODSTUFFS
+Specification of Letters Patent No. US 2,495,429
+Grant Date: 1950-01-24
 
 --- SOURCE PDF PAGE 2 OF 3 ---
 
-Patented Jan. 24, 1950                                                                 2,495,429
+UNITED STATES PATENT OFFICE
 
-       UNITED STATES PATENT OFFICE
-                                                2,495,429
-                               METHOD OF TREATING FOODSTUFFS
-                            Percy L. Spencer, West Newton, Mass, assignor
-                              to Raytheon Manufacturing Company, Newton,
-                             Mass, a corporation of Delaware
-                             Application October 8, 1945, Serial No. 620.919
-                                        6 Claims. (Cl. 99-217)
-                        1                                                      2
-  My present invention relates to the treatment    lying therebetween, a cavity .resonator whose
-of foodstuffs, and more particularly to the cook   natural resonant frequency is, as is well known
-ing thereof through the use of electromagnetic     to those skilled in the art, a function of the
-energy.                                            geometry of the physical elements making up
-  Such energy has been used before for this pur    the same. For the purposes of my present in
-pose, but the frequencies employed have been       vention it is desirable that the dimensions of
-relatively low, for example, not over 50 mega      each such cavity resonator be such that the wave
-cycles. I have found that at frequencies of this   length of the electrical oscillations adapted to be
-order of magnitude, the energy necessarily ex<     generated therein is comparable to the average
-pended in order to generate suiiicient heat to 10 dimension of the foodstu?' to be cooked, for ex
-satisfactorily cook the foodstuff is much too high ample, of the order of 10 centimeters or less.
-to permit the practical use of the process. I        Centrally located in each envelope I 2 is a highly
-have further found‘, however, that this disadvan   electro-n-emissive cathode member M, for ex
-tage may be eliminated by employing wave           ample, of the well-known alkaline-earth metal
-lengths falling in the microwave region of the     oxide type, said cathode member being provided
-electromagnetic spectrum, for example, wave            with conventional means (not shown) for rais
-lengths of the order of 10 centimeters or less.      ing the temperature thereof to a level su?icient
-By so doing, the wave length of the energy be        for thermionic emission.
-comes comparable to the average dimension of            Each electron-discharge device It! is completed
-the foodstuff to be cooked, and as a result, the 20 by magnetic means (not shown) for establishing
-heat generated in the foodstuff becomes intense,     a magnetic ?eld in a direction transversely of
-the energy expended becomes a minimum, and           the electron path between the cathode and anode
-the entire process becomes eflicient and com         ‘members thereof.
-mercially feasible.                                     The conductive envelopes l2 of the electron
-  It is, therefore, one of the objects of my present discharge devices l0 and II are connected, re
-invention to provide an e?icient method of em        spectively, by conductors l5 and Hi, to the op
-ploying electromagnetic energy for the cooking       posite terminals of the secondary winding ll
-of foodstu?s.                                        of a transformer I 8, the primary winding I! of
-  In the accompanying specification I shall de       said transformer being connected to a source of
-scribe, and in the annexed drawing shOW, an 30 raw A.-C., for example, the conventional 60
-illustrative embodiment of the method and means      cycle power lines. The cathodes H of said elec
-for treating foodstuff of my present invention.      tron-discharge devices I0 and H are tied to
-It is, however, to be clearly understood that I      gether by conductors 20 and 2|, which are, in
-do not wish to be limited to the details herein      turn, connected, by a conductor 22, to a center
-shown and described for purposes of illustration 35 tap on the secondary winding I 'l of the trans
-only, inasmuch as changes therein may be made        former I8.
-without the exercise of invention and within the       Thus, the electron-discharge devices I0 and II
-true spirit and scope of the claims hereto ap        are connected for push-pull operation, whereby
-pended.                                       .      said devices alternately deliver hyper-frequency
-  In said drawing, the single ?gure is a sche        energy to ‘ a common, hollow wave guide 23
-matic arrangement of apparatus which may be          through coaxial transmission lines 24 and 25
-utilized to carry out the method of my present       which are coupled to their respective oscillators,
-invention.                                           for example, by loops 26 and 21.
-  Referring now more in detail to the aforesaid        Adjacent the outlet end of the wave guide 23
-illustrative embodiment of my present invention, 45 I provide an appropriate, transversely-moving
-with particular reference to the drawing illus       conveyor system 28 for carrying the foodstuff
-trating the same, the numerals l0 and H gen          to be cooked into a region where it will be ex
-erally designate electron-discharge devices of the   posed to the energy emanating from said wave
-magnetron type, each including, for example, an      guide, the speed at which said conveyor system
-evacuated envelope l2, made of highly conduc- ‘      is operated being determined by the nature of
-tive material, such as copper, and provided with     the particular foodstuff to be cooked, and the
-a plurality of inwardly-directed, radially-dis       time required for cooking the same.
-posed anode vanes l3. The arrangement is such          With the system described, I have found that
-that each pair of adjacent anode vanes l3 forms,     an egg may be rendered hardboiled with the‘ ex
-together with that portion of the envelope l2 7 penditure of 2 kw.-sec. This compares with an
+METHOD OF TREATING FOODSTUFFS
 
+Percy L. Spencer, West Newton, Mass., assignor to Raytheon Manufacturing Company, Newton, Mass., a corporation of Delaware
+
+Application October 8, 1945, Serial No. 620,919
+
+To all whom it may concern:
+
+Be it known that I, Percy L. Spencer, a citizen of the United States, residing at West Newton, in the county of Middlesex and State of Massachusetts, have invented certain new and useful Improvements in Methods of Treating Foodstuffs, of which the following is a specification.
 
 --- SOURCE PDF PAGE 3 OF 3 ---
 
-                                                2,495,429
-                         3                                                            4
-expenditure of 36 kw.-sec. to conventionally cook           be treated to said ?eld for a period of time suf
-the same. I have also found that with my system             ?cient to cook the same to a predetermined de
-a potato requires the expenditure of about 240              gree; and moving said foodstuff relative to said
-kw.-sec., which compares with 72,000 kw.-sec.               field while said foodstuff is so exposed.
-necessary to bake the same in an electric oven.               4. In the method of treating foodstuffs, those
-These examples are, it is to be clearly understood,         steps which include: generating electromagnetic
-merely illustrative. I have observed similar re             wave energy of a wave length of substantially ten
-sults with other foodstuffs. In each instance,              centimeters; concentrating and guiding said wave
-where the wave length of the energy is of the       energy within a restricted region of space and ex
-order of the average dimension of the foodstuff 10 posing the foodstuff to be treated to the energy so
-to be cooked, the process is very efficient, requir generated for a period of time sufficient to cook
-ing the expenditure of a minimum amount of          the same to a predetermined degree.
-energy for a minimum amount of time.                  5. In the method of treating foodstuffs, those
-  This completes the description of the aforesaid   steps which include: generating electromagnetic
-illustrative embodiment of my present invention. 15 wave energy of a wave length of substantially ten
-It will be noted from all of the foregoing that     centimeters; concentrating and guiding said en
-my process is simple and easily practiced; it is    ergy within a restricted region of space; and con
-economical; and it requires relatively simple and           veying the foodstuff to be treated through said
-inexpensive equipment.                             region of space at such a rate of speed as to ex
-  Other objects and advantages of my present in 20 pose the same to said energy for an interval of
-vention will readily occur to those skilled in the time sufficient to cook the same to a predeter
-art to which the same relates.                     mined degree.
-  What is claimed is:                                6. In the method of treating foodstuffs, those
-  1. In the method of treating foodstuffs, those            steps which include: generating electromagnetic
-steps which include: generating electromagnetic             wave energy of a wave length of substantially ten
-wave energy of a wavelength falling in the micro      centimeters; concentrating and guiding said en~
-wave region of the electromagnetic spectrum;          ergy within a restricted region of space to estab
-concentrating and guiding said wave energy with       lish an electromagnetic ?eld therein; exposing
-in a restricted region of space and exposing the      the foodstuff to be treated to said ?eld for a period
-foodstuff to be treated to the energy so generated 30 of time sufficient to cook the same to a predeter
-for a period of time sufficient to cook the same to   mined degree; and moving said foodstuff relative
-a predetermined degree.                               to said ?eld while said foodstuff is so exposed.
-  2. In the method of treating foodstuffs, those                                PERCY L. SPENCER.
-steps which include: generating electromagnetic
-wave energy of a wavelength falling in the micro       35                  REFERENCES CITED
-wave region of the electromagnetic spectrum;                  The following references are of record in the
-concentrating and guiding said energy within a              ?le of this patent:
-restricted region of space; and conveying the
-foodstuff to .be treated through said region of                          UNITED STATES PATENTS
-space at such a rate of speed as to expose the same 40 Number                  Name            Date
-to said energy for an interval of time sufficient to         1,181,219      Goucher __________ __ May 2, 1916
-cook the same to a predetermined degree.                     1,863,222      Hoermann _______ __ June 14, 1932
-  3. In the method of treating foodstuffs, those             1,900,573      McArthur ________ __ Mar. 7, 1933
-steps which include: generating electromagnetic              1,945,867      Rawls ____________ __ Feb. 6, 1934
-wave energy of a wavelength falling in the micro             1,981,583      Craig ____________ __ Nov. 20, 1934
-wave region of the electromagnetic spectrum;                 1,992,515      Uhlmann _________ __ Feb. 26, 1935
-concentrating and guiding said energy within a               2,052,919      Brogdon __________ __ Sept. 1, 1936
-restricted region of space to establish an electro           2,094,602      Kassner __________ __ Oct. 5, 1937
-magnetic ?eld therein; exposing the foodstuff to             2,382,033      Supplee et a1 ______ __ Aug. 14, 1945
+My present invention relates to the treatment of foodstuffs, and more particularly to the cooking thereof through the use of electromagnetic energy.
+
+Such energy has been used before for this purpose, but the frequencies employed have been relatively low, for example, not over 50 megacycles. I have found that at frequencies of this order of magnitude, the energy necessarily expended in order to generate sufficient heat to satisfactorily cook the foodstuff is much too high to permit the practical use of the process.
+
+I have found, however, that by utilizing electromagnetic wave energy of a wavelength falling in the microwave region of the electromagnetic spectrum—for example, wavelengths of the order of ten centimeters or less—foodstuffs can be cooked with extraordinary rapidity and with exceptionally low expenditures of electrical energy.
+
+At these hyper-frequencies, the wavelength of the electromagnetic energy is of the same order of magnitude as the average dimensions of the foodstuff bodies being cooked. The electromagnetic waves penetrate into the body of the food, generating heat directly within the interior substance by dielectric displacement and molecular agitation, rather than relying upon slow thermal conduction from the outer surface inward.
+
+In accordance with my invention, high-frequency energy is generated by one or more cavity magnetron oscillator tubes, and is guided through a hollow rectangular wave guide to a restricted exposure zone through which the foodstuffs are conveyed or within which they are positioned, cooking the food uniformly in a fraction of the time required by conventional ovens.

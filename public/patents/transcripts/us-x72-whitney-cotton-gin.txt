@@ -1,18 +1,15 @@
 UNITED STATES PATENT OFFICE.
-
 ELI WHITNEY, OF MULBERRY GROVE, GEORGIA.
 
 COTTON GIN.
 
-<dfn title="An open document ('litterae patentes') issued by a sovereign or government under public seal, granting an inventor exclusive legal monopoly rights to manufacture, use, and vend an invention. (Modern: Granted Patent Document / Certificate)" class="cursor-help underline decoration-dotted decoration-amber-600 dark:decoration-amber-400 decoration-2 underline-offset-4 text-ink-950 dark:text-parchment-50 hover:bg-amber-500/10 dark:hover:bg-amber-400/10 rounded px-0.5 transition-colors">Letters Patent</dfn> No. X72. Dated March 14,
+Letters Patent No. X72. Dated March 14, 1794.
+Application filed June 20, 1793.
 
-1794. Application filed June 20,
+THE SCHEDULE TO WHICH THESE LETTERS PATENT ARE REFERRED.
 
-1793.
-
-THE SCHEDULE TO WHICH THESE <dfn title="An open document ('litterae patentes') issued by a sovereign or government under public seal, granting an inventor exclusive legal monopoly rights to manufacture, use, and vend an invention. (Modern: Granted Patent Document / Certificate)" class="cursor-help underline decoration-dotted decoration-amber-600 dark:decoration-amber-400 decoration-2 underline-offset-4 text-ink-950 dark:text-parchment-50 hover:bg-amber-500/10 dark:hover:bg-amber-400/10 rounded px-0.5 transition-colors">LETTERS PATENT</dfn> ARE REFERRED.
-
-To all to whom these presents shall come: BE IT KNOWN that I, ELI WHITNEY, a citizen of the State of Massachusetts, residing at Mulberry Grove, in the County of Chatham and State of Georgia, have invented a new and useful machine for ginning and cleaning cotton, of which the following is a <dfn title="The comprehensive written description of an invention and the manner of constructing and operating it, in terms sufficiently clear to enable any person skilled in the art to replicate it. (Modern: Patent Detailed Description & Embodiments)" class="cursor-help underline decoration-dotted decoration-amber-600 dark:decoration-amber-400 decoration-2 underline-offset-4 text-ink-950 dark:text-parchment-50 hover:bg-amber-500/10 dark:hover:bg-amber-400/10 rounded px-0.5 transition-colors">specification</dfn>:
+To all to whom these presents shall come:
+BE IT KNOWN that I, ELI WHITNEY, a citizen of the State of Massachusetts, residing at Mulberry Grove, in the County of Chatham and State of Georgia, have invented a new and useful machine for ginning and cleaning cotton, of which the following is a specification:
 
 The nature of my invention consists in a machine by which the seeds of short-staple cotton are separated from the lint or wool with great rapidity and with small labor.
 

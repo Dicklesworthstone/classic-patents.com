@@ -1,10 +1,27 @@
-UNITED STATES PATENT OFFICE. JOHN BARDEEN AND WALTER H. BRATTAIN, OF SUMMIT AND MORRISTOWN, NEW JERSEY, ASSIGNORS TO BELL TELEPHONE LABORATORIES, INCORPORATED, OF NEW YORK, N. Y., A CORPORATION OF NEW YORK.
+--- SOURCE PDF PAGE 1 OF 3 ---
+
+UNITED STATES PATENT OFFICE.
+JOHN BARDEEN, WALTER H. BRATTAIN
+
+THREE-ELECTRODE CIRCUIT ELEMENT UTILIZING SEMICONDUCTIVE MATERIALS
+Specification of Letters Patent No. US 2,569,347
+Grant Date: 1951-10-03
+
+--- SOURCE PDF PAGE 2 OF 3 ---
+
+UNITED STATES PATENT OFFICE.
+JOHN BARDEEN AND WALTER H. BRATTAIN, OF SUMMIT AND MORRISTOWN, NEW JERSEY, ASSIGNORS TO BELL TELEPHONE LABORATORIES, INCORPORATED, OF NEW YORK, N. Y., A CORPORATION OF NEW YORK.
 
 THREE-ELECTRODE CIRCUIT ELEMENT UTILIZING SEMICONDUCTIVE MATERIALS.
 
-Application June 17, 1948, Serial No. 33,466. Patent No. 2,569,347. Patented Oct. 3, 1951.
+Application June 17, 1948, Serial No. 33,466.
+Patent No. 2,569,347. Patented Oct. 3, 1951.
 
-To all whom it may concern: Be it known that we, JOHN BARDEEN and WALTER H. BRATTAIN, citizens of the United States, residing at Summit and Morristown, in the County of Morris and State of New Jersey, have invented certain new and useful Improvements in Three-Electrode Circuit Elements Utilizing Semiconductive Materials, of which the following is a specification, reference being had to the accompanying drawings.
+To all whom it may concern:
+
+Be it known that we, JOHN BARDEEN and WALTER H. BRATTAIN, citizens of the United States, residing at Summit and Morristown, in the County of Morris and State of New Jersey, have invented certain new and useful Improvements in Three-Electrode Circuit Elements Utilizing Semiconductive Materials, of which the following is a specification, reference being had to the accompanying drawings.
+
+--- SOURCE PDF PAGE 3 OF 3 ---
 
 This invention relates to novel circuit elements and methods utilizing semiconductive materials for the amplification and control of electric currents and signals.
 
@@ -13,11 +30,3 @@ Prior to our invention, the amplification of electrical signals was accomplished
 In accordance with our invention, electrical amplification is accomplished by a solid-state device comprising a block of semiconductive material, such as high-purity n-type germanium, having a base electrode making a low-resistance ohmic connection therewith, and two rectifying point contacts, termed the emitter and collector, bearing against a surface of the block and spaced apart by a very small distance, on the order of a few thousandths of an inch (0.002 to 0.005 inch).
 
 When the emitter contact is biased in the forward (low resistance) direction and the collector contact is biased in the reverse (high resistance) direction, a signal voltage applied to the emitter causes an injection of minority carrier holes into an inversion layer at the semiconductor surface. These carriers drift rapidly under the influence of electric fields to the collector, modulating the collector current and generating substantial voltage and power gain across a high-resistance external load.
-
-I claim as my invention:
-
-1. (Independent) A circuit element which comprises a block of semiconductive material, a base electrode making low-resistance contact with said block, and two point electrodes making rectifier contact with a surface of said block, said point electrodes being spaced apart by a distance of the order of a few mils.
-
-2. A circuit element in accordance with claim 1 wherein one of said point contacts is biased in the forward direction and the other of said point contacts is biased in the reverse direction relative to said base electrode.
-
-3. A circuit element in accordance with claim 1 wherein the semiconductive material is germanium of the n-type having a surface layer of p-type conductivity.

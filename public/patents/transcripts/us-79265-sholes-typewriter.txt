@@ -1,161 +1,30 @@
 UNITED STATES PATENT OFFICE.
+C. LATHAM SHOLES, CARLOS GLIDDEN, AND SAMUEL W. SOULE, OF MILWAUKEE, WISCONSIN.
 
-C. ILATHAM SHIOLES, CARILOS GLIDDEN, ANID SAMUEL W. SOULE, OF MIL
+TYPE-WRITING MACHINE.
 
-<pre class="font-mono text-sm whitespace-pre overflow-x-auto p-4 bg-ink-900/10 dark:bg-parchment-100/10 rounded-lg">                                    WAUKEE, WISCONSIN.                         m</pre>
+Specification forming part of Letters Patent No. 79,265, dated June 23, 1868.
 
-iMPROVEMENT N TYPE-writing MACHINES. <dfn title="The comprehensive written description of an invention and the manner of constructing and operating it, in terms sufficiently clear to enable any person skilled in the art to replicate it. (Modern: Patent Detailed Description & Embodiments)" class="cursor-help underline decoration-dotted decoration-amber-600 dark:decoration-amber-400 decoration-2 underline-offset-4 text-ink-950 dark:text-parchment-50 hover:bg-amber-500/10 dark:hover:bg-amber-400/10 rounded px-0.5 transition-colors">Specification</dfn> forming part of <dfn title="An open document ('litterae patentes') issued by a sovereign or government under public seal, granting an inventor exclusive legal monopoly rights to manufacture, use, and vend an invention. (Modern: Granted Patent Document / Certificate)" class="cursor-help underline decoration-dotted decoration-amber-600 dark:decoration-amber-400 decoration-2 underline-offset-4 text-ink-950 dark:text-parchment-50 hover:bg-amber-500/10 dark:hover:bg-amber-400/10 rounded px-0.5 transition-colors">Letters Patent</dfn> No. 79,265, dated June 23, 1868.
+To all whom it may concern:
 
-<pre class="font-mono text-sm whitespace-pre overflow-x-auto p-4 bg-ink-900/10 dark:bg-parchment-100/10 rounded-lg">To all whom it nay concern:              of an inch or more deep toward the central</pre>
+Be it known that we, C. LATHAM SHOLES, CARLOS GLIDDEN, and SAMUEL W. SOULE, of the city and county of Milwaukee, in the State of Wisconsin, have invented a new and useful Machine for Writing with Type, of which the following is a specification:
 
-Be it known that we, C. LATHAM SHOLES, circle to meet and fit exactly the radial CARLOS GLIDDEN, and SAMUEL W. SouLE, of grooves, and with a groove for pivot-wire cut the city of Milwaukee, and county of Mil in and circumscribing the periphery, as shown Waukee, and State of Wisconsin, have invented in Figs. 1 and 5. new and useful Improvements in Type-Writ Of any suitable material (we use and pre ing Machines; and we do hereby declare that fer steel) make as many type bars or ham the following is a full, clear, and exact descrip mers O as types to be used or slots in the disk.
+The nature of our invention consists in:
+1. An arrangement of type-bars in a circular ring or basket, each type-bar pivoted at its outer end and having a steel letter, numeral, or mark of punctuation at its free inner end, all said type-bars converging to strike upward against a single common printing point on a central platen.
 
-tion of the invention, which will enable those Pivot the outer ends of the type-bars in the skilled in the art to make and use the same, slots in the outer edge by a wire laid in the reference being had to the accompanying groove in the periphery circumscribing the drawings, forming part of this <dfn title="The comprehensive written description of an invention and the manner of constructing and operating it, in terms sufficiently clear to enable any person skilled in the art to replicate it. (Modern: Patent Detailed Description & Embodiments)" class="cursor-help underline decoration-dotted decoration-amber-600 dark:decoration-amber-400 decoration-2 underline-offset-4 text-ink-950 dark:text-parchment-50 hover:bg-amber-500/10 dark:hover:bg-amber-400/10 rounded px-0.5 transition-colors">specification</dfn>, disk. On the upper sides of the inner ends
+2. A series of key-levers arranged in rows in front of the machine, connected by pull-wires to the type-bars, so that depressing any key instantly throws the corresponding type-bar upward against the ribbon.
 
-<pre class="font-mono text-sm whitespace-pre overflow-x-auto p-4 bg-ink-900/10 dark:bg-parchment-100/10 rounded-lg">in which-                  ???                    of the type-bars cut in relief the types to be</pre>
+3. An inked ribbon interposed between the type and the paper, moved automatically by a spooling ratchet at each keystroke to present a fresh inking surface.
 
-Figure 1 is a perspective view of the ma used. Make all the type-bars gf the exact chine; Figs. 2, 3, 4, 5, 6, and 9, views of de length of the radius of the circle of the disk, tached parts thereof; Fig. 7, a view of a lon so each type on the inner ends, when thrown. gitudinal vertical section thereof, and Fig. 8 up into the radial grooves, will strike against a view of the rear elevation of the same. , the central point. (See Figs. 1, 5, and 7.) This invention is of improvements to an Fasten the disk thus combined with the type invention of a type-writing machine, an ap bars in the circle in the cover of the case, as plication for a patent for which we filed Oc shownin Figs. 1and7,byanyconvenientmeans tober 11,
+4. A paper carriage mounted on guide rails above the circular type-ring, propelled laterally by a spring barrel and governed by an escapement wheel and vibratory pawls operated by a universal spacer bar beneath the key-levers.
 
-1867. Its features are a better way not interfering with the working of the type of working the type-bars, of holding the pa bars. (We set it on wire posts fastened to the per on the carriage, of moving and regulat bottom of the case.) In the case, on a suitable ing the movement of the carriage, of holding, frame, put a key-board similar to the key applying, and moving the inking-ribbon, a board of a piano, having as many keys II, plus self-adjusting <dfn title="The cylindrical rubber or wooden roller on a typewriter that supports the paper and advances it line by line under typing strikes. (Modern: Typewriter Paper Roller Drum)" class="cursor-help underline decoration-dotted decoration-amber-600 dark:decoration-amber-400 decoration-2 underline-offset-4 text-ink-950 dark:text-parchment-50 hover:bg-amber-500/10 dark:hover:bg-amber-400/10 rounded px-0.5 transition-colors">platen</dfn>, and a rest or cushion one, as types to be used, as shown in Fig. 1,
+When any key is depressed by the operator's finger, the key-lever pulls upon its connecting wire, causing the corresponding type-bar to swing upward in an arc and strike the underside of the paper against the inked ribbon at the center point. Simultaneously, the key-lever depresses the universal bar, which rocks the escapement pawls, releasing the escapement wheel by one tooth and allowing the spring barrel to advance the paper carriage exactly one letter space for the next character.
 
-<pre class="font-mono text-sm whitespace-pre overflow-x-auto p-4 bg-ink-900/10 dark:bg-parchment-100/10 rounded-lg">for the type-bars to follow.                      cach key reaching from the front in under or</pre>
+I claim
 
-Make a case A, about two feet square, four opposite the type-bar's and pivotect to or vibrat to six inches deep, or of any requisite dimen ing on the fulcrum or beam M, as shown in sions, of material and finish to one's taste, Fig.
+as our invention:
+1. The arrangement of the type-bars in a circular ring or basket to strike at a common central printing point, substantially as described.
 
-7. On the inner end of each key, except with the lid or cover A' linged to the back ing the space-key, fasten a finger t, made in board A' by hinges f, as shown in Figs. 7 and any convenient way, (we use a stiff wire,) or
+2. The combination of the key-levers with the type-bars, the universal spacer bar, and the escapement mechanism for feeding the paper carriage step-by-step at each stroke of a key.
 
-8. In the cover cut a circle, as shown in Fig. bend the inner ends of thc keys so the fin
-
-7. Make a circular annular disk I, of any gers will be part of the keys to reach the cor hard tough material (we use and prefer brass) responding type-bar, so that when the front four to five inches in diameter, or any re end of the key is pressed down it will strike quired size, with a circle or hole in the cen and throw the type - bar up into its radial ter, one to one and a half or more inches in groove and its type-end against the central diameter, with the outer edge or periphery point, as shown in Fig.
-
-7. The ends of the fin one-half to three-fourths of an inch or more gers will thus be in a circle corresponding to thick, and the inner edge or circumference the circle of the disk and type-bars. Within of the central circle two-eighths to three and below the circle of the fingers and type eighths of an inch or more thick, with the top bars set a cushion or rest q, of any material side planed level and smooth and the bottom for the type-bars to fall back and rest on af side beveled, if preferred, from the outer to ter hav?ng been thrown up against the cen the inner edge with as many radial slots or tral point, as shown in Fig.7. Over the cen grooves as types to be used cut in the bottom tral point of the inner circle of the disk sus side from the central circle to the periphery, pend a solid anvil or post O' in any firm man and deep to within an eighth of an inch of ner, as by the ar?m HD, fastemed to the edge of the top, less or more, with slots in the outer the case and reaching out to the anvil, as edge or periphery one-half to three-fourths shown in Figs. 1 and
-
-7. In the bottom of the
-
-<pre class="font-mono text-sm whitespace-pre overflow-x-auto p-4 bg-ink-900/10 dark:bg-parchment-100/10 rounded-lg"> 2.                                              9,265</pre>
-
-anvil make a spherical cavity or bowl. Make the bar C the springs a will be pressed close a <dfn title="The cylindrical rubber or wooden roller on a typewriter that supports the paper and advances it line by line under typing strikes. (Modern: Typewriter Paper Roller Drum)" class="cursor-help underline decoration-dotted decoration-amber-600 dark:decoration-amber-400 decoration-2 underline-offset-4 text-ink-950 dark:text-parchment-50 hover:bg-amber-500/10 dark:hover:bg-amber-400/10 rounded px-0.5 transition-colors">platen</dfn> G of any hard smooth substance (we to the bars E' and E° at every point in their use metal) with the bottom or face finished length as they pass down and under the Smooth and level, and with the top spherical springs b, attached to the bars C and C. to fit the bowl in the bottom of the anvil. Rabbet the bars E, E, and E at their inner Fit and attach the spherical end of the <dfn title="The cylindrical rubber or wooden roller on a typewriter that supports the paper and advances it line by line under typing strikes. (Modern: Typewriter Paper Roller Drum)" class="cursor-help underline decoration-dotted decoration-amber-600 dark:decoration-amber-400 decoration-2 underline-offset-4 text-ink-950 dark:text-parchment-50 hover:bg-amber-500/10 dark:hover:bg-amber-400/10 rounded px-0.5 transition-colors">platen</dfn> edges, so they may be as thin as practicable, in and to the bowl of the anvil, thus mak and form a chase or bed for the paper to lie ing of the connection a universal joint, and in.
-
-This combination of devices forms a sim making the <dfn title="The cylindrical rubber or wooden roller on a typewriter that supports the paper and advances it line by line under typing strikes. (Modern: Typewriter Paper Roller Drum)" class="cursor-help underline decoration-dotted decoration-amber-600 dark:decoration-amber-400 decoration-2 underline-offset-4 text-ink-950 dark:text-parchment-50 hover:bg-amber-500/10 dark:hover:bg-amber-400/10 rounded px-0.5 transition-colors">platen</dfn> self-adjustable. (See Figs. ple and practicable paper-carriage, the larger 1 and 7.) Hang the <dfn title="The cylindrical rubber or wooden roller on a typewriter that supports the paper and advances it line by line under typing strikes. (Modern: Typewriter Paper Roller Drum)" class="cursor-help underline decoration-dotted decoration-amber-600 dark:decoration-amber-400 decoration-2 underline-offset-4 text-ink-950 dark:text-parchment-50 hover:bg-amber-500/10 dark:hover:bg-amber-400/10 rounded px-0.5 transition-colors">platen</dfn> as near the plane and primary frame C, C, and C, movable to of the surface of the cover of the case as will and from in one direction-say east and west just admit the paper to be written on and the carrying the smaller and secondary frame E, carbonized paper or inking-ribbon to pass E', and E° with it, and the latter frame mov . . easily under the <dfn title="The cylindrical rubber or wooden roller on a typewriter that supports the paper and advances it line by line under typing strikes. (Modern: Typewriter Paper Roller Drum)" class="cursor-help underline decoration-dotted decoration-amber-600 dark:decoration-amber-400 decoration-2 underline-offset-4 text-ink-950 dark:text-parchment-50 hover:bg-amber-500/10 dark:hover:bg-amber-400/10 rounded px-0.5 transition-colors">platen</dfn> and over the disk and able in the transverse direction to and from case.
-
-This adjustable plateninsures the types north and south, while the former is station meeting the paper evenly and squarely, and ary, thus furnishing a movementi in one di giving a full and fair impression thereof when rection for a line of words and in the oppo
-
-<pre class="font-mono text-sm whitespace-pre overflow-x-auto p-4 bg-ink-900/10 dark:bg-parchment-100/10 rounded-lg">    thrown against the paper.                       site direction for a series of lines.</pre>
-
-Make an open frame C, C, and C° with the On the edgeofthecoverofthecaseattheright bars C and C as arms to the main bar C, as of the paper-carriage attach the bar F, laid on shown in Fig. 1, the arms projecting at a right stops or shoulders, so that the underside of the angle to the main bar. Extend the arm C so bar will be one-half inch or more above the ta that when the main bar C is laid flush and even ble or cover of the case.
-
-In this bar set a series with the front edge of the main part of the of pins e, running down into the table, so as cover of the case it will reach entirely across to be fast and firm at regular and equal dis to the back of the case and project so that tances apart, the distance desired for the space the cord may be attached to the open end, :(including the line) from one line of writing as shown in Fig.
-
-1. To the front edge of the to another, as shown in Fig.
-
-1. From the bar Cattach a cleat S, to jut down against right-hand edge of the bar E' of the paper the edge of the cover of the case, as shown in carriage project a lip out, under the bar Cor Fig.
-
-1. On the front edge of the top of the from the clasp attached to E' and around C, coverlay a rail, and on the under side of the and on this lip pivot a pawl h, with a sharp bar C at each end, in the corner next to the incline on the side toward the front of the cleat S, pivot a small flange-wheel to roll on case running to a point, so arranged with a the rail and enable the frame to move easily stop that it cannot be turned on the pivot in from right to left and back, or attach the the direction of the back of the case, but ears g to the edge of the cover or table, as readily turned in the opposite direction and shown in Fig.1, (two, next the keys, not being held in position by a yielding-spring l, all seen in the drawings, because of the cleat S.) as shown in Figs. 1 and
-
-3. By moving the and under the cleat S fasten two rings to carriage to the right side of the case the point serve as guides. To the ears g attach rods c, of the pawl h will just pass a pine on the side extending from the ears seen in Fig. 1 to the from the front of the case. The incline of ears unseen next the keys and through the the pawl on the side next the pin being guides. This will:enable the frame to slide equal to the distance from one pin to another, easily from right to left and back, and be a and the pawl not being turnable on its pivot guide to keep it always in place. To and in the direction from the front to the back of within the frame C, C, and Cattach another the case, the frame E, E, and E, with the open frame E, E, and E, as shown in Fig. 1, paper, when on it, necessarily will be moved with the bar E opposite and parallel to the the proper distance from one line of writing
-
-<pre class="font-mono text-sm whitespace-pre overflow-x-auto p-4 bg-ink-900/10 dark:bg-parchment-100/10 rounded-lg">   bar C, and the bars E' and E° parallel with to another.                                        :</pre>
-
-<pre class="font-mono text-sm whitespace-pre overflow-x-auto p-4 bg-ink-900/10 dark:bg-parchment-100/10 rounded-lg">   the bars C and C. To the bars C’ and Cat           Attach to the right-hand corner of the car</pre>
-
-tach springs b on a line through the center of riage-frame a cord a' and run it lengthwise the <dfn title="The cylindrical rubber or wooden roller on a typewriter that supports the paper and advances it line by line under typing strikes. (Modern: Typewriter Paper Roller Drum)" class="cursor-help underline decoration-dotted decoration-amber-600 dark:decoration-amber-400 decoration-2 underline-offset-4 text-ink-950 dark:text-parchment-50 hover:bg-amber-500/10 dark:hover:bg-amber-400/10 rounded px-0.5 transition-colors">platen</dfn>, parallel to the bar C, to press of the bar under the bar C in a groove in the down on the bars E' and E. Arrange the bar or table for that purpose, or it may be frame E, E, and E to slide to and from the close. to and inside of the bar, over a pulley bar C, the bars E' and E° along the bars C’ e', fitted in and below the top surface of the and C, either by slots or grooves in the inner table, as shown in Fig. 1, and fasten to the edges of the bars C and C, and tongues on other end of it a weight under the case, but the outer edges of the bars E and E° to fit unseen in the drawings.
-
-To the other end of and work therein, or by clasps on the bars the bar C fasten a cord v, and run it down E and E, reaching over and around the bars over a large pulley R on the back side of the C’ and C, and fitted so as to slide readily or case A, and to the other end of the cord hang by any other obvious device. At the ends of the weight W, as shown in Fig.
-
-8. These the bars E and E, where they join the bar cords v and a', attached one to each corner E, fasten two limber, thin, flat wire springs of the carriage on one side, running over the a, as long as the bars E and E, so that in pulleys R and e' and fastened to the weight sliding the frame E, E, and E to and from W and the weight W' (unseen in the draw
-
-79,265 ings) are the force and means of moving the yielding spring so that when the upperfork
-
-<pre class="font-mono text-sm whitespace-pre overflow-x-auto p-4 bg-ink-900/10 dark:bg-parchment-100/10 rounded-lg">carriage and paper while writing.           is pressed down into an upper notch of the</pre>
-
-Under the table or cover of the case, be ratchet I the spring, will flyback against and hind the beam or fulcrum M, between the up into the next tooth and notch to the right fulcrum and the disk a suitable distance, on below. Thedfieé of this yielding spring is to and across all the keys, lay a bar T, with the assist the under fork to catch every under ends bent at a right angle and extended and tooth and not let one slip by. As the ratchet pivoted to the frame below and in front of is moved along by the cariage till the face the fulcrum, as shown at s, Fig.
-
-7, so that of the tooth to the right below strikes and when the front ends of the keys are pressed stops against the spring and under fork, the . . down the rear ends will strike against and left perpendicular face of the tooth directly. raise the bar an extent in proportion to the above is moved to and directly in line up and distance from the fulcrum. Connect a lever down into a hair-breadth with the perpendic H to the middle of the bar T, midway of the ular face of the fork above, so that when the
-
-<pre class="font-mono text-sm whitespace-pre overflow-x-auto p-4 bg-ink-900/10 dark:bg-parchment-100/10 rounded-lg"> key-board, extending directly over and par front        end or forks of the lever are moved or,</pre>
-
-allel with and between the middle keys, and pressed down and the under fork lets go its pivoted in the middle on a suitable support, hold of an under tooth the upper fork falls as shown in Fig.
-
-7. Bifurcate the front end into the notch and against the tooth directly of this lever and make the right-side faces of above and prevents the ratchet from moving; the forks perpendicular and the left-side but when the forks are thrown up and the faces inclined, the upper one to the left up upper fork lets go its hold of the tooth above Ward and the under one to the left downward, the ratchet moves to the left the space of one with the under edge of the upper fork and notch till the next tooth to the right below, the upper edge of the under fork sharp like with the yielding spring in the notch at its saw-teeth, as shown in Figs. 1 and 2, particu perpendicular face, strikes against theperpen larly in Fig.
-
-2. Fasten to the bar C of the dicular face of the under fork. In this way carriage-frame two holders or arms d, extend the ratchet and carriage are held firmly still, ing down through the cleat S, or fasten them while the front or bifurcated end of the lever directly to the cleat, and pivot in their lower His thrown and held down, but moves to the ends the ends of the ratchet-bar I, as shown left one notch, a regular, exact, and equal in Figs. 1 and
-
-2. Serrate the bar I on both. distance every time the bifurcated end of the sides with notches like saw-teeth, as shown in lever is thrown up, and as striking down the Figs. 1 and
-
-2. Make these notches, teeth, or front end of each key, as at L in Fig. 1, raises cogs regular and equidistant apart, the exact the bar T laid across the key at the rear of the distance required for a letter in writing or fulcrum M, and raises the rear end of the le printing on the paper. Make the left side of ver H, attached to the bar T, it therefore ne the faces of the teeth or cogs perpendicular, cessarily throws down the bifurcated or front both above and below, and the right-side faces end of the lever, and as the key rises to its inclined exactly alike, but the reverse of the place of rest again all these movements are teeth orcogs of the inneredges of the forks of the reversed and necessarily throw up again the lever H, so that of the lever H, with its forks front end of the lever. Thus, the work
-
-<pre class="font-mono text-sm whitespace-pre overflow-x-auto p-4 bg-ink-900/10 dark:bg-parchment-100/10 rounded-lg">embracing the ratchet-bar I, in moving up ing          of the keys L, in eombination with the</pre>
-
-and down first one and then the other forks weights W and W’, (the latter unseen,) the wili strike and fit into the notches of the bar cords v and at the pulleys R ande', the bar I, as shown in Figs. 1 and
-
-2. Make the forks T, the lever H, the ratchet I, and the carriage of the lever H so far asunder as just to allow inevitably moves the paper a regular, uni the ratchet I in its widest way to pass be form, and exact distance-any distance de tween. At the right side, considered from sired for a type or letter every time a key is the front of the under fork of the lever H, at struck-and the paper is moved while the tach a thin yielding spring i, as shown in Figs. type-bar is falling to the cushion, and stopped 1 and
-
-2. Make the upper and sharp edge of and held firmly stationary while the type is the under fork stand a hair-breadth or slight struck against it and the <dfn title="The cylindrical rubber or wooden roller on a typewriter that supports the paper and advances it line by line under typing strikes. (Modern: Typewriter Paper Roller Drum)" class="cursor-help underline decoration-dotted decoration-amber-600 dark:decoration-amber-400 decoration-2 underline-offset-4 text-ink-950 dark:text-parchment-50 hover:bg-amber-500/10 dark:hover:bg-amber-400/10 rounded px-0.5 transition-colors">platen</dfn>. distance to the right of the under and sharp On the end of the ratchet I, to the right, edge of the upper fork, and then, as the attach the lever 2, to turn it down flatwise weights W and W, attached to the cords v. when desired, as shown in Figs. 1 and
-
-2. To and a ', over the pulleys Rande', as shown in the bar C of the carriage attach a yielding Figs. 1 and 8, (excepting that the weigh'W' is unseen in the drawings,) are constantly pulling spring a to hold the lever and ratchet in per pendicular position, while the carriage is at the carriage to draw it from the right to moving from right to left, as shown in Figs. the left of the table or case. When the up 1 and
-
-3. Turn the lever 2 forward and down, per fork is thrown up out of an upper notch and therewith the ratchet, to a horizontal po in the ratchet, the carriage will move to the sition, and the ratchet and carriage can be left till the left-side perpendicular face of moved from left to right, the ratchet through the tooth or cog next to the right and be and between the embracing-forks of the lever low meets and strikes against the right-side Hreadily and without obstruction. This can perpendicular face of the under fork, and the be done by the hand or by any obvious de carriage is thereby stopped. Fix the thin vice by a foot-treadle, thus completing the
-
-<pre class="font-mono text-sm whitespace-pre overflow-x-auto p-4 bg-ink-900/10 dark:bg-parchment-100/10 rounded-lg">4                                              79,265</pre>
-
-means for the right and left movement ofthe ing   mostofperfectly ordinary adapted   to its work-the communications      with writ types carriage and paper. On the front end of the arm D, just behind instead      of a pen-and in every way the best the anvil, put a cross-beam D', as shown in particularly as toyetthedesigned
-
-<pre class="font-mono text-sm whitespace-pre overflow-x-auto p-4 bg-ink-900/10 dark:bg-parchment-100/10 rounded-lg">                                                   of all machines                   for the purpose,</pre>
-
-Figs. 1, 8, and
-
-9. In the end of the cross chine and the neatness and labor -the cost of  making       ma saving beam, at the right, put a gudgeon s', and quality of its work. through the end at the left run a shaft l, and through a box at the left side of the back end orFig.     6 of the drawings represents a crescent the segment comprising half a disk. By
-
-<pre class="font-mono text-sm whitespace-pre overflow-x-auto p-4 bg-ink-900/10 dark:bg-parchment-100/10 rounded-lg"> of the arm D, as shown in Figs. 1 and 8, making              the circumference large enough to</pre>
-
-: make two ribbon-spools m, of any adequate receive the size, with holes in their centers, to slip on and the crescentrequisite may  be number of radial grooves substituted for the disk,
-
-<pre class="font-mono text-sm whitespace-pre overflow-x-auto p-4 bg-ink-900/10 dark:bg-parchment-100/10 rounded-lg">  revolve on the gudgeons', as shown in Figs. or, in other words, the          segment comprising</pre>
-
-1, 8, and
-
-9. At the circumference of the holes one-half for the whole disk. in the spools m in the inner edge of each What we claim as new and useful in our spool, through from side to side, cut a slot to fit on a key or cog or spur on the front end invention,
-
-1. The and desire to secure by patent, is key-levers L., vibrating on the full of the shaft l forward of the cross-beam D', crum M, with the inner      ends or fingers w . so that whichever spool is put on the shaft reaching under the type-bars,   so that the keys will be fast thereto and cannot revolve there
-
-<pre class="font-mono text-sm whitespace-pre overflow-x-auto p-4 bg-ink-900/10 dark:bg-parchment-100/10 rounded-lg">on. On the hind end of the shaft l fasten a         will act directly on the types, substantially</pre>
-
-<pre class="font-mono text-sm whitespace-pre overflow-x-auto p-4 bg-ink-900/10 dark:bg-parchment-100/10 rounded-lg">pulley k, as shown in Figs. 1 and
-
-8. Make as and for the purpose described.                     ?</pre>
-
-the pulleys R and k, as shown in Fig. 8, cone the2. bifurcated The spacer or ratchet I, combined with pulleys-that is, make each R and is a series bar T, pivoted atlever       H, connected with the sand resting on and across of pulleys, d?creasing in size in regular coni the arms of the keys cal order. Pivot the pulley Ron a bar P, and M, so that striking theI,faces behind the fulcrum
-
-<pre class="font-mono text-sm whitespace-pre overflow-x-auto p-4 bg-ink-900/10 dark:bg-parchment-100/10 rounded-lg">pivot the bar P to the back side of the case work the teeth of the forks of        the keys will</pre>
-
-of the lever up A, so that the pulley may rise and fall freely, and    down and into the notches of the spaces as shown in Fig.
-
-8. Attach a ratchet-wheel and give V, with a pawlt, pivoted to the bar P, as shown movementa certain     uniform and regular space to the paper-carriage in line of in Fig. 8, to follow and fall into the notches the types, when       made substantially as de of the ratchet-wheel to prevent the wheel turn scribed. ing toward the bar F, as seen in Fig. 8, or
-
-3. The pins e, fastened to the table A, com from left to right, considered from the front. bined with the pawl li and the spring to Connect the pulleys R and k with a cord or give the paper-carriage a certain and regular band v', as shown in Fig.
-
-8. The pulley R, pivoted to the loose-pivoted bar P, with the cross-line      movement at a right angle to the
-
-<pre class="font-mono text-sm whitespace-pre overflow-x-auto p-4 bg-ink-900/10 dark:bg-parchment-100/10 rounded-lg">weight W pulling down on the pulley, will space         movement from line to line, when made</pre>
-
-always   keep the band 'tight, so that it will substantially not slip in working. Upon the spool m on bars as described.
-
-4. The clasps or springs b, attached to the
-
-<pre class="font-mono text-sm whitespace-pre overflow-x-auto p-4 bg-ink-900/10 dark:bg-parchment-100/10 rounded-lg">the gudgeons' wind the inking-ribbon, aud of theC and          C' on a line through the middle</pre>
-
-run one end...under the <dfn title="The cylindrical rubber or wooden roller on a typewriter that supports the paper and advances it line by line under typing strikes. (Modern: Typewriter Paper Roller Drum)" class="cursor-help underline decoration-dotted decoration-amber-600 dark:decoration-amber-400 decoration-2 underline-offset-4 text-ink-950 dark:text-parchment-50 hover:bg-amber-500/10 dark:hover:bg-amber-400/10 rounded px-0.5 transition-colors">platen</dfn> G and attach a, attached to G, <dfn title="The cylindrical rubber or wooden roller on a typewriter that supports the paper and advances it line by line under typing strikes. (Modern: Typewriter Paper Roller Drum)" class="cursor-help underline decoration-dotted decoration-amber-600 dark:decoration-amber-400 decoration-2 underline-offset-4 text-ink-950 dark:text-parchment-50 hover:bg-amber-500/10 dark:hover:bg-amber-400/10 rounded px-0.5 transition-colors">platen</dfn> the combined with the springs bar E to hold the paper to it to the spool an on the shaft l, as shown in the carriage and press Fig.1. Then, as striking each key L. permits tight in passing under theit <dfn title="The cylindrical rubber or wooden roller on a typewriter that supports the paper and advances it line by line under typing strikes. (Modern: Typewriter Paper Roller Drum)" class="cursor-help underline decoration-dotted decoration-amber-600 dark:decoration-amber-400 decoration-2 underline-offset-4 text-ink-950 dark:text-parchment-50 hover:bg-amber-500/10 dark:hover:bg-amber-400/10 rounded px-0.5 transition-colors">platen</dfn>, down smooth and when made the weight. W, by means of the cord v over substantially as described. the pulley R, to pull or move the carriage the
-
-5. The spools m, combined with the gudg- . space of one notch of the ratchet-bar I, it will eons', the shaft l, the pulleysk and R, the necessarily roll the pulley R a corresponding band v', the cord , the weightW, the ratchet distance, and, as the pulleys R and k are con wheel V, the pawlt, and the bar P, pivoted to nected by the band v', and the pulley k and the left spool n, considered from the front, the      back of the case A to feed a fresh part of both being fast to the shaftl, rolling the pull the inking-ribbon under the <dfn title="The cylindrical rubber or wooden roller on a typewriter that supports the paper and advances it line by line under typing strikes. (Modern: Typewriter Paper Roller Drum)" class="cursor-help underline decoration-dotted decoration-amber-600 dark:decoration-amber-400 decoration-2 underline-offset-4 text-ink-950 dark:text-parchment-50 hover:bg-amber-500/10 dark:hover:bg-amber-400/10 rounded px-0.5 transition-colors">platen</dfn> to each ley R necessarily will roll the spools m and type as successively, when made substantially described. draw the ribbon from the loose spool on the This <dfn title="The comprehensive written description of an invention and the manner of constructing and operating it, in terms sufficiently clear to enable any person skilled in the art to replicate it. (Modern: Patent Detailed Description & Embodiments)" class="cursor-help underline decoration-dotted decoration-amber-600 dark:decoration-amber-400 decoration-2 underline-offset-4 text-ink-950 dark:text-parchment-50 hover:bg-amber-500/10 dark:hover:bg-amber-400/10 rounded px-0.5 transition-colors">specification</dfn> signed this 1st day of gudgeons' under the <dfn title="The cylindrical rubber or wooden roller on a typewriter that supports the paper and advances it line by line under typing strikes. (Modern: Typewriter Paper Roller Drum)" class="cursor-help underline decoration-dotted decoration-amber-600 dark:decoration-amber-400 decoration-2 underline-offset-4 text-ink-950 dark:text-parchment-50 hover:bg-amber-500/10 dark:hover:bg-amber-400/10 rounded px-0.5 transition-colors">platen</dfn>. G. and onto the May,     A. D.
-
-1868. C. LATIIAMI SIHOLES. spool attached to the shaftl, and thus give a
-
-<pre class="font-mono text-sm whitespace-pre overflow-x-auto p-4 bg-ink-900/10 dark:bg-parchment-100/10 rounded-lg">    fresh place of the inking-ribbon every time.                       CARLOS GILIDDEN.</pre>
-
-<pre class="font-mono text-sm whitespace-pre overflow-x-auto p-4 bg-ink-900/10 dark:bg-parchment-100/10 rounded-lg">    for every type to strike against, and by means                     SAMUET. W. SOUI.E.</pre>
-
-of the series of conical pulleys at R and k Witnesses: the feed of the inking-ribbon can be regu
-
-<pre class="font-mono text-sm whitespace-pre overflow-x-auto p-4 bg-ink-900/10 dark:bg-parchment-100/10 rounded-lg">    lated as may be desired.                              G. E. WEISS,</pre>
-
-<pre class="font-mono text-sm whitespace-pre overflow-x-auto p-4 bg-ink-900/10 dark:bg-parchment-100/10 rounded-lg">      Thus made, the type-writer is the simplest,         F. J. CROSBY.</pre>
+3. The automatic inking ribbon mechanism arranged to advance between the type and paper simultaneously with the letter spacing.

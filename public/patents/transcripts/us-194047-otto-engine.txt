@@ -1,159 +1,30 @@
-4. Sheets-Sheet . N. A. OTTO. GAS-M0T0R, EN GINES. Pat 8 in te d Aug:. 14, 1877
-
-PEERS. PHOTO-LITHoGRAPHER, washington, D. c.
-
-N. A. OTTO.
-
-4. Sheets-Sheet 2. .      . GAS-MOTOR EN GINES.
-
-<pre class="font-mono text-sm whitespace-pre overflow-x-auto p-4 bg-ink-900/10 dark:bg-parchment-100/10 rounded-lg">No. 194,047.                   Fatente d Aug. 14, 1877</pre>
-
-Ex S ???   X
-
-???????
-
-4. Sheets-Sheet
-
-3. N. A. OTTO. GAS-MOTOR, EN GINES.
-
-<pre class="font-mono text-sm whitespace-pre overflow-x-auto p-4 bg-ink-900/10 dark:bg-parchment-100/10 rounded-lg">No. 194,047.                 Paten ted Aug. 14, 1877.</pre>
-
-4 Sheets-Sheet
-
-4. N. A. OTTO. GAS-MOTOR, EN GINES.
-
-<pre class="font-mono text-sm whitespace-pre overflow-x-auto p-4 bg-ink-900/10 dark:bg-parchment-100/10 rounded-lg">    No. 194, 047.         -       Patente d Aug. 14, 1877.</pre>
-
-$     ???
-
-I R
-
 UNITED STATES PATENT OFFICE.
+NICOLAUS AUGUST OTTO, OF DEUTZ, GERMANY, ASSIGNOR TO THE GAS-MOTOREN-FABRIK DEUTZ.
 
-NIC O L A U S A. OTTO, OF DEUTZ, GERMANY. IMPROVEMENT IN GAS MOTOR ENGINES.
+IMPROVEMENT IN GAS-MOTOR ENGINES.
 
-<dfn title="The comprehensive written description of an invention and the manner of constructing and operating it, in terms sufficiently clear to enable any person skilled in the art to replicate it. (Modern: Patent Detailed Description & Embodiments)" class="cursor-help underline decoration-dotted decoration-amber-600 dark:decoration-amber-400 decoration-2 underline-offset-4 text-ink-950 dark:text-parchment-50 hover:bg-amber-500/10 dark:hover:bg-amber-400/10 rounded px-0.5 transition-colors">Specification</dfn> forming part of <dfn title="An open document ('litterae patentes') issued by a sovereign or government under public seal, granting an inventor exclusive legal monopoly rights to manufacture, use, and vend an invention. (Modern: Granted Patent Document / Certificate)" class="cursor-help underline decoration-dotted decoration-amber-600 dark:decoration-amber-400 decoration-2 underline-offset-4 text-ink-950 dark:text-parchment-50 hover:bg-amber-500/10 dark:hover:bg-amber-400/10 rounded px-0.5 transition-colors">Letters Patent</dfn> No. 194,042, dated August 14, 1877; application filed July 13, 1876.
-
-<pre class="font-mono text-sm whitespace-pre overflow-x-auto p-4 bg-ink-900/10 dark:bg-parchment-100/10 rounded-lg">
+Specification forming part of Letters Patent No. 194,047, dated August 14, 1877.
+Application filed March 24, 1877.
 
 To all whom it may concern:
 
-ton to be at the end of its instroke, its bottom</pre>
+Be it known that I, NICOLAUS AUGUST OTTO, residing at Deutz, in the Empire of Germany, have invented an Improved Gas-Motor Engine, of which the following is a specification:
 
-Be it known that I, NICOLAUS AUGUST surface being represented by the dotted line OTTO, of the Gas-Motoren Fabrik - Deutz, at a, while the slide D is in such a position that Deutz, in the German Empire, lave invented its passage D establishes a communication an Improved Gas-Motor Engine; and do here between the outer air through the aperture by declare that the following description, D' and the port C, then, on the piston com taken in connection with the accompanying mencing its outstroke, it will draw in atmos sheets of drawings, hereinafter referred to, pheric air until it arrives at the point indi forms a full and exact <dfn title="The comprehensive written description of an invention and the manner of constructing and operating it, in terms sufficiently clear to enable any person skilled in the art to replicate it. (Modern: Patent Detailed Description & Embodiments)" class="cursor-help underline decoration-dotted decoration-amber-600 dark:decoration-amber-400 decoration-2 underline-offset-4 text-ink-950 dark:text-parchment-50 hover:bg-amber-500/10 dark:hover:bg-amber-400/10 rounded px-0.5 transition-colors">specification</dfn> of the cated by the dotted line b, when the slide will same, wherein I have set forth the nature and have been moved so as to cut off the air-sup principles of my said inprovement, by which ply and establish a communication between my invention may be distinguished from oth the passage Gin the slide-cover, for an inti ers of a similar class, together with such parts mate mixture of coal-gas or petroleum vapor as I claim and desire to secure by Letters Pat and air, (in such proportions that the mixture
+In gas-engines heretofore constructed, such as the 'Lenoir' engine, the combustible mixture was drawn in during the first half of the working stroke and ignited without previous compression, resulting in great shock, small expansion, and excessive consumption of gas.
 
-<pre class="font-mono text-sm whitespace-pre overflow-x-auto p-4 bg-ink-900/10 dark:bg-parchment-100/10 rounded-lg">ent-that is to say:                               will burn of itself, but, owing to the presence of</pre>
+The nature of my invention consists in operating an engine by means of an explosive gaseous charge which is subjected to a four-stroke cycle accomplished during two complete revolutions of the crankshaft, as follows:
 
-In gas-motor engines as at present con the first admitted air, will not explode,) and the structed, an explosive mixture of combustible port Cthrough the passage D. On the con gas and air is introduced into the engine-cyl tinued motion of the piston, combustible gase inder, where it is ignited, resulting in a sudden ous mixture will consequently be drawn in development of heat and expansion of the until the piston has arrived at a point, c, when gases, a great portion of the useful effect be the slide will have moved into the position ing lost by absorption of heat, unless special. slown, cutting off the gas-supply, and about provisions are made for allowing the gases to to establish a communication between the
+FIRST STROKE (Outward): The piston moves outward, drawing in a charge of air and combustible gas through a slide valve.
+SECOND STROKE (Inward): The intake valve closes, and the returning piston compresses the gaseous charge into a clearance space or combustion chamber at the end of the cylinder.
+THIRD STROKE (Outward - Working Stroke): The compressed charge is ignited by a flame port in the slide valve, rapidly burning and expanding with high pressure and temperature, forcing the piston outward to do mechanical work on the crankshaft.
+FOURTH STROKE (Inward): The exhaust valve is held open, and the returning piston expels the burned gases from the cylinder into the exhaust pipe.
 
-<pre class="font-mono text-sm whitespace-pre overflow-x-auto p-4 bg-ink-900/10 dark:bg-parchment-100/10 rounded-lg">expand very rapidly.                            small gas-flame H and the charge in the cyl</pre>
+The four distinct operations are governed by a half-speed shaft geared to the crankshaft by a two-to-one gear ratio ($2:1$), driving the slide valve and exhaust cam.
 
-According to my present invention an in inder, for the purpose of igniting the latter. timate mixture of combustible gas or vapor The combustible gaseous mixture, in enter and air is introduced into the cylinder, to ing the cylinder behind the charge of air pre gether with a separate charge of air or other viously admitted, will, to a certain extent, Inix gas, that may or may not support combustion, with the latter, the particles of the combusti in such a manner and in such proportions that ble umixture being close together in and near the particles of the combustible gaseous mix the port C, and becoming more and more dis ture are more or less dispersed in an isolated persed in the air as they approach the piston, condition in the air or other gas, so that on as indicated by the dots in the drawing, which ignition, instead of an explosion ensuing, the represent the combustible particles.
+By compressing the charge into the clearance space before ignition, the combustion is made gradual, the peak expansion pressure is doubled, and the heat of combustion is converted into mechanical work with far greater thermodynamic efficiency than has ever before been attained.
 
-Thus, ou flame will be communicated gradually from the ignition of the charge in the port C, the one combustible particle to another, thereby gaseous mixture will at first burn with com effecting a gradual development of heat and a parative rapidity, the flame spreading from corresponding gradual expansion of the gases, particle to particle; but as the ignition extends which will enable the motive power so pro toward the front end of the charge, it will pro duced to be utilized in the most effective man ceed more and more slowly, owing to the colm
+I claim as my invention:
 
-<pre class="font-mono text-sm whitespace-pre overflow-x-auto p-4 bg-ink-900/10 dark:bg-parchment-100/10 rounded-lg">  8T.                                           bustible particles being farther and farther</pre>
+1. The method of operating a gas-motor engine by drawing in a combustible charge during one stroke, compressing said charge in the cylinder during the return stroke, igniting and expanding the compressed charge during the next stroke to perform work, and expelling the combustion products during the fourth stroke, substantially as described.
 
-In order more clearly to describe my inven apart. tion, I will refer to the accompanying draw The burning particles impart their heat to ings, in which Figure 1 shows a longitudinal the surrounding air, producing a gradually section of an engine-cylinder, A having a pis increasing pressure in the cylinder, which ton, B, connected to a fly-wheel shaft, and a causes the piston to complete its outstroke. port or passage, C, for the admission of coin Motion being thus imparted to the fly-wheel.
-
-bustible gaseous mixture and air, controlled by the piston-rod, its momentum causes the by the slide D, and having also a passage, E, piston to perform its return stroke, whereby for the emission of the products of combus the products of combustion are expelled tion, closed by a valve, F. Assuming the pis through the valve F, and, the fly-wheel also
-
-<pre class="font-mono text-sm whitespace-pre overflow-x-auto p-4 bg-ink-900/10 dark:bg-parchment-100/10 rounded-lg">    2                                              94.047</pre>
-
-causing the piston to commence its next out tioned that the crank Kinakes one revolution, stroke, a fresh charge of air and combustible and, consequently, the slide one to-and-fro mixture is drawn in, as before described.       motion, while the piston makes two double
-
-<pre class="font-mono text-sm whitespace-pre overflow-x-auto p-4 bg-ink-900/10 dark:bg-parchment-100/10 rounded-lg">       In order to vary the power of the engine, strokes.                                         -</pre>
-
-the charge of combustible mixture(represented The mode of operating with this engine is by the space a to b) may be varied, as may as follows: Assuming the piston to be at the also the proportions of air and coal-gas or va end of its instroke (represented by the dotted por of which it is composed, and such varia linea, Fig. 3,) and about to be moved through tion may be controlled by connecting the valve its outstroke by the momentum of the fly gear with any suitable construction of gov wheel M, then, the slide D (the construction
-
-<pre class="font-mono text-sm whitespace-pre overflow-x-auto p-4 bg-ink-900/10 dark:bg-parchment-100/10 rounded-lg">    ernor, as will be presently described.          of which will be presently explained) being in</pre>
-
-From the foregoing general description it position to admit atmospheric air through the will be seen that as in the improved mode of passage D and port C, air will be drawn into operating there is no sudden explosion of the the   cylinder until the piston has reached the gaseous charge, but a gradual development point represented by the dotted line b, when, |   of heat and expansion of the gases, there will the slide having established a communica be no such losses of effect as result in gas-en tion with the combustible-gas supply and the gines of present construction through shocks cylinder, combustible gas intimately mixed produced by the sudden development of motive with air will be drawn in until the piston has power, and by the absorption of leat conse arrived at the end of its outstroke, the posi quent upon the inability of the gases to ex tion shown at Fig.
-
-3. As before explained
-
-<pre class="font-mono text-sm whitespace-pre overflow-x-auto p-4 bg-ink-900/10 dark:bg-parchment-100/10 rounded-lg">    pand with sufficient rapidity.                  with reference to Fig. 1, the combustible gas</pre>
-
-The above - described berieficial effect of eous mixture, in entering, will mix to a certain the improved mode of working will be further extent with the air previously introduced, the increased by the fact that the charge of air particles of gaseous mixture being close to interposed between the combustible mixture gether at the back end of t?ie cylinder, and and the piston will operate as a cushion or buf more and more separated from each other to: fer in still further reducing the suddenness of ward the front end. The slide having moved the expansive force generated as it transmits so as to close the inlet. port C, the piston' is
-
-<pre class="font-mono text-sm whitespace-pre overflow-x-auto p-4 bg-ink-900/10 dark:bg-parchment-100/10 rounded-lg">    it to the piston.                               caused, by the momentum of the fly-wheel, to</pre>
-
-Engines operating according to my inven perform its instroke, whereby the charge of tion may either be single-acting-the return gaseous      mixture and air that filled the cylin deratatmospheric   pressure willbe compressed stroke being effected by the momentum of the fly-wheel-orthey may be double-acting, a gas into the space from the line a to the back end eous charge being introduced at each end of of the cylinder, the particles of gaseous mix the eylinder. They may also operate with the ture remaining in much the same unequally gases either at atinospheric pressure or com distributed condition in the air as they did be pressed to any desired degree. In the latter fore compression.
-
-The slide now establishes case the engine may be arranged in a similar a communication between the gas-flame H and manner to that above described, the gases be the interior of the cylinder, so as to ignite the ing compressed by any suitable kulown means charge, resulting in a gradual development of heat and expansion of the gases, as before ex before being introduced into the engine; but, plained,
-
-<pre class="font-mono text-sm whitespace-pre overflow-x-auto p-4 bg-ink-900/10 dark:bg-parchment-100/10 rounded-lg">    by preference, I dispense with any such addi.                 whereby the piston will be caused to</pre>
-
-tional compressing mechanism by arranging perform its outstroke, imparting fresh mo the engine to operate in the mauner I will now mentum to the fly-wheel. This momentum proceed to describe with reference to Figs. 2 will again cause the piston to perform its iu:
-
-<pre class="font-mono text-sm whitespace-pre overflow-x-auto p-4 bg-ink-900/10 dark:bg-parchment-100/10 rounded-lg">    to 13 of the drawings, of which                    stroke, whereby the products of combustion</pre>
-
-Fig.2 shows a side elevation; Fig. 3, a sec will be expelled through the valve F, which tional plan; Fig. 4, a back-end view, and Figs. has been opened by the lever N, acted on
-
-<pre class="font-mono text-sm whitespace-pre overflow-x-auto p-4 bg-ink-900/10 dark:bg-parchment-100/10 rounded-lg">    5 to 13 details of the valve-gear.                 by a cam, O, on the shaft K. As the pis</pre>
-
-The engine is here represented as being ton only moves back to the line a, it will be single-acting, the cylinder A being open to the seen that a certain portion of the products of atmosphere at its front end. At its closed combustion will remain in the cylinder, and back end it has a space, A', beyond the stroke will consequently mix to a certain extent with of the piston B, which space i, by preference, the air drawn in behind them at the next out made conical at the end, as shown, tapering stroke; but as the mixture of combustible gas to the iulet-port C for coulbustible gas and and air afterward introduced will buru inde air, and also communicating by the passage pendently of the air or other gas surrounding E with the escape-valve F, Fig.
-
-3, for the pro its particles, it will be seen that the presence
-
-<pre class="font-mono text-sm whitespace-pre overflow-x-auto p-4 bg-ink-900/10 dark:bg-parchment-100/10 rounded-lg">    ducts of combustion.                                of such products of combustion in the charge</pre>
-
-The piston B is connected by the rod B to will be of no consequence. the crank-shaft II, on which is a bevel-pinion, I', As before stated, the power of the engine in gear with a bevel-wheel, K, on a shaft, K. may be regulated by regulating the quantity
-
-<pre class="font-mono text-sm whitespace-pre overflow-x-auto p-4 bg-ink-900/10 dark:bg-parchment-100/10 rounded-lg">    On the other end of this shaft is a crank, K, of combustible         gas introduced at each charge.</pre>
-
-<pre class="font-mono text-sm whitespace-pre overflow-x-auto p-4 bg-ink-900/10 dark:bg-parchment-100/10 rounded-lg">    connected by a link, D', to the slide D, gov This        is effected by the gas-slide P, controlled by</pre>
-
-erning the admission of gas and air to the the governor Q, operating oil the sliding cam cylinder. The gearing I K is so propor R as follows: Fig. 5 shows an enlarged front
-
-<pre class="font-mono text-sm whitespace-pre overflow-x-auto p-4 bg-ink-900/10 dark:bg-parchment-100/10 rounded-lg">                                           194,047.                                            3.</pre>
-
-view of the gas-slide; Figs, 6 and 7, vertical the air-passage D is just about to communi sections, and Fig. 8 a plan, of the same. In : cate with the port C, and, secondly, its posi the casing of the slide are formed two pas tion at point 2, the gas and air supply having sages, Gº-andº-Gº, the former communicating just been cut off. It will be seen that in the with a pipe, G, leading to the gas-passage G. first position the gas-passage G is also about in the slide D, and the other with the gas to open; but the before-described action of supply pipe G.
-
-These passages have small the gas-slide P will prevent the admission of side openings, as shown, which, when the slide combustible gas until the requisite charge of is in the position shown in Fig. 7, both com air is introduced. Fig. 11 shows, first, the municate with the cavity of the slide P, so position of the slide at the point 3 when the that gas can pass from Ginto G, and thence flatne of the gas jet H is about to be commu into the passage. G of the slide D. When the nicated to the gaseous charge by a small quan slide is moved into the position shown in Fig.
-
-tity of inflamed gas in the passage D', and, 6, this communication, and consequently the secondly, its position at the point 4 when the gas-supply, is cut off. The slide P rests with escape-valve F is about to be opened. a small roller, P. , upon a cam, R, which re For effecting the ignition of the clharge, a volves with, but can slide somewhat upon, Small quantity of combustible gas is made to the shaft K, the raising of the slide being ef. pass clown a pipe, S, into a recess, S', in the: fected by the cam, while its downward motion end of the cylinder, whence it issues: through is effected by the spring P.
-
-According as a small channel, D, in the slide into the pas the cam is shifted relatively to the roller Pl sage D. Ehere it is ignited by the jet H, and by the action of the governor Q and lever Q, the flame is, by the motion of the slide, con (which has a fork taking into a collar on the veyed to the port C, the slide-cover L being cam, as shown,) the slide is made to establish made to close the outer opening of D8 before the communication between G and G* for a its inner opening communicates with C, as
-
-<pre class="font-mono text-sm whitespace-pre overflow-x-auto p-4 bg-ink-900/10 dark:bg-parchment-100/10 rounded-lg">longer or a shorter period, thus allowing a shown at Fig. 11.                 • .</pre>
-
-greater or less quantity of the combustible The gas-passage G communicates with the gas for-one charge to pass into the cylinder air-passage D through a number of small A independently of the action of the slide D. openings, as shown at Fig. 13, so that the gas, The gas-slide P is held against the face of the in issuing in small divided jets into D', be casing by a spring, P, pressing against a comes intimately mixed with the air therein
-
-<pre class="font-mono text-sm whitespace-pre overflow-x-auto p-4 bg-ink-900/10 dark:bg-parchment-100/10 rounded-lg">cover, P, on the back of the slide.               in the requisite proportions for producing the</pre>
-
-The construction and mode of operating of Combustible mixture before described. the engine-slide D will be understood on ref. The opening of the escape-valve F at the erence to Figs, 10 to 13, of which Figs, 10 and commencement of the second instroke of the 11 represent two longitudinal sections of the piston (point 4 at Fig. 9) is effected by the slide and casing on line Z, Z, Fig. 12, with the bell-crank lever F, connected at one end to slide in two different positions, and Figs. 12 the stem of the valve, and having at the other and 13 show transverse sections, respectively end a roller, F, which is acted upon by the
-
-<pre class="font-mono text-sm whitespace-pre overflow-x-auto p-4 bg-ink-900/10 dark:bg-parchment-100/10 rounded-lg">on lines XX and Y Y, Fig. 10.                     cam F on the shaft K. E' is the pipe for con</pre>
-
-From the previous description of the action ducting away the products of combustion. of the engine, it will be seen that there are The governor Q is driven by bevel-gearing four strokes of the piston required for one from the shaft K, its arms being made to complete operation-namely, an outstroke for move a sliding collar, Q, up or down, thus drawing in the charge of combustible mixture imparting motion through the lever Q to the and air, an instroke for compressing the gases, cam R, as before described. a second outstroke when the piston is pro The cylinder A is, by preference, provided pelled on the ignition of the gases, and a sec with a jacket, as shown.
-
-ond instroke for expelling the products of As beforestated, theengine may bearranged combustion. The slide D consequently has to double-acting byproviding the requisite valve. perform one to-and-fro motion while the pis gear for each end of the cylinder. It may ton is performing the above-mentioned four op also be arranged in a vertical or inclined posi erations, for which purpose, as before stated, tion, instead of horizontal; and if single-acting, the slide-crank K makes one revolution while or if great regularity of motion be required, the engine-shaft makes two. The circle at two or more engines may be connected to one Fig.
-
-9 represents a diagram of the path of the and the same crank-shaft. crank K, in which the part from 1 to 2 rep Having thus described the nature of my in resents the motion of the slide during the vention, and in what manner the same is to time of drawing in the gaseous charge, the be performed, I wish it to be understood that part from 2 to 3 the motion during the com I do not claim generally the separate introduc pression of the charge, 3 to 4 the motion dur tion of combustible gas and air into the cylin ing the working stroke, and 4 to 1 the motion der of a gas-engine, as I am aware that is to during the expulsion of the products of com a certain extent described in the English bustion.
-
-Figs. 10 and li each show two po Patents No. 1,655 of 1857, and 335 of 1860; sitions of the slide, Fig. 10 showing, first, its but, position at the point 1 of the crank-path when     I claim
-
-<pre class="font-mono text-sm whitespace-pre overflow-x-auto p-4 bg-ink-900/10 dark:bg-parchment-100/10 rounded-lg">4                                           194,047</pre>
-
-1. A gas-motor engine wherein an inti pels the products of combustion, substantially ::te mixture of combustible gas or vapor and air is introduced into the cylinder, separate as herein described with reference to Figs. 2 to 13 of the drawings. from a charge of air or other incombustible
-
-4. In gas-motor engines wherein charges of gas, in such manner and in such proportions combustible gas and air are introduced sep that the particles of combustible mixture will arately into the cylinder, regulating the power be close together at the point of ignition, but of the engine by controlling the gas-supply will be more and more dispersed in the charge by means of a valve operated by a governor, of air forward of that point, whereby the de substantially as herein described. velopment of heat and the expansion or in
-
-5. In gas-motor engines, the shaft K, driven
-
-<pre class="font-mono text-sm whitespace-pre overflow-x-auto p-4 bg-ink-900/10 dark:bg-parchment-100/10 rounded-lg">crease of pressure produced by the combus from        the engine-shaft, with crank K”, imparting</pre>
-
-tion are rendered gradual, substantially as motion       to the slide D, cam R, for regulating herein described.
-
-2. A gas-motor engine wherein an intimate escape-valve F, and the gas-supply,       cam F, for opening the substantially as herein de mixture of combustible gas or vapor and air scribed. is introduced into the cylinder separate from
-
-6. In gas-motor engines, the combination of and subsequent to a charge of air, such intro the cylinder A piston B, engine-shaft I, coun duction being effected through an aperture or ter-shaft    K, crank K”, slide D, gas-slide P, cam apertures in the end surface of the cylinder, R, escape-valve     F, lever F, and cam F, all in order to cause the charge of air to move arranged and operating substantially as and forward in the cylinder as the combustible for the purposes herein described. mixture is introduced, substantially as and In testimony whereof I have signed my
-
-<pre class="font-mono text-sm whitespace-pre overflow-x-auto p-4 bg-ink-900/10 dark:bg-parchment-100/10 rounded-lg">for the purposes set forth.                      name to this <dfn title="The comprehensive written description of an invention and the manner of constructing and operating it, in terms sufficiently clear to enable any person skilled in the art to replicate it. (Modern: Patent Detailed Description & Embodiments)" class="cursor-help underline decoration-dotted decoration-amber-600 dark:decoration-amber-400 decoration-2 underline-offset-4 text-ink-950 dark:text-parchment-50 hover:bg-amber-500/10 dark:hover:bg-amber-400/10 rounded px-0.5 transition-colors">specification</dfn> in the presence of</pre>
-
-3. A gas-motor engine wherein, by one out two subscribing witnesses this 1st day of June, stroke of the piston, separate charges of com 1876. bustible gaseous mixture and of air are drawn into the cylinder, which charges are compressed Witnesses:NICOLAUS   AUGUST OTTO.
-
-<pre class="font-mono text-sm whitespace-pre overflow-x-auto p-4 bg-ink-900/10 dark:bg-parchment-100/10 rounded-lg">by the instroke and then ignited, so as to pro         FRIEDRICH ALBERT SPIECKER,</pre>
-
-<pre class="font-mono text-sm whitespace-pre overflow-x-auto p-4 bg-ink-900/10 dark:bg-parchment-100/10 rounded-lg">pel the piston, which, by its return stroke, ex        GUSTAV KLEINJING.               .. . . . . .</pre>
+2. The combination with the cylinder and piston of a half-speed camshaft geared in a two-to-one ratio to the crankshaft for governing the intake, ignition, and exhaust in synchronization with the four-stroke cycle.

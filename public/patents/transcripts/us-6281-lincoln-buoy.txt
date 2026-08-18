@@ -1,12 +1,9 @@
 UNITED STATES PATENT OFFICE.
-
 ABRAHAM LINCOLN, OF SPRINGFIELD, ILLINOIS.
 
 BUOYING VESSELS OVER SHOALS.
 
-<dfn title="The comprehensive written description of an invention and the manner of constructing and operating it, in terms sufficiently clear to enable any person skilled in the art to replicate it. (Modern: Patent Detailed Description & Embodiments)" class="cursor-help underline decoration-dotted decoration-amber-600 dark:decoration-amber-400 decoration-2 underline-offset-4 text-ink-950 dark:text-parchment-50 hover:bg-amber-500/10 dark:hover:bg-amber-400/10 rounded px-0.5 transition-colors">Specification</dfn> of <dfn title="An open document ('litterae patentes') issued by a sovereign or government under public seal, granting an inventor exclusive legal monopoly rights to manufacture, use, and vend an invention. (Modern: Granted Patent Document / Certificate)" class="cursor-help underline decoration-dotted decoration-amber-600 dark:decoration-amber-400 decoration-2 underline-offset-4 text-ink-950 dark:text-parchment-50 hover:bg-amber-500/10 dark:hover:bg-amber-400/10 rounded px-0.5 transition-colors">Letters Patent</dfn> No. 6,281, dated May 22,
-
-1849.
+Specification of Letters Patent No. 6,281, dated May 22, 1849.
 
 To all whom it may concern:
 
@@ -19,9 +16,3 @@ Attached to the sides of the vessel, below the guards, are expandable chambers o
 When the vessel is in deep water, the buoyant chambers are collapsed against the hull, occupying very little space and offering no impediment to the vessel's progress. Upon approaching a shoal, shallow water, or sandbar, the central shaft is rotated by the vessel's steam power or by hand, causing the ropes to draw the lower movable parts of the chambers downward and outward, expanding the bellows and filling them with air.
 
 The additional displacement thus created exerts a powerful upward buoyant lift, raising the vessel several inches or feet in the water, and enabling her to glide safely across the shoal. Once deep water is regained, the chambers are deflated and restored to their contracted position against the hull.
-
-I claim as my invention:
-
-1. (Independent) What I claim as my invention and desire to secure by <dfn title="An open document ('litterae patentes') issued by a sovereign or government under public seal, granting an inventor exclusive legal monopoly rights to manufacture, use, and vend an invention. (Modern: Granted Patent Document / Certificate)" class="cursor-help underline decoration-dotted decoration-amber-600 dark:decoration-amber-400 decoration-2 underline-offset-4 text-ink-950 dark:text-parchment-50 hover:bg-amber-500/10 dark:hover:bg-amber-400/10 rounded px-0.5 transition-colors">letters patent</dfn> is the combination of expandable buoyant chambers placed at the sides of a vessel, with the vertical sliding uprights and ropes and pulleys, or their equivalents, for the purpose of expanding said buoyant chambers, and thereby buoying the vessel over shoals, shallow water, and other obstructions, substantially as herein set forth.
-
-2. The combination of the expandable buoyant chambers with a central longitudinal shaft driven by the power of the vessel, for simultaneously operating all the sliding uprights and expanding the chambers equally on both sides of the vessel.

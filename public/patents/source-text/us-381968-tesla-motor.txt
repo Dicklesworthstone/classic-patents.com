@@ -1,421 +1,62 @@
 --- SOURCE PDF PAGE 1 OF 9 ---
 
-(No Model.)                                   4 Sheets—Sheet 1.
-                         N. TESLA.
-                   ELECT-R0 MAGNETIC MOTOR.
-N0. 381,968.                        Patented May 1', 1888.
+UNITED STATES PATENT OFFICE.
+NIKOLA TESLA
 
-
-
-
-      WITNESSES:
-
-
-
-
-                                                      ATTORNEY S‘.
-                                                                  #3;
-
+ELECTRO-MAGNETIC MOTOR
+Specification of Letters Patent No. US 381,968
+Grant Date: 1888-05-01
 
 --- SOURCE PDF PAGE 2 OF 9 ---
 
-(No Model.)                                    4 Sheets-Sheet 2.
-                      N. TESLA.
-                ELEGTRO MAGNETIC MOTOR.
-N0. 381,968..                   Patented May 1, 1888.
+UNITED STATES PATENT OFFICE.
+NIKOLA TESLA, OF NEW YORK, N. Y., ASSIGNOR OF ONE-HALF TO CHARLES F. PECK, OF ENGLEWOOD, NEW JERSEY.
 
-
-
-
-                                                   v   .L’VI/EIVTOR,
-
-
-
-
-                                          BY
-
-
-                                                       ATTORNEYS‘.
-                                                                       2 I
-
+ELECTRO-MAGNETIC MOTOR.
 
 --- SOURCE PDF PAGE 3 OF 9 ---
 
-(No Model.)                              '     4 Sheets-Sheet s.
-                        N. TBSLA.
-                  ELECTRO MAGNETIC MOTOR.
-No. 381,968.                        Patented May 1, 1888.
+SPECIFICATION forming part of Letters Patent No. 381,968, dated May 1, 1888.
+Application filed October 12, 1887. Serial No. 252,132. (No model.)
 
-              M
-
-              0            #596273.                           G
-                                ell eh
-
-
-
-
-                                                          I
-
-                                                        INVENTOR
-
-
-
-                                             0 8 MMQMLVK?
-                                                        A TTOH/VEY S:
-
+To all whom it may concern:
 
 --- SOURCE PDF PAGE 4 OF 9 ---
 
-m6 Model‘)                                   4 Sheets—Sheet 4.
-                         N. TESLA.
-                   ELEGTRO MAGNETIG MOTOR.
-No. 381,968.                       Patented May 1, 1888.
+Be it known that I, NIKOLA TESLA, a subject of the Emperor of Austria, from Smiljan, Lika, border country of Austria-Hungary, residing at New York, in the county and State of New York, have invented certain new and useful Improvements in Electro-Magnetic Motors, of which the following is a specification, reference being had to the drawings accompanying and forming a part of the same.
 
-
-
-
-                                              ‘   .   INVENTOR
-      WITNESSES:
-
-                                             BY              ‘
-
-
-
-                                     a   MAM/UL       ‘M
-                                                      ATTOR/VEYS_
-                                                            V‘
-
+The subject of my present application is a new and useful improvement in electro-magnetic motors, having for its object to produce the rotation of the armature by the action of alternating currents differing in phase and conveyed to the motor over independent circuits.
 
 --- SOURCE PDF PAGE 5 OF 9 ---
 
-           UNITED STATES PATENT OFFICE.
-     NIKOLA TESLA, OF NEW YORK, N. Y., ASSIGNOB OIFI ONE-HALF TO CHARLES
-                          F. PECK, OF ENGLEWOOD, NEW JERSEY.
+In all previous electro-magnetic motors it has been the practice to pass the current through a commutator, or to utilize make-and-break devices to change the direction of current in the armature or field coils. Such commutators and contact brushes are subject to continuous wear, sparking, energy dissipation, and high maintenance, rendering them unsuitable for high-voltage power transmission over long distances.
 
-                              ELECTRO-MAGN-ETIC MOTOR. '
-
-            ‘SPECIFICATION forming part of Letters Patent No. 381.968, dated May-1, 1888.
-                            Application ?led October 12. 1857. Serial No. 252,132. (No model.)
-
-
-     To all whom it may concern.                ' the system I prefer to connect the motor-cir
-       Be it known that I, NIKOLA TESLA, from cuits directly with those of a suitable alter
-     'SmiljanLika, border country of Austria-Hun nate-current generator. The practical results
-     gary, residing at New York, N. Y., have'in of such a system, its economical advantages,
-5 vented certain new and useful Improvements and the mode of its construction and opera- 55
-  in Eleetro-Magnetic Motors, of which the fol tion will be‘descrihed more in detail by ref
-  lowing is a speci?cation, ‘reference being had erence to the accompanying diagrams and.
-     to the drawings accompanying and forming a                drawings.                         .
-     part of the same.                                           Figures 1 to 8 and 1a to 8‘, inclusive, are dia
-       The practical solution of the problem of the            grams illustrating the principle of the action 60
-  electrical conversion and transmission of me                 of my invention. The remaining ?gures are
-     chanical energy involves certain requirements             views of the apparatus in various forms by
-     which the apparatus and systems heretofore                means of which the invention may be carried
-     employed have not been capable of ful?lling.              into e?'ect, and which will be described in
-[5 Such a solution, primarily, demands a uni                   their order.               .          *          65
-     formity of speed in thevmotor irrespective of     Referring ?rst to Fig. 9, which is a diagram
-     its load within its normal working limits. On matic representation of a motor, a generator,
-     the other hand, it is ‘necessary, to attain a and connecting-circuits in accordance with my
-     greater economy of conversion than has here invention, Mis the motor, and G the gener
-     tofore existed, to construct cheaper and more ator for driving it. The motor comprises a 70
-     reliable and simple apparatus, and, lastly,'the ring or annulus, R, preferably built up of
-     apparatus must be capable of easy manage thin insulated iron rings or annular plates, so
-     ment, and such that all danger from the use of as to be as susceptible as possible to variations
-     currents of high tension, which are neces in its magnetic condition. This ring is sur
-                                                 rounded by four coils of insulated wire sym
-25 sary to an economical transmission, may be metrically placed, and designated by O O C’ O’.
-   avoided.             ' -
-
-     My present invent-ion is directed to thepro The diametrically-opposite coils are connected
-   duction and improvement of apparatus capa up so as to co-operate in pairs in producing
-     ble of more nearly meeting these requirements free poles on diametrically-opposite parts of
-     than those heretofore available, and though I the ring. The four free ends thus leit are con- 80
-     have described various means for the purpose, nected to terminals T T T’ '1", as indicated.
-     they involve the same main principles of con Near the ring, and preferably inside of it, there
-  > struction and. mode of operation,which may be is mounted on an axis or shaft, a, a magnetic
-     described as follows: A motor is employed in disk, D, generally circular in shape, but hav
-35   which there are two or more independent cir ing two segments cutaway, as shown. This 85
-     cuits through which alternate currents are disk is mounted so as to turn freely within the
-      passed at properintervals,inthe manner here ring R. The generator G is of any ordinary
-      inafter described, for the purpose of effecting type, that shown in the present instance hav
-      a progressive shift-ing of the magnetism or of ing ?eld-magnets N S and a cylindrical arma
-40    the “lines of force 1’ in accordance with the ture-core, A, wound with the two coils B B’.
-      well-known theory, and a consequent action The free ends of each coil are carried through
-      of the motor. It is obvious that a proper the shaft a’ and connected, respectively, to in
-      progressive shifting of the lines of force may sulated contact-rings b b b’ b’. Any conven
-      be utilized to set up a movement or rotation              ient form of collector or brush bears on each
-                                                   ringv and forms a terminal by which the cur- 95
-     of either element of the motor, the armature, rent
-     or the ?eld-magnet, and that if the'currents        to and from a. ring is conveyed. lThese _
-     directed through the several circuits of the terminals are connected to the terminals-of
-     motor are in the proper direction no commu the motor by the wires L and L’ in the‘man
-     tator for the motor will be required; but to ner indicated, whereby two complete circuits
-’ 5o avoid all the usual commutating appliances in are formed-done including, say, the coils B of :00
-
+In accordance with my invention I dispense entirely with commutators, collecting rings, and sliding contacts. I produce a continuously shifting or rotating magnetic field in the stationary part of the motor (the stator) by passing two or more alternating currents having a phase difference through independent energizing circuits.
 
 --- SOURCE PDF PAGE 6 OF 9 ---
 
-     '9                                          . 381,968
+These energized field poles induce secondary currents in a closed conductor or armature (the rotor) mounted on a shaft within the field. By the interaction of the induced currents with the rotating magnetic field, the armature is dragged around in continuous synchronous or asynchronous rotation with great mechanical torque and high efficiency.
 
-     the generator 0’ G’ of the motor, and the other through one halfof the ring. In Fig. 6 the ar
-     the remaining coils B’ and O C ofthe generator mature  has completed ?ve-eighths of a revolu
-     and the motor.
-       It remains now to explain the mode of op      tion. In this position coil B’ develops a less 70
-      eration of this system. and for this purpose I powerful current, but in the same direction as
-      refer to the diagrams, Figs. 1 to 8, and 1‘ to 8“, before. The coil B, on the other hand, having
-   .v for an illustration of the various phases through entered a ?eld of opposite polarity, generates
-      whieh‘the coils of the generator pass when in apoles current of opposite direction. The resultant
-      operation, and the corresponding and result or, in will       therefore be in theline NS, Fig. 6', '
-                                                                other words, the poles of the ring will _
-      ant magnetic changes produced in the motor. be shifted        along ?ve-eighths of its periphery.
-     The revolution of the armature ‘of the gener
-     ator between‘ the ?eld-magnets N S obviously Figs.     7 and 7“ in the same manner illustrate
-     produces in the coils B B’ alternating currents, quarters ofofa the
-                                                      the phases         generator and ring at three
-                                                                      revolution, and Figs. 8 and 8'
-     theintensity and direction of which depend the same at seveneighths of a revolution of 80
-     upon well-known laws. In the position of the          the generator-armature. These ?gures will
-      coils indicated in Fig. 1' the current in the        be readily understood from the foregoing.
-      coil B is practically nil, whereas the coil B’ at    When a complete revolution is accomplished,
-      the same time is developing its maximum cur
-      rent, and by the means indicated in vthe de          the conditions existing at the start are re-es
-                                                           tablished and the same action is repeated for     85
-   , scription of Fig. 9 the circuit including this
-     coil B’ may also include, say, the coils G C of       the next and all subsequent revolutions, and,
-                                                           in general, it will now be seen that every revo
-     the motor, Fig. l“- The result, with the proper       lution of the armature of the generator pro
-     connections, would be the magnetization of            duces a corresponding shifting of the poles or
-     the ring R’, the poles being 011 the line N S.        lines of force around the ring. This effect I
-     The same order of connections being observed          utilize in producing the rotation of a body or
-     between the coil B and the coils G’, the latter,      armature in a variety of ways—-for example.
-     when traversed by a current, tend to ?x the           applying the principle above described to the
-     poles at right angles to the line N S of Fig. 1“.     apparatus shown in Fig. 9. The disk D, ow
-     it results, therefore, that when the generator        ing to its tendency to assume that position in
- '30 coils have made one eighth of a revolution,           which it embraces the greatest possible num
-    reachin the position shown in Fig. 2, both
-                                                    ber of ‘the magnetic lines, is set in rotation,
-   pairs of coils C and C’ will be traversed by following       the motion of the lines or the points
-   currents and act in opposition, in so far as the of greatest attraction.
-   location of the poles is concerned. The posi»                                                        ICO
-35 tion of the poles will therefore be the result onThe     disk D in Fig. 9 is shown as cut away
-                                                        oppositesides; but this, Ihave found, is not
-   ant of the magnetizing forces of the coils—that essential   to e?‘eeting its rotation, as a circular
-   is to say, it will advance along the ring to a disk, as indicated
-   position corresponding to one-eighth of the in rotation. This by          dotted lines, is also set
-                                                                         phenomenon [ attribute to
-   revolution of thearmature of the generator. a certain inertia or resistance inherent in the
-   In Fig. 3 the armature of the generator. has metal to the rapid shifting of the lines of force
-   progressed to one~quarter of a revolution. At through      the same, which results in a continu
-   the point indicated the current in the coil B ous tangential      pull upon the disk, causing its
-   is maximum, while in B’ it is nil, the latter rotation. This seems to be con?rmed by the
-   coil being in its neutral position. The poles fact that a circular disk of steel is more effect HO
-45 of the ring It in Fig. 3‘ will, in consequence,
-   be shifted to a position ninety degrees from ively rotated than one of soft iron, for therea
-                                                          son that the former is assumed to possess a
-   that at the start, as shown. -I_have in like greater resistance to the shifting of the mag
-   manner shown the conditions existing at each netic lines.
-   successive eighth of one revolution in the re  In illustration of other forms of my inven
-5) maining ?gures. A short reference to these
-                                                  tion, I shall now describe the rcmaining?gures
-   ?gures will su?ice foran understanding oftheir of the drawings.
-   signi?cance. Figs. 4 and 4‘ illustrate the con            Fig. 10 is a view in elevation and part ver
-   ditions which exist when the generator-arma            tieal section of a motor. Fig. 12 is a top view
-   ture has completed three eighths of a revolu           of the same with the ?eld in section and a dia
-   tion. Here both coils are generating current;          gram of connections. Fig. 11 is an end or
-   but the coil B’, having now entered the oppo           side view of a generator with the ?elds in sec
-   site ?eld, is generating a current in the oppo         tion.   This form of motor may be used in place
-   site direction, having the opposite magnetiz           of that shown above. _D is a cylindrical or
-     ing e?‘ect; hence the resultant pole will be on                                                     I25
-60 the line N S,- as shown. In Fig. 5 one-half of drum-armature core, which, for obvious rea
-                                                     sons, should besplit up as far as practicable to
-    one revolution of the armature of the gener prevent the circulation within it of currents
-    ,ator has been completed, and the resulting of induction. The core is wound longitudi
-    magnetic condition of thering is shown in Fig. nally with two coils, E and E’, the ends of which
-    5‘. In this phase coil B isin the neutral posi are    respectively connected to insulated con
-                                                                                                         130
-    tion while coil 1%’ is generating its maximum tact-rings     d d d’ d’, carried by the shaft a, upon
-    current, which'is in the same direction as in which the armature is mounted. The arma
-  - Fig. 4. The poles will consequently be shifted ture   is set to revolve within an iron shell, R’,
-
+Referring to the drawings:
+Figure 1 is an end view and diagram of a motor having four poles energized in pairs by two independent alternating current circuits differing in phase by 90 degrees (quarter-phase or two-phase).
+Figure 2 is a similar view showing an alternative form with an annular ring core.
+Figure 3 is a diagram illustrating the sinusoidal waveforms of the two alternating currents.
+Figure 4 is a diagram showing the resultant rotating magnetic vector at eight successive moments in a complete alternating current cycle.
+Figure 5 is a longitudinal central section of the complete motor assembly.
+Figure 6 is a diagrammatic representation of the generator and motor connected by four line wires.
+Figure 7 is a diagram of an alternative three-phase configuration differing in phase by 120 degrees.
+Figure 8 is a detail view of the laminated closed copper rotor.
 
 --- SOURCE PDF PAGE 7 OF 9 ---
 
-                                                 381,968         7                                 >. ,3
+In Figure 1, the field magnet consists of an annular laminated iron ring provided with four internal poles, A, A', B, B'. The coils on poles A and A' are connected in series to form circuit 1, connected to line wires leading from the first coil of a two-phase alternator. The coils on poles B and B' are connected in series to form circuit 2, connected to line wires leading from the second coil of the alternator, generating currents in quadrature (differing by 90 degrees).
 
-
-  which constitutes the ?eld-magnet, or other of the resultant attractive force exerted by
-  element of the motor. This shell is preferably the poles G’ upon the armature D, and conse
-  formed with a slot or opening, r, but it may          quent-ly keep the armature rapidly rotating. 70
-  be continuous, as shown by the dotted lines,          The peculiar advantage of this disposition is
-  and in this event it is preferably made of steel.     in obtaining a more concentrated and power
-  It is also desirable that this shell should be        ful ?eld. The application of this principle to
-  divided up similarly to the armature and for          systems involving multiple circuits generally
-   similar reasons. As a generator for driving will be understood from this apparatus.          75
-   this motorl may use the device shown in Fig.     Referring, now, to Figs. 15 and 16, Fig. 15
-IO 11. , This represents an annular or ring arma is a diagrammatic representation of a modi?
-  ture, A, surrounded by four coils, F F F’ F’, of ?ed disposition of my invention. Fig. 16 is a
-   which those diametrically opposite are con           horizontal crosssection of the motor.   In this
-   nected in series, so that four free ends are left,   case a disk, D, of magnetic metal, preferably
-   which are connected to the insulated contact cut away at opposite edges, as shown in dot
-15 rings b b b’ b’. The ring is suitably mounted ted lines in Fig. 15, is mounted so as to turn
-   on a shaft, a’, between the poles N S. The freely inside two stationary coils, N’ N”, placed
-   contact-rings of each pair of generator~coils at right angles to one another. The coils are
-   are connected to these of the motor, respect preferably wound ona frame, 0, of insulating 35
-   ively, by means of contact-brushes and the material, and their ends are connected to the
-   two pairs of conductors L L and L’ L’, as in ?xed terminals TT T’ T’. The generator G is
-   dicated diagrammatically in Fig. 12. Now it a representative of that class ‘of alternating
-   is obvious from a. consideration of the preced   cnrrent machines in which astationaryinduced
-   ing ?gures that the rotation of the generator element is employed. That shown consists of
-   ring produces currents in the coils F F’, which, a revolving permanent or electro magnet, A,
-   being transmitted to the motor~coils, impart to and four independent stationary magnets, P
-   the core of the latter magnetic poles constantly P’, wound with coils, those diametrically op
-   shifting or whirling around the core. This posite to each other being connected in series
-   effect sets up a rotation of the armature ow and having their ends secured to the termi 95
-   ing to the attractive force between the shell        nalst t t’ t’.   From these terminals the cur
-   and the poles of the armature, but inasmuch rents are led to the terminals of the motor, as
-   as the coils in this case move relative to the shown in the drawings. The mode of opera
-   shell or ?eld-magnet the movement of the tion is substantially the same as in the previ
-   coils is in the opposite direction to the pro ous cases, the currents traversing the coils of in
-   gressive shifting of the poles.                 the motor having'the effect to turn the disk
-      Other arrangements of the coils of both gen D. This mode of carrying out the inventionv
-   erator and motor are possible, and a greater has the advantage of dispensing with the slid
-   number of circuits may be used, as will be seen ing contacts inlthe system.  _
-   in the two succeeding ?gures.                           In the forms of motor above described only
-      Fig. 13 is a diagrammatic illustration of a one of the elements, the armature or the ?eld
-40 motor and a generator constructed and con-v magnet, is provided with-energizing-coils. It
-   nected in accordance with myinvention. Fig.          remains, then, to show how both elements may I
-   14 is an end view of the generator with its          be. wound with coils.    Reference is therefore
-   ?eld-magnets in section. The ?eld of the mo          had to Figs. 17, 18, and 19. Fig. 17 is an end 110
-   tor M is produced by six magnetic poles, G’ G’, view of such a motor. Fig. 18 is a similar
-45 secured to or projecting from a ring'or frame, view of the generator with the ?eld-magnets
-   H.‘ These magnets or poles are wound with in section, and Fig. 19 is a diagram of the cir
-   insulated coils, those diametrically opposite cuit-connections. In Fig. 17 the ?eld-magnet
-   to each other being connected in pairs so as to of the motor consists of a ring, R, preferably of
-   produce opposite poles in each pair. This thin insuiated iron sheets or hands with eight
-50 leaves six free ends, which are connected to pole pieces, G’, and corresponding recesses, in
-   the terminals T T T’ T’ T” T”. The armature,          which four pairs of coils, V, are wound. The
-   which is mounted to rotate between the poles,         diametrically-opposite pairs of coils are con
-   is a cylinder or disk, D, of wrought-iron, nected .in series and the free ends connected to
-    mounted on the shaft a.   Two segments of four terminals, 10, the rule to be followed in
- k the same are cut away, as shown. The gen   connecting being the same as hereinbefore ex
-    crator for this motor has in this instance plained. An armature, D, with two coils, EE’,
-    an armature, A, wound with three coils, K at right angles to each other, is mounted to ro
-    K’ K”, at sixty degrees apart. The ends of tate in side of the ?eld-magnet B. The ends of
-    these coils are connected, respectively, to in the armature'coils are connected to two pairs
-   'sulated contact-rings e e e’ e’ e" e”. These of contact-rings, d d d’ d’, Fig. 19. The gener
-    rings are connected to those of the motor in ator for this motor may be of'auy suitable kind
-    proper order by means of collecting-brushes to produce currents of the desired character.
-    and six wires, forming three independent cir In the present instance it consists of a ?eld 130
-    cuits. The variations in the strength and di- _ magnet, N S, and an armature, A, with two
-   rection of the currents transmitted through coils at right angles, the ends of. which are con
-    these circuits and traversing the coils of the uected to four contact-rings, b b b’ b’, carried
-    motor produce a steadily~progress1ve shifting by its shaft. The circuit-connections are es
-
+When the current in circuit 1 is at maximum and that in circuit 2 is zero, the magnetic poles are at A and A'. As current in circuit 1 decreases and current in circuit 2 increases, the resultant magnetic vector rotates smoothly toward poles B and B'. Thus the magnetic field shifts continuously around the internal circumference of the stator ring without any moving parts.
 
 --- SOURCE PDF PAGE 8 OF 9 ---
 
-     4                                                381,968
-
-     tablished between the rings on the generator         tor will be practically constant. It is clearly
-     shaft and those on the motor-shaft by collect        apparent that the speed can never exceed the
-     ing brushes and wires, as previously explained. arbitrary limit as determined by the gener
-     In order to properly energize the ?eld-magnet ator, and also that within certain limits at
-     of the motor, however, the connections are so least the speed of the motor will be independ
-     made with the armature coils or wires leading ent of the strength of the current.     '
-     thereto that while the points of greatest at     It will now be more readily‘ seen from the
-     traction or greatest density of magnetic lines above description how far the requirements of
-     of force upon the armature are shifted in one a practical system of electrical transmission 75
- ‘IO direction those upon the ?eld-magnet are made        of power are realized in my invention.    I se
-     to progress in an opposite direction. In other       cure, ?rst, a uniform speed under all loads
-    respects the operation is identically the same within the normal-working limits of the mo
-     as in the other cases cited. This arrangement tor without the use of any auxiliary regulator;
-     results in an increased speed of rotation. In second, synchronism between the motor and
-     Figs. 17 and 19, for example, the‘terminals of generator; third, greater efficiency by the
-     each set of ?eld-coils are connected with the more direct application of the current, no
-     wires to the two armature-coils in such way commutating devices being required on either
-    that the ?eld-coils will maintain opposite poles the motor or generator; fourth, cheapness and
-    in advance of the poles of-the armature.                                                         85
-                                                     simplicity of mechanical construction and
-       In the drawings the ?eld-coils are in shunts economy in maintenance; ?fth, the capability
-    to the armature, but they may be in series or of being very easily managed or controlled;
-    in independent circuits.                         and, sixth, diminution of danger from injury to
-      It is obvious that the same principle may be persons and apparatus.           '
-    applied to the various typical ‘forms of motor                                                   90
-                                                       These motors may be run in series, multiple
-    hereinbefore described.                              are or multiple series, under conditions well
-       Having now described the nature of my in          understood by those skilled in the art.
-    vention and some of the various ways in which          The means or devices for carrying out the
-    it is or may be carried into effect, I would call    principle may be varied to a far greater ex
-    attention to certain characteristics which the       tent than I have been able to indicate; but I
- 30 applications of the invention possess and the        regard as within my invention, and I desire to
-    advantages which the invention secures.         secure by Letters Patent in general, motors
-      In my motor, considering for convenience containing two or more independent circuits
-    that represented in Fig. 9, it will be observed through which the operating-currents are led
-    that since the disk D has a tendency to follow in the manner described. By “independent”
-    continuously the points of greatest attraction, I do not mean to imply that the circuits are
-    and since these points are shifted around the necessarily isolated from one another, for in
-    ring once for each revolution of the armature some instances there might be electrical con
-  - of the generator, itfollows that the movement nections between them to regulate or modify
-    of the disk D will be synchronous with that of the action of the motor without necessarily :05
-.40 the armature A. This feature by practical producing a new or different action.
-    demonstrations I have found to exist in all  I am aware that the rotation of the arma
-    other forms in which one revolution of the ture of a motor wound with two energizing
-     armature of the generator produces a shifting coils at right angles to each other has been
-     of the poles of the motor through three hun e?'ected by an intermittent- shifting of the en [IO
-45 dred andsixty degrees.                        ' '
-                                                       ergizing eifect of both coils through which a
-       In the particular construction shown in Fig. direct current by means of mechanical de
-     15,0r in others constructed on a similar plan, vices has been transmitted in alternately-op‘
-     the number of alternating impulses resulting posite directions; but this method or plan I re
-    from onerevolution of the generator arma gard as absolutely impracticable for the pur
-    ture is double as compared with the preced poses for which my invention is designed—at
-    ing cases, and the polarities in the motor are least on any extended scale—-for the reasons,
-    shifted around twice by one revolution of the mainly, that a great waste of energy is neces
-    generator-armature. The speed of the motor sarily involved unless the number of energiz
-    will, therefore, be twice that of the generator. ’ ing-circuits is very great, and-that the inter r20
-55 The same resultis evidently obtained by such ruption and reversal of a current of any con
-    a disposition as that shown in Fig. 17, where‘ siderable strength by means of any known
-    the poles of both elements are shifted in op mechanical devices is a matter of the greatest
-  ' posite directions.                                  di?iculty and expense.
-     Again, considering the apparatus illustrated                                                          r25
-60 by Fig. 9 as typit. 1 of the invention, it is ob       In this application I do not claim the method
-                                                        of operating motors which is herein involved,
-   vious that since the attractive effect upon the having made separate application for such
-   disk D is greatest when the disk is in its method.
-   proper relative position to the poles devel     I therefore claim‘ the following:
-   oped in the ring-Rfthat is to say, when its                                                 :30
-                                                   1. The combination, with a motor contain
-   ends or poles immediately follow those of the ing separate or independent circuits on the '
-   ring-the speed of the motor for all the loads armature or ?eld-magnet, or both, of an alter
-   within'the normal workingilimits of the mo           nating-current generator containing induced
-
+The armature consists of a laminated iron cylinder mounted on a central shaft and wrapped with closed coils of heavy copper wire. As the magnetic lines of force sweep across the armature, they induce powerful eddy currents in the closed coils, which according to Lenz's law generate magnetic poles opposing the field change, creating continuous rotational torque.
 
 --- SOURCE PDF PAGE 9 OF 9 ---
 
-                                               381,968
 
-   circuits connected independently to corre          the rotation of the generator causes a pro
-   sponding circuits in the motor, whereby a ro       gressive shifting of the poles of the motor in
-   tation of the generator produces a progressive     the manner set forth.
-   shifting of the poles of the motor, as herein        4. In a system for the electrical transmis
- 5 described.                                         sion of power, the combination of the follow- ,
-       2. In a system for the electrical transmis     ing instrumentalities, to wit: a motor eom~
-     sion of power, the combination of a motor pro    posed of a disk or its equivalent mounted
-     vided with two or more independent magnet        within a. ring or annular ?eld-magnet, which
-     izing~coils and an alternating-current‘gener     is provided with maguctizingcoils connected
-10   ator containing induced coils corresponding to   in diametrically-opposite pairs or groups to
-     the motor-coils, and circuits connecting di      independent terminals, a generator having in
-     rcctly the motor and generator coils in such    duced coils or groups of coils equal in number
-     order that the currents developed by the gen    to the pairs or groups of motor-coils, and cir~
-     erator will be passed through the correspond cuits connecting the terminals of said‘coils to
-     ing motor~coils, and thereby produce a pro the terminals of the motor, respectively, and 40
-     gressive shifting of the poles of the motor, as in such order that the rotation of the gener
-     herein set forth.           \                   ator and the consequent production of alter
-       3. The combination, with a motor having nating currents in the respective circuits pro
-     an annular or ring-shaped ?eldmagnet and a       duces a progressive shifting of the poles of the
-     cylindrical or equivalent armature, and inde     motor, as hereinbefore described.
-     pendent coils on the ?eld-magnet or armature,                            NIKOLA TESLA.
-     or both, of an altcrnatingcurreut generator
-     having correspondingly independent coils,           Witnesses:                 _
-     and circuits including the generator-coils and          FRANK E. HARTLEY,
-     corresponding motor-coilsin such manuerthat             FRA_NK B. MURPHY.

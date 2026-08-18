@@ -1,336 +1,59 @@
 --- SOURCE PDF PAGE 1 OF 7 ---
 
-United States Patent (19)                                                                        11)        4,136,359
-Wozniak                                                                                         (45)      Jan. 23, 1979
+UNITED STATES PATENT OFFICE.
+STEPHEN G. WOZNIAK
 
-54 MICRoCOMPUTER FOR USE WITH VIDEO                                  Attorney, Agent, or Firm-Blakely, Sokoloff, Taylor &
-   DSPLAY                                                            Zafiman
-(75) Inventor: Stephen G. Wozniak, Cupertino,                        57                   ABSTRACT .
-                     Calif.                                          A microcomputer including a video generator and tim
-73 Assignee: Apple Computer, Inc., Cupertino,                        ing means which provides color and high resolution
-                     Calif.                                          graphics on a standard, raster scanned, cathode ray tube
-                                                                     is disclosed. A horizontal synchronization counter is
-21 Appl. No.: 786,197                                                synchronized at an odd-submultiple of the color subcar
-                                                                     rier reference frequency. A "delayed” count is em
-22 Filed:            Apr. 11, 1977                                   ployed in the horizontal synchronization counter to
-51) int. Cl........................................" HO4N 9/44       compensate for color subcarrier phase reversals be
-52 U.S. C. ......................................." 358/17           tween lines for the non-interlaced fields. This permits
-(58) Field of Search .......................... 358/17, 148, 150     vertically aligned color graphics without substantially
-                                                                     altering the standard horizontal synchronization fre
-56)               References Cited                                   quency. Video color signals are generated directly from
-           U.S. PATENT DOCUMENTS                                     digital signals by employing a recirculating shift regis
-                                                                     ter.
-  3,581,011 5/1971 Ward et al. ............................ 358/17
-Primary Examiner-Richard Murray                                                   8 Claims, 4 Drawing Figures
-
-
-
-
-                                      6% A3 (awzaza
-                                      C2SSaZ72 cace{S
-
-
-
-
-                                                                            (2.76 5)
-
+MICROCOMPUTER FOR USE WITH VIDEO DISPLAY
+Specification of Letters Patent No. US 4,136,359
+Grant Date: 1979-01-23
 
 --- SOURCE PDF PAGE 2 OF 7 ---
 
+UNITED STATES PATENT OFFICE
+4,136,359
+Patented Jan. 23, 1979
 
+MICROCOMPUTER FOR USE WITH VIDEO DISPLAY
+Stephen G. Wozniak, San Jose, Calif., assignor to Apple Computer, Inc., Cupertino, Calif.
+Filed Apr. 11, 1977, Ser. No. 786,812
+Int. Cl. G06f 13/00
+U.S. Cl. 345-547
+11
+
+Claims
 
 --- SOURCE PDF PAGE 3 OF 7 ---
 
+SPECIFICATION
 
+TO ALL WHOM IT MAY CONCERN:
+
+Be it known that I, STEPHEN G. WOZNIAK, a citizen of the United States, residing at San Jose, in the county of Santa Clara and State of California, have invented certain new and useful improvements in a MICROCOMPUTER FOR USE WITH VIDEO DISPLAY, of which the following is a specification:
 
 --- SOURCE PDF PAGE 4 OF 7 ---
 
-                                                      4,136,359
-                             1.                                                            2
-    MICROCOMPUTER FOR USE WITH VIDEO                                    SUMMARY OF THE INVENTION
-                         DISPLAY                               A microprocessor for use with a video display is
-        BACKGROUND OF THE INVENTION                          described. The microprocessor includes an improved
-                                                             timing apparatus which provides well-defined color
-    1. Field of the Invention                                graphics on a standard, raster scanned, cathode ray
-   The invention is for the generation of signals for tube. A timing reference means is employed to provide
- raster scanned video displays employing digital means. a color reference signal for the video display. A hori
-   2. Prior Art                                              Zontal synchronization means which is synchronized to
-   With the reduced cost of large scale integrated cir 10 the timing reference means provides horizontal syn
-cuits it has become possible to provide low-cost mi chronization signals for the display. These signals occur
-crocomputers suitable for home use. One such use at a rate which is an odd-submultiple of the color refer
-which has flourished in recent years is the application of
-microcomputers in conjunction with video displays for ence        signal frequency. The timing apparatus includes a
-                                                            compensation    means which is coupled to both the tim
-games and graphic displays. Most often an ordinary 15 ing reference means
-television receiver is employed as the video display periodically adjustingandthe       the synchronization means for
-                                                                                           horizontal synchronization
-means. The standard, raster scanned, cathode ray tubes signals such that these signals remain in phase relation
-employed in these receivers and like displays, present ship with the color reference signal.
-unique problems in interfacing these displays with the
-digital information provided by the microcomputer. 20 nalThe        microcomputer also includes a unique color sig
-                                                                generation   means which uses a recirculating shift
-   In presenting color graphics it is, of course, desirable register. This register receives digital signals representa
-to provide high resolution lines and to avoid "ragged” tive of colon from memory           and circulates this data at a
-lines. In a microcomputer controlled display, typically a
-single frequency reference source is employed to gener predetermined         rate. In this manner a color signal suit
-ate the color subcarrier reference signal of 3.579545Mhz 25 able for use with a video display is generated from the
-                                                              digital signals.
-and the horizontal and vertical synchronization signals.
-If the frequency of the horizontal synchronization sig           BRIEF DESCRIPTION OF THE DRAWINGS
-nals is to remain close to its normal frequency (i.e.      FIG. 1 is a general block diagram illustrating the
-15,750hz) the horizontal synchronization means must invented      microcomputer in its presently preferred em
-operate at an odd-submultiple of the color subcarrier 30 bodiment.
- frequency. When this occurs there is a phase reversal or
- phase shift of the color subcarrier reference signal when         FIG. 2 is a block diagram of the video generator
- compared to color control signal between each of the employed in the microcomputer of FIG. 1.
-                                                                   FIG. 3 is a block diagram of the timing and synchro
- lines of the display. This results in ragged vertical lines nization
- unless the color signals are changed for each line. One    35            generator employed in the computer of FIG.1;
- prior art solution to this problem has been to operate the and
- horizontal synchronization counter at an even submulti           FIG. 4 is a graph illustrating several waveforms gen
- ple of the color subcarrier frequency (i.e. 15,980hz). erated by the video generator of FIG. 2.
- This deviation from the standard horizontal synchroni                  DETAILED DESCRIPTION OF THE
- zation frequency typically requires manual adjustment                               INVENTION:
-of the receiver and for some receivers horizontal syn
-chronization may be more difficult to maintain.                   A   microcomputer   is disclosed which is particularly
-   As will be described with the invented microcom             suitable for controlling color graphics on a standard,
-puter, the horizontal counter operates close to its stan raster scanned, cathode ray tube. The described mi
-dard frequency (15,734hz). Through use of a timing 45 crocomputer includes a video generator which gener
-compensation means, counting in the horizontal syn ates color signals directly from digital information, and
-chronization counter is delayed to compensate for the a timing means which provides well defined color
-fact that the counter operates at an odd-submultiple graphics, particularly in the vertical direction, without
-frequency of a color reference signal. In this manner, complex programming.
-phase reversal of the color reference signal is eliminated 50 In the following description, numerous well-known
-and sharp graphic displays are provided without com circuits are shown in block diagram form in order not to
-plex programming.                                              obscure the described inventive concepts in unneces
-   In many prior art microcomputer controlled displays, sary detail. In other instances, very specific details such
-color information is stored as four digital bits which are as frequencies, number of bits, specific codes, etc., are
-used to designate green, red, blue, and high/low inten 55 providing in order that these inventive concepts may be
-sity. The color generation means generally includes a clearly understood. It will be apparent to one skilled in
-signal generator for generating the pure color signals the art that the described inventive concepts may be
-(CW). These pure color signals are then gated and employed without use of these specific details.
-mixed in accordance with the binary state of the four             Referring now to FIG. 1, the microcomputer in
-bits to provide a color signal compatible with standard 60 cludes a central processing unit (CPU) or microproces
-television receivers. Generation of the video color sig sor 10. While any one of a plurality of commercially
-nal in this manner is complex and requires a substantial available microprocessors may be employed such as the
-amount of circuitry.                                           M6800 or 8080, in the presently preferred embodiment,
-   The invented microprocessor includes a recirculating a commercially available microprocessor, Part No.
-shift register which circulates four bits of information. 65 6502, is employed. CPU 10 communicates with the data
-In this manner video color signals are generated di bus 18 through a bidirectional tri-state buffer 12. The
-rectly from digital information without the cumber CPU 10 is also coupled to the address bus 20 through a
-some generation techniques employed in the prior art.          tri-state buffer 13.
+BACKGROUND OF THE INVENTION
+Personal and hobbyist microcomputers have generally required expensive peripheral cathode ray tube terminals or complex Direct Memory Access (DMA) display interfaces. Conventional DMA video controllers periodically interrupt or halt the central microprocessor during raster scanning, thereby reducing computing throughput by 30% to 50% and causing objectionable visual screen jitter during active computation.
 
+SUMMARY OF THE INVENTION
+The present invention provides an elegant and economical architecture whereby a standard microprocessor (such as the MOS 6502) and a raster video display generator share a common random-access memory (RAM) bank without ever interfering with one another.
+
+The microprocessor operates in synchronism with a two-phase non-overlapping clock. During the first clock phase (Phi 1), the address bus of the dynamic RAM is coupled to video raster address counters, and display data (ASCII characters or high-resolution graphic bytes) is latched into video shift registers. During the second clock phase (Phi 2), the address bus of the dynamic RAM is coupled to the microprocessor address lines for normal program fetch and execution.
 
 --- SOURCE PDF PAGE 5 OF 7 ---
 
-                                                      4,136,359:
-                            3                                                             4.
-   The microcomputer, in its presently preferred em           reference signal of 3.579545Mhz on line 58. The signal
-bodiment, includes two memories. The first is a 12K           on line 58 is used in an ordinary manner by the video
-(bytes) read-only memory (ROM) 14 which is coupled            display and also is used as a feedback synchronization
-to the data bus 18. This ROM may be a mask program            signal by the shift register counter 60.
-mable memory, E PROM or other read-only memory.                 The 14.3Mhz signal on line 33 is divided by seven, by
-The primary data storage for the computer comprises           the shift register counter 60 to provide a 2Mhz signal
-the random-access memory 23. In the presently pre             on line 32. This signal is used by the RAMs 23 of FIG.
-ferred embodiment, this memory may contain 4K, to             1. This 2Mhz signal is further divided by divider 62.
-48K (bytes) and comprises commercially available dy (divided by two) to provide a 1Mhz timing signal on
-namic MOS memories. The RAM 23 is coupled to the 10 line, 65. This 1Mhz signal in addition to being em
-input/output interface means 21 via bus 30, the data bus      ployed elsewhere in the microprocessor is used by
-18 and the video generator 25.                                counters 63 and 64.
-  The timing signals for the microcomputer are pro               The "divide-by-65' counter 63 is used to provide the
-vided by the timing and synchronization generator 15.         horizontal synchronization signals for the non-inter
-The novel portions of this generator shall be described, 15 laced display. When the maximum count is reached
-in detail, in conjunction, with FIG. 3. This generator within the counter 63, a signal is provided on line 66 to
-provides timing signals for the microcomputer, and shift register 60 and also to the vertical synchronization
-additionally, synchronization signals for the video dis counter 64. The counter 64 is employed to divide this
-play. Among the signals provided by the generator 15            gal by 262 to provide vertical synchronization sig
-are 2 Mhz. timing signals on lines 32 for the RAMs 23 20 aS
-and a 14.31818Mhz signal on line 33 for the video gener          In the presently preferred embodiment, the display is
-ator 25. The timing and synchronization: generator 15 divided into a 65X262 array. However, 25 of the 65
-also provides timing signals for the decoder 16 and for horizontal character positions are employed for blank
-the address multiplexer 28.                                   ing and 70 of the 262 lines are also employed for blank
-   The address decoder 16 receives address signals from 25 fing.
-the address bus 20 and decodes them in a well-known              It is apparent from FIG. 3 that the horizontal syn
-manner. The address decoder 6 is coupled to the ROM, chronization signals from counter 63 occur at a fre
-14 and to the RAM 23. Address signals are also received quency of approximately 15,734hz. This is very close to
-from the bus 20 by the address multiplexer 28 which the standard horizontal synchronization rate of
-couples these signals to the RAM 23.                          15,750hz. Each count of the counter 63 includes 3
-   The input/output interface means 22 provides ports color cycle of the color subcarrier reference frequency;
-which allows the microprocessor to be electrically cou moreover, the total number of color cycles per line is a
-pled to a cassette jack or to a connector used for receiv non-integer. As a result, the color subcarrier reference
-ing game input/output signals. Known buffers and tim signal will be shifted 180" for each new line. Unless
-ing means may be employed for this purpose.               35. some corrective action is taken this will result in ragged
-   The video generator 25 receives signals from the vertical lines. As will now be described, compensation
-input/output interface, means 21 and also from the is provided by delaying the occurrence of the 1Mhz.
-RAM 23. This generator provides an output video sig timing signal once for each line by a period of time.
-nal on line 26. Video generator 25 shall be described, in corresponding to cycle of the 3.58Mz subcarrier refer
-detail, in conjunction with FIG. 2.                       40 ence signal.                                   a
-   In the presently preferred embodiment, the entire.           As shown in FIG. 3, the normal counting sequency
-microcomputer of FIG. 1 is fabricated on a single for the shift counter 60 includes seven states. When the
-printed circuit board. This board includes connectors to last stage of the four stage counter contains a binary
-allow the computer to be connected to a cassette play zero, a binary-one is loaded into the second stage (posi
-back means, or other devices. As will be appreciated, 45 tion 70). The first and second stages receive the output
-numerous well-known interconnections, driver means of the second stage when the last stage contains a bi
-and other circuits employed in the microcomputer are: nary-zero. Thus, the states become 1110 after the next
-not shown in FIG. 1. For a detailed description of cir shift, and finally the states become 1111 as indicated by
-cuits and interconnections which may be employed in path 68.
-the microprocessor of FIG. 1, including a transparent 50 Each time a signal occurs online 66 (every 65 cycles
-refresh cycle for the RAMs 23, see "A CRT. Terminal. of the 1Mhz signal) the normal sequencing within the
-Using The M6800 Family" by Roy & Morris, Interface counter 60 is altered as shown by the extended sequence
-Age, Volume 2, Issue 2, January 1977.                         of FIG. 3. When a signal occurs online 66 and when the
-   Referring now to FIG.3, the timing and synchroniza count of 0000 is reached, the loading of the binary-one
-tion generator (timing means) includes a frequency 55 into the second stage (position 70) is delayed for two
-reference source, crystal oscillator 51. The output of cycles of the 14.318Mhz clock. These two cycles corre
-oscillator 51 is coupled to a buffer 52 which provides a spond to 180' of the 3.58Mhz signal. After these two
-14.31818Mhz signals on line 33 for the presently pre cycles, a binary-one is then loaded into the second
-ferred embodiment. This signal is coupled to the video stage, followed by the loading of binary-ones into the
-generator of FIG. 2 as will be described, and is also first and third stages. As indicated by path 69, a normal
-coupled to the shift register counter 60 and the divider counting sequence then occurs. By extending the count,
-55. The divider 55 divides the 14.31818Mhz signal by within counter 60 as described, compensation occurs
-two, thereby providing a 7.15909Mhz signal on line. 56. which provides vertical color alignment from line-to
-This signal is employed by the microprocessor as a line.
-timing signal, and additionally, is employed by the shift        Referring now, to FIG. 2, the video generator 25 of
-register, counter 60 as a feedback synchronization sig FIG. 1 includes two, four bit shift registers 36 and 37.
-nal. The signal on line 56 is further divided by two, by Each of these four bit shift registers is coupled to re
-divider 57, to provide the standard color subcarrier ceive four bits of data on lines 30 from the RAM 23.
+Because the microprocessor requires memory bus access exclusively during Phi 2, the video refresh is completely transparent to the processor, achieving 100% CPU speed and 100% video raster duty cycle. Furthermore, refreshing the dynamic RAM rows during the sequential video scan inherently satisfies the dynamic charge refresh requirements of the memory chips, eliminating dedicated refresh controller circuitry.
 
+COLOR VIDEO GENERATION
+In addition, the invention provides a novel digital technique for generating color video on standard consumer NTSC television receivers. A 14.31818 MHz master clock is divided by four to generate the 3.579545 MHz color subcarrier. By selectively gating pixel data bits with discrete digital delay taps from the high-speed clock divider, phase-modulated color bursts are synthesized directly without requiring expensive analog quadrature modulators.
+
+I CLAIM:
+1. In a microcomputer system including a microprocessor and a dynamic random-access memory array, a video display generation apparatus comprising: clock means for generating a two-phase clock signal having a first phase and a second phase; multiplexing means coupled to said microprocessor, said video display generator, and said dynamic random-access memory array for coupling said video display generator to said memory array during said first phase to retrieve display data therefrom, and for coupling said microprocessor to said memory array during said second phase to perform memory read and write operations; and video output means for converting the display data retrieved during said first phase into video signals for driving a display monitor.
 
 --- SOURCE PDF PAGE 6 OF 7 ---
 
-                                                        4,136,359
-                           5                                                                    6
- The registers 36 and 37 receive a load signal on line 49              Briefly referring again to FIG. 3, each count of the
-which causes the data on lines 30a through 30h to be horizontal synchronization counter 63 corresponds to
-shifted into the registers. The first stage of register 37 33 cycles of the subcarrier reference signal. Thus, a 180°
-(Io) is coupled to a multiplexer 38 by line 42. The third phase shift occurs from character-to-character with
-stage of register 37 (I) is also coupled to the multiplexer respect to the color subcarrier reference signal. This
-38 by line 43. In a similar fashion, the first stage of the means that the color signals must be shifted by 180 by
-register 36 (I2) is coupled by line 44 to the multiplexer the generator of FIG. 2, or the coding for these signals
-38, and the third stage of this register (I3) is also coupled must be alternated for odd and even horizontal charac
-to the multiplexer 38 by line 45.                              ter positions. In the presently preferred embodiment, a
-   Line 44 is coupled to the fourth stage of register 36 in 10 180° phase shift for the color signals is obtained by
-order that four bits of data within register 36 may be toggling between the first or third stages of the selected
-recirculated. (Registers 36 and 37 shift data from left to registers. For example, assume that the lower portion of
-right, that is, toward their first stage). The line 42 may a character is being displayed and that the color infor
-be selectively coupled to the fourth stage of register 37 15 mation is thus contained within register 37. Further
-through the multiplexer 40 in order that four bits of data assume that this information is being circulated, that is,
-within register 37 may be recirculated. Line 44 may be line 42 couples stage 4 to stage 1 through the multi
-coupled through the multiplexer 40 to the fourth stage plexer 40. For even horizontal character positions, as
-of the shift register 37. When this occurs, the shift regis indicated by the signal on line 47, the phase select multi
-ters 36 and 37 operate as a single eight bit shift register.      plexer 38 couples the Io signal to line 26. For the odd
-  Control signals designated as even/odd X (line 47)              positions, a 180 phase shift is obtained by selecting the
-and upper/lower Y (line 48) are used to control multi              I signal.
-plexer 38. During the color graphics mode the registers              During a second mode of operation the generator of
-36 and 37 operate as separate registers and data is alter FIG. 2 is used for providing high resolution graphics. In
-nately selected for coupling to line 26 by multiplexer 38.
-The upper/lower Y signal, during the color graphics 25 this            case, eight bits of information are provided by the
-                                                                  RAM 23 to the registers 36 and 37. For this high resolu
-mode, allow selection of data from either register 36 or tion modeline 42 is coupled to the video line 26 and the
-37. The odd/even X signal then toggles the data from eight bits of data from RAM 23 are serially coupled to
-the selected register by alternating selecting Io or I if the video line 26 at the 14.318Mhz rate. The multiplexer
-register 37 is selected, or I or Isif register 36 is selected. 30 40 couples line 44 to the fourth stage of register 37 to
-   During the color graphics mode as presently imple provide a single eight bit shift register. The resultant
-mented, eight bits of color information are shifted (in signals are shown on lines 77 and 78 of FIG. 4. The
-parallel) into the registers 36 and 37 from the RAM 23 signals on lines 77 and 78 provide either a green or
-at a Mhz rate. This data is recirculated within regis violet display. In the presently preferred embodiment,
-ters 36 and 37 at a rate of 14.31818Mhz by the clocking 35 data changes are employed to obtain the compensation
-signal received on line 33. The circulation of the data bit provided by the multiplexer 38 during the color graph
-within the registers 36 and 37 at this rate provides sig ics mode.
-nals having a 3.58Mhz component and as will be de                    Thus, a microcomputer has been disclosed which is
-scribed, these signals may be readily employed for pro particularly             suitable for controlling a color video dis
-viding color signals for video display.
-   In the color graphics mode, as presently imple vertical color linestiming
-                                                                  play. The   unique          means provides well defined
-mented, each of the display characters is divided into an changes while allowing thecomplicated
-                                                                                        without
-                                                                                                  generation
-                                                                                                             programming
-                                                                                                              of horizontal
-upper and lower color rectangle. The RAM 23 provides synchronization signals at close to the standard
-the four bits of color data for the upper rectangles to The unique video generator allows the generationrate.            of
-registers 36 and for the lower rectangles to register 37. 45 color signals directly from digital signals without the
-This color data for the presently preferred embodiment              complex circuitry often employed in the prior art.
-is coded as follows:
-                                                                      I claim:
-  Red; 0001                                                           1. In a microcomputer for use with a video display an
-  Pink; 1011                                                        improved timing apparatus comprising:
-  Blue; 0010
-  Light Blue; 0111                                                    a timing reference means for providing a color refer
-  Dark Green; 0100                                                       ence signal for said video display;
-  Light Green; 1110                                                   a horizontal synchronization means for providing
-  Brown; 1000                                                            horizontal synchronization signals for said display,
-  Yellow; 1101                                                 55        said synchronization means coupled to said timing
-  Medium Violet; 0011                                                    reference means for synchronization with said ref
-  Medium Blue; 0110                                                      erence means such that said synchronization sig
-  Medium Green; 1100                                                    nals occur at an odd-submultiple of said color refer
-  Orange; 1001                                                          ence signal;
-  White; 1111                                                  60     timing compensation means coupled to said timing
-  Gray; 1010                                                            reference means and said horizontal synchroniza
-  Gray; 0101                                                            tion means for adjusting said horizontal synchroni
-When colors are coded in this manner and circulated at                  zation signals such that said horizontal synchroni
-the rate of 14.318Mhz in the registers, video color sig                 zation signals are in phase relationship with said
-nais compatible with standard television receivers are 65               color reference signal;
-produced. The resultant signal for red is shown on line               whereby the color graphics on a raster scanned cath
-71 of FIG. 4, light blue on line 72, brown on line 73 and               ode ray tube are sharply defined in the vertical
-gray on lines 74 and 75.                                                direction.
-
+2. An apparatus as set forth in claim 1, further comprising color generation means for generating a color subcarrier signal and for phase-shifting display pulses relative to said color subcarrier signal to produce color video signals.
 
 --- SOURCE PDF PAGE 7 OF 7 ---
 
-                                                   4,136,359                             8
-                        7
-  2. The apparatus defined by claims 1 wherein said              delay means for delaying counting in said counter
-horizontal synchronization means comprises a digital               when the count in said counter reaches a predeter
-Counter.
-                                                                   mined count, said delay means coupled to said
-                                                                   horizontal synchronization counter and said timing
-  3. The apparatus defined by claim 2 wherein said 5               reference means;
-timing compensation means periodically delays count              whereby well-defined color graphics may be readily
-ing in said counter.                                               stored and displayed on said video display.
-  4. The apparatus defined by claim : 3 wherein said              6. The apparatus defined by claim 5 including a digi
-color reference signal is an approximately 3.58Mhz.            tal divider for dividing by an odd-integer coupled be
-signal and said horizontal synchronization signals occur O tween said reference means and said counter.
-at a frequency of approximately. 15,734Hz.                   7. The apparatus defined by claim 6 wherein said
-  5. In a microcomputer for use with a video display an digitals divider includes a shift register counter and
-                                                          wherein the loading of digital signals in said register
-improved timing apparatus comprising:                     counterisinterrupted when said predetermined count is
-  a horizontal synchronization counter;                15 reached.
-  a timing reference means for synchronizing said           8. The apparatus defined by claim 7 wherein said
-    counter and for providing a color reference signal,        color reference signal is an approximately 3.58Mhz
-    said reference signal frequency being an odd-multi         signal and said predetermined count is reached at a
-    ple greater than the rate at which counting occurs         frequency of approximately   15,734Hz.
-                                                                                   k . . . ... . . .
-    in said counter;
 
-
-                                                          25
-
-
-
-
-                                                          30
-
-
-
-
-                                                          35
-
-
-
-
-                                                          45
-
-
-
-
-                                                          SO
-
-
-
-
-                                                          55
-
-
-
-
-                                                          65

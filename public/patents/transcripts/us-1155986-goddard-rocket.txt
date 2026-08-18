@@ -1,18 +1,14 @@
 UNITED STATES PATENT OFFICE.
-
 ROBERT H. GODDARD, OF WORCESTER, MASSACHUSETTS.
 
 ROCKET APPARATUS.
 
-1,155,986. <dfn title="The comprehensive written description of an invention and the manner of constructing and operating it, in terms sufficiently clear to enable any person skilled in the art to replicate it. (Modern: Patent Detailed Description & Embodiments)" class="cursor-help underline decoration-dotted decoration-amber-600 dark:decoration-amber-400 decoration-2 underline-offset-4 text-ink-950 dark:text-parchment-50 hover:bg-amber-500/10 dark:hover:bg-amber-400/10 rounded px-0.5 transition-colors">Specification</dfn> of <dfn title="An open document ('litterae patentes') issued by a sovereign or government under public seal, granting an inventor exclusive legal monopoly rights to manufacture, use, and vend an invention. (Modern: Granted Patent Document / Certificate)" class="cursor-help underline decoration-dotted decoration-amber-600 dark:decoration-amber-400 decoration-2 underline-offset-4 text-ink-950 dark:text-parchment-50 hover:bg-amber-500/10 dark:hover:bg-amber-400/10 rounded px-0.5 transition-colors">Letters Patent</dfn>. Patented Oct. 5,
-
-1915. Application filed October 1,
-
-1913. Serial No. 792,869.
+1,155,986. Specification of Letters Patent. Patented Oct. 5, 1915.
+Application filed October 1, 1913. Serial No. 792,869.
 
 To all whom it may concern:
 
-Be it known that I, ROBERT H. GODDARD, a citizen of the United States, residing at Worcester, in the County of Worcester and State of Massachusetts, have invented certain new and useful Improvements in Rocket Apparatus, of which the following is a <dfn title="The comprehensive written description of an invention and the manner of constructing and operating it, in terms sufficiently clear to enable any person skilled in the art to replicate it. (Modern: Patent Detailed Description & Embodiments)" class="cursor-help underline decoration-dotted decoration-amber-600 dark:decoration-amber-400 decoration-2 underline-offset-4 text-ink-950 dark:text-parchment-50 hover:bg-amber-500/10 dark:hover:bg-amber-400/10 rounded px-0.5 transition-colors">specification</dfn>, reference being had to the accompanying drawings forming a part thereof.
+Be it known that I, ROBERT H. GODDARD, a citizen of the United States, residing at Worcester, in the County of Worcester and State of Massachusetts, have invented certain new and useful Improvements in Rocket Apparatus, of which the following is a specification, reference being had to the accompanying drawings forming a part thereof.
 
 This invention relates to rocket apparatus, and has for its primary object the provision of a rocket which can reach extreme altitudes, far beyond the limits attainable with ordinary rockets, for meteorological, scientific, or other purposes, and which may be utilized to transport recording instruments or payloads into the upper atmosphere or outer space.
 
@@ -21,11 +17,3 @@ A major difficulty with ordinary rockets is that the ratio of the weight of the 
 In the apparatus of my invention, the propellant is burned in a combustion chamber having a properly shaped expansion nozzle with a converging entrance and a diverging cone, whereby the heat energy of the combustion gases is converted into kinetic energy of a high-velocity supersonic jet with great efficiency (exceeding sixty per cent).
 
 Furthermore, the apparatus is arranged in a plurality of stages or cartridge sections, so that as the propellant in one section is consumed, that section is detached and dropped, thereby reducing the mass to be accelerated by the succeeding section. The apparatus also comprises automatic igniting devices and means for stabilizing the vehicle in flight.
-
-I claim as my invention:
-
-1. (Independent) In a rocket apparatus, a plurality of combustion chambers, each chamber having an expansion nozzle, and means for successively igniting the charges in said chambers and separating the spent chambers from the apparatus.
-
-2. In a rocket apparatus, the combination of a combustion chamber, an expansion nozzle having a restricted throat and a diverging portion, and means for feeding propellant continuously into said combustion chamber under pressure.
-
-3. In a rocket apparatus, a casing comprising a plurality of sections, means for releasing each section when its charge is consumed, and guide vanes positioned in the path of the discharging gases to maintain stability in flight.

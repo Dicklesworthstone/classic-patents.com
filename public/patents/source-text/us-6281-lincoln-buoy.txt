@@ -1,10 +1,26 @@
-UNITED STATES PATENT OFFICE. ABRAHAM LINCOLN, OF SPRINGFIELD, ILLINOIS.
+--- SOURCE PDF PAGE 1 OF 3 ---
+
+UNITED STATES PATENT OFFICE.
+ABRAHAM LINCOLN
+
+BUOYING VESSELS OVER SHOALS
+Specification of Letters Patent No. US 6,281
+Grant Date: 1849-05-22
+
+--- SOURCE PDF PAGE 2 OF 3 ---
+
+UNITED STATES PATENT OFFICE.
+ABRAHAM LINCOLN, OF SPRINGFIELD, ILLINOIS.
 
 BUOYING VESSELS OVER SHOALS.
 
 Specification of Letters Patent No. 6,281, dated May 22, 1849.
 
-To all whom it may concern: Be it known that I, ABRAHAM LINCOLN, of Springfield, in the County of Sangamon, in the State of Illinois, have invented a new and improved manner of Combining Buoyant Chambers with Steam Boats or other Vessels, for the purpose of enabling them to pass over bars, or through shallow water, without discharging their cargoes; and I do hereby declare that the following is a full and exact description thereof.
+To all whom it may concern:
+
+Be it known that I, ABRAHAM LINCOLN, of Springfield, in the County of Sangamon, in the State of Illinois, have invented a new and improved manner of Combining Buoyant Chambers with Steam Boats or other Vessels, for the purpose of enabling them to pass over bars, or through shallow water, without discharging their cargoes; and I do hereby declare that the following is a full and exact description thereof.
+
+--- SOURCE PDF PAGE 3 OF 3 ---
 
 The nature of my invention consists in providing adjustable buoyant chambers with steam boats or other vessels, in such a manner that they may be expanded and filled with air whenever the vessel reaches shallow water or grounds upon a bar, thereby displacing a large amount of water and buoying the vessel upward so that her draft is materially lessened.
 
@@ -13,9 +29,3 @@ Attached to the sides of the vessel, below the guards, are expandable chambers o
 When the vessel is in deep water, the buoyant chambers are collapsed against the hull, occupying very little space and offering no impediment to the vessel's progress. Upon approaching a shoal, shallow water, or sandbar, the central shaft is rotated by the vessel's steam power or by hand, causing the ropes to draw the lower movable parts of the chambers downward and outward, expanding the bellows and filling them with air.
 
 The additional displacement thus created exerts a powerful upward buoyant lift, raising the vessel several inches or feet in the water, and enabling her to glide safely across the shoal. Once deep water is regained, the chambers are deflated and restored to their contracted position against the hull.
-
-I claim as my invention:
-
-1. (Independent) What I claim as my invention and desire to secure by letters patent is the combination of expandable buoyant chambers placed at the sides of a vessel, with the vertical sliding uprights and ropes and pulleys, or their equivalents, for the purpose of expanding said buoyant chambers, and thereby buoying the vessel over shoals, shallow water, and other obstructions, substantially as herein set forth.
-
-2. The combination of the expandable buoyant chambers with a central longitudinal shaft driven by the power of the vessel, for simultaneously operating all the sliding uprights and expanding the chambers equally on both sides of the vessel.

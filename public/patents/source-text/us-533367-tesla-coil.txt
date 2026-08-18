@@ -1,10 +1,27 @@
-UNITED STATES PATENT OFFICE. NIKOLA TESLA, OF NEW YORK, N. Y.
+--- SOURCE PDF PAGE 1 OF 3 ---
+
+UNITED STATES PATENT OFFICE.
+NIKOLA TESLA
+
+ELECTRICAL TRANSFORMER
+Specification of Letters Patent No. US 533,367
+Grant Date: 1895-02-06
+
+--- SOURCE PDF PAGE 2 OF 3 ---
+
+UNITED STATES PATENT OFFICE.
+NIKOLA TESLA, OF NEW YORK, N. Y.
 
 ELECTRICAL TRANSFORMER.
 
-SPECIFICATION forming part of Letters Patent No. 533,367, dated February 6, 1895. Application filed January 18, 1894. Serial No. 497,291. (No model.)
+SPECIFICATION forming part of Letters Patent No. 533,367, dated February 6, 1895.
+Application filed January 18, 1894. Serial No. 497,291. (No model.)
 
-To all whom it may concern: Be it known that I, NIKOLA TESLA, a citizen of the United States, residing at New York, in the County and State of New York, have invented certain new and useful Improvements in Electrical Transformers, of which the following is a specification, reference being had to the drawings accompanying and forming a part of the same.
+To all whom it may concern:
+
+Be it known that I, NIKOLA TESLA, a citizen of the United States, residing at New York, in the County and State of New York, have invented certain new and useful Improvements in Electrical Transformers, of which the following is a specification, reference being had to the drawings accompanying and forming a part of the same.
+
+--- SOURCE PDF PAGE 3 OF 3 ---
 
 The present invention relates to transformers or coils employed in systems for the generation and utilization of electrical currents of high potential and high frequency, such as are produced by disruptive discharge from condensers or analogous sources.
 
@@ -13,11 +30,3 @@ In the transformation of electrical currents of ordinary frequencies, such as ar
 To obviate these difficulties, I construct electrical transformers entirely without iron cores, relying upon mutual induction through air or insulating media such as mineral oil. In order to obtain very high potentials with high efficiency and without dielectric breakdown, I construct the primary and secondary circuits with such values of self-induction and capacity that their natural periods of electrical oscillation are identically matched, creating true electrical resonance between the primary disruptive tank circuit and the secondary high-potential resonator.
 
 Furthermore, to withstand the enormous electrostatic stresses developed near the high-potential extremity of the secondary coil without flashover to the primary or between adjacent turns, I wind the secondary winding upon a conical or tapered insulating support. The turns of lowest potential are placed at the wide base adjacent to the primary, while the turns of highest potential converge toward the apex, maximizing spatial clearance and dielectric separation where the potential difference is greatest.
-
-I claim as my invention:
-
-1. (Independent) The improvement in the method of electrical transformation consisting in passing high-frequency currents through a primary coil of low resistance and self-induction and inducing thereby currents in a secondary coil having a greater number of convolutions and adjusted to be in resonance with the primary circuit, substantially as set forth.
-
-2. In an electrical transformer for high frequencies, the combination with a primary coil of a secondary coil wound upon a tapered or conical insulating support, substantially as described.
-
-3. In an electrical transformer, the combination with a primary circuit comprising a condenser and disruptive discharge device, of an open-core secondary circuit tuned to electrical resonance with said primary circuit, substantially as set forth.

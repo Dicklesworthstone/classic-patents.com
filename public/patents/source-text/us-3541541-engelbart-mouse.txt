@@ -1,427 +1,65 @@
 --- SOURCE PDF PAGE 1 OF 7 ---
 
-Nov. 17, 1970                      D. C. ENGELBART              3,541,541
-                     X-Y POSITION INDICATOR FOR A DISPLAY SYSTEM
-Filed June 21, 1967                                        3. Sheets-Sheet l
+UNITED STATES PATENT OFFICE.
+DOUGLAS C. ENGELBART
 
-
-
-
-               12        NOW S THE
-                         TIME FOB
-
-
-
-
-              do e a 3 d 0 to de
-             docs o doooo oocoo
-            wd d O d e
-
-
-
-
-   4.
-
-                                                                   IN/IENTOR.
-                                                      DOUGLAS C. ENGEL BART
-
-                                                         -d-:       s ls...}
-                                                                   ATTORNEYS
-
+X-Y POSITION INDICATOR FOR A DISPLAY SYSTEM
+Specification of Letters Patent No. US 3,541,541
+Grant Date: 1970-11-17
 
 --- SOURCE PDF PAGE 2 OF 7 ---
 
-Nov. 17, 1970                                      D. C. ENGELEBART                 3,541,541
-                                X-Y POSITION INDICATOR FOR A DISPLAY SYSTEM
-Filed June 2, 1967                                                             3. Sheets-Sheet 2
-                                                                     62             7O
-                                                                                      --V
+UNITED STATES PATENT OFFICE
+3,541,541
+Patented Nov. 17, 1970
 
+X-Y POSITION INDICATOR FOR A DISPLAY SYSTEM
+Douglas C. Engelbart, Menlo Park, Calif., assignor to Stanford Research Institute, Menlo Park, Calif., a corporation of California
+Filed June 21, 1967, Ser. No. 647,563
+Int. Cl. G06f 3/033
+U.S. Cl. 345-163
+3
 
-
-
-F. G. 4                                  40A        74               66
-                                    72                                                X
-
-
-                                ...
-                                Y POST ON POT
-                                                                      a
-
-
-
-
-                          --- - N Yr N-1O
-                     ---- -            199
-                              - - x3
-     / / t                a -            N       1O4         116
-     // M            1.               N N        1O6
- ///// 1                          NN \                 112
- |           /                               \
-                                          13 O         11O
-                     /1N  S) 1Oe
-                              UP 12C is S      124
-                                                 C---
-                                                                                            128
-     l                O  $53, 114        Sis E UP
-         \ N                                 ss/ .           DELAY                    COUNTER
-         N                -                                                    DOWN
-                 N        - \\\
-                          - \\                   118                       B) 126
-                                                                                      INVENTOR.
-             F G.               6                                          DOUGLAS C. ENGELBART
-                                                                      BY
-
-
-                                                                                      AT TORNEYS
-
+Claims
 
 --- SOURCE PDF PAGE 3 OF 7 ---
 
- Nov. 17, 1970                D. C. ENGELBART               3,541,541
-                  X-Y POSITION INDICATOR FOR A DISPLAY SYSTEM
- Filed June 21, 1967                                    3. Sheets-Sheet S
+SPECIFICATION
 
+TO ALL WHOM IT MAY CONCERN:
 
-
-
-                                            RESOLVER
-
-
-
-
- SCHM TT                                        DIFFERENT ATOR
-                          CHOPPER
-ON       OFF                                                      162
-                  PULSE             166
-
-
-
-
-                                          UP-DOWN
-                                          COUNTER
-
-
-
-
-                                                                INVENTOR.
-                                                DOUGLAS C. ENGELBART
-
-                                                BY 1.--ty he A.
-                                                                AT TORNEYS
-
+Be it known that I, DOUGLAS C. ENGELBART, a citizen of the United States, residing at Menlo Park, in the county of San Mateo and State of California, have invented certain new and useful improvements in an X-Y POSITION INDICATOR FOR A DISPLAY SYSTEM, of which the following is a specification:
 
 --- SOURCE PDF PAGE 4 OF 7 ---
 
-United States Patent Office                                                                                       3,541,541
-                                                                                                Patented Nov. 17, 1970
-                                                                                                  2
-                          3,541,541                                 their axes perpendicular to each other and each wheel is
-          X-Y POSITION INDICATOR FOR                                attached to a potentiometer or other means for indicating
-               A DISPLAY SYSTEM                                     its rotation. The position indicator control is held by the
-Douglas C. Engelbart, Palo Alto, Calif., assignor to Stan           hand and moved over any surface, such as a desktop (or
-  ford Research Institute, Menlo Park, Calif., a corpora            even may be moved by the feet). As the indicator control
-  tion of California                                                is moved, the two wheels rotate and the resistance of the
-          Filed June 21, 1967, Ser. No. 647,872                    potentiometer changes. Electrical leads connected to the
-                    Int. CI. H01j 29/70                            potentiometers trail behind the indicator control and con
-U.S. C. 340-324                                     8 Claims       nect to a computer which continuously monitors the in
-                                                                 O dicator control's position. The computer causes the CRT
-         ABSTRACT OF THE DISCLOSURE                                to display a symbol, or cursor, such as a short line on the
-                                                                   CRT screen to define a position on the screen about which
-  An X-Y position indicator control for movement by         changes or the like may be made, the cursor position
-the hand over any surface to move a cursor over the         changing in accordance with movement of the X-Y posi
-display on a cathode ray tube, the indicator control gen 15 tion indicator control. Buttons are provided on the indi
-erating signals indicating its position to cause a cursor           cator control housing for closing switches to send pulses
-to be displayed on the tube at the corresponding posi               through additional wires trailing behind the indicator con
-tion. The indicator control mechanism contains X and                trol to signal for a change in the displayed information.
-Y position wheels mounted perpendicular to each other,        For example, one button on the indicator control may
-which rotate according to the X and Y movements of 20 be used to cause the erasure of a small area directly above.
-the mechanism, and which operate rheostats to send sig        or following the cursor. New material may then be in
-nals along a wire to a computer which controls the CRT        serted in place of the material erased in accordance with
-display.                                                      the programming of the computer, as by typing in letters.
-                                                                While a potentiometer may be connected to each of
-        BACKGROUND OF THE INVENTION                        25 the two wheels on the indicator control, other devices
-   This invention relates to visual display systems and,      can be used for generating signals indicating rotation of
-more particularly, to devices for altering the display at     the wheels. One such device is a shaft position encoder
-selected locations.
-                                                              which   produces a digita output corresponding to the an
-                                                              gular  position
-   One of the potentially most promising means for de 30 provides a direct     of the wheel. While such an arrangement
-livering and receiving information to and from digital                            digital output, instead of an analog out
-computers involves the display of computer outputs as         put  which   must  be  digitally converted to be used by the
-visual representations on a cathode ray tube and the          computer    control   in  the CRT display, the output from
-alteration of the display by a human operator in order to     a shaft   encoder   necessitates  a large cable. Still another
-deliver instructions to the computer. In order for a          means   for indicating   position of a wheel is an incremental
-human operator to readily change the displayed pattern,       encoder    and  counter.   An  incremental  encoder generates
-he must be provided with means for accurately indicating      an up indicating pulse each time the shaft moves by a
-the exact position on the visual display at which he can      certain increment of rotation in one directon and gen
-make alterations. Devices are known which enable ac
-                                                              erates a down indicating pulse when the shaft moves in the
-curate position location on the tube display, such as a 40 other
-                                                              down
-                                                                     direction. These pulses are transmitted to an up
-                                                                      counter, which provides a digital output equal to
-light pencil detector which is held against the tube while    the  sums   of the up inputs minus the sum of the dow
-the entire tube is swept by the beam, the instant at which    inputs.
-light is detected during the time required to sweep the
-entire face indicating the detector's position.                    BRIEF DESCRIPTION OF THE DRAWINGS
-   A disadvantage of the light pencil and other similar 45 FIG. 1 is a pictorial illustration of a display system in
-devices is that they generally require the human operator     accordance with the invention;                      . . . . . . ... .
-to hold the pencil against the CRT with one hand while           FIG.   2 is a sectional  elevation  view of  the position      in
-changes are made. Consequently, the operator does not         dicating control mechanism of the invention;                    ... ,
-have both hands free to enter changes, as by typing them         FIG. 3 is a sectional plan view of the mechanism of
-in, and cannot move to equipment only a step away from 50 FIG.       2;
-the CRT. Furthermore, the light pencil often covers part         FIG.   4 is a simplified schematic diagram of an elec
-of the area of the CRT display where changes are to be        trical circuit  for connection to a position indicating con
-entered, which interferes with the process.                   trol mechanism of the invention;             . . .
-          SUMMARY OF THE INVENTION                              FIG. 5 is a schematic diagram of another embodiment
-   One subject of the invention is to provide an X-Y         of  an electrical circuit for use in the invention, wherein
-position indicating control mechanism for controlling a shaft   FIG.
-                                                                     encoder is used;
-                                                                      6 is still another
-                                                                                                . . . ..
-                                                                                         embodiment    of an electrical
-                                                                                                                         . . . is
-                                                                                                                        cir
-indications of positions on a cathode ray tube (CRT) dis
-play, by movement along a surface which can be other cuit         for use in the invention, utilizing an incremental en
-                                                             coder; and                                    :
-than the face of the CRT.                                 60
-   Another object of the invention is to provide a posi         FIG. 7 is a schematic diagram of another circuit for
-                                                             use in the invention, which also employs an incremental
-tion indicator control which transmits signals defining encoder.
-its position on a surface, and which is connected by only
-a cable to the apparatus which acts upon such infor                   DESCRIPTION OF THE PREFERRED
-mation.                                                   65                        EMBODIMENTS
-   Still another object of the invention is to provide a        FIG. 1 shows a display system constructed in accord
-simple and improved X-Y position locating device.            ance with the invention, comprising a cathode ray tube
-   The foregoing and other objects are realized by an X-Y           display 10 for creating visual patterns on the face 12 of
-position indicator control mechanism comprising a small  a cathode ray tube, a computer system 14 including a
-housing adapted to be held in the hand and having two 70 typewriter input apparatus 15 which generates signals that
-wheels and an idler ball bearing for contacting the sur  define the patterns displayed by the CRT display system,
-face on which it rests. The two wheels are mounted with  and an X-Y position indicator control 16. The position
+BACKGROUND OF THE INVENTION
+In interactive computer systems employing cathode ray tube displays, it is frequently desirable for a human operator to rapidly and accurately position a cursor or coordinate point on the display screen. Prior techniques for achieving this objective have utilized light pens held against the phosphor screen face, joysticks manipulated by the fingers, or banks of keyboard step buttons.
 
+Light pens suffer from the distinct disadvantage that the operator must maintain his hand and arm in an elevated, unsupported posture, causing rapid muscular fatigue during sustained computer sessions. Joysticks, on the other hand, typically control cursor velocity rather than absolute spatial displacement, making precise millimeter targeting difficult.
+
+SUMMARY OF THE INVENTION
+The present invention overcomes these difficulties by providing a compact, handheld control unit—commonly designated as a "mouse"—which rests comfortably on a working surface such as a desk adjacent to the display console. The operator's hand rests naturally on the upper surface of the housing in a supported posture.
 
 --- SOURCE PDF PAGE 5 OF 7 ---
 
-                                                       3,541,541
-                             3                                                               4
-indicator control 16 is positioned on the top of the cabi     lies in a desired position. The indicator control remains
-net 17 of the computer, although it can be positioned on      stationary so long as it is left in place; therefore the cursor
-any other surface. The indicator control 16 has wheels        20 remains fixed without any effort of the human operator.
-which support it on the cabinet and which register changes    If it is desired to move the cursor 20, the position indicator
-in the position thereon. A wire 18 connects the position 5 control 16 is moved in directions corresponding to the
-indicator control to the computer 14 for transmitting sig     desired movements of the cursor. The resistances of the
-nals indicating the position of the indicator control. The    rheostats, sensed through the conductors contained in the
-computer 14, which controls the pattern on the CRT wire 18, continually monitor the position of the indicator
-face 12, generates signals causing the display of a line      control and cause movement of the line cursor 20 ac
-or other cursor 20 on the CRT. The position of the O cordingly.
-cursor 20 is governed by the position of the indicator con       FIG. 4 is a simplified schematic diagram of the electri
-trol 16 determined by the computer 14 in accordance with      cal circuit by which the position of the indicator control
-the signals it receives from the indicator control over       16 is monitored. Electrical conductors 62, 64, 66 and 68
-the wire 18.                                                  represent separate leads contained in the wire 18 connect
-   Three buttons 22 are located on the indicator control      ing the indicator control to the computer. A voltage --V
-16 for operating switches within the indicator control to     is connected at terminal 70 for sending currents through
-allow currents to flow through conductors of the wire 18.     the two rheostats or potentiometers whose resistances
-The switches may be used to cause changes in particular       are indicated at 38A and 40A. One side of each potentio
-areas of the display, or for other purposes. For example,     meter is connected to lead 64, which is grounded. The
-one of the buttons may be used to control the delivery 20 wipers 72 and 74 of the potentiometers are connected to
-of signals which command the computer 14 to operate           leads 68 and 66, respectively, which in turn are con
-on the portion of the pattern displayed immediately above     nected to terminals Y and X. By noting the voltage at X
-the cursor 20, such as a single character, the particular     and Y, relative to ground potential, the resistances of the
-operation being designated by inputs to the typewriter ap     two potentiometers and therefore the X and Y positions
-paratus 15. Another button may be used to command the 25 of the indicator control are known.
-operations to be performed on the entire line of characters      The indications of X and Y position given by the
-immediately above and to the right of the cursor 20. An       voltages at terminals X and Y are presented in analog
-operation such as "erase' may be designated by pressing       form. A digital computer requires digital inputs and there
-a particular key on the typewriter, to cause the computer     fore, an analog-to-digital converter must be used between
-to stop the display of characters at those areas. New char 30 the X and Y terminals and the computer inputs. Two
-acters can be inserted into the display by leaving the posi types of digital output devices for use with the indicator
-tion indicator control 16 stationary so the cursor does       control are shown in FIGS. 5, 6 and 7.
-not move and then typing in the new characters on the            FIG. 5 shows a position indication control circuit which
-typewriter 15.                                                provides a digital output. An encoding disc 80 is shown
-  The position indicator control 16 is shown more clearly        which is used to indicate the X position. The disc 80,
-in the sectional side view of FIG. 2 and the sectional plan      which is a simplified illustration of the type of disc which
-view of FIG. 3. A housing 26 has a bottom wall 28 on             is used in practice, is divided into four rings 82, 84, 86
-which is attached a right angle bracket 30. One arm 32           and 88. The disc 80 is also divided into sixteen sectors,
-of the bracket holds three pushbutton switches 34 which          each indicated by a number 0 through 15. Four electri
-close circuits that cause changes in the cathode ray tube 40 cal contacts connected to wires 92, 94, 96 and 98, pro
-display. The pushbuttons 22 are slideably mounted in the     vide readouts. Each of the sixteen sectors of each of the
-housing 26, for movement against the switches 34 to close    four rings of the disc 80, can be coated with either con
-them.                                                            ductive material or insulative material. The contacts con
-   Each arm 32 and 36 of the bracket 30 holds a poten      nected to the four output wires 92 through 98 remain
-tiometer, the arm 32 holding an X position potentiometer stationary while the disc 80, attached to the X position
-38 and the arm 36 holding a Y position potentiometer 40.   wheel shaft 99, rotates, Currents flow through the disc and
-An X position wheel 42 is fixed to a shaft 44 of the po through those wires 92 through 98 which are over a con
-tentiometer 38, while a Y position wheel 46 is fixed to a ductive portion of the disc, to indicate position.
-shaft 48 of the Y position potentiometer 40. Each of the      In order to indicate many positions, the disc 80 is, in
-position wheels 42 and 46 project through slots 50 and 50 practice divided into a large number of rings and sec
-52, respectively, formed in the bottom wall 28. A ball     tors, so that a large number of positions can be indicated
-bearing support 54 fixed to the underside of the bottom    and small changes of position are registered. A similar
-wall 28 serves as a third point of support, in addition to Scheme is used for the Y position. The advantage of the
-the two wheels 42 and 46, to stably support the indicator  readout scheme of FIG. 6 is that a digital output is pro
-control on the cabinet 17 or other surface.                vided which completely defines the position of the indi
-   When the position indicator control is moved over the   cator at every instant. A major disadvantage is that a
-cabinet 17, or any other surface, the X and Y position large number of wires must be connected to the posi
-wheels rotate. Inasmuch as the X and Y position wheels     tion indicator control so that a relatively thick cable trails
-42 and 46 are mounted on axes that are perpendicular to    behind it and limits the ease with which it can be moved.
-each other, the X position wheel 42 rotates by an amount 60 FIG. 6 illustrates still another position readout means,
-equal to the movement in one direction which may be which possesses the advantage of digital output while re
-defined as the X direction, while the Y position wheel     quiring a minimum number of leads connecting the posi
-46 rotates an amount equal to the movement in a perpen tion indicator control to the computer. In the readout
-dicular or Y direction. As the wheels move, the shafts of  circuit of FIG. 5, a disc 100 is provided which has three
-their respective potentiometers rotate, and the resistance rows of electrical contacts, designated 102, 104 and 106.
-of the potentiometers enable continuous measurement of     The disc 100 has its axes fixed to the X wheel of the de
-the resistance, and therefore of the X and Y positions of  vice shown in FIGS. 1, 2 and 3 in place of the potentio
-the indicator control 16. It may be noted that in most     meter. The device of FIG. 6 operates by transmitting 'up'
-cases multiturn potentiometers are used to enable moni pulses when the position indicator control moves to the
-toring of large movements of the indicator control, or     right and "down" pulses when the position indicator con
-conversely, to enable fine control.                        trol moves to the left. A counter circuit, which is fixed to
-  The position indicator control may be utilized by first the computer adds the up pulses and subtracts the down
-placing it on the cabinet 17 and moving it up or down pulses to provide a continuous digital indication of the
-and back or forth to cause corresponding movements in position of the position indicator control. A similar ar
-the apparent position of the cursor 20, until the cursor 5 rangement is used for the Y position.
+Within the housing are mounted two wheels oriented at right angles (90 degrees) to each other. When the housing is translated across the surface, each wheel rolls exclusively in response to motion parallel to its rotation plane, while skidding laterally in response to orthogonal motion. Each wheel drives an associated potentiometer or digital pulse encoder, producing independent X and Y coordinate signals transmitted to the computer display circuitry.
 
+DETAILED DESCRIPTION OF PREFERRED EMBODIMENTS
+Referring to FIG. 1, the indicator comprises a carved wooden housing 10 dimensioned to fit comfortably within the palm of an operator's hand. On the top front portion of the housing is disposed a microswitch push-button 12 adapted to be depressed by the operator's index finger to signal selection or entry of a target coordinate.
+
+Referring to FIG. 2, the bottom face of housing 10 reveals first wheel 16 and second wheel 18. Wheel 16 rotates about an axle aligned with the lateral Y-axis, thereby measuring displacement along the longitudinal X-axis. Wheel 18 rotates about an axle aligned with the longitudinal X-axis, thereby measuring displacement along the lateral Y-axis. The lower perimeters of wheels 16 and 18 contact the supporting tabletop through an opening in baseplate 20.
 
 --- SOURCE PDF PAGE 6 OF 7 ---
 
-                                                       3,541,541
-                              5                                                              6
-   In the circuit of FIG. 6 three sensors 108, 110 and 112    of the AND gates. The outputs of two of the AND gates
-are located adjacent to the rows of contacts 102, 104 and     deliver pulses to the up input port 168 of an up/down
-106, respectively. Whenever the disc 100 rotates and one      counter 170 while the outputs of two other AND gates
-of the contacts of one of the three rows comes under a        are delivered to the down input port 172 of the counter.
-sensor, a voltage is delivered over one of the lines 114,     The counter 170 continuously delivers digital output
-116 or 118, leading to circuitry located at the computer.     signals defining the position of disc 140.
-The contacts on the three rows 102, 104 and 106 are lo           While the position indicator control can be used merely
-cated so that only one contact is under a sensor at any       to cause a change in cursor position, and other means
-given time.                                                   Such as a typewriter can be used for adding to the pat
-   The lines 114, 116, and 118 trail behind the position in O tern, the indicator control can be used in other ways.
-dicator control and lead to flip-flop 120, OR gate 122        For example, the position indicator control can be placed
-and AND gates 124 and 126, as shown. The outputs of           on a drawing to be displayed on the CRT, and then
-the two AND gates 124 and 126 lead to counter 128 to          the indicator control can be moved to trace the lines of
-cause it to count up or down. The counter 128 has num         the drawing with the computer causing corresponding
-erous output lines over which it continuously transmits 15 lines to be displayed on the CRT. For such uses, the
-signals indicating in a digital manner, the position of the   wheels and electrical signal generators of the indicator
-position indicator control.                                      control should cause cursor movements which very close
-  When the disc 100 of FIG. 6 rotates and a contact of          ly correspond to indicator control housing movements.
-row 104 comes under readying sensor 110, a signal is               The particular mechanical construction shown in FIGS.
-transmitted over line 116 to set the RS flip-flop 120. If 20 2 and 3 are especially well adapted for maintaining ac
-the disc is rotating in a forward or clockwise direction        curacy of output and ease of use. The use of only three
-the next contact of the three rows to come under a sensor       points of contact, comprising the two wheels and the ball
-is a contact of up row 102. When a contact 102 touches          bearing support, help to assure that both wheels will con
-sensor 108, a signal is transmitted over up line 114 to         stantly remain in firm contact with the surface on which
-AND gate 124. Inasmuch as the flip-flop 120 has been 25 the position indicator control rests. The location of the
-set, a voltage is being received at input 130 of gate 124,      various buttons for indicating areas of the display to be
-and the additional signal at input 132 of gate 124 causes       operated on, or for other purposes, on the indicator which
-it to generate a pulse. The pulse from gate 124 enters          is moved by the hand allows a human operator to main
-counter 128 at its up input, causing the counter to count       tain control over both position of changes and the type
-up by one digit. The signal over up line 114 also enters 30 of changes on the display with only one hand. The use
-OR gate 122 which leads to delay line 124 which, in turn,       of an indicator control which rests firmly on a surface
-leads to the reset input of flip-flop 120. A delay of delay     enables the operator to accurately maintain position with
-line 124 is very short so that flip-flop 120 is reset an        a minimum of muscle effort, since the indicator control
-instant after an up pulse is registered by the counter.         remains stationary unless some force is applied to it.
-   If the disc 100 continues to turn clockwise after an         The use of relatively large position wheels having appreci
-up pulse is registered, then a contact of row 106 comes         able, even if small, moments of inertia, reduces jittering of
-under down Sensor 112 and causes it to deliver a signal         the indicator control and promotes smooth movement
-over down line 118 to the AND gate 126. The AND gate            which is helpful in accurate positioning where the dis
-126 will not deliver a pulse because its input 134 from the     played characters are small or where accurate tracing of
-flip-flop 120 has no voltage on it, due to the fact that the 40 a pattern is required.
-flip-flop 120 has been reset. Only after another signal is         While particular embodiments of the invention have
-transmitted over line 116 to again set the flip-flop 120,       been illustrated and described, it should be understood
-will a pulse from up line 114 cause the registation of that many modifications and variations may be resorted
-another up count. Down counting occurs in a similar             to by those skilled in the art, and the scope of the inven
-manner when the disc 100 turns in a counter clockwise 45 tion is limited only by a just interpretation of the follow
-direction.                                                       ing claims.
-  The circuit of FIG. 6 requires only four leads between       I claim:
-the computer and the position indicator control. The four       1. In a display system controlled by a computer where
-leads are the lines 114, 116, 118, and an additional line    by the display is alterable in accordance with signals
-(not shown) for connection to a voltage source to pro 50 delivered to said computer which indicate positions on
-vide pulses that flow through the sensors to the other       said display and changes desired to be made therein, the
-three lines.                                                 improvement in a position indicating control apparatus
-   FIG. 7 illustrates another position readout means of which is movable over a surface to provide position in
-the incremental encoder type, similar to that of FIG. 6.     dications corresponding to positions on said display com
-The circuit of FIG. 7 utilizes a simpler encoding disc 55 prising:
-and one fewer lead, although it involves more complex           a housing:
-electronics. In the circuit of FIG. 7, a disc 140 whose         a first position wheel rotatably mounted on said hous
-axis is connected to a position wheel such as the X posi           ing and having a rim portion extending past the
-tion wheel is provided which has a track 142 having                boundaries   defined by said housing for supporting
-spaced conductive segments. A control contact 146 60               said housing  on said surface;
-and stepping contact 148 are disposed over the track to         a  second   position wheel rotatably mounted on said
-make contact with the conductive segments thereof. The             housing with its axis of rotation oriented perpendicu
-contacts are arranged for contacting the segments at
-angular positions of the disc which overlap. A lead (not           lar to the axis of said first wheel, said second posi
-shown) connected to the disc 140 conducts currents to the 65       tion wheel having a rim portion extending past said
-segments of the two tracks.                                        housing for Supporting said housing on said surface;
-   The contact 146 is connected to a Schmidt trigger cir        transducer   means connected to each of said first and
-cuit 150 which provides currents to two of four AND                Second wheels, for generating digital position in
-gates 152, 154, 156 and 158, at a time. The other contact          dicating signals indicating the degree of rotation of
- 148 carries current to a resolver 160 of the Schmidt 70              said wheels; and
-trigger, on-off type, which provides signals with sharp,            flexible conductor means for connecting said transducer
-standard on-off wavefronts. The output of the resolver                means to Said computer, for conducting said position
-is delivered to a differentiator 162 which delivers sharp             indicating signals to said computer while enabling
-pulses to an inverter chopper 164 and a normal chopper                unrestrained movement of said housing relative to
- 166. The outputs of each chopper are delivered to two 75             said computer.
+As the device is moved along any arbitrary straight or curved path on the table, the instantaneous displacement vector decomposes into its orthogonal vector components. Wheel 16 rotates by an angle proportional to the X displacement, while wheel 18 rotates by an angle proportional to the Y displacement. Potentiometers 24 and 26, coupled directly to the respective wheel shafts, modulate electrical voltages delivered via flexible multi-conductor cable 28 to the display control unit.
 
+Depressing button 12 closes an electrical circuit, notifying the central data processing apparatus that the displayed cursor location corresponds to a selected alphanumeric character, graphical node, or program execution instruction.
+
+I CLAIM:
+1. An X-Y position indicator control mechanism comprising: a housing adapted to be moved by hand over a surface; a first wheel mounted in said housing for rotation about an axis in response to movement of said housing along said surface in a first direction; a second wheel mounted in said housing for rotation about an axis perpendicular to said first wheel axis in response to movement of said housing along said surface in a second direction perpendicular to said first direction; first means responsive to rotation of said first wheel for generating a first electrical signal representing displacement in said first direction; and second means responsive to rotation of said second wheel for generating a second electrical signal representing displacement in said second direction.
 
 --- SOURCE PDF PAGE 7 OF 7 ---
 
-                                                        3,541,541
-                         7                                                                8
-  2. The improvement in a position indicating control               a second position wheel rotatably mounted on said
-apparatus as defined in claim 1 wherein:                              housing with its axis of rotation oriented perpen
-  said transducer means comprises an incremental en                   dicular to the axis of said first wheel, said second
-    coder connected to said first position wheel and said             position wheel having a rim portion extending past
-    flexible conductor means for generating first pulses 5            said housing for supporting said housing on said
-    at each predetermined increment of rotation of said               surface; and
-    first position wheel in a first direction and for generat       transducer means connected to each of said first and
-    ing second pulses at each increment of rotation of                second wheels, for generating digital position in
-    said first position wheel in the opposite direction;              dicating signals indicating the degree of rotation of
-    and including:                                              O     said wheels.
-  counter means connected to said flexible conductor                6. The improvement described in claim 5 including:
-    means, for generating a digital count indicating the           coupling means for substantially unrestrained coupling
-     net rotation of said first position wheel.                       of said transducer means to said computer, to couple
-  3. The improvement in a position indicating control                 Said position indicating signals to said computer
-apparatus as defined in claim 2 wherein said incremental 15           while enabling substantially unrestrained movement
-encoder comprises:                                                    of said housing relative to said computer.
-   a disc connected to said first position wheel having            7. The improvement described in claim 5 including:
-      track means, said track means having a plurality             a flexible conductor for connecting said transducer
-      of spaced conductor segments;                                   means to said computer, to carry position indicating
-  a control contact and a stepping contact disposed along 20          signals to said computer while enabling substan
-      said track means, said control and stepping contacts            tially unrestrained movement of said housing relative
-     positioned for the electrical connection of only one             to said computer.
-      of said contacts with said segments at first prede           8. A display system for presenting an alterable visual
-     termined angular positions of said disc and for the display comprising:
-      simultaneous electrical connection of both of said 25 cathode ray tube means for providing a visual display;
-      contacts with said segments at second predetermined          computer means connected to said cathode ray tube
-      angular positions of said disc; and                             means for controlling inputs to said cathode ray tube
-   logic means connected to said control and stepping                 means to define the visual display thereof, said com
-      contacts for generating said first pulses when said             puter means including means for generating signals
-      stepping contact makes a first direction of transition  30      defining a cursor for display at variable positions
-     between electrical connection with one of said seg               on said cathode ray tube means and means for
-      ments and lack of electrical connection with one of             altering inputs to said tube means to cause a change
-      said segments at the same time that said control                in the display about the position of said cursor;
-      contact is in a first predetermined state of electrical      a position indicator control connected to said com
-     connection with one of said segments and for gen                 puter means, said position indicator control having
-     erating said second pulses.                                      a  housing which contains transducer means for de
-  4. The improvement of a position indicating control                 livering signals for causing movement of said cursor
-apparatus as defined in claim 1 wherein:                              on  said cathode  ray tube means in response to move
-  said transducer means comprises a shaft position en 40
-      coder having a plurality of outputs and said con                ment of said housing over a surface; and
-      ductor means comprises a plurality of conductors             at least one cathode ray tube display control switch
-      connected to said outputs of said encoder, whereby              disposed on said position indicator control.
-     to constantly indicate the position of said position
-      indicating apparatus.                                                            References Cited
-  5. In a display system controlled by a computer where 45                     UNITED     STATES PATENTS
-by the display is alterable in accordance with signals
-delivered to said computer which indicate positions on            3,304,434 2/1967 Koster ----------- 33-141.5 X
-said display and changes desired to be made therein, the          3,346,853 10/1967 Koster et al. ----- 340-324 X
-improvement in a position indicating control apparatus            3,355,730 1 1/1967 Neasham ---------- 178-18X
-which is movable over a surface to provide position in 50
-dications corresponding to positions on said display THOMAS B. HABECKER, Primary Examiner
-comprising:
-   a housing;                                                    D. L. TRAFTON, Assistant Examiner
-   a first position wheel rotatably mounted on said housing 55
-      and having a rim portion extending past the bound                                 U.S. C. X.R.
-      aries defined by said housing for supporting said 33-141.5; 178-18; 345-177, 204, 212, 354
-      housing on said surface;
+2. An indicator as set forth in claim 1, wherein each of said first and second means comprises a rotary potentiometer coupled to a respective one of said wheels.
+
+3. An indicator as set forth in claim 1, wherein said housing includes at least one manually depressible switch on an upper surface thereof for transmitting control signals to an associated display system.
