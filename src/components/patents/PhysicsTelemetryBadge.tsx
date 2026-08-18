@@ -1,7 +1,7 @@
 "use client";
 
 import { Activity, Cpu, Gauge, Info, RotateCcw, Zap } from "lucide-react";
-import { useCallback, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { EnergyFlowStrip } from "@/components/patents/EnergyFlowStrip";
 import { ColorizedEquation } from "@/components/ui/ColorizedEquation";
 import { LatexRenderer } from "@/components/ui/LatexRenderer";
@@ -40,13 +40,21 @@ export function PhysicsTelemetryBadge({
 
   const energy = useMemo(() => energyChannelsFor(patentId, params), [patentId, params]);
   const liveEnvelope = liveMetrics.map((m) => `${m.label} ${m.value} ${m.unit}`).join("; ");
+  const [announcedEnvelope, setAnnouncedEnvelope] = useState("");
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setAnnouncedEnvelope(liveEnvelope);
+    }, 1500); // Throttled interval for screen readers
+    return () => clearTimeout(timer);
+  }, [liveEnvelope]);
 
   if (!data) return null;
 
   return (
     <div className="rounded-2xl border border-parchment-300 dark:border-ink-800 bg-parchment-50/90 dark:bg-ink-950/90 p-4 sm:p-5 text-xs font-sans text-ink-800 dark:text-parchment-200 shadow-sm space-y-4">
       <div className="sr-only" aria-live="polite" aria-atomic="true">
-        {data.domainTitle}. {liveEnvelope}
+        {data.domainTitle}. {announcedEnvelope}
       </div>
 
       {/* Header Bar */}

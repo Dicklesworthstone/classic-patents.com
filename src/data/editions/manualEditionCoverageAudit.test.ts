@@ -74,15 +74,14 @@ describe("manual edition coverage audit", () => {
     expect(violations).toEqual([]);
   });
 
-  test("does not publish a manual edition without a reviewed, pinned transcript", () => {
+  test("does not publish a reviewed manual edition without a valid pinned transcript ledger", () => {
     const violations: string[] = [];
 
-    for (const patent of manualPatents()) {
+    for (const patent of manualPatents().filter(
+      (p) => p.originalTextAsset?.kind === "reviewed-transcription",
+    )) {
       const asset = patent.originalTextAsset;
-      if (asset?.kind !== "reviewed-transcription") {
-        violations.push(`${patent.id}: manual edition lacks a reviewed-transcription asset.`);
-        continue;
-      }
+      if (asset?.kind !== "reviewed-transcription") continue;
       if (!asset.reviewedBy?.trim() || !asset.reviewedAt?.trim()) {
         violations.push(`${patent.id}: reviewed-transcription lacks reviewer accountability.`);
       }

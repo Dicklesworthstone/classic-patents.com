@@ -1,10 +1,10 @@
 "use client";
 
 import { Zap } from "lucide-react";
+import { SparkWaterfall } from "@/components/patents/visuals/SparkWaterfall";
 import { FrankenSimEngine } from "@/physics/engine";
 import { teslaCoilResonantKhz } from "@/physics/teslaKernel";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
-import { SparkWaterfall } from "@/components/patents/visuals/SparkWaterfall";
 
 export function TeslaCoilSim() {
   const { params, updateParam } = usePatentPhysics("us-533367-tesla-coil");
