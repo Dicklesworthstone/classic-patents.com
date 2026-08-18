@@ -2117,6 +2117,176 @@ export const ALL_COLORIZED_EQUATIONS: Record<string, ColorizedEquation[]> = {
       historicalSignificance:
         "US 3923554 eliminated photographic chemical film, enabling digital cameras, smartphones, astronomy (Hubble Space Telescope), and medical endoscopy.",
     },
+    {
+      id: "ccd-thermal-dark-current",
+      patentId: "us-3858232-boyle-smith-ccd",
+      title: "Thermal Dark Current Generation & Arrhenius Depletion Noise",
+      category: "Semiconductor Physics & Sensor Noise",
+      rawLatex:
+        "J_{\\text{dark}} = q \\frac{n_i W_{\\text{dep}}}{2 \\tau_g} \\propto T^2 \\exp\\left(-\\frac{E_g}{2 k_B T}\\right)",
+      colorizedLatex:
+        "\\textcolor{#dc2626}{J_{\\text{dark}}} = \\textcolor{#059669}{q} \\frac{\\textcolor{#0891b2}{n_i} \\textcolor{#2563eb}{W_{\\text{dep}}}}{2 \\textcolor{#d97706}{\\tau_g}} \\propto \\textcolor{#9333ea}{T^2} \\exp\\left(-\\frac{\\textcolor{#ea580c}{E_g}}{2 \\textcolor{#059669}{k_B} \\textcolor{#9333ea}{T}}\\right)",
+      plainEnglishSentence: [
+        { text: "The " },
+        { text: "spontaneous thermal dark current density", variableId: "j_dark" },
+        { text: " inside the silicon potential well scales with the " },
+        { text: "elementary electron charge", variableId: "elem_q" },
+        { text: ", the " },
+        { text: "intrinsic carrier concentration", variableId: "n_intrinsic" },
+        { text: ", and the " },
+        { text: "depletion layer depth", variableId: "w_depletion" },
+        { text: ", divided by " },
+        { text: "minority carrier generation lifetime", variableId: "tau_generation" },
+        { text: ", dropping exponentially with " },
+        { text: "cooling sensor temperature", variableId: "kelvin_temp" },
+        { text: "." },
+      ],
+      variables: [
+        {
+          id: "j_dark",
+          symbol: "J_{\\text{dark}}",
+          name: "Dark Current Generation Density",
+          color: "crimson",
+          role: "Spontaneous accumulation rate of thermally generated electrons in un-illuminated pixels ($~1\\text{ nA/cm}^2$ at room temp)",
+          unit: "Amperes per square centimeter (A/cm^2)",
+          dimension: "[I L^-2]",
+          explanation:
+            "Sets the fundamental floor on exposure time and signal-to-noise ratio in low-light astronomical and scientific imaging.",
+          telemetryMetricLabel: "Dark Current",
+        },
+        {
+          id: "elem_q",
+          symbol: "q",
+          name: "Elementary Electric Charge",
+          color: "emerald",
+          role: "Charge magnitude of a single electron ($1.602 \\times 10^{-19}\\text{ C}$)",
+          unit: "Coulombs (C)",
+          dimension: "[I T]",
+          explanation: "Fundamental physical constant.",
+        },
+        {
+          id: "n_intrinsic",
+          symbol: "n_i",
+          name: "Intrinsic Silicon Carrier Concentration",
+          color: "cyan",
+          role: "Thermal electron-hole pair density in pure silicon ($~10^{10}\\text{ cm}^{-3}$ at $300\\text{ K}$)",
+          unit: "Carriers per cubic centimeter (cm^-3)",
+          dimension: "[L^-3]",
+          explanation:
+            "Doubles approximately every 8 °C temperature rise due to thermal valence band excitation.",
+        },
+        {
+          id: "w_depletion",
+          symbol: "W_{\\text{dep}}",
+          name: "MOS Depletion Region Depth",
+          color: "sapphire",
+          role: "Depth of the electric field penetration beneath the silicon dioxide interface ($1 - 5\\text{ }\\mu\\text{m}$)",
+          unit: "Micrometers (\\mu m)",
+          dimension: "[L]",
+          explanation:
+            "A wider depletion region collects more incoming photons but also gathers more thermal noise carriers.",
+        },
+        {
+          id: "tau_generation",
+          symbol: "\\tau_g",
+          name: "Carrier Generation Lifetime",
+          color: "amber",
+          role: "Average lifetime before thermal electron-hole recombination ($10 - 100\\text{ }\\mu\\text{s}$)",
+          unit: "Microseconds (\\mu s)",
+          dimension: "[T]",
+          explanation:
+            "Higher crystal purity and lower defect density prolong $\\tau_g$, suppressing unwanted dark charge accumulation.",
+        },
+        {
+          id: "kelvin_temp",
+          symbol: "T",
+          name: "Sensor Operating Temperature",
+          color: "amethyst",
+          role: "Absolute operating temperature of the silicon die (cooled to $-100^\\circ\\text{C} = 173\\text{ K}$ in Hubble)",
+          unit: "Kelvin (K)",
+          dimension: "[Theta]",
+          explanation:
+            "Cryogenic cooling virtually eliminates dark current, enabling hours-long astronomical exposures without noise.",
+        },
+      ],
+      pedagogicalNote:
+        "Cooling a CCD sensor by 40 °C cuts its thermal noise by 95%, which is why space telescopes and medical fluoroscopes use Peltier thermoelectric or cryogenic nitrogen chillers.",
+      claimRef: 1,
+      historicalSignificance:
+        "Demonstrated the semiconductor physics necessary to make silicon sensors outperform silver halide photographic emulsions.",
+    },
+    {
+      id: "ccd-fringe-field-drift-transfer",
+      patentId: "us-3858232-boyle-smith-ccd",
+      title: "Fringe-Field Drift Acceleration & Charge Transfer Speed",
+      category: "Semiconductor Carrier Transport & Electrostatics",
+      rawLatex: "t_{\\text{transfer}} = \\frac{L^2}{\\pi^2 \\mu_{\\text{eff}} E_{\\text{fringe}}}",
+      colorizedLatex:
+        "\\textcolor{#059669}{t_{\\text{transfer}}} = \\frac{\\textcolor{#2563eb}{L^2}}{\\textcolor{#d97706}{\\pi^2} \\textcolor{#0891b2}{\\mu_{\\text{eff}}} \\textcolor{#dc2626}{E_{\\text{fringe}}}}",
+      plainEnglishSentence: [
+        { text: "The " },
+        { text: "inter-electrode charge transfer duration", variableId: "transfer_time" },
+        { text: " shrinks with the square of " },
+        { text: "gate electrode length", variableId: "gate_len" },
+        { text: ", accelerated by " },
+        { text: "electron channel surface mobility", variableId: "surface_mobility" },
+        { text: " and the lateral " },
+        { text: "fringe electrostatic field", variableId: "fringe_field" },
+        { text: " established between adjacent clock phases." },
+      ],
+      variables: [
+        {
+          id: "transfer_time",
+          symbol: "t_{\\text{transfer}}",
+          name: "Single-Electrode Charge Transit Time",
+          color: "emerald",
+          role: "Time required for a charge packet to drift completely into the neighboring potential well ($< 10\\text{ ns}$)",
+          unit: "Nanoseconds (ns)",
+          dimension: "[T]",
+          explanation:
+            "Allows megapixel video frame readouts at standard 30–60 Hz broadcast refresh rates without image smearing.",
+          telemetryMetricLabel: "Transit Time",
+        },
+        {
+          id: "gate_len",
+          symbol: "L",
+          name: "MOS Gate Electrode Channel Length",
+          color: "sapphire",
+          role: "Physical spacing between adjacent polysilicon gate fingers ($2 - 5\\text{ }\\mu\\text{m}$ in early CCDs)",
+          unit: "Micrometers (\\mu m)",
+          dimension: "[L]",
+          explanation:
+            "Shrinking $L$ drastically reduces transfer time by the square law ($L^2$), enabling multi-megahertz clock frequencies.",
+        },
+        {
+          id: "surface_mobility",
+          symbol: "\\mu_{\\text{eff}}",
+          name: "Effective Electron Channel Mobility",
+          color: "cyan",
+          role: "Velocity of electrons per unit electric field along the silicon-oxide interface ($~600\\text{ cm}^2/\\text{V}\\cdot\\text{s}$)",
+          unit: "cm^2 / (V * s)",
+          dimension: "[M^-1 T^2 I]",
+          explanation:
+            "Buried-channel CCDs move the transfer path away from the surface into the bulk silicon, doubling $\\mu_{\\text{eff}}$ and maximizing transfer efficiency.",
+        },
+        {
+          id: "fringe_field",
+          symbol: "E_{\\text{fringe}}",
+          name: "Lateral Fringe Electric Field",
+          color: "crimson",
+          role: "Lateral potential gradient between the emptying gate and the deeper receiving gate ($>10^3\\text{ V/cm}$)",
+          unit: "Volts per centimeter (V/cm)",
+          dimension: "[M L T^-3 I^-1]",
+          explanation:
+            "Drives rapid drift transport once thermal diffusion clears the initial majority of the charge packet.",
+        },
+      ],
+      pedagogicalNote:
+        "In the final 1% of charge transfer, thermal diffusion alone is too slow. The lateral fringe electric field sweeps the last trailing electrons into the receiving well, ensuring CTE exceeds 99.999%.",
+      claimRef: 1,
+      historicalSignificance:
+        "Enabled high-speed electronic video framing and high-resolution CCD line scanners.",
+    },
   ],
 
   // 11. Enrico Fermi & Leo Szilard Neutronic Reactor (US 2,708,656)
@@ -2364,6 +2534,176 @@ export const ALL_COLORIZED_EQUATIONS: Record<string, ColorizedEquation[]> = {
       claimRef: 1,
       historicalSignificance:
         "The cornerstone equation of nuclear reactor physics, enabling natural uranium nuclear reactors without isotopic enrichment.",
+    },
+    {
+      id: "fermi-criticality-geometric-buckling",
+      patentId: "us-2708656-fermi-reactor",
+      title: "Effective Multiplication Factor (k_eff) & Geometric Buckling Non-Leakage",
+      category: "Nuclear Reactor Physics & Neutron Diffusion",
+      rawLatex: "k_{\\text{eff}} = \\frac{k_\\infty}{1 + M^2 B_g^2}",
+      colorizedLatex:
+        "\\textcolor{#059669}{k_{\\text{eff}}} = \\frac{\\textcolor{#dc2626}{k_\\infty}}{1 + \\textcolor{#2563eb}{M^2} \\textcolor{#d97706}{B_g^2}}",
+      plainEnglishSentence: [
+        { text: "The " },
+        { text: "effective multiplication factor", variableId: "keff_net" },
+        { text: " of the finite reactor core equals the " },
+        { text: "infinite lattice multiplication", variableId: "kinf_lattice" },
+        { text: " reduced by the product of the " },
+        { text: "neutron migration area", variableId: "migration_m2" },
+        { text: " and the " },
+        { text: "geometric spatial buckling", variableId: "buckling_bg2" },
+        { text: ", establishing the minimum critical pile volume." },
+      ],
+      variables: [
+        {
+          id: "keff_net",
+          symbol: "k_{\\text{eff}}",
+          name: "Effective Core Multiplication Factor",
+          color: "emerald",
+          role: "Net generation-to-generation neutron ratio accounting for boundary leakage ($k_{\\text{eff}} = 1.0006$ at CP-1 criticality)",
+          unit: "Dimensionless ratio",
+          dimension: "[1]",
+          explanation:
+            "When $k_{\\text{eff}} = 1.000$, the chain reaction is perfectly critical and self-sustaining at constant thermal power.",
+          telemetryMetricLabel: "k_effective",
+        },
+        {
+          id: "kinf_lattice",
+          symbol: "k_\\infty",
+          name: "Infinite Medium Multiplication Factor",
+          color: "crimson",
+          role: "Multiplication factor of an infinite, un-leaking graphite-uranium matrix ($~1.07$ in CP-1 design)",
+          unit: "Dimensionless ratio",
+          dimension: "[1]",
+          explanation:
+            "The fundamental material property of the periodic uranium-graphite lattice defined by the four-factor formula.",
+        },
+        {
+          id: "migration_m2",
+          symbol: "M^2",
+          name: "Neutron Migration Area",
+          color: "sapphire",
+          role: "Sum of Fermi slowing-down age $\\tau$ and thermal diffusion area $L^2$ ($M^2 \\approx 700\\text{ cm}^2$ in graphite)",
+          unit: "Square centimeters (cm^2)",
+          dimension: "[L^2]",
+          explanation:
+            "Represents one-sixth the mean-squared distance a neutron travels from birth at fission to final thermal absorption.",
+        },
+        {
+          id: "buckling_bg2",
+          symbol: "B_g^2",
+          name: "Geometric Buckling Factor",
+          color: "amber",
+          role: "Curvature eigenvalue of neutron spatial flux distribution determined by pile dimensions ($B_g^2 = (\\pi/a)^2 + (\\pi/b)^2 + (\\pi/c)^2$)",
+          unit: "Inverse square centimeters (cm^-2)",
+          dimension: "[L^-2]",
+          explanation:
+            "As pile dimensions increase, geometric buckling $B_g^2$ shrinks toward zero, eliminating neutron leakage until $k_{\\text{eff}} \\ge 1.000$.",
+        },
+      ],
+      pedagogicalNote:
+        "Chicago Pile-1 was built layer-by-layer (57 layers of graphite timber). As each layer was added, $B_g^2$ decreased until criticality was reached on layer 57.",
+      claimRef: 1,
+      historicalSignificance:
+        "Defined the universal scaling law for reactor sizing and radiation reflector blankets.",
+    },
+    {
+      id: "fermi-prompt-neutron-power-transient",
+      patentId: "us-2708656-fermi-reactor",
+      title: "Prompt Neutron Generation Time & Reactor Power Excursion",
+      category: "Nuclear Reactor Kinetics & Control",
+      rawLatex: "P(t) = P_0 \\exp\\left( \\frac{\\rho - \\beta}{\\ell^*} t \\right)",
+      colorizedLatex:
+        "\\textcolor{#dc2626}{P(t)} = \\textcolor{#0891b2}{P_0} \\exp\\left( \\frac{\\textcolor{#2563eb}{\\rho} - \\textcolor{#d97706}{\\beta}}{\\textcolor{#9333ea}{\\ell^*}} \\textcolor{#059669}{t} \\right)",
+      plainEnglishSentence: [
+        { text: "The " },
+        { text: "instantaneous core thermal power", variableId: "power_t" },
+        { text: " evolves from " },
+        { text: "initial steady power", variableId: "power_0" },
+        { text: " with exponential growth governed by net " },
+        { text: "reactivity", variableId: "reactivity_rho" },
+        { text: " minus the " },
+        { text: "delayed neutron fraction", variableId: "delayed_beta" },
+        { text: ", normalized by " },
+        { text: "prompt neutron generation lifetime", variableId: "prompt_lifetime" },
+        { text: " over " },
+        { text: "elapsed time", variableId: "elapsed_time" },
+        { text: "." },
+      ],
+      variables: [
+        {
+          id: "power_t",
+          symbol: "P(t)",
+          name: "Instantaneous Reactor Thermal Power",
+          color: "crimson",
+          role: "Total fission thermal power release across the active core ($0.5\\text{ W}$ in CP-1 test run)",
+          unit: "Watts (W)",
+          dimension: "[M L^2 T^-3]",
+          explanation:
+            "Monitored by boron trifluoride ($BF_3$) proportional neutron ionization chambers inserted into the pile.",
+          telemetryMetricLabel: "Thermal Power",
+        },
+        {
+          id: "power_0",
+          symbol: "P_0",
+          name: "Initial Baseline Power Level",
+          color: "cyan",
+          role: "Steady-state fission power before control rod motion",
+          unit: "Watts (W)",
+          dimension: "[M L^2 T^-3]",
+          explanation:
+            "CP-1 initially operated at milliwatt levels before George Weil slowly withdrew the vernier cadmium rod.",
+        },
+        {
+          id: "reactivity_rho",
+          symbol: "\\rho",
+          name: "Core Reactivity",
+          color: "sapphire",
+          role: "Fractional deviation from criticality ($\\rho = (k_{\\text{eff}} - 1) / k_{\\text{eff}}$)",
+          unit: "Dimensionless / Dollars ($)",
+          dimension: "[1]",
+          explanation:
+            "Positive reactivity increases neutron flux; negative reactivity from cadmium absorbers shuts down the pile.",
+        },
+        {
+          id: "delayed_beta",
+          symbol: "\\beta",
+          name: "Delayed Neutron Fraction",
+          color: "amber",
+          role: "Fraction of fission neutrons emitted by radioactive precursor decay rather than prompt fission ($0.0065 = 0.65\\%$ in U-235)",
+          unit: "Dimensionless fraction",
+          dimension: "[1]",
+          explanation:
+            "Because $\\rho < \\beta$, the reactor period is tens of seconds rather than milliseconds, making manual control rod manipulation completely safe.",
+        },
+        {
+          id: "prompt_lifetime",
+          symbol: "\\ell^*",
+          name: "Prompt Neutron Generation Lifetime",
+          color: "amethyst",
+          role: "Average time from neutron emission to subsequent fission absorption ($~10^{-3}\\text{ s}$ in graphite, $~10^{-4}\\text{ s}$ in light water)",
+          unit: "Seconds (s)",
+          dimension: "[T]",
+          explanation:
+            "Without delayed neutrons, a reactor with $\\rho > 0$ would double its power every millisecond.",
+        },
+        {
+          id: "elapsed_time",
+          symbol: "t",
+          name: "Elapsed Observation Time",
+          color: "emerald",
+          role: "Time interval following control rod repositioning",
+          unit: "Seconds (s)",
+          dimension: "[T]",
+          explanation:
+            "Measured by clockwork chart recorders tracking neutron galvanometer deflection.",
+        },
+      ],
+      pedagogicalNote:
+        "The small 0.65% fraction of delayed neutrons is the sole physical reason that nuclear reactors can be controlled safely by human operators and mechanical rods.",
+      claimRef: 1,
+      historicalSignificance:
+        "Enabled the precise vernier rod control mechanisms claimed in Fermi's foundational patent.",
     },
   ],
 
@@ -2927,6 +3267,175 @@ export const ALL_COLORIZED_EQUATIONS: Record<string, ColorizedEquation[]> = {
       claimRef: 1,
       historicalSignificance:
         "US 3671542 established modern liquid-crystal polymer chemistry and has saved thousands of lives through Kevlar ballistic vests.",
+    },
+    {
+      id: "kwolek-ballistic-acoustic-velocity",
+      patentId: "us-3671542-kwolek-kevlar",
+      title: "Acoustic Wave Propagation Velocity & Ballistic Energy Dissipation",
+      category: "Continuum Mechanics & Wave Propagation",
+      rawLatex:
+        "c = \\sqrt{\\frac{E}{\\rho}} \\quad \\text{and} \\quad U = \\frac{1}{2} \\rho c \\cdot v^2",
+      colorizedLatex:
+        "\\textcolor{#059669}{c} = \\sqrt{\\frac{\\textcolor{#2563eb}{E}}{\\textcolor{#0891b2}{\\rho}}} \\quad \\text{and} \\quad \\textcolor{#dc2626}{U} = \\frac{1}{2} \\textcolor{#0891b2}{\\rho} \\textcolor{#059669}{c} \\cdot \\textcolor{#9333ea}{v^2}",
+      plainEnglishSentence: [
+        { text: "The " },
+        { text: "longitudinal sound speed", variableId: "sound_c" },
+        { text: " across the Kevlar polymer backbone equals the square root of " },
+        { text: "tensile modulus", variableId: "youngs_e" },
+        { text: " divided by " },
+        { text: "polymer density", variableId: "density_rho" },
+        { text: ", rapidly dispersing projectile impact energy into a broad " },
+        { text: "strain wave volume", variableId: "strain_energy_u" },
+        { text: " before localized rupture at " },
+        { text: "projectile velocity", variableId: "velocity_v" },
+        { text: "." },
+      ],
+      variables: [
+        {
+          id: "sound_c",
+          symbol: "c",
+          name: "Longitudinal Acoustic Wave Velocity",
+          color: "emerald",
+          role: "Speed at which tensile stress pulses radiate outward along the filament ($~9,500\\text{ m/s} = 34,200\\text{ km/h} \\approx \\text{Mach } 28$)",
+          unit: "Meters per second (m/s)",
+          dimension: "[L T^-1]",
+          explanation:
+            "Because sound travels nearly 30 times faster in Kevlar than in air, impact stress is instantly shared across hundreds of yarn filaments rather than concentrating at the bullet tip.",
+          telemetryMetricLabel: "Wave Velocity",
+        },
+        {
+          id: "youngs_e",
+          symbol: "E",
+          name: "Aramid Tensile Young's Modulus",
+          color: "sapphire",
+          role: "Elastic stiffness along the oriented chain axis ($130\\text{ GPa}$)",
+          unit: "Gigapascals (GPa)",
+          dimension: "[M L^-1 T^-2]",
+          explanation:
+            "Linear conjugated benzene rings and trans-amide linkages prevent bending, giving ceramic-like stiffness in a flexible organic fiber.",
+        },
+        {
+          id: "density_rho",
+          symbol: "\\rho",
+          name: "Bulk Polymer Density",
+          color: "cyan",
+          role: "Specific mass density of crystalline PPTA ($1,440\\text{ kg/m}^3 = 1.44\\text{ g/cm}^3$)",
+          unit: "kg/m^3",
+          dimension: "[M L^-3]",
+          explanation:
+            "Exceptionally low density compared to steel ($7,850\\text{ kg/m}^3$), enabling lightweight wearable ballistic armor.",
+        },
+        {
+          id: "strain_energy_u",
+          symbol: "U",
+          name: "Ballistic Energy Absorption Rate",
+          color: "crimson",
+          role: "Rate of kinetic energy transfer into strain energy across the fabric weave ($J/s$)",
+          unit: "Joules per second / Watts",
+          dimension: "[M L^2 T^-3]",
+          explanation: "Proportional to the product $\\rho c$, known as acoustic impedance.",
+        },
+        {
+          id: "velocity_v",
+          symbol: "v",
+          name: "Projectile Impact Velocity",
+          color: "amethyst",
+          role: "Incoming velocity of handgun or shrapnel fragment ($300 - 900\\text{ m/s}$)",
+          unit: "Meters per second (m/s)",
+          dimension: "[L T^-1]",
+          explanation:
+            "The bullet is deformed into a mushroom shape as the aramid weave absorbs its kinetic momentum.",
+        },
+      ],
+      pedagogicalNote:
+        "A bullet moves at ~400 m/s, but the stress wave in Kevlar travels at ~9,500 m/s. The fiber pulls surrounding weave yarns into the stopping action long before the bullet can penetrate.",
+      claimRef: 1,
+      historicalSignificance:
+        "Established the scientific foundation for modern soft body armor, vehicle spall liners, and space debris shielding.",
+    },
+    {
+      id: "kwolek-interchain-hydrogen-bonding",
+      patentId: "us-3671542-kwolek-kevlar",
+      title: "Extended-Chain PPTA Trans-Amide Intermolecular Hydrogen Bonding Energy",
+      category: "Polymer Chemistry & Crystal Lattice",
+      rawLatex:
+        "E_{\\text{lattice}} = \\sum_{k=1}^N \\left( E_{\\text{covalent}} + E_{\\text{H-bond}} \\cos\\phi \\right)",
+      colorizedLatex:
+        "\\textcolor{#dc2626}{E_{\\text{lattice}}} = \\sum_{k=1}^{\\textcolor{#2563eb}{N}} \\left( \\textcolor{#059669}{E_{\\text{covalent}}} + \\textcolor{#d97706}{E_{\\text{H-bond}}} \\textcolor{#0891b2}{\\cos\\phi} \\right)",
+      plainEnglishSentence: [
+        { text: "The " },
+        { text: "total crystal cohesive lattice energy", variableId: "e_lat" },
+        { text: " across " },
+        { text: "polymer repeating monomer units", variableId: "n_repeat" },
+        { text: " combines the " },
+        { text: "covalent backbone bond energy", variableId: "e_covalent" },
+        { text: " along each chain with dense " },
+        { text: "trans-amide hydrogen bonding energy", variableId: "e_hbond" },
+        { text: " modulated by " },
+        { text: "chain coplanarity alignment", variableId: "cos_phi" },
+        { text: " between adjacent molecular sheets." },
+      ],
+      variables: [
+        {
+          id: "e_lat",
+          symbol: "E_{\\text{lattice}}",
+          name: "Total Crystal Lattice Cohesion Energy",
+          color: "crimson",
+          role: "Combined bonding enthalpy holding the PPTA crystalline fibril together against thermal and mechanical shear ($>600\\text{ kJ/mol}$)",
+          unit: "Kilojoules per mole (kJ/mol)",
+          dimension: "[M L^2 T^-2 N^-1]",
+          explanation:
+            "Prevents individual polymer chains from slipping past one another under massive tensile pull.",
+        },
+        {
+          id: "n_repeat",
+          symbol: "N",
+          name: "Degree of Polymerization",
+          color: "sapphire",
+          role: "Number of repeating 1,4-phenylene terephthalamide monomer units in each macromolecule ($N \\approx 100 - 300$)",
+          unit: "Dimensionless count",
+          dimension: "[1]",
+          explanation:
+            "Higher molecular weight increases total intermolecular cross-anchoring, maximizing tensile tenacity.",
+        },
+        {
+          id: "e_covalent",
+          symbol: "E_{\\text{covalent}}",
+          name: "Covalent Backbone Bond Energy",
+          color: "emerald",
+          role: "Dissociation energy of aromatic C-C and C-N covalent bonds along the chain axis ($~350\\text{ kJ/mol}$)",
+          unit: "Kilojoules per mole (kJ/mol)",
+          dimension: "[M L^2 T^-2 N^-1]",
+          explanation: "Directly withstands axial tensile loads without yielding.",
+        },
+        {
+          id: "e_hbond",
+          symbol: "E_{\\text{H-bond}}",
+          name: "Trans-Amide Hydrogen Bond Energy",
+          color: "amber",
+          role: "Electrostatic attraction between carbonyl oxygen ($C=O$) and amino hydrogen ($N-H$) of neighboring chains ($~25\\text{ kJ/mol}$ per bond)",
+          unit: "Kilojoules per mole (kJ/mol)",
+          dimension: "[M L^2 T^-2 N^-1]",
+          explanation:
+            "Forms an infinite 2D hydrogen-bonded pleated sheet, locking adjacent chains into rigid crystal plates.",
+        },
+        {
+          id: "cos_phi",
+          symbol: "\\cos\\phi",
+          name: "Planar Sheet Coplanarity Angle",
+          color: "cyan",
+          role: "Dihedral orientation angle between aromatic phenyl rings and the amide plane ($\\phi \\approx 30^\\circ$)",
+          unit: "Dimensionless geometric factor",
+          dimension: "[1]",
+          explanation:
+            "Steric hindrance creates a slight non-zero twist that optimizes both hydrogen bonding and radial crystal packing.",
+        },
+      ],
+      pedagogicalNote:
+        "The alternating aromatic ring and trans-amide linkage creates a molecular zipper where hydrogen bonds repeat every 0.5 nm, turning flexible liquid dope into an unyielding solid crystal upon extrusion into water.",
+      claimRef: 1,
+      historicalSignificance:
+        "Revealed the exact molecular architecture responsible for high-performance synthetic aramids.",
     },
   ],
 
@@ -3860,6 +4369,153 @@ export const ALL_COLORIZED_EQUATIONS: Record<string, ColorizedEquation[]> = {
       claimRef: 1,
       historicalSignificance:
         "Eliminated electrical ignition systems, magnetos, and spark plugs, creating an inherently reliable all-mechanical heat engine.",
+    },
+    {
+      id: "diesel-air-standard-efficiency",
+      patentId: "us-542846-diesel-engine",
+      title: "Diesel Air-Standard Cycle Thermal Efficiency & Cut-Off Ratio",
+      category: "Thermodynamics & Heat Engines",
+      rawLatex:
+        "\\eta_{\\text{th}} = 1 - \\frac{1}{r^{\\gamma - 1}} \\left[ \\frac{r_c^\\gamma - 1}{\\gamma(r_c - 1)} \\right]",
+      colorizedLatex:
+        "\\textcolor{#059669}{\\eta_{\\text{th}}} = 1 - \\frac{1}{\\textcolor{#2563eb}{r}^{\\textcolor{#d97706}{\\gamma - 1}}} \\left[ \\frac{\\textcolor{#9333ea}{r_c}^{\\textcolor{#d97706}{\\gamma}} - 1}{\\textcolor{#d97706}{\\gamma}(\\textcolor{#9333ea}{r_c} - 1)} \\right]",
+      plainEnglishSentence: [
+        { text: "The " },
+        { text: "air-standard thermal efficiency", variableId: "diesel_eta_th" },
+        { text: " of the Diesel cycle depends on both the " },
+        { text: "compression ratio", variableId: "diesel_r" },
+        { text: ", the " },
+        { text: "specific heat ratio", variableId: "diesel_gamma" },
+        { text: ", and the " },
+        { text: "fuel admission cut-off ratio", variableId: "diesel_rc" },
+        { text: ", decreasing slightly as more fuel is injected at constant pressure." },
+      ],
+      variables: [
+        {
+          id: "diesel_eta_th",
+          symbol: "\\eta_{\\text{th}}",
+          name: "Diesel Cycle Thermal Efficiency",
+          color: "emerald",
+          role: "Net indicated thermodynamic work output divided by fuel heat input ($40\\% - 54\\%$)",
+          unit: "Dimensionless percentage (%)",
+          dimension: "[1]",
+          explanation:
+            "Diesel's constant-pressure heat addition cycle achieves higher real-world efficiency than Otto spark-ignition engines due to its extreme compression ratios.",
+          telemetryMetricLabel: "Thermal Efficiency",
+        },
+        {
+          id: "diesel_r",
+          symbol: "r",
+          name: "Volumetric Compression Ratio",
+          color: "sapphire",
+          role: "Ratio of maximum cylinder volume to minimum clearance volume ($r = V_1 / V_2 \\approx 18$)",
+          unit: "Dimensionless ratio",
+          dimension: "[1]",
+          explanation:
+            "Higher compression ratio directly increases the expansion ratio, allowing more mechanical enthalpy extraction per stroke.",
+          telemetryKey: "compressionRatio",
+        },
+        {
+          id: "diesel_gamma",
+          symbol: "\\gamma",
+          name: "Specific Heat Ratio (Isentropic Exponent)",
+          color: "amber",
+          role: "Ratio of constant-pressure to constant-volume specific heat ($c_p / c_v = 1.40$ for fresh air)",
+          unit: "Dimensionless constant",
+          dimension: "[1]",
+          explanation:
+            "Governs the steepness of adiabatic compression and expansion curves on the indicator diagram.",
+        },
+        {
+          id: "diesel_rc",
+          symbol: "r_c",
+          name: "Combustion Cut-Off Ratio",
+          color: "amethyst",
+          role: "Ratio of cylinder volume when fuel injection ceases to clearance volume ($r_c = V_3 / V_2 \\approx 1.8 - 2.5$)",
+          unit: "Dimensionless ratio",
+          dimension: "[1]",
+          explanation:
+            "In Diesel's patent, fuel is admitted gradually as the piston begins moving downward, keeping pressure constant until cut-off.",
+        },
+      ],
+      pedagogicalNote:
+        "At the limit where cut-off ratio approaches 1 (instantaneous combustion), the Diesel efficiency formula converges to the Otto cycle formula.",
+      claimRef: 1,
+      historicalSignificance:
+        "Rudolf Diesel's breakthrough was demonstrating that timed cut-off combustion allowed unprecedented fuel economy in stationary and marine prime movers.",
+    },
+    {
+      id: "diesel-peak-adiabatic-pressure",
+      patentId: "us-542846-diesel-engine",
+      title: "Adiabatic Peak Cylinder Compression Pressure",
+      category: "Thermodynamics & Gas Dynamics",
+      rawLatex: "P_2 = P_1 \\cdot r^\\gamma",
+      colorizedLatex:
+        "\\textcolor{#dc2626}{P_2} = \\textcolor{#0891b2}{P_1} \\cdot \\textcolor{#2563eb}{r}^{\\textcolor{#d97706}{\\gamma}}",
+      plainEnglishSentence: [
+        { text: "The " },
+        { text: "peak cylinder compression pressure", variableId: "p_peak" },
+        { text: " at top dead center equals " },
+        { text: "intake atmospheric pressure", variableId: "p_intake" },
+        { text: " scaled by " },
+        { text: "compression ratio", variableId: "comp_r" },
+        { text: " to the power of the " },
+        { text: "isentropic exponent", variableId: "isentropic_gamma" },
+        { text: "." },
+      ],
+      variables: [
+        {
+          id: "p_peak",
+          symbol: "P_2",
+          name: "Peak Compression Pressure",
+          color: "crimson",
+          role: "Pressure inside the cylinder at the end of the compression stroke ($40 - 60\\text{ bar} \\approx 4 - 6\\text{ MPa}$)",
+          unit: "Bar / Pascals (Pa)",
+          dimension: "[M L^-1 T^-2]",
+          explanation:
+            "Extreme pressure ensures that the air is hot enough to instantly ignite atomized heavy oil without external spark plugs.",
+          telemetryMetricLabel: "Peak Pressure",
+        },
+        {
+          id: "p_intake",
+          symbol: "P_1",
+          name: "Intake Manifold Pressure",
+          color: "cyan",
+          role: "Ambient atmospheric intake pressure ($1.013\\text{ bar} = 101.3\\text{ kPa}$)",
+          unit: "Bar / Pascals (Pa)",
+          dimension: "[M L^-1 T^-2]",
+          explanation:
+            "Pure atmospheric air inducted during the downstroke before intake valve closure.",
+        },
+        {
+          id: "comp_r",
+          symbol: "r",
+          name: "Compression Ratio",
+          color: "sapphire",
+          role: "Cylinder volumetric compression ratio ($18:1$)",
+          unit: "Dimensionless ratio",
+          dimension: "[1]",
+          explanation:
+            "Compresses the inducted air into a compact combustion bowl in the piston crown.",
+          telemetryKey: "compressionRatio",
+        },
+        {
+          id: "isentropic_gamma",
+          symbol: "\\gamma",
+          name: "Isentropic Exponent",
+          color: "amber",
+          role: "Air adiabatic index ($1.40$)",
+          unit: "Dimensionless constant",
+          dimension: "[1]",
+          explanation:
+            "Assumes rapid compression with minimal instantaneous heat transfer to cylinder cooling jackets.",
+        },
+      ],
+      pedagogicalNote:
+        "Achieving 40+ atmospheres required Diesel and MAN engineers to invent precision cast-iron piston rings and high-strength crosshead cylinder construction.",
+      claimRef: 1,
+      historicalSignificance:
+        "Established high-pressure compression-ignition as a practical engineering reality.",
     },
   ],
 
