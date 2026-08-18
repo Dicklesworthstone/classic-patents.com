@@ -87,12 +87,64 @@ The web application is built with:
 
 ## How to Add a New Patent to the Library
 
-Adding a patent is an archival, educational, and product change—not just a new
-card in a list. The Wright brothers' *Flying-Machine* patent is the reference
-implementation: [`src/data/patents/wright-flyer.ts`](./src/data/patents/wright-flyer.ts),
-`public/patents/pdfs/us-821393-wright-flyer.pdf`, its registered id
-`us-821393-wright-flyer`, and its matching 2D/3D visual modules. Follow every
-applicable step below. Do not publish a partial or speculative record.
+Adding a patent is an archival, educational, and product change, not a new
+card in a list. Do not publish a partial or speculative record. Filling the
+TypeScript `Patent` type is not enough.
+
+The Wright brothers' *Flying-Machine* grant is the reference implementation
+for the whole vertical slice: identity, provenance, pinned facsimile,
+reviewed ledger, archival edition, claim decoders, Plain English engineering
+face, historical context, colorized equations, one shared physics bus, 2D
+simulator, Three.js 3D studio, schematic, telemetry badge, and tests. Its
+catalogue id is `us-821393-wright-flyer`. Tesla's *Electro-Magnetic Motor*
+(`us-381968-tesla-motor`) is the companion reference for the archival-edition
+publication contract (figure-crop directory, term annotations, paragraph-level
+parallel readings, and the edition test that pins every block to the ledger).
+
+A new record is unfinished until a visitor can read the legal instrument, the
+physics, the fight over priority (or an honest empty `patentWars` array), and
+a working model of the claimed mechanism without another round of "make it
+not suck."
+
+### The Wright Flyer exemplar (complete artifact map)
+
+Every complete record ships this same shape. Copy the Wright paths, then
+replace `us-821393-wright-flyer` / `wright-flyer` / `WrightFlyer` with the
+new id and names.
+
+| Layer | Wright path | What it is |
+| --- | --- | --- |
+| Provenance receipt | `docs/provenance/us-821393-wright-flyer.md` | Source URL, retrieval date, rights basis, SHA-256, page count, PDF-page locators for every quoted passage, claim, and drawing. Written **before** editorial copy. |
+| Pinned facsimile | `public/patents/pdfs/us-821393-wright-flyer.pdf` | Immutable source PDF. Filename equals the catalogue id. |
+| Reviewed ledger | `public/patents/transcripts/us-821393-wright-flyer-reviewed.txt` | Page-complete human-reviewed transcription. Begins with `--- REVIEWED TRANSCRIPTION PAGE 1 OF N ---`. Research evidence, not the visitor-facing source face. |
+| Figure crops | `public/patents/figures/us-821393-wright-flyer-fig-1-preview.png` (Wright, flat) or, for new records, `public/patents/figures/<id>/fig-1-source-crop-v1.png` (Tesla convention) | Editor-chosen crops from the pinned drawing sheets. Edition figure references point here. |
+| Canonical record | `src/data/patents/wright-flyer.ts` (`wrightFlyerPatent`) | Identity, excerpt, claim decoders, Plain English, drawings, historical context. Claims' `originalText` is pulled from the edition so the two cannot drift. |
+| Archival edition | `src/data/editions/wrightFlyerEdition.ts` (`wrightFlyerArchivalEdition`) | Continuous, hand-authored React source face. Typed blocks, not OCR, not a PDF text layer, not scan-page breaks. |
+| Edition test | `src/data/editions/wrightFlyerEdition.test.ts` | Pins SHA-256, all printed claims, ledger markers, and every textual block back to the reviewed transcript. Tesla's `teslaMotorEdition.test.ts` is the fuller contract (figure files on disk, term definitions, parallel readings). |
+| Parallel readings | `src/data/editions/parallelReadings.ts` key `us-821393-wright-flyer` | One non-lossy explanation per edition paragraph, keyed by block index. New records export the map from the edition file and register it here. |
+| Physics kernel | `src/physics/wrightKernel.ts` | Shared SI step. 2D, 3D, schematic, and badge all call `readWrightControls` + `stepWrightFlyerSi`. |
+| Physics registry | `src/physics/telemetryData.ts` key `us-821393-wright-flyer` | SI controls, governing equation, `engineMethod`, `computeMetrics` that call the shared step. |
+| Spec-clause weave | `src/physics/specClauses.ts` | Kernel predicates that light exact phrases on the spec face (warp, adverse yaw, rudder linkage). |
+| Colorized equations | `src/data/colorizedEquations.ts` key `us-821393-wright-flyer` | Dual-coded equations whose variables bind to live telemetry. |
+| 2D visual | `src/components/patents/visuals/WrightFlyerSim.tsx` | Orthographic pedagogical instrument on the shared bus. |
+| 3D visual | `src/components/patents/visuals/three/WrightFlyer3D.tsx` | Three.js studio via `createThreeStudioScene`. |
+| 3D model | `src/components/patents/visuals/three/wrightFlyerAirframe.ts` | Procedural airframe from the drawings, not a decorative GLTF. |
+| Dispatcher | `src/components/patents/visuals/index.tsx` `case "us-821393-wright-flyer":` | Explicit id case. The default is the Wright Flyer; a new record must never reach that fallback. |
+| Schematic | `svgType: "wright-flyer"` plus `SCHEMATIC_HINTS` / `renderHistoricalSchematic` | Original-drawing viewer. Callouts match facsimile letters/numbers. |
+| Registry | `src/data/patents/index.ts` `allPatents` (chronological) | Search, home counts, timeline, adjacent nav, static routes, metadata, OG images. |
+
+Four layers stay separate. A later reviewer must reproduce each one without
+guessing:
+
+1. **Facsimile** — the pinned PDF.
+2. **Reviewed ledger** — page-marked transcription used as comparison evidence.
+3. **Archival edition** — the continuous visitor-facing source face.
+4. **Editorial explanation** — Plain English, claim decoders, historical
+   context, visuals. Never treat layer 4 as a substitute for layers 1–3.
+
+Do not ship CSV exports, QR codes, downloadable "receipts," invented impact
+scores, or other theater metrics. The museum argument is the facsimile, the
+claims, the SI kernel, and the working model.
 
 ### 1. Scope and source research
 
@@ -109,19 +161,35 @@ applicable step below. Do not publish a partial or speculative record.
    (the specification and drawings), and modern engineering interpretation.
    Plain English must retain the relevant physics, units, equations, limits,
    and uncertainty rather than offering a superficial analogy.
-4. Create a provenance receipt at `docs/provenance/<id>.md` before authoring
-   editorial copy. It must retain the source URL and retrieval date,
-   public-domain/rights basis, SHA-256, page count, and exact PDF page locators
-   for every quoted specification passage, claim, and drawing. Keep the raw
-   facsimile, raw OCR, normalized transcription, and editorial explanation as
-   separate layers; a later reviewer must be able to reproduce each layer
-   without guessing.
+4. Create a provenance receipt at `docs/provenance/<id>.md` **before**
+   authoring editorial copy. Use Wright's receipt as the template
+   (`docs/provenance/us-821393-wright-flyer.md`). Required sections:
+
+   - **Source identity**: catalogue id, granted title, inventors as printed,
+     grant date, filing date, primary public-record URL, local PDF path,
+     retrieval and full-facsimile review date, rights basis (typically a
+     United States patent whose historical text and drawings are public-domain
+     United States Government material), lowercase SHA-256 of the pinned PDF,
+     PDF page count.
+   - **Facsimile map**: a table of every PDF page with what was checked
+     (drawing sheet / masthead / claims range / signatures). Wright's ten-page
+     map is the model. These locators stay in the receipt; they do not appear
+     on the visitor-facing edition.
+   - **Editorial and preservation boundaries**: which file is the public
+     source face, which file is the reviewed ledger, where figure crops live,
+     how many printed claims exist, and an explicit statement that OCR / PDF
+     text-layer files are research evidence only.
+
 5. Choose a stable, URL-safe id in this format:
-   `us-<unpunctuated-number>-<short-kebab-title>`. For example, the Wright
-   record uses `us-821393-wright-flyer`, its file is
-   `us-821393-wright-flyer.pdf`, and its public route is
-   `/patents/us-821393-wright-flyer`. Check `src/data/patents/` and
-   `allPatents` first so the id, patent number, and title do not collide.
+   `us-<unpunctuated-number>-<short-kebab-title>`. Pre-1836 X-patents keep
+   the historical `X` (`us-x9430-colt-revolver`). The Wright record uses
+   `us-821393-wright-flyer`; its PDF is `us-821393-wright-flyer.pdf`; its
+   public route is `/patents/us-821393-wright-flyer`. Check
+   `src/data/patents/` and `allPatents` first so the id, patent number, and
+   title do not collide. The id, PDF filename, transcript filename, figure
+   directory, provenance filename, and route must all match. Do not change a
+   published id without an explicit redirect (`LegacyPatentRedirect`) and
+   written approval; home-page links and `generateStaticParams` will 404.
 
 ### 2. Add the immutable source asset
 
@@ -134,12 +202,23 @@ applicable step below. Do not publish a partial or speculative record.
    the detail page embeds this local facsimile and the download pipeline copies
    it into its working cache.
 3. Inspect the PDF before registering it: it must be the intended patent,
-   readable, complete, and large enough to be a genuine document—not a
+   readable, complete, and large enough to be a genuine document, not a
    placeholder, an HTML error page, or a different member of the patent family.
    Use `pdfinfo public/patents/pdfs/<id>.pdf` and review representative pages.
+   Compute the digest and pin it in three places (they must match):
+
+   ```bash
+   shasum -a 256 public/patents/pdfs/<id>.pdf
+   ```
+
+   Wright's digest is
+   `678bea5d81cb4e90a15c998bc932d2cf01bc87cfc3fcc53f0ecbdbdc70097966`.
+   It appears on `originalTextAsset.sourcePdfSha256`,
+   `archivalEdition.sourcePdfSha256`, and the provenance receipt.
 4. Do not modify or discard an existing source PDF merely because an OCR result
    looks surprising. Preserve the original and diagnose the pipeline or source
-   provenance instead.
+   provenance instead. Changing a pinned PDF without updating every digest
+   will fail the edition test and the publication contract.
 
 ### 3. Author the typed canonical record
 
