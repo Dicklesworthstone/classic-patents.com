@@ -1,26 +1,54 @@
-UNITED STATES PATENT OFFICE.
-ELI WHITNEY, OF MULBERRY GROVE, GEORGIA.
+US X72 — E. WHITNEY — COTTON GIN
+Reviewed transcription of the 12-page local facsimile.
+Source PDF SHA-256: 9b0873182dbd2852a89bbf5bc7101e2c3b7a2d0cc76cee0df5c7acbfc86844ee
 
-COTTON GIN.
+[Page 1: original drawing sheet. Inscription: “72 X. Eli Whitney. Cotton Gin.” Figure 1; restored detail labels corresponding to Fig. 2 components.]
+[Page 2: restored drawing sheet 1. “E. Whitney. Cotton Gin. Patented Mar. 14, 1794.” Figure 1 and Fig. 2/detail views.]
+[Page 3: restored drawing sheet 2. “E. Whitney. Cotton Gin. Patented Mar. 14, 1794.” Drive, clearer, breastwork, and hopper details.]
 
-Letters Patent No. X72. Dated March 14, 1794.
-Application filed June 20, 1793.
+[Page 4]
+State Department, November 26, 1803. I certify that the foregoing is a true copy of the description of the cotton gin referred to in the letters patent granted to Eli Whitney, dated the fourteenth day of March, one thousand seven hundred and ninety-four. James Madison.
 
-THE SCHEDULE TO WHICH THESE LETTERS PATENT ARE REFERRED.
+A Description of a New Invented Cotton Gin: or Machine for cleansing and separating Cotton from its seeds.
 
-To all to whom these presents shall come:
-BE IT KNOWN that I, ELI WHITNEY, a citizen of the State of Massachusetts, residing at Mulberry Grove, in the County of Chatham and State of Georgia, have invented a new and useful machine for ginning and cleaning cotton, of which the following is a specification:
+This Machine may be described under five divisions, corresponding to its five principal parts: Viz: 1. The Frame, 2. The Cylinder; 3. The Breastwork; 4. The clearer, and 5. The Hopper.
 
-The nature of my invention consists in a machine by which the seeds of short-staple cotton are separated from the lint or wool with great rapidity and with small labor.
+I. The frame, by which the whole work is supported and kept together, ought to be made of well seasoned timber, so that it may be firm and steady, and never become loose in the joints. Scantling four inches by three, will perhaps be stuff, of as suitable size as any. The frame should be of a square or parallelogramic form, the width must answer to the length of the Cylinder and the height and length may be proportioned as circumstances shall render convenient.
 
-The machine consists of a wooden cylinder mounted on an iron axle, into the surface of which are set annular rows of wire teeth or circular saw plates. This cylinder revolves within a wooden framing having a hopper or breastwork formed of parallel wire or iron ribs placed so close together that the teeth can pass freely between them, while the seeds are excluded and held back by their size.
+In the drawing annexed, Fig. 1, is a section of the Machine. A represents the cylinder, B The Breastwork, C, The clearer and D: The Hopper.
 
-Behind the toothed cylinder is placed a second cylinder armed with rows of stiff horsehair or hog-bristle brushes. This brush cylinder is geared to revolve in a direction opposite to that of the toothed cylinder and with greater velocity, whereby the clean cotton fiber drawn through the ribs by the teeth is swept from the teeth and thrown out at the rear of the machine by the centrifugal blast of air created by the revolving brushes.
+II. The Cylinder is of wood: its form is perfectly described by its name, and its dimensions may be from six to nine inches diameter, and from two to five feet in length. This cylinder is placed horizontally across the frame, in such manner as to give room for the clearer on one side of it, and the Hopper on the other, as in fig. 1. Its height, if the machine is worked by Hand should be about three feet four inches: otherwise it may be regulated by convenience. In the cylinder is fixed an Iron axis so large as to turn in the lathe without quivering. The axis may pass quite thro’ the cylinder or consist only of gudgeons, driven with cement into each end.
 
-The cotton being placed in the hopper, the crank is turned, imparting motion to the toothed cylinder. The wire teeth seizing upon the cotton fibers drag them through the narrow apertures between the ribs into the interior of the box, leaving the clean seeds behind in the hopper to fall out through a lower opening. The rapidly rotating brushes continuously strip the teeth clean of lint, keeping the apparatus unencumbered and operating continuously.
+[Pages 5–6]
+There must be a shoulder at, b. Fig. 2. on each side the bearing or box to prevent any horizontal variation in the Cylinder. The bearings of the axis must be rounded in a lathe, so that the centre of the axis may coincide with the center of the cylinder. One end admits the winch; the other receives the whirl designed for putting the clearer in motion. The brass boxes consist each of two parts, c and d, Fig. 7; the lower is sunk into the frame and the upper is bolted and screwed down. At e is a perforation for conveying oil to the axis.
 
-I claim as my invention:
+After the cylinder, with its axis is fitted and rounded with exactness, the circular part of its surface is filled with teeth set in annular rows. The spaces between rows must admit a cotton seed to turn round freely and ought not to be less than seven sixteenths of an inch. The spaces between teeth in the same row must not admit a seed or half seed; they ought not to exceed one twelfth of an inch, and about one sixteenth is thought best.
 
-1. The combination of a cylinder furnished with rows of teeth with a breastwork or grate having narrow apertures through which said teeth pass to pull cotton fiber while excluding seeds.
+The teeth are made from common iron wire, drawn smaller without nealing, cut to equal lengths by the compound-lever cutter shown at Fig. 10, driven into the cylinder, inclined toward the tangent until tooth and tangent form about 55 or 60 degrees, then trimmed, filed to an angular point, and polished. A crooked gage, Fig. 8, with prongs matching the cylinder curvature, equalizes their length. The timber should be quarter stuff and of equal density, such as beech, maple, or black birch.
 
-2. In combination with said toothed cylinder and grate, a clearing cylinder furnished with brushes revolving with greater velocity in the opposite direction to detach the cotton from the teeth.
+[Pages 7–8]
+III. The breastwork, Fig. 11, and B. Fig. 1 and Fig. 2, is fixed above the cylinder, parallel and contiguous to the same. It has transverse grooves or openings through which the rows of teeth pass as the cylinder revolves: and its use is to obstruct the seeds while the Cotton is carried forward through the grooves by the teeth. That side next the cylinder should be made of brass or Iron. Its face ought to make an angle with the tangent less than 50 Degrees.
+
+A tooth fastens upon cotton still connected with seed. The seeds, being too large to pass through the breastwork, are stopped while cotton is forced through the groove and disengaged. The breastwork should be about 2½ or 3 inches thick in proportion to cotton length, so carried cotton disconnects before leaving the grooves. It may be cast metal with slots, separate pieces seated in a wooden groove, or the alternate wood-and-metal-strap construction shown at Fig. 14.
+
+IV. The clearer C, Fig. 1, has an iron axis and two equal cross frames; four parallel pieces carry channels for brushes. Each brush is hog bristles bound between thin wooden strips, fixed with thread, pitch or rosin, and a hot iron; exposed bristles are cut to about an inch. The clearer is horizontal and parallel to the cylinder. Its bristle ends strike the cylinder with a small degree of friction, it turns contrary to the cylinder, and it outruns it sufficiently to sweep its whole surface.
+
+[Pages 9–10]
+A two-brush clearer may be made with opposed boards, Fig. 4, or a grooved cylinder. Brushes need four or five inches between them. The faster clearer sweeps cotton from the teeth; air put in motion by it and the centrifugal force of cotton disengage lint from the brushes. Bristles are best set at about 20 or 25 degrees with the clearer diameter.
+
+The clearer is put in motion by the cylinder by means of a band and whirls. The whirls are solid wooden wheels about 2½ or 3 inches thick, their periphery a spherical surface swelling at the center. A leather band tends toward the highest place and is less liable to leave the work than on a grooved rim. The whirl axis is in a movable iron plate for tensioning; this produces the movement of cogwheel and pinion with less friction, expence, and ratling noise.
+
+[Page 11]
+V. One side of the Hopper is formed by the breastwork, two ends by the frame, and the other side is moveable so that it may slide nearer the cylinder as the charge decreases. This gives seeds a rotary motion until stripped. A wire crate lets sand and thoroughly cleansed seed fall below. One hopper full must be finished, the moveable part drawn back, the hopper cleared of seeds, and then supplied anew. A partition beneath the cylinder separates seed from clean cotton. The machine may be turned by Horses or Water; if moved by water it is thought to diminish the usual labour of cleaning green seed cotton at least forty nine fiftieths.
+
+The foregoing is a Description of the machine for cleansing Cotton, alluded to in a Petition of the Subscriber, Dated Philadelphia June 20th. 1793, and lodged in the Office of the Secretary of State alledging that he the Subscriber is the Inventor of said Machine, and signifying his desire of obtaining an exclusive property in the same.
+
+Eli Whitney
+Signed in presence of
+Chauncey Goodrich Counsellor at law Hartford.
+John Allen Counsellor at law Litchfield.
+
+[Page 12]
+State of Connecticut Ss. City of New Haven. I Elizur Goodrich Esqre. Alderman for said City, and Not. Public, by lawful authority admitted and sworn, residing in said City, and by law authorized to administer Oaths, Do hereby certify, declare and make known to whom it doth or may concern: That at said City on this Twenty Eighth day of October one thousand seven hundred and ninety three, Eli Whitney of the County of Worcester in the Commonwealth of Massachusetts, now resident in said City, personally appeared before me, the said Alderman and Notary, and made solemn Oath, that he does verily believe that he the said Whitney is the True inventor and Discoverer of the machine for Ginning Cotton, a Description whereof is hereto annexed by me the said Alderman and Notary by my Seal Notarial, and that he the said Whitney verily believes that a Machine of similar construction hath never before been known, or used.
+
+In Testimony whereof I the said Alderman and Notary, have hereunto set my Hand and Seal at the City aforesaid on the Day above said. Elizur Goodrich Alderman & Not. Public
