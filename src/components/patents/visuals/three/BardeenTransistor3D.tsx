@@ -1,52 +1,37 @@
 "use client";
 
-import {
-  Activity,
-  Camera,
-  Cpu,
-  Eye,
-  EyeOff,
-  RotateCcw,
-  Sparkles,
-  Volume2,
-  VolumeX,
-  Zap,
-} from "lucide-react";
-import { useEffect, useRef, useState } from "react";
-import * as THREE from "three";
+import { Activity, Camera, Eye, EyeOff, Volume2, VolumeX, Zap } from "lucide-react";
+import { memo, useEffect, useRef, useState } from "react";
+import type * as THREE from "three";
 import { bardeenLoadLine, stepBardeenTransistor } from "@/physics/catalogKernels";
 import { FrankenSimEngine } from "@/physics/engine";
 import { useFrankenSimPhysics } from "@/physics/useFrankenSimPhysics";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
-import { createLcg } from "@/utils/lcg";
 import { soundEngine } from "@/utils/soundEngine";
 import {
-  createGlowPointTexture,
-  createThreeStudioScene,
-  type StudioContext,
-} from "./ThreeStudioScene";
+  buildBardeenTransistorModel,
+  updateBardeenTransistorKinematics,
+} from "./bardeenTransistorModel";
+import { StudioKernelChips } from "./StudioKernelChips";
+import { createThreeStudioScene, type StudioContext } from "./ThreeStudioScene";
 import { useLiveSimParams } from "./useLiveSimParams";
-
 import { usePatentAudio } from "./usePatentAudio";
 
-const lcg = createLcg(1770);
+type CameraPreset = "iso" | "apex" | "band" | "spring" | "base" | "top";
 
-type CameraPreset = "iso" | "apex" | "band" | "spring" | "base";
-
-export function BardeenTransistor3D() {
+export const BardeenTransistor3D = memo(() => {
   const containerRef = useRef<HTMLDivElement>(null);
+  const [showUiOverlay, setShowUiOverlay] = useState<boolean>(true);
+  const [isCutaway, setIsCutaway] = useState<boolean>(false);
 
   // Semiconductor Point-Contact State Controls
   const { params } = usePatentPhysics("us-2569347-bardeen-transistor");
-  const [showUiOverlay, setShowUiOverlay] = useState<boolean>(true);
   const emitterCurrentMa = params.emitterCurrent ?? 1.5;
   const collectorVoltageV = params.collectorBias ?? -40;
   const pointContactGapMicrons = params.pointSpacing ?? 50;
-  const [showHoleDrift, _setShowHoleDrift] = useState<boolean>(true);
-  const [showCalloutPins, setShowCalloutPins] = useState<boolean>(false);
+  const [showHoleDrift] = useState<boolean>(true);
   const [activeCamera, setActiveCamera] = useState<CameraPreset>("iso");
   const { isAudioMuted, toggleSound: toggleEngine } = usePatentAudio();
-  const [isToneActive, setIsToneActive] = useState<boolean>(false);
 
   // Transistor Physics Calculations (FrankenSim Germanium Minority Transport)
   const semiState = FrankenSimEngine.stepBardeenTransistor(
@@ -62,6 +47,7 @@ export function BardeenTransistor3D() {
     refusal: { isRefused: false },
     semi: semiState,
   });
+
   const bardeen = stepBardeenTransistor(
     emitterCurrentMa,
     collectorVoltageV,
@@ -80,6 +66,7 @@ export function BardeenTransistor3D() {
     showHoleDrift,
     currentGainAlpha: semiState.currentGainAlpha,
     holeDiffusion: semiState.holeDiffusionCoefficientCm2ps,
+    isCutaway,
   });
 
   const controlsRef = useRef<StudioContext["controls"] | null>(null);
@@ -112,33 +99,19 @@ export function BardeenTransistor3D() {
         camera.position.set(-5, 2, 4);
         controls.target.set(-2, 0, 1);
         break;
+      case "top":
+        camera.position.set(0, 12.0, 0.1);
+        controls.target.set(0, 0, 0);
+        break;
     }
     controls.update();
   };
 
   const toggleSound = () => {
-    toggleEngine();
+    toggleEngine(() => {
+      soundEngine.playSwitchClick();
+    });
   };
-
-  const toggleAudioTone = () => {
-    if (isToneActive) {
-      soundEngine.stopContinuousTone();
-      setIsToneActive(false);
-    } else {
-      // 1000 Hz test signal amplified through transistor
-      soundEngine.playContinuousTone(1000, "sine", 0.12 * Math.min(1.0, powerGainDb / 20));
-      setIsToneActive(true);
-      if (isAudioMuted) {
-        toggleEngine();
-      }
-    }
-  };
-
-  useEffect(() => {
-    return () => {
-      soundEngine.stopContinuousTone();
-    };
-  }, []);
 
   useEffect(() => {
     const container = containerRef.current;
@@ -154,305 +127,134 @@ export function BardeenTransistor3D() {
     cameraRef.current = camera;
     controlsRef.current = controls;
 
-    const germaniumCrystalMat = new THREE.MeshStandardMaterial({
-      color: 0x475569,
-      roughness: 0.15,
-      metalness: 0.85,
-    });
-
-    const goldFoilMat = new THREE.MeshStandardMaterial({
-      color: 0xf59e0b,
-      roughness: 0.1,
-      metalness: 0.98,
-    });
-
-    const polystyreneWedgeMat = new THREE.MeshPhysicalMaterial({
-      color: 0xffffff,
-      transmission: 0.88,
-      opacity: 0.9,
-      transparent: true,
-      roughness: 0.1,
-      ior: 1.5,
-    });
-
-    const phosphorBronzeMat = new THREE.MeshStandardMaterial({
-      color: 0xb45309,
-      roughness: 0.2,
-      metalness: 0.92,
-    });
-
-    const copperPlatenMat = new THREE.MeshStandardMaterial({
-      color: 0xc25e1a,
-      roughness: 0.25,
-      metalness: 0.9,
-    });
-
-    const brassMat = new THREE.MeshStandardMaterial({
-      color: 0xd97706,
-      roughness: 0.22,
-      metalness: 0.92,
-    });
-
-    const transistorGroup = new THREE.Group();
-    scene.add(transistorGroup);
-
-    // Heavy Copper Grounding Base Platen (Ohmic base contact)
-    const basePlaten = new THREE.Mesh(new THREE.BoxGeometry(8.2, 0.5, 6.8), copperPlatenMat);
-    basePlaten.position.y = -1.35;
-    basePlaten.receiveShadow = true;
-    transistorGroup.add(basePlaten);
-
-    // Soldered Base Terminal Lug
-    const baseLug = new THREE.Mesh(new THREE.CylinderGeometry(0.12, 0.12, 1.4, 12), brassMat);
-    baseLug.rotation.z = Math.PI / 2;
-    baseLug.position.set(-3.8, -1.35, 0);
-    transistorGroup.add(baseLug);
-
-    // Etched High-Purity n-Type Germanium Crystal Slab
-    const geBlock = new THREE.Mesh(new THREE.BoxGeometry(6.2, 1.1, 5.2), germaniumCrystalMat);
-    geBlock.position.y = -0.55;
-    geBlock.castShadow = true;
-    transistorGroup.add(geBlock);
-
-    // Triangular Polystyrene Plastic Wedge (Brattain's shaped wedge)
-    const wedgeShape = new THREE.Shape();
-    wedgeShape.moveTo(-0.9, 2.2);
-    wedgeShape.lineTo(0.9, 2.2);
-    wedgeShape.lineTo(0, 0.05);
-    wedgeShape.closePath();
-
-    const wedgeGeo = new THREE.ExtrudeGeometry(wedgeShape, { depth: 0.8, bevelEnabled: false });
-    wedgeGeo.center();
-    const wedge = new THREE.Mesh(wedgeGeo, polystyreneWedgeMat);
-    wedge.position.set(0, 1.25, 0);
-    transistorGroup.add(wedge);
-
-    // Phosphor-Bronze Cantilever Spring & Knurled Micrometer Pressure Screw
-    const springGroup = new THREE.Group();
-    springGroup.position.set(0, 2.6, 0);
-
-    const springArm = new THREE.Mesh(new THREE.BoxGeometry(0.35, 0.08, 3.2), phosphorBronzeMat);
-    springGroup.add(springArm);
-
-    const adjustmentScrew = new THREE.Mesh(
-      new THREE.CylinderGeometry(0.24, 0.24, 0.9, 24),
-      brassMat,
-    );
-    adjustmentScrew.position.set(0, 0.45, 1.2);
-    springGroup.add(adjustmentScrew);
-
-    // Spring Retaining Post
-    const post = new THREE.Mesh(new THREE.CylinderGeometry(0.18, 0.18, 3.6, 16), brassMat);
-    post.position.set(0, -1.2, 1.2);
-    springGroup.add(post);
-
-    transistorGroup.add(springGroup);
-
-    const emitterGroup = new THREE.Group();
-    const collectorGroup = new THREE.Group();
-
-    const emitterFoil = new THREE.Mesh(new THREE.BoxGeometry(0.18, 1.8, 0.75), goldFoilMat);
-    emitterFoil.rotation.z = -0.42;
-    emitterFoil.position.set(-0.55, 1.1, 0);
-    emitterGroup.add(emitterFoil);
-
-    const emitterWire = new THREE.Mesh(
-      new THREE.CylinderGeometry(0.04, 0.04, 2.2, 8),
-      phosphorBronzeMat,
-    );
-    emitterWire.rotation.z = -0.6;
-    emitterWire.position.set(-1.4, 2.0, 0);
-    emitterGroup.add(emitterWire);
-    transistorGroup.add(emitterGroup);
-
-    const collectorFoil = new THREE.Mesh(new THREE.BoxGeometry(0.18, 1.8, 0.75), goldFoilMat);
-    collectorFoil.rotation.z = 0.42;
-    collectorFoil.position.set(0.55, 1.1, 0);
-    collectorGroup.add(collectorFoil);
-
-    const collectorWire = new THREE.Mesh(
-      new THREE.CylinderGeometry(0.04, 0.04, 2.2, 8),
-      phosphorBronzeMat,
-    );
-    collectorWire.rotation.z = 0.6;
-    collectorWire.position.set(1.4, 2.0, 0);
-    collectorGroup.add(collectorWire);
-    transistorGroup.add(collectorGroup);
-
-    const holeCount = 120;
-    const holeGeo = new THREE.BufferGeometry();
-    const holePos = new Float32Array(holeCount * 3);
-    for (let i = 0; i < holeCount; i++) {
-      holePos[i * 3] = -0.6 + lcg() * 1.2;
-      holePos[i * 3 + 1] = 0.05 - lcg() * 0.35;
-      holePos[i * 3 + 2] = (lcg() - 0.5) * 0.8;
-    }
-    holeGeo.setAttribute("position", new THREE.BufferAttribute(holePos, 3));
-    const glowTex = createGlowPointTexture();
-    const holePoints = new THREE.Points(
-      holeGeo,
-      new THREE.PointsMaterial({
-        color: 0x38bdf8,
-        size: 0.22,
-        map: glowTex,
-        transparent: true,
-        opacity: 0.85,
-        blending: THREE.AdditiveBlending,
-        depthWrite: false,
-      }),
-    );
-    transistorGroup.add(holePoints);
+    const { rootGroup, nodes, materials, dispose } = buildBardeenTransistorModel();
+    scene.add(rootGroup);
 
     let reqId: number;
-    let _renderedSteps = 0;
+    let timeSec = 0;
+
     const animate = () => {
       reqId = requestAnimationFrame(animate);
-      _renderedSteps += 1;
-      const delta = 1 / 60;
+      const dt = 1 / 60;
+      timeSec += dt;
       const p = live.current;
-      const currentGapUnits = p.pointContactGapMicrons * 0.012;
-      emitterGroup.position.x = -currentGapUnits / 2;
-      collectorGroup.position.x = currentGapUnits / 2;
-      const driftSpeed =
-        p.currentGainAlpha * (p.emitterCurrentMa / 2.5) * (p.holeDiffusion / 49) * 3.5 * delta;
-      for (let i = 0; i < holeCount; i++) {
-        const idx = i * 3;
-        holePos[idx] += driftSpeed;
-        if (holePos[idx] > currentGapUnits / 2 + 0.1) {
-          holePos[idx] = -currentGapUnits / 2 - 0.05;
-        }
-      }
-      holeGeo.attributes.position.needsUpdate = true;
-      holePoints.visible = p.showHoleDrift;
-      controls.update();
+
+      updateBardeenTransistorKinematics(
+        nodes,
+        materials,
+        dt,
+        timeSec,
+        p.pointContactGapMicrons,
+        p.emitterCurrentMa,
+        p.currentGainAlpha,
+        p.holeDiffusion,
+        p.showHoleDrift,
+        p.isCutaway ?? false,
+      );
+
       renderer.render(scene, camera);
     };
+
     animate();
 
     return () => {
       cancelAnimationFrame(reqId);
-      studio.dispose();
+      dispose();
+      studio.cleanup();
     };
   }, [live]);
 
   return (
-    <div className="flex flex-col h-full bg-parchment-50/60 dark:bg-ink-950/80 rounded-2xl overflow-hidden border border-parchment-300 dark:border-ink-800 shadow-patent">
-      <div className="relative flex-1 min-h-[380px] sm:min-h-[460px] w-full cursor-grab active:cursor-grabbing">
-        <div ref={containerRef} className="absolute inset-0 w-full h-full" />
-        {showUiOverlay && (
-          <div className="absolute top-3 left-3 sm:top-4 sm:left-4 z-10 flex flex-col gap-1.5 sm:gap-2 pointer-events-none max-w-[calc(100%-8rem)] sm:max-w-md transition-opacity duration-200">
-            <div className="bg-white/90 dark:bg-ink-900/90 backdrop-blur-md p-2 sm:px-3.5 sm:py-2.5 rounded-xl border border-parchment-300 dark:border-ink-700 shadow-sm">
-              <div className="text-[10px] sm:text-[11px] font-sans text-amber-700 dark:text-amber-400 font-bold uppercase tracking-wider flex items-center gap-1.5">
-                <Cpu className="w-3 h-3 sm:w-3.5 sm:h-3.5 text-blue-500 animate-pulse" />
-                Point-Contact Transistor Telemetry
-              </div>
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-3 gap-y-0.5 sm:gap-y-1 mt-1 text-[10px] sm:text-xs font-sans">
-                <div>
-                  <span className="text-ink-600 dark:text-ink-400">Current Gain (α):</span>{" "}
-                  <span className="font-bold text-emerald-600 dark:text-emerald-400">
-                    {alphaCurrentGain}
-                  </span>
-                </div>
-                <div>
-                  <span className="text-ink-600 dark:text-ink-400">Collector:</span>{" "}
-                  <span className="font-bold text-blue-600 dark:text-blue-400">
-                    {collectorCurrentMa} mA
-                  </span>
-                </div>
-                <div>
-                  <span className="text-ink-600 dark:text-ink-400">Power Gain:</span>{" "}
-                  <span className="font-bold text-purple-600 dark:text-purple-400">
-                    +{powerGainDb} dB · {voltageGain}× · D ={" "}
-                    {semiState.holeDiffusionCoefficientCm2ps} cm²/s
-                  </span>
-                </div>
-              </div>
-            </div>
-            <div className="hidden sm:flex bg-white/90 dark:bg-ink-900/90 backdrop-blur-md px-3 py-1.5 rounded-lg border border-parchment-300 dark:border-ink-700 text-[11px] font-sans text-ink-700 dark:text-ink-300 items-center gap-2 max-w-full">
-              <Sparkles className="w-3.5 h-3.5 text-amber-500 animate-pulse shrink-0" />
-              <span className="truncate">
-                John Bardeen &amp; Walter Brattain (US 2,524,035) — Point-Contact Transistor
-              </span>
-            </div>
-          </div>
-        )}
+    <div className="relative w-full h-[620px] bg-parchment-900 rounded-2xl overflow-hidden border border-parchment-700 shadow-2xl flex flex-col">
+      <div ref={containerRef} className="w-full h-full cursor-grab active:cursor-grabbing" />
 
-        <div className="absolute top-3 right-3 sm:top-4 sm:right-4 z-10 flex gap-1.5 sm:gap-2">
+      {/* Top HUD Controls */}
+      <div className="absolute top-4 left-4 right-4 flex flex-wrap items-center justify-between gap-3 pointer-events-none z-10">
+        <div className="flex items-center gap-2 bg-parchment-950/80 backdrop-blur-md px-3.5 py-2 rounded-xl border border-parchment-700/60 shadow-lg pointer-events-auto">
+          <Activity className="w-4 h-4 text-amber-500 animate-pulse" />
+          <span className="text-xs font-mono font-bold text-parchment-100 uppercase tracking-wider">
+            Bardeen Point-Contact Transistor 3D
+          </span>
+          <span className="text-[10px] font-mono px-2 py-0.5 rounded-full bg-amber-500/20 text-amber-300 border border-amber-500/30">
+            US Patent 2,569,347 (1948)
+          </span>
+        </div>
+
+        {/* Camera Toolbar */}
+        <div className="flex items-center gap-1.5 bg-parchment-950/80 backdrop-blur-md p-1.5 rounded-xl border border-parchment-700/60 shadow-lg pointer-events-auto">
+          <Camera className="w-3.5 h-3.5 text-parchment-400 ml-1.5 mr-1" />
+          {(
+            [
+              ["iso", "Isometric"],
+              ["apex", "Point Contacts"],
+              ["band", "Energy Bands"],
+              ["spring", "Cantilever Spring"],
+              ["base", "Base Platen"],
+              ["top", "Top"],
+            ] as [CameraPreset, string][]
+          ).map(([preset, label]) => (
+            <button
+              key={preset}
+              type="button"
+              onClick={() => applyCameraPreset(preset)}
+              className={`px-2.5 py-1 text-xs font-sans rounded-lg transition-colors ${
+                activeCamera === preset
+                  ? "bg-amber-600 text-white font-semibold shadow-sm"
+                  : "text-parchment-300 hover:text-white hover:bg-parchment-800/60"
+              }`}
+            >
+              {label}
+            </button>
+          ))}
+        </div>
+
+        {/* Toggles */}
+        <div className="flex items-center gap-1.5 bg-parchment-950/80 backdrop-blur-md p-1.5 rounded-xl border border-parchment-700/60 shadow-lg pointer-events-auto">
+          <button
+            type="button"
+            onClick={() => setIsCutaway(!isCutaway)}
+            title={isCutaway ? "Solid Crystal" : "Cutaway Crystal"}
+            className={`flex items-center gap-1 px-2.5 py-1 text-xs font-sans rounded-lg transition-colors ${
+              isCutaway
+                ? "bg-amber-600/30 text-amber-200 border border-amber-500/40"
+                : "text-parchment-300 hover:text-white hover:bg-parchment-800/60"
+            }`}
+          >
+            {isCutaway ? <EyeOff className="w-3.5 h-3.5" /> : <Eye className="w-3.5 h-3.5" />}
+            <span>{isCutaway ? "Cutaway" : "Solid"}</span>
+          </button>
+
+          <button
+            type="button"
+            onClick={toggleSound}
+            title={isAudioMuted ? "Unmute Sound" : "Mute Sound"}
+            className="p-1.5 rounded-lg text-xs text-parchment-400 hover:text-white hover:bg-parchment-800 transition-colors"
+          >
+            {isAudioMuted ? <VolumeX className="w-4 h-4" /> : <Volume2 className="w-4 h-4" />}
+          </button>
           <button
             type="button"
             onClick={() => setShowUiOverlay(!showUiOverlay)}
-            className={`p-1.5 sm:p-2.5 rounded-xl backdrop-blur-md border transition-colors shadow-sm ${
-              showUiOverlay
-                ? "bg-white/90 dark:bg-ink-900/90 border-parchment-300 dark:border-ink-700 text-ink-700 dark:text-parchment-300 hover:bg-parchment-100"
-                : "bg-amber-600 text-white border-amber-700 shadow-md ring-2 ring-amber-500/30"
-            }`}
-            title={showUiOverlay ? "Hide Overlay UI (Clean 3D View)" : "Show Overlay UI"}
-            aria-label={showUiOverlay ? "Hide Overlay UI" : "Show Overlay UI"}
+            className="p-1.5 rounded-lg text-xs text-parchment-400 hover:text-white hover:bg-parchment-800 transition-colors"
           >
-            {showUiOverlay ? (
-              <EyeOff className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
-            ) : (
-              <Eye className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
-            )}
-          </button>
-          <button
-            aria-label="Toggle test tone"
-            type="button"
-            onClick={toggleAudioTone}
-            className={`p-1.5 sm:p-2.5 rounded-xl backdrop-blur-md border transition-colors shadow-sm ${isToneActive ? "bg-emerald-600 text-white border-emerald-700 shadow-md ring-2 ring-emerald-400 animate-pulse" : "bg-white/90 dark:bg-ink-900/90 border-parchment-300 dark:border-ink-700 text-ink-700 dark:text-parchment-300 hover:bg-parchment-100"}`}
-            title="Play 1 kHz Test Tone"
-          >
-            <Activity className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
-          </button>
-          <button
-            aria-label={isAudioMuted ? "Unmute simulation audio" : "Mute simulation audio"}
-            type="button"
-            onClick={toggleSound}
-            className="p-1.5 sm:p-2.5 rounded-xl bg-white/90 dark:bg-ink-900/90 backdrop-blur-md border border-parchment-300 dark:border-ink-700 text-ink-700 dark:text-parchment-300 hover:bg-parchment-100 transition-colors shadow-sm"
-          >
-            {isAudioMuted ? (
-              <VolumeX className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
-            ) : (
-              <Volume2 className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-amber-600" />
-            )}
-          </button>
-          <button
-            aria-label={showCalloutPins ? "Hide annotation pins" : "Show annotation pins"}
-            type="button"
-            onClick={() => setShowCalloutPins(!showCalloutPins)}
-            className={`p-1.5 sm:p-2.5 rounded-xl backdrop-blur-md border transition-colors shadow-sm ${showCalloutPins ? "bg-amber-600 text-white border-amber-700 shadow-md" : "bg-white/90 dark:bg-ink-900/90 border-parchment-300 dark:border-ink-700 text-ink-700 dark:text-parchment-300"}`}
-            title="Toggle Pins"
-          >
-            <Zap className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
-          </button>
-          <button
-            aria-label="Reset camera view"
-            type="button"
-            onClick={() => applyCameraPreset("iso")}
-            className="p-1.5 sm:p-2.5 rounded-xl bg-white/90 dark:bg-ink-900/90 backdrop-blur-md border border-parchment-300 dark:border-ink-700 text-ink-700 dark:text-parchment-300 hover:bg-parchment-100 transition-colors shadow-sm"
-          >
-            <RotateCcw className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
+            <Zap className="w-4 h-4 text-amber-400" />
           </button>
         </div>
-
-        {showUiOverlay && (
-          <div className="absolute bottom-3 left-3 sm:bottom-4 sm:left-4 z-10 flex flex-nowrap overflow-x-auto scrollbar-none max-w-[calc(100%-1.5rem)] sm:max-w-none gap-1 sm:gap-1.5 bg-white/85 dark:bg-ink-900/85 backdrop-blur-md p-1 sm:p-1.5 rounded-xl border border-parchment-300 dark:border-ink-700 shadow-sm text-[10px] sm:text-xs transition-opacity duration-200">
-            <span className="px-1.5 sm:px-2 py-0.5 sm:py-1 text-ink-500 font-sans flex items-center gap-1 shrink-0">
-              <Camera className="w-3 h-3 sm:w-3.5 sm:h-3.5" /> View:
-            </span>
-            {(["iso", "apex", "band", "spring", "base"] as const).map((id) => (
-              <button
-                key={id}
-                type="button"
-                onClick={() => applyCameraPreset(id)}
-                className={`px-2 py-0.5 sm:px-2.5 sm:py-1 rounded-lg font-sans whitespace-nowrap shrink-0 transition-colors ${activeCamera === id ? "bg-amber-700 text-white font-semibold" : "text-ink-700 dark:text-parchment-300 hover:bg-parchment-200"}`}
-              >
-                {id.toUpperCase()}
-              </button>
-            ))}
-          </div>
-        )}
       </div>
+
+      <StudioKernelChips
+        visible={showUiOverlay}
+        title="Bardeen point-contact semiconductor transport"
+        chips={[
+          { label: "Emitter I_e", value: `${emitterCurrentMa}`, unit: "mA" },
+          { label: "Collector V_c", value: `${collectorVoltageV}`, unit: "V" },
+          { label: "Contact Gap", value: `${pointContactGapMicrons}`, unit: "µm" },
+          { label: "Current Gain α", value: alphaCurrentGain, tone: "ok" },
+          { label: "Collector I_c", value: collectorCurrentMa, unit: "mA" },
+          { label: "Voltage Gain A_v", value: `${voltageGain.toFixed(1)}×` },
+          { label: "Power Gain G_p", value: `${powerGainDb.toFixed(1)}`, unit: "dB" },
+        ]}
+      />
     </div>
   );
-}
+});
