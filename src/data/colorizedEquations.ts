@@ -3010,10 +3010,18 @@ function formatSymbolForDisplay(sym: string): string {
     "\\Omega": "Omega (Ω)",
     "\\hbar": "h-bar (ℏ)",
   };
-  const base = sym.replace(/[_\^].*$/, "");
+  const base = sym.replace(/[_^].*$/, "");
   if (greekMap[sym]) return greekMap[sym];
-  if (greekMap[base]) return `${greekMap[base]} term`;
-  const clean = sym.replace(/^\\(?:text|mathrm|mathbf)\{/, "").replace(/\}$/, "");
+  if (greekMap[base]) {
+    const sub = sym.replace(/^[^_^]+/, "").replace(/[{}\\]/g, "");
+    return `${greekMap[base]} ${sub ? `(${sub})` : "term"}`;
+  }
+  const clean = sym
+    .replace(/^\\vec\{([a-zA-Z0-9_]+)\}/, "$1 Vector")
+    .replace(/^\\(?:text|mathrm|mathbf|mathit|mathsf)\{/, "")
+    .replace(/\}$/, "")
+    .replace(/\\_/g, " ")
+    .replace(/[{}]/g, "");
   return `Parameter (${clean})`;
 }
 
@@ -3119,10 +3127,19 @@ export function convertScientificPrincipleToColorizedEquation(
     "\\ll",
     "\\sim",
     "\\equiv",
-    "\\parallel",
     "\\perp",
     "\\in",
     "\\subset",
+    "\\leq",
+    "\\geq",
+    "\\prod",
+    "\\coprod",
+    "\\oint",
+    "\\cosh",
+    "\\sinh",
+    "\\tanh",
+    "\\forall",
+    "\\exists",
   ]);
 
   // Robust LaTeX Math Token Extraction
@@ -3147,7 +3164,7 @@ export function convertScientificPrincipleToColorizedEquation(
         }
       }
     } else {
-      const baseCmd = sym.replace(/[_\^].*$/, "");
+      const baseCmd = sym.replace(/[_^].*$/, "");
       if (
         !mathBlacklist.has(sym) &&
         !mathBlacklist.has(baseCmd) &&
@@ -3171,7 +3188,7 @@ export function convertScientificPrincipleToColorizedEquation(
   }
 
   // Topic Context Detection
-  const pLower = (principle.principle + " " + principle.explanation + " " + patentId).toLowerCase();
+  const pLower = `${principle.principle} ${principle.explanation} ${patentId}`.toLowerCase();
   const isOptics =
     category === "optics" ||
     pLower.includes("camera") ||
@@ -3255,11 +3272,1022 @@ export function convertScientificPrincipleToColorizedEquation(
     let unit = "SI Units";
     let dimension = "[1]";
     let role = `Governing physical parameter in ${principle.principle}`;
-    let telemetryKey: string | undefined = undefined;
-    let telemetryMetricLabel: string | undefined = undefined;
+    let telemetryKey: string | undefined;
+    let telemetryMetricLabel: string | undefined;
+
+    // 0a. CARRIER AIR CONDITIONING / PSYCHROMETRICS
+    if (
+      patentId.includes("carrier") ||
+      pLower.includes("psychrometric") ||
+      pLower.includes("dew-point")
+    ) {
+      if (sym === "c_{pa}" || sym === "c_p") {
+        name = "Specific Heat of Dry Air";
+        unit = "kJ/(kg·K) [1.006 kJ/(kg·K)]";
+        dimension = "[L^2 T^-2 \\Theta^-1]";
+        role = "Thermal energy required to raise dry air temperature by one degree";
+      } else if (sym === "h_{fg0}") {
+        name = "Latent Heat of Water Vaporization at 0°C";
+        unit = "kJ/kg [2501 kJ/kg]";
+        dimension = "[L^2 T^-2]";
+        role = "Enthalpy required to evaporate water into air at freezing baseline";
+      } else if (sym === "c_{pw}" || sym === "c_{pv}") {
+        name = "Specific Heat of Water Vapor";
+        unit = "kJ/(kg·K) [1.86 kJ/(kg·K)]";
+        dimension = "[L^2 T^-2 \\Theta^-1]";
+        role = "Heat capacity of superheated moisture vapor carried in air mixture";
+      } else if (sym === "W") {
+        name = "Absolute Humidity Moisture Ratio";
+        unit = "kg H2O / kg dry air";
+        dimension = "[1]";
+        role = "Mass of dissolved water vapor per kilogram of dry atmospheric air";
+      } else if (sym === "Q") {
+        name = "Enthalpy Extraction Rate";
+        unit = "Kilowatts (kW)";
+        dimension = "[M L^2 T^-3]";
+        role = "Total cooling capacity extracted from the airstream by chilled spray";
+      } else if (sym === "H" || sym === "h") {
+        name = "Moist Air Enthalpy";
+        unit = "Kilojoules / kg (kJ/kg)";
+        dimension = "[L^2 T^-2]";
+        role = "Combined sensible heat and latent moisture energy of air";
+      }
+    }
+
+    // 0b. FARNSWORTH IMAGE DISSECTOR & TV
+    else if (
+      patentId.includes("farnsworth") ||
+      pLower.includes("dissector") ||
+      pLower.includes("kell") ||
+      pLower.includes("raster")
+    ) {
+      if (sym === "J_e") {
+        name = "Photoelectric Current Density";
+        unit = "Amperes per square meter (A/m²)";
+        dimension = "[I L^-2]";
+        role = "Electron flux emitted from cesium oxide photocathode under incident scene light";
+      } else if (sym === "x" || sym === "y") {
+        name = "Photocathode Coordinate";
+        unit = "Millimeters (mm)";
+        dimension = "[L]";
+        role = "Spatial position on continuous photoemissive surface scanned across aperture";
+      } else if (sym === "q") {
+        name = "Elementary Electron Charge";
+        unit = "Coulombs (1.602 × 10^-19 C)";
+        dimension = "[I T]";
+        role = "Charge of individual photoelectrons focused into scanning beam";
+      } else if (sym === "V_a") {
+        name = "Anode Accelerating Voltage";
+        unit = "Volts (V) [~1000 V]";
+        dimension = "[M L^2 T^-3 I^-1]";
+        role = "High positive potential accelerating photoelectrons toward the target aperture";
+      } else if (sym === "\\vec{F}" || sym === "F") {
+        name = "Lorentz Magnetic Deflection Force";
+        unit = "Newtons (N)";
+        dimension = "[M L T^-2]";
+        role =
+          "Dynamic magnetic force deflecting electron image across horizontal and vertical axes";
+      } else if (sym === "\\vec{E}" || sym === "E") {
+        name = "Electrostatic Accelerating Field";
+        unit = "Volts per meter (V/m)";
+        dimension = "[M L T^-3 I^-1]";
+        role = "Axial electrostatic field gradient preserving electron image fidelity";
+      } else if (sym === "\\vec{v}" || sym === "v") {
+        name = "Electron Drift Velocity Vector";
+        unit = "Meters per second (m/s)";
+        dimension = "[L T^-1]";
+        role = "Velocity of emitted photoelectrons traveling down the vacuum tube";
+      } else if (sym === "K_{Kell}" || sym === "K") {
+        name = "Kell Spatial Resolution Factor";
+        unit = "Dimensionless coefficient (~0.7)";
+        dimension = "[1]";
+        role = "Empirical reduction factor accounting for discrete scan line sampling artifacts";
+      } else if (sym === "N_{lines}^2" || sym === "N_{lines}" || sym === "N") {
+        name = "Active Raster Scan Line Count";
+        unit = "Scan lines (e.g. 525 lines)";
+        dimension = "[1]";
+        role = "Number of horizontal scan lines composing each complete video frame";
+      }
+    }
+
+    // 0c. EINSTEIN-SZILARD ABSORPTION REFRIGERATOR
+    else if (
+      patentId.includes("einstein") ||
+      pLower.includes("butane") ||
+      pLower.includes("thermosiphon")
+    ) {
+      if (sym === "y_{butane}" || sym === "y") {
+        name = "Butane Vapor Mole Fraction";
+        unit = "Mole fraction [0-1]";
+        dimension = "[1]";
+        role = "Fractional concentration of butane vapor in the pressurized ammonia-butane cycle";
+      } else if (sym === "H_{vap}") {
+        name = "Enthalpy of Vaporization";
+        unit = "Kilojoules per mole (kJ/mol)";
+        dimension = "[M L^2 T^-2 N^-1]";
+        role = "Latent heat absorbed by butane evaporating into lower-pressure ammonia vapor";
+      } else if (sym === "z") {
+        name = "Thermosiphon Bubble Elevation";
+        unit = "Meters (m)";
+        dimension = "[L]";
+        role =
+          "Height to which vapor bubbles lift liquid refrigerant without mechanical moving parts";
+      } else if (sym === "\\vec{F}" || sym === "F") {
+        name = "Electromagnetic Pumping Force";
+        unit = "Newtons (N)";
+        dimension = "[M L T^-2]";
+        role = "Inductive Lorentz force pumping liquid metal without seals or moving pistons";
+      } else if (sym === "\\vec{J}" || sym === "J") {
+        name = "Induced Eddy Current Density";
+        unit = "Amperes per square meter (A/m²)";
+        dimension = "[I L^-2]";
+        role = "Eddy current induced in liquid metal by rotating magnetic field";
+      } else if (sym === "\\vec{E}" || sym === "E") {
+        name = "Induced Electrostatic Field";
+        unit = "Volts per meter (V/m)";
+        dimension = "[M L T^-3 I^-1]";
+        role = "Electric field generated across the conductive fluid conduit";
+      } else if (sym === "\\vec{v}" || sym === "v") {
+        name = "Fluid Flow Velocity Vector";
+        unit = "Meters per second (m/s)";
+        dimension = "[L T^-1]";
+        role = "Speed of liquid metal circulated through the heat exchange loop";
+      } else if (sym === "C" || sym === "n" || sym === "o") {
+        name = "Carnot Absorption Efficiency Ratio";
+        unit = "Dimensionless ratio";
+        dimension = "[1]";
+        role =
+          "Theoretical maximum COP governed by generator, evaporator, and condenser temperatures";
+      }
+    }
+
+    // 0d. KWOLEK LIQUID-CRYSTAL ARAMID POLYMER
+    else if (
+      patentId.includes("kwolek") ||
+      pLower.includes("flory") ||
+      pLower.includes("lyotropic") ||
+      pLower.includes("aramid")
+    ) {
+      if (sym === "x") {
+        name = "Polymer Chain Axial Aspect Ratio";
+        unit = "Length-to-diameter ratio ($L/d > 100$)";
+        dimension = "[1]";
+        role =
+          "Molecular aspect ratio of rigid rod-like PPTA chains driving nematic liquid-crystal alignment";
+      } else if (sym === "c") {
+        name = "Longitudinal Acoustic Shock Velocity";
+        unit = "Meters per second (m/s) [~10,000 m/s]";
+        dimension = "[L T^-1]";
+        role = "Speed of stress wave propagation along aligned covalently bonded aromatic chains";
+      } else if (sym === "E" || sym === "E_{coh}" || sym === "E_{H-bond}") {
+        name = "Covalent / Hydrogen Bond Energy";
+        unit = "Kilojoules per mole (kJ/mol)";
+        dimension = "[M L^2 T^-2 N^-1]";
+        role =
+          "Inter-chain hydrogen bonding energy providing high transverse ballistic shear strength";
+      } else if (sym === "H_{vap}") {
+        name = "Enthalpy of Polymer Vaporization";
+        unit = "Kilojoules per mole (kJ/mol)";
+        dimension = "[M L^2 T^-2 N^-1]";
+        role = "Thermal energy required to overcome intermolecular cohesive lattice forces";
+      } else if (sym === "V_m") {
+        name = "Molar Volume of Repeating Unit";
+        unit = "Cubic centimeters per mole (cm³/mol)";
+        dimension = "[L^3 N^-1]";
+        role = "Volume occupied by one mole of polymer repeat units";
+      }
+    }
+
+    // 0e. PARSONS STEAM TURBINE
+    else if (
+      patentId.includes("parsons") ||
+      pLower.includes("turbine") ||
+      pLower.includes("isentropic")
+    ) {
+      if (sym === "u") {
+        name = "Turbine Blade Peripheral Velocity";
+        unit = "Meters per second (m/s)";
+        dimension = "[L T^-1]";
+        role = "Rotational tangential velocity of moving blade ring stages";
+      } else if (sym === "x") {
+        name = "Steam Quality / Dryness Fraction";
+        unit = "Mass fraction [0-1]";
+        dimension = "[1]";
+        role = "Ratio of vapor mass to total mixture mass expanding through compound stages";
+      } else if (sym === "C_{u1}" || sym === "C_{u2}") {
+        name = "Steam Tangential Swirl Velocity";
+        unit = "Meters per second (m/s)";
+        dimension = "[L T^-1]";
+        role = "Tangential component of steam absolute velocity entering vs exiting blading";
+      }
+    }
+
+    // 0f. TESLA TELEAUTOMATON / RADIO REMOTE CONTROL
+    else if (
+      patentId.includes("teleautomaton") ||
+      patentId.includes("613809") ||
+      pLower.includes("coherer") ||
+      pLower.includes("teleautomaton")
+    ) {
+      if (sym === "C") {
+        name = "Tuning Antenna Capacitance";
+        unit = "Farads (F)";
+        dimension = "[M^-1 L^-2 T^4 I^2]";
+        role = "Adjustable capacitance setting resonant reception frequency of the receiver";
+      } else if (sym === "E" || sym === "E_{\\theta}" || sym === "E_\\theta") {
+        name = "Radiated RF Electric Field";
+        unit = "Volts per meter (V/m)";
+        dimension = "[M L T^-3 I^-1]";
+        role = "Electromagnetic field strength radiated by transmitting antenna to trigger coherer";
+      } else if (sym === "S_{n+1}" || sym === "S_n") {
+        name = "Stepping Relay Sequencer State";
+        unit = "Discrete state index [1-4]";
+        dimension = "[1]";
+        role = "Internal rotary switch position advancing boat propulsion and rudder motors";
+      } else if (sym === "X" || sym === "Y_n") {
+        name = "Command Pulse / Actuator State";
+        unit = "Binary logic state [0/1]";
+        dimension = "[1]";
+        role = "Radio pulse input signal selecting rudder port/starboard or propeller throttle";
+      }
+    }
+
+    // 0g. ZEPPELIN RIGID AIRSHIP
+    else if (
+      patentId.includes("zeppelin") ||
+      pLower.includes("airship") ||
+      pLower.includes("aerostatic")
+    ) {
+      if (sym === "y") {
+        name = "Distance from Neutral Bending Axis";
+        unit = "Meters (m)";
+        dimension = "[L]";
+        role = "Distance from the transverse hull centroid to outer duralumin longitudinal girder";
+      } else if (sym === "z") {
+        name = "Barometric Pressure Altitude";
+        unit = "Meters (m)";
+        dimension = "[L]";
+        role = "Flight elevation governing atmospheric air density and hydrogen gas cell expansion";
+      } else if (sym.includes("e^{-M") || sym.includes("e^-M")) {
+        name = "Barometric Density Decay Factor";
+        unit = "Dimensionless exponent";
+        dimension = "[1]";
+        role = "Exponential decrease in air pressure and buoyant lifting force with altitude";
+      } else if (sym === "V_0") {
+        name = "Initial Gas Cell Volume at Sea Level";
+        unit = "Cubic meters (m³)";
+        dimension = "[L^3]";
+        role = "Unexpanded baseline volume of lift gas at standard atmospheric pressure";
+      }
+    }
+
+    // 0h. LINDE AIR LIQUEFACTION & CRYOGENICS
+    else if (
+      patentId.includes("linde") ||
+      pLower.includes("liquefaction") ||
+      pLower.includes("cryogenic")
+    ) {
+      if (sym === "H") {
+        name = "Cryogenic Fluid Enthalpy";
+        unit = "Kilojoules per kilogram (kJ/kg)";
+        dimension = "[L^2 T^-2]";
+        role = "Total thermal enthalpy conserved across Joule-Thomson expansion valve";
+      } else if (sym === "C_p") {
+        name = "Isobaric Heat Capacity of Compressed Air";
+        unit = "kJ/(kg·K)";
+        dimension = "[L^2 T^-2 \\Theta^-1]";
+        role = "Specific heat governing temperature drop during regenerative heat exchange";
+      } else if (sym === "U") {
+        name = "Overall Heat Transfer Coefficient";
+        unit = "Watts per square meter-kelvin (W/(m²·K))";
+        dimension = "[M T^-3 \\Theta^-1]";
+        role =
+          "Counter-current heat exchanger thermal conductance between high and low pressure air";
+      } else if (sym === "y" || sym === "x") {
+        name = "Vapor / Liquid Nitrogen Mole Fraction";
+        unit = "Mole fraction [0-1]";
+        dimension = "[1]";
+        role =
+          "Relative volatility equilibrium ratio during low-temperature fractional distillation";
+      } else if (sym === "q") {
+        name = "Radiation Heat Inleak Rate";
+        unit = "Watts (W)";
+        dimension = "[M L^2 T^-3]";
+        role = "Parasitic ambient heat entering cryogenic vessel through vacuum jacket insulation";
+      }
+    }
+
+    // 0i. LAMARR FREQUENCY HOPPING SPREAD SPECTRUM
+    else if (
+      patentId.includes("lamarr") ||
+      pLower.includes("frequency-hopping") ||
+      pLower.includes("anti-jam") ||
+      pLower.includes("spread-spectrum")
+    ) {
+      if (sym === "C") {
+        name = "Shannon Channel Capacity";
+        unit = "Bits per second (bps)";
+        dimension = "[T^-1]";
+        role = "Theoretical maximum error-free information transmission rate across noisy channel";
+      } else if (sym === "N" && pLower.includes("shannon")) {
+        name = "Channel Gaussian Noise Power";
+        unit = "Watts (W)";
+        dimension = "[M L^2 T^-3]";
+        role = "Background thermal noise across the transmission band";
+      } else if (sym === "G_p" || sym === "G") {
+        name = "Anti-Jam Processing Gain";
+        unit = "Decibels (dB) / Ratio";
+        dimension = "[1]";
+        role =
+          "Signal-to-interference ratio improvement achieved by frequency-hopping spectrum expansion";
+      } else if (sym === "W_{ss}" || sym === "W") {
+        name = "Spread-Spectrum RF Bandwidth";
+        unit = "Megahertz (MHz)";
+        dimension = "[T^-1]";
+        role = "Total frequency bandwidth across which carrier hops pseudo-randomly";
+      } else if (sym === "N_{channels}" || sym === "N_{total}" || sym === "N") {
+        name = "Total Frequency Hopping Channels";
+        unit = "Carrier bins [88 channels]";
+        dimension = "[1]";
+        role =
+          "Total discrete radio frequency slots synchronized across transmitting and receiving rolls";
+      } else if (sym === "N_{jam\\_channels}" || sym.includes("jam")) {
+        name = "Jammer Blocked Channels";
+        unit = "Active jam bins";
+        dimension = "[1]";
+        role = "Number of simultaneous frequency bins blocked by hostile narrowband interference";
+      } else if (sym === "x" || sym === "c") {
+        name = "Pseudo-Random Code Sequence";
+        unit = "Binary code symbols [±1]";
+        dimension = "[1]";
+        role =
+          "Orthogonal pseudo-random sequence governing transmitter and receiver carrier shifts";
+      }
+    }
+
+    // 0j. SPENCER MICROWAVE CAVITY MAGNETRON
+    else if (
+      patentId.includes("spencer") ||
+      pLower.includes("microwave") ||
+      pLower.includes("magnetron") ||
+      pLower.includes("choke")
+    ) {
+      if (sym === "\\vec{E}" || sym === "E" || sym === "E_0") {
+        name = "Microwave Electric Field Vector";
+        unit = "Volts per meter (V/m)";
+        dimension = "[M L T^-3 I^-1]";
+        role =
+          "High-frequency 2.45 GHz alternating microwave field driving water dipole oscillation";
+      } else if (sym === "r_a" || sym === "r_c" || sym === "r_c^2") {
+        name = "Magnetron Anode / Cathode Radius";
+        unit = "Millimeters (mm)";
+        dimension = "[L]";
+        role = "Cylindrical resonant cavity geometry determining electron cyclotron cutoff orbits";
+      } else if (sym === "V_a") {
+        name = "Magnetron Anode Accelerating Voltage";
+        unit = "Kilovolts (kV) [~4 kV]";
+        dimension = "[M L^2 T^-3 I^-1]";
+        role =
+          "High DC potential accelerating electrons radially from cathode toward resonant anode blocks";
+      } else if (sym === "c_p") {
+        name = "Specific Heat Capacity";
+        unit = "Joules per (kg·K) (J/(kg·K))";
+        dimension = "[L^2 T^-2 \\Theta^-1]";
+        role = "Thermal energy required to raise target food matter temperature by one kelvin";
+      } else if (sym === "Z_{in}" || sym === "Z_0" || sym === "Z_L") {
+        name = "Characteristic Transmission Impedance";
+        unit = "Ohms (Ω) [50 Ω / 377 Ω]";
+        dimension = "[M L^2 T^-3 I^-2]";
+        role = "Wave transmission line impedance and quarter-wave choke matching boundary";
+      } else if (sym === "j") {
+        name = "Imaginary Phase Unit (j = √-1)";
+        unit = "Complex phase operator";
+        dimension = "[1]";
+        role =
+          "90-degree reactive impedance phase rotation in electromagnetic transmission line equations";
+      }
+    }
+
+    // 0k. BARDEEN POINT-CONTACT TRANSISTOR
+    else if (
+      patentId.includes("bardeen") ||
+      pLower.includes("point-contact") ||
+      pLower.includes("transistor")
+    ) {
+      if (sym === "\\vec{E}" || sym === "E") {
+        name = "Minority Carrier Drift Electric Field";
+        unit = "Volts per centimeter (V/cm)";
+        dimension = "[M L T^-3 I^-1]";
+        role =
+          "Electrostatic field gradient accelerating injected hole packet through bulk germanium";
+      } else if (sym === "V_C") {
+        name = "Collector Reverse Bias Voltage";
+        unit = "Volts (V)";
+        dimension = "[M L^2 T^-3 I^-1]";
+        role = "Reverse bias extracting injected minority holes across the point-contact collector";
+      } else if (sym === "Q_{ss}") {
+        name = "Surface State Trapped Charge Density";
+        unit = "Coulombs per square centimeter (C/cm²)";
+        dimension = "[I T L^-2]";
+        role =
+          "Charge trapped in localized quantum surface levels screening bulk germanium from external fields";
+      } else if (sym === "q") {
+        name = "Elementary Electric Charge";
+        unit = "Coulombs (1.602 × 10^-19 C)";
+        dimension = "[I T]";
+        role = "Fundamental quantum of charge carried by conduction electrons and holes";
+      } else if (sym === "D_{it}") {
+        name = "Interface Trap Energy Density";
+        unit = "States per cm²-eV (states/(cm²·eV))";
+        dimension = "[M^-1 L^-4 T^2 I^-1]";
+        role = "Density of localized electronic states across the semiconductor bandgap";
+      } else if (sym === "E_F" || sym === "E_0") {
+        name = "Fermi Energy Level / Neutral Energy";
+        unit = "Electron-volts (eV)";
+        dimension = "[M L^2 T^-2]";
+        role = "Thermodynamic electrochemical potential of charge carriers in the crystal";
+      } else if (sym === "D_p" || sym === "D_n") {
+        name = "Minority Carrier Diffusion Coefficient";
+        unit = "Square centimeters per second (cm²/s)";
+        dimension = "[L^2 T^-1]";
+        role =
+          "Brownian spatial diffusion rate of minority hole packets through the base semiconductor";
+      }
+    }
+
+    // 0l. FERMI NUCLEAR CRITICAL REACTOR
+    else if (
+      patentId.includes("fermi") ||
+      pLower.includes("reactor") ||
+      pLower.includes("fission") ||
+      pLower.includes("moderation")
+    ) {
+      if (sym === "N" || sym === "N_0") {
+        name = "Elastic Collision Thermalization Count";
+        unit = "Collisions [~115 collisions]";
+        dimension = "[1]";
+        role =
+          "Number of graphite collisions required to slow 2 MeV fast neutrons to 0.025 eV thermal speed";
+      } else if (sym === "E_0" || sym === "E_{th}") {
+        name = "Prompt Fission / Thermal Neutron Energy";
+        unit = "MeV / eV ($2\\text{ MeV} \\to 0.025\\text{ eV}$)";
+        dimension = "[M L^2 T^-2]";
+        role =
+          "Initial fast fission neutron energy vs room-temperature thermal neutron equilibrium";
+      } else if (sym === "N_U") {
+        name = "Uranium Atomic Number Density";
+        unit = "Atoms per cubic centimeter (atoms/cm³)";
+        dimension = "[L^-3]";
+        role = "Concentration of heavy uranium fuel nuclei within the lumped lattice geometry";
+      } else if (sym === "H") {
+        name = "Active Core Critical Height";
+        unit = "Meters (m)";
+        dimension = "[L]";
+        role = "Vertical dimension of the CP-1 uranium-graphite critical pile geometry";
+      }
+    }
+
+    // 0m. NOYCE PLANAR INTEGRATED CIRCUIT
+    else if (
+      patentId.includes("noyce") ||
+      pLower.includes("planar") ||
+      pLower.includes("deal-grove") ||
+      pLower.includes("electromigration")
+    ) {
+      if (sym === "x_{ox}" || sym === "x_{ox}^2") {
+        name = "Thermal Silicon Dioxide Thickness";
+        unit = "Nanometers (nm)";
+        dimension = "[L]";
+        role =
+          "Passivating and insulating thermal oxide dielectric barrier protecting silicon junctions";
+      } else if (sym === "J_{FN}" || sym === "J") {
+        name = "Current Density / Tunneling Current";
+        unit = "Amperes per square centimeter (A/cm²)";
+        dimension = "[I L^-2]";
+        role = "High-field quantum mechanical Fowler-Nordheim field emission tunneling density";
+      } else if (sym === "C_1") {
+        name = "Fowler-Nordheim Tunneling Coefficient";
+        unit = "Amperes per volt squared (A/V²)";
+        dimension = "[M^-1 L^-4 T^3 I^3]";
+        role =
+          "Quantum mechanical tunneling rate coefficient across thin silicon dioxide dielectric";
+      } else if (sym === "E_{ox}" || sym === "E_{ox}^2" || sym === "E_{bd}" || sym === "E_0") {
+        name = "Oxide Electric Field / Breakdown Field";
+        unit = "Megavolts per centimeter (MV/cm)";
+        dimension = "[M L T^-3 I^-1]";
+        role = "Electrostatic field gradient across insulating silicon dioxide layer";
+      }
+    }
+
+    // 0n. ENGELBART COMPUTER MOUSE
+    else if (
+      patentId.includes("engelbart") ||
+      pLower.includes("mouse") ||
+      pLower.includes("potentiometer") ||
+      pLower.includes("fitts")
+    ) {
+      if (sym.includes("vec{v}") || sym.includes("v_{hand}")) {
+        name = "Hand Movement Velocity Vector";
+        unit = "Meters per second (m/s)";
+        dimension = "[L T^-1]";
+        role = "Spatial translation speed and heading of the mouse chassis across the work surface";
+      } else if (sym === "j") {
+        name = "Cartesian Y-Axis Unit Vector (ĵ)";
+        unit = "Dimensionless unit vector";
+        dimension = "[1]";
+        role = "Orthogonal vertical direction vector of mouse chassis travel across desk surface";
+      } else if (sym === "x" || sym === "y") {
+        name = "Cartesian Coordinate Displacement";
+        unit = "Millimeters (mm)";
+        dimension = "[L]";
+        role = "Displacement along individual orthogonal tracking wheel axes";
+      } else if (sym === "D") {
+        name = "Target Acquisition Travel Distance";
+        unit = "Pixels / Millimeters (mm)";
+        dimension = "[L]";
+        role = "Distance required to reach the on-screen target in Fitts's Law";
+      } else if (sym === "W") {
+        name = "Target Element Screen Width";
+        unit = "Pixels / Millimeters (mm)";
+        dimension = "[L]";
+        role = "Spatial target width determining selection difficulty in Fitts's Law";
+      } else if (sym === "V_x" || sym === "V_y" || sym === "V_{ref}") {
+        name = "Potentiometer Divider / Reference Voltage";
+        unit = "Volts (V)";
+        dimension = "[M L^2 T^-3 I^-1]";
+        role = "Analog DC voltage proportional to tracking wheel rotation angle";
+      } else if (sym === "X_{screen}" || sym === "Y_{screen}") {
+        name = "Screen CRT Cursor Coordinate";
+        unit = "Pixels";
+        dimension = "[1]";
+        role = "Quantized cursor coordinate mapped from encoder voltage ADC readings";
+      } else if (sym === "\\text{CPI}" || sym === "CPI") {
+        name = "Counts Per Inch Resolution";
+        unit = "Pulses / inch";
+        dimension = "[L^-1]";
+        role = "Encoder pulse frequency per inch of physical desktop travel";
+      }
+    }
+
+    // 0o. BOYLE-SMITH CHARGE-COUPLED DEVICE (CCD)
+    else if (
+      patentId.includes("boyle") ||
+      patentId.includes("ccd") ||
+      pLower.includes("charge-coupled") ||
+      pLower.includes("potential well")
+    ) {
+      if (sym === "n_e") {
+        name = "Photoelectron Packet Count";
+        unit = "Electrons (e⁻)";
+        dimension = "[1]";
+        role = "Number of photo-generated electrons collected within the MOS potential well";
+      } else if (sym === "V_G" || sym === "V_0" || sym === "V_0^2") {
+        name = "MOS Gate / Surface Potential";
+        unit = "Volts (V)";
+        dimension = "[M L^2 T^-3 I^-1]";
+        role = "Clocked gate electrode voltage creating surface potential well depth";
+      } else if (sym === "N") {
+        name = "Shift Register Clocked Transfer Stages";
+        unit = "Transfer steps";
+        dimension = "[1]";
+        role = "Number of 3-phase MOS gate transfers required to clock charge to output amplifier";
+      } else if (sym.includes("e^{-N") || sym.includes("e^-N")) {
+        name = "Cumulative Charge Packet Survival Ratio";
+        unit = "Dimensionless fraction";
+        dimension = "[1]";
+        role =
+          "Fraction of original photoelectron packet surviving N consecutive bucket-brigade shifts";
+      } else if (sym === "S_{out}" || sym === "S_{in}") {
+        name = "Output / Input Charge Signal Packet";
+        unit = "Electrons / Volts";
+        dimension = "[1]";
+        role = "Signal charge packet magnitude before vs after CCD shift registers";
+      } else if (sym === "\\text{CTE}" || sym === "CTE" || sym === "\\epsilon") {
+        name = "Charge Transfer Efficiency / Inefficiency";
+        unit = "Dimensionless fraction [0-1]";
+        dimension = "[1]";
+        role = "Fractional charge packet conservation efficiency per transfer gate step";
+      } else if (sym === "V_{out}") {
+        name = "Floating Diffusion Sense Output Voltage";
+        unit = "Microvolts per electron (μV/e⁻)";
+        dimension = "[M L^2 T^-3 I^-1]";
+        role = "Charge-to-voltage conversion amplitude on sensing node";
+      } else if (sym === "C_{FD}") {
+        name = "Floating Diffusion Node Capacitance";
+        unit = "Femtofarads (fF) [~10 fF]";
+        dimension = "[M^-1 L^-2 T^4 I^2]";
+        role =
+          "Microscopic node capacitance converting charge packets into readable voltage signals";
+      } else if (sym === "J_{dark}") {
+        name = "Thermal Dark Current Generation Rate";
+        unit = "Amperes per square meter (A/m²)";
+        dimension = "[I L^-2]";
+        role = "Thermal noise electron accumulation in unilluminated pixel wells";
+      } else if (sym === "W_{dep}") {
+        name = "Silicon Depletion Layer Width";
+        unit = "Micrometers (μm)";
+        dimension = "[L]";
+        role = "Thickness of carrier-depleted silicon collecting photon charges";
+      } else if (sym === "s_0") {
+        name = "Surface Recombination Velocity";
+        unit = "Centimeters per second (cm/s)";
+        dimension = "[L T^-1]";
+        role = "Rate of non-radiative electron recombination at dielectric boundary";
+      } else if (sym === "q") {
+        name = "Elementary Electric Charge";
+        unit = "Coulombs (1.602 × 10^-19 C)";
+        dimension = "[I T]";
+        role = "Fundamental electron charge quantum converted to output voltage";
+      } else if (sym === "A_V") {
+        name = "Voltage Amplification Gain";
+        unit = "Dimensionless ratio";
+        dimension = "[1]";
+        role = "On-chip source-follower output buffer amplifier voltage gain";
+      }
+    }
+
+    // 0p. HOLLERITH ELECTRIC TABULATING SYSTEM
+    else if (
+      patentId.includes("hollerith") ||
+      pLower.includes("tabulating") ||
+      pLower.includes("punched card")
+    ) {
+      if (sym === "H") {
+        name = "Information Entropy Tabulation Capacity";
+        unit = "Bits per punched card";
+        dimension = "[1]";
+        role = "Information content density encoded across the 240-position hole matrix";
+      } else if (sym === "p_i" || sym === "p") {
+        name = "Hole Punch Occurrence Probability";
+        unit = "Probability fraction [0-1]";
+        dimension = "[1]";
+        role = "Statistical distribution of demographic categories in census returns";
+      }
+    }
+
+    // 0q. RENO INCLINED ELEVATOR / ESCALATOR
+    else if (
+      patentId.includes("reno") ||
+      pLower.includes("escalator") ||
+      pLower.includes("inclined")
+    ) {
+      if (sym === "N") {
+        name = "Continuous Passenger Throughput Capacity";
+        unit = "Passengers per hour (pph)";
+        dimension = "[T^-1]";
+        role = "Rate of passenger transport up the continuous 25-degree incline";
+      } else if (sym === "w") {
+        name = "Moving Treadway Cleat Width";
+        unit = "Meters (m)";
+        dimension = "[L]";
+        role = "Transverse width of the ridged continuous rubber/wood treadway belt";
+      } else if (sym === "y") {
+        name = "Comb-Plate Ingress Meshing Depth";
+        unit = "Millimeters (mm)";
+        dimension = "[L]";
+        role = "Vertical engagement depth between stationary comb prongs and moving belt grooves";
+      } else if (sym === "v^2" || sym === "v") {
+        name = "Linear Belt Speed";
+        unit = "Meters per second (m/s)";
+        dimension = "[L T^-1]";
+        role = "Velocity of the inclined treadway moving passengers smoothly";
+      } else if (sym.includes("e^{\\mu") || sym.includes("e^\\mu")) {
+        name = "Capstan Drive Belt Friction Factor";
+        unit = "Dimensionless multiplier";
+        dimension = "[1]";
+        role = "Euler-Eytelwein friction amplification driving handrail belt synchronization";
+      }
+    }
+
+    // 0r. TESLA HIGH FREQUENCY COIL TRANSFORMER
+    else if (
+      patentId.includes("tesla-coil") ||
+      patentId.includes("533367") ||
+      pLower.includes("tesla coil")
+    ) {
+      if (sym === "C_p" || sym === "C_s" || sym === "C_{top}") {
+        name = "Primary / Secondary / Topload Capacitance";
+        unit = "Picofarads (pF) / Microfarads (μF)";
+        dimension = "[M^-1 L^-2 T^4 I^2]";
+        role = "Resonant tank circuit and spherical terminal electrostatic capacitance";
+      } else if (sym === "V_{sec}" || sym === "V_{pri}" || sym === "V_{top}" || sym === "V_B") {
+        name = "High-Frequency Resonant / Breakdown Voltage";
+        unit = "Kilovolts (kV) / Megavolts (MV)";
+        dimension = "[M L^2 T^-3 I^-1]";
+        role = "Stepped-up RF potential ionizing ambient air into high-voltage streamers";
+      } else if (sym === "Q") {
+        name = "Resonant Circuit Quality Factor (Q)";
+        unit = "Dimensionless multiplier";
+        dimension = "[1]";
+        role = "Ratio of energy stored to energy dissipated per cycle ($Q = \\omega L / R$)";
+      } else if (sym === "t_{transfer}") {
+        name = "Beat-Envelope Energy Transfer Period";
+        unit = "Microseconds (μs)";
+        dimension = "[T]";
+        role = "Time required for loose magnetic coupling to pump total energy into secondary";
+      }
+    }
+
+    // 0s. DIESEL INTERNAL COMBUSTION ENGINE
+    else if (patentId.includes("diesel") || pLower.includes("diesel")) {
+      if (sym.includes("r^{\\gamma") || sym.includes("r^\\gamma") || sym === "r_c" || sym === "r") {
+        name = "Compression / Cutoff Volume Ratio";
+        unit = "Dimensionless ratio ($r \\approx 18:1$)";
+        dimension = "[1]";
+        role =
+          "Extreme compression ratio achieving 600°C auto-ignition temperature of injected fuel";
+      } else if (sym === "d_{32}" || sym === "D") {
+        name = "Sauter Mean Droplet Diameter";
+        unit = "Micrometers (μm) [~20 μm]";
+        dimension = "[L]";
+        role = "Fuel atomization droplet size governing high-pressure combustion surface area";
+      } else if (sym === "d^2" || sym === "d_0^2") {
+        name = "Droplet Evaporation Surface Term";
+        unit = "Square micrometers (μm²)";
+        dimension = "[L^2]";
+        role = "D-squared law governing fuel droplet vaporization rate in hot compressed air";
+      }
+    }
+
+    // 0t. MARCONI WIRELESS TELEGRAPHY
+    else if (
+      patentId.includes("marconi") ||
+      pLower.includes("marconi") ||
+      pLower.includes("poynting") ||
+      pLower.includes("monopole")
+    ) {
+      if (sym === "\\vec{S}" || sym === "S") {
+        name = "Poynting Radiated Power Flux Vector";
+        unit = "Watts per square meter (W/m²)";
+        dimension = "[M T^-3]";
+        role =
+          "Directional electromagnetic radiation power density emitted toward distant receiver";
+      } else if (sym === "\\vec{E}" || sym === "E" || sym === "E_{total}" || sym === "E_0") {
+        name = "RF Radiated Electric Field Strength";
+        unit = "Volts per meter (V/m)";
+        dimension = "[M L T^-3 I^-1]";
+        role = "High-frequency signal wave amplitude inducing antenna voltage at receiver";
+      } else if (sym === "D_{max}" || sym === "D") {
+        name = "Maximum Telegraphic Reception Range";
+        unit = "Kilometers (km) / Nautical Miles";
+        dimension = "[L]";
+        role = "Greatest distance at which coherer detects signals over curved ocean surface";
+      } else if (sym === "h_{aerial}^2" || sym === "h_{aerial}" || sym === "h") {
+        name = "Aerial Mast Height";
+        unit = "Meters (m)";
+        dimension = "[L]";
+        role = "Vertical antenna height scaling transmission range by square-law relation";
+      } else if (sym === "J" || sym === "e^2" || sym === "h^2") {
+        name = "Quantum Coherer Tunneling Current";
+        unit = "Amperes per square meter (A/m²)";
+        dimension = "[I L^-2]";
+        role =
+          "Micro-spark breakdown across metallic filings converting RF waves into DC telegraph clicks";
+      }
+    }
+
+    // 0u. PELTON IMPULSE WATER TURBINE
+    else if (patentId.includes("pelton") || pLower.includes("pelton")) {
+      if (sym === "u") {
+        name = "Runner Bucket Peripheral Speed";
+        unit = "Meters per second (m/s)";
+        dimension = "[L T^-1]";
+        role =
+          "Tangential speed of the split-cup buckets operating at half water jet speed ($u = 0.5 v$)";
+      } else if (sym === "C_v") {
+        name = "Nozzle Discharge Velocity Coefficient";
+        unit = "Dimensionless ratio (~0.98)";
+        dimension = "[1]";
+        role = "Frictional efficiency factor of the contracted needle nozzle jet";
+      } else if (sym === "H" || sym === "H^{5/4}") {
+        name = "Effective Hydraulic Water Head";
+        unit = "Meters (m)";
+        dimension = "[L]";
+        role = "Hydrostatic elevation head supplying high-pressure water column to the penstock";
+      } else if (sym === "N_s" || sym === "N") {
+        name = "Runner Rotational / Specific Speed";
+        unit = "Revolutions per minute (RPM) / Non-dimensional";
+        dimension = "[T^-1]";
+        role = "Rotational speed matched to impulse turbine hydraulic operating regime";
+      }
+    }
+
+    // 0v. EDISON PHONOGRAPH & SOUND RECORDING
+    else if (
+      patentId.includes("phonograph") ||
+      pLower.includes("phonograph") ||
+      pLower.includes("stylus")
+    ) {
+      if (sym === "D") {
+        name = "Tinfoil Mandrel Cylinder Diameter";
+        unit = "Millimeters (mm) [~100 mm]";
+        dimension = "[L]";
+        role = "Outer diameter of the grooved recording cylinder";
+      } else if (sym === "n") {
+        name = "Mandrel Rotational Speed";
+        unit = "Revolutions per minute (RPM) [~60 RPM]";
+        dimension = "[T^-1]";
+        role = "Crank-driven angular velocity determining linear recording track speed";
+      }
+    }
+
+    // 0w. EDISON INCANDESCENT ELECTRIC LAMP
+    else if (
+      patentId.includes("lightbulb") ||
+      patentId.includes("223898") ||
+      pLower.includes("filament") ||
+      pLower.includes("blackbody")
+    ) {
+      if (sym === "I^2" || sym === "I") {
+        name = "Conduction Current / Joule Power Term";
+        unit = "Amperes squared (A²) / Amperes (A)";
+        dimension = "[I^2]";
+        role = "Current squared driving resistive heating dissipation in carbonized thread";
+      } else if (sym === "E" || sym === "u") {
+        name = "Radiant Emittance / Blackbody Energy Density";
+        unit = "Watts per square meter (W/m²) / Joules per m³";
+        dimension = "[M T^-3]";
+        role = "Total visible and infrared radiation emitted across blackbody spectrum";
+      } else if (sym === "d^2" || sym === "d") {
+        name = "Gas Molecule Collision Diameter";
+        unit = "Nanometers (nm)";
+        dimension = "[L]";
+        role = "Molecular cross-section determining mean free path in high vacuum bulb";
+      }
+    }
+
+    // 0x. DE LAVAL CENTRIFUGAL CREAM SEPARATOR
+    else if (
+      patentId.includes("delaval") ||
+      pLower.includes("centrifug") ||
+      pLower.includes("cream")
+    ) {
+      if (sym === "r^2" || sym === "r") {
+        name = "Centrifuge Bowl Radius";
+        unit = "Meters (m)";
+        dimension = "[L]";
+        role = "Radial distance from spinning vertical axis creating centrifugal g-force field";
+      }
+    }
+
+    // 0y. MERGENTHALER LINOTYPE TYPESETTING
+    else if (
+      patentId.includes("linotype") ||
+      pLower.includes("matrix") ||
+      pLower.includes("typesetting")
+    ) {
+      if (sym === "b_i" || sym === "b") {
+        name = "Matrix Tooth Keyway Binary Notch";
+        unit = "Binary notch bit [0/1]";
+        dimension = "[1]";
+        role = "Triangular notch combination releasing brass matrix into correct magazine channel";
+      }
+    }
+
+    // 0z. MAXIM AUTOMATIC RECOIL MACHINE GUN
+    else if (
+      patentId.includes("maxim") ||
+      pLower.includes("machine gun") ||
+      pLower.includes("fusee")
+    ) {
+      if (sym === "x_0" || sym === "r_0") {
+        name = "Fusee Cam Initial Deflection / Lever Arm";
+        unit = "Millimeters (mm)";
+        dimension = "[L]";
+        role = "Volute cam profile converting spring tension into constant restoring torque";
+      } else if (sym === "x") {
+        name = "Barrel Recoil Stroke Displacement";
+        unit = "Millimeters (mm) [~19 mm]";
+        dimension = "[L]";
+        role = "Rearward travel of barrel and breech block unlocking toggle mechanism";
+      }
+    }
+
+    // 0aa. THOMSON RESISTANCE ELECTRIC WELDING
+    else if (
+      patentId.includes("welding") ||
+      patentId.includes("347140") ||
+      pLower.includes("welding")
+    ) {
+      if (sym === "q" || sym === "Q") {
+        name = "Joule Heat Generation / Diffusion Activation Energy";
+        unit = "Joules (J) / Kilojoules per mole (kJ/mol)";
+        dimension = "[M L^2 T^-2]";
+        role =
+          "Thermal energy generated at high-resistance contact interface forging plastic union";
+      } else if (sym === "I^2") {
+        name = "Welding Heavy Secondary Current Squared";
+        unit = "Amperes squared (A²) [~10^8 A²]";
+        dimension = "[I^2]";
+        role = "High current squared driving rapid localized interface melting";
+      } else if (sym === "D" || sym === "D_0") {
+        name = "Solid-State Atomic Diffusion Coefficient";
+        unit = "Square meters per second (m²/s)";
+        dimension = "[L^2 T^-1]";
+        role = "Rate of metallic atom migration across plastic contact boundary";
+      } else if (sym === "x") {
+        name = "Diffusion Joint Penetration Depth";
+        unit = "Millimeters (mm)";
+        dimension = "[L]";
+        role = "Thickness of solid-state metallurgical bond zone";
+      } else if (sym === "N_s" || sym === "N_p") {
+        name = "Step-Down Transformer Secondary / Primary Turns";
+        unit = "Turn count (e.g. 1 turn secondary)";
+        dimension = "[1]";
+        role = "Single-turn heavy copper secondary delivering thousands of amperes";
+      }
+    }
+
+    // 0ab. TESLA POLYPHASE AC INDUCTION MOTOR
+    else if (
+      patentId.includes("tesla-motor") ||
+      patentId.includes("381968") ||
+      pLower.includes("induction motor")
+    ) {
+      if (sym === "j") {
+        name = "Quadrature Spatial / Phase Operator";
+        unit = "90-degree phase operator";
+        dimension = "[1]";
+        role = "Orthogonal spatial stator orientation matching temporal 90-degree AC phase shift";
+      } else if (sym === "E") {
+        name = "Induced Rotor Electromotive Force";
+        unit = "Volts (V)";
+        dimension = "[M L^2 T^-3 I^-1]";
+        role = "Faraday EMF induced in short-circuited rotor windings by rotating magnetic flux";
+      } else if (sym === "o" || sym === "N") {
+        name = "Stator Phase Turns per Pole";
+        unit = "Coil turns";
+        dimension = "[1]";
+        role = "Number of winding turns per magnetic pole pair";
+      } else if (sym === "s_{crit}") {
+        name = "Critical Breakdown Slip Fraction";
+        unit = "Dimensionless fraction [0-1]";
+        dimension = "[1]";
+        role = "Rotor slip at which motor delivers peak breakdown stall torque";
+      } else if (sym === "V_{th}^2" || sym === "V_{th}") {
+        name = "Thevenin Equivalent Stator Terminal Voltage";
+        unit = "Volts squared (V²) / Volts (V)";
+        dimension = "[M L^2 T^-3 I^-1]";
+        role = "Stator phase voltage driving magnetization and rotor current loops";
+      } else if (sym === "n_s") {
+        name = "Synchronous Stator Field Rotational Speed";
+        unit = "Revolutions per minute (RPM) [e.g. 1800 RPM]";
+        dimension = "[T^-1]";
+        role = "Speed of rotating magnetic field ($n_s = 120 f / P$)";
+      } else if (sym === "d_{lam}^2" || sym === "d_{lam}") {
+        name = "Silicon Steel Core Lamination Thickness";
+        unit = "Millimeters (mm) [~0.5 mm]";
+        dimension = "[L]";
+        role = "Thin insulated core sheets suppressing parasitic eddy current heat losses";
+      } else if (sym === "f^2" || sym === "f") {
+        name = "AC Power Grid Supply Frequency";
+        unit = "Hertz (Hz) [60 Hz]";
+        dimension = "[T^-1]";
+        role = "Line frequency driving alternating polyphase excitation";
+      } else if (sym === "D_{iron}") {
+        name = "Ferromagnetic Iron Core Density";
+        unit = "Kilograms per cubic meter (kg/m³)";
+        dimension = "[M L^-3]";
+        role = "Soft silicon iron core mass density governing magnetic saturation flux";
+      }
+    }
+
+    // 0ac. OTTO FOUR-STROKE CYCLE ENGINE
+    else if (
+      patentId.includes("otto") ||
+      patentId.includes("194047") ||
+      pLower.includes("otto cycle")
+    ) {
+      if (sym === "C_d") {
+        name = "Poppet Intake Valve Discharge Coefficient";
+        unit = "Dimensionless ratio (~0.6)";
+        dimension = "[1]";
+        role = "Flow efficiency of mushroom poppet valve admitting fresh charge";
+      }
+    }
+
+    // 0ad. DAIMLER HIGH-SPEED GASOLINE ENGINE
+    else if (patentId.includes("daimler") || patentId.includes("361931")) {
+      if (sym === "N") {
+        name = "Normal Friction Clutch Clamping Force";
+        unit = "Newtons (N)";
+        dimension = "[M L T^-2]";
+        role = "Spring thrust pressing friction cone surfaces into positive drive engagement";
+      } else if (sym === "Q") {
+        name = "Water Jacket Heat Extraction Rate";
+        unit = "Kilowatts (kW)";
+        dimension = "[M L^2 T^-3]";
+        role = "Thermal energy conducted through cylinder wall into circulating cooling water";
+      } else if (sym === "c_p") {
+        name = "Specific Heat Capacity of Coolant Water";
+        unit = "kJ/(kg·K) [4.186 kJ/(kg·K)]";
+        dimension = "[L^2 T^-2 \\Theta^-1]";
+        role = "Thermal heat absorption capacity preventing cylinder seizure";
+      }
+    }
 
     // 1. OPTICS / CAMERAS / IMAGING
-    if (isOptics) {
+    else if (isOptics) {
       if (sym === "H") {
         name = "Hyperfocal Distance";
         unit = "Meters (m)";
@@ -3493,6 +4521,97 @@ export function convertScientificPrincipleToColorizedEquation(
         unit = "Amperes per square meter (A/m²)";
         dimension = "[I L^-2]";
         role = "Spurious thermal electron-hole generation rate in silicon depletion zone";
+      } else if (
+        sym === "C" &&
+        (pLower.includes("shannon") || pLower.includes("bandwidth") || pLower.includes("channel"))
+      ) {
+        name = "Shannon Channel Capacity";
+        unit = "Bits per second (bps)";
+        dimension = "[T^-1]";
+        role = "Theoretical maximum error-free information transmission rate across noisy channel";
+      } else if (sym === "G_p" || sym === "G") {
+        name = "Anti-Jam Processing Gain";
+        unit = "Decibels (dB) / Dimensionless Ratio";
+        dimension = "[1]";
+        role =
+          "Signal-to-interference ratio improvement achieved by frequency-hopping spectrum expansion";
+      } else if (sym === "W_{ss}" || sym === "W") {
+        name = "Spread-Spectrum RF Bandwidth";
+        unit = "Megahertz (MHz)";
+        dimension = "[T^-1]";
+        role = "Total frequency bandwidth across which carrier hops pseudo-randomly";
+      } else if (
+        sym === "N_{channels}" ||
+        sym === "N_{total}" ||
+        (sym === "N" && pLower.includes("channel"))
+      ) {
+        name = "Total Frequency Hopping Channels";
+        unit = "Carrier bins [88 channels]";
+        dimension = "[1]";
+        role =
+          "Total discrete radio frequency slots synchronized across transmitting and receiving rolls";
+      } else if (sym === "N_{jam\\_channels}" || sym.includes("jam")) {
+        name = "Jammer Blocked Channels";
+        unit = "Active jam bins";
+        dimension = "[1]";
+        role = "Number of simultaneous frequency bins blocked by hostile narrowband interference";
+      } else if (sym === "x" || sym === "c") {
+        name = "Pseudo-Random Code Sequence";
+        unit = "Binary code symbols [±1]";
+        dimension = "[1]";
+        role =
+          "Orthogonal pseudo-random sequence governing transmitter and receiver carrier shifts";
+      } else if (sym === "\\vec{v}_{hand}" || sym === "v_{hand}") {
+        name = "Hand Movement Velocity Vector";
+        unit = "Meters per second (m/s)";
+        dimension = "[L T^-1]";
+        role = "Spatial translation speed and heading of the mouse chassis across the work surface";
+      } else if (sym === "V_x" || sym === "V_y" || sym === "V_{ref}") {
+        name = "Potentiometer Divider / Reference Voltage";
+        unit = "Volts (V)";
+        dimension = "[M L^2 T^-3 I^-1]";
+        role = "Analog DC voltage proportional to orthogonal knife-edge wheel rotation angle";
+      } else if (sym === "X_{screen}" || sym === "Y_{screen}") {
+        name = "Screen CRT Cursor Coordinate";
+        unit = "Pixels";
+        dimension = "[1]";
+        role = "Quantized on-screen display coordinate driven by mouse encoder integration";
+      } else if (sym === "V_G" || sym === "V_0" || sym === "V_0^2") {
+        name = "MOS Gate Depletion Potential";
+        unit = "Volts (V)";
+        dimension = "[M L^2 T^-3 I^-1]";
+        role = "Clocked gate electrode potential creating electrostatic surface potential well";
+      } else if (sym === "V_{out}") {
+        name = "Floating Diffusion Sense Output Voltage";
+        unit = "Microvolts per electron (μV/e⁻)";
+        dimension = "[M L^2 T^-3 I^-1]";
+        role = "Charge-to-voltage conversion amplitude on output sensing node";
+      } else if (sym === "C_{FD}") {
+        name = "Floating Diffusion Node Capacitance";
+        unit = "Femtofarads (fF) [~10 fF]";
+        dimension = "[M^-1 L^-2 T^4 I^2]";
+        role =
+          "Microscopic node capacitance converting charge packets into readable voltage signals";
+      } else if (sym === "W_{dep}") {
+        name = "Silicon Depletion Layer Width";
+        unit = "Micrometers (μm)";
+        dimension = "[L]";
+        role = "Thickness of carrier-depleted semiconductor region collecting photoelectrons";
+      } else if (sym === "s_0") {
+        name = "Surface Recombination Velocity";
+        unit = "Centimeters per second (cm/s)";
+        dimension = "[L T^-1]";
+        role = "Rate of non-radiative electron-hole recombination at silicon-dielectric interface";
+      } else if (sym === "V_c" || sym === "V_{dd}") {
+        name = "DRAM Storage Cell / Supply Rail Voltage";
+        unit = "Volts (V) [+5V / +12V]";
+        dimension = "[M L^2 T^-3 I^-1]";
+        role = "Stored logic potential on MOS storage capacitor vs main power supply voltage";
+      } else if (sym === "n" && pLower.includes("apple")) {
+        name = "NTSC Color Subcarrier Phase Tap Index";
+        unit = "Clock phase index [0-3]";
+        dimension = "[1]";
+        role = "Quarter-cycle delay index generating four distinct composite color tint hues";
       }
     }
 
@@ -3550,7 +4669,7 @@ export function convertScientificPrincipleToColorizedEquation(
         unit = "Degrees (°) / Radians";
         dimension = "[1]";
         role = "Aircraft roll attitude angle during coordinated banking turn";
-      } else if (sym === "\\dot{\psi}" || sym === "\\psi") {
+      } else if (sym === "\\dot{psi}" || sym === "\\psi") {
         name = "Turn Rate / Yaw Heading";
         unit = "Degrees per second (°/s) / Radians";
         dimension = "[T^-1]";
@@ -3677,7 +4796,7 @@ export function convertScientificPrincipleToColorizedEquation(
         role = "Thermal fission neutron yield of natural uranium fuel lumps";
       } else if (sym === "\\epsilon") {
         name = "Fast Fission Factor";
-        unit = "Dimensionless multiplier ($\approx 1.03$)";
+        unit = "Dimensionless multiplier ($approx 1.03$)";
         dimension = "[1]";
         role = "Fractional increase in total fission neutrons from fast fission of U-238";
       } else if (sym === "\\xi") {
@@ -3698,7 +4817,7 @@ export function convertScientificPrincipleToColorizedEquation(
         role = "Instantaneous thermal neutron density governing reactor power output";
       } else if (sym === "\\beta") {
         name = "Delayed Neutron Fraction";
-        unit = "Dimensionless fraction ($\beta \approx 0.0065$)";
+        unit = "Dimensionless fraction ($\beta approx 0.0065$)";
         dimension = "[1]";
         role = "Fraction of fission neutrons emitted via delayed precursor radioactive decay";
       } else if (sym === "\\Lambda") {
@@ -3729,15 +4848,68 @@ export function convertScientificPrincipleToColorizedEquation(
         dimension = "[L^-2]";
         role =
           "Spatial curvature of the neutron flux eigenmode determining leakage loss from core geometry";
-      } else if (sym === "\\Phi") {
-        name = "Scalar Thermal Neutron Flux";
-        unit = "Neutrons per square centimeter per second (n/(cm²·s))";
-        dimension = "[L^-2 T^-1]";
-        role = "Neutron population speed integral driving continuous fission reactions";
+      } else if (sym === "N" || sym === "N_0") {
+        name = "Elastic Collision Thermalization Count";
+        unit = "Collisions [~115 collisions]";
+        dimension = "[1]";
+        role =
+          "Number of graphite collisions required to slow 2 MeV fast neutrons to 0.025 eV thermal speed";
+      } else if (sym === "H") {
+        name = "Active Core Critical Height";
+        unit = "Meters (m)";
+        dimension = "[L]";
+        role = "Vertical dimension of the CP-1 uranium-graphite critical pile geometry";
       }
     }
 
-    // 7. SEMICONDUCTOR & SOLID-STATE PHYSICS
+    // 7. MICROWAVE & CAVITY MAGNETRON PHYSICS
+    else if (
+      pLower.includes("microwave") ||
+      pLower.includes("magnetron") ||
+      pLower.includes("spencer") ||
+      pLower.includes("cavity") ||
+      pLower.includes("dielectric") ||
+      pLower.includes("waveguide") ||
+      pLower.includes("impedance")
+    ) {
+      if (sym === "\\vec{E}" || sym === "E" || sym === "E_0") {
+        name = "Microwave Electric Field Vector";
+        unit = "Volts per meter (V/m)";
+        dimension = "[M L T^-3 I^-1]";
+        role =
+          "High-frequency alternating microwave electric field driving water dipole oscillation";
+      } else if (sym === "r_a" || sym === "r_c" || sym === "r_c^2") {
+        name = "Magnetron Anode / Cathode Radius";
+        unit = "Millimeters (mm)";
+        dimension = "[L]";
+        role = "Cylindrical resonant cavity geometry determining electron cyclotron cutoff orbits";
+      } else if (sym === "V_a") {
+        name = "Magnetron Anode Accelerating High Voltage";
+        unit = "Kilovolts (kV) [~4 kV]";
+        dimension = "[M L^2 T^-3 I^-1]";
+        role =
+          "High DC potential accelerating electrons radially from cathode toward resonant anode blocks";
+      } else if (sym === "c_p") {
+        name = "Specific Heat Capacity";
+        unit = "Joules per kilogram-kelvin (J/(kg·K))";
+        dimension = "[L^2 T^-2 \\Theta^-1]";
+        role =
+          "Thermal energy required to raise target organic food matter temperature by one kelvin";
+      } else if (sym === "Z_{in}" || sym === "Z_0" || sym === "Z_L") {
+        name = "Characteristic / Input Impedance";
+        unit = "Ohms (Ω) [50 Ω / 377 Ω]";
+        dimension = "[M L^2 T^-3 I^-2]";
+        role = "Wave transmission line impedance and quarter-wave choke matching boundary";
+      } else if (sym === "j") {
+        name = "Imaginary Phase Unit (j = √-1)";
+        unit = "Complex phase operator";
+        dimension = "[1]";
+        role =
+          "90-degree reactive impedance phase rotation in electromagnetic transmission line equations";
+      }
+    }
+
+    // 8. SEMICONDUCTOR & SOLID-STATE PHYSICS
     if (
       pLower.includes("transistor") ||
       pLower.includes("semiconductor") ||
@@ -3766,9 +4938,53 @@ export function convertScientificPrincipleToColorizedEquation(
         role = "Ratio of output collector voltage swing to input emitter signal voltage";
       } else if (sym === "\\alpha") {
         name = "Common-Base Current Gain";
-        unit = "Dimensionless fraction ($\approx 0.98 - 0.99$)";
+        unit = "Dimensionless fraction ($approx 0.98 - 0.99$)";
         dimension = "[1]";
         role = "Fraction of injected emitter carriers successfully collected at the collector";
+      } else if (sym === "V_C") {
+        name = "Collector Reverse Bias Voltage";
+        unit = "Volts (V)";
+        dimension = "[M L^2 T^-3 I^-1]";
+        role = "Reverse bias potential extracting injected minority holes across collector contact";
+      } else if (sym === "Q_{ss}") {
+        name = "Surface State Trapped Charge Density";
+        unit = "Coulombs per square centimeter (C/cm²)";
+        dimension = "[I T L^-2]";
+        role =
+          "Electrostatic charge trapped in localized quantum surface levels screening bulk germanium";
+      } else if (sym === "q") {
+        name = "Elementary Electric Charge";
+        unit = "Coulombs (1.602 × 10^-19 C)";
+        dimension = "[I T]";
+        role = "Fundamental charge quantum of conduction electrons and holes";
+      } else if (sym === "D_{it}") {
+        name = "Interface Trap Energy Density";
+        unit = "States per cm²-eV (states/(cm²·eV))";
+        dimension = "[M^-1 L^-4 T^2 I^-1]";
+        role = "Density of localized electronic states across the semiconductor bandgap";
+      } else if (sym === "E_F" || sym === "E_0") {
+        name = "Fermi Energy Level / Neutral Energy";
+        unit = "Electron-volts (eV)";
+        dimension = "[M L^2 T^-2]";
+        role = "Thermodynamic electrochemical potential of charge carriers in the crystal";
+      } else if (sym === "D_p" || sym === "D_n") {
+        name = "Minority Carrier Diffusion Coefficient";
+        unit = "Square centimeters per second (cm²/s)";
+        dimension = "[L^2 T^-1]";
+        role =
+          "Brownian spatial diffusion rate of minority hole packets through the base semiconductor";
+      } else if (sym === "C_1") {
+        name = "Fowler-Nordheim Pre-Exponential Factor";
+        unit = "Amperes per volt squared (A/V²)";
+        dimension = "[M^-1 L^-4 T^3 I^3]";
+        role =
+          "Quantum mechanical tunneling rate coefficient across thin silicon dioxide dielectric";
+      } else if (sym === "J^n") {
+        name = "Electromigration Current Density Scaling";
+        unit = "(A/cm²)^n";
+        dimension = "[I^n L^-2n]";
+        role =
+          "Power-law atomic flux divergence driving vacancy coalescence in aluminum interconnects";
       } else if (sym === "t_{transit}") {
         name = "Base Minority Carrier Transit Time";
         unit = "Picoseconds (ps) / Nanoseconds (ns)";
@@ -3909,17 +5125,188 @@ export function convertScientificPrincipleToColorizedEquation(
         dimension = "[M L^2 T^-1]";
         role =
           "Fundamental quantum of electromagnetic action ($6.626 \\times 10^{-34}\\text{ J}\\cdot\\text{s}$)";
-      } else if (sym === "\\nu") {
-        name = "Photon Optical Frequency (ν)";
-        unit = "Hertz (Hz)";
-        dimension = "[T^-1]";
+      } else if (sym === "j" || sym === "i") {
+        name = "Imaginary Phase Unit (j = √-1)";
+        unit = "Complex phase operator";
+        dimension = "[1]";
+        role = "90-degree phase shift operator in AC circuit analysis and vector rotation";
+      } else if (/^Q$/i.test(sym) || /^Q_/.test(sym) || /^q$/i.test(sym) || /^q_/.test(sym)) {
+        name = "Thermal Heat / Electric Charge / Flow Rate";
+        unit = "Joules (J) / Watts (W) / Coulombs (C)";
+        dimension = "[M L^2 T^-2]";
+        role = "Heat energy transferred, electric charge quantity, or volumetric flow rate";
+      } else if (
+        /^C_p$/i.test(sym) ||
+        /^c_p$/i.test(sym) ||
+        /^C_v$/i.test(sym) ||
+        /^c_v$/i.test(sym)
+      ) {
+        name = "Specific Heat Capacity";
+        unit = "Joules per kilogram-kelvin (J/(kg·K))";
+        dimension = "[L^2 T^-2 \\Theta^-1]";
+        role = "Thermal energy required to raise unit mass temperature by one kelvin";
+      } else if (/^U$/i.test(sym) || /^U_/.test(sym)) {
+        name = "Overall Heat Transfer Coefficient";
+        unit = "Watts per square meter-kelvin (W/(m²·K))";
+        dimension = "[M T^-3 \\Theta^-1]";
+        role = "Overall thermal conductance across boundary walls or heat exchanger tubes";
+      } else if (/^W$/i.test(sym) || /^W_/.test(sym) || /^w$/i.test(sym) || /^w_/.test(sym)) {
+        name = "Mechanical Work / Width / Spatial Span";
+        unit = "Joules (J) / Meters (m)";
+        dimension = "[M L^2 T^-2]";
+        role = "Mechanical work done by expanding fluid or transverse spatial dimension";
+      } else if (/^E$/i.test(sym) || /^E_/.test(sym)) {
+        name = "Electromotive Force / Energy / Electric Field";
+        unit = "Volts (V) / Joules (J) / (V/m)";
+        dimension = "[M L^2 T^-3 I^-1]";
+        role = "Electrical potential, kinetic/potential energy, or electrostatic field strength";
+      } else if (
+        /^D$/i.test(sym) ||
+        /^D_/.test(sym) ||
+        /^d$/i.test(sym) ||
+        /^d_/.test(sym) ||
+        /^d\^/.test(sym)
+      ) {
+        name = "Characteristic Diameter / Diffusion / Displacement";
+        unit = "Meters (m) / (m²/s)";
+        dimension = "[L]";
+        role = "Geometric diameter, atomic diffusion rate, or displacement distance";
+      } else if (/^N$/i.test(sym) || /^N_/.test(sym) || /^n$/.test(sym) || /^n_/.test(sym)) {
+        name = "Quantity Count / Rotational Speed / Winding Turns";
+        unit = "Count [1] / RPM / Turns";
+        dimension = "[1]";
+        role = "Discrete component count, shaft rotational speed, or coil turn count";
+      } else if (/^c$/i.test(sym) || /^c_/.test(sym)) {
+        name = "Wave Propagation Speed / Sound Velocity";
+        unit = "Meters per second (m/s)";
+        dimension = "[L T^-1]";
+        role = "Speed of acoustic, elastic, or electromagnetic wave propagation";
+      } else if (/^[xyz]$/i.test(sym) || /^[xyz]_/i.test(sym) || /^[xyz]\^/i.test(sym)) {
+        name = "Spatial Coordinate / Displacement / Mole Fraction";
+        unit = "Meters (m) / Dimensionless fraction";
+        dimension = "[L]";
+        role = "Cartesian spatial position coordinate, displacement, or species mole fraction";
+      } else if (sym.includes("r^{\\gamma") || sym.includes("r^\\gamma")) {
+        name = "Adiabatic Temperature Expansion Factor";
+        unit = "Dimensionless ratio";
+        dimension = "[1]";
+        role = "Isentropic expansion temperature factor governing cycle thermal efficiency";
+      } else if (sym.includes("e^{-") || sym.includes("e^-")) {
+        name = "Exponential Decay / Attenuation Factor";
+        unit = "Dimensionless fraction";
+        dimension = "[1]";
+        role = "Exponential spatial or temporal attenuation of energy across media";
+      } else if (sym === "I^2") {
+        name = "Conduction Current Squared (I²)";
+        unit = "Amperes squared (A²)";
+        dimension = "[I^2]";
+        role = "Current squared driving Joule resistive heating dissipation";
+      } else if (sym === "e^2" || sym === "h^2") {
+        name = "Fundamental Physical Constant Squared";
+        unit = "Physical units squared";
+        dimension = "[1]";
+        role = "Square of elementary charge or Planck's constant in quantum equations";
+      } else if (sym.startsWith("b_") || sym.startsWith("b_{")) {
+        name = "Binary Notch / Punch Cell Code";
+        unit = "Binary logic state [0/1]";
+        dimension = "[1]";
+        role = "Encoded discrete binary data bit in punched card or matrix sorting logic";
+      } else if (sym.startsWith("X_") || sym.startsWith("Y_") || sym === "X" || sym === "Y") {
+        name = "Logic Input / Output Signal State";
+        unit = "Binary logic state [0/1]";
+        dimension = "[1]";
+        role = "Discrete input or output logic state in relay or switching networks";
+      } else if (sym.startsWith("A_") || sym.startsWith("A_{")) {
+        name = "Harmonic Fourier Amplitude Coefficient";
+        unit = "Dimensionless amplitude";
+        dimension = "[1]";
+        role = "Peak amplitude of individual acoustic or electromagnetic Fourier harmonics";
+      } else if (sym === "\\vec{L}" || sym === "L_{vec}") {
+        name = "Total Angular Momentum Vector";
+        unit = "Kilogram meter-squared per second (kg·m²/s)";
+        dimension = "[M L^2 T^-1]";
+        role = "Gyroscopic angular momentum stabilizing spinning gun barrels or rotors";
+      } else if (sym === "\\vec{m}" || sym === "m_{vec}") {
+        name = "Magnetic Dipole Moment Vector";
+        unit = "Ampere square meters (A·m²)";
+        dimension = "[I L^2]";
+        role = "Rotor magnetic dipole vector reacting with stator field to generate motor torque";
+      } else if (sym === "J") {
+        name = "Hydrodynamic Advance Ratio / Current Density";
+        unit = "Dimensionless ratio / A/m²";
+        dimension = "[1]";
+        role = "Propeller axial advance per revolution or electrical current density";
+      } else if (sym === "C_T") {
+        name = "Propeller Hydrodynamic Thrust Coefficient";
+        unit = "Dimensionless coefficient";
+        dimension = "[1]";
+        role = "Dimensionless propeller thrust force normalized by water density and disc area";
+      } else if (sym === "H" || sym.startsWith("H^")) {
+        name = "Information Entropy / Hydraulic Water Head";
+        unit = "Bits / card / Meters (m)";
+        dimension = "[1]";
+        role = "Information content density or hydrostatic elevation head";
+      } else if (sym === "t_{dash}" || sym === "t_{dot}") {
+        name = "Morse Code Element Duration (Dash / Dot)";
+        unit = "Milliseconds (ms)";
+        dimension = "[T]";
         role =
-          "Frequency of absorbed actinic light determining photon quantum energy ($E = h\\nu$)";
-      } else if (sym === "e" || sym === "e^-") {
-        name = "Photo-Excited Conduction Electron (e⁻)";
-        unit = "Elementary charge ($1.602 \\times 10^{-19}\\text{ C}$)";
-        dimension = "[I T]";
-        role = "Conduction band electron migrating to silver halide sensitivity specks";
+          "Standard temporal duration of telegraphic pulse units ($t_{\\text{dash}} = 3 t_{\\text{dot}}$)";
+      } else if (sym === "g^2" || sym === "g") {
+        name = "Electromagnetic Air Gap Length";
+        unit = "Millimeters squared (mm²) / Meters (m)";
+        dimension = "[L^2]";
+        role = "Physical air gap clearance separating solenoid armature from iron core";
+      } else if (sym === "V_{rx}" || sym === "V_0" || sym === "V_{th}^2" || sym === "V_{sec}") {
+        name = "Electric Potential Signal / Source Voltage";
+        unit = "Volts (V)";
+        dimension = "[M L^2 T^-3 I^-1]";
+        role = "Received telegraph pulse voltage or stepped-up resonant potential";
+      } else if (sym === "V_1" || sym === "V_{displaced}" || sym === "V_d") {
+        name = "Volumetric Capacity / Displaced Fluid Volume";
+        unit = "Cubic meters (m³) / Liters";
+        dimension = "[L^3]";
+        role = "Volume of displaced buoyant water or cylinder displacement capacity";
+      } else if (sym === "C_{10}" || sym === "C_{01}") {
+        name = "Mooney-Rivlin Hyperelastic Rubber Constants";
+        unit = "Megapascals (MPa)";
+        dimension = "[M L^-1 T^-2]";
+        role = "Empirical strain energy density parameters governing vulcanized rubber elasticity";
+      } else if (sym === "h_{retract}" || sym === "a_{max}") {
+        name = "Needle Retraction Stroke / Cam Peak Acceleration";
+        unit = "Millimeters (mm) / m/s²";
+        dimension = "[L]";
+        role = "Vertical needle eye retraction stroke forming open thread loop for shuttle passage";
+      } else if (sym === "p_{pitch}" || sym === "p_{stitch}") {
+        name = "Lockstitch Seam Pitch Spacing";
+        unit = "Millimeters per stitch (mm)";
+        dimension = "[L]";
+        role = "Linear spacing between adjacent needle penetrations along cloth seam";
+      } else if (sym === "C_d") {
+        name = "Orifice Flow Discharge Coefficient";
+        unit = "Dimensionless ratio (~0.6)";
+        dimension = "[1]";
+        role = "Flow contraction and friction factor through pneumatic valves and ports";
+      } else if (sym === "\\text{COP}" || sym === "COP") {
+        name = "Coefficient of Performance (COP)";
+        unit = "Dimensionless ratio";
+        dimension = "[1]";
+        role = "Ratio of useful cooling capacity to thermal input energy";
+      } else if (sym === "B^2") {
+        name = "Core Geometric Buckling Factor";
+        unit = "Inverse square meters (m^-2)";
+        dimension = "[L^-2]";
+        role = "Spatial curvature of neutron flux governing criticality leakage boundary";
+      } else if (sym === "J_{dark}" || sym === "s_0") {
+        name = "Thermal Dark Current / Surface Recombination Velocity";
+        unit = "Amperes per m² (A/m²) / cm/s";
+        dimension = "[I L^-2]";
+        role = "Thermal noise electron accumulation or interface carrier recombination speed";
+      } else if (sym === "o" || sym === "u") {
+        name = "Mass Fraction / Speed Ratio";
+        unit = "Dimensionless ratio";
+        dimension = "[1]";
+        role = "Chemical ingredient percentage by weight or relative velocity ratio";
       } else {
         name = formatSymbolForDisplay(sym);
       }
@@ -4022,7 +5409,15 @@ export function getColorizedEquationsForPatent(
   patentId: string,
   patent?: Patent,
 ): ColorizedEquation[] {
-  const bespokeList = ALL_COLORIZED_EQUATIONS[patentId] || [];
+  const EQUATION_ID_ALIASES: Record<string, string> = {
+    "us-1102653-goddard-rocket": "us-1155986-goddard-rocket",
+    "us-3858232-boyle-smith-ccd": "us-3923554-boyle-smith-ccd",
+    "us-608969-parsons-turbine": "us-328710-parsons-turbine",
+  };
+  const bespokeList =
+    ALL_COLORIZED_EQUATIONS[patentId] ||
+    ALL_COLORIZED_EQUATIONS[EQUATION_ID_ALIASES[patentId] ?? ""] ||
+    [];
 
   let targetPatent = patent;
   if (!targetPatent) {

@@ -38,7 +38,7 @@ describe("Colorized Equations Master Registry Integrity", () => {
   test("all LaTeX equations compile cleanly through KaTeX without syntax errors", async () => {
     const katex = (await import("katex")).default;
 
-    for (const [patentId, eqs] of Object.entries(ALL_COLORIZED_EQUATIONS)) {
+    for (const [_patentId, eqs] of Object.entries(ALL_COLORIZED_EQUATIONS)) {
       expect(eqs.length).toBeGreaterThan(0);
 
       for (const eq of eqs) {
