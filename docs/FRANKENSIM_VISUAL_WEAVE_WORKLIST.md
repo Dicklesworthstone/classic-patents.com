@@ -38,6 +38,8 @@ the visitor can see or hear the kernel change the instrument.
 - [x] P3.2 Howe: `stepHoweLockstitch` → needle / shuttle / loop
 - [x] P3.3 Engelbart: `stepEngelbartResolver` → pulses from wheel roll
 - [x] P3.4 Engine.ts re-exports the same functions
+- [x] P3.5 Fermi `fermiKeff` / `stepFermiKinetics` shared by engine, badge, schematic, spec clauses, 3D
+- [x] P3.6 Sholes / Linotype / Reno / Otis 3D draw `machineKernels` and write registry keys (`typingSpeedWpm`, `matrixRate`, `beltSpeed`, `cabPayload`/`cableTension`)
 
 ## P4 — Backlog (do not drop; not this slice's visitor-facing blocker)
 

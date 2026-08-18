@@ -13,50 +13,6 @@ import { usePatentAudio } from "./usePatentAudio";
 
 type CameraPreset = "iso" | "roll" | "waterfall" | "escapement" | "torpedo";
 
-interface ScenarioPreset {
-  id: string;
-  name: string;
-  desc: string;
-  channels: number;
-  hopRate: number;
-  jamming: boolean;
-}
-
-const _SCENARIOS: ScenarioPreset[] = [
-  {
-    id: "secret_1942",
-    name: "1942 Secret System (US 2,292,387)",
-    desc: "Lamarr & Antheil's 88-key piano roll synchronization defeating Nazi radio-guided torpedo jamming.",
-    channels: 88,
-    hopRate: 12,
-    jamming: true,
-  },
-  {
-    id: "bluetooth_fast",
-    name: "Modern FHSS (Bluetooth/Wi-Fi)",
-    desc: "High-speed pseudo-random hopping across 79 ISM channels for ultra-resilient packet delivery.",
-    channels: 79,
-    hopRate: 24,
-    jamming: true,
-  },
-  {
-    id: "broadband_spread",
-    name: "Wideband Anti-Jam Margin",
-    desc: "Maximum 88-key spread spectrum bandwidth delivering +19.4 dB processing gain against wideband sweepers.",
-    channels: 88,
-    hopRate: 16,
-    jamming: false,
-  },
-  {
-    id: "heavy_jamming",
-    name: "Severe Electronic Warfare",
-    desc: "Triple-band enemy barrage jamming defeated by continuous pseudo-random frequency hopping.",
-    channels: 88,
-    hopRate: 20,
-    jamming: true,
-  },
-];
-
 export function LamarrFrequencyHopping3D() {
   const containerRef = useRef<HTMLDivElement>(null);
 
@@ -65,7 +21,7 @@ export function LamarrFrequencyHopping3D() {
   const [showUiOverlay, setShowUiOverlay] = useState<boolean>(true);
   const carrierChannelsCount = params.channels ?? 88;
   const hopRateHopsPerSec = params.hopRate ?? 4;
-  const [isJammingActive, setIsJammingActive] = useState<boolean>(true);
+  const isJammingActive = params.isJammingActive !== 0;
   const [currentChannel, setCurrentChannel] = useState<number>(44);
   const [showCalloutPins, setShowCalloutPins] = useState<boolean>(false);
   const [activeCamera, setActiveCamera] = useState<CameraPreset>("iso");
@@ -142,15 +98,6 @@ export function LamarrFrequencyHopping3D() {
         break;
     }
     controls.update();
-  };
-
-  const _applyScenario = (s: ScenarioPreset) => {
-    updateParam("channels", s.channels);
-    updateParam("hopRate", s.hopRate);
-    setIsJammingActive(s.jamming);
-    if (!isAudioMuted) {
-      soundEngine.playPianoKeyHop(440);
-    }
   };
 
   const handleToggleSound = () => {

@@ -21,50 +21,6 @@ import { usePatentAudio } from "./usePatentAudio";
 
 type CameraPreset = "iso" | "generator" | "condenser" | "evaporator" | "absorber";
 
-interface ScenarioPreset {
-  id: string;
-  name: string;
-  desc: string;
-  heatWatts: number;
-  pressureAtm: number;
-  gasRatio: number;
-}
-
-const _SCENARIOS: ScenarioPreset[] = [
-  {
-    id: "einstein_1930_nominal",
-    name: "1930 Berlin Prototype (Nominal)",
-    desc: "Single-pressure hermetic cycle using butane, ammonia, and water with no moving seals or toxic leak hazards.",
-    heatWatts: 220,
-    pressureAtm: 10.0,
-    gasRatio: 0.8,
-  },
-  {
-    id: "deep_freeze",
-    name: "Deep Sub-Zero Freeze Cycle",
-    desc: "High auxiliary ammonia partial pressure dropping butane evaporation temperature down to -12°C.",
-    heatWatts: 350,
-    pressureAtm: 12.0,
-    gasRatio: 0.92,
-  },
-  {
-    id: "low_heat_solar",
-    name: "Low-Grade Waste Heat / Solar",
-    desc: "Gentle 120W input demonstrating passive thermosiphon circulation driven purely by heat buoyancy.",
-    heatWatts: 120,
-    pressureAtm: 8.0,
-    gasRatio: 0.7,
-  },
-  {
-    id: "maximum_cooling",
-    name: "High-Capacity Industrial Mode",
-    desc: "Heavy 500W thermal generator driving maximum vapor distillation and condensing mass flow rate.",
-    heatWatts: 500,
-    pressureAtm: 14.0,
-    gasRatio: 0.9,
-  },
-];
-
 export function EinsteinRefrigerator3D() {
   const containerRef = useRef<HTMLDivElement>(null);
 
@@ -73,7 +29,7 @@ export function EinsteinRefrigerator3D() {
   const [showUiOverlay, setShowUiOverlay] = useState<boolean>(true);
   const heatInputWatts = params.heatInput ?? 220;
   const systemPressureAtm = params.totalPressure ?? 15;
-  const [auxiliaryGasRatio, setAuxiliaryGasRatio] = useState<number>(0.8); // 0.2 to 0.95 Ammonia/Butane
+  const auxiliaryGasRatio = params.auxiliaryGasRatio ?? 0.8;
   const [isHeating, _setIsHeating] = useState<boolean>(true);
   const [showCalloutPins, setShowCalloutPins] = useState<boolean>(false);
   const [activeCamera, setActiveCamera] = useState<CameraPreset>("iso");
@@ -124,15 +80,6 @@ export function EinsteinRefrigerator3D() {
         break;
     }
     controls.update();
-  };
-
-  const _applyScenario = (s: ScenarioPreset) => {
-    updateParam("heatInput", s.heatWatts);
-    updateParam("totalPressure", s.pressureAtm);
-    setAuxiliaryGasRatio(s.gasRatio);
-    if (!isAudioMuted) {
-      soundEngine.playSwitchClick();
-    }
   };
 
   const toggleSound = () => {

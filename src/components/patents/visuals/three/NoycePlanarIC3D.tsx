@@ -11,59 +11,15 @@ import { useLiveSimParams } from "./useLiveSimParams";
 
 type CameraPreset = "iso" | "metallization_layer" | "oxide_dielectric" | "pn_junctions" | "top";
 
-interface ScenarioPreset {
-  id: string;
-  name: string;
-  desc: string;
-  clockMhz: number;
-  oxideNm: number;
-  layer: "all" | "silicon" | "oxide" | "metal";
-}
-
-const _SCENARIOS: ScenarioPreset[] = [
-  {
-    id: "noyce_1959_patent",
-    name: "1959 Planar Monolithic Patent (US 2,981,877)",
-    desc: "Robert Noyce's silicon breakthrough: Vapor-deposited aluminum interconnects over thermally grown SiO₂ passivation.",
-    clockMhz: 10,
-    oxideNm: 500,
-    layer: "all",
-  },
-  {
-    id: "thin_oxide_high_speed",
-    name: "Sub-Micron Thin Gate Oxide",
-    desc: "Ultrathin 150nm SiO₂ dielectric scaling gate capacitance down to picofarads for 50 MHz switching speeds.",
-    clockMhz: 50,
-    oxideNm: 150,
-    layer: "oxide",
-  },
-  {
-    id: "pn_junction_isolation",
-    name: "Reverse-Biased PN Isolation",
-    desc: "Diffused P-type isolation tubs creating reverse-biased depletion regions separating monolithic transistors.",
-    clockMhz: 20,
-    oxideNm: 400,
-    layer: "silicon",
-  },
-  {
-    id: "aluminum_metallization",
-    name: "Vacuum Evaporated Al Leads",
-    desc: "Adherent aluminum thin film lines bridging insulating oxide steps directly onto transistor contact windows.",
-    clockMhz: 40,
-    oxideNm: 250,
-    layer: "metal",
-  },
-];
-
 export function NoycePlanarIC3D() {
   const containerRef = useRef<HTMLDivElement>(null);
 
   // Microelectronics State Controls
-  const { params, updateParam } = usePatentPhysics("us-2981877-noyce-ic");
+  const { params } = usePatentPhysics("us-2981877-noyce-ic");
   const [showUiOverlay, setShowUiOverlay] = useState<boolean>(true);
-  const [clockFrequencyMhz, setClockFrequencyMhz] = useState<number>(10); // 1 to 50 MHz
+  const clockFrequencyMhz = params.clockFrequencyMhz ?? 10;
   const oxideLayerThicknessNm = (params.oxideThickness ?? 0.5) * 1000;
-  const [activeLayer, setActiveLayer] = useState<"all" | "silicon" | "oxide" | "metal">("all");
+  const [activeLayer, _setActiveLayer] = useState<"all" | "silicon" | "oxide" | "metal">("all");
   const [showLogicSignals, _setShowLogicSignals] = useState<boolean>(true);
   const [showCalloutPins, setShowCalloutPins] = useState<boolean>(false);
   const [activeCamera, setActiveCamera] = useState<CameraPreset>("iso");
@@ -113,15 +69,6 @@ export function NoycePlanarIC3D() {
         break;
     }
     controls.update();
-  };
-
-  const _applyScenario = (s: ScenarioPreset) => {
-    setClockFrequencyMhz(s.clockMhz);
-    updateParam("oxideThickness", s.oxideNm / 1000);
-    setActiveLayer(s.layer);
-    if (isPlayingAudio) {
-      soundEngine.playContinuousTone(200 + s.clockMhz * 20, "square", 0.03);
-    }
   };
 
   // Audio Clock Generator

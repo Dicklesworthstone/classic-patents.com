@@ -18,7 +18,7 @@ export function WrightFlyerSim() {
   const rudderAngle = controls.rudderDeg;
   const canardAngle = controls.elevatorDeg;
   const isCoupled = controls.coupled;
-  const [activeStep, setActiveStep] = useState<number>(3);
+  const [activeStep, setActiveStep] = useState<number>(0);
 
   const leftWingLift = 100 - wingWarpAngle * 2.2;
   const rightWingLift = 100 + wingWarpAngle * 2.2;
@@ -31,7 +31,12 @@ export function WrightFlyerSim() {
   // Step presets for guided pedagogical walkthrough
   const applyPedagogyStep = (step: number) => {
     setActiveStep(step);
-    if (step === 1) {
+    if (step === 0) {
+      updateParam("coupled", 1);
+      updateParam("wingWarp", 0);
+      updateParam("rudder", 0);
+      updateParam("elevator", 0);
+    } else if (step === 1) {
       updateParam("coupled", 0);
       updateParam("wingWarp", 14);
       updateParam("rudder", 0);
@@ -45,8 +50,6 @@ export function WrightFlyerSim() {
       updateParam("rudder", coupledRudderDeg(12));
     }
   };
-
-  // handleWarpChange removed.
 
   return (
     <div className="rounded-2xl border border-amber-900/20 dark:border-ink-800 bg-parchment-50 dark:bg-ink-950 p-6 shadow-patent space-y-6">
@@ -66,7 +69,18 @@ export function WrightFlyerSim() {
         </div>
 
         {/* Guided Learning Stepper */}
-        <div className="flex items-center gap-1.5 bg-parchment-200 dark:bg-ink-900 p-1 rounded-xl border border-parchment-300 dark:border-ink-800 text-xs font-mono">
+        <div className="flex flex-wrap items-center gap-1.5 bg-parchment-200 dark:bg-ink-900 p-1 rounded-xl border border-parchment-300 dark:border-ink-800 text-xs font-mono">
+          <button
+            type="button"
+            onClick={() => applyPedagogyStep(0)}
+            className={`px-3 py-1.5 rounded-lg transition-colors ${
+              activeStep === 0
+                ? "bg-amber-700 text-white font-bold shadow-sm dark:bg-amber-600"
+                : "text-ink-700 dark:text-ink-400 hover:text-ink-900"
+            }`}
+          >
+            Level Trim
+          </button>
           <button
             type="button"
             onClick={() => applyPedagogyStep(1)}

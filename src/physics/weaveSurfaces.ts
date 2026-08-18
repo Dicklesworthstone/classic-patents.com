@@ -3,6 +3,7 @@
  * No CSV, QR, receipts, or invented WASM.
  */
 
+import { fermiKeff } from "./fermiKinetics";
 import { teslaBAt } from "./teslaKernel";
 import { goddardThermo } from "./thermochem";
 import { readWrightControls, stepWrightFlyerSi } from "./wrightKernel";
@@ -160,7 +161,7 @@ export function materialProbe(
   if (patentId.includes("fermi")) {
     const rod = params.rodWithdrawal ?? 83.5;
     const mod = params.moderatorPurity ?? 99.5;
-    const keff = 0.85 + (rod / 100) * 0.18 * (mod / 100);
+    const keff = fermiKeff(rod, mod);
     return {
       part: calloutLabel,
       material: "Cadmium in a graphite–uranium lattice",
@@ -225,7 +226,7 @@ export function intervalGhosts(patentId: string, params: Record<string, number>)
   if (patentId.includes("fermi")) {
     const rod = params.rodWithdrawal ?? 83.5;
     const mod = params.moderatorPurity ?? 99.5;
-    const keff = 0.85 + (rod / 100) * 0.18 * (mod / 100);
+    const keff = fermiKeff(rod, mod);
     return [{ label: "k_eff", min: 0.85, max: 1.05, live: keff, unit: "" }];
   }
   if (patentId.includes("goddard")) {

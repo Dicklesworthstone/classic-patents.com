@@ -1,8 +1,9 @@
 "use client";
 
 import { Box, Layers } from "lucide-react";
+// 3D WebGL Physics Simulators
+import dynamic from "next/dynamic";
 import { useState } from "react";
-
 // 2D Vector Schematics & Dynamic Simulators
 import { BardeenTransistorSim } from "./BardeenTransistorSim";
 import { BellTelephoneSim } from "./BellTelephoneSim";
@@ -53,61 +54,233 @@ import { TeslaCoilSim } from "./TeslaCoilSim";
 import { TeslaMotorSim } from "./TeslaMotorSim";
 import { TeslaTeleautomatonSim } from "./TeslaTeleautomatonSim";
 import { ThomsonWeldingSim } from "./ThomsonWeldingSim";
-// 3D WebGL Physics Simulators
-import { BardeenTransistor3D } from "./three/BardeenTransistor3D";
-import { BellTelephone3D } from "./three/BellTelephone3D";
-import { BoyleSmithCcd3D } from "./three/BoyleSmithCcd3D";
-import { CarrierAirConditioner3D } from "./three/CarrierAirConditioner3D";
-import { ColtRevolver3D } from "./three/ColtRevolver3D";
-import { CorlissSteamEngine3D } from "./three/CorlissSteamEngine3D";
-import { DaimlerEngine3D } from "./three/DaimlerEngine3D";
-import { DavenportElectricMotor3D } from "./three/DavenportElectricMotor3D";
-import { DeLavalSeparator3D } from "./three/DeLavalSeparator3D";
-import { DieselEngine3D } from "./three/DieselEngine3D";
-import { EastmanKodak3D } from "./three/EastmanKodak3D";
-import { EdisonBulb3D } from "./three/EdisonBulb3D";
-import { EdisonPhonograph3D } from "./three/EdisonPhonograph3D";
-import { EinsteinRefrigerator3D } from "./three/EinsteinRefrigerator3D";
-import { EngelbartMouse3D } from "./three/EngelbartMouse3D";
-import { EricssonPropeller3D } from "./three/EricssonPropeller3D";
-import { FarnsworthTV3D } from "./three/FarnsworthTV3D";
-import { FermiReactor3D } from "./three/FermiReactor3D";
-import { GatlingGun3D } from "./three/GatlingGun3D";
-import { GliddenBarbedWire3D } from "./three/GliddenBarbedWire3D";
-import { GoddardRocket3D } from "./three/GoddardRocket3D";
-import { GoodyearRubber3D } from "./three/GoodyearRubber3D";
-import { GrammeDynamo3D } from "./three/GrammeDynamo3D";
-import { HollerithTabulating3D } from "./three/HollerithTabulating3D";
-import { HoweSewingMachine3D } from "./three/HoweSewingMachine3D";
-import { HyattCelluloid3D } from "./three/HyattCelluloid3D";
-import { KwolekKevlar3D } from "./three/KwolekKevlar3D";
-import { LamarrFrequencyHopping3D } from "./three/LamarrFrequencyHopping3D";
-import { LincolnBuoy3D } from "./three/LincolnBuoy3D";
-import { LindeAirLiquefaction3D } from "./three/LindeAirLiquefaction3D";
-import { MarconiRadio3D } from "./three/MarconiRadio3D";
-import { MaximMachineGun3D } from "./three/MaximMachineGun3D";
-import { McCormickReaper3D } from "./three/McCormickReaper3D";
-import { MergenthalerLinotype3D } from "./three/MergenthalerLinotype3D";
-import { MorseTelegraph3D } from "./three/MorseTelegraph3D";
-import { NobelDynamite3D } from "./three/NobelDynamite3D";
-import { NoycePlanarIC3D } from "./three/NoycePlanarIC3D";
-import { OtisElevator3D } from "./three/OtisElevator3D";
-import { OttoEngine3D } from "./three/OttoEngine3D";
-import { ParsonsTurbine3D } from "./three/ParsonsTurbine3D";
-import { PasteurFermentation3D } from "./three/PasteurFermentation3D";
-import { PeltonWheel3D } from "./three/PeltonWheel3D";
-import { RenoEscalator3D } from "./three/RenoEscalator3D";
-import { SholesTypewriter3D } from "./three/SholesTypewriter3D";
-import { SpencerMicrowave3D } from "./three/SpencerMicrowave3D";
-import { TeslaCoil3D } from "./three/TeslaCoil3D";
-import { TeslaMotor3D } from "./three/TeslaMotor3D";
-import { TeslaTeleautomaton3D } from "./three/TeslaTeleautomaton3D";
-import { ThomsonWelding3D } from "./three/ThomsonWelding3D";
-import { WestinghouseAirBrake3D } from "./three/WestinghouseAirBrake3D";
-import { WhitneyCottonGin3D } from "./three/WhitneyCottonGin3D";
-import { WozniakApple3D } from "./three/WozniakApple3D";
-import { WrightFlyer3D } from "./three/WrightFlyer3D";
-import { ZeppelinAirship3D } from "./three/ZeppelinAirship3D";
+
+const ThreeLoading = () => (
+  <div className="w-full min-h-[420px] rounded-2xl border border-parchment-300 dark:border-ink-800 bg-[#090d16] flex flex-col items-center justify-center p-6 text-center space-y-3">
+    <div className="w-8 h-8 rounded-full border-2 border-amber-500 border-t-transparent animate-spin" />
+    <span className="font-mono text-xs text-amber-500 tracking-wider">
+      INITIALIZING THREE.JS WEBGL SIMULATION...
+    </span>
+  </div>
+);
+
+const BardeenTransistor3D = dynamic(
+  () => import("./three/BardeenTransistor3D").then((mod) => mod.BardeenTransistor3D),
+  { ssr: false, loading: ThreeLoading },
+);
+const BellTelephone3D = dynamic(
+  () => import("./three/BellTelephone3D").then((mod) => mod.BellTelephone3D),
+  { ssr: false, loading: ThreeLoading },
+);
+const BoyleSmithCcd3D = dynamic(
+  () => import("./three/BoyleSmithCcd3D").then((mod) => mod.BoyleSmithCcd3D),
+  { ssr: false, loading: ThreeLoading },
+);
+const CarrierAirConditioner3D = dynamic(
+  () => import("./three/CarrierAirConditioner3D").then((mod) => mod.CarrierAirConditioner3D),
+  { ssr: false, loading: ThreeLoading },
+);
+const ColtRevolver3D = dynamic(
+  () => import("./three/ColtRevolver3D").then((mod) => mod.ColtRevolver3D),
+  { ssr: false, loading: ThreeLoading },
+);
+const CorlissSteamEngine3D = dynamic(
+  () => import("./three/CorlissSteamEngine3D").then((mod) => mod.CorlissSteamEngine3D),
+  { ssr: false, loading: ThreeLoading },
+);
+const DaimlerEngine3D = dynamic(
+  () => import("./three/DaimlerEngine3D").then((mod) => mod.DaimlerEngine3D),
+  { ssr: false, loading: ThreeLoading },
+);
+const DavenportElectricMotor3D = dynamic(
+  () => import("./three/DavenportElectricMotor3D").then((mod) => mod.DavenportElectricMotor3D),
+  { ssr: false, loading: ThreeLoading },
+);
+const DeLavalSeparator3D = dynamic(
+  () => import("./three/DeLavalSeparator3D").then((mod) => mod.DeLavalSeparator3D),
+  { ssr: false, loading: ThreeLoading },
+);
+const DieselEngine3D = dynamic(
+  () => import("./three/DieselEngine3D").then((mod) => mod.DieselEngine3D),
+  { ssr: false, loading: ThreeLoading },
+);
+const EastmanKodak3D = dynamic(
+  () => import("./three/EastmanKodak3D").then((mod) => mod.EastmanKodak3D),
+  { ssr: false, loading: ThreeLoading },
+);
+const EdisonBulb3D = dynamic(() => import("./three/EdisonBulb3D").then((mod) => mod.EdisonBulb3D), {
+  ssr: false,
+  loading: ThreeLoading,
+});
+const EdisonPhonograph3D = dynamic(
+  () => import("./three/EdisonPhonograph3D").then((mod) => mod.EdisonPhonograph3D),
+  { ssr: false, loading: ThreeLoading },
+);
+const EinsteinRefrigerator3D = dynamic(
+  () => import("./three/EinsteinRefrigerator3D").then((mod) => mod.EinsteinRefrigerator3D),
+  { ssr: false, loading: ThreeLoading },
+);
+const EngelbartMouse3D = dynamic(
+  () => import("./three/EngelbartMouse3D").then((mod) => mod.EngelbartMouse3D),
+  { ssr: false, loading: ThreeLoading },
+);
+const EricssonPropeller3D = dynamic(
+  () => import("./three/EricssonPropeller3D").then((mod) => mod.EricssonPropeller3D),
+  { ssr: false, loading: ThreeLoading },
+);
+const FarnsworthTV3D = dynamic(
+  () => import("./three/FarnsworthTV3D").then((mod) => mod.FarnsworthTV3D),
+  { ssr: false, loading: ThreeLoading },
+);
+const FermiReactor3D = dynamic(
+  () => import("./three/FermiReactor3D").then((mod) => mod.FermiReactor3D),
+  { ssr: false, loading: ThreeLoading },
+);
+const GatlingGun3D = dynamic(() => import("./three/GatlingGun3D").then((mod) => mod.GatlingGun3D), {
+  ssr: false,
+  loading: ThreeLoading,
+});
+const GliddenBarbedWire3D = dynamic(
+  () => import("./three/GliddenBarbedWire3D").then((mod) => mod.GliddenBarbedWire3D),
+  { ssr: false, loading: ThreeLoading },
+);
+const GoddardRocket3D = dynamic(
+  () => import("./three/GoddardRocket3D").then((mod) => mod.GoddardRocket3D),
+  { ssr: false, loading: ThreeLoading },
+);
+const GoodyearRubber3D = dynamic(
+  () => import("./three/GoodyearRubber3D").then((mod) => mod.GoodyearRubber3D),
+  { ssr: false, loading: ThreeLoading },
+);
+const GrammeDynamo3D = dynamic(
+  () => import("./three/GrammeDynamo3D").then((mod) => mod.GrammeDynamo3D),
+  { ssr: false, loading: ThreeLoading },
+);
+const HollerithTabulating3D = dynamic(
+  () => import("./three/HollerithTabulating3D").then((mod) => mod.HollerithTabulating3D),
+  { ssr: false, loading: ThreeLoading },
+);
+const HoweSewingMachine3D = dynamic(
+  () => import("./three/HoweSewingMachine3D").then((mod) => mod.HoweSewingMachine3D),
+  { ssr: false, loading: ThreeLoading },
+);
+const HyattCelluloid3D = dynamic(
+  () => import("./three/HyattCelluloid3D").then((mod) => mod.HyattCelluloid3D),
+  { ssr: false, loading: ThreeLoading },
+);
+const KwolekKevlar3D = dynamic(
+  () => import("./three/KwolekKevlar3D").then((mod) => mod.KwolekKevlar3D),
+  { ssr: false, loading: ThreeLoading },
+);
+const LamarrFrequencyHopping3D = dynamic(
+  () => import("./three/LamarrFrequencyHopping3D").then((mod) => mod.LamarrFrequencyHopping3D),
+  { ssr: false, loading: ThreeLoading },
+);
+const LincolnBuoy3D = dynamic(
+  () => import("./three/LincolnBuoy3D").then((mod) => mod.LincolnBuoy3D),
+  { ssr: false, loading: ThreeLoading },
+);
+const LindeAirLiquefaction3D = dynamic(
+  () => import("./three/LindeAirLiquefaction3D").then((mod) => mod.LindeAirLiquefaction3D),
+  { ssr: false, loading: ThreeLoading },
+);
+const MarconiRadio3D = dynamic(
+  () => import("./three/MarconiRadio3D").then((mod) => mod.MarconiRadio3D),
+  { ssr: false, loading: ThreeLoading },
+);
+const MaximMachineGun3D = dynamic(
+  () => import("./three/MaximMachineGun3D").then((mod) => mod.MaximMachineGun3D),
+  { ssr: false, loading: ThreeLoading },
+);
+const McCormickReaper3D = dynamic(
+  () => import("./three/McCormickReaper3D").then((mod) => mod.McCormickReaper3D),
+  { ssr: false, loading: ThreeLoading },
+);
+const MergenthalerLinotype3D = dynamic(
+  () => import("./three/MergenthalerLinotype3D").then((mod) => mod.MergenthalerLinotype3D),
+  { ssr: false, loading: ThreeLoading },
+);
+const MorseTelegraph3D = dynamic(
+  () => import("./three/MorseTelegraph3D").then((mod) => mod.MorseTelegraph3D),
+  { ssr: false, loading: ThreeLoading },
+);
+const NobelDynamite3D = dynamic(
+  () => import("./three/NobelDynamite3D").then((mod) => mod.NobelDynamite3D),
+  { ssr: false, loading: ThreeLoading },
+);
+const NoycePlanarIC3D = dynamic(
+  () => import("./three/NoycePlanarIC3D").then((mod) => mod.NoycePlanarIC3D),
+  { ssr: false, loading: ThreeLoading },
+);
+const OtisElevator3D = dynamic(
+  () => import("./three/OtisElevator3D").then((mod) => mod.OtisElevator3D),
+  { ssr: false, loading: ThreeLoading },
+);
+const OttoEngine3D = dynamic(() => import("./three/OttoEngine3D").then((mod) => mod.OttoEngine3D), {
+  ssr: false,
+  loading: ThreeLoading,
+});
+const ParsonsTurbine3D = dynamic(
+  () => import("./three/ParsonsTurbine3D").then((mod) => mod.ParsonsTurbine3D),
+  { ssr: false, loading: ThreeLoading },
+);
+const PasteurFermentation3D = dynamic(
+  () => import("./three/PasteurFermentation3D").then((mod) => mod.PasteurFermentation3D),
+  { ssr: false, loading: ThreeLoading },
+);
+const PeltonWheel3D = dynamic(
+  () => import("./three/PeltonWheel3D").then((mod) => mod.PeltonWheel3D),
+  { ssr: false, loading: ThreeLoading },
+);
+const RenoEscalator3D = dynamic(
+  () => import("./three/RenoEscalator3D").then((mod) => mod.RenoEscalator3D),
+  { ssr: false, loading: ThreeLoading },
+);
+const SholesTypewriter3D = dynamic(
+  () => import("./three/SholesTypewriter3D").then((mod) => mod.SholesTypewriter3D),
+  { ssr: false, loading: ThreeLoading },
+);
+const SpencerMicrowave3D = dynamic(
+  () => import("./three/SpencerMicrowave3D").then((mod) => mod.SpencerMicrowave3D),
+  { ssr: false, loading: ThreeLoading },
+);
+const TeslaCoil3D = dynamic(() => import("./three/TeslaCoil3D").then((mod) => mod.TeslaCoil3D), {
+  ssr: false,
+  loading: ThreeLoading,
+});
+const TeslaMotor3D = dynamic(() => import("./three/TeslaMotor3D").then((mod) => mod.TeslaMotor3D), {
+  ssr: false,
+  loading: ThreeLoading,
+});
+const TeslaTeleautomaton3D = dynamic(
+  () => import("./three/TeslaTeleautomaton3D").then((mod) => mod.TeslaTeleautomaton3D),
+  { ssr: false, loading: ThreeLoading },
+);
+const ThomsonWelding3D = dynamic(
+  () => import("./three/ThomsonWelding3D").then((mod) => mod.ThomsonWelding3D),
+  { ssr: false, loading: ThreeLoading },
+);
+const WestinghouseAirBrake3D = dynamic(
+  () => import("./three/WestinghouseAirBrake3D").then((mod) => mod.WestinghouseAirBrake3D),
+  { ssr: false, loading: ThreeLoading },
+);
+const WhitneyCottonGin3D = dynamic(
+  () => import("./three/WhitneyCottonGin3D").then((mod) => mod.WhitneyCottonGin3D),
+  { ssr: false, loading: ThreeLoading },
+);
+const WozniakApple3D = dynamic(
+  () => import("./three/WozniakApple3D").then((mod) => mod.WozniakApple3D),
+  { ssr: false, loading: ThreeLoading },
+);
+const WrightFlyer3D = dynamic(
+  () => import("./three/WrightFlyer3D").then((mod) => mod.WrightFlyer3D),
+  { ssr: false, loading: ThreeLoading },
+);
+const ZeppelinAirship3D = dynamic(
+  () => import("./three/ZeppelinAirship3D").then((mod) => mod.ZeppelinAirship3D),
+  { ssr: false, loading: ThreeLoading },
+);
+
 import { WestinghouseAirBrakeSim } from "./WestinghouseAirBrakeSim";
 import { WhitneyCottonGinSim } from "./WhitneyCottonGinSim";
 import { WozniakAppleSim } from "./WozniakAppleSim";

@@ -13,12 +13,12 @@ function formatTranscript(content: string): string {
 
   // 2. Rejoin lines that were broken in the middle of a sentence.
   // We split by \n, then rejoin lines that don't end in punctuation or are clearly continued.
-  let lines = text.split("\n");
-  let newLines: string[] = [];
+  const lines = text.split("\n");
+  const newLines: string[] = [];
   let currentPara = "";
 
   for (let i = 0; i < lines.length; i++) {
-    let line = lines[i].trim();
+    const line = lines[i].trim();
     if (!line) {
       if (currentPara) {
         newLines.push(currentPara);

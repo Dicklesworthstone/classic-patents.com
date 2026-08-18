@@ -3,6 +3,8 @@
  * Highlighted on the spec face so a slider change lights the clause it tests.
  */
 
+import { fermiKeff } from "./fermiKinetics";
+
 export interface SpecClause {
   id: string;
   phrase: string;
@@ -80,7 +82,7 @@ export function specClausesFor(patentId: string, params: Record<string, number>)
   if (patentId === FERMI_ID) {
     const rod = params.rodWithdrawal ?? 83.5;
     const mod = params.moderatorPurity ?? 99.5;
-    const keff = 0.85 + (rod / 100) * 0.18 * (mod / 100);
+    const keff = fermiKeff(rod, mod);
     return [
       {
         id: "critical",

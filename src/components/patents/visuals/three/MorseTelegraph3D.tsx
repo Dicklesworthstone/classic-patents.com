@@ -10,60 +10,16 @@ import { useLiveSimParams } from "./useLiveSimParams";
 
 type CameraPreset = "iso" | "key_lever" | "electromagnet_relay" | "paper_tape_register" | "top";
 
-interface ScenarioPreset {
-  id: string;
-  name: string;
-  desc: string;
-  voltageV: number;
-  miles: number;
-  wpm: number;
-}
-
-const _SCENARIOS: ScenarioPreset[] = [
-  {
-    id: "morse_1844_what_hath_god_wrought",
-    name: "May 24, 1844 Historic Transmission",
-    desc: "Samuel Morse transmits 'What hath God wrought' across 44 miles of single-wire telegraph line between DC and Baltimore.",
-    voltageV: 24,
-    miles: 44,
-    wpm: 16,
-  },
-  {
-    id: "high_speed_dispatch",
-    name: "High-Speed Railroad Dispatching",
-    desc: "30 words-per-minute rapid train routing telegraphy over a 12-mile local junction wire.",
-    voltageV: 18,
-    miles: 12,
-    wpm: 30,
-  },
-  {
-    id: "transcontinental_long_line",
-    name: "Transcontinental High-Resistance Line",
-    desc: "Long 120-mile trunk line requiring 48V battery potential to overcome wire resistance and drive relay armature.",
-    voltageV: 48,
-    miles: 120,
-    wpm: 22,
-  },
-  {
-    id: "low_voltage_demo",
-    name: "Local Depot Test Circuit",
-    desc: "Low-voltage 6V test line demonstrating relay spring tension calibration and armature air gap mechanics.",
-    voltageV: 6,
-    miles: 44,
-    wpm: 10,
-  },
-];
-
 export function MorseTelegraph3D() {
   const containerRef = useRef<HTMLDivElement>(null);
 
   // Telegraph Circuit State Controls
   const { params, updateParam } = usePatentPhysics("us-1647-morse-telegraph");
   const [showUiOverlay, setShowUiOverlay] = useState<boolean>(true);
-  const [lineVoltageV, setLineVoltageV] = useState<number>(24); // 6 to 48 VV
-  const [lineLengthMiles, setLineLengthMiles] = useState<number>(44); // Baltimore to Washington (44 miles)
+  const lineVoltageV = params.lineVoltageV ?? 24;
+  const lineLengthMiles = params.lineLengthMiles ?? 44;
   const [keyIsDown, setKeyIsDown] = useState<boolean>(false);
-  const [_wpmSpeed, setWpmSpeed] = useState<number>(20); // 5 to 35 WPM
+  const _wpmSpeed = params.wpmSpeed ?? 20;
   const [showCalloutPins, setShowCalloutPins] = useState<boolean>(false);
   const [activeCamera, setActiveCamera] = useState<CameraPreset>("iso");
   const [isPlayingAudio, setIsPlayingAudio] = useState<boolean>(true);
@@ -115,15 +71,6 @@ export function MorseTelegraph3D() {
         break;
     }
     controls.update();
-  };
-
-  const _applyScenario = (s: ScenarioPreset) => {
-    setLineVoltageV(s.voltageV);
-    setLineLengthMiles(s.miles);
-    setWpmSpeed(s.wpm);
-    const r = s.miles * 12.5 + 150;
-    updateParam("currentMa", (s.voltageV / r) * 1000);
-    if (isPlayingAudio) soundEngine.playMorseClick();
   };
 
   useEffect(() => {

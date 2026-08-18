@@ -3,6 +3,7 @@
 import { Activity, Camera, Sparkles, Volume2, VolumeX, Zap } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import * as THREE from "three";
+import { stepSholesTypewriter } from "@/physics/machineKernels";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { soundEngine } from "@/utils/soundEngine";
 import { createThreeStudioScene, type StudioContext } from "./ThreeStudioScene";
@@ -45,9 +46,10 @@ export function SholesTypewriter3D() {
   // Typewriter Kinematics Parameters
   const { params, updateParam } = usePatentPhysics("us-79265-sholes-typewriter");
   const [showUiOverlay, setShowUiOverlay] = useState<boolean>(true);
-  const typingWpm = params.typingWpm ?? 45;
-  const charsPerSecond = ((typingWpm * 5) / 60).toFixed(1);
-  const escapementStepMm = 2.54; // 1/10th inch
+  const typingWpm = params.typingSpeedWpm ?? 45;
+  const sholesIdle = stepSholesTypewriter(typingWpm, 0);
+  const charsPerSecond = sholesIdle.cps.toFixed(1);
+  const escapementStepMm = sholesIdle.pitchMm;
   const [activeCamera, setActiveCamera] = useState<CameraPreset>("iso");
   const { isAudioMuted, toggleSound: toggleEngine } = usePatentAudio();
 
@@ -91,7 +93,7 @@ export function SholesTypewriter3D() {
   };
 
   const applyScenario = (s: ScenarioPreset) => {
-    updateParam("typingWpm", s.typingWpm);
+    updateParam("typingSpeedWpm", s.typingWpm);
     if (!isAudioMuted) {
       soundEngine.playSwitchClick();
     }
@@ -151,11 +153,32 @@ export function SholesTypewriter3D() {
     const rootGroup = new THREE.Group();
     scene.add(rootGroup);
 
-    // 1. Cast-Iron Sewing Machine Style Frame & Table
-    const frame = new THREE.Mesh(new THREE.BoxGeometry(7.5, 4.5, 6.5), japannedCastIronMat);
-    frame.position.y = -1.2;
-    frame.castShadow = true;
-    rootGroup.add(frame);
+    // 1. Japanned sewing-machine table + C-frame (not a solid crate)
+    const table = new THREE.Mesh(new THREE.BoxGeometry(7.6, 0.28, 5.4), japannedCastIronMat);
+    table.position.y = -1.55;
+    table.castShadow = true;
+    table.receiveShadow = true;
+    rootGroup.add(table);
+    [
+      [-3.2, -2.2],
+      [3.2, -2.2],
+      [-3.2, 2.0],
+      [3.2, 2.0],
+    ].forEach(([lx, lz]) => {
+      const leg = new THREE.Mesh(
+        new THREE.CylinderGeometry(0.16, 0.22, 2.4, 12),
+        japannedCastIronMat,
+      );
+      leg.position.set(lx, -2.9, lz);
+      rootGroup.add(leg);
+    });
+    const rearColumn = new THREE.Mesh(new THREE.BoxGeometry(1.4, 2.6, 1.1), japannedCastIronMat);
+    rearColumn.position.set(0, -0.15, -2.1);
+    rearColumn.castShadow = true;
+    rootGroup.add(rearColumn);
+    const topDeck = new THREE.Mesh(new THREE.BoxGeometry(5.4, 0.18, 1.6), japannedCastIronMat);
+    topDeck.position.set(0, 1.15, -1.4);
+    rootGroup.add(topDeck);
 
     // 2. Up-Striking Type-Basket with Radial Bars (Claim 1)
     const basketGroup = new THREE.Group();
@@ -226,23 +249,27 @@ export function SholesTypewriter3D() {
       }
     }
 
-    // Animation Loop
     let reqId: number;
     const clock = new THREE.Clock();
+    const restBarRot: Array<{ x: number; z: number }> = typeBars.map((b) => ({
+      x: b.rotation.x,
+      z: b.rotation.z,
+    }));
 
     const animate = () => {
       reqId = requestAnimationFrame(animate);
-      const _delta = clock.getDelta();
-      const _p = live.current;
+      const p = live.current;
+      const step = stepSholesTypewriter(p.typingWpm, clock.getElapsedTime());
 
-      // Type hammer striking rhythm
-      const strikeFreq = Number(charsPerSecond) * 2 * Math.PI;
-      const strikePhase = Math.sin(clock.getElapsedTime() * strikeFreq);
-      activeHammer.rotation.x = strikePhase > 0.5 ? -Math.PI / 3 : 0;
-
-      // Carriage stepping left
-      carriageGroup.position.x =
-        ((clock.getElapsedTime() * Number(charsPerSecond) * 0.1) % 2.5) - 1.25;
+      activeHammer.rotation.x = step.hammerAngleRad;
+      typeBars.forEach((bar, i) => {
+        const rest = restBarRot[i];
+        const striking = i === step.barIndex && step.strikePhase < 0.28;
+        bar.rotation.x = rest.x + (striking ? step.hammerAngleRad * 0.55 : 0);
+        bar.rotation.z = rest.z;
+      });
+      // 10-pitch carriage: 2.54 mm/char → scene units (~0.012 per mm)
+      carriageGroup.position.x = 1.2 - step.carriageXMm * 0.012;
 
       renderer.render(scene, camera);
     };
@@ -253,7 +280,7 @@ export function SholesTypewriter3D() {
       cancelAnimationFrame(reqId);
       studio.cleanup();
     };
-  }, [live.current, charsPerSecond]);
+  }, [live]);
 
   return (
     <div className="relative w-full h-[620px] bg-parchment-900 rounded-2xl overflow-hidden border border-parchment-700 shadow-2xl flex flex-col">
@@ -369,7 +396,7 @@ export function SholesTypewriter3D() {
                 max="100"
                 step="5"
                 value={typingWpm}
-                onChange={(e) => updateParam("typingWpm", Number(e.target.value))}
+                onChange={(e) => updateParam("typingSpeedWpm", Number(e.target.value))}
                 className="w-full accent-amber-500 cursor-pointer"
               />
               <span className="text-xs font-mono text-amber-400 w-12 text-right font-bold">

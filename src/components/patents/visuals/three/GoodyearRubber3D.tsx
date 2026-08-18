@@ -25,58 +25,6 @@ import { usePatentAudio } from "./usePatentAudio";
 
 type CameraPreset = "iso" | "chains" | "bridges" | "clamps" | "top";
 
-interface ScenarioPreset {
-  id: string;
-  name: string;
-  desc: string;
-  sulfurPct: number;
-  tempC: number;
-  stretch: number;
-}
-
-const _SCENARIOS: ScenarioPreset[] = [
-  {
-    id: "goodyear_1844",
-    name: "1844 Goodyear Vulcanized Rubber (US 3,633)",
-    desc: "Charles Goodyear's historic breakthrough: Sulfur cross-links creating thermostable polymer network resilient from -40°C to +140°C.",
-    sulfurPct: 4.5,
-    tempC: 140,
-    stretch: 1.8,
-  },
-  {
-    id: "raw_gum_rubber",
-    name: "Unvulcanized Raw Natural Gum (Prior Art)",
-    desc: "Uncrosslinked polyisoprene chains sliding past each other; turns sticky in summer heat (>45°C) and brittle in cold (<0°C).",
-    sulfurPct: 0.0,
-    tempC: 45,
-    stretch: 1.2,
-  },
-  {
-    id: "high_stretch",
-    name: "High Tensile Elongation Test",
-    desc: "Polymer chains uncoiling under 3.5× stretch; cross-link nodes pull taut, illustrating entropic elasticity (negative thermal expansion).",
-    sulfurPct: 5.0,
-    tempC: 120,
-    stretch: 3.5,
-  },
-  {
-    id: "ebonite_hard",
-    name: "Ebonite / Hard Rubber (High Sulfur)",
-    desc: "Heavy 30% sulfur loading creating rigid, densely crosslinked thermoset ebonite with no elastomeric flexibility.",
-    sulfurPct: 30.0,
-    tempC: 150,
-    stretch: 1.05,
-  },
-  {
-    id: "frost_brittleness",
-    name: "Deep Freeze Glass Transition (-40°C)",
-    desc: "Unvulcanized rubber below glass transition temperature $T_g$; thermal kinetic energy drops, freezing chain rotation.",
-    sulfurPct: 4.5,
-    tempC: -40,
-    stretch: 1.05,
-  },
-];
-
 export function GoodyearRubber3D() {
   const containerRef = useRef<HTMLDivElement>(null);
 
@@ -85,9 +33,9 @@ export function GoodyearRubber3D() {
   const [showUiOverlay, setShowUiOverlay] = useState<boolean>(true);
   const sulfurWeightPct = params.sulfurPct ?? 8;
   const cureTemperatureCelsius = params.vulcanTemp ?? 145;
-  const [appliedTensileStretch, setAppliedTensileStretch] = useState<number>(1.8);
-  const [showSulfurCrosslinks, _setShowSulfurCrosslinks] = useState<boolean>(true);
-  const [showStressVectors, _setShowStressVectors] = useState<boolean>(true);
+  const appliedTensileStretch = params.appliedTensileStretch ?? 1.8;
+  const showSulfurCrosslinks = params.showSulfurCrosslinks !== 0;
+  const showStressVectors = params.showStressVectors !== 0;
   const [showCalloutPins, setShowCalloutPins] = useState<boolean>(false);
   const [activeCamera, setActiveCamera] = useState<CameraPreset>("iso");
   const { isAudioMuted, toggleSound: toggleEngine } = usePatentAudio();
@@ -188,15 +136,6 @@ export function GoodyearRubber3D() {
         break;
     }
     controls.update();
-  };
-
-  const _applyScenario = (s: ScenarioPreset) => {
-    updateParam("sulfurPct", s.sulfurPct);
-    updateParam("vulcanTemp", s.tempC);
-    setAppliedTensileStretch(s.stretch);
-    if (!isAudioMuted) {
-      soundEngine.playElastomerSnap(s.stretch);
-    }
   };
 
   const toggleSound = () => {

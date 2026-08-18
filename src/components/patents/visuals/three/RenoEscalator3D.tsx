@@ -3,6 +3,7 @@
 import { Activity, Camera, Sparkles, Volume2, VolumeX, Zap } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import * as THREE from "three";
+import { stepRenoEscalator } from "@/physics/machineKernels";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { soundEngine } from "@/utils/soundEngine";
 import { createThreeStudioScene, type StudioContext } from "./ThreeStudioScene";
@@ -45,14 +46,23 @@ export function RenoEscalator3D() {
   // Transit Dynamics Parameters
   const { params, updateParam } = usePatentPhysics("us-470918-reno-escalator");
   const [showUiOverlay, setShowUiOverlay] = useState<boolean>(true);
-  const deckSpeedFpm = params.speedFpm ?? 90;
-  const passengersPerHour = Math.round(deckSpeedFpm * 60);
-  const inclineAngleDeg = 25;
+  const beltSpeedMps = params.beltSpeed ?? 0.45;
+  const passengerCount = params.passengerCount ?? 30;
+  const inclineAngleDeg = params.inclineAngle ?? 25;
+  const renoIdle = stepRenoEscalator({
+    passengerCount,
+    inclineAngleDeg,
+    velocityMps: beltSpeedMps,
+  });
+  const deckSpeedFpm = renoIdle.speedFpm;
+  const passengersPerHour = renoIdle.throughputPerHour;
   const [activeCamera, setActiveCamera] = useState<CameraPreset>("iso");
   const { isAudioMuted, toggleSound: toggleEngine } = usePatentAudio();
 
   const live = useLiveSimParams({
-    deckSpeedFpm,
+    beltSpeedMps,
+    passengerCount,
+    inclineAngleDeg,
     isAudioMuted,
   });
 
@@ -91,7 +101,7 @@ export function RenoEscalator3D() {
   };
 
   const applyScenario = (s: ScenarioPreset) => {
-    updateParam("speedFpm", s.speedFpm);
+    updateParam("beltSpeed", (s.speedFpm * 0.3048) / 60);
     if (!isAudioMuted) {
       soundEngine.playSwitchClick();
     }
@@ -176,16 +186,19 @@ export function RenoEscalator3D() {
       cleats.push(cleat);
     }
 
-    // 3. Intermeshing Cast-Bronze Comb-Plates at Landings (Claim 2)
-    // Upper Comb-Plate
-    const upperComb = new THREE.Mesh(new THREE.BoxGeometry(0.8, 0.12, 2.8), brassCombMat);
-    upperComb.position.set(3.8, 1.9, 0);
-    rootGroup.add(upperComb);
-
-    // Lower Comb-Plate
-    const lowerComb = new THREE.Mesh(new THREE.BoxGeometry(0.8, 0.12, 2.8), brassCombMat);
-    lowerComb.position.set(-3.8, -1.9, 0);
-    rootGroup.add(lowerComb);
+    // 3. Intermeshing bronze comb teeth at both landings (Claim 2, 1.2 mm clearance)
+    const addComb = (x: number, y: number) => {
+      const plate = new THREE.Mesh(new THREE.BoxGeometry(0.55, 0.08, 2.8), brassCombMat);
+      plate.position.set(x, y, 0);
+      rootGroup.add(plate);
+      for (let t = 0; t < 14; t++) {
+        const tooth = new THREE.Mesh(new THREE.BoxGeometry(0.38, 0.04, 0.08), brassCombMat);
+        tooth.position.set(x + (x > 0 ? -0.38 : 0.38), y, -1.3 + t * 0.2);
+        rootGroup.add(tooth);
+      }
+    };
+    addComb(3.8, 1.9);
+    addComb(-3.8, -1.9);
 
     // 4. Moving Rubber Handrail Balustrade
     [-1.6, 1.6].forEach((hz) => {
@@ -202,19 +215,22 @@ export function RenoEscalator3D() {
     let reqId: number;
     const clock = new THREE.Clock();
 
+    const cleatHome = cleats.map((c) => c.position.x);
+
     const animate = () => {
       reqId = requestAnimationFrame(animate);
-      const delta = clock.getDelta();
       const p = live.current;
+      const step = stepRenoEscalator({
+        passengerCount: p.passengerCount,
+        inclineAngleDeg: p.inclineAngleDeg,
+        velocityMps: p.beltSpeedMps,
+        elapsedS: clock.getElapsedTime(),
+      });
 
-      const speedMps = (p.deckSpeedFpm * 0.3048) / 60;
-
-      // Animate cleat slats traveling uphill along incline
-      cleats.forEach((c) => {
-        c.position.x += speedMps * 2.2 * delta;
-        if (c.position.x > 5.0) {
-          c.position.x = -5.0;
-        }
+      cleats.forEach((c, i) => {
+        let x = cleatHome[i] + step.cleatOffset;
+        if (x > 5.0) x -= step.cleatPitch * cleatCount;
+        c.position.x = x;
       });
 
       renderer.render(scene, camera);
@@ -226,7 +242,7 @@ export function RenoEscalator3D() {
       cancelAnimationFrame(reqId);
       studio.cleanup();
     };
-  }, [live.current]);
+  }, [live, inclineAngleDeg]);
 
   return (
     <div className="relative w-full h-[620px] bg-parchment-900 rounded-2xl overflow-hidden border border-parchment-700 shadow-2xl flex flex-col">
@@ -311,7 +327,9 @@ export function RenoEscalator3D() {
             </div>
             <div className="bg-parchment-900/80 px-3 py-1.5 rounded-lg border border-parchment-700/50 flex flex-col">
               <span className="text-[10px] text-parchment-400 uppercase">Safety Mechanism</span>
-              <span className="font-bold text-amber-300">Interlocking Comb-Plates</span>
+              <span className="font-bold text-amber-300">
+                Comb {renoIdle.combPlateClearanceMm} mm · {renoIdle.motorTorqueNm} N·m
+              </span>
             </div>
           </div>
 
@@ -344,7 +362,7 @@ export function RenoEscalator3D() {
                 max="150"
                 step="10"
                 value={deckSpeedFpm}
-                onChange={(e) => updateParam("speedFpm", Number(e.target.value))}
+                onChange={(e) => updateParam("beltSpeed", (Number(e.target.value) * 0.3048) / 60)}
                 className="w-full accent-amber-500 cursor-pointer"
               />
               <span className="text-xs font-mono text-amber-400 w-12 text-right font-bold">

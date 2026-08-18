@@ -15,55 +15,6 @@ import { usePatentAudio } from "./usePatentAudio";
 
 type CameraPreset = "iso" | "de_laval_nozzle" | "combustion_chamber" | "gimbal_actuator" | "top";
 
-interface ScenarioPreset {
-  id: string;
-  name: string;
-  desc: string;
-  chamberPsi: number;
-  flowKgs: number;
-  stage: 1 | 2;
-  gimbalDeg: number;
-}
-
-const _SCENARIOS: ScenarioPreset[] = [
-  {
-    id: "goddard_1926_auburn",
-    name: "March 16, 1926 Auburn Launch",
-    desc: "Robert Goddard launches world's first liquid-propellant rocket (LOX + gasoline) reaching 41 ft altitude in 2.5s.",
-    chamberPsi: 250,
-    flowKgs: 1.2,
-    stage: 1,
-    gimbalDeg: 0,
-  },
-  {
-    id: "staged_separation",
-    name: "Multi-Stage High Altitude Jettison",
-    desc: "Stage 1 booster fuel depletion and pneumatic inter-stage ring separation igniting Stage 2 upper nozzle.",
-    chamberPsi: 380,
-    flowKgs: 2.2,
-    stage: 2,
-    gimbalDeg: -4,
-  },
-  {
-    id: "gyro_steering",
-    name: "Active Gyro Exhaust Vane Control",
-    desc: "Gimbal vanes vectoring supersonic exhaust stream in response to gyroscopic attitude sensor perturbations.",
-    chamberPsi: 320,
-    flowKgs: 1.8,
-    stage: 1,
-    gimbalDeg: 12,
-  },
-  {
-    id: "max_q_overpressure",
-    name: "Max-Q High Chamber Pressure Thrust",
-    desc: "550 psi high-pressure combustion driving Mach 3.4 supersonic exhaust velocity with 12,000 N thrust.",
-    chamberPsi: 550,
-    flowKgs: 4.5,
-    stage: 1,
-    gimbalDeg: 8,
-  },
-];
-
 export function GoddardRocket3D() {
   const containerRef = useRef<HTMLDivElement>(null);
 
@@ -72,10 +23,10 @@ export function GoddardRocket3D() {
   const [showUiOverlay, setShowUiOverlay] = useState<boolean>(true);
   const chamberPressurePsi = params.chamberPressure ?? 350;
   const expansionRatio = params.expansionRatio ?? 3.5;
-  const [fuelFlowRateKgs, setFuelFlowRateKgs] = useState<number>(1.8); // 0.5 to 5.0 kg/s
-  const [activeStage, setActiveStage] = useState<1 | 2>(1);
-  const [gyroGimbalAngleDeg, setGyroGimbalAngleDeg] = useState<number>(3); // -15 to +15 deg
-  const [showExhaustPlume, _setShowExhaustPlume] = useState<boolean>(true);
+  const fuelFlowRateKgs = params.fuelFlowRateKgs ?? 1.8;
+  const activeStage = params.activeStage ?? 1;
+  const gyroGimbalAngleDeg = params.gyroGimbalAngleDeg ?? 3;
+  const showExhaustPlume = params.showExhaustPlume !== 0;
   const [showCalloutPins, setShowCalloutPins] = useState<boolean>(false);
   const [activeCamera, setActiveCamera] = useState<CameraPreset>("iso");
   const { isAudioMuted, toggleSound: toggleEngine } = usePatentAudio();
@@ -148,16 +99,6 @@ export function GoddardRocket3D() {
         break;
     }
     controls.update();
-  };
-
-  const _applyScenario = (s: ScenarioPreset) => {
-    updateParam("chamberPressure", s.chamberPsi);
-    setFuelFlowRateKgs(s.flowKgs);
-    setActiveStage(s.stage);
-    setGyroGimbalAngleDeg(s.gimbalDeg);
-    if (!isAudioMuted) {
-      soundEngine.playSwitchClick();
-    }
   };
 
   const toggleSound = () => {

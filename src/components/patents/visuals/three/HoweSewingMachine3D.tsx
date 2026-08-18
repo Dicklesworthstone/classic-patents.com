@@ -24,58 +24,6 @@ import { usePatentAudio } from "./usePatentAudio";
 
 type CameraPreset = "iso" | "needle" | "shuttle" | "flywheel" | "top";
 
-interface ScenarioPreset {
-  id: string;
-  name: string;
-  desc: string;
-  rpm: number;
-  pitch: number;
-  tension: number;
-}
-
-const _SCENARIOS: ScenarioPreset[] = [
-  {
-    id: "howe_1846_patent",
-    name: "1846 Howe Lockstitch Demonstration",
-    desc: "Elias Howe Jr.'s original eye-pointed needle and reciprocating shuttle creating interlocking dual-thread stitches (US 4,750).",
-    rpm: 240,
-    pitch: 3.5,
-    tension: 45,
-  },
-  {
-    id: "heavy_canvas_leather",
-    name: "Heavy Canvas / Leatherwork",
-    desc: "Slow 120 RPM hand-crank drive piercing thick multi-ply textile with high 85g thread tension and wide 5.0mm pitch.",
-    rpm: 120,
-    pitch: 5.0,
-    tension: 85,
-  },
-  {
-    id: "high_speed_production",
-    name: "Industrial High-Speed Seaming",
-    desc: "420 RPM continuous seamstress drive delivering 35 mm/s feed rate—over 25× faster than manual hand-needle sewing.",
-    rpm: 420,
-    pitch: 2.8,
-    tension: 55,
-  },
-  {
-    id: "fine_silk_delicate",
-    name: "Delicate Victorian Silk Stitching",
-    desc: "Low-tension 25g fine stitch cycle preventing delicate fabric puckering or needle shearing.",
-    rpm: 180,
-    pitch: 1.8,
-    tension: 25,
-  },
-  {
-    id: "slow_demo",
-    name: "Slow-Motion Lockstitch Breakdown",
-    desc: "60 RPM demonstration showing needle thread loop dilation and boat shuttle pass-through.",
-    rpm: 60,
-    pitch: 4.0,
-    tension: 50,
-  },
-];
-
 export function HoweSewingMachine3D() {
   const containerRef = useRef<HTMLDivElement>(null);
 
@@ -83,9 +31,9 @@ export function HoweSewingMachine3D() {
   const { params, updateParam } = usePatentPhysics("us-4750-howe-sewing-machine");
   const [showUiOverlay, setShowUiOverlay] = useState<boolean>(true);
   const stitchingSpeedRpm = params.crankRpm ?? 240;
-  const [stitchPitchMm, setStitchPitchMm] = useState<number>(3.5);
-  const [threadTensionGrams, setThreadTensionGrams] = useState<number>(45);
-  const [isCranking, _setIsCranking] = useState<boolean>(true);
+  const stitchPitchMm = params.stitchPitchMm ?? 3.5;
+  const threadTensionGrams = params.threadTensionGrams ?? 45;
+  const isCranking = params.isCranking !== 0;
   const [showCalloutPins, setShowCalloutPins] = useState<boolean>(false);
   const [activeCamera, setActiveCamera] = useState<CameraPreset>("iso");
   const { isAudioMuted, toggleSound: toggleEngine } = usePatentAudio();
@@ -153,15 +101,6 @@ export function HoweSewingMachine3D() {
         break;
     }
     controls.update();
-  };
-
-  const _applyScenario = (s: ScenarioPreset) => {
-    updateParam("crankRpm", s.rpm);
-    setStitchPitchMm(s.pitch);
-    setThreadTensionGrams(s.tension);
-    if (!isAudioMuted) {
-      soundEngine.playLockstitchClack();
-    }
   };
 
   const toggleSound = () => {

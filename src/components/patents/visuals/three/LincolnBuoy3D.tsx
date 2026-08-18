@@ -12,58 +12,6 @@ import { usePatentAudio } from "./usePatentAudio";
 
 type CameraPreset = "iso" | "bellows_chambers" | "pilothouse" | "paddlewheel" | "top";
 
-interface ScenarioPreset {
-  id: string;
-  name: string;
-  desc: string;
-  inflationPct: number;
-  weightTons: number;
-  shoalDepthFt: number;
-}
-
-const _SCENARIOS: ScenarioPreset[] = [
-  {
-    id: "lincoln_1849_patent",
-    name: "1849 Lincoln Patent Specification (US 6,281)",
-    desc: "Abraham Lincoln's invention: Waterproof expandable air chambers beneath the guards inflated by steam to buoy steamboats over shoals.",
-    inflationPct: 80,
-    weightTons: 380,
-    shoalDepthFt: 5.5,
-  },
-  {
-    id: "sangamon_river_shoal",
-    name: "Sangamon River Shoal Grounding",
-    desc: "A shallow sandbar with zero bellows inflation causing the heavy wooden hull to ground out with zero underkeel clearance.",
-    inflationPct: 0,
-    weightTons: 420,
-    shoalDepthFt: 4.2,
-  },
-  {
-    id: "deep_water_cruise",
-    name: "Mississippi Deep Channel Navigation",
-    desc: "Cruising down the Mississippi River with deflated, tucked bellows for maximum hydrodynamic efficiency.",
-    inflationPct: 0,
-    weightTons: 350,
-    shoalDepthFt: 10.0,
-  },
-  {
-    id: "max_buoyant_lift",
-    name: "Maximum 118-Ton Pneumatic Lift",
-    desc: "100% steam-powered bellows expansion lifting the keel 2.4 feet to clear a treacherous 3.8-foot limestone ledge.",
-    inflationPct: 100,
-    weightTons: 450,
-    shoalDepthFt: 3.8,
-  },
-  {
-    id: "heavy_cargo_rapids",
-    name: "Heavy 550-Ton Cotton Cargo Run",
-    desc: "Heavily laden riverboat navigating shallow Sangamon River rapids with continuous buoyant stabilization.",
-    inflationPct: 90,
-    weightTons: 550,
-    shoalDepthFt: 7.0,
-  },
-];
-
 export function LincolnBuoy3D() {
   const containerRef = useRef<HTMLDivElement>(null);
 
@@ -71,7 +19,7 @@ export function LincolnBuoy3D() {
   const { params, updateParam } = usePatentPhysics("us-6281-lincoln-buoy");
   const [showUiOverlay, setShowUiOverlay] = useState<boolean>(true);
   const bellowsInflationPct = params.inflationPct ?? 75;
-  const [steamboatWeightTons, setSteamboatWeightTons] = useState<number>(380); // 200 to 600 tons
+  const steamboatWeightTons = params.weightTons ?? 380;
   const riverShoalDepthFt = params.shoalDepth ?? 3.5;
   const [showCalloutPins, setShowCalloutPins] = useState<boolean>(false);
   const [activeCamera, setActiveCamera] = useState<CameraPreset>("iso");
@@ -136,15 +84,6 @@ export function LincolnBuoy3D() {
         break;
     }
     controls.update();
-  };
-
-  const _applyScenario = (s: ScenarioPreset) => {
-    updateParam("inflationPct", s.inflationPct);
-    setSteamboatWeightTons(s.weightTons);
-    updateParam("shoalDepth", s.shoalDepthFt);
-    if (!isAudioMuted) {
-      soundEngine.playSwitchClick();
-    }
   };
 
   const toggleSound = () => {

@@ -1,43 +1,358 @@
 --- SOURCE PDF PAGE 1 OF 7 ---
 
-UNITED STATES PATENT OFFICE.
-HEDY KIESLER MARKEY, GEORGE ANTHEIL
 
-SECRET COMMUNICATION SYSTEM
-Specification of Letters Patent No. US 2,292,387
-Grant Date: 1942-08-11
 
 --- SOURCE PDF PAGE 2 OF 7 ---
 
-UNITED STATES PATENT OFFICE.
-HEDY KIESLER MARKEY AND GEORGE ANTHEIL, OF LOS ANGELES, CALIFORNIA.
+11, 1942.     H. K. MARKEY ETAL,             4 2,292,387
+            SECRET COMMUNICATION SYSTEM
+                Filed June 10, 1941       2 Sheets-Sheet 2
 
-SECRET COMMUNICATION SYSTEM.
 
 --- SOURCE PDF PAGE 3 OF 7 ---
 
-Application June 10, 1941, Serial No. 397,412. Patent No. 2,292,387. Patented Aug. 11, 1942.
+Patented Aug. 111, 1942                                                                    2,292,387
 
-To all whom it may concern:
+
+           UNITED STATES PATENT >OFFICE
+                                                2,292,387
+                                SECRET COMlVIUNICATION SYSTEM
+                           Hedy Kiesler Markey, Los Angeles, and George
+                                  Anthcil, Manhattan Beach, Calif.
+                             Application June 10, 1941, Serial No. 397,412
+                                       6 Claims. (0]. 250-2)
+  This invention relates broadly to secret com           Fig. 2 is a schematic diagram of the appa
+munication systems involving the use of carrier        ratus at a receiving station;
+waves of different frequencies, and} is especially       Fig. 3 is a schematic diagram illustrating a
+useful in the remote control of dirigible craft,       starting circuit for starting the ,motors at the
+such as torpedoes.                                    transmitting and receiving stations simultane
+  An object of the invention is to provide a          ously;
+method of secret communication which is rela                Fig. 4 is a plan view of a section of a record
+tively simple and reliable in operation, but at       strip that may be employed;
+the same time is di?icult to discover or decipher.          Fig. 5 is a detail cross section through a rec
+  Brie?y, our system as adapted for radio control 10 ord~responsive switching mechanism employed in
+of a. remote craft, employs a pair of synchronous     the invention;
+records, one at the transmitting station and one        Fig. 6 is a sectional view at right angles to the
+at the receiving station, which change the tuning     view of Fig. 5 and taken substantially in the
+of the transmitting and receiving apparatus           plane VI—VI of Fig. 5, but showing the record
+from time to time, so that without knowledge of 15 strip in a different longitudinal position; and
+the records an enemy would be unable to deter           Fig. 7 is a diagram in plan illustrating how
+mine at what frequency a controlling impulse          the course of a torpedo may be changed in ac
+would be sent. Furthermore, we contemplate            cordance with the invention.
+employing records of the type used for many             Referring ?rst to Fig. 7, there is disclosed a
+years in player pianos, and which consist, of long 20 mother ship 10 which at the beginning of opera
+rolls of paper having perforations variously posi     tions occupies the position “la and at the end
+tioned in a. plurality of longitudinal rows along of the operations occupies the position lllb. This
+the records. In a conventional player piano rec   mother ship discharges a. torpedo II that travels
+ord there may be 88 rows of perforations, and     successively along different paths l2, l3, I4, l5
+in our system such a record would permit the 25 and IE to strike an enemy ship II, which initial
+use of 88 different carrier frequencies, from     ly' occupies the position Ila but which has moved
+one to another of which both the transmitting     into the position llb at the time it is struck by
+and receiving station would be changed at in      the torpedo H. According to its original course,
+tervals.   Furthermore, records of the type de        the enemy ship I‘! would have reached the posi
+scribed can be made of substantial length and 30 tion I10, but it changed its course following the
+may be driven slow or fast. This makes it pos
+                                                     ?ring of the torpedo, in an attempt to evade the
+                                                     torpedo.          '
+sible for a. pair of records, one at the transmit
+                                                       In accordance with the present invention, the
+ting station and one at the receiving station, to    torpedo II can be steered from the mother ship
+run for a length of time ample for the remote
+                                                  35 Illa and its course changed from time to time as
+control of a device such as a torpedo.               necessary to cause it to strike its target. In
+  The two records may be synchronized by driv        directing the torpedo it may, under some cir
+ing them with accurately calibrated constant         cumstances, be observed directly from the mother
+speed spring motors, such as are employed for        ship 10, or its course may be followed by an
+driving clocks and chronometers. However, it is 40 observer in an airplane l8 who communicates his
+also within the scope of our invention to pe         ?ndings to the mother ship Illa. It is also possible
+riodically correct the position of the record at     to control the torpedo directly from the airplane
+the receiving station by transmitting synchro        IB if the latter is equipped with the necessary
+nous impulses from the transmitting station.         synchronous transmitting equipment in accord
+The use of synchronizing impulses for correct 45 ance with the invention.           '
+ing the phase relation of rotary apparatus at a         Under the particular circumstances'of Fig. 7,
+receiving station is Well-known and highly de        the enemy ship I ‘I was traveling in a straight line
+veloped in the ?elds of automatic telegraphy and     substantially parallel to the mother ship ID at
+television.                                          the time the torpedo was discharged, and the
+  Other more speci?c objects and features of 50 latter was directed forwardly at a substantial
+our invention will appear from the following de      angle to compensate for the speed of the ship
+tailed description of a particular embodiment        I‘! and for water currents represented by the
+thereof, as illustrated in the drawings, in which    small arrows I9. However, as a result of the
+  Fig. 1 is a schematic diagram of the appa          change in course of the enemy ship Ila and the
+ratus at a transmitting station;                  55 effect of the water currents, it is observed that
+
 
 --- SOURCE PDF PAGE 4 OF 7 ---
 
-Be it known that we, HEDY KIESLER MARKEY and GEORGE ANTHEIL, citizens of the United States, residing at Los Angeles, in the county of Los Angeles and State of California, have invented a new and useful Secret Communication System, of which the following is a specification.
+ 2                                                2,292,387
+ the torpedo, if it continues on its original course,     responds to perforations in the different rows
+ will miss the enemy ship. Hence it is steered            A to H, inclusive, on the strip, to close the vari
+ by remote control to depart from the path 12            ous switches 3| and the switch 42.
+ and follow the path B. At later times it is noted         A typical construction that may be used in
+ that further changes are necessary, and its course .    the control head 39 is shown in Figs. 5 and 6.
+ is successively changed from the path l3 to the         Thus it may comprise a block or shoe 45 over
+ path l4, to the path i5, and to the path‘ ii, in        which the record strip is drawn and which has a
+ order to strike the enemy ship llb.                     plurality of vertical passages 46, the orifices of
+    The remote control of the torpedo as described       which are juxtaposed to the different rows A
+ is old and broadly does not constitute a part of 10 to H, inclusive, of the strip. In Fig. 5 two of the
+ our invention. However, it has been very dim               passages 46 are shown juxtaposed to and in com
+ cult in the past to employ radio control of a              munication with apertures in the two rows C
+ torpedo, for the reason that the enemy could               and G of the strip 31.
+ quickly discover the frequency of the control sig             Each of the passages 46 is communicated by a
+ nals and block control of the torpedo by sending 15 restricted passage 41 with a suction manifold 48,
+ false signals of the same frequency.                       which is connected by a tube 49 to a suction
+   In accordance with our invention, we employ              pump 56. Each of the passages 46 is also con
+ variable frequency radio transmitters and re               nected by a tube 6| to the upper end of an
+ ceivers for the remote control, and change the             associated-cylinder 52 containing a piston 53.
+ frequency at intervals by synchronous records 20 Each piston 53 projects from the lower end of
+ at the two stations.     '                                 its associated cylinder 52 and overlies a movable
+   Referring to Fig. 1, the apparatus at the trans          spring 54 of one of the tuning switches 3|. The
+ mitting station includes as its main elements a            movable spring 54 is separated by a block of i"..
+ variable-frequency carrier oscillator 20, a modu           sulation‘ 55 from the lower end of its associated
+ lator 2|, an amplifier 22, and an antenna 23. 25 piston 63. The pistons are normally maintained
+ These elements are represented schematically               in upper position in which shoulders 66 thereon
+ since their exact construction does not consti             lie against the lower face of the cylinder block
+ tute a part of the present invention. Su?ice it            51 containing the cylinders 62, under which con
+ to say that the variable-frequency. carrier oscil          ditions the contacts 3| are open. However, un-1
+ lator 2|! is controlled to oscillate at diiferent fre__ 80 der certain conditions to be described, the pis
+ quencies by a plurality of tuning condensers 24a,       tons 53 are urged downwardly, by compression
+ 24b, 24c, 24d, 24c, 24!, and 24a, adapted to be         springs 53a positioned thereabove, to carry the
+independently connected to the oscillator by au          movable springs 64 against the cooperating con
+tomatically controlled switches 3|, one for each         tact springs 58 to close the switches 3|.
+condenser. The different condensers 24a to 2417, 35    The pistons 53 are maintained in uppermost
+inclusive, are of different capacities, and these   position, in which the switches 3| are open,
+differences are indicated in the drawings by dif    when a solid portion of the record strip 31 over
+ferent spacings between the plates.                 lies the passages 46, but are depressed by the
+  Two controls are provided in the system of        springs 53:: when apertures in the record strip
+Fig. 1, in the form of two keys L and R, respec 40 move into registration with the passages‘ 46.
+tively. Key L is employed to transmit a signal      Thus so long as the upper end of a passage 46
+for applying left rudder to the distant torpedo,    is closed by the record strip 31, suction is up
+and the key R is employed to apply right rudder   plied from the manifold 48 through the restrict»
+to the torpedo. Actuation of the key L closes     ed passage 41 to the cylinder 62, and lifts the
+main contacts 32, which connect the output of 45 piston 53 against the force of the spring 63a.
+the oscillator 20 to the modulator 2|, and at the However, when a perforation in the record strip
+same time closes contacts 33, which connect a            is in registration with a passage 46, air ?ows
+IOU-cycle oscillator 34 to the modulator II, which       freely info the upper end of the passage and into
+thereupon modulates the particular carrier wave   the restricted passage 41, thereby breaking the
+being generated at that time by the oscillator 50 suction applied to the upper end of the piston
+20. The modulated carrier wave is then ampli      53 and permitting the spring 63a to move the
+fled in the ampli?er 22 and transmitted from the  piston downwardly and close the associated
+antenna 23.                                       switch 3|.
+  If the operator desires to apply right rudder     It will be obvious that by so positioning the
+to the distant torpedo, he actuates the key R, 55 perforations in the different rows A, B, C, D, E,
+which closes the main contacts 32 and also closes F, and G, that perforations in different rows
+contacts 35, which connect a 500-cycle oscil      are successively brought into registration with
+lator 36 to the modulator 2|.                     their associated passages 46 (Fig. 5), different
+  The switches 3| are selectively closed by a     ones of the switches 3| will be successively closed,
+record-controlled mechanism actuated by a rec           tor-connect different ones of the tuning con,
+ord strip 31, which is drawn off, a supply roll 36      densers 24a to 249 (Fig. 1) inclusive, to the
+over a control head 39 and wound up on a take           oscillator 26 and thereby change the frequency
+up spool 40 driven by a constant-speed clock mo         of the carrier wave. Furthermore the frequency
+tor 4|.                               '                 changes can be purely arbitrary, without any
+  Referring now to Fig. 4, the record strip 31          periodic recurrence that would render it easy for
+has perforations arranged in eight diiferent lon        an enemy to anticipate the frequency at any
+gitudinally extending rows A, B, C, D, E, F, G,         particular instant.
+and H, respectively. Perforations in the rows             Referring now to Fig. 2, the apparatus at
+A, B, C, D, E, F, and G control the seven switches the receiving station, (which may be on the tor
+3| associated with the different tuning condens 70 pedo ll of Fig. 1), comprises a receiving an
+ers 24a to 24g, inclusive. The perforations in     tenna 6| and a signal selector 6| that may be
+row H control an auxiliary switch 42 (Fig. 1),     tuned to any one of four different frequencies
+which lights a signal lamp 43 from a battery 44.   by connecting thereto dill'erent condensers 24'd,
+  The strip 31 is drawn over the control head      24's, 24'}, and 24's‘. When the condenser 24'd
+39, as previously mentioned, and the control head 75 is connected to the selector 6| and the condenser
 
-This invention relates to secret communication systems, and has for one of its objects the provision of a method of and apparatus for transmitting signals or radio control impulses between a transmitting station and a receiving station (such as a radio-guided torpedo) in such a manner that interception and jamming by an unauthorized third party is rendered practically impossible.
 
 --- SOURCE PDF PAGE 5 OF 7 ---
 
-In the radio control of dirigible craft, such as torpedoes, the transmission of guidance impulses over a fixed carrier frequency is readily detected and jammed by an enemy transmitter broadcasting high-power noise or interference on the same frequency, causing the torpedo to lose guidance and miss its target.
+                                                 2,292,387                                                 3
+ 24d is connected to the oscillator 20, the trans          nected one at a time to the selector 6|, to tune
+ mitter and receiver are both tuned to the same            it to di?erent frequencies, by contacts 3I' similar
+ frequency, and so on.                                     to the contacts 3I at the transmitting station,
+   When a signal received on the antenna 60 is             and actuated in the same way under the control
+ of the same frequency to which the selector BI            of a record strip 31', which may be identical with
+ is tuned, the signal is ampli?ed in an ampli?er           the record strip 31 at the transmitting station,
+ 64 and delivered to a detector 65. There will             and is pulled over a control head 39‘ by a clock
+ then appear in the output of the detector the             motor M’ which runs at the same speed as the
+ modulation wave that was impressed upon the       motor M at the transmitting station. The de
+ carrier at the transmitting station, and this 10 tails of the control head 39' and the switches 3|’,
+ modulation wave is applied to the input of a      whereby the latter are closed in response to dif
+ pair of ?lters I66 and 566, the ?rst of which is  ferently positioned perforations in the record
+ tuned to lOO-cycles and the second to SOD-cycles. strip 31', are the same as those at the transmit
+ The output of the ?lter I66 is delivered through     ting statlon, which were described with reference
+ a recti?er I68 to a magnet I69, and the output 15 to Figs. 5 and 6.
+ of the ?lter 566 is delivered through‘ a recti?er      It is of course necessary that the record strips
+ 568 to a magnet 569. The magnets I69 and 569         31 and 31' at the transmitting and receiving sta
+ act on a common armature 12, which is nor            tions, respectively, be started at the same time
+ mally positioned in a neutral position but moves     and in proper phase relation with each other, so
+ in response to energization of magnet I69 to 20 that corresponding perforations in the two record
+ close on a contact I10 and moves in response         strips will move over their associated control
+ to energizaticn of magnet 569 to close on a con      heads at the same time. We therefore provide
+ tact 510.                                            an apparatus for holding both record strips in a
+   If a received signal was produced by actuation     starting position until the torpedo is ?red, and
+ of the key L (Fig. 1) at the transmitting sta 25 for then simultaneously releasing both strips so
+ tion, then it is modulated with a wave of 100        that they can be moved at the same speed by
+ cycles, and the modulation wave will be passed       their associated motors M and M ’.
+ by the ?lter I66 to energize the magnet I69 and         The holding mechanism at each station in
+ close the armature 12 on the contact I10, there      cludes a pin I00 (Fig. 6) slidably mounted for
+ by completing a circuit from a battery 14 through 30 vertical movement in the head 45 and adapted to
+ a solenoid I15. The solenoid thereupon attracts      engage a special starting hole IOI (Fig. 4) in its
+ its plunger I16, causing a pawl I11, connected to associated record strip. The pin I00 is normally
+ the plunger, to be pulled into engagement with    urged into a lower position by a compression
+ ratchet teeth I18 on a rudder wheel 19 and        spring I02, as shown in Fig. 5, so that it is clear
+ advance the wheel clockwise by the length of 35 of the record strip and does not impede its move
+ one of the ratchet teeth. A spring I80 normally   ment. However, the pin is adapted to be held
+ maintains the pawl I11 clear of the teeth I18,    in upper position in engagement with the hole
+ and a stationary cam face I8I guides the pawl '   IOI in the record strip, by a solenoid I03 having
+ into engagement with the ratchet teeth as it is           a plunger I04 which is connected to the pin I 00.
+ moved by the plunger I16.                              40 The solenoid is shown energized in Fig. 6.
+   The rudder wheel 19 is secured to a rudder                Referring now to Fig. 3, when a torpedo
+‘ post 82 carrying a rudder 83, so that the rudder         equipped with the apparatus disclosed in Fig. 2
+ is moved a predetermined distance toward the              is prepared for ?ring from the mother ship, on
+ left in response to a single actuation of the key L.
+                                                  which the transmitting apparatus of Fig. 1 is
+ at .the transmitting station. The key need be 45 mounted, both the solenoid I03 on the torpedo
+ closed only momentarily, and as soon as it is    and the solenoid I03 in the transmitting'equip
+ released the magnet I69 and the solenoid I15 are .ment, are connected in series with a battery I05
+ released, whereupon the pawl I 11 and plunger         by a circuit including conductors I06 which ex
+ I16 are retracted into neutral position by the        tend between the torpedo and the transmitting
+ spring I80.                                        50 station on the mother ship, thereby holding both
+    If the key R at the transmitting station is_       the record strips in starting position. When the
+ actuated, then the carrier wave is modulated with     torpedo is ?red, the conductors I06 are broken,
+ the 500-cycle modulating wave, which is passed        thereby interrupting the series energizing cir
+ by the ?lter 566 at the receiving station, to en      cuit of the solenoids I03 and releasing both sole
+ ergize the magnet 569. This closes the arma 55 noids simultaneously to permit the strips at both
+ ture 12 on the contact 510, to energize a solenoid    stations to start in phase with each other.
+ 515, identical with the solenoid I15, and actuate       It will be noted that whereas there are seven
+ a pawl 511 which engages with ratchet teeth 518.      tuning condensers 24 at the transmitting station,
+ The latter are oppositely directed with respect       there are only four tuning condensers 24' at the
+ to the ratchet teeth I18, so that the pawl 511 60 receiving station. The extra three tuning con
+ and the teeth 518 function to shift the rudder 83     densers at the transmitting station provide three
+ to the right, instead of to the left.                 additional channels for the transmitter for which
+    Some means must be providedto retain the           there are no corresponding channels at the re
+ rudder 83 in whatever position it has been moved      ceiver, to thereby permit the sending of false
+ by the pawl I11 or 511, and we have shown a 65 impulses to confuse the enemy.
+ brakedrum 84 frictionally engaged by a brake            In the particular system shown, the receiving
+ band 85 and connected by a pinion 86 and a gear       apparatus is e?ective to receive on the channels
+ segment 81 to the rudder wheel 19. The brake ' D, E, F, and G, but is ineffective to receive on
+ band 85 offers su?icient frictional resistance to     the channels A, B, and C. If the operator at the
+ movement of the rudder to retain it in the posi 70 transmitting station sent a signal while the os
+ tion to which it has been moved, but insuf?cient      cillator was operating on one of the channels
+ to prevent movement of the rudder by the pawls        A, B, or C, the signal would not be received on
+  I11 and 511.                                         the torpedo. It its therefore desirable to provide
+    The tuning condensers 24'd to 24'g, inclusive,     an indicator to advice the operator at the trans
+ at the receiving station are adapted to be con 75 mitting station when the transmitting and re
 
-According to our invention, we transmit the guidance signals not upon a single fixed carrier frequency, but upon a large plurality of different carrier frequencies (for example, eighty-eight frequencies corresponding to the notes of a piano keyboard), hopping rapidly and pseudo-randomly from one frequency to another in a predetermined sequence.
 
 --- SOURCE PDF PAGE 6 OF 7 ---
 
-To achieve perfect synchronization between the transmitter (on board an aircraft or ship) and the receiver (inside the torpedo), we employ twin identical perforated paper tapes or player-piano rolls driven at identical constant speeds by synchronized clockwork or electric motors.
+                       4                                                     2,292,887
+                 ' ' ceivingstations are both tuned tothe same fre                      -desc'rihing in detail, its application to thecon; "
+                 @IIUGHCY.            Thelamp43, actuated by the auxiliary ,             trol of a'torpedoor other craft where it is neces
+                       switch 42 (Fig. '1) constitutes such an indicator.                sary to’ steer in only one dimension, it will be ' '7
+                       _ Theswitch? is closed to light'the lamp 43                  I , obvious to'those skilled inithe artthat byvusing ' I
+                       whenever an, aperture in row H ' (Fig. 4) ,of' the,              ' a’ large’ number of modulation frequencies, ad
+                       record strip moves overits associated passage 4‘                 'ditional, functions canbe performed.      Thus by 1 "
+  '      '       I    in   the control head        as. I The perforations in    ,        using four modulation waves having frequencies
+                        row}! of therecord strip are so, arranged as to "of say. lilo-cycles, 500-cycles, LOGO-cycles and
+                       ,light'the lam'p43 whenever the operator should ' I 2,000-cycles, respectively, and using appropriate ' '
+                        not send a control, signal- To this end, the per 10 filters at the receiving station, it is obvious that , I
+                       forations in the row Hon the record strip occur‘ "itwo rudders can be controlled. This wouldybe
+                     , at the beginning and: end of: each perforation in ' I , desirable when controlling aerial’ torpedoes or“
+                      the rows D, Eli‘, and G, and extend between                        other types of craft in vwhich control'in, a ver-,
+                       successive, spaced, perforationsin these rows (at ' ' 'tical' direction, as well as in a horizontal direc- '
+                     V which times perforations occur in one or more of '     tion, is desirable. ' There'is noparticular limit
+                      the rows, A, B, and C, which transmit false                        to the numberof control channels that can'be 7
+                      signals).   ,        '                    '        '
+                                                                                      used with our invention. '
+                        The, mechanism arrangedas described, func- I            , I     It is also to be understood that other methods ,
+                      'tions to light the lamp 43v for a short time during          ' of modulation ‘than the conventional oneshown, > '
+                      each transitionfrom one to another of the useful '20, including frequency; modulation or phase modu '
+                      channels D, E, F, and G, to warn, the operator, _                  lation, Can be employed‘inour system. '    ,         ,
+  ~y ,               ' not to transmit a control impulse, at the moment             '      Theexpression “carrier wave," as used in the '
+             '       of, transition from one frequencyto another. ' I,
+         I v I        The lamp43, remains lighted throughout periods, ,
+                                                                                         claims, ,is'intended; to define the unmodulated -
+                                                                                    . wave when phase or frequency modulation is,
+                 ' I when'the transmitter is tuned to transmit in any                    employed.    ‘ 1     I
 
-The perforations in the paper tapes step the carrier oscillator of the transmitter through a rapid sequence of discrete frequencies, while the identical paper roll in the torpedo synchronously tunes the local oscillator of the receiver to the exact same sequence of frequencies.
+                 @One of the channels A, B, or C. 'The'operator I, I ' Various other'departures from the exact system ,
+                  wilLcf course, occasionally transmit impulses . described, will be apparent tothose‘skilled' ‘in ' i '
+' _          "'while the transmitter is tuned to’ one of. the '                         the art, and the invention'yis, therefore, to: be ' ' »
+      'mchannels A, B, or'C, to mislead'the enemy, but’,                                limited only, as set forth in the appended claims. _ '
+                     'hewill know, by the fact thatthe lamp. “is                         »We claim: "
+                      lighted, that these impulses will not affectv the             ,      1. In a secret communication system, a'trans- ' '
+                      torpedo.         I       I    ‘       I
+                                                                                         mittingstationincluding means for generating,
+                       I It will be understood > that; many variations,           ' and transmitting carrier waves of 'a'plura'lity of ' i ' ' I
+                     . from, the construction, shownv can be made with          , I frequencies, a ?rst elongated record strip having ' I 1
+                     out departing from the invention- Thus in order                ' differently characterized, longitudinally disposed
+                      to simplify thedrawings a record strip having             ' I recordings thereon, record-actuated‘means selec; 1 ' '
+  '      '       . only eight :rows of perforations has been illus                  tively responsive to different ones of said record'
+                 . trated.       However, as previously mentioned, sim          I 1 ings for vdetermining the frequency of said carrier
+                     ilar record strips employed in player pianos now ' ' I , ,vl'raves, means, for moving said strip "past'said reg-Z ' .
+      ' I . I 'h'aveas many as :88rowsof perforations, and a , 40                       ord-actuated means whereby the carrier wave
+                     similar number could be employed in the pres                       frequency is changed from time to time in ac;
+                     ent system to provide a large number of useable                    cordance with the recordings on said strip, a re
+                     channels, to which both the transmitting and                       ceiving station including carrier wave-receiving
+                     receiving stations can be tuned, and also a large     means having tuning means tunable to said car
+                     number of auxiliary channels at thetransmitter 45 ner wave frequencies, a second record strip, rec
+                     for sending false signals.                           ord-actuated means selectively responsive to dif
+                        If desired, the perforations corresponding to     ferent recordings on'said second record strip for
+                     the false signals, may be omitted from the record    tumng said receiver to said predetermined carrier
+                     strip at the receiver. However this is not neces     frequencies, and means for moving said second
+                     sary. The record strip at the transmitting and 50 strip past its associated record-actuated means in
+                     the receiving stations can be identical in all re    synchronism with said ?rst strip, whereby the
+                     spects, and any number of rows of perforations       record-actuated means at the transmitting sta
+                     in the record strip at the receiving station can     tion and at the receiving station, respectively, are
+                     be rendered ineffective by blocking the passages     actuated in synchronism to maintain the receiver
+                     46 in the receiving head that correspond to the 55 tuned to the carrier frequency of the transmitter.
+                     false channels. It will also beobvious that the         2. Apparatus as described in claim 1, in which
+                     control heads 39 and 39' at the transmitting         said differently characterized recordings on said
+                     and receiving stations, respectively, can be iden    record strips are distinguished by being di?er
+                     tical but the contact springs 54 and 5! (Fig. 6)     ently laterally displaced from each other, and
+                     at the receiver can be left disconnected in those 00 said record-actuated means are selectively re
+                     channels in which false signals are transmitted.     isponsive to the lateral positioning of said record
+                       A very important feature of our system is that      ngs.                         '
+
+                     only relatively few and relatively short signals        3. Apparatus as described in claim 1, in which
+                     need be transmitted. ' Thus it is necessary only                   said record strip comprises a ribbon having lon
+                     to close one of the keys L or R momentarily to 65 gitudinally extending slots therein differently
+                     de?ect the rudder 83 by one increment in either   characterized by being differently laterally posi
+                     direction. The transmission of a very short im    tioned on said ribbon, and each said record-ac
+                     pulse may not be discovered by the enemy at       tuated means includes a plurality of movable ele
+                     all. Even if the enemy should pick up one of      ments each movable to tune its associated gener
+                     the impulses transmitted, he‘ would not know 70 ating or receiving means to a different one of said
+                     whether it was an effective signal or a false sig                  frequencies, and means for selectively moving
+                     nal. Furthermore, it is quite possible to so ar                said elements in accordance with the lateral po
+                     range the records that the receiver is never                   sitioning of the slots in said ribbon.
+                     twice tuned to the same frequency.                               4. In a system of the type described, including
+                       Although the invention has been explained by ‘l5 a control station and a movable craft to be con
+
 
 --- SOURCE PDF PAGE 7 OF 7 ---
 
-Should an enemy attempt to jam the signal, only a tiny fraction of the total transmission on any single frequency could be interfered with, while the rapid hopping to dozens of other frequencies ensures that the guidance impulses are received continuously and accurately.
+                                               2,292,387                                               3
+trolled thereby, apparatus at said control station   nism to maintain said radio receiver tuned to
+comprising an oscillator and tuning means there      the frequency of oscillation of the transmitter;
+for, a ?rst elongated record strip having differ     mechanism on said craft for selectively deter
+ently characterized, longitudinally disposed re      mining its movement, and means responsive to
+cordings thereon, record-actuated means selec        radio signals received by said radio receiver for
+tively responsive to different ones of said record   controlling said mechanism.               -
+ings for tuning said oscillator to predetermined       5. Apparatus as described in claim 4, in which
+different frequencies, means for moving said rec     said mechanism on said‘craft for selectively de
+ord strip past said record-actuated means where      termining its movement includes a control ele
+by the frequency of oscillation is changed from 10 ment movable by predetermined increments, and
+time to time in accordance with the recordings       means responsive to successive received radio im
+on said strip, and means for selectively transmit    pulses for moving said element by one increment
+ting radio signals corresponding in frequency to     only in response to each separate impulse irre
+the said frequency of oscillation; apparatus on      spective of the length of the impulse.
+said movable craft comprising a radio receiver         6. Apparatus as described in claim 1, including
+having tuning means tunable to said predeter         means at the transmitting station for transmit
+mined frequencies, a second record strip, record     ting radio signals of different frequencies to
+actuated means selectively responsive to different   which said radio receiver tuning means are not
+recordings on said second record strip for tuning    tunable, and means coordinated with the record
+said receiver to said predetermined frequencies,     ings on said ?rst strip for indicating at the trans
+means for moving said second strip past its asso     mitting station when the transmitting apparatus
+ciated record-actuated means in synchronism          is tuned to frequencies that are not receivable at
+with said ?rst strip whereby the record-actuated     the receiving station.
+means at the control station and On the mov                             HEDY KIESLER MARKEY.
+able craft, respectively, are actuated in synchro                       GEORGE ANTHEIL.

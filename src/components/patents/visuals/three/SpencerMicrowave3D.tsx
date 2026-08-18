@@ -23,58 +23,14 @@ import { useLiveSimParams } from "./useLiveSimParams";
 
 type CameraPreset = "iso" | "cavity_resonator" | "electron_spokes" | "waveguide_launch" | "top";
 
-interface ScenarioPreset {
-  id: string;
-  name: string;
-  desc: string;
-  voltageKv: number;
-  magGauss: number;
-  powerW: number;
-}
-
-const _SCENARIOS: ScenarioPreset[] = [
-  {
-    id: "spencer_1945_patent",
-    name: "1945 Raytheon Radarange Patent (US 2,495,429)",
-    desc: "Percy Spencer's discovery: 2.45 GHz cavity magnetron generating dense microwave radiation to heat food through dielectric loss.",
-    voltageKv: 4.2,
-    magGauss: 1450,
-    powerW: 850,
-  },
-  {
-    id: "popcorn_first_test",
-    name: "First Popcorn Kernel Test",
-    desc: "Historic Raytheon laboratory test where popcorn kernels burst instantaneously beside the open waveguide horn.",
-    voltageKv: 3.8,
-    magGauss: 1350,
-    powerW: 650,
-  },
-  {
-    id: "hull_cutoff_threshold",
-    name: "Hull Cutoff Field Transition",
-    desc: "Critical magnetic field $B_c$ trapping electrons into swirling cycloidal space-charge spokes rather than striking anode.",
-    voltageKv: 4.2,
-    magGauss: 1200,
-    powerW: 500,
-  },
-  {
-    id: "high_power_industrial",
-    name: "1,200W Commercial Radarange",
-    desc: "Full-power 1.2 kW continuous microwave emission with intense water molecule dipole rotation at 2.45 billion cycles/sec.",
-    voltageKv: 5.5,
-    magGauss: 1750,
-    powerW: 1200,
-  },
-];
-
 export function SpencerMicrowave3D() {
   const containerRef = useRef<HTMLDivElement>(null);
 
   // Magnetron & Cavity Resonator State
-  const { params, updateParam } = usePatentPhysics("us-2495429-spencer-microwave");
+  const { params } = usePatentPhysics("us-2495429-spencer-microwave");
   const [showUiOverlay, setShowUiOverlay] = useState<boolean>(true);
   const anodeVoltageKv = (params.anodeVoltage ?? 2200) / 1000;
-  const [magneticFieldGauss, setMagneticFieldGauss] = useState<number>(1450); // 800 to 2200 Gauss
+  const magneticFieldGauss = params.magneticFieldGauss ?? 1450;
   const rfPowerWatts = params.rfPowerSetting ?? 800;
   const [showSpokeWheel, _setShowSpokeWheel] = useState<boolean>(true);
   const [showWaterDipoles, _setShowWaterDipoles] = useState<boolean>(true);
@@ -153,15 +109,6 @@ export function SpencerMicrowave3D() {
         break;
     }
     controls.update();
-  };
-
-  const _applyScenario = (s: ScenarioPreset) => {
-    updateParam("anodeVoltage", s.voltageKv * 1000);
-    setMagneticFieldGauss(s.magGauss);
-    updateParam("rfPowerSetting", s.powerW);
-    if (isPlayingAudio) {
-      soundEngine.playContinuousTone(120, "sawtooth", 0.04);
-    }
   };
 
   // Audio Magnetron Hum

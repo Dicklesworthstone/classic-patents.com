@@ -13,66 +13,17 @@ import { useLiveSimParams } from "./useLiveSimParams";
 
 type CameraPreset = "iso" | "toroid_breakout" | "primary_spiral" | "spark_gap" | "top";
 
-interface ScenarioPreset {
-  id: string;
-  name: string;
-  desc: string;
-  freqKhz: number;
-  gapMm: number;
-  voltageKv: number;
-  toploadPf: number;
-}
-
-const _SCENARIOS: ScenarioPreset[] = [
-  {
-    id: "tesla_1891_patent",
-    name: "1891 Resonant Transformer (US 512,340)",
-    desc: "Nikola Tesla's air-core resonant transformer: Flat spiral primary loosely coupled to tuned secondary coil.",
-    freqKhz: 180,
-    gapMm: 12,
-    voltageKv: 15,
-    toploadPf: 35,
-  },
-  {
-    id: "colorado_springs_1899",
-    name: "1899 Colorado Springs Magnifier",
-    desc: "Tesla's 50-foot magnifying transmitter generating 12-million-volt 135-foot lightning arcs shaking the Pikes Peak soil.",
-    freqKhz: 95,
-    gapMm: 28,
-    voltageKv: 30,
-    toploadPf: 75,
-  },
-  {
-    id: "wardenclyffe_tower",
-    name: "1901 Wardenclyffe Wireless Tower",
-    desc: "Massive 68-foot hemispherical dome topload designed for global telluric wireless power transmission through Earth's crust.",
-    freqKhz: 120,
-    gapMm: 22,
-    voltageKv: 25,
-    toploadPf: 60,
-  },
-  {
-    id: "high_frequency_cw",
-    name: "350 kHz Continuous-Wave Resonance",
-    desc: "High-frequency compact coil producing smooth violet brush coronal discharge with zero magnetic saturation.",
-    freqKhz: 350,
-    gapMm: 8,
-    voltageKv: 10,
-    toploadPf: 20,
-  },
-];
-
 export function TeslaCoil3D() {
   const containerRef = useRef<HTMLDivElement>(null);
 
   // Electrical Resonant State Controls
-  const { params, updateParam } = usePatentPhysics("us-533367-tesla-coil");
+  const { params } = usePatentPhysics("us-533367-tesla-coil");
   const [showUiOverlay, setShowUiOverlay] = useState<boolean>(true);
   const primaryCap = params.primaryCap ?? 45;
   const resonantFreqKhz = Math.round(180 * Math.sqrt(45 / Math.max(10, primaryCap)));
-  const [sparkGapDistanceMm, setSparkGapDistanceMm] = useState<number>(12); // 2 to 30 mm
-  const [inputVoltageKv, setInputVoltageKv] = useState<number>(15); // 5 to 30 kV
-  const [_toploadCapacitancePf, setToploadCapacitancePf] = useState<number>(35); // 10 to 80 pF
+  const sparkGapDistanceMm = params.sparkGapDistanceMm ?? 12;
+  const inputVoltageKv = params.inputVoltageKv ?? 15;
+  const _toploadCapacitancePf = params.toploadCapacitancePf ?? 35;
   const [showLightningStreamers, _setShowLightningStreamers] = useState<boolean>(true);
   const [showCalloutPins, setShowCalloutPins] = useState<boolean>(false);
   const [activeCamera, setActiveCamera] = useState<CameraPreset>("iso");
@@ -146,19 +97,6 @@ export function TeslaCoil3D() {
         break;
     }
     controls.update();
-  };
-
-  const _applyScenario = (s: ScenarioPreset) => {
-    updateParam(
-      "primaryCap",
-      Math.min(90, Math.max(10, 45 * (180 / Math.max(50, s.freqKhz)) ** 2)),
-    );
-    setSparkGapDistanceMm(s.gapMm);
-    setInputVoltageKv(s.voltageKv);
-    setToploadCapacitancePf(s.toploadPf);
-    if (isPlayingAudio) {
-      soundEngine.playContinuousTone(s.freqKhz * 2.0, "sawtooth", 0.04);
-    }
   };
 
   // Audio synthesis

@@ -21,55 +21,6 @@ import { usePatentAudio } from "./usePatentAudio";
 
 type CameraPreset = "iso" | "ring" | "hbonds" | "spinneret" | "impact";
 
-interface ScenarioPreset {
-  id: string;
-  name: string;
-  desc: string;
-  shear: number;
-  conc: number;
-  temp: number;
-  impact: boolean;
-}
-
-const _SCENARIOS: ScenarioPreset[] = [
-  {
-    id: "kwolek_1971",
-    name: "1971 Stephanie Kwolek (US 3,819,587)",
-    desc: "Stephanie Kwolek's discovery: Liquid-crystal nematic dopes yielding ultra-high tensile PPTA fibers.",
-    shear: 450,
-    conc: 19.5,
-    temp: 85,
-    impact: false,
-  },
-  {
-    id: "isotropic_poor",
-    name: "Isotropic Solution (Disordered)",
-    desc: "Low-concentration solution lacking nematic ordering, producing weak random-coil filaments.",
-    shear: 100,
-    conc: 8.0,
-    temp: 45,
-    impact: false,
-  },
-  {
-    id: "ballistic_impact",
-    name: "Ballistic Impact Absorption",
-    desc: "High-speed projectile impact testing transverse wave dispersion across hydrogen-bonded aromatic sheets.",
-    shear: 600,
-    conc: 20.0,
-    temp: 75,
-    impact: true,
-  },
-  {
-    id: "high_shear",
-    name: "High-Shear Industrial Spinning",
-    desc: "850 s⁻¹ capillary extrusion shear rate locking PPTA rigid-rods into flawless parallel crystal domains.",
-    shear: 850,
-    conc: 22.0,
-    temp: 80,
-    impact: false,
-  },
-];
-
 export function KwolekKevlar3D() {
   const containerRef = useRef<HTMLDivElement>(null);
 
@@ -78,10 +29,10 @@ export function KwolekKevlar3D() {
   const [showUiOverlay, setShowUiOverlay] = useState<boolean>(true);
   const drawRatio = params.drawRatio ?? 6.5;
   const shearRate = 50 + ((drawRatio - 2) / 7) * 950;
-  const [polymerConcentrationPct, setPolymerConcentrationPct] = useState<number>(18.5); // 5 to 25 wt%
-  const [temperatureCelsius, setTemperatureCelsius] = useState<number>(85); // 20 to 120 °C
-  const [showHydrogenBonds, _setShowHydrogenBonds] = useState<boolean>(true);
-  const [isImpactTesting, setIsImpactTesting] = useState<boolean>(false);
+  const polymerConcentrationPct = params.polymerConcentrationPct ?? 18.5;
+  const temperatureCelsius = params.temperatureCelsius ?? 85;
+  const showHydrogenBonds = params.showHydrogenBonds !== 0;
+  const isImpactTesting = params.isImpactTesting !== 0;
   const [showCalloutPins, setShowCalloutPins] = useState<boolean>(false);
   const [activeCamera, setActiveCamera] = useState<CameraPreset>("iso");
   const { isAudioMuted, toggleSound } = usePatentAudio();
@@ -134,45 +85,11 @@ export function KwolekKevlar3D() {
     controls.update();
   };
 
-  const _applyScenario = (s: ScenarioPreset) => {
-    updateParam("drawRatio", 2 + ((s.shear - 50) / 950) * 7);
-    setPolymerConcentrationPct(s.conc);
-    setTemperatureCelsius(s.temp);
-    setIsImpactTesting(s.impact);
-    if (!isAudioMuted) {
-      soundEngine.playElastomerSnap(s.shear / 400);
-    }
-  };
-
   const handleToggleSound = () => {
     toggleSound(() => {
       soundEngine.playElastomerSnap(1.2);
     });
   };
-
-  const impactTimerRef = useRef<number | null>(null);
-
-  const _handleTriggerImpact = () => {
-    if (impactTimerRef.current !== null) {
-      window.clearTimeout(impactTimerRef.current);
-    }
-    setIsImpactTesting(true);
-    if (!isAudioMuted) {
-      soundEngine.playSwitchClick();
-    }
-    impactTimerRef.current = window.setTimeout(() => {
-      setIsImpactTesting(false);
-      impactTimerRef.current = null;
-    }, 1800);
-  };
-
-  useEffect(() => {
-    return () => {
-      if (impactTimerRef.current !== null) {
-        window.clearTimeout(impactTimerRef.current);
-      }
-    };
-  }, []);
 
   useEffect(() => {
     const container = containerRef.current;

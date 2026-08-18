@@ -21,50 +21,6 @@ import { useLiveSimParams } from "./useLiveSimParams";
 
 type CameraPreset = "iso" | "filament_horseshoe" | "screw_base" | "exhaust_tip" | "top";
 
-interface ScenarioPreset {
-  id: string;
-  name: string;
-  desc: string;
-  voltage: number;
-  vacuumTorr: number;
-  material: "carbonized-bamboo" | "platinum-wire";
-}
-
-const _SCENARIOS: ScenarioPreset[] = [
-  {
-    id: "menlo_park_1879",
-    name: "October 1879 Menlo Park Historic Test",
-    desc: "Carbonized cotton/bamboo filament sustained for over 40 hours in a Sprengel mercury pump vacuum at 110V.",
-    voltage: 110,
-    vacuumTorr: 1e-6,
-    material: "carbonized-bamboo",
-  },
-  {
-    id: "platinum_burnout",
-    name: "Early Platinum Wire Experiment",
-    desc: "Low-resistance (4Ω) metallic platinum wire with thermal expansion regulator, vulnerable to sudden melting at high voltage.",
-    voltage: 30,
-    vacuumTorr: 1e-3,
-    material: "platinum-wire",
-  },
-  {
-    id: "overdrive_burnout",
-    name: "135V High Overdrive Test",
-    desc: "Overvolted carbon filament running at 135V, demonstrating intense blackbody luminosity with rapid sublimation wear.",
-    voltage: 135,
-    vacuumTorr: 1e-6,
-    material: "carbonized-bamboo",
-  },
-  {
-    id: "victorian_amber_dimmer",
-    name: "65V Victorian Amber Glow",
-    desc: "Under-driven carbonized bamboo filament emitting a warm, non-glaring amber radiance (approx 1,800K).",
-    voltage: 65,
-    vacuumTorr: 1e-6,
-    material: "carbonized-bamboo",
-  },
-];
-
 export function EdisonBulb3D() {
   const containerRef = useRef<HTMLDivElement>(null);
 
@@ -72,8 +28,8 @@ export function EdisonBulb3D() {
   const { params, updateParam } = usePatentPhysics("us-223898-edison-lightbulb");
   const [showUiOverlay, setShowUiOverlay] = useState<boolean>(true);
   const appliedVoltage = params.voltage ?? 110;
-  const [vacuumTorr, setVacuumTorr] = useState<number>(1e-6); // 1.0 down to 1e-6 Torr
-  const [filamentMaterial, setFilamentMaterial] = useState<"carbonized-bamboo" | "platinum-wire">(
+  const vacuumTorr = params.vacuumTorr ?? 1e-6;
+  const [filamentMaterial, _setFilamentMaterial] = useState<"carbonized-bamboo" | "platinum-wire">(
     "carbonized-bamboo",
   );
   const [showGasMolecules, _setShowGasMolecules] = useState<boolean>(true);
@@ -128,15 +84,6 @@ export function EdisonBulb3D() {
         break;
     }
     controls.update();
-  };
-
-  const _applyScenario = (s: ScenarioPreset) => {
-    updateParam("voltage", s.voltage);
-    setVacuumTorr(s.vacuumTorr);
-    setFilamentMaterial(s.material);
-    if (isPlayingAudio) {
-      soundEngine.playContinuousTone(60 + s.voltage * 2, "sine", 0.05);
-    }
   };
 
   // Web Audio Filament Hum

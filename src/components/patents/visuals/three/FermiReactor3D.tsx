@@ -28,59 +28,15 @@ import { usePatentAudio } from "./usePatentAudio";
 
 type CameraPreset = "iso" | "control_rods" | "graphite_core" | "gantry" | "top";
 
-interface ScenarioPreset {
-  id: string;
-  name: string;
-  desc: string;
-  rodPct: number;
-  moderatorPct: number;
-  enrichmentPct: number;
-}
-
-const _SCENARIOS: ScenarioPreset[] = [
-  {
-    id: "cp1_1942_criticality",
-    name: "Dec 2, 1942 CP-1 First Criticality",
-    desc: "Enrico Fermi commands George Weil to withdraw ZIP rod to 65%, reaching self-sustaining chain reaction (k_eff = 1.006).",
-    rodPct: 65,
-    moderatorPct: 99.9,
-    enrichmentPct: 0.72,
-  },
-  {
-    id: "scram_shutdown",
-    name: "Full SCRAM Emergency Insertion",
-    desc: "All cadmium safety control rods dropped into the graphite core, absorbing thermal neutrons and terminating criticality.",
-    rodPct: 0,
-    moderatorPct: 99.9,
-    enrichmentPct: 0.72,
-  },
-  {
-    id: "delayed_critical",
-    name: "Delayed-Neutron Steady State",
-    desc: "Exact critical balance (k_eff = 1.000) governed by the 0.65% delayed neutron fraction from precursor fission decays.",
-    rodPct: 58,
-    moderatorPct: 99.9,
-    enrichmentPct: 0.72,
-  },
-  {
-    id: "impure_graphite",
-    name: "Boron-Contaminated Graphite",
-    desc: "Prior-art impure moderator with high thermal neutron capture cross-section preventing chain reaction buildup.",
-    rodPct: 30,
-    moderatorPct: 98.5,
-    enrichmentPct: 0.72,
-  },
-];
-
 export function FermiReactor3D() {
   const containerRef = useRef<HTMLDivElement>(null);
 
   // Nuclear Reactor Kinetics State Controls
-  const { params, updateParam } = usePatentPhysics("us-2708656-fermi-reactor");
+  const { params } = usePatentPhysics("us-2708656-fermi-reactor");
   const [showUiOverlay, setShowUiOverlay] = useState<boolean>(true);
-  const controlRodWithdrawalPct = params.rodWithdrawal ?? 65;
+  const controlRodWithdrawalPct = params.rodWithdrawal ?? 83.5;
   const moderatorPurityPct = params.moderatorPurity ?? 99.9;
-  const [fuelEnrichmentPct, setFuelEnrichmentPct] = useState<number>(0.72); // 0.72% natural U
+  const fuelEnrichmentPct = params.fuelEnrichmentPct ?? 0.72;
   const [showNeutronCascade, _setShowNeutronCascade] = useState<boolean>(true);
   const [showCalloutPins, setShowCalloutPins] = useState<boolean>(false);
   const [activeCamera, setActiveCamera] = useState<CameraPreset>("iso");
@@ -145,15 +101,6 @@ export function FermiReactor3D() {
         break;
     }
     controls.update();
-  };
-
-  const _applyScenario = (s: ScenarioPreset) => {
-    updateParam("rodWithdrawal", s.rodPct);
-    updateParam("moderatorPurity", s.moderatorPct);
-    setFuelEnrichmentPct(s.enrichmentPct);
-    if (!isAudioMuted) {
-      soundEngine.playSwitchClick();
-    }
   };
 
   const toggleSound = () => {

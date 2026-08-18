@@ -4,11 +4,33 @@
  * Data verification, schema validation, and PDF existence check for Classic Patents.
  */
 
+import { execFileSync } from "node:child_process";
 import * as fs from "node:fs";
 import * as path from "node:path";
 import { allPatents, searchPatents } from "../src/data/patents";
 import { patentSchema } from "../src/data/patents/schema";
 import { validateSourcePdfTextLayer } from "../src/data/patents/sourceTextValidation";
+
+const MAX_PDF_TEXT_BUFFER_BYTES = 64 * 1024 * 1024;
+
+function exactSourceTextForPdf(pdfPath: string, expectedPageCount: number): string {
+  const extracted = execFileSync("pdftotext", ["-layout", pdfPath, "-"], {
+    encoding: "utf8",
+    maxBuffer: MAX_PDF_TEXT_BUFFER_BYTES,
+  }).replace(/\r\n?/g, "\n");
+  const pages = extracted.split("\f");
+  if (pages.at(-1) === "") pages.pop();
+
+  if (pages.length !== expectedPageCount) {
+    throw new Error(
+      `${pdfPath}: pdftotext produced ${pages.length} page(s), expected ${expectedPageCount}.`,
+    );
+  }
+
+  return pages
+    .map((page, index) => `--- SOURCE PDF PAGE ${index + 1} OF ${expectedPageCount} ---\n\n${page}`)
+    .join("\n\n");
+}
 
 function isValidIsoDate(value: string): boolean {
   if (!/^\d{4}-\d{2}-\d{2}$/.test(value)) return false;
@@ -161,6 +183,22 @@ async function main() {
           patent.originalTextAsset.pageCount,
         );
         if (!validation.valid) fail(validation.error ?? "source-PDF text layer is invalid.");
+        if (fs.existsSync(localPdfPath)) {
+          try {
+            const expectedSourceText = exactSourceTextForPdf(
+              localPdfPath,
+              patent.originalTextAsset.pageCount,
+            );
+            if (sourceText !== expectedSourceText) {
+              fail(
+                "source-PDF text layer differs from deterministic pdftotext extraction; publish editorial corrections only as a separately reviewed transcription.",
+              );
+            }
+          } catch (error: unknown) {
+            const message = error instanceof Error ? error.message : String(error);
+            fail(`could not regenerate source-PDF text layer: ${message}`);
+          }
+        }
       }
     } else {
       sourceTextGaps.push(patent.id);

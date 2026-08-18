@@ -1,44 +1,128 @@
 --- SOURCE PDF PAGE 1 OF 3 ---
 
-UNITED STATES PATENT OFFICE.
-RICHARD JORDAN GATLING
 
-IMPROVEMENT IN REVOLVING BATTERY-GUNS
-Specification of Letters Patent No. US 36,836
-Grant Date: 1862-11-04
 
 --- SOURCE PDF PAGE 2 OF 3 ---
 
-UNITED STATES PATENT OFFICE.
-RICHARD J. GATLING, OF INDIANAPOLIS, INDIANA.
+        UNITED STATES PATENT OFFICE.
+      RICHARD J. GATLING, OF IND IANA POLIS, IND I A NA.
+              IMPROVEMENT IN REVOLVING BATTERY GUNS.
+             Specification forming part of Letters Patent No. 36, S36, dated November 4, 1862.
 
-IMPROVEMENT IN REVOLVING BATTERY-GUNS.
+   To all chon it may concern:                         in the outer casing and disk, which protects
+      Be it known that I, RICHARD J. GATLING, the locks from injury.
+   of Indianapolis, county of Marion, and State of Similar letters of reference indicate corre.
+   Indiana, have invented new and useful Im- sponding parts in the several figures.
+   provements in Fire-Arms; and I do hereby To enable others skilled in the art to make
+   declare that the following is a full and exact and use my invention, I will proceed to de
+   description thereof, reference being had to the scribe its construction and operation.
+   accompanying drawings, making part of this I construct my gun usually with six ordi.
+   specification, in which-                            nary rifle-barrels, E, fixed at their rear and
+      Figure 1 is a side elevation of the gun with forward ends into circular plates F and G,
+   the upper portion of the wheels cut away. Fig. which are rigidly secured to a shaft, N, upon
+   2 is a vertical longitudinal section through the which is also rigidly fixed the grooved carrier
+   center of the gun. Fig. 3 is a top view of the C and lock-cylinder D and cog-wheel K. A
+   gun with the top half of the external casing, A, case or shield, A, covers and protects the lock
+   left off and the middle portion of the barrels cylinder and cog-wheel. All of these several
+   cut away to shorten the drawing. Fig. 4 is a parts are mounted on a frame, B, and are sup.
+   transverse section through lock-cylinder on ported by an ordinary gun-carriage. The lock
+   line a y in Figs.1 and 2. Fig.5is an end view cylinder D is perforated longitudinally with
+   of the grooved carrier C which receives the six holes, (corresponding to the number of bar.
+   cartridges or cartridge-chambers. Fig. 6 is a rels,) as shown in Fig. 4, and has slots cut
+   side view of one of the tubes containing the through from the surface of the cylinder to the
+   mainspring and hammer of one of the locks, holes to admit the projecting portion of the
+   Fig. 7 is a perspective view of the ring P hammers b. In the perforations or holes in
+   which surrounds the forward end of the lock- the lock-cylinder the locks (one of which is
+   cylinder D, having inclined planes on its rear shown in elevation in Fig. 6) are placed.
+   edge for cocking and drawing back the ham- The locks are constructed of the tubes a. a,
+.. mers to their proper position.                      &c., having a flanged breech-pin, c, secured in
+      The object of this invention is to obtain a their rear ends and provided with hammers b
+   simple, compact, durable, and efficient fire- and mainsprings d, all formed and arranged
+   arm for war purposes, to be used either in at- as clearly shown in section in Fig. 2;
+   tack or defence, one that is light when con- C is a grooved carrier for conveying the
+   pared with ordinary field-artillery, that is easily cartridge-chambers from the reservoir or hop
+   transported, that may be rapidly fired, and that per H up to the position in which they are
+   can be operated by few men.                         fired, and thence on around until they fall out
+      The invention consists in a singularly-con. by their own weight; but that the cartridge
+   structed revolving lock cylinder or breech, in chambers may be removed with certainty from
+   combination with a grooved carrier and bar. the grooved carrier C a comb or rake is pro
+   rels all rigidly fixed upon the same shaft, and vided and attached to the frame, as shown by
+   all of which revolve together when the gun is the red lines in Figs. 2 and 3.
+   in operation, the locks and grooves in the car. P, Figs. 2, 3, and 7, is a ring encircling the
+   rier and the barrels all being parallel with the forward end of the lock-cylinder D, and is
+axis of revolution.                        rigidly secured by lugs to the frame B. The
+  The invention also consists in the novel rear edge of this ring is formed into two in
+means employed in cocking and firing the gun clined planes, as clearly shown in Fig. 3, the
+without the use of a trigger by means of the greater inclined plane serving to push back
+inclined plane on the rear edge of the ring P, or cock the hammers b as they are successively
+which surrounds the forward end of the lock- revolved, while the lesser inclined plane serves
+cylinder, and also in the novel use of the in- to push the hammers back into their proper
+ner tubes (which contain the locks) to press- places within the tubesa after they have struck
+the cartridge-chambers firmly against the rear the percussion-cap, so as to allow the cartridge
+ends of the barrels while being discharged, and chambers to drop from the carrier.
 
-Specification forming part of Letters Patent No. 36,836, dated November 4, 1862.
-
-To all whom it may concern:
-
-Be it known that I, RICHARD J. GATLING, of Indianapolis, in the County of Marion and State of Indiana, have invented a new and useful Revolving Battery-Gun, of which the following is a specification:
-
-The nature of my invention consists in:
-1. A series of barrels revolving around a central axis, each barrel having its own corresponding lock or breech-pin moving in an aligned channel.
-
-2. A stationary cylindrical casing having an internal spiral or helical cam track on its inner surface, which imparts a longitudinal reciprocating motion to the locks as they revolve with the barrels.
-
-3. A hopper placed above the revolving lock cylinder through which cartridges are fed by gravity into the carrier troughs.
 
 --- SOURCE PDF PAGE 3 OF 3 ---
 
-4. A cocking ring or cam which retracts the firing pin or striker against a spring and releases it when the barrel is locked at the bottom position, firing the charge.
+                                            36,836
 
-As the hand crank is turned, the barrels, carrier cylinder, and lock cylinder rotate continuously in unison. During the top half of the revolution, each lock is pushed forward by the spiral cam, pushing a cartridge from the hopper into the barrel chamber and locking the breech. As the barrel reaches the bottom dead center, the striker is released by the cocking cam, discharging the round. During the ascending half of the revolution, the spiral cam retracts the lock, an extractor hook draws the spent case from the chamber, and the case falls out through an ejection chute at the bottom.
-
-Thus, every turn of the crank continuously and harmoniously cycles all the barrels in succession without pause or jamming, keeping the barrels comparatively cool by distributing the heat across the entire cluster.
-
-I claim as my invention:
-
-1. The combination of a series of revolving barrels with corresponding reciprocating locks, operated by a stationary helical cam track to perform the operations of loading, cocking, firing, and extracting continuously.
-
-2. The combination with the revolving barrels and locks of the gravity feed hopper and slotted carrier cylinder for supplying cartridges in succession to the chambers.
-
-3. Distributing the thermal strain of rapid firing across a revolving cluster of multiple independent barrels.
+  The disk I forms a division in the case A ring P, and when they have passed the high
+the forward portion of the case forming a est point of the inclined plane they are driven
+shield or covering for the locks, while the rear forward against tle percussion-cap on the nip
+division contains and protects the cog-wheel ple of tlhe cartridge-chamber by the coiled
+K and L. In the forward face of the disk a mainspring e with sufficient force to explode
+small steel plug, O, is inserted, having its for the cap and discharge the cartridge, after
+ ward face rounded or swelled out slightly be which the cartridge-holder is carricdon around
+yond the face of the disk. This swell is for the until it drops out of the carrier by its own
+ purpose of pressing the tubes a forward against weight, when it is ready to be taken up and
+the cartridge-clhambers R, and thus pressing reloaded.                 w
+the cartridge-chambers firmly against the rear I do not claim the use of the grooved or
+end of the barrel at the time of each and every fluted revolving carrier C, separately consid
+discharge, thereby preventing the escape of ered, and when the same is made to revolve
+gas from the ignited powder. The forward mo separately and independently of the barrels
+tion of the tubes a, caused by the swell O on and breech, the same being an old device;
+disk I, also assists in compressing the main neither (lo I claim tlho direct combination
+springs d, thereby increasing the force of the thereof with an automatic revolving gear or
+blow from the lock-hammers b upon the per with a device for pressing the cartridge-cham
+cussion-caps on the nipples of the cartridge ber against the barrel when used alone for
+chambers.                                         that purpose; but
+   The rounded heads of the breech-pin c bear What I do claim as new and as my inven.
+against the forward face of the disk I, being tion, and desire to secure by Letters Patent,
+kept in their position by the coiled springs ee, S
+&c., which surround the rear ends of the tubes 1. The combination of the lock-cylinder or
+a ca, &c., the springs e bearing against the rear breech D with the grooved carrier C, circular
+end of the lock-cylinder and against the flange plate F, and barrels E E, &c., the lock-cylin
+of the breech-pin c. By this arrangement the der or breech, carrier, and circular plate being
+forward ends of the locks are kept flush with firmly fastened upon the main shaft N, and
+the forward face of the lock-cylinder until they the locks, grooves in the carrier, and barrels
+are revolved opposite the swell o, when they being arranged on a line parallel with the axis
+are pressed forward, as before described.         of revolution, the whole revolving together
+   The shaft N, upon which the lock-cylinder when the gun is in operation, substantially as
+D, carrier C, barrels E, and cog-wheel K are described.
+rigidly secured, has a bearing near its rear end 2. In the construction of revolving fire-arms,
+in disk I and a bearing at its forward end in the use of as many locks as there are barrels,
+a box on the frame B. A crank-shaft, M, runs said locks revolving simultaneously with the
+through the rear part of ease A and has fixed breech and barrels, and being arranged and
+upon it the small cog-wheel or pinion L and operated substantially as set forth.
+crank S.                                            3. The stationary ring P, provided with in
+   An adjusting-screw, T, is placed in the box clined planes on its rear edge, in combination
+opposite the forward end of shaft N, for regu with lock-cylinder ID and locks, when con
+lating the pressure upon the cartridge-cham structed and operated for the purposes sub
+bers R. The cartridge-chambers R., (any de stantially as set forth.
+sired number of which may be used,) being 4. The tubes a a, &c., furnished with the
+loaded, are placed in the hopper or reservoir, flanged breech-pins c c, &c., and springs ee,
+with their nipple or cap ends toward the ham &c., and which contain the lock-hammers b
+mers, over the grooved carriers C, when, by b, &c., and mainsprings d d, &c., in combina
+rotating the crank S, which carries with it the tion with the revolving breech D, disk I, and
+shaft M, and pinion L, which meshes into the swell o, when constructed, arranged, and op
+large cog-wheel K, thereby revolving the shaft erated for the purposes substantially as set
+N, lock-cylinder D, carrier C, and barrels E, forth.
+the cartridges drop or rather roll into the 5. The disk I, in combination with the ex
+grooves of carrier C and are carried by it up ternal breech-piece or casing, A, which forms
+to the position in which they are discharged. a shield or covering for the lock-cylinder and
+The hammers, cartridge-chambers, and barrels which protects the locks and cog-wheels from
+all being on a line parallel to the axis of revo injury.
+lution, it is impossible for the cartridges to be                 RICHARD J. GATLING.
+out of place when discharged.                       Witnesses:
+   The hammers b are pushed back by the                  A. F. MAYHEw,
+large inclined plane on the rear edge of the            W. O. ROCKWOOD,

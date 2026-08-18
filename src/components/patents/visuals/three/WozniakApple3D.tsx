@@ -11,61 +11,17 @@ import { usePatentAudio } from "./usePatentAudio";
 
 type CameraPreset = "iso" | "cpu" | "ram_matrix" | "slots" | "top";
 
-interface ScenarioPreset {
-  id: string;
-  name: string;
-  desc: string;
-  clockMhz: number;
-  mode: "hires_color" | "lores_color" | "text_40col";
-  ramKb: number;
-}
-
-const _SCENARIOS: ScenarioPreset[] = [
-  {
-    id: "wozniak_1977",
-    name: "1977 Apple II Launch Architecture",
-    desc: "Steve Wozniak's masterstroke (US 4,136,359): 1.02 MHz CPU interleaved with video refresh with zero DMA wait states.",
-    clockMhz: 1.02,
-    mode: "hires_color",
-    ramKb: 48,
-  },
-  {
-    id: "breakout_color",
-    name: "Wozniak Color Breakout Game",
-    desc: "Direct 3.58 MHz NTSC color burst synthesis from 1-bit shift registers without expensive color palette hardware.",
-    clockMhz: 1.02,
-    mode: "lores_color",
-    ramKb: 16,
-  },
-  {
-    id: "integer_basic",
-    name: "Integer BASIC in Motherboard ROM",
-    desc: "Minimal 4 KB RAM system booting instantaneously into Wozniak's hand-assembled Integer BASIC interpreter.",
-    clockMhz: 1.02,
-    mode: "text_40col",
-    ramKb: 4,
-  },
-  {
-    id: "turbo_acceleration",
-    name: "2.0 MHz Accelerator Turbo Mode",
-    desc: "Double-speed 6502 processing cutting clock cycle to 500 ns while preserving NTSC raster alignment.",
-    clockMhz: 2.0,
-    mode: "hires_color",
-    ramKb: 48,
-  },
-];
-
 export function WozniakApple3D() {
   const containerRef = useRef<HTMLDivElement>(null);
 
   // Microcomputer Architecture State Controls
-  const { params, updateParam } = usePatentPhysics("us-4136359-wozniak-apple");
+  const { params } = usePatentPhysics("us-4136359-wozniak-apple");
   const [showUiOverlay, setShowUiOverlay] = useState<boolean>(true);
   const clockFrequencyMhz = (params.crystalFreq ?? 14.318) / 14;
-  const [videoMode, setVideoMode] = useState<"hires_color" | "lores_color" | "text_40col">(
+  const [videoMode, _setVideoMode] = useState<"hires_color" | "lores_color" | "text_40col">(
     "hires_color",
   );
-  const [ramCapacityKb, setRamCapacityKb] = useState<number>(48); // 4, 16, 48 KB
+  const ramCapacityKb = params.ramCapacityKb ?? 48;
   const [isCpuActive, _setIsCpuActive] = useState<boolean>(true);
   const [showCalloutPins, setShowCalloutPins] = useState<boolean>(false);
   const [activeCamera, setActiveCamera] = useState<CameraPreset>("iso");
@@ -117,15 +73,6 @@ export function WozniakApple3D() {
         break;
     }
     controls.update();
-  };
-
-  const _applyScenario = (s: ScenarioPreset) => {
-    updateParam("crystalFreq", s.clockMhz * 14);
-    setVideoMode(s.mode);
-    setRamCapacityKb(s.ramKb);
-    if (!isAudioMuted) {
-      soundEngine.playMicroswitchClick();
-    }
   };
 
   const toggleSound = () => {

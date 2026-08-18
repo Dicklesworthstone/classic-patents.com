@@ -12,6 +12,7 @@ import {
 } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import * as THREE from "three";
+import { stepOtisElevator } from "@/physics/machineKernels";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { soundEngine } from "@/utils/soundEngine";
 import { createThreeStudioScene, type StudioContext } from "./ThreeStudioScene";
@@ -56,19 +57,23 @@ export function OtisElevator3D() {
   const containerRef = useRef<HTMLDivElement>(null);
 
   // Mechanical Elevator Simulation Parameters
-  const { params } = usePatentPhysics("us-31128-otis-elevator");
+  const { params, updateParam } = usePatentPhysics("us-31128-otis-elevator");
   const [showUiOverlay, setShowUiOverlay] = useState<boolean>(true);
-  const [isRopeSevered, setIsRopeSevered] = useState<boolean>(false);
-  const cabWeightLbs = params.payloadKg ? params.payloadKg * 2.2 : 2500;
+  const cabPayloadKg = params.cabPayload ?? 650;
+  const cableTensionPct = params.cableTension ?? 100;
+  const otis = stepOtisElevator({ cabPayloadKg, cableTensionPct });
+  const isRopeSevered = otis.isSnapped;
+  const cabWeightLbs = Math.round(cabPayloadKg * 2.20462);
   const [activeCamera, setActiveCamera] = useState<CameraPreset>("iso");
   const { isAudioMuted, toggleSound: toggleEngine } = usePatentAudio();
 
-  const pawlEngagementMs = isRopeSevered ? 78 : 0;
-  const stoppingDistanceInches = isRopeSevered ? 1.4 : 0;
+  const pawlEngagementMs = otis.pawlEngagementMs;
+  const stoppingDistanceInches = Number((otis.stoppingDistanceCm / 2.54).toFixed(1));
 
   const live = useLiveSimParams({
     isRopeSevered,
-    cabWeightLbs,
+    cabPayloadKg,
+    cableTensionPct,
     isAudioMuted,
   });
 
@@ -107,21 +112,22 @@ export function OtisElevator3D() {
   };
 
   const cutRope = () => {
-    setIsRopeSevered(true);
+    updateParam("cableTension", 0);
     if (!isAudioMuted) {
       soundEngine.playImpactThud();
     }
   };
 
   const resetRope = () => {
-    setIsRopeSevered(false);
+    updateParam("cableTension", 100);
     if (!isAudioMuted) {
       soundEngine.playSwitchClick();
     }
   };
 
   const applyScenario = (s: ScenarioPreset) => {
-    setIsRopeSevered(s.ropeCut);
+    updateParam("cabPayload", Math.round(s.cabWeightLbs / 2.20462));
+    updateParam("cableTension", s.ropeCut ? 0 : 100);
     if (!isAudioMuted) {
       soundEngine.playSwitchClick();
     }
@@ -292,19 +298,16 @@ export function OtisElevator3D() {
       const _delta = clock.getDelta();
       const p = live.current;
 
-      if (p.isRopeSevered) {
-        ropeMesh.visible = false;
-        // Spring snaps open, forcing pawls outward to mesh with rack
-        leftPawl.position.x = -1.98;
-        rightPawl.position.x = 1.98;
-        leafSpringGroup.scale.y = 1.35; // Bowed open
-      } else {
-        ropeMesh.visible = true;
-        // Under rope tension, pawls pulled inward clear of teeth
-        leftPawl.position.x = -1.72;
-        rightPawl.position.x = 1.72;
-        leafSpringGroup.scale.y = 0.7; // Compressed flat by cable tension
-      }
+      const step = stepOtisElevator({
+        cabPayloadKg: p.cabPayloadKg,
+        cableTensionPct: p.cableTensionPct,
+      });
+      ropeMesh.visible = !step.isSnapped;
+      const pawlOut = step.isPawlEngaged ? 1.98 : 1.72;
+      leftPawl.position.x = -pawlOut;
+      rightPawl.position.x = pawlOut;
+      // Tension bows the leaf; snap lets it flatten and fire the dogs
+      leafSpringGroup.scale.y = 0.55 + (1 - step.cableTensionPct / 100) * 0.85;
 
       renderer.render(scene, camera);
     };
@@ -315,7 +318,7 @@ export function OtisElevator3D() {
       cancelAnimationFrame(reqId);
       studio.cleanup();
     };
-  }, [live.current]);
+  }, [live]);
 
   return (
     <div className="relative w-full h-[620px] bg-parchment-900 rounded-2xl overflow-hidden border border-parchment-700 shadow-2xl flex flex-col">

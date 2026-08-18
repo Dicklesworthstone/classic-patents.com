@@ -1,63 +1,779 @@
 --- SOURCE PDF PAGE 1 OF 13 ---
 
-UNITED STATES PATENT OFFICE.
-NIKOLA TESLA
+  N. TESLA.        Patented Nov. 8, 898.
+ CONTROLLING MECHANISM OF MOVING WESSELS
+OR VEHICLES.
+                         5 Sheets-Sheet .
 
-METHOD OF AND APPARATUS FOR CONTROLLING MECHANISM OF MOVING VESSELS OR VEHICLES
-Specification of Letters Patent No. US 613,809
-Grant Date: 1898-11-08
 
 --- SOURCE PDF PAGE 2 OF 13 ---
 
-UNITED STATES PATENT OFFICE.
-NIKOLA TESLA, OF NEW YORK, N. Y.
+    No. 63,809.                               Patented Nov. 8, 1898.
+                             N. TES.A.
+METHOD OF AND APPARATUS FOR CONTROLLING MECHANISM OF MOVING WESSELS
+                           OR VEHICLEs.
+    (No Model.)                                      5 SheetsS
+
+
+
+
+s
+
 
 --- SOURCE PDF PAGE 3 OF 13 ---
 
-METHOD OF AND APPARATUS FOR CONTROLLING MECHANISM OF MOVING VESSELS OR VEHICLES.
+ No. 63,809.                                 Patented Nov. 8, 1898.
+                            N. TESLA.             -
+METHOD OF AND APPARATUS FOR CONTROLLING MECHANISA of MoviNG vesses
+                           OR VEHICLES.
+
+
+
+
+               It is
+
+
+                  a
+               aims
+
+
+    rea
+
+          is        E.
+                   S. s
+
+
+
+
+A%22asses,
+          22
+
 
 --- SOURCE PDF PAGE 4 OF 13 ---
 
-SPECIFICATION forming part of Letters Patent No. 613,809, dated November 8, 1898.
-Application filed July 1, 1898. Serial No. 684,934. (No model.)
+ No. 613,809.                  N. TESLA.
+                                              Patented Nov. 8, 1898.
+METHOD OF AND APPARATUS FOR CONTROLLING MECHANISM OF MOVING vessels
+                              OR VEHICLES.
+(No Model.).                                         5. Sheets-Sheet 4.
+
+
+
+
+                  Erft
+               IIIH
+                  UIDUILEIt
+
+
+
+
+                              as Y
+
+
+
+
+                                                         /7zeeeey"
+
 
 --- SOURCE PDF PAGE 5 OF 13 ---
 
-To all whom it may concern:
+     N 0. 613.809.               N. TESLA.
+                                                  Patented Nov. 8, 1898.
+    METHOD OF AND APPARATUS FOR CONTROLLING MECHANISM OF MOVING VEssels
+                               OR WEHICLES.
+    ( No Model.                                          5. Sheets-Sheet 5.
+
+
+
+
+      S
+     S.
+    csi
+                        al
+R                     - - --
+
+          HH                                 to
+                                         n ŠGs      S - is
+
+                     Ll
+                                        32;
+                                    V                     is
+
+
+
+
+Weases,               . \                                Az
+      /
+
 
 --- SOURCE PDF PAGE 6 OF 13 ---
 
-Be it known that I, NIKOLA TESLA, a citizen of the United States, residing at New York, in the County and State of New York, have invented certain new and useful Improvements in Methods of and Apparatus for Controlling Mechanism of Moving Vessels or Vehicles; and I do hereby declare that the following is a full, clear, and exact description of the invention.
+            UNITED STATES PATENT OFFICE.
+                              NIKOLA TESLA, OF NEW YORK, N. Y.
+         METHOD OF AND APPARATUS FOR CONTROLLING MECHANISM OF MOVING WESSELS OR WEHICLES,
+
+            SPECIFICATION forming part of Letters Patent No. 613,809, dated November 8, 1898.
+                               Application filed July 1, 1898. Serial No. 684,934. (No model.)
+     To ?till who in it n-?ty concern:                          connections between the vessel and the ap
+         Be it known that I, NIKOLATESLA, a citi paratus governing its movements and with
+      Zen of the United States, residing at New York, out  such restrictions as these must necessarily 55
+      in the county and State of New York, have in impose.
+      vented certain new and useful improvements In a broad sense, then, my invention dif
+      in methods of and apparatus for controlling fers      from all of those systems which provide
+      from a distance the operation of the propel for the
+      ling - engines, the steering apparatus, and movingcontrol         of the mechanism carried by a
+      other mechanism carried by moving bodies or that I require noandintermediate
+                                                                object        governing its motion in
+                                                                                          wires, cables,
+      floating vessels, of which the following is a
+      specification, reference being had to the draw or  other form of electrical or mechanical con
+                                                      nection with the object save the natural me- .
+      ings accompanying and forming part of the dia
+      Se.                                                   in space. I accomplish, nevertheless,
+                                                      similar results and in a much more practica
+        The problem for which the invention form ble manner by producing waves, impulses, or
+     ing the subject of my present application af radiations
+     fords a complete and practicable solution is earth, water,     which are received through the
+     that of controlling from a given point the op paratus on theor movingatmosphere by suitable ap
+     eration of the propelling-engines, the steer desired actions so long asbody     the
+                                                                                         and cause the
+                                                                                          body remains o
+     ing apparatus, and other mechanism carried within the active region or effective          range of
+     by a moving object, such as a boat or any such currents, waves, impulses, or radiations.
+     floating vessel, whereby the movements and The many and difficult requirements of the
+     course of such body or vessel may be directed object     here contemplated, involving peculiar
+     and controlled from a distance and any de means for transmitting to a considerable dis 75
+     vice carried by the same brought into action tance an influence capable of causing in a
+ 25 at any desired time. So far as I am aware positive           and reliable manner these actions,
+     the only attempts to solve this problem which necessitated      the designing of devices and ap
+     have heretofore met with any measure of suc paratus of a novel         kind in order to utilize to
+     cess have been made in connection with a the         best  advantage    various facts or results,
+     certain class of vessels the machinery of which, either through
+     which was governed by electric currents con or those of others, havemybeen    own investigations
+                                                                                        rendered prac
+     veyed to the controlling apparatus through a tically available.
+    flexible conductor; but this system is subject As to that part of my invention which in
+     to such obvious limitations as are imposed by volves the production of suitable waves or
+    the length, weight, and strength of the con variations        and the conveying of the same to
+ 35 ductor which can be practically used, by the a remote receiving         apparatus capable of be
+    difficulty of maintaining with safety a high ing operated or controlled         by their influence,
+    speed of the vessel or changing the direction it may be carried out in various         ways, which
+    of movement of the same with the desired are
+    rapidity, by the necessity for effecting the. stood. For example, I may pass less
+                                                         at  the  present  time   more  or      under
+                                                                                             through a
+40 control from a point which is practically fixed, conducting-path, preferably inclosing a large
+    and by many well-understood drawbacks in area, a rapidly-varying current and by elec
+    separably connected with such a system. The
+    plan which I have perfected involves none of tromagnetic         induction of the same affect a
+                                                     circuit carried by the moving body. In this 95
+    these objections, for I am enabled by the use case the action at a given distance will be the
+45 of my invention to employ any means of pro stronger
+    pulsion, to impart to the moving body or ves conductortheandlarger the
+                                                                            the area inclosed by the
+                                                                           greater the rate of change
+    sel the highest possible speed, to control the of the current. If the latter
+    operation of its machinery and to direct its in the ordinary ways, the ratewere          generated
+                                                                                       of change, and Od
+    movements from either a fixed point or from consequently the distance at which the action
+50 a body moving and changing its direction would            be practically available for the present
+    however rapidly, and to maintain this control purpose,
+   over great distances without any artificial ing such would           be very small; but by adopt
+                                                                means as I have devised-that is,
+
 
 --- SOURCE PDF PAGE 7 OF 13 ---
 
-The invention which I have described consists in a method of and apparatus for controlling from a distance the operation of the mechanism for propelling and steering a moving vessel or vehicle by means of waves, impulses, or radiations conveyed through the natural media to a receiving apparatus situated on the vessel.
+  2                       .                 618,809
+   either by passing through the conducting-path o but obviously my invention in its broad fea
+                                                   tures is not limited to the special mode and
+   currents of a specially - designed high-fre appliances      which I have devised and shall
+   quency alternator or, better still, those of a here describe.
+   strongly-charged condenser-a very high rate. In any event-a-that is to say, whichever of
+   of change may be obtained and the effective the above or similar plans I may adopt-and
+   range of the influence thus extended over a particularly when the influence exerted from
+   vast area, and by carefully adjusting the cira. a distance upon the receiving-circuit be too 75
+   cuit on the moving body so as to be in exact small to directly and reliably affect and actu
+   electromagnetic synchronism with the pri
+Io mary disturbances this influence may be util ate the controlling apparatus Iemploy auxil
+  ized at great distances.                         iary sensitive relays or, generally speaking,
+    Another way to carry out my invention is means capable of being brought into action
+  to direct the currents or discharges of a high ‘by the feeblest influences in order to effect
+  frequency machine or condenser through a the        control of the movements of the distant
+                                                  body with the least possible expenditure of
+  circuit one terminal of which is connected energy       and at the greatest practicable dis
+  directly, or inductively with the ground and
+   the other to a body, preferably of large sur tance, thus extending the range and useful
+   face and at an elevation. In this case if the ness of my invention.
+   circuit on the moving body be similarly ar vices    A great variety of electrical and other de
+   ranged or connected differences of potential detecting  more or less suitable for the purpose of
+   on the terminals of the circuit either by con               and utilizing feeble actions are now
+   duction or electrostatic induction are pro well        known to scientific men and artisans and
+                                                           not be all enumerated here. Confining 90
+   duced and the same object is attained. Again, needmyself  merely to the electrical as the most .
+   to secure the best action the receiving-circuit practicable    of such means and referring only .
+25 should  be adjusted  so as to be in electromag
+    netic synchronism with the primary source,       to those which,   while not the most sensitive,
+    as before; but in this instance it will be un are perhaps more readily available from the 95
+    derstood by those skilled in the art that if the more general knowledge which exists regard
+    number of vibrations per unit of time be the ing them, I may state that a contrivance may
+    same the circuit should now have a length be         used which has long been known and used
+                                                     as a lightning-arrester in connection with
+      of conductor only one-half of that used in the telephone-switchboards for operating annun
+      former case.
+     Still another way is to pass the currents ciators and like devices, comprising a bat Ioo
+   simply through the ground by connecting tery       the poles of which are connected to two
+35 both  the terminals of the source of high-fre conducting-terminals separated by a minute
+   quency currents to earth at different and re thickness     of dielectric. The electromotive
+                                                  force of the battery should be such as to strain
+   mote points and to utilize the currents spread the thin dielectric layer very nearly to the I o5
+   ing through the ground for affecting a re
+   ceiving-circuit properly placed and adjusted. point of breaking down      in order to increase
+40 Again, in this instance if only one of the ter turbance reaches a circuitan
+                                                  the sensitiveness.    When       electrical dis
+                                                                                so arranged and
+   minals of the receiving-circuit be connected adjusted, additional strain is     put upon the o
+   to the ground, the other terminal being insu insulating-film, which gives way      and allows
+   lated, the adjustment as to synchronism with
+                                                  the passage of a current which can be util
+   the source will require that under otherwise ized   to operate any form of circuit-controlling
+   equal conditions the length of wire behalf of apparatus.
+   that which would be used if both the termi
+    nals be connected or, generally, if the circuit ingAgain,  another contrivance capable of be
+    be in the form of a closed loop or coil. Ob fectsutilized     in detecting feeble electrical ef II5
+                                                           consists of two conducting plates or ter
+    viously also in the latter case the relative po
+ So sition of the receiving and transmitting cir minals which have, preferably, wires of some
+    cuits is of importance, whereas if the circuit length attached to them and are bridged by
+    be of the former kind-that is, open-the conductinga mass of minute particles of metal or other
+    relative position of the circuits is, as a rule, ticles lying material.   Normally these par
+                                                                   loose do not connect the metal
+    of little or no consequence.
+        e
+ 55 Finally,     I may avail myself, inn carrying out plates; but under the influence of an elec
+    my invention, of electrical oscillations which trical disturbance produced at a distance,
+    do not follow any particular conducting-path, evidently      owing to electrostatic attraction,
+    but propagate in straight lines through space, they    are pressed firmly against each other, I25.
+    of rays, waves, pulses, or disturbances of any thus    establishing a good electrical connection
+     kind capable of bringing, the mechanism of between the two terminals. This change of
+     the moving body into action from a distance state may be made use of in a number of ways
+     and at the will of the operator by their effect for the above purpose.
+     upon suitable controlling devices.                 Still another modified device, which may 13o:
+       In the following detailed description Ishall be said to embody the features of both the
+     confine myself to an explanation of that former, is obtained by connecting the two
+     method and apparatus only which I have conducting plates or terminals above referred
+       found to be the most practical and effectual; to permanently with the poles of a battery
+
 
 --- SOURCE PDF PAGE 8 OF 13 ---
 
-My invention comprises:
-First, a transmitting apparatus capable of generating and transmitting through the natural media (such as the air, water, or ground) electromagnetic waves or impulses of predetermined frequency and character.
-Second, a receiving conductor or antenna mounted on the vessel, connected to a sensitive electrical detector or coherer adapted to be acted upon by the received waves.
-Third, a local relay or circuit-controller actuated by the detector whenever an electromagnetic impulse is received.
-Fourth, a multi-position rotary switch or commutator device stepped sequentially by the relay, having contacts so arranged that successive impulses selectively close and open circuits controlling the electric steering-motor, the propulsion-motor, and signalling lights on the vessel.
-Fifth, an automatic mechanical tapper or decoherer synchronized with the relay mechanism to restore the detector to its sensitive, non-conducting condition immediately after each impulse is received.
+                                                      618,809                                                 3
+       which should be of very constant electromo
+       tive force. In this arrangement a distant tric        its original unimpaired insulating quali
+                                                        ties in order to enable the device to be used
+       electrical disturbance produces a twofold ef in successive operations. This is usually ac o
+       fect on the conducting particles and insulat complished         by a gentle tapping or vibration
+       ing-films between them. The former are of the electrodes                 or particles or continuous
+       brought nearer to each other in consequence rotation of the same;            but in long experience
+       of the sudden increase of electrostatic attrac with many forms of these         devices I have found
+       tion, and the latter, owing to this, as well as that such procedures, while        suitable in simple
+       by being reduced in thickness or in number,
+   O are subjected to a much greater strain, which and comparatively unimportant operations,
+       they are unable to withstand.                    as ordinary signaling, when it is merely re
+         It will be obviously noted from the pre in     quired that the succeeding effects produced
+       ceding that whichever of these or similar gard      the receiving-circuit should differ in re
+       contrivances be used the sensitiveness and, case ittoistheir     relative duration only, in which
+       what is often still more important, the reli of the individual or
+                                                                    of little     no consequence if some
+                                                                               effects be altered or incom
+       ability of operation is very materially in plete or even entirely             missed, do not yield
+       creased by a close adjustment of the periods satisfactory results in many
+      of vibration of the transmitting and receiv it may be very important thatinstances,    the
+                                                                                                        when
+                                                                                                  effects pro
+      ing circuits, and, although such adjustment duced should all be exactly such as desired
+ 20 is in many cases unnecessary for the success and that none should fail. To illustrate, let
+    , ful carrying out of my invention, I neverthe it be supposed that an official directing the
+      less make it a rule to bestow upon this fea movements of a vessel in the manner de
+      ture the greatest possible care, not only be scribed
+      cause of the above-mentioned advantages, action ashould              find it necessary to bring into
+ 25 which are secured by the observance of the form a particulardevice
+                                                                  special            on the latter or to per
+                                                                               operation,  perhaps of vital
+      most favorable conditions in this respect, but moment, at an instant's notice
+      also and chiefly with the objeet of prevent when, by design or accident, theand                possibly
+                                                                                                 vessel itself
+      ing the receiving-circuit from being affected. or   any mark indicating its presence is hidden 95
+      by waves or disturbances emanating from from            his view. In this instance a failure or
+      sources not under the control of the operator. defective action of any part of the apparatus.
+      The narrower the range of vibrations which might have disastrous consequences and such
+      are still capable of perceptibly affecting the cases
+      receiving-circuit the safer will the latter be of theinmachinery
+                                                                  which the sure and timely working
+      against extraneous disturbances. To secure may often presentisthemselves  of paramount importance do
+                                                                                            in practice, and
+ 35 the best result, it is necessary, as is well this consideration has impressed
+      known to experts, to construct the receiving necessity of doing away with theme                with the
+      circuit or that part of the same in which the the present devices and procedures and in     defects
+                                                                                                            of .
+      vibration chiefly occurs so that it will have producing an apparatus which while being                     Io5
+     the highest possible self-induction and at the
+ 40 same time the least possible resistance. In sensitive          will also be most reliable and posi
+                                                       tive in its action. In the arrangement here
+     this manner I have demonstrated the practica inafter
+     bility of providing a great number of such re in a mostdescribed
+                                                                  satisfactory
+                                                                              these defects are overcone
+                                                                                   manner, enabling thou
+     ceiving-circuits-fifty or a hundred, or more sands of successive operations,            in all respects o
+     each of which may be called up or brought
+45 into action whenever desired without the oth. alike,        being performed by the controlling ap
+                                                       paratus without a single irregularity or miss
+     ers being interfered with. This result makes being        recorded. For a better understanding
+     it possible for one operator to direct simul of these       and other details of the invention as
+     taneously the movements of a number of I now carry               them out I would refer to the ac II5
+     bodies as well as to control the action of a
+50 number of devices located on the same body, companyingFigure    1 is
+                                                                       drawings, in which
+                                                                         a plan view of a vessel and
+     each of which may have a distinct duty to mechanism within                the same. Fig.2 is alon
+     fulfil. In the following description, how gitudinal
+     ever, I shall show a still further development terior mechanism inthe
+                                                                  section    of     same, showing the in
+                                                                                 side elevation. Fig. 3 is
+     in this direction-namely, how, by making a plan view, partially diagrammatical,                   of the
+     use   of merely  one receiving-circuit, a great.
+55 variety of devices may be actuated and any vessel, apparatus, and circuit connections of
+     number of different functions performed at the        same. Fig. 4 is a plan view, on an en
+                                                      larged   scale, of a portion of the controlling
+    the
+     atOr.
+          will and command of the distant oper mechanism.               Fig. 5 is an end view of the 125
+        It should be stated in advance in regard to side elevation.shows
+                                                      same.     Fig.6            the same mechanism in
+     the sensitive devices above mentioned, which tail of the mechanism.7 is Fig.
+                                                                            Fig.      a side view of a de
+    may be broadly considered as belonging to sectional view, on a larger scale,8 ofisaasensitive    central
+     one class, inasmuch as the operation of all
+    of them involves the breaking down of a device             forming part of the receiving-circuit. 130
+    minute thickness of highly-strained dielec system ina its
+                                                      Fig.  9 is    diagrammatic illustration of the
+                                                                        preferred form. Fig. 10 is a
+    tric, that it is necessary to make some provi view of the various
+    sion for automatically restoring to the dielec but on a larger scale, mechanisms             employed,
+                                                                                  and leaving out or indi
+
 
 --- SOURCE PDF PAGE 9 OF 13 ---
 
+  4                                        - 68,809
+  cating conventionally certain parts of well cylinder c, with insulating-heads c', through
+                                              which passes a central metallic rod c'. A
+  understood character.
+      Referring to Figs. 1 and .2, A designates
+                                              . .      small quantity of grains dof conducting ma 70
+                                                  any terial,   such as an oxidized metal, is placed in .
+   type of vessel or vehicle which is capable of the cylinder.             A metallic strip d', secured to
+5 being propelled and directed, It   suchbeasdesigned
+                                   may         a boat, an insulated post        d", bears against the side
+   a balloon, or a carriage.
+   to carry in a suitable compartment B objects of the cylinder c, connecting     one  part
+                                                                                            it with the con
+                                                                                             of the circuit. 75.
+                                                       ductor     C,  formin
+   of any kind, according to the nature of the The central rod c" is connected
+   uses to which it is to be applied. The ves the instrument and so to the to                      the frame
+to sel-in this instance a boat-is provided with of                                              other part of
+   suitable  propelling machinery, which is shown the circuit
+   as comprising a screw-propeller C, secured to the
+                                                                       through the forked metal arme,
+                                                            ends of which are fastened with two nuts
+   the shaftofan electromagnetic motor D, which to the projecting               ends of the rod, by which
+   derives its power from storage batteries E. E. means          the cylinder c is supported.
+                                                           In order to interrupt the flow of battery
+ 5 E. E. In addition to the propelling engine or current           which is started through the action
+    motor the boat carries also a small steering of the sensitive             device A, special means are
+    motor F, the shaft of which is extended be
+   yond its bearings and provided with a worm e'provided,             which are as follows: The armature
+   which meshes with a toothed wheel G. This ofcloses         the magneta, when attracted by the lat
+20 latter is fixed to a sleeve b, freely movable on ter,              a circuit containing a battery b" and
+    a vertical rod H, and is rotated in one or the net is fixedThe
+                                                        magnet.f.            armature-lever f' of this mag
+                                                                         to a rock-shaft f', to which is se 90
+    other direction, according to the direction of cured an anchor-escapement                  g, which con
+    rotation of the motor F.                            trols the    movements     of a spindleg,   driven by
+       The sleeve b on rod His in gear, through
+25 the cog-wheels H' and H', with a spindie G, ait clock-train             K. The spindleg has fixed to
+                                                           a diskg' with four pins b', so that for each
+    mounted in vertical bearings at the stem of oscillation             of the escapement g the spindleg'
+    the boat and carrying the rudder F.                 is turned through one-quarter of a revolu 95
+       The apparatus by means of which the op tion.               One of the spindles in the clock-train,
+    eration of both the propelling and steering
+ 30 mechanismsis controlled involves, primarily, as          h, is geared so as to make one-half of a
+                                                         revolution for each quarter-revolution of spin
+    a receiving-circuit, which for reasons before dle                The end of the former spindle ex o
+    stated is preferably both adjusted and ren tendsg'.through               the side of the frame and car
+    dered sensitive to the influence of waves or ries an eccentric                cylinder h, which passes
+    impulses emanating from a remote source, through                 a slot   in a  lever h", pivoted to the
+ 35 the adjustment being so that the period of side of the frame. The                    forked arm e, which
+     oscillation of the circuit is either the same as
+     that of the source or a harmonic thereof.           supports the cylinder c, is pivoted to the end Ibs
+        The receiving-circuit proper (diagrammat of eccentric              l', and the eccentric and said
+     ically shown in Figs. 3 and 10) comprises a arm           are connected by a spiral spring l. Two
+ 40 terminal E", conductor C, a sensitive device pins           i' i' extend out from the lever h", and
+     A, and a conductor A", leading to the ground one          of these is always in the path of a pro
+     conveniently through a connection to the jection               on arm e. They operate to prevent
+                                                         the turning of cylinder c with the spindle h C
+    metal keel B" of the vessel. The terminal E' and the eccentric. It will be evident that a
+ ?' should  present a large conducting-surface half-revolution of the spindle h will wind up
+ 45 and should be supported as high as practica the spring i and at the same time raise or
+    ble on a standard D', which is shown as broken
+    in Fig. 2; but such provisions are not always lower   the lever.h', and these parts are so ar
+    necessary. It is important to insulate very ranged
+                                                    the
+                                                            that just before the half-revolution of II5
+                                                        spindle is completed the pin i', in engage
+    well the conductor C' in whatever manner it ment with projection        or stop-pin p, is with
+ so be supported.                                   drawn  from its path, and the cylinder c, obey
+      The circuit or path just referred to forms
+    also a part of a local circuit, which latter in ing  the force of the spring i, is suddenly
+                                                    turned end for end, its notion being checked
+       cluides a relay-magnet a and a battery a', the by the other pin it. The adjustment rela
+ . . . electromotive force of which is, as before ex tively-to armature f' of magnet f is further
+ 55 plained, so determined that although the di more so made         that the pin is withdrawn at
+       electric layers in the sensitive device A" are
+       subjected to a great strain, yet normally they the  moment when the armature has nearly
+                                                      reached its extreme position in its approach. I 25
+       withstand the strain and no appreciable cur toward
+       rentflows through the local circuit; but when          the magnet-that is, when the leverl,
+  6o an electrical disturbance reaches the circuit which carries the armature f', almost touches
+       the dielectric films are broken down, the re the    lower one of the two stops ss, Fig. 5
+       sistance of the device A' is suddenly and which  The
+                                                             limits its motion in both directions. I 30
+                                                             arrangement just described has been
+       greatly diminished, and a current traverses the result    of long experimenting with the ob
+        the relay-magnet A.
+  65 The particular sensitive device employed ject         of overcoming certain defects in devices
+        is shown in general views and in detail in of     this kind, to which reference has been
+        Figs. 4, 6, 7, and 8. It consists of a metal made before. These defects I have found to
+                                                                                t
 
 
 --- SOURCE PDF PAGE 10 OF 13 ---
 
+                                             618,809                                          5
+
+   be due to many causes, as the unequal size, two heads, respectively, contact plates or seg
+   weight, and shape of the grains, the unequal ments f' i' extend on diametrically opposite
+   pressure which results from this and from the sides of the cylinder. The platej' is in elec 7o
+   manner in which the grains are usually agi trical connection with the frame of the in
+   tated, the lack of uniformity in the conduc strument through the head from which it ex
+   tivity of the surface of the particlesowing to tends, while insulted strips or brushes J J'
+   the varying thickness of the superficial oxi bear upon the free end or head of the cylin
+   dized layer, the varying condition of the gas der and the periphery of the same, respec 75
+   or atmosphere in which the particles are im tively. Three terminals are thus provided,
+   mersed, and to certain deficiencies, well known one always in connection with plate j', the
+   to experts, of the transmitting apparatus as other always in connection with the plate f",
+   heretofore employed, which are in a large and the third adapted to rest on the strips f'
+   measure reduced by the use of my improved and 'in succession or upon the intermediate
+   high-frequency coils. To do away with the insulating-spaces, according to the position
+   defects in the sensitive device, I prepare the in which the commutator is brought by the
+   particles so that they will be in all respects clock-train and the anchor-escapement g.
+   as nearly alike as possible. They are manu K" K", Figs. 1, 3, and 10, are two relay
+   factured by a special tool, insuring their equal magnets conveniently placed in the rear of .
+   ity in size, weight, and shape, and are then the propelling - engine. One terminal of a
+   unifornly oxidized by placing them for a battery k' is connected to one end of each of
+   given time in an acid solution of predeter the relay-coils, the opposite terminal to the
+   mined strength. This secures equal conduc brush J', and the opposite ends of the relay
+   tivity of their surfaces and stops their further coils to the brush J and to the frame of the 90
+   deterioration, thus preventing a change in instrument, respectively. As a consequence
+25 the character of the gas in the space in which of this arrangement either the relay K or K'
+   they are inclosed. I prefer not to rarefy the will be energized as the brush J' bears upon
+   atmosphere within the sensitive device, as the platei' or f', respectively, or both relays
+   this has the effect of rendering the former will be inactive while the brush J' bears upon 95
+   less constant in regard to its dielectric prop an insulating-space between the platesi and
+   erties, but merely secure an air-tight inclosure f'. While one relay, as K', is energized, its
+   of the particles and rigorous absence of mois armature closes a circuit through the motor
+   ture, which is fatal to satisfactory working. F, which is rotated in a direction to throw the
+      The normal position of the cylinder c is ver rudder to port. On the other hand, when re CO
+   tical, and when turned in the manner de lay K" is active another circuit through the
+35 scribed the grains in it are simply shifted motor F is closed, which reverses its direc
+   from one end to the other; but inasmuch as tion of rotation and shifts the rudder to star
+   they always fall through the same space and board. These circuits, however, are at the
+   are subjected to the same agitation they are same time utilized for other purposes, and Ios
+   brought after each operation of the relay to their course is, in part, through apparatus
+40 precisely the same electrical condition and which I shall describe before tracing their
+   offer the same resistance to the flow of the COS.
+   battery-current until another impulse from The fixed rod H carries an insulating disk
+   afar reaches the receiving-circuit.               or head I, Fig. 2, to the under side of which O
+      The relay-magnet a should be of such char are secured six brushes, 1, 2, 3, 4, 5, and 6,
+45 acter as to respond to a very weak current and Fig. 3. The sleeve b, which surrounds the
+   yet be positive in its action. To insure the re rod and is turned by the steering-motor F,
+   traction of its armature e' after the current has carries a disk L', upon the upper face of
+   been established through the magnet f and which are two concentric circles of conduct II5
+   interrupted by the inversion of the sensitive ing contact-plates. Brushes 1, 2, 3, and 4
+   device c, a light rod c is supported in guides bear upon the inner circle of contacts, while
+   on the frame in position to be lifted by an ex the brushes 5 and 6 bear upon the outer cir
+   tension k' of the armature-lever land to raise cle of contacts. The outer circle of contacts
+   slightly the armature e. As a feeble current comprises two long plates 7 and 8 on opposite
+   may normally flow through the sensitive de sides of the disk and a series of shorter
+55 vice and the relay-magnet a, which would be plates 9, 10, 11, 12, 13, and 14 in the front
+   sufficient to hold though not draw the arma and rear. Flexible conductors l l connect
+   ture down, it is well to observe this precau the plates 7 and 8 with the terminals of the
+   tion.                                          propelling - motor D, and the poles of the 25
+     The operation of the relay-magnet a and main battery E are connected to the brushes
+   the consequent operation of the electromag 5 and 6, respectively, so that while the rudder
+   net.f, as above described, are utilized to con is straight or turned up to a certain angle to
+   trol the operation of the propelling-engitue either side the current is conveyed through
+   and the steering apparatus in the following the brushes 5 and 6 and segments 7 and 8 to
+   manner: On the spindleg', which carries the the propelling-motor D. The steering-motor
+   escapement-disk g', Figs. 4 and 6, is a cyl F is also driven by current taken from the
+   inder i of insulating material with a conduct main battery E in the following manner: A
+   ing plate or head at each end. From these conductor 15 from one pole of the battery
 
 
 --- SOURCE PDF PAGE 11 OF 13 ---
 
+     6            -                            618,800
+
+   leads to one of the commutator-brushes, and direction.          Its rotation is opposed by a spring
+                                                     m", so that in normal operation, owing to the
+   from the other brush runs a conductor 16 to fact        that the circuits of motor - F are closed 7o
+   one of the contacts of each relay K" K".
+   When one of these relays, as K", is active, it but a short time, the lever ar', which is fas
+ 5 continues this circuit through a wire. 19 tened to one of the wheels of clockwork M,
+   through one field-coil or set of coils on the with which the armature of the motor is
+   motor F and thence to the brush 1. In a geared, will move but a short distance and
+   similar manner when the other relay K' is upon cessation of the current return to a stop 75
+   active the circuit is continued from wire 18 P; but if the circuits of the motor F are . .
+to through a wire 20, the second or reversing closed and opened rapidly insuccession, which
+   set of field-coils, and to brush 2.             - operation leaves the rudder unaffected, then
+      Both brushes 1 and 2 at all times when the the lever m'is moved to a greaterangle, com
+     adder is not turned more than about forty ing in contact with a metal plate n, and finally,
+   five degrees to one side are in contact with a if desired, with a post in'. Upon the lever m'.
+15 long conducting-plate 21, and one brush in coming in contact with plate in the current
+   any position of the rudder is always in con of the main battery passes either through one
+   tact with said plate, and the latter, is con or other or both of the lights supported on
+   nected by a flexible conductor 22 with the op standards        q q., according to the position of
+    posite pole of the main battery. Hence the brushes 3 and 4 relatively to the insulating
+20 motor F may always becaused to rotate in segment 23; but since the head L, carrying
+    one direction whatever may be the position the segments, is geared to the rudder the po
+    of the rudder, and may be caused to rotate sition of the latter is in a general way deter 90
+                                                     mined by observing the lights. Both of the
+   in either direction whenever the position of lights
+    the rudder is less than a predetermined an                may be colored, and by flashing them
+25 gle, conveniently forty-five degrees from the up whenever desired the operator may guide
+    center position. In order, however, to pre at        night the vessel in its course. For such
+    went the rudder from being turned too far in purposes also the standards r rare provided, ..
+    either direction, the isolated plate 23 is used. which    should be painted in lively colors, so 95
+    Any movement of the rudder beyond a pre as            to be visible by day at great distances.
+30 determined limit brings this plate under one By        opening and closing the circuits of motor
+    or the other of the brushes 1 2 and breaks Fa greater number of times, preferably de
+    the circuit of motor F, so that the rudder can termined beforehand, the lever m" is brought do
+    be driven no farther in that direction, but, in contact with post n', thus closing the cir
+    as will be understood, the apparatus is in cuit of the main battery through a device o
+35 condition to turn the rudder over to the other and bringing the latter into action at the mo
+    side. In like manner the circuit of the pro such  ment desired. By similar contrivances or .
+    pelling-motor Discontrolled through brushes.             as will readily suggest themselves to
+    5 and 6 and the segments on the outer circle mechanicians any number of different devices
+    of contacts of head L. If the short segments may        be operated.
+                                                         Referring now to Fig. 9, which illustrates
+40 on either side of the circle are insulated, the diagrammatically         the system as practiced
+     motor D will be stopped whenever one of the
+    brushes 5 or 6 passes onto one of them fro when           directing the movements of a boat, in
+                                                      this figure S designates any source of elec O
+    the larger segments 7 8.
+       It is important to add that on all contact trical disturbance or oscillations the genera
+45 points where a break occurs provision should tion of which is controlled by a suitable switch
+     be made to overcome the sparking and pre contained           in box T. The handle of the switch
+    went the oscillation of electrical charges in isfour movable in one direction only and stops on
+                                                             points t t at at', so that as the handle 115
+    the circuits, as such sparks and oscillations
+     may affect the sensitive device. It is this passes from stop to stop oscillations are pro
+50 consideration chiefly which makes it advis duced by the source during a very short time
+   able to use the two relaysKK", which other interval. There are thus produced four dis
+   wise might be dispensed with. They should turbances during one revolution and the re. .
+   be also placed as far as practicable from the ceiving-circuit is affected four times; but it 120
+   sensitive device in order to guard the latter will be understood from the foregoing descrip
+55 against any action of strong varying currents. tion of the controlling devices on the vessel
+ .     In addition to the mechanism described the that the rudder will be moved twice, once to
+    vessel may carry any other devices or appa right and once to left. Now I preferably place.
+    ratus as might be required for accomplishing the handle of the switch so that when it is ar 25
+    any special object of more orless importance. rested on points tt'-that is, to the right or
+6o By way of illustration a small motor m is left of the operator-he is reminded that the
+    shown, Figs. 1 and 3, which conveniently vessel is being deflected to the right or left
+    serves for a number of purposes. This motor from its course, by which means the control
+    is shown connected in series with the arma is facilitated. The normal positions of the 130
+... ture of the steering-motor F, so that when handle are therefore at u u' when the rudder
+65 ever either one of the circuits of the latter is is not acted upon, and it remains on the points
+    elosed through relays K' K' the motor m is to u' only so long as necessary. Since, as be
+    likewise rotated, but in all eases in the same fore stated, the working of the apparatus is
 
 
 --- SOURCE PDF PAGE 12 OF 13 ---
 
+                                              618,809
+     very sure, the operator is enabled to perform dle is moved quickly over two points, so that
+     any such operations as provision is made for the    circuit which would nove the rudder in
+     without even seeing the vessel.
+        The manner of using the apparatus and the time intervaldirection
+                                                     the opposite           is closed for too short a
+                                                                    to produce an appreciable ef
+     operation of the several instrumentalities
+     comprising the same is in detail as follows: fect    and is allowed to rest on the third point
+     Normally the plate L' is turned so that brush sition,the
+                                                     until     rudder is shifted to the desired po
+     2 rests upon the insulated segment, 23 and point, which the
+                                                            when      handle is moved to the next
+                                                                   again throws out both relays K' 75
+     brush 6 upon one of the insulated short seg and K". It will be understood that if the
+     ments in the rear of the circle. Under these handle be held for a sufficiently long time
+     conditions the rudder will be turned to star upon either point tort the motor F will sim
+     board and the circuit of motor D interrupted ply turn the plate I, in one direction or the
+     between brushes 5 and 6. At the same time other until the circuits of motors D and Fare
+     only one of the circuits of motor F-that con broken. It is furthermore evident that one
+     trolled by relay K'-is capable of being closed, relay K or K" will always be operative to
+     since brush 2, which connects with the other, start the motor F.
+     is out of contact with the long segment 21. As previously explained, the longest period
+    Assuming now that it is desired to start the of operation of which the motor F is capable
+    vessel and direct it to a given point, the han under ordinary conditions of use does not
+ 20 dle T is turned from its normal position on
+                                                     permit the motor m to shift the arm m' into
+     point u' to the point l on the switch-box. contact      with the plate n, but if the handle
+    This sends out an electrical disturbance, T be turned with a certain rapidity a series
+    which, passing through the receiving-circuit of current impulses will be directed through 90
+    on the vessel, affects the sensitive device A" motor n but as these tend to rotate the
+25 and starts the flow of current through the lo motor F in opposite directions they do not
+    cal circuit, including said device, the relaya, sensibly affect the latter, but act to rotate
+    and the battery a'. This, as has been pre the motor m against the force of the coiled
+    viously explained, turns the cylinderi and spring.
+    causes the brush J to pass from insulation The invention which I have described will 95
+    onto the contactf'. The battery k" is thus prove useful in many ways. Vessels or ve
+    closed through relay K", and the latter closes hicles of any suitable kind may be used, as
+    that circuit of the motor F which, starting life, despatch, or pilot boats or the like, or for
+    from plate 22, which is permanently con carrying letters, packages, provisions, in OO
+    nected with one pole of the main battery, is struments, objects, or materials of any de
+35 completed through the brush 1, the field of scription, for establishing communication
+    motor F, wire 19, the armature of relay K", with inaccessible regions and exploring the
+    wire 16, the motor n, the brushes and com conditions existing in the same, for killing or
+    mutator of motor F, and wire 15 to the oppo capturing whales or other animals of the sea,
+    site terminal of the battery E. Motor F is and for many other scientific, engineering, or Ios
+    thus set in operation to shift the rudder to commercial purposes; but the greatest value
+    port; but the movement of plate L' which
+    follows brings the brush 6 back onto segment of     my invention will result from its effect
+                                                     upon warfare and armaments, for by reason
+    8 and closes the circuit of the propelling-mo of its certain and unlimited destructiveness O
+    tor which starts the vessel. The motor F is it will tend to bring about and maintain per
+45 permitted to run until the rudder has been manent peace among nations.
+    turned sufficiently to steer the vessel in the     Having now described my invention, what
+    desired direction, when the handle Tis turned I claim is
+    to the point it. This produces another action 1. The improvement in the art of control II5
+    of the relay a and brush J' is shifted onto ling the movements and operation of a vessel
+    insulation and both relays K' and IX' are in or vehicle herein described, which consists in
+    active. The rudder remains in the position producing waves or disturbances which are
+    to which it has been shifted by the motor F. conveyed to the vessel by the natural media,
+    If it be then desired to shift it to starboard, actuating thereby suitable apparatus on the 2Cd
+    or in the opposite direction to that in which vessel and effecting the control of the pro
+55 it was last moved, the handle T is simply pelling-engine, the steering and other mech
+    turned to point t and allowed to remain there anism by the operation of the said apparatus,
+    until the motor F, which is now operated as set forth.
+    by relay K", the circuit of which is closed 2. The improvement in the art of control I 25
+    by strip J coming into contact with plate ling the movements and operation of a vessel
+    j', has done its work. The movement of or vehicle, herein described, which consists
+    handle T to the next point throws out both in establishing a region of waves or disturb
+    relays K' and K", and the next movement ances, and actuating by their influence ex
+    causes a shifting of the rudder to port, and erted at a distance the devices on sui) vessel
+    so on. Suppose, however, that after the rud or vehicle, which control the propelling, steer
+    der has been set at any angle to its middle ing and other mechanism thereon, as set forth.
+    position it be desired to shift it still farther 3. The improvement in the art of control
+    in the same direction. In such case the han ling the movements and operation of a vessel
 
 
 --- SOURCE PDF PAGE 13 OF 13 ---
 
+  8.. . .                                     618,809
 
+  or establishing
+     vehicle, herein  described,  which waves
+                                         consists   9. The sensitive device herein described 55
+  in              a region of electrical       or taining
+                                                  comprising  in construction
+                                                          a material            a receptacle
+                                                                     such as particles         con
+                                                                                        of oxidized
+  disturbances, and actuating by their influ metal forming       a part of the circuit, and means
+   ence, exerted at a distance, the devices on for turning the same end for end when the
+   said vessel or vehicle, which control the pro material has been rendered active by the pas
+   pelling, steering and other mechanism there sage through it of an electric discharge, as
+   on,4.asThe
+            setimprovement
+               forth.        in the art of control set10.forth.                  -.
+   ling the movements and operation of a vessel comprising in combination herein
+                                                            The   sensitive  device         described,
+                                                                                    a receptacle con
+ O or vehicle, herein described, which consists
+   in providing on the vessel a circuit control taining
+                                                      metal
+                                                               a material such as particles of oxidized
+                                                             forming   a part of an electric circuit,
+    ling the propelling, steering and other mech
+   anism, adjusting or rendering such circuit an          electromagnet in said circuit, and devices
+                                                      controlled thereby for turning the receptacle
+    sensitive to waves or disturbances of a defi end
+    nite character, establishing a region of such as setforforth.
+                                                                end when said magnet is energized, 7o
+    waves or disturbances, and rendering by their 11. The sensitivee device herein described,
+    means the controlling-circuit active or inac comprising in combination a receptacle con
+    tive,  as set forth.
+       5. The combination with a source of elec taining a material such as particles of oxidized
+20 trical waves or disturbances of a moving ves metal         forming part of an electric circuit, a
+                                                                            the receptacle; an electro 75
+    sel or vehicle, and mechanism thereon for pro magnet inrotating
+                                                      motor   for
+    pelling, steering or operating the same, and a escapement controlled the
+                                                                   circuit with       material, and an
+                                                                                 by said magnet. and
+     controlling apparatus adapted to be actuated adapted to permit a half-revolution         of the re
+     by the influence of the said waves or dis ceptacle when the said magnet is energized,
+     turbances
+25 set forth.    at a distance from  the   source, as  as set forth.
+                                         w
+       6. The combination with a source of elec or12.         The combination with a movable body.
+                                                          vehicle,  of a propelling-motor, a steering
+     trical waves or disturbances of a moving ves.
+   sel or vehicle, mechanism for propelling,steer motor
+                                                   moving
+                                                         and electrical contacts carried by a
+                                                           portion of the steering mechanism,
+   ing or operating the same, a circuit and means and adapted    in certain positions of the latter
+   therein for controlling said mechanism, and to interrupt the      circuit of the propelling-mo
+    means for rendering said circuit active or in tor, a local circuit     and means connected
+    active through the influence of the said waves therewith for controlling   the steering-motor,
+    or disturbances exerted at a distance from the and a circuit controlling the  local circuit and
+    Source, as set forth.                                 for rendering said controlling-circuit go"
+       7. The combination with a source of elec means
+    trical waves or disturbances and means for sensitive     to the influence of electric waves or
+    starting and stopping the same, of a vesselor source, at setexerted
+                                                   disturbances
+                                                                  forth.
+                                                                           at a distance from their
+                                                                                  .. . .
+    vehicle, propelling and steering mechanism 13. The combination           with the steering-mo
+ 40 carried thereby, a circuit containing or con tor, a local circuit for directing current 95.
+     nected with means for controlling the opera
+    tion of said mechanism and adjusted or ren through      the same in opposite directions, a .
+                                                   controlling-circuit   rendered sensitive to the
+     dered sensitive to the waves or disturbances influence of electric waves or disturbances ex
+     of the source, as set forth.
+       8. The combination with a source of elec erted   at a distance from their source, a motor
+     trical waves or disturbances, and means for in  circuit with the steering-motor but adapt Od
+     starting and stopping the operation of the ed to run always in the same direction, and
+     same, of a vessel or vehicle, propelling and a local circuit or circuits controlled by said
+     steering mechanism carried thereby, local cir motor, as set forth.
+ 50 cuits controlling said mechanisms, a circuit
+     sensitive to the waves or disturbances of the
+                                                                                NIKOLATESLA.
+     source and means therein adapted to control         Witnesses:
+                                                             RAPHAEL NETTER,
+     the said local circuits, as and for the purpose         GEORGE SCHERFF.
+     set forth.

@@ -1,62 +1,794 @@
 --- SOURCE PDF PAGE 1 OF 13 ---
 
-UNITED STATES PATENT OFFICE.
-PHILO T. FARNSWORTH
+Aug. 26, 1930.   P.A T. FARNswoRTH           1,773,980
+                  TELEVISION SYSTEM
 
-TELEVISION SYSTEM
-Specification of Letters Patent No. US 1,773,980
-Grant Date: 1930-08-26
+                  Filed Jan. 7, 1927    4 Sheefcs-Sheet   l
+
+
+
+
+                                  wmf
+
+
+
+
+                            mw.
+
+
+
+
+                                                      à: Si
+                                                   31a/venice ‘
+
+
+
+
+                                                     amena/3
+
 
 --- SOURCE PDF PAGE 2 OF 13 ---
 
-UNITED STATES PATENT OFFICE.
-PHILO T. FARNSWORTH, OF SAN FRANCISCO, CALIFORNIA, ASSIGNOR TO TELEVISION LABORATORIES, INC.
+Aug. 26, 1930.   P. T. FARNSWORTH            1,773,980
+                  TELEVIS ION SYSTEM
+
+                  Filed Jan. '7, 1927   4 sheets-sheen   2
+
 
 --- SOURCE PDF PAGE 3 OF 13 ---
 
-TELEVISION SYSTEM.
+Aug. 2_6, 1930.   P. T. FARNSWORTH            1,773,980
+                   TELEVI S ION SYSTEM
+
+                   Filed Jan. 7, 1927    4 Sheets-Sheet    3
+
+
+
+
+                                                          gluem/w15)
+
 
 --- SOURCE PDF PAGE 4 OF 13 ---
 
-Application filed January 7, 1927. Serial No. 159,639. Patent No. 1,773,980. Patented Aug. 26, 1930.
+Aug. 26, 1930.     P. T. FARNsWoRTH            1,773,980
+                    TELEVISION SYSTEM
+                    Filed Jan. '7, 1927   4 Sheets-Sheet   4
+
+
+
+
+      li7b1-2§91
+
 
 --- SOURCE PDF PAGE 5 OF 13 ---
 
-To all whom it may concern:
+ Patented Aug. 26, 1930                                                             1,773,980
+
+          UNITED STATES PATENT OFFICE
+     PHILO T. FARNSWORTH, OF BERKELEY, CALIFORNIA, -ASSIGNOIÈ BY MESNE ASSIGN
+        MENTS, TO TELEVISION LABORATORIES, INC., 0F SAN FRANCISCO, CALIFORNIA, A
+        CORPORATION OF CALIFORNIA
+                                         TELEVISION SYSTEM
+                            Application ñ1ed January 7, 1927. Serial No. 159,540.
+
+       Thi-s invention relates to a television appa the mechanically moving parts of the prior
+     ratus and process, that is, it is directed to an apparatus have not been able to travel at the
+   apparatus and process for the instantaneous necessary
+                                                   chronism
+                                                               speed requirements with the syn
+                                                              required  in a television apparatus.
+   transmission of a scene or moving image of
+   an object located at a distance in which the      An object of the present invention is to 55
+   transmission is by electricity.                 provide a method and apparatus for televi
+      Heretofore attempts have been made to sion, which is adapted to transmit electrically
+   transmit an image of an object by electricity a true moving image in full light shades of
+   so that the image of the object will instan theAnother
+                                                       object to be transmitted.
+                                                                object of the present invention is 60
+10 taneously  appear   at a distance. These  prior
+   attempts at television have generally em to provide          a method and apparatus for tele
+   bodied an apparatus and method in which vision         in which the conversion and dissecting
+   each particular elementary area of the image of the light shades of the objectl to be trans
+   of the object is successively converted into an mitted,
+                                                   such
+                                                            to electricity and the reconversion of
+                                                         electricity  to form an image is accom
+   electrical current, the intensity of which is plished in the following       manner:
+    proportional to the intensity of the light at In the process and apparatus         of the present
+    that particular elementary area; all the ele
+    mentary areas of the image being covered in invention, light from all portions of the ob.
+    that fraction of a second during which the eye ject whose image is to be transmitted, is
+20   will retain a picture, hereafter referred to as focused- at one time’ upon a light sensitive
+                                                plate of a photo-electrical cell to thereby de
+     the optical period. |This is followed by a velop
+     transmission of such current’and a conversion    an electronic discharge from said plate,
+   of such current to light corresponding in in in   which each portion of the cross section of
+                                                  such  electronic discharge will correspond in 75
+   tensity to the intensities of the light of the electrical intensity with> the intensity of light
+25 individual  areas of  the original image;  the
+   reconversion process likewise being per from whichthat
+                                                  imposed   on      portion of the sensitive plate
+   formed within the optical period so that, by nated. Such the  a
+                                                                      electrical discharge origi
+                                                                   discharge  is- herein termed an
+   a proper coordination of the developed light,
+   an image of the object to be transmitted ap-' electrical image. ‘An electrical shutter is then
+30 pears as instantly formed at the receiving end
+                                                  interposed between said sensitive plate and
+   of the apparatus and method.                ^  the anode of the photo-electrical cell, the
+        The timev during which the human eye will shutter having a small aperture therein so '
+      retain a picture is of such short duration that that there can be received upon said anode at
+      the conversion of the light shades of the orig one instant, only the electrons which origi
+    inal image of the object to electricity and the nate from one elementary area of the light
+                                                    sensitive plate. There is then imposed upon
+    reconversion of saidv electricity to lightand the
+    the roper coordination of such light must be         electrical discharge a plurality of elec
+    per ormed at a very tremendous speed. All       trical potentials of different frequencies for
+                                                    causing
+    prior attempts at television have attempted directions,  the electrical disch arge to bend in'two
+ 40 to employ some mechanically moving part
+                                                                 whereby the electrons from each
+   -for dissecting` the image of the original ob    elementary    portion of the sensitive plate are
+    ject during the process of forming an elec successively        directed through said shutter,
+                                                    this action taking place so as to completely
+      trical current which varies in intensity in ac
+    cordance vwith the light. shades of the cover      the >area ofthe sensitive plate within the
+                                                 optical  period. The scene to be transmitted
+   ~respective elementary areas of the image.-
+    None of these prior attempts at television is   thus analyzed or dissected to produce an
+                                                 electrical current', or “light” current having
+    have proven successful. They have resulted C)variations  in intensity in accordance with the
+    at best in the production of a crude moving
+    silhouette of the object to be transmitted.  light  shades  of the object to be transmitted
+ 50 This has generally been due to the fact that
+                                                 and  this  is accomplished   within the optical Í
+
 
 --- SOURCE PDF PAGE 6 OF 13 ---
 
-Be it known that I, PHILO T. FARNSWORTH, a citizen of the United States, residing at San Francisco, in the county of San Francisco and State of California, have invented certain new and useful Improvements in Television Systems, of which the following is a specification.
+                                              »       1,773,980
+
+
+    period without the necessity of employing t              Figure 2 is a diagrammatic view of the
+    any mechanically moving parts. ¿              -
+                                                 television receiver,
+      The produced electrical current or “light”    Figure 3 is a circuitdiagram of the elec
+    current may be transmitted to the _receiving trical connections for the television receiver,
+    end of the apparatus by either wires or may    Figure 4 is an elevation of one of the
+    be superimposed upon a wireless _carrier wave. oscillographs,                                _
+                                                                                                   70
+    There is also transmitted at the same time and   Figure 5 is a plan view of one of- lthe oscll
+    preferably superimposed upon the same car lographs,
+    rier wave, the two electric potentials of dif    Figure 6 is a perspective view of the light
+ 10 ferent frequencies which are employed in diverting means,
+    analyzing the image so that such currents ` Figure 7 is a sectional View of the photo 75
+    may be'employed t0 synchronize the receiv             electric cell,             '
+    ing apparatus and process.            ~
+                                                            Figure 8 is a section on the line 8-8 of
+      At the receiving end of the apparatus and Figure 7',y                 -
+   process, the “light” current is reconvertedto      Figure 9 is a section of the light rotator,
+   light and the light coordinated to form an         Figure l0~is an end view thereof,
+   image of the object transmitted in accordance ;. Figure 11 is a representation of the form ,
+   with the following apparatus and process.        of elec-tric current of the first oscillator em
+     Preferably a constant source of light is uti ployed in developing a potential for the
+ao lized which is directed“, first, through a polar photo-electric kicell,
+   izing prism and hence through an apparatus Figure l2 is a representation of' the form 85
+   or means by which the plane of' polarization of electric current produced in the second
+   of the light may be rotated by the flight” oscillator,
+   current. yIn this manner an instantaneous                Figure 13 is a representation of the result'
+   response to the variations of such light cur           in ' straight lined potential, f
+   rent is obtained inthe rotation' of the plane                                                            90
+                                                 Figure 14 isa -view of the scanning path
+   of polarization of the light.y The light is and also a view of the path of the light beam
+   then directed through a suitable Screen Cïlp21~~ over the receiving screen,
+   bleof shutting off the light in accordance         Figure 15 is a perspective View of a bi-axial
+  -with the rotation of its plane of polariza-y crystal    showing the conical refraction of un 95
+   tion. In this manner, a beam of light is polarized light,
+  developed fluctuating in intensity to the va    Figure 16 is a perspective view of a bi~r l
+  riations of intensity of the “light” current- axial crystaly showing the refraction of polar
+  transmitted without the necessity of employ f ized light, and,
+  ing any mechanically moving parts.' This
+  said beam of light is then projected by means of Figure
+                                                    the
+                                                            17 is a diagrammatic illustration
+                                                        path- of light through the gratings.
+                                                                                                            100
+  of two cooperating oscillographs upon the        Referring to the drawings, 2 represents
+  screen Where the image is-to be transmitted, an object, an image of which is to be trans
+` said oscillographs being  operated by they
+  synchronizing frequencies transmitted with mitted.  Said object may be an actual scene
+                                             0r a photograph, a projection of a motion
+  the “light” current ~to correctly coordinate picture film, or any other object. The object
+  the lightl upon the screen to form a correct
+  image.                         l                       2 is preferably illuminated, for example, by
+    The present invention, together with vari means    of an arc light 3 focused thereon by
+                                               a lens 4. 5 indicates a lens for focusing an
+  ous objects and advantages thereof will best image  of the object 2, upon the light sensi 11n
+  be understood from a description of a pre tive plate    6 of a photo electric cell 7.
+  ferred form or example of a process and ap     The photo~electric cell is preferably con
+  paratus for television embodying the inven             structed as follows:
+  tion. For this purpose, l have hereinafter               The light sensitive plate 6 or cathode of
+  set forth one form of example of a methodA
+ and apparatus for producing television in ,of the cell is preferably made flat and is formed 115
+                                                  a fine mesh screen 8, and said screen 8 is
+ accordance with the present invention, and
+ have illustrated said apparatus and method covered or coated with a light sensitive
+ as i-t is adapted for television by wireless. material   such as sodium, potassium, or ru
+                                               bidium. 10 'is the anode of the photo-electric
+ It is to be understood, however, that the in
+ vention is capable of various and numerous cell positioned at the other end of the cell.                  120
+ modifications, changes, and substitutions, Between
+                                              and
+                                                         the sensitive plate 6 and anode 10
+                                                    closely adjacent to anode 10 is placed
+ and is not necessarily limited to the trans~
+ mission by wireless or radio.                ’an electric shutter l1 formed by >a metallic
+   The apparatus and method will best be plate in which there is a small aperture l2.
+ understood from a description of the accom Between the shutter 11 and light sensitive
+ panying drawings, in which:              -   plate 6, four plates 13, 14, 15, and 16 are
+   Figure 1 is a diagrammatic view of a com   placed  at right angles to each other and out
+                                               side the path of elect-rons from the plate '6
+ plete television transmitter, including a cir to
+ cuit diagram therefor, '        v      '
+                                                  the shutter 11. Each opposed pair of the
+                                                        plates are connected to a source of electrical
+
 
 --- SOURCE PDF PAGE 7 OF 13 ---
 
-My invention relates to television systems and has for its primary object the provision of a system of television in which the scanning of the object or image is accomplished entirely electronically, without the use of any mechanically moving parts such as rotating disks, mirrors, or prisms.
+                                               1,773,980
+                                                                                                 3
+
+     potential of a different frequency. The circuit    in resonance with the frequency of the
+     photo-electric cell should be highly evacuf desired circuit. Said oscillator in turn pro
+                                                     vides a source of potential for a second oscil
+     ated, such for example as to 10'7 cm. mer      lating circuit of similar design, the second
+     cury to permit a high potential across the     oscillator operating at a higher frequency
+     cell without ionization.                       such, for example, as 500 kilo-cycles. The
+        The necessity for employing a high po
+     tential across the cell arises from the fact second oscillator comprises the tube 32, the
+                                                    plate 33 of which is charged with the oscil
+     that the photo electrons emitted from the latory
+     cathode 6 have a- small emission velocity oscillator  energy of the first oscillator. The first
+     which depends upon the color of the light 31’ to plate    is coupled thru the secondary coil
+     causing their emission. This emission cluded in series       3S, the inductance 234 being in
+                                                                     therewith. The inductance 34
+     Velocity is always small, of the order of that may be any suitable     radio frequency choke
+     which an electron would acquire by falling to prevent the high frequencies           in the sec
+     through a Volt or two, but it may have nearly ond oscillating circuit from being imposed
+     any direction. This haphazard motion tends the first oscillating` circuit. The plate §53 on
+                                                                                                      SO
+
+     to distort the~ electric image and is only pre connected through the primary 40 of' a radio   is
+     vented from doing so by making the poten~ frequency transformer and hence through the
+     tial between the cathode 6 and the anode capacity        41 with the grid 42. Capacities 43
+     10 high enough to insure that the time taken  and 44 are shunted around all or part of the
+     for an electron to traverse the distance be. primary 40 and a lead is connected from their
+     tween cathode 6 and anode 10 is so small that midpoint to the filament 30 of the tube -32.
+     the small velocity transverse to this path 'The grid 42 of the tube is connected through
+     produces no appreciable distortion. Hence a suitable leak 45 and negative bias battery
+     the vacuum in the photo-electric cell 7 should 4G with iilan'lcnt 39. It is understood that 90
+     be the highest obtainable.
+       The electrical potentials are provided by the  second oscillatingl circuit thus described
+25
+                                                 is only one example of a circuit adapted for
+    an oscillator 17, capable of developing' two thi s purpose and the various constants of the
+    different high frequency electrical currents. circuit. may be. of any value suitable for bring
+    Said oscillator 17 not only is required to pro ing the circuit into" resonance With the fre 95
+30 vide a source of oscillating energy but is re
+    quired to provide a form of oscillating en quency of the oscillations (50() kilo-cycles)
+   ergy, the wave form of which is composed desired         to be produced therein.
+                                                     The voltage of the first oscillator is adjust
+    of substantially straight lines, as Will be
+                                                   ed to be Well above the value required for i
+    hereinafter pointed out. Such a wave form maximum           plate current of the secondoscil 100
+35 is essential to accomplish a uniform lighting lator. Hence, since the second oscillator will
+    of all portions of the image which is to be ,generate oscillations only when the plate volt~
+       The oscillator comprises a tri-electrode age is positive, the current generated' by the
+    produced.             „                    ‘
+
+                                                     second oscillator will be similar to that shown
+      valve 2() connected in a circuit acting as -an in Figure 12. The harmonic oscillating cur 105
+40    oscillator to .produce an oscillating energy rent developed by the first oscillator is repre
+      of low frequency, such for example as 10
+      cycles per second. It is understood that any sented     in Figure 11. This current,`when im
+      customary or preferred form of circuit for current suchthe
+                                                      posed   upon       second oscillator, develops. a
+      this purpose may be employed, the particu which it ywill be illustrated
+                                                                      as             in Figure 12, in
+                                                                          seen that each positive cy
+45 lar circuit described beingr provided with a cle of the first harmonic current -produces a
+      grid leak 21 connected Wlth the grid 22 of series of harmonic oscillations in the second
+      the tube 20, and hence through a negative oscillator of substantially ‘equal intensity,
+      bias battery 23 to the filament 24. Thel fila n'hile during the negative period of the first
+      ment 24 is indicated as heated by a battery harmonic current, substantially no oscilla
+      25. The plate 26 of the tube is connected
+      through a battery 26’ and the choke coil 25’ tions The
+                                                             are developed in the second oscillator.
+                                                               output from the second oscillator is
+      to the filament 24. The plate 26 also con then imposed upon an audion circuit having .
+      nects through an inductance 27 and capacity a tube 48 with its grid 49 connected by a line
+       28’ with the grid. The inductance 27 is through the grid leak and grid condenser 5()
+       shunted by a fixed capacity 28 and a Variable to an inductance 51 inductively coupled to the
+       capacity 429 in series, one end of the series
+       being connected to the end ofthe induct inductance           40. Said secondary 51. is connect
+                                                       ed to the filament 52 ofthe au dion 48. Shunt
+       ance 27 and the other end having'a variable ed across the secondary 52 is a condenser 53
+       connection with said inductance. Between of value suitable. to produce resonance with
+ lill these capacities 28 and 29, a lead 31 is con
+                                                       the oscillations developed in the second os
+       nected which connects with the filament 24 cillator. TheV plate 54 and the audion 48 is
+       of the tube 20.           l                     connected by t-he lead -55 with the plate 15 of
+          By this connection, the constants of the os the photo-electric cell, and the opposed plate
+       cillating circuit may be any value of induc 16 of the photo-electric cell is connected by
+        tance and capacity to bring the oscillating'
+
 
 --- SOURCE PDF PAGE 8 OF 13 ---
 
-A further object of my invention is to provide an improved television transmitting tube (the Image Dissector) wherein an optical image of the scene to be transmitted is focused upon a continuous photoelectric surface (a cold photo-cathode) to liberate an electrical charge image or electron stream corresponding in cross-sectional density to the optical light values of the image.
+         4                                             1,773,980
+         a lead 56 through the battery 57 to the fila one megohm, in order that the'drop across
+         ment 52. The resistance 58 is shunted-'across ‘such resistance induced by the fluctuations of
+         the leads 55 and 56 to provide a potential for` light in the photo-electriccell ma be ampli
+         the plates 15 and 16.                           fied before being transmitted.    he shutter
+           The action of the audion circuit including A11 of the photo-electric cell is connected by
+         the tube 48 is to produce an alternating cur line 71 to the positive terminal ofthe battery 70
+         rent equal to the frequency developed in the 67 between the resistance 69 and the battery
+         ñrst oscillator but the Wave form of said fre 67 so that it operates at the same potential
+         quency is of substantially straight lines such, as the anode 10~of the cell but its current
+      10 for example, as indicated in Figure 13.      In supply does not pass through the lresistance
+        producinfr this Wave form, the audion tube 48 69                                                        75
+        operates c ue to the bias of the grid leak and The effect of the potential applied to the
+        condenser 50 to accumulate a charge during plates 13 and 14 is to cause the electric dis
+        the passage of each wave train indicated in charge from the light- sensitive plate 6 to be
+        Figure 12, and such accumulated charge leaks bent backend 'forth between the plates 13
+        ofi' during the interval between successive and 14 at a frequency corresponding to the 80
+        trains, so that the output of the audion 40 into frequency of the electric potential imposed
+        the plate circuit, indicated by the leads 55 and on the plates 13 and „.14 for example, 10
+        56 (passingr to the plates 15 and 16 of the cycles per second)-.` ` The e ect o'f the poten
+ 20 photo-electric cells) assumes the straight line   tial applied to the‘pla'tes 15 and 16 is to cause
+        form of Figure 13.                            the electric discharge from the light sensitive
+           There is also a duplicate form of audion plate to be bent back and forth between the
+        circuit for supplying a similar wave form of plates 15 and 16 at a>lfrequency correspond
+        electrical oscillations for the plates 13 and ing to the frequency of the electric potential
+25      14 of the photo-electric cell, said oscillations imposed on the platesd 13 and 14, (forexam
+        being, however, at a higher frequency such', ple, 5000 cycles per second). "The resulting 90
+       for example, as 5000 cycles per second. Inas effect is the same as if the opening 12 of the
+       -much as this circuit is identical except in shutter 11 was mechanically moved over the
+      » value of constants to the circuit just described,
+                                                 light sensitive plate in accordance with the
+       the parts corresponding to those numbered line shown in Figure l14, in which the sub 95
+        20 to 54 are numbered £20a to 54a. 1t is un-v stantially parallel lines indicate _the move-
+      A derstood that the oscillating tube 20a devel-. ment caused by the potential on theplates 15
+         ops a' harmonic oscillating current of 5000 and 16. The oscillations of the electric dis
+         cycles which will be imposed upon the oscil~ charge     in the direction at right angles to the
+         lator including the tube 32B, operating at 500 lines of Figure 14 is caused by the potential
+         kilo-cycles producing a straight line alternat on plates 13 and 14, causing the image on 103
+         ing current in tube 48a of a frequency of the plate 6 tobe traversed once every 1/20th
+        5000 cycles per second. The outputfromtube of       a second with a 10 cycle per second poten
+      " 48a to the plates 13 and 14 is from filament tial. During this period of time. the 5000
+      \ 52:", through resistance 58“, battery 57a, and cycle per second frequency imposed on plates
+        hence through a modulating tube 59 through 15 and 16 will have caused five hundred pas
+        the plate 60 thereof, and lto the filament » sages 'across the image asl contrasted with the
+        6l thereof, and hence to the plate 54n other television lattempts which have succeed
+        of the tube 48a. . The potential drop ed in securing only about thirty~fìve lines
+        across resistance 5821 is utilized to pro across the image during the optical period.
+        vide the potential for~ plates 13 and 14 through Moreover, it is understood- that the frequen 110
+        leads 55zt and 56a. The modulated tube 59 has cies imposedon the plates'v 1_3 to 16 inclusive
+        its grid 62 connected through the negative maybe        increased without limit (up to at least
+        bias battery 63 and condenser 64 with lead 56'      ten thousand kilo-cycles per second), giving
+wr.    while the ñlanient 61 is connected to lead 65
+       with the lead 55. _In this way, the, tube 61         any desired number of passages over the ilm      im
+                                                            age within the optical period.. or to make the
+       acts to modulate the low frequency from the          optical period as short as desired.~   ,
+       first oscillator circuit upon -the higher fre         j There’will now be described the apparatus
+    quency of the second-oscillating circuit.       utilized for amplifying the light current and
+      -The potential for the photo-electric cell is for transmitting such current on a wireless
+  ' provided by a battery 67. The negative ter carrier wave, together with the' two analyz 12D
+    minal of the battery 67 is connected by a line ingoscillator currents or potentials employed
+    70 with the light sensitive plate 6 of the on the plates _13 to 16 inclusive, of the photo
+    photo-electric cell and the positive terminal electric   cell'. `The transmitting means com
+      of the battery 67 is connected through a re           prises the tube’72, said tube operating both
+      sistance 69 to a lead 68 connecting-with the as an amplifier ofthe light current and as a
+      anode 10 of the photo-electric cell. The bat modulator of a further tube 7 3, it being il- ~
+      tery 67 has preferably a high potential, such lustrated as in a Heising modulatingcircuit.
+      ns th-e order of 1000 volts and the resistance ‘The tube 73 produöesa íirstl carrier wave'of
+      69 is of high. resistance such, for example, as       suitable frequency> such, for'example, as‘of     130 ‘
+
 
 --- SOURCE PDF PAGE 9 OF 13 ---
 
-The electron stream as a whole is accelerated toward an anode target at the opposite end of the tube by an electrostatic field, and is focused by a longitudinal magnetic focusing coil so that the cross-sectional distribution of electrons is maintained intact.
+                                            1,713,989                                         5
+ about 500 4kilo-cycles. For this purpose, the the filament 99. The tube 94 is part of la
+ tube is illustrated as having its plate 74 con Heising modulator that has its plate 102 con
+ nected by lead 75 with an inductance 76, the nected by a lead 103 through a radio fre
+ opposite end of which is connected through quency choke or resistance 104 to the positive
+ the condenser 77 to the grid 8 of the tube.    terminal of battery 105, the negative termi 70
+    The inductance 7 6 is tapped in the center nal of Which is connected with the filament
+ by a variable tap 79 which connects lto a 99. The lead 103 also connects with the radio
+ variable condenser 80 and hence by a line 81 frequency choke 106 to the late 107 of the
+ to the filament 82. The condenser _80 and the oscillator tube 95. The cholke 106 prevents '
+ coil 76 may have an values provided that the second carrier wave from being imposed 75
+ the condenser 80 an( the inductance 76 are upon the double modulatinof tube 94 While
+ adapted to bring the circuit in resonance with the choke or resistance 104 flilctuates the po
+ the carrier Wave to be produced. The line 8l tential supply to the plate 107 of the oscil
+ is also connected with the line 77 by a con lator 95 in accordance With the output of the
+ denser 82“, The grid 78 is also connected double modulating tube 94. The plate 107 80
+ with the filament 82 through a grid leak 84 connects With the lead 108 to an inductance
+ and negative battery 85. The potential for 109 producinv` the second carrier Wave, said
+ the tube 73 is provided by the battery 91, inductance being connected with the lead 110
+ through the resistance or choke 90. The tube through condenser 111 with the grid 112 of
+ 72 acts as a variable resistance across 90 and the oscillator tube 95. The filament 113 of 85
+ 91, increasing 0r decreasing the potential the tube is connected by lead 114 through a
+ drop and thereby ymodulating the potential variable condenser 115 to the inductance 109.
+ on plate 74 of the tube 73. The tube 72 has There is also a condenser 116 between the lead
+  its grid 86'connected by a negative bias bat  114 and the grid leak 110. The inductance '
+                                                is also connected with an antenna 117 or'other
+Ul tery 87 With the resistance 69, across which
+   there is imposed the “light” potential Where means for radiating the output from the
+y by said-“light” potential is amplified in the transmitter. The filament 113 is grounded
+   tube 7 3. The plate 88 of the amplifying and as indicated at 118.
+   modulating tube 72 is connected by a line         The receiver of the television >apparatus
+   89 through a choke or resistance 90 and a and process is constructed and operates as 95
+   battery 91, the negative side of 'which is con follows: Preferably there is employed a
+   nected with the filament 92 of the tube 72 source of- light of constant intensity, such as
+   and also With the filament 82 of the oscil an arc light 120 and to obtain a pencil of light
+   lating tube 73.                           1  '  therefrom, there is placed a shutter 121 with
+     The   choke 90 operates to fluctuate the  po~ a small aperture 122 in front of the arc light. 100
+Ul
+   tential supply to the plate of the oscillating The li ht from said shutter is then passed
+   tube in accordance With the amplified light throng
+                                                   dicated
+                                                            a polarizer 123. The ,polarizer is in
+                                                           as preferably in the form of a Nicol
+   current. In Athe lea-d between t e choke 90
+   and plate 74 is provided a choke 92 which prism. The polarized light from the Nicol
+   prevents the carrier Wave produced in the prism 123 is then passed through a lens 124 105
+  oscillator 73 from being imposed upon the which parallels the polarized light and the
+' amplifying and modulating tube 72 by the paralleled light is then passed through a de
+  circuit thus described. The carrier Wave pro vice 125 for rotating the plane of the polar
+  duced in the oscillator 73 is modulated by ized light. The device 125 may be any de
+  the amplified light current. This potential vice suitable for rotating the plane of the 110
+  is then imposed upon la double modulating polarized light in accordance with the fluctua
+  tube 94 which operates to modulate an oscil tions of the light current received at the re
+  lator 95 producing a second carrier Wave of ceiver. The method of receiving and sepa
+  higher frequency, such for example as 1500 rating this light current from the trans
+  kilo-cycles, or the Wave length to be trans mitted Wave Will be hereinafter pointed out. v115
+  mitt-ed'.                                      The preferred form of such device is illus'
+     Said double modulator tube 94 not only trated as comprising a means for producing
+  modulates the second carrier Wave with the a magnetic field 'fluctuating in accordance
+  modulated first carrier Wave from oscillator with   _the light current, such as the coil 126,
+                                                 surrounding   an electrically optically active
+  73, but also modulates said carrier Wave With
+  the analyzing potentials from the m‘odulator medium 127, such for example as a thin film
+  tube 59. The double modulating tube 94 has of iron, cobalt, or nickel, or carbon disulfide,
+  its grid 96 connected by lead 97 with a coil glass,'or any other material in Whicha beam
+  98, the coil 98 being connectedto the filament of polarized light rotates considerably when
+  99 of the double modulating tube. By this subjected to a magnetic field. I prefer to em 125
+  means, the output from the oscillator 7 3 is ploy carbon disulfide and said carbon disul
+  imposed upon the double modulating grid. fide is held in the core of the coil 126,by glass
+  rIÍhe analyzing potentials are imposed upon plates 128.                         '
+  the grid 96 by a lead 100 which connects across  The light from the light rotator 125 is then
+  ‘the resistance 58a and hence by a lead 101 to passed through a device adapted for restrict
+
 
 --- SOURCE PDF PAGE 10 OF 13 ---
 
-A pair of orthogonal magnetic deflection coils energized by sawtooth currents is disposed around the tube to deflect the entire electron image horizontally and vertically across a tiny fixed scanning aperture in the anode target.
+                                                   :1,778,980
+        ing the passage of light in accordanceqwith passes through’perpendicularly to the optic
+       its de ee of rotation. I preferably employ axis of the crystal.
+       a com ination of a pair of gratings 129 and       By means of the polarizer 123, light rotator
+       130 and a bi-axial crystal 131. The gratings' 125, and analyzer comprising the gratings 129
+    - 129 and 130 may be any usual form- of light and 1,30 andthe bi-axial crystal 131, the con
+      gratings, for example', 'ruled upon a silvered stant supply of light through arc light 120
+      transparent surface, and are placed at oppo is caused to produce. a li ht cgt, varying in
+      site ends or sides of the bi-axlal crystal with tensity, va lng in accor ance""with the in
+      their gratings opposed. The bi-axial crystal tensity
+      employed between the gratings -is adapted to coil126.of Thereby,.without
+                                                                  t e light current supplied tdrthe
+                                                                                     the employment
+      produce a conical refraction of the light. As of- any mechanical moving apparatus, the
+      an example of a suitable crystal of this kind, light current is reconverted into light.
+      I'have employed a crystal of arragonite one        Such lightis then passed through a lens 132
+      centimeter thick between the gratings ruled -by which it is focused upon a pair of cooper
+ 15 with 100 lines per millimeter. lWith » this , ating oscillographs 133 and 134. Said co
+      combination, the rotation between com lete operating oscillographs 133 and 134 are po
+      extinction and complete restoration is -o the sitioned at right angles one to the other and
+     order of two degrees. _Thus with. this .ana so that the light from one strikes the other
+     lyzer, very small currents may be employed- oscillograph. vSaid oscillographs are oper
+ 20 upon .the rotator, permitting the use of a ated at different frequencies with the result
+     coil of very high natural period.         =   ` 4that the light is by said oscillographs pro 85
+         The operation of this analyzer will best be
+     understood from Figures 15, 16 and 17, in jected        in horizontal vibrations, which are suc
+                                                      cessively lowered or raised vertically so that
+     which Figures 15, 16 and 17 there is disclosed the light'can pass through a lens 135 upon a
+ 25 how a. rotation of a few degrees will change
+                                                      screen 136 and covers successively an entire
+       complete extinction to complete restoration. rectangular area of said screen. The oscillo
+       A indicates a beam of light passing through ‘graphs 133 and 134 are operated by electri
+       the first gratin 129 and hence through the _cal currents of the frequencies of the two an
+       bi-_axial crysta 131 to the second -grating alyzer currents applied to the plates 13 to 16
+ 30    130, the lines 'of which are opposed to the of the photo-electric'cell so that the passage
+    lines of the grating- 129. If the beamfof light of the beam of light over the screen 136 is 95
+    passes directl through the bi-axia'l crystal in synchronism with the bending of the elec
+    1t is complete y extinguished by the lines o trical discharge from the sensitive plate 6 of
+   the grating 130 but if the plane of polariza the photo-electric cell and thereby each por- `
+35 tion of the beam A is rotated slightly, the ray
+                                                    tion of light is properly coordinated to pro
+   A will take the direction of the dotted lines duce a correct image of the object being trans 101
+   through the crystal and pass between the lines      mitted.                  '                    -
+   'of the gratin 130, a slight di?'erence in re      The details of the construction of the os
+      fraction of t e light in the bi-axial crystal cillographs 133 and 134 are shown in Figures
+40    131 being sufficient’ for this purpose.          4 and 5, only one of the oscillographs be 10!
+         In explanation of the> action of the bi-axial ing illustrated since they are of similar con
+      crystal 131, it is understood that the light struction. The oscillographs comprise a base
+      is directed on said crystal along one of its or body 137 of any suitable material. In the
+      optic axes. When this is done, the light is
+      refractedy to an extent depending on the posi center thereof, is mounted a quartz strip 138
+      tion of the plane of polarization. When un top.  havinfê a silvered mirror surface 139 at its 110
+                                                              aid quartz strip vibrator 138 is held`
+     polarized light from an aperture is directed in a holder 140 which is vertically adjustable ,
+  ’ on such a crystal along `one of its axes, said by a set-screw 141. The quartz strip vibra
+   - light will appear as a circle from the other tor is engaged at opposite sides and at points
+50    side of the crystal, but when a> beam of polar spaced apart slightly vertically by a pair of
+      ized light is directed along one of the axes of                                                 115
+      the crystal, it appears as a point of light lying quartz strips 142 and 143 laid horizontally
+                                                        and plated at the tops and bottoms by a
+      in the circle produced by the unpolarized metallic
+      light, but its position is dependent on the po at 144 andplating,  such as copper, as indicated
+                                                                  _145. The outer ends of such quartz
+      sition of the plane of polarization of the strips v142 and ‘143 engage guides 146 on the
+      beam of light. A 90 degree rotation of the body, and hence engage clamps 147 by which           120
+      plane of polarization of the beam of light 'they are held to carriers 148. The clamps 147
+ .» will rotate the light from the crystal from one are connected by adjusting screws 149 to the
+     side of the circle 8 to the opposite side. The body 137 by means of which the quartz strips
+     two extreme positions of a polarized beam of 142 and 143 may have their pressure against
+                                                                                                 125
+   light are indicated in Figure 15, by the two the quartz strip vibrator 138 adjusted. At
+   branches of the beam of light A. During the the    inner ends of the quartz strips 142 and 143
+   passage of the light through the bi~axial crys are'placed rests 149a over which are placed a
+   tal, the wave front of the beam of light re resilient material, such as rubber, and'there
+ - mains parallel and the wave front of the beam above is placed a further quantity of rubber.
+                                                                                                  130
+
 
 --- SOURCE PDF PAGE 11 OF 13 ---
 
-As the electron image is swept back and forth across the aperture in a raster pattern of parallel lines, the number of electrons entering the aperture at any instant is directly proportional to the brightness of that elementary pixel area of the original optical scene, producing a continuous electrical video signal.
+                                              1,773,980                                          7
+
+  Clamps 150 are placed over the top of the in         quartz strips of said oscillographs 133 being
+  ner ends of the quartz strips and connected          connected by a line 171 with a resistance 200
+  with adjusting screws 151 by means of which          shunted across line 170, and line 201 which
+  the vertical positions of the ends of the            line connects with the opposite side of the
+  quartz strips may be adjusted. It is under condenser 168. By this connection, the oscil
+  stood that in the showing of Figures 4 and lograph 133 is operated by the higher anal yz
+  5, the quartz strips are greatly exaggerated ing frequency, i'. e., the 500 cycles per .<sec
+  in thickness Ainasmuch as in practice such ond frequency. Said frequency also passes
+  strips are very thin, approximating the thick through the grid leak 172 to a grid 174 of a
+  ness of a sheet of paper, and are cut with their detector tube 173 wherein said frequency is 75
+  `thickness in the direction of the electric axis, detected to deliver from its plate 175 a poten
+  their length in the direction .of the axis of ex tial of the frequency of the íirst analyzing
+  tension and their Width along the optic axis current, or 10 cycles per second. The plate
+  of the crystal. The bottom-,sides of the strips 175 is indicated as connected by the line 176
+   142 and 143 are connected by lconductors 152 to the resistance 202 which is connected by a 80
+   While the top plating on the -strips is 'connect tap 203 to the top plating of the oscillograph
+   ed by conductors 153 connected with springs 134 and the bottom plating of the oscillo
+   154 at the top of the clamps 150.                graph 134 is'indicated as connected by line
+     Referring to Figure 3, the electrical appa 177 through the battery 178 to the filament 85
+   ratus for receiving the- transmitted Wave in 179 of the detector 173. The filament 179 is
+   the transmitter vand correctly applying the also connected by the lead 180 with the con
+   light current and analyzing currents to the denser 168. The resistance 200 and 202 pro
+   light rotator 125 and oscillographs 133 and vide a means for controlling the potential of
+   134 is as follows: 155 indicates a receiving        thecurrents applied to the oscillographs.
+   antenna or other means for collecting wire             1t will be readily apparent from the de      90
+   less _waves which antenna is connected              scription of the apparatus and operation
+   through an inductance 156 to a ground indi          thereof, how the detected light current im
+   cated at 157. Inductance 156 forms a pri            posed upon the coil 126 modulates the light
+   mary of a transformer in which the second           in accordance with the intensity of light at
+                                                the particular point from which said light 95
+30 ary 158 is in the grid circuit of a detector 159.
+     160 indicates a tuning condenser for bring current originated from the light sensitive
+                                                plate 6. It .will also be seen that said light
+   ing the receiver in resonance with the carrier
+   waive of the transmitter. The plate 161 is is projected upon the screen 136 by the oscil
+   indicated as connected to a pluralit of filters, lations of the oscillographs 133 and 134 to._ 10eY
+                                                    form a correct image of the object -trans
+35 the first of which comprises the inductance mitted, the light being caused to travel back
+   162, the voltage across Which-is applied to the
+   grid of a second detector 164. The first filter and forth across the screen similar to the ac
+   comprising the inductance 162 should be in tion' of the shutter 11 of the transmitter, mak
+     resonance with the first carrier wave de           ing the example given 500 reciprocations
+                                                      across the screen in covering the complete
+40 veloped in the transmitter oi'gtube 159 there area thereof, and said reciprocations are
+    of. There is thus imposed upon the grid of a
+    detector tube 164 a current comprising the made within a period of 1/20th of a second.
+    lightcurrent modulated upon the first car It      and
+                                                          is understood, however, that the process
+                                                            apparatus of the present invention is not
+    rier Wave formed in the transmitter. v In the
+    detector  164, such carrier  wave  is detected to necessarily limited to the use 0f the particu 110
+45
+    produce a current output from the plate 165, lar        frequencies given for the purpose of
+    which is equivalent to the light current de facilitating the description of ‘a preferred
+    veloped in the transmitter. Inv the second process and apparatus. ‘ `                          '
+
+    detector circuit 164, 166 indicates af condenser     'I he process and apparatus of the present
+                                                      invention permit the selection of such small 115
+50 for passing the high frequency and blocking elementary areas of the image to be trans
+    the low frequency currents, and 167 indicates mitted that the produced image on the screen
+     a battery for supplying the plate potential.
+     The plate 165 is indicated as connected with 136 follows all of the light shades of the
+     the coil 126 of the light rotator.                object, producing a correct image thereof.
+ 55    The complete circuit of the detector tube      This    is accomplished without the employ 126
+     159 also includes a condenser 168 of a capac   ment of mechanically moving parts, except
+     ity suitable for by-passing the high frequency ing the vibrating strips of the _oscillographs
+     of the first carrier wave which is detected by The apparatus is thus free from mechanical
+     the tube 164 and of a capacity to block the problems.
+     frequency of the analyzing current-s. Such ' While the process and apparatus for pro
+                                                                                                        ....u
+
+
+60
+     analyzing currents are therefrom. passed ducing television herein described is well
+     through a choke 169 and line 170 to one of the adapted for carrying out the objects of the
+     oscillogfraphs 133, connecting for example present invention, it is understood that va
+     with the top platings of both of the quartz rious modifications and changes may be made 139
+     strips thereof, the bottom plating of the without departing from the invention, and
+
 
 --- SOURCE PDF PAGE 12 OF 13 ---
 
-Referring to the drawings:
-Figure 1 is a schematic diagram of the complete television transmitter and receiver system.
-Figure 2 is a longitudinal sectional view of the Image Dissector camera tube.
-Figure 3 is a diagram of the magnetic deflection coils and sawtooth sweep generators.
-Figure 4 is a diagram illustrating the electronic raster scan pattern.
-Figure 5 is a sectional view of the target anode and scanning aperture.
+                                                                 1,773,980               `   Y
+
+
+        the invent-ion includes all such modifications substantially straight line wave form, utiliz
+        and changes as come within the scope of the ing said electrica potential' to analyze an
+        following appended claims.                                    image into elementary areas,2 producing a
+        `   I claim:
+                                                                      train of energy varying according to the in
+          1. The method of television which includes tensity of light of said areas, converting said
+        forming an electrical image, and traversing train of energy into light varying according
+        eachelementary area of the elect-rical image to the light of said areas, and utilizing said
+        by an electric shutter at a velocity sufficient electric potential of substantially straight
+        to cover the entire image within the optical line wave form to correlate successive por
+                                                                      tions of said light.       u                -
+        p 2.
+         eriod.
+             The process of televisilQn
+                                - '_ , . which
+                                             _ com'                     .10. A method of television which com
+       prises forming an electrical image, moving prises producing two electrical                         otentials
+       said electrical image in more than one direc                  of different frequencies, each of said electri
+       tion by an analyzing potential, and varying cal potentials having substantially straight
+       the intensity of an electric current in accord
+                                                   line wave forms',- causing said electrical po-'
+       ance with the position of the electrical image. >tentials to analyze an image into elementary
+         3. The method of television which com areas. producing a train of energy varying
+       prises focusin an image of an object upon according to the intensity of light of said
+       the sensitive pâtel of a photo-electric cell, 1m areas, and converting said train of energy
+       posing a shutter in the path of the> electrical into light-varying -according to the light of
+       discharge from said plate, and forming trans                                                                   85
+                                                                     said areas.                           .
+       verse to the electrical discharge two electrical                l1. A , method of television which com
+       potentials of different frequencies.      prises producing two electrical potentials of
+         4. An apparatus for picture d‘issecting different frequencies, each of said electrical
+       comprising a cell having a plate of photo sen                 potentials having substantially straight line
+    sitive material, an anode', a plurality of plates wave forms, causing said electrical potentials 90
+    positioned between the photo sens-itive plate to analyze an image 'into element-ary areas,
+    and anode, and-means for imposing upon'said producing a train of energy varying accord
+    plates a plurality of electrical `potentials vof ing to the intensity of light of said areas, con
+ 30 diii'erent frequencies.A                          verting said train of energy into light vary
+       5. An apparatus for dissecting an image ing according to the light of said areas, and 95
+    comprising a cell having a photo sensitive causing said electrical potentials of different
+    plate, an anode, a shutter between the anode 'frequencies to correlate successive portions of
+    and plate, and electrical means for bending said light to reform said image.
+ 35 the electrical discharge from said plate.           12. Ina system of television, analyzing an
+      6. The method of television/which com image into elementary areas by causing a
+     ‘ prises forming an electrical discharge, which .scanning device to scan all elements of said
+       >corresponds in cross section in electrical in image successively at a substantially uniform
+    tensity to the light intensity of an image to -velocity, over a'continuous path reciprocating
+ 40 be transmitted, transmitting successive por      transversely of the image and the reciproca
+    tions of said electricdischarge, and modulat tions having a slow motion transverse thereto. 105
+   ing light thereby.                         '   '    13. A method of television which comprises
+      7. tA method of television which comprises forming an electrical image, moving the im
+   analyzing an image into elementary areas„ age in two directions over an electrical shut-l
+   producing a train of. energy -varying accord ]ter having a small aperture, thus forming an
+   ing to the intensity of light of said areas, all electrical current which is a function of the '110
+   of the 'elementary areas being covered with~ intensity ofthe portion of the electrical im
+   in the opticalv period. causing said train of age at said aperture.              A
+ ' energy to modulate a'source ofv llight of con       14. A method   of television   which comprises
+50 sta'nt intensity according to the vlightfpf said
+                                                    4.forming an electrical image, impressing upon 115
+   areas, and correlating successive portions of said image two electrical potentials of dif- ~
+  ' said light to reform said image, said latter
+                                               ferent- frequencies, thereby causing said im
+     operation being completed within the opti age to move in two directions respecting an
+55
+     cal    period.       _   '     ~   ,   ~   Y
+                                                    electrical shutter and forming an electric cur
+                                                    y       ’
+
+
+       8. A method of `television which com rises rent from the portion of the electrical image 120
+     producing an electrical oscillation having a registered with the electrical shutter.
+     substantially straiojht line wave form, utlliz   15. An apparatus for television which com
+    ing said electrical- potentiallto analyze an prises means for forming an electrical image,
+    image into elementary areas, producing a and means for scanning each elementary area
+150 train of energy'varying according- to the in
+                                                    of the electrical image, andA means for produc
+    tensity of light 'of said areas, and converting ing a train of electrical energy in accordance 125
+     said vtrain of energy into light varying ac -with the intensity of _the elementary area of
+     cording to the light of said areas.-               >       l . the electricalimage being scanned. `
+       9. A method of television which comprises       16. An apparatus for television which com- '
+     producing. an4 electrical oscillation having a. prises means for forming an electric image,
+
+
+
+
+__
+
 
 --- SOURCE PDF PAGE 13 OF 13 ---
 
+                                                 1,773,980
+     means for >moving said electric image in more
+     than one direction by an analyzing potential,
+     and means for varying the intensity of 'an
+     electrical current in accordance with the po
+ s sltion of the electrical image.                 i
+       17. An apparatus for television which ‘com
+      rises means for focusing an image of an ob
+     ject upon the sensitive plate of aphoto-electric
+     cell, said photo-electric cell having an anode
+10 therein to receive an electrical discharge from
+   said plate, said cell having a shutter in the
+   path of the electrical discharge from the sen
+     sitive plate, said cell having plates positioned
+   transverse to the electrical discharge, and
+15 means for imposin upon said plates electri
+     cal potentials of di erent frequencies.
+       18.- An apparatus of the class described, in
+ y cluding an oscillator, an oscillator of higher
+     frequency operated by the oscillations from
+20 the ñrst oscillator, thereby producing succes--
+   sive trains of oscillations during the positive
+     cycle of oscillations of the iirst oscillator, a
+     device for accumulating and discharging said
+     oscillations thereby producing oscillations
+25 having substantially straight lined wave
+   form, similar means producing an alternating
+   potential of straight lined wave form and
+   higher frequency, means for utilizing said po
+   tentials to scan an image in two directions,
+30 means for modulating the lower frequency
+     upon the higher frequency, means for produc
+     ing a train of energy varying in intensity in
+   accordance with the area scanned, means for
+   modulating a carrier wave with said train of
+35 energy and said scanning potentials, mea-ns
+   for receiving and detecting said train of en
+   ergy and said analyzing potentials, means for
+   modulating the light in accordance with said
+   analyzing potentials, and means for correlat
+40 ing said -light to form an image actuated by '
+     sa1d potentials having straight line wave
+     forms.                    '   '   '
 
+
+       Signed at San Francisco, California, this
+     21st day of December, 1926.
+45               PHILO T.> FARNSWORTH.
+
+
+
+50
+
+
+
+
+60
+
+
+
+
+65

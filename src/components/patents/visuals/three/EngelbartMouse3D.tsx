@@ -23,50 +23,6 @@ import { usePatentAudio } from "./usePatentAudio";
 
 type CameraPreset = "iso" | "wheels" | "xray" | "top" | "crt";
 
-interface ScenarioPreset {
-  id: string;
-  name: string;
-  desc: string;
-  speed: number;
-  trajectory: "figure8" | "circle" | "horizontal" | "vertical";
-  cpi: number;
-}
-
-const _SCENARIOS: ScenarioPreset[] = [
-  {
-    id: "horizontal",
-    name: "Pure X-Axis Tracking",
-    desc: "Horizontal motion spins X-wheel 100%; Y-wheel skids laterally on its knife edge without spinning.",
-    speed: 140,
-    trajectory: "horizontal",
-    cpi: 200,
-  },
-  {
-    id: "vertical",
-    name: "Pure Y-Axis Tracking",
-    desc: "Vertical motion spins Y-wheel 100%; X-wheel skids laterally on its knife edge without spinning.",
-    speed: 140,
-    trajectory: "vertical",
-    cpi: 200,
-  },
-  {
-    id: "figure8",
-    name: "1968 'Mother of All Demos'",
-    desc: "Complex 2D curve motion simultaneously driving dual independent potentiometers into oN-Line System (NLS).",
-    speed: 160,
-    trajectory: "figure8",
-    cpi: 200,
-  },
-  {
-    id: "highres",
-    name: "Precision Coordinate Sampling",
-    desc: "High-resolution 400 CPI encoding demonstrating fine microsecond potentiometer voltage gradients.",
-    speed: 80,
-    trajectory: "circle",
-    cpi: 400,
-  },
-];
-
 export function EngelbartMouse3D() {
   const containerRef = useRef<HTMLDivElement>(null);
 
@@ -74,10 +30,10 @@ export function EngelbartMouse3D() {
   const { params, updateParam } = usePatentPhysics("us-3541541-engelbart-mouse");
   const [showUiOverlay, setShowUiOverlay] = useState<boolean>(true);
   const displacementSpeedMmSec = params.mouseSpeed ?? 140;
-  const [mouseTrajectory, setMouseTrajectory] = useState<
+  const [mouseTrajectory, _setMouseTrajectory] = useState<
     "figure8" | "circle" | "horizontal" | "vertical"
   >("figure8");
-  const [cpiResolution, setCpiResolution] = useState<number>(200);
+  const cpiResolution = params.cpiResolution ?? 200;
   const [isClicking, setIsClicking] = useState<boolean>(false);
   const [isXRayMode, setIsXRayMode] = useState<boolean>(false);
   const [showCalloutPins, setShowCalloutPins] = useState<boolean>(false);
@@ -136,15 +92,6 @@ export function EngelbartMouse3D() {
         break;
     }
     controls.update();
-  };
-
-  const _applyScenario = (s: ScenarioPreset) => {
-    updateParam("mouseSpeed", s.speed);
-    setMouseTrajectory(s.trajectory);
-    setCpiResolution(s.cpi);
-    if (!isAudioMuted) {
-      soundEngine.playMicroswitchClick();
-    }
   };
 
   const _handleManualClick = () => {

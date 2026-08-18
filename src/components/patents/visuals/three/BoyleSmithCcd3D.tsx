@@ -14,55 +14,6 @@ import { usePatentAudio } from "./usePatentAudio";
 
 type CameraPreset = "iso" | "potential_well" | "sensing_node" | "gate_electrodes" | "top";
 
-interface ScenarioPreset {
-  id: string;
-  name: string;
-  desc: string;
-  phaseFreqHz: number;
-  lux: number;
-  voltageV: number;
-  ctePct: number;
-}
-
-const _SCENARIOS: ScenarioPreset[] = [
-  {
-    id: "bell_1969_first_device",
-    name: "1969 Bell Labs 8-Bit Line Shift Register",
-    desc: "Boyle and Smith's original 3-phase charge transfer channel on n-type silicon with gate oxide potential wells.",
-    phaseFreqHz: 2,
-    lux: 450,
-    voltageV: 10.0,
-    ctePct: 99.99,
-  },
-  {
-    id: "hubble_wfpc2",
-    name: "Hubble WFPC2 Scientific Imaging",
-    desc: "Cryogenically cooled CCD array operating with ultra-high 99.999% CTE for photon-counting astronomical exposures.",
-    phaseFreqHz: 1,
-    lux: 80,
-    voltageV: 14.0,
-    ctePct: 99.999,
-  },
-  {
-    id: "low_light_astronomy",
-    name: "Low-Light Deep-Sky Readout",
-    desc: "Ultra-clean slow-scan readout clocking isolated packets of under 500 photoelectrons across 1,024 transfer gates.",
-    phaseFreqHz: 1,
-    lux: 15,
-    voltageV: 12.0,
-    ctePct: 99.995,
-  },
-  {
-    id: "saturation",
-    name: "Full-Well Blooming Overexposure",
-    desc: "Extreme 1200 Lux illumination exceeding 160,000 electron capacity and spilling over channel barriers.",
-    phaseFreqHz: 3,
-    lux: 1200,
-    voltageV: 8.0,
-    ctePct: 99.85,
-  },
-];
-
 export function BoyleSmithCcd3D() {
   const containerRef = useRef<HTMLDivElement>(null);
 
@@ -70,11 +21,11 @@ export function BoyleSmithCcd3D() {
   const { params, updateParam } = usePatentPhysics("us-3923554-boyle-smith-ccd");
   const [showUiOverlay, setShowUiOverlay] = useState<boolean>(true);
   const [clockPhase, _setClockPhase] = useState<1 | 2 | 3>(1);
-  const [incidentLux, setIncidentLux] = useState<number>(450); // 50 to 1200 Lux
+  const incidentLux = params.incidentLux ?? 450;
   const gateVoltageV = params.gateVoltage ?? 10;
-  const [transferEfficiencyPct, setTransferEfficiencyPct] = useState<number>(99.99); // 99.0 to 99.999%
+  const transferEfficiencyPct = params.transferEfficiencyPct ?? 99.99;
   const [isAutoClocking, _setIsAutoClocking] = useState<boolean>(true);
-  const [clockSpeedFactor, setClockSpeedFactor] = useState<number>(2); // 1 to 10 Hz
+  const clockSpeedFactor = params.clockSpeedFactor ?? 2;
   const [showCalloutPins, setShowCalloutPins] = useState<boolean>(false);
   const [activeCamera, setActiveCamera] = useState<CameraPreset>("iso");
   const { isAudioMuted, toggleSound: toggleEngine } = usePatentAudio();
@@ -134,16 +85,6 @@ export function BoyleSmithCcd3D() {
         break;
     }
     controls.update();
-  };
-
-  const _applyScenario = (s: ScenarioPreset) => {
-    setClockSpeedFactor(s.phaseFreqHz);
-    setIncidentLux(s.lux);
-    updateParam("gateVoltage", s.voltageV);
-    setTransferEfficiencyPct(s.ctePct);
-    if (!isAudioMuted) {
-      soundEngine.playSwitchClick();
-    }
   };
 
   const toggleSound = () => {

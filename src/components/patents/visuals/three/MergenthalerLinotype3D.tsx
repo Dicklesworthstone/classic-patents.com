@@ -3,6 +3,7 @@
 import { Activity, Camera, Sparkles, Volume2, VolumeX, Zap } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import * as THREE from "three";
+import { LINOTYPE_CHARS_PER_LINE, stepMergenthalerLinotype } from "@/physics/machineKernels";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { soundEngine } from "@/utils/soundEngine";
 import { createThreeStudioScene, type StudioContext } from "./ThreeStudioScene";
@@ -45,15 +46,23 @@ export function MergenthalerLinotype3D() {
   // Linotype Mechanical Composing Parameters
   const { params, updateParam } = usePatentPhysics("us-313224-mergenthaler-linotype");
   const [showUiOverlay, setShowUiOverlay] = useState<boolean>(true);
-  const castingLpm = params.castingLpm ?? 6.0;
-  const potTempC = 280; // Lead-tin-antimony alloy
-  const charsPerLine = 42;
-  const charsPerHour = Math.round(castingLpm * charsPerLine * 60);
+  const matrixRate = params.matrixRate ?? 60;
+  const spacebandWedge = params.spacebandWedge ?? 6.5;
+  const potTempC = params.potTemp ?? 260;
+  const castingLpm = matrixRate / LINOTYPE_CHARS_PER_LINE;
+  const charsPerHour = Math.round(matrixRate * 60);
+  const linotypeIdle = stepMergenthalerLinotype({
+    matrixRatePerMin: matrixRate,
+    spacebandWedgeMm: spacebandWedge,
+    potTempC,
+  });
   const [activeCamera, setActiveCamera] = useState<CameraPreset>("iso");
   const { isAudioMuted, toggleSound: toggleEngine } = usePatentAudio();
 
   const live = useLiveSimParams({
-    castingLpm,
+    matrixRate,
+    spacebandWedge,
+    potTempC,
     isAudioMuted,
   });
 
@@ -92,7 +101,7 @@ export function MergenthalerLinotype3D() {
   };
 
   const applyScenario = (s: ScenarioPreset) => {
-    updateParam("castingLpm", s.castingLpm);
+    updateParam("matrixRate", s.castingLpm * LINOTYPE_CHARS_PER_LINE);
     if (!isAudioMuted) {
       soundEngine.playSwitchClick();
     }
@@ -212,18 +221,30 @@ export function MergenthalerLinotype3D() {
     keyDeck.rotation.x = Math.PI / 8;
     rootGroup.add(keyDeck);
 
-    // Animation Loop
+    const fallingMatrix = new THREE.Mesh(new THREE.BoxGeometry(0.18, 0.32, 0.08), brassMat);
+    fallingMatrix.position.set(0, 2.4, 0.4);
+    rootGroup.add(fallingMatrix);
+
     let reqId: number;
     const clock = new THREE.Clock();
 
     const animate = () => {
       reqId = requestAnimationFrame(animate);
-      const _delta = clock.getDelta();
       const p = live.current;
+      const step = stepMergenthalerLinotype({
+        matrixRatePerMin: p.matrixRate,
+        spacebandWedgeMm: p.spacebandWedge,
+        potTempC: p.potTempC,
+        elapsedS: clock.getElapsedTime(),
+      });
 
-      // Pump plunger stroke cycle
-      const pumpFreq = (p.castingLpm / 60) * 2 * Math.PI;
-      plungerRod.position.y = 1.2 + Math.sin(clock.getElapsedTime() * pumpFreq) * 0.25;
+      plungerRod.position.y = 1.2 + step.plungerY;
+      moldDisk.rotation.y = step.moldAngle;
+      leadSlug.visible = step.slugOut;
+      leadSlug.position.x = 0.6 + (step.slugOut ? (step.phase - 0.72) * 4 : 0);
+      fallingMatrix.position.y = 2.6 - step.phase * 2.4;
+      fallingMatrix.visible = step.phase < 0.55;
+      leadMetalMat.color.setHex(step.isEutecticTemp ? 0x94a3b8 : 0x475569);
 
       renderer.render(scene, camera);
     };
@@ -234,7 +255,7 @@ export function MergenthalerLinotype3D() {
       cancelAnimationFrame(reqId);
       studio.cleanup();
     };
-  }, [live.current]);
+  }, [live]);
 
   return (
     <div className="relative w-full h-[620px] bg-parchment-900 rounded-2xl overflow-hidden border border-parchment-700 shadow-2xl flex flex-col">
@@ -315,7 +336,9 @@ export function MergenthalerLinotype3D() {
             </div>
             <div className="bg-parchment-900/80 px-3 py-1.5 rounded-lg border border-parchment-700/50 flex flex-col">
               <span className="text-[10px] text-parchment-400 uppercase">Melting Pot Temp</span>
-              <span className="font-bold text-red-400">{potTempC}°C (Molten Alloy)</span>
+              <span className="font-bold text-red-400">
+                {potTempC}°C {linotypeIdle.isEutecticTemp ? "(eutectic)" : "(off-eutectic)"}
+              </span>
             </div>
             <div className="bg-parchment-900/80 px-3 py-1.5 rounded-lg border border-parchment-700/50 flex flex-col">
               <span className="text-[10px] text-parchment-400 uppercase">Justification Method</span>
@@ -352,7 +375,9 @@ export function MergenthalerLinotype3D() {
                 max="10"
                 step="0.5"
                 value={castingLpm}
-                onChange={(e) => updateParam("castingLpm", Number(e.target.value))}
+                onChange={(e) =>
+                  updateParam("matrixRate", Number(e.target.value) * LINOTYPE_CHARS_PER_LINE)
+                }
                 className="w-full accent-amber-500 cursor-pointer"
               />
               <span className="text-xs font-mono text-amber-400 w-12 text-right font-bold">

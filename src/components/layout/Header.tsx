@@ -20,6 +20,7 @@ export function Header() {
   const pathname = usePathname();
 
   const isLinkActive = (href: string) => {
+    if (!pathname) return false;
     if (href === "/") return pathname === "/";
     return pathname.startsWith(href);
   };
@@ -67,7 +68,7 @@ export function Header() {
           <Link
             href="/"
             className={`px-2.5 py-1.5 rounded-lg transition-colors font-sans ${
-              pathname === "/"
+              isLinkActive("/")
                 ? "bg-amber-100/80 dark:bg-amber-950/60 text-amber-900 dark:text-amber-300 font-bold"
                 : "text-ink-700 dark:text-parchment-300 hover:text-amber-800 dark:hover:text-amber-400"
             }`}
@@ -77,7 +78,7 @@ export function Header() {
           <Link
             href="/timeline"
             className={`px-2.5 py-1.5 rounded-lg transition-colors font-sans ${
-              pathname.startsWith("/timeline")
+              isLinkActive("/timeline")
                 ? "bg-amber-100/80 dark:bg-amber-950/60 text-amber-900 dark:text-amber-300 font-bold"
                 : "text-ink-700 dark:text-parchment-300 hover:text-amber-800 dark:hover:text-amber-400"
             }`}
@@ -87,7 +88,7 @@ export function Header() {
           <Link
             href="/about"
             className={`px-2.5 py-1.5 rounded-lg transition-colors font-sans ${
-              pathname.startsWith("/about")
+              isLinkActive("/about")
                 ? "bg-amber-100/80 dark:bg-amber-950/60 text-amber-900 dark:text-amber-300 font-bold"
                 : "text-ink-700 dark:text-parchment-300 hover:text-amber-800 dark:hover:text-amber-400"
             }`}

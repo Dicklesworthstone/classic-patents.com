@@ -15,58 +15,14 @@ import { usePatentAudio } from "./usePatentAudio";
 
 type CameraPreset = "iso" | "spark_gap" | "induction_coil" | "aerial_monopole" | "top";
 
-interface ScenarioPreset {
-  id: string;
-  name: string;
-  desc: string;
-  heightM: number;
-  gapMm: number;
-  coilKv: number;
-}
-
-const _SCENARIOS: ScenarioPreset[] = [
-  {
-    id: "marconi_1896_patent",
-    name: "1896 Wireless Patent (US 586,193)",
-    desc: "Guglielmo Marconi's breakthrough: Elevated vertical aerial antenna paired with low-impedance earth ground plate.",
-    heightM: 30,
-    gapMm: 10,
-    coilKv: 20,
-  },
-  {
-    id: "salisbury_plain_1897",
-    name: "1897 Salisbury Plain 4-Mile Trial",
-    desc: "First official British Post Office military demonstration transmitting clear Morse code across 4.5 miles of terrain.",
-    heightM: 45,
-    gapMm: 14,
-    coilKv: 30,
-  },
-  {
-    id: "transatlantic_1901",
-    name: "1901 Transatlantic Morse 'S' Signal",
-    desc: "2,100-mile historic transmission from Poldhu, Cornwall to Signal Hill, Newfoundland defying curved-earth skeptics.",
-    heightM: 60,
-    gapMm: 22,
-    coilKv: 50,
-  },
-  {
-    id: "tabletop_laboratory",
-    name: "Villa Griffone Laboratory Test",
-    desc: "Early Bologna garden experiments testing Righi spark oscillator triggering Branly coherer through stone walls.",
-    heightM: 15,
-    gapMm: 6,
-    coilKv: 12,
-  },
-];
-
 export function MarconiRadio3D() {
   const containerRef = useRef<HTMLDivElement>(null);
 
   // Spark-Gap Radio State Controls
-  const { params, updateParam } = usePatentPhysics("us-586193-marconi-radio");
+  const { params } = usePatentPhysics("us-586193-marconi-radio");
   const [showUiOverlay, setShowUiOverlay] = useState<boolean>(true);
   const aerialHeightMeters = params.aerialHeight ?? 88;
-  const [sparkGapMm, setSparkGapMm] = useState<number>(10); // 2 to 25 mm
+  const sparkGapMm = params.sparkGapMm ?? 10;
   const inductionCoilKv = params.sparkVoltage ?? 28;
   const [showEmWavefronts, _setShowEmWavefronts] = useState<boolean>(true);
   const [isSparking, _setIsSparking] = useState<boolean>(true);
@@ -147,15 +103,6 @@ export function MarconiRadio3D() {
         break;
     }
     controls.update();
-  };
-
-  const _applyScenario = (s: ScenarioPreset) => {
-    updateParam("aerialHeight", s.heightM);
-    setSparkGapMm(s.gapMm);
-    updateParam("sparkVoltage", s.coilKv);
-    if (!isAudioMuted) {
-      soundEngine.playSwitchClick();
-    }
   };
 
   const toggleSound = () => {

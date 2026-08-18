@@ -57,7 +57,7 @@ function main() {
     fs.writeFileSync(transcriptPath, pureText, "utf8");
 
     // Write to source-text/ with preserved page markers if present
-    let pageCount = patent.originalTextAsset?.pageCount || 3;
+    const pageCount = patent.originalTextAsset?.pageCount || 3;
     const pageMarkers: string[] = [];
     for (let i = 1; i <= pageCount; i++) {
       pageMarkers.push(`--- SOURCE PDF PAGE ${i} OF ${pageCount} ---`);

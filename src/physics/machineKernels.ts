@@ -1,5 +1,6 @@
 /**
- * Shared step buffers for CCD wells, Howe lockstitch, and Engelbart wheels.
+ * Shared step buffers for CCD wells, Howe lockstitch, Engelbart wheels,
+ * Sholes typebasket, Mergenthaler slug cycle, Reno cleat deck, and Otis pawls.
  * Components must draw these values rather than inventing a second formula.
  */
 
@@ -53,4 +54,132 @@ export function stepEngelbartResolver(
   const pulsesX = Math.round((dThetaX / (2 * Math.PI)) * pulsesPerRev);
   const pulsesY = Math.round((dThetaY / (2 * Math.PI)) * pulsesPerRev);
   return { dThetaX, dThetaY, pulsesX, pulsesY };
+}
+
+/** 10-pitch Remington / Sholes platen: 1/10 inch per character. */
+export const SHOLES_PITCH_MM = 2.54;
+export const LINOTYPE_CHARS_PER_LINE = 42;
+
+export function stepSholesTypewriter(
+  typingSpeedWpm: number,
+  elapsedS: number,
+): {
+  cps: number;
+  pitchMm: number;
+  carriageXMm: number;
+  hammerAngleRad: number;
+  barIndex: number;
+  strikePhase: number;
+} {
+  const wpm = Math.max(0, typingSpeedWpm);
+  const cps = (wpm * 5) / 60;
+  const charsTyped = Math.max(0, elapsedS) * cps;
+  const col = charsTyped % 70;
+  const strikePhase = cps > 0 ? (elapsedS * cps) % 1 : 0;
+  return {
+    cps,
+    pitchMm: SHOLES_PITCH_MM,
+    carriageXMm: col * SHOLES_PITCH_MM,
+    hammerAngleRad: strikePhase < 0.22 ? (strikePhase / 0.22) * (-Math.PI / 3) : 0,
+    barIndex: Math.floor(charsTyped) % 24,
+    strikePhase,
+  };
+}
+
+export function stepMergenthalerLinotype(params: {
+  matrixRatePerMin?: number;
+  spacebandWedgeMm?: number;
+  potTempC?: number;
+  elapsedS?: number;
+}): {
+  justificationWidthMm: number;
+  solidificationTimeMs: number;
+  brinellHardness: number;
+  distributorFreqHz: number;
+  isEutecticTemp: boolean;
+  plungerY: number;
+  moldAngle: number;
+  slugOut: boolean;
+  cycleS: number;
+  phase: number;
+} {
+  const rate = params.matrixRatePerMin ?? 60;
+  const wedge = params.spacebandWedgeMm ?? 6.5;
+  const temp = params.potTempC ?? 260;
+  const elapsedS = params.elapsedS ?? 0;
+  const isEutecticTemp = temp >= 240 && temp <= 275;
+  const linesPerMin = rate / LINOTYPE_CHARS_PER_LINE;
+  const cycleS = 60 / Math.max(0.25, linesPerMin);
+  const phase = (elapsedS / cycleS) % 1;
+  return {
+    justificationWidthMm: Number((85 + wedge * 4.2).toFixed(1)),
+    solidificationTimeMs: Math.round(450 * (temp / 260)),
+    brinellHardness: isEutecticTemp ? 24 : Math.round(16 + (temp / 260) * 5),
+    distributorFreqHz: Number((rate / 60).toFixed(2)),
+    isEutecticTemp,
+    plungerY: Math.sin(phase * Math.PI * 2) * 0.25,
+    moldAngle: phase * Math.PI * 2,
+    slugOut: phase > 0.72 && phase < 0.92,
+    cycleS,
+    phase,
+  };
+}
+
+export function stepRenoEscalator(params: {
+  passengerCount?: number;
+  inclineAngleDeg?: number;
+  velocityMps?: number;
+  elapsedS?: number;
+}): {
+  throughputPerHour: number;
+  motorTorqueNm: number;
+  motorPowerKw: number;
+  combPlateClearanceMm: number;
+  speedFpm: number;
+  cleatOffset: number;
+  cleatPitch: number;
+} {
+  const passengers = params.passengerCount ?? 30;
+  const angleDeg = params.inclineAngleDeg ?? 25;
+  const v = params.velocityMps ?? 0.45;
+  const elapsedS = params.elapsedS ?? 0;
+  const angleRad = (angleDeg * Math.PI) / 180;
+  const gravityLoadN = passengers * 700 * Math.sin(angleRad);
+  const frictionLoadN = passengers * 700 * Math.cos(angleRad) * 0.03 + 800;
+  const motorTorqueNm = Math.round(((gravityLoadN + frictionLoadN) * 0.35) / 0.88);
+  const cleatPitch = 0.42;
+  return {
+    throughputPerHour: Math.round((v * 2 * 3600) / 0.5),
+    motorTorqueNm,
+    motorPowerKw: Number(((motorTorqueNm * (v / 0.35)) / 1000).toFixed(2)),
+    combPlateClearanceMm: 1.2,
+    speedFpm: Math.round((v * 60) / 0.3048),
+    cleatOffset: (((v * elapsedS) % cleatPitch) + cleatPitch) % cleatPitch,
+    cleatPitch,
+  };
+}
+
+export function stepOtisElevator(params: { cabPayloadKg?: number; cableTensionPct?: number }): {
+  cabPayloadKg: number;
+  cableTensionPct: number;
+  isSnapped: boolean;
+  springDeflectionCm: number;
+  isPawlEngaged: boolean;
+  stoppingDistanceCm: number;
+  peakArrestForceKn: number;
+  pawlEngagementMs: number;
+} {
+  const massKg = 400 + (params.cabPayloadKg ?? 650);
+  const tensionPct = params.cableTensionPct ?? 100;
+  const isSnapped = tensionPct < 15;
+  return {
+    cabPayloadKg: params.cabPayloadKg ?? 650,
+    cableTensionPct: tensionPct,
+    isSnapped,
+    springDeflectionCm: Number(((tensionPct / 100) * 10).toFixed(1)),
+    isPawlEngaged: isSnapped,
+    stoppingDistanceCm: isSnapped ? 4.5 : 0,
+    peakArrestForceKn: isSnapped ? Number(((massKg * 9.81 * 1.8) / 1000).toFixed(1)) : 0,
+    pawlEngagementMs: isSnapped ? 38 : 0,
+  };
 }

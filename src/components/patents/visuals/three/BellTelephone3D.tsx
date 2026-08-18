@@ -10,64 +10,15 @@ import { useLiveSimParams } from "./useLiveSimParams";
 
 type CameraPreset = "iso" | "speaking_horn" | "liquid_transmitter" | "battery_cells" | "top";
 
-interface ScenarioPreset {
-  id: string;
-  name: string;
-  desc: string;
-  freqHz: number;
-  amplitude: number;
-  voltage: number;
-  conductivity: number;
-}
-
-const _SCENARIOS: ScenarioPreset[] = [
-  {
-    id: "bell_1876_first_words",
-    name: "March 10, 1876 Historic Transmission",
-    desc: "Alexander Graham Bell speaks to Thomas Watson: 'Mr. Watson—Come here—I want to see you' over a variable-resistance acid transmitter.",
-    freqHz: 300,
-    amplitude: 0.85,
-    voltage: 6.0,
-    conductivity: 1.2,
-  },
-  {
-    id: "vocal_speech_range",
-    name: "Human Voice Formant Frequency",
-    desc: "800 Hz acoustic resonance demonstrating undulating continuous electrical speech current waveform transmission.",
-    freqHz: 800,
-    amplitude: 0.65,
-    voltage: 6.0,
-    conductivity: 1.2,
-  },
-  {
-    id: "high_sensitivity_low_voltage",
-    name: "Subtle Whisper Sensitivity",
-    desc: "Delicate 0.25 amplitude acoustic wave modulating micro-currents in dilute acidulated water electrolyte.",
-    freqHz: 550,
-    amplitude: 0.3,
-    voltage: 3.0,
-    conductivity: 0.8,
-  },
-  {
-    id: "long_distance_boost",
-    name: "Long-Distance Line Battery",
-    desc: "12V Daniell gravity cell battery bank boosting current transmission along miles of copper telegraph wire.",
-    freqHz: 440,
-    amplitude: 0.75,
-    voltage: 12.0,
-    conductivity: 1.5,
-  },
-];
-
 export function BellTelephone3D() {
   const containerRef = useRef<HTMLDivElement>(null);
 
   const { params, updateParam } = usePatentPhysics("us-174465-bell-telephone");
   const [showUiOverlay, setShowUiOverlay] = useState<boolean>(true);
-  const [acousticFrequencyHz, setAcousticFrequencyHz] = useState<number>(440); // 100 to 1200 Hz
+  const acousticFrequencyHz = params.acousticFrequencyHz ?? 440;
   const voiceAmplitude = ((params.voiceAmplitude ?? 75) - 40) / 55;
-  const [batteryVoltage, setBatteryVoltage] = useState<number>(6.0); // 1.5 to 12 V
-  const [liquidConductivity, setLiquidConductivity] = useState<number>(1.2); // acidulated water S/m
+  const batteryVoltage = params.batteryVoltage ?? 6.0;
+  const liquidConductivity = params.liquidConductivity ?? 1.2;
   const [showAcousticWaves, _setShowAcousticWaves] = useState<boolean>(true);
   const [showCalloutPins, setShowCalloutPins] = useState<boolean>(false);
   const [activeCamera, setActiveCamera] = useState<CameraPreset>("iso");
@@ -120,16 +71,6 @@ export function BellTelephone3D() {
         break;
     }
     controls.update();
-  };
-
-  const _applyScenario = (s: ScenarioPreset) => {
-    setAcousticFrequencyHz(s.freqHz);
-    updateParam("voiceAmplitude", 40 + s.amplitude * 55);
-    setBatteryVoltage(s.voltage);
-    setLiquidConductivity(s.conductivity);
-    if (isPlayingAudio) {
-      soundEngine.playContinuousTone(s.freqHz, "sine", s.amplitude * 0.1);
-    }
   };
 
   // Sound Engine Integration

@@ -6,6 +6,12 @@
  * interactive parameter controllers, and 60-FPS computed telemetry states for every classic patent.
  */
 
+import { fermiKeff, stepFermiKinetics } from "./fermiKinetics";
+import {
+  stepMergenthalerLinotype,
+  stepRenoEscalator,
+  stepSholesTypewriter,
+} from "./machineKernels";
 import { readWrightControls, stepWrightFlyerSi } from "./wrightKernel";
 
 export interface PhysicsControl {
@@ -66,7 +72,7 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
         min: -15,
         max: 15,
         step: 0.5,
-        defaultValue: 8,
+        defaultValue: 0,
         unit: "°",
       },
       {
@@ -75,7 +81,7 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
         min: -25,
         max: 25,
         step: 0.5,
-        defaultValue: 4,
+        defaultValue: 0,
         unit: "°",
       },
       {
@@ -84,7 +90,7 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
         min: -15,
         max: 15,
         step: 0.5,
-        defaultValue: 5,
+        defaultValue: 0,
         unit: "°",
       },
       {
@@ -260,14 +266,10 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
     computeMetrics: (p) => {
       const rod = p.rodWithdrawal ?? 83.5;
       const mod = p.moderatorPurity ?? 99.5;
-      const keff = 0.85 + (rod / 100) * 0.18 * (mod / 100);
-      const rhoDollars = (keff - 1.0) / (keff * 0.0065);
-      const thermalPower =
-        keff > 1.002
-          ? Math.round(500 * (keff / 1.002) ** 4)
-          : keff >= 0.998
-            ? 200
-            : Math.max(1, Math.round(20 * (keff / 0.99)));
+      const keff = fermiKeff(rod, mod);
+      const kinetics = stepFermiKinetics(rod, mod);
+      const rhoDollars = kinetics.reactivityDollars;
+      const thermalPower = kinetics.thermalPowerWatts;
       const flux = (thermalPower * 3.2e7).toExponential(2);
 
       return [
@@ -546,6 +548,15 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
         defaultValue: 800,
         unit: "W",
       },
+      {
+        id: "magneticFieldGauss",
+        label: "Magnetic Field",
+        min: 800,
+        max: 2200,
+        step: 10,
+        defaultValue: 1450,
+        unit: "G",
+      },
     ],
     computeMetrics: (p) => {
       const v = p.anodeVoltage ?? 2200;
@@ -612,6 +623,15 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
         step: 0.05,
         defaultValue: 0.5,
         unit: "µm",
+      },
+      {
+        id: "clockFrequencyMhz",
+        label: "Clock Frequency",
+        min: 1,
+        max: 50,
+        step: 1,
+        defaultValue: 10,
+        unit: "MHz",
       },
     ],
     computeMetrics: (p) => {
@@ -818,6 +838,15 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
         defaultValue: 88,
         unit: "m",
       },
+      {
+        id: "sparkGapMm",
+        label: "Spark Gap Distance",
+        min: 2,
+        max: 25,
+        step: 1,
+        defaultValue: 10,
+        unit: "mm",
+      },
     ],
     computeMetrics: (p) => {
       const v = p.sparkVoltage ?? 28;
@@ -886,6 +915,33 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
         defaultValue: 1200,
         unit: "turns",
       },
+      {
+        id: "lineVoltageV",
+        label: "Line Voltage",
+        min: 6,
+        max: 48,
+        step: 1,
+        defaultValue: 24,
+        unit: "V",
+      },
+      {
+        id: "lineLengthMiles",
+        label: "Line Distance",
+        min: 10,
+        max: 150,
+        step: 5,
+        defaultValue: 44,
+        unit: "Mi",
+      },
+      {
+        id: "wpmSpeed",
+        label: "Words Per Minute",
+        min: 5,
+        max: 35,
+        step: 1,
+        defaultValue: 20,
+        unit: "WPM",
+      },
     ],
     computeMetrics: (p) => {
       const i = (p.currentMa ?? 65) / 1000;
@@ -943,6 +999,42 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
         step: 0.2,
         defaultValue: 6.5,
         unit: "ratio",
+      },
+      {
+        id: "polymerConcentrationPct",
+        label: "Polymer Concentration",
+        min: 5.0,
+        max: 25.0,
+        step: 0.5,
+        defaultValue: 18.5,
+        unit: "wt%",
+      },
+      {
+        id: "temperatureCelsius",
+        label: "Dope Temperature",
+        min: 20,
+        max: 120,
+        step: 1,
+        defaultValue: 85,
+        unit: "°C",
+      },
+      {
+        id: "showHydrogenBonds",
+        label: "Show H-Bonds",
+        min: 0,
+        max: 1,
+        step: 1,
+        defaultValue: 1,
+        unit: "",
+      },
+      {
+        id: "isImpactTesting",
+        label: "Trigger Impact Test",
+        min: 0,
+        max: 1,
+        step: 1,
+        defaultValue: 0,
+        unit: "trigger",
       },
       {
         id: "impactVelocity",
@@ -1083,6 +1175,15 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
         unit: "%",
       },
       {
+        id: "weightTons",
+        label: "Steamboat Weight",
+        min: 200,
+        max: 600,
+        step: 10,
+        defaultValue: 380,
+        unit: "T",
+      },
+      {
         id: "shoalDepth",
         label: "Riverbed Shoal Water Depth",
         min: 2.0,
@@ -1160,6 +1261,15 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
         step: 0.5,
         defaultValue: 4.0,
         unit: "hops/s",
+      },
+      {
+        id: "isJammingActive",
+        label: "Enable Jamming",
+        min: 0,
+        max: 1,
+        step: 1,
+        defaultValue: 1,
+        unit: "",
       },
     ],
     computeMetrics: (p) => {
@@ -1464,6 +1574,15 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
         defaultValue: 14.318,
         unit: "MHz",
       },
+      {
+        id: "ramCapacityKb",
+        label: "RAM Capacity",
+        min: 4,
+        max: 48,
+        step: 4,
+        defaultValue: 48,
+        unit: "KB",
+      },
     ],
     computeMetrics: (p) => {
       const f = p.crystalFreq ?? 14.318;
@@ -1517,26 +1636,44 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
         id: "crankRpm",
         label: "Flywheel Drive Velocity",
         min: 60,
-        max: 320,
+        max: 420,
         step: 10,
-        defaultValue: 180,
+        defaultValue: 240,
         unit: "RPM",
       },
       {
-        id: "feedRate",
-        label: "Cloth Baser Feed Rate",
+        id: "stitchPitchMm",
+        label: "Stitch Pitch",
         min: 1.0,
-        max: 8.0,
-        step: 0.5,
+        max: 6.0,
+        step: 0.1,
         defaultValue: 3.5,
-        unit: "mm/s",
+        unit: "mm",
+      },
+      {
+        id: "threadTensionGrams",
+        label: "Thread Tension",
+        min: 20,
+        max: 90,
+        step: 1,
+        defaultValue: 45,
+        unit: "g",
+      },
+      {
+        id: "isCranking",
+        label: "Drive Power",
+        min: 0,
+        max: 1,
+        step: 1,
+        defaultValue: 1,
+        unit: "",
       },
     ],
     computeMetrics: (p) => {
-      const rpm = p.crankRpm ?? 180;
-      const feed = p.feedRate ?? 3.5;
+      const rpm = p.crankRpm ?? 240;
+      const feed = p.stitchPitchMm ?? 3.5;
       const shuttleHz = (rpm / 60).toFixed(2);
-      const stitchLen = ((feed * 1000) / (rpm * 10)).toFixed(1);
+      const stitchLen = feed.toFixed(1);
 
       return [
         {
@@ -1597,6 +1734,33 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
         step: 0.01,
         defaultValue: 0.18,
         unit: "ratio",
+      },
+      {
+        id: "sparkGapDistanceMm",
+        label: "Spark Gap Distance",
+        min: 2,
+        max: 30,
+        step: 1,
+        defaultValue: 12,
+        unit: "mm",
+      },
+      {
+        id: "inputVoltageKv",
+        label: "Input Voltage",
+        min: 5,
+        max: 30,
+        step: 1,
+        defaultValue: 15,
+        unit: "kV",
+      },
+      {
+        id: "toploadCapacitancePf",
+        label: "Topload Capacitance",
+        min: 10,
+        max: 80,
+        step: 5,
+        defaultValue: 35,
+        unit: "pF",
       },
     ],
     computeMetrics: (p) => {
@@ -1838,9 +2002,14 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
       const rate = p.matrixRate ?? 60;
       const wedge = p.spacebandWedge ?? 6.5;
       const temp = p.potTemp ?? 260;
-      const justWidth = (85 + wedge * 4.2).toFixed(1);
-      const solidMs = Math.round(450 * (temp / 260));
-      const hardness = temp >= 240 && temp <= 275 ? "24 HB (Optimal)" : "18 HB (Sub-optimal)";
+      const linotype = stepMergenthalerLinotype({
+        matrixRatePerMin: rate,
+        spacebandWedgeMm: wedge,
+        potTempC: temp,
+      });
+      const justWidth = linotype.justificationWidthMm.toFixed(1);
+      const solidMs = linotype.solidificationTimeMs;
+      const hardness = linotype.isEutecticTemp ? "24 HB (Optimal)" : "18 HB (Sub-optimal)";
 
       return [
         {
@@ -2234,14 +2403,14 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
       const count = p.passengerCount ?? 30;
       const angle = p.inclineAngle ?? 25;
       const v = p.beltSpeed ?? 0.45;
-      const throughput = Math.round((v * 2 * 3600) / 0.5);
-      const angleRad = (angle * Math.PI) / 180;
-      const torque = Math.round(
-        ((count * 700 * Math.sin(angleRad) + count * 700 * Math.cos(angleRad) * 0.03 + 800) *
-          0.35) /
-          0.88,
-      );
-      const powerKw = ((torque * (v / 0.35)) / 1000).toFixed(2);
+      const reno = stepRenoEscalator({
+        passengerCount: count,
+        inclineAngleDeg: angle,
+        velocityMps: v,
+      });
+      const throughput = reno.throughputPerHour;
+      const torque = reno.motorTorqueNm;
+      const powerKw = reno.motorPowerKw.toFixed(2);
 
       return [
         {
@@ -3169,7 +3338,7 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
     ],
     computeMetrics: (p) => {
       const wpm = p.typingSpeedWpm ?? 60;
-      const cps = (wpm * 5) / 60;
+      const cps = stepSholesTypewriter(wpm, 0).cps;
       return [
         {
           label: "Key Strike Frequency",

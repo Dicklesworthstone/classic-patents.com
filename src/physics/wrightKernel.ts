@@ -35,13 +35,13 @@ export function coupledRudderDeg(wingWarpDeg: number): number {
 }
 
 export function readWrightControls(params: Record<string, number>): WrightControls {
-  const wingWarpDeg = params.wingWarp ?? 4;
+  const wingWarpDeg = params.wingWarp ?? 0;
   const coupled = (params.coupled ?? 1) >= 0.5;
   return {
     airspeedMph: params.airspeed ?? 28,
     wingWarpDeg,
     rudderDeg: coupled ? coupledRudderDeg(wingWarpDeg) : (params.rudder ?? 0),
-    elevatorDeg: params.elevator ?? 5,
+    elevatorDeg: params.elevator ?? 0,
     coupled,
   };
 }

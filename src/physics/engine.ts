@@ -5,7 +5,16 @@
  * semiconductor carrier transport, thermal absorption cycles, and point kinetics.
  */
 
-import { stepCcdWells, stepEngelbartResolver, stepHoweLockstitch } from "./machineKernels";
+import { stepFermiKinetics } from "./fermiKinetics";
+import {
+  stepCcdWells,
+  stepEngelbartResolver,
+  stepHoweLockstitch,
+  stepMergenthalerLinotype,
+  stepOtisElevator,
+  stepRenoEscalator,
+  stepSholesTypewriter,
+} from "./machineKernels";
 import { teslaBAt, teslaFig4Strobe } from "./teslaKernel";
 import type {
   AerodynamicsState,
@@ -77,6 +86,7 @@ export const FrankenSimEngine = {
   stepCcdWells,
   stepHoweLockstitch,
   stepEngelbartResolver,
+  stepSholesTypewriter,
 
   stepTeslaMotor(
     freqHz: number,
@@ -111,40 +121,15 @@ export const FrankenSimEngine = {
   },
 
   /**
-   * Enrico Fermi Chicago Pile-1 (US 2,708,656) - 4-Factor Criticality Kinetics
+   * Enrico Fermi Chicago Pile-1 (US 2,708,656).
+   * Delegates to fermiKinetics — same k_eff as the badge, schematic, and 3D HUD.
    */
   stepFermiReactor(
     controlRodWithdrawalPct: number,
     moderatorPurityPct: number,
     fuelEnrichmentPct: number = 0.72,
   ): NuclearKineticsState {
-    const kEffective =
-      1.32 *
-      (fuelEnrichmentPct / 0.72) ** 0.5 *
-      (moderatorPurityPct / 100) ** 2 *
-      (0.65 + (controlRodWithdrawalPct / 100) * 0.42);
-
-    const isSupercritical = kEffective > 1.002;
-    const isCritical = kEffective >= 0.998 && kEffective <= 1.002;
-    const thermalPowerWatts = isSupercritical
-      ? Math.round(500 * (kEffective / 1.002) ** 4)
-      : isCritical
-        ? 200
-        : Math.round(20 * (kEffective / 0.99));
-
-    const reactivityDollars = (kEffective - 1.0) / (kEffective * 0.0065);
-    const thermalFlux = thermalPowerWatts * 3.2e7; // n/(cm^2*s)
-
-    return {
-      kEffective: Number(kEffective.toFixed(4)),
-      reactivityDollars: Number(reactivityDollars.toFixed(2)),
-      thermalNeutronFluxNPerCm2S: thermalFlux,
-      delayedNeutronFractionBeta: 0.0065,
-      precursorConcentrationGroup1to6: [0.033, 0.219, 0.196, 0.395, 0.115, 0.042],
-      reactorPeriodSeconds: reactivityDollars > 0 ? 0.08 / (reactivityDollars * 0.0065) : -999,
-      thermalPowerWatts,
-      controlRodInsertionFraction: 1 - controlRodWithdrawalPct / 100,
-    };
+    return stepFermiKinetics(controlRodWithdrawalPct, moderatorPurityPct, fuelEnrichmentPct);
   },
 
   /**
@@ -494,28 +479,7 @@ export const FrankenSimEngine = {
    * Elisha Otis Safety Elevator (US 31,128)
    * Fail-Safe Spring Deceleration & Guide-Rail Ratchet Catch Dynamics
    */
-  stepOtisElevator(params: {
-    cabPayloadKg?: number;
-    cableTensionPct?: number; // 100% normal, 0% snapped
-  }) {
-    const massKg = 400 + (params.cabPayloadKg ?? 650);
-    const tensionPct = params.cableTensionPct ?? 100;
-    const isSnapped = tensionPct < 15;
-    const springDeflectionCm = Number(((tensionPct / 100) * 10).toFixed(1));
-    const isPawlEngaged = isSnapped;
-    const stoppingDistanceCm = isSnapped ? 4.5 : 0;
-    const peakArrestForceKn = isSnapped ? Number(((massKg * 9.81 * 1.8) / 1000).toFixed(1)) : 0;
-
-    return {
-      cabPayloadKg: params.cabPayloadKg ?? 650,
-      cableTensionPct: tensionPct,
-      isSnapped,
-      springDeflectionCm,
-      isPawlEngaged,
-      stoppingDistanceCm,
-      peakArrestForceKn,
-    };
-  },
+  stepOtisElevator,
 
   /**
    * George Westinghouse Automatic Air Brake (US 124,404)
@@ -554,30 +518,7 @@ export const FrankenSimEngine = {
    * Ottmar Mergenthaler Linotype Machine (US 313,224)
    * Binary Matrix Keyway Sorting & Spaceband Justification
    */
-  stepMergenthalerLinotype(params: {
-    matrixRatePerMin?: number;
-    spacebandWedgeMm?: number;
-    castingPressureBar?: number;
-    potTempC?: number;
-  }) {
-    const rate = params.matrixRatePerMin ?? 60;
-    const wedge = params.spacebandWedgeMm ?? 6.5;
-    const press = params.castingPressureBar ?? 30;
-    const temp = params.potTempC ?? 260;
-    const isEutecticTemp = temp >= 240 && temp <= 275;
-    const justificationWidthMm = Number((85 + wedge * 4.2).toFixed(1));
-    const solidificationTimeMs = Math.round(450 * (temp / 260) * (25 / press));
-    const brinellHardness = isEutecticTemp ? 24 : Math.round(16 + (temp / 260) * 5);
-    const distributorFreqHz = Number((rate / 60).toFixed(2));
-
-    return {
-      justificationWidthMm,
-      solidificationTimeMs,
-      brinellHardness,
-      distributorFreqHz,
-      isEutecticTemp,
-    };
-  },
+  stepMergenthalerLinotype,
 
   /**
    * Hiram Maxim Automatic Machine Gun (US 319,596)
@@ -700,29 +641,7 @@ export const FrankenSimEngine = {
    * Jesse Reno Inclined Elevator / Escalator (US 470,918)
    * Continuous Moving Slats & Comb-Plate Safety Extraction
    */
-  stepRenoEscalator(params: {
-    passengerCount?: number;
-    inclineAngleDeg?: number;
-    velocityMps?: number;
-  }) {
-    const passengers = params.passengerCount ?? 30;
-    const angleDeg = params.inclineAngleDeg ?? 25;
-    const v = params.velocityMps ?? 0.45;
-    const angleRad = (angleDeg * Math.PI) / 180;
-    const throughputPerHour = Math.round((v * 2 * 3600) / 0.5);
-    const avgPassWeightN = 700;
-    const gravityLoadN = passengers * avgPassWeightN * Math.sin(angleRad);
-    const frictionLoadN = passengers * avgPassWeightN * Math.cos(angleRad) * 0.03 + 800;
-    const motorTorqueNm = Math.round(((gravityLoadN + frictionLoadN) * 0.35) / 0.88);
-    const motorPowerKw = Number(((motorTorqueNm * (v / 0.35)) / 1000).toFixed(2));
-
-    return {
-      throughputPerHour,
-      motorTorqueNm,
-      motorPowerKw,
-      combPlateClearanceMm: 1.2,
-    };
-  },
+  stepRenoEscalator,
 
   /**
    * Rudolf Diesel Compression-Ignition Engine (US 542,846)
