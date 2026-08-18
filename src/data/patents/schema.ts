@@ -161,53 +161,79 @@ const curatedSpecificationEditionSchema = z.object({
   preparedBy: z.string().min(1),
   preparedAt: isoDate,
   completeFacsimileReviewed: z.literal(true),
+  claimStatus: z
+    .object({
+      kind: z.literal("no-formal-claims-in-facsimile"),
+      evidence: z.string().min(1),
+    })
+    .optional(),
   blocks: z.array(curatedSpecificationBlockSchema).min(1),
 });
 
-export const patentSchema: z.ZodType<Patent> = z.object({
-  id: z.string().min(1),
-  patentNumber: z.string().min(1),
-  title: z.string().min(1),
-  shortTitle: z.string().min(1),
-  subtitle: z.string().min(1),
-  inventors: z.array(z.string().min(1)).min(1),
-  inventorLocation: z.string().min(1),
-  grantDate: isoDate,
-  filingDate: isoDate,
-  era: z.string().min(1),
-  category: z.enum([
-    "aviation",
-    "aerospace",
-    "electricity",
-    "telecom",
-    "computing",
-    "consumer",
-    "materials",
-    "optics",
-  ]),
-  categoryLabel: z.string().min(1),
-  summary: z.string().min(1),
-  heroQuote: z.string().min(1),
-  originalPdfUrl: z.string().min(1),
-  googlePatentsUrl: z.url(),
-  usptoClassification: z.string().min(1),
-  originalText: z.string().min(1),
-  originalTextAsset: originalTextAssetSchema.optional(),
-  archivalEdition: curatedSpecificationEditionSchema.optional(),
-  plainEnglishExplanation: plainEnglishSchema,
-  claims: z.array(patentClaimSchema).min(1),
-  drawings: z.array(patentDrawingSchema).min(1),
-  historicalContext: historicalContextSchema,
-  tags: z.array(z.string().min(1)).optional(),
-  stats: z
-    .object({
-      totalClaims: z.number().int().nonnegative(),
-      independentClaims: z.number().int().nonnegative(),
-      patentWarYears: z.string().min(1).optional(),
-      impactScore: z.number().min(1).max(100).optional(),
-    })
-    .optional(),
-});
+export const patentSchema: z.ZodType<Patent> = z
+  .object({
+    id: z.string().min(1),
+    patentNumber: z.string().min(1),
+    title: z.string().min(1),
+    shortTitle: z.string().min(1),
+    subtitle: z.string().min(1),
+    inventors: z.array(z.string().min(1)).min(1),
+    inventorLocation: z.string().min(1),
+    grantDate: isoDate,
+    filingDate: isoDate,
+    era: z.string().min(1),
+    category: z.enum([
+      "aviation",
+      "aerospace",
+      "electricity",
+      "telecom",
+      "computing",
+      "consumer",
+      "materials",
+      "optics",
+    ]),
+    categoryLabel: z.string().min(1),
+    summary: z.string().min(1),
+    heroQuote: z.string().min(1),
+    originalPdfUrl: z.string().min(1),
+    googlePatentsUrl: z.url(),
+    usptoClassification: z.string().min(1),
+    originalText: z.string().min(1),
+    originalTextAsset: originalTextAssetSchema.optional(),
+    archivalEdition: curatedSpecificationEditionSchema.optional(),
+    plainEnglishExplanation: plainEnglishSchema,
+    claims: z.array(patentClaimSchema),
+    drawings: z.array(patentDrawingSchema),
+    historicalContext: historicalContextSchema,
+    tags: z.array(z.string().min(1)).optional(),
+    stats: z
+      .object({
+        totalClaims: z.number().int().nonnegative(),
+        independentClaims: z.number().int().nonnegative(),
+        patentWarYears: z.string().min(1).optional(),
+        impactScore: z.number().min(1).max(100).optional(),
+      })
+      .optional(),
+  })
+  .superRefine((patent, context) => {
+    const noFormalClaims =
+      patent.archivalEdition?.claimStatus?.kind === "no-formal-claims-in-facsimile";
+    if (patent.claims.length === 0 && !noFormalClaims) {
+      context.addIssue({
+        code: z.ZodIssueCode.custom,
+        path: ["claims"],
+        message:
+          "expected at least one claim or an explicit no-formal-claims facsimile attestation",
+      });
+    }
+    if (patent.claims.length > 0 && noFormalClaims) {
+      context.addIssue({
+        code: z.ZodIssueCode.custom,
+        path: ["claims"],
+        message: "claims conflict with the no-formal-claims facsimile attestation",
+      });
+    }
+  });
 
 export function parsePatentCatalog(patents: unknown[]): Patent[] {
   return patents.map((entry, index) => {

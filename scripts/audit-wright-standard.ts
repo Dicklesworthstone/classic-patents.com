@@ -68,7 +68,8 @@ for (const p of allPatents) {
   }
 
   // Check claims
-  if (!p.claims || p.claims.length === 0) {
+  const noFormalClaims = p.archivalEdition?.claimStatus?.kind === "no-formal-claims-in-facsimile";
+  if ((!p.claims || p.claims.length === 0) && !noFormalClaims) {
     issues.push("no claims registered");
   }
   for (const c of p.claims) {

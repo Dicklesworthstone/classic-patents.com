@@ -123,9 +123,16 @@ async function main() {
     }
 
     // 5. Check claims
+    const noFormalClaims =
+      patent.archivalEdition?.claimStatus?.kind === "no-formal-claims-in-facsimile";
     if (!patent.claims || patent.claims.length === 0) {
-      fail("No claims found.");
+      if (!noFormalClaims) {
+        fail("No claims found and no reviewed-facsimile no-formal-claims attestation exists.");
+      }
     } else {
+      if (noFormalClaims) {
+        fail("Claims conflict with the reviewed-facsimile no-formal-claims attestation.");
+      }
       const independentClaims = patent.claims.filter((c) => c.isIndependent);
       if (independentClaims.length === 0) {
         fail("Patent has no independent claims.");

@@ -593,7 +593,11 @@ export function DualProjectionViewer({ patent, initialView }: DualProjectionView
           </div>
 
           {/* Line-by-Line Claims Decoder */}
-          <ClaimsDecoder claims={patent.claims} patentId={patent.id} />
+          <ClaimsDecoder
+            claims={patent.claims}
+            patentId={patent.id}
+            claimStatus={patent.archivalEdition?.claimStatus}
+          />
 
           {/* Historical Context & Patent Wars */}
           <HistoricalContextPanel context={patent.historicalContext} />

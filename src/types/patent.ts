@@ -161,6 +161,16 @@ export interface CuratedSpecificationEdition {
   preparedAt: string;
   /** An explicit attestation that the full facsimile, not OCR alone, was checked. */
   completeFacsimileReviewed: true;
+  /**
+   * Present only when the reviewed historical facsimile genuinely contains no
+   * separately enumerated legal claims. It prevents the catalogue from
+   * inventing claims merely to satisfy a modern data shape.
+   */
+  claimStatus?: {
+    kind: "no-formal-claims-in-facsimile";
+    /** Precise source-facing evidence of the absence. */
+    evidence: string;
+  };
   /** The ordered authored content of the continuous reading edition. */
   blocks: CuratedSpecificationBlock[];
 }

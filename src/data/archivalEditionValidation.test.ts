@@ -68,4 +68,33 @@ describe("validateCuratedSpecificationEdition", () => {
     expect(result.errors.join("\n")).toContain("duplicates claim 1");
     expect(result.errors.join("\n")).toContain("has 1 cells, expected 2");
   });
+
+  test("permits zero claim blocks only with explicit reviewed-facsimile evidence", () => {
+    const edition = validEdition();
+    edition.blocks = edition.blocks.filter((block) => block.kind !== "claim");
+    edition.claimStatus = {
+      kind: "no-formal-claims-in-facsimile",
+      evidence:
+        "The complete reviewed facsimile presents description, drawings, and signatures but no separately numbered claim clause.",
+    };
+
+    expect(validateCuratedSpecificationEdition(edition)).toEqual({ valid: true, errors: [] });
+  });
+
+  test("rejects a bare zero-claim edition and contradictory claim status", () => {
+    const missingEvidence = validEdition();
+    missingEvidence.blocks = missingEvidence.blocks.filter((block) => block.kind !== "claim");
+    expect(validateCuratedSpecificationEdition(missingEvidence).errors.join("\n")).toContain(
+      "explicit no-formal-claims attestation",
+    );
+
+    const contradictory = validEdition();
+    contradictory.claimStatus = {
+      kind: "no-formal-claims-in-facsimile",
+      evidence: "The source has no numbered claims.",
+    };
+    expect(validateCuratedSpecificationEdition(contradictory).errors.join("\n")).toContain(
+      "cannot contain claim blocks",
+    );
+  });
 });

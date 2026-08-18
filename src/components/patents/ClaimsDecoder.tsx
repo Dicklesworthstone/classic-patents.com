@@ -5,11 +5,12 @@ import { useCallback, useState } from "react";
 import { TextWithLatex } from "@/components/ui/LatexRenderer";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { WRIGHT_PATENT_ID } from "@/physics/wrightKernel";
-import type { PatentClaim } from "@/types/patent";
+import type { CuratedSpecificationEdition, PatentClaim } from "@/types/patent";
 
 interface ClaimsDecoderProps {
   claims: PatentClaim[];
   patentId?: string;
+  claimStatus?: CuratedSpecificationEdition["claimStatus"];
 }
 
 function claimLiveState(
@@ -23,7 +24,7 @@ function claimLiveState(
   return null;
 }
 
-export function ClaimsDecoder({ claims, patentId }: ClaimsDecoderProps) {
+export function ClaimsDecoder({ claims, patentId, claimStatus }: ClaimsDecoderProps) {
   const [activeClaimNum, setActiveClaimNum] = useState<number>(claims[0]?.number || 1);
   const [copied, setCopied] = useState<boolean>(false);
   const { params } = usePatentPhysics(patentId || "");
@@ -38,6 +39,29 @@ export function ClaimsDecoder({ claims, patentId }: ClaimsDecoderProps) {
     setCopied(true);
     setTimeout(() => setCopied(false), 2000);
   }, [claim]);
+
+  if (claims.length === 0) {
+    return (
+      <section className="rounded-2xl border border-parchment-300 bg-parchment-50 p-6 shadow-xs dark:border-ink-800 dark:bg-ink-950 sm:p-8">
+        <div className="flex items-center gap-2.5">
+          <Scale className="h-5 w-5 text-amber-600 dark:text-amber-400" />
+          <h3 className="font-serif text-lg font-bold text-ink-950 dark:text-parchment-100 sm:text-xl">
+            Formal Claims
+          </h3>
+        </div>
+        <p className="mt-4 text-base leading-relaxed text-ink-800 dark:text-parchment-200">
+          This reviewed historical facsimile contains no separately numbered formal claims. The
+          edition preserves the document&apos;s actual description instead of inventing a modern
+          claims list.
+        </p>
+        {claimStatus?.evidence ? (
+          <p className="mt-3 border-l-2 border-amber-500 pl-4 text-sm leading-relaxed text-ink-700 dark:text-parchment-300">
+            {claimStatus.evidence}
+          </p>
+        ) : null}
+      </section>
+    );
+  }
 
   const selectPrevClaim = () => {
     if (activeIndex > 0) {

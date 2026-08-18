@@ -142,7 +142,20 @@ export function validateCuratedSpecificationEdition(
     errors.push(`The archival edition must have exactly one masthead, found ${mastheadCount}.`);
   }
   if (paragraphCount === 0) errors.push("The archival edition must include descriptive prose.");
-  if (claimNumbers.size === 0) errors.push("The archival edition must include at least one claim.");
+
+  const noFormalClaims = edition.claimStatus?.kind === "no-formal-claims-in-facsimile";
+  if (noFormalClaims) {
+    if (claimNumbers.size > 0) {
+      errors.push("An edition marked as having no formal claims cannot contain claim blocks.");
+    }
+    if (!edition.claimStatus?.evidence.trim()) {
+      errors.push("A no-formal-claims edition must state its facsimile evidence.");
+    }
+  } else if (claimNumbers.size === 0) {
+    errors.push(
+      "The archival edition must include at least one claim or an explicit no-formal-claims attestation.",
+    );
+  }
 
   return { valid: errors.length === 0, errors };
 }
