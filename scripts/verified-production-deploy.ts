@@ -98,6 +98,22 @@ function assertCommitUnchanged(expectedCommit: string, stage: string) {
   }
 }
 
+function isProcessInCurrentWorkspace(pid: string): boolean {
+  try {
+    const lsofResult = spawnSync("lsof", ["-p", pid, "-a", "-d", "cwd", "-Fn"], {
+      encoding: "utf8",
+    });
+    const stdout = lsofResult.stdout ?? "";
+    const cwdLine = stdout.split("\n").find((line) => line.startsWith("n"));
+    if (!cwdLine) return true;
+    const procCwd = cwdLine.slice(1);
+    const root = process.cwd();
+    return procCwd === root || procCwd.startsWith(`${root}/`);
+  } catch {
+    return true;
+  }
+}
+
 function conflictingBuilds(): string[] {
   const currentPid = process.pid.toString();
   const processList = run("ps", ["-Ao", "pid=,ppid=,etime=,command="], true, false).stdout;
@@ -113,7 +129,7 @@ function conflictingBuilds(): string[] {
     ) {
       return false;
     }
-    if (line.includes("/dp/") || line.includes("jeffreys-skills")) {
+    if (!isProcessInCurrentWorkspace(pid)) {
       return false;
     }
     return true;
