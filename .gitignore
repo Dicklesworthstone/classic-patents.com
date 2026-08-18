@@ -48,6 +48,7 @@ artifacts/ocr_raster_cache/
 artifacts/ocr_runs/
 artifacts/e2e_screenshots/
 artifacts/transcript_format_previews/
+artifacts/transcript_reformat_previews/
 tsconfig.tsbuildinfo
 .ntm/
 .env*

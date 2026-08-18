@@ -1,15 +1,18 @@
 /**
  * reformat-all-transcripts.ts
  *
- * Systematic Data Quality & Archival Typography Formatter for all Patent Transcripts.
- * Formats full reviewed text into clean, well-spaced paragraphs of reasonable reading length,
- * separating preambles, claims, and numbered items into distinct structured blocks.
+ * Noncanonical preview formatter for transcript review.
+ *
+ * It never rewrites a published transcript. Formatting prose can change legal
+ * wording or structure, so the output is deliberately an ignored review
+ * artifact that must be approved before a separately reviewed publication.
  */
 
 import * as fs from "node:fs";
 import * as path from "node:path";
 
 const transcriptsDir = path.join(process.cwd(), "public", "patents", "transcripts");
+const previewDir = path.join(process.cwd(), "artifacts", "transcript_reformat_previews");
 
 function formatTranscript(content: string): string {
   let text = content.replace(/\r\n/g, "\n").replace(/\r/g, "\n").trim();
@@ -80,23 +83,23 @@ function formatTranscript(content: string): string {
 
 function main() {
   const files = fs.readdirSync(transcriptsDir).filter((f) => f.endsWith(".txt"));
-  console.log(`Processing ${files.length} transcript files...`);
+  console.log(`Previewing ${files.length} transcript files...`);
 
   let modifiedCount = 0;
   for (const file of files) {
-    const filePath = path.join(transcriptsDir, file);
-    const original = fs.readFileSync(filePath, "utf8");
+    const transcriptPath = path.join(transcriptsDir, file);
+    const original = fs.readFileSync(transcriptPath, "utf8");
     const formatted = formatTranscript(original);
+    const previewPath = path.join(previewDir, file);
 
-    if (original !== formatted) {
-      fs.writeFileSync(filePath, formatted, "utf8");
-      console.log(`✓ Formatted ${file} (${formatted.split("\n\n").length} paragraphs)`);
-      modifiedCount++;
-    }
+    fs.mkdirSync(previewDir, { recursive: true });
+    fs.writeFileSync(previewPath, formatted, "utf8");
+    if (original !== formatted) modifiedCount++;
+    console.log(`✓ Previewed ${file} (${formatted.split("\n\n").length} paragraphs)`);
   }
 
   console.log(
-    `\nReformatting complete. ${modifiedCount} transcript files updated with museum-quality typography.`,
+    `\nPreview complete. ${modifiedCount} transcript file(s) would change. Review ${path.relative(process.cwd(), previewDir)} before any editorial action.`,
   );
 }
 

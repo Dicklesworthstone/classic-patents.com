@@ -1,41 +1,14 @@
 /**
  * switch-all-to-reviewed-transcripts.ts
  *
- * Switches all patent records in src/data/patents/ to use the high-quality reviewed
- * transcripts in /patents/transcripts/ rather than the un-mangled source-text dumps.
+ * Retired safety guard.
+ *
+ * This file intentionally remains as an explicit failure instead of being
+ * removed: a previous version relabelled every record as a reviewed
+ * transcription merely because a file existed at /patents/transcripts/. Most
+ * of those files were short editorial excerpts, not complete patents.
  */
 
-import * as fs from "node:fs";
-import * as path from "node:path";
-
-const patentsDir = path.join(process.cwd(), "src", "data", "patents");
-
-function main() {
-  const files = fs
-    .readdirSync(patentsDir)
-    .filter((f) => f.endsWith(".ts") && f !== "index.ts" && f !== "schema.ts");
-  console.log(`Checking ${files.length} patent data files...`);
-
-  let updatedCount = 0;
-  for (const file of files) {
-    const filePath = path.join(patentsDir, file);
-    const content = fs.readFileSync(filePath, "utf8");
-
-    // Replace /patents/source-text/ with /patents/transcripts/
-    const newContent = content
-      .replace(/url:\s*"\/patents\/source-text\/([^"]+)"/g, 'url: "/patents/transcripts/$1"')
-      .replace(/kind:\s*"source-pdf-text-layer"/g, 'kind: "reviewed-transcription"');
-
-    if (newContent !== content) {
-      fs.writeFileSync(filePath, newContent, "utf8");
-      console.log(`✓ Updated ${file} -> reviewed-transcription`);
-      updatedCount++;
-    }
-  }
-
-  console.log(
-    `\nComplete: ${updatedCount} patent data records switched to reviewed-transcription.`,
-  );
-}
-
-main();
+throw new Error(
+  "This bulk relabelling command is retired. A reviewed transcription requires page-by-page human review, a documented provenance record, and an explicit per-patent catalogue change; a filename is not evidence of completeness.",
+);
