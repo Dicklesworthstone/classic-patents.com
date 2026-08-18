@@ -20,10 +20,10 @@ import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { createLcg } from "@/utils/lcg";
 import { soundEngine } from "@/utils/soundEngine";
 import {
-  createGlowPointTexture,
   createThreeStudioScene,
   type StudioContext,
 } from "./ThreeStudioScene";
+import { buildSpencerMicrowaveModel } from "./spencerMicrowaveModel";
 import { useLiveSimParams } from "./useLiveSimParams";
 
 const lcg = createLcg(1661);
@@ -149,156 +149,23 @@ export function SpencerMicrowave3D() {
     cameraRef.current = camera;
     controlsRef.current = controls;
 
-    // --- PBR MATERIALS ---
-    const copperAnodeMat = new THREE.MeshStandardMaterial({
-      color: 0xca8a04,
-      roughness: 0.22,
-      metalness: 0.88,
-    });
+    const model = buildSpencerMicrowaveModel();
+    scene.add(model.root);
 
-    const cathodeMat = new THREE.MeshStandardMaterial({
-      color: 0xef4444,
-      roughness: 0.4,
-      metalness: 0.5,
-      emissive: 0xef4444,
-      emissiveIntensity: 0.8,
-    });
-
-    const alnicoMagnetMat = new THREE.MeshStandardMaterial({
-      color: 0x334155,
-      roughness: 0.35,
-      metalness: 0.8,
-    });
-
-    // --- 3D CAVITY MAGNETRON & MICROWAVE ASSEMBLY ---
-    const magnetronGroup = new THREE.Group();
-    scene.add(magnetronGroup);
-
-    // Anode Block Shell
-    const anodeOuter = new THREE.Mesh(
-      new THREE.CylinderGeometry(4.3, 4.3, 3.4, 48),
-      copperAnodeMat,
-    );
-    anodeOuter.castShadow = true;
-    anodeOuter.receiveShadow = true;
-    magnetronGroup.add(anodeOuter);
-
-    // Center Interaction Bore
-    const centerBore = new THREE.Mesh(
-      new THREE.CylinderGeometry(1.5, 1.5, 3.42, 36),
-      new THREE.MeshStandardMaterial({ color: 0x1e293b, roughness: 0.6 }),
-    );
-    magnetronGroup.add(centerBore);
-
-    // 8 Radial Resonant Cavities
-    const numCavities = 8;
-    for (let i = 0; i < numCavities; i++) {
-      const angle = (i * 2 * Math.PI) / numCavities;
-      const hole = new THREE.Mesh(
-        new THREE.CylinderGeometry(0.62, 0.62, 3.42, 24),
-        new THREE.MeshStandardMaterial({ color: 0x0f172a, roughness: 0.7 }),
-      );
-      hole.position.set(Math.cos(angle) * 2.8, 0, Math.sin(angle) * 2.8);
-      magnetronGroup.add(hole);
-
-      const slot = new THREE.Mesh(
-        new THREE.BoxGeometry(1.3, 3.42, 0.18),
-        new THREE.MeshStandardMaterial({ color: 0x0f172a, roughness: 0.7 }),
-      );
-      slot.position.set(Math.cos(angle) * 2.1, 0, Math.sin(angle) * 2.1);
-      slot.rotation.y = -angle;
-      magnetronGroup.add(slot);
-    }
-
-    // Pi-Mode Strapping Rings
-    [-1.6, 1.6].forEach((yPos) => {
-      const innerRing = new THREE.Mesh(new THREE.TorusGeometry(1.8, 0.05, 8, 36), copperAnodeMat);
-      innerRing.rotation.x = Math.PI / 2;
-      innerRing.position.y = yPos;
-      magnetronGroup.add(innerRing);
-
-      const outerRing = new THREE.Mesh(new THREE.TorusGeometry(2.3, 0.05, 8, 36), copperAnodeMat);
-      outerRing.rotation.x = Math.PI / 2;
-      outerRing.position.y = yPos;
-      magnetronGroup.add(outerRing);
-    });
-
-    // Central Thermionic Cathode
-    const cathode = new THREE.Mesh(new THREE.CylinderGeometry(0.38, 0.38, 4.2, 24), cathodeMat);
-    cathode.castShadow = true;
-    magnetronGroup.add(cathode);
-
-    [-2.1, 2.1].forEach((yEnd) => {
-      const endHat = new THREE.Mesh(
-        new THREE.CylinderGeometry(0.65, 0.65, 0.12, 24),
-        new THREE.MeshStandardMaterial({ color: 0x64748b, metalness: 0.9 }),
-      );
-      endHat.position.y = yEnd;
-      magnetronGroup.add(endHat);
-    });
-
-    // Alnico Permanent Magnet Shoes
-    [-3.2, 3.2].forEach((yMag) => {
-      const poleShoe = new THREE.Mesh(
-        new THREE.CylinderGeometry(3.5, 4.2, 1.8, 36),
-        alnicoMagnetMat,
-      );
-      poleShoe.position.y = yMag;
-      magnetronGroup.add(poleShoe);
-    });
-
-    // --- ROTATING ELECTRON SPOKE WHEEL PARTICLES ---
-    const spokeCount = 120;
-    const spokeGeo = new THREE.BufferGeometry();
-    const spokePos = new Float32Array(spokeCount * 3);
-    const glowTex = createGlowPointTexture();
-
-    for (let i = 0; i < spokeCount; i++) {
-      const idx = i * 3;
-      const spokeIndex = i % 4;
-      const baseAngle = (spokeIndex * Math.PI) / 2;
-      const r = 0.5 + lcg() * 0.9;
-      const angle = baseAngle + (lcg() - 0.5) * 0.3;
-      spokePos[idx] = Math.cos(angle) * r;
-      spokePos[idx + 1] = (lcg() - 0.5) * 1.5;
-      spokePos[idx + 2] = Math.sin(angle) * r;
-    }
-    spokeGeo.setAttribute("position", new THREE.BufferAttribute(spokePos, 3));
-
-    const spokePoints = new THREE.Points(
-      spokeGeo,
-      new THREE.PointsMaterial({
-        size: 0.26,
-        map: glowTex,
-        color: 0x38bdf8,
-        transparent: true,
-        opacity: 0.9,
-        blending: THREE.AdditiveBlending,
-        depthWrite: false,
-      }),
-    );
-    magnetronGroup.add(spokePoints);
-
-    // --- RENDER LOOP & REAL-TIME SPOKE WHEEL ROTATION ---
     let reqId: number;
-    let _renderedSteps = 0;
 
     const animate = () => {
       reqId = requestAnimationFrame(animate);
-      _renderedSteps += 1;
       const delta = 1 / 60;
       const p = live.current;
 
-      if (p.isOscillating) {
-        spokePoints.visible = p.showSpokeWheel;
-        spokePoints.rotation.y += delta * (p.microwaveFreqMhz / 2450) * 4.5;
-        (spokePoints.material as THREE.PointsMaterial).opacity = Math.min(
-          0.95,
-          0.25 + (p.dielectricLoss / 2000) * 0.7,
-        );
-      } else {
-        spokePoints.visible = false;
-      }
+      model.updateKinematics(
+        delta,
+        p.isOscillating,
+        p.microwaveFreqMhz,
+        p.dielectricLoss,
+        p.showSpokeWheel,
+      );
 
       controls.update();
       renderer.render(scene, camera);
@@ -308,6 +175,7 @@ export function SpencerMicrowave3D() {
 
     return () => {
       cancelAnimationFrame(reqId);
+      model.dispose();
       studio.dispose();
     };
   }, [live]);

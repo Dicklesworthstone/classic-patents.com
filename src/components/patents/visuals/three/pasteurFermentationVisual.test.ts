@@ -85,16 +85,7 @@ describe("US 135,245 Louis Pasteur Brewing & Fermentation visual & biophysics bo
     expect(nodes.airlockMesh).toBeDefined();
     expect(nodes.cottonBulb).toBeDefined();
 
-    updatePasteurFermentationKinematics(
-      nodes,
-      materials,
-      0.016,
-      0.5,
-      22,
-      95,
-      true,
-      true,
-    );
+    updatePasteurFermentationKinematics(nodes, materials, 0.016, 0.5, 22, 95, true, true);
     expect(materials.tinnedCopper.transparent).toBe(true);
     expect(nodes.bubblePoints.visible).toBe(true);
 

@@ -2,12 +2,12 @@
 
 import { Activity, Camera, Eye, EyeOff } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
-import * as THREE from "three";
+import type * as THREE from "three";
 import { stepMcCormickReaper } from "@/physics/catalogKernels";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
+import { buildMcCormickReaperModel } from "./mccormickReaperModel";
 import { StudioKernelChips } from "./StudioKernelChips";
 import { createThreeStudioScene, type StudioContext } from "./ThreeStudioScene";
-import { buildMcCormickReaperModel } from "./mccormickReaperModel";
 import { useLiveSimParams } from "./useLiveSimParams";
 
 type CameraPreset = "iso" | "sickle_guards" | "grain_reel" | "platform" | "top";

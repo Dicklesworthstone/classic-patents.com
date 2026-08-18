@@ -1,25 +1,32 @@
 "use client";
 
-import { Activity, Camera, Eye, EyeOff, Volume2, VolumeX } from "lucide-react";
-import { useEffect, useRef, useState } from "react";
-import * as THREE from "three";
+import { Activity, Camera, Eye, EyeOff, Volume2, VolumeX, Zap } from "lucide-react";
+import { memo, useEffect, useRef, useState } from "react";
+import type * as THREE from "three";
 import { stepGrammeDynamo } from "@/physics/catalogKernels";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { soundEngine } from "@/utils/soundEngine";
-import { StudioKernelChips } from "./StudioKernelChips";
 import {
-  createGlowPointTexture,
-  createThreeStudioScene,
-  type StudioContext,
-} from "./ThreeStudioScene";
+  buildGrammeDynamoModel,
+  updateGrammeDynamoKinematics,
+} from "./grammeDynamoModel";
+import { StudioKernelChips } from "./StudioKernelChips";
+import { createThreeStudioScene, type StudioContext } from "./ThreeStudioScene";
 import { useLiveSimParams } from "./useLiveSimParams";
 import { usePatentAudio } from "./usePatentAudio";
 
-type CameraPreset = "iso" | "ring_armature" | "collector_rods" | "pole_pieces" | "top";
+type CameraPreset =
+  | "iso"
+  | "ring_armature"
+  | "collector_rods"
+  | "pole_pieces"
+  | "bearing_pedestal"
+  | "top";
 
-export function GrammeDynamo3D() {
+export const GrammeDynamo3D = memo(() => {
   const containerRef = useRef<HTMLDivElement>(null);
   const [showUiOverlay, setShowUiOverlay] = useState<boolean>(true);
+  const [isCutaway, setIsCutaway] = useState<boolean>(false);
 
   // The shared parameter map carries an explicitly illustrative shaft rate.
   const { params } = usePatentPhysics("us-120057-gramme-dynamo");
@@ -35,6 +42,7 @@ export function GrammeDynamo3D() {
     showMagneticFlux,
     isAudioMuted,
     displayRadPerFrame: gramme.displayRadPerFrame,
+    isCutaway,
   });
 
   const controlsRef = useRef<StudioContext["controls"] | null>(null);
@@ -63,6 +71,10 @@ export function GrammeDynamo3D() {
         camera.position.set(2.8, 2.5, 3.8);
         controls.target.set(1.2, 0, 0);
         break;
+      case "bearing_pedestal":
+        camera.position.set(-4.5, 1.0, 2.5);
+        controls.target.set(-3.8, -0.6, 0);
+        break;
       case "top":
         camera.position.set(0, 12.0, 0.1);
         controls.target.set(0, 0, 0);
@@ -70,6 +82,7 @@ export function GrammeDynamo3D() {
     }
     controls.update();
   };
+
   const toggleSound = () => {
     toggleEngine(() => {
       soundEngine.playSwitchClick();
@@ -90,187 +103,29 @@ export function GrammeDynamo3D() {
     cameraRef.current = camera;
     controlsRef.current = controls;
 
-    // Materials
-    const castIronMat = new THREE.MeshStandardMaterial({
-      color: 0x1e293b,
-      roughness: 0.5,
-      metalness: 0.8,
-    });
-
-    const copperCoilMat = new THREE.MeshStandardMaterial({
-      color: 0xd97706,
-      roughness: 0.25,
-      metalness: 0.9,
-    });
-
-    const brassMat = new THREE.MeshStandardMaterial({
-      color: 0xc8963e,
-      roughness: 0.2,
-      metalness: 0.92,
-    });
-
-    const rubberMat = new THREE.MeshStandardMaterial({
-      color: 0x111827,
-      roughness: 0.92,
-      metalness: 0.02,
-    });
-
-    const steelShaftMat = new THREE.MeshStandardMaterial({
-      color: 0xf1f5f9,
-      roughness: 0.1,
-      metalness: 0.95,
-    });
-
-    const fluxGlowTex = createGlowPointTexture();
-
-    const rootGroup = new THREE.Group();
+    const { rootGroup, nodes, materials, dispose } = buildGrammeDynamoModel();
     scene.add(rootGroup);
-
-    // 1. Heavy Cast-Iron Bedplate & Upright Bearing Brackets
-    const bedplate = new THREE.Mesh(new THREE.BoxGeometry(10.5, 0.8, 6.5), castIronMat);
-    bedplate.position.y = -2.2;
-    bedplate.receiveShadow = true;
-    rootGroup.add(bedplate);
-
-    [-3.8, 3.8].forEach((bx) => {
-      const pedestal = new THREE.Mesh(new THREE.CylinderGeometry(0.45, 0.6, 3.2, 16), castIronMat);
-      pedestal.position.set(bx, -0.6, 0);
-      rootGroup.add(pedestal);
-    });
-
-    // 2. Stationary Field Magnet Iron Core Pole Shoes
-    const statorGroup = new THREE.Group();
-    rootGroup.add(statorGroup);
-
-    [-1, 1].forEach((dir) => {
-      const poleShoe = new THREE.Mesh(
-        new THREE.CylinderGeometry(2.6, 2.6, 2.8, 24, 1, true, 0, Math.PI * 0.6),
-        castIronMat,
-      );
-      poleShoe.rotation.z = Math.PI / 2;
-      poleShoe.rotation.x = dir > 0 ? Math.PI * 0.2 : Math.PI * 1.2;
-      poleShoe.position.set(0, 0, 0);
-      poleShoe.castShadow = true;
-      statorGroup.add(poleShoe);
-
-      // Heavy Field Magnet Coils
-      const fCoil = new THREE.Mesh(new THREE.BoxGeometry(2.2, 1.4, 2.4), copperCoilMat);
-      fCoil.position.set(0, dir * 2.2, 0);
-      fCoil.castShadow = true;
-      statorGroup.add(fCoil);
-    });
-
-    // 3. Revolving Gramme Ring Armature (Claim 1: Soft Iron Ring + Toroidal Windings)
-    const armatureGroup = new THREE.Group();
-    rootGroup.add(armatureGroup);
-
-    // Drive Shaft
-    const shaft = new THREE.Mesh(new THREE.CylinderGeometry(0.18, 0.18, 9.0, 16), steelShaftMat);
-    shaft.rotation.z = Math.PI / 2;
-    shaft.castShadow = true;
-    armatureGroup.add(shaft);
-
-    // Soft Iron Toroidal Ring Core
-    const ironRing = new THREE.Mesh(new THREE.TorusGeometry(1.8, 0.45, 16, 36), castIronMat);
-    ironRing.rotation.y = Math.PI / 2;
-    armatureGroup.add(ironRing);
-
-    // The first construction expressly states thirty-six small bobbins joined
-    // end to end around the ring.
-    const sectorCount = 36;
-    for (let s = 0; s < sectorCount; s++) {
-      const sAngle = (s * Math.PI * 2) / sectorCount;
-      const coilSector = new THREE.Mesh(new THREE.TorusGeometry(0.55, 0.14, 12, 16), copperCoilMat);
-      coilSector.position.set(0, Math.cos(sAngle) * 1.8, Math.sin(sAngle) * 1.8);
-      coilSector.rotation.y = Math.PI / 2;
-      coilSector.rotation.x = sAngle;
-      coilSector.castShadow = true;
-      armatureGroup.add(coilSector);
-    }
-
-    // 4. Junction conductors C rotate with the ring. They are collected by
-    // rubbers S, as described in US 120,057; this is not a later segmented
-    // commutator drum.
-    const junctionRodGeometry = new THREE.CylinderGeometry(0.055, 0.055, 0.85, 10);
-    for (let junction = 0; junction < sectorCount; junction++) {
-      const angle = (junction * Math.PI * 2) / sectorCount;
-      const junctionRod = new THREE.Mesh(junctionRodGeometry, brassMat);
-      junctionRod.rotation.z = Math.PI / 2;
-      junctionRod.position.set(-0.55, Math.cos(angle) * 1.8, Math.sin(angle) * 1.8);
-      armatureGroup.add(junctionRod);
-    }
-
-    // Stationary collecting rubbers contact successive junction rods.
-    [-1, 1].forEach((dir) => {
-      const collectorRubber = new THREE.Mesh(new THREE.BoxGeometry(0.22, 0.46, 0.8), rubberMat);
-      collectorRubber.position.set(-0.95, dir * 1.8, 0);
-      rootGroup.add(collectorRubber);
-    });
-
-    // 5. Magnetic Flux Vector Field Particles
-    const fluxCount = 120;
-    const fluxGeo = new THREE.BufferGeometry();
-    const fluxPositions = new Float32Array(fluxCount * 3);
-    const fluxColors = new Float32Array(fluxCount * 3);
-
-    for (let i = 0; i < fluxCount; i++) {
-      const idx = i * 3;
-      const angle = (i * Math.PI * 2) / fluxCount;
-      const radius = 1.42 + (i % 6) * 0.14;
-      fluxPositions[idx] = ((i % 5) - 2) * 0.2;
-      fluxPositions[idx + 1] = Math.cos(angle) * radius;
-      fluxPositions[idx + 2] = Math.sin(angle) * radius;
-
-      fluxColors[idx] = 0.2;
-      fluxColors[idx + 1] = 0.85;
-      fluxColors[idx + 2] = 1.0;
-    }
-
-    fluxGeo.setAttribute("position", new THREE.BufferAttribute(fluxPositions, 3));
-    fluxGeo.setAttribute("color", new THREE.BufferAttribute(fluxColors, 3));
-
-    const fluxPoints = new THREE.Points(
-      fluxGeo,
-      new THREE.PointsMaterial({
-        size: 0.25,
-        map: fluxGlowTex,
-        vertexColors: true,
-        transparent: true,
-        opacity: 0.85,
-        blending: THREE.AdditiveBlending,
-        depthWrite: false,
-      }),
-    );
-    rootGroup.add(fluxPoints);
 
     // Animation Loop
     let reqId: number;
-    let frame = 0;
+    let timeSec = 0;
 
     const animate = () => {
       reqId = requestAnimationFrame(animate);
-      frame += 1;
+      const dt = 1 / 60;
+      timeSec += dt;
       const p = live.current;
 
-      const radiansPerFrame = p.displayRadPerFrame ?? (p.shaftRate * Math.PI * 2) / 240;
-      armatureGroup.rotation.x = frame * radiansPerFrame;
-
-      // Deterministic display motion: a fixed frame sequence, with no ambient
-      // randomness or private wall-clock state.
-      const pos = fluxPositions;
-      for (let i = 0; i < fluxCount; i++) {
-        const idx = i * 3;
-        const angle = (i * Math.PI * 2) / fluxCount + frame * radiansPerFrame * 0.3;
-        const radius = 1.42 + (i % 6) * 0.14;
-        pos[idx + 1] = Math.cos(angle) * radius;
-        pos[idx + 2] = Math.sin(angle) * radius;
-      }
-      const fluxPositionAttribute = fluxGeo.getAttribute("position");
-      fluxPositionAttribute.needsUpdate = true;
-      fluxPoints.visible = p.showMagneticFlux;
-      (fluxPoints.material as THREE.PointsMaterial).opacity = Math.min(
-        0.95,
-        0.25 + (p.inducedEmfIndex / 160) * 0.7,
+      updateGrammeDynamoKinematics(
+        nodes,
+        materials,
+        dt,
+        timeSec,
+        p.shaftRate,
+        p.inducedEmfIndex,
+        p.displayRadPerFrame,
+        p.showMagneticFlux,
+        p.isCutaway ?? false,
       );
 
       renderer.render(scene, camera);
@@ -280,6 +135,7 @@ export function GrammeDynamo3D() {
 
     return () => {
       cancelAnimationFrame(reqId);
+      dispose();
       studio.cleanup();
     };
   }, [live]);
@@ -309,6 +165,7 @@ export function GrammeDynamo3D() {
               ["ring_armature", "Ring Armature"],
               ["collector_rods", "Junctions & Rubbers"],
               ["pole_pieces", "Field Poles"],
+              ["bearing_pedestal", "Pedestals"],
               ["top", "Top"],
             ] as [CameraPreset, string][]
           ).map(([preset, label]) => (
@@ -329,6 +186,20 @@ export function GrammeDynamo3D() {
 
         {/* Toggles */}
         <div className="flex items-center gap-1.5 bg-parchment-950/80 backdrop-blur-md p-1.5 rounded-xl border border-parchment-700/60 shadow-lg pointer-events-auto">
+          <button
+            type="button"
+            onClick={() => setIsCutaway(!isCutaway)}
+            title={isCutaway ? "Solid Machine" : "Cutaway Frame"}
+            className={`flex items-center gap-1 px-2.5 py-1 text-xs font-sans rounded-lg transition-colors ${
+              isCutaway
+                ? "bg-amber-600/30 text-amber-200 border border-amber-500/40"
+                : "text-parchment-300 hover:text-white hover:bg-parchment-800/60"
+            }`}
+          >
+            {isCutaway ? <EyeOff className="w-3.5 h-3.5" /> : <Eye className="w-3.5 h-3.5" />}
+            <span>{isCutaway ? "Cutaway" : "Solid"}</span>
+          </button>
+
           <button
             type="button"
             onClick={() => setShowMagneticFlux(!showMagneticFlux)}
@@ -352,14 +223,9 @@ export function GrammeDynamo3D() {
           <button
             type="button"
             onClick={() => setShowUiOverlay(!showUiOverlay)}
-            title={showUiOverlay ? "Hide Overlay UI" : "Show Overlay UI"}
             className="p-1.5 rounded-lg text-xs text-parchment-400 hover:text-white hover:bg-parchment-800 transition-colors"
           >
-            {showUiOverlay ? (
-              <EyeOff className="w-4 h-4" />
-            ) : (
-              <Eye className="w-4 h-4 text-amber-400" />
-            )}
+            <Zap className="w-4 h-4 text-amber-400" />
           </button>
         </div>
       </div>
@@ -368,21 +234,23 @@ export function GrammeDynamo3D() {
         visible={showUiOverlay}
         title="Gramme ring collection"
         chips={[
-          { label: "Shaft", value: shaftRate.toFixed(1), unit: "relative" },
-          { label: "E", value: String(gramme.inducedEmfIndex), unit: "index" },
+          { label: "Shaft Rate", value: shaftRate.toFixed(1), unit: "relative" },
+          { label: "Induced EMF", value: String(gramme.inducedEmfIndex), unit: "index" },
+          { label: "Ring Bobbins", value: "36", unit: "wound" },
           { label: "Junctions", value: String(gramme.printedJunctionCount), unit: "printed" },
           {
             label: "Collection",
             value: String(gramme.collectionContinuityPct),
-            unit: "% idealized",
+            unit: "% continuity",
           },
-          { label: "dθ", value: String(gramme.displayDegPerFrame), unit: "°/frame" },
+          { label: "Shaft Velocity", value: String(gramme.displayDegPerFrame), unit: "°/frame" },
         ]}
       />
       <p className="absolute bottom-3 left-4 right-4 z-10 rounded-lg border border-parchment-700/60 bg-parchment-950/80 px-3 py-2 text-xs text-parchment-200 backdrop-blur-md">
-        Source-faithful explanatory mode: joined bobbins, junction conductors, and collecting
-        rubbers. US 120,057 gives no historical rpm, volts, amperes, or watts.
+        Source-faithful explanatory mode: 36 joined bobbins, radial junction conductors, and collecting
+        rubbers. US 120,057 established the continuous DC generation principle.
       </p>
     </div>
   );
-}
+});
+

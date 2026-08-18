@@ -244,4 +244,3 @@ export const PasteurFermentation3D = memo(() => {
     </div>
   );
 });
-

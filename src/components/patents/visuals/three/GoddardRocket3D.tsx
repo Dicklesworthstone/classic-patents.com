@@ -2,7 +2,7 @@
 
 import { Camera, Eye, EyeOff, Flame, Rocket, RotateCcw, Volume2, VolumeX, Zap } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
-import * as THREE from "three";
+import type * as THREE from "three";
 import { FrankenSimEngine } from "@/physics/engine";
 import { ensureGoddardWasm } from "@/physics/goddardWasm";
 import { deLavalMeridian, goddardThermo } from "@/physics/thermochem";
@@ -10,11 +10,8 @@ import { useFrankenSimPhysics } from "@/physics/useFrankenSimPhysics";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { createLcg } from "@/utils/lcg";
 import { soundEngine } from "@/utils/soundEngine";
-import {
-  createGlowPointTexture,
-  createThreeStudioScene,
-  type StudioContext,
-} from "./ThreeStudioScene";
+import { buildGoddardRocketModel } from "./goddardRocketModel";
+import { createThreeStudioScene, type StudioContext } from "./ThreeStudioScene";
 import { useLiveSimParams } from "./useLiveSimParams";
 
 import { usePatentAudio } from "./usePatentAudio";
@@ -139,252 +136,24 @@ export function GoddardRocket3D() {
     cameraRef.current = camera;
     controlsRef.current = controls;
 
-    // --- PBR MATERIALS ---
-    const aluminumHullMat = new THREE.MeshStandardMaterial({
-      color: 0xf1f5f9,
-      roughness: 0.2,
-      metalness: 0.9,
-    });
+    const model = buildGoddardRocketModel();
+    scene.add(model.root);
 
-    const copperNozzleMat = new THREE.MeshStandardMaterial({
-      color: 0xd97706,
-      roughness: 0.3,
-      metalness: 0.85,
-    });
-
-    // --- 3D MULTI-STAGE ROCKET ASSEMBLY ---
-    const rocketGroup = new THREE.Group();
-    scene.add(rocketGroup);
-
-    // Stage 1 (Booster Stage)
-    const stage1Group = new THREE.Group();
-    const stage1Body = new THREE.Mesh(
-      new THREE.CylinderGeometry(1.2, 1.2, 5.5, 48),
-      aluminumHullMat,
-    );
-    stage1Body.castShadow = true;
-    stage1Body.receiveShadow = true;
-    stage1Group.add(stage1Body);
-
-    for (let r = 0; r < 4; r++) {
-      const ring = new THREE.Mesh(
-        new THREE.TorusGeometry(1.21, 0.03, 8, 36),
-        new THREE.MeshStandardMaterial({ color: 0x94a3b8, metalness: 0.9 }),
-      );
-      ring.rotation.x = Math.PI / 2;
-      ring.position.y = -2.2 + r * 1.4;
-      stage1Group.add(ring);
-    }
-
-    // 4 Swept Aerodynamic Stabilizing Fins
-    for (let f = 0; f < 4; f++) {
-      const fAngle = (f * Math.PI) / 2;
-      const finShape = new THREE.Shape();
-      finShape.moveTo(0, 0);
-      finShape.lineTo(1.4, -0.6);
-      finShape.lineTo(1.4, -1.8);
-      finShape.lineTo(0, -1.5);
-      finShape.closePath();
-
-      const finGeo = new THREE.ExtrudeGeometry(finShape, { depth: 0.08, bevelEnabled: false });
-      finGeo.center();
-      const fin = new THREE.Mesh(finGeo, aluminumHullMat);
-      fin.position.set(Math.cos(fAngle) * 1.8, -2.0, Math.sin(fAngle) * 1.8);
-      fin.rotation.y = -fAngle + Math.PI / 2;
-      fin.castShadow = true;
-      stage1Group.add(fin);
-    }
-
-    // De Laval Supersonic Converging-Diverging Nozzle with Regenerative Cooling Tubes
-    const nozzleGroup = new THREE.Group();
-    nozzleGroup.position.y = -2.75;
-
-    const gimbalRing = new THREE.Mesh(
-      new THREE.TorusGeometry(0.95, 0.06, 12, 32),
-      new THREE.MeshStandardMaterial({ color: 0x475569, metalness: 0.85, roughness: 0.3 }),
-    );
-    gimbalRing.rotation.x = Math.PI / 2;
-    gimbalRing.position.y = 0.2;
-    nozzleGroup.add(gimbalRing);
-
-    const nozzlePoints: THREE.Vector2[] = [];
-    nozzlePoints.push(new THREE.Vector2(0.85, 0.3));
-    nozzlePoints.push(new THREE.Vector2(0.82, 0.1));
-    nozzlePoints.push(new THREE.Vector2(0.42, -0.2));
-    nozzlePoints.push(new THREE.Vector2(0.32, -0.35));
-    nozzlePoints.push(new THREE.Vector2(0.45, -0.65));
-    nozzlePoints.push(new THREE.Vector2(0.68, -1.05));
-    nozzlePoints.push(new THREE.Vector2(0.92, -1.45));
-
-    const deLavalGeo = new THREE.LatheGeometry(nozzlePoints, 48);
-    const deLavalMesh = new THREE.Mesh(deLavalGeo, copperNozzleMat);
-    deLavalMesh.castShadow = true;
-    nozzleGroup.add(deLavalMesh);
-    let lastExpansion = 3.5;
-
-    // Regenerative Cooling Jacket Manifold Rings
-    const manifoldRing = new THREE.Mesh(
-      new THREE.TorusGeometry(0.93, 0.05, 12, 36),
-      new THREE.MeshStandardMaterial({ color: 0xb45309, metalness: 0.9 }),
-    );
-    manifoldRing.rotation.x = Math.PI / 2;
-    manifoldRing.position.y = -1.45;
-    nozzleGroup.add(manifoldRing);
-
-    // Dual High-Pressure Propellant Feed Pipes (LOX & Gasoline)
-    [-0.65, 0.65].forEach((px) => {
-      const pipeCurve = new THREE.CatmullRomCurve3([
-        new THREE.Vector3(px, 1.8, 0.8),
-        new THREE.Vector3(px, 0.4, 0.8),
-        new THREE.Vector3(px * 0.6, -0.2, 0.4),
-        new THREE.Vector3(px * 0.4, -0.8, 0.2),
-      ]);
-      const pipeGeo = new THREE.TubeGeometry(pipeCurve, 20, 0.045, 8, false);
-      const pipeMesh = new THREE.Mesh(
-        pipeGeo,
-        new THREE.MeshStandardMaterial({ color: 0xd4af37, metalness: 0.9, roughness: 0.2 }),
-      );
-      nozzleGroup.add(pipeMesh);
-    });
-
-    // 4 Gyro-Stabilized Exhaust Jet Vanes (Steering in supersonic gas)
-    for (let v = 0; v < 4; v++) {
-      const vAngle = (v * Math.PI) / 2;
-      const vane = new THREE.Mesh(
-        new THREE.BoxGeometry(0.04, 0.35, 0.25),
-        new THREE.MeshStandardMaterial({ color: 0x1e293b, metalness: 0.9, roughness: 0.3 }),
-      );
-      vane.position.set(Math.cos(vAngle) * 0.65, -1.5, Math.sin(vAngle) * 0.65);
-      vane.rotation.y = -vAngle;
-      nozzleGroup.add(vane);
-    }
-
-    stage1Group.add(nozzleGroup);
-    rocketGroup.add(stage1Group);
-
-    // Stage 2 (Upper Payload Stage & Interstage Adapter)
-    const stage2Group = new THREE.Group();
-    stage2Group.position.y = 4.2;
-
-    const interstage = new THREE.Mesh(
-      new THREE.CylinderGeometry(0.8, 1.2, 1.2, 36),
-      new THREE.MeshStandardMaterial({ color: 0x334155, roughness: 0.4, metalness: 0.8 }),
-    );
-    interstage.position.y = -1.0;
-    stage2Group.add(interstage);
-
-    const stage2Body = new THREE.Mesh(
-      new THREE.CylinderGeometry(0.8, 0.8, 2.6, 36),
-      aluminumHullMat,
-    );
-    stage2Body.position.y = 0.8;
-    stage2Body.castShadow = true;
-    stage2Group.add(stage2Body);
-
-    // Aerodynamic Parabolic Nose Cone Fairing
-    const nosePoints: THREE.Vector2[] = [];
-    nosePoints.push(new THREE.Vector2(0.01, 2.2));
-    nosePoints.push(new THREE.Vector2(0.2, 1.8));
-    nosePoints.push(new THREE.Vector2(0.5, 1.0));
-    nosePoints.push(new THREE.Vector2(0.8, 0));
-    const noseGeo = new THREE.LatheGeometry(nosePoints, 36);
-    const noseCone = new THREE.Mesh(noseGeo, aluminumHullMat);
-    noseCone.position.y = 2.1;
-    noseCone.castShadow = true;
-    stage2Group.add(noseCone);
-
-    rocketGroup.add(stage2Group);
-
-    // --- GLOWING SUPERSONIC EXHAUST PLUME PARTICLES ---
-    const plumeCount = 180;
-    const plumeGeo = new THREE.BufferGeometry();
-    const plumePos = new Float32Array(plumeCount * 3);
-    const plumeColors = new Float32Array(plumeCount * 3);
-
-    const glowTex = createGlowPointTexture();
-
-    for (let i = 0; i < plumeCount; i++) {
-      const idx = i * 3;
-      plumePos[idx] = (lcg() - 0.5) * 0.4;
-      plumePos[idx + 1] = -4.2 - lcg() * 4.5;
-      plumePos[idx + 2] = (lcg() - 0.5) * 0.4;
-
-      const progress = (-plumePos[idx + 1] - 4.2) / 4.5;
-      plumeColors[idx] = 1.0;
-      plumeColors[idx + 1] = Math.max(0, 0.8 - progress * 0.7);
-      plumeColors[idx + 2] = Math.max(0, 0.3 - progress * 0.3);
-    }
-
-    plumeGeo.setAttribute("position", new THREE.BufferAttribute(plumePos, 3));
-    plumeGeo.setAttribute("color", new THREE.BufferAttribute(plumeColors, 3));
-
-    const plumePoints = new THREE.Points(
-      plumeGeo,
-      new THREE.PointsMaterial({
-        size: 0.42,
-        map: glowTex,
-        vertexColors: true,
-        transparent: true,
-        opacity: 0.9,
-        blending: THREE.AdditiveBlending,
-        depthWrite: false,
-      }),
-    );
-    scene.add(plumePoints);
-
-    // --- RENDER LOOP & REAL-TIME SUPERSONIC PLUME DYNAMICS ---
     let reqId: number;
-    let _renderedSteps = 0;
 
     const animate = () => {
       reqId = requestAnimationFrame(animate);
-      _renderedSteps += 1;
       const delta = 1 / 60;
       const p = live.current;
 
-      const gimbalRad = (p.gyroGimbalAngleDeg * Math.PI) / 180;
-      nozzleGroup.rotation.z = gimbalRad;
-
-      const ar = p.expansionRatio ?? 3.5;
-      if (Math.abs(ar - lastExpansion) > 0.04) {
-        lastExpansion = ar;
-        deLavalMesh.geometry.dispose();
-        deLavalMesh.geometry = new THREE.LatheGeometry(
-          deLavalMeridian(ar).map(([r, y]) => new THREE.Vector2(r, y)),
-          48,
-        );
-      }
-
-      if (p.activeStage === 2) {
-        stage2Group.position.y += (7.5 - stage2Group.position.y) * 0.05;
-        stage1Group.position.y += (-6.0 - stage1Group.position.y) * 0.05;
-      } else {
-        stage2Group.position.y += (4.2 - stage2Group.position.y) * 0.1;
-        stage1Group.position.y += (0 - stage1Group.position.y) * 0.1;
-      }
-
-      const plumeOk = (p.exhaustVelocityMps ?? 0) >= 800;
-      if (p.showExhaustPlume && plumeOk) {
-        const pPos = plumePos;
-        const velocitySpeed = (p.exhaustVelocityMps / 2000) * 35.0 * delta;
-        const exitSpread = 0.22 * Math.sqrt(Math.max(2, p.expansionRatio ?? 3.5));
-
-        for (let i = 0; i < plumeCount; i++) {
-          const idx = i * 3;
-          pPos[idx + 1] -= velocitySpeed;
-          pPos[idx] += Math.sin(gimbalRad) * velocitySpeed * 0.4;
-
-          if (pPos[idx + 1] < -8.5) {
-            pPos[idx] = (lcg() - 0.5) * exitSpread;
-            pPos[idx + 1] = -4.2;
-            pPos[idx + 2] = (lcg() - 0.5) * exitSpread;
-          }
-        }
-        plumeGeo.attributes.position.needsUpdate = true;
-        plumePoints.visible = true;
-      } else {
-        plumePoints.visible = false;
-      }
+      model.updateKinematics(
+        delta,
+        p.activeStage,
+        p.gyroGimbalAngleDeg,
+        p.expansionRatio ?? 3.5,
+        p.exhaustVelocityMps ?? 0,
+        p.showExhaustPlume,
+      );
 
       controls.update();
       renderer.render(scene, camera);
@@ -394,6 +163,7 @@ export function GoddardRocket3D() {
 
     return () => {
       cancelAnimationFrame(reqId);
+      model.dispose();
       studio.dispose();
     };
   }, [live]);
