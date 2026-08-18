@@ -26,7 +26,7 @@ export function NobelDynamiteSim() {
   const handleDetonate = () => {
     if (isCapStrongEnough) {
       setIsDetonated(true);
-      setTimeout(() => setIsDetonated(false), 800);
+      setTimeout(() => setIsDetonated(false), nobel.flashDisplayMs);
     }
   };
 
@@ -169,7 +169,7 @@ export function NobelDynamiteSim() {
             Detonation Velocity
           </span>
           <span className="font-mono text-sm sm:text-base font-bold text-ink-900 dark:text-parchment-100">
-            {detonationVelocityMps} m/s
+            {detonationVelocityMps} m/s · {nobel.chargeTransitUs} µs / 20 cm
           </span>
         </div>
         <div className="bg-parchment-100 dark:bg-ink-900 border border-parchment-200 dark:border-ink-800 p-2.5 rounded-xl text-center">
@@ -213,7 +213,7 @@ export function NobelDynamiteSim() {
             max="85"
             step="1"
             value={nitroglycerinRatioPct}
-            onChange={(e) => updateParam("nitroglycerinRatioPct", Number(e.target.value))}
+            onChange={(e) => updateParam("ngConcentrationPct", Number(e.target.value))}
             className="w-full accent-amber-600 cursor-pointer"
           />
         </div>

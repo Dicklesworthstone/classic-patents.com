@@ -34,22 +34,30 @@ export function SpencerMicrowaveSim() {
         const nextTemp = Math.min(180, tempRef.current + heatStep);
         tempRef.current = nextTemp;
         setTempCelsius(nextTemp);
-        if (nextTemp > 100 && poppedRef.current < 12) {
+        if (nextTemp > rf.popcornThresholdC && poppedRef.current < rf.popcornKernelCount) {
           poppedRef.current += 1;
           setPoppedCount(poppedRef.current);
           soundEngine.playPopcornPop();
         }
       } else {
-        const nextTemp = Math.min(25, tempRef.current + 0.1);
+        const nextTemp = Math.min(25, tempRef.current + rf.dryIceHeatStepC);
         tempRef.current = nextTemp;
         setTempCelsius(nextTemp);
       }
-    }, 200);
+    }, rf.heatTickMs);
     return () => clearInterval(interval);
-  }, [isEmitting, foodType, rf.popcornHeatStepC]);
+  }, [
+    isEmitting,
+    foodType,
+    rf.popcornHeatStepC,
+    rf.dryIceHeatStepC,
+    rf.popcornKernelCount,
+    rf.popcornThresholdC,
+    rf.heatTickMs,
+  ]);
 
   const resetHeating = () => {
-    setTempCelsius(20);
+    setTempCelsius(rf.initialTempC);
     setPoppedCount(0);
     soundEngine.playSwitchClick();
   };
@@ -204,7 +212,13 @@ export function SpencerMicrowaveSim() {
           <div className="text-xs font-mono text-ink-300 mt-2">
             Internal Food Temp:{" "}
             <span className="text-amber-400 font-bold">{Math.round(tempCelsius)}°C</span> · Popcorn
-            Popped: <span className="text-purple-400 font-bold">{poppedCount} / 12</span>
+            Popped:{" "}
+            <span className="text-purple-400 font-bold">
+              {poppedCount} / {rf.popcornKernelCount}
+            </span>
+            {rf.timeToPopS > 0 ? (
+              <span className="text-ink-500"> · {rf.timeToPopS}s to 100 °C (250 g)</span>
+            ) : null}
           </div>
         </div>
 
@@ -253,13 +267,13 @@ export function SpencerMicrowaveSim() {
               title="magnetron cycle vs water heat"
               fast={{
                 name: "RF cycle",
-                period: "408",
+                period: String(rf.rfCyclePs),
                 scale: "ps",
                 detail: "2.45 GHz: one oscillation of the cavity field, far too fast to feel.",
               }}
               slow={{
                 name: "Thermal rise",
-                period: ((4180 * 0.25) / Math.max(50, powerWatts)).toFixed(1),
+                period: rf.waterHeatSecondsPerK.toFixed(1),
                 scale: "s / °C",
                 detail: `Time for ${powerWatts} W to lift 250 g of water one kelvin. Dipoles follow the field; heat does not.`,
               }}

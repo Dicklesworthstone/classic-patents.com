@@ -13,19 +13,15 @@ export function BoyleSmithCcdSim() {
   const clockFreq = params.clockFreq ?? 2.5;
   const gateVoltageV = params.gateVoltage ?? 8;
   const [isPlaying, setIsPlaying] = useState<boolean>(false);
+  const ccd = stepCcdWells(clockPhase, incidentLux, clockFreq, gateVoltageV);
 
   useEffect(() => {
     if (!isPlaying) return;
-    const interval = setInterval(
-      () => {
-        setClockPhase((prev) => (prev === 1 ? 2 : prev === 2 ? 3 : 1));
-      },
-      Math.round(1000 / (clockFreq * 2)),
-    );
+    const interval = setInterval(() => {
+      setClockPhase((prev) => (prev === 1 ? 2 : prev === 2 ? 3 : 1));
+    }, ccd.phaseDisplayMs);
     return () => clearInterval(interval);
-  }, [isPlaying, clockFreq]);
-
-  const ccd = stepCcdWells(clockPhase, incidentLux, clockFreq, gateVoltageV);
+  }, [isPlaying, ccd.phaseDisplayMs]);
   const photoElectrons = ccd.photoElectrons;
   const outputSignalMillivolts = ccd.outputSignalMv;
   const chargeTransferEfficiency = ccd.cte;
@@ -242,7 +238,7 @@ export function BoyleSmithCcdSim() {
             <div>
               <span className="text-ink-400 block text-xs">CLOCK STATE</span>
               <span className="text-blue-400 font-bold text-sm sm:text-base">
-                Phase φ{clockPhase} Active
+                Phase φ{clockPhase} · {ccd.phasePeriodNs} ns
               </span>
             </div>
             <div>
@@ -319,7 +315,7 @@ export function BoyleSmithCcdSim() {
                   {"3-Phase Clock Speed"}
                 </span>
                 <span className="text-cyan-600 dark:text-cyan-400 font-bold">
-                  {clockFreq.toFixed(2)} MHz
+                  {clockFreq.toFixed(2)} MHz · {ccd.phaseDisplayMs} ms/φ
                 </span>
               </div>
               <input

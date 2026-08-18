@@ -40,7 +40,7 @@ export function NoycePlanarICSim() {
   const noyce = stepNoyceIC({
     reverseBias,
     oxideThickness,
-    clockFrequencyMhz: params.clockFrequencyMhz ?? 1,
+    clockFrequencyMhz: params.clockFrequencyMhz ?? 10,
   });
   const [activeLayerStep, setActiveLayerStep] = useState<number>(4);
 
@@ -284,6 +284,18 @@ export function NoycePlanarICSim() {
                 <span className="block text-ink-500">Breakdown</span>
                 <span className="font-bold text-ink-900 dark:text-parchment-100">
                   {noyce.breakdownMarginV} V
+                </span>
+              </div>
+              <div className="rounded-lg bg-parchment-50 dark:bg-ink-950 border border-parchment-200 dark:border-ink-800 p-2 text-center">
+                <span className="block text-ink-500">Clock period</span>
+                <span className="font-bold text-ink-900 dark:text-parchment-100">
+                  {noyce.clockPeriodNs} ns
+                </span>
+              </div>
+              <div className="rounded-lg bg-parchment-50 dark:bg-ink-950 border border-parchment-200 dark:border-ink-800 p-2 text-center">
+                <span className="block text-ink-500">f_max</span>
+                <span className="font-bold text-ink-900 dark:text-parchment-100">
+                  {noyce.maxClockGhz} GHz
                 </span>
               </div>
             </div>

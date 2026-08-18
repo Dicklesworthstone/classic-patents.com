@@ -6,6 +6,7 @@ import * as THREE from "three";
 import { HudText } from "@/components/ui/LatexRenderer";
 import { stepNoyceIC } from "@/physics/catalogKernels";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
+import { createLcg } from "@/utils/lcg";
 import { soundEngine } from "@/utils/soundEngine";
 import {
   createGlowPointTexture,
@@ -13,6 +14,8 @@ import {
   type StudioContext,
 } from "./ThreeStudioScene";
 import { useLiveSimParams } from "./useLiveSimParams";
+
+const lcg = createLcg(1256);
 
 type CameraPreset = "iso" | "metallization_layer" | "oxide_dielectric" | "pn_junctions" | "top";
 
@@ -44,6 +47,7 @@ export function NoycePlanarIC3D() {
     oxideLayerThicknessNm,
     activeLayer,
     showLogicSignals,
+    clockPeriodNs: noyce.clockPeriodNs,
   });
 
   const controlsRef = useRef<StudioContext["controls"] | null>(null);
@@ -219,9 +223,9 @@ export function NoycePlanarIC3D() {
 
     for (let i = 0; i < signalCount; i++) {
       const idx = i * 3;
-      signalPos[idx] = (Math.random() - 0.5) * 6.5;
+      signalPos[idx] = (lcg() - 0.5) * 6.5;
       signalPos[idx + 1] = 0.65;
-      signalPos[idx + 2] = (Math.random() - 0.5) * 6.5;
+      signalPos[idx + 2] = (lcg() - 0.5) * 6.5;
     }
     signalGeo.setAttribute("position", new THREE.BufferAttribute(signalPos, 3));
 
@@ -241,11 +245,12 @@ export function NoycePlanarIC3D() {
 
     // --- RENDER LOOP & REAL-TIME LOGIC SIGNAL PROPAGATION ---
     let reqId: number;
-    const clock = new THREE.Clock();
+    let renderedSteps = 0;
 
     const animate = () => {
       reqId = requestAnimationFrame(animate);
-      const delta = clock.getDelta();
+      renderedSteps += 1;
+      const delta = 1 / 60;
       const p = live.current;
 
       substrateMesh.visible = p.activeLayer === "all" || p.activeLayer === "silicon";
@@ -256,7 +261,7 @@ export function NoycePlanarIC3D() {
       if (p.showLogicSignals) {
         signalPoints.visible = true;
         const sPos = signalPos;
-        const speed = (p.clockFrequencyMhz / 10) * 18.0 * delta;
+        const speed = (100 / Math.max(10, p.clockPeriodNs ?? 100)) * 18.0 * delta;
 
         for (let i = 0; i < signalCount; i++) {
           const idx = i * 3;

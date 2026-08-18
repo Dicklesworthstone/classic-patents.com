@@ -6,6 +6,7 @@ import * as THREE from "three";
 import { FrankenSimEngine } from "@/physics/engine";
 import { useFrankenSimPhysics } from "@/physics/useFrankenSimPhysics";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
+import { createLcg } from "@/utils/lcg";
 import { soundEngine } from "@/utils/soundEngine";
 import {
   createGlowPointTexture,
@@ -14,6 +15,8 @@ import {
 } from "./ThreeStudioScene";
 import { useLiveSimParams } from "./useLiveSimParams";
 import { usePatentAudio } from "./usePatentAudio";
+
+const lcg = createLcg(2278);
 
 type CameraPreset = "iso" | "roll" | "waterfall" | "escapement" | "torpedo";
 
@@ -247,9 +250,9 @@ export function LamarrFrequencyHopping3D() {
 
     for (let i = 0; i < hopCount; i++) {
       const idx = i * 3;
-      hopPos[idx] = (Math.random() - 0.5) * 8.0;
-      hopPos[idx + 1] = 2.0 + Math.random() * 2.5;
-      hopPos[idx + 2] = (Math.random() - 0.5) * 3.0;
+      hopPos[idx] = (lcg() - 0.5) * 8.0;
+      hopPos[idx + 1] = 2.0 + lcg() * 2.5;
+      hopPos[idx + 2] = (lcg() - 0.5) * 3.0;
     }
 
     hopGeo.setAttribute("position", new THREE.BufferAttribute(hopPos, 3));
@@ -269,7 +272,7 @@ export function LamarrFrequencyHopping3D() {
 
     // --- RENDER LOOP & REAL-TIME SPREAD SPECTRUM HOPPING ---
     let reqId: number;
-    const clock = new THREE.Clock();
+    let renderedSteps = 0;
     let hopTimer = 0;
     let activeChan = 22;
     // Coprime step with 88 piano keys — same shared roll as the 2D schematic.
@@ -279,7 +282,8 @@ export function LamarrFrequencyHopping3D() {
 
     const animate = () => {
       reqId = requestAnimationFrame(animate);
-      const delta = clock.getDelta();
+      renderedSteps += 1;
+      const delta = 1 / 60;
       const p = live.current;
 
       hopTimer += delta;
@@ -360,9 +364,7 @@ export function LamarrFrequencyHopping3D() {
         if (hPos[idx + 1] > 5.0) {
           hPos[idx + 1] = 1.5;
           hPos[idx] =
-            -5.0 +
-            (activeChan / Math.max(1, liveChannels - 1)) * 10.0 +
-            (Math.random() - 0.5) * 0.8;
+            -5.0 + (activeChan / Math.max(1, liveChannels - 1)) * 10.0 + (lcg() - 0.5) * 0.8;
         }
       }
       hopGeo.attributes.position.needsUpdate = true;

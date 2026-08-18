@@ -15,6 +15,7 @@ import { useEffect, useRef, useState } from "react";
 import * as THREE from "three";
 import { stepEinsteinRefrigerator } from "@/physics/catalogKernels";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
+import { createLcg } from "@/utils/lcg";
 import { soundEngine } from "@/utils/soundEngine";
 import {
   createGlowPointTexture,
@@ -23,6 +24,8 @@ import {
 } from "./ThreeStudioScene";
 import { useLiveSimParams } from "./useLiveSimParams";
 import { usePatentAudio } from "./usePatentAudio";
+
+const lcg = createLcg(2091);
 
 type CameraPreset = "iso" | "generator" | "condenser" | "evaporator" | "absorber";
 
@@ -256,9 +259,9 @@ export function EinsteinRefrigerator3D() {
 
     for (let i = 0; i < fluidCount; i++) {
       const idx = i * 3;
-      fluidPos[idx] = (Math.random() - 0.5) * 6.0;
-      fluidPos[idx + 1] = (Math.random() - 0.5) * 4.5;
-      fluidPos[idx + 2] = (Math.random() - 0.5) * 0.4;
+      fluidPos[idx] = (lcg() - 0.5) * 6.0;
+      fluidPos[idx + 1] = (lcg() - 0.5) * 4.5;
+      fluidPos[idx + 2] = (lcg() - 0.5) * 0.4;
 
       const progressX = (fluidPos[idx] + 3.0) / 6.0;
       fluidColors[idx] = progressX;
@@ -285,11 +288,12 @@ export function EinsteinRefrigerator3D() {
 
     // --- RENDER LOOP & REAL-TIME THERMOSIPHON CIRCULATION ---
     let reqId: number;
-    const clock = new THREE.Clock();
+    let renderedSteps = 0;
 
     const animate = () => {
       reqId = requestAnimationFrame(animate);
-      const delta = clock.getDelta();
+      renderedSteps += 1;
+      const delta = 1 / 60;
       const p = live.current;
 
       const fPos = fluidPos;

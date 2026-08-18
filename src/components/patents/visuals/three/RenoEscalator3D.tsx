@@ -179,7 +179,7 @@ export function RenoEscalator3D() {
 
     // Animation Loop
     let reqId: number;
-    const clock = new THREE.Clock();
+    let renderedSteps = 0;
 
     const cleatHome = cleats.map((c) => c.position.x);
 
@@ -190,7 +190,7 @@ export function RenoEscalator3D() {
         passengerCount: p.passengerCount,
         inclineAngleDeg: p.inclineAngleDeg,
         velocityMps: p.beltSpeedMps,
-        elapsedS: clock.getElapsedTime(),
+        elapsedS: renderedSteps * (1 / 60),
       });
 
       cleats.forEach((c, i) => {

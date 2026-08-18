@@ -35,6 +35,8 @@ export function DeLavalSeparator3D() {
     fatYieldPct: sep.fatYieldPct,
     creamFlowLph: sep.creamFlowLph,
     isAudioMuted,
+    displayOmegaRadPerS: sep.displayOmegaRadPerS,
+    bowlOmegaRadPerS: sep.bowlOmegaRadPerS,
   });
 
   const controlsRef = useRef<StudioContext["controls"] | null>(null);
@@ -213,26 +215,26 @@ export function DeLavalSeparator3D() {
 
     // Animation Loop
     let reqId: number;
-    const clock = new THREE.Clock();
+    let renderedSteps = 0;
 
     const animate = () => {
       reqId = requestAnimationFrame(animate);
-      const delta = clock.getDelta();
+      renderedSteps += 1;
+      const delta = 1 / 60;
       const p = live.current;
 
-      const omegaRadPerSec = (p.bowlRpm * 2 * Math.PI) / 60;
-      bowlGroup.rotation.y += omegaRadPerSec * delta * 0.15;
+      bowlGroup.rotation.y += (p.displayOmegaRadPerS ?? 0) * delta;
 
       // Cream (inner) vs skim (outer) only when g-force is high enough to split
       const split = p.centrifugalGs > 2000;
       const creamSpeed = (p.creamFlowLph / 300) * 1.6;
       creamDrops.forEach((drop, i) => {
         drop.visible = split;
-        drop.position.y = 0.2 - ((clock.getElapsedTime() * creamSpeed + i * 0.18) % 1.8);
+        drop.position.y = 0.2 - ((renderedSteps * (1 / 60) * creamSpeed + i * 0.18) % 1.8);
       });
       skimDrops.forEach((drop, i) => {
         drop.visible = split;
-        drop.position.y = -0.4 - ((clock.getElapsedTime() * creamSpeed * 0.85 + i * 0.2) % 2.0);
+        drop.position.y = -0.4 - ((renderedSteps * (1 / 60) * creamSpeed * 0.85 + i * 0.2) % 2.0);
       });
 
       renderer.render(scene, camera);
@@ -328,6 +330,8 @@ export function DeLavalSeparator3D() {
           { label: "Fat yield", value: sep.fatYieldPct.toFixed(1), unit: "%" },
           { label: "Cream", value: throughputLitersPerHr.toFixed(1), unit: "L/h" },
           { label: "Skim", value: sep.skimFlowLph.toFixed(1), unit: "L/h" },
+          { label: "ω", value: sep.bowlOmegaRadPerS.toFixed(0), unit: "rad/s" },
+          { label: "ω×0.15", value: sep.displayOmegaRadPerS.toFixed(1), unit: "rad/s" },
         ]}
       />
     </div>

@@ -15,7 +15,7 @@ export function DieselEngine3D() {
   const containerRef = useRef<HTMLDivElement>(null);
   const { params, updateParam } = usePatentPhysics("us-542846-diesel-engine");
 
-  const engineRpm = params.engineRpm ?? 160;
+  const engineRpm = params.engineRpm ?? 150;
   const compressionRatio = params.compRatio ?? params.compressionRatio ?? 18;
   const diesel = FrankenSimEngine.stepDieselEngine({
     compressionRatio,
@@ -157,11 +157,11 @@ export function DieselEngine3D() {
 
     // --- 5. ANIMATION LOOP ---
     let crankAngle = 0;
-    let lastTime = performance.now();
+    let renderedSteps = 0;
 
     const renderLoop = (time: number) => {
-      const dt = Math.min((time - lastTime) / 1000, 0.1);
-      lastTime = time;
+      renderedSteps += 1;
+      const dt = 1 / 60;
 
       if (live.current.isPlaying) {
         const rpm = live.current.engineRpm;

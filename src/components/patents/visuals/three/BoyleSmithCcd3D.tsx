@@ -63,6 +63,8 @@ export function BoyleSmithCcd3D() {
     photoElectrons: ccdWells.photoElectrons,
     fullWellElectrons: ccdWells.fullWellElectrons,
     cte: ccdWells.cte,
+    phaseDisplayMs: ccdWells.phaseDisplayMs,
+    phasePeriodNs: ccdWells.phasePeriodNs,
   });
 
   const controlsRef = useRef<StudioContext["controls"] | null>(null);
@@ -267,25 +269,26 @@ export function BoyleSmithCcd3D() {
 
     // --- RENDER LOOP & REAL-TIME CHARGE TRANSFER DYNAMICS ---
     let reqId: number;
-    const clock = new THREE.Clock();
+    let renderedSteps = 0;
     let phaseTimer = 0;
     let currentActivePhase: 1 | 2 | 3 = 1;
 
     const animate = () => {
       reqId = requestAnimationFrame(animate);
-      const delta = clock.getDelta();
+      renderedSteps += 1;
+      const delta = 1 / 60;
       const p = live.current;
 
-      let loopSeed = Math.floor(clock.getElapsedTime() * 1000) + 12345;
+      let loopSeed = Math.floor(renderedSteps * (1 / 60) * 1000) + 12345;
       const lcgLoop = () => {
         loopSeed = (loopSeed * 1664525 + 1013904223) % 4294967296;
         return loopSeed / 4294967296;
       };
 
       if (p.isAutoClocking) {
-        // Clock is MHz; use it as a visual rate, not a real-time 10⁶ tick.
-        phaseTimer += delta * (p.clockFreq ?? 2.5);
-        if (phaseTimer > 0.8) {
+        // Visible 3-phase step from the kernel (not leftover 0.8 / f or 1/(2f)).
+        phaseTimer += delta;
+        if (phaseTimer > (p.phaseDisplayMs ?? 200) / 1000) {
           phaseTimer = 0;
           currentActivePhase = ((currentActivePhase % 3) + 1) as 1 | 2 | 3;
           if (!p.isAudioMuted && lcgLoop() < 0.3) {
@@ -378,7 +381,7 @@ export function BoyleSmithCcd3D() {
                 <div>
                   <span className="text-ink-600 dark:text-ink-400">Transfer Inefficiency (ε):</span>{" "}
                   <span className="font-bold text-purple-600 dark:text-purple-400">
-                    {chargeTransferInefficiencyEpsilon}
+                    {chargeTransferInefficiencyEpsilon} · {ccdWells.phasePeriodNs} ns/φ
                   </span>
                 </div>
               </div>

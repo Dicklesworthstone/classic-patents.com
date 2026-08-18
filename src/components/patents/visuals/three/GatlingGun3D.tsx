@@ -89,12 +89,13 @@ export function GatlingGun3D() {
 
     // Animation Loop
     let reqId: number;
-    const clock = new THREE.Clock();
+    let renderedSteps = 0;
     let lastFireTime = 0;
 
     const animate = () => {
       reqId = requestAnimationFrame(animate);
-      const delta = clock.getDelta();
+      renderedSteps += 1;
+      const delta = 1 / 60;
       const p = live.current;
 
       const omegaRadPerSec = (p.crankRpm * 2 * Math.PI) / 60;
@@ -112,7 +113,7 @@ export function GatlingGun3D() {
 
       // Muzzle Flash & Acoustic Pulse at 12 o'clock firing position
       const fireIntervalSec = 60 / Math.max(1, p.roundsPerMinute);
-      const now = clock.getElapsedTime();
+      const now = renderedSteps * (1 / 60);
       if (now - lastFireTime > fireIntervalSec) {
         lastFireTime = now;
         if (p.showMuzzleFlash) {

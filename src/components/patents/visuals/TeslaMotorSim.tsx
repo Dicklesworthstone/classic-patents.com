@@ -3,7 +3,13 @@
 import { Zap } from "lucide-react";
 import { useEffect, useState } from "react";
 import { FrankenSimEngine } from "@/physics/engine";
-import { TESLA_FIELD_POLES, teslaBAt } from "@/physics/teslaKernel";
+import {
+  TESLA_FIELD_DISPLAY_SLOWDOWN,
+  TESLA_FIELD_DISPLAY_TICK_MS,
+  TESLA_FIELD_POLES,
+  teslaBAt,
+  teslaFieldDisplayOmegaDegPerS,
+} from "@/physics/teslaKernel";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { soundEngine } from "@/utils/soundEngine";
 
@@ -24,9 +30,11 @@ export function TeslaMotorSim() {
 
   // Animation Loop for Stator Field & Rotor Rotation
   useEffect(() => {
+    const degPerTick =
+      teslaFieldDisplayOmegaDegPerS(frequencyHz) * (TESLA_FIELD_DISPLAY_TICK_MS / 1000);
     const interval = setInterval(() => {
-      setAngle((prev) => (prev + (frequencyHz / 60) * 8) % 360);
-    }, 30);
+      setAngle((prev) => (prev + degPerTick) % 360);
+    }, TESLA_FIELD_DISPLAY_TICK_MS);
     return () => clearInterval(interval);
   }, [frequencyHz]);
 
@@ -275,7 +283,10 @@ export function TeslaMotorSim() {
           <div className="w-full grid grid-cols-3 gap-2 text-center text-xs font-mono pt-3 border-t border-ink-800 text-ink-300">
             <div>
               <span className="text-ink-500 block text-[10px]">SYNC SPEED</span>
-              <span className="text-amber-400 font-bold">{syncSpeedRpm} RPM</span>
+              <span className="text-amber-400 font-bold">
+                {syncSpeedRpm} RPM · ω/{TESLA_FIELD_DISPLAY_SLOWDOWN}{" "}
+                {teslaFieldDisplayOmegaDegPerS(frequencyHz).toFixed(0)} °/s
+              </span>
             </div>
             <div>
               <span className="text-ink-500 block text-[10px]">ROTOR SPEED</span>

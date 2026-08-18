@@ -183,7 +183,7 @@ export function PeltonWheelSim() {
             Jet Velocity
           </span>
           <span className="font-mono text-sm sm:text-base font-bold text-ink-900 dark:text-parchment-100">
-            {jetVelocityMps} m/s ({waterHeadMeters}m Head)
+            {jetVelocityMps} m/s · u {pelton.bucketSpeedMps} m/s
           </span>
         </div>
         <div className="bg-parchment-100 dark:bg-ink-900 border border-parchment-200 dark:border-ink-800 p-2.5 rounded-xl text-center">

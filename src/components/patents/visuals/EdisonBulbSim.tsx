@@ -18,24 +18,23 @@ export function EdisonBulbSim() {
 
   const bulb = stepEdisonBulb({ voltage, filamentLength: params.filamentLength ?? 22 });
   // High-R path is the Edison kernel. Low-R is the Swan/Maxim counterfactual for feeder I²R.
-  const resistanceOhms = resistanceMode === "high-resistance" ? bulb.hotResistanceOhm : 1.5;
+  const resistanceOhms =
+    resistanceMode === "high-resistance" ? bulb.hotResistanceOhm : bulb.lowResistanceOhm;
   const currentAmps =
-    resistanceMode === "high-resistance" ? bulb.currentAmps : voltage / resistanceOhms;
+    resistanceMode === "high-resistance" ? bulb.currentAmps : bulb.lowResistanceAmps;
   const powerWatts =
-    resistanceMode === "high-resistance" ? bulb.radiantWatts : (voltage * voltage) / 1.5;
+    resistanceMode === "high-resistance" ? bulb.radiantWatts : bulb.lowResistanceWatts;
 
   const feederResistance = bulb.feederResistanceOhm;
   const feederPowerLossWatts =
-    resistanceMode === "high-resistance"
-      ? bulb.feederLossWatts
-      : currentAmps ** 2 * feederResistance;
+    resistanceMode === "high-resistance" ? bulb.feederLossWatts : bulb.lowResistanceFeederLossWatts;
 
   const isBurnedOut = !isVacuumIntact && voltage > 30;
   const tempKelvin = isBurnedOut
     ? 300
     : resistanceMode === "high-resistance"
       ? bulb.filamentTempK
-      : Math.round(300 + powerWatts ** 0.45 * 160);
+      : bulb.lowResistanceTempK;
 
   const getFilamentColor = () => {
     if (isBurnedOut) return "#475569";
@@ -146,7 +145,7 @@ export function EdisonBulbSim() {
           </svg>
 
           {/* Telemetry Footer */}
-          <div className="w-full grid grid-cols-3 gap-2 text-center text-xs font-mono pt-3 border-t border-ink-800 text-ink-300">
+          <div className="w-full grid grid-cols-2 sm:grid-cols-4 gap-2 text-center text-xs font-mono pt-3 border-t border-ink-800 text-ink-300">
             <div>
               <span className="text-ink-500 block text-[10px]">CURRENT DRAW</span>
               <span className="text-amber-400 font-bold">{currentAmps.toFixed(2)} A</span>
@@ -158,6 +157,12 @@ export function EdisonBulbSim() {
             <div>
               <span className="text-ink-500 block text-[10px]">FILAMENT TEMP</span>
               <span className="text-orange-400 font-bold">{tempKelvin} K</span>
+            </div>
+            <div>
+              <span className="text-ink-500 block text-[10px]">DESIGN LIFE</span>
+              <span className="text-purple-400 font-bold">
+                {resistanceMode === "high-resistance" ? `${bulb.designLifeHours} h` : "—"}
+              </span>
             </div>
           </div>
         </div>
@@ -203,12 +208,12 @@ export function EdisonBulbSim() {
                   }`}
                 >
                   <div className="flex justify-between items-center">
-                    <span>Swan / Prior Art (1.5 Ω)</span>
+                    <span>Swan / Prior Art ({bulb.lowResistanceOhm} Ω)</span>
                     <span className="text-red-200">✗ Impractical</span>
                   </div>
                   <div className="text-[10px] opacity-80 mt-0.5">
-                    Draws {currentAmps.toFixed(1)} A; feeder wires overheat and burn (
-                    {Math.round(feederPowerLossWatts)} W lost in copper).
+                    Draws {currentAmps.toFixed(1)} A; {feederResistance} Ω copper feeder wires
+                    overheat ({Math.round(feederPowerLossWatts)} W lost).
                   </div>
                 </button>
               </div>

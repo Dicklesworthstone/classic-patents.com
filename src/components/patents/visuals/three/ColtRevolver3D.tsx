@@ -144,8 +144,8 @@ export function ColtRevolver3D() {
     fireTimerRef.current = window.setTimeout(() => {
       setIsFiring(false);
       setCurrentChamberIndex((prev) => (prev % 5) + 1);
-    }, 750);
-  }, [isFullCock, isFiring, updateParam]);
+    }, coltMech.cycleDisplayMs);
+  }, [isFullCock, isFiring, updateParam, coltMech.cycleDisplayMs]);
 
   useEffect(() => {
     return () => {

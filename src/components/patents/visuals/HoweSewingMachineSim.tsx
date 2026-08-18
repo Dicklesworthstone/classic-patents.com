@@ -10,16 +10,22 @@ export function HoweSewingMachineSim() {
   const { params, updateParam } = usePatentPhysics("us-4750-howe-sewing-machine");
   const [crankAngleDeg, setCrankAngleDeg] = useState<number>(120); // 0 to 360 degrees
   const [isPlaying, setIsPlaying] = useState<boolean>(false);
-  const sewingSpeedRpm = params.crankRpm ?? 180; // 60 to 320 rpm
-  const sew = stepHoweSewingMachine(sewingSpeedRpm, params.threadTensionGrams ?? 45);
+  const sewingSpeedRpm = params.crankRpm ?? 240;
+  const sew = stepHoweSewingMachine(
+    sewingSpeedRpm,
+    params.threadTensionGrams ?? 45,
+    params.stitchPitchMm ?? 3.5,
+  );
 
   useEffect(() => {
     if (!isPlaying) return;
+    const tickMs = sew.crankDisplayTickMs;
+    const degPerTick = sew.crankOmegaDegPerS * (tickMs / 1000);
     const interval = setInterval(() => {
-      setCrankAngleDeg((prev) => (prev + (sewingSpeedRpm / 60) * 12) % 360);
-    }, 30);
+      setCrankAngleDeg((prev) => (prev + degPerTick) % 360);
+    }, tickMs);
     return () => clearInterval(interval);
-  }, [isPlaying, sewingSpeedRpm]);
+  }, [isPlaying, sew.crankDisplayTickMs, sew.crankOmegaDegPerS]);
 
   const {
     needleY,
@@ -216,8 +222,8 @@ export function HoweSewingMachineSim() {
                   <TextWithLatex text="Machine Speed ($f_{sew}$)" />
                 </span>
                 <span className="text-blue-600 dark:text-blue-400 font-bold">
-                  {sewingSpeedRpm} RPM · {sew.stitchFrequencyHz} Hz · {sew.lockstitchShearStrengthN}{" "}
-                  N
+                  {sewingSpeedRpm} RPM · {sew.stitchFrequencyHz} Hz · {sew.crankOmegaDegPerS} °/s ·{" "}
+                  {sew.clothFeedMmPerS} mm/s · {sew.lockstitchShearStrengthN} N
                 </span>
               </div>
               <input

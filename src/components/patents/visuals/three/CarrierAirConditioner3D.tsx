@@ -4,6 +4,7 @@ import { Activity, Camera, Eye, EyeOff, Volume2, VolumeX, Waves } from "lucide-r
 import { useEffect, useRef, useState } from "react";
 import * as THREE from "three";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
+import { createLcg } from "@/utils/lcg";
 import { soundEngine } from "@/utils/soundEngine";
 import {
   createGlowPointTexture,
@@ -12,6 +13,8 @@ import {
 } from "./ThreeStudioScene";
 import { useLiveSimParams } from "./useLiveSimParams";
 import { usePatentAudio } from "./usePatentAudio";
+
+const lcg = createLcg(2146);
 
 type CameraPreset = "iso" | "spray_chamber" | "baffle_plates" | "blower_fan" | "top";
 
@@ -179,9 +182,9 @@ export function CarrierAirConditioner3D() {
 
     for (let i = 0; i < mistCount; i++) {
       const idx = i * 3;
-      mistPositions[idx] = -2.4 + Math.random() * 2.8;
-      mistPositions[idx + 1] = -1.2 + Math.random() * 2.6;
-      mistPositions[idx + 2] = -1.4 + Math.random() * 2.8;
+      mistPositions[idx] = -2.4 + lcg() * 2.8;
+      mistPositions[idx + 1] = -1.2 + lcg() * 2.6;
+      mistPositions[idx + 2] = -1.4 + lcg() * 2.8;
     }
 
     mistGeo.setAttribute("position", new THREE.BufferAttribute(mistPositions, 3));
@@ -198,11 +201,12 @@ export function CarrierAirConditioner3D() {
 
     // Animation Loop
     let reqId: number;
-    const clock = new THREE.Clock();
+    let renderedSteps = 0;
 
     const animate = () => {
       reqId = requestAnimationFrame(animate);
-      const delta = clock.getDelta();
+      renderedSteps += 1;
+      const delta = 1 / 60;
       const p = live.current;
 
       const fanSpeed = (p.airflowCfm / 15000) * 12.0;

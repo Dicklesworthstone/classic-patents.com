@@ -8,7 +8,7 @@ import { usePatentPhysics } from "@/physics/usePatentPhysics";
 export function KwolekKevlarSim() {
   const { params, updateParam } = usePatentPhysics("us-3671542-kwolek-kevlar");
   const drawRatio = params.drawRatio ?? 6.5;
-  const [tensileTension, setTensileTension] = useState<number>(30);
+  const tensileTension = params.appliedTension ?? 30;
   const [bulletFired, setBulletFired] = useState<boolean>(false);
 
   const kevlar = stepKevlarContinuum(drawRatio, params.impactVelocity ?? 450, tensileTension);
@@ -32,7 +32,7 @@ export function KwolekKevlarSim() {
       window.clearTimeout(impactTimerRef.current);
     }
     setBulletFired(true);
-    impactTimerRef.current = window.setTimeout(() => setBulletFired(false), 2500);
+    impactTimerRef.current = window.setTimeout(() => setBulletFired(false), kevlar.impactDisplayMs);
   };
 
   return (
@@ -173,7 +173,7 @@ export function KwolekKevlarSim() {
                 min="0"
                 max="100"
                 value={tensileTension}
-                onChange={(e) => setTensileTension(Number(e.target.value))}
+                onChange={(e) => updateParam("appliedTension", Number(e.target.value))}
                 className="w-full accent-blue-600 cursor-pointer h-2 bg-parchment-300 dark:bg-ink-700 rounded-lg"
               />
             </div>

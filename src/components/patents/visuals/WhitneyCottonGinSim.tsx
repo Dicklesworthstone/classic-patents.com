@@ -9,7 +9,7 @@ import { usePatentAudio } from "./three/usePatentAudio";
 export function WhitneyCottonGinSim() {
   const { params, updateParam, resetParams } = usePatentPhysics("us-x72-whitney-cotton-gin");
   const { isAudioMuted, toggleSound } = usePatentAudio();
-  const crankRpm = params.crankRpm ?? 60;
+  const crankRpm = params.crankRpm ?? 180;
   const grateClearanceMm = params.seedGridClearance ?? 3.2;
   const [isPlaying, setIsPlaying] = useState<boolean>(true);
   const [angle, setAngle] = useState<number>(0);

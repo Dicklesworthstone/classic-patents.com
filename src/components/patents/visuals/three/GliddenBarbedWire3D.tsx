@@ -204,11 +204,12 @@ export function GliddenBarbedWire3D() {
 
     // Animation Loop
     let reqId: number;
-    const clock = new THREE.Clock();
+    let renderedSteps = 0;
 
     const animate = () => {
       reqId = requestAnimationFrame(animate);
-      const delta = clock.getDelta();
+      renderedSteps += 1;
+      const delta = 1 / 60;
       const p = live.current;
 
       const omegaRadPerSec = (p.machineRpm * 2 * Math.PI) / 60;

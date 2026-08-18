@@ -5,6 +5,7 @@ import { useEffect, useRef, useState } from "react";
 import * as THREE from "three";
 import { stepWhitneyCottonGin } from "@/physics/catalogKernels";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
+import { createLcg } from "@/utils/lcg";
 import { soundEngine } from "@/utils/soundEngine";
 import { StudioKernelChips } from "./StudioKernelChips";
 import {
@@ -14,6 +15,8 @@ import {
 } from "./ThreeStudioScene";
 import { useLiveSimParams } from "./useLiveSimParams";
 import { usePatentAudio } from "./usePatentAudio";
+
+const lcg = createLcg(1661);
 
 type CameraPreset = "iso" | "grate_saws" | "brush_drum" | "hopper" | "top";
 
@@ -265,9 +268,9 @@ export function WhitneyCottonGin3D() {
 
     for (let i = 0; i < fiberCount; i++) {
       const idx = i * 3;
-      fiberPositions[idx] = (Math.random() - 0.5) * 6.0;
-      fiberPositions[idx + 1] = 0.2 + (Math.random() - 0.5) * 1.5;
-      fiberPositions[idx + 2] = -0.5 + Math.random() * 2.8;
+      fiberPositions[idx] = (lcg() - 0.5) * 6.0;
+      fiberPositions[idx + 1] = 0.2 + (lcg() - 0.5) * 1.5;
+      fiberPositions[idx + 2] = -0.5 + lcg() * 2.8;
 
       fiberColors[idx] = 0.98;
       fiberColors[idx + 1] = 0.98;
@@ -299,12 +302,8 @@ export function WhitneyCottonGin3D() {
     const seedInstanced = new THREE.InstancedMesh(seedGeo, seedMat, 30);
     const dummy = new THREE.Object3D();
     for (let i = 0; i < 30; i++) {
-      dummy.position.set(
-        (Math.random() - 0.5) * 5.8,
-        -0.8 + Math.random() * 0.4,
-        0.5 + Math.random() * 0.8,
-      );
-      dummy.rotation.set(Math.random() * Math.PI, Math.random() * Math.PI, 0);
+      dummy.position.set((lcg() - 0.5) * 5.8, -0.8 + lcg() * 0.4, 0.5 + lcg() * 0.8);
+      dummy.rotation.set(lcg() * Math.PI, lcg() * Math.PI, 0);
       dummy.updateMatrix();
       seedInstanced.setMatrixAt(i, dummy.matrix);
     }
@@ -313,11 +312,12 @@ export function WhitneyCottonGin3D() {
 
     // Animation Loop
     let reqId: number;
-    const clock = new THREE.Clock();
+    let renderedSteps = 0;
 
     const animate = () => {
       reqId = requestAnimationFrame(animate);
-      const delta = clock.getDelta();
+      renderedSteps += 1;
+      const delta = 1 / 60;
       const p = live.current;
 
       const sawRadPerSec = (p.sawSpeedRpm * 2 * Math.PI) / 60;
@@ -336,8 +336,8 @@ export function WhitneyCottonGin3D() {
         pos[idx + 1] += Math.sin(pos[idx + 2] * 3) * 0.02;
         if (pos[idx + 2] > 3.0) {
           pos[idx + 2] = -1.2;
-          pos[idx + 1] = 0.2 + (Math.random() - 0.5) * 0.8;
-          pos[idx] = (Math.random() - 0.5) * 6.0;
+          pos[idx + 1] = 0.2 + (lcg() - 0.5) * 0.8;
+          pos[idx] = (lcg() - 0.5) * 6.0;
         }
       }
       fiberGeo.attributes.position.needsUpdate = true;

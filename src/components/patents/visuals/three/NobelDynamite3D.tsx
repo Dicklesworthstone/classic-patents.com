@@ -5,6 +5,7 @@ import { useEffect, useRef, useState } from "react";
 import * as THREE from "three";
 import { stepNobelDynamite } from "@/physics/catalogKernels";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
+import { createLcg } from "@/utils/lcg";
 import { soundEngine } from "@/utils/soundEngine";
 import { StudioKernelChips } from "./StudioKernelChips";
 import {
@@ -14,6 +15,8 @@ import {
 } from "./ThreeStudioScene";
 import { useLiveSimParams } from "./useLiveSimParams";
 import { usePatentAudio } from "./usePatentAudio";
+
+const lcg = createLcg(1323);
 
 type CameraPreset = "iso" | "blasting_cap" | "matrix_cutaway" | "fuse" | "top";
 
@@ -33,6 +36,7 @@ export function NobelDynamite3D() {
   const [isFuseLit, setIsFuseLit] = useState<boolean>(false);
   const [activeCamera, setActiveCamera] = useState<CameraPreset>("iso");
   const { isAudioMuted, toggleSound: toggleEngine } = usePatentAudio();
+  const fuseTimerRef = useRef<number | null>(null);
 
   const live = useLiveSimParams({
     ngPercentage,
@@ -41,6 +45,8 @@ export function NobelDynamite3D() {
     isAudioMuted,
     blastOverpressureMpa,
     isInitiated: nobel.isInitiated ? 1 : 0,
+    chargeTransitUs: nobel.chargeTransitUs,
+    flashDisplayMs: nobel.flashDisplayMs,
   });
 
   const controlsRef = useRef<StudioContext["controls"] | null>(null);
@@ -82,7 +88,21 @@ export function NobelDynamite3D() {
     if (!isAudioMuted) {
       soundEngine.playSwitchClick();
     }
+    if (fuseTimerRef.current !== null) {
+      window.clearTimeout(fuseTimerRef.current);
+    }
+    fuseTimerRef.current = window.setTimeout(() => {
+      setIsFuseLit(false);
+    }, nobel.flashDisplayMs);
   };
+
+  useEffect(() => {
+    return () => {
+      if (fuseTimerRef.current !== null) {
+        window.clearTimeout(fuseTimerRef.current);
+      }
+    };
+  }, []);
 
   const toggleSound = () => {
     toggleEngine(() => {
@@ -165,12 +185,8 @@ export function NobelDynamite3D() {
     );
     const dummy = new THREE.Object3D();
     for (let i = 0; i < grainCount; i++) {
-      dummy.position.set(
-        (Math.random() - 0.5) * 1.8,
-        (Math.random() - 0.5) * 4.2,
-        Math.random() * 0.9,
-      );
-      dummy.rotation.set(Math.random() * Math.PI, Math.random() * Math.PI, 0);
+      dummy.position.set((lcg() - 0.5) * 1.8, (lcg() - 0.5) * 4.2, lcg() * 0.9);
+      dummy.rotation.set(lcg() * Math.PI, lcg() * Math.PI, 0);
       dummy.updateMatrix();
       grainInst.setMatrixAt(i, dummy.matrix);
     }
@@ -218,18 +234,19 @@ export function NobelDynamite3D() {
 
     // Animation Loop
     let reqId: number;
-    const clock = new THREE.Clock();
+    let renderedSteps = 0;
 
     const animate = () => {
       reqId = requestAnimationFrame(animate);
-      const delta = clock.getDelta();
+      renderedSteps += 1;
+      const delta = 1 / 60;
       const p = live.current;
 
       stickGroup.rotation.y += delta * 0.15;
 
       // Pulse Fuse Spark when lit
       if (p.isFuseLit) {
-        sparkMat.opacity = 0.7 + Math.sin(clock.getElapsedTime() * 25) * 0.3;
+        sparkMat.opacity = 0.7 + Math.sin(renderedSteps * (1 / 60) * 25) * 0.3;
       } else {
         sparkMat.opacity = 0;
       }
@@ -349,6 +366,7 @@ export function NobelDynamite3D() {
           { label: "P", value: String(nobel.blastOverpressureGpa), unit: "GPa" },
           { label: "E", value: String(nobel.energyMjPerKg), unit: "MJ/kg" },
           { label: "Cushion", value: `${nobel.cushionFactor}`, unit: "×" },
+          { label: "20 cm", value: String(nobel.chargeTransitUs), unit: "µs" },
         ]}
       />
     </div>

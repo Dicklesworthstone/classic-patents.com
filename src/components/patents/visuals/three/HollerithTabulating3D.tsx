@@ -149,9 +149,12 @@ export function HollerithTabulating3D() {
     dialBackboard.castShadow = true;
     rootGroup.add(dialBackboard);
 
-    // 4 Rows of 10 Dials
-    for (let r = 0; r < 4; r++) {
-      for (let c = 0; c < 10; c++) {
+    // Printed 1890 register bank: 40 dials in four rows of ten.
+    const registerDialCount = 40;
+    const dialsPerRow = 10;
+    const dialRows = registerDialCount / dialsPerRow;
+    for (let r = 0; r < dialRows; r++) {
+      for (let c = 0; c < dialsPerRow; c++) {
         const dial = new THREE.Mesh(new THREE.CylinderGeometry(0.24, 0.24, 0.08, 16), dialWhiteMat);
         dial.rotation.x = Math.PI / 2;
         dial.position.set(-2.7 + c * 0.6, 3.0 - r * 0.75, -1.6);
@@ -195,16 +198,17 @@ export function HollerithTabulating3D() {
 
     // Animation Loop
     let reqId: number;
-    const clock = new THREE.Clock();
+    let renderedSteps = 0;
 
     const animate = () => {
       reqId = requestAnimationFrame(animate);
-      const _delta = clock.getDelta();
+      renderedSteps += 1;
+      const _delta = 1 / 60;
       const p = live.current;
 
       // Pin press plunging down into card
       const pressFreq = (p.cardsPerMin / 60) * 2 * Math.PI;
-      const pressPhase = Math.sin(clock.getElapsedTime() * pressFreq);
+      const pressPhase = Math.sin(renderedSteps * (1 / 60) * pressFreq);
       pinPlateGroup.position.y =
         0.8 + (pressPhase > 0 ? -pressPhase * (0.2 + (p.solenoidForceN / 40) * 0.35) : 0);
 
@@ -295,6 +299,7 @@ export function HollerithTabulating3D() {
           { label: "Cycle", value: String(hollerith.cycleTimeMs), unit: "ms" },
           { label: "Solenoid", value: String(hollerith.solenoidForceN), unit: "N" },
           { label: "Day", value: cardsPerDay.toLocaleString() },
+          { label: "Pins", value: String(hollerith.sensingPinCount) },
           { label: "Dials", value: String(clockDialCount) },
         ]}
       />

@@ -17,11 +17,14 @@ import { HudText } from "@/components/ui/LatexRenderer";
 import { FrankenSimEngine } from "@/physics/engine";
 import { useFrankenSimPhysics } from "@/physics/useFrankenSimPhysics";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
+import { createLcg } from "@/utils/lcg";
 import { soundEngine } from "@/utils/soundEngine";
 import { createThreeStudioScene, type StudioContext } from "./ThreeStudioScene";
 import { useLiveSimParams } from "./useLiveSimParams";
 
 import { usePatentAudio } from "./usePatentAudio";
+
+const lcg = createLcg(1436);
 
 type CameraPreset = "iso" | "chains" | "bridges" | "clamps" | "top";
 
@@ -45,6 +48,8 @@ export function GoodyearRubber3D() {
     cureTemperatureCelsius,
     sulfurWeightPct,
     30,
+    appliedTensileStretch,
+    params.specimenTempC ?? 35,
   );
 
   useFrankenSimPhysics("us-3633-goodyear-rubber", {
@@ -64,27 +69,14 @@ export function GoodyearRubber3D() {
   });
   const isVulcanized = !_rubberPhysics.isStickyOrBrittle;
   const glassTransitionTempC = _rubberPhysics.glassTransitionTempC;
-  const isGlassy = cureTemperatureCelsius < glassTransitionTempC;
+  const isGlassy = _rubberPhysics.isGlassy;
   const tensileElasticModulusMpa = isGlassy
-    ? "2400.0"
+    ? _rubberPhysics.glassyModulusMpa.toFixed(1)
     : _rubberPhysics.tensileStrengthMpa.toFixed(2);
+  const trueStressMpa = isGlassy ? "N/A (Rigid Glass)" : _rubberPhysics.trueStressMpa.toFixed(2);
 
-  // True Stress: sigma = E * (lambda - 1 / lambda^2)
-  const trueStressMpa = isGlassy
-    ? "N/A (Rigid Glass)"
-    : (
-        Number(tensileElasticModulusMpa) *
-        (appliedTensileStretch - 1 / appliedTensileStretch ** 2)
-      ).toFixed(2);
-
-  // Entropic Force: delta S = -0.5 * N * k * (lambda^2 + 2/lambda - 3)
   const entropicEntropyReductionJ = isVulcanized
-    ? (
-        0.5 *
-        1.38e-23 *
-        1e26 *
-        (appliedTensileStretch ** 2 + 2 / appliedTensileStretch - 3)
-      ).toFixed(1)
+    ? _rubberPhysics.entropicReductionJ.toFixed(1)
     : "0.0 (Plastic Flow)";
 
   const live = useLiveSimParams({
@@ -271,7 +263,7 @@ export function GoodyearRubber3D() {
     for (let b = 0; b < numBridges; b++) {
       const baseX = -3.2 + (b / (numBridges - 1)) * 6.4;
       const bridgeG = new THREE.Group();
-      bridgeG.position.set(baseX, (Math.random() - 0.5) * 1.8, (Math.random() - 0.5) * 1.0);
+      bridgeG.position.set(baseX, (lcg() - 0.5) * 1.8, (lcg() - 0.5) * 1.0);
 
       const sAtom1 = new THREE.Mesh(new THREE.SphereGeometry(0.18, 16, 16), sulfurBridgeMat);
       sAtom1.position.y = -0.2;
@@ -295,12 +287,13 @@ export function GoodyearRubber3D() {
 
     // --- RENDER LOOP & REAL-TIME ENTROPIC ELASTICITY ---
     let reqId: number;
-    const clock = new THREE.Clock();
+    let renderedSteps = 0;
 
     const animate = () => {
       reqId = requestAnimationFrame(animate);
-      const _delta = clock.getDelta();
-      const elapsed = clock.getElapsedTime();
+      renderedSteps += 1;
+      const _delta = 1 / 60;
+      const elapsed = renderedSteps * (1 / 60);
       const p = live.current;
 
       const stretch = p.appliedTensileStretch;
@@ -382,9 +375,9 @@ export function GoodyearRubber3D() {
                   </span>
                 </div>
                 <div>
-                  <span className="text-ink-600 dark:text-ink-400">Stress:</span>{" "}
+                  <span className="text-ink-600 dark:text-ink-400">Stress / Modulus:</span>{" "}
                   <span className="font-bold text-purple-600 dark:text-purple-400">
-                    {trueStressMpa} MPa
+                    {trueStressMpa} MPa / {tensileElasticModulusMpa} MPa
                   </span>
                 </div>
                 <div>
@@ -392,7 +385,7 @@ export function GoodyearRubber3D() {
                     <HudText text="Entropic $\\Delta S$:" />
                   </span>{" "}
                   <span className="font-bold text-amber-600 dark:text-amber-400">
-                    -{entropicEntropyReductionJ} J/K
+                    -{entropicEntropyReductionJ} J/K · Tg {glassTransitionTempC} °C
                   </span>
                 </div>
               </div>

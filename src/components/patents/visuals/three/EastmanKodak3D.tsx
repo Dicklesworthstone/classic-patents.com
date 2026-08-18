@@ -23,12 +23,12 @@ export function EastmanKodak3D() {
     const raw = params.shutterSpeed ?? 0.05;
     return raw > 1 ? 1 / raw : raw;
   })();
-  const shutterFractionSec = Math.round(1 / shutterSpeedSec);
   const kodak = FrankenSimEngine.stepEastmanKodak({
     shutterSpeedSec,
     apertureFNumber: params.apertureStop ?? 9,
     subjectDistanceM: params.subjectDist ?? 3,
   });
+  const shutterFractionSec = kodak.shutterReciprocal;
   const exposureCount = kodak.rollCapacity;
   const filmFormatInches = kodak.filmFormatInches;
   const [activeCamera, setActiveCamera] = useState<CameraPreset>("iso");
@@ -39,6 +39,8 @@ export function EastmanKodak3D() {
     isAudioMuted,
     exposureValueEv: kodak.exposureValueEv,
     hyperfocalM: kodak.hyperfocalM,
+    barrelOmegaRadPerS: kodak.barrelOmegaRadPerS,
+    flashDisplayMs: kodak.flashDisplayMs,
   });
 
   const controlsRef = useRef<StudioContext["controls"] | null>(null);
@@ -169,15 +171,14 @@ export function EastmanKodak3D() {
 
     // Animation Loop
     let reqId: number;
-    const clock = new THREE.Clock();
+    let renderedSteps = 0;
 
     const animate = () => {
       reqId = requestAnimationFrame(animate);
-      const delta = clock.getDelta();
+      renderedSteps += 1;
+      const delta = 1 / 60;
       const p = live.current;
-      // Rotary barrel period ≈ shutter open time (US 388,850)
-      const omega = (2 * Math.PI) / Math.max(0.01, 1 / p.shutterFractionSec);
-      barrel.rotation.x += omega * delta;
+      barrel.rotation.x += (p.barrelOmegaRadPerS ?? 0) * delta;
 
       renderer.render(scene, camera);
     };
@@ -267,6 +268,7 @@ export function EastmanKodak3D() {
           { label: "Hyperfocal", value: kodak.hyperfocalM.toFixed(1), unit: "m" },
           { label: "f", value: String(kodak.focalLengthMm), unit: "mm" },
           { label: "Film", value: `${filmFormatInches} in · ${exposureCount} exp` },
+          { label: "Flash", value: String(kodak.flashDisplayMs), unit: "ms" },
         ]}
       />
     </div>

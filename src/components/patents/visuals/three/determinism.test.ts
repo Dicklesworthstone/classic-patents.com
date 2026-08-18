@@ -1,5 +1,5 @@
 import { describe, expect, test } from "bun:test";
-import { readFileSync } from "node:fs";
+import { readFileSync, readdirSync } from "node:fs";
 import { join } from "node:path";
 
 const WRIGHT_FLYER_3D_SOURCE = join(
@@ -51,7 +51,7 @@ describe("McCormick Reaper replay boundary", () => {
 describe("per-patent Three.js replay boundary", () => {
   test("does not permit an exemplar patent renderer to seed its visual state from randomness or a private clock", () => {
     const directory = join(process.cwd(), "src/components/patents/visuals/three");
-    const exemplarFiles = ["WrightFlyer3D.tsx", "McCormickReaper3D.tsx"];
+    const exemplarFiles = readdirSync(directory).filter((f) => f.endsWith("3D.tsx"));
     const violations = exemplarFiles.flatMap((file) => {
       const source = readFileSync(join(directory, file), "utf8");
       const forbidden = ["Math.random", "new THREE.Clock", "performance.now"].filter((token) =>

@@ -58,7 +58,7 @@ export function ColtRevolverSim() {
       setIsFiring(false);
       setBulletFired(false);
       setCurrentChamberIndex((prev) => (prev % 5) + 1);
-    }, 1100);
+    }, colt.cycleDisplayMs);
   };
 
   return (

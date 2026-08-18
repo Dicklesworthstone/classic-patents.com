@@ -9,6 +9,7 @@ import { teslaCoilResonantKhz } from "@/physics/teslaKernel";
 import { ensureTeslaWasm } from "@/physics/teslaWasm";
 import { useFrankenSimPhysics } from "@/physics/useFrankenSimPhysics";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
+import { createLcg } from "@/utils/lcg";
 import { soundEngine } from "@/utils/soundEngine";
 import {
   createGlowPointTexture,
@@ -16,6 +17,8 @@ import {
   type StudioContext,
 } from "./ThreeStudioScene";
 import { useLiveSimParams } from "./useLiveSimParams";
+
+const lcg = createLcg(896);
 
 type CameraPreset = "iso" | "toroid_breakout" | "primary_spiral" | "spark_gap" | "top";
 
@@ -52,6 +55,7 @@ export function TeslaCoil3D() {
   );
   const secondaryVoltageMv = coilPhysics.secondaryPotentialMv.toFixed(2);
   const streamerLengthInches = coilPhysics.streamerLengthInches.toFixed(1);
+  const streamerLengthMeters = coilPhysics.streamerLengthMeters.toFixed(2);
 
   useFrankenSimPhysics("us-533367-tesla-coil", {
     domain: "electromagnetics_flux",
@@ -280,10 +284,10 @@ export function TeslaCoil3D() {
 
     for (let i = 0; i < coronaCount; i++) {
       const idx = i * 3;
-      const theta = Math.random() * Math.PI * 2;
-      const r = 1.65 + (Math.random() - 0.5) * 0.9;
+      const theta = lcg() * Math.PI * 2;
+      const r = 1.65 + (lcg() - 0.5) * 0.9;
       coronaPos[idx] = Math.cos(theta) * r;
-      coronaPos[idx + 1] = 2.4 + (Math.random() - 0.5) * 0.8;
+      coronaPos[idx + 1] = 2.4 + (lcg() - 0.5) * 0.8;
       coronaPos[idx + 2] = Math.sin(theta) * r;
     }
     coronaGeo.setAttribute("position", new THREE.BufferAttribute(coronaPos, 3));
@@ -304,11 +308,12 @@ export function TeslaCoil3D() {
 
     // --- RENDER LOOP & REAL-TIME LIGHTNING DYNAMICS ---
     let reqId: number;
-    const clock = new THREE.Clock();
+    let renderedSteps = 0;
 
     const animate = () => {
       reqId = requestAnimationFrame(animate);
-      const _delta = clock.getDelta();
+      renderedSteps += 1;
+      const _delta = 1 / 60;
       const p = live.current;
 
       if (p.showLightningStreamers) {
@@ -318,11 +323,11 @@ export function TeslaCoil3D() {
           const line = streamerLines[s];
           const geo = streamerGeos[s];
           if (line && geo) {
-            line.visible = Math.random() < Math.min(0.95, (p.sparkRateHz ?? 120) / 200);
+            line.visible = lcg() < Math.min(0.95, (p.sparkRateHz ?? 120) / 200);
             const posAttr = geo.attributes.position as THREE.BufferAttribute;
             const posArr = posAttr.array as Float32Array;
 
-            const baseAngle = (s * Math.PI * 2) / streamerCount + Math.random() * 0.2;
+            const baseAngle = (s * Math.PI * 2) / streamerCount + lcg() * 0.2;
             const startX = Math.cos(baseAngle) * 1.65;
             const startY = 2.4;
             const startZ = Math.sin(baseAngle) * 1.65;
@@ -339,11 +344,9 @@ export function TeslaCoil3D() {
               const t = i / 13;
               const idx = i * 3;
               const jitter = 0.35 * (1 - t * 0.3);
-              posArr[idx] =
-                startX + Math.cos(baseAngle) * t * length + (Math.random() - 0.5) * jitter;
-              posArr[idx + 1] = startY + t * length * 0.5 + (Math.random() - 0.5) * jitter;
-              posArr[idx + 2] =
-                startZ + Math.sin(baseAngle) * t * length + (Math.random() - 0.5) * jitter;
+              posArr[idx] = startX + Math.cos(baseAngle) * t * length + (lcg() - 0.5) * jitter;
+              posArr[idx + 1] = startY + t * length * 0.5 + (lcg() - 0.5) * jitter;
+              posArr[idx + 2] = startZ + Math.sin(baseAngle) * t * length + (lcg() - 0.5) * jitter;
             }
             posAttr.needsUpdate = true;
           }
@@ -402,8 +405,7 @@ export function TeslaCoil3D() {
                 <div>
                   <span className="text-ink-600 dark:text-ink-400">Arc:</span>{" "}
                   <span className="font-bold text-emerald-600 dark:text-emerald-400">
-                    {streamerLengthInches} In (
-                    {((Number(streamerLengthInches) * 2.54) / 100).toFixed(2)} m)
+                    {streamerLengthInches} In ({streamerLengthMeters} m)
                   </span>
                 </div>
                 <div>

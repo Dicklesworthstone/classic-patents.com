@@ -5,6 +5,7 @@ import { useEffect, useRef, useState } from "react";
 import * as THREE from "three";
 import { stepParsonsTurbine } from "@/physics/catalogKernels";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
+import { createLcg } from "@/utils/lcg";
 import { soundEngine } from "@/utils/soundEngine";
 import { StudioKernelChips } from "./StudioKernelChips";
 import {
@@ -14,6 +15,8 @@ import {
 } from "./ThreeStudioScene";
 import { useLiveSimParams } from "./useLiveSimParams";
 import { usePatentAudio } from "./usePatentAudio";
+
+const lcg = createLcg(1471);
 
 type CameraPreset = "iso" | "turbine_stages" | "rotor_blades" | "governor" | "top";
 
@@ -43,6 +46,10 @@ export function ParsonsTurbine3D() {
     shaftPowerKw: powerKw,
     enthalpyKjKg: parsons.enthalpyKjKg,
     inletMpa: parsons.inletMpa,
+    displayOmegaRadPerS: parsons.displayOmegaRadPerS,
+    rotorOmegaRadPerS: parsons.rotorOmegaRadPerS,
+    bladeSpeedMps: parsons.bladeSpeedMps,
+    steamSpeedMps: parsons.steamSpeedMps,
   });
 
   const controlsRef = useRef<StudioContext["controls"] | null>(null);
@@ -287,7 +294,7 @@ export function ParsonsTurbine3D() {
 
     for (let i = 0; i < steamCount; i++) {
       const idx = i * 3;
-      const x = -4.5 + Math.random() * 9.5;
+      const x = -4.5 + lcg() * 9.5;
 
       // Determine radius based on stage
       let maxR = 0.8;
@@ -295,8 +302,8 @@ export function ParsonsTurbine3D() {
       else if (x > -1.3 && x <= 1.7) maxR = 1.75;
       else if (x > 1.7 && x <= 5.0) maxR = 2.35;
 
-      const r = maxR * Math.random() ** 0.5; // distribute within volume
-      const a = Math.random() * Math.PI * 2;
+      const r = maxR * lcg() ** 0.5; // distribute within volume
+      const a = lcg() * Math.PI * 2;
 
       steamPositions[idx] = x;
       steamPositions[idx + 1] = Math.cos(a) * r;
@@ -327,15 +334,16 @@ export function ParsonsTurbine3D() {
 
     // Animation Loop
     let reqId: number;
-    const clock = new THREE.Clock();
+    let renderedSteps = 0;
 
     const animate = () => {
       reqId = requestAnimationFrame(animate);
-      const delta = clock.getDelta();
+      renderedSteps += 1;
+      const delta = 1 / 60;
       const p = live.current;
 
-      const omegaRadPerSec = (p.turbineRpm * 2 * Math.PI) / 60;
-      rotorGroup.rotation.x += omegaRadPerSec * delta * 0.08;
+      const omegaDisplay = p.displayOmegaRadPerS ?? 0;
+      rotorGroup.rotation.x += omegaDisplay * delta;
 
       // Animate axial expansion of steam from HP inlet to LP exhaust
       const pos = steamPositions;
@@ -364,7 +372,7 @@ export function ParsonsTurbine3D() {
         steamRadii[i] = r;
 
         let a = Math.atan2(pos[idx + 2], pos[idx + 1]);
-        a += omegaRadPerSec * delta * 0.04;
+        a += omegaDisplay * 0.5 * delta;
         pos[idx + 1] = Math.cos(a) * r;
         pos[idx + 2] = Math.sin(a) * r;
       }
@@ -471,6 +479,8 @@ export function ParsonsTurbine3D() {
           { label: "Shaft", value: String(powerKw), unit: "kW" },
           { label: "Stages", value: String(stageCount) },
           { label: "u/c", value: String(parsons.steamBladeSpeedRatio) },
+          { label: "u", value: String(parsons.bladeSpeedMps), unit: "m/s" },
+          { label: "ω×0.08", value: parsons.displayOmegaRadPerS.toFixed(1), unit: "rad/s" },
         ]}
       />
     </div>

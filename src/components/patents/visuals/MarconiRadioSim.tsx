@@ -16,18 +16,19 @@ export function MarconiRadioSim() {
 
   const radio = stepMarconiRadio(antennaHeightMeters, params.sparkGapMm ?? 10, sparkPowerKv);
   const estimatedRangeMiles = radio.maxRangeMiles;
+  const waveAdvancePx = (radio.resonantFreqMhz / 0.85) * 4;
 
   useEffect(() => {
     let timer: any;
     if (isSparking) {
       timer = setInterval(() => {
-        setWaveRingRadius((r) => (r + 4) % 120);
+        setWaveRingRadius((r) => (r + waveAdvancePx) % 120);
       }, 40);
     } else {
       setWaveRingRadius(0);
     }
     return () => clearInterval(timer);
-  }, [isSparking]);
+  }, [isSparking, waveAdvancePx]);
 
   const triggerSpark = () => {
     setIsSparking(true);
@@ -35,7 +36,7 @@ export function MarconiRadioSim() {
     setTimeout(() => {
       setIsSparking(false);
       soundEngine.stopContinuousTone();
-    }, 1200);
+    }, radio.sparkDisplayMs);
   };
 
   return (
@@ -209,14 +210,18 @@ export function MarconiRadioSim() {
           </svg>
 
           {/* Telemetry Footer */}
-          <div className="w-full grid grid-cols-3 gap-2 text-center text-xs font-mono pt-3 border-t border-ink-800 text-ink-300">
+          <div className="w-full grid grid-cols-2 sm:grid-cols-4 gap-2 text-center text-xs font-mono pt-3 border-t border-ink-800 text-ink-300">
             <div>
-              <span className="text-ink-500 block text-[10px]">ANTENNA HEIGHT</span>
-              <span className="text-amber-400 font-bold">{antennaHeightMeters} Meters</span>
+              <span className="text-ink-500 block text-[10px]">f₀</span>
+              <span className="text-amber-400 font-bold">{radio.resonantFreqKhz} kHz</span>
             </div>
             <div>
-              <span className="text-ink-500 block text-[10px]">SPARK VOLTAGE</span>
-              <span className="text-blue-400 font-bold">{sparkPowerKv} kV</span>
+              <span className="text-ink-500 block text-[10px]">R_rad</span>
+              <span className="text-blue-400 font-bold">{radio.radiationResistanceOhms} Ω</span>
+            </div>
+            <div>
+              <span className="text-ink-500 block text-[10px]">PEAK RF</span>
+              <span className="text-purple-400 font-bold">{radio.peakRfPowerKw} kW</span>
             </div>
             <div>
               <span className="text-ink-500 block text-[10px]">PREDICTED RANGE</span>
@@ -228,8 +233,8 @@ export function MarconiRadioSim() {
         {/* Controls Sidebar */}
         <div className="lg:col-span-4 space-y-4">
           <SparkWaterfall
-            fundamentalHz={3e8 / (4 * antennaHeightMeters)}
-            energy={Math.min(1, sparkPowerKv / 50)}
+            fundamentalHz={radio.resonantFreqMhz * 1e6}
+            energy={Math.min(1, radio.peakRfPowerKw / 80)}
             firing={isSparking}
           />
           <div className="rounded-2xl border border-parchment-300 dark:border-ink-800 bg-parchment-100/70 dark:bg-ink-900/60 p-5 space-y-4">

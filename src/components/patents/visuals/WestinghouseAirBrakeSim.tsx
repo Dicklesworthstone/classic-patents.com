@@ -40,12 +40,9 @@ export function WestinghouseAirBrakeSim() {
 
       setTrainSpeedMph((prev) => {
         if (cylPressurePsi > 5) {
-          // Decelerate proportionally to clamping pressure
-          const decel = wh.pistonStrokeRatio * 18 * dt;
-          return Math.max(0, prev - decel);
+          return Math.max(0, prev - wh.decelerationMphPerS * dt);
         }
-        // Accelerate back to 45 mph if release
-        return Math.min(45, prev + 10 * dt);
+        return Math.min(wh.approachSpeedMph, prev + 10 * dt);
       });
 
       setWheelRotation((prev) => (prev + trainSpeedMph * 8 * dt) % 360);
@@ -56,7 +53,7 @@ export function WestinghouseAirBrakeSim() {
     return () => {
       if (animRef.current) cancelAnimationFrame(animRef.current);
     };
-  }, [cylPressurePsi, trainSpeedMph, wh.pistonStrokeRatio]);
+  }, [cylPressurePsi, trainSpeedMph, wh.decelerationMphPerS, wh.approachSpeedMph]);
 
   const setPreset = (psi: number, _label?: string) => {
     updateParam("trainPipePressure", psi);
@@ -141,6 +138,9 @@ export function WestinghouseAirBrakeSim() {
             <div className="flex items-center gap-1.5">
               <span className="text-ink-400">Train Speed:</span>
               <span className="text-amber-400 font-bold">{trainSpeedMph.toFixed(1)} MPH</span>
+              {wh.stoppingTimeS > 0 ? (
+                <span className="text-ink-500"> · {wh.stoppingTimeS}s to stop</span>
+              ) : null}
             </div>
             <div className="flex items-center gap-1.5 border-l border-ink-700 pl-3">
               <span className="text-ink-400">Clamping Force:</span>

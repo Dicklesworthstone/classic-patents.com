@@ -16,6 +16,7 @@ import * as THREE from "three";
 import { blackbodyRgb } from "@/physics/blackbody";
 import { stepEdisonBulb } from "@/physics/catalogKernels";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
+import { createLcg } from "@/utils/lcg";
 import { soundEngine } from "@/utils/soundEngine";
 import {
   createGlowPointTexture,
@@ -23,6 +24,8 @@ import {
   type StudioContext,
 } from "./ThreeStudioScene";
 import { useLiveSimParams } from "./useLiveSimParams";
+
+const lcg = createLcg(999);
 
 type CameraPreset = "iso" | "filament_horseshoe" | "screw_base" | "exhaust_tip" | "top";
 
@@ -48,9 +51,8 @@ export function EdisonBulb3D() {
   });
   const powerWatts = bulb.radiantWatts;
   const filamentTempKelvin = bulb.filamentTempK;
-  const currentAmps = (params.voltage ?? 110) / (bulb.hotResistanceOhm ?? 150);
-  const estimatedLifespanHours =
-    vacuumTorr < 1e-4 ? Math.round(1200 / (Math.max(appliedVoltage, 1) / 110) ** 3.5) : 0;
+  const currentAmps = bulb.currentAmps;
+  const estimatedLifespanHours = vacuumTorr < 1e-4 ? bulb.designLifeHours : 0;
 
   const live = useLiveSimParams({
     appliedVoltage,
@@ -290,9 +292,9 @@ export function EdisonBulb3D() {
 
     for (let i = 0; i < gasCount; i++) {
       const idx = i * 3;
-      const r = Math.random() * 2.2;
-      const theta = Math.random() * Math.PI * 2;
-      const phi = (Math.random() - 0.5) * Math.PI;
+      const r = lcg() * 2.2;
+      const theta = lcg() * Math.PI * 2;
+      const phi = (lcg() - 0.5) * Math.PI;
       gasPos[idx] = r * Math.cos(phi) * Math.cos(theta);
       gasPos[idx + 1] = 1.0 + r * Math.sin(phi);
       gasPos[idx + 2] = r * Math.cos(phi) * Math.sin(theta);
@@ -314,11 +316,12 @@ export function EdisonBulb3D() {
 
     // --- RENDER LOOP & REAL-TIME INCANDESCENCE DYNAMICS ---
     let reqId: number;
-    const clock = new THREE.Clock();
+    let renderedSteps = 0;
 
     const animate = () => {
       reqId = requestAnimationFrame(animate);
-      const delta = clock.getDelta();
+      renderedSteps += 1;
+      const delta = 1 / 60;
       const p = live.current;
 
       const incandescenceIntensity = Math.min(1.0, (p.appliedVoltage / 110) ** 2);
@@ -345,9 +348,9 @@ export function EdisonBulb3D() {
 
         for (let i = 0; i < gasCount; i++) {
           const idx = i * 3;
-          gPos[idx] += (Math.random() - 0.5) * thermalJitter;
-          gPos[idx + 1] += (Math.random() - 0.5) * thermalJitter;
-          gPos[idx + 2] += (Math.random() - 0.5) * thermalJitter;
+          gPos[idx] += (lcg() - 0.5) * thermalJitter;
+          gPos[idx + 1] += (lcg() - 0.5) * thermalJitter;
+          gPos[idx + 2] += (lcg() - 0.5) * thermalJitter;
         }
         gasGeo.attributes.position.needsUpdate = true;
       } else {

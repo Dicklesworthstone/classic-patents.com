@@ -5,6 +5,7 @@ import { useEffect, useRef, useState } from "react";
 import * as THREE from "three";
 import { stepBellTelephone } from "@/physics/catalogKernels";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
+import { createLcg } from "@/utils/lcg";
 import { soundEngine } from "@/utils/soundEngine";
 import {
   createGlowPointTexture,
@@ -12,6 +13,8 @@ import {
   type StudioContext,
 } from "./ThreeStudioScene";
 import { useLiveSimParams } from "./useLiveSimParams";
+
+const lcg = createLcg(1315);
 
 type CameraPreset = "iso" | "speaking_horn" | "liquid_transmitter" | "battery_cells" | "top";
 
@@ -29,15 +32,15 @@ export function BellTelephone3D() {
   const [activeCamera, setActiveCamera] = useState<CameraPreset>("iso");
   const [isPlayingAudio, setIsPlayingAudio] = useState<boolean>(false);
 
-  // Electrical Physics Calculations
-  // Resistance: R(t) = R_0 - k * A * sin(omega * t)
-  const baseResistanceOhms = 40.0 / liquidConductivity;
-  const resistanceModulationOhms = baseResistanceOhms * 0.45 * voiceAmplitude;
-  const currentBaselineAmps = batteryVoltage / baseResistanceOhms;
   const bell = stepBellTelephone({
     voiceAmplitude: params.voiceAmplitude ?? 75,
     airGap: params.airGap ?? 0.35,
+    batteryVoltage,
+    liquidConductivity,
   });
+  const baseResistanceOhms = bell.baseResistanceOhms;
+  const resistanceModulationOhms = bell.resistanceModulationOhms;
+  const currentBaselineAmps = bell.currentBaselineAmps;
   const peakAudioCurrentMa = bell.modulatedMa;
 
   const live = useLiveSimParams({
@@ -291,9 +294,9 @@ export function BellTelephone3D() {
 
     for (let i = 0; i < electronCount; i++) {
       const idx = i * 3;
-      electronPos[idx] = 2.0 + (Math.random() - 0.5) * 0.5;
-      electronPos[idx + 1] = -0.5 - Math.random() * 1.5;
-      electronPos[idx + 2] = (Math.random() - 0.5) * 0.5;
+      electronPos[idx] = 2.0 + (lcg() - 0.5) * 0.5;
+      electronPos[idx + 1] = -0.5 - lcg() * 1.5;
+      electronPos[idx + 2] = (lcg() - 0.5) * 0.5;
     }
 
     electronGeo.setAttribute("position", new THREE.BufferAttribute(electronPos, 3));
@@ -313,12 +316,13 @@ export function BellTelephone3D() {
 
     // --- RENDER LOOP & REAL-TIME ACOUSTIC OSCILLATION ---
     let reqId: number;
-    const clock = new THREE.Clock();
+    let renderedSteps = 0;
 
     const animate = () => {
       reqId = requestAnimationFrame(animate);
-      const delta = clock.getDelta();
-      const elapsed = clock.getElapsedTime();
+      renderedSteps += 1;
+      const delta = 1 / 60;
+      const elapsed = renderedSteps * (1 / 60);
       const p = live.current;
 
       const omega = 2 * Math.PI * p.acousticFrequencyHz;

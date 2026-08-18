@@ -207,15 +207,16 @@ export function TeslaTeleautomaton3D() {
 
     // Animation Loop
     let reqId: number;
-    const clock = new THREE.Clock();
+    let renderedSteps = 0;
 
     const animate = () => {
       reqId = requestAnimationFrame(animate);
-      const delta = clock.getDelta();
+      renderedSteps += 1;
+      const delta = 1 / 60;
       const p = live.current;
 
       // Gentle water buoyancy sway
-      const t = clock.getElapsedTime();
+      const t = renderedSteps * (1 / 60);
       hullGroup.position.y = Math.sin(t * 1.5) * 0.08;
       hullGroup.rotation.z = Math.sin(t * 0.8) * 0.02;
 

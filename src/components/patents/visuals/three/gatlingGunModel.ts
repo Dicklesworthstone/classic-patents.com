@@ -1,3 +1,4 @@
+import { createLcg } from "@/utils/lcg";
 /**
  * gatlingGunModel.ts
  *
@@ -7,6 +8,8 @@
  */
 
 import * as THREE from "three";
+
+const lcg = createLcg(1537);
 
 export interface GatlingGunModel {
   rootGroup: THREE.Group;
@@ -33,7 +36,7 @@ export function buildGatlingGunModel(): GatlingGunModel {
     wctx.fillRect(0, 0, 512, 512);
     for (let i = 0; i < 200; i++) {
       wctx.fillStyle = i % 2 === 0 ? "rgba(90, 50, 25, 0.4)" : "rgba(35, 18, 8, 0.5)";
-      wctx.fillRect(0, Math.random() * 512, 512, Math.random() * 4 + 1);
+      wctx.fillRect(0, lcg() * 512, 512, lcg() * 4 + 1);
     }
   }
   const woodTexture = new THREE.CanvasTexture(woodCanvas);
@@ -323,9 +326,9 @@ export function buildGatlingGunModel(): GatlingGunModel {
   const flashCount = 60;
   const flashPositions = new Float32Array(flashCount * 3);
   for (let i = 0; i < flashCount; i++) {
-    flashPositions[i * 3] = 4.8 + Math.random() * 1.8;
-    flashPositions[i * 3 + 1] = 0.4 + (Math.random() - 0.5) * 0.8;
-    flashPositions[i * 3 + 2] = (Math.random() - 0.5) * 0.8;
+    flashPositions[i * 3] = 4.8 + lcg() * 1.8;
+    flashPositions[i * 3 + 1] = 0.4 + (lcg() - 0.5) * 0.8;
+    flashPositions[i * 3 + 2] = (lcg() - 0.5) * 0.8;
   }
   flashGeo.setAttribute("position", new THREE.BufferAttribute(flashPositions, 3));
   geometriesToDispose.push(flashGeo);

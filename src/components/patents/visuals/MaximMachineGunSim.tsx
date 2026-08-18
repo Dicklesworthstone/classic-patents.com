@@ -11,7 +11,6 @@ export function MaximMachineGunSim() {
   const { isAudioMuted, toggleSound } = usePatentAudio();
   const cyclicRateRpm = params.firingRate ?? 600;
   const jacketWaterLiters = params.waterLevel ?? 4.0;
-  const recoilStrokeMm = params.recoilStroke ?? 19;
   const [isPlaying, setIsPlaying] = useState<boolean>(true);
   const [recoilPhase, setRecoilPhase] = useState<number>(0);
   const animRef = useRef<number | null>(null);
@@ -19,8 +18,9 @@ export function MaximMachineGunSim() {
   const maxim = FrankenSimEngine.stepMaximMachineGun({
     firingRateRpm: cyclicRateRpm,
     waterJacketLiters: jacketWaterLiters,
-    recoilStrokeMm,
+    recoilStrokeMm: params.recoilStroke ?? 19,
   });
+  const recoilStrokeMm = maxim.recoilStrokeMm;
   const barrelTempC = maxim.barrelTempC;
   const muzzleEnergyJoules = maxim.muzzleEnergyJoules;
   const cycleTimeMs = maxim.cycleIntervalMs;

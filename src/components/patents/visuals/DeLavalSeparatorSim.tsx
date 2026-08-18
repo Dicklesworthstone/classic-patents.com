@@ -12,7 +12,7 @@ export function DeLavalSeparatorSim() {
   const bowlRpm = params.bowlRpm ?? 6500;
   const rawMilkFlowLph = params.rawMilkFlowLph ?? 300;
   const [isPlaying, setIsPlaying] = useState<boolean>(true);
-  const [_angleDeg, setAngleDeg] = useState<number>(0);
+  const [angleDeg, setAngleDeg] = useState<number>(0);
   const animRef = useRef<number | null>(null);
 
   const sep = stepDeLavalSeparator({ bowlRpm, rawMilkFlowLph });
@@ -28,7 +28,7 @@ export function DeLavalSeparatorSim() {
     const loop = (time: number) => {
       const dt = (time - lastTime) / 1000;
       lastTime = time;
-      setAngleDeg((prev) => (prev + (bowlRpm / 60) * 360 * dt) % 360);
+      setAngleDeg((prev) => (prev + sep.displayOmegaDegPerS * dt) % 360);
       animRef.current = requestAnimationFrame(loop);
     };
 
@@ -36,7 +36,7 @@ export function DeLavalSeparatorSim() {
     return () => {
       if (animRef.current) cancelAnimationFrame(animRef.current);
     };
-  }, [isPlaying, bowlRpm]);
+  }, [isPlaying, sep.displayOmegaDegPerS]);
 
   return (
     <div className="w-full rounded-2xl border border-parchment-300 dark:border-ink-800 bg-parchment-50 dark:bg-ink-950 p-4 sm:p-6 shadow-md transition-colors">
@@ -109,6 +109,23 @@ export function DeLavalSeparatorSim() {
               fill="#ECC94B"
               opacity="0.9"
             />
+
+            {/* Nested disc vanes — display ω, not leftover rpm×6 */}
+            <g transform={`rotate(${angleDeg})`}>
+              {[0, 45, 90, 135].map((a) => (
+                <line
+                  key={`disc-vane-${a}`}
+                  x1="0"
+                  y1="-48"
+                  x2="0"
+                  y2="48"
+                  transform={`rotate(${a})`}
+                  stroke="#E2E8F0"
+                  strokeWidth="1.5"
+                  opacity="0.55"
+                />
+              ))}
+            </g>
 
             {/* Central Vertical Feed Spindle */}
             <rect
@@ -190,7 +207,8 @@ export function DeLavalSeparatorSim() {
             Centrifugal Field
           </span>
           <span className="font-mono text-sm sm:text-base font-bold text-ink-900 dark:text-parchment-100">
-            {centrifugalAccG.toLocaleString()} G ({bowlRpm} RPM)
+            {centrifugalAccG.toLocaleString()} G · {bowlRpm} RPM · ω×{sep.displaySlowdown}{" "}
+            {sep.displayOmegaDegPerS.toFixed(0)} °/s
           </span>
         </div>
         <div className="bg-parchment-100 dark:bg-ink-900 border border-parchment-200 dark:border-ink-800 p-2.5 rounded-xl text-center">

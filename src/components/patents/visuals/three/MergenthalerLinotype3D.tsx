@@ -204,7 +204,7 @@ export function MergenthalerLinotype3D() {
     rootGroup.add(fallingMatrix);
 
     let reqId: number;
-    const clock = new THREE.Clock();
+    let renderedSteps = 0;
 
     const animate = () => {
       reqId = requestAnimationFrame(animate);
@@ -213,7 +213,7 @@ export function MergenthalerLinotype3D() {
         matrixRatePerMin: p.matrixRate,
         spacebandWedgeMm: p.spacebandWedge,
         potTempC: p.potTempC,
-        elapsedS: clock.getElapsedTime(),
+        elapsedS: renderedSteps * (1 / 60),
       });
 
       plungerRod.position.y = 1.2 + step.plungerY;

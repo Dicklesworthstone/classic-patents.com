@@ -70,6 +70,7 @@ export function HoweSewingMachine3D() {
     clothFeedRateMmPerSec,
     threadTensionGrams,
     isAudioMuted,
+    crankOmegaRadPerS: stitchState.crankOmegaRadPerS,
   });
 
   const controlsRef = useRef<StudioContext["controls"] | null>(null);
@@ -354,16 +355,17 @@ export function HoweSewingMachine3D() {
 
     // --- RENDER LOOP & REAL-TIME LOCKSTITCH KINEMATICS ---
     let reqId: number;
-    const clock = new THREE.Clock();
+    let renderedSteps = 0;
     let prevStitchCycle = 0;
 
     const animate = () => {
       reqId = requestAnimationFrame(animate);
-      const _delta = clock.getDelta();
-      const elapsed = clock.getElapsedTime();
+      renderedSteps += 1;
+      const _delta = 1 / 60;
+      const elapsed = renderedSteps * (1 / 60);
       const p = live.current;
 
-      const omega = (p.stitchingSpeedRpm / 60) * 2 * Math.PI;
+      const omega = p.crankOmegaRadPerS ?? (p.stitchingSpeedRpm / 60) * 2 * Math.PI;
       const crankAngle = elapsed * omega;
       const crankDeg = ((crankAngle * 180) / Math.PI) % 360;
       const stitch = stepHoweLockstitch(crankDeg);

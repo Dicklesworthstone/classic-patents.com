@@ -29,7 +29,7 @@ export function MaximMachineGun3D() {
     waterJacketLiters: params.waterLevel ?? 4,
     recoilStrokeMm: params.recoilStroke ?? 19,
   });
-  const recoilStrokeM = (params.recoilStroke ?? 19) / 1000;
+  const recoilStrokeM = maxim.recoilStrokeMm / 1000;
   const [showMuzzleFlash, setShowMuzzleFlash] = useState<boolean>(true);
   const [activeCamera, setActiveCamera] = useState<CameraPreset>("iso");
   const { isAudioMuted, toggleSound: toggleEngine } = usePatentAudio();
@@ -200,15 +200,16 @@ export function MaximMachineGun3D() {
 
     // Animation Loop
     let reqId: number;
-    const clock = new THREE.Clock();
+    let renderedSteps = 0;
 
     const animate = () => {
       reqId = requestAnimationFrame(animate);
-      const _delta = clock.getDelta();
+      renderedSteps += 1;
+      const _delta = 1 / 60;
       const p = live.current;
 
       const fireFreq = (p.fireRateRpm / 60) * 2 * Math.PI;
-      const recoilPhase = Math.sin(clock.getElapsedTime() * fireFreq);
+      const recoilPhase = Math.sin(renderedSteps * (1 / 60) * fireFreq);
 
       const strokeScene = Math.max(0.08, p.recoilStrokeM * 8);
       gunGroup.position.x = recoilPhase > 0 ? -recoilPhase * strokeScene : 0;

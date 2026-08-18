@@ -35,6 +35,7 @@ export function HyattCelluloid3D() {
     isAudioMuted,
     viscosityPaS: hyatt.viscosityPaS,
     isMelted: hyatt.isMelted ? 1 : 0,
+    extrusionRateCmPerMin: hyatt.extrusionRateCmPerMin,
   });
 
   const controlsRef = useRef<StudioContext["controls"] | null>(null);
@@ -211,18 +212,19 @@ export function HyattCelluloid3D() {
 
     // Animation Loop
     let reqId: number;
-    const clock = new THREE.Clock();
+    let renderedSteps = 0;
 
     const animate = () => {
       reqId = requestAnimationFrame(animate);
-      clock.getDelta();
+      renderedSteps += 1;
       const p = live.current;
 
       const melted = p.isMelted > 0.5;
-      const ramHz = melted ? 0.35 + p.hydraulicPressureMpa * 0.04 : 0.08;
+      // Presentation Hz tracks the kernel extrusion (14.25 cm/min → 0.75 Hz).
+      const ramHz = melted ? Math.max(0.08, (p.extrusionRateCmPerMin ?? 0) / 19) : 0.08;
       const ramStroke = melted ? 0.12 + p.hydraulicPressureMpa * 0.03 : 0.02;
       ramPiston.position.x =
-        1.8 + Math.sin(clock.getElapsedTime() * ramHz * Math.PI * 2) * ramStroke;
+        1.8 + Math.sin(renderedSteps * (1 / 60) * ramHz * Math.PI * 2) * ramStroke;
       // Extrusion only when steam + pressure have melted the camphor-nitrocellulose
       const flow = melted ? Math.min(1.4, 1800 / Math.max(80, p.viscosityPaS)) : 0.08;
       rodMesh.visible = melted;

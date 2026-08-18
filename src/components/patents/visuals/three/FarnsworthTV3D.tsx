@@ -6,6 +6,7 @@ import * as THREE from "three";
 import { FrankenSimEngine } from "@/physics/engine";
 import { useFrankenSimPhysics } from "@/physics/useFrankenSimPhysics";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
+import { createLcg } from "@/utils/lcg";
 import { soundEngine } from "@/utils/soundEngine";
 import {
   createGlowPointTexture,
@@ -15,6 +16,8 @@ import {
 import { useLiveSimParams } from "./useLiveSimParams";
 
 import { usePatentAudio } from "./usePatentAudio";
+
+const lcg = createLcg(1240);
 
 type CameraPreset = "iso" | "photocathode" | "aperture" | "coils" | "top";
 
@@ -313,12 +316,13 @@ export function FarnsworthTV3D() {
 
     // --- RENDER LOOP & REAL-TIME ELECTRON RASTER DYNAMICS ---
     let reqId: number;
-    const clock = new THREE.Clock();
+    let renderedSteps = 0;
 
     const animate = () => {
       reqId = requestAnimationFrame(animate);
-      const delta = clock.getDelta();
-      const elapsed = clock.getElapsedTime();
+      renderedSteps += 1;
+      const delta = 1 / 60;
+      const elapsed = renderedSteps * (1 / 60);
       const p = live.current;
 
       const hFreq = p.horizontalFreqKhz * 0.25;
@@ -340,8 +344,8 @@ export function FarnsworthTV3D() {
           bPos[idx + 1] = vSawtooth * 0.9 * deflectFactor * rasterScale;
           bPos[idx + 2] = hSawtooth * 0.9 * deflectFactor * rasterScale;
         } else {
-          bPos[idx + 1] = (Math.random() - 0.5) * 0.06;
-          bPos[idx + 2] = (Math.random() - 0.5) * 0.06;
+          bPos[idx + 1] = (lcg() - 0.5) * 0.06;
+          bPos[idx + 2] = (lcg() - 0.5) * 0.06;
         }
 
         bPos[idx] += delta * beamVelocityScale;

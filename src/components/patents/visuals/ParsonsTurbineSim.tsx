@@ -12,19 +12,18 @@ export function ParsonsTurbineSim() {
   const rotorRpm = params.rotorRpm ?? 3000;
   const inletPressurePsi = params.inletPressurePsi ?? 180;
   const [isPlaying, setIsPlaying] = useState<boolean>(true);
-  const [_angleDeg, setAngleDeg] = useState<number>(0);
+  const [angleDeg, setAngleDeg] = useState<number>(0);
   const animRef = useRef<number | null>(null);
 
   // Reaction Turbine Thermodynamics
-  const {
-    inletMpa: pInletMpa,
-    shaftPowerKw,
-    stageCount,
-    steamBladeSpeedRatio,
-  } = FrankenSimEngine.stepParsonsTurbine({
+  const parsons = FrankenSimEngine.stepParsonsTurbine({
     rotorRpm,
     inletPressurePsi,
   });
+  const pInletMpa = parsons.inletMpa;
+  const shaftPowerKw = parsons.shaftPowerKw;
+  const stageCount = parsons.stageCount;
+  const steamBladeSpeedRatio = parsons.steamBladeSpeedRatio;
 
   useEffect(() => {
     if (!isPlaying) return;
@@ -33,7 +32,7 @@ export function ParsonsTurbineSim() {
     const loop = (time: number) => {
       const dt = (time - lastTime) / 1000;
       lastTime = time;
-      setAngleDeg((prev) => (prev + rotorRpm * 6 * dt) % 360);
+      setAngleDeg((prev) => (prev + parsons.displayOmegaDegPerS * dt) % 360);
       animRef.current = requestAnimationFrame(loop);
     };
 
@@ -41,7 +40,7 @@ export function ParsonsTurbineSim() {
     return () => {
       if (animRef.current) cancelAnimationFrame(animRef.current);
     };
-  }, [isPlaying, rotorRpm]);
+  }, [isPlaying, parsons.displayOmegaDegPerS]);
 
   return (
     <div className="w-full rounded-2xl border border-parchment-300 dark:border-ink-800 bg-parchment-50 dark:bg-ink-950 p-4 sm:p-6 shadow-md transition-colors">
@@ -220,6 +219,25 @@ export function ParsonsTurbineSim() {
           >
             Dummy Piston Balance
           </text>
+
+          {/* Shaft-end view — display ω, not leftover rpm×6 */}
+          <g transform="translate(545, 300)">
+            <circle r="22" fill="#1A202C" stroke="#718096" strokeWidth="1.5" />
+            <g transform={`rotate(${angleDeg})`}>
+              {[0, 45, 90, 135].map((a) => (
+                <line
+                  key={`rotor-spoke-${a}`}
+                  x1="0"
+                  y1="-18"
+                  x2="0"
+                  y2="18"
+                  transform={`rotate(${a})`}
+                  stroke="#D4AF37"
+                  strokeWidth="2"
+                />
+              ))}
+            </g>
+          </g>
         </svg>
       </div>
 
@@ -230,7 +248,8 @@ export function ParsonsTurbineSim() {
             Turbine Speed
           </span>
           <span className="font-mono text-sm sm:text-base font-bold text-ink-900 dark:text-parchment-100">
-            {rotorRpm} RPM
+            {rotorRpm} RPM · ω×{parsons.displaySlowdown} {parsons.displayOmegaDegPerS.toFixed(0)}{" "}
+            °/s
           </span>
         </div>
         <div className="bg-parchment-100 dark:bg-ink-900 border border-parchment-200 dark:border-ink-800 p-2.5 rounded-xl text-center">

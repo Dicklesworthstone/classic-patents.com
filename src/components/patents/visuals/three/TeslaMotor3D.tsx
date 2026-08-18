@@ -5,9 +5,10 @@ import { useEffect, useRef, useState } from "react";
 import * as THREE from "three";
 import { HudText } from "@/components/ui/LatexRenderer";
 import { FrankenSimEngine } from "@/physics/engine";
-import { TESLA_FIELD_POLES, teslaBAt } from "@/physics/teslaKernel";
+import { TESLA_FIELD_POLES, teslaBAt, teslaFieldDisplayOmegaRadPerS } from "@/physics/teslaKernel";
 import { useFrankenSimPhysics } from "@/physics/useFrankenSimPhysics";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
+import { createLcg } from "@/utils/lcg";
 import { soundEngine } from "@/utils/soundEngine";
 import {
   createGlowPointTexture,
@@ -15,6 +16,8 @@ import {
   type StudioContext,
 } from "./ThreeStudioScene";
 import { useLiveSimParams } from "./useLiveSimParams";
+
+const lcg = createLcg(1034);
 
 type CameraPreset = "iso" | "stator_coils" | "squirrel_cage" | "shaft_drive" | "top";
 
@@ -54,6 +57,7 @@ export function TeslaMotor3D() {
     slip,
     showMagneticFlux,
     isPlayingAudio,
+    fieldDisplayOmegaRadPerS: teslaFieldDisplayOmegaRadPerS(acFrequencyHz),
   });
 
   const controlsRef = useRef<StudioContext["controls"] | null>(null);
@@ -355,14 +359,14 @@ export function TeslaMotor3D() {
 
     for (let i = 0; i < fluxCount; i++) {
       const idx = i * 3;
-      const radius = 2.6 + Math.random() * 1.8;
-      const angle = Math.random() * Math.PI * 2;
+      const radius = 2.6 + lcg() * 1.8;
+      const angle = lcg() * Math.PI * 2;
       fluxPositions[idx] = Math.cos(angle) * radius;
-      fluxPositions[idx + 1] = (Math.random() - 0.5) * 2.8;
+      fluxPositions[idx + 1] = (lcg() - 0.5) * 2.8;
       fluxPositions[idx + 2] = Math.sin(angle) * radius;
 
       fluxColors[idx] = 0.2;
-      fluxColors[idx + 1] = 0.7 + Math.random() * 0.3;
+      fluxColors[idx + 1] = 0.7 + lcg() * 0.3;
       fluxColors[idx + 2] = 1.0;
     }
 
@@ -396,23 +400,24 @@ export function TeslaMotor3D() {
 
     // --- RENDER LOOP & REAL-TIME PHYSICS SIMULATION ---
     let reqId: number;
-    const clock = new THREE.Clock();
+    let renderedSteps = 0;
     let bFieldAngle = 0;
 
     const animate = () => {
       reqId = requestAnimationFrame(animate);
-      const delta = clock.getDelta();
-      const elapsed = clock.getElapsedTime();
+      renderedSteps += 1;
+      const delta = 1 / 60;
+      const elapsed = renderedSteps * (1 / 60);
       const p = live.current;
 
       // Electrical ω shown at 1/20 so a 60 Hz field is visible. HUD states ns.
-      const visualScale = 1 / 20;
-      const omegaElec = 2 * Math.PI * p.acFrequencyHz;
-      bFieldAngle += omegaElec * visualScale * delta;
+      const omegaDisplay =
+        p.fieldDisplayOmegaRadPerS ?? teslaFieldDisplayOmegaRadPerS(p.acFrequencyHz);
+      bFieldAngle += omegaDisplay * delta;
       const field = teslaBAt(bFieldAngle, phaseCount);
       bFieldArrow.setDirection(new THREE.Vector3(field.bx, 0, field.by));
 
-      const omegaRotor = omegaElec * visualScale * (1 - p.slip);
+      const omegaRotor = omegaDisplay * (1 - p.slip);
       rotorGroup.rotation.y += omegaRotor * delta;
 
       for (const item of coilMeshes) {
@@ -430,7 +435,7 @@ export function TeslaMotor3D() {
         const z = fPos[idx + 2];
         const r = Math.sqrt(x * x + z * z);
         let curAngle = Math.atan2(z, x);
-        curAngle += omegaElec * visualScale * delta;
+        curAngle += omegaDisplay * delta;
 
         fPos[idx] = Math.cos(curAngle) * r;
         fPos[idx + 2] = Math.sin(curAngle) * r;

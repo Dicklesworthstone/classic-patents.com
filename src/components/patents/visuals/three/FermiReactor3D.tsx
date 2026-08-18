@@ -294,12 +294,13 @@ export function FermiReactor3D() {
 
     // --- RENDER LOOP & REAL-TIME NEUTRON KINETICS ---
     let reqId: number;
-    const clock = new THREE.Clock();
+    let renderedSteps = 0;
     let geigerClickTimer = 0;
 
     const animate = () => {
       reqId = requestAnimationFrame(animate);
-      const delta = clock.getDelta();
+      renderedSteps += 1;
+      const delta = 1 / 60;
       const p = live.current;
 
       const targetRodY = -0.5 + (p.controlRodWithdrawalPct / 100) * 3.2;
@@ -315,7 +316,7 @@ export function FermiReactor3D() {
         const nPos = neutronPos;
         const speed = (Number(p.kEff) / 1.0) * 4.0 * delta;
 
-        let seed = Math.floor(clock.getElapsedTime() * 1000);
+        let seed = Math.floor(renderedSteps * (1 / 60) * 1000);
         const lcg = () => {
           seed = (seed * 1664525 + 1013904223) % 4294967296;
           return seed / 4294967296;
@@ -347,7 +348,7 @@ export function FermiReactor3D() {
         if (geigerClickTimer > clickInterval) {
           geigerClickTimer = 0;
           // Deterministic PRNG based on clock time to satisfy the 'digest' requirement
-          const pseudoRandom = (Math.sin(clock.getElapsedTime() * 12345.67) + 1) / 2;
+          const pseudoRandom = (Math.sin(renderedSteps * (1 / 60) * 12345.67) + 1) / 2;
           if (!p.isAudioMuted && pseudoRandom < 0.6) {
             soundEngine.playSwitchClick();
           }

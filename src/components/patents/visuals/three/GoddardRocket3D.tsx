@@ -8,6 +8,7 @@ import { ensureGoddardWasm } from "@/physics/goddardWasm";
 import { deLavalMeridian, goddardThermo } from "@/physics/thermochem";
 import { useFrankenSimPhysics } from "@/physics/useFrankenSimPhysics";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
+import { createLcg } from "@/utils/lcg";
 import { soundEngine } from "@/utils/soundEngine";
 import {
   createGlowPointTexture,
@@ -17,6 +18,8 @@ import {
 import { useLiveSimParams } from "./useLiveSimParams";
 
 import { usePatentAudio } from "./usePatentAudio";
+
+const lcg = createLcg(1309);
 
 type CameraPreset = "iso" | "de_laval_nozzle" | "combustion_chamber" | "gimbal_actuator" | "top";
 
@@ -302,9 +305,9 @@ export function GoddardRocket3D() {
 
     for (let i = 0; i < plumeCount; i++) {
       const idx = i * 3;
-      plumePos[idx] = (Math.random() - 0.5) * 0.4;
-      plumePos[idx + 1] = -4.2 - Math.random() * 4.5;
-      plumePos[idx + 2] = (Math.random() - 0.5) * 0.4;
+      plumePos[idx] = (lcg() - 0.5) * 0.4;
+      plumePos[idx + 1] = -4.2 - lcg() * 4.5;
+      plumePos[idx + 2] = (lcg() - 0.5) * 0.4;
 
       const progress = (-plumePos[idx + 1] - 4.2) / 4.5;
       plumeColors[idx] = 1.0;
@@ -331,11 +334,12 @@ export function GoddardRocket3D() {
 
     // --- RENDER LOOP & REAL-TIME SUPERSONIC PLUME DYNAMICS ---
     let reqId: number;
-    const clock = new THREE.Clock();
+    let renderedSteps = 0;
 
     const animate = () => {
       reqId = requestAnimationFrame(animate);
-      const delta = clock.getDelta();
+      renderedSteps += 1;
+      const delta = 1 / 60;
       const p = live.current;
 
       const gimbalRad = (p.gyroGimbalAngleDeg * Math.PI) / 180;
@@ -371,9 +375,9 @@ export function GoddardRocket3D() {
           pPos[idx] += Math.sin(gimbalRad) * velocitySpeed * 0.4;
 
           if (pPos[idx + 1] < -8.5) {
-            pPos[idx] = (Math.random() - 0.5) * exitSpread;
+            pPos[idx] = (lcg() - 0.5) * exitSpread;
             pPos[idx + 1] = -4.2;
-            pPos[idx + 2] = (Math.random() - 0.5) * exitSpread;
+            pPos[idx + 2] = (lcg() - 0.5) * exitSpread;
           }
         }
         plumeGeo.attributes.position.needsUpdate = true;

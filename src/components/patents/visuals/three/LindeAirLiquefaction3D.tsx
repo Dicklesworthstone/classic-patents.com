@@ -4,6 +4,7 @@ import { Activity, Camera, Eye, EyeOff, Volume2, VolumeX, Wind } from "lucide-re
 import { useEffect, useRef, useState } from "react";
 import * as THREE from "three";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
+import { createLcg } from "@/utils/lcg";
 import { soundEngine } from "@/utils/soundEngine";
 import {
   createGlowPointTexture,
@@ -12,6 +13,8 @@ import {
 } from "./ThreeStudioScene";
 import { useLiveSimParams } from "./useLiveSimParams";
 import { usePatentAudio } from "./usePatentAudio";
+
+const lcg = createLcg(2028);
 
 type CameraPreset = "iso" | "jt_valve" | "counter_heat_exchanger" | "liquid_dewar" | "top";
 
@@ -169,10 +172,10 @@ export function LindeAirLiquefaction3D() {
 
     for (let i = 0; i < mistCount; i++) {
       const idx = i * 3;
-      const r = Math.random() * 0.7;
-      const a = Math.random() * Math.PI * 2;
+      const r = lcg() * 0.7;
+      const a = lcg() * Math.PI * 2;
       mistPositions[idx] = Math.cos(a) * r;
-      mistPositions[idx + 1] = -1.2 - Math.random() * 0.9;
+      mistPositions[idx + 1] = -1.2 - lcg() * 0.9;
       mistPositions[idx + 2] = Math.sin(a) * r;
     }
 
@@ -190,11 +193,12 @@ export function LindeAirLiquefaction3D() {
 
     // Animation Loop
     let reqId: number;
-    const clock = new THREE.Clock();
+    let renderedSteps = 0;
 
     const animate = () => {
       reqId = requestAnimationFrame(animate);
-      const delta = clock.getDelta();
+      renderedSteps += 1;
+      const delta = 1 / 60;
       const p = live.current;
 
       // Animate downward falling condensed droplets

@@ -10,14 +10,14 @@ export function EastmanKodakSim() {
   const { params, updateParam, resetParams } = usePatentPhysics("us-388850-eastman-kodak");
   const { isAudioMuted, toggleSound } = usePatentAudio();
   const shutterSpeedSec = params.shutterSpeed ?? 0.05;
-  const [exposureCount, setExposureCount] = useState<number>(14);
+  const [exposureCount, setExposureCount] = useState<number>(0);
   const [isShutterTriggered, setIsShutterTriggered] = useState<boolean>(false);
 
   const fNumber = params.apertureStop ?? 9.0;
   const kodak = FrankenSimEngine.stepEastmanKodak({
     shutterSpeedSec,
     apertureFNumber: fNumber,
-    subjectDistanceM: params.subjectDistance ?? 3.0,
+    subjectDistanceM: params.subjectDist ?? params.subjectDistance ?? 3.0,
   });
   const totalExposures = kodak.rollCapacity;
   const focalLengthMm = kodak.focalLengthMm;
@@ -27,7 +27,7 @@ export function EastmanKodakSim() {
     if (exposureCount < totalExposures) {
       setExposureCount((prev) => prev + 1);
     }
-    setTimeout(() => setIsShutterTriggered(false), 500);
+    setTimeout(() => setIsShutterTriggered(false), kodak.flashDisplayMs);
   };
 
   return (
@@ -159,7 +159,7 @@ export function EastmanKodakSim() {
               fontWeight="bold"
               fontFamily="sans-serif"
             >
-              Film Plane ({exposureCount}/100)
+              Film Plane ({exposureCount}/{kodak.rollCapacity})
             </text>
 
             {/* Take-Up Spool & Key Wind (Bottom) */}
@@ -203,7 +203,7 @@ export function EastmanKodakSim() {
             Shutter Speed
           </span>
           <span className="font-mono text-sm sm:text-base font-bold text-amber-700 dark:text-amber-500">
-            1/{(1 / shutterSpeedSec).toFixed(0)} s
+            1/{kodak.shutterReciprocal} s
           </span>
         </div>
         <div className="bg-parchment-100 dark:bg-ink-900 border border-parchment-200 dark:border-ink-800 p-2.5 rounded-xl text-center">
@@ -229,7 +229,7 @@ export function EastmanKodakSim() {
         <div>
           <div className="flex justify-between text-xs font-sans font-medium text-ink-700 dark:text-parchment-300 mb-1">
             <span>Barrel Shutter Exposure Duration</span>
-            <span className="font-mono">1/{(1 / shutterSpeedSec).toFixed(0)} sec</span>
+            <span className="font-mono">1/{kodak.shutterReciprocal} sec</span>
           </div>
           <input
             type="range"
@@ -244,12 +244,14 @@ export function EastmanKodakSim() {
         <div>
           <div className="flex justify-between text-xs font-sans font-medium text-ink-700 dark:text-parchment-300 mb-1">
             <span>Current Exposure on Roll</span>
-            <span className="font-mono">{exposureCount} / 100</span>
+            <span className="font-mono">
+              {exposureCount} / {kodak.rollCapacity}
+            </span>
           </div>
           <input
             type="range"
             min="0"
-            max="100"
+            max={kodak.rollCapacity}
             step="1"
             value={exposureCount}
             onChange={(e) => setExposureCount(Number(e.target.value))}

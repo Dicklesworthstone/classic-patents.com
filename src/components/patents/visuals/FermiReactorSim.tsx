@@ -266,11 +266,7 @@ export function FermiReactorSim() {
             slow={{
               name: "Delayed period",
               period:
-                kEffective > 1.0001
-                  ? (0.084 / Math.max(0.0002, kEffective - 1)).toFixed(1)
-                  : kEffective < 0.999
-                    ? (0.084 / Math.max(0.0002, 1 - kEffective)).toFixed(1)
-                    : "∞",
+                kinetics.reactorPeriodSeconds > 0 ? kinetics.reactorPeriodSeconds.toFixed(1) : "∞",
               scale: "s",
               detail:
                 kEffective >= 0.998 && kEffective <= 1.002

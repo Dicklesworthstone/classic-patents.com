@@ -91,18 +91,20 @@ export function MorseTelegraphSim() {
       const sym = chars[i];
       if (sym === "·") {
         soundEngine.playContinuousTone(700, "sine", 0.1);
-        await new Promise((r) => setTimeout(r, 80));
+        await new Promise((r) => setTimeout(r, morse.ditMs));
         soundEngine.stopContinuousTone();
         if (!isMountedRef.current) break;
-        await new Promise((r) => setTimeout(r, 60));
+        await new Promise((r) => setTimeout(r, morse.intraGapMs));
       } else if (sym === "-") {
         soundEngine.playContinuousTone(700, "sine", 0.1);
-        await new Promise((r) => setTimeout(r, 220));
+        await new Promise((r) => setTimeout(r, morse.dahMs));
         soundEngine.stopContinuousTone();
         if (!isMountedRef.current) break;
-        await new Promise((r) => setTimeout(r, 60));
-      } else if (sym === " " || sym === "/") {
-        await new Promise((r) => setTimeout(r, 180));
+        await new Promise((r) => setTimeout(r, morse.intraGapMs));
+      } else if (sym === "/") {
+        await new Promise((r) => setTimeout(r, morse.wordGapMs));
+      } else if (sym === " ") {
+        await new Promise((r) => setTimeout(r, morse.letterGapMs));
       }
     }
 
@@ -364,6 +366,30 @@ export function MorseTelegraphSim() {
                 onChange={(e) => updateParam("currentMa", Number(e.target.value))}
                 className="w-full accent-amber-600 cursor-pointer h-2 bg-parchment-300 dark:bg-ink-700 rounded-lg"
               />
+            </div>
+
+            <div className="space-y-1">
+              <div className="flex justify-between text-xs font-mono">
+                <span className="font-semibold text-ink-800 dark:text-parchment-200">
+                  PARIS Words Per Minute
+                </span>
+                <span className="text-amber-600 dark:text-amber-400 font-bold">
+                  {morse.wpmSpeed} WPM · dit {morse.ditMs}/{morse.dahMs} ms
+                </span>
+              </div>
+              <input
+                type="range"
+                aria-label="Morse words per minute"
+                min="5"
+                max="35"
+                step="1"
+                value={morse.wpmSpeed}
+                onChange={(e) => updateParam("wpmSpeed", Number(e.target.value))}
+                className="w-full accent-amber-600 cursor-pointer h-2 bg-parchment-300 dark:bg-ink-700 rounded-lg"
+              />
+              <div className="text-[10px] font-mono text-ink-500 dark:text-ink-400">
+                unit {morse.unitDurationMs} ms · tape {morse.tapeAdvanceRadPerS} rad/s
+              </div>
             </div>
 
             {/* Relay Amplifier Toggle */}

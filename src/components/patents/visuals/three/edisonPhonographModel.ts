@@ -1,3 +1,4 @@
+import { createLcg } from "@/utils/lcg";
 /**
  * edisonPhonographModel.ts
  *
@@ -8,6 +9,8 @@
  */
 
 import * as THREE from "three";
+
+const lcg = createLcg(2185);
 
 export interface EdisonPhonographModel {
   rootGroup: THREE.Group;
@@ -34,7 +37,7 @@ export function buildEdisonPhonographModel(): EdisonPhonographModel {
     wctx.fillRect(0, 0, 512, 512);
     for (let i = 0; i < 240; i++) {
       wctx.fillStyle = i % 2 === 0 ? "rgba(80, 30, 10, 0.45)" : "rgba(25, 10, 5, 0.5)";
-      wctx.fillRect(0, Math.random() * 512, 512, Math.random() * 3 + 1);
+      wctx.fillRect(0, lcg() * 512, 512, lcg() * 3 + 1);
     }
   }
   const woodTexture = new THREE.CanvasTexture(woodCanvas);

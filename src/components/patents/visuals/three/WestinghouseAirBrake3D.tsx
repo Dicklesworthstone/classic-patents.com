@@ -36,6 +36,8 @@ export function WestinghouseAirBrake3D() {
     isAudioMuted,
     clampingForceKn,
     stoppingDistanceFt,
+    pistonStrokeRatio: westinghouse.pistonStrokeRatio,
+    approachSpeedMph: westinghouse.approachSpeedMph,
   });
 
   const controlsRef = useRef<StudioContext["controls"] | null>(null);
@@ -217,15 +219,16 @@ export function WestinghouseAirBrake3D() {
 
     // Animation Loop
     let reqId: number;
-    const clock = new THREE.Clock();
+    let renderedSteps = 0;
 
     const animate = () => {
       reqId = requestAnimationFrame(animate);
-      const delta = clock.getDelta();
+      renderedSteps += 1;
+      const delta = 1 / 60;
       const p = live.current;
 
-      const clamp = Math.min(1, p.clampingForceKn / 80);
-      const roll = 4.5 * (1 - clamp);
+      const clamp = Math.min(1, p.pistonStrokeRatio ?? 0);
+      const roll = ((p.approachSpeedMph ?? 45) / 45) * 4.5 * (1 - clamp);
       wheels.forEach((w) => {
         w.rotation.z += roll * delta;
       });
@@ -320,6 +323,7 @@ export function WestinghouseAirBrake3D() {
           { label: "Valve", value: westinghouse.valveState, tone: isBrakeClamped ? "hot" : "ok" },
           { label: "Shoe", value: String(clampingForceKn), unit: "kN" },
           { label: "Stop", value: String(stoppingDistanceFt), unit: "ft" },
+          { label: "t_stop", value: String(westinghouse.stoppingTimeS), unit: "s" },
         ]}
       />
     </div>

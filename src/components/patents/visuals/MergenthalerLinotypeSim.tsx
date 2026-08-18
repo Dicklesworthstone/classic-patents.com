@@ -28,7 +28,7 @@ export function MergenthalerLinotypeSim() {
   const handleCastLine = () => {
     if (isMetalLiquid) {
       setIsCast(true);
-      setTimeout(() => setIsCast(false), 900);
+      setTimeout(() => setIsCast(false), lino.solidificationTimeMs);
     }
   };
 

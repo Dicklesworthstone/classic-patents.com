@@ -12,20 +12,20 @@ export function HollerithTabulatingSim() {
   const circuitVoltageV = params.batteryVolts ?? params.supplyVoltageV ?? 12.0;
   const cardsPerMinuteRate = params.cardsPerMin ?? 60;
   const [activeDemographic, setActiveDemographic] = useState<string>("Male, Age 20-30, Native");
-  const [totalCardsProcessed, setTotalCardsProcessed] = useState<number>(450);
+  const [totalCardsProcessed, setTotalCardsProcessed] = useState<number>(0);
   const [isPressDown, setIsPressDown] = useState<boolean>(false);
 
   const hol = stepHollerithTabulating({
     cardsPerMin: cardsPerMinuteRate,
     supplyVoltageV: circuitVoltageV,
-    activeRelays: 16,
+    activeRelays: params.activeRelays,
   });
   const sortingPocketOpen = activeDemographic.includes("Male") ? 3 : 7;
 
   const handleTabulateCard = () => {
     setIsPressDown(true);
     setTotalCardsProcessed((prev) => prev + 1);
-    setTimeout(() => setIsPressDown(false), 500);
+    setTimeout(() => setIsPressDown(false), hol.cycleTimeMs);
   };
 
   return (
@@ -104,7 +104,7 @@ export function HollerithTabulatingSim() {
             </text>
 
             {/* Mercury Cups (Liquid Metal Pools) */}
-            {Array.from({ length: 16 }).map((_, i) => (
+            {Array.from({ length: hol.sensingPinCount }).map((_, i) => (
               <circle
                 key={`mercury-cup-${i * 12}`}
                 cx={20 + (i % 8) * 25}
@@ -250,7 +250,7 @@ export function HollerithTabulatingSim() {
             Cards Processed
           </span>
           <span className="font-mono text-sm sm:text-base font-bold text-ink-900 dark:text-parchment-100">
-            {totalCardsProcessed.toLocaleString()}
+            {totalCardsProcessed.toLocaleString()} / {hol.cardsPerDay.toLocaleString()} day
           </span>
         </div>
         <div className="bg-parchment-100 dark:bg-ink-900 border border-parchment-200 dark:border-ink-800 p-2.5 rounded-xl text-center">
@@ -266,7 +266,8 @@ export function HollerithTabulatingSim() {
             Solenoid / Cycle
           </span>
           <span className="font-mono text-sm sm:text-base font-bold text-emerald-700 dark:text-emerald-500">
-            {hol.solenoidForceN} N / {hol.cycleTimeMs} ms
+            {hol.solenoidForceN} N / {hol.cycleTimeMs} ms · {hol.sensingPinCount} pins /{" "}
+            {hol.registerDialCount} dials
           </span>
         </div>
         <div className="bg-parchment-100 dark:bg-ink-900 border border-parchment-200 dark:border-ink-800 p-2.5 rounded-xl text-center">

@@ -21,7 +21,7 @@ export function ThomsonWeldingSim() {
 
   const handleWeld = () => {
     setIsWelding(true);
-    setTimeout(() => setIsWelding(false), 1200);
+    setTimeout(() => setIsWelding(false), weld.weldPulseMs);
   };
 
   return (
@@ -234,7 +234,7 @@ export function ThomsonWeldingSim() {
             Weld State
           </span>
           <span className="font-mono text-sm sm:text-base font-bold text-ink-900 dark:text-parchment-100">
-            {isPlasticForged ? "Solid Forged" : "Cold / Elastic"}
+            {isPlasticForged ? "Solid Forged" : "Cold / Elastic"} · {weld.weldPulseMs} ms
           </span>
         </div>
       </div>

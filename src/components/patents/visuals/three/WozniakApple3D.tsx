@@ -5,6 +5,7 @@ import { useEffect, useRef, useState } from "react";
 import * as THREE from "three";
 import { stepWozniakApple } from "@/physics/catalogKernels";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
+import { createLcg } from "@/utils/lcg";
 import { soundEngine } from "@/utils/soundEngine";
 import {
   createGlowPointTexture,
@@ -13,6 +14,8 @@ import {
 } from "./ThreeStudioScene";
 import { useLiveSimParams } from "./useLiveSimParams";
 import { usePatentAudio } from "./usePatentAudio";
+
+const lcg = createLcg(1237);
 
 type CameraPreset = "iso" | "cpu" | "ram_matrix" | "slots" | "top";
 
@@ -248,9 +251,9 @@ export function WozniakApple3D() {
       const idx = i * 3;
       const isPhi1Video = i % 2 === 0;
 
-      busPos[idx] = -2.8 + Math.random() * 5.5;
-      busPos[idx + 1] = -0.85 + Math.random() * 0.2;
-      busPos[idx + 2] = -2.0 + Math.random() * 4.0;
+      busPos[idx] = -2.8 + lcg() * 5.5;
+      busPos[idx + 1] = -0.85 + lcg() * 0.2;
+      busPos[idx + 2] = -2.0 + lcg() * 4.0;
 
       if (isPhi1Video) {
         busColors[idx] = 0.1;
@@ -282,17 +285,18 @@ export function WozniakApple3D() {
 
     // --- RENDER LOOP & REAL-TIME BUS INTERLEAVING ---
     let reqId: number;
-    const clock = new THREE.Clock();
+    let renderedSteps = 0;
 
     const animate = () => {
       reqId = requestAnimationFrame(animate);
-      const delta = clock.getDelta();
+      renderedSteps += 1;
+      const delta = 1 / 60;
       const p = live.current;
 
       const bPos = busPos;
       const speed = p.cpuClockMhz * 4.0 * delta;
       // Visual Φ2 window (~4 Hz). A 1.023 MHz sine aliases to noise on rAF.
-      const phi2 = Math.sin(clock.getElapsedTime() * Math.PI * 8) > 0;
+      const phi2 = Math.sin(renderedSteps * (1 / 60) * Math.PI * 8) > 0;
 
       if (p.isCpuActive) {
         for (let i = 0; i < busPacketCount; i++) {

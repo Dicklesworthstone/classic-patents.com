@@ -290,11 +290,12 @@ export function LincolnBuoy3D() {
 
     // --- RENDER LOOP & REAL-TIME HYDROSTATIC DYNAMICS ---
     let reqId: number;
-    const clock = new THREE.Clock();
+    let renderedSteps = 0;
 
     const animate = () => {
       reqId = requestAnimationFrame(animate);
-      const delta = clock.getDelta();
+      renderedSteps += 1;
+      const delta = 1 / 60;
       const p = live.current;
 
       paddleGroup.rotation.z -= delta * (p.shoalClearanceFt > 0 ? 1.8 : 0.35);

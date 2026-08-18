@@ -47,6 +47,8 @@ export function MorseTelegraph3D() {
     loopCurrentMa,
     magneticForceN: morse.magneticForceN,
     ampereTurns: morse.ampereTurns,
+    tapeAdvanceRadPerS: morse.tapeAdvanceRadPerS,
+    unitDurationMs: morse.unitDurationMs,
   });
 
   const controlsRef = useRef<StudioContext["controls"] | null>(null);
@@ -262,18 +264,19 @@ export function MorseTelegraph3D() {
 
     // --- RENDER LOOP & REAL-TIME ARMATURE DYNAMICS ---
     let reqId: number;
-    const clock = new THREE.Clock();
+    let renderedSteps = 0;
 
     const animate = () => {
       reqId = requestAnimationFrame(animate);
-      const delta = clock.getDelta();
+      renderedSteps += 1;
+      const delta = 1 / 60;
       const p = live.current;
 
       if (p.keyIsDown) {
         const pull = Math.min(0.22, p.magneticForceN / 8);
         keyLeverGroup.rotation.z = 0.06;
         armatureGroup.position.y = 2.05 - pull;
-        spool.rotation.z += 0.012 + (p.magneticForceN / 6) * 0.03;
+        spool.rotation.z += (p.tapeAdvanceRadPerS ?? 20) * delta;
       } else {
         keyLeverGroup.rotation.z = -0.02;
         armatureGroup.position.y = 2.05;
@@ -343,7 +346,7 @@ export function MorseTelegraph3D() {
                 <div>
                   <span className="text-ink-600 dark:text-ink-400">Line Distance:</span>{" "}
                   <span className="font-bold text-purple-600 dark:text-purple-400">
-                    {lineLengthMiles} Mi · {wpmSpeed} WPM
+                    {lineLengthMiles} Mi · {wpmSpeed} WPM · dit {morse.ditMs}/{morse.dahMs} ms
                   </span>
                 </div>
               </div>

@@ -1,3 +1,4 @@
+import { createLcg } from "@/utils/lcg";
 /**
  * ThreeStudioScene.ts
  *
@@ -15,6 +16,8 @@
  */
 
 import * as THREE from "three";
+
+const lcg = createLcg(1630);
 
 export type EnvironmentStyle = "sky" | "studio" | "laboratory" | "ocean";
 
@@ -121,15 +124,15 @@ function createCumulusCloudPuff(
     depthWrite: false,
   });
 
-  const puffCount = 6 + Math.floor(Math.random() * 4);
+  const puffCount = 6 + Math.floor(lcg() * 4);
   for (let i = 0; i < puffCount; i++) {
-    const radius = (2.2 + Math.random() * 2.8) * scale;
+    const radius = (2.2 + lcg() * 2.8) * scale;
     const geo = new THREE.SphereGeometry(radius, 12, 10);
     const mesh = new THREE.Mesh(geo, cloudMat);
 
-    const ox = (Math.random() - 0.5) * 8 * scale;
-    const oy = (Math.random() - 0.5) * 2 * scale;
-    const oz = (Math.random() - 0.5) * 5 * scale;
+    const ox = (lcg() - 0.5) * 8 * scale;
+    const oy = (lcg() - 0.5) * 2 * scale;
+    const oz = (lcg() - 0.5) * 5 * scale;
 
     mesh.position.set(baseX + ox, baseY + oy, baseZ + oz);
     mesh.scale.set(1.4, 0.8, 1.0); // Flatten puffs into cumulus horizontal shape

@@ -2,7 +2,7 @@
 
 import { Activity, Camera, Eye, EyeOff, Sparkles, Volume2, VolumeX, Zap } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
-import * as THREE from "three";
+import type * as THREE from "three";
 import { stepEdisonPhonograph } from "@/physics/catalogKernels";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { soundEngine } from "@/utils/soundEngine";
@@ -32,6 +32,7 @@ export function EdisonPhonograph3D() {
     cylinderRpm,
     isAudioMuted,
     grooveDepthMicrons: phono.grooveDepthMicrons,
+    axialTravelMmPerS: phono.axialTravelMmPerS,
   });
 
   const controlsRef = useRef<StudioContext["controls"] | null>(null);
@@ -102,23 +103,24 @@ export function EdisonPhonograph3D() {
 
     // Animation Loop
     let reqId: number;
-    const clock = new THREE.Clock();
+    let renderedSteps = 0;
 
     const animate = () => {
       reqId = requestAnimationFrame(animate);
-      const delta = clock.getDelta();
+      renderedSteps += 1;
+      const delta = 1 / 60;
       const p = live.current;
 
       const omegaRadPerSec = (p.cylinderRpm * 2 * Math.PI) / 60;
       model.cylinderGroup.rotation.x += omegaRadPerSec * delta;
 
-      // Longitudinal Lead-Screw Traverse (wrapping around bounds)
-      const traverseSpeed = (p.cylinderRpm * 0.002) / 60;
-      model.cylinderGroup.position.x = ((clock.getElapsedTime() * traverseSpeed) % 1.2) - 0.6;
+      // Scene scale: 2.54 mm/s (one 0.1-inch turn per second) → 0.002 world-units/s.
+      const traverseSpeed = ((p.axialTravelMmPerS ?? 2.54) * 0.002) / 2.54;
+      model.cylinderGroup.position.x = ((renderedSteps * (1 / 60) * traverseSpeed) % 1.2) - 0.6;
 
       // Stylus Acoustic Vibration
       const stylusVibe =
-        Math.sin(clock.getElapsedTime() * 40.0) * (0.008 + (p.grooveDepthMicrons / 25) * 0.04);
+        Math.sin(renderedSteps * (1 / 60) * 40.0) * (0.008 + (p.grooveDepthMicrons / 25) * 0.04);
       model.stylus.position.y = -0.55 + stylusVibe;
 
       renderer.render(scene, camera);

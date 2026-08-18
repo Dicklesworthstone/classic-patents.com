@@ -270,6 +270,18 @@ export function EngelbartMouseSim() {
                 <span>Resolution / Pulse:</span>
                 <span className="font-mono font-bold">{resolutionMmPerPulse.toFixed(2)} mm</span>
               </div>
+              <div className="flex justify-between">
+                <span>Counts / mm:</span>
+                <span className="font-mono font-bold">{mouse.countsPerMm}</span>
+              </div>
+              <div className="flex justify-between">
+                <span>Pulse train:</span>
+                <span className="font-mono font-bold">{mouse.pulseRateHz} Hz</span>
+              </div>
+              <div className="flex justify-between">
+                <span>Click dwell:</span>
+                <span className="font-mono font-bold">{mouse.clickDisplayMs} ms</span>
+              </div>
             </div>
           </div>
 

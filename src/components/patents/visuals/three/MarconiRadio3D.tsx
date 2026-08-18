@@ -7,6 +7,7 @@ import { HudText } from "@/components/ui/LatexRenderer";
 import { FrankenSimEngine } from "@/physics/engine";
 import { useFrankenSimPhysics } from "@/physics/useFrankenSimPhysics";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
+import { createLcg } from "@/utils/lcg";
 import { soundEngine } from "@/utils/soundEngine";
 import {
   createGlowPointTexture,
@@ -16,6 +17,8 @@ import {
 import { useLiveSimParams } from "./useLiveSimParams";
 
 import { usePatentAudio } from "./usePatentAudio";
+
+const lcg = createLcg(1208);
 
 type CameraPreset = "iso" | "spark_gap" | "induction_coil" | "aerial_monopole" | "top";
 
@@ -68,6 +71,7 @@ export function MarconiRadio3D() {
   const resonantFreqMhz = radioPhysics.resonantFreqMhz.toFixed(2);
   const maxRangeMiles = radioPhysics.maxRangeMiles.toFixed(1);
   const peakRfPowerKw = radioPhysics.peakRfPowerKw.toFixed(1);
+  const radiationResistanceOhms = radioPhysics.radiationResistanceOhms.toFixed(2);
 
   const live = useLiveSimParams({
     aerialHeightMeters,
@@ -291,9 +295,9 @@ export function MarconiRadio3D() {
 
     for (let i = 0; i < sparkCount; i++) {
       const idx = i * 3;
-      sparkParticlePos[idx] = (Math.random() - 0.5) * 0.8;
-      sparkParticlePos[idx + 1] = -1.8 + (Math.random() - 0.5) * 0.3;
-      sparkParticlePos[idx + 2] = (Math.random() - 0.5) * 0.4;
+      sparkParticlePos[idx] = (lcg() - 0.5) * 0.8;
+      sparkParticlePos[idx + 1] = -1.8 + (lcg() - 0.5) * 0.3;
+      sparkParticlePos[idx + 2] = (lcg() - 0.5) * 0.4;
     }
     sparkParticleGeo.setAttribute("position", new THREE.BufferAttribute(sparkParticlePos, 3));
 
@@ -313,12 +317,13 @@ export function MarconiRadio3D() {
 
     // --- RENDER LOOP & REAL-TIME RF OSCILLATION DYNAMICS ---
     let reqId: number;
-    const clock = new THREE.Clock();
+    let renderedSteps = 0;
 
     const animate = () => {
       reqId = requestAnimationFrame(animate);
-      const _delta = clock.getDelta();
-      const elapsed = clock.getElapsedTime();
+      renderedSteps += 1;
+      const _delta = 1 / 60;
+      const elapsed = renderedSteps * (1 / 60);
       const p = live.current;
 
       const mastScale = Math.max(0.25, (p.aerialHeightMeters ?? 88) / 88);
@@ -328,24 +333,24 @@ export function MarconiRadio3D() {
 
       if (p.isSparking) {
         sparkPoints.visible = true;
-        sparkArc.visible = Math.random() > 0.15;
+        sparkArc.visible = lcg() > 0.15;
 
         const aPos = arcPositions;
         for (let i = 0; i < 15; i++) {
           const t = i / 14;
           const idx = i * 3;
           aPos[idx] = -0.4 + t * 0.8;
-          aPos[idx + 1] = (Math.random() - 0.5) * 0.12;
-          aPos[idx + 2] = (Math.random() - 0.5) * 0.12;
+          aPos[idx + 1] = (lcg() - 0.5) * 0.12;
+          aPos[idx + 2] = (lcg() - 0.5) * 0.12;
         }
         sparkArcGeo.attributes.position.needsUpdate = true;
 
         const sPos = sparkParticlePos;
         for (let i = 0; i < sparkCount; i++) {
           const idx = i * 3;
-          sPos[idx] = (Math.random() - 0.5) * 0.8;
-          sPos[idx + 1] = -1.8 + (Math.random() - 0.5) * 0.3;
-          sPos[idx + 2] = (Math.random() - 0.5) * 0.4;
+          sPos[idx] = (lcg() - 0.5) * 0.8;
+          sPos[idx + 1] = -1.8 + (lcg() - 0.5) * 0.3;
+          sPos[idx + 2] = (lcg() - 0.5) * 0.4;
         }
         sparkParticleGeo.attributes.position.needsUpdate = true;
       } else {
@@ -412,9 +417,9 @@ export function MarconiRadio3D() {
                   </span>
                 </div>
                 <div>
-                  <span className="text-ink-600 dark:text-ink-400">Potential:</span>{" "}
+                  <span className="text-ink-600 dark:text-ink-400">R_rad:</span>{" "}
                   <span className="font-bold text-purple-600 dark:text-purple-400">
-                    {inductionCoilKv} kV ({sparkGapMm} mm)
+                    {radiationResistanceOhms} Ω
                   </span>
                 </div>
               </div>

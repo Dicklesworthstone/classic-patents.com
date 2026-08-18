@@ -11,8 +11,15 @@ export function BellTelephoneSim() {
   const { params, updateParam } = usePatentPhysics("us-174465-bell-telephone");
   const acousticFrequency = params.acousticFrequencyHz ?? 440;
   const voiceAmplitude = params.voiceAmplitude ?? 75;
+  const batteryVoltage = params.batteryVoltage ?? 6;
+  const liquidConductivity = params.liquidConductivity ?? 1.2;
   const loudnessSones = sonesFromDbSpl(voiceAmplitude);
-  const bell = stepBellTelephone({ voiceAmplitude, airGap: params.airGap ?? 0.35 });
+  const bell = stepBellTelephone({
+    voiceAmplitude,
+    airGap: params.airGap ?? 0.35,
+    batteryVoltage,
+    liquidConductivity,
+  });
   const [signalType, setSignalType] = useState<"continuous-undulating" | "intermittent-make-break">(
     "continuous-undulating",
   );
@@ -103,7 +110,8 @@ export function BellTelephoneSim() {
             </span>
             <span className="flex items-center gap-1 text-emerald-400">
               <Volume2 className="w-3.5 h-3.5" /> Receiver {bell.diaphragmUm} µm /{" "}
-              {bell.modulatedMa} mA
+              {bell.modulatedMa} mA · R₀ {bell.baseResistanceOhms} Ω · I₀ {bell.currentBaselineMa}{" "}
+              mA
             </span>
           </div>
 
@@ -213,6 +221,48 @@ export function BellTelephoneSim() {
                 value={voiceAmplitude}
                 onChange={(e) => updateParam("voiceAmplitude", Number(e.target.value))}
                 className="w-full accent-amber-600 cursor-pointer h-2 bg-parchment-300 dark:bg-ink-700 rounded-lg"
+              />
+            </div>
+
+            <div>
+              <div className="flex justify-between text-xs font-mono mb-1">
+                <span className="font-semibold text-ink-800 dark:text-parchment-200">
+                  Battery Voltage
+                </span>
+                <span className="text-emerald-600 dark:text-emerald-400 font-bold">
+                  {batteryVoltage} V
+                </span>
+              </div>
+              <input
+                type="range"
+                aria-label="Battery Voltage"
+                min="1"
+                max="12"
+                step="0.5"
+                value={batteryVoltage}
+                onChange={(e) => updateParam("batteryVoltage", Number(e.target.value))}
+                className="w-full accent-emerald-600 cursor-pointer h-2 bg-parchment-300 dark:bg-ink-700 rounded-lg"
+              />
+            </div>
+
+            <div>
+              <div className="flex justify-between text-xs font-mono mb-1">
+                <span className="font-semibold text-ink-800 dark:text-parchment-200">
+                  Acidulated Water Conductivity
+                </span>
+                <span className="text-purple-600 dark:text-purple-400 font-bold">
+                  {liquidConductivity.toFixed(1)} S
+                </span>
+              </div>
+              <input
+                type="range"
+                aria-label="Acidulated Water Conductivity"
+                min="0.2"
+                max="3"
+                step="0.1"
+                value={liquidConductivity}
+                onChange={(e) => updateParam("liquidConductivity", Number(e.target.value))}
+                className="w-full accent-purple-600 cursor-pointer h-2 bg-parchment-300 dark:bg-ink-700 rounded-lg"
               />
             </div>
           </div>

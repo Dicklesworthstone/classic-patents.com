@@ -5,6 +5,7 @@ import { useEffect, useRef, useState } from "react";
 import * as THREE from "three";
 import { stepPeltonWheel } from "@/physics/catalogKernels";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
+import { createLcg } from "@/utils/lcg";
 import { soundEngine } from "@/utils/soundEngine";
 import { StudioKernelChips } from "./StudioKernelChips";
 import {
@@ -14,6 +15,8 @@ import {
 } from "./ThreeStudioScene";
 import { useLiveSimParams } from "./useLiveSimParams";
 import { usePatentAudio } from "./usePatentAudio";
+
+const lcg = createLcg(1127);
 
 type CameraPreset = "iso" | "split_bucket" | "needle_nozzle" | "runner_wheel" | "top";
 
@@ -198,9 +201,9 @@ export function PeltonWheel3D() {
 
     for (let i = 0; i < jetCount; i++) {
       const idx = i * 3;
-      jetPositions[idx] = -3.0 + Math.random() * 2.8;
-      jetPositions[idx + 1] = -2.0 + Math.random() * 1.8;
-      jetPositions[idx + 2] = (Math.random() - 0.5) * 0.15;
+      jetPositions[idx] = -3.0 + lcg() * 2.8;
+      jetPositions[idx + 1] = -2.0 + lcg() * 1.8;
+      jetPositions[idx + 2] = (lcg() - 0.5) * 0.15;
 
       jetColors[idx] = 0.4;
       jetColors[idx + 1] = 0.85;
@@ -226,11 +229,12 @@ export function PeltonWheel3D() {
 
     // Animation Loop
     let reqId: number;
-    const clock = new THREE.Clock();
+    let renderedSteps = 0;
 
     const animate = () => {
       reqId = requestAnimationFrame(animate);
-      const delta = clock.getDelta();
+      renderedSteps += 1;
+      const delta = 1 / 60;
       const p = live.current;
 
       const omegaRadPerSec = (p.wheelRpm * 2 * Math.PI) / 60;
@@ -352,6 +356,7 @@ export function PeltonWheel3D() {
         chips={[
           { label: "Head", value: String(headMeters), unit: "m" },
           { label: "v_jet", value: String(jetVelocityMps), unit: "m/s" },
+          { label: "u", value: String(pelton.bucketSpeedMps), unit: "m/s" },
           {
             label: "u/v",
             value: pelton.speedRatio.toFixed(3),

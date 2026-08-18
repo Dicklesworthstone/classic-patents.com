@@ -5,6 +5,7 @@ import { useEffect, useRef, useState } from "react";
 import * as THREE from "three";
 import { stepPasteurFermentation } from "@/physics/catalogKernels";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
+import { createLcg } from "@/utils/lcg";
 import { soundEngine } from "@/utils/soundEngine";
 import { StudioKernelChips } from "./StudioKernelChips";
 import {
@@ -14,6 +15,8 @@ import {
 } from "./ThreeStudioScene";
 import { useLiveSimParams } from "./useLiveSimParams";
 import { usePatentAudio } from "./usePatentAudio";
+
+const lcg = createLcg(2000);
 
 type CameraPreset = "iso" | "gooseneck_airlock" | "cooling_coil" | "sampling_valve" | "top";
 
@@ -205,10 +208,10 @@ export function PasteurFermentation3D() {
     const bubblePositions = new Float32Array(bubbleCount * 3);
     for (let i = 0; i < bubbleCount; i++) {
       const idx = i * 3;
-      const r = Math.random() * 1.8;
-      const a = Math.random() * Math.PI * 2;
+      const r = lcg() * 1.8;
+      const a = lcg() * Math.PI * 2;
       bubblePositions[idx] = Math.cos(a) * r;
-      bubblePositions[idx + 1] = -1.4 + Math.random() * 3.2;
+      bubblePositions[idx + 1] = -1.4 + lcg() * 3.2;
       bubblePositions[idx + 2] = Math.sin(a) * r;
     }
     bubbleGeo.setAttribute("position", new THREE.BufferAttribute(bubblePositions, 3));
@@ -225,11 +228,12 @@ export function PasteurFermentation3D() {
 
     // Animation Loop
     let reqId: number;
-    const clock = new THREE.Clock();
+    let renderedSteps = 0;
 
     const animate = () => {
       reqId = requestAnimationFrame(animate);
-      const delta = clock.getDelta();
+      renderedSteps += 1;
+      const delta = 1 / 60;
       const p = live.current;
 
       // CO₂ rise tracks yeast activity — off-temp wort goes quiet

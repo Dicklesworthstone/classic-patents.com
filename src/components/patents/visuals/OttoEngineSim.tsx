@@ -77,7 +77,10 @@ export function OttoEngineSim() {
           </button>
           <button
             type="button"
-            onClick={resetParams}
+            onClick={() => {
+              resetParams();
+              setCrankAngleDeg(0);
+            }}
             aria-label="Reset Simulation"
             className="p-2 rounded-lg bg-parchment-200 dark:bg-ink-800 hover:bg-parchment-300 dark:hover:bg-ink-700 text-ink-800 dark:text-parchment-200 transition-colors"
           >
@@ -223,7 +226,7 @@ export function OttoEngineSim() {
             Peak Pressure
           </span>
           <span className="font-mono text-sm sm:text-base font-bold text-amber-700 dark:text-amber-500">
-            {peakPressureBar} bar
+            {peakPressureBar} bar · P2 {otto.peakCompressionBar} / P3 {otto.peakFiringBar}
           </span>
         </div>
         <div className="bg-parchment-100 dark:bg-ink-900 border border-parchment-200 dark:border-ink-800 p-2.5 rounded-xl text-center">

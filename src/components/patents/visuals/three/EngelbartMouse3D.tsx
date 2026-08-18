@@ -50,9 +50,10 @@ export function EngelbartMouse3D() {
   const mouse = stepEngelbartMouse({
     mouseSpeed: displacementSpeedMmSec,
     wheelRadius: wheelRadiusMm,
+    pulsesPerRev: params.pulsesPerRev ?? 200,
   });
   const cpiResolution = mouse.dpi;
-  const pulseRateHz = mouse.slewPxPerS;
+  const pulseRateHz = mouse.pulseRateHz;
 
   const live = useLiveSimParams({
     displacementSpeedMmSec,
@@ -107,7 +108,7 @@ export function EngelbartMouse3D() {
     if (!isAudioMuted) {
       soundEngine.playMicroswitchClick();
     }
-    setTimeout(() => setIsClicking(false), 160);
+    setTimeout(() => setIsClicking(false), mouse.clickDisplayMs);
   };
 
   const toggleSound = () => {
@@ -323,7 +324,7 @@ export function EngelbartMouse3D() {
 
     // --- RENDER LOOP & REAL-TIME KINEMATICS ---
     let reqId: number;
-    const clock = new THREE.Clock();
+    let renderedSteps = 0;
     let prevX = 0;
     let hudAcc = 0;
     let lastHudX = Number.NaN;
@@ -332,8 +333,9 @@ export function EngelbartMouse3D() {
 
     const animate = () => {
       reqId = requestAnimationFrame(animate);
-      const delta = clock.getDelta();
-      const elapsed = clock.getElapsedTime();
+      renderedSteps += 1;
+      const delta = 1 / 60;
+      const elapsed = renderedSteps * (1 / 60);
       const p = live.current;
 
       // X-Ray Material Toggle
@@ -439,7 +441,7 @@ export function EngelbartMouse3D() {
                 <div>
                   <span className="text-ink-600 dark:text-ink-400">Encoder Resolution:</span>{" "}
                   <span className="font-bold text-purple-600 dark:text-purple-400">
-                    {cpiResolution} CPI ({Math.round(cpiResolution / 25.4)} counts/mm)
+                    {cpiResolution} CPI ({mouse.countsPerMm} /mm)
                   </span>
                 </div>
                 <div>

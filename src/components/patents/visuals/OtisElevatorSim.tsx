@@ -37,17 +37,18 @@ export function OtisElevatorSim() {
     setIsCableCut(true);
     updateParam("cableTension", 0);
 
-    // Cable snap sound
     soundEngine.playElastomerSnap(1.5);
 
-    // Cab drops 8px before pawl catches in the next ratchet tooth
-    setCabY((prev) => prev + 12);
+    const snapped = stepOtisElevator({ cabPayloadKg, cableTensionPct: 0 });
+    setCabY((prev) => prev + snapped.stoppingDistanceCm * (12 / 4.5));
 
-    timerRef.current = window.setTimeout(() => {
-      setIsArrested(true);
-      // Heavy mechanical ratchet engagement thud
-      soundEngine.playLockstitchClack();
-    }, 150);
+    timerRef.current = window.setTimeout(
+      () => {
+        setIsArrested(true);
+        soundEngine.playLockstitchClack();
+      },
+      Math.max(16, snapped.pawlEngagementMs),
+    );
   };
 
   const handleResetCable = () => {
@@ -111,8 +112,8 @@ export function OtisElevatorSim() {
             <div className="absolute top-4 left-4 z-20 px-3.5 py-1.5 bg-emerald-950/90 border border-emerald-600 rounded-xl text-emerald-300 text-xs font-mono flex items-center gap-2 animate-bounce">
               <Sparkles className="w-4 h-4 text-emerald-400" />
               <span>
-                &quot;ALL SAFE, GENTLEMEN!&quot; — Arrested in 38 ms ({arrestForceKn} kN shear
-                resistance)
+                &quot;ALL SAFE, GENTLEMEN!&quot; — Arrested in {otis.pawlEngagementMs} ms ·{" "}
+                {otis.stoppingDistanceCm} cm ({arrestForceKn} kN)
               </span>
             </div>
           )}

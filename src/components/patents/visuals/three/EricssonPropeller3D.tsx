@@ -5,6 +5,7 @@ import { useEffect, useRef, useState } from "react";
 import * as THREE from "three";
 import { stepEricssonPropeller } from "@/physics/catalogKernels";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
+import { createLcg } from "@/utils/lcg";
 import { soundEngine } from "@/utils/soundEngine";
 import { StudioKernelChips } from "./StudioKernelChips";
 import {
@@ -14,6 +15,8 @@ import {
 } from "./ThreeStudioScene";
 import { useLiveSimParams } from "./useLiveSimParams";
 import { usePatentAudio } from "./usePatentAudio";
+
+const lcg = createLcg(1787);
 
 type CameraPreset = "iso" | "propeller_drum" | "helical_blades" | "sternpost" | "top";
 
@@ -44,6 +47,8 @@ export function EricssonPropeller3D() {
     thrustKn: ericson.thrustKn,
     bladePitchAngleDeg: params.bladePitchAngleDeg ?? 35,
     propulsiveEfficiencyPct: Number(propulsiveEfficiencyPct),
+    shaftOmegaRadPerS: ericson.shaftOmegaRadPerS,
+    wakeSwirlScale: ericson.wakeSwirlScale,
   });
 
   const controlsRef = useRef<StudioContext["controls"] | null>(null);
@@ -190,9 +195,9 @@ export function EricssonPropeller3D() {
 
     for (let i = 0; i < wakeCount; i++) {
       const idx = i * 3;
-      const r = 0.5 + Math.random() * 2.2;
-      const a = Math.random() * Math.PI * 2;
-      wakePositions[idx] = 1.0 + Math.random() * 6.5; // Downstream along +X
+      const r = 0.5 + lcg() * 2.2;
+      const a = lcg() * Math.PI * 2;
+      wakePositions[idx] = 1.0 + lcg() * 6.5; // Downstream along +X
       wakePositions[idx + 1] = Math.cos(a) * r;
       wakePositions[idx + 2] = Math.sin(a) * r;
 
@@ -220,14 +225,15 @@ export function EricssonPropeller3D() {
 
     // Animation Loop
     let reqId: number;
-    const clock = new THREE.Clock();
+    let renderedSteps = 0;
 
     const animate = () => {
       reqId = requestAnimationFrame(animate);
-      const delta = clock.getDelta();
+      renderedSteps += 1;
+      const delta = 1 / 60;
       const p = live.current;
 
-      const omegaRadPerSec = (p.shaftRpm * 2 * Math.PI) / 60;
+      const omegaRadPerSec = p.shaftOmegaRadPerS ?? (p.shaftRpm * 2 * Math.PI) / 60;
       propGroup.rotation.x += omegaRadPerSec * delta;
 
       // Animate wake spiral streamlines
@@ -238,7 +244,7 @@ export function EricssonPropeller3D() {
         const y = pos[idx + 1];
         const z = pos[idx + 2];
         let curAngle = Math.atan2(z, y);
-        curAngle += omegaRadPerSec * delta * 0.4;
+        curAngle += omegaRadPerSec * delta * (p.wakeSwirlScale ?? 0.4);
         const r = Math.sqrt(y * y + z * z);
         pos[idx + 1] = Math.cos(curAngle) * r;
         pos[idx + 2] = Math.sin(curAngle) * r;
@@ -355,6 +361,7 @@ export function EricssonPropeller3D() {
           { label: "η_p", value: propulsiveEfficiencyPct, unit: "%" },
           { label: "slip", value: String(ericson.slipFraction) },
           { label: "p", value: String(ericson.pitchMeters), unit: "m" },
+          { label: "ω", value: ericson.shaftOmegaRadPerS.toFixed(1), unit: "rad/s" },
         ]}
       />
     </div>

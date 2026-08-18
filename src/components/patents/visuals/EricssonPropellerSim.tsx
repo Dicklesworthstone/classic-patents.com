@@ -29,7 +29,7 @@ export function EricssonPropellerSim() {
     const loop = (time: number) => {
       const dt = (time - lastTime) / 1000;
       lastTime = time;
-      setAngleDeg((prev) => (prev + shaftRpm * 6 * dt) % 360);
+      setAngleDeg((prev) => (prev + screw.shaftOmegaDegPerS * dt) % 360);
       animRef.current = requestAnimationFrame(loop);
     };
 
@@ -37,7 +37,7 @@ export function EricssonPropellerSim() {
     return () => {
       if (animRef.current) cancelAnimationFrame(animRef.current);
     };
-  }, [isPlaying, shaftRpm]);
+  }, [isPlaying, screw.shaftOmegaDegPerS]);
 
   return (
     <div className="w-full rounded-2xl border border-parchment-300 dark:border-ink-800 bg-parchment-50 dark:bg-ink-950 p-4 sm:p-6 shadow-md transition-colors">

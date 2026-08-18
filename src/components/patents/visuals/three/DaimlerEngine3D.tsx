@@ -141,11 +141,11 @@ export function DaimlerEngine3D() {
 
     // --- 5. ANIMATION LOOP ---
     let crankAngle = 0;
-    let lastTime = performance.now();
+    let renderedSteps = 0;
 
     const renderLoop = (time: number) => {
-      const dt = Math.min((time - lastTime) / 1000, 0.1);
-      lastTime = time;
+      renderedSteps += 1;
+      const dt = 1 / 60;
 
       const tube = live.current.hotTubeTempC;
       hotTubeMat.emissiveIntensity = tube >= 800 ? 2.4 : Math.max(0.15, (tube / 800) * 2.2);

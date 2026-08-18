@@ -1,4 +1,7 @@
 import * as THREE from "three";
+import { createLcg } from "@/utils/lcg";
+
+const lcg = createLcg(9430);
 
 /**
  * 1836 Samuel Colt Paterson Revolver (.36 Caliber No. 5 Texas Model)
@@ -55,9 +58,9 @@ function createCaseHardenedTexture(): THREE.CanvasTexture {
   ];
 
   for (let i = 0; i < 80; i++) {
-    const x = Math.random() * 512;
-    const y = Math.random() * 512;
-    const r = 20 + Math.random() * 70;
+    const x = lcg() * 512;
+    const y = lcg() * 512;
+    const r = 20 + lcg() * 70;
     const grad = ctx.createRadialGradient(x, y, 2, x, y, r);
     const col = colors[i % colors.length];
     grad.addColorStop(0, col);
@@ -74,7 +77,7 @@ function createCaseHardenedTexture(): THREE.CanvasTexture {
   const imgData = ctx.getImageData(0, 0, 512, 512);
   const d = imgData.data;
   for (let p = 0; p < d.length; p += 4) {
-    const noise = (Math.random() - 0.5) * 16;
+    const noise = (lcg() - 0.5) * 16;
     d[p] = Math.max(0, Math.min(255, d[p] + noise));
     d[p + 1] = Math.max(0, Math.min(255, d[p + 1] + noise));
     d[p + 2] = Math.max(0, Math.min(255, d[p + 2] + noise));
@@ -104,7 +107,7 @@ function createWalnutGripTexture(): THREE.CanvasTexture {
 
   // Flowing wood grain growth rings
   for (let i = 0; i < 110; i++) {
-    const y = i * 4.8 + (Math.random() - 0.5) * 3;
+    const y = i * 4.8 + (lcg() - 0.5) * 3;
     const alpha = 0.09 + (i % 4 === 0 ? 0.18 : 0.05);
     ctx.strokeStyle = `rgba(24, 11, 4, ${alpha})`;
     ctx.lineWidth = 1.2 + (i % 3) * 0.8;
@@ -116,10 +119,10 @@ function createWalnutGripTexture(): THREE.CanvasTexture {
 
   // Walnut pores and medullary rays
   for (let j = 0; j < 450; j++) {
-    const px = Math.random() * 512;
-    const py = Math.random() * 512;
+    const px = lcg() * 512;
+    const py = lcg() * 512;
     ctx.fillStyle = "rgba(16, 7, 2, 0.25)";
-    ctx.fillRect(px, py, 4 + Math.random() * 8, 1.2);
+    ctx.fillRect(px, py, 4 + lcg() * 8, 1.2);
   }
 
   const tex = new THREE.CanvasTexture(canvas);
@@ -646,9 +649,9 @@ export function buildColtRevolverModel(): ColtRevolverModel {
   const smokeGeo = new THREE.BufferGeometry();
   const smokePositions = new Float32Array(smokeCount * 3);
   for (let s = 0; s < smokeCount; s++) {
-    smokePositions[s * 3] = 0.5 + Math.random() * 3.5;
-    smokePositions[s * 3 + 1] = (Math.random() - 0.5) * 1.8;
-    smokePositions[s * 3 + 2] = (Math.random() - 0.5) * 1.8;
+    smokePositions[s * 3] = 0.5 + lcg() * 3.5;
+    smokePositions[s * 3 + 1] = (lcg() - 0.5) * 1.8;
+    smokePositions[s * 3 + 2] = (lcg() - 0.5) * 1.8;
   }
   smokeGeo.setAttribute("position", new THREE.BufferAttribute(smokePositions, 3));
   const smokeMat = new THREE.PointsMaterial({
@@ -666,9 +669,9 @@ export function buildColtRevolverModel(): ColtRevolverModel {
   const sparkGeo = new THREE.BufferGeometry();
   const sparkPos = new Float32Array(sparkCount * 3);
   for (let k = 0; k < sparkCount; k++) {
-    sparkPos[k * 3] = (Math.random() - 0.5) * 4;
-    sparkPos[k * 3 + 1] = (Math.random() - 0.5) * 2;
-    sparkPos[k * 3 + 2] = (Math.random() - 0.5) * 2;
+    sparkPos[k * 3] = (lcg() - 0.5) * 4;
+    sparkPos[k * 3 + 1] = (lcg() - 0.5) * 2;
+    sparkPos[k * 3 + 2] = (lcg() - 0.5) * 2;
   }
   sparkGeo.setAttribute("position", new THREE.BufferAttribute(sparkPos, 3));
   const sparkMat = new THREE.PointsMaterial({

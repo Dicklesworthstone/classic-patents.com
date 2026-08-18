@@ -1,25 +1,22 @@
 "use client";
 
 import { Layers } from "lucide-react";
-import { useState } from "react";
 import { stepGoodyearRubber } from "@/physics/catalogKernels";
-import { vulcanKinetics } from "@/physics/thermochem";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 
 export function GoodyearRubberSim() {
   const { params, updateParam } = usePatentPhysics("us-3633-goodyear-rubber");
   const sulfurPercent = params.sulfurPct ?? 8;
-  const [temperatureCelsius, setTemperatureCelsius] = useState<number>(35);
-  const [appliedStress, setAppliedStress] = useState<number>(50);
+  const specimenTempC = params.specimenTempC ?? 35;
+  const stretchLambda = params.appliedTensileStretch ?? 1.8;
+  const vulcanTempC = params.vulcanTemp ?? 145;
 
-  const rubber = stepGoodyearRubber(params.vulcanTemp ?? 145, sulfurPercent, 30);
+  const rubber = stepGoodyearRubber(vulcanTempC, sulfurPercent, 30, stretchLambda, specimenTempC);
   const isRaw = sulfurPercent < 2;
   const isEbonite = sulfurPercent > 20;
   const isElastic = !isRaw && !isEbonite && !rubber.isStickyOrBrittle;
-
-  const isMelted = isRaw && temperatureCelsius > 35;
-  const isBrittle = isRaw && temperatureCelsius < 0;
-  const cure = vulcanKinetics(params.vulcanTemp ?? 145, sulfurPercent);
+  const isMelted = rubber.isRawGumMelted;
+  const isBrittle = rubber.isRawGumBrittle;
 
   return (
     <div className="rounded-2xl border border-amber-900/20 dark:border-ink-800 bg-parchment-50 dark:bg-ink-950 p-6 shadow-patent space-y-6">
@@ -67,7 +64,7 @@ export function GoodyearRubberSim() {
           <svg viewBox="0 0 440 220" className="w-full max-w-md h-auto select-none">
             {/* Molecular Polyisoprene Chains */}
             {[-40, -15, 10, 35].map((yOffset, idx) => {
-              const stretch = appliedStress * 0.8;
+              const stretch = (stretchLambda - 1) * 80;
               const yBase = 110 + yOffset;
               const sag = isMelted ? 25 : 0;
               return (
@@ -107,7 +104,7 @@ export function GoodyearRubberSim() {
             </div>
             <div>
               <span className="text-ink-500 block text-[10px]">TEMPERATURE</span>
-              <span className="text-orange-400 font-bold">{temperatureCelsius}°C</span>
+              <span className="text-orange-400 font-bold">{specimenTempC}°C</span>
             </div>
             <div>
               <span className="text-ink-500 block text-[10px]">ELASTIC RETURN</span>
@@ -128,15 +125,15 @@ export function GoodyearRubberSim() {
               <div className="uppercase tracking-wider text-ink-500">Cure kinetics</div>
               <div className="flex justify-between">
                 <span>regime</span>
-                <span className="font-bold">{cure.regime}</span>
+                <span className="font-bold">{rubber.regime}</span>
               </div>
               <div className="flex justify-between">
                 <span>relative rate</span>
-                <span className="font-bold">{cure.rateRel.toFixed(2)}</span>
+                <span className="font-bold">{rubber.rateRel.toFixed(2)}</span>
               </div>
               <div className="flex justify-between">
                 <span>cross-link</span>
-                <span className="font-bold">{cure.crosslinkMolCm3} mol/cm³</span>
+                <span className="font-bold">{rubber.crossLinkDensity} mol/cm³</span>
               </div>
               <div className="flex justify-between">
                 <span>Tg</span>
@@ -169,47 +166,69 @@ export function GoodyearRubberSim() {
                 <span>30% (Ebonite)</span>
               </div>
               <div className="flex justify-between text-[10px] font-mono text-amber-700 dark:text-amber-400 pt-1">
-                <span>Crosslinks: {cure.crosslinkMolCm3} mol/cm³</span>
-                <span className="capitalize">State: {cure.regime}</span>
+                <span>Crosslinks: {rubber.crossLinkDensity} mol/cm³</span>
+                <span className="capitalize">State: {rubber.regime}</span>
               </div>
             </div>
 
-            {/* Temperature Slider */}
             <div className="space-y-1">
               <div className="flex justify-between text-xs font-mono">
                 <span className="font-semibold text-ink-800 dark:text-parchment-200">
-                  Ambient Temperature
+                  Vulcanization Temperature
                 </span>
-                <span className="text-orange-600 dark:text-orange-400 font-bold">
-                  {temperatureCelsius}°C
+                <span className="text-amber-600 dark:text-amber-400 font-bold">
+                  {vulcanTempC}°C
                 </span>
               </div>
               <input
                 type="range"
-                aria-label="Ambient Temperature"
+                aria-label="Vulcanization Temperature"
+                min="110"
+                max="190"
+                step="2"
+                value={vulcanTempC}
+                onChange={(e) => updateParam("vulcanTemp", Number(e.target.value))}
+                className="w-full accent-amber-600 cursor-pointer h-2 bg-parchment-300 dark:bg-ink-700 rounded-lg"
+              />
+            </div>
+
+            <div className="space-y-1">
+              <div className="flex justify-between text-xs font-mono">
+                <span className="font-semibold text-ink-800 dark:text-parchment-200">
+                  Specimen Temperature
+                </span>
+                <span className="text-orange-600 dark:text-orange-400 font-bold">
+                  {specimenTempC}°C
+                </span>
+              </div>
+              <input
+                type="range"
+                aria-label="Specimen Temperature"
                 min="-20"
                 max="100"
-                value={temperatureCelsius}
-                onChange={(e) => setTemperatureCelsius(Number(e.target.value))}
+                value={specimenTempC}
+                onChange={(e) => updateParam("specimenTempC", Number(e.target.value))}
                 className="w-full accent-orange-600 cursor-pointer h-2 bg-parchment-300 dark:bg-ink-700 rounded-lg"
               />
             </div>
 
-            {/* Applied Mechanical Tensile Stress */}
             <div className="space-y-1">
               <div className="flex justify-between text-xs font-mono">
                 <span className="font-semibold text-ink-800 dark:text-parchment-200">
-                  Applied Tensile Strain
+                  Tensile Stretch (λ)
                 </span>
-                <span className="text-blue-600 dark:text-blue-400 font-bold">{appliedStress}%</span>
+                <span className="text-blue-600 dark:text-blue-400 font-bold">
+                  {stretchLambda.toFixed(2)}×
+                </span>
               </div>
               <input
                 type="range"
-                aria-label="Applied Tensile Strain"
-                min="0"
-                max="100"
-                value={appliedStress}
-                onChange={(e) => setAppliedStress(Number(e.target.value))}
+                aria-label="Tensile Stretch"
+                min="1"
+                max="2.5"
+                step="0.05"
+                value={stretchLambda}
+                onChange={(e) => updateParam("appliedTensileStretch", Number(e.target.value))}
                 className="w-full accent-blue-600 cursor-pointer h-2 bg-parchment-300 dark:bg-ink-700 rounded-lg"
               />
             </div>

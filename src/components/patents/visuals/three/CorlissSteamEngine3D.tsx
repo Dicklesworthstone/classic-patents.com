@@ -19,7 +19,7 @@ export function CorlissSteamEngine3D() {
   // Thermodynamic Simulation Parameters
   const { params } = usePatentPhysics("us-6162-corliss-steam-engine");
   const [showUiOverlay, setShowUiOverlay] = useState<boolean>(true);
-  const engineRpm = params.engineRpm ?? 60;
+  const engineRpm = params.engineRpm ?? 65;
   const steamPressurePsi = params.steamPressurePsi ?? 100;
   const cutoffPct = params.cutoffPct ?? 25;
   const [_showCalloutPins, _setShowCalloutPins] = useState<boolean>(false);
@@ -28,7 +28,7 @@ export function CorlissSteamEngine3D() {
 
   const corliss = stepCorlissEngine({ steamPressurePsi, engineRpm, cutoffPct });
   const indicatedHp = corliss.indicatedHp;
-  const coalSavingsPct = corliss.thermalEfficiencyPct.toFixed(1);
+  const thermalEfficiencyPct = corliss.thermalEfficiencyPct.toFixed(1);
 
   const live = useLiveSimParams({
     engineRpm,
@@ -36,7 +36,7 @@ export function CorlissSteamEngine3D() {
     cutoffPct,
     isAudioMuted,
     indicatedHp,
-    coalSavingsPct: Number(coalSavingsPct),
+    thermalEfficiencyPct: Number(thermalEfficiencyPct),
   });
 
   const controlsRef = useRef<StudioContext["controls"] | null>(null);
@@ -281,11 +281,12 @@ export function CorlissSteamEngine3D() {
 
     // Animation Loop
     let reqId: number;
-    const clock = new THREE.Clock();
+    let renderedSteps = 0;
 
     const animate = () => {
       reqId = requestAnimationFrame(animate);
-      const delta = clock.getDelta();
+      renderedSteps += 1;
+      const delta = 1 / 60;
       const p = live.current;
 
       const omegaRadPerSec = (p.engineRpm * 2 * Math.PI) / 60;
@@ -388,7 +389,7 @@ export function CorlissSteamEngine3D() {
           { label: "Steam", value: String(steamPressurePsi), unit: "psi" },
           { label: "Cutoff", value: String(cutoffPct), unit: "%" },
           { label: "IHP", value: String(indicatedHp), unit: "hp" },
-          { label: "η", value: coalSavingsPct, unit: "%" },
+          { label: "η", value: thermalEfficiencyPct, unit: "%" },
           { label: "P", value: String(corliss.boilerMpa), unit: "MPa" },
           { label: "r_exp", value: String(corliss.expansionRatio) },
         ]}

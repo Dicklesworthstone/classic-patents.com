@@ -38,7 +38,11 @@ export function KwolekKevlar3D() {
   const [activeCamera, setActiveCamera] = useState<CameraPreset>("iso");
   const { isAudioMuted, toggleSound } = usePatentAudio();
 
-  const kevlar = FrankenSimEngine.stepKevlarContinuum(drawRatio, params.impactVelocity ?? 450);
+  const kevlar = FrankenSimEngine.stepKevlarContinuum(
+    drawRatio,
+    params.impactVelocity ?? 450,
+    params.appliedTension ?? 30,
+  );
   const isNematicLCP = polymerConcentrationPct >= 12.0 && temperatureCelsius < 105;
   const tensileStrengthGpa = kevlar.tensileStrengthGpa.toFixed(2);
   const modulusGpa = kevlar.elasticModulusGpa.toFixed(0);
@@ -52,6 +56,8 @@ export function KwolekKevlar3D() {
     isAudioMuted,
     elasticModulusGpa: kevlar.elasticModulusGpa,
     tensileStressMpa: kevlar.tensileStressMpa,
+    impactVelocityMps: params.impactVelocity ?? 450,
+    impactDisplayMs: kevlar.impactDisplayMs,
   });
 
   const controlsRef = useRef<StudioContext["controls"] | null>(null);
@@ -245,12 +251,13 @@ export function KwolekKevlar3D() {
 
     // --- RENDER LOOP & REAL-TIME LIQUID CRYSTAL DYNAMICS ---
     let reqId: number;
-    const clock = new THREE.Clock();
+    let renderedSteps = 0;
 
     const animate = () => {
       reqId = requestAnimationFrame(animate);
-      const delta = clock.getDelta();
-      const elapsed = clock.getElapsedTime();
+      renderedSteps += 1;
+      const delta = 1 / 60;
+      const elapsed = renderedSteps * (1 / 60);
       const p = live.current;
 
       const shearAlignment = Math.min(1.0, p.shearRate / 600);
@@ -275,7 +282,8 @@ export function KwolekKevlar3D() {
       const stopsProjectile = p.isNematicLCP && p.elasticModulusGpa >= 130;
 
       if (p.isImpactTesting) {
-        bullet.position.x -= delta * 18.0;
+        // Studio scale: 25 m/s → 1 unit/s, so 450 m/s matches the old 18 unit/s fly-in.
+        bullet.position.x -= delta * ((p.impactVelocityMps ?? 450) / 25);
         if (stopsProjectile && bullet.position.x < 1.0) {
           bullet.position.x = 1.0;
           polymerGroup.position.x = -Math.sin(elapsed * 30.0) * 0.25;

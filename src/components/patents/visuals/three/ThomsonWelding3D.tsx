@@ -5,6 +5,7 @@ import { useEffect, useRef, useState } from "react";
 import * as THREE from "three";
 import { stepThomsonWelding } from "@/physics/catalogKernels";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
+import { createLcg } from "@/utils/lcg";
 import { soundEngine } from "@/utils/soundEngine";
 import { StudioKernelChips } from "./StudioKernelChips";
 import {
@@ -14,6 +15,8 @@ import {
 } from "./ThreeStudioScene";
 import { useLiveSimParams } from "./useLiveSimParams";
 import { usePatentAudio } from "./usePatentAudio";
+
+const lcg = createLcg(1458);
 
 type CameraPreset = "iso" | "weld_junction" | "transformer_core" | "copper_clamps" | "top";
 
@@ -197,9 +200,9 @@ export function ThomsonWelding3D() {
       sparkPositions[idx + 2] = 0;
 
       // Random burst velocity vector
-      sparkVels.push((Math.random() - 0.5) * 6.0);
-      sparkVels.push(Math.random() * 5.0 + 1.0);
-      sparkVels.push((Math.random() - 0.5) * 6.0);
+      sparkVels.push((lcg() - 0.5) * 6.0);
+      sparkVels.push(lcg() * 5.0 + 1.0);
+      sparkVels.push((lcg() - 0.5) * 6.0);
     }
 
     sparkGeo.setAttribute("position", new THREE.BufferAttribute(sparkPositions, 3));
@@ -216,11 +219,12 @@ export function ThomsonWelding3D() {
 
     // Animation Loop
     let reqId: number;
-    const clock = new THREE.Clock();
+    let renderedSteps = 0;
 
     const animate = () => {
       reqId = requestAnimationFrame(animate);
-      const delta = clock.getDelta();
+      renderedSteps += 1;
+      const delta = 1 / 60;
       const p = live.current;
 
       // Spark explosion animation
@@ -236,9 +240,9 @@ export function ThomsonWelding3D() {
           pos[idx] = 0;
           pos[idx + 1] = 0.4;
           pos[idx + 2] = 0;
-          sparkVels[idx] = (Math.random() - 0.5) * 6.0;
-          sparkVels[idx + 1] = Math.random() * 5.0 + 1.0;
-          sparkVels[idx + 2] = (Math.random() - 0.5) * 6.0;
+          sparkVels[idx] = (lcg() - 0.5) * 6.0;
+          sparkVels[idx + 1] = lcg() * 5.0 + 1.0;
+          sparkVels[idx + 2] = (lcg() - 0.5) * 6.0;
         }
       }
       sparkGeo.attributes.position.needsUpdate = true;

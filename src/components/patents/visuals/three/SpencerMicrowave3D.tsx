@@ -17,6 +17,7 @@ import { HudText } from "@/components/ui/LatexRenderer";
 import { FrankenSimEngine } from "@/physics/engine";
 import { useFrankenSimPhysics } from "@/physics/useFrankenSimPhysics";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
+import { createLcg } from "@/utils/lcg";
 import { soundEngine } from "@/utils/soundEngine";
 import {
   createGlowPointTexture,
@@ -24,6 +25,8 @@ import {
   type StudioContext,
 } from "./ThreeStudioScene";
 import { useLiveSimParams } from "./useLiveSimParams";
+
+const lcg = createLcg(1661);
 
 type CameraPreset = "iso" | "cavity_resonator" | "electron_spokes" | "waveguide_launch" | "top";
 
@@ -254,10 +257,10 @@ export function SpencerMicrowave3D() {
       const idx = i * 3;
       const spokeIndex = i % 4;
       const baseAngle = (spokeIndex * Math.PI) / 2;
-      const r = 0.5 + Math.random() * 0.9;
-      const angle = baseAngle + (Math.random() - 0.5) * 0.3;
+      const r = 0.5 + lcg() * 0.9;
+      const angle = baseAngle + (lcg() - 0.5) * 0.3;
       spokePos[idx] = Math.cos(angle) * r;
-      spokePos[idx + 1] = (Math.random() - 0.5) * 1.5;
+      spokePos[idx + 1] = (lcg() - 0.5) * 1.5;
       spokePos[idx + 2] = Math.sin(angle) * r;
     }
     spokeGeo.setAttribute("position", new THREE.BufferAttribute(spokePos, 3));
@@ -278,11 +281,12 @@ export function SpencerMicrowave3D() {
 
     // --- RENDER LOOP & REAL-TIME SPOKE WHEEL ROTATION ---
     let reqId: number;
-    const clock = new THREE.Clock();
+    let renderedSteps = 0;
 
     const animate = () => {
       reqId = requestAnimationFrame(animate);
-      const delta = clock.getDelta();
+      renderedSteps += 1;
+      const delta = 1 / 60;
       const p = live.current;
 
       if (p.isOscillating) {
@@ -348,6 +352,7 @@ export function SpencerMicrowave3D() {
                   <span className="text-ink-600 dark:text-ink-400">Heating:</span>{" "}
                   <span className="font-bold text-purple-600 dark:text-purple-400">
                     {waterDielectricLossDensity} W/dm³
+                    {rfPhysics.timeToPopS > 0 ? ` · ${rfPhysics.timeToPopS}s to 100 °C` : ""}
                   </span>
                 </div>
               </div>

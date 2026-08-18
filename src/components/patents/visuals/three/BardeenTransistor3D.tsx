@@ -18,6 +18,7 @@ import { bardeenLoadLine, stepBardeenTransistor } from "@/physics/catalogKernels
 import { FrankenSimEngine } from "@/physics/engine";
 import { useFrankenSimPhysics } from "@/physics/useFrankenSimPhysics";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
+import { createLcg } from "@/utils/lcg";
 import { soundEngine } from "@/utils/soundEngine";
 import {
   createGlowPointTexture,
@@ -27,6 +28,8 @@ import {
 import { useLiveSimParams } from "./useLiveSimParams";
 
 import { usePatentAudio } from "./usePatentAudio";
+
+const lcg = createLcg(1770);
 
 type CameraPreset = "iso" | "apex" | "band" | "spring" | "base";
 
@@ -280,9 +283,9 @@ export function BardeenTransistor3D() {
     const holeGeo = new THREE.BufferGeometry();
     const holePos = new Float32Array(holeCount * 3);
     for (let i = 0; i < holeCount; i++) {
-      holePos[i * 3] = -0.6 + Math.random() * 1.2;
-      holePos[i * 3 + 1] = 0.05 - Math.random() * 0.35;
-      holePos[i * 3 + 2] = (Math.random() - 0.5) * 0.8;
+      holePos[i * 3] = -0.6 + lcg() * 1.2;
+      holePos[i * 3 + 1] = 0.05 - lcg() * 0.35;
+      holePos[i * 3 + 2] = (lcg() - 0.5) * 0.8;
     }
     holeGeo.setAttribute("position", new THREE.BufferAttribute(holePos, 3));
     const glowTex = createGlowPointTexture();
@@ -301,10 +304,11 @@ export function BardeenTransistor3D() {
     transistorGroup.add(holePoints);
 
     let reqId: number;
-    const clock = new THREE.Clock();
+    let renderedSteps = 0;
     const animate = () => {
       reqId = requestAnimationFrame(animate);
-      const delta = clock.getDelta();
+      renderedSteps += 1;
+      const delta = 1 / 60;
       const p = live.current;
       const currentGapUnits = p.pointContactGapMicrons * 0.012;
       emitterGroup.position.x = -currentGapUnits / 2;

@@ -208,14 +208,15 @@ export function ZeppelinAirship3D() {
 
     // Animation Loop
     let reqId: number;
-    const clock = new THREE.Clock();
+    let renderedSteps = 0;
 
     const animate = () => {
       reqId = requestAnimationFrame(animate);
-      const delta = clock.getDelta();
+      renderedSteps += 1;
+      const delta = 1 / 60;
       const p = live.current;
 
-      const t = clock.getElapsedTime();
+      const t = renderedSteps * (1 / 60);
       hullGroup.position.y = (p.netLiftKn / 40) * 0.9 + Math.sin(t * 0.8) * 0.08;
       hullGroup.rotation.z = (p.pitchTrimDeg * Math.PI) / 180 + Math.sin(t * 0.4) * 0.01;
 

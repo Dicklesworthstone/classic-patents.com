@@ -5,6 +5,7 @@ import { useEffect, useRef, useState } from "react";
 import * as THREE from "three";
 import { stepDavenportMotor } from "@/physics/catalogKernels";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
+import { createLcg } from "@/utils/lcg";
 import { soundEngine } from "@/utils/soundEngine";
 import { StudioKernelChips } from "./StudioKernelChips";
 import {
@@ -14,6 +15,8 @@ import {
 } from "./ThreeStudioScene";
 import { useLiveSimParams } from "./useLiveSimParams";
 import { usePatentAudio } from "./usePatentAudio";
+
+const lcg = createLcg(2287);
 
 type CameraPreset = "iso" | "commutator" | "stator_magnets" | "rotor" | "top";
 
@@ -220,9 +223,9 @@ export function DavenportElectricMotor3D() {
     const sparkGeo = new THREE.BufferGeometry();
     const sparkPositions = new Float32Array(sparkCount * 3);
     for (let i = 0; i < sparkCount; i++) {
-      sparkPositions[i * 3] = (Math.random() > 0.5 ? 0.4 : -0.4) + (Math.random() - 0.5) * 0.15;
-      sparkPositions[i * 3 + 1] = 1.6 + (Math.random() - 0.5) * 0.2;
-      sparkPositions[i * 3 + 2] = (Math.random() - 0.5) * 0.2;
+      sparkPositions[i * 3] = (lcg() > 0.5 ? 0.4 : -0.4) + (lcg() - 0.5) * 0.15;
+      sparkPositions[i * 3 + 1] = 1.6 + (lcg() - 0.5) * 0.2;
+      sparkPositions[i * 3 + 2] = (lcg() - 0.5) * 0.2;
     }
     sparkGeo.setAttribute("position", new THREE.BufferAttribute(sparkPositions, 3));
     const sparkMat = new THREE.PointsMaterial({
@@ -238,11 +241,12 @@ export function DavenportElectricMotor3D() {
 
     // Animation Loop
     let reqId: number;
-    const clock = new THREE.Clock();
+    let renderedSteps = 0;
 
     const animate = () => {
       reqId = requestAnimationFrame(animate);
-      const delta = clock.getDelta();
+      renderedSteps += 1;
+      const delta = 1 / 60;
       const p = live.current;
 
       const omegaRadPerSec = (p.motorRpm * 2 * Math.PI) / 60;
@@ -250,7 +254,7 @@ export function DavenportElectricMotor3D() {
 
       const watts = p.mechanicalWatts;
       sparkPoints.visible =
-        p.showSparkParticles && watts > 8 && Math.sin(clock.getElapsedTime() * 40) > 0.1;
+        p.showSparkParticles && watts > 8 && Math.sin(renderedSteps * (1 / 60) * 40) > 0.1;
       sparkMat.opacity = Math.min(0.95, 0.2 + (watts / 80) * 0.75);
       sparkMat.size = 0.15 + (p.supplyVoltage / 24) * 0.2;
 
@@ -341,6 +345,7 @@ export function DavenportElectricMotor3D() {
           { label: "Load", value: motorTorqueNm, unit: "N·m" },
           { label: "ω", value: String(motorRpm), unit: "rpm" },
           { label: "P", value: mechanicalWatts, unit: "W" },
+          { label: "P_in", value: String(davenport.electricalWatts), unit: "W" },
           { label: "I", value: String(davenport.armatureCurrentA), unit: "A" },
           { label: "η", value: String(davenport.efficiencyPct), unit: "%" },
         ]}
