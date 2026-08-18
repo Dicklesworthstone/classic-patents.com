@@ -157,6 +157,7 @@ export function stepNobelDynamite(params: {
   const blastOverpressureMpa = isInitiated ? Math.round(4500 + (ng - 50) * 120) : 0;
   const detonationVelocityMps = isInitiated ? Math.round(5500 + (ng - 50) * 80) : 0;
   return {
+    capEnergyJoules: cap,
     detonationVelocityMps,
     isInitiated,
     blastOverpressureMpa,
