@@ -93,7 +93,7 @@ This document serves as the single source of truth and granular task tracker for
 - [ ] **Douglas Engelbart Coordinate Computer Mouse (US 3,541,541)**
   - [ ] Orthogonal knife-edge dual wheels planar coordinate resolver kinematics
   - [ ] Potentiometer resistance wiper angle to $(X, Y)$ screen cursor position
-- [ ] **Abraham Lincoln Buoying Vessels (US 6,281)**
+- [ ] **Abraham Lincoln Buoying Vessels (US 6,469)**
   - [ ] Expandable air chamber hydrostatic buoyant lift ($\Delta F_b = \rho_{\text{water}} g \Delta V$)
   - [ ] River shoal draft reduction and pneumatic shaft synchronization
 - [ ] **Hedy Lamarr & George Antheil Spread Spectrum (US 2,292,387)**

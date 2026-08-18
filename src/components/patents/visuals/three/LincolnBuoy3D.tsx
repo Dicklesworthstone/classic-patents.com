@@ -17,7 +17,7 @@ export function LincolnBuoy3D() {
   const containerRef = useRef<HTMLDivElement>(null);
 
   // Marine Hydrostatic State Controls
-  const { params } = usePatentPhysics("us-6281-lincoln-buoy");
+  const { params } = usePatentPhysics("us-6469-lincoln-buoy");
   const [showUiOverlay, setShowUiOverlay] = useState<boolean>(true);
   const bellowsInflationPct = params.inflationPct ?? 75;
   const steamboatWeightTons = params.weightTons ?? 380;
@@ -372,7 +372,7 @@ export function LincolnBuoy3D() {
 
             <div className="hidden sm:flex bg-white/90 dark:bg-ink-900/90 backdrop-blur-md px-3 py-1.5 rounded-lg border border-parchment-300 dark:border-ink-700 text-[11px] font-sans text-ink-700 dark:text-ink-300 items-center gap-2 max-w-full">
               <Waves className="w-3.5 h-3.5 text-blue-500 animate-pulse shrink-0" />
-              <span className="truncate">Abraham Lincoln (US 6,281) — Buoying Vessels (1849)</span>
+              <span className="truncate">Abraham Lincoln (US 6,469) — Buoying Vessels (1849)</span>
             </div>
           </div>
         )}

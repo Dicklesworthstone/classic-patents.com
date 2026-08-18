@@ -3,9 +3,9 @@ import * as path from "node:path";
 
 const newPatentsToFetch = [
   {
-    id: "us-6281-lincoln-buoy",
-    number: "US6281",
-    altUrl: "https://patentimages.storage.googleapis.com/c6/29/65/569c73dfa1bbec/US6281A.pdf",
+    id: "us-6469-lincoln-buoy",
+    number: "US6469",
+    altUrl: "https://patentimages.storage.googleapis.com/pdfs/US6469.pdf",
   },
   {
     id: "us-4750-howe-sewing-machine",

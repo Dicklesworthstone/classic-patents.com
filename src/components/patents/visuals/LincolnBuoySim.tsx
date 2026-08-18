@@ -5,7 +5,7 @@ import { useState } from "react";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 
 export function LincolnBuoySim() {
-  const { params, updateParam } = usePatentPhysics("us-6281-lincoln-buoy");
+  const { params, updateParam } = usePatentPhysics("us-6469-lincoln-buoy");
   const bellowsExpansionPercent = params.inflationPct ?? 75;
   const [vesselCargoTons, setVesselCargoTons] = useState<number>(120); // 50 to 200 tons
   const riverDepthFeet = params.shoalDepth ?? 3.5;
@@ -30,7 +30,7 @@ export function LincolnBuoySim() {
           <div className="flex items-center gap-2.5">
             <Ship className="w-6 h-6 text-amber-600 dark:text-amber-400" />
             <h3 className="font-serif text-2xl font-bold text-ink-950 dark:text-parchment-50">
-              Abraham Lincoln&apos;s Steamboat Buoyancy Simulator (US 6,281)
+              Abraham Lincoln&apos;s Steamboat Buoyancy Simulator (US 6,469)
             </h3>
           </div>
           <p className="text-sm sm:text-base text-ink-700 dark:text-ink-300 mt-1">
