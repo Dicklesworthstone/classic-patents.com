@@ -26,7 +26,7 @@ export function EinsteinRefrigerator3D() {
   const containerRef = useRef<HTMLDivElement>(null);
 
   // Absorption Thermodynamics State Controls
-  const { params, updateParam } = usePatentPhysics("us-1781541-einstein-refrigerator");
+  const { params } = usePatentPhysics("us-1781541-einstein-refrigerator");
   const [showUiOverlay, setShowUiOverlay] = useState<boolean>(true);
   const heatInputWatts = params.heatInput ?? 220;
   const systemPressureAtm = params.totalPressure ?? 15;

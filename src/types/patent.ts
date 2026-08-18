@@ -90,6 +90,16 @@ export interface PlainEnglishExplanation {
 export type CuratedSpecificationInline =
   | { kind: "text"; text: string }
   | {
+      kind: "reference";
+      /** Exact source-language reference, authored at this occurrence. */
+      text: string;
+      /** Editor-chosen destination; the reader never infers this from prose. */
+      href: string;
+      referenceType: "figure" | "claim" | "section";
+      /** Accessible description of the visual source or source section. */
+      label: string;
+    }
+  | {
       kind: "term";
       /** Exact words from the historical specification. */
       text: string;

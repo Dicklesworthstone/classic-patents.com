@@ -352,7 +352,7 @@ export function WhitneyCottonGin3D() {
       cancelAnimationFrame(reqId);
       studio.cleanup();
     };
-  }, [live.current]);
+  }, [live]);
 
   return (
     <div className="relative w-full h-[620px] bg-parchment-900 rounded-2xl overflow-hidden border border-parchment-700 shadow-2xl flex flex-col">

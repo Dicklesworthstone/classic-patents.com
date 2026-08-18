@@ -5,7 +5,6 @@ import { useEffect, useRef, useState } from "react";
 import * as THREE from "three";
 import { stepDavenportMotor } from "@/physics/catalogKernels";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
-import { StudioKernelChips } from "./StudioKernelChips";
 import { createThreeStudioScene } from "./ThreeStudioScene";
 import { useLiveSimParams } from "./useLiveSimParams";
 
@@ -147,12 +146,13 @@ export function DavenportMotor3D() {
     motorGroup.add(brush2);
 
     let animId: number;
+    const clock = new THREE.Clock();
 
     const animate = () => {
       animId = requestAnimationFrame(animate);
       const rpm = live.current.motorRpm;
       const omega = (rpm * 2 * Math.PI) / 60;
-      rotorGroup.rotation.y += omega * 0.016;
+      rotorGroup.rotation.y += omega * clock.getDelta();
 
       controls.update();
       renderer.render(scene, camera);
@@ -180,7 +180,8 @@ export function DavenportMotor3D() {
             </span>
           </div>
           <div className="text-[11px] font-mono text-neutral-400">
-            Voltage: {batteryVoltage} V | Load: {loadTorque} N·m | Speed: {motorRpm} RPM
+            Voltage: {batteryVoltage} V | Load: {loadTorque} N·m | Speed: {motorRpm} RPM |{" "}
+            {davenport.shaftPowerW} W
           </div>
         </div>
 
@@ -214,18 +215,6 @@ export function DavenportMotor3D() {
           </div>
         </div>
       )}
-
-      <StudioKernelChips
-        visible={showUiOverlay}
-        side="right"
-        title="Davenport commutator"
-        chips={[
-          { label: "Battery", value: String(batteryVoltage), unit: "V" },
-          { label: "Load", value: String(loadTorque), unit: "N·m" },
-          { label: "ω", value: String(motorRpm), unit: "rpm" },
-          { label: "Shaft", value: String(davenport.shaftPowerW), unit: "W" },
-        ]}
-      />
     </div>
   );
 }

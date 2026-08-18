@@ -75,6 +75,8 @@ export function SpencerMicrowave3D() {
     showSpokeWheel,
     showWaterDipoles,
     isOscillating,
+    microwaveFreqMhz: rfPhysics.microwaveFreqMhz,
+    dielectricLoss: rfPhysics.dielectricLossWattsPerDm3,
   });
 
   const controlsRef = useRef<any>(null);
@@ -278,7 +280,11 @@ export function SpencerMicrowave3D() {
 
       if (p.isOscillating) {
         spokePoints.visible = p.showSpokeWheel;
-        spokePoints.rotation.y += delta * 4.5;
+        spokePoints.rotation.y += delta * (p.microwaveFreqMhz / 2450) * 4.5;
+        (spokePoints.material as THREE.PointsMaterial).opacity = Math.min(
+          0.95,
+          0.25 + (p.dielectricLoss / 2000) * 0.7,
+        );
       } else {
         spokePoints.visible = false;
       }
@@ -313,7 +319,8 @@ export function SpencerMicrowave3D() {
                 <div>
                   <span className="text-ink-600 dark:text-ink-400">Freq:</span>{" "}
                   <span className="font-bold text-blue-600 dark:text-blue-400">
-                    2,450 MHz (λ = 12.2 cm)
+                    {rfPhysics.microwaveFreqMhz.toLocaleString()} MHz (λ = {rfPhysics.wavelengthCm}{" "}
+                    cm){isOscillating ? "" : " — below Hull cutoff"}
                   </span>
                 </div>
                 <div>

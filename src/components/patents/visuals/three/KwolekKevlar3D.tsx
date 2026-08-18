@@ -26,7 +26,7 @@ export function KwolekKevlar3D() {
   const containerRef = useRef<HTMLDivElement>(null);
 
   // Polymer Chemistry State Controls
-  const { params, updateParam } = usePatentPhysics("us-3671542-kwolek-kevlar");
+  const { params } = usePatentPhysics("us-3671542-kwolek-kevlar");
   const [showUiOverlay, setShowUiOverlay] = useState<boolean>(true);
   const drawRatio = params.drawRatio ?? 6.5;
   const shearRate = 50 + ((drawRatio - 2) / 7) * 950;
@@ -50,6 +50,8 @@ export function KwolekKevlar3D() {
     isImpactTesting,
     isNematicLCP,
     isAudioMuted,
+    elasticModulusGpa: kevlar.elasticModulusGpa,
+    tensileStressMpa: kevlar.tensileStressMpa,
   });
 
   const controlsRef = useRef<any>(null);
@@ -269,7 +271,8 @@ export function KwolekKevlar3D() {
       hBondsGroup.visible = p.showHydrogenBonds && p.isNematicLCP;
 
       // Nematic, well-sheared PPTA stops the projectile; isotropic dope does not.
-      const stopsProjectile = p.isNematicLCP && p.shearRate >= 300;
+      // E = min(145, 60 + 20·draw). Draw 2 → 100 GPa (fails); draw ≥ 3.5 → 130 GPa (holds).
+      const stopsProjectile = p.isNematicLCP && p.elasticModulusGpa >= 130;
 
       if (p.isImpactTesting) {
         bullet.position.x -= delta * 18.0;

@@ -69,6 +69,8 @@ export function MarconiRadio3D() {
     showEmWavefronts,
     isSparking,
     isAudioMuted,
+    resonantFreqMhz: radioPhysics.resonantFreqMhz,
+    peakRfPowerKw: radioPhysics.peakRfPowerKw,
   });
 
   const controlsRef = useRef<any>(null);
@@ -348,9 +350,12 @@ export function MarconiRadio3D() {
         const ring = waveRings[i];
         if (ring) {
           ring.visible = p.showEmWavefronts && p.isSparking;
-          const wavePhase = (elapsed * 2.5 + i * 0.7) % 3.0;
+          const wavePhase = (elapsed * (Math.max(0.2, p.resonantFreqMhz) / 0.85) + i * 0.7) % 3.0;
           ring.scale.setScalar(1.0 + wavePhase * 0.6);
-          (ring.material as THREE.MeshBasicMaterial).opacity = Math.max(0, 0.75 - wavePhase * 0.24);
+          (ring.material as THREE.MeshBasicMaterial).opacity = Math.max(
+            0,
+            0.35 + (p.peakRfPowerKw / 80) * 0.5 - wavePhase * 0.24,
+          );
         }
       }
 

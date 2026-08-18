@@ -14,7 +14,6 @@ import {
 } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import * as THREE from "three";
-import { HudText } from "@/components/ui/LatexRenderer";
 import { FrankenSimEngine } from "@/physics/engine";
 import { useFrankenSimPhysics } from "@/physics/useFrankenSimPhysics";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
@@ -30,12 +29,12 @@ export function BardeenTransistor3D() {
   const containerRef = useRef<HTMLDivElement>(null);
 
   // Semiconductor Point-Contact State Controls
-  const { params, updateParam } = usePatentPhysics("us-2569347-bardeen-transistor");
+  const { params } = usePatentPhysics("us-2569347-bardeen-transistor");
   const [showUiOverlay, setShowUiOverlay] = useState<boolean>(true);
   const emitterCurrentMa = params.emitterCurrent ?? 1.5;
   const collectorVoltageV = params.collectorBias ?? -40;
   const pointContactGapMicrons = params.pointSpacing ?? 50;
-  const [showHoleDrift, setShowHoleDrift] = useState<boolean>(true);
+  const [showHoleDrift, _setShowHoleDrift] = useState<boolean>(true);
   const [showCalloutPins, setShowCalloutPins] = useState<boolean>(false);
   const [activeCamera, setActiveCamera] = useState<CameraPreset>("iso");
   const { isAudioMuted, toggleSound: toggleEngine } = usePatentAudio();
@@ -73,6 +72,8 @@ export function BardeenTransistor3D() {
     pointContactGapMicrons,
     collectorVoltageV,
     showHoleDrift,
+    currentGainAlpha: semiState.currentGainAlpha,
+    holeDiffusion: semiState.holeDiffusionCoefficientCm2ps,
   });
 
   const controlsRef = useRef<any>(null);
@@ -306,7 +307,7 @@ export function BardeenTransistor3D() {
       emitterGroup.position.x = -currentGapUnits / 2;
       collectorGroup.position.x = currentGapUnits / 2;
       const driftSpeed =
-        (p.emitterCurrentMa / 2.5) * (Math.abs(p.collectorVoltageV) / 40) * 3.5 * delta;
+        p.currentGainAlpha * (p.emitterCurrentMa / 2.5) * (p.holeDiffusion / 49) * 3.5 * delta;
       for (let i = 0; i < holeCount; i++) {
         const idx = i * 3;
         holePos[idx] += driftSpeed;
@@ -354,7 +355,8 @@ export function BardeenTransistor3D() {
                 <div>
                   <span className="text-ink-600 dark:text-ink-400">Power Gain:</span>{" "}
                   <span className="font-bold text-purple-600 dark:text-purple-400">
-                    +{powerGainDb} dB ({voltageGain}×)
+                    +{powerGainDb} dB · {voltageGain}× · D ={" "}
+                    {semiState.holeDiffusionCoefficientCm2ps} cm²/s
                   </span>
                 </div>
               </div>

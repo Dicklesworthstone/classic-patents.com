@@ -75,6 +75,9 @@ export function ColtRevolver3D() {
     isFiring,
     showLockworkCutaway,
     isAudioMuted,
+    muzzleVelocityMps,
+    hoopStressMpa,
+    isLocked: coltMech.isLocked ? 1 : 0,
   });
 
   const controlsRef = useRef<StudioContext["controls"] | null>(null);
@@ -293,9 +296,9 @@ export function ColtRevolver3D() {
         smokePuffScale += 0.09;
         model.smokeMesh.scale.set(smokePuffScale, smokePuffScale, smokePuffScale);
 
-        // Recoil muzzle rise & backwards frame push
-        model.group.rotation.z = Math.min(0.22, model.group.rotation.z + 0.09);
-        model.group.position.x = Math.max(-0.35, model.group.position.x - 0.07);
+        const kick = 0.04 + (p.muzzleVelocityMps / 400) * 0.1;
+        model.group.rotation.z = Math.min(0.22, model.group.rotation.z + kick);
+        model.group.position.x = Math.max(-0.35, model.group.position.x - kick * 0.8);
       } else {
         blastMat.opacity *= 0.72;
         smokeMat.opacity *= 0.88;

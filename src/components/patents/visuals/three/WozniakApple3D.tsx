@@ -288,7 +288,8 @@ export function WozniakApple3D() {
 
       const bPos = busPos;
       const speed = p.cpuClockMhz * 4.0 * delta;
-      const phi2 = Math.sin(clock.getElapsedTime() * p.cpuClockMhz * Math.PI * 2) > 0;
+      // Visual Φ2 window (~4 Hz). A 1.023 MHz sine aliases to noise on rAF.
+      const phi2 = Math.sin(clock.getElapsedTime() * Math.PI * 8) > 0;
 
       if (p.isCpuActive) {
         for (let i = 0; i < busPacketCount; i++) {
@@ -345,7 +346,7 @@ export function WozniakApple3D() {
                 <div>
                   <span className="text-ink-600 dark:text-ink-400">NTSC Burst:</span>{" "}
                   <span className="font-bold text-amber-600 dark:text-amber-400">
-                    {colorSubcarrierMhz} MHz
+                    {colorSubcarrierMhz} MHz · {cycleTimeNs} ns/clk
                   </span>
                 </div>
                 <div>

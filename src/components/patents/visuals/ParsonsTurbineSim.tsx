@@ -2,9 +2,9 @@
 
 import { Play, RotateCcw, Volume2, VolumeX } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
+import { FrankenSimEngine } from "@/physics/engine";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { usePatentAudio } from "./three/usePatentAudio";
-import { FrankenSimEngine } from "@/physics/engine";
 
 export function ParsonsTurbineSim() {
   const { params, updateParam, resetParams } = usePatentPhysics("us-328710-parsons-turbine");

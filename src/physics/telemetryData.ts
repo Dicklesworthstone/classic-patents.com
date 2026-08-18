@@ -3245,6 +3245,7 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
       const corliss = stepCorlissEngine({
         steamPressurePsi: p.steamPressurePsi,
         engineRpm: p.engineRpm,
+        cutoffPct: p.cutoffPct,
       });
       const ihp = corliss.indicatedHp;
       return [
@@ -3987,3 +3988,7 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
       "Parsons divided high-pressure steam expansion across multiple expanding annular rows of reaction blades, keeping tip velocity manageable while directly driving high-speed electrical alternators.",
   },
 };
+
+// Ensure both us-608969 and us-328710 resolve
+PATENT_PHYSICS_REGISTRY["us-608969-parsons-turbine"] =
+  PATENT_PHYSICS_REGISTRY["us-328710-parsons-turbine"];

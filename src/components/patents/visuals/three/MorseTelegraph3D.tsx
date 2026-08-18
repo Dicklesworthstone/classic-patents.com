@@ -334,9 +334,7 @@ export function MorseTelegraph3D() {
                 <div>
                   <span className="text-ink-600 dark:text-ink-400">Magnetic Pull:</span>{" "}
                   <span className="font-bold text-emerald-600 dark:text-emerald-400">
-                    {keyIsDown
-                      ? `${magneticHoldForceN} N · ${morse.ampereTurns} A·t`
-                      : "0.00 N"}
+                    {keyIsDown ? `${magneticHoldForceN} N · ${morse.ampereTurns} A·t` : "0.00 N"}
                   </span>
                 </div>
                 <div>

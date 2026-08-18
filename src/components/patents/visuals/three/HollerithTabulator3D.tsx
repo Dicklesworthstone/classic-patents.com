@@ -225,12 +225,9 @@ export function HollerithTabulator3D() {
       if (animRef.current) cancelAnimationFrame(animRef.current);
       studio.dispose();
     };
-  }, [
-    live.current.tabulatingSpeedCpm,
-    live.current.isPlaying,
-    live.current.cycleTimeMs,
-    live.current.solenoidForceN,
-  ]);
+    // live is a stable ref; the loop reads live.current. Remounting on every cadence tick
+    // tore down the WebGL context.
+  }, [live]);
 
   const setCameraView = (view: CameraPreset) => {
     const studio = studioRef.current;

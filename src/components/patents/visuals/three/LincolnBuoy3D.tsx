@@ -17,7 +17,7 @@ export function LincolnBuoy3D() {
   const containerRef = useRef<HTMLDivElement>(null);
 
   // Marine Hydrostatic State Controls
-  const { params, updateParam } = usePatentPhysics("us-6281-lincoln-buoy");
+  const { params } = usePatentPhysics("us-6281-lincoln-buoy");
   const [showUiOverlay, setShowUiOverlay] = useState<boolean>(true);
   const bellowsInflationPct = params.inflationPct ?? 75;
   const steamboatWeightTons = params.weightTons ?? 380;
@@ -339,7 +339,8 @@ export function LincolnBuoy3D() {
                 <div>
                   <span className="text-ink-600 dark:text-ink-400">Draft:</span>{" "}
                   <span className="font-bold text-blue-600 dark:text-blue-400">
-                    {effectiveDraftFt.toFixed(1)} ft (Base {baseDraftFt.toFixed(1)} ft)
+                    {effectiveDraftFt.toFixed(1)} ft · {hullWaterplaneAreaSqFt.toFixed(0)} ft² ·{" "}
+                    {waterDensityLbsPerCuFt} lb/ft³
                   </span>
                 </div>
                 <div>

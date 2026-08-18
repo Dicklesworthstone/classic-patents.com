@@ -215,7 +215,7 @@ export function PeltonWheel3D() {
       new THREE.PointsMaterial({
         size: 0.25,
         map: waterGlowTex,
-        vertexColors: true,
+        vertexColors: false,
         transparent: true,
         opacity: 0.9,
         blending: THREE.AdditiveBlending,
@@ -264,7 +264,7 @@ export function PeltonWheel3D() {
       cancelAnimationFrame(reqId);
       studio.cleanup();
     };
-  }, [live.current]);
+  }, [live]);
 
   return (
     <div className="relative w-full h-[620px] bg-parchment-900 rounded-2xl overflow-hidden border border-parchment-700 shadow-2xl flex flex-col">

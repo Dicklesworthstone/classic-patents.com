@@ -29,7 +29,7 @@ export function GoodyearRubber3D() {
   const containerRef = useRef<HTMLDivElement>(null);
 
   // Vulcanization Chemistry & Physics State
-  const { params, updateParam } = usePatentPhysics("us-3633-goodyear-rubber");
+  const { params } = usePatentPhysics("us-3633-goodyear-rubber");
   const [showUiOverlay, setShowUiOverlay] = useState<boolean>(true);
   const sulfurWeightPct = params.sulfurPct ?? 8;
   const cureTemperatureCelsius = params.vulcanTemp ?? 145;

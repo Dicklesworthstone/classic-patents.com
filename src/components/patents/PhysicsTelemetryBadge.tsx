@@ -3,7 +3,9 @@
 import { Activity, Cpu, Gauge, Info, RotateCcw, Zap } from "lucide-react";
 import { useCallback, useMemo, useState } from "react";
 import { EnergyFlowStrip } from "@/components/patents/EnergyFlowStrip";
+import { ColorizedEquation } from "@/components/ui/ColorizedEquation";
 import { LatexRenderer } from "@/components/ui/LatexRenderer";
+import { getColorizedEquationsForPatent } from "@/data/colorizedEquations";
 import { energyChannelsFor } from "@/physics/energyChannels";
 import { qtyDimension } from "@/physics/qty";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
@@ -27,6 +29,7 @@ export function PhysicsTelemetryBadge({
     resetParams,
   } = usePatentPhysics(patentId);
   const [showTheory, setShowTheory] = useState(defaultExpanded);
+  const equations = useMemo(() => getColorizedEquationsForPatent(patentId), [patentId]);
 
   const handleReset = useCallback(() => {
     resetParams();
@@ -211,26 +214,32 @@ export function PhysicsTelemetryBadge({
 
       {/* Expanded Governing Equations & Deep Pedagogical Theory */}
       {showTheory && (
-        <div className="pt-4 border-t border-parchment-200 dark:border-ink-800 space-y-3 animate-in fade-in duration-200">
-          <div>
-            <div className="flex items-center gap-1.5 text-[11px] font-mono font-bold text-amber-800 dark:text-amber-400 mb-1.5">
-              <Zap className="w-3.5 h-3.5 text-amber-600 dark:text-amber-400" />
-              <span>Governing Equation: {data.equationName}</span>
-            </div>
-            <div className="p-3.5 rounded-xl bg-white dark:bg-ink-900 border border-parchment-300 dark:border-ink-800 text-center font-mono text-sm overflow-x-auto text-ink-950 dark:text-parchment-100 shadow-inner">
-              <LatexRenderer math={data.governingEquation} block />
-            </div>
-          </div>
+        <div className="pt-4 border-t border-parchment-200 dark:border-ink-800 space-y-4 animate-in fade-in duration-200">
+          {equations.length > 0 ? (
+            <ColorizedEquation equation={equations[0]} />
+          ) : (
+            <>
+              <div>
+                <div className="flex items-center gap-1.5 text-[11px] font-mono font-bold text-amber-800 dark:text-amber-400 mb-1.5">
+                  <Zap className="w-3.5 h-3.5 text-amber-600 dark:text-amber-400" />
+                  <span>Governing Equation: {data.equationName}</span>
+                </div>
+                <div className="p-3.5 rounded-xl bg-white dark:bg-ink-900 border border-parchment-300 dark:border-ink-800 text-center font-mono text-sm overflow-x-auto text-ink-950 dark:text-parchment-100 shadow-inner">
+                  <LatexRenderer math={data.governingEquation} block />
+                </div>
+              </div>
 
-          <div className="flex items-start gap-2.5 text-xs text-ink-800 dark:text-parchment-200 leading-relaxed font-sans bg-parchment-100/70 dark:bg-ink-900/60 p-3.5 rounded-xl border border-parchment-300 dark:border-ink-800 shadow-2xs">
-            <Info className="w-4 h-4 text-amber-700 dark:text-amber-400 shrink-0 mt-0.5" />
-            <p>
-              <strong className="text-ink-950 dark:text-white font-serif">
-                Physical Principle:
-              </strong>{" "}
-              {data.pedagogicalInsight}
-            </p>
-          </div>
+              <div className="flex items-start gap-2.5 text-xs text-ink-800 dark:text-parchment-200 leading-relaxed font-sans bg-parchment-100/70 dark:bg-ink-900/60 p-3.5 rounded-xl border border-parchment-300 dark:border-ink-800 shadow-2xs">
+                <Info className="w-4 h-4 text-amber-700 dark:text-amber-400 shrink-0 mt-0.5" />
+                <p>
+                  <strong className="text-ink-950 dark:text-white font-serif">
+                    Physical Principle:
+                  </strong>{" "}
+                  {data.pedagogicalInsight}
+                </p>
+              </div>
+            </>
+          )}
 
           <div className="text-[10px] font-mono text-ink-500 dark:text-ink-400 flex flex-wrap items-center justify-between gap-2 pt-1">
             <span className="flex items-center gap-1.5">

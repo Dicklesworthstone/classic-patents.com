@@ -21,6 +21,14 @@ const edition: CuratedSpecificationEditionData = {
         { kind: "small-caps", text: "CAPITALS" },
         { kind: "text", text: " " },
         {
+          kind: "reference",
+          text: "Fig. 1",
+          href: "?view=pdf-facsimile",
+          referenceType: "figure",
+          label: "Open Fig. 1 in the primary facsimile",
+        },
+        { kind: "text", text: " " },
+        {
           kind: "term",
           text: "aeroplane",
           definition: "A lifting wing surface in period usage.",
@@ -55,13 +63,24 @@ const edition: CuratedSpecificationEditionData = {
 
 describe("CuratedSpecificationEdition", () => {
   test("escapes historical text while rendering only explicit authored term UI", () => {
-    const html = renderToStaticMarkup(<CuratedSpecificationEdition edition={edition} />);
+    const html = renderToStaticMarkup(
+      <CuratedSpecificationEdition
+        edition={edition}
+        paragraphNotes={{ 2: "A source-specific explanation prepared by an editor." }}
+        claimDecoders={[{ number: 1, plainEnglish: "The legal scope of the example claim." }]}
+      />,
+    );
 
     expect(html).toContain("&lt;script&gt;text&lt;/script&gt;");
     expect(html).not.toContain("<script>text</script>");
     expect(html).toContain("aeroplane");
-    expect(html).toContain("Definition available.");
     expect(html).toContain("A lifting wing surface in period usage.");
+    expect(html).toContain('role="tooltip"');
+    expect(html).toContain("Fig. 1");
+    expect(html).toContain("Open Fig. 1 in the primary facsimile");
+    expect(html).toContain("Plain English");
+    expect(html).toContain("A source-specific explanation prepared by an editor.");
+    expect(html).toContain("The legal scope of the example claim.");
     expect(html).toContain("FIG. 1");
     expect(html).toContain("An authored historical table");
     expect(html).toContain("F = ma");

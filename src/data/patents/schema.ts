@@ -94,6 +94,13 @@ const originalTextAssetSchema = z.object({
 const curatedSpecificationInlineSchema = z.discriminatedUnion("kind", [
   z.object({ kind: z.literal("text"), text: z.string().min(1) }),
   z.object({
+    kind: z.literal("reference"),
+    text: z.string().min(1),
+    href: z.string().min(1),
+    referenceType: z.enum(["figure", "claim", "section"]),
+    label: z.string().min(1),
+  }),
+  z.object({
     kind: z.literal("term"),
     text: z.string().min(1),
     definition: z.string().min(1),

@@ -34,6 +34,13 @@ function validateInlines(
     if (inline.kind === "term" && !inline.definition.trim()) {
       errors.push(`${inlineLocation} has an empty authored term definition.`);
     }
+    if (inline.kind === "reference") {
+      if (!inline.href.trim())
+        errors.push(`${inlineLocation} has an empty authored reference URL.`);
+      if (!inline.label.trim()) {
+        errors.push(`${inlineLocation} has an empty authored reference label.`);
+      }
+    }
   }
 }
 

@@ -119,6 +119,19 @@ the visitor can see or hear the kernel change the instrument.
 - [x] P5.26 Davenport electric sparks scale with shaft watts
 - [x] P5.27 Noyce HUD shows depletion width and breakdown margin
 - [x] P5.28 Catalog kernels own Daimler / Hollerith; engine and weave call them
+- [x] P5.29 Morse armature pull from I² force, not a binary key
+- [x] P5.30 Bell diaphragm throw from kernel µm
+- [x] P5.31 Einstein circulation / frost from cooling watts and T_evap
+- [x] P5.32 Wozniak bus: Φ1 video always, Φ2 CPU only
+- [x] P5.33 Lincoln hull paints rose when aground; paddle slows
+- [x] P5.34 Goodyear stress arrows from tensile psi
+- [x] P5.35 Edison HUD shows lm/W from the blackbody kernel
+- [x] P5.36 Spencer spoke spin / opacity from Hull oscillation and dielectric loss
+- [x] P5.37 Kevlar stop is E ≥ 90 GPa, not a shear-rate guess
+- [x] P5.38 Bardeen hole drift from α and D_p
+- [x] P5.39 Marconi wavefronts from f₀ and spark kW
+- [x] P5.40 Colt recoil from muzzle velocity
+- [x] P5.41 Farnsworth beam brightness from lux; raster scale from gyro radius
 
 ## Explicitly out of scope
 

@@ -14,7 +14,7 @@ type CameraPreset = "iso" | "speaking_horn" | "liquid_transmitter" | "battery_ce
 export function BellTelephone3D() {
   const containerRef = useRef<HTMLDivElement>(null);
 
-  const { params, updateParam } = usePatentPhysics("us-174465-bell-telephone");
+  const { params } = usePatentPhysics("us-174465-bell-telephone");
   const [showUiOverlay, setShowUiOverlay] = useState<boolean>(true);
   const acousticFrequencyHz = params.acousticFrequencyHz ?? 440;
   const voiceAmplitude = ((params.voiceAmplitude ?? 75) - 40) / 55;
@@ -336,7 +336,8 @@ export function BellTelephone3D() {
       }
 
       const ePos = electronPos;
-      const currentSpeed = (p.currentBaselineAmps + (p.modulatedMa / 1000) * oscillation) * 12.0 * delta;
+      const currentSpeed =
+        (p.currentBaselineAmps + (p.modulatedMa / 1000) * oscillation) * 12.0 * delta;
       for (let i = 0; i < electronCount; i++) {
         const idx = i * 3;
         ePos[idx + 1] -= currentSpeed;

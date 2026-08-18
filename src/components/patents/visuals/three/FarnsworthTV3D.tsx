@@ -21,6 +21,8 @@ export function FarnsworthTV3D() {
   const { params, updateParam: _updateParam } = usePatentPhysics("us-1773980-farnsworth-tv");
   const [showUiOverlay, setShowUiOverlay] = useState<boolean>(true);
   const acceleratingVoltageKv = (params.anodeVoltage ?? 1500) / 1000;
+  const coilCurrentA = params.coilCurrent ?? 0.42;
+  const deflectionGauss = coilCurrentA * (120 / 0.42);
   const horizontalFreqKhz = params.horizontalFreqKhz ?? 15.75;
   const verticalFreqHz = params.verticalFreqHz ?? 60;
   const lightIntensityLux = params.lightIntensityLux ?? 500;
@@ -30,7 +32,7 @@ export function FarnsworthTV3D() {
   const { isAudioMuted, toggleSound: toggleEngine } = usePatentAudio();
 
   // Electron Optics Physics (FrankenSim Relativistic Electron Beam)
-  const beamState = FrankenSimEngine.stepFarnsworthTv(acceleratingVoltageKv, 120);
+  const beamState = FrankenSimEngine.stepFarnsworthTv(acceleratingVoltageKv, deflectionGauss);
   const velocityMps = beamState.electronVelocityMps;
   const velocityFractionC = (beamState.relativisticBeta * 100).toFixed(1);
   const photocathodeCurrentUa = (lightIntensityLux * 0.045).toFixed(1);
@@ -57,6 +59,8 @@ export function FarnsworthTV3D() {
     showElectronBeam,
     isAudioMuted,
     velocityMps,
+    lightIntensityLux,
+    gyroRadiusMm: beamState.gyroRadiusMm,
   });
 
   const controlsRef = useRef<any>(null);
@@ -323,8 +327,10 @@ export function FarnsworthTV3D() {
 
         if (progress > 0.4) {
           const deflectFactor = (progress - 0.4) / 0.6;
-          bPos[idx + 1] = vSawtooth * 0.9 * deflectFactor;
-          bPos[idx + 2] = hSawtooth * 0.9 * deflectFactor;
+          // Default 1.5 kV / 120 G gyro is ~11 mm; scale raster around that.
+          const rasterScale = Math.min(1.5, Math.max(0.45, 11 / Math.max(6, p.gyroRadiusMm)));
+          bPos[idx + 1] = vSawtooth * 0.9 * deflectFactor * rasterScale;
+          bPos[idx + 2] = hSawtooth * 0.9 * deflectFactor * rasterScale;
         } else {
           bPos[idx + 1] = (Math.random() - 0.5) * 0.06;
           bPos[idx + 2] = (Math.random() - 0.5) * 0.06;
@@ -337,6 +343,10 @@ export function FarnsworthTV3D() {
       }
       beamGeo.attributes.position.needsUpdate = true;
       beamPoints.visible = p.showElectronBeam;
+      (beamPoints.material as THREE.PointsMaterial).opacity = Math.min(
+        0.95,
+        0.2 + (p.lightIntensityLux / 800) * 0.75,
+      );
 
       controls.update();
       renderer.render(scene, camera);

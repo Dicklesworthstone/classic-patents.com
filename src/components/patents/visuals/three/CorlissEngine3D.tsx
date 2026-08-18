@@ -26,7 +26,7 @@ export function CorlissEngine3D() {
   const [activeCamera, setActiveCamera] = useState<CameraPreset>("iso");
   const { isAudioMuted } = usePatentAudio();
 
-  const corliss = stepCorlissEngine({ steamPressurePsi, engineRpm });
+  const corliss = stepCorlissEngine({ steamPressurePsi, engineRpm, cutoffPct });
   const indicatedHorsepower = corliss.indicatedHp;
   const thermalEfficiencyPct = corliss.thermalEfficiencyPct;
 
@@ -156,7 +156,7 @@ export function CorlissEngine3D() {
       model.dispose();
       studio.cleanup();
     };
-  }, [live.current]);
+  }, [live]);
 
   return (
     <div className="relative w-full h-[620px] bg-parchment-900 rounded-2xl overflow-hidden border border-parchment-700 shadow-2xl flex flex-col">

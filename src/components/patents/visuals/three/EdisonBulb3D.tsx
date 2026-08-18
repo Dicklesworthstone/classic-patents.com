@@ -26,11 +26,11 @@ export function EdisonBulb3D() {
   const containerRef = useRef<HTMLDivElement>(null);
 
   // Electrical & Thermal Simulation State
-  const { params, updateParam } = usePatentPhysics("us-223898-edison-lightbulb");
+  const { params } = usePatentPhysics("us-223898-edison-lightbulb");
   const [showUiOverlay, setShowUiOverlay] = useState<boolean>(true);
   const appliedVoltage = params.voltage ?? 110;
   const vacuumTorr = params.vacuumTorr ?? 1e-6;
-  const [filamentMaterial, _setFilamentMaterial] = useState<"carbonized-bamboo" | "platinum-wire">(
+  const [_filamentMaterial, _setFilamentMaterial] = useState<"carbonized-bamboo" | "platinum-wire">(
     "carbonized-bamboo",
   );
   const [showGasMolecules, _setShowGasMolecules] = useState<boolean>(true);

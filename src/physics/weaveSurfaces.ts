@@ -4,7 +4,9 @@
  */
 
 import {
+  stepBardeenTransistor,
   stepBellTelephone,
+  stepColtRevolver,
   stepCorlissEngine,
   stepDaimlerEngine,
   stepDavenportMotor,
@@ -14,9 +16,11 @@ import {
   stepEricssonPropeller,
   stepGatlingGun,
   stepGliddenBarbedWire,
+  stepGoodyearRubber,
   stepGrammeDynamo,
   stepHollerithTabulating,
   stepHyattCelluloid,
+  stepKevlarContinuum,
   stepLincolnBuoy,
   stepMcCormickReaper,
   stepMorseTelegraph,
@@ -25,8 +29,10 @@ import {
   stepParsonsTurbine,
   stepPasteurFermentation,
   stepPeltonWheel,
+  stepSpencerMicrowave,
   stepThomsonWelding,
   stepWhitneyCottonGin,
+  stepWozniakApple,
   stepZeppelinAirship,
 } from "./catalogKernels";
 import { fermiKeff } from "./fermiKinetics";
@@ -155,18 +161,6 @@ export function materialProbe(
       value: si.liftToDrag.toFixed(2),
       unit: "ratio",
       note: `Gross lift ${Math.round(si.liftNewtons)} N at ${params.airspeed ?? 28} mph.`,
-    };
-  }
-  if (patentId.includes("edison")) {
-    const v = params.voltage ?? 110;
-    const t = Math.round(1200 + (v / 130) * 1150);
-    return {
-      part: calloutLabel,
-      material: "Carbonized bamboo in Sprengel vacuum",
-      qty: "T_filament",
-      value: t.toString(),
-      unit: "K",
-      note: "Color is the blackbody at this T, not a texture.",
     };
   }
   if (patentId.includes("tesla-motor") || patentId.includes("381968")) {
@@ -356,6 +350,7 @@ export function materialProbe(
     const corliss = stepCorlissEngine({
       steamPressurePsi: params.steamPressurePsi,
       engineRpm: params.engineRpm,
+      cutoffPct: params.cutoffPct,
     });
     return {
       part: calloutLabel,
@@ -626,6 +621,90 @@ export function materialProbe(
       note: `${h.solenoidForceN} N pin force · τ ${h.inductiveTauMs} ms.`,
     };
   }
+  if (patentId.includes("goodyear") || patentId.includes("3633")) {
+    const rubber = stepGoodyearRubber(params.vulcanTemp, params.sulfurPct, 30);
+    return {
+      part: calloutLabel,
+      material: "India rubber + sulfur, 135–165 °C window",
+      qty: "σ",
+      value: rubber.tensileStrengthPsi.toString(),
+      unit: "psi",
+      note: rubber.isStickyOrBrittle
+        ? "Off-window — sticky or brittle."
+        : `ν ${rubber.crossLinkDensity} · return ${rubber.elasticReturnPct}%.`,
+    };
+  }
+  if (patentId.includes("wozniak") || patentId.includes("4136359")) {
+    const apple = stepWozniakApple({
+      crystalFreq: params.crystalFreq,
+      ramCapacityKb: params.ramCapacityKb,
+    });
+    return {
+      part: calloutLabel,
+      material: "14.318 MHz crystal, Φ1 video / Φ2 CPU",
+      qty: "Φ2",
+      value: apple.dramWindowNs.toString(),
+      unit: "ns",
+      note: `CPU ${apple.cpuClockMhz} MHz · color ${apple.colorSubcarrierMhz} MHz.`,
+    };
+  }
+  if (patentId.includes("spencer") || patentId.includes("2495429")) {
+    const rf = stepSpencerMicrowave(
+      (params.anodeVoltage ?? 2200) / 1000,
+      params.magneticFieldGauss,
+      params.rfPowerSetting,
+    );
+    return {
+      part: calloutLabel,
+      material: "Cavity magnetron, Hull cutoff",
+      qty: "P_dielectric",
+      value: rf.dielectricLossWattsPerDm3.toString(),
+      unit: "W/dm³",
+      note: rf.isOscillating
+        ? `${rf.microwaveFreqMhz} MHz. B > ${rf.hullCutoffGauss} G.`
+        : `Below Hull cutoff ${rf.hullCutoffGauss} G — no RF.`,
+    };
+  }
+  if (patentId.includes("kevlar") || patentId.includes("3671542")) {
+    const k = stepKevlarContinuum(params.drawRatio, params.impactVelocity);
+    return {
+      part: calloutLabel,
+      material: "PPTA nematic dope, hydrogen-bonded sheets",
+      qty: "E",
+      value: k.elasticModulusGpa.toString(),
+      unit: "GPa",
+      note: `${k.tensileStressMpa} MPa at ${k.tensileStrainPct}% strain.`,
+    };
+  }
+  if (patentId.includes("bardeen") || patentId.includes("2569347")) {
+    const t = stepBardeenTransistor(
+      params.emitterCurrent,
+      params.collectorBias,
+      params.pointSpacing,
+    );
+    return {
+      part: calloutLabel,
+      material: "n-Ge, two phosphor-bronze cat-whiskers",
+      qty: "α",
+      value: t.currentGainAlpha.toString(),
+      unit: "",
+      note: `D_p ${t.holeDiffusionCoefficientCm2ps} cm²/s · τ ${t.transitTimeNs} ns.`,
+    };
+  }
+  if (patentId.includes("colt") || patentId.includes("us-138")) {
+    const colt = stepColtRevolver({
+      chamberPressureMpa: params.chamberPressure,
+      cockingAngleDeg: params.cockingAngle,
+    });
+    return {
+      part: calloutLabel,
+      material: ".36 Paterson cylinder, folding trigger",
+      qty: "v",
+      value: colt.muzzleVelocityMps.toString(),
+      unit: "m/s",
+      note: `Hoop ${colt.hoopStressMpa} MPa. ${colt.isLocked ? "Locked." : "Indexing."}`,
+    };
+  }
   return null;
 }
 
@@ -815,6 +894,36 @@ export function intervalGhosts(patentId: string, params: Record<string, number>)
     });
     return [{ label: "Cycle", min: 200, max: 3000, live: h.cycleTimeMs, unit: "ms" }];
   }
+  if (patentId.includes("goodyear") || patentId.includes("3633")) {
+    const rubber = stepGoodyearRubber(params.vulcanTemp, params.sulfurPct, 30);
+    return [{ label: "σ", min: 200, max: 3200, live: rubber.tensileStrengthPsi, unit: "psi" }];
+  }
+  if (patentId.includes("wozniak") || patentId.includes("4136359")) {
+    const apple = stepWozniakApple({ crystalFreq: params.crystalFreq });
+    return [{ label: "Φ2", min: 200, max: 800, live: apple.dramWindowNs, unit: "ns" }];
+  }
+  if (patentId.includes("spencer") || patentId.includes("2495429")) {
+    const rf = stepSpencerMicrowave(
+      (params.anodeVoltage ?? 2200) / 1000,
+      params.magneticFieldGauss,
+      params.rfPowerSetting,
+    );
+    return [
+      { label: "Loss", min: 0, max: 3000, live: rf.dielectricLossWattsPerDm3, unit: "W/dm³" },
+    ];
+  }
+  if (patentId.includes("kevlar") || patentId.includes("3671542")) {
+    const k = stepKevlarContinuum(params.drawRatio, params.impactVelocity);
+    return [{ label: "E", min: 60, max: 145, live: k.elasticModulusGpa, unit: "GPa" }];
+  }
+  if (patentId.includes("bardeen") || patentId.includes("2569347")) {
+    const t = stepBardeenTransistor(
+      params.emitterCurrent,
+      params.collectorBias,
+      params.pointSpacing,
+    );
+    return [{ label: "α", min: 0.2, max: 3, live: t.currentGainAlpha, unit: "" }];
+  }
   return [];
 }
 
@@ -978,7 +1087,7 @@ export function datedScenarios(patentId: string): DatedScenario[] {
       },
     ];
   }
-  if (patentId.includes("edison")) {
+  if (patentId.includes("223898") || patentId.includes("lightbulb")) {
     return [
       {
         id: "menlo-1879-10-21",
@@ -1096,7 +1205,7 @@ export function coupleLinks(patentId: string, params: Record<string, number>): C
     const pin = 80 + f * 1.2 + load * 8;
     return [{ from: "stator B", to: "shaft", watts: pin * 0.82 }];
   }
-  if (patentId.includes("edison")) {
+  if (patentId.includes("223898") || patentId.includes("lightbulb")) {
     const v = params.voltage ?? 110;
     const p = (v * v) / 150;
     return [{ from: "I²R", to: "radiation", watts: p }];

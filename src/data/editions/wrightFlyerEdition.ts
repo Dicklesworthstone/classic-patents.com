@@ -1,4 +1,8 @@
-import type { CuratedSpecificationEdition, CuratedSpecificationInlines } from "@/types/patent";
+import type {
+  CuratedSpecificationEdition,
+  CuratedSpecificationInline,
+  CuratedSpecificationInlines,
+} from "@/types/patent";
 
 const literal = (text: string): CuratedSpecificationInlines => [{ kind: "text", text }];
 
@@ -13,6 +17,26 @@ const annotated = (
   { kind: "term", text, definition, label },
   { kind: "text", text: after },
 ];
+
+/**
+ * A source reference is authored at the exact historical occurrence. It is
+ * never inferred from a string at render time.
+ */
+const figureReference = (text: string): CuratedSpecificationInline => ({
+  kind: "reference",
+  text,
+  href: "?view=pdf-facsimile",
+  referenceType: "figure",
+  label: `Open ${text} in the original patent facsimile`,
+});
+
+const claimsReference: CuratedSpecificationInline = {
+  kind: "reference",
+  text: "claims",
+  href: "?view=original-spec#claim-1",
+  referenceType: "section",
+  label: "Jump to the first numbered claim in this original patent text",
+};
 
 /**
  * A continuous, manually prepared reading edition of US 821,393. The author
@@ -86,15 +110,37 @@ export const wrightFlyerArchivalEdition: CuratedSpecificationEdition = {
     },
     {
       kind: "paragraph",
-      inlines: literal(
-        "To these ends our invention consists in certain novel features, which we will now proceed to describe and will then particularly point out in the claims.",
-      ),
+      inlines: [
+        {
+          kind: "text",
+          text: "To these ends our invention consists in certain novel features, which we will now proceed to describe and will then particularly point out in the ",
+        },
+        claimsReference,
+        { kind: "text", text: "." },
+      ],
     },
     {
       kind: "paragraph",
-      inlines: literal(
-        "In the accompanying drawings, Figure 1 is a perspective view of an apparatus embodying our invention in one form. Fig. 2 is a plan view of the same, partly in horizontal section and partly broken away. Fig. 3 is a side elevation; and Figs. 4 and 5 are detail views, of one form of flexible joint for connecting the upright standards with the aeroplanes.",
-      ),
+      inlines: [
+        { kind: "text", text: "In the accompanying drawings, " },
+        figureReference("Figure 1"),
+        {
+          kind: "text",
+          text: " is a perspective view of an apparatus embodying our invention in one form. ",
+        },
+        figureReference("Fig. 2"),
+        {
+          kind: "text",
+          text: " is a plan view of the same, partly in horizontal section and partly broken away. ",
+        },
+        figureReference("Fig. 3"),
+        { kind: "text", text: " is a side elevation; and " },
+        figureReference("Figs. 4 and 5"),
+        {
+          kind: "text",
+          text: " are detail views, of one form of flexible joint for connecting the upright standards with the aeroplanes.",
+        },
+      ],
     },
     {
       kind: "paragraph",
@@ -116,19 +162,28 @@ export const wrightFlyerArchivalEdition: CuratedSpecificationEdition = {
     },
     {
       kind: "paragraph",
-      inlines: annotated(
-        "Each aeroplane is formed by stretching cloth or other suitable fabric over a frame composed of two parallel transverse spars 3, extending from side to side of the machine, their ends being connected by bows 4, extending from front to rear of the machine. The front and rear spars 3 of each aeroplane are connected by a series of parallel ribs 5, which preferably extend somewhat beyond the rear spar, as shown. These spars, bows, and ribs are preferably constructed of wood having the necessary strength, combined with lightness and flexibility. Upon this framework the cloth which forms the ",
-        "supporting-surface",
-        "The air-facing wing surface that supplies aerodynamic support; the Wrights use “aeroplane” for this surface or collection of surfaces.",
-        " of the aeroplane is secured, the frame being inclosed in the cloth. The cloth for each aeroplane previously to its attachment to its frame is cut on the bias and made up into a single piece approximately",
-        "Patent vocabulary",
-      ),
-    },
-    {
-      kind: "paragraph",
-      inlines: literal(
-        "the size and shape of the aeroplane, having the threads of the fabric arranged diagonally to the transverse spars and longitudinal ribs, as indicated at 6 in Fig. 2. Thus the diagonal threads of the cloth form truss systems with the spars and ribs, the threads constituting the diagonal members. A hem is formed at the rear edge of the cloth to receive a wire 7, which is connected to the ends of the rear spar and supported by the rearwardly-extending ends of the longitudinal ribs 5, thus forming a rearwardly-extending flap or portion of the aeroplane. This construction of the aeroplanes gives a surface which has very great strength to withstand lateral and longitudinal strains, at the same time being capable of being bent or twisted in the manner hereinafter described.",
-      ),
+      inlines: [
+        {
+          kind: "text",
+          text: "Each aeroplane is formed by stretching cloth or other suitable fabric over a frame composed of two parallel transverse spars 3, extending from side to side of the machine, their ends being connected by bows 4, extending from front to rear of the machine. The front and rear spars 3 of each aeroplane are connected by a series of parallel ribs 5, which preferably extend somewhat beyond the rear spar, as shown. These spars, bows, and ribs are preferably constructed of wood having the necessary strength, combined with lightness and flexibility. Upon this framework the cloth which forms the ",
+        },
+        {
+          kind: "term",
+          text: "supporting-surface",
+          definition:
+            "The air-facing wing surface that supplies aerodynamic support; the Wrights use “aeroplane” for this surface or collection of surfaces.",
+          label: "Patent vocabulary",
+        },
+        {
+          kind: "text",
+          text: " of the aeroplane is secured, the frame being inclosed in the cloth. The cloth for each aeroplane previously to its attachment to its frame is cut on the bias and made up into a single piece approximately the size and shape of the aeroplane, having the threads of the fabric arranged diagonally to the transverse spars and longitudinal ribs, as indicated at 6 in ",
+        },
+        figureReference("Fig. 2"),
+        {
+          kind: "text",
+          text: ". Thus the diagonal threads of the cloth form truss systems with the spars and ribs, the threads constituting the diagonal members. A hem is formed at the rear edge of the cloth to receive a wire 7, which is connected to the ends of the rear spar and supported by the rearwardly-extending ends of the longitudinal ribs 5, thus forming a rearwardly-extending flap or portion of the aeroplane. This construction of the aeroplanes gives a surface which has very great strength to withstand lateral and longitudinal strains, at the same time being capable of being bent or twisted in the manner hereinafter described.",
+        },
+      ],
     },
     {
       kind: "paragraph",

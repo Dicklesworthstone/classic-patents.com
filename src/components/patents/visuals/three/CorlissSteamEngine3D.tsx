@@ -26,7 +26,7 @@ export function CorlissSteamEngine3D() {
   const [activeCamera, setActiveCamera] = useState<CameraPreset>("iso");
   const { isAudioMuted, toggleSound: toggleEngine } = usePatentAudio();
 
-  const corliss = stepCorlissEngine({ steamPressurePsi, engineRpm });
+  const corliss = stepCorlissEngine({ steamPressurePsi, engineRpm, cutoffPct });
   const indicatedHp = corliss.indicatedHp;
   const coalSavingsPct = (35 + (25 - cutoffPct) * 0.4).toFixed(1);
 

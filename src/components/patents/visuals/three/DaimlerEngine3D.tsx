@@ -189,12 +189,9 @@ export function DaimlerEngine3D() {
       if (animRef.current) cancelAnimationFrame(animRef.current);
       studio.dispose();
     };
-  }, [
-    live.current.isPlaying,
-    live.current.engineRpm,
-    live.current.bmepBar,
-    live.current.hotTubeTempC,
-  ]);
+    // live is a stable ref; reading live.current inside rAF. Remounting on sliders
+    // tore down the WebGL context.
+  }, [live]);
 
   const setCameraView = (view: CameraPreset) => {
     const studio = studioRef.current;
@@ -281,9 +278,9 @@ export function DaimlerEngine3D() {
               </div>
               <input
                 type="range"
-                min="300"
-                max="1200"
-                step="30"
+                min="400"
+                max="950"
+                step="25"
                 value={engineRpm}
                 onChange={(e) => updateParam("engineRpm", Number(e.target.value))}
                 className="w-full accent-amber-500 cursor-pointer"
@@ -297,9 +294,9 @@ export function DaimlerEngine3D() {
               </div>
               <input
                 type="range"
-                min="400"
-                max="1100"
-                step="25"
+                min="650"
+                max="950"
+                step="10"
                 value={hotTubeTempC}
                 onChange={(e) => updateParam("hotTubeTemp", Number(e.target.value))}
                 className="w-full accent-amber-500 cursor-pointer"

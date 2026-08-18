@@ -112,12 +112,19 @@ export function stepDavenportMotor(params: { batteryVoltage?: number; loadTorque
   };
 }
 
-export function stepCorlissEngine(params: { steamPressurePsi?: number; engineRpm?: number }) {
+export function stepCorlissEngine(params: {
+  steamPressurePsi?: number;
+  engineRpm?: number;
+  cutoffPct?: number;
+}) {
   const psi = params.steamPressurePsi ?? 100;
   const rpm = params.engineRpm ?? 65;
+  const cutoff = (params.cutoffPct ?? 25) / 100;
+  // Default 25% cutoff keeps the historical IHP; earlier cutoff admits less steam.
+  const mepFactor = 0.75 + cutoff;
   return {
-    indicatedHp: Math.round(psi * rpm * 0.25 * 1.8),
-    thermalEfficiencyPct: 24.5,
+    indicatedHp: Math.round(psi * rpm * 0.25 * 1.8 * mepFactor),
+    thermalEfficiencyPct: Number((24.5 + (0.25 - cutoff) * 12).toFixed(1)),
   };
 }
 
@@ -149,7 +156,9 @@ export function stepPasteurFermentation(params: {
   const hold = params.holdTimeMin ?? 20;
   const temp = params.wortTempC ?? 22;
   return {
-    logReduction: Number(Math.min(8.0, (hold / 20) * ((pTemp - 45) / 10) * 4.5).toFixed(1)),
+    logReduction: Number(
+      Math.max(0, Math.min(8.0, (hold / 20) * ((pTemp - 45) / 10) * 4.5)).toFixed(1),
+    ),
     yeastActivityPct: Math.min(100, Math.round(100 * Math.exp(-0.02 * (temp - 24) ** 2))),
   };
 }
@@ -251,8 +260,8 @@ export function stepHollerithTabulating(params: {
   supplyVoltageV?: number;
   activeRelays?: number;
 }) {
-  const cpm = params.cardsPerMin ?? 60;
-  const v = params.supplyVoltageV ?? 12;
+  const cpm = Math.max(1, params.cardsPerMin ?? 60);
+  const v = Math.max(0.5, params.supplyVoltageV ?? 12);
   const relays = params.activeRelays ?? 8;
   return {
     cycleTimeMs: Math.round(60000 / cpm),
@@ -270,7 +279,7 @@ export function stepNoyceIC(params: {
   clockFrequencyMhz?: number;
 }) {
   const vr = params.reverseBias ?? 5.0;
-  const tox = params.oxideThickness ?? 0.5;
+  const tox = Math.max(0.05, params.oxideThickness ?? 0.5);
   const wUm = Number((0.5 * Math.sqrt(0.7 + vr)).toFixed(2));
   return {
     depletionWidthUm: wUm,
@@ -296,7 +305,7 @@ export function stepEdisonBulb(params: { voltage?: number; filamentLength?: numb
 
 export function stepBellTelephone(params: { voiceAmplitude?: number; airGap?: number }) {
   const db = params.voiceAmplitude ?? 75;
-  const gap = params.airGap ?? 0.35;
+  const gap = Math.max(0.05, params.airGap ?? 0.35);
   const displUm = Number((10 ** ((db - 40) / 30) * 0.45).toFixed(2));
   return {
     diaphragmUm: displUm,
@@ -335,6 +344,85 @@ export function stepWozniakApple(params: { crystalFreq?: number; ramCapacityKb?:
     colorSubcarrierMhz: Number((f / 4).toFixed(3)),
     dramWindowNs: Number(((1000 / cpuMhz) * 0.5).toFixed(1)),
     ramCapacityKb: params.ramCapacityKb ?? 48,
+  };
+}
+
+export function stepSpencerMicrowave(anodeKv?: number, magneticGauss?: number, rfWatts?: number) {
+  const kv = anodeKv ?? 2.2;
+  const b = magneticGauss ?? 1400;
+  const rf = rfWatts ?? 800;
+  const hullCutoffGauss = Math.round(1180 * Math.sqrt(kv / 4.2));
+  const isOscillating = b > hullCutoffGauss;
+  return {
+    hullCutoffGauss,
+    isOscillating,
+    microwaveFreqMhz: 2450,
+    wavelengthCm: 12.24,
+    dielectricLossWattsPerDm3: isOscillating ? Math.round(rf * 1.8) : 0,
+  };
+}
+
+export function stepKevlarContinuum(drawRatio?: number, impactVelocityMps?: number) {
+  const draw = drawRatio ?? 6.5;
+  const v = impactVelocityMps ?? 200;
+  const elasticModulusGpa = Math.min(145, 60 + draw * 20);
+  const sonic = Math.sqrt((elasticModulusGpa * 1e9) / 1440);
+  const strainPct = (v / sonic) * 100;
+  return {
+    tensileStressMpa: Math.round((strainPct / 100) * elasticModulusGpa * 1000),
+    tensileStrainPct: Number(strainPct.toFixed(2)),
+    elasticModulusGpa,
+  };
+}
+
+export function stepBardeenTransistor(
+  emitterCurrentMa?: number,
+  collectorBiasVolts?: number,
+  pointSpacingMicrons?: number,
+) {
+  const _ie = emitterCurrentMa ?? 1.5;
+  const _vc = collectorBiasVolts ?? -40;
+  const gap = pointSpacingMicrons ?? 50;
+  const holeMobilityCm2Vs = 1900;
+  const holeDiffusionCoefficient = 0.0259 * holeMobilityCm2Vs;
+  const transitTimeNs = ((gap * 1e-4) ** 2 / (2 * holeDiffusionCoefficient)) * 1e9;
+  const transportFactor = Math.max(0.1, 1 - transitTimeNs / 150);
+  const currentGainAlpha = Number((0.95 * transportFactor * 1.8).toFixed(2));
+  return {
+    currentGainAlpha,
+    holeDiffusionCoefficientCm2ps: Number(holeDiffusionCoefficient.toFixed(1)),
+    transitTimeNs: Number(transitTimeNs.toFixed(2)),
+  };
+}
+
+export function stepMarconiRadio(
+  aerialHeightMeters?: number,
+  sparkGapMm?: number,
+  coilKv?: number,
+) {
+  const h = aerialHeightMeters ?? 88;
+  const gap = Math.max(0.5, sparkGapMm ?? 10);
+  const kv = coilKv ?? 28;
+  const wavelengthMeters = h * 4;
+  return {
+    wavelengthMeters,
+    resonantFreqMhz: Number((300 / wavelengthMeters).toFixed(2)),
+    maxRangeMiles: Number((0.015 * h * h * (kv / 20)).toFixed(1)),
+    peakRfPowerKw: Number(((kv * kv) / (gap * 1.5)).toFixed(1)),
+  };
+}
+
+export function stepColtRevolver(params: {
+  chamberPressureMpa?: number;
+  cockingAngleDeg?: number;
+}) {
+  const pMpa = params.chamberPressureMpa ?? 85;
+  const cockDeg = params.cockingAngleDeg ?? 45;
+  return {
+    hoopStressMpa: Number(((pMpa * 4.5) / 3.8).toFixed(1)),
+    indexAngleDeg: Number(((cockDeg / 45) * 72).toFixed(1)),
+    isLocked: cockDeg >= 44,
+    muzzleVelocityMps: Math.round(180 + Math.sqrt(pMpa) * 13.5),
   };
 }
 
