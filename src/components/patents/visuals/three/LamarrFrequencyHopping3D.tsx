@@ -2,17 +2,14 @@
 
 import { Camera, Eye, EyeOff, Radio, RotateCcw, Shield, Volume2, VolumeX, Zap } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
-import * as THREE from "three";
+import type * as THREE from "three";
 import { FrankenSimEngine } from "@/physics/engine";
 import { useFrankenSimPhysics } from "@/physics/useFrankenSimPhysics";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { createLcg } from "@/utils/lcg";
 import { soundEngine } from "@/utils/soundEngine";
-import {
-  createGlowPointTexture,
-  createThreeStudioScene,
-  type StudioContext,
-} from "./ThreeStudioScene";
+import { buildLamarrFrequencyHoppingModel } from "./lamarrFrequencyHoppingModel";
+import { createThreeStudioScene, type StudioContext } from "./ThreeStudioScene";
 import { useLiveSimParams } from "./useLiveSimParams";
 import { usePatentAudio } from "./usePatentAudio";
 
@@ -133,156 +130,18 @@ export function LamarrFrequencyHopping3D() {
     cameraRef.current = camera;
     controlsRef.current = controls;
 
-    // --- PBR MATERIALS ---
-    const brassMat = new THREE.MeshStandardMaterial({
-      color: 0xd97706,
-      roughness: 0.18,
-      metalness: 0.92,
-    });
+    const model = buildLamarrFrequencyHoppingModel();
+    scene.add(model.root);
 
-    const pianoRollPaperMat = new THREE.MeshStandardMaterial({
-      color: 0xfef9e7,
-      roughness: 0.8,
-      metalness: 0.05,
-      side: THREE.DoubleSide,
-    });
-
-    // --- 3D PIANO ROLL & SPREAD SPECTRUM ASSEMBLY ---
-    const apparatusGroup = new THREE.Group();
-    scene.add(apparatusGroup);
-
-    // Torpedo Guidance Bay Aluminum Housing Frame
-    const torpedoBay = new THREE.Mesh(
-      new THREE.CylinderGeometry(4.2, 4.2, 7.8, 36, 1, true),
-      new THREE.MeshStandardMaterial({
-        color: 0x334155,
-        metalness: 0.85,
-        roughness: 0.35,
-        side: THREE.BackSide,
-      }),
-    );
-    torpedoBay.rotation.z = Math.PI / 2;
-    torpedoBay.position.y = 0.5;
-    apparatusGroup.add(torpedoBay);
-
-    // Brass Sideplates & Gear Train Framework
-    [-2.6, 2.6].forEach((zPos) => {
-      const sidePlate = new THREE.Mesh(new THREE.BoxGeometry(7.2, 2.8, 0.15), brassMat);
-      sidePlate.position.set(0, 0.4, zPos);
-      apparatusGroup.add(sidePlate);
-    });
-
-    // Take-Up & Supply Flanged Brass Spools
-    const drum1 = new THREE.Mesh(new THREE.CylinderGeometry(0.8, 0.8, 5.0, 32), brassMat);
-    drum1.rotation.x = Math.PI / 2;
-    drum1.position.set(-3.0, 0.4, 0);
-    drum1.castShadow = true;
-    apparatusGroup.add(drum1);
-
-    const drum2 = new THREE.Mesh(new THREE.CylinderGeometry(0.8, 0.8, 5.0, 32), brassMat);
-    drum2.rotation.x = Math.PI / 2;
-    drum2.position.set(3.0, 0.4, 0);
-    drum2.castShadow = true;
-    apparatusGroup.add(drum2);
-
-    [-3.0, 3.0].forEach((xPos) => {
-      [-2.55, 2.55].forEach((fz) => {
-        const flange = new THREE.Mesh(new THREE.CylinderGeometry(1.6, 1.6, 0.08, 32), brassMat);
-        flange.rotation.x = Math.PI / 2;
-        flange.position.set(xPos, 0.4, fz);
-        apparatusGroup.add(flange);
-      });
-    });
-
-    // Perforated 88-Key Paper Roll Tape Web between drums
-    const paperWeb = new THREE.Mesh(new THREE.PlaneGeometry(6.0, 4.8), pianoRollPaperMat);
-    paperWeb.position.set(0, 1.45, 0);
-    paperWeb.rotation.x = -Math.PI / 2;
-    paperWeb.castShadow = true;
-    paperWeb.receiveShadow = true;
-    apparatusGroup.add(paperWeb);
-
-    // 88-Key Spring Contact Sensing Comb with Gold Plunger Pins
-    const comb = new THREE.Mesh(
-      new THREE.BoxGeometry(0.28, 0.45, 4.9),
-      new THREE.MeshStandardMaterial({ color: 0xca8a04, roughness: 0.2, metalness: 0.95 }),
-    );
-    comb.position.set(0, 1.7, 0);
-    comb.castShadow = true;
-    apparatusGroup.add(comb);
-
-    for (let p = 0; p < 22; p++) {
-      const pin = new THREE.Mesh(
-        new THREE.CylinderGeometry(0.04, 0.04, 0.35, 8),
-        new THREE.MeshStandardMaterial({ color: 0xfef08a, metalness: 0.95 }),
-      );
-      pin.position.set(0, 1.48, -2.2 + p * 0.21);
-      apparatusGroup.add(pin);
-    }
-
-    // --- 3D SPECTRAL WATERFALL FREQUENCY HOPPING BARS ---
-    const spectrumBarsGroup = new THREE.Group();
-    spectrumBarsGroup.position.set(0, -2.2, 0);
-
-    const maxDisplayChannels = 88;
-    const barMeshes: THREE.Mesh[] = [];
-
-    for (let c = 0; c < maxDisplayChannels; c++) {
-      const x = -5.0 + (c / Math.max(1, maxDisplayChannels - 1)) * 10.0;
-      const barGeo = new THREE.BoxGeometry(0.18, 0.4, 0.4);
-      const barMat = new THREE.MeshStandardMaterial({
-        color: 0x334155,
-        roughness: 0.3,
-        metalness: 0.7,
-      });
-      const bar = new THREE.Mesh(barGeo, barMat);
-      bar.position.set(x, 0.2, 0);
-      spectrumBarsGroup.add(bar);
-      barMeshes.push(bar);
-    }
-    apparatusGroup.add(spectrumBarsGroup);
-
-    // --- GLOWING RF CARRIER HOPPING PARTICLES ---
-    const hopCount = 80;
-    const hopGeo = new THREE.BufferGeometry();
-    const hopPos = new Float32Array(hopCount * 3);
-    const glowTex = createGlowPointTexture();
-
-    for (let i = 0; i < hopCount; i++) {
-      const idx = i * 3;
-      hopPos[idx] = (lcg() - 0.5) * 8.0;
-      hopPos[idx + 1] = 2.0 + lcg() * 2.5;
-      hopPos[idx + 2] = (lcg() - 0.5) * 3.0;
-    }
-
-    hopGeo.setAttribute("position", new THREE.BufferAttribute(hopPos, 3));
-    const hopPoints = new THREE.Points(
-      hopGeo,
-      new THREE.PointsMaterial({
-        size: 0.4,
-        map: glowTex,
-        color: 0x38bdf8,
-        transparent: true,
-        opacity: 0.9,
-        blending: THREE.AdditiveBlending,
-        depthWrite: false,
-      }),
-    );
-    scene.add(hopPoints);
-
-    // --- RENDER LOOP & REAL-TIME SPREAD SPECTRUM HOPPING ---
     let reqId: number;
-    let _renderedSteps = 0;
     let hopTimer = 0;
     let activeChan = 22;
-    // Coprime step with 88 piano keys — same shared roll as the 2D schematic.
     let rollStep = 0;
     const PIANO_KEYS = 88;
     const PIANO_ROLL_STEP = 37;
 
     const animate = () => {
       reqId = requestAnimationFrame(animate);
-      _renderedSteps += 1;
       const delta = 1 / 60;
       const p = live.current;
 
@@ -293,10 +152,7 @@ export function LamarrFrequencyHopping3D() {
         hopTimer = 0;
         rollStep += 1;
         const pianoKey = ((rollStep * PIANO_ROLL_STEP) % PIANO_KEYS) + 1;
-        const liveChannels = Math.max(
-          8,
-          Math.min(maxDisplayChannels, Math.round(p.carrierChannelsCount)),
-        );
+        const liveChannels = Math.max(8, Math.min(88, Math.round(p.carrierChannelsCount)));
         activeChan = Math.floor(((pianoKey - 1) / PIANO_KEYS) * liveChannels);
         setCurrentChannel(activeChan + 1);
 
@@ -306,68 +162,13 @@ export function LamarrFrequencyHopping3D() {
         }
       }
 
-      drum1.rotation.y += delta * 1.5;
-      drum2.rotation.y += delta * 1.5;
-
-      // Update Spectral Channel Waterfall — bar count tracks the channel slider.
-      const liveChannels = Math.max(
-        8,
-        Math.min(maxDisplayChannels, Math.round(p.carrierChannelsCount)),
-      );
+      const liveChannels = Math.max(8, Math.min(88, Math.round(p.carrierChannelsCount)));
       const jamCenter = Math.min(
         liveChannels - 1,
         Math.max(0, Math.round(p.jamChannel ?? liveChannels * 0.3) - 1),
       );
-      for (let c = 0; c < maxDisplayChannels; c++) {
-        const bar = barMeshes[c];
-        if (c >= liveChannels) {
-          bar.visible = false;
-          continue;
-        }
-        bar.visible = true;
-        bar.position.x = -5.0 + (c / Math.max(1, liveChannels - 1)) * 10.0;
-        const mat = bar.material as THREE.MeshStandardMaterial;
 
-        const isJammerBar =
-          p.isJammingActive && (c === jamCenter - 1 || c === jamCenter || c === jamCenter + 1);
-        if (c === activeChan && isJammerBar) {
-          bar.scale.y = 5.2;
-          bar.position.y = 1.05;
-          mat.color.setHex(0xef4444);
-          mat.emissive.setHex(0xef4444);
-          mat.emissiveIntensity = 1.0;
-        } else if (c === activeChan) {
-          bar.scale.y = 4.5;
-          bar.position.y = 0.9;
-          mat.color.setHex(0x10b981);
-          mat.emissive.setHex(0x10b981);
-          mat.emissiveIntensity = 0.8;
-        } else if (isJammerBar) {
-          bar.scale.y = 6.0;
-          bar.position.y = 1.2;
-          mat.color.setHex(0xef4444);
-          mat.emissive.setHex(0xef4444);
-          mat.emissiveIntensity = 0.9;
-        } else {
-          bar.scale.y = 1.0;
-          bar.position.y = 0.2;
-          mat.color.setHex(0x334155);
-          mat.emissive.setHex(0x000000);
-          mat.emissiveIntensity = 0;
-        }
-      }
-
-      const hPos = hopPos;
-      for (let i = 0; i < hopCount; i++) {
-        const idx = i * 3;
-        hPos[idx + 1] += delta * 3.5;
-        if (hPos[idx + 1] > 5.0) {
-          hPos[idx + 1] = 1.5;
-          hPos[idx] =
-            -5.0 + (activeChan / Math.max(1, liveChannels - 1)) * 10.0 + (lcg() - 0.5) * 0.8;
-        }
-      }
-      hopGeo.attributes.position.needsUpdate = true;
+      model.updateKinematics(delta, activeChan, liveChannels, p.isJammingActive, jamCenter);
 
       controls.update();
       renderer.render(scene, camera);
@@ -377,6 +178,7 @@ export function LamarrFrequencyHopping3D() {
 
     return () => {
       cancelAnimationFrame(reqId);
+      model.dispose();
       studio.dispose();
     };
   }, [live]);
