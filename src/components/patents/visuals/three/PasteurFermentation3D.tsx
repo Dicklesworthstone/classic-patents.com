@@ -1,10 +1,12 @@
 "use client";
 
-import { Activity, Camera, Eye, Sparkles, Volume2, VolumeX, Zap } from "lucide-react";
+import { Activity, Camera, Eye, Volume2, VolumeX, Zap } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import * as THREE from "three";
+import { stepPasteurFermentation } from "@/physics/catalogKernels";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { soundEngine } from "@/utils/soundEngine";
+import { StudioKernelChips } from "./StudioKernelChips";
 import {
   createGlowPointTexture,
   createThreeStudioScene,
@@ -19,12 +21,17 @@ export function PasteurFermentation3D() {
   const containerRef = useRef<HTMLDivElement>(null);
 
   // Biochemical Fermentation Parameters
-  const { params, updateParam } = usePatentPhysics("us-135245-pasteur-fermentation");
+  const { params } = usePatentPhysics("us-135245-pasteur-fermentation");
   const [showUiOverlay, setShowUiOverlay] = useState<boolean>(true);
-  const fermentationTempC = params.wortTempC ?? 16.5;
+  const fermentationTempC = params.wortTempC ?? params.tempCelsius ?? 22;
   const isPureYeast = params.pureYeast ?? true;
-  const alcoholAbvPct = (5.2 * (fermentationTempC / 16.5)).toFixed(1);
-  const co2PressureBar = (1.8 * (fermentationTempC / 16.5)).toFixed(2);
+  const pasteur = stepPasteurFermentation({
+    pasteurizationTempC: params.pasteurizationTempC ?? 58,
+    holdTimeMin: params.holdTimeMin ?? 20,
+    wortTempC: fermentationTempC,
+  });
+  const alcoholAbvPct = (5.2 * (pasteur.yeastActivityPct / 100)).toFixed(1);
+  const co2PressureBar = (1.8 * (pasteur.yeastActivityPct / 100)).toFixed(2);
   const [showBubbles, setShowBubbles] = useState<boolean>(true);
   const [activeCamera, setActiveCamera] = useState<CameraPreset>("iso");
   const { isAudioMuted, toggleSound: toggleEngine } = usePatentAudio();
@@ -34,6 +41,8 @@ export function PasteurFermentation3D() {
     isPureYeast,
     showBubbles,
     isAudioMuted,
+    yeastActivityPct: pasteur.yeastActivityPct,
+    logReduction: pasteur.logReduction,
   });
 
   const controlsRef = useRef<StudioContext["controls"] | null>(null);
@@ -223,17 +232,21 @@ export function PasteurFermentation3D() {
       const delta = clock.getDelta();
       const p = live.current;
 
-      // Animate rising bubbles
+      // CO₂ rise tracks yeast activity — off-temp wort goes quiet
+      const activity = Math.max(0, p.yeastActivityPct / 100);
+      const rise = 0.15 + activity * 1.4;
       const pos = bubblePositions;
       for (let i = 0; i < bubbleCount; i++) {
         const idx = i * 3;
-        pos[idx + 1] += 0.8 * delta;
+        pos[idx + 1] += rise * delta;
         if (pos[idx + 1] > 2.0) {
           pos[idx + 1] = -1.4;
         }
       }
       bubbleGeo.attributes.position.needsUpdate = true;
-      bubblePoints.visible = p.showBubbles;
+      bubblePoints.visible = p.showBubbles && activity > 0.12;
+      bubbleMat.opacity = 0.2 + activity * 0.75;
+      bubbleMat.color.setHex(p.fermentationTempC > 28 ? 0xf87171 : 0xfef08a);
 
       renderer.render(scene, camera);
     };
@@ -320,6 +333,23 @@ export function PasteurFermentation3D() {
           </button>
         </div>
       </div>
+
+      <StudioKernelChips
+        visible={showUiOverlay}
+        title="Pasteur closed vat"
+        chips={[
+          {
+            label: "Wort",
+            value: String(fermentationTempC),
+            unit: "°C",
+            tone: pasteur.yeastActivityPct > 40 ? "ok" : "warn",
+          },
+          { label: "Yeast", value: String(pasteur.yeastActivityPct), unit: "%" },
+          { label: "ABV", value: alcoholAbvPct, unit: "%" },
+          { label: "CO₂", value: co2PressureBar, unit: "bar" },
+          { label: "Log kill", value: pasteur.logReduction.toFixed(1) },
+        ]}
+      />
     </div>
   );
 }

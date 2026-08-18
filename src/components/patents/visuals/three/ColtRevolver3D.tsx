@@ -169,11 +169,15 @@ export function ColtRevolver3D() {
     const model = buildColtRevolverModel();
     scene.add(model.group);
 
+    let gltfBaraban: THREE.Object3D | null = null;
+    let gltfKurok: THREE.Object3D | null = null;
+    let gltfVzvod: THREE.Object3D | null = null;
+
     // Load High-Quality GLB Model to replace primitive shapes
     import("three/examples/jsm/loaders/GLTFLoader.js").then(({ GLTFLoader }) => {
       const loader = new GLTFLoader();
       loader.load("/models/colt-paterson.glb", (gltf) => {
-        // Hide the programmer-art primitive meshes but keep groups visible for physics
+        // Hide the programmer-art primitive meshes but keep groups visible for physics math
         const hideMeshes = (group: THREE.Group) => {
           group.children.forEach((c) => {
             if (c.type === "Mesh") c.visible = false;
@@ -183,6 +187,7 @@ export function ColtRevolver3D() {
         hideMeshes(model.cylinderGroup);
         hideMeshes(model.hammerGroup);
         hideMeshes(model.triggerGroup);
+        hideMeshes(model.loadingLeverGroup);
 
         model.group.children.forEach((c) => {
           if (
@@ -190,7 +195,9 @@ export function ColtRevolver3D() {
             c !== model.blastGroup &&
             c !== model.cylinderGroup &&
             c !== model.hammerGroup &&
-            c !== model.triggerGroup
+            c !== model.triggerGroup &&
+            c !== model.loadingLeverGroup &&
+            c !== model.lockworkCutawayGroup
           ) {
             c.visible = false;
           }
@@ -200,27 +207,14 @@ export function ColtRevolver3D() {
         const gltfScene = gltf.scene;
         // Center and scale the GLTF model to fit the existing camera preset
         gltfScene.scale.set(12, 12, 12);
-        gltfScene.rotation.y = Math.PI;
-        gltfScene.position.set(0, -1.5, 0);
+        // The GLB is modeled pointing diagonally downwards.
+        // We calculate the barrel angle to be -49.63 degrees. So we rotate +49.63 deg on Z.
+        gltfScene.rotation.z = 49.63 * (Math.PI / 180);
+        gltfScene.position.set(2.0, -1.5, 0.4); // Tweak position after rotation so it centers with the camera
 
-        // Extract nodes to hook up to physics animation!
-        const baraban = gltfScene.getObjectByName("baraban");
-        if (baraban) model.cylinderGroup.add(baraban);
-
-        const kurok = gltfScene.getObjectByName("kurok");
-        if (kurok) {
-          model.hammerGroup.add(kurok);
-          kurok.position.set(0, 0, 0);
-        }
-
-        const vzvod = gltfScene.getObjectByName("vzvod");
-        if (vzvod) {
-          model.triggerGroup.add(vzvod);
-          vzvod.position.set(0, 0, 0);
-        }
-
-        const frame = gltfScene.getObjectByName("COLT");
-        if (frame) model.group.add(frame);
+        gltfBaraban = gltfScene.getObjectByName("baraban") || null;
+        gltfKurok = gltfScene.getObjectByName("kurok") || null;
+        gltfVzvod = gltfScene.getObjectByName("vzvod") || null;
 
         scene.add(gltfScene);
       });
@@ -263,12 +257,14 @@ export function ColtRevolver3D() {
       // 0 deg = hammer resting against percussion nipple; 45 deg = full cock
       const hammerTargetAngle = (p.cockingAngleDeg / 45) * 0.72;
       model.hammerGroup.rotation.z += (hammerTargetAngle - model.hammerGroup.rotation.z) * 0.18;
+      if (gltfKurok) gltfKurok.rotation.z = model.hammerGroup.rotation.z;
 
       // 2. Animate Paterson Folding Trigger
       // Trigger drops out of the frame mortise automatically as the hammer is cocked!
       const triggerDeployFraction = Math.min(1.0, p.cockingAngleDeg / 40);
       model.triggerGroup.rotation.z = -triggerDeployFraction * 0.45;
       model.triggerGroup.position.y = -1.42 - triggerDeployFraction * 0.32;
+      if (gltfVzvod) gltfVzvod.rotation.z = model.triggerGroup.rotation.z;
 
       // 3. Animate 5-Chamber Cylinder Indexing
       // Each shot steps 360° / 5 = 72° (2 * PI / 5)
@@ -277,6 +273,7 @@ export function ColtRevolver3D() {
         (p.currentChamberIndex - 1) * chamberStepRad + (p.cockingAngleDeg / 45) * chamberStepRad;
       currentCylinderAngle += (targetCylinderAngle - currentCylinderAngle) * 0.16;
       model.cylinderGroup.rotation.x = currentCylinderAngle;
+      if (gltfBaraban) gltfBaraban.rotation.x = currentCylinderAngle;
 
       // 4. Lockwork Cutaway Visibility
       model.lockworkCutawayGroup.visible = p.showLockworkCutaway;

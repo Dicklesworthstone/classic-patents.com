@@ -5,6 +5,7 @@ import { useEffect, useRef, useState } from "react";
 import * as THREE from "three";
 import { HudText } from "@/components/ui/LatexRenderer";
 import { FrankenSimEngine } from "@/physics/engine";
+import { ensureTeslaWasm } from "@/physics/teslaWasm";
 import { useFrankenSimPhysics } from "@/physics/useFrankenSimPhysics";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { soundEngine } from "@/utils/soundEngine";
@@ -15,6 +16,10 @@ type CameraPreset = "iso" | "toroid_breakout" | "primary_spiral" | "spark_gap" |
 
 export function TeslaCoil3D() {
   const containerRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    ensureTeslaWasm();
+  }, []);
 
   // Electrical Resonant State Controls
   const { params } = usePatentPhysics("us-533367-tesla-coil");

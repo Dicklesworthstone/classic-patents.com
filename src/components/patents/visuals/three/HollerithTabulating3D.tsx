@@ -1,11 +1,12 @@
 "use client";
 
-import { Activity, Camera, Eye, EyeOff, Sparkles, Volume2, VolumeX } from "lucide-react";
+import { Activity, Camera, Eye, EyeOff, Volume2, VolumeX } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import * as THREE from "three";
 import { FrankenSimEngine } from "@/physics/engine";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { soundEngine } from "@/utils/soundEngine";
+import { StudioKernelChips } from "./StudioKernelChips";
 import { createThreeStudioScene, type StudioContext } from "./ThreeStudioScene";
 import { useLiveSimParams } from "./useLiveSimParams";
 import { usePatentAudio } from "./usePatentAudio";
@@ -17,7 +18,7 @@ export function HollerithTabulating3D() {
   const [showUiOverlay, setShowUiOverlay] = useState<boolean>(true);
 
   // Electromechanical Computation Parameters
-  const { params, updateParam } = usePatentPhysics("us-395781-hollerith-tabulating");
+  const { params } = usePatentPhysics("us-395781-hollerith-tabulating");
   const cardsPerMin = params.cardsPerMin ?? 60;
   const hollerith = FrankenSimEngine.stepHollerithTabulating({
     cardsPerMin,
@@ -25,7 +26,7 @@ export function HollerithTabulating3D() {
     activeRelays: params.activeRelays ?? 8,
   });
   const cardsPerDay = Math.round((60_000 / hollerith.cycleTimeMs) * 60 * 7);
-  const clockDialCount = 40;
+  const clockDialCount = 40; // register bank on the 1890 census machine
   const [activeCamera, setActiveCamera] = useState<CameraPreset>("iso");
   const { isAudioMuted, toggleSound: toggleEngine } = usePatentAudio();
 
@@ -33,6 +34,7 @@ export function HollerithTabulating3D() {
     cardsPerMin,
     isAudioMuted,
     cycleTimeMs: hollerith.cycleTimeMs,
+    solenoidForceN: hollerith.solenoidForceN,
     cardsPerDay,
   });
 
@@ -203,7 +205,8 @@ export function HollerithTabulating3D() {
       // Pin press plunging down into card
       const pressFreq = (p.cardsPerMin / 60) * 2 * Math.PI;
       const pressPhase = Math.sin(clock.getElapsedTime() * pressFreq);
-      pinPlateGroup.position.y = 0.8 + (pressPhase > 0 ? -pressPhase * 0.45 : 0);
+      pinPlateGroup.position.y =
+        0.8 + (pressPhase > 0 ? -pressPhase * (0.2 + (p.solenoidForceN / 40) * 0.35) : 0);
 
       renderer.render(scene, camera);
     };
@@ -283,6 +286,18 @@ export function HollerithTabulating3D() {
           </button>
         </div>
       </div>
+
+      <StudioKernelChips
+        visible={showUiOverlay}
+        title="Hollerith pin press"
+        chips={[
+          { label: "Cards", value: String(cardsPerMin), unit: "/min" },
+          { label: "Cycle", value: String(hollerith.cycleTimeMs), unit: "ms" },
+          { label: "Solenoid", value: String(hollerith.solenoidForceN), unit: "N" },
+          { label: "Day", value: cardsPerDay.toLocaleString() },
+          { label: "Dials", value: String(clockDialCount) },
+        ]}
+      />
     </div>
   );
 }

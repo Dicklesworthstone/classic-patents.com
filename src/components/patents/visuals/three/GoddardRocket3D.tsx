@@ -4,6 +4,7 @@ import { Camera, Eye, EyeOff, Flame, Rocket, RotateCcw, Volume2, VolumeX, Zap } 
 import { useEffect, useRef, useState } from "react";
 import * as THREE from "three";
 import { FrankenSimEngine } from "@/physics/engine";
+import { ensureGoddardWasm } from "@/physics/goddardWasm";
 import { deLavalMeridian, goddardThermo } from "@/physics/thermochem";
 import { useFrankenSimPhysics } from "@/physics/useFrankenSimPhysics";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
@@ -17,6 +18,10 @@ type CameraPreset = "iso" | "de_laval_nozzle" | "combustion_chamber" | "gimbal_a
 
 export function GoddardRocket3D() {
   const containerRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    ensureGoddardWasm();
+  }, []);
 
   // Propulsion & Staging State Controls
   const { params, updateParam } = usePatentPhysics("us-1155986-goddard-rocket");

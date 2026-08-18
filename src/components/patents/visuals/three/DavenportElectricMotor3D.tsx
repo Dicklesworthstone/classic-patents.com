@@ -1,10 +1,12 @@
 "use client";
 
-import { Activity, Camera, Eye, EyeOff, Sparkles, Volume2, VolumeX } from "lucide-react";
+import { Activity, Camera, Eye, EyeOff, Volume2, VolumeX } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import * as THREE from "three";
+import { stepDavenportMotor } from "@/physics/catalogKernels";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { soundEngine } from "@/utils/soundEngine";
+import { StudioKernelChips } from "./StudioKernelChips";
 import {
   createGlowPointTexture,
   createThreeStudioScene,
@@ -19,21 +21,25 @@ export function DavenportElectricMotor3D() {
   const containerRef = useRef<HTMLDivElement>(null);
 
   // Electromechanical Parameters
-  const { params, updateParam } = usePatentPhysics("us-132-davenport-electric-motor");
-  const motorRpm = params.rotorRpm ?? 450;
-  const supplyVoltage = (motorRpm / 450) * 12;
+  const { params } = usePatentPhysics("us-132-davenport-electric-motor");
+  const supplyVoltage = params.batteryVoltage ?? 12;
+  const loadTorque = params.loadTorque ?? 0.8;
+  const davenport = stepDavenportMotor({ batteryVoltage: supplyVoltage, loadTorque });
+  const motorRpm = davenport.shaftRpm;
   const [showSparkParticles, setShowSparkParticles] = useState<boolean>(true);
   const [activeCamera, setActiveCamera] = useState<CameraPreset>("iso");
   const { isAudioMuted, toggleSound: toggleEngine } = usePatentAudio();
 
-  const motorTorqueNm = (supplyVoltage * 0.12).toFixed(2);
-  const mechanicalWatts = ((Number(motorTorqueNm) * motorRpm * 2 * Math.PI) / 60).toFixed(1);
+  const motorTorqueNm = loadTorque.toFixed(2);
+  const mechanicalWatts = davenport.shaftPowerW.toFixed(1);
 
   const live = useLiveSimParams({
     motorRpm,
     supplyVoltage,
     showSparkParticles,
     isAudioMuted,
+    loadTorque,
+    mechanicalWatts: davenport.shaftPowerW,
   });
 
   const controlsRef = useRef<StudioContext["controls"] | null>(null);
@@ -242,7 +248,11 @@ export function DavenportElectricMotor3D() {
       const omegaRadPerSec = (p.motorRpm * 2 * Math.PI) / 60;
       rotorGroup.rotation.y += omegaRadPerSec * delta;
 
-      sparkPoints.visible = p.showSparkParticles && Math.sin(clock.getElapsedTime() * 40) > 0.1;
+      const watts = p.mechanicalWatts;
+      sparkPoints.visible =
+        p.showSparkParticles && watts > 8 && Math.sin(clock.getElapsedTime() * 40) > 0.1;
+      sparkMat.opacity = Math.min(0.95, 0.2 + (watts / 80) * 0.75);
+      sparkMat.size = 0.15 + (p.supplyVoltage / 24) * 0.2;
 
       renderer.render(scene, camera);
     };
@@ -323,7 +333,16 @@ export function DavenportElectricMotor3D() {
         </div>
       </div>
 
-      {/* Bottom Telemetry Bar & Controls */}
+      <StudioKernelChips
+        visible
+        title="Davenport commutator"
+        chips={[
+          { label: "V", value: String(supplyVoltage), unit: "V" },
+          { label: "Load", value: motorTorqueNm, unit: "N·m" },
+          { label: "ω", value: String(motorRpm), unit: "rpm" },
+          { label: "P", value: mechanicalWatts, unit: "W" },
+        ]}
+      />
     </div>
   );
 }

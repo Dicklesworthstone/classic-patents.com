@@ -40,9 +40,10 @@ export function BoyleSmithCcd3D() {
     refusal: { isRefused: false },
     semi: _ccdState,
   });
-  const fullWellElectrons = Math.round((gateVoltageV - 1.2) * 12500);
-  const collectedChargeElectrons = Math.round(fullWellElectrons * Math.min(1.0, incidentLux / 800));
-  const chargeTransferInefficiencyEpsilon = ((100 - transferEfficiencyPct) / 100).toExponential(2);
+  const ccdWells = stepCcdWells(clockPhase, incidentLux, clockSpeedFactor);
+  const fullWellElectrons = ccdWells.photoElectrons;
+  const collectedChargeElectrons = Math.round(ccdWells.wells[clockPhase - 1] ?? 0);
+  const chargeTransferInefficiencyEpsilon = (1 - ccdWells.cte).toExponential(2);
 
   const live = useLiveSimParams({
     clockPhase,
@@ -51,6 +52,8 @@ export function BoyleSmithCcd3D() {
     clockSpeedFactor,
     incidentLux,
     isAudioMuted,
+    photoElectrons: ccdWells.photoElectrons,
+    cte: ccdWells.cte,
   });
 
   const controlsRef = useRef<any>(null);

@@ -14,6 +14,7 @@ import {
 } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import * as THREE from "three";
+import { stepEngelbartMouse } from "@/physics/catalogKernels";
 import { stepEngelbartResolver } from "@/physics/machineKernels";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { soundEngine } from "@/utils/soundEngine";
@@ -46,8 +47,12 @@ export function EngelbartMouse3D() {
     y: 384,
   });
 
-  const pulseRateHz = Math.round((displacementSpeedMmSec / 25.4) * cpiResolution);
   const wheelRadiusMm = params.wheelRadius ?? 10;
+  const mouse = stepEngelbartMouse({
+    mouseSpeed: displacementSpeedMmSec,
+    wheelRadius: wheelRadiusMm,
+  });
+  const pulseRateHz = mouse.slewPxPerS;
 
   const live = useLiveSimParams({
     displacementSpeedMmSec,
@@ -56,6 +61,8 @@ export function EngelbartMouse3D() {
     isXRayMode,
     cpiResolution,
     wheelRadiusMm,
+    dpi: mouse.dpi,
+    omegaRadPerS: mouse.omegaRadPerS,
   });
 
   const controlsRef = useRef<any>(null);

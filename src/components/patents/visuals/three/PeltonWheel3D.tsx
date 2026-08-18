@@ -6,6 +6,7 @@ import * as THREE from "three";
 import { stepPeltonWheel } from "@/physics/catalogKernels";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { soundEngine } from "@/utils/soundEngine";
+import { StudioKernelChips } from "./StudioKernelChips";
 import {
   createGlowPointTexture,
   createThreeStudioScene,
@@ -21,7 +22,7 @@ export function PeltonWheel3D() {
   const [showUiOverlay, setShowUiOverlay] = useState<boolean>(true);
 
   // Hydrodynamic Impulse Parameters
-  const { params, updateParam } = usePatentPhysics("us-233692-pelton-water-wheel");
+  const { params } = usePatentPhysics("us-233692-pelton-water-wheel");
   const headMeters = params.headMeters ?? 450;
   const wheelRpm = params.runnerRpm ?? params.rotorRpm ?? 600;
   const pelton = stepPeltonWheel({ headMeters, runnerRpm: wheelRpm });
@@ -40,6 +41,7 @@ export function PeltonWheel3D() {
     isAudioMuted,
     etaPct: hydraulicEfficiencyPct,
     shaftPowerKw: powerKw,
+    speedRatio: pelton.speedRatio,
   });
 
   const controlsRef = useRef<StudioContext["controls"] | null>(null);
@@ -247,6 +249,11 @@ export function PeltonWheel3D() {
       }
       jetGeo.attributes.position.needsUpdate = true;
       jetPoints.visible = p.showJet;
+      // Euler optimum is u/v ≈ 0.5. Off-design paints the jet: cyan too-slow, rose too-fast.
+      const ratioErr = Math.abs((p.speedRatio ?? 0.5) - 0.5);
+      const jetMat = jetPoints.material as THREE.PointsMaterial;
+      jetMat.color.setHex(ratioErr < 0.08 ? 0xfbbf24 : p.speedRatio < 0.5 ? 0x38bdf8 : 0xfb7185);
+      jetMat.opacity = 0.55 + (p.etaPct / 93) * 0.4;
 
       renderer.render(scene, camera);
     };
@@ -338,6 +345,22 @@ export function PeltonWheel3D() {
           </button>{" "}
         </div>
       </div>
+
+      <StudioKernelChips
+        visible={showUiOverlay}
+        title="Pelton impulse runner"
+        chips={[
+          { label: "Head", value: String(headMeters), unit: "m" },
+          { label: "v_jet", value: String(jetVelocityMps), unit: "m/s" },
+          {
+            label: "u/v",
+            value: pelton.speedRatio.toFixed(3),
+            tone: Math.abs(pelton.speedRatio - 0.5) < 0.08 ? "ok" : "warn",
+          },
+          { label: "η", value: String(hydraulicEfficiencyPct), unit: "%" },
+          { label: "Shaft", value: String(powerKw), unit: "kW" },
+        ]}
+      />
     </div>
   );
 }

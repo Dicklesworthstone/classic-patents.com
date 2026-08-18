@@ -1,11 +1,12 @@
 "use client";
 
-import { Activity, Camera, Eye, EyeOff, Sparkles, Volume2, VolumeX, Waves } from "lucide-react";
+import { Activity, Camera, Eye, EyeOff, Volume2, VolumeX, Waves } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import * as THREE from "three";
 import { stepEricssonPropeller } from "@/physics/catalogKernels";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { soundEngine } from "@/utils/soundEngine";
+import { StudioKernelChips } from "./StudioKernelChips";
 import {
   createGlowPointTexture,
   createThreeStudioScene,
@@ -20,7 +21,7 @@ export function EricssonPropeller3D() {
   const containerRef = useRef<HTMLDivElement>(null);
 
   // Marine Hydrodynamics Parameters
-  const { params, updateParam } = usePatentPhysics("us-588-ericsson-propeller");
+  const { params } = usePatentPhysics("us-588-ericsson-propeller");
   const [showUiOverlay, setShowUiOverlay] = useState<boolean>(true);
   const shaftRpm = params.shaftRpm ?? 120;
   const ericson = stepEricssonPropeller({
@@ -41,6 +42,7 @@ export function EricssonPropeller3D() {
     showWake,
     isAudioMuted,
     thrustKn: ericson.thrustKn,
+    bladePitchAngleDeg: params.bladePitchAngleDeg ?? 35,
     propulsiveEfficiencyPct: Number(propulsiveEfficiencyPct),
   });
 
@@ -232,7 +234,7 @@ export function EricssonPropeller3D() {
       const pos = wakePositions;
       for (let i = 0; i < wakeCount; i++) {
         const idx = i * 3;
-        pos[idx] += (p.shaftRpm / 60) * 8.0 * delta;
+        pos[idx] += (p.shipSpeedKnots / 8.5) * 6.5 * delta;
         const y = pos[idx + 1];
         const z = pos[idx + 2];
         let curAngle = Math.atan2(z, y);
@@ -247,6 +249,9 @@ export function EricssonPropeller3D() {
       }
       wakeGeo.attributes.position.needsUpdate = true;
       wakePoints.visible = p.showWake;
+      const wakeMat = wakePoints.material as THREE.PointsMaterial;
+      wakeMat.opacity = Math.min(0.95, 0.3 + (p.thrustKn / 30) * 0.65);
+      wakeMat.color.setHex(p.thrustKn > 12 ? 0x38bdf8 : 0x64748b);
 
       renderer.render(scene, camera);
     };
@@ -338,6 +343,18 @@ export function EricssonPropeller3D() {
           </button>
         </div>
       </div>
+
+      <StudioKernelChips
+        visible={showUiOverlay}
+        title="Ericsson screw"
+        chips={[
+          { label: "Shaft", value: String(Math.round(shaftRpm)), unit: "rpm" },
+          { label: "Pitch", value: String(params.bladePitchAngleDeg ?? 35), unit: "°" },
+          { label: "Ship", value: String(shipSpeedKnots), unit: "kn" },
+          { label: "Thrust", value: thrustKn, unit: "kN" },
+          { label: "η_p", value: propulsiveEfficiencyPct, unit: "%" },
+        ]}
+      />
     </div>
   );
 }

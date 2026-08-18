@@ -1,11 +1,12 @@
 "use client";
 
-import { Activity, Camera, Eye, EyeOff, Sparkles, Volume2, VolumeX } from "lucide-react";
+import { Activity, Camera, Eye, EyeOff, Volume2, VolumeX } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import * as THREE from "three";
 import { stepSholesTypewriter } from "@/physics/machineKernels";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { soundEngine } from "@/utils/soundEngine";
+import { StudioKernelChips } from "./StudioKernelChips";
 import { createThreeStudioScene, type StudioContext } from "./ThreeStudioScene";
 import { useLiveSimParams } from "./useLiveSimParams";
 import { usePatentAudio } from "./usePatentAudio";
@@ -17,7 +18,7 @@ export function SholesTypewriter3D() {
   const [showUiOverlay, setShowUiOverlay] = useState<boolean>(true);
 
   // Typewriter Kinematics Parameters
-  const { params, updateParam } = usePatentPhysics("us-79265-sholes-typewriter");
+  const { params } = usePatentPhysics("us-79265-sholes-typewriter");
   const typingWpm = params.typingSpeedWpm ?? 45;
   const sholesIdle = stepSholesTypewriter(typingWpm, 0);
   const charsPerSecond = sholesIdle.cps.toFixed(1);
@@ -205,15 +206,21 @@ export function SholesTypewriter3D() {
     keyboardGroup.position.set(0, -0.4, 2.2);
     rootGroup.add(keyboardGroup);
 
+    const ivoryKeys: THREE.Mesh[] = [];
+    const keyRestY: number[] = [];
     for (let r = 0; r < 3; r++) {
       for (let k = 0; k < 10; k++) {
         const key = new THREE.Mesh(new THREE.CylinderGeometry(0.12, 0.12, 0.18, 16), ivoryKeyMat);
-        key.position.set(-1.8 + k * 0.4, -r * 0.25, -r * 0.35);
+        const restY = -r * 0.25;
+        key.position.set(-1.8 + k * 0.4, restY, -r * 0.35);
         keyboardGroup.add(key);
+        ivoryKeys.push(key);
+        keyRestY.push(restY);
       }
     }
 
     let reqId: number;
+    let lastBar = -1;
     const clock = new THREE.Clock();
     const restBarRot: Array<{ x: number; z: number }> = typeBars.map((b) => ({
       x: b.rotation.x,
@@ -234,6 +241,14 @@ export function SholesTypewriter3D() {
       });
       // 10-pitch carriage: 2.54 mm/char → scene units (~0.012 per mm)
       carriageGroup.position.x = 1.2 - step.carriageXMm * 0.012;
+      ivoryKeys.forEach((key, i) => {
+        const striking = i % 24 === step.barIndex && step.strikePhase < 0.22;
+        key.position.y = keyRestY[i] + (striking ? -0.09 : 0);
+      });
+      if (step.barIndex !== lastBar && step.strikePhase < 0.22 && !p.isAudioMuted) {
+        lastBar = step.barIndex;
+        soundEngine.playSwitchClick();
+      }
 
       renderer.render(scene, camera);
     };
@@ -313,6 +328,16 @@ export function SholesTypewriter3D() {
           </button>
         </div>
       </div>
+
+      <StudioKernelChips
+        visible={showUiOverlay}
+        title="Sholes 10-pitch platen"
+        chips={[
+          { label: "Cadence", value: String(typingWpm), unit: "wpm" },
+          { label: "Strike", value: charsPerSecond, unit: "s⁻¹" },
+          { label: "Pitch", value: escapementStepMm.toFixed(2), unit: "mm" },
+        ]}
+      />
     </div>
   );
 }

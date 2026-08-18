@@ -1,11 +1,12 @@
 "use client";
 
-import { Activity, Camera, Eye, EyeOff, Sparkles, Volume2, VolumeX } from "lucide-react";
+import { Activity, Camera, Eye, EyeOff, Volume2, VolumeX } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import * as THREE from "three";
 import { stepGrammeDynamo } from "@/physics/catalogKernels";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { soundEngine } from "@/utils/soundEngine";
+import { StudioKernelChips } from "./StudioKernelChips";
 import {
   createGlowPointTexture,
   createThreeStudioScene,
@@ -21,7 +22,7 @@ export function GrammeDynamo3D() {
   const [showUiOverlay, setShowUiOverlay] = useState<boolean>(true);
 
   // Electrical Dynamo Parameters
-  const { params, updateParam } = usePatentPhysics("us-120057-gramme-dynamo");
+  const { params } = usePatentPhysics("us-120057-gramme-dynamo");
   const dynamoRpm = params.shaftRpm ?? params.rotorRpm ?? 950;
   const gramme = stepGrammeDynamo({
     shaftRpm: dynamoRpm,
@@ -260,6 +261,10 @@ export function GrammeDynamo3D() {
       }
       fluxGeo.attributes.position.needsUpdate = true;
       fluxPoints.visible = p.showMagneticFlux;
+      (fluxPoints.material as THREE.PointsMaterial).opacity = Math.min(
+        0.95,
+        0.25 + (p.outputVoltageVolts / 200) * 0.7,
+      );
 
       renderer.render(scene, camera);
     };
@@ -351,6 +356,17 @@ export function GrammeDynamo3D() {
           </button>
         </div>
       </div>
+
+      <StudioKernelChips
+        visible={showUiOverlay}
+        title="Gramme ring"
+        chips={[
+          { label: "Shaft", value: String(Math.round(dynamoRpm)), unit: "rpm" },
+          { label: "E", value: String(outputVoltageVolts), unit: "V" },
+          { label: "I", value: currentAmps, unit: "A" },
+          { label: "P", value: powerWatts, unit: "W" },
+        ]}
+      />
     </div>
   );
 }

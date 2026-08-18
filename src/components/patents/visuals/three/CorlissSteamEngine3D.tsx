@@ -1,10 +1,12 @@
 "use client";
 
-import { Activity, Camera, Eye, EyeOff, Sparkles, Volume2, VolumeX } from "lucide-react";
+import { Activity, Camera, Eye, EyeOff, Volume2, VolumeX } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import * as THREE from "three";
+import { stepCorlissEngine } from "@/physics/catalogKernels";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { soundEngine } from "@/utils/soundEngine";
+import { StudioKernelChips } from "./StudioKernelChips";
 import { createThreeStudioScene, type StudioContext } from "./ThreeStudioScene";
 import { useLiveSimParams } from "./useLiveSimParams";
 import { usePatentAudio } from "./usePatentAudio";
@@ -15,7 +17,7 @@ export function CorlissSteamEngine3D() {
   const containerRef = useRef<HTMLDivElement>(null);
 
   // Thermodynamic Simulation Parameters
-  const { params, updateParam } = usePatentPhysics("us-6162-corliss-steam-engine");
+  const { params } = usePatentPhysics("us-6162-corliss-steam-engine");
   const [showUiOverlay, setShowUiOverlay] = useState<boolean>(true);
   const engineRpm = params.engineRpm ?? 60;
   const steamPressurePsi = params.steamPressurePsi ?? 100;
@@ -24,10 +26,8 @@ export function CorlissSteamEngine3D() {
   const [activeCamera, setActiveCamera] = useState<CameraPreset>("iso");
   const { isAudioMuted, toggleSound: toggleEngine } = usePatentAudio();
 
-  // Indicated Horsepower Calculation: IHP = (P * L * A * N * 2) / 33000
-  const mepPsi =
-    steamPressurePsi * (0.85 * ((1 + Math.log(100 / Math.max(cutoffPct, 10))) * (cutoffPct / 100)));
-  const indicatedHp = Math.round(((mepPsi * 3.0 * (Math.PI * 9.0) * engineRpm * 2) / 33000) * 18);
+  const corliss = stepCorlissEngine({ steamPressurePsi, engineRpm });
+  const indicatedHp = corliss.indicatedHp;
   const coalSavingsPct = (35 + (25 - cutoffPct) * 0.4).toFixed(1);
 
   const live = useLiveSimParams({
@@ -35,6 +35,8 @@ export function CorlissSteamEngine3D() {
     steamPressurePsi,
     cutoffPct,
     isAudioMuted,
+    indicatedHp,
+    coalSavingsPct: Number(coalSavingsPct),
   });
 
   const controlsRef = useRef<StudioContext["controls"] | null>(null);
@@ -297,7 +299,8 @@ export function CorlissSteamEngine3D() {
       connRod.rotation.z = -Math.cos(crankAngle) * 0.22;
 
       // Wrist-plate oscillation (harmonic)
-      wristPlateGroup.rotation.z = Math.sin(crankAngle) * 0.45;
+      const wristAmp = 0.16 + (p.cutoffPct / 100) * 0.4;
+      wristPlateGroup.rotation.z = Math.sin(crankAngle) * wristAmp;
 
       renderer.render(scene, camera);
     };
@@ -377,6 +380,17 @@ export function CorlissSteamEngine3D() {
           </button>
         </div>
       </div>
+
+      <StudioKernelChips
+        visible={showUiOverlay}
+        title="Corliss dashpot trip"
+        chips={[
+          { label: "Steam", value: String(steamPressurePsi), unit: "psi" },
+          { label: "Cutoff", value: String(cutoffPct), unit: "%" },
+          { label: "IHP", value: String(indicatedHp), unit: "hp" },
+          { label: "Coal saved", value: coalSavingsPct, unit: "%" },
+        ]}
+      />
     </div>
   );
 }

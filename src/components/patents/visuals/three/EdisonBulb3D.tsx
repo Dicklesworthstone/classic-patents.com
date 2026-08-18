@@ -14,6 +14,7 @@ import {
 import { useEffect, useRef, useState } from "react";
 import * as THREE from "three";
 import { blackbodyRgb } from "@/physics/blackbody";
+import { stepEdisonBulb } from "@/physics/catalogKernels";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { soundEngine } from "@/utils/soundEngine";
 import { createGlowPointTexture, createThreeStudioScene } from "./ThreeStudioScene";
@@ -37,11 +38,13 @@ export function EdisonBulb3D() {
   const [activeCamera, setActiveCamera] = useState<CameraPreset>("iso");
   const [isPlayingAudio, setIsPlayingAudio] = useState<boolean>(false);
 
-  // Physics Calculations (Stefan-Boltzmann Law)
-  const baseResistance = filamentMaterial === "carbonized-bamboo" ? 100 : 4;
-  const currentAmps = appliedVoltage / baseResistance;
-  const powerWatts = appliedVoltage * currentAmps;
-  const filamentTempKelvin = Math.round(300 + (powerWatts * 4e10) ** 0.25);
+  const bulb = stepEdisonBulb({
+    voltage: appliedVoltage,
+    filamentLength: params.filamentLength ?? 22,
+  });
+  const powerWatts = bulb.radiantWatts;
+  const filamentTempKelvin = bulb.filamentTempK;
+  const currentAmps = (params.voltage ?? 110) / (bulb.hotResistanceOhm ?? 150);
   const estimatedLifespanHours =
     vacuumTorr < 1e-4 ? Math.round(1200 / (Math.max(appliedVoltage, 1) / 110) ** 3.5) : 0;
 

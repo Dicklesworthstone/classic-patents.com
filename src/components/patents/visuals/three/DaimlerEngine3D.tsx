@@ -34,6 +34,10 @@ export function DaimlerEngine3D() {
     engineRpm,
     hotTubeTempC,
     isPlaying,
+    bmepBar: daimler.bmepBar,
+    brakeHorsepower: daimler.brakeHorsepower,
+    outerWheelRpm: daimler.outerWheelRpm,
+    innerWheelRpm: daimler.innerWheelRpm,
   });
 
   const studioRef = useRef<StudioContext | null>(null);
@@ -144,8 +148,12 @@ export function DaimlerEngine3D() {
       const dt = Math.min((time - lastTime) / 1000, 0.1);
       lastTime = time;
 
-      if (live.current.isPlaying) {
-        const rpm = live.current.engineRpm;
+      const tube = live.current.hotTubeTempC;
+      hotTubeMat.emissiveIntensity = tube >= 800 ? 2.4 : Math.max(0.15, (tube / 800) * 2.2);
+      hotTubeMat.emissive.setHex(tube >= 800 ? 0xf97316 : tube >= 600 ? 0xb45309 : 0x334155);
+
+      if (live.current.isPlaying && tube >= 600) {
+        const rpm = live.current.engineRpm * (live.current.bmepBar / 4.5);
         const speed = (rpm / 60) * Math.PI * 2;
         crankAngle = (crankAngle + speed * dt) % (Math.PI * 2);
 
@@ -181,7 +189,12 @@ export function DaimlerEngine3D() {
       if (animRef.current) cancelAnimationFrame(animRef.current);
       studio.dispose();
     };
-  }, [live.current.isPlaying, live.current.engineRpm]);
+  }, [
+    live.current.isPlaying,
+    live.current.engineRpm,
+    live.current.bmepBar,
+    live.current.hotTubeTempC,
+  ]);
 
   const setCameraView = (view: CameraPreset) => {
     const studio = studioRef.current;
@@ -277,6 +290,22 @@ export function DaimlerEngine3D() {
               />
             </div>
 
+            <div className="space-y-1">
+              <div className="flex justify-between text-xs font-mono text-slate-300">
+                <span>Platinum hot-tube</span>
+                <span className="text-amber-400 font-bold">{hotTubeTempC} °C</span>
+              </div>
+              <input
+                type="range"
+                min="400"
+                max="1100"
+                step="25"
+                value={hotTubeTempC}
+                onChange={(e) => updateParam("hotTubeTemp", Number(e.target.value))}
+                className="w-full accent-amber-500 cursor-pointer"
+              />
+            </div>
+
             {/* Live Readout Badges */}
             <div className="grid grid-cols-2 gap-2 pt-1">
               <div className="bg-slate-800/80 rounded-lg p-2 border border-slate-700 text-center">
@@ -286,9 +315,21 @@ export function DaimlerEngine3D() {
                 </span>
               </div>
               <div className="bg-slate-800/80 rounded-lg p-2 border border-slate-700 text-center">
-                <span className="text-[10px] font-mono text-slate-400 block">Ignition Tube</span>
+                <span className="text-[10px] font-mono text-slate-400 block">BMEP / tube</span>
                 <span className="text-xs font-mono font-bold text-amber-400">
-                  {hotTubeTempC} °C
+                  {daimler.bmepBar} bar · {hotTubeTempC} °C
+                </span>
+              </div>
+              <div className="bg-slate-800/80 rounded-lg p-2 border border-slate-700 text-center">
+                <span className="text-[10px] font-mono text-slate-400 block">Diff wheels</span>
+                <span className="text-xs font-mono font-bold text-sky-300">
+                  {daimler.innerWheelRpm}/{daimler.outerWheelRpm} rpm
+                </span>
+              </div>
+              <div className="bg-slate-800/80 rounded-lg p-2 border border-slate-700 text-center">
+                <span className="text-[10px] font-mono text-slate-400 block">Mass</span>
+                <span className="text-xs font-mono font-bold text-slate-200">
+                  {_engineWeightKg} kg
                 </span>
               </div>
             </div>

@@ -1,10 +1,12 @@
 "use client";
 
-import { Activity, Camera, Eye, EyeOff, Sparkles, Volume2, VolumeX } from "lucide-react";
+import { Activity, Camera, Eye, EyeOff, Volume2, VolumeX } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import * as THREE from "three";
+import { stepHyattCelluloid } from "@/physics/catalogKernels";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { soundEngine } from "@/utils/soundEngine";
+import { StudioKernelChips } from "./StudioKernelChips";
 import { createThreeStudioScene, type StudioContext } from "./ThreeStudioScene";
 import { useLiveSimParams } from "./useLiveSimParams";
 import { usePatentAudio } from "./usePatentAudio";
@@ -16,10 +18,14 @@ export function HyattCelluloid3D() {
   const [showUiOverlay, setShowUiOverlay] = useState<boolean>(true);
 
   // Polymer Processing Parameters
-  const { params, updateParam } = usePatentPhysics("us-105338-hyatt-celluloid");
-  const processTempC = params.steamTempC ?? 125;
-  const hydraulicPressureMpa = (processTempC / 125) * 22;
-  const extrusionRateCmPerMin = (processTempC * 0.15).toFixed(1);
+  const { params } = usePatentPhysics("us-105338-hyatt-celluloid");
+  const processTempC = params.steamTempC ?? params.tempCelsius ?? 95;
+  const hydraulicPressureMpa = params.hydraulicPressureMpa ?? 10;
+  const hyatt = stepHyattCelluloid({
+    steamTempC: processTempC,
+    hydraulicPressureMpa,
+  });
+  const extrusionRateCmPerMin = hyatt.isMelted ? (processTempC * 0.15).toFixed(1) : "0.0";
   const [activeCamera, setActiveCamera] = useState<CameraPreset>("iso");
   const { isAudioMuted, toggleSound: toggleEngine } = usePatentAudio();
 
@@ -27,6 +33,8 @@ export function HyattCelluloid3D() {
     processTempC,
     hydraulicPressureMpa,
     isAudioMuted,
+    viscosityPaS: hyatt.viscosityPaS,
+    isMelted: hyatt.isMelted ? 1 : 0,
   });
 
   const controlsRef = useRef<StudioContext["controls"] | null>(null);
@@ -207,11 +215,20 @@ export function HyattCelluloid3D() {
 
     const animate = () => {
       reqId = requestAnimationFrame(animate);
-      const _delta = clock.getDelta();
-      const _p = live.current;
+      clock.getDelta();
+      const p = live.current;
 
-      // Subtle ram pulsation
-      ramPiston.position.x = 1.8 + Math.sin(clock.getElapsedTime() * 1.5) * 0.15;
+      const melted = p.isMelted > 0.5;
+      const ramHz = melted ? 0.35 + p.hydraulicPressureMpa * 0.04 : 0.08;
+      const ramStroke = melted ? 0.12 + p.hydraulicPressureMpa * 0.03 : 0.02;
+      ramPiston.position.x =
+        1.8 + Math.sin(clock.getElapsedTime() * ramHz * Math.PI * 2) * ramStroke;
+      // Extrusion only when steam + pressure have melted the camphor-nitrocellulose
+      const flow = melted ? Math.min(1.4, 1800 / Math.max(80, p.viscosityPaS)) : 0.08;
+      rodMesh.visible = melted;
+      rodMesh.scale.x = flow;
+      celluloidAmberMat.opacity = melted ? 0.88 : 0.22;
+      celluloidAmberMat.color.setHex(p.processTempC >= 90 ? 0xf59e0b : 0xb45309);
 
       renderer.render(scene, camera);
     };
@@ -291,6 +308,27 @@ export function HyattCelluloid3D() {
           </button>
         </div>
       </div>
+
+      <StudioKernelChips
+        visible={showUiOverlay}
+        title="Hyatt hydraulic press"
+        chips={[
+          {
+            label: "Steam jacket",
+            value: String(processTempC),
+            unit: "°C",
+            tone: hyatt.isMelted ? "hot" : "warn",
+          },
+          { label: "Ram", value: hydraulicPressureMpa.toFixed(0), unit: "MPa" },
+          { label: "η", value: String(hyatt.viscosityPaS), unit: "Pa·s" },
+          {
+            label: "Extrusion",
+            value: hyatt.isMelted ? extrusionRateCmPerMin : "0.0",
+            unit: "cm/min",
+            tone: hyatt.isMelted ? "ok" : "warn",
+          },
+        ]}
+      />
     </div>
   );
 }

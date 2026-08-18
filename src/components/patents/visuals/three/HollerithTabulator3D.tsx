@@ -3,6 +3,7 @@
 import { Camera, Play, Volume2, VolumeX, Zap } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import * as THREE from "three";
+import { FrankenSimEngine } from "@/physics/engine";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { createThreeStudioScene, type StudioContext } from "./ThreeStudioScene";
 import { useLiveSimParams } from "./useLiveSimParams";
@@ -15,7 +16,12 @@ export function HollerithTabulator3D() {
   const { params, updateParam } = usePatentPhysics("us-395781-hollerith-tabulating");
 
   const cardsProcessed = params.cardsProcessed ?? 1890;
-  const tabulatingSpeedCpm = params.cardsPerMin ?? 60;
+  const tabulatingSpeedCpm = params.cardsPerMin ?? params.tabulatingSpeed ?? 60;
+  const hollerith = FrankenSimEngine.stepHollerithTabulating({
+    cardsPerMin: tabulatingSpeedCpm,
+    supplyVoltageV: params.batteryVolts ?? 12,
+    activeRelays: params.activeRelays ?? 8,
+  });
 
   const [isPlaying, setIsPlaying] = useState<boolean>(true);
   const [showUiOverlay, setShowUiOverlay] = useState<boolean>(true);
@@ -25,6 +31,9 @@ export function HollerithTabulator3D() {
     cardsProcessed,
     tabulatingSpeedCpm,
     isPlaying,
+    cycleTimeMs: hollerith.cycleTimeMs,
+    solenoidForceN: hollerith.solenoidForceN,
+    activeRelays: params.activeRelays ?? 8,
   });
 
   const studioRef = useRef<StudioContext | null>(null);
@@ -191,10 +200,11 @@ export function HollerithTabulator3D() {
       if (live.current.isPlaying) {
         cardStep += dt * (live.current.tabulatingSpeedCpm / 60);
 
-        // Press lever bobs up and down
         if (pressHandleRef.current) {
-          const pressPhase = Math.sin(time * 0.006);
-          pressHandleRef.current.rotation.z = Math.PI / 4 + pressPhase * 0.2;
+          const cycleS = Math.max(0.05, live.current.cycleTimeMs / 1000);
+          const pressPhase = Math.sin((time / 1000 / cycleS) * Math.PI * 2);
+          const amp = 0.12 + (live.current.solenoidForceN / 40) * 0.18;
+          pressHandleRef.current.rotation.z = Math.PI / 4 + pressPhase * amp;
         }
 
         // Stepping dial hands
@@ -215,7 +225,12 @@ export function HollerithTabulator3D() {
       if (animRef.current) cancelAnimationFrame(animRef.current);
       studio.dispose();
     };
-  }, [live.current.tabulatingSpeedCpm, live.current.isPlaying]);
+  }, [
+    live.current.tabulatingSpeedCpm,
+    live.current.isPlaying,
+    live.current.cycleTimeMs,
+    live.current.solenoidForceN,
+  ]);
 
   const setCameraView = (view: CameraPreset) => {
     const studio = studioRef.current;
@@ -314,16 +329,16 @@ export function HollerithTabulator3D() {
             {/* Readout Badges */}
             <div className="grid grid-cols-2 gap-2 pt-1">
               <div className="bg-slate-800/80 rounded-lg p-2 border border-slate-700 text-center">
-                <span className="text-[10px] font-mono text-slate-400 block">
-                  Demographic Dials
-                </span>
+                <span className="text-[10px] font-mono text-slate-400 block">Cycle</span>
                 <span className="text-xs font-mono font-bold text-emerald-400">
-                  24 Relays Active
+                  {hollerith.cycleTimeMs} ms
                 </span>
               </div>
               <div className="bg-slate-800/80 rounded-lg p-2 border border-slate-700 text-center">
-                <span className="text-[10px] font-mono text-slate-400 block">Sorting Accuracy</span>
-                <span className="text-xs font-mono font-bold text-amber-400">100% Verified</span>
+                <span className="text-[10px] font-mono text-slate-400 block">Solenoid</span>
+                <span className="text-xs font-mono font-bold text-amber-400">
+                  {hollerith.solenoidForceN} N · {params.activeRelays ?? 8} relays
+                </span>
               </div>
             </div>
           </div>

@@ -1,11 +1,12 @@
 "use client";
 
-import { Activity, Camera, Eye, EyeOff, Flame, Sparkles, Volume2, VolumeX } from "lucide-react";
+import { Activity, Camera, Eye, EyeOff, Flame, Volume2, VolumeX } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import * as THREE from "three";
 import { stepNobelDynamite } from "@/physics/catalogKernels";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { soundEngine } from "@/utils/soundEngine";
+import { StudioKernelChips } from "./StudioKernelChips";
 import {
   createGlowPointTexture,
   createThreeStudioScene,
@@ -21,7 +22,7 @@ export function NobelDynamite3D() {
   const [showUiOverlay, setShowUiOverlay] = useState<boolean>(true);
 
   // Chemical Explosives Parameters
-  const { params, updateParam } = usePatentPhysics("us-78317-nobel-dynamite");
+  const { params } = usePatentPhysics("us-78317-nobel-dynamite");
   const ngPercentage = params.ngConcentrationPct ?? params.ngConcentration ?? 75;
   const nobel = stepNobelDynamite({
     ngConcentrationPct: ngPercentage,
@@ -114,6 +115,8 @@ export function NobelDynamite3D() {
       color: 0x92400e,
       roughness: 0.9,
       metalness: 0.05,
+      emissive: 0xff4400,
+      emissiveIntensity: 0,
     });
 
     const copperCapMat = new THREE.MeshStandardMaterial({
@@ -230,6 +233,10 @@ export function NobelDynamite3D() {
       } else {
         sparkMat.opacity = 0;
       }
+      // Cap must actually initiate — fuse alone does not detonate kieselguhr-NG
+      const det = p.isFuseLit && p.isInitiated > 0.5;
+      kieselguhrMatrixMat.emissiveIntensity = det ? 1.6 : 0;
+      sparkMat.size = 0.4 + (p.detonationVelocityMps / 8000) * 1.4;
 
       renderer.render(scene, camera);
     };
@@ -321,7 +328,26 @@ export function NobelDynamite3D() {
         </div>
       </div>
 
-      {/* Bottom Telemetry Bar & Controls */}
+      <StudioKernelChips
+        visible={showUiOverlay}
+        title="Nobel kieselguhr"
+        chips={[
+          { label: "NG", value: String(ngPercentage), unit: "%" },
+          {
+            label: "Cap",
+            value: String(params.capEnergyJoules ?? 1.2),
+            unit: "J",
+            tone: nobel.isInitiated ? "ok" : "warn",
+          },
+          {
+            label: "v_d",
+            value: String(detonationVelocityMps),
+            unit: "m/s",
+            tone: nobel.isInitiated ? "hot" : "warn",
+          },
+          { label: "P", value: String(blastOverpressureMpa), unit: "MPa" },
+        ]}
+      />
     </div>
   );
 }

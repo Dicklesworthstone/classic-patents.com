@@ -1,11 +1,12 @@
 "use client";
 
-import { Activity, Camera, Flame, Sparkles, Volume2, VolumeX, Zap } from "lucide-react";
+import { Activity, Camera, Flame, Volume2, VolumeX, Zap } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import * as THREE from "three";
 import { FrankenSimEngine } from "@/physics/engine";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { soundEngine } from "@/utils/soundEngine";
+import { StudioKernelChips } from "./StudioKernelChips";
 import {
   createGlowPointTexture,
   createThreeStudioScene,
@@ -39,6 +40,8 @@ export function MaximMachineGun3D() {
     isAudioMuted,
     recoilStrokeM,
     barrelTempC: maxim.barrelTempC,
+    waterEvapRateGs: maxim.waterEvapRateGs,
+    recoilMomentumNs: maxim.recoilMomentumNs,
   });
 
   const controlsRef = useRef<StudioContext["controls"] | null>(null);
@@ -131,10 +134,8 @@ export function MaximMachineGun3D() {
     rootGroup.add(gunGroup);
 
     // Cylindrical Water Jacket (Claim 1)
-    const waterJacket = new THREE.Mesh(
-      new THREE.CylinderGeometry(0.55, 0.55, 4.2, 24),
-      gunmetalMat,
-    );
+    const jacketMat = gunmetalMat.clone();
+    const waterJacket = new THREE.Mesh(new THREE.CylinderGeometry(0.55, 0.55, 4.2, 24), jacketMat);
     waterJacket.rotation.z = Math.PI / 2;
     waterJacket.position.x = 1.4;
     waterJacket.castShadow = true;
@@ -217,6 +218,9 @@ export function MaximMachineGun3D() {
 
       // Muzzle flash sync
       flashMat.opacity = recoilPhase > 0.8 && p.showMuzzleFlash ? 0.95 : 0;
+      jacketMat.color.setHex(
+        p.barrelTempC > 200 ? 0xf87171 : p.barrelTempC > 110 ? 0xfbbf24 : 0x334155,
+      );
 
       renderer.render(scene, camera);
     };
@@ -303,6 +307,23 @@ export function MaximMachineGun3D() {
           </button>
         </div>
       </div>
+
+      <StudioKernelChips
+        visible={showUiOverlay}
+        title="Maxim recoil lock"
+        chips={[
+          { label: "Cyclic", value: String(Math.round(fireRateRpm)), unit: "rds/min" },
+          { label: "Stroke", value: String(Math.round(recoilStrokeM * 1000)), unit: "mm" },
+          { label: "p", value: String(maxim.recoilMomentumNs), unit: "N·s" },
+          {
+            label: "Barrel",
+            value: String(maxim.barrelTempC),
+            unit: "°C",
+            tone: maxim.barrelTempC > 200 ? "warn" : "ok",
+          },
+          { label: "Steam", value: String(maxim.waterEvapRateGs), unit: "g/s" },
+        ]}
+      />
     </div>
   );
 }

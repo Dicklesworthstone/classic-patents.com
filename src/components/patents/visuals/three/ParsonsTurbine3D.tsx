@@ -1,11 +1,12 @@
 "use client";
 
-import { Activity, Camera, Sparkles, Volume2, VolumeX, Wind, Zap } from "lucide-react";
+import { Activity, Camera, Volume2, VolumeX, Wind, Zap } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import * as THREE from "three";
 import { stepParsonsTurbine } from "@/physics/catalogKernels";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { soundEngine } from "@/utils/soundEngine";
+import { StudioKernelChips } from "./StudioKernelChips";
 import {
   createGlowPointTexture,
   createThreeStudioScene,
@@ -20,7 +21,7 @@ export function ParsonsTurbine3D() {
   const containerRef = useRef<HTMLDivElement>(null);
 
   // Steam Turbomachinery Parameters
-  const { params, updateParam } = usePatentPhysics("us-608969-parsons-turbine");
+  const { params } = usePatentPhysics("us-328710-parsons-turbine");
   const [showUiOverlay, setShowUiOverlay] = useState<boolean>(true);
   const turbineRpm = params.rotorRpm ?? 3000;
   const steamPressureBar = params.steamPressureBar ?? (params.inletPressurePsi ?? 180) / 14.5038;
@@ -40,6 +41,8 @@ export function ParsonsTurbine3D() {
     showSteamFlow,
     isAudioMuted,
     shaftPowerKw: powerKw,
+    enthalpyKjKg: parsons.enthalpyKjKg,
+    inletMpa: parsons.inletMpa,
   });
 
   const controlsRef = useRef<StudioContext["controls"] | null>(null);
@@ -245,7 +248,7 @@ export function ParsonsTurbine3D() {
       const pos = steamPositions;
       for (let i = 0; i < steamCount; i++) {
         const idx = i * 3;
-        pos[idx] += (p.turbineRpm / 60) * 0.25 * delta;
+        pos[idx] += (p.enthalpyKjKg / 550) * (p.turbineRpm / 3000) * 12 * delta;
         const x = pos[idx];
         const r = 0.6 + ((x + 4.5) / 9.0) * 1.4;
         let a = Math.atan2(pos[idx + 2], pos[idx + 1]);
@@ -259,6 +262,10 @@ export function ParsonsTurbine3D() {
       }
       steamGeo.attributes.position.needsUpdate = true;
       steamPoints.visible = p.showSteamFlow;
+      (steamPoints.material as THREE.PointsMaterial).opacity = Math.min(
+        0.95,
+        0.25 + (p.shaftPowerKw / 14000) * 0.7,
+      );
 
       renderer.render(scene, camera);
     };
@@ -345,6 +352,18 @@ export function ParsonsTurbine3D() {
           </button>
         </div>
       </div>
+
+      <StudioKernelChips
+        visible={showUiOverlay}
+        title="Parsons reaction stages"
+        chips={[
+          { label: "Rotor", value: String(Math.round(turbineRpm)), unit: "rpm" },
+          { label: "Inlet", value: parsons.inletMpa.toFixed(2), unit: "MPa" },
+          { label: "h", value: String(parsons.enthalpyKjKg), unit: "kJ/kg" },
+          { label: "Shaft", value: String(powerKw), unit: "kW" },
+          { label: "Stages", value: String(stageCount) },
+        ]}
+      />
     </div>
   );
 }

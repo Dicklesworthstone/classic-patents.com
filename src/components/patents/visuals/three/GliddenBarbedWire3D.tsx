@@ -3,8 +3,10 @@
 import { Activity, Camera, Eye, EyeOff, Volume2, VolumeX } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import * as THREE from "three";
+import { stepGliddenBarbedWire } from "@/physics/catalogKernels";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { soundEngine } from "@/utils/soundEngine";
+import { StudioKernelChips } from "./StudioKernelChips";
 import { createThreeStudioScene, type StudioContext } from "./ThreeStudioScene";
 import { useLiveSimParams } from "./useLiveSimParams";
 import { usePatentAudio } from "./usePatentAudio";
@@ -16,12 +18,17 @@ export function GliddenBarbedWire3D() {
   const [showUiOverlay, setShowUiOverlay] = useState<boolean>(true);
 
   // Wire Manufacturing Parameters
-  const { params, updateParam } = usePatentPhysics("us-157124-glidden-barbed-wire");
+  const { params } = usePatentPhysics("us-157124-glidden-barbed-wire");
   const twistsPerFoot = params.twistsPerFoot ?? 5;
   const machineRpm = twistsPerFoot * 24;
   const barbSpacingInches = params.barbSpacingInches ?? 5.0;
+  const glidden = stepGliddenBarbedWire({
+    wireTensionN: params.wireTensionN ?? 650,
+    twistsPerFoot,
+    animalPushForceN: params.animalPushForceN ?? 120,
+  });
   const feetPerMinute = ((machineRpm * barbSpacingInches) / 12).toFixed(1);
-  const tensileStrengthLbs = 950;
+  const tensileStrengthLbs = 950; // Bessemer fence-wire rating, ~1874
   const [activeCamera, setActiveCamera] = useState<CameraPreset>("iso");
   const { isAudioMuted, toggleSound: toggleEngine } = usePatentAudio();
 
@@ -29,6 +36,8 @@ export function GliddenBarbedWire3D() {
     machineRpm,
     barbSpacingInches,
     isAudioMuted,
+    sagCm: glidden.sagCm,
+    isLocked: glidden.isLocked ? 1 : 0,
   });
 
   const controlsRef = useRef<StudioContext["controls"] | null>(null);
@@ -204,6 +213,7 @@ export function GliddenBarbedWire3D() {
 
       const omegaRadPerSec = (p.machineRpm * 2 * Math.PI) / 60;
       flyerGroup.rotation.x += omegaRadPerSec * delta;
+      galvanizedSteelMat.color.setHex(p.isLocked > 0 ? 0xe2e8f0 : 0xf87171);
       reelGroup.rotation.x += omegaRadPerSec * 0.2 * delta;
 
       renderer.render(scene, camera);
@@ -284,6 +294,23 @@ export function GliddenBarbedWire3D() {
           </button>{" "}
         </div>
       </div>
+
+      <StudioKernelChips
+        visible={showUiOverlay}
+        title="Glidden locked barb"
+        chips={[
+          { label: "Twists", value: String(twistsPerFoot), unit: "/ft" },
+          { label: "Sag", value: String(glidden.sagCm), unit: "cm" },
+          { label: "Hold", value: String(glidden.barbSlipThresholdN), unit: "N" },
+          {
+            label: "Lock",
+            value: glidden.isLocked ? "held" : "slip",
+            tone: glidden.isLocked ? "ok" : "warn",
+          },
+          { label: "Line", value: feetPerMinute, unit: "ft/min" },
+          { label: "Wire", value: String(tensileStrengthLbs), unit: "lb" },
+        ]}
+      />
     </div>
   );
 }

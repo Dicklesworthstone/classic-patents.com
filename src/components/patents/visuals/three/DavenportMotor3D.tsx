@@ -3,7 +3,9 @@
 import { Eye, EyeOff, Zap } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import * as THREE from "three";
+import { stepDavenportMotor } from "@/physics/catalogKernels";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
+import { StudioKernelChips } from "./StudioKernelChips";
 import { createThreeStudioScene } from "./ThreeStudioScene";
 import { useLiveSimParams } from "./useLiveSimParams";
 
@@ -14,7 +16,8 @@ export function DavenportMotor3D() {
 
   const batteryVoltage = params.batteryVoltage ?? 12;
   const loadTorque = params.loadTorque ?? 0.8;
-  const motorRpm = Math.round((batteryVoltage / 12) * (450 / Math.max(0.5, loadTorque)));
+  const davenport = stepDavenportMotor({ batteryVoltage, loadTorque });
+  const motorRpm = davenport.shaftRpm;
   const live = useLiveSimParams({ motorRpm, batteryVoltage, loadTorque });
 
   useEffect(() => {
@@ -211,6 +214,18 @@ export function DavenportMotor3D() {
           </div>
         </div>
       )}
+
+      <StudioKernelChips
+        visible={showUiOverlay}
+        side="right"
+        title="Davenport commutator"
+        chips={[
+          { label: "Battery", value: String(batteryVoltage), unit: "V" },
+          { label: "Load", value: String(loadTorque), unit: "N·m" },
+          { label: "ω", value: String(motorRpm), unit: "rpm" },
+          { label: "Shaft", value: String(davenport.shaftPowerW), unit: "W" },
+        ]}
+      />
     </div>
   );
 }

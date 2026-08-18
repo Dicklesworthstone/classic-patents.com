@@ -3,6 +3,7 @@
 import { Camera, Eye, EyeOff, Radio, RotateCcw, Volume2, VolumeX, Zap } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import * as THREE from "three";
+import { stepMorseTelegraph } from "@/physics/catalogKernels";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { soundEngine } from "@/utils/soundEngine";
 import { createGlowPointTexture, createThreeStudioScene } from "./ThreeStudioScene";
@@ -30,13 +31,19 @@ export function MorseTelegraph3D() {
   const totalResistanceOhms = lineResistanceOhms + coilResistanceOhms;
   const computedCurrentMa = (lineVoltageV / totalResistanceOhms) * 1000;
   const loopCurrentMa = (params.currentMa ?? computedCurrentMa).toFixed(1);
-  const magneticHoldForceN = (Number(loopCurrentMa) * 0.08).toFixed(2);
+  const morse = stepMorseTelegraph({
+    currentMa: Number(loopCurrentMa),
+    wireTurns: params.wireTurns ?? 1200,
+  });
+  const magneticHoldForceN = morse.magneticForceN.toFixed(2);
 
   const live = useLiveSimParams({
     keyIsDown,
     lineVoltageV,
     lineLengthMiles,
     loopCurrentMa,
+    magneticForceN: morse.magneticForceN,
+    ampereTurns: morse.ampereTurns,
   });
 
   const controlsRef = useRef<any>(null);
@@ -260,12 +267,13 @@ export function MorseTelegraph3D() {
       const p = live.current;
 
       if (p.keyIsDown) {
+        const pull = Math.min(0.22, p.magneticForceN / 8);
         keyLeverGroup.rotation.z = 0.06;
-        armatureGroup.position.y = 1.85; // Pulled down onto pole faces
-        spool.rotation.z += 0.03; // Spool tape advances
+        armatureGroup.position.y = 2.05 - pull;
+        spool.rotation.z += 0.012 + (p.magneticForceN / 6) * 0.03;
       } else {
         keyLeverGroup.rotation.z = -0.02;
-        armatureGroup.position.y = 2.05; // Released by antagonist spring
+        armatureGroup.position.y = 2.05;
       }
 
       if (p.keyIsDown) {
@@ -326,7 +334,9 @@ export function MorseTelegraph3D() {
                 <div>
                   <span className="text-ink-600 dark:text-ink-400">Magnetic Pull:</span>{" "}
                   <span className="font-bold text-emerald-600 dark:text-emerald-400">
-                    {keyIsDown ? `${magneticHoldForceN} N` : "0.00 N"}
+                    {keyIsDown
+                      ? `${magneticHoldForceN} N · ${morse.ampereTurns} A·t`
+                      : "0.00 N"}
                   </span>
                 </div>
                 <div>

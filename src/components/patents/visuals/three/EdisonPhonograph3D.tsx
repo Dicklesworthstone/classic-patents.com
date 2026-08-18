@@ -3,6 +3,7 @@
 import { Activity, Camera, Eye, EyeOff, Sparkles, Volume2, VolumeX, Zap } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import * as THREE from "three";
+import { stepEdisonPhonograph } from "@/physics/catalogKernels";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { soundEngine } from "@/utils/soundEngine";
 import { buildEdisonPhonographModel } from "./edisonPhonographModel";
@@ -18,14 +19,19 @@ export function EdisonPhonograph3D() {
 
   // Acoustic Phonograph Parameters
   const { params, updateParam } = usePatentPhysics("us-200521-edison-phonograph");
-  const cylinderRpm = params.cylinderRpm ?? 60;
-  const surfaceSpeedCmPerSec = ((cylinderRpm * Math.PI * 7.62) / 60).toFixed(1);
+  const cylinderRpm = params.mandrelRpm ?? params.cylinderRpm ?? 60;
+  const phono = stepEdisonPhonograph({
+    mandrelRpm: cylinderRpm,
+    voiceVolumeDb: params.voiceVolumeDb ?? 75,
+  });
+  const surfaceSpeedCmPerSec = (phono.trackSpeedInPerS * 2.54).toFixed(1);
   const [activeCamera, setActiveCamera] = useState<CameraPreset>("iso");
   const { isAudioMuted, toggleSound: toggleEngine } = usePatentAudio();
 
   const live = useLiveSimParams({
     cylinderRpm,
     isAudioMuted,
+    grooveDepthMicrons: phono.grooveDepthMicrons,
   });
 
   const controlsRef = useRef<StudioContext["controls"] | null>(null);
@@ -68,6 +74,13 @@ export function EdisonPhonograph3D() {
     });
   };
 
+  const applyScenario = (rpm: number, db: number) => {
+    updateParam("cylinderRpm", rpm);
+    updateParam("mandrelRpm", rpm);
+    updateParam("voiceVolumeDb", db);
+    if (typeof window !== "undefined") soundEngine.playSwitchClick();
+  };
+
   // biome-ignore lint/correctness/useExhaustiveDependencies: Three.js animation loop reads live ref
   useEffect(() => {
     const container = containerRef.current;
@@ -104,7 +117,8 @@ export function EdisonPhonograph3D() {
       model.cylinderGroup.position.x = ((clock.getElapsedTime() * traverseSpeed) % 1.2) - 0.6;
 
       // Stylus Acoustic Vibration
-      const stylusVibe = Math.sin(clock.getElapsedTime() * 40.0) * 0.03;
+      const stylusVibe =
+        Math.sin(clock.getElapsedTime() * 40.0) * (0.008 + (p.grooveDepthMicrons / 25) * 0.04);
       model.stylus.position.y = -0.55 + stylusVibe;
 
       renderer.render(scene, camera);
@@ -124,49 +138,119 @@ export function EdisonPhonograph3D() {
       <div ref={containerRef} className="w-full h-full cursor-grab active:cursor-grabbing" />
 
       {/* Top-Right Toggle & Camera Controls */}
-      <div className="absolute top-4 right-4 flex items-center gap-2 pointer-events-auto z-20"></div>
-
-      {/* Top HUD Controls */}
-      <div className="absolute top-4 left-4 right-4 flex flex-wrap items-center justify-between gap-3 pointer-events-none z-10 pr-28 sm:pr-32">
-        <div className="flex items-center gap-2 bg-parchment-950/80 backdrop-blur-md px-3.5 py-2 rounded-xl border border-parchment-700/60 shadow-lg pointer-events-auto">
-          <Activity className="w-4 h-4 text-amber-500 animate-pulse" />
-          <span className="text-xs font-mono font-bold text-parchment-100 uppercase tracking-wider">
-            Edison Phonograph 3D
-          </span>
-          <span className="text-[10px] font-mono px-2 py-0.5 rounded-full bg-amber-500/20 text-amber-300 border border-amber-500/30">
-            US Patent 200,521 (1878)
-          </span>
-        </div>
-
-        {/* Camera Views */}
-        <div className="flex items-center gap-1.5 bg-parchment-950/80 backdrop-blur-md p-1.5 rounded-xl border border-parchment-700/60 shadow-lg pointer-events-auto">
-          <Camera className="w-3.5 h-3.5 text-parchment-400 ml-1.5 mr-1" />
-          {(
-            [
-              { id: "iso", label: "Overview" },
-              { id: "stylus_groove", label: "Stylus & Diaphragm" },
-              { id: "tinfoil_cylinder", label: "Tinfoil Mandrel" },
-              { id: "brass_horn", label: "Brass Horn" },
-              { id: "top", label: "Top View" },
-            ] as const
-          ).map((c) => (
-            <button
-              key={c.id}
-              type="button"
-              onClick={() => applyCameraPreset(c.id)}
-              className={`px-2.5 py-1 text-xs font-mono rounded-lg transition-all ${
-                activeCamera === c.id
-                  ? "bg-amber-600 text-white font-bold shadow-xs"
-                  : "text-parchment-300 hover:text-white hover:bg-parchment-800/60"
-              }`}
-            >
-              {c.label}
-            </button>
-          ))}
-        </div>
+      <div className="absolute top-4 right-4 flex items-center gap-2 pointer-events-auto z-20">
+        <button
+          type="button"
+          onClick={toggleSound}
+          title={isAudioMuted ? "Unmute Sound" : "Mute Sound"}
+          className="p-2 rounded-xl bg-parchment-950/80 backdrop-blur-md border border-parchment-700/60 text-parchment-300 hover:text-white shadow-lg transition-colors cursor-pointer"
+        >
+          {isAudioMuted ? (
+            <VolumeX className="w-4 h-4" />
+          ) : (
+            <Volume2 className="w-4 h-4 text-amber-400" />
+          )}
+        </button>
+        <button
+          type="button"
+          onClick={() => setShowUiOverlay(!showUiOverlay)}
+          title={showUiOverlay ? "Hide Overlay UI" : "Show Overlay UI"}
+          className="p-2 rounded-xl bg-parchment-950/80 backdrop-blur-md border border-parchment-700/60 text-parchment-300 hover:text-white shadow-lg transition-colors cursor-pointer"
+        >
+          {showUiOverlay ? (
+            <EyeOff className="w-4 h-4" />
+          ) : (
+            <Eye className="w-4 h-4 text-amber-400" />
+          )}
+        </button>
       </div>
 
-      {/* Bottom Control Bar */}
+      {showUiOverlay && (
+        <>
+          {/* Top HUD Controls */}
+          <div className="absolute top-4 left-4 right-4 flex flex-wrap items-center justify-between gap-3 pointer-events-none z-10 pr-28 sm:pr-32">
+            <div className="flex items-center gap-2 bg-parchment-950/80 backdrop-blur-md px-3.5 py-2 rounded-xl border border-parchment-700/60 shadow-lg pointer-events-auto">
+              <Activity className="w-4 h-4 text-amber-500 animate-pulse" />
+              <span className="text-xs font-mono font-bold text-parchment-100 uppercase tracking-wider">
+                Edison Phonograph 3D
+              </span>
+              <span className="text-[10px] font-mono px-2 py-0.5 rounded-full bg-amber-500/20 text-amber-300 border border-amber-500/30">
+                US Patent 200,521 (1878)
+              </span>
+            </div>
+
+            {/* Camera Views */}
+            <div className="flex items-center gap-1.5 bg-parchment-950/80 backdrop-blur-md p-1.5 rounded-xl border border-parchment-700/60 shadow-lg pointer-events-auto">
+              <Camera className="w-3.5 h-3.5 text-parchment-400 ml-1.5 mr-1" />
+              {(
+                [
+                  { id: "iso", label: "Overview" },
+                  { id: "stylus_groove", label: "Stylus & Diaphragm" },
+                  { id: "tinfoil_cylinder", label: "Tinfoil Mandrel" },
+                  { id: "brass_horn", label: "Brass Horn" },
+                  { id: "top", label: "Top View" },
+                ] as const
+              ).map((c) => (
+                <button
+                  key={c.id}
+                  type="button"
+                  onClick={() => applyCameraPreset(c.id)}
+                  className={`px-2.5 py-1 text-xs font-mono rounded-lg transition-all cursor-pointer ${
+                    activeCamera === c.id
+                      ? "bg-amber-600 text-white font-bold shadow-xs"
+                      : "text-parchment-300 hover:text-white hover:bg-parchment-800/60"
+                  }`}
+                >
+                  {c.label}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          {/* Bottom Telemetry & Presets */}
+          <div className="absolute bottom-4 left-4 right-4 flex flex-wrap items-center justify-between gap-3 pointer-events-none z-10">
+            {/* Telemetry Chips */}
+            <div className="flex items-center gap-2 bg-parchment-950/80 backdrop-blur-md px-3.5 py-2 rounded-xl border border-parchment-700/60 shadow-lg pointer-events-auto">
+              <Sparkles className="w-4 h-4 text-amber-400" />
+              <div className="flex items-center gap-3 text-xs font-mono text-parchment-300">
+                <span>
+                  Mandrel: <strong className="text-white">{cylinderRpm} RPM</strong>
+                </span>
+                <span className="text-parchment-600">|</span>
+                <span>
+                  Surface: <strong className="text-amber-400">{surfaceSpeedCmPerSec} cm/s</strong>
+                </span>
+                <span className="text-parchment-600">|</span>
+                <span>
+                  Groove Depth:{" "}
+                  <strong className="text-emerald-400">
+                    {phono.grooveDepthMicrons.toFixed(1)} µm
+                  </strong>
+                </span>
+              </div>
+            </div>
+
+            {/* Presets */}
+            <div className="flex items-center gap-1.5 bg-parchment-950/80 backdrop-blur-md p-1.5 rounded-xl border border-parchment-700/60 shadow-lg pointer-events-auto">
+              <Zap className="w-3.5 h-3.5 text-amber-400 ml-1.5 mr-1" />
+              <button
+                type="button"
+                onClick={() => applyScenario(60, 75)}
+                className="px-2.5 py-1 text-xs font-mono rounded-lg bg-parchment-800/60 hover:bg-amber-600 hover:text-white text-parchment-200 transition-colors cursor-pointer"
+              >
+                Standard Mary Had A Little Lamb (60 RPM)
+              </button>
+              <button
+                type="button"
+                onClick={() => applyScenario(120, 90)}
+                className="px-2.5 py-1 text-xs font-mono rounded-lg bg-parchment-800/60 hover:bg-amber-600 hover:text-white text-parchment-200 transition-colors cursor-pointer"
+              >
+                High Acoustic Power (120 RPM)
+              </button>
+            </div>
+          </div>
+        </>
+      )}
     </div>
   );
 }

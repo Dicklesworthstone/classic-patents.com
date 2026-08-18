@@ -1,11 +1,13 @@
 "use client";
 
-import { Activity, Camera, Gauge, Volume2, VolumeX } from "lucide-react";
+import { Activity, Camera, Eye, EyeOff } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import * as THREE from "three";
+import { stepCorlissEngine } from "@/physics/catalogKernels";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { soundEngine } from "@/utils/soundEngine";
 import { buildCorlissEngineModel } from "./corlissEngineModel";
+import { StudioKernelChips } from "./StudioKernelChips";
 import { createThreeStudioScene, type StudioContext } from "./ThreeStudioScene";
 import { useLiveSimParams } from "./useLiveSimParams";
 import { usePatentAudio } from "./usePatentAudio";
@@ -14,23 +16,25 @@ type CameraPreset = "iso" | "wristplate" | "flywheel" | "valves" | "top";
 
 export function CorlissEngine3D() {
   const containerRef = useRef<HTMLDivElement>(null);
-  const { params, updateParam } = usePatentPhysics("us-6162-corliss-steam-engine");
+  const { params } = usePatentPhysics("us-6162-corliss-steam-engine");
+  const [showUiOverlay, setShowUiOverlay] = useState<boolean>(true);
 
   const cutoffPct = params.cutoffPct ?? 25;
   const steamPressurePsi = params.steamPressurePsi ?? 125;
   const engineRpm = params.engineRpm ?? 50;
 
   const [activeCamera, setActiveCamera] = useState<CameraPreset>("iso");
-  const { isAudioMuted, toggleSound: toggleEngine } = usePatentAudio();
+  const { isAudioMuted } = usePatentAudio();
 
-  const indicatedHorsepower = Math.round(
-    ((steamPressurePsi * 0.75 * 0.9 * 350 * engineRpm) / 33000) * 1.8,
-  );
-  const thermalEfficiencyPct = Math.round(18 + (steamPressurePsi / 125) * 6 - (cutoffPct / 50) * 4);
+  const corliss = stepCorlissEngine({ steamPressurePsi, engineRpm });
+  const indicatedHorsepower = corliss.indicatedHp;
+  const thermalEfficiencyPct = corliss.thermalEfficiencyPct;
 
   const live = useLiveSimParams({
     cutoffPct,
     steamPressurePsi,
+    indicatedHorsepower,
+    thermalEfficiencyPct,
     engineRpm,
     isAudioMuted,
   });
@@ -122,7 +126,8 @@ export function CorlissEngine3D() {
       model.connectingRod.rotation.z = rodAngle;
 
       // 3. Wrist Plate Oscillation & Valve Linkage
-      const wristAngle = Math.sin(theta + Math.PI / 4) * 0.32;
+      const wristAmp = 0.14 + (p.cutoffPct / 100) * 0.36;
+      const wristAngle = Math.sin(theta + Math.PI / 4) * wristAmp;
       model.wristPlate.rotation.z = wristAngle;
       model.reachRods.forEach((rod, idx) => {
         rod.rotation.z = wristAngle + (idx * Math.PI) / 4;
@@ -169,8 +174,18 @@ export function CorlissEngine3D() {
           </span>
         </div>
 
-        {/* Camera Views */}
+        {/* Camera Views & HUD Toggle */}
         <div className="flex items-center gap-1.5 bg-parchment-950/80 backdrop-blur-md p-1.5 rounded-xl border border-parchment-700/60 shadow-lg pointer-events-auto">
+          <button
+            type="button"
+            onClick={() => setShowUiOverlay((v) => !v)}
+            className="p-1.5 rounded-lg text-parchment-300 hover:text-white hover:bg-parchment-800/60 transition-colors"
+            title={showUiOverlay ? "Hide HUD Overlay" : "Show HUD Overlay"}
+            aria-label={showUiOverlay ? "Hide HUD Overlay" : "Show HUD Overlay"}
+          >
+            {showUiOverlay ? <EyeOff className="w-3.5 h-3.5" /> : <Eye className="w-3.5 h-3.5" />}
+          </button>
+          <div className="w-px h-3.5 bg-parchment-700/60 my-auto" />
           <Camera className="w-3.5 h-3.5 text-parchment-400 ml-1.5 mr-1" />
           {(
             [
@@ -196,6 +211,17 @@ export function CorlissEngine3D() {
           ))}
         </div>
       </div>
+
+      <StudioKernelChips
+        visible={showUiOverlay}
+        title="Corliss wrist-plate cutoff"
+        chips={[
+          { label: "Steam", value: String(steamPressurePsi), unit: "psi" },
+          { label: "Cutoff", value: String(cutoffPct), unit: "%" },
+          { label: "IHP", value: String(indicatedHorsepower), unit: "hp" },
+          { label: "η", value: String(thermalEfficiencyPct), unit: "%" },
+        ]}
+      />
     </div>
   );
 }

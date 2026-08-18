@@ -1,20 +1,12 @@
 "use client";
 
-import {
-  Activity,
-  Camera,
-  RotateCcw,
-  Scissors,
-  Sparkles,
-  Volume2,
-  VolumeX,
-  Zap,
-} from "lucide-react";
+import { Activity, Camera, RotateCcw, Scissors, Volume2, VolumeX, Zap } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import * as THREE from "three";
 import { stepOtisElevator } from "@/physics/machineKernels";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { soundEngine } from "@/utils/soundEngine";
+import { StudioKernelChips } from "./StudioKernelChips";
 import { createThreeStudioScene, type StudioContext } from "./ThreeStudioScene";
 import { useLiveSimParams } from "./useLiveSimParams";
 import { usePatentAudio } from "./usePatentAudio";
@@ -262,6 +254,8 @@ export function OtisElevator3D() {
       rightPawl.position.x = pawlOut;
       // Tension bows the leaf; snap lets it flatten and fire the dogs
       leafSpringGroup.scale.y = 0.55 + (1 - step.cableTensionPct / 100) * 0.85;
+      // 4.5 cm catch is the historical claim; scene units exaggerate so the drop is visible
+      cabGroup.position.y = step.isSnapped ? -Math.min(0.6, step.stoppingDistanceCm * 0.12) : 0;
 
       renderer.render(scene, camera);
     };
@@ -354,6 +348,28 @@ export function OtisElevator3D() {
           </button>
         </div>
       </div>
+
+      <StudioKernelChips
+        visible={showUiOverlay}
+        title="Otis wagon-spring safety"
+        chips={[
+          { label: "Payload", value: String(cabWeightLbs), unit: "lb" },
+          {
+            label: "Cable",
+            value: String(Math.round(cableTensionPct)),
+            unit: "%",
+            tone: isRopeSevered ? "warn" : "ok",
+          },
+          {
+            label: "Pawls",
+            value: otis.isPawlEngaged ? "engaged" : "stowed",
+            tone: otis.isPawlEngaged ? "hot" : "ok",
+          },
+          { label: "Stop", value: String(stoppingDistanceInches), unit: "in" },
+          { label: "Pawl", value: String(pawlEngagementMs), unit: "ms" },
+          { label: "Arrest", value: String(otis.peakArrestForceKn), unit: "kN" },
+        ]}
+      />
     </div>
   );
 }

@@ -13,6 +13,7 @@ import {
 } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import * as THREE from "three";
+import { stepEinsteinRefrigerator } from "@/physics/catalogKernels";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { soundEngine } from "@/utils/soundEngine";
 import { createGlowPointTexture, createThreeStudioScene } from "./ThreeStudioScene";
@@ -35,17 +36,22 @@ export function EinsteinRefrigerator3D() {
   const [activeCamera, setActiveCamera] = useState<CameraPreset>("iso");
   const { isAudioMuted, toggleSound: toggleEngine } = usePatentAudio();
 
-  // Thermodynamic Physics (Dalton's Law of Partial Pressures)
-  // P_butane = P_total * (1 - y_ammonia)
+  const frige = stepEinsteinRefrigerator({
+    heatInput: heatInputWatts,
+    totalPressure: systemPressureAtm,
+  });
   const butanePartialPressureAtm = (systemPressureAtm * (1 - auxiliaryGasRatio)).toFixed(2);
-  const evaporatorTemperatureCelsius = Math.round(-18 + Number(butanePartialPressureAtm) * 6.5);
-  const copEfficiency = (0.35 * (1 - Math.abs(evaporatorTemperatureCelsius) / 100)).toFixed(2);
-  const coolingPowerWatts = Math.round(heatInputWatts * Number(copEfficiency));
+  const evaporatorTemperatureCelsius = frige.evapTempC;
+  const copEfficiency = frige.cop.toFixed(2);
+  const coolingPowerWatts = frige.coolingWatts;
 
   const live = useLiveSimParams({
     heatInputWatts,
     isHeating,
     isAudioMuted,
+    coolingWatts: frige.coolingWatts,
+    evapTempC: frige.evapTempC,
+    cop: frige.cop,
   });
 
   const controlsRef = useRef<any>(null);
@@ -282,7 +288,9 @@ export function EinsteinRefrigerator3D() {
       const p = live.current;
 
       const fPos = fluidPos;
-      const circSpeed = (p.isHeating ? p.heatInputWatts / 220 : 0) * 3.5 * delta;
+      const circSpeed = (p.isHeating ? p.coolingWatts / 70 : 0) * 3.5 * delta;
+      coldEvaporatorMat.emissiveIntensity = Math.min(1.3, Math.max(0.08, -p.evapTempC / 35));
+      coldEvaporatorMat.color.setHex(p.evapTempC < -10 ? 0x7dd3fc : 0x64748b);
 
       for (let i = 0; i < fluidCount; i++) {
         const idx = i * 3;

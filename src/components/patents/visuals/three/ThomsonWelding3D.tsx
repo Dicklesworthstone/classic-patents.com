@@ -1,10 +1,12 @@
 "use client";
 
-import { Activity, Camera, Eye, EyeOff, Flame, Sparkles, Volume2, VolumeX } from "lucide-react";
+import { Activity, Camera, Eye, EyeOff, Flame, Volume2, VolumeX } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import * as THREE from "three";
+import { stepThomsonWelding } from "@/physics/catalogKernels";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { soundEngine } from "@/utils/soundEngine";
+import { StudioKernelChips } from "./StudioKernelChips";
 import {
   createGlowPointTexture,
   createThreeStudioScene,
@@ -20,11 +22,14 @@ export function ThomsonWelding3D() {
   const [showUiOverlay, setShowUiOverlay] = useState<boolean>(true);
 
   // Electrical Resistance Welding Parameters
-  const { params, updateParam } = usePatentPhysics("us-347140-thomson-welding");
-  const weldCurrentAmps = params.weldCurrentAmps ?? 4500;
-  const weldTempCelsius = Math.min(1500, Math.round((weldCurrentAmps / 4500) * 1350));
-  const contactVoltageVolts = 1.8;
-  const weldPowerKw = ((weldCurrentAmps * contactVoltageVolts) / 1000).toFixed(1);
+  const { params } = usePatentPhysics("us-347140-thomson-welding");
+  const weldCurrentAmps = params.weldCurrentAmps ?? params.currentAmperes ?? 4500;
+  const weld = stepThomsonWelding({
+    weldCurrentAmps,
+    clampPressureMpa: params.clampPressureMpa ?? 35,
+  });
+  const weldTempCelsius = weld.interfaceTempC;
+  const weldPowerKw = weld.jouleKw.toFixed(1);
   const [showSparks, setShowSparks] = useState<boolean>(true);
   const [activeCamera, setActiveCamera] = useState<CameraPreset>("iso");
   const { isAudioMuted, toggleSound: toggleEngine } = usePatentAudio();
@@ -32,6 +37,8 @@ export function ThomsonWelding3D() {
   const live = useLiveSimParams({
     weldCurrentAmps,
     weldTempCelsius,
+    jouleKw: weld.jouleKw,
+    isForged: weld.isForged ? 1 : 0,
     showSparks,
     isAudioMuted,
   });
@@ -235,7 +242,11 @@ export function ThomsonWelding3D() {
         }
       }
       sparkGeo.attributes.position.needsUpdate = true;
-      sparkPoints.visible = p.showSparks;
+      const forged = p.isForged > 0.5;
+      sparkPoints.visible = p.showSparks && forged;
+      glowingWeldMat.emissiveIntensity = forged ? 2.2 : 0.25;
+      glowingWeldMat.emissive.setHex(p.weldTempCelsius >= 1150 ? 0xfff7ed : 0x7c2d12);
+      weldSeam.scale.setScalar(forged ? 1.05 : 0.72);
 
       renderer.render(scene, camera);
     };
@@ -327,6 +338,26 @@ export function ThomsonWelding3D() {
           </button>
         </div>
       </div>
+
+      <StudioKernelChips
+        visible={showUiOverlay}
+        title="Thomson I²R forge"
+        chips={[
+          { label: "I", value: String(Math.round(weldCurrentAmps)), unit: "A" },
+          { label: "P", value: weldPowerKw, unit: "kW" },
+          {
+            label: "T",
+            value: String(weldTempCelsius),
+            unit: "°C",
+            tone: weld.isForged ? "hot" : "warn",
+          },
+          {
+            label: "Forge",
+            value: weld.isForged ? "plastic" : "cold",
+            tone: weld.isForged ? "ok" : "warn",
+          },
+        ]}
+      />
     </div>
   );
 }

@@ -4,6 +4,7 @@ import { Camera, Cpu, Eye, EyeOff, RotateCcw, Sparkles, Volume2, VolumeX, Zap } 
 import { useEffect, useRef, useState } from "react";
 import * as THREE from "three";
 import { HudText } from "@/components/ui/LatexRenderer";
+import { stepNoyceIC } from "@/physics/catalogKernels";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { soundEngine } from "@/utils/soundEngine";
 import { createGlowPointTexture, createThreeStudioScene } from "./ThreeStudioScene";
@@ -25,10 +26,14 @@ export function NoycePlanarIC3D() {
   const [activeCamera, setActiveCamera] = useState<CameraPreset>("iso");
   const [isPlayingAudio, setIsPlayingAudio] = useState<boolean>(false);
 
-  // Semiconductor Physics Calculations
-  const gateCapacitancePf = ((3.9 * 8.854e-12 * 1e-8) / (oxideLayerThicknessNm * 1e-9)) * 1e12;
-  const gatePropagationDelayPs = Math.round(gateCapacitancePf * 45 * 10);
-  const maxClockGhz = (1000 / (gatePropagationDelayPs * 4)).toFixed(2);
+  const noyce = stepNoyceIC({
+    reverseBias: params.reverseBias ?? 5,
+    oxideThickness: params.oxideThickness ?? 0.5,
+    clockFrequencyMhz,
+  });
+  const gateCapacitancePf = noyce.junctionCapPfPerMm2;
+  const gatePropagationDelayPs = Math.round(noyce.propDelayNs * 1000);
+  const maxClockGhz = (1000 / Math.max(1, gatePropagationDelayPs * 4)).toFixed(2);
 
   const live = useLiveSimParams({
     clockFrequencyMhz,
@@ -306,6 +311,12 @@ export function NoycePlanarIC3D() {
                   <span className="text-ink-600 dark:text-ink-400">Gate Delay:</span>{" "}
                   <span className="font-bold text-emerald-600 dark:text-emerald-400">
                     {gatePropagationDelayPs} ps
+                  </span>
+                </div>
+                <div>
+                  <span className="text-ink-600 dark:text-ink-400">Depletion:</span>{" "}
+                  <span className="font-bold text-sky-600 dark:text-sky-400">
+                    {noyce.depletionWidthUm} µm · {noyce.breakdownMarginV} V margin
                   </span>
                 </div>
                 <div>

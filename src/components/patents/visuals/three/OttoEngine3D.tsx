@@ -1,11 +1,12 @@
 "use client";
 
-import { Activity, Camera, Sparkles, Volume2, VolumeX, Zap } from "lucide-react";
+import { Activity, Camera, Volume2, VolumeX, Zap } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import * as THREE from "three";
 import { stepOttoEngine } from "@/physics/catalogKernels";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { soundEngine } from "@/utils/soundEngine";
+import { StudioKernelChips } from "./StudioKernelChips";
 import {
   createGlowPointTexture,
   createThreeStudioScene,
@@ -20,7 +21,7 @@ export function OttoEngine3D() {
   const containerRef = useRef<HTMLDivElement>(null);
 
   // Four-Stroke Thermodynamic Parameters
-  const { params, updateParam } = usePatentPhysics("us-194047-otto-engine");
+  const { params } = usePatentPhysics("us-194047-otto-engine");
   const [showUiOverlay, setShowUiOverlay] = useState<boolean>(true);
   const engineRpm = params.engineRpm ?? 180;
   const otto = stepOttoEngine({
@@ -34,7 +35,10 @@ export function OttoEngine3D() {
 
   const live = useLiveSimParams({
     engineRpm,
+    compressionRatio: params.compressionRatio ?? 4.5,
     isAudioMuted,
+    thermalEfficiencyPct,
+    brakeHorsepower: otto.brakeHorsepower,
   });
 
   const controlsRef = useRef<StudioContext["controls"] | null>(null);
@@ -225,7 +229,9 @@ export function OttoEngine3D() {
 
       // 4-stroke cycle flash during power stroke
       const cyclePhase = (crankAngle / (4 * Math.PI)) % 1;
-      flameMat.opacity = cyclePhase > 0.5 && cyclePhase < 0.65 ? 0.95 : 0;
+      const firing = cyclePhase > 0.5 && cyclePhase < 0.65 && p.thermalEfficiencyPct > 25;
+      flameMat.opacity = firing ? 0.95 : 0;
+      flameMat.size = 0.55 + (p.compressionRatio / 8) * 0.7;
 
       renderer.render(scene, camera);
     };
@@ -300,6 +306,22 @@ export function OttoEngine3D() {
           </button>
         </div>
       </div>
+
+      <StudioKernelChips
+        visible={showUiOverlay}
+        title="Otto air-standard"
+        chips={[
+          { label: "rpm", value: String(engineRpm) },
+          { label: "r", value: `${params.compressionRatio ?? 4.5}:1` },
+          {
+            label: "η",
+            value: String(thermalEfficiencyPct),
+            unit: "%",
+            tone: thermalEfficiencyPct > 25 ? "ok" : "warn",
+          },
+          { label: "BHP", value: powerBhp },
+        ]}
+      />
     </div>
   );
 }

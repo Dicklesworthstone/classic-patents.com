@@ -13,6 +13,7 @@ import {
 } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import * as THREE from "three";
+import { FrankenSimEngine } from "@/physics/engine";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { soundEngine } from "@/utils/soundEngine";
 import { createThreeStudioScene } from "./ThreeStudioScene";
@@ -37,10 +38,10 @@ export function KwolekKevlar3D() {
   const [activeCamera, setActiveCamera] = useState<CameraPreset>("iso");
   const { isAudioMuted, toggleSound } = usePatentAudio();
 
-  // Liquid-Crystal Physics Calculations
+  const kevlar = FrankenSimEngine.stepKevlarContinuum(drawRatio, params.impactVelocity ?? 200);
   const isNematicLCP = polymerConcentrationPct >= 12.0 && temperatureCelsius < 105;
-  const tensileStrengthGpa = (isNematicLCP ? 3.6 * (shearRate / 500) ** 0.35 : 0.8).toFixed(2);
-  const modulusGpa = (isNematicLCP ? 130 * (shearRate / 500) ** 0.4 : 25).toFixed(0);
+  const tensileStrengthGpa = (kevlar.tensileStressMpa / 1000).toFixed(2);
+  const modulusGpa = kevlar.elasticModulusGpa.toFixed(0);
 
   const live = useLiveSimParams({
     shearRate,

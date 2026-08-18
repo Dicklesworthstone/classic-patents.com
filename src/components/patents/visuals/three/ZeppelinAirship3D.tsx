@@ -3,8 +3,10 @@
 import { Activity, Camera, Eye, EyeOff, Volume2, VolumeX } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import * as THREE from "three";
+import { stepZeppelinAirship } from "@/physics/catalogKernels";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { soundEngine } from "@/utils/soundEngine";
+import { StudioKernelChips } from "./StudioKernelChips";
 import { createThreeStudioScene, type StudioContext } from "./ThreeStudioScene";
 import { useLiveSimParams } from "./useLiveSimParams";
 import { usePatentAudio } from "./usePatentAudio";
@@ -16,11 +18,18 @@ export function ZeppelinAirship3D() {
   const [showUiOverlay, setShowUiOverlay] = useState<boolean>(true);
 
   // Aerostatic & Aerodynamic Parameters
-  const { params, updateParam } = usePatentPhysics("us-621195-zeppelin-airship");
-  const airspeedMph = params.airspeedMph ?? 17.5;
+  const { params } = usePatentPhysics("us-621195-zeppelin-airship");
+  const flightSpeedKnots = params.flightSpeedKnots ?? params.airspeedMph ?? 28;
+  const airspeedMph = params.airspeedMph ?? Number((Number(flightSpeedKnots) * 1.15078).toFixed(1));
+  const zep = stepZeppelinAirship({
+    gasInflation: params.gasInflation ?? 95,
+    flightAlt: params.flightAlt ?? 300,
+    flightSpeedKnots: Number(flightSpeedKnots),
+    trimWeight: params.trimWeight ?? 5,
+  });
   const engineRpm = (airspeedMph / 17.5) * 1000;
-  const grossLiftKg = 12400;
-  const hydrogenVolumeM3 = 11300;
+  const grossLiftKg = Math.round((zep.grossBuoyancyKn / 9.81) * 1000);
+  const hydrogenVolumeM3 = zep.hydrogenVolumeM3;
   const [showWireframe, setShowWireframe] = useState<boolean>(false);
   const [activeCamera, setActiveCamera] = useState<CameraPreset>("iso");
   const { isAudioMuted, toggleSound: toggleEngine } = usePatentAudio();
@@ -30,6 +39,9 @@ export function ZeppelinAirship3D() {
     engineRpm,
     showWireframe,
     isAudioMuted,
+    netLiftKn: zep.netLiftKn,
+    pitchTrimDeg: zep.pitchTrimDeg,
+    parasiteDragKn: zep.parasiteDragKn,
   });
 
   const controlsRef = useRef<StudioContext["controls"] | null>(null);
@@ -203,10 +215,9 @@ export function ZeppelinAirship3D() {
       const delta = clock.getDelta();
       const p = live.current;
 
-      // Gentle aerostatic floating motion
       const t = clock.getElapsedTime();
-      hullGroup.position.y = Math.sin(t * 0.8) * 0.15;
-      hullGroup.rotation.z = Math.sin(t * 0.4) * 0.02;
+      hullGroup.position.y = (p.netLiftKn / 40) * 0.9 + Math.sin(t * 0.8) * 0.08;
+      hullGroup.rotation.z = (p.pitchTrimDeg * Math.PI) / 180 + Math.sin(t * 0.4) * 0.01;
 
       // Spin propellers
       const propSpeed = (p.engineRpm / 60) * 8.0;
@@ -306,6 +317,23 @@ export function ZeppelinAirship3D() {
           </button>{" "}
         </div>
       </div>
+
+      <StudioKernelChips
+        visible={showUiOverlay}
+        title="LZ lattice hull"
+        chips={[
+          { label: "H₂", value: String(Math.round(hydrogenVolumeM3)), unit: "m³" },
+          {
+            label: "Lift",
+            value: String(zep.netLiftKn),
+            unit: "kN",
+            tone: zep.netLiftKn > 0 ? "ok" : "warn",
+          },
+          { label: "Mass", value: String(grossLiftKg), unit: "kg" },
+          { label: "Pitch", value: String(zep.pitchTrimDeg), unit: "°" },
+          { label: "Drag", value: String(zep.parasiteDragKn), unit: "kN" },
+        ]}
+      />
     </div>
   );
 }

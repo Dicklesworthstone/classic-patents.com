@@ -1,10 +1,12 @@
 "use client";
 
-import { Activity, Camera, Eye, EyeOff, Sparkles, Volume2, VolumeX } from "lucide-react";
+import { Activity, Camera, Eye, EyeOff, Volume2, VolumeX } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import * as THREE from "three";
+import { stepMcCormickReaper } from "@/physics/catalogKernels";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { soundEngine } from "@/utils/soundEngine";
+import { StudioKernelChips } from "./StudioKernelChips";
 import { createThreeStudioScene, type StudioContext } from "./ThreeStudioScene";
 import { useLiveSimParams } from "./useLiveSimParams";
 import { usePatentAudio } from "./usePatentAudio";
@@ -15,15 +17,16 @@ export function McCormickReaper3D() {
   const containerRef = useRef<HTMLDivElement>(null);
 
   // Mechanical Reaper Simulation Parameters
-  const { params, updateParam } = usePatentPhysics("us-x8277-mccormick-reaper");
-  const groundSpeedMph = params.groundSpeedMph ?? 2.5;
-  const sickleCps = groundSpeedMph * 4.2; // Cycles per second
-  const reelRpm = groundSpeedMph * 12.0; // Revolutions per min
+  const { params } = usePatentPhysics("us-x8277-mccormick-reaper");
+  const groundSpeedMph = params.forwardSpeedMph ?? params.groundSpeedMph ?? 2.5;
+  const reaper = stepMcCormickReaper({ forwardSpeedMph: groundSpeedMph });
+  const sickleCps = reaper.cutFrequencyHz;
+  const reelRpm = reaper.reelRpm;
   const [showStalks, setShowStalks] = useState<boolean>(true);
   const [activeCamera, setActiveCamera] = useState<CameraPreset>("iso");
   const { isAudioMuted, toggleSound: toggleEngine } = usePatentAudio();
 
-  const acresPerDay = (groundSpeedMph * 5.0).toFixed(1);
+  const acresPerDay = reaper.harvestAcresPerDay.toFixed(1);
   const laborRatio = (Number(acresPerDay) / 1.0).toFixed(0); // 1 acre/day per man with cradle scythe
 
   const live = useLiveSimParams({
@@ -376,7 +379,17 @@ export function McCormickReaper3D() {
         </div>
       </div>
 
-      {/* Bottom Telemetry Bar & Controls */}
+      <StudioKernelChips
+        visible
+        title="McCormick cutter bar"
+        chips={[
+          { label: "Ground", value: String(groundSpeedMph), unit: "mph" },
+          { label: "Sickle", value: String(sickleCps), unit: "Hz" },
+          { label: "Reel", value: String(reelRpm), unit: "rpm" },
+          { label: "Harvest", value: acresPerDay, unit: "ac/day" },
+          { label: "vs cradle", value: `${laborRatio}×` },
+        ]}
+      />
     </div>
   );
 }

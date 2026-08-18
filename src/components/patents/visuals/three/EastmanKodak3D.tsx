@@ -6,6 +6,7 @@ import * as THREE from "three";
 import { FrankenSimEngine } from "@/physics/engine";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { soundEngine } from "@/utils/soundEngine";
+import { StudioKernelChips } from "./StudioKernelChips";
 import { createThreeStudioScene, type StudioContext } from "./ThreeStudioScene";
 import { useLiveSimParams } from "./useLiveSimParams";
 import { usePatentAudio } from "./usePatentAudio";
@@ -17,7 +18,7 @@ export function EastmanKodak3D() {
   const [showUiOverlay, setShowUiOverlay] = useState<boolean>(true);
 
   // Photographic Optics Parameters
-  const { params, updateParam } = usePatentPhysics("us-388850-eastman-kodak");
+  const { params } = usePatentPhysics("us-388850-eastman-kodak");
   const shutterSpeedSec = (() => {
     const raw = params.shutterSpeed ?? 0.05;
     return raw > 1 ? 1 / raw : raw;
@@ -256,6 +257,17 @@ export function EastmanKodak3D() {
           </button>{" "}
         </div>
       </div>
+
+      <StudioKernelChips
+        visible={showUiOverlay}
+        title="Eastman roll-holder"
+        chips={[
+          { label: "Shutter", value: `1/${shutterFractionSec}`, unit: "s" },
+          { label: "EV", value: kodak.exposureValueEv.toFixed(1) },
+          { label: "Hyperfocal", value: kodak.hyperfocalM.toFixed(1), unit: "m" },
+          { label: "Film", value: `${filmFormatInches} in · ${exposureCount} exp` },
+        ]}
+      />
     </div>
   );
 }

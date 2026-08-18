@@ -1,11 +1,13 @@
 "use client";
 
-import { Activity, Camera, Eye, EyeOff, Flame, Sparkles, Volume2, VolumeX } from "lucide-react";
+import { Activity, Camera, Eye, EyeOff } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import * as THREE from "three";
+import { stepGatlingGun } from "@/physics/catalogKernels";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { soundEngine } from "@/utils/soundEngine";
 import { buildGatlingGunModel } from "./gatlingGunModel";
+import { StudioKernelChips } from "./StudioKernelChips";
 import { createThreeStudioScene, type StudioContext } from "./ThreeStudioScene";
 import { useLiveSimParams } from "./useLiveSimParams";
 import { usePatentAudio } from "./usePatentAudio";
@@ -16,13 +18,17 @@ export function GatlingGun3D() {
   const containerRef = useRef<HTMLDivElement>(null);
 
   // Ballistic Simulation Parameters
-  const { params, updateParam } = usePatentPhysics("us-36836-gatling-gun");
+  const { params } = usePatentPhysics("us-36836-gatling-gun");
   const [showUiOverlay, setShowUiOverlay] = useState<boolean>(true);
-  const crankRpm = params.crankRpm ?? 33;
-  const roundsPerMinute = crankRpm * 6; // 6 barrels fire per revolution
+  const crankRpm = params.crankRpm ?? 60;
+  const gatling = stepGatlingGun({
+    crankRpm,
+    barrelCount: params.barrelCount ?? 6,
+  });
+  const roundsPerMinute = gatling.roundsPerMin;
   const [showMuzzleFlash, _setShowMuzzleFlash] = useState<boolean>(true);
   const [activeCamera, setActiveCamera] = useState<CameraPreset>("iso");
-  const { isAudioMuted, toggleSound: toggleEngine } = usePatentAudio();
+  const { isAudioMuted } = usePatentAudio();
 
   const live = useLiveSimParams({
     crankRpm,
@@ -105,7 +111,7 @@ export function GatlingGun3D() {
       });
 
       // Muzzle Flash & Acoustic Pulse at 12 o'clock firing position
-      const fireIntervalSec = 60 / (p.crankRpm * 6);
+      const fireIntervalSec = 60 / Math.max(1, p.roundsPerMinute);
       const now = clock.getElapsedTime();
       if (now - lastFireTime > fireIntervalSec) {
         lastFireTime = now;
@@ -187,6 +193,17 @@ export function GatlingGun3D() {
           </button>
         </div>
       </div>
+
+      <StudioKernelChips
+        visible={showUiOverlay}
+        title="Gatling cam-crank cluster"
+        chips={[
+          { label: "Crank", value: String(Math.round(crankRpm)), unit: "rpm" },
+          { label: "Barrels", value: String(params.barrelCount ?? 6) },
+          { label: "RoF", value: String(roundsPerMinute), unit: "rds/min" },
+          { label: "Cooling", value: String(gatling.barrelCoolingIntervalS), unit: "s/bbl" },
+        ]}
+      />
     </div>
   );
 }

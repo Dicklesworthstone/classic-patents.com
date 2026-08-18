@@ -1,11 +1,12 @@
 "use client";
 
-import { Activity, Camera, Eye, EyeOff, Sparkles, Volume2, VolumeX } from "lucide-react";
+import { Activity, Camera, Eye, EyeOff, Volume2, VolumeX } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import * as THREE from "three";
 import { stepDeLavalSeparator } from "@/physics/catalogKernels";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { soundEngine } from "@/utils/soundEngine";
+import { StudioKernelChips } from "./StudioKernelChips";
 import { createThreeStudioScene, type StudioContext } from "./ThreeStudioScene";
 import { useLiveSimParams } from "./useLiveSimParams";
 import { usePatentAudio } from "./usePatentAudio";
@@ -17,7 +18,7 @@ export function DeLavalSeparator3D() {
   const [showUiOverlay, setShowUiOverlay] = useState<boolean>(true);
 
   // Centrifugal Separation Parameters
-  const { params, updateParam } = usePatentPhysics("us-247804-delaval-separator");
+  const { params } = usePatentPhysics("us-247804-delaval-separator");
   const bowlRpm = params.bowlRpm ?? params.rotorRpm ?? 6500;
   const sep = stepDeLavalSeparator({
     bowlRpm,
@@ -31,6 +32,8 @@ export function DeLavalSeparator3D() {
   const live = useLiveSimParams({
     bowlRpm,
     centrifugalGs,
+    fatYieldPct: sep.fatYieldPct,
+    creamFlowLph: sep.creamFlowLph,
     isAudioMuted,
   });
 
@@ -107,9 +110,14 @@ export function DeLavalSeparator3D() {
       metalness: 0.9,
     });
 
-    const _creamMat = new THREE.MeshStandardMaterial({
+    const creamMat = new THREE.MeshStandardMaterial({
       color: 0xfef08a,
       roughness: 0.3,
+      metalness: 0.05,
+    });
+    const skimMat = new THREE.MeshStandardMaterial({
+      color: 0xf8fafc,
+      roughness: 0.35,
       metalness: 0.05,
     });
 
@@ -190,6 +198,19 @@ export function DeLavalSeparator3D() {
     milkSpout.position.set(-1.6, -0.2, 0);
     receiverGroup.add(milkSpout);
 
+    const creamDrops: THREE.Mesh[] = [];
+    const skimDrops: THREE.Mesh[] = [];
+    for (let i = 0; i < 10; i++) {
+      const cream = new THREE.Mesh(new THREE.SphereGeometry(0.07, 8, 8), creamMat);
+      cream.position.set(2.0, 0.1 - i * 0.18, 0);
+      receiverGroup.add(cream);
+      creamDrops.push(cream);
+      const skim = new THREE.Mesh(new THREE.SphereGeometry(0.08, 8, 8), skimMat);
+      skim.position.set(-2.3, -0.5 - i * 0.2, 0);
+      receiverGroup.add(skim);
+      skimDrops.push(skim);
+    }
+
     // Animation Loop
     let reqId: number;
     const clock = new THREE.Clock();
@@ -201,6 +222,18 @@ export function DeLavalSeparator3D() {
 
       const omegaRadPerSec = (p.bowlRpm * 2 * Math.PI) / 60;
       bowlGroup.rotation.y += omegaRadPerSec * delta * 0.15;
+
+      // Cream (inner) vs skim (outer) only when g-force is high enough to split
+      const split = p.centrifugalGs > 2000;
+      const creamSpeed = (p.creamFlowLph / 300) * 1.6;
+      creamDrops.forEach((drop, i) => {
+        drop.visible = split;
+        drop.position.y = 0.2 - ((clock.getElapsedTime() * creamSpeed + i * 0.18) % 1.8);
+      });
+      skimDrops.forEach((drop, i) => {
+        drop.visible = split;
+        drop.position.y = -0.4 - ((clock.getElapsedTime() * creamSpeed * 0.85 + i * 0.2) % 2.0);
+      });
 
       renderer.render(scene, camera);
     };
@@ -281,7 +314,21 @@ export function DeLavalSeparator3D() {
         </div>
       </div>
 
-      {/* Bottom Telemetry Bar & Controls */}
+      <StudioKernelChips
+        visible={showUiOverlay}
+        title="De Laval centrifuge"
+        chips={[
+          { label: "Bowl", value: String(Math.round(bowlRpm)), unit: "rpm" },
+          {
+            label: "g",
+            value: centrifugalGs.toLocaleString(),
+            unit: "×g",
+            tone: centrifugalGs > 2000 ? "ok" : "warn",
+          },
+          { label: "Fat yield", value: sep.fatYieldPct.toFixed(1), unit: "%" },
+          { label: "Cream", value: throughputLitersPerHr.toFixed(1), unit: "L/h" },
+        ]}
+      />
     </div>
   );
 }

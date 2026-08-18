@@ -62,18 +62,12 @@ export function GoodyearRubber3D() {
       buoyancyLiftForceKiloNewtons: 0,
     },
   });
-  const isVulcanized = sulfurWeightPct >= 2.0 && cureTemperatureCelsius >= 115;
+  const isVulcanized = !_rubberPhysics.isStickyOrBrittle;
   const glassTransitionTempC = Math.round(-70 + sulfurWeightPct * 3.8);
   const isGlassy = cureTemperatureCelsius < glassTransitionTempC;
-
-  // Neo-Hookean Elastic Modulus: E = 3 * rho * R * T / M_c
-  const tempKelvin = Math.max(200, cureTemperatureCelsius + 273.15);
-  const crosslinkDensity = isVulcanized ? (sulfurWeightPct / 32.0) * 1.8 : 0.05;
   const tensileElasticModulusMpa = isGlassy
     ? "2400.0"
-    : isVulcanized
-      ? ((crosslinkDensity * (tempKelvin / 300) * 1.4) ** 1.15).toFixed(2)
-      : "0.12";
+    : (_rubberPhysics.tensileStrengthPsi * 0.00689476).toFixed(2);
 
   // True Stress: sigma = E * (lambda - 1 / lambda^2)
   const trueStressMpa = isGlassy
@@ -101,6 +95,9 @@ export function GoodyearRubber3D() {
     isGlassy,
     cureTemperatureCelsius,
     sulfurWeightPct,
+    crossLinkDensity: _rubberPhysics.crossLinkDensity,
+    tensileStrengthPsi: _rubberPhysics.tensileStrengthPsi,
+    elasticReturnPct: _rubberPhysics.elasticReturnPct,
   });
 
   const controlsRef = useRef<any>(null);

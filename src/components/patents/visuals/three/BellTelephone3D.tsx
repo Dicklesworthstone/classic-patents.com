@@ -3,6 +3,7 @@
 import { Camera, Eye, EyeOff, Mic, RotateCcw, Volume2, VolumeX, Waves, Zap } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import * as THREE from "three";
+import { stepBellTelephone } from "@/physics/catalogKernels";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { soundEngine } from "@/utils/soundEngine";
 import { createGlowPointTexture, createThreeStudioScene } from "./ThreeStudioScene";
@@ -29,14 +30,19 @@ export function BellTelephone3D() {
   const baseResistanceOhms = 40.0 / liquidConductivity;
   const resistanceModulationOhms = baseResistanceOhms * 0.45 * voiceAmplitude;
   const currentBaselineAmps = batteryVoltage / baseResistanceOhms;
-  const peakAudioCurrentMa =
-    (batteryVoltage / (baseResistanceOhms - resistanceModulationOhms) - currentBaselineAmps) * 1000;
+  const bell = stepBellTelephone({
+    voiceAmplitude: params.voiceAmplitude ?? 75,
+    airGap: params.airGap ?? 0.35,
+  });
+  const peakAudioCurrentMa = bell.modulatedMa;
 
   const live = useLiveSimParams({
     acousticFrequencyHz,
     voiceAmplitude,
     showAcousticWaves,
     currentBaselineAmps,
+    diaphragmUm: bell.diaphragmUm,
+    modulatedMa: bell.modulatedMa,
   });
 
   const controlsRef = useRef<any>(null);
@@ -312,7 +318,8 @@ export function BellTelephone3D() {
       const p = live.current;
 
       const omega = 2 * Math.PI * p.acousticFrequencyHz;
-      const oscillation = Math.sin(elapsed * omega * 0.05) * p.voiceAmplitude;
+      const throwUm = Math.max(0.2, p.diaphragmUm);
+      const oscillation = Math.sin(elapsed * omega * 0.05) * (throwUm / 8);
 
       diaphragmMesh.position.x = -1.38 + oscillation * 0.04;
       rodGroup.position.y = 0.6 - oscillation * 0.35;
@@ -329,7 +336,7 @@ export function BellTelephone3D() {
       }
 
       const ePos = electronPos;
-      const currentSpeed = (p.currentBaselineAmps + oscillation * 0.05) * 12.0 * delta;
+      const currentSpeed = (p.currentBaselineAmps + (p.modulatedMa / 1000) * oscillation) * 12.0 * delta;
       for (let i = 0; i < electronCount; i++) {
         const idx = i * 3;
         ePos[idx + 1] -= currentSpeed;

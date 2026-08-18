@@ -1,11 +1,12 @@
 "use client";
 
-import { Activity, Camera, Eye, EyeOff, Sparkles, Volume2, VolumeX } from "lucide-react";
+import { Activity, Camera, Eye, EyeOff, Volume2, VolumeX } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import * as THREE from "three";
 import { FrankenSimEngine } from "@/physics/engine";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { soundEngine } from "@/utils/soundEngine";
+import { StudioKernelChips } from "./StudioKernelChips";
 import { createThreeStudioScene, type StudioContext } from "./ThreeStudioScene";
 import { useLiveSimParams } from "./useLiveSimParams";
 import { usePatentAudio } from "./usePatentAudio";
@@ -223,20 +224,14 @@ export function WestinghouseAirBrake3D() {
       const delta = clock.getDelta();
       const p = live.current;
 
-      // Wheel rotation when brake released
-      if (!p.isBrakeClamped) {
-        wheels.forEach((w) => {
-          w.rotation.z += 4.5 * delta;
-        });
-        leftShoe.position.x = -1.88; // Retracted
-        rightShoe.position.x = 1.88;
-        pistonRod.position.x = 0.8;
-      } else {
-        // Clamped against wheel treads
-        leftShoe.position.x = -2.0;
-        rightShoe.position.x = 2.0;
-        pistonRod.position.x = 1.2;
-      }
+      const clamp = Math.min(1, p.clampingForceKn / 80);
+      const roll = 4.5 * (1 - clamp);
+      wheels.forEach((w) => {
+        w.rotation.z += roll * delta;
+      });
+      leftShoe.position.x = -1.88 - clamp * 0.14;
+      rightShoe.position.x = 1.88 + clamp * 0.14;
+      pistonRod.position.x = 0.8 + clamp * 0.4;
 
       renderer.render(scene, camera);
     };
@@ -317,7 +312,16 @@ export function WestinghouseAirBrake3D() {
         </div>
       </div>
 
-      {/* Bottom Telemetry Bar & Controls */}
+      <StudioKernelChips
+        visible={showUiOverlay}
+        title="Westinghouse triple valve"
+        chips={[
+          { label: "Pipe", value: String(trainlinePressurePsi), unit: "psi" },
+          { label: "Valve", value: westinghouse.valveState, tone: isBrakeClamped ? "hot" : "ok" },
+          { label: "Shoe", value: String(clampingForceKn), unit: "kN" },
+          { label: "Stop", value: String(stoppingDistanceFt), unit: "ft" },
+        ]}
+      />
     </div>
   );
 }

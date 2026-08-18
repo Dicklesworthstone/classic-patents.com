@@ -3,6 +3,7 @@
 import { Camera, Cpu, Eye, EyeOff, Monitor, RotateCcw, Volume2, VolumeX, Zap } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import * as THREE from "three";
+import { stepWozniakApple } from "@/physics/catalogKernels";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { soundEngine } from "@/utils/soundEngine";
 import { createGlowPointTexture, createThreeStudioScene } from "./ThreeStudioScene";
@@ -27,11 +28,14 @@ export function WozniakApple3D() {
   const [activeCamera, setActiveCamera] = useState<CameraPreset>("iso");
   const { isAudioMuted, toggleSound: toggleEngine } = usePatentAudio();
 
-  // System Architecture Calculations
-  const cycleTimeNs = Math.round(1000 / clockFrequencyMhz);
-  const phi1VideoAccessWindowNs = Math.round(cycleTimeNs / 2);
+  const apple = stepWozniakApple({
+    crystalFreq: params.crystalFreq ?? 14.318,
+    ramCapacityKb,
+  });
+  const cycleTimeNs = Math.round(1000 / apple.cpuClockMhz);
+  const phi1VideoAccessWindowNs = apple.dramWindowNs;
   const effectiveCpuThroughputPct = 100;
-  const colorSubcarrierMhz = (3.579545).toFixed(4);
+  const colorSubcarrierMhz = apple.colorSubcarrierMhz.toFixed(4);
 
   const live = useLiveSimParams({
     clockFrequencyMhz,

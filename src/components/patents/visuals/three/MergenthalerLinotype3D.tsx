@@ -6,6 +6,7 @@ import * as THREE from "three";
 import { LINOTYPE_CHARS_PER_LINE, stepMergenthalerLinotype } from "@/physics/machineKernels";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { soundEngine } from "@/utils/soundEngine";
+import { StudioKernelChips } from "./StudioKernelChips";
 import { createThreeStudioScene, type StudioContext } from "./ThreeStudioScene";
 import { useLiveSimParams } from "./useLiveSimParams";
 import { usePatentAudio } from "./usePatentAudio";
@@ -17,7 +18,7 @@ export function MergenthalerLinotype3D() {
   const [showUiOverlay, setShowUiOverlay] = useState<boolean>(true);
 
   // Linotype Mechanical Composing Parameters
-  const { params, updateParam } = usePatentPhysics("us-313224-mergenthaler-linotype");
+  const { params } = usePatentPhysics("us-313224-mergenthaler-linotype");
   const matrixRate = params.matrixRate ?? 60;
   const spacebandWedge = params.spacebandWedge ?? 6.5;
   const potTempC = params.potTemp ?? 260;
@@ -141,6 +142,18 @@ export function MergenthalerLinotype3D() {
     magazine.castShadow = true;
     magGroup.add(magazine);
 
+    // Vertical magazine channels — brass matrices drop one channel at a time
+    const channelMats: THREE.Mesh[] = [];
+    for (let c = 0; c < 12; c++) {
+      const channel = new THREE.Mesh(new THREE.BoxGeometry(0.16, 3.6, 0.05), polishedSteelMat);
+      channel.position.set(-1.65 + c * 0.3, 0.05, 0.22);
+      magGroup.add(channel);
+      const stacked = new THREE.Mesh(new THREE.BoxGeometry(0.14, 0.22, 0.06), brassMat);
+      stacked.position.set(-1.65 + c * 0.3, 1.4, 0.28);
+      magGroup.add(stacked);
+      channelMats.push(stacked);
+    }
+
     // 3. Molten Type-Metal Melting Pot & Pump Plunger (Claim 2)
     const potGroup = new THREE.Group();
     potGroup.position.set(-1.8, -0.4, 0.4);
@@ -209,7 +222,12 @@ export function MergenthalerLinotype3D() {
       leadSlug.position.x = 0.6 + (step.slugOut ? (step.phase - 0.72) * 4 : 0);
       fallingMatrix.position.y = 2.6 - step.phase * 2.4;
       fallingMatrix.visible = step.phase < 0.55;
+      fallingMatrix.position.x = -1.65 + (Math.floor(step.phase * 12) % 12) * 0.3;
       leadMetalMat.color.setHex(step.isEutecticTemp ? 0x94a3b8 : 0x475569);
+      channelMats.forEach((mat, i) => {
+        mat.position.y =
+          1.4 - (i === Math.floor(step.phase * 12) % 12 && step.phase < 0.5 ? 0.35 : 0);
+      });
 
       renderer.render(scene, camera);
     };
@@ -289,6 +307,28 @@ export function MergenthalerLinotype3D() {
           </button>{" "}
         </div>
       </div>
+
+      <StudioKernelChips
+        visible={showUiOverlay}
+        title="Mergenthaler slug cycle"
+        chips={[
+          { label: "Matrices", value: String(matrixRate), unit: "/min" },
+          { label: "Chars", value: charsPerHour.toLocaleString(), unit: "/h" },
+          { label: "Lines", value: castingLpm.toFixed(2), unit: "/min" },
+          {
+            label: "Pot",
+            value: String(potTempC),
+            unit: "°C",
+            tone: linotypeIdle.isEutecticTemp ? "ok" : "warn",
+          },
+          { label: "Justified", value: String(linotypeIdle.justificationWidthMm), unit: "mm" },
+          {
+            label: "Slug",
+            value: linotypeIdle.slugOut ? "eject" : "cast",
+            tone: linotypeIdle.slugOut ? "hot" : "ok",
+          },
+        ]}
+      />
     </div>
   );
 }

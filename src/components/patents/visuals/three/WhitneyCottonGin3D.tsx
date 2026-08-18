@@ -1,10 +1,12 @@
 "use client";
 
-import { Activity, Camera, Eye, EyeOff, Sparkles, Volume2, VolumeX, Zap } from "lucide-react";
+import { Activity, Camera, Eye, EyeOff, Volume2, VolumeX, Zap } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import * as THREE from "three";
+import { stepWhitneyCottonGin } from "@/physics/catalogKernels";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { soundEngine } from "@/utils/soundEngine";
+import { StudioKernelChips } from "./StudioKernelChips";
 import {
   createGlowPointTexture,
   createThreeStudioScene,
@@ -19,18 +21,19 @@ export function WhitneyCottonGin3D() {
   const containerRef = useRef<HTMLDivElement>(null);
 
   // Mechanical Simulation Parameters
-  const { params, updateParam } = usePatentPhysics("us-x72-whitney-cotton-gin");
+  const { params } = usePatentPhysics("us-x72-whitney-cotton-gin");
   const [showUiOverlay, setShowUiOverlay] = useState<boolean>(true);
-  const crankRpm = params.crankRpm ?? 60;
-  const sawSpeedRpm = crankRpm * 2.5;
-  const brushSpeedRpm = sawSpeedRpm * 3.2; // Counter-rotates at ~3.2x speed to create centrifugal air draft
+  const crankRpm = params.crankRpm ?? 180;
+  const gin = stepWhitneyCottonGin({ crankRpm });
+  const sawSpeedRpm = gin.sawRpm;
+  const brushSpeedRpm = gin.brushRpm;
   const [_showCalloutPins, _setShowCalloutPins] = useState<boolean>(false);
   const [showFibers, setShowFibers] = useState<boolean>(true);
   const [activeCamera, setActiveCamera] = useState<CameraPreset>("iso");
   const { isAudioMuted, toggleSound: toggleEngine } = usePatentAudio();
 
-  const dailyOutputLbs = (crankRpm * 0.85).toFixed(1);
-  const laborMultiplier = ((crankRpm * 0.85) / 1.0).toFixed(0); // 1 lb/day was manual standard
+  const dailyOutputLbs = gin.outputLbsPerDay.toFixed(1);
+  const laborMultiplier = (gin.outputLbsPerDay / 1.0).toFixed(0);
 
   const live = useLiveSimParams({
     crankRpm,
@@ -38,6 +41,7 @@ export function WhitneyCottonGin3D() {
     brushSpeedRpm,
     showFibers,
     isAudioMuted,
+    outputLbsPerDay: gin.outputLbsPerDay,
   });
 
   const controlsRef = useRef<StudioContext["controls"] | null>(null);
@@ -328,7 +332,7 @@ export function WhitneyCottonGin3D() {
       const pos = fiberPositions;
       for (let i = 0; i < fiberCount; i++) {
         const idx = i * 3;
-        pos[idx + 2] += (p.sawSpeedRpm / 60) * 4.2 * delta;
+        pos[idx + 2] += (p.outputLbsPerDay / 50) * 4.2 * delta;
         pos[idx + 1] += Math.sin(pos[idx + 2] * 3) * 0.02;
         if (pos[idx + 2] > 3.0) {
           pos[idx + 2] = -1.2;
@@ -425,6 +429,18 @@ export function WhitneyCottonGin3D() {
           </button>
         </div>
       </div>
+
+      <StudioKernelChips
+        visible={showUiOverlay}
+        title="Whitney gin"
+        chips={[
+          { label: "Crank", value: String(Math.round(crankRpm)), unit: "rpm" },
+          { label: "Saws", value: String(sawSpeedRpm), unit: "rpm" },
+          { label: "Brush", value: String(brushSpeedRpm), unit: "rpm" },
+          { label: "Lint", value: dailyOutputLbs, unit: "lb/day" },
+          { label: "vs hand", value: `${laborMultiplier}×` },
+        ]}
+      />
     </div>
   );
 }

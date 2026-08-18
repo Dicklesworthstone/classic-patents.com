@@ -6,6 +6,7 @@ import * as THREE from "three";
 import { stepRenoEscalator } from "@/physics/machineKernels";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { soundEngine } from "@/utils/soundEngine";
+import { StudioKernelChips } from "./StudioKernelChips";
 import { createThreeStudioScene, type StudioContext } from "./ThreeStudioScene";
 import { useLiveSimParams } from "./useLiveSimParams";
 import { usePatentAudio } from "./usePatentAudio";
@@ -17,7 +18,7 @@ export function RenoEscalator3D() {
   const [showUiOverlay, setShowUiOverlay] = useState<boolean>(true);
 
   // Transit Dynamics Parameters
-  const { params, updateParam } = usePatentPhysics("us-470918-reno-escalator");
+  const { params } = usePatentPhysics("us-470918-reno-escalator");
   const beltSpeedMps = params.beltSpeed ?? 0.45;
   const passengerCount = params.passengerCount ?? 30;
   const inclineAngleDeg = params.inclineAngle ?? 25;
@@ -276,6 +277,18 @@ export function RenoEscalator3D() {
           </button>{" "}
         </div>
       </div>
+
+      <StudioKernelChips
+        visible={showUiOverlay}
+        title="Reno cleated deck"
+        chips={[
+          { label: "Belt", value: beltSpeedMps.toFixed(2), unit: "m/s" },
+          { label: "Incline", value: String(inclineAngleDeg), unit: "°" },
+          { label: "Deck", value: String(deckSpeedFpm), unit: "fpm" },
+          { label: "Throughput", value: passengersPerHour.toLocaleString(), unit: "/h" },
+          { label: "Torque", value: String(renoIdle.motorTorqueNm), unit: "N·m" },
+        ]}
+      />
     </div>
   );
 }

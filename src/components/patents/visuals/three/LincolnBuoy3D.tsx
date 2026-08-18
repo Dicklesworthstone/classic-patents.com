@@ -3,6 +3,7 @@
 import { Anchor, Camera, Eye, EyeOff, RotateCcw, Volume2, VolumeX, Waves, Zap } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import * as THREE from "three";
+import { stepLincolnBuoy } from "@/physics/catalogKernels";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { soundEngine } from "@/utils/soundEngine";
 import { createThreeStudioScene } from "./ThreeStudioScene";
@@ -25,24 +26,21 @@ export function LincolnBuoy3D() {
   const [activeCamera, setActiveCamera] = useState<CameraPreset>("iso");
   const { isAudioMuted, toggleSound: toggleEngine } = usePatentAudio();
 
-  // Hydrostatic Buoyancy Physics (FrankenSim Archimedes Principles)
+  const lincoln = stepLincolnBuoy({
+    inflationPct: bellowsInflationPct,
+    weightTons: steamboatWeightTons,
+    shoalDepth: riverShoalDepthFt,
+  });
   const hullLengthFt = 160;
   const hullBeamFt = 32;
   const waterDensityLbsPerCuFt = 62.4;
   const hullWaterplaneAreaSqFt = hullLengthFt * hullBeamFt * 0.78;
-  const baseDraftFt =
-    (steamboatWeightTons * 2000) / (hullWaterplaneAreaSqFt * waterDensityLbsPerCuFt);
+  const baseDraftFt = 5.0;
 
-  const maxBellowsDisplacedCuFt = 2 * (120 * 4.5 * 3.5); // 3,780 cu ft
-  const activeBellowsBuoyancyLbs =
-    (bellowsInflationPct / 100) * maxBellowsDisplacedCuFt * waterDensityLbsPerCuFt;
-  const netLiftTons = Math.round(activeBellowsBuoyancyLbs / 2000);
-  const effectiveDraftFt = Math.max(
-    1.8,
-    baseDraftFt - activeBellowsBuoyancyLbs / (hullWaterplaneAreaSqFt * waterDensityLbsPerCuFt),
-  );
-  const underKeelClearanceFt = (riverShoalDepthFt - effectiveDraftFt).toFixed(2);
-  const isAground = Number(underKeelClearanceFt) <= 0;
+  const netLiftTons = Number((lincoln.liftKn / 9.81).toFixed(1));
+  const effectiveDraftFt = Math.max(1.8, 5.0 - lincoln.draftReductionFt);
+  const underKeelClearanceFt = lincoln.shoalClearanceFt.toFixed(2);
+  const isAground = lincoln.shoalClearanceFt <= 0;
 
   const live = useLiveSimParams({
     bellowsInflationPct,
@@ -50,6 +48,7 @@ export function LincolnBuoy3D() {
     baseDraftFt,
     effectiveDraftFt,
     isAudioMuted,
+    liftKn: lincoln.liftKn,
   });
 
   const controlsRef = useRef<any>(null);
