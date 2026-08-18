@@ -1,16 +1,10 @@
 import { describe, expect, test } from "bun:test";
 import { readFileSync } from "node:fs";
 import { join } from "node:path";
-import { buildKwolekKevlarModel } from "./kwolekKevlarModel";
 import { FrankenSimEngine } from "@/physics/engine";
+import { buildKwolekKevlarModel } from "./kwolekKevlarModel";
 
-const VISUALS_DIRECTORY = join(
-  process.cwd(),
-  "src",
-  "components",
-  "patents",
-  "visuals",
-);
+const VISUALS_DIRECTORY = join(process.cwd(), "src", "components", "patents", "visuals");
 
 describe("US 3,671,542 Stephanie Kwolek Kevlar visual & polymer physics boundary", () => {
   test("uses pure procedural Three.js WebGL architecture without external GLTF/GLB models", () => {

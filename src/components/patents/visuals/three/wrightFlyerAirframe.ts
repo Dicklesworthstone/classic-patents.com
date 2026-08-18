@@ -54,6 +54,9 @@ function deterministicUnit(index: number, channel: number): number {
  * Procedural Quarter-Sawn White Spruce Grain Texture
  */
 function spruceTexture(): THREE.CanvasTexture {
+  if (typeof document === "undefined") {
+    return new THREE.Texture() as unknown as THREE.CanvasTexture;
+  }
   const canvas = document.createElement("canvas");
   canvas.width = 512;
   canvas.height = 512;
@@ -95,6 +98,9 @@ function spruceTexture(): THREE.CanvasTexture {
  * Procedural Pride of the West Unbleached Muslin Linen Texture
  */
 function muslinTexture(): THREE.CanvasTexture {
+  if (typeof document === "undefined") {
+    return new THREE.Texture() as unknown as THREE.CanvasTexture;
+  }
   const canvas = document.createElement("canvas");
   canvas.width = 256;
   canvas.height = 256;
@@ -148,6 +154,9 @@ function muslinTexture(): THREE.CanvasTexture {
  * Laminated Dark Walnut / Hard Ash Texture (for Propeller Blades & Skids)
  */
 function walnutTexture(): THREE.CanvasTexture {
+  if (typeof document === "undefined") {
+    return new THREE.Texture() as unknown as THREE.CanvasTexture;
+  }
   const canvas = document.createElement("canvas");
   canvas.width = 256;
   canvas.height = 256;

@@ -2,7 +2,7 @@
 
 import { Camera, Eye, EyeOff, RotateCcw, Sparkles, Volume2, VolumeX, Zap } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
-import * as THREE from "three";
+import type * as THREE from "three";
 import { HudText } from "@/components/ui/LatexRenderer";
 import { FrankenSimEngine } from "@/physics/engine";
 import { teslaCoilResonantKhz } from "@/physics/teslaKernel";
@@ -11,10 +11,7 @@ import { useFrankenSimPhysics } from "@/physics/useFrankenSimPhysics";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { createLcg } from "@/utils/lcg";
 import { soundEngine } from "@/utils/soundEngine";
-import {
-  createThreeStudioScene,
-  type StudioContext,
-} from "./ThreeStudioScene";
+import { createThreeStudioScene, type StudioContext } from "./ThreeStudioScene";
 import { buildTeslaCoilModel } from "./teslaCoilModel";
 import { useLiveSimParams } from "./useLiveSimParams";
 
@@ -163,12 +160,7 @@ export function TeslaCoil3D() {
       const inches = Number(p.streamerLengthInches) || 0;
       const meters = inches * 0.0254;
 
-      model.updateKinematics(
-        delta,
-        p.showLightningStreamers,
-        meters,
-        Number(p.secondaryVoltageMv),
-      );
+      model.updateKinematics(delta, p.showLightningStreamers, meters, Number(p.secondaryVoltageMv));
 
       controls.update();
       renderer.render(scene, camera);

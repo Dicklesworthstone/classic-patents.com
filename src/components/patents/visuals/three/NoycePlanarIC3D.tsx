@@ -1,34 +1,33 @@
 "use client";
 
-import { Camera, Cpu, Eye, EyeOff, RotateCcw, Sparkles, Volume2, VolumeX, Zap } from "lucide-react";
-import { useEffect, useRef, useState } from "react";
-import * as THREE from "three";
-import { HudText } from "@/components/ui/LatexRenderer";
+import { Activity, Camera, Eye, EyeOff, Volume2, VolumeX, Zap } from "lucide-react";
+import { memo, useEffect, useRef, useState } from "react";
+import type * as THREE from "three";
 import { stepNoyceIC } from "@/physics/catalogKernels";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
-import { createLcg } from "@/utils/lcg";
 import { soundEngine } from "@/utils/soundEngine";
-import {
-  createGlowPointTexture,
-  createThreeStudioScene,
-  type StudioContext,
-} from "./ThreeStudioScene";
+import { buildNoycePlanarICModel, updateNoycePlanarIcKinematics } from "./noycePlanarICModel";
+import { StudioKernelChips } from "./StudioKernelChips";
+import { createThreeStudioScene, type StudioContext } from "./ThreeStudioScene";
 import { useLiveSimParams } from "./useLiveSimParams";
 
-const lcg = createLcg(1256);
+type CameraPreset =
+  | "iso"
+  | "metallization_layer"
+  | "oxide_dielectric"
+  | "pn_junctions"
+  | "leadframe"
+  | "top";
 
-type CameraPreset = "iso" | "metallization_layer" | "oxide_dielectric" | "pn_junctions" | "top";
-
-export function NoycePlanarIC3D() {
+export const NoycePlanarIC3D = memo(() => {
   const containerRef = useRef<HTMLDivElement>(null);
+  const [showUiOverlay, setShowUiOverlay] = useState<boolean>(true);
+  const [isCutaway, setIsCutaway] = useState<boolean>(false);
 
   // Microelectronics State Controls
   const { params } = usePatentPhysics("us-2981877-noyce-ic");
-  const [showUiOverlay, setShowUiOverlay] = useState<boolean>(true);
   const clockFrequencyMhz = params.clockFrequencyMhz ?? 10;
-  const [activeLayer, _setActiveLayer] = useState<"all" | "silicon" | "oxide" | "metal">("all");
-  const [showLogicSignals, _setShowLogicSignals] = useState<boolean>(true);
-  const [showCalloutPins, setShowCalloutPins] = useState<boolean>(false);
+  const [showLogicSignals] = useState<boolean>(true);
   const [activeCamera, setActiveCamera] = useState<CameraPreset>("iso");
   const [isPlayingAudio, setIsPlayingAudio] = useState<boolean>(false);
 
@@ -45,9 +44,9 @@ export function NoycePlanarIC3D() {
   const live = useLiveSimParams({
     clockFrequencyMhz,
     oxideLayerThicknessNm,
-    activeLayer,
     showLogicSignals,
     clockPeriodNs: noyce.clockPeriodNs,
+    isCutaway,
   });
 
   const controlsRef = useRef<StudioContext["controls"] | null>(null);
@@ -76,6 +75,10 @@ export function NoycePlanarIC3D() {
         camera.position.set(-2.2, 1.8, 3.5);
         controls.target.set(-1.0, 0.1, 0);
         break;
+      case "leadframe":
+        camera.position.set(0, 4.5, 8.5);
+        controls.target.set(0, -0.6, 0);
+        break;
       case "top":
         camera.position.set(0, 11.0, 0.1);
         controls.target.set(0, 0, 0);
@@ -84,7 +87,10 @@ export function NoycePlanarIC3D() {
     controls.update();
   };
 
-  // Audio Clock Generator
+  const toggleSound = () => {
+    setIsPlayingAudio(!isPlayingAudio);
+  };
+
   useEffect(() => {
     if (isPlayingAudio) {
       soundEngine.playContinuousTone(200 + clockFrequencyMhz * 15, "square", 0.02);
@@ -110,172 +116,28 @@ export function NoycePlanarIC3D() {
     cameraRef.current = camera;
     controlsRef.current = controls;
 
-    // --- PBR MATERIALS ---
-    const siliconSubstrateMat = new THREE.MeshStandardMaterial({
-      color: 0x334155,
-      roughness: 0.25,
-      metalness: 0.85,
-    });
+    const { rootGroup, nodes, materials, dispose } = buildNoycePlanarICModel();
+    scene.add(rootGroup);
 
-    const nDiffusedMat = new THREE.MeshStandardMaterial({
-      color: 0x0284c7,
-      roughness: 0.3,
-      metalness: 0.75,
-    });
-
-    const siliconDioxideMat = new THREE.MeshPhysicalMaterial({
-      color: 0x38bdf8,
-      transmission: 0.82,
-      opacity: 0.85,
-      transparent: true,
-      roughness: 0.05,
-      ior: 1.46,
-    });
-
-    const aluminumMetalMat = new THREE.MeshStandardMaterial({
-      color: 0xf8fafc,
-      roughness: 0.08,
-      metalness: 0.98,
-    });
-
-    const goldBondWireMat = new THREE.MeshStandardMaterial({
-      color: 0xf59e0b,
-      roughness: 0.15,
-      metalness: 0.95,
-    });
-
-    // --- 3D MONOLITHIC PLANAR IC CHIP ASSEMBLY ---
-    const chipGroup = new THREE.Group();
-    scene.add(chipGroup);
-
-    // Ceramic DIP Package Header
-    const ceramicBase = new THREE.Mesh(
-      new THREE.BoxGeometry(12.4, 0.6, 12.4),
-      new THREE.MeshStandardMaterial({ color: 0xf8fafc, roughness: 0.35, metalness: 0.1 }),
-    );
-    ceramicBase.position.y = -1.0;
-    ceramicBase.receiveShadow = true;
-    chipGroup.add(ceramicBase);
-
-    // Gold Die-Attach Cavity Pocket
-    const goldPocket = new THREE.Mesh(new THREE.BoxGeometry(8.6, 0.08, 8.6), goldBondWireMat);
-    goldPocket.position.y = -0.68;
-    chipGroup.add(goldPocket);
-
-    // 14 Gold-Plated Leadframe Fingers
-    for (let f = 0; f < 7; f++) {
-      const fX = -4.2 + f * 1.4;
-      [-5.5, 5.5].forEach((fZ) => {
-        const lead = new THREE.Mesh(new THREE.BoxGeometry(0.65, 0.12, 1.8), goldBondWireMat);
-        lead.position.set(fX, -0.65, fZ);
-        chipGroup.add(lead);
-      });
-    }
-
-    // 1. P-Type Silicon Substrate
-    const substrateGeo = new THREE.BoxGeometry(8.0, 0.8, 8.0);
-    const substrateMesh = new THREE.Mesh(substrateGeo, siliconSubstrateMat);
-    substrateMesh.position.y = -0.3;
-    substrateMesh.castShadow = true;
-    substrateMesh.receiveShadow = true;
-    chipGroup.add(substrateMesh);
-
-    // 2. N-Type Diffused Wells
-    const nWellsGroup = new THREE.Group();
-    for (let x = -2.2; x <= 2.2; x += 2.2) {
-      for (let z = -2.2; z <= 2.2; z += 2.2) {
-        const well = new THREE.Mesh(new THREE.BoxGeometry(1.5, 0.18, 1.5), nDiffusedMat);
-        well.position.set(x, 0.12, z);
-        nWellsGroup.add(well);
-      }
-    }
-    chipGroup.add(nWellsGroup);
-
-    // 3. SiO2 Passivation Layer
-    const oxideLayer = new THREE.Mesh(new THREE.BoxGeometry(7.8, 0.35, 7.8), siliconDioxideMat);
-    oxideLayer.position.y = 0.35;
-    chipGroup.add(oxideLayer);
-
-    // 4. Aluminum Metallization Traces
-    const metalGroup = new THREE.Group();
-
-    const trace1 = new THREE.Mesh(new THREE.BoxGeometry(7.2, 0.12, 0.45), aluminumMetalMat);
-    trace1.position.set(0, 0.58, -1.8);
-    trace1.castShadow = true;
-    const trace2 = new THREE.Mesh(new THREE.BoxGeometry(7.2, 0.12, 0.45), aluminumMetalMat);
-    trace2.position.set(0, 0.58, 1.8);
-    trace2.castShadow = true;
-    metalGroup.add(trace1, trace2);
-
-    for (let x = -2.2; x <= 2.2; x += 2.2) {
-      const bridge = new THREE.Mesh(new THREE.BoxGeometry(0.45, 0.12, 4.0), aluminumMetalMat);
-      bridge.position.set(x, 0.58, 0);
-      bridge.castShadow = true;
-      metalGroup.add(bridge);
-    }
-    chipGroup.add(metalGroup);
-
-    // --- GLOWING LOGIC SIGNAL PULSES ---
-    const signalCount = 60;
-    const signalGeo = new THREE.BufferGeometry();
-    const signalPos = new Float32Array(signalCount * 3);
-    const glowTex = createGlowPointTexture();
-
-    for (let i = 0; i < signalCount; i++) {
-      const idx = i * 3;
-      signalPos[idx] = (lcg() - 0.5) * 6.5;
-      signalPos[idx + 1] = 0.65;
-      signalPos[idx + 2] = (lcg() - 0.5) * 6.5;
-    }
-    signalGeo.setAttribute("position", new THREE.BufferAttribute(signalPos, 3));
-
-    const signalPoints = new THREE.Points(
-      signalGeo,
-      new THREE.PointsMaterial({
-        size: 0.28,
-        map: glowTex,
-        color: 0x38bdf8,
-        transparent: true,
-        opacity: 0.9,
-        blending: THREE.AdditiveBlending,
-        depthWrite: false,
-      }),
-    );
-    chipGroup.add(signalPoints);
-
-    // --- RENDER LOOP & REAL-TIME LOGIC SIGNAL PROPAGATION ---
     let reqId: number;
-    let _renderedSteps = 0;
+    let timeSec = 0;
 
     const animate = () => {
       reqId = requestAnimationFrame(animate);
-      _renderedSteps += 1;
-      const delta = 1 / 60;
+      const dt = 1 / 60;
+      timeSec += dt;
       const p = live.current;
 
-      substrateMesh.visible = p.activeLayer === "all" || p.activeLayer === "silicon";
-      nWellsGroup.visible = p.activeLayer === "all" || p.activeLayer === "silicon";
-      oxideLayer.visible = p.activeLayer === "all" || p.activeLayer === "oxide";
-      metalGroup.visible = p.activeLayer === "all" || p.activeLayer === "metal";
+      updateNoycePlanarIcKinematics(
+        nodes,
+        materials,
+        dt,
+        timeSec,
+        p.clockFrequencyMhz,
+        p.showLogicSignals,
+        p.isCutaway ?? false,
+      );
 
-      if (p.showLogicSignals) {
-        signalPoints.visible = true;
-        const sPos = signalPos;
-        const speed = (100 / Math.max(10, p.clockPeriodNs ?? 100)) * 18.0 * delta;
-
-        for (let i = 0; i < signalCount; i++) {
-          const idx = i * 3;
-          sPos[idx] += speed;
-          if (sPos[idx] > 3.4) {
-            sPos[idx] = -3.4;
-          }
-        }
-        signalGeo.attributes.position.needsUpdate = true;
-      } else {
-        signalPoints.visible = false;
-      }
-
-      controls.update();
       renderer.render(scene, camera);
     };
 
@@ -283,154 +145,104 @@ export function NoycePlanarIC3D() {
 
     return () => {
       cancelAnimationFrame(reqId);
-      studio.dispose();
+      dispose();
+      studio.cleanup();
     };
   }, [live]);
 
   return (
-    <div className="flex flex-col h-full bg-parchment-50/60 dark:bg-ink-950/80 rounded-2xl overflow-hidden border border-parchment-300 dark:border-ink-800 shadow-patent">
-      {/* 3D WebGL Canvas Viewport */}
-      <div className="relative flex-1 min-h-[380px] sm:min-h-[460px] w-full cursor-grab active:cursor-grabbing">
-        <div ref={containerRef} className="absolute inset-0 w-full h-full" />
+    <div className="relative w-full h-[620px] bg-parchment-900 rounded-2xl overflow-hidden border border-parchment-700 shadow-2xl flex flex-col">
+      <div ref={containerRef} className="w-full h-full cursor-grab active:cursor-grabbing" />
 
-        {/* Live HUD Telemetry Overlay */}
-        {showUiOverlay && (
-          <div className="absolute top-3 left-3 sm:top-4 sm:left-4 z-10 flex flex-col gap-1.5 sm:gap-2 pointer-events-none max-w-[calc(100%-8rem)] sm:max-w-md transition-opacity duration-200">
-            <div className="bg-white/90 dark:bg-ink-900/90 backdrop-blur-md p-2 sm:px-3.5 sm:py-2.5 rounded-xl border border-parchment-300 dark:border-ink-700 shadow-sm">
-              <div className="text-[10px] sm:text-[11px] font-sans text-amber-700 dark:text-amber-400 font-bold uppercase tracking-wider flex items-center gap-1.5">
-                <Cpu className="w-3 h-3 sm:w-3.5 sm:h-3.5 text-blue-500 animate-pulse" />
-                Planar Monolithic IC Telemetry
-              </div>
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-3 gap-y-0.5 sm:gap-y-1 mt-1 text-[10px] sm:text-xs font-sans">
-                <div>
-                  <span className="text-ink-600 dark:text-ink-400">Clock:</span>{" "}
-                  <span className="font-bold text-blue-600 dark:text-blue-400">
-                    {clockFrequencyMhz} MHz (Max {maxClockGhz} GHz)
-                  </span>
-                </div>
-                <div>
-                  <span className="text-ink-600 dark:text-ink-400">
-                    <HudText text="Oxide Cap ($C_{ox}$):" />
-                  </span>{" "}
-                  <span className="font-bold text-amber-600 dark:text-amber-400">
-                    {gateCapacitancePf.toFixed(2)} pF ({oxideLayerThicknessNm} nm)
-                  </span>
-                </div>
-                <div>
-                  <span className="text-ink-600 dark:text-ink-400">Gate Delay:</span>{" "}
-                  <span className="font-bold text-emerald-600 dark:text-emerald-400">
-                    {gatePropagationDelayPs} ps
-                  </span>
-                </div>
-                <div>
-                  <span className="text-ink-600 dark:text-ink-400">Depletion:</span>{" "}
-                  <span className="font-bold text-sky-600 dark:text-sky-400">
-                    {noyce.depletionWidthUm} µm · {noyce.breakdownMarginV} V margin
-                  </span>
-                </div>
-                <div>
-                  <span className="text-ink-600 dark:text-ink-400">Interconnect:</span>{" "}
-                  <span className="font-bold text-purple-600 dark:text-purple-400">
-                    Vapor Al (0 flying wires)
-                  </span>
-                </div>
-              </div>
-            </div>
+      {/* Top HUD Controls */}
+      <div className="absolute top-4 left-4 right-4 flex flex-wrap items-center justify-between gap-3 pointer-events-none z-10">
+        <div className="flex items-center gap-2 bg-parchment-950/80 backdrop-blur-md px-3.5 py-2 rounded-xl border border-parchment-700/60 shadow-lg pointer-events-auto">
+          <Activity className="w-4 h-4 text-sky-400 animate-pulse" />
+          <span className="text-xs font-mono font-bold text-parchment-100 uppercase tracking-wider">
+            Noyce Monolithic Planar IC 3D
+          </span>
+          <span className="text-[10px] font-mono px-2 py-0.5 rounded-full bg-sky-500/20 text-sky-300 border border-sky-500/30">
+            US Patent 2,981,877 (1959)
+          </span>
+        </div>
 
-            <div className="hidden sm:flex bg-white/90 dark:bg-ink-900/90 backdrop-blur-md px-3 py-1.5 rounded-lg border border-parchment-300 dark:border-ink-700 text-[11px] font-sans text-ink-700 dark:text-ink-300 items-center gap-2 max-w-full">
-              <Sparkles className="w-3.5 h-3.5 text-emerald-500 animate-pulse shrink-0" />
-              <span className="truncate">Robert N. Noyce (US 2,981,877) — Planar IC (1959)</span>
-            </div>
-          </div>
-        )}
+        {/* Camera Toolbar */}
+        <div className="flex items-center gap-1.5 bg-parchment-950/80 backdrop-blur-md p-1.5 rounded-xl border border-parchment-700/60 shadow-lg pointer-events-auto">
+          <Camera className="w-3.5 h-3.5 text-parchment-400 ml-1.5 mr-1" />
+          {(
+            [
+              ["iso", "Isometric"],
+              ["metallization_layer", "Aluminum Traces"],
+              ["oxide_dielectric", "SiO₂ Dielectric"],
+              ["pn_junctions", "PN Junctions"],
+              ["leadframe", "Leadframe"],
+              ["top", "Top"],
+            ] as [CameraPreset, string][]
+          ).map(([preset, label]) => (
+            <button
+              key={preset}
+              type="button"
+              onClick={() => applyCameraPreset(preset)}
+              className={`px-2.5 py-1 text-xs font-sans rounded-lg transition-colors ${
+                activeCamera === preset
+                  ? "bg-sky-600 text-white font-semibold shadow-sm"
+                  : "text-parchment-300 hover:text-white hover:bg-parchment-800/60"
+              }`}
+            >
+              {label}
+            </button>
+          ))}
+        </div>
 
-        {/* Top Right Tool Bar (Toggle UI, Audio, Pins, Reset) */}
-        <div className="absolute top-3 right-3 sm:top-4 sm:right-4 z-10 flex gap-1.5 sm:gap-2">
+        {/* Toggles */}
+        <div className="flex items-center gap-1.5 bg-parchment-950/80 backdrop-blur-md p-1.5 rounded-xl border border-parchment-700/60 shadow-lg pointer-events-auto">
+          <button
+            type="button"
+            onClick={() => setIsCutaway(!isCutaway)}
+            title={isCutaway ? "Solid Oxide" : "Cutaway Oxide"}
+            className={`flex items-center gap-1 px-2.5 py-1 text-xs font-sans rounded-lg transition-colors ${
+              isCutaway
+                ? "bg-sky-600/30 text-sky-200 border border-sky-500/40"
+                : "text-parchment-300 hover:text-white hover:bg-parchment-800/60"
+            }`}
+          >
+            {isCutaway ? <EyeOff className="w-3.5 h-3.5" /> : <Eye className="w-3.5 h-3.5" />}
+            <span>{isCutaway ? "Cutaway" : "Solid"}</span>
+          </button>
+
+          <button
+            type="button"
+            onClick={toggleSound}
+            title={isPlayingAudio ? "Mute Clock Audio" : "Play Clock Audio"}
+            className="p-1.5 rounded-lg text-xs text-parchment-400 hover:text-white hover:bg-parchment-800 transition-colors"
+          >
+            {isPlayingAudio ? (
+              <Volume2 className="w-4 h-4 text-sky-400" />
+            ) : (
+              <VolumeX className="w-4 h-4" />
+            )}
+          </button>
           <button
             type="button"
             onClick={() => setShowUiOverlay(!showUiOverlay)}
-            className={`p-1.5 sm:p-2.5 rounded-xl backdrop-blur-md border transition-colors shadow-sm ${
-              showUiOverlay
-                ? "bg-white/90 dark:bg-ink-900/90 border-parchment-300 dark:border-ink-700 text-ink-700 dark:text-parchment-300 hover:bg-parchment-100"
-                : "bg-amber-600 text-white border-amber-700 shadow-md ring-2 ring-amber-500/30"
-            }`}
-            title={showUiOverlay ? "Hide Overlay UI (Clean 3D View)" : "Show Overlay UI"}
-            aria-label={showUiOverlay ? "Hide Overlay UI" : "Show Overlay UI"}
+            className="p-1.5 rounded-lg text-xs text-parchment-400 hover:text-white hover:bg-parchment-800 transition-colors"
           >
-            {showUiOverlay ? (
-              <EyeOff className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
-            ) : (
-              <Eye className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
-            )}
-          </button>
-          <button
-            aria-label="Toggle test tone"
-            type="button"
-            onClick={() => setIsPlayingAudio(!isPlayingAudio)}
-            className="p-1.5 sm:p-2.5 rounded-xl bg-white/90 dark:bg-ink-900/90 backdrop-blur-md border border-parchment-300 dark:border-ink-700 text-ink-700 dark:text-parchment-300 hover:bg-parchment-100 dark:hover:bg-ink-800 transition-colors shadow-sm"
-            title={isPlayingAudio ? "Mute Clock Audio" : "Enable Square-Wave Clock Tone"}
-          >
-            {isPlayingAudio ? (
-              <Volume2 className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-emerald-600" />
-            ) : (
-              <VolumeX className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
-            )}
-          </button>
-          <button
-            aria-label={showCalloutPins ? "Hide annotation pins" : "Show annotation pins"}
-            type="button"
-            onClick={() => setShowCalloutPins(!showCalloutPins)}
-            className={`p-1.5 sm:p-2.5 rounded-xl backdrop-blur-md border transition-colors shadow-sm ${
-              showCalloutPins
-                ? "bg-amber-600 text-white border-amber-700 shadow-md"
-                : "bg-white/90 dark:bg-ink-900/90 border-parchment-300 dark:border-ink-700 text-ink-700 dark:text-parchment-300 hover:bg-parchment-100"
-            }`}
-            title="Toggle Historical Patent Numeral Pins"
-          >
-            <Zap className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
-          </button>
-          <button
-            aria-label="Reset camera view"
-            type="button"
-            onClick={() => applyCameraPreset("iso")}
-            className="p-1.5 sm:p-2.5 rounded-xl bg-white/90 dark:bg-ink-900/90 backdrop-blur-md border border-parchment-300 dark:border-ink-700 text-ink-700 dark:text-parchment-300 hover:bg-parchment-100 dark:hover:bg-ink-800 transition-colors shadow-sm"
-            title="Reset Orbit Camera"
-          >
-            <RotateCcw className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
+            <Zap className="w-4 h-4 text-sky-400" />
           </button>
         </div>
-
-        {/* Camera Views Bar */}
-        {showUiOverlay && (
-          <div className="absolute bottom-3 left-3 sm:bottom-4 sm:left-4 z-10 flex flex-nowrap overflow-x-auto scrollbar-none max-w-[calc(100%-1.5rem)] sm:max-w-none gap-1 sm:gap-1.5 bg-white/85 dark:bg-ink-900/85 backdrop-blur-md p-1 sm:p-1.5 rounded-xl border border-parchment-300 dark:border-ink-700 shadow-sm text-[10px] sm:text-xs transition-opacity duration-200">
-            <span className="px-1.5 sm:px-2 py-0.5 sm:py-1 text-ink-500 font-sans flex items-center gap-1 shrink-0">
-              <Camera className="w-3 h-3 sm:w-3.5 sm:h-3.5" /> View:
-            </span>
-            {(
-              [
-                ["iso", "Isometric"],
-                ["metallization_layer", "Al Metal"],
-                ["oxide_dielectric", "SiO₂ Glass"],
-                ["pn_junctions", "PN Junctions"],
-                ["top", "Die Surface"],
-              ] as const
-            ).map(([id, label]) => (
-              <button
-                key={id}
-                type="button"
-                onClick={() => applyCameraPreset(id)}
-                className={`px-2 py-0.5 sm:px-2.5 sm:py-1 rounded-lg font-sans whitespace-nowrap shrink-0 transition-colors ${
-                  activeCamera === id
-                    ? "bg-amber-700 dark:bg-amber-600 text-white font-semibold shadow-xs"
-                    : "text-ink-700 dark:text-parchment-300 hover:bg-parchment-200 dark:hover:bg-ink-800"
-                }`}
-              >
-                {label}
-              </button>
-            ))}
-          </div>
-        )}
       </div>
+
+      <StudioKernelChips
+        visible={showUiOverlay}
+        title="Noyce planar monolithic circuit kinetics"
+        chips={[
+          { label: "Clock Freq", value: `${clockFrequencyMhz}`, unit: "MHz" },
+          { label: "Oxide Layer", value: `${oxideLayerThicknessNm.toFixed(0)}`, unit: "nm" },
+          { label: "Junction Cap", value: `${gateCapacitancePf.toFixed(2)}`, unit: "pF/mm²" },
+          { label: "Prop Delay", value: `${gatePropagationDelayPs.toFixed(0)}`, unit: "ps" },
+          { label: "Max Clock", value: `${maxClockGhz}`, unit: "GHz", tone: "ok" },
+        ]}
+      />
     </div>
   );
-}
+});

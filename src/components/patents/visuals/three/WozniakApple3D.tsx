@@ -2,18 +2,15 @@
 
 import { Camera, Cpu, Eye, EyeOff, Monitor, RotateCcw, Volume2, VolumeX, Zap } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
-import * as THREE from "three";
+import type * as THREE from "three";
 import { stepWozniakApple } from "@/physics/catalogKernels";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { createLcg } from "@/utils/lcg";
 import { soundEngine } from "@/utils/soundEngine";
-import {
-  createGlowPointTexture,
-  createThreeStudioScene,
-  type StudioContext,
-} from "./ThreeStudioScene";
+import { createThreeStudioScene, type StudioContext } from "./ThreeStudioScene";
 import { useLiveSimParams } from "./useLiveSimParams";
 import { usePatentAudio } from "./usePatentAudio";
+import { buildWozniakAppleModel } from "./wozniakAppleModel";
 
 const lcg = createLcg(1237);
 
@@ -109,183 +106,9 @@ export function WozniakApple3D() {
     cameraRef.current = camera;
     controlsRef.current = controls;
 
-    // --- PBR MATERIALS ---
-    const caseBeigeMat = new THREE.MeshStandardMaterial({
-      color: 0xe2d9c8,
-      roughness: 0.45,
-      metalness: 0.05,
-    });
+    const model = buildWozniakAppleModel();
+    scene.add(model.root);
 
-    const pcbGreenMat = new THREE.MeshStandardMaterial({
-      color: 0x14532d,
-      roughness: 0.35,
-      metalness: 0.2,
-    });
-
-    const icChipMat = new THREE.MeshStandardMaterial({
-      color: 0x0f172a,
-      roughness: 0.25,
-      metalness: 0.8,
-    });
-
-    const goldSlotMat = new THREE.MeshStandardMaterial({
-      color: 0xf59e0b,
-      roughness: 0.15,
-      metalness: 0.95,
-    });
-
-    // --- 3D APPLE II MICROCOMPUTER ASSEMBLY ---
-    const computerGroup = new THREE.Group();
-    scene.add(computerGroup);
-
-    // Molded Beige Structural Foam Chassis with Sloped Front Deck
-    const chassis = new THREE.Mesh(new THREE.BoxGeometry(11.4, 1.8, 10.4), caseBeigeMat);
-    chassis.position.y = -1.5;
-    chassis.receiveShadow = true;
-    computerGroup.add(chassis);
-
-    // Sloped Front Keyboard Deck
-    const deck = new THREE.Mesh(new THREE.BoxGeometry(10.8, 0.4, 3.2), caseBeigeMat);
-    deck.position.set(0, -0.6, 4.2);
-    deck.rotation.x = 0.25;
-    deck.receiveShadow = true;
-    computerGroup.add(deck);
-
-    // Green FR-4 Double-Sided Motherboard PCB
-    const motherboard = new THREE.Mesh(new THREE.BoxGeometry(10.6, 0.12, 9.2), pcbGreenMat);
-    motherboard.position.y = -0.55;
-    motherboard.receiveShadow = true;
-    computerGroup.add(motherboard);
-
-    // Gold Ground Traces along PCB Perimeter
-    const traceRing = new THREE.Mesh(new THREE.BoxGeometry(10.4, 0.14, 9.0), goldSlotMat);
-    traceRing.position.y = -0.54;
-    computerGroup.add(traceRing);
-
-    // MOS Technology 6502 8-Bit CPU (40-Pin DIP)
-    const cpuGroup = new THREE.Group();
-    cpuGroup.position.set(-3.2, -0.42, 0.4);
-
-    const cpuBody = new THREE.Mesh(new THREE.BoxGeometry(1.3, 0.22, 3.4), icChipMat);
-    cpuBody.castShadow = true;
-    cpuGroup.add(cpuBody);
-
-    const notch = new THREE.Mesh(
-      new THREE.CylinderGeometry(0.18, 0.18, 0.1, 16, 1, false, 0, Math.PI),
-      new THREE.MeshStandardMaterial({ color: 0x1e293b, roughness: 0.9 }),
-    );
-    notch.position.set(0, 0.12, -1.6);
-    cpuGroup.add(notch);
-
-    // 40 Silver DIP Lead Pins
-    for (let p = 0; p < 20; p++) {
-      const pinZ = -1.5 + p * 0.16;
-      [-0.7, 0.7].forEach((pinX) => {
-        const pin = new THREE.Mesh(
-          new THREE.BoxGeometry(0.12, 0.15, 0.06),
-          new THREE.MeshStandardMaterial({ color: 0xe2e8f0, metalness: 0.95 }),
-        );
-        pin.position.set(pinX, -0.1, pinZ);
-        cpuGroup.add(pin);
-      });
-    }
-    computerGroup.add(cpuGroup);
-
-    // 4116 16K Dynamic RAM Bank (3 Rows of 8 Chips = 48K RAM Matrix)
-    const ramGroup = new THREE.Group();
-    for (let row = 0; row < 3; row++) {
-      for (let col = 0; col < 8; col++) {
-        const ramChip = new THREE.Mesh(new THREE.BoxGeometry(0.45, 0.18, 0.95), icChipMat);
-        ramChip.position.set(-0.8 + col * 0.62, -0.44, -2.4 + row * 1.25);
-        ramChip.castShadow = true;
-        ramGroup.add(ramChip);
-      }
-    }
-    computerGroup.add(ramGroup);
-
-    // Apple Integer BASIC & Monitor ROM Bank (6 24-Pin DIP Chips)
-    const romGroup = new THREE.Group();
-    for (let r = 0; r < 6; r++) {
-      const romChip = new THREE.Mesh(new THREE.BoxGeometry(0.65, 0.2, 1.8), icChipMat);
-      romChip.position.set(3.6, -0.43, -2.4 + r * 0.9);
-      romChip.castShadow = true;
-      romGroup.add(romChip);
-    }
-    computerGroup.add(romGroup);
-
-    // 8 Peripheral Expansion Slots (50-Pin Gold-Plated Edge Connectors)
-    const slotsGroup = new THREE.Group();
-    for (let s = 0; s < 8; s++) {
-      const slotBody = new THREE.Mesh(new THREE.BoxGeometry(0.28, 0.45, 3.4), goldSlotMat);
-      slotBody.position.set(-3.4 + s * 0.95, -0.32, 2.6);
-      slotBody.castShadow = true;
-      slotsGroup.add(slotBody);
-    }
-    computerGroup.add(slotsGroup);
-
-    // 14.31818 MHz Master NTSC Color Clock Crystal Oscillator Can
-    const crystal = new THREE.Mesh(
-      new THREE.CylinderGeometry(0.22, 0.22, 0.65, 16),
-      new THREE.MeshStandardMaterial({ color: 0xf8fafc, roughness: 0.1, metalness: 0.95 }),
-    );
-    crystal.position.set(-4.4, -0.28, -2.2);
-    crystal.castShadow = true;
-    computerGroup.add(crystal);
-
-    // Rear Panel RCA Composite Video Out Jack
-    const rcaJack = new THREE.Mesh(
-      new THREE.CylinderGeometry(0.28, 0.28, 0.5, 16),
-      new THREE.MeshStandardMaterial({ color: 0xd97706, metalness: 0.9 }),
-    );
-    rcaJack.rotation.x = Math.PI / 2;
-    rcaJack.position.set(4.2, -0.35, -4.6);
-    computerGroup.add(rcaJack);
-
-    // --- GLOWING INTERLEAVED BUS DATA PARTICLES (Phi 1 Video vs Phi 2 CPU) ---
-    const busPacketCount = 140;
-    const busGeo = new THREE.BufferGeometry();
-    const busPos = new Float32Array(busPacketCount * 3);
-    const busColors = new Float32Array(busPacketCount * 3);
-
-    const glowTex = createGlowPointTexture();
-
-    for (let i = 0; i < busPacketCount; i++) {
-      const idx = i * 3;
-      const isPhi1Video = i % 2 === 0;
-
-      busPos[idx] = -2.8 + lcg() * 5.5;
-      busPos[idx + 1] = -0.85 + lcg() * 0.2;
-      busPos[idx + 2] = -2.0 + lcg() * 4.0;
-
-      if (isPhi1Video) {
-        busColors[idx] = 0.1;
-        busColors[idx + 1] = 0.9;
-        busColors[idx + 2] = 1.0;
-      } else {
-        busColors[idx] = 1.0;
-        busColors[idx + 1] = 0.7;
-        busColors[idx + 2] = 0.2;
-      }
-    }
-
-    busGeo.setAttribute("position", new THREE.BufferAttribute(busPos, 3));
-    busGeo.setAttribute("color", new THREE.BufferAttribute(busColors, 3));
-
-    const busPoints = new THREE.Points(
-      busGeo,
-      new THREE.PointsMaterial({
-        size: 0.38,
-        map: glowTex,
-        vertexColors: true,
-        transparent: true,
-        opacity: 0.9,
-        blending: THREE.AdditiveBlending,
-        depthWrite: false,
-      }),
-    );
-    computerGroup.add(busPoints);
-
-    // --- RENDER LOOP & REAL-TIME BUS INTERLEAVING ---
     let reqId: number;
     let renderedSteps = 0;
 
@@ -295,23 +118,12 @@ export function WozniakApple3D() {
       const delta = 1 / 60;
       const p = live.current;
 
-      const bPos = busPos;
-      const speed = (p.busDisplaySpeed ?? p.cpuClockMhz * 4.0) * delta;
-      const phi2Hz = p.phi2DisplayHz ?? 4;
-      const phi2 = Math.sin(renderedSteps * (1 / 60) * 2 * Math.PI * phi2Hz) > 0;
-
-      if (p.isCpuActive) {
-        for (let i = 0; i < busPacketCount; i++) {
-          const idx = i * 3;
-          const videoPhi1 = i % 2 === 0;
-          if (videoPhi1 || phi2) {
-            bPos[idx] += speed * (videoPhi1 ? 1 : -1);
-          }
-          if (bPos[idx] > 3.5) bPos[idx] = -3.0;
-          if (bPos[idx] < -3.5) bPos[idx] = 3.0;
-        }
-        busGeo.attributes.position.needsUpdate = true;
-      }
+      model.updateKinematics(
+        delta,
+        renderedSteps,
+        p.busDisplaySpeed ?? p.cpuClockMhz * 4.0,
+        p.isCpuActive,
+      );
 
       controls.update();
       renderer.render(scene, camera);
@@ -321,6 +133,7 @@ export function WozniakApple3D() {
 
     return () => {
       cancelAnimationFrame(reqId);
+      model.dispose();
       studio.dispose();
     };
   }, [live]);

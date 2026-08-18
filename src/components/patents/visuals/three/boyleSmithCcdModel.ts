@@ -47,9 +47,15 @@ export interface BoyleSmithCcdMaterials {
 }
 
 export interface BoyleSmithCcdModelResult {
+  root: THREE.Group;
   rootGroup: THREE.Group;
   nodes: BoyleSmithCcdModelNodes;
   materials: BoyleSmithCcdMaterials;
+  updateKinematics: (
+    delta: number,
+    activePhase: 1 | 2 | 3,
+    wellsData: { wells: number[]; fullWellElectrons: number; cte: number },
+  ) => void;
   dispose: () => void;
 }
 
@@ -159,10 +165,7 @@ export function buildBoyleSmithCcdModel(): BoyleSmithCcdModelResult {
   });
 
   // 3. SiO2 Gate Dielectric Oxide Layer
-  const oxide = new THREE.Mesh(
-    trackGeo(new THREE.BoxGeometry(9.4, 0.25, 4.4)),
-    materials.oxideMat,
-  );
+  const oxide = new THREE.Mesh(trackGeo(new THREE.BoxGeometry(9.4, 0.25, 4.4)), materials.oxideMat);
   oxide.position.y = 0.12;
   rootGroup.add(oxide);
 
@@ -268,7 +271,15 @@ export function buildBoyleSmithCcdModel(): BoyleSmithCcdModelResult {
     for (const t of texturesToDispose) t.dispose();
   };
 
-  return { rootGroup, nodes, materials, dispose };
+  const updateKinematics = (
+    delta: number,
+    activePhase: 1 | 2 | 3,
+    wellsData: { wells: number[]; fullWellElectrons: number; cte: number },
+  ) => {
+    updateBoyleSmithCcdKinematics(nodes, materials, delta, 0, activePhase, wellsData, false);
+  };
+
+  return { root: rootGroup, rootGroup, nodes, materials, updateKinematics, dispose };
 }
 
 /**

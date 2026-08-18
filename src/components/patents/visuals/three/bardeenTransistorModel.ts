@@ -14,8 +14,8 @@
  */
 
 import * as THREE from "three";
-import { createGlowPointTexture } from "./ThreeStudioScene";
 import { createLcg } from "@/utils/lcg";
+import { createGlowPointTexture } from "./ThreeStudioScene";
 
 const lcg = createLcg(1770);
 
@@ -304,8 +304,7 @@ export function updateBardeenTransistorKinematics(
   nodes.emitterGroup.position.x = -currentGapUnits / 2;
   nodes.collectorGroup.position.x = currentGapUnits / 2;
 
-  const driftSpeed =
-    currentGainAlpha * (emitterCurrentMa / 2.5) * (holeDiffusion / 49) * 3.5 * dt;
+  const driftSpeed = currentGainAlpha * (emitterCurrentMa / 2.5) * (holeDiffusion / 49) * 3.5 * dt;
   const pos = nodes.holePos;
 
   for (let i = 0; i < nodes.holeCount; i++) {
