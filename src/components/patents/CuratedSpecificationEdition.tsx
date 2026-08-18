@@ -148,21 +148,29 @@ function FigureReference({
         </span>
         <span className="grid gap-3">
           {inline.figurePreviews?.map((preview) => (
-            <figure
+            <span
               key={preview.src}
               className="overflow-hidden rounded-xl border border-parchment-300 bg-white dark:border-ink-800 dark:bg-ink-900"
             >
-              <NextImage
-                src={preview.src}
-                alt={preview.alt}
-                width={preview.width}
-                height={preview.height}
-                className="block h-auto w-full bg-white dark:bg-parchment-50"
-              />
-              <figcaption className="border-t border-parchment-300 px-3 py-2 text-xs leading-relaxed text-ink-700 dark:border-ink-800 dark:text-parchment-300">
-                {preview.alt}
-              </figcaption>
-            </figure>
+              <a
+                href={preview.src}
+                target="_blank"
+                rel="noopener noreferrer"
+                aria-label={`Open ${preview.alt} at full size`}
+                className="block focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-amber-700"
+              >
+                <NextImage
+                  src={preview.src}
+                  alt={preview.alt}
+                  width={preview.width}
+                  height={preview.height}
+                  className="block h-auto w-full bg-white dark:bg-parchment-50"
+                />
+                <span className="block border-t border-parchment-300 px-3 py-2 text-xs leading-relaxed text-ink-700 dark:border-ink-800 dark:text-parchment-300">
+                  {preview.alt}
+                </span>
+              </a>
+            </span>
           ))}
         </span>
       </span>

@@ -52,14 +52,10 @@ describe("ColorizedEquation Component", () => {
     expect(html).toContain('aria-expanded="false"');
   });
 
-  test("renders universal fallback equations for any catalog patent", () => {
+  test("does not render an unreviewed generated equation for a catalog patent", () => {
     const { getColorizedEquationsForPatent } = require("@/data/colorizedEquations");
     const cottonGinEqs = getColorizedEquationsForPatent("us-x72-whitney-cotton-gin");
-    expect(cottonGinEqs.length).toBeGreaterThan(0);
-
-    const html = renderToString(<ColorizedEquation equation={cottonGinEqs[0]} />);
-    expect(html).toContain("Mathematical Governing Law");
-    expect(html).toContain("Plain English Decoder");
+    expect(cottonGinEqs).toEqual([]);
   });
 
   test("renders all variable symbols and inline explanation math via KaTeX without raw LaTeX strings", () => {

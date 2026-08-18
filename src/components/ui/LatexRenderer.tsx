@@ -26,7 +26,7 @@ export function LatexRenderer({ math, block = false, className = "" }: LatexRend
     try {
       return katex.renderToString(math, {
         displayMode: block,
-        throwOnError: false,
+        throwOnError: true,
         output: "htmlAndMathml",
         trust: trustInteractiveTokenMarkup,
         strict: false,
@@ -37,7 +37,15 @@ export function LatexRenderer({ math, block = false, className = "" }: LatexRend
   }, [math, block]);
 
   if (!html) {
-    return <span className={`latex-container inline-block ${className}`}>{math}</span>;
+    return (
+      <span
+        role="status"
+        aria-label="Mathematical notation unavailable"
+        className={`latex-container inline-block rounded border border-amber-500/50 bg-amber-100/70 px-2 py-1 font-sans text-xs text-amber-950 dark:bg-amber-950/40 dark:text-amber-100 ${className}`}
+      >
+        Mathematical notation unavailable
+      </span>
+    );
   }
 
   return (

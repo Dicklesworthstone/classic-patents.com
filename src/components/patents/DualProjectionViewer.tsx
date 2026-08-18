@@ -14,7 +14,7 @@ import {
 } from "lucide-react";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { ColorizedEquation } from "@/components/ui/ColorizedEquation";
-import { TextWithLatex } from "@/components/ui/LatexRenderer";
+import { LatexRenderer, TextWithLatex } from "@/components/ui/LatexRenderer";
 import { getColorizedEquationsForPatent } from "@/data/colorizedEquations";
 import { archivalParallelReadingsFor } from "@/data/editions/parallelReadings";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
@@ -48,9 +48,13 @@ function isPatentViewMode(value: string | undefined): value is PatentViewMode {
   return !!value && (PATENT_VIEW_MODES as string[]).includes(value);
 }
 
-function viewModeFromLocation(): PatentViewMode | undefined {
-  const candidate = new URLSearchParams(window.location.search).get("view") ?? undefined;
+export function viewModeFromSearch(search: string): PatentViewMode | undefined {
+  const candidate = new URLSearchParams(search).get("view") ?? undefined;
   return isPatentViewMode(candidate) ? candidate : undefined;
+}
+
+function viewModeFromLocation(): PatentViewMode | undefined {
+  return viewModeFromSearch(window.location.search);
 }
 
 function handlePrint() {
@@ -105,10 +109,7 @@ export type PatentViewMode =
 
 export function DualProjectionViewer({ patent, initialView }: DualProjectionViewerProps) {
   const { tick, lastChange } = usePatentPhysics(patent.id);
-  const colorizedEquations = useMemo(
-    () => getColorizedEquationsForPatent(patent.id, patent),
-    [patent],
-  );
+  const colorizedEquations = useMemo(() => getColorizedEquationsForPatent(patent.id), [patent]);
   const [viewMode, setViewModeState] = useState<PatentViewMode>(
     isPatentViewMode(initialView) ? initialView : "plain-english",
   );
@@ -131,7 +132,7 @@ export function DualProjectionViewer({ patent, initialView }: DualProjectionView
   useEffect(() => {
     const syncFromLocation = () => {
       const view = viewModeFromLocation();
-      if (view) setViewModeState(view);
+      setViewModeState(view ?? "plain-english");
     };
 
     syncFromLocation();
@@ -177,6 +178,7 @@ export function DualProjectionViewer({ patent, initialView }: DualProjectionView
         <div className="flex flex-wrap items-center gap-2 text-sm font-sans">
           <button
             type="button"
+            aria-pressed={viewMode === "plain-english"}
             onClick={() => setViewMode("plain-english")}
             title="Plain English Face (Shortcut: 1)"
             className={`px-3.5 sm:px-4 py-2 sm:py-2.5 rounded-xl flex items-center gap-2 transition-colors cursor-pointer ${
@@ -194,6 +196,7 @@ export function DualProjectionViewer({ patent, initialView }: DualProjectionView
 
           <button
             type="button"
+            aria-pressed={viewMode === "original-spec"}
             onClick={() => setViewMode("original-spec")}
             title="Original Patent Text (Shortcut: 2)"
             className={`px-3.5 sm:px-4 py-2 sm:py-2.5 rounded-xl flex items-center gap-2 transition-colors cursor-pointer ${
@@ -211,6 +214,7 @@ export function DualProjectionViewer({ patent, initialView }: DualProjectionView
 
           <button
             type="button"
+            aria-pressed={viewMode === "interactive-sim"}
             onClick={() => setViewMode("interactive-sim")}
             title="Interactive 3D Simulator (Shortcut: 3)"
             className={`px-3.5 sm:px-4 py-2 sm:py-2.5 rounded-xl flex items-center gap-2 transition-colors cursor-pointer ${
@@ -228,6 +232,7 @@ export function DualProjectionViewer({ patent, initialView }: DualProjectionView
 
           <button
             type="button"
+            aria-pressed={viewMode === "schematic-sheet"}
             onClick={() => setViewMode("schematic-sheet")}
             title="Schematic & Pins (Shortcut: 4)"
             className={`px-3.5 sm:px-4 py-2 sm:py-2.5 rounded-xl flex items-center gap-2 transition-colors cursor-pointer ${
@@ -245,6 +250,7 @@ export function DualProjectionViewer({ patent, initialView }: DualProjectionView
 
           <button
             type="button"
+            aria-pressed={viewMode === "pdf-facsimile"}
             onClick={() => setViewMode("pdf-facsimile")}
             title="Full Original PDF (Shortcut: 5)"
             className={`px-3.5 sm:px-4 py-2 sm:py-2.5 rounded-xl flex items-center gap-2 transition-colors cursor-pointer ${
@@ -275,6 +281,7 @@ export function DualProjectionViewer({ patent, initialView }: DualProjectionView
 
           <button
             type="button"
+            aria-pressed={viewMode === "split-view"}
             onClick={() => setViewMode(viewMode === "split-view" ? "plain-english" : "split-view")}
             title="Toggle Dual Split-Screen (Shortcut: 6)"
             className={`px-4 py-2 rounded-xl text-xs sm:text-sm font-sans border flex items-center gap-2 transition-colors shadow-xs cursor-pointer ${
@@ -463,7 +470,7 @@ export function DualProjectionViewer({ patent, initialView }: DualProjectionView
                   <span>Interactive Real-Time Physical Simulation</span>
                 </h4>
                 <span className="text-xs font-sans text-ink-500 hidden sm:inline">
-                  Drag to rotate · Scroll to zoom · Parameters synchronize with live SI telemetry
+                  Drag to rotate · Scroll to zoom · Shared controls update the displayed model
                 </span>
               </div>
               <PatentVisualDispatcher patentId={patent.id} />
@@ -512,25 +519,25 @@ export function DualProjectionViewer({ patent, initialView }: DualProjectionView
               </div>
             </div>
 
-            {/* Governing Scientific Equations & Principles (Interactive Colorized Math Explainer) */}
+            {/* Governing Scientific Equations & Principles */}
             {(colorizedEquations.length > 0 ||
               patent.plainEnglishExplanation.scientificPrinciples.length > 0) && (
               <div className="space-y-6 pt-6 border-t border-parchment-200 dark:border-ink-800">
                 <div className="flex items-center justify-between gap-3 flex-wrap">
                   <div>
                     <span className="text-xs font-mono text-amber-700 dark:text-amber-400 font-bold uppercase tracking-widest block">
-                      Interactive Mathematical Physics &amp; Rigorous Mechanics
+                      Engineering Principles &amp; Equations
                     </span>
                     <h4 className="font-serif font-bold text-xl sm:text-2xl text-ink-950 dark:text-parchment-50">
-                      Governing Equations &amp; Colorized Principles
+                      Governing Equations &amp; Engineering Principles
                     </h4>
                   </div>
                   <span className="text-xs font-sans text-ink-600 dark:text-ink-400 italic">
-                    Dual-coded visual mapping &amp; live SI telemetry
+                    Authored explanation paired with its stated mathematical relation
                   </span>
                 </div>
 
-                {/* Interactive Colorized Equations for All Governing Laws */}
+                {/* Interactive cards exist only for authored, reviewed annotations. */}
                 {colorizedEquations.length > 0 && (
                   <div className="space-y-6">
                     {colorizedEquations.map((eq: ColorizedEquationType) => (
@@ -539,31 +546,39 @@ export function DualProjectionViewer({ patent, initialView }: DualProjectionView
                   </div>
                 )}
 
-                {/* Qualitative Principle Notes (for any principles without mathematical formulas) */}
-                {patent.plainEnglishExplanation.scientificPrinciples.some(
-                  (sci) => !sci.formula,
-                ) && (
+                {/* Every remaining principle keeps its authored prose and formula without inference. */}
+                {patent.plainEnglishExplanation.scientificPrinciples.length > 0 && (
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-5 pt-2">
-                    {patent.plainEnglishExplanation.scientificPrinciples
-                      .filter((sci) => !sci.formula)
-                      .map((sci, idx) => (
-                        <div
-                          key={sci.principle}
-                          className="p-6 rounded-2xl bg-parchment-100/80 dark:bg-ink-900/80 border border-parchment-300 dark:border-ink-800 space-y-4 shadow-sm hover:border-amber-700/40 transition-colors"
-                        >
-                          <div className="flex items-center justify-between gap-2">
-                            <span className="text-amber-900 dark:text-amber-400 font-serif font-bold text-base sm:text-lg">
-                              {sci.principle}
-                            </span>
-                            <span className="text-[10px] font-mono font-bold px-2 py-0.5 rounded-md bg-amber-700/10 text-amber-800 dark:text-amber-400 border border-amber-700/20">
-                              Principle Note {idx + 1}
-                            </span>
-                          </div>
-                          <div className="text-xs sm:text-sm text-ink-800 dark:text-parchment-200 font-sans leading-relaxed">
-                            <TextWithLatex text={sci.explanation} />
-                          </div>
+                    {patent.plainEnglishExplanation.scientificPrinciples.map((sci, idx) => (
+                      <div
+                        key={sci.principle}
+                        className="p-6 rounded-2xl bg-parchment-100/80 dark:bg-ink-900/80 border border-parchment-300 dark:border-ink-800 space-y-4 shadow-sm hover:border-amber-700/40 transition-colors"
+                      >
+                        <div className="flex items-center justify-between gap-2">
+                          <span className="text-amber-900 dark:text-amber-400 font-serif font-bold text-base sm:text-lg">
+                            {sci.principle}
+                          </span>
+                          <span className="text-[10px] font-mono font-bold px-2 py-0.5 rounded-md bg-amber-700/10 text-amber-800 dark:text-amber-400 border border-amber-700/20">
+                            Authored Principle {idx + 1}
+                          </span>
                         </div>
-                      ))}
+                        {sci.formula && (
+                          <div className="rounded-xl bg-white/75 dark:bg-ink-950/70 border border-parchment-300 dark:border-ink-800 px-4 py-3 overflow-x-auto">
+                            <span className="block text-[10px] font-mono font-bold uppercase tracking-wider text-ink-500 dark:text-ink-400 mb-2">
+                              Stated relation
+                            </span>
+                            <LatexRenderer
+                              math={sci.formula}
+                              block
+                              className="text-ink-950 dark:text-parchment-50"
+                            />
+                          </div>
+                        )}
+                        <div className="text-xs sm:text-sm text-ink-800 dark:text-parchment-200 font-sans leading-relaxed">
+                          <TextWithLatex text={sci.explanation} />
+                        </div>
+                      </div>
+                    ))}
                   </div>
                 )}
               </div>
@@ -615,7 +630,7 @@ export function DualProjectionViewer({ patent, initialView }: DualProjectionView
                     ? "Complete Manually Prepared Archival Edition"
                     : rawSourceTextAsset
                       ? "Raw Source Layer Withheld From Publication"
-                      : "Original-Source Edition Status"}
+                      : "Original Patent Text"}
                 </span>
                 <h3 className="font-serif text-2xl sm:text-3xl font-bold text-ink-950 dark:text-parchment-50">
                   {patent.patentNumber} · Specification of Letters Patent

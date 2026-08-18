@@ -23,4 +23,12 @@ describe("LatexRenderer", () => {
     expect(linkHtml).not.toContain('<a href="javascript:alert(1)"');
     expect(imageHtml).not.toContain('<img src="javascript:alert(1)"');
   });
+
+  test("uses a readable visible fallback instead of leaking malformed TeX", () => {
+    const malformed = String.raw`\notARealCommand{`;
+    const html = renderToStaticMarkup(<LatexRenderer math={malformed} />);
+
+    expect(html).toContain("Mathematical notation unavailable");
+    expect(html).not.toContain(malformed);
+  });
 });

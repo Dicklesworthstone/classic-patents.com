@@ -59,9 +59,11 @@ export function PhysicsTelemetryBadge({
           <div>
             <div className="flex items-center gap-1.5 font-mono text-[11px] font-bold text-amber-800 dark:text-amber-400 uppercase tracking-widest">
               <Cpu className="w-3.5 h-3.5 text-amber-700 dark:text-amber-400" />
-              <span>FrankenSim Physics Core</span>
+              <span>Host-Model Telemetry</span>
               <span className="text-ink-300 dark:text-ink-600">/</span>
-              <span className="text-ink-950 dark:text-parchment-100 font-bold">Live Telemetry</span>
+              <span className="text-ink-950 dark:text-parchment-100 font-bold">
+                Computed Readout
+              </span>
             </div>
             <div className="text-xs text-ink-600 dark:text-ink-400 font-serif italic mt-0.5">
               {data.domainTitle}
@@ -244,13 +246,13 @@ export function PhysicsTelemetryBadge({
           <div className="text-[10px] font-mono text-ink-500 dark:text-ink-400 flex flex-wrap items-center justify-between gap-2 pt-1">
             <span className="flex items-center gap-1.5">
               <Activity className="w-3 h-3 text-emerald-600 dark:text-emerald-400" />
-              <span>WASM physics kernel:</span>{" "}
+              <span>Host calculation:</span>{" "}
               <code className="text-amber-800 dark:text-amber-400 font-bold">
                 {data.engineMethod}()
               </code>
             </span>
             <span className="text-ink-500 dark:text-ink-400">
-              SI Telemetry Protocol · 6-DoF Synchronized
+              A patent-specific WASM kernel is identified only by its visual when it is loaded.
             </span>
           </div>
         </div>
