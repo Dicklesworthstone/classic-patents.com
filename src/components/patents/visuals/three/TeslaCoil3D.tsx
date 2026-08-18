@@ -12,10 +12,10 @@ import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { createLcg } from "@/utils/lcg";
 import { soundEngine } from "@/utils/soundEngine";
 import {
-  createGlowPointTexture,
   createThreeStudioScene,
   type StudioContext,
 } from "./ThreeStudioScene";
+import { buildTeslaCoilModel } from "./teslaCoilModel";
 import { useLiveSimParams } from "./useLiveSimParams";
 
 const lcg = createLcg(896);
@@ -150,213 +150,25 @@ export function TeslaCoil3D() {
     cameraRef.current = camera;
     controlsRef.current = controls;
 
-    // --- PBR MATERIALS ---
-    const toroidAluminumMat = new THREE.MeshStandardMaterial({
-      color: 0xf1f5f9,
-      roughness: 0.1,
-      metalness: 0.95,
-    });
+    const model = buildTeslaCoilModel();
+    scene.add(model.root);
 
-    const secondaryCopperWireMat = new THREE.MeshStandardMaterial({
-      color: 0xd97706,
-      roughness: 0.3,
-      metalness: 0.85,
-    });
-
-    const primaryHeavyCopperMat = new THREE.MeshStandardMaterial({
-      color: 0xca8a04,
-      roughness: 0.18,
-      metalness: 0.9,
-    });
-
-    const baseMahoganyMat = new THREE.MeshStandardMaterial({
-      color: 0x78350f,
-      roughness: 0.35,
-      metalness: 0.05,
-    });
-
-    const sparkGapBrassMat = new THREE.MeshStandardMaterial({
-      color: 0xf59e0b,
-      roughness: 0.12,
-      metalness: 0.95,
-    });
-
-    // --- 3D TESLA COIL APPARATUS ---
-    const coilGroup = new THREE.Group();
-    scene.add(coilGroup);
-
-    // Insulated Base Table
-    const tableBase = new THREE.Mesh(
-      new THREE.CylinderGeometry(4.2, 4.5, 0.8, 36),
-      baseMahoganyMat,
-    );
-    tableBase.position.y = -3.8;
-    tableBase.receiveShadow = true;
-    coilGroup.add(tableBase);
-
-    // Secondary Helical Resonator Tube
-    const secondaryCylinder = new THREE.Mesh(
-      new THREE.CylinderGeometry(0.85, 0.85, 5.2, 48),
-      secondaryCopperWireMat,
-    );
-    secondaryCylinder.position.y = -0.6;
-    secondaryCylinder.castShadow = true;
-    coilGroup.add(secondaryCylinder);
-
-    // Continuous Archimedean Spiral Primary Coil
-    const spiralPts: THREE.Vector3[] = [];
-    const numSpiralTurns = 6.0;
-    const numSpiralPts = 160;
-    const innerRadius = 1.3;
-    const outerRadius = 3.6;
-
-    for (let i = 0; i <= numSpiralPts; i++) {
-      const t = i / numSpiralPts;
-      const angle = t * numSpiralTurns * Math.PI * 2;
-      const radius = innerRadius + t * (outerRadius - innerRadius);
-      const y = -2.8 + t * 0.45;
-      spiralPts.push(new THREE.Vector3(Math.cos(angle) * radius, y, Math.sin(angle) * radius));
-    }
-
-    const spiralCurve = new THREE.CatmullRomCurve3(spiralPts);
-    const spiralGeo = new THREE.TubeGeometry(spiralCurve, 140, 0.09, 8, false);
-    const spiralMesh = new THREE.Mesh(spiralGeo, primaryHeavyCopperMat);
-    spiralMesh.castShadow = true;
-    coilGroup.add(spiralMesh);
-
-    // 6 Radial Slotted Mahogany Comb Standoffs
-    for (let s = 0; s < 6; s++) {
-      const sAngle = (s * Math.PI * 2) / 6;
-      const comb = new THREE.Mesh(new THREE.BoxGeometry(2.4, 0.35, 0.18), baseMahoganyMat);
-      comb.position.set(Math.cos(sAngle) * 2.4, -2.8, Math.sin(sAngle) * 2.4);
-      comb.rotation.y = -sAngle;
-      coilGroup.add(comb);
-    }
-
-    // Spun Aluminum Toroidal Terminal Topload
-    const toroidGeo = new THREE.TorusGeometry(1.65, 0.65, 24, 48);
-    const toroidMesh = new THREE.Mesh(toroidGeo, toroidAluminumMat);
-    toroidMesh.rotation.x = Math.PI / 2;
-    toroidMesh.position.y = 2.4;
-    toroidMesh.castShadow = true;
-    coilGroup.add(toroidMesh);
-
-    // Rotary Spark Gap Assembly on Baseboard
-    const sparkGapBase = new THREE.Mesh(
-      new THREE.BoxGeometry(2.4, 0.15, 1.4),
-      new THREE.MeshStandardMaterial({ color: 0x1e293b, roughness: 0.5 }),
-    );
-    sparkGapBase.position.set(2.4, -3.3, 0);
-    coilGroup.add(sparkGapBase);
-
-    [-0.5, 0.5].forEach((gx) => {
-      const electrode = new THREE.Mesh(new THREE.SphereGeometry(0.22, 16, 16), sparkGapBrassMat);
-      electrode.position.set(2.4 + gx, -3.05, 0);
-      coilGroup.add(electrode);
-    });
-
-    // --- REAL-TIME BRANCHING LIGHTNING STREAMER LINES ---
-    const streamerCount = 6;
-    const streamerLines: THREE.Line[] = [];
-    const streamerGeos: THREE.BufferGeometry[] = [];
-
-    for (let s = 0; s < streamerCount; s++) {
-      const segCount = 14;
-      const geo = new THREE.BufferGeometry();
-      const pos = new Float32Array(segCount * 3);
-      geo.setAttribute("position", new THREE.BufferAttribute(pos, 3));
-      const mat = new THREE.LineBasicMaterial({
-        color: 0x38bdf8,
-        transparent: true,
-        opacity: 0.9,
-      });
-      const line = new THREE.Line(geo, mat);
-      scene.add(line);
-      streamerLines.push(line);
-      streamerGeos.push(geo);
-    }
-
-    // --- GLOWING CORONAL PARTICLES ---
-    const coronaCount = 80;
-    const coronaGeo = new THREE.BufferGeometry();
-    const coronaPos = new Float32Array(coronaCount * 3);
-    const glowTex = createGlowPointTexture();
-
-    for (let i = 0; i < coronaCount; i++) {
-      const idx = i * 3;
-      const theta = lcg() * Math.PI * 2;
-      const r = 1.65 + (lcg() - 0.5) * 0.9;
-      coronaPos[idx] = Math.cos(theta) * r;
-      coronaPos[idx + 1] = 2.4 + (lcg() - 0.5) * 0.8;
-      coronaPos[idx + 2] = Math.sin(theta) * r;
-    }
-    coronaGeo.setAttribute("position", new THREE.BufferAttribute(coronaPos, 3));
-
-    const coronaPoints = new THREE.Points(
-      coronaGeo,
-      new THREE.PointsMaterial({
-        size: 0.35,
-        map: glowTex,
-        color: 0x67e8f9,
-        transparent: true,
-        opacity: 0.85,
-        blending: THREE.AdditiveBlending,
-        depthWrite: false,
-      }),
-    );
-    scene.add(coronaPoints);
-
-    // --- RENDER LOOP & REAL-TIME LIGHTNING DYNAMICS ---
     let reqId: number;
-    let _renderedSteps = 0;
 
     const animate = () => {
       reqId = requestAnimationFrame(animate);
-      _renderedSteps += 1;
-      const _delta = 1 / 60;
+      const delta = 1 / 60;
       const p = live.current;
 
-      if (p.showLightningStreamers) {
-        coronaPoints.visible = true;
+      const inches = Number(p.streamerLengthInches) || 0;
+      const meters = inches * 0.0254;
 
-        for (let s = 0; s < streamerCount; s++) {
-          const line = streamerLines[s];
-          const geo = streamerGeos[s];
-          if (line && geo) {
-            line.visible = lcg() < Math.min(0.95, (p.sparkRateHz ?? 120) / 200);
-            const posAttr = geo.attributes.position as THREE.BufferAttribute;
-            const posArr = posAttr.array as Float32Array;
-
-            const baseAngle = (s * Math.PI * 2) / streamerCount + lcg() * 0.2;
-            const startX = Math.cos(baseAngle) * 1.65;
-            const startY = 2.4;
-            const startZ = Math.sin(baseAngle) * 1.65;
-
-            // Kernel length is inches of air breakdown (28 in/MV). Studio ≈ 0.4 m / unit.
-            const inches = Number(p.streamerLengthInches) || 0;
-            const length = Math.min(8, Math.max(0.35, (inches * 0.0254) / 0.4));
-
-            posArr[0] = startX;
-            posArr[1] = startY;
-            posArr[2] = startZ;
-
-            for (let i = 1; i < 14; i++) {
-              const t = i / 13;
-              const idx = i * 3;
-              const jitter = 0.35 * (1 - t * 0.3);
-              posArr[idx] = startX + Math.cos(baseAngle) * t * length + (lcg() - 0.5) * jitter;
-              posArr[idx + 1] = startY + t * length * 0.5 + (lcg() - 0.5) * jitter;
-              posArr[idx + 2] = startZ + Math.sin(baseAngle) * t * length + (lcg() - 0.5) * jitter;
-            }
-            posAttr.needsUpdate = true;
-          }
-        }
-      } else {
-        coronaPoints.visible = false;
-        streamerLines.forEach((l) => {
-          l.visible = false;
-        });
-      }
+      model.updateKinematics(
+        delta,
+        p.showLightningStreamers,
+        meters,
+        Number(p.secondaryVoltageMv),
+      );
 
       controls.update();
       renderer.render(scene, camera);
@@ -366,6 +178,7 @@ export function TeslaCoil3D() {
 
     return () => {
       cancelAnimationFrame(reqId);
+      model.dispose();
       studio.dispose();
     };
   }, [live]);
