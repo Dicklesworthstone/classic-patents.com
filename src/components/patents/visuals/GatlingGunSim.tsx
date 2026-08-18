@@ -17,7 +17,7 @@ export function GatlingGunSim() {
 
   const gatling = stepGatlingGun({ crankRpm, barrelCount });
   const cadenceRpm = gatling.roundsPerMin;
-  const cycleTimeMs = Math.round(60000 / Math.max(1, cadenceRpm));
+  const cycleTimeMs = gatling.cycleTimeMs;
   const barrelCoolingTimeSec = gatling.barrelCoolingIntervalS;
   const muzzleEnergyJoules = gatling.muzzleEnergyJoules;
 

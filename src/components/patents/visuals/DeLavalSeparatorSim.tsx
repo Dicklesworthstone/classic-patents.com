@@ -18,7 +18,7 @@ export function DeLavalSeparatorSim() {
   const sep = stepDeLavalSeparator({ bowlRpm, rawMilkFlowLph });
   const centrifugalAccG = sep.gForce;
   const creamYieldLph = sep.creamFlowLph;
-  const skimMilkYieldLph = Number((rawMilkFlowLph - creamYieldLph).toFixed(1));
+  const skimMilkYieldLph = sep.skimFlowLph;
   const separationEfficiencyPct = sep.fatYieldPct;
 
   useEffect(() => {

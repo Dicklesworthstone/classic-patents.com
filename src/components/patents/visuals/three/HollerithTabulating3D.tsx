@@ -26,7 +26,7 @@ export function HollerithTabulating3D() {
     activeRelays: params.activeRelays ?? 16,
   });
   const cardsPerDay = Math.round((60_000 / hollerith.cycleTimeMs) * 60 * 7);
-  const clockDialCount = 40; // register bank on the 1890 census machine
+  const clockDialCount = hollerith.registerDialCount;
   const [activeCamera, setActiveCamera] = useState<CameraPreset>("iso");
   const { isAudioMuted, toggleSound: toggleEngine } = usePatentAudio();
 

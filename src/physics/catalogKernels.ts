@@ -67,9 +67,24 @@ export function stepEricssonPropeller(params: { shaftRpm?: number; bladePitchAng
   const rpm = params.shaftRpm ?? 120;
   const pitchDeg = params.bladePitchAngleDeg ?? 35;
   const pitchFactor = Math.tan((pitchDeg * Math.PI) / 180) / Math.tan((35 * Math.PI) / 180);
+  const pitchMeters = Number((Math.PI * 1.6 * Math.tan((pitchDeg * Math.PI) / 180)).toFixed(2));
+  const shipSpeedKnots = Number(((rpm / 120) * 8.5 * pitchFactor).toFixed(1));
+  const theoreticalSpeedKnots = Number(((rpm * pitchMeters * 60) / 1852).toFixed(1));
+  const slipFraction =
+    theoreticalSpeedKnots > 0
+      ? Number(
+          Math.max(
+            0,
+            Math.min(0.9, (theoreticalSpeedKnots - shipSpeedKnots) / theoreticalSpeedKnots),
+          ).toFixed(2),
+        )
+      : 0.15;
   return {
-    shipSpeedKnots: Number(((rpm / 120) * 8.5 * pitchFactor).toFixed(1)),
+    shipSpeedKnots,
     thrustKn: Math.round((rpm / 120) ** 2 * 18 * pitchFactor),
+    pitchMeters,
+    theoreticalSpeedKnots,
+    slipFraction,
   };
 }
 
@@ -81,6 +96,7 @@ export function stepDeLavalSeparator(params: { bowlRpm?: number; rawMilkFlowLph?
     gForce,
     fatYieldPct: Math.min(99.9, Number((95 + (gForce / 5000) * 4.5).toFixed(1))),
     creamFlowLph: Number((flow * 0.12).toFixed(1)),
+    skimFlowLph: Number((flow * 0.88).toFixed(1)),
   };
 }
 
@@ -95,6 +111,10 @@ export function stepNobelDynamite(params: {
     detonationVelocityMps: isInitiated ? Math.round(5500 + (ng - 50) * 80) : 0,
     isInitiated,
     blastOverpressureMpa: isInitiated ? Math.round(4500 + (ng - 50) * 120) : 0,
+    blastOverpressureGpa: isInitiated
+      ? Number(((4500 + (ng - 50) * 120) / 1000).toFixed(1))
+      : 0,
+    energyMjPerKg: Number(((ng / 100) * 6.3).toFixed(2)),
     // Free NG vs kieselguhr dough: more dry meal → higher drop-hammer margin.
     cushionFactor: Number((1 + (100 - ng) / 8.9).toFixed(1)),
   };
@@ -102,10 +122,12 @@ export function stepNobelDynamite(params: {
 
 export function stepWhitneyCottonGin(params: { crankRpm?: number }) {
   const rpm = params.crankRpm ?? 180;
+  const sawRpm = Math.round(rpm * 3.5);
   return {
-    sawRpm: Math.round(rpm * 3.5),
+    sawRpm,
     brushRpm: Math.round(rpm * 12.0),
     outputLbsPerDay: Math.round((rpm / 180) * 50),
+    sawTipSpeedMps: Number(((sawRpm * 2 * Math.PI * 0.125) / 60).toFixed(2)),
   };
 }
 
@@ -170,6 +192,7 @@ export function stepGatlingGun(params: { crankRpm?: number; barrelCount?: number
     roundsPerMin: rof,
     barrelCoolingIntervalS: Number(((60 / Math.max(1, rof)) * count).toFixed(2)),
     muzzleEnergyJoules: 1850,
+    cycleTimeMs: Math.round(60000 / Math.max(1, rof)),
   };
 }
 
@@ -194,11 +217,14 @@ export function stepPasteurFermentation(params: {
   const pTemp = params.pasteurizationTempC ?? 58;
   const hold = params.holdTimeMin ?? 20;
   const temp = params.wortTempC ?? 22;
+  const logReduction = Number(
+    Math.max(0, Math.min(8.0, (hold / 20) * ((pTemp - 45) / 10) * 4.5)).toFixed(1),
+  );
   return {
-    logReduction: Number(
-      Math.max(0, Math.min(8.0, (hold / 20) * ((pTemp - 45) / 10) * 4.5)).toFixed(1),
-    ),
+    logReduction,
     yeastActivityPct: Math.min(100, Math.round(100 * Math.exp(-0.02 * (temp - 24) ** 2))),
+    survivorPct:
+      logReduction >= 6 ? 0.0001 : Number((100 * 10 ** -logReduction).toFixed(2)),
   };
 }
 
@@ -224,6 +250,7 @@ export function stepGliddenBarbedWire(params: {
     contactStressMpa: Number((push / contactAreaMm2).toFixed(0)),
     machineRpm,
     productionRateFtPerMin: Number(((machineRpm * spacingIn) / 12).toFixed(1)),
+    wireTensionLbs: Math.round(t / 4.44822),
   };
 }
 
@@ -254,6 +281,7 @@ export function stepThomsonWelding(params: {
     jouleKw: kw,
     interfaceTempC: tempC,
     isForged: tempC >= 1150 && press >= 25,
+    upsetBurrWidthMm: Number(((press / 35) * 3.8).toFixed(1)),
   };
 }
 

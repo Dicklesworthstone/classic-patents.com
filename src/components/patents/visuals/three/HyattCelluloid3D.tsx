@@ -25,7 +25,7 @@ export function HyattCelluloid3D() {
     steamTempC: processTempC,
     hydraulicPressureMpa,
   });
-  const extrusionRateCmPerMin = hyatt.isMelted ? (processTempC * 0.15).toFixed(1) : "0.0";
+  const extrusionRateCmPerMin = hyatt.extrusionRateCmPerMin.toFixed(1);
   const [activeCamera, setActiveCamera] = useState<CameraPreset>("iso");
   const { isAudioMuted, toggleSound: toggleEngine } = usePatentAudio();
 
@@ -321,6 +321,8 @@ export function HyattCelluloid3D() {
           },
           { label: "Ram", value: hydraulicPressureMpa.toFixed(0), unit: "MPa" },
           { label: "η", value: String(hyatt.viscosityPaS), unit: "Pa·s" },
+          { label: "ρ", value: String(hyatt.consolidationDensityGPerCm3), unit: "g/cm³" },
+          { label: "Clear", value: String(hyatt.transparencyPct), unit: "%" },
           {
             label: "Extrusion",
             value: hyatt.isMelted ? extrusionRateCmPerMin : "0.0",

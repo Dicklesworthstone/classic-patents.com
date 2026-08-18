@@ -11,15 +11,16 @@ export function GliddenBarbedWireSim() {
   const twistsPerFoot = params.twistsPerFoot ?? 5;
   const animalPushForceN = params.animalPushForceN ?? 120;
   const wireTensionNewtons = params.wireTensionN ?? 650;
-  const wireTensionLbs = Math.round(wireTensionNewtons / 4.44822);
 
   const wire = stepGliddenBarbedWire({
     wireTensionN: wireTensionNewtons,
     twistsPerFoot,
     animalPushForceN,
+    barbSpacingInches: params.barbSpacingInches ?? 5.0,
   });
-  const contactAreaMm2 = 0.25;
-  const contactStressMpa = Number((animalPushForceN / contactAreaMm2).toFixed(0));
+  const wireTensionLbs = wire.wireTensionLbs;
+  const contactAreaMm2 = wire.contactAreaMm2;
+  const contactStressMpa = wire.contactStressMpa;
   const barbSlipForceN = wire.barbSlipThresholdN;
   const isBarbLocked = wire.isLocked;
   const isCattleDeterred = contactStressMpa > 200;
@@ -152,7 +153,7 @@ export function GliddenBarbedWireSim() {
               fontWeight="bold"
               fontFamily="sans-serif"
             >
-              Animal Contact: {contactStressMpa} MPa
+              Animal Contact: {contactStressMpa} MPa / {contactAreaMm2} mm²
             </text>
           </g>
         </svg>

@@ -21,8 +21,8 @@ export function CorlissEngineSim() {
     engineRpm,
     cutoffPct: cutoffFractionPct,
   });
-  const pBoilerMpa = Number((boilerPressurePsi * 0.00689476).toFixed(2));
-  const expansionRatio = Number((100 / Math.max(5, cutoffFractionPct)).toFixed(1));
+  const pBoilerMpa = corliss.boilerMpa;
+  const expansionRatio = corliss.expansionRatio;
   const indicatedHorsepower = corliss.indicatedHp;
   const thermalEfficiencyPct = corliss.thermalEfficiencyPct;
 

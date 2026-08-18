@@ -20,20 +20,20 @@ export function GliddenBarbedWire3D() {
   // Wire Manufacturing Parameters
   const { params } = usePatentPhysics("us-157124-glidden-barbed-wire");
   const twistsPerFoot = params.twistsPerFoot ?? 5;
-  const machineRpm = twistsPerFoot * 24;
   const barbSpacingInches = params.barbSpacingInches ?? 5.0;
   const glidden = stepGliddenBarbedWire({
     wireTensionN: params.wireTensionN ?? 650,
     twistsPerFoot,
     animalPushForceN: params.animalPushForceN ?? 120,
+    barbSpacingInches,
   });
-  const feetPerMinute = ((machineRpm * barbSpacingInches) / 12).toFixed(1);
-  const tensileStrengthLbs = 950; // Bessemer fence-wire rating, ~1874
+  const feetPerMinute = glidden.productionRateFtPerMin.toFixed(1);
+  const tensileStrengthLbs = glidden.tensileStrengthLbs;
   const [activeCamera, setActiveCamera] = useState<CameraPreset>("iso");
   const { isAudioMuted, toggleSound: toggleEngine } = usePatentAudio();
 
   const live = useLiveSimParams({
-    machineRpm,
+    machineRpm: glidden.machineRpm,
     barbSpacingInches,
     isAudioMuted,
     sagCm: glidden.sagCm,

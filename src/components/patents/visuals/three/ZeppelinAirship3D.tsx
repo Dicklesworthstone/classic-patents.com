@@ -28,7 +28,7 @@ export function ZeppelinAirship3D() {
     trimWeight: params.trimWeight ?? 5,
   });
   const engineRpm = (airspeedMph / 17.5) * 1000;
-  const grossLiftKg = Math.round((zep.grossBuoyancyKn / 9.81) * 1000);
+  const grossLiftKg = zep.grossLiftKg;
   const hydrogenVolumeM3 = zep.hydrogenVolumeM3;
   const [showWireframe, setShowWireframe] = useState<boolean>(false);
   const [activeCamera, setActiveCamera] = useState<CameraPreset>("iso");

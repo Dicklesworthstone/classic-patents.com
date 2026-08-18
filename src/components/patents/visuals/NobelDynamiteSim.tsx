@@ -18,10 +18,10 @@ export function NobelDynamiteSim() {
     capEnergyJoules,
   });
   const detonationVelocityMps = nobel.detonationVelocityMps;
-  const peakPressureGpa = Number((nobel.blastOverpressureMpa / 1000).toFixed(1));
+  const peakPressureGpa = nobel.blastOverpressureGpa;
   const isCapStrongEnough = nobel.isInitiated;
   const isSensitiveUnsafe = nitroglycerinRatioPct > 82;
-  const explosiveEnergyMjPerKg = Number(((nitroglycerinRatioPct / 100) * 6.3).toFixed(2));
+  const explosiveEnergyMjPerKg = nobel.energyMjPerKg;
 
   const handleDetonate = () => {
     if (isCapStrongEnough) {

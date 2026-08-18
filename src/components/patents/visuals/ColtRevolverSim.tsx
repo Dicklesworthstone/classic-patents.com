@@ -23,7 +23,7 @@ export function ColtRevolverSim() {
     cockingAngleDeg,
   });
   const isFullCock = colt.isLocked;
-  const _cylinderRotationAngle = colt.indexAngleDeg;
+  const cylinderRotationAngle = colt.indexAngleDeg;
   const isBoltLocked = colt.isLocked || cockingAngleDeg <= 2;
   const boltRetractionY = cockingAngleDeg > 2 && !colt.isLocked ? 12 : 0;
   const hoopStressMpa = colt.hoopStressMpa.toFixed(1);
@@ -127,7 +127,8 @@ export function ColtRevolverSim() {
             <Sparkles className="w-4 h-4 text-amber-400" />
             <span>
               CHAMBER #{currentChamberIndex} FIRED: {muzzleVelocityMps} m/s | Energy:{" "}
-              {muzzleEnergyJoules} J | Hoop Stress: {hoopStressMpa} MPa
+              {muzzleEnergyJoules} J | Hoop Stress: {hoopStressMpa} MPa | Index:{" "}
+              {cylinderRotationAngle}°
             </span>
           </div>
         )}

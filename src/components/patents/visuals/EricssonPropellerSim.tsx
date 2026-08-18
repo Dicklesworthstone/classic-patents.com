@@ -16,19 +16,11 @@ export function EricssonPropellerSim() {
   const animRef = useRef<number | null>(null);
 
   const screw = stepEricssonPropeller({ shaftRpm, bladePitchAngleDeg });
-  const pitchMeters = Number(
-    (Math.PI * 1.6 * Math.tan((bladePitchAngleDeg * Math.PI) / 180)).toFixed(2),
-  );
+  const pitchMeters = screw.pitchMeters;
   const actualShipSpeedKnots = screw.shipSpeedKnots;
   const thrustKiloNewtons = screw.thrustKn;
-  const theoreticalSpeedKnots = (shaftRpm * pitchMeters * 60) / 1852;
-  const slipFraction =
-    theoreticalSpeedKnots > 0
-      ? Math.max(
-          0,
-          Math.min(0.9, (theoreticalSpeedKnots - actualShipSpeedKnots) / theoreticalSpeedKnots),
-        )
-      : 0.15;
+  const theoreticalSpeedKnots = screw.theoreticalSpeedKnots;
+  const slipFraction = screw.slipFraction;
 
   useEffect(() => {
     if (!isPlaying) return;

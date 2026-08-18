@@ -392,6 +392,8 @@ export function McCormickReaper3D() {
           { label: "24-inch wheel", value: String(reaper.groundWheelRpm), unit: "rpm" },
           { label: "Crank", value: String(cutterCrankRpm), unit: "rpm" },
           { label: "Reel", value: String(reelRpm), unit: "rpm" },
+          { label: "v", value: String(reaper.groundSpeedMps), unit: "m/s" },
+          { label: "f_cut", value: String(reaper.cutterHz), unit: "Hz" },
         ]}
       />
     </div>

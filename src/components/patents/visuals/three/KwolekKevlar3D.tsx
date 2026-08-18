@@ -40,7 +40,7 @@ export function KwolekKevlar3D() {
 
   const kevlar = FrankenSimEngine.stepKevlarContinuum(drawRatio, params.impactVelocity ?? 450);
   const isNematicLCP = polymerConcentrationPct >= 12.0 && temperatureCelsius < 105;
-  const tensileStrengthGpa = (kevlar.tensileStressMpa / 1000).toFixed(2);
+  const tensileStrengthGpa = kevlar.tensileStrengthGpa.toFixed(2);
   const modulusGpa = kevlar.elasticModulusGpa.toFixed(0);
 
   const live = useLiveSimParams({
@@ -324,7 +324,7 @@ export function KwolekKevlar3D() {
                 <div>
                   <span className="text-ink-600 dark:text-ink-400">Modulus:</span>{" "}
                   <span className="font-bold text-blue-600 dark:text-blue-400">
-                    {modulusGpa} GPa
+                    {modulusGpa} GPa · {kevlar.alignmentPct}% align
                   </span>
                 </div>
                 <div>

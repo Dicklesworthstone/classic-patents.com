@@ -28,7 +28,7 @@ export function CorlissSteamEngine3D() {
 
   const corliss = stepCorlissEngine({ steamPressurePsi, engineRpm, cutoffPct });
   const indicatedHp = corliss.indicatedHp;
-  const coalSavingsPct = (35 + (25 - cutoffPct) * 0.4).toFixed(1);
+  const coalSavingsPct = corliss.thermalEfficiencyPct.toFixed(1);
 
   const live = useLiveSimParams({
     engineRpm,
@@ -388,7 +388,9 @@ export function CorlissSteamEngine3D() {
           { label: "Steam", value: String(steamPressurePsi), unit: "psi" },
           { label: "Cutoff", value: String(cutoffPct), unit: "%" },
           { label: "IHP", value: String(indicatedHp), unit: "hp" },
-          { label: "Coal saved", value: coalSavingsPct, unit: "%" },
+          { label: "η", value: coalSavingsPct, unit: "%" },
+          { label: "P", value: String(corliss.boilerMpa), unit: "MPa" },
+          { label: "r_exp", value: String(corliss.expansionRatio) },
         ]}
       />
     </div>

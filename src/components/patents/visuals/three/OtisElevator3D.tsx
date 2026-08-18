@@ -368,6 +368,8 @@ export function OtisElevator3D() {
           { label: "Stop", value: String(stoppingDistanceInches), unit: "in" },
           { label: "Pawl", value: String(pawlEngagementMs), unit: "ms" },
           { label: "Arrest", value: String(otis.peakArrestForceKn), unit: "kN" },
+          { label: "Mass", value: String(otis.hangingMassKg), unit: "kg" },
+          { label: "T", value: String(otis.hoistTensionKn), unit: "kN" },
         ]}
       />
     </div>

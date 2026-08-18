@@ -9,12 +9,12 @@ export function McCormickReaperSim() {
   const { params, updateParam, resetParams } = usePatentPhysics("us-x8277-mccormick-reaper");
   const groundSpeedMph = params.forwardSpeedMph ?? params.groundSpeedMph ?? 2.5;
   const reaper = stepMcCormickReaper({ forwardSpeedMph: groundSpeedMph });
-  const cutterCyclesPerSecond = reaper.cutterCrankRpm / 60;
+  const cutterCyclesPerSecond = reaper.cutterHz;
   const [isPlaying, setIsPlaying] = useState<boolean>(true);
   const [phase, setPhase] = useState<number>(0);
   const animRef = useRef<number | null>(null);
 
-  const groundSpeedMps = Number((groundSpeedMph * 0.44704).toFixed(2));
+  const groundSpeedMps = reaper.groundSpeedMps;
   const reelRpm = reaper.reelRpm;
 
   useEffect(() => {

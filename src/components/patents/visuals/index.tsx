@@ -332,7 +332,6 @@ export function PatentVisualDispatcher({ patentId }: PatentVisualDispatcherProps
           case "us-x72-whitney-cotton-gin":
             return renderMode === "3d-physics" ? <WhitneyCottonGin3D /> : <WhitneyCottonGinSim />;
           case "us-x8277-mccormick-reaper":
-          case "us-4895-mccormick-reaper":
             return renderMode === "3d-physics" ? <McCormickReaper3D /> : <McCormickReaperSim />;
           case "us-x9430-colt-revolver":
             return renderMode === "3d-physics" ? <ColtRevolver3D /> : <ColtRevolverSim />;
@@ -439,7 +438,6 @@ export function PatentVisualDispatcher({ patentId }: PatentVisualDispatcherProps
           case "us-2981877-noyce-ic":
             return renderMode === "3d-physics" ? <NoycePlanarIC3D /> : <NoycePlanarICSim />;
           case "us-3671542-kwolek-kevlar":
-          case "us-3819786-kwolek-kevlar":
             return renderMode === "3d-physics" ? <KwolekKevlar3D /> : <KwolekKevlarSim />;
           case "us-223898-edison-lightbulb":
             return renderMode === "3d-physics" ? <EdisonBulb3D /> : <EdisonBulbSim />;
@@ -450,16 +448,12 @@ export function PatentVisualDispatcher({ patentId }: PatentVisualDispatcherProps
           case "us-4750-howe-sewing-machine":
             return renderMode === "3d-physics" ? <HoweSewingMachine3D /> : <HoweSewingMachineSim />;
           case "us-533367-tesla-coil":
-          case "us-593138-tesla-coil":
             return renderMode === "3d-physics" ? <TeslaCoil3D /> : <TeslaCoilSim />;
-          case "us-1155986-goddard-rocket":
           case "us-1102653-goddard-rocket":
             return renderMode === "3d-physics" ? <GoddardRocket3D /> : <GoddardRocketSim />;
           case "us-2569347-bardeen-transistor":
-          case "us-2524191-bardeen-transistor":
             return renderMode === "3d-physics" ? <BardeenTransistor3D /> : <BardeenTransistorSim />;
           case "us-3923554-boyle-smith-ccd":
-          case "us-3792322-boyle-smith-ccd":
           case "us-3858232-boyle-smith-ccd":
             return renderMode === "3d-physics" ? <BoyleSmithCcd3D /> : <BoyleSmithCcdSim />;
           case "us-586193-marconi-radio":

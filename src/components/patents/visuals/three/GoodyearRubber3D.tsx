@@ -53,7 +53,7 @@ export function GoodyearRubber3D() {
     timeStepDt: 0.016,
     refusal: { isRefused: false },
     continuum: {
-      tensileStressMpa: _rubberPhysics.tensileStrengthPsi * 0.00689476,
+      tensileStressMpa: _rubberPhysics.tensileStrengthMpa,
       tensileStrainPct: _rubberPhysics.elasticReturnPct,
       elasticModulusGpa: 0,
       crossLinkDensityMolesPerCm3: _rubberPhysics.crossLinkDensity,
@@ -67,7 +67,7 @@ export function GoodyearRubber3D() {
   const isGlassy = cureTemperatureCelsius < glassTransitionTempC;
   const tensileElasticModulusMpa = isGlassy
     ? "2400.0"
-    : (_rubberPhysics.tensileStrengthPsi * 0.00689476).toFixed(2);
+    : _rubberPhysics.tensileStrengthMpa.toFixed(2);
 
   // True Stress: sigma = E * (lambda - 1 / lambda^2)
   const trueStressMpa = isGlassy

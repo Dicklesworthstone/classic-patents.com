@@ -17,7 +17,7 @@ export function ThomsonWeldingSim() {
   const jouleHeatWatts = weld.jouleKw * 1000;
   const interfaceTempC = weld.interfaceTempC;
   const isPlasticForged = weld.isForged;
-  const upsetBurrWidthMm = Number(((clampPressureMpa / 35) * 3.8).toFixed(1));
+  const upsetBurrWidthMm = weld.upsetBurrWidthMm;
 
   const handleWeld = () => {
     setIsWelding(true);

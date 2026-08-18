@@ -16,7 +16,7 @@ export function WhitneyCottonGinSim() {
   const animRef = useRef<number | null>(null);
 
   const gin = stepWhitneyCottonGin({ crankRpm });
-  const sawSpeedMps = Number(((gin.sawRpm * 2 * Math.PI * 0.125) / 60).toFixed(2));
+  const sawSpeedMps = gin.sawTipSpeedMps;
   const brushRpm = gin.brushRpm;
   const ginningRateLbsPerDay = gin.outputLbsPerDay;
   const isClogged = grateClearanceMm < 1.8;

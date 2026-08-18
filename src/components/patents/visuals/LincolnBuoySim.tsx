@@ -20,8 +20,8 @@ export function LincolnBuoySim() {
   const clearanceFeet = lincoln.shoalClearanceFt;
   const isGrounded = clearanceFeet < 0;
 
-  const displacedVolumeCuFt = Math.round(lincoln.displacedVolumeM3 * 35.315);
-  const buoyantLiftTons = Number((lincoln.liftKn / 9.81).toFixed(1));
+  const displacedVolumeCuFt = lincoln.displacedVolumeCuFt;
+  const buoyantLiftTons = lincoln.liftTons;
 
   return (
     <div className="rounded-2xl border border-amber-900/20 dark:border-ink-800 bg-parchment-50 dark:bg-ink-950 p-6 sm:p-7 shadow-patent space-y-6">

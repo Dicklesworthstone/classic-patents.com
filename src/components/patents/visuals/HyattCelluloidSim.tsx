@@ -14,8 +14,8 @@ export function HyattCelluloidSim() {
   const hyatt = stepHyattCelluloid({ steamTempC: moldTempC, hydraulicPressureMpa });
   const isMelted = hyatt.isMelted;
   const viscosityPaS = hyatt.viscosityPaS;
-  const consolidationDensityGPerCm3 = Number((1.2 + (hydraulicPressureMpa / 20) * 0.18).toFixed(2));
-  const transparencyPct = isMelted ? Math.min(95, Math.round(50 + (moldTempC - 80) * 1.2)) : 10;
+  const consolidationDensityGPerCm3 = hyatt.consolidationDensityGPerCm3;
+  const transparencyPct = hyatt.transparencyPct;
 
   return (
     <div className="w-full rounded-2xl border border-parchment-300 dark:border-ink-800 bg-parchment-50 dark:bg-ink-950 p-4 sm:p-6 shadow-md transition-colors">

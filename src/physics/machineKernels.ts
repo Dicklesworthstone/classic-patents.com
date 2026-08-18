@@ -189,6 +189,7 @@ export function stepOtisElevator(params: { cabPayloadKg?: number; cableTensionPc
   peakArrestForceKn: number;
   pawlEngagementMs: number;
   hangingMassKg: number;
+  hoistTensionKn: number;
 } {
   const massKg = 400 + (params.cabPayloadKg ?? 650);
   const tensionPct = params.cableTensionPct ?? 100;
@@ -203,5 +204,6 @@ export function stepOtisElevator(params: { cabPayloadKg?: number; cableTensionPc
     stoppingDistanceCm: isSnapped ? 4.5 : 0,
     peakArrestForceKn: isSnapped ? Number(((massKg * 9.81 * 1.8) / 1000).toFixed(1)) : 0,
     pawlEngagementMs: isSnapped ? 38 : 0,
+    hoistTensionKn: Number(((massKg * 9.81) / 1000).toFixed(1)),
   };
 }

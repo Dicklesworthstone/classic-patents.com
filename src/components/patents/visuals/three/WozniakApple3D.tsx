@@ -35,9 +35,9 @@ export function WozniakApple3D() {
   const [showCalloutPins, setShowCalloutPins] = useState<boolean>(false);
   const [activeCamera, setActiveCamera] = useState<CameraPreset>("iso");
   const { isAudioMuted, toggleSound: toggleEngine } = usePatentAudio();
-  const cycleTimeNs = Math.round(1000 / apple.cpuClockMhz);
+  const cycleTimeNs = apple.cycleTimeNs;
   const phi1VideoAccessWindowNs = apple.dramWindowNs;
-  const effectiveCpuThroughputPct = 100; // video steals Φ1; CPU never DMA-halts
+  const effectiveCpuThroughputPct = apple.cpuDutyPct;
   const colorSubcarrierMhz = apple.colorSubcarrierMhz.toFixed(4);
 
   const live = useLiveSimParams({

@@ -21,8 +21,8 @@ export function ZeppelinAirshipSim() {
     flightSpeedKnots,
     trimWeight,
   });
-  const grossLiftKg = Math.round((zep.grossBuoyancyKn / 9.81) * 1000);
-  const usefulPayloadKg = Math.max(0, Math.round((zep.netLiftKn / 9.81) * 1000));
+  const grossLiftKg = zep.grossLiftKg;
+  const usefulPayloadKg = zep.usefulPayloadKg;
   const pitchTrimDeg = zep.pitchTrimDeg;
 
   useEffect(() => {
@@ -217,7 +217,7 @@ export function ZeppelinAirshipSim() {
             Airspeed
           </span>
           <span className="font-mono text-sm sm:text-base font-bold text-emerald-700 dark:text-emerald-500">
-            {flightSpeedKnots} knots ({(flightSpeedKnots * 1.852).toFixed(1)} km/h)
+            {flightSpeedKnots} knots ({zep.flightSpeedKmh} km/h)
           </span>
         </div>
         <div className="bg-parchment-100 dark:bg-ink-900 border border-parchment-200 dark:border-ink-800 p-2.5 rounded-xl text-center">

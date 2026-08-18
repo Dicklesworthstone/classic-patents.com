@@ -4,6 +4,7 @@ import { Zap } from "lucide-react";
 import { FrankenSimEngine } from "@/physics/engine";
 import { teslaCoilResonantKhz } from "@/physics/teslaKernel";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
+import { SparkWaterfall } from "@/components/patents/visuals/SparkWaterfall";
 
 export function TeslaCoilSim() {
   const { params, updateParam } = usePatentPhysics("us-533367-tesla-coil");
@@ -188,6 +189,11 @@ export function TeslaCoilSim() {
 
         {/* Controls Sidebar */}
         <div className="lg:col-span-4 space-y-4">
+          <SparkWaterfall
+            fundamentalHz={resonantFreqKhz * 1000}
+            energy={Math.min(1, secondaryVoltageKv / 1500)}
+            firing={true}
+          />
           <div className="rounded-2xl border border-parchment-300 dark:border-ink-800 bg-parchment-100/80 dark:bg-ink-900/70 p-5 space-y-4 shadow-sm">
             <span className="font-serif font-bold text-base sm:text-lg text-ink-950 dark:text-parchment-50 block">
               Resonant LC Parameters

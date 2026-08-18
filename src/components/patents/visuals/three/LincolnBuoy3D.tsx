@@ -31,14 +31,14 @@ export function LincolnBuoy3D() {
     weightTons: steamboatWeightTons,
     shoalDepth: riverShoalDepthFt,
   });
-  const hullLengthFt = 160;
-  const hullBeamFt = 32;
-  const waterDensityLbsPerCuFt = 62.4;
-  const hullWaterplaneAreaSqFt = hullLengthFt * hullBeamFt * 0.78;
-  const baseDraftFt = 5.0;
+  const hullLengthFt = lincoln.hullLengthFt;
+  const hullBeamFt = lincoln.hullBeamFt;
+  const waterDensityLbsPerCuFt = lincoln.waterDensityLbsPerCuFt;
+  const hullWaterplaneAreaSqFt = lincoln.waterplaneAreaSqFt;
+  const baseDraftFt = lincoln.baseDraftFt;
 
-  const netLiftTons = Number((lincoln.liftKn / 9.81).toFixed(1));
-  const effectiveDraftFt = Math.max(1.8, 5.0 - lincoln.draftReductionFt);
+  const netLiftTons = lincoln.liftTons;
+  const effectiveDraftFt = lincoln.hullDraftFt;
   const underKeelClearanceFt = lincoln.shoalClearanceFt.toFixed(2);
   const isAground = lincoln.shoalClearanceFt <= 0;
 
@@ -339,8 +339,8 @@ export function LincolnBuoy3D() {
                 <div>
                   <span className="text-ink-600 dark:text-ink-400">Draft:</span>{" "}
                   <span className="font-bold text-blue-600 dark:text-blue-400">
-                    {effectiveDraftFt.toFixed(1)} ft · {hullWaterplaneAreaSqFt.toFixed(0)} ft² ·{" "}
-                    {waterDensityLbsPerCuFt} lb/ft³
+                    {effectiveDraftFt.toFixed(1)} ft · {hullLengthFt}×{hullBeamFt} ft ·{" "}
+                    {hullWaterplaneAreaSqFt.toFixed(0)} ft² · {waterDensityLbsPerCuFt} lb/ft³
                   </span>
                 </div>
                 <div>

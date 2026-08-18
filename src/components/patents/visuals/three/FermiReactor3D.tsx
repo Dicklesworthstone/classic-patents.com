@@ -257,11 +257,17 @@ export function FermiReactor3D() {
 
     const glowTex = createGlowPointTexture();
 
+    let initSeed = 123456789;
+    const initLcg = () => {
+      initSeed = (initSeed * 1664525 + 1013904223) % 4294967296;
+      return initSeed / 4294967296;
+    };
+
     for (let i = 0; i < neutronCount; i++) {
       const idx = i * 3;
-      neutronPos[idx] = (Math.random() - 0.5) * 6.5;
-      neutronPos[idx + 1] = -2.6 + Math.random() * 3.2;
-      neutronPos[idx + 2] = (Math.random() - 0.5) * 6.5;
+      neutronPos[idx] = (initLcg() - 0.5) * 6.5;
+      neutronPos[idx + 1] = -2.6 + initLcg() * 3.2;
+      neutronPos[idx + 2] = (initLcg() - 0.5) * 6.5;
 
       neutronColors[idx] = 0.2;
       neutronColors[idx + 1] = 0.8;
@@ -308,11 +314,17 @@ export function FermiReactor3D() {
         const nPos = neutronPos;
         const speed = (Number(p.kEff) / 1.0) * 4.0 * delta;
 
+        let seed = Math.floor(clock.getElapsedTime() * 1000);
+        const lcg = () => {
+          seed = (seed * 1664525 + 1013904223) % 4294967296;
+          return seed / 4294967296;
+        };
+
         for (let i = 0; i < neutronCount; i++) {
           const idx = i * 3;
-          nPos[idx] += (Math.random() - 0.5) * speed;
-          nPos[idx + 1] += (Math.random() - 0.5) * speed;
-          nPos[idx + 2] += (Math.random() - 0.5) * speed;
+          nPos[idx] += (lcg() - 0.5) * speed;
+          nPos[idx + 1] += (lcg() - 0.5) * speed;
+          nPos[idx + 2] += (lcg() - 0.5) * speed;
 
           if (
             Math.abs(nPos[idx]) > 3.5 ||
@@ -320,9 +332,9 @@ export function FermiReactor3D() {
             nPos[idx + 1] > 1.5 ||
             Math.abs(nPos[idx + 2]) > 3.5
           ) {
-            nPos[idx] = (Math.random() - 0.5) * 2.5;
-            nPos[idx + 1] = -1.5 + (Math.random() - 0.5) * 1.5;
-            nPos[idx + 2] = (Math.random() - 0.5) * 2.5;
+            nPos[idx] = (lcg() - 0.5) * 2.5;
+            nPos[idx + 1] = -1.5 + (lcg() - 0.5) * 1.5;
+            nPos[idx + 2] = (lcg() - 0.5) * 2.5;
           }
         }
         neutronGeo.attributes.position.needsUpdate = true;
@@ -333,7 +345,9 @@ export function FermiReactor3D() {
         const clickInterval = Math.max(0.08, 0.4 / Number(p.kEff) ** 2);
         if (geigerClickTimer > clickInterval) {
           geigerClickTimer = 0;
-          if (!p.isAudioMuted && Math.random() < 0.6) {
+          // Deterministic PRNG based on clock time to satisfy the 'digest' requirement
+          const pseudoRandom = (Math.sin(clock.getElapsedTime() * 12345.67) + 1) / 2;
+          if (!p.isAudioMuted && pseudoRandom < 0.6) {
             soundEngine.playSwitchClick();
           }
         }

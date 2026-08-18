@@ -17,7 +17,7 @@ export function OtisElevatorSim() {
     cabPayloadKg,
     cableTensionPct: isCableCut ? 0 : (params.cableTension ?? 100),
   });
-  const hangingMassKg = 400 + cabPayloadKg;
+  const hangingMassKg = otis.hangingMassKg;
   const springBowedHeight = isCableCut ? 0 : 18;
   const pawlExtensionX = isCableCut ? 18 : 4;
   const arrestForceKn = otis.peakArrestForceKn.toFixed(1);
@@ -197,7 +197,7 @@ export function OtisElevatorSim() {
                   strokeDasharray="3,3"
                 />
                 <text x="240" y="30" fill="#fbbf24" fontSize="9" fontFamily="monospace">
-                  HOISTING ROPE UNDER TENSION (T = {((hangingMassKg * 9.81) / 1000).toFixed(1)} kN)
+                  HOISTING ROPE UNDER TENSION (T = {otis.hoistTensionKn} kN)
                 </text>
               </g>
             ) : (

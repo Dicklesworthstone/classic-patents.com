@@ -8,13 +8,13 @@ import { usePatentPhysics } from "@/physics/usePatentPhysics";
 export function KwolekKevlarSim() {
   const { params, updateParam } = usePatentPhysics("us-3671542-kwolek-kevlar");
   const drawRatio = params.drawRatio ?? 6.5;
-  const polymerAlignment = Math.min(100, Math.round((drawRatio / 8.0) * 100));
   const [tensileTension, setTensileTension] = useState<number>(30);
   const [bulletFired, setBulletFired] = useState<boolean>(false);
 
-  const kevlar = stepKevlarContinuum(drawRatio, params.impactVelocity ?? 450);
+  const kevlar = stepKevlarContinuum(drawRatio, params.impactVelocity ?? 450, tensileTension);
+  const polymerAlignment = kevlar.alignmentPct;
   const currentStrengthGPa = kevlar.tensileStrengthGpa;
-  const residualCapacityGPa = currentStrengthGPa * (1 - tensileTension / 220);
+  const residualCapacityGPa = kevlar.residualStrengthGpa;
   const isArmorPenetrated = bulletFired && residualCapacityGPa < 1.6;
 
   const impactTimerRef = useRef<number | null>(null);
