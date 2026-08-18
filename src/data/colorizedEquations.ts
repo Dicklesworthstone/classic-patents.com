@@ -1263,19 +1263,19 @@ export const ALL_COLORIZED_EQUATIONS: Record<string, ColorizedEquation[]> = {
             "Provides the stable baseline potential for ratiometric position conversion.",
         },
       ],
-      pedagogicalNote:
-        "Engelbart tested light pens, tracking balls, joysticks, and knee controllers. The orthogonal dual-wheel wooden mouse was proven vastly superior in speed and accuracy for navigating interactive text and windows on a cathode ray display.",
       claimRef: 1,
       historicalSignificance:
         "US 3541541 introduced the computer mouse, graphic cursor pointing, and the foundation for all modern Graphical User Interfaces (GUIs).",
+      pedagogicalNote:
+        "The knife-edge wheels act as mechanical vector projection operators. As the mouse glides freely across a 2D plane, one wheel only rolls under X-axis movement and drags along Y; the other rolls under Y and drags along X. This pure mechanical decoupling cleanly isolates the planar vector components into independent rotational analog voltages without complex trigonometry.",
     },
   ],
 
-  // 10. Boyle & Smith 3-Phase CCD (US 3,923,554)
-  "us-3923554-boyle-smith-ccd": [
+  // 10. Willard Boyle & George Smith Charge-Coupled Device (US 3,858,232)
+  "us-3858232-boyle-smith-ccd": [
     {
       id: "ccd-potential-well-transfer",
-      patentId: "us-3923554-boyle-smith-ccd",
+      patentId: "us-3858232-boyle-smith-ccd",
       title: "3-Phase MOS Potential Well Charge Transfer & Storage Capacity",
       category: "Digital Imaging & Image Sensors",
       rawLatex:
@@ -1927,11 +1927,11 @@ export const ALL_COLORIZED_EQUATIONS: Record<string, ColorizedEquation[]> = {
     },
   ],
 
-  // 16. Robert Goddard Liquid-Fuel Rocket (US 1,155,986)
-  "us-1155986-goddard-rocket": [
+  // 16. Robert Goddard Liquid-Fuel Rocket (US 1,102,653)
+  "us-1102653-goddard-rocket": [
     {
       id: "goddard-rocket-equation",
-      patentId: "us-1155986-goddard-rocket",
+      patentId: "us-1102653-goddard-rocket",
       title: "Tsiolkovsky Velocity Increment & Supersonic de Laval Nozzle Expansion",
       category: "Aerospace & Supersonic Propulsion",
       rawLatex:
@@ -5410,15 +5410,5 @@ function _convertScientificPrincipleToColorizedEquation(
  * non-interactive rendering path for authored scientific-principle formulas.
  */
 export function getColorizedEquationsForPatent(patentId: string): ColorizedEquation[] {
-  const EQUATION_ID_ALIASES: Record<string, string> = {
-    "us-1102653-goddard-rocket": "us-1155986-goddard-rocket",
-    "us-3858232-boyle-smith-ccd": "us-3923554-boyle-smith-ccd",
-    "us-608969-parsons-turbine": "us-328710-parsons-turbine",
-  };
-  const bespokeList =
-    ALL_COLORIZED_EQUATIONS[patentId] ||
-    ALL_COLORIZED_EQUATIONS[EQUATION_ID_ALIASES[patentId] ?? ""] ||
-    [];
-
-  return bespokeList;
+  return ALL_COLORIZED_EQUATIONS[patentId] || [];
 }
