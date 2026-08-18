@@ -1,6 +1,7 @@
 "use client";
 
 import { RotateCcw, Volume2, VolumeX } from "lucide-react";
+import { stepHyattCelluloid } from "@/physics/catalogKernels";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { usePatentAudio } from "./three/usePatentAudio";
 
@@ -10,15 +11,11 @@ export function HyattCelluloidSim() {
   const moldTempC = params.steamTempC ?? 95;
   const hydraulicPressureMpa = params.hydraulicPressureMpa ?? 10;
 
-  // Polymer thermodynamics
-  const glassTransitionTempC = 65;
-  const isMelted = moldTempC >= glassTransitionTempC && hydraulicPressureMpa >= 4.0;
-  const viscosityPoise = Math.max(
-    100,
-    Math.round(50000 / (1 + Math.exp((moldTempC - glassTransitionTempC) * 0.1))),
-  );
+  const hyatt = stepHyattCelluloid({ steamTempC: moldTempC, hydraulicPressureMpa });
+  const isMelted = hyatt.isMelted;
+  const viscosityPaS = hyatt.viscosityPaS;
   const consolidationDensityGPerCm3 = Number((1.2 + (hydraulicPressureMpa / 20) * 0.18).toFixed(2));
-  const transparencyPct = isMelted ? Math.min(95, Math.round(50 + (moldTempC - 65) * 1.2)) : 10;
+  const transparencyPct = isMelted ? Math.min(95, Math.round(50 + (moldTempC - 80) * 1.2)) : 10;
 
   return (
     <div className="w-full rounded-2xl border border-parchment-300 dark:border-ink-800 bg-parchment-50 dark:bg-ink-950 p-4 sm:p-6 shadow-md transition-colors">
@@ -193,7 +190,7 @@ export function HyattCelluloidSim() {
             Melt Viscosity
           </span>
           <span className="font-mono text-sm sm:text-base font-bold text-amber-700 dark:text-amber-500">
-            {viscosityPoise} Poise
+            {viscosityPaS} Pa·s
           </span>
         </div>
         <div className="bg-parchment-100 dark:bg-ink-900 border border-parchment-200 dark:border-ink-800 p-2.5 rounded-xl text-center">

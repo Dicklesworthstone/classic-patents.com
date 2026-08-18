@@ -2,12 +2,13 @@
 
 import { Tv } from "lucide-react";
 import { useEffect, useState } from "react";
+import { FrankenSimEngine } from "@/physics/engine";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 
 export function FarnsworthTVSim() {
   const { params, updateParam } = usePatentPhysics("us-1773980-farnsworth-tv");
   const anodeVoltage = params.anodeVoltage ?? 1500;
-  const _coilCurrent = params.coilCurrent ?? 0.42;
+  const coilCurrent = params.coilCurrent ?? 0.42;
   const scanLines = params.scanLines ?? 60;
   const [mode, setMode] = useState<"electronic-farnsworth" | "mechanical-nipkow">(
     "electronic-farnsworth",
@@ -15,7 +16,9 @@ export function FarnsworthTVSim() {
   const [isScanning, setIsScanning] = useState<boolean>(true);
   const [beamPos, setBeamPos] = useState<{ x: number; y: number }>({ x: 0, y: 0 });
 
-  const speedMultiplier = (anodeVoltage / 1500) * 8;
+  const deflectionGauss = coilCurrent * (120 / 0.42);
+  const beam = FrankenSimEngine.stepFarnsworthTv(anodeVoltage / 1000, deflectionGauss);
+  const speedMultiplier = Math.max(1, beam.electronVelocityMps / 2.1e7);
 
   useEffect(() => {
     if (!isScanning) return;
@@ -109,7 +112,8 @@ export function FarnsworthTVSim() {
           <div className="text-xs font-mono text-ink-300 mt-3">
             {mode === "electronic-farnsworth" ? (
               <span className="text-emerald-400 font-bold">
-                Electron Optics: {scanLines} Progressive Scan Lines (Flicker-Free)
+                Electron Optics: {scanLines} lines · {(beam.electronVelocityMps / 1e6).toFixed(1)}{" "}
+                Mm/s · r={beam.gyroRadiusMm} mm
               </span>
             ) : (
               <span className="text-amber-400 font-bold">

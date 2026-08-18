@@ -2,6 +2,7 @@
 
 import { AlertTriangle, Play, RotateCcw, Volume2, VolumeX } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
+import { stepWhitneyCottonGin } from "@/physics/catalogKernels";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { usePatentAudio } from "./three/usePatentAudio";
 
@@ -14,12 +15,10 @@ export function WhitneyCottonGinSim() {
   const [angle, setAngle] = useState<number>(0);
   const animRef = useRef<number | null>(null);
 
-  // Physics calculation
-  const sawSpeedMps = Number(((crankRpm * 2 * Math.PI * 0.125) / 60).toFixed(2));
-  const brushRpm = crankRpm * (params.brushRatio ?? 2.5);
-  const ginningRateLbsPerHr = Number(
-    (crankRpm * 1.15 * (grateClearanceMm > 3.5 ? 0.4 : 1.0)).toFixed(1),
-  );
+  const gin = stepWhitneyCottonGin({ crankRpm });
+  const sawSpeedMps = Number(((gin.sawRpm * 2 * Math.PI * 0.125) / 60).toFixed(2));
+  const brushRpm = gin.brushRpm;
+  const ginningRateLbsPerDay = gin.outputLbsPerDay;
   const isClogged = grateClearanceMm < 1.8;
   const isSeedDamaged = grateClearanceMm > 3.8;
 
@@ -248,7 +247,7 @@ export function WhitneyCottonGinSim() {
             Ginning Rate
           </span>
           <span className="font-mono text-sm sm:text-base font-bold text-emerald-700 dark:text-emerald-500">
-            {ginningRateLbsPerHr} lbs/hr
+            {ginningRateLbsPerDay} lbs/day
           </span>
         </div>
         <div className="bg-parchment-100 dark:bg-ink-900 border border-parchment-200 dark:border-ink-800 p-2.5 rounded-xl text-center">

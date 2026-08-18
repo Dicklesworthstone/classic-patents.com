@@ -2,6 +2,7 @@
 
 import { RotateCcw, Scissors, ShieldCheck, Sparkles } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
+import { stepOtisElevator } from "@/physics/machineKernels";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { soundEngine } from "@/utils/soundEngine";
 
@@ -12,10 +13,14 @@ export function OtisElevatorSim() {
   const [cabY, setCabY] = useState<number>(100); // 40 to 220 px
   const [isArrested, setIsArrested] = useState<boolean>(false);
 
-  const springBowedHeight = isCableCut ? 0 : 18; // px of upward arch
-  const pawlExtensionX = isCableCut ? 18 : 4; // px outward into teeth
-  const grossMassKg = 400 + cabPayloadKg;
-  const arrestForceKn = ((grossMassKg * 9.81 * 1.8) / 1000).toFixed(1);
+  const otis = stepOtisElevator({
+    cabPayloadKg,
+    cableTensionPct: isCableCut ? 0 : (params.cableTension ?? 100),
+  });
+  const hangingMassKg = 400 + cabPayloadKg;
+  const springBowedHeight = isCableCut ? 0 : 18;
+  const pawlExtensionX = isCableCut ? 18 : 4;
+  const arrestForceKn = otis.peakArrestForceKn.toFixed(1);
 
   const timerRef = useRef<number | null>(null);
 
@@ -192,7 +197,7 @@ export function OtisElevatorSim() {
                   strokeDasharray="3,3"
                 />
                 <text x="240" y="30" fill="#fbbf24" fontSize="9" fontFamily="monospace">
-                  HOISTING ROPE UNDER TENSION (T = {((grossMassKg * 9.81) / 1000).toFixed(1)} kN)
+                  HOISTING ROPE UNDER TENSION (T = {((hangingMassKg * 9.81) / 1000).toFixed(1)} kN)
                 </text>
               </g>
             ) : (

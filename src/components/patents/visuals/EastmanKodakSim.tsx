@@ -2,6 +2,7 @@
 
 import { Camera, RotateCcw, Volume2, VolumeX } from "lucide-react";
 import { useState } from "react";
+import { FrankenSimEngine } from "@/physics/engine";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { usePatentAudio } from "./three/usePatentAudio";
 
@@ -12,12 +13,14 @@ export function EastmanKodakSim() {
   const [exposureCount, setExposureCount] = useState<number>(14);
   const [isShutterTriggered, setIsShutterTriggered] = useState<boolean>(false);
 
-  // Optics & Photographic Film Physics
   const totalExposures = 100;
-  const _filmDiameterInches = 2.5; // Circular 2.5" frame
-  const focalLengthMm = 57; // Rapid Rectilinear Lens
+  const focalLengthMm = 57;
   const fNumber = params.apertureStop ?? 9.0;
-  const filmWoundPct = Math.round((exposureCount / totalExposures) * 100);
+  const kodak = FrankenSimEngine.stepEastmanKodak({
+    shutterSpeedSec,
+    apertureFNumber: fNumber,
+    subjectDistanceM: params.subjectDistance ?? 3.0,
+  });
 
   const handleTriggerShutter = () => {
     setIsShutterTriggered(true);
@@ -213,10 +216,10 @@ export function EastmanKodakSim() {
         </div>
         <div className="bg-parchment-100 dark:bg-ink-900 border border-parchment-200 dark:border-ink-800 p-2.5 rounded-xl text-center">
           <span className="text-[10px] uppercase tracking-wider text-ink-500 dark:text-ink-400 block font-sans">
-            Roll Remaining
+            EV / Hyperfocal
           </span>
           <span className="font-mono text-sm sm:text-base font-bold text-ink-900 dark:text-parchment-100">
-            {100 - filmWoundPct}%
+            EV {kodak.exposureValueEv} / {kodak.hyperfocalM} m
           </span>
         </div>
       </div>

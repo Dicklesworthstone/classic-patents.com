@@ -2,6 +2,7 @@
 
 import { Zap } from "lucide-react";
 import { useEffect, useState } from "react";
+import { FrankenSimEngine } from "@/physics/engine";
 import { teslaBAt } from "@/physics/teslaKernel";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { soundEngine } from "@/utils/soundEngine";
@@ -10,29 +11,24 @@ export function TeslaMotorSim() {
   const { params, updateParam } = usePatentPhysics("us-381968-tesla-motor");
   const phaseCount = (params.phaseCount as 2 | 3) ?? 2;
   const frequencyHz = params.frequency ?? 60;
-  const loadTorque = params.loadTorque ?? 20;
+  const loadTorque = params.loadTorque ?? 38.5;
   const isPlayingAudio = (params.acHum ?? 0) === 1;
   const [_activePedagogyStep, setActivePedagogyStep] = useState<number>(1);
   const [angle, setAngle] = useState<number>(0);
 
-  // This drawing is a 2-pole machine: 4 (or 6) coil sides around one N–S pair.
-  // ns = 120 f / P, P = 2 → 3600 RPM at 60 Hz for both 2-phase and 3-phase.
   const fieldPoles = 2;
-  const syncSpeedRpm = (120 * frequencyHz) / fieldPoles;
-  const slip = Math.min(0.25, (loadTorque / 100) * 0.2 + 0.02);
+  const em = FrankenSimEngine.stepTeslaMotor(frequencyHz, fieldPoles, loadTorque);
+  const syncSpeedRpm = em.synchronousRpm;
+  const slip = em.slipFraction;
   const rotorSpeedRpm = Math.round(syncSpeedRpm * (1 - slip));
 
   // Animation Loop for Stator Field & Rotor Rotation
   useEffect(() => {
     const interval = setInterval(() => {
-      setAngle((prev) => {
-        const next = (prev + (frequencyHz / 60) * 8) % 360;
-        updateParam("omegaT", next);
-        return next;
-      });
+      setAngle((prev) => (prev + (frequencyHz / 60) * 8) % 360);
     }, 30);
     return () => clearInterval(interval);
-  }, [frequencyHz, updateParam]);
+  }, [frequencyHz]);
 
   // Audio AC Hum feedback
   useEffect(() => {

@@ -43,6 +43,7 @@ import {
   stepRenoEscalator,
   stepSholesTypewriter,
 } from "./machineKernels";
+import { teslaCoilResonantKhz } from "./teslaKernel";
 import { readWrightControls, stepWrightFlyerSi } from "./wrightKernel";
 
 export interface PhysicsControl {
@@ -1915,7 +1916,7 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
     ],
     computeMetrics: (p) => {
       const cap = p.primaryCap ?? 45;
-      const freqKhz = Math.round(180 * Math.sqrt(45 / cap));
+      const freqKhz = teslaCoilResonantKhz(cap);
       const inputKv = p.inputVoltageKv ?? 15;
       const sparkGap = p.sparkGapDistanceMm ?? 12;
 
@@ -4105,6 +4106,10 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
   },
 };
 
-// Ensure both us-608969 and us-328710 resolve
+// Ensure aliases and alternate catalog numbers resolve cleanly
 PATENT_PHYSICS_REGISTRY["us-608969-parsons-turbine"] =
   PATENT_PHYSICS_REGISTRY["us-328710-parsons-turbine"];
+PATENT_PHYSICS_REGISTRY["us-1102653-goddard-rocket"] =
+  PATENT_PHYSICS_REGISTRY["us-1155986-goddard-rocket"];
+PATENT_PHYSICS_REGISTRY["us-3858232-boyle-smith-ccd"] =
+  PATENT_PHYSICS_REGISTRY["us-3923554-boyle-smith-ccd"];

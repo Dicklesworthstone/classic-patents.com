@@ -2,6 +2,7 @@
 
 import { Play, RotateCcw, Volume2, VolumeX } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
+import { stepDavenportMotor } from "@/physics/catalogKernels";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { usePatentAudio } from "./three/usePatentAudio";
 
@@ -10,27 +11,15 @@ export function DavenportMotorSim() {
   const { isAudioMuted, toggleSound } = usePatentAudio();
   const batteryVoltageV = params.batteryVoltage ?? 12;
   const loadTorqueNm = params.loadTorque ?? 0.8;
-  const loadTorqueMnm = Math.round(loadTorqueNm * 10);
   const [isPlaying, setIsPlaying] = useState<boolean>(true);
   const [rotorAngleDeg, setRotorAngleDeg] = useState<number>(0);
   const animRef = useRef<number | null>(null);
 
-  // DC Motor Physics
-  const coilResistanceOhms = 1.8;
-  const backEmfConstantKv = 0.008; // V / RPM
-  const noLoadRpm = (batteryVoltageV / backEmfConstantKv) * 0.85;
-  const actualRpm = Math.max(0, Math.round(noLoadRpm * (1 - loadTorqueMnm / 40)));
-  const currentAmps = Number(
-    Math.max(0.2, (batteryVoltageV - actualRpm * backEmfConstantKv) / coilResistanceOhms).toFixed(
-      2,
-    ),
-  );
-  const mechanicalWatts = Number(
-    ((loadTorqueMnm * 1e-3 * (actualRpm * 2 * Math.PI)) / 60).toFixed(2),
-  );
-  const electricalWatts = Number((batteryVoltageV * currentAmps).toFixed(2));
-  const efficiencyPct =
-    electricalWatts > 0 ? Math.min(85, Math.round((mechanicalWatts / electricalWatts) * 100)) : 0;
+  const motor = stepDavenportMotor({ batteryVoltage: batteryVoltageV, loadTorque: loadTorqueNm });
+  const actualRpm = motor.shaftRpm;
+  const mechanicalWatts = motor.shaftPowerW;
+  const currentAmps = motor.armatureCurrentA;
+  const efficiencyPct = motor.efficiencyPct;
 
   useEffect(() => {
     if (!isPlaying || actualRpm <= 0) return;

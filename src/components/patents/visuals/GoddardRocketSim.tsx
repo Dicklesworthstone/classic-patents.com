@@ -8,7 +8,7 @@ import { goddardThermo } from "@/physics/thermochem";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 
 export function GoddardRocketSim() {
-  const { params, updateParam } = usePatentPhysics("us-1155986-goddard-rocket");
+  const { params, updateParam } = usePatentPhysics("us-1102653-goddard-rocket");
   const [activeStage, setActiveStage] = useState<1 | 2 | 3>(1);
   const combustionPressurePsi = params.chamberPressure ?? 350;
   const nozzleExpansionRatio = params.expansionRatio ?? 3.5;
@@ -216,7 +216,7 @@ export function GoddardRocketSim() {
                 fontFamily="monospace"
                 fontWeight="bold"
               >
-                {exhaustVelocityMs} m/s (Mach {(exhaustVelocityMs / 340).toFixed(1)})
+                {exhaustVelocityMs} m/s (Mach {res.machExit.toFixed(1)})
               </text>
             </g>
           </svg>
@@ -295,7 +295,7 @@ export function GoddardRocketSim() {
               </div>
               <div className="flex justify-between">
                 <span>I_sp</span>
-                <span className="font-bold">{thermo.ispSec} s</span>
+                <span className="font-bold">{specificImpulseSec} s</span>
               </div>
             </div>
 
@@ -325,7 +325,7 @@ export function GoddardRocketSim() {
             <div className="space-y-1.5">
               <div className="flex justify-between text-xs sm:text-sm font-mono">
                 <span className="font-semibold text-ink-800 dark:text-parchment-200">
-                  <TextWithLatex text="de Laval Nozzle Ratio ($\epsilon$)" />
+                  <TextWithLatex text="de Laval Nozzle Ratio ($\\epsilon$)" />
                 </span>
                 <span className="text-blue-600 dark:text-blue-400 font-bold">
                   {nozzleExpansionRatio.toFixed(1)}:1

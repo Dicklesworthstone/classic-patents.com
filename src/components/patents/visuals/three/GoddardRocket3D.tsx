@@ -24,7 +24,7 @@ export function GoddardRocket3D() {
   }, []);
 
   // Propulsion & Staging State Controls
-  const { params } = usePatentPhysics("us-1155986-goddard-rocket");
+  const { params } = usePatentPhysics("us-1102653-goddard-rocket");
   const [showUiOverlay, setShowUiOverlay] = useState<boolean>(true);
   const chamberPressurePsi = params.chamberPressure ?? 350;
   const expansionRatio = params.expansionRatio ?? 3.5;
@@ -44,7 +44,7 @@ export function GoddardRocket3D() {
     expansionRatio,
   );
 
-  useFrankenSimPhysics("us-1155986-goddard-rocket", {
+  useFrankenSimPhysics("us-1102653-goddard-rocket", {
     domain: "thermodynamics_transport",
     timestampMs: Date.now(),
     timeStepDt: 0.016,

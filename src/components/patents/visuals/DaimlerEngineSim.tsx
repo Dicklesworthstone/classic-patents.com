@@ -2,6 +2,7 @@
 
 import { Play, RotateCcw, Volume2, VolumeX } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
+import { stepDaimlerEngine } from "@/physics/catalogKernels";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { usePatentAudio } from "./three/usePatentAudio";
 
@@ -14,10 +15,14 @@ export function DaimlerEngineSim() {
   const [crankAngleDeg, setCrankAngleDeg] = useState<number>(0);
   const animRef = useRef<number | null>(null);
 
-  // High-Speed Engine Thermodynamics
-  const isHotTubeIgniting = hotTubeTempC >= 750;
-  const powerOutputHp = Number((engineRpm * 0.0016 * (hotTubeTempC / 850)).toFixed(2));
-  const specificPowerHpPerKg = Number((powerOutputHp / 38).toFixed(3)); // 38 kg total weight
+  const daimler = stepDaimlerEngine({
+    engineRpm,
+    hotTubeTempC,
+    differentialSlipAngleDeg: params.turnAngle ?? 15,
+  });
+  const isHotTubeIgniting = hotTubeTempC >= 800;
+  const powerOutputHp = daimler.brakeHorsepower;
+  const specificPowerHpPerKg = Number((powerOutputHp / 40).toFixed(3));
 
   useEffect(() => {
     if (!isPlaying) return;

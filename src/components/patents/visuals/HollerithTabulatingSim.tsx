@@ -2,21 +2,24 @@
 
 import { Play, RotateCcw, Volume2, VolumeX } from "lucide-react";
 import { useState } from "react";
+import { stepHollerithTabulating } from "@/physics/catalogKernels";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { usePatentAudio } from "./three/usePatentAudio";
 
 export function HollerithTabulatingSim() {
   const { params, resetParams } = usePatentPhysics("us-395781-hollerith-tabulating");
   const { isAudioMuted, toggleSound } = usePatentAudio();
-  const circuitVoltageV = params.batteryVolts ?? 12.0;
+  const circuitVoltageV = params.batteryVolts ?? params.supplyVoltageV ?? 12.0;
   const cardsPerMinuteRate = params.cardsPerMin ?? 60;
   const [activeDemographic, setActiveDemographic] = useState<string>("Male, Age 20-30, Native");
   const [totalCardsProcessed, setTotalCardsProcessed] = useState<number>(450);
   const [isPressDown, setIsPressDown] = useState<boolean>(false);
 
-  // Electrical Tabulation Physics
-  const _mercuryPoolResistanceOhms = 0.5;
-  const currentPerPinAmps = Number((circuitVoltageV / 24).toFixed(2)); // 24 ohm solenoid
+  const hol = stepHollerithTabulating({
+    cardsPerMin: cardsPerMinuteRate,
+    supplyVoltageV: circuitVoltageV,
+    activeRelays: 16,
+  });
   const sortingPocketOpen = activeDemographic.includes("Male") ? 3 : 7;
 
   const handleTabulateCard = () => {
@@ -260,10 +263,10 @@ export function HollerithTabulatingSim() {
         </div>
         <div className="bg-parchment-100 dark:bg-ink-900 border border-parchment-200 dark:border-ink-800 p-2.5 rounded-xl text-center">
           <span className="text-[10px] uppercase tracking-wider text-ink-500 dark:text-ink-400 block font-sans">
-            Pin Current
+            Solenoid / Cycle
           </span>
           <span className="font-mono text-sm sm:text-base font-bold text-emerald-700 dark:text-emerald-500">
-            {currentPerPinAmps} A ({circuitVoltageV}V)
+            {hol.solenoidForceN} N / {hol.cycleTimeMs} ms
           </span>
         </div>
         <div className="bg-parchment-100 dark:bg-ink-900 border border-parchment-200 dark:border-ink-800 p-2.5 rounded-xl text-center">

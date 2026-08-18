@@ -2,6 +2,7 @@
 
 import { Cpu } from "lucide-react";
 import { useState } from "react";
+import { stepNoyceIC } from "@/physics/catalogKernels";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 
 const STEPS = [
@@ -36,7 +37,12 @@ export function NoycePlanarICSim() {
   const { params, updateParam } = usePatentPhysics("us-2981877-noyce-ic");
   const oxideThickness = params.oxideThickness ?? 0.5;
   const reverseBias = params.reverseBias ?? 5.0;
-  const [activeLayerStep, setActiveLayerStep] = useState<number>(4); // 0: Substrate, 1: Oxide, 2: Windows, 3: Junctions, 4: Aluminum Leads
+  const noyce = stepNoyceIC({
+    reverseBias,
+    oxideThickness,
+    clockFrequencyMhz: params.clockFrequencyMhz ?? 1,
+  });
+  const [activeLayerStep, setActiveLayerStep] = useState<number>(4);
 
   return (
     <div className="rounded-2xl border border-amber-900/20 dark:border-ink-800 bg-parchment-50 dark:bg-ink-950 p-6 shadow-patent space-y-6">
@@ -265,6 +271,21 @@ export function NoycePlanarICSim() {
               <p className="text-xs font-sans text-ink-800 dark:text-parchment-200 leading-relaxed">
                 {STEPS[activeLayerStep].desc}
               </p>
+            </div>
+
+            <div className="grid grid-cols-2 gap-2 text-[10px] font-mono">
+              <div className="rounded-lg bg-parchment-50 dark:bg-ink-950 border border-parchment-200 dark:border-ink-800 p-2 text-center">
+                <span className="block text-ink-500">Depletion</span>
+                <span className="font-bold text-ink-900 dark:text-parchment-100">
+                  {noyce.depletionWidthUm} µm
+                </span>
+              </div>
+              <div className="rounded-lg bg-parchment-50 dark:bg-ink-950 border border-parchment-200 dark:border-ink-800 p-2 text-center">
+                <span className="block text-ink-500">Breakdown</span>
+                <span className="font-bold text-ink-900 dark:text-parchment-100">
+                  {noyce.breakdownMarginV} V
+                </span>
+              </div>
             </div>
 
             <div className="space-y-3 pt-2 border-t border-parchment-200 dark:border-ink-800">

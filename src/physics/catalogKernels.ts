@@ -111,9 +111,17 @@ export function stepDavenportMotor(params: { batteryVoltage?: number; loadTorque
   const v = params.batteryVoltage ?? 12;
   const load = params.loadTorque ?? 0.8;
   const rpm = Math.round((v / 12) * (450 / Math.max(0.5, load)));
+  const shaftPowerW = Math.round(((rpm * 2 * Math.PI) / 60) * load);
+  const ktNmPerA = 0.12;
+  const armatureCurrentA = Number((load / ktNmPerA).toFixed(2));
+  const copperLossW = armatureCurrentA ** 2 * 1.8;
+  const electricalWatts = Math.round(shaftPowerW + copperLossW);
   return {
     shaftRpm: rpm,
-    shaftPowerW: Math.round(((rpm * 2 * Math.PI) / 60) * load),
+    shaftPowerW,
+    armatureCurrentA,
+    electricalWatts,
+    efficiencyPct: electricalWatts > 0 ? Math.round((shaftPowerW / electricalWatts) * 100) : 0,
   };
 }
 

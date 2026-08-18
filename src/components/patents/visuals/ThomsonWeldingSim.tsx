@@ -2,6 +2,7 @@
 
 import { RotateCcw, Volume2, VolumeX, Zap } from "lucide-react";
 import { useState } from "react";
+import { stepThomsonWelding } from "@/physics/catalogKernels";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { usePatentAudio } from "./three/usePatentAudio";
 
@@ -12,11 +13,10 @@ export function ThomsonWeldingSim() {
   const clampPressureMpa = params.clampPressureMpa ?? 35;
   const [isWelding, setIsWelding] = useState<boolean>(false);
 
-  // Joule heating physics
-  const contactResistanceMicroOhms = 180;
-  const jouleHeatWatts = Math.round(weldCurrentAmps ** 2 * (contactResistanceMicroOhms * 1e-6));
-  const interfaceTempC = Math.round(25 + (jouleHeatWatts / 1800) * 850);
-  const isPlasticForged = interfaceTempC >= 1150 && clampPressureMpa >= 25;
+  const weld = stepThomsonWelding({ weldCurrentAmps, clampPressureMpa });
+  const jouleHeatWatts = weld.jouleKw * 1000;
+  const interfaceTempC = weld.interfaceTempC;
+  const isPlasticForged = weld.isForged;
   const upsetBurrWidthMm = Number(((clampPressureMpa / 35) * 3.8).toFixed(1));
 
   const handleWeld = () => {

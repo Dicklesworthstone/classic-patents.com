@@ -2,6 +2,7 @@
 
 import { Play, RotateCcw, Volume2, VolumeX } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
+import { stepGatlingGun } from "@/physics/catalogKernels";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { usePatentAudio } from "./three/usePatentAudio";
 
@@ -14,11 +15,11 @@ export function GatlingGunSim() {
   const [clusterAngleDeg, setClusterAngleDeg] = useState<number>(0);
   const animRef = useRef<number | null>(null);
 
-  // Gatling Kinematics
-  const cadenceRpm = crankRpm * barrelCount;
-  const cycleTimeMs = Math.round(60000 / (cadenceRpm + 1e-4));
-  const barrelCoolingTimeSec = Number((60 / (crankRpm + 1e-4)).toFixed(2));
-  const muzzleEnergyJoules = 1850; // .58 caliber round
+  const gatling = stepGatlingGun({ crankRpm, barrelCount });
+  const cadenceRpm = gatling.roundsPerMin;
+  const cycleTimeMs = Math.round(60000 / Math.max(1, cadenceRpm));
+  const barrelCoolingTimeSec = gatling.barrelCoolingIntervalS;
+  const muzzleEnergyJoules = 1850;
 
   useEffect(() => {
     if (!isPlaying) return;

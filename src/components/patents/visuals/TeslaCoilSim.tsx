@@ -2,6 +2,7 @@
 
 import { Zap } from "lucide-react";
 import { FrankenSimEngine } from "@/physics/engine";
+import { teslaCoilResonantKhz } from "@/physics/teslaKernel";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 
 export function TeslaCoilSim() {
@@ -14,7 +15,7 @@ export function TeslaCoilSim() {
   const secondaryTurns = params.secondaryTurns ?? 850;
 
   // Resonant calculations via central physics engine
-  const resonantFreqKhz = Math.round(180 * Math.sqrt(45 / primaryCapacitanceNf));
+  const resonantFreqKhz = teslaCoilResonantKhz(primaryCapacitanceNf);
   const res = FrankenSimEngine.stepTeslaCoil(
     resonantFreqKhz,
     inputKv,

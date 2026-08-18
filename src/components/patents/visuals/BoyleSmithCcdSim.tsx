@@ -2,11 +2,12 @@
 
 import { Camera, Play } from "lucide-react";
 import { useEffect, useState } from "react";
+import { TextWithLatex } from "@/components/ui/LatexRenderer";
 import { stepCcdWells } from "@/physics/machineKernels";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 
 export function BoyleSmithCcdSim() {
-  const { params, updateParam } = usePatentPhysics("us-3923554-boyle-smith-ccd");
+  const { params, updateParam } = usePatentPhysics("us-3858232-boyle-smith-ccd");
   const [clockPhase, setClockPhase] = useState<1 | 2 | 3>(1);
   const incidentLux = params.incidentLux ?? 850;
   const clockFreq = params.clockFreq ?? 2.5;
@@ -292,7 +293,7 @@ export function BoyleSmithCcdSim() {
             <div className="space-y-1.5">
               <div className="flex justify-between text-xs sm:text-sm font-mono">
                 <span className="font-semibold text-ink-800 dark:text-parchment-200">
-                  {"Incident Light Exposure ($I_{lux}$)"}
+                  <TextWithLatex text="Incident Light Exposure ($I_{lux}$)" />
                 </span>
                 <span className="text-amber-600 dark:text-amber-400 font-bold">
                   {incidentLux} Lux

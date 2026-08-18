@@ -181,7 +181,8 @@ export function DavenportMotor3D() {
           </div>
           <div className="text-[11px] font-mono text-neutral-400">
             Voltage: {batteryVoltage} V | Load: {loadTorque} N·m | Speed: {motorRpm} RPM |{" "}
-            {davenport.shaftPowerW} W
+            {davenport.shaftPowerW} W | {davenport.armatureCurrentA} A | {davenport.efficiencyPct}%
+            η
           </div>
         </div>
 

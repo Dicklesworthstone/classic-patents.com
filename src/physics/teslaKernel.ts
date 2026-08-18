@@ -6,6 +6,12 @@
 export const TESLA_PATENT_ID = "us-381968-tesla-motor";
 export const TESLA_STROBE_COUNT = 8;
 
+/** Primary LC: 180 kHz at the 45 nF registry default. Shared by 2D, 3D, badge, weave. */
+export function teslaCoilResonantKhz(primaryCapNf?: number): number {
+  const cap = Math.max(10, primaryCapNf ?? 45);
+  return Math.round(180 * Math.sqrt(45 / cap));
+}
+
 export interface TeslaFieldSample {
   omegaT: number;
   bx: number;

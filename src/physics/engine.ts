@@ -50,6 +50,7 @@ import {
 } from "./machineKernels";
 import { teslaBAt, teslaFig4Strobe } from "./teslaKernel";
 import { tryTeslaWasmStep } from "./teslaWasm";
+import { goddardThermo } from "./thermochem";
 import type {
   AerodynamicsState,
   ContinuumState,
@@ -152,9 +153,16 @@ export const FrankenSimEngine = {
   ): ElectromagneticsState {
     const synchronousRpm = (120 * freqHz) / poles;
     const maxBreakdownTorqueNm = 45.0;
-    const slipFraction = Math.min(
-      0.95,
-      Math.max(0.015, appliedLoadTorqueNm / maxBreakdownTorqueNm),
+    // Kloss inversion, stable (low-slip) branch. 1888 squirrel cages run
+    // breakdown near s_m ≈ 0.18; T/T_max = T/45 must not be read as slip.
+    const breakdownSlip = 0.18;
+    const torqueRatio = Math.min(0.98, Math.max(0.02, appliedLoadTorqueNm / maxBreakdownTorqueNm));
+    const inv = 1 / torqueRatio;
+    const slipFraction = Number(
+      Math.min(
+        0.95,
+        Math.max(0.015, breakdownSlip * (inv - Math.sqrt(Math.max(0, inv * inv - 1)))),
+      ).toFixed(4),
     );
     const rotorRpm = synchronousRpm * (1 - slipFraction);
     const shaftPowerWatts = (appliedLoadTorqueNm * (rotorRpm * 2 * Math.PI)) / 60;
@@ -263,22 +271,12 @@ export const FrankenSimEngine = {
     }
 
     const chamberPressurePa = chamberPressurePsi * 6894.76;
-    const gamma = 1.24; // Combustion products heat capacity ratio
-    const combustionTempK = 2850;
-    const gasConstantR = 365; // J/(kg*K) for gasoline + liquid O2
-
-    // Supersonic Mach number at exit via area-Mach relation
+    const gamma = 1.24;
+    const thermo = goddardThermo(chamberPressurePsi, expansionRatio);
     const machExit = Math.sqrt((2 / (gamma - 1)) * (expansionRatio ** (2 / (gamma + 1)) - 1));
-    const exhaustVelocityMps = Math.round(
-      Math.sqrt(
-        ((2 * gamma) / (gamma - 1)) *
-          gasConstantR *
-          combustionTempK *
-          (1 - 1 / expansionRatio ** (gamma - 1)),
-      ),
-    );
+    const exhaustVelocityMps = thermo.veMps;
     const thrustNewtons = Math.round(fuelFlowKgPerSec * exhaustVelocityMps);
-    const specificImpulseSec = Number((exhaustVelocityMps / 9.80665).toFixed(1));
+    const specificImpulseSec = thermo.ispSec;
 
     return {
       chamberPressurePsi,

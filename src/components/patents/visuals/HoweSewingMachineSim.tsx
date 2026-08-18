@@ -2,7 +2,8 @@
 
 import { Play, Scissors } from "lucide-react";
 import { useEffect, useState } from "react";
-import { stepHoweLockstitch } from "@/physics/machineKernels";
+import { TextWithLatex } from "@/components/ui/LatexRenderer";
+import { stepHoweLockstitch, stepHoweSewingMachine } from "@/physics/machineKernels";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 
 export function HoweSewingMachineSim() {
@@ -10,6 +11,7 @@ export function HoweSewingMachineSim() {
   const [crankAngleDeg, setCrankAngleDeg] = useState<number>(120); // 0 to 360 degrees
   const [isPlaying, setIsPlaying] = useState<boolean>(false);
   const sewingSpeedRpm = params.crankRpm ?? 180; // 60 to 320 rpm
+  const sew = stepHoweSewingMachine(sewingSpeedRpm, params.threadTensionGrams ?? 45);
 
   useEffect(() => {
     if (!isPlaying) return;
@@ -189,7 +191,7 @@ export function HoweSewingMachineSim() {
             <div className="space-y-1.5">
               <div className="flex justify-between text-xs sm:text-sm font-mono">
                 <span className="font-semibold text-ink-800 dark:text-parchment-200">
-                  Manual Flywheel Crank Angle ($\theta$)
+                  <TextWithLatex text="Manual Flywheel Crank Angle ($\\theta$)" />
                 </span>
                 <span className="text-amber-600 dark:text-amber-400 font-bold">
                   {Math.round(crankAngleDeg)}°
@@ -197,7 +199,7 @@ export function HoweSewingMachineSim() {
               </div>
               <input
                 type="range"
-                aria-label="Manual Flywheel Crank Angle (\theta)"
+                aria-label="Manual Flywheel Crank Angle (theta)"
                 min="0"
                 max="360"
                 step="2"
@@ -211,10 +213,11 @@ export function HoweSewingMachineSim() {
             <div className="space-y-1.5">
               <div className="flex justify-between text-xs sm:text-sm font-mono">
                 <span className="font-semibold text-ink-800 dark:text-parchment-200">
-                  {"Machine Speed ($f_{sew}$)"}
+                  <TextWithLatex text="Machine Speed ($f_{sew}$)" />
                 </span>
                 <span className="text-blue-600 dark:text-blue-400 font-bold">
-                  {sewingSpeedRpm} RPM
+                  {sewingSpeedRpm} RPM · {sew.stitchFrequencyHz} Hz · {sew.lockstitchShearStrengthN}{" "}
+                  N
                 </span>
               </div>
               <input

@@ -36,27 +36,15 @@ export function TeslaMotor3D() {
   const synchronousSpeedRpm = emPhysics.synchronousRpm;
   const slip = emPhysics.slipFraction;
   const rotorSpeedRpm = Math.round(synchronousSpeedRpm * (1 - slip));
+  const shaftPowerWatts = (appliedLoadTorqueNm * (rotorSpeedRpm * 2 * Math.PI)) / 60;
   const electricalPowerWatts = Math.round(
-    ((appliedLoadTorqueNm * (rotorSpeedRpm * 2 * Math.PI)) / 60) * 1.15,
+    shaftPowerWatts / Math.max(0.2, emPhysics.efficiencyPct / 100),
   );
   const rotorInducedCurrentAmps = Math.round(emPhysics.currentAmperes);
 
   useFrankenSimPhysics("us-381968-tesla-motor", {
     domain: "electromagnetics_flux",
-    em: {
-      frequencyHz: acFrequencyHz,
-      magneticFluxDensityTesla: 0.8,
-      electricFieldVpm: 0,
-      phaseAngleRad: 0,
-      inductanceHenry: 0.12,
-      capacitanceFarad: 0,
-      currentAmperes: rotorInducedCurrentAmps,
-      voltageVolts: 110,
-      powerFactor: 0.85,
-      efficiencyPct: 78,
-      synchronousRpm: synchronousSpeedRpm,
-      slipFraction: slip,
-    },
+    em: emPhysics,
   });
 
   const live = useLiveSimParams({

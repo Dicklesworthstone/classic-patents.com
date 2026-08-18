@@ -1,4 +1,6 @@
 import type { EnergyChannel } from "@/components/patents/EnergyFlowStrip";
+import { stepEdisonBulb, stepEinsteinRefrigerator } from "./catalogKernels";
+import { FrankenSimEngine } from "./engine";
 import { goddardThermo } from "./thermochem";
 import { readWrightControls, stepWrightFlyerSi } from "./wrightKernel";
 
@@ -18,21 +20,31 @@ export function energyChannelsFor(
     ];
   }
   if (patentId === "us-223898-edison-lightbulb") {
-    const v = params.voltage ?? 110;
-    const r = 90 + ((1200 + (v / 130) * 1150) / 2350) * 60;
-    const p = v ** 2 / r;
-    const vis = p * 0.02;
+    const bulb = stepEdisonBulb({
+      voltage: params.voltage ?? 110,
+      filamentLength: params.filamentLength,
+    });
+    const p = bulb.radiantWatts;
+    const vis = p * Math.min(0.08, bulb.luminousLmPerW / 40);
     return [
       { name: "Joule heat", watts: p, tone: "in" },
       { name: "Visible", watts: vis, tone: "useful" },
       { name: "IR + cond.", watts: p - vis, tone: "loss" },
     ];
   }
-  if (patentId === "us-1155986-goddard-rocket") {
-    const th = goddardThermo(params.chamberPressure ?? 350, params.expansionRatio ?? 3.5);
-    const mdot = 0.205 * ((params.chamberPressure ?? 350) / 350);
-    const chem = mdot * 1.2e6;
-    const kin = 0.5 * mdot * th.veMps ** 2;
+  if (patentId === "us-1155986-goddard-rocket" || patentId === "us-1102653-goddard-rocket") {
+    const pc = params.chamberPressure ?? 350;
+    const eps = params.expansionRatio ?? 3.5;
+    const rocket = FrankenSimEngine.stepGoddardRocket(
+      pc,
+      params.fuelFlowRateKgs ?? 1.8,
+      params.throatAreaCm2 ?? 4.2,
+      eps,
+    );
+    const mdot = params.fuelFlowRateKgs ?? 1.8;
+    const th = goddardThermo(pc, eps);
+    const chem = mdot * ((th.gamma / (th.gamma - 1)) * 365 * th.chamberTempK);
+    const kin = 0.5 * mdot * rocket.exhaustVelocityMps ** 2;
     return [
       { name: "Chem. enthalpy", watts: chem, tone: "in" },
       { name: "Exhaust KE", watts: kin, tone: "useful" },
@@ -40,21 +52,28 @@ export function energyChannelsFor(
     ];
   }
   if (patentId === "us-1781541-einstein-refrigerator") {
-    const qIn = params.heatInput ?? 220;
-    const press = params.totalPressure ?? 15;
-    const evapTemp = -25 + (press - 10) * 1.4;
-    const cop = 0.32 * (1 - Math.abs(evapTemp) / 120);
+    const e = stepEinsteinRefrigerator({
+      heatInput: params.heatInput ?? 220,
+      totalPressure: params.totalPressure ?? 15,
+      ammoniaRatio: params.ammoniaRatio,
+    });
     return [
-      { name: "Burner", watts: qIn, tone: "in" },
-      { name: "Evaporator", watts: qIn * cop, tone: "useful" },
-      { name: "Reject", watts: qIn * (1 - cop), tone: "loss" },
+      { name: "Burner", watts: e.coolingWatts / Math.max(0.05, e.cop), tone: "in" },
+      { name: "Evaporator", watts: e.coolingWatts, tone: "useful" },
+      {
+        name: "Reject",
+        watts: Math.max(0, e.coolingWatts / Math.max(0.05, e.cop) - e.coolingWatts),
+        tone: "loss",
+      },
     ];
   }
   if (patentId === "us-381968-tesla-motor") {
     const f = params.frequency ?? 60;
-    const load = params.loadTorque ?? 20;
-    const pin = 80 + f * 1.2 + load * 8;
-    const pout = pin * 0.82;
+    const load = params.loadTorque ?? 38.5;
+    const em = FrankenSimEngine.stepTeslaMotor(f, 2, load);
+    const rotorRpm = em.synchronousRpm * (1 - em.slipFraction);
+    const pout = (load * (rotorRpm * 2 * Math.PI)) / 60;
+    const pin = pout / Math.max(0.2, em.efficiencyPct / 100);
     return [
       { name: "Stator input", watts: pin, tone: "in" },
       { name: "Shaft", watts: pout, tone: "useful" },

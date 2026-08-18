@@ -2,22 +2,20 @@
 
 import { Layers } from "lucide-react";
 import { useState } from "react";
+import { stepGoodyearRubber } from "@/physics/catalogKernels";
 import { vulcanKinetics } from "@/physics/thermochem";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 
 export function GoodyearRubberSim() {
   const { params, updateParam } = usePatentPhysics("us-3633-goodyear-rubber");
   const sulfurPercent = params.sulfurPct ?? 8;
-  const [temperatureCelsius, setTemperatureCelsius] = useState<number>(35); // -30 to 120°C
-  const [appliedStress, setAppliedStress] = useState<number>(50); // 0 to 100%
+  const [temperatureCelsius, setTemperatureCelsius] = useState<number>(35);
+  const [appliedStress, setAppliedStress] = useState<number>(50);
 
-  // Polymer physics:
-  // Sulfur < 2% = Raw rubber (melts when hot, shatters when cold)
-  // Sulfur 2-10% = Vulcanized elastic rubber (tires, elastic bands)
-  // Sulfur > 25% = Ebonite hard vulcanite (rigid bowling balls / electrical casings)
+  const rubber = stepGoodyearRubber(params.vulcanTemp ?? 145, sulfurPercent, 30);
   const isRaw = sulfurPercent < 2;
   const isEbonite = sulfurPercent > 20;
-  const isElastic = !isRaw && !isEbonite;
+  const isElastic = !isRaw && !isEbonite && !rubber.isStickyOrBrittle;
 
   const isMelted = isRaw && temperatureCelsius > 35;
   const isBrittle = isRaw && temperatureCelsius < 0;
@@ -112,9 +110,9 @@ export function GoodyearRubberSim() {
               <span className="text-orange-400 font-bold">{temperatureCelsius}°C</span>
             </div>
             <div>
-              <span className="text-ink-500 block text-[10px]">ELASTIC RECOVERY</span>
+              <span className="text-ink-500 block text-[10px]">ELASTIC RETURN</span>
               <span className={isElastic ? "text-emerald-400 font-bold" : "text-red-400 font-bold"}>
-                {isElastic ? "100% Hookean Snap" : "Permanent Deformation"}
+                {rubber.elasticReturnPct}% / {rubber.tensileStrengthPsi} psi
               </span>
             </div>
           </div>

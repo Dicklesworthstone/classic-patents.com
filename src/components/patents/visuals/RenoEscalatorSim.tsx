@@ -2,6 +2,7 @@
 
 import { Play, RotateCcw, Volume2, VolumeX } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
+import { stepRenoEscalator } from "@/physics/machineKernels";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { usePatentAudio } from "./three/usePatentAudio";
 
@@ -15,16 +16,14 @@ export function RenoEscalatorSim() {
   const [treadOffset, setTreadOffset] = useState<number>(0);
   const animRef = useRef<number | null>(null);
 
-  // Escalator kinematics
-  const beltSpeedFpm = Math.round((beltSpeedMps * 60) / 0.3048);
-  const passengersPerHour = Math.round((beltSpeedMps / 0.38) * 3000);
-  const driveMotorPowerKw = Number(
-    (
-      2.2 +
-      (passengerLoad * 75 * 9.80665 * Math.sin((inclineAngleDeg * Math.PI) / 180) * beltSpeedMps) /
-        1000
-    ).toFixed(1),
-  );
+  const reno = stepRenoEscalator({
+    passengerCount: passengerLoad,
+    inclineAngleDeg,
+    velocityMps: beltSpeedMps,
+  });
+  const beltSpeedFpm = reno.speedFpm;
+  const passengersPerHour = reno.throughputPerHour;
+  const driveMotorPowerKw = reno.motorPowerKw;
 
   useEffect(() => {
     if (!isPlaying) return;

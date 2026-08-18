@@ -341,6 +341,8 @@ export function DavenportElectricMotor3D() {
           { label: "Load", value: motorTorqueNm, unit: "N·m" },
           { label: "ω", value: String(motorRpm), unit: "rpm" },
           { label: "P", value: mechanicalWatts, unit: "W" },
+          { label: "I", value: String(davenport.armatureCurrentA), unit: "A" },
+          { label: "η", value: String(davenport.efficiencyPct), unit: "%" },
         ]}
       />
     </div>

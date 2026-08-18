@@ -4,6 +4,7 @@ import { AlertCircle, Lightbulb } from "lucide-react";
 import { useState } from "react";
 import { MaterialCard } from "@/components/patents/MaterialCard";
 import { blackbodyRgb } from "@/physics/blackbody";
+import { stepEdisonBulb } from "@/physics/catalogKernels";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { soundEngine } from "@/utils/soundEngine";
 
@@ -15,19 +16,22 @@ export function EdisonBulbSim() {
   );
   const [isVacuumIntact, setIsVacuumIntact] = useState<boolean>(true);
 
-  // Electrical and thermal physics
-  // High Resistance (Edison) = 100 Ohms, Low Resistance (Swan/Maxim) = 1.5 Ohms
-  const resistanceOhms = resistanceMode === "high-resistance" ? 100 : 1.5;
+  const bulb = stepEdisonBulb({ voltage, filamentLength: params.filamentLength ?? 22 });
+  // High-R path is the Edison kernel. Low-R is the Swan/Maxim counterfactual for feeder I²R.
+  const resistanceOhms = resistanceMode === "high-resistance" ? bulb.hotResistanceOhm : 1.5;
   const currentAmps = voltage / resistanceOhms;
-  const powerWatts = (voltage * voltage) / resistanceOhms;
+  const powerWatts =
+    resistanceMode === "high-resistance" ? bulb.radiantWatts : (voltage * voltage) / 1.5;
 
-  // Feeder cable copper resistance for 1 mile distribution
-  const feederResistance = 0.4; // Ohms
+  const feederResistance = 0.4;
   const feederPowerLossWatts = currentAmps ** 2 * feederResistance;
 
-  // Filament temperature in Kelvin (Stefan-Boltzmann approx)
   const isBurnedOut = !isVacuumIntact && voltage > 30;
-  const tempKelvin = isBurnedOut ? 300 : Math.round(300 + powerWatts ** 0.45 * 160);
+  const tempKelvin = isBurnedOut
+    ? 300
+    : resistanceMode === "high-resistance"
+      ? bulb.filamentTempK
+      : Math.round(300 + powerWatts ** 0.45 * 160);
 
   const getFilamentColor = () => {
     if (isBurnedOut) return "#475569";
@@ -218,7 +222,13 @@ export function EdisonBulbSim() {
                 { label: "Hot T", value: `${tempKelvin} K` },
                 { label: "R", value: `${resistanceOhms.toFixed(1)} Ω` },
                 { label: "P_rad", value: `${powerWatts.toFixed(1)} W` },
-                { label: "Color", value: getFilamentColor() },
+                {
+                  label: "lm/W",
+                  value:
+                    resistanceMode === "high-resistance"
+                      ? `${bulb.luminousLmPerW}`
+                      : "counterfactual",
+                },
               ]}
             />
 

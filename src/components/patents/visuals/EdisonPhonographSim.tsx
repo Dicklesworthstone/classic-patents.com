@@ -2,6 +2,7 @@
 
 import { Play, RotateCcw, Volume2, VolumeX } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
+import { stepEdisonPhonograph } from "@/physics/catalogKernels";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { usePatentAudio } from "./three/usePatentAudio";
 
@@ -14,12 +15,11 @@ export function EdisonPhonographSim() {
   const [cylinderAngleDeg, setCylinderAngleDeg] = useState<number>(0);
   const animRef = useRef<number | null>(null);
 
-  // Acoustic & Lead-Screw Kinematics
-  const _threadsPerInch = 10;
+  const phono = stepEdisonPhonograph({ mandrelRpm: crankRpm, voiceVolumeDb });
   const leadScrewPitchMm = 2.54;
-  const surfaceSpeedMps = Number(((crankRpm * 2 * Math.PI * 0.05) / 60).toFixed(2));
+  const surfaceSpeedMps = Number((phono.trackSpeedInPerS * 0.0254).toFixed(2));
   const axialTravelMm = Number((((cylinderAngleDeg / 360) * leadScrewPitchMm) % 40).toFixed(1));
-  const indentationDepthMicrons = Number(((voiceVolumeDb / 75) * 25).toFixed(1));
+  const indentationDepthMicrons = phono.grooveDepthMicrons;
   const audioBandwidthHz = Math.round(surfaceSpeedMps * 4500);
 
   useEffect(() => {

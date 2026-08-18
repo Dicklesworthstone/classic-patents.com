@@ -20,10 +20,14 @@ export function WrightFlyerSim() {
   const isCoupled = controls.coupled;
   const [activeStep, setActiveStep] = useState<number>(0);
 
-  const leftWingLift = 100 - wingWarpAngle * 2.2;
-  const rightWingLift = 100 + wingWarpAngle * 2.2;
-  const leftInducedDrag = (leftWingLift / 100) ** 2 * 15;
-  const rightInducedDrag = (rightWingLift / 100) ** 2 * 15;
+  const warpLiftN = wingWarpAngle * 18.5;
+  const leftLiftN = Math.max(0, si.liftNewtons / 2 - warpLiftN / 2);
+  const rightLiftN = Math.max(0, si.liftNewtons / 2 + warpLiftN / 2);
+  const liftSpan = Math.max(1, si.liftNewtons);
+  const leftWingLift = (leftLiftN / liftSpan) * 100;
+  const rightWingLift = (rightLiftN / liftSpan) * 100;
+  const leftInducedDrag = (leftLiftN / Math.max(1, si.liftNewtons)) ** 2 * si.inducedDragNewtons;
+  const rightInducedDrag = (rightLiftN / Math.max(1, si.liftNewtons)) ** 2 * si.inducedDragNewtons;
   const netYawMoment = si.netYawNm;
   const isCoordinatedTurn = si.coordinated;
   const isAdverseYawCrash = si.adverseYawDominant;
@@ -337,7 +341,7 @@ export function WrightFlyerSim() {
                 fontFamily="monospace"
                 fontWeight="bold"
               >
-                Lift: {Math.round(leftWingLift)}%
+                Lift: {Math.round(leftLiftN)} N
               </text>
               <line
                 x1="0"
@@ -354,7 +358,7 @@ export function WrightFlyerSim() {
                 fontSize="8"
                 fontFamily="monospace"
               >
-                Drag: {Math.round(leftInducedDrag)}
+                Drag: {Math.round(leftInducedDrag)} N
               </text>
             </g>
 
@@ -377,7 +381,7 @@ export function WrightFlyerSim() {
                 fontFamily="monospace"
                 fontWeight="bold"
               >
-                Lift: {Math.round(rightWingLift)}%
+                Lift: {Math.round(rightLiftN)} N
               </text>
               <line
                 x1="0"
@@ -394,7 +398,7 @@ export function WrightFlyerSim() {
                 fontSize="8"
                 fontFamily="monospace"
               >
-                Drag: {Math.round(rightInducedDrag)}
+                Drag: {Math.round(rightInducedDrag)} N
               </text>
             </g>
           </g>
@@ -405,7 +409,7 @@ export function WrightFlyerSim() {
           <div>
             <span className="text-ink-500 block text-[10px]">ROLL CONTROL</span>
             <span className="text-amber-400 font-bold">
-              Δ Lift = {(leftWingLift - rightWingLift).toFixed(1)}%
+              Δ Lift = {(leftLiftN - rightLiftN).toFixed(0)} N
             </span>
           </div>
           <div>

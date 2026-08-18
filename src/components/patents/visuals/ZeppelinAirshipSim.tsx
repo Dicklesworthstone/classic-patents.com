@@ -2,6 +2,7 @@
 
 import { Play, RotateCcw, Volume2, VolumeX } from "lucide-react";
 import { useEffect, useState } from "react";
+import { stepZeppelinAirship } from "@/physics/catalogKernels";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { usePatentAudio } from "./three/usePatentAudio";
 
@@ -9,17 +10,20 @@ export function ZeppelinAirshipSim() {
   const { params, updateParam, resetParams } = usePatentPhysics("us-621195-zeppelin-airship");
   const { isAudioMuted, toggleSound } = usePatentAudio();
   const flightSpeedKnots = params.flightSpeedKnots ?? 28;
-  const gasCellPurityPct = params.gasInflation ?? 98;
-  const slidingTrimKg = (params.trimWeight ?? 0) * 33.3; // Scale -15..15m to -500..500kg equivalent
+  const gasCellPurityPct = params.gasInflation ?? 95;
+  const trimWeight = params.trimWeight ?? 5;
   const [isPlaying, setIsPlaying] = useState<boolean>(true);
   const [pitchDeg, setPitchDeg] = useState<number>(0);
 
-  // Aerostatic & Aerodynamic physics
-  const hydrogenVolumeM3 = 11300; // LZ 1 volume
-  const grossLiftKg = Math.round(hydrogenVolumeM3 * 1.2 * (gasCellPurityPct / 100));
-  const emptyWeightKg = 10200; // Aluminum girder skeleton + 17 gas cells + 2 Daimler engines
-  const usefulPayloadKg = Math.max(0, grossLiftKg - emptyWeightKg);
-  const pitchTrimDeg = Number(((slidingTrimKg / 500) * 12).toFixed(1));
+  const zep = stepZeppelinAirship({
+    gasInflation: gasCellPurityPct,
+    flightAlt: params.flightAlt ?? 300,
+    flightSpeedKnots,
+    trimWeight,
+  });
+  const grossLiftKg = Math.round((zep.grossBuoyancyKn / 9.81) * 1000);
+  const usefulPayloadKg = Math.max(0, Math.round((zep.netLiftKn / 9.81) * 1000));
+  const pitchTrimDeg = zep.pitchTrimDeg;
 
   useEffect(() => {
     setPitchDeg(pitchTrimDeg);
@@ -151,7 +155,7 @@ export function ZeppelinAirshipSim() {
             <line x1="-180" y1="58" x2="180" y2="58" stroke="#4A5568" strokeWidth="3" />
             {/* Sliding Trim Weight (Translates on Keel) */}
             <rect
-              x={(slidingTrimKg / 500) * 140 - 10}
+              x={(trimWeight / 15) * 140 - 10}
               y="52"
               width="20"
               height="12"
@@ -168,7 +172,7 @@ export function ZeppelinAirshipSim() {
               fontWeight="bold"
               fontFamily="sans-serif"
             >
-              Sliding Trim ({slidingTrimKg} kg)
+              Keel trim ({trimWeight} · {pitchTrimDeg}°)
             </text>
 
             {/* Stern Control Fins & Rudders */}
@@ -232,8 +236,8 @@ export function ZeppelinAirshipSim() {
           <div className="flex justify-between text-xs font-sans font-medium text-ink-700 dark:text-parchment-300 mb-1">
             <span>Sliding Trim Weight Position (Keel)</span>
             <span className="font-mono">
-              {slidingTrimKg.toFixed(0)} kg (
-              {slidingTrimKg < 0 ? "Bow Down" : slidingTrimKg > 0 ? "Stern Down" : "Level"})
+              {trimWeight} ({pitchTrimDeg}°{" "}
+              {trimWeight < 0 ? "bow" : trimWeight > 0 ? "stern" : "level"})
             </span>
           </div>
           <input
@@ -241,7 +245,7 @@ export function ZeppelinAirshipSim() {
             min="-15"
             max="15"
             step="1"
-            value={params.trimWeight ?? 0}
+            value={trimWeight}
             onChange={(e) => updateParam("trimWeight", Number(e.target.value))}
             className="w-full accent-amber-600 cursor-pointer"
           />

@@ -3,20 +3,19 @@
 import { Radio, Zap } from "lucide-react";
 import { useEffect, useState } from "react";
 import { SparkWaterfall } from "@/components/patents/visuals/SparkWaterfall";
+import { stepMarconiRadio } from "@/physics/catalogKernels";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { soundEngine } from "@/utils/soundEngine";
 
 export function MarconiRadioSim() {
   const { params, updateParam } = usePatentPhysics("us-586193-marconi-radio");
-  const antennaHeightMeters = params.aerialHeight ?? 88; // 30 to 120 meters
-  const sparkPowerKv = params.sparkVoltage ?? 28; // 10 to 50 kV
+  const antennaHeightMeters = params.aerialHeight ?? 88;
+  const sparkPowerKv = params.sparkVoltage ?? 28;
   const [isSparking, setIsSparking] = useState<boolean>(false);
   const [waveRingRadius, setWaveRingRadius] = useState<number>(0);
 
-  // Marconi Antenna Law: Range D proportional to H * sqrt(Power)
-  const estimatedRangeMiles = Math.round(
-    (antennaHeightMeters / 10) * Math.sqrt(sparkPowerKv) * 2.8,
-  );
+  const radio = stepMarconiRadio(antennaHeightMeters, params.sparkGapMm ?? 10, sparkPowerKv);
+  const estimatedRangeMiles = radio.maxRangeMiles;
 
   useEffect(() => {
     let timer: any;

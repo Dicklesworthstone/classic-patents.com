@@ -48,7 +48,7 @@ import {
   stepRenoEscalator,
   stepSholesTypewriter,
 } from "./machineKernels";
-import { teslaBAt } from "./teslaKernel";
+import { teslaBAt, teslaCoilResonantKhz } from "./teslaKernel";
 import { goddardThermo } from "./thermochem";
 import { readWrightControls, stepWrightFlyerSi } from "./wrightKernel";
 
@@ -228,7 +228,12 @@ export function materialProbe(
       note: `${mouse.dpi} dpi, ${mouse.slewPxPerS} px/s from wheel roll.`,
     };
   }
-  if (patentId.includes("boyle") || patentId.includes("ccd") || patentId.includes("3923554")) {
+  if (
+    patentId.includes("boyle") ||
+    patentId.includes("ccd") ||
+    patentId.includes("3923554") ||
+    patentId.includes("3858232")
+  ) {
     const wells = stepCcdWells(
       1,
       params.incidentLux ?? 850,
@@ -246,7 +251,7 @@ export function materialProbe(
   }
   if (patentId.includes("tesla-coil") || patentId.includes("533367")) {
     const cap = params.primaryCap ?? 45;
-    const freqKhz = Math.round(180 * Math.sqrt(45 / Math.max(10, cap)));
+    const freqKhz = teslaCoilResonantKhz(cap);
     const coil = FrankenSimEngine.stepTeslaCoil(
       freqKhz,
       params.inputVoltageKv ?? 15,
@@ -966,7 +971,12 @@ export function intervalGhosts(patentId: string, params: Record<string, number>)
     });
     return [{ label: "ω", min: 0, max: 40, live: mouse.omegaRadPerS, unit: "rad/s" }];
   }
-  if (patentId.includes("boyle") || patentId.includes("ccd") || patentId.includes("3923554")) {
+  if (
+    patentId.includes("boyle") ||
+    patentId.includes("ccd") ||
+    patentId.includes("3923554") ||
+    patentId.includes("3858232")
+  ) {
     const wells = stepCcdWells(
       1,
       params.incidentLux ?? 850,
@@ -985,7 +995,7 @@ export function intervalGhosts(patentId: string, params: Record<string, number>)
   }
   if (patentId.includes("tesla-coil") || patentId.includes("533367")) {
     const cap = params.primaryCap ?? 45;
-    const freqKhz = Math.round(180 * Math.sqrt(45 / Math.max(10, cap)));
+    const freqKhz = teslaCoilResonantKhz(cap);
     const coil = FrankenSimEngine.stepTeslaCoil(
       freqKhz,
       params.inputVoltageKv ?? 15,
@@ -1274,7 +1284,12 @@ export function fidelityField(
       unit: "dpi",
     };
   }
-  if (patentId.includes("boyle") || patentId.includes("ccd") || patentId.includes("3923554")) {
+  if (
+    patentId.includes("boyle") ||
+    patentId.includes("ccd") ||
+    patentId.includes("3923554") ||
+    patentId.includes("3858232")
+  ) {
     const wells = stepCcdWells(
       1,
       params.incidentLux ?? 850,
@@ -1291,7 +1306,7 @@ export function fidelityField(
   }
   if (patentId.includes("tesla-coil") || patentId.includes("533367")) {
     const cap = params.primaryCap ?? 45;
-    const freqKhz = Math.round(180 * Math.sqrt(45 / Math.max(10, cap)));
+    const freqKhz = teslaCoilResonantKhz(cap);
     const coil = FrankenSimEngine.stepTeslaCoil(
       freqKhz,
       params.inputVoltageKv ?? 15,
@@ -1615,7 +1630,12 @@ export function datedScenarios(patentId: string): DatedScenario[] {
       },
     ];
   }
-  if (patentId.includes("boyle") || patentId.includes("ccd") || patentId.includes("3923554")) {
+  if (
+    patentId.includes("boyle") ||
+    patentId.includes("ccd") ||
+    patentId.includes("3923554") ||
+    patentId.includes("3858232")
+  ) {
     return [
       {
         id: "murray-hill-1969",
@@ -1729,18 +1749,22 @@ export function coupleLinks(patentId: string, params: Record<string, number>): C
   }
   if (patentId.includes("tesla-motor") || patentId.includes("381968")) {
     const f = params.frequency ?? 60;
-    const load = params.loadTorque ?? 20;
-    const pin = 80 + f * 1.2 + load * 8;
-    return [{ from: "stator B", to: "shaft", watts: pin * 0.82 }];
+    const load = params.loadTorque ?? 38.5;
+    const em = FrankenSimEngine.stepTeslaMotor(f, 2, load);
+    const rotorRpm = em.synchronousRpm * (1 - em.slipFraction);
+    const pout = (load * (rotorRpm * 2 * Math.PI)) / 60;
+    return [{ from: "stator B", to: "shaft", watts: pout }];
   }
   if (patentId.includes("223898") || patentId.includes("lightbulb")) {
-    const v = params.voltage ?? 110;
-    const p = (v * v) / 150;
-    return [{ from: "I²R", to: "radiation", watts: p }];
+    const bulb = stepEdisonBulb({
+      voltage: params.voltage ?? 110,
+      filamentLength: params.filamentLength,
+    });
+    return [{ from: "I²R", to: "radiation", watts: bulb.radiantWatts }];
   }
   if (patentId.includes("tesla-coil") || patentId.includes("533367")) {
     const cap = params.primaryCap ?? 45;
-    const freqKhz = Math.round(180 * Math.sqrt(45 / Math.max(10, cap)));
+    const freqKhz = teslaCoilResonantKhz(cap);
     const coil = FrankenSimEngine.stepTeslaCoil(
       freqKhz,
       params.inputVoltageKv ?? 15,
@@ -1752,7 +1776,12 @@ export function coupleLinks(patentId: string, params: Record<string, number>): C
     const watts = (params.inputVoltageKv ?? 15) * 20;
     return [{ from: "primary spark", to: `${coil.streamerLengthInches.toFixed(0)} in arc`, watts }];
   }
-  if (patentId.includes("boyle") || patentId.includes("ccd") || patentId.includes("3923554")) {
+  if (
+    patentId.includes("boyle") ||
+    patentId.includes("ccd") ||
+    patentId.includes("3923554") ||
+    patentId.includes("3858232")
+  ) {
     const wells = stepCcdWells(
       1,
       params.incidentLux ?? 850,

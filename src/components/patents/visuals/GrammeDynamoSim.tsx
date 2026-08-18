@@ -2,6 +2,7 @@
 
 import { Play, RotateCcw, Volume2, VolumeX } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
+import { stepGrammeDynamo } from "@/physics/catalogKernels";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { usePatentAudio } from "./three/usePatentAudio";
 
@@ -14,13 +15,10 @@ export function GrammeDynamoSim() {
   const [angleDeg, setAngleDeg] = useState<number>(0);
   const animRef = useRef<number | null>(null);
 
-  // Electrical physics
-  const magneticFluxTesla = 1.35;
-  const generatedDcVolts = Number(
-    (rotorRpm * magneticFluxTesla * (coilSections / 32) * 0.12).toFixed(1),
-  );
-  const outputAmperes = Number((generatedDcVolts / 2.5).toFixed(1));
-  const electricalPowerWatts = Math.round(generatedDcVolts * outputAmperes);
+  const gramme = stepGrammeDynamo({ shaftRpm: rotorRpm, coilSegments: coilSections });
+  const generatedDcVolts = gramme.emfVolts;
+  const electricalPowerWatts = gramme.powerWatts;
+  const outputAmperes = Number((electricalPowerWatts / Math.max(1, generatedDcVolts)).toFixed(1));
   const voltageRipplePct = Number(((Math.PI ** 2 / (2 * coilSections ** 2)) * 100).toFixed(2));
 
   useEffect(() => {

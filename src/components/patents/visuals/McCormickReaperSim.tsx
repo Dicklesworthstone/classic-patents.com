@@ -2,26 +2,23 @@
 
 import { Play, RotateCcw, Volume2, VolumeX } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
+import { stepMcCormickReaper } from "@/physics/catalogKernels";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { usePatentAudio } from "./three/usePatentAudio";
 
 export function McCormickReaperSim() {
   const { params, updateParam, resetParams } = usePatentPhysics("us-x8277-mccormick-reaper");
   const { isAudioMuted, toggleSound } = usePatentAudio();
-  const groundSpeedMph = params.groundSpeedMph ?? 3.0;
-  const cutterStrokeRate = params.cutterStrokeRate ?? 450;
+  const groundSpeedMph = params.forwardSpeedMph ?? params.groundSpeedMph ?? 2.5;
+  const reaper = stepMcCormickReaper({ forwardSpeedMph: groundSpeedMph });
+  const cutterStrokeRate = Math.round(reaper.cutFrequencyHz * 60);
   const [isPlaying, setIsPlaying] = useState<boolean>(true);
   const [phase, setPhase] = useState<number>(0);
   const animRef = useRef<number | null>(null);
 
-  // Mechanical kinematics
   const groundSpeedMps = Number((groundSpeedMph * 0.44704).toFixed(2));
-  const reelRpm = params.reelSpeedRpm ?? groundSpeedMph * 8.5;
-  const cuttingEfficiencyPct = Math.min(
-    98,
-    Math.round((cutterStrokeRate / (groundSpeedMph * 70 + 1e-4)) * 85),
-  );
-  const harvestedAcresPerDay = Number(((groundSpeedMph * 4.5 * 10) / 8.25).toFixed(1));
+  const reelRpm = reaper.reelRpm;
+  const harvestedAcresPerDay = reaper.harvestAcresPerDay;
 
   useEffect(() => {
     if (!isPlaying) return;
@@ -221,7 +218,7 @@ export function McCormickReaperSim() {
             Cutter Cadence
           </span>
           <span className="font-mono text-sm sm:text-base font-bold text-amber-700 dark:text-amber-500">
-            {cutterStrokeRate} strokes/min
+            {cutterStrokeRate} strokes/min ({reaper.cutFrequencyHz} Hz)
           </span>
         </div>
         <div className="bg-parchment-100 dark:bg-ink-900 border border-parchment-200 dark:border-ink-800 p-2.5 rounded-xl text-center">
@@ -234,10 +231,10 @@ export function McCormickReaperSim() {
         </div>
         <div className="bg-parchment-100 dark:bg-ink-900 border border-parchment-200 dark:border-ink-800 p-2.5 rounded-xl text-center">
           <span className="text-[10px] uppercase tracking-wider text-ink-500 dark:text-ink-400 block font-sans">
-            Cutting Efficiency
+            Reel Speed
           </span>
           <span className="font-mono text-sm sm:text-base font-bold text-ink-900 dark:text-parchment-100">
-            {cuttingEfficiencyPct}%
+            {reelRpm} RPM
           </span>
         </div>
       </div>
@@ -261,18 +258,15 @@ export function McCormickReaperSim() {
         </div>
         <div>
           <div className="flex justify-between text-xs font-sans font-medium text-ink-700 dark:text-parchment-300 mb-1">
-            <span>Sickle Stroke Rate</span>
-            <span className="font-mono">{cutterStrokeRate} strokes/min</span>
+            <span>Reel Speed (from ground speed)</span>
+            <span className="font-mono">{reelRpm} RPM</span>
           </div>
-          <input
-            type="range"
-            min="200"
-            max="800"
-            step="25"
-            value={cutterStrokeRate}
-            onChange={(e) => updateParam("cutterStrokeRate", Number(e.target.value))}
-            className="w-full accent-amber-600 cursor-pointer"
-          />
+          <div className="h-2 rounded bg-parchment-200 dark:bg-ink-800 overflow-hidden">
+            <div
+              className="h-full bg-amber-600"
+              style={{ width: `${Math.min(100, (reelRpm / 62.5) * 100)}%` }}
+            />
+          </div>
         </div>
       </div>
     </div>

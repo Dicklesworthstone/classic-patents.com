@@ -1,6 +1,7 @@
 "use client";
 
 import { Ship } from "lucide-react";
+import { TextWithLatex } from "@/components/ui/LatexRenderer";
 import { stepLincolnBuoy } from "@/physics/catalogKernels";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 
@@ -224,7 +225,7 @@ export function LincolnBuoySim() {
             <div className="space-y-1.5">
               <div className="flex justify-between text-xs sm:text-sm font-mono">
                 <span className="font-semibold text-ink-800 dark:text-parchment-200">
-                  Bellows Expansion ($\Delta V$)
+                  <TextWithLatex text="Bellows Expansion ($\\Delta V$)" />
                 </span>
                 <span className="text-amber-600 dark:text-amber-400 font-bold">
                   {bellowsExpansionPercent}%
@@ -232,7 +233,7 @@ export function LincolnBuoySim() {
               </div>
               <input
                 type="range"
-                aria-label="Bellows Expansion (\Delta V)"
+                aria-label="Bellows Expansion (delta V)"
                 min="0"
                 max="100"
                 step="5"
@@ -246,7 +247,7 @@ export function LincolnBuoySim() {
             <div className="space-y-1.5">
               <div className="flex justify-between text-xs sm:text-sm font-mono">
                 <span className="font-semibold text-ink-800 dark:text-parchment-200">
-                  {"Cargo Weight ($M_{cargo}$)"}
+                  <TextWithLatex text="Cargo Weight ($M_{cargo}$)" />
                 </span>
                 <span className="text-blue-600 dark:text-blue-400 font-bold">
                   {vesselCargoTons} tons
@@ -268,7 +269,7 @@ export function LincolnBuoySim() {
             <div className="space-y-1.5">
               <div className="flex justify-between text-xs sm:text-sm font-mono">
                 <span className="font-semibold text-ink-800 dark:text-parchment-200">
-                  {"Shoal Water Depth ($h_{river}$)"}
+                  <TextWithLatex text="Shoal Water Depth ($h_{river}$)" />
                 </span>
                 <span className="text-emerald-600 dark:text-emerald-400 font-bold">
                   {riverDepthFeet.toFixed(1)} ft

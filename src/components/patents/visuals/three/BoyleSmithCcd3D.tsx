@@ -18,7 +18,7 @@ export function BoyleSmithCcd3D() {
   const containerRef = useRef<HTMLDivElement>(null);
 
   // CCD Physics & Clocking State Controls
-  const { params } = usePatentPhysics("us-3923554-boyle-smith-ccd");
+  const { params } = usePatentPhysics("us-3858232-boyle-smith-ccd");
   const [showUiOverlay, setShowUiOverlay] = useState<boolean>(true);
   const [clockPhase, _setClockPhase] = useState<1 | 2 | 3>(1);
   const incidentLux = params.incidentLux ?? 850;
@@ -37,7 +37,7 @@ export function BoyleSmithCcd3D() {
     clockFreq,
   );
 
-  useFrankenSimPhysics("us-3923554-boyle-smith-ccd", {
+  useFrankenSimPhysics("us-3858232-boyle-smith-ccd", {
     domain: "semiconductor_carrier",
     timestampMs: Date.now(),
     timeStepDt: 0.016,

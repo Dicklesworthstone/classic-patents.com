@@ -2,6 +2,7 @@
 
 import { RotateCcw, Volume2, VolumeX, Zap } from "lucide-react";
 import { useState } from "react";
+import { stepNobelDynamite } from "@/physics/catalogKernels";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { usePatentAudio } from "./three/usePatentAudio";
 
@@ -12,10 +13,13 @@ export function NobelDynamiteSim() {
   const capEnergyJoules = params.capEnergyJoules ?? 1.2;
   const [isDetonated, setIsDetonated] = useState<boolean>(false);
 
-  // Energetic physics
-  const detonationVelocityMps = Math.round(4200 + (nitroglycerinRatioPct / 75) * 2100);
-  const peakPressureGpa = Number(((1.45 * (detonationVelocityMps / 1000) ** 2) / 4).toFixed(1));
-  const isCapStrongEnough = capEnergyJoules >= 0.4;
+  const nobel = stepNobelDynamite({
+    ngConcentrationPct: nitroglycerinRatioPct,
+    capEnergyJoules,
+  });
+  const detonationVelocityMps = nobel.detonationVelocityMps;
+  const peakPressureGpa = Number((nobel.blastOverpressureMpa / 1000).toFixed(1));
+  const isCapStrongEnough = nobel.isInitiated;
   const isSensitiveUnsafe = nitroglycerinRatioPct > 82;
   const explosiveEnergyMjPerKg = Number(((nitroglycerinRatioPct / 100) * 6.3).toFixed(2));
 

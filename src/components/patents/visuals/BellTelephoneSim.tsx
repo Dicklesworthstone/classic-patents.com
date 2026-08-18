@@ -2,6 +2,7 @@
 
 import { Mic, Volume2, VolumeX, Waves } from "lucide-react";
 import { useEffect, useState } from "react";
+import { stepBellTelephone } from "@/physics/catalogKernels";
 import { formatSones, sonesFromDbSpl } from "@/physics/psycho";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { soundEngine } from "@/utils/soundEngine";
@@ -11,6 +12,7 @@ export function BellTelephoneSim() {
   const acousticFrequency = params.acousticFrequencyHz ?? 440;
   const voiceAmplitude = params.voiceAmplitude ?? 75;
   const loudnessSones = sonesFromDbSpl(voiceAmplitude);
+  const bell = stepBellTelephone({ voiceAmplitude, airGap: params.airGap ?? 0.35 });
   const [signalType, setSignalType] = useState<"continuous-undulating" | "intermittent-make-break">(
     "continuous-undulating",
   );
@@ -100,7 +102,8 @@ export function BellTelephoneSim() {
               <Mic className="w-3.5 h-3.5" /> Vocal Sound Input (Air Pressure)
             </span>
             <span className="flex items-center gap-1 text-emerald-400">
-              <Volume2 className="w-3.5 h-3.5" /> Receiver Diaphragm Output
+              <Volume2 className="w-3.5 h-3.5" /> Receiver {bell.diaphragmUm} µm /{" "}
+              {bell.modulatedMa} mA
             </span>
           </div>
 

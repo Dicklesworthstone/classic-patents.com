@@ -31,6 +31,8 @@ export const PATENT_PARAM_ALIASES: Record<string, Record<string, ParamAlias>> = 
     boilerPressure: same("steamPressurePsi"),
     boilerPressurePsi: same("steamPressurePsi"),
     cutoffPercentage: same("cutoffPct"),
+    cutoffRatioPct: same("cutoffPct"),
+    rpm: same("engineRpm"),
   },
   "us-79265-sholes-typewriter": { typingWpm: same("typingSpeedWpm") },
   "us-132-davenport-electric-motor": {
@@ -89,6 +91,7 @@ export const PATENT_PARAM_ALIASES: Record<string, Record<string, ParamAlias>> = 
     },
   },
   "us-3923554-boyle-smith-ccd": { clockSpeedFactor: same("clockFreq") },
+  "us-3858232-boyle-smith-ccd": { clockSpeedFactor: same("clockFreq") },
   "us-1781541-einstein-refrigerator": { auxiliaryGasRatio: same("ammoniaRatio") },
 };
 

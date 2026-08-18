@@ -2,6 +2,7 @@
 
 import { Play, RotateCcw, Volume2, VolumeX } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
+import { stepDeLavalSeparator } from "@/physics/catalogKernels";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { usePatentAudio } from "./three/usePatentAudio";
 
@@ -14,16 +15,11 @@ export function DeLavalSeparatorSim() {
   const [_angleDeg, setAngleDeg] = useState<number>(0);
   const animRef = useRef<number | null>(null);
 
-  // Centrifugal fluid mechanics
-  const bowlRadiusMeters = 0.1;
-  const angularVelocityRadPs = (bowlRpm * 2 * Math.PI) / 60;
-  const centrifugalAccG = Math.round((angularVelocityRadPs ** 2 * bowlRadiusMeters) / 9.80665);
-  const creamYieldLph = Number((rawMilkFlowLph * 0.12).toFixed(1));
-  const skimMilkYieldLph = Number((rawMilkFlowLph * 0.88).toFixed(1));
-  const separationEfficiencyPct = Math.min(
-    99.9,
-    Number((95 + (centrifugalAccG / 5000) * 4.5).toFixed(1)),
-  );
+  const sep = stepDeLavalSeparator({ bowlRpm, rawMilkFlowLph });
+  const centrifugalAccG = sep.gForce;
+  const creamYieldLph = sep.creamFlowLph;
+  const skimMilkYieldLph = Number((rawMilkFlowLph - creamYieldLph).toFixed(1));
+  const separationEfficiencyPct = sep.fatYieldPct;
 
   useEffect(() => {
     if (!isPlaying) return;

@@ -20,11 +20,9 @@ export function CarrierAirConditioner3D() {
   const [showUiOverlay, setShowUiOverlay] = useState<boolean>(true);
 
   // Psychrometric Air Treatment Parameters
-  const { params, updateParam } = usePatentPhysics("us-808897-carrier-air-conditioner");
+  const { params } = usePatentPhysics("us-808897-carrier-air-conditioner");
   const airflowCfm = params.airflowCfm ?? 15000;
   const sprayWaterTempC = params.sprayTempC ?? 12.5;
-  const supplyDryBulbTempC = 22.0;
-  const targetRelativeHumidityPct = 55;
   const [showSprayMist, setShowSprayMist] = useState<boolean>(true);
   const [activeCamera, setActiveCamera] = useState<CameraPreset>("iso");
   const { isAudioMuted, toggleSound: toggleEngine } = usePatentAudio();

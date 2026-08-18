@@ -1,6 +1,7 @@
 "use client";
 
 import { RotateCcw, Volume2, VolumeX } from "lucide-react";
+import { stepGliddenBarbedWire } from "@/physics/catalogKernels";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { usePatentAudio } from "./three/usePatentAudio";
 
@@ -12,11 +13,15 @@ export function GliddenBarbedWireSim() {
   const wireTensionNewtons = params.wireTensionN ?? 650;
   const wireTensionLbs = Math.round(wireTensionNewtons / 4.44822);
 
-  // Structural & contact mechanics
-  const contactAreaMm2 = 0.25; // Sharp chisel point
+  const wire = stepGliddenBarbedWire({
+    wireTensionN: wireTensionNewtons,
+    twistsPerFoot,
+    animalPushForceN,
+  });
+  const contactAreaMm2 = 0.25;
   const contactStressMpa = Number((animalPushForceN / contactAreaMm2).toFixed(0));
-  const barbSlipForceN = Number((twistsPerFoot * 95).toFixed(0));
-  const isBarbLocked = barbSlipForceN > animalPushForceN;
+  const barbSlipForceN = wire.barbSlipThresholdN;
+  const isBarbLocked = wire.isLocked;
   const isCattleDeterred = contactStressMpa > 200;
 
   return (

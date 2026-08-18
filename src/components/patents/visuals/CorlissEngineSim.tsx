@@ -2,27 +2,29 @@
 
 import { Play, RotateCcw, Volume2, VolumeX } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
+import { stepCorlissEngine } from "@/physics/catalogKernels";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { usePatentAudio } from "./three/usePatentAudio";
 
 export function CorlissEngineSim() {
   const { params, updateParam, resetParams } = usePatentPhysics("us-6162-corliss-steam-engine");
   const { isAudioMuted, toggleSound } = usePatentAudio();
-  const boilerPressurePsi = params.boilerPressurePsi ?? 100;
-  const cutoffFractionPct = params.cutoffRatioPct ?? 25;
-  const engineRpm = params.rpm ?? 60;
+  const boilerPressurePsi = params.steamPressurePsi ?? params.boilerPressurePsi ?? 100;
+  const cutoffFractionPct = params.cutoffPct ?? params.cutoffRatioPct ?? 25;
+  const engineRpm = params.engineRpm ?? params.rpm ?? 65;
   const [isPlaying, setIsPlaying] = useState<boolean>(true);
   const [crankAngleDeg, setCrankAngleDeg] = useState<number>(0);
   const animRef = useRef<number | null>(null);
 
-  // Thermodynamics & Corliss kinematics
+  const corliss = stepCorlissEngine({
+    steamPressurePsi: boilerPressurePsi,
+    engineRpm,
+    cutoffPct: cutoffFractionPct,
+  });
   const pBoilerMpa = Number((boilerPressurePsi * 0.00689476).toFixed(2));
   const expansionRatio = Number((100 / Math.max(5, cutoffFractionPct)).toFixed(1));
-  const imepPsi = Math.round(
-    boilerPressurePsi * ((1 + Math.log(expansionRatio)) / expansionRatio - 0.15),
-  );
-  const indicatedHorsepower = Number(((imepPsi * 1.5 * 2.2 * 2 * engineRpm) / 33000).toFixed(1));
-  const thermalEfficiencyPct = Math.round(18 + expansionRatio * 1.6);
+  const indicatedHorsepower = corliss.indicatedHp;
+  const thermalEfficiencyPct = corliss.thermalEfficiencyPct;
 
   useEffect(() => {
     if (!isPlaying) return;

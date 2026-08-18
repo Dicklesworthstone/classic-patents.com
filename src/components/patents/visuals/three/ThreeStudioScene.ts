@@ -667,6 +667,7 @@ export function createThreeStudioScene(opts: StudioOptions): StudioContext {
   let activeSkyTexture: THREE.CanvasTexture = skyTexture;
 
   const updateEnvironment = () => {
+    if (typeof document === "undefined") return;
     const currentIsDark =
       document.documentElement.classList.contains("dark") ||
       document.documentElement.classList.contains("theme-blueprint");

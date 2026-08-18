@@ -461,6 +461,7 @@ export function PatentVisualDispatcher({ patentId }: PatentVisualDispatcherProps
             return renderMode === "3d-physics" ? <BardeenTransistor3D /> : <BardeenTransistorSim />;
           case "us-3923554-boyle-smith-ccd":
           case "us-3792322-boyle-smith-ccd":
+          case "us-3858232-boyle-smith-ccd":
             return renderMode === "3d-physics" ? <BoyleSmithCcd3D /> : <BoyleSmithCcdSim />;
           case "us-586193-marconi-radio":
             return renderMode === "3d-physics" ? <MarconiRadio3D /> : <MarconiRadioSim />;

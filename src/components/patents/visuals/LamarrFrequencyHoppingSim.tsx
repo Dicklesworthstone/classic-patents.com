@@ -2,6 +2,7 @@
 
 import { Radio } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
+import { FrankenSimEngine } from "@/physics/engine";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 
 /** 88 piano-roll slots: 37 is coprime with 88, so one revolution visits every key once. */
@@ -53,7 +54,8 @@ export function LamarrFrequencyHoppingSim() {
   const radioChannel =
     Math.floor(((Math.max(1, currentChannel) - 1) / PIANO_KEYS) * liveChannels) + 1;
   const isJammedThisInstant = isEnemyJamming && radioChannel === jammingFrequencyChannel;
-  const jammingInterferencePercent = isEnemyJamming ? (1 / liveChannels) * 100 : 0;
+  const fh = FrankenSimEngine.stepLamarrFrequencyHopping(liveChannels, hopsPerSec);
+  const jammingInterferencePercent = isEnemyJamming ? (1 / fh.channelsCount) * 100 : 0;
   const recentHopSet = new Set(historyChannels);
 
   return (
@@ -178,11 +180,11 @@ export function LamarrFrequencyHoppingSim() {
           <div className="w-full grid grid-cols-3 gap-2 text-center text-xs font-mono pt-3 border-t border-ink-800 text-ink-300">
             <div>
               <span className="text-ink-500 block text-[10px]">HOPPING CHANNELS</span>
-              <span className="text-purple-400 font-bold">88 Piano Frequencies</span>
+              <span className="text-purple-400 font-bold">{fh.channelsCount} channels</span>
             </div>
             <div>
-              <span className="text-ink-500 block text-[10px]">HOP RATE</span>
-              <span className="text-amber-400 font-bold">{hopsPerSec} Hops/sec</span>
+              <span className="text-ink-500 block text-[10px]">PROCESS GAIN</span>
+              <span className="text-amber-400 font-bold">{fh.processingGainDb} dB</span>
             </div>
             <div>
               <span className="text-ink-500 block text-[10px]">JAMMER IMPACT</span>
@@ -253,8 +255,9 @@ export function LamarrFrequencyHoppingSim() {
               </span>
               <p className="leading-relaxed">
                 An enemy broadcasting high-power noise on Channel #{jammingFrequencyChannel} only
-                blocks the torpedo signal when the carrier hits that exact channel (1 out of 88
-                times). 98.9% of all command packets get through completely uninterrupted.
+                blocks the torpedo signal when the carrier hits that exact channel (1 out of{" "}
+                {fh.channelsCount}). Processing gain {fh.processingGainDb} dB; jammer occupancy{" "}
+                {jammingInterferencePercent.toFixed(2)}%.
               </p>
             </div>
           </div>

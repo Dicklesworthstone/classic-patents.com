@@ -2,6 +2,7 @@
 
 import { Play, RotateCcw, Volume2, VolumeX } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
+import { stepPeltonWheel } from "@/physics/catalogKernels";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { usePatentAudio } from "./three/usePatentAudio";
 
@@ -14,19 +15,11 @@ export function PeltonWheelSim() {
   const [wheelAngleDeg, setWheelAngleDeg] = useState<number>(0);
   const animRef = useRef<number | null>(null);
 
-  // Hydrodynamic impulse physics
-  const jetVelocityMps = Number(Math.sqrt(2 * 9.80665 * waterHeadMeters).toFixed(1));
-  const runnerRadiusMeters = 0.75;
-  const bucketTipSpeedMps = Number(((wheelRpm * 2 * Math.PI * runnerRadiusMeters) / 60).toFixed(1));
-  const optimalSpeedRatio = Number((bucketTipSpeedMps / jetVelocityMps).toFixed(2));
-  // Peak efficiency when bucket speed = 0.5 * jet speed
-  const turbineEfficiencyPct = Math.max(
-    40,
-    Math.round(93 - Math.abs(optimalSpeedRatio - 0.5) * 160),
-  );
-  const massFlowKgPerSec = 45;
-  const hydraulicPowerKw = Math.round((massFlowKgPerSec * 9.80665 * waterHeadMeters) / 1000);
-  const shaftPowerKw = Math.round(hydraulicPowerKw * (turbineEfficiencyPct / 100));
+  const pelton = stepPeltonWheel({ headMeters: waterHeadMeters, runnerRpm: wheelRpm });
+  const jetVelocityMps = pelton.jetVelocityMps;
+  const optimalSpeedRatio = pelton.speedRatio;
+  const turbineEfficiencyPct = pelton.etaPct;
+  const shaftPowerKw = pelton.shaftPowerKw;
 
   useEffect(() => {
     if (!isPlaying) return;

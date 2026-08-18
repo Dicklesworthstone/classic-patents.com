@@ -3,6 +3,7 @@
 import { Activity, RotateCcw, Shield, Sparkles } from "lucide-react";
 import { useEffect, useState } from "react";
 import { TwoClocksStrip } from "@/components/patents/TwoClocksStrip";
+import { TextWithLatex } from "@/components/ui/LatexRenderer";
 import { FrankenSimEngine } from "@/physics/engine";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { soundEngine } from "@/utils/soundEngine";
@@ -62,8 +63,7 @@ export function FermiReactorSim() {
             </h3>
           </div>
           <p className="text-xs text-ink-600 dark:text-ink-400 mt-1">
-            Observe the 4-Factor formula self-sustaining chain reaction: $k_{"{eff}"} = \eta \cdot
-            \epsilon \cdot p \cdot f \cdot P_{"{NL}"}$.
+            <TextWithLatex text="Observe the neutron multiplication factors: $k_{\\mathrm{eff}} = \\eta \\cdot \\epsilon \\cdot p \\cdot f \\cdot P_{\\mathrm{NL}}$." />
           </p>
         </div>
 

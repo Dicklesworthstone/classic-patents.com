@@ -2,6 +2,7 @@
 
 import { Play, RotateCcw, Volume2, VolumeX } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
+import { stepEricssonPropeller } from "@/physics/catalogKernels";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { usePatentAudio } from "./three/usePatentAudio";
 
@@ -14,16 +15,20 @@ export function EricssonPropellerSim() {
   const [angleDeg, setAngleDeg] = useState<number>(0);
   const animRef = useRef<number | null>(null);
 
-  // Hydrodynamic calculations
+  const screw = stepEricssonPropeller({ shaftRpm, bladePitchAngleDeg });
   const pitchMeters = Number(
     (Math.PI * 1.6 * Math.tan((bladePitchAngleDeg * Math.PI) / 180)).toFixed(2),
   );
-  const theoreticalSpeedKnots = Number(((shaftRpm * pitchMeters * 60) / 1852).toFixed(1));
-  const slipFraction = 0.18;
-  const actualShipSpeedKnots = Number((theoreticalSpeedKnots * (1 - slipFraction)).toFixed(1));
-  const thrustKiloNewtons = Number(
-    ((0.5 * 1025 * (actualShipSpeedKnots * 0.5144) ** 2 * 2.01 * 0.85) / 1000).toFixed(1),
-  );
+  const actualShipSpeedKnots = screw.shipSpeedKnots;
+  const thrustKiloNewtons = screw.thrustKn;
+  const theoreticalSpeedKnots = (shaftRpm * pitchMeters * 60) / 1852;
+  const slipFraction =
+    theoreticalSpeedKnots > 0
+      ? Math.max(
+          0,
+          Math.min(0.9, (theoreticalSpeedKnots - actualShipSpeedKnots) / theoreticalSpeedKnots),
+        )
+      : 0.15;
 
   useEffect(() => {
     if (!isPlaying) return;

@@ -159,6 +159,14 @@ the visitor can see or hear the kernel change the instrument.
 - [x] P5.66 Goddard altitude is on the bus; Tesla 3D spark flicker follows sparkRateHz
 - [x] P5.67 Diesel / Maxim / Otto / Colt / Sholes 2D faces call the shared step
 - [x] P5.68 Spencer 2D popcorn heat follows Hull oscillation + dielectric loss
+- [x] P5.69 Pelton / Nobel / Thomson / Otis / De Laval / Reno / Zeppelin 2D call the shared step
+- [x] P5.70 Catalog 2D honesty: Daimler, Pasteur, Gramme, Gatling, Whitney, McCormick, Hyatt, Edison phonograph/bulb, Linotype, Ericsson, Glidden, Hollerith, Kodak, Bardeen, Corliss, Davenport, Morse, Noyce, Marconi, Bell, Wozniak, Goodyear, Farnsworth call the same step as badge/3D. Otis hoist T uses hanging mass; Zeppelin keel trim is position/pitch, not fake kg.
+- [x] P5.71 Peer-reverted Otis/Pelton 2D restored onto the shared step. Tesla 2D uses stepTeslaMotor (P=2, load 38.5). Howe 2D shows stitch Hz / shear N. Lamarr 2D processing gain and jam occupancy come from stepLamarrFrequencyHopping. Morse receive gate is kernel force, not fake miles.
+- [x] P5.72 Tesla slip is Kloss low-slip (s≈10% at 38.5 N·m), not T/45. Goddard thermo and rocket step share R=365 / v_e. Energy strip for Edison / Goddard / Einstein / Tesla calls the same step as the badge.
+- [x] P5.73 Tesla-coil resonance is teslaCoilResonantKhz (2D/3D/badge/weave). Davenport η/I from copper loss, not P/V tautology. Goddard 2D Mach is kernel machExit. Weave coupleLinks Tesla/Edison call the shared step. Goddard 2D/3D write us-1102653 (page id), not leftover us-1155986.
+- [x] P5.74 CCD 2D/3D write us-3858232 (page id), not leftover us-3923554. Wright 2D wing lift/drag bars share the kernel lift split (18.5 N per deg warp). Wozniak 3D clock is apple.cpuClockMhz.
+- [x] P5.75 Tesla 2D no longer writes omegaT onto the shared bus every 30 ms; Fig. 4 schematic animates locally. Goddard/CCD colorized equations resolve from page ids via alias.
+- [x] P5.76 Tesla 3D publishes the kernel ElectromagneticsState (1.2 T / 220 V / 87% η), not leftover 0.8 T / 110 V / 78%. Input watts from kernel η. Davenport 3D chips show I and η. Goodyear 3D HUD tensile/return from the kernel.
 
 ## Explicitly out of scope
 

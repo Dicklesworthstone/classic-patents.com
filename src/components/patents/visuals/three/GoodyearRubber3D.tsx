@@ -367,10 +367,10 @@ export function GoodyearRubber3D() {
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-3 gap-y-0.5 sm:gap-y-1 mt-1 text-[10px] sm:text-xs font-sans">
                 <div>
                   <span className="text-ink-600 dark:text-ink-400">
-                    <HudText text="Modulus ($E$):" />
+                    <HudText text="Tensile:" />
                   </span>{" "}
                   <span className="font-bold text-blue-600 dark:text-blue-400">
-                    {tensileElasticModulusMpa} MPa
+                    {_rubberPhysics.tensileStrengthPsi} psi / {_rubberPhysics.elasticReturnPct}%
                   </span>
                 </div>
                 <div>

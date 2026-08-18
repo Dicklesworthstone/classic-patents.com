@@ -5,6 +5,7 @@ import { useEffect, useRef, useState } from "react";
 import * as THREE from "three";
 import { HudText } from "@/components/ui/LatexRenderer";
 import { FrankenSimEngine } from "@/physics/engine";
+import { teslaCoilResonantKhz } from "@/physics/teslaKernel";
 import { ensureTeslaWasm } from "@/physics/teslaWasm";
 import { useFrankenSimPhysics } from "@/physics/useFrankenSimPhysics";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
@@ -25,7 +26,7 @@ export function TeslaCoil3D() {
   const { params } = usePatentPhysics("us-533367-tesla-coil");
   const [showUiOverlay, setShowUiOverlay] = useState<boolean>(true);
   const primaryCap = params.primaryCap ?? 45;
-  const resonantFreqKhz = Math.round(180 * Math.sqrt(45 / Math.max(10, primaryCap)));
+  const resonantFreqKhz = teslaCoilResonantKhz(primaryCap);
   const sparkGapDistanceMm = params.sparkGapDistanceMm ?? 12;
   const inputVoltageKv = params.inputVoltageKv ?? 15;
   const couplingK = params.couplingK ?? 0.18;

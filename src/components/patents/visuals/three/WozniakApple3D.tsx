@@ -18,20 +18,19 @@ export function WozniakApple3D() {
   // Microcomputer Architecture State Controls
   const { params } = usePatentPhysics("us-4136359-wozniak-apple");
   const [showUiOverlay, setShowUiOverlay] = useState<boolean>(true);
-  const clockFrequencyMhz = (params.crystalFreq ?? 14.318) / 14;
-  const [videoMode, _setVideoMode] = useState<"hires_color" | "lores_color" | "text_40col">(
-    "hires_color",
-  );
   const ramCapacityKb = params.ramCapacityKb ?? 48;
-  const [isCpuActive, _setIsCpuActive] = useState<boolean>(true);
-  const [showCalloutPins, setShowCalloutPins] = useState<boolean>(false);
-  const [activeCamera, setActiveCamera] = useState<CameraPreset>("iso");
-  const { isAudioMuted, toggleSound: toggleEngine } = usePatentAudio();
-
   const apple = stepWozniakApple({
     crystalFreq: params.crystalFreq ?? 14.318,
     ramCapacityKb,
   });
+  const clockFrequencyMhz = apple.cpuClockMhz;
+  const [videoMode, _setVideoMode] = useState<"hires_color" | "lores_color" | "text_40col">(
+    "hires_color",
+  );
+  const [isCpuActive, _setIsCpuActive] = useState<boolean>(true);
+  const [showCalloutPins, setShowCalloutPins] = useState<boolean>(false);
+  const [activeCamera, setActiveCamera] = useState<CameraPreset>("iso");
+  const { isAudioMuted, toggleSound: toggleEngine } = usePatentAudio();
   const cycleTimeNs = Math.round(1000 / apple.cpuClockMhz);
   const phi1VideoAccessWindowNs = apple.dramWindowNs;
   const effectiveCpuThroughputPct = 100; // video steals Φ1; CPU never DMA-halts

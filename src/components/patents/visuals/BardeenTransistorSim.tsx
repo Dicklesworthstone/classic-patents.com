@@ -2,6 +2,7 @@
 
 import { Cpu } from "lucide-react";
 import { TextWithLatex } from "@/components/ui/LatexRenderer";
+import { stepBardeenTransistor } from "@/physics/catalogKernels";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 
 export function BardeenTransistorSim() {
@@ -10,12 +11,12 @@ export function BardeenTransistorSim() {
   const collectorVoltageV = Math.abs(params.collectorBias ?? -40);
   const pointSpacingMicrons = params.pointSpacing ?? 50;
 
-  // Solid-state calculations
-  // Current transfer ratio alpha decreases with wider point spacing
-  const geometricAlpha = Math.max(0.4, 1.8 * Math.exp(-pointSpacingMicrons / 80));
-  // Reverse collector bias must be strong enough to sweep injected holes before they recombine.
-  const collectionEfficiency = Math.min(1, Math.max(0.25, collectorVoltageV / 28));
-  const alphaRatio = geometricAlpha * collectionEfficiency;
+  const semi = stepBardeenTransistor(
+    emitterCurrentMa,
+    params.collectorBias ?? -40,
+    pointSpacingMicrons,
+  );
+  const alphaRatio = semi.currentGainAlpha;
   const collectorCurrentMa = emitterCurrentMa * alphaRatio;
   const loadResistanceKohm = 20;
   const inputResistanceOhm = 250;

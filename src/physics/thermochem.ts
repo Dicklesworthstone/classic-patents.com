@@ -6,16 +6,20 @@ export interface GoddardThermo {
   veMps: number;
 }
 
-/** LOX–gasoline isentropic estimate from chamber pressure and expansion ratio. */
+/** LOX–gasoline isentropic estimate. Same R, γ, and v_e as stepGoddardRocket. */
 export function goddardThermo(chamberPsi: number, expansionRatio: number): GoddardThermo {
   const gamma = 1.24;
+  const gasConstantR = 365;
   const pcPa = chamberPsi * 6894.76;
   const chamberTempK = Math.round(2400 + (pcPa / 2.4e6) * 400);
-  const peOverPc = 1 / Math.max(1.4, expansionRatio ** 1.15);
-  const exhaustTempK = Math.round(chamberTempK * peOverPc ** ((gamma - 1) / gamma));
+  const expansion = Math.max(1.4, expansionRatio);
+  const exhaustTempK = Math.round(chamberTempK / expansion ** (gamma - 1));
   const veMps = Math.round(
     Math.sqrt(
-      ((2 * gamma) / (gamma - 1)) * 287 * chamberTempK * (1 - peOverPc ** ((gamma - 1) / gamma)),
+      ((2 * gamma) / (gamma - 1)) *
+        gasConstantR *
+        chamberTempK *
+        (1 - 1 / expansion ** (gamma - 1)),
     ),
   );
   return {

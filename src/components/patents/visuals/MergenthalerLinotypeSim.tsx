@@ -2,6 +2,7 @@
 
 import { Play, RotateCcw, Volume2, VolumeX } from "lucide-react";
 import { useState } from "react";
+import { stepMergenthalerLinotype } from "@/physics/machineKernels";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { usePatentAudio } from "./three/usePatentAudio";
 
@@ -10,15 +11,19 @@ export function MergenthalerLinotypeSim() {
   const { isAudioMuted, toggleSound } = usePatentAudio();
   const lineLengthPicas = params.lineLengthPicas ?? 13;
   const potTempC = params.potTemp ?? 260;
+  const matrixRate = params.matrixRate ?? 60;
   const [isCast, setIsCast] = useState<boolean>(false);
 
-  // Linotype casting & metallurgy
-  const lineLengthMm = Number((lineLengthPicas * 4.2333).toFixed(1));
+  const lino = stepMergenthalerLinotype({
+    matrixRatePerMin: matrixRate,
+    spacebandWedgeMm: params.spacebandWedge ?? 6.5,
+    potTempC,
+  });
+  const lineLengthMm = lino.justificationWidthMm;
   const alloyMeltPointC = 240;
-  const isMetalLiquid = potTempC >= alloyMeltPointC;
-  const castingCycleSeconds = 6.5;
-  const linesPerHour = isMetalLiquid ? Math.round(3600 / castingCycleSeconds) : 0;
-  const slugSolidificationTimeSec = Number((1.2 + (potTempC - 240) * 0.015).toFixed(2));
+  const isMetalLiquid = lino.isEutecticTemp;
+  const linesPerHour = isMetalLiquid ? Math.round(3600 / Math.max(0.25, lino.cycleS)) : 0;
+  const slugSolidificationTimeSec = Number((lino.solidificationTimeMs / 1000).toFixed(2));
 
   const handleCastLine = () => {
     if (isMetalLiquid) {

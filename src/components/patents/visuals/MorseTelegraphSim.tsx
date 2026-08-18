@@ -1,7 +1,8 @@
 "use client";
 
 import { Radio, Volume2 } from "lucide-react";
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
+import { stepMorseTelegraph } from "@/physics/catalogKernels";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { soundEngine } from "@/utils/soundEngine";
 
@@ -41,8 +42,18 @@ export function MorseTelegraphSim() {
   const [activeSymbolIndex, setActiveSymbolIndex] = useState<number>(-1);
   const [isKeyDepressed, setIsKeyDepressed] = useState<boolean>(false);
   const currentMa = params.currentMa ?? 65;
+  const morse = stepMorseTelegraph({ currentMa, wireTurns: params.wireTurns ?? 1200 });
   const lineLengthMiles = Math.round(120 - currentMa);
   const [isRelayEnabled, setIsRelayEnabled] = useState<boolean>(true);
+  const isMountedRef = useRef<boolean>(true);
+
+  useEffect(() => {
+    isMountedRef.current = true;
+    return () => {
+      isMountedRef.current = false;
+      soundEngine.stopContinuousTone();
+    };
+  }, []);
 
   // Encode message to Morse
   const encodedSymbols = inputMessage
@@ -69,28 +80,33 @@ export function MorseTelegraphSim() {
 
     const chars = encodedSymbols.split("");
     for (let i = 0; i < chars.length; i++) {
+      if (!isMountedRef.current) break;
       setActiveSymbolIndex(i);
       const sym = chars[i];
       if (sym === "·") {
         soundEngine.playContinuousTone(700, "sine", 0.1);
         await new Promise((r) => setTimeout(r, 80));
         soundEngine.stopContinuousTone();
+        if (!isMountedRef.current) break;
         await new Promise((r) => setTimeout(r, 60));
       } else if (sym === "-") {
         soundEngine.playContinuousTone(700, "sine", 0.1);
         await new Promise((r) => setTimeout(r, 220));
         soundEngine.stopContinuousTone();
+        if (!isMountedRef.current) break;
         await new Promise((r) => setTimeout(r, 60));
       } else if (sym === " " || sym === "/") {
         await new Promise((r) => setTimeout(r, 180));
       }
     }
 
-    setIsPlaying(false);
-    setActiveSymbolIndex(-1);
+    if (isMountedRef.current) {
+      setIsPlaying(false);
+      setActiveSymbolIndex(-1);
+    }
   };
 
-  const isSignalReceived = isRelayEnabled || lineLengthMiles < 25;
+  const isSignalReceived = isRelayEnabled || morse.magneticForceN >= 0.25;
 
   return (
     <div className="rounded-2xl border border-amber-900/20 dark:border-ink-800 bg-parchment-50 dark:bg-ink-950 p-6 shadow-patent space-y-6">
@@ -131,8 +147,8 @@ export function MorseTelegraphSim() {
           {!isSignalReceived && (
             <div className="w-full px-3 py-1.5 bg-red-950/90 border border-red-700 text-red-300 text-xs font-mono rounded-lg flex items-center justify-between">
               <span>
-                ⚠ LINE EXTINCTION: Wire resistance extinguished signal over {lineLengthMiles} miles
-                without relay!
+                ⚠ LINE EXTINCTION: armature pull {morse.magneticForceN} N below 0.25 N over{" "}
+                {lineLengthMiles} mi without relay!
               </span>
             </div>
           )}
@@ -329,7 +345,7 @@ export function MorseTelegraphSim() {
                   Line Loop Current (Line Distance)
                 </span>
                 <span className="text-amber-600 dark:text-amber-400 font-bold">
-                  {currentMa.toFixed(0)} mA ({lineLengthMiles} mi)
+                  {currentMa.toFixed(0)} mA · {morse.magneticForceN} N / {morse.stylusKpa} kPa
                 </span>
               </div>
               <input

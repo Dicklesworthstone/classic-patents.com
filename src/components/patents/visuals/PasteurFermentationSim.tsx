@@ -2,6 +2,7 @@
 
 import { Play, RotateCcw, Volume2, VolumeX } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
+import { stepPasteurFermentation } from "@/physics/catalogKernels";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { usePatentAudio } from "./three/usePatentAudio";
 
@@ -14,12 +15,14 @@ export function PasteurFermentationSim() {
   const [timerSeconds, setTimerSeconds] = useState<number>(0);
   const animRef = useRef<number | null>(null);
 
-  // Biological kinetics
-  const isMicrobesKilled = bathTempC >= 55 && holdTimeMinutes >= 15;
+  const pasteur = stepPasteurFermentation({
+    pasteurizationTempC: bathTempC,
+    holdTimeMin: holdTimeMinutes,
+    wortTempC: params.wortTempC ?? 22,
+  });
+  const decimalReductionLog = pasteur.logReduction;
+  const isMicrobesKilled = decimalReductionLog >= 6;
   const isAromaPreserved = bathTempC <= 65;
-  const decimalReductionLog = Number(
-    Math.min(8.0, (holdTimeMinutes / 20) * ((bathTempC - 45) / 10) * 4.5).toFixed(1),
-  );
   const survivingBacteriaPct =
     decimalReductionLog >= 6 ? 0.0001 : Number((100 * 10 ** -decimalReductionLog).toFixed(2));
   const shelfLifeMonths = isMicrobesKilled ? 24 : 0.5;

@@ -1,18 +1,44 @@
 "use client";
 
 import { Cpu, Monitor, Sparkles, Zap } from "lucide-react";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
+import { TextWithLatex } from "@/components/ui/LatexRenderer";
+import { stepWozniakApple } from "@/physics/catalogKernels";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
+
+export function wozniakBusCycle(tick: number, phi2Steal: number) {
+  const normalizedTick = Math.max(0, Math.floor(tick));
+  const normalizedSteal = Math.max(0, Math.min(0.9, phi2Steal));
+  const nominalVideoPhase = normalizedTick % 2 === 1;
+  const videoSlot = Math.ceil(normalizedTick / 2);
+  const stolenVideoSlot =
+    nominalVideoPhase &&
+    Math.floor(videoSlot * normalizedSteal) > Math.floor((videoSlot - 1) * normalizedSteal);
+
+  return {
+    phase: nominalVideoPhase && !stolenVideoSlot ? (1 as const) : (0 as const),
+    advanceRaster: nominalVideoPhase && !stolenVideoSlot,
+    dramAddress: `0x${(0x0400 + ((normalizedTick * 0x31) % 0x0400))
+      .toString(16)
+      .toUpperCase()
+      .padStart(4, "0")}`,
+  };
+}
 
 export function WozniakAppleSim() {
   const { params, updateParam } = usePatentPhysics("us-4136359-wozniak-apple");
   const crystalFreq = params.crystalFreq ?? 14.318;
+  const apple = stepWozniakApple({
+    crystalFreq,
+    ramCapacityKb: params.ramCapacityKb ?? 48,
+  });
   const phi2Steal = params.phi2Steal ?? 0;
   const [clockPhase, setClockPhase] = useState<0 | 1>(0); // Phase 1: CPU, Phase 2: Video Shifter
   const [isClockRunning, setIsClockRunning] = useState<boolean>(true);
   const [rasterLine, setRasterLine] = useState<number>(42);
   const [colorMode, setColorMode] = useState<"color" | "monochrome">("color");
   const [dramAddress, setDramAddress] = useState<string>("0x0400");
+  const busTickRef = useRef(0);
 
   const intervalMs = Math.max(50, Math.round(2100 / crystalFreq));
 
@@ -20,14 +46,11 @@ export function WozniakAppleSim() {
   useEffect(() => {
     if (!isClockRunning) return;
     const interval = setInterval(() => {
-      setClockPhase((prev) => {
-        if (phi2Steal > 0 && Math.random() < phi2Steal) return 0;
-        return prev === 0 ? 1 : 0;
-      });
-      setRasterLine((prev) =>
-        phi2Steal > 0.6 && Math.random() < phi2Steal ? prev : (prev + 1) % 192,
-      );
-      setDramAddress(`0x0${(400 + Math.floor(Math.random() * 0x03ff)).toString(16).toUpperCase()}`);
+      busTickRef.current += 1;
+      const cycle = wozniakBusCycle(busTickRef.current, phi2Steal);
+      setClockPhase(cycle.phase);
+      if (cycle.advanceRaster) setRasterLine((previous) => (previous + 1) % 192);
+      setDramAddress(cycle.dramAddress);
     }, intervalMs);
     return () => clearInterval(interval);
   }, [isClockRunning, intervalMs, phi2Steal]);
@@ -44,9 +67,8 @@ export function WozniakAppleSim() {
             </h3>
           </div>
           <p className="text-xs text-ink-600 dark:text-ink-400 mt-1">
-            Wozniak’s breakthrough timing interleave: 6502 CPU accesses DRAM during Phase 1
-            ($\Phi_1$), while Video Display logic fetches raster scanlines during Phase 2 ($\Phi_2$)
-            with <strong>zero bus contention and zero RAM refresh overhead</strong>.
+            <TextWithLatex text="Wozniak’s breakthrough timing interleave: 6502 CPU accesses DRAM during Phase 1 ($\\Phi_1$), while Video Display logic fetches raster scanlines during Phase 2 ($\\Phi_2$) with " />
+            <strong>zero bus contention and zero RAM refresh overhead</strong>.
           </p>
         </div>
 
@@ -111,7 +133,7 @@ export function WozniakAppleSim() {
                 textAnchor="middle"
                 className="text-[10px] font-mono fill-emerald-400"
               >
-                1.023 MHz
+                {apple.cpuClockMhz} MHz
               </text>
               <text
                 x="45"
