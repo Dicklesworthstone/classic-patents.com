@@ -1,6 +1,6 @@
 "use client";
 
-import { Activity, Camera, Eye, EyeOff, Flame, Volume2, VolumeX, Zap } from "lucide-react";
+import { Activity, Camera, Eye, EyeOff, Volume2, VolumeX, Zap } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import * as THREE from "three";
 import { stepOttoEngine } from "@/physics/catalogKernels";
@@ -8,8 +8,8 @@ import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { soundEngine } from "@/utils/soundEngine";
 import {
   buildOttoEngineModel,
-  updateOttoEngineKinematics,
   type OttoEngineModelResult,
+  updateOttoEngineKinematics,
 } from "./ottoEngineModel";
 import { StudioKernelChips } from "./StudioKernelChips";
 import {

@@ -395,8 +395,9 @@ export const FrankenSimEngine = {
   },
 
   /**
-   * Nikola Tesla Resonant Transformer (US 512,340)
-   * Coupled LC Resonance & Breakdown Breakdown Potentials
+   * Generic coupled-LC and breakdown host fallback used by the interpretive
+   * high-potential-transformer visualization. It is not a source-faithful
+   * reconstruction of US 593,138.
    */
   stepTeslaCoil(
     resonantFreqKhz: number,

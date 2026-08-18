@@ -1,7 +1,4 @@
-import {
-  noyceIcArchivalEdition,
-  noyceIcRecordCorrections,
-} from "@/data/editions/noyceIcEdition";
+import { noyceIcArchivalEdition, noyceIcRecordCorrections } from "@/data/editions/noyceIcEdition";
 import type { Patent } from "@/types/patent";
 
 const baseNoyceIcPatent: Patent = {

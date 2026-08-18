@@ -1,6 +1,9 @@
+import { renoEscalatorArchivalEdition } from "@/data/editions/renoEscalatorEdition";
 import type { Patent } from "@/types/patent";
 
-export const renoEscalatorPatent: Patent = {
+// Retained only as a migration witness for the previous catalogue copy. The
+// public export below replaces its unsupported source text and specifications.
+const legacyRenoEscalatorPatent: Patent = {
   id: "us-470918-reno-escalator",
   patentNumber: "US 470,918",
   title: "Endless Conveyer or Elevator",
@@ -285,4 +288,279 @@ Third, in a moving hand-rail traveling at the same velocity and in the same dire
     totalClaims: 3,
     independentClaims: 1,
   },
+};
+
+const sourceClaimText = (number: number) => {
+  for (const block of renoEscalatorArchivalEdition.blocks) {
+    if (block.kind === "claim" && block.number === number) {
+      return block.inlines.map((inline) => inline.text).join("");
+    }
+  }
+  throw new Error(`US 470,918 is missing source claim ${number}.`);
+};
+
+/**
+ * The source-checked public record. Its complete original-text face is the
+ * explicit manual edition, never the legacy text layer or OCR transcript.
+ */
+export const renoEscalatorPatent: Patent = {
+  ...legacyRenoEscalatorPatent,
+  shortTitle: "Reno Endless Conveyer",
+  subtitle: "Hinged passenger belt, combed landings, and a traveling hand-rail",
+  inventorLocation: "New York City, New York",
+  categoryLabel: "Passenger Conveyance & Mechanical Handling",
+  summary:
+    "Reno's 1892 grant describes an inclined passenger conveyer made from hinged cast-iron belt sections. Fixed comb-like landings register with the belt's longitudinal grooves, while a linked moving hand-rail travels beside it. The specification gives a preferred 25-degree slope, a speed of about 200 feet per minute, and a stated maximum single-file capacity of 6,000 passengers an hour.",
+  heroQuote:
+    "The object of this invention is in particular to provide a mechanical incline or slide-conveyer to be used in place of elevators or stairways where large numbers of persons are to be transferred from one floor or level to another, either upward or downward.",
+  originalTextAsset: {
+    url: "/patents/transcripts/us-470918-reno-escalator-reviewed.txt",
+    pageCount: 4,
+    kind: "reviewed-transcription",
+    reviewedBy: "Classic Patents editorial agent (GPT-5.6)",
+    reviewedAt: "2026-08-18",
+    sourcePdfSha256: renoEscalatorArchivalEdition.sourcePdfSha256,
+  },
+  originalText:
+    "The complete source, all three printed claims, and four source-facsimile figures are available in the manually prepared Original Patent Text edition.",
+  archivalEdition: renoEscalatorArchivalEdition,
+  plainEnglishExplanation: {
+    overview:
+      "The patent turns an inclined route into a continuously moving passenger platform. Short hinged cast-iron sections form the belt. Their grooves accept fixed landing prongs at the ends, so the moving surface can meet a stationary floor, while the belt's hinge and wheel geometry guides it around the upper and lower turns.",
+    coreMechanism:
+      "Belt sections 2 are joined at hinges 12 and run on sprocket-wheels 3. I-beams 4 and their channels 15 guide the squared hinge portions along the incline; grooves 16 and seats 17 carry the joints through the turns. At each landing, fixed prongs 5 of comb-like landing 14 enter the belt grooves. A second endless chain, hand-rail 10, runs on fixed rail 7 and sprocket-wheels 6 beside the passenger belt.",
+    mechanicalBreakdown: [
+      {
+        title: "Hinged, grooved passenger belt",
+        summary:
+          "Sections 2 form a continuous cast-iron belt, hinged at 12 and turned by two pairs of sprocket-wheels 3.",
+        technicalDetails:
+          "The grant says the grooves may be about three-fourths inch wide and one inch deep. The fixed landing prongs are to have a clearance not exceeding one-eighth inch from the groove bottoms and sides. The patent also allows rows of pegs instead of continuous channels.",
+        archaicTerm: "Conveyer",
+        modernEquivalent: "Continuously moving passenger conveyor",
+      },
+      {
+        title: "Combed landings and guided turn",
+        summary:
+          "Fixed cast-steel landing prongs enter the belt grooves while channels and seats guide the hinges through the end wheels.",
+        technicalDetails:
+          "The belt slides on two I-beams 4 between the end-wheel pairs. Channel 15 limits lateral motion; its continuation as wheel groove 16 and wheel seats 17 support the rounded hinge parts as the belt turns. This is the actual stated transition geometry, rather than a later standardized escalator comb-plate design.",
+        archaicTerm: "Comb-like landings",
+        modernEquivalent: "Fixed grooved or combed passenger-transfer surface",
+      },
+      {
+        title: "Sectional moving hand-rail",
+        summary:
+          "Short rail pieces 10 form an endless linked hand-rail that bends around sprocket-wheels 6.",
+        technicalDetails:
+          "Steel plates 8 slide in a groove in fixed rail 7 and are joined by steel links 9. Their lower notches 18 mesh with teeth 19 on wheels 6. The source describes one rail for a single-file conveyer and preferably two for a wider one.",
+        archaicTerm: "Traveling hand-rail",
+        modernEquivalent: "Moving handrail assembled from articulated sections",
+      },
+    ],
+    scientificPrinciples: [
+      {
+        principle: "Continuous passenger flow",
+        formula:
+          "The specification states about 200 feet per minute and a maximum single-file capacity of 6,000 passengers per hour.",
+        explanation:
+          "Reno's stated operating idea is a conveyor that does not stop or reverse. For opposing traffic, he proposes separate rising and descending conveyers rather than one unit alternately changing direction.",
+      },
+      {
+        principle: "Guided hinged motion",
+        formula:
+          "Channels 15 and 16, with seats 17, guide the squared and rounded portions of hinges 12 through the straight run and end-wheel turns.",
+        explanation:
+          "The source describes a mechanical constraint system: beam channels prevent lateral movement on the incline, then corresponding wheel features take over at the curved path. It does not state motor power, brake performance, load rating, or a modern safety factor.",
+      },
+    ],
+    whyItMattersToday:
+      "The legal scope is narrower and more mechanical than the old catalogue copy suggested. Claim 1 joins a longitudinally channeled hinged passenger belt to a matching channeled or combed landing; Claim 2 covers the articulated hand-rail and its supports; Claim 3 combines a combed landing, hinged platform, and traveling hand-rail. The grant is a useful primary document for the early engineering of continuously moving passenger conveyers.",
+  },
+  claims: [
+    {
+      number: 1,
+      isIndependent: true,
+      originalText: sourceClaimText(1),
+      plainEnglish:
+        "Claim 1 covers the matching transfer geometry: a passenger belt made of hinged, longitudinally channeled sections plus a landing whose channels or combs register with them, allowing transfer in either direction.",
+      keyInnovations: ["Hinged channeled belt", "Registering combed landing"],
+    },
+    {
+      number: 2,
+      isIndependent: true,
+      originalText: sourceClaimText(2),
+      plainEnglish:
+        "Claim 2 covers a linked endless traveling hand-rail together with the stationary support and sprocket-wheels that carry it beside the conveyer or elevator.",
+      keyInnovations: ["Articulated traveling hand-rail", "Support and sprocket-wheel system"],
+    },
+    {
+      number: 3,
+      isIndependent: true,
+      originalText: sourceClaimText(3),
+      plainEnglish:
+        "Claim 3 covers the combined arrangement of combed landing, endless hinged traveling platform, and endless traveling hand-rail operating together.",
+      keyInnovations: ["Combed landing", "Hinged platform", "Traveling hand-rail"],
+    },
+  ],
+  drawings: [
+    {
+      figureNumber: "Fig. 1",
+      title: "Lower end of the conveyer",
+      caption: "Side elevation of part of the conveyer and hand-rail at its lower inclined end.",
+      svgType: "reno-escalator",
+      callouts: [
+        {
+          id: "belt-2",
+          figureRef: "Fig. 1",
+          label: "2",
+          element: "Belt section",
+          description: "One of the hinged belt sections.",
+          x: 58,
+          y: 68,
+        },
+        {
+          id: "rail-10",
+          figureRef: "Fig. 1",
+          label: "10",
+          element: "Moving hand-rail",
+          description: "One articulated hand-rail section.",
+          x: 54,
+          y: 31,
+        },
+        {
+          id: "case-20",
+          figureRef: "Fig. 1",
+          label: "20",
+          element: "Casing",
+          description: "Casing over a segment of the moving rail at the landing.",
+          x: 19,
+          y: 56,
+        },
+      ],
+    },
+    {
+      figureNumber: "Fig. 2",
+      title: "Upper end of the conveyer",
+      caption:
+        "Side elevation of the upper end, including wheel 3, belt sections, landing 14, and guide features.",
+      svgType: "reno-escalator",
+      callouts: [
+        {
+          id: "wheel-3",
+          figureRef: "Fig. 2",
+          label: "3",
+          element: "Sprocket-wheel",
+          description: "One of the wheels that turns the passenger belt.",
+          x: 51,
+          y: 55,
+        },
+        {
+          id: "prong-5",
+          figureRef: "Fig. 2",
+          label: "5",
+          element: "Landing prong",
+          description: "Prong entering a belt groove at the landing.",
+          x: 47,
+          y: 22,
+        },
+        {
+          id: "landing-14",
+          figureRef: "Fig. 2",
+          label: "14",
+          element: "Comb-like landing",
+          description: "Fixed passenger-transfer landing.",
+          x: 62,
+          y: 16,
+        },
+      ],
+    },
+    {
+      figureNumber: "Fig. 3",
+      title: "General outline",
+      caption: "General outline of the continuous conveyor and hand-rail path.",
+      svgType: "reno-escalator",
+      callouts: [
+        {
+          id: "shaft-13",
+          figureRef: "Fig. 3",
+          label: "13",
+          element: "Shaft",
+          description: "Shaft carrying a hand-rail sprocket-wheel.",
+          x: 73,
+          y: 35,
+        },
+        {
+          id: "rail-10-outline",
+          figureRef: "Fig. 3",
+          label: "10",
+          element: "Hand-rail",
+          description: "Endless articulated rail path.",
+          x: 51,
+          y: 43,
+        },
+      ],
+    },
+    {
+      figureNumber: "Fig. 4",
+      title: "Cross-section on line a b",
+      caption:
+        "Cross-section through line a b of Figure 2, showing the belt, guide, and hand-rail construction.",
+      svgType: "reno-escalator",
+      callouts: [
+        {
+          id: "beam-4",
+          figureRef: "Fig. 4",
+          label: "4",
+          element: "I-beam",
+          description: "Guide beam beneath the belt.",
+          x: 50,
+          y: 30,
+        },
+        {
+          id: "rail-7",
+          figureRef: "Fig. 4",
+          label: "7",
+          element: "Fixed railing",
+          description: "Fixed rail on which the hand-rail slides.",
+          x: 52,
+          y: 54,
+        },
+        {
+          id: "plate-8",
+          figureRef: "Fig. 4",
+          label: "8",
+          element: "Steel plate",
+          description: "Plate secured to an individual moving rail piece.",
+          x: 48,
+          y: 60,
+        },
+      ],
+    },
+  ],
+  historicalContext: {
+    problemStatement:
+      "The grant names a mechanical incline or slide-conveyer as an alternative to elevators or stairways where large numbers of people must move between levels.",
+    priorArtLimitations: [
+      "The source frames the target use as replacing conventional elevators or stairways for large passenger flows; it does not identify a specific prior competing machine.",
+      "A single conveyer would require a change of direction for return traffic, which Reno avoids by proposing separate rising and descending units.",
+    ],
+    breakthroughInsight:
+      "A hinged grooved belt can meet a fixed combed landing if the landing's prongs register with its grooves, while channels and wheel seats guide the hinges through the turn. That permits a continuous passenger surface to meet a stationary floor.",
+    patentWars: [],
+    civilizationalImpact:
+      "The patent records an early mechanical design for continuously moving people on an incline. Its specification makes the original engineering choices inspectable: articulated cast-iron belt sections, groove-and-prong landings, guided hinges, and an articulated hand-rail.",
+    sideNotes: [
+      "The grant's stated preferred belt-groove dimensions are about three-fourths inch wide by one inch deep, with landing-prong clearance not exceeding one-eighth inch.",
+      "The stated intended slope is about 25 degrees; the stated preferred travel rate is about 200 feet per minute.",
+    ],
+  },
+  tags: [
+    "Jesse W. Reno",
+    "Endless conveyer",
+    "Passenger conveyance",
+    "Traveling hand-rail",
+    "Comb-like landing",
+  ],
+  stats: { totalClaims: 3, independentClaims: 3 },
 };

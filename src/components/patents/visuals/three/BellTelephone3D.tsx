@@ -37,6 +37,7 @@ export function BellTelephone3D() {
     airGap: params.airGap ?? 0.35,
     batteryVoltage,
     liquidConductivity,
+    acousticFrequencyHz,
   });
   const baseResistanceOhms = bell.baseResistanceOhms;
   const resistanceModulationOhms = bell.resistanceModulationOhms;
@@ -50,6 +51,9 @@ export function BellTelephone3D() {
     currentBaselineAmps,
     diaphragmUm: bell.diaphragmUm,
     modulatedMa: bell.modulatedMa,
+    acousticDisplayOmegaRadPerS: bell.acousticDisplayOmegaRadPerS,
+    electronDisplaySpeed: bell.electronDisplaySpeed,
+    waveAdvancePerS: bell.waveAdvancePerS,
   });
 
   const controlsRef = useRef<StudioContext["controls"] | null>(null);
@@ -325,9 +329,12 @@ export function BellTelephone3D() {
       const elapsed = renderedSteps * (1 / 60);
       const p = live.current;
 
-      const omega = 2 * Math.PI * p.acousticFrequencyHz;
       const throwUm = Math.max(0.2, p.diaphragmUm);
-      const oscillation = Math.sin(elapsed * omega * 0.05) * (throwUm / 8);
+      const oscillation =
+        Math.sin(
+          elapsed * (p.acousticDisplayOmegaRadPerS ?? 2 * Math.PI * p.acousticFrequencyHz * 0.05),
+        ) *
+        (throwUm / 8);
 
       diaphragmMesh.position.x = -1.38 + oscillation * 0.04;
       rodGroup.position.y = 0.6 - oscillation * 0.35;
@@ -337,7 +344,7 @@ export function BellTelephone3D() {
         const ring = waveRings[i];
         if (ring) {
           ring.visible = p.showAcousticWaves;
-          const wavePhase = (elapsed * 3.0 + i * 0.8) % 3.0;
+          const wavePhase = (elapsed * (p.waveAdvancePerS ?? 3) + i * 0.8) % 3.0;
           ring.scale.setScalar(1.0 + wavePhase * 0.4);
           (ring.material as THREE.MeshBasicMaterial).opacity = Math.max(0, 0.8 - wavePhase * 0.25);
         }
@@ -345,7 +352,9 @@ export function BellTelephone3D() {
 
       const ePos = electronPos;
       const currentSpeed =
-        (p.currentBaselineAmps + (p.modulatedMa / 1000) * oscillation) * 12.0 * delta;
+        ((p.electronDisplaySpeed ?? p.currentBaselineAmps * 12) +
+          (p.modulatedMa / 1000) * oscillation * 12) *
+        delta;
       for (let i = 0; i < electronCount; i++) {
         const idx = i * 3;
         ePos[idx + 1] -= currentSpeed;

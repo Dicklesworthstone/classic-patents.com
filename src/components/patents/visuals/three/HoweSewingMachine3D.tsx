@@ -12,12 +12,13 @@ import {
   Zap,
 } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
-import * as THREE from "three";
+import type * as THREE from "three";
 import { FrankenSimEngine } from "@/physics/engine";
 import { stepHoweLockstitch } from "@/physics/machineKernels";
 import { useFrankenSimPhysics } from "@/physics/useFrankenSimPhysics";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { soundEngine } from "@/utils/soundEngine";
+import { buildHoweSewingMachineModel } from "./howeSewingMachineModel";
 import { createThreeStudioScene, type StudioContext } from "./ThreeStudioScene";
 import { useLiveSimParams } from "./useLiveSimParams";
 import { usePatentAudio } from "./usePatentAudio";
@@ -127,233 +128,11 @@ export function HoweSewingMachine3D() {
     cameraRef.current = camera;
     controlsRef.current = controls;
 
-    // --- PBR MATERIALS ---
-    const castIronMat = new THREE.MeshStandardMaterial({
-      color: 0x1e293b,
-      roughness: 0.35,
-      metalness: 0.85,
-    });
+    // Build procedural 3D model
+    const model = buildHoweSewingMachineModel();
+    scene.add(model.rootGroup);
 
-    const polishedSteelMat = new THREE.MeshStandardMaterial({
-      color: 0xf1f5f9,
-      roughness: 0.08,
-      metalness: 0.95,
-    });
-
-    const brassMat = new THREE.MeshStandardMaterial({
-      color: 0xd97706,
-      roughness: 0.18,
-      metalness: 0.9,
-    });
-
-    const needleThreadMat = new THREE.MeshBasicMaterial({
-      color: 0xef4444, // Upper needle thread (Red)
-    });
-
-    const clothFabricMat = new THREE.MeshStandardMaterial({
-      color: 0xfef3c7,
-      roughness: 0.75,
-      metalness: 0.05,
-      side: THREE.DoubleSide,
-    });
-
-    // --- 3D HOWE LOCKSTITCH MACHINE ASSEMBLY ---
-    const machineGroup = new THREE.Group();
-    scene.add(machineGroup);
-
-    // Cast-Iron Base Plate & Cloth Bed with Arch Stanchions
-    const bedPlate = new THREE.Mesh(new THREE.BoxGeometry(11.0, 0.7, 6.5), castIronMat);
-    bedPlate.position.y = -2.2;
-    bedPlate.castShadow = true;
-    bedPlate.receiveShadow = true;
-    machineGroup.add(bedPlate);
-
-    // 4 Victorian Fluted Table Legs with Turned Ball Feet
-    [
-      [-4.8, -2.6],
-      [4.8, -2.6],
-      [-4.8, 2.6],
-      [4.8, 2.6],
-    ].forEach(([lx, lz]) => {
-      const leg = new THREE.Mesh(new THREE.CylinderGeometry(0.35, 0.28, 1.8, 24), castIronMat);
-      leg.position.set(lx, -3.45, lz);
-      machineGroup.add(leg);
-
-      const foot = new THREE.Mesh(new THREE.SphereGeometry(0.32, 16, 16), brassMat);
-      foot.position.set(lx, -4.35, lz);
-      machineGroup.add(foot);
-    });
-
-    // Vertical Overhanging Arm Casting (C-frame) with Archival Fillets
-    const armColumn = new THREE.Mesh(new THREE.CylinderGeometry(0.85, 1.2, 4.2, 32), castIronMat);
-    armColumn.position.set(-3.2, 0, 0);
-    armColumn.castShadow = true;
-    machineGroup.add(armColumn);
-
-    const overhangingArm = new THREE.Mesh(new THREE.BoxGeometry(6.5, 0.9, 1.4), castIronMat);
-    overhangingArm.position.set(0, 2.1, 0);
-    overhangingArm.castShadow = true;
-    machineGroup.add(overhangingArm);
-
-    // Upper Spool Spindle with Wooden Thread Bobbin
-    const spoolSpindle = new THREE.Mesh(
-      new THREE.CylinderGeometry(0.06, 0.06, 1.4, 12),
-      polishedSteelMat,
-    );
-    spoolSpindle.position.set(-1.8, 3.2, 0);
-    machineGroup.add(spoolSpindle);
-
-    const threadSpool = new THREE.Mesh(
-      new THREE.CylinderGeometry(0.45, 0.45, 0.9, 24),
-      new THREE.MeshStandardMaterial({ color: 0xef4444, roughness: 0.8 }),
-    );
-    threadSpool.position.set(-1.8, 3.0, 0);
-    machineGroup.add(threadSpool);
-
-    // Rotary Thread Tensioner Discs & Knurled Adjuster Nut
-    const tensionGroup = new THREE.Group();
-    tensionGroup.position.set(0.6, 2.6, 0.72);
-
-    const disc1 = new THREE.Mesh(
-      new THREE.CylinderGeometry(0.32, 0.32, 0.05, 24),
-      polishedSteelMat,
-    );
-    disc1.rotation.x = Math.PI / 2;
-    tensionGroup.add(disc1);
-
-    const disc2 = new THREE.Mesh(
-      new THREE.CylinderGeometry(0.32, 0.32, 0.05, 24),
-      polishedSteelMat,
-    );
-    disc2.rotation.x = Math.PI / 2;
-    disc2.position.z = 0.06;
-    tensionGroup.add(disc2);
-
-    const knurledNut = new THREE.Mesh(new THREE.CylinderGeometry(0.18, 0.18, 0.15, 16), brassMat);
-    knurledNut.rotation.x = Math.PI / 2;
-    knurledNut.position.z = 0.15;
-    tensionGroup.add(knurledNut);
-    machineGroup.add(tensionGroup);
-
-    // Spoked Hand Flywheel with Wooden Turning Handle
-    const flywheelGroup = new THREE.Group();
-    flywheelGroup.position.set(-3.8, 2.1, 0);
-
-    const wheelRim = new THREE.Mesh(new THREE.TorusGeometry(2.3, 0.22, 24, 48), brassMat);
-    wheelRim.rotation.y = Math.PI / 2;
-    wheelRim.castShadow = true;
-    flywheelGroup.add(wheelRim);
-
-    for (let s = 0; s < 6; s++) {
-      const sAngle = (s * Math.PI) / 3;
-      const spoke = new THREE.Mesh(new THREE.CylinderGeometry(0.08, 0.08, 4.4, 16), brassMat);
-      spoke.rotation.x = sAngle;
-      flywheelGroup.add(spoke);
-    }
-
-    const crankPin = new THREE.Mesh(
-      new THREE.CylinderGeometry(0.12, 0.12, 1.2, 12),
-      polishedSteelMat,
-    );
-    crankPin.rotation.z = Math.PI / 2;
-    crankPin.position.set(-0.6, 1.7, 0);
-    flywheelGroup.add(crankPin);
-
-    const handleGrip = new THREE.Mesh(
-      new THREE.CylinderGeometry(0.22, 0.22, 0.9, 24),
-      new THREE.MeshStandardMaterial({ color: 0x78350f, roughness: 0.35 }),
-    );
-    handleGrip.rotation.z = Math.PI / 2;
-    handleGrip.position.set(-0.8, 1.7, 0);
-    flywheelGroup.add(handleGrip);
-
-    machineGroup.add(flywheelGroup);
-
-    // Elias Howe's Signature Curved Oscillating Needle Arm (Claim 1)
-    const needleArmGroup = new THREE.Group();
-    needleArmGroup.position.set(2.8, 1.2, 0);
-
-    const needleArmBeam = new THREE.Mesh(new THREE.BoxGeometry(0.22, 2.6, 0.35), polishedSteelMat);
-    needleArmBeam.castShadow = true;
-    needleArmGroup.add(needleArmBeam);
-
-    // Curved Eye-Pointed Steel Needle (Arc Radius matching arm stroke)
-    const needleCurve = new THREE.CatmullRomCurve3([
-      new THREE.Vector3(0, -1.2, 0),
-      new THREE.Vector3(0.08, -1.8, 0.05),
-      new THREE.Vector3(0, -2.4, 0),
-    ]);
-    const needleGeo = new THREE.TubeGeometry(needleCurve, 32, 0.045, 12, false);
-    const needleMesh = new THREE.Mesh(needleGeo, polishedSteelMat);
-    needleMesh.castShadow = true;
-    needleArmGroup.add(needleMesh);
-
-    const eyeMesh = new THREE.Mesh(new THREE.TorusGeometry(0.06, 0.02, 10, 16), polishedSteelMat);
-    eyeMesh.position.set(0, -2.35, 0);
-    needleArmGroup.add(eyeMesh);
-
-    machineGroup.add(needleArmGroup);
-
-    // Oscillating Boat Shuttle Carriage in Circular Race (Claim 2)
-    const shuttleGroup = new THREE.Group();
-    shuttleGroup.position.set(2.8, -1.5, 0);
-
-    const shuttlePoints: THREE.Vector2[] = [];
-    shuttlePoints.push(new THREE.Vector2(0.01, 1.2));
-    shuttlePoints.push(new THREE.Vector2(0.28, 0.6));
-    shuttlePoints.push(new THREE.Vector2(0.32, 0));
-    shuttlePoints.push(new THREE.Vector2(0.28, -0.6));
-    shuttlePoints.push(new THREE.Vector2(0.01, -1.2));
-    const shuttleGeo = new THREE.LatheGeometry(shuttlePoints, 32);
-    const shuttleBody = new THREE.Mesh(shuttleGeo, brassMat);
-    shuttleBody.rotation.x = Math.PI / 2;
-    shuttleBody.castShadow = true;
-    shuttleGroup.add(shuttleBody);
-
-    const bobbin = new THREE.Mesh(
-      new THREE.CylinderGeometry(0.18, 0.18, 0.8, 24),
-      polishedSteelMat,
-    );
-    bobbin.rotation.z = Math.PI / 2;
-    shuttleGroup.add(bobbin);
-
-    machineGroup.add(shuttleGroup);
-
-    // Baster Clamping Plate & Projecting Steel Feed Pins (Claim 3)
-    const basterPlate = new THREE.Mesh(new THREE.BoxGeometry(0.15, 1.2, 5.0), polishedSteelMat);
-    basterPlate.position.set(2.3, -1.2, 0);
-    machineGroup.add(basterPlate);
-
-    // 8 Projecting Steel Baster Pins holding fabric
-    for (let pin = 0; pin < 8; pin++) {
-      const pinZ = -2.0 + pin * 0.55;
-      const feedPin = new THREE.Mesh(
-        new THREE.CylinderGeometry(0.02, 0.02, 0.35, 8),
-        polishedSteelMat,
-      );
-      feedPin.rotation.z = Math.PI / 2;
-      feedPin.position.set(2.45, -1.2, pinZ);
-      machineGroup.add(feedPin);
-    }
-
-    const cloth = new THREE.Mesh(new THREE.BoxGeometry(8.0, 0.1, 4.0), clothFabricMat);
-    cloth.position.set(0.5, -1.75, 0);
-    cloth.castShadow = true;
-    cloth.receiveShadow = true;
-    machineGroup.add(cloth);
-
-    // --- 3D INTERLOCKING LOCKSTITCH THREAD PATHS ---
-    const threadCurve = new THREE.CatmullRomCurve3([
-      new THREE.Vector3(2.8, 3.2, 0),
-      new THREE.Vector3(2.8, 1.2, 0),
-      new THREE.Vector3(2.8, -1.8, 0),
-      new THREE.Vector3(1.5, -1.75, 0),
-    ]);
-    const threadGeo = new THREE.TubeGeometry(threadCurve, 30, 0.03, 6, false);
-    const threadMesh = new THREE.Mesh(threadGeo, needleThreadMat);
-    machineGroup.add(threadMesh);
-
-    // --- RENDER LOOP & REAL-TIME LOCKSTITCH KINEMATICS ---
+    // Render loop & kinematics
     let reqId: number;
     let renderedSteps = 0;
     let prevStitchCycle = 0;
@@ -361,7 +140,6 @@ export function HoweSewingMachine3D() {
     const animate = () => {
       reqId = requestAnimationFrame(animate);
       renderedSteps += 1;
-      const _delta = 1 / 60;
       const elapsed = renderedSteps * (1 / 60);
       const p = live.current;
 
@@ -371,37 +149,21 @@ export function HoweSewingMachine3D() {
       const stitch = stepHoweLockstitch(crankDeg);
 
       if (p.isCranking) {
-        flywheelGroup.rotation.x = crankAngle;
-        needleArmGroup.rotation.z = (stitch.needleY / 45) * 0.45;
-        needleArmGroup.position.y = 1.2 + stitch.needleY / 90;
-        shuttleGroup.position.z = (stitch.shuttleX / 60) * 1.2;
-        shuttleGroup.position.x = 2.8 + (stitch.loopOpen ? stitch.loopWidth / 80 : 0);
-        threadMesh.visible = stitch.loopOpen;
-        threadMesh.scale.z = stitch.loopOpen ? 1 + stitch.loopWidth / 24 : 1;
+        model.flywheelGroup.rotation.x = crankAngle;
+        model.needleArmGroup.rotation.z = (stitch.needleY / 45) * 0.45;
+        model.needleArmGroup.position.y = 1.8 + stitch.needleY / 90;
+        model.shuttleGroup.position.z = (stitch.shuttleX / 60) * 1.2;
+        model.clothMesh.position.z = -((elapsed * Number(p.clothFeedRateMmPerSec) * 0.1) % 2.0);
 
-        cloth.position.x = 0.5 - ((elapsed * Number(p.clothFeedRateMmPerSec) * 0.1) % 2.0);
-
-        // Acoustic clack synthesis on each stitch stroke bottom dead-center
+        // Acoustic clack synthesis on stitch cycle
         const currentCycle = Math.floor(crankAngle / (2 * Math.PI));
         if (currentCycle !== prevStitchCycle) {
           prevStitchCycle = currentCycle;
-          let seed = currentCycle * 12345 + 6789;
-          const lcg = () => {
-            seed = (seed * 1664525 + 1013904223) % 4294967296;
-            return seed / 4294967296;
-          };
-          if (!p.isAudioMuted && lcg() < 0.8) {
+          if (!p.isAudioMuted) {
             soundEngine.playLockstitchClack();
           }
         }
       }
-
-      // Tension tautens the needle thread; slack (<20 g) sags, over-tight (>80 g) goes wire-thin.
-      const tension = p.threadTensionGrams;
-      const taut = Math.min(1.8, Math.max(0.35, tension / 45));
-      threadMesh.scale.set(1, taut, taut);
-      threadMesh.position.y = tension < 22 ? -0.18 : 0;
-      needleThreadMat.color.setHex(tension > 80 ? 0xf97316 : 0xef4444);
 
       controls.update();
       renderer.render(scene, camera);
@@ -411,6 +173,7 @@ export function HoweSewingMachine3D() {
 
     return () => {
       cancelAnimationFrame(reqId);
+      model.dispose();
       studio.dispose();
     };
   }, [live]);

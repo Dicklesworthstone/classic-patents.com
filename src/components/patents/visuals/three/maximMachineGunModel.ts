@@ -8,6 +8,9 @@
  */
 
 import * as THREE from "three";
+import { createLcg } from "@/utils/lcg";
+
+const lcg = createLcg(319596);
 
 export interface MaximMachineGunModel {
   rootGroup: THREE.Group;
@@ -396,9 +399,9 @@ export function buildMaximMachineGunModel(): MaximMachineGunModel {
   const steamGeo = new THREE.BufferGeometry();
   const steamPositions = new Float32Array(steamCount * 3);
   for (let i = 0; i < steamCount; i++) {
-    steamPositions[i * 3] = 3.55 + (Math.random() - 0.5) * 0.3;
-    steamPositions[i * 3 + 1] = 0.95 + Math.random() * 0.8;
-    steamPositions[i * 3 + 2] = (Math.random() - 0.5) * 0.3;
+    steamPositions[i * 3] = 3.55 + (lcg() - 0.5) * 0.3;
+    steamPositions[i * 3 + 1] = 0.95 + lcg() * 0.8;
+    steamPositions[i * 3 + 2] = (lcg() - 0.5) * 0.3;
   }
   steamGeo.setAttribute("position", new THREE.BufferAttribute(steamPositions, 3));
   const steamMat = new THREE.PointsMaterial({
@@ -418,7 +421,7 @@ export function buildMaximMachineGunModel(): MaximMachineGunModel {
     const sCaseGeo = new THREE.CylinderGeometry(0.045, 0.05, 0.35, 8);
     const sCase = new THREE.Mesh(sCaseGeo, brass);
     sCase.position.set(0.15 + (k % 3) * 0.15, -0.65 - Math.floor(k / 3) * 0.4, (k - 3) * 0.12);
-    sCase.rotation.set(Math.random() * Math.PI, Math.random() * Math.PI, Math.random() * Math.PI);
+    sCase.rotation.set(lcg() * Math.PI, lcg() * Math.PI, lcg() * Math.PI);
     geometriesToDispose.push(sCaseGeo);
     spentCasesGroup.add(sCase);
   }
@@ -446,9 +449,15 @@ export function buildMaximMachineGunModel(): MaximMachineGunModel {
       flame,
     },
     dispose: () => {
-      texturesToDispose.forEach((t) => t.dispose());
-      geometriesToDispose.forEach((g) => g.dispose());
-      materialsToDispose.forEach((m) => m.dispose());
+      for (const t of texturesToDispose) {
+        t.dispose();
+      }
+      for (const g of geometriesToDispose) {
+        g.dispose();
+      }
+      for (const m of materialsToDispose) {
+        m.dispose();
+      }
     },
   };
 }

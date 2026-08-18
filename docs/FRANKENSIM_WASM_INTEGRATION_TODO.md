@@ -22,10 +22,10 @@ This document serves as the single source of truth and granular task tracker for
   - [x] Rotating stator magnetic flux field vector $\vec{B}(t) = B_0(\cos\omega t\,\hat{i} + \sin\omega t\,\hat{j})$
   - [x] Rotor slip calculation ($s = \frac{n_s - n}{n_s}$) and induced electromagnetic torque
   - [x] Interactive AC frequency, pole count, and load torque controllers
-- [x] **Tesla High-Frequency Resonant Transformer (US 533,367)**
-  - [x] Dual-resonant coupled LC tank oscillations ($L_1 C_1 \approx L_2 C_2$)
-  - [x] Spark-gap ionization breakdown kinetics and voltage multiplication ($V_2 = V_1 \sqrt{L_2 / L_1}$)
-  - [x] Electric field streamer ionization geometry
+- [x] **Tesla High-Potential Transformer (US 593,138)**
+  - [x] Interpretive transformer visualization bound to the correct catalogue id
+  - [x] Source-described quarter-wave secondary relation ($l \approx \lambda / 4$)
+  - [x] Explicitly non-facsimile model until the manual source edition is complete
 - [x] **Alexander Graham Bell Telephone (US 174,465)**
   - [x] Variable resistance diaphragm acoustic transfer function
   - [x] Undulating continuous electrical speech current waveform synthesis

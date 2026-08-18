@@ -27,9 +27,9 @@ const newPatentsToFetch = [
     altUrl: "https://patentimages.storage.googleapis.com/b5/aa/70/4e84b80bbf23fa/US4750.pdf",
   },
   {
-    id: "us-533367-tesla-coil",
-    number: "US533367",
-    altUrl: "https://patentimages.storage.googleapis.com/56/a8/51/8725ae15893d56/US533367.pdf",
+    id: "us-593138-tesla-coil",
+    number: "US593138",
+    altUrl: "https://patentimages.storage.googleapis.com/4e/ec/02/c74192af65fe67/US593138.pdf",
   },
   {
     id: "us-1155986-goddard-rocket",

@@ -19,6 +19,7 @@ export function BellTelephoneSim() {
     airGap: params.airGap ?? 0.35,
     batteryVoltage,
     liquidConductivity,
+    acousticFrequencyHz: acousticFrequency,
   });
   const [signalType, setSignalType] = useState<"continuous-undulating" | "intermittent-make-break">(
     "continuous-undulating",
@@ -111,7 +112,7 @@ export function BellTelephoneSim() {
             <span className="flex items-center gap-1 text-emerald-400">
               <Volume2 className="w-3.5 h-3.5" /> Receiver {bell.diaphragmUm} µm /{" "}
               {bell.modulatedMa} mA · R₀ {bell.baseResistanceOhms} Ω · I₀ {bell.currentBaselineMa}{" "}
-              mA
+              mA · ω {bell.acousticDisplayOmegaRadPerS.toFixed(0)} rad/s
             </span>
           </div>
 

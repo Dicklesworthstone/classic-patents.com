@@ -51,5 +51,7 @@ export function stepFermiKinetics(
       reactorPeriodSeconds > 0
         ? Math.max(50, Math.min(800, Math.round(reactorPeriodSeconds * 20)))
         : 800,
+    // Studio neutron scatter: 4 units/s at k=1. Not a physical v_thermal.
+    neutronDisplaySpeed: Number((kEffective * 4).toFixed(3)),
   };
 }

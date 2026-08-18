@@ -11,7 +11,7 @@ const claim = (number: number, value: string) => ({
   number,
   inlines: text(value),
 });
-const _term = (value: string, definition: string): CuratedSpecificationInline => ({
+const term = (value: string, definition: string): CuratedSpecificationInline => ({
   kind: "term",
   text: value,
   definition,
@@ -127,11 +127,36 @@ export const teslaMotorArchivalEdition: CuratedSpecificationEdition = {
         "The practical solution of the problem of the electrical conversion and transmission of mechanical energy involves certain requirements which the apparatus and systems heretofore employed have not been capable of fulfilling. Such a solution, primarily, demands a uniformity of speed in the motor irrespective of its load within its normal working limits. On the other hand, it is necessary, to attain a greater economy of conversion than has heretofore existed, to construct cheaper and more reliable and simple apparatus, and, lastly, the apparatus must be capable of easy management, and such that all danger from the use of currents of high tension, which are necessary to an economical transmission, may be avoided.",
       ),
     ),
-    p(
-      text(
-        "My present invention is directed to the production and improvement of apparatus capable of more nearly meeting these requirements than those heretofore available, and though I have described various means for the purpose, they involve the same main principles of construction and mode of operation, which may be described as follows: A motor is employed in which there are two or more independent circuits through which alternate currents are passed at proper intervals, in the manner hereinafter described, for the purpose of effecting a progressive shifting of the magnetism or of the \u201clines of force\u201d in accordance with the well-known theory, and a consequent action of the motor. It is obvious that a proper progressive shifting of the lines of force may be utilized to set up a movement or rotation of either element of the motor, the armature, or the field-magnet, and that if the currents directed through the several circuits of the motor are in the proper direction no commutator for the motor will be required; but to avoid all the usual commutating appliances in the system I prefer to connect the motor-circuits directly with those of a suitable alternating-current generator. The practical results of such a system, its economical advantages, and the mode of its construction and operation will be described more in detail by reference to the accompanying diagrams and drawings.",
+    p([
+      {
+        kind: "text",
+        text: "My present invention is directed to the production and improvement of apparatus capable of more nearly meeting these requirements than those heretofore available, and though I have described various means for the purpose, they involve the same main principles of construction and mode of operation, which may be described as follows: A motor is employed in which there are two or more ",
+      },
+      term(
+        "independent circuits",
+        "Tesla later says that “independent” does not require complete electrical isolation. Here it means separately arranged current paths whose effects can be timed and connected in the stated order.",
       ),
-    ),
+      {
+        kind: "text",
+        text: " through which alternate currents are passed at proper intervals, in the manner hereinafter described, for the purpose of effecting a progressive shifting of the magnetism or of the “",
+      },
+      term(
+        "lines of force",
+        "Tesla's period term for the spatial magnetic field pattern. In this specification, its progressive shift identifies the moving positions of strongest attraction in the motor.",
+      ),
+      {
+        kind: "text",
+        text: "” in accordance with the well-known theory, and a consequent action of the motor. It is obvious that a proper progressive shifting of the lines of force may be utilized to set up a movement or rotation of either element of the motor, the armature, or the field-magnet, and that if the currents directed through the several circuits of the motor are in the proper direction no ",
+      },
+      term(
+        "commutator",
+        "A mechanical switching device used in many direct-current motors to reverse current as the armature turns. Tesla's passage says his motor does not require one.",
+      ),
+      {
+        kind: "text",
+        text: " for the motor will be required; but to avoid all the usual commutating appliances in the system I prefer to connect the motor-circuits directly with those of a suitable alternating-current generator. The practical results of such a system, its economical advantages, and the mode of its construction and operation will be described more in detail by reference to the accompanying diagrams and drawings.",
+      },
+    ]),
     p([
       {
         kind: "text",
@@ -146,7 +171,15 @@ export const teslaMotorArchivalEdition: CuratedSpecificationEdition = {
     p([
       {
         kind: "text",
-        text: "The motor comprises a ring or annulus, R, preferably built up of thin insulated iron rings or annular plates, so as to be as susceptible as possible to variations in its magnetic condition. This ring is surrounded by four coils of insulated wire symmetrically placed, and designated by C C C′ C′. The diametrically-opposite coils are connected up so as to co-operate in pairs in producing free poles on diametrically-opposite parts of the ring. The four free ends thus left are connected to terminals T T T′ T′, as indicated. Near the ring, and preferably inside of it, there is mounted on an axis or shaft, a, a magnetic disk, D, generally circular in shape, but having two segments cut away, as shown. This disk is mounted so as to turn freely within the ring R. The generator G is of any ordinary type, that shown in the present instance having field-magnets N S and a cylindrical armature-core, A, wound with the two coils B B′. The free ends of each coil are carried through the shaft a′ and connected, respectively, to insulated contact-rings b b b′ b′. Any convenient form of collector or brush bears on each ring and forms a terminal by which the current to and from a ring is conveyed. These terminals are connected to the terminals of the motor by the wires L and L′ in the manner indicated, whereby two complete circuits are formed—one including, say, the coils B of the generator C′ C′ of the motor, and the other the remaining coils B′ and C C of the generator and the motor.",
+        text: "The motor comprises a ring or ",
+      },
+      term(
+        "annulus",
+        "A ring-shaped body. Tesla uses it for the magnetic ring R surrounding the movable disk in Figure 9.",
+      ),
+      {
+        kind: "text",
+        text: ", R, preferably built up of thin insulated iron rings or annular plates, so as to be as susceptible as possible to variations in its magnetic condition. This ring is surrounded by four coils of insulated wire symmetrically placed, and designated by C C C′ C′. The diametrically-opposite coils are connected up so as to co-operate in pairs in producing free poles on diametrically-opposite parts of the ring. The four free ends thus left are connected to terminals T T T′ T′, as indicated. Near the ring, and preferably inside of it, there is mounted on an axis or shaft, a, a magnetic disk, D, generally circular in shape, but having two segments cut away, as shown. This disk is mounted so as to turn freely within the ring R. The generator G is of any ordinary type, that shown in the present instance having field-magnets N S and a cylindrical armature-core, A, wound with the two coils B B′. The free ends of each coil are carried through the shaft a′ and connected, respectively, to insulated contact-rings b b b′ b′. Any convenient form of collector or brush bears on each ring and forms a terminal by which the current to and from a ring is conveyed. These terminals are connected to the terminals of the motor by the wires L and L′ in the manner indicated, whereby two complete circuits are formed—one including, say, the coils B of the generator C′ C′ of the motor, and the other the remaining coils B′ and C C of the generator and the motor.",
       },
     ]),
     p([
@@ -354,11 +387,11 @@ export const teslaMotorArchivalEdition: CuratedSpecificationEdition = {
         kind: "text",
         text: "In the forms of motor above described only one of the elements, the armature or the field-magnet, is provided with energizing-coils. It remains, then, to show how both elements may be wound with coils. Reference is therefore had to ",
       },
-      figure("Fig. 17"),
+      figure("Fig. 17", "Figs. 17"),
       { kind: "text", text: ", " },
-      figure("Fig. 18"),
+      figure("Fig. 18", "18"),
       { kind: "text", text: ", and " },
-      figure("Fig. 19"),
+      figure("Fig. 19", "19"),
       {
         kind: "text",
         text: ". ",
@@ -598,9 +631,10 @@ export const teslaMotorParallelReadings: Readonly<Record<number, readonly string
   37: [
     "Tesla introduces the formal claims that define the legal boundaries of the invention, focusing on the combination of multi-circuit motors with matching alternating-current generators.",
   ],
-  42: ["Nikola Tesla's authentic printed signature executes and concludes the formal specification."],
+  42: [
+    "Nikola Tesla's authentic printed signature executes and concludes the formal specification.",
+  ],
   43: [
     "Frank E. Hartley and Frank B. Murphy serve as the two subscribing witnesses attesting to the execution of the instrument.",
   ],
 };
-

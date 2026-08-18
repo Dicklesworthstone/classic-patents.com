@@ -417,7 +417,7 @@ export function PatentVisualDispatcher({ patentId }: PatentVisualDispatcherProps
             );
           case "us-470918-reno-escalator":
             return renderMode === "3d-physics" ? <RenoEscalator3D /> : <RenoEscalatorSim />;
-          case "us-533367-tesla-coil":
+          case "us-593138-tesla-coil":
             return renderMode === "3d-physics" ? <TeslaCoil3D /> : <TeslaCoilSim />;
           case "us-542846-diesel-engine":
             return renderMode === "3d-physics" ? <DieselEngine3D /> : <DieselEngineSim />;

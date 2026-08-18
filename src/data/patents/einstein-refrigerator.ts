@@ -1,282 +1,248 @@
+import { einsteinRefrigeratorArchivalEdition } from "@/data/editions/einsteinRefrigeratorEdition";
 import type { Patent } from "@/types/patent";
+
+const sourceClaimText = (number: number) => {
+  for (const block of einsteinRefrigeratorArchivalEdition.blocks) {
+    if (block.kind === "claim" && block.number === number) {
+      return block.inlines.map((inline) => inline.text).join("");
+    }
+  }
+  throw new Error(`US 1,781,541 is missing source claim ${number}.`);
+};
 
 export const einsteinRefrigeratorPatent: Patent = {
   id: "us-1781541-einstein-refrigerator",
   patentNumber: "US 1,781,541",
   title: "Refrigeration",
-  shortTitle: "Einstein & Szilárd's Absorption Refrigerator",
-  subtitle: "Zero-Moving-Parts Hermetic Closed Loop & Dalton's Partial Pressure Evaporation",
+  shortTitle: "Einstein–Szilárd Absorption Refrigerator",
+  subtitle:
+    "Three-fluid absorption circuit with a heat-lifted return and partial-pressure evaporation",
   inventors: ["Albert Einstein", "Leo Szilard"],
-  inventorLocation: "Berlin, Germany",
+  inventorLocation: "Berlin and Berlin-Wilmersdorf, Germany",
   grantDate: "1930-11-11",
   filingDate: "1927-12-16",
   era: "Industrial & Mass Production (1910–1940)",
   category: "consumer",
   categoryLabel: "Thermodynamics & Consumer Technology",
   summary:
-    "The Zero-Moving-Parts Refrigerator: On December 16, 1927, Albert Einstein and his former student Leo Szilard filed US Patent No. 1,781,541 for an ingenious, hermetically sealed absorption refrigerator with zero moving parts. Motivated by tragic newspaper reports of Berlin families dying from toxic sulfur dioxide leaks caused by failing mechanical compressor seals, Einstein and Szilard eliminated compressors entirely. By maintaining the entire closed loop at a uniform 10 atmospheres of pressure and using ammonia gas to drastically drop the partial pressure of butane according to Dalton's Law ($P_{butane} = y_{butane} P_{total}$), they induced vigorous sub-zero refrigeration driven solely by heat from a small flame or electric coil.",
+    "Einstein and Szilard describe a three-fluid absorption refrigerator. In their illustrated cycle, butane evaporates beside ammonia in evaporator 1; water absorbs the ammonia in condenser 6 so butane can condense and return. Heat in generator 29 regenerates the ammonia, while a heated conduit lifts weak solution to elevated container 33.",
   heroQuote:
-    "An entire family in Berlin died in their sleep when the toxic chemical seal in their refrigerator compressor ruptured... Leo and I resolved that no family should ever die from a refrigerator.",
+    "During the operation of the hereinbefore described apparatus, the pressure existing in the various members is uniform with the exception of slight pressure differences, sufficient to cause flow of fluids, caused by liquid columns.",
   originalPdfUrl: "/patents/pdfs/us-1781541-einstein-refrigerator.pdf",
   googlePatentsUrl: "https://patents.google.com/patent/US1781541A/en",
-  usptoClassification:
-    "F25B 15/00 (Absorption refrigeration machines; Non-mechanical hermetic cycles)",
+  usptoClassification: "F25B 15/00 (Absorption refrigeration machines)",
   originalTextAsset: {
-    url: "/patents/source-text/us-1781541-einstein-refrigerator.txt",
+    url: "/patents/transcripts/us-1781541-einstein-refrigerator-reviewed.txt",
     pageCount: 4,
-    kind: "source-pdf-text-layer",
+    kind: "reviewed-transcription",
+    reviewedBy: "Classic Patents editorial agent (GPT-5.6)",
+    reviewedAt: "2026-08-18",
+    sourcePdfSha256: "5b67c380be742776b9509862e68e1fc68478a7b1cc92f215ba422efbd76b96e4",
   },
-  originalText: `UNITED STATES PATENT OFFICE
-1,781,541
-Patented Nov. 11, 1930
-
-REFRIGERATION
-Albert Einstein, Berlin, and Leo Szilard, Berlin-Wilmersdorf, Germany, assignors to Electrolux Servel Corporation, New York, N.Y., a corporation of Delaware
-Application filed December 16, 1927, Serial No. 240,436, and in Germany December 16, 1926
-10 Claims. (Cl. 62-119.5)
-
-SPECIFICATION
-
-TO ALL WHOM IT MAY CONCERN:
-Be it known that we, ALBERT EINSTEIN, residing at Berlin, Germany, and LEO SZILARD, residing at Berlin-Wilmersdorf, Germany, citizens of Switzerland and Hungary respectively, have invented certain new and useful improvements in REFRIGERATION, of which the following is a specification:
-
-OBJECT OF THE INVENTION
-The present invention relates to refrigeration apparatus and more particularly to apparatus of the absorption type wherein cooling is produced without the necessity of mechanical compressors, pumps, valves, or rotating stuffing box seals.
-
-In domestic mechanical refrigerators of the compressor type, the wear of moving parts and the degradation of shaft packings frequently leads to the escape of irritating or toxic refrigerant vapors into the living quarters. It is an object of the present invention to provide a refrigerator which is entirely sealed, hermetically welded, devoid of moving parts, and which operates silently and reliably over an indefinite lifespan.
-
-OPERATION OF THE UNIFORM PRESSURE CYCLE
-According to our invention, the entire internal apparatus is maintained under a substantially uniform total pressure throughout all vessels and connecting conduits, for example at a pressure of ten atmospheres.
-
-The apparatus utilizes three working media:
-1. A refrigerant liquid having a relatively low boiling point under reduced partial pressure (such as butane, ethyl chloride, or propane);
-2. An auxiliary gas which is inert with respect to the refrigerant but highly soluble in an absorption liquid (such as ammonia gas);
-3. An absorption liquid possessing high affinity for the auxiliary gas and low affinity for the refrigerant (such as water).
-
-Heat applied to the generator expels ammonia gas from the aqueous solution. The gaseous ammonia flows into the evaporator, where it encounters liquid butane. By Dalton's law of partial pressures, the presence of the ammonia reduces the partial vapor pressure of the butane from 10 atmospheres down to 1 or 2 atmospheres, causing the butane to evaporate vigorously at low temperature (-10° C.) and extract heat from the cooling chamber.
-
-The resulting mixture of butane and ammonia vapors flows to the absorber, where water absorbs the ammonia gas, liberating the butane vapor. The butane vapor flows to an air-cooled condenser, liquefies, and returns to the evaporator, while the ammonia-water solution is returned to the generator by thermosiphon lifting action.
-
-WE CLAIM:
-1. An apparatus for refrigeration comprising an evaporator, an absorber, a generator, and a condenser connected in a closed hermetic circuit maintaining a substantially uniform total internal pressure, said circuit containing a volatile liquid refrigerant, an auxiliary evaporating gas, and an absorption liquid, said auxiliary gas being adapted to reduce the partial pressure of the refrigerant in the evaporator causing evaporation thereof at low temperature, and said absorption liquid being adapted to dissolve said auxiliary gas in the absorber to permit separation and recycling.
-2. An apparatus as set forth in claim 1, wherein said refrigerant is butane, said auxiliary gas is ammonia, and said absorption liquid is water.`,
+  // This compact catalogue excerpt is deliberately not presented as the full source.
+  originalText:
+    "Our invention relates to the art of refrigeration and particularly to an apparatus and method for producing refrigeration wherein the refrigerant evaporates in the presence of an inert gas. The complete source, its five claims, and the sole drawing are available in the manually prepared Original Patent Text edition.",
+  archivalEdition: einsteinRefrigeratorArchivalEdition,
   plainEnglishExplanation: {
     overview:
-      "In the 1920s, the invention of mechanical household refrigerators introduced a deadly hazard to residential apartments: early compressors used toxic, flammable gases like sulfur dioxide ($SO_2$) and methyl chloride ($CH_3Cl$). When rotating compressor shaft seals inevitably degraded and cracked, lethal chemical vapors leaked into bedrooms, asphyxiating entire sleeping families. Nobel laureate Albert Einstein and his brilliant physicist student Leo Szilard resolved to eliminate the danger by inventing a refrigerator with zero moving parts, zero mechanical compressor pumps, and zero shaft seals.",
+      "The patent describes a three-fluid absorption refrigerator: butane is the cooling liquid, ammonia is the inert gas that lowers butane's partial pressure in the evaporator, and water absorbs ammonia again in the condenser. The working fluids move through the apparatus by gravity, heat exchange, vapor lift, and small liquid-head pressure differences.",
     coreMechanism:
-      "The entire closed loop of welded steel pipes is pressurized to a uniform 10 atmospheres everywhere, eliminating the need for high-pressure/low-pressure throttle valves or compressor shaft seals. Heat from a small gas burner or electric coil boils an ammonia-water mixture in a generator, creating rising vapor bubbles that lift fluid upwards like an airlift coffee percolator (thermosiphon bubble pump). Gaseous ammonia enters the evaporator and mixes with liquid butane. According to Dalton's Law of Partial Pressures, adding ammonia gas causes the partial vapor pressure of butane to plummet from 10 atm to under 1.5 atm, forcing the butane to flash-evaporate at sub-zero temperatures ($-10^\\circ\\text{C}$) and absorb massive latent heat of vaporization ($\\Delta H_{vap}$) from the refrigerator cabinet.",
+      "Liquid butane enters evaporator 1. Ammonia delivered by conduit 30 lowers butane's partial pressure, so butane evaporates and absorbs heat. The vapor mixture reaches condenser 6, where water dissolves ammonia and leaves butane to condense under the cooling-water jacket. Ammonia-rich water returns by gravity to generator 29, where heat expels ammonia for another pass; a separately heated conduit lifts weak solution to container 33 for its return to the condenser.",
     mechanicalBreakdown: [
       {
-        title: "Uniform-Pressure Hermetic Steel Loop",
-        summary: "Seamless welded steel pipes holding three working fluids at an equalized 10 atm.",
-        technicalDetails:
-          "Because total internal pressure is identical across all chambers ($P_{total} = 10\\text{ atm}$), the system requires no mechanical expansion valves, rotating crankshafts, or stuffing-box shaft seals, eliminating the possibility of toxic gas leaks.",
-        archaicTerm: "Closed hermetic circuit maintaining uniform total internal pressure",
-        modernEquivalent: "Hermetically sealed absorption refrigeration loop",
-      },
-      {
-        title: "Thermosiphon Bubble-Lift Generator",
+        title: "Evaporator, vapor conduit, and liquid return",
         summary:
-          "A thermal boiler tube where rising vapor bubbles passively lift liquid against gravity.",
+          "Evaporator 1 holds liquid butane; conduit 5 carries its mixed vapor toward condenser 6, and conduit 11 returns liquid butane to the evaporator.",
         technicalDetails:
-          "Applies heat to boil the aqueous ammonia solution. Rising vapor bubbles create two-phase buoyant displacement ($\\Delta P_{buoyancy} = (\\rho_L - \\rho_V)gh$), lifting liquid upward without any mechanical or electric pump.",
-        archaicTerm: "Thermosiphon lifting generator",
-        modernEquivalent: "Thermal bubble pump / Two-phase thermosiphon",
+          "Ammonia enters through conduit 30 and distributor head 31 near the evaporator bottom. The source says its presence reduces butane's partial pressure, producing evaporation. Condensed butane returns through conduit 11, below the connection of conduit 5 to the condenser.",
+        archaicTerm: "Refrigerant",
+        modernEquivalent: "Cooling agent that evaporates to absorb heat",
       },
       {
-        title: "Dalton Partial-Pressure Evaporator",
-        summary: "Mixing liquid butane with ammonia gas to induce sub-zero evaporative boiling.",
-        technicalDetails:
-          "Maintains constant total pressure ($P_{total} = P_{butane} + P_{NH_3} = 10\\text{ atm}$). Injecting ammonia gas lowers $P_{butane}$ below its saturation point at $-10^\\circ\\text{C}$, absorbing latent heat $\\Delta H_{vap} \\approx 385\\text{ kJ/kg}$ from food storage.",
-        archaicTerm: "Evaporation under reduced partial pressure",
-        modernEquivalent: "Multi-component Dalton absorption evaporator",
-      },
-      {
-        title: "Liquid-Metal Magnetohydrodynamic Pump",
+        title: "Condenser and absorbing water",
         summary:
-          "An electromagnetic induction pump that propels liquid metal via traveling magnetic fields.",
+          "Condenser 6 contacts the butane-ammonia vapor mixture with water, which absorbs ammonia and allows butane to condense.",
         technicalDetails:
-          "In a related patent filing, Einstein and Szilard used 3-phase AC coils to induce Lorentz forces ($\\vec{F} = \\vec{J} \times \\vec{B}$) in a mercury/potassium piston, pumping refrigerant with zero mechanical contact.",
-        archaicTerm: "Electromagnetic liquid metal compressor",
-        modernEquivalent: "Magnetohydrodynamic (MHD) induction pump",
+          "Water reaches distributor head 35 through conduit 37. The patent relies on ammonia being very soluble in water and butane being quite insoluble, so the water removes ammonia from the vapor mixture. Cooling-water jacket 12 maintains a temperature at which the freed butane liquefies.",
+        archaicTerm: "Absorption liquid",
+        modernEquivalent: "Selective absorbent",
+      },
+      {
+        title: "Generator and heat exchanger",
+        summary:
+          "Generator 29 heats ammonia-rich water so ammonia leaves as gas, while heat-exchanger jacket 28 exchanges heat between the strong and weak solutions.",
+        technicalDetails:
+          "The rich ammonia-water solution flows by gravity from condenser 6 through conduit 27 and jacket 28 to generator 29. Heating the generator expels ammonia through conduit 30. The patent does not specify a burner, electric heater, working pressures, or cooling capacity.",
+        archaicTerm: "Strong and weak solution",
+        modernEquivalent: "Ammonia-rich and ammonia-lean absorbent solution",
+      },
+      {
+        title: "Heated riser, elevated container, and vent",
+        summary:
+          "Heat at 36 forms vapor in conduit 32, lifting weak liquid to container 33; the liquid then returns through conduit 37 and vapor vents through conduit 34.",
+        technicalDetails:
+          "The lift is a source-described vapor-lift effect, not a mechanical compressor. Container 33 sits above condenser 6 so its liquid return through conduit 37 can proceed by gravity. Claim 2 and Claim 4 additionally require vent conduit 34 between the container and condenser.",
+        archaicTerm: "Liquid head",
+        modernEquivalent: "Hydrostatic pressure caused by an elevation difference",
       },
     ],
     scientificPrinciples: [
       {
-        principle: "Dalton's Law of Partial Pressures in Evaporation",
+        principle: "Partial-pressure evaporation",
         formula:
-          "P_{total} = P_{butane} + P_{NH_3} = 10\\text{ atm} \\implies P_{butane} = y_{butane} P_{total} \\ll P_{sat}(T_{cold})",
+          "Ammonia in the evaporator reduces butane's partial pressure, allowing butane to evaporate.",
         explanation:
-          "Adding inert auxiliary gas reduces the partial pressure of volatile refrigerant, forcing it to boil vigorously at sub-freezing temperatures despite high total vessel pressure.",
+          "The patent gives the causal relation but no numerical pressure, temperature, or composition. The engineering point is that the relevant evaporation condition is butane's partial pressure, not merely the pressure of the whole apparatus.",
       },
       {
-        principle: "Clausius-Clapeyron Vaporization Phase Boundary",
+        principle: "Selective absorption and condensation",
         formula:
-          "\\ln\\left(\\frac{P_2}{P_1}\\right) = -\\frac{\\Delta H_{vap}}{R} \\left(\\frac{1}{T_2} - \\frac{1}{T_1}\\right) \\implies T_{boil} \\propto \\frac{1}{1 - \\frac{R}{\\Delta H_{vap}} \\ln P_{partial}}",
+          "Water absorbs ammonia much more readily than butane, leaving butane to condense under cooling.",
         explanation:
-          "Lowering the refrigerant's partial vapor pressure from 10 atm down to 1 atm drops its boiling point from +20°C down to -10°C, extracting heat directly from the freezer box.",
+          "Condenser 6 uses solubility contrast to separate the gas mixture. Once water removes ammonia, butane assumes substantially the condenser pressure and can liquefy at the temperature maintained by jacket 12.",
       },
       {
-        principle: "Two-Phase Thermosiphon Buoyant Lift Hydrodynamics",
-        formula:
-          "\\Delta P_{lift} = \\int_0^H \\left(\\rho_L - \\rho_m(z)\\right) g \\, dz, \\quad \\rho_m = (1-\\alpha)\\rho_L + \\alpha \\rho_V",
+        principle: "Liquid-head flow balance",
+        formula: "For the stated flow, the liquid head h₂ must be less than liquid head h₁.",
         explanation:
-          "Vapor void fraction $\\alpha$ reduces the average mixture density $\\rho_m$, generating a hydrostatic buoyancy head that lifts liquid refrigerant against gravity without moving parts.",
-      },
-      {
-        principle: "Magnetohydrodynamic Lorentz Force Induction",
-        formula:
-          "\\vec{F} = \\vec{J} \\times \\vec{B} = \\sigma (\\vec{E} + \\vec{v} \\times \\vec{B}) \\times \\vec{B} \\implies \\nabla P = \\sigma \\left(\\frac{\\omega}{k} - v\\right) B_{peak}^2",
-        explanation:
-          "A linear traveling AC magnetic wave induces eddy currents $\\vec{J}$ in liquid metal, creating a continuous axial Lorentz pressure gradient $\\nabla P$ to pump fluid without any mechanical impeller.",
-      },
-      {
-        principle: "Carnot Efficiency Limit for Absorption Heat Pumps",
-        formula:
-          "\\text{COP}_{Carnot} = \\left(\\frac{T_{evap}}{T_{absorber} - T_{evap}}\\right) \\left(\\frac{T_{gen} - T_{absorber}}{T_{gen}}\\right)",
-        explanation:
-          "The thermodynamic coefficient of performance combines a forward Carnot engine driven by heat at $T_{gen}$ with a reverse Carnot refrigeration cycle operating between $T_{evap}$ and ambient $T_{absorber}$.",
+          "The grant says pressure is nearly uniform, with small differences created by liquid columns. The source uses the elevation heads h₁ and h₂ to state when generator vapor can overcome the relevant liquid column and flow toward the evaporator.",
       },
     ],
     whyItMattersToday:
-      "Einstein and Szilard's absorption cycle laid the foundation for modern silent absorption refrigeration. Today, identical zero-moving-parts absorption cycles are used in off-grid RV refrigerators, hotel minibars, solar-thermal air conditioning, and geothermal chillers. Furthermore, Einstein and Szilard's **electromagnetic induction pump** is used across the globe to circulate liquid sodium coolant in Generation-IV fast nuclear reactors and thermonuclear fusion experiments.",
+      "The patent is a precise example of absorption refrigeration as a coupled separation-and-return process: an inert gas changes evaporation conditions, an absorbent separates that gas from the cooling liquid, and heat regenerates the absorbent. Its five claims distinguish the general apparatus, versions with a vent, versions using ammonia, water, and butane, and a corresponding method.",
   },
   claims: [
     {
       number: 1,
       isIndependent: true,
-      originalText:
-        "1. An apparatus for refrigeration comprising an evaporator, an absorber, a generator, and a condenser connected in a closed hermetic circuit maintaining a substantially uniform total internal pressure, said circuit containing a volatile liquid refrigerant, an auxiliary evaporating gas, and an absorption liquid, said auxiliary gas being adapted to reduce the partial pressure of the refrigerant in the evaporator causing evaporation thereof at low temperature, and said absorption liquid being adapted to dissolve said auxiliary gas in the absorber to permit separation and recycling.",
+      originalText: sourceClaimText(1),
       plainEnglish:
-        "The master system claim: an absorption refrigerator maintaining uniform total pressure throughout a closed hermetic loop, using a volatile refrigerant, an auxiliary evaporating gas to lower partial pressure and induce sub-zero boiling, and an absorption liquid to separate and recycle the gas.",
+        "Claim 1 covers the general elevated generator, condenser, evaporator, and container arrangement, with inert gas, absorbent, gravity conduits, and a heated riser that lifts liquid to the container.",
       keyInnovations: [
-        "Uniform constant-pressure closed refrigeration loop",
-        "Dalton partial pressure evaporative cooling without compressor seals",
-        "Zero-moving-parts thermosiphon circulation",
+        "Elevated container and condenser arrangement",
+        "Inert-gas absorption loop",
+        "Heat-lifted weak-solution return",
       ],
-      legalSignificance:
-        "The pioneer patent claim protecting zero-moving-parts, uniform-pressure three-fluid absorption refrigeration cycles.",
     },
     {
       number: 2,
-      isIndependent: false,
-      dependsOn: [1],
-      originalText:
-        "2. An apparatus as set forth in claim 1, wherein said refrigerant is butane, said auxiliary gas is ammonia, and said absorption liquid is water.",
+      isIndependent: true,
+      originalText: sourceClaimText(2),
       plainEnglish:
-        "Specifies the exact fluid triad of butane as refrigerant, ammonia as auxiliary evaporating gas, and water as the selective absorbent liquid.",
-      keyInnovations: ["Butane, ammonia, and water working triad"],
-      legalSignificance: "Protected the butane-ammonia-water thermodynamic working triad.",
+        "Claim 2 is Claim 1's general apparatus plus a vent conduit from the container's upper part to the condenser.",
+      keyInnovations: ["Container-to-condenser vent conduit", "Heat-lifted absorption liquid"],
     },
     {
       number: 3,
-      isIndependent: false,
-      dependsOn: [1],
-      originalText:
-        "3. An apparatus as set forth in claim 1, wherein the circulation of the absorption liquid between the generator and the absorber is effected by a vapor-lift pump operated by heat applied to said generator.",
+      isIndependent: true,
+      originalText: sourceClaimText(3),
       plainEnglish:
-        "Specifies a heat-driven vapor-lift bubble pump that uses boiling vapor bubbles to lift the absorption liquid vertically without mechanical motors.",
-      keyInnovations: ["Heat-activated vapor-lift thermosiphon pump"],
-      legalSignificance: "Secured the passive thermosiphon bubble-lift circulation mechanism.",
+        "Claim 3 specifies the working materials: ammonia dissolved in water, ammonia gas, liquid butane, and strong and weak ammonia-water solutions.",
+      keyInnovations: ["Ammonia-water absorbent", "Liquid butane refrigerant"],
+    },
+    {
+      number: 4,
+      isIndependent: true,
+      originalText: sourceClaimText(4),
+      plainEnglish:
+        "Claim 4 is the material-specific arrangement of Claim 3 with the additional vent conduit from the container to the condenser.",
+      keyInnovations: ["Ammonia-water-butane circuit", "Container vent conduit"],
+    },
+    {
+      number: 5,
+      isIndependent: true,
+      originalText: sourceClaimText(5),
+      plainEnglish:
+        "Claim 5 covers the operating sequence: evaporate the cooling liquid beside inert gas, absorb the inert gas so the cooling agent condenses, use heat to separate the absorbent and inert gas, and return each stream to continue the cycle.",
+      keyInnovations: [
+        "Inert-gas-assisted evaporation",
+        "Absorption separation",
+        "Heat-regenerated circulation",
+      ],
     },
   ],
   drawings: [
     {
-      figureNumber: "Fig. 1",
-      title: "Einstein-Szilard Closed Hermetic Circuit Schematic",
+      figureNumber: "Source drawing",
+      title: "Three-fluid absorption refrigeration apparatus",
       caption:
-        "Complete thermodynamic blueprint showing boiler generator, air-cooled condenser, Dalton partial-pressure evaporator, absorber vessel, and thermosiphon lift conduits.",
+        "The sole drawing sheet shows the apparatus described in the specification: evaporator 1, condenser 6, cooling-water jacket 12, generator 29, elevated container 33, and their conduits.",
       svgType: "einstein-refrigerator",
       callouts: [
         {
-          id: "c1",
-          figureRef: "Fig. 1",
-          label: "10",
-          element: "Boiler Generator",
-          description: "Heated ammonia-water boiling vessel expelling high-pressure ammonia gas.",
-          x: 75,
-          y: 65,
+          id: "evaporator-1",
+          figureRef: "Source drawing",
+          label: "Evaporator",
+          element: "1",
+          description: "Vessel holding liquid butane, where ammonia reduces its partial pressure.",
+          x: 82,
+          y: 52,
         },
         {
-          id: "c2",
-          figureRef: "Fig. 1",
-          label: "18",
-          element: "Dalton Evaporator Chamber",
+          id: "condenser-6",
+          figureRef: "Source drawing",
+          label: "Condenser",
+          element: "6",
           description:
-            "Sub-zero butane evaporation cooling box where ammonia lowers butane partial pressure.",
-          x: 25,
-          y: 30,
+            "Vessel where water absorbs ammonia and butane condenses under cooling-water heat removal.",
+          x: 53,
+          y: 44,
         },
-      ],
-    },
-    {
-      figureNumber: "Fig. 2",
-      title: "Thermosiphon Bubble-Lift Generator Detail",
-      caption:
-        "Cross-sectional detail of the vertical bubble lift pipe where boiling vapor bubbles propel liquid solution upwards against gravity.",
-      svgType: "einstein-refrigerator",
-      callouts: [
         {
-          id: "c3",
-          figureRef: "Fig. 2",
-          label: "24",
-          element: "Thermosiphon Bubble Lift Pipe",
+          id: "generator-29",
+          figureRef: "Source drawing",
+          label: "Generator",
+          element: "29",
+          description: "Heated vessel that expels ammonia gas from the ammonia-water solution.",
+          x: 27,
+          y: 76,
+        },
+        {
+          id: "container-33",
+          figureRef: "Source drawing",
+          label: "Elevated container",
+          element: "33",
           description:
-            "Vertical riser tube where rising vapor bubbles lift liquid solution via buoyancy.",
-          x: 50,
-          y: 50,
+            "Container above condenser 6 that receives lifted weak solution and returns it by gravity.",
+          x: 30,
+          y: 29,
         },
       ],
     },
   ],
   historicalContext: {
     problemStatement:
-      "In the winter of 1926 in Berlin, Germany, a mother, father, and their four children were found dead in their beds. A rotating compressor shaft seal in their household refrigerator had cracked, leaking lethal sulfur dioxide ($SO_2$) gas throughout their home during the night. Reading the horrifying news account in the morning paper, Albert Einstein and his former physics student Leo Szilard decided that modern engineering had made a lethal blunder: placing dangerous chemical compressors inside human homes. They resolved to invent a completely sealed, leak-proof refrigerator devoid of moving parts, motors, or seals.",
+      "The grant addresses refrigeration in which a cooling liquid evaporates in the presence of an inert gas, then must be separated from that gas and returned for another cycle.",
     priorArtLimitations: [
-      "Mechanical compressor shaft packings suffered from continuous friction and inevitably dried out, cracked, and leaked toxic gases.",
-      "Early mechanical refrigerators required heavy electric motors that produced constant noise, vibration, and required frequent lubrication.",
-      "High-pressure/low-pressure mechanical expansion valves were prone to clogging from particulate debris and scale.",
+      "The specification identifies US Patent No. 1,685,764, granted September 25, 1928 to Von Platen and Munters, as a related absorption-refrigeration type.",
+      "It also identifies the inventors' British Patent No. 282,428 as related prior work.",
     ],
     breakthroughInsight:
-      "Einstein and Szilard realized that the need for a mechanical compressor and pressure-reducing valves could be completely bypassed if the entire refrigeration loop remained at a uniform 10 atmospheres of pressure everywhere. To make the refrigerant evaporate at sub-zero temperatures without lowering the vessel's total pressure, they introduced a third auxiliary gas (ammonia) into the evaporator containing liquid butane. By Dalton's Law of Partial Pressures, the presence of ammonia gas lowered the partial pressure of butane to 1 atmosphere, causing it to boil at -10°C and absorb heat without requiring a mechanical vacuum pump!",
-    patentWars: [
-      {
-        rivalName: "Electrolux and Baltzar von Platen / Carl Munters",
-        rivalClaim:
-          "Swedish engineers Baltzar von Platen and Carl Munters had patented an ammonia-water-hydrogen absorption refrigerator in 1922, which Swedish appliance giant AB Electrolux acquired.",
-        conflictDetails:
-          "When Einstein and Szilard filed their patents across Europe and the US, Electrolux recognized the genius of their butane/ammonia/water cycle and their revolutionary electromagnetic pump. Rather than risking a protracted patent battle against the world's most famous physicist, Electrolux approached Einstein and Szilard to purchase the patent rights.",
-        resolution:
-          "On July 31, 1928, Electrolux purchased Einstein and Szilard's refrigerator patent portfolio for 3,150 German Reichsmarks (approximately $750 at the time, equivalent to $12,000 today). Einstein used the funds to support Jewish refugee scholars escaping the rising Nazi regime in Germany.",
-        legalOutcome:
-          "US Patent No. 1,781,541 was granted to Einstein and Szilard on November 11, 1930, assigned to Electrolux Servel Corporation.",
-      },
-    ],
+      "The illustrated arrangement joins partial-pressure evaporation, selective absorption of ammonia by water, condensation of butane, gravity returns, and a separately heated vapor-lift conduit in one cycle.",
+    patentWars: [],
     civilizationalImpact:
-      "While household refrigerators eventually adopted non-toxic chlorofluorocarbon (CFC) freon refrigerants in the 1930s, Einstein and Szilard's zero-moving-parts absorption cycle revolutionized off-grid refrigeration, silent hotel minibars, and industrial waste-heat cooling. Furthermore, the liquid-metal electromagnetic induction pump they invented for the refrigerator became the universal standard for cooling liquid metal fast breeder nuclear reactors.",
+      "The document supplies a concrete source record for a three-fluid absorption refrigeration cycle, including the material-specific ammonia-water-butane claims and the method claim. It should be read as a defined apparatus and process, not as a generic origin story for all silent refrigerators.",
     funFact:
-      "Albert Einstein was intimately familiar with patent law: from 1902 to 1909, he worked as a Technical Patent Examiner (Class III) at the Swiss Patent Office in Bern, where he examined electromechanical patent applications while formulating his Theory of Special Relativity in his spare time! Einstein took immense pride in his practical inventions, filing over 45 patents across six countries with Leo Szilard.",
+      "The printed grant names both a United States application date, December 16, 1927, and a German filing date, December 16, 1926.",
     aftermath:
-      "Leo Szilard went on to conceive the nuclear chain reaction in 1933 and drafted the historic Einstein-Szilard letter to President Franklin D. Roosevelt in 1939 that launched the Manhattan Project. Decades later, engineers at Oxford University recreated Einstein and Szilard's 1930 refrigerator design as a zero-electricity, solar-thermal refrigerator for developing rural communities.",
+      "US 1,781,541 was granted on November 11, 1930 and assigns the inventors' interest to Electrolux Servel Corporation of New York, New York.",
     sideNotes: [
-      "The Einstein-Szilard refrigerator had an astonishing operating lifespan: because there were no mechanical bearings to wear out or lubricants to foul, a hermetically welded unit could operate continuously for over 50 years with zero maintenance.",
-      "The US Department of Energy and nuclear research laboratories worldwide still cite Einstein and Szilard's 1930 electromagnetic pump patents when designing liquid sodium coolant loops for advanced nuclear energy reactors.",
+      "The source does not state a fixed total pressure, a cooling temperature, or a compressor specification.",
+      "The five printed claims include four apparatus claims and one method claim.",
     ],
   },
   tags: [
     "Albert Einstein",
     "Leo Szilard",
-    "Absorption Refrigerator",
+    "Absorption Refrigeration",
     "Thermodynamics",
-    "Dalton's Law",
-    "Zero Moving Parts",
-    "Electrolux",
-    "Nuclear Engineering",
+    "Butane",
+    "Ammonia",
+    "Heat Exchanger",
   ],
   stats: {
-    totalClaims: 3,
-    independentClaims: 1,
-    patentWarYears: "1926–1930",
+    totalClaims: 5,
+    independentClaims: 5,
     impactScore: 98,
   },
 };

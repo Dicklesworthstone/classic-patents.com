@@ -2,10 +2,11 @@
 
 import { Activity, Camera, Eye, EyeOff, Volume2, VolumeX } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
-import * as THREE from "three";
+import type * as THREE from "three";
 import { stepCorlissEngine } from "@/physics/catalogKernels";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { soundEngine } from "@/utils/soundEngine";
+import { buildCorlissEngineModel } from "./corlissSteamEngineModel";
 import { StudioKernelChips } from "./StudioKernelChips";
 import { createThreeStudioScene, type StudioContext } from "./ThreeStudioScene";
 import { useLiveSimParams } from "./useLiveSimParams";
@@ -80,7 +81,6 @@ export function CorlissSteamEngine3D() {
     });
   };
 
-  // biome-ignore lint/correctness/useExhaustiveDependencies: Three.js studio lifecycle
   useEffect(() => {
     const container = containerRef.current;
     if (!container) return;
@@ -95,215 +95,65 @@ export function CorlissSteamEngine3D() {
     cameraRef.current = camera;
     controlsRef.current = controls;
 
-    // Materials
-    const castIronMat = new THREE.MeshStandardMaterial({
-      color: 0x1e293b,
-      roughness: 0.5,
-      metalness: 0.8,
-    });
-
-    const polishedSteelMat = new THREE.MeshStandardMaterial({
-      color: 0xf1f5f9,
-      roughness: 0.12,
-      metalness: 0.95,
-    });
-
-    const brassValveMat = new THREE.MeshStandardMaterial({
-      color: 0xd97706,
-      roughness: 0.22,
-      metalness: 0.9,
-    });
-
-    const mahoganyLaggingMat = new THREE.MeshStandardMaterial({
-      color: 0x5c2c16,
-      roughness: 0.4,
-      metalness: 0.05,
-    });
-
-    const rootGroup = new THREE.Group();
-    scene.add(rootGroup);
-
-    // 1. Heavy Masonry Foundation Bed & Cast Iron Sole Plate
-    const foundation = new THREE.Mesh(
-      new THREE.BoxGeometry(13.0, 1.2, 7.5),
-      new THREE.MeshStandardMaterial({ color: 0x334155, roughness: 0.9 }),
-    );
-    foundation.position.y = -2.6;
-    foundation.receiveShadow = true;
-    rootGroup.add(foundation);
-
-    // 2. Steam Cylinder with Wood Stave Lagging Jacket & 4 Valve Boxes (Claim 1)
-    const cylinderGroup = new THREE.Group();
-    cylinderGroup.position.set(-3.6, 0, 0);
-    rootGroup.add(cylinderGroup);
-
-    // Cylinder Body
-    const cylOuter = new THREE.Mesh(
-      new THREE.CylinderGeometry(1.6, 1.6, 4.2, 32),
-      mahoganyLaggingMat,
-    );
-    cylOuter.rotation.z = Math.PI / 2;
-    cylOuter.castShadow = true;
-    cylinderGroup.add(cylOuter);
-
-    // Brass Retention Hoops
-    [-1.6, -0.6, 0.6, 1.6].forEach((cx) => {
-      const hoop = new THREE.Mesh(new THREE.TorusGeometry(1.62, 0.04, 12, 32), brassValveMat);
-      hoop.rotation.y = Math.PI / 2;
-      hoop.position.x = cx;
-      cylinderGroup.add(hoop);
-    });
-
-    // 4 Rotary Oscillating Valve Chests (2 Top Admission, 2 Bottom Exhaust)
-    const valveBoxes: THREE.Group[] = [];
-    [
-      [-1.4, 1.6, 0], // Front Steam
-      [1.4, 1.6, 0], // Back Steam
-      [-1.4, -1.6, 0], // Front Exhaust
-      [1.4, -1.6, 0], // Back Exhaust
-    ].forEach(([vx, vy, vz], _idx) => {
-      const vGroup = new THREE.Group();
-      vGroup.position.set(vx, vy, vz);
-
-      const vHousing = new THREE.Mesh(new THREE.CylinderGeometry(0.45, 0.45, 1.2, 16), castIronMat);
-      vHousing.rotation.x = Math.PI / 2;
-      vGroup.add(vHousing);
-
-      const vArm = new THREE.Mesh(new THREE.BoxGeometry(0.12, 0.8, 0.15), polishedSteelMat);
-      vArm.position.y = vy > 0 ? 0.5 : -0.5;
-      vGroup.add(vArm);
-
-      cylinderGroup.add(vGroup);
-      valveBoxes.push(vGroup);
-    });
-
-    // 3. Central Oscillating Wrist Plate (Claim 2)
-    const wristPlateGroup = new THREE.Group();
-    wristPlateGroup.position.set(-3.6, 0, 1.8);
-    rootGroup.add(wristPlateGroup);
-
-    const wristPlateDisc = new THREE.Mesh(
-      new THREE.CylinderGeometry(1.1, 1.1, 0.22, 32),
-      polishedSteelMat,
-    );
-    wristPlateDisc.rotation.x = Math.PI / 2;
-    wristPlateDisc.castShadow = true;
-    wristPlateGroup.add(wristPlateDisc);
-
-    // 4 Connecting Reach Rods to Valves
-    for (let r = 0; r < 4; r++) {
-      const rod = new THREE.Mesh(new THREE.CylinderGeometry(0.04, 0.04, 2.2, 8), polishedSteelMat);
-      rod.position.set(r % 2 === 0 ? -0.8 : 0.8, r < 2 ? 0.9 : -0.9, 0);
-      rod.rotation.z = r % 2 === 0 ? Math.PI / 5 : -Math.PI / 5;
-      wristPlateGroup.add(rod);
-    }
-
-    // 4. Vertical Air Dashpots with Leather Packing Cups
-    [-4.8, -2.4].forEach((dx) => {
-      const dashpot = new THREE.Mesh(new THREE.CylinderGeometry(0.35, 0.35, 1.6, 16), castIronMat);
-      dashpot.position.set(dx, -1.8, 1.4);
-      rootGroup.add(dashpot);
-
-      const plunger = new THREE.Mesh(
-        new THREE.CylinderGeometry(0.12, 0.12, 1.8, 12),
-        polishedSteelMat,
-      );
-      plunger.position.set(dx, -1.0, 1.4);
-      rootGroup.add(plunger);
-    });
-
-    // 5. Crosshead Slide, Guide Bars & Connecting Rod
-    const crossheadGroup = new THREE.Group();
-    crossheadGroup.position.set(-0.6, 0, 0);
-    rootGroup.add(crossheadGroup);
-
-    const crossheadBlock = new THREE.Mesh(new THREE.BoxGeometry(0.9, 0.7, 0.8), polishedSteelMat);
-    crossheadGroup.add(crossheadBlock);
-
-    const pistonRod = new THREE.Mesh(
-      new THREE.CylinderGeometry(0.16, 0.16, 3.2, 16),
-      polishedSteelMat,
-    );
-    pistonRod.rotation.z = Math.PI / 2;
-    pistonRod.position.x = -1.6;
-    crossheadGroup.add(pistonRod);
-
-    // Connecting Rod
-    const connRod = new THREE.Mesh(new THREE.BoxGeometry(4.6, 0.22, 0.28), polishedSteelMat);
-    connRod.position.set(2.0, 0, 0);
-    rootGroup.add(connRod);
-
-    // 6. Crankshaft & Massive 14-Foot Spoked Cast-Iron Flywheel
-    const flywheelGroup = new THREE.Group();
-    flywheelGroup.position.set(4.2, 0, 0);
-    rootGroup.add(flywheelGroup);
-
-    const wheelRim = new THREE.Mesh(new THREE.TorusGeometry(3.6, 0.32, 16, 48), castIronMat);
-    wheelRim.rotation.y = Math.PI / 2;
-    wheelRim.castShadow = true;
-    flywheelGroup.add(wheelRim);
-
-    // 8 Elliptical Tapered Spokes
-    for (let sp = 0; sp < 8; sp++) {
-      const spAngle = (sp * Math.PI) / 4;
-      const spoke = new THREE.Mesh(new THREE.CylinderGeometry(0.12, 0.18, 7.0, 12), castIronMat);
-      spoke.rotation.x = spAngle;
-      flywheelGroup.add(spoke);
-    }
-
-    // Crank Web & Pin
-    const crankWeb = new THREE.Mesh(new THREE.BoxGeometry(0.35, 1.4, 0.5), polishedSteelMat);
-    crankWeb.position.set(-0.4, 0.5, 0);
-    flywheelGroup.add(crankWeb);
-
-    const crankPin = new THREE.Mesh(
-      new THREE.CylinderGeometry(0.15, 0.15, 0.6, 12),
-      polishedSteelMat,
-    );
-    crankPin.rotation.z = Math.PI / 2;
-    crankPin.position.set(-0.7, 1.0, 0);
-    flywheelGroup.add(crankPin);
-
-    // Centrifugal Flyball Governor
-    const govGroup = new THREE.Group();
-    govGroup.position.set(1.5, 2.2, 1.6);
-    rootGroup.add(govGroup);
-
-    const govSpindle = new THREE.Mesh(
-      new THREE.CylinderGeometry(0.08, 0.08, 2.4, 12),
-      brassValveMat,
-    );
-    govGroup.add(govSpindle);
-
-    [-0.5, 0.5].forEach((gx) => {
-      const ball = new THREE.Mesh(new THREE.SphereGeometry(0.24, 16, 16), brassValveMat);
-      ball.position.set(gx, 0.6, 0);
-      govGroup.add(ball);
-    });
+    // Build procedural 3D model
+    const model = buildCorlissEngineModel();
+    scene.add(model.rootGroup);
 
     // Animation Loop
     let reqId: number;
-    let _renderedSteps = 0;
+    let renderedSteps = 0;
+    let crankAngle = 0;
 
     const animate = () => {
       reqId = requestAnimationFrame(animate);
-      _renderedSteps += 1;
+      renderedSteps += 1;
       const delta = 1 / 60;
       const p = live.current;
 
       const omegaRadPerSec = p.crankOmegaRadPerS ?? (p.engineRpm * 2 * Math.PI) / 60;
-      flywheelGroup.rotation.x += omegaRadPerSec * delta;
-      govGroup.rotation.y += (p.governorOmegaRadPerS ?? omegaRadPerSec * 1.5) * delta;
+      crankAngle = (crankAngle + omegaRadPerSec * delta) % (Math.PI * 2);
 
-      const crankAngle = flywheelGroup.rotation.x;
-      const strokeX = Math.sin(crankAngle) * 1.0;
-      crossheadGroup.position.x = -0.6 + strokeX;
-      connRod.position.x = 1.8 + strokeX * 0.5;
-      connRod.rotation.z = -Math.cos(crankAngle) * 0.22;
+      // Crank & flywheel rotation
+      model.crankGroup.rotation.z = crankAngle;
 
-      // Wrist-plate oscillation (harmonic)
-      const wristAmp = 0.16 + (p.cutoffPct / 100) * 0.4;
-      wristPlateGroup.rotation.z = Math.sin(crankAngle) * wristAmp;
+      // Governor rotation & flyball expansion
+      const govOmega = p.governorOmegaRadPerS ?? omegaRadPerSec * 1.8;
+      model.governorGroup.rotation.y += govOmega * delta;
+      const govSpread = 0.35 + Math.min(0.35, (p.engineRpm / 100) * 0.25);
+      model.governorBalls[0].position.x = -govSpread;
+      model.governorBalls[1].position.x = govSpread;
+
+      // Kinematics: crankpin position
+      const crankR = 0.65;
+      const pinX = 3.8 + Math.cos(crankAngle) * crankR;
+      const pinY = Math.sin(crankAngle) * crankR;
+
+      // Slider-crank crosshead position
+      const rodL = 4.4;
+      const strokeX = pinX - Math.sqrt(Math.max(0.1, rodL ** 2 - pinY ** 2));
+      model.crossheadGroup.position.x = strokeX;
+
+      // Connecting rod pose
+      model.conRodGroup.position.set(strokeX, 0, 0);
+      const rodAngle = Math.atan2(pinY, pinX - strokeX);
+      model.conRodGroup.rotation.z = rodAngle;
+
+      // Central wrist plate harmonic oscillation
+      const wristAmp = 0.18 + (p.cutoffPct / 100) * 0.35;
+      const wristAngle = Math.sin(crankAngle + Math.PI * 0.25) * wristAmp;
+      model.wristPlate.rotation.z = wristAngle;
+
+      // 4 Rotary oscillating valve levers
+      model.valveLevers[0].rotation.z = wristAngle * 0.9;
+      model.valveLevers[1].rotation.z = -wristAngle * 0.9;
+      model.valveLevers[2].rotation.z = Math.sin(crankAngle) * wristAmp * 0.7;
+      model.valveLevers[3].rotation.z = -Math.sin(crankAngle) * wristAmp * 0.7;
+
+      // Dashpot rods drop motion
+      const drop1 = Math.max(0, -wristAngle * 1.2);
+      const drop2 = Math.max(0, wristAngle * 1.2);
+      model.dashpotRods[0].position.y = 1.5 - drop1;
+      model.dashpotRods[1].position.y = 1.5 - drop2;
 
       renderer.render(scene, camera);
     };
@@ -312,9 +162,10 @@ export function CorlissSteamEngine3D() {
 
     return () => {
       cancelAnimationFrame(reqId);
+      model.dispose();
       studio.cleanup();
     };
-  }, []);
+  }, [live]);
 
   return (
     <div className="relative w-full h-[620px] bg-parchment-900 rounded-2xl overflow-hidden border border-parchment-700 shadow-2xl flex flex-col">

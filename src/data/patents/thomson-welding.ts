@@ -1,6 +1,7 @@
+import { thomsonWeldingArchivalEdition } from "@/data/editions/thomsonWeldingEdition";
 import type { Patent } from "@/types/patent";
 
-export const thomsonWeldingPatent: Patent = {
+const legacyThomsonWeldingPatent: Patent = {
   id: "us-347140-thomson-welding",
   patentNumber: "US 347,140",
   title: "Apparatus for Electric Welding",
@@ -341,6 +342,182 @@ I claim as my invention:
     "Joule Heating",
     "General Electric",
   ],
+  stats: {
+    totalClaims: 8,
+    independentClaims: 8,
+  },
+};
+
+const manualClaimText = (number: number) => {
+  const sourceClaim = thomsonWeldingArchivalEdition.blocks.find(
+    (
+      block,
+    ): block is Extract<(typeof thomsonWeldingArchivalEdition.blocks)[number], { kind: "claim" }> =>
+      block.kind === "claim" && block.number === number,
+  );
+  if (!sourceClaim) throw new Error(`US 347,140 is missing source claim ${number}.`);
+  return sourceClaim.inlines.map((inline) => inline.text).join("");
+};
+
+const claimReadings = [
+  [
+    "The broad process claim: keep two metal pieces in contact and pass a current through their joint strong enough to fuse and unite them.",
+    ["contact joint", "fusing current", "metal union"],
+  ],
+  [
+    "This process adds a simultaneous force that tends to bring the pieces together while heavy current traverses their joint.",
+    ["heavy current", "simultaneous pressure", "moving-together force"],
+  ],
+  [
+    "This is the end-to-end version: fusing current and mechanical pressure act at the contact between the metal ends.",
+    ["metal ends", "fusing current", "contact pressure"],
+  ],
+  [
+    "This apparatus claim names movable clamps, a pressure source such as a spring, and current applied while the pieces are held in pressure contact.",
+    ["movable clamps", "spring pressure", "pressure-contact current"],
+  ],
+  [
+    "This claim narrows the apparatus to conductive supports L and L-prime, removable dies or holding clamps, and a way to press the arms together.",
+    ["arms L and L-prime", "removable dies", "closing mechanism"],
+  ],
+  [
+    "This claim protects the adjustable spring or equivalent that sets the force applied by the clamps during welding.",
+    ["holders", "current connections", "adjustable spring"],
+  ],
+  [
+    "This is the power-transfer arrangement: a switched primary line and a secondary welding circuit coupled into the work held under pressure.",
+    ["primary feeding line", "secondary welding circuit", "energy transfer"],
+  ],
+  [
+    "This claim combines guided and clamped work with powerful junction current and pressure, obtaining complete union when fusion begins.",
+    ["guided pieces", "junction current", "incipient fusion"],
+  ],
+] as const;
+
+/**
+ * The public record is an explicit source-corrected overlay. The previous
+ * long record stays in this module as a migration witness, but the visitor
+ * sees only source-supported metadata, claims, and manual archival edition.
+ */
+export const thomsonWeldingPatent: Patent = {
+  ...legacyThomsonWeldingPatent,
+  filingDate: "1886-03-29",
+  summary:
+    "Thomson's specification describes electric welding as holding abutting metal pieces under small, adjustable pressure while a large current passes through their joint. It illustrates clamp forms, spring, hand, and weight pressure, transformer and battery supplies, and eight claims covering the process and apparatus.",
+  heroQuote:
+    "Briefly, the new art, which I term “electric welding,” consists in bringing together with a certain pressure the ends of the wires, bars, &c., to be jointed.",
+  originalTextAsset: {
+    url: "/patents/transcripts/us-347140-thomson-welding-reviewed.txt",
+    pageCount: 5,
+    kind: "reviewed-transcription",
+    reviewedBy: "Classic Patents editorial agent (GPT-5.6)",
+    reviewedAt: "2026-08-18",
+    sourcePdfSha256: "80e7bbf735c52f3ace482277f39b130c0b6a62ee8eb9290389175939ba48356c",
+  },
+  originalText:
+    "Thomson calls electric welding the union of abutting metal wires or bars by a high-volume current at the joint under controlled pressure. The complete five-page source, two drawing sheets, and all eight claims are available in the manually prepared Original Patent Text edition.",
+  archivalEdition: thomsonWeldingArchivalEdition,
+  plainEnglishExplanation: {
+    overview:
+      "The patent makes the joint itself the resistive part of a deliberately low-voltage, high-current circuit. Clamps hold the work ends near J; when current crosses the abutment, heat forms there, and spring, hand, weight, or other pressure closes the softened ends into a continuous piece.",
+    coreMechanism:
+      "Thomson guides the work in conductive arms, maintains slight pressure, and sends current through the abutting faces. His transformer example uses a fine-wire primary M and a few-turn heavy secondary N. Because the source places a large fraction of circuit resistance at the intended joint, energy evolves at the joint rather than throughout the supply conductors; small relative movement then supplies the upset pressure.",
+    mechanicalBreakdown: [
+      {
+        title: "Clamping arms and interchangeable holders",
+        summary:
+          "Arms L and L-prime carry removable clamps K and K-prime that make electrical contact and hold the work close to J.",
+        technicalDetails:
+          "The source permits V-grooves, removable shells, universal chucks, and faces fitted to square, hexagonal, rectangular, round, or tubular work. Fig. 1 uses an insulated pivot A; a straight guided slide is offered for accurately abutting heavy work.",
+        archaicTerm: "clamp-holding bars",
+        modernEquivalent: "conductive workholding arms",
+      },
+      {
+        title: "Pressure during heating",
+        summary:
+          "A spring S is the pictured default, with hand pressure, an adjustable weight, and other pressure sources treated as alternatives.",
+        technicalDetails:
+          "The pressure is deliberately small and adjustable. As the joint yields, the arms approach and a burr can appear at J; current is stopped and the burr may be filed or ground away. The source does not give a force, timing, or a water-cooled electrode design.",
+        archaicTerm: "elastic pressure",
+        modernEquivalent: "spring-applied upset force",
+      },
+      {
+        title: "Induction-coil supply",
+        summary:
+          "Fig. 16 transfers energy from a switched fine-wire primary M to a very-heavy, few-turn secondary N connected to the clamps.",
+        technicalDetails:
+          "Closing switch B for a second or two induces current in N. Thomson's explanation is qualitative: resistance in the work pieces is a large fraction of the secondary circuit, so much energy appears at the intended weld. Fig. 17 moves the closing elasticity into the terminal arrangement.",
+        archaicTerm: "electro-motive force",
+        modernEquivalent: "voltage",
+      },
+      {
+        title: "Alternative battery supply",
+        summary:
+          "Fig. 18 uses a large-surface Planté secondary battery instead of the induction coil.",
+        technicalDetails:
+          "The battery is charged from a moderate-current circuit and then supplies a short, heavy-current welding interval when handles bring the sprung conductors together. The patent also permits large dynamos, direct current, or alternating current.",
+        archaicTerm: "Planté battery",
+        modernEquivalent: "lead-acid secondary cell",
+      },
+    ],
+    scientificPrinciples: [
+      {
+        principle: "Resistive heating at the abutment",
+        formula:
+          "Heat at the joint grows with the square of the current, as Thomson expressly states.",
+        explanation:
+          "The specification gives an illustrative joint resistance below one fifty-thousandth of an ohm for moderate wire, yet says a sufficiently large current develops fusion heat at J. It does not state a fixed current, voltage, or temperature.",
+      },
+      {
+        principle: "Transformer energy transfer",
+        formula: "A switched primary winding M induces current in heavy secondary winding N.",
+        explanation:
+          "The source describes the winding sizes and circuit roles, not a turns ratio or rated output. The point is to obtain large current with little electro-motive force at the clamps.",
+      },
+    ],
+    whyItMattersToday:
+      "The document records an early resistance-welding method that couples local electrical heating to controlled mechanical upset. Its drawings make the practical questions visible: where current enters, how work is guided, how pressure is applied, and how different work geometries change the clamp.",
+  },
+  claims: claimReadings.map(([plainEnglish, keyInnovations], index) => ({
+    number: index + 1,
+    isIndependent: true,
+    originalText: manualClaimText(index + 1),
+    plainEnglish,
+    keyInnovations: [...keyInnovations],
+  })),
+  drawings: [
+    {
+      figureNumber: "Figs. 1–9",
+      title: "Clamp, pressure, and joint arrangements",
+      caption:
+        "First source sheet: Fig. 1's clamp apparatus through Fig. 9's modified gravity-pressure arrangement.",
+      svgType: "thomson-welding",
+      callouts: [],
+    },
+    {
+      figureNumber: "Figs. 10–18",
+      title: "Work-piece variants and current supplies",
+      caption:
+        "Second source sheet: Fig. 10 through Fig. 18, including transformer and secondary-battery sources.",
+      svgType: "thomson-welding",
+      callouts: [],
+    },
+  ],
+  historicalContext: {
+    problemStatement:
+      "The specification seeks a firm metal joint without the usual use of solder or another lower-melting metal, including joints in wire, bars, tubes, rings, band-saw steel, and cable.",
+    priorArtLimitations: [
+      "The source contrasts its joint with a soldered or otherwise lower-melting-metal joint.",
+      "A brazed band-saw joint is identified as weaker and as causing nearby destruction of temper.",
+    ],
+    breakthroughInsight:
+      "Thomson locates the working path at the abutted ends and combines current of great volume with small, controlled pressure. The figure sequence turns that insight into clamps, pressure arrangements, and power sources.",
+    patentWars: [],
+    civilizationalImpact:
+      "The source documents the technical elements that later resistance-welding practice must coordinate: local current path, fitted workholding, joint alignment, and controlled force. This edition does not assert a later adoption history that the pinned facsimile does not establish.",
+    aftermath:
+      "This record confines historical claims to the primary source; further litigation or commercial-history assertions require separately cited research.",
+  },
   stats: {
     totalClaims: 8,
     independentClaims: 8,

@@ -203,15 +203,15 @@ export function prepareInteractiveLatex(equation: {
 
     if (!found && latex.includes(v.symbol)) {
       const rawReplacement = `\\htmlClass{${termClass}}{\\htmlData{var=${v.id}}{\\textcolor{${hex}}{${v.symbol}}}}`;
-      
+
       const escapeRegExp = (s: string) => s.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
       const isAlphaNumStart = /^[a-zA-Z0-9]/.test(v.symbol);
       const isAlphaNumEnd = /[a-zA-Z0-9]$/.test(v.symbol);
-      
+
       const prefix = isAlphaNumStart ? "(?<![a-zA-Z0-9\\\\_])" : "";
       const suffix = isAlphaNumEnd ? "(?![a-zA-Z0-9])" : "";
       const regexStr = `${prefix}${escapeRegExp(v.symbol)}${suffix}`;
-      
+
       try {
         const re = new RegExp(regexStr, "g");
         const parts = latex.split(/(\\text\{[^{}]*\})/g);
@@ -221,7 +221,7 @@ export function prepareInteractiveLatex(equation: {
           }
         }
         latex = parts.join("");
-      } catch (e) {
+      } catch (_e) {
         // Fallback to basic string replacement if regex fails on legacy browser
         latex = latex.replaceAll(v.symbol, rawReplacement);
       }

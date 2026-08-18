@@ -29,8 +29,8 @@ export function TeslaCoil3D() {
     ensureTeslaWasm();
   }, []);
 
-  // Electrical Resonant State Controls
-  const { params } = usePatentPhysics("us-533367-tesla-coil");
+  // Interpretive high-potential-transformer controls, not a facsimile reconstruction.
+  const { params } = usePatentPhysics("us-593138-tesla-coil");
   const [showUiOverlay, setShowUiOverlay] = useState<boolean>(true);
   const primaryCap = params.primaryCap ?? 45;
   const toploadCapacitancePf = params.toploadCapacitancePf ?? 35;
@@ -44,7 +44,7 @@ export function TeslaCoil3D() {
   const [activeCamera, setActiveCamera] = useState<CameraPreset>("iso");
   const [isPlayingAudio, setIsPlayingAudio] = useState<boolean>(false);
 
-  // High-Frequency Resonant Physics Calculations (FrankenSim Coupled LC Transformation)
+  // Interpretive coupled-LC host-model calculations.
   const coilPhysics = FrankenSimEngine.stepTeslaCoil(
     resonantFreqKhz,
     inputVoltageKv,
@@ -57,7 +57,7 @@ export function TeslaCoil3D() {
   const streamerLengthInches = coilPhysics.streamerLengthInches.toFixed(1);
   const streamerLengthMeters = coilPhysics.streamerLengthMeters.toFixed(2);
 
-  useFrankenSimPhysics("us-533367-tesla-coil", {
+  useFrankenSimPhysics("us-593138-tesla-coil", {
     domain: "electromagnetics_flux",
     refusal: { isRefused: false },
     em: {
@@ -382,7 +382,7 @@ export function TeslaCoil3D() {
             <div className="bg-white/90 dark:bg-ink-900/90 backdrop-blur-md p-2 sm:px-3.5 sm:py-2.5 rounded-xl border border-parchment-300 dark:border-ink-700 shadow-sm">
               <div className="text-[10px] sm:text-[11px] font-sans text-amber-700 dark:text-amber-400 font-bold uppercase tracking-wider flex items-center gap-1.5">
                 <Zap className="w-3 h-3 sm:w-3.5 sm:h-3.5 text-blue-500 animate-pulse" />
-                Resonant Transformer Telemetry
+                Interpretive Transformer Telemetry
               </div>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-3 gap-y-0.5 sm:gap-y-1 mt-1 text-[10px] sm:text-xs font-sans">
                 <div>
@@ -420,7 +420,7 @@ export function TeslaCoil3D() {
             <div className="hidden sm:flex bg-white/90 dark:bg-ink-900/90 backdrop-blur-md px-3 py-1.5 rounded-lg border border-parchment-300 dark:border-ink-700 text-[11px] font-sans text-ink-700 dark:text-ink-300 items-center gap-2 max-w-full">
               <Sparkles className="w-3.5 h-3.5 text-amber-500 animate-pulse shrink-0" />
               <span className="truncate">
-                Nikola Tesla (US 512,340) — Electrical Transformer (1894)
+                Nikola Tesla (US 593,138) — Electrical Transformer (1897)
               </span>
             </div>
           </div>

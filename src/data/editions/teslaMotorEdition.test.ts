@@ -3,8 +3,8 @@ import { createHash } from "node:crypto";
 import { existsSync, readFileSync } from "node:fs";
 import { resolve } from "node:path";
 import { validateCuratedSpecificationEdition } from "@/data/archivalEditionValidation";
-import { teslaMotorPatent } from "@/data/patents/tesla-motor";
 import { validateReviewedTranscription } from "@/data/patents/sourceTextValidation";
+import { teslaMotorPatent } from "@/data/patents/tesla-motor";
 import { teslaMotorArchivalEdition, teslaMotorParallelReadings } from "./teslaMotorEdition";
 
 describe("US 381,968 manual source edition", () => {
@@ -29,7 +29,9 @@ describe("US 381,968 manual source edition", () => {
 
   test("keeps the typed legal claims exactly synchronized with the public decoders", () => {
     const authoredClaims = teslaMotorArchivalEdition.blocks.filter(
-      (block): block is Extract<(typeof teslaMotorArchivalEdition.blocks)[number], { kind: "claim" }> =>
+      (
+        block,
+      ): block is Extract<(typeof teslaMotorArchivalEdition.blocks)[number], { kind: "claim" }> =>
         block.kind === "claim",
     );
     expect(teslaMotorPatent.claims.map((claim) => claim.originalText)).toEqual(
@@ -51,24 +53,88 @@ describe("US 381,968 manual source edition", () => {
         : [],
     );
     expect(references).not.toHaveLength(0);
+    const previewSources = new Set<string>();
     for (const reference of references) {
       expect(reference.figurePreviews?.length).toBeGreaterThan(0);
       for (const preview of reference.figurePreviews ?? []) {
         expect(preview.src).toStartWith("/patents/figures/us-381968-tesla-motor/");
         expect(existsSync(resolve(process.cwd(), "public", preview.src.slice(1)))).toBe(true);
+        previewSources.add(preview.src);
       }
+    }
+    expect([...previewSources].sort()).toEqual([
+      "/patents/figures/us-381968-tesla-motor/fig-17-source-crop-v1.png",
+      "/patents/figures/us-381968-tesla-motor/fig-18-source-crop-v1.png",
+      "/patents/figures/us-381968-tesla-motor/fig-19-source-crop-v1.png",
+      "/patents/figures/us-381968-tesla-motor/fig-9-source-crop-v1.png",
+      "/patents/figures/us-381968-tesla-motor/figs-1-to-8-source-crop-v1.png",
+      "/patents/figures/us-381968-tesla-motor/figs-10-to-12-source-crop-v1.png",
+      "/patents/figures/us-381968-tesla-motor/figs-13-to-14-source-crop-v1.png",
+      "/patents/figures/us-381968-tesla-motor/figs-15-to-16-source-crop-v1.png",
+      "/patents/figures/us-381968-tesla-motor/figs-1a-to-8a-source-crop-v1.png",
+    ]);
+  });
+
+  test("makes historical technical terms explicit authored annotations", () => {
+    const terms = teslaMotorArchivalEdition.blocks.flatMap((block) =>
+      "inlines" in block
+        ? block.inlines.filter(
+            (inline): inline is Extract<(typeof block.inlines)[number], { kind: "term" }> =>
+              inline.kind === "term",
+          )
+        : [],
+    );
+    expect(terms.map((term) => term.text)).toEqual([
+      "independent circuits",
+      "lines of force",
+      "commutator",
+      "annulus",
+    ]);
+    for (const term of terms) {
+      expect(term.definition.trim().length).toBeGreaterThan(80);
     }
   });
 
-  test("pairs every prose paragraph and claim with a non-lossy explanation", () => {
+  test("pairs every prose paragraph with a non-lossy explanation", () => {
     const explainableBlocks = teslaMotorArchivalEdition.blocks.flatMap((block, index) =>
-      block.kind === "paragraph" || block.kind === "claim" ? [index] : [],
+      block.kind === "paragraph" ? [index] : [],
     );
-    expect(Object.keys(teslaMotorParallelReadings).map(Number).sort((a, b) => a - b)).toEqual(
-      explainableBlocks,
-    );
+    expect(
+      Object.keys(teslaMotorParallelReadings)
+        .map(Number)
+        .sort((a, b) => a - b),
+    ).toEqual(explainableBlocks);
     for (const index of explainableBlocks) {
       expect(teslaMotorParallelReadings[index]?.join(" ").trim().length).toBeGreaterThan(40);
+    }
+  });
+
+  test("keeps every published source paragraph and claim in the reviewed ledger", () => {
+    const ledger = readFileSync(
+      `${process.cwd()}/public/patents/transcripts/us-381968-tesla-motor-reviewed.txt`,
+      "utf8",
+    );
+    const normalize = (value: string) =>
+      value
+        .replaceAll("“", '"')
+        .replaceAll("”", '"')
+        .replace(/[–—]/g, "-")
+        .replace(/\s+/g, " ")
+        .trim();
+    const sourceBlocks = teslaMotorArchivalEdition.blocks.filter(
+      (
+        block,
+      ): block is Extract<
+        (typeof teslaMotorArchivalEdition.blocks)[number],
+        { kind: "paragraph" | "claim" }
+      > => block.kind === "paragraph" || block.kind === "claim",
+    );
+
+    expect(sourceBlocks).not.toHaveLength(0);
+    for (const block of sourceBlocks) {
+      expect(normalize(ledger)).toContain(
+        normalize(block.inlines.map((inline) => inline.text).join("")),
+      );
     }
   });
 
@@ -85,5 +151,8 @@ describe("US 381,968 manual source edition", () => {
     expect(validateReviewedTranscription(ledger, 9)).toEqual({ valid: true });
     expect(JSON.stringify(teslaMotorArchivalEdition)).not.toContain("source-pdf-text-layer");
     expect(JSON.stringify(teslaMotorArchivalEdition)).not.toContain("Definition available");
+    expect(teslaMotorPatent.originalText).not.toContain("squirrel-cage");
+    expect(teslaMotorPatent.originalText).not.toContain("What I claim");
+    expect(JSON.stringify(teslaMotorPatent.historicalContext.patentWars)).toBe("[]");
   });
 });

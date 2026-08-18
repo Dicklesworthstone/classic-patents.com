@@ -45,7 +45,7 @@ import { renoEscalatorPatent } from "./reno-escalator";
 import { parsePatentCatalog } from "./schema";
 import { sholesTypewriterPatent } from "./sholes-typewriter";
 import { spencerMicrowavePatent } from "./spencer-microwave";
-import { teslaCoilPatent } from "./tesla-coil";
+import { teslaCoil593138Patent } from "./tesla-coil-593138";
 import { teslaMotorPatent } from "./tesla-motor";
 import { teslaTeleautomatonPatent } from "./tesla-teleautomaton";
 import { thomsonWeldingPatent } from "./thomson-welding";
@@ -89,9 +89,9 @@ export const allPatents: Patent[] = parsePatentCatalog([
   eastmanKodakPatent,
   hollerithTabulatingPatent,
   renoEscalatorPatent,
-  teslaCoilPatent,
   dieselEnginePatent,
   marconiRadioPatent,
+  teslaCoil593138Patent,
   parsonsTurbinePatent,
   teslaTeleautomatonPatent,
   zeppelinAirshipPatent,
@@ -114,6 +114,19 @@ export const allPatents: Patent[] = parsePatentCatalog([
 
 export function getPatentById(id: string): Patent | undefined {
   return allPatents.find((p) => p.id === id);
+}
+
+/**
+ * Historical catalogue aliases. These are deliberately outside `allPatents`:
+ * they preserve inbound links without letting a false patent identity enter
+ * static catalogue pages, search results, or structured metadata.
+ */
+export const LEGACY_PATENT_REDIRECTS = {
+  "us-533367-tesla-coil": "us-593138-tesla-coil",
+} as const;
+
+export function legacyPatentRedirectFor(id: string): string | undefined {
+  return LEGACY_PATENT_REDIRECTS[id as keyof typeof LEGACY_PATENT_REDIRECTS];
 }
 
 export function getFeaturedPatents(): Patent[] {

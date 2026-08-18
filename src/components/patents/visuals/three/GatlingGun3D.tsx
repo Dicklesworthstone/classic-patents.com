@@ -1,6 +1,6 @@
 "use client";
 
-import { Activity, Camera, Eye, EyeOff } from "lucide-react";
+import { Activity, Camera, Eye, EyeOff, Volume2, VolumeX, Zap } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import type * as THREE from "three";
 import { stepGatlingGun } from "@/physics/catalogKernels";
@@ -12,7 +12,7 @@ import { createThreeStudioScene, type StudioContext } from "./ThreeStudioScene";
 import { useLiveSimParams } from "./useLiveSimParams";
 import { usePatentAudio } from "./usePatentAudio";
 
-type CameraPreset = "iso" | "barrels" | "breech_cam" | "hopper" | "top";
+type CameraPreset = "iso" | "barrels" | "breech_cam" | "hopper" | "crank" | "top";
 
 export function GatlingGun3D() {
   const containerRef = useRef<HTMLDivElement>(null);
@@ -20,21 +20,23 @@ export function GatlingGun3D() {
   // Ballistic Simulation Parameters
   const { params } = usePatentPhysics("us-36836-gatling-gun");
   const [showUiOverlay, setShowUiOverlay] = useState<boolean>(true);
+  const [isCutaway, setIsCutaway] = useState<boolean>(false);
   const crankRpm = params.crankRpm ?? 60;
   const gatling = stepGatlingGun({
     crankRpm,
     barrelCount: params.barrelCount ?? 6,
   });
   const roundsPerMinute = gatling.roundsPerMin;
-  const [showMuzzleFlash, _setShowMuzzleFlash] = useState<boolean>(true);
+  const [showMuzzleFlash] = useState<boolean>(true);
   const [activeCamera, setActiveCamera] = useState<CameraPreset>("iso");
-  const { isAudioMuted } = usePatentAudio();
+  const { isAudioMuted, toggleSound } = usePatentAudio();
 
   const live = useLiveSimParams({
     crankRpm,
     roundsPerMinute,
     showMuzzleFlash,
     isAudioMuted,
+    isCutaway,
     crankOmegaRadPerS: gatling.crankOmegaRadPerS,
   });
 
@@ -64,6 +66,10 @@ export function GatlingGun3D() {
         camera.position.set(-0.8, 3.8, 2.2);
         controls.target.set(-0.6, 1.4, 0);
         break;
+      case "crank":
+        camera.position.set(-3.6, 1.2, 2.8);
+        controls.target.set(-2.4, 0.4, 0.85);
+        break;
       case "top":
         camera.position.set(0, 11.0, 0.1);
         controls.target.set(0, 0, 0);
@@ -71,13 +77,14 @@ export function GatlingGun3D() {
     }
     controls.update();
   };
+
   useEffect(() => {
     if (!containerRef.current) return;
 
     const studio = createThreeStudioScene({
       container: containerRef.current,
-      cameraPos: [3, 2, 8],
-      targetPos: [0, -0.5, 0],
+      cameraPos: [9.0, 5.0, 10.0],
+      targetPos: [0, 0, 0],
       fov: 38,
     });
     const { scene, camera, renderer, controls } = studio;
@@ -99,6 +106,10 @@ export function GatlingGun3D() {
       const delta = 1 / 60;
       const p = live.current;
 
+      // Update cutaway transparency on breech casing
+      model.materials.bronzeReceiver.opacity = p.isCutaway ? 0.35 : 1.0;
+      model.materials.bronzeReceiver.transparent = p.isCutaway;
+
       const omegaRadPerSec = p.crankOmegaRadPerS ?? (p.crankRpm * 2 * Math.PI) / 60;
       model.barrelClusterGroup.rotation.x += omegaRadPerSec * delta;
       model.crankGroup.rotation.x += omegaRadPerSec * delta;
@@ -118,14 +129,16 @@ export function GatlingGun3D() {
       if (now - lastFireTime > fireIntervalSec) {
         lastFireTime = now;
         if (p.showMuzzleFlash) {
-          (model.muzzleFlashPoints.material as THREE.PointsMaterial).opacity = 0.95;
+          model.materials.muzzleFlash.opacity = 0.95;
         }
         if (!p.isAudioMuted && typeof window !== "undefined") {
           soundEngine.playSparks();
         }
       } else {
-        const mat = model.muzzleFlashPoints.material as THREE.PointsMaterial;
-        mat.opacity = Math.max(0, mat.opacity - delta * 8.0);
+        model.materials.muzzleFlash.opacity = Math.max(
+          0,
+          model.materials.muzzleFlash.opacity - delta * 8.0,
+        );
       }
 
       renderer.render(scene, camera);
@@ -156,7 +169,7 @@ export function GatlingGun3D() {
           </span>
         </div>
 
-        {/* Camera Views */}
+        {/* Camera Views & Toggles */}
         <div className="flex items-center gap-1.5 bg-parchment-950/80 backdrop-blur-md p-1.5 rounded-xl border border-parchment-700/60 shadow-lg pointer-events-auto">
           <Camera className="w-3.5 h-3.5 text-parchment-400 ml-1.5 mr-1" />
           {(
@@ -165,7 +178,8 @@ export function GatlingGun3D() {
               { id: "barrels", label: "6 Barrels" },
               { id: "breech_cam", label: "Cam Breech" },
               { id: "hopper", label: "Hopper Feed" },
-              { id: "top", label: "Top View" },
+              { id: "crank", label: "Crank" },
+              { id: "top", label: "Top" },
             ] as const
           ).map((c) => (
             <button
@@ -181,17 +195,37 @@ export function GatlingGun3D() {
               {c.label}
             </button>
           ))}
+
+          <button
+            type="button"
+            onClick={() => setIsCutaway(!isCutaway)}
+            title={isCutaway ? "Solid Receiver" : "Cutaway Breech Casing"}
+            className={`flex items-center gap-1 px-2.5 py-1 text-xs font-sans rounded-lg transition-colors ${
+              isCutaway
+                ? "bg-amber-600/30 text-amber-200 border border-amber-500/40"
+                : "text-parchment-300 hover:text-white hover:bg-parchment-800/60"
+            }`}
+          >
+            {isCutaway ? <EyeOff className="w-3.5 h-3.5" /> : <Eye className="w-3.5 h-3.5" />}
+            <span>{isCutaway ? "Cutaway" : "Solid"}</span>
+          </button>
+
+          <button
+            type="button"
+            onClick={toggleSound}
+            title={isAudioMuted ? "Unmute Sound" : "Mute Sound"}
+            className="p-1.5 rounded-lg text-xs text-parchment-400 hover:text-white hover:bg-parchment-800 transition-colors"
+          >
+            {isAudioMuted ? <VolumeX className="w-4 h-4" /> : <Volume2 className="w-4 h-4" />}
+          </button>
+
           <button
             type="button"
             onClick={() => setShowUiOverlay(!showUiOverlay)}
             title={showUiOverlay ? "Hide Overlay UI" : "Show Overlay UI"}
             className="p-1.5 rounded-lg text-xs text-parchment-400 hover:text-white hover:bg-parchment-800 transition-colors"
           >
-            {showUiOverlay ? (
-              <EyeOff className="w-4 h-4" />
-            ) : (
-              <Eye className="w-4 h-4 text-amber-400" />
-            )}
+            <Zap className="w-4 h-4 text-amber-400" />
           </button>
         </div>
       </div>

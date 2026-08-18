@@ -2,21 +2,16 @@
 
 import { Activity, Camera, Eye, EyeOff, Volume2, VolumeX, Waves } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
-import * as THREE from "three";
+import type * as THREE from "three";
 import { stepPeltonWheel } from "@/physics/catalogKernels";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { createLcg } from "@/utils/lcg";
 import { soundEngine } from "@/utils/soundEngine";
+import { buildPeltonWheelModel } from "./peltonWheelModel";
 import { StudioKernelChips } from "./StudioKernelChips";
-import {
-  createGlowPointTexture,
-  createThreeStudioScene,
-  type StudioContext,
-} from "./ThreeStudioScene";
+import { createThreeStudioScene, type StudioContext } from "./ThreeStudioScene";
 import { useLiveSimParams } from "./useLiveSimParams";
 import { usePatentAudio } from "./usePatentAudio";
-
-import { buildPeltonWheelModel } from "./peltonWheelModel";
 
 const lcg = createLcg(1127);
 

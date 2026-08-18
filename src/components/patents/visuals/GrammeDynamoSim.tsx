@@ -11,7 +11,7 @@ export function GrammeDynamoSim() {
   const { isAudioMuted, toggleSound } = usePatentAudio();
   const shaftRate = params.shaftRate ?? 1;
   const gramme = stepGrammeDynamo({ shaftRate });
-  const printedJunctionCount = gramme.printedJunctionCount;
+  const printedJunctionCount = 36;
   const [isPlaying, setIsPlaying] = useState<boolean>(true);
   const [angleDeg, setAngleDeg] = useState<number>(0);
   const animRef = useRef<number | null>(null);

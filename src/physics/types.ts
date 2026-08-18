@@ -98,6 +98,7 @@ export interface NuclearKineticsState {
   thermalPowerWatts: number; // W
   controlRodInsertionFraction: number;
   geigerIntervalMs: number;
+  neutronDisplaySpeed: number;
 }
 
 // 6. Continuum Mechanics, Polymers & Mechanisms

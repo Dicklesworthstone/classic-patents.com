@@ -542,6 +542,7 @@ export function stepBellTelephone(params: {
   airGap?: number;
   batteryVoltage?: number;
   liquidConductivity?: number;
+  acousticFrequencyHz?: number;
 }) {
   const db = params.voiceAmplitude ?? 75;
   const gap = Math.max(0.05, params.airGap ?? 0.35);
@@ -552,6 +553,7 @@ export function stepBellTelephone(params: {
   const baseResistanceOhms = Number((40 / sigma).toFixed(1));
   const resistanceModulationOhms = Number((baseResistanceOhms * 0.45 * voiceNorm).toFixed(1));
   const currentBaselineAmps = Number((volts / baseResistanceOhms).toFixed(3));
+  const freqHz = Math.max(1, params.acousticFrequencyHz ?? 440);
   return {
     diaphragmUm: displUm,
     modulatedMa: Number(((displUm / (gap * 1000)) * 18.5).toFixed(2)),
@@ -560,6 +562,11 @@ export function stepBellTelephone(params: {
     resistanceModulationOhms,
     currentBaselineAmps,
     currentBaselineMa: Number((currentBaselineAmps * 1000).toFixed(1)),
+    acousticFrequencyHz: freqHz,
+    // 440 Hz shown at 1/20 so the diaphragm is visible. HUD states f.
+    acousticDisplayOmegaRadPerS: Number(((2 * Math.PI * freqHz) / 20).toFixed(3)),
+    electronDisplaySpeed: Number((currentBaselineAmps * 12).toFixed(3)),
+    waveAdvancePerS: 3,
   };
 }
 

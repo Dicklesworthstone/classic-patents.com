@@ -41,8 +41,8 @@
 | **[US 174,465](./src/data/patents/bell-telephone.ts)** | Improvement in Telegraphy (Telephone) | Alexander Graham Bell | Mar 7, 1876 | Variable resistance undulating acoustic speech transmission | 📞 3D Acoustic Transducer |
 | **[US 223,898](./src/data/patents/edison-lightbulb.ts)** | Electric-Lamp | Thomas A. Edison | Jan 27, 1880 | High-resistance carbon filament in high vacuum | 💡 3D Thermal Vacuum Bulb |
 | **[US 381,968](./src/data/patents/tesla-motor.ts)** | Electro-Magnetic Motor | Nikola Tesla | May 1, 1888 | Brushless polyphase AC rotating magnetic stator field | ⚡ 3D Magnetic Stator Motor |
-| **[US 533,367](./src/data/patents/tesla-coil.ts)** | Electrical Transformer | Nikola Tesla | Jan 29, 1895 | Dual-resonant air-core LC high-frequency transformer | ⚡ 3D High-Voltage Spark Coil |
 | **[US 586,193](./src/data/patents/marconi-radio.ts)** | Transmitting Electrical Signals | Guglielmo Marconi | Jul 13, 1897 | Elevated monopole aerial & earth-grounded spark system | 📡 3D RF Spark Transmitter |
+| **[US 593,138](./src/data/patents/tesla-coil-593138.ts)** | Electrical Transformer | Nikola Tesla | Nov 2, 1897 | Graded spiral windings for high-potential transformation and transmission | ⚡ 3D High-Potential Transformer |
 | **[US 821,393](./src/data/patents/wright-flyer.ts)** | Flying-Machine | Orville & Wilbur Wright | May 22, 1906 | 3-axis aerodynamic flight control via wing warping | 🛩️ 3D 6-DoF Flight Sim |
 | **[US 1,155,986](./src/data/patents/goddard-rocket.ts)** | Rocket Apparatus | Robert H. Goddard | Oct 5, 1915 | Bipropellant combustion chamber & de Laval nozzle | 🚀 3D Supersonic Rocket Nozzle |
 | **[US 1,781,541](./src/data/patents/einstein-refrigerator.ts)** | Refrigeration | Albert Einstein & Leo Szilard | Nov 11, 1930 | Zero-moving-parts hermetic Dalton partial pressure cooling | ❄️ 3D Absorption Refrigerator |

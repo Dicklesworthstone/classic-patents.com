@@ -7,7 +7,7 @@ import { teslaCoilResonantKhz } from "@/physics/teslaKernel";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 
 export function TeslaCoilSim() {
-  const { params, updateParam } = usePatentPhysics("us-533367-tesla-coil");
+  const { params, updateParam } = usePatentPhysics("us-593138-tesla-coil");
   const primaryCapacitanceNf = params.primaryCap ?? 45;
   const inputKv = params.inputVoltageKv ?? 15;
   const sparkGap = params.sparkGapDistanceMm ?? 12;
@@ -16,7 +16,7 @@ export function TeslaCoilSim() {
   const secondaryTurns = params.secondaryTurns ?? 850;
   const toploadCapacitancePf = params.toploadCapacitancePf ?? 35;
 
-  // Resonant calculations via central physics engine
+  // Interpretive host-model calculations; see the source-edition gate on the record.
   const resonantFreqKhz = teslaCoilResonantKhz(primaryCapacitanceNf, toploadCapacitancePf);
   const res = FrankenSimEngine.stepTeslaCoil(
     resonantFreqKhz,
@@ -37,12 +37,12 @@ export function TeslaCoilSim() {
           <div className="flex items-center gap-2.5">
             <Zap className="w-6 h-6 text-purple-500 animate-pulse" />
             <h3 className="font-serif text-2xl font-bold text-ink-950 dark:text-parchment-50">
-              Nikola Tesla&apos;s High-Frequency Resonant Transformer (US 533,367)
+              Nikola Tesla&apos;s High-Potential Transformer (US 593,138)
             </h3>
           </div>
           <p className="text-sm sm:text-base text-ink-700 dark:text-ink-300 mt-1">
-            Air-core dual-tuned LC electrical resonance producing high-frequency standing waves and
-            million-volt plasma streamers.
+            An interpretive high-potential winding model. It illustrates voltage grading and is not
+            a reconstruction of the 1897 apparatus while its manual source edition is pending.
           </p>
         </div>
 

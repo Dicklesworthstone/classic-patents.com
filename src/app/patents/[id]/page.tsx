@@ -3,8 +3,15 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { DualProjectionViewer } from "@/components/patents/DualProjectionViewer";
+import { LegacyPatentRedirect } from "@/components/patents/LegacyPatentRedirect";
 import { PatentHeader } from "@/components/patents/PatentHeader";
-import { allPatents, getAdjacentPatents, getPatentById } from "@/data/patents";
+import {
+  allPatents,
+  getAdjacentPatents,
+  getPatentById,
+  LEGACY_PATENT_REDIRECTS,
+  legacyPatentRedirectFor,
+} from "@/data/patents";
 
 interface PatentPageProps {
   params: Promise<{ id: string }>;
@@ -13,13 +20,21 @@ interface PatentPageProps {
 export const dynamicParams = false;
 
 export async function generateStaticParams() {
-  return allPatents.map((p) => ({
-    id: p.id,
+  return [...allPatents.map((p) => p.id), ...Object.keys(LEGACY_PATENT_REDIRECTS)].map((id) => ({
+    id,
   }));
 }
 
 export async function generateMetadata({ params }: PatentPageProps): Promise<Metadata> {
   const { id } = await params;
+  const legacyTarget = legacyPatentRedirectFor(id);
+  if (legacyTarget) {
+    return {
+      title: "Patent Record Moved",
+      robots: { index: false, follow: false },
+      alternates: { canonical: `/patents/${legacyTarget}` },
+    };
+  }
   const patent = getPatentById(id);
   if (!patent) {
     return { title: "Patent Not Found" };
@@ -33,6 +48,10 @@ export async function generateMetadata({ params }: PatentPageProps): Promise<Met
 
 export default async function PatentDetailPage({ params }: PatentPageProps) {
   const { id } = await params;
+  const legacyTarget = legacyPatentRedirectFor(id);
+  if (legacyTarget) {
+    return <LegacyPatentRedirect targetId={legacyTarget} />;
+  }
   const patent = getPatentById(id);
 
   if (!patent) {

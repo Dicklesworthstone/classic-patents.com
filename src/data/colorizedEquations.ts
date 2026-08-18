@@ -2064,121 +2064,10 @@ export const ALL_COLORIZED_EQUATIONS: Record<string, ColorizedEquation[]> = {
     },
   ],
 
-  // 17. Nikola Tesla High-Frequency Oscillator / Tesla Coil (US 533,367)
-  "us-533367-tesla-coil": [
-    {
-      id: "tesla-coil-resonance",
-      patentId: "us-533367-tesla-coil",
-      title: "Dual-Resonant High-Frequency Voltage Step-Up & Tank Tuning",
-      category: "High-Voltage Electromagnetics & RF",
-      rawLatex:
-        "V_2 = V_1 \\sqrt{\\frac{L_2}{L_1}} = V_1 \\sqrt{\\frac{C_1}{C_2}} \\quad \\text{and} \\quad f_0 = \\frac{1}{2\\pi \\sqrt{L_1 C_1}} = \\frac{1}{2\\pi \\sqrt{L_2 C_2}}",
-      colorizedLatex:
-        "\\textcolor{#9333ea}{V_2} = \\textcolor{#2563eb}{V_1} \\sqrt{\\frac{\\textcolor{#059669}{L_2}}{\\textcolor{#ea580c}{L_1}}} = \\textcolor{#2563eb}{V_1} \\sqrt{\\frac{\\textcolor{#0891b2}{C_1}}{\\textcolor{#dc2626}{C_2}}} \\quad \\text{and} \\quad \\textcolor{#d97706}{f_0} = \\frac{1}{2\\pi \\sqrt{\\textcolor{#ea580c}{L_1} \\textcolor{#0891b2}{C_1}}}",
-      plainEnglishSentence: [
-        { text: "The " },
-        { text: "million-volt output potential", variableId: "v2" },
-        { text: " is multiplied from " },
-        { text: "primary tank voltage", variableId: "v1" },
-        { text: " by tuning " },
-        { text: "secondary resonant inductance", variableId: "l2" },
-        { text: " and " },
-        { text: "primary tank inductance", variableId: "l1" },
-        { text: " so the " },
-        { text: "large primary capacitor", variableId: "c1" },
-        { text: " discharges into the " },
-        { text: "small top-load capacitance", variableId: "c2" },
-        { text: " at the exact " },
-        { text: "shared resonant frequency", variableId: "f0" },
-        { text: "." },
-      ],
-      variables: [
-        {
-          id: "v2",
-          symbol: "V_2",
-          name: "Secondary Resonant Voltage",
-          color: "amethyst",
-          role: "Extreme high-frequency potential generated at the top toroid terminal (up to 1,000,000+ Volts)",
-          unit: "Volts (V) / Kilovolts (kV)",
-          dimension: "[M L^2 T^-3 I^-1]",
-          explanation:
-            "Unlike conventional iron-core step-up transformers that rely on turns ratios (N2/N1), the Tesla coil achieves voltage multiplication through energy conservation in resonant LC tanks: (1/2) C1 V1^2 = (1/2) C2 V2^2.",
-          telemetryMetricLabel: "Secondary Voltage",
-        },
-        {
-          id: "v1",
-          symbol: "V_1",
-          name: "Primary Spark Gap Voltage",
-          color: "sapphire",
-          role: "Initial breakdown potential across the spark gap (approx 10,000 to 25,000 Volts)",
-          unit: "Volts (V)",
-          dimension: "[M L^2 T^-3 I^-1]",
-          explanation:
-            "Provided by an iron-core line transformer charging the primary Leyden jars or oil capacitors until the spark gap breaks down.",
-          telemetryKey: "primaryVoltage",
-        },
-        {
-          id: "l2",
-          symbol: "L_2",
-          name: "Secondary Coil Inductance",
-          color: "emerald",
-          role: "High-inductance single-layer helical winding (approx 20 to 50 millihenries)",
-          unit: "Millihenries (mH)",
-          dimension: "[M L^2 T^-2 I^-2]",
-          explanation: "Wound with fine wire in a tall cylinder to prevent inter-turn flashover.",
-        },
-        {
-          id: "l1",
-          symbol: "L_1",
-          name: "Primary Coil Inductance",
-          color: "coral",
-          role: "Low-inductance, heavy copper strap spiral winding (approx 10 to 50 microhenries)",
-          unit: "Microhenries (\\mu H)",
-          dimension: "[M L^2 T^-2 I^-2]",
-          explanation:
-            "A few turns of heavy copper tubing allowing instantaneous kiloampere discharge currents with minimal ohmic resistance.",
-        },
-        {
-          id: "c1",
-          symbol: "C_1",
-          name: "Primary Tank Capacitance",
-          color: "cyan",
-          role: "Heavy-duty oil capacitor tank storing primary charge energy (approx 20 to 100 nanofarads)",
-          unit: "Nanofarads (nF)",
-          dimension: "[M^-1 L^-2 T^4 I^2]",
-          explanation: "Stores high energy per pulse: E = (1/2) C1 V1^2.",
-        },
-        {
-          id: "c2",
-          symbol: "C_2",
-          name: "Secondary Terminal Capacitance",
-          color: "crimson",
-          role: "Microscopic self-capacitance of top toroid sphere (approx 10 to 30 picofarads)",
-          unit: "Picofarads (pF)",
-          dimension: "[M^-1 L^-2 T^4 I^2]",
-          explanation:
-            "Because C2 is tiny, transferring all primary energy into C2 produces extreme voltage: V2 = V1 sqrt(C1 / C2).",
-        },
-        {
-          id: "f0",
-          symbol: "f_0",
-          name: "Resonant LC Frequency",
-          color: "amber",
-          role: "Natural oscillation frequency of primary and secondary circuits (100 kHz to 2 MHz)",
-          unit: "Kilohertz (kHz)",
-          dimension: "[T^-1]",
-          explanation:
-            "Exact resonance (f_primary = f_secondary) allows 100% inductive power transfer via loosely coupled air cores.",
-          telemetryKey: "sparkFreqKhz",
-        },
-      ],
-      pedagogicalNote:
-        "Nikola Tesla discovered that by eliminating iron cores and tuning primary and secondary LC tanks to exact identical resonance, electrical energy bounces back and forth like a swing, pumping secondary voltage to millions of volts without burning insulation.",
-      claimRef: 1,
-      historicalSignificance:
-        "US 533367 is the foundation for high-frequency radio transmitters, spark-gap wireless telegraphy, and particle accelerators.",
-    },
-  ],
+  // The source-facing formula treatment is intentionally deferred with the
+  // complete manual edition. The prior LC-tank panel described another Tesla
+  // design and must not be displayed for US 593,138.
+  "us-593138-tesla-coil": [],
 
   // 18. Guglielmo Marconi Wireless Telegraphy (US 586,193)
   "us-586193-marconi-radio": [
@@ -7473,7 +7362,7 @@ function _convertScientificPrincipleToColorizedEquation(
     // 0r. TESLA HIGH FREQUENCY COIL TRANSFORMER
     else if (
       patentId.includes("tesla-coil") ||
-      patentId.includes("533367") ||
+      patentId.includes("593138") ||
       pLower.includes("tesla coil")
     ) {
       if (sym === "C_p" || sym === "C_s" || sym === "C_{top}") {

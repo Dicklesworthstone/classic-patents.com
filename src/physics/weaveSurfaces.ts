@@ -40,7 +40,7 @@ import {
   stepZeppelinAirship,
 } from "./catalogKernels";
 import { FrankenSimEngine } from "./engine";
-import { fermiKeff } from "./fermiKinetics";
+import { fermiKeff, stepFermiKinetics } from "./fermiKinetics";
 import {
   stepCcdWells,
   stepHoweSewingMachine,
@@ -194,14 +194,14 @@ export function materialProbe(
   if (patentId.includes("fermi")) {
     const rod = params.rodWithdrawal ?? 83.5;
     const mod = params.moderatorPurity ?? 99.5;
-    const keff = fermiKeff(rod, mod);
+    const kinetics = stepFermiKinetics(rod, mod);
     return {
       part: calloutLabel,
       material: "Cadmium in a graphite–uranium lattice",
       qty: "k_eff",
-      value: keff.toFixed(4),
+      value: kinetics.kEffective.toFixed(4),
       unit: "",
-      note: `Rods at ${rod.toFixed(0)}% withdrawn. Delayed-critical band is 0.998–1.002.`,
+      note: `Rods at ${rod.toFixed(0)}% withdrawn. Delayed-critical band is 0.998–1.002 · n ${kinetics.neutronDisplaySpeed} u/s.`,
     };
   }
   if (patentId.includes("howe") || patentId.includes("4750")) {
@@ -255,7 +255,7 @@ export function materialProbe(
       note: `${wells.photoElectrons.toLocaleString()} e⁻ in a ${wells.fullWellElectrons.toLocaleString()} e⁻ well. φ ${wells.phasePeriodNs} ns.`,
     };
   }
-  if (patentId.includes("tesla-coil") || patentId.includes("533367")) {
+  if (patentId.includes("tesla-coil") || patentId.includes("593138")) {
     const cap = params.primaryCap ?? 45;
     const freqKhz = teslaCoilResonantKhz(cap, params.toploadCapacitancePf);
     const coil = FrankenSimEngine.stepTeslaCoil(
@@ -397,6 +397,7 @@ export function materialProbe(
     const bell = stepBellTelephone({
       voiceAmplitude: params.voiceAmplitude,
       airGap: params.airGap,
+      acousticFrequencyHz: params.acousticFrequencyHz,
     });
     return {
       part: calloutLabel,
@@ -404,7 +405,7 @@ export function materialProbe(
       qty: "Δi",
       value: bell.modulatedMa.toFixed(2),
       unit: "mA",
-      note: `Diaphragm ${bell.diaphragmUm} µm. ${bell.sensitivityMvPerPa} mV/Pa.`,
+      note: `Diaphragm ${bell.diaphragmUm} µm. ${bell.sensitivityMvPerPa} mV/Pa · ω ${bell.acousticDisplayOmegaRadPerS} rad/s.`,
     };
   }
   if (patentId.includes("marconi")) {
@@ -840,7 +841,7 @@ export function materialProbe(
       qty: "Φ2",
       value: apple.dramWindowNs.toString(),
       unit: "ns",
-      note: `CPU ${apple.cpuClockMhz} MHz · color ${apple.colorSubcarrierMhz} MHz. Φ2 duty ${apple.cpuDutyPct}%.`,
+      note: `CPU ${apple.cpuClockMhz} MHz · color ${apple.colorSubcarrierMhz} MHz. Φ2 duty ${apple.cpuDutyPct}% · visual Φ2 ${apple.phi2DisplayHz} Hz.`,
     };
   }
   if (patentId.includes("spencer") || patentId.includes("2495429")) {
@@ -1013,7 +1014,7 @@ export function intervalGhosts(patentId: string, params: Record<string, number>)
       },
     ];
   }
-  if (patentId.includes("tesla-coil") || patentId.includes("533367")) {
+  if (patentId.includes("tesla-coil") || patentId.includes("593138")) {
     const cap = params.primaryCap ?? 45;
     const freqKhz = teslaCoilResonantKhz(cap, params.toploadCapacitancePf);
     const coil = FrankenSimEngine.stepTeslaCoil(
@@ -1343,7 +1344,7 @@ export function fidelityField(
       unit: "",
     };
   }
-  if (patentId.includes("tesla-coil") || patentId.includes("533367")) {
+  if (patentId.includes("tesla-coil") || patentId.includes("593138")) {
     const cap = params.primaryCap ?? 45;
     const freqKhz = teslaCoilResonantKhz(cap, params.toploadCapacitancePf);
     const coil = FrankenSimEngine.stepTeslaCoil(
@@ -1489,7 +1490,7 @@ export function spectralModes(patentId: string, params: Record<string, number>):
       name: n === 1 ? "λ/4" : `${n} f₀`,
     }));
   }
-  if (patentId.includes("tesla-coil") || patentId.includes("533367")) {
+  if (patentId.includes("tesla-coil") || patentId.includes("593138")) {
     const f0 = teslaCoilResonantKhz(params.primaryCap, params.toploadCapacitancePf) * 1000;
     return [1, 2, 3].map((n) => ({
       n,
@@ -1683,7 +1684,7 @@ export function datedScenarios(patentId: string): DatedScenario[] {
       },
     ];
   }
-  if (patentId.includes("tesla-coil") || patentId.includes("533367")) {
+  if (patentId.includes("tesla-coil") || patentId.includes("593138")) {
     return [
       {
         id: "columbia-1891",
@@ -1799,7 +1800,7 @@ export function coupleLinks(patentId: string, params: Record<string, number>): C
     });
     return [{ from: "I²R", to: "radiation", watts: bulb.radiantWatts }];
   }
-  if (patentId.includes("tesla-coil") || patentId.includes("533367")) {
+  if (patentId.includes("tesla-coil") || patentId.includes("593138")) {
     const cap = params.primaryCap ?? 45;
     const freqKhz = teslaCoilResonantKhz(cap, params.toploadCapacitancePf);
     const coil = FrankenSimEngine.stepTeslaCoil(

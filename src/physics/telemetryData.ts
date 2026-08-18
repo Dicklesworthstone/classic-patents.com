@@ -354,6 +354,13 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
           progressPct: (kinetics.geigerIntervalMs / 800) * 100,
         },
         {
+          label: "Neutron Display",
+          value: `${kinetics.neutronDisplaySpeed}`,
+          unit: "u/s",
+          badgeColor: "cyan",
+          progressPct: Math.min(100, (kinetics.neutronDisplaySpeed / 6) * 100),
+        },
+        {
           label: "Thermal Power",
           value: thermalPower.toLocaleString(),
           unit: "W",
@@ -989,6 +996,7 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
         airGap: p.airGap,
         batteryVoltage: p.batteryVoltage,
         liquidConductivity: p.liquidConductivity,
+        acousticFrequencyHz: p.acousticFrequencyHz,
       });
       const displMicrons = bell.diaphragmUm.toFixed(2);
       const modCurrent = bell.modulatedMa.toFixed(2);
@@ -1036,6 +1044,13 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
           unit: "mA",
           badgeColor: "cyan",
           progressPct: Math.min(100, (bell.currentBaselineMa / 200) * 100),
+        },
+        {
+          label: "Display ω",
+          value: `${bell.acousticDisplayOmegaRadPerS}`,
+          unit: "rad/s",
+          badgeColor: "amber",
+          progressPct: Math.min(100, (bell.acousticDisplayOmegaRadPerS / 200) * 100),
         },
       ];
     },
@@ -2176,13 +2191,12 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
     pedagogicalInsight:
       "A curved eye-pointed needle pushes a thread loop through the cloth; an oscillating shuttle carrying a second bobbin thread passes through the loop, locking both threads inside the seam.",
   },
-  "us-533367-tesla-coil": {
+  "us-593138-tesla-coil": {
     domain: "electromagnetics_flux",
-    domainTitle: "Dual-Resonant Coupled LC Tank Voltage Multiplication & Ionization",
-    equationName: "Resonant Transformer Voltage Multiplication",
-    governingEquation:
-      "V_2 = V_1 \\sqrt{\\frac{L_2}{L_1}} \\quad \\text{with} \\quad \\omega_0 = \\frac{1}{\\sqrt{L_1 C_1}} = \\frac{1}{\\sqrt{L_2 C_2}}",
-    engineMethod: "FrankenSimEngine.stepTeslaCoil",
+    domainTitle: "Interpretive High-Potential Transformer Visualization",
+    equationName: "Source-Described Quarter-Wave Secondary",
+    governingEquation: "l \\approx \\lambda / 4",
+    engineMethod: "FrankenSimEngine.stepTeslaCoil (interpretive host fallback)",
     controls: [
       {
         id: "primaryCap",
@@ -2268,21 +2282,21 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
 
       return [
         {
-          label: "Resonant Peak Voltage",
+          label: "Illustrative Peak Voltage",
           value: `${peakKv}`,
           unit: "kV",
           badgeColor: "purple",
           progressPct: (peakKv / 800) * 100,
         },
         {
-          label: "LC Tank Frequency",
+          label: "Illustrative Frequency",
           value: freqKhz.toString(),
           unit: "kHz",
           badgeColor: "cyan",
           progressPct: (freqKhz / 350) * 100,
         },
         {
-          label: "Streamer Spark Length",
+          label: "Illustrative Discharge Length",
           value: streamerM,
           unit: "m",
           badgeColor: "amber",
@@ -2298,7 +2312,7 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
       ];
     },
     pedagogicalInsight:
-      "Air-core primary and secondary coils tuned to identical LC natural resonant frequencies transfer energy inductively over multiple cycles, building up electrostatic voltage until the air dielectric ionizes.",
+      "US 593,138 describes a secondary approximately one-quarter of the electrical disturbance wavelength, with the remote terminal at maximum potential. The interactive numbers are an interpretive host model, not a reconstruction of a measured historic apparatus.",
   },
   "us-x9430-colt-revolver": {
     domain: "continuum_elasticity",

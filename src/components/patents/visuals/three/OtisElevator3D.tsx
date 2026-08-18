@@ -1,17 +1,28 @@
 "use client";
 
-import { Activity, Camera, RotateCcw, Scissors, Volume2, VolumeX, Zap } from "lucide-react";
+import {
+  Activity,
+  Camera,
+  Eye,
+  EyeOff,
+  RotateCcw,
+  Scissors,
+  Volume2,
+  VolumeX,
+  Zap,
+} from "lucide-react";
 import { useEffect, useRef, useState } from "react";
-import * as THREE from "three";
+import type * as THREE from "three";
 import { stepOtisElevator } from "@/physics/machineKernels";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { soundEngine } from "@/utils/soundEngine";
+import { buildOtisElevatorModel, updateOtisElevatorKinematics } from "./otisElevatorModel";
 import { StudioKernelChips } from "./StudioKernelChips";
 import { createThreeStudioScene, type StudioContext } from "./ThreeStudioScene";
 import { useLiveSimParams } from "./useLiveSimParams";
 import { usePatentAudio } from "./usePatentAudio";
 
-type CameraPreset = "iso" | "safety_pawls" | "leaf_spring" | "cab" | "top";
+type CameraPreset = "iso" | "safety_pawls" | "leaf_spring" | "cab" | "crown_sheave" | "top";
 
 export function OtisElevator3D() {
   const containerRef = useRef<HTMLDivElement>(null);
@@ -19,6 +30,7 @@ export function OtisElevator3D() {
   // Mechanical Elevator Simulation Parameters
   const { params, updateParam } = usePatentPhysics("us-31128-otis-elevator");
   const [showUiOverlay, setShowUiOverlay] = useState<boolean>(true);
+  const [isCutaway, setIsCutaway] = useState<boolean>(false);
   const cabPayloadKg = params.cabPayload ?? 650;
   const cableTensionPct = params.cableTension ?? 100;
   const otis = stepOtisElevator({ cabPayloadKg, cableTensionPct });
@@ -35,6 +47,7 @@ export function OtisElevator3D() {
     cabPayloadKg,
     cableTensionPct,
     isAudioMuted,
+    isCutaway,
   });
 
   const controlsRef = useRef<StudioContext["controls"] | null>(null);
@@ -62,6 +75,10 @@ export function OtisElevator3D() {
       case "cab":
         camera.position.set(0, 0.5, 4.5);
         controls.target.set(0, 0, 0);
+        break;
+      case "crown_sheave":
+        camera.position.set(0, 6.8, 3.5);
+        controls.target.set(0, 5.6, 0);
         break;
       case "top":
         camera.position.set(0, 13.0, 0.1);
@@ -99,164 +116,37 @@ export function OtisElevator3D() {
     cameraRef.current = camera;
     controlsRef.current = controls;
 
-    // Materials
-    const timberWoodMat = new THREE.MeshStandardMaterial({
-      color: 0x5c381e,
-      roughness: 0.75,
-      metalness: 0.05,
-    });
-
-    const castIronMat = new THREE.MeshStandardMaterial({
-      color: 0x27272a,
-      roughness: 0.45,
-      metalness: 0.85,
-    });
-
-    const springSteelMat = new THREE.MeshStandardMaterial({
-      color: 0x64748b,
-      roughness: 0.2,
-      metalness: 0.92,
-    });
-
-    const brassShackleMat = new THREE.MeshStandardMaterial({
-      color: 0xd97706,
-      roughness: 0.25,
-      metalness: 0.9,
-    });
-
-    const ropeHempMat = new THREE.MeshStandardMaterial({
-      color: 0xb45309,
-      roughness: 0.9,
-      metalness: 0.0,
-    });
-
-    const rootGroup = new THREE.Group();
-    scene.add(rootGroup);
-
-    // 1. Vertical Hoistway Timber Frame with Notched Ratchet Racks (Claim 1)
-    const hoistwayGroup = new THREE.Group();
-    rootGroup.add(hoistwayGroup);
-
-    // Twin Vertical Timber Uprights
-    [-2.2, 2.2].forEach((ux) => {
-      const post = new THREE.Mesh(new THREE.BoxGeometry(0.6, 12.0, 0.6), timberWoodMat);
-      post.position.set(ux, 0, 0);
-      post.castShadow = true;
-      hoistwayGroup.add(post);
-
-      // Notched Cast-Iron Ratchet Racks
-      const toothCount = 36;
-      for (let t = 0; t < toothCount; t++) {
-        const ty = -5.5 + t * 0.32;
-        const tooth = new THREE.Mesh(new THREE.ConeGeometry(0.14, 0.26, 3), castIronMat);
-        tooth.rotation.z = ux > 0 ? Math.PI / 2 : -Math.PI / 2;
-        tooth.position.set(ux > 0 ? ux - 0.35 : ux + 0.35, ty, 0);
-        tooth.castShadow = true;
-        hoistwayGroup.add(tooth);
-      }
-    });
-
-    // Top Header Beam & Pulley Sheave
-    const topBeam = new THREE.Mesh(new THREE.BoxGeometry(5.4, 0.6, 0.8), timberWoodMat);
-    topBeam.position.set(0, 5.8, 0);
-    hoistwayGroup.add(topBeam);
-
-    const sheave = new THREE.Mesh(new THREE.CylinderGeometry(0.8, 0.8, 0.25, 24), castIronMat);
-    sheave.rotation.x = Math.PI / 2;
-    sheave.position.set(0, 5.8, 0);
-    hoistwayGroup.add(sheave);
-
-    // 2. Elevator Cab Assembly
-    const cabGroup = new THREE.Group();
-    rootGroup.add(cabGroup);
-
-    // Platform Floor
-    const cabFloor = new THREE.Mesh(new THREE.BoxGeometry(3.6, 0.25, 3.6), timberWoodMat);
-    cabFloor.position.y = -1.5;
-    cabFloor.castShadow = true;
-    cabFloor.receiveShadow = true;
-    cabGroup.add(cabFloor);
-
-    // Cab Railings
-    const railing = new THREE.Mesh(
-      new THREE.BoxGeometry(3.4, 1.4, 3.4),
-      new THREE.MeshStandardMaterial({
-        color: 0x78350f,
-        roughness: 0.6,
-        wireframe: true,
-      }),
-    );
-    railing.position.y = -0.7;
-    cabGroup.add(railing);
-
-    // Overhead Timber Crossbeam (Draw-Bar)
-    const crossbeam = new THREE.Mesh(new THREE.BoxGeometry(3.8, 0.4, 0.4), timberWoodMat);
-    crossbeam.position.y = 1.8;
-    crossbeam.castShadow = true;
-    cabGroup.add(crossbeam);
-
-    // 3. Multi-Leaf Wagon Spring atop Crossbeam (Claim 2)
-    const leafSpringGroup = new THREE.Group();
-    leafSpringGroup.position.set(0, 2.2, 0);
-    cabGroup.add(leafSpringGroup);
-
-    // Curved Multi-Leaf Bow Spring Mesh
-    const springCurve = new THREE.QuadraticBezierCurve3(
-      new THREE.Vector3(-1.8, 0, 0),
-      new THREE.Vector3(0, 0.55, 0),
-      new THREE.Vector3(1.8, 0, 0),
-    );
-    const springGeo = new THREE.TubeGeometry(springCurve, 24, 0.08, 8, false);
-    const springMesh = new THREE.Mesh(springGeo, springSteelMat);
-    springMesh.castShadow = true;
-    leafSpringGroup.add(springMesh);
-
-    // 4. Opposed Safety Dogs / Pawls
-    const leftPawl = new THREE.Mesh(new THREE.ConeGeometry(0.18, 0.5, 4), castIronMat);
-    leftPawl.rotation.z = Math.PI / 2;
-    leftPawl.position.set(-1.85, 1.8, 0);
-    cabGroup.add(leftPawl);
-
-    const rightPawl = new THREE.Mesh(new THREE.ConeGeometry(0.18, 0.5, 4), castIronMat);
-    rightPawl.rotation.z = -Math.PI / 2;
-    rightPawl.position.set(1.85, 1.8, 0);
-    cabGroup.add(rightPawl);
-
-    // 5. Hoisting Rope & Tension Shackle
-    const shackleMesh = new THREE.Mesh(
-      new THREE.CylinderGeometry(0.12, 0.12, 0.6, 16),
-      brassShackleMat,
-    );
-    shackleMesh.position.set(0, 2.6, 0);
-    cabGroup.add(shackleMesh);
-
-    const ropeGeo = new THREE.CylinderGeometry(0.06, 0.06, 3.2, 8);
-    const ropeMesh = new THREE.Mesh(ropeGeo, ropeHempMat);
-    ropeMesh.position.set(0, 4.3, 0);
-    rootGroup.add(ropeMesh);
+    const { root, nodes, materials, dispose } = buildOtisElevatorModel();
+    scene.add(root);
 
     // Animation Loop
     let reqId: number;
-    let _renderedSteps = 0;
+    let timeSec = 0;
 
     const animate = () => {
       reqId = requestAnimationFrame(animate);
-      _renderedSteps += 1;
-      const _delta = 1 / 60;
+      const dt = 1 / 60;
+      timeSec += dt;
       const p = live.current;
 
       const step = stepOtisElevator({
         cabPayloadKg: p.cabPayloadKg,
         cableTensionPct: p.cableTensionPct,
       });
-      ropeMesh.visible = !step.isSnapped;
-      const pawlOut = step.isPawlEngaged ? 1.98 : 1.72;
-      leftPawl.position.x = -pawlOut;
-      rightPawl.position.x = pawlOut;
-      // Tension bows the leaf; snap lets it flatten and fire the dogs
-      leafSpringGroup.scale.y = 0.55 + (1 - step.cableTensionPct / 100) * 0.85;
-      // 4.5 cm catch is the historical claim; scene units exaggerate so the drop is visible
-      cabGroup.position.y = step.isSnapped ? -Math.min(0.6, step.stoppingDistanceCm * 0.12) : 0;
+
+      // Update cutaway transparency
+      materials.agedTimberWood.opacity = p.isCutaway ? 0.35 : 1.0;
+      materials.agedTimberWood.transparent = p.isCutaway;
+
+      updateOtisElevatorKinematics(
+        nodes,
+        materials,
+        dt,
+        timeSec,
+        step.isSnapped,
+        step.springDeflectionCm,
+        step.isPawlEngaged,
+      );
 
       renderer.render(scene, camera);
     };
@@ -265,6 +155,7 @@ export function OtisElevator3D() {
 
     return () => {
       cancelAnimationFrame(reqId);
+      dispose();
       studio.cleanup();
     };
   }, [live]);
@@ -294,6 +185,7 @@ export function OtisElevator3D() {
               ["safety_pawls", "Safety Pawls"],
               ["leaf_spring", "Leaf Spring"],
               ["cab", "Passenger Cab"],
+              ["crown_sheave", "Crown Sheave"],
               ["top", "Top"],
             ] as [CameraPreset, string][]
           ).map(([preset, label]) => (
@@ -314,6 +206,20 @@ export function OtisElevator3D() {
 
         {/* Toggles & Cut Rope Action */}
         <div className="flex items-center gap-1.5 bg-parchment-950/80 backdrop-blur-md p-1.5 rounded-xl border border-parchment-700/60 shadow-lg pointer-events-auto">
+          <button
+            type="button"
+            onClick={() => setIsCutaway(!isCutaway)}
+            title={isCutaway ? "Solid Mode" : "Cutaway Guide Posts"}
+            className={`flex items-center gap-1 px-2.5 py-1 text-xs font-sans rounded-lg transition-colors ${
+              isCutaway
+                ? "bg-amber-600/30 text-amber-200 border border-amber-500/40"
+                : "text-parchment-300 hover:text-white hover:bg-parchment-800/60"
+            }`}
+          >
+            {isCutaway ? <EyeOff className="w-3.5 h-3.5" /> : <Eye className="w-3.5 h-3.5" />}
+            <span>{isCutaway ? "Cutaway" : "Solid"}</span>
+          </button>
+
           {isRopeSevered ? (
             <button
               type="button"

@@ -1,6 +1,12 @@
+import { carrierAirConditionerArchivalEdition } from "@/data/editions/carrierAirConditionerEdition";
 import type { Patent } from "@/types/patent";
 
-export const carrierAirConditionerPatent: Patent = {
+/**
+ * Retained only as a migration witness. Its public successor below corrects
+ * the pre-existing conflation of US 808,897 with Carrier's other air-control
+ * work; the registry imports `carrierAirConditionerPatent`, not this record.
+ */
+export const legacyCarrierAirConditionerPatent: Patent = {
   id: "us-808897-carrier-air-conditioner",
   patentNumber: "US 808,897",
   title: "Apparatus for Treating Air",
@@ -296,5 +302,145 @@ I claim as my invention:
     independentClaims: 1,
     patentWarYears: "1902–1915",
     impactScore: 100,
+  },
+};
+
+const manualClaims = carrierAirConditionerArchivalEdition.blocks
+  .filter((block) => block.kind === "claim")
+  .map((block) => ({
+    number: block.number,
+    originalText: block.inlines.map((inline) => inline.text).join(""),
+  }));
+
+export const carrierAirConditionerPatent: Patent = {
+  id: "us-808897-carrier-air-conditioner",
+  patentNumber: "US 808,897",
+  title: "Apparatus for Treating Air",
+  shortTitle: "Wet-Plate Air Purifier",
+  subtitle: "A sprayed-air washer with sinuous separator plates for particle and droplet removal",
+  inventors: ["Willis H. Carrier"],
+  inventorLocation: "Buffalo, New York",
+  grantDate: "1906-01-02",
+  filingDate: "1904-09-16",
+  era: "Progressive Era (1900–1920)",
+  category: "consumer",
+  categoryLabel: "Air Treatment & Environmental Engineering",
+  summary:
+    "US 808,897 claims an air-purifying apparatus in which a fine spray wets suspended material and an upright, zigzag plate separator removes liquid and the material captured by it. It is not the 1902 Carrier humidity-control patent often credited as the origin of modern air conditioning: this 1904 filing is specifically about the construction and action of the separator plates.",
+  heroQuote: "The two portions of the separator-plates perform distinct functions.",
+  originalPdfUrl: "/patents/pdfs/us-808897-carrier-air-conditioner.pdf",
+  googlePatentsUrl: "https://patents.google.com/patent/US808897A/en",
+  usptoClassification: "Air-purifying apparatus",
+  originalTextAsset: {
+    url: "/patents/transcripts/us-808897-carrier-air-conditioner-reviewed.txt",
+    pageCount: 4,
+    kind: "reviewed-transcription",
+    reviewedBy: "Classic Patents editorial agent (GPT-5.6)",
+    reviewedAt: "2026-08-18",
+    sourcePdfSha256: "b8cfbb69e27934862236ecabf03396e67d04a4b4011c98083f1205cd76f0291e",
+  },
+  archivalEdition: carrierAirConditionerArchivalEdition,
+  originalText:
+    "This grant describes an air conduit, a fine spray, and a two-stage plate separator. Its five claims protect the geometry of the upright sinuous plates and their gutters, not an automatic dew-point-control system.",
+  plainEnglishExplanation: {
+    overview:
+      "Carrier washes an air stream with a fine liquid spray, then sends that wet stream through repeated turns between shaped upright plates. Dirt is thrown into the wet film; the plate geometry then removes free droplets while keeping the pressure loss modest.",
+    coreMechanism:
+      "A fan K moves air through casing M. Spray device H makes a fine liquid spray. The front plate faces i remain wet and collect suspended matter as the air turns through them. Rear flanges b and c form gutters that interrupt liquid travel across the later bends, separating free droplets before the air leaves the apparatus.",
+    mechanicalBreakdown: [
+      {
+        title: "Spray device H",
+        summary:
+          "A supply pipe and whirling nozzles distribute treating liquid through the incoming air.",
+        technicalDetails:
+          "The specification permits water or another treating liquid. Its shown nozzles h impart circular motion to the issuing liquid to make a fine spray; it does not state a refrigeration temperature, pump pressure, or automatic humidity controller.",
+        archaicTerm: "Atomized spray",
+        modernEquivalent: "Fine-droplet air washer spray",
+      },
+      {
+        title: "Sinuous separator plates",
+        summary: "Upright plates make the air follow a sequence of oblique turns.",
+        technicalDetails:
+          "The turns bring the stream into contact with wetted faces. Inertia and the curved path drive suspended solid material toward the liquid film, which carries it down to trap J and filter or sieve L.",
+        archaicTerm: "Separator plates or elements",
+        modernEquivalent: "Wet baffle or mist-eliminator plates",
+      },
+      {
+        title: "Rear flanges and gutters",
+        summary:
+          "The plate's rear section limits liquid flow across successive faces to remove droplets from air.",
+        technicalDetails:
+          "Projections b and c obstruct liquid motion at the bends, while gutter a collects liquid at the rear edge. The claim language makes the unobstructed wet front and obstructed rear a deliberate two-stage arrangement.",
+        archaicTerm: "Flanges or lips",
+        modernEquivalent: "Droplet-separation gutters",
+      },
+    ],
+    scientificPrinciples: [
+      {
+        principle: "Inertial impaction in a turning flow",
+        explanation:
+          "The document says that particles are thrown against the wet film by their inertia and by centrifugal force from the sinuous air path. In modern terms, a particle cannot follow every abrupt streamline turn as readily as the carrier gas, so it contacts the wetted surface.",
+      },
+      {
+        principle: "Gravity drainage and liquid-film capture",
+        explanation:
+          "The front plate surfaces intentionally remain wet. Captured material is washed downward by that film into basin or trap J, while the rear plate geometry seeks to separate free liquid from the outgoing air.",
+      },
+    ],
+    whyItMattersToday:
+      "The patent records a practical early air-washer and mist-separator problem: create wet contact for particle capture, then prevent liquid carryover. Its complete source also matters because it distinguishes this plate-separator grant from Carrier's separate humidity-control work.",
+  },
+  claims: manualClaims.map(({ number, originalText }) => ({
+    number,
+    isIndependent: true,
+    originalText,
+    plainEnglish:
+      [
+        "Claim 1 covers the two-zone upright plate construction: smooth wet front faces distribute liquid, while a projected rear portion separates it as air follows sinuous passages.",
+        "Claim 2 adds the general air-moistening means and specifies smooth front plate portions with projections in the succeeding portions.",
+        "Claim 3 focuses on upright bends and projecting flanges that form upright gutters in a moistened-air separator.",
+        "Claim 4 states the plate system more compactly as continuous zigzig surfaces with gutter-forming projections at salient portions.",
+        "Claim 5 claims the separator plate itself: angled sections overlap so the front of the rear section forms a gutter at the joint.",
+      ][number - 1] ?? "Exact scope is set by the printed claim text.",
+    keyInnovations: [
+      "upright separator plates",
+      "sinuous air passages",
+      "liquid-separation gutters",
+    ],
+  })),
+  drawings: [1, 2, 3, 4, 5, 6].map((number) => ({
+    figureNumber: `Fig. ${number}`,
+    title:
+      [
+        "Air-treatment apparatus",
+        "Separator section",
+        "Separator diagram",
+        "Separator plate",
+        "Spray-nozzle section",
+        "Spray-nozzle section in a second plane",
+      ][number - 1] ?? "Source drawing",
+    caption: `Source facsimile Fig. ${number} from US 808,897.`,
+    svgType: "carrier-air-conditioner",
+    callouts: [],
+  })),
+  historicalContext: {
+    problemStatement:
+      "An air washer needs to expose suspended material to liquid, then remove the liquid and captured material without allowing the air to bypass the separator path.",
+    priorArtLimitations: [
+      "A simple spray can leave liquid droplets entrained in the outgoing air.",
+      "A plate that drains liquid too early loses wet contact area; a plate that retains too much liquid can leave carryover.",
+    ],
+    breakthroughInsight:
+      "Carrier divides the plate into a wet, unobstructed front contact zone and a rear zone with projections and gutters, so the same sinuous path can first capture material and then separate liquid.",
+    patentWars: [],
+    civilizationalImpact:
+      "The document is an early industrial treatment of air washing and mist separation. It should not be used as evidence for technical features absent from its source, including a specified chilled-water dew-point system.",
+    aftermath:
+      "The printed grant identifies Buffalo Forge Company as assignee. This edition limits its historical claims to what the primary facsimile and its masthead establish.",
+  },
+  tags: ["Willis H. Carrier", "air washer", "air purification", "mist elimination"],
+  stats: {
+    totalClaims: 5,
+    independentClaims: 5,
   },
 };

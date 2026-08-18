@@ -68,6 +68,7 @@ export function FermiReactor3D() {
     kEff,
     geigerIntervalMs: reactorKinetics.geigerIntervalMs,
     isAudioMuted,
+    neutronDisplaySpeed: reactorKinetics.neutronDisplaySpeed,
   });
 
   const controlsRef = useRef<StudioContext["controls"] | null>(null);
@@ -314,7 +315,7 @@ export function FermiReactor3D() {
 
       if (p.showNeutronCascade) {
         const nPos = neutronPos;
-        const speed = (Number(p.kEff) / 1.0) * 4.0 * delta;
+        const speed = (p.neutronDisplaySpeed ?? Number(p.kEff) * 4.0) * delta;
 
         let seed = Math.floor(renderedSteps * (1 / 60) * 1000);
         const lcg = () => {

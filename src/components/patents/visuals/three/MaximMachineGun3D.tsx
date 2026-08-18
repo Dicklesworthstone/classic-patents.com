@@ -1,7 +1,7 @@
 "use client";
 
-import { Activity, Camera, Eye, EyeOff, Flame, RotateCcw, Volume2, VolumeX, Wind, Zap } from "lucide-react";
-import { useCallback, useEffect, useRef, useState } from "react";
+import { Flame, Volume2, VolumeX } from "lucide-react";
+import { useEffect, useRef, useState } from "react";
 import * as THREE from "three";
 import { FrankenSimEngine } from "@/physics/engine";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
@@ -18,7 +18,7 @@ export function MaximMachineGun3D() {
   const containerRef = useRef<HTMLDivElement>(null);
 
   // Automatic Recoil Ballistics Parameters
-  const { params, updateParam, resetParams } = usePatentPhysics("us-319596-maxim-machine-gun");
+  const { params } = usePatentPhysics("us-319596-maxim-machine-gun");
   const [showUiOverlay, setShowUiOverlay] = useState<boolean>(true);
   const fireRateRpm = params.firingRate ?? params.fireRateRpm ?? 600;
   const waterLevelLiters = params.waterLevel ?? 4;
@@ -30,7 +30,7 @@ export function MaximMachineGun3D() {
     recoilStrokeMm,
   });
   const recoilStrokeM = maxim.recoilStrokeMm / 1000;
-  const [showMuzzleFlash, setShowMuzzleFlash] = useState<boolean>(true);
+  const [showMuzzleFlash, _setShowMuzzleFlash] = useState<boolean>(true);
   const [activeCamera, setActiveCamera] = useState<CameraPreset>("iso");
   const { isAudioMuted, toggleSound: toggleEngine } = usePatentAudio();
 
@@ -215,7 +215,9 @@ export function MaximMachineGun3D() {
               type="button"
               onClick={() => applyCameraPreset("iso")}
               className={`px-2.5 py-1 rounded-xl text-xs font-mono font-bold transition-colors ${
-                activeCamera === "iso" ? "bg-amber-600 text-white" : "text-slate-300 hover:text-white hover:bg-slate-800"
+                activeCamera === "iso"
+                  ? "bg-amber-600 text-white"
+                  : "text-slate-300 hover:text-white hover:bg-slate-800"
               }`}
             >
               Overview
@@ -224,7 +226,9 @@ export function MaximMachineGun3D() {
               type="button"
               onClick={() => applyCameraPreset("toggle_lock")}
               className={`px-2.5 py-1 rounded-xl text-xs font-mono font-bold transition-colors ${
-                activeCamera === "toggle_lock" ? "bg-amber-600 text-white" : "text-slate-300 hover:text-white hover:bg-slate-800"
+                activeCamera === "toggle_lock"
+                  ? "bg-amber-600 text-white"
+                  : "text-slate-300 hover:text-white hover:bg-slate-800"
               }`}
             >
               Toggle Lock
@@ -233,7 +237,9 @@ export function MaximMachineGun3D() {
               type="button"
               onClick={() => applyCameraPreset("water_jacket")}
               className={`px-2.5 py-1 rounded-xl text-xs font-mono font-bold transition-colors ${
-                activeCamera === "water_jacket" ? "bg-amber-600 text-white" : "text-slate-300 hover:text-white hover:bg-slate-800"
+                activeCamera === "water_jacket"
+                  ? "bg-amber-600 text-white"
+                  : "text-slate-300 hover:text-white hover:bg-slate-800"
               }`}
             >
               Water Jacket
@@ -242,7 +248,9 @@ export function MaximMachineGun3D() {
               type="button"
               onClick={() => applyCameraPreset("belt_feed")}
               className={`px-2.5 py-1 rounded-xl text-xs font-mono font-bold transition-colors ${
-                activeCamera === "belt_feed" ? "bg-amber-600 text-white" : "text-slate-300 hover:text-white hover:bg-slate-800"
+                activeCamera === "belt_feed"
+                  ? "bg-amber-600 text-white"
+                  : "text-slate-300 hover:text-white hover:bg-slate-800"
               }`}
             >
               Belt Feed
@@ -251,7 +259,9 @@ export function MaximMachineGun3D() {
               type="button"
               onClick={() => applyCameraPreset("spade_grips")}
               className={`px-2.5 py-1 rounded-xl text-xs font-mono font-bold transition-colors ${
-                activeCamera === "spade_grips" ? "bg-amber-600 text-white" : "text-slate-300 hover:text-white hover:bg-slate-800"
+                activeCamera === "spade_grips"
+                  ? "bg-amber-600 text-white"
+                  : "text-slate-300 hover:text-white hover:bg-slate-800"
               }`}
             >
               Spade Grips
@@ -264,7 +274,11 @@ export function MaximMachineGun3D() {
             className="p-2.5 rounded-xl bg-slate-900/90 border border-slate-700/80 text-slate-200 hover:text-white transition-colors shadow-lg"
             title={isAudioMuted ? "Unmute gunshot sound" : "Mute gunshot sound"}
           >
-            {isAudioMuted ? <VolumeX className="w-4 h-4 text-slate-400" /> : <Volume2 className="w-4 h-4 text-emerald-400" />}
+            {isAudioMuted ? (
+              <VolumeX className="w-4 h-4 text-slate-400" />
+            ) : (
+              <Volume2 className="w-4 h-4 text-emerald-400" />
+            )}
           </button>
           <button
             type="button"

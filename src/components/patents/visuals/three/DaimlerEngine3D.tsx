@@ -2,14 +2,13 @@
 
 import { Camera, Flame, Play, Volume2, VolumeX } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
-import * as THREE from "three";
 import { FrankenSimEngine } from "@/physics/engine";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
+import { soundEngine } from "@/utils/soundEngine";
+import { buildDaimlerEngineModel } from "./daimlerEngineModel";
 import { createThreeStudioScene, type StudioContext } from "./ThreeStudioScene";
 import { useLiveSimParams } from "./useLiveSimParams";
 import { usePatentAudio } from "./usePatentAudio";
-import { soundEngine } from "@/utils/soundEngine";
-import { buildDaimlerEngineModel } from "./daimlerEngineModel";
 
 type CameraPreset = "iso" | "cylinder" | "crankcase" | "hottube";
 
@@ -69,18 +68,21 @@ export function DaimlerEngine3D() {
 
     // Kinematic state
     let crankAngle = 0;
-    let renderedSteps = 0;
+    let _renderedSteps = 0;
     let lastAudioStroke = -1;
 
     const renderLoop = () => {
-      renderedSteps += 1;
+      _renderedSteps += 1;
       const dt = 1 / 60;
       const p = live.current;
 
       // Hot-tube glow modulation
       const tube = p.hotTubeTempC;
-      model.materials.hotTubeMat.emissiveIntensity = tube >= 800 ? 2.8 : Math.max(0.15, (tube / 800) * 2.2);
-      model.materials.hotTubeMat.emissive.setHex(tube >= 800 ? 0xf97316 : tube >= 600 ? 0xb45309 : 0x334155);
+      model.materials.hotTubeMat.emissiveIntensity =
+        tube >= 800 ? 2.8 : Math.max(0.15, (tube / 800) * 2.2);
+      model.materials.hotTubeMat.emissive.setHex(
+        tube >= 800 ? 0xf97316 : tube >= 600 ? 0xb45309 : 0x334155,
+      );
 
       if (p.isPlaying && p.isRunning > 0) {
         const speed = p.runningOmegaRadPerS ?? (p.engineRpm * 2 * Math.PI) / 60;
@@ -104,7 +106,7 @@ export function DaimlerEngine3D() {
 
         // Exhaust valve cam pushrod motion (opens during exhaust stroke: 3π to 4π)
         const isExhaust = crankAngle >= Math.PI * 3;
-        const exhaustLift = isExhaust ? Math.sin((crankAngle - Math.PI * 3)) * 0.12 : 0;
+        const exhaustLift = isExhaust ? Math.sin(crankAngle - Math.PI * 3) * 0.12 : 0;
         model.exhaustPushrod.position.y = 0.2 + exhaustLift;
         model.exhaustRocker.rotation.z = exhaustLift * 1.5;
         model.exhaustValve.position.y = 2.5 - exhaustLift;

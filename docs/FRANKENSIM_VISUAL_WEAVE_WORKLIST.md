@@ -201,6 +201,8 @@ the visitor can see or hear the kernel change the instrument.
 - [x] P5.108 Otto/Corliss crank ω, Glidden flyer/reel ω, phonograph mandrel ω, and Hollerith press ω live on the shared step. 2D crank/cylinder clocks and 3D flywheel/governor/flyer/mandrel/press use those fields.
 - [x] P5.109 Diesel step takes engineRpm; crank ω lives on the step (15.71 rad/s at 150 rpm). 2D 720° clock and 3D crank use it. Daimler running ω (hot-tube BMEP scale) lives on the step; 3D no longer does leftover rpm×BMEP/4.5. McCormick wheel/reel/cutter ω live on the printed kinematic step; 2D sickle and 3D wheel/reel/sickle share them.
 - [x] P5.110 Davenport 2D rotor uses shaftOmegaDegPerS (not leftover rpm×6). Gramme displayDegPerFrame / displayRadPerFrame (1.5° ≡ 2π/240 at shaftRate=1) live on the step; 2D/3D share it; bobbin loop uses printedJunctionCount. Zeppelin propeller display ω (rpm/60×8) lives on the step; 3D props integrate it.
+- [x] P5.111 Hyatt ramHz / ramStrokeStudio live on the step (14.25 cm/min → 0.75 Hz). Wozniak phi2DisplayHz (4 Hz) and busDisplaySpeed live on the step; 3D Φ2 window is 2πf, not leftover π×8. Westinghouse rolling ω (v/0.42 m, clamp from pipe) lives on the step; 3D wheels no longer convert mph privately.
+- [x] P5.112 Fermi neutronDisplaySpeed (k_eff×4 studio u/s) lives on the kinetics step. Bell acousticDisplayOmega (2πf/20), electronDisplaySpeed (I₀×12), and waveAdvancePerS live on the telephone step; 3D diaphragm/electrons/rings read them.
 
 ## Explicitly out of scope
 

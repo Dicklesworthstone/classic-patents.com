@@ -332,7 +332,7 @@ export function HyattCelluloid3D() {
             unit: "cm/min",
             tone: hyatt.isMelted ? "ok" : "warn",
           },
-          { label: "Ram", value: String(hyatt.ramHz), unit: "Hz" },
+          { label: "f_ram", value: String(hyatt.ramHz), unit: "Hz" },
         ]}
       />
     </div>

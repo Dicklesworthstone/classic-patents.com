@@ -1,15 +1,15 @@
 "use client";
 
-import { Activity, Camera, Eye, EyeOff, Volume2, VolumeX, Waves, Zap } from "lucide-react";
+import { Camera, Eye, EyeOff, Volume2, VolumeX, Waves, Zap } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
-import * as THREE from "three";
+import type * as THREE from "three";
 import { FrankenSimEngine } from "@/physics/engine";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { soundEngine } from "@/utils/soundEngine";
 import {
   buildCarrierAirConditionerModel,
-  updateCarrierAirConditionerKinematics,
   type CarrierAirConditionerModelResult,
+  updateCarrierAirConditionerKinematics,
 } from "./carrierAirConditionerModel";
 import { StudioKernelChips } from "./StudioKernelChips";
 import { createThreeStudioScene, type StudioContext } from "./ThreeStudioScene";
