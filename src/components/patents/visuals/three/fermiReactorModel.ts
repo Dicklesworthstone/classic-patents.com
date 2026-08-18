@@ -254,6 +254,8 @@ export function buildFermiReactorModel(): FermiReactorModel {
     neutronDisplaySpeed: number,
     showNeutronCascade: boolean,
   ) => {
+    const rodStudioY = -0.5 + (Math.min(100, Math.max(0, controlRodWithdrawalPct)) / 100) * 3.2;
+    const fuelGlowIntensity = Math.max(0, (kEff - 0.98) * 8);
     updateFermiReactorKinematics(
       model,
       delta,
@@ -261,6 +263,8 @@ export function buildFermiReactorModel(): FermiReactorModel {
       kEff,
       moderatorPurityPct,
       neutronDisplaySpeed,
+      rodStudioY,
+      fuelGlowIntensity,
       showNeutronCascade,
     );
   };
