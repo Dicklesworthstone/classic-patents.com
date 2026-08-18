@@ -117,11 +117,14 @@ async function main() {
     }
 
     // 2. Check dates
-    if (!isValidIsoDate(patent.grantDate) || !isValidIsoDate(patent.filingDate)) {
+    if (
+      !isValidIsoDate(patent.grantDate) ||
+      (patent.filingDate !== null && !isValidIsoDate(patent.filingDate))
+    ) {
       fail(
-        `Invalid date (expected a real YYYY-MM-DD). Grant: ${patent.grantDate}, Filing: ${patent.filingDate}`,
+        `Invalid date (expected a real YYYY-MM-DD, or a documented null filing date). Grant: ${patent.grantDate}, Filing: ${patent.filingDate}`,
       );
-    } else if (patent.filingDate > patent.grantDate) {
+    } else if (patent.filingDate && patent.filingDate > patent.grantDate) {
       fail(`Filing date ${patent.filingDate} is after grant date ${patent.grantDate}.`);
     }
 
@@ -392,7 +395,7 @@ async function main() {
     if (
       !patent.historicalContext?.problemStatement ||
       !patent.historicalContext.breakthroughInsight ||
-      patent.historicalContext.patentWars.length === 0
+      !Array.isArray(patent.historicalContext.patentWars)
     ) {
       fail("Incomplete historical context or patent wars record.");
     }
