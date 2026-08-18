@@ -362,11 +362,22 @@ export function DualProjectionViewer({ patent, initialView }: DualProjectionView
       {/* VIEW MODE: SCHEMATIC SHEET & NUMBERED CALLOUTS */}
       {viewMode === "schematic-sheet" && (
         <div className="space-y-6">
-          <InteractiveDiagramViewer
-            drawings={patent.drawings}
-            patentNumber={patent.patentNumber}
-            patentId={patent.id}
-          />
+          {patent.archivalEdition?.drawingStatus?.kind === "no-drawings-in-facsimile" ? (
+            <div className="rounded-2xl border border-amber-300 dark:border-amber-800 bg-amber-50/80 dark:bg-amber-950/20 p-6 text-ink-900 dark:text-parchment-100">
+              <h4 className="font-serif text-xl font-bold">
+                Historical Text-Only Instrument (No Drawing Sheets)
+              </h4>
+              <p className="mt-2 font-sans text-sm leading-relaxed">
+                {patent.archivalEdition.drawingStatus.evidence}
+              </p>
+            </div>
+          ) : (
+            <InteractiveDiagramViewer
+              drawings={patent.drawings}
+              patentNumber={patent.patentNumber}
+              patentId={patent.id}
+            />
+          )}
           <WeaveInstrument patentId={patent.id} />
         </div>
       )}

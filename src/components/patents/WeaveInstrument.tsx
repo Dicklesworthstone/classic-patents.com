@@ -1,5 +1,6 @@
 "use client";
 
+import { marconiMastHeightFromHz } from "@/physics/catalogKernels";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import {
   coupleLinks,
@@ -209,7 +210,10 @@ export function WeaveInstrument({ patentId }: WeaveInstrumentProps) {
                 type="button"
                 onClick={() => {
                   if (patentId.includes("marconi")) {
-                    updateParam("aerialHeight", Math.round(3e8 / (4 * m.freqHz)));
+                    updateParam(
+                      "aerialHeight",
+                      marconiMastHeightFromHz(m.freqHz / Math.max(1, m.n)),
+                    );
                   }
                 }}
                 className="px-2 py-1 rounded-lg border border-parchment-300 dark:border-ink-700 text-[10px] font-mono"

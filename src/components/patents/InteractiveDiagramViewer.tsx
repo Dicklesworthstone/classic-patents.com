@@ -3166,7 +3166,7 @@ export function InteractiveDiagramViewer({
                       <span className="font-mono font-bold mr-1">[{callout.element}]</span>{" "}
                       {callout.label}
                     </span>
-                    <span className="text-[10px] opacity-70 flex-shrink-0 ml-1">
+                    <span className="text-[10px] opacity-70 shrink-0 ml-1">
                       {isSelected ? "Active ✓" : "Inspect →"}
                     </span>
                   </button>

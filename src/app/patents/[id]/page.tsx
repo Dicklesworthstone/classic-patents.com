@@ -89,7 +89,7 @@ export default async function PatentDetailPage({ params }: PatentPageProps) {
             href={`/patents/${prev.id}`}
             className="p-4 rounded-2xl border border-parchment-300 dark:border-ink-800 bg-parchment-50/80 dark:bg-ink-900/60 hover:bg-parchment-100 dark:hover:bg-ink-800/80 transition-colors flex items-center gap-3 group shadow-xs"
           >
-            <ArrowLeft className="w-5 h-5 text-amber-700 dark:text-amber-400 group-hover:-translate-x-1 transition-transform flex-shrink-0" />
+            <ArrowLeft className="w-5 h-5 text-amber-700 dark:text-amber-400 group-hover:-translate-x-1 transition-transform shrink-0" />
             <div className="min-w-0">
               <span className="text-[11px] font-sans text-ink-500 dark:text-ink-400 font-bold uppercase tracking-wider block">
                 Previous Invention ({prev.grantDate.slice(0, 4)})
@@ -116,7 +116,7 @@ export default async function PatentDetailPage({ params }: PatentPageProps) {
                 {next.shortTitle} ({next.patentNumber})
               </span>
             </div>
-            <ArrowRight className="w-5 h-5 text-amber-700 dark:text-amber-400 group-hover:translate-x-1 transition-transform flex-shrink-0" />
+            <ArrowRight className="w-5 h-5 text-amber-700 dark:text-amber-400 group-hover:translate-x-1 transition-transform shrink-0" />
           </Link>
         ) : (
           <div />

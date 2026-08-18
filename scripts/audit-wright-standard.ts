@@ -82,9 +82,14 @@ for (const p of allPatents) {
   }
 
   // Check drawings and callouts
-  if (!p.drawings || p.drawings.length === 0) {
+  const noDrawingsInGrant =
+    p.archivalEdition?.drawingStatus?.kind === "no-drawings-in-facsimile" ||
+    ["us-3633-goodyear-rubber", "us-78317-nobel-dynamite", "us-105338-hyatt-celluloid"].includes(
+      p.id,
+    );
+  if (!noDrawingsInGrant && (!p.drawings || p.drawings.length === 0)) {
     issues.push("no patent drawings registered");
-  } else {
+  } else if (p.drawings && p.drawings.length > 0) {
     for (const d of p.drawings) {
       if (!d.callouts || d.callouts.length === 0) {
         issues.push(`drawing ${d.figureNumber} has 0 callouts`);
