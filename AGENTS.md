@@ -65,7 +65,7 @@ The web application is built with:
 
 1. **Web Frontend**: Next.js 15 (App Router, React 19, TypeScript).
 2. **Styling & Aesthetics**: Tailwind CSS with custom thematic extensions (Parchment vintage archival mode, Blueprint dark engineering mode, High-contrast clean mode). Google Fonts (Playfair Display, EB Garamond, Inter, JetBrains Mono).
-3. **Interactive Visual & Simulation Engine**: React Three Fiber / Three.js 3D WebGL modules backed by **FrankenSim** (`~/projects/frankensim`) computational physics compiled to WebAssembly. Simulations leverage Lie-group time integration (`fs-time`, `fs-mbd`), discrete de Rham electromagnetics (`fs-flux`), lattice particle kinetics (`fs-lattice`), thermal transport (`fs-conduction`), and continuum elasticity (`fs-truss`, `fs-solid`) with Blake3 state digests and typed refusal boundaries.
+3. **Interactive Visual & Simulation Engine**: React Three Fiber / Three.js 3D WebGL modules backed by **FrankenSim** (`~/projects/frankensim`) computational physics compiled to WebAssembly. Bind the generic crates that own the law (`fs-time`, `fs-mbd`, `fs-flux`, `fs-lattice`, `fs-conduction`, `fs-truss`, `fs-solid`, and others in `~/projects/frankensim/crates`). Wright happens to have an extra packaged flyer module; that is not the expected shape of every new patent. Blake3 state digests and typed refusal boundaries still apply.
 4. **Data & Pipeline**: TypeScript data schemas (`src/data/patents/`), automated downloading (`scripts/download-patents.ts`), and optional local transcription helpers. Agents may transcribe with any tool, including built-in model vision. The published ledger is a human-reviewed artifact, not a raw OCR dump.
 5. **Hosting & Deployment**: Vercel (CLI-managed, prebuilt deploy workflow, zero build credit burn).
 6. **Code Quality**: Biome (`biome check`, `biome format --write`), TypeScript (`tsc --noEmit`), UBS (`ubs --diff`, `ubs --staged`).
@@ -122,7 +122,7 @@ new id and names.
 | Archival edition | `src/data/editions/wrightFlyerEdition.ts` (`wrightFlyerArchivalEdition`) | Continuous, hand-authored React source face. Typed blocks, not OCR, not a PDF text layer, not scan-page breaks. |
 | Edition test | `src/data/editions/wrightFlyerEdition.test.ts` | Pins SHA-256, all printed claims, ledger markers, and every textual block back to the reviewed transcript. Tesla's `teslaMotorEdition.test.ts` is the fuller contract (figure files on disk, term definitions, parallel readings). |
 | Parallel readings | `src/data/editions/parallelReadings.ts` key `us-821393-wright-flyer` | One non-lossy explanation per edition paragraph, keyed by block index. New records export the map from the edition file and register it here. |
-| Physics kernel | `src/physics/wrightKernel.ts` | Shared SI step. 2D, 3D, schematic, and badge all call `readWrightControls` + `stepWrightFlyerSi`. |
+| Physics kernel | `src/physics/wrightKernel.ts` | Shared SI step. 2D, 3D, schematic, and badge all call `readWrightControls` + `stepWrightFlyerSi`. Wright also has a packaged `fs-flyer` WASM module; new patents compose generic FrankenSim crates instead of waiting for a packaged equivalent (see §5b). |
 | Physics registry | `src/physics/telemetryData.ts` key `us-821393-wright-flyer` | SI controls, governing equation, `engineMethod`, `computeMetrics` that call the shared step. |
 | Spec-clause weave | `src/physics/specClauses.ts` | Kernel predicates that light exact phrases on the spec face (warp, adverse yaw, rudder linkage). |
 | Colorized equations | `src/data/colorizedEquations.ts` key `us-821393-wright-flyer` | Dual-coded equations whose variables bind to live telemetry. |
@@ -636,18 +636,62 @@ Wright's `historicalContext` is the depth bar:
 The TypeScript `FrankenSimEngine` in `src/physics/engine.ts` is a **host
 fallback**: closed-form SI toys for when WASM is not loaded. It is not
 FrankenSim. The real engine is `~/projects/frankensim` compiled to WASM
-(`fs-time`, `fs-mbd`, `fs-flux`, `fs-lattice`, `fs-conduction`, `fs-truss`,
-`fs-solid`, Blake3 digests, typed refusal). The Wright Flyer host-pumped
-app in `~/projects/frankensim/apps/wright-flyer` is the transport reference:
-capability probe, leased-ring / transferable fallback, host-fed clock,
-bounded catch-up, no `std::time` on wasm32.
+(generic crates plus, for this one patent, a packaged flyer module).
+Blake3 digests and typed refusal still apply.
+
+**Wright has a packaged module. Most patents will not.** FrankenSim
+happens to ship a Wright-specific stack (`fs-flyer`, `fs-flyer-wasm`,
+and the host-pumped app `~/projects/frankensim/apps/wright-flyer`).
+That app is the **transport** reference: capability probe, leased-ring
+or transferable fallback, host-fed clock, bounded catch-up, no
+`std::time` on wasm32. It is not a requirement that every new patent
+wait for a ready-made `fs-<patent>` crate, a `*-wasm` package, or a
+dedicated `apps/` demo. Do not skip WASM, or collapse to a decorative
+CSS rotate, because no one has wrapped Otto or Tesla or Fermi as a
+single productized module.
+
+**Compose the generic crates that already own the law.** Look at the
+claimed mechanism, then bind the FrankenSim modules that compute that
+kind of physics. Typical mappings (compose more than one when the
+claim couples domains):
+
+- Rigid machines, cams, cranks, governors, linkages, rotors:
+  `fs-time` + `fs-mbd` (+ `fs-constraint` / `fs-contact` when joints
+  or impacts matter). Howe shuttle, Otto crank, Pelton runner, Otis
+  drum, Westinghouse triple-valve.
+- Guy-wires, frames, trusses: `fs-truss` (Wright stay-wires are the
+  teaching case even though the flyer also has a packaged aero kernel).
+- Electromagnetic fields, flux, LC, solenoids, rotating B:
+  `fs-flux` and, when the drawing is a complex, `fs-feec`. Tesla motor
+  and coil, Bell, Morse, Marconi.
+- Heat, radiation, phase change, absorption cycles:
+  `fs-conduction`, `fs-convection`. Edison filament, Einstein–Szilard,
+  Spencer cavity loss, Carrier, Linde.
+- Continuum solids, fibers, rupture: `fs-solid`. Kwolek, Goodyear
+  when treated as a deforming body.
+- Lattice / kinetic / reaction-diffusion / hole injection / neutrons:
+  `fs-lattice`. Fermi 6-group kinetics, Bardeen injection, Goodyear
+  cross-link count.
+- Airflow over a shape: `fs-airflow`, `fs-lbm`, `fs-airfoil`. Do not
+  invent pretty vortices the crate will not stand behind.
+- Materials as named cards, not magic numbers: `fs-matdb`.
+- Intervals, regimes, probes: `fs-ivl`, `fs-regime`, `fs-probe`.
+
+A patent-specific crate is allowed only when the generic modules
+cannot express the claimed law, and even then it should sit **on top
+of** those generics the way `fs-flyer` sits on `fs-time` + `fs-mbd`.
+Until a WASM instance of those crates is actually wired and stepping,
+keep an honest TypeScript host fallback that calls the same SI step
+the faces already use. Name the target crates in the registry from
+day one. Absence of a packaged demo is not a reason to give up.
 
 Do not label a HUD "WASM Core" / `aero (wasm)` / `kernel (wasm)` unless a
 WASM instance actually stepped the state on this tick. A closed-form
 TypeScript evaluation must say so (`ts-lie-fallback`, `host SI`, or the
 actual function name). Wright's 3D reads `flyerKernelSource()` /
 `flyerAeroSource()` after `ensureFlyerWasm()` and displays whatever those
-helpers return.
+helpers return. That honesty rule is the same for a composed
+`fs-flux` + `fs-mbd` Tesla step as it is for the flyer module.
 
 **One bus, catalog patent id.** For every patent, sliders on the 2D sim,
 sliders on the 3D sim, schematic callouts, `PhysicsTelemetryBadge`, weave
@@ -753,8 +797,12 @@ fake impact scores) as a substitute for a missing kernel.
    slider. Add param aliases if a face needs a local name.
 3. Map each independent claim to a probe, constraint, or readout.
    Wright's `coupled` control is labeled "Claim 18 rudder linkage".
-4. Name the FrankenSim crate that *should* own the law (`fs-mbd`,
-   `fs-flux`, …) in the registry even while only the TS fallback exists.
+4. Name **and try to bind** the generic FrankenSim crates that own
+   the law (`fs-mbd`, `fs-flux`, `fs-conduction`, …), even while only
+   the TS fallback is stepping. Do not wait for a packaged
+   `fs-<this-patent>` module. Compose what exists in
+   `~/projects/frankensim/crates`. Write a patent-specific crate only
+   when those generics cannot express the claim.
 5. Emit leftover SI the HUD will print: ω, display ω, cycle periods,
    currents, temperatures. Prefer `rpmToOmega` for rotating machines.
 6. Document the refusal boundary (what the kernel will not pretend to
@@ -963,7 +1011,10 @@ A new record is ready to publish only when all of the following are true:
    telemetry.
 6. `PATENT_PHYSICS_REGISTRY[id]` calls a real shared step. 2D, 3D, schematic,
    and badge share `usePatentPhysics(id)`. At least one independent claim is
-   a live probe. HUD does not say WASM unless a module stepped.
+   a live probe. The registry names the generic FrankenSim crates that
+   should own the law and the visual binds them when a WASM build exists;
+   it does not stall for a packaged per-patent module. HUD does not say
+   WASM unless a module stepped.
 7. Unique 2D visual, Three.js 3D (when spatial) via `createThreeStudioScene`
    and a procedural `*Model.ts`, explicit dispatcher case, unique `svgType`.
 8. `dispatcher.test.ts`, the edition test, the publication-contract test, and
