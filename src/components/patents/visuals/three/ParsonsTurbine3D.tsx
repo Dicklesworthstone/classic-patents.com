@@ -51,6 +51,7 @@ export function ParsonsTurbine3D() {
     displayOmegaRadPerS: parsons.displayOmegaRadPerS,
     steamAdvancePerS: parsons.steamAdvancePerS,
     steamOpacity: parsons.steamOpacity,
+    steamSwirlOmegaRadPerS: parsons.steamSwirlOmegaRadPerS,
     rotorOmegaRadPerS: parsons.rotorOmegaRadPerS,
     bladeSpeedMps: parsons.bladeSpeedMps,
     steamSpeedMps: parsons.steamSpeedMps,
@@ -135,6 +136,7 @@ export function ParsonsTurbine3D() {
         p.displayOmegaRadPerS ?? 0,
         p.steamAdvancePerS,
         p.steamOpacity,
+        p.steamSwirlOmegaRadPerS,
         p.showSteamFlow,
         p.isCutaway,
       );

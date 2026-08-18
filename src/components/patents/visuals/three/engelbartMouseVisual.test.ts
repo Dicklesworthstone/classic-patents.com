@@ -58,6 +58,7 @@ describe("US 3,541,541 Douglas Engelbart Computer Mouse visual & resolver kinema
     expect(result.omegaRadPerS).toBeGreaterThan(0);
     expect(result.pulseRateHz).toBeGreaterThan(0);
     expect(result.dpi).toBeGreaterThan(100);
+    expect(result.pathDisplayOmega).toBeCloseTo(350 * 0.018, 3);
   });
 
   test("builds and articulates procedural walnut body, metal base, red button, X/Y orthogonal wheels, and potentiometer resolvers correctly", () => {
@@ -72,12 +73,13 @@ describe("US 3,541,541 Douglas Engelbart Computer Mouse visual & resolver kinema
     expect(model.nodes.cord).toBeDefined();
 
     // Test kinematics update
+    const mouse = stepEngelbartMouse({ mouseSpeed: 350, wheelRadius: 10, pulsesPerRev: 200 });
     updateEngelbartMouseKinematics(
       model.nodes,
       model.materials,
       1 / 60,
       1.0,
-      350,
+      mouse.pathDisplayOmega,
       "figure8",
       10,
       200,

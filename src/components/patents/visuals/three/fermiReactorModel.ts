@@ -37,6 +37,8 @@ export interface FermiReactorModel {
     moderatorPurityPct: number,
     neutronDisplaySpeed: number,
     showNeutronCascade: boolean,
+    rodStudioY?: number,
+    fuelGlowIntensity?: number,
   ) => void;
   dispose: () => void;
 }
@@ -253,9 +255,12 @@ export function buildFermiReactorModel(): FermiReactorModel {
     moderatorPurityPct: number,
     neutronDisplaySpeed: number,
     showNeutronCascade: boolean,
+    rodStudioY?: number,
+    fuelGlowIntensity?: number,
   ) => {
-    const rodStudioY = -0.5 + (Math.min(100, Math.max(0, controlRodWithdrawalPct)) / 100) * 3.2;
-    const fuelGlowIntensity = Math.max(0, (kEff - 0.98) * 8);
+    const effRodStudioY =
+      rodStudioY ?? -0.5 + (Math.min(100, Math.max(0, controlRodWithdrawalPct)) / 100) * 3.2;
+    const effFuelGlow = fuelGlowIntensity ?? Math.max(0, (kEff - 0.98) * 8);
     updateFermiReactorKinematics(
       model,
       delta,
@@ -263,8 +268,8 @@ export function buildFermiReactorModel(): FermiReactorModel {
       kEff,
       moderatorPurityPct,
       neutronDisplaySpeed,
-      rodStudioY,
-      fuelGlowIntensity,
+      effRodStudioY,
+      effFuelGlow,
       showNeutronCascade,
     );
   };

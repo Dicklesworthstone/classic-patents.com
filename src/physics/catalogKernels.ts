@@ -110,6 +110,7 @@ export function stepParsonsTurbine(params: { rotorRpm?: number; inletPressurePsi
     displayOmegaDegPerS: Number((rpm * 6 * displaySlowdown).toFixed(1)),
     steamAdvancePerS: Number(((enthalpyKjKg / 550) * (rpm / 3000) * 12).toFixed(3)),
     steamOpacity: Number(Math.min(0.95, 0.25 + (shaftPowerKw / 14000) * 0.7).toFixed(3)),
+    steamSwirlOmegaRadPerS: Number((rotorOmegaRadPerS * displaySlowdown * 0.5).toFixed(3)),
   };
 }
 
@@ -686,6 +687,7 @@ export function stepEngelbartMouse(params: {
     countsPerMm: Number((ppr / circumferenceMm).toFixed(2)),
     pulseRateHz: Number(((v * ppr) / circumferenceMm).toFixed(1)),
     clickDisplayMs: Math.max(80, Math.round(180000 / Math.max(1, (v * ppr) / circumferenceMm))),
+    pathDisplayOmega: Number((v * 0.018).toFixed(4)),
   };
 }
 
@@ -830,6 +832,7 @@ export function stepMarconiRadio(
     sparkDisplayMs: 1200,
     waveOpacityBase: Number((0.35 + (peakRfPowerKw / 80) * 0.5).toFixed(3)),
     wavePhaseRate: Number((Math.max(0.2, resonantFreqMhz) / 0.85).toFixed(3)),
+    waveAdvancePx: Number(((Math.max(0.2, resonantFreqMhz) / 0.85) * 4).toFixed(3)),
     mastStudioScale: Number(Math.max(0.25, h / 88).toFixed(4)),
   };
 }

@@ -16,7 +16,7 @@ export function MarconiRadioSim() {
 
   const radio = stepMarconiRadio(antennaHeightMeters, params.sparkGapMm ?? 10, sparkPowerKv);
   const estimatedRangeMiles = radio.maxRangeMiles;
-  const waveAdvancePx = (radio.resonantFreqMhz / 0.85) * 4;
+  const waveAdvancePx = radio.waveAdvancePx;
 
   useEffect(() => {
     let timer: any;

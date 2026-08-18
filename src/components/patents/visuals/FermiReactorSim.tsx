@@ -135,7 +135,7 @@ export function FermiReactorSim() {
 
             {/* Cadmium Control Rods (Vertical Channels) */}
             {/* Control Rod 1 */}
-            <g transform={`translate(140, ${30 - (controlRodWithdrawalPct / 100) * 120})`}>
+            <g transform={`translate(140, ${kinetics.rodSvgY})`}>
               <rect
                 x="0"
                 y="0"
@@ -147,7 +147,7 @@ export function FermiReactorSim() {
               <circle cx="4" cy="5" r="3" className="fill-amber-500" />
             </g>
             {/* Control Rod 2 */}
-            <g transform={`translate(252, ${30 - (controlRodWithdrawalPct / 100) * 120})`}>
+            <g transform={`translate(252, ${kinetics.rodSvgY})`}>
               <rect
                 x="0"
                 y="0"

@@ -315,7 +315,7 @@ export function updateEngelbartMouseKinematics(
   materials: EngelbartMouseMaterials,
   dt: number,
   timeSec: number,
-  displacementSpeedMmSec: number,
+  pathDisplayOmega: number,
   mouseTrajectory: "figure8" | "circle" | "horizontal" | "vertical",
   wheelRadiusMm: number,
   pulsesPerRev: number,
@@ -326,7 +326,7 @@ export function updateEngelbartMouseKinematics(
   nodes.body.material = isXRayMode ? materials.woodHousingXRay : materials.woodHousing;
 
   // Trajectory computation
-  const speed = displacementSpeedMmSec * 0.018;
+  const speed = pathDisplayOmega;
   let posX = 0;
   let posZ = 0;
 

@@ -332,6 +332,7 @@ export function updateParsonsTurbineKinematics(
   displayOmegaRadPerS: number,
   steamAdvancePerS: number,
   steamOpacity: number,
+  steamSwirlOmegaRadPerS: number,
   showSteamFlow: boolean,
   isCutaway: boolean,
 ) {
@@ -364,7 +365,7 @@ export function updateParsonsTurbineKinematics(
     nodes.steamRadii[i] = r;
 
     let a = Math.atan2(pos[idx + 2], pos[idx + 1]);
-    a += displayOmegaRadPerS * 0.5 * dt;
+    a += steamSwirlOmegaRadPerS * dt;
     pos[idx + 1] = Math.cos(a) * r;
     pos[idx + 2] = Math.sin(a) * r;
   }

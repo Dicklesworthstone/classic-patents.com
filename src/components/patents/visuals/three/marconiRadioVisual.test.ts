@@ -70,6 +70,7 @@ describe("US 586,193 Guglielmo Marconi Wireless Radio Telegraphy visual & electr
     expect(result.maxRangeMiles).toBeGreaterThan(10);
     expect(result.waveOpacityBase).toBeCloseTo(0.35 + (result.peakRfPowerKw / 80) * 0.5, 2);
     expect(result.mastStudioScale).toBeCloseTo(1, 3);
+    expect(result.waveAdvancePx).toBeCloseTo(result.wavePhaseRate * 4, 2);
   });
 
   test("builds and articulates procedural mast, 4-sphere spark gap, Morse key, and wavefront rings correctly", () => {
