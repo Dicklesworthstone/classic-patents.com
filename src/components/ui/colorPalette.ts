@@ -194,7 +194,7 @@ export function prepareInteractiveLatex(equation: {
           const replacement = `\\htmlClass{${termClass}}{\\htmlData{var=${v.id}}{${fullColoredMatch}}}`;
           latex = latex.slice(0, searchIdx) + replacement + latex.slice(afterSymbolIdx + 1);
           found = true;
-          searchIdx = searchIdx + replacement.length;
+          searchIdx = latex.indexOf(colorTargetPrefix, searchIdx + replacement.length);
           continue;
         }
       }
