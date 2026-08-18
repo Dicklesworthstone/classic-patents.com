@@ -646,7 +646,7 @@ export const FrankenSimEngine = {
     const hyperfocalM = Number((f ** 2 / (n * c) + f).toFixed(2));
     const dofNearM = Number(((hyperfocalM * dist) / (hyperfocalM + dist)).toFixed(2));
     const dofFarM =
-      dist > hyperfocalM ? 999 : Number(((hyperfocalM * dist) / (hyperfocalM - dist)).toFixed(2));
+      dist >= hyperfocalM ? 999 : Number(((hyperfocalM * dist) / (hyperfocalM - dist)).toFixed(2));
     const ev = Number(Math.log2(n ** 2 / t).toFixed(2));
 
     return {
