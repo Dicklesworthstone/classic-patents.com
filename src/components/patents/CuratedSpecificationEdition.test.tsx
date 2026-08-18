@@ -66,7 +66,12 @@ describe("CuratedSpecificationEdition", () => {
     const html = renderToStaticMarkup(
       <CuratedSpecificationEdition
         edition={edition}
-        paragraphNotes={{ 2: "A source-specific explanation prepared by an editor." }}
+        paragraphReadings={{
+          2: [
+            "A source-specific explanation prepared by an editor.",
+            "A second authored paragraph retains another material detail.",
+          ],
+        }}
         claimDecoders={[{ number: 1, plainEnglish: "The legal scope of the example claim." }]}
       />,
     );
@@ -80,6 +85,7 @@ describe("CuratedSpecificationEdition", () => {
     expect(html).toContain("Open Fig. 1 in the primary facsimile");
     expect(html).toContain("Plain English");
     expect(html).toContain("A source-specific explanation prepared by an editor.");
+    expect(html).toContain("A second authored paragraph retains another material detail.");
     expect(html).toContain("The legal scope of the example claim.");
     expect(html).toContain("FIG. 1");
     expect(html).toContain("An authored historical table");

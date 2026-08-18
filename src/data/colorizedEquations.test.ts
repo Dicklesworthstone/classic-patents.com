@@ -6,10 +6,7 @@
 
 import { describe, expect, test } from "bun:test";
 import { allPatents } from "@/data/patents";
-import {
-  ALL_COLORIZED_EQUATIONS,
-  getColorizedEquationsForPatent,
-} from "./colorizedEquations";
+import { ALL_COLORIZED_EQUATIONS, getColorizedEquationsForPatent } from "./colorizedEquations";
 
 describe("Colorized Equations Master Registry Integrity", () => {
   test("every patent in catalog resolves at least one valid colorized equation", () => {

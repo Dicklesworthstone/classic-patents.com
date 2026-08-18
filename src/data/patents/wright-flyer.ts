@@ -171,7 +171,7 @@ The operator lies prone in a movable cradle 6 upon the lower aeroplane. By shift
       isIndependent: true,
       originalText: manualClaimText(1),
       plainEnglish:
-        "Claims the broad control principle: independently change the incidence of the two wing margins to restore lateral balance.",
+        "This claim covers a normally flat wing whose two side margins can move above or below the wing's normal plane about a spanwise axis. The movement puts the two margins at different angles of incidence to the air. It also requires a mechanism that makes those margin movements. In modern terms, this is the broad wing-warping roll-control combination, stated without requiring a biplane, a particular cable layout, or a particular amount of twist.",
       keyInnovations: [
         "Differential wing warping",
         "Opposed wing-margin incidence",
@@ -185,7 +185,7 @@ The operator lies prone in a movable cradle 6 upon the lower aeroplane. By shift
       isIndependent: true,
       originalText: manualClaimText(2),
       plainEnglish:
-        "Claims the biplane implementation: flexible-jointed uprights preserve the separation of the two wings while their margins move.",
+        "This claim adds a specific biplane structure to Claim 1's margin motion. Two normally parallel wings are stacked one over the other. Upright standards connect their margins; at the lateral portions those connections are flexible, while the standards maintain a fixed separation between the parts they join. Each side margin can move above or below its wing's normal plane about a spanwise axis, producing different angles of incidence, and a mechanism must impart that motion.",
       keyInnovations: ["Superposed aeroplanes", "Flexible upright joints", "Fixed wing spacing"],
     },
     {
@@ -193,7 +193,7 @@ The operator lies prone in a movable cradle 6 upon the lower aeroplane. By shift
       isIndependent: true,
       originalText: manualClaimText(3),
       plainEnglish:
-        "Claims a single flat wing whose left and right margins change both relative to the wing plane and relative to each other.",
+        "This is the single-wing version. A normally flat aeroplane has side margins that can move above or below its normal plane about a spanwise axis. The margins must take different angular positions both relative to the main wing plane and relative to one another, so they meet the air at different angles of incidence. The claim also requires a mechanism that moves the margins together in that differential relation.",
       keyInnovations: [
         "Normal wing plane",
         "Simultaneous opposed motion",
@@ -205,7 +205,7 @@ The operator lies prone in a movable cradle 6 upon the lower aeroplane. By shift
       isIndependent: true,
       originalText: manualClaimText(4),
       plainEnglish:
-        "Claims the paired-wing version in which the margins on each side move together while the two sides take different angles.",
+        "This claim combines the paired-wing arrangement with coordinated differential warping. Parallel stacked aeroplanes each have movable side margins. Uprights connect their edges; the uprights at the side portions use flexible joints and keep their connected points the same distance apart. A single mechanism moves both wings' margins so the two margins on a given side take the same angle, while the margins on the opposite side take a different angle.",
       keyInnovations: [
         "Paired wing surfaces",
         "Equal same-side angle",
@@ -217,7 +217,7 @@ The operator lies prone in a movable cradle 6 upon the lower aeroplane. By shift
       isIndependent: true,
       originalText: manualClaimText(5),
       plainEnglish:
-        "Claims the transverse rectangular wing geometry and its inboard transverse axis of warp.",
+        "This claim narrows the geometry. The aeroplane is a normally flat rectangle elongated across the direction of flight. Its side margins move about an axis within the wing body that is perpendicular to those margins. That motion places the margins at different angular relations to the wing's normal plane. The claimed combination includes the means that causes that movement.",
       keyInnovations: ["Transverse wing span", "Inboard warp axis", "Variable lateral margins"],
     },
     {
@@ -225,7 +225,7 @@ The operator lies prone in a movable cradle 6 upon the lower aeroplane. By shift
       isIndependent: true,
       originalText: manualClaimText(6),
       plainEnglish:
-        "Claims the full biplane geometry, flexible connections, and simultaneous movement of all four margins.",
+        "This is the rectangular-biplane form of the preceding idea. Two normally flat, span-elongated wings remain equidistant through upright standards, and the standards at their side portions have flexible joints. One mechanism simultaneously moves both side margins of both wings about axes that lie in the wing planes and are perpendicular to the margins. Margins on the same side move to the same angle; margins on opposite sides move to different angles.",
       keyInnovations: ["Biplane warp", "Equidistant standards", "Opposed margin angles"],
     },
     {
@@ -233,7 +233,7 @@ The operator lies prone in a movable cradle 6 upon the lower aeroplane. By shift
       isIndependent: true,
       originalText: manualClaimText(7),
       plainEnglish:
-        "Claims a vertical rudder mechanically coordinated with differential wing incidence so it faces the low-resistance side.",
+        "This claim adds the coordinated yaw correction to a differentially warped wing. The mechanism moves the wing's side portions to different angular relations, so they meet the air at different angles of incidence. It also includes a vertical rudder and a linkage that makes the rudder face the side nearest the wing margin with the smaller angle of incidence and the least air resistance. That orientation counters the yaw caused when the higher-incidence side has more drag.",
       keyInnovations: ["Coupled roll and yaw", "Vertical rudder", "Adverse-yaw correction"],
       legalSignificance:
         "This expresses the coupled-control relation, rather than merely adding a rudder to an aircraft.",
@@ -242,7 +242,8 @@ The operator lies prone in a movable cradle 6 upon the lower aeroplane. By shift
       number: 8,
       isIndependent: true,
       originalText: manualClaimText(8),
-      plainEnglish: "Claims the coupled vertical-rudder arrangement in the two-wing machine.",
+      plainEnglish:
+        "This is Claim 7 in the flexible biplane form. Two parallel stacked wings stay equidistant through upright standards, with flexible joints at their lateral portions. A mechanism moves both wings' side portions into different angles, so one side presents a different incidence to the air than the other. A vertical rudder is linked to face the side with the smaller incidence and lower resistance.",
       keyInnovations: ["Superposed wings", "Coupled rudder", "Differential resistance"],
     },
     {
@@ -250,7 +251,7 @@ The operator lies prone in a movable cradle 6 upon the lower aeroplane. By shift
       isIndependent: true,
       originalText: manualClaimText(9),
       plainEnglish:
-        "Claims a helicoidal, or continuously twisting, warp of a transversely elongated wing.",
+        "This claim requires a normally flat wing elongated across the line of flight and a mechanism that gives it a helicoidal warp. The twist occurs around a spanwise axis located centrally along the body of the wing, in the direction in which the wing is elongated. “Helicoidal” means the twist is distributed through the wing surface rather than being a single hinged deflection.",
       keyInnovations: ["Helicoidal warp", "Central transverse axis", "Continuous twist"],
     },
     {
@@ -258,7 +259,7 @@ The operator lies prone in a movable cradle 6 upon the lower aeroplane. By shift
       isIndependent: true,
       originalText: manualClaimText(10),
       plainEnglish:
-        "Claims simultaneous helicoidal warping of both wings through flexibly connected standards.",
+        "This is the two-wing version of the helicoidal-warp claim. Two normally flat, span-elongated wings are held equidistant by upright standards, and the standards attach through flexible joints. The required mechanism simultaneously gives each wing a helicoidal warp about its central spanwise axis.",
       keyInnovations: ["Two warped wings", "Flexible standards", "Synchronized warp"],
     },
     {
@@ -266,7 +267,7 @@ The operator lies prone in a movable cradle 6 upon the lower aeroplane. By shift
       isIndependent: true,
       originalText: manualClaimText(11),
       plainEnglish:
-        "Claims the helicoidally warped biplane together with the coordinated vertical rudder.",
+        "This claim combines the flexible-jointed, equidistant biplane of Claim 10 with a vertical rudder. Both wings receive simultaneous helicoidal warps about their central spanwise axes. The rudder must be moved so its resisting surface faces the side nearest the wing margins with smaller incidence and less air resistance, preserving the roll-and-yaw relationship described in Claim 7.",
       keyInnovations: ["Helicoidal biplane warp", "Vertical rudder", "Low-drag-side steering"],
     },
     {
@@ -274,7 +275,7 @@ The operator lies prone in a movable cradle 6 upon the lower aeroplane. By shift
       isIndependent: true,
       originalText: manualClaimText(12),
       plainEnglish:
-        "Claims the flexible horizontal control surface that curves upward or downward behind its normal plane.",
+        "This claim covers a normally flat, substantially horizontal flexible rudder used with an aeroplane. A mechanism curves that rudder rearward and upward or rearward and downward relative to its normal plane. The legal point is the curved pitch-control surface, not merely any flat horizontal plane.",
       keyInnovations: ["Horizontal rudder", "Flexible curvature", "Pitch control"],
     },
     {
@@ -282,14 +283,15 @@ The operator lies prone in a movable cradle 6 upon the lower aeroplane. By shift
       isIndependent: true,
       originalText: manualClaimText(13),
       plainEnglish:
-        "Claims the pivot, springs, and rear-edge actuation that control the horizontal rudder.",
+        "This specifies the front-rudder mechanism more closely. The normally flat, horizontal flexible rudder pivots near its center on an axis across the line of flight. Springs resist vertical motion of its front edge. A separate mechanism moves its rear edge above or below the normal plane, bending the surface while the front edge is restrained.",
       keyInnovations: ["Transverse pivot", "Restoring springs", "Rear-edge control"],
     },
     {
       number: 14,
       isIndependent: true,
       originalText: manualClaimText(14),
-      plainEnglish: "Claims the combined roll, yaw, and pitch-control machine as a system.",
+      plainEnglish:
+        "This claim puts the three control functions in one aircraft. Connected stacked wings have opposite side portions moved to different angles. A vertical rudder is driven toward the side with smaller incidence and less air resistance. A horizontal rudder has a mechanism that presents either its upper or lower surface to the air. The combination therefore includes roll control, yaw correction, and pitch control together.",
       keyInnovations: ["Three-axis control", "Vertical rudder", "Horizontal rudder"],
     },
     {
@@ -297,14 +299,15 @@ The operator lies prone in a movable cradle 6 upon the lower aeroplane. By shift
       isIndependent: true,
       originalText: manualClaimText(15),
       plainEnglish:
-        "Adds the characteristic placement: vertical rudder aft and horizontal rudder forward.",
+        "This repeats Claim 14's connected stacked wings, differential side angles, linked vertical rudder, and air-facing horizontal rudder. It adds the positional requirement: the vertical rudder is at the rear of the machine and the horizontal rudder is at the front. That is the Wright canard arrangement, stated as part of the claimed combination.",
       keyInnovations: ["Aft yaw control", "Forward pitch control", "Coordinated surfaces"],
     },
     {
       number: 16,
       isIndependent: true,
       originalText: manualClaimText(16),
-      plainEnglish: "Claims the parallel tail arms and their pivoted vertical rudder mounting.",
+      plainEnglish:
+        "This claim covers the rear support arrangement. Two connected stacked aeroplanes each have an arm extending rearward. The arms are parallel and their rear ends can swing upward. A vertical rudder pivots in those rear ends. The upward freedom protects the tail assembly when it contacts the ground at a landing angle.",
       keyInnovations: ["Tail arms", "Vertical rudder pivot", "Free upward motion"],
     },
     {
@@ -312,7 +315,7 @@ The operator lies prone in a movable cradle 6 upon the lower aeroplane. By shift
       isIndependent: true,
       originalText: manualClaimText(17),
       plainEnglish:
-        "Claims the flexible biplane structure and the two crossed control ropes that produce the wing warp.",
+        "This claim specifies the cable-built flexible biplane. Two normally flat but flexible wings are stacked and joined at their margins by upright standards through universal joints. Diagonal stay-wires connect opposite ends of adjacent standards. One rope runs along the lower wing's front edge, through guides at its front corners, to the upper wing's rear corners. A second rope runs along the lower wing's rear edge, through rear-corner guides, to the upper wing's front corners.",
       keyInnovations: ["Universal joints", "Diagonal stay-wires", "Front and rear control ropes"],
     },
     {
@@ -320,7 +323,7 @@ The operator lies prone in a movable cradle 6 upon the lower aeroplane. By shift
       isIndependent: true,
       originalText: manualClaimText(18),
       plainEnglish:
-        "Adds the vertical rudder and tiller-rope linkage to the complete rope-operated wing-warping structure.",
+        "This retains every structural element of Claim 17: the flexible stacked wings, universal-jointed standards, diagonal stay-wires, front rope, rear rope, corner guides, and diagonally opposed rope endpoints. It adds a vertical rudder and a tiller-rope that connects that rudder to the rope along the rear edge of the lower wing. The added linkage makes the rudder move with the wing-warping cable system.",
       keyInnovations: ["Tiller-rope", "Rudder linkage", "Wing-warping rigging"],
     },
   ],

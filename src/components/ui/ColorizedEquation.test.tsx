@@ -33,24 +33,16 @@ describe("ColorizedEquation Component", () => {
 
   test("color palette helper produces correct KaTeX color tags", () => {
     const wrapped = wrapKatexColor("C_L^2", "emerald", false);
-    expect(wrapped).toBe(
-      `\\textcolor{${COLOR_STYLES.emerald.hexLight}}{C_L^2}`,
-    );
+    expect(wrapped).toBe(`\\textcolor{${COLOR_STYLES.emerald.hexLight}}{C_L^2}`);
 
     const wrappedDark = wrapKatexColor("C_L^2", "emerald", true);
-    expect(wrappedDark).toBe(
-      `\\textcolor{${COLOR_STYLES.emerald.hexDark}}{C_L^2}`,
-    );
+    expect(wrappedDark).toBe(`\\textcolor{${COLOR_STYLES.emerald.hexDark}}{C_L^2}`);
   });
 
   test("renders collapsed view and custom initial active variable", () => {
     const eq = ALL_COLORIZED_EQUATIONS["us-821393-wright-flyer"][0];
     const html = renderToString(
-      <ColorizedEquation
-        equation={eq}
-        initialActiveVariableId="cl"
-        defaultExpanded={false}
-      />,
+      <ColorizedEquation equation={eq} initialActiveVariableId="cl" defaultExpanded={false} />,
     );
     expect(html).toContain("Lift Coefficient (Squared)");
     expect(html).toContain('aria-expanded="false"');
@@ -61,9 +53,7 @@ describe("ColorizedEquation Component", () => {
     const cottonGinEqs = getColorizedEquationsForPatent("us-x72-whitney-cotton-gin");
     expect(cottonGinEqs.length).toBeGreaterThan(0);
 
-    const html = renderToString(
-      <ColorizedEquation equation={cottonGinEqs[0]} />,
-    );
+    const html = renderToString(<ColorizedEquation equation={cottonGinEqs[0]} />);
     expect(html).toContain("Mathematical Governing Law");
     expect(html).toContain("Plain English Decoder");
   });

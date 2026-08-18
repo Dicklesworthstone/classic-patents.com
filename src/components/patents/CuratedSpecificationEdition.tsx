@@ -1,6 +1,7 @@
 "use client";
 
 import { ArrowUpRight, Image, ScrollText } from "lucide-react";
+import NextImage from "next/image";
 import type { MouseEvent as ReactMouseEvent, ReactNode } from "react";
 import { useId, useState } from "react";
 import type {
@@ -12,8 +13,11 @@ import type {
 
 interface CuratedSpecificationEditionProps {
   edition: CuratedSpecificationEditionData;
-  /** Hand-authored notes keyed to the edition's stable block order. */
-  paragraphNotes: Readonly<Record<number, string>>;
+  /**
+   * Hand-authored, loss-conscious readings keyed to the edition's stable
+   * block order. Each source paragraph may require several modern paragraphs.
+   */
+  paragraphReadings: Readonly<Record<number, readonly string[]>>;
   /** Separately hand-authored claim decoders from the canonical patent record. */
   claimDecoders: readonly Pick<PatentClaim, "number" | "plainEnglish">[];
   className?: string;
@@ -77,6 +81,10 @@ function SourceReference({
 }: {
   inline: Extract<CuratedSpecificationInline, { kind: "reference" }>;
 }) {
+  if (inline.referenceType === "figure" && inline.figurePreviews) {
+    return <FigureReference inline={inline} />;
+  }
+
   const isFigure = inline.referenceType === "figure";
   const Icon = isFigure ? Image : ScrollText;
   const typeLabel = isFigure ? "Figure" : inline.referenceType === "claim" ? "Claim" : "Section";
@@ -92,6 +100,71 @@ function SourceReference({
       <span>{inline.text}</span>
       <ArrowUpRight className="h-[0.9em] w-[0.9em]" aria-hidden="true" />
     </a>
+  );
+}
+
+function FigureReference({
+  inline,
+}: {
+  inline: Extract<CuratedSpecificationInline, { kind: "reference" }>;
+}) {
+  const tooltipId = useId();
+  const [touchOpen, setTouchOpen] = useState(false);
+  const handleClick = (event: ReactMouseEvent<HTMLButtonElement>) => {
+    // On a fine pointer the figure follows hover alone. Keyboard activation
+    // and tap interaction remain available without a persistent mouse click.
+    if (event.detail > 0 && hasFineHoverPointer()) {
+      event.currentTarget.blur();
+      return;
+    }
+    setTouchOpen((open) => !open);
+  };
+
+  return (
+    <span className="group relative inline">
+      <button
+        type="button"
+        aria-controls={tooltipId}
+        aria-expanded={touchOpen}
+        aria-label={inline.label}
+        className="mx-0.5 inline-flex items-center gap-1 rounded-md border border-amber-500/45 bg-amber-100/75 px-1.5 py-0.5 align-baseline font-sans text-[0.72em] font-bold leading-none text-amber-950 no-underline shadow-xs transition-colors hover:border-amber-700 hover:bg-amber-200 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-amber-700 dark:border-amber-500/50 dark:bg-amber-950/45 dark:text-amber-100 dark:hover:bg-amber-900/70"
+        onClick={handleClick}
+      >
+        <Image className="h-[0.95em] w-[0.95em]" aria-hidden="true" />
+        <span className="font-mono text-[0.8em] uppercase tracking-[0.08em]">Figure</span>
+        <span>{inline.text}</span>
+      </button>
+      <span
+        id={tooltipId}
+        role="tooltip"
+        className={`absolute left-1/2 top-full z-30 mt-3 w-[min(25rem,calc(100vw-2.5rem))] -translate-x-1/2 rounded-2xl border border-amber-400/70 bg-parchment-50 p-3 font-sans text-sm font-normal text-ink-900 shadow-2xl group-hover:block group-focus-within:block sm:left-0 sm:translate-x-0 dark:border-amber-700/80 dark:bg-ink-950 dark:text-parchment-100 ${
+          touchOpen ? "block" : "hidden"
+        }`}
+      >
+        <span className="mb-2 block font-mono text-[0.65rem] font-bold uppercase tracking-[0.14em] text-amber-800 dark:text-amber-400">
+          Original patent drawing
+        </span>
+        <span className="grid gap-3">
+          {inline.figurePreviews?.map((preview) => (
+            <figure
+              key={preview.src}
+              className="overflow-hidden rounded-xl border border-parchment-300 bg-white dark:border-ink-800 dark:bg-ink-900"
+            >
+              <NextImage
+                src={preview.src}
+                alt={preview.alt}
+                width={preview.width}
+                height={preview.height}
+                className="block h-auto w-full bg-white dark:bg-parchment-50"
+              />
+              <figcaption className="border-t border-parchment-300 px-3 py-2 text-xs leading-relaxed text-ink-700 dark:border-ink-800 dark:text-parchment-300">
+                {preview.alt}
+              </figcaption>
+            </figure>
+          ))}
+        </span>
+      </span>
+    </span>
   );
 }
 
@@ -122,7 +195,7 @@ function ParallelReading({
   sourceLabel = "Original patent text",
 }: {
   children: ReactNode;
-  plainEnglish: string;
+  plainEnglish: readonly string[];
   sourceLabel?: string;
 }) {
   return (
@@ -137,7 +210,13 @@ function ParallelReading({
         <span className="mb-2 block font-mono text-[10px] font-bold uppercase tracking-[0.14em] text-emerald-800 dark:text-emerald-300">
           Plain English
         </span>
-        <p className="text-pretty">{plainEnglish}</p>
+        <div className="space-y-3">
+          {plainEnglish.map((paragraph, index) => (
+            <p key={`${index}-${paragraph.slice(0, 24)}`} className="text-pretty">
+              {paragraph}
+            </p>
+          ))}
+        </div>
       </aside>
     </section>
   );
@@ -151,7 +230,7 @@ function ParallelReading({
  */
 export function CuratedSpecificationEdition({
   edition,
-  paragraphNotes,
+  paragraphReadings,
   claimDecoders,
   className,
 }: CuratedSpecificationEditionProps) {
@@ -167,16 +246,33 @@ export function CuratedSpecificationEdition({
         const key = `${block.kind}-${index}`;
 
         if (block.kind === "masthead") {
+          const [office, inventors, title, ...legalDetails] = block.lines;
           return (
             <header
               key={key}
-              className="border-y border-parchment-300 py-6 text-center font-mono text-xs font-bold uppercase tracking-[0.16em] text-amber-900 dark:border-ink-800 dark:text-amber-400 sm:text-sm"
+              className="overflow-hidden rounded-2xl border border-amber-700/30 bg-[linear-gradient(135deg,rgba(180,83,9,0.13),rgba(255,251,235,0.55)_48%,rgba(180,83,9,0.07))] shadow-sm dark:border-amber-600/30 dark:bg-[linear-gradient(135deg,rgba(180,83,9,0.2),rgba(20,20,18,0.35)_48%,rgba(180,83,9,0.1))]"
             >
-              {block.lines.map((line, lineIndex) => (
-                <p key={`${key}-line-${lineIndex}`} className="my-1">
-                  {line}
+              <div className="border-b border-amber-700/25 bg-amber-700/[0.08] px-5 py-3 text-center font-mono text-[0.65rem] font-bold uppercase tracking-[0.2em] text-amber-950 dark:border-amber-500/25 dark:bg-amber-500/[0.1] dark:text-amber-200 sm:px-8 sm:text-[0.72rem]">
+                {office}
+              </div>
+              <div className="px-5 py-7 text-center sm:px-10 sm:py-10">
+                <p className="font-sans text-xs font-semibold uppercase tracking-[0.14em] text-ink-700 dark:text-parchment-300 sm:text-sm">
+                  {inventors}
                 </p>
-              ))}
+                <h2 className="mt-4 font-serif text-3xl font-bold tracking-[0.06em] text-ink-950 dark:text-parchment-50 sm:mt-5 sm:text-5xl">
+                  {title}
+                </h2>
+              </div>
+              <div className="grid border-t border-amber-700/25 bg-parchment-100/60 font-mono text-[0.68rem] font-semibold leading-5 text-ink-700 dark:border-amber-500/25 dark:bg-ink-950/35 dark:text-parchment-300 sm:grid-cols-2 sm:text-xs">
+                {legalDetails.map((detail, detailIndex) => (
+                  <p
+                    key={`${key}-legal-detail-${detailIndex}`}
+                    className="px-5 py-3 text-center sm:px-6 sm:py-4 sm:text-left [&:not(:first-child)]:border-t [&:not(:first-child)]:border-amber-700/20 sm:[&:not(:first-child)]:border-l sm:[&:not(:first-child)]:border-t-0 dark:[&:not(:first-child)]:border-amber-500/20"
+                  >
+                    {detail}
+                  </p>
+                ))}
+              </div>
             </header>
           );
         }
@@ -198,8 +294,8 @@ export function CuratedSpecificationEdition({
         }
 
         if (block.kind === "paragraph") {
-          const plainEnglish = paragraphNotes[index];
-          if (!plainEnglish) {
+          const plainEnglish = paragraphReadings[index];
+          if (!plainEnglish || plainEnglish.length === 0) {
             throw new Error(
               `Manual archival paragraph ${index + 1} is missing its Plain English reading.`,
             );
@@ -239,7 +335,7 @@ export function CuratedSpecificationEdition({
           return (
             <ParallelReading
               key={key}
-              plainEnglish={plainEnglish}
+              plainEnglish={[plainEnglish]}
               sourceLabel={`Original claim ${block.number}`}
             >
               {claim}

@@ -2763,9 +2763,6 @@ export function InteractiveDiagramViewer({
   const [activeCalloutId, setActiveCalloutId] = useState<string | null>(null);
   const [hoveredCalloutId, setHoveredCalloutId] = useState<string | null>(null);
   const [zoomLevel, setZoomLevel] = useState<number>(1);
-  const [schematicTheme, setSchematicTheme] = useState<"blueprint" | "parchment" | "chalkboard">(
-    "blueprint",
-  );
 
   const activeDrawing = drawings[activeFigIndex] || drawings[0];
   const callouts = useMemo(() => activeDrawing?.callouts ?? [], [activeDrawing]);
@@ -2812,31 +2809,6 @@ export function InteractiveDiagramViewer({
 
   if (!activeDrawing) return null;
 
-  // Theme palettes
-  const themeStyles = {
-    blueprint: {
-      bg: "bg-[#061121]",
-      grid: "bg-[linear-gradient(to_right,#0c2340_1px,transparent_1px),linear-gradient(to_bottom,#0c2340_1px,transparent_1px)] opacity-60",
-      borderStroke: "#0ea5e9",
-      textFill: "#7dd3fc",
-      badgeClass: "bg-cyan-950/80 text-cyan-400 border-cyan-800",
-    },
-    parchment: {
-      bg: "bg-[#fbf7ee]",
-      grid: "bg-[linear-gradient(to_right,#e7dec8_1px,transparent_1px),linear-gradient(to_bottom,#e7dec8_1px,transparent_1px)] opacity-70",
-      borderStroke: "#78350f",
-      textFill: "#451a03",
-      badgeClass: "bg-amber-100 text-amber-900 border-amber-300",
-    },
-    chalkboard: {
-      bg: "bg-[#090d16]",
-      grid: "bg-[linear-gradient(to_right,#1e293b_1px,transparent_1px),linear-gradient(to_bottom,#1e293b_1px,transparent_1px)] opacity-50",
-      borderStroke: "#10b981",
-      textFill: "#6ee7b7",
-      badgeClass: "bg-emerald-950/80 text-emerald-400 border-emerald-800",
-    },
-  }[schematicTheme];
-
   return (
     <div className="rounded-2xl border border-parchment-300 dark:border-ink-800 bg-parchment-50 dark:bg-ink-950 p-5 sm:p-6 shadow-patent space-y-5">
       {/* Header, Figure Switcher & Viewport Toolbar */}
@@ -2844,7 +2816,7 @@ export function InteractiveDiagramViewer({
         <div>
           <div className="flex items-center gap-2">
             <Compass className="w-4 h-4 text-amber-700 dark:text-amber-500" />
-            <h3 className="font-serif text-lg font-bold text-ink-900 dark:text-parchment-100">
+            <h3 className="font-serif text-lg font-bold text-ink-950 dark:text-parchment-100">
               Interactive Schematic Sheet ({activeDrawing.figureNumber})
             </h3>
           </div>
@@ -2852,46 +2824,6 @@ export function InteractiveDiagramViewer({
         </div>
 
         <div className="flex flex-wrap items-center gap-2">
-          {/* Theme Palette Switcher */}
-          <div className="flex items-center bg-parchment-200/80 dark:bg-ink-900 rounded-xl p-1 border border-parchment-300 dark:border-ink-800 text-xs">
-            <button
-              type="button"
-              onClick={() => setSchematicTheme("blueprint")}
-              className={`px-2.5 py-1 rounded-lg font-sans transition-colors ${
-                schematicTheme === "blueprint"
-                  ? "bg-cyan-700 text-white font-bold shadow-xs"
-                  : "text-ink-700 dark:text-ink-400 hover:text-ink-900"
-              }`}
-              title="Cyan Engineering Blueprint"
-            >
-              Blueprint
-            </button>
-            <button
-              type="button"
-              onClick={() => setSchematicTheme("parchment")}
-              className={`px-2.5 py-1 rounded-lg font-sans transition-colors ${
-                schematicTheme === "parchment"
-                  ? "bg-amber-700 text-white font-bold shadow-xs"
-                  : "text-ink-700 dark:text-ink-400 hover:text-ink-900"
-              }`}
-              title="Archival Sepia Parchment"
-            >
-              Parchment
-            </button>
-            <button
-              type="button"
-              onClick={() => setSchematicTheme("chalkboard")}
-              className={`px-2.5 py-1 rounded-lg font-sans transition-colors ${
-                schematicTheme === "chalkboard"
-                  ? "bg-emerald-700 text-white font-bold shadow-xs"
-                  : "text-ink-700 dark:text-ink-400 hover:text-ink-900"
-              }`}
-              title="Slate Technical Chalkboard"
-            >
-              Chalkboard
-            </button>
-          </div>
-
           {/* Zoom controls */}
           <div className="flex items-center bg-parchment-200/80 dark:bg-ink-900 rounded-xl p-1 border border-parchment-300 dark:border-ink-800 text-xs">
             <button
@@ -2955,13 +2887,9 @@ export function InteractiveDiagramViewer({
       {/* Schematic Container with Interactive Pins & Pin Inspector */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
         {/* Drawing Artboard */}
-        <div
-          className={`lg:col-span-8 flex flex-col items-center justify-center rounded-2xl ${themeStyles.bg} p-4 sm:p-6 border border-parchment-300 dark:border-ink-800 relative min-h-[380px] shadow-inner overflow-hidden transition-colors duration-300`}
-        >
-          {/* Blueprint background grid */}
-          <div
-            className={`absolute inset-0 ${themeStyles.grid} bg-[size:24px_24px] rounded-2xl pointer-events-none`}
-          />
+        <div className="lg:col-span-8 flex flex-col items-center justify-center rounded-2xl bg-[#fbf7ee] dark:bg-[#061121] p-4 sm:p-6 border border-parchment-300 dark:border-ink-800 relative min-h-[380px] shadow-inner overflow-hidden transition-colors duration-300">
+          {/* Blueprint / parchment background grid */}
+          <div className="absolute inset-0 bg-[linear-gradient(to_right,#e7dec8_1px,transparent_1px),linear-gradient(to_bottom,#e7dec8_1px,transparent_1px)] opacity-70 dark:bg-[linear-gradient(to_right,#0c2340_1px,transparent_1px),linear-gradient(to_bottom,#0c2340_1px,transparent_1px)] dark:opacity-60 bg-[size:24px_24px] rounded-2xl pointer-events-none" />
 
           {/* Schematic SVG Vector Frame */}
           <div
@@ -2985,7 +2913,8 @@ export function InteractiveDiagramViewer({
                 width="380"
                 height="280"
                 fill="none"
-                stroke={themeStyles.borderStroke}
+                stroke="#78350f"
+                className="dark:stroke-[#0ea5e9]"
                 strokeWidth="1.5"
                 strokeDasharray="4 2"
                 strokeOpacity="0.4"
@@ -2996,7 +2925,8 @@ export function InteractiveDiagramViewer({
                 y="32"
                 textAnchor="middle"
                 fontSize="11"
-                fill={themeStyles.textFill}
+                fill="#451a03"
+                className="dark:fill-[#7dd3fc]"
                 fontFamily="serif"
                 fontWeight="bold"
                 letterSpacing="1"

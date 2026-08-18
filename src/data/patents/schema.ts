@@ -99,6 +99,17 @@ const curatedSpecificationInlineSchema = z.discriminatedUnion("kind", [
     href: z.string().min(1),
     referenceType: z.enum(["figure", "claim", "section"]),
     label: z.string().min(1),
+    figurePreviews: z
+      .array(
+        z.object({
+          src: z.string().startsWith("/patents/figures/"),
+          alt: z.string().min(1),
+          width: z.number().int().positive(),
+          height: z.number().int().positive(),
+        }),
+      )
+      .min(1)
+      .optional(),
   }),
   z.object({
     kind: z.literal("term"),

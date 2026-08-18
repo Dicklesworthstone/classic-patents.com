@@ -16,7 +16,7 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 import { ColorizedEquation } from "@/components/ui/ColorizedEquation";
 import { LatexRenderer, TextWithLatex } from "@/components/ui/LatexRenderer";
 import { getColorizedEquationsForPatent } from "@/data/colorizedEquations";
-import { archivalParallelReadingFor } from "@/data/editions/parallelReadings";
+import { archivalParallelReadingsFor } from "@/data/editions/parallelReadings";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import type { ColorizedEquation as ColorizedEquationType } from "@/types/equation";
 import type { Patent } from "@/types/patent";
@@ -405,7 +405,7 @@ export function DualProjectionViewer({ patent, initialView }: DualProjectionView
               {archivalEdition ? (
                 <CuratedSpecificationEdition
                   edition={archivalEdition}
-                  paragraphNotes={archivalParallelReadingFor(patent.id)}
+                  paragraphReadings={archivalParallelReadingsFor(patent.id)}
                   claimDecoders={patent.claims}
                   className="text-ink-950 select-text dark:text-parchment-100"
                 />
@@ -633,7 +633,7 @@ export function DualProjectionViewer({ patent, initialView }: DualProjectionView
             {archivalEdition ? (
               <CuratedSpecificationEdition
                 edition={archivalEdition}
-                paragraphNotes={archivalParallelReadingFor(patent.id)}
+                paragraphReadings={archivalParallelReadingsFor(patent.id)}
                 claimDecoders={patent.claims}
                 className="rounded-2xl border border-parchment-300 bg-parchment-100/80 p-6 text-ink-950 shadow-xs select-text dark:border-ink-800 dark:bg-ink-900/80 dark:text-parchment-100 sm:p-10"
               />

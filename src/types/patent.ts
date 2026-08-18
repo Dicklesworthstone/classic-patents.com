@@ -98,6 +98,16 @@ export type CuratedSpecificationInline =
       referenceType: "figure" | "claim" | "section";
       /** Accessible description of the visual source or source section. */
       label: string;
+      /**
+       * Crops from the pinned source facsimile, selected by the editor for
+       * this exact occurrence. Omitted for non-figure source references.
+       */
+      figurePreviews?: readonly {
+        src: string;
+        alt: string;
+        width: number;
+        height: number;
+      }[];
     }
   | {
       kind: "term";
