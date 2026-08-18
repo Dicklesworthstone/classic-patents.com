@@ -214,6 +214,7 @@ the visitor can see or hear the kernel change the instrument.
 - [x] P5.121 Howe lockstitch emits needleStudioRotZ / needleStudioY / shuttleStudioZ and clothStudioAdvancePerS; 3D no longer divides leftover 45/90/60. Pelton jet/spray/needle/handwheel studio rates live on the wheel step. Wozniak, Fermi, and Gramme drop leftover `?? 4.0` / `?? k_eff×4` / `?? 2π/240` fallbacks. Goddard 3D reads thrustLbf from the step.
 - [x] P5.122 Einstein fluidDisplaySpeed / heaterGlow / generatorGlow / evaporatorGlow live on the absorption step; 3D thermosiphon and glow no longer divide leftover 45 / 250 / 300 / 35.
 - [x] P5.123 Bardeen holeDriftSpeed / gapStudioUnits, Kevlar bulletDisplaySpeed, Morse keyOscillation / armatureStrike / tapeAdvance / electronDisplaySpeed, Edison incandescence / thermalJitter, and Nobel shockwaveGlow / stickDisplayOmega live on the shared steps. 3D kinematics no longer convert leftover Ie/D, v/400, WPM/20, T/300, or v_det/6000 privately.
+- [x] P5.124 Otto govDisplayOmega / flyballRadius, Diesel governorBallSpread / pressureNeedleRadPerBar, Maxim steamOpacity, and Parsons steamAdvancePerS / steamOpacity live on the shared steps. 3D no longer converts leftover rpm/180, rpm/150, evap/15, or h/550×n/3000.
 
 ## Explicitly out of scope
 
