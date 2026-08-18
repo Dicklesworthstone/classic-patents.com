@@ -91,11 +91,7 @@ export function stepWrightFlyerSi(controls: WrightControls): WrightSiState {
     streamFlowSpeed: Number(((controls.airspeedMph / 30) * 18).toFixed(3)),
     downwashSpeed: Number((cl * 0.08).toFixed(4)),
     cradleStudioX: Number((-0.35 + (controls.wingWarpDeg / 15) * 0.12).toFixed(4)),
-    leftBayTension: Number(
-      Math.max(0, liftNewtons / 2200 + controls.wingWarpDeg / 15).toFixed(4),
-    ),
-    rightBayTension: Number(
-      Math.max(0, liftNewtons / 2200 - controls.wingWarpDeg / 15).toFixed(4),
-    ),
+    leftBayTension: Number(Math.max(0, liftNewtons / 2200 + controls.wingWarpDeg / 15).toFixed(4)),
+    rightBayTension: Number(Math.max(0, liftNewtons / 2200 - controls.wingWarpDeg / 15).toFixed(4)),
   };
 }

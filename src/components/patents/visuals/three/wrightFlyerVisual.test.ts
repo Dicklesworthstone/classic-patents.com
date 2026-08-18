@@ -56,6 +56,8 @@ describe("US 821,393 Wright Brothers Flying-Machine 3D visual & aerodynamic boun
     expect(si.totalDragNewtons).toBeGreaterThan(100);
     expect(si.adverseYawNm).toBeDefined();
     expect(si.rudderYawNm).toBeDefined();
+    expect(si.propDisplayOmegaRadPerS).toBeGreaterThan(0);
+    expect(si.streamFlowSpeed).toBeGreaterThan(0);
   });
 
   test("builds and articulates procedural biplane wings, flexible rib warp, forward elevator, and twin rudders correctly", () => {
@@ -69,7 +71,25 @@ describe("US 821,393 Wright Brothers Flying-Machine 3D visual & aerodynamic boun
     expect(airframe.leftPropBlades).toBeDefined();
     expect(airframe.rightPropBlades).toBeDefined();
 
-    updateWrightFlyerKinematics(airframe, 0.016, 6.0, 8.0, 3.0, 30.0, 1500, true);
+    const pose = stepWrightFlyerSi({
+      airspeedMph: 30,
+      wingWarpDeg: 6,
+      rudderDeg: 8,
+      elevatorDeg: 3,
+      coupled: true,
+    });
+    updateWrightFlyerKinematics(
+      airframe,
+      0.016,
+      6.0,
+      8.0,
+      3.0,
+      pose.propDisplayOmegaRadPerS,
+      pose.cradleStudioX,
+      pose.leftBayTension,
+      pose.rightBayTension,
+      true,
+    );
     expect(airframe.rudderGroup.rotation.y).toBeCloseTo((-8.0 * Math.PI) / 180, 2);
     expect(airframe.canardGroup.rotation.x).toBeCloseTo((-3.0 * Math.PI) / 180, 2);
     expect(airframe.muslinMat.opacity).toBe(0.35);

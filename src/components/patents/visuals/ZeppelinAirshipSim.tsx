@@ -155,7 +155,7 @@ export function ZeppelinAirshipSim() {
             <line x1="-180" y1="58" x2="180" y2="58" stroke="#4A5568" strokeWidth="3" />
             {/* Sliding Trim Weight (Translates on Keel) */}
             <rect
-              x={(trimWeight / 15) * 140 - 10}
+              x={zep.trimSvgX}
               y="52"
               width="20"
               height="12"

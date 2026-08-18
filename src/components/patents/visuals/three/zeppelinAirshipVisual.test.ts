@@ -73,6 +73,7 @@ describe("US 621,195 Ferdinand von Zeppelin Rigid Airship visual & aerostatics b
     expect(result.hydrogenVolumeM3).toBeGreaterThan(10000);
     expect(result.propellerRpm).toBeGreaterThan(1000);
     expect(result.hullStudioY).toBeCloseTo((result.netLiftKn / 40) * 0.9, 3);
+    expect(result.trimSvgX).toBeCloseTo((5 / 15) * 140 - 10, 2);
   });
 
   test("builds and articulates procedural rigid hull, duralumin rings, gas cells, and gondolas correctly", () => {

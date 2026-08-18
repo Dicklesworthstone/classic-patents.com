@@ -64,6 +64,7 @@ describe("US X9430 Colt Paterson Revolver visual & physics boundary", () => {
     expect(fullCock.muzzleVelocityMps).toBe(304);
     expect(fullCock.muzzleEnergyJoules).toBe(240);
     expect(fullCock.powderGrains).toBe(45);
+    expect(fullCock.recoilKick).toBeCloseTo(0.05 + (304 / 400) * 0.1, 3);
 
     const halfCock = stepColtRevolver({ chamberPressureMpa: 85, cockingAngleDeg: 22.5 });
     expect(halfCock.isLocked).toBe(false);

@@ -131,9 +131,10 @@ export function stepEricssonPropeller(params: { shaftRpm?: number; bladePitchAng
         )
       : 0.15;
   const shaftOmegaRadPerS = (rpm * 2 * Math.PI) / 60;
+  const thrustKn = Math.round((rpm / 120) ** 2 * 18 * pitchFactor);
   return {
     shipSpeedKnots,
-    thrustKn: Math.round((rpm / 120) ** 2 * 18 * pitchFactor),
+    thrustKn,
     pitchMeters,
     theoreticalSpeedKnots,
     slipFraction,
@@ -142,7 +143,7 @@ export function stepEricssonPropeller(params: { shaftRpm?: number; bladePitchAng
     wakeSwirlScale: 0.4,
     wakeFlowSpeed: 6.5,
     wakeSwirlCoeff: 0.08,
-    wakeOpacity: Number(Math.min(0.95, 0.3 + (Math.round((rpm / 120) ** 2 * 18 * pitchFactor) / 30) * 0.65).toFixed(3)),
+    wakeOpacity: Number(Math.min(0.95, 0.3 + (thrustKn / 30) * 0.65).toFixed(3)),
   };
 }
 

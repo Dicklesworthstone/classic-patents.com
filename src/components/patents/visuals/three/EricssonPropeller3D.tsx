@@ -50,6 +50,7 @@ export function EricssonPropeller3D() {
     wakeSwirlScale: ericson.wakeSwirlScale,
     wakeFlowSpeed: ericson.wakeFlowSpeed,
     wakeSwirlCoeff: ericson.wakeSwirlCoeff,
+    wakeOpacity: ericson.wakeOpacity,
   });
 
   const controlsRef = useRef<StudioContext["controls"] | null>(null);
@@ -136,7 +137,7 @@ export function EricssonPropeller3D() {
       );
 
       const wakeMat = model.materials.wakeMat;
-      wakeMat.opacity = Math.min(0.95, 0.3 + (p.thrustKn / 30) * 0.65);
+      wakeMat.opacity = p.wakeOpacity;
       wakeMat.color.setHex(p.thrustKn > 12 ? 0x38bdf8 : 0x64748b);
 
       renderer.render(scene, camera);

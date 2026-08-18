@@ -72,6 +72,7 @@ describe("US 588 John Ericsson Screw Propeller visual & hydrodynamics boundary",
     expect(result.slipFraction).toBeLessThan(1);
     expect(result.wakeFlowSpeed).toBeCloseTo(6.5, 5);
     expect(result.wakeSwirlCoeff).toBeCloseTo(0.08, 5);
+    expect(result.wakeOpacity).toBeCloseTo(Math.min(0.95, 0.3 + (result.thrustKn / 30) * 0.65), 3);
   });
 
   test("builds and articulates procedural tandem drums, concentric shafts, and wake particles correctly", () => {

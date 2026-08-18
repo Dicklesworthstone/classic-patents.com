@@ -85,6 +85,7 @@ export function ColtRevolver3D() {
     showLockworkCutaway,
     isAudioMuted,
     muzzleVelocityMps,
+    recoilKick: coltMech.recoilKick,
     hoopStressMpa,
     isLocked: coltMech.isLocked ? 1 : 0,
   });
@@ -243,7 +244,7 @@ export function ColtRevolver3D() {
         smokePuffScale += 0.12;
         model.smokeMesh.scale.set(smokePuffScale, smokePuffScale, smokePuffScale);
 
-        const kick = 0.05 + (p.muzzleVelocityMps / 400) * 0.1;
+        const kick = p.recoilKick;
         model.group.rotation.z = Math.min(0.24, model.group.rotation.z + kick);
         model.group.position.x = Math.max(-0.4, model.group.position.x - kick * 0.8);
       } else {

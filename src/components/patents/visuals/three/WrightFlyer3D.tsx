@@ -65,8 +65,6 @@ export function WrightFlyer3D() {
   const [isAutoFlying, setIsAutoFlying] = useState<boolean>(true);
   const [kernelLabel, setKernelLabel] = useState(flyerKernelSource());
   const [aeroLabel, setAeroLabel] = useState(flyerAeroSource());
-  const baseCl = 0.45 + elevatorPitchDeg * 0.04;
-
   const live = useLiveSimParams({
     wingWarpDeg,
     rudderYawDeg,
@@ -80,7 +78,13 @@ export function WrightFlyer3D() {
     dragNewtons: si.totalDragNewtons,
     netYawNm: si.netYawNm,
     coupled: isCoupled ? 1 : 0,
-    cl: baseCl,
+    cl: si.cl,
+    propDisplayOmegaRadPerS: si.propDisplayOmegaRadPerS,
+    streamFlowSpeed: si.streamFlowSpeed,
+    downwashSpeed: si.downwashSpeed,
+    cradleStudioX: si.cradleStudioX,
+    leftBayTension: si.leftBayTension,
+    rightBayTension: si.rightBayTension,
   });
 
   const controlsRef = useRef<StudioContext["controls"] | null>(null);
@@ -221,20 +225,6 @@ export function WrightFlyer3D() {
       const elapsed = renderedSteps * FIXED_RENDER_STEP_S;
 
       const p = live.current;
-      const siNow = {
-        airspeedMps: p.airspeedMph * 0.44704,
-        dynamicPressurePa: 0,
-        liftNewtons: p.liftNewtons,
-        inducedDragNewtons: 0,
-        parasiticDragNewtons: 0,
-        totalDragNewtons: p.dragNewtons,
-        liftToDrag: 0,
-        adverseYawNm: 0,
-        rudderYawNm: 0,
-        netYawNm: p.netYawNm,
-        coordinated: false,
-        adverseYawDominant: p.netYawNm < -8,
-      };
       const controlsNow = {
         airspeedMph: p.airspeedMph,
         wingWarpDeg: p.wingWarpDeg,
@@ -242,6 +232,7 @@ export function WrightFlyer3D() {
         elevatorDeg: p.elevatorPitchDeg,
         coupled: p.coupled >= 0.5,
       };
+      const siNow = stepWrightFlyerSi(controlsNow);
 
       if (p.isAutoFlying) {
         scheduler.pump(elapsed, () => {
@@ -267,14 +258,16 @@ export function WrightFlyer3D() {
         p.wingWarpDeg,
         p.rudderYawDeg,
         p.elevatorPitchDeg,
-        p.airspeedMph,
-        p.liftNewtons,
+        p.propDisplayOmegaRadPerS,
+        p.cradleStudioX,
+        p.leftBayTension,
+        p.rightBayTension,
         p.isCutaway,
       );
 
       // Streamline Flow Particle Physics
       const posArr = particlePositions;
-      const flowSpeed = (p.airspeedMph / 30) * 18 * delta;
+      const flowSpeed = p.streamFlowSpeed * delta;
 
       for (let i = 0; i < particleCount; i++) {
         const idx = i * 3;
@@ -282,7 +275,7 @@ export function WrightFlyer3D() {
 
         // Downwash deflection as airflow passes the wings
         if (posArr[idx + 2] < 1 && posArr[idx + 2] > -4) {
-          posArr[idx + 1] -= p.cl * 0.08 * delta;
+          posArr[idx + 1] -= p.downwashSpeed * delta;
         }
 
         // Reset particle when it travels past the tail

@@ -552,6 +552,7 @@ export const FrankenSimEngine = {
       muzzleEnergyJoules: cat.muzzleEnergyJoules,
       powderGrains: cat.powderGrains,
       cycleDisplayMs: cat.cycleDisplayMs,
+      recoilKick: cat.recoilKick,
     };
   },
 

@@ -1021,14 +1021,15 @@ export function updateWrightFlyerKinematics(
   wingWarpDeg: number,
   rudderYawDeg: number,
   elevatorPitchDeg: number,
-  airspeedMph: number,
-  liftNewtons: number,
+  propDisplayOmegaRadPerS: number,
+  cradleStudioX: number,
+  leftBayTension: number,
+  rightBayTension: number,
   isCutaway = false,
 ): void {
   // Propellers Rotation (Counter-Rotating to eliminate gyroscopic torque)
-  const propSpeed = (airspeedMph / 25) * 45;
-  airframe.leftPropBlades.rotation.z += propSpeed * delta;
-  airframe.rightPropBlades.rotation.z -= propSpeed * delta;
+  airframe.leftPropBlades.rotation.z += propDisplayOmegaRadPerS * delta;
+  airframe.rightPropBlades.rotation.z -= propDisplayOmegaRadPerS * delta;
 
   // Animate Wing Warping Deflection on Mesh Tips
   const warpRad = (wingWarpDeg * Math.PI) / 180;
@@ -1045,7 +1046,7 @@ export function updateWrightFlyerKinematics(
   }
 
   // Pilot hip cradle sliding sideways during wing warping
-  airframe.cradleGroup.position.x = -0.35 + (wingWarpDeg / 15) * 0.12;
+  airframe.cradleGroup.position.x = cradleStudioX;
 
   // Animate Elevator & Rudder
   airframe.canardGroup.rotation.x = (-elevatorPitchDeg * Math.PI) / 180;
@@ -1053,8 +1054,8 @@ export function updateWrightFlyerKinematics(
 
   // Interplane X-wires: the high-AoA tip carries extra lift, so that bay's
   // piano wire goes amber, then red. Slack bay stays steel-grey.
-  const leftTension = Math.max(0, liftNewtons / 2200 + wingWarpDeg / 15);
-  const rightTension = Math.max(0, liftNewtons / 2200 - wingWarpDeg / 15);
+  const leftTension = leftBayTension;
+  const rightTension = rightBayTension;
   const paintBay = (mat: THREE.MeshStandardMaterial, tension: number) => {
     if (tension > 1.15) mat.color.setHex(0xef4444);
     else if (tension > 0.55) mat.color.setHex(0xf59e0b);

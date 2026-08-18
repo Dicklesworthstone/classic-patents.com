@@ -23,10 +23,8 @@ describe("archival publication boundary", () => {
     expect(archivalEditionForPublication(wrightFlyerPatent)).toBe(
       wrightFlyerPatent.archivalEdition,
     );
-    expect(isArchivalEditionExplicitlyWithheld(mergenthalerLinotypePatent.id)).toBe(false);
-    expect(archivalEditionForPublication(mergenthalerLinotypePatent)).toBe(
-      mergenthalerLinotypePatent.archivalEdition,
-    );
+    expect(isArchivalEditionExplicitlyWithheld(mergenthalerLinotypePatent.id)).toBe(true);
+    expect(archivalEditionForPublication(mergenthalerLinotypePatent)).toBeUndefined();
     const unmappedPatent: Patent = {
       ...wrightFlyerPatent,
       id: "us-unmapped-draft-test",

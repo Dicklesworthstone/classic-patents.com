@@ -221,6 +221,7 @@ the visitor can see or hear the kernel change the instrument.
 - [x] P5.128 Tesla coil streamerStudioLength (m/1.5), Bell electronStudioSpeed (I×6), Ericsson wakeFlowSpeed / wakeSwirlCoeff, and Fermi rodStudioY / fuelGlow live on the shared steps. 3D no longer converts leftover inches×0.0254, electron×0.5, ω×0.08, or rod/100×3.2.
 - [x] P5.129 Parsons steamSwirlOmega, Marconi waveAdvancePx, Fermi rodSvgY, and Engelbart pathDisplayOmega live on the shared steps. 2D/3D no longer convert leftover displayΩ×0.5, f/0.85, rod/100×120, or mm/s×0.018. Fermi 3D wrapper no longer re-derives rod/glow beside the step.
 - [x] P5.130 Engelbart resolverSvgScale (40), Hyatt billetOpacity, Lincoln bellowsFlare/Mid/Drop px, and Bell toneGainSine/Square live on the shared steps. 2D/3D no longer convert leftover dX×40, transparency/100, infl/100, or dB/100 audio gain.
+- [x] P5.131 Wright propDisplayOmega / streamFlowSpeed / downwashSpeed / cradleStudioX / bay tensions live on stepWrightFlyerSi. Ericsson wakeOpacity, Colt recoilKick, and Zeppelin trimSvgX live on their steps. Fermi 3D wrapper no longer falls back to leftover rod/glow formulas.
 
 ## Explicitly out of scope
 
