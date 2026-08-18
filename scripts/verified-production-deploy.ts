@@ -8,6 +8,7 @@
  */
 
 import { spawnSync } from "node:child_process";
+import { createHash } from "node:crypto";
 import * as fs from "node:fs";
 import { createServer } from "node:net";
 import * as path from "node:path";
@@ -18,6 +19,12 @@ const PLATFORM_HOSTNAME = "classic-patents.vercel.app";
 const PROMOTION_HOSTNAMES = [...PUBLIC_HOSTNAMES, PLATFORM_HOSTNAME] as const;
 const WRIGHT_ROUTE = "/patents/us-821393-wright-flyer";
 const WRIGHT_SOURCE_TEXT_ROUTE = "/patents/source-text/us-821393-wright-flyer.txt";
+const WRIGHT_SOURCE_TEXT_FILE = path.join(
+  "public",
+  "patents",
+  "source-text",
+  "us-821393-wright-flyer.txt",
+);
 
 type CommandResult = {
   stdout: string;
@@ -113,7 +120,11 @@ function countFiles(directory: string): number {
     .filter((entry) => entry.isFile()).length;
 }
 
-function assertCompletePrebuiltArtifact() {
+function sha256(content: string | Buffer): string {
+  return createHash("sha256").update(content).digest("hex");
+}
+
+function assertCompletePrebuiltArtifact(buildStartedAtMs: number) {
   const outputDirectory = path.join(process.cwd(), ".vercel", "output");
   const configPath = path.join(outputDirectory, "config.json");
   const staticDirectory = path.join(outputDirectory, "static");
@@ -136,11 +147,32 @@ function assertCompletePrebuiltArtifact() {
   if (config.version !== 3) {
     throw new Error("Vercel output config is not a version 3 Build Output API artifact.");
   }
+  const configModifiedAtMs = fs.statSync(configPath).mtimeMs;
+  if (configModifiedAtMs + 1_000 < buildStartedAtMs) {
+    throw new Error(
+      "Vercel output predates this release attempt; refusing to upload a stale prebuilt artifact.",
+    );
+  }
 
   const fileCount = countFiles(outputDirectory);
   if (fileCount < 100) {
     throw new Error(
       `Vercel output has only ${fileCount} files; a valid Classic Patents release has a full static site.`,
+    );
+  }
+
+  const sourcePath = path.join(process.cwd(), WRIGHT_SOURCE_TEXT_FILE);
+  const prebuiltSourcePath = path.join(outputDirectory, "static", WRIGHT_SOURCE_TEXT_ROUTE);
+  if (!fs.existsSync(sourcePath) || !fs.existsSync(prebuiltSourcePath)) {
+    throw new Error(
+      "Vercel output is missing the Wright complete source-text asset required for release.",
+    );
+  }
+  const sourceHash = sha256(fs.readFileSync(sourcePath));
+  const prebuiltSourceHash = sha256(fs.readFileSync(prebuiltSourcePath));
+  if (sourceHash !== prebuiltSourceHash) {
+    throw new Error(
+      "Vercel output's Wright source-text asset does not match the current workspace; refusing stale or mixed output.",
     );
   }
   console.log(`Validated fresh Vercel artifact: ${fileCount} files.`);
@@ -153,7 +185,11 @@ function deploymentUrl(output: string): string {
   return url.replace(/[),.]$/, "");
 }
 
-async function assertResponse(url: string, pathName: string, requiredText: string) {
+async function assertResponse(
+  url: string,
+  pathName: string,
+  requiredText: string,
+): Promise<string> {
   const response = await fetch(`${url}${pathName}`, { signal: AbortSignal.timeout(30_000) });
   const body = await response.text();
   if (!response.ok || !body.includes(requiredText)) {
@@ -161,13 +197,14 @@ async function assertResponse(url: string, pathName: string, requiredText: strin
       `Release check failed for ${url}${pathName}: HTTP ${response.status}; required content was not present.`,
     );
   }
+  return body;
 }
 
 function assertProtectedPreviewResponse(
   deployment: string,
   pathName: string,
   requiredText: string,
-) {
+): string {
   const marker = "__CLASSIC_PATENTS_HTTP_STATUS__";
   const response = run(
     "vercel",
@@ -193,20 +230,39 @@ function assertProtectedPreviewResponse(
       `Release check failed for protected preview ${deployment}${pathName}: HTTP ${status || "unknown"}; required content was not present.`,
     );
   }
+  return body;
 }
 
 async function assertReleaseRoutes(url: string) {
   await assertResponse(url, WRIGHT_ROUTE, "Complete Source Text");
-  await assertResponse(url, WRIGHT_SOURCE_TEXT_ROUTE, "--- SOURCE PDF PAGE 1 OF 10 ---");
+  const sourceText = await assertResponse(
+    url,
+    WRIGHT_SOURCE_TEXT_ROUTE,
+    "--- SOURCE PDF PAGE 1 OF 10 ---",
+  );
+  assertWrightSourceTextMatchesWorkspace(sourceText, url);
 }
 
 function assertProtectedPreviewRoutes(deployment: string) {
   assertProtectedPreviewResponse(deployment, WRIGHT_ROUTE, "Complete Source Text");
-  assertProtectedPreviewResponse(
+  const sourceText = assertProtectedPreviewResponse(
     deployment,
     WRIGHT_SOURCE_TEXT_ROUTE,
     "--- SOURCE PDF PAGE 1 OF 10 ---",
   );
+  assertWrightSourceTextMatchesWorkspace(sourceText, deployment);
+}
+
+function assertWrightSourceTextMatchesWorkspace(sourceText: string, location: string) {
+  const workspaceSource = fs.readFileSync(
+    path.join(process.cwd(), WRIGHT_SOURCE_TEXT_FILE),
+    "utf8",
+  );
+  if (sha256(sourceText) !== sha256(workspaceSource)) {
+    throw new Error(
+      `Release check failed for ${location}${WRIGHT_SOURCE_TEXT_ROUTE}: the served text differs from the current source asset.`,
+    );
+  }
 }
 
 async function acquireDeploymentLock() {
@@ -249,11 +305,12 @@ async function main() {
     assertCleanTrackedWorkingTree("After application build");
 
     run("vercel", ["pull", "--yes"]);
+    const vercelBuildStartedAtMs = Date.now();
     run("vercel", ["build", "--prod"]);
     assertNoConflictingBuilds("After Vercel build");
     assertCommitUnchanged(commit, "After Vercel build");
     assertCleanTrackedWorkingTree("After Vercel build");
-    assertCompletePrebuiltArtifact();
+    assertCompletePrebuiltArtifact(vercelBuildStartedAtMs);
 
     const deployment = run(
       "vercel",
