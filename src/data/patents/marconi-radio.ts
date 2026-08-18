@@ -26,6 +26,7 @@ const _legacyMarconiRadioResearch: Patent = {
   originalPdfUrl: "/patents/pdfs/us-586193-marconi-radio.pdf",
   googlePatentsUrl: "https://patents.google.com/patent/US586193A/en",
   usptoClassification: "H04B 1/02 (Radio transmitters)",
+  archivalEdition: marconiRadioArchivalEdition,
   originalTextAsset: {
     url: "/patents/source-text/us-586193-marconi-radio.txt",
     pageCount: 11,

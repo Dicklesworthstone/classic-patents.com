@@ -205,7 +205,9 @@ export const engelbartMouseArchivalEdition: CuratedSpecificationEdition = {
       ),
     ]),
     p([
-      text("The indications of X and Y position given by the voltages at terminals X and Y are presented in analog form. A digital computer requires digital inputs and therefore, an analog-to-digital converter must be used between the X and Y terminals and the computer inputs. Two types of digital output devices for use with the indicator control are shown in "),
+      text(
+        "The indications of X and Y position given by the voltages at terminals X and Y are presented in analog form. A digital computer requires digital inputs and therefore, an analog-to-digital converter must be used between the X and Y terminals and the computer inputs. Two types of digital output devices for use with the indicator control are shown in ",
+      ),
       figure("FIG. 5", 5),
       text(", "),
       figure("FIG. 6", 6),
@@ -220,15 +222,23 @@ export const engelbartMouseArchivalEdition: CuratedSpecificationEdition = {
       ),
     ]),
     p([
-      text("In order to indicate many positions, the disc 80 is, in practice divided into a large number of rings and sectors, so that a large number of positions can be indicated and small changes of position are registered. A similar scheme is used for the Y position. The advantage of the readout scheme of "),
+      text(
+        "In order to indicate many positions, the disc 80 is, in practice divided into a large number of rings and sectors, so that a large number of positions can be indicated and small changes of position are registered. A similar scheme is used for the Y position. The advantage of the readout scheme of ",
+      ),
       figure("FIG. 6", 6),
-      text(" is that a digital output is provided which completely defines the position of the indicator at every instant. A major disadvantage is that a large number of wires must be connected to the position indicator control so that a relatively thick cable trails behind it and limits the ease with which it can be moved."),
+      text(
+        " is that a digital output is provided which completely defines the position of the indicator at every instant. A major disadvantage is that a large number of wires must be connected to the position indicator control so that a relatively thick cable trails behind it and limits the ease with which it can be moved.",
+      ),
     ]),
     p([
       figure("FIG. 6", 6),
-      text(" illustrates still another position readout means, which possesses the advantage of digital output while requiring a minimum number of leads connecting the position indicator control to the computer. In the readout circuit of "),
+      text(
+        " illustrates still another position readout means, which possesses the advantage of digital output while requiring a minimum number of leads connecting the position indicator control to the computer. In the readout circuit of ",
+      ),
       figure("FIG. 5", 5),
-      text(", a disc 100 is provided which has three rows of electrical contacts, designated 102, 104 and 106. The disc 100 has its axes fixed to the X wheel of the device shown in "),
+      text(
+        ", a disc 100 is provided which has three rows of electrical contacts, designated 102, 104 and 106. The disc 100 has its axes fixed to the X wheel of the device shown in ",
+      ),
       figure("FIG. 1", 1),
       text(", "),
       figure("FIG. 2", 2),
@@ -236,12 +246,16 @@ export const engelbartMouseArchivalEdition: CuratedSpecificationEdition = {
       figure("FIG. 3", 3),
       text(" in place of the potentiometer. The device of "),
       figure("FIG. 6", 6),
-      text(" operates by transmitting “up” pulses when the position indicator control moves to the right and “down” pulses when the position indicator control moves to the left. A counter circuit, which is fixed to the computer adds the up pulses and subtracts the down pulses to provide a continuous digital indication of the position of the position indicator control. A similar arrangement is used for the Y position."),
+      text(
+        " operates by transmitting “up” pulses when the position indicator control moves to the right and “down” pulses when the position indicator control moves to the left. A counter circuit, which is fixed to the computer adds the up pulses and subtracts the down pulses to provide a continuous digital indication of the position of the position indicator control. A similar arrangement is used for the Y position.",
+      ),
     ]),
     p([
       text("In the circuit of "),
       figure("FIG. 6", 6),
-      text(" three sensors 108, 110 and 112 are located adjacent to the rows of contacts 102, 104 and 106, respectively. Whenever the disc 100 rotates and one of the contacts of one of the three rows comes under a sensor, a voltage is delivered over one of the lines 114, 116 or 118, leading to circuitry located at the computer. The contacts on the three rows 102, 104 and 106 are located so that only one contact is under a sensor at any given time."),
+      text(
+        " three sensors 108, 110 and 112 are located adjacent to the rows of contacts 102, 104 and 106, respectively. Whenever the disc 100 rotates and one of the contacts of one of the three rows comes under a sensor, a voltage is delivered over one of the lines 114, 116 or 118, leading to circuitry located at the computer. The contacts on the three rows 102, 104 and 106 are located so that only one contact is under a sensor at any given time.",
+      ),
     ]),
     p(
       "The lines 114, 116, and 118 trail behind the position indicator control and lead to flip-flop 120, OR gate 122 and AND gates 124 and 126, as shown. The outputs of the two AND gates 124 and 126 lead to counter 128 to cause it to count up or down. The counter 128 has numerous output lines over which it continuously transmits signals indicating in a digital manner, the position of the position indicator control.",
@@ -249,7 +263,9 @@ export const engelbartMouseArchivalEdition: CuratedSpecificationEdition = {
     p([
       text("When the disc 100 of "),
       figure("FIG. 6", 6),
-      text(" rotates and a contact of row 104 comes under readying sensor 110, a signal is transmitted over line 116 to set the RS flip-flop 120. If the disc is rotating in a forward or clockwise direction the next contact of the three rows to come under a sensor is a contact of up row 102. When a contact 102 touches sensor 108, a signal is transmitted over up line 114 to AND gate 124. Inasmuch as the flip-flop 120 has been set, a voltage is being received at input 130 of gate 124, and the additional signal at input 132 of gate 124 causes it to generate a pulse. The pulse from gate 124 enters counter 128 at its up input, causing the counter to count up by one digit. The signal over up line 114 also enters OR gate 122 which leads to delay line 124 which, in turn, leads to the reset input of flip-flop 120. A delay of delay line 124 is very short so that flip-flop 120 is reset an instant after an up pulse is registered by the counter."),
+      text(
+        " rotates and a contact of row 104 comes under readying sensor 110, a signal is transmitted over line 116 to set the RS flip-flop 120. If the disc is rotating in a forward or clockwise direction the next contact of the three rows to come under a sensor is a contact of up row 102. When a contact 102 touches sensor 108, a signal is transmitted over up line 114 to AND gate 124. Inasmuch as the flip-flop 120 has been set, a voltage is being received at input 130 of gate 124, and the additional signal at input 132 of gate 124 causes it to generate a pulse. The pulse from gate 124 enters counter 128 at its up input, causing the counter to count up by one digit. The signal over up line 114 also enters OR gate 122 which leads to delay line 124 which, in turn, leads to the reset input of flip-flop 120. A delay of delay line 124 is very short so that flip-flop 120 is reset an instant after an up pulse is registered by the counter.",
+      ),
     ]),
     p(
       "If the disc 100 continues to turn clockwise after an up pulse is registered, then a contact of row 106 comes under down sensor 112 and causes it to deliver a signal over down line 118 to the AND gate 126. The AND gate 126 will not deliver a pulse because its input 134 from the flip-flop 120 has no voltage on it, due to the fact that the flip-flop 120 has been reset. Only after another signal is transmitted over line 116 to again set the flip-flop 120, will a pulse from up line 114 cause the registration of another up count. Down counting occurs in a similar manner when the disc 100 turns in a counter clockwise direction.",
@@ -257,17 +273,25 @@ export const engelbartMouseArchivalEdition: CuratedSpecificationEdition = {
     p([
       text("The circuit of "),
       figure("FIG. 6", 6),
-      text(" requires only four leads between the computer and the position indicator control. The four leads are the lines 114, 116, 118, and an additional line (not shown) for connection to a voltage source to provide pulses that flow through the sensors to the other three lines."),
+      text(
+        " requires only four leads between the computer and the position indicator control. The four leads are the lines 114, 116, 118, and an additional line (not shown) for connection to a voltage source to provide pulses that flow through the sensors to the other three lines.",
+      ),
     ]),
     p([
       figure("FIG. 7", 7),
-      text(" illustrates another position readout means of the incremental encoder type, similar to that of "),
+      text(
+        " illustrates another position readout means of the incremental encoder type, similar to that of ",
+      ),
       figure("FIG. 6", 6),
       text(". The circuit of "),
       figure("FIG. 7", 7),
-      text(" utilizes a simpler encoding disc and one fewer lead, although it involves more complex electronics. In the circuit of "),
+      text(
+        " utilizes a simpler encoding disc and one fewer lead, although it involves more complex electronics. In the circuit of ",
+      ),
       figure("FIG. 7", 7),
-      text(", a disc 140 whose axis is connected to a position wheel such as the X position wheel is provided which has a track 142 having spaced conductive segments. A control contact 146 and stepping contact 148 are disposed over the track to make contact with the conductive segments thereof. The contacts are arranged for contacting the segments at angular positions of the disc which overlap. A lead (not shown) connected to the disc 140 conducts currents to the segments of the two tracks."),
+      text(
+        ", a disc 140 whose axis is connected to a position wheel such as the X position wheel is provided which has a track 142 having spaced conductive segments. A control contact 146 and stepping contact 148 are disposed over the track to make contact with the conductive segments thereof. The contacts are arranged for contacting the segments at angular positions of the disc which overlap. A lead (not shown) connected to the disc 140 conducts currents to the segments of the two tracks.",
+      ),
     ]),
     p(
       "The contact 146 is connected to a Schmidt trigger circuit 150 which provides currents to two of four AND gates 152, 154, 156 and 158, at a time. The other contact 148 carries current to a resolver 160 of the Schmidt trigger, on-off type, which provides signals with sharp, standard on-off wavefronts. The output of the resolver is delivered to a differentiator 162 which delivers sharp pulses to an inverter chopper 164 and a normal chopper 166. The outputs of each chopper are delivered to two of the AND gates. The outputs of two of the AND gates deliver pulses to the up input port 168 of an up/down counter 170 while the outputs of two other AND gates are delivered to the down input port 172 of the counter. The counter 170 continuously delivers digital output signals defining the position of disc 140.",
@@ -280,7 +304,9 @@ export const engelbartMouseArchivalEdition: CuratedSpecificationEdition = {
       figure("FIG. 2", 2),
       text(" and "),
       figure("FIG. 3", 3),
-      text(" are especially well adapted for maintaining accuracy of output and ease of use. The use of only three points of contact, comprising the two wheels and the ball bearing support, help to assure that both wheels will constantly remain in firm contact with the surface on which the position indicator control rests. The location of the various buttons for indicating areas of the display to be operated on, or for other purposes, on the indicator which is moved by the hand allows a human operator to maintain control over both position of changes and the type of changes on the display with only one hand. The use of an indicator control which rests firmly on a surface enables the operator to accurately maintain position with a minimum of muscle effort, since the indicator control remains stationary unless some force is applied to it. The use of relatively large position wheels having appreciable, even if small, moments of inertia, reduces jittering of the indicator control and promotes smooth movement which is helpful in accurate positioning where the displayed characters are small or where accurate tracing of a pattern is required."),
+      text(
+        " are especially well adapted for maintaining accuracy of output and ease of use. The use of only three points of contact, comprising the two wheels and the ball bearing support, help to assure that both wheels will constantly remain in firm contact with the surface on which the position indicator control rests. The location of the various buttons for indicating areas of the display to be operated on, or for other purposes, on the indicator which is moved by the hand allows a human operator to maintain control over both position of changes and the type of changes on the display with only one hand. The use of an indicator control which rests firmly on a surface enables the operator to accurately maintain position with a minimum of muscle effort, since the indicator control remains stationary unless some force is applied to it. The use of relatively large position wheels having appreciable, even if small, moments of inertia, reduces jittering of the indicator control and promotes smooth movement which is helpful in accurate positioning where the displayed characters are small or where accurate tracing of a pattern is required.",
+      ),
     ]),
     p(
       "While particular embodiments of the invention have been illustrated and described, it should be understood that many modifications and variations may be resorted to by those skilled in the art, and the scope of the invention is limited only by a just interpretation of the following claims.",

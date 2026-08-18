@@ -1,10 +1,10 @@
-import { mergenthalerLinotypeParallelReadings } from "./mergenthalerLinotypeEdition";
-import { marconiRadioParallelReadings } from "./marconiRadioEdition";
-import { lamarrFrequencyHoppingParallelReadings } from "./lamarrFrequencyHoppingEdition";
-import { hollerithTabulatingParallelReadings } from "./hollerithTabulatingEdition";
-import { fermiReactorParallelReadings } from "./fermiReactorEdition";
-import { engelbartMouseParallelReadings } from "./engelbartMouseEdition";
 import { boyleSmithCcdParallelReadings } from "./boyleSmithCcdEdition";
+import { engelbartMouseParallelReadings } from "./engelbartMouseEdition";
+import { fermiReactorParallelReadings } from "./fermiReactorEdition";
+import { hollerithTabulatingParallelReadings } from "./hollerithTabulatingEdition";
+import { lamarrFrequencyHoppingParallelReadings } from "./lamarrFrequencyHoppingEdition";
+import { marconiRadioParallelReadings } from "./marconiRadioEdition";
+import { mergenthalerLinotypeParallelReadings } from "./mergenthalerLinotypeEdition";
 /**
  * Hand-authored, paragraph-level companion readings for published archival
  * editions. These are editorial translations, not OCR cleanup or generated
@@ -122,7 +122,14 @@ export const ARCHIVAL_PARALLEL_READINGS: Readonly<
   "us-2495429-spencer-microwave": spencerMicrowaveParallelReadings,
   "us-2524035-bardeen-transistor": bardeenTransistorParallelReadings,
   "us-2981877-noyce-ic": noyceIcParallelReadings,
+  "us-313224-mergenthaler-linotype": mergenthalerLinotypeParallelReadings,
+  "us-3541541-engelbart-mouse": engelbartMouseParallelReadings,
   "us-3671542-kwolek-kevlar": kwolekKevlarParallelReadings,
+  "us-3858232-boyle-smith-ccd": boyleSmithCcdParallelReadings,
+  "us-395781-hollerith-tabulating": hollerithTabulatingParallelReadings,
+  "us-586193-marconi-radio": marconiRadioParallelReadings,
+  "us-2292387-lamarr-frequency-hopping": lamarrFrequencyHoppingParallelReadings,
+  "us-2708656-fermi-reactor": fermiReactorParallelReadings,
   "us-4136359-wozniak-apple": wozniakAppleParallelReadings,
 
   "us-821393-wright-flyer": {

@@ -16,11 +16,11 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 import { ColorizedEquation } from "@/components/ui/ColorizedEquation";
 import { LatexRenderer, TextWithLatex } from "@/components/ui/LatexRenderer";
 import { getColorizedEquationsForPatent } from "@/data/colorizedEquations";
-import { isArchivalEditionExplicitlyWithheld } from "@/data/editions/publicationApproval";
 import {
   ARCHIVAL_PARALLEL_READINGS,
   archivalParallelReadingsFor,
 } from "@/data/editions/parallelReadings";
+import { isArchivalEditionExplicitlyWithheld } from "@/data/editions/publicationApproval";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import type { ColorizedEquation as ColorizedEquationType } from "@/types/equation";
 import type { Patent } from "@/types/patent";
@@ -58,6 +58,10 @@ export function viewModeFromSearch(search: string): PatentViewMode | undefined {
 }
 
 export function archivalEditionForPublication(patent: Pick<Patent, "id" | "archivalEdition">) {
+  const hasEd = !!patent.archivalEdition;
+  const isWithheld = isArchivalEditionExplicitlyWithheld(patent.id);
+  const reading = ARCHIVAL_PARALLEL_READINGS[patent.id];
+  console.log(`[archivalEditionForPublication] ${patent.id}: hasEd=${hasEd}, isWithheld=${isWithheld}, readingDefined=${!!reading}`);
   return patent.archivalEdition &&
     !isArchivalEditionExplicitlyWithheld(patent.id) &&
     ARCHIVAL_PARALLEL_READINGS[patent.id]

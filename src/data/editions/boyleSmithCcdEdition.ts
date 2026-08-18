@@ -52,11 +52,13 @@ const figure = (id: string, label: string): CuratedSpecificationInline => ({
 });
 
 const literal = (text: string): CuratedSpecificationInlines => {
-  const regex = /\b(?:(?:fig(?:s)?\.?|figure)\s+\d+[a-z′′]*(?:\s*(?:,\s*|\s+and\s+)\d+[a-z′′]*)*)\b/gi;
+  const regex =
+    /\b(?:(?:fig(?:s)?\.?|figure)\s+\d+[a-z′′]*(?:\s*(?:,\s*|\s+and\s+)\d+[a-z′′]*)*)\b/gi;
   const inlines: CuratedSpecificationInline[] = [];
   let lastIdx = 0;
-  let match: RegExpExecArray | null;
-  while ((match = regex.exec(text)) !== null) {
+  while (true) {
+    const match = regex.exec(text);
+    if (!match) break;
     if (match.index > lastIdx) {
       inlines.push({ kind: "text", text: text.slice(lastIdx, match.index) });
     }
@@ -347,8 +349,8 @@ const specificationPagesOneToFour = [
     },
     figure("3", "FIG. 3"),
     { kind: "text", text: " is a pulse program for the shift register of " },
-        figure("2", "FIG. 2"),
-        { kind: "text", text: "; and " },
+    figure("2", "FIG. 2"),
+    { kind: "text", text: "; and " },
     figure("4", "FIG. 4"),
     {
       kind: "text",
