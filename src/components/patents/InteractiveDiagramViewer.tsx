@@ -11,7 +11,7 @@ import {
   ZoomOut,
 } from "lucide-react";
 import { useCallback, useEffect, useMemo, useState } from "react";
-import { fermiKeff } from "@/physics/fermiKinetics";
+import { stepFermiKinetics } from "@/physics/fermiKinetics";
 import { teslaBAt, teslaFig4Strobe } from "@/physics/teslaKernel";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { materialProbe, whitneySamples } from "@/physics/weaveSurfaces";
@@ -407,7 +407,7 @@ function renderHistoricalSchematic(
       const rodWithdrawal = params?.rodWithdrawal ?? 83.5;
       const rodY = 20 + ((100 - rodWithdrawal) / 100) * 70;
       const modPurity = params?.moderatorPurity ?? 99.5;
-      const keff = fermiKeff(rodWithdrawal, modPurity);
+      const keff = stepFermiKinetics(rodWithdrawal, modPurity).kEffective;
       const fuelGlow = keff > 1.002 ? "#ef4444" : keff >= 0.998 ? "#10b981" : "#3b82f6";
       return (
         <g stroke="#38bdf8" strokeWidth="1.5" fill="none">

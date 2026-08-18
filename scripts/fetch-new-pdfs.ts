@@ -37,11 +37,6 @@ const newPatentsToFetch = [
     altUrl: "https://patentimages.storage.googleapis.com/ef/da/be/e02fcff4b986c7/US1155986.pdf",
   },
   {
-    id: "us-2569347-bardeen-transistor",
-    number: "US2569347",
-    altUrl: "https://patentimages.storage.googleapis.com/39/e8/3c/6920ad5212563f/US2569347.pdf",
-  },
-  {
     id: "us-3923554-boyle-smith-ccd",
     number: "US3923554",
     altUrl: "https://patentimages.storage.googleapis.com/02/76/75/cd2ca75be415f3/US3923554.pdf",

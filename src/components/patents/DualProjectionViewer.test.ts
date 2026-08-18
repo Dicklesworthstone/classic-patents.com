@@ -1,5 +1,5 @@
 import { describe, expect, test } from "bun:test";
-import { marconiRadioPatent } from "@/data/patents/marconi-radio";
+import { mergenthalerLinotypePatent } from "@/data/patents/mergenthaler-linotype";
 import { wrightFlyerPatent } from "@/data/patents/wright-flyer";
 import { archivalEditionForPublication, viewModeFromSearch } from "./DualProjectionViewer";
 
@@ -21,6 +21,6 @@ describe("archival publication boundary", () => {
     expect(archivalEditionForPublication(wrightFlyerPatent)).toBe(
       wrightFlyerPatent.archivalEdition,
     );
-    expect(archivalEditionForPublication(marconiRadioPatent)).toBeUndefined();
+    expect(archivalEditionForPublication(mergenthalerLinotypePatent)).toBeUndefined();
   });
 });

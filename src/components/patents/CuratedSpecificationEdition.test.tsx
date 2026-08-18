@@ -87,7 +87,9 @@ describe("CuratedSpecificationEdition", () => {
     expect(html).toContain("A source-specific explanation prepared by an editor.");
     expect(html).toContain("A second authored paragraph retains another material detail.");
     expect(html).toContain("The legal scope of the example claim.");
-    expect(html).toContain("FIG. 1");
+    expect(html).not.toContain("FIG. 1");
+    expect(html).not.toContain("Test drawing");
+    expect(html).not.toContain("An authored figure-sheet description.");
     expect(html).toContain("An authored historical table");
     expect(html).toContain("F = ma");
   });

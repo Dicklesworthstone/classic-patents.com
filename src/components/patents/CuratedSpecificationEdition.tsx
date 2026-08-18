@@ -354,20 +354,12 @@ export function CuratedSpecificationEdition({
         }
 
         if (block.kind === "figure-sheet") {
-          return (
-            <figure
-              key={key}
-              className="rounded-xl border border-parchment-300 bg-parchment-100/60 px-5 py-4 dark:border-ink-800 dark:bg-ink-900/60"
-            >
-              <figcaption className="mb-2 font-mono text-xs font-bold uppercase tracking-[0.12em] text-amber-800 dark:text-amber-400">
-                {block.figureLabel}
-                {block.title ? ` — ${block.title}` : ""}
-              </figcaption>
-              <p className="text-sm leading-relaxed sm:text-base">
-                <RenderInlines inlines={block.description} />
-              </p>
-            </figure>
-          );
+          // Drawing sheets belong to the facsimile, not to the continuous
+          // reading edition. Every source-figure occurrence is authored in
+          // the surrounding specification text and can expose its own local
+          // crop on hover. Rendering a sheet card here would reintroduce PDF
+          // pagination into a view whose purpose is continuous reading.
+          return null;
         }
 
         if (block.kind === "table") {

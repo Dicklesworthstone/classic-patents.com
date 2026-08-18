@@ -9,7 +9,10 @@ import { createHash } from "node:crypto";
 import * as fs from "node:fs";
 import * as path from "node:path";
 import { validateCuratedSpecificationEdition } from "../src/data/archivalEditionValidation";
-import { archivalParallelReadingsFor } from "../src/data/editions/parallelReadings";
+import {
+  ARCHIVAL_PARALLEL_READINGS,
+  archivalParallelReadingsFor,
+} from "../src/data/editions/parallelReadings";
 import { allPatents, searchPatents } from "../src/data/patents";
 import { patentSchema } from "../src/data/patents/schema";
 import {
@@ -112,6 +115,7 @@ async function main() {
   for (const patent of allPatents) {
     const prefix = `[${patent.patentNumber} - ${patent.id}]`;
     let patentErrorCount = 0;
+    let publishedManualEdition = false;
     const fail = (message: string) => {
       console.error(`❌ ${prefix} ${message}`);
       errorCount++;
@@ -276,11 +280,16 @@ async function main() {
       }
     }
 
-    // 8. A public complete specification must be a manual React edition, not
-    // an OCR result, text transcript, HTML string, or runtime reconstruction.
-    if (patent.archivalEdition) {
+    // 8. A public complete specification must be a manual React edition with
+    // an explicitly registered companion map, never an OCR result, text
+    // transcript, HTML string, or runtime reconstruction. A patent-local
+    // draft without that map is intentionally withheld by the renderer and
+    // must not be validated as a visitor-facing edition.
+    const archivalEdition = patent.archivalEdition;
+    if (archivalEdition && Object.hasOwn(ARCHIVAL_PARALLEL_READINGS, patent.id)) {
+      publishedManualEdition = true;
       manualEditionCount++;
-      const editionValidation = validateCuratedSpecificationEdition(patent.archivalEdition);
+      const editionValidation = validateCuratedSpecificationEdition(archivalEdition);
       if (!editionValidation.valid) {
         fail(`manual archival edition: ${editionValidation.errors.join(" ")}`);
       }
@@ -288,12 +297,12 @@ async function main() {
         const sourcePdfSha256 = createHash("sha256")
           .update(fs.readFileSync(localPdfPath))
           .digest("hex");
-        if (sourcePdfSha256 !== patent.archivalEdition.sourcePdfSha256) {
+        if (sourcePdfSha256 !== archivalEdition.sourcePdfSha256) {
           fail("manual archival edition sourcePdfSha256 does not match the local PDF.");
         }
       }
 
-      const editionClaims = patent.archivalEdition.blocks.filter((block) => block.kind === "claim");
+      const editionClaims = archivalEdition.blocks.filter((block) => block.kind === "claim");
       const editionClaimNumbers = editionClaims.map((claim) => claim.number);
       const catalogClaimNumbers = patent.claims.map((claim) => claim.number);
       if (
@@ -337,7 +346,7 @@ async function main() {
 
       try {
         const readings = archivalParallelReadingsFor(patent.id);
-        const paragraphIndexes = patent.archivalEdition.blocks.flatMap((block, index) =>
+        const paragraphIndexes = archivalEdition.blocks.flatMap((block, index) =>
           block.kind === "paragraph" ? [index] : [],
         );
         const readingIndexes = Object.keys(readings)
@@ -358,7 +367,7 @@ async function main() {
         fail(`manual parallel reading registry: ${message}`);
       }
 
-      for (const block of patent.archivalEdition.blocks) {
+      for (const block of archivalEdition.blocks) {
         for (const inlines of authoredInlinesForBlock(block)) {
           for (const inline of inlines) {
             if (inline.kind !== "reference" || inline.referenceType !== "figure") continue;
@@ -408,7 +417,9 @@ async function main() {
     } else {
       manualEditionGaps.push(patent.id);
       console.warn(
-        `⚠️  ${prefix} Complete source text is withheld: no manually prepared archival edition is published.`,
+        patent.archivalEdition
+          ? `⚠️  ${prefix} Complete source text is withheld: a patent-local manual-edition draft has no published companion map.`
+          : `⚠️  ${prefix} Complete source text is withheld: no manually prepared archival edition is published.`,
       );
     }
 
@@ -443,7 +454,9 @@ async function main() {
 
     if (patentErrorCount === 0 && pdfSizeBytes !== undefined) {
       console.log(
-        `✓ ${prefix} Passed all verification gates (PDF verified: ${(pdfSizeBytes / 1024).toFixed(1)} KB).`,
+        publishedManualEdition
+          ? `✓ ${prefix} Passed integrity and published-manual-edition gates (PDF verified: ${(pdfSizeBytes / 1024).toFixed(1)} KB).`
+          : `✓ ${prefix} Passed catalog/source-integrity gates; complete manual edition remains withheld (PDF verified: ${(pdfSizeBytes / 1024).toFixed(1)} KB).`,
       );
     } else {
       console.error(`✗ ${prefix} Failed ${patentErrorCount} verification gate(s).`);
