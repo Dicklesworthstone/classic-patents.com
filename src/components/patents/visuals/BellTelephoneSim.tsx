@@ -38,9 +38,9 @@ export function BellTelephoneSim() {
   useEffect(() => {
     if (isPlayingAudio) {
       if (signalType === "continuous-undulating") {
-        soundEngine.playContinuousTone(acousticFrequency, "sine", (voiceAmplitude / 100) * 0.1);
+        soundEngine.playContinuousTone(acousticFrequency, "sine", bell.toneGainSine);
       } else {
-        soundEngine.playContinuousTone(acousticFrequency, "square", (voiceAmplitude / 100) * 0.06);
+        soundEngine.playContinuousTone(acousticFrequency, "square", bell.toneGainSquare);
       }
     } else {
       soundEngine.stopContinuousTone();
@@ -48,7 +48,7 @@ export function BellTelephoneSim() {
     return () => {
       soundEngine.stopContinuousTone();
     };
-  }, [isPlayingAudio, signalType, acousticFrequency, voiceAmplitude]);
+  }, [isPlayingAudio, signalType, acousticFrequency, bell.toneGainSine, bell.toneGainSquare]);
 
   // Generate oscilloscope waveform points — spatial frequency tracks the voice-frequency slider.
   const points = Array.from({ length: 60 })

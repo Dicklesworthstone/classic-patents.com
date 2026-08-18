@@ -310,15 +310,17 @@ export function stepHyattCelluloid(params: { steamTempC?: number; hydraulicPress
   const press = params.hydraulicPressureMpa ?? 10;
   const isMelted = temp >= 80 && press >= 6;
   const extrusionRateCmPerMin = isMelted ? Number((temp * 0.15).toFixed(1)) : 0;
+  const transparencyPct = isMelted ? Math.min(95, Math.round(50 + (temp - 80) * 1.2)) : 10;
   return {
     viscosityPaS: Math.round(1800 * Math.exp(-0.03 * (temp - 70))),
     isMelted,
     consolidationDensityGPerCm3: Number((1.2 + (press / 20) * 0.18).toFixed(2)),
-    transparencyPct: isMelted ? Math.min(95, Math.round(50 + (temp - 80) * 1.2)) : 10,
+    transparencyPct,
     extrusionRateCmPerMin,
     // Presentation ram: 14.25 cm/min → 0.75 Hz. Stroke is studio units.
     ramHz: isMelted ? Number(Math.max(0.08, extrusionRateCmPerMin / 19).toFixed(3)) : 0.08,
     ramStrokeStudio: isMelted ? Number((0.12 + press * 0.03).toFixed(3)) : 0.02,
+    billetOpacity: Number((0.3 + (transparencyPct / 100) * 0.6).toFixed(3)),
   };
 }
 
@@ -619,6 +621,8 @@ export function stepBellTelephone(params: {
     acousticDisplayOmegaRadPerS: Number(((2 * Math.PI * freqHz) / 20).toFixed(3)),
     electronDisplaySpeed: Number((currentBaselineAmps * 12).toFixed(3)),
     electronStudioSpeed: Number((currentBaselineAmps * 6).toFixed(3)),
+    toneGainSine: Number(((db / 100) * 0.1).toFixed(4)),
+    toneGainSquare: Number(((db / 100) * 0.06).toFixed(4)),
     waveAdvancePerS: 3,
     diaphragmStudioScale: Number(((displUm / 10) * 0.08).toFixed(5)),
   };
@@ -688,6 +692,7 @@ export function stepEngelbartMouse(params: {
     pulseRateHz: Number(((v * ppr) / circumferenceMm).toFixed(1)),
     clickDisplayMs: Math.max(80, Math.round(180000 / Math.max(1, (v * ppr) / circumferenceMm))),
     pathDisplayOmega: Number((v * 0.018).toFixed(4)),
+    resolverSvgScale: 40,
   };
 }
 
@@ -958,6 +963,9 @@ export function stepLincolnBuoy(params: {
     baseDraftFt,
     waterplaneAreaSqFt: Math.round(hullLengthFt * hullBeamFt * 0.78),
     paddleDisplayOmegaRadPerS: 1.2,
+    bellowsFlarePx: Number(((infl / 100) * 40).toFixed(2)),
+    bellowsMidPx: Number(((infl / 100) * 35).toFixed(2)),
+    bellowsDropPx: Number(((infl / 100) * 45).toFixed(2)),
   };
 }
 

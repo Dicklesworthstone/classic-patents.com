@@ -316,6 +316,7 @@ export function updateEngelbartMouseKinematics(
   dt: number,
   timeSec: number,
   pathDisplayOmega: number,
+  resolverSvgScale: number,
   mouseTrajectory: "figure8" | "circle" | "horizontal" | "vertical",
   wheelRadiusMm: number,
   pulsesPerRev: number,
@@ -329,29 +330,40 @@ export function updateEngelbartMouseKinematics(
   const speed = pathDisplayOmega;
   let posX = 0;
   let posZ = 0;
+  let dX = 0;
+  let dZ = 0;
 
   if (mouseTrajectory === "horizontal") {
     posX = Math.sin(timeSec * speed) * 3.5;
     posZ = 0;
+    dX = Math.cos(timeSec * speed) * speed * dt * 3.5;
+    dZ = 0;
   } else if (mouseTrajectory === "vertical") {
     posX = 0;
     posZ = Math.sin(timeSec * speed) * 3.5;
+    dX = 0;
+    dZ = Math.cos(timeSec * speed) * speed * dt * 3.5;
   } else if (mouseTrajectory === "circle") {
     posX = Math.cos(timeSec * speed) * 3.0;
     posZ = Math.sin(timeSec * speed) * 3.0;
+    dX = -Math.sin(timeSec * speed) * speed * dt * 3.0;
+    dZ = Math.cos(timeSec * speed) * speed * dt * 3.0;
   } else {
     // Figure 8
     posX = Math.sin(timeSec * speed) * 3.2;
     posZ = Math.sin(timeSec * speed * 2.0) * 1.8;
+    dX = Math.cos(timeSec * speed) * speed * dt * 3.2;
+    dZ = Math.cos(timeSec * speed * 2.0) * speed * 2.0 * dt * 1.8;
   }
 
   nodes.mouseGroup.position.set(posX, 0, posZ);
 
-  // Approximate instantaneous delta displacement
-  const dX = Math.cos(timeSec * speed) * speed * dt * 3.2;
-  const dZ = Math.cos(timeSec * speed * 2.0) * speed * 2.0 * dt * 1.8;
-
-  const resolved = stepEngelbartResolver(dX * 40, dZ * 40, wheelRadiusMm, pulsesPerRev);
+  const resolved = stepEngelbartResolver(
+    dX * resolverSvgScale,
+    dZ * resolverSvgScale,
+    wheelRadiusMm,
+    pulsesPerRev,
+  );
 
   nodes.xWheelRim.rotation.x -= resolved.dThetaX;
   nodes.xPotWiper.rotation.x -= resolved.dThetaX;

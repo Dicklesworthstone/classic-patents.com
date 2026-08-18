@@ -134,14 +134,14 @@ export function LincolnBuoySim() {
               <g opacity="0.95">
                 {/* Starboard Bellows (Left in 2D view) */}
                 <path
-                  d={`M 145 10 L ${145 - (bellowsExpansionPercent / 100) * 40} 10 L ${150 - (bellowsExpansionPercent / 100) * 35} ${10 + (bellowsExpansionPercent / 100) * 45} L 150 50 Z`}
+                  d={`M 145 10 L ${145 - lincoln.bellowsFlarePx} 10 L ${150 - lincoln.bellowsMidPx} ${10 + lincoln.bellowsDropPx} L 150 50 Z`}
                   fill="#f59e0b"
                   stroke="#fbbf24"
                   strokeWidth="2"
                 />
                 {/* Port Bellows (Right in 2D view) */}
                 <path
-                  d={`M 455 10 L ${455 + (bellowsExpansionPercent / 100) * 40} 10 L ${450 + (bellowsExpansionPercent / 100) * 35} ${10 + (bellowsExpansionPercent / 100) * 45} L 450 50 Z`}
+                  d={`M 455 10 L ${455 + lincoln.bellowsFlarePx} 10 L ${450 + lincoln.bellowsMidPx} ${10 + lincoln.bellowsDropPx} L 450 50 Z`}
                   fill="#f59e0b"
                   stroke="#fbbf24"
                   strokeWidth="2"

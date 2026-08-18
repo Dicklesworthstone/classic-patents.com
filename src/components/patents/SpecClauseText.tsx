@@ -55,7 +55,9 @@ function renderPhysicsHighlighting(
 export function SpecClauseText({ patentId, text, className }: SpecClauseTextProps) {
   const { params } = usePatentPhysics(patentId);
   const clauses = useMemo(() => specClausesFor(patentId, params), [patentId, params]);
-  const active = clauses.filter((c) => c.active && text.includes(c.phrase));
+  const active = clauses.filter(
+    (c) => c.active && text.toLocaleLowerCase().includes(c.phrase.toLocaleLowerCase()),
+  );
   const byPhrase = useMemo(
     () => new Map(active.map((clause) => [clause.phrase.toLocaleLowerCase(), clause])),
     [active],

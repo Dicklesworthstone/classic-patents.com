@@ -59,6 +59,7 @@ describe("US 3,541,541 Douglas Engelbart Computer Mouse visual & resolver kinema
     expect(result.pulseRateHz).toBeGreaterThan(0);
     expect(result.dpi).toBeGreaterThan(100);
     expect(result.pathDisplayOmega).toBeCloseTo(350 * 0.018, 3);
+    expect(result.resolverSvgScale).toBe(40);
   });
 
   test("builds and articulates procedural walnut body, metal base, red button, X/Y orthogonal wheels, and potentiometer resolvers correctly", () => {
@@ -80,6 +81,7 @@ describe("US 3,541,541 Douglas Engelbart Computer Mouse visual & resolver kinema
       1 / 60,
       1.0,
       mouse.pathDisplayOmega,
+      mouse.resolverSvgScale,
       "figure8",
       10,
       200,
@@ -87,6 +89,44 @@ describe("US 3,541,541 Douglas Engelbart Computer Mouse visual & resolver kinema
       false,
     );
     expect(model.nodes.mouseGroup.position.x).toBeDefined();
+
+    // Verify orthogonal independence: pure horizontal movement rotates X-wheel, leaving Y-wheel at zero rotation
+    model.nodes.xWheelRim.rotation.x = 0;
+    model.nodes.yWheelRim.rotation.z = 0;
+    updateEngelbartMouseKinematics(
+      model.nodes,
+      model.materials,
+      1 / 60,
+      0.5,
+      mouse.pathDisplayOmega,
+      1.0,
+      "horizontal",
+      10,
+      200,
+      false,
+      false,
+    );
+    expect(model.nodes.xWheelRim.rotation.x).not.toBe(0);
+    expect(model.nodes.yWheelRim.rotation.z).toBe(0);
+
+    // Verify orthogonal independence: pure vertical movement rotates Y-wheel, leaving X-wheel at zero rotation
+    model.nodes.xWheelRim.rotation.x = 0;
+    model.nodes.yWheelRim.rotation.z = 0;
+    updateEngelbartMouseKinematics(
+      model.nodes,
+      model.materials,
+      1 / 60,
+      0.5,
+      mouse.pathDisplayOmega,
+      1.0,
+      "vertical",
+      10,
+      200,
+      false,
+      false,
+    );
+    expect(model.nodes.xWheelRim.rotation.x).toBe(0);
+    expect(model.nodes.yWheelRim.rotation.z).not.toBe(0);
 
     model.dispose();
   });

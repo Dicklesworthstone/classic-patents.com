@@ -132,7 +132,7 @@ export function HyattCelluloidSim() {
             height="120"
             rx="4"
             fill={isMelted ? "#FEFCBF" : "#E2E8F0"}
-            opacity={0.3 + (transparencyPct / 100) * 0.6}
+            opacity={hyatt.billetOpacity}
             stroke="#D69E2E"
             strokeWidth="2"
           />

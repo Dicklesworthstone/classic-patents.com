@@ -46,6 +46,7 @@ export const EngelbartMouse3D = memo(() => {
     dpi: mouse.dpi,
     omegaRadPerS: mouse.omegaRadPerS,
     pathDisplayOmega: mouse.pathDisplayOmega,
+    resolverSvgScale: mouse.resolverSvgScale,
     pulsesPerRev: params.pulsesPerRev ?? 200,
   });
 
@@ -146,6 +147,7 @@ export const EngelbartMouse3D = memo(() => {
         dt,
         timeSec,
         p.pathDisplayOmega,
+        p.resolverSvgScale,
         p.mouseTrajectory,
         p.wheelRadiusMm,
         p.pulsesPerRev,

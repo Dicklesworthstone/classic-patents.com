@@ -220,6 +220,7 @@ the visitor can see or hear the kernel change the instrument.
 - [x] P5.127 Bell diaphragmStudioScale, Edison phonograph stylusAmp / stylusOmega, Eastman filmAdvance / supplySpool omega, De Laval pulley / skim rates, and Marconi waveOpacity / wavePhaseRate / mastStudioScale live on the shared steps. 3D no longer converts leftover μm/10, μm/1000, spool×0.8, pulley×0.25, or kW/80.
 - [x] P5.128 Tesla coil streamerStudioLength (m/1.5), Bell electronStudioSpeed (I×6), Ericsson wakeFlowSpeed / wakeSwirlCoeff, and Fermi rodStudioY / fuelGlow live on the shared steps. 3D no longer converts leftover inches×0.0254, electron×0.5, ω×0.08, or rod/100×3.2.
 - [x] P5.129 Parsons steamSwirlOmega, Marconi waveAdvancePx, Fermi rodSvgY, and Engelbart pathDisplayOmega live on the shared steps. 2D/3D no longer convert leftover displayΩ×0.5, f/0.85, rod/100×120, or mm/s×0.018. Fermi 3D wrapper no longer re-derives rod/glow beside the step.
+- [x] P5.130 Engelbart resolverSvgScale (40), Hyatt billetOpacity, Lincoln bellowsFlare/Mid/Drop px, and Bell toneGainSine/Square live on the shared steps. 2D/3D no longer convert leftover dX×40, transparency/100, infl/100, or dB/100 audio gain.
 
 ## Explicitly out of scope
 
