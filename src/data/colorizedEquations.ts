@@ -466,83 +466,390 @@ export const ALL_COLORIZED_EQUATIONS: Record<string, ColorizedEquation[]> = {
   // 2. Tesla Induction Motor (US 381,968)
   "us-381968-tesla-motor": [
     {
-      id: "tesla-stator-bfield",
-      patentId: "us-381968-tesla-motor",
-      title: "Rotating Stator Magnetic Flux Vector",
-      category: "Electromagnetics & Induction",
-      rawLatex:
-        "\\vec{B}(t) = B_0 \\left( \\cos(\\omega t)\\,\\hat{i} + \\sin(\\omega t)\\,\\hat{j} \\right)",
-      colorizedLatex:
-        "\\textcolor{#9333ea}{\\vec{B}(t)} = \\textcolor{#0891b2}{B_0} \\left( \\textcolor{#059669}{\\cos(\\omega t)}\\,\\hat{i} + \\textcolor{#d97706}{\\sin(\\omega t)}\\,\\hat{j} \\right)",
-      plainEnglishSentence: [
-        { text: "The " },
-        {
-          text: "resultant rotating magnetic field vector",
-          variableId: "b_vec",
-        },
-        { text: " maintains constant " },
-        { text: "peak flux amplitude", variableId: "b_0" },
-        { text: " through the sum of " },
-        { text: "in-phase horizontal coil flux", variableId: "b_x" },
-        { text: " and " },
-        { text: "quadrature vertical coil flux", variableId: "b_y" },
-        { text: "." },
-      ],
-      variables: [
-        {
-          id: "b_vec",
-          symbol: "\\vec{B}(t)",
-          name: "Resultant Rotating Magnetic Field",
-          color: "amethyst",
-          role: "Total electromagnetic stator vector that sweeps continuously in space without mechanical brushes",
-          unit: "Tesla (T)",
-          dimension: "[M T^-2 I^-1]",
-          explanation:
-            "By superimposing two out-of-phase AC magnetic fields, Tesla created a constant-magnitude vector that rotates in space at the electrical line frequency, dragging the rotor along via Faraday induction.",
-          telemetryMetricLabel: "Stator Field (B)",
-        },
-        {
-          id: "b_0",
-          symbol: "B_0",
-          name: "Peak Magnetic Field Strength",
-          color: "cyan",
-          role: "Maximum magnetic flux density produced by stator electromagnet pole windings",
-          unit: "Tesla (T)",
-          dimension: "[M T^-2 I^-1]",
-          explanation:
-            "Determined by the number of coil turns, core magnetic permeability, and excitation current ($B_0 = \\mu N I / g$).",
-        },
-        {
-          id: "b_x",
-          symbol: "\\cos(\\omega t)",
-          name: "Phase-A Horizontal Flux",
-          color: "emerald",
-          role: "Sinusoidal magnetic flux generated across the primary stator pole pair",
-          unit: "Normalized sinusoid [-1, 1]",
-          dimension: "[1]",
-          explanation:
-            "Phase A is energized by AC current $I_A(t) = I_0 \\cos(\\omega t)$, generating a pulsating horizontal field along the x-axis.",
-          telemetryKey: "freqHz",
-        },
-        {
-          id: "b_y",
-          symbol: "\\sin(\\omega t)",
-          name: "Phase-B Quadrature Flux",
-          color: "amber",
-          role: "90-degree phase-shifted magnetic flux along the orthogonal vertical pole pair",
-          unit: "Normalized sinusoid [-1, 1]",
-          dimension: "[1]",
-          explanation:
-            "Phase B is energized 90 degrees out of phase ($I_B(t) = I_0 \\sin(\\omega t)$). The trigonometric identity $\\cos^2(\\omega t) + \\sin^2(\\omega t) = 1$ ensures constant field magnitude and smooth, vibration-free rotation.",
-        },
-      ],
-      pedagogicalNote:
-        "Before Tesla, electric motors required mechanical commutators with sparking carbon brushes that wore out rapidly and could not run on AC power. Tesla proved that multi-phase AC currents synthesize a continuous rotating spatial vector with zero physical contact.",
-      claimRef: 1,
-      historicalSignificance:
-        "The polyphase AC motor made long-distance alternating current transmission commercially viable and powers over 90% of all industrial motors worldwide today.",
+        "id": "tesla-stator-bfield",
+        "patentId": "us-381968-tesla-motor",
+        "title": "Rotating Stator Magnetic Flux Vector",
+        "category": "Electromagnetics & Induction",
+        "rawLatex": "\\vec{B}(t) = B_0 \\left( \\cos(\\omega t)\\,\\hat{i} + \\sin(\\omega t)\\,\\hat{j} \\right)",
+        "colorizedLatex": "\\textcolor{#9333ea}{\\vec{B}(t)} = \\textcolor{#0891b2}{B_0} \\left( \\textcolor{#059669}{\\cos(\\omega t)}\\,\\hat{i} + \\textcolor{#d97706}{\\sin(\\omega t)}\\,\\hat{j} \\right)",
+        "plainEnglishSentence": [
+            {
+                "text": "The "
+            },
+            {
+                "text": "resultant rotating magnetic field vector",
+                "variableId": "b_vec"
+            },
+            {
+                "text": " maintains constant "
+            },
+            {
+                "text": "peak flux amplitude",
+                "variableId": "b_0"
+            },
+            {
+                "text": " through the sum of "
+            },
+            {
+                "text": "in-phase horizontal coil flux",
+                "variableId": "b_x"
+            },
+            {
+                "text": " and "
+            },
+            {
+                "text": "quadrature vertical coil flux",
+                "variableId": "b_y"
+            },
+            {
+                "text": "."
+            }
+        ],
+        "variables": [
+            {
+                "id": "b_vec",
+                "symbol": "\\vec{B}(t)",
+                "name": "Resultant Rotating Magnetic Field",
+                "color": "amethyst",
+                "role": "Total electromagnetic stator vector that sweeps continuously in space without mechanical brushes",
+                "unit": "Tesla (T)",
+                "dimension": "[M T^-2 I^-1]",
+                "explanation": "By superimposing two out-of-phase AC magnetic fields, Tesla created a constant-magnitude vector that rotates in space at the electrical line frequency, dragging the rotor along via Faraday induction.",
+                "telemetryMetricLabel": "Stator Field (B)"
+            },
+            {
+                "id": "b_0",
+                "symbol": "B_0",
+                "name": "Peak Magnetic Field Strength",
+                "color": "cyan",
+                "role": "Maximum magnetic flux density produced by stator electromagnet pole windings",
+                "unit": "Tesla (T)",
+                "dimension": "[M T^-2 I^-1]",
+                "explanation": "Determined by the number of coil turns, core magnetic permeability, and excitation current ($B_0 = \\mu N I / g$)."
+            },
+            {
+                "id": "b_x",
+                "symbol": "\\cos(\\omega t)",
+                "name": "Phase-A Horizontal Flux",
+                "color": "emerald",
+                "role": "Sinusoidal magnetic flux generated across the primary stator pole pair",
+                "unit": "Normalized sinusoid [-1, 1]",
+                "dimension": "[1]",
+                "explanation": "Phase A is energized by AC current $I_A(t) = I_0 \\cos(\\omega t)$, generating a pulsating horizontal field along the x-axis.",
+                "telemetryKey": "freqHz"
+            },
+            {
+                "id": "b_y",
+                "symbol": "\\sin(\\omega t)",
+                "name": "Phase-B Quadrature Flux",
+                "color": "amber",
+                "role": "90-degree phase-shifted magnetic flux along the orthogonal vertical pole pair",
+                "unit": "Normalized sinusoid [-1, 1]",
+                "dimension": "[1]",
+                "explanation": "Phase B is energized 90 degrees out of phase ($I_B(t) = I_0 \\sin(\\omega t)$). The trigonometric identity $\\cos^2(\\omega t) + \\sin^2(\\omega t) = 1$ ensures constant field magnitude and smooth, vibration-free rotation."
+            }
+        ],
+        "pedagogicalNote": "Before Tesla, electric motors required mechanical commutators with sparking carbon brushes that wore out rapidly and could not run on AC power. Tesla proved that multi-phase AC currents synthesize a continuous rotating spatial vector with zero physical contact.",
+        "claimRef": 1,
+        "historicalSignificance": "The polyphase AC motor made long-distance alternating current transmission commercially viable and powers over 90% of all industrial motors worldwide today."
     },
-  ],
+    {
+        "id": "tesla-sync-speed",
+        "patentId": "us-381968-tesla-motor",
+        "title": "Synchronous Stator Field Angular Velocity",
+        "category": "Electromagnetics & Kinematics",
+        "rawLatex": "\\omega_s = \\frac{2\\pi f}{P}",
+        "colorizedLatex": "\\textcolor{#2563eb}{\\omega_s} = \\frac{2\\pi \\textcolor{#059669}{f}}{\\textcolor{#ea580c}{P}}",
+        "plainEnglishSentence": [
+            {
+                "text": "The "
+            },
+            {
+                "text": "synchronous angular velocity",
+                "variableId": "omega_s"
+            },
+            {
+                "text": " of the stator magnetic field is proportional to the "
+            },
+            {
+                "text": "alternating current line frequency",
+                "variableId": "line_freq"
+            },
+            {
+                "text": " divided by the "
+            },
+            {
+                "text": "number of magnetic pole pairs",
+                "variableId": "pole_pairs"
+            },
+            {
+                "text": "."
+            }
+        ],
+        "variables": [
+            {
+                "id": "omega_s",
+                "symbol": "\\omega_s",
+                "name": "Synchronous Angular Velocity",
+                "color": "sapphire",
+                "role": "Rotational speed of the magnetic field sweeping around the stator perimeter",
+                "unit": "rad/s (or RPM = 120f / (2P))",
+                "dimension": "[T^-1]",
+                "explanation": "The speed at which the magnetic poles travel around the stator ring. In a 2-pole 60 Hz motor, synchronous speed is exactly 3600 RPM (377 rad/s).",
+                "telemetryKey": "shaftRate",
+                "telemetryMetricLabel": "Sync Speed"
+            },
+            {
+                "id": "line_freq",
+                "symbol": "f",
+                "name": "AC Line Frequency",
+                "color": "emerald",
+                "role": "Frequency of alternating current generated by the polyphase dynamo",
+                "unit": "Hertz (Hz = s^-1)",
+                "dimension": "[T^-1]",
+                "explanation": "Tesla standardized Westinghouse grids at 60 Hz, balancing transformer core size against line inductance losses."
+            },
+            {
+                "id": "pole_pairs",
+                "symbol": "P",
+                "name": "Number of Pole Pairs",
+                "color": "coral",
+                "role": "Count of North-South magnetic pole pairs distributed around the stator ring",
+                "unit": "Dimensionless integer",
+                "dimension": "[1]",
+                "explanation": "Figure 9 of the patent illustrates a 2-pole arrangement ($P = 1$), producing one full magnetic rotation per electrical cycle."
+            }
+        ],
+        "pedagogicalNote": "Unlike steam engines whose speed depends on throttle opening and load, an AC induction motor's field speed is locked precisely to the frequency of the power grid.",
+        "claimRef": 1,
+        "historicalSignificance": "Established the foundation of modern synchronous grids and multi-speed pole-changing induction motors."
+    },
+    {
+        "id": "tesla-rotor-slip-emf",
+        "patentId": "us-381968-tesla-motor",
+        "title": "Induced Rotor Electromotive Force & Slip",
+        "category": "Electromagnetics & Induction",
+        "rawLatex": "\\mathcal{E}_r = s \\cdot \\mathcal{E}_{r0} = \\left( \\frac{\\omega_s - \\omega_r}{\\omega_s} \\right) \\mathcal{E}_{r0}",
+        "colorizedLatex": "\\textcolor{#dc2626}{\\mathcal{E}_r} = \\textcolor{#d97706}{s} \\cdot \\textcolor{#0891b2}{\\mathcal{E}_{r0}} = \\left( \\frac{\\textcolor{#2563eb}{\\omega_s} - \\textcolor{#059669}{\\omega_r}}{\\textcolor{#2563eb}{\\omega_s}} \\right) \\textcolor{#0891b2}{\\mathcal{E}_{r0}}",
+        "plainEnglishSentence": [
+            {
+                "text": "The "
+            },
+            {
+                "text": "induced rotor electromotive force",
+                "variableId": "rotor_emf"
+            },
+            {
+                "text": " is governed by the "
+            },
+            {
+                "text": "fractional slip",
+                "variableId": "slip_s"
+            },
+            {
+                "text": " times the "
+            },
+            {
+                "text": "standstill locked-rotor EMF",
+                "variableId": "emf_locked"
+            },
+            {
+                "text": ", defined by the difference between "
+            },
+            {
+                "text": "synchronous field speed",
+                "variableId": "omega_sync"
+            },
+            {
+                "text": " and "
+            },
+            {
+                "text": "actual mechanical rotor speed",
+                "variableId": "omega_rotor"
+            },
+            {
+                "text": "."
+            }
+        ],
+        "variables": [
+            {
+                "id": "rotor_emf",
+                "symbol": "\\mathcal{E}_r",
+                "name": "Induced Rotor Electromotive Force",
+                "color": "crimson",
+                "role": "Voltage induced in the closed rotor conductor bars by cutting the rotating stator flux lines",
+                "unit": "Volts (V)",
+                "dimension": "[M L^2 T^-3 I^-1]",
+                "explanation": "By Faraday's law, voltage is induced only when there is relative motion between the rotor conductors and the rotating magnetic field.",
+                "telemetryMetricLabel": "Rotor Induced EMF"
+            },
+            {
+                "id": "slip_s",
+                "symbol": "s",
+                "name": "Fractional Slip Ratio",
+                "color": "amber",
+                "role": "Normalized relative speed difference between stator field and rotating armature",
+                "unit": "Dimensionless ratio [0, 1]",
+                "dimension": "[1]",
+                "explanation": "At standstill ($s=1$), maximum voltage is induced to start the motor. At synchronous speed ($s=0$), relative motion ceases, induced voltage drops to zero, and torque vanishes. Typical loaded slip is 2% to 5%.",
+                "telemetryKey": "loadTorque"
+            },
+            {
+                "id": "emf_locked",
+                "symbol": "\\mathcal{E}_{r0}",
+                "name": "Standstill Locked-Rotor EMF",
+                "color": "cyan",
+                "role": "Maximum theoretical voltage induced in the rotor winding when held stationary at rest",
+                "unit": "Volts (V)",
+                "dimension": "[M L^2 T^-3 I^-1]",
+                "explanation": "Equal to the stator-to-rotor transformer turns ratio multiplied by the primary stator magnetizing flux."
+            },
+            {
+                "id": "omega_sync",
+                "symbol": "\\omega_s",
+                "name": "Stator Synchronous Velocity",
+                "color": "sapphire",
+                "role": "Angular velocity of the stator magnetic flux wave",
+                "unit": "rad/s",
+                "dimension": "[T^-1]",
+                "explanation": "Constant velocity set by line frequency ($2\\pi f / P$)."
+            },
+            {
+                "id": "omega_rotor",
+                "symbol": "\\omega_r",
+                "name": "Mechanical Rotor Velocity",
+                "color": "emerald",
+                "role": "Actual rotational speed of the motor shaft delivering mechanical shaft power",
+                "unit": "rad/s",
+                "dimension": "[T^-1]",
+                "explanation": "As mechanical load increases, the rotor slows down slightly, increasing slip $s$, which increases induced rotor current and torque to balance the load."
+            }
+        ],
+        "pedagogicalNote": "An induction motor is self-regulating: when mechanical resistance increases, the rotor slips further behind the magnetic wave, automatically drawing more current and generating more torque without any electronic controller.",
+        "claimRef": 2,
+        "historicalSignificance": "Explains the asynchronous self-governing torque mechanism that made Tesla induction motors the workhorses of the Industrial Revolution."
+    },
+    {
+        "id": "tesla-eddy-current-subdivision",
+        "patentId": "us-381968-tesla-motor",
+        "title": "Core Subdivision & Eddy Current Power Loss",
+        "category": "Electromagnetics & Materials",
+        "rawLatex": "P_{\\text{eddy}} = \\frac{\\pi^2 \\cdot d^2 \\cdot B_{\\text{max}}^2 \\cdot f^2}{6 \\cdot \\rho_{\\text{Fe}} \\cdot D}",
+        "colorizedLatex": "\\textcolor{#dc2626}{P_{\\text{eddy}}} = \\frac{\\pi^2 \\cdot \\textcolor{#2563eb}{d^2} \\cdot \\textcolor{#9333ea}{B_{\\text{max}}^2} \\cdot \\textcolor{#059669}{f^2}}{6 \\cdot \\textcolor{#0891b2}{\\rho_{\\text{Fe}}} \\cdot \\textcolor{#d97706}{D}}",
+        "plainEnglishSentence": [
+            {
+                "text": "The parasitic "
+            },
+            {
+                "text": "eddy current thermal power loss",
+                "variableId": "p_eddy"
+            },
+            {
+                "text": " in the iron core scales with the square of "
+            },
+            {
+                "text": "lamination sheet thickness",
+                "variableId": "lam_thick"
+            },
+            {
+                "text": ", square of "
+            },
+            {
+                "text": "peak magnetic flux density",
+                "variableId": "b_peak"
+            },
+            {
+                "text": ", and square of "
+            },
+            {
+                "text": "electrical frequency",
+                "variableId": "freq"
+            },
+            {
+                "text": ", inversely proportional to "
+            },
+            {
+                "text": "iron electrical resistivity",
+                "variableId": "rho_fe"
+            },
+            {
+                "text": " and "
+            },
+            {
+                "text": "mass density",
+                "variableId": "density_fe"
+            },
+            {
+                "text": "."
+            }
+        ],
+        "variables": [
+            {
+                "id": "p_eddy",
+                "symbol": "P_{\\text{eddy}}",
+                "name": "Specific Eddy Current Loss",
+                "color": "crimson",
+                "role": "Heat energy wasted by circulating parasitic currents induced within the magnetic iron core",
+                "unit": "Watts per kilogram (W/kg)",
+                "dimension": "[L^2 T^-3]",
+                "explanation": "Alternating magnetic flux induces miniature circulating vortex currents in solid iron that waste power as resistive Joule heat ($I^2 R$)."
+            },
+            {
+                "id": "lam_thick",
+                "symbol": "d",
+                "name": "Lamination Sheet Thickness",
+                "color": "sapphire",
+                "role": "Thickness of individual insulated iron plates forming the subdivided core",
+                "unit": "meters (m, typically 0.35 to 0.5 mm in modern silicon steel)",
+                "dimension": "[L]",
+                "explanation": "Because eddy loss is proportional to $d^2$, subdividing a solid 10 mm iron core into twenty 0.5 mm laminated sheets reduces eddy current losses by a factor of $20^2 = 400\\times$ (99.75% loss reduction)."
+            },
+            {
+                "id": "b_peak",
+                "symbol": "B_{\\text{max}}",
+                "name": "Peak Core Magnetic Flux Density",
+                "color": "amethyst",
+                "role": "Maximum magnetic operating point in the core before magnetic saturation",
+                "unit": "Tesla (T, typically 1.2 to 1.6 T)",
+                "dimension": "[M T^-2 I^-1]",
+                "explanation": "Higher flux density enables more compact motors, but losses grow with $B_{\\text{max}}^2$."
+            },
+            {
+                "id": "freq",
+                "symbol": "f",
+                "name": "Operating Alternating Frequency",
+                "color": "emerald",
+                "role": "Rate of magnetic reversal per second",
+                "unit": "Hertz (Hz)",
+                "dimension": "[T^-1]",
+                "explanation": "Losses increase quadratically with frequency ($f^2$), making core lamination essential at 60 Hz."
+            },
+            {
+                "id": "rho_fe",
+                "symbol": "\\rho_{\\text{Fe}}",
+                "name": "Core Electrical Resistivity",
+                "color": "cyan",
+                "role": "Electrical resistance of the ferromagnetic alloy to circulating eddy currents",
+                "unit": "\\Omega \\cdot \\text{m}",
+                "dimension": "[M L^3 T^-3 I^-2]",
+                "explanation": "Tesla specified subdivided iron; modern electrical steels add 3% silicon to increase $\\rho_{\\text{Fe}}$ fourfold and suppress eddy currents further."
+            },
+            {
+                "id": "density_fe",
+                "symbol": "D",
+                "name": "Iron Mass Density",
+                "color": "amber",
+                "role": "Mass density of the ferromagnetic core material",
+                "unit": "kg/m^3 (~7850 kg/m^3)",
+                "dimension": "[M L^-3]",
+                "explanation": "Converts volumetric loss to specific power loss per unit mass."
+            }
+        ],
+        "pedagogicalNote": "Tesla explicitly required in the specification that the iron core be 'split up as far as practicable to prevent circulating currents of induction'—inventing the laminated electrical steel core standard used in every modern transformer and electric motor.",
+        "claimRef": 1,
+        "historicalSignificance": "Solved the severe core overheating problem that plagued early alternating current machinery, raising electrical motor efficiency from under 50% to over 92%."
+    }
+],
 
   // 3. Edison Light Bulb (US 223,898)
   "us-223898-edison-lightbulb": [
@@ -1387,112 +1694,233 @@ export const ALL_COLORIZED_EQUATIONS: Record<string, ColorizedEquation[]> = {
   // 11. Enrico Fermi & Leo Szilard Neutronic Reactor (US 2,708,656)
   "us-2708656-fermi-reactor": [
     {
-      id: "fermi-point-kinetics",
-      patentId: "us-2708656-fermi-reactor",
-      title: "6-Group Delayed Neutron Criticality & Prompt Kinetics",
-      category: "Nuclear Physics & Criticality",
-      rawLatex:
-        "\\frac{dn}{dt} = \\frac{\\rho - \\beta}{\\Lambda} n + \\sum_{i=1}^6 \\lambda_i C_i \\quad \\text{and} \\quad k_{\\text{eff}} = \\frac{1}{1 - \\rho}",
-      colorizedLatex:
-        "\\frac{d\\textcolor{#9333ea}{n}}{dt} = \\frac{\\textcolor{#dc2626}{\\rho} - \\textcolor{#0891b2}{\\beta}}{\\textcolor{#ea580c}{\\Lambda}} \\textcolor{#9333ea}{n} + \\sum_{i=1}^6 \\textcolor{#d97706}{\\lambda_i} \\textcolor{#059669}{C_i} \\quad \\text{and} \\quad \\textcolor{#dc2626}{k_{\\text{eff}}} = \\frac{1}{1 - \\rho}",
-      plainEnglishSentence: [
-        { text: "The " },
-        { text: "rate of neutron flux growth", variableId: "n_flux" },
-        { text: " depends on " },
-        { text: "total reactivity excess", variableId: "rho" },
-        { text: " offset by the " },
-        { text: "delayed neutron fraction", variableId: "beta" },
-        { text: " over " },
-        {
-          text: "prompt neutron generation lifetime",
-          variableId: "lambda_gen",
-        },
-        { text: ", stabilized by " },
-        { text: "6 delayed precursor decay groups", variableId: "ci" },
-        { text: " with " },
-        { text: "characteristic decay constants", variableId: "decay_k" },
-        { text: "." },
-      ],
-      variables: [
-        {
-          id: "n_flux",
-          symbol: "n(t)",
-          name: "Thermal Neutron Population",
-          color: "amethyst",
-          role: "Total density of thermalized neutrons driving U-235 fission cascades in the graphite matrix",
-          unit: "Neutrons / cm^3",
-          dimension: "[L^-3]",
-          explanation:
-            "Directly proportional to the thermal power output of the reactor core ($P = n \\cdot v_{\\text{th}} \\cdot \\Sigma_f \\cdot E_{\\text{fiss}}$).",
-          telemetryMetricLabel: "Neutron Flux",
-        },
-        {
-          id: "rho",
-          symbol: "\\rho",
-          name: "Reactivity Index",
-          color: "crimson",
-          role: "Fractional departure from exact criticality: \\rho = (k_{eff} - 1) / k_{eff}",
-          unit: "Dimensionless / Dollars ($)",
-          dimension: "[1]",
-          explanation:
-            "When cadmium control rods are withdrawn, reactivity rises. If $\\rho < \\beta$, the reactor is delayed critical (safe and slowly controllable). If $\\rho \\ge \\beta$, the core goes prompt critical.",
-          telemetryKey: "cadmiumPosition",
-          telemetryMetricLabel: "Reactivity",
-        },
-        {
-          id: "beta",
-          symbol: "\\beta",
-          name: "Delayed Neutron Fraction",
-          color: "cyan",
-          role: "Fraction of fission neutrons emitted after precursor radioactive decay (0.0065 = 0.65% for U-235)",
-          unit: "Fraction (0.0065)",
-          dimension: "[1]",
-          explanation:
-            "Without delayed neutrons, reactors would experience power excursions on a microsecond timescale, making human or mechanical control impossible.",
-        },
-        {
-          id: "lambda_gen",
-          symbol: "\\Lambda",
-          name: "Prompt Generation Time",
-          color: "coral",
-          role: "Average time from neutron birth in fission to thermalization in graphite and absorption (approx 1 millisecond)",
-          unit: "Seconds (s)",
-          dimension: "[T]",
-          explanation:
-            "Thermalization in heavy graphite blocks slows fast 2 MeV fission neutrons down to 0.025 eV thermal speeds.",
-        },
-        {
-          id: "ci",
-          symbol: "C_i",
-          name: "Delayed Precursor Concentration",
-          color: "emerald",
-          role: "Concentration of radioactive fission product isotopes (e.g. Br-87, I-137) that emit delayed neutrons",
-          unit: "Precursors / cm^3",
-          dimension: "[L^-3]",
-          explanation:
-            "These six isotopic groups emit neutrons over half-lives ranging from 0.2 seconds to 55 seconds, slowing the reactor time constant down to human manageable speeds.",
-        },
-        {
-          id: "decay_k",
-          symbol: "\\lambda_i",
-          name: "Precursor Decay Constant",
-          color: "amber",
-          role: "Radioactive decay rate constants (\\lambda_i = \\ln 2 / T_{1/2}) for the 6 delayed isotope families",
-          unit: "1 / Seconds (s^-1)",
-          dimension: "[T^-1]",
-          explanation:
-            "Controls the gradual release of delayed neutrons after control rods are repositioned.",
-        },
-      ],
-      pedagogicalNote:
-        "Fermi and Szilard realized that high-purity graphite could thermalize fast neutrons without capturing them, and that delayed neutron emissions give human operators and cadmium safety rods seconds (rather than microseconds) to control chain reactions.",
-      claimRef: 1,
-      historicalSignificance:
-        "US 2708656 is the master patent for nuclear energy, establishing the principles of all nuclear reactors and carbon-free power generation worldwide.",
+        "id": "fermi-delayed-neutron-kinetics",
+        "patentId": "us-2708656-fermi-reactor",
+        "title": "Point Reactor Kinetics with Delayed Neutrons",
+        "category": "Nuclear Physics & Kinetics",
+        "rawLatex": "\\frac{dn(t)}{dt} = \\frac{\\rho(t) - \\beta}{\\Lambda} n(t) + \\sum_{i=1}^{6} \\lambda_i C_i(t)",
+        "colorizedLatex": "\\frac{d\\textcolor{#059669}{n(t)}}{dt} = \\frac{\\textcolor{#dc2626}{\\rho(t)} - \\textcolor{#d97706}{\\beta}}{\\textcolor{#0891b2}{\\Lambda}} \\textcolor{#059669}{n(t)} + \\sum_{i=1}^{6} \\textcolor{#9333ea}{\\lambda_i} \\textcolor{#2563eb}{C_i(t)}",
+        "plainEnglishSentence": [
+            {
+                "text": "The "
+            },
+            {
+                "text": "rate of change of neutron density",
+                "variableId": "dn_dt"
+            },
+            {
+                "text": " depends on the "
+            },
+            {
+                "text": "net reactivity",
+                "variableId": "rho_reactivity"
+            },
+            {
+                "text": " minus the "
+            },
+            {
+                "text": "delayed neutron precursor fraction",
+                "variableId": "beta_delayed"
+            },
+            {
+                "text": ", divided by the "
+            },
+            {
+                "text": "neutron generation time",
+                "variableId": "prompt_lifetime"
+            },
+            {
+                "text": ", plus the sum of "
+            },
+            {
+                "text": "precursor decay rates",
+                "variableId": "lambda_decay"
+            },
+            {
+                "text": " releasing "
+            },
+            {
+                "text": "delayed emitter concentrations",
+                "variableId": "precursor_conc"
+            },
+            {
+                "text": "."
+            }
+        ],
+        "variables": [
+            {
+                "id": "dn_dt",
+                "symbol": "n(t)",
+                "name": "Thermal Neutron Population Density",
+                "color": "emerald",
+                "role": "Instantaneous concentration of thermalized neutrons driving sustained uranium-235 chain reactions",
+                "unit": "neutrons/cm^3",
+                "dimension": "[L^-3]",
+                "explanation": "Proportional to instantaneous thermal reactor power ($P_{\\text{th}} = \\Sigma_f \\Phi E_f V$).",
+                "telemetryKey": "controlRodInches",
+                "telemetryMetricLabel": "Neutron Population"
+            },
+            {
+                "id": "rho_reactivity",
+                "symbol": "\\rho(t)",
+                "name": "Net Core Reactivity",
+                "color": "crimson",
+                "role": "Relative departure of effective multiplication factor $k_{\\text{eff}}$ from exact criticality ($(k-1)/k$)",
+                "unit": "pcm (or dollars $ where $\\rho = \\$1$ is prompt critical)",
+                "dimension": "[1]",
+                "explanation": "Regulated by sliding cadmium control rods into the graphite pile. When $\\rho = 0$, $k_{\\text{eff}} = 1.000$ (steady-state criticality)."
+            },
+            {
+                "id": "beta_delayed",
+                "symbol": "\\beta",
+                "name": "Total Delayed Neutron Fraction",
+                "color": "amber",
+                "role": "Fraction of fission neutrons emitted by radioactive precursor decay rather than prompt fission (~0.65% in U-235)",
+                "unit": "Dimensionless fraction (0.0065 for U-235)",
+                "dimension": "[1]",
+                "explanation": "Delayed neutrons extend reactor response time from microseconds ($10^{-5}\\text{ s}$) to seconds (~0.1 s), making human and automatic control physically possible."
+            },
+            {
+                "id": "prompt_lifetime",
+                "symbol": "\\Lambda",
+                "name": "Prompt Neutron Generation Time",
+                "color": "cyan",
+                "role": "Mean time elapsed between neutron emission in fission and subsequent absorption causing fission",
+                "unit": "seconds (s, ~$10^{-4}\\text{ s}$ in graphite pile)",
+                "dimension": "[T]",
+                "explanation": "Without delayed neutrons, a supercritical prompt excursion would double power in milliseconds."
+            },
+            {
+                "id": "lambda_decay",
+                "symbol": "\\lambda_i",
+                "name": "Precursor Group Decay Constant",
+                "color": "amethyst",
+                "role": "Decay probability per second of the $i$-th delayed neutron precursor group ($i = 1\\dots 6$)",
+                "unit": "s^-1",
+                "dimension": "[T^-1]",
+                "explanation": "Precursors like Bromine-87 and Iodine-137 emit neutrons with half-lives ranging from 0.2 seconds to 56 seconds."
+            },
+            {
+                "id": "precursor_conc",
+                "symbol": "C_i(t)",
+                "name": "Delayed Precursor Concentration",
+                "color": "sapphire",
+                "role": "Population of delayed neutron emitter fission fragments in the uranium fuel matrix",
+                "unit": "nuclei/cm^3",
+                "dimension": "[L^-3]",
+                "explanation": "Acts as a physical thermal kinetic reservoir dampening core reactivity transients."
+            }
+        ],
+        "pedagogicalNote": "Chicago Pile-1 operated at the West Stands of Stagg Field at the University of Chicago on December 2, 1942, achieving the world's first self-sustaining controlled nuclear chain reaction ($k_{\\text{eff}} = 1.0006$).",
+        "claimRef": 1,
+        "historicalSignificance": "Proved nuclear energy could be released in a controlled, continuous, and safe manner, birthing the atomic power industry."
     },
-  ],
+    {
+        "id": "fermi-four-factor-formula",
+        "patentId": "us-2708656-fermi-reactor",
+        "title": "Fermi Four-Factor Criticality Formula",
+        "category": "Nuclear Reactor Physics",
+        "rawLatex": "k_\\infty = \\eta \\cdot \\varepsilon \\cdot p \\cdot f",
+        "colorizedLatex": "\\textcolor{#dc2626}{k_\\infty} = \\textcolor{#2563eb}{\\eta} \\cdot \\textcolor{#0891b2}{\\varepsilon} \\cdot \\textcolor{#059669}{p} \\cdot \\textcolor{#d97706}{f}",
+        "plainEnglishSentence": [
+            {
+                "text": "The "
+            },
+            {
+                "text": "infinite multiplication factor",
+                "variableId": "k_inf"
+            },
+            {
+                "text": " is the product of "
+            },
+            {
+                "text": "thermal neutron yield per absorption",
+                "variableId": "eta_yield"
+            },
+            {
+                "text": ", "
+            },
+            {
+                "text": "fast fission factor",
+                "variableId": "eps_fast"
+            },
+            {
+                "text": ", "
+            },
+            {
+                "text": "resonance escape probability",
+                "variableId": "p_resonance"
+            },
+            {
+                "text": ", and "
+            },
+            {
+                "text": "thermal utilization factor",
+                "variableId": "f_thermal"
+            },
+            {
+                "text": "."
+            }
+        ],
+        "variables": [
+            {
+                "id": "k_inf",
+                "symbol": "k_\\infty",
+                "name": "Infinite Medium Multiplication Factor",
+                "color": "crimson",
+                "role": "Ratio of neutrons produced by fission in one generation to neutrons absorbed in the preceding generation in an infinite lattice",
+                "unit": "Dimensionless ratio",
+                "dimension": "[1]",
+                "explanation": "Must exceed 1.000 so that when geometric leakage losses are subtracted, effective $k_{\\text{eff}} = k_\\infty \\cdot P_{\\text{FNL}} \\cdot P_{\\text{TNL}} \\ge 1.000$.",
+                "telemetryMetricLabel": "k_infinity"
+            },
+            {
+                "id": "eta_yield",
+                "symbol": "\\eta",
+                "name": "Neutron Reproduction Factor",
+                "color": "sapphire",
+                "role": "Average number of fission neutrons emitted per thermal neutron absorbed in natural uranium (~1.34 in natural U)",
+                "unit": "neutrons per absorption",
+                "dimension": "[1]",
+                "explanation": "Determined by the ratio of fission to capture cross sections in uranium isotopes ($eta = \nu Sigma_f^U / Sigma_a^U$)."
+            },
+            {
+                "id": "eps_fast",
+                "symbol": "\\varepsilon",
+                "name": "Fast Fission Factor",
+                "color": "cyan",
+                "role": "Ratio of total fissions (fast + thermal) to fissions caused by thermal neutrons alone (~1.03)",
+                "unit": "Dimensionless factor",
+                "dimension": "[1]",
+                "explanation": "Accounts for high-energy prompt neutrons causing immediate fission in Uranium-238 before slowing down."
+            },
+            {
+                "id": "p_resonance",
+                "symbol": "p",
+                "name": "Resonance Escape Probability",
+                "color": "emerald",
+                "role": "Probability that a fast fission neutron slows down to thermal energy without being captured in U-238 resonance absorption peaks (~0.89)",
+                "unit": "Dimensionless probability [0, 1]",
+                "dimension": "[1]",
+                "explanation": "Fermi and Szilard's breakthrough: clustering uranium into lumped slugs embedded inside graphite blocks kept neutrons inside moderator while traversing resonance energies, maximizing $p$."
+            },
+            {
+                "id": "f_thermal",
+                "symbol": "f",
+                "name": "Thermal Utilization Factor",
+                "color": "amber",
+                "role": "Fraction of thermal neutrons absorbed in uranium fuel compared to total absorption in fuel, graphite moderator, and structural timber (~0.88)",
+                "unit": "Dimensionless fraction [0, 1]",
+                "dimension": "[1]",
+                "explanation": "Requires ultra-pure graphite free of neutron-poison boron impurities to minimize parasitic moderator capture."
+            }
+        ],
+        "pedagogicalNote": "Fermi and Szilard solved the natural uranium paradox: pure natural uranium mixed homogeneously with graphite cannot achieve criticality ($k_\\infty < 1$). By spacing uranium lumps in a discrete 3D matrix (Claim 1), resonance capture was suppressed, achieving $k_\\infty \\approx 1.07$.",
+        "claimRef": 1,
+        "historicalSignificance": "The cornerstone equation of nuclear reactor physics, enabling natural uranium nuclear reactors without isotopic enrichment."
+    }
+],
 
-  // 12. Robert Noyce Monolithic Silicon Integrated Circuit (US 2,981,877)
   "us-2981877-noyce-ic": [
     {
       id: "noyce-pn-depletion",
@@ -2309,106 +2737,180 @@ export const ALL_COLORIZED_EQUATIONS: Record<string, ColorizedEquation[]> = {
   // 19. Rudolf Diesel Internal Combustion Engine (US 542,846)
   "us-542846-diesel-engine": [
     {
-      id: "diesel-compression-ignition",
-      patentId: "us-542846-diesel-engine",
-      title: "Isentropic Compression Autoignition Temperature & Diesel Cycle Efficiency",
-      category: "Thermodynamics & Heat Engines",
-      rawLatex:
-        "T_2 = T_1 \\cdot r^{\\gamma - 1} \\quad \\text{and} \\quad \\eta_{\\text{diesel}} = 1 - \\frac{1}{r^{\\gamma-1}} \\left[ \\frac{r_c^\\gamma - 1}{\\gamma (r_c - 1)} \\right]",
-      colorizedLatex:
-        "\\textcolor{#dc2626}{T_2} = \\textcolor{#2563eb}{T_1} \\cdot \\textcolor{#059669}{r}^{\\textcolor{#d97706}{\\gamma - 1}} \\quad \\text{and} \\quad \\textcolor{#9333ea}{\\eta_{\\text{diesel}}} = 1 - \\frac{1}{\\textcolor{#059669}{r}^{\\textcolor{#d97706}{\\gamma-1}}} \\left[ \\frac{\\textcolor{#ea580c}{r_c}^\\gamma - 1}{\\gamma (\\textcolor{#ea580c}{r_c} - 1)} \\right]",
-      plainEnglishSentence: [
-        { text: "The " },
-        { text: "combustion chamber autoignition temperature", variableId: "t2" },
-        { text: " is generated from " },
-        { text: "intake ambient temperature", variableId: "t1" },
-        { text: " by an " },
-        { text: "extreme 16:1 compression ratio", variableId: "r_comp" },
-        { text: " governed by the " },
-        { text: "air specific heat ratio (gamma = 1.4)", variableId: "gamma" },
-        { text: ", producing " },
-        { text: "record thermal efficiency", variableId: "eta" },
-        { text: " determined by " },
-        { text: "fuel injection cut-off duration", variableId: "rc" },
-        { text: "." },
-      ],
-      variables: [
-        {
-          id: "t2",
-          symbol: "T_2",
-          name: "Top-Dead-Center Air Temperature",
-          color: "crimson",
-          role: "Extreme compressed air temperature reaching 700 to 900 C (973 to 1173 K) prior to fuel injection",
-          unit: "Kelvin (K) / Celsius (C)",
-          dimension: "[\\Theta]",
-          explanation:
-            "Far exceeds the self-ignition temperature of heavy petroleum oil (approx 250 C), so injected fuel instantly atomizes and ignites spontaneously without spark plugs or hot tubes.",
-          telemetryMetricLabel: "Chamber Temp",
-        },
-        {
-          id: "t1",
-          symbol: "T_1",
-          name: "Ambient Intake Temperature",
-          color: "sapphire",
-          role: "Atmospheric air temperature drawn into cylinder during intake stroke (approx 293 K)",
-          unit: "Kelvin (K)",
-          dimension: "[\\Theta]",
-          explanation:
-            "Pure air only is compressed—unlike gasoline engines that compress a fuel-air mixture susceptible to premature knocking/detonation.",
-        },
-        {
-          id: "r_comp",
-          symbol: "r",
-          name: "Volumetric Compression Ratio",
-          color: "emerald",
-          role: "Ratio of bottom-dead-center volume to top-dead-center clearance volume (14:1 to 22:1)",
-          unit: "Compression ratio (16.0)",
-          dimension: "[1]",
-          explanation:
-            "By compressing pure air alone, Diesel could push compression ratios to 16:1 or higher (compared to 4:1 in 19th-century Otto gasoline engines), doubling thermal efficiency.",
-          telemetryKey: "compressionRatio",
-        },
-        {
-          id: "gamma",
-          symbol: "\\gamma",
-          name: "Specific Heat Ratio (Air)",
-          color: "amber",
-          role: "Adiabatic index of diatomic air (c_p / c_v = 1.40)",
-          unit: "Dimensionless ratio (1.40)",
-          dimension: "[1]",
-          explanation: "Governs isentropic temperature rise during rapid piston compression.",
-        },
-        {
-          id: "eta",
-          symbol: "\\eta_{\\text{diesel}}",
-          name: "Brake Thermal Efficiency",
-          color: "amethyst",
-          role: "Fraction of fuel chemical enthalpy converted into shaft mechanical work (35% to 55%)",
-          unit: "Efficiency percentage (%)",
-          dimension: "[1]",
-          explanation:
-            "The Diesel engine became the most thermally efficient heat engine in human history, far surpassing steam engines (10%) and early gasoline engines (20%).",
-          telemetryMetricLabel: "Thermal Eff",
-        },
-        {
-          id: "rc",
-          symbol: "r_c",
-          name: "Fuel Injection Cut-Off Ratio",
-          color: "coral",
-          role: "Ratio of cylinder volume after fuel injection stops to clearance volume (approx 1.5 to 2.5)",
-          unit: "Volume ratio [1.5 - 2.5]",
-          dimension: "[1]",
-          explanation:
-            "Fuel is injected at constant pressure during the initial portion of the power stroke.",
-          telemetryKey: "fuelInjectionMg",
-        },
-      ],
-      pedagogicalNote:
-        "Rudolf Diesel sought to build an engine that approached the theoretical maximum efficiency of Sadi Carnot's cycle. By compressing pure air until it became red-hot and gradually spraying in heavy oil, he eliminated spark plugs and created the prime mover for global maritime, rail, and freight transport.",
-      claimRef: 1,
-      historicalSignificance:
-        "US 542846 created the high-efficiency compression-ignition engine that powers modern container ships, locomotives, electrical backup grids, and heavy trucking.",
+        "id": "diesel-carnot-ideal-efficiency",
+        "patentId": "us-542846-diesel-engine",
+        "title": "Diesel Carnot Cycle Thermodynamic Efficiency",
+        "category": "Thermodynamics & Heat Engines",
+        "rawLatex": "\\eta_{\\text{Carnot}} = 1 - \\frac{T_C}{T_H} = 1 - \\frac{1}{r^{\\gamma - 1}}",
+        "colorizedLatex": "\\textcolor{#059669}{\\eta_{\\text{Carnot}}} = 1 - \\frac{\\textcolor{#0891b2}{T_C}}{\\textcolor{#dc2626}{T_H}} = 1 - \\frac{1}{\\textcolor{#2563eb}{r^{\\gamma - 1}}}",
+        "plainEnglishSentence": [
+            {
+                "text": "The "
+            },
+            {
+                "text": "theoretical maximum thermal efficiency",
+                "variableId": "eta_carnot"
+            },
+            {
+                "text": " is determined by the ratio of "
+            },
+            {
+                "text": "cold exhaust temperature",
+                "variableId": "t_cold"
+            },
+            {
+                "text": " to "
+            },
+            {
+                "text": "peak hot combustion temperature",
+                "variableId": "t_hot"
+            },
+            {
+                "text": ", scaling with "
+            },
+            {
+                "text": "adiabatic compression ratio",
+                "variableId": "comp_ratio"
+            },
+            {
+                "text": "."
+            }
+        ],
+        "variables": [
+            {
+                "id": "eta_carnot",
+                "symbol": "\\eta_{\\text{Carnot}}",
+                "name": "Maximum Thermodynamic Thermal Efficiency",
+                "color": "emerald",
+                "role": "Upper theoretical limit of heat energy conversion into mechanical shaft work",
+                "unit": "Dimensionless percentage (%)",
+                "dimension": "[1]",
+                "explanation": "Diesel designed his engine specifically to approach the Carnot limit by raising compression temperature above fuel ignition threshold without premature knocking.",
+                "telemetryMetricLabel": "Thermal Efficiency"
+            },
+            {
+                "id": "t_cold",
+                "symbol": "T_C",
+                "name": "Cold Reservoir / Ambient Intake Temperature",
+                "color": "cyan",
+                "role": "Temperature of intake air inducted into the working cylinder ($300\\text{ K} = 27^\\circ\\text{C}$)",
+                "unit": "Kelvin (K)",
+                "dimension": "[Theta]",
+                "explanation": "Lower ambient temperature increases air density and thermodynamic expansion delta."
+            },
+            {
+                "id": "t_hot",
+                "symbol": "T_H",
+                "name": "Peak Combustion Temperature",
+                "color": "crimson",
+                "role": "Maximum gas temperature during progressive constant-pressure fuel burning ($1800\\text{ K} - 2200\\text{ K}$)",
+                "unit": "Kelvin (K)",
+                "dimension": "[Theta]",
+                "explanation": "Controlled by progressive fuel injection rate so peak temperature does not cause dissociation or mechanical failure."
+            },
+            {
+                "id": "comp_ratio",
+                "symbol": "r",
+                "name": "Volumetric Compression Ratio",
+                "color": "sapphire",
+                "role": "Ratio of maximum cylinder volume at bottom dead center to minimum clearance volume at top dead center ($V_1 / V_2 = 14:1\\text{ to }22:1$)",
+                "unit": "Dimensionless ratio",
+                "dimension": "[1]",
+                "explanation": "High compression ($r=18:1$) produces over $40\\text{ bar}$ pressure, heating air to $>900\\text{ K}$ for instant auto-ignition.",
+                "telemetryKey": "compressionRatio"
+            }
+        ],
+        "pedagogicalNote": "Steam engines converted barely 10% of coal energy to work. Rudolf Diesel proved that compressing pure air to 40+ atmospheres eliminated spark plugs and doubled thermal efficiency to 42%.",
+        "claimRef": 1,
+        "historicalSignificance": "Created the primary power source for global maritime shipping, heavy rail freight, long-haul trucking, and electrical generation."
     },
+    {
+        "id": "diesel-compression-ignition-temp",
+        "patentId": "us-542846-diesel-engine",
+        "title": "Adiabatic Compression Auto-Ignition Temperature",
+        "category": "Thermodynamics & Gas Dynamics",
+        "rawLatex": "T_2 = T_1 \\cdot r^{\\gamma - 1}",
+        "colorizedLatex": "\\textcolor{#dc2626}{T_2} = \\textcolor{#0891b2}{T_1} \\cdot \\textcolor{#2563eb}{r}^{\\textcolor{#d97706}{\\gamma - 1}}",
+        "plainEnglishSentence": [
+            {
+                "text": "The "
+            },
+            {
+                "text": "top dead center compressed air temperature",
+                "variableId": "t_comp"
+            },
+            {
+                "text": " equals "
+            },
+            {
+                "text": "ambient intake air temperature",
+                "variableId": "t_ambient"
+            },
+            {
+                "text": " multiplied by "
+            },
+            {
+                "text": "compression ratio",
+                "variableId": "r_ratio"
+            },
+            {
+                "text": " raised to the power of "
+            },
+            {
+                "text": "specific heat ratio minus one",
+                "variableId": "gamma_poly"
+            },
+            {
+                "text": "."
+            }
+        ],
+        "variables": [
+            {
+                "id": "t_comp",
+                "symbol": "T_2",
+                "name": "Compression Temperature at Top Dead Center",
+                "color": "crimson",
+                "role": "Peak air temperature achieved entirely by mechanical work of piston compression ($~953\\text{ K} = 680^\\circ\\text{C}$)",
+                "unit": "Kelvin (K)",
+                "dimension": "[Theta]",
+                "explanation": "Far exceeds the auto-ignition temperature of heavy petroleum oil ($~210^\\circ\\text{C}$), ensuring instantaneous spontaneous combustion upon fuel atomization.",
+                "telemetryMetricLabel": "TDC Temperature"
+            },
+            {
+                "id": "t_ambient",
+                "symbol": "T_1",
+                "name": "Intake Air Temperature",
+                "color": "cyan",
+                "role": "Initial ambient temperature of fresh air inducted on the downward intake stroke ($300\\text{ K}$)",
+                "unit": "Kelvin (K)",
+                "dimension": "[Theta]",
+                "explanation": "Diesel engines draw in pure air rather than an explosive fuel-air vapor, eliminating pre-ignition knock."
+            },
+            {
+                "id": "r_ratio",
+                "symbol": "r",
+                "name": "Compression Ratio",
+                "color": "sapphire",
+                "role": "Volumetric ratio of cylinder displacement ($V_1 / V_2 = 18:1$)",
+                "unit": "Dimensionless ratio",
+                "dimension": "[1]",
+                "explanation": "Diesel engines operate at compression ratios 3x higher than gasoline spark-ignition engines."
+            },
+            {
+                "id": "gamma_poly",
+                "symbol": "\\gamma",
+                "name": "Adiabatic Heat Capacity Ratio",
+                "color": "amber",
+                "role": "Ratio of specific heat at constant pressure to constant volume ($c_p / c_v = 1.40$ for diatomic air)",
+                "unit": "Dimensionless constant (1.40)",
+                "dimension": "[1]",
+                "explanation": "Governs the steep exponential rise in temperature as molecular kinetic energy is concentrated in a tight combustion bowl."
+            }
+        ],
+        "pedagogicalNote": "Because only pure air is compressed, there is zero fuel present to prematurely ignite. This allowed Diesel to raise compression to extreme levels impossible in Otto-cycle gasoline engines.",
+        "claimRef": 1,
+        "historicalSignificance": "Eliminated electrical ignition systems, magnetos, and spark plugs, creating an inherently reliable all-mechanical heat engine."
+    }
   ],
 
   // 20. Lester Pelton Split-Bucket Impulse Water Wheel (US 233,692)
