@@ -1,0 +1,36 @@
+# US 6,162 — Corliss steam-engine valve gear: source receipt
+
+- Catalogue id: `us-6162-corliss-steam-engine`
+- Local immutable facsimile: `public/patents/pdfs/us-6162-corliss-steam-engine.pdf`
+- Primary public record: [Google Patents, US6162A](https://patents.google.com/patent/US6162A/en)
+- Retrieved and directly compared: 2026-08-17
+- SHA-256: `22a03c717ed383165143af5aa3b85c8dac0705eaa4cdadcf93130ba28ef76ff5`
+- PDF page count: 8
+- Rights basis: United States patent specification issued in 1849. The local
+  facsimile is preserved as the source record; this receipt makes no separate
+  legal clearance finding for any third-party scan presentation.
+
+## Facsimile map
+
+| PDF pages | Material checked | Edition treatment |
+| --- | --- | --- |
+| 1 | Drawing sheet 1: Fig. 1, side elevation | `FIG. 1` sheet record and locally derived Figure 1 crop |
+| 2 | Drawing sheet 2: Fig. 2, longitudinal vertical section | `FIG. 2` sheet record and locally derived Figure 2 crop |
+| 3 | Drawing sheet 3: Figs. 3, 6, and 7 | individual sheet record and Figure 3, 6, and 7 crops |
+| 4 | Drawing sheet 4: Figs. 4, 5, 8, and 9 | individual sheet record and source-sheet previews designated for Figures 4, 5, 8, and 9 |
+| 5 | Masthead, reissue notice, opening, figure key, frame and valve-motion description | authored masthead and continuous paragraphs |
+| 6 | Continuation of frame construction; exhaust and admission valve linkage | continuous paragraphs |
+| 7 | Catch, weighted closing lever, air-cylinder cushion, governor cams, claim 1 opening | continuous paragraphs and Claim 1 node |
+| 8 | Claim 1 conclusion, Claim 2, Corliss signature, witnesses, `[FIRST PRINTED 1913.]` | Claim 1 and Claim 2 nodes; execution notice |
+
+## Editorial boundary
+
+The public archival face is `src/data/editions/corlissSteamEngineEdition.ts`:
+an explicit typed node sequence prepared from direct visual comparison of all
+eight PDF pages. `public/patents/source-text/us-6162-corliss-steam-engine.txt`
+is retained only as a non-authoritative OCR comparison artifact. It was not
+used as public edition input or as completeness proof.
+
+The published data record names its curated excerpt as an excerpt and attaches
+the complete manual edition. The specification has two printed claims, not the
+three synthetic claims that preceded this receipt.
