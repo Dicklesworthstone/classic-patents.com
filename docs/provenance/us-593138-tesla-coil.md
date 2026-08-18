@@ -5,7 +5,7 @@
 - Canonical catalogue id: `us-593138-tesla-coil`
 - Local immutable asset: `public/patents/pdfs/us-593138-tesla-coil.pdf`
 - Title sheet: *Electrical Transformer*, Nikola Tesla, No. 593,138, patented November 2, 1897
-- Filing/application line: March 20, 1897; serial no. 623,453
+- Filing/application line: March 20, 1897; serial no. 628,453
 - Primary record: <https://patents.google.com/patent/US593138A/en>
 - Direct public facsimile record: <https://patentimages.storage.googleapis.com/4e/ec/02/c74192af65fe67/US593138.pdf>
 - Retrieval and source inspection: 2026-08-18

@@ -42,7 +42,7 @@ NIKOLA TESLA, OF NEW YORK, N. Y.
 ELECTRICAL TRANSFORMER.
 
 SPECIFICATION forming part of Letters Patent No. 593,138, dated November 2, 1897.
-Application filed March 20, 1897. Serial No. 623,453. (No model.)
+Application filed March 20, 1897. Serial No. 628,453. (No model.)
 
 The present application is based upon an apparatus which I have devised and employed for the purpose of developing electrical currents of high potential.`,
   archivalEdition: teslaCoil593138ArchivalEdition,

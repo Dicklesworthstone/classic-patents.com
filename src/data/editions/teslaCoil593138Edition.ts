@@ -65,7 +65,7 @@ export const teslaCoil593138ArchivalEdition: CuratedSpecificationEdition = {
         "UNITED STATES PATENT OFFICE.",
         "NIKOLA TESLA, OF NEW YORK, N. Y.",
         "ELECTRICAL TRANSFORMER.",
-        "Specification forming part of Letters Patent No. 593,138, dated November 2, 1897. Application filed March 20, 1897. Serial No. 623,453. (No model.)",
+        "Specification forming part of Letters Patent No. 593,138, dated November 2, 1897. Application filed March 20, 1897. Serial No. 628,453. (No model.)",
       ],
     },
     {
