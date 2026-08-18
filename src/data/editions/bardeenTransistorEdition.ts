@@ -550,7 +550,9 @@ export const bardeenTransistorArchivalEdition: CuratedSpecificationEdition = {
         text: ", in which case the collector field 14 bears the shape of a semitorus. Its trace on the plane of the block surface is shown by the broken lines 14a, 14b. The two semicircular spots 6e, 6f, of ",
       },
       figure("Fig. 7", "Fig. 7"),
-      { kind: "text", text: " are the substantial equivalent of the circle of Fig. 6." },
+      { kind: "text", text: " are the substantial equivalent of the circle of " },
+      figure("Fig. 6", "Fig. 6"),
+      { kind: "text", text: "." },
     ]),
     p([
       {
@@ -657,8 +659,8 @@ export const bardeenTransistorArchivalEdition: CuratedSpecificationEdition = {
       ),
     ),
     p(text("It is known that")),
-    { kind: "equation", text: "n₁ = A₁e^(eVₑ/KT)     (4a)" },
-    { kind: "equation", text: "n₂ = A₂e^(−eVₕ/KT)     (4b)" },
+    { kind: "equation", text: "n₁ = A₁e^(−eVₑ/KT)     (4a)" },
+    { kind: "equation", text: "n₂ = A₂e^(eVₕ/KT)     (4b)" },
     p([
       { kind: "text", text: "where Ve is the height of the electron space potential curve (a of " },
       figure("Fig. 15", "Fig. 15"),
@@ -674,7 +676,7 @@ export const bardeenTransistorArchivalEdition: CuratedSpecificationEdition = {
     ]),
     {
       kind: "equation",
-      text: "C = A₁μ₁e₁e^(eVₑ/KT) + A₂μ₂e₂e^(−e(Eg−Vₑ)/KT)     (5)",
+      text: "C = A₁μ₁e₁e^(−eVₑ/KT) + A₂μ₂e₂e^(e(Eg−Vₑ)/KT)     (5)",
     },
     p(
       text(
