@@ -450,10 +450,11 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
       const ie = p.emitterCurrent ?? 1.5;
       const vcoll = Math.abs(p.collectorBias ?? -40);
       const spacing = p.pointSpacing ?? 50;
-      const transitTimeNs = ((spacing * 1e-4) ** 2 / (2 * 49.2)) * 1e9;
-      const alpha = Number((1.95 * Math.max(0.2, 1 - spacing / 120)).toFixed(2));
-      const powerGainDb = (10 * Math.log10(alpha ** 2 * (vcoll / 1.5))).toFixed(1);
-      const ic = (ie * alpha + vcoll * 0.04).toFixed(2);
+      const semi = FrankenSimEngine.stepBardeenTransistor(ie, p.collectorBias ?? -40, spacing);
+      const transitTimeNs = semi.clockPeriodNs;
+      const alpha = semi.currentGainAlpha;
+      const powerGainDb = (10 * Math.log10(Math.max(1e-6, alpha ** 2 * (vcoll / 1.5)))).toFixed(1);
+      const ic = (ie * alpha).toFixed(2);
 
       return [
         {
@@ -599,30 +600,33 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
     computeMetrics: (p) => {
       const v = p.anodeVoltage ?? 2200;
       const rfWatts = p.rfPowerSetting ?? 800;
-      const eField = (30 + (v / 3000) * 25).toFixed(1);
-      const heatRate = ((rfWatts / 800) * 14.2).toFixed(1);
+      const rf = FrankenSimEngine.stepSpencerMicrowave(
+        v / 1000,
+        p.magneticFieldGauss ?? 1450,
+        rfWatts,
+      );
 
       return [
         {
           label: "Resonant Frequency",
-          value: "2,450",
+          value: rf.microwaveFreqMhz.toLocaleString(),
           unit: "MHz",
           badgeColor: "cyan",
           progressPct: 80,
         },
         {
-          label: "Electric Field (E)",
-          value: eField,
-          unit: "kV/m",
-          badgeColor: "amber",
-          progressPct: (Number(eField) / 60) * 100,
+          label: "Hull Cutoff",
+          value: rf.hullCutoffGauss.toString(),
+          unit: "G",
+          badgeColor: rf.isOscillating ? "emerald" : "rose",
+          progressPct: Math.min(100, (rf.hullCutoffGauss / 2200) * 100),
         },
         {
-          label: "Volumetric Heating",
-          value: heatRate,
-          unit: "W/cm³",
-          badgeColor: "emerald",
-          progressPct: (Number(heatRate) / 25) * 100,
+          label: "Dielectric Loss",
+          value: rf.dielectricLossWattsPerDm3.toString(),
+          unit: "W/dm³",
+          badgeColor: rf.isOscillating ? "emerald" : "amber",
+          progressPct: Math.min(100, (rf.dielectricLossWattsPerDm3 / 2200) * 100),
         },
         {
           label: "RF Output Power",
@@ -890,9 +894,8 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
     computeMetrics: (p) => {
       const v = p.sparkVoltage ?? 28;
       const h = p.aerialHeight ?? 88;
-      const freqKhz = Math.round(3e8 / (4 * h) / 1000);
-      const sparkEnergy = (0.5 * 12e-9 * (v * 1000) ** 2).toFixed(2);
-      const rangeKm = Math.round(Math.sqrt(h * v * 0.8));
+      const radio = FrankenSimEngine.stepMarconiRadio(h, p.sparkGapMm ?? 10, v);
+      const freqKhz = Math.round(radio.resonantFreqMhz * 1000);
 
       return [
         {
@@ -903,25 +906,25 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
           progressPct: (freqKhz / 2500) * 100,
         },
         {
-          label: "Spark Energy Packet",
-          value: sparkEnergy,
-          unit: "J",
+          label: "Peak RF Power",
+          value: radio.peakRfPowerKw.toString(),
+          unit: "kW",
           badgeColor: "amber",
-          progressPct: (Number(sparkEnergy) / 15) * 100,
+          progressPct: Math.min(100, (radio.peakRfPowerKw / 80) * 100),
         },
         {
           label: "Radiation Resistance",
-          value: "36.5",
+          value: radio.radiationResistanceOhms.toFixed(1),
           unit: "Ω",
           badgeColor: "emerald",
           progressPct: 75,
         },
         {
           label: "Estimated Range",
-          value: rangeKm.toString(),
-          unit: "km",
+          value: radio.maxRangeMiles.toString(),
+          unit: "mi",
           badgeColor: "indigo",
-          progressPct: (rangeKm / 80) * 100,
+          progressPct: Math.min(100, (radio.maxRangeMiles / 200) * 100),
         },
       ];
     },
@@ -1313,11 +1316,11 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
       },
     ],
     computeMetrics: (p) => {
-      const ch = p.channels ?? 88;
       const hops = p.hopRate ?? 4.0;
-      const rfBwMhz = (ch * 0.1).toFixed(1);
-      const procGainDb = (10 * Math.log10((Number(rfBwMhz) * 1000) / 10)).toFixed(1);
-      const antiJamDb = (Number(procGainDb) - 3.0).toFixed(1);
+      const fh = FrankenSimEngine.stepLamarrFrequencyHopping(p.channels ?? 88, hops);
+      const rfBwMhz = fh.spreadSpectrumBandwidthMhz.toFixed(1);
+      const procGainDb = fh.processingGainDb.toFixed(1);
+      const antiJamDb = fh.antiJammingMarginDb.toFixed(1);
 
       return [
         {
@@ -1892,14 +1895,14 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
       },
     ],
     computeMetrics: (p) => {
-      const pMpa = p.chamberPressure ?? 85;
-      const cockDeg = p.cockingAngle ?? 45;
-      const rInnerMm = 4.5;
-      const tWallMm = 3.8;
-      const hoopStressMpa = ((pMpa * rInnerMm) / tWallMm).toFixed(1);
-      const indexAngleDeg = ((cockDeg / 45) * 72).toFixed(1);
-      const isLocked = cockDeg >= 44;
-      const muzzleVelocityMps = Math.round(180 + Math.sqrt(pMpa) * 13.5);
+      const colt = FrankenSimEngine.stepColtRevolver({
+        chamberPressureMpa: p.chamberPressure ?? 85,
+        cockingAngleDeg: p.cockingAngle ?? 45,
+      });
+      const hoopStressMpa = colt.hoopStressMpa.toFixed(1);
+      const indexAngleDeg = colt.indexAngleDeg.toFixed(1);
+      const isLocked = colt.isLocked;
+      const muzzleVelocityMps = colt.muzzleVelocityMps;
 
       return [
         {
@@ -2142,28 +2145,28 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
       },
     ],
     computeMetrics: (p) => {
-      const rpm = p.firingRate ?? 600;
-      const water = p.waterLevel ?? 4.0;
-      const _stroke = p.recoilStroke ?? 19;
-      const recoilVel = ((0.014 * 740) / 3.2).toFixed(2);
-      const recoilMom = (3.2 * Number(recoilVel)).toFixed(2);
-      const barrelTemp = water > 0.5 ? 100 : Math.min(450, Math.round(100 + (rpm / 600) * 280));
-      const boilRate = water > 0.5 ? (((rpm / 60) * 45 * 0.28) / 2.26).toFixed(1) : "0.0";
+      const maxim = FrankenSimEngine.stepMaximMachineGun({
+        firingRateRpm: p.firingRate ?? 600,
+        waterJacketLiters: p.waterLevel ?? 4.0,
+        recoilStrokeMm: p.recoilStroke ?? 19,
+      });
+      const barrelTemp = maxim.barrelTempC;
+      const boilRate = maxim.waterEvapRateGs.toFixed(1);
 
       return [
         {
-          label: "Recoil Velocity",
-          value: `${recoilVel} m/s`,
-          unit: "v_rec",
+          label: "Toggle Unlock",
+          value: `${maxim.toggleUnlockForceN}`,
+          unit: "N",
           badgeColor: "emerald",
-          progressPct: (Number(recoilVel) / 5) * 100,
+          progressPct: (maxim.toggleUnlockForceN / 280) * 100,
         },
         {
           label: "Recoil Momentum",
-          value: `${recoilMom} N·s`,
+          value: `${maxim.recoilMomentumNs} N·s`,
           unit: "p_rec",
           badgeColor: "cyan",
-          progressPct: (Number(recoilMom) / 15) * 100,
+          progressPct: (maxim.recoilMomentumNs / 15) * 100,
         },
         {
           label: "Barrel Temperature",
@@ -2177,7 +2180,7 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
           value: `${boilRate} g/s`,
           unit: "dm/dt",
           badgeColor: "purple",
-          progressPct: (Number(boilRate) / 20) * 100,
+          progressPct: (Number(boilRate) / 80) * 100,
         },
       ];
     },
@@ -2552,16 +2555,14 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
       },
     ],
     computeMetrics: (p) => {
-      const r = p.compRatio ?? 18;
-      const pBlast = p.blastAirPressure ?? 65;
-      const rc = p.cutoffRatio ?? 1.6;
-      const _rpm = p.engineRpm ?? 150;
-      const tCompC = Math.round(300 * r ** 0.4 - 273);
-      const pComp = (1.0 * r ** 1.4).toFixed(1);
-      const idealEff = ((1 - (1 / r ** 0.4) * ((rc ** 1.4 - 1) / (1.4 * (rc - 1)))) * 100).toFixed(
-        1,
-      );
-      const brakeEff = (Number(idealEff) * 0.68).toFixed(1);
+      const diesel = FrankenSimEngine.stepDieselEngine({
+        compressionRatio: p.compRatio ?? 18,
+        blastAirPressureBar: p.blastAirPressure ?? 65,
+        cutoffRatio: p.cutoffRatio ?? 1.6,
+      });
+      const tCompC = diesel.tCompressionC;
+      const pComp = diesel.pCompBar.toFixed(1);
+      const brakeEff = diesel.brakeEfficiencyPct.toFixed(1);
 
       return [
         {
@@ -2587,10 +2588,10 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
         },
         {
           label: "Auto-Ignition State",
-          value: tCompC > 210 && pBlast > Number(pComp) ? "SELF-IGNITING" : "NO IGNITION",
+          value: diesel.isAutoIgnition ? "SELF-IGNITING" : "NO IGNITION",
           unit: "state",
-          badgeColor: tCompC > 210 && pBlast > Number(pComp) ? "emerald" : "rose",
-          progressPct: tCompC > 210 ? 100 : 0,
+          badgeColor: diesel.isAutoIgnition ? "emerald" : "rose",
+          progressPct: diesel.isAutoIgnition ? 100 : 0,
         },
       ];
     },
@@ -2976,13 +2977,15 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
       },
     ],
     computeMetrics: (p) => {
-      const pipePsi = p.trainPipePressure ?? 70;
-      const mass = p.carMass ?? 35;
-      const cylPsi = Math.max(0, Math.min(55, Math.round((70 - pipePsi) * 1.1)));
-      const pistonThrustKn = ((cylPsi * 78.5 * 5 * 4.44822) / 1000).toFixed(1);
-      const isEmergency = pipePsi < 10;
-      const isService = pipePsi < 60 && !isEmergency;
-      const stopDistM = cylPsi > 10 ? Math.round((500 * (mass / 35)) / (cylPsi / 50)) : 1200;
+      const wh = FrankenSimEngine.stepWestinghouseAirBrake({
+        trainPipePressurePsi: p.trainPipePressure ?? 70,
+        carMassTonnes: p.carMass ?? 35,
+      });
+      const cylPsi = wh.brakeCylinderPressurePsi;
+      const pistonThrustKn = wh.shoeClampingForceKn.toFixed(1);
+      const isEmergency = wh.valveState === "EMERGENCY";
+      const isService = wh.valveState === "SERVICE";
+      const stopDistM = wh.stoppingDistanceM;
 
       return [
         {

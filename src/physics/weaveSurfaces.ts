@@ -337,6 +337,49 @@ export function materialProbe(
       note: `Breakdown margin ${ic.breakdownMarginV} V.`,
     };
   }
+  if (patentId.includes("maxim") || patentId.includes("319596")) {
+    const maxim = FrankenSimEngine.stepMaximMachineGun({
+      firingRateRpm: params.firingRate ?? params.fireRateRpm ?? 600,
+      waterJacketLiters: params.waterLevel ?? 4,
+      recoilStrokeMm: params.recoilStroke ?? 19,
+    });
+    return {
+      part: calloutLabel,
+      material: "Water-jacketed short-recoil toggle lock",
+      qty: "F_toggle",
+      value: maxim.toggleUnlockForceN.toString(),
+      unit: "N",
+      note: `Barrel ${maxim.barrelTempC} °C. Evap ${maxim.waterEvapRateGs} g/s.`,
+    };
+  }
+  if (patentId.includes("westinghouse") || patentId.includes("124404")) {
+    const wh = FrankenSimEngine.stepWestinghouseAirBrake({
+      trainPipePressurePsi: params.trainPipePressure ?? params.brakePressurePsi ?? 70,
+      carMassTonnes: params.carMass ?? 35,
+    });
+    return {
+      part: calloutLabel,
+      material: "Triple valve + 10-inch foundation cylinder",
+      qty: "F_shoe",
+      value: wh.shoeClampingForceKn.toString(),
+      unit: "kN",
+      note: `${wh.valveState} at ${wh.brakeCylinderPressurePsi} psi cyl.`,
+    };
+  }
+  if (patentId.includes("lamarr") || patentId.includes("2292387")) {
+    const fh = FrankenSimEngine.stepLamarrFrequencyHopping(
+      params.channels ?? 88,
+      params.hopRate ?? 4,
+    );
+    return {
+      part: calloutLabel,
+      material: "88-key player-piano roll + slotted RF",
+      qty: "G_p",
+      value: fh.processingGainDb.toFixed(1),
+      unit: "dB",
+      note: `${fh.spreadSpectrumBandwidthMhz.toFixed(1)} MHz hop set. Margin ${fh.antiJammingMarginDb} dB.`,
+    };
+  }
   if (patentId.includes("bell") || patentId.includes("174465")) {
     const bell = stepBellTelephone({
       voiceAmplitude: params.voiceAmplitude,
@@ -987,6 +1030,28 @@ export function intervalGhosts(patentId: string, params: Record<string, number>)
     });
     return [{ label: "W", min: 0.2, max: 3, live: ic.depletionWidthUm, unit: "µm" }];
   }
+  if (patentId.includes("maxim") || patentId.includes("319596")) {
+    const maxim = FrankenSimEngine.stepMaximMachineGun({
+      firingRateRpm: params.firingRate ?? params.fireRateRpm ?? 600,
+      waterJacketLiters: params.waterLevel ?? 4,
+      recoilStrokeMm: params.recoilStroke ?? 19,
+    });
+    return [{ label: "T_b", min: 80, max: 450, live: maxim.barrelTempC, unit: "°C" }];
+  }
+  if (patentId.includes("westinghouse") || patentId.includes("124404")) {
+    const wh = FrankenSimEngine.stepWestinghouseAirBrake({
+      trainPipePressurePsi: params.trainPipePressure ?? params.brakePressurePsi ?? 70,
+      carMassTonnes: params.carMass ?? 35,
+    });
+    return [{ label: "Stop", min: 50, max: 1200, live: wh.stoppingDistanceM, unit: "m" }];
+  }
+  if (patentId.includes("lamarr") || patentId.includes("2292387")) {
+    const fh = FrankenSimEngine.stepLamarrFrequencyHopping(
+      params.channels ?? 88,
+      params.hopRate ?? 4,
+    );
+    return [{ label: "G_p", min: 10, max: 35, live: fh.processingGainDb, unit: "dB" }];
+  }
   if (patentId.includes("sholes") || patentId.includes("79265")) {
     const sholes = stepSholesTypewriter(params.typingSpeedWpm ?? 45, 0);
     return [{ label: "Strike", min: 1, max: 10, live: sholes.cps, unit: "s⁻¹" }];
@@ -1273,6 +1338,46 @@ export function fidelityField(
       reference: "30",
       residual: (ic.breakdownMarginV - 30).toFixed(1),
       unit: "V",
+    };
+  }
+  if (patentId.includes("maxim") || patentId.includes("319596")) {
+    const maxim = FrankenSimEngine.stepMaximMachineGun({
+      firingRateRpm: params.firingRate ?? params.fireRateRpm ?? 600,
+      waterJacketLiters: params.waterLevel ?? 4,
+      recoilStrokeMm: params.recoilStroke ?? 19,
+    });
+    return {
+      part: "Jacket boil vs 1884 Maxim water-cooled gun",
+      model: maxim.barrelTempC.toString(),
+      reference: "100",
+      residual: (maxim.barrelTempC - 100).toString(),
+      unit: "°C",
+    };
+  }
+  if (patentId.includes("westinghouse") || patentId.includes("124404")) {
+    const wh = FrankenSimEngine.stepWestinghouseAirBrake({
+      trainPipePressurePsi: params.trainPipePressure ?? params.brakePressurePsi ?? 70,
+      carMassTonnes: params.carMass ?? 35,
+    });
+    return {
+      part: "Train-pipe charge vs 70 psi running",
+      model: wh.trainPipePressurePsi.toString(),
+      reference: "70",
+      residual: (wh.trainPipePressurePsi - 70).toString(),
+      unit: "psi",
+    };
+  }
+  if (patentId.includes("lamarr") || patentId.includes("2292387")) {
+    const fh = FrankenSimEngine.stepLamarrFrequencyHopping(
+      params.channels ?? 88,
+      params.hopRate ?? 4,
+    );
+    return {
+      part: "Hop set vs 88-key piano roll",
+      model: fh.channelsCount.toString(),
+      reference: "88",
+      residual: (fh.channelsCount - 88).toString(),
+      unit: "keys",
     };
   }
   return null;
@@ -1572,6 +1677,36 @@ export function datedScenarios(patentId: string): DatedScenario[] {
         date: "1959-07-30",
         name: "Fairchild planar process",
         writes: { reverseBias: 5, oxideThickness: 0.5 },
+      },
+    ];
+  }
+  if (patentId.includes("maxim") || patentId.includes("319596")) {
+    return [
+      {
+        id: "hatton-garden-1884",
+        date: "1884",
+        name: "Hatton Garden water-jacket trial",
+        writes: { firingRate: 600, waterLevel: 4, recoilStroke: 19 },
+      },
+    ];
+  }
+  if (patentId.includes("westinghouse") || patentId.includes("124404")) {
+    return [
+      {
+        id: "steubenville-1869",
+        date: "1869",
+        name: "Steubenville automatic stop",
+        writes: { trainPipePressure: 20, carMass: 35 },
+      },
+    ];
+  }
+  if (patentId.includes("lamarr") || patentId.includes("2292387")) {
+    return [
+      {
+        id: "filing-1941-06-10",
+        date: "1941-06-10",
+        name: "Secret Communication System filing",
+        writes: { channels: 88, hopRate: 4, isJammingActive: 1 },
       },
     ];
   }
