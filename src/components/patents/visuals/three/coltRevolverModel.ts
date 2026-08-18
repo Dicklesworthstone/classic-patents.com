@@ -27,6 +27,7 @@ export interface ColtRevolverModel {
   sparkPoints: THREE.Points;
   lockworkCutawayGroup: THREE.Group;
   textures: THREE.Texture[];
+  dispose: () => void;
 }
 
 /**
@@ -682,6 +683,22 @@ export function buildColtRevolverModel(): ColtRevolverModel {
 
   rootGroup.add(blastGroup);
 
+  const dispose = () => {
+    for (const tex of textures) {
+      tex.dispose();
+    }
+    rootGroup.traverse((child) => {
+      if (child instanceof THREE.Mesh || child instanceof THREE.Points) {
+        child.geometry.dispose();
+        if (Array.isArray(child.material)) {
+          for (const m of child.material) m.dispose();
+        } else if (child.material) {
+          child.material.dispose();
+        }
+      }
+    });
+  };
+
   return {
     group: rootGroup,
     cylinderGroup,
@@ -695,5 +712,6 @@ export function buildColtRevolverModel(): ColtRevolverModel {
     sparkPoints,
     lockworkCutawayGroup,
     textures,
+    dispose,
   };
 }
