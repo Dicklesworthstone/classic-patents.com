@@ -7,19 +7,14 @@ import { ensureFlyerWasm, flyerKernelSource } from "@/physics/flyerWasm";
 import { TickScheduler } from "@/physics/tickScheduler";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { identityAeroBody, stepWrightAeroBody } from "@/physics/wrightAeroBody";
-import {
-  coupledRudderDeg,
-  readWrightControls,
-  stepWrightFlyerSi,
-  WRIGHT_PATENT_ID,
-} from "@/physics/wrightKernel";
+import { readWrightControls, stepWrightFlyerSi, WRIGHT_PATENT_ID } from "@/physics/wrightKernel";
 import { createGlowPointTexture, createThreeStudioScene } from "./ThreeStudioScene";
 import { useLiveSimParams } from "./useLiveSimParams";
 import { buildWrightFlyerAirframe, FLYER_DIM } from "./wrightFlyerAirframe";
 
 export function WrightFlyer3D() {
   const containerRef = useRef<HTMLDivElement>(null);
-  const { params, updateParam } = usePatentPhysics(WRIGHT_PATENT_ID);
+  const { params } = usePatentPhysics(WRIGHT_PATENT_ID);
   const controls = readWrightControls(params);
   const si = stepWrightFlyerSi(controls);
   const {
@@ -29,9 +24,6 @@ export function WrightFlyer3D() {
     airspeedMph,
     coupled: isCoupled,
   } = controls;
-
-  const airspeedFps = airspeedMph * 1.46667;
-  const dynamicPressure = 0.5 * 0.0023769 * airspeedFps ** 2;
 
   const [showUiOverlay, setShowUiOverlay] = useState<boolean>(true);
   const [showStreamlines, setShowStreamlines] = useState<boolean>(true);
@@ -54,13 +46,6 @@ export function WrightFlyer3D() {
     coupled: isCoupled ? 1 : 0,
     cl: baseCl,
   });
-
-  const applyWarp = (val: number) => {
-    updateParam("wingWarp", val);
-    if (isCoupled) {
-      updateParam("rudder", coupledRudderDeg(val));
-    }
-  };
 
   useEffect(() => {
     ensureFlyerWasm().then(() => {
@@ -415,112 +400,7 @@ export function WrightFlyer3D() {
         </div>
       </div>
 
-      {/* Parameter Sliders Panel */}
-      <div className="p-4 sm:p-5 bg-parchment-100/80 dark:bg-ink-900/90 border-t border-parchment-300 dark:border-ink-800 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 text-xs font-sans">
-        {/* Wing Warping (Roll & Adverse Yaw) */}
-        <div className="space-y-1.5 p-3 rounded-xl bg-parchment-50/60 dark:bg-ink-950/60 border border-parchment-200 dark:border-ink-800/80">
-          <div className="flex justify-between font-medium text-ink-900 dark:text-parchment-100">
-            <span>Wing Warping (Roll):</span>
-            <span className="font-mono font-bold text-amber-700 dark:text-amber-400">
-              {wingWarpDeg > 0 ? `+${wingWarpDeg}°` : `${wingWarpDeg}°`}
-            </span>
-          </div>
-          <input
-            type="range"
-            aria-label="Wing Warping (Roll)"
-            min="-15"
-            max="15"
-            step="1"
-            value={wingWarpDeg}
-            onChange={(e) => applyWarp(Number(e.target.value))}
-            className="w-full accent-amber-600 dark:accent-amber-400 cursor-pointer"
-          />
-          <span className="text-[10px] text-ink-500 dark:text-ink-400 block">
-            Helical torsion along lateral spars
-          </span>
-        </div>
-
-        {/* Vertical Rudder (Yaw Compensation) */}
-        <div className="space-y-1.5 p-3 rounded-xl bg-parchment-50/60 dark:bg-ink-950/60 border border-parchment-200 dark:border-ink-800/80">
-          <div className="flex justify-between font-medium text-ink-900 dark:text-parchment-100">
-            <span>Rudder Angle (Yaw):</span>
-            <span className="font-mono font-bold text-sky-700 dark:text-sky-400">
-              {rudderYawDeg > 0 ? `+${rudderYawDeg}°` : `${rudderYawDeg}°`}
-            </span>
-          </div>
-          <input
-            type="range"
-            aria-label="Rudder Angle (Yaw)"
-            min="-25"
-            max="25"
-            step="1"
-            value={rudderYawDeg}
-            disabled={isCoupled}
-            onChange={(e) => updateParam("rudder", Number(e.target.value))}
-            className={`w-full accent-sky-600 dark:accent-sky-400 ${isCoupled ? "opacity-50 cursor-not-allowed" : "cursor-pointer"}`}
-          />
-          <label className="flex items-center gap-1.5 text-[10px] text-ink-600 dark:text-ink-400 font-mono">
-            <input
-              type="checkbox"
-              checked={isCoupled}
-              onChange={(e) => {
-                updateParam("coupled", e.target.checked ? 1 : 0);
-                if (e.target.checked) {
-                  updateParam("rudder", coupledRudderDeg(wingWarpDeg));
-                }
-              }}
-              className="rounded accent-emerald-600"
-            />
-            Claim 1 hip-cradle coupling
-          </label>
-        </div>
-
-        {/* Forward Canard (Pitch Angle) */}
-        <div className="space-y-1.5 p-3 rounded-xl bg-parchment-50/60 dark:bg-ink-950/60 border border-parchment-200 dark:border-ink-800/80">
-          <div className="flex justify-between font-medium text-ink-900 dark:text-parchment-100">
-            <span>Canard Pitch (Elevator):</span>
-            <span className="font-mono font-bold text-emerald-700 dark:text-emerald-400">
-              {elevatorPitchDeg > 0 ? `+${elevatorPitchDeg}°` : `${elevatorPitchDeg}°`}
-            </span>
-          </div>
-          <input
-            type="range"
-            aria-label="Canard Elevator (Pitch)"
-            min="-15"
-            max="15"
-            step="1"
-            value={elevatorPitchDeg}
-            onChange={(e) => updateParam("elevator", Number(e.target.value))}
-            className="w-full accent-emerald-600 dark:accent-emerald-400 cursor-pointer"
-          />
-          <span className="text-[10px] text-ink-500 dark:text-ink-400 block">
-            Controls angle of attack &amp; stall margin
-          </span>
-        </div>
-
-        {/* Airspeed (Dynamic Pressure) */}
-        <div className="space-y-1.5 p-3 rounded-xl bg-parchment-50/60 dark:bg-ink-950/60 border border-parchment-200 dark:border-ink-800/80">
-          <div className="flex justify-between font-medium text-ink-900 dark:text-parchment-100">
-            <span>Relative Airspeed:</span>
-            <span className="font-mono font-bold text-amber-800 dark:text-amber-400">
-              {airspeedMph} mph ({airspeedFps.toFixed(1)} ft/s)
-            </span>
-          </div>
-          <input
-            type="range"
-            aria-label="Relative Airspeed"
-            min="15"
-            max="45"
-            step="1"
-            value={airspeedMph}
-            onChange={(e) => updateParam("airspeed", Number(e.target.value))}
-            className="w-full accent-amber-600 dark:accent-amber-400 cursor-pointer"
-          />
-          <span className="text-[10px] text-ink-500 dark:text-ink-400 block">
-            Dynamic pressure q = ½ρV² = {dynamicPressure.toFixed(2)} psf
-          </span>
-        </div>
-      </div>
+      {/* The unified PhysicsTelemetryBadge now handles parameter controls globally. */}
     </div>
   );
 }

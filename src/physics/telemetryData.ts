@@ -35,6 +35,11 @@ export interface PatentPhysicsMetadata {
   controls: PhysicsControl[];
   computeMetrics: (params: Record<string, number>) => PhysicsMetric[];
   pedagogicalInsight: string;
+  enforceConstraints?: (
+    params: Record<string, number>,
+    key: string,
+    value: number,
+  ) => Record<string, number>;
 }
 
 export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
@@ -127,6 +132,15 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
     },
     pedagogicalInsight:
       "Helical wing warping creates differential lift across wing tips; the mechanical coupling to the vertical rudder counteracts adverse yaw induced by differential vortex drag.",
+    enforceConstraints: (params, key, value) => {
+      const updated = { ...params, [key]: value };
+      if (updated.coupled === 1) {
+        if (key === "wingWarp" || key === "coupled") {
+          updated.rudder = Number((updated.wingWarp * 0.5).toFixed(1)); // Simple linear coupling equivalent
+        }
+      }
+      return updated;
+    },
   },
   "us-381968-tesla-motor": {
     domain: "electromagnetics_flux",

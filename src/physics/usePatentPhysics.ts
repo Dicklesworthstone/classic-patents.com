@@ -51,6 +51,7 @@ export function getPatentPhysicsParams(patentId: string): Record<string, number>
 }
 
 export function setPatentPhysicsParam(patentId: string, paramId: string, value: number) {
+  const meta = PATENT_PHYSICS_REGISTRY[patentId];
   const current = getPatentPhysicsParams(patentId);
   const from = current[paramId] ?? value;
   const now =
@@ -66,7 +67,12 @@ export function setPatentPhysicsParam(patentId: string, paramId: string, value: 
     ratePerSec: (value - from) / dtSec,
     atMs: now,
   });
-  const updated = { ...current, [paramId]: value };
+
+  let updated = { ...current, [paramId]: value };
+  if (meta?.enforceConstraints) {
+    updated = meta.enforceConstraints(updated, paramId, value);
+  }
+
   stateMap.set(patentId, updated);
   const listeners = listenersMap.get(patentId);
   if (listeners) {

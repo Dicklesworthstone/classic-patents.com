@@ -1,15 +1,12 @@
 "use client";
 
-import { Activity, Camera, Flame, Sparkles, Volume2, VolumeX, Zap } from "lucide-react";
+import { Activity, Camera, Flame, Sparkles, Volume2, VolumeX } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import * as THREE from "three";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { soundEngine } from "@/utils/soundEngine";
-import {
-  createGlowPointTexture,
-  createThreeStudioScene,
-  type StudioContext,
-} from "./ThreeStudioScene";
+import { buildGatlingGunModel } from "./gatlingGunModel";
+import { createThreeStudioScene, type StudioContext } from "./ThreeStudioScene";
 import { useLiveSimParams } from "./useLiveSimParams";
 import { usePatentAudio } from "./usePatentAudio";
 
@@ -48,10 +45,10 @@ export function GatlingGun3D() {
 
   // Ballistic Simulation Parameters
   const { params, updateParam } = usePatentPhysics("us-36836-gatling-gun");
-  const [showUiOverlay, setShowUiOverlay] = useState<boolean>(true);
+  const [_showUiOverlay, _setShowUiOverlay] = useState<boolean>(true);
   const crankRpm = params.crankRpm ?? 33;
   const roundsPerMinute = crankRpm * 6; // 6 barrels fire per revolution
-  const [showMuzzleFlash, setShowMuzzleFlash] = useState<boolean>(true);
+  const [showMuzzleFlash, _setShowMuzzleFlash] = useState<boolean>(true);
   const [activeCamera, setActiveCamera] = useState<CameraPreset>("iso");
   const { isAudioMuted, toggleSound: toggleEngine } = usePatentAudio();
 
@@ -73,23 +70,23 @@ export function GatlingGun3D() {
 
     switch (preset) {
       case "iso":
-        camera.position.set(10.0, 6.0, 11.0);
+        camera.position.set(9.0, 5.0, 10.0);
         controls.target.set(0, 0, 0);
         break;
       case "barrels":
-        camera.position.set(3.5, 0.8, 4.2);
-        controls.target.set(2.0, 0.5, 0);
+        camera.position.set(4.5, 1.2, 3.8);
+        controls.target.set(2.4, 0.4, 0);
         break;
       case "breech_cam":
-        camera.position.set(-2.2, 1.8, 3.5);
-        controls.target.set(-1.0, 0.5, 0);
+        camera.position.set(-2.0, 1.8, 3.2);
+        controls.target.set(-0.8, 0.4, 0);
         break;
       case "hopper":
-        camera.position.set(-1.0, 4.2, 2.5);
-        controls.target.set(-1.0, 1.8, 0);
+        camera.position.set(-0.8, 3.8, 2.2);
+        controls.target.set(-0.6, 1.4, 0);
         break;
       case "top":
-        camera.position.set(0, 12.0, 0.1);
+        camera.position.set(0, 11.0, 0.1);
         controls.target.set(0, 0, 0);
         break;
     }
@@ -98,25 +95,14 @@ export function GatlingGun3D() {
 
   const applyScenario = (s: ScenarioPreset) => {
     updateParam("crankRpm", s.crankRpm);
-    if (!isAudioMuted) {
-      soundEngine.playSwitchClick();
-    }
   };
 
-  const toggleSound = () => {
-    toggleEngine(() => {
-      soundEngine.playSwitchClick();
-    });
-  };
-
-  // biome-ignore lint/correctness/useExhaustiveDependencies: Three.js studio lifecycle
   useEffect(() => {
-    const container = containerRef.current;
-    if (!container) return;
+    if (!containerRef.current) return;
 
     const studio = createThreeStudioScene({
-      container,
-      cameraPos: [10.0, 6.0, 11.0],
+      container: containerRef.current,
+      cameraPos: [9.0, 5.0, 10.0],
       targetPos: [0, 0, 0],
     });
 
@@ -124,139 +110,14 @@ export function GatlingGun3D() {
     cameraRef.current = camera;
     controlsRef.current = controls;
 
-    // Materials
-    const bluedSteelMat = new THREE.MeshStandardMaterial({
-      color: 0x1e293b,
-      roughness: 0.25,
-      metalness: 0.92,
-    });
-
-    const brassReceiverMat = new THREE.MeshStandardMaterial({
-      color: 0xd97706,
-      roughness: 0.22,
-      metalness: 0.9,
-    });
-
-    const woodCarriageMat = new THREE.MeshStandardMaterial({
-      color: 0x5c381e,
-      roughness: 0.7,
-      metalness: 0.05,
-    });
-
-    const ironFittingsMat = new THREE.MeshStandardMaterial({
-      color: 0x334155,
-      roughness: 0.45,
-      metalness: 0.85,
-    });
-
-    const flashGlowTex = createGlowPointTexture();
-
-    const rootGroup = new THREE.Group();
-    scene.add(rootGroup);
-
-    // 1. Oak Field Carriage with Spoked Wheels & Brass Elevation Screws
-    const carriageGroup = new THREE.Group();
-    rootGroup.add(carriageGroup);
-
-    // Carriage Trail Legs
-    const trailLeg = new THREE.Mesh(new THREE.BoxGeometry(0.35, 0.35, 6.0), woodCarriageMat);
-    trailLeg.position.set(0, -1.2, -2.4);
-    trailLeg.rotation.x = Math.PI / 10;
-    carriageGroup.add(trailLeg);
-
-    // Wheels
-    [-2.2, 2.2].forEach((wx) => {
-      const wheel = new THREE.Mesh(new THREE.TorusGeometry(1.6, 0.12, 12, 32), woodCarriageMat);
-      wheel.position.set(wx, -0.6, 0);
-      wheel.rotation.y = Math.PI / 2;
-      wheel.castShadow = true;
-      carriageGroup.add(wheel);
-    });
-
-    // 2. Revolving Barrel Cluster (6 Barrels + Central Shaft) (Claim 1)
-    const barrelClusterGroup = new THREE.Group();
-    barrelClusterGroup.position.set(0, 0.6, 0);
-    rootGroup.add(barrelClusterGroup);
-
-    // Central Steel Axle
-    const axle = new THREE.Mesh(new THREE.CylinderGeometry(0.12, 0.12, 7.5, 16), bluedSteelMat);
-    axle.rotation.z = Math.PI / 2;
-    barrelClusterGroup.add(axle);
-
-    // Front & Rear Barrel Alignment Plates (Spider Discs)
-    [0.8, 3.8].forEach((px) => {
-      const plate = new THREE.Mesh(
-        new THREE.CylinderGeometry(0.85, 0.85, 0.15, 24),
-        brassReceiverMat,
-      );
-      plate.rotation.z = Math.PI / 2;
-      plate.position.x = px;
-      barrelClusterGroup.add(plate);
-    });
-
-    // 6 Rifled Steel Barrels
-    for (let b = 0; b < 6; b++) {
-      const angle = (b * Math.PI) / 3;
-      const barrel = new THREE.Mesh(new THREE.CylinderGeometry(0.14, 0.14, 4.8, 16), bluedSteelMat);
-      barrel.rotation.z = Math.PI / 2;
-      barrel.position.set(2.4, Math.cos(angle) * 0.62, Math.sin(angle) * 0.62);
-      barrel.castShadow = true;
-      barrelClusterGroup.add(barrel);
-    }
-
-    // 3. Brass Breech Casing & Cam Track Housing (Claim 2)
-    const breechHousing = new THREE.Mesh(
-      new THREE.CylinderGeometry(0.95, 0.95, 2.8, 24),
-      brassReceiverMat,
-    );
-    breechHousing.rotation.z = Math.PI / 2;
-    breechHousing.position.set(-1.4, 0.6, 0);
-    breechHousing.castShadow = true;
-    rootGroup.add(breechHousing);
-
-    // 4. Gravity Feed Ammunition Hopper Chute
-    const hopper = new THREE.Mesh(new THREE.BoxGeometry(0.5, 1.8, 0.3), brassReceiverMat);
-    hopper.position.set(-1.2, 2.0, 0);
-    hopper.castShadow = true;
-    rootGroup.add(hopper);
-
-    // 5. Hand Crank Handle
-    const crankGroup = new THREE.Group();
-    crankGroup.position.set(-2.8, 0.6, 0.9);
-    rootGroup.add(crankGroup);
-
-    const crankArm = new THREE.Mesh(new THREE.BoxGeometry(0.12, 1.2, 0.12), ironFittingsMat);
-    crankArm.position.y = 0.5;
-    crankGroup.add(crankArm);
-
-    const crankKnob = new THREE.Mesh(
-      new THREE.CylinderGeometry(0.12, 0.12, 0.6, 12),
-      woodCarriageMat,
-    );
-    crankKnob.rotation.x = Math.PI / 2;
-    crankKnob.position.set(0, 1.0, 0.3);
-    crankGroup.add(crankKnob);
-
-    // 6. Muzzle Flash & Spark Particles
-    const flashMat = new THREE.PointsMaterial({
-      size: 0.9,
-      map: flashGlowTex,
-      transparent: true,
-      opacity: 0,
-      blending: THREE.AdditiveBlending,
-      color: 0xffaa22,
-    });
-    const flashGeo = new THREE.BufferGeometry();
-    flashGeo.setAttribute(
-      "position",
-      new THREE.BufferAttribute(new Float32Array([4.9, 1.2, 0]), 3),
-    );
-    const flashPoints = new THREE.Points(flashGeo, flashMat);
-    rootGroup.add(flashPoints);
+    // Load High-Fidelity Gatling Gun Model
+    const model = buildGatlingGunModel();
+    scene.add(model.rootGroup);
 
     // Animation Loop
     let reqId: number;
     const clock = new THREE.Clock();
+    let lastFireTime = 0;
 
     const animate = () => {
       reqId = requestAnimationFrame(animate);
@@ -264,13 +125,33 @@ export function GatlingGun3D() {
       const p = live.current;
 
       const omegaRadPerSec = (p.crankRpm * 2 * Math.PI) / 60;
-      barrelClusterGroup.rotation.x += omegaRadPerSec * delta;
-      crankGroup.rotation.z += omegaRadPerSec * delta;
+      model.barrelClusterGroup.rotation.x += omegaRadPerSec * delta;
+      model.crankGroup.rotation.x += omegaRadPerSec * delta;
 
-      // Pulse Muzzle Flash at top barrel position
-      const isFiring =
-        p.showMuzzleFlash && Math.sin(clock.getElapsedTime() * p.roundsPerMinute * 0.5) > 0.6;
-      flashMat.opacity = isFiring ? 0.95 : 0;
+      // Kinematic Cam Track Bolt Reciprocation
+      const currentAngle = model.barrelClusterGroup.rotation.x;
+      model.bolts.forEach((bolt, idx) => {
+        const barrelAngle = currentAngle + (idx * Math.PI) / 3;
+        // Cam profile: forward stroke between 0 and PI, extraction stroke between PI and 2PI
+        const camDisplacement = Math.cos(barrelAngle) * 0.38;
+        bolt.position.x = -0.6 + camDisplacement;
+      });
+
+      // Muzzle Flash & Acoustic Pulse at 12 o'clock firing position
+      const fireIntervalSec = 60 / (p.crankRpm * 6);
+      const now = clock.getElapsedTime();
+      if (now - lastFireTime > fireIntervalSec) {
+        lastFireTime = now;
+        if (p.showMuzzleFlash) {
+          (model.muzzleFlashPoints.material as THREE.PointsMaterial).opacity = 0.95;
+        }
+        if (!p.isAudioMuted && typeof window !== "undefined") {
+          soundEngine.playSparks();
+        }
+      } else {
+        const mat = model.muzzleFlashPoints.material as THREE.PointsMaterial;
+        mat.opacity = Math.max(0, mat.opacity - delta * 8.0);
+      }
 
       renderer.render(scene, camera);
     };
@@ -279,9 +160,10 @@ export function GatlingGun3D() {
 
     return () => {
       cancelAnimationFrame(reqId);
+      model.dispose();
       studio.cleanup();
     };
-  }, []);
+  }, [live.current]);
 
   return (
     <div className="relative w-full h-[620px] bg-parchment-900 rounded-2xl overflow-hidden border border-parchment-700 shadow-2xl flex flex-col">
@@ -299,126 +181,99 @@ export function GatlingGun3D() {
           </span>
         </div>
 
-        {/* Camera Toolbar */}
+        {/* Camera Views */}
         <div className="flex items-center gap-1.5 bg-parchment-950/80 backdrop-blur-md p-1.5 rounded-xl border border-parchment-700/60 shadow-lg pointer-events-auto">
           <Camera className="w-3.5 h-3.5 text-parchment-400 ml-1.5 mr-1" />
           {(
             [
-              ["iso", "Isometric"],
-              ["barrels", "Barrels"],
-              ["breech_cam", "Breech Cam"],
-              ["hopper", "Hopper"],
-              ["top", "Top"],
-            ] as [CameraPreset, string][]
-          ).map(([preset, label]) => (
+              { id: "iso", label: "Overview" },
+              { id: "barrels", label: "6 Barrels" },
+              { id: "breech_cam", label: "Cam Breech" },
+              { id: "hopper", label: "Hopper Feed" },
+              { id: "top", label: "Top View" },
+            ] as const
+          ).map((c) => (
             <button
-              key={preset}
+              key={c.id}
               type="button"
-              onClick={() => applyCameraPreset(preset)}
-              className={`px-2.5 py-1 text-xs font-sans rounded-lg transition-colors ${
-                activeCamera === preset
-                  ? "bg-amber-600 text-white font-semibold shadow-sm"
+              onClick={() => applyCameraPreset(c.id)}
+              className={`px-2.5 py-1 text-xs font-mono rounded-lg transition-all ${
+                activeCamera === c.id
+                  ? "bg-amber-600 text-white font-bold shadow-xs"
                   : "text-parchment-300 hover:text-white hover:bg-parchment-800/60"
               }`}
             >
-              {label}
+              {c.label}
+            </button>
+          ))}
+        </div>
+      </div>
+
+      {/* Bottom Control Bar */}
+      <div className="absolute bottom-4 left-4 right-4 flex flex-col md:flex-row items-stretch md:items-center justify-between gap-3 pointer-events-none z-10">
+        {/* Scenario Presets */}
+        <div className="flex flex-wrap items-center gap-1.5 bg-parchment-950/85 backdrop-blur-md p-2 rounded-2xl border border-parchment-700/60 shadow-xl pointer-events-auto">
+          <Sparkles className="w-4 h-4 text-amber-400 ml-1.5 mr-1" />
+          {SCENARIOS.map((s) => (
+            <button
+              key={s.id}
+              type="button"
+              onClick={() => applyScenario(s)}
+              className={`px-3 py-1.5 text-xs font-mono rounded-xl transition-all ${
+                crankRpm === s.crankRpm
+                  ? "bg-amber-600 text-white font-bold shadow-xs"
+                  : "text-parchment-200 hover:text-white hover:bg-parchment-800/60"
+              }`}
+            >
+              {s.name}
             </button>
           ))}
         </div>
 
-        {/* Toggles */}
-        <div className="flex items-center gap-1.5 bg-parchment-950/80 backdrop-blur-md p-1.5 rounded-xl border border-parchment-700/60 shadow-lg pointer-events-auto">
+        {/* Live Controls & Telemetry */}
+        <div className="flex items-center gap-3 bg-parchment-950/85 backdrop-blur-md px-4 py-2 rounded-2xl border border-parchment-700/60 shadow-xl pointer-events-auto">
+          <div className="flex items-center gap-2">
+            <span className="text-xs font-mono text-parchment-300">Crank Speed:</span>
+            <input
+              type="range"
+              min="5"
+              max="100"
+              step="1"
+              value={crankRpm}
+              onChange={(e) => updateParam("crankRpm", Number.parseFloat(e.target.value))}
+              className="w-24 h-1.5 bg-parchment-800 rounded-lg appearance-none cursor-pointer accent-amber-500"
+            />
+            <span className="text-xs font-mono font-bold text-amber-400 w-12 text-right">
+              {crankRpm} RPM
+            </span>
+          </div>
+
+          <div className="h-4 w-px bg-parchment-700" />
+
+          <div className="flex items-center gap-1.5">
+            <Flame className="w-3.5 h-3.5 text-orange-400" />
+            <span className="text-xs font-mono text-parchment-300">Fire Rate:</span>
+            <span className="text-xs font-mono font-bold text-orange-400">
+              {roundsPerMinute} rds/min
+            </span>
+          </div>
+
+          <div className="h-4 w-px bg-parchment-700" />
+
           <button
             type="button"
-            onClick={() => setShowMuzzleFlash(!showMuzzleFlash)}
-            title="Toggle Muzzle Flash"
-            className={`p-1.5 rounded-lg text-xs transition-colors ${
-              showMuzzleFlash
-                ? "bg-amber-600/30 text-amber-300 border border-amber-500/40"
-                : "text-parchment-400 hover:text-white"
-            }`}
+            onClick={toggleEngine}
+            className="p-1.5 rounded-lg text-parchment-300 hover:text-white hover:bg-parchment-800/60 transition-colors"
+            title={isAudioMuted ? "Unmute Firing Acoustics" : "Mute Firing Acoustics"}
           >
-            <Flame className="w-4 h-4 text-orange-400" />
-          </button>
-          <button
-            type="button"
-            onClick={toggleSound}
-            title={isAudioMuted ? "Unmute Sound" : "Mute Sound"}
-            className="p-1.5 rounded-lg text-xs text-parchment-400 hover:text-white hover:bg-parchment-800 transition-colors"
-          >
-            {isAudioMuted ? <VolumeX className="w-4 h-4" /> : <Volume2 className="w-4 h-4" />}
-          </button>
-          <button
-            type="button"
-            onClick={() => setShowUiOverlay(!showUiOverlay)}
-            className="p-1.5 rounded-lg text-xs text-parchment-400 hover:text-white hover:bg-parchment-800 transition-colors"
-          >
-            <Zap className="w-4 h-4 text-amber-400" />
+            {isAudioMuted ? (
+              <VolumeX className="w-4 h-4 text-parchment-400" />
+            ) : (
+              <Volume2 className="w-4 h-4 text-amber-400" />
+            )}
           </button>
         </div>
       </div>
-
-      {/* Bottom Telemetry Bar & Controls */}
-      {showUiOverlay && (
-        <div className="absolute bottom-4 left-4 right-4 bg-parchment-950/90 backdrop-blur-md rounded-2xl border border-parchment-700/70 p-4 shadow-2xl z-10 flex flex-col gap-3">
-          <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5 pb-2 border-b border-parchment-800/80 text-xs font-mono">
-            <div className="bg-parchment-900/80 px-3 py-1.5 rounded-lg border border-parchment-700/50 flex flex-col">
-              <span className="text-[10px] text-parchment-400 uppercase">Hand Crank Speed</span>
-              <span className="font-bold text-amber-400">{crankRpm} RPM</span>
-            </div>
-            <div className="bg-parchment-900/80 px-3 py-1.5 rounded-lg border border-parchment-700/50 flex flex-col">
-              <span className="text-[10px] text-parchment-400 uppercase">Rate of Fire</span>
-              <span className="font-bold text-red-400">{roundsPerMinute} Rounds/Min</span>
-            </div>
-            <div className="bg-parchment-900/80 px-3 py-1.5 rounded-lg border border-parchment-700/50 flex flex-col">
-              <span className="text-[10px] text-parchment-400 uppercase">Muzzle Velocity</span>
-              <span className="font-bold text-blue-400">1,380 ft/s (420 m/s)</span>
-            </div>
-            <div className="bg-parchment-900/80 px-3 py-1.5 rounded-lg border border-parchment-700/50 flex flex-col">
-              <span className="text-[10px] text-parchment-400 uppercase">Active Mechanism</span>
-              <span className="font-bold text-amber-300">6-Bolt Rotary Cam Cycle</span>
-            </div>
-          </div>
-
-          <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
-            <div className="flex items-center gap-2 w-full sm:w-auto">
-              <span className="text-xs font-mono text-parchment-400 flex items-center gap-1 shrink-0">
-                <Sparkles className="w-3.5 h-3.5 text-amber-500" /> Presets:
-              </span>
-              <div className="flex gap-1.5 overflow-x-auto pb-1">
-                {SCENARIOS.map((sc) => (
-                  <button
-                    key={sc.id}
-                    type="button"
-                    onClick={() => applyScenario(sc)}
-                    className="px-2.5 py-1 text-xs font-sans rounded-lg bg-parchment-800/80 hover:bg-parchment-700 text-parchment-200 hover:text-white border border-parchment-600/50 transition-colors whitespace-nowrap"
-                  >
-                    {sc.name}
-                  </button>
-                ))}
-              </div>
-            </div>
-
-            <div className="flex items-center gap-3 w-full sm:w-72 shrink-0">
-              <span className="text-xs font-sans text-parchment-300 shrink-0 font-medium">
-                Crank RPM:
-              </span>
-              <input
-                type="range"
-                min="10"
-                max="80"
-                step="2"
-                value={crankRpm}
-                onChange={(e) => updateParam("crankRpm", Number(e.target.value))}
-                className="w-full accent-amber-500 cursor-pointer"
-              />
-              <span className="text-xs font-mono text-amber-400 w-12 text-right font-bold">
-                {crankRpm}
-              </span>
-            </div>
-          </div>
-        </div>
-      )}
     </div>
   );
 }

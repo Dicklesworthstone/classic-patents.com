@@ -26,9 +26,33 @@ type HelloFn = (
   steps: number,
 ) => string;
 
+type AeroFn = (
+  ixx: number,
+  iyy: number,
+  izz: number,
+  qw: number,
+  qx: number,
+  qy: number,
+  qz: number,
+  wx: number,
+  wy: number,
+  wz: number,
+  tx: number,
+  ty: number,
+  tz: number,
+  dtS: number,
+  steps: number,
+) => string;
+
 let helloFn: HelloFn | null = null;
+let aeroFn: AeroFn | null = null;
 let loadAttempted = false;
 let source: FlyerKernelSource = "unloaded";
+let aeroSource: "wasm" | "ts-lie-fallback" = "ts-lie-fallback";
+
+export function flyerAeroSource(): "wasm" | "ts-lie-fallback" {
+  return aeroSource;
+}
 
 export function flyerKernelSource(): FlyerKernelSource {
   return source;
@@ -53,6 +77,7 @@ export async function ensureFlyerWasm(): Promise<FlyerKernelSource> {
       const mod = (await import(/* webpackIgnore: true */ blobUrl)) as {
         default: (module_or_path?: unknown) => Promise<unknown>;
         flyer_hello_spin: HelloFn;
+        flyer_aero_step?: AeroFn;
       };
       await mod.default({ module_or_path: wasmUrl });
       if (typeof mod.flyer_hello_spin !== "function") {
@@ -60,6 +85,10 @@ export async function ensureFlyerWasm(): Promise<FlyerKernelSource> {
       }
       helloFn = mod.flyer_hello_spin;
       source = "wasm";
+      if (typeof mod.flyer_aero_step === "function") {
+        aeroFn = mod.flyer_aero_step;
+        aeroSource = "wasm";
+      }
     } finally {
       URL.revokeObjectURL(blobUrl);
     }
@@ -120,6 +149,36 @@ export function identityFlyerState(): HelloState {
 /** CG2 step with body torque. hello_spin is torque-free; this is the aero kernel. */
 export function stepFlyerAero(state: HelloState, torque: Vec3, dtS: number): HelloState {
   const dt = Math.min(1, Math.max(1e-9, dtS));
+  if (aeroFn) {
+    const raw = aeroFn(
+      FLYER_INERTIA[0],
+      FLYER_INERTIA[1],
+      FLYER_INERTIA[2],
+      state.quaternion[0],
+      state.quaternion[1],
+      state.quaternion[2],
+      state.quaternion[3],
+      state.omega[0],
+      state.omega[1],
+      state.omega[2],
+      torque[0],
+      torque[1],
+      torque[2],
+      dt,
+      1,
+    );
+    try {
+      const parsed = JSON.parse(raw) as { ok?: { quaternion: number[]; omega_body: number[] } };
+      if (parsed.ok?.quaternion && parsed.ok.omega_body) {
+        return {
+          quaternion: parsed.ok.quaternion as unknown as Quat,
+          omega: parsed.ok.omega_body as unknown as Vec3,
+        };
+      }
+    } catch {
+      /* fall through to TS */
+    }
+  }
   const next = rigidBodyStep(state.quaternion, state.omega, FLYER_INERTIA, dt, torque);
   return { quaternion: next.q, omega: next.omega };
 }
