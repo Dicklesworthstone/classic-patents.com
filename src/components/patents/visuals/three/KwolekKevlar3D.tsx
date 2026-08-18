@@ -17,6 +17,7 @@ import { FrankenSimEngine } from "@/physics/engine";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { soundEngine } from "@/utils/soundEngine";
 import { createThreeStudioScene, type StudioContext } from "./ThreeStudioScene";
+import { buildKwolekKevlarModel } from "./kwolekKevlarModel";
 import { useLiveSimParams } from "./useLiveSimParams";
 import { usePatentAudio } from "./usePatentAudio";
 
@@ -114,142 +115,9 @@ export function KwolekKevlar3D() {
     cameraRef.current = camera;
     controlsRef.current = controls;
 
-    // --- PBR MATERIALS ---
-    const carbonRingMat = new THREE.MeshStandardMaterial({
-      color: 0xf59e0b,
-      roughness: 0.25,
-      metalness: 0.85,
-    });
+    const model = buildKwolekKevlarModel();
+    scene.add(model.root);
 
-    const amideNitrogenMat = new THREE.MeshStandardMaterial({
-      color: 0x3b82f6,
-      roughness: 0.2,
-      metalness: 0.6,
-    });
-
-    const carbonylOxygenMat = new THREE.MeshStandardMaterial({
-      color: 0xef4444,
-      roughness: 0.2,
-      metalness: 0.6,
-    });
-
-    const spinneretSteelMat = new THREE.MeshStandardMaterial({
-      color: 0x475569,
-      roughness: 0.15,
-      metalness: 0.95,
-    });
-
-    // --- 3D POLYMER CHAIN ASSEMBLY ---
-    const polymerGroup = new THREE.Group();
-    scene.add(polymerGroup);
-
-    // Stainless Steel Spinneret Extrusion Pack
-    const spinneretPack = new THREE.Group();
-    spinneretPack.position.set(-6.0, 0, 0);
-
-    const nozzleBody = new THREE.Mesh(
-      new THREE.CylinderGeometry(2.4, 2.8, 1.4, 32),
-      spinneretSteelMat,
-    );
-    nozzleBody.rotation.z = Math.PI / 2;
-    spinneretPack.add(nozzleBody);
-
-    for (let o = -2; o <= 2; o++) {
-      const hole = new THREE.Mesh(
-        new THREE.CylinderGeometry(0.1, 0.1, 0.2, 12),
-        new THREE.MeshStandardMaterial({ color: 0x0f172a, roughness: 0.8 }),
-      );
-      hole.rotation.z = Math.PI / 2;
-      hole.position.set(0.7, o * 0.9, 0);
-      spinneretPack.add(hole);
-    }
-    polymerGroup.add(spinneretPack);
-
-    // Parallel Rigid-Rod Polymer Chains (5 Extended PPTA Liquid-Crystal Chains)
-    const chains: { group: THREE.Group; baseY: number }[] = [];
-    const numChains = 5;
-
-    for (let c = 0; c < numChains; c++) {
-      const chainG = new THREE.Group();
-      const yPos = (c - (numChains - 1) / 2) * 1.35;
-      chainG.position.set(0, yPos, 0);
-
-      // Repeat Units along Chain (6 Monomer units)
-      for (let u = 0; u < 6; u++) {
-        const xPos = -4.2 + u * 1.55;
-
-        // Benzene Ring (Hexagonal Carbon Ring)
-        const ringG = new THREE.Group();
-        ringG.position.x = xPos;
-        for (let r = 0; r < 6; r++) {
-          const angle = (r * Math.PI) / 3;
-          const nextAngle = ((r + 1) * Math.PI) / 3;
-          const ax = Math.cos(angle) * 0.38;
-          const ay = Math.sin(angle) * 0.38;
-          const bx = Math.cos(nextAngle) * 0.38;
-          const by = Math.sin(nextAngle) * 0.38;
-
-          const atom = new THREE.Mesh(new THREE.SphereGeometry(0.11, 12, 12), carbonRingMat);
-          atom.position.set(ax, ay, 0);
-          ringG.add(atom);
-
-          const bondStick = new THREE.Mesh(
-            new THREE.CylinderGeometry(0.03, 0.03, 0.38, 8),
-            new THREE.MeshStandardMaterial({ color: 0x475569, metalness: 0.8 }),
-          );
-          bondStick.position.set((ax + bx) / 2, (ay + by) / 2, 0);
-          bondStick.rotation.z = angle + Math.PI / 6;
-          ringG.add(bondStick);
-        }
-        chainG.add(ringG);
-
-        // Amide Group (-NH-CO-)
-        const nAtom = new THREE.Mesh(new THREE.SphereGeometry(0.14, 12, 12), amideNitrogenMat);
-        nAtom.position.set(xPos + 0.55, 0.22, 0);
-        chainG.add(nAtom);
-
-        const oAtom = new THREE.Mesh(new THREE.SphereGeometry(0.14, 12, 12), carbonylOxygenMat);
-        oAtom.position.set(xPos + 0.95, -0.22, 0);
-        chainG.add(oAtom);
-      }
-
-      chainG.castShadow = true;
-      polymerGroup.add(chainG);
-      chains.push({ group: chainG, baseY: yPos });
-    }
-
-    // Hydrogen Bonds (-NH···O=C-) Transverse Struts
-    const hBondsGroup = new THREE.Group();
-    for (let c = 0; c < numChains - 1; c++) {
-      const yMid = (c - (numChains - 1) / 2) * 1.35 + 0.675;
-      for (let u = 0; u < 5; u++) {
-        const xPos = -3.6 + u * 1.55;
-        const hBond = new THREE.Mesh(
-          new THREE.CylinderGeometry(0.035, 0.035, 1.15, 8),
-          new THREE.MeshStandardMaterial({
-            color: 0x38bdf8,
-            roughness: 0.3,
-            metalness: 0.5,
-            transparent: true,
-            opacity: 0.75,
-          }),
-        );
-        hBond.position.set(xPos, yMid, 0);
-        hBondsGroup.add(hBond);
-      }
-    }
-    polymerGroup.add(hBondsGroup);
-
-    // Ballistic Bullet Projectile (9mm Parabellum test)
-    const bullet = new THREE.Mesh(
-      new THREE.ConeGeometry(0.45, 1.4, 24),
-      new THREE.MeshStandardMaterial({ color: 0xb45309, metalness: 0.9, roughness: 0.2 }),
-    );
-    bullet.rotation.z = Math.PI / 2;
-    bullet.position.set(6.5, 0, 0);
-    scene.add(bullet);
-
-    // --- RENDER LOOP & REAL-TIME LIQUID CRYSTAL DYNAMICS ---
     let reqId: number;
     let renderedSteps = 0;
 
@@ -263,8 +131,8 @@ export function KwolekKevlar3D() {
       const shearAlignment = Math.min(1.0, p.shearRate / 600);
       const thermalDisorder = Math.max(0, (p.temperatureCelsius - 60) / 60) * 0.3;
 
-      for (let i = 0; i < numChains; i++) {
-        const item = chains[i];
+      for (let i = 0; i < model.chains.length; i++) {
+        const item = model.chains[i];
         if (p.isNematicLCP) {
           item.group.rotation.z =
             Math.sin(elapsed * 2.0 + i) * (0.05 * (1 - shearAlignment) + thermalDisorder);
@@ -275,25 +143,22 @@ export function KwolekKevlar3D() {
         }
       }
 
-      hBondsGroup.visible = p.showHydrogenBonds && p.isNematicLCP;
+      model.hBondsGroup.visible = p.showHydrogenBonds && p.isNematicLCP;
 
-      // Nematic, well-sheared PPTA stops the projectile; isotropic dope does not.
-      // E = min(145, 60 + 20·draw). Draw 2 → 100 GPa (fails); draw ≥ 3.5 → 130 GPa (holds).
       const stopsProjectile = p.isNematicLCP && p.elasticModulusGpa >= 130;
 
       if (p.isImpactTesting) {
-        // Studio scale: 25 m/s → 1 unit/s, so 450 m/s matches the old 18 unit/s fly-in.
-        bullet.position.x -= delta * ((p.impactVelocityMps ?? 450) / 25);
-        if (stopsProjectile && bullet.position.x < 1.0) {
-          bullet.position.x = 1.0;
-          polymerGroup.position.x = -Math.sin(elapsed * 30.0) * 0.25;
-        } else if (!stopsProjectile && bullet.position.x < -7.0) {
-          bullet.position.x = -7.0;
-          polymerGroup.position.x = 0;
+        model.bulletMesh.position.x -= delta * ((p.impactVelocityMps ?? 450) / 25);
+        if (stopsProjectile && model.bulletMesh.position.x < 1.0) {
+          model.bulletMesh.position.x = 1.0;
+          model.polymerGroup.position.x = -Math.sin(elapsed * 30.0) * 0.25;
+        } else if (!stopsProjectile && model.bulletMesh.position.x < -7.0) {
+          model.bulletMesh.position.x = -7.0;
+          model.polymerGroup.position.x = 0;
         }
       } else {
-        bullet.position.x = 6.5;
-        polymerGroup.position.x = 0;
+        model.bulletMesh.position.x = 6.5;
+        model.polymerGroup.position.x = 0;
       }
 
       controls.update();
@@ -304,6 +169,7 @@ export function KwolekKevlar3D() {
 
     return () => {
       cancelAnimationFrame(reqId);
+      model.dispose();
       studio.dispose();
     };
   }, [live]);
