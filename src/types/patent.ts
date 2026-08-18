@@ -91,6 +91,13 @@ export interface OriginalTextAsset {
    * are intentionally not treated as complete by the reader.
    */
   kind?: OriginalTextAssetKind;
+  /**
+   * Required for a reviewed transcription. They make the human, date, and
+   * exact source PDF accountable rather than inferring review from a filename.
+   */
+  reviewedBy?: string;
+  reviewedAt?: string;
+  sourcePdfSha256?: string;
 }
 
 export interface Patent {

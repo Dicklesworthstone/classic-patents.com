@@ -7,8 +7,8 @@ import { usePatentPhysics } from "@/physics/usePatentPhysics";
 export function FarnsworthTVSim() {
   const { params, updateParam } = usePatentPhysics("us-1773980-farnsworth-tv");
   const anodeVoltage = params.anodeVoltage ?? 1500;
-  const coilCurrent = params.coilCurrent ?? 0.42;
-  const [scanLines, setScanLines] = useState<number>(60); // 30 to 240 lines
+  const _coilCurrent = params.coilCurrent ?? 0.42;
+  const scanLines = params.scanLines ?? 60;
   const [mode, setMode] = useState<"electronic-farnsworth" | "mechanical-nipkow">(
     "electronic-farnsworth",
   );
@@ -47,6 +47,18 @@ export function FarnsworthTVSim() {
         <div className="flex items-center gap-2">
           <button
             type="button"
+            onClick={() => {
+              const newMode =
+                mode === "electronic-farnsworth" ? "mechanical-nipkow" : "electronic-farnsworth";
+              setMode(newMode);
+              updateParam("scanLines", newMode === "mechanical-nipkow" ? 30 : 120);
+            }}
+            className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-mono font-medium bg-parchment-200 dark:bg-ink-800 text-ink-700 dark:text-ink-300 hover:bg-parchment-300 dark:hover:bg-ink-700 transition-colors"
+          >
+            {mode === "electronic-farnsworth" ? "Compare to Nipkow Disc" : "Return to Farnsworth"}
+          </button>
+          <button
+            type="button"
             onClick={() => setIsScanning(!isScanning)}
             className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-mono font-medium bg-emerald-600 text-white hover:bg-emerald-700 transition-colors"
           >
@@ -55,9 +67,9 @@ export function FarnsworthTVSim() {
         </div>
       </div>
 
-      <div className="my-5 grid grid-cols-1 lg:grid-cols-12 gap-6">
+      <div className="my-5">
         {/* CRT / Image Screen */}
-        <div className="lg:col-span-7 flex flex-col items-center justify-center rounded-xl bg-ink-950 p-6 border border-parchment-200 dark:border-ink-800 relative min-h-[300px]">
+        <div className="flex flex-col items-center justify-center rounded-xl bg-ink-950 p-6 border border-parchment-200 dark:border-ink-800 relative min-h-[300px]">
           <div className="w-64 h-56 rounded-2xl bg-zinc-900 border-4 border-zinc-700 shadow-2xl relative overflow-hidden flex items-center justify-center">
             {/* CRT Phosphor Scan Lines Effect */}
             <div
@@ -104,110 +116,6 @@ export function FarnsworthTVSim() {
                 Mechanical Nipkow Disc: Severe 30-line Blur & Frame Shake
               </span>
             )}
-          </div>
-        </div>
-
-        {/* Controls */}
-        <div className="lg:col-span-5 space-y-4">
-          <div className="bg-parchment-100/60 dark:bg-ink-900/60 p-4 rounded-xl border border-parchment-200 dark:border-ink-800 space-y-3">
-            <div>
-              <span className="text-xs font-mono block text-ink-700 dark:text-ink-300 font-semibold mb-1">
-                Dissection Technology
-              </span>
-              <div className="grid grid-cols-2 gap-2 text-xs font-mono">
-                <button
-                  type="button"
-                  onClick={() => {
-                    setMode("electronic-farnsworth");
-                    setScanLines(120);
-                  }}
-                  className={`p-2 rounded border text-left transition-colors ${
-                    mode === "electronic-farnsworth"
-                      ? "bg-emerald-700 text-white border-emerald-800 font-bold"
-                      : "bg-parchment-200 dark:bg-ink-800 text-ink-700 dark:text-ink-300 border-parchment-300"
-                  }`}
-                >
-                  <div>Farnsworth All-Electronic</div>
-                  <div className="text-[10px] opacity-80">Magnetic sweep yoke</div>
-                </button>
-                <button
-                  type="button"
-                  onClick={() => {
-                    setMode("mechanical-nipkow");
-                    setScanLines(30);
-                  }}
-                  className={`p-2 rounded border text-left transition-colors ${
-                    mode === "mechanical-nipkow"
-                      ? "bg-amber-700 text-white border-amber-800 font-bold"
-                      : "bg-parchment-200 dark:bg-ink-800 text-ink-700 dark:text-ink-300 border-parchment-300"
-                  }`}
-                >
-                  <div>Nipkow Mechanical</div>
-                  <div className="text-[10px] opacity-80">Spinning hole disc</div>
-                </button>
-              </div>
-            </div>
-
-            <div>
-              <div className="flex justify-between text-xs font-mono mb-1">
-                <span className="font-semibold text-ink-800 dark:text-parchment-200">
-                  Scan Line Resolution
-                </span>
-                <span className="text-emerald-600 dark:text-emerald-400 font-bold">
-                  {scanLines} lines/frame
-                </span>
-              </div>
-              <input
-                type="range"
-                aria-label="Scan Line Resolution"
-                min="20"
-                max="240"
-                step="10"
-                value={scanLines}
-                onChange={(e) => setScanLines(Number(e.target.value))}
-                className="w-full accent-emerald-600 cursor-pointer h-2 bg-parchment-300 dark:bg-ink-700 rounded-lg"
-              />
-            </div>
-
-            <div>
-              <div className="flex justify-between text-xs font-mono mb-1">
-                <span className="font-semibold text-ink-800 dark:text-parchment-200">
-                  Anode Accelerating Potential
-                </span>
-                <span className="text-cyan-600 dark:text-cyan-400 font-bold">{anodeVoltage} V</span>
-              </div>
-              <input
-                type="range"
-                aria-label="Anode Accelerating Potential"
-                min="600"
-                max="2500"
-                step="50"
-                value={anodeVoltage}
-                onChange={(e) => updateParam("anodeVoltage", Number(e.target.value))}
-                className="w-full accent-cyan-600 cursor-pointer h-2 bg-parchment-300 dark:bg-ink-700 rounded-lg"
-              />
-            </div>
-
-            <div>
-              <div className="flex justify-between text-xs font-mono mb-1">
-                <span className="font-semibold text-ink-800 dark:text-parchment-200">
-                  Deflection Coil Current
-                </span>
-                <span className="text-purple-600 dark:text-purple-400 font-bold">
-                  {coilCurrent.toFixed(2)} A
-                </span>
-              </div>
-              <input
-                type="range"
-                aria-label="Deflection Coil Current"
-                min="0.1"
-                max="0.8"
-                step="0.02"
-                value={coilCurrent}
-                onChange={(e) => updateParam("coilCurrent", Number(e.target.value))}
-                className="w-full accent-purple-600 cursor-pointer h-2 bg-parchment-300 dark:bg-ink-700 rounded-lg"
-              />
-            </div>
           </div>
         </div>
       </div>

@@ -16,7 +16,7 @@ function formatTranscript(content: string): string {
   let lines = text.split("\n");
   let newLines: string[] = [];
   let currentPara = "";
-  
+
   for (let i = 0; i < lines.length; i++) {
     let line = lines[i].trim();
     if (!line) {
@@ -26,14 +26,18 @@ function formatTranscript(content: string): string {
       }
       continue;
     }
-    
+
     // Table detection heuristic: if a line has multiple multiple-spaces, it's probably tabular data
     if (line.match(/\s{4,}.*\s{4,}/)) {
       if (currentPara) {
         newLines.push(currentPara);
         currentPara = "";
       }
-      newLines.push("<pre class=\"font-mono text-sm whitespace-pre overflow-x-auto p-4 bg-ink-900/10 dark:bg-parchment-100/10 rounded-lg\">" + lines[i] + "</pre>"); // keep original spacing
+      newLines.push(
+        '<pre class="font-mono text-sm whitespace-pre overflow-x-auto p-4 bg-ink-900/10 dark:bg-parchment-100/10 rounded-lg">' +
+          lines[i] +
+          "</pre>",
+      ); // keep original spacing
       continue;
     }
 
@@ -61,9 +65,12 @@ function formatTranscript(content: string): string {
   text = text.replace(/(\s)([0-9]+\.\s+[A-Z])/g, "$1\n\n$2");
 
   // 6. Split excessively long paragraphs
-  const paragraphs = text.split(/\n{2,}/).map(p => p.trim()).filter(Boolean);
+  const paragraphs = text
+    .split(/\n{2,}/)
+    .map((p) => p.trim())
+    .filter(Boolean);
   const balancedParagraphs: string[] = [];
-  
+
   for (const para of paragraphs) {
     if (para.startsWith("<pre")) {
       balancedParagraphs.push(para);
@@ -93,13 +100,13 @@ function formatTranscript(content: string): string {
 
   // 7. Inject Hover Definitions
   let finalText = balancedParagraphs.join("\n\n");
-  
+
   // Sort terms by length descending to avoid partial matches
   const terms = Object.entries(ESOTERIC_PATENT_GLOSSARY).sort((a, b) => b[0].length - a[0].length);
   for (const [termKey, def] of terms) {
     const escapedTerm = termKey.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
     const regex = new RegExp(`\\b(${escapedTerm})\\b`, "gi");
-    
+
     finalText = finalText.replace(regex, (match) => {
       // Don't replace if it's already inside an HTML tag
       return `<dfn title="${def.historicalDefinition} (Modern: ${def.modernEquivalent})" class="cursor-help underline decoration-dotted decoration-amber-600 dark:decoration-amber-400 decoration-2 underline-offset-4 text-ink-950 dark:text-parchment-50 hover:bg-amber-500/10 dark:hover:bg-amber-400/10 rounded px-0.5 transition-colors">${match}</dfn>`;

@@ -1339,8 +1339,8 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
       const hFreq = p.horizontalFreqKhz ?? 15.75;
       const vFreq = p.verticalFreqHz ?? 60;
       const lux = p.lightIntensityLux ?? 500;
-      const scanLinesParam = p.scanLines ?? 60;
-      
+      const _scanLinesParam = p.scanLines ?? 60;
+
       const beamVelocity = (Math.sqrt((2 * 1.6e-19 * v) / 9.1e-31) / 1e6).toFixed(2);
       const deflAngle = (i * 48 * (1500 / v) ** 0.5).toFixed(1);
       const derivedScanLines = Math.round((hFreq * 1000) / vFreq);

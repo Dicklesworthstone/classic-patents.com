@@ -81,9 +81,13 @@ const plainEnglishSchema = z.object({
 const originalTextAssetSchema = z.object({
   url: z.string().startsWith("/patents/"),
   pageCount: z.number().int().positive(),
-  kind: z
-    .enum(["reviewed-transcription", "source-pdf-text-layer"])
-    .default("reviewed-transcription"),
+  kind: z.enum(["reviewed-transcription", "source-pdf-text-layer"]).optional(),
+  reviewedBy: z.string().min(1).optional(),
+  reviewedAt: isoDate.optional(),
+  sourcePdfSha256: z
+    .string()
+    .regex(/^[a-f0-9]{64}$/, "expected a SHA-256 hex digest")
+    .optional(),
 });
 
 export const patentSchema: z.ZodType<Patent> = z.object({

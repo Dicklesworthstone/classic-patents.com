@@ -8,6 +8,7 @@ import * as fs from "node:fs";
 import * as path from "node:path";
 import { allPatents, searchPatents } from "../src/data/patents";
 import { patentSchema } from "../src/data/patents/schema";
+import { validateSourcePdfTextLayer } from "../src/data/patents/sourceTextValidation";
 
 function isValidIsoDate(value: string): boolean {
   if (!/^\d{4}-\d{2}-\d{2}$/.test(value)) return false;
@@ -21,9 +22,15 @@ async function main() {
 
   // Architectural Invariant Fail-Safe Gate: Pure Next.js App Router Integrity
   const pagesDir = path.join(process.cwd(), "src", "pages");
-  if (fs.existsSync(pagesDir)) {
+  const legacyPageSourceFiles = fs.existsSync(pagesDir)
+    ? fs
+        .readdirSync(pagesDir, { recursive: true, encoding: "utf8" })
+        .map((entry) => String(entry))
+        .filter((entry) => /\.(?:[cm]?[jt]sx?)$/.test(entry) && !entry.endsWith(".d.ts"))
+    : [];
+  if (legacyPageSourceFiles.length > 0) {
     console.error(
-      `🚨 ARCHITECTURAL VIOLATION: src/pages directory detected! Next.js 15 App Router apps must NOT contain a src/pages directory.`,
+      `🚨 ARCHITECTURAL VIOLATION: legacy Pages Router source detected in src/pages: ${legacyPageSourceFiles.join(", ")}. Next.js 15 App Router apps must NOT contain a src/pages route.`,
     );
     process.exit(1);
   }
@@ -149,12 +156,11 @@ async function main() {
       }
       if (patent.originalTextAsset.kind === "source-pdf-text-layer" && fs.existsSync(assetPath)) {
         const sourceText = fs.readFileSync(assetPath, "utf8");
-        const pageMarkers = sourceText.match(/^--- SOURCE PDF PAGE \d+ OF \d+ ---$/gm) ?? [];
-        if (pageMarkers.length !== patent.originalTextAsset.pageCount) {
-          fail(
-            `source-PDF text layer has ${pageMarkers.length} page marker(s), expected ${patent.originalTextAsset.pageCount}.`,
-          );
-        }
+        const validation = validateSourcePdfTextLayer(
+          sourceText,
+          patent.originalTextAsset.pageCount,
+        );
+        if (!validation.valid) fail(validation.error ?? "source-PDF text layer is invalid.");
       }
     } else {
       sourceTextGaps.push(patent.id);
