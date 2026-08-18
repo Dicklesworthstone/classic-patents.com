@@ -7,6 +7,17 @@ import {
   ROOT_QA_WITHHELD_ARCHIVAL_EDITION_IDS,
 } from "./publicationApproval";
 
+const EXPECTED_ROOT_QA_WITHHOLDS = [
+  "us-313224-mergenthaler-linotype",
+  "us-395781-hollerith-tabulating",
+  "us-586193-marconi-radio",
+  "us-2292387-lamarr-frequency-hopping",
+  "us-2708656-fermi-reactor",
+  "us-3541541-engelbart-mouse",
+  "us-3671542-kwolek-kevlar",
+  "us-3858232-boyle-smith-ccd",
+] as const;
+
 describe("Wright archival parallel reading", () => {
   test("gives every manually prepared source paragraph a hand-authored companion", () => {
     const notes = archivalParallelReadingsFor(wrightFlyerPatent.id);
@@ -107,6 +118,8 @@ describe("manual archival parallel-reading registry", () => {
         isArchivalEditionExplicitlyWithheld(patentId),
       ),
     ).toEqual([]);
-    expect(ROOT_QA_WITHHELD_ARCHIVAL_EDITION_IDS.length).toBeGreaterThan(0);
+    expect([...ROOT_QA_WITHHELD_ARCHIVAL_EDITION_IDS].sort()).toEqual(
+      [...EXPECTED_ROOT_QA_WITHHOLDS].sort(),
+    );
   });
 });

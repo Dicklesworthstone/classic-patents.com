@@ -13,7 +13,10 @@ import {
   ARCHIVAL_PARALLEL_READINGS,
   archivalParallelReadingsFor,
 } from "../src/data/editions/parallelReadings";
-import { isArchivalEditionExplicitlyWithheld } from "../src/data/editions/publicationApproval";
+import {
+  isArchivalEditionExplicitlyWithheld,
+  ROOT_QA_WITHHELD_ARCHIVAL_EDITION_IDS,
+} from "../src/data/editions/publicationApproval";
 import { allPatents, searchPatents } from "../src/data/patents";
 import { patentSchema } from "../src/data/patents/schema";
 import {
@@ -23,6 +26,21 @@ import {
 import type { CuratedSpecificationBlock, CuratedSpecificationInlines } from "../src/types/patent";
 
 const MAX_PDF_TEXT_BUFFER_BYTES = 64 * 1024 * 1024;
+
+// Root acceptance has independently rejected these incomplete source faces.
+// Keep this release-side sentinel separate from the editable publication map:
+// a bulk companion-map merge or an accidental empty hold list must fail the
+// verifier instead of turning drafts into visitor-facing "complete" editions.
+const REQUIRED_ROOT_QA_WITHHOLDS = [
+  "us-313224-mergenthaler-linotype",
+  "us-395781-hollerith-tabulating",
+  "us-586193-marconi-radio",
+  "us-2292387-lamarr-frequency-hopping",
+  "us-2708656-fermi-reactor",
+  "us-3541541-engelbart-mouse",
+  "us-3671542-kwolek-kevlar",
+  "us-3858232-boyle-smith-ccd",
+] as const;
 
 function exactSourceTextForPdf(pdfPath: string, expectedPageCount: number): string {
   const extracted = execFileSync("pdftotext", ["-layout", pdfPath, "-"], {
@@ -112,6 +130,15 @@ async function main() {
   let sourceTextLayerCount = 0;
   let manualEditionCount = 0;
   const manualEditionGaps: string[] = [];
+
+  const actualRootQaWithholds = [...ROOT_QA_WITHHELD_ARCHIVAL_EDITION_IDS].sort();
+  const requiredRootQaWithholds = [...REQUIRED_ROOT_QA_WITHHOLDS].sort();
+  if (actualRootQaWithholds.join("\n") !== requiredRootQaWithholds.join("\n")) {
+    console.error(
+      `❌ Root source-edition hold list changed without final-QA reconciliation. Required: ${requiredRootQaWithholds.join(", ")}. Actual: ${actualRootQaWithholds.join(", ") || "(empty)"}.`,
+    );
+    errorCount++;
+  }
 
   for (const patent of allPatents) {
     const prefix = `[${patent.patentNumber} - ${patent.id}]`;
