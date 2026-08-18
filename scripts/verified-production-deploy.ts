@@ -163,9 +163,50 @@ async function assertResponse(url: string, pathName: string, requiredText: strin
   }
 }
 
+function assertProtectedPreviewResponse(
+  deployment: string,
+  pathName: string,
+  requiredText: string,
+) {
+  const marker = "__CLASSIC_PATENTS_HTTP_STATUS__";
+  const response = run(
+    "vercel",
+    [
+      "curl",
+      "--deployment",
+      deployment,
+      pathName,
+      "--",
+      "--silent",
+      "--show-error",
+      "--write-out",
+      `\n${marker}%{http_code}`,
+    ],
+    true,
+    false,
+  ).stdout;
+  const statusIndex = response.lastIndexOf(marker);
+  const status = Number.parseInt(response.slice(statusIndex + marker.length).trim(), 10);
+  const body = response.slice(0, statusIndex);
+  if (statusIndex < 0 || status < 200 || status >= 300 || !body.includes(requiredText)) {
+    throw new Error(
+      `Release check failed for protected preview ${deployment}${pathName}: HTTP ${status || "unknown"}; required content was not present.`,
+    );
+  }
+}
+
 async function assertReleaseRoutes(url: string) {
   await assertResponse(url, WRIGHT_ROUTE, "Complete Source Text");
   await assertResponse(url, WRIGHT_SOURCE_TEXT_ROUTE, "--- SOURCE PDF PAGE 1 OF 10 ---");
+}
+
+function assertProtectedPreviewRoutes(deployment: string) {
+  assertProtectedPreviewResponse(deployment, WRIGHT_ROUTE, "Complete Source Text");
+  assertProtectedPreviewResponse(
+    deployment,
+    WRIGHT_SOURCE_TEXT_ROUTE,
+    "--- SOURCE PDF PAGE 1 OF 10 ---",
+  );
 }
 
 async function acquireDeploymentLock() {
@@ -220,7 +261,7 @@ async function main() {
       true,
     );
     const previewUrl = deploymentUrl(`${deployment.stdout}\n${deployment.stderr}`);
-    await assertReleaseRoutes(previewUrl);
+    assertProtectedPreviewRoutes(previewUrl);
     assertNoConflictingBuilds("Before promotion");
     assertCommitUnchanged(commit, "Before promotion");
     assertCleanTrackedWorkingTree("Before promotion");

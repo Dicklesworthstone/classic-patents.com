@@ -19,6 +19,15 @@ async function main() {
   console.log("=== Classic Patents Data Verification Gate ===");
   console.log(`Checking ${allPatents.length} curated historical patents...\n`);
 
+  // Architectural Invariant Fail-Safe Gate: Pure Next.js App Router Integrity
+  const pagesDir = path.join(process.cwd(), "src", "pages");
+  if (fs.existsSync(pagesDir)) {
+    console.error(
+      `🚨 ARCHITECTURAL VIOLATION: src/pages directory detected! Next.js 15 App Router apps must NOT contain a src/pages directory.`,
+    );
+    process.exit(1);
+  }
+
   let errorCount = 0;
   let completeSourceTextCount = 0;
   const sourceTextGaps: string[] = [];
