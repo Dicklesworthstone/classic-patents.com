@@ -173,6 +173,8 @@ the visitor can see or hear the kernel change the instrument.
 - [x] P5.80 Gramme I and ripple live on the kernel (no V/4.5 3D split). Gatling 1850 J, Colt ½mv², and Goodyear Tg are kernel fields. Engine Colt wraps catalog.
 - [x] P5.81 Maxim muzzle energy is ½mv² from the same 14 g / 740 m/s already in the recoil step (no leftover 3400 J). Parsons blade u/c lives on the kernel; 2D copy is 48 rings not 45. Otto badge/3D show P2 and P3. Gramme/Gatling/Colt/Goodyear/Daimler/Kodak/Linotype leftover HUD constants now read kernel fields.
 - [x] P5.82 Tesla coil f₀ includes the topload slider (15 pF secondary + C_top). Sholes 90° throw and hammer angle share the kernel. Phonograph lead-screw pitch / surface speed / bandwidth live on stepEdisonPhonograph. Morse V/R (12.5 Ω/mi + 150 Ω coil), WPM unit time, and 3D HUD come from stepMorseTelegraph. Kodak 2.5 in format and Edison feeder 0.4 Ω are kernel fields. Tesla P=2 is TESLA_FIELD_POLES.
+- [x] P5.83 Glidden 950 lb Bessemer rating, barb contact stress, and line ft/min live on the kernel. Lincoln 3D draft follows hullDraftFt (weight + bellows), not 5.0 − Δd. Hyatt density / clarity / extrusion rate, Kevlar alignment + fiber UTS (engine wraps catalog), and Wozniak Φ2 duty 100% are kernel fields.
+- [x] P5.84 McCormick ground m/s and cutter Hz come from the printed wheel/gear kinematics. Zeppelin lift kg / payload live on the kernel (no private /9.81). Corliss boiler MPa and expansion ratio replace leftover psi×0.00689 and 100/cutoff; 3D η is kernel thermalEfficiencyPct, not a coal-savings guess. Otis hanging mass (400 kg cab + payload) and Hollerith 40-dial 1890 register bank are kernel fields.
 
 ## Explicitly out of scope
 

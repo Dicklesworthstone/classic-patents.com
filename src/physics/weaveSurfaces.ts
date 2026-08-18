@@ -482,7 +482,7 @@ export function materialProbe(
       qty: "lock",
       value: wire.isLocked ? "held" : "slip",
       unit: "",
-      note: `Sag ${wire.sagCm} cm. Barb holds ${wire.barbSlipThresholdN} N.`,
+      note: `Sag ${wire.sagCm} cm. Barb holds ${wire.barbSlipThresholdN} N. ${wire.tensileStrengthLbs} lb Bessemer · ${wire.productionRateFtPerMin} ft/min.`,
     };
   }
   if (patentId.includes("lincoln") || patentId.includes("6281")) {
@@ -497,7 +497,7 @@ export function materialProbe(
       qty: "Δd",
       value: buoy.draftReductionFt.toFixed(2),
       unit: "ft",
-      note: `${buoy.liftKn} kN lift. Shoal clearance ${buoy.shoalClearanceFt} ft.`,
+      note: `${buoy.liftKn} kN lift. Draft ${buoy.hullDraftFt} ft. Shoal clearance ${buoy.shoalClearanceFt} ft.`,
     };
   }
   if (patentId.includes("einstein") || patentId.includes("1781541")) {
@@ -645,7 +645,7 @@ export function materialProbe(
       value: hyatt.viscosityPaS.toString(),
       unit: "Pa·s",
       note: hyatt.isMelted
-        ? "Charge is plastic — ram can extrude."
+        ? `Charge is plastic — ram can extrude. ρ ${hyatt.consolidationDensityGPerCm3} g/cm³ · ${hyatt.transparencyPct}% clear.`
         : "Below melt — ram just packs powder.",
     };
   }
@@ -739,7 +739,7 @@ export function materialProbe(
       qty: "crank",
       value: reaper.cutterCrankRpm.toString(),
       unit: "rpm",
-      note: "No-slip host kinematic estimate from dimensions printed in US X8277; not a field-capacity measurement.",
+      note: `${reaper.cutterHz} Hz · ${reaper.groundSpeedMps} m/s. No-slip host kinematic estimate from dimensions printed in US X8277; not a field-capacity measurement.`,
     };
   }
   if (patentId.includes("nobel") || patentId.includes("78317")) {
@@ -828,7 +828,7 @@ export function materialProbe(
       qty: "Φ2",
       value: apple.dramWindowNs.toString(),
       unit: "ns",
-      note: `CPU ${apple.cpuClockMhz} MHz · color ${apple.colorSubcarrierMhz} MHz.`,
+      note: `CPU ${apple.cpuClockMhz} MHz · color ${apple.colorSubcarrierMhz} MHz. Φ2 duty ${apple.cpuDutyPct}%.`,
     };
   }
   if (patentId.includes("spencer") || patentId.includes("2495429")) {
@@ -856,7 +856,7 @@ export function materialProbe(
       qty: "E",
       value: k.elasticModulusGpa.toString(),
       unit: "GPa",
-      note: `${k.tensileStressMpa} MPa at ${k.tensileStrainPct}% strain.`,
+      note: `${k.tensileStrengthGpa} GPa fiber · ${k.alignmentPct}% align. ${k.tensileStressMpa} MPa at ${k.tensileStrainPct}% strain.`,
     };
   }
   if (patentId.includes("bardeen") || patentId.includes("2569347")) {

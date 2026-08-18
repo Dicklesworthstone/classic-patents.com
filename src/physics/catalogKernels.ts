@@ -116,10 +116,13 @@ export function stepMcCormickReaper(params: { forwardSpeedMph?: number }) {
   // the ground-wheel axle and a 12-inch pulley on the reel. This is a no-slip
   // kinematic estimate from those printed dimensions, not a field model.
   const groundWheelRpm = (groundSpeedMph * 88) / (Math.PI * 2);
+  const cutterCrankRpm = Number((groundWheelRpm * (30 / 9) * (27 / 9)).toFixed(1));
   return {
     groundWheelRpm: Number(groundWheelRpm.toFixed(1)),
-    cutterCrankRpm: Number((groundWheelRpm * (30 / 9) * (27 / 9)).toFixed(1)),
+    cutterCrankRpm,
     reelRpm: Number((groundWheelRpm * (13 / 12)).toFixed(1)),
+    groundSpeedMps: Number((groundSpeedMph * 0.44704).toFixed(2)),
+    cutterHz: Number((cutterCrankRpm / 60).toFixed(2)),
   };
 }
 
@@ -154,6 +157,8 @@ export function stepCorlissEngine(params: {
   return {
     indicatedHp: Math.round(psi * rpm * 0.25 * 1.8 * mepFactor),
     thermalEfficiencyPct: Number((24.5 + (0.25 - cutoff) * 12).toFixed(1)),
+    boilerMpa: Number((psi * 0.00689476).toFixed(2)),
+    expansionRatio: Number((1 / Math.max(0.05, cutoff)).toFixed(1)),
   };
 }
 
@@ -171,9 +176,13 @@ export function stepGatlingGun(params: { crankRpm?: number; barrelCount?: number
 export function stepHyattCelluloid(params: { steamTempC?: number; hydraulicPressureMpa?: number }) {
   const temp = params.steamTempC ?? 95;
   const press = params.hydraulicPressureMpa ?? 10;
+  const isMelted = temp >= 80 && press >= 6;
   return {
     viscosityPaS: Math.round(1800 * Math.exp(-0.03 * (temp - 70))),
-    isMelted: temp >= 80 && press >= 6,
+    isMelted,
+    consolidationDensityGPerCm3: Number((1.2 + (press / 20) * 0.18).toFixed(2)),
+    transparencyPct: isMelted ? Math.min(95, Math.round(50 + (temp - 80) * 1.2)) : 10,
+    extrusionRateCmPerMin: isMelted ? Number((temp * 0.15).toFixed(1)) : 0,
   };
 }
 
@@ -197,15 +206,24 @@ export function stepGliddenBarbedWire(params: {
   wireTensionN?: number;
   twistsPerFoot?: number;
   animalPushForceN?: number;
+  barbSpacingInches?: number;
 }) {
   const t = params.wireTensionN ?? 650;
   const twists = params.twistsPerFoot ?? 5;
   const push = params.animalPushForceN ?? 120;
+  const spacingIn = params.barbSpacingInches ?? 5.0;
   const barbSlipThresholdN = twists * 95;
+  const contactAreaMm2 = 0.25;
+  const machineRpm = twists * 24;
   return {
     sagCm: Number((2800 / Math.max(100, t)).toFixed(1)),
     barbSlipThresholdN,
     isLocked: barbSlipThresholdN >= push,
+    tensileStrengthLbs: 950,
+    contactAreaMm2,
+    contactStressMpa: Number((push / contactAreaMm2).toFixed(0)),
+    machineRpm,
+    productionRateFtPerMin: Number(((machineRpm * spacingIn) / 12).toFixed(1)),
   };
 }
 
@@ -265,6 +283,9 @@ export function stepZeppelinAirship(params: {
     parasiteDragKn: Number(((0.5 * rhoAir * (speedKmh / 3.6) ** 2 * 85 * 0.025) / 1000).toFixed(2)),
     ambientAirDensityKgM3: Number(rhoAir.toFixed(3)),
     hydrogenVolumeM3: totalVolumeM3,
+    grossLiftKg: Math.round((grossBuoyancyKn / 9.81) * 1000),
+    usefulPayloadKg: Math.max(0, Math.round((netLiftKn / 9.81) * 1000)),
+    flightSpeedKmh: Number(speedKmh.toFixed(1)),
   };
 }
 
@@ -309,6 +330,7 @@ export function stepHollerithTabulating(params: {
     ),
     inductiveTauMs: Number(((0.08 / (v / 2.4)) * 1000).toFixed(1)),
     contactResistanceOhms: 0.08,
+    registerDialCount: 40,
   };
 }
 
@@ -405,6 +427,9 @@ export function stepWozniakApple(params: { crystalFreq?: number; ramCapacityKb?:
     colorSubcarrierMhz: Number((f / 4).toFixed(3)),
     dramWindowNs: Number(((1000 / cpuMhz) * 0.5).toFixed(1)),
     ramCapacityKb: params.ramCapacityKb ?? 48,
+    // Φ1 is video refresh; the 6502 never DMA-halts on Φ2.
+    cpuDutyPct: 100,
+    cycleTimeNs: Math.round(1000 / cpuMhz),
   };
 }
 
@@ -423,17 +448,26 @@ export function stepSpencerMicrowave(anodeKv?: number, magneticGauss?: number, r
   };
 }
 
-export function stepKevlarContinuum(drawRatio?: number, impactVelocityMps?: number) {
+export function stepKevlarContinuum(
+  drawRatio?: number,
+  impactVelocityMps?: number,
+  appliedTension?: number,
+) {
   const draw = drawRatio ?? 6.5;
   const v = impactVelocityMps ?? 450;
+  const load = appliedTension ?? 30;
   const elasticModulusGpa = Math.min(145, 60 + draw * 20);
   const sonic = Math.sqrt((elasticModulusGpa * 1e9) / 1440);
   const strainPct = (v / sonic) * 100;
+  const tensileStrengthGpa = Number(Math.min(3.6, 0.5 + draw * 0.45).toFixed(2));
   return {
     tensileStressMpa: Math.round((strainPct / 100) * elasticModulusGpa * 1000),
     tensileStrainPct: Number(strainPct.toFixed(2)),
     elasticModulusGpa,
-    tensileStrengthGpa: Number(Math.min(3.6, 0.5 + draw * 0.45).toFixed(2)),
+    tensileStrengthGpa,
+    sonicVelocityMps: Math.round(sonic),
+    alignmentPct: Math.min(100, Math.round((draw / 8.0) * 100)),
+    residualStrengthGpa: Number((tensileStrengthGpa * (1 - load / 220)).toFixed(2)),
   };
 }
 
@@ -514,9 +548,11 @@ export function stepGoodyearRubber(
   const duration = durationMin ?? 30;
   const isOptimalTemp = temp >= 135 && temp <= 165;
   const crossLinkDensity = (sulfur / 8.0) * (duration / 30) * (isOptimalTemp ? 1.0 : 0.4);
+  const tensileStrengthPsi = Math.min(3200, Math.round(crossLinkDensity * 2800));
   return {
     crossLinkDensity: Number(crossLinkDensity.toFixed(3)),
-    tensileStrengthPsi: Math.min(3200, Math.round(crossLinkDensity * 2800)),
+    tensileStrengthPsi,
+    tensileStrengthMpa: Number((tensileStrengthPsi * 0.00689476).toFixed(2)),
     elasticReturnPct: Math.min(98, Math.round(50 + crossLinkDensity * 45)),
     isStickyOrBrittle: !isOptimalTemp || crossLinkDensity < 0.3,
     glassTransitionTempC: Math.round(-70 + sulfur * 3.8),
@@ -553,13 +589,23 @@ export function stepLincolnBuoy(params: {
   const volM3 = Number(((infl / 100) * 42.5).toFixed(1));
   const liftKn = Math.round(volM3 * 9.81);
   const draftRedFt = Number((volM3 * 0.055).toFixed(2));
-  const hullDraftFt = 5.0 + (weight - 380) / 190 - draftRedFt;
+  const hullLengthFt = 160;
+  const hullBeamFt = 32;
+  const baseDraftFt = 5.0;
+  const hullDraftFt = baseDraftFt + (weight - 380) / 190 - draftRedFt;
   return {
     displacedVolumeM3: volM3,
+    displacedVolumeCuFt: Math.round(volM3 * 35.315),
     liftKn,
+    liftTons: Number((liftKn / 9.81).toFixed(1)),
     draftReductionFt: draftRedFt,
     hullDraftFt: Number(hullDraftFt.toFixed(2)),
     shoalClearanceFt: Number((depth - hullDraftFt).toFixed(2)),
+    hullLengthFt,
+    hullBeamFt,
+    waterDensityLbsPerCuFt: 62.4,
+    baseDraftFt,
+    waterplaneAreaSqFt: Math.round(hullLengthFt * hullBeamFt * 0.78),
   };
 }
 

@@ -1166,7 +1166,7 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
         p.impactVelocity ?? 450,
       );
       const eGpa = kevlar.elasticModulusGpa;
-      const vSonic = Math.round(Math.sqrt((eGpa * 1e9) / 1440));
+      const vSonic = kevlar.sonicVelocityMps;
       const strainPct = kevlar.tensileStrainPct.toFixed(2);
       const stressMpa = kevlar.tensileStressMpa;
 
@@ -1198,6 +1198,20 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
           unit: "%",
           badgeColor: Number(strainPct) < 3.5 ? "amber" : "rose",
           progressPct: (Number(strainPct) / 4.0) * 100,
+        },
+        {
+          label: "Fiber Strength",
+          value: `${kevlar.tensileStrengthGpa} GPa`,
+          unit: "σ_ult",
+          badgeColor: "emerald",
+          progressPct: (kevlar.tensileStrengthGpa / 3.6) * 100,
+        },
+        {
+          label: "Chain Alignment",
+          value: `${kevlar.alignmentPct}%`,
+          unit: "align",
+          badgeColor: "purple",
+          progressPct: kevlar.alignmentPct,
         },
       ];
     },
@@ -1357,6 +1371,20 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
           unit: "m³",
           badgeColor: "indigo",
           progressPct: (Number(volM3) / 45) * 100,
+        },
+        {
+          label: "Hull Draft",
+          value: `${buoy.hullDraftFt} ft`,
+          unit: "d",
+          badgeColor: "amber",
+          progressPct: (buoy.hullDraftFt / 8) * 100,
+        },
+        {
+          label: "Waterplane",
+          value: `${buoy.waterplaneAreaSqFt} ft²`,
+          unit: "A_wp",
+          badgeColor: "cyan",
+          progressPct: 100,
         },
       ];
     },
@@ -1777,6 +1805,13 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
           badgeColor: "indigo",
           progressPct: 100,
         },
+        {
+          label: "Φ2 CPU Duty",
+          value: `${apple.cpuDutyPct}%`,
+          unit: "duty",
+          badgeColor: "emerald",
+          progressPct: apple.cpuDutyPct,
+        },
       ];
     },
     pedagogicalInsight:
@@ -2144,6 +2179,13 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
           unit: "Δy",
           badgeColor: isSnapped ? "emerald" : "cyan",
           progressPct: isSnapped ? 45 : 0,
+        },
+        {
+          label: "Hanging Mass",
+          value: `${otis.hangingMassKg} kg`,
+          unit: "m",
+          badgeColor: "amber",
+          progressPct: (otis.hangingMassKg / 1500) * 100,
         },
       ];
     },
@@ -2577,11 +2619,18 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
           progressPct: (Number(tauMs) / 30) * 100,
         },
         {
-          label: "Parallel Accumulators",
-          value: `${relays} dials`,
-          unit: "active",
+          label: "Active Relays",
+          value: `${relays}`,
+          unit: "relays",
           badgeColor: "purple",
-          progressPct: (relays / 40) * 100,
+          progressPct: (relays / 16) * 100,
+        },
+        {
+          label: "Census Register Bank",
+          value: `${hol.registerDialCount} dials`,
+          unit: "dials",
+          badgeColor: "cyan",
+          progressPct: 100,
         },
       ];
     },
@@ -2927,6 +2976,13 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
           unit: "α_trim",
           badgeColor: "indigo",
           progressPct: (Math.abs(Number(pitchDeg)) / 10) * 100,
+        },
+        {
+          label: "Useful Payload",
+          value: `${zep.usefulPayloadKg} kg`,
+          unit: "m_pay",
+          badgeColor: "amber",
+          progressPct: (zep.usefulPayloadKg / 5000) * 100,
         },
         {
           label: "Air Density",
@@ -3277,6 +3333,18 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
           unit: "n_reel",
           badgeColor: "emerald",
         },
+        {
+          label: "Ground Speed",
+          value: `${reaper.groundSpeedMps} m/s`,
+          unit: "v",
+          badgeColor: "cyan",
+        },
+        {
+          label: "Cutter Frequency",
+          value: `${reaper.cutterHz} Hz`,
+          unit: "f_cut",
+          badgeColor: "purple",
+        },
       ];
     },
     pedagogicalInsight:
@@ -3437,6 +3505,20 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
           unit: "eta_th",
           badgeColor: "emerald",
           progressPct: (corliss.thermalEfficiencyPct / 40) * 100,
+        },
+        {
+          label: "Boiler Pressure",
+          value: `${corliss.boilerMpa} MPa`,
+          unit: "P",
+          badgeColor: "amber",
+          progressPct: (corliss.boilerMpa / 1.4) * 100,
+        },
+        {
+          label: "Expansion Ratio",
+          value: `${corliss.expansionRatio}`,
+          unit: "r_exp",
+          badgeColor: "cyan",
+          progressPct: (corliss.expansionRatio / 8) * 100,
         },
       ];
     },
@@ -3648,6 +3730,20 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
           badgeColor: isMelted ? "emerald" : "rose",
           progressPct: isMelted ? 100 : 20,
         },
+        {
+          label: "Consolidation Density",
+          value: `${hyatt.consolidationDensityGPerCm3} g/cm³`,
+          unit: "rho",
+          badgeColor: "cyan",
+          progressPct: ((hyatt.consolidationDensityGPerCm3 - 1.2) / 0.2) * 100,
+        },
+        {
+          label: "Transparency",
+          value: `${hyatt.transparencyPct}%`,
+          unit: "clear",
+          badgeColor: "purple",
+          progressPct: hyatt.transparencyPct,
+        },
       ];
     },
     pedagogicalInsight:
@@ -3839,6 +3935,20 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
           unit: "lock",
           badgeColor: isLocked ? "emerald" : "rose",
           progressPct: isLocked ? 100 : 25,
+        },
+        {
+          label: "Bessemer Rating",
+          value: `${wire.tensileStrengthLbs} lb`,
+          unit: "UTS",
+          badgeColor: "amber",
+          progressPct: 100,
+        },
+        {
+          label: "Line Output",
+          value: `${wire.productionRateFtPerMin} ft/min`,
+          unit: "v_line",
+          badgeColor: "cyan",
+          progressPct: (wire.productionRateFtPerMin / 60) * 100,
         },
       ];
     },

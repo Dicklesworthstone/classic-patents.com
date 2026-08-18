@@ -10,6 +10,7 @@ import {
   stepColtRevolver as catalogStepColt,
   stepDaimlerEngine as catalogStepDaimlerEngine,
   stepHollerithTabulating as catalogStepHollerith,
+  stepKevlarContinuum as catalogStepKevlar,
   stepLincolnBuoy as catalogStepLincolnBuoy,
   stepBellTelephone,
   stepCorlissEngine,
@@ -56,7 +57,6 @@ import { tryTeslaWasmStep } from "./teslaWasm";
 import { goddardThermo } from "./thermochem";
 import type {
   AerodynamicsState,
-  ContinuumState,
   ElectromagneticsState,
   NuclearKineticsState,
   SemiconductorState,
@@ -229,20 +229,20 @@ export const FrankenSimEngine = {
   /**
    * Stephanie Kwolek Kevlar Aramid Polymers (US 3,671,542)
    */
-  stepKevlarContinuum(drawRatio: number, impactVelocityMps: number): ContinuumState {
-    const elasticModulusGpa = Math.min(145, 60 + drawRatio * 20);
-    const sonicDispersionVelocityMps = Math.sqrt((elasticModulusGpa * 1e9) / 1440);
-    const strainPct = (impactVelocityMps / sonicDispersionVelocityMps) * 100;
-    const stressMpa = (strainPct / 100) * elasticModulusGpa * 1000;
-
+  stepKevlarContinuum(drawRatio: number, impactVelocityMps: number) {
+    const cat = catalogStepKevlar(drawRatio, impactVelocityMps);
     return {
-      tensileStressMpa: Math.round(stressMpa),
-      tensileStrainPct: Number(strainPct.toFixed(2)),
-      elasticModulusGpa,
+      tensileStressMpa: cat.tensileStressMpa,
+      tensileStrainPct: cat.tensileStrainPct,
+      elasticModulusGpa: cat.elasticModulusGpa,
       crossLinkDensityMolesPerCm3: 0.085,
       stitchFrequencyHz: 0,
       feedVelocityMmPs: 0,
       buoyancyLiftForceKiloNewtons: 0,
+      tensileStrengthGpa: cat.tensileStrengthGpa,
+      sonicVelocityMps: cat.sonicVelocityMps,
+      alignmentPct: cat.alignmentPct,
+      residualStrengthGpa: cat.residualStrengthGpa,
     };
   },
 
