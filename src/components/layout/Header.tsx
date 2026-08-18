@@ -2,6 +2,7 @@
 
 import { Compass, Github, Menu, X } from "lucide-react";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { useState } from "react";
 import { ThemeToggle } from "./ThemeToggle";
 
@@ -16,9 +17,15 @@ const NAV_LINKS = [
 
 export function Header() {
   const [mobileOpen, setMobileOpen] = useState(false);
+  const pathname = usePathname();
+
+  const isLinkActive = (href: string) => {
+    if (href === "/") return pathname === "/";
+    return pathname.startsWith(href);
+  };
 
   return (
-    <header className="sticky top-0 z-40 w-full border-b border-parchment-300 dark:border-ink-800 bg-parchment-50 dark:bg-ink-950 isolate">
+    <header className="sticky top-0 z-40 w-full border-b border-parchment-300 dark:border-ink-800 bg-parchment-50/95 dark:bg-ink-950/95 backdrop-blur-md isolate">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between gap-4">
         {/* Brand Logo */}
         <Link href="/" className="flex items-center gap-3 group">
@@ -36,62 +43,54 @@ export function Header() {
         </Link>
 
         {/* Desktop & Tablet Navigation Links */}
-        <nav className="hidden lg:flex items-center gap-6 text-sm font-medium">
-          <Link
-            href="/"
-            className="text-ink-800 dark:text-parchment-200 hover:text-amber-800 dark:hover:text-amber-400 transition-colors font-semibold"
-          >
-            Museum Catalog
-          </Link>
-          <Link
-            href="/patents/us-821393-wright-flyer"
-            className="text-ink-700 dark:text-parchment-300 hover:text-amber-800 dark:hover:text-amber-400 transition-colors"
-          >
-            Wright Flyer 3D
-          </Link>
-          <Link
-            href="/patents/us-381968-tesla-motor"
-            className="text-ink-700 dark:text-parchment-300 hover:text-amber-800 dark:hover:text-amber-400 transition-colors"
-          >
-            Tesla AC Motor
-          </Link>
-          <Link
-            href="/patents/us-2981877-noyce-ic"
-            className="text-ink-700 dark:text-parchment-300 hover:text-amber-800 dark:hover:text-amber-400 transition-colors"
-          >
-            Noyce Silicon IC
-          </Link>
-          <Link
-            href="/timeline"
-            className="text-ink-700 dark:text-parchment-300 hover:text-amber-800 dark:hover:text-amber-400 transition-colors"
-          >
-            Timeline
-          </Link>
-          <Link
-            href="/about"
-            className="text-ink-700 dark:text-parchment-300 hover:text-amber-800 dark:hover:text-amber-400 transition-colors"
-          >
-            Mission
-          </Link>
+        <nav className="hidden lg:flex items-center gap-1 text-sm font-medium">
+          {NAV_LINKS.map((link) => {
+            const active = isLinkActive(link.href);
+            return (
+              <Link
+                key={link.href}
+                href={link.href}
+                className={`px-3 py-1.5 rounded-lg transition-colors font-sans ${
+                  active
+                    ? "bg-amber-100/80 dark:bg-amber-950/60 text-amber-900 dark:text-amber-300 font-bold"
+                    : "text-ink-700 dark:text-parchment-300 hover:text-amber-800 dark:hover:text-amber-400 hover:bg-parchment-200/60 dark:hover:bg-ink-900/60"
+                }`}
+              >
+                {link.label}
+              </Link>
+            );
+          })}
         </nav>
 
         {/* Medium Tablet Nav (768px - 1023px) */}
-        <nav className="hidden md:flex lg:hidden items-center gap-3.5 text-xs font-medium">
+        <nav className="hidden md:flex lg:hidden items-center gap-1 text-xs font-medium">
           <Link
             href="/"
-            className="text-ink-800 dark:text-parchment-200 hover:text-amber-800 dark:hover:text-amber-400 transition-colors font-semibold"
+            className={`px-2.5 py-1.5 rounded-lg transition-colors font-sans ${
+              pathname === "/"
+                ? "bg-amber-100/80 dark:bg-amber-950/60 text-amber-900 dark:text-amber-300 font-bold"
+                : "text-ink-700 dark:text-parchment-300 hover:text-amber-800 dark:hover:text-amber-400"
+            }`}
           >
             Catalog
           </Link>
           <Link
             href="/timeline"
-            className="text-ink-700 dark:text-parchment-300 hover:text-amber-800 dark:hover:text-amber-400 transition-colors font-medium"
+            className={`px-2.5 py-1.5 rounded-lg transition-colors font-sans ${
+              pathname.startsWith("/timeline")
+                ? "bg-amber-100/80 dark:bg-amber-950/60 text-amber-900 dark:text-amber-300 font-bold"
+                : "text-ink-700 dark:text-parchment-300 hover:text-amber-800 dark:hover:text-amber-400"
+            }`}
           >
             Timeline
           </Link>
           <Link
             href="/about"
-            className="text-ink-700 dark:text-parchment-300 hover:text-amber-800 dark:hover:text-amber-400 transition-colors font-medium"
+            className={`px-2.5 py-1.5 rounded-lg transition-colors font-sans ${
+              pathname.startsWith("/about")
+                ? "bg-amber-100/80 dark:bg-amber-950/60 text-amber-900 dark:text-amber-300 font-bold"
+                : "text-ink-700 dark:text-parchment-300 hover:text-amber-800 dark:hover:text-amber-400"
+            }`}
           >
             Mission
           </Link>
@@ -125,18 +124,25 @@ export function Header() {
       {mobileOpen && (
         <nav
           id="mobile-museum-nav"
-          className="md:hidden border-t border-parchment-300 dark:border-ink-800 bg-parchment-50/98 dark:bg-ink-950/98 px-4 py-3 flex flex-col gap-1"
+          className="md:hidden border-t border-parchment-300 dark:border-ink-800 bg-parchment-50/98 dark:bg-ink-950/98 px-4 py-3 flex flex-col gap-1 shadow-xl"
         >
-          {NAV_LINKS.map((link) => (
-            <Link
-              key={link.href}
-              href={link.href}
-              onClick={() => setMobileOpen(false)}
-              className="px-3 py-2.5 rounded-xl text-sm font-medium text-ink-800 dark:text-parchment-200 hover:bg-parchment-200 dark:hover:bg-ink-800 transition-colors"
-            >
-              {link.label}
-            </Link>
-          ))}
+          {NAV_LINKS.map((link) => {
+            const active = isLinkActive(link.href);
+            return (
+              <Link
+                key={link.href}
+                href={link.href}
+                onClick={() => setMobileOpen(false)}
+                className={`px-3 py-2.5 rounded-xl text-sm font-medium transition-colors ${
+                  active
+                    ? "bg-amber-600 text-white font-bold"
+                    : "text-ink-800 dark:text-parchment-200 hover:bg-parchment-200 dark:hover:bg-ink-800"
+                }`}
+              >
+                {link.label}
+              </Link>
+            );
+          })}
         </nav>
       )}
     </header>
