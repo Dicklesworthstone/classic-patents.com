@@ -117,6 +117,13 @@ describe("edisonPhonographArchivalEdition", () => {
     expect(edisonPhonographPatent.claims.map((claim) => claim.originalText)).toEqual(
       claims.map((claim) => claim.inlines.map((inline) => inline.text).join("")),
     );
+    const canonicalRecordSource = readFileSync(
+      resolve(process.cwd(), "src/data/patents/edison-phonograph.ts"),
+      "utf8",
+    );
+    expect(canonicalRecordSource).toContain("function manualClaimText");
+    expect(canonicalRecordSource).toContain("edisonPhonographArchivalEdition.blocks.find");
+    expect(canonicalRecordSource).not.toContain("const MANUALLY_REVIEWED_CLAIM_TEXT");
     expect(edisonPhonographPatent.stats).toMatchObject({ totalClaims: 4, independentClaims: 4 });
   });
 
