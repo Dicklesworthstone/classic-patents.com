@@ -345,6 +345,7 @@ export function ThomsonWelding3D() {
         chips={[
           { label: "I", value: String(Math.round(weldCurrentAmps)), unit: "A" },
           { label: "P", value: weldPowerKw, unit: "kW" },
+          { label: "Burr", value: String(weld.upsetBurrWidthMm), unit: "mm" },
           {
             label: "T",
             value: String(weldTempCelsius),

@@ -436,6 +436,7 @@ export function WhitneyCottonGin3D() {
         chips={[
           { label: "Crank", value: String(Math.round(crankRpm)), unit: "rpm" },
           { label: "Saws", value: String(sawSpeedRpm), unit: "rpm" },
+          { label: "v_tip", value: String(gin.sawTipSpeedMps), unit: "m/s" },
           { label: "Brush", value: String(brushSpeedRpm), unit: "rpm" },
           { label: "Lint", value: dailyOutputLbs, unit: "lb/day" },
           { label: "vs hand", value: `${laborMultiplier}×` },

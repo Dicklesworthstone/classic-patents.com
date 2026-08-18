@@ -327,6 +327,7 @@ export function DeLavalSeparator3D() {
           },
           { label: "Fat yield", value: sep.fatYieldPct.toFixed(1), unit: "%" },
           { label: "Cream", value: throughputLitersPerHr.toFixed(1), unit: "L/h" },
+          { label: "Skim", value: sep.skimFlowLph.toFixed(1), unit: "L/h" },
         ]}
       />
     </div>

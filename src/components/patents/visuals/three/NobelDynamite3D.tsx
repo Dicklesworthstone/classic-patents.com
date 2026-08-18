@@ -346,6 +346,8 @@ export function NobelDynamite3D() {
             tone: nobel.isInitiated ? "hot" : "warn",
           },
           { label: "P", value: String(blastOverpressureMpa), unit: "MPa" },
+          { label: "P", value: String(nobel.blastOverpressureGpa), unit: "GPa" },
+          { label: "E", value: String(nobel.energyMjPerKg), unit: "MJ/kg" },
           { label: "Cushion", value: `${nobel.cushionFactor}`, unit: "×" },
         ]}
       />

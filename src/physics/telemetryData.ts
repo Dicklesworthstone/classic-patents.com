@@ -2187,6 +2187,13 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
           badgeColor: "amber",
           progressPct: (otis.hangingMassKg / 1500) * 100,
         },
+        {
+          label: "Hoist Tension",
+          value: `${otis.hoistTensionKn} kN`,
+          unit: "T",
+          badgeColor: "cyan",
+          progressPct: (otis.hoistTensionKn / 15) * 100,
+        },
       ];
     },
     pedagogicalInsight:
@@ -3288,6 +3295,13 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
           badgeColor: "emerald",
           progressPct: (outputLbs / 100) * 100,
         },
+        {
+          label: "Saw Tip Speed",
+          value: `${gin.sawTipSpeedMps} m/s`,
+          unit: "v_tip",
+          badgeColor: "purple",
+          progressPct: (gin.sawTipSpeedMps / 12) * 100,
+        },
       ];
     },
     pedagogicalInsight:
@@ -3452,6 +3466,20 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
           badgeColor: "emerald",
           progressPct: (thrustKn / 90) * 100,
         },
+        {
+          label: "Geometric Pitch",
+          value: `${ericson.pitchMeters} m`,
+          unit: "p",
+          badgeColor: "amber",
+          progressPct: (ericson.pitchMeters / 5) * 100,
+        },
+        {
+          label: "Apparent Slip",
+          value: `${ericson.slipFraction}`,
+          unit: "s",
+          badgeColor: "purple",
+          progressPct: ericson.slipFraction * 100,
+        },
       ];
     },
     pedagogicalInsight:
@@ -3577,6 +3605,13 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
           badgeColor: "amber",
           progressPct: (gatling.muzzleEnergyJoules / 2000) * 100,
         },
+        {
+          label: "Cycle Interval",
+          value: `${gatling.cycleTimeMs} ms`,
+          unit: "t_cyc",
+          badgeColor: "cyan",
+          progressPct: (gatling.cycleTimeMs / 400) * 100,
+        },
       ];
     },
     pedagogicalInsight:
@@ -3629,6 +3664,20 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
           unit: "vs free NG",
           badgeColor: "emerald",
           progressPct: Math.min(100, (nobel.cushionFactor / 7) * 100),
+        },
+        {
+          label: "Blast Overpressure",
+          value: `${nobel.blastOverpressureGpa} GPa`,
+          unit: "P_CJ",
+          badgeColor: "rose",
+          progressPct: (nobel.blastOverpressureGpa / 8) * 100,
+        },
+        {
+          label: "Specific Energy",
+          value: `${nobel.energyMjPerKg} MJ/kg`,
+          unit: "Q",
+          badgeColor: "amber",
+          progressPct: (nobel.energyMjPerKg / 6.3) * 100,
         },
       ];
     },
@@ -3871,6 +3920,13 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
           unit: "rate",
           badgeColor: activity > 70 ? "emerald" : "amber",
           progressPct: activity,
+        },
+        {
+          label: "Surviving Fraction",
+          value: `${pasteur.survivorPct}%`,
+          unit: "N/N0",
+          badgeColor: pasteur.survivorPct < 0.01 ? "emerald" : "amber",
+          progressPct: Math.min(100, pasteur.survivorPct * 10),
         },
       ];
     },
@@ -4201,6 +4257,13 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
           badgeColor: "cyan",
           progressPct: (creamFlow / 75) * 100,
         },
+        {
+          label: "Skim Discharge Rate",
+          value: `${sep.skimFlowLph} L/h`,
+          unit: "Q_skim",
+          badgeColor: "purple",
+          progressPct: (sep.skimFlowLph / 300) * 100,
+        },
       ];
     },
     pedagogicalInsight:
@@ -4261,6 +4324,13 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
           unit: "fusion",
           badgeColor: isForged ? "emerald" : "rose",
           progressPct: isForged ? 100 : 30,
+        },
+        {
+          label: "Upset Burr",
+          value: `${weld.upsetBurrWidthMm} mm`,
+          unit: "w_burr",
+          badgeColor: "amber",
+          progressPct: (weld.upsetBurrWidthMm / 6) * 100,
         },
       ];
     },

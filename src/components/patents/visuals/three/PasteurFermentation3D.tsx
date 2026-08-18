@@ -348,6 +348,7 @@ export function PasteurFermentation3D() {
           { label: "ABV", value: alcoholAbvPct, unit: "%" },
           { label: "CO₂", value: co2PressureBar, unit: "bar" },
           { label: "Log kill", value: pasteur.logReduction.toFixed(1) },
+          { label: "Survivors", value: String(pasteur.survivorPct), unit: "%" },
         ]}
       />
     </div>

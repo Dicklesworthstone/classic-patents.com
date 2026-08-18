@@ -107,13 +107,12 @@ export function stepNobelDynamite(params: {
   const ng = params.ngConcentrationPct ?? 75;
   const cap = params.capEnergyJoules ?? 1.2;
   const isInitiated = cap >= 0.4;
+  const blastOverpressureMpa = isInitiated ? Math.round(4500 + (ng - 50) * 120) : 0;
   return {
     detonationVelocityMps: isInitiated ? Math.round(5500 + (ng - 50) * 80) : 0,
     isInitiated,
-    blastOverpressureMpa: isInitiated ? Math.round(4500 + (ng - 50) * 120) : 0,
-    blastOverpressureGpa: isInitiated
-      ? Number(((4500 + (ng - 50) * 120) / 1000).toFixed(1))
-      : 0,
+    blastOverpressureMpa,
+    blastOverpressureGpa: Number((blastOverpressureMpa / 1000).toFixed(1)),
     energyMjPerKg: Number(((ng / 100) * 6.3).toFixed(2)),
     // Free NG vs kieselguhr dough: more dry meal → higher drop-hammer margin.
     cushionFactor: Number((1 + (100 - ng) / 8.9).toFixed(1)),
@@ -223,8 +222,7 @@ export function stepPasteurFermentation(params: {
   return {
     logReduction,
     yeastActivityPct: Math.min(100, Math.round(100 * Math.exp(-0.02 * (temp - 24) ** 2))),
-    survivorPct:
-      logReduction >= 6 ? 0.0001 : Number((100 * 10 ** -logReduction).toFixed(2)),
+    survivorPct: logReduction >= 6 ? 0.0001 : Number((100 * 10 ** -logReduction).toFixed(2)),
   };
 }
 
