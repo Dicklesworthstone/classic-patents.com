@@ -1,21 +1,26 @@
 "use client";
 
-import { Activity, Camera, Eye, EyeOff, Volume2, VolumeX } from "lucide-react";
-import { useEffect, useRef, useState } from "react";
-import * as THREE from "three";
+import { Activity, Camera, Eye, EyeOff, Volume2, VolumeX, Zap } from "lucide-react";
+import { memo, useEffect, useRef, useState } from "react";
+import type * as THREE from "three";
 import { stepGliddenBarbedWire } from "@/physics/catalogKernels";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { soundEngine } from "@/utils/soundEngine";
+import {
+  buildGliddenBarbedWireModel,
+  updateGliddenBarbedWireKinematics,
+} from "./gliddenBarbedWireModel";
 import { StudioKernelChips } from "./StudioKernelChips";
 import { createThreeStudioScene, type StudioContext } from "./ThreeStudioScene";
 import { useLiveSimParams } from "./useLiveSimParams";
 import { usePatentAudio } from "./usePatentAudio";
 
-type CameraPreset = "iso" | "barb_lock" | "twisting_helix" | "takeup_drum" | "top";
+type CameraPreset = "iso" | "barb_lock" | "twisting_helix" | "takeup_drum" | "feed_spools" | "top";
 
-export function GliddenBarbedWire3D() {
+export const GliddenBarbedWire3D = memo(() => {
   const containerRef = useRef<HTMLDivElement>(null);
   const [showUiOverlay, setShowUiOverlay] = useState<boolean>(true);
+  const [isCutaway, setIsCutaway] = useState<boolean>(false);
 
   // Wire Manufacturing Parameters
   const { params } = usePatentPhysics("us-157124-glidden-barbed-wire");
@@ -27,8 +32,6 @@ export function GliddenBarbedWire3D() {
     animalPushForceN: params.animalPushForceN ?? 120,
     barbSpacingInches,
   });
-  const feetPerMinute = glidden.productionRateFtPerMin.toFixed(1);
-  const tensileStrengthLbs = glidden.tensileStrengthLbs;
   const [activeCamera, setActiveCamera] = useState<CameraPreset>("iso");
   const { isAudioMuted, toggleSound: toggleEngine } = usePatentAudio();
 
@@ -37,9 +40,10 @@ export function GliddenBarbedWire3D() {
     barbSpacingInches,
     isAudioMuted,
     sagCm: glidden.sagCm,
-    isLocked: glidden.isLocked ? 1 : 0,
+    isLocked: glidden.isLocked,
     flyerOmegaRadPerS: glidden.flyerOmegaRadPerS,
     reelOmegaRadPerS: glidden.reelOmegaRadPerS,
+    isCutaway,
   });
 
   const controlsRef = useRef<StudioContext["controls"] | null>(null);
@@ -67,6 +71,10 @@ export function GliddenBarbedWire3D() {
       case "takeup_drum":
         camera.position.set(3.5, 2.0, 4.0);
         controls.target.set(2.2, 0, 0);
+        break;
+      case "feed_spools":
+        camera.position.set(-4.8, 2.0, 3.2);
+        controls.target.set(-3.8, 0, -1.2);
         break;
       case "top":
         camera.position.set(0, 11.5, 0.1);
@@ -96,128 +104,29 @@ export function GliddenBarbedWire3D() {
     cameraRef.current = camera;
     controlsRef.current = controls;
 
-    // Materials
-    const castIronMat = new THREE.MeshStandardMaterial({
-      color: 0x1e293b,
-      roughness: 0.5,
-      metalness: 0.85,
-    });
-
-    const galvanizedSteelMat = new THREE.MeshStandardMaterial({
-      color: 0xe2e8f0,
-      roughness: 0.2,
-      metalness: 0.95,
-    });
-
-    const walnutWoodMat = new THREE.MeshStandardMaterial({
-      color: 0x5c2c16,
-      roughness: 0.6,
-      metalness: 0.05,
-    });
-
-    const rootGroup = new THREE.Group();
+    const { rootGroup, nodes, materials, dispose } = buildGliddenBarbedWireModel();
     scene.add(rootGroup);
-
-    // 1. Heavy Wooden Workshop Bench & Cast Iron Bed
-    const bench = new THREE.Mesh(new THREE.BoxGeometry(11.0, 0.8, 5.5), walnutWoodMat);
-    bench.position.y = -2.2;
-    bench.receiveShadow = true;
-    rootGroup.add(bench);
-
-    // 2. Dual Feed Spools (Raw Wire Inflow)
-    [-3.8, -3.8].forEach((sx, idx) => {
-      const spool = new THREE.Mesh(new THREE.CylinderGeometry(0.9, 0.9, 0.6, 24), castIronMat);
-      spool.rotation.z = Math.PI / 2;
-      spool.position.set(sx, idx === 0 ? 0.8 : -0.8, -1.2);
-      rootGroup.add(spool);
-    });
-
-    // 3. Rotating Twister Flyer Arbor (Claim 1)
-    const flyerGroup = new THREE.Group();
-    flyerGroup.position.set(-1.8, 0, 0);
-    rootGroup.add(flyerGroup);
-
-    const flyerRing = new THREE.Mesh(new THREE.TorusGeometry(1.4, 0.12, 12, 32), castIronMat);
-    flyerRing.rotation.y = Math.PI / 2;
-    flyerGroup.add(flyerRing);
-
-    // 4. Barbed Wire Twisting Helical Model (Claim 1 & Claim 2)
-    const wireAssemblyGroup = new THREE.Group();
-    rootGroup.add(wireAssemblyGroup);
-
-    // Double-Strand Twisted Wire
-    const strand1Curve = new THREE.CatmullRomCurve3([
-      new THREE.Vector3(-3.2, 0.1, 0),
-      new THREE.Vector3(-1.0, 0.15, 0.1),
-      new THREE.Vector3(1.0, 0.1, -0.1),
-      new THREE.Vector3(3.2, 0.1, 0),
-    ]);
-    const strand1Geo = new THREE.TubeGeometry(strand1Curve, 40, 0.04, 8, false);
-    const strand1Mesh = new THREE.Mesh(strand1Geo, galvanizedSteelMat);
-    wireAssemblyGroup.add(strand1Mesh);
-
-    const strand2Curve = new THREE.CatmullRomCurve3([
-      new THREE.Vector3(-3.2, -0.1, 0),
-      new THREE.Vector3(-1.0, -0.15, -0.1),
-      new THREE.Vector3(1.0, -0.1, 0.1),
-      new THREE.Vector3(3.2, -0.1, 0),
-    ]);
-    const strand2Geo = new THREE.TubeGeometry(strand2Curve, 40, 0.04, 8, false);
-    const strand2Mesh = new THREE.Mesh(strand2Geo, galvanizedSteelMat);
-    wireAssemblyGroup.add(strand2Mesh);
-
-    // 5 Discrete 2-Point Diamond Barbs Coiled Around Strand 1 (Claim 2)
-    const barbCount = 5;
-    for (let b = 0; b < barbCount; b++) {
-      const bx = -2.2 + b * 1.1;
-      const barbGroup = new THREE.Group();
-      barbGroup.position.set(bx, 0, 0);
-
-      // Coiled Wire Loop
-      const coil = new THREE.Mesh(new THREE.TorusGeometry(0.12, 0.035, 8, 16), galvanizedSteelMat);
-      barbGroup.add(coil);
-
-      // Sharp Diamond Spurs (2 Points)
-      [-1, 1].forEach((dir) => {
-        const spur = new THREE.Mesh(new THREE.ConeGeometry(0.05, 0.35, 4), galvanizedSteelMat);
-        spur.position.set(0, dir * 0.22, dir * 0.15);
-        spur.rotation.x = (dir * Math.PI) / 4;
-        barbGroup.add(spur);
-      });
-
-      wireAssemblyGroup.add(barbGroup);
-    }
-
-    // 5. Take-Up Reel Drum (Winding Finished Wire)
-    const reelGroup = new THREE.Group();
-    reelGroup.position.set(3.5, 0, 0);
-    rootGroup.add(reelGroup);
-
-    const reelHub = new THREE.Mesh(new THREE.CylinderGeometry(0.6, 0.6, 1.4, 24), walnutWoodMat);
-    reelHub.rotation.z = Math.PI / 2;
-    reelGroup.add(reelHub);
-
-    [-0.7, 0.7].forEach((rx) => {
-      const flange = new THREE.Mesh(new THREE.CylinderGeometry(1.6, 1.6, 0.12, 24), castIronMat);
-      flange.rotation.z = Math.PI / 2;
-      flange.position.x = rx;
-      reelGroup.add(flange);
-    });
 
     // Animation Loop
     let reqId: number;
-    let _renderedSteps = 0;
+    let timeSec = 0;
 
     const animate = () => {
       reqId = requestAnimationFrame(animate);
-      _renderedSteps += 1;
-      const delta = 1 / 60;
+      const dt = 1 / 60;
+      timeSec += dt;
       const p = live.current;
 
-      const omegaRadPerSec = p.flyerOmegaRadPerS ?? (p.machineRpm * 2 * Math.PI) / 60;
-      flyerGroup.rotation.x += omegaRadPerSec * delta;
-      galvanizedSteelMat.color.setHex(p.isLocked > 0 ? 0xe2e8f0 : 0xf87171);
-      reelGroup.rotation.x += (p.reelOmegaRadPerS ?? omegaRadPerSec * 0.2) * delta;
+      updateGliddenBarbedWireKinematics(
+        nodes,
+        materials,
+        dt,
+        timeSec,
+        p.flyerOmegaRadPerS ?? 31.4,
+        p.reelOmegaRadPerS ?? 6.28,
+        p.isLocked ?? true,
+        p.isCutaway ?? false,
+      );
 
       renderer.render(scene, camera);
     };
@@ -226,6 +135,7 @@ export function GliddenBarbedWire3D() {
 
     return () => {
       cancelAnimationFrame(reqId);
+      dispose();
       studio.cleanup();
     };
   }, [live]);
@@ -253,8 +163,9 @@ export function GliddenBarbedWire3D() {
             [
               ["iso", "Isometric"],
               ["barb_lock", "Barb Locking"],
-              ["twisting_helix", "Flyer Helix"],
-              ["takeup_drum", "Takeup Drum"],
+              ["twisting_helix", "Twister Flyer"],
+              ["takeup_drum", "Take-up Reel"],
+              ["feed_spools", "Feed Spools"],
               ["top", "Top"],
             ] as [CameraPreset, string][]
           ).map(([preset, label]) => (
@@ -277,6 +188,20 @@ export function GliddenBarbedWire3D() {
         <div className="flex items-center gap-1.5 bg-parchment-950/80 backdrop-blur-md p-1.5 rounded-xl border border-parchment-700/60 shadow-lg pointer-events-auto">
           <button
             type="button"
+            onClick={() => setIsCutaway(!isCutaway)}
+            title={isCutaway ? "Solid Machine" : "Cutaway Frame"}
+            className={`flex items-center gap-1 px-2.5 py-1 text-xs font-sans rounded-lg transition-colors ${
+              isCutaway
+                ? "bg-amber-600/30 text-amber-200 border border-amber-500/40"
+                : "text-parchment-300 hover:text-white hover:bg-parchment-800/60"
+            }`}
+          >
+            {isCutaway ? <EyeOff className="w-3.5 h-3.5" /> : <Eye className="w-3.5 h-3.5" />}
+            <span>{isCutaway ? "Cutaway" : "Solid"}</span>
+          </button>
+
+          <button
+            type="button"
             onClick={toggleSound}
             title={isAudioMuted ? "Unmute Sound" : "Mute Sound"}
             className="p-1.5 rounded-lg text-xs text-parchment-400 hover:text-white hover:bg-parchment-800 transition-colors"
@@ -286,35 +211,35 @@ export function GliddenBarbedWire3D() {
           <button
             type="button"
             onClick={() => setShowUiOverlay(!showUiOverlay)}
-            title={showUiOverlay ? "Hide Overlay UI" : "Show Overlay UI"}
             className="p-1.5 rounded-lg text-xs text-parchment-400 hover:text-white hover:bg-parchment-800 transition-colors"
           >
-            {showUiOverlay ? (
-              <EyeOff className="w-4 h-4" />
-            ) : (
-              <Eye className="w-4 h-4 text-amber-400" />
-            )}
-          </button>{" "}
+            <Zap className="w-4 h-4 text-amber-400" />
+          </button>
         </div>
       </div>
 
       <StudioKernelChips
         visible={showUiOverlay}
-        title="Glidden locked barb"
+        title="Glidden locked barb fencing kinematics"
         chips={[
-          { label: "Twists", value: String(twistsPerFoot), unit: "/ft" },
-          { label: "Sag", value: String(glidden.sagCm), unit: "cm" },
-          { label: "Hold", value: String(glidden.barbSlipThresholdN), unit: "N" },
+          { label: "Twist Rate", value: String(twistsPerFoot), unit: "twists/ft" },
+          { label: "Barb Spacing", value: barbSpacingInches.toFixed(1), unit: "in" },
+          { label: "Catenary Sag", value: glidden.sagCm.toFixed(1), unit: "cm" },
+          { label: "Slip Threshold", value: String(glidden.barbSlipThresholdN), unit: "N" },
           {
-            label: "Lock",
-            value: glidden.isLocked ? "held" : "slip",
+            label: "Lock State",
+            value: glidden.isLocked ? "LOCKED" : "SLIPPAGE",
             tone: glidden.isLocked ? "ok" : "warn",
           },
-          { label: "Line", value: feetPerMinute, unit: "ft/min" },
-          { label: "Wire", value: String(tensileStrengthLbs), unit: "lb" },
-          { label: "ω", value: glidden.flyerOmegaRadPerS.toFixed(1), unit: "rad/s" },
+          {
+            label: "Production Rate",
+            value: glidden.productionRateFtPerMin.toFixed(1),
+            unit: "ft/min",
+          },
+          { label: "Tensile Strength", value: String(glidden.tensileStrengthLbs), unit: "lbs" },
+          { label: "ω_flyer", value: glidden.flyerOmegaRadPerS.toFixed(1), unit: "rad/s" },
         ]}
       />
     </div>
   );
-}
+});
