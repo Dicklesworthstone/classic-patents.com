@@ -1,9 +1,15 @@
 import { ImageResponse } from "next/og";
-import { getPatentById } from "@/data/patents";
+import { allPatents, getPatentById } from "@/data/patents";
+
+export function generateStaticParams() {
+  return allPatents.map((patent) => ({
+    id: patent.id,
+  }));
+}
 
 export const size = {
   width: 1200,
-  height: 600,
+  height: 630,
 };
 export const contentType = "image/png";
 
