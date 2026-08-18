@@ -187,7 +187,7 @@ export function DualProjectionViewer({ patent, initialView }: DualProjectionView
           <button
             type="button"
             onClick={() => setViewMode("original-spec")}
-            title="Original Specification (Shortcut: 2)"
+            title="Original Patent Text (Shortcut: 2)"
             className={`px-3.5 sm:px-4 py-2 sm:py-2.5 rounded-xl flex items-center gap-2 transition-colors cursor-pointer ${
               viewMode === "original-spec"
                 ? "bg-amber-700 text-white font-bold shadow-sm dark:bg-amber-600"
@@ -195,7 +195,7 @@ export function DualProjectionViewer({ patent, initialView }: DualProjectionView
             }`}
           >
             <Scroll className="w-4 h-4 text-amber-300" />
-            <span>{archivalEdition ? "Complete Source Text" : "Original Source Status"}</span>
+            <span>Original Patent Text</span>
             <kbd className="hidden md:inline-block text-[10px] font-mono px-1 py-0.2 rounded bg-black/15 dark:bg-white/15 opacity-80">
               2
             </kbd>
