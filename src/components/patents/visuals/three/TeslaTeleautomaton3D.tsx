@@ -20,11 +20,9 @@ export function TeslaTeleautomaton3D() {
   const [showUiOverlay, setShowUiOverlay] = useState<boolean>(true);
 
   // Wireless Teleautomation Robotics Parameters
-  const { params, updateParam } = usePatentPhysics("us-613809-tesla-teleautomaton");
+  const { params } = usePatentPhysics("us-613809-tesla-teleautomaton");
   const rudderAngleDeg = params.rudderAngleDeg ?? 15;
   const propellerRpm = params.propellerRpm ?? 450;
-  const vesselSpeedKnots = (propellerRpm * 0.018).toFixed(1);
-  const rfFrequencyMhz = 2.4;
   const [showRadioWaves, setShowRadioWaves] = useState<boolean>(true);
   const [activeCamera, setActiveCamera] = useState<CameraPreset>("iso");
   const { isAudioMuted, toggleSound: toggleEngine } = usePatentAudio();

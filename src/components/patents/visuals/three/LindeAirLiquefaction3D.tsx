@@ -1,6 +1,6 @@
 "use client";
 
-import { Activity, Camera, Eye, EyeOff, Sparkles, Volume2, VolumeX, Wind } from "lucide-react";
+import { Activity, Camera, Eye, Sparkles, Volume2, VolumeX, Wind } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import * as THREE from "three";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
@@ -20,11 +20,8 @@ export function LindeAirLiquefaction3D() {
   const [showUiOverlay, setShowUiOverlay] = useState<boolean>(true);
 
   // Cryogenic Thermodynamics Parameters
-  const { params, updateParam } = usePatentPhysics("us-727650-linde-air-liquefaction");
+  const { params } = usePatentPhysics("us-727650-linde-air-liquefaction");
   const inletPressureBar = params.inletBar ?? 200;
-  const liquidTempKelvin = 80;
-  const liquidTempCelsius = -193.15;
-  const liquefactionRateLph = ((inletPressureBar / 200) * 32).toFixed(1);
   const [showMist, setShowMist] = useState<boolean>(true);
   const [activeCamera, setActiveCamera] = useState<CameraPreset>("iso");
   const { isAudioMuted, toggleSound: toggleEngine } = usePatentAudio();

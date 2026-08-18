@@ -28,7 +28,7 @@ export function EngelbartMouse3D() {
   const containerRef = useRef<HTMLDivElement>(null);
 
   // Mouse Kinematics & Rendering State
-  const { params, updateParam } = usePatentPhysics("us-3541541-engelbart-mouse");
+  const { params } = usePatentPhysics("us-3541541-engelbart-mouse");
   const [showUiOverlay, setShowUiOverlay] = useState<boolean>(true);
   const displacementSpeedMmSec = params.mouseSpeed ?? 140;
   const [mouseTrajectory, _setMouseTrajectory] = useState<
