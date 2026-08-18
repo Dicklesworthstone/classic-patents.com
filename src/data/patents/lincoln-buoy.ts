@@ -1,4 +1,5 @@
 import type { Patent } from "@/types/patent";
+import { lincolnBuoyArchivalEdition } from "../editions/lincolnBuoyEdition";
 
 export const lincolnBuoyPatent: Patent = {
   id: "us-6469-lincoln-buoy",
@@ -20,6 +21,7 @@ export const lincolnBuoyPatent: Patent = {
   originalPdfUrl: "/patents/pdfs/us-6469-lincoln-buoy.pdf",
   googlePatentsUrl: "https://patentimages.storage.googleapis.com/pdfs/US6469.pdf",
   usptoClassification: "B63B 43/14 (Vessels; buoyancy tanks)",
+  archivalEdition: lincolnBuoyArchivalEdition,
   originalTextAsset: {
     url: "/patents/transcripts/us-6469-lincoln-buoy.txt",
     pageCount: 3,

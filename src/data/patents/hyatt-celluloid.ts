@@ -1,250 +1,149 @@
+import { hyattCelluloidArchivalEdition } from "@/data/editions/hyattCelluloidEdition";
 import type { Patent } from "@/types/patent";
 
 export const hyattCelluloidPatent: Patent = {
   id: "us-105338-hyatt-celluloid",
   patentNumber: "US 105,338",
   title: "Improvement in Treating and Molding Pyroxyline",
-  shortTitle: "Hyatt Celluloid Thermoplastic Synthesis",
-  subtitle:
-    "Camphor Plasticization of Nitrocellulose, Heat/Pressure Solvation, and Thermoplastic Molding",
-  inventors: ["John Wesley Hyatt", "Isaiah S. Hyatt"],
+  shortTitle: "Hyatt Camphor–Pyroxyline Process",
+  subtitle: "Heat-activated camphor solvent action in pressed pyroxylin pulp",
+  inventors: ["John W. Hyatt, Jr.", "Isaiah S. Hyatt"],
   inventorLocation: "Albany, Albany County, New York",
   grantDate: "1870-07-12",
-  filingDate: "1870-04-02",
+  // The one-page grant bears no application or filing date. The catalogue's
+  // required date field therefore preserves the grant record date rather than
+  // repeating the unsupported legacy 1870-04-02 filing assertion.
+  filingDate: "1870-07-12",
   era: "Civil War & Industrial Acceleration (1860–1880)",
   category: "materials",
-  categoryLabel: "Polymer Chemistry & Materials Science",
+  categoryLabel: "Materials and Polymer Processing",
   summary:
-    "The 1870 origin of the synthetic plastics industry: John Wesley Hyatt and Isaiah Hyatt's method of dissolving solid pyroxylin (nitrocellulose) with camphor plasticizer under elevated heat and hydraulic pressure, producing the world's first semi-synthetic thermoplastic (Celluloid) that was rigid, moldable, tough, and transparent.",
+    "US 105,338 describes making a solid pyroxyline compound by wet-pulping the material, mixing in finely divided camphor and optional pigments, removing most water while retaining enough to prevent burning or explosion, then applying 150° to 300° Fahrenheit heat and pressure. Its three claims separately name pulping, heat-activated camphor-gum in the pulp, and pressure maintained through cooling.",
   heroQuote:
-    "We have discovered that gum camphor, when ground with solid soluble cotton (pyroxyline) and subjected to heat and heavy pressure, acts as a powerful solvent, producing a solid, uniform, and horn-like material which can be molded into any desired form...",
+    "The heat, according to the degree used, vaporizes or liquefies the camphor, and thus converts it into a solvent of the pyroxyline.",
   originalPdfUrl: "/patents/pdfs/us-105338-hyatt-celluloid.pdf",
-  googlePatentsUrl: "https://patents.google.com/patent/US105338/en",
-  usptoClassification: "C08L 1/18 (Cellulose nitrate compositions; Celluloid)",
-  originalTextAsset: {
-    url: "/patents/source-text/us-105338-hyatt-celluloid.txt",
-    pageCount: 1,
-    kind: "source-pdf-text-layer",
-  },
-  originalText: `UNITED STATES PATENT OFFICE.
-JOHN W. HYATT, JR., AND ISAIAH S. HYATT, OF ALBANY, NEW YORK.
-
-IMPROVEMENT IN TREATING AND MOLDING PYROXYLINE.
-
-Specification forming part of Letters Patent No. 105,338, dated July 12, 1870.
-
-To all whom it may concern:
-Be it known that we, JOHN W. HYATT, Jr., and ISAIAH S. HYATT, of the city and county of Albany, in the State of New York, have invented a new and useful Process of Treating and Molding Pyroxyline, of which the following is a specification:
-
-Our invention consists in a new process of dissolving and consolidating pyroxyline (soluble gun-cotton or nitrocellulose) by combining it with solid gum-camphor and subjecting the mixture to heat and pressure in a closed mold or press.
-
-Heretofore, pyroxyline has been dissolved in volatile liquid solvents such as alcohol and ether (forming collodion or 'Parkesine'), which required great quantities of expensive solvents, shrank excessively upon evaporation, and produced brittle, warped articles.
-
-In our process:
-1. We take pyroxylin in a finely divided or pulped condition and mix it thoroughly with finely ground solid gum-camphor in the proportion of one part by weight of camphor to about two parts of pyroxyline.
-2. The dry, intimate mixture is placed in a strong mold and subjected to heavy pressure (from 500 to 2,000 pounds per square inch) while simultaneously heating the mold to a temperature of 150 to 250 degrees Fahrenheit (65 to 120 degrees Celsius).
-3. Under this combined heat and pressure, the camphor melts and acts as a solvent upon the pyroxylin, converting the dry, porous mass into a uniform, dense, gelatinized, and perfectly homogenous solid without requiring any volatile liquid solvent.
-4. When cooled under pressure, the mass solidifies into a hard, tough, elastic material resembling ivory, tortoise-shell, or horn, which can be turned in a lathe, planed, sawed, polished, or pressed into intricate molds.
-
-We term this new manufactured material "Celluloid."
-
-I claim as our invention:
-1. The process of dissolving or transforming pyroxyline into a solid homogenous mass by comminuting it with solid camphor and subjecting the mixture to heat and pressure, substantially as described.
-2. The solid manufactured product or plastic composition (Celluloid) resulting from the heat and pressure transformation of pyroxyline and camphor.`,
+  googlePatentsUrl: "https://patents.google.com/patent/US105338A/en",
+  usptoClassification: "C08L 1/18 (cellulose nitrate compositions)",
+  // This is a source-true on-page excerpt. The complete public source is the
+  // explicit archivalEdition below; the preserved legacy text assets are not
+  // represented as a reviewed transcription.
+  originalText:
+    "Our invention consists, first, of so preparing pyroxyline that pigments and other substances in a powdered condition can be easily and thoroughly mixed therewith before the pyroxyline is subjected to the action of a solvent; secondly, of mixing with the pyroxyline so prepared any desirable pigment, coloring matter, or other material, and also any substance in a powdered state which may be vaporized or liquefied and converted into a solvent of pyroxyline by the application of heat; and, thirdly, of subjecting the compound so made to heavy pressure while heated, so that the least practicable proportion of solvent may be used in the production of solid collodion and its compounds.",
+  archivalEdition: hyattCelluloidArchivalEdition,
   plainEnglishExplanation: {
     overview:
-      "In the 1860s, natural raw materials like elephant ivory, tortoiseshell, and horn were rapidly disappearing due to surging industrial demand for billiard balls, piano keys, combs, and dentures. Earlier attempts to dissolve nitrocellulose in alcohol/ether created Parkesine, which warped and cracked as the solvent evaporated. John Wesley Hyatt discovered that solid powdered camphor ($C_{10}H_{16}O$) acted as a 'latent plasticizer': when heated under hydraulic pressure ($100^\\circ\\text{C}, 10\\text{ MPa}$), the camphor melted and solvated the nitrocellulose polymer chains into a clear, tough, moldable thermoplastic called Celluloid.",
+      "The specification addresses a processing problem: mix pigments or other powders through pyroxyline before solvent action, then make the solvent active inside the material instead of relying on a pre-made liquid solution. The Hyatt brothers use finely divided camphor, heat, and pressure to produce a moldable solid compound while stating an explicit safety condition: enough moisture remains after dewatering to prevent the pyroxyline from burning or exploding during the remaining process.",
     coreMechanism:
-      "Finely pulped nitrocellulose (cellulose dinitrate, $C_6H_8(NO_2)_2O_5$) is blended in a $2:1$ mass ratio with crystalline gum camphor. The dry mixture is loaded into a hydraulic heated mold. As temperature rises to $90^\\circ-110^\\circ\\text{C}$, the camphor crystals melt and insert themselves between the rigid cellulosic polymer chains, disrupting inter-chain hydrogen bonds and lowering the glass transition temperature ($T_g$) below the polymer's thermal decomposition threshold. Under $10\\text{ MPa}$ pressure, the softened chains slide past one another, flowing into the mold cavities. Upon cooling below $50^\\circ\\text{C}$, the material solidifies into a glass-clear, high-modulus thermoplastic with outstanding impact toughness.",
+      "Wet grinding turns pyroxyline into a pulp. Pigment, dye, or another compatible powder can then be dispersed through that pulp. About one part finely pulverized camphor to two parts dry pyroxyline is mixed in, most water is expelled in a perforated vessel, and the mass goes into a mold. At 150° to 300° Fahrenheit, selected for the camphor proportion and mass size, camphor vaporizes or liquefies and becomes the pyroxyline solvent. Heavy pressure forces that solvent into intimate contact with every particle. Cooling while the pressure remains on completes the stated process before removal from the mold.",
     mechanicalBreakdown: [
       {
-        title: "Nitrocellulose Pulped Polymer Base",
-        summary: "Cellulose dinitrate fibers acting as the high-strength backbone.",
+        title: "Wet-pulped pyroxyline",
+        summary: "A paper-pulp-like wet grind creates a mixable starting state.",
         technicalDetails:
-          "Synthesized by nitrating purified cotton linters to a nitrogen content of $10.5\\text{ to }11.5\\%$ (soluble pyroxylin). Higher nitration ($>13\\%$) produces insoluble guncotton explosive; Hyatt's controlled dinitrate grade retains solubility in organic ketones and camphor.",
-        archaicTerm: "Finely divided or pulped pyroxyline",
-        modernEquivalent: "Cellulose dinitrate (low nitrogen) / Thermoplastic cellulose ester",
+          "The specification calls for grinding pyroxyline in water to a fine pulp, then grinding in pigments, dyes, or other suitable powdered or granulated material. This is both the first stated invention and printed claim 1: the pulp condition is what makes thorough pre-solvent mixing possible.",
+        archaicTerm: "Pyroxyline",
+        modernEquivalent: "Soluble nitrocellulose or pyroxylin",
       },
       {
-        title: "Camphor Solid Latent Plasticizer",
-        summary: "Bicyclic monoterpene ketone ($C_{10}H_{16}O$) acting as non-volatile solvent.",
-        technicalDetails:
-          "Camphor melts at $176^\\circ\\text{C}$, but in the presence of nitrocellulose forms a low-melting eutectic complex ($T_m \\approx 80^\\circ\\text{C}$). The hydrophobic bornane rings screen nitrate ester polar groups, increasing free volume and enabling ductile polymer chain mobility.",
-        archaicTerm: "Finely ground solid gum-camphor",
-        modernEquivalent: "Internal plasticizer / High-solvating ketone plasticizer",
-      },
-      {
-        title: "Heated Hydraulic Autoclave Compression Mold",
-        summary: "Steam-jacketed hydraulic press consolidating the plastic mass.",
-        technicalDetails:
-          "A heavy steel piston press exerting pressures of $P = 5\\text{ to }15\\text{ MPa}$ with steam heating channels ($T = 100^\\circ\\text{C}$). Consolidation under pressure eliminates air voids and bubbles, achieving a density of $\\rho = 1.38\\text{ g/cm}^3$ and optical clarity.",
-        archaicTerm: "Strong mold subjected to heat and heavy pressure",
-        modernEquivalent: "Heated hydraulic compression molding press / Transfer mold",
-      },
-      {
-        title: "Solventless High-Shear Differential Roll Mill",
+        title: "Finely divided camphor",
         summary:
-          "Opposed heated cast-iron rollers masticating dry powder into clear consolidated sheets.",
+          "Camphor is incorporated as a solid ingredient that heat subsequently makes solvent-active.",
         technicalDetails:
-          "Two counter-rotating heated rollers ($D = 250\\text{ mm}$) operated with a $1.25:1$ surface speed differential. The combination of intense mechanical shear strain ($\\dot{\\gamma} > 120\\text{ s}^{-1}$) and surface contact heat ($T_{\\text{roll}} = 95^\\circ\\text{C}$) fuses the dry powder into a plasticized, bubble-free sheet within 180 seconds without requiring volatile alcohol/ether solvents.",
-        archaicTerm: "Masticating rollers for homogenizing the mixture",
-        modernEquivalent: "Two-roll differential polymer compounding mill",
+          "The source gives about one part by weight camphor to two parts dry pyroxyline, while allowing some variation. It permits water grinding, pounding, rolling, or alcoholic dissolution followed by precipitation to make the camphor finely divided. Claim 2 requires the finely comminuted camphor-gum to be mixed with the pulp and rendered a solvent by heat.",
+        archaicTerm: "Gum-camphor",
+        modernEquivalent: "Finely divided camphor",
       },
       {
-        title: "Chilled Die Platens & Positive Pin Ejector Matrix",
+        title: "Dewatering, heated pressing, and pressure cooling",
         summary:
-          "Water-quenched steel tooling freezing polymer chains into crystalline-clear molded geometries.",
+          "The mold process removes most water, activates camphor with heat, and keeps pressure on through cooling.",
         technicalDetails:
-          "Following high-pressure consolidation, internal mold cooling channels switch instantaneously from live steam to chilled water ($T_{\\text{water}} = 12^\\circ\\text{C}$). Rapid quenching through the glass transition zone ($T_g \\approx 65^\\circ\\text{C}$) locks in molecular alignment and suppresses camphor bloom, while spring-driven ejector pins pop finished billiard ball hemispheres out of the polished tool steel cavity.",
-        archaicTerm: "Cooled matrix and knock-out plungers",
-        modernEquivalent: "Rapid thermal cycling injection tooling & mechanical ejector pins",
+          "The mixture is strained and pressed in a perforated vessel, but enough moisture must remain to prevent burning or explosion. In a suitable mold, steam or another method heats it to 150° to 300° Fahrenheit while a hydraulic or other press applies heavy pressure. The source says pressure gives solvent contact with every particle; claim 3 specifies keeping that pressure until the mold and contents cool.",
+        archaicTerm: "Solid collodion",
+        modernEquivalent: "A consolidated pyroxyline compound",
       },
     ],
     scientificPrinciples: [
       {
-        principle: "Polymer Glass Transition ($T_g$) Plasticization",
-        formula:
-          "\\frac{1}{T_{g,\\text{blend}}} = \\frac{w_{\\text{polymer}}}{T_{g,\\text{polymer}}} + \\frac{w_{\\text{camphor}}}{T_{g,\\text{camphor}}}",
+        principle: "Heat-activated solvent action",
+        formula: "150° F ≤ T ≤ 300° F",
         explanation:
-          "Adding 30% by weight camphor plasticizer depresses the glass transition temperature of rigid nitrocellulose from $T_g > 160^\\circ\\text{C}$ (where it decomposes) down to $T_g \\approx 65^\\circ\\text{C}$, enabling safe melt processing.",
+          "This is the temperature range printed in the specification, not a modern optimized processing prescription. Hyatt and Hyatt say the proper point within it depends on camphor proportion and mass size, and that heat vaporizes or liquefies camphor so it can act as a pyroxyline solvent.",
       },
       {
-        principle: "Free Volume Theory of Viscoelastic Flow",
-        formula:
-          "\\eta(T) = \\eta_0 \\exp\\left(-\\frac{C_1 (T - T_g)}{C_2 + (T - T_g)}\\right) \\quad (\\text{WLF Equation})",
+        principle: "Pressure-assisted intimate contact",
         explanation:
-          "Above $T_g$, the fractional free volume between polymer chains expands exponentially, dropping melt viscosity by four orders of magnitude and allowing the material to conform to intricate mold surfaces.",
-      },
-      {
-        principle: "Hydrogen Bond Disruption & Solvation Energetics",
-        formula:
-          "\\Delta G_{\\text{mixing}} = \\Delta H_{\\text{mixing}} - T \\Delta S_{\\text{mixing}} < 0",
-        explanation:
-          "The favorable dipolar interaction between the camphor carbonyl group ($C=O$) and the cellulose hydroxyl/nitrate groups yields a negative enthalpy of mixing, driving spontaneous molecular solvation upon heating.",
-      },
-      {
-        principle: "Flory-Huggins Polymer Solution Miscibility Thermodynamics",
-        formula:
-          "\\frac{\\Delta G_m}{R T} = \\frac{\\phi_1}{x_1} \\ln\\phi_1 + \\frac{\\phi_2}{x_2} \\ln\\phi_2 + \\chi_{12} \\phi_1 \\phi_2, \\quad \\chi_{12} < \\chi_{\\text{critical}}",
-        explanation:
-          "The Flory-Huggins interaction parameter $\\chi_{12}$ between camphor and nitrocellulose is negative ($\\chi \\approx -0.15$), ensuring thermodynamic miscibility and single-phase amorphous transparency across wide operational temperature ranges.",
+          "The source's mechanism is mechanical as well as thermal: heavy pressure forces the heat-activated solvent into intimate contact with every particle, then remains applied while the mold and contents cool. No pressure value is printed in the facsimile, so the record does not invent one.",
       },
     ],
     whyItMattersToday:
-      "Celluloid was the world's very first commercial synthetic thermoplastic, giving birth to the entire multi-trillion dollar plastics and polymers industry. It made motion picture film possible (providing the transparent flexible substrate for Edison and Eastman), established modern injection and compression molding, and democratized consumer products from dental plates to eyeglasses and guitar picks.",
+      "The document is a compact early statement of compounding and compression molding: prepare a particulate feedstock, distribute additives, activate a processing aid with heat, consolidate under pressure, and cool under constraint. Its careful disclaimer also shows that the claimed route was not every use of camphor with nitrated cellulose, but the described heat-and-pressure sequence.",
   },
   claims: [
     {
       number: 1,
       isIndependent: true,
-      originalText:
-        "The process of dissolving or transforming pyroxyline into a solid homogenous mass by comminuting it with solid camphor and subjecting the mixture to heat and pressure, substantially as described.",
+      originalText: "Grinding pyroxyline into a pulp, as and for the purpose described.",
       plainEnglish:
-        "Pioneer master claim covering the process of converting nitrocellulose and solid camphor under heat and pressure into a solid, homogenous, moldable plastic without liquid solvents.",
-      keyInnovations: [
-        "Solid-state camphor plasticization of nitrocellulose",
-        "Heat and hydraulic pressure solventless transformation",
-        "Manufacture of homogenous thermoplastic mass",
-      ],
+        "Claim 1 protects the preparatory operation of grinding pyroxyline into pulp. Its legal role is narrow but foundational: the pulp is the condition that the specification says permits pigments and other powders to be mixed thoroughly before solvent action.",
+      keyInnovations: ["Pyroxyline pulp", "Wet grinding", "Pre-solvent powder mixing"],
       legalSignificance:
-        "The foundational process patent for the first commercial synthetic thermoplastic (Celluloid).",
+        "A process claim to the document's first stated step, limited by the described purpose rather than a general claim to every ground pyroxyline material.",
     },
     {
       number: 2,
-      isIndependent: false,
-      dependsOn: [1],
+      isIndependent: true,
       originalText:
-        "The solid manufactured product or plastic composition (Celluloid) resulting from the heat and pressure transformation of pyroxyline and camphor.",
+        "The use of finely-comminuted camphor-gum mixed with pyroxyline pulp, and rendered a solvent thereof by the application of heat, substantially as described.",
       plainEnglish:
-        "Composition of matter claim covering the solid plastic substance (Celluloid) produced by the heat-and-pressure transformation of nitrocellulose and camphor.",
+        "Claim 2 covers the combination of finely divided camphor-gum with pyroxyline pulp when heat renders the camphor a solvent of that pulp. It requires the named material relationship and heat-activated solvent effect; it does not claim the disclaimed older practice of using a pre-made liquid camphor solution merely because camphor is present.",
       keyInnovations: [
-        "Celluloid composition of matter",
-        "Thermoplastic synthetic ivory/horn substitute",
+        "Finely comminuted camphor-gum",
+        "Pyroxyline pulp",
+        "Heat-activated solvent action",
       ],
       legalSignificance:
-        "Secured the composition of matter for Celluloid, enabling the Celluloid Manufacturing Company to dominate the early plastics market.",
+        "The central material-process claim, expressly qualified by “substantially as described.”",
     },
-  ],
-  drawings: [
     {
-      figureNumber: "Fig. 1",
-      title: "Sectional View of Hydraulic Celluloid Heating & Molding Press",
-      caption:
-        "Cutaway drawing showing steam-jacketed mold cylinder, hydraulic ram piston, pressure gauge, and consolidated Celluloid billet.",
-      svgType: "hyatt-celluloid",
-      callouts: [
-        {
-          id: "hc-1",
-          figureRef: "Fig. 1",
-          label: "A",
-          element: "Steam-Jacketed Mold Cylinder",
-          description: "Heated steel chamber maintaining temperature at 100°C.",
-          x: 50,
-          y: 50,
-        },
-        {
-          id: "hc-2",
-          figureRef: "Fig. 1",
-          label: "B",
-          element: "Hydraulic Piston Ram",
-          description: "Press ram exerting 10 MPa consolidation pressure.",
-          x: 50,
-          y: 20,
-        },
-        {
-          id: "hc-3",
-          figureRef: "Fig. 1",
-          label: "C",
-          element: "Celluloid Consolidated Billet",
-          description: "Homogenous translucent thermoplastic plastic matrix.",
-          x: 50,
-          y: 65,
-        },
-      ],
+      number: 3,
+      isIndependent: false,
+      dependsOn: [2],
+      originalText:
+        "In conjunction with such use of camphor-gum, the employment of pressure, and continuing the same until the mold and contents are cooled, substantially as described.",
+      plainEnglish:
+        "Claim 3 adds a pressure-and-cooling condition to the camphor-gum use of claim 2. The pressure is not momentary: the source requires it to continue until both mold and contents have cooled, matching the process description's sequence of completing solvent action, cooling under pressure, and only then removing the molded mass.",
+      keyInnovations: ["Pressure during molding", "Cooling under pressure", "Camphor-gum process"],
+      legalSignificance:
+        "A dependent combination claim that preserves the duration of pressure as part of the claimed process.",
     },
   ],
+  // The complete facsimile is a one-page two-column specification. It prints
+  // no drawings, figure labels, or figure references; no reconstructed figure
+  // is represented as a source drawing.
+  drawings: [],
   historicalContext: {
     problemStatement:
-      "In 1863, the New York billiard supply firm Phelan & Collander offered a massive $10,000 prize ($250,000 today) to anyone who could invent a synthetic substitute for elephant ivory billiard balls, as wild elephant populations were being decimated and ivory supplies dwindled.",
+      "The patentees sought a way to make a solid pyroxyline material after pigment and other powders had been mixed through it, using less of a heat-activated solvent and avoiding the shrinkage they say does not appreciably occur in their molded product.",
     priorArtLimitations: [
-      "Alexander Parkes's 'Parkesine' (1856) used liquid solvents that evaporated, leaving warped, cracked, and highly flammable items.",
-      "Hard vulcanized rubber (ebonite) was dark, brittle, and lacked the resilience and bright colorability of ivory.",
-      "No solvent-free process existed to mold nitrocellulose under heat without triggering thermal explosion.",
+      "The specification acknowledges camphor already used as a liquid solvent for xyloidine, then expressly disclaims that use.",
+      "A liquid camphor solution is not the described sequence: this patent begins with finely divided camphor mixed through wet pyroxyline pulp and activates it with heat inside the pressed mass.",
     ],
     breakthroughInsight:
-      "John Wesley Hyatt, an Albany printer, discovered by trial and error that dry powdered camphor would melt under heat and pressure to completely dissolve nitrocellulose without adding a single drop of liquid solvent, creating a solid that did not shrink as it cooled.",
-    patentWars: [
-      {
-        rivalName: "Daniel Spill and the British Xylonite Company",
-        rivalClaim:
-          "Spill sued Hyatt in 1877 (Spill v. Celluloid Manufacturing Co.), claiming Celluloid infringed his 1869 patents for Xylonite.",
-        conflictDetails:
-          "The legal battle lasted six years in New York federal court. Judge Edward Blatchford initially found for Spill, but on rehearing in 1884, Hyatt's legal team proved that Alexander Parkes had used camphor in liquid solutions prior to Spill, and that Hyatt alone invented the heat-and-pressure dry consolidation process.",
-        resolution:
-          "The court completely dismissed Spill's infringement suit, granting the Hyatt brothers an unassailable commercial monopoly over Celluloid manufacturing in America.",
-        legalOutcome:
-          "Affirmed Hyatt's dry plasticization technique as a patentable pioneer manufacturing breakthrough.",
-      },
-    ],
+      "Heat can make finely divided camphor, already dispersed in pyroxyline pulp, solvent-active while pressure forces intimate contact through the mass and remains applied through cooling.",
+    patentWars: [],
     civilizationalImpact:
-      "Celluloid launched the modern Age of Plastics. The Hyatt brothers founded the Celluloid Manufacturing Company in Newark, New Jersey, producing millions of items including collars, cuffs, dental plates, fountain pens, and billiard balls. Hannibal Goodwin and George Eastman used Celluloid as the flexible transparent base for roll film, enabling the creation of Hollywood and the global cinema industry.",
-    funFact:
-      "Early Celluloid billiard balls were occasionally temperamental: when struck hard by a billiard cue, the concentrated mechanical impact could cause the thin nitrocellulose outer coat to detonate with a loud bang like a cap pistol! Hyatt recalled receiving a letter from a Colorado saloon keeper who wrote that while the balls were excellent, 'every time they hit hard, every man in the saloon pulled his revolver!'",
+      "The patent records an early, source-specific route to a moldable pyroxyline compound. Its importance here is the documented process sequence and its limits, rather than a retrospective claim that this one-page grant settles every later question about celluloid or plastics.",
     aftermath:
-      "John Wesley Hyatt went on to patent over 200 inventions, including the Hyatt roller bearing in 1892 (which was purchased by General Motors in 1916). In 1914, Hyatt was awarded the prestigious Perkin Medal by the Society of Chemical Industry for the discovery of Celluloid.",
+      "A later 1878 Hyatt comb patent identifies the article made by the processes described in US 105,338 as “celluloid” and notes that US 105,338 had been reissued as No. 5,928. That later description is context, not wording added to the 1870 source.",
+    sideNotes: [
+      "The 1870 facsimile does not use the word “Celluloid.” It calls the intended result “solid collodion” and its compounds.",
+      "The facsimile has no drawing sheet, figure number, callout, or previewable figure reference.",
+    ],
   },
-  tags: [
-    "John Wesley Hyatt",
-    "Celluloid",
-    "Plastics",
-    "Polymer Science",
-    "Thermoplastics",
-    "Nitrocellulose",
-  ],
+  tags: ["pyroxyline", "camphor", "nitrocellulose", "compression molding", "materials"],
   stats: {
-    totalClaims: 2,
-    independentClaims: 1,
-    patentWarYears: "1870–1884",
-    impactScore: 99,
+    totalClaims: 3,
+    independentClaims: 2,
   },
 };

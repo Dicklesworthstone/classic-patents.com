@@ -1,4 +1,22 @@
 import type { Patent } from "@/types/patent";
+import { whitneyCottonGinArchivalEdition } from "../editions/whitneyCottonGinEdition";
+
+const whitneySourceDrawingCrops = [
+  ["Fig. 1", "Section of the machine"],
+  ["Fig. 2", "Cylinder and machine detail"],
+  ["Fig. 2.1", "Tooth-row detail"],
+  ["Fig. 2.2", "Tooth-row detail"],
+  ["Fig. 2.3", "Tooth detail"],
+  ["Fig. 2.4", "Tooth detail"],
+  ["Fig. 2.5", "Tooth detail"],
+  ["Fig. 3", "Whirls and belt drive"],
+  ["Fig. 4", "Clearer construction"],
+  ["Fig. 5", "Clearer detail"],
+  ["Fig. 6", "Brush detail"],
+  ["Fig. 7", "Cylinder bearing detail"],
+  ["Fig. 11", "Breastwork detail"],
+  ["Fig. 12", "Breastwork section"],
+] as const;
 
 export const whitneyCottonGinPatent: Patent = {
   id: "us-x72-whitney-cotton-gin",
@@ -14,36 +32,23 @@ export const whitneyCottonGinPatent: Patent = {
   category: "consumer",
   categoryLabel: "Mechanical Processing & Agriculture",
   summary:
-    "The 1794 mechanical gin that transformed world agriculture: Eli Whitney's toothed wooden cylinder pulling green-seed cotton lint through a narrow slotted wire breastwork, mechanically separating fiber from seeds while counter-rotating horsehair brushes cleared the teeth, increasing cotton processing productivity fifty-fold in a single stroke.",
+    "Whitney's 1794 record describes a wooden toothed cylinder that carries cotton through a grooved breastwork while seeds remain behind, then a faster contrary-moving clearer that removes lint from the teeth. The complete source is a signed description and affidavit, not a modern numbered-claim instrument.",
   heroQuote:
-    "The cotton is put into the hopper, where it is acted upon by the teeth of the cylinder... the seeds being prevented from passing through the grates by reason of their size, are left behind, while the clean cotton is swept away by the brushes.",
+    "The cotton is put into the hopper, carried through the breastwork by the teeth, brushed off from the teeth by the clearer and flies off from the clearer, with the assistance of the air, by its own centrifugal force.",
   originalPdfUrl: "/patents/pdfs/us-x72-whitney-cotton-gin.pdf",
   googlePatentsUrl: "https://patents.google.com/patent/USX72/en",
   usptoClassification: "D01B 1/06 (Separating cotton fibres from seed; Saw gins)",
-  originalText: `UNITED STATES PATENT OFFICE.
-ELI WHITNEY, OF MULBERRY GROVE, GEORGIA.
-
-COTTON GIN.
-
-Letters Patent No. X72. Dated March 14, 1794.
-Application filed June 20, 1793.
-
-THE SCHEDULE TO WHICH THESE LETTERS PATENT ARE REFERRED.
-
-To all to whom these presents shall come:
-BE IT KNOWN that I, ELI WHITNEY, a citizen of the State of Massachusetts, residing at Mulberry Grove, in the County of Chatham and State of Georgia, have invented a new and useful machine for ginning and cleaning cotton, of which the following is a specification:
-
-The nature of my invention consists in a machine by which the seeds of short-staple cotton are separated from the lint or wool with great rapidity and with small labor.
-
-The machine consists of a wooden cylinder mounted on an iron axle, into the surface of which are set annular rows of wire teeth or circular saw plates. This cylinder revolves within a wooden framing having a hopper or breastwork formed of parallel wire or iron ribs placed so close together that the teeth can pass freely between them, while the seeds are excluded and held back by their size.
-
-Behind the toothed cylinder is placed a second cylinder armed with rows of stiff horsehair or hog-bristle brushes. This brush cylinder is geared to revolve in a direction opposite to that of the toothed cylinder and with greater velocity, whereby the clean cotton fiber drawn through the ribs by the teeth is swept from the teeth and thrown out at the rear of the machine by the centrifugal blast of air created by the revolving brushes.
-
-The cotton being placed in the hopper, the crank is turned, imparting motion to the toothed cylinder. The wire teeth seizing upon the cotton fibers drag them through the narrow apertures between the ribs into the interior of the box, leaving the clean seeds behind in the hopper to fall out through a lower opening. The rapidly rotating brushes continuously strip the teeth clean of lint, keeping the apparatus unencumbered and operating continuously.
-
-I claim as my invention:
-1. The combination of a cylinder furnished with rows of teeth with a breastwork or grate having narrow apertures through which said teeth pass to pull cotton fiber while excluding seeds.
-2. In combination with said toothed cylinder and grate, a clearing cylinder furnished with brushes revolving with greater velocity in the opposite direction to detach the cotton from the teeth.`,
+  originalText:
+    "This Machine may be described under five divisions, corresponding to its five principal parts: Viz: 1. The Frame, 2. The Cylinder; 3. The Breastwork; 4. The clearer, and 5. The Hopper.",
+  originalTextAsset: {
+    url: "/patents/transcripts/us-x72-whitney-cotton-gin.txt",
+    pageCount: 12,
+    kind: "reviewed-transcription",
+    reviewedBy: "Classic Patents editorial agent (HazyTern)",
+    reviewedAt: "2026-08-17",
+    sourcePdfSha256: "9b0873182dbd2852a89bbf5bc7101e2c3b7a2d0cc76cee0df5c7acbfc86844ee",
+  },
+  archivalEdition: whitneyCottonGinArchivalEdition,
   plainEnglishExplanation: {
     overview:
       "Green-seed upland cotton grew prolifically across the American South, but its sticky seeds adhered so tightly to the fibers that a laborer took an entire day to clean a single pound by hand. Eli Whitney realized that continuous mechanical tooth action combined with a rigid exclusionary grid could separate fiber from seed by exploiting the difference in their physical dimensions. His 1794 gin increased fiber output from 1 pound to 50 pounds per worker per day.",
@@ -123,76 +128,16 @@ I claim as my invention:
     whyItMattersToday:
       "Whitney's concept of high-speed mechanical dimensional exclusion paired with continuous rotary tooth capture remains the core architecture of all modern commercial saw gins (such as Lummus and Continental Eagle gins processing thousands of bales per hour). It triggered an economic and demographic explosion that remade global trade and industrial textile manufacturing.",
   },
-  claims: [
-    {
-      number: 1,
-      isIndependent: true,
-      originalText:
-        "The combination of a cylinder furnished with rows of teeth with a breastwork or grate having narrow apertures through which said teeth pass to pull cotton fiber while excluding seeds.",
-      plainEnglish:
-        "Broad pioneer claim securing the combination of a rotating toothed cylinder and a slotted grating where the slots are sized to allow teeth and fiber through while physically blocking cotton seeds.",
-      keyInnovations: [
-        "Rotary toothed cylinder for fiber snagging",
-        "Narrow slotted breastwork exclusionary grid",
-        "Mechanical dimensional separation of lint from seed",
-      ],
-      legalSignificance:
-        "The foundational claim covering mechanical saw ginning, heavily litigated across the South after widespread infringing copies were constructed.",
-    },
-    {
-      number: 2,
-      isIndependent: false,
-      dependsOn: [1],
-      originalText:
-        "In combination with said toothed cylinder and grate, a clearing cylinder furnished with brushes revolving with greater velocity in the opposite direction to detach the cotton from the teeth.",
-      plainEnglish:
-        "Specifies the counter-rotating high-speed brush cylinder positioned behind the teeth to continuously sweep and discharge the stripped lint.",
-      keyInnovations: [
-        "Counter-rotating brush doffer",
-        "Speed-increasing gear drive for centrifugal lint discharge",
-      ],
-      legalSignificance:
-        "Protected the continuous self-cleaning mechanism that prevented the wire teeth from clogging under high-speed operation.",
-    },
-  ],
-  drawings: [
-    {
-      figureNumber: "Fig. 1",
-      title: "Perspective View of Cotton Gin Mechanism",
-      caption:
-        "Isometric drawing of Whitney's cotton gin showing hopper breastwork, toothed saw cylinder, geared brush cylinder, and hand crank.",
-      svgType: "whitney-cotton-gin",
-      callouts: [
-        {
-          id: "cg-1",
-          figureRef: "Fig. 1",
-          label: "A",
-          element: "Toothed Saw Cylinder",
-          description: "Wooden cylinder set with wire teeth pulling fiber from hopper.",
-          x: 45,
-          y: 40,
-        },
-        {
-          id: "cg-2",
-          figureRef: "Fig. 1",
-          label: "B",
-          element: "Slotted Breastwork Grate",
-          description: "Iron ribs spaced at 3.2 mm allowing teeth through while blocking seeds.",
-          x: 30,
-          y: 35,
-        },
-        {
-          id: "cg-3",
-          figureRef: "Fig. 1",
-          label: "C",
-          element: "Clearer Brush Cylinder",
-          description: "Counter-rotating horsehair brush cylinder sweeping lint from teeth.",
-          x: 65,
-          y: 45,
-        },
-      ],
-    },
-  ],
+  // This facsimile is a descriptive schedule with signatures and an affidavit,
+  // not a later-form patent containing separately enumerated claims.
+  claims: [],
+  drawings: whitneySourceDrawingCrops.map(([figureNumber, title]) => ({
+    figureNumber,
+    title,
+    caption: `Source-derived ${figureNumber} crop from the pinned Whitney cotton-gin facsimile drawing sheets.`,
+    svgType: "whitney-cotton-gin",
+    callouts: [],
+  })),
   historicalContext: {
     problemStatement:
       "Upland short-staple cotton was easy to grow across inland soil, but each seed was coated in dense, tangled fuzz that required over 10 hours of manual finger picking to yield one pound of clean fiber, creating a massive economic bottleneck for textile mills.",
@@ -232,7 +177,7 @@ I claim as my invention:
     "Interchangeable Parts",
   ],
   stats: {
-    totalClaims: 2,
-    independentClaims: 1,
+    totalClaims: 0,
+    independentClaims: 0,
   },
 };

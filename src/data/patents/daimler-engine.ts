@@ -1,291 +1,355 @@
+import { daimlerMarineEngineArchivalEdition } from "@/data/editions/us-361931-daimler-engine";
 import type { Patent } from "@/types/patent";
 
+/**
+ * US 361,931 is a marine-engine installation patent. Its pinned six-page
+ * facsimile does not describe a motor carriage; the record is deliberately
+ * limited to what that primary source presents.
+ */
 export const daimlerEnginePatent: Patent = {
   id: "us-361931-daimler-engine",
   patentNumber: "US 361,931",
-  title: "Motor Carriage",
-  shortTitle: "Daimler High-Speed Petrol Engine & Motor Carriage",
+  title: "Explosive-Gas Marine Engine",
+  shortTitle: "Marine Propulsion Engine",
   subtitle:
-    "High-RPM Lightweight Internal Combustion, Hot-Tube Ignition, and Kinematic Bevel Gear Differential",
+    "A friction-coupled, reversible screw-propeller installation for a gas or petroleum motor",
   inventors: ["Gottlieb Daimler"],
-  inventorLocation: "Cannstatt, Germany",
+  inventorLocation: "Cannstatt, Würtemberg, Germany",
   grantDate: "1887-04-26",
-  filingDate: "1886-09-18",
+  filingDate: "1886-11-09",
   era: "Gilded Age & Grid (1870–1900)",
   category: "consumer",
-  categoryLabel: "Automotive Powertrains & High-Speed ICE",
+  categoryLabel: "Marine Propulsion & Internal-Combustion Engines",
   summary:
-    "The birth of the modern automobile: on April 26, 1887, Gottlieb Daimler received US Patent No. 361,931 for the high-speed internal combustion engine and motor carriage. Before Daimler, gas engines (such as Nikolaus Otto's stationary 4-stroke engine) were massive cast-iron beasts weighing over 300 kilograms per horsepower and limited to 150–200 RPM, making vehicle propulsion impossible. Daimler revolutionized internal combustion by increasing operational speed to 600–900 RPM ($P = \\frac{\\text{BMEP} \\cdot V_d \\cdot N}{120}$). By inventing a platinum hot-tube glow ignition system, an enclosed crankcase with splash lubrication, and a bevel-gear differential drivetrain ($\\omega_{\\text{left}} + \\omega_{\\text{right}} = 2\\omega_{\\text{pinion}}$), Daimler built the high power-to-weight powertrain that launched global automotive transportation.",
+    "Granted on April 26, 1887, US 361,931 describes Gottlieb Daimler's installation of a gas or petroleum motor in a boat or vessel. The specification couples an in-line motor shaft to a longitudinally movable propeller shaft, uses friction contact for forward motion and a reversing arrangement for backward motion, and also sets out steering, thrust-bearing starting, water cooling, and gas-reservoir arrangements. It is not a motor-carriage patent.",
   heroQuote:
-    "Be it known that I, Gottlieb Daimler, have invented certain new and useful Improvements in Motor Carriages, of which the following is a specification...",
+    "My invention relates to apparatus for effecting the propulsion of a boat or vessel by a gas or petroleum motor instead of by a steam-engine.",
   originalPdfUrl: "/patents/pdfs/us-361931-daimler-engine.pdf",
   googlePatentsUrl: "https://patents.google.com/patent/US361931A/en",
-  usptoClassification: "B62D 61/06 (Motor vehicles / Engine-driven carriages)",
+  usptoClassification:
+    "B63H 23/30 (marine-propulsion power transmission characterized by clutches)",
   originalTextAsset: {
-    url: "/patents/source-text/us-361931-daimler-engine.txt",
+    url: "/patents/transcripts/us-361931-daimler-engine.txt",
     pageCount: 6,
-    kind: "source-pdf-text-layer",
+    kind: "reviewed-transcription",
+    reviewedBy: "Classic Patents editorial agent (codex-hotel)",
+    reviewedAt: "2026-08-17",
+    sourcePdfSha256: "1c20cb38fad97fe6658cd711d7009dcb70da74af4cf22aec380882e055407159",
   },
   originalText: `UNITED STATES PATENT OFFICE.
-GOTTLIEB DAIMLER, OF CANNSTATT, GERMANY.
+GOTTLIEB DAIMLER, OF CANNSTADT, WÜRTEMBERG, GERMANY.
 
-MOTOR-CARRIAGE.
+EXPLOSIVE-GAS MARINE ENGINE.
 
 SPECIFICATION forming part of Letters Patent No. 361,931, dated April 26, 1887.
-Application filed September 18, 1886. Serial No. 213,912. (No model.) Patented in Germany October 26, 1886, No. 39,367.
+Application filed November 9, 1886. Serial No. 218,411. (No model.)
 
-To all whom it may concern:
-Be it known that I, GOTTLIEB DAIMLER, a subject of the King of Würtemberg, residing at Cannstatt, in the Kingdom of Würtemberg, German Empire, have invented certain new and useful Improvements in Motor-Carriages; and I do hereby declare that the following is a full, clear, and exact description of the invention.
-
-The object of my invention is to produce a light, compact, and efficient motor-vehicle capable of transporting passengers and goods upon ordinary roads at high speeds without requiring tracks or heavy steam-boilers.
-
-The invention consists essentially:
-First, in a high-speed gas or petroleum internal-combustion engine having an enclosed crankcase and an incandescent hot-tube ignition apparatus, whereby the engine can operate continuously at six hundred to nine hundred revolutions per minute.
-Second, in the arrangement and mounting of said engine vertically within or upon the frame of a carriage, with the driving-shaft connected by flexible belts, pulleys, and friction clutches to a countershaft.
-Third, in a differential gear mechanism transmitting power from said countershaft to the rear driving wheels, whereby the wheels can revolve at different speeds when turning corners while each receiving driving torque from the engine.
-Fourth, in a steering mechanism connected to the front carriage axle, controlled by a vertical steering spindle and handle convenient to the driver's seat.`,
+My invention relates to apparatus for effecting the propulsion of a boat or vessel by a gas or petroleum motor instead of by a steam-engine, whereby a maximum of speed is obtained with a minimum extent of immersion of the vessel.`,
+  archivalEdition: daimlerMarineEngineArchivalEdition,
   plainEnglishExplanation: {
     overview:
-      "In the 1880s, stationary gas engines were giant industrial machines bolted into concrete factory basements. They were heavy, slow, and cooled by running city tap water. Gottlieb Daimler, together with his chief designer Wilhelm Maybach, broke the speed barrier of internal combustion. By inventing an incandescent glow tube that ignited gasoline vapor instantaneously and an enclosed flywheel crankcase that ran at 700 RPM, Daimler reduced engine weight per horsepower from 300 kg/hp down to 40 kg/hp, creating the first practical mobile engine light enough to mount on a horse carriage.",
+      "The patent addresses a marine installation, not a road vehicle. Daimler proposes replacing a vessel's steam engine, coal, water, and associated ballast with a gas or petroleum motor, then solving the installation problems that follow: engaging a screw propeller gradually, reversing it, taking propeller thrust, steering from the same station, cooling the cylinder, and storing combustible gas aboard.",
     coreMechanism:
-      "A vertical four-stroke cylinder ($V_d = 462\\text{ cm}^3$) aspirates a vaporized gasoline-air charge through an automatic atmospheric intake valve. As the piston ascends on the compression stroke ($r = 3.5:1$), the fuel-air charge is forced into a platinum-alloy incandescent tube heated from outside by a miniature gasoline blowtorch to $T_{\\text{tube}} \\approx 850^\\circ\\text{C}$. Peak compression pressure forces the mixture past the tube threshold, self-igniting without mechanical valves or electrical spark batteries. The exploding gas expands at $P_{\\text{peak}} \\approx 1.8\\text{ MPa}$, driving the cast-iron piston downward. Dual counter-rotating internal flywheels in an oil-tight aluminum/iron crankcase smooth out torque pulses and drive an output bevel pulley. Power is transmitted through a tensionable leather flat belt to a rear differential axle, where two coaxial half-shafts are linked by bevel spider pinions ($\\omega_{\\text{left}} + \\omega_{\\text{right}} = 2\\omega_{\\text{pinion}}$), allowing the outer wheel to spin faster on curves without tire slip.",
+      "The motor shaft and propeller shaft are in line. For forward motion, the operator moves the propeller shaft toward the motor until two half-couplings make frictional contact; propeller thrust is intended to maintain that contact. For reverse, the shaft moves back, separating the forward coupling while levers press intermediate friction disks against a reversing disk. The patent therefore changes propeller direction through a mechanical coupling arrangement while the motor is described as running continuously in one direction.",
     mechanicalBreakdown: [
       {
-        title: "High-RPM Vertical Cylinder & Enclosed Crankcase",
-        summary: "Lightweight vertical single-cylinder layout with internal flywheels.",
+        title: "Movable propeller shaft and forward coupling",
+        summary:
+          "The propeller shaft slides longitudinally so its half-coupling can engage the half-coupling fixed to the motor shaft.",
         technicalDetails:
-          "Enclosing dual balanced flywheels inside an oil-tight crankcase protected rotating parts from road dust and enabled continuous splash lubrication, raising continuous operating speed from $180\\text{ RPM}$ to over $750\\text{ RPM}$.",
-        archaicTerm: "Vertical petroleum motor with enclosed casing",
-        modernEquivalent: "High-speed single-cylinder ICE crankcase",
+          "The source calls for a propeller shaft in line with the motor shaft and capable of longitudinal motion in its bearings. Pushing it forward produces frictional engagement for starting ahead; the propeller's thrust is said to maintain contact. The source permits either conical or flat coupling faces and specifies gradual engagement through spring and control hardware.",
+        archaicTerm: "half-coupling",
+        modernEquivalent: "One mating member of a friction clutch",
       },
       {
-        title: "Incandescent Glow Hot-Tube Ignition",
-        summary: "Closed platinum-nickel tube heated externally by burner flame.",
+        title: "Reverse mechanism",
+        summary:
+          "Drawing the shaft back releases the ahead coupling and presses intermediate disks against a reversing disk.",
         technicalDetails:
-          "Eliminated erratic 19th-century slide-valve ignition. When cylinder compression reaches peak pressure $P_{\\text{comp}} \\approx 4.5\\text{ bar}$, fresh mixture is driven into the red-hot tube ($850^\\circ\\text{C}$), automatically triggering detonation at Top Dead Center.",
-        archaicTerm: "Incandescent ignition tube and heating-lamp",
-        modernEquivalent: "Hot-tube ignition / Compression glow point",
+          "Elbow levers transmit the shaft's longitudinal movement to the intermediate disks. Their pressure makes the screw rotate in the contrary direction for astern propulsion. The specification also discloses an alternative with bevel wheels kept in mesh, but does not claim a vehicle differential.",
+        archaicTerm: "friction-disks",
+        modernEquivalent: "Friction clutch plates",
       },
       {
-        title: "Variable-Tension Belt & Friction Cone Transmission",
-        summary: "Clutch-tensioned belt drive providing two forward drive ratios.",
+        title: "Combined operating station",
+        summary:
+          "The control hardware groups propulsion engagement and steering at the steersman's seat.",
         technicalDetails:
-          "A hand lever tightens a leather belt between graduated stepped pulleys, smoothly absorbing engine engagement shock and providing variable slip during vehicle acceleration from a standstill.",
-        archaicTerm: "Friction-pulley and belt-shifting mechanism",
-        modernEquivalent: "Friction cone clutch & belt transmission",
+          "A screw spindle, hand wheel or crank, lever, collars, and spring control forward motion of the propeller shaft. A rudder shaft is operated by levers, and the patent says the spindle may pass through or sit beside that steering shaft so the controls are together at seat p. This is a positional arrangement, not an automobile steering system.",
+        archaicTerm: "screw-spindle",
+        modernEquivalent: "Threaded control screw",
       },
       {
-        title: "Bevel-Gear Rear Differential Axle",
-        summary: "Epicyclic bevel gear cluster dividing torque between drive wheels.",
+        title: "Thrust bearing and starting crank",
+        summary:
+          "A bearing at the motor's front takes propeller thrust and temporarily turns the motor for starting.",
         technicalDetails:
-          "The central differential carrier holds two bevel pinions engaging side gears keyed to left and right half-shafts, satisfying the kinematic relationship $\\omega_{\\text{left}} + \\omega_{\\text{right}} = 2\\omega_{\\text{carrier}}$ and preventing axle binding on turns.",
-        archaicTerm: "Compensating differential gearing",
-        modernEquivalent: "Open bevel-gear differential axle",
+          "The bearing contains a sliding pin that can engage a stud on the motor shaft. Turning its crank starts the engine; once started, the inclined pin is pushed out of gear so the bearing and crank remain stationary. The arrangement keeps propeller axial load and starting action in the described bearing assembly.",
+        archaicTerm: "thrust-bearing",
+        modernEquivalent: "Axial-load bearing",
       },
       {
-        title: "Surface Float Petroleum Vaporizer Carburetor",
-        summary: "Warm-air bubbling carburetor generating homogeneous combustible vapor.",
+        title: "Cooling and gas storage",
+        summary:
+          "The specification uses surrounding water for cylinder cooling and describes vessel spaces as gas reservoirs.",
         technicalDetails:
-          "A cylindrical brass fuel vessel containing volatile petroleum spirit ($0.68\\text{ g/cm}^3$). Engine exhaust warms the bottom jacket ($T = 45^\\circ\\text{C}$), while an annular copper float maintains a shallow liquid pool; intake manifold vacuum draws ambient air through a submerged perforated bell, creating rich gasoline vapor mixed with secondary air via a rotary barrel valve.",
-        archaicTerm: "Surface carburetor and float apparatus",
-        modernEquivalent: "Constant-level float carburetor & air-fuel mixer",
+          "Cooling water may be driven through a cylinder jacket by the vessel's forward motion through siphon-like piping, by a centrifugal pump, or by both. For combustible gas, high-pressure holders feed a low-pressure bag-like reservoir; the source says lined hull spaces and holders can also serve as floats. These are named arrangements and conditions of the marine installation, not claims about a gasoline road engine.",
+        archaicTerm: "gas-holder",
+        modernEquivalent: "Pressurized gas storage vessel",
       },
     ],
     scientificPrinciples: [
       {
-        principle: "Internal Combustion Engine Power Scaling",
-        formula:
-          "P_{\\text{brake}} = \\frac{\\text{BMEP} \\cdot V_d \\cdot N}{120 \\times 1000} \\text{ (kW)}",
+        principle: "Frictional torque transmission",
+        formula: "T \\leq \\mu N r",
         explanation:
-          "Engine power is directly proportional to rotational speed $N$. By elevating engine speed from $150\\text{ RPM}$ to $750\\text{ RPM}$, Daimler extracted 5 times more mechanical power from the exact same cylinder displacement $V_d$, reducing engine mass per horsepower by $80\\%$.",
+          "The forward and reverse arrangements depend on normal force pressing friction surfaces together. Increasing that force raises the torque that can be transmitted before slip, subject to the friction coefficient μ and effective radius r. The source's spring, lever, and spindle provide the engagement force; it gives no numerical coefficient, force, or speed.",
       },
       {
-        principle: "Kinematics of Differential Wheel Gearing",
-        formula:
-          "\\omega_{\\text{left}} + \\omega_{\\text{right}} = 2\\omega_{\\text{pinion}}, \\quad v_{\\text{outer}} = v_{\\text{vehicle}} \\left(1 + \\frac{W_{\\text{track}}}{2 R_{\\text{turn}}}\\right)",
+        principle: "Propeller thrust as an axial load",
+        formula: "F_T = \\dot{m}(v_{\\text{wake}} - v_{\\text{inlet}})",
         explanation:
-          "When cornering on a radius $R_{\\text{turn}}$, the outer wheel must travel a longer arc than the inner wheel. The bevel differential automatically splits torque while permitting different rotational velocities, eliminating tire scrubbing and axle fracture.",
+          "A propeller accelerates water and experiences an opposing axial thrust. The patent uses that thrust mechanically: in ahead motion it is stated to maintain the required coupling contact, while a thrust bearing receives the load. The formula is a modern momentum-accounting explanation, not a formula printed in the 1887 patent.",
       },
       {
-        principle: "Hot-Tube Ignition Thermal Kinetics",
-        formula:
-          "t_{\\text{ignition}} = \\frac{\\ln(T_{\\text{auto}} / T_0)}{k_{\\text{thermal}}}, \\quad T_{\\text{tube}} \\ge 850^\\circ\\text{C} > T_{\\text{auto-gasoline}} (280^\\circ\\text{C})",
+        principle: "Water-jacket heat removal",
+        formula: "\\dot Q = \\dot m c_p (T_{\\text{out}}-T_{\\text{in}})",
         explanation:
-          "Ignition timing is governed by the compression wave driving the combustible mixture past the unburned boundary layer into the incandescent hot zone, causing instantaneous thermal detonation at maximum cylinder density.",
-      },
-      {
-        principle: "Stoichiometric Hydrocarbon Combustion Thermochemistry",
-        formula:
-          "\\text{C}_8\\text{H}_{18} + 12.5 (\\text{O}_2 + 3.76 \\text{N}_2) \\to 8 \\text{CO}_2 + 9 \\text{H}_2\\text{O} + 47 \\text{N}_2 + \\Delta H_c \\; (44.4\\text{ MJ/kg})",
-        explanation:
-          "Maintaining an air-fuel mass ratio near stoichiometric ($\\text{AFR} \\approx 14.7:1$) maximizes adiabatic flame temperature ($T_{\\text{flame}} > 2,200\\text{ K}$) and combustion pressure without hydrocarbon unburnt fouling.",
-      },
-      {
-        principle: "Capstan Belt Traction Friction Limit",
-        formula:
-          "\\frac{T_{\\text{tight}}}{T_{\\text{slack}}} \\le e^{\\mu \\theta_{\\text{wrap}}}, \\quad P_{\\text{trans}} = (T_{\\text{tight}} - T_{\\text{slack}}) v_{\\text{belt}}",
-        explanation:
-          "The leather belt transmission transfers engine power via capstan friction around the drive pulley ($\\mu \\approx 0.30$), slipping safely when vehicle torque demands exceed the adhesion limit to protect internal gears.",
+          "Water circulated through the cylinder jacket removes heat in proportion to its mass flow, heat capacity, and temperature rise. The facsimile proposes flow caused by forward motion, a centrifugal pump, or their combination; it does not state temperatures or flow rates.",
       },
     ],
     whyItMattersToday:
-      "Daimler's high-speed petrol engine and drivetrain architecture established the fundamental blueprint of the modern motor vehicle: front-mounted or mid-mounted high-RPM liquid-fueled engine, mechanical clutch transmission, and rear differential drive axle. Daimler's company merged with Karl Benz's firm in 1926 to form Mercedes-Benz, the world's oldest continuous automobile manufacturer.",
+      "The record preserves a distinct 1887 marine-propulsion design problem: joining an internal-combustion motor to a screw propeller while providing controlled ahead and astern motion, steering, axial-load support, cooling, and onboard fuel-gas storage. Its ten claims make those combinations legible without converting the document into a patent for a motor carriage.",
   },
   claims: [
     {
       number: 1,
       isIndependent: true,
       originalText:
-        "The combination, with a carriage body and running-gear, of a high-speed gas or petroleum motor mounted thereon, a driving-shaft rotated by said motor, a countershaft connected by belts and friction-clutches with the driving-shaft, and differential gearing connecting said countershaft with the driving-wheels, substantially as and for the purpose set forth.",
+        "The combination, with the propeller and propeller-shaft of a vessel and with part of a friction-coupling on said shaft, of a gas or petroleum motor-engine having its shaft arranged in line with the propeller-shaft and provided with part of a friction-coupling for effecting the forward motion of the vessel and gearing between the propeller-shaft and the part of the friction-coupling on the engine for effecting the backward motion of the vessel, substantially as described.",
       plainEnglish:
-        "The master motor carriage system claim covering a road vehicle powered by a high-speed petroleum engine linked via belt friction clutches and a differential gear to drive the road wheels.",
+        "Claim 1 covers the specified vessel propulsion combination: an in-line gas or petroleum motor, a propeller shaft with one clutch member, an engine shaft with the other member for ahead motion, and gearing for astern motion.",
       keyInnovations: [
-        "High-RPM petroleum powertrain",
-        "Belt-tensioned clutch transmission",
-        "Differential axle integration for road vehicles",
+        "In-line motor and propeller shafts",
+        "Forward friction coupling",
+        "Astern gearing",
       ],
       legalSignificance:
-        "The foundational US patent claim for self-propelled internal combustion automobiles with differential road propulsion.",
+        "This is a combination claim; its scope is limited to the stated vessel, shaft, coupling, and reverse-gearing arrangement.",
     },
     {
       number: 2,
-      isIndependent: false,
-      dependsOn: [1],
+      isIndependent: true,
       originalText:
-        "In a motor-carriage, the combination, with the motor and the driving-wheels, of a friction-pulley transmission comprising belts of different diameters, and a belt-tightening lever for engaging and disengaging said belts to vary the speed of the carriage relative to the motor.",
+        "The combination, with the propeller-shaft having a longitudinal movement in its bearings and provided with part of a friction-clutch, of a gas or petroleum motor-engine having its shaft arranged in line with the propeller-shaft and provided with part of a friction-coupling which engages and disengages the part of the friction-coupling by the longitudinal movement of said propeller-shaft, substantially as described.",
       plainEnglish:
-        "The variable-speed transmission claim: stepped belt pulleys and a manual tightening lever allowing the driver to change gear ratios and engage/disengage engine power smoothly.",
+        "Claim 2 focuses on the longitudinally movable propeller shaft and its use to engage and disengage the two friction-coupling parts.",
       keyInnovations: [
-        "Multi-ratio stepped pulley drive",
-        "Belt-tightener clutch lever",
-        "Smooth road vehicle acceleration",
+        "Longitudinally movable propeller shaft",
+        "Engageable friction clutch",
+        "In-line shaft arrangement",
       ],
       legalSignificance:
-        "Protected the mechanical transmission interface between high-speed ICE engines and variable-speed road wheels.",
+        "The legal work is done by the specified movement-and-coupling relationship, not by a generic propeller alone.",
     },
     {
       number: 3,
-      isIndependent: false,
-      dependsOn: [1],
+      isIndependent: true,
       originalText:
-        "In a motor-carriage, the combination, with the motor cylinder, of an incandescent ignition-tube extending into the combustion space, and an external burner for maintaining said tube at red heat, whereby ignition of the compressed charge is effected automatically at high speed.",
+        "In combination with a gas or petroleum motor-engine, a propeller-shaft connected to the engine-shaft by a friction-coupling and capable of sliding longitudinally in its bearings, so that the thrust of the propeller when in motion will maintain the frictional contact of the coupling.",
       plainEnglish:
-        "The hot-tube ignition claim: a glowing platinum-alloy tube maintained at red heat by an external burner to reliably ignite fuel charges at 600+ RPM without electric batteries.",
+        "Claim 3 states that propeller thrust maintains frictional clutch contact after the sliding shaft has engaged it.",
       keyInnovations: [
-        "Incandescent glow tube ignition",
-        "Battery-free high-speed detonation",
-        "Reliable multi-hundred RPM combustion",
+        "Thrust-maintained coupling contact",
+        "Sliding shaft bearings",
+        "Friction-coupled propulsion",
       ],
       legalSignificance:
-        "Enabled high-speed automotive engine operation before the invention of reliable high-tension electrical spark plugs and magnetos.",
+        "This claim narrows the claimed result to a propeller-shaft arrangement where thrust performs the stated contact-maintaining role.",
+    },
+    {
+      number: 4,
+      isIndependent: true,
+      originalText:
+        "In combination with the frictional coupling connecting the engine-shaft with the sliding propeller-shaft, the friction-disks c e' e² and the levers f' f², connected to the propeller-shaft, constituting mechanism for reversing the motion of the propeller, the pull of the latter when reversed being made to effect the required frictional contact between the disks e' e² and c for this purpose.",
+      plainEnglish:
+        "Claim 4 covers the named reversing disks and levers, with reverse propeller pull maintaining their frictional contact.",
+      keyInnovations: [
+        "Reversing disk",
+        "Intermediate friction disks",
+        "Lever-actuated reverse contact",
+      ],
+      legalSignificance:
+        "It claims the particular disk-and-lever reverse mechanism, including its stated thrust/pull effect.",
+    },
+    {
+      number: 5,
+      isIndependent: true,
+      originalText:
+        "The combination, with a motor-engine, the propeller-shaft of a vessel, and a friction-coupling connecting the engine and propeller-shaft, of a thrust-bearing, q, for taking the thrust of the propeller, and means for starting the engine, comprising the crank-handle r and sliding pin r², substantially as described.",
+      plainEnglish:
+        "Claim 5 combines a propeller-thrust bearing with the crank handle and sliding pin used to start the motor.",
+      keyInnovations: ["Propeller thrust bearing", "Crank-handle starting", "Sliding starting pin"],
+      legalSignificance:
+        "Its scope is the expressly named bearing-and-starting combination in the propulsion installation.",
+    },
+    {
+      number: 6,
+      isIndependent: true,
+      originalText:
+        "The combination, with the rudder and the longitudinally-movable propeller-shaft, of the vertical shaft o', levers o² o³, chain n, or equivalent screw-spindle k, and devices connecting said spindle with the propeller-shaft for steering the vessel and shifting the propeller-shaft, substantially as described.",
+      plainEnglish:
+        "Claim 6 covers a grouped steering and shaft-shifting control using the listed rudder, shaft, lever, chain, spindle, and connecting devices.",
+      keyInnovations: ["Rudder linkage", "Shared control station", "Propeller-shaft shifting"],
+      legalSignificance:
+        "The claim is limited to the enumerated combination that both steers and shifts the propeller shaft.",
+    },
+    {
+      number: 7,
+      isIndependent: true,
+      originalText:
+        "The combination, with the water-jacket of the motor-cylinder, of fore and aft pipes, s' s², arranged with siphon-like action and communicating with the outer water for effecting the cooling of the cylinder by means of the outer water, substantially as described.",
+      plainEnglish:
+        "Claim 7 covers the cylinder water jacket and fore-and-aft siphon-like pipes that use outside water for cooling.",
+      keyInnovations: [
+        "Cylinder water jacket",
+        "Fore-and-aft cooling pipes",
+        "Siphon-like circulation",
+      ],
+      legalSignificance:
+        "This is a cooling-system combination claim, not a claim to every water-cooled engine.",
+    },
+    {
+      number: 8,
+      isIndependent: true,
+      originalText:
+        "The combination, with the water-jacket of the motor-cylinder, of fore and aft pipes, s' s², arranged with siphon-like action and communicating with the outer water for cooling the cylinder, and a centrifugal pump, u, for effecting the circulation of the water, substantially as described.",
+      plainEnglish:
+        "Claim 8 adds centrifugal-pump circulation to the jacket and siphon-like external-water pipes.",
+      keyInnovations: ["Cylinder water jacket", "Centrifugal pump", "External-water circulation"],
+      legalSignificance: "The claim requires the stated jacket, pipe, and pump combination.",
+    },
+    {
+      number: 9,
+      isIndependent: true,
+      originalText:
+        "The combination, with the water-jacket of the motor-cylinder, of fore and aft pipes, s' s², arranged with siphon-like action and communicating with the outer water, a centrifugal pump, u, for effecting the circulation of the water, and the branch pipe v, having a three-way cock for enabling the circulating water to be taken either from the outer water or from the bilge, substantially as described.",
+      plainEnglish:
+        "Claim 9 adds a branched pipe and three-way cock so cooling water may be drawn from outside water or the bilge.",
+      keyInnovations: ["Three-way cock", "Bilge-water branch", "Pumped cooling circuit"],
+      legalSignificance:
+        "Its added legal limitation is the branch and three-way selection feature within the specified cooling system.",
+    },
+    {
+      number: 10,
+      isIndependent: true,
+      originalText:
+        "In a vessel propelled by a gas motor-engine, the combination, with the gas motor-engine, of a screw-propeller whose shaft is capable of sliding longitudinally and is geared to the engine-shaft by a friction-coupling, means for longitudinally shifting the propeller-shaft for varying the speed, stopping, and reversing, a low-pressure gas-reservoir for supplying the gas motor-engine with combustible gas, and one or more high-pressure gas-holders that supply the low-pressure reservoir through reducing cocks or valves, substantially as herein described.",
+      plainEnglish:
+        "Claim 10 joins the sliding, friction-coupled propeller drive to a low-pressure gas reservoir supplied from one or more high-pressure holders through reducing valves.",
+      keyInnovations: [
+        "Sliding reversible propeller shaft",
+        "Low-pressure gas reservoir",
+        "High-pressure holders with reducing valves",
+      ],
+      legalSignificance:
+        "This is the broadest printed installation combination: propulsion control plus the specified two-pressure gas-supply arrangement.",
     },
   ],
   drawings: [
     {
-      figureNumber: "Fig. 1",
-      title: "Daimler Motor Carriage Side Elevation & Powertrain",
+      figureNumber: "Figs. 1–6",
+      title: "Explosive-Gas Marine Engine installation and details",
       caption:
-        "Side elevation drawing of Daimler's four-wheeled motor carriage showing the vertical high-speed engine, hot-tube ignition, belt transmission pulleys, and differential rear axle.",
-      svgType: "daimler-engine",
+        "The three drawing sheets show a vessel with its motor, propeller, steering and cooling arrangements, the thrust-bearing details, and high-pressure gas-holder sections. All labels and views are from the US 361,931 facsimile.",
+      svgType: "generic",
       callouts: [
         {
           id: "de-1",
           figureRef: "Fig. 1",
           label: "A",
-          element: "Vertical High-Speed Engine",
-          description: "Single-cylinder petrol motor operating at 700 RPM with enclosed crankcase.",
-          x: 48,
-          y: 52,
+          element: "Motor-engine",
+          description: "The gas or petroleum motor-engine identified as A in the specification.",
+          x: 53,
+          y: 48,
         },
         {
           id: "de-2",
           figureRef: "Fig. 1",
-          label: "B",
-          element: "Incandescent Hot-Tube Igniter",
-          description: "External burner heating platinum tube to 850°C for compression detonation.",
-          x: 44,
-          y: 40,
+          label: "d",
+          element: "Screw-propeller",
+          description: "The screw-propeller fixed at the outer end of propeller shaft b.",
+          x: 25,
+          y: 48,
         },
         {
           id: "de-3",
-          figureRef: "Fig. 1",
-          label: "C",
-          element: "Belt Tension Clutch Lever",
-          description: "Driver control lever shifting tension to select road drive ratios.",
-          x: 35,
-          y: 42,
+          figureRef: "Fig. 2",
+          label: "m",
+          element: "Rudder",
+          description:
+            "The rudder connected to the steering mechanism described in the specification.",
+          x: 50,
+          y: 77,
         },
         {
           id: "de-4",
-          figureRef: "Fig. 1",
-          label: "D",
-          element: "Bevel-Gear Differential Axle",
-          description: "Rear differential dividing torque between outer and inner drive wheels.",
-          x: 72,
-          y: 68,
+          figureRef: "Fig. 4",
+          label: "q",
+          element: "Thrust-bearing",
+          description:
+            "The bearing that receives propeller thrust and carries the starting arrangement.",
+          x: 28,
+          y: 72,
         },
         {
           id: "de-5",
-          figureRef: "Fig. 1",
-          label: "E",
-          element: "Rack & Pinion Steering Tiller",
-          description: "Vertical steering spindle controlling front carriage axle angle.",
-          x: 28,
-          y: 35,
+          figureRef: "Fig. 5",
+          label: "w²",
+          element: "High-pressure gas-holder",
+          description: "A sectional view of a high-pressure gas-holder.",
+          x: 50,
+          y: 45,
+        },
+        {
+          id: "de-6",
+          figureRef: "Fig. 6",
+          label: "w²",
+          element: "Gas-holder section",
+          description: "A transverse section of the Fig. 5 high-pressure gas-holder.",
+          x: 62,
+          y: 67,
         },
       ],
     },
   ],
   historicalContext: {
     problemStatement:
-      "Throughout the 19th century, inventors tried to build 'horseless carriages' powered by steam boilers or heavy electric lead-acid batteries. Steam carriages required 45 minutes to build boiler pressure, consumed vast quantities of coal and water, and weighed several tons. Electric vehicles could only travel 15 miles before exhausting their heavy batteries. A completely new, lightweight, high-energy-density prime mover was needed to make personal road transport possible.",
+      "The specification identifies the marine burden it addresses: a steam engine requires coal, water, and metal ballast, increasing a vessel's immersion and consuming capacity that could carry a load.",
     priorArtLimitations: [
-      "Otto and Langen atmospheric engines were limited to 80 RPM and weighed over 500 kg per kilowatt.",
-      "Early slide-valve flame ignitions blew out at engine speeds above 200 RPM.",
-      "Steam tractors destroyed public roads and produced clouds of smoke, sparks, and boiling water.",
+      "The patent contrasts its gas or petroleum motor installation with a steam engine and its stated coal, water, and ballast burden.",
+      "The source says the propeller installation needs controlled starting, stopping, reversing, steering, thrust support, cylinder cooling, and, when gas is used, onboard storage.",
     ],
     breakthroughInsight:
-      "Daimler and Maybach realized that petroleum gasoline (then considered a dangerous waste byproduct of kerosene refining) possessed extraordinary chemical energy density ($44\\text{ MJ/kg}$). By radically accelerating engine rotational speed to 750 RPM using hot-tube ignition and an enclosed crankcase, they could extract high mechanical power from a tiny, 40-kilogram engine package.",
-    patentWars: [
-      {
-        rivalName:
-          "George B. Selden and the Association of Licensed Automobile Manufacturers (ALAM)",
-        rivalClaim:
-          "Patent attorney George Selden filed a broad US patent application in 1879 claiming all liquid-hydrocarbon road vehicles, attempting to collect a royalty on every automobile built in America.",
-        conflictDetails:
-          "ALAM used the Selden patent to cartelize the American auto industry and sued Henry Ford in 1903. Ford cited Daimler's prior 1887 patent US 361,931 and European engine publications.",
-        resolution:
-          "In 1911, the Federal Appeals Court ruled in Ford's favor (*Columbia Motor Car Co. v. C.A. Duerr & Co.*), finding that modern high-speed Otto/Daimler engines did not infringe Selden's slow Brayton-cycle claim.",
-        legalOutcome:
-          "Daimler's prior art was the key evidence that broke the Selden patent monopoly, establishing open competition in global automobile manufacturing.",
-      },
-    ],
+      "The source's central installation move is a longitudinally movable propeller shaft: friction contact carries the vessel ahead, a reversing disk arrangement carries it astern, and the controls can be located together at the steersman's seat.",
+    patentWars: [],
     civilizationalImpact:
-      "In 1885, Daimler mounted his engine onto a wooden bicycle to create the *Reitwagen* (the world's first motorcycle), and in 1886 installed it in a four-seat carriage (the first four-wheeled automobile). Daimler's lightweight petrol engines powered the world's first motorboats, airships, and trucks, inaugurating the 20th-century automotive and aviation age.",
+      "US 361,931 documents an 1886–87 attempt to make a gas or petroleum motor serve a complete marine-propulsion system. Its claims preserve specific mechanical and cooling combinations for a vessel, rather than a generic story of road transport.",
     funFact:
-      "Daimler's famous three-pointed star logo, adopted in 1909, symbolized Gottlieb Daimler's personal ambition for his high-speed engine to dominate transportation across 'land, water, and air.'",
-    aftermath:
-      "Gottlieb Daimler died in Cannstatt in 1900 at age 65. His chief engineer Wilhelm Maybach continued designing world-famous engines, including the 1901 Mercedes 35 hp, regarded as the first truly modern racing automobile.",
+      "The signed specification names Wilhelm Maybach and Herman Keppler as its two witnesses; the three drawing sheets instead bear the lithographic witnesses George B. Ailes and Robert Garrett.",
     sideNotes: [
-      "In 1888, Bertha Benz (wife of Daimler's rival Karl Benz) took her husband's motorwagen on the first long-distance automobile road trip (106 km from Mannheim to Pforzheim), using ligroin solvent purchased from local pharmacies to fuel the journey.",
-      "Daimler's early surface carburetor had no throttle butterfly; instead, the engine speed was regulated by a hit-and-miss exhaust valve lifter that skipped exhaust cycles when the engine over-sped.",
+      "The specification records French, Belgian, Italian, German, and British patent activity, with the dates and numbers printed in its heading and opening paragraph.",
+      "It refers to Daimler's US Patent No. 349,983, dated September 28, 1886, for the gas or petroleum motor employed by preference.",
     ],
   },
   tags: [
     "Gottlieb Daimler",
-    "Wilhelm Maybach",
-    "Automobile",
-    "Internal Combustion Engine",
-    "High-Speed Petrol Engine",
-    "Hot-Tube Ignition",
-    "Differential Axle",
-    "Mercedes-Benz",
-    "Gilded Age",
+    "Marine propulsion",
+    "Screw propeller",
+    "Friction coupling",
+    "Gas motor",
+    "Water cooling",
+    "1887",
   ],
-  stats: {
-    totalClaims: 3,
-    independentClaims: 1,
-    patentWarYears: "1886–1911",
-    impactScore: 100,
-  },
+  stats: { totalClaims: 10, independentClaims: 10 },
 };

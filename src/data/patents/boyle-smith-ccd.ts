@@ -1,55 +1,36 @@
 import type { Patent } from "@/types/patent";
+import {
+  boyleSmithCcdClaimTexts,
+  boyleSmithCcdFigureSheets,
+} from "../editions/boyleSmithCcdEdition";
 
 export const boyleSmithCcdPatent: Patent = {
-  id: "us-3923554-boyle-smith-ccd",
-  patentNumber: "US 3,923,554",
-  title: "Three Phase Charge Coupled Device",
-  shortTitle: "Boyle & Smith's Charge-Coupled Device (CCD Sensor)",
-  subtitle:
-    "The Solid-State Imaging Sensor that Eliminated Chemical Photographic Film and Enabled Digital Cameras",
+  id: "us-3858232-boyle-smith-ccd",
+  patentNumber: "US 3,858,232",
+  title: "Information Storage Devices",
+  shortTitle: "Charge-Coupled Information Storage",
+  subtitle: "Localized Charge Storage and Serial Transfer Through Semiconductor Potential Wells",
   inventors: ["Willard S. Boyle", "George E. Smith"],
   inventorLocation: "Murray Hill, New Jersey",
-  grantDate: "1975-12-02",
-  filingDate: "1974-06-28",
+  grantDate: "1974-12-31",
+  filingDate: "1971-11-09",
   era: "Semiconductor Revolution (1950–1975)",
   category: "computing",
   categoryLabel: "Digital Imaging & Optoelectronics",
   summary:
-    "The Digital Eye of Humanity: Willard Boyle and George Smith's Charge-Coupled Device (CCD) at Bell Labs stores photo-generated charge packets in silicon MOS potential wells and shifts them across the chip with three-phase clocking, replacing chemical photographic film with digital pixels and earning the 2009 Nobel Prize in Physics.",
+    "US 3,858,232 discloses information-storage devices in which charge carriers occupy induced potential-energy minima in a semiconductor and are translated by sequential electrode bias. The December 31, 1974 grant claims surface and buried storage, serial and multichannel transfer, input and detection stages, and image and acoustic-wave embodiments.",
   heroQuote:
-    "Charge coupled devices typically comprise a semiconductor substrate covered with an insulating layer upon which an array of closely spaced field electrodes are formed... Packets of minority carriers representing information or image data can be stored in these wells and transferred from well to well along the semiconductor surface by sequentially manipulating the potentials applied to adjacent electrodes.",
-  originalPdfUrl: "/patents/pdfs/us-3923554-boyle-smith-ccd.pdf",
-  googlePatentsUrl: "https://patents.google.com/patent/US3923554A/en",
-  usptoClassification: "H01L 27/148 (Charge coupled device image sensors)",
-  originalText: `UNITED STATES PATENT OFFICE.
-WILLARD S. BOYLE AND GEORGE E. SMITH, RESIDING AT SUMMIT AND BERKELEY HEIGHTS, N.J., ASSIGNORS TO BELL TELEPHONE LABORATORIES, INCORPORATED, MURRAY HILL, N.J.
-
-THREE PHASE CHARGE COUPLED DEVICE.
-
-Appl. No. 484,008. Filed June 28, 1974.
-Patent No. 3,923,554. Patented Dec. 2, 1975.
-
-To all whom it may concern:
-Be it known that we, WILLARD S. BOYLE and GEORGE E. SMITH, citizens of the United States and Canada, residing at Summit and Berkeley Heights, in the County of Union, State of New Jersey, have invented certain new and useful Improvements in Three Phase Charge Coupled Devices, of which the following is a specification, reference being had to the accompanying drawings.
-
-This invention relates to charge coupled devices (CCDs) and, more particularly, to arrangements for achieving highly efficient, unidirectional charge transfer in such devices using three-phase clocking.
-
-Charge coupled devices typically comprise a semiconductor substrate of one conductivity type, such as p-type silicon, covered with an insulating layer of silicon dioxide upon which an array of closely spaced field electrodes are formed. By applying appropriate potentials to these electrodes, localized surface depletion regions or potential energy wells are formed within the semiconductor beneath the electrodes. Packets of minority carrier electrons, generated either photoelectrically by incident illumination or injected electrically, can be stored in these wells without lateral dispersion.
-
-Transfer of the stored charge packets along the semiconductor surface is achieved by sequentially manipulating the potentials applied to adjacent electrodes. In a three-phase system, every third electrode is interconnected to one of three clock voltage lines ($\\phi_1, \\phi_2, \\phi_3$). By lowering the potential barrier under the forward adjacent electrode while simultaneously raising the potential under the storage electrode, the charge packet is transferred forward by self-induced electric fields, thermal diffusion, and fringing fields with extremely high transfer efficiency.
-
-We claim as our invention:
-
-1. A charge coupled device comprising a semiconductor substrate, an insulating layer overlying a surface of said substrate, an array of closely spaced electrodes overlying said insulating layer and forming a plurality of three-electrode charge transfer stages, and means for applying three-phase clock voltages to said electrodes to cause sequential transfer of charge packets through said substrate.
-
-2. A charge coupled device in accordance with claim 1 wherein said electrodes of each transfer stage are arranged in overlapping relationship to eliminate potential barriers between adjacent electrodes during charge transfer.
-
-3. A charge coupled device in accordance with claim 1 further comprising channel stop diffusion regions of higher conductivity than said substrate disposed laterally adjacent said transfer stages to confine charge packets within defined channels.`,
+    "The specification describes devices based on the recognition that minority charge carriers within a semiconductor can be used to represent information.",
+  originalPdfUrl: "/patents/pdfs/us-3858232-boyle-smith-ccd.pdf",
+  googlePatentsUrl: "https://patents.google.com/patent/US3858232A/en",
+  usptoClassification: "US 357/24, 357/23, 307/304; Int. Cl. H01L 11/14.",
+  originalText:
+    "The source-corrected record points to the reviewed US 3,858,232 facsimile. The former US 3,923,554 text remains preserved as an unserved comparison asset and is not a transcription of this record.",
   plainEnglishExplanation: {
     overview:
-      "For over a century, photography required chemical silver-halide film that was slow, messy, and impossible to transmit electronically. In October 1969 at Bell Labs, Willard Boyle and George Smith invented the electronic equivalent of film: the Charge-Coupled Device (CCD). Light striking silicon knocks electrons free via the photoelectric effect, collecting in microscopic electrostatic potential 'buckets' beneath metal-oxide-semiconductor (MOS) gates. By sequencing voltages across three phases of gate electrodes, the charge packets are walked smoothly across the chip like a fire-brigade bucket line into a single high-gain readout amplifier, transforming photons into digital images.",
+      "The source is a broad charge-coupled information-storage disclosure, not the later three-phase CCD patent previously named by this route. Its central move is to make a movable electrostatic storage site: a voltage on a field electrode changes the semiconductor potential so a packet of minority carriers is confined, then an adjacent voltage sequence moves the packet to a new site for storage, logic, detection, or image readout.",
     coreMechanism:
-      "Incident photons create electron-hole pairs in p-type silicon ($n_e = \\eta_{QE} \\Phi$). Applying a positive gate voltage ($V_G > V_{th}$) creates an electrostatic potential well ($\\psi_s$) in the silicon that traps the electrons. A 3-phase clock cycle ($\\phi_1, \\phi_2, \\phi_3$) lowers the potential of the adjacent electrode, causing the electron packet to spill forward into the neighboring well. At the end of each shift register line, a floating diffusion sense node converts the charge packet into a proportional voltage signal ($V_{out} = Q / C_{sense}$) for digitization.",
+      "An electrode and insulating layer form a field-controlled depletion region in a single-conductivity semiconductor. The electric potential energy of a carrier varies with position; a local minimum is a storage well. The source's transfer condition is overlap: before the first well is removed, a next well is established so diffusion and the electric field carry the stored charge into it. It describes two- and three-phase drive variants, surface and buried channels, and detectors that convert the stored charge or its capacitance into an observable signal.",
     mechanicalBreakdown: [
       {
         title: "MOS Depletion Potential Well Matrix",
@@ -122,55 +103,48 @@ We claim as our invention:
     whyItMattersToday:
       "Boyle and Smith's CCD sensor transformed human civilization: it enabled modern astronomy (including the Hubble and James Webb Space Telescopes), digital photography, video camcorders, endoscopy and medical imaging, barcode scanners, and the billion-sensor CMOS image sensor industry in every modern smartphone.",
   },
-  claims: [
-    {
-      number: 1,
-      isIndependent: true,
-      originalText:
-        "A charge coupled device comprising a semiconductor substrate, an insulating layer overlying a surface of said substrate, an array of closely spaced electrodes overlying said insulating layer and forming a plurality of three-electrode charge transfer stages, and means for applying three-phase clock voltages to said electrodes to cause sequential transfer of charge packets through said substrate.",
+  claims: boyleSmithCcdClaimTexts.map((claim) => {
+    const independent = [1, 2, 10, 13, 14, 31, 32].includes(claim.number);
+    const parent: Record<number, number> = {
+      3: 2,
+      4: 3,
+      5: 3,
+      6: 2,
+      7: 6,
+      8: 2,
+      9: 2,
+      11: 10,
+      12: 10,
+      15: 14,
+      16: 15,
+      17: 14,
+      18: 17,
+      19: 17,
+      20: 17,
+      21: 14,
+      22: 14,
+      23: 14,
+      24: 14,
+      25: 24,
+      26: 25,
+      27: 24,
+      28: 24,
+      29: 24,
+      30: 24,
+    };
+    return {
+      number: claim.number,
+      isIndependent: independent,
+      ...(parent[claim.number] ? { dependsOn: [parent[claim.number]] } : {}),
+      originalText: claim.text,
       plainEnglish:
-        "The master apparatus claim covering a 3-phase charge coupled device with a semiconductor substrate, an insulating dielectric layer, an array of 3-electrode transfer stages, and 3-phase clock voltage means for moving charge packets sequentially across the chip.",
-      keyInnovations: [
-        "Bucket-brigade charge packet manipulation",
-        "3-phase sequential electrode clocking",
-        "Monolithic solid-state digital imaging sensor",
-      ],
-      legalSignificance:
-        "The foundational patent claim of digital imaging sensors, recognized as the basis for the 2009 Nobel Prize in Physics.",
-    },
-    {
-      number: 2,
-      isIndependent: false,
-      dependsOn: [1],
-      originalText:
-        "A charge coupled device in accordance with claim 1 wherein said electrodes of each transfer stage are arranged in overlapping relationship to eliminate potential barriers between adjacent electrodes during charge transfer.",
-      plainEnglish:
-        "A 3-phase CCD where the gate electrodes physically overlap in multi-level polysilicon layers, eliminating spurious potential energy barriers and dips in the silicon channel.",
-      keyInnovations: [
-        "Overlapping multi-layer polysilicon gates",
-        "Elimination of inter-electrode potential pockets",
-        "Near-unity Charge Transfer Efficiency",
-      ],
-      legalSignificance:
-        "Protected the crucial structural fabrication technique that enabled CCDs to achieve high transfer speeds and clean images.",
-    },
-    {
-      number: 3,
-      isIndependent: false,
-      dependsOn: [1],
-      originalText:
-        "A charge coupled device in accordance with claim 1 further comprising channel stop diffusion regions of higher conductivity than said substrate disposed laterally adjacent said transfer stages to confine charge packets within defined channels.",
-      plainEnglish:
-        "A charge coupled device featuring high-doping lateral channel stop regions that confine the moving charge packets strictly within their designated column lanes.",
-      keyInnovations: [
-        "Channel stop isolation diffusions",
-        "Anti-blooming spatial confinement",
-        "Multi-column parallel imaging arrays",
-      ],
-      legalSignificance:
-        "Secured the lateral isolation architecture essential for building large two-dimensional megapixel sensor arrays.",
-    },
-  ],
+        "This claim defines the stated charge-storage or charge-transfer arrangement by retaining its physical medium, electrode arrangement, input, output, timing, or detection condition. It does not claim the later three-phase CCD record that was previously attached to this route.",
+      keyInnovations: ["Induced potential-energy storage sites", "Sequential charge transfer"],
+    };
+  }),
+  /*
+  Legacy drawing metadata for the unserved US 3,923,554 asset. Kept in source
+  history only while this object is corrected to the reviewed US 3,858,232.
   drawings: [
     {
       figureNumber: "Fig. 1",
@@ -239,6 +213,27 @@ We claim as our invention:
       ],
     },
   ],
+  ],
+  */
+  drawings: boyleSmithCcdFigureSheets.map(([id, figureNumber, title]) => ({
+    figureNumber,
+    title,
+    caption: `${figureNumber} from the local US 3,858,232 facsimile: ${title.toLowerCase()}.`,
+    svgType: "boyle-smith-ccd",
+    callouts: [
+      {
+        id: `boyle-smith-${id}`,
+        figureRef: figureNumber,
+        label: figureNumber,
+        element: title,
+        description: `Source-faithful crop for ${figureNumber}; reference numerals remain in the facsimile image.`,
+        x: 50,
+        y: 50,
+      },
+    ],
+  })),
+  /* Legacy US 3,923,554 historical copy retained as unserved source history. */
+  /*
   historicalContext: {
     problemStatement:
       "In the late 1960s, capturing visual images required either wet chemical film (which took hours to develop in darkrooms and could not be transmitted across networks) or cumbersome vacuum-tube vidicon cameras (which were bulky, fragile, power-hungry, and suffered from severe image burn-in and lag).",
@@ -273,21 +268,39 @@ We claim as our invention:
       "Modern scientific CCDs can achieve a quantum efficiency ($\\eta_{QE}$) exceeding 95% at optical wavelengths, compared to less than 2% for the finest photographic film.",
     ],
   },
+  },
+  */
+  historicalContext: {
+    problemStatement:
+      "The source identifies information storage in magnetic domains, electrostatic camera targets, and delay lines, then seeks a semiconductor medium where charge can be generated, stored in selected potential minima, moved, and retrieved.",
+    priorArtLimitations: [
+      "Magnetic stores represented information by domain polarity in sheets, cores, or wires.",
+      "Electrostatic camera targets required scanning-electron-beam readout.",
+      "Acoustic and electromechanical delay lines held information dynamically in traveling elastic waves.",
+    ],
+    breakthroughInsight:
+      "A field-electrode sequence can translate a localized minority-carrier packet through a semiconductor by establishing an overlapping next potential well before the preceding well is removed. The same mechanism can serve serial storage, logic, multichannel transfer, imaging, or a traveling-wave implementation.",
+    patentWars: [],
+    civilizationalImpact:
+      "The patent supplies a source-documented vocabulary and set of device arrangements for charge-coupled storage: potential wells, serial transfer, recirculation, multichannel paths, image read-in, and capacitive detection. The record does not attribute the later development of every digital camera to this particular grant.",
+    funFact:
+      "The front sheet expressly calls this application a continuation-in-part of Ser. No. 11,541, filed February 16, 1970 and then abandoned.",
+    aftermath:
+      "The grant issued on December 31, 1974 with 32 claims and 22 drawing figures. The current record confines its historical statement to what the reviewed facsimile documents.",
+  },
   tags: [
-    "Willard Boyle",
-    "George Smith",
-    "CCD Sensor",
-    "Digital Photography",
-    "Nobel Prize",
+    "Willard Sterling Boyle",
+    "George Elwood Smith",
+    "Charge-coupled device",
+    "Information storage",
+    "Semiconductor memory",
     "Semiconductor Revolution",
-    "Optoelectronics",
-    "Hubble",
+    "Potential wells",
+    "Charge transfer",
     "Bell Labs",
   ],
   stats: {
-    totalClaims: 3,
-    independentClaims: 1,
-    patentWarYears: "1974–2009",
-    impactScore: 100,
+    totalClaims: 32,
+    independentClaims: 7,
   },
 };

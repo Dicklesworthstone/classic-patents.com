@@ -1,292 +1,442 @@
 import type { Patent } from "@/types/patent";
+import { goddardRocketArchivalEdition } from "../editions/goddardRocketEdition";
+
+function manualClaimText(number: number): string {
+  const block = goddardRocketArchivalEdition.blocks.find(
+    (candidate) => candidate.kind === "claim" && candidate.number === number,
+  );
+  if (block?.kind !== "claim")
+    throw new Error(`Goddard manual edition is missing claim ${number}.`);
+  return block.inlines.map((inline) => inline.text).join("");
+}
 
 export const goddardRocketPatent: Patent = {
-  id: "us-1155986-goddard-rocket",
-  patentNumber: "US 1,155,986",
+  id: "us-1102653-goddard-rocket",
+  patentNumber: "US 1,102,653",
   title: "Rocket Apparatus",
-  shortTitle: "Goddard's Multi-Stage Liquid Rocket",
-  subtitle:
-    "Multi-Stage Vehicle Staging and Supersonic de Laval Expansion Nozzles for Extreme Altitudes and Spaceflight",
+  shortTitle: "Solid-Charge Auxiliary Rocket",
+  subtitle: "Tapered exhaust tube, spin-producing charges, and gyroscopic camera support",
   inventors: ["Robert H. Goddard"],
   inventorLocation: "Worcester, Massachusetts",
-  grantDate: "1915-10-05",
+  grantDate: "1914-07-07",
   filingDate: "1913-10-01",
-  era: "Early Aviation (1900–1910)",
-  category: "aviation",
+  era: "Early Rocket Research (1900–1920)",
+  category: "aerospace",
   categoryLabel: "Aerospace & Rocket Propulsion",
   summary:
-    "Goddard's foundational astronautics patent established the two physical breakthroughs required to leave Earth's gravity: multi-stage staging that jettisons empty deadweight tanks in flight, and converging-diverging supersonic de Laval nozzles that convert combustion gas thermal enthalpy into hypersonic kinetic exhaust velocity.",
+    "US 1,102,653 describes a solid-explosive rocket for carrying photographic or other recording instruments to extreme heights. Its disclosed apparatus uses a long tapered exhaust tube, electrically fired backward-curved spin charges, a smaller auxiliary rocket fired from a forward tube after the main charge is substantially consumed, and a gyroscope-supported camera that does not rotate with the spinning head.",
   heroQuote:
-    "A major difficulty with ordinary rockets is that the dead weight of the casing must be accelerated throughout the entire flight... in the apparatus of my invention, the propellant is burned in a chamber having a properly shaped expansion nozzle, and is arranged in a plurality of stages so that as the propellant in one section is consumed, that section is detached and dropped.",
-  originalPdfUrl: "/patents/pdfs/us-1155986-goddard-rocket.pdf",
-  googlePatentsUrl: "https://patents.google.com/patent/US1155986A/en",
+    "This invention relates to a rocket apparatus and particularly to a form of such apparatus adapted to transport photographic or other recording instruments to extreme heights.",
+  originalPdfUrl: "/patents/pdfs/us-1102653-goddard-rocket.pdf",
+  googlePatentsUrl: "https://patents.google.com/patent/US1102653A/en",
   usptoClassification: "F02K 9/00 (Rocket-engine plants)",
+  originalTextAsset: {
+    url: "/patents/transcripts/us-1102653-goddard-rocket.txt",
+    pageCount: 4,
+    kind: "reviewed-transcription",
+    reviewedBy: "Classic Patents editorial agent (codex-foxtrot)",
+    reviewedAt: "2026-08-17",
+    sourcePdfSha256: "8503f52914f4201850d7d6f067ac48886dda77c2cdb5e8fce831e13232f7c42b",
+  },
+  archivalEdition: goddardRocketArchivalEdition,
   originalText: `UNITED STATES PATENT OFFICE.
 ROBERT H. GODDARD, OF WORCESTER, MASSACHUSETTS.
 
 ROCKET APPARATUS.
 
-1,155,986. Specification of Letters Patent. Patented Oct. 5, 1915.
-Application filed October 1, 1913. Serial No. 792,869.
+1,102,653. Specification of Letters Patent. Patented July 7, 1914.
+Application filed October 1, 1913. Serial No. 792,707.
 
 To all whom it may concern:
-Be it known that I, ROBERT H. GODDARD, a citizen of the United States, residing at Worcester, in the County of Worcester and State of Massachusetts, have invented certain new and useful Improvements in Rocket Apparatus, of which the following is a specification, reference being had to the accompanying drawings forming a part thereof.
+Be it known that I, ROBERT H. GODDARD, a citizen of the United States, residing at Worcester, in the county of Worcester and State of Massachusetts, have invented a new and useful Rocket Apparatus, of which the following is a specification.
 
-This invention relates to rocket apparatus, and has for its primary object the provision of a rocket which can reach extreme altitudes, far beyond the limits attainable with ordinary rockets, for meteorological, scientific, or other purposes, and which may be utilized to transport recording instruments or payloads into the upper atmosphere or outer space.
+This invention relates to a rocket apparatus and particularly to a form of such apparatus adapted to transport photographic or other recording instruments to extreme heights. Certain features of the invention are also applicable to the display of signals or to the projection of explosives.
 
-A major difficulty with ordinary rockets is that the ratio of the weight of the propellant to the total initial weight of the rocket is small, and that the dead weight of the casing must be accelerated throughout the entire flight. Furthermore, the gases produced by combustion are discharged with low velocity through simple orifices, resulting in very low thermodynamic efficiency (rarely exceeding two per cent).
-
-In the apparatus of my invention, the propellant is burned in a combustion chamber having a properly shaped expansion nozzle with a converging entrance and a diverging cone, whereby the heat energy of the combustion gases is converted into kinetic energy of a high-velocity supersonic jet with great efficiency (exceeding sixty per cent).
-
-Furthermore, the apparatus is arranged in a plurality of stages or cartridge sections, so that as the propellant in one section is consumed, that section is detached and dropped, thereby reducing the mass to be accelerated by the succeeding section. The apparatus also comprises automatic igniting devices and means for stabilizing the vehicle in flight.`,
+The full reviewed transcription and the continuous manually authored source edition are available from the archival reading face.`,
   plainEnglishExplanation: {
     overview:
-      "Before Robert H. Goddard, rockets were simple solid-gunpowder fireworks that rarely exceeded a mile in altitude. Because a single-stage rocket must accelerate its heavy burnt-out iron casing and empty fuel tanks for its entire flight, reaching orbit was mathematically impossible under the rocket equation. Goddard solved this by inventing two foundational aerospace principles: supersonic de Laval converging-diverging nozzles that accelerate exhaust gas to Mach 3+, and multi-stage staging that jettisons empty structural deadweight at separation points.",
+      "The source solves four linked problems for a high-altitude recording rocket: turn explosive heat into useful exhaust motion, rotate the rocket before launch, restore spin in its smaller follow-on rocket, and keep the camera from spinning with the outer body. It uses solid explosive disks, not liquid oxygen or gasoline; it fires the smaller rocket from a tube rather than dropping an exhausted lower stage.",
     coreMechanism:
-      "Liquid propellants (liquid oxygen and gasoline) or pressurized solid charges burn inside a high-strength combustion chamber at high chamber pressure ($P_c > 20\\text{ bar}$). The expanding gas accelerates through a converging throat to Mach 1 and expands through a diverging bell to supersonic exit velocity ($v_e > 2,500\\text{ m/s}$). As the propellant in stage 1 is depleted, automated release latches decouple the stage, dropping empty deadweight so that stage 2 ignites at high velocity with a pristine mass ratio ($m_0/m_f$).",
+      "Disks 12 burn in primary chamber 10 and discharge through tapered tube 11. Goddard specifies a slightly tapered truncated cone at least three times its longest diameter, chosen so expanding gases can complete combustion before leaving the tube. Electrical heating elements ignite the backward-curved charges in recesses 15, producing reaction torque and initial spin. After the primary explosive is substantially consumed, fuse 28 fires the reduced auxiliary rocket in tube 24. Its later curved-tube charges restore spin, while gyroscope 37 keeps the pivoted camera support from following the head's rotation.",
     mechanicalBreakdown: [
       {
-        title: "Supersonic de Laval Expansion Nozzle",
-        summary:
-          "Converging-diverging hourglass geometry converting heat enthalpy to kinetic velocity.",
+        title: "Primary solid-charge chamber and tapered tube",
+        summary: "Explosive disks burn in chamber 10 and exhaust through the long tapered tube 11.",
         technicalDetails:
-          "Compresses subsonic gas to Mach 1 at the narrow throat ($A^*$) and expands it isentropically in the diverging cone to Mach 3+, increasing exhaust kinetic efficiency from 2% to over 60% ($v_e = \\sqrt{\\frac{2\\gamma R T_0}{(\\gamma-1)M}[1 - (p_e/p_0)^{(\\gamma-1)/\\gamma}]}$).",
-        archaicTerm: "Expansion nozzle with tapered throat and diverging cone",
-        modernEquivalent: "Supersonic converging-diverging de Laval rocket nozzle",
+          "Goddard prefers disks 12 with progressively increasing burn rates so chamber pressure remains constant at the pressure for which tube 11 is designed. The tube is a truncated cone of slight taper, at least three times its longest diameter. It gives gases room to expand and complete combustion before exit. In conservation-of-momentum terms, exhaust momentum produces the rocket reaction, $F = \\dot{m} v_e$; the source does not state a supersonic nozzle or a measured exhaust velocity.",
+        archaicTerm: "explosive material",
+        modernEquivalent: "solid propellant charge",
       },
       {
-        title: "Multi-Stage Detachable Separation Latches",
+        title: "Initial spin charges",
         summary:
-          "Mechanical spring-loaded latches and explosive releases decoupling depleted stages.",
+          "Backward-curved radial recesses 15 use reaction from small explosive charges to rotate the complete rocket.",
         technicalDetails:
-          "When propellant pressure drops at burnout, release collars disengage, allowing aerodynamic drag and separation springs to jettison the spent stage casing.",
-        archaicTerm: "Detachable cartridge sections and release pins",
-        modernEquivalent: "Pneumatic/pyrotechnic stage separation interstage mechanism",
+          "Charges 16 sit in substantially radial, backwardly curved tubes. Battery 19, key 20, wires 18, and embedded heating elements 17 ignite them simultaneously. Their reaction torque raises the rocket's angular speed before fuse 14 starts main propulsion. The engineering relation is $\tau = dL/dt$: a torque changes angular momentum $L$; the patent's limitation is the specific curved-tube explosive arrangement, not a generic attitude-control system.",
+        archaicTerm: "tubes or recesses",
+        modernEquivalent: "tangential spin thruster passages",
       },
       {
-        title: "Liquid Propellant Injection & Chamber Cooling",
+        title: "Firing tube and auxiliary rocket",
         summary:
-          "Pressurized fuel and oxidizer manifold injecting propellants into a combustion zone.",
+          "A reduced secondary rocket is launched from firing tube 24 after substantial consumption of the primary charge.",
         technicalDetails:
-          "Injects liquid oxygen and hydrocarbon fuel through atomizing orifices, absorbing heat along the chamber walls to prevent metallurgical burn-through.",
-        archaicTerm: "Propellant feed chamber with injector orifices",
-        modernEquivalent: "Regeneratively cooled bi-propellant combustion chamber",
+          "Fuse 28 reaches from auxiliary charge 27 into the last primary disk 12. The condition matters: when the primary propelling charge is substantially exhausted, fuse 28 ignites and firing tube 24 acts as a gun. The smaller rocket has its own chamber 25, tapered tube 26, and disks 27. This is a projectile-from-a-tube arrangement, not a claimed interstage separation mechanism.",
+        archaicTerm: "firing tube",
+        modernEquivalent: "launch tube for an auxiliary rocket",
       },
       {
-        title: "Exhaust Jet Gyroscope Steering Vanes",
-        summary: "Movable refractory vanes mounted directly in the supersonic exhaust stream.",
+        title: "Spin restoration and camera orientation",
+        summary:
+          "Auxiliary charges restore rotation, while a three-phase-motor gyroscope resists rotation of the camera support.",
         technicalDetails:
-          "Deflects supersonic exhaust vectors ($\vec{F}_{thrust}$) to generate restoring pitch and yaw control moments, maintaining aerodynamic vertical stability.",
-        archaicTerm: "Movable steering vanes in exhaust jet",
-        modernEquivalent: "Gimbaled rocket thrust vector control (TVC) system",
+          "When auxiliary explosive 27 has been consumed to a predetermined extent, its rapidly burning path lights charges 31 in curved recesses 30. In head 29, pivoted support 33 holds camera 34. Gyroscope 37 is the armature of a three-phase induction motor and is brought to speed through wires 41 and temporary contact wires 43. Angular-momentum conservation makes its axis resist a change of orientation, keeping support 33 from rotating with the spinning head.",
+        archaicTerm: "apparatus head",
+        modernEquivalent: "instrument compartment",
       },
     ],
     scientificPrinciples: [
       {
-        principle: "Tsiolkovsky Multi-Stage Rocket Equation",
-        formula:
-          "\\Delta v_{total} = \\sum_{i=1}^N v_{e,i} \\ln\\left(\\frac{m_{0,i}}{m_{f,i}}\\right) = \\sum_{i=1}^N I_{sp,i} g_0 \\ln\\left(\\frac{m_{0,i}}{m_{f,i}}\\right)",
+        principle: "Energy conversion and exhaust reaction",
+        formula: "F = \\dot{m} v_e",
         explanation:
-          "Because empty structural mass ($m_{dry}$) is discarded at each stage separation, the vehicle avoids hauling useless deadweight, allowing the cumulative velocity increment ($\\Delta v$) to exceed Earth escape velocity ($11.2\\text{ km/s}$).",
+          "Goddard explicitly treats the fraction of explosive heat transformed into kinetic energy as decisive for velocity. The familiar momentum form says thrust follows mass-flow rate times exhaust velocity, but the source's actual hardware is a solid charge and long tapered tube, with proportions selected experimentally.",
       },
       {
-        principle: "Isentropic Supersonic Expansion & Exhaust Velocity",
-        formula:
-          "v_e = \\sqrt{\\frac{2\\gamma}{\\gamma - 1} \\frac{R T_c}{M} \\left[1 - \\left(\\frac{p_e}{p_c}\\right)^{\\frac{\\gamma - 1}{\\gamma}}\\right]}",
+        principle: "Rotational dynamics",
+        formula: "\\tau = dL/dt",
         explanation:
-          "High combustion chamber temperature ($T_c$), low molecular weight exhaust gas ($M$), and large nozzle expansion ratios ($p_c/p_e$) maximize kinetic exhaust velocity ($v_e$) and specific impulse ($I_{sp}$).",
+          "Backward-curved passages discharge gas so its reaction supplies a torque. The initial set is made before flight in frame 21; the auxiliary rocket later has separate passages and a timed ignition path to restore spin after atmospheric friction has reduced it.",
       },
       {
-        principle: "Rocket Thrust in Atmosphere & Vacuum",
-        formula: "F = \\dot{m} v_e + (p_e - p_a) A_e",
+        principle: "Gyroscopic orientation",
+        formula: "L = I\\omega",
         explanation:
-          "Thrust consists of momentum thrust ($\\dot{m} v_e$) and pressure thrust ($(p_e - p_a) A_e$). In the vacuum of space ($p_a = 0$), rocket thrust actually increases to its maximum value, proving the rocket operates by Newton's third law rather than 'pushing against air.'",
-      },
-      {
-        principle: "Nozzle Area-Mach Number Expansion Relation",
-        formula:
-          "\\frac{A}{A^*} = \\frac{1}{M}\\left[\\frac{2 + (\\gamma - 1)M^2}{\\gamma + 1}\\right]^{\\frac{\\gamma + 1}{2(\\gamma - 1)}}",
-        explanation:
-          "In supersonic compressible flow ($M > 1$), increasing cross-sectional area ($A > A^*$) causes gas velocity to increase and pressure to drop, accelerating combustion exhaust to supersonic speeds.",
-      },
-      {
-        principle: "Payload Mass Fraction Optimization",
-        formula:
-          "\\lambda = \\frac{m_{payload}}{m_0} = \\prod_{i=1}^N \\left(e^{-\\Delta v_i / v_e} - \\epsilon_i\\right)",
-        explanation:
-          "Multi-stage optimization demonstrates that a 3-stage rocket can deliver a payload to orbit with a total vehicle mass that is orders of magnitude smaller than any theoretically possible single-stage vehicle.",
+          "A spinning rotor has angular momentum. Goddard uses gyroscope 37 on pivoted support 33 so the support can resist sharing the head's rotation. The patent describes the practical high-speed drive as a three-phase induction motor rather than claiming modern inertial navigation.",
       },
     ],
     whyItMattersToday:
-      "Every modern orbital launch vehicle—from NASA's Saturn V and Artemis SLS to SpaceX Falcon 9 and Starship—relies directly on the multi-stage separation architecture and supersonic de Laval expansion nozzles first patented by Robert Goddard in 1915.",
+      "This 1914 document is an unusually complete early high-altitude instrument-rocket proposal: it connects exhaust-tube geometry, pre-launch spin, a follow-on smaller rocket, and a gyroscopically held camera. Its value is in those stated combinations and conditions, not in a retroactive claim that it disclosed liquid engines, de Laval nozzles, or modern stage separation.",
   },
   claims: [
     {
       number: 1,
       isIndependent: true,
-      originalText:
-        "In a rocket apparatus, a plurality of combustion chambers, each chamber having an expansion nozzle, and means for successively igniting the charges in said chambers and separating the spent chambers from the apparatus.",
+      originalText: manualClaimText(1),
       plainEnglish:
-        "The master claim covering a multi-stage rocket vehicle comprising multiple combustion chambers, each equipped with an expansion nozzle, and mechanisms to successively ignite propellant charges and detach spent stages in flight.",
+        "Claim 1 combines a primary rocket with both a combustion chamber and a firing tube, a secondary rocket mounted in that tube, and a trigger that fires the secondary rocket when the primary explosive is substantially consumed. The timing condition and the tube-mounted secondary rocket are both required parts of this claim.",
       keyInnovations: [
-        "Multi-stage launch vehicle architecture",
-        "In-flight structural staging and separation",
-        "Sequential stage ignition",
+        "primary rocket",
+        "firing tube",
+        "secondary rocket",
+        "substantial-consumption firing condition",
       ],
-      legalSignificance:
-        "The cornerstone patent claim of modern aerospace engineering, establishing the legal foundation for multi-stage space launch vehicles.",
     },
     {
       number: 2,
-      isIndependent: false,
-      dependsOn: [1],
-      originalText:
-        "In a rocket apparatus, the combination of a combustion chamber, an expansion nozzle having a restricted throat and a diverging portion, and means for feeding propellant continuously into said combustion chamber under pressure.",
+      isIndependent: true,
+      originalText: manualClaimText(2),
       plainEnglish:
-        "A rocket propulsion assembly combining a pressurized combustion chamber, a converging-diverging de Laval expansion nozzle, and continuous propellant feed under pressure.",
+        "Claim 2 is limited to a combustion chamber containing explosive and its rearward tapered discharge tube. The tube must be a slightly tapered truncated cone and must be at least three times its longest diameter. It does not claim liquid propellant, a converging throat, or any specified Mach number.",
       keyInnovations: [
-        "Converging-diverging de Laval rocket nozzle",
-        "Continuous pressurized propellant feed",
-        "Supersonic gas enthalpy conversion",
+        "solid explosive chamber",
+        "rearward tapered tube",
+        "truncated cone",
+        "three-diameter minimum length",
       ],
-      legalSignificance:
-        "Protected the integration of supersonic converging-diverging nozzles into liquid and continuous rocket propulsion systems.",
     },
     {
       number: 3,
-      isIndependent: false,
-      dependsOn: [1],
-      originalText:
-        "In a rocket apparatus, a casing comprising a plurality of sections, means for releasing each section when its charge is consumed, and guide vanes positioned in the path of the discharging gases to maintain stability in flight.",
+      isIndependent: true,
+      originalText: manualClaimText(3),
       plainEnglish:
-        "A rocket vehicle casing divided into separable stage sections with automated release mechanisms and exhaust gas steering vanes for in-flight stabilization.",
+        "Claim 3 adds rotation to the primary-and-secondary rocket arrangement. The primary rocket supplies the initial rotation of both rockets; the secondary rocket has its own means to maintain its rotation after firing from the primary firing tube.",
       keyInnovations: [
-        "Separable stage casing joints",
-        "Automated burnout release mechanisms",
-        "Jet vane thrust vector steering",
+        "primary firing tube",
+        "secondary rocket",
+        "initial rotation",
+        "secondary spin maintenance",
       ],
-      legalSignificance:
-        "Covered early thrust vector control (TVC) mechanisms using jet vanes directly immersed in the rocket exhaust plume.",
+    },
+    {
+      number: 4,
+      isIndependent: true,
+      originalText: manualClaimText(4),
+      plainEnglish:
+        "Claim 4 covers a rocket casing with propulsion and separate rotation means: substantially radial transverse tubes curved backward relative to the direction of rotation. Those tubes contain explosive with embedded heating elements, and the elements fire all tube charges at the same time.",
+      keyInnovations: [
+        "backward-curved transverse tubes",
+        "explosive spin charges",
+        "embedded heating elements",
+        "simultaneous ignition",
+      ],
+    },
+    {
+      number: 5,
+      isIndependent: true,
+      originalText: manualClaimText(5),
+      plainEnglish:
+        "Claim 5 requires a first means that produces initial rotation, a propelling-explosive chamber, additional explosive in substantially radial curved tubes, and firing means between those explosives. The additional tube explosive must ignite when the propelling charge has been consumed to the stated predetermined extent and restore the initial spin rate.",
+      keyInnovations: [
+        "initial spin",
+        "propelling explosive",
+        "radial curved tubes",
+        "predetermined-consumption ignition",
+        "spin restoration",
+      ],
+    },
+    {
+      number: 6,
+      isIndependent: true,
+      originalText: manualClaimText(6),
+      plainEnglish:
+        "Claim 6 requires a rocket with a combustion chamber, an apparatus head that contains a support for the carried apparatus, means that rotate the rocket, and means that prevent the apparatus support from rotating. Its legal work is to keep the instrument support distinct from the spinning outer rocket.",
+      keyInnovations: [
+        "combustion chamber",
+        "apparatus head",
+        "rotating rocket",
+        "non-rotating apparatus support",
+      ],
+    },
+    {
+      number: 7,
+      isIndependent: true,
+      originalText: manualClaimText(7),
+      plainEnglish:
+        "Claim 7 specifies one anti-rotation arrangement: the apparatus head contains a pivotally mounted support, and a gyroscope mounted on that support restrains it from rotating with the head. The pivot and gyroscope are express limitations, not merely a general camera mount.",
+      keyInnovations: [
+        "pivoted support",
+        "apparatus head",
+        "gyroscope",
+        "restraint from head rotation",
+      ],
+    },
+    {
+      number: 8,
+      isIndependent: true,
+      originalText: manualClaimText(8),
+      plainEnglish:
+        "Claim 8 covers the head, a support pivoted inside it, a gyroscope on the support, and means that impart a high initial gyroscope speed. In the illustrated apparatus, the three-phase induction-motor arrangement supplies that starting speed, but the claim states the function rather than naming that motor.",
+      keyInnovations: [
+        "apparatus head",
+        "pivoted support",
+        "gyroscope",
+        "high initial rotational speed",
+      ],
     },
   ],
   drawings: [
     {
       figureNumber: "Fig. 1",
-      title: "Longitudinal Cross Section of Multi-Stage Rocket Apparatus",
+      title: "Longitudinal view of the rocket apparatus",
       caption:
-        "Cross-sectional blueprint showing stacked combustion stages, de Laval converging-diverging exhaust nozzles, and stage release latches.",
+        "Longitudinal view, partly in section, of the rocket apparatus as a whole. Source PDF p. 1.",
       svgType: "goddard-rocket",
       callouts: [
         {
-          id: "gd-1",
+          id: "gd-10",
           figureRef: "Fig. 1",
-          label: "A",
-          element: "Supersonic de Laval Nozzle",
-          description:
-            "Hourglass converging-diverging nozzle accelerating exhaust to supersonic velocity.",
-          x: 50,
-          y: 82,
+          label: "10",
+          element: "Combustion chamber",
+          description: "Primary combustion chamber containing disks 12.",
+          x: 77,
+          y: 61,
         },
         {
-          id: "gd-2",
+          id: "gd-11",
           figureRef: "Fig. 1",
-          label: "B",
-          element: "Primary Combustion Chamber",
-          description:
-            "High-pressure combustion chamber engineered for continuous propellant combustion.",
-          x: 50,
-          y: 55,
+          label: "11",
+          element: "Tapered tube",
+          description: "Elongated tapered discharge tube below the primary chamber.",
+          x: 77,
+          y: 83,
         },
         {
-          id: "gd-3",
+          id: "gd-24",
           figureRef: "Fig. 1",
-          label: "C",
-          element: "Stage Separation Joint",
-          description:
-            "Spring-loaded mechanical latch decoupling depleted lower stage casings in flight.",
-          x: 50,
-          y: 40,
+          label: "24",
+          element: "Firing tube",
+          description: "Forward tube from which the auxiliary rocket is fired.",
+          x: 78,
+          y: 43,
         },
         {
-          id: "gd-4",
+          id: "gd-29",
           figureRef: "Fig. 1",
-          label: "D",
-          element: "Upper Stage Payload Bay",
-          description:
-            "Upper stage compartment housing scientific instruments and recovery parachute.",
-          x: 50,
-          y: 18,
+          label: "29",
+          element: "Auxiliary head",
+          description: "Head containing the camera support and gyroscope assembly.",
+          x: 78,
+          y: 25,
         },
       ],
     },
     {
       figureNumber: "Fig. 2",
-      title: "Detailed Cross Section of Combustion Chamber & Feed Manifold",
+      title: "Enlarged section of the apparatus head",
       caption:
-        "Enlarged mechanical detail of the high-pressure propellant feeding injectors, combustion throat, and refractory nozzle liner.",
+        "Enlarged longitudinal sectional view of the head of the apparatus. Source PDF p. 1.",
       svgType: "goddard-rocket",
       callouts: [
         {
-          id: "gd-5",
+          id: "gd-33",
           figureRef: "Fig. 2",
-          label: "E",
-          element: "Throat Contraction Area",
-          description:
-            "Minimum cross-sectional throat where exhaust gas achieves Mach 1 sonic velocity.",
+          label: "33",
+          element: "Apparatus support",
+          description: "Pivotally mounted support for the recording apparatus.",
+          x: 54,
+          y: 22,
+        },
+        {
+          id: "gd-37",
+          figureRef: "Fig. 2",
+          label: "37",
+          element: "Gyroscope",
+          description: "Gyroscope carried in the apparatus support.",
+          x: 49,
+          y: 18,
+        },
+        {
+          id: "gd-39",
+          figureRef: "Fig. 2",
+          label: "39",
+          element: "Field coils",
+          description: "Three-phase induction-motor field coils used to start the gyroscope.",
+          x: 46,
+          y: 28,
+        },
+      ],
+    },
+    {
+      figureNumber: "Fig. 3",
+      title: "Primary rocket spin charges",
+      caption: "Transverse sectional view on line 3-3 of Fig. 2. Source PDF p. 1.",
+      svgType: "goddard-rocket",
+      callouts: [
+        {
+          id: "gd-15",
+          figureRef: "Fig. 3",
+          label: "15",
+          element: "Backward-curved tubes",
+          description: "Substantially radial, backward-curved recesses for initial-spin charges.",
           x: 50,
-          y: 65,
+          y: 45,
+        },
+        {
+          id: "gd-16",
+          figureRef: "Fig. 3",
+          label: "16",
+          element: "Explosive material",
+          description: "Explosive placed in the primary spin tubes.",
+          x: 48,
+          y: 47,
+        },
+        {
+          id: "gd-17",
+          figureRef: "Fig. 3",
+          label: "17",
+          element: "Heating element",
+          description: "Fine metal filament embedded for simultaneous electrical ignition.",
+          x: 53,
+          y: 51,
+        },
+      ],
+    },
+    {
+      figureNumber: "Fig. 4",
+      title: "Auxiliary rocket spin-restoration charges",
+      caption: "Transverse sectional view on line 4-4 of Fig. 2. Source PDF p. 1.",
+      svgType: "goddard-rocket",
+      callouts: [
+        {
+          id: "gd-30",
+          figureRef: "Fig. 4",
+          label: "30",
+          element: "Curved tubes",
+          description: "Curved recesses in the auxiliary rocket head.",
+          x: 49,
+          y: 50,
+        },
+        {
+          id: "gd-31",
+          figureRef: "Fig. 4",
+          label: "31",
+          element: "Explosive charges",
+          description: "Charges ignited to increase or restore auxiliary spin.",
+          x: 49,
+          y: 44,
+        },
+        {
+          id: "gd-32",
+          figureRef: "Fig. 4",
+          label: "32",
+          element: "Ignition tubes",
+          description: "Small tubes carrying the rapidly burning compound from charge 27.",
+          x: 50,
+          y: 52,
+        },
+      ],
+    },
+    {
+      figureNumber: "Fig. 5",
+      title: "Launching framework",
+      caption:
+        "Vertical elevation of the framework from which the apparatus may be fired, drawn to reduced scale. Source PDF p. 1.",
+      svgType: "goddard-rocket",
+      callouts: [
+        {
+          id: "gd-21",
+          figureRef: "Fig. 5",
+          label: "21",
+          element: "Vertical framework",
+          description: "Framework that holds the rocket while it is spun before launch.",
+          x: 51,
+          y: 48,
+        },
+        {
+          id: "gd-22",
+          figureRef: "Fig. 5",
+          label: "22",
+          element: "Ball bearing",
+          description: "One of the ball bearings supporting the rocket in the frame.",
+          x: 56,
+          y: 77,
+        },
+        {
+          id: "gd-23",
+          figureRef: "Fig. 5",
+          label: "23",
+          element: "Ball bearing",
+          description: "The second ball bearing at the upper rocket support.",
+          x: 57,
+          y: 37,
         },
       ],
     },
   ],
   historicalContext: {
     problemStatement:
-      "In the early 20th century, rocketry was restricted to solid black-powder fireworks and artillery rockets. These single-stage projectiles had dismal thermodynamic efficiency (<2%), could not be throttled or guided, and carried the entire heavy casing deadweight from launch to burnout, making high-altitude atmospheric research or orbital spaceflight physically impossible.",
+      "The specification's stated bottleneck is reaching extreme heights with recording instruments while converting a larger fraction of a solid explosive charge's heat into the rocket's kinetic energy. It also treats spin and the direction of a carried camera as linked practical problems.",
     priorArtLimitations: [
-      "Congreve and Hale black-powder artillery rockets had low exhaust velocities ($v_e < 600\\text{ m/s}$) and heavy iron casings.",
-      "Konstantin Tsiolkovsky had derived the rocket equation mathematically in 1903, but had built no working hardware, pumps, or nozzles.",
-      "Single-stage mass ratios ($m_0/m_f$) could not mathematically provide the $\\Delta v$ needed to escape Earth's gravity well without staging.",
+      "The source contrasts ordinary rockets that discharge combustion gases through a rear opening with the elongated tapered tube 11 used here.",
+      "A spinning outer rocket would rotate a recording apparatus with it unless a separate support and restraint were provided.",
+      "Atmospheric friction reduces the auxiliary rocket's rotation, so initial spin alone does not meet the stated operational goal.",
     ],
     breakthroughInsight:
-      "Goddard recognized that by applying steam-turbine de Laval supersonic nozzles to rocket combustion, gas thermal energy could be converted into hypersonic exhaust ($v_e > 2,500\\text{ m/s}$) with >60% kinetic efficiency. Crucially, by dividing the rocket into separable stages that drop empty tank mass in flight, the vehicle's effective mass ratio multiplies exponentially.",
-    patentWars: [
-      {
-        rivalName: "The New York Times Editorial Board (1920)",
-        rivalClaim:
-          "In a January 1920 editorial, The New York Times ridiculed Goddard's proposal to send a multi-stage rocket to the Moon, asserting that rockets could not operate in the vacuum of space because they had 'no air to push against.'",
-        conflictDetails:
-          "Goddard had already demonstrated experimentally in Clark University vacuum chambers that rocket thrust actually increases in vacuum ($F = \\dot{m}v_e + p_e A_e$) because ambient atmospheric backpressure no longer retards nozzle expansion.",
-        resolution:
-          "On July 17, 1969—as Apollo 11 was speeding toward the Moon powered by multi-stage liquid rocket engines—The New York Times published a historic retraction: 'Further investigation and experimentation have confirmed the findings of Isaac Newton in the 17th Century and it is now definitely established that a rocket can function in a vacuum as well as in an atmosphere. The Times regrets the error.'",
-        legalOutcome:
-          "In 1960, the United States Government and NASA paid a $1,000,000 patent infringement settlement to the estate of Robert H. Goddard, formally acknowledging that all American military and space rockets utilized Goddard's patented staging and nozzle designs.",
-      },
-    ],
+      "Goddard joins a long, slightly tapered exhaust tube to solid-charge combustion; a pre-launch electrically fired spin system; a reduced auxiliary rocket fired when the main charge is substantially consumed; and a gyroscope-supported recording instrument. The exact claims divide those combinations into eight independently stated legal definitions.",
+    patentWars: [],
     civilizationalImpact:
-      "Goddard's 1915 patents laid the foundation for the Space Age. Wernher von Braun, Sergei Korolev, and NASA engineers directly studied Goddard's papers and patents to build the V-2, Redstone, Saturn V, Space Shuttle, and interplanetary exploration probes.",
-    funFact:
-      "On March 16, 1926, in Auburn, Massachusetts, Goddard launched the world's first liquid-propellant rocket. Fueled by gasoline and liquid oxygen, the 10-foot rocket flew for 2.5 seconds, reached an altitude of 41 feet, and landed in a cabbage patch 184 feet away, marking the 'Kitty Hawk of Rocketry.'",
+      "The source records an early attempt to make a high-altitude instrument rocket into a coordinated machine rather than a simple firework. Its technical record includes solid-charge exhaust expansion, staged follow-on flight from a firing tube, spin management, and gyroscopic instrument orientation.",
     aftermath:
-      "With financial backing from Charles Lindbergh and the Guggenheim Foundation, Goddard moved to Roswell, New Mexico, where he built and test-fired gyroscope-stabilized, liquid-fueled rockets up to 9,000 feet altitude throughout the 1930s. Today, NASA's premier space flight center in Greenbelt, Maryland, is named the Goddard Space Flight Center in his honor.",
-    sideNotes: [
-      "US Patent 1,102,653 (July 1914) protected Goddard's liquid-propellant combustion chamber and de Laval nozzle; US Patent 1,155,986 (October 1915) protected the multi-stage vehicle architecture.",
-      "Goddard was granted 214 patents during his lifetime and posthumously, covering gyroscopic steering, turbopumps, variable-thrust throttles, and ceramic combustion liners.",
-    ],
+      "The printed specification does not document a patent dispute, later settlement, or a particular commercial outcome. This record therefore preserves the historical apparatus and avoids attributing later liquid-engine or interstage-separation claims to US 1,102,653.",
   },
   tags: [
-    "Robert Goddard",
-    "Multi-Stage Rocket",
-    "Space Exploration",
-    "de Laval Nozzle",
-    "Liquid Propellant",
-    "Astronautics",
-    "Apollo",
-    "Supersonic Aerodynamics",
+    "Robert H. Goddard",
+    "solid rocket",
+    "high-altitude photography",
+    "gyroscope",
+    "rocket spin",
+    "auxiliary rocket",
   ],
-  stats: {
-    totalClaims: 3,
-    independentClaims: 1,
-    patentWarYears: "1913–1960",
-    impactScore: 100,
-  },
+  stats: { totalClaims: 8, independentClaims: 8 },
 };
