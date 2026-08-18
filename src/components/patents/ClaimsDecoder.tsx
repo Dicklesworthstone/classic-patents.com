@@ -18,8 +18,24 @@ function claimLiveState(
   claimNum: number,
   params: Record<string, number>,
 ): "held" | "broken" | null {
-  if (patentId === WRIGHT_PATENT_ID && claimNum === 1) {
-    return (params.coupled ?? 1) >= 0.5 ? "held" : "broken";
+  if (!patentId) return null;
+  if (patentId === WRIGHT_PATENT_ID || patentId.includes("wright")) {
+    if (claimNum === 1 || claimNum === 2) {
+      return (params.coupled ?? 1) >= 0.5 ? "held" : "broken";
+    }
+  }
+  if (patentId.includes("tesla-motor") && claimNum === 1) {
+    return (params.phaseCount ?? 2) >= 2 ? "held" : "broken";
+  }
+  if (patentId.includes("fermi") && claimNum === 1) {
+    return (params.controlRodExtractionPct ?? 60) <= 85 ? "held" : "broken";
+  }
+  if (patentId.includes("edison-bulb") && claimNum === 1) {
+    return (params.vacuumLevel ?? 1) >= 0.5 ? "held" : "broken";
+  }
+  if (patentId.includes("goodyear") && claimNum === 1) {
+    const s = params.sulfurPct ?? 8;
+    return s >= 2 && s <= 20 ? "held" : "broken";
   }
   return null;
 }

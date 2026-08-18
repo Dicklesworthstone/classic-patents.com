@@ -142,6 +142,7 @@ export function Header() {
               rel="noopener noreferrer"
               className="p-2 sm:p-2.5 rounded-xl border border-parchment-300 dark:border-ink-800 hover:bg-parchment-200 dark:hover:bg-ink-800 text-ink-800 dark:text-parchment-200 transition-colors"
               title="View on GitHub"
+              aria-label="View Classic Patents on GitHub"
             >
               <Github className="w-4 h-4 sm:w-5 sm:h-5" />
             </a>
