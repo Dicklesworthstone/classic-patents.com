@@ -1,6 +1,7 @@
 import { describe, expect, test } from "bun:test";
 import { mergenthalerLinotypePatent } from "@/data/patents/mergenthaler-linotype";
 import { wrightFlyerPatent } from "@/data/patents/wright-flyer";
+import type { Patent } from "@/types/patent";
 import { archivalEditionForPublication, viewModeFromSearch } from "./DualProjectionViewer";
 
 describe("patent view URL state", () => {
@@ -21,6 +22,13 @@ describe("archival publication boundary", () => {
     expect(archivalEditionForPublication(wrightFlyerPatent)).toBe(
       wrightFlyerPatent.archivalEdition,
     );
-    expect(archivalEditionForPublication(mergenthalerLinotypePatent)).toBeUndefined();
+    expect(archivalEditionForPublication(mergenthalerLinotypePatent)).toBe(
+      mergenthalerLinotypePatent.archivalEdition,
+    );
+    const unmappedPatent: Patent = {
+      ...wrightFlyerPatent,
+      id: "us-unmapped-draft-test",
+    };
+    expect(archivalEditionForPublication(unmappedPatent)).toBeUndefined();
   });
 });
