@@ -20,16 +20,22 @@ export function stepPeltonWheel(params: { headMeters?: number; runnerRpm?: numbe
   };
 }
 
-export function stepGrammeDynamo(params: { shaftRpm?: number; coilSegments?: number }) {
-  const rpm = params.shaftRpm ?? 950;
-  const segs = params.coilSegments ?? 32;
-  const emfVolts = Math.round((rpm / 950) * 110 * (segs / 32));
-  const powerWatts = Math.round(emfVolts ** 2 / 12);
+/**
+ * A normalized explanatory model for the first ring construction in US
+ * 120,057. The specification states thirty-six joined bobbins and collecting
+ * rubbers, but supplies no rotational speed, flux density, winding turns,
+ * resistance, voltage, current, or power rating. Do not turn these relative
+ * indicators into historical electrical measurements.
+ */
+export function stepGrammeDynamo(params: { shaftRate?: number }) {
+  const shaftRate = Math.max(0.4, Math.min(1.6, params.shaftRate ?? 1));
+  const printedJunctionCount = 36;
+  const inducedEmfIndex = Math.round(100 * shaftRate);
   return {
-    emfVolts,
-    powerWatts,
-    armatureCurrentA: Number((powerWatts / Math.max(1, emfVolts)).toFixed(1)),
-    voltageRipplePct: Number(((Math.PI ** 2 / (2 * segs ** 2)) * 100).toFixed(2)),
+    shaftRate,
+    printedJunctionCount,
+    inducedEmfIndex,
+    collectionContinuityPct: Number((100 - 100 / printedJunctionCount).toFixed(1)),
   };
 }
 
@@ -116,6 +122,7 @@ export function stepNobelDynamite(params: {
     energyMjPerKg: Number(((ng / 100) * 6.3).toFixed(2)),
     // Free NG vs kieselguhr dough: more dry meal → higher drop-hammer margin.
     cushionFactor: Number((1 + (100 - ng) / 8.9).toFixed(1)),
+    isSensitiveUnsafe: ng > 82,
   };
 }
 
@@ -127,6 +134,7 @@ export function stepWhitneyCottonGin(params: { crankRpm?: number }) {
     brushRpm: Math.round(rpm * 12.0),
     outputLbsPerDay: Math.round((rpm / 180) * 50),
     sawTipSpeedMps: Number(((sawRpm * 2 * Math.PI * 0.125) / 60).toFixed(2)),
+    laborMultiplier: Math.round((rpm / 180) * 50),
   };
 }
 
@@ -219,10 +227,14 @@ export function stepPasteurFermentation(params: {
   const logReduction = Number(
     Math.max(0, Math.min(8.0, (hold / 20) * ((pTemp - 45) / 10) * 4.5)).toFixed(1),
   );
+  const yeastActivityPct = Math.min(100, Math.round(100 * Math.exp(-0.02 * (temp - 24) ** 2)));
   return {
     logReduction,
-    yeastActivityPct: Math.min(100, Math.round(100 * Math.exp(-0.02 * (temp - 24) ** 2))),
+    yeastActivityPct,
     survivorPct: logReduction >= 6 ? 0.0001 : Number((100 * 10 ** -logReduction).toFixed(2)),
+    alcoholAbvPct: Number((5.2 * (yeastActivityPct / 100)).toFixed(1)),
+    co2PressureBar: Number((1.8 * (yeastActivityPct / 100)).toFixed(2)),
+    shelfLifeMonths: logReduction >= 6 ? 24 : 0.5,
   };
 }
 
@@ -263,6 +275,7 @@ export function stepEdisonPhonograph(params: { mandrelRpm?: number; voiceVolumeD
     grooveDepthMicrons: Number(((vol / 75) * 25).toFixed(1)),
     leadScrewPitchMm,
     surfaceSpeedMps,
+    surfaceSpeedCmPerS: Number((surfaceSpeedMps * 100).toFixed(1)),
     audioBandwidthHz: Math.round(surfaceSpeedMps * 4500),
   };
 }
@@ -280,6 +293,7 @@ export function stepThomsonWelding(params: {
     interfaceTempC: tempC,
     isForged: tempC >= 1150 && press >= 25,
     upsetBurrWidthMm: Number(((press / 35) * 3.8).toFixed(1)),
+    jouleWatts: kw * 1000,
   };
 }
 
@@ -312,6 +326,8 @@ export function stepZeppelinAirship(params: {
     grossLiftKg: Math.round((grossBuoyancyKn / 9.81) * 1000),
     usefulPayloadKg: Math.max(0, Math.round((netLiftKn / 9.81) * 1000)),
     flightSpeedKmh: Number(speedKmh.toFixed(1)),
+    flightSpeedMph: Number((speedKmh / 1.60934).toFixed(1)),
+    propellerRpm: Math.round((speedKmh / 1.60934 / 17.5) * 1000),
   };
 }
 
@@ -357,6 +373,7 @@ export function stepHollerithTabulating(params: {
     inductiveTauMs: Number(((0.08 / (v / 2.4)) * 1000).toFixed(1)),
     contactResistanceOhms: 0.08,
     registerDialCount: 40,
+    cardsPerDay: Math.round(cpm * 60 * 7),
   };
 }
 
@@ -368,11 +385,16 @@ export function stepNoyceIC(params: {
   const vr = params.reverseBias ?? 5.0;
   const tox = Math.max(0.05, params.oxideThickness ?? 0.5);
   const wUm = Number((0.5 * Math.sqrt(0.7 + vr)).toFixed(2));
+  const propDelayNs = Number((0.8 + (1 / tox) * 0.2 + vr * 0.02).toFixed(2));
+  const propDelayPs = Math.round(propDelayNs * 1000);
   return {
     depletionWidthUm: wUm,
     junctionCapPfPerMm2: Number((28 / wUm).toFixed(1)),
-    propDelayNs: Number((0.8 + (1 / tox) * 0.2 + vr * 0.02).toFixed(2)),
+    propDelayNs,
     breakdownMarginV: Number((35 - vr).toFixed(1)),
+    oxideThicknessNm: Math.round(tox * 1000),
+    propDelayPs,
+    maxClockGhz: Number((1000 / Math.max(1, propDelayPs * 4)).toFixed(2)),
   };
 }
 
@@ -388,6 +410,8 @@ export function stepEdisonBulb(params: { voltage?: number; filamentLength?: numb
     radiantWatts: powerWatts,
     luminousLmPerW: Number(Math.max(0.1, ((tempK - 1400) / 1000) ** 2 * 2.8).toFixed(2)),
     feederResistanceOhm: 0.4,
+    currentAmps: Number((v / resOhm).toFixed(3)),
+    feederLossWatts: Number(((v / resOhm) ** 2 * 0.4).toFixed(1)),
   };
 }
 
@@ -435,13 +459,23 @@ export function stepMorseTelegraph(params: {
   };
 }
 
-export function stepEngelbartMouse(params: { mouseSpeed?: number; wheelRadius?: number }) {
+export function stepEngelbartMouse(params: {
+  mouseSpeed?: number;
+  wheelRadius?: number;
+  pulsesPerRev?: number;
+}) {
   const v = params.mouseSpeed ?? 350;
   const r = params.wheelRadius ?? 10.0;
+  const ppr = params.pulsesPerRev ?? 200;
+  const diameterMm = r * 2;
+  const circumferenceMm = Math.PI * diameterMm;
   return {
-    dpi: Math.round((200 * 10) / r),
+    dpi: Math.round((ppr * 10) / r),
     omegaRadPerS: Number((v / r).toFixed(1)),
     slewPxPerS: Number((v * 3.8).toFixed(0)),
+    wheelDiameterMm: diameterMm,
+    wheelCircumferenceMm: Number(circumferenceMm.toFixed(2)),
+    mmPerPulse: Number((circumferenceMm / ppr).toFixed(3)),
   };
 }
 
@@ -456,6 +490,7 @@ export function stepWozniakApple(params: { crystalFreq?: number; ramCapacityKb?:
     // Φ1 is video refresh; the 6502 never DMA-halts on Φ2.
     cpuDutyPct: 100,
     cycleTimeNs: Math.round(1000 / cpuMhz),
+    busTickIntervalMs: Math.max(50, Math.round(2100 / f)),
   };
 }
 
@@ -471,6 +506,7 @@ export function stepSpencerMicrowave(anodeKv?: number, magneticGauss?: number, r
     microwaveFreqMhz: 2450,
     wavelengthCm: 12.24,
     dielectricLossWattsPerDm3: isOscillating ? Math.round(rf * 1.8) : 0,
+    popcornHeatStepC: isOscillating ? Number(((rf * 1.8) / 450).toFixed(3)) : 0,
   };
 }
 
@@ -517,6 +553,7 @@ export function stepBardeenTransistor(
     transitTimeNs: Number(transitTimeNs.toFixed(2)),
     voltageGain: loadLine.voltageGain,
     powerGainDb: loadLine.powerGainDb,
+    collectorCurrentMa: Number((_ie * currentGainAlpha).toFixed(2)),
   };
 }
 
@@ -561,6 +598,7 @@ export function stepColtRevolver(params: {
     isLocked: cockDeg >= 44,
     muzzleVelocityMps,
     muzzleEnergyJoules: Math.round(0.5 * 0.0052 * muzzleVelocityMps ** 2),
+    powderGrains: Math.round((pMpa - 40) / 1.5 + 15),
   };
 }
 

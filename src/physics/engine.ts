@@ -35,6 +35,7 @@ import {
   stepParsonsTurbine,
   stepPasteurFermentation,
   stepPeltonWheel,
+  stepSpencerMicrowave as stepSpencerMicrowaveCatalog,
   stepThomsonWelding,
   stepWhitneyCottonGin,
   stepWozniakApple,
@@ -185,6 +186,9 @@ export const FrankenSimEngine = {
       efficiencyPct: Math.round((shaftPowerWatts / (electricalInputWatts + 1e-4)) * 100),
       synchronousRpm,
       slipFraction,
+      rotorRpm: Math.round(rotorRpm),
+      shaftPowerWatts: Math.round(shaftPowerWatts),
+      electricalInputWatts: Math.round(electricalInputWatts),
     };
   },
 
@@ -270,6 +274,7 @@ export const FrankenSimEngine = {
         thrustNewtons: wasmRes.thrust_newtons,
         specificImpulseSec: wasmRes.exhaust_velocity_mps / 9.80665,
         machExit: wasmRes.mach_exit,
+        thrustLbf: Math.round(wasmRes.thrust_newtons * 0.224809),
       };
     }
 
@@ -288,6 +293,7 @@ export const FrankenSimEngine = {
       thrustNewtons,
       specificImpulseSec,
       machExit: Number(machExit.toFixed(2)),
+      thrustLbf: Math.round(thrustNewtons * 0.224809),
     };
   },
 
@@ -372,6 +378,7 @@ export const FrankenSimEngine = {
       relativisticBeta: Number(relativisticBeta.toFixed(3)),
       gyroRadiusMm: Number(gyroRadiusMm.toFixed(1)),
       photocathodeCurrentUa: Number((Math.max(0, incidentLux) * 0.045).toFixed(1)),
+      rasterAdvance: Number(Math.max(1, velocityMps / 2.1e7).toFixed(2)),
     };
   },
 
@@ -380,19 +387,7 @@ export const FrankenSimEngine = {
    * Hull Cutoff & Microwave Dipole Radiation
    */
   stepSpencerMicrowave(anodeKv: number, magneticGauss: number, rfWatts: number) {
-    const hullCutoffGauss = Math.round(1180 * Math.sqrt(anodeKv / 4.2));
-    const isOscillating = magneticGauss > hullCutoffGauss;
-    const microwaveFreqMhz = 2450;
-    const wavelengthCm = 12.24;
-    const dielectricLossWattsPerDm3 = isOscillating ? Math.round(rfWatts * 1.8) : 0;
-
-    return {
-      hullCutoffGauss,
-      isOscillating,
-      microwaveFreqMhz,
-      wavelengthCm,
-      dielectricLossWattsPerDm3,
-    };
+    return stepSpencerMicrowaveCatalog(anodeKv, magneticGauss, rfWatts);
   },
 
   /**
@@ -418,6 +413,10 @@ export const FrankenSimEngine = {
         secondaryPotentialMv: Number((wasmRes.secondary_potential_mv * scale).toFixed(2)),
         streamerLengthInches: Number((wasmRes.streamer_length_inches * scale).toFixed(1)),
         streamerLengthMeters: Number((wasmRes.streamer_length_meters * scale).toFixed(2)),
+        secondaryPotentialKv: Math.round(wasmRes.secondary_potential_mv * scale * 1000),
+        streamerScale: Number(
+          Math.min(2.2, Math.max(0.35, (wasmRes.streamer_length_inches * scale) / 48)).toFixed(2),
+        ),
       };
     }
 
@@ -434,6 +433,8 @@ export const FrankenSimEngine = {
       secondaryPotentialMv: Number(secondaryPotentialMv.toFixed(2)),
       streamerLengthInches: Number(streamerLengthInches.toFixed(1)),
       streamerLengthMeters: Number(((streamerLengthInches * 2.54) / 100).toFixed(2)),
+      secondaryPotentialKv: Math.round(secondaryPotentialMv * 1000),
+      streamerScale: Number(Math.min(2.2, Math.max(0.35, streamerLengthInches / 48)).toFixed(2)),
     };
   },
 
@@ -478,8 +479,8 @@ export const FrankenSimEngine = {
    * Elias Howe Sewing Machine (US 4,750)
    * 4-Bar Kinematic Linkage & Shuttle Lockstitch Interlock
    */
-  stepHoweSewingMachine(flywheelRpm: number, stitchTensionGrams: number) {
-    return stepHoweSewingMachineKernel(flywheelRpm, stitchTensionGrams);
+  stepHoweSewingMachine(flywheelRpm: number, stitchTensionGrams: number, stitchPitchMm?: number) {
+    return stepHoweSewingMachineKernel(flywheelRpm, stitchTensionGrams, stitchPitchMm);
   },
 
   /**
@@ -510,6 +511,8 @@ export const FrankenSimEngine = {
       spreadSpectrumBandwidthMhz,
       processingGainDb,
       antiJammingMarginDb,
+      hopIntervalMs: Math.round(1000 / Math.max(1, hopRateHopsPerSec)),
+      jamOccupancyPct: Number((100 / Math.max(1, channelsCount)).toFixed(2)),
     };
   },
 
@@ -527,6 +530,7 @@ export const FrankenSimEngine = {
       isLocked: cat.isLocked,
       muzzleVelocityMps: cat.muzzleVelocityMps,
       muzzleEnergyJoules: cat.muzzleEnergyJoules,
+      powderGrains: cat.powderGrains,
     };
   },
 
@@ -565,6 +569,8 @@ export const FrankenSimEngine = {
       brakeCylinderPressurePsi: cylPsi,
       shoeClampingForceKn,
       stoppingDistanceM,
+      stoppingDistanceFt: Math.round(stoppingDistanceM * 3.28084),
+      pistonStrokeRatio: Number((cylPsi / 55).toFixed(2)),
       valveState: isEmergency ? "EMERGENCY" : isService ? "SERVICE" : "RELEASE",
     };
   },

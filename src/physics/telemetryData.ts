@@ -8,6 +8,7 @@
 
 import {
   bardeenLoadLine,
+  stepBardeenTransistor,
   stepBellTelephone,
   stepCorlissEngine,
   stepDavenportMotor,
@@ -45,6 +46,7 @@ import {
   stepSholesTypewriter,
 } from "./machineKernels";
 import { teslaCoilResonantKhz } from "./teslaKernel";
+import { goddardNozzleMatch } from "./thermochem";
 import { readWrightControls, stepWrightFlyerSi } from "./wrightKernel";
 
 export interface PhysicsControl {
@@ -233,7 +235,7 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
       const em = FrankenSimEngine.stepTeslaMotor(f, 2, torque);
       const synchRpm = em.synchronousRpm;
       const slipPct = em.slipFraction * 100;
-      const rotorRpm = Math.round(synchRpm * (1 - em.slipFraction));
+      const rotorRpm = em.rotorRpm;
       const effPct = em.efficiencyPct;
 
       return [
@@ -332,6 +334,26 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
           progressPct: Math.min(100, Math.max(0, (rhoDollars + 2) * 25)),
         },
         {
+          label: "Reactor Period",
+          value:
+            kinetics.reactorPeriodSeconds > 0
+              ? `${kinetics.reactorPeriodSeconds.toFixed(1)} s`
+              : "subcritical",
+          unit: "T",
+          badgeColor: kinetics.reactorPeriodSeconds > 0 ? "amber" : "cyan",
+          progressPct:
+            kinetics.reactorPeriodSeconds > 0
+              ? Math.min(100, 100 / kinetics.reactorPeriodSeconds)
+              : 0,
+        },
+        {
+          label: "Geiger Interval",
+          value: `${kinetics.geigerIntervalMs} ms`,
+          unit: "Δt",
+          badgeColor: "purple",
+          progressPct: (kinetics.geigerIntervalMs / 800) * 100,
+        },
+        {
           label: "Thermal Power",
           value: thermalPower.toLocaleString(),
           unit: "W",
@@ -393,6 +415,7 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
       const throat = p.throatAreaCm2 ?? 4.2;
 
       const res = FrankenSimEngine.stepGoddardRocket(pc, flow, throat, ar);
+      const match = goddardNozzleMatch(p.flightAltitudeMiles ?? 18, ar);
       const mach = res.machExit;
       const ve = res.exhaustVelocityMps;
       const isp = res.specificImpulseSec.toFixed(1);
@@ -414,6 +437,13 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
           progressPct: Math.min(100, (ve / 3000) * 100),
         },
         {
+          label: "Thrust",
+          value: `${thrust} N (${res.thrustLbf} lbf)`,
+          unit: "F",
+          badgeColor: "amber",
+          progressPct: Math.min(100, (thrust / 4000) * 100),
+        },
+        {
           label: "Specific Impulse (Isp)",
           value: isp,
           unit: "s",
@@ -426,6 +456,13 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
           unit: "N",
           badgeColor: "indigo",
           progressPct: Math.min(100, (thrust / 800) * 100),
+        },
+        {
+          label: "Nozzle Match",
+          value: `${match.optimalEpsilon}:1`,
+          unit: "ε*",
+          badgeColor: "cyan",
+          progressPct: match.expansionEfficiency * 100,
         },
         {
           label: "Optimum Ae/At",
@@ -488,7 +525,11 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
       const transitTimeNs = semi.clockPeriodNs;
       const alpha = semi.currentGainAlpha;
       const powerGainDb = bardeenLoadLine(alpha).powerGainDb.toFixed(1);
-      const ic = (ie * alpha).toFixed(2);
+      const ic = stepBardeenTransistor(
+        ie,
+        p.collectorBias ?? -40,
+        spacing,
+      ).collectorCurrentMa.toFixed(2);
 
       return [
         {
@@ -673,6 +714,13 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
           progressPct: Math.min(100, (rf.dielectricLossWattsPerDm3 / 2200) * 100),
         },
         {
+          label: "Popcorn ΔT",
+          value: `${rf.popcornHeatStepC} °C/tick`,
+          unit: "dT",
+          badgeColor: rf.isOscillating ? "amber" : "cyan",
+          progressPct: Math.min(100, rf.popcornHeatStepC * 30),
+        },
+        {
           label: "RF Output Power",
           value: rfWatts.toString(),
           unit: "W",
@@ -751,6 +799,13 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
           unit: "ns",
           badgeColor: "emerald",
           progressPct: (Number(propDelay) / 3.0) * 100,
+        },
+        {
+          label: "Max Clock",
+          value: `${ic.maxClockGhz} GHz`,
+          unit: "f_max",
+          badgeColor: "purple",
+          progressPct: Math.min(100, (ic.maxClockGhz / 0.3) * 100),
         },
         {
           label: "Breakdown Margin",
@@ -1466,8 +1521,22 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
           progressPct: (Number(antiJamDb) / 30) * 100,
         },
         {
+          label: "Hop Interval",
+          value: `${fh.hopIntervalMs} ms`,
+          unit: "Δt",
+          badgeColor: "amber",
+          progressPct: (fh.hopIntervalMs / 500) * 100,
+        },
+        {
+          label: "Jam Occupancy",
+          value: `${fh.jamOccupancyPct}%`,
+          unit: "1/N",
+          badgeColor: "purple",
+          progressPct: fh.jamOccupancyPct * 10,
+        },
+        {
           label: "Hop Dwell Period",
-          value: (1000 / hops).toFixed(0),
+          value: `${fh.hopIntervalMs}`,
           unit: "ms",
           badgeColor: "purple",
           progressPct: (hops / 10) * 100,
@@ -1514,7 +1583,11 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
       },
     ],
     computeMetrics: (p) => {
-      const mouse = stepEngelbartMouse({ mouseSpeed: p.mouseSpeed, wheelRadius: p.wheelRadius });
+      const mouse = stepEngelbartMouse({
+        mouseSpeed: p.mouseSpeed,
+        wheelRadius: p.wheelRadius,
+        pulsesPerRev: p.pulsesPerRev,
+      });
       const omegaRps = mouse.omegaRadPerS.toFixed(1);
       const dpi = mouse.dpi;
 
@@ -1546,6 +1619,13 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
           unit: "px/s",
           badgeColor: "purple",
           progressPct: Math.min(100, (mouse.slewPxPerS / 3000) * 100),
+        },
+        {
+          label: "Pulse Pitch",
+          value: `${mouse.mmPerPulse} mm`,
+          unit: "Δx",
+          badgeColor: "amber",
+          progressPct: 100,
         },
       ];
     },
@@ -1722,6 +1802,13 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
           progressPct: (wellCap / 200000) * 100,
         },
         {
+          label: "Output Signal",
+          value: `${wells.outputSignalMv} mV`,
+          unit: "V_out",
+          badgeColor: "amber",
+          progressPct: Math.min(100, wells.outputSignalMv / 10),
+        },
+        {
           label: "Gate Step Period",
           value: transitNs,
           unit: "ns",
@@ -1806,6 +1893,13 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
           progressPct: 100,
         },
         {
+          label: "Demo Tick",
+          value: `${apple.busTickIntervalMs} ms`,
+          unit: "Δt",
+          badgeColor: "amber",
+          progressPct: 100,
+        },
+        {
           label: "Φ2 CPU Duty",
           value: `${apple.cpuDutyPct}%`,
           unit: "duty",
@@ -1866,7 +1960,7 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
       const rpm = p.crankRpm ?? 240;
       const feed = p.stitchPitchMm ?? 3.5;
       const tension = p.threadTensionGrams ?? 45;
-      const sew = stepHoweSewingMachine(rpm, tension);
+      const sew = stepHoweSewingMachine(rpm, tension, feed);
       const shuttleHz = sew.stitchFrequencyHz.toFixed(2);
       const stitchLen = feed.toFixed(1);
 
@@ -1884,6 +1978,13 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
           unit: "Hz",
           badgeColor: "emerald",
           progressPct: (Number(shuttleHz) / 6) * 100,
+        },
+        {
+          label: "Cloth Feed",
+          value: `${sew.clothFeedMmPerS} mm/s`,
+          unit: "v_feed",
+          badgeColor: "amber",
+          progressPct: (sew.clothFeedMmPerS / 20) * 100,
         },
         {
           label: "Stitch Length",
@@ -1991,7 +2092,7 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
         k,
         p.secondaryTurns ?? 850,
       );
-      const peakKv = Math.round(res.secondaryPotentialMv * 1000);
+      const peakKv = res.secondaryPotentialKv;
       const streamerM = res.streamerLengthMeters.toFixed(2);
 
       return [
@@ -2064,6 +2165,7 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
       const indexAngleDeg = colt.indexAngleDeg.toFixed(1);
       const isLocked = colt.isLocked;
       const muzzleVelocityMps = colt.muzzleVelocityMps;
+      const powderGrains = colt.powderGrains;
 
       return [
         {
@@ -2100,6 +2202,13 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
           unit: "E_k",
           badgeColor: "purple",
           progressPct: (colt.muzzleEnergyJoules / 400) * 100,
+        },
+        {
+          label: "Powder Charge",
+          value: `${powderGrains} gr`,
+          unit: "grains",
+          badgeColor: "amber",
+          progressPct: (powderGrains / 60) * 100,
         },
       ];
     },
@@ -2194,6 +2303,20 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
           badgeColor: "cyan",
           progressPct: (otis.hoistTensionKn / 15) * 100,
         },
+        {
+          label: "Cab Payload",
+          value: `${otis.cabPayloadLbs} lb`,
+          unit: "lb",
+          badgeColor: "purple",
+          progressPct: (otis.cabPayloadLbs / 2000) * 100,
+        },
+        {
+          label: "Catch Distance",
+          value: `${otis.stoppingDistanceIn} in`,
+          unit: "in",
+          badgeColor: isSnapped ? "emerald" : "cyan",
+          progressPct: isSnapped ? 45 : 0,
+        },
       ];
     },
     pedagogicalInsight:
@@ -2264,6 +2387,20 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
           unit: "width",
           badgeColor: "emerald",
           progressPct: (Number(justWidth) / 140) * 100,
+        },
+        {
+          label: "Lines per Hour",
+          value: `${linotype.linesPerHour}`,
+          unit: "lph",
+          badgeColor: "cyan",
+          progressPct: (linotype.linesPerHour / 120) * 100,
+        },
+        {
+          label: "Matrices per Hour",
+          value: `${linotype.charsPerHour}`,
+          unit: "cph",
+          badgeColor: "purple",
+          progressPct: (linotype.charsPerHour / 4000) * 100,
         },
         {
           label: "Slug Solidification",
@@ -2639,6 +2776,13 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
           badgeColor: "cyan",
           progressPct: 100,
         },
+        {
+          label: "7-hour Day",
+          value: hol.cardsPerDay.toLocaleString(),
+          unit: "cards",
+          badgeColor: "amber",
+          progressPct: (hol.cardsPerDay / 30000) * 100,
+        },
       ];
     },
     pedagogicalInsight:
@@ -2978,6 +3122,13 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
           progressPct: (Number(grossKn) / 140) * 100,
         },
         {
+          label: "Airspeed",
+          value: `${zep.flightSpeedMph} mph`,
+          unit: "v",
+          badgeColor: "amber",
+          progressPct: (zep.flightSpeedMph / 80) * 100,
+        },
+        {
           label: "Pitch Trim Angle",
           value: `${pitchDeg}°`,
           unit: "α_trim",
@@ -3228,6 +3379,13 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
           progressPct: (Number(pistonThrustKn) / 85) * 100,
         },
         {
+          label: "Stopping Distance",
+          value: `${wh.stoppingDistanceFt} ft`,
+          unit: "ft",
+          badgeColor: "amber",
+          progressPct: Math.min(100, (wh.stoppingDistanceFt / 4000) * 100),
+        },
+        {
           label: "Triple Valve State",
           value: isEmergency
             ? "EMERGENCY DUMP"
@@ -3301,6 +3459,13 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
           unit: "v_tip",
           badgeColor: "purple",
           progressPct: (gin.sawTipSpeedMps / 12) * 100,
+        },
+        {
+          label: "vs Hand Ginning",
+          value: `${gin.laborMultiplier}×`,
+          unit: "labor",
+          badgeColor: "amber",
+          progressPct: Math.min(100, gin.laborMultiplier),
         },
       ];
     },
@@ -3679,57 +3844,64 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
           badgeColor: "amber",
           progressPct: (nobel.energyMjPerKg / 6.3) * 100,
         },
+        {
+          label: "Dough State",
+          value: nobel.isSensitiveUnsafe ? "EXUDING" : "STABLE",
+          unit: "state",
+          badgeColor: nobel.isSensitiveUnsafe ? "rose" : "emerald",
+          progressPct: nobel.isSensitiveUnsafe ? 20 : 90,
+        },
       ];
     },
     pedagogicalInsight:
       "Inert porous kieselguhr absorbs liquid nitroglycerin like a sponge, rendering the explosive insensitive to shock while the fulminate of mercury cap delivers the shockwave necessary for full detonation.",
   },
   "us-79265-sholes-typewriter": {
-    domain: "aerodynamics_mbd",
-    domainTitle: "Mechanism Kinematics & Anti-Collision Type-Basket",
-    equationName: "Typebar Angular Acceleration & Escapement Pitch",
+    domain: "mechanism_kinematics",
+    domainTitle: "Source-Constrained Type-Bar and Carriage Demonstration",
+    equationName: "Key, Ratchet, and Carriage Sequence",
     governingEquation:
-      "\\tau_{\\text{key}} = I_{\\text{bar}} \\cdot \\alpha \\quad \\text{and} \\quad \\Delta x_{\\text{platen}} = p_{\\text{pitch}}",
-    engineMethod: "FrankenSimEngine.stepSholesTypewriter",
+      "A key raises bar T; lever H alternately releases ratchet I; the weighted carriage advances one serration while the type-bar returns to cushion q.",
+    engineMethod: "Source-constrained TypeScript display cycle; no measured rate or pitch",
     controls: [
       {
         id: "typingSpeedWpm",
-        label: "Typing Cadence",
-        min: 20,
+        label: "Demonstration Cadence",
+        min: 10,
         max: 120,
         step: 5,
-        defaultValue: 60,
-        unit: "WPM",
+        defaultValue: 40,
+        unit: "strokes/min",
       },
     ],
     computeMetrics: (p) => {
-      const sholes = stepSholesTypewriter(p.typingSpeedWpm ?? 60, 0);
+      const sholes = stepSholesTypewriter(p.typingSpeedWpm ?? 40, 0);
       return [
         {
-          label: "Key Strike Frequency",
-          value: `${sholes.cps.toFixed(1)} chars/sec`,
-          unit: "f_strike",
+          label: "Demonstration Events",
+          value: sholes.eventsPerSecond.toFixed(1),
+          unit: "strokes/s",
           badgeColor: "amber",
-          progressPct: (sholes.cps / 12) * 100,
+          progressPct: (sholes.eventsPerSecond / 2) * 100,
         },
         {
-          label: "Platen Pitch",
-          value: sholes.pitchMm.toFixed(2),
-          unit: "mm",
+          label: "Key Cycle",
+          value: `${Math.round(sholes.keyCyclePct * 100)}%`,
+          unit: "relative",
           badgeColor: "emerald",
-          progressPct: 100,
+          progressPct: sholes.keyCyclePct * 100,
         },
         {
-          label: "Typebar Throw",
-          value: `${sholes.typebarStrikeAngleDeg}°`,
-          unit: "deg",
+          label: "Ratchet State",
+          value: sholes.ratchetReleasePct > 0 ? "releasing" : "held",
+          unit: "state",
           badgeColor: "cyan",
-          progressPct: 100,
+          progressPct: sholes.ratchetReleasePct * 100,
         },
       ];
     },
     pedagogicalInsight:
-      "Radial typebars swing up to hit the central printing guide beneath the platen. The QWERTY layout separates commonly paired letters across opposite sectors to prevent physical clashes.",
+      "US 79,265 describes direct key action under radial type-bars, a self-adjusting platen, an alternating-fork ratchet, separate transverse line motion, and a ribbon feed. It does not state a keyboard arrangement, pitch, bar count, throw angle, or collision model.",
   },
   "us-105338-hyatt-celluloid": {
     domain: "solid_mechanics",
@@ -3800,68 +3972,51 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
   },
   "us-120057-gramme-dynamo": {
     domain: "electromagnetics_flux",
-    domainTitle: "Continuous Direct-Current Toroidal Electromagnetics",
-    equationName: "Faraday Induced EMF & Ring Armature Integration",
+    domainTitle: "Continuous-current collection from an endless ring winding",
+    equationName: "Faraday induction with sequential junction collection",
     governingEquation:
-      "\\mathcal{E} = -N \\cdot \\frac{d\\Phi_B}{dt} = \\frac{p \\cdot N \\cdot \\Phi \\cdot n}{60 \\cdot a}",
-    engineMethod: "FrankenSimEngine.stepGrammeDynamo",
+      "For a fixed construction, induced e.m.f. scales with angular speed: E is proportional to omega. The patent does not state the values needed to calculate volts.",
+    engineMethod:
+      "Normalized source-faithful collection model; not a measured or WASM electrical rating",
     controls: [
       {
-        id: "shaftRpm",
-        label: "Dynamo Shaft Speed",
-        min: 300,
-        max: 1600,
-        step: 50,
-        defaultValue: 950,
-        unit: "RPM",
-      },
-      {
-        id: "coilSegments",
-        label: "Toroidal Coil Segments",
-        min: 12,
-        max: 48,
-        step: 4,
-        defaultValue: 32,
-        unit: "segments",
+        id: "shaftRate",
+        label: "Illustrative shaft-rate factor",
+        min: 0.4,
+        max: 1.6,
+        step: 0.1,
+        defaultValue: 1,
+        unit: "relative",
       },
     ],
     computeMetrics: (p) => {
-      const gramme = stepGrammeDynamo({ shaftRpm: p.shaftRpm, coilSegments: p.coilSegments });
-      const emf = gramme.emfVolts;
-      const power = gramme.powerWatts;
+      const gramme = stepGrammeDynamo({ shaftRate: p.shaftRate });
       return [
         {
-          label: "Generated EMF",
-          value: `${emf} V DC`,
-          unit: "EMF",
+          label: "Induced e.m.f. (illustrative)",
+          value: `${gramme.inducedEmfIndex}`,
+          unit: "relative index",
           badgeColor: "cyan",
-          progressPct: (emf / 200) * 100,
+          progressPct: (gramme.inducedEmfIndex / 160) * 100,
         },
         {
-          label: "Electrical Output",
-          value: `${power} W`,
-          unit: "P_elec",
+          label: "Printed joined bobbins",
+          value: `${gramme.printedJunctionCount}`,
+          unit: "junctions",
           badgeColor: "amber",
-          progressPct: (power / 3000) * 100,
+          progressPct: 100,
         },
         {
-          label: "Armature Current",
-          value: `${gramme.armatureCurrentA} A`,
-          unit: "I_a",
+          label: "Collection continuity (idealized)",
+          value: `${gramme.collectionContinuityPct}%`,
+          unit: "overlap",
           badgeColor: "emerald",
-          progressPct: (gramme.armatureCurrentA / 20) * 100,
-        },
-        {
-          label: "Commutator Ripple",
-          value: `${gramme.voltageRipplePct}%`,
-          unit: "ripple",
-          badgeColor: "purple",
-          progressPct: Math.min(100, gramme.voltageRipplePct * 20),
+          progressPct: gramme.collectionContinuityPct,
         },
       ];
     },
     pedagogicalInsight:
-      "The continuous toroidal ring core keeps magnetic flux constant in both halves of the winding. The commutator taps smooth DC output with negligible ripple voltage.",
+      "The continuous ring joins many small bobbins end to end. As rotation changes which junctions meet the collecting rubbers, contributions hand off in sequence. The patent describes that continuity but does not give a voltage, resistance, load, or speed from which to calculate a historical output.",
   },
   "us-135245-pasteur-fermentation": {
     domain: "thermal_transport",
@@ -3922,11 +4077,32 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
           progressPct: activity,
         },
         {
+          label: "ABV",
+          value: `${pasteur.alcoholAbvPct}%`,
+          unit: "abv",
+          badgeColor: "purple",
+          progressPct: (pasteur.alcoholAbvPct / 5.2) * 100,
+        },
+        {
+          label: "Head CO₂",
+          value: `${pasteur.co2PressureBar} bar`,
+          unit: "P_CO2",
+          badgeColor: "cyan",
+          progressPct: (pasteur.co2PressureBar / 1.8) * 100,
+        },
+        {
           label: "Surviving Fraction",
           value: `${pasteur.survivorPct}%`,
           unit: "N/N0",
           badgeColor: pasteur.survivorPct < 0.01 ? "emerald" : "amber",
           progressPct: Math.min(100, pasteur.survivorPct * 10),
+        },
+        {
+          label: "Shelf Life",
+          value: `${pasteur.shelfLifeMonths} mo`,
+          unit: "t_shelf",
+          badgeColor: pasteur.shelfLifeMonths > 1 ? "emerald" : "amber",
+          progressPct: pasteur.shelfLifeMonths > 1 ? 100 : 10,
         },
       ];
     },

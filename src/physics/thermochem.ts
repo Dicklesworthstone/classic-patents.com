@@ -31,6 +31,17 @@ export function goddardThermo(chamberPsi: number, expansionRatio: number): Godda
   };
 }
 
+/** Off-design nozzle match vs altitude. Shared by 2D, badge, weave. */
+export function goddardNozzleMatch(altitudeMiles: number, expansionRatio: number) {
+  const alt = Math.max(0, altitudeMiles);
+  const eps = Math.max(1.4, expansionRatio);
+  const optimalEpsilon = Number(Math.min(25, Math.max(3, 3.5 * Math.exp(alt / 12))).toFixed(1));
+  const expansionEfficiency = Number(
+    Math.max(0.6, 1 - Math.abs(eps - optimalEpsilon) / (optimalEpsilon * 2)).toFixed(2),
+  );
+  return { optimalEpsilon, expansionEfficiency };
+}
+
 /** Chamber → sonic throat → exit meridian for a lathe nozzle. Radii in metres of the 3D stage. */
 export function deLavalMeridian(expansionRatio: number): [number, number][] {
   const rt = 0.32;

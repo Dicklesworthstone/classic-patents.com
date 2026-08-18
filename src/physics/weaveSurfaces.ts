@@ -458,16 +458,15 @@ export function materialProbe(
   }
   if (patentId.includes("gramme") || patentId.includes("120057")) {
     const gramme = stepGrammeDynamo({
-      shaftRpm: params.shaftRpm,
-      coilSegments: params.coilSegments,
+      shaftRate: params.shaftRate,
     });
     return {
       part: calloutLabel,
-      material: "Toroidal ring armature, two brushes",
-      qty: "E",
-      value: gramme.emfVolts.toString(),
-      unit: "V",
-      note: `${gramme.powerWatts} W into the load. Continuous DC from the Gramme ring.`,
+      material: "Endless small bobbins, junction conductors, and collecting rubbers",
+      qty: "relative E",
+      value: gramme.inducedEmfIndex.toString(),
+      unit: "index",
+      note: `${gramme.printedJunctionCount} printed junctions; continuous-current collection is illustrated without inventing a historical rating.`,
     };
   }
   if (patentId.includes("glidden") || patentId.includes("157124")) {
@@ -562,15 +561,15 @@ export function materialProbe(
     };
   }
   if (patentId.includes("sholes") || patentId.includes("79265")) {
-    const wpm = params.typingSpeedWpm ?? 45;
-    const sholes = stepSholesTypewriter(wpm, 0);
+    const cadence = params.typingSpeedWpm ?? 40;
+    const sholes = stepSholesTypewriter(cadence, 0);
     return {
       part: calloutLabel,
-      material: "Up-striking type-basket, 10-pitch platen",
-      qty: "f_strike",
-      value: sholes.cps.toFixed(1),
-      unit: "s⁻¹",
-      note: `${wpm} wpm · ${sholes.pitchMm} mm/char Remington pitch.`,
+      material: "Radial type-bars, platen, and ratchet-carriage relation",
+      qty: "display cadence",
+      value: sholes.eventsPerSecond.toFixed(1),
+      unit: "strokes/s",
+      note: `${cadence} demonstration strokes/min. The grant supplies no measured character pitch or rate.`,
     };
   }
   if (patentId.includes("linotype") || patentId.includes("313224")) {
@@ -1071,7 +1070,15 @@ export function intervalGhosts(patentId: string, params: Record<string, number>)
   }
   if (patentId.includes("sholes") || patentId.includes("79265")) {
     const sholes = stepSholesTypewriter(params.typingSpeedWpm ?? 45, 0);
-    return [{ label: "Strike", min: 1, max: 10, live: sholes.cps, unit: "s⁻¹" }];
+    return [
+      {
+        label: "Demo",
+        min: 0,
+        max: 2,
+        live: sholes.eventsPerSecond,
+        unit: "strokes/s",
+      },
+    ];
   }
   if (patentId.includes("linotype") || patentId.includes("313224")) {
     const lino = stepMergenthalerLinotype({
@@ -1754,8 +1761,7 @@ export function coupleLinks(patentId: string, params: Record<string, number>): C
     const f = params.frequency ?? 60;
     const load = params.loadTorque ?? 38.5;
     const em = FrankenSimEngine.stepTeslaMotor(f, 2, load);
-    const rotorRpm = em.synchronousRpm * (1 - em.slipFraction);
-    const pout = (load * (rotorRpm * 2 * Math.PI)) / 60;
+    const pout = em.shaftPowerWatts;
     return [{ from: "stator B", to: "shaft", watts: pout }];
   }
   if (patentId.includes("223898") || patentId.includes("lightbulb")) {

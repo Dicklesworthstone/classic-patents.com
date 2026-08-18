@@ -71,9 +71,8 @@ export function energyChannelsFor(
     const f = params.frequency ?? 60;
     const load = params.loadTorque ?? 38.5;
     const em = FrankenSimEngine.stepTeslaMotor(f, 2, load);
-    const rotorRpm = em.synchronousRpm * (1 - em.slipFraction);
-    const pout = (load * (rotorRpm * 2 * Math.PI)) / 60;
-    const pin = pout / Math.max(0.2, em.efficiencyPct / 100);
+    const pout = em.shaftPowerWatts;
+    const pin = em.electricalInputWatts;
     return [
       { name: "Stator input", watts: pin, tone: "in" },
       { name: "Shaft", watts: pout, tone: "useful" },

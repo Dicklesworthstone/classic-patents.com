@@ -36,6 +36,7 @@ export function stepFermiKinetics(
       ? 200
       : Math.max(1, Math.round(20 * (kEffective / 0.99)));
   const reactivityDollars = Number(((kEffective - 1.0) / (kEffective * 0.0065)).toFixed(2));
+  const reactorPeriodSeconds = reactivityDollars > 0 ? 0.08 / (reactivityDollars * 0.0065) : -999;
 
   return {
     kEffective,
@@ -43,8 +44,12 @@ export function stepFermiKinetics(
     thermalNeutronFluxNPerCm2S: thermalPowerWatts * 3.2e7,
     delayedNeutronFractionBeta: 0.0065,
     precursorConcentrationGroup1to6: [0.033, 0.219, 0.196, 0.395, 0.115, 0.042],
-    reactorPeriodSeconds: reactivityDollars > 0 ? 0.08 / (reactivityDollars * 0.0065) : -999,
+    reactorPeriodSeconds,
     thermalPowerWatts,
     controlRodInsertionFraction: 1 - rodWithdrawalPct / 100,
+    geigerIntervalMs:
+      reactorPeriodSeconds > 0
+        ? Math.max(50, Math.min(800, Math.round(reactorPeriodSeconds * 20)))
+        : 800,
   };
 }

@@ -14,6 +14,7 @@ export function stepCcdWells(
   photoElectrons: number;
   fullWellElectrons: number;
   cte: number;
+  outputSignalMv: number;
 } {
   const cte = Math.max(0.999, 0.99995 - clockMhz * 1e-5);
   const fullWellElectrons = Math.max(1, Math.round(12500 * Math.max(0, gateVoltageV)));
@@ -23,17 +24,25 @@ export function stepCcdWells(
   wells[idx] = photoElectrons;
   const residual = photoElectrons * (1 - cte);
   wells[(idx + 2) % 3] += residual;
-  return { wells, photoElectrons, fullWellElectrons, cte };
+  const outputSignalMv = Number((((photoElectrons * 1.602e-19) / 10e-15) * 1000).toFixed(1));
+  return { wells, photoElectrons, fullWellElectrons, cte, outputSignalMv };
 }
 
-export function stepHoweSewingMachine(flywheelRpm: number, stitchTensionGrams: number) {
+export function stepHoweSewingMachine(
+  flywheelRpm: number,
+  stitchTensionGrams: number,
+  stitchPitchMm: number = 2.5,
+) {
   const rpm = Math.max(0, flywheelRpm);
   const stitchFrequencyHz = Number((rpm / 60).toFixed(1));
+  const pitch = Math.max(0.5, stitchPitchMm);
   return {
     stitchesPerMinute: rpm,
     stitchFrequencyHz,
     cycleTimeMs: Math.round(1000 / Math.max(0.01, stitchFrequencyHz)),
     lockstitchShearStrengthN: Math.round(stitchTensionGrams * 0.088),
+    stitchPitchMm: pitch,
+    clothFeedMmPerS: Number((stitchFrequencyHz * pitch).toFixed(1)),
   };
 }
 
@@ -70,37 +79,40 @@ export function stepEngelbartResolver(
   return { dThetaX, dThetaY, pulsesX, pulsesY };
 }
 
-/** 10-pitch Remington / Sholes platen: 1/10 inch per character. */
-export const SHOLES_PITCH_MM = 2.54;
 export const LINOTYPE_CHARS_PER_LINE = 42;
 
+/**
+ * A source-constrained display cycle for US 79,265.
+ *
+ * The grant explains the causal order (key L raises bar T; forks on H release
+ * ratchet I; the carriage moves one notch while the type-bar falls), but gives
+ * no character pitch, type-bar count, throw angle, mass, or speed. This helper
+ * therefore exposes only a visitor-selected demonstration cadence and relative
+ * phase values. It must never be labelled as measured machine telemetry.
+ */
 export function stepSholesTypewriter(
-  typingSpeedWpm: number,
+  demonstrationCadencePerMin: number,
   elapsedS: number,
 ): {
-  cps: number;
-  pitchMm: number;
-  carriageXMm: number;
-  typebarStrikeAngleDeg: number;
-  hammerAngleRad: number;
-  barIndex: number;
-  strikePhase: number;
+  eventsPerSecond: number;
+  completedSteps: number;
+  keyCyclePct: number;
+  ratchetReleasePct: number;
+  displayTypebarIndex: number;
 } {
-  const wpm = Math.max(0, typingSpeedWpm);
-  const cps = (wpm * 5) / 60;
-  const charsTyped = Math.max(0, elapsedS) * cps;
-  const col = charsTyped % 70;
-  const strikePhase = cps > 0 ? (elapsedS * cps) % 1 : 0;
-  const typebarStrikeAngleDeg = 90;
+  const cadence = Math.min(120, Math.max(0, demonstrationCadencePerMin));
+  const eventsPerSecond = cadence / 60;
+  const cycleCount = Math.max(0, elapsedS) * eventsPerSecond;
+  const keyCyclePct = eventsPerSecond > 0 ? cycleCount % 1 : 0;
+  const completedSteps = Math.floor(cycleCount);
   return {
-    cps,
-    pitchMm: SHOLES_PITCH_MM,
-    carriageXMm: col * SHOLES_PITCH_MM,
-    typebarStrikeAngleDeg,
-    hammerAngleRad:
-      strikePhase < 0.22 ? (strikePhase / 0.22) * ((-typebarStrikeAngleDeg * Math.PI) / 180) : 0,
-    barIndex: Math.floor(charsTyped) % 24,
-    strikePhase,
+    eventsPerSecond,
+    completedSteps,
+    keyCyclePct,
+    ratchetReleasePct: keyCyclePct < 0.35 ? keyCyclePct / 0.35 : 0,
+    // This indexes only diagrammatic bars in the presentation, never a
+    // claim about how many bars the source machine used.
+    displayTypebarIndex: completedSteps % 12,
   };
 }
 
@@ -121,6 +133,10 @@ export function stepMergenthalerLinotype(params: {
   cycleS: number;
   phase: number;
   alloyMeltPointC: number;
+  linesPerHour: number;
+  solidificationTimeSec: number;
+  charsPerHour: number;
+  linesPerMin: number;
 } {
   const rate = params.matrixRatePerMin ?? 60;
   const wedge = params.spacebandWedgeMm ?? 6.5;
@@ -130,9 +146,10 @@ export function stepMergenthalerLinotype(params: {
   const linesPerMin = rate / LINOTYPE_CHARS_PER_LINE;
   const cycleS = 60 / Math.max(0.25, linesPerMin);
   const phase = (elapsedS / cycleS) % 1;
+  const solidificationTimeMs = Math.round(450 * (temp / 260));
   return {
     justificationWidthMm: Number((85 + wedge * 4.2).toFixed(1)),
-    solidificationTimeMs: Math.round(450 * (temp / 260)),
+    solidificationTimeMs,
     brinellHardness: isEutecticTemp ? 24 : Math.round(16 + (temp / 260) * 5),
     distributorFreqHz: Number((rate / 60).toFixed(2)),
     isEutecticTemp,
@@ -142,6 +159,10 @@ export function stepMergenthalerLinotype(params: {
     cycleS,
     phase,
     alloyMeltPointC: 240,
+    linesPerHour: isEutecticTemp ? Math.round(3600 / Math.max(0.25, cycleS)) : 0,
+    solidificationTimeSec: Number((solidificationTimeMs / 1000).toFixed(2)),
+    charsPerHour: Math.round(rate * 60),
+    linesPerMin: Number((rate / LINOTYPE_CHARS_PER_LINE).toFixed(2)),
   };
 }
 
@@ -190,6 +211,8 @@ export function stepOtisElevator(params: { cabPayloadKg?: number; cableTensionPc
   pawlEngagementMs: number;
   hangingMassKg: number;
   hoistTensionKn: number;
+  cabPayloadLbs: number;
+  stoppingDistanceIn: number;
 } {
   const massKg = 400 + (params.cabPayloadKg ?? 650);
   const tensionPct = params.cableTensionPct ?? 100;
@@ -205,5 +228,7 @@ export function stepOtisElevator(params: { cabPayloadKg?: number; cableTensionPc
     peakArrestForceKn: isSnapped ? Number(((massKg * 9.81 * 1.8) / 1000).toFixed(1)) : 0,
     pawlEngagementMs: isSnapped ? 38 : 0,
     hoistTensionKn: Number(((massKg * 9.81) / 1000).toFixed(1)),
+    cabPayloadLbs: Math.round((params.cabPayloadKg ?? 650) * 2.20462),
+    stoppingDistanceIn: Number(((isSnapped ? 4.5 : 0) / 2.54).toFixed(1)),
   };
 }

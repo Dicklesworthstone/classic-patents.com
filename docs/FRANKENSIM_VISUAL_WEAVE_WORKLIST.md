@@ -176,6 +176,10 @@ the visitor can see or hear the kernel change the instrument.
 - [x] P5.83 Glidden 950 lb Bessemer rating, barb contact stress, and line ft/min live on the kernel. Lincoln 3D draft follows hullDraftFt (weight + bellows), not 5.0 − Δd. Hyatt density / clarity / extrusion rate, Kevlar alignment + fiber UTS (engine wraps catalog), and Wozniak Φ2 duty 100% are kernel fields.
 - [x] P5.84 McCormick ground m/s and cutter Hz come from the printed wheel/gear kinematics. Zeppelin lift kg / payload live on the kernel (no private /9.81). Corliss boiler MPa and expansion ratio replace leftover psi×0.00689 and 100/cutoff; 3D η is kernel thermalEfficiencyPct, not a coal-savings guess. Otis hanging mass (400 kg cab + payload) and Hollerith 40-dial 1890 register bank are kernel fields.
 - [x] P5.85 Nobel GPa / MJ/kg, Thomson upset burr, Whitney saw tip speed, De Laval skim flow, Ericsson pitch/slip (3D η_p is 1−s, not 68+v/15), Gatling cycle ms, Otis hoist T, Pasteur survivor %, Glidden tension lb, and Zeppelin km/h all come from the shared step.
+- [x] P5.86 Tesla rotor rpm / shaft W / input W live on ElectromagneticsState (2D/3D/badge/energy/weave). Goddard thrust lbf on both TS and WASM returns. Pasteur ABV/CO₂, CCD V_out, Hollerith 7-hour card day, Whitney vs-hand, Engelbart mm/pulse, Linotype lph, and Edison high-R current come from the shared step.
+- [x] P5.87 Otis cab lb / catch inches, Westinghouse stop feet, Noyce oxide nm / tpd ps / f_max, Tesla-coil kV, Bardeen I_c, Howe cloth feed, Pasteur shelf months, and Nobel exudation all come from the shared step.
+- [x] P5.88 Goddard nozzle match (ε* vs altitude) is goddardNozzleMatch. Zeppelin mph / prop rpm, Colt powder grains, Linotype chars/hour, phonograph cm/s, Edison feeder I²R, Thomson joule W, Westinghouse 2D stroke from pistonStrokeRatio, and Farnsworth raster advance all come from the shared step.
+- [x] P5.89 Fermi Geiger interval is kernel period (not 280/(k−0.98) or 0.4/k²). Gramme 36 junctions from the step. Wozniak demo tick, Lamarr hop/jam occupancy, Spencer popcorn ΔT, Tesla-coil streamer scale, and Westinghouse wheel decel from pistonStrokeRatio.
 
 ## Explicitly out of scope
 

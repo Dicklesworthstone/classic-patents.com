@@ -57,6 +57,9 @@ export interface ElectromagneticsState {
   efficiencyPct: number; // %
   synchronousRpm: number;
   slipFraction: number;
+  rotorRpm: number;
+  shaftPowerWatts: number;
+  electricalInputWatts: number;
 }
 
 // 3. Solid-State, CMOS & Microarchitecture
@@ -94,6 +97,7 @@ export interface NuclearKineticsState {
   reactorPeriodSeconds: number; // T (s)
   thermalPowerWatts: number; // W
   controlRodInsertionFraction: number;
+  geigerIntervalMs: number;
 }
 
 // 6. Continuum Mechanics, Polymers & Mechanisms

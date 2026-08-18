@@ -25,7 +25,10 @@ export const PATENT_PARAM_ALIASES: Record<string, Record<string, ParamAlias>> = 
   "us-247804-delaval-separator": { rotorRpm: same("bowlRpm") },
   "us-200521-edison-phonograph": { cylinderRpm: same("mandrelRpm") },
   "us-x8277-mccormick-reaper": { groundSpeedMph: same("forwardSpeedMph") },
-  "us-120057-gramme-dynamo": { rotorRpm: same("shaftRpm") },
+  "us-120057-gramme-dynamo": {
+    rotorRpm: same("shaftRate"),
+    shaftRpm: same("shaftRate"),
+  },
   "us-395781-hollerith-tabulating": { tabulatingSpeed: same("cardsPerMin") },
   "us-6162-corliss-steam-engine": {
     boilerPressure: same("steamPressurePsi"),
