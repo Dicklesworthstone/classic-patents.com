@@ -196,18 +196,11 @@ export const FrankenSimEngine = {
   stepKevlarContinuum(drawRatio: number, impactVelocityMps: number, appliedTension?: number) {
     const cat = catalogStepKevlar(drawRatio, impactVelocityMps, appliedTension);
     return {
-      tensileStressMpa: cat.tensileStressMpa,
-      tensileStrainPct: cat.tensileStrainPct,
-      elasticModulusGpa: cat.elasticModulusGpa,
+      ...cat,
       crossLinkDensityMolesPerCm3: 0.085,
       stitchFrequencyHz: 0,
       feedVelocityMmPs: 0,
       buoyancyLiftForceKiloNewtons: 0,
-      tensileStrengthGpa: cat.tensileStrengthGpa,
-      sonicVelocityMps: cat.sonicVelocityMps,
-      alignmentPct: cat.alignmentPct,
-      residualStrengthGpa: cat.residualStrengthGpa,
-      impactDisplayMs: cat.impactDisplayMs,
     };
   },
 
@@ -284,9 +277,7 @@ export const FrankenSimEngine = {
       exhaustKineticWatts,
       expansionRatio,
       plumeAdvancePerS:
-        exhaustVelocityMps >= 800
-          ? Number(((exhaustVelocityMps / 2000) * 35).toFixed(3))
-          : 0,
+        exhaustVelocityMps >= 800 ? Number(((exhaustVelocityMps / 2000) * 35).toFixed(3)) : 0,
     };
   },
 

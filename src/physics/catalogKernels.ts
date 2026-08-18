@@ -884,9 +884,7 @@ export function stepEinsteinRefrigerator(params: {
     fluidDisplaySpeed: Number((coolingWatts / 45 + 0.8).toFixed(3)),
     heaterGlowIntensity: Number(((qIn / 250) * 0.95).toFixed(3)),
     generatorGlowIntensity: Number(((qIn / 300) * 0.7).toFixed(3)),
-    evaporatorGlowIntensity: Number(
-      Math.min(1.3, Math.max(0.08, -evapTempC / 35)).toFixed(3),
-    ),
+    evaporatorGlowIntensity: Number(Math.min(1.3, Math.max(0.08, -evapTempC / 35)).toFixed(3)),
   };
 }
 
