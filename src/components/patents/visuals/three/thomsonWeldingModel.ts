@@ -235,14 +235,15 @@ export function updateThomsonWeldingKinematics(
   _dt: number,
   timeSec: number,
   interfaceTempC: number,
-  upsetBurrWidthMm: number,
+  weldGlowIntensity: number,
+  weldSeamScale: number,
+  jawStudioOffset: number,
   isForged: boolean,
   showSparks: boolean,
 ) {
   // 1. Incandescence Intensity & Color based on temperature
   // Below 500°C: dark; 500-900°C: dull red; 900-1200°C: bright orange; >1200°C: dazzling white
-  const tempRatio = Math.min(1.5, Math.max(0, interfaceTempC / 1300));
-  materials.glowingWeld.emissiveIntensity = tempRatio * 1.8;
+  materials.glowingWeld.emissiveIntensity = weldGlowIntensity;
 
   if (interfaceTempC > 1100) {
     materials.glowingWeld.emissive.setHex(0xffffff);
@@ -253,12 +254,11 @@ export function updateThomsonWeldingKinematics(
   }
 
   // 2. Plastic Upset Bulge Size
-  const scale = 1.0 + (upsetBurrWidthMm / 3.8) * 0.35;
-  nodes.weldSeam.scale.set(scale, scale * 1.1, scale);
+  nodes.weldSeam.scale.set(weldSeamScale, weldSeamScale * 1.1, weldSeamScale);
 
   // 3. Right Movable Clamp Compression Offset
-  nodes.rightJaw.position.x = 1.4 - (upsetBurrWidthMm / 3.8) * 0.12;
-  nodes.rightBar.position.x = 1.2 - (upsetBurrWidthMm / 3.8) * 0.12;
+  nodes.rightJaw.position.x = 1.4 - jawStudioOffset;
+  nodes.rightBar.position.x = 1.2 - jawStudioOffset;
 
   // 4. Deterministic Spark Trajectory Animation
   nodes.sparkPoints.visible = showSparks && isForged;

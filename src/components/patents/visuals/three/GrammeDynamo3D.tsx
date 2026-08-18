@@ -39,6 +39,7 @@ export const GrammeDynamo3D = memo(() => {
     showMagneticFlux,
     isAudioMuted,
     displayRadPerFrame: gramme.displayRadPerFrame,
+    fluxOpacity: gramme.fluxOpacity,
     isCutaway,
   });
 
@@ -121,6 +122,7 @@ export const GrammeDynamo3D = memo(() => {
         p.shaftRate,
         p.inducedEmfIndex,
         p.displayRadPerFrame,
+        p.fluxOpacity,
         p.showMagneticFlux,
         p.isCutaway ?? false,
       );
