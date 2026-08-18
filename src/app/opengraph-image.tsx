@@ -1,5 +1,6 @@
 import { ImageResponse } from "next/og";
 
+export const runtime = "nodejs";
 export const alt = "Classic Patents — Historical Technical Patent Museum";
 export const size = {
   width: 1200,

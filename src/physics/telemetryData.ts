@@ -6,6 +6,15 @@
  * interactive parameter controllers, and 60-FPS computed telemetry states for every classic patent.
  */
 
+import {
+  stepDeLavalSeparator,
+  stepEricssonPropeller,
+  stepGrammeDynamo,
+  stepNobelDynamite,
+  stepOttoEngine,
+  stepParsonsTurbine,
+  stepPeltonWheel,
+} from "./catalogKernels";
 import { fermiKeff, stepFermiKinetics } from "./fermiKinetics";
 import {
   stepMergenthalerLinotype,
@@ -3140,11 +3149,12 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
       },
     ],
     computeMetrics: (p) => {
-      const rpm = p.shaftRpm ?? 120;
-      const pitchDeg = p.bladePitchAngleDeg ?? 35;
-      const pitchFactor = Math.tan((pitchDeg * Math.PI) / 180) / Math.tan((35 * Math.PI) / 180);
-      const speedKnots = ((rpm / 120) * 8.5 * pitchFactor).toFixed(1);
-      const thrustKn = Math.round((rpm / 120) ** 2 * 18 * pitchFactor);
+      const ericson = stepEricssonPropeller({
+        shaftRpm: p.shaftRpm,
+        bladePitchAngleDeg: p.bladePitchAngleDeg,
+      });
+      const speedKnots = ericson.shipSpeedKnots.toFixed(1);
+      const thrustKn = ericson.thrustKn;
       return [
         {
           label: "Vessel Speed",
@@ -3294,10 +3304,12 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
       },
     ],
     computeMetrics: (p) => {
-      const ng = p.ngConcentrationPct ?? 75;
-      const cap = p.capEnergyJoules ?? 1.2;
-      const vDet = Math.round(5500 + (ng - 50) * 80);
-      const isInitiated = cap >= 0.4;
+      const nobel = stepNobelDynamite({
+        ngConcentrationPct: p.ngConcentrationPct,
+        capEnergyJoules: p.capEnergyJoules,
+      });
+      const vDet = nobel.detonationVelocityMps;
+      const isInitiated = nobel.isInitiated;
       return [
         {
           label: "Detonation Velocity",
@@ -3438,10 +3450,9 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
       },
     ],
     computeMetrics: (p) => {
-      const rpm = p.shaftRpm ?? 950;
-      const segs = p.coilSegments ?? 32;
-      const emf = Math.round((rpm / 950) * 110 * (segs / 32));
-      const power = Math.round(emf ** 2 / 12);
+      const gramme = stepGrammeDynamo({ shaftRpm: p.shaftRpm, coilSegments: p.coilSegments });
+      const emf = gramme.emfVolts;
+      const power = gramme.powerWatts;
       return [
         {
           label: "Generated EMF",
@@ -3614,10 +3625,9 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
       },
     ],
     computeMetrics: (p) => {
-      const rpm = p.engineRpm ?? 180;
-      const cr = p.compressionRatio ?? 4.5;
-      const hp = ((rpm / 180) * (3.0 * (cr / 4.5) ** 0.5)).toFixed(1);
-      const etaPct = Math.round((1 - 1 / cr ** 0.4) * 100);
+      const otto = stepOttoEngine({ engineRpm: p.engineRpm, compressionRatio: p.compressionRatio });
+      const hp = otto.brakeHorsepower.toFixed(1);
+      const etaPct = otto.thermalEfficiencyPct;
       return [
         {
           label: "Brake Horsepower",
@@ -3718,14 +3728,10 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
       },
     ],
     computeMetrics: (p) => {
-      const h = p.headMeters ?? 450;
-      const rpm = p.runnerRpm ?? 600;
-      const vJet = Math.round(Math.sqrt(2 * 9.81 * h));
-      const uBucket = (rpm * 2 * Math.PI * 0.75) / 60;
-      const speedRatio = uBucket / Math.max(1, vJet);
-      const eta = Math.max(40, Math.round(93 - Math.abs(speedRatio - 0.5) * 160));
-      const hydroKw = (45 * 9.81 * h) / 1000;
-      const kw = Math.round(hydroKw * (eta / 100));
+      const pelton = stepPeltonWheel({ headMeters: p.headMeters, runnerRpm: p.runnerRpm });
+      const vJet = pelton.jetVelocityMps;
+      const eta = pelton.etaPct;
+      const kw = pelton.shaftPowerKw;
       return [
         {
           label: "Jet Velocity",
@@ -3781,11 +3787,10 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
       },
     ],
     computeMetrics: (p) => {
-      const rpm = p.bowlRpm ?? 6500;
-      const flow = p.rawMilkFlowLph ?? 300;
-      const g = Math.round((((rpm * 2 * Math.PI) / 60) ** 2 * 0.1) / 9.80665);
-      const yieldFat = Math.min(99.9, Number((95 + (g / 5000) * 4.5).toFixed(1)));
-      const creamFlow = Number((flow * 0.12).toFixed(1));
+      const sep = stepDeLavalSeparator({ bowlRpm: p.bowlRpm, rawMilkFlowLph: p.rawMilkFlowLph });
+      const g = sep.gForce;
+      const yieldFat = sep.fatYieldPct;
+      const creamFlow = sep.creamFlowLph;
       return [
         {
           label: "Centrifugal G-Force",
@@ -3900,10 +3905,11 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
       },
     ],
     computeMetrics: (p) => {
-      const rpm = p.rotorRpm ?? 3000;
-      const psi = p.inletPressurePsi ?? 180;
-      const enthalpy = Math.round(550 * (psi / 180));
-      const kw = Math.round(28 * enthalpy * 0.84 * (rpm / 3000));
+      const parsons = stepParsonsTurbine({
+        rotorRpm: p.rotorRpm,
+        inletPressurePsi: p.inletPressurePsi,
+      });
+      const kw = parsons.shaftPowerKw;
       return [
         {
           label: "Shaft Power Output",
@@ -3914,10 +3920,10 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
         },
         {
           label: "Inlet Pressure",
-          value: `${(psi * 0.00689476).toFixed(2)} MPa`,
+          value: `${parsons.inletMpa.toFixed(2)} MPa`,
           unit: "P_inlet",
           badgeColor: "amber",
-          progressPct: (psi / 300) * 100,
+          progressPct: ((p.inletPressurePsi ?? 180) / 300) * 100,
         },
         {
           label: "Reaction Expansion",

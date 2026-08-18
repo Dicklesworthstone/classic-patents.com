@@ -15,7 +15,7 @@ export function HollerithTabulator3D() {
   const { params, updateParam } = usePatentPhysics("us-395781-hollerith-tabulating");
 
   const cardsProcessed = params.cardsProcessed ?? 1890;
-  const tabulatingSpeedCpm = params.tabulatingSpeed ?? 60;
+  const tabulatingSpeedCpm = params.cardsPerMin ?? 60;
 
   const [isPlaying, setIsPlaying] = useState<boolean>(true);
   const [showUiOverlay, setShowUiOverlay] = useState<boolean>(true);
@@ -306,7 +306,7 @@ export function HollerithTabulator3D() {
                 max="120"
                 step="5"
                 value={tabulatingSpeedCpm}
-                onChange={(e) => updateParam("tabulatingSpeed", Number(e.target.value))}
+                onChange={(e) => updateParam("cardsPerMin", Number(e.target.value))}
                 className="w-full accent-amber-500 cursor-pointer"
               />
             </div>

@@ -15,42 +15,6 @@ import { usePatentAudio } from "./usePatentAudio";
 
 type CameraPreset = "iso" | "grate_saws" | "brush_drum" | "hopper" | "top";
 
-interface ScenarioPreset {
-  id: string;
-  name: string;
-  desc: string;
-  crankRpm: number;
-  sawCount: number;
-  feedRateLbsPerHr: number;
-}
-
-const SCENARIOS: ScenarioPreset[] = [
-  {
-    id: "whitney_1794_original",
-    name: "1794 Whitney Hand-Crank Gin",
-    desc: "Eli Whitney's original hand-cranked gin separating 50 lbs of clean green-seed short-staple cotton fiber per day (US X72).",
-    crankRpm: 60,
-    sawCount: 40,
-    feedRateLbsPerHr: 6.2,
-  },
-  {
-    id: "water_powered_mill",
-    name: "Waterwheel Mill Drive (240 RPM)",
-    desc: "Continuous mill drive processing over 300 lbs/day with high tooth velocity pulling fibers cleanly through the 3.2mm slotted breastwork.",
-    crankRpm: 240,
-    sawCount: 60,
-    feedRateLbsPerHr: 38.0,
-  },
-  {
-    id: "heavy_staple_choke",
-    name: "Heavy Raw Cotton Inflow",
-    desc: "Dense boll feeding testing seed exclusion at the breastwork ribs and counter-rotating brush suction.",
-    crankRpm: 120,
-    sawCount: 50,
-    feedRateLbsPerHr: 22.0,
-  },
-];
-
 export function WhitneyCottonGin3D() {
   const containerRef = useRef<HTMLDivElement>(null);
 
@@ -108,13 +72,6 @@ export function WhitneyCottonGin3D() {
         break;
     }
     controls.update();
-  };
-
-  const applyScenario = (s: ScenarioPreset) => {
-    updateParam("crankRpm", s.crankRpm);
-    if (!isAudioMuted) {
-      soundEngine.playSwitchClick();
-    }
   };
 
   const toggleSound = () => {
@@ -468,76 +425,6 @@ export function WhitneyCottonGin3D() {
           </button>
         </div>
       </div>
-
-      {/* Bottom Interactive Physics & Control Panel */}
-      {showUiOverlay && (
-        <div className="absolute bottom-4 left-4 right-4 bg-parchment-950/90 backdrop-blur-md rounded-2xl border border-parchment-700/70 p-4 shadow-2xl z-10 flex flex-col gap-3">
-          {/* Real-Time Mechanical Telemetry Bar */}
-          <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5 pb-2 border-b border-parchment-800/80 text-xs font-mono">
-            <div className="bg-parchment-900/80 px-3 py-1.5 rounded-lg border border-parchment-700/50 flex flex-col">
-              <span className="text-[10px] text-parchment-400 uppercase">Hand Crank Speed</span>
-              <span className="font-bold text-amber-400">{crankRpm} RPM</span>
-            </div>
-            <div className="bg-parchment-900/80 px-3 py-1.5 rounded-lg border border-parchment-700/50 flex flex-col">
-              <span className="text-[10px] text-parchment-400 uppercase">Saw Tooth Tip Speed</span>
-              <span className="font-bold text-blue-400">{sawSpeedRpm.toFixed(0)} RPM (2.5×)</span>
-            </div>
-            <div className="bg-parchment-900/80 px-3 py-1.5 rounded-lg border border-parchment-700/50 flex flex-col">
-              <span className="text-[10px] text-parchment-400 uppercase">Brush Ejection Speed</span>
-              <span className="font-bold text-emerald-400">
-                {brushSpeedRpm.toFixed(0)} RPM (8.0×)
-              </span>
-            </div>
-            <div className="bg-parchment-900/80 px-3 py-1.5 rounded-lg border border-parchment-700/50 flex flex-col">
-              <span className="text-[10px] text-parchment-400 uppercase">Daily Clean Output</span>
-              <span className="font-bold text-amber-300">
-                {dailyOutputLbs} lbs/day ({laborMultiplier}× manual)
-              </span>
-            </div>
-          </div>
-
-          {/* Scenario Presets & Live Slider Controls */}
-          <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
-            {/* Presets */}
-            <div className="flex items-center gap-2 w-full sm:w-auto">
-              <span className="text-xs font-mono text-parchment-400 flex items-center gap-1 shrink-0">
-                <Sparkles className="w-3.5 h-3.5 text-amber-500" /> Presets:
-              </span>
-              <div className="flex gap-1.5 overflow-x-auto pb-1">
-                {SCENARIOS.map((sc) => (
-                  <button
-                    key={sc.id}
-                    type="button"
-                    onClick={() => applyScenario(sc)}
-                    className="px-2.5 py-1 text-xs font-sans rounded-lg bg-parchment-800/80 hover:bg-parchment-700 text-parchment-200 hover:text-white border border-parchment-600/50 transition-colors whitespace-nowrap"
-                  >
-                    {sc.name}
-                  </button>
-                ))}
-              </div>
-            </div>
-
-            {/* Slider */}
-            <div className="flex items-center gap-3 w-full sm:w-72 shrink-0">
-              <span className="text-xs font-sans text-parchment-300 shrink-0 font-medium">
-                Crank RPM:
-              </span>
-              <input
-                type="range"
-                min="20"
-                max="240"
-                step="5"
-                value={crankRpm}
-                onChange={(e) => updateParam("crankRpm", Number(e.target.value))}
-                className="w-full accent-amber-500 cursor-pointer"
-              />
-              <span className="text-xs font-mono text-amber-400 w-12 text-right font-bold">
-                {crankRpm}
-              </span>
-            </div>
-          </div>
-        </div>
-      )}
     </div>
   );
 }

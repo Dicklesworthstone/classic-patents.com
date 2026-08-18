@@ -1,6 +1,6 @@
 "use client";
 
-import { Activity, Camera, Sparkles, Volume2, VolumeX, Zap } from "lucide-react";
+import { Activity, Camera, Eye, EyeOff, Volume2, VolumeX } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import * as THREE from "three";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
@@ -11,45 +11,14 @@ import { usePatentAudio } from "./usePatentAudio";
 
 type CameraPreset = "iso" | "barb_lock" | "twisting_helix" | "takeup_drum" | "top";
 
-interface ScenarioPreset {
-  id: string;
-  name: string;
-  desc: string;
-  machineRpm: number;
-  barbSpacingInches: number;
-}
-
-const SCENARIOS: ScenarioPreset[] = [
-  {
-    id: "glidden_1874_winner",
-    name: "1874 Glidden 'The Winner' Barbed Wire",
-    desc: "Joseph Glidden's iconic design: 2-point wire barbs coiled around one strand and locked in place by a second twisted strand (US 157,124).",
-    machineRpm: 120,
-    barbSpacingInches: 5.0,
-  },
-  {
-    id: "cattle_ranch_heavy",
-    name: "Texas Longhorn Heavy Defense (3-Inch)",
-    desc: "Dense 3-inch barb pitch with high tensile galvanization resisting 4.5 kN cattle herd impact.",
-    machineRpm: 90,
-    barbSpacingInches: 3.0,
-  },
-  {
-    id: "high_speed_spooling",
-    name: "Industrial High-Speed Spooling",
-    desc: "240 RPM continuous factory flyer twisting over 80 feet of barbed wire per minute.",
-    machineRpm: 240,
-    barbSpacingInches: 6.0,
-  },
-];
-
 export function GliddenBarbedWire3D() {
   const containerRef = useRef<HTMLDivElement>(null);
+  const [showUiOverlay, setShowUiOverlay] = useState<boolean>(true);
 
   // Wire Manufacturing Parameters
   const { params, updateParam } = usePatentPhysics("us-157124-glidden-barbed-wire");
-  const [showUiOverlay, setShowUiOverlay] = useState<boolean>(true);
-  const machineRpm = params.machineRpm ?? 120;
+  const twistsPerFoot = params.twistsPerFoot ?? 5;
+  const machineRpm = twistsPerFoot * 24;
   const barbSpacingInches = params.barbSpacingInches ?? 5.0;
   const feetPerMinute = ((machineRpm * barbSpacingInches) / 12).toFixed(1);
   const tensileStrengthLbs = 950;
@@ -94,13 +63,6 @@ export function GliddenBarbedWire3D() {
         break;
     }
     controls.update();
-  };
-
-  const applyScenario = (s: ScenarioPreset) => {
-    updateParam("machineRpm", s.machineRpm);
-    if (!isAudioMuted) {
-      soundEngine.playSwitchClick();
-    }
   };
 
   const toggleSound = () => {
@@ -311,74 +273,17 @@ export function GliddenBarbedWire3D() {
           <button
             type="button"
             onClick={() => setShowUiOverlay(!showUiOverlay)}
+            title={showUiOverlay ? "Hide Overlay UI" : "Show Overlay UI"}
             className="p-1.5 rounded-lg text-xs text-parchment-400 hover:text-white hover:bg-parchment-800 transition-colors"
           >
-            <Zap className="w-4 h-4 text-amber-400" />
-          </button>
+            {showUiOverlay ? (
+              <EyeOff className="w-4 h-4" />
+            ) : (
+              <Eye className="w-4 h-4 text-amber-400" />
+            )}
+          </button>{" "}
         </div>
       </div>
-
-      {/* Bottom Telemetry Bar & Controls */}
-      {showUiOverlay && (
-        <div className="absolute bottom-4 left-4 right-4 bg-parchment-950/90 backdrop-blur-md rounded-2xl border border-parchment-700/70 p-4 shadow-2xl z-10 flex flex-col gap-3">
-          <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5 pb-2 border-b border-parchment-800/80 text-xs font-mono">
-            <div className="bg-parchment-900/80 px-3 py-1.5 rounded-lg border border-parchment-700/50 flex flex-col">
-              <span className="text-[10px] text-parchment-400 uppercase">Flyer Speed</span>
-              <span className="font-bold text-amber-400">{machineRpm} RPM</span>
-            </div>
-            <div className="bg-parchment-900/80 px-3 py-1.5 rounded-lg border border-parchment-700/50 flex flex-col">
-              <span className="text-[10px] text-parchment-400 uppercase">Spool Output Rate</span>
-              <span className="font-bold text-blue-400">{feetPerMinute} ft/min</span>
-            </div>
-            <div className="bg-parchment-900/80 px-3 py-1.5 rounded-lg border border-parchment-700/50 flex flex-col">
-              <span className="text-[10px] text-parchment-400 uppercase">Barb Pitch</span>
-              <span className="font-bold text-emerald-400">{barbSpacingInches} Inches</span>
-            </div>
-            <div className="bg-parchment-900/80 px-3 py-1.5 rounded-lg border border-parchment-700/50 flex flex-col">
-              <span className="text-[10px] text-parchment-400 uppercase">Tensile Strength</span>
-              <span className="font-bold text-amber-300">{tensileStrengthLbs} lbs (4.2 kN)</span>
-            </div>
-          </div>
-
-          <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
-            <div className="flex items-center gap-2 w-full sm:w-auto">
-              <span className="text-xs font-mono text-parchment-400 flex items-center gap-1 shrink-0">
-                <Sparkles className="w-3.5 h-3.5 text-amber-500" /> Presets:
-              </span>
-              <div className="flex gap-1.5 overflow-x-auto pb-1">
-                {SCENARIOS.map((sc) => (
-                  <button
-                    key={sc.id}
-                    type="button"
-                    onClick={() => applyScenario(sc)}
-                    className="px-2.5 py-1 text-xs font-sans rounded-lg bg-parchment-800/80 hover:bg-parchment-700 text-parchment-200 hover:text-white border border-parchment-600/50 transition-colors whitespace-nowrap"
-                  >
-                    {sc.name}
-                  </button>
-                ))}
-              </div>
-            </div>
-
-            <div className="flex items-center gap-3 w-full sm:w-72 shrink-0">
-              <span className="text-xs font-sans text-parchment-300 shrink-0 font-medium">
-                Flyer RPM:
-              </span>
-              <input
-                type="range"
-                min="60"
-                max="300"
-                step="10"
-                value={machineRpm}
-                onChange={(e) => updateParam("machineRpm", Number(e.target.value))}
-                className="w-full accent-amber-500 cursor-pointer"
-              />
-              <span className="text-xs font-mono text-amber-400 w-12 text-right font-bold">
-                {machineRpm}
-              </span>
-            </div>
-          </div>
-        </div>
-      )}
     </div>
   );
 }

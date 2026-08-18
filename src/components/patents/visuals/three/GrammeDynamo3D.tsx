@@ -1,8 +1,9 @@
 "use client";
 
-import { Activity, Camera, Eye, Sparkles, Volume2, VolumeX, Zap } from "lucide-react";
+import { Activity, Camera, Eye, EyeOff, Sparkles, Volume2, VolumeX } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import * as THREE from "three";
+import { stepGrammeDynamo } from "@/physics/catalogKernels";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { soundEngine } from "@/utils/soundEngine";
 import {
@@ -15,48 +16,20 @@ import { usePatentAudio } from "./usePatentAudio";
 
 type CameraPreset = "iso" | "ring_armature" | "commutator" | "pole_pieces" | "top";
 
-interface ScenarioPreset {
-  id: string;
-  name: string;
-  desc: string;
-  dynamoRpm: number;
-  outputVoltageVolts: number;
-}
-
-const SCENARIOS: ScenarioPreset[] = [
-  {
-    id: "gramme_1871_original",
-    name: "1871 Gramme Dynamo Original (Smooth DC)",
-    desc: "Zénobe Gramme's continuous ring armature generating ripple-free direct current for commercial arc lighting (US 120,057).",
-    dynamoRpm: 1200,
-    outputVoltageVolts: 110,
-  },
-  {
-    id: "high_power_arc_grid",
-    name: "Arc Lighting Central Station (1,600 RPM)",
-    desc: "High-speed dynamo generating 160V DC and 35 Amps to illuminate Paris streets with Jablochkoff candles.",
-    dynamoRpm: 1600,
-    outputVoltageVolts: 160,
-  },
-  {
-    id: "motor_generator_mode",
-    name: "Reversible DC Motor Mode",
-    desc: "Demonstrating electrical reversibility where external DC current drives the ring armature as a powerful electric motor.",
-    dynamoRpm: 800,
-    outputVoltageVolts: 75,
-  },
-];
-
 export function GrammeDynamo3D() {
   const containerRef = useRef<HTMLDivElement>(null);
+  const [showUiOverlay, setShowUiOverlay] = useState<boolean>(true);
 
   // Electrical Dynamo Parameters
   const { params, updateParam } = usePatentPhysics("us-120057-gramme-dynamo");
-  const [showUiOverlay, setShowUiOverlay] = useState<boolean>(true);
-  const dynamoRpm = params.rotorRpm ?? 1200;
-  const outputVoltageVolts = (dynamoRpm / 1200) * 110;
+  const dynamoRpm = params.shaftRpm ?? params.rotorRpm ?? 950;
+  const gramme = stepGrammeDynamo({
+    shaftRpm: dynamoRpm,
+    coilSegments: params.coilSegments ?? 32,
+  });
+  const outputVoltageVolts = gramme.emfVolts;
   const currentAmps = (outputVoltageVolts / 4.5).toFixed(1);
-  const powerWatts = (outputVoltageVolts * Number(currentAmps)).toFixed(0);
+  const powerWatts = gramme.powerWatts.toFixed(0);
   const [showMagneticFlux, setShowMagneticFlux] = useState<boolean>(true);
   const [activeCamera, setActiveCamera] = useState<CameraPreset>("iso");
   const { isAudioMuted, toggleSound: toggleEngine } = usePatentAudio();
@@ -101,14 +74,6 @@ export function GrammeDynamo3D() {
     }
     controls.update();
   };
-
-  const applyScenario = (s: ScenarioPreset) => {
-    updateParam("rotorRpm", s.dynamoRpm);
-    if (!isAudioMuted) {
-      soundEngine.playSwitchClick();
-    }
-  };
-
   const toggleSound = () => {
     toggleEngine(() => {
       soundEngine.playSwitchClick();
@@ -375,74 +340,17 @@ export function GrammeDynamo3D() {
           <button
             type="button"
             onClick={() => setShowUiOverlay(!showUiOverlay)}
+            title={showUiOverlay ? "Hide Overlay UI" : "Show Overlay UI"}
             className="p-1.5 rounded-lg text-xs text-parchment-400 hover:text-white hover:bg-parchment-800 transition-colors"
           >
-            <Zap className="w-4 h-4 text-amber-400" />
+            {showUiOverlay ? (
+              <EyeOff className="w-4 h-4" />
+            ) : (
+              <Eye className="w-4 h-4 text-amber-400" />
+            )}
           </button>
         </div>
       </div>
-
-      {/* Bottom Telemetry Bar & Controls */}
-      {showUiOverlay && (
-        <div className="absolute bottom-4 left-4 right-4 bg-parchment-950/90 backdrop-blur-md rounded-2xl border border-parchment-700/70 p-4 shadow-2xl z-10 flex flex-col gap-3">
-          <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5 pb-2 border-b border-parchment-800/80 text-xs font-mono">
-            <div className="bg-parchment-900/80 px-3 py-1.5 rounded-lg border border-parchment-700/50 flex flex-col">
-              <span className="text-[10px] text-parchment-400 uppercase">Armature Speed</span>
-              <span className="font-bold text-amber-400">{dynamoRpm} RPM</span>
-            </div>
-            <div className="bg-parchment-900/80 px-3 py-1.5 rounded-lg border border-parchment-700/50 flex flex-col">
-              <span className="text-[10px] text-parchment-400 uppercase">Continuous DC Output</span>
-              <span className="font-bold text-blue-400">{outputVoltageVolts.toFixed(1)} V DC</span>
-            </div>
-            <div className="bg-parchment-900/80 px-3 py-1.5 rounded-lg border border-parchment-700/50 flex flex-col">
-              <span className="text-[10px] text-parchment-400 uppercase">Output Current</span>
-              <span className="font-bold text-emerald-400">{currentAmps} A</span>
-            </div>
-            <div className="bg-parchment-900/80 px-3 py-1.5 rounded-lg border border-parchment-700/50 flex flex-col">
-              <span className="text-[10px] text-parchment-400 uppercase">Electric Power</span>
-              <span className="font-bold text-amber-300">{powerWatts} Watts</span>
-            </div>
-          </div>
-
-          <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
-            <div className="flex items-center gap-2 w-full sm:w-auto">
-              <span className="text-xs font-mono text-parchment-400 flex items-center gap-1 shrink-0">
-                <Sparkles className="w-3.5 h-3.5 text-amber-500" /> Presets:
-              </span>
-              <div className="flex gap-1.5 overflow-x-auto pb-1">
-                {SCENARIOS.map((sc) => (
-                  <button
-                    key={sc.id}
-                    type="button"
-                    onClick={() => applyScenario(sc)}
-                    className="px-2.5 py-1 text-xs font-sans rounded-lg bg-parchment-800/80 hover:bg-parchment-700 text-parchment-200 hover:text-white border border-parchment-600/50 transition-colors whitespace-nowrap"
-                  >
-                    {sc.name}
-                  </button>
-                ))}
-              </div>
-            </div>
-
-            <div className="flex items-center gap-3 w-full sm:w-72 shrink-0">
-              <span className="text-xs font-sans text-parchment-300 shrink-0 font-medium">
-                Dynamo RPM:
-              </span>
-              <input
-                type="range"
-                min="400"
-                max="2400"
-                step="50"
-                value={dynamoRpm}
-                onChange={(e) => updateParam("rotorRpm", Number(e.target.value))}
-                className="w-full accent-amber-500 cursor-pointer"
-              />
-              <span className="text-xs font-mono text-amber-400 w-16 text-right font-bold">
-                {dynamoRpm}
-              </span>
-            </div>
-          </div>
-        </div>
-      )}
     </div>
   );
 }

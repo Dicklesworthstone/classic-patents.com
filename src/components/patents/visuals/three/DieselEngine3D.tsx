@@ -3,6 +3,7 @@
 import { Camera, Flame, Play, Volume2, VolumeX } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import * as THREE from "three";
+import { FrankenSimEngine } from "@/physics/engine";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { createThreeStudioScene, type StudioContext } from "./ThreeStudioScene";
 import { useLiveSimParams } from "./useLiveSimParams";
@@ -15,20 +16,26 @@ export function DieselEngine3D() {
   const { params, updateParam } = usePatentPhysics("us-542846-diesel-engine");
 
   const engineRpm = params.engineRpm ?? 160;
-  const compressionRatio = params.compressionRatio ?? 14.5;
+  const compressionRatio = params.compRatio ?? params.compressionRatio ?? 14.5;
+  const diesel = FrankenSimEngine.stepDieselEngine({
+    compressionRatio,
+    blastAirPressureBar: params.blastAirPressure ?? 65,
+    cutoffRatio: params.cutoffRatio ?? 1.6,
+  });
 
   const [isPlaying, setIsPlaying] = useState<boolean>(true);
   const [showUiOverlay, setShowUiOverlay] = useState<boolean>(true);
   const { isMuted, toggleMute } = usePatentAudio();
 
-  const peakPressureBar = Math.round(1.0 * compressionRatio ** 1.38);
-  const peakTempC = Math.round(293 * compressionRatio ** 0.38 - 273);
-  const _indicatedHp = Math.round((engineRpm / 160) * (peakPressureBar / 35) * 20);
+  const peakPressureBar = diesel.pCompBar;
+  const peakTempC = diesel.tCompressionC;
 
   const live = useLiveSimParams({
     engineRpm,
     compressionRatio,
     isPlaying,
+    isAutoIgnition: diesel.isAutoIgnition ? 1 : 0,
+    peakTempC,
   });
 
   const studioRef = useRef<StudioContext | null>(null);
@@ -184,7 +191,7 @@ export function DieselEngine3D() {
         // Autoignition flash near Top Dead Center (crankAngle ~ PI/2)
         if (flameFlashRef.current) {
           const isTdc = Math.abs(Math.sin(crankAngle) - 1.0) < 0.08;
-          flameFlashRef.current.visible = isTdc;
+          flameFlashRef.current.visible = isTdc && live.current.isAutoIgnition > 0;
         }
       }
 
@@ -199,7 +206,7 @@ export function DieselEngine3D() {
       if (animRef.current) cancelAnimationFrame(animRef.current);
       studio.dispose();
     };
-  }, [live.current.isPlaying, live.current.engineRpm]);
+  }, [live]);
 
   const setCameraView = (view: CameraPreset) => {
     const studio = studioRef.current;
@@ -290,7 +297,7 @@ export function DieselEngine3D() {
                 max="20.0"
                 step="0.5"
                 value={compressionRatio}
-                onChange={(e) => updateParam("compressionRatio", Number(e.target.value))}
+                onChange={(e) => updateParam("compRatio", Number(e.target.value))}
                 className="w-full accent-amber-500 cursor-pointer"
               />
             </div>
@@ -307,7 +314,9 @@ export function DieselEngine3D() {
                 <span className="text-[10px] font-mono text-slate-400 block">
                   Autoignition Temp
                 </span>
-                <span className="text-xs font-mono font-bold text-amber-400">{peakTempC} °C</span>
+                <span className="text-xs font-mono font-bold text-amber-400">
+                  {peakTempC} °C{diesel.isAutoIgnition ? "" : " (no fire)"}
+                </span>
               </div>
             </div>
           </div>

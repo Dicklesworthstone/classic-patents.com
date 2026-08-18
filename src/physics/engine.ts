@@ -5,6 +5,15 @@
  * semiconductor carrier transport, thermal absorption cycles, and point kinetics.
  */
 
+import {
+  stepDeLavalSeparator,
+  stepEricssonPropeller,
+  stepGrammeDynamo,
+  stepNobelDynamite,
+  stepOttoEngine,
+  stepParsonsTurbine,
+  stepPeltonWheel,
+} from "./catalogKernels";
 import { stepFermiKinetics } from "./fermiKinetics";
 import {
   stepCcdWells,
@@ -87,6 +96,13 @@ export const FrankenSimEngine = {
   stepHoweLockstitch,
   stepEngelbartResolver,
   stepSholesTypewriter,
+  stepPeltonWheel,
+  stepGrammeDynamo,
+  stepOttoEngine,
+  stepParsonsTurbine,
+  stepEricssonPropeller,
+  stepDeLavalSeparator,
+  stepNobelDynamite,
 
   stepTeslaMotor(
     freqHz: number,

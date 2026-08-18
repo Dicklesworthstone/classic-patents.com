@@ -12,48 +12,12 @@ import { usePatentAudio } from "./usePatentAudio";
 
 type CameraPreset = "iso" | "wristplate" | "flywheel" | "valves" | "top";
 
-interface ScenarioPreset {
-  id: string;
-  name: string;
-  desc: string;
-  engineRpm: number;
-  boilerPressure: number;
-  cutoffPercentage: number;
-}
-
-const SCENARIOS: ScenarioPreset[] = [
-  {
-    id: "centennial_standard",
-    name: "1876 Centennial 1400 HP Mode",
-    desc: "George Corliss's towering 700-ton Centennial Exposition engine operating at nominal 36 RPM, 125 PSI with 25% automatic cutoff.",
-    engineRpm: 36,
-    boilerPressure: 125,
-    cutoffPercentage: 25,
-  },
-  {
-    id: "heavy_mill_load",
-    name: "Heavy Textile Mill Load",
-    desc: "High-torque operation with 40% extended cutoff delivering massive indicated horsepower to thousands of belt-driven looms.",
-    engineRpm: 60,
-    boilerPressure: 150,
-    cutoffPercentage: 40,
-  },
-  {
-    id: "light_economy",
-    name: "High-Efficiency Economy (15% Cutoff)",
-    desc: "Early steam cutoff maximizing adiabatic expansion ratio, achieving world-record thermal efficiency of 24%.",
-    engineRpm: 45,
-    boilerPressure: 110,
-    cutoffPercentage: 15,
-  },
-];
-
 export function CorlissEngine3D() {
   const containerRef = useRef<HTMLDivElement>(null);
   const { params, updateParam } = usePatentPhysics("us-6162-corliss-steam-engine");
 
-  const cutoffPct = params.cutoffPercentage ?? 25;
-  const steamPressurePsi = params.boilerPressure ?? 125;
+  const cutoffPct = params.cutoffPct ?? 25;
+  const steamPressurePsi = params.steamPressurePsi ?? 125;
   const engineRpm = params.engineRpm ?? 50;
 
   const [activeCamera, setActiveCamera] = useState<CameraPreset>("iso");
@@ -103,12 +67,6 @@ export function CorlissEngine3D() {
         break;
     }
     controls.update();
-  };
-
-  const applyScenario = (s: ScenarioPreset) => {
-    updateParam("engineRpm", s.engineRpm);
-    updateParam("boilerPressure", s.boilerPressure);
-    updateParam("cutoffPercentage", s.cutoffPercentage);
   };
 
   useEffect(() => {

@@ -1,8 +1,9 @@
 "use client";
 
-import { Activity, Camera, Sparkles, Volume2, VolumeX, Zap } from "lucide-react";
+import { Activity, Camera, Eye, EyeOff, Sparkles, Volume2, VolumeX } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import * as THREE from "three";
+import { stepDeLavalSeparator } from "@/physics/catalogKernels";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { soundEngine } from "@/utils/soundEngine";
 import { createThreeStudioScene, type StudioContext } from "./ThreeStudioScene";
@@ -11,43 +12,19 @@ import { usePatentAudio } from "./usePatentAudio";
 
 type CameraPreset = "iso" | "centrifuge_bowl" | "conical_discs" | "outlet_spouts" | "top";
 
-interface ScenarioPreset {
-  id: string;
-  name: string;
-  desc: string;
-  bowlRpm: number;
-}
-
-const SCENARIOS: ScenarioPreset[] = [
-  {
-    id: "delaval_1881_continuous",
-    name: "1881 De Laval Continuous Separator",
-    desc: "Gustaf de Laval's 7,000 RPM high-speed centrifuge generating 4,000× g centrifugal field to continuously separate cream from skim milk (US 247,804).",
-    bowlRpm: 7000,
-  },
-  {
-    id: "high_capacity_dairy",
-    name: "Industrial Creamery (8,500 RPM)",
-    desc: "High-throughput processing of 1,200 liters of whole milk per hour with 99.9% butterfat extraction.",
-    bowlRpm: 8500,
-  },
-  {
-    id: "slow_spin_demonstration",
-    name: "Low-Speed Stratification Breakdown",
-    desc: "3,000 RPM demonstration illustrating density boundary separation along the conical disc surfaces.",
-    bowlRpm: 3000,
-  },
-];
-
 export function DeLavalSeparator3D() {
   const containerRef = useRef<HTMLDivElement>(null);
+  const [showUiOverlay, setShowUiOverlay] = useState<boolean>(true);
 
   // Centrifugal Separation Parameters
   const { params, updateParam } = usePatentPhysics("us-247804-delaval-separator");
-  const [showUiOverlay, setShowUiOverlay] = useState<boolean>(true);
-  const bowlRpm = params.rotorRpm ?? 7000;
-  const centrifugalGs = Math.round((((bowlRpm * 2 * Math.PI) / 60) ** 2 * 0.12) / 9.81);
-  const throughputLitersPerHr = Math.round((bowlRpm / 7000) * 800);
+  const bowlRpm = params.bowlRpm ?? params.rotorRpm ?? 6500;
+  const sep = stepDeLavalSeparator({
+    bowlRpm,
+    rawMilkFlowLph: params.rawMilkFlowLph ?? 300,
+  });
+  const centrifugalGs = sep.gForce;
+  const throughputLitersPerHr = sep.creamFlowLph;
   const [activeCamera, setActiveCamera] = useState<CameraPreset>("iso");
   const { isAudioMuted, toggleSound: toggleEngine } = usePatentAudio();
 
@@ -89,13 +66,6 @@ export function DeLavalSeparator3D() {
         break;
     }
     controls.update();
-  };
-
-  const applyScenario = (s: ScenarioPreset) => {
-    updateParam("rotorRpm", s.bowlRpm);
-    if (!isAudioMuted) {
-      soundEngine.playSwitchClick();
-    }
   };
 
   const toggleSound = () => {
@@ -299,74 +269,19 @@ export function DeLavalSeparator3D() {
           <button
             type="button"
             onClick={() => setShowUiOverlay(!showUiOverlay)}
+            title={showUiOverlay ? "Hide Overlay UI" : "Show Overlay UI"}
             className="p-1.5 rounded-lg text-xs text-parchment-400 hover:text-white hover:bg-parchment-800 transition-colors"
           >
-            <Zap className="w-4 h-4 text-amber-400" />
+            {showUiOverlay ? (
+              <EyeOff className="w-4 h-4" />
+            ) : (
+              <Eye className="w-4 h-4 text-amber-400" />
+            )}
           </button>
         </div>
       </div>
 
       {/* Bottom Telemetry Bar & Controls */}
-      {showUiOverlay && (
-        <div className="absolute bottom-4 left-4 right-4 bg-parchment-950/90 backdrop-blur-md rounded-2xl border border-parchment-700/70 p-4 shadow-2xl z-10 flex flex-col gap-3">
-          <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5 pb-2 border-b border-parchment-800/80 text-xs font-mono">
-            <div className="bg-parchment-900/80 px-3 py-1.5 rounded-lg border border-parchment-700/50 flex flex-col">
-              <span className="text-[10px] text-parchment-400 uppercase">Bowl Speed</span>
-              <span className="font-bold text-amber-400">{bowlRpm.toLocaleString()} RPM</span>
-            </div>
-            <div className="bg-parchment-900/80 px-3 py-1.5 rounded-lg border border-parchment-700/50 flex flex-col">
-              <span className="text-[10px] text-parchment-400 uppercase">Centrifugal Field</span>
-              <span className="font-bold text-blue-400">{centrifugalGs.toLocaleString()}× g</span>
-            </div>
-            <div className="bg-parchment-900/80 px-3 py-1.5 rounded-lg border border-parchment-700/50 flex flex-col">
-              <span className="text-[10px] text-parchment-400 uppercase">Milk Throughput</span>
-              <span className="font-bold text-emerald-400">{throughputLitersPerHr} L/hr</span>
-            </div>
-            <div className="bg-parchment-900/80 px-3 py-1.5 rounded-lg border border-parchment-700/50 flex flex-col">
-              <span className="text-[10px] text-parchment-400 uppercase">Fat Extraction</span>
-              <span className="font-bold text-amber-300">99.8% Butterfat Clean</span>
-            </div>
-          </div>
-
-          <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
-            <div className="flex items-center gap-2 w-full sm:w-auto">
-              <span className="text-xs font-mono text-parchment-400 flex items-center gap-1 shrink-0">
-                <Sparkles className="w-3.5 h-3.5 text-amber-500" /> Presets:
-              </span>
-              <div className="flex gap-1.5 overflow-x-auto pb-1">
-                {SCENARIOS.map((sc) => (
-                  <button
-                    key={sc.id}
-                    type="button"
-                    onClick={() => applyScenario(sc)}
-                    className="px-2.5 py-1 text-xs font-sans rounded-lg bg-parchment-800/80 hover:bg-parchment-700 text-parchment-200 hover:text-white border border-parchment-600/50 transition-colors whitespace-nowrap"
-                  >
-                    {sc.name}
-                  </button>
-                ))}
-              </div>
-            </div>
-
-            <div className="flex items-center gap-3 w-full sm:w-72 shrink-0">
-              <span className="text-xs font-sans text-parchment-300 shrink-0 font-medium">
-                Bowl RPM:
-              </span>
-              <input
-                type="range"
-                min="2000"
-                max="10000"
-                step="250"
-                value={bowlRpm}
-                onChange={(e) => updateParam("rotorRpm", Number(e.target.value))}
-                className="w-full accent-amber-500 cursor-pointer"
-              />
-              <span className="text-xs font-mono text-amber-400 w-16 text-right font-bold">
-                {bowlRpm}
-              </span>
-            </div>
-          </div>
-        </div>
-      )}
     </div>
   );
 }

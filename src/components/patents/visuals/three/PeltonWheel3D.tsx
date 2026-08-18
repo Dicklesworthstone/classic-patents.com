@@ -1,8 +1,9 @@
 "use client";
 
-import { Activity, Camera, Sparkles, Volume2, VolumeX, Waves, Zap } from "lucide-react";
+import { Activity, Camera, Eye, EyeOff, Volume2, VolumeX, Waves } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import * as THREE from "three";
+import { stepPeltonWheel } from "@/physics/catalogKernels";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { soundEngine } from "@/utils/soundEngine";
 import {
@@ -15,51 +16,18 @@ import { usePatentAudio } from "./usePatentAudio";
 
 type CameraPreset = "iso" | "split_bucket" | "needle_nozzle" | "runner_wheel" | "top";
 
-interface ScenarioPreset {
-  id: string;
-  name: string;
-  desc: string;
-  headMeters: number;
-  wheelRpm: number;
-}
-
-const SCENARIOS: ScenarioPreset[] = [
-  {
-    id: "pelton_1880_nevada",
-    name: "1880 Nevada Gold Mill (500m Head)",
-    desc: "Lester Pelton's split-bucket impulse wheel converting high-head water jets into rotary power at 88% efficiency (US 233,692).",
-    headMeters: 500,
-    wheelRpm: 600,
-  },
-  {
-    id: "alpine_hydroelectric",
-    name: "Alpine High-Head Hydro (800m Head)",
-    desc: "125 m/s supersonic water jet striking 18 bronze buckets delivering 450 kW electrical generation.",
-    headMeters: 800,
-    wheelRpm: 900,
-  },
-  {
-    id: "low_head_mining",
-    name: "Low Head Hydraulic Sluice (250m Head)",
-    desc: "Direct-drive mining hoist operation illustrating jet splitting and momentum reversal physics.",
-    headMeters: 250,
-    wheelRpm: 350,
-  },
-];
-
 export function PeltonWheel3D() {
   const containerRef = useRef<HTMLDivElement>(null);
+  const [showUiOverlay, setShowUiOverlay] = useState<boolean>(true);
 
   // Hydrodynamic Impulse Parameters
   const { params, updateParam } = usePatentPhysics("us-233692-pelton-water-wheel");
-  const [showUiOverlay, setShowUiOverlay] = useState<boolean>(true);
-  const headMeters = params.headMeters ?? 500;
-  const wheelRpm = params.rotorRpm ?? 600;
-  const jetVelocityMps = Math.round(Math.sqrt(2 * 9.81 * headMeters) * 0.98);
-  const hydraulicEfficiencyPct = 88.5;
-  const powerKw = Math.round(
-    ((0.05 * 1000 * 9.81 * headMeters * (hydraulicEfficiencyPct / 100)) / 1000) * 4.5,
-  );
+  const headMeters = params.headMeters ?? 450;
+  const wheelRpm = params.runnerRpm ?? params.rotorRpm ?? 600;
+  const pelton = stepPeltonWheel({ headMeters, runnerRpm: wheelRpm });
+  const jetVelocityMps = pelton.jetVelocityMps;
+  const hydraulicEfficiencyPct = pelton.etaPct;
+  const powerKw = pelton.shaftPowerKw;
   const [showJet, setShowJet] = useState<boolean>(true);
   const [activeCamera, setActiveCamera] = useState<CameraPreset>("iso");
   const { isAudioMuted, toggleSound: toggleEngine } = usePatentAudio();
@@ -70,6 +38,8 @@ export function PeltonWheel3D() {
     jetVelocityMps,
     showJet,
     isAudioMuted,
+    etaPct: hydraulicEfficiencyPct,
+    shaftPowerKw: powerKw,
   });
 
   const controlsRef = useRef<StudioContext["controls"] | null>(null);
@@ -104,14 +74,6 @@ export function PeltonWheel3D() {
         break;
     }
     controls.update();
-  };
-
-  const applyScenario = (s: ScenarioPreset) => {
-    updateParam("headMeters", s.headMeters);
-    updateParam("rotorRpm", s.wheelRpm);
-    if (!isAudioMuted) {
-      soundEngine.playSwitchClick();
-    }
   };
 
   const toggleSound = () => {
@@ -365,74 +327,17 @@ export function PeltonWheel3D() {
           <button
             type="button"
             onClick={() => setShowUiOverlay(!showUiOverlay)}
+            title={showUiOverlay ? "Hide Overlay UI" : "Show Overlay UI"}
             className="p-1.5 rounded-lg text-xs text-parchment-400 hover:text-white hover:bg-parchment-800 transition-colors"
           >
-            <Zap className="w-4 h-4 text-amber-400" />
-          </button>
+            {showUiOverlay ? (
+              <EyeOff className="w-4 h-4" />
+            ) : (
+              <Eye className="w-4 h-4 text-amber-400" />
+            )}
+          </button>{" "}
         </div>
       </div>
-
-      {/* Bottom Telemetry Bar & Controls */}
-      {showUiOverlay && (
-        <div className="absolute bottom-4 left-4 right-4 bg-parchment-950/90 backdrop-blur-md rounded-2xl border border-parchment-700/70 p-4 shadow-2xl z-10 flex flex-col gap-3">
-          <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5 pb-2 border-b border-parchment-800/80 text-xs font-mono">
-            <div className="bg-parchment-900/80 px-3 py-1.5 rounded-lg border border-parchment-700/50 flex flex-col">
-              <span className="text-[10px] text-parchment-400 uppercase">Effective Head</span>
-              <span className="font-bold text-amber-400">{headMeters} Meters</span>
-            </div>
-            <div className="bg-parchment-900/80 px-3 py-1.5 rounded-lg border border-parchment-700/50 flex flex-col">
-              <span className="text-[10px] text-parchment-400 uppercase">Jet Velocity</span>
-              <span className="font-bold text-blue-400">{jetVelocityMps} m/s (220 MPH)</span>
-            </div>
-            <div className="bg-parchment-900/80 px-3 py-1.5 rounded-lg border border-parchment-700/50 flex flex-col">
-              <span className="text-[10px] text-parchment-400 uppercase">Hydraulic Efficiency</span>
-              <span className="font-bold text-emerald-400">{hydraulicEfficiencyPct}%</span>
-            </div>
-            <div className="bg-parchment-900/80 px-3 py-1.5 rounded-lg border border-parchment-700/50 flex flex-col">
-              <span className="text-[10px] text-parchment-400 uppercase">Shaft Power</span>
-              <span className="font-bold text-amber-300">{powerKw} kW</span>
-            </div>
-          </div>
-
-          <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
-            <div className="flex items-center gap-2 w-full sm:w-auto">
-              <span className="text-xs font-mono text-parchment-400 flex items-center gap-1 shrink-0">
-                <Sparkles className="w-3.5 h-3.5 text-amber-500" /> Presets:
-              </span>
-              <div className="flex gap-1.5 overflow-x-auto pb-1">
-                {SCENARIOS.map((sc) => (
-                  <button
-                    key={sc.id}
-                    type="button"
-                    onClick={() => applyScenario(sc)}
-                    className="px-2.5 py-1 text-xs font-sans rounded-lg bg-parchment-800/80 hover:bg-parchment-700 text-parchment-200 hover:text-white border border-parchment-600/50 transition-colors whitespace-nowrap"
-                  >
-                    {sc.name}
-                  </button>
-                ))}
-              </div>
-            </div>
-
-            <div className="flex items-center gap-3 w-full sm:w-72 shrink-0">
-              <span className="text-xs font-sans text-parchment-300 shrink-0 font-medium">
-                Head (Meters):
-              </span>
-              <input
-                type="range"
-                min="100"
-                max="1000"
-                step="25"
-                value={headMeters}
-                onChange={(e) => updateParam("headMeters", Number(e.target.value))}
-                className="w-full accent-amber-500 cursor-pointer"
-              />
-              <span className="text-xs font-mono text-amber-400 w-16 text-right font-bold">
-                {headMeters}m
-              </span>
-            </div>
-          </div>
-        </div>
-      )}
     </div>
   );
 }

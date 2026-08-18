@@ -1,5 +1,5 @@
 # Next.js
-.next/
+.next*
 out/
 build/
 dist/
@@ -60,4 +60,6 @@ colt*.png
 fix_*.py
 refactor.py
 list_missing.ts
+test-compile.mjs
 src/pages/
+.pages-backup/

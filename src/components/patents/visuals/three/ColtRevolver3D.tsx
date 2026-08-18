@@ -169,6 +169,63 @@ export function ColtRevolver3D() {
     const model = buildColtRevolverModel();
     scene.add(model.group);
 
+    // Load High-Quality GLB Model to replace primitive shapes
+    import("three/examples/jsm/loaders/GLTFLoader.js").then(({ GLTFLoader }) => {
+      const loader = new GLTFLoader();
+      loader.load("/models/colt-paterson.glb", (gltf) => {
+        // Hide the programmer-art primitive meshes but keep groups visible for physics
+        const hideMeshes = (group: THREE.Group) => {
+          group.children.forEach((c) => {
+            if (c.type === "Mesh") c.visible = false;
+            if (c.type === "Group") hideMeshes(c as THREE.Group);
+          });
+        };
+        hideMeshes(model.cylinderGroup);
+        hideMeshes(model.hammerGroup);
+        hideMeshes(model.triggerGroup);
+
+        model.group.children.forEach((c) => {
+          if (
+            c.type === "Group" &&
+            c !== model.blastGroup &&
+            c !== model.cylinderGroup &&
+            c !== model.hammerGroup &&
+            c !== model.triggerGroup
+          ) {
+            c.visible = false;
+          }
+          if (c.type === "Mesh") c.visible = false;
+        });
+
+        const gltfScene = gltf.scene;
+        // Center and scale the GLTF model to fit the existing camera preset
+        gltfScene.scale.set(12, 12, 12);
+        gltfScene.rotation.y = Math.PI;
+        gltfScene.position.set(0, -1.5, 0);
+
+        // Extract nodes to hook up to physics animation!
+        const baraban = gltfScene.getObjectByName("baraban");
+        if (baraban) model.cylinderGroup.add(baraban);
+
+        const kurok = gltfScene.getObjectByName("kurok");
+        if (kurok) {
+          model.hammerGroup.add(kurok);
+          kurok.position.set(0, 0, 0);
+        }
+
+        const vzvod = gltfScene.getObjectByName("vzvod");
+        if (vzvod) {
+          model.triggerGroup.add(vzvod);
+          vzvod.position.set(0, 0, 0);
+        }
+
+        const frame = gltfScene.getObjectByName("COLT");
+        if (frame) model.group.add(frame);
+
+        scene.add(gltfScene);
+      });
+    });
+
     // Callout Pins
     const pinGroup = new THREE.Group();
     pinGroup.visible = showCalloutPins;

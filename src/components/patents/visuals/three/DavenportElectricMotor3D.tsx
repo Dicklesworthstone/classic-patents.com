@@ -1,6 +1,6 @@
 "use client";
 
-import { Activity, Camera, Eye, EyeOff, Sparkles, Volume2, VolumeX, Zap } from "lucide-react";
+import { Activity, Camera, Eye, EyeOff, Sparkles, Volume2, VolumeX } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import * as THREE from "three";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
@@ -15,44 +15,11 @@ import { usePatentAudio } from "./usePatentAudio";
 
 type CameraPreset = "iso" | "commutator" | "stator_magnets" | "rotor" | "top";
 
-interface ScenarioPreset {
-  id: string;
-  name: string;
-  desc: string;
-  voltageVolts: number;
-  motorRpm: number;
-}
-
-const SCENARIOS: ScenarioPreset[] = [
-  {
-    id: "davenport_1837_original",
-    name: "1837 Davenport Original (First US Motor)",
-    desc: "Thomas Davenport's patented rotary DC electric motor running on Grove galvanic cells (US 132).",
-    voltageVolts: 12,
-    motorRpm: 450,
-  },
-  {
-    id: "heavy_galvanic_drive",
-    name: "High-Voltage 24V Workshop Drive",
-    desc: "Series-connected battery bank generating 2.8 Nm torque to drive a miniature machine shop drill press.",
-    voltageVolts: 24,
-    motorRpm: 900,
-  },
-  {
-    id: "low_voltage_tick",
-    name: "Low Voltage Battery Demonstration",
-    desc: "6V low-speed demonstration showing commutator polarity commutation at $90^\\circ$ quadrature.",
-    voltageVolts: 6,
-    motorRpm: 220,
-  },
-];
-
 export function DavenportElectricMotor3D() {
   const containerRef = useRef<HTMLDivElement>(null);
 
   // Electromechanical Parameters
   const { params, updateParam } = usePatentPhysics("us-132-davenport-electric-motor");
-  const [showUiOverlay, setShowUiOverlay] = useState<boolean>(true);
   const motorRpm = params.rotorRpm ?? 450;
   const supplyVoltage = (motorRpm / 450) * 12;
   const [showSparkParticles, setShowSparkParticles] = useState<boolean>(true);
@@ -101,13 +68,6 @@ export function DavenportElectricMotor3D() {
         break;
     }
     controls.update();
-  };
-
-  const applyScenario = (s: ScenarioPreset) => {
-    updateParam("rotorRpm", s.motorRpm);
-    if (!isAudioMuted) {
-      soundEngine.playSwitchClick();
-    }
   };
 
   const toggleSound = () => {
@@ -360,77 +320,10 @@ export function DavenportElectricMotor3D() {
           >
             {isAudioMuted ? <VolumeX className="w-4 h-4" /> : <Volume2 className="w-4 h-4" />}
           </button>
-          <button
-            type="button"
-            onClick={() => setShowUiOverlay(!showUiOverlay)}
-            className="p-1.5 rounded-lg text-xs text-parchment-400 hover:text-white hover:bg-parchment-800 transition-colors"
-          >
-            <Zap className="w-4 h-4 text-amber-400" />
-          </button>
         </div>
       </div>
 
       {/* Bottom Telemetry Bar & Controls */}
-      {showUiOverlay && (
-        <div className="absolute bottom-4 left-4 right-4 bg-parchment-950/90 backdrop-blur-md rounded-2xl border border-parchment-700/70 p-4 shadow-2xl z-10 flex flex-col gap-3">
-          <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5 pb-2 border-b border-parchment-800/80 text-xs font-mono">
-            <div className="bg-parchment-900/80 px-3 py-1.5 rounded-lg border border-parchment-700/50 flex flex-col">
-              <span className="text-[10px] text-parchment-400 uppercase">Motor Speed</span>
-              <span className="font-bold text-amber-400">{motorRpm} RPM</span>
-            </div>
-            <div className="bg-parchment-900/80 px-3 py-1.5 rounded-lg border border-parchment-700/50 flex flex-col">
-              <span className="text-[10px] text-parchment-400 uppercase">Battery Voltage</span>
-              <span className="font-bold text-blue-400">{supplyVoltage.toFixed(1)} V DC</span>
-            </div>
-            <div className="bg-parchment-900/80 px-3 py-1.5 rounded-lg border border-parchment-700/50 flex flex-col">
-              <span className="text-[10px] text-parchment-400 uppercase">Developed Torque</span>
-              <span className="font-bold text-emerald-400">{motorTorqueNm} Nm</span>
-            </div>
-            <div className="bg-parchment-900/80 px-3 py-1.5 rounded-lg border border-parchment-700/50 flex flex-col">
-              <span className="text-[10px] text-parchment-400 uppercase">Shaft Power</span>
-              <span className="font-bold text-amber-300">{mechanicalWatts} Watts</span>
-            </div>
-          </div>
-
-          <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
-            <div className="flex items-center gap-2 w-full sm:w-auto">
-              <span className="text-xs font-mono text-parchment-400 flex items-center gap-1 shrink-0">
-                <Sparkles className="w-3.5 h-3.5 text-amber-500" /> Presets:
-              </span>
-              <div className="flex gap-1.5 overflow-x-auto pb-1">
-                {SCENARIOS.map((sc) => (
-                  <button
-                    key={sc.id}
-                    type="button"
-                    onClick={() => applyScenario(sc)}
-                    className="px-2.5 py-1 text-xs font-sans rounded-lg bg-parchment-800/80 hover:bg-parchment-700 text-parchment-200 hover:text-white border border-parchment-600/50 transition-colors whitespace-nowrap"
-                  >
-                    {sc.name}
-                  </button>
-                ))}
-              </div>
-            </div>
-
-            <div className="flex items-center gap-3 w-full sm:w-72 shrink-0">
-              <span className="text-xs font-sans text-parchment-300 shrink-0 font-medium">
-                Rotor RPM:
-              </span>
-              <input
-                type="range"
-                min="100"
-                max="1200"
-                step="25"
-                value={motorRpm}
-                onChange={(e) => updateParam("rotorRpm", Number(e.target.value))}
-                className="w-full accent-amber-500 cursor-pointer"
-              />
-              <span className="text-xs font-mono text-amber-400 w-16 text-right font-bold">
-                {motorRpm}
-              </span>
-            </div>
-          </div>
-        </div>
-      )}
     </div>
   );
 }

@@ -1,6 +1,6 @@
 "use client";
 
-import { Activity, Camera, Sparkles, Volume2, VolumeX, Zap } from "lucide-react";
+import { Activity, Camera, Eye, EyeOff, Sparkles, Volume2, VolumeX } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import * as THREE from "three";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
@@ -11,42 +11,6 @@ import { usePatentAudio } from "./usePatentAudio";
 
 type CameraPreset = "iso" | "wrist_plate" | "dashpots" | "flywheel" | "top";
 
-interface ScenarioPreset {
-  id: string;
-  name: string;
-  desc: string;
-  engineRpm: number;
-  steamPressurePsi: number;
-  cutoffPct: number;
-}
-
-const SCENARIOS: ScenarioPreset[] = [
-  {
-    id: "corliss_1849_centennial",
-    name: "1849 Corliss Mill Engine",
-    desc: "George Corliss's revolutionary rotary valve engine with wrist-plate variable cutoff and air dashpots delivering 28% thermal efficiency (US 6,162).",
-    engineRpm: 60,
-    steamPressurePsi: 100,
-    cutoffPct: 25,
-  },
-  {
-    id: "heavy_textile_mill",
-    name: "New England Textile Mill (Full Load)",
-    desc: "Governed cutoff expanding to 45% stroke to drive 500 looms under heavy industrial shaft loads.",
-    engineRpm: 75,
-    steamPressurePsi: 130,
-    cutoffPct: 45,
-  },
-  {
-    id: "high_expansion_idle",
-    name: "High Expansion Cruise (15% Cutoff)",
-    desc: "Early trip release maximizing adiabatic steam expansion and reducing fuel consumption by over 35%.",
-    engineRpm: 50,
-    steamPressurePsi: 90,
-    cutoffPct: 15,
-  },
-];
-
 export function CorlissSteamEngine3D() {
   const containerRef = useRef<HTMLDivElement>(null);
 
@@ -54,7 +18,7 @@ export function CorlissSteamEngine3D() {
   const { params, updateParam } = usePatentPhysics("us-6162-corliss-steam-engine");
   const [showUiOverlay, setShowUiOverlay] = useState<boolean>(true);
   const engineRpm = params.engineRpm ?? 60;
-  const steamPressurePsi = params.boilerPressurePsi ?? 100;
+  const steamPressurePsi = params.steamPressurePsi ?? 100;
   const cutoffPct = params.cutoffPct ?? 25;
   const [_showCalloutPins, _setShowCalloutPins] = useState<boolean>(false);
   const [activeCamera, setActiveCamera] = useState<CameraPreset>("iso");
@@ -106,16 +70,6 @@ export function CorlissSteamEngine3D() {
     }
     controls.update();
   };
-
-  const applyScenario = (s: ScenarioPreset) => {
-    updateParam("engineRpm", s.engineRpm);
-    updateParam("boilerPressurePsi", s.steamPressurePsi);
-    updateParam("cutoffPct", s.cutoffPct);
-    if (!isAudioMuted) {
-      soundEngine.playSwitchClick();
-    }
-  };
-
   const toggleSound = () => {
     toggleEngine(() => {
       soundEngine.playSwitchClick();
@@ -403,83 +357,26 @@ export function CorlissSteamEngine3D() {
         <div className="flex items-center gap-1.5 bg-parchment-950/80 backdrop-blur-md p-1.5 rounded-xl border border-parchment-700/60 shadow-lg pointer-events-auto">
           <button
             type="button"
+            onClick={() => setShowUiOverlay(!showUiOverlay)}
+            title={showUiOverlay ? "Hide Overlay UI" : "Show Overlay UI"}
+            className="p-1.5 rounded-lg text-xs text-parchment-400 hover:text-white hover:bg-parchment-800 transition-colors"
+          >
+            {showUiOverlay ? (
+              <EyeOff className="w-4 h-4" />
+            ) : (
+              <Eye className="w-4 h-4 text-amber-400" />
+            )}
+          </button>
+          <button
+            type="button"
             onClick={toggleSound}
             title={isAudioMuted ? "Unmute Sound" : "Mute Sound"}
             className="p-1.5 rounded-lg text-xs text-parchment-400 hover:text-white hover:bg-parchment-800 transition-colors"
           >
             {isAudioMuted ? <VolumeX className="w-4 h-4" /> : <Volume2 className="w-4 h-4" />}
           </button>
-          <button
-            type="button"
-            onClick={() => setShowUiOverlay(!showUiOverlay)}
-            className="p-1.5 rounded-lg text-xs text-parchment-400 hover:text-white hover:bg-parchment-800 transition-colors"
-          >
-            <Zap className="w-4 h-4 text-amber-400" />
-          </button>
         </div>
       </div>
-
-      {/* Bottom Telemetry Bar & Controls */}
-      {showUiOverlay && (
-        <div className="absolute bottom-4 left-4 right-4 bg-parchment-950/90 backdrop-blur-md rounded-2xl border border-parchment-700/70 p-4 shadow-2xl z-10 flex flex-col gap-3">
-          <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5 pb-2 border-b border-parchment-800/80 text-xs font-mono">
-            <div className="bg-parchment-900/80 px-3 py-1.5 rounded-lg border border-parchment-700/50 flex flex-col">
-              <span className="text-[10px] text-parchment-400 uppercase">Engine Speed</span>
-              <span className="font-bold text-amber-400">{engineRpm} RPM</span>
-            </div>
-            <div className="bg-parchment-900/80 px-3 py-1.5 rounded-lg border border-parchment-700/50 flex flex-col">
-              <span className="text-[10px] text-parchment-400 uppercase">Admission Cutoff</span>
-              <span className="font-bold text-blue-400">{cutoffPct}% Stroke</span>
-            </div>
-            <div className="bg-parchment-900/80 px-3 py-1.5 rounded-lg border border-parchment-700/50 flex flex-col">
-              <span className="text-[10px] text-parchment-400 uppercase">Indicated Power</span>
-              <span className="font-bold text-emerald-400">{indicatedHp} IHP</span>
-            </div>
-            <div className="bg-parchment-900/80 px-3 py-1.5 rounded-lg border border-parchment-700/50 flex flex-col">
-              <span className="text-[10px] text-parchment-400 uppercase">Fuel Economy Benefit</span>
-              <span className="font-bold text-amber-300">{coalSavingsPct}% Coal Saved</span>
-            </div>
-          </div>
-
-          <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
-            <div className="flex items-center gap-2 w-full sm:w-auto">
-              <span className="text-xs font-mono text-parchment-400 flex items-center gap-1 shrink-0">
-                <Sparkles className="w-3.5 h-3.5 text-amber-500" /> Presets:
-              </span>
-              <div className="flex gap-1.5 overflow-x-auto pb-1">
-                {SCENARIOS.map((sc) => (
-                  <button
-                    key={sc.id}
-                    type="button"
-                    onClick={() => applyScenario(sc)}
-                    className="px-2.5 py-1 text-xs font-sans rounded-lg bg-parchment-800/80 hover:bg-parchment-700 text-parchment-200 hover:text-white border border-parchment-600/50 transition-colors whitespace-nowrap"
-                  >
-                    {sc.name}
-                  </button>
-                ))}
-              </div>
-            </div>
-
-            <div className="flex items-center gap-3 w-full sm:w-72 shrink-0">
-              <span className="text-xs font-sans text-parchment-300 shrink-0 font-medium">
-                Engine RPM:
-              </span>
-              <input
-                type="range"
-                min="30"
-                max="120"
-                step="5"
-                value={engineRpm}
-                onChange={(e) => updateParam("engineRpm", Number(e.target.value))}
-                className="w-full accent-amber-500 cursor-pointer"
-              />
-              <span className="text-xs font-mono text-amber-400 w-12 text-right font-bold">
-                {engineRpm}
-              </span>
-            </div>
-          </div>
-        </div>
-      )}
     </div>
   );
 }

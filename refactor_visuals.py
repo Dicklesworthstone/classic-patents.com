@@ -1,79 +1,52 @@
 import re
-import sys
 import os
 
 files = [
-    "src/components/patents/visuals/three/WestinghouseAirBrake3D.tsx",
-    "src/components/patents/visuals/three/DavenportElectricMotor3D.tsx",
-    "src/components/patents/visuals/three/LindeAirLiquefaction3D.tsx",
-    "src/components/patents/visuals/three/McCormickReaper3D.tsx",
-    "src/components/patents/visuals/three/NobelDynamite3D.tsx",
-    "src/components/patents/visuals/three/DeLavalSeparator3D.tsx",
-    "src/components/patents/visuals/three/EdisonPhonograph3D.tsx",
-    "src/components/patents/visuals/three/CarrierAirConditioner3D.tsx"
+    "src/components/patents/visuals/three/SholesTypewriter3D.tsx",
+    "src/components/patents/visuals/three/GrammeDynamo3D.tsx",
+    "src/components/patents/visuals/three/HyattCelluloid3D.tsx",
+    "src/components/patents/visuals/three/CorlissSteamEngine3D.tsx",
+    "src/components/patents/visuals/three/GatlingGun3D.tsx",
+    "src/components/patents/visuals/three/HollerithTabulating3D.tsx",
+    "src/components/patents/visuals/three/EricssonPropeller3D.tsx",
+    "src/components/patents/visuals/three/ThomsonWelding3D.tsx"
 ]
 
 for file_path in files:
-    with open(file_path, "r") as f:
+    with open(file_path, "r", encoding="utf-8") as f:
         content = f.read()
 
-    # 1. Remove interface ScenarioPreset and SCENARIOS / _SCENARIOS arrays
-    content = re.sub(r'interface\s+ScenarioPreset\s*\{[^}]+\}\s*', '', content)
-    
-    # Matches const SCENARIOS: ScenarioPreset[] = [...];
-    content = re.sub(r'const\s+_?SCENARIOS\s*:\s*ScenarioPreset\[\]\s*=\s*\[[\s\S]*?\];\s*', '', content)
+    # 1. Remove ScenarioPreset interface
+    content = re.sub(r"interface ScenarioPreset \{[^\}]*\}\n+", "", content)
 
-    # 2. Remove applyScenario / _applyScenario
-    content = re.sub(r'const\s+_?applyScenario\s*=\s*\([^)]*\)\s*=>\s*\{[\s\S]*?\};\s*', '', content)
+    # 2. Remove SCENARIOS array
+    content = re.sub(r"const _?SCENARIOS(?:_PRESETS)?: ScenarioPreset\[\] = \[.*?\];\n+", "", content, flags=re.DOTALL)
 
-    # 3. Remove showUiOverlay state
-    content = re.sub(r'\s*const\s+\[showUiOverlay,\s*setShowUiOverlay\]\s*=\s*useState<boolean>\([^)]+\);', '', content)
-    
-    # Remove Zap icon toggle
-    # Look for the button containing setShowUiOverlay(!showUiOverlay) and Zap
-    content = re.sub(r'<button[^>]*onClick=\{\(\)\s*=>\s*setShowUiOverlay\(!showUiOverlay\)\}[^>]*>[\s\S]*?<Zap[^>]*/>[\s\S]*?</button>\s*', '', content)
-    
-    # 4. Remove the bottom UI panel block
-    # It starts with {showUiOverlay && ( and ends with )} right before the closing </div> of the component.
-    # Since regex for balanced parentheses is hard, we can use a trick:
-    # We know it starts with `{showUiOverlay && (` and ends with `)}` at the bottom.
-    # Let's find `{showUiOverlay && (` and just remove everything from there up to the last `)}` before `</div>\n  );`
-    
-    start_idx = content.find('{showUiOverlay && (')
-    if start_idx != -1:
-        # Find the matching closing of `)` after `showUiOverlay && (`
-        # Actually, since it's the last big block before the end:
-        end_str = "    </div>\n  );\n}"
-        end_idx = content.rfind(end_str)
-        if end_idx != -1:
-            # We must be careful not to remove the closing </div> of the main container.
-            # Usually the block is something like:
-            #       {showUiOverlay && (
-            #         <div className="absolute bottom-4 ...
-            #            ...
-            #         </div>
-            #       )}
-            #     </div>
-            #   );
-            # }
-            # Let's extract the substring to be removed:
-            search_area = content[start_idx:end_idx]
-            # remove the last )} from search_area
-            last_bracket = search_area.rfind(')}')
-            if last_bracket != -1:
-                content = content[:start_idx] + content[start_idx + last_bracket + 2:]
-            else:
-                print(f"Could not find closing brackets for showUiOverlay in {file_path}")
-        else:
-            print(f"Could not find end of component in {file_path}")
+    # 3. Remove applyScenario
+    content = re.sub(r"\s*const _?applyScenario = \(s: ScenarioPreset\) => \{.*?(?:\n  };\n|\n  })", "", content, flags=re.DOTALL)
 
-    # Remove Zap from lucide-react import if it's no longer used
-    if 'Zap' in content and 'showUiOverlay' not in content:
-        content = re.sub(r',\s*Zap\b', '', content)
-        content = re.sub(r'\bZap\s*,', '', content)
-        content = re.sub(r'\bZap\b', '', content)
-        
-    with open(file_path, "w") as f:
+    # 4. Remove useState for showUiOverlay
+    content = re.sub(r"\s*const \[[^\]]*showUiOverlay[^\]]*\] = useState<boolean>\([^)]*\);\n", "\n", content)
+
+    # 5. Remove Zap toggle button from Top HUD (if exists)
+    content = re.sub(r"\s*<button[^>]*onClick=\{[^}]*showUiOverlay[^}]*\}[^>]*>\s*<Zap[^>]*/>\s*</button>", "", content, flags=re.DOTALL)
+
+    # 6. Remove Zap import if present
+    content = re.sub(r", Zap", "", content)
+    content = re.sub(r"Zap, ", "", content)
+
+    # 7. Remove Bottom Panel. It either starts with `{/* Bottom Telemetry Bar & Controls */}` or `{/* Bottom Control Bar */}`
+    # It extends up to the final closing `</div>` of the root container.
+    # To be safe, we match from `{/* Bottom` until `    </div>\n  );\n}`
+    
+    # We will find the pattern `{/* Bottom` and everything after it until `    </div>\n  );\n}`
+    match = re.search(r"(\s*\{\/\*\s*Bottom.*)", content, flags=re.DOTALL)
+    if match:
+        bottom_str = match.group(1)
+        # find the last "    </div>\n  );\n}" in the entire file, or just use rpartition
+        # Actually, let's just use re.sub with a positive lookahead to the end of the file.
+        content = re.sub(r"\s*\{\/\*\s*Bottom.*?(?=\s*</div>\s*\)\;\s*\})", "", content, flags=re.DOTALL)
+
+    with open(file_path, "w", encoding="utf-8") as f:
         f.write(content)
 
-print("Done")

@@ -3,6 +3,7 @@
 import { Activity, Camera, Sparkles, Volume2, VolumeX, Wind, Zap } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import * as THREE from "three";
+import { stepParsonsTurbine } from "@/physics/catalogKernels";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { soundEngine } from "@/utils/soundEngine";
 import {
@@ -15,47 +16,19 @@ import { usePatentAudio } from "./usePatentAudio";
 
 type CameraPreset = "iso" | "turbine_stages" | "rotor_blades" | "governor" | "top";
 
-interface ScenarioPreset {
-  id: string;
-  name: string;
-  desc: string;
-  steamPressureBar: number;
-  turbineRpm: number;
-}
-
-const SCENARIOS: ScenarioPreset[] = [
-  {
-    id: "turbinia_1897_spithead",
-    name: "1897 Turbinia Naval Sprint",
-    desc: "Charles Parsons' multi-stage reaction steam turbine driving the yacht Turbinia to a world record 34.5 knots at the Spithead Fleet Review (US 608,969).",
-    steamPressureBar: 18,
-    turbineRpm: 3600,
-  },
-  {
-    id: "central_station_turbo_generator",
-    name: "Electrical Turbo-Generator (4,800 RPM)",
-    desc: "Direct-coupled 1 MW electrical turbogenerator operating on 20 bar superheated steam with 82% isentropic efficiency.",
-    steamPressureBar: 22,
-    turbineRpm: 4800,
-  },
-  {
-    id: "low_pressure_vacuum_run",
-    name: "Condensing Vacuum Cruise",
-    desc: "Deep 0.05 bar surface condenser vacuum extracting maximum thermodynamic enthalpy across final low-pressure stages.",
-    steamPressureBar: 12,
-    turbineRpm: 2400,
-  },
-];
-
 export function ParsonsTurbine3D() {
   const containerRef = useRef<HTMLDivElement>(null);
 
   // Steam Turbomachinery Parameters
   const { params, updateParam } = usePatentPhysics("us-608969-parsons-turbine");
   const [showUiOverlay, setShowUiOverlay] = useState<boolean>(true);
-  const turbineRpm = params.rotorRpm ?? 3600;
-  const steamPressureBar = params.steamPressureBar ?? 18;
-  const powerKw = Math.round((turbineRpm / 3600) * (steamPressureBar / 18) * 1500);
+  const turbineRpm = params.rotorRpm ?? 3000;
+  const steamPressureBar = params.steamPressureBar ?? (params.inletPressurePsi ?? 180) / 14.5038;
+  const parsons = stepParsonsTurbine({
+    rotorRpm: turbineRpm,
+    inletPressurePsi: params.inletPressurePsi ?? steamPressureBar * 14.5038,
+  });
+  const powerKw = parsons.shaftPowerKw;
   const stageCount = 48;
   const [showSteamFlow, setShowSteamFlow] = useState<boolean>(true);
   const [activeCamera, setActiveCamera] = useState<CameraPreset>("iso");
@@ -66,6 +39,7 @@ export function ParsonsTurbine3D() {
     steamPressureBar,
     showSteamFlow,
     isAudioMuted,
+    shaftPowerKw: powerKw,
   });
 
   const controlsRef = useRef<StudioContext["controls"] | null>(null);
@@ -100,13 +74,6 @@ export function ParsonsTurbine3D() {
         break;
     }
     controls.update();
-  };
-
-  const applyScenario = (s: ScenarioPreset) => {
-    updateParam("rotorRpm", s.turbineRpm);
-    if (!isAudioMuted) {
-      soundEngine.playSwitchClick();
-    }
   };
 
   const toggleSound = () => {
@@ -378,70 +345,6 @@ export function ParsonsTurbine3D() {
           </button>
         </div>
       </div>
-
-      {/* Bottom Telemetry Bar & Controls */}
-      {showUiOverlay && (
-        <div className="absolute bottom-4 left-4 right-4 bg-parchment-950/90 backdrop-blur-md rounded-2xl border border-parchment-700/70 p-4 shadow-2xl z-10 flex flex-col gap-3">
-          <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5 pb-2 border-b border-parchment-800/80 text-xs font-mono">
-            <div className="bg-parchment-900/80 px-3 py-1.5 rounded-lg border border-parchment-700/50 flex flex-col">
-              <span className="text-[10px] text-parchment-400 uppercase">Turbine Speed</span>
-              <span className="font-bold text-amber-400">{turbineRpm.toLocaleString()} RPM</span>
-            </div>
-            <div className="bg-parchment-900/80 px-3 py-1.5 rounded-lg border border-parchment-700/50 flex flex-col">
-              <span className="text-[10px] text-parchment-400 uppercase">Steam Pressure</span>
-              <span className="font-bold text-blue-400">{steamPressureBar} bar</span>
-            </div>
-            <div className="bg-parchment-900/80 px-3 py-1.5 rounded-lg border border-parchment-700/50 flex flex-col">
-              <span className="text-[10px] text-parchment-400 uppercase">Shaft Power</span>
-              <span className="font-bold text-emerald-400">
-                {(powerKw / 1000).toFixed(2)} MW ({powerKw.toLocaleString()} kW)
-              </span>
-            </div>
-            <div className="bg-parchment-900/80 px-3 py-1.5 rounded-lg border border-parchment-700/50 flex flex-col">
-              <span className="text-[10px] text-parchment-400 uppercase">Expansion Stages</span>
-              <span className="font-bold text-amber-300">{stageCount} Reaction Rows</span>
-            </div>
-          </div>
-
-          <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
-            <div className="flex items-center gap-2 w-full sm:w-auto">
-              <span className="text-xs font-mono text-parchment-400 flex items-center gap-1 shrink-0">
-                <Sparkles className="w-3.5 h-3.5 text-amber-500" /> Presets:
-              </span>
-              <div className="flex gap-1.5 overflow-x-auto pb-1">
-                {SCENARIOS.map((sc) => (
-                  <button
-                    key={sc.id}
-                    type="button"
-                    onClick={() => applyScenario(sc)}
-                    className="px-2.5 py-1 text-xs font-sans rounded-lg bg-parchment-800/80 hover:bg-parchment-700 text-parchment-200 hover:text-white border border-parchment-600/50 transition-colors whitespace-nowrap"
-                  >
-                    {sc.name}
-                  </button>
-                ))}
-              </div>
-            </div>
-
-            <div className="flex items-center gap-3 w-full sm:w-72 shrink-0">
-              <span className="text-xs font-sans text-parchment-300 shrink-0 font-medium">
-                Turbine RPM:
-              </span>
-              <input
-                type="range"
-                min="1000"
-                max="6000"
-                step="100"
-                value={turbineRpm}
-                onChange={(e) => updateParam("rotorRpm", Number(e.target.value))}
-                className="w-full accent-amber-500 cursor-pointer"
-              />
-              <span className="text-xs font-mono text-amber-400 w-16 text-right font-bold">
-                {turbineRpm}
-              </span>
-            </div>
-          </div>
-        </div>
-      )}
     </div>
   );
 }

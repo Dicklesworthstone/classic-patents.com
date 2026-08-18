@@ -1,6 +1,6 @@
 "use client";
 
-import { Activity, Camera, Flame, Sparkles, Volume2, VolumeX } from "lucide-react";
+import { Activity, Camera, Eye, EyeOff, Flame, Sparkles, Volume2, VolumeX } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import * as THREE from "three";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
@@ -12,40 +12,12 @@ import { usePatentAudio } from "./usePatentAudio";
 
 type CameraPreset = "iso" | "barrels" | "breech_cam" | "hopper" | "top";
 
-interface ScenarioPreset {
-  id: string;
-  name: string;
-  desc: string;
-  crankRpm: number;
-}
-
-const SCENARIOS: ScenarioPreset[] = [
-  {
-    id: "gatling_1862_original",
-    name: "1862 Gatling Original (6-Barrel)",
-    desc: "Dr. Richard Gatling's original 6-barrel rotary battery gun firing 200 rounds/min with continuous spiral cam cycling (US 36,836).",
-    crankRpm: 33,
-  },
-  {
-    id: "rapid_barrage",
-    name: "Rapid Barrage (400 Rounds/Min)",
-    desc: "High-speed hand cranking delivering over 6 shots per second to break enemy infantry charges.",
-    crankRpm: 66,
-  },
-  {
-    id: "slow_demonstration",
-    name: "Slow Kinematic Cam Demonstration",
-    desc: "10 RPM slow crank illustrating the 6-stage bolt cycle: chambering, locking, firing pin release, primary extraction, and casing ejection.",
-    crankRpm: 10,
-  },
-];
-
 export function GatlingGun3D() {
   const containerRef = useRef<HTMLDivElement>(null);
 
   // Ballistic Simulation Parameters
   const { params, updateParam } = usePatentPhysics("us-36836-gatling-gun");
-  const [_showUiOverlay, _setShowUiOverlay] = useState<boolean>(true);
+  const [showUiOverlay, setShowUiOverlay] = useState<boolean>(true);
   const crankRpm = params.crankRpm ?? 33;
   const roundsPerMinute = crankRpm * 6; // 6 barrels fire per revolution
   const [showMuzzleFlash, _setShowMuzzleFlash] = useState<boolean>(true);
@@ -92,11 +64,6 @@ export function GatlingGun3D() {
     }
     controls.update();
   };
-
-  const applyScenario = (s: ScenarioPreset) => {
-    updateParam("crankRpm", s.crankRpm);
-  };
-
   useEffect(() => {
     if (!containerRef.current) return;
 
@@ -206,70 +173,16 @@ export function GatlingGun3D() {
               {c.label}
             </button>
           ))}
-        </div>
-      </div>
-
-      {/* Bottom Control Bar */}
-      <div className="absolute bottom-4 left-4 right-4 flex flex-col md:flex-row items-stretch md:items-center justify-between gap-3 pointer-events-none z-10">
-        {/* Scenario Presets */}
-        <div className="flex flex-wrap items-center gap-1.5 bg-parchment-950/85 backdrop-blur-md p-2 rounded-2xl border border-parchment-700/60 shadow-xl pointer-events-auto">
-          <Sparkles className="w-4 h-4 text-amber-400 ml-1.5 mr-1" />
-          {SCENARIOS.map((s) => (
-            <button
-              key={s.id}
-              type="button"
-              onClick={() => applyScenario(s)}
-              className={`px-3 py-1.5 text-xs font-mono rounded-xl transition-all ${
-                crankRpm === s.crankRpm
-                  ? "bg-amber-600 text-white font-bold shadow-xs"
-                  : "text-parchment-200 hover:text-white hover:bg-parchment-800/60"
-              }`}
-            >
-              {s.name}
-            </button>
-          ))}
-        </div>
-
-        {/* Live Controls & Telemetry */}
-        <div className="flex items-center gap-3 bg-parchment-950/85 backdrop-blur-md px-4 py-2 rounded-2xl border border-parchment-700/60 shadow-xl pointer-events-auto">
-          <div className="flex items-center gap-2">
-            <span className="text-xs font-mono text-parchment-300">Crank Speed:</span>
-            <input
-              type="range"
-              min="5"
-              max="100"
-              step="1"
-              value={crankRpm}
-              onChange={(e) => updateParam("crankRpm", Number.parseFloat(e.target.value))}
-              className="w-24 h-1.5 bg-parchment-800 rounded-lg appearance-none cursor-pointer accent-amber-500"
-            />
-            <span className="text-xs font-mono font-bold text-amber-400 w-12 text-right">
-              {crankRpm} RPM
-            </span>
-          </div>
-
-          <div className="h-4 w-px bg-parchment-700" />
-
-          <div className="flex items-center gap-1.5">
-            <Flame className="w-3.5 h-3.5 text-orange-400" />
-            <span className="text-xs font-mono text-parchment-300">Fire Rate:</span>
-            <span className="text-xs font-mono font-bold text-orange-400">
-              {roundsPerMinute} rds/min
-            </span>
-          </div>
-
-          <div className="h-4 w-px bg-parchment-700" />
-
           <button
             type="button"
-            onClick={toggleEngine}
-            className="p-1.5 rounded-lg text-parchment-300 hover:text-white hover:bg-parchment-800/60 transition-colors"
-            title={isAudioMuted ? "Unmute Firing Acoustics" : "Mute Firing Acoustics"}
+            onClick={() => setShowUiOverlay(!showUiOverlay)}
+            title={showUiOverlay ? "Hide Overlay UI" : "Show Overlay UI"}
+            className="p-1.5 rounded-lg text-xs text-parchment-400 hover:text-white hover:bg-parchment-800 transition-colors"
           >
-            {isAudioMuted ? (
-              <VolumeX className="w-4 h-4 text-parchment-400" />
+            {showUiOverlay ? (
+              <EyeOff className="w-4 h-4" />
             ) : (
-              <Volume2 className="w-4 h-4 text-amber-400" />
+              <Eye className="w-4 h-4 text-amber-400" />
             )}
           </button>
         </div>

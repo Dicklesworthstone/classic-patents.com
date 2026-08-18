@@ -1,6 +1,6 @@
 "use client";
 
-import { Activity, Camera, Sparkles, Volume2, VolumeX, Zap } from "lucide-react";
+import { Activity, Camera, Eye, EyeOff, Volume2, VolumeX } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import * as THREE from "three";
 import { stepRenoEscalator } from "@/physics/machineKernels";
@@ -12,40 +12,12 @@ import { usePatentAudio } from "./usePatentAudio";
 
 type CameraPreset = "iso" | "comb_plates" | "cleated_deck" | "handrail" | "top";
 
-interface ScenarioPreset {
-  id: string;
-  name: string;
-  desc: string;
-  speedFpm: number;
-}
-
-const SCENARIOS: ScenarioPreset[] = [
-  {
-    id: "coney_island_1896",
-    name: "1896 Coney Island Inclined Elevator",
-    desc: "Jesse Reno's original moving stairway carrying 75,000 riders along an inclined cleat deck with intermeshing comb-plates (US 470,918).",
-    speedFpm: 90,
-  },
-  {
-    id: "london_underground_rush",
-    name: "London Subway High-Volume (120 FPM)",
-    desc: "Fast 120 ft/min incline belt transporting 7,200 commuters per hour between tube levels.",
-    speedFpm: 120,
-  },
-  {
-    id: "accessible_slow_cruise",
-    name: "Department Store Gentle Glide",
-    desc: "Smooth 60 ft/min gentle speed with synchronized rubber handrails for Victorian department store shoppers.",
-    speedFpm: 60,
-  },
-];
-
 export function RenoEscalator3D() {
   const containerRef = useRef<HTMLDivElement>(null);
+  const [showUiOverlay, setShowUiOverlay] = useState<boolean>(true);
 
   // Transit Dynamics Parameters
   const { params, updateParam } = usePatentPhysics("us-470918-reno-escalator");
-  const [showUiOverlay, setShowUiOverlay] = useState<boolean>(true);
   const beltSpeedMps = params.beltSpeed ?? 0.45;
   const passengerCount = params.passengerCount ?? 30;
   const inclineAngleDeg = params.inclineAngle ?? 25;
@@ -98,13 +70,6 @@ export function RenoEscalator3D() {
         break;
     }
     controls.update();
-  };
-
-  const applyScenario = (s: ScenarioPreset) => {
-    updateParam("beltSpeed", (s.speedFpm * 0.3048) / 60);
-    if (!isAudioMuted) {
-      soundEngine.playSwitchClick();
-    }
   };
 
   const toggleSound = () => {
@@ -300,78 +265,17 @@ export function RenoEscalator3D() {
           <button
             type="button"
             onClick={() => setShowUiOverlay(!showUiOverlay)}
+            title={showUiOverlay ? "Hide Overlay UI" : "Show Overlay UI"}
             className="p-1.5 rounded-lg text-xs text-parchment-400 hover:text-white hover:bg-parchment-800 transition-colors"
           >
-            <Zap className="w-4 h-4 text-amber-400" />
-          </button>
+            {showUiOverlay ? (
+              <EyeOff className="w-4 h-4" />
+            ) : (
+              <Eye className="w-4 h-4 text-amber-400" />
+            )}
+          </button>{" "}
         </div>
       </div>
-
-      {/* Bottom Telemetry Bar & Controls */}
-      {showUiOverlay && (
-        <div className="absolute bottom-4 left-4 right-4 bg-parchment-950/90 backdrop-blur-md rounded-2xl border border-parchment-700/70 p-4 shadow-2xl z-10 flex flex-col gap-3">
-          <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5 pb-2 border-b border-parchment-800/80 text-xs font-mono">
-            <div className="bg-parchment-900/80 px-3 py-1.5 rounded-lg border border-parchment-700/50 flex flex-col">
-              <span className="text-[10px] text-parchment-400 uppercase">Belt Speed</span>
-              <span className="font-bold text-amber-400">{deckSpeedFpm} ft/min</span>
-            </div>
-            <div className="bg-parchment-900/80 px-3 py-1.5 rounded-lg border border-parchment-700/50 flex flex-col">
-              <span className="text-[10px] text-parchment-400 uppercase">Passenger Flow</span>
-              <span className="font-bold text-blue-400">
-                {passengersPerHour.toLocaleString()} Riders/Hour
-              </span>
-            </div>
-            <div className="bg-parchment-900/80 px-3 py-1.5 rounded-lg border border-parchment-700/50 flex flex-col">
-              <span className="text-[10px] text-parchment-400 uppercase">Incline Angle</span>
-              <span className="font-bold text-emerald-400">{inclineAngleDeg}°</span>
-            </div>
-            <div className="bg-parchment-900/80 px-3 py-1.5 rounded-lg border border-parchment-700/50 flex flex-col">
-              <span className="text-[10px] text-parchment-400 uppercase">Safety Mechanism</span>
-              <span className="font-bold text-amber-300">
-                Comb {renoIdle.combPlateClearanceMm} mm · {renoIdle.motorTorqueNm} N·m
-              </span>
-            </div>
-          </div>
-
-          <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
-            <div className="flex items-center gap-2 w-full sm:w-auto">
-              <span className="text-xs font-mono text-parchment-400 flex items-center gap-1 shrink-0">
-                <Sparkles className="w-3.5 h-3.5 text-amber-500" /> Presets:
-              </span>
-              <div className="flex gap-1.5 overflow-x-auto pb-1">
-                {SCENARIOS.map((sc) => (
-                  <button
-                    key={sc.id}
-                    type="button"
-                    onClick={() => applyScenario(sc)}
-                    className="px-2.5 py-1 text-xs font-sans rounded-lg bg-parchment-800/80 hover:bg-parchment-700 text-parchment-200 hover:text-white border border-parchment-600/50 transition-colors whitespace-nowrap"
-                  >
-                    {sc.name}
-                  </button>
-                ))}
-              </div>
-            </div>
-
-            <div className="flex items-center gap-3 w-full sm:w-72 shrink-0">
-              <span className="text-xs font-sans text-parchment-300 shrink-0 font-medium">
-                Speed (FPM):
-              </span>
-              <input
-                type="range"
-                min="30"
-                max="150"
-                step="10"
-                value={deckSpeedFpm}
-                onChange={(e) => updateParam("beltSpeed", (Number(e.target.value) * 0.3048) / 60)}
-                className="w-full accent-amber-500 cursor-pointer"
-              />
-              <span className="text-xs font-mono text-amber-400 w-12 text-right font-bold">
-                {deckSpeedFpm}
-              </span>
-            </div>
-          </div>
-        </div>
-      )}
     </div>
   );
 }

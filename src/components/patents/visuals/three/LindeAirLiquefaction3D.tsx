@@ -1,6 +1,6 @@
 "use client";
 
-import { Activity, Camera, Sparkles, Volume2, VolumeX, Wind, Zap } from "lucide-react";
+import { Activity, Camera, Eye, EyeOff, Sparkles, Volume2, VolumeX, Wind } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import * as THREE from "three";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
@@ -15,40 +15,12 @@ import { usePatentAudio } from "./usePatentAudio";
 
 type CameraPreset = "iso" | "jt_valve" | "counter_heat_exchanger" | "liquid_dewar" | "top";
 
-interface ScenarioPreset {
-  id: string;
-  name: string;
-  desc: string;
-  inletBar: number;
-}
-
-const SCENARIOS: ScenarioPreset[] = [
-  {
-    id: "linde_1895_regenerative",
-    name: "1895 Linde Regenerative Liquefaction",
-    desc: "Carl von Linde's counter-current heat exchanger combining Joule-Thomson isenthalpic expansion to liquefy atmospheric air continuously at 80 K (US 727,650).",
-    inletBar: 200,
-  },
-  {
-    id: "industrial_tonnage_oxygen",
-    name: "High-Capacity Tonnage Air Separation (240 bar)",
-    desc: "Continuous fractional distillation feedstock condensing 45 liters of liquid air per hour.",
-    inletBar: 240,
-  },
-  {
-    id: "cooldown_phase",
-    name: "Initial Regenerative Cooldown (150 bar)",
-    desc: "Demonstrating cumulative counter-current temperature step-down before first liquid droplet condensation.",
-    inletBar: 150,
-  },
-];
-
 export function LindeAirLiquefaction3D() {
   const containerRef = useRef<HTMLDivElement>(null);
+  const [showUiOverlay, setShowUiOverlay] = useState<boolean>(true);
 
   // Cryogenic Thermodynamics Parameters
   const { params, updateParam } = usePatentPhysics("us-727650-linde-air-liquefaction");
-  const [showUiOverlay, setShowUiOverlay] = useState<boolean>(true);
   const inletPressureBar = params.inletBar ?? 200;
   const liquidTempKelvin = 80;
   const liquidTempCelsius = -193.15;
@@ -95,13 +67,6 @@ export function LindeAirLiquefaction3D() {
         break;
     }
     controls.update();
-  };
-
-  const applyScenario = (s: ScenarioPreset) => {
-    updateParam("inletBar", s.inletBar);
-    if (!isAudioMuted) {
-      soundEngine.playSwitchClick();
-    }
   };
 
   const toggleSound = () => {
@@ -326,76 +291,19 @@ export function LindeAirLiquefaction3D() {
           <button
             type="button"
             onClick={() => setShowUiOverlay(!showUiOverlay)}
+            title={showUiOverlay ? "Hide Overlay UI" : "Show Overlay UI"}
             className="p-1.5 rounded-lg text-xs text-parchment-400 hover:text-white hover:bg-parchment-800 transition-colors"
           >
-            <Zap className="w-4 h-4 text-amber-400" />
+            {showUiOverlay ? (
+              <EyeOff className="w-4 h-4" />
+            ) : (
+              <Eye className="w-4 h-4 text-amber-400" />
+            )}
           </button>
         </div>
       </div>
 
       {/* Bottom Telemetry Bar & Controls */}
-      {showUiOverlay && (
-        <div className="absolute bottom-4 left-4 right-4 bg-parchment-950/90 backdrop-blur-md rounded-2xl border border-parchment-700/70 p-4 shadow-2xl z-10 flex flex-col gap-3">
-          <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5 pb-2 border-b border-parchment-800/80 text-xs font-mono">
-            <div className="bg-parchment-900/80 px-3 py-1.5 rounded-lg border border-parchment-700/50 flex flex-col">
-              <span className="text-[10px] text-parchment-400 uppercase">Inlet Compression</span>
-              <span className="font-bold text-amber-400">{inletPressureBar} bar</span>
-            </div>
-            <div className="bg-parchment-900/80 px-3 py-1.5 rounded-lg border border-parchment-700/50 flex flex-col">
-              <span className="text-[10px] text-parchment-400 uppercase">Cryogenic Temp</span>
-              <span className="font-bold text-blue-400">
-                {liquidTempCelsius}°C ({liquidTempKelvin} K)
-              </span>
-            </div>
-            <div className="bg-parchment-900/80 px-3 py-1.5 rounded-lg border border-parchment-700/50 flex flex-col">
-              <span className="text-[10px] text-parchment-400 uppercase">Condensation Rate</span>
-              <span className="font-bold text-emerald-400">{liquefactionRateLph} L/hr</span>
-            </div>
-            <div className="bg-parchment-900/80 px-3 py-1.5 rounded-lg border border-parchment-700/50 flex flex-col">
-              <span className="text-[10px] text-parchment-400 uppercase">Thermodynamic Law</span>
-              <span className="font-bold text-amber-300">Joule-Thomson Isenthalpic</span>
-            </div>
-          </div>
-
-          <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
-            <div className="flex items-center gap-2 w-full sm:w-auto">
-              <span className="text-xs font-mono text-parchment-400 flex items-center gap-1 shrink-0">
-                <Sparkles className="w-3.5 h-3.5 text-amber-500" /> Presets:
-              </span>
-              <div className="flex gap-1.5 overflow-x-auto pb-1">
-                {SCENARIOS.map((sc) => (
-                  <button
-                    key={sc.id}
-                    type="button"
-                    onClick={() => applyScenario(sc)}
-                    className="px-2.5 py-1 text-xs font-sans rounded-lg bg-parchment-800/80 hover:bg-parchment-700 text-parchment-200 hover:text-white border border-parchment-600/50 transition-colors whitespace-nowrap"
-                  >
-                    {sc.name}
-                  </button>
-                ))}
-              </div>
-            </div>
-
-            <div className="flex items-center gap-3 w-full sm:w-72 shrink-0">
-              <span className="text-xs font-sans text-parchment-300 shrink-0 font-medium">
-                Inlet Bar:
-              </span>
-              <input
-                type="range"
-                min="100"
-                max="300"
-                step="10"
-                value={inletPressureBar}
-                onChange={(e) => updateParam("inletBar", Number(e.target.value))}
-                className="w-full accent-amber-500 cursor-pointer"
-              />
-              <span className="text-xs font-mono text-amber-400 w-16 text-right font-bold">
-                {inletPressureBar} bar
-              </span>
-            </div>
-          </div>
-        </div>
-      )}
     </div>
   );
 }

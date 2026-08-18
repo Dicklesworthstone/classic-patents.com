@@ -3,6 +3,7 @@
 import { Camera, Flame, Play, Volume2, VolumeX } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import * as THREE from "three";
+import { FrankenSimEngine } from "@/physics/engine";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { createThreeStudioScene, type StudioContext } from "./ThreeStudioScene";
 import { useLiveSimParams } from "./useLiveSimParams";
@@ -16,12 +17,17 @@ export function DaimlerEngine3D() {
 
   const engineRpm = params.engineRpm ?? 720;
   const hotTubeTempC = params.hotTubeTemp ?? 850;
+  const daimler = FrankenSimEngine.stepDaimlerEngine({
+    engineRpm,
+    hotTubeTempC,
+    differentialSlipAngleDeg: params.turnAngle ?? 15,
+  });
 
   const [isPlaying, setIsPlaying] = useState<boolean>(true);
   const [showUiOverlay, setShowUiOverlay] = useState<boolean>(true);
   const { isMuted, toggleMute } = usePatentAudio();
 
-  const brakeHorsepower = Number(((engineRpm / 720) * 1.1).toFixed(2));
+  const brakeHorsepower = daimler.brakeHorsepower;
   const _engineWeightKg = 40; // Lightweight 1.1 hp per 40 kg
 
   const live = useLiveSimParams({

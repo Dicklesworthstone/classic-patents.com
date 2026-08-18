@@ -14,15 +14,6 @@ import { useLiveSimParams } from "./useLiveSimParams";
 
 type CameraPreset = "iso" | "stator_coils" | "squirrel_cage" | "shaft_drive" | "top";
 
-interface ScenarioPreset {
-  id: string;
-  name: string;
-  desc: string;
-  freqHz: number;
-  phases: 2 | 3;
-  loadTorqueNm: number;
-}
-
 export function TeslaMotor3D() {
   const containerRef = useRef<HTMLDivElement>(null);
 
@@ -108,15 +99,6 @@ export function TeslaMotor3D() {
         break;
     }
     controls.update();
-  };
-
-  const _applyScenario = (s: ScenarioPreset) => {
-    updateParam("frequency", s.freqHz);
-    updateParam("phaseCount", s.phases);
-    updateParam("loadTorque", s.loadTorqueNm);
-    if (isPlayingAudio) {
-      soundEngine.playTeslaMotorHum(s.freqHz, Math.round(((120 * s.freqHz) / 2) * 0.95));
-    }
   };
 
   // Web Audio AC Motor 60Hz Harmonic Sound

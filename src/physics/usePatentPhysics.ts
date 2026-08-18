@@ -7,6 +7,7 @@
 "use client";
 
 import { useCallback, useEffect, useMemo, useState } from "react";
+import { canonicalizeParam, expandParamAliases } from "./paramAliases";
 import { PATENT_PHYSICS_REGISTRY, type PhysicsMetric } from "./telemetryData";
 
 type Listener = (params: Record<string, number>) => void;
@@ -36,10 +37,9 @@ function bumpTick(patentId: string, change: ParamChange | null) {
   changeMap.set(patentId, change);
 }
 
-export function getPatentPhysicsParams(patentId: string): Record<string, number> {
-  if (stateMap.has(patentId)) {
-    return stateMap.get(patentId) ?? {};
-  }
+function getRawPatentPhysicsParams(patentId: string): Record<string, number> {
+  const existing = stateMap.get(patentId);
+  if (existing) return existing;
   const meta = PATENT_PHYSICS_REGISTRY[patentId];
   if (!meta) return {};
   const initial: Record<string, number> = {};
@@ -50,10 +50,26 @@ export function getPatentPhysicsParams(patentId: string): Record<string, number>
   return initial;
 }
 
+function publishParams(patentId: string, raw: Record<string, number>) {
+  const expanded = expandParamAliases(patentId, raw);
+  const listeners = listenersMap.get(patentId);
+  if (!listeners) return;
+  for (const listener of listeners) {
+    listener(expanded);
+  }
+}
+
+export function getPatentPhysicsParams(patentId: string): Record<string, number> {
+  return expandParamAliases(patentId, getRawPatentPhysicsParams(patentId));
+}
+
 export function setPatentPhysicsParam(patentId: string, paramId: string, value: number) {
+  const canonical = canonicalizeParam(patentId, paramId, value);
   const meta = PATENT_PHYSICS_REGISTRY[patentId];
-  const current = getPatentPhysicsParams(patentId);
-  const from = current[paramId] ?? value;
+  const current = getRawPatentPhysicsParams(patentId);
+  const from = current[canonical.id] ?? value;
+  paramId = canonical.id;
+  value = canonical.value;
   const now =
     typeof performance !== "undefined" && typeof performance.now === "function"
       ? performance.now()
@@ -74,12 +90,7 @@ export function setPatentPhysicsParam(patentId: string, paramId: string, value: 
   }
 
   stateMap.set(patentId, updated);
-  const listeners = listenersMap.get(patentId);
-  if (listeners) {
-    for (const listener of listeners) {
-      listener(updated);
-    }
-  }
+  publishParams(patentId, updated);
 }
 
 export function resetPatentPhysicsParams(patentId: string) {
@@ -91,12 +102,7 @@ export function resetPatentPhysicsParams(patentId: string) {
   }
   stateMap.set(patentId, initial);
   bumpTick(patentId, null);
-  const listeners = listenersMap.get(patentId);
-  if (listeners) {
-    for (const listener of listeners) {
-      listener(initial);
-    }
-  }
+  publishParams(patentId, initial);
 }
 
 export function usePatentPhysics(patentId: string) {

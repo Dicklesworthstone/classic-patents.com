@@ -12,34 +12,6 @@ import { usePatentAudio } from "./usePatentAudio";
 
 type CameraPreset = "iso" | "stylus_groove" | "tinfoil_cylinder" | "brass_horn" | "top";
 
-interface ScenarioPreset {
-  id: string;
-  name: string;
-  desc: string;
-  cylinderRpm: number;
-}
-
-const SCENARIOS: ScenarioPreset[] = [
-  {
-    id: "mary_had_a_little_lamb",
-    name: "1877 'Mary Had a Little Lamb' Recording",
-    desc: "Thomas Edison's historic recording capturing the human voice into tinfoil grooves via a vibrating stylus (US 200,521).",
-    cylinderRpm: 60,
-  },
-  {
-    id: "orchestral_fidelity",
-    name: "High-Speed Acoustic Fidelity (90 RPM)",
-    desc: "Higher surface velocity yielding improved high-frequency acoustic tracking up to 3,000 Hz.",
-    cylinderRpm: 90,
-  },
-  {
-    id: "slow_crank_playback",
-    name: "Slow Hand-Cranked Playback (40 RPM)",
-    desc: "Slow motion demonstrating stylus hill-and-dale indentation tracking along the lead-screw helix.",
-    cylinderRpm: 40,
-  },
-];
-
 export function EdisonPhonograph3D() {
   const containerRef = useRef<HTMLDivElement>(null);
   const [showUiOverlay, setShowUiOverlay] = useState<boolean>(true);
@@ -88,13 +60,6 @@ export function EdisonPhonograph3D() {
         break;
     }
     controls.update();
-  };
-
-  const applyScenario = (s: ScenarioPreset) => {
-    updateParam("cylinderRpm", s.cylinderRpm);
-    if (!isAudioMuted) {
-      soundEngine.playSwitchClick();
-    }
   };
 
   const toggleSound = () => {
@@ -159,132 +124,49 @@ export function EdisonPhonograph3D() {
       <div ref={containerRef} className="w-full h-full cursor-grab active:cursor-grabbing" />
 
       {/* Top-Right Toggle & Camera Controls */}
-      <div className="absolute top-4 right-4 flex items-center gap-2 pointer-events-auto z-20">
-        <button
-          type="button"
-          onClick={() => setShowUiOverlay(!showUiOverlay)}
-          className={`p-2 rounded-xl border text-xs font-mono font-bold transition-all shadow-lg backdrop-blur-md flex items-center gap-1.5 ${
-            showUiOverlay
-              ? "bg-parchment-950/80 text-parchment-200 border-parchment-700 hover:bg-parchment-900"
-              : "bg-amber-600 text-white border-amber-500 shadow-amber-500/20"
-          }`}
-          title={showUiOverlay ? "Hide Overlay UI (Clean 3D View)" : "Show Overlay UI"}
-          aria-label={showUiOverlay ? "Hide Overlay UI" : "Show Overlay UI"}
-        >
-          {showUiOverlay ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
-          <span className="hidden sm:inline">{showUiOverlay ? "Hide HUD" : "Show HUD"}</span>
-        </button>
+      <div className="absolute top-4 right-4 flex items-center gap-2 pointer-events-auto z-20"></div>
+
+      {/* Top HUD Controls */}
+      <div className="absolute top-4 left-4 right-4 flex flex-wrap items-center justify-between gap-3 pointer-events-none z-10 pr-28 sm:pr-32">
+        <div className="flex items-center gap-2 bg-parchment-950/80 backdrop-blur-md px-3.5 py-2 rounded-xl border border-parchment-700/60 shadow-lg pointer-events-auto">
+          <Activity className="w-4 h-4 text-amber-500 animate-pulse" />
+          <span className="text-xs font-mono font-bold text-parchment-100 uppercase tracking-wider">
+            Edison Phonograph 3D
+          </span>
+          <span className="text-[10px] font-mono px-2 py-0.5 rounded-full bg-amber-500/20 text-amber-300 border border-amber-500/30">
+            US Patent 200,521 (1878)
+          </span>
+        </div>
+
+        {/* Camera Views */}
+        <div className="flex items-center gap-1.5 bg-parchment-950/80 backdrop-blur-md p-1.5 rounded-xl border border-parchment-700/60 shadow-lg pointer-events-auto">
+          <Camera className="w-3.5 h-3.5 text-parchment-400 ml-1.5 mr-1" />
+          {(
+            [
+              { id: "iso", label: "Overview" },
+              { id: "stylus_groove", label: "Stylus & Diaphragm" },
+              { id: "tinfoil_cylinder", label: "Tinfoil Mandrel" },
+              { id: "brass_horn", label: "Brass Horn" },
+              { id: "top", label: "Top View" },
+            ] as const
+          ).map((c) => (
+            <button
+              key={c.id}
+              type="button"
+              onClick={() => applyCameraPreset(c.id)}
+              className={`px-2.5 py-1 text-xs font-mono rounded-lg transition-all ${
+                activeCamera === c.id
+                  ? "bg-amber-600 text-white font-bold shadow-xs"
+                  : "text-parchment-300 hover:text-white hover:bg-parchment-800/60"
+              }`}
+            >
+              {c.label}
+            </button>
+          ))}
+        </div>
       </div>
 
-      {showUiOverlay && (
-        <>
-          {/* Top HUD Controls */}
-          <div className="absolute top-4 left-4 right-4 flex flex-wrap items-center justify-between gap-3 pointer-events-none z-10 pr-28 sm:pr-32">
-            <div className="flex items-center gap-2 bg-parchment-950/80 backdrop-blur-md px-3.5 py-2 rounded-xl border border-parchment-700/60 shadow-lg pointer-events-auto">
-              <Activity className="w-4 h-4 text-amber-500 animate-pulse" />
-              <span className="text-xs font-mono font-bold text-parchment-100 uppercase tracking-wider">
-                Edison Phonograph 3D
-              </span>
-              <span className="text-[10px] font-mono px-2 py-0.5 rounded-full bg-amber-500/20 text-amber-300 border border-amber-500/30">
-                US Patent 200,521 (1878)
-              </span>
-            </div>
-
-            {/* Camera Views */}
-            <div className="flex items-center gap-1.5 bg-parchment-950/80 backdrop-blur-md p-1.5 rounded-xl border border-parchment-700/60 shadow-lg pointer-events-auto">
-              <Camera className="w-3.5 h-3.5 text-parchment-400 ml-1.5 mr-1" />
-              {(
-                [
-                  { id: "iso", label: "Overview" },
-                  { id: "stylus_groove", label: "Stylus & Diaphragm" },
-                  { id: "tinfoil_cylinder", label: "Tinfoil Mandrel" },
-                  { id: "brass_horn", label: "Brass Horn" },
-                  { id: "top", label: "Top View" },
-                ] as const
-              ).map((c) => (
-                <button
-                  key={c.id}
-                  type="button"
-                  onClick={() => applyCameraPreset(c.id)}
-                  className={`px-2.5 py-1 text-xs font-mono rounded-lg transition-all ${
-                    activeCamera === c.id
-                      ? "bg-amber-600 text-white font-bold shadow-xs"
-                      : "text-parchment-300 hover:text-white hover:bg-parchment-800/60"
-                  }`}
-                >
-                  {c.label}
-                </button>
-              ))}
-            </div>
-          </div>
-
-          {/* Bottom Control Bar */}
-          <div className="absolute bottom-4 left-4 right-4 flex flex-col md:flex-row items-stretch md:items-center justify-between gap-3 pointer-events-none z-10">
-            {/* Scenario Presets */}
-            <div className="flex flex-wrap items-center gap-1.5 bg-parchment-950/85 backdrop-blur-md p-2 rounded-2xl border border-parchment-700/60 shadow-xl pointer-events-auto">
-              <Sparkles className="w-4 h-4 text-amber-400 ml-1.5 mr-1" />
-              {SCENARIOS.map((s) => (
-                <button
-                  key={s.id}
-                  type="button"
-                  onClick={() => applyScenario(s)}
-                  className={`px-3 py-1.5 text-xs font-mono rounded-xl transition-all ${
-                    cylinderRpm === s.cylinderRpm
-                      ? "bg-amber-600 text-white font-bold shadow-xs"
-                      : "text-parchment-200 hover:text-white hover:bg-parchment-800/60"
-                  }`}
-                >
-                  {s.name}
-                </button>
-              ))}
-            </div>
-
-            {/* Live Controls & SI Telemetry */}
-            <div className="flex items-center gap-3 bg-parchment-950/85 backdrop-blur-md px-4 py-2 rounded-2xl border border-parchment-700/60 shadow-xl pointer-events-auto">
-              <div className="flex items-center gap-2">
-                <span className="text-xs font-mono text-parchment-300">RPM:</span>
-                <input
-                  type="range"
-                  min="20"
-                  max="120"
-                  step="1"
-                  value={cylinderRpm}
-                  onChange={(e) => updateParam("cylinderRpm", Number.parseFloat(e.target.value))}
-                  className="w-20 h-1.5 bg-parchment-800 rounded-lg appearance-none cursor-pointer accent-amber-500"
-                />
-                <span className="text-xs font-mono font-bold text-amber-400 w-10 text-right">
-                  {cylinderRpm}
-                </span>
-              </div>
-
-              <div className="h-4 w-px bg-parchment-700" />
-
-              <div className="flex items-center gap-1.5">
-                <Zap className="w-3.5 h-3.5 text-orange-400" />
-                <span className="text-xs font-mono text-parchment-300">Speed:</span>
-                <span className="text-xs font-mono font-bold text-orange-400">
-                  {surfaceSpeedCmPerSec} cm/s
-                </span>
-              </div>
-
-              <div className="h-4 w-px bg-parchment-700" />
-
-              <button
-                type="button"
-                onClick={toggleSound}
-                className="p-1.5 rounded-lg text-parchment-300 hover:text-white hover:bg-parchment-800/60 transition-colors"
-                title={isAudioMuted ? "Unmute Acoustic Transducer" : "Mute Acoustic Transducer"}
-              >
-                {isAudioMuted ? (
-                  <VolumeX className="w-4 h-4 text-parchment-400" />
-                ) : (
-                  <Volume2 className="w-4 h-4 text-amber-400" />
-                )}
-              </button>
-            </div>
-          </div>
-        </>
-      )}
+      {/* Bottom Control Bar */}
     </div>
   );
 }

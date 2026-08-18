@@ -15,45 +15,13 @@ import { usePatentAudio } from "./usePatentAudio";
 
 type CameraPreset = "iso" | "gooseneck_airlock" | "cooling_coil" | "sampling_valve" | "top";
 
-interface ScenarioPreset {
-  id: string;
-  name: string;
-  desc: string;
-  tempCelsius: number;
-  pureYeast: boolean;
-}
-
-const SCENARIOS: ScenarioPreset[] = [
-  {
-    id: "pasteur_1873_pure_yeast",
-    name: "1873 Pasteur Axenic Fermentation",
-    desc: "Louis Pasteur's sterile closed-tank fermentation with cotton-filtered goose-neck air trap eliminating lactic/acetic souring (US 135,245).",
-    tempCelsius: 16.5,
-    pureYeast: true,
-  },
-  {
-    id: "rapid_lager_fermentation",
-    name: "Controlled Cold Lager Primary (10°C)",
-    desc: "Cold-jacket cooling stabilizing bottom-fermenting Saccharomyces pastorianus for pristine crystal-clear Pilsner beer.",
-    tempCelsius: 10.0,
-    pureYeast: true,
-  },
-  {
-    id: "unsterile_prior_art",
-    name: "Unsealed Prior-Art Open Vat",
-    desc: "Demonstrating atmospheric airborne wild bacterium contamination resulting in acetic acid spoil and vinegar conversion.",
-    tempCelsius: 24.0,
-    pureYeast: false,
-  },
-];
-
 export function PasteurFermentation3D() {
   const containerRef = useRef<HTMLDivElement>(null);
 
   // Biochemical Fermentation Parameters
   const { params, updateParam } = usePatentPhysics("us-135245-pasteur-fermentation");
   const [showUiOverlay, setShowUiOverlay] = useState<boolean>(true);
-  const fermentationTempC = params.tempCelsius ?? 16.5;
+  const fermentationTempC = params.wortTempC ?? 16.5;
   const isPureYeast = params.pureYeast ?? true;
   const alcoholAbvPct = (5.2 * (fermentationTempC / 16.5)).toFixed(1);
   const co2PressureBar = (1.8 * (fermentationTempC / 16.5)).toFixed(2);
@@ -100,13 +68,6 @@ export function PasteurFermentation3D() {
         break;
     }
     controls.update();
-  };
-
-  const applyScenario = (s: ScenarioPreset) => {
-    updateParam("tempCelsius", s.tempCelsius);
-    if (!isAudioMuted) {
-      soundEngine.playSwitchClick();
-    }
   };
 
   const toggleSound = () => {
@@ -359,70 +320,6 @@ export function PasteurFermentation3D() {
           </button>
         </div>
       </div>
-
-      {/* Bottom Telemetry Bar & Controls */}
-      {showUiOverlay && (
-        <div className="absolute bottom-4 left-4 right-4 bg-parchment-950/90 backdrop-blur-md rounded-2xl border border-parchment-700/70 p-4 shadow-2xl z-10 flex flex-col gap-3">
-          <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5 pb-2 border-b border-parchment-800/80 text-xs font-mono">
-            <div className="bg-parchment-900/80 px-3 py-1.5 rounded-lg border border-parchment-700/50 flex flex-col">
-              <span className="text-[10px] text-parchment-400 uppercase">Vat Temperature</span>
-              <span className="font-bold text-amber-400">{fermentationTempC}°C</span>
-            </div>
-            <div className="bg-parchment-900/80 px-3 py-1.5 rounded-lg border border-parchment-700/50 flex flex-col">
-              <span className="text-[10px] text-parchment-400 uppercase">
-                Dissolved CO2 Pressure
-              </span>
-              <span className="font-bold text-blue-400">{co2PressureBar} bar</span>
-            </div>
-            <div className="bg-parchment-900/80 px-3 py-1.5 rounded-lg border border-parchment-700/50 flex flex-col">
-              <span className="text-[10px] text-parchment-400 uppercase">Alcohol Yield</span>
-              <span className="font-bold text-emerald-400">{alcoholAbvPct}% ABV</span>
-            </div>
-            <div className="bg-parchment-900/80 px-3 py-1.5 rounded-lg border border-parchment-700/50 flex flex-col">
-              <span className="text-[10px] text-parchment-400 uppercase">Airlock Protection</span>
-              <span className="font-bold text-amber-300">Sterile Cotton Gooseneck Trap</span>
-            </div>
-          </div>
-
-          <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
-            <div className="flex items-center gap-2 w-full sm:w-auto">
-              <span className="text-xs font-mono text-parchment-400 flex items-center gap-1 shrink-0">
-                <Sparkles className="w-3.5 h-3.5 text-amber-500" /> Presets:
-              </span>
-              <div className="flex gap-1.5 overflow-x-auto pb-1">
-                {SCENARIOS.map((sc) => (
-                  <button
-                    key={sc.id}
-                    type="button"
-                    onClick={() => applyScenario(sc)}
-                    className="px-2.5 py-1 text-xs font-sans rounded-lg bg-parchment-800/80 hover:bg-parchment-700 text-parchment-200 hover:text-white border border-parchment-600/50 transition-colors whitespace-nowrap"
-                  >
-                    {sc.name}
-                  </button>
-                ))}
-              </div>
-            </div>
-
-            <div className="flex items-center gap-3 w-full sm:w-72 shrink-0">
-              <span className="text-xs font-sans text-parchment-300 shrink-0 font-medium">
-                Vat Temp:
-              </span>
-              <input
-                type="range"
-                min="8"
-                max="28"
-                step="0.5"
-                value={fermentationTempC}
-                onChange={(e) => updateParam("tempCelsius", Number(e.target.value))}
-                className="w-full accent-amber-500 cursor-pointer"
-              />
-              <span className="text-xs font-mono text-amber-400 w-16 text-right font-bold">
-                {fermentationTempC}°C
-              </span>
-            </div>
-          </div>
-        </div>
-      )}
     </div>
   );
 }

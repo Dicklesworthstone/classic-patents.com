@@ -1,8 +1,9 @@
 "use client";
 
-import { Activity, Camera, Sparkles, Volume2, VolumeX, Zap } from "lucide-react";
+import { Activity, Camera, Eye, EyeOff, Volume2, VolumeX } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import * as THREE from "three";
+import { FrankenSimEngine } from "@/physics/engine";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { soundEngine } from "@/utils/soundEngine";
 import { createThreeStudioScene, type StudioContext } from "./ThreeStudioScene";
@@ -11,41 +12,22 @@ import { usePatentAudio } from "./usePatentAudio";
 
 type CameraPreset = "iso" | "roll_film" | "barrel_shutter" | "lens_aperture" | "top";
 
-interface ScenarioPreset {
-  id: string;
-  name: string;
-  desc: string;
-  shutterFractionSec: number;
-}
-
-const SCENARIOS: ScenarioPreset[] = [
-  {
-    id: "kodak_1888_snapshot",
-    name: "1888 Original Kodak 'You Press the Button'",
-    desc: "George Eastman's handheld roll-film box camera democratizing photography with 100 circular exposures on paper-backed film (US 388,850).",
-    shutterFractionSec: 35, // 1/35 sec
-  },
-  {
-    id: "bright_sunlight_portrait",
-    name: "Bright Daylight Snapshot (1/50 sec)",
-    desc: "Rapid barrel shutter rotation capturing handheld action without tripod blur.",
-    shutterFractionSec: 50,
-  },
-  {
-    id: "overcast_exposure",
-    name: "Overcast Landscape (1/20 sec)",
-    desc: "Longer exposure utilizing fixed f/9 meniscus aperture for deep depth of field.",
-    shutterFractionSec: 20,
-  },
-];
-
 export function EastmanKodak3D() {
   const containerRef = useRef<HTMLDivElement>(null);
+  const [showUiOverlay, setShowUiOverlay] = useState<boolean>(true);
 
   // Photographic Optics Parameters
   const { params, updateParam } = usePatentPhysics("us-388850-eastman-kodak");
-  const [showUiOverlay, setShowUiOverlay] = useState<boolean>(true);
-  const shutterFractionSec = params.shutterSpeed ?? 35;
+  const shutterSpeedSec = (() => {
+    const raw = params.shutterSpeed ?? 0.05;
+    return raw > 1 ? 1 / raw : raw;
+  })();
+  const shutterFractionSec = Math.round(1 / shutterSpeedSec);
+  const kodak = FrankenSimEngine.stepEastmanKodak({
+    shutterSpeedSec,
+    apertureFNumber: params.apertureStop ?? 9,
+    subjectDistanceM: params.subjectDist ?? 3,
+  });
   const exposureCount = 100;
   const filmFormatInches = 2.5; // Circular image
   const [activeCamera, setActiveCamera] = useState<CameraPreset>("iso");
@@ -54,6 +36,8 @@ export function EastmanKodak3D() {
   const live = useLiveSimParams({
     shutterFractionSec,
     isAudioMuted,
+    exposureValueEv: kodak.exposureValueEv,
+    hyperfocalM: kodak.hyperfocalM,
   });
 
   const controlsRef = useRef<StudioContext["controls"] | null>(null);
@@ -88,13 +72,6 @@ export function EastmanKodak3D() {
         break;
     }
     controls.update();
-  };
-
-  const applyScenario = (s: ScenarioPreset) => {
-    updateParam("shutterSpeed", s.shutterFractionSec);
-    if (!isAudioMuted) {
-      soundEngine.playSwitchClick();
-    }
   };
 
   const toggleSound = () => {
@@ -196,10 +173,10 @@ export function EastmanKodak3D() {
     const animate = () => {
       reqId = requestAnimationFrame(animate);
       const delta = clock.getDelta();
-      const _p = live.current;
-
-      // Subtle barrel shutter rotation
-      barrel.rotation.x += 1.2 * delta;
+      const p = live.current;
+      // Rotary barrel period ≈ shutter open time (US 388,850)
+      const omega = (2 * Math.PI) / Math.max(0.01, 1 / p.shutterFractionSec);
+      barrel.rotation.x += omega * delta;
 
       renderer.render(scene, camera);
     };
@@ -268,74 +245,17 @@ export function EastmanKodak3D() {
           <button
             type="button"
             onClick={() => setShowUiOverlay(!showUiOverlay)}
+            title={showUiOverlay ? "Hide Overlay UI" : "Show Overlay UI"}
             className="p-1.5 rounded-lg text-xs text-parchment-400 hover:text-white hover:bg-parchment-800 transition-colors"
           >
-            <Zap className="w-4 h-4 text-amber-400" />
-          </button>
+            {showUiOverlay ? (
+              <EyeOff className="w-4 h-4" />
+            ) : (
+              <Eye className="w-4 h-4 text-amber-400" />
+            )}
+          </button>{" "}
         </div>
       </div>
-
-      {/* Bottom Telemetry Bar & Controls */}
-      {showUiOverlay && (
-        <div className="absolute bottom-4 left-4 right-4 bg-parchment-950/90 backdrop-blur-md rounded-2xl border border-parchment-700/70 p-4 shadow-2xl z-10 flex flex-col gap-3">
-          <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5 pb-2 border-b border-parchment-800/80 text-xs font-mono">
-            <div className="bg-parchment-900/80 px-3 py-1.5 rounded-lg border border-parchment-700/50 flex flex-col">
-              <span className="text-[10px] text-parchment-400 uppercase">Shutter Speed</span>
-              <span className="font-bold text-amber-400">1/{shutterFractionSec} sec</span>
-            </div>
-            <div className="bg-parchment-900/80 px-3 py-1.5 rounded-lg border border-parchment-700/50 flex flex-col">
-              <span className="text-[10px] text-parchment-400 uppercase">Roll Film Capacity</span>
-              <span className="font-bold text-blue-400">{exposureCount} Exposures</span>
-            </div>
-            <div className="bg-parchment-900/80 px-3 py-1.5 rounded-lg border border-parchment-700/50 flex flex-col">
-              <span className="text-[10px] text-parchment-400 uppercase">Negative Diameter</span>
-              <span className="font-bold text-emerald-400">{filmFormatInches}&quot; Circular</span>
-            </div>
-            <div className="bg-parchment-900/80 px-3 py-1.5 rounded-lg border border-parchment-700/50 flex flex-col">
-              <span className="text-[10px] text-parchment-400 uppercase">Optics Design</span>
-              <span className="font-bold text-amber-300">Rapid-Rectilinear Doublet</span>
-            </div>
-          </div>
-
-          <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
-            <div className="flex items-center gap-2 w-full sm:w-auto">
-              <span className="text-xs font-mono text-parchment-400 flex items-center gap-1 shrink-0">
-                <Sparkles className="w-3.5 h-3.5 text-amber-500" /> Presets:
-              </span>
-              <div className="flex gap-1.5 overflow-x-auto pb-1">
-                {SCENARIOS.map((sc) => (
-                  <button
-                    key={sc.id}
-                    type="button"
-                    onClick={() => applyScenario(sc)}
-                    className="px-2.5 py-1 text-xs font-sans rounded-lg bg-parchment-800/80 hover:bg-parchment-700 text-parchment-200 hover:text-white border border-parchment-600/50 transition-colors whitespace-nowrap"
-                  >
-                    {sc.name}
-                  </button>
-                ))}
-              </div>
-            </div>
-
-            <div className="flex items-center gap-3 w-full sm:w-72 shrink-0">
-              <span className="text-xs font-sans text-parchment-300 shrink-0 font-medium">
-                Shutter:
-              </span>
-              <input
-                type="range"
-                min="10"
-                max="100"
-                step="5"
-                value={shutterFractionSec}
-                onChange={(e) => updateParam("shutterSpeed", Number(e.target.value))}
-                className="w-full accent-amber-500 cursor-pointer"
-              />
-              <span className="text-xs font-mono text-amber-400 w-16 text-right font-bold">
-                1/{shutterFractionSec}s
-              </span>
-            </div>
-          </div>
-        </div>
-      )}
     </div>
   );
 }

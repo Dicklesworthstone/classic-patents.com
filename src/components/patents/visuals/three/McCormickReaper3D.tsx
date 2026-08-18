@@ -1,6 +1,6 @@
 "use client";
 
-import { Activity, Camera, Eye, EyeOff, Sparkles, Volume2, VolumeX, Zap } from "lucide-react";
+import { Activity, Camera, Eye, EyeOff, Sparkles, Volume2, VolumeX } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import * as THREE from "three";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
@@ -11,44 +11,11 @@ import { usePatentAudio } from "./usePatentAudio";
 
 type CameraPreset = "iso" | "sickle_guards" | "grain_reel" | "platform" | "top";
 
-interface ScenarioPreset {
-  id: string;
-  name: string;
-  desc: string;
-  speedMph: number;
-  acresPerDay: number;
-}
-
-const SCENARIOS: ScenarioPreset[] = [
-  {
-    id: "mccormick_1834_virginia",
-    name: "1834 Virginia Harvest",
-    desc: "Cyrus McCormick's horse-drawn reaper harvesting 12 acres of ripe wheat per day with reciprocating sickle and 4-vane revolving reel (US X8277).",
-    speedMph: 2.5,
-    acresPerDay: 12.0,
-  },
-  {
-    id: "fast_prairie_run",
-    name: "Fast Midwest Prairie Run",
-    desc: "3.5 MPH trot across level ground delivering 18 acres/day—replacing the labor of 15 manual scythe cradlers.",
-    speedMph: 3.5,
-    acresPerDay: 17.5,
-  },
-  {
-    id: "heavy_damp_grain",
-    name: "Heavy Damp Lodged Wheat",
-    desc: "Slow 1.5 MPH careful cut through tangled stems testing the triangular divider shoe and pointed guard finger separation.",
-    speedMph: 1.5,
-    acresPerDay: 7.2,
-  },
-];
-
 export function McCormickReaper3D() {
   const containerRef = useRef<HTMLDivElement>(null);
 
   // Mechanical Reaper Simulation Parameters
   const { params, updateParam } = usePatentPhysics("us-x8277-mccormick-reaper");
-  const [showUiOverlay, setShowUiOverlay] = useState<boolean>(true);
   const groundSpeedMph = params.groundSpeedMph ?? 2.5;
   const sickleCps = groundSpeedMph * 4.2; // Cycles per second
   const reelRpm = groundSpeedMph * 12.0; // Revolutions per min
@@ -99,13 +66,6 @@ export function McCormickReaper3D() {
         break;
     }
     controls.update();
-  };
-
-  const applyScenario = (s: ScenarioPreset) => {
-    updateParam("groundSpeedMph", s.speedMph);
-    if (!isAudioMuted) {
-      soundEngine.playSwitchClick();
-    }
   };
 
   const toggleSound = () => {
@@ -413,79 +373,10 @@ export function McCormickReaper3D() {
           >
             {isAudioMuted ? <VolumeX className="w-4 h-4" /> : <Volume2 className="w-4 h-4" />}
           </button>
-          <button
-            type="button"
-            onClick={() => setShowUiOverlay(!showUiOverlay)}
-            className="p-1.5 rounded-lg text-xs text-parchment-400 hover:text-white hover:bg-parchment-800 transition-colors"
-          >
-            <Zap className="w-4 h-4 text-amber-400" />
-          </button>
         </div>
       </div>
 
       {/* Bottom Telemetry Bar & Controls */}
-      {showUiOverlay && (
-        <div className="absolute bottom-4 left-4 right-4 bg-parchment-950/90 backdrop-blur-md rounded-2xl border border-parchment-700/70 p-4 shadow-2xl z-10 flex flex-col gap-3">
-          <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5 pb-2 border-b border-parchment-800/80 text-xs font-mono">
-            <div className="bg-parchment-900/80 px-3 py-1.5 rounded-lg border border-parchment-700/50 flex flex-col">
-              <span className="text-[10px] text-parchment-400 uppercase">Ground Speed</span>
-              <span className="font-bold text-amber-400">{groundSpeedMph.toFixed(1)} MPH</span>
-            </div>
-            <div className="bg-parchment-900/80 px-3 py-1.5 rounded-lg border border-parchment-700/50 flex flex-col">
-              <span className="text-[10px] text-parchment-400 uppercase">Sickle Frequency</span>
-              <span className="font-bold text-blue-400">{sickleCps.toFixed(1)} Hz (Cycles/s)</span>
-            </div>
-            <div className="bg-parchment-900/80 px-3 py-1.5 rounded-lg border border-parchment-700/50 flex flex-col">
-              <span className="text-[10px] text-parchment-400 uppercase">Grain Reel Speed</span>
-              <span className="font-bold text-emerald-400">{reelRpm.toFixed(0)} RPM</span>
-            </div>
-            <div className="bg-parchment-900/80 px-3 py-1.5 rounded-lg border border-parchment-700/50 flex flex-col">
-              <span className="text-[10px] text-parchment-400 uppercase">Daily Reaping Rate</span>
-              <span className="font-bold text-amber-300">
-                {acresPerDay} Acres/Day ({laborRatio}× scythe)
-              </span>
-            </div>
-          </div>
-
-          <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
-            <div className="flex items-center gap-2 w-full sm:w-auto">
-              <span className="text-xs font-mono text-parchment-400 flex items-center gap-1 shrink-0">
-                <Sparkles className="w-3.5 h-3.5 text-amber-500" /> Presets:
-              </span>
-              <div className="flex gap-1.5 overflow-x-auto pb-1">
-                {SCENARIOS.map((sc) => (
-                  <button
-                    key={sc.id}
-                    type="button"
-                    onClick={() => applyScenario(sc)}
-                    className="px-2.5 py-1 text-xs font-sans rounded-lg bg-parchment-800/80 hover:bg-parchment-700 text-parchment-200 hover:text-white border border-parchment-600/50 transition-colors whitespace-nowrap"
-                  >
-                    {sc.name}
-                  </button>
-                ))}
-              </div>
-            </div>
-
-            <div className="flex items-center gap-3 w-full sm:w-72 shrink-0">
-              <span className="text-xs font-sans text-parchment-300 shrink-0 font-medium">
-                Ground Speed:
-              </span>
-              <input
-                type="range"
-                min="1.0"
-                max="5.0"
-                step="0.1"
-                value={groundSpeedMph}
-                onChange={(e) => updateParam("groundSpeedMph", Number(e.target.value))}
-                className="w-full accent-amber-500 cursor-pointer"
-              />
-              <span className="text-xs font-mono text-amber-400 w-16 text-right font-bold">
-                {groundSpeedMph.toFixed(1)} MPH
-              </span>
-            </div>
-          </div>
-        </div>
-      )}
     </div>
   );
 }

@@ -28,18 +28,18 @@ for (const file of files) {
   );
 
   // Remove applyScenario
-  content = content.replace(/  const _?applyScenario = \([\s\S]*?\}\n    \}\n  \};\n\n/, "");
-  content = content.replace(/  const _?applyScenario = \([\s\S]*?\}\n  \};\n\n/, "");
+  content = content.replace(/ {2}const _?applyScenario = \([\s\S]*?\}\n {4}\}\n {2}\};\n\n/, "");
+  content = content.replace(/ {2}const _?applyScenario = \([\s\S]*?\}\n {2}\};\n\n/, "");
 
   // Remove showUiOverlay state
   content = content.replace(
-    /  const \[(?:_)?showUiOverlay, (?:_)?setShowUiOverlay\] = useState<boolean>\(true\);\n/,
+    / {2}const \[(?:_)?showUiOverlay, (?:_)?setShowUiOverlay\] = useState<boolean>\(true\);\n/,
     "",
   );
 
   // Remove Zap button (various formatting, but it has Zap)
   content = content.replace(
-    /          <button\s+type="button"\s+onClick=\{[^}]*setShowUiOverlay[^}]*\}[^>]*>\s*<Zap [^>]*\/>\s*<\/button>\s*/,
+    / {10}<button\s+type="button"\s+onClick=\{[^}]*setShowUiOverlay[^}]*\}[^>]*>\s*<Zap [^>]*\/>\s*<\/button>\s*/,
     "",
   );
 
@@ -49,7 +49,7 @@ for (const file of files) {
   // Remove Bottom Telemetry Bar & Controls
   // We'll match from "{/* Bottom Telemetry Bar & Controls */}" to the end just before "    </div>\n  );\n}"
   content = content.replace(
-    /\s*\{\/\* Bottom Telemetry Bar & Controls \*\/\}[\s\S]*?(?=\s*<\/div>\s*\)\;\s*\})/m,
+    /\s*\{\/\* Bottom Telemetry Bar & Controls \*\/\}[\s\S]*?(?=\s*<\/div>\s*\);\s*\})/m,
     "",
   );
 

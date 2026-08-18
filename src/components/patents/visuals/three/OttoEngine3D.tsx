@@ -3,6 +3,7 @@
 import { Activity, Camera, Sparkles, Volume2, VolumeX, Zap } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import * as THREE from "three";
+import { stepOttoEngine } from "@/physics/catalogKernels";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { soundEngine } from "@/utils/soundEngine";
 import {
@@ -15,34 +16,6 @@ import { usePatentAudio } from "./usePatentAudio";
 
 type CameraPreset = "iso" | "slide_valve" | "cylinder_piston" | "flywheels" | "top";
 
-interface ScenarioPreset {
-  id: string;
-  name: string;
-  desc: string;
-  engineRpm: number;
-}
-
-const SCENARIOS: ScenarioPreset[] = [
-  {
-    id: "otto_1877_silent",
-    name: "1877 Otto 'Silent' 4-Stroke Engine",
-    desc: "Nicolaus Otto's breakthrough four-stroke cycle compressing gas-air charge prior to ignition, doubling thermal efficiency to 17% (US 194,047).",
-    engineRpm: 180,
-  },
-  {
-    id: "high_speed_generator",
-    name: "Factory Belt Drive (240 RPM)",
-    desc: "Governed continuous load producing 8.5 Brake Horsepower with 2:1 reduction side-shaft timing.",
-    engineRpm: 240,
-  },
-  {
-    id: "slow_cycle_breakdown",
-    name: "Slow 60 RPM 4-Stroke Cycle Breakdown",
-    desc: "Slow motion showing the 4 distinct strokes: Intake, Compression, Flame Expansion, and Exhaust scavenge.",
-    engineRpm: 60,
-  },
-];
-
 export function OttoEngine3D() {
   const containerRef = useRef<HTMLDivElement>(null);
 
@@ -50,8 +23,12 @@ export function OttoEngine3D() {
   const { params, updateParam } = usePatentPhysics("us-194047-otto-engine");
   const [showUiOverlay, setShowUiOverlay] = useState<boolean>(true);
   const engineRpm = params.engineRpm ?? 180;
-  const powerBhp = (engineRpm * 0.038).toFixed(1);
-  const thermalEfficiencyPct = 17.2;
+  const otto = stepOttoEngine({
+    engineRpm,
+    compressionRatio: params.compressionRatio ?? 4.5,
+  });
+  const powerBhp = otto.brakeHorsepower.toFixed(1);
+  const thermalEfficiencyPct = otto.thermalEfficiencyPct;
   const [activeCamera, setActiveCamera] = useState<CameraPreset>("iso");
   const { isAudioMuted, toggleSound: toggleEngine } = usePatentAudio();
 
@@ -92,13 +69,6 @@ export function OttoEngine3D() {
         break;
     }
     controls.update();
-  };
-
-  const applyScenario = (s: ScenarioPreset) => {
-    updateParam("engineRpm", s.engineRpm);
-    if (!isAudioMuted) {
-      soundEngine.playSwitchClick();
-    }
   };
 
   const toggleSound = () => {
@@ -330,68 +300,6 @@ export function OttoEngine3D() {
           </button>
         </div>
       </div>
-
-      {/* Bottom Telemetry Bar & Controls */}
-      {showUiOverlay && (
-        <div className="absolute bottom-4 left-4 right-4 bg-parchment-950/90 backdrop-blur-md rounded-2xl border border-parchment-700/70 p-4 shadow-2xl z-10 flex flex-col gap-3">
-          <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5 pb-2 border-b border-parchment-800/80 text-xs font-mono">
-            <div className="bg-parchment-900/80 px-3 py-1.5 rounded-lg border border-parchment-700/50 flex flex-col">
-              <span className="text-[10px] text-parchment-400 uppercase">Engine Speed</span>
-              <span className="font-bold text-amber-400">{engineRpm} RPM</span>
-            </div>
-            <div className="bg-parchment-900/80 px-3 py-1.5 rounded-lg border border-parchment-700/50 flex flex-col">
-              <span className="text-[10px] text-parchment-400 uppercase">Brake Horsepower</span>
-              <span className="font-bold text-blue-400">{powerBhp} BHP</span>
-            </div>
-            <div className="bg-parchment-900/80 px-3 py-1.5 rounded-lg border border-parchment-700/50 flex flex-col">
-              <span className="text-[10px] text-parchment-400 uppercase">Thermal Efficiency</span>
-              <span className="font-bold text-emerald-400">{thermalEfficiencyPct}% (2× steam)</span>
-            </div>
-            <div className="bg-parchment-900/80 px-3 py-1.5 rounded-lg border border-parchment-700/50 flex flex-col">
-              <span className="text-[10px] text-parchment-400 uppercase">Operating Principle</span>
-              <span className="font-bold text-amber-300">Otto 4-Stroke Compression</span>
-            </div>
-          </div>
-
-          <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
-            <div className="flex items-center gap-2 w-full sm:w-auto">
-              <span className="text-xs font-mono text-parchment-400 flex items-center gap-1 shrink-0">
-                <Sparkles className="w-3.5 h-3.5 text-amber-500" /> Presets:
-              </span>
-              <div className="flex gap-1.5 overflow-x-auto pb-1">
-                {SCENARIOS.map((sc) => (
-                  <button
-                    key={sc.id}
-                    type="button"
-                    onClick={() => applyScenario(sc)}
-                    className="px-2.5 py-1 text-xs font-sans rounded-lg bg-parchment-800/80 hover:bg-parchment-700 text-parchment-200 hover:text-white border border-parchment-600/50 transition-colors whitespace-nowrap"
-                  >
-                    {sc.name}
-                  </button>
-                ))}
-              </div>
-            </div>
-
-            <div className="flex items-center gap-3 w-full sm:w-72 shrink-0">
-              <span className="text-xs font-sans text-parchment-300 shrink-0 font-medium">
-                Engine RPM:
-              </span>
-              <input
-                type="range"
-                min="50"
-                max="300"
-                step="10"
-                value={engineRpm}
-                onChange={(e) => updateParam("engineRpm", Number(e.target.value))}
-                className="w-full accent-amber-500 cursor-pointer"
-              />
-              <span className="text-xs font-mono text-amber-400 w-12 text-right font-bold">
-                {engineRpm}
-              </span>
-            </div>
-          </div>
-        </div>
-      )}
     </div>
   );
 }

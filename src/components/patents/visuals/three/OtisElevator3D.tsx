@@ -21,38 +21,6 @@ import { usePatentAudio } from "./usePatentAudio";
 
 type CameraPreset = "iso" | "safety_pawls" | "leaf_spring" | "cab" | "top";
 
-interface ScenarioPreset {
-  id: string;
-  name: string;
-  desc: string;
-  cabWeightLbs: number;
-  ropeCut: boolean;
-}
-
-const SCENARIOS: ScenarioPreset[] = [
-  {
-    id: "crystal_palace_1854",
-    name: "1854 Crystal Palace Demonstration",
-    desc: "Elisha Otis orders the hoisting rope slashed with a saber mid-air; the leaf spring instantly expands and locks the cab within 2 inches (US 31,128).",
-    cabWeightLbs: 2500,
-    ropeCut: true,
-  },
-  {
-    id: "normal_hoisting",
-    name: "Normal Passenger Hoisting",
-    desc: "Hoisting cable under full 2.4 kN tension holding leaf spring flexed and safety pawls retracted 15mm clear of the ratchet racks.",
-    cabWeightLbs: 2000,
-    ropeCut: false,
-  },
-  {
-    id: "overloaded_freight",
-    name: "Heavy Industrial Freight Load",
-    desc: "4,500 lb load testing structural guide shoe alignment and rack tooth shear margins.",
-    cabWeightLbs: 4500,
-    ropeCut: false,
-  },
-];
-
 export function OtisElevator3D() {
   const containerRef = useRef<HTMLDivElement>(null);
 
@@ -65,7 +33,7 @@ export function OtisElevator3D() {
   const isRopeSevered = otis.isSnapped;
   const cabWeightLbs = Math.round(cabPayloadKg * 2.20462);
   const [activeCamera, setActiveCamera] = useState<CameraPreset>("iso");
-  const { isAudioMuted, toggleSound: toggleEngine } = usePatentAudio();
+  const { isAudioMuted, toggleSound } = usePatentAudio();
 
   const pawlEngagementMs = otis.pawlEngagementMs;
   const stoppingDistanceInches = Number((otis.stoppingDistanceCm / 2.54).toFixed(1));
@@ -123,20 +91,6 @@ export function OtisElevator3D() {
     if (!isAudioMuted) {
       soundEngine.playSwitchClick();
     }
-  };
-
-  const applyScenario = (s: ScenarioPreset) => {
-    updateParam("cabPayload", Math.round(s.cabWeightLbs / 2.20462));
-    updateParam("cableTension", s.ropeCut ? 0 : 100);
-    if (!isAudioMuted) {
-      soundEngine.playSwitchClick();
-    }
-  };
-
-  const toggleSound = () => {
-    toggleEngine(() => {
-      soundEngine.playSwitchClick();
-    });
   };
 
   useEffect(() => {
@@ -400,54 +354,6 @@ export function OtisElevator3D() {
           </button>
         </div>
       </div>
-
-      {/* Bottom Telemetry Bar & Controls */}
-      {showUiOverlay && (
-        <div className="absolute bottom-4 left-4 right-4 bg-parchment-950/90 backdrop-blur-md rounded-2xl border border-parchment-700/70 p-4 shadow-2xl z-10 flex flex-col gap-3">
-          <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5 pb-2 border-b border-parchment-800/80 text-xs font-mono">
-            <div className="bg-parchment-900/80 px-3 py-1.5 rounded-lg border border-parchment-700/50 flex flex-col">
-              <span className="text-[10px] text-parchment-400 uppercase">Hoisting State</span>
-              <span className={`font-bold ${isRopeSevered ? "text-red-400" : "text-emerald-400"}`}>
-                {isRopeSevered ? "CABLE SEVERED (LOCKED)" : "NORMAL HOISTING"}
-              </span>
-            </div>
-            <div className="bg-parchment-900/80 px-3 py-1.5 rounded-lg border border-parchment-700/50 flex flex-col">
-              <span className="text-[10px] text-parchment-400 uppercase">Pawl Engagement Time</span>
-              <span className="font-bold text-amber-400">{pawlEngagementMs} ms</span>
-            </div>
-            <div className="bg-parchment-900/80 px-3 py-1.5 rounded-lg border border-parchment-700/50 flex flex-col">
-              <span className="text-[10px] text-parchment-400 uppercase">Arrest Drop Distance</span>
-              <span className="font-bold text-blue-400">
-                {stoppingDistanceInches} Inches (Zero Freefall)
-              </span>
-            </div>
-            <div className="bg-parchment-900/80 px-3 py-1.5 rounded-lg border border-parchment-700/50 flex flex-col">
-              <span className="text-[10px] text-parchment-400 uppercase">Cab Payload</span>
-              <span className="font-bold text-amber-300">{cabWeightLbs} lbs</span>
-            </div>
-          </div>
-
-          <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
-            <div className="flex items-center gap-2 w-full sm:w-auto">
-              <span className="text-xs font-mono text-parchment-400 flex items-center gap-1 shrink-0">
-                <Sparkles className="w-3.5 h-3.5 text-amber-500" /> Presets:
-              </span>
-              <div className="flex gap-1.5 overflow-x-auto pb-1">
-                {SCENARIOS.map((sc) => (
-                  <button
-                    key={sc.id}
-                    type="button"
-                    onClick={() => applyScenario(sc)}
-                    className="px-2.5 py-1 text-xs font-sans rounded-lg bg-parchment-800/80 hover:bg-parchment-700 text-parchment-200 hover:text-white border border-parchment-600/50 transition-colors whitespace-nowrap"
-                  >
-                    {sc.name}
-                  </button>
-                ))}
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
     </div>
   );
 }

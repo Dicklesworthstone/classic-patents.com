@@ -26,50 +26,6 @@ import { usePatentAudio } from "./usePatentAudio";
 
 type CameraPreset = "iso" | "apex" | "band" | "spring" | "base";
 
-interface ScenarioPreset {
-  id: string;
-  name: string;
-  desc: string;
-  gap: number;
-  emitterMa: number;
-  collectorV: number;
-}
-
-const SCENARIOS: ScenarioPreset[] = [
-  {
-    id: "bell_1947",
-    name: "Dec 16, 1947 Historic First Gain",
-    desc: "Brattain & Bardeen's historic Bell Labs discovery with 50µm razor-cut gap in gold foil on Germanium.",
-    gap: 50,
-    emitterMa: 2.5,
-    collectorV: -40,
-  },
-  {
-    id: "high_gain",
-    name: "Sub-Diffusion High Gain",
-    desc: "20µm microscopic gap well within hole diffusion length $L_p$, achieving >22 dB power amplification.",
-    gap: 20,
-    emitterMa: 3.5,
-    collectorV: -60,
-  },
-  {
-    id: "diffusion_cutoff",
-    name: "Hole Diffusion Cutoff",
-    desc: "140µm wide gap exceeding hole recombination distance, causing current gain to collapse below unity.",
-    gap: 140,
-    emitterMa: 2.0,
-    collectorV: -30,
-  },
-  {
-    id: "max_power",
-    name: "Maximum Power Saturation",
-    desc: "High emitter injection driving heavy hole density into germanium inversion layer.",
-    gap: 35,
-    emitterMa: 7.0,
-    collectorV: -75,
-  },
-];
-
 export function BardeenTransistor3D() {
   const containerRef = useRef<HTMLDivElement>(null);
 
@@ -151,15 +107,6 @@ export function BardeenTransistor3D() {
         break;
     }
     controls.update();
-  };
-
-  const applyScenario = (s: ScenarioPreset) => {
-    updateParam("pointSpacing", s.gap);
-    updateParam("emitterCurrent", s.emitterMa);
-    updateParam("collectorBias", s.collectorV);
-    if (!isAudioMuted) {
-      soundEngine.playPianoKeyHop(Math.round(s.gap * 4));
-    }
   };
 
   const toggleSound = () => {
@@ -496,106 +443,6 @@ export function BardeenTransistor3D() {
             ))}
           </div>
         )}
-      </div>
-
-      <div className="p-4 sm:p-5 bg-parchment-100/90 dark:bg-ink-900/90 border-t border-parchment-300 dark:border-ink-800 space-y-4">
-        <div className="space-y-1.5">
-          <div className="text-xs font-sans font-bold text-ink-700 dark:text-ink-300 uppercase tracking-wider flex items-center gap-1.5">
-            <Sparkles className="w-3.5 h-3.5 text-amber-600" /> Operating Scenarios:
-          </div>
-          <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
-            {SCENARIOS.map((s) => (
-              <button
-                key={s.id}
-                type="button"
-                onClick={() => applyScenario(s)}
-                className="p-2.5 rounded-xl border border-parchment-300 dark:border-ink-700 bg-white/70 dark:bg-ink-950/70 hover:bg-parchment-50 dark:hover:bg-ink-800 text-left transition-colors"
-              >
-                <div className="text-xs font-bold text-ink-900 dark:text-parchment-100">
-                  {s.name}
-                </div>
-                <div className="text-[10px] text-ink-500 line-clamp-2">
-                  <HudText text={s.desc} />
-                </div>
-              </button>
-            ))}
-          </div>
-        </div>
-
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 pt-1">
-          <div className="space-y-1.5">
-            <div className="flex justify-between text-xs font-sans font-semibold text-ink-800 dark:text-parchment-200">
-              <span>Emitter Current:</span>
-              <span className="text-amber-700 font-bold">{emitterCurrentMa.toFixed(1)} mA</span>
-            </div>
-            <input
-              type="range"
-              aria-label="Emitter Current"
-              min="0.5"
-              max="8.0"
-              step="0.5"
-              value={emitterCurrentMa}
-              onChange={(e) => updateParam("emitterCurrent", Number(e.target.value))}
-              className="w-full accent-amber-600 cursor-pointer"
-            />
-          </div>
-          <div className="space-y-1.5">
-            <div className="flex justify-between text-xs font-sans font-semibold text-ink-800 dark:text-parchment-200">
-              <span>Collector Bias:</span>
-              <span className="text-blue-600 font-bold">{collectorVoltageV} V</span>
-            </div>
-            <input
-              type="range"
-              aria-label="Collector Bias"
-              min="-80"
-              max="-10"
-              step="5"
-              value={collectorVoltageV}
-              onChange={(e) => updateParam("collectorBias", Number(e.target.value))}
-              className="w-full accent-blue-600 cursor-pointer"
-            />
-          </div>
-          <div className="space-y-1.5">
-            <div className="flex justify-between text-xs font-sans font-semibold text-ink-800 dark:text-parchment-200">
-              <span>Whisker Gap:</span>
-              <span className="text-emerald-600 font-bold">{pointContactGapMicrons} µm</span>
-            </div>
-            <input
-              type="range"
-              aria-label="Whisker Gap"
-              min="15"
-              max="150"
-              step="5"
-              value={pointContactGapMicrons}
-              onChange={(e) => updateParam("pointSpacing", Number(e.target.value))}
-              className="w-full accent-emerald-600 cursor-pointer"
-            />
-          </div>
-        </div>
-
-        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 pt-1 border-t border-parchment-200 dark:border-ink-800 text-xs font-sans">
-          <label className="flex items-center gap-2 cursor-pointer select-none">
-            <input
-              type="checkbox"
-              checked={showHoleDrift}
-              onChange={(e) => setShowHoleDrift(e.target.checked)}
-              className="rounded accent-amber-600"
-            />
-            <span>Render Minority Carrier Hole Drift</span>
-          </label>
-          <div className="flex items-center gap-2 w-full sm:w-auto">
-            <span className="text-ink-600 dark:text-ink-400">Power Amplification:</span>
-            <div className="w-28 sm:w-36 bg-parchment-300 dark:bg-ink-800 rounded-full h-2.5 overflow-hidden">
-              <div
-                className="bg-gradient-to-r from-amber-500 to-emerald-500 h-full transition-colors"
-                style={{ width: `${Math.min(100, (powerGainDb / 25) * 100)}%` }}
-              />
-            </div>
-            <span className="font-bold text-ink-800 dark:text-parchment-200">
-              +{powerGainDb} dB
-            </span>
-          </div>
-        </div>
       </div>
     </div>
   );

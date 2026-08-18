@@ -1,8 +1,9 @@
 "use client";
 
-import { Activity, Camera, Flame, Sparkles, Volume2, VolumeX, Zap } from "lucide-react";
+import { Activity, Camera, Eye, EyeOff, Flame, Sparkles, Volume2, VolumeX } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import * as THREE from "three";
+import { stepNobelDynamite } from "@/physics/catalogKernels";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { soundEngine } from "@/utils/soundEngine";
 import {
@@ -15,43 +16,19 @@ import { usePatentAudio } from "./usePatentAudio";
 
 type CameraPreset = "iso" | "blasting_cap" | "matrix_cutaway" | "fuse" | "top";
 
-interface ScenarioPreset {
-  id: string;
-  name: string;
-  desc: string;
-  ngRatioPct: number;
-}
-
-const SCENARIOS: ScenarioPreset[] = [
-  {
-    id: "nobel_1867_standard",
-    name: "1867 Nobel No. 1 Dynamite (75% NG)",
-    desc: "Alfred Nobel's benchmark composition: 75% liquid nitroglycerin absorbed in 25% inert porous kieselguhr diatomaceous earth (US 78,317).",
-    ngRatioPct: 75,
-  },
-  {
-    id: "gelignite_high_density",
-    name: "Gelignite Blasting Gelatin (90% NG)",
-    desc: "High-density waterproof formulation utilizing nitrocellulose gelling to achieve 7,800 m/s explosive detonation velocity for granite tunneling.",
-    ngRatioPct: 90,
-  },
-  {
-    id: "safe_transport_mix",
-    name: "Safety Low-Sensitivity Mix (60% NG)",
-    desc: "Reduced nitroglycerin ratio eliminating free oil exudation during railway transport and temperature swings.",
-    ngRatioPct: 60,
-  },
-];
-
 export function NobelDynamite3D() {
   const containerRef = useRef<HTMLDivElement>(null);
+  const [showUiOverlay, setShowUiOverlay] = useState<boolean>(true);
 
   // Chemical Explosives Parameters
   const { params, updateParam } = usePatentPhysics("us-78317-nobel-dynamite");
-  const [showUiOverlay, setShowUiOverlay] = useState<boolean>(true);
-  const ngPercentage = params.ngConcentration ?? 75;
-  const detonationVelocityMps = Math.round(5200 + (ngPercentage - 50) * 80);
-  const blastOverpressureMpa = Math.round(4500 + (ngPercentage - 50) * 120);
+  const ngPercentage = params.ngConcentrationPct ?? params.ngConcentration ?? 75;
+  const nobel = stepNobelDynamite({
+    ngConcentrationPct: ngPercentage,
+    capEnergyJoules: params.capEnergyJoules ?? 1.2,
+  });
+  const detonationVelocityMps = nobel.detonationVelocityMps;
+  const blastOverpressureMpa = nobel.isInitiated ? Math.round(4500 + (ngPercentage - 50) * 120) : 0;
   const [isFuseLit, setIsFuseLit] = useState<boolean>(false);
   const [activeCamera, setActiveCamera] = useState<CameraPreset>("iso");
   const { isAudioMuted, toggleSound: toggleEngine } = usePatentAudio();
@@ -61,6 +38,8 @@ export function NobelDynamite3D() {
     detonationVelocityMps,
     isFuseLit,
     isAudioMuted,
+    blastOverpressureMpa,
+    isInitiated: nobel.isInitiated ? 1 : 0,
   });
 
   const controlsRef = useRef<StudioContext["controls"] | null>(null);
@@ -99,13 +78,6 @@ export function NobelDynamite3D() {
 
   const igniteFuse = () => {
     setIsFuseLit(true);
-    if (!isAudioMuted) {
-      soundEngine.playSwitchClick();
-    }
-  };
-
-  const applyScenario = (s: ScenarioPreset) => {
-    updateParam("ngConcentration", s.ngRatioPct);
     if (!isAudioMuted) {
       soundEngine.playSwitchClick();
     }
@@ -337,76 +309,19 @@ export function NobelDynamite3D() {
           <button
             type="button"
             onClick={() => setShowUiOverlay(!showUiOverlay)}
+            title={showUiOverlay ? "Hide Overlay UI" : "Show Overlay UI"}
             className="p-1.5 rounded-lg text-xs text-parchment-400 hover:text-white hover:bg-parchment-800 transition-colors"
           >
-            <Zap className="w-4 h-4 text-amber-400" />
+            {showUiOverlay ? (
+              <EyeOff className="w-4 h-4" />
+            ) : (
+              <Eye className="w-4 h-4 text-amber-400" />
+            )}
           </button>
         </div>
       </div>
 
       {/* Bottom Telemetry Bar & Controls */}
-      {showUiOverlay && (
-        <div className="absolute bottom-4 left-4 right-4 bg-parchment-950/90 backdrop-blur-md rounded-2xl border border-parchment-700/70 p-4 shadow-2xl z-10 flex flex-col gap-3">
-          <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5 pb-2 border-b border-parchment-800/80 text-xs font-mono">
-            <div className="bg-parchment-900/80 px-3 py-1.5 rounded-lg border border-parchment-700/50 flex flex-col">
-              <span className="text-[10px] text-parchment-400 uppercase">
-                Nitroglycerin Fraction
-              </span>
-              <span className="font-bold text-amber-400">{ngPercentage}% NG</span>
-            </div>
-            <div className="bg-parchment-900/80 px-3 py-1.5 rounded-lg border border-parchment-700/50 flex flex-col">
-              <span className="text-[10px] text-parchment-400 uppercase">Detonation Velocity</span>
-              <span className="font-bold text-red-400">{detonationVelocityMps} m/s (Mach 21)</span>
-            </div>
-            <div className="bg-parchment-900/80 px-3 py-1.5 rounded-lg border border-parchment-700/50 flex flex-col">
-              <span className="text-[10px] text-parchment-400 uppercase">Blast Overpressure</span>
-              <span className="font-bold text-blue-400">{blastOverpressureMpa} MPa</span>
-            </div>
-            <div className="bg-parchment-900/80 px-3 py-1.5 rounded-lg border border-parchment-700/50 flex flex-col">
-              <span className="text-[10px] text-parchment-400 uppercase">Stabilizing Matrix</span>
-              <span className="font-bold text-amber-300">Porous Diatomaceous Kieselguhr</span>
-            </div>
-          </div>
-
-          <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
-            <div className="flex items-center gap-2 w-full sm:w-auto">
-              <span className="text-xs font-mono text-parchment-400 flex items-center gap-1 shrink-0">
-                <Sparkles className="w-3.5 h-3.5 text-amber-500" /> Presets:
-              </span>
-              <div className="flex gap-1.5 overflow-x-auto pb-1">
-                {SCENARIOS.map((sc) => (
-                  <button
-                    key={sc.id}
-                    type="button"
-                    onClick={() => applyScenario(sc)}
-                    className="px-2.5 py-1 text-xs font-sans rounded-lg bg-parchment-800/80 hover:bg-parchment-700 text-parchment-200 hover:text-white border border-parchment-600/50 transition-colors whitespace-nowrap"
-                  >
-                    {sc.name}
-                  </button>
-                ))}
-              </div>
-            </div>
-
-            <div className="flex items-center gap-3 w-full sm:w-72 shrink-0">
-              <span className="text-xs font-sans text-parchment-300 shrink-0 font-medium">
-                NG Ratio:
-              </span>
-              <input
-                type="range"
-                min="50"
-                max="90"
-                step="5"
-                value={ngPercentage}
-                onChange={(e) => updateParam("ngConcentration", Number(e.target.value))}
-                className="w-full accent-amber-500 cursor-pointer"
-              />
-              <span className="text-xs font-mono text-amber-400 w-12 text-right font-bold">
-                {ngPercentage}%
-              </span>
-            </div>
-          </div>
-        </div>
-      )}
     </div>
   );
 }

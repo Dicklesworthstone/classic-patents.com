@@ -1,6 +1,6 @@
 "use client";
 
-import { Activity, Camera, Sparkles, Volume2, VolumeX, Waves, Zap } from "lucide-react";
+import { Activity, Camera, Eye, EyeOff, Sparkles, Volume2, VolumeX, Waves } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import * as THREE from "three";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
@@ -15,44 +15,12 @@ import { usePatentAudio } from "./usePatentAudio";
 
 type CameraPreset = "iso" | "spray_chamber" | "baffle_plates" | "blower_fan" | "top";
 
-interface ScenarioPreset {
-  id: string;
-  name: string;
-  desc: string;
-  airflowCfm: number;
-  sprayTempC: number;
-}
-
-const SCENARIOS: ScenarioPreset[] = [
-  {
-    id: "sackett_wilhelms_1906",
-    name: "1906 Sackett-Wilhelms Lithography Plant",
-    desc: "Willis Carrier's Apparatus for Treating Air fixing 55% constant relative humidity to eliminate paper expansion in multicolor printing (US 808,897).",
-    airflowCfm: 15000,
-    sprayTempC: 12.5,
-  },
-  {
-    id: "summer_comfort_cooling",
-    name: "Summer Comfort Dehumidification",
-    desc: "Sub-cooling humid 35°C outdoor air below dew point to wring out moisture before reheat.",
-    airflowCfm: 20000,
-    sprayTempC: 8.0,
-  },
-  {
-    id: "winter_adiabatic_humidification",
-    name: "Winter Humidifying Mode",
-    desc: "Adiabatic water spray adding controlled water vapor to dry heated winter supply air.",
-    airflowCfm: 12000,
-    sprayTempC: 18.0,
-  },
-];
-
 export function CarrierAirConditioner3D() {
   const containerRef = useRef<HTMLDivElement>(null);
+  const [showUiOverlay, setShowUiOverlay] = useState<boolean>(true);
 
   // Psychrometric Air Treatment Parameters
   const { params, updateParam } = usePatentPhysics("us-808897-carrier-air-conditioner");
-  const [showUiOverlay, setShowUiOverlay] = useState<boolean>(true);
   const airflowCfm = params.airflowCfm ?? 15000;
   const sprayWaterTempC = params.sprayTempC ?? 12.5;
   const supplyDryBulbTempC = 22.0;
@@ -100,13 +68,6 @@ export function CarrierAirConditioner3D() {
         break;
     }
     controls.update();
-  };
-
-  const applyScenario = (s: ScenarioPreset) => {
-    updateParam("airflowCfm", s.airflowCfm);
-    if (!isAudioMuted) {
-      soundEngine.playSwitchClick();
-    }
   };
 
   const toggleSound = () => {
@@ -340,78 +301,19 @@ export function CarrierAirConditioner3D() {
           <button
             type="button"
             onClick={() => setShowUiOverlay(!showUiOverlay)}
+            title={showUiOverlay ? "Hide Overlay UI" : "Show Overlay UI"}
             className="p-1.5 rounded-lg text-xs text-parchment-400 hover:text-white hover:bg-parchment-800 transition-colors"
           >
-            <Zap className="w-4 h-4 text-amber-400" />
+            {showUiOverlay ? (
+              <EyeOff className="w-4 h-4" />
+            ) : (
+              <Eye className="w-4 h-4 text-amber-400" />
+            )}
           </button>
         </div>
       </div>
 
       {/* Bottom Telemetry Bar & Controls */}
-      {showUiOverlay && (
-        <div className="absolute bottom-4 left-4 right-4 bg-parchment-950/90 backdrop-blur-md rounded-2xl border border-parchment-700/70 p-4 shadow-2xl z-10 flex flex-col gap-3">
-          <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5 pb-2 border-b border-parchment-800/80 text-xs font-mono">
-            <div className="bg-parchment-900/80 px-3 py-1.5 rounded-lg border border-parchment-700/50 flex flex-col">
-              <span className="text-[10px] text-parchment-400 uppercase">Airflow Rate</span>
-              <span className="font-bold text-amber-400">{airflowCfm.toLocaleString()} CFM</span>
-            </div>
-            <div className="bg-parchment-900/80 px-3 py-1.5 rounded-lg border border-parchment-700/50 flex flex-col">
-              <span className="text-[10px] text-parchment-400 uppercase">
-                Dew Point Temperature
-              </span>
-              <span className="font-bold text-blue-400">{sprayWaterTempC}°C</span>
-            </div>
-            <div className="bg-parchment-900/80 px-3 py-1.5 rounded-lg border border-parchment-700/50 flex flex-col">
-              <span className="text-[10px] text-parchment-400 uppercase">Target Humidity</span>
-              <span className="font-bold text-emerald-400">
-                {targetRelativeHumidityPct}% Constant RH
-              </span>
-            </div>
-            <div className="bg-parchment-900/80 px-3 py-1.5 rounded-lg border border-parchment-700/50 flex flex-col">
-              <span className="text-[10px] text-parchment-400 uppercase">Supply Dry Bulb</span>
-              <span className="font-bold text-amber-300">{supplyDryBulbTempC}°C</span>
-            </div>
-          </div>
-
-          <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
-            <div className="flex items-center gap-2 w-full sm:w-auto">
-              <span className="text-xs font-mono text-parchment-400 flex items-center gap-1 shrink-0">
-                <Sparkles className="w-3.5 h-3.5 text-amber-500" /> Presets:
-              </span>
-              <div className="flex gap-1.5 overflow-x-auto pb-1">
-                {SCENARIOS.map((sc) => (
-                  <button
-                    key={sc.id}
-                    type="button"
-                    onClick={() => applyScenario(sc)}
-                    className="px-2.5 py-1 text-xs font-sans rounded-lg bg-parchment-800/80 hover:bg-parchment-700 text-parchment-200 hover:text-white border border-parchment-600/50 transition-colors whitespace-nowrap"
-                  >
-                    {sc.name}
-                  </button>
-                ))}
-              </div>
-            </div>
-
-            <div className="flex items-center gap-3 w-full sm:w-72 shrink-0">
-              <span className="text-xs font-sans text-parchment-300 shrink-0 font-medium">
-                Airflow CFM:
-              </span>
-              <input
-                type="range"
-                min="5000"
-                max="30000"
-                step="1000"
-                value={airflowCfm}
-                onChange={(e) => updateParam("airflowCfm", Number(e.target.value))}
-                className="w-full accent-amber-500 cursor-pointer"
-              />
-              <span className="text-xs font-mono text-amber-400 w-16 text-right font-bold">
-                {airflowCfm}
-              </span>
-            </div>
-          </div>
-        </div>
-      )}
     </div>
   );
 }

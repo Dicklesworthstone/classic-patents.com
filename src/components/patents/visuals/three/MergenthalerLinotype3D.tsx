@@ -1,6 +1,6 @@
 "use client";
 
-import { Activity, Camera, Sparkles, Volume2, VolumeX, Zap } from "lucide-react";
+import { Activity, Camera, Eye, EyeOff, Volume2, VolumeX } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import * as THREE from "three";
 import { LINOTYPE_CHARS_PER_LINE, stepMergenthalerLinotype } from "@/physics/machineKernels";
@@ -12,40 +12,12 @@ import { usePatentAudio } from "./usePatentAudio";
 
 type CameraPreset = "iso" | "matrix_magazine" | "casting_pot" | "spaceband_justifier" | "top";
 
-interface ScenarioPreset {
-  id: string;
-  name: string;
-  desc: string;
-  castingLpm: number;
-}
-
-const SCENARIOS: ScenarioPreset[] = [
-  {
-    id: "linotype_1886_ny_tribune",
-    name: "1886 New York Tribune Linotype",
-    desc: "Ottmar Mergenthaler's line-casting composing machine setting molten lead slugs 6× faster than hand composition (US 313,224).",
-    castingLpm: 6.0,
-  },
-  {
-    id: "newspaper_deadline_rush",
-    name: "Newspaper Deadline Rush (8 LPM)",
-    desc: "High-speed continuous line assembly with automated spaceband justification and matrix distribution.",
-    castingLpm: 8.0,
-  },
-  {
-    id: "slow_matrix_circulation",
-    name: "Matrix Circulation Cycle Breakdown",
-    desc: "Slow motion demonstrating gravity matrix descent, metal pot injection, and V-notch binary distributor sorting.",
-    castingLpm: 3.0,
-  },
-];
-
 export function MergenthalerLinotype3D() {
   const containerRef = useRef<HTMLDivElement>(null);
+  const [showUiOverlay, setShowUiOverlay] = useState<boolean>(true);
 
   // Linotype Mechanical Composing Parameters
   const { params, updateParam } = usePatentPhysics("us-313224-mergenthaler-linotype");
-  const [showUiOverlay, setShowUiOverlay] = useState<boolean>(true);
   const matrixRate = params.matrixRate ?? 60;
   const spacebandWedge = params.spacebandWedge ?? 6.5;
   const potTempC = params.potTemp ?? 260;
@@ -98,13 +70,6 @@ export function MergenthalerLinotype3D() {
         break;
     }
     controls.update();
-  };
-
-  const applyScenario = (s: ScenarioPreset) => {
-    updateParam("matrixRate", s.castingLpm * LINOTYPE_CHARS_PER_LINE);
-    if (!isAudioMuted) {
-      soundEngine.playSwitchClick();
-    }
   };
 
   const toggleSound = () => {
@@ -313,80 +278,17 @@ export function MergenthalerLinotype3D() {
           <button
             type="button"
             onClick={() => setShowUiOverlay(!showUiOverlay)}
+            title={showUiOverlay ? "Hide Overlay UI" : "Show Overlay UI"}
             className="p-1.5 rounded-lg text-xs text-parchment-400 hover:text-white hover:bg-parchment-800 transition-colors"
           >
-            <Zap className="w-4 h-4 text-amber-400" />
-          </button>
+            {showUiOverlay ? (
+              <EyeOff className="w-4 h-4" />
+            ) : (
+              <Eye className="w-4 h-4 text-amber-400" />
+            )}
+          </button>{" "}
         </div>
       </div>
-
-      {/* Bottom Telemetry Bar & Controls */}
-      {showUiOverlay && (
-        <div className="absolute bottom-4 left-4 right-4 bg-parchment-950/90 backdrop-blur-md rounded-2xl border border-parchment-700/70 p-4 shadow-2xl z-10 flex flex-col gap-3">
-          <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5 pb-2 border-b border-parchment-800/80 text-xs font-mono">
-            <div className="bg-parchment-900/80 px-3 py-1.5 rounded-lg border border-parchment-700/50 flex flex-col">
-              <span className="text-[10px] text-parchment-400 uppercase">Casting Rate</span>
-              <span className="font-bold text-amber-400">{castingLpm.toFixed(1)} Lines/Min</span>
-            </div>
-            <div className="bg-parchment-900/80 px-3 py-1.5 rounded-lg border border-parchment-700/50 flex flex-col">
-              <span className="text-[10px] text-parchment-400 uppercase">Typesetting Output</span>
-              <span className="font-bold text-blue-400">
-                {charsPerHour.toLocaleString()} Chars/Hour (6× Hand)
-              </span>
-            </div>
-            <div className="bg-parchment-900/80 px-3 py-1.5 rounded-lg border border-parchment-700/50 flex flex-col">
-              <span className="text-[10px] text-parchment-400 uppercase">Melting Pot Temp</span>
-              <span className="font-bold text-red-400">
-                {potTempC}°C {linotypeIdle.isEutecticTemp ? "(eutectic)" : "(off-eutectic)"}
-              </span>
-            </div>
-            <div className="bg-parchment-900/80 px-3 py-1.5 rounded-lg border border-parchment-700/50 flex flex-col">
-              <span className="text-[10px] text-parchment-400 uppercase">Justification Method</span>
-              <span className="font-bold text-amber-300">Wedge Spacebands</span>
-            </div>
-          </div>
-
-          <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
-            <div className="flex items-center gap-2 w-full sm:w-auto">
-              <span className="text-xs font-mono text-parchment-400 flex items-center gap-1 shrink-0">
-                <Sparkles className="w-3.5 h-3.5 text-amber-500" /> Presets:
-              </span>
-              <div className="flex gap-1.5 overflow-x-auto pb-1">
-                {SCENARIOS.map((sc) => (
-                  <button
-                    key={sc.id}
-                    type="button"
-                    onClick={() => applyScenario(sc)}
-                    className="px-2.5 py-1 text-xs font-sans rounded-lg bg-parchment-800/80 hover:bg-parchment-700 text-parchment-200 hover:text-white border border-parchment-600/50 transition-colors whitespace-nowrap"
-                  >
-                    {sc.name}
-                  </button>
-                ))}
-              </div>
-            </div>
-
-            <div className="flex items-center gap-3 w-full sm:w-72 shrink-0">
-              <span className="text-xs font-sans text-parchment-300 shrink-0 font-medium">
-                Casting Speed (LPM):
-              </span>
-              <input
-                type="range"
-                min="2"
-                max="10"
-                step="0.5"
-                value={castingLpm}
-                onChange={(e) =>
-                  updateParam("matrixRate", Number(e.target.value) * LINOTYPE_CHARS_PER_LINE)
-                }
-                className="w-full accent-amber-500 cursor-pointer"
-              />
-              <span className="text-xs font-mono text-amber-400 w-12 text-right font-bold">
-                {castingLpm.toFixed(1)}
-              </span>
-            </div>
-          </div>
-        </div>
-      )}
     </div>
   );
 }

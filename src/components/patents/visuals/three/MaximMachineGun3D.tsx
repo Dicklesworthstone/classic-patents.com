@@ -3,6 +3,7 @@
 import { Activity, Camera, Flame, Sparkles, Volume2, VolumeX, Zap } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import * as THREE from "three";
+import { FrankenSimEngine } from "@/physics/engine";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { soundEngine } from "@/utils/soundEngine";
 import {
@@ -15,43 +16,19 @@ import { usePatentAudio } from "./usePatentAudio";
 
 type CameraPreset = "iso" | "toggle_lock" | "water_jacket" | "belt_feed" | "top";
 
-interface ScenarioPreset {
-  id: string;
-  name: string;
-  desc: string;
-  fireRateRpm: number;
-}
-
-const SCENARIOS: ScenarioPreset[] = [
-  {
-    id: "maxim_1884_recoil",
-    name: "1884 Maxim Automatic Recoil Gun",
-    desc: "Hiram Maxim's historic breakthrough harnessing barrel recoil force to unlock the toggle, extract, eject, and chamber 600 rounds/min automatically (US 319,596).",
-    fireRateRpm: 600,
-  },
-  {
-    id: "sustained_water_cooled_fire",
-    name: "Sustained Water-Cooled Barrage",
-    desc: "Continuous 7.5-liter water-jacket boiling heat dissipation allowing 2,000 continuous rounds without barrel failure.",
-    fireRateRpm: 650,
-  },
-  {
-    id: "slow_toggle_kinematics",
-    name: "Slow-Motion Toggle Lock Breakdown",
-    desc: "120 RPM slow motion illustrating the knee-joint toggle lock over-center lockup and rearward cam unlocking.",
-    fireRateRpm: 120,
-  },
-];
-
 export function MaximMachineGun3D() {
   const containerRef = useRef<HTMLDivElement>(null);
 
   // Automatic Recoil Ballistics Parameters
-  const { params, updateParam } = usePatentPhysics("us-319596-maxim-machine-gun");
+  const { params } = usePatentPhysics("us-319596-maxim-machine-gun");
   const [showUiOverlay, setShowUiOverlay] = useState<boolean>(true);
-  const fireRateRpm = params.fireRateRpm ?? 600;
-  const muzzleVelocityMps = 740;
-  const roundsPerSecond = (fireRateRpm / 60).toFixed(1);
+  const fireRateRpm = params.firingRate ?? params.fireRateRpm ?? 600;
+  const maxim = FrankenSimEngine.stepMaximMachineGun({
+    firingRateRpm: fireRateRpm,
+    waterJacketLiters: params.waterLevel ?? 4,
+    recoilStrokeMm: params.recoilStroke ?? 19,
+  });
+  const recoilStrokeM = (params.recoilStroke ?? 19) / 1000;
   const [showMuzzleFlash, setShowMuzzleFlash] = useState<boolean>(true);
   const [activeCamera, setActiveCamera] = useState<CameraPreset>("iso");
   const { isAudioMuted, toggleSound: toggleEngine } = usePatentAudio();
@@ -60,6 +37,8 @@ export function MaximMachineGun3D() {
     fireRateRpm,
     showMuzzleFlash,
     isAudioMuted,
+    recoilStrokeM,
+    barrelTempC: maxim.barrelTempC,
   });
 
   const controlsRef = useRef<StudioContext["controls"] | null>(null);
@@ -94,13 +73,6 @@ export function MaximMachineGun3D() {
         break;
     }
     controls.update();
-  };
-
-  const applyScenario = (s: ScenarioPreset) => {
-    updateParam("fireRateRpm", s.fireRateRpm);
-    if (!isAudioMuted) {
-      soundEngine.playSwitchClick();
-    }
   };
 
   const toggleSound = () => {
@@ -237,8 +209,8 @@ export function MaximMachineGun3D() {
       const fireFreq = (p.fireRateRpm / 60) * 2 * Math.PI;
       const recoilPhase = Math.sin(clock.getElapsedTime() * fireFreq);
 
-      // Gun recoil stroke
-      gunGroup.position.x = recoilPhase > 0 ? -recoilPhase * 0.15 : 0;
+      const strokeScene = Math.max(0.08, p.recoilStrokeM * 8);
+      gunGroup.position.x = recoilPhase > 0 ? -recoilPhase * strokeScene : 0;
 
       // Toggle lock breaking upward on recoil
       toggleGroup.position.y = 0.2 + (recoilPhase > 0 ? recoilPhase * 0.25 : 0);
@@ -331,70 +303,6 @@ export function MaximMachineGun3D() {
           </button>
         </div>
       </div>
-
-      {/* Bottom Telemetry Bar & Controls */}
-      {showUiOverlay && (
-        <div className="absolute bottom-4 left-4 right-4 bg-parchment-950/90 backdrop-blur-md rounded-2xl border border-parchment-700/70 p-4 shadow-2xl z-10 flex flex-col gap-3">
-          <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5 pb-2 border-b border-parchment-800/80 text-xs font-mono">
-            <div className="bg-parchment-900/80 px-3 py-1.5 rounded-lg border border-parchment-700/50 flex flex-col">
-              <span className="text-[10px] text-parchment-400 uppercase">Cyclic Rate</span>
-              <span className="font-bold text-amber-400">{fireRateRpm} RPM</span>
-            </div>
-            <div className="bg-parchment-900/80 px-3 py-1.5 rounded-lg border border-parchment-700/50 flex flex-col">
-              <span className="text-[10px] text-parchment-400 uppercase">Fire Cadence</span>
-              <span className="font-bold text-blue-400">{roundsPerSecond} Rounds/Sec</span>
-            </div>
-            <div className="bg-parchment-900/80 px-3 py-1.5 rounded-lg border border-parchment-700/50 flex flex-col">
-              <span className="text-[10px] text-parchment-400 uppercase">Muzzle Velocity</span>
-              <span className="font-bold text-emerald-400">
-                {muzzleVelocityMps} m/s (.303 British)
-              </span>
-            </div>
-            <div className="bg-parchment-900/80 px-3 py-1.5 rounded-lg border border-parchment-700/50 flex flex-col">
-              <span className="text-[10px] text-parchment-400 uppercase">Mechanism</span>
-              <span className="font-bold text-amber-300">Short Recoil Toggle Lock</span>
-            </div>
-          </div>
-
-          <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
-            <div className="flex items-center gap-2 w-full sm:w-auto">
-              <span className="text-xs font-mono text-parchment-400 flex items-center gap-1 shrink-0">
-                <Sparkles className="w-3.5 h-3.5 text-amber-500" /> Presets:
-              </span>
-              <div className="flex gap-1.5 overflow-x-auto pb-1">
-                {SCENARIOS.map((sc) => (
-                  <button
-                    key={sc.id}
-                    type="button"
-                    onClick={() => applyScenario(sc)}
-                    className="px-2.5 py-1 text-xs font-sans rounded-lg bg-parchment-800/80 hover:bg-parchment-700 text-parchment-200 hover:text-white border border-parchment-600/50 transition-colors whitespace-nowrap"
-                  >
-                    {sc.name}
-                  </button>
-                ))}
-              </div>
-            </div>
-
-            <div className="flex items-center gap-3 w-full sm:w-72 shrink-0">
-              <span className="text-xs font-sans text-parchment-300 shrink-0 font-medium">
-                Fire Rate (RPM):
-              </span>
-              <input
-                type="range"
-                min="100"
-                max="800"
-                step="25"
-                value={fireRateRpm}
-                onChange={(e) => updateParam("fireRateRpm", Number(e.target.value))}
-                className="w-full accent-amber-500 cursor-pointer"
-              />
-              <span className="text-xs font-mono text-amber-400 w-12 text-right font-bold">
-                {fireRateRpm}
-              </span>
-            </div>
-          </div>
-        </div>
-      )}
     </div>
   );
 }

@@ -1,8 +1,9 @@
 "use client";
 
-import { Activity, Camera, Sparkles, Volume2, VolumeX, Waves, Zap } from "lucide-react";
+import { Activity, Camera, Eye, EyeOff, Sparkles, Volume2, VolumeX, Waves } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import * as THREE from "three";
+import { stepEricssonPropeller } from "@/physics/catalogKernels";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { soundEngine } from "@/utils/soundEngine";
 import {
@@ -15,38 +16,6 @@ import { usePatentAudio } from "./usePatentAudio";
 
 type CameraPreset = "iso" | "propeller_drum" | "helical_blades" | "sternpost" | "top";
 
-interface ScenarioPreset {
-  id: string;
-  name: string;
-  desc: string;
-  shaftRpm: number;
-  shipSpeedKnots: number;
-}
-
-const SCENARIOS: ScenarioPreset[] = [
-  {
-    id: "uss_princeton_1843",
-    name: "1843 USS Princeton Warship",
-    desc: "John Ericsson's 6-bladed hoop propeller driving the first screw-propelled steam warship in US naval history (US 588).",
-    shaftRpm: 120,
-    shipSpeedKnots: 11.5,
-  },
-  {
-    id: "full_ahead_flank",
-    name: "Full Ahead Flank (180 RPM)",
-    desc: "High thrust 45 kN sprint delivering over 14 knots with helical blades channeling laminar axial wake.",
-    shaftRpm: 180,
-    shipSpeedKnots: 14.2,
-  },
-  {
-    id: "bollard_pull_towing",
-    name: "Bollard Pull Heavy Tow",
-    desc: "Zero-advance maximum slip test generating 60 kN static bollard pull against heavy barge resistance.",
-    shaftRpm: 100,
-    shipSpeedKnots: 2.0,
-  },
-];
-
 export function EricssonPropeller3D() {
   const containerRef = useRef<HTMLDivElement>(null);
 
@@ -54,13 +23,16 @@ export function EricssonPropeller3D() {
   const { params, updateParam } = usePatentPhysics("us-588-ericsson-propeller");
   const [showUiOverlay, setShowUiOverlay] = useState<boolean>(true);
   const shaftRpm = params.shaftRpm ?? 120;
-  const shipSpeedKnots = params.shipSpeedKnots ?? 11.5;
+  const ericson = stepEricssonPropeller({
+    shaftRpm,
+    bladePitchAngleDeg: params.bladePitchAngleDeg ?? 35,
+  });
+  const shipSpeedKnots = ericson.shipSpeedKnots;
   const [showWake, setShowWake] = useState<boolean>(true);
   const [activeCamera, setActiveCamera] = useState<CameraPreset>("iso");
   const { isAudioMuted, toggleSound: toggleEngine } = usePatentAudio();
 
-  // Hydrodynamic Thrust Calculation: T = C_T * rho * n^2 * D^4
-  const thrustKn = (0.0028 * shaftRpm ** 2 * 0.95).toFixed(1);
+  const thrustKn = ericson.thrustKn.toFixed(1);
   const propulsiveEfficiencyPct = (68 + (shipSpeedKnots / 15) * 6).toFixed(1);
 
   const live = useLiveSimParams({
@@ -68,6 +40,8 @@ export function EricssonPropeller3D() {
     shipSpeedKnots,
     showWake,
     isAudioMuted,
+    thrustKn: ericson.thrustKn,
+    propulsiveEfficiencyPct: Number(propulsiveEfficiencyPct),
   });
 
   const controlsRef = useRef<StudioContext["controls"] | null>(null);
@@ -103,14 +77,6 @@ export function EricssonPropeller3D() {
     }
     controls.update();
   };
-
-  const applyScenario = (s: ScenarioPreset) => {
-    updateParam("shaftRpm", s.shaftRpm);
-    if (!isAudioMuted) {
-      soundEngine.playSwitchClick();
-    }
-  };
-
   const toggleSound = () => {
     toggleEngine(() => {
       soundEngine.playSwitchClick();
@@ -352,85 +318,26 @@ export function EricssonPropeller3D() {
           </button>
           <button
             type="button"
+            onClick={() => setShowUiOverlay(!showUiOverlay)}
+            title={showUiOverlay ? "Hide Overlay UI" : "Show Overlay UI"}
+            className="p-1.5 rounded-lg text-xs text-parchment-400 hover:text-white hover:bg-parchment-800 transition-colors"
+          >
+            {showUiOverlay ? (
+              <EyeOff className="w-4 h-4" />
+            ) : (
+              <Eye className="w-4 h-4 text-amber-400" />
+            )}
+          </button>
+          <button
+            type="button"
             onClick={toggleSound}
             title={isAudioMuted ? "Unmute Sound" : "Mute Sound"}
             className="p-1.5 rounded-lg text-xs text-parchment-400 hover:text-white hover:bg-parchment-800 transition-colors"
           >
             {isAudioMuted ? <VolumeX className="w-4 h-4" /> : <Volume2 className="w-4 h-4" />}
           </button>
-          <button
-            type="button"
-            onClick={() => setShowUiOverlay(!showUiOverlay)}
-            className="p-1.5 rounded-lg text-xs text-parchment-400 hover:text-white hover:bg-parchment-800 transition-colors"
-          >
-            <Zap className="w-4 h-4 text-amber-400" />
-          </button>
         </div>
       </div>
-
-      {/* Bottom Telemetry Bar & Controls */}
-      {showUiOverlay && (
-        <div className="absolute bottom-4 left-4 right-4 bg-parchment-950/90 backdrop-blur-md rounded-2xl border border-parchment-700/70 p-4 shadow-2xl z-10 flex flex-col gap-3">
-          <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5 pb-2 border-b border-parchment-800/80 text-xs font-mono">
-            <div className="bg-parchment-900/80 px-3 py-1.5 rounded-lg border border-parchment-700/50 flex flex-col">
-              <span className="text-[10px] text-parchment-400 uppercase">Shaft Speed</span>
-              <span className="font-bold text-amber-400">{shaftRpm} RPM</span>
-            </div>
-            <div className="bg-parchment-900/80 px-3 py-1.5 rounded-lg border border-parchment-700/50 flex flex-col">
-              <span className="text-[10px] text-parchment-400 uppercase">Vessel Speed</span>
-              <span className="font-bold text-blue-400">{shipSpeedKnots.toFixed(1)} Knots</span>
-            </div>
-            <div className="bg-parchment-900/80 px-3 py-1.5 rounded-lg border border-parchment-700/50 flex flex-col">
-              <span className="text-[10px] text-parchment-400 uppercase">Axial Thrust</span>
-              <span className="font-bold text-emerald-400">{thrustKn} kN</span>
-            </div>
-            <div className="bg-parchment-900/80 px-3 py-1.5 rounded-lg border border-parchment-700/50 flex flex-col">
-              <span className="text-[10px] text-parchment-400 uppercase">
-                Propulsive Efficiency
-              </span>
-              <span className="font-bold text-amber-300">{propulsiveEfficiencyPct}%</span>
-            </div>
-          </div>
-
-          <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
-            <div className="flex items-center gap-2 w-full sm:w-auto">
-              <span className="text-xs font-mono text-parchment-400 flex items-center gap-1 shrink-0">
-                <Sparkles className="w-3.5 h-3.5 text-amber-500" /> Presets:
-              </span>
-              <div className="flex gap-1.5 overflow-x-auto pb-1">
-                {SCENARIOS.map((sc) => (
-                  <button
-                    key={sc.id}
-                    type="button"
-                    onClick={() => applyScenario(sc)}
-                    className="px-2.5 py-1 text-xs font-sans rounded-lg bg-parchment-800/80 hover:bg-parchment-700 text-parchment-200 hover:text-white border border-parchment-600/50 transition-colors whitespace-nowrap"
-                  >
-                    {sc.name}
-                  </button>
-                ))}
-              </div>
-            </div>
-
-            <div className="flex items-center gap-3 w-full sm:w-72 shrink-0">
-              <span className="text-xs font-sans text-parchment-300 shrink-0 font-medium">
-                Shaft RPM:
-              </span>
-              <input
-                type="range"
-                min="40"
-                max="240"
-                step="5"
-                value={shaftRpm}
-                onChange={(e) => updateParam("shaftRpm", Number(e.target.value))}
-                className="w-full accent-amber-500 cursor-pointer"
-              />
-              <span className="text-xs font-mono text-amber-400 w-12 text-right font-bold">
-                {shaftRpm}
-              </span>
-            </div>
-          </div>
-        </div>
-      )}
     </div>
   );
 }
