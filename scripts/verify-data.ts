@@ -5,11 +5,15 @@
  */
 
 import { execFileSync } from "node:child_process";
+import { createHash } from "node:crypto";
 import * as fs from "node:fs";
 import * as path from "node:path";
 import { allPatents, searchPatents } from "../src/data/patents";
 import { patentSchema } from "../src/data/patents/schema";
-import { validateSourcePdfTextLayer } from "../src/data/patents/sourceTextValidation";
+import {
+  validateReviewedTranscription,
+  validateSourcePdfTextLayer,
+} from "../src/data/patents/sourceTextValidation";
 
 const MAX_PDF_TEXT_BUFFER_BYTES = 64 * 1024 * 1024;
 
@@ -197,6 +201,22 @@ async function main() {
           } catch (error: unknown) {
             const message = error instanceof Error ? error.message : String(error);
             fail(`could not regenerate source-PDF text layer: ${message}`);
+          }
+        }
+      }
+      if (patent.originalTextAsset.kind === "reviewed-transcription" && fs.existsSync(assetPath)) {
+        const reviewedText = fs.readFileSync(assetPath, "utf8");
+        const validation = validateReviewedTranscription(
+          reviewedText,
+          patent.originalTextAsset.pageCount,
+        );
+        if (!validation.valid) fail(validation.error ?? "reviewed transcription is invalid.");
+        if (patent.originalTextAsset.sourcePdfSha256 && fs.existsSync(localPdfPath)) {
+          const sourcePdfSha256 = createHash("sha256")
+            .update(fs.readFileSync(localPdfPath))
+            .digest("hex");
+          if (sourcePdfSha256 !== patent.originalTextAsset.sourcePdfSha256) {
+            fail("reviewed transcription sourcePdfSha256 does not match the local PDF.");
           }
         }
       }

@@ -1,6 +1,6 @@
 "use client";
 
-import { Activity, Camera, Gauge, Sparkles, Volume2, VolumeX, Zap } from "lucide-react";
+import { Activity, Camera, Gauge, Volume2, VolumeX } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import * as THREE from "three";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
@@ -236,82 +236,6 @@ export function CorlissEngine3D() {
               {c.label}
             </button>
           ))}
-        </div>
-      </div>
-
-      {/* Bottom Control Bar */}
-      <div className="absolute bottom-4 left-4 right-4 flex flex-col md:flex-row items-stretch md:items-center justify-between gap-3 pointer-events-none z-10">
-        {/* Scenario Presets */}
-        <div className="flex flex-wrap items-center gap-1.5 bg-parchment-950/85 backdrop-blur-md p-2 rounded-2xl border border-parchment-700/60 shadow-xl pointer-events-auto">
-          <Sparkles className="w-4 h-4 text-amber-400 ml-1.5 mr-1" />
-          {SCENARIOS.map((s) => (
-            <button
-              key={s.id}
-              type="button"
-              onClick={() => applyScenario(s)}
-              className={`px-3 py-1.5 text-xs font-mono rounded-xl transition-all ${
-                engineRpm === s.engineRpm
-                  ? "bg-amber-600 text-white font-bold shadow-xs"
-                  : "text-parchment-200 hover:text-white hover:bg-parchment-800/60"
-              }`}
-            >
-              {s.name}
-            </button>
-          ))}
-        </div>
-
-        {/* Live Controls & SI Telemetry */}
-        <div className="flex items-center gap-3 bg-parchment-950/85 backdrop-blur-md px-4 py-2 rounded-2xl border border-parchment-700/60 shadow-xl pointer-events-auto">
-          <div className="flex items-center gap-2">
-            <span className="text-xs font-mono text-parchment-300">RPM:</span>
-            <input
-              type="range"
-              min="10"
-              max="100"
-              step="1"
-              value={engineRpm}
-              onChange={(e) => updateParam("engineRpm", Number.parseFloat(e.target.value))}
-              className="w-20 h-1.5 bg-parchment-800 rounded-lg appearance-none cursor-pointer accent-amber-500"
-            />
-            <span className="text-xs font-mono font-bold text-amber-400 w-10 text-right">
-              {engineRpm}
-            </span>
-          </div>
-
-          <div className="h-4 w-px bg-parchment-700" />
-
-          <div className="flex items-center gap-1.5">
-            <Zap className="w-3.5 h-3.5 text-orange-400" />
-            <span className="text-xs font-mono text-parchment-300">Power:</span>
-            <span className="text-xs font-mono font-bold text-orange-400">
-              {indicatedHorsepower} IHP
-            </span>
-          </div>
-
-          <div className="h-4 w-px bg-parchment-700" />
-
-          <div className="flex items-center gap-1.5">
-            <Gauge className="w-3.5 h-3.5 text-emerald-400" />
-            <span className="text-xs font-mono text-parchment-300">Efficiency:</span>
-            <span className="text-xs font-mono font-bold text-emerald-400">
-              {thermalEfficiencyPct}%
-            </span>
-          </div>
-
-          <div className="h-4 w-px bg-parchment-700" />
-
-          <button
-            type="button"
-            onClick={toggleEngine}
-            className="p-1.5 rounded-lg text-parchment-300 hover:text-white hover:bg-parchment-800/60 transition-colors"
-            title={isAudioMuted ? "Unmute Steam Acoustics" : "Mute Steam Acoustics"}
-          >
-            {isAudioMuted ? (
-              <VolumeX className="w-4 h-4 text-parchment-400" />
-            ) : (
-              <Volume2 className="w-4 h-4 text-amber-400" />
-            )}
-          </button>
         </div>
       </div>
     </div>

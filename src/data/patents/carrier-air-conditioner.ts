@@ -45,7 +45,15 @@ The invention consists, fundamentally:
 First, in a casing or chamber through which the air to be treated is caused to flow by a fan or blower.
 Second, in a series of atomizing spray-nozzles arranged across the path of the air within said chamber, through which water under pressure is discharged in a dense, finely divided atomized spray or mist, in intimate contact with the passing air.
 Third, in means for regulating the temperature of the spray-water so that when the air is to be dehumidified the water is maintained at a temperature below the dew-point of the entering air, whereby moisture is condensed from the air and collected in the water.
-Fourth, in a series of baffle-plates or eliminators located in the chamber beyond the spray-nozzles, having zigzag surfaces for intercepting all suspended water droplets from the air stream while allowing the conditioned air to pass onward without entrained liquid.`,
+Fourth, in a series of baffle-plates or eliminators located in the chamber beyond the spray-nozzles, having zigzag surfaces for intercepting all suspended water droplets from the air stream while allowing the conditioned air to pass onward without entrained liquid.
+
+I claim as my invention:
+
+1. The method of regulating the humidity of air, which consists in causing the air to pass through a finely divided spray of water maintained at a predetermined temperature to bring the air to a substantially saturated condition at a predetermined dew-point temperature, and then separating the entrained water particles from the air.
+
+2. In an apparatus for treating air, the combination with a casing through which the air flows, of spray-nozzles arranged to discharge an atomized liquid into the air stream, means for regulating the temperature of the liquid discharged by the nozzles, and eliminator-plates located beyond the nozzles for intercepting liquid particles suspended in the air.
+
+3. The method of dehumidifying air, which consists in causing the air to pass through an atomized spray of water maintained at a temperature below the dew-point of the entering air, whereby moisture is condensed from the air by direct liquid contact, and removing the entrained liquid from the air stream.`,
   plainEnglishExplanation: {
     overview:
       "Before Willis Carrier, summer heat and humidity shut down textile mills, warped printing paper, spoiled pharmaceuticals, and made southern cities nearly unlivable in July and August. Early cooling attempts blew air across blocks of frozen lake ice, which cooled the air slightly but left it at 100% relative humidity, creating a swampy, moldy indoor atmosphere. Carrier realized that human comfort and industrial manufacturing required controlling **both temperature and humidity simultaneously**. His apparatus invented the fundamental technology of modern heating, ventilation, and air conditioning (HVAC).",

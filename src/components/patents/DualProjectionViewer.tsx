@@ -14,6 +14,7 @@ import {
 } from "lucide-react";
 import { useEffect, useState } from "react";
 import { LatexRenderer, TextWithLatex } from "@/components/ui/LatexRenderer";
+import { validateReviewedTranscription } from "@/data/patents/sourceTextValidation";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import type { Patent } from "@/types/patent";
 import { ClaimsDecoder } from "./ClaimsDecoder";
@@ -147,6 +148,12 @@ export function DualProjectionViewer({ patent, initialView }: DualProjectionView
         return response.text();
       })
       .then((text) => {
+        const validation = validateReviewedTranscription(text, asset.pageCount);
+        if (!validation.valid) {
+          throw new Error(
+            validation.error ?? "The reviewed transcription failed its complete-page verification.",
+          );
+        }
         const completeText = text.trim();
         if (!completeText) throw new Error("The complete transcript asset is empty.");
         setCompleteOriginalText(completeText);

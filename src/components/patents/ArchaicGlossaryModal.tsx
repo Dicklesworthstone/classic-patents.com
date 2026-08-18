@@ -130,6 +130,20 @@ export function ArchaicGlossaryModal({ isOpen, onClose, patent }: ArchaicGlossar
 }`
     : "";
 
+  const [copiedApa, setCopiedApa] = useState(false);
+
+  const apaCitation = patent
+    ? `${inventorNamesApa}. (${patent.grantDate.split("-")[0]}). ${patent.title} (U.S. Patent No. ${patent.patentNumber}). U.S. Patent and Trademark Office. https://classic-patents.com/patents/${patent.id}`
+    : "";
+
+  const copyApa = () => {
+    if (typeof window !== "undefined" && apaCitation) {
+      navigator.clipboard.writeText(apaCitation);
+      setCopiedApa(true);
+      setTimeout(() => setCopiedApa(false), 2000);
+    }
+  };
+
   const copyBibtex = () => {
     if (typeof window !== "undefined" && bibtexCitation) {
       navigator.clipboard.writeText(bibtexCitation);
@@ -161,7 +175,7 @@ export function ArchaicGlossaryModal({ isOpen, onClose, patent }: ArchaicGlossar
             aria-label="Close"
             type="button"
             onClick={onClose}
-            className="p-1.5 rounded-lg text-ink-500 hover:text-ink-800 dark:hover:text-ink-200 hover:bg-parchment-200 dark:hover:bg-ink-800 transition-colors"
+            className="p-1.5 rounded-lg text-ink-500 hover:text-ink-800 dark:hover:text-ink-200 hover:bg-parchment-200 dark:hover:bg-ink-800 transition-colors cursor-pointer"
           >
             <X className="w-5 h-5" />
           </button>
@@ -172,7 +186,7 @@ export function ArchaicGlossaryModal({ isOpen, onClose, patent }: ArchaicGlossar
           <button
             type="button"
             onClick={() => setActiveTab("glossary")}
-            className={`pb-2 border-b-2 font-bold transition-colors ${
+            className={`pb-2 border-b-2 font-bold transition-colors cursor-pointer ${
               activeTab === "glossary"
                 ? "border-amber-600 text-amber-700 dark:text-amber-400"
                 : "border-transparent text-ink-500 hover:text-ink-800"
@@ -184,7 +198,7 @@ export function ArchaicGlossaryModal({ isOpen, onClose, patent }: ArchaicGlossar
             <button
               type="button"
               onClick={() => setActiveTab("citation")}
-              className={`pb-2 border-b-2 font-bold transition-colors ${
+              className={`pb-2 border-b-2 font-bold transition-colors cursor-pointer ${
                 activeTab === "citation"
                   ? "border-amber-600 text-amber-700 dark:text-amber-400"
                   : "border-transparent text-ink-500 hover:text-ink-800"
@@ -234,7 +248,7 @@ export function ArchaicGlossaryModal({ isOpen, onClose, patent }: ArchaicGlossar
                       <p className="text-ink-700 dark:text-ink-300 italic">{g.literalDefinition}</p>
                     </div>
 
-                    <div className="p-2 rounded bg-emerald-50 dark:bg-emerald-950/40 text-emerald-900 dark:text-emerald-200 border border-emerald-200 dark:border-emerald-800 font-sans">
+                    <div className="p-2 rounded-lg bg-emerald-50 dark:bg-emerald-950/40 text-emerald-900 dark:text-emerald-200 border border-emerald-200 dark:border-emerald-800 font-sans">
                       <span className="font-mono text-[10px] font-bold block text-emerald-700 dark:text-emerald-400 uppercase">
                         Modern Engineering Decoded:
                       </span>
@@ -259,7 +273,7 @@ export function ArchaicGlossaryModal({ isOpen, onClose, patent }: ArchaicGlossar
                 <button
                   type="button"
                   onClick={copyBibtex}
-                  className="px-3 py-1.5 rounded-lg bg-amber-700 hover:bg-amber-800 text-white text-xs font-mono font-medium flex items-center gap-1.5 transition-colors"
+                  className="px-3 py-1.5 rounded-lg bg-amber-700 hover:bg-amber-800 text-white text-xs font-mono font-medium flex items-center gap-1.5 transition-colors cursor-pointer"
                 >
                   {copiedCitation ? (
                     <Check className="w-3.5 h-3.5" />
@@ -274,10 +288,24 @@ export function ArchaicGlossaryModal({ isOpen, onClose, patent }: ArchaicGlossar
                 {bibtexCitation}
               </div>
 
-              <div className="p-4 rounded-xl bg-parchment-100 dark:bg-ink-900 border border-parchment-200 dark:border-ink-800 space-y-1 text-xs">
-                <span className="font-bold text-ink-800 dark:text-parchment-200 block font-mono">
-                  APA Format:
-                </span>
+              <div className="p-4 rounded-xl bg-parchment-100 dark:bg-ink-900 border border-parchment-200 dark:border-ink-800 space-y-2 text-xs">
+                <div className="flex items-center justify-between">
+                  <span className="font-bold text-ink-800 dark:text-parchment-200 block font-mono">
+                    APA Format:
+                  </span>
+                  <button
+                    type="button"
+                    onClick={copyApa}
+                    className="px-2.5 py-1 rounded-md bg-parchment-200 dark:bg-ink-800 hover:bg-parchment-300 dark:hover:bg-ink-700 text-ink-800 dark:text-parchment-200 text-xs font-mono flex items-center gap-1 transition-colors cursor-pointer border border-parchment-300 dark:border-ink-700"
+                  >
+                    {copiedApa ? (
+                      <Check className="w-3 h-3 text-emerald-600 dark:text-emerald-400" />
+                    ) : (
+                      <Copy className="w-3 h-3" />
+                    )}
+                    <span>{copiedApa ? "Copied!" : "Copy APA"}</span>
+                  </button>
+                </div>
                 <p className="text-ink-700 dark:text-ink-300 italic font-serif text-sm">
                   {inventorNamesApa}. ({patent.grantDate.split("-")[0]}). <em>{patent.title}</em>{" "}
                   (U.S. Patent No. {patent.patentNumber}). U.S. Patent and Trademark Office.

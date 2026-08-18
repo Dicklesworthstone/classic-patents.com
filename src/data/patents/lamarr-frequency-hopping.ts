@@ -46,7 +46,15 @@ To achieve perfect synchronization between the transmitter (on board an aircraft
 
 The perforations in the paper tapes step the carrier oscillator of the transmitter through a rapid sequence of discrete frequencies, while the identical paper roll in the torpedo synchronously tunes the local oscillator of the receiver to the exact same sequence of frequencies.
 
-Should an enemy attempt to jam the signal, only a tiny fraction of the total transmission on any single frequency could be interfered with, while the rapid hopping to dozens of other frequencies ensures that the guidance impulses are received continuously and accurately.`,
+Should an enemy attempt to jam the signal, only a tiny fraction of the total transmission on any single frequency could be interfered with, while the rapid hopping to dozens of other frequencies ensures that the guidance impulses are received continuously and accurately.
+
+We claim as our invention:
+
+1. A secret communication system comprising a transmitting station having means for generating carrier waves of a plurality of different frequencies, means for varying the frequency of said carrier waves in accordance with a predetermined pattern, a receiving station having means for receiving carrier waves of said plurality of frequencies, and means at the receiving station synchronized with said transmitting station for tuning the receiving station to receive said carrier waves in accordance with the same predetermined pattern.
+
+2. A system as set forth in claim 1, wherein said means for varying the frequency of the carrier waves at the transmitting station and the tuning at the receiving station comprise record sheets having perforations therein corresponding to the predetermined pattern, and mechanisms for advancing said sheets in synchronism.
+
+3. The method of transmitting secret control signals, which comprises generating carrier waves of varying frequencies, stepping the frequency of said carrier waves through a plurality of discrete frequency bands in a predetermined pseudo-random sequence, modulating said waves with control signals, and synchronously tuning a receiver to the same sequence of frequency bands.`,
   plainEnglishExplanation: {
     overview:
       "During early World War II, radio-guided naval torpedoes had a fatal flaw: enemy warships could easily detect the fixed radio control frequency and broadcast loud electronic noise on that single channel, blinding the torpedo and causing it to veer off course. Austrian-born Hollywood star Hedy Lamarr, drawing on insights into radio-controlled weaponry gained during her first marriage to Austrian arms manufacturer Fritz Mandl, teamed up with avant-garde composer George Antheil (famed for scoring *Ballet Mécanique* for 16 synchronized player pianos). Together, they designed a system that split the signal across 88 distinct radio frequencies (the number of keys on a piano keyboard), continuously hopping from one channel to another in a synchronized pseudo-random sequence controlled by identical slotted paper rolls. Even if an enemy jammed a specific frequency, 87 other channels remained crystal clear.",

@@ -56,7 +56,15 @@ Referring to the drawings:
 Figure 1 is a top plan view of a unitary semiconductor device embodying my invention.
 Figure 2 is a cross-sectional view taken along line 2-2 of Figure 1.
 Figure 3 is a perspective cross-sectional view showing a transistor with vapor-deposited aluminum leads crossing over PN junction boundaries.
-Figure 4 is a diagrammatic cross-section showing multiple diffused components and interconnecting metallization on a common silicon substrate.`,
+Figure 4 is a diagrammatic cross-section showing multiple diffused components and interconnecting metallization on a common silicon substrate.
+
+I claim as my invention:
+
+1. A semiconductor device comprising a body of semiconductor material having a surface, a junction within said body extending to said surface, an insulating layer on said surface covering said junction, and an electrical lead adherent to said insulating layer and extending across said junction without making electrical contact therewith, said lead making electrical connection with said body on at least one side of said junction.
+
+2. A semiconductor structure comprising a monocrystalline body of semiconductor material containing a plurality of diffused PN junctions, an adherent layer of silicon dioxide covering said surface and said junctions, apertures through said silicon dioxide layer exposing portions of said semiconductor material, and a plurality of metallic conductor strips adherent to said silicon dioxide layer extending through said apertures to make electrical contact with said exposed semiconductor portions, thereby interconnecting said junctions.
+
+3. The method of fabricating an electrical connection to a semiconductor body having a PN junction extending to a surface thereof, comprising the steps of forming an insulating oxide layer on said surface over said junction, removing a portion of said oxide layer to expose a surface region of said body on one side of said junction, depositing a layer of metal over said oxide layer and said exposed surface region, and selectively removing portions of said metal layer to leave a conductor strip adhering to said oxide layer and extending across said junction in electrical contact with said exposed surface region.`,
   plainEnglishExplanation: {
     overview:
       "In the late 1950s, the computing revolution faced an insurmountable physical barrier known as the 'Tyranny of Numbers': computers required hundreds of thousands of discrete transistors, diodes, and resistors hand-soldered together with delicate copper wires. If a single solder joint broke or shorted, the entire room-sized computer failed. In 1958, Jack Kilby at Texas Instruments proved that all components could be carved from the same semiconductor crystal, but he still connected them with tiny hand-glued gold flying wires. Robert Noyce at Fairchild Semiconductor made the definitive breakthrough that created the modern world: he realized that by thermally growing a microscopically thin glass insulator ($SiO_2$) on silicon and etching contact windows, aluminum metal could be vapor-deposited directly onto the chip, printing millions of microscopic wires simultaneously in one solid crystal block.",

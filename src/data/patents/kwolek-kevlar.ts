@@ -48,7 +48,15 @@ Under polarized light microscopy, these dopes exhibit bright birefringence, shim
 
 When these optically anisotropic dopes are extruded through spinneret orifices by dry-jet wet spinning into an aqueous coagulating bath, the liquid-crystalline domains undergo instantaneous, spontaneous, nearly perfect axial alignment along the fiber axis without requiring secondary mechanical drawing.
 
-The resulting fibers exhibit unprecedented physical properties: a tenacity exceeding 20 grams per denier (over 3,000 MPa tensile strength, more than five times stronger than steel on an equal weight basis), an initial modulus exceeding 400 grams per denier, and complete dimensional stability without melting up to temperatures exceeding 500 degrees Celsius.`,
+The resulting fibers exhibit unprecedented physical properties: a tenacity exceeding 20 grams per denier (over 3,000 MPa tensile strength, more than five times stronger than steel on an equal weight basis), an initial modulus exceeding 400 grams per denier, and complete dimensional stability without melting up to temperatures exceeding 500 degrees Celsius.
+
+I claim as my invention:
+
+1. An optically anisotropic solution capable of forming high tenacity fibers, comprising at least 5% by weight of a wholly aromatic polyamide in concentrated sulfuric acid of at least 98% concentration, said polyamide consisting essentially of repeating units wherein the chain-extending bonds are directed coaxially or parallelly in opposite directions.
+
+2. A solution as set forth in claim 1, wherein said polyamide is poly(p-phenylene terephthalamide).
+
+3. The method of producing high-tenacity, high-modulus fibers comprising the steps of extruding the optically anisotropic solution of claim 1 through a spinneret, across a gas space, and into an aqueous coagulating bath to form solid filamentary structures wherein the polymer molecules are aligned parallel to the filament axis.`,
   plainEnglishExplanation: {
     overview:
       "In 1964, DuPont tasked chemist Stephanie Kwolek with finding a lightweight synthetic fiber to replace heavy steel belts in radial automobile tires. Ordinary polymers like nylon form tangled, spaghetti-like molecular chains that produce flexible, moderately strong fibers. When Kwolek synthesized poly-p-phenylene terephthalamide (PPD-T) and dissolved it in concentrated sulfuric acid, she noticed the solution was cloudy, opalescent, and thin as water. While colleagues initially feared it would clog delicate spinning machinery, Kwolek recognized that the solution had formed a nematic liquid crystal: the rigid rod-like molecules had spontaneously lined up parallel to one another. When extruded through spinneret holes, the molecules emerged perfectly pre-aligned into extended-chain crystal lattices, creating Kevlar—a fiber five times stronger than steel by weight.",

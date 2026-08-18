@@ -47,7 +47,17 @@ I have discovered that even a cotton thread properly carbonized and placed in a 
 The filament may be formed of cotton or linen thread, wood splint, paper, or fibers of bamboo carbonized in a closed iron mold at a high temperature. Leading-in wires of platinum are clamped to the ends of the carbon filament, and the whole is mounted upon a glass stem fused into the neck of a glass bulb. The bulb is then exhausted upon a Sprengel mercury pump while current is passed through the filament to drive out occluded gases from the carbon and glass walls, after which the tube is sealed off by the blow-pipe.
 
 Referring to the drawing:
-Figure 1 is a view of the lamp in elevation, showing the glass globe with the carbon filament mounted on platinum wires and sealed at the base.`,
+Figure 1 is a view of the lamp in elevation, showing the glass globe with the carbon filament mounted on platinum wires and sealed at the base.
+
+I claim as my invention:
+
+1. An electric lamp for giving light by incandescence, consisting of a filament of carbon of high resistance, made as described, and secured to metallic wires, as set forth.
+
+2. The combination of carbon filaments with a receiver made entirely of glass and conductors passing through the glass, and from which receiver the air is exhausted, for the purposes set forth.
+
+3. A carbon filament or strip coiled and connected to electric conductors so that only a portion of the surface radiates light, as set forth.
+
+4. The method herein described of securing the carbon wire or filament to the conductors by a plastic compound consisting of carbon and coal-tar, substantially as set forth.`,
   plainEnglishExplanation: {
     overview:
       "Before Edison, dozens of inventors (including Joseph Swan, Humphry Davy, and Warren de la Rue) had demonstrated incandescent light, but their lamps burned out within minutes or hours and used thick, low-resistance carbon or platinum rods (1–4 Ω). To run thousands of low-resistance lamps in parallel, a power grid would require massive, solid copper cables as thick as tree trunks ($I = V / R$). Edison solved both the physics and the economics: by making the filament a micro-thin, high-resistance carbonized thread (100–200 Ω) inside a millionth-of-an-atmosphere vacuum, he reduced the required current by 95% ($P = V^2 / R$), making thin copper home wiring financially feasible for the first time.",

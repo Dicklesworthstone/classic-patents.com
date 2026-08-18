@@ -1,5 +1,5 @@
 import { describe, expect, it } from "bun:test";
-import { validateSourcePdfTextLayer } from "./sourceTextValidation";
+import { validateReviewedTranscription, validateSourcePdfTextLayer } from "./sourceTextValidation";
 
 describe("source-PDF text layer validation", () => {
   it("accepts a complete, ordered page ledger", () => {
@@ -27,5 +27,15 @@ describe("source-PDF text layer validation", () => {
     );
     expect(result.valid).toBeFalse();
     expect(result.error).toContain("ledger");
+  });
+
+  it("requires an explicit page ledger for a reviewed transcription", () => {
+    expect(
+      validateReviewedTranscription(
+        "--- REVIEWED TRANSCRIPTION PAGE 1 OF 1 ---\n\nComplete reviewed text",
+        1,
+      ),
+    ).toEqual({ valid: true });
+    expect(validateReviewedTranscription("Complete reviewed text", 1).valid).toBeFalse();
   });
 });

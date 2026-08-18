@@ -58,7 +58,15 @@ In Figure 1, the field magnet consists of an annular laminated iron ring provide
 
 When the current in circuit 1 is at maximum and that in circuit 2 is zero, the magnetic poles are at A and A'. As current in circuit 1 decreases and current in circuit 2 increases, the resultant magnetic vector rotates smoothly toward poles B and B'. Thus the magnetic field shifts continuously around the internal circumference of the stator ring without any moving parts.
 
-The armature consists of a laminated iron cylinder mounted on a central shaft and wrapped with closed coils of heavy copper wire. As the magnetic lines of force sweep across the armature, they induce powerful eddy currents in the closed coils, which according to Lenz's law generate magnetic poles opposing the field change, creating continuous rotational torque.`,
+The armature consists of a laminated iron cylinder mounted on a central shaft and wrapped with closed coils of heavy copper wire. As the magnetic lines of force sweep across the armature, they induce powerful eddy currents in the closed coils, which according to Lenz's law generate magnetic poles opposing the field change, creating continuous rotational torque.
+
+What I claim is:
+
+1. The method of operating electro-magnetic motors herein described, which consists in producing a progressive shifting of the magnetic poles of the motor by directing through independent energizing-circuits alternating currents differing in phase, substantially as set forth.
+
+2. The combination, with an annular or other closed field-magnet, of two or more independent energizing-circuits and an armature mounted within the field, and connections for directing through the circuits alternating currents differing in phase, whereby a progressive shifting of the poles of the field-magnet is produced, substantially as set forth.
+
+3. The combination, with a motor containing independent energizing-circuits, of an alternating-current generator with coils connected with the motor-circuits and adapted to produce alternating currents differing in phase, substantially as described.`,
   plainEnglishExplanation: {
     overview:
       "In the 1880s, electric motors were direct current (DC) machines equipped with split-ring mechanical commutators and carbon brushes. The brushes sparked violently, wore out rapidly, generated severe electrical noise, and limited power transmission to a one-mile radius around local DC dynamos ($I^2R$ copper losses). Alternating current (AC) could be transformed to high voltages for hundreds of miles of transmission, but no practical AC motor existed—single-phase motors had zero starting torque and had to be spun up by hand. In a flash of mathematical genius, Nikola Tesla realized that passing multiple out-of-phase AC currents through stationary stator coils created a rotating magnetic field in the air gap. A closed rotor inside this field is dragged along purely by electromagnetic induction, eliminating all commutators, brushes, sparking, and wear.",

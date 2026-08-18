@@ -40,6 +40,8 @@ the visitor can see or hear the kernel change the instrument.
 - [x] P3.4 Engine.ts re-exports the same functions
 - [x] P3.5 Fermi `fermiKeff` / `stepFermiKinetics` shared by engine, badge, schematic, spec clauses, 3D
 - [x] P3.6 Sholes / Linotype / Reno / Otis 3D draw `machineKernels` and write registry keys (`typingSpeedWpm`, `matrixRate`, `beltSpeed`, `cabPayload`/`cableTension`)
+- [x] P3.7 More 3D sliders remapped to registry keys: Westinghouse `trainPipePressure`, Hyatt `steamTempC`, Maxim `firingRate`, Nobel `ngConcentrationPct`, Pasteur `wortTempC`, Pelton `runnerRpm`, De Laval `bowlRpm`, Diesel `compRatio`, McCormick `forwardSpeedMph`, Edison phonograph `mandrelRpm`, Thomson `weldCurrentAmps`, Gramme `shaftRpm`, Hollerith `cardsPerMin`, Davenport `batteryVoltage`
+- [x] P3.8 Corliss both 3Ds write `steamPressurePsi`; Zeppelin writes `flightSpeedKnots`; Glidden writes `twistsPerFoot`. Native `aero_step_yaws_when_torque_is_applied` passed; public `flyer_aero_step` applies +Y torque (ω_y = 0.58 after 8 steps).
 
 ## P4 — Backlog (do not drop; not this slice's visitor-facing blocker)
 
