@@ -9,11 +9,11 @@ import { createHash } from "node:crypto";
 import * as fs from "node:fs";
 import * as path from "node:path";
 import { validateCuratedSpecificationEdition } from "../src/data/archivalEditionValidation";
-import { isArchivalEditionExplicitlyWithheld } from "../src/data/editions/publicationApproval";
 import {
   ARCHIVAL_PARALLEL_READINGS,
   archivalParallelReadingsFor,
 } from "../src/data/editions/parallelReadings";
+import { isArchivalEditionExplicitlyWithheld } from "../src/data/editions/publicationApproval";
 import { allPatents, searchPatents } from "../src/data/patents";
 import { patentSchema } from "../src/data/patents/schema";
 import {
