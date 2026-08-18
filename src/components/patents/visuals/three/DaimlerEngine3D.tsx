@@ -141,10 +141,10 @@ export function DaimlerEngine3D() {
 
     // --- 5. ANIMATION LOOP ---
     let crankAngle = 0;
-    let renderedSteps = 0;
+    let _renderedSteps = 0;
 
-    const renderLoop = (time: number) => {
-      renderedSteps += 1;
+    const renderLoop = () => {
+      _renderedSteps += 1;
       const dt = 1 / 60;
 
       const tube = live.current.hotTubeTempC;

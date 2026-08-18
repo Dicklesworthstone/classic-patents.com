@@ -1,0 +1,23 @@
+--- REVIEWED TRANSCRIPTION PAGE 1 OF 8 ---
+Drawing sheet 1 of 3: Figs. 1 and 2. Source-review ledger for US 2,981,877.
+
+--- REVIEWED TRANSCRIPTION PAGE 2 OF 8 ---
+Drawing sheet 2 of 3: Figs. 3, 4, and 5. Source-review ledger for US 2,981,877.
+
+--- REVIEWED TRANSCRIPTION PAGE 3 OF 8 ---
+Drawing sheet 3 of 3: Figs. 6 and 7. Source-review ledger for US 2,981,877.
+
+--- REVIEWED TRANSCRIPTION PAGE 4 OF 8 ---
+Patent Office masthead, objectives, figure list, and the opening single-transistor specification were checked directly against the pinned PDF. The complete visitor-facing transcription is authored in src/data/editions/noyceIcEdition.ts rather than this review locator ledger.
+
+--- REVIEWED TRANSCRIPTION PAGE 5 OF 8 ---
+The single-transistor continuation and opening multi-device specification were checked directly against the pinned PDF. The complete visitor-facing transcription is authored in src/data/editions/noyceIcEdition.ts rather than this review locator ledger.
+
+--- REVIEWED TRANSCRIPTION PAGE 6 OF 8 ---
+The multi-device circuit, equivalent-circuit explanation, and parallel-strip-example opening were checked directly against the pinned PDF. The complete visitor-facing transcription is authored in src/data/editions/noyceIcEdition.ts rather than this review locator ledger.
+
+--- REVIEWED TRANSCRIPTION PAGE 7 OF 8 ---
+The parallel-strip example and claims 1 through 7 were checked directly against the pinned PDF. The complete visitor-facing transcription is authored in src/data/editions/noyceIcEdition.ts rather than this review locator ledger.
+
+--- REVIEWED TRANSCRIPTION PAGE 8 OF 8 ---
+Claims 7 through 10 and the cited-reference table were checked directly against the pinned PDF. The complete visitor-facing transcription is authored in src/data/editions/noyceIcEdition.ts rather than this review locator ledger.

@@ -45,6 +45,9 @@ export function WhitneyCottonGin3D() {
     showFibers,
     isAudioMuted,
     outputLbsPerDay: gin.outputLbsPerDay,
+    crankOmegaRadPerS: gin.crankOmegaRadPerS,
+    sawOmegaRadPerS: gin.sawOmegaRadPerS,
+    brushOmegaRadPerS: gin.brushOmegaRadPerS,
   });
 
   const controlsRef = useRef<StudioContext["controls"] | null>(null);
@@ -312,17 +315,17 @@ export function WhitneyCottonGin3D() {
 
     // Animation Loop
     let reqId: number;
-    let renderedSteps = 0;
+    let _renderedSteps = 0;
 
     const animate = () => {
       reqId = requestAnimationFrame(animate);
-      renderedSteps += 1;
+      _renderedSteps += 1;
       const delta = 1 / 60;
       const p = live.current;
 
-      const sawRadPerSec = (p.sawSpeedRpm * 2 * Math.PI) / 60;
-      const brushRadPerSec = (p.brushSpeedRpm * 2 * Math.PI) / 60;
-      const crankRadPerSec = (p.crankRpm * 2 * Math.PI) / 60;
+      const sawRadPerSec = p.sawOmegaRadPerS ?? (p.sawSpeedRpm * 2 * Math.PI) / 60;
+      const brushRadPerSec = p.brushOmegaRadPerS ?? (p.brushSpeedRpm * 2 * Math.PI) / 60;
+      const crankRadPerSec = p.crankOmegaRadPerS ?? (p.crankRpm * 2 * Math.PI) / 60;
 
       sawCylinderGroup.rotation.x += sawRadPerSec * delta;
       brushCylinderGroup.rotation.x -= brushRadPerSec * delta; // Counter-rotating
@@ -440,6 +443,7 @@ export function WhitneyCottonGin3D() {
           { label: "Brush", value: String(brushSpeedRpm), unit: "rpm" },
           { label: "Lint", value: dailyOutputLbs, unit: "lb/day" },
           { label: "vs hand", value: `${laborMultiplier}×` },
+          { label: "ω_crank", value: gin.crankOmegaRadPerS.toFixed(1), unit: "rad/s" },
         ]}
       />
     </div>

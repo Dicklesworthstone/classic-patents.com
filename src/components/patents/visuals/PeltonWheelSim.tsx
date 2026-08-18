@@ -23,13 +23,14 @@ export function PeltonWheelSim() {
 
   useEffect(() => {
     if (!isPlaying) return;
+
     let lastTime = performance.now();
 
     const loop = (time: number) => {
       const dt = Math.min(0.1, (time - lastTime) / 1000);
       lastTime = time;
-      
-      setWheelAngleDeg((prev) => (prev + wheelRpm * 6 * dt) % 360);
+
+      setWheelAngleDeg((prev) => (prev + pelton.runnerOmegaDegPerS * dt) % 360);
       animRef.current = requestAnimationFrame(loop);
     };
 
@@ -37,7 +38,7 @@ export function PeltonWheelSim() {
     return () => {
       if (animRef.current) cancelAnimationFrame(animRef.current);
     };
-  }, [isPlaying, wheelRpm]);
+  }, [isPlaying, pelton.runnerOmegaDegPerS]);
 
   return (
     <div className="w-full rounded-2xl border border-parchment-300 dark:border-ink-800 bg-parchment-50 dark:bg-ink-950 p-4 sm:p-6 shadow-md transition-colors">

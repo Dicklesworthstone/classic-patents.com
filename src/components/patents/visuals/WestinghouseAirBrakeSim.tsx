@@ -37,7 +37,6 @@ export function WestinghouseAirBrakeSim() {
     const loop = (time: number) => {
       const dt = Math.min(0.1, (time - lastTime) / 1000);
       lastTime = time;
-      
 
       setTrainSpeedMph((prev) => {
         if (cylPressurePsi > 5) {

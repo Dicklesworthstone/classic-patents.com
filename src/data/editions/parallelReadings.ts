@@ -25,11 +25,14 @@ import { maximMachineGunParallelReadings } from "./maximMachineGunEdition";
 import { mccormickReaperParallelReadings } from "./mccormickReaperEdition";
 import { morseTelegraphParallelReadings } from "./morseTelegraphEdition";
 import { nobelDynamiteParallelReadings } from "./nobelDynamiteEdition";
+import { noyceIcParallelReadings } from "./noyceIcEdition";
 import { otisElevatorParallelReadings } from "./otisElevatorParallelReading";
 import { ottoEngineParallelReadings } from "./ottoEngineEdition";
 import { pasteurFermentationParallelReadings } from "./pasteurFermentationParallelReading";
 import { peltonWaterWheelParallelReadings } from "./peltonWaterWheelEdition";
 import { sholesTypewriterParallelReadings } from "./sholesTypewriterEdition";
+import { spencerMicrowaveParallelReadings } from "./spencerMicrowaveEdition";
+import { teslaMotorParallelReadings } from "./teslaMotorEdition";
 import { HOWE_SEWING_MACHINE_PARALLEL_READINGS } from "./us-4750-howe-sewing-machine";
 import { DAIMLER_MARINE_ENGINE_PARALLEL_READINGS } from "./us-361931-daimler-engine";
 import { westinghouseAirBrakeParallelReadings } from "./westinghouseAirBrakeEdition";
@@ -64,10 +67,13 @@ export const ARCHIVAL_PARALLEL_READINGS: Readonly<
   "us-223898-edison-lightbulb": edisonLightbulbParallelReadings,
   "us-233692-pelton-water-wheel": peltonWaterWheelParallelReadings,
   "us-247804-delaval-separator": delavalSeparatorParallelReadings,
+  "us-2495429-spencer-microwave": spencerMicrowaveParallelReadings,
+  "us-2981877-noyce-ic": noyceIcParallelReadings,
   "us-319596-maxim-machine-gun": maximMachineGunParallelReadings,
   "us-79265-sholes-typewriter": sholesTypewriterParallelReadings,
   "us-361931-daimler-engine": DAIMLER_MARINE_ENGINE_PARALLEL_READINGS,
   "us-1102653-goddard-rocket": goddardRocketParallelReadings,
+  "us-381968-tesla-motor": teslaMotorParallelReadings,
   "us-821393-wright-flyer": {
     4: [
       "This is the standard public notice at the start of a United States patent. It addresses any reader who may need to know what the inventors claim to have made.",

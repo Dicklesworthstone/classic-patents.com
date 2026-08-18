@@ -28,13 +28,14 @@ export function CorlissEngineSim() {
 
   useEffect(() => {
     if (!isPlaying) return;
+
     let lastTime = performance.now();
 
     const loop = (time: number) => {
       const dt = Math.min(0.1, (time - lastTime) / 1000);
       lastTime = time;
-      
-      setCrankAngleDeg((prev) => (prev + engineRpm * 6 * dt) % 360);
+
+      setCrankAngleDeg((prev) => (prev + corliss.crankOmegaDegPerS * dt) % 360);
       animRef.current = requestAnimationFrame(loop);
     };
 
@@ -42,7 +43,7 @@ export function CorlissEngineSim() {
     return () => {
       if (animRef.current) cancelAnimationFrame(animRef.current);
     };
-  }, [isPlaying, engineRpm]);
+  }, [isPlaying, corliss.crankOmegaDegPerS]);
 
   // Kinematic calculations for piston & wrist-plate
   const pistonStroke = Math.sin((crankAngleDeg * Math.PI) / 180) * 45;

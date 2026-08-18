@@ -38,6 +38,8 @@ export function GliddenBarbedWire3D() {
     isAudioMuted,
     sagCm: glidden.sagCm,
     isLocked: glidden.isLocked ? 1 : 0,
+    flyerOmegaRadPerS: glidden.flyerOmegaRadPerS,
+    reelOmegaRadPerS: glidden.reelOmegaRadPerS,
   });
 
   const controlsRef = useRef<StudioContext["controls"] | null>(null);
@@ -204,18 +206,18 @@ export function GliddenBarbedWire3D() {
 
     // Animation Loop
     let reqId: number;
-    let renderedSteps = 0;
+    let _renderedSteps = 0;
 
     const animate = () => {
       reqId = requestAnimationFrame(animate);
-      renderedSteps += 1;
+      _renderedSteps += 1;
       const delta = 1 / 60;
       const p = live.current;
 
-      const omegaRadPerSec = (p.machineRpm * 2 * Math.PI) / 60;
+      const omegaRadPerSec = p.flyerOmegaRadPerS ?? (p.machineRpm * 2 * Math.PI) / 60;
       flyerGroup.rotation.x += omegaRadPerSec * delta;
       galvanizedSteelMat.color.setHex(p.isLocked > 0 ? 0xe2e8f0 : 0xf87171);
-      reelGroup.rotation.x += omegaRadPerSec * 0.2 * delta;
+      reelGroup.rotation.x += (p.reelOmegaRadPerS ?? omegaRadPerSec * 0.2) * delta;
 
       renderer.render(scene, camera);
     };
@@ -310,6 +312,7 @@ export function GliddenBarbedWire3D() {
           },
           { label: "Line", value: feetPerMinute, unit: "ft/min" },
           { label: "Wire", value: String(tensileStrengthLbs), unit: "lb" },
+          { label: "ω", value: glidden.flyerOmegaRadPerS.toFixed(1), unit: "rad/s" },
         ]}
       />
     </div>

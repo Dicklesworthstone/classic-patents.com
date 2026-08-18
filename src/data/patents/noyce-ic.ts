@@ -1,6 +1,10 @@
+import {
+  noyceIcArchivalEdition,
+  noyceIcRecordCorrections,
+} from "@/data/editions/noyceIcEdition";
 import type { Patent } from "@/types/patent";
 
-export const noyceIcPatent: Patent = {
+const baseNoyceIcPatent: Patent = {
   id: "us-2981877-noyce-ic",
   patentNumber: "US 2,981,877",
   title: "Semiconductor Device-and-Lead Structure",
@@ -21,10 +25,14 @@ export const noyceIcPatent: Patent = {
   originalPdfUrl: "/patents/pdfs/us-2981877-noyce-ic.pdf",
   googlePatentsUrl: "https://patents.google.com/patent/US2981877A/en",
   usptoClassification: "H01L 27/06 (Monolithic integrated circuits)",
+  archivalEdition: noyceIcArchivalEdition,
   originalTextAsset: {
-    url: "/patents/source-text/us-2981877-noyce-ic.txt",
+    url: "/patents/transcripts/us-2981877-noyce-ic-reviewed.txt",
     pageCount: 8,
-    kind: "source-pdf-text-layer",
+    kind: "reviewed-transcription",
+    reviewedBy: "Classic Patents editorial agent (GPT-5.6)",
+    reviewedAt: "2026-08-18",
+    sourcePdfSha256: "c6efa2efedcfdec092a8f5aff7354fc067f3b287bbfad6749e1235cee77a2d59",
   },
   originalText: `UNITED STATES PATENT OFFICE.
 ROBERT N. NOYCE, OF LOS ALTOS, CALIFORNIA, ASSIGNOR TO FAIRCHILD SEMICONDUCTOR CORPORATION, OF MOUNTAIN VIEW, CALIFORNIA.
@@ -305,7 +313,12 @@ I claim as my invention:
     "Moore's Law",
   ],
   stats: {
-    totalClaims: 3,
-    independentClaims: 1,
+    totalClaims: 10,
+    independentClaims: 9,
   },
+};
+
+export const noyceIcPatent: Patent = {
+  ...baseNoyceIcPatent,
+  ...noyceIcRecordCorrections,
 };

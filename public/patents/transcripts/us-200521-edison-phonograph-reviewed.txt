@@ -1,0 +1,82 @@
+--- REVIEWED TRANSCRIPTION PAGE 1 OF 3 ---
+
+T. A. EDISON.
+PHONOGRAPH OR SPEAKING MACHINE.
+No. 200,521. Patented Feb. 19, 1878.
+
+Drawing sheet containing Figs. 1, 2, 3, and 4.
+
+--- REVIEWED TRANSCRIPTION PAGE 2 OF 3 ---
+
+UNITED STATES PATENT OFFICE.
+THOMAS A. EDISON, OF MENLO PARK, NEW JERSEY.
+IMPROVEMENT IN PHONOGRAPH OR SPEAKING MACHINES.
+Specification forming part of Letters Patent No. 200,521, dated February 19, 1878; application filed December 24, 1877.
+
+To all whom it may concern:
+
+Be it known that I, THOMAS A. EDISON, of Menlo Park, in the county of Middlesex and State of New Jersey, have invented an Improvement in Phonograph or Speaking Machines, of which the following is a specification:
+
+The object of this invention is to record in permanent characters the human voice and other sounds, from which characters such sounds may be reproduced and rendered audible again at a future time.
+
+The invention consists in arranging a plate, diaphragm, or other flexible body capable of being vibrated by the human voice or other sounds, in conjunction with a material capable of registering the movements of such vibrating body by embossing or indenting or altering such material, in such a manner that such register-marks will be sufficient to cause a second vibrating plate or body to be set in motion by them, and thus reproduce the motions of the first vibrating body.
+
+The invention further consists in the various combinations of mechanism to carry out my invention.
+
+I have discovered, after a long series of experiments, that a diaphragm or other body capable of being set in motion by the human voice does not give, except in rare instances, superimposed vibrations, as has heretofore been supposed, but that each vibration is separate and distinct, and therefore it becomes possible to record and reproduce the sounds of the human voice.
+
+In the drawings, Figure 1 is a vertical section, illustrating my invention, and Fig. 2 is a plan of the same.
+
+A is a cylinder having a helical indenting groove cut from end to end—say, ten grooves to the inch. Upon this is placed the material to be indented, preferably metallic foil. This drum or cylinder is secured to a shaft, X, having at one end a thread cut with ten threads to the inch, the bearing P also having a thread cut in it.
+
+L is a tube, provided with a longitudinal slot, and it is rotated by the clock-work at M, or other source of power.
+
+The shaft X passes into the tube L, and it is rotated by a pin, 2, secured to the shaft, and passing through the slot on the tube L, the object of the long slot being to allow the shaft X to pass endwise through the center or support P by the action of the screw on X. At the same time that the cylinder is rotated it passes toward the support O.
+
+B is the speaking-tube or mouth-piece, which may be of any desired character, so long as proper slots or holes are provided to re-enforce the hissing consonants. Devices to effect this object are shown in my application, No. 143, filed August 28, 1877. Hence they are not shown or further described herein.
+
+Upon the end of the tube or mouth-piece is a diaphragm, having an indenting-point of hard material secured to its center, and so arranged in relation to the cylinder A that the point will be exactly opposite the groove in the cylinder at any position the cylinder may occupy in its forward rotary movement. The speaking-tube is arranged upon a standard, which, in practice, I provide with devices for causing the tube to approach and recede from the cylinder.
+
+The operation of recording is as follows:
+
+The cylinder is, by the action of the screw in X, placed adjacent to the pillar P, which brings the indenting-point of the diaphragm G opposite the first groove on the cylinder, over which is placed a sheet of thick metallic foil, paper, or other yielding material. The tube B is then adjusted toward the cylinder until the indenting-point touches the material and indents it slightly. The clock-work is then set running, and words spoken in the tube B will cause the diaphragm to take up every vibration, and these movements will be recorded with surprising accuracy by indentations in the foil.
+
+After the foil on the cylinder has received the required indentations, or passed to its full limit toward O, it is made to return to P by proper means, and the indented material is brought to a position for reproducing and rendering audible the sounds that had been made by the person speaking into the tube B.
+
+--- REVIEWED TRANSCRIPTION PAGE 3 OF 3 ---
+
+C is a tube similar to B, except that the diaphragm is somewhat lighter and more sensitive, although this is not actually necessary. In front of this diaphragm is a light spring, D, having a small point shorter and finer than the indenting-point on the diaphragm of B. This spring and point are so arranged as to fall exactly into the path of all the indentations. This spring is connected to the diaphragm F of C by a thread or other substance capable of conveying the movements of D. Now, when the cylinder is allowed to rotate, the spring D is set in motion by each indentation corresponding to its depth and length.
+
+This motion is conveyed to the diaphragm either by vibrations through a thread or directly by connecting the spring to the diaphragm F, and these motions being due to the indentations, which are an exact record of every movement of the first diaphragm, the voice of the speaker is reproduced exactly and clearly, and with sufficient volume to be heard at some distance.
+
+The indented material may be detached from the machine and preserved for any length of time, and by replacing the foil in a proper manner the original speaker's voice can be reproduced, and the same may be repeated frequently, as the foil is not changed in shape if the apparatus is properly adjusted.
+
+The record, if it be upon tin-foil, may be stereotyped by means of the plaster-of-paris process, and from the stereotype multiple copies may be made expeditiously and cheaply by casting or by pressing tin-foil or other material upon it. This is valuable when musical compositions are required for numerous machines.
+
+It is obvious that many forms of mechanism may be used to give motion to the material to be indented. For instance, a revolving plate may have a volute spiral cut both on its upper and lower surfaces, on the top of which the foil or indenting material is laid and secured in a proper manner.
+
+A two-part arm is used with this disk, the portion beneath the disk having a point in the lower groove, and the portion above the disk carrying the speaking and receiving diaphragmic devices, which arm is caused, by the volute spiral groove upon the lower surface, to swing gradually from near the center to the outer circumference of the plate as it is revolved, or vice versa.
+
+An apparatus of this general character adapted to a magnet that indents the paper is shown in my application for a patent, No. 128, filed March 26, 1877; hence no claim is made herein to such apparatus, and further description of the same is unnecessary.
+
+A wide continuous roll of material may be used, the diaphragmic devices being reciprocated by proper mechanical devices backward and forward over the roll as it passes forward; or a narrow strip like that in a Morse register may be moved in contact with the indenting-point, and from this the sounds may be reproduced.
+
+The material employed for this purpose may be soft paper saturated or coated with paraffine or similar material, with a sheet of metal foil on the surface thereof to receive the impression from the indenting-point. I do not wish to confine myself to reproducing sound by indentations only, as the transmitting or recording device may be in a sinuous form, resulting from the use of a thread passing with paper beneath the pressure-rollers t, (see Fig. 3,) such thread being moved laterally by a fork or eye adjacent to the roller t, and receiving its motion from the diaphragm G, with which such fork or eye is connected, and thus record the movement of the diaphragm by the impression of the thread in the paper to the right and left of a straight line, from which indentation the receiving diaphragm may receive its motion and the sound be reproduced, substantially in the manner I have already shown; or the diaphragm may, by its motion, give more or less pressure to an inking-pen, u, Fig. 4, the point of which rests upon paper or other material moved along regularly beneath the point of the pen, thus causing more or less ink to be deposited upon the material, according to the greater or lesser movement of the diaphragm.
+
+These ink-marks serve to give motion to a second diaphragm when the paper containing such marks is drawn along beneath the end of a lever resting upon them and connected to such diaphragm, the lever and diaphragm being moved by the friction between the point being greatest, or the thickness of the ink being greater where there is a large quantity of ink than where there is a small quantity. Thus the original sound-vibrations are reproduced upon the second diaphragm.
+
+I claim as my invention—
+
+1. The method herein specified of reproducing the human voice or other sounds by causing the sound-vibrations to be recorded, substantially as specified, and obtaining motion from that record, substantially as set forth, for the reproduction of the sound-vibrations.
+
+2. The combination, with a diaphragm exposed to sound-vibrations, of a moving surface of yielding material—such as metallic foil—upon which marks are made corresponding to the sound-vibrations, and of a character adapted to use in the reproduction of the sound, substantially as set forth.
+
+3. The combination, with a surface having marks thereon corresponding to sound-vibrations, of a point receiving motion from such marks, and a diaphragm connected to said point, and responding to the motion of the point, substantially as set forth.
+
+4. In an instrument for making a record of sound-vibrations, the combination, with the diaphragm and point, of a cylinder having a helical groove and means for revolving the cylinder and communicating an end movement corresponding to the inclination of the helical groove, substantially as set forth.
+
+Signed by me this 15th day of December, A. D. 1877.
+
+THOS. A. EDISON.
+
+Witnesses: GEO. T. PINCKNEY, CHAS. H. SMITH.

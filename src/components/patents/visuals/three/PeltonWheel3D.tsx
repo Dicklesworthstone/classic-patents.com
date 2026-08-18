@@ -45,6 +45,7 @@ export function PeltonWheel3D() {
     etaPct: hydraulicEfficiencyPct,
     shaftPowerKw: powerKw,
     speedRatio: pelton.speedRatio,
+    runnerOmegaRadPerS: pelton.runnerOmegaRadPerS,
   });
 
   const controlsRef = useRef<StudioContext["controls"] | null>(null);
@@ -229,15 +230,15 @@ export function PeltonWheel3D() {
 
     // Animation Loop
     let reqId: number;
-    let renderedSteps = 0;
+    let _renderedSteps = 0;
 
     const animate = () => {
       reqId = requestAnimationFrame(animate);
-      renderedSteps += 1;
+      _renderedSteps += 1;
       const delta = 1 / 60;
       const p = live.current;
 
-      const omegaRadPerSec = (p.wheelRpm * 2 * Math.PI) / 60;
+      const omegaRadPerSec = p.runnerOmegaRadPerS ?? (p.wheelRpm * 2 * Math.PI) / 60;
       runnerGroup.rotation.z += omegaRadPerSec * delta;
 
       // Animate jet trajectory from nozzle to bucket
@@ -364,6 +365,7 @@ export function PeltonWheel3D() {
           },
           { label: "η", value: String(hydraulicEfficiencyPct), unit: "%" },
           { label: "Shaft", value: String(powerKw), unit: "kW" },
+          { label: "ω", value: pelton.runnerOmegaRadPerS.toFixed(1), unit: "rad/s" },
         ]}
       />
     </div>

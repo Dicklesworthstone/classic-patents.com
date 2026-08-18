@@ -39,6 +39,7 @@ export function OttoEngine3D() {
     isAudioMuted,
     thermalEfficiencyPct,
     brakeHorsepower: otto.brakeHorsepower,
+    crankOmegaRadPerS: otto.crankOmegaRadPerS,
   });
 
   const controlsRef = useRef<StudioContext["controls"] | null>(null);
@@ -211,15 +212,15 @@ export function OttoEngine3D() {
 
     // Animation Loop
     let reqId: number;
-    let renderedSteps = 0;
+    let _renderedSteps = 0;
 
     const animate = () => {
       reqId = requestAnimationFrame(animate);
-      renderedSteps += 1;
+      _renderedSteps += 1;
       const delta = 1 / 60;
       const p = live.current;
 
-      const omegaRadPerSec = (p.engineRpm * 2 * Math.PI) / 60;
+      const omegaRadPerSec = p.crankOmegaRadPerS ?? (p.engineRpm * 2 * Math.PI) / 60;
       crankGroup.rotation.z -= omegaRadPerSec * delta;
 
       const crankAngle = -crankGroup.rotation.z;
@@ -323,6 +324,7 @@ export function OttoEngine3D() {
           { label: "BHP", value: powerBhp },
           { label: "P2", value: String(otto.peakCompressionBar), unit: "bar" },
           { label: "P3", value: String(otto.peakFiringBar), unit: "bar" },
+          { label: "ω", value: otto.crankOmegaRadPerS.toFixed(1), unit: "rad/s" },
         ]}
       />
     </div>

@@ -331,7 +331,7 @@ export function materialProbe(
       qty: "groove",
       value: phono.grooveDepthMicrons.toString(),
       unit: "µm",
-      note: `${phono.trackSpeedInPerS} in/s at the 4-inch drum.`,
+      note: `${phono.trackSpeedInPerS} in/s at the 4-inch drum · ω ${phono.mandrelOmegaRadPerS} rad/s.`,
     };
   }
   if (patentId.includes("noyce") || patentId.includes("2981877")) {
@@ -361,7 +361,7 @@ export function materialProbe(
       qty: "F_toggle",
       value: maxim.toggleUnlockForceN.toString(),
       unit: "N",
-      note: `Barrel ${maxim.barrelTempC} °C. Evap ${maxim.waterEvapRateGs} g/s. ${maxim.muzzleEnergyJoules} J.`,
+      note: `Barrel ${maxim.barrelTempC} °C. Evap ${maxim.waterEvapRateGs} g/s. ${maxim.muzzleEnergyJoules} J · ω ${maxim.fireOmegaRadPerS} rad/s.`,
     };
   }
   if (patentId.includes("westinghouse") || patentId.includes("124404")) {
@@ -445,7 +445,7 @@ export function materialProbe(
       qty: "η",
       value: otto.thermalEfficiencyPct.toString(),
       unit: "%",
-      note: `Air-standard 1−r^(1−γ). ${otto.brakeHorsepower} BHP. P2 ${otto.peakCompressionBar} bar / P3 ${otto.peakFiringBar} bar.`,
+      note: `Air-standard 1−r^(1−γ). ${otto.brakeHorsepower} BHP. P2 ${otto.peakCompressionBar} bar / P3 ${otto.peakFiringBar} bar · ω ${otto.crankOmegaRadPerS} rad/s.`,
     };
   }
   if (patentId.includes("pelton") || patentId.includes("233692")) {
@@ -459,7 +459,7 @@ export function materialProbe(
       qty: "v_jet",
       value: pelton.jetVelocityMps.toString(),
       unit: "m/s",
-      note: `u/v = ${pelton.speedRatio}. η ${pelton.etaPct}% → ${pelton.shaftPowerKw} kW.`,
+      note: `u/v = ${pelton.speedRatio}. η ${pelton.etaPct}% → ${pelton.shaftPowerKw} kW · ω ${pelton.runnerOmegaRadPerS} rad/s.`,
     };
   }
   if (patentId.includes("gramme") || patentId.includes("120057")) {
@@ -487,7 +487,7 @@ export function materialProbe(
       qty: "lock",
       value: wire.isLocked ? "held" : "slip",
       unit: "",
-      note: `Sag ${wire.sagCm} cm. Barb holds ${wire.barbSlipThresholdN} N. ${wire.tensileStrengthLbs} lb Bessemer · ${wire.productionRateFtPerMin} ft/min.`,
+      note: `Sag ${wire.sagCm} cm. Barb holds ${wire.barbSlipThresholdN} N. ${wire.tensileStrengthLbs} lb Bessemer · ${wire.productionRateFtPerMin} ft/min · ω ${wire.flyerOmegaRadPerS} rad/s.`,
     };
   }
   if (patentId.includes("lincoln") || patentId.includes("6281")) {
@@ -531,7 +531,7 @@ export function materialProbe(
       qty: "ω",
       value: motor.shaftRpm.toString(),
       unit: "rpm",
-      note: `${motor.shaftPowerW} W shaft. Voltage ${params.batteryVoltage ?? 12} V.`,
+      note: `${motor.shaftPowerW} W shaft · ω ${motor.shaftOmegaRadPerS} rad/s. Voltage ${params.batteryVoltage ?? 12} V.`,
     };
   }
   if (patentId.includes("corliss") || patentId.includes("6162")) {
@@ -546,7 +546,7 @@ export function materialProbe(
       qty: "IHP",
       value: corliss.indicatedHp.toString(),
       unit: "hp",
-      note: `η ${corliss.thermalEfficiencyPct}%. Cutoff is a trip, not a throttle.`,
+      note: `η ${corliss.thermalEfficiencyPct}%. Cutoff is a trip, not a throttle · ω ${corliss.crankOmegaRadPerS} rad/s.`,
     };
   }
   if (
@@ -665,7 +665,7 @@ export function materialProbe(
       qty: "RoF",
       value: gat.roundsPerMin.toString(),
       unit: "rds/min",
-      note: `${gat.barrelCoolingIntervalS} s between shots on one barrel.`,
+      note: `${gat.barrelCoolingIntervalS} s between shots on one barrel · ω ${gat.crankOmegaRadPerS} rad/s.`,
     };
   }
   if (patentId.includes("parsons") || patentId.includes("608969")) {
@@ -733,7 +733,7 @@ export function materialProbe(
       qty: "lint",
       value: gin.outputLbsPerDay.toString(),
       unit: "lb/day",
-      note: `Saws ${gin.sawRpm} rpm, brush ${gin.brushRpm} rpm.`,
+      note: `Saws ${gin.sawRpm} rpm, brush ${gin.brushRpm} rpm · ω ${gin.crankOmegaRadPerS} rad/s.`,
     };
   }
   if (patentId.includes("mccormick") || patentId.includes("x8277")) {
@@ -806,7 +806,7 @@ export function materialProbe(
       qty: "cycle",
       value: h.cycleTimeMs.toString(),
       unit: "ms",
-      note: `${h.solenoidForceN} N pin force · τ ${h.inductiveTauMs} ms.`,
+      note: `${h.solenoidForceN} N pin force · τ ${h.inductiveTauMs} ms · ω ${h.pressOmegaRadPerS} rad/s.`,
     };
   }
   if (patentId.includes("goodyear") || patentId.includes("3633")) {

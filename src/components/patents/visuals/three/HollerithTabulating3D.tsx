@@ -36,6 +36,7 @@ export function HollerithTabulating3D() {
     cycleTimeMs: hollerith.cycleTimeMs,
     solenoidForceN: hollerith.solenoidForceN,
     cardsPerDay,
+    pressOmegaRadPerS: hollerith.pressOmegaRadPerS,
   });
 
   const controlsRef = useRef<StudioContext["controls"] | null>(null);
@@ -207,7 +208,7 @@ export function HollerithTabulating3D() {
       const p = live.current;
 
       // Pin press plunging down into card
-      const pressFreq = (p.cardsPerMin / 60) * 2 * Math.PI;
+      const pressFreq = p.pressOmegaRadPerS ?? (p.cardsPerMin / 60) * 2 * Math.PI;
       const pressPhase = Math.sin(renderedSteps * (1 / 60) * pressFreq);
       pinPlateGroup.position.y =
         0.8 + (pressPhase > 0 ? -pressPhase * (0.2 + (p.solenoidForceN / 40) * 0.35) : 0);
@@ -301,6 +302,7 @@ export function HollerithTabulating3D() {
           { label: "Day", value: cardsPerDay.toLocaleString() },
           { label: "Pins", value: String(hollerith.sensingPinCount) },
           { label: "Dials", value: String(clockDialCount) },
+          { label: "ω_press", value: hollerith.pressOmegaRadPerS.toFixed(2), unit: "rad/s" },
         ]}
       />
     </div>

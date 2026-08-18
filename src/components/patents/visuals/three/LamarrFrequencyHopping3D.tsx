@@ -272,7 +272,7 @@ export function LamarrFrequencyHopping3D() {
 
     // --- RENDER LOOP & REAL-TIME SPREAD SPECTRUM HOPPING ---
     let reqId: number;
-    let renderedSteps = 0;
+    let _renderedSteps = 0;
     let hopTimer = 0;
     let activeChan = 22;
     // Coprime step with 88 piano keys — same shared roll as the 2D schematic.
@@ -282,7 +282,7 @@ export function LamarrFrequencyHopping3D() {
 
     const animate = () => {
       reqId = requestAnimationFrame(animate);
-      renderedSteps += 1;
+      _renderedSteps += 1;
       const delta = 1 / 60;
       const p = live.current;
 

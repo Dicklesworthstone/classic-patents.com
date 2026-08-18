@@ -35,6 +35,7 @@ export function GatlingGun3D() {
     roundsPerMinute,
     showMuzzleFlash,
     isAudioMuted,
+    crankOmegaRadPerS: gatling.crankOmegaRadPerS,
   });
 
   const controlsRef = useRef<StudioContext["controls"] | null>(null);
@@ -98,7 +99,7 @@ export function GatlingGun3D() {
       const delta = 1 / 60;
       const p = live.current;
 
-      const omegaRadPerSec = (p.crankRpm * 2 * Math.PI) / 60;
+      const omegaRadPerSec = p.crankOmegaRadPerS ?? (p.crankRpm * 2 * Math.PI) / 60;
       model.barrelClusterGroup.rotation.x += omegaRadPerSec * delta;
       model.crankGroup.rotation.x += omegaRadPerSec * delta;
 
@@ -204,6 +205,7 @@ export function GatlingGun3D() {
           { label: "RoF", value: String(roundsPerMinute), unit: "rds/min" },
           { label: "Cooling", value: String(gatling.barrelCoolingIntervalS), unit: "s/bbl" },
           { label: "E", value: String(gatling.muzzleEnergyJoules), unit: "J" },
+          { label: "ω", value: gatling.crankOmegaRadPerS.toFixed(2), unit: "rad/s" },
         ]}
       />
     </div>

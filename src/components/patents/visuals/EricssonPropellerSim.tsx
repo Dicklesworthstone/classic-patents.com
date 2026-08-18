@@ -24,6 +24,7 @@ export function EricssonPropellerSim() {
 
   useEffect(() => {
     if (!isPlaying) return;
+
     let lastTime = performance.now();
 
     const loop = (time: number) => {

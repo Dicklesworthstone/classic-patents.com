@@ -35,13 +35,14 @@ export function OttoEngineSim() {
 
   useEffect(() => {
     if (!isPlaying) return;
+
     let lastTime = performance.now();
 
     const loop = (time: number) => {
       const dt = Math.min(0.1, (time - lastTime) / 1000);
       lastTime = time;
-      
-      setCrankAngleDeg((prev) => (prev + engineRpm * 6 * dt) % 720);
+
+      setCrankAngleDeg((prev) => (prev + otto.crankOmegaDegPerS * dt) % 720);
       animRef.current = requestAnimationFrame(loop);
     };
 
@@ -49,7 +50,7 @@ export function OttoEngineSim() {
     return () => {
       if (animRef.current) cancelAnimationFrame(animRef.current);
     };
-  }, [isPlaying, engineRpm]);
+  }, [isPlaying, otto.crankOmegaDegPerS]);
 
   // Piston linear displacement x(theta)
   const crankRad = ((cycleAngleDeg % 360) * Math.PI) / 180;

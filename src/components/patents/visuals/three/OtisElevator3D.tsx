@@ -237,11 +237,11 @@ export function OtisElevator3D() {
 
     // Animation Loop
     let reqId: number;
-    let renderedSteps = 0;
+    let _renderedSteps = 0;
 
     const animate = () => {
       reqId = requestAnimationFrame(animate);
-      renderedSteps += 1;
+      _renderedSteps += 1;
       const _delta = 1 / 60;
       const p = live.current;
 

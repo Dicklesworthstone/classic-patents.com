@@ -1,0 +1,81 @@
+--- REVIEWED TRANSCRIPTION PAGE 1 OF 4 ---
+
+GEORGE WESTINGHOUSE, Jr.
+Improvement in Steam Power Air Brakes and Signals.
+No. 124,404. Patented March 5, 1872.
+
+[DRAWING SHEET]
+Fig. 1: inverted view of car-body and improved apparatus.
+Fig. 2: arrangement of air-brake pipes with the main reservoir.
+Fig. 3: signalling use of the apparatus.
+Fig. 4: enlarged gauge-index.
+Figs. 5 and 6: enlarged and detached views of the tripping apparatus.
+
+--- REVIEWED TRANSCRIPTION PAGE 2 OF 4 ---
+
+UNITED STATES PATENT OFFICE.
+GEORGE WESTINGHOUSE, JR., OF PITTSBURG, PENNSYLVANIA.
+
+IMPROVEMENT IN STEAM-POWER AIR-BRAKES AND SIGNALS.
+
+Specification forming part of Letters Patent No. 124,404, dated March 5, 1872.
+
+SPECIFICATION.
+
+To all whom it may concern:
+
+Be it known that I, GEORGE WESTINGHOUSE, Jr., of Pittsburg, in the county of Allegheny and State of Pennsylvania, have invented a new and useful Improvement in Steam-Power Air-Brakes and Signals; and I do hereby declare the following to be a full, clear, and exact description thereof, reference being had to the accompanying drawing making a part of this specification, in which—
+
+Figure 1 is an inverted view of a car-body with my improved apparatus attached thereto. Fig. 2 shows the arrangement of the air-brake pipes with reference to the main reservoir. Fig. 3, in connection with Fig. 2, illustrates the use of the apparatus for signaling. Fig. 4 is an enlarged view of the gauge-index, and Figs. 5 and 6 are enlarged and detached views of the tripping apparatus of Fig. 1.
+
+Like letters of reference indicate like parts in each.
+
+In the steam-power air-brake apparatus heretofore in use a single line of pipe conveys the compressed air from the main reservoir on the locomotive to each brake-cylinder. If this pipe becomes accidentally broken at any point it is, of course, useless for braking purposes from that point to the rear end of the train. For this and other reasons I have devised an apparatus consisting in part of a double line of brake-pipes, which may be co-operative or independently operative in braking at the pleasure of the engineer, and which as a separate device I have included in a separate application.
+
+The improvement herein described relates to the same class of apparatus; and consists in the features of construction and combination, substantially as hereinafter claimed, by which, first, an air-reservoir, auxiliary to or independent of the main reservoir, is combined on each car with the brake-cylinder; second, by means of a cock or cocks, with suitable ports, such additional reservoir, when used as an auxiliary reservoir, is charged with compressed air from one brake-pipe, and the brake-cylinder from the other, such pipes in such use being interchangeable or not, at pleasure; third, and by means of a single cock with suitable ports either brake-pipe may be used for charging the reservoir and the other for operating the brakes; fourth, when a car becomes disconnected from the train by accident or otherwise, a port or ports will thereby be opened in a communicating-pipe or pipes, by which the air from such auxiliary reservoir will be admitted freely to the brake-cylinder, so as automatically to apply the brakes; and fifth, the conductor and engineer may communicate signals or orders to each other by the use of the brake-pipes and the compressed air.
+
+Some of the functions above specified are performed by the apparatus described in the separate application above mentioned; and hence in such cases I limit myself in this application to the means set forth or their substantial equivalents.
+
+To enable others skilled in the art to make and use my improvement, I will proceed to describe its construction and mode of operation.
+
+The brake-pipes B B¹ extend along under the body of each car A from end to end, and the pipes of one car are coupled to those of the next by the hose and coupling connections described in patent granted to me August 8, 1870, and thereby connection is made with the main reservoir A¹. The brake-cylinder C is of the usual construction. An air-receiver, D, is attached to the bottom of the car A. This receiver should ordinarily be somewhat larger than the brake-cylinder C, and strong enough to sustain a pressure of, say, one hundred pounds per square inch, more or less. It may be used as a reservoir auxiliary to the main reservoir A¹, or as an independent reservoir, one on each car, for storing up the air necessary to apply the brakes. In this latter use I combine with it any known device for compressing air, such as an air-pump, fan-blower, steam-injector, &c.; and if an air-pump it may be worked by an eccentric on one of the car-axles A² or in other known way. A pipe or air-passage then extends directly or indirectly from it to the brake-cylinder C, with a stop-cock device therein, by which the compressed air is admitted at pleasure from such reservoir D to the brake-cylinder, so as to apply the brakes in the usual way. By the means set forth reservoir D is recharged from time to time, as may be necessary, in order to keep a store or supply of compressed air always on hand and ready for use.
+
+--- REVIEWED TRANSCRIPTION PAGE 3 OF 4 ---
+
+But the chief use which I contemplate for this reservoir D is as an auxiliary to the main reservoir A¹. One brake-pipe, B, I use in the ordinary way for conveying compressed air from the main reservoir A¹ to the brake-cylinder C, and the other pipe, B¹, I always keep in open communication with the main reservoir A¹, so that it is always filled with compressed air; but it is immaterial in the construction shown which pipe is used for either purpose. A cross-pipe, B² B³, connects the pipes B B¹, and from their point of junction the pipes b b¹ branch off, one to the brake-cylinder C and the other to the auxiliary reservoir D. At the junction of these pipes in a suitable case, d, I arrange a cock, d¹, having two non-communicating ports, a a¹, such that in one adjustment they will open communication from B² to b, and from B³ to b¹; and in the other adjustment from B³ to b and from B² to b¹. With the adjustment shown the pipe B¹ is to be used as a reservoir-pipe for containing compressed air and conveying the same to the auxiliary reservoir D, and the other pipe B is the ordinary operating-pipe for operating the brakes in the usual way.
+
+It will be seen that by turning the cock d¹ one quarter way around the relation of the pipes B B¹ to the auxiliary reservoir D and the brake-cylinder C will be reversed, but that the operation otherwise will remain the same. I also so construct my apparatus that when a car leaves the track or becomes uncoupled from the train the brakes will be automatically applied by means of the compressed air which is stored up in the reservoir-pipe and the auxiliary reservoir.
+
+For this purpose I connect the pipes B B¹ with each other near the ends of the car by cross-pipes E E. In two diagonally-opposite corners of the parallelogram thus formed I make cases e for the three-way cocks e, though one such cock and case will suffice to perform the function in view. When the cars are running these cocks are both in the position shown at the upper right corner of Fig. 1, so as to leave a free communication through the pipes B B¹. Each cock e is provided with a handle or arm, which (by means hereinafter described) is, when a coupling breaks or a car leaves the track, shifted so as to throw the cock to the position shown at the lower left-hand corner of Fig. 1, by which through communication is closed and the compressed air passes from the reservoir-pipe B¹ and auxiliary reservoir D around through the operating-pipe B and pipes B² b to the brake-cylinder C, and applies the brakes.
+
+To give the cocks e this throw I have shown two devices, which are illustrated in Figs. 1, 5, and 6. In Fig. 6, e¹ represents the cock-case; e², the stem of the cock e; and e³, the shifting-handle, which, in this figure, is in the position it occupies when through communication is open. From a wrist on this handle e³ a crank-arm, m, extends back to, and, by a catch, m¹, engages, a counter-catch, o. A spring, m², or its equivalent, a weight, is arranged in connection with the crank-arm m, so that when the catch is released the arm will, by a forward throw, shift the position of the cock e, as above indicated. To effect this release I introduce under the arm m a tripping-head or lever, i, preferably of circular form, so that it will bear against the arm m whichever way it is moved, and from at or about its central point a tripping-stem, i¹, extends downward such distance that when the car is on the track, it will clear the ground, but when the car leaves the track it will strike the ground, the track, or ties, and, by a vertical, forward, or back or side motion, lift the arm m and disengage the catch with the result already stated.
+
+But to shift the position of the cock when the car-couplings break, while the car is still on the track, I run a cord or chain, y, or equivalent device from the outer end of the handle e³ forward and attach it to the hose-coupling y¹ of that or the next car at such point forward of the slack that when the car-couplings break and the slack-hose is straightened out the handle e³ will, by the cord y, be drawn over far enough to shift the position of the cock e, as already explained. In this way the brakes are automatically applied, in case of accident, to any part of the train. The same wire or chain y, or another, may extend in like manner from the coupling y¹ to the stem i¹, or to any other device which will disengage the catch m¹ with like result to that already stated. A slot, x, is made in the forward or outer end of the arm m, in which the wrist of the handle e³ plays, in order that the cock may be shifted by the wire y independently of the arm m. But other devices for automatically shifting the cock e may be employed; my present invention not being limited to those described.
+
+To the main reservoir A¹ is attached any suitable form of pressure-gauge, as shown at f, and to each brake-pipe B B¹ I attach a pressure-gauge of like suitable form g g¹, and arrange in convenient proximity to each an alarm-whistle, h h¹. These gauges g g¹ and whistles h h¹ are for use in signaling. Each one has a graduated index (illustrated in Fig. 4) so constructed, with reference to the pressure of air in the pipes, that a certain amount or degree of pressure, say one-half pound per square inch, shall send the index fingers to the graduation 2; a pressure a little greater, to 3; and so on. By a system agreed on, each graduation indicates a separate order or message, as “flag station,” “stop for orders,” “danger—run slow,” “danger—stop,” &c.; the highest or last graduation, preferably, indicating “stop.” The gauge is so constructed that greater degrees of air pressure will not effect it. In each car a like gauge is arranged, as shown at g², Fig. 3, and a pipe connection, n n¹, extends from it to the brake-pipes B B¹. This gauge is arranged at any suitable point in the car, and its pipe connections are fitted with a cock, n², which is accessible to the conductor, and of which he carries the key. These pipe connections n n¹ and cock n² are such that, on the cock n² being opened, the compressed air will be admitted from the reservoir-pipe, say B¹, both to the gauge g² and to the other or operating-pipe B, along which it will pass to the gauge g in the engineer's cab. The conductor opens the cock n² till the pressure of air has moved the index fingers to the graduation which indicates the order he wishes to give the engineer, and then closes it. The index finger on the engineer's gauge will, in like manner, be carried to the same graduation, and the alarm of the whistle will call his attention to it. By reversing the operation the engineer may communicate messages to the conductor.
+
+--- REVIEWED TRANSCRIPTION PAGE 4 OF 4 ---
+
+I do not deem it necessary to describe more minutely the ports and passages leading from the pipes n n¹ to the gauge g², as a suitable arrangement of such devices, on the function being known, can be readily made by those skilled in the art. Where one of the brake-pipes is always used as a reservoir-pipe, and the other as an operating-pipe, only one of the gauges g g¹ will be required, and, of course, it should be arranged on the operating-pipe.
+
+It will be seen that the conductor, by fully opening the cock, in case of extreme danger, will be enabled to apply the brakes himself, as well as notify the engineer, since the air will flow over by the pipes n n¹ from the reservoir-pipe B¹ to the operating-pipe B, and thence to the brake-cylinders. Also, that if it be desired to communicate but a single order, the gauges g g¹ g² may be dispensed with, and the order be communicated by a whistle blast.
+
+What I claim as my invention, and desire to secure by Letters Patent, is—
+
+1. An air-reservoir arranged on each separate car in combination with an air-brake cylinder, D, and main reservoir A¹ on or near the locomotive, substantially as and for the uses set forth.
+
+2. The combination of the pipes B B¹ B² B³ b b¹ with a suitable arrangement of ports for admitting air to the auxiliary reservoir D and brake-cylinder C, substantially as and for the uses set forth.
+
+3. The cock d¹ having ports a a¹, and arranged relatively to the air-reservoir D, brake-cylinder C, and pipes B B¹, substantially as described.
+
+4. A cock, e, arranged in an air-brake pipe, with a suitable arrangement of ports inside and an automatically-operating connection outside, whereby, in case of accident, a free communication will be opened from an auxiliary reservoir, C, to a brake-cylinder, D, and external communication be closed, substantially as set forth.
+
+5. In combination with a pair of air-brake pipes, B B¹, a signaling apparatus consisting essentially of an alarm or index guage, or both, on or near the engineer's cab, a pipe connection on or in one or more of the cars, from one pipe, B, to the other, B¹, and like means in connection therewith for regulating or fixing the alarm to be given, substantially as set forth.
+
+In testimony whereof I, the said GEORGE WESTINGHOUSE, Jr., have hereunto set my hand.
+
+GEO. WESTINGHOUSE, JR.
+
+Witnesses:
+JOHN H. JOHNSON.
+G. H. CHRISTY.

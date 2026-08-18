@@ -33,6 +33,7 @@ export function EdisonPhonograph3D() {
     isAudioMuted,
     grooveDepthMicrons: phono.grooveDepthMicrons,
     axialTravelMmPerS: phono.axialTravelMmPerS,
+    mandrelOmegaRadPerS: phono.mandrelOmegaRadPerS,
   });
 
   const controlsRef = useRef<StudioContext["controls"] | null>(null);
@@ -111,7 +112,7 @@ export function EdisonPhonograph3D() {
       const delta = 1 / 60;
       const p = live.current;
 
-      const omegaRadPerSec = (p.cylinderRpm * 2 * Math.PI) / 60;
+      const omegaRadPerSec = p.mandrelOmegaRadPerS ?? (p.cylinderRpm * 2 * Math.PI) / 60;
       model.cylinderGroup.rotation.x += omegaRadPerSec * delta;
 
       // Scene scale: 2.54 mm/s (one 0.1-inch turn per second) → 0.002 world-units/s.

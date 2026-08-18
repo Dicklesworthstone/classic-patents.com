@@ -24,13 +24,14 @@ export function WhitneyCottonGinSim() {
 
   useEffect(() => {
     if (!isPlaying) return;
+
     let lastTime = performance.now();
 
     const loop = (time: number) => {
       const dt = Math.min(0.1, (time - lastTime) / 1000);
       lastTime = time;
-      
-      setAngle((prev) => (prev + crankRpm * 6 * dt) % 360);
+
+      setAngle((prev) => (prev + gin.crankOmegaDegPerS * dt) % 360);
       animRef.current = requestAnimationFrame(loop);
     };
 
@@ -38,7 +39,7 @@ export function WhitneyCottonGinSim() {
     return () => {
       if (animRef.current) cancelAnimationFrame(animRef.current);
     };
-  }, [isPlaying, crankRpm]);
+  }, [isPlaying, gin.crankOmegaDegPerS]);
 
   return (
     <div className="w-full rounded-2xl border border-parchment-300 dark:border-ink-800 bg-parchment-50 dark:bg-ink-950 p-4 sm:p-6 shadow-md transition-colors">

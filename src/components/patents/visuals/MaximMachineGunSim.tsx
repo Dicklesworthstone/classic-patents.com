@@ -27,13 +27,14 @@ export function MaximMachineGunSim() {
 
   useEffect(() => {
     if (!isPlaying) return;
+
     let lastTime = performance.now();
 
     const loop = (time: number) => {
       const dt = Math.min(0.1, (time - lastTime) / 1000);
       lastTime = time;
-      
-      setRecoilPhase((prev) => (prev + (cyclicRateRpm / 60) * 2 * Math.PI * dt) % (2 * Math.PI));
+
+      setRecoilPhase((prev) => (prev + maxim.fireOmegaRadPerS * dt) % (2 * Math.PI));
       animRef.current = requestAnimationFrame(loop);
     };
 
@@ -41,7 +42,7 @@ export function MaximMachineGunSim() {
     return () => {
       if (animRef.current) cancelAnimationFrame(animRef.current);
     };
-  }, [isPlaying, cyclicRateRpm]);
+  }, [isPlaying, maxim.fireOmegaRadPerS]);
 
   // Recoil displacement of barrel & breech
   const recoilX = (Math.cos(recoilPhase) + 1) * (recoilStrokeMm / 2);

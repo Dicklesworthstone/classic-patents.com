@@ -37,6 +37,8 @@ export function CorlissSteamEngine3D() {
     isAudioMuted,
     indicatedHp,
     thermalEfficiencyPct: Number(thermalEfficiencyPct),
+    crankOmegaRadPerS: corliss.crankOmegaRadPerS,
+    governorOmegaRadPerS: corliss.governorOmegaRadPerS,
   });
 
   const controlsRef = useRef<StudioContext["controls"] | null>(null);
@@ -281,17 +283,17 @@ export function CorlissSteamEngine3D() {
 
     // Animation Loop
     let reqId: number;
-    let renderedSteps = 0;
+    let _renderedSteps = 0;
 
     const animate = () => {
       reqId = requestAnimationFrame(animate);
-      renderedSteps += 1;
+      _renderedSteps += 1;
       const delta = 1 / 60;
       const p = live.current;
 
-      const omegaRadPerSec = (p.engineRpm * 2 * Math.PI) / 60;
+      const omegaRadPerSec = p.crankOmegaRadPerS ?? (p.engineRpm * 2 * Math.PI) / 60;
       flywheelGroup.rotation.x += omegaRadPerSec * delta;
-      govGroup.rotation.y += omegaRadPerSec * 1.5 * delta;
+      govGroup.rotation.y += (p.governorOmegaRadPerS ?? omegaRadPerSec * 1.5) * delta;
 
       const crankAngle = flywheelGroup.rotation.x;
       const strokeX = Math.sin(crankAngle) * 1.0;
@@ -392,6 +394,7 @@ export function CorlissSteamEngine3D() {
           { label: "η", value: thermalEfficiencyPct, unit: "%" },
           { label: "P", value: String(corliss.boilerMpa), unit: "MPa" },
           { label: "r_exp", value: String(corliss.expansionRatio) },
+          { label: "ω", value: corliss.crankOmegaRadPerS.toFixed(2), unit: "rad/s" },
         ]}
       />
     </div>

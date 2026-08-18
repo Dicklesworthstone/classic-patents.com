@@ -1,3 +1,4 @@
+import { teslaMotorArchivalEdition } from "@/data/editions/teslaMotorEdition";
 import type { Patent } from "@/types/patent";
 
 export const teslaMotorPatent: Patent = {
@@ -20,10 +21,14 @@ export const teslaMotorPatent: Patent = {
   originalPdfUrl: "/patents/pdfs/us-381968-tesla-motor.pdf",
   googlePatentsUrl: "https://patents.google.com/patent/US381968A/en",
   usptoClassification: "H02K 17/00 (Asynchronous induction motors)",
+  archivalEdition: teslaMotorArchivalEdition,
   originalTextAsset: {
-    url: "/patents/source-text/us-381968-tesla-motor.txt",
+    url: "/patents/transcripts/us-381968-tesla-motor-reviewed.txt",
     pageCount: 9,
-    kind: "source-pdf-text-layer",
+    kind: "reviewed-transcription",
+    sourcePdfSha256: "cffd7ff061b05feef92c2d6ef4d767c7b7e8c6b4e0d10cc9be3fbd51841dce12",
+    reviewedBy: "Classic Patents editorial agent (GPT-5.6)",
+    reviewedAt: "2026-08-18",
   },
   originalText: `UNITED STATES PATENT OFFICE.
 NIKOLA TESLA, OF NEW YORK, N. Y., ASSIGNOR OF ONE-HALF TO CHARLES F. PECK, OF ENGLEWOOD, NEW JERSEY.
@@ -34,7 +39,7 @@ SPECIFICATION forming part of Letters Patent No. 381,968, dated May 1, 1888.
 Application filed October 12, 1887. Serial No. 252,132. (No model.)
 
 To all whom it may concern:
-Be it known that I, NIKOLA TESLA, a subject of the Emperor of Austria, from Smiljan, Lika, border country of Austria-Hungary, residing at New York, in the county and State of New York, have invented certain new and useful Improvements in Electro-Magnetic Motors, of which the following is a specification, reference being had to the drawings accompanying and forming a part of the same.
+Be it known that I, NIKOLA TESLA, from Smiljan Lika, border country of Austria-Hungary, residing at New York, in the county and State of New York, have invented certain new and useful Improvements in Electro-Magnetic Motors, of which the following is a specification, reference being had to the drawings accompanying and forming a part of the same.
 
 The subject of my present application is a new and useful improvement in electro-magnetic motors, having for its object to produce the rotation of the armature by the action of alternating currents differing in phase and conveyed to the motor over independent circuits.
 
@@ -62,11 +67,13 @@ The armature consists of a laminated iron cylinder mounted on a central shaft an
 
 What I claim is:
 
-1. The method of operating electro-magnetic motors herein described, which consists in producing a progressive shifting of the magnetic poles of the motor by directing through independent energizing-circuits alternating currents differing in phase, substantially as set forth.
+1. The combination, with a motor containing separate or independent circuits on the armature or field-magnet, or both, of an alternating-current generator containing induced circuits connected independently to corresponding circuits in the motor, whereby a rotation of the generator produces a progressive shifting of the poles of the motor, as herein described.
 
-2. The combination, with an annular or other closed field-magnet, of two or more independent energizing-circuits and an armature mounted within the field, and connections for directing through the circuits alternating currents differing in phase, whereby a progressive shifting of the poles of the field-magnet is produced, substantially as set forth.
+2. In a system for the electrical transmission of power, the combination of a motor provided with two or more independent magnetizing-coils and an alternating-current generator containing induced coils corresponding to the motor-coils, and circuits connecting directly the motor and generator coils in such order that the currents developed by the generator will be passed through the corresponding motor-coils, and thereby produce a progressive shifting of the poles of the motor, as herein set forth.
 
-3. The combination, with a motor containing independent energizing-circuits, of an alternating-current generator with coils connected with the motor-circuits and adapted to produce alternating currents differing in phase, substantially as described.`,
+3. The combination, with a motor having an annular or ring-shaped field-magnet and a cylindrical or equivalent armature, and independent coils on the field-magnet or armature, or both, of an alternating-current generator having correspondingly independent coils, and circuits including the generator-coils and corresponding motor-coils in such manner that the rotation of the generator causes a progressive shifting of the poles of the motor in the manner set forth.
+
+4. In a system for the electrical transmission of power, the combination of the following instrumentalities, to wit: a motor composed of a disk or its equivalent mounted within a ring or annular field-magnet, which is provided with magnetizing-coils connected in diametrically-opposite pairs or groups to independent terminals, a generator having induced coils or groups of coils equal in number to the pairs or groups of motor-coils, and circuits connecting the terminals of said coils to the terminals of the motor, respectively, and in such order that the rotation of the generator and the consequent production of alternating currents in the respective circuits produces a progressive shifting of the poles of the motor, as hereinbefore described.`,
   plainEnglishExplanation: {
     overview:
       "In the 1880s, electric motors were direct current (DC) machines equipped with split-ring mechanical commutators and carbon brushes. The brushes sparked violently, wore out rapidly, generated severe electrical noise, and limited power transmission to a one-mile radius around local DC dynamos ($I^2R$ copper losses). Alternating current (AC) could be transformed to high voltages for hundreds of miles of transmission, but no practical AC motor existed—single-phase motors had zero starting torque and had to be spun up by hand. In a flash of mathematical genius, Nikola Tesla realized that passing multiple out-of-phase AC currents through stationary stator coils created a rotating magnetic field in the air gap. A closed rotor inside this field is dragged along purely by electromagnetic induction, eliminating all commutators, brushes, sparking, and wear.",
@@ -151,46 +158,61 @@ What I claim is:
       number: 1,
       isIndependent: true,
       originalText:
-        "The method of operating electro-magnetic motors herein described, which consists in producing a progressive shifting of the magnetic poles of the motor by directing through independent energizing-circuits alternating currents differing in phase, substantially as set forth.",
+        "The combination, with a motor containing separate or independent circuits on the armature or field-magnet, or both, of an alternating-current generator containing induced circuits connected independently to corresponding circuits in the motor, whereby a rotation of the generator produces a progressive shifting of the poles of the motor, as herein described.",
       plainEnglish:
-        "The historic master process claim covering the method of operating an electric motor by producing a continuously rotating magnetic field in the stator using two or more phase-shifted alternating currents.",
+        "The master apparatus and system combination claim protecting an alternating-current motor possessing two or more independent energizing circuits on the field or armature, coupled directly to corresponding induced circuits of an alternating-current generator, whereby rotating the generator continuously advances and rotates the motor's magnetic poles in synchronism without mechanical commutators.",
       keyInnovations: [
-        "Polyphase AC rotating magnetic field",
-        "Phase-shifted alternating currents",
-        "Progressive magnetic shifting without mechanical switching",
+        "Paired motor-generator polyphase circuits",
+        "Independent magnetic phase windings",
+        "Progressive pole shifting from generator rotation",
       ],
       legalSignificance:
-        "The master patent claim of polyphase AC power. Upheld across dozens of federal court battles, giving George Westinghouse the exclusive monopoly to build the Niagara Falls AC hydroelectric plant.",
+        "The core structural combination claim establishing the foundational link between polyphase AC generation and polyphase motor torque.",
     },
     {
       number: 2,
       isIndependent: true,
       originalText:
-        "The combination, with an annular or other closed field-magnet, of two or more independent energizing-circuits and an armature mounted within the field, and connections for directing through the circuits alternating currents differing in phase, whereby a progressive shifting of the poles of the field-magnet is produced, substantially as set forth.",
+        "In a system for the electrical transmission of power, the combination of a motor provided with two or more independent magnetizing-coils and an alternating-current generator containing induced coils corresponding to the motor-coils, and circuits connecting directly the motor and generator coils in such order that the currents developed by the generator will be passed through the corresponding motor-coils, and thereby produce a progressive shifting of the poles of the motor, as herein set forth.",
       plainEnglish:
-        "The master apparatus claim covering an AC motor structure consisting of a closed stator ring with multiple independent phase windings, a closed rotor mounted inside, and electrical connections for polyphase currents.",
+        "The master power-transmission system combination claim covering an induction motor possessing at least two independent magnetizing coils directly wired to matching induced generator coils in an ordered sequence that transmits alternating currents to produce continuous traveling magnetic poles.",
       keyInnovations: [
-        "Polyphase stator architecture",
-        "Closed magnetic circuit",
-        "Internal rotor geometry",
+        "Polyphase electrical power transmission system",
+        "Ordered direct multi-phase wiring",
+        "Phase-quadrature induction motor drive",
       ],
       legalSignificance:
-        "Protected the physical machine architecture of every induction motor built worldwide.",
+        "Protected the fundamental architecture of long-distance polyphase power transmission from generator station to industrial motor.",
     },
     {
-      number: 9,
+      number: 3,
       isIndependent: true,
       originalText:
-        "The combination, with a motor containing independent energizing-circuits, of an alternating-current generator with coils connected with the motor-circuits and adapted to produce alternating currents differing in phase, substantially as described.",
+        "The combination, with a motor having an annular or ring-shaped field-magnet and a cylindrical or equivalent armature, and independent coils on the field-magnet or armature, or both, of an alternating-current generator having correspondingly independent coils, and circuits including the generator-coils and corresponding motor-coils in such manner that the rotation of the generator causes a progressive shifting of the poles of the motor in the manner set forth.",
       plainEnglish:
-        "The historic system claim covering the complete end-to-end polyphase AC power grid: an AC generator producing multiple phase-shifted currents linked directly over transmission wires to drive polyphase induction motors.",
+        "The specific machine architecture claim covering an annular ring field magnet enclosing a cylindrical or equivalent armature rotor, equipped with independent phase coils wired to an alternating-current generator to shift the stator poles progressively and drive continuous brushless shaft rotation.",
       keyInnovations: [
-        "End-to-end polyphase AC power system",
-        "Synchronous AC generation and distribution",
-        "Complete AC grid architecture",
+        "Annular ring stator geometry",
+        "Internal cylindrical armature rotor",
+        "Continuous circular traveling magnetic vector",
       ],
       legalSignificance:
-        "Broadest patent claim in electrical power history, covering the unified generation, long-distance transmission, and mechanical utilization of polyphase alternating current.",
+        "Defined the physical circular ring and internal cylindrical rotor topology adopted by virtually all industrial induction motors.",
+    },
+    {
+      number: 4,
+      isIndependent: true,
+      originalText:
+        "In a system for the electrical transmission of power, the combination of the following instrumentalities, to wit: a motor composed of a disk or its equivalent mounted within a ring or annular field-magnet, which is provided with magnetizing-coils connected in diametrically-opposite pairs or groups to independent terminals, a generator having induced coils or groups of coils equal in number to the pairs or groups of motor-coils, and circuits connecting the terminals of said coils to the terminals of the motor, respectively, and in such order that the rotation of the generator and the consequent production of alternating currents in the respective circuits produces a progressive shifting of the poles of the motor, as hereinbefore described.",
+      plainEnglish:
+        "The complete instrumental power system claim defining a ring stator with diametrically-opposed coil groups, an internal disk armature rotor, and an equal number of matching generator coil circuits creating polyphase currents and progressive magnetic pole shifting to transmit mechanical power.",
+      keyInnovations: [
+        "Diametrically-opposed stator coil pairs",
+        "Equal multi-phase generator coil groups",
+        "Synchronous polyphase induction drive",
+      ],
+      legalSignificance:
+        "The most exhaustive system claim of the patent, upholding Westinghouse's exclusive rights during the historic War of the Currents.",
     },
   ],
   drawings: [
@@ -299,7 +321,8 @@ What I claim is:
     "Niagara Falls",
   ],
   stats: {
-    totalClaims: 3,
-    independentClaims: 3,
+    totalClaims: 4,
+    independentClaims: 4,
   },
 };
+

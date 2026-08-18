@@ -23,13 +23,14 @@ export function GatlingGunSim() {
 
   useEffect(() => {
     if (!isPlaying) return;
+
     let lastTime = performance.now();
 
     const loop = (time: number) => {
       const dt = Math.min(0.1, (time - lastTime) / 1000);
       lastTime = time;
-      
-      setClusterAngleDeg((prev) => (prev + crankRpm * 6 * dt) % 360);
+
+      setClusterAngleDeg((prev) => (prev + gatling.crankOmegaDegPerS * dt) % 360);
       animRef.current = requestAnimationFrame(loop);
     };
 
@@ -37,7 +38,7 @@ export function GatlingGunSim() {
     return () => {
       if (animRef.current) cancelAnimationFrame(animRef.current);
     };
-  }, [isPlaying, crankRpm]);
+  }, [isPlaying, gatling.crankOmegaDegPerS]);
 
   return (
     <div className="w-full rounded-2xl border border-parchment-300 dark:border-ink-800 bg-parchment-50 dark:bg-ink-950 p-4 sm:p-6 shadow-md transition-colors">

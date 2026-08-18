@@ -5,6 +5,13 @@
 
 import { vulcanKinetics } from "./thermochem";
 
+function rpmToOmega(rpm: number) {
+  return {
+    omegaRadPerS: Number(((Math.max(0, rpm) * 2 * Math.PI) / 60).toFixed(3)),
+    omegaDegPerS: Number((Math.max(0, rpm) * 6).toFixed(1)),
+  };
+}
+
 export function stepPeltonWheel(params: { headMeters?: number; runnerRpm?: number }) {
   const h = params.headMeters ?? 450;
   const rpm = params.runnerRpm ?? 600;
@@ -13,12 +20,15 @@ export function stepPeltonWheel(params: { headMeters?: number; runnerRpm?: numbe
   const speedRatio = uBucket / Math.max(1, vJet);
   const etaPct = Math.max(40, Math.round(93 - Math.abs(speedRatio - 0.5) * 160));
   const hydroKw = (45 * 9.81 * h) / 1000;
+  const runner = rpmToOmega(rpm);
   return {
     jetVelocityMps: vJet,
     bucketSpeedMps: Number(uBucket.toFixed(2)),
     speedRatio: Number(speedRatio.toFixed(3)),
     etaPct,
     shaftPowerKw: Math.round(hydroKw * (etaPct / 100)),
+    runnerOmegaRadPerS: runner.omegaRadPerS,
+    runnerOmegaDegPerS: runner.omegaDegPerS,
   };
 }
 
@@ -45,11 +55,14 @@ export function stepOttoEngine(params: { engineRpm?: number; compressionRatio?: 
   const rpm = params.engineRpm ?? 180;
   const cr = params.compressionRatio ?? 4.5;
   const peakCompressionBar = Number((1.0 * cr ** 1.35).toFixed(1));
+  const crank = rpmToOmega(rpm);
   return {
     brakeHorsepower: Number(((rpm / 180) * (3.0 * (cr / 4.5) ** 0.5)).toFixed(1)),
     thermalEfficiencyPct: Math.round((1 - 1 / cr ** 0.4) * 100),
     peakCompressionBar,
     peakFiringBar: Number((peakCompressionBar * 3.8).toFixed(1)),
+    crankOmegaRadPerS: crank.omegaRadPerS,
+    crankOmegaDegPerS: crank.omegaDegPerS,
   };
 }
 
@@ -160,12 +173,20 @@ export function stepNobelDynamite(params: {
 export function stepWhitneyCottonGin(params: { crankRpm?: number }) {
   const rpm = params.crankRpm ?? 180;
   const sawRpm = Math.round(rpm * 3.5);
+  const brushRpm = Math.round(rpm * 12.0);
+  const crank = rpmToOmega(rpm);
+  const saw = rpmToOmega(sawRpm);
+  const brush = rpmToOmega(brushRpm);
   return {
     sawRpm,
-    brushRpm: Math.round(rpm * 12.0),
+    brushRpm,
     outputLbsPerDay: Math.round((rpm / 180) * 50),
     sawTipSpeedMps: Number(((sawRpm * 2 * Math.PI * 0.125) / 60).toFixed(2)),
     laborMultiplier: Math.round((rpm / 180) * 50),
+    crankOmegaRadPerS: crank.omegaRadPerS,
+    crankOmegaDegPerS: crank.omegaDegPerS,
+    sawOmegaRadPerS: saw.omegaRadPerS,
+    brushOmegaRadPerS: brush.omegaRadPerS,
   };
 }
 
@@ -195,12 +216,15 @@ export function stepDavenportMotor(params: { batteryVoltage?: number; loadTorque
   const armatureCurrentA = Number((load / ktNmPerA).toFixed(2));
   const copperLossW = armatureCurrentA ** 2 * 1.8;
   const electricalWatts = Math.round(shaftPowerW + copperLossW);
+  const shaft = rpmToOmega(rpm);
   return {
     shaftRpm: rpm,
     shaftPowerW,
     armatureCurrentA,
     electricalWatts,
     efficiencyPct: electricalWatts > 0 ? Math.round((shaftPowerW / electricalWatts) * 100) : 0,
+    shaftOmegaRadPerS: shaft.omegaRadPerS,
+    shaftOmegaDegPerS: shaft.omegaDegPerS,
   };
 }
 
@@ -214,11 +238,15 @@ export function stepCorlissEngine(params: {
   const cutoff = (params.cutoffPct ?? 25) / 100;
   // Default 25% cutoff keeps the historical IHP; earlier cutoff admits less steam.
   const mepFactor = 0.75 + cutoff;
+  const crank = rpmToOmega(rpm);
   return {
     indicatedHp: Math.round(psi * rpm * 0.25 * 1.8 * mepFactor),
     thermalEfficiencyPct: Number((24.5 + (0.25 - cutoff) * 12).toFixed(1)),
     boilerMpa: Number((psi * 0.00689476).toFixed(2)),
     expansionRatio: Number((1 / Math.max(0.05, cutoff)).toFixed(1)),
+    crankOmegaRadPerS: crank.omegaRadPerS,
+    crankOmegaDegPerS: crank.omegaDegPerS,
+    governorOmegaRadPerS: Number((crank.omegaRadPerS * 1.5).toFixed(3)),
   };
 }
 
@@ -226,11 +254,14 @@ export function stepGatlingGun(params: { crankRpm?: number; barrelCount?: number
   const rpm = params.crankRpm ?? 60;
   const count = params.barrelCount ?? 6;
   const rof = Math.round(rpm * count);
+  const crank = rpmToOmega(rpm);
   return {
     roundsPerMin: rof,
     barrelCoolingIntervalS: Number(((60 / Math.max(1, rof)) * count).toFixed(2)),
     muzzleEnergyJoules: 1850,
     cycleTimeMs: Math.round(60000 / Math.max(1, rof)),
+    crankOmegaRadPerS: crank.omegaRadPerS,
+    crankOmegaDegPerS: crank.omegaDegPerS,
   };
 }
 
@@ -282,6 +313,7 @@ export function stepGliddenBarbedWire(params: {
   const barbSlipThresholdN = twists * 95;
   const contactAreaMm2 = 0.25;
   const machineRpm = twists * 24;
+  const flyer = rpmToOmega(machineRpm);
   return {
     sagCm: Number((2800 / Math.max(100, t)).toFixed(1)),
     barbSlipThresholdN,
@@ -292,6 +324,9 @@ export function stepGliddenBarbedWire(params: {
     machineRpm,
     productionRateFtPerMin: Number(((machineRpm * spacingIn) / 12).toFixed(1)),
     wireTensionLbs: Math.round(t / 4.44822),
+    flyerOmegaRadPerS: flyer.omegaRadPerS,
+    flyerOmegaDegPerS: flyer.omegaDegPerS,
+    reelOmegaRadPerS: Number((flyer.omegaRadPerS * 0.2).toFixed(3)),
   };
 }
 
@@ -302,6 +337,7 @@ export function stepEdisonPhonograph(params: { mandrelRpm?: number; voiceVolumeD
   const surfaceSpeedMps = Number((trackSpeedInPerS * 0.0254).toFixed(2));
   const leadScrewPitchMm = 2.54;
   const axialTravelMmPerS = Number(((rpm / 60) * leadScrewPitchMm).toFixed(3));
+  const mandrel = rpmToOmega(rpm);
   return {
     trackSpeedInPerS,
     grooveDepthMicrons: Number(((vol / 75) * 25).toFixed(1)),
@@ -310,6 +346,8 @@ export function stepEdisonPhonograph(params: { mandrelRpm?: number; voiceVolumeD
     surfaceSpeedMps,
     surfaceSpeedCmPerS: Number((surfaceSpeedMps * 100).toFixed(1)),
     audioBandwidthHz: Math.round(surfaceSpeedMps * 4500),
+    mandrelOmegaRadPerS: mandrel.omegaRadPerS,
+    mandrelOmegaDegPerS: mandrel.omegaDegPerS,
   };
 }
 
@@ -401,6 +439,7 @@ export function stepHollerithTabulating(params: {
   const sensingPinCount = 16;
   const registerDialCount = 40;
   const relays = params.activeRelays ?? sensingPinCount;
+  const press = rpmToOmega(cpm);
   return {
     cycleTimeMs: Math.round(60000 / cpm),
     solenoidForceN: Number(
@@ -412,6 +451,8 @@ export function stepHollerithTabulating(params: {
     registerDialCount,
     sortingPocketCount: 24,
     cardsPerDay: Math.round(cpm * 60 * 7),
+    pressOmegaRadPerS: press.omegaRadPerS,
+    pressOmegaDegPerS: press.omegaDegPerS,
   };
 }
 
@@ -819,5 +860,7 @@ export function stepMaximMachineGun(params: {
     muzzleEnergyJoules,
     cycleIntervalMs,
     recoilStrokeMm: stroke,
+    fireOmegaRadPerS: rpmToOmega(rpm).omegaRadPerS,
+    fireOmegaDegPerS: rpmToOmega(rpm).omegaDegPerS,
   };
 }

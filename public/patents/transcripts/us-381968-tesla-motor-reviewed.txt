@@ -1,0 +1,95 @@
+--- REVIEWED TRANSCRIPTION PAGE 1 OF 9 ---
+N. TESLA.
+ELECTRO MAGNETIC MOTOR.
+No. 381,968. Patented May 1, 1888.
+Sheet 1 of 4: Figs. 1 to 8, Figs. 1a to 8a.
+
+--- REVIEWED TRANSCRIPTION PAGE 2 OF 9 ---
+N. TESLA.
+ELECTRO MAGNETIC MOTOR.
+No. 381,968. Patented May 1, 1888.
+Sheet 2 of 4: Fig. 9, Figs. 10 to 12.
+
+--- REVIEWED TRANSCRIPTION PAGE 3 OF 9 ---
+N. TESLA.
+ELECTRO MAGNETIC MOTOR.
+No. 381,968. Patented May 1, 1888.
+Sheet 3 of 4: Figs. 13 to 16.
+
+--- REVIEWED TRANSCRIPTION PAGE 4 OF 9 ---
+N. TESLA.
+ELECTRO MAGNETIC MOTOR.
+No. 381,968. Patented May 1, 1888.
+Sheet 4 of 4: Figs. 17 to 19.
+
+--- REVIEWED TRANSCRIPTION PAGE 5 OF 9 ---
+UNITED STATES PATENT OFFICE.
+NIKOLA TESLA, OF NEW YORK, N. Y., ASSIGNOR OF ONE-HALF TO CHARLES F. PECK, OF ENGLEWOOD, NEW JERSEY.
+
+ELECTRO-MAGNETIC MOTOR.
+
+SPECIFICATION forming part of Letters Patent No. 381,968, dated May 1, 1888.
+Application filed October 12, 1887. Serial No. 252,132. (No model.)
+
+To all whom it may concern:
+Be it known that I, NIKOLA TESLA, a subject of the Emperor of Austria, from Smiljan, Lika, border country of Austria-Hungary, residing at New York, in the county and State of New York, have invented certain new and useful Improvements in Electro-Magnetic Motors, of which the following is a specification, reference being had to the drawings accompanying and forming a part of the same.
+
+The subject of my present application is a new and useful improvement in electro-magnetic motors, having for its object to produce the rotation of the armature by the action of alternating currents differing in phase and conveyed to the motor over independent circuits.
+
+The practical solution of the problem of the electrical conversion and transmission of mechanical energy involves certain requirements which the apparatus and systems heretofore employed have not been capable of fulfilling. Such a solution, primarily, demands a converter of energy, such as a motor, which can be operated by alternating currents, which will automatically adjust itself to the work required of it, and which is economical and capable of being easily controlled.
+
+The apparatus which I have devised fulfills these conditions, and in order that the principle and mode of operation of the same may be fully understood I will describe it by reference to the accompanying drawings, in which—
+
+Figures 1 to 8, inclusive, are diagrammatic illustrations of the principle of the invention.
+
+--- REVIEWED TRANSCRIPTION PAGE 6 OF 9 ---
+Fig. 9 is an elevation and part section of a motor embodying the invention. Fig. 10 is an elevation and part section of a modified form of motor. Fig. 11 is an end view of a generator for operating this form of motor. Fig. 12 is a diagram of the connections between the generator and motor. Figs. 13 and 14 are diagrams of another modified form of the invention. Figs. 15 and 16 are diagrams of still another form of the invention. Fig. 17 is an elevation of another form of motor. Fig. 18 is an end view of a generator for operating the same, and Fig. 19 is a diagram of the connections between this motor and generator.
+
+In illustration of the principle of the invention, let it be assumed that in Fig. 1 the motor is represented by a ring, R, of soft iron, wound with two coils of insulated wire, C and C′, at right angles to each other. If current is passed through coil C, poles N S are formed at the points opposite to the ends of this coil, as indicated in Fig. 1a. If, on the other hand, a current is passed through coil C′, poles are formed at points at right angles to those formed by coil C, as shown in Fig. 3a. If current is simultaneously passed through both coils, poles will be formed at intermediate points, as shown in Fig. 2a.
+
+It is obvious that by alternating the direction of the currents in the coils in proper sequence the poles will be caused to shift progressively around the ring. This effect is produced by the generator shown in Figs. 1 to 8. This consists of an armature-core, A, wound with two coils, B and B′, at right angles to each other, and mounted to rotate between the poles of a field-magnet, N S.
+
+--- REVIEWED TRANSCRIPTION PAGE 7 OF 9 ---
+The terminal wires of each coil are connected to insulated contact-rings carried by the armature-shaft, and these rings are connected by brushes and conductors to the coils of the motor, respectively.
+
+As the generator-armature rotates, alternating currents are induced in the coils B B′, which differ in phase by ninety degrees, or a quarter of a period. These currents, passing through the motor-coils C C′, produce a progressive shifting of the poles around the ring R, which causes a disc, D, of iron or steel, mounted inside the ring, to rotate.
+
+The disc D in Fig. 9 is shown as cut away on opposite sides; but this is not essential, as a circular disc is also set in rotation. This effect I attribute to a certain inertia or resistance inherent in the metal to the rapid shifting of the lines of force through the same, which results in a continuous tangential pull upon the disc.
+
+In illustration of other forms of my invention, I shall now describe the remaining figures of the drawings. Fig. 10 is a view in elevation and part vertical section of a motor. Fig. 12 is a top view of the same with the field in section and a diagram of connections. Fig. 11 is an end view of a generator with the fields in section.
+
+D is a cylindrical or drum-armature core wound longitudinally with two coils, E and E′, connected to insulated contact-rings on the shaft. The armature revolves within an iron shell, R′, which constitutes the field-magnet.
+
+--- REVIEWED TRANSCRIPTION PAGE 8 OF 9 ---
+The generator for driving this motor, shown in Fig. 11, has an annular armature, A, surrounded by four coils, F F F′ F′, connected in pairs to contact-rings, which are connected by conductors L L and L′ L′ to the motor-rings.
+
+In the form shown in Figs. 13 and 14, the motor has six poles and is operated by a generator having three coils spaced sixty degrees apart, producing currents in three independent circuits differing in phase by sixty degrees.
+
+In the form shown in Figs. 15 and 16, the motor consists of two coils at right angles and a disc armature, and the generator has a rotating field-magnet and stationary induced coils.
+
+In the form shown in Figs. 17, 18, and 19, both the field-magnet and armature of the motor are provided with energizing-coils, which are connected to corresponding coils on the generator.
+
+It will now be more readily seen from the above description how far the requirements of a practical system of electrical transmission of power are realized in my invention. I secure, first, a uniform speed under all loads; second, synchronism between motor and generator; third, greater efficiency, no commutating devices being required; fourth, cheapness and simplicity of construction; fifth, capability of being easily controlled; and, sixth, diminution of danger.
+
+--- REVIEWED TRANSCRIPTION PAGE 9 OF 9 ---
+These motors may be run in series, multiple arc or multiple series, under conditions well understood by those skilled in the art.
+
+The means or devices for carrying out the principle may be varied to a far greater extent than I have been able to indicate; but I regard as within my invention motors containing two or more independent circuits through which the operating-currents are led in the manner described.
+
+In this application I do not claim the method of operating motors which is herein involved, having made separate application for such method.
+
+What I claim is:
+
+1. The combination, with a motor containing separate or independent circuits on the armature or field-magnet, or both, of an alternating-current generator containing induced circuits connected independently to corresponding circuits in the motor, whereby a rotation of the generator produces a progressive shifting of the poles of the motor, as herein described.
+
+2. In a system for the electrical transmission of power, the combination of a motor provided with two or more independent magnetizing-coils and an alternating-current generator containing induced coils corresponding to the motor-coils, and circuits connecting directly the motor and generator coils in such order that the currents developed by the generator will be passed through the corresponding motor-coils, and thereby produce a progressive shifting of the poles of the motor, as herein set forth.
+
+3. The combination, with a motor having an annular or ring-shaped field-magnet and a cylindrical or equivalent armature, and independent coils on the field-magnet or armature, or both, of an alternating-current generator having correspondingly independent coils, and circuits including the generator-coils and corresponding motor-coils in such manner that the rotation of the generator causes a progressive shifting of the poles of the motor in the manner set forth.
+
+4. In a system for the electrical transmission of power, the combination of the following instrumentalities, to wit: a motor composed of a disk or its equivalent mounted within a ring or annular field-magnet, which is provided with magnetizing-coils connected in diametrically-opposite pairs or groups to independent terminals, a generator having induced coils or groups of coils equal in number to the pairs or groups of motor-coils, and circuits connecting the terminals of said coils to the terminals of the motor, respectively, and in such order that the rotation of the generator and the consequent production of alternating currents in the respective circuits produces a progressive shifting of the poles of the motor, as hereinbefore described.
+
+NIKOLA TESLA.
+
+Witnesses:
+FRANK E. HARTLEY,
+FRANK B. MURPHY.

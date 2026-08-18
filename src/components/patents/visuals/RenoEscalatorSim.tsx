@@ -27,12 +27,13 @@ export function RenoEscalatorSim() {
 
   useEffect(() => {
     if (!isPlaying) return;
+
     let lastTime = performance.now();
 
     const loop = (time: number) => {
       const dt = Math.min(0.1, (time - lastTime) / 1000);
       lastTime = time;
-      
+
       setTreadOffset((prev) => (prev + beltSpeedMps * 40 * dt) % 40);
       animRef.current = requestAnimationFrame(loop);
     };

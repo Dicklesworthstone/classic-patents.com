@@ -1,3 +1,4 @@
+import { spencerMicrowaveArchivalEdition } from "@/data/editions/spencerMicrowaveEdition";
 import type { Patent } from "@/types/patent";
 
 export const spencerMicrowavePatent: Patent = {
@@ -20,10 +21,14 @@ export const spencerMicrowavePatent: Patent = {
   originalPdfUrl: "/patents/pdfs/us-2495429-spencer-microwave.pdf",
   googlePatentsUrl: "https://patents.google.com/patent/US2495429A/en",
   usptoClassification: "H05B 6/64 (Dielectric heating / Microwave ovens)",
+  archivalEdition: spencerMicrowaveArchivalEdition,
   originalTextAsset: {
-    url: "/patents/source-text/us-2495429-spencer-microwave.txt",
+    url: "/patents/transcripts/us-2495429-spencer-microwave-reviewed.txt",
     pageCount: 3,
-    kind: "source-pdf-text-layer",
+    kind: "reviewed-transcription",
+    reviewedBy: "Classic Patents editorial agent (GPT-5.6)",
+    reviewedAt: "2026-08-18",
+    sourcePdfSha256: "c5affa57d71dd79a431c8a87427672d9d04579cab911b1b6b5eec9a16ad00aca",
   },
   originalText: `UNITED STATES PATENT OFFICE
 

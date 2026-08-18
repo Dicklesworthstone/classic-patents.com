@@ -1,0 +1,80 @@
+--- REVIEWED TRANSCRIPTION PAGE 1 OF 5 ---
+H. S. MAXIM.
+MACHINE GUN.
+No. 319,596. Patented June 9, 1885.
+
+2 Sheets—Sheet 1. (No Model.)
+
+Drawing sheet containing Fig. 1, a vertical central longitudinal section, and Fig. 2, a plan partly in section. It bears the inventor signature by Parkerson Page, attorney, and the witnesses Raymond Barros and H. M. Taylor.
+
+--- REVIEWED TRANSCRIPTION PAGE 2 OF 5 ---
+H. S. MAXIM.
+MACHINE GUN.
+No. 319,596. Patented June 9, 1885.
+
+2 Sheets—Sheet 2. (No Model.)
+
+Drawing sheet containing Fig. 3, a side view of a portion of the breech-case with parts attached. It bears the inventor signature by Parkerson Page, attorney, and the witnesses Raymond Barros and H. M. Taylor.
+
+--- REVIEWED TRANSCRIPTION PAGE 3 OF 5 ---
+UNITED STATES PATENT OFFICE.
+HIRAM S. MAXIM, OF LONDON, COUNTY OF MIDDLESEX, ENGLAND.
+
+MACHINE-GUN.
+
+SPECIFICATION forming part of Letters Patent No. 319,596, dated June 9, 1885.
+Application filed March 14, 1885. (No model.) Patented in England January 3, 1884, No. 606, and in France June 13, 1884, No. 162,737.
+
+To all whom it may concern:
+
+Be it known that I, HIRAM S. MAXIM, a citizen of the United States, residing at London, in the county of Middlesex, England, have invented certain new and useful Improvements in Machine-Guns, of which the following is a specification, reference being had to the drawings accompanying and forming a part of the same, this application being a division of one filed by me May 27, 1884, No. 132,883, and for an invention patented by me in Great Britain January 3, 1884, No. 606, and in France June 13, 1884, No. 162,737.
+
+My improvements, which form the subject of this application, relate to a machine or automatic magazine-gun described and shown in my application May 27, 1884, No. 132,883. In the gun referred to the construction is of such nature that the force of the gases which issue from the muzzle of the gun at each discharge of the same is utilized for extracting and ejecting the empty cartridge-case, cocking the hammer, bringing another cartridge into position for firing, and firing the same, or for preparing the arm for the next discharge, or for effecting one or more of these operations, and in some cases storing energy to be subsequently used for effecting the remainder thereof.
+
+The particular means for utilizing the force of the gases in the case referred to comprised a vacuum-chamber, in communication with a tubular open chamber surrounding the muzzle of the gun, and a movable piston in the chamber, connected with the breech mechanism in such manner that the movement of the piston effected the proper operation of the breech mechanism. In lieu of using in this way the force of the gases indirectly, they may be used directly to effect the several operations of reloading, firing, and extracting; and the subject of my present application is a gun constructed for so utilizing the gases.
+
+I will describe my invention by reference to the accompanying drawings, in which Figure 1 is a vertical central longitudinal section of a gun constructed in accordance with my invention. Fig. 2 is a plan of the same, partly in section, on line a c a², Fig. 1. Fig. 3 is a side view of a portion of the breech-case with the parts attached thereto.
+
+A is a strong metal frame, which is provided with a lid or cover, A′, and which may be mounted on any suitable stand or carriage.
+
+B is the barrel, which is fixed in the frame A, and C is the breech-block.
+
+Fitted upon the muzzle of the gun is a sleeve or tubular piece, l, which piece is firmly united to a socket, l′, free to slide a short distance to and fro on the barrel B, and connected by the side rods or links, m and m′, to levers n, pivoted upon a pin or rod, n′, fixed in the frame A. The diameter of the sleeve or tubular piece l is diminished at its front end in the manner shown, so that a bullet can pass through the same; but the gases issuing from the muzzle of the gun will, by reason of their expansion, act upon the series of shoulders l², and force the tubular piece l and its socket l′ to move forward upon the barrel when the gun is fired.
+
+Two bars or rods, c′ c′, with right-angled ends c², are arranged to slide through apertures, serving as guides, in the frame A. The ends c² of these rods are connected by means of links o with the levers n, as shown in Fig. 1. The rear ends of the rods c′ are connected with the breech mechanism, as hereinafter described.
+
+d is a slotted arm or cross-head, which is fixed to or formed integrally with the breech-block C, and which is provided with a guide-rod, d′, extending rearwardly therefrom and free to slide to and fro in a guide, d², carried by the frame A. A crank-shaft, e, is carried in bearings e′ fixed to the frame A, and is so arranged that the crank-pin e² fits within the slot in the cross-head d. Two arms, f, are fixed to the crank e at right angles thereto, and a pin or rod, f′, is passed through these arms and connected by the links f² to the rear end of the two rods c′. When the rods are moved rearwardly, the crank e is partially rotated, the said crank acting upon the cross-head d, so as to draw back the breech-block and the crank-pin traveling in the slot in the said cross-head. The crank-shaft e is made with a square portion to receive a hand-wheel, e³, for operating the breech mechanism by hand.
+
+g is the extractor, and h the sear, which are both pivoted to the breech-block C, and h′ is a spring fixed to the said sear, and tending to
+
+--- REVIEWED TRANSCRIPTION PAGE 4 OF 5 ---
+hold the extractor g in engagement with the flange of a cartridge when the latter is inserted in the barrel. This spring also tends to hold the sear h down, so that it will engage with the firing-pin i. The said firing-pin passes longitudinally through the center of the breech-block C, and is encircled by a spiral spring, i′, which tends to press the same forward. The said firing-pin is provided at its rear end with a head, i², which has a knife-edge and a roller, i³, carried by a pin fixed in the said head. A lever, j, is pivoted to the cross-head d, one end of which lever extends upward between the said knife-edge and the roller i³, and the other end of which extends downward into the path of the crank-pin e². These parts are so arranged that during the rearward movement of the cross-head d the crank-pin e² acts upon the lever j and causes it to draw back the firing-pin i until the sear h, which is acted upon by the spring h′, engages with the head i² of the said firing-pin and holds the same in its cocked position. When the sear thus falls into engagement with the firing-pin the extractor g is disengaged from the flange of the cartridge or cartridge-case in the barrel.
+
+The feed-wheels Q Q′ are similar to those described in the specification filed with my said former application for Letters Patent, and are operated in a similar manner, the hooked rod K′ for removing or transferring the cartridges from the feed-wheel Q to the feed-wheel Q′ being fixed to the cross-head d.
+
+The return movement of the piston c and parts connected therewith is caused by a volute spring, k, like an ordinary clock-spring. This spring is arranged within a cover or case, k′, to which one end of the said spring is secured, the other end thereof being secured to the crank-shaft e. The cover or case k′ is attached to the frame A by screws k² passing through the slots k³, and the said cover or case is provided with a handle, k⁴, so that it can be adjusted in either direction to regulate the tension of the spring k. By these means the tension of the spring can be so diminished that after the breech-block and other parts have been moved backward by the force of the explosion, the said spring will not cause their return movement. The gun can then be discharged, when desired, by turning the handle k⁴ in the opposite direction.
+
+The operation of this gun is as follows—that is to say, the mechanism is operated by hand until a cartridge is fed into the barrel. The discharge of this cartridge causes the tubular piece l to move forward and the rods c′ are forced backward. In this rearward movement the extractor g withdraws the empty cartridge-case from the barrel B into the uppermost groove of the feed-wheel Q, and the crank-pin e², traveling downward in the slotted cross-head d, acts upon the lever j and draws back the firing-pin i until the sear h falls and its shoulder h² engages with the shoulder i³ of the firing-pin. The downward movement of the sear h disengages the extractor g from the flange of the cartridge-case. The rearward movement of the hooked rod K′ draws a cartridge from the uppermost groove of the feed-wheel Q′ and the projection C⁵ on the breech-block acts upon one of the teeth of the feed-wheel Q and causes the partial rotation of the feed-wheels, as described in the specification above referred to. The energy stored up in the spring k by the partial rotation of the crank e then causes the tubular piece to move back into position, and the breech-block and parts connected therewith to move forward. This forward movement causes the feed-wheels Q Q′ to be again partially rotated by the projection C⁵, so as to bring a fresh cartridge in line with the barrel, and also to bring a fresh cartridge in the feed-wheel Q′ in line with the lowermost groove of the feed-wheel Q. The breech-block is, moreover, driven home—that is to say, driven firmly against the breech end of the barrel—and in its forward movement forces the cartridge into the barrel, and at the moment the breech is closed the crank-pin e² is forced against the end of the sear h, and pushes the same up so as to release the firing-pin i, which is acted upon by the spring i′, and discharges the cartridge in the barrel. This movement of the sear also causes the extractor g to engage with the flange of the said cartridge. The discharge of the fresh cartridge again operates the mechanism in the manner above described. It will therefore be understood that after the first discharge the fire-arm operates automatically until all the cartridges in the magazine or in the feed-wheels are fired.
+
+It is obvious that my invention may be applied to various descriptions of fire-arms, either for storing energy, to be subsequently used for effecting the operations necessary in loading and firing the same, or preparing the arm for the next discharge, or for directly effecting one or more of these operations and storing energy to be afterwards used for effecting the remainder of the said operations.
+
+What I claim as my invention is—
+
+1. The combination, with the sliding breech-block and the loading, firing, and extracting mechanism connected therewith, of the sliding tubular piece surrounding the muzzle and intermediate connections, between the breech-block and the sliding piece, whereby a movement of the latter operates the breech mechanism, as set forth.
+
+2. The combination, with the sliding breech-block and the loading, firing, and extracting mechanism connected therewith, of the sliding tubular piece surrounding the muzzle, the rods connecting the said piece with the breech mechanism, and the intermediate lever and link between the tubular piece and the connecting-rods, whereby a forward movement of the former produces a rearward movement of the latter, as described.
+
+3. The combination, with the barrel B, of the sliding tubular piece l surrounding the muzzle, socket l′, into which the rear end of
+
+--- REVIEWED TRANSCRIPTION PAGE 5 OF 5 ---
+the same extends, sliding breech-block C, and bars m and c′, with intermediate links, the said bars and links forming a connection between the sliding breech-block and the tubular piece l, as described.
+
+4. The combination of the sliding breech-block and the breech mechanism connected therewith, the crank-shaft e, connected with the breech-block, spring k, secured to the crank-shaft and the frame of the gun, the sliding tubular piece l, surrounding the muzzle, and intermediate connections between the same and the crank-shaft, all as set forth.
+
+In testimony whereof I have hereunto set may hand this 16th day of December, 1884.
+
+HIRAM S. MAXIM.
+
+Witnesses:
+J. R. CLARK, Jr.,
+H. M. TAYLOR.

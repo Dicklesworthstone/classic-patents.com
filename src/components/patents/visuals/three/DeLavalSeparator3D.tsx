@@ -221,6 +221,7 @@ export function DeLavalSeparator3D() {
       reqId = requestAnimationFrame(animate);
       renderedSteps += 1;
       const delta = 1 / 60;
+      const elapsed = renderedSteps * (1 / 60);
       const p = live.current;
 
       bowlGroup.rotation.y += (p.displayOmegaRadPerS ?? 0) * delta;
@@ -230,11 +231,11 @@ export function DeLavalSeparator3D() {
       const creamSpeed = (p.creamFlowLph / 300) * 1.6;
       creamDrops.forEach((drop, i) => {
         drop.visible = split;
-        drop.position.y = 0.2 - ((renderedSteps * (1 / 60) * creamSpeed + i * 0.18) % 1.8);
+        drop.position.y = 0.2 - ((elapsed * creamSpeed + i * 0.18) % 1.8);
       });
       skimDrops.forEach((drop, i) => {
         drop.visible = split;
-        drop.position.y = -0.4 - ((renderedSteps * (1 / 60) * creamSpeed * 0.85 + i * 0.2) % 2.0);
+        drop.position.y = -0.4 - ((elapsed * creamSpeed * 0.85 + i * 0.2) % 2.0);
       });
 
       renderer.render(scene, camera);

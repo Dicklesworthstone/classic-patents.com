@@ -43,6 +43,7 @@ export function DavenportElectricMotor3D() {
     isAudioMuted,
     loadTorque,
     mechanicalWatts: davenport.shaftPowerW,
+    shaftOmegaRadPerS: davenport.shaftOmegaRadPerS,
   });
 
   const controlsRef = useRef<StudioContext["controls"] | null>(null);
@@ -249,7 +250,7 @@ export function DavenportElectricMotor3D() {
       const delta = 1 / 60;
       const p = live.current;
 
-      const omegaRadPerSec = (p.motorRpm * 2 * Math.PI) / 60;
+      const omegaRadPerSec = p.shaftOmegaRadPerS ?? (p.motorRpm * 2 * Math.PI) / 60;
       rotorGroup.rotation.y += omegaRadPerSec * delta;
 
       const watts = p.mechanicalWatts;
@@ -348,6 +349,7 @@ export function DavenportElectricMotor3D() {
           { label: "P_in", value: String(davenport.electricalWatts), unit: "W" },
           { label: "I", value: String(davenport.armatureCurrentA), unit: "A" },
           { label: "η", value: String(davenport.efficiencyPct), unit: "%" },
+          { label: "ω", value: davenport.shaftOmegaRadPerS.toFixed(1), unit: "rad/s" },
         ]}
       />
     </div>

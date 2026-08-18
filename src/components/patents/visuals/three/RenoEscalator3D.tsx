@@ -185,6 +185,7 @@ export function RenoEscalator3D() {
 
     const animate = () => {
       reqId = requestAnimationFrame(animate);
+      renderedSteps += 1;
       const p = live.current;
       const step = stepRenoEscalator({
         passengerCount: p.passengerCount,

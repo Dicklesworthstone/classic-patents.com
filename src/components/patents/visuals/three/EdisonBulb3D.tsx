@@ -316,11 +316,11 @@ export function EdisonBulb3D() {
 
     // --- RENDER LOOP & REAL-TIME INCANDESCENCE DYNAMICS ---
     let reqId: number;
-    let renderedSteps = 0;
+    let _renderedSteps = 0;
 
     const animate = () => {
       reqId = requestAnimationFrame(animate);
-      renderedSteps += 1;
+      _renderedSteps += 1;
       const delta = 1 / 60;
       const p = live.current;
 
