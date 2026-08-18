@@ -12,7 +12,7 @@ import {
   Sparkles,
   Zap,
 } from "lucide-react";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { LatexRenderer, TextWithLatex } from "@/components/ui/LatexRenderer";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import type { Patent } from "@/types/patent";
@@ -42,6 +42,11 @@ const PATENT_VIEW_MODES: PatentViewMode[] = [
 
 function isPatentViewMode(value: string | undefined): value is PatentViewMode {
   return !!value && (PATENT_VIEW_MODES as string[]).includes(value);
+}
+
+function viewModeFromLocation(): PatentViewMode | undefined {
+  const candidate = new URLSearchParams(window.location.search).get("view") ?? undefined;
+  return isPatentViewMode(candidate) ? candidate : undefined;
 }
 
 function handlePrint() {
@@ -113,13 +118,25 @@ export function DualProjectionViewer({ patent, initialView }: DualProjectionView
       ? "Raw source-PDF text layer retained privately · manual edition pending"
       : "Complete archival edition unavailable";
 
-  // Hydration-safe: SSR stays on the default face; deep links apply after mount.
-  // Reading searchParams in the RSC page would force every patent route dynamic.
+  // Hydration-safe: SSR stays on the default face; URL selection applies after
+  // mount, so routes remain static while refresh, bookmarks, and history work.
   useEffect(() => {
-    const view = new URLSearchParams(window.location.search).get("view");
-    if (isPatentViewMode(view ?? undefined)) {
-      setViewModeState(view as PatentViewMode);
-    }
+    const syncFromLocation = () => {
+      const view = viewModeFromLocation();
+      if (view) setViewModeState(view);
+    };
+
+    syncFromLocation();
+    window.addEventListener("popstate", syncFromLocation);
+    return () => window.removeEventListener("popstate", syncFromLocation);
+  }, []);
+
+  const setViewMode = useCallback((mode: PatentViewMode) => {
+    setViewModeState(mode);
+    const url = new URL(window.location.href);
+    if (url.searchParams.get("view") === mode) return;
+    url.searchParams.set("view", mode);
+    window.history.pushState({ patentView: mode }, "", url);
   }, []);
 
   // Quick keyboard shortcuts: 1-6 for instant face switching
@@ -127,22 +144,17 @@ export function DualProjectionViewer({ patent, initialView }: DualProjectionView
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.target instanceof HTMLInputElement || e.target instanceof HTMLTextAreaElement) return;
       if (e.metaKey || e.ctrlKey || e.altKey) return;
-      if (e.key === "1") setViewModeState("plain-english");
-      else if (e.key === "2") setViewModeState("original-spec");
-      else if (e.key === "3") setViewModeState("interactive-sim");
-      else if (e.key === "4") setViewModeState("schematic-sheet");
-      else if (e.key === "5") setViewModeState("pdf-facsimile");
-      else if (e.key === "6") {
-        setViewModeState((curr) => (curr === "split-view" ? "plain-english" : "split-view"));
-      }
+      if (e.key === "1") setViewMode("plain-english");
+      else if (e.key === "2") setViewMode("original-spec");
+      else if (e.key === "3") setViewMode("interactive-sim");
+      else if (e.key === "4") setViewMode("schematic-sheet");
+      else if (e.key === "5") setViewMode("pdf-facsimile");
+      else if (e.key === "6")
+        setViewMode(viewMode === "split-view" ? "plain-english" : "split-view");
     };
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
-  }, []);
-
-  const setViewMode = (mode: PatentViewMode) => {
-    setViewModeState(mode);
-  };
+  }, [setViewMode, viewMode]);
 
   return (
     <div

@@ -132,13 +132,13 @@ The operator lies prone in a movable cradle 6 upon the lower aeroplane. By shift
         principle: "Aerodynamic Lift & Differential Circulation",
         formula: "L = \\frac{1}{2} \\rho V^2 S C_L(\\alpha)",
         explanation:
-          "Warping the wing changes its local angle of attack \\alpha, shifting the circulation \\Gamma and creating differential lift between the left and right wingtips to generate a roll torque.",
+          "Warping the wing changes its local angle of attack $\\alpha$, shifting the circulation $\\Gamma$ and creating differential lift between the left and right wingtips to generate a roll torque.",
       },
       {
         principle: "Induced Drag & Adverse Yaw Mechanism",
         formula: "C_{Di} = \\frac{C_L^2}{\\pi \\cdot AR \\cdot e}",
         explanation:
-          "The high-lift wing tip experiences greater induced drag C_{Di}, which creates an adverse yawing moment that pulls the aircraft away from the intended turn unless counteracted by the vertical rudder.",
+          "The high-lift wing tip experiences greater induced drag $C_{Di}$, which creates an adverse yawing moment that pulls the aircraft away from the intended turn unless counteracted by the vertical rudder.",
       },
       {
         principle: "3-Axis Coordinated Turn Flight Dynamics",

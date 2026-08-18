@@ -284,7 +284,5 @@ Third, in a moving hand-rail traveling at the same velocity and in the same dire
   stats: {
     totalClaims: 3,
     independentClaims: 1,
-    patentWarYears: "1892–1911",
-    impactScore: 100,
   },
 };

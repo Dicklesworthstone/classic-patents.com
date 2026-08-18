@@ -285,7 +285,5 @@ Fourth, I mount engines and propellers upon rigid cars suspended below or attach
   stats: {
     totalClaims: 3,
     independentClaims: 1,
-    patentWarYears: "1898–1908",
-    impactScore: 100,
   },
 };

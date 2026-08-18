@@ -231,24 +231,30 @@ I claim as my invention:
       },
     ],
     civilizationalImpact:
-      "Dynamite compressed decades of mining and railway excavation into months. It enabled the Alpine tunnels, the Hoosac Tunnel, the St. Gotthard Tunnel, iron ore mining on the Mesabi Range, and the foundation works for modern dams, bridges, and canals.",
+      "Nobel's invention of dynamite transformed civil engineering and mining. It made possible the excavation of the Panama Canal, the St. Gotthard Railway Tunnel through the Alps, the Hoosac Tunnel in Massachusetts, and the transcontinental railway networks across North America, while establishing the wealth that funded the Nobel Prizes.",
     funFact:
-      "Nobel coined the name 'Dynamite' from the ancient Greek word 'dynamis' (δύναμις), meaning 'power'. He initially considered naming it 'Nobel's Safety Powder' to reassure terrified mine owners!",
+      "Alfred Nobel chose the word 'dynamite' from the ancient Greek word 'dynamis' (δύναμις), meaning 'power'. Nobel later established the Nobel Peace Prize and international scientific prizes in his 1895 will, dedicating his enormous fortune to honor those who confer the greatest benefit on humankind.",
     aftermath:
-      "In 1875, Nobel invented 'Gelignite' (blasting gelatin) by dissolving nitrocellulose in nitroglycerin. Upon his death in 1896 in Sanremo, Italy, Nobel bequeathed the majority of his massive estate—over 31 million Swedish kronor—to establish the Nobel Prizes in Physics, Chemistry, Physiology or Medicine, Literature, and Peace.",
+      "Nobel went on to invent blasting gelatin (gelignite) in 1875 and ballistite in 1887, accumulating 355 patents worldwide. By his death in Sanremo, Italy in 1896, he controlled over 90 armament and explosive factories in 20 countries.",
+    sideNotes: [
+      "Kieselguhr (diatomaceous earth) is composed of microscopic fossilized silica skeletons of diatoms, capable of absorbing up to three times its own weight in liquid nitroglycerin.",
+      "The invention of the mercury fulminate blasting cap (Patent 78,317 Claim 2) marked the birth of modern two-stage explosive initiation.",
+    ],
   },
   tags: [
     "Alfred Nobel",
     "Dynamite",
-    "Energetic Materials",
-    "Blasting Cap",
-    "Detonation Shock Wave",
-    "Nobel Prize",
+    "Explosives",
+    "Nitroglycerin",
+    "Chemistry",
+    "Mining Engineering",
+    "Civil Engineering",
+    "19th Century",
   ],
   stats: {
     totalClaims: 2,
     independentClaims: 1,
-    patentWarYears: "1868–1874",
-    impactScore: 100,
+    patentWarYears: "1868–1876",
+    impactScore: 98,
   },
 };

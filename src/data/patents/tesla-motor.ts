@@ -301,7 +301,5 @@ What I claim is:
   stats: {
     totalClaims: 3,
     independentClaims: 3,
-    patentWarYears: "1888–1896",
-    impactScore: 100,
   },
 };

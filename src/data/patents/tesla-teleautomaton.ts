@@ -284,7 +284,5 @@ Fifth, an automatic mechanical tapper or decoherer synchronized with the relay m
   stats: {
     totalClaims: 3,
     independentClaims: 1,
-    patentWarYears: "1898–1943",
-    impactScore: 100,
   },
 };

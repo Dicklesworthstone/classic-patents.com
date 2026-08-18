@@ -290,7 +290,5 @@ I CLAIM:
   stats: {
     totalClaims: 3,
     independentClaims: 1,
-    patentWarYears: "1977–1988",
-    impactScore: 100,
   },
 };

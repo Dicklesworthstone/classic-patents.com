@@ -307,7 +307,5 @@ I claim as my invention:
   stats: {
     totalClaims: 3,
     independentClaims: 1,
-    patentWarYears: "1959–1969",
-    impactScore: 100,
   },
 };

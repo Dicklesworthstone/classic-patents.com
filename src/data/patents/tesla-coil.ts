@@ -282,7 +282,5 @@ Furthermore, to withstand the enormous electrostatic stresses developed near the
   stats: {
     totalClaims: 3,
     independentClaims: 1,
-    patentWarYears: "1894–1943",
-    impactScore: 99,
   },
 };
