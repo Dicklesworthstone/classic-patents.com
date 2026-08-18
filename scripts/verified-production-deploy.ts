@@ -20,6 +20,7 @@ const PUBLIC_HOSTNAMES = ["classic-patents.com", "www.classic-patents.com"] as c
 const PLATFORM_HOSTNAME = "classic-patents.vercel.app";
 const PROMOTION_HOSTNAMES = [...PUBLIC_HOSTNAMES, PLATFORM_HOSTNAME] as const;
 const WRIGHT_ROUTE = "/patents/us-821393-wright-flyer";
+const WRIGHT_ARCHIVAL_TEXT_LABEL = "Original Patent Text";
 const WRIGHT_MANUAL_EDITION_MARKER = 'data-archival-edition="manual-react-edition"';
 
 type CommandResult = {
@@ -250,12 +251,12 @@ function assertProtectedPreviewResponse(
 }
 
 async function assertReleaseRoutes(url: string) {
-  await assertResponse(url, WRIGHT_ROUTE, "Complete Source Text");
+  await assertResponse(url, WRIGHT_ROUTE, WRIGHT_ARCHIVAL_TEXT_LABEL);
   await assertResponse(url, WRIGHT_ROUTE, WRIGHT_MANUAL_EDITION_MARKER);
 }
 
 function assertProtectedPreviewRoutes(deployment: string) {
-  assertProtectedPreviewResponse(deployment, WRIGHT_ROUTE, "Complete Source Text");
+  assertProtectedPreviewResponse(deployment, WRIGHT_ROUTE, WRIGHT_ARCHIVAL_TEXT_LABEL);
   assertProtectedPreviewResponse(deployment, WRIGHT_ROUTE, WRIGHT_MANUAL_EDITION_MARKER);
 }
 
