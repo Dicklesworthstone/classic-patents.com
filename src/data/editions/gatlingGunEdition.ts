@@ -38,6 +38,15 @@ const figure = (number: number) => ({
   figurePreviews: [previews[number]],
 });
 
+const figureGroup = (text: string, ...numbers: number[]) => ({
+  kind: "reference" as const,
+  text,
+  href: `#figure-${numbers[0]}`,
+  referenceType: "figure" as const,
+  label: `${text} in the pinned US 36,836 facsimile`,
+  figurePreviews: numbers.map((number) => previews[number]),
+});
+
 /**
  * Paragraph- and claim-level companion reading for this edition. Keys are the
  * exact zero-based indexes of `gatlingGunArchivalEdition.blocks`; the mapping
@@ -179,8 +188,10 @@ export const gatlingGunArchivalEdition: CuratedSpecificationEdition = {
         figure(4),
         {
           kind: "text",
-          text: " is a transverse section through lock-cylinder on line x y in Figs. 1 and 2. ",
+          text: " is a transverse section through lock-cylinder on line x y in ",
         },
+        figureGroup("Figs. 1 and 2", 1, 2),
+        { kind: "text", text: ". " },
         figure(5),
         {
           kind: "text",
@@ -320,7 +331,12 @@ export const gatlingGunArchivalEdition: CuratedSpecificationEdition = {
       inlines: [
         {
           kind: "text",
-          text: "P, Figs. 2, 3, and 7, is a ring encircling the forward end of the lock-cylinder D, and is rigidly secured by lugs to the frame B. The rear edge of this ring is formed into two inclined planes, as clearly shown in ",
+          text: "P, ",
+        },
+        figureGroup("Figs. 2, 3, and 7", 2, 3, 7),
+        {
+          kind: "text",
+          text: ", is a ring encircling the forward end of the lock-cylinder D, and is rigidly secured by lugs to the frame B. The rear edge of this ring is formed into two inclined planes, as clearly shown in ",
         },
         figure(3),
         {

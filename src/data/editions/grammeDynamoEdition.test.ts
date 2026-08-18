@@ -45,6 +45,19 @@ describe("grammeDynamoArchivalEdition", () => {
     }
   });
 
+  test("does not leave a source figure citation stranded in a plain text node", () => {
+    const bareFigureCitation = /\bFig(?:s)?\.\s*\d+|\bFigure\s+\d+/i;
+
+    for (const block of grammeDynamoArchivalEdition.blocks) {
+      if (!("inlines" in block)) continue;
+      for (const inline of block.inlines) {
+        if (inline.kind === "text") {
+          expect(inline.text).not.toMatch(bareFigureCitation);
+        }
+      }
+    }
+  });
+
   test("pins the record to the reviewed transcription, all claims, and both named inventors", () => {
     expect(grammeDynamoPatent.archivalEdition).toBe(grammeDynamoArchivalEdition);
     expect(grammeDynamoPatent.originalTextAsset).toMatchObject({

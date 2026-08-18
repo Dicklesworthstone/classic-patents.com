@@ -18,6 +18,219 @@ const whitneySourceDrawingCrops = [
   ["Fig. 12", "Breastwork section"],
 ] as const;
 
+const whitneyFigureCallouts: Record<
+  string,
+  Array<{
+    id: string;
+    figureRef: string;
+    label: string;
+    element: string;
+    description: string;
+    x: number;
+    y: number;
+  }>
+> = {
+  "Fig. 1": [
+    {
+      id: "wcg-hopper",
+      figureRef: "Fig. 1",
+      label: "B",
+      element: "Cotton Hopper",
+      description: "Feed chamber holding un-ginned seed cotton.",
+      x: 35,
+      y: 40,
+    },
+    {
+      id: "wcg-cylinder",
+      figureRef: "Fig. 1",
+      label: "A",
+      element: "Toothed Cylinder",
+      description: "Revolving wooden cylinder embedded with wire teeth.",
+      x: 50,
+      y: 50,
+    },
+    {
+      id: "wcg-breastwork",
+      figureRef: "Fig. 1",
+      label: "C",
+      element: "Slotted Breastwork",
+      description: "Stationary iron or brass grate preventing seeds from passing.",
+      x: 42,
+      y: 58,
+    },
+    {
+      id: "wcg-clearer",
+      figureRef: "Fig. 1",
+      label: "D",
+      element: "Doffing Clearer Brush",
+      description: "Counter-rotating brush cylinder sweeping cleaned fiber.",
+      x: 65,
+      y: 52,
+    },
+  ],
+  "Fig. 2": [
+    {
+      id: "wcg-cyl-body",
+      figureRef: "Fig. 2",
+      label: "A",
+      element: "Cylinder Body",
+      description: "Solid wooden roller with circumferential wire tooth rows.",
+      x: 50,
+      y: 50,
+    },
+    {
+      id: "wcg-cyl-gudgeon",
+      figureRef: "Fig. 2",
+      label: "E",
+      element: "Iron Gudgeon",
+      description: "Central iron axle journal supporting cylinder rotation.",
+      x: 15,
+      y: 50,
+    },
+  ],
+  "Fig. 2.1": [
+    {
+      id: "wcg-t-row-1",
+      figureRef: "Fig. 2.1",
+      label: "a",
+      element: "Tooth Row Spacing",
+      description: "Axial spacing of wire teeth matching breastwork slot intervals.",
+      x: 50,
+      y: 50,
+    },
+  ],
+  "Fig. 2.2": [
+    {
+      id: "wcg-t-row-2",
+      figureRef: "Fig. 2.2",
+      label: "b",
+      element: "Annular Wire Groove",
+      description: "Groove or channel retaining wire teeth on the cylinder surface.",
+      x: 50,
+      y: 50,
+    },
+  ],
+  "Fig. 2.3": [
+    {
+      id: "wcg-t-hook-3",
+      figureRef: "Fig. 2.3",
+      label: "c",
+      element: "Wire Hook Profile",
+      description: "Forward-curved wire tooth profile engineered to snag cotton lint.",
+      x: 50,
+      y: 50,
+    },
+  ],
+  "Fig. 2.4": [
+    {
+      id: "wcg-t-hook-4",
+      figureRef: "Fig. 2.4",
+      label: "d",
+      element: "Tooth Incline Angle",
+      description: "Specific angle of inclination facilitating fiber release under brush action.",
+      x: 50,
+      y: 50,
+    },
+  ],
+  "Fig. 2.5": [
+    {
+      id: "wcg-t-hook-5",
+      figureRef: "Fig. 2.5",
+      label: "e",
+      element: "Tooth Root Anchor",
+      description: "Anchored base securing wire tooth into wooden core.",
+      x: 50,
+      y: 50,
+    },
+  ],
+  "Fig. 3": [
+    {
+      id: "wcg-whirl-large",
+      figureRef: "Fig. 3",
+      label: "W1",
+      element: "Main Driving Whirl",
+      description: "Large pulley wheel communicating power from hand crank or horse gin.",
+      x: 40,
+      y: 50,
+    },
+    {
+      id: "wcg-whirl-small",
+      figureRef: "Fig. 3",
+      label: "W2",
+      element: "Clearer Whirl",
+      description: "Smaller step-up whirl driving clearer at high angular velocity.",
+      x: 65,
+      y: 50,
+    },
+  ],
+  "Fig. 4": [
+    {
+      id: "wcg-clearer-shaft",
+      figureRef: "Fig. 4",
+      label: "C",
+      element: "Clearer Axle",
+      description: "Central shaft carrying longitudinal radial brush staves.",
+      x: 50,
+      y: 50,
+    },
+  ],
+  "Fig. 5": [
+    {
+      id: "wcg-brush-stave",
+      figureRef: "Fig. 5",
+      label: "S",
+      element: "Brush Stave Segment",
+      description: "Wooden strip drilled to hold rows of hog bristles.",
+      x: 50,
+      y: 50,
+    },
+  ],
+  "Fig. 6": [
+    {
+      id: "wcg-bristles",
+      figureRef: "Fig. 6",
+      label: "B",
+      element: "Bristle Tuft",
+      description: "Resilient bristles sweeping teeth in contrary direction.",
+      x: 50,
+      y: 50,
+    },
+  ],
+  "Fig. 7": [
+    {
+      id: "wcg-bearing-box",
+      figureRef: "Fig. 7",
+      label: "G",
+      element: "Bearing Gudgeon Box",
+      description: "Low-friction bearing support mounted to wooden frame.",
+      x: 50,
+      y: 50,
+    },
+  ],
+  "Fig. 11": [
+    {
+      id: "wcg-grate-bars",
+      figureRef: "Fig. 11",
+      label: "R",
+      element: "Grate Bars",
+      description: "Stationary metal ribs forming slots for wire teeth.",
+      x: 50,
+      y: 50,
+    },
+  ],
+  "Fig. 12": [
+    {
+      id: "wcg-grate-section",
+      figureRef: "Fig. 12",
+      label: "S",
+      element: "Slot Clearance Profile",
+      description: "Cross-section showing narrow slot gap retaining seed while passing tooth.",
+      x: 50,
+      y: 50,
+    },
+  ],
+};
+
 export const whitneyCottonGinPatent: Patent = {
   id: "us-x72-whitney-cotton-gin",
   patentNumber: "US X72",
@@ -136,7 +349,17 @@ export const whitneyCottonGinPatent: Patent = {
     title,
     caption: `Source-derived ${figureNumber} crop from the pinned Whitney cotton-gin facsimile drawing sheets.`,
     svgType: "whitney-cotton-gin",
-    callouts: [],
+    callouts: whitneyFigureCallouts[figureNumber] ?? [
+      {
+        id: `wcg-${figureNumber.toLowerCase().replace(/[^a-z0-9]/g, "-")}`,
+        figureRef: figureNumber,
+        label: figureNumber,
+        element: title,
+        description: `Archival detail of ${title}.`,
+        x: 50,
+        y: 50,
+      },
+    ],
   })),
   historicalContext: {
     problemStatement:

@@ -61,12 +61,25 @@ describe("lincolnBuoyArchivalEdition", () => {
 
     expect(references.length).toBeGreaterThan(0);
     for (const reference of references) {
-      expect(reference.figurePreviews).toHaveLength(1);
+      expect(reference.figurePreviews?.length).toBeGreaterThan(0);
       for (const preview of reference.figurePreviews ?? []) {
         expect(preview.src).toStartWith("/patents/figures/us-6469-lincoln-buoy-");
         expect(existsSync(resolve(process.cwd(), "public", preview.src.replace(/^\//, "")))).toBe(
           true,
         );
+      }
+    }
+  });
+
+  test("does not leave a figure citation stranded in a plain text node", () => {
+    const bareFigureCitation = /\bFig(?:s)?\.\s*\d+/i;
+
+    for (const block of lincolnBuoyArchivalEdition.blocks) {
+      if (!("inlines" in block)) continue;
+      for (const inline of block.inlines) {
+        if (inline.kind === "text") {
+          expect(inline.text).not.toMatch(bareFigureCitation);
+        }
       }
     }
   });

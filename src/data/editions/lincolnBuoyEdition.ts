@@ -32,6 +32,15 @@ const figure = (number: keyof typeof FIGURE_PREVIEWS) => ({
   figurePreviews: [FIGURE_PREVIEWS[number]],
 });
 
+const figures = (...numbers: (keyof typeof FIGURE_PREVIEWS)[]) => ({
+  kind: "reference" as const,
+  text: `Figs. ${numbers.join(" and ")}`,
+  href: `#lincoln-buoy-figure-${numbers[0]}`,
+  referenceType: "figure" as const,
+  label: `Figures ${numbers.join(" and ")} in the US 6,469 source drawing sheet`,
+  figurePreviews: numbers.map((number) => FIGURE_PREVIEWS[number]),
+});
+
 /**
  * A continuous, hand-prepared reading edition made from direct visual review
  * of all three pages of the US 6,469 local facsimile. The drawing sheet stays
@@ -131,15 +140,31 @@ export const lincolnBuoyArchivalEdition: CuratedSpecificationEdition = {
     },
     {
       kind: "paragraph",
-      inlines: literal(
-        "The sides of the chambers may be stayed and supported centrally by a frame k, as shown in Fig. 3, or as many stays may be combined with them as may be necessary to give them the requisite fullness and strength when expanded.",
-      ),
+      inlines: [
+        {
+          kind: "text",
+          text: "The sides of the chambers may be stayed and supported centrally by a frame k, as shown in ",
+        },
+        figure(3),
+        {
+          kind: "text",
+          text: ", or as many stays may be combined with them as may be necessary to give them the requisite fullness and strength when expanded.",
+        },
+      ],
     },
     {
       kind: "paragraph",
-      inlines: literal(
-        "The buoyant chambers are suspended and operated as follows: A suitable number of vertical shafts or spars D, D, are combined with each of the chambers, as represented in Figs. 2 and 3, to wit: The shafts work freely in apertures formed in the upper sides of the chambers, and their lower ends are permanently secured to the under sides of the chambers: The vertical shafts or spars (D, D,) pass up through the top of the boxes B, B, on the lower guards of the vessel, and then through its upper guards, or some other suitable support, to keep them in a vertical position.",
-      ),
+      inlines: [
+        {
+          kind: "text",
+          text: "The buoyant chambers are suspended and operated as follows: A suitable number of vertical shafts or spars D, D, are combined with each of the chambers, as represented in ",
+        },
+        figures(2, 3),
+        {
+          kind: "text",
+          text: ", to wit: The shafts work freely in apertures formed in the upper sides of the chambers, and their lower ends are permanently secured to the under sides of the chambers: The vertical shafts or spars (D, D,) pass up through the top of the boxes B, B, on the lower guards of the vessel, and then through its upper guards, or some other suitable support, to keep them in a vertical position.",
+        },
+      ],
     },
     {
       kind: "paragraph",
@@ -160,7 +185,12 @@ export const lincolnBuoyArchivalEdition: CuratedSpecificationEdition = {
       inlines: [
         {
           kind: "text",
-          text: "The ropes f, f, are connected to the vertical shafts at i, i, as shown in Figs. 1 and 2. It will therefore be perceived, that by turning the main shaft C, in one direction, the buoyant chambers will be expanded into the position shown in ",
+          text: "The ropes f, f, are connected to the vertical shafts at i, i, as shown in ",
+        },
+        figures(1, 2),
+        {
+          kind: "text",
+          text: ". It will therefore be perceived, that by turning the main shaft C, in one direction, the buoyant chambers will be expanded into the position shown in ",
         },
         figure(1),
         {

@@ -126,7 +126,17 @@ export const ericssonPropellerArchivalEdition: CuratedSpecificationEdition = {
         figure("Fig. 2", [2]),
         {
           kind: "text",
-          text: ", A A A represent a cylinder of equal diameter with the hoops A and B in Fig. 1. a, a, a, a, a, a, a, a, are eight thin spiral planes or plates of the same width as the plates 1, 2, 3, 4, 5 and 9, 10, 11, 12 and 13 in Fig. 1, and coiled around the said cylinder A A A spirally like the thread of a screw, the coils being placed at equal distances from each other and each having such a fall or inclination that it will not have passed once around the cylinder until it has advanced along it a distance equal to three times its diameter. Now if the said cylinder A A A with its spiral plates or threads be cut off through the lines D, E and F G, the portions of the spiral plates between the said lines and which are here numbered 9, 10, 11, 12 and 13 show the exact forms and positions which the plates represented in ",
+          text: ", A A A represent a cylinder of equal diameter with the hoops A and B in ",
+        },
+        figure("Fig. 1", [1]),
+        {
+          kind: "text",
+          text: ". a, a, a, a, a, a, a, a, are eight thin spiral planes or plates of the same width as the plates 1, 2, 3, 4, 5 and 9, 10, 11, 12 and 13 in ",
+        },
+        figure("Fig. 1", [1]),
+        {
+          kind: "text",
+          text: ", and coiled around the said cylinder A A A spirally like the thread of a screw, the coils being placed at equal distances from each other and each having such a fall or inclination that it will not have passed once around the cylinder until it has advanced along it a distance equal to three times its diameter. Now if the said cylinder A A A with its spiral plates or threads be cut off through the lines D, E and F G, the portions of the spiral plates between the said lines and which are here numbered 9, 10, 11, 12 and 13 show the exact forms and positions which the plates represented in ",
         },
         figure("Fig. 1", [1]),
         {
@@ -145,7 +155,17 @@ export const ericssonPropellerArchivalEdition: CuratedSpecificationEdition = {
         figure("Fig. 1", [1]),
         {
           kind: "text",
-          text: ". c, c, c, c, c, c, c, c, are narrow hoops of wrought iron passing around and riveted at the parts marked D in Fig. 3 to the spiral plates in order to secure them more firmly in their places. E E E is a strong wrought iron stay, better seen in Fig. 3, firmly bolted to the stern of the vessel. e, e, is a brass bearing fixed in the said stay E which bearing carries the outer and enlarged end of the shaft a, a, a, the other end of the shaft being carried by and working through a stuffing box F attached to the shaft b, b, b, which shaft is supported by a strong cast iron framing G and plumber block g. C is a stuffing box fixed to the stern post to prevent the water from entering the vessel around the shaft b, b, b, which should work freely through the stern post.",
+          text: ". c, c, c, c, c, c, c, c, are narrow hoops of wrought iron passing around and riveted at the parts marked D in ",
+        },
+        figure("Fig. 3", [3]),
+        {
+          kind: "text",
+          text: " to the spiral plates in order to secure them more firmly in their places. E E E is a strong wrought iron stay, better seen in ",
+        },
+        figure("Fig. 3", [3]),
+        {
+          kind: "text",
+          text: ", firmly bolted to the stern of the vessel. e, e, is a brass bearing fixed in the said stay E which bearing carries the outer and enlarged end of the shaft a, a, a, the other end of the shaft being carried by and working through a stuffing box F attached to the shaft b, b, b, which shaft is supported by a strong cast iron framing G and plumber block g. C is a stuffing box fixed to the stern post to prevent the water from entering the vessel around the shaft b, b, b, which should work freely through the stern post.",
         },
       ],
     },
@@ -191,7 +211,12 @@ export const ericssonPropellerArchivalEdition: CuratedSpecificationEdition = {
         figure("Fig. 6", [6]),
         {
           kind: "text",
-          text: " is a section showing the manner in which the requisite contrary movement is obtained in the said application of my propeller. In order the more clearly to describe the said application I will first describe this last mentioned Fig. 6, but previous to doing I have to state that similar letters of reference will be used to denote similar parts in all the figures.",
+          text: " is a section showing the manner in which the requisite contrary movement is obtained in the said application of my propeller. In order the more clearly to describe the said application I will first describe this last mentioned ",
+        },
+        figure("Fig. 6", [6]),
+        {
+          kind: "text",
+          text: ", but previous to doing I have to state that similar letters of reference will be used to denote similar parts in all the figures.",
         },
       ],
     },
@@ -209,9 +234,19 @@ export const ericssonPropellerArchivalEdition: CuratedSpecificationEdition = {
     },
     {
       kind: "paragraph",
-      inlines: text(
-        "Having thus described Fig. 6, representing the section of my propeller as applied to ships of war or merchant vessels, I will now proceed to describe Fig. 4, showing the manner in which it is attached. K is a bracket of iron, better seen at K K, it is firmly fixed to the stern for the purpose of carrying the propeller, by means of the hollow stem A and its collars d d, the hollow stem being kept in its place by the key k which is secured to the bracket K by a slight chain. L is a stay of wrought iron, to keep the hollow stem A firmly in an upright position, and to receive and communicate the force of the propellers for which purpose it is attached to the stern post by hinges on each side of the rudder; its form will be better seen at L L, the rudder being made to work between l, l and the fork M fitted to receive the hollow stem A, which is kept in by a key m this being secured to the stay by a slight chain as shown in the drawing. N is a ring or collar around the upper part of the hollow stem A, having a strong loop or eye at n. It is evident that by driving out the keys m k and x and pushing down the sliding coupling box f the hollow stem with the upright shaft and propeller will become quite detached, and may thus be lifted out of the water or taken on board simply by applying a hoisting tackle at n. The stay L should whenever the propeller is taken on board be lifted up and kept suspended by the hooked rope at R in the position shown by the dotted lines n r.",
-      ),
+      inlines: [
+        { kind: "text", text: "Having thus described " },
+        figure("Fig. 6", [6]),
+        {
+          kind: "text",
+          text: ", representing the section of my propeller as applied to ships of war or merchant vessels, I will now proceed to describe ",
+        },
+        figure("Fig. 4", [4]),
+        {
+          kind: "text",
+          text: ", showing the manner in which it is attached. K is a bracket of iron, better seen at K K, it is firmly fixed to the stern for the purpose of carrying the propeller, by means of the hollow stem A and its collars d d, the hollow stem being kept in its place by the key k which is secured to the bracket K by a slight chain. L is a stay of wrought iron, to keep the hollow stem A firmly in an upright position, and to receive and communicate the force of the propellers for which purpose it is attached to the stern post by hinges on each side of the rudder; its form will be better seen at L L, the rudder being made to work between l, l and the fork M fitted to receive the hollow stem A, which is kept in by a key m this being secured to the stay by a slight chain as shown in the drawing. N is a ring or collar around the upper part of the hollow stem A, having a strong loop or eye at n. It is evident that by driving out the keys m k and x and pushing down the sliding coupling box f the hollow stem with the upright shaft and propeller will become quite detached, and may thus be lifted out of the water or taken on board simply by applying a hoisting tackle at n. The stay L should whenever the propeller is taken on board be lifted up and kept suspended by the hooked rope at R in the position shown by the dotted lines n r.",
+        },
+      ],
     },
     {
       kind: "paragraph",
@@ -223,7 +258,12 @@ export const ericssonPropellerArchivalEdition: CuratedSpecificationEdition = {
         figure("Fig. 5", [5]),
         {
           kind: "text",
-          text: ", S S being two high pressure steam cylinders placed horizontally and nearly at right angles, their power to be communicated by the forked connecting rods s s to the crank F. In cases where the application of steam engines would be objectionable manual force may be applied by means of long winches similar to those used for working ordinary chain pumps or by means of a capstan made to give motion to the conical cog wheel T, marked in red lines, see Fig. 4, such cog wheel to work in or give motion to another conical cog wheel V fixed on the upright shaft F.",
+          text: ", S S being two high pressure steam cylinders placed horizontally and nearly at right angles, their power to be communicated by the forked connecting rods s s to the crank F. In cases where the application of steam engines would be objectionable manual force may be applied by means of long winches similar to those used for working ordinary chain pumps or by means of a capstan made to give motion to the conical cog wheel T, marked in red lines, see ",
+        },
+        figure("Fig. 4", [4]),
+        {
+          kind: "text",
+          text: ", such cog wheel to work in or give motion to another conical cog wheel V fixed on the upright shaft F.",
         },
       ],
     },

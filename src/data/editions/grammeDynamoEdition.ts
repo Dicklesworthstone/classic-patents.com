@@ -31,6 +31,27 @@ const figure7To9 = drawingSheet(2, "7–9");
 const figure10To13 = drawingSheet(3, "10–13");
 const figure14 = drawingSheet(4, "14");
 
+const sourceFigure = (
+  text: string,
+  sheet: 1 | 2 | 3 | 4,
+): Extract<CuratedSpecificationInline, { kind: "reference" }> => {
+  const sourceSheet = {
+    1: figure1To3,
+    2: figure7To9,
+    3: figure10To13,
+    4: figure14,
+  }[sheet];
+
+  return {
+    kind: "reference",
+    text,
+    href: `#drawing-sheet-${sheet}`,
+    referenceType: "figure",
+    label: `${text} on drawing sheet ${sheet} of the pinned US 120,057 facsimile`,
+    figurePreviews: sourceSheet.figurePreviews,
+  };
+};
+
 /**
  * Continuous, manual edition of US 120,057. Every drawing sheet and every
  * specification page in the pinned nine-page PDF was inspected by the named
@@ -144,10 +165,15 @@ export const grammeDynamoArchivalEdition: CuratedSpecificationEdition = {
     {
       kind: "paragraph",
       inlines: [
+        sourceFigure("Figure 1", 1),
         {
           kind: "text",
-          text: "Figure 1 of the annexed drawing represents a vertical projective view of a magneto-electric machine, constructed according to the above-described principles; Fig. 2 shows a vertical section, and Fig. 3 a view of a detached part. See ",
+          text: " of the annexed drawing represents a vertical projective view of a magneto-electric machine, constructed according to the above-described principles; ",
         },
+        sourceFigure("Fig. 2", 1),
+        { kind: "text", text: " shows a vertical section, and " },
+        sourceFigure("Fig. 3", 1),
+        { kind: "text", text: " a view of a detached part. See " },
         figure1To3,
         { kind: "text", text: "." },
       ],
@@ -227,9 +253,17 @@ export const grammeDynamoArchivalEdition: CuratedSpecificationEdition = {
     {
       kind: "paragraph",
       inlines: [
+        sourceFigure("Fig. 4", 1),
         {
           kind: "text",
-          text: "Fig. 4 shows a vertical, and Fig. 5 a horizontal projection, and Fig. 6 a vertical section of another construction of magneto-electric machine arranged according to our invention. See ",
+          text: " shows a vertical, and ",
+        },
+        sourceFigure("Fig. 5", 1),
+        { kind: "text", text: " a horizontal projection, and " },
+        sourceFigure("Fig. 6", 1),
+        {
+          kind: "text",
+          text: " a vertical section of another construction of magneto-electric machine arranged according to our invention. See ",
         },
         figure4To6,
         {
@@ -271,9 +305,17 @@ export const grammeDynamoArchivalEdition: CuratedSpecificationEdition = {
     {
       kind: "paragraph",
       inlines: [
+        sourceFigure("Fig. 7", 2),
         {
           kind: "text",
-          text: "Fig. 7 represents a vertical projection; Fig. 8 a horizontal section, and Fig. 9 a modification of parts of another construction of magneto-electric machine, arranged according to our invention. See ",
+          text: " represents a vertical projection; ",
+        },
+        sourceFigure("Fig. 8", 2),
+        { kind: "text", text: " a horizontal section, and " },
+        sourceFigure("Fig. 9", 2),
+        {
+          kind: "text",
+          text: " a modification of parts of another construction of magneto-electric machine, arranged according to our invention. See ",
         },
         figure7To9,
         { kind: "text", text: "." },
@@ -281,15 +323,36 @@ export const grammeDynamoArchivalEdition: CuratedSpecificationEdition = {
     },
     {
       kind: "paragraph",
-      inlines: literal(
-        "The apparatus consists of two revolving disks, A A′, arranged as has been described in reference to Figs. 4, 5, and 6, and fixed on the shaft D, which revolves in bearings situated in a brass frame, J. Each of the disks consists of a series of small bobbins, connected in the same manner as those of the cylinder A of Figs. 4, 5, and 6, and the conducting-rods C are fixed between wooden or other suitable non-conducting disks, F and G. The currents are taken by six rubbers or springs, S, fixed to the frame J and to the insulated carriers V.",
-      ),
+      inlines: [
+        {
+          kind: "text",
+          text: "The apparatus consists of two revolving disks, A A′, arranged as has been described in reference to ",
+        },
+        sourceFigure("Figs. 4, 5, and 6", 1),
+        {
+          kind: "text",
+          text: ", and fixed on the shaft D, which revolves in bearings situated in a brass frame, J. Each of the disks consists of a series of small bobbins, connected in the same manner as those of the cylinder A of ",
+        },
+        sourceFigure("Figs. 4, 5, and 6", 1),
+        {
+          kind: "text",
+          text: ", and the conducting-rods C are fixed between wooden or other suitable non-conducting disks, F and G. The currents are taken by six rubbers or springs, S, fixed to the frame J and to the insulated carriers V.",
+        },
+      ],
     },
     {
       kind: "paragraph",
-      inlines: literal(
-        "The electro-magnets are formed of twelve short bobbins, six of which are situated on one side and the other six on the opposite side of the apparatus, one end of the iron bars of which magnets are bolted to two hexagonal pieces, P and P′, whereas at the opposite end they are connected in pairs by armatures B, see Figs. 7 and 8, and they are coupled in such manner that the armatures B connect similar poles, and that over the periphery each electro-magnet has a dissimilar pole, in consequence of which the armatures B form the poles of the electro-magnets, and the disks A and A′ are only magnetized by three north and three south poles.",
-      ),
+      inlines: [
+        {
+          kind: "text",
+          text: "The electro-magnets are formed of twelve short bobbins, six of which are situated on one side and the other six on the opposite side of the apparatus, one end of the iron bars of which magnets are bolted to two hexagonal pieces, P and P′, whereas at the opposite end they are connected in pairs by armatures B, see ",
+        },
+        sourceFigure("Figs. 7 and 8", 2),
+        {
+          kind: "text",
+          text: ", and they are coupled in such manner that the armatures B connect similar poles, and that over the periphery each electro-magnet has a dissimilar pole, in consequence of which the armatures B form the poles of the electro-magnets, and the disks A and A′ are only magnetized by three north and three south poles.",
+        },
+      ],
     },
     {
       kind: "paragraph",
@@ -311,16 +374,35 @@ export const grammeDynamoArchivalEdition: CuratedSpecificationEdition = {
     },
     {
       kind: "paragraph",
-      inlines: literal(
-        "It will be readily understood that in this arrangement also the number of electro-magnets may, if wished, be either increased or diminished; that instead of the disks a cylinder, A, might be made use of, viz., as shown in Fig. 9; or that one or more of the disks might be done away with; and that by making use of a cylinder, A, Fig. 9, this latter might be kept fixed, and instead the electro-magnets be caused to rotate in the interior of it for magnetizing from the inside.",
-      ),
+      inlines: [
+        {
+          kind: "text",
+          text: "It will be readily understood that in this arrangement also the number of electro-magnets may, if wished, be either increased or diminished; that instead of the disks a cylinder, A, might be made use of, viz., as shown in ",
+        },
+        sourceFigure("Fig. 9", 2),
+        {
+          kind: "text",
+          text: "; or that one or more of the disks might be done away with; and that by making use of a cylinder, A, ",
+        },
+        sourceFigure("Fig. 9", 2),
+        {
+          kind: "text",
+          text: ", this latter might be kept fixed, and instead the electro-magnets be caused to rotate in the interior of it for magnetizing from the inside.",
+        },
+      ],
     },
     {
       kind: "paragraph",
       inlines: [
+        sourceFigure("Fig. 10", 3),
         {
           kind: "text",
-          text: "Fig. 10 represents a vertical projection, and Fig. 11 a horizontal section of another construction of magneto-electric machine arranged according to our invention. See ",
+          text: " represents a vertical projection, and ",
+        },
+        sourceFigure("Fig. 11", 3),
+        {
+          kind: "text",
+          text: " a horizontal section of another construction of magneto-electric machine arranged according to our invention. See ",
         },
         figure10To13,
         {
@@ -366,9 +448,15 @@ export const grammeDynamoArchivalEdition: CuratedSpecificationEdition = {
     {
       kind: "paragraph",
       inlines: [
+        sourceFigure("Fig. 12", 3),
         {
           kind: "text",
-          text: "Fig. 12 shows a longitudinal vertical projection, and Fig. 13 an end vertical projection of another construction of magneto-electric apparatus arranged according to our invention. See ",
+          text: " shows a longitudinal vertical projection, and ",
+        },
+        sourceFigure("Fig. 13", 3),
+        {
+          kind: "text",
+          text: " an end vertical projection of another construction of magneto-electric apparatus arranged according to our invention. See ",
         },
         figure10To13,
         { kind: "text", text: "." },
@@ -413,9 +501,10 @@ export const grammeDynamoArchivalEdition: CuratedSpecificationEdition = {
     {
       kind: "paragraph",
       inlines: [
+        sourceFigure("Fig. 14", 4),
         {
           kind: "text",
-          text: "Fig. 14 represents a longitudinal elevation view, some parts being shown as partly removed, of another construction of apparatus arranged according to our invention. See ",
+          text: " represents a longitudinal elevation view, some parts being shown as partly removed, of another construction of apparatus arranged according to our invention. See ",
         },
         figure14,
         {
@@ -426,9 +515,17 @@ export const grammeDynamoArchivalEdition: CuratedSpecificationEdition = {
     },
     {
       kind: "paragraph",
-      inlines: literal(
-        "The said poles are kept isolated from each other by means of the bad conducting parts i and i′ and the bobbin or cylinder A is arranged, as has been described above, in reference to the apparatus of Figs. 1 and 2, viz., composed of a continuous series of small bobbins connected end to end, the junctions being each connected to a conductor C, which conductors are kept isolated from each other; on the free ends of which conductors act the rubbers or connecting-rollers S and S′ for carrying the currents respectively to the posts X and X′.",
-      ),
+      inlines: [
+        {
+          kind: "text",
+          text: "The said poles are kept isolated from each other by means of the bad conducting parts i and i′ and the bobbin or cylinder A is arranged, as has been described above, in reference to the apparatus of ",
+        },
+        sourceFigure("Figs. 1 and 2", 1),
+        {
+          kind: "text",
+          text: ", viz., composed of a continuous series of small bobbins connected end to end, the junctions being each connected to a conductor C, which conductors are kept isolated from each other; on the free ends of which conductors act the rubbers or connecting-rollers S and S′ for carrying the currents respectively to the posts X and X′.",
+        },
+      ],
     },
     {
       kind: "paragraph",
@@ -438,15 +535,33 @@ export const grammeDynamoArchivalEdition: CuratedSpecificationEdition = {
     },
     {
       kind: "paragraph",
-      inlines: literal(
-        "As has been mentioned in the beginning of this specification, our invention allows of giving rise either to continuous or to alternate currents. Thus, for instance, in the second apparatus described, in respect to Figs. 4, 5, and 6, if the conductors C and metal rubbers or conducting-springs S be done away with, and the shaft D be connected metallically with two diametrically-opposite junctions of the small bobbins of the cylinder A, the said small bobbins remaining connected in an endless manner, as has been described; and if, in the manner as shown in Fig. 11, we connect together by a metal conductor a small rod, inserted in an isolated manner in the shaft D, two other diametrically-opposite junctions situated in a perpendicular direction in respect to the two first-mentioned junctions, we will then obtain alternate currents—the current taken from the frame B in metallic communication by means of its bearings with the shaft D, and that taken from a metal rubber pressing against the end of the small isolated rod inserted in the shaft D being alternate.",
-      ),
+      inlines: [
+        {
+          kind: "text",
+          text: "As has been mentioned in the beginning of this specification, our invention allows of giving rise either to continuous or to alternate currents. Thus, for instance, in the second apparatus described, in respect to ",
+        },
+        sourceFigure("Figs. 4, 5, and 6", 1),
+        {
+          kind: "text",
+          text: ", if the conductors C and metal rubbers or conducting-springs S be done away with, and the shaft D be connected metallically with two diametrically-opposite junctions of the small bobbins of the cylinder A, the said small bobbins remaining connected in an endless manner, as has been described; and if, in the manner as shown in ",
+        },
+        sourceFigure("Fig. 11", 3),
+        {
+          kind: "text",
+          text: ", we connect together by a metal conductor a small rod, inserted in an isolated manner in the shaft D, two other diametrically-opposite junctions situated in a perpendicular direction in respect to the two first-mentioned junctions, we will then obtain alternate currents—the current taken from the frame B in metallic communication by means of its bearings with the shaft D, and that taken from a metal rubber pressing against the end of the small isolated rod inserted in the shaft D being alternate.",
+        },
+      ],
     },
     {
       kind: "paragraph",
-      inlines: literal(
-        "The small bobbins of Figs. 4, 5, and 6 are coupled together for quantity, they representing four series of eighteen bobbins each.",
-      ),
+      inlines: [
+        { kind: "text", text: "The small bobbins of " },
+        sourceFigure("Figs. 4, 5, and 6", 1),
+        {
+          kind: "text",
+          text: " are coupled together for quantity, they representing four series of eighteen bobbins each.",
+        },
+      ],
     },
     {
       kind: "paragraph",
@@ -498,9 +613,17 @@ export const grammeDynamoArchivalEdition: CuratedSpecificationEdition = {
     },
     {
       kind: "paragraph",
-      inlines: literal(
-        "Fourthly, the general arrangement of our apparatus may also be modified in various manners; thus, for instance, instead of causing the cylinder or large bobbin A of the apparatus of Figs. 1 and 2 to revolve, a magnet might be caused to revolve at the inside or at the outside of this bobbin.",
-      ),
+      inlines: [
+        {
+          kind: "text",
+          text: "Fourthly, the general arrangement of our apparatus may also be modified in various manners; thus, for instance, instead of causing the cylinder or large bobbin A of the apparatus of ",
+        },
+        sourceFigure("Figs. 1 and 2", 1),
+        {
+          kind: "text",
+          text: " to revolve, a magnet might be caused to revolve at the inside or at the outside of this bobbin.",
+        },
+      ],
     },
     {
       kind: "paragraph",

@@ -29,6 +29,19 @@ describe("ericssonPropellerArchivalEdition", () => {
     expect(publicText).toContain("JOSEPH MARQUETTE");
   });
 
+  test("does not leave a source figure citation stranded in a plain text node", () => {
+    const bareFigureCitation = /\bFig(?:s)?\.\s*\d+/i;
+
+    for (const block of ericssonPropellerArchivalEdition.blocks) {
+      if (!("inlines" in block)) continue;
+      for (const inline of block.inlines) {
+        if (inline.kind === "text") {
+          expect(inline.text).not.toMatch(bareFigureCitation);
+        }
+      }
+    }
+  });
+
   test("pairs every authored source paragraph with a non-lossy local companion", () => {
     for (const [index, block] of ericssonPropellerArchivalEdition.blocks.entries()) {
       if (block.kind !== "paragraph") continue;

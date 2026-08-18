@@ -31,4 +31,17 @@ describe("US X72 Whitney cotton-gin manual edition", () => {
     const withoutAttestation = { ...whitneyCottonGinArchivalEdition, claimStatus: undefined };
     expect(validateCuratedSpecificationEdition(withoutAttestation).valid).toBe(false);
   });
+
+  test("does not leave source figure citations stranded in plain text nodes", () => {
+    const bareFigureCitation = /\bFig(?:s)?\.\s*\d+/i;
+
+    for (const block of whitneyCottonGinArchivalEdition.blocks) {
+      if (!("inlines" in block)) continue;
+      for (const inline of block.inlines) {
+        if (inline.kind === "text") {
+          expect(inline.text).not.toMatch(bareFigureCitation);
+        }
+      }
+    }
+  });
 });

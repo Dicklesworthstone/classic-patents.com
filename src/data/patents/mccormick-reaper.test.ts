@@ -20,6 +20,8 @@ describe("mccormickReaperPatent", () => {
       groundWheelRpm: 35,
       cutterCrankRpm: 350.1,
       reelRpm: 37.9,
+      groundSpeedMps: 1.12,
+      cutterHz: 5.83,
     });
     expect(Object.keys(estimate)).not.toContain("harvestAcresPerDay");
     expect(Object.keys(estimate)).not.toContain("cutFrequencyHz");

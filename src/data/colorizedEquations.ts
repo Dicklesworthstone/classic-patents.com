@@ -1015,7 +1015,7 @@ export const ALL_COLORIZED_EQUATIONS: Record<string, ColorizedEquation[]> = {
           symbol: "\\alpha",
           name: "Current Gain Factor",
           color: "amethyst",
-          role: "Differential current transfer ratio (\\partial I_c / \\partial I_e \\approx 1.5 - 3.0 in point-contact Ge)",
+          role: "Differential current transfer ratio ($\\partial I_c / \\partial I_e \\approx 1.5\\text{--}3.0$ in point-contact Ge)",
           unit: "Dimensionless gain ratio",
           dimension: "[1]",
           explanation:
@@ -1550,7 +1550,7 @@ export const ALL_COLORIZED_EQUATIONS: Record<string, ColorizedEquation[]> = {
           symbol: "\\varepsilon_s",
           name: "Silicon Permittivity",
           color: "cyan",
-          role: "Material dielectric constant of silicon (\\varepsilon_r \\approx 11.7)",
+          role: "Material dielectric constant of silicon ($\\varepsilon_r \\approx 11.7$)",
           unit: "Farads per meter (F/m)",
           dimension: "[M^-1 L^-3 T^4 I^2]",
           explanation:
@@ -2436,7 +2436,7 @@ export const ALL_COLORIZED_EQUATIONS: Record<string, ColorizedEquation[]> = {
           unit: "Newtons (N)",
           dimension: "[M L T^-2]",
           explanation:
-            "By curving the cup to reverse the water direction nearly 180 degrees (\\beta \\approx 165^\\circ), \\cos(165^\\circ) \\approx -0.966, so (1 - \\cos\\beta) \\approx 1.966—doubling the force compared to a flat paddle (1.0).",
+            "By curving the cup to reverse the water direction nearly 180 degrees ($\\beta \\approx 165^\\circ$), $\\cos(165^\\circ) \\approx -0.966$, so $(1 - \\cos\\beta) \\approx 1.966$—doubling the force compared to a flat paddle (1.0).",
           telemetryMetricLabel: "Bucket Force",
         },
         {
@@ -2444,7 +2444,7 @@ export const ALL_COLORIZED_EQUATIONS: Record<string, ColorizedEquation[]> = {
           symbol: "\\dot{m}",
           name: "Water Mass Flow Rate",
           color: "cyan",
-          role: "Mass of water ejected by the nozzle needle per second (\\rho \\cdot A_{\\text{nozzle}} \\cdot v_{\\text{jet}})",
+          role: "Mass of water ejected by the nozzle needle per second ($\\rho \\cdot A_{\\text{nozzle}} \\cdot v_{\\text{jet}}$)",
           unit: "Kilograms / second (kg/s)",
           dimension: "[M T^-1]",
           explanation: "Regulated by an adjustable spear needle in the nozzle.",
@@ -2454,7 +2454,7 @@ export const ALL_COLORIZED_EQUATIONS: Record<string, ColorizedEquation[]> = {
           symbol: "v_{\\text{jet}}",
           name: "Torricelli High-Head Jet Velocity",
           color: "sapphire",
-          role: "Velocity of high-pressure water jet issuing from nozzle: v = \\sqrt{2 g H}",
+          role: "Velocity of high-pressure water jet issuing from nozzle: $v = \\sqrt{2 g H}$",
           unit: "Meters / second (m/s)",
           dimension: "[L T^-1]",
           explanation:
@@ -2466,11 +2466,11 @@ export const ALL_COLORIZED_EQUATIONS: Record<string, ColorizedEquation[]> = {
           symbol: "u",
           name: "Bucket Peripheral Velocity",
           color: "amber",
-          role: "Linear tangential speed of the bucket pitch circle (u = \\omega \\cdot r)",
+          role: "Linear tangential speed of the bucket pitch circle ($u = \\omega \\cdot r$)",
           unit: "Meters / second (m/s)",
           dimension: "[L T^-1]",
           explanation:
-            "Peak kinetic energy transfer occurs when u = 0.5 * v_jet, causing discharged water to drop dead with zero remaining kinetic energy.",
+            "Peak kinetic energy transfer occurs when $u = 0.5 v_{\\text{jet}}$, causing discharged water to drop dead with zero remaining kinetic energy.",
           telemetryKey: "wheelRpm",
         },
         {
@@ -2635,7 +2635,7 @@ export const ALL_COLORIZED_EQUATIONS: Record<string, ColorizedEquation[]> = {
           symbol: "\\mu_{\\text{JT}}",
           name: "Joule-Thomson Inversion Coefficient",
           color: "emerald",
-          role: "Temperature drop per unit pressure drop during throttling expansion (\\approx +0.25 K / bar for air below 40 C)",
+          role: "Temperature drop per unit pressure drop during throttling expansion ($\\approx +0.25\\text{ K/bar}$ for air below 40 °C)",
           unit: "Kelvin / bar (K/bar)",
           dimension: "[M^-1 L T^2 \\Theta]",
           explanation:
@@ -2865,11 +2865,11 @@ export const ALL_COLORIZED_EQUATIONS: Record<string, ColorizedEquation[]> = {
           symbol: "\\eta_{\\text{blade}}",
           name: "Reaction Blade Stage Efficiency",
           color: "amethyst",
-          role: "50% degree of reaction aerodynamic blade profile efficiency (\\approx 85-90%)",
+          role: "50% degree of reaction steam foil blade profile efficiency ($\\approx 85\\text{--}90\\%$)",
           unit: "Efficiency percentage (%)",
           dimension: "[1]",
           explanation:
-            "Steam expands equally in both stationary nozzles and moving blades, creating smooth aerodynamic reaction thrust without shockwaves.",
+            "Steam expands equally in both stationary nozzles and moving blades, creating smooth fluid-foil reaction thrust without shockwaves.",
         },
       ],
       pedagogicalNote:

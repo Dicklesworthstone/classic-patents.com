@@ -37,13 +37,6 @@ const figure = (label: string, sheet: keyof typeof SHEETS): CuratedSpecification
   figurePreviews: [SHEETS[sheet]],
 });
 
-const term = (value: string, definition: string): CuratedSpecificationInline => ({
-  kind: "term",
-  text: value,
-  definition,
-  label: "1840 patent vocabulary",
-});
-
 const p = (inlines: CuratedSpecificationInlines) => ({ kind: "paragraph" as const, inlines });
 const claim = (number: number, value: string) => ({
   kind: "claim" as const,
@@ -225,7 +218,17 @@ export const morseTelegraphArchivalEdition: CuratedSpecificationEdition = {
     p([
       {
         kind: "text",
-        text: "On the under side of the type for the circular port-rule is a groove (system of type, Example 6, A in Figs. 1 and 3) about midway of their width, in depth about half the thickness aforesaid, and extending from the space ends, as B, Example 6, Fig. 3 - that is, the ends without indentation - of said type, along the length, and conforming to the curve thereof, to a point, D D, equal in distance from the opposite ends to half the width of the pointed teeth cut upon their edges. For a delineation of those type reference is made to sections thereof in ",
+        text: "On the under side of the type for the circular port-rule is a groove (system of type, Example 6, A in ",
+      },
+      figure("Figs. 1 and 3", 1),
+      {
+        kind: "text",
+        text: ") about midway of their width, in depth about half the thickness aforesaid, and extending from the space ends, as B, Example 6, ",
+      },
+      figure("Fig. 3", 1),
+      {
+        kind: "text",
+        text: " - that is, the ends without indentation - of said type, along the length, and conforming to the curve thereof, to a point, D D, equal in distance from the opposite ends to half the width of the pointed teeth cut upon their edges. For a delineation of those type reference is made to sections thereof in ",
       },
       figure("Example 6, Figs. 1 and 3", 1),
       {
@@ -246,16 +249,31 @@ export const morseTelegraphArchivalEdition: CuratedSpecificationEdition = {
         kind: "text",
         text: "The circular port-rule is a substitute, when preferred, for both the type-rule and the straight port-rule, and consists of a horizontal or inclined wheel, ",
       },
-      term("Example 9, Fig. 1, A", "The source's label for the circular port-rule wheel."),
+      figure("Example 9, Fig. 1, A", 2),
       {
         kind: "text",
-        text: ", of any convenient diameter, of wood or metal, having its axis connected on the under side of the wheel, with a pinion-wheel, K, as in the case of the straight port-rule. It is moved by the motion of the pinion-wheel, as is the type-rule in the former description. On the entire circumference of said horizontal or inclined wheel, and upon its upper surface, is a shoulder or cavity, a, Figs. 1, 2, corresponding in depth with the thickness of the type used, and in width, by equal to that of the type, exclusive of the teeth or indentations.",
+        text: ", of any convenient diameter, of wood or metal, having its axis connected on the under side of the wheel, with a pinion-wheel, K, as in the case of the straight port-rule. It is moved by the motion of the pinion-wheel, as is the type-rule in the former description. On the entire circumference of said horizontal or inclined wheel, and upon its upper surface, is a shoulder or cavity, a, ",
+      },
+      figure("Figs. 1, 2", 2),
+      {
+        kind: "text",
+        text: ", corresponding in depth with the thickness of the type used, and in width, by equal to that of the type, exclusive of the teeth or indentations.",
       },
     ]),
     p([
       {
         kind: "text",
-        text: "The operation of said circular port-rule in regulating the movement of the type in use is as follows: When the wheel A is set in motion the type resting immediately upon the shoulder of the wheel, in the manner mentioned above, as in Fig. 2, is carried forward on the curvature of the wheel from beneath the column of type resting upon it in the stationary type-feeder by means of one of the before-named cogs coming in contact with that point D, Fig. 3, Example 6, in the groove of the type, hereinbefore described as forming the termination of said groove. As said lower type in the column that is held by the stationary feeder is carried forward and removed, the next type settles immediately upon the shoulder of the wheel, and, after the manner of the removed type, is brought in contact with another cog of said shoulder within the groove of the type, and thence carried forward from beneath the incumbent column, as its predecessor.",
+        text: "The operation of said circular port-rule in regulating the movement of the type in use is as follows: When the wheel A is set in motion the type resting immediately upon the shoulder of the wheel, in the manner mentioned above, as in ",
+      },
+      figure("Fig. 2", 2),
+      {
+        kind: "text",
+        text: ", is carried forward on the curvature of the wheel from beneath the column of type resting upon it in the stationary type-feeder by means of one of the before-named cogs coming in contact with that point D, ",
+      },
+      figure("Fig. 3", 2),
+      {
+        kind: "text",
+        text: ", Example 6, in the groove of the type, hereinbefore described as forming the termination of said groove. As said lower type in the column that is held by the stationary feeder is carried forward and removed, the next type settles immediately upon the shoulder of the wheel, and, after the manner of the removed type, is brought in contact with another cog of said shoulder within the groove of the type, and thence carried forward from beneath the incumbent column, as its predecessor.",
       },
     ]),
     p([
@@ -263,7 +281,12 @@ export const morseTelegraphArchivalEdition: CuratedSpecificationEdition = {
       figure("Example 9, Fig. 3", 2),
       {
         kind: "text",
-        text: ", consists, first, for use with the straight port-rule, Example 8, Fig. 1, A, of a strip of wood of any length from six to twenty-four inches, resting upon a pivot, a, or in a notched pillar formed into a fulcrum by a metal pin, a, passing through it and the lever. At one end of the lever a metallic wire, bent to a semicircular or half-square form, as at A, or resembling the prongs of a fork distended, is attached by its center, as described in the annexed drawings, Example 8, at the point marked A. Between said end of the lever and the fulcrum a, and near the latter, on the side of lever A, is inserted a metallic tooth or cog, b, curved on the side nearest to the fulcrum, and in other respects corresponding to the teeth or indentations upon the type already described.",
+        text: ", consists, first, for use with the straight port-rule, ",
+      },
+      figure("Example 8, Fig. 1, A", 2),
+      {
+        kind: "text",
+        text: ", of a strip of wood of any length from six to twenty-four inches, resting upon a pivot, a, or in a notched pillar formed into a fulcrum by a metal pin, a, passing through it and the lever. At one end of the lever a metallic wire, bent to a semicircular or half-square form, as at A, or resembling the prongs of a fork distended, is attached by its center, as described in the annexed drawings, Example 8, at the point marked A. Between said end of the lever and the fulcrum a, and near the latter, on the side of lever A, is inserted a metallic tooth or cog, b, curved on the side nearest to the fulcrum, and in other respects corresponding to the teeth or indentations upon the type already described.",
       },
     ]),
     p([
@@ -280,13 +303,28 @@ export const morseTelegraphArchivalEdition: CuratedSpecificationEdition = {
       figure("Example 10, Figs. 1, 2, and 4", 3),
       {
         kind: "text",
-        text: ", at A. Said lever A operates upon a fulcrum, a, that passes through the end that forms the elbow a, upon the lower extremity of which, a, and facing an electro-magnet, is attached the armature of a magnet, f. In the other extremity of the lever, at B, is inserted one or more pencils, fountain-pens, printing-wheels, or other marking-instruments, as may be seen in Fig. 4 of the example last mentioned, at letter B. The magnet is at letter O in the same figure.",
+        text: ", at A. Said lever A operates upon a fulcrum, a, that passes through the end that forms the elbow a, upon the lower extremity of which, a, and facing an electro-magnet, is attached the armature of a magnet, f. In the other extremity of the lever, at B, is inserted one or more pencils, fountain-pens, printing-wheels, or other marking-instruments, as may be seen in ",
+      },
+      figure("Fig. 4", 3),
+      {
+        kind: "text",
+        text: " of the example last mentioned, at letter B. The magnet is at letter O in the same figure.",
       },
     ]),
     p([
       {
         kind: "text",
-        text: "Secondly, a cylinder or barrel of metal or wood, and covered with cloth or yielding coating, to turn upon an axis and occupying a position directly beneath the pencil, fountain-pen, printing-wheel, or other marking-instrument to be used, as exhibited in the last-mentioned example of drawings, Fig. 4, at points marked D. Two rollers, marked b b in said figure of drawings, are connected with said cylinder, on the upper side curvatures thereof, and being connected with each other by two narrow bands of tape passing over and beneath each, near the ends thereof, and over the intervening surface of the cylinder, in a manner to cause a friction of the bands of tape upon the latter when in motion, as delineated in the last-named example, Fig. 4, at points marked c c c. The distance between said bands of tape on the rollers is such as to admit of the pencil, or other marking instrument in the lever, to drop upon the intervening space of the cylinder.",
+        text: "Secondly, a cylinder or barrel of metal or wood, and covered with cloth or yielding coating, to turn upon an axis and occupying a position directly beneath the pencil, fountain-pen, printing-wheel, or other marking-instrument to be used, as exhibited in the last-mentioned example of drawings, ",
+      },
+      figure("Fig. 4", 3),
+      {
+        kind: "text",
+        text: ", at points marked D. Two rollers, marked b b in said figure of drawings, are connected with said cylinder, on the upper side curvatures thereof, and being connected with each other by two narrow bands of tape passing over and beneath each, near the ends thereof, and over the intervening surface of the cylinder, in a manner to cause a friction of the bands of tape upon the latter when in motion, as delineated in the last-named example, ",
+      },
+      figure("Fig. 4", 3),
+      {
+        kind: "text",
+        text: ", at points marked c c c. The distance between said bands of tape on the rollers is such as to admit of the pencil, or other marking instrument in the lever, to drop upon the intervening space of the cylinder.",
       },
     ]),
     p([
@@ -298,7 +336,12 @@ export const morseTelegraphArchivalEdition: CuratedSpecificationEdition = {
     p([
       {
         kind: "text",
-        text: "To extend more effectually the length of any desired circuit of conductors, and to perpetuate the power of the electric or galvanic current equally throughout the same, I adopt the following mode, and also for connecting and using any desired number of additional and intervening batteries or generators of said current, and for connecting progressively any number of consecutive circuits, viz: Place at any point in a circuit an electro-magnet of the denomination already described, with an armature upon a lever of the form and structure, and in the position of that used at the register to hold and operate the marking-instrument, with only a substitution therein for such marking-instrument of a forked wire, A, Example 9, Fig. 3, like that upon the end of the signal-lever heretofore described. Directly beneath the latter wire place two cups of mercury, E E, or two metallic plates joined to terminations of a circuit leading from the fresh or additional battery or generator of said circuit in the same manner as they are to be provided in the first circuit of conductors at the points where the cups of mercury are hereinbefore described.",
+        text: "To extend more effectually the length of any desired circuit of conductors, and to perpetuate the power of the electric or galvanic current equally throughout the same, I adopt the following mode, and also for connecting and using any desired number of additional and intervening batteries or generators of said current, and for connecting progressively any number of consecutive circuits, viz: Place at any point in a circuit an electro-magnet of the denomination already described, with an armature upon a lever of the form and structure, and in the position of that used at the register to hold and operate the marking-instrument, with only a substitution therein for such marking-instrument of a forked wire, A, ",
+      },
+      figure("Example 9, Fig. 3", 2),
+      {
+        kind: "text",
+        text: ", like that upon the end of the signal-lever heretofore described. Directly beneath the latter wire place two cups of mercury, E E, or two metallic plates joined to terminations of a circuit leading from the fresh or additional battery or generator of said circuit in the same manner as they are to be provided in the first circuit of conductors at the points where the cups of mercury are hereinbefore described.",
       },
     ]),
     p([

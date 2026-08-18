@@ -11,14 +11,20 @@ import type {
 const text = (value: string): CuratedSpecificationInlines => [{ kind: "text", text: value }];
 
 const dims: Record<string, [number, number]> = {
+  "1": [1078, 1600],
   "2": [1078, 887],
-  "10": [618, 1050],
+  "3": [654, 759],
+  "4": [661, 760],
+  "5": [653, 779],
+  "6": [581, 741],
+  "7": [599, 815],
   "8": [1078, 783],
-  "3": [1078, 783],
-  "13": [1013, 737], // Fig. 11
-  "14": [1000, 778], // Fig. 12
-  "11": [471, 1061], // Fig. 6
-  "9": [713, 1300], // Fig. 4
+  "9": [713, 1300],
+  "10": [618, 1050],
+  "11": [471, 1061],
+  "12": [850, 760],
+  "13": [1013, 737],
+  "14": [1000, 778],
 };
 
 const preview = (number: number | string, label: string): CuratedSpecificationInline => {
@@ -128,21 +134,35 @@ export const whitneyCottonGinArchivalEdition: CuratedSpecificationEdition = {
     },
     {
       kind: "paragraph",
-      inlines: fig(
-        "There must be a shoulder at, b. ",
-        2,
-        "Fig. 2",
-        ". on each side the bearing or box to prevent any horizontal variation in the Cylinder. The bearings of the axis, or those parts which rest on the boxes must be rounded in a lathe, so that the centre of the axis may coincide with the center of the cylinder. One end of the axis should extend so far without the frame as to admit the winch, by which it is turned, to be connected with it at C. and so far at the other end as to receive the whirl designed for putting the clearer in motion. The brass boxes, in which the axis of the cylinder runs, consist each of two parts; c, and, d. Fig. 7. The lower part d, is sunk into the wood of the frame to keep it firm and motionless; and the upper part, c, is kept in its place by 2 small Iron bolts, H, H, headed on the lower end at, H. These bolts are inserted into the under side of the rail or scantling of the frame and continued up through both parts of the box. A portion of the bolts, as H, a, should be square, to prevent them from turning. The upper part of the box, c, is screwed down close, with a nut on the end of each bolt. At, e, is a perforation for conveying oil to the axis.",
-      ),
+      inlines: [
+        ...fig(
+          "There must be a shoulder at, b. ",
+          2,
+          "Fig. 2",
+          ". on each side the bearing or box to prevent any horizontal variation in the Cylinder. The bearings of the axis, or those parts which rest on the boxes must be rounded in a lathe, so that the centre of the axis may coincide with the center of the cylinder. One end of the axis should extend so far without the frame as to admit the winch, by which it is turned, to be connected with it at C. and so far at the other end as to receive the whirl designed for putting the clearer in motion. The brass boxes, in which the axis of the cylinder runs, consist each of two parts; c, and, d. ",
+        ),
+        preview(7, "Fig. 7"),
+        {
+          kind: "text",
+          text: ". The lower part d, is sunk into the wood of the frame to keep it firm and motionless; and the upper part, c, is kept in its place by 2 small Iron bolts, H, H, headed on the lower end at, H. These bolts are inserted into the under side of the rail or scantling of the frame and continued up through both parts of the box. A portion of the bolts, as H, a, should be square, to prevent them from turning. The upper part of the box, c, is screwed down close, with a nut on the end of each bolt. At, e, is a perforation for conveying oil to the axis.",
+        },
+      ],
     },
     {
       kind: "paragraph",
-      inlines: fig(
-        "After the cylinder, with its axis is fitted and rounded with exactness, the circular part of its surface is filled with teeth set in annular rows. The spaces d, e, f, g, h, ",
-        2,
-        "Fig. 2",
-        " between the rows of teeth must be so large as to admit a cotton seed to turn round freely in them every way: and ought not to be less than seven sixteenths of an inch. The spaces k, l, m, n, &c, Fig. 1, between the teeth, in the same row, must be so small as not to admit a seed or a half seed. They ought not to exceed one twelfth of an inch, and I think about one sixteenth of an inch the best.",
-      ),
+      inlines: [
+        ...fig(
+          "After the cylinder, with its axis is fitted and rounded with exactness, the circular part of its surface is filled with teeth set in annular rows. The spaces d, e, f, g, h, ",
+          2,
+          "Fig. 2",
+          " between the rows of teeth must be so large as to admit a cotton seed to turn round freely in them every way: and ought not to be less than seven sixteenths of an inch. The spaces k, l, m, n, &c, ",
+        ),
+        preview(1, "Fig. 1"),
+        {
+          kind: "text",
+          text: ", between the teeth, in the same row, must be so small as not to admit a seed or a half seed. They ought not to exceed one twelfth of an inch, and I think about one sixteenth of an inch the best.",
+        },
+      ],
     },
     {
       kind: "paragraph",
@@ -161,12 +181,19 @@ export const whitneyCottonGinArchivalEdition: CuratedSpecificationEdition = {
     },
     {
       kind: "paragraph",
-      inlines: fig(
-        "When the teeth are all set they should be cut of an equal length. In order for this take a crooked gage ",
-        8,
-        "Fig. 8",
-        " having two prongs q. r.; the curvature of which corresponds with that of the cylinder. This gage is merely a crooked fork, the thickness of whose prongs or tines, as represented between s. and t. Fig. 9 equalizes the length of the teeth, and is applied to the cylinder, with one tine on each side of an annular row. With a pair of cutting pliers, cut the teeth 1.2.3. &c off even with the gage, then slide it along to 6.7.8. &c. and so proceed till you have trimmed all the teeth to an equal length. This done put the cylinder into a lathe and with a file bring the teeth to a kind of angular point, resembling a wire flatted and cut obliquely. After the teeth are brought to a proper shape, smooth them with a polishing file and the cylinder will be finished.",
-      ),
+      inlines: [
+        ...fig(
+          "When the teeth are all set they should be cut of an equal length. In order for this take a crooked gage ",
+          8,
+          "Fig. 8",
+          " having two prongs q. r.; the curvature of which corresponds with that of the cylinder. This gage is merely a crooked fork, the thickness of whose prongs or tines, as represented between s. and t. ",
+        ),
+        preview(9, "Fig. 9"),
+        {
+          kind: "text",
+          text: " equalizes the length of the teeth, and is applied to the cylinder, with one tine on each side of an annular row. With a pair of cutting pliers, cut the teeth 1.2.3. &c off even with the gage, then slide it along to 6.7.8. &c. and so proceed till you have trimmed all the teeth to an equal length. This done put the cylinder into a lathe and with a file bring the teeth to a kind of angular point, resembling a wire flatted and cut obliquely. After the teeth are brought to a proper shape, smooth them with a polishing file and the cylinder will be finished.",
+        },
+      ],
     },
     {
       kind: "paragraph",
@@ -177,18 +204,35 @@ export const whitneyCottonGinArchivalEdition: CuratedSpecificationEdition = {
     { kind: "heading", level: 3, text: "III. The Breastwork" },
     {
       kind: "paragraph",
-      inlines: fig(
-        "The breastwork ",
-        13,
-        "Fig. 11",
-        ", and B. Fig. 1. and Fig. 2, is fixed above the cylinder, parallel and contiguous to the same. It has transverse grooves or openings 1.2.3.4 &c through which the rows of teeth pass as the cylinder revolves: and its use is to obstruct the seeds while the Cotton is carried forward through the grooves by the teeth. That side of the breastwork next the cylinder should be made of brass or Iron, that it may be the more durable. Its face or surface a.x. Fig. 1. ought to make an angle with the tangent x.z. less than 50 Degrees.",
-      ),
+      inlines: [
+        ...fig("The breastwork ", 13, "Fig. 11", ", and B. "),
+        preview(1, "Fig. 1"),
+        { kind: "text", text: ". and " },
+        preview(2, "Fig. 2"),
+        {
+          kind: "text",
+          text: ", is fixed above the cylinder, parallel and contiguous to the same. It has transverse grooves or openings 1.2.3.4 &c through which the rows of teeth pass as the cylinder revolves: and its use is to obstruct the seeds while the Cotton is carried forward through the grooves by the teeth. That side of the breastwork next the cylinder should be made of brass or Iron, that it may be the more durable. Its face or surface a.x. ",
+        },
+        preview(1, "Fig. 1"),
+        {
+          kind: "text",
+          text: ". ought to make an angle with the tangent x.z. less than 50 Degrees.",
+        },
+      ],
     },
     {
       kind: "paragraph",
-      inlines: text(
-        "A tooth in passing from k up to the breastwork B. fastens itself upon a certain quantity of Cotton, which is still connected with its seeds. The seeds being too large to pass through the breastwork are there stopped, while the cotton is forced thro’ the groove and disengaged from the seeds. Now if the point of the tooth enters the groove before the root or that part next the cylinder, it carries through all which it has collected in coming from k; but if the root of the tooth enter the groove before the point, part of the Cotton fastened on it, will slide off: and this latter case is preferable as it helps to give the Cotton a rotary motion in the hopper. The thickness of the breastwork, or the distance from a. to i. Fig. 1. should be about 2 ½ or 3 inches, in proportion to the length of the cotton. It should be such that the cotton which is carried through by the teeth may be disconnected from that which is left in the hopper before it leaves the grooves; otherwise that which is carried partly through the breastwork will by the motion of that with which it is connected in the hopper become so collected and knotted at i, as to obstruct and bend the teeth.",
-      ),
+      inlines: [
+        {
+          kind: "text",
+          text: "A tooth in passing from k up to the breastwork B. fastens itself upon a certain quantity of Cotton, which is still connected with its seeds. The seeds being too large to pass through the breastwork are there stopped, while the cotton is forced thro’ the groove and disengaged from the seeds. Now if the point of the tooth enters the groove before the root or that part next the cylinder, it carries through all which it has collected in coming from k; but if the root of the tooth enter the groove before the point, part of the Cotton fastened on it, will slide off: and this latter case is preferable as it helps to give the Cotton a rotary motion in the hopper. The thickness of the breastwork, or the distance from a. to i. ",
+        },
+        preview(1, "Fig. 1"),
+        {
+          kind: "text",
+          text: ". should be about 2 ½ or 3 inches, in proportion to the length of the cotton. It should be such that the cotton which is carried through by the teeth may be disconnected from that which is left in the hopper before it leaves the grooves; otherwise that which is carried partly through the breastwork will by the motion of that with which it is connected in the hopper become so collected and knotted at i, as to obstruct and bend the teeth.",
+        },
+      ],
     },
     {
       kind: "paragraph",
@@ -201,9 +245,14 @@ export const whitneyCottonGinArchivalEdition: CuratedSpecificationEdition = {
     },
     {
       kind: "paragraph",
-      inlines: text(
-        "Form a breastwork of the same shape and dimensions as the one before described, entirely of wood. Place a bar of wood one inch below the cylinder and parallel to it. Then with straps or ribs of iron, brass or tin plate, connect the breastwork of wood with the bar below. The ribs or straps must be so applied as to let it close to the surface of the cylinder between the wooden breastwork and the bar, and of a width that will permit them to work freely between the annular rows of teeth. That end of each strap which is fastened to the breastwork should divide widthwise into two parts, one of which should press close against the lower surface of the breastwork board, the other turn upwards from it. See Fig. 14.",
-      ),
+      inlines: [
+        {
+          kind: "text",
+          text: "Form a breastwork of the same shape and dimensions as the one before described, entirely of wood. Place a bar of wood one inch below the cylinder and parallel to it. Then with straps or ribs of iron, brass or tin plate, connect the breastwork of wood with the bar below. The ribs or straps must be so applied as to let it close to the surface of the cylinder between the wooden breastwork and the bar, and of a width that will permit them to work freely between the annular rows of teeth. That end of each strap which is fastened to the breastwork should divide widthwise into two parts, one of which should press close against the lower surface of the breastwork board, the other turn upwards from it. See ",
+        },
+        preview(14, "Fig. 14"),
+        { kind: "text", text: "." },
+      ],
     },
     { kind: "heading", level: 3, text: "IV. The Clearer" },
     {
@@ -241,9 +290,22 @@ export const whitneyCottonGinArchivalEdition: CuratedSpecificationEdition = {
     },
     {
       kind: "paragraph",
-      inlines: text(
-        "The number of brushes in the clearer is not material; but let it be observed that the distance from, e, to e, Fig. 1. between the brushes, must be at least 4 or 5 inches; otherwise the cotton will wind up round the clearer. The surface of the clearer moving much faster than that of the cylinder, the brushes sweep off the Cotton from the teeth. The air put in motion by the clearer, and the centrifugal force of the cotton disengage it from the brushes. Note, It is best to set the brushes in the grooves in such a manner, that the bristles will make an angle of about 20 or 25° with the diameter of the clearer, in the direction e,o, Fig. 1. By that means the Bristles fall more perpendicularly on the teeth, strike them more forcibly, and clear off the cotton more effectually.",
-      ),
+      inlines: [
+        {
+          kind: "text",
+          text: "The number of brushes in the clearer is not material; but let it be observed that the distance from, e, to e, ",
+        },
+        preview(1, "Fig. 1"),
+        {
+          kind: "text",
+          text: ". between the brushes, must be at least 4 or 5 inches; otherwise the cotton will wind up round the clearer. The surface of the clearer moving much faster than that of the cylinder, the brushes sweep off the Cotton from the teeth. The air put in motion by the clearer, and the centrifugal force of the cotton disengage it from the brushes. Note, It is best to set the brushes in the grooves in such a manner, that the bristles will make an angle of about 20 or 25° with the diameter of the clearer, in the direction e,o, ",
+        },
+        preview(1, "Fig. 1"),
+        {
+          kind: "text",
+          text: ". By that means the Bristles fall more perpendicularly on the teeth, strike them more forcibly, and clear off the cotton more effectually.",
+        },
+      ],
     },
     {
       kind: "paragraph",
@@ -271,9 +333,17 @@ export const whitneyCottonGinArchivalEdition: CuratedSpecificationEdition = {
     },
     {
       kind: "paragraph",
-      inlines: text(
-        "A few additional remarks will sufficiently shew the construction, use and operation of this machine. The cotton is put into the hopper I.D.H.k.a.u.s. Fig. 1. in as large a quantity as the cylinder will put in motion. Some of the seeds become stripped sooner than others. If it be black seed Cotton, the seeds being smooth, will most of them fall through the crate as soon as they are clean, but a considerable part of the green seeds which are thus denominated from being covered with a kind of green coat, resembling Velvet will continue in the hopper. It will not answer therefore to supply it gradually as the quantity in it diminishes, because the seeds will soon grow cumbrous and by their constant intervention prevent the teeth from attaching themselves to the Cotton so fast as they otherwise would: but one hopper full must be finished, the moveable part drawn back, the hopper cleared of seeds and then supplied with Cotton anew.",
-      ),
+      inlines: [
+        {
+          kind: "text",
+          text: "A few additional remarks will sufficiently shew the construction, use and operation of this machine. The cotton is put into the hopper I.D.H.k.a.u.s. ",
+        },
+        preview(1, "Fig. 1"),
+        {
+          kind: "text",
+          text: ". in as large a quantity as the cylinder will put in motion. Some of the seeds become stripped sooner than others. If it be black seed Cotton, the seeds being smooth, will most of them fall through the crate as soon as they are clean, but a considerable part of the green seeds which are thus denominated from being covered with a kind of green coat, resembling Velvet will continue in the hopper. It will not answer therefore to supply it gradually as the quantity in it diminishes, because the seeds will soon grow cumbrous and by their constant intervention prevent the teeth from attaching themselves to the Cotton so fast as they otherwise would: but one hopper full must be finished, the moveable part drawn back, the hopper cleared of seeds and then supplied with Cotton anew.",
+        },
+      ],
     },
     {
       kind: "paragraph",

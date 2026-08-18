@@ -24,6 +24,7 @@ const WRIGHT_ARCHIVAL_TEXT_LABEL = "Original Patent Text";
 const WRIGHT_MANUAL_EDITION_MARKER = 'data-archival-edition="manual-react-edition"';
 const PUBLICATION_CONTRACT_TESTS = [
   "src/data/editions/archivalEditionSemantics.test.ts",
+  "src/data/editions/manualEditionCoverageAudit.test.ts",
   "src/components/patents/visuals/three/determinism.test.ts",
 ] as const;
 

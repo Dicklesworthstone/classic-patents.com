@@ -40,6 +40,19 @@ describe("morseTelegraphArchivalEdition", () => {
     }
   });
 
+  test("does not leave a source figure citation stranded in a plain text node", () => {
+    const bareFigureCitation = /\bFig(?:s)?\.\s*\d+/i;
+
+    for (const block of morseTelegraphArchivalEdition.blocks) {
+      if (!("inlines" in block)) continue;
+      for (const inline of block.inlines) {
+        if (inline.kind === "text") {
+          expect(inline.text).not.toMatch(bareFigureCitation);
+        }
+      }
+    }
+  });
+
   test("prepares a non-lossy patent-owned reading for every prose node", () => {
     for (const [index, block] of morseTelegraphArchivalEdition.blocks.entries()) {
       if (block.kind !== "paragraph") continue;

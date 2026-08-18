@@ -71,6 +71,8 @@ export const hyattCelluloidPatent: Patent = {
       },
       {
         principle: "Pressure-assisted intimate contact",
+        formula:
+          "P > P_{\\text{ambient}} \\quad (\\text{maintained during } T_{\\text{process}} \\to T_{\\text{ambient}})",
         explanation:
           "The source's mechanism is mechanical as well as thermal: heavy pressure forces the heat-activated solvent into intimate contact with every particle, then remains applied while the mold and contents cool. No pressure value is printed in the facsimile, so the record does not invent one.",
       },

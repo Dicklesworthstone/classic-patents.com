@@ -453,7 +453,17 @@ export const grammeDynamoPatent: Patent = {
       title: "Detached part",
       caption: "Detached part of the Fig. 1–3 construction; source drawing sheet 1.",
       svgType: "gramme-dynamo",
-      callouts: [],
+      callouts: [
+        {
+          id: "gd-fig3-c",
+          figureRef: "Fig. 3",
+          label: "C",
+          element: "Detached conductor",
+          description: "Isolated conductor bar soldered at the junction between two bobbins.",
+          x: 50,
+          y: 50,
+        },
+      ],
     },
     {
       figureNumber: "Fig. 4",
@@ -477,14 +487,34 @@ export const grammeDynamoPatent: Patent = {
       title: "Second machine, horizontal projection",
       caption: "Horizontal projection of the Fig. 4–6 construction; source drawing sheet 1.",
       svgType: "gramme-dynamo",
-      callouts: [],
+      callouts: [
+        {
+          id: "gd-fig5-h",
+          figureRef: "Fig. 5",
+          label: "H",
+          element: "Compound magnets",
+          description: "Six compound permanent magnets grouped with like poles connected.",
+          x: 50,
+          y: 48,
+        },
+      ],
     },
     {
       figureNumber: "Fig. 6",
       title: "Second machine, vertical section",
       caption: "Vertical section of the Fig. 4–6 construction; source drawing sheet 1.",
       svgType: "gramme-dynamo",
-      callouts: [],
+      callouts: [
+        {
+          id: "gd-fig6-a",
+          figureRef: "Fig. 6",
+          label: "A",
+          element: "Armature section",
+          description: "Internal section through the continuous ring and insulated coils.",
+          x: 52,
+          y: 52,
+        },
+      ],
     },
     {
       figureNumber: "Fig. 7",
@@ -508,7 +538,17 @@ export const grammeDynamoPatent: Patent = {
       title: "Disk machine, horizontal section",
       caption: "Horizontal section of the Fig. 7–9 construction; source drawing sheet 2.",
       svgType: "gramme-dynamo",
-      callouts: [],
+      callouts: [
+        {
+          id: "gd-fig8-aa",
+          figureRef: "Fig. 8",
+          label: "A, A′",
+          element: "Disk sections",
+          description: "Horizontal sectional plane through the twin revolving disks.",
+          x: 50,
+          y: 50,
+        },
+      ],
     },
     {
       figureNumber: "Fig. 9",
@@ -516,7 +556,17 @@ export const grammeDynamoPatent: Patent = {
       caption:
         "Modification using a cylinder in the Fig. 7–9 construction; source drawing sheet 2.",
       svgType: "gramme-dynamo",
-      callouts: [],
+      callouts: [
+        {
+          id: "gd-fig9-a",
+          figureRef: "Fig. 9",
+          label: "A",
+          element: "Modified core",
+          description: "Cylindrical continuous armature modification.",
+          x: 50,
+          y: 50,
+        },
+      ],
     },
     {
       figureNumber: "Fig. 10",
@@ -540,7 +590,17 @@ export const grammeDynamoPatent: Patent = {
       title: "Twin-cylinder machine, horizontal section",
       caption: "Horizontal section of the Fig. 10–11 construction; source drawing sheet 3.",
       svgType: "gramme-dynamo",
-      callouts: [],
+      callouts: [
+        {
+          id: "gd-fig11-h",
+          figureRef: "Fig. 11",
+          label: "H",
+          element: "Straight magnets",
+          description: "Four straight permanent magnets connected by iron plate B.",
+          x: 50,
+          y: 48,
+        },
+      ],
     },
     {
       figureNumber: "Fig. 12",
@@ -566,7 +626,17 @@ export const grammeDynamoPatent: Patent = {
       caption:
         "End vertical projection of the chain-and-fixed-bobbin construction; source drawing sheet 3.",
       svgType: "gramme-dynamo",
-      callouts: [],
+      callouts: [
+        {
+          id: "gd-fig13-b",
+          figureRef: "Fig. 13",
+          label: "B",
+          element: "Bobbin aperture",
+          description: "End view showing the aperture through fixed bobbins for chain motion.",
+          x: 50,
+          y: 50,
+        },
+      ],
     },
     {
       figureNumber: "Fig. 14",

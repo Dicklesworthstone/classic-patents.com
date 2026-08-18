@@ -56,6 +56,19 @@ describe("gatlingGunArchivalEdition", () => {
     ).toBe(true);
   });
 
+  test("does not leave a source figure citation stranded in a plain text node", () => {
+    const bareFigureCitation = /\bFig(?:s)?\.\s*\d+/i;
+
+    for (const block of gatlingGunArchivalEdition.blocks) {
+      if (!("inlines" in block)) continue;
+      for (const inline of block.inlines) {
+        if (inline.kind === "text") {
+          expect(inline.text).not.toMatch(bareFigureCitation);
+        }
+      }
+    }
+  });
+
   test("has a non-lossy local companion for every and only authored source paragraph", () => {
     const translatedBlocks = gatlingGunArchivalEdition.blocks
       .map((block, index) => ({ block, index }))
