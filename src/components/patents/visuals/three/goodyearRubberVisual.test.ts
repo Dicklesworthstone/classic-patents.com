@@ -2,10 +2,7 @@ import { describe, expect, test } from "bun:test";
 import { readFileSync } from "node:fs";
 import { join } from "node:path";
 import { FrankenSimEngine } from "@/physics/engine";
-import {
-  buildGoodyearRubberModel,
-  updateGoodyearRubberKinematics,
-} from "./goodyearRubberModel";
+import { buildGoodyearRubberModel, updateGoodyearRubberKinematics } from "./goodyearRubberModel";
 
 const VISUALS_DIRECTORY = join(process.cwd(), "src/components/patents/visuals");
 
@@ -49,14 +46,7 @@ describe("US 3,633 Charles Goodyear Vulcanized Rubber visual & polymer mechanics
       "utf8",
     );
 
-    for (const preset of [
-      "iso",
-      "chains",
-      "bridges",
-      "clamps",
-      "stress_vectors",
-      "top",
-    ]) {
+    for (const preset of ["iso", "chains", "bridges", "clamps", "stress_vectors", "top"]) {
       expect(threeSource).toContain(preset);
     }
 

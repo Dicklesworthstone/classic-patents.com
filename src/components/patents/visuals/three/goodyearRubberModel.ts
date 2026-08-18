@@ -287,10 +287,7 @@ export function updateGoodyearRubberKinematics(
   // Stress vector scaling
   nodes.leftArrow.visible = showStressVectors;
   nodes.rightArrow.visible = showStressVectors;
-  const stressScale = Math.min(
-    2.8,
-    Math.max(0.35, (tensileStrengthPsi / 2800) * (stretch - 0.6)),
-  );
+  const stressScale = Math.min(2.8, Math.max(0.35, (tensileStrengthPsi / 2800) * (stretch - 0.6)));
   nodes.leftArrow.scale.set(stressScale, stressScale, stressScale);
   nodes.rightArrow.scale.set(stressScale, stressScale, stressScale);
 

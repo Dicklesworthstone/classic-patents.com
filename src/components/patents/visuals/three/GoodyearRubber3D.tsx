@@ -7,10 +7,7 @@ import { FrankenSimEngine } from "@/physics/engine";
 import { useFrankenSimPhysics } from "@/physics/useFrankenSimPhysics";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { soundEngine } from "@/utils/soundEngine";
-import {
-  buildGoodyearRubberModel,
-  updateGoodyearRubberKinematics,
-} from "./goodyearRubberModel";
+import { buildGoodyearRubberModel, updateGoodyearRubberKinematics } from "./goodyearRubberModel";
 import { StudioKernelChips } from "./StudioKernelChips";
 import { createThreeStudioScene, type StudioContext } from "./ThreeStudioScene";
 import { useLiveSimParams } from "./useLiveSimParams";
@@ -256,11 +253,27 @@ export function GoodyearRubber3D() {
         chips={[
           { label: "Cure Temp", value: `${cureTemperatureCelsius}`, unit: "°C" },
           { label: "Sulfur", value: `${sulfurWeightPct}`, unit: "wt%" },
-          { label: "Tensile", value: String(Math.round(rubberPhysics.tensileStrengthPsi)), unit: "psi" },
+          {
+            label: "Tensile",
+            value: String(Math.round(rubberPhysics.tensileStrengthPsi)),
+            unit: "psi",
+          },
           { label: "Modulus", value: rubberPhysics.tensileStrengthMpa.toFixed(2), unit: "MPa" },
-          { label: "Crosslink ρ", value: rubberPhysics.crossLinkDensity.toExponential(2), unit: "mol/cm³" },
-          { label: "Elastic Return", value: `${rubberPhysics.elasticReturnPct.toFixed(1)}`, unit: "%" },
-          { label: "Glass Tg", value: `${rubberPhysics.glassTransitionTempC.toFixed(0)}`, unit: "°C" },
+          {
+            label: "Crosslink ρ",
+            value: rubberPhysics.crossLinkDensity.toExponential(2),
+            unit: "mol/cm³",
+          },
+          {
+            label: "Elastic Return",
+            value: `${rubberPhysics.elasticReturnPct.toFixed(1)}`,
+            unit: "%",
+          },
+          {
+            label: "Glass Tg",
+            value: `${rubberPhysics.glassTransitionTempC.toFixed(0)}`,
+            unit: "°C",
+          },
           { label: "Stretch λ", value: `${appliedTensileStretch.toFixed(2)}`, unit: "x" },
         ]}
       />

@@ -18,6 +18,13 @@ export interface EdisonPhonographModel {
   soundBoxGroup: THREE.Group;
   stylus: THREE.Mesh;
   flywheel: THREE.Mesh;
+  materials: {
+    mahogany: THREE.MeshStandardMaterial;
+    castIron: THREE.MeshStandardMaterial;
+    polishedBrass: THREE.MeshStandardMaterial;
+    tinfoil: THREE.MeshStandardMaterial;
+    steel: THREE.MeshStandardMaterial;
+  };
   dispose: () => void;
 }
 
@@ -28,28 +35,31 @@ export function buildEdisonPhonographModel(): EdisonPhonographModel {
   const geometriesToDispose: THREE.BufferGeometry[] = [];
 
   // Procedural Mahogany Texture
-  const woodCanvas = document.createElement("canvas");
-  woodCanvas.width = 512;
-  woodCanvas.height = 512;
-  const wctx = woodCanvas.getContext("2d");
-  if (wctx) {
-    wctx.fillStyle = "#3b1708";
-    wctx.fillRect(0, 0, 512, 512);
-    for (let i = 0; i < 240; i++) {
-      wctx.fillStyle = i % 2 === 0 ? "rgba(80, 30, 10, 0.45)" : "rgba(25, 10, 5, 0.5)";
-      wctx.fillRect(0, lcg() * 512, 512, lcg() * 3 + 1);
+  let woodTexture: THREE.CanvasTexture | undefined;
+  if (typeof document !== "undefined") {
+    const woodCanvas = document.createElement("canvas");
+    woodCanvas.width = 512;
+    woodCanvas.height = 512;
+    const wctx = woodCanvas.getContext("2d");
+    if (wctx) {
+      wctx.fillStyle = "#3b1708";
+      wctx.fillRect(0, 0, 512, 512);
+      for (let i = 0; i < 240; i++) {
+        wctx.fillStyle = i % 2 === 0 ? "rgba(80, 30, 10, 0.45)" : "rgba(25, 10, 5, 0.5)";
+        wctx.fillRect(0, lcg() * 512, 512, lcg() * 3 + 1);
+      }
     }
+    woodTexture = new THREE.CanvasTexture(woodCanvas);
+    woodTexture.colorSpace = THREE.SRGBColorSpace;
+    woodTexture.wrapS = THREE.RepeatWrapping;
+    woodTexture.wrapT = THREE.RepeatWrapping;
+    woodTexture.repeat.set(2, 4);
+    texturesToDispose.push(woodTexture);
   }
-  const woodTexture = new THREE.CanvasTexture(woodCanvas);
-  woodTexture.colorSpace = THREE.SRGBColorSpace;
-  woodTexture.wrapS = THREE.RepeatWrapping;
-  woodTexture.wrapT = THREE.RepeatWrapping;
-  woodTexture.repeat.set(2, 4);
-  texturesToDispose.push(woodTexture);
 
   // Materials
   const mahoganyMat = new THREE.MeshStandardMaterial({
-    map: woodTexture,
+    ...(woodTexture ? { map: woodTexture } : {}),
     color: 0x4a1d0a,
     roughness: 0.45,
     metalness: 0.08,
@@ -231,6 +241,41 @@ export function buildEdisonPhonographModel(): EdisonPhonographModel {
     soundBoxGroup,
     stylus,
     flywheel,
+    materials: {
+      mahogany: mahoganyMat,
+      castIron: castIronMat,
+      polishedBrass: polishedBrassMat,
+      tinfoil: tinfoilMat,
+      steel: steelMat,
+    },
     dispose,
   };
 }
+
+/**
+ * Updates cylinder mandrel rotation, stylus indentation, and cutaway mode.
+ */
+export function updateEdisonPhonographKinematics(
+  model: EdisonPhonographModel,
+  dt: number,
+  timeSec: number,
+  cylinderRpm: number,
+  grooveDepthMicrons: number,
+  isCutaway: boolean,
+) {
+  const omegaRad = (cylinderRpm * 2 * Math.PI) / 60;
+  model.cylinderGroup.rotation.x += omegaRad * dt;
+  model.flywheel.rotation.x += omegaRad * dt;
+
+  // Stylus acoustic indentation vibration
+  const depthMm = (grooveDepthMicrons / 1000) * 0.05;
+  const vibration = Math.sin(timeSec * 45) * depthMm;
+  model.stylus.position.y = -0.55 + vibration;
+
+  // Cutaway Mode
+  model.materials.mahogany.opacity = isCutaway ? 0.35 : 1.0;
+  model.materials.mahogany.transparent = isCutaway;
+  model.materials.tinfoil.opacity = isCutaway ? 0.55 : 1.0;
+  model.materials.tinfoil.transparent = isCutaway;
+}
+

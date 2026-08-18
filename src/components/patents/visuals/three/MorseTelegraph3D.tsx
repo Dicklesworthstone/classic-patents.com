@@ -150,8 +150,9 @@ export function MorseTelegraph3D() {
 
   return (
     <div className="relative w-full h-[620px] bg-parchment-900 rounded-2xl overflow-hidden border border-parchment-700 shadow-2xl flex flex-col">
-      <div
+      <section
         ref={containerRef}
+        aria-label="3D Interactive Morse Telegraph simulation"
         className="w-full h-full cursor-grab active:cursor-grabbing"
         onMouseDown={() => setKeyIsDown(true)}
         onMouseUp={() => setKeyIsDown(false)}

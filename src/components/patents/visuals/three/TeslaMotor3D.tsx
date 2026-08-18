@@ -8,16 +8,13 @@ import { FrankenSimEngine } from "@/physics/engine";
 import { TESLA_FIELD_POLES, teslaBAt, teslaFieldDisplayOmegaRadPerS } from "@/physics/teslaKernel";
 import { useFrankenSimPhysics } from "@/physics/useFrankenSimPhysics";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
-import { createLcg } from "@/utils/lcg";
 import { soundEngine } from "@/utils/soundEngine";
 import {
-  createGlowPointTexture,
   createThreeStudioScene,
   type StudioContext,
 } from "./ThreeStudioScene";
+import { buildTeslaMotorModel } from "./teslaMotorModel";
 import { useLiveSimParams } from "./useLiveSimParams";
-
-const lcg = createLcg(1034);
 
 type CameraPreset = "iso" | "stator_coils" | "squirrel_cage" | "shaft_drive" | "top";
 
@@ -30,13 +27,12 @@ export function TeslaMotor3D() {
   const acFrequencyHz = params.frequency ?? 60;
   const phaseCount = (params.phaseCount as 2 | 3) ?? 2;
   const appliedLoadTorqueNm = params.loadTorque ?? 38.5;
-  const [showMagneticFlux, _setShowMagneticFlux] = useState<boolean>(true);
+  const [showMagneticFlux, setShowMagneticFlux] = useState<boolean>(true);
   const [showCalloutPins, setShowCalloutPins] = useState<boolean>(false);
   const [activeCamera, setActiveCamera] = useState<CameraPreset>("iso");
   const isPlayingAudio = (params.acHum ?? 0) === 1;
 
   // Electromechanical Induction Physics Calculations (FrankenSim Engine)
-  // Four/six coil sides around one N–S pair: a 2-pole rotating field.
   const fieldPoles = TESLA_FIELD_POLES;
   const polePairs = fieldPoles / 2;
   const emPhysics = FrankenSimEngine.stepTeslaMotor(acFrequencyHz, fieldPoles, appliedLoadTorqueNm);
@@ -120,272 +116,9 @@ export function TeslaMotor3D() {
     cameraRef.current = camera;
     controlsRef.current = controls;
 
-    // --- PBR MATERIALS ---
-    const statorIronMat = new THREE.MeshStandardMaterial({
-      color: 0x475569,
-      roughness: 0.35,
-      metalness: 0.85,
-    });
-
-    const copperRotorBarMat = new THREE.MeshStandardMaterial({
-      color: 0xf59e0b,
-      roughness: 0.15,
-      metalness: 0.95,
-    });
-
-    const rotorCoreMat = new THREE.MeshStandardMaterial({
-      color: 0x64748b,
-      roughness: 0.4,
-      metalness: 0.6,
-    });
-
-    const shaftSteelMat = new THREE.MeshStandardMaterial({
-      color: 0xf8fafc,
-      roughness: 0.08,
-      metalness: 0.95,
-    });
-
-    // --- 3D STATOR & INDUSTRIAL CHASSIS ASSEMBLY ---
-    const statorGroup = new THREE.Group();
-    scene.add(statorGroup);
-
-    // Heavy Cast-Iron Bedplate with Mounting Flanges
-    const bedplate = new THREE.Mesh(
-      new THREE.BoxGeometry(11.0, 0.7, 7.5),
-      new THREE.MeshStandardMaterial({ color: 0x1e293b, roughness: 0.6, metalness: 0.75 }),
-    );
-    bedplate.position.y = -4.2;
-    bedplate.receiveShadow = true;
-    statorGroup.add(bedplate);
-
-    // 4 Anchor Bosses with Hexagonal Hold-Down Bolts
-    [
-      [-4.8, -3.0],
-      [4.8, -3.0],
-      [-4.8, 3.0],
-      [4.8, 3.0],
-    ].forEach(([bx, bz]) => {
-      const boss = new THREE.Mesh(new THREE.CylinderGeometry(0.35, 0.4, 0.4, 16), statorIronMat);
-      boss.position.set(bx, -3.7, bz);
-      statorGroup.add(boss);
-
-      const bolt = new THREE.Mesh(new THREE.CylinderGeometry(0.14, 0.14, 0.35, 6), shaftSteelMat);
-      bolt.position.set(bx, -3.4, bz);
-      statorGroup.add(bolt);
-    });
-
-    // Twin Cast-Iron Pillow Block Bearing Pedestals (Fore & Aft)
-    [-3.8, 3.8].forEach((pedZ) => {
-      const pedestalGroup = new THREE.Group();
-      pedestalGroup.position.set(0, -1.8, pedZ);
-
-      // Flanged Pedestal Base
-      const pedBase = new THREE.Mesh(new THREE.BoxGeometry(3.2, 3.8, 0.8), statorIronMat);
-      pedBase.position.y = -1.2;
-      pedBase.castShadow = true;
-      pedestalGroup.add(pedBase);
-
-      // Bronze Split Sleeve Bearing Bushing
-      const bushing = new THREE.Mesh(
-        new THREE.CylinderGeometry(0.72, 0.72, 0.95, 24),
-        new THREE.MeshStandardMaterial({ color: 0xd97706, metalness: 0.9, roughness: 0.2 }),
-      );
-      bushing.rotation.x = Math.PI / 2;
-      bushing.castShadow = true;
-      pedestalGroup.add(bushing);
-
-      // Brass Grease / Oil Cup Reservoirs
-      const oilCup = new THREE.Mesh(
-        new THREE.CylinderGeometry(0.18, 0.14, 0.45, 12),
-        new THREE.MeshStandardMaterial({ color: 0xc8963e, metalness: 0.92, roughness: 0.25 }),
-      );
-      oilCup.position.set(0, 0.95, 0);
-      pedestalGroup.add(oilCup);
-
-      statorGroup.add(pedestalGroup);
-    });
-
-    // Stator Outer Ring Core with Lamination Clamp Studs
-    const statorGeo = new THREE.CylinderGeometry(5.2, 5.2, 3.8, 48, 1, true);
-    const statorMesh = new THREE.Mesh(statorGeo, statorIronMat);
-    statorMesh.castShadow = true;
-    statorMesh.receiveShadow = true;
-    statorGroup.add(statorMesh);
-
-    // Stator Lamination Stack Ribs
-    for (let l = 0; l < 8; l++) {
-      const lamRing = new THREE.Mesh(
-        new THREE.TorusGeometry(5.22, 0.04, 8, 48),
-        new THREE.MeshStandardMaterial({ color: 0x334155, metalness: 0.9 }),
-      );
-      lamRing.rotation.x = Math.PI / 2;
-      lamRing.position.y = -1.6 + l * 0.46;
-      statorGroup.add(lamRing);
-    }
-
-    // 4 Longitudinal Stator Through-Bolts with Hex Nuts
-    for (let tb = 0; tb < 4; tb++) {
-      const tbAngle = (tb * Math.PI) / 2 + Math.PI / 4;
-      const tbX = Math.cos(tbAngle) * 5.0;
-      const tbZ = Math.sin(tbAngle) * 5.0;
-      const rod = new THREE.Mesh(new THREE.CylinderGeometry(0.08, 0.08, 4.4, 8), shaftSteelMat);
-      rod.position.set(tbX, 0, tbZ);
-      statorGroup.add(rod);
-
-      [-2.15, 2.15].forEach((nutY) => {
-        const nut = new THREE.Mesh(new THREE.CylinderGeometry(0.16, 0.16, 0.18, 6), shaftSteelMat);
-        nut.position.set(tbX, nutY, tbZ);
-        statorGroup.add(nut);
-      });
-    }
-
-    // Terminal Connection Board with Knurled Brass Binding Posts
-    const termBoard = new THREE.Mesh(
-      new THREE.BoxGeometry(2.4, 1.2, 0.35),
-      new THREE.MeshStandardMaterial({ color: 0x78350f, roughness: 0.5 }),
-    );
-    termBoard.position.set(0, 3.8, 4.2);
-    statorGroup.add(termBoard);
-
-    for (let post = 0; post < 4; post++) {
-      const postMesh = new THREE.Mesh(
-        new THREE.CylinderGeometry(0.12, 0.12, 0.35, 12),
-        new THREE.MeshStandardMaterial({ color: 0xd97706, metalness: 0.95, roughness: 0.2 }),
-      );
-      postMesh.rotation.x = Math.PI / 2;
-      postMesh.position.set(-0.75 + post * 0.5, 3.8, 4.45);
-      statorGroup.add(postMesh);
-    }
-
-    // Salient Stator Poles & Copper Windings
-    const numPoles = phaseCount === 2 ? 4 : 6;
-    const coilMeshes: { mesh: THREE.Mesh; phaseIdx: number }[] = [];
-
-    for (let p = 0; p < numPoles; p++) {
-      const angle = (p * (2 * Math.PI)) / numPoles;
-      const poleGroup = new THREE.Group();
-      poleGroup.position.set(Math.cos(angle) * 3.8, 0, Math.sin(angle) * 3.8);
-      poleGroup.rotation.y = -angle + Math.PI / 2;
-
-      // Iron Core Pole Piece
-      const poleIron = new THREE.Mesh(new THREE.BoxGeometry(1.6, 3.2, 1.4), statorIronMat);
-      poleIron.castShadow = true;
-      poleGroup.add(poleIron);
-
-      // Heavy Gauge Copper Magnet Wire Coil Spool
-      const coilMat = new THREE.MeshStandardMaterial({
-        color: 0xd97706,
-        roughness: 0.25,
-        metalness: 0.85,
-      });
-      const coilMesh = new THREE.Mesh(new THREE.BoxGeometry(1.9, 2.6, 1.8), coilMat);
-      coilMesh.castShadow = true;
-      poleGroup.add(coilMesh);
-
-      coilMeshes.push({ mesh: coilMesh, phaseIdx: p % phaseCount });
-      statorGroup.add(poleGroup);
-    }
-
-    // --- 3D ROTOR & SQUIRREL CAGE ASSEMBLY ---
-    const rotorGroup = new THREE.Group();
-    scene.add(rotorGroup);
-
-    // Laminated Iron Rotor Cylinder Core
-    const rotorCore = new THREE.Mesh(new THREE.CylinderGeometry(2.45, 2.45, 3.4, 32), rotorCoreMat);
-    rotorCore.castShadow = true;
-    rotorCore.receiveShadow = true;
-    rotorGroup.add(rotorCore);
-
-    // Polished Drive Shaft with Keyway Slot
-    const shaft = new THREE.Mesh(new THREE.CylinderGeometry(0.55, 0.55, 9.8, 24), shaftSteelMat);
-    shaft.rotation.x = Math.PI / 2;
-    shaft.castShadow = true;
-    rotorGroup.add(shaft);
-
-    // Crowned Output Belt Pulley on Shaft Extension
-    const pulleyGroup = new THREE.Group();
-    pulleyGroup.position.set(0, 0, 4.4);
-
-    const pulleyRim = new THREE.Mesh(
-      new THREE.CylinderGeometry(1.45, 1.45, 1.1, 24),
-      new THREE.MeshStandardMaterial({ color: 0x334155, metalness: 0.8, roughness: 0.35 }),
-    );
-    pulleyRim.rotation.x = Math.PI / 2;
-    pulleyRim.castShadow = true;
-    pulleyGroup.add(pulleyRim);
-
-    // Pulley Hub & Locking Setscrew
-    const pulleyHub = new THREE.Mesh(
-      new THREE.CylinderGeometry(0.75, 0.75, 1.3, 16),
-      shaftSteelMat,
-    );
-    pulleyHub.rotation.x = Math.PI / 2;
-    pulleyGroup.add(pulleyHub);
-    rotorGroup.add(pulleyGroup);
-
-    // 16 Skewed Pure-Copper Squirrel-Cage Conductor Bars
-    const barCount = 16;
-    for (let b = 0; b < barCount; b++) {
-      const barAngle = (b * (2 * Math.PI)) / barCount;
-      const bar = new THREE.Mesh(
-        new THREE.CylinderGeometry(0.12, 0.12, 3.5, 12),
-        copperRotorBarMat,
-      );
-      bar.position.set(Math.cos(barAngle) * 2.35, 0, Math.sin(barAngle) * 2.35);
-      bar.rotation.z = 0.08;
-      bar.castShadow = true;
-      rotorGroup.add(bar);
-    }
-
-    // Heavy Copper Short-Circuit End Rings
-    [-1.72, 1.72].forEach((endY) => {
-      const endRing = new THREE.Mesh(
-        new THREE.TorusGeometry(2.35, 0.18, 12, 32),
-        copperRotorBarMat,
-      );
-      endRing.rotation.x = Math.PI / 2;
-      endRing.position.y = endY;
-      endRing.castShadow = true;
-      rotorGroup.add(endRing);
-    });
-
-    // --- GLOWING ROTATING MAGNETIC FLUX FIELD PARTICLES ---
-    const fluxCount = 180;
-    const fluxGeo = new THREE.BufferGeometry();
-    const fluxPositions = new Float32Array(fluxCount * 3);
-    const fluxColors = new Float32Array(fluxCount * 3);
-
-    const glowTex = createGlowPointTexture();
-
-    for (let i = 0; i < fluxCount; i++) {
-      const idx = i * 3;
-      const radius = 2.6 + lcg() * 1.8;
-      const angle = lcg() * Math.PI * 2;
-      fluxPositions[idx] = Math.cos(angle) * radius;
-      fluxPositions[idx + 1] = (lcg() - 0.5) * 2.8;
-      fluxPositions[idx + 2] = Math.sin(angle) * radius;
-
-      fluxColors[idx] = 0.2;
-      fluxColors[idx + 1] = 0.7 + lcg() * 0.3;
-      fluxColors[idx + 2] = 1.0;
-    }
-
-    fluxGeo.setAttribute("position", new THREE.BufferAttribute(fluxPositions, 3));
-    fluxGeo.setAttribute("color", new THREE.BufferAttribute(fluxColors, 3));
-
-    const fluxPoints = new THREE.Points(
-      fluxGeo,
-      new THREE.PointsMaterial({
-        size: 0.38,
-        map: glowTex,
-        vertexColors: true,
-        transparent: true,
-        opacity: 0.85,
-        blending: THREE.AdditiveBlending,
-        depthWrite: false,
-      }),
-    );
-    scene.add(fluxPoints);
+    // --- 3D STATOR & ROTOR ASSEMBLY ---
+    const model = buildTeslaMotorModel(phaseCount);
+    scene.add(model.rootGroup);
 
     // --- ROTATING B-FIELD VECTOR ARROW ---
     const bFieldArrow = new THREE.ArrowHelper(
@@ -410,7 +143,7 @@ export function TeslaMotor3D() {
       const elapsed = renderedSteps * (1 / 60);
       const p = live.current;
 
-      // Electrical ω shown at 1/20 so a 60 Hz field is visible. HUD states ns.
+      // Electrical ω shown at 1/20 so a 60 Hz field is visible.
       const omegaDisplay =
         p.fieldDisplayOmegaRadPerS ?? teslaFieldDisplayOmegaRadPerS(p.acFrequencyHz);
       bFieldAngle += omegaDisplay * delta;
@@ -418,9 +151,9 @@ export function TeslaMotor3D() {
       bFieldArrow.setDirection(new THREE.Vector3(field.bx, 0, field.by));
 
       const omegaRotor = omegaDisplay * (1 - p.slip);
-      rotorGroup.rotation.y += omegaRotor * delta;
+      model.rotorGroup.rotation.y += omegaRotor * delta;
 
-      for (const item of coilMeshes) {
+      for (const item of model.coilMeshes) {
         const phaseOffset = item.phaseIdx * (phaseCount === 2 ? Math.PI / 2 : (2 * Math.PI) / 3);
         const currentI = Math.sin(elapsed * p.acFrequencyHz * 0.5 + phaseOffset);
         const mat = item.mesh.material as THREE.MeshStandardMaterial;
@@ -428,8 +161,8 @@ export function TeslaMotor3D() {
         mat.emissiveIntensity = Math.abs(currentI) * 0.9;
       }
 
-      const fPos = fluxPositions;
-      for (let i = 0; i < fluxCount; i++) {
+      const fPos = model.fluxPositions;
+      for (let i = 0; i < model.fluxCount; i++) {
         const idx = i * 3;
         const x = fPos[idx];
         const z = fPos[idx + 2];
@@ -440,8 +173,8 @@ export function TeslaMotor3D() {
         fPos[idx] = Math.cos(curAngle) * r;
         fPos[idx + 2] = Math.sin(curAngle) * r;
       }
-      fluxGeo.attributes.position.needsUpdate = true;
-      fluxPoints.visible = p.showMagneticFlux;
+      model.fluxPoints.geometry.attributes.position.needsUpdate = true;
+      model.fluxPoints.visible = p.showMagneticFlux;
       bFieldArrow.visible = p.showMagneticFlux;
 
       controls.update();
@@ -452,6 +185,8 @@ export function TeslaMotor3D() {
 
     return () => {
       cancelAnimationFrame(reqId);
+      model.dispose();
+      bFieldArrow.dispose();
       studio.dispose();
     };
   }, [live, phaseCount]);
@@ -531,16 +266,20 @@ export function TeslaMotor3D() {
             )}
           </button>
           <button
-            aria-label="Toggle test tone"
+            aria-label={isPlayingAudio ? "Stop AC Motor Audio" : "Play AC Motor 60Hz Tone"}
             type="button"
             onClick={() => updateParam("acHum", isPlayingAudio ? 0 : 1)}
-            className="p-1.5 sm:p-2.5 rounded-xl bg-white/90 dark:bg-ink-900/90 backdrop-blur-md border border-parchment-300 dark:border-ink-700 text-ink-700 dark:text-parchment-300 hover:bg-parchment-100 dark:hover:bg-ink-800 transition-colors shadow-sm"
-            title={isPlayingAudio ? "Mute Motor Audio" : "Enable Motor Harmonic Sound"}
+            className={`p-1.5 sm:p-2.5 rounded-xl backdrop-blur-md border transition-colors shadow-sm ${
+              isPlayingAudio
+                ? "bg-amber-600 text-white border-amber-700 shadow-md"
+                : "bg-white/90 dark:bg-ink-900/90 border-parchment-300 dark:border-ink-700 text-ink-700 dark:text-parchment-300 hover:bg-parchment-100"
+            }`}
+            title={isPlayingAudio ? "Stop AC Motor Audio" : "Play AC Motor 60Hz Tone"}
           >
             {isPlayingAudio ? (
-              <Volume2 className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-emerald-600" />
-            ) : (
               <VolumeX className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
+            ) : (
+              <Volume2 className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-amber-600" />
             )}
           </button>
           <button
@@ -576,20 +315,20 @@ export function TeslaMotor3D() {
             {(
               [
                 ["iso", "Isometric"],
-                ["stator_coils", "Stator Poles"],
-                ["squirrel_cage", "Rotor Cage"],
-                ["shaft_drive", "Drive Shaft"],
-                ["top", "Air Gap"],
+                ["stator_coils", "Stator Coils"],
+                ["squirrel_cage", "Rotor & Bars"],
+                ["shaft_drive", "Shaft & Pulley"],
+                ["top", "Plan View"],
               ] as const
-            ).map(([id, label]) => (
+            ).map(([preset, label]) => (
               <button
-                key={id}
+                key={preset}
                 type="button"
-                onClick={() => applyCameraPreset(id)}
-                className={`px-2 py-0.5 sm:px-2.5 sm:py-1 rounded-lg font-sans whitespace-nowrap shrink-0 transition-colors ${
-                  activeCamera === id
-                    ? "bg-amber-700 dark:bg-amber-600 text-white font-semibold shadow-xs"
-                    : "text-ink-700 dark:text-parchment-300 hover:bg-parchment-200 dark:hover:bg-ink-800"
+                onClick={() => applyCameraPreset(preset)}
+                className={`px-2 py-1 rounded-lg transition-colors font-medium shrink-0 ${
+                  activeCamera === preset
+                    ? "bg-amber-600 text-white shadow-xs"
+                    : "text-ink-700 dark:text-ink-300 hover:bg-parchment-200 dark:hover:bg-ink-800"
                 }`}
               >
                 {label}

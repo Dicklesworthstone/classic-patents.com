@@ -7,19 +7,10 @@ import { stepMcCormickReaper } from "@/physics/catalogKernels";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { StudioKernelChips } from "./StudioKernelChips";
 import { createThreeStudioScene, type StudioContext } from "./ThreeStudioScene";
+import { buildMcCormickReaperModel } from "./mccormickReaperModel";
 import { useLiveSimParams } from "./useLiveSimParams";
 
 type CameraPreset = "iso" | "sickle_guards" | "grain_reel" | "platform" | "top";
-
-function deterministicUnit(index: number, channel: number): number {
-  let state = Math.imul(index + 1, 0x9e3779b1) ^ Math.imul(channel + 1, 0x85ebca6b);
-  state ^= state >>> 16;
-  state = Math.imul(state, 0x7feb352d);
-  state ^= state >>> 15;
-  state = Math.imul(state, 0x846ca68b);
-  state ^= state >>> 16;
-  return (state >>> 0) / 0x1_0000_0000;
-}
 
 export function McCormickReaper3D() {
   const containerRef = useRef<HTMLDivElement>(null);
@@ -77,7 +68,6 @@ export function McCormickReaper3D() {
     controls.update();
   };
 
-  // biome-ignore lint/correctness/useExhaustiveDependencies: Three.js studio lifecycle
   useEffect(() => {
     const container = containerRef.current;
     if (!container) return;
@@ -92,200 +82,9 @@ export function McCormickReaper3D() {
     cameraRef.current = camera;
     controlsRef.current = controls;
 
-    // Materials
-    const weatheredWoodMat = new THREE.MeshStandardMaterial({
-      color: 0x6b4226,
-      roughness: 0.8,
-      metalness: 0.05,
-    });
-
-    const ashWoodMat = new THREE.MeshStandardMaterial({
-      color: 0xa16207,
-      roughness: 0.6,
-      metalness: 0.05,
-    });
-
-    const castIronMat = new THREE.MeshStandardMaterial({
-      color: 0x27272a,
-      roughness: 0.4,
-      metalness: 0.85,
-    });
-
-    const sickleSteelMat = new THREE.MeshStandardMaterial({
-      color: 0xe2e8f0,
-      roughness: 0.15,
-      metalness: 0.95,
-    });
-
-    const brassGearsMat = new THREE.MeshStandardMaterial({
-      color: 0xd97706,
-      roughness: 0.25,
-      metalness: 0.9,
-    });
-
-    const strawMat = new THREE.MeshStandardMaterial({
-      color: 0xfde047,
-      roughness: 0.9,
-      metalness: 0.0,
-    });
-
-    const rootGroup = new THREE.Group();
-    scene.add(rootGroup);
-
-    // 1. Heavy Wooden Main Chassis & Grain Platform Deck
-    const platformGroup = new THREE.Group();
-    rootGroup.add(platformGroup);
-
-    // Wooden Grain Platform
-    const platformDeck = new THREE.Mesh(new THREE.BoxGeometry(6.5, 0.18, 4.5), weatheredWoodMat);
-    platformDeck.position.set(0.5, -0.6, -0.5);
-    platformDeck.castShadow = true;
-    platformDeck.receiveShadow = true;
-    platformGroup.add(platformDeck);
-
-    // Draft Tongue (Extending Forward to Horses)
-    const draftTongue = new THREE.Mesh(new THREE.BoxGeometry(0.3, 0.35, 7.5), ashWoodMat);
-    draftTongue.position.set(3.2, -0.5, 4.2);
-    draftTongue.castShadow = true;
-    platformGroup.add(draftTongue);
-
-    // Side Grain Divider Shoe (Triangular Wedge)
-    const dividerShoe = new THREE.Mesh(new THREE.ConeGeometry(0.6, 2.8, 4), weatheredWoodMat);
-    dividerShoe.rotation.x = Math.PI / 2;
-    dividerShoe.rotation.z = Math.PI / 4;
-    dividerShoe.position.set(-2.8, -0.5, 2.0);
-    dividerShoe.castShadow = true;
-    platformGroup.add(dividerShoe);
-
-    // 2. Large Spoked Ground Drive Wheel with Master Bull Gear
-    const driveWheelGroup = new THREE.Group();
-    driveWheelGroup.position.set(3.4, -0.2, 0);
-    rootGroup.add(driveWheelGroup);
-
-    // Outer Wooden / Iron Tire Rim
-    const wheelRim = new THREE.Mesh(new THREE.TorusGeometry(1.9, 0.14, 16, 36), castIronMat);
-    wheelRim.rotation.y = Math.PI / 2;
-    wheelRim.castShadow = true;
-    driveWheelGroup.add(wheelRim);
-
-    // Spoke Array
-    for (let sp = 0; sp < 8; sp++) {
-      const spAngle = (sp * Math.PI) / 4;
-      const spoke = new THREE.Mesh(new THREE.CylinderGeometry(0.06, 0.06, 3.7, 12), castIronMat);
-      spoke.rotation.x = spAngle;
-      driveWheelGroup.add(spoke);
-    }
-
-    // Master Bull Gear Hub
-    const bullGear = new THREE.Mesh(new THREE.CylinderGeometry(0.9, 0.9, 0.22, 24), brassGearsMat);
-    bullGear.rotation.z = Math.PI / 2;
-    driveWheelGroup.add(bullGear);
-
-    // 3. Pointed Guard Fingers & Reciprocating Serrated Sickle Bar (Claim 1)
-    const cutterAssembly = new THREE.Group();
-    cutterAssembly.position.set(0.5, -0.6, 1.8);
-    rootGroup.add(cutterAssembly);
-
-    // Stationary Pointed Guard Fingers
-    const fingerCount = 18;
-    for (let f = 0; f < fingerCount; f++) {
-      const fx = -2.8 + f * (5.6 / (fingerCount - 1));
-      const finger = new THREE.Mesh(new THREE.ConeGeometry(0.12, 0.75, 4), castIronMat);
-      finger.rotation.x = Math.PI / 2;
-      finger.position.set(fx, 0, 0.35);
-      finger.castShadow = true;
-      cutterAssembly.add(finger);
-    }
-
-    // Reciprocating Serrated Sickle Bar
-    const sickleBarGroup = new THREE.Group();
-    cutterAssembly.add(sickleBarGroup);
-
-    const sickleSteelBacking = new THREE.Mesh(
-      new THREE.BoxGeometry(5.8, 0.08, 0.12),
-      sickleSteelMat,
-    );
-    sickleBarGroup.add(sickleSteelBacking);
-
-    // Triangular Serrated Cutter Teeth
-    for (let t = 0; t < fingerCount; t++) {
-      const tx = -2.8 + t * (5.6 / (fingerCount - 1));
-      const tooth = new THREE.Mesh(new THREE.ConeGeometry(0.14, 0.45, 3), sickleSteelMat);
-      tooth.rotation.x = Math.PI / 2;
-      tooth.position.set(tx, 0.04, 0.2);
-      sickleBarGroup.add(tooth);
-    }
-
-    // Pitman Arm & Crank Drive
-    const pitmanArm = new THREE.Mesh(new THREE.BoxGeometry(0.12, 0.12, 1.8), castIronMat);
-    pitmanArm.position.set(3.0, 0, 0.8);
-    pitmanArm.rotation.y = -Math.PI / 8;
-    cutterAssembly.add(pitmanArm);
-
-    // 4. Revolving 4-Vane Grain Reel
-    const reelGroup = new THREE.Group();
-    reelGroup.position.set(0.5, 1.4, 0.8);
-    rootGroup.add(reelGroup);
-
-    // Reel Central Axle
-    const reelAxle = new THREE.Mesh(new THREE.CylinderGeometry(0.12, 0.12, 6.2, 16), ashWoodMat);
-    reelAxle.rotation.z = Math.PI / 2;
-    reelGroup.add(reelAxle);
-
-    // 4 Radial Vanes
-    for (let v = 0; v < 4; v++) {
-      const vAngle = (v * Math.PI) / 2;
-      const vaneGroup = new THREE.Group();
-      vaneGroup.rotation.x = vAngle;
-
-      // Radial Wooden Arms
-      [-2.4, 2.4].forEach((axPos) => {
-        const arm = new THREE.Mesh(new THREE.BoxGeometry(0.08, 1.8, 0.08), ashWoodMat);
-        arm.position.set(axPos, 0.9, 0);
-        vaneGroup.add(arm);
-      });
-
-      // Horizontal Sweep Slat
-      const slat = new THREE.Mesh(new THREE.BoxGeometry(6.0, 0.25, 0.04), ashWoodMat);
-      slat.position.set(0, 1.8, 0);
-      slat.castShadow = true;
-      vaneGroup.add(slat);
-
-      reelGroup.add(vaneGroup);
-    }
-
-    // 5. Standing Wheat Stalks Field & Falling Cut Stems
-    const stalkCount = 45;
-    const stalksInstanced = new THREE.InstancedMesh(
-      new THREE.CylinderGeometry(0.03, 0.03, 1.6, 6),
-      strawMat,
-      stalkCount,
-    );
-    const dummy = new THREE.Object3D();
-    for (let i = 0; i < stalkCount; i++) {
-      dummy.position.set(
-        -2.5 + deterministicUnit(i, 0) * 5.0,
-        0.2,
-        2.2 + deterministicUnit(i, 1) * 2.5,
-      );
-      dummy.rotation.set(
-        (deterministicUnit(i, 2) - 0.5) * 0.2,
-        0,
-        (deterministicUnit(i, 3) - 0.5) * 0.2,
-      );
-      dummy.updateMatrix();
-      stalksInstanced.setMatrixAt(i, dummy.matrix);
-    }
-    stalksInstanced.instanceMatrix.needsUpdate = true;
-    rootGroup.add(stalksInstanced);
-
-    // Cut Grain Sheaf on Deck
-    const sheafGeo = new THREE.CylinderGeometry(0.35, 0.5, 2.2, 8);
-    sheafGeo.rotateZ(Math.PI / 2);
-    const sheafMesh = new THREE.Mesh(sheafGeo, strawMat);
-    sheafMesh.position.set(0.6, -0.4, -0.6);
-    sheafMesh.castShadow = true;
-    platformGroup.add(sheafMesh);
+    // Build procedural 3D model
+    const model = buildMcCormickReaperModel();
+    scene.add(model.rootGroup);
 
     // Animation Loop
     let reqId: number;
@@ -294,9 +93,6 @@ export function McCormickReaper3D() {
     const animate = () => {
       reqId = requestAnimationFrame(animate);
       const p = live.current;
-      // This is deliberately a fixed rendering step. It makes the same
-      // control sequence reproduce the same pose without implying a wall-clock
-      // simulation or a FrankenSim WASM solve.
       const elapsedSeconds = presentationStep / 60;
       presentationStep += 1;
 
@@ -305,15 +101,15 @@ export function McCormickReaper3D() {
         p.groundWheelOmegaRadPerS ?? (sourceKinematics.groundWheelRpm * 2 * Math.PI) / 60;
       const reelRadPerSec = p.reelOmegaRadPerS ?? (p.reelRpm * 2 * Math.PI) / 60;
 
-      driveWheelGroup.rotation.x = wheelRadPerSec * elapsedSeconds;
-      reelGroup.rotation.x = reelRadPerSec * elapsedSeconds;
+      model.driveWheelGroup.rotation.x = wheelRadPerSec * elapsedSeconds;
+      model.reelGroup.rotation.x = reelRadPerSec * elapsedSeconds;
 
       // Reciprocate Sickle Bar
       const sicklePhase =
         elapsedSeconds * (p.cutterOmegaRadPerS ?? (p.cutterCrankRpm / 60) * Math.PI * 2);
-      sickleBarGroup.position.x = Math.sin(sicklePhase) * 0.18; // Illustrative visual amplitude only.
+      model.sickleBarGroup.position.x = Math.sin(sicklePhase) * 0.18;
 
-      stalksInstanced.visible = p.showStalks;
+      model.stalksInstanced.visible = p.showStalks;
 
       renderer.render(scene, camera);
     };
@@ -322,9 +118,10 @@ export function McCormickReaper3D() {
 
     return () => {
       cancelAnimationFrame(reqId);
+      model.dispose();
       studio.cleanup();
     };
-  }, []);
+  }, [live]);
 
   return (
     <div className="relative w-full h-[620px] bg-parchment-900 rounded-2xl overflow-hidden border border-parchment-700 shadow-2xl flex flex-col">
