@@ -1181,7 +1181,7 @@ function renderHistoricalSchematic(
             5-Chamber Cylinder (Δθ={rotDeg.toFixed(0)}°)
           </text>
           <text x="50" y="42" fill="#bae6fd" fontSize="9">
-            Pawl & Hammer (US 138)
+            Pawl & Hammer (US X9430)
           </text>
         </g>
       );

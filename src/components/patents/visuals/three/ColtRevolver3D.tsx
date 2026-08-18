@@ -27,7 +27,7 @@ type CameraPreset = "iso" | "cylinder" | "lockwork" | "sightline" | "top";
 
 export function ColtRevolver3D() {
   const containerRef = useRef<HTMLDivElement>(null);
-  const { params, updateParam, resetParams } = usePatentPhysics("us-138-colt-revolver");
+  const { params, updateParam, resetParams } = usePatentPhysics("us-x9430-colt-revolver");
 
   // Reactive Physics & Mechanical State
   const chamberPressureMpa = params.chamberPressure ?? 85;
@@ -47,7 +47,7 @@ export function ColtRevolver3D() {
     cockingAngleDeg,
   });
 
-  useFrankenSimPhysics("us-138-colt-revolver", {
+  useFrankenSimPhysics("us-x9430-colt-revolver", {
     domain: "solid_mechanics",
     timestampMs: Date.now(),
     timeStepDt: 0.016,

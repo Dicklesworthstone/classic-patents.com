@@ -229,7 +229,7 @@ export function buildColtRevolverModel(): ColtRevolverModel {
     roughness: 0.25,
   });
 
-  // --- 2. REVOLVING 5-CHAMBER CYLINDER (US 138 Fig. 2 & 3) ---
+  // --- 2. REVOLVING 5-CHAMBER CYLINDER (US X9430 Fig. 2 & 3) ---
   // Positioned at origin (0, 0, 0)
   const cylinderGroup = new THREE.Group();
   cylinderGroup.position.set(0, 0, 0);
@@ -351,7 +351,7 @@ export function buildColtRevolverModel(): ColtRevolverModel {
   arborPin.position.set(0.6, 0, 0);
   rootGroup.add(arborPin);
 
-  // --- 4. OCTAGONAL RIFLED BARREL & UNDER-LUG (US 138 Fig. 1) ---
+  // --- 4. OCTAGONAL RIFLED BARREL & UNDER-LUG (US X9430 Fig. 1) ---
   // Barrel Axis is PRECISELY at Y = +0.82, Z = 0 (Concentric with Top Chamber)
   const barrelGroup = new THREE.Group();
   barrelGroup.position.set(0, 0, 0);
@@ -451,7 +451,7 @@ export function buildColtRevolverModel(): ColtRevolverModel {
 
   rootGroup.add(loadingLeverGroup);
 
-  // --- 6. CASE-HARDENED RECEIVER FRAME & RECOIL SHIELD (US 138 Fig. 4) ---
+  // --- 6. CASE-HARDENED RECEIVER FRAME & RECOIL SHIELD (US X9430 Fig. 4) ---
   const frameGroup = new THREE.Group();
   frameGroup.position.set(0, 0, 0);
 
@@ -536,7 +536,7 @@ export function buildColtRevolverModel(): ColtRevolverModel {
 
   rootGroup.add(gripGroup);
 
-  // --- 8. HISTORIC PATERSON FOLDING TRIGGER (US 138 Fig. 5) ---
+  // --- 8. HISTORIC PATERSON FOLDING TRIGGER (US X9430 Fig. 5) ---
   // Hidden inside frame mortise; drops down and tilts when cocked!
   const triggerGroup = new THREE.Group();
   triggerGroup.position.set(frameRearX - 0.7, -1.42, 0);
@@ -554,7 +554,7 @@ export function buildColtRevolverModel(): ColtRevolverModel {
 
   rootGroup.add(triggerGroup);
 
-  // --- 9. SINGLE-ACTION HAMMER & CHECKERED SPUR (US 138 Fig. 6) ---
+  // --- 9. SINGLE-ACTION HAMMER & CHECKERED SPUR (US X9430 Fig. 6) ---
   // Pivot axis at (frameRearX - 1.1, -0.15)
   const hammerGroup = new THREE.Group();
   const hammerPivotX = frameRearX - 1.1; // -2.50

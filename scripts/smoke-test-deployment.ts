@@ -38,7 +38,7 @@ async function runSmokeTests() {
   // 2. Curated Sample of Historic Patent Routes
   const samplePatentIds = [
     "us-821393-wright-flyer",
-    "us-138-colt-revolver",
+    "us-x9430-colt-revolver",
     "us-381968-tesla-motor",
     "us-223898-edison-lightbulb",
     "us-2708656-fermi-reactor",

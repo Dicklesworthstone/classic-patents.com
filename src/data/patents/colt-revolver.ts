@@ -1,272 +1,228 @@
+import { coltRevolverArchivalEdition } from "@/data/editions/coltRevolverEdition";
 import type { Patent } from "@/types/patent";
 
+const manualClaimText = (number: number): string => {
+  const block = coltRevolverArchivalEdition.blocks.find(
+    (candidate) => candidate.kind === "claim" && candidate.number === number,
+  );
+  if (block?.kind !== "claim") {
+    throw new Error(`US X9430 is missing its authored claim ${number}.`);
+  }
+  return block.inlines.map((inline) => inline.text).join("");
+};
+
 export const coltRevolverPatent: Patent = {
-  id: "us-138-colt-revolver",
-  patentNumber: "US 138",
-  title: "Revolving Gun",
-  shortTitle: "Colt Rotating Cylinder Firearm Mechanism",
-  subtitle: "Pawl and Ratchet Cylinder Indexing, Sear Lockup, and Isolated Percussion Nipples",
+  id: "us-x9430-colt-revolver",
+  patentNumber: "US X9430",
+  title: "Improvement in Fire-Arms",
+  shortTitle: "Revolving Gun",
+  subtitle: "Indexed revolving cylinder, locking key, and percussion-cap protection",
   inventors: ["Samuel Colt"],
-  inventorLocation: "Hartford, Connecticut & Paterson, New Jersey",
+  inventorLocation: "Hartford, Connecticut",
   grantDate: "1836-02-25",
+  // The pinned specification names the grant date but gives no application date.
+  // This legacy required field predates the source-only edition model; retain the
+  // existing catalogue value pending a shared schema/provenance decision.
   filingDate: "1836-01-09",
-  era: "Early Republic & Industrial Dawn (1790–1830)",
+  era: "Early Republic & Industrial Dawn (1790–1839)",
   category: "consumer",
-  categoryLabel: "Mechanical Indexing & Ballistics",
+  categoryLabel: "Mechanical Indexing & Fire-Arms",
   summary:
-    "The 1836 firearm breakthrough that created the repeating handgun: Samuel Colt's single-action revolver integrating a mechanical link between the cocking hammer and cylinder pawl, automatically rotating the 5-chambered cylinder by exactly 72 degrees while lifting a spring bolt into a locking recess to align each chamber bore with the stationary rifled barrel in a single fluid motion.",
-  heroQuote:
-    "By drawing back the hammer to cock the lock, the cylinder is revolved through the space of one chamber and held immovably in line with the barrel by the locking bolt during discharge...",
-  originalPdfUrl: "/patents/pdfs/us-138-colt-revolver.pdf",
-  googlePatentsUrl: "https://patents.google.com/patent/US138/en",
-  usptoClassification: "F41C 3/14 (Revolvers; Revolving cylinder mechanisms)",
+    "US X9430 is Samuel Colt's February 25, 1836 specification for a revolving gun. Its text describes a cylinder carried on an arbor, a ratchet and lifter driven by cocking the hammer, a spring-held locking key, separated percussion-cap tubes, and related long-gun lockwork.",
+  heroQuote: "The principle of locking and turning the cylinder.",
+  originalPdfUrl: "/patents/pdfs/us-x9430-colt-revolver.pdf",
+  googlePatentsUrl: "https://patents.google.com/patent/USX9430I1/en",
+  usptoClassification: "Historical U.S. patent; revolving fire-arms",
+  archivalEdition: coltRevolverArchivalEdition,
   originalTextAsset: {
-    url: "/patents/source-text/us-138-colt-revolver.txt",
-    pageCount: 2,
-    kind: "source-pdf-text-layer",
+    url: "/patents/transcripts/us-x9430-colt-revolver.txt",
+    pageCount: 7,
+    kind: "reviewed-transcription",
+    reviewedBy: "codex-charlie",
+    reviewedAt: "2026-08-17",
+    sourcePdfSha256: "61eed2c1b5ea259a301fb2690a7d3d17e1a59560cfb002dc91c29a50f5841d01",
   },
-  originalText: `UNITED STATES PATENT OFFICE.
-SAMUEL COLT, OF HARTFORD, CONNECTICUT.
-
-IMPROVEMENT IN FIRE-ARMS.
-
-Specification forming part of Letters Patent No. 138, dated February 25, 1836.
-
-To all whom it may concern:
-Be it known that I, SAMUEL COLT, of the city of Hartford, in the State of Connecticut, have invented certain new and useful Improvements in Fire-Arms, of which the following is a specification:
-
-The principle of my invention consists in combining a revolving cylinder containing a plurality of chambers with the cocking and firing mechanism in such manner that the simple action of drawing back the hammer to full cock rotates the cylinder through the space of one chamber, firmly locks it in axial alignment with the stationary barrel, and holds it immovably during discharge, while isolating the percussion nipples from lateral chain-fire.
-
-The construction of the apparatus comprises:
-1. A revolving cylinder mounted upon a central arbor or pin, having five or six chambers drilled longitudinally through it. At the rear face of the cylinder is formed a ratchet having a number of teeth corresponding to the number of chambers.
-2. A hand or pawl pivoted to the breast of the hammer, which, as the hammer is drawn back by the thumb, rises and engages the ratchet teeth, rotating the cylinder through sixty to seventy-two degrees.
-3. A spring bolt or locking lever engaging notches in the periphery of the cylinder. As the hammer begins its cocking movement, a cam on the hammer withdraws the locking bolt from the notch; as full cock is reached, the bolt snaps back into the next notch, locking the cylinder rigidly in line with the barrel.
-4. Partitions or recoil shields separating each percussion nipple from its neighbors, preventing the flash of one cap from communicating laterally to adjacent charges.
-
-When the trigger is pulled, the hammer falls upon the aligned nipple, detonating the percussion cap and discharging the bullet through the barrel, without disturbing the locked position of the cylinder.
-
-I claim as my invention:
-1. The combination of the rotating cylinder with the cock or hammer, so connected by a pawl and ratchet that cocking the hammer rotates the cylinder to bring a fresh chamber into alignment with the barrel.
-2. The combination with said cylinder and hammer of the locking bolt operated by the motion of the hammer to unlock and re-lock the cylinder at each cocking operation.
-3. The protective partitions between the percussion nipples to prevent accidental communication of fire between the chambers.`,
+  originalText:
+    "Be it known that I, SAMUEL COLT, of Hartford, in the county of Hartford and State of Connecticut, have invented a new and useful Improvement in Fire-Arms. The complete, source-checked specification, all eight claims, drawing-sheet descriptions, signature, and witnesses are presented in the manually prepared Original Patent Text edition.",
   plainEnglishExplanation: {
     overview:
-      "Before Samuel Colt, repeating firearms were dangerous, bulky 'pepperbox' guns that rotated multiple heavy barrels by hand or were prone to catastrophic 'chain-fires' (where one shot ignited all neighboring chambers simultaneously). Colt invented a compact mechanism that linked the single thumb cocking of the hammer to a pawl and ratchet, automatically indexing a lightweight multi-chambered cylinder into precision alignment with a single rifled barrel while locking it rigidly against firing recoil.",
+      "Colt's specification links a repeating gun's parts into one sequence: cocking frees the cylinder, the lifter advances a ratchet, a spring-held key re-enters a ward to lock the next chamber opposite the barrel, and the trigger releases the hammer onto a percussion cap.",
     coreMechanism:
-      "Drawing the hammer back with the thumb performs three synchronized mechanical operations simultaneously: (1) A cam on the lower hammer body pushes the cylinder locking bolt downward out of its perimeter notch; (2) A pivoted vertical hand (pawl) on the hammer face pushes upward against a ratchet tooth on the cylinder arbor, rotating the cylinder exactly $72^\\circ$; (3) At full cock, the sear drops into the hammer notch, and the spring bolt snaps upward into the next cylinder perimeter recess, locking the chamber in alignment ($<0.05\\text{ mm}$ concentricity) with the barrel bore. Deep steel partitions between the percussion caps physically shield adjacent nipples from spark flashback.",
+      "The cited mechanism is a discrete indexing chain, not a claim to a particular chamber count. Hammer pin p first lifts the locking key so its end r leaves a cylinder ward. The lifter arm d then pushes a ratchet tooth s through the shackle, advancing one chamber. Once pin p passes the key's upper end t, spring m forces r into the succeeding ward. The trigger-held connecting rod then releases the hammer to strike the cap on the aligned tube.",
     mechanicalBreakdown: [
       {
-        title: "Pawl & Ratchet Cylinder Indexer",
-        summary: "Pivoted vertical hand on hammer rotating cylinder by exactly 72 degrees.",
-        technicalDetails:
-          "The hand is pinned to the hammer below the main pivot axis. During the $45^\\circ$ hammer cocking arc, the hand travels upward along an involute curve, imparting angular momentum to the ratchet ($\\Delta \\theta = \\frac{2\\pi}{N_{\\text{chambers}}} = 72^\\circ$).",
-        archaicTerm: "Hand or pawl engaging the ratchet on the arbor",
-        modernEquivalent: "Cylinder hand / Indexing pawl",
-      },
-      {
-        title: "Cylinder Locking Bolt & Cam",
-        summary: "Spring-loaded bolt snapping into cylinder perimeter recesses.",
-        technicalDetails:
-          "A split spring bolt rests in a deep notch on the cylinder outer circumference. The hammer carries a bevel cam that lifts the bolt during the initial $10^\\circ$ of cocking travel, then lets it snap back into the next notch as the chamber hits true center, resisting recoil torques exceeding $150\\text{ N}\\cdot\\text{m}$.",
-        archaicTerm: "Spring bolt engaging notches in the periphery",
-        modernEquivalent: "Cylinder stop bolt / Cylinder bolt detent",
-      },
-      {
-        title: "Recoil Shield & Flash-Isolating Nipple Partitions",
-        summary: "Milled steel walls isolating percussion caps against chain fire.",
-        technicalDetails:
-          "Each percussion nipple is recessed within a milled cavity bounded by $3\\text{ mm}$ thick steel partition walls. When the hammer ignites the mercury fulminate cap, expanding combustion gas is baffled backwards against the frame recoil shield rather than flashing sideways into neighboring chambers.",
-        archaicTerm: "Partitions separating the nipples",
-        modernEquivalent: "Recoil shield / Flash-barrier cylinder partitions",
-      },
-      {
-        title: "Central Center-Pin Arbor & Transverse Barrel Wedge",
+        title: "Arbor, cylinder, and shackle",
         summary:
-          "Rigid longitudinal axle absorbing axial recoil tension and enabling modular takedown.",
+          "The arbor carries the revolving cylinder while a shackle mechanically joins the cylinder to its ratchet.",
         technicalDetails:
-          "A solid hardened-steel central arbor pin ($d = 9.5\\text{ mm}$) threads into the frame and passes completely through the cylinder axis. A tapered transverse steel wedge through the forward arbor extension clamps the barrel assembly rigidly against the lower frame lugs, withstanding axial tensile thrust forces ($F_{\\text{thrust}} > 8.5\\text{ kN}$) without stretching.",
-        archaicTerm: "Center pin and key or wedge securing the barrel",
-        modernEquivalent: "Cylinder arbor shaft & barrel clamping wedge",
+          "The specification says the arbor is keyed against turning in the shield, while the cylinder turns by the ratchet and shackle. The claim is the shackle's application to connect those two members, not an unstated modern geometry.",
+        archaicTerm: "Arbor",
+        modernEquivalent: "Cylinder axis or spindle",
       },
       {
-        title: "Sear Notches, Half-Cock Safety, & Laminated Mainspring",
+        title: "Lifter, ratchet, and locking key",
         summary:
-          "Three-position tumbler lock delivering crisp trigger release and fall-safe loading.",
+          "Cocking advances one chamber and the spring key locks that chamber at the barrel.",
         technicalDetails:
-          "The lower hammer hub features two EDM-style precision ground notches: a deep half-cock safety notch that captures the sear nose and locks the trigger while freeing the cylinder for hand rotation during loading, and a full-cock notch engaging at $4.2\\text{ N}$ trigger pull. A heavy V-shaped leaf mainspring stores $12.5\\text{ J}$ of strain energy, accelerating the hammer into the percussion nipple in $<8.0\\text{ ms}$.",
-        archaicTerm: "Tumbler notches and main-spring for cocking and releasing",
-        modernEquivalent: "Sear-tumbler fire control group & leaf mainspring",
+          "The lifter's arm d acts on a ratchet tooth; the hammer pin p lifts the key before the turn and spring m restores its end r to the next ward. In plain terms, the gun separates unlocking, indexing, and lockup into a causal sequence.",
+        archaicTerm: "Lifter or hand",
+        modernEquivalent: "Cylinder-indexing pawl",
+      },
+      {
+        title: "Cap tubes, partitions, and shield",
+        summary:
+          "The rear percussion caps sit on individual tubes with partitions and a shield around them.",
+        technicalDetails:
+          "Colt expressly says the partitions prevent fire or smoke communicating from one cap to another. His third claim additionally names the shield as protection against moisture and smoke affecting the lockwork.",
+        archaicTerm: "Percussion-cap",
+        modernEquivalent: "Impact-sensitive primer cap",
+      },
+      {
+        title: "Connecting rod and trigger",
+        summary:
+          "A rod joins the hammer's cocked catch to the trigger so the trigger can release it.",
+        technicalDetails:
+          "The rod is pushed forward while cocking and then caught by the trigger. Pulling the trigger draws the rod from the hammer catch; the mainspring drives the hammer forward. Claim 4 names this rod principle directly.",
+        archaicTerm: "Connecting-rod",
+        modernEquivalent: "Trigger-to-sear linkage",
       },
     ],
     scientificPrinciples: [
       {
-        principle: "Internal Ballistic Hoop Stress",
-        formula:
-          "\\sigma_{\\text{hoop}} = \\frac{P_{\\text{combustion}} \\cdot r_{\\text{inner}}}{t_{\\text{wall}}} < \\sigma_{\\text{yield}}",
+        principle: "Discrete angular indexing",
+        formula: "Δθ = 2π / N",
         explanation:
-          "Peak black powder combustion pressures ($70\\text{ to }120\\text{ MPa}$) generate extreme tensile hoop stresses in the cylinder walls, requiring forged carbon steel with thickness $t \\ge 3.5\\text{ mm}$ to prevent chamber rupture.",
+          "For a cylinder with N chambers, advancing one ratchet tooth rotates the chamber pattern by one Nth of a revolution. The patent describes that one-chamber advance but does not specify N.",
       },
       {
-        principle: "Kinematic Angular Discretization (5-Step Ratchet Geneva)",
-        formula:
-          "\\theta_{\\text{step}} = \\frac{360^\\circ}{N} = 72^\\circ, \\quad \\omega(t) = \\dot{\\theta}_{\\text{hammer}}(t) \\cdot \\frac{r_{\\text{pawl}}}{r_{\\text{ratchet}}}",
+        principle: "Moment balance about a pivot",
+        formula: "τ = r × F",
         explanation:
-          "The continuous angular rotation of the thumb hammer is converted into a discrete $72^\\circ$ stepwise rotation of the 5-chamber cylinder via pawl-ratchet geometry.",
-      },
-      {
-        principle: "Gas Expansion Pressure & Barrel Sealing",
-        formula:
-          "v_{\\text{muzzle}} = \\sqrt{\\frac{2}{m_{\\text{bullet}}} \\int_{x_0}^{x_1} P(x) A_{\\text{bore}} \\, dx}",
-        explanation:
-          "Expanding propellant gases accelerate the conical lead bullet through the barrel; minimizing the cylinder-to-barrel gap ($<0.15\\text{ mm}$) prevents gas pressure blow-by and maintains high muzzle velocity.",
-      },
-      {
-        principle: "Recoil Momentum Conservation & Arbor Tensile Shear",
-        formula:
-          "m_{\\text{bullet}} v_{\\text{bullet}} + m_{\\text{gas}} v_{\\text{gas}} = M_{\\text{gun}} V_{\\text{recoil}}, \\quad \\sigma_{\\text{arbor}} = \\frac{F_{\\text{thrust}}}{\\frac{\\pi}{4} d_{\\text{arbor}}^2}",
-        explanation:
-          "Conservation of linear momentum governs firearm recoil dynamics, while the central arbor pin bears the entire forward gas separation impulse without yielding or shearing the barrel locking wedge.",
+          "The hammer, key, trigger, and lever work about named fulcrums. A force applied at a distance from a fulcrum creates the turning moment that moves the connected part.",
       },
     ],
     whyItMattersToday:
-      "Colt's single-action pawl, ratchet, and cylinder stop architecture became the universal blueprint for all revolving cylinder firearms (from the 1873 Colt Single Action Army 'Peacemaker' to modern Smith & Wesson and Ruger revolvers). Beyond firearms, Colt pioneered precision assembly line mass production with drop-forged interchangeable parts in Hartford, Connecticut, establishing the cornerstone of American industrial manufacturing.",
+      "The document is an early primary source for the linked problems of indexing, lockup, cap isolation, and trigger release in a revolving firearm. Its claims are narrower and more varied than a later shorthand description of a generic revolver mechanism.",
   },
   claims: [
     {
       number: 1,
       isIndependent: true,
-      originalText:
-        "The combination of the rotating cylinder with the cock or hammer, so connected by a pawl and ratchet that cocking the hammer rotates the cylinder to bring a fresh chamber into alignment with the barrel.",
-      plainEnglish:
-        "Master claim securing the mechanical linkage between the cocking hammer and a pawl/ratchet that automatically indexes the cylinder by one chamber when the hammer is cocked.",
-      keyInnovations: [
-        "Single-action hammer-to-cylinder pawl linkage",
-        "Automatic cylinder rotation on cocking",
-        "Multi-chambered single-barrel repeating firearm",
-      ],
-      legalSignificance:
-        "The foundational claim of the modern revolver, granting Colt a lucrative monopoly on repeating handguns until the patent expired in the 1850s.",
+      originalText: manualClaimText(1),
+      plainEnglish: "Claims placing the percussion caps at the cylinder's end.",
+      keyInnovations: ["End-mounted percussion caps"],
     },
     {
       number: 2,
-      isIndependent: false,
-      dependsOn: [1],
-      originalText:
-        "The combination with said cylinder and hammer of the locking bolt operated by the motion of the hammer to unlock and re-lock the cylinder at each cocking operation.",
-      plainEnglish:
-        "Specifies the spring bolt mechanism that unlocks the cylinder as cocking begins and locks it rigidly into alignment as full cock is reached.",
-      keyInnovations: [
-        "Hammer-actuated cylinder stop bolt",
-        "Positive chamber-to-bore alignment locking",
-      ],
-      legalSignificance:
-        "Protected the critical alignment and safety catch mechanism that prevented misaligned firing.",
+      isIndependent: true,
+      originalText: manualClaimText(2),
+      plainEnglish: "Claims the separating partition between adjacent caps.",
+      keyInnovations: ["Cap partition"],
     },
     {
       number: 3,
-      isIndependent: false,
-      dependsOn: [1],
-      originalText:
-        "The protective partitions between the percussion nipples to prevent accidental communication of fire between the chambers.",
+      isIndependent: true,
+      originalText: manualClaimText(3),
       plainEnglish:
-        "Covers the recessed steel partition walls separating the percussion nipples to prevent sparks from causing multiple chambers to ignite simultaneously.",
-      keyInnovations: [
-        "Flash-isolating percussion nipple partitions",
-        "Anti-chain-fire safety geometry",
-      ],
-      legalSignificance:
-        "Addressed the primary lethal safety hazard of early revolving multi-chamber weapons.",
+        "Claims a protective shield over the caps to guard the lockwork from moisture and smoke.",
+      keyInnovations: ["Cap shield", "Lockwork protection"],
+    },
+    {
+      number: 4,
+      isIndependent: true,
+      originalText: manualClaimText(4),
+      plainEnglish: "Claims the rod that mechanically connects hammer and trigger.",
+      keyInnovations: ["Hammer-to-trigger connecting rod"],
+    },
+    {
+      number: 5,
+      isIndependent: true,
+      originalText: manualClaimText(5),
+      plainEnglish: "Claims the shackle used to connect the cylinder and its ratchet.",
+      keyInnovations: ["Cylinder-to-ratchet shackle"],
+    },
+    {
+      number: 6,
+      isIndependent: true,
+      originalText: manualClaimText(6),
+      plainEnglish: "Claims the combined principle of cylinder lockup and rotation.",
+      keyInnovations: ["Cylinder locking", "Cylinder turning"],
+    },
+    {
+      number: 7,
+      isIndependent: true,
+      originalText: manualClaimText(7),
+      plainEnglish: "Claims the arbor-and-plate arrangement that unites barrel and cylinder.",
+      keyInnovations: ["Arbor", "Barrel-to-cylinder union"],
+    },
+    {
+      number: 8,
+      isIndependent: true,
+      originalText: manualClaimText(8),
+      plainEnglish:
+        "Claims the adopter and setting lever used in the long-gun arrangement, which the text distinguishes from the pistol.",
+      keyInnovations: ["Adopter", "Setting lever"],
     },
   ],
   drawings: [
     {
-      figureNumber: "Fig. 1",
-      title: "Longitudinal Section of Colt Paterson Revolver Lockwork",
-      caption:
-        "Cutaway view showing hammer, mainspring, pawl (hand), cylinder ratchet, locking bolt, and 5-chambered cylinder.",
+      figureNumber: "Division 1",
+      title: "Pistol",
+      caption: "The complete pistol view described in the specification.",
       svgType: "colt-revolver",
       callouts: [
         {
-          id: "cr-1",
-          figureRef: "Fig. 1",
-          label: "A",
-          element: "Cocking Hammer & Cam",
-          description: "Thumb-cocked hammer driving pawl and tripping cylinder stop bolt.",
-          x: 20,
-          y: 40,
+          id: "x9430-hammer",
+          figureRef: "Division 3, Fig. 1",
+          label: "a",
+          element: "Hammer fulcrum",
+          description: "Pivot point of the percussion-cap-striking hammer.",
+          x: 34,
+          y: 56,
         },
         {
-          id: "cr-2",
-          figureRef: "Fig. 1",
-          label: "B",
-          element: "Cylinder Hand / Pawl",
-          description: "Vertical lever rotating ratchet teeth on cylinder arbor by 72 degrees.",
-          x: 35,
-          y: 50,
+          id: "x9430-lifter",
+          figureRef: "Division 3, Fig. 4",
+          label: "d",
+          element: "Lifter arm",
+          description: "Arm that enters the ratchet teeth to advance the cylinder.",
+          x: 44,
+          y: 58,
         },
         {
-          id: "cr-3",
-          figureRef: "Fig. 1",
-          label: "C",
-          element: "Revolving 5-Chamber Cylinder",
-          description: "Forged steel cylinder with bored chambers and locking notches.",
-          x: 55,
-          y: 45,
-        },
-        {
-          id: "cr-4",
-          figureRef: "Fig. 1",
-          label: "D",
-          element: "Cylinder Stop Locking Bolt",
-          description: "Spring bolt engaging perimeter notches to align chamber with barrel.",
-          x: 50,
-          y: 75,
+          id: "x9430-key",
+          figureRef: "Division 3, Fig. 3",
+          label: "r",
+          element: "Locking-key end",
+          description: "Spring-driven end that enters the succeeding cylinder ward.",
+          x: 53,
+          y: 62,
         },
       ],
+    },
+    {
+      figureNumber: "Division 2",
+      title: "Four sectional views",
+      caption:
+        "The source divides the pistol into four sections to show the arbor, cylinder, lock plate, barrel, and related parts.",
+      svgType: "colt-revolver",
+      callouts: [],
     },
   ],
   historicalContext: {
     problemStatement:
-      "In the 1830s, military and civilian firearms were single-shot muzzleloaders or bulky multi-barrel 'pepperbox' pistols. Reloading a single-shot pistol under combat conditions took 20 to 30 seconds; pepperbox pistols were heavy, unbalanced, and frequently suffered catastrophic chain fires, blowing the shooter's hand off.",
+      "The specification itself identifies the practical problem: make successive chambered shots while maintaining a locked chamber at the barrel and isolating neighboring percussion caps.",
     priorArtLimitations: [
-      "Elisha Collier's 1818 flintlock revolver required the cylinder to be rotated and locked by hand before each shot.",
-      "Multi-barrel pepperbox guns were front-heavy, inaccurate, and lacked a stationary rifled barrel.",
-      "No single-action mechanism existed that automatically indexed and locked the cylinder via the cocking stroke of the hammer.",
+      "The source does not identify a named prior machine or inventor; this record does not infer one from the facsimile.",
     ],
     breakthroughInsight:
-      "Legend has it that while serving as a 16-year-old sailor aboard the ship Corvo bound for Calcutta in 1830, Colt observed the ship's capstan and steering wheel ratchet mechanism. He whittled a wooden model of a revolver where the cocking hammer rotated and locked a revolving cylinder in a single motion.",
-    patentWars: [
-      {
-        rivalName: "Edwin Wesson and the Massachusetts Arms Company",
-        rivalClaim:
-          "Manufactured revolvers in 1849 claiming their lockwork and cylinder bevel gears did not infringe Colt's pawl-and-ratchet patent.",
-        conflictDetails:
-          "Colt sued the Massachusetts Arms Company in 1851 in Boston federal court (Colt v. Massachusetts Arms Co.). Colt hired famous orator Edward N. Dickerson, who used enlarged working brass models and dynamic demonstrations to convince the jury.",
-        resolution:
-          "The jury found Massachusetts Arms guilty of infringement after just two hours of deliberation. The court issued an injunction and awarded Colt damages, solidifying his absolute monopoly until 1857.",
-        legalOutcome:
-          "Affirmed the broad scope of Colt's combination claims covering automatic hammer-actuated cylinder indexing.",
-      },
-    ],
+      "Colt assigns separate mechanical work to the hammer pin, lifter, ratchet, locking key, springs, and connecting rod, then describes their order during cocking and discharge.",
+    patentWars: [],
     civilizationalImpact:
-      "During the Mexican-American War and Texas Ranger operations under Captain Samuel Walker, Colt's revolvers proved decisively superior, leading to government contracts and the famous Colt Walker and 1851 Navy revolvers. Colt built the Colt Armory in Hartford, pioneering mass production with interchangeable parts, division of labor, and modern industrial capitalism.",
-    funFact:
-      "To fund his early patent applications and prototypes, young Samuel Colt traveled across American towns from 1832 to 1835 billing himself as the 'Celebrated Dr. Coult of New York, London, and Calcutta,' administering laughing gas (nitrous oxide) to curious townspeople for 25 cents per show!",
+      "The document preserves an early United States claim set for component-level solutions to repeated percussion-cap firing: cap placement and separation, smoke protection, trigger linkage, cylinder drive and lockup, and the barrel-arbor union.",
     aftermath:
-      "When Colt's patent expired in 1857, Smith & Wesson had already patented Rollin White's bored-through cylinder for metallic cartridges (US 12,648). Colt's company was forced to wait out White's patent before introducing the legendary Colt Single Action Army 'Peacemaker' in 1873.",
+      "This record makes no litigation or manufacturing claim without a separately reviewed historical source.",
   },
-  tags: [
-    "Samuel Colt",
-    "Revolver",
-    "Firearms",
-    "Kinematic Indexing",
-    "Mass Production",
-    "American System",
-  ],
-  stats: {
-    totalClaims: 3,
-    independentClaims: 1,
-    patentWarYears: "1836–1857",
-    impactScore: 97,
-  },
+  tags: ["Samuel Colt", "Revolving gun", "Percussion fire-arm", "Mechanical indexing"],
+  stats: { totalClaims: 8, independentClaims: 8 },
 };

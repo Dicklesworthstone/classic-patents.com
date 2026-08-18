@@ -7,7 +7,7 @@ import { soundEngine } from "@/utils/soundEngine";
 import { usePatentAudio } from "./three/usePatentAudio";
 
 export function ColtRevolverSim() {
-  const { params, updateParam, resetParams } = usePatentPhysics("us-138-colt-revolver");
+  const { params, updateParam, resetParams } = usePatentPhysics("us-x9430-colt-revolver");
   const { isAudioMuted, toggleSound } = usePatentAudio();
 
   const chamberPressureMpa = params.chamberPressure ?? 85;
@@ -69,7 +69,7 @@ export function ColtRevolverSim() {
           <div className="flex items-center gap-2">
             <Target className="w-5 h-5 text-amber-600 dark:text-amber-500 animate-pulse" />
             <h3 className="font-serif text-lg sm:text-xl font-bold text-ink-900 dark:text-parchment-100">
-              Colt Single-Action 5-Chamber Indexing & Lockwork (US 138)
+              Colt Single-Action 5-Chamber Indexing & Lockwork (US X9430)
             </h3>
           </div>
           <p className="text-xs text-ink-600 dark:text-ink-400 mt-1">

@@ -10,7 +10,6 @@
  */
 export const sourcePdfTextPageCounts: Readonly<Record<string, number>> = {
   "us-x8277-mccormick-reaper": 3,
-  "us-138-colt-revolver": 2,
   "us-132-davenport-electric-motor": 3,
   "us-588-ericsson-propeller": 5,
   "us-1647-morse-telegraph": 9,
