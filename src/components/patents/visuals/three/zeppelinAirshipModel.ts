@@ -252,14 +252,14 @@ export function updateZeppelinAirshipKinematics(
   materials: ZeppelinAirshipMaterials,
   dt: number,
   timeSec: number,
-  netLiftKn: number,
+  hullStudioY: number,
   pitchTrimDeg: number,
   propellerSpeedRadPerS: number,
   trimWeightPosM: number,
   isCutaway: boolean,
 ) {
   // 1. Aerostatic Buoyancy Altitude & Gentle Flight Sway
-  nodes.hullGroup.position.y = (netLiftKn / 40) * 0.9 + Math.sin(timeSec * 0.8) * 0.08;
+  nodes.hullGroup.position.y = hullStudioY + Math.sin(timeSec * 0.8) * 0.08;
   nodes.hullGroup.rotation.z = (pitchTrimDeg * Math.PI) / 180 + Math.sin(timeSec * 0.4) * 0.01;
 
   // 2. Sliding Trim Weight Translation along Keel

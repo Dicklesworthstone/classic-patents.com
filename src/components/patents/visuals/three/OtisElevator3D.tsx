@@ -144,7 +144,7 @@ export function OtisElevator3D() {
         dt,
         timeSec,
         step.isSnapped,
-        step.springDeflectionCm,
+        step.springBowY,
         step.isPawlEngaged,
       );
 

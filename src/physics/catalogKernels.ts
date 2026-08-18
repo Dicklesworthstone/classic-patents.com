@@ -61,6 +61,7 @@ export function stepGrammeDynamo(params: { shaftRate?: number }) {
     collectionContinuityPct: Number((100 - 100 / printedJunctionCount).toFixed(1)),
     displayDegPerFrame,
     displayRadPerFrame: Number(((displayDegPerFrame * Math.PI) / 180).toFixed(6)),
+    fluxOpacity: Number(Math.min(0.95, 0.25 + (inducedEmfIndex / 160) * 0.7).toFixed(3)),
   };
 }
 
@@ -279,6 +280,8 @@ export function stepCorlissEngine(params: {
     crankOmegaRadPerS: crank.omegaRadPerS,
     crankOmegaDegPerS: crank.omegaDegPerS,
     governorOmegaRadPerS: Number((crank.omegaRadPerS * 1.5).toFixed(3)),
+    govSpread: Number((0.35 + Math.min(0.35, (rpm / 100) * 0.25)).toFixed(4)),
+    wristAmp: Number((0.18 + cutoff * 0.35).toFixed(4)),
   };
 }
 
@@ -410,6 +413,9 @@ export function stepThomsonWelding(params: {
     upsetBurrWidthMm: Number(((press / 35) * 3.8).toFixed(1)),
     jouleWatts: kw * 1000,
     weldPulseMs: Math.round(Math.max(200, 5.4e6 / Math.max(500, i))),
+    weldGlowIntensity: Number((Math.min(1.5, Math.max(0, tempC / 1300)) * 1.8).toFixed(3)),
+    weldSeamScale: Number((1 + (press / 35) * 0.35).toFixed(4)),
+    jawStudioOffset: Number(((press / 35) * 0.12).toFixed(4)),
   };
 }
 
@@ -447,6 +453,7 @@ export function stepZeppelinAirship(params: {
     propellerRpm,
     propellerOmegaRadPerS: rpmToOmega(propellerRpm).omegaRadPerS,
     propellerDisplayOmegaRadPerS: Number(((propellerRpm / 60) * 8).toFixed(3)),
+    hullStudioY: Number(((netLiftKn / 40) * 0.9).toFixed(4)),
   };
 }
 
@@ -480,6 +487,9 @@ export function stepDaimlerEngine(params: {
     crankOmegaDegPerS: crank.omegaDegPerS,
     isRunning: tubeTemp >= 600,
     runningOmegaRadPerS: running.omegaRadPerS,
+    hotTubeGlow: Number(
+      (tubeTemp >= 800 ? 2.8 : Math.max(0.15, (tubeTemp / 800) * 2.2)).toFixed(3),
+    ),
   };
 }
 
@@ -508,6 +518,14 @@ export function stepHollerithTabulating(params: {
     cardsPerSec: Number((cpm / 60).toFixed(3)),
     pressOmegaRadPerS: press.omegaRadPerS,
     pressOmegaDegPerS: press.omegaDegPerS,
+    plungeAmp: Number(
+      (
+        0.2 +
+        (Number((((relays * (v / 12) * 45) ** 2 * 1.256e-6 * 0.0004) / (2 * 0.002 ** 2)).toFixed(2)) /
+          40) *
+          0.35
+      ).toFixed(4),
+    ),
   };
 }
 

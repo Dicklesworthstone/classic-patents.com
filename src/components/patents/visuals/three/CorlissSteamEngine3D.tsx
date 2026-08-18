@@ -41,6 +41,8 @@ export function CorlissSteamEngine3D() {
     thermalEfficiencyPct: Number(thermalEfficiencyPct),
     crankOmegaRadPerS: corliss.crankOmegaRadPerS,
     governorOmegaRadPerS: corliss.governorOmegaRadPerS,
+    govSpread: corliss.govSpread,
+    wristAmp: corliss.wristAmp,
   });
 
   const controlsRef = useRef<StudioContext["controls"] | null>(null);
@@ -116,7 +118,7 @@ export function CorlissSteamEngine3D() {
       const omegaRadPerSec = p.crankOmegaRadPerS;
       crankAngle = (crankAngle + omegaRadPerSec * delta) % (Math.PI * 2);
 
-      updateCorlissEngineKinematics(model, crankAngle, p.engineRpm, p.cutoffPct, p.isCutaway);
+      updateCorlissEngineKinematics(model, crankAngle, p.govSpread, p.wristAmp, p.isCutaway);
 
       renderer.render(scene, camera);
     };

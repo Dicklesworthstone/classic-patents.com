@@ -400,15 +400,14 @@ export function buildCorlissEngineModel(): CorlissEngineModel {
 export function updateCorlissEngineKinematics(
   model: CorlissEngineModel,
   crankAngle: number,
-  engineRpm: number,
-  cutoffPct: number,
+  govSpread: number,
+  wristAmp: number,
   isCutaway = false,
 ): { strokeX: number; wristAngle: number } {
   model.crankGroup.rotation.z = -crankAngle;
 
   const govAngle = crankAngle * 2.5;
   model.governorGroup.rotation.y = govAngle;
-  const govSpread = 0.35 + Math.min(0.35, (engineRpm / 100) * 0.25);
   model.governorBalls[0].position.x = -govSpread;
   model.governorBalls[1].position.x = govSpread;
 
@@ -428,7 +427,6 @@ export function updateCorlissEngineKinematics(
   model.conRodGroup.rotation.z = rodAngle;
 
   // Central wrist plate harmonic oscillation (Claim 2)
-  const wristAmp = 0.18 + (cutoffPct / 100) * 0.35;
   const wristAngle = Math.sin(crankAngle + Math.PI * 0.25) * wristAmp;
   model.wristPlate.rotation.z = wristAngle;
 

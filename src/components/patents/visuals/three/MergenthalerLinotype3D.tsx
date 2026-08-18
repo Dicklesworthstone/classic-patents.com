@@ -141,7 +141,7 @@ export function MergenthalerLinotype3D() {
         step.plungerY,
         step.moldAngle,
         step.slugOut,
-        p.spacebandWedge,
+        step.wedgeLift,
       );
 
       renderer.render(scene, camera);

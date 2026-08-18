@@ -59,6 +59,8 @@ describe("US 6,162 George Corliss Steam Engine visual & kinematics boundary", ()
     expect(result.indicatedHp).toBeGreaterThan(50);
     expect(result.thermalEfficiencyPct).toBeGreaterThan(15);
     expect(result.crankOmegaRadPerS).toBeCloseTo((65 * 2 * Math.PI) / 60, 2);
+    expect(result.govSpread).toBeCloseTo(0.5125, 3);
+    expect(result.wristAmp).toBeCloseTo(0.2675, 3);
   });
 
   test("builds and articulates procedural wrist plate, 4 rotary valves, dashpots, and governor correctly", () => {
@@ -72,7 +74,14 @@ describe("US 6,162 George Corliss Steam Engine visual & kinematics boundary", ()
     expect(model.materials.mahogany).toBeDefined();
     expect(model.materials.castIron).toBeDefined();
 
-    const { strokeX, wristAngle } = updateCorlissEngineKinematics(model, Math.PI / 4, 65, 25, true);
+    const corliss = stepCorlissEngine({ steamPressurePsi: 100, engineRpm: 65, cutoffPct: 25 });
+    const { strokeX, wristAngle } = updateCorlissEngineKinematics(
+      model,
+      Math.PI / 4,
+      corliss.govSpread,
+      corliss.wristAmp,
+      true,
+    );
 
     expect(strokeX).toBeDefined();
     expect(wristAngle).toBeDefined();

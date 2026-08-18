@@ -60,6 +60,7 @@ describe("US 31,128 Elisha Otis Safety Hoisting Apparatus visual & mechanics bou
     expect(intact.isPawlEngaged).toBe(false);
     expect(intact.springDeflectionCm).toBe(10);
     expect(intact.hoistTensionKn).toBeGreaterThan(9.0);
+    expect(intact.springBowY).toBeCloseTo(0.22, 4);
 
     const severed = stepOtisElevator({ cabPayloadKg: 650, cableTensionPct: 0 });
     expect(severed.isSnapped).toBe(true);
@@ -77,7 +78,8 @@ describe("US 31,128 Elisha Otis Safety Hoisting Apparatus visual & mechanics bou
     expect(nodes.springLeaves.length).toBe(4);
 
     // Initial intact state
-    updateOtisElevatorKinematics(nodes, materials, 0.016, 0, false, 10, false);
+    const intact = stepOtisElevator({ cabPayloadKg: 650, cableTensionPct: 100 });
+    updateOtisElevatorKinematics(nodes, materials, 0.016, 0, false, intact.springBowY, false);
     expect(nodes.tautCable.visible).toBe(true);
     expect(nodes.severedCableTop.visible).toBe(false);
 

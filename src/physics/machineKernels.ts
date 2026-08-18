@@ -162,6 +162,7 @@ export function stepMergenthalerLinotype(params: {
   solidificationTimeSec: number;
   charsPerHour: number;
   linesPerMin: number;
+  wedgeLift: number;
 } {
   const rate = params.matrixRatePerMin ?? 60;
   const wedge = params.spacebandWedgeMm ?? 6.5;
@@ -188,6 +189,7 @@ export function stepMergenthalerLinotype(params: {
     solidificationTimeSec: Number((solidificationTimeMs / 1000).toFixed(2)),
     charsPerHour: Math.round(rate * 60),
     linesPerMin: Number((rate / LINOTYPE_CHARS_PER_LINE).toFixed(2)),
+    wedgeLift: Number(((wedge / 10) * 0.15).toFixed(4)),
   };
 }
 
@@ -238,6 +240,7 @@ export function stepOtisElevator(params: { cabPayloadKg?: number; cableTensionPc
   hoistTensionKn: number;
   cabPayloadLbs: number;
   stoppingDistanceIn: number;
+  springBowY: number;
 } {
   const massKg = 400 + (params.cabPayloadKg ?? 650);
   const tensionPct = params.cableTensionPct ?? 100;
@@ -255,5 +258,6 @@ export function stepOtisElevator(params: { cabPayloadKg?: number; cableTensionPc
     hoistTensionKn: Number(((massKg * 9.81) / 1000).toFixed(1)),
     cabPayloadLbs: Math.round((params.cabPayloadKg ?? 650) * 2.20462),
     stoppingDistanceIn: Number(((isSnapped ? 4.5 : 0) / 2.54).toFixed(1)),
+    springBowY: isSnapped ? 0 : Number(((tensionPct / 100) * 0.22).toFixed(4)),
   };
 }

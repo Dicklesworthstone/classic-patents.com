@@ -72,6 +72,7 @@ describe("US 621,195 Ferdinand von Zeppelin Rigid Airship visual & aerostatics b
     expect(result.netLiftKn).toBeGreaterThan(0);
     expect(result.hydrogenVolumeM3).toBeGreaterThan(10000);
     expect(result.propellerRpm).toBeGreaterThan(1000);
+    expect(result.hullStudioY).toBeCloseTo((result.netLiftKn / 40) * 0.9, 3);
   });
 
   test("builds and articulates procedural rigid hull, duralumin rings, gas cells, and gondolas correctly", () => {
@@ -82,7 +83,23 @@ describe("US 621,195 Ferdinand von Zeppelin Rigid Airship visual & aerostatics b
     expect(nodes.gondolas.length).toBe(2);
     expect(nodes.propellers.length).toBe(4);
 
-    updateZeppelinAirshipKinematics(nodes, materials, 0.016, 0.5, 20.0, 2.5, 100, 3.0, true);
+    const zep = stepZeppelinAirship({
+      gasInflation: 95,
+      flightAlt: 300,
+      flightSpeedKnots: 28,
+      trimWeight: 5,
+    });
+    updateZeppelinAirshipKinematics(
+      nodes,
+      materials,
+      0.016,
+      0.5,
+      zep.hullStudioY,
+      zep.pitchTrimDeg,
+      zep.propellerDisplayOmegaRadPerS,
+      3.0,
+      true,
+    );
     expect(materials.fabricEnvelope.wireframe).toBe(true);
     expect(nodes.gasCells[0].visible).toBe(true);
 

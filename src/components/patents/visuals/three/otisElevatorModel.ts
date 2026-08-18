@@ -395,7 +395,7 @@ export function updateOtisElevatorKinematics(
   dt: number,
   timeSec: number,
   isRopeSevered: boolean,
-  springDeflectionCm: number,
+  springBowStudioY: number,
   isPawlEngaged: boolean,
 ) {
   // 1. Hoisting Cable State
@@ -406,7 +406,7 @@ export function updateOtisElevatorKinematics(
   // 2. Leaf Spring Elastic Deflection
   // Under tension (100%), spring bows upward in the center (+0.25m)
   // When severed (0%), spring flattens and pushes ends outwards
-  const springBowY = isRopeSevered ? 0.0 : (springDeflectionCm / 10) * 0.22;
+  const springBowY = isRopeSevered ? 0.0 : springBowStudioY;
   nodes.leafSpringGroup.position.y = 2.35 + springBowY;
   nodes.springShackle.position.y = 0.35 + springBowY * 0.8;
 

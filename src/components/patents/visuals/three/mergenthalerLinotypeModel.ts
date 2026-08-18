@@ -321,7 +321,7 @@ export function updateMergenthalerLinotypeKinematics(
   plungerY: number,
   moldAngle: number,
   slugOut: boolean,
-  spacebandWedgeMm: number,
+  wedgeLift: number,
 ) {
   // 1. Plunger Stroke
   nodes.potPlunger.position.y = 0.9 + plungerY * 0.6;
@@ -336,7 +336,7 @@ export function updateMergenthalerLinotypeKinematics(
   }
 
   // 4. Spaceband Justification Expansion
-  const wedgeLift = (spacebandWedgeMm / 10) * 0.15;
+
   for (const band of nodes.spacebands) {
     band.position.y = 0.12 + wedgeLift;
   }
