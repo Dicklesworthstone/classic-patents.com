@@ -22,9 +22,9 @@ export const lindeAirLiquefactionPatent: Patent = {
   googlePatentsUrl: "https://patents.google.com/patent/US727650A/en",
   usptoClassification: "F25J 1/00 (Processes or apparatus for liquefying or solidifying gases)",
   originalTextAsset: {
-    url: "/patents/source-text/us-727650-linde-air-liquefaction.txt",
+    url: "/patents/transcripts/us-727650-linde-air-liquefaction.txt",
     pageCount: 5,
-    kind: "source-pdf-text-layer",
+    kind: "reviewed-transcription",
   },
   originalText: `UNITED STATES PATENT OFFICE.
 CARL LINDE, OF MUNICH, GERMANY.

@@ -21,9 +21,9 @@ export const nobelDynamitePatent: Patent = {
   googlePatentsUrl: "https://patents.google.com/patent/US78317/en",
   usptoClassification: "C06B 31/00 (Explosives containing nitroglycerin; Solid dynamites)",
   originalTextAsset: {
-    url: "/patents/source-text/us-78317-nobel-dynamite.txt",
+    url: "/patents/transcripts/us-78317-nobel-dynamite.txt",
     pageCount: 2,
-    kind: "source-pdf-text-layer",
+    kind: "reviewed-transcription",
   },
   originalText: `UNITED STATES PATENT OFFICE.
 ALFRED NOBEL, OF STOCKHOLM, SWEDEN.

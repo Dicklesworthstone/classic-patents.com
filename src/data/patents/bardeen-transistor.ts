@@ -21,6 +21,11 @@ export const bardeenTransistorPatent: Patent = {
   originalPdfUrl: "/patents/pdfs/us-2569347-bardeen-transistor.pdf",
   googlePatentsUrl: "https://patents.google.com/patent/US2569347A/en",
   usptoClassification: "H01L 29/00 (Semiconductor devices; transistors)",
+  originalTextAsset: {
+    url: "/patents/transcripts/us-2569347-bardeen-transistor.txt",
+    pageCount: 8,
+    kind: "reviewed-transcription",
+  },
   originalText: `UNITED STATES PATENT OFFICE.
 JOHN BARDEEN AND WALTER H. BRATTAIN, OF SUMMIT AND MORRISTOWN, NEW JERSEY, ASSIGNORS TO BELL TELEPHONE LABORATORIES, INCORPORATED, OF NEW YORK, N. Y., A CORPORATION OF NEW YORK.
 

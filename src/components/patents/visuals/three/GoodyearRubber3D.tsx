@@ -15,6 +15,7 @@ import { useEffect, useRef, useState } from "react";
 import * as THREE from "three";
 import { HudText } from "@/components/ui/LatexRenderer";
 import { FrankenSimEngine } from "@/physics/engine";
+import { useFrankenSimPhysics } from "@/physics/useFrankenSimPhysics";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { soundEngine } from "@/utils/soundEngine";
 import { createThreeStudioScene } from "./ThreeStudioScene";
@@ -97,6 +98,22 @@ export function GoodyearRubber3D() {
     sulfurWeightPct,
     30,
   );
+
+  useFrankenSimPhysics("us-3633-goodyear-rubber", {
+    domain: "continuum_polymers",
+    timestampMs: Date.now(),
+    timeStepDt: 0.016,
+    refusal: { isRefused: false },
+    continuum: {
+      tensileStressMpa: _rubberPhysics.tensileStrengthPsi * 0.00689476,
+      tensileStrainPct: _rubberPhysics.elasticReturnPct,
+      elasticModulusGpa: 0,
+      crossLinkDensityMolesPerCm3: _rubberPhysics.crossLinkDensity,
+      stitchFrequencyHz: 0,
+      feedVelocityMmPs: 0,
+      buoyancyLiftForceKiloNewtons: 0,
+    },
+  });
   const isVulcanized = sulfurWeightPct >= 2.0 && cureTemperatureCelsius >= 115;
   const glassTransitionTempC = Math.round(-70 + sulfurWeightPct * 3.8);
   const isGlassy = cureTemperatureCelsius < glassTransitionTempC;

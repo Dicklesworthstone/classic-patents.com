@@ -21,9 +21,9 @@ export const bellTelephonePatent: Patent = {
   googlePatentsUrl: "https://patents.google.com/patent/US174465A/en",
   usptoClassification: "H04M 1/00 (Telephonic systems; Transmitters)",
   originalTextAsset: {
-    url: "/patents/source-text/us-174465-bell-telephone.txt",
+    url: "/patents/transcripts/us-174465-bell-telephone.txt",
     pageCount: 6,
-    kind: "source-pdf-text-layer",
+    kind: "reviewed-transcription",
   },
   originalText: `UNITED STATES PATENT OFFICE.
 ALEXANDER GRAHAM BELL, OF SALEM, MASSACHUSETTS.

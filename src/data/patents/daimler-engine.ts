@@ -22,9 +22,9 @@ export const daimlerEnginePatent: Patent = {
   googlePatentsUrl: "https://patents.google.com/patent/US361931A/en",
   usptoClassification: "B62D 61/06 (Motor vehicles / Engine-driven carriages)",
   originalTextAsset: {
-    url: "/patents/source-text/us-361931-daimler-engine.txt",
+    url: "/patents/transcripts/us-361931-daimler-engine.txt",
     pageCount: 6,
-    kind: "source-pdf-text-layer",
+    kind: "reviewed-transcription",
   },
   originalText: `UNITED STATES PATENT OFFICE.
 GOTTLIEB DAIMLER, OF CANNSTATT, GERMANY.

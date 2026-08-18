@@ -59,6 +59,9 @@ function writeNewAsset(outputPath: string, content: string): "created" | "unchan
   if (fs.existsSync(outputPath)) {
     const existing = fs.readFileSync(outputPath, "utf8");
     if (existing === content) return "unchanged";
+    throw new Error(
+      `${outputPath} already exists with different content. Refusing to overwrite a published source-text asset.`,
+    );
   }
 
   fs.mkdirSync(path.dirname(outputPath), { recursive: true });

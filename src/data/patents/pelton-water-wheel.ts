@@ -22,9 +22,9 @@ export const peltonWaterWheelPatent: Patent = {
   googlePatentsUrl: "https://patents.google.com/patent/US233692/en",
   usptoClassification: "F03B 1/02 (Pelton wheels; Buckets with splitters)",
   originalTextAsset: {
-    url: "/patents/source-text/us-233692-pelton-water-wheel.txt",
+    url: "/patents/transcripts/us-233692-pelton-water-wheel.txt",
     pageCount: 3,
-    kind: "source-pdf-text-layer",
+    kind: "reviewed-transcription",
   },
   originalText: `UNITED STATES PATENT OFFICE.
 LESTER A. PELTON, OF CAMPTONVILLE, CALIFORNIA.

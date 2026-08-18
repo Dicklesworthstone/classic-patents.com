@@ -15,6 +15,7 @@ import {
 import { useEffect, useRef, useState } from "react";
 import * as THREE from "three";
 import { FrankenSimEngine } from "@/physics/engine";
+import { useFrankenSimPhysics } from "@/physics/useFrankenSimPhysics";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { soundEngine } from "@/utils/soundEngine";
 import { buildColtRevolverModel } from "./coltRevolverModel";
@@ -88,6 +89,22 @@ export function ColtRevolver3D() {
   const coltMech = FrankenSimEngine.stepColtRevolver({
     chamberPressureMpa,
     cockingAngleDeg,
+  });
+
+  useFrankenSimPhysics("us-138-colt-revolver", {
+    domain: "solid_mechanics",
+    timestampMs: Date.now(),
+    timeStepDt: 0.016,
+    refusal: { isRefused: false },
+    continuum: {
+      tensileStressMpa: coltMech.hoopStressMpa,
+      tensileStrainPct: 0,
+      elasticModulusGpa: 200,
+      crossLinkDensityMolesPerCm3: 0,
+      stitchFrequencyHz: 0,
+      feedVelocityMmPs: 0,
+      buoyancyLiftForceKiloNewtons: 0,
+    },
   });
 
   const hoopStressMpa = coltMech.hoopStressMpa;

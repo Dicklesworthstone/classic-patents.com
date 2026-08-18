@@ -22,9 +22,9 @@ export const dieselEnginePatent: Patent = {
   googlePatentsUrl: "https://patents.google.com/patent/US542846A/en",
   usptoClassification: "F02B 1/12 (Compression-ignition engines / High-pressure injection)",
   originalTextAsset: {
-    url: "/patents/source-text/us-542846-diesel-engine.txt",
+    url: "/patents/transcripts/us-542846-diesel-engine.txt",
     pageCount: 10,
-    kind: "source-pdf-text-layer",
+    kind: "reviewed-transcription",
   },
   originalText: `UNITED STATES PATENT OFFICE.
 RUDOLF DIESEL, OF BERLIN, GERMANY.

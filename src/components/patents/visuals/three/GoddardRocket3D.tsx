@@ -5,6 +5,7 @@ import { useEffect, useRef, useState } from "react";
 import * as THREE from "three";
 import { FrankenSimEngine } from "@/physics/engine";
 import { deLavalMeridian, goddardThermo } from "@/physics/thermochem";
+import { useFrankenSimPhysics } from "@/physics/useFrankenSimPhysics";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { soundEngine } from "@/utils/soundEngine";
 import { createGlowPointTexture, createThreeStudioScene } from "./ThreeStudioScene";
@@ -81,6 +82,24 @@ export function GoddardRocket3D() {
 
   // Rocket Propulsion Physics (FrankenSim de Laval Isentropic Expansion)
   const rocketPhysics = FrankenSimEngine.stepGoddardRocket(chamberPressurePsi, fuelFlowRateKgs);
+
+  useFrankenSimPhysics("us-1155986-goddard-rocket", {
+    domain: "thermodynamics_transport",
+    timestampMs: Date.now(),
+    timeStepDt: 0.016,
+    refusal: { isRefused: false },
+    thermo: {
+      temperatureCelsius: 0,
+      temperatureKelvin: 0,
+      pressureAtm: rocketPhysics.chamberPressurePa / 101325,
+      partialPressureButaneAtm: 0,
+      heatInputWatts: 0,
+      coolingPowerWatts: 0,
+      coefficientOfPerformance: 0,
+      blackbodyRadiantPowerWatts: 0,
+      fluidFlowVelocityMps: rocketPhysics.exhaustVelocityMps,
+    },
+  });
   const thermo = goddardThermo(chamberPressurePsi, expansionRatio);
   const specificImpulseSec = thermo.ispSec;
   const exhaustVelocityMps = thermo.veMps;

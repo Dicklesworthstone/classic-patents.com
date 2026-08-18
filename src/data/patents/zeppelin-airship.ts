@@ -22,9 +22,9 @@ export const zeppelinAirshipPatent: Patent = {
   googlePatentsUrl: "https://patents.google.com/patent/US621195A/en",
   usptoClassification: "B64B 1/08 (Rigid airships / Lightweight lattice spaceframes)",
   originalTextAsset: {
-    url: "/patents/source-text/us-621195-zeppelin-airship.txt",
+    url: "/patents/transcripts/us-621195-zeppelin-airship.txt",
     pageCount: 7,
-    kind: "source-pdf-text-layer",
+    kind: "reviewed-transcription",
   },
   originalText: `UNITED STATES PATENT OFFICE.
 FERDINAND GRAF VON ZEPPELIN, OF STUTTGART, GERMANY.

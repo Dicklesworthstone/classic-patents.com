@@ -15,6 +15,7 @@ import { useEffect, useRef, useState } from "react";
 import * as THREE from "three";
 import { FrankenSimEngine } from "@/physics/engine";
 import { stepHoweLockstitch } from "@/physics/machineKernels";
+import { useFrankenSimPhysics } from "@/physics/useFrankenSimPhysics";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { soundEngine } from "@/utils/soundEngine";
 import { createThreeStudioScene } from "./ThreeStudioScene";
@@ -91,6 +92,22 @@ export function HoweSewingMachine3D() {
 
   // Lockstitch Kinematics Calculations (FrankenSim 4-Bar Mechanism)
   const stitchState = FrankenSimEngine.stepHoweSewingMachine(stitchingSpeedRpm, threadTensionGrams);
+
+  useFrankenSimPhysics("us-4750-howe-sewing-machine", {
+    domain: "continuum_elasticity",
+    timestampMs: Date.now(),
+    timeStepDt: 0.016,
+    refusal: { isRefused: false },
+    continuum: {
+      tensileStressMpa: 0,
+      tensileStrainPct: 0,
+      elasticModulusGpa: 0,
+      crossLinkDensityMolesPerCm3: 0,
+      stitchFrequencyHz: stitchState.stitchFrequencyHz,
+      feedVelocityMmPs: stitchState.stitchFrequencyHz * stitchPitchMm,
+      buoyancyLiftForceKiloNewtons: 0,
+    },
+  });
   const stitchesPerSecond = stitchState.stitchFrequencyHz.toFixed(1);
   const clothFeedRateMmPerSec = (stitchState.stitchFrequencyHz * stitchPitchMm).toFixed(1);
   const handSewingSpeedRatio = (Number(clothFeedRateMmPerSec) / 1.2).toFixed(1);

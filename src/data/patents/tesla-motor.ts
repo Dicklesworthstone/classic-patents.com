@@ -21,9 +21,9 @@ export const teslaMotorPatent: Patent = {
   googlePatentsUrl: "https://patents.google.com/patent/US381968A/en",
   usptoClassification: "H02K 17/00 (Asynchronous induction motors)",
   originalTextAsset: {
-    url: "/patents/source-text/us-381968-tesla-motor.txt",
+    url: "/patents/transcripts/us-381968-tesla-motor.txt",
     pageCount: 9,
-    kind: "source-pdf-text-layer",
+    kind: "reviewed-transcription",
   },
   originalText: `UNITED STATES PATENT OFFICE.
 NIKOLA TESLA, OF NEW YORK, N. Y., ASSIGNOR OF ONE-HALF TO CHARLES F. PECK, OF ENGLEWOOD, NEW JERSEY.

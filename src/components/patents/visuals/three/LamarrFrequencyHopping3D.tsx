@@ -4,6 +4,7 @@ import { Camera, Eye, EyeOff, Radio, RotateCcw, Shield, Volume2, VolumeX, Zap } 
 import { useEffect, useRef, useState } from "react";
 import * as THREE from "three";
 import { FrankenSimEngine } from "@/physics/engine";
+import { useFrankenSimPhysics } from "@/physics/useFrankenSimPhysics";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { soundEngine } from "@/utils/soundEngine";
 import { createGlowPointTexture, createThreeStudioScene } from "./ThreeStudioScene";
@@ -75,6 +76,27 @@ export function LamarrFrequencyHopping3D() {
     carrierChannelsCount,
     hopRateHopsPerSec,
   );
+
+  useFrankenSimPhysics("us-2292387-lamarr-frequency-hopping", {
+    domain: "electromagnetics_flux",
+    timestampMs: Date.now(),
+    timeStepDt: 0.016,
+    refusal: { isRefused: false },
+    em: {
+      frequencyHz: fhPhysics.spreadSpectrumBandwidthMhz * 1e6,
+      magneticFluxDensityTesla: 0,
+      electricFieldVpm: 0,
+      phaseAngleRad: 0,
+      inductanceHenry: 0,
+      capacitanceFarad: 0,
+      currentAmperes: 0,
+      voltageVolts: 0,
+      powerFactor: 0,
+      efficiencyPct: 0,
+      synchronousRpm: 0,
+      slipFraction: 0,
+    },
+  });
   const processingGainDb = fhPhysics.processingGainDb.toFixed(1);
   const antiJamMarginDb = fhPhysics.antiJammingMarginDb.toFixed(1);
   const activeFrequencyMhz = (302 + ((Math.max(1, currentChannel) - 1) * (520 - 302)) / 87).toFixed(

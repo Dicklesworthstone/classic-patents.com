@@ -22,9 +22,9 @@ export const davenportElectricMotorPatent: Patent = {
   googlePatentsUrl: "https://patents.google.com/patent/US132/en",
   usptoClassification: "H02K 23/00 (DC commutator motors; Commutation)",
   originalTextAsset: {
-    url: "/patents/source-text/us-132-davenport-electric-motor.txt",
+    url: "/patents/transcripts/us-132-davenport-electric-motor.txt",
     pageCount: 3,
-    kind: "source-pdf-text-layer",
+    kind: "reviewed-transcription",
   },
   originalText: `UNITED STATES PATENT OFFICE.
 THOMAS DAVENPORT, OF BRANDON, VERMONT.

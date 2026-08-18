@@ -16,6 +16,7 @@ import { useEffect, useRef, useState } from "react";
 import * as THREE from "three";
 import { HudText } from "@/components/ui/LatexRenderer";
 import { FrankenSimEngine } from "@/physics/engine";
+import { useFrankenSimPhysics } from "@/physics/useFrankenSimPhysics";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { soundEngine } from "@/utils/soundEngine";
 import { createGlowPointTexture, createThreeStudioScene } from "./ThreeStudioScene";
@@ -90,6 +91,14 @@ export function BardeenTransistor3D() {
     collectorVoltageV,
     pointContactGapMicrons,
   );
+
+  useFrankenSimPhysics("us-2569347-bardeen-transistor", {
+    domain: "semiconductor_carrier",
+    timestampMs: Date.now(),
+    timeStepDt: 0.016,
+    refusal: { isRefused: false },
+    semi: semiState,
+  });
   const alphaCurrentGain = semiState.currentGainAlpha.toFixed(2);
   const collectorCurrentMa = (semiState.currentGainAlpha * emitterCurrentMa).toFixed(2);
   const voltageGain = Math.round(Math.abs(collectorVoltageV) / 0.6);

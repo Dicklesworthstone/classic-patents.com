@@ -22,9 +22,9 @@ export const gatlingGunPatent: Patent = {
   googlePatentsUrl: "https://patents.google.com/patent/US36836/en",
   usptoClassification: "F41F 1/10 (Multiple barrel guns; Rotary barrel cluster)",
   originalTextAsset: {
-    url: "/patents/source-text/us-36836-gatling-gun.txt",
+    url: "/patents/transcripts/us-36836-gatling-gun.txt",
     pageCount: 3,
-    kind: "source-pdf-text-layer",
+    kind: "reviewed-transcription",
   },
   originalText: `UNITED STATES PATENT OFFICE.
 RICHARD J. GATLING, OF INDIANAPOLIS, INDIANA.

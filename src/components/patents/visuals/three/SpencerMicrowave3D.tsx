@@ -15,6 +15,7 @@ import { useEffect, useRef, useState } from "react";
 import * as THREE from "three";
 import { HudText } from "@/components/ui/LatexRenderer";
 import { FrankenSimEngine } from "@/physics/engine";
+import { useFrankenSimPhysics } from "@/physics/useFrankenSimPhysics";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { soundEngine } from "@/utils/soundEngine";
 import { createGlowPointTexture, createThreeStudioScene } from "./ThreeStudioScene";
@@ -87,6 +88,27 @@ export function SpencerMicrowave3D() {
     magneticFieldGauss,
     rfPowerWatts,
   );
+
+  useFrankenSimPhysics("us-2495429-spencer-microwave", {
+    domain: "electromagnetics_flux",
+    timestampMs: Date.now(),
+    timeStepDt: 0.016,
+    refusal: { isRefused: false },
+    em: {
+      frequencyHz: rfPhysics.microwaveFreqMhz * 1e6,
+      magneticFluxDensityTesla: magneticFieldGauss * 1e-4,
+      electricFieldVpm: (anodeVoltageKv * 1000) / 0.01,
+      phaseAngleRad: 0,
+      inductanceHenry: 0,
+      capacitanceFarad: 0,
+      currentAmperes: 0,
+      voltageVolts: anodeVoltageKv * 1000,
+      powerFactor: 0,
+      efficiencyPct: 0,
+      synchronousRpm: 0,
+      slipFraction: 0,
+    },
+  });
   const hullCutoffGauss = rfPhysics.hullCutoffGauss;
   const isOscillating = rfPhysics.isOscillating;
   const waterDielectricLossDensity = rfPhysics.dielectricLossWattsPerDm3.toString();

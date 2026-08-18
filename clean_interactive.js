@@ -1,5 +1,5 @@
-const fs = require("fs");
-const path = require("path");
+const fs = require("node:fs");
+const path = require("node:path");
 
 const dir = path.join(__dirname, "src/components/patents/visuals/three");
 const files = fs.readdirSync(dir).filter((f) => f.endsWith("3D.tsx"));
@@ -22,7 +22,7 @@ for (const file of files) {
     // </div>\n    </div>\n  );\n}
     // We can just append the closing sequence to the truncated content.
 
-    content = content.substring(0, lineStart) + "\n    </div>\n  );\n}\n";
+    content = `${content.substring(0, lineStart)}\n    </div>\n  );\n}\n`;
 
     fs.writeFileSync(filePath, content);
     console.log("Cleaned:", file);

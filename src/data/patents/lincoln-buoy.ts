@@ -21,6 +21,11 @@ export const lincolnBuoyPatent: Patent = {
   originalPdfUrl: "/patents/pdfs/us-6281-lincoln-buoy.pdf",
   googlePatentsUrl: "https://patents.google.com/patent/US6281A/en",
   usptoClassification: "B63B 43/14 (Marine vessels; buoyancy tanks)",
+  originalTextAsset: {
+    url: "/patents/transcripts/us-6281-lincoln-buoy.txt",
+    pageCount: 3,
+    kind: "reviewed-transcription",
+  },
   originalText: `UNITED STATES PATENT OFFICE.
 ABRAHAM LINCOLN, OF SPRINGFIELD, ILLINOIS.
 

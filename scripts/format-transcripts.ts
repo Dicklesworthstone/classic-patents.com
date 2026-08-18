@@ -68,58 +68,25 @@ export function normalizePatentProse(rawText: string): string {
 }
 
 const transcriptsDir = path.join(process.cwd(), "public", "patents", "transcripts");
+const previewDir = path.join(process.cwd(), "artifacts", "transcript_format_previews");
 
-if (!fs.existsSync(transcriptsDir)) fs.mkdirSync(transcriptsDir, { recursive: true });
-
-console.log("=== Formatting and Normalizing Full Original Patent Transcripts ===");
+console.log("=== Formatting Noncanonical Transcript Previews ===");
+console.log("Published transcripts and source-text assets are never modified by this script.");
 
 for (const patent of allPatents) {
-  const specBody = normalizePatentProse(patent.originalText);
-
-  // If originalText doesn't have formal header, construct standard header
-  let fullCleanText = "";
-  if (!specBody.includes("UNITED STATES PATENT OFFICE") && !specBody.includes("Letters Patent")) {
-    const headerBlock = [
-      "UNITED STATES PATENT OFFICE",
-      `${patent.inventors.join(", ").toUpperCase()}, OF ${(patent.inventorLocation || "").toUpperCase()}`,
-      "",
-      patent.title.toUpperCase(),
-      "",
-      `Specification forming part of Letters Patent No. ${patent.patentNumber.replace("US ", "")}, dated ${patent.grantDate}.`,
-      patent.filingDate ? `Application filed ${patent.filingDate}.` : "",
-    ]
-      .filter((l) => l !== undefined)
-      .join("\n")
-      .trim();
-
-    fullCleanText = `${headerBlock}\n\n${specBody}`;
-  } else {
-    fullCleanText = specBody;
-  }
-
-  // If claims are not already at the bottom of originalText, append formatted claims
-  if (
-    !fullCleanText.includes("I claim as my invention:") &&
-    !fullCleanText.includes("What I claim is:") &&
-    !fullCleanText.includes("Having thus described my invention")
-  ) {
-    const claimsBlock = [
-      "I claim as my invention:",
-      ...patent.claims.map(
-        (c) => `${c.number}. ${c.isIndependent ? "(Independent) " : ""}${c.originalText.trim()}`,
-      ),
-    ].join("\n\n");
-    fullCleanText += `\n\n${claimsBlock}`;
-  }
-
-  fullCleanText += "\n";
-
   const transcriptPath = path.join(transcriptsDir, `${patent.id}.txt`);
-  fs.writeFileSync(transcriptPath, fullCleanText, "utf-8");
+  if (!fs.existsSync(transcriptPath)) {
+    console.warn(`Skipped ${patent.id}: no transcript is available to format.`);
+    continue;
+  }
+  const previewPath = path.join(previewDir, `${patent.id}.txt`);
+  const formatted = `${normalizePatentProse(fs.readFileSync(transcriptPath, "utf8"))}\n`;
 
-  console.log(
-    `✓ [${patent.patentNumber}] Formatted transcript: ${patent.id} (${fullCleanText.length} chars)`,
-  );
+  fs.mkdirSync(previewDir, { recursive: true });
+  fs.writeFileSync(previewPath, formatted, "utf8");
+  console.log(`Previewed ${patent.id} (${formatted.length} chars).`);
 }
 
-console.log("\nAll 54 patent transcripts cleanly formatted without header duplication!");
+console.log(
+  `\nReview candidates in ${path.relative(process.cwd(), previewDir)} before any editorial action.`,
+);

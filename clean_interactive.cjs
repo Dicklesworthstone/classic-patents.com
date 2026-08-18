@@ -1,5 +1,5 @@
-const fs = require("fs");
-const path = require("path");
+const fs = require("node:fs");
+const path = require("node:path");
 
 const dir = path.join(__dirname, "src/components/patents/visuals/three");
 const files = fs.readdirSync(dir).filter((f) => f.endsWith("3D.tsx"));
@@ -20,7 +20,7 @@ for (const file of files) {
     // Generally the container is `div className="relative w-full h-full min-h-[...`
     // The interactive controls bar is a sibling div inside that container.
     // Therefore removing the controls bar just means we close the container div.
-    content = content.substring(0, lineStart) + "\n    </div>\n  );\n}\n";
+    content = `${content.substring(0, lineStart)}\n    </div>\n  );\n}\n`;
 
     fs.writeFileSync(filePath, content);
     console.log("Cleaned:", file);

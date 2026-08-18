@@ -22,9 +22,9 @@ export const hollerithTabulatingPatent: Patent = {
   googlePatentsUrl: "https://patents.google.com/patent/US395781A/en",
   usptoClassification: "G06K 7/04 (Punched-card reading / Electro-mechanical tabulators)",
   originalTextAsset: {
-    url: "/patents/source-text/us-395781-hollerith-tabulating.txt",
+    url: "/patents/transcripts/us-395781-hollerith-tabulating.txt",
     pageCount: 17,
-    kind: "source-pdf-text-layer",
+    kind: "reviewed-transcription",
   },
   originalText: `UNITED STATES PATENT OFFICE.
 HERMAN HOLLERITH, OF WASHINGTON, DISTRICT OF COLUMBIA.

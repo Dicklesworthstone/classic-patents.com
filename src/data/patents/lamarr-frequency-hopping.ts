@@ -22,9 +22,9 @@ export const lamarrPatent: Patent = {
   googlePatentsUrl: "https://patents.google.com/patent/US2292387A/en",
   usptoClassification: "H04K 1/02 (Frequency hopping spread spectrum)",
   originalTextAsset: {
-    url: "/patents/source-text/us-2292387-lamarr-frequency-hopping.txt",
+    url: "/patents/transcripts/us-2292387-lamarr-frequency-hopping.txt",
     pageCount: 7,
-    kind: "source-pdf-text-layer",
+    kind: "reviewed-transcription",
   },
   originalText: `UNITED STATES PATENT OFFICE.
 HEDY KIESLER MARKEY AND GEORGE ANTHEIL, OF LOS ANGELES, CALIFORNIA.

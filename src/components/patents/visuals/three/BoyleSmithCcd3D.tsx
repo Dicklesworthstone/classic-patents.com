@@ -5,6 +5,7 @@ import { useEffect, useRef, useState } from "react";
 import * as THREE from "three";
 import { FrankenSimEngine } from "@/physics/engine";
 import { stepCcdWells } from "@/physics/machineKernels";
+import { useFrankenSimPhysics } from "@/physics/useFrankenSimPhysics";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { soundEngine } from "@/utils/soundEngine";
 import { createGlowPointTexture, createThreeStudioScene } from "./ThreeStudioScene";
@@ -80,6 +81,14 @@ export function BoyleSmithCcd3D() {
 
   // Charge-Coupled Physics Calculations (FrankenSim 3-Phase MOS Well Transfer)
   const _ccdState = FrankenSimEngine.stepBoyleSmithCcd(clockPhase, gateVoltageV, 65000);
+
+  useFrankenSimPhysics("us-3923554-boyle-smith-ccd", {
+    domain: "semiconductor_carrier",
+    timestampMs: Date.now(),
+    timeStepDt: 0.016,
+    refusal: { isRefused: false },
+    semi: _ccdState,
+  });
   const fullWellElectrons = Math.round((gateVoltageV - 1.2) * 12500);
   const collectedChargeElectrons = Math.round(fullWellElectrons * Math.min(1.0, incidentLux / 800));
   const chargeTransferInefficiencyEpsilon = ((100 - transferEfficiencyPct) / 100).toExponential(2);

@@ -20,6 +20,11 @@ export const whitneyCottonGinPatent: Patent = {
   originalPdfUrl: "/patents/pdfs/us-x72-whitney-cotton-gin.pdf",
   googlePatentsUrl: "https://patents.google.com/patent/USX72/en",
   usptoClassification: "D01B 1/06 (Separating cotton fibres from seed; Saw gins)",
+  originalTextAsset: {
+    url: "/patents/transcripts/us-x72-whitney-cotton-gin.txt",
+    pageCount: 2,
+    kind: "reviewed-transcription",
+  },
   originalText: `UNITED STATES PATENT OFFICE.
 ELI WHITNEY, OF MULBERRY GROVE, GEORGIA.
 

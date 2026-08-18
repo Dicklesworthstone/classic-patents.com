@@ -22,9 +22,9 @@ export const parsonsTurbinePatent: Patent = {
   googlePatentsUrl: "https://patents.google.com/patent/US608969/en",
   usptoClassification: "F01D 1/04 (Axial-flow reaction steam turbines; Multi-stage expansion)",
   originalTextAsset: {
-    url: "/patents/source-text/us-608969-parsons-turbine.txt",
+    url: "/patents/transcripts/us-608969-parsons-turbine.txt",
     pageCount: 7,
-    kind: "source-pdf-text-layer",
+    kind: "reviewed-transcription",
   },
   originalText: `UNITED STATES PATENT OFFICE.
 CHARLES ALGERNON PARSONS, OF NEWCASTLE-UPON-TYNE, ENGLAND.

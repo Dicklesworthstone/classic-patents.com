@@ -21,9 +21,9 @@ export const ericssonPropellerPatent: Patent = {
   googlePatentsUrl: "https://patents.google.com/patent/US588/en",
   usptoClassification: "B63H 1/14 (Marine propellers; Screw propellers)",
   originalTextAsset: {
-    url: "/patents/source-text/us-588-ericsson-propeller.txt",
+    url: "/patents/transcripts/us-588-ericsson-propeller.txt",
     pageCount: 5,
-    kind: "source-pdf-text-layer",
+    kind: "reviewed-transcription",
   },
   originalText: `UNITED STATES PATENT OFFICE.
 JOHN ERICSSON, OF LONDON, GREAT BRITAIN.

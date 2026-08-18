@@ -22,9 +22,9 @@ export const einsteinRefrigeratorPatent: Patent = {
   usptoClassification:
     "F25B 15/00 (Absorption refrigeration machines; Non-mechanical hermetic cycles)",
   originalTextAsset: {
-    url: "/patents/source-text/us-1781541-einstein-refrigerator.txt",
+    url: "/patents/transcripts/us-1781541-einstein-refrigerator.txt",
     pageCount: 4,
-    kind: "source-pdf-text-layer",
+    kind: "reviewed-transcription",
   },
   originalText: `UNITED STATES PATENT OFFICE
 1,781,541

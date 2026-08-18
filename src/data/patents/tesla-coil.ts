@@ -21,6 +21,11 @@ export const teslaCoilPatent: Patent = {
   originalPdfUrl: "/patents/pdfs/us-533367-tesla-coil.pdf",
   googlePatentsUrl: "https://patents.google.com/patent/US533367A/en",
   usptoClassification: "H01F 38/00 (Transformers; resonant coils)",
+  originalTextAsset: {
+    url: "/patents/transcripts/us-533367-tesla-coil.txt",
+    pageCount: 3,
+    kind: "reviewed-transcription",
+  },
   originalText: `UNITED STATES PATENT OFFICE.
 NIKOLA TESLA, OF NEW YORK, N. Y.
 

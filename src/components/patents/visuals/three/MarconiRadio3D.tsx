@@ -5,6 +5,7 @@ import { useEffect, useRef, useState } from "react";
 import * as THREE from "three";
 import { HudText } from "@/components/ui/LatexRenderer";
 import { FrankenSimEngine } from "@/physics/engine";
+import { useFrankenSimPhysics } from "@/physics/useFrankenSimPhysics";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { soundEngine } from "@/utils/soundEngine";
 import { createGlowPointTexture, createThreeStudioScene } from "./ThreeStudioScene";
@@ -79,6 +80,27 @@ export function MarconiRadio3D() {
     sparkGapMm,
     inductionCoilKv,
   );
+
+  useFrankenSimPhysics("us-586193-marconi-radio", {
+    domain: "electromagnetics_flux",
+    timestampMs: Date.now(),
+    timeStepDt: 0.016,
+    refusal: { isRefused: false },
+    em: {
+      frequencyHz: radioPhysics.resonantFreqMhz * 1e6,
+      magneticFluxDensityTesla: 0,
+      electricFieldVpm: 0,
+      phaseAngleRad: 0,
+      inductanceHenry: 0,
+      capacitanceFarad: 0,
+      currentAmperes: 0,
+      voltageVolts: inductionCoilKv * 1000,
+      powerFactor: 0,
+      efficiencyPct: 0,
+      synchronousRpm: 0,
+      slipFraction: 0,
+    },
+  });
   const wavelengthMeters = radioPhysics.wavelengthMeters;
   const resonantFreqMhz = radioPhysics.resonantFreqMhz.toFixed(2);
   const maxRangeMiles = radioPhysics.maxRangeMiles.toFixed(1);

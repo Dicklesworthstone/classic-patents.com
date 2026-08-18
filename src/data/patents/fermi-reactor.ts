@@ -21,9 +21,9 @@ export const fermiReactorPatent: Patent = {
   googlePatentsUrl: "https://patents.google.com/patent/US2708656A/en",
   usptoClassification: "G21C 1/00 (Nuclear reactors; Core structures and control)",
   originalTextAsset: {
-    url: "/patents/source-text/us-2708656-fermi-reactor.txt",
+    url: "/patents/transcripts/us-2708656-fermi-reactor.txt",
     pageCount: 58,
-    kind: "source-pdf-text-layer",
+    kind: "reviewed-transcription",
   },
   originalText: `UNITED STATES PATENT OFFICE
 2,708,656
