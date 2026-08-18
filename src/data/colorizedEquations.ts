@@ -2064,10 +2064,137 @@ export const ALL_COLORIZED_EQUATIONS: Record<string, ColorizedEquation[]> = {
     },
   ],
 
-  // The source-facing formula treatment is intentionally deferred with the
-  // complete manual edition. The prior LC-tank panel described another Tesla
-  // design and must not be displayed for US 593,138.
-  "us-593138-tesla-coil": [],
+  "us-593138-tesla-coil": [
+    {
+      id: "tesla-voltage-grading",
+      patentId: "us-593138-tesla-coil",
+      title: "Inter-Turn Voltage Gradient & Dielectric Stress Grading",
+      category: "High-Voltage Electromagnetics",
+      rawLatex: "\\Delta V_{\\text{turn}} = \\frac{V_{\\text{max}}}{N}",
+      colorizedLatex:
+        "\\textcolor{#059669}{\\Delta V_{\\text{turn}}} = \\frac{\\textcolor{#ef4444}{V_{\\text{max}}}}{\\textcolor{#2563eb}{N}}",
+      plainEnglishSentence: [
+        { text: "The " },
+        { text: "inter-turn potential gradient", variableId: "dv_turn" },
+        { text: " is minimized by distributing the " },
+        { text: "terminal high voltage", variableId: "v_max" },
+        { text: " uniformly across " },
+        { text: "total secondary turns", variableId: "turn_count" },
+        { text: " wound in a flat spiral." },
+      ],
+      variables: [
+        {
+          id: "dv_turn",
+          symbol: "\\Delta V_{\\text{turn}}",
+          name: "Inter-Turn Potential Difference",
+          color: "emerald",
+          role: "Voltage drop between adjacent concentric winding turns",
+          unit: "Volts (V)",
+          dimension: "[M L^2 T^-3 I^-1]",
+          explanation:
+            "By winding the high-voltage secondary as a flat spiral, Tesla keeps adjacent convolutions at minimal voltage differences, preventing insulation puncture.",
+        },
+        {
+          id: "v_max",
+          symbol: "V_{\\text{max}}",
+          name: "Peak Secondary Terminal Potential",
+          color: "crimson",
+          role: "Maximum output potential developed at the outer elevated secondary terminal",
+          unit: "Volts (V)",
+          dimension: "[M L^2 T^-3 I^-1]",
+          explanation:
+            "The outermost convolution attains several hundred thousand to millions of volts relative to earth.",
+        },
+        {
+          id: "turn_count",
+          symbol: "N",
+          name: "Total Secondary Winding Turns",
+          color: "sapphire",
+          role: "Number of helical or spiral convolutions comprising the secondary inductor",
+          unit: "Turns (dimensionless)",
+          dimension: "[1]",
+          explanation:
+            "A large number of finely spaced turns progressively steps up voltage without allowing concentrated dielectric stress.",
+        },
+      ],
+      pedagogicalNote:
+        "In US Patent 593,138, Tesla solves high-voltage insulation by geometry: the inner end near the primary is grounded, while potential climbs radially outward away from ground and the primary coil.",
+      claimRef: 2,
+      historicalSignificance:
+        "Claim 2 explicitly protects the flat spiral geometry with the inner terminal connected to the primary and to earth.",
+    },
+    {
+      id: "tesla-quarter-wave-standing-wave",
+      patentId: "us-593138-tesla-coil",
+      title: "Quarter-Wave Resonant Standing Wave Distribution",
+      category: "High-Frequency Resonance",
+      rawLatex: "\\ell \\approx \\frac{\\lambda}{4} = \\frac{v_p}{4 f_0}",
+      colorizedLatex:
+        "\\textcolor{#059669}{\\ell} \\approx \\frac{\\textcolor{#9333ea}{\\lambda}}{4} = \\frac{\\textcolor{#0d9488}{v_p}}{4 \\textcolor{#2563eb}{f_0}}",
+      plainEnglishSentence: [
+        { text: "The " },
+        { text: "physical secondary wire length", variableId: "wire_len" },
+        { text: " is tuned to approximately one-quarter of the " },
+        { text: "electrical disturbance wavelength", variableId: "wavelength" },
+        { text: ", equal to the " },
+        { text: "wave phase propagation velocity", variableId: "phase_vel" },
+        { text: " divided by four times the " },
+        { text: "fundamental resonant frequency", variableId: "res_freq" },
+        { text: "." },
+      ],
+      variables: [
+        {
+          id: "wire_len",
+          symbol: "\\ell",
+          name: "Secondary Wire Axial Length",
+          color: "emerald",
+          role: "Total developed wire length of the secondary spiral",
+          unit: "Meters (m)",
+          dimension: "[L]",
+          explanation:
+            "Tesla specifies that the wire length should match one-quarter of the electrical wavelength so that a voltage antinode (maximum potential) develops at the free terminal.",
+        },
+        {
+          id: "wavelength",
+          symbol: "\\lambda",
+          name: "Electromagnetic Wavelength",
+          color: "amethyst",
+          role: "Spatial wavelength of the oscillatory electrical impulse",
+          unit: "Meters (m)",
+          dimension: "[L]",
+          explanation:
+            "Governed by the LC resonant period of the primary tank discharge.",
+        },
+        {
+          id: "phase_vel",
+          symbol: "v_p",
+          name: "Phase Propagation Velocity",
+          color: "teal",
+          role: "Velocity of electromagnetic wave propagation along the helical conductor",
+          unit: "Meters per second (m/s)",
+          dimension: "[L T^-1]",
+          explanation:
+            "Close to the speed of light ($c \\approx 3 \\times 10^8\\text{ m/s}$) modified by coil geometry and dielectric loading.",
+        },
+        {
+          id: "res_freq",
+          symbol: "f_0",
+          name: "Fundamental Resonant Frequency",
+          color: "sapphire",
+          role: "Natural oscillatory frequency of the tuned transformer",
+          unit: "Hertz (Hz)",
+          dimension: "[T^-1]",
+          explanation:
+            "Typically 50 kHz to 500 kHz in Tesla's high-power experimental stations.",
+        },
+      ],
+      pedagogicalNote:
+        "Under quarter-wave resonance, a standing wave forms: a current antinode and voltage node exist at the grounded base, while a voltage antinode and zero current exist at the elevated terminal.",
+      claimRef: 1,
+      historicalSignificance:
+        "The quarter-wave resonance principle formed the basis of Tesla's Colorado Springs magnifying transmitter experiments in 1899.",
+    },
+  ],
 
   // 18. Guglielmo Marconi Wireless Telegraphy (US 586,193)
   "us-586193-marconi-radio": [
