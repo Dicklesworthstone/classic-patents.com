@@ -26,6 +26,7 @@ import {
   stepGoodyearRubber as stepGoodyearRubberCatalog,
   stepGrammeDynamo,
   stepHyattCelluloid,
+  stepMarconiRadio as stepMarconiRadioCatalog,
   stepMaximMachineGun,
   stepMcCormickReaper,
   stepMorseTelegraph,
@@ -218,6 +219,7 @@ export const FrankenSimEngine = {
       ammoniaRatio,
     });
     return {
+      ...cat,
       temperatureCelsius: cat.evapTempC,
       temperatureKelvin: cat.evapTempC + 273.15,
       pressureAtm: systemPressureAtm,
@@ -226,15 +228,15 @@ export const FrankenSimEngine = {
       coolingPowerWatts: cat.coolingWatts,
       coefficientOfPerformance: cat.cop,
       blackbodyRadiantPowerWatts: 0,
-      fluidFlowVelocityMps: (heatInputWatts / 220) * 0.15,
+      fluidFlowVelocityMps: Number(((heatInputWatts / 220) * 0.15).toFixed(3)),
     };
   },
 
   /**
    * Stephanie Kwolek Kevlar Aramid Polymers (US 3,671,542)
    */
-  stepKevlarContinuum(drawRatio: number, impactVelocityMps: number) {
-    const cat = catalogStepKevlar(drawRatio, impactVelocityMps);
+  stepKevlarContinuum(drawRatio: number, impactVelocityMps: number, appliedTension?: number) {
+    const cat = catalogStepKevlar(drawRatio, impactVelocityMps, appliedTension);
     return {
       tensileStressMpa: cat.tensileStressMpa,
       tensileStrainPct: cat.tensileStrainPct,
@@ -247,6 +249,7 @@ export const FrankenSimEngine = {
       sonicVelocityMps: cat.sonicVelocityMps,
       alignmentPct: cat.alignmentPct,
       residualStrengthGpa: cat.residualStrengthGpa,
+      impactDisplayMs: cat.impactDisplayMs,
     };
   },
 
@@ -339,7 +342,7 @@ export const FrankenSimEngine = {
       currentGainAlpha: 1.0,
       holeDiffusionCoefficientCm2ps: 35.0,
       chargeTransferEfficiencyPct: Number((wells.cte * 100).toFixed(4)),
-      clockPeriodNs: Number((1000 / Math.max(0.1, clockMhz * 3)).toFixed(1)),
+      clockPeriodNs: wells.phasePeriodNs,
       busBandwidthMbps: 10,
       electronVelocityMps: wells.photoElectrons,
       relativisticFractionC: 0,
@@ -443,19 +446,7 @@ export const FrankenSimEngine = {
    * Monopole Quarter-Wave Radiation & Range Proportionality
    */
   stepMarconiRadio(aerialHeightMeters: number, sparkGapMm: number, coilKv: number) {
-    const wavelengthMeters = aerialHeightMeters * 4;
-    const resonantFreqMhz = 300 / wavelengthMeters;
-    const maxRangeMiles = 0.015 * aerialHeightMeters * aerialHeightMeters * (coilKv / 20);
-    const peakRfPowerKw = (coilKv * coilKv) / (sparkGapMm * 1.5);
-    const radiationResistanceOhms = 36.6;
-
-    return {
-      wavelengthMeters,
-      resonantFreqMhz: Number(resonantFreqMhz.toFixed(2)),
-      maxRangeMiles: Number(maxRangeMiles.toFixed(1)),
-      peakRfPowerKw: Number(peakRfPowerKw.toFixed(1)),
-      radiationResistanceOhms,
-    };
+    return stepMarconiRadioCatalog(aerialHeightMeters, sparkGapMm, coilKv);
   },
 
   /**
@@ -468,6 +459,7 @@ export const FrankenSimEngine = {
       shoalDepth: riverDepthFeet,
     });
     return {
+      ...cat,
       chamberVolumeM3: cat.displacedVolumeM3,
       buoyancyForceKn: cat.liftKn,
       draftReductionInches: Number((cat.draftReductionFt * 12).toFixed(1)),
@@ -487,8 +479,20 @@ export const FrankenSimEngine = {
    * Charles Goodyear Vulcanized Rubber (US 3,633)
    * Polymer Disulfide Cross-Linking Kinetics
    */
-  stepGoodyearRubber(vulcanizationTempC: number, sulfurPct: number, durationMin: number) {
-    return stepGoodyearRubberCatalog(vulcanizationTempC, sulfurPct, durationMin);
+  stepGoodyearRubber(
+    vulcanizationTempC: number,
+    sulfurPct: number,
+    durationMin: number,
+    stretchLambda?: number,
+    specimenTempC?: number,
+  ) {
+    return stepGoodyearRubberCatalog(
+      vulcanizationTempC,
+      sulfurPct,
+      durationMin,
+      stretchLambda,
+      specimenTempC,
+    );
   },
 
   /**
@@ -531,6 +535,7 @@ export const FrankenSimEngine = {
       muzzleVelocityMps: cat.muzzleVelocityMps,
       muzzleEnergyJoules: cat.muzzleEnergyJoules,
       powderGrains: cat.powderGrains,
+      cycleDisplayMs: cat.cycleDisplayMs,
     };
   },
 
@@ -547,9 +552,11 @@ export const FrankenSimEngine = {
   stepWestinghouseAirBrake(params: {
     trainPipePressurePsi?: number; // 0 to 70 psi
     carMassTonnes?: number; // 20 to 60 tonnes
+    approachSpeedMph?: number;
   }) {
     const pipePsi = params.trainPipePressurePsi ?? 70;
     const carMass = params.carMassTonnes ?? 35;
+    const approachSpeedMph = params.approachSpeedMph ?? 45;
     const auxPsi = 70; // charged reservoir pressure
     const isEmergency = pipePsi < 10;
     const isService = pipePsi < 60 && !isEmergency;
@@ -562,6 +569,13 @@ export const FrankenSimEngine = {
     const shoeClampingForceKn = Number(((pistonThrustLbf * 5 * 4.44822) / 1000).toFixed(1));
     const stoppingDistanceM =
       cylPsi > 10 ? Math.round((500 * (carMass / 35)) / (cylPsi / 50)) : 1200;
+    const approachSpeedMps = Number((approachSpeedMph * 0.44704).toFixed(2));
+    const decelerationMps2 =
+      cylPsi > 10 && stoppingDistanceM > 0
+        ? Number((approachSpeedMps ** 2 / (2 * stoppingDistanceM)).toFixed(3))
+        : 0;
+    const stoppingTimeS =
+      decelerationMps2 > 0 ? Number((approachSpeedMps / decelerationMps2).toFixed(1)) : 0;
 
     return {
       trainPipePressurePsi: pipePsi,
@@ -572,6 +586,11 @@ export const FrankenSimEngine = {
       stoppingDistanceFt: Math.round(stoppingDistanceM * 3.28084),
       pistonStrokeRatio: Number((cylPsi / 55).toFixed(2)),
       valveState: isEmergency ? "EMERGENCY" : isService ? "SERVICE" : "RELEASE",
+      approachSpeedMph,
+      approachSpeedMps,
+      decelerationMps2,
+      decelerationMphPerS: Number((decelerationMps2 / 0.44704).toFixed(2)),
+      stoppingTimeS,
     };
   },
 
@@ -628,6 +647,11 @@ export const FrankenSimEngine = {
       focalLengthMm: Math.round(f * 1000),
       rollCapacity: 100,
       filmFormatInches: 2.5,
+      shutterReciprocal: Math.round(1 / Math.max(1e-4, t)),
+      // Barrel flash is the shutter interval, floored so 1/100 s is still visible.
+      flashDisplayMs: Math.max(80, Math.round(t * 1000)),
+      // One barrel revolution per open time (US 388,850 rotary shutter).
+      barrelOmegaRadPerS: Number(((2 * Math.PI) / Math.max(0.01, t)).toFixed(3)),
     };
   },
 

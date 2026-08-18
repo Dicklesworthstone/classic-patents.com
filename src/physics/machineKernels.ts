@@ -15,7 +15,10 @@ export function stepCcdWells(
   fullWellElectrons: number;
   cte: number;
   outputSignalMv: number;
+  phasePeriodNs: number;
+  phaseDisplayMs: number;
 } {
+  const f = Math.max(0.1, clockMhz);
   const cte = Math.max(0.999, 0.99995 - clockMhz * 1e-5);
   const fullWellElectrons = Math.max(1, Math.round(12500 * Math.max(0, gateVoltageV)));
   const photoElectrons = Math.min(fullWellElectrons, Math.round((Math.max(0, lux) / 1000) * 45000));
@@ -25,13 +28,23 @@ export function stepCcdWells(
   const residual = photoElectrons * (1 - cte);
   wells[(idx + 2) % 3] += residual;
   const outputSignalMv = Number((((photoElectrons * 1.602e-19) / 10e-15) * 1000).toFixed(1));
-  return { wells, photoElectrons, fullWellElectrons, cte, outputSignalMv };
+  return {
+    wells,
+    photoElectrons,
+    fullWellElectrons,
+    cte,
+    outputSignalMv,
+    // Real 3-phase gate step: T = 1/(3f).
+    phasePeriodNs: Number((1000 / (f * 3)).toFixed(1)),
+    // Visible bucket-brigade step. 500 ms/MHz ≡ 1500/(3f), not a leftover 2-phase 1/(2f).
+    phaseDisplayMs: Math.max(40, Math.round(500 / f)),
+  };
 }
 
 export function stepHoweSewingMachine(
   flywheelRpm: number,
   stitchTensionGrams: number,
-  stitchPitchMm: number = 2.5,
+  stitchPitchMm: number = 3.5,
 ) {
   const rpm = Math.max(0, flywheelRpm);
   const stitchFrequencyHz = Number((rpm / 60).toFixed(1));
@@ -43,6 +56,9 @@ export function stepHoweSewingMachine(
     lockstitchShearStrengthN: Math.round(stitchTensionGrams * 0.088),
     stitchPitchMm: pitch,
     clothFeedMmPerS: Number((stitchFrequencyHz * pitch).toFixed(1)),
+    crankOmegaRadPerS: Number((stitchFrequencyHz * 2 * Math.PI).toFixed(3)),
+    crankOmegaDegPerS: Number((stitchFrequencyHz * 360).toFixed(1)),
+    crankDisplayTickMs: 30,
   };
 }
 

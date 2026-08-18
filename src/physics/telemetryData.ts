@@ -721,6 +721,27 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
           progressPct: Math.min(100, rf.popcornHeatStepC * 30),
         },
         {
+          label: "Heat Tick",
+          value: `${rf.heatTickMs}`,
+          unit: "ms",
+          badgeColor: "cyan",
+          progressPct: (rf.heatTickMs / 400) * 100,
+        },
+        {
+          label: "Water Heat",
+          value: `${rf.waterHeatSecondsPerK}`,
+          unit: "s/K",
+          badgeColor: rf.isOscillating ? "amber" : "cyan",
+          progressPct: Math.min(100, (rf.waterHeatSecondsPerK / 3) * 100),
+        },
+        {
+          label: "Time to Pop",
+          value: `${rf.timeToPopS}`,
+          unit: "s",
+          badgeColor: rf.isOscillating ? "amber" : "cyan",
+          progressPct: Math.min(100, (rf.timeToPopS / 200) * 100),
+        },
+        {
           label: "RF Output Power",
           value: rfWatts.toString(),
           unit: "W",
@@ -808,6 +829,13 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
           progressPct: Math.min(100, (ic.maxClockGhz / 0.3) * 100),
         },
         {
+          label: "Clock Period",
+          value: `${ic.clockPeriodNs}`,
+          unit: "ns",
+          badgeColor: "cyan",
+          progressPct: Math.min(100, (ic.clockPeriodNs / 1000) * 100),
+        },
+        {
           label: "Breakdown Margin",
           value: ic.breakdownMarginV.toFixed(1),
           unit: "V",
@@ -882,6 +910,20 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
           badgeColor: "cyan",
           progressPct: (Number(lumEff) / 4.0) * 100,
         },
+        {
+          label: "Filament Current",
+          value: bulb.currentAmps.toFixed(2),
+          unit: "A",
+          badgeColor: "amber",
+          progressPct: (bulb.currentAmps / 2) * 100,
+        },
+        {
+          label: "Design Life",
+          value: String(bulb.designLifeHours),
+          unit: "h",
+          badgeColor: "purple",
+          progressPct: Math.min(100, (bulb.designLifeHours / 2400) * 100),
+        },
       ];
     },
     pedagogicalInsight:
@@ -922,9 +964,32 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
         defaultValue: 0.35,
         unit: "mm",
       },
+      {
+        id: "batteryVoltage",
+        label: "Battery Voltage",
+        min: 1,
+        max: 12,
+        step: 0.5,
+        defaultValue: 6,
+        unit: "V",
+      },
+      {
+        id: "liquidConductivity",
+        label: "Acidulated Water Conductivity",
+        min: 0.2,
+        max: 3,
+        step: 0.1,
+        defaultValue: 1.2,
+        unit: "S",
+      },
     ],
     computeMetrics: (p) => {
-      const bell = stepBellTelephone({ voiceAmplitude: p.voiceAmplitude, airGap: p.airGap });
+      const bell = stepBellTelephone({
+        voiceAmplitude: p.voiceAmplitude,
+        airGap: p.airGap,
+        batteryVoltage: p.batteryVoltage,
+        liquidConductivity: p.liquidConductivity,
+      });
       const displMicrons = bell.diaphragmUm.toFixed(2);
       const modCurrent = bell.modulatedMa.toFixed(2);
       const sens = bell.sensitivityMvPerPa.toFixed(1);
@@ -957,6 +1022,20 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
           unit: "Hz",
           badgeColor: "indigo",
           progressPct: (((p.acousticFrequencyHz ?? 440) - 200) / 600) * 100,
+        },
+        {
+          label: "Liquid R₀",
+          value: `${bell.baseResistanceOhms}`,
+          unit: "Ω",
+          badgeColor: "purple",
+          progressPct: Math.min(100, (bell.baseResistanceOhms / 80) * 100),
+        },
+        {
+          label: "Bias Current",
+          value: `${bell.currentBaselineMa}`,
+          unit: "mA",
+          badgeColor: "cyan",
+          progressPct: Math.min(100, (bell.currentBaselineMa / 200) * 100),
         },
       ];
     },
@@ -1003,7 +1082,7 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
       const v = p.sparkVoltage ?? 28;
       const h = p.aerialHeight ?? 88;
       const radio = FrankenSimEngine.stepMarconiRadio(h, p.sparkGapMm ?? 10, v);
-      const freqKhz = Math.round(radio.resonantFreqMhz * 1000);
+      const freqKhz = radio.resonantFreqKhz;
 
       return [
         {
@@ -1147,6 +1226,13 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
           badgeColor: "amber",
           progressPct: (morse.unitDurationMs / 240) * 100,
         },
+        {
+          label: "Dit / Dah",
+          value: `${morse.ditMs} / ${morse.dahMs}`,
+          unit: "ms",
+          badgeColor: "purple",
+          progressPct: (morse.ditMs / 240) * 100,
+        },
       ];
     },
     pedagogicalInsight:
@@ -1214,11 +1300,21 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
         defaultValue: 450,
         unit: "m/s",
       },
+      {
+        id: "appliedTension",
+        label: "Applied Tensile Strain",
+        min: 0,
+        max: 100,
+        step: 1,
+        defaultValue: 30,
+        unit: "%",
+      },
     ],
     computeMetrics: (p) => {
       const kevlar = FrankenSimEngine.stepKevlarContinuum(
         p.drawRatio ?? 6.5,
         p.impactVelocity ?? 450,
+        p.appliedTension ?? 30,
       );
       const eGpa = kevlar.elasticModulusGpa;
       const vSonic = kevlar.sonicVelocityMps;
@@ -1262,6 +1358,13 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
           progressPct: (kevlar.tensileStrengthGpa / 3.6) * 100,
         },
         {
+          label: "Residual Strength",
+          value: `${kevlar.residualStrengthGpa} GPa`,
+          unit: "σ_res",
+          badgeColor: kevlar.residualStrengthGpa < 1.6 ? "rose" : "emerald",
+          progressPct: (kevlar.residualStrengthGpa / 3.6) * 100,
+        },
+        {
           label: "Chain Alignment",
           value: `${kevlar.alignmentPct}%`,
           unit: "align",
@@ -1299,12 +1402,32 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
         defaultValue: 8.0,
         unit: "%",
       },
+      {
+        id: "specimenTempC",
+        label: "Specimen Temperature",
+        min: -20,
+        max: 100,
+        step: 1,
+        defaultValue: 35,
+        unit: "°C",
+      },
+      {
+        id: "appliedTensileStretch",
+        label: "Tensile Stretch (λ)",
+        min: 1.0,
+        max: 2.5,
+        step: 0.05,
+        defaultValue: 1.8,
+        unit: "λ",
+      },
     ],
     computeMetrics: (p) => {
       const rubber = FrankenSimEngine.stepGoodyearRubber(
         p.vulcanTemp ?? 145,
         p.sulfurPct ?? 8.0,
         30,
+        p.appliedTensileStretch ?? 1.8,
+        p.specimenTempC ?? 35,
       );
       const crossLink = rubber.crossLinkDensity.toFixed(3);
       const tensilePsi = rubber.tensileStrengthPsi;
@@ -1345,6 +1468,20 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
           unit: "Tg",
           badgeColor: "amber",
           progressPct: ((rubber.glassTransitionTempC + 80) / 50) * 100,
+        },
+        {
+          label: "Cure Rate",
+          value: `${rubber.rateRel}`,
+          unit: rubber.regime,
+          badgeColor: rubber.regime === "cure" ? "emerald" : "amber",
+          progressPct: Math.min(100, rubber.rateRel * 50),
+        },
+        {
+          label: "True Stress",
+          value: `${rubber.trueStressMpa}`,
+          unit: "MPa",
+          badgeColor: "indigo",
+          progressPct: Math.min(100, (rubber.trueStressMpa / 30) * 100),
         },
       ];
     },
@@ -1627,6 +1764,20 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
           badgeColor: "amber",
           progressPct: 100,
         },
+        {
+          label: "Counts / mm",
+          value: String(mouse.countsPerMm),
+          unit: "1/mm",
+          badgeColor: "indigo",
+          progressPct: Math.min(100, (mouse.countsPerMm / 10) * 100),
+        },
+        {
+          label: "Pulse Rate",
+          value: String(mouse.pulseRateHz),
+          unit: "Hz",
+          badgeColor: "cyan",
+          progressPct: Math.min(100, (mouse.pulseRateHz / 2000) * 100),
+        },
       ];
     },
     pedagogicalInsight:
@@ -1784,7 +1935,6 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
       const wells = stepCcdWells(1, lux, f, vGate);
       const wellCap = wells.fullWellElectrons;
       const cte = (wells.cte * 100).toFixed(4);
-      const transitNs = (1000 / (f * 3)).toFixed(1);
 
       return [
         {
@@ -1810,10 +1960,17 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
         },
         {
           label: "Gate Step Period",
-          value: transitNs,
+          value: `${wells.phasePeriodNs}`,
           unit: "ns",
           badgeColor: "purple",
-          progressPct: (Number(transitNs) / 500) * 100,
+          progressPct: (wells.phasePeriodNs / 500) * 100,
+        },
+        {
+          label: "Visible φ Step",
+          value: `${wells.phaseDisplayMs} ms`,
+          unit: "t_φ",
+          badgeColor: "amber",
+          progressPct: Math.min(100, (wells.phaseDisplayMs / 1000) * 100),
         },
         {
           label: "Dynamic Range",
@@ -1985,6 +2142,13 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
           unit: "v_feed",
           badgeColor: "amber",
           progressPct: (sew.clothFeedMmPerS / 20) * 100,
+        },
+        {
+          label: "Crank ω",
+          value: `${sew.crankOmegaDegPerS}`,
+          unit: "deg/s",
+          badgeColor: "purple",
+          progressPct: Math.min(100, (sew.crankOmegaDegPerS / 2160) * 100),
         },
         {
           label: "Stitch Length",
@@ -2688,6 +2852,20 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
           badgeColor: "cyan",
           progressPct: 100,
         },
+        {
+          label: "Shutter Flash",
+          value: `${kodak.flashDisplayMs} ms`,
+          unit: "t_shut",
+          badgeColor: "amber",
+          progressPct: Math.min(100, (kodak.flashDisplayMs / 200) * 100),
+        },
+        {
+          label: "Barrel ω",
+          value: `${kodak.barrelOmegaRadPerS}`,
+          unit: "rad/s",
+          badgeColor: "cyan",
+          progressPct: Math.min(100, (kodak.barrelOmegaRadPerS / 700) * 100),
+        },
       ];
     },
     pedagogicalInsight:
@@ -2767,7 +2945,14 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
           value: `${relays}`,
           unit: "relays",
           badgeColor: "purple",
-          progressPct: (relays / 16) * 100,
+          progressPct: (relays / hol.registerDialCount) * 100,
+        },
+        {
+          label: "Sensing Pins",
+          value: `${hol.sensingPinCount}`,
+          unit: "pins",
+          badgeColor: "indigo",
+          progressPct: 100,
         },
         {
           label: "Census Register Bank",
@@ -3386,6 +3571,20 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
           progressPct: Math.min(100, (wh.stoppingDistanceFt / 4000) * 100),
         },
         {
+          label: "Approach Speed",
+          value: `${wh.approachSpeedMph}`,
+          unit: "mph",
+          badgeColor: "cyan",
+          progressPct: (wh.approachSpeedMph / 60) * 100,
+        },
+        {
+          label: "Stop Time",
+          value: wh.stoppingTimeS > 0 ? `${wh.stoppingTimeS}` : "—",
+          unit: "s",
+          badgeColor: "indigo",
+          progressPct: wh.stoppingTimeS > 0 ? Math.min(100, (wh.stoppingTimeS / 60) * 100) : 0,
+        },
+        {
           label: "Triple Valve State",
           value: isEmergency
             ? "EMERGENCY DUMP"
@@ -3851,6 +4050,20 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
           badgeColor: nobel.isSensitiveUnsafe ? "rose" : "emerald",
           progressPct: nobel.isSensitiveUnsafe ? 20 : 90,
         },
+        {
+          label: "20 cm Transit",
+          value: `${nobel.chargeTransitUs} µs`,
+          unit: "t_CJ",
+          badgeColor: "cyan",
+          progressPct: Math.min(100, (nobel.chargeTransitUs / 40) * 100),
+        },
+        {
+          label: "Visible Flash",
+          value: `${nobel.flashDisplayMs} ms`,
+          unit: "t_flash",
+          badgeColor: "amber",
+          progressPct: (nobel.flashDisplayMs / 400) * 100,
+        },
       ];
     },
     pedagogicalInsight:
@@ -4307,6 +4520,13 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
           unit: "pitch",
           badgeColor: "emerald",
           progressPct: 100,
+        },
+        {
+          label: "Axial Feed",
+          value: String(phono.axialTravelMmPerS),
+          unit: "mm/s",
+          badgeColor: "indigo",
+          progressPct: Math.min(100, (phono.axialTravelMmPerS / 5) * 100),
         },
         {
           label: "Audio Bandwidth",

@@ -24,6 +24,7 @@ import {
   stepHyattCelluloid,
   stepKevlarContinuum,
   stepLincolnBuoy,
+  stepMarconiRadio,
   stepMcCormickReaper,
   stepMorseTelegraph,
   stepNobelDynamite,
@@ -204,20 +205,25 @@ export function materialProbe(
     };
   }
   if (patentId.includes("howe") || patentId.includes("4750")) {
-    const sew = stepHoweSewingMachine(params.crankRpm ?? 240, params.threadTensionGrams ?? 45);
+    const sew = stepHoweSewingMachine(
+      params.crankRpm ?? 240,
+      params.threadTensionGrams ?? 45,
+      params.stitchPitchMm ?? 3.5,
+    );
     return {
       part: calloutLabel,
       material: "Eye-pointed needle + boat shuttle, two threads",
       qty: "shear",
       value: sew.lockstitchShearStrengthN.toString(),
       unit: "N",
-      note: `${sew.stitchesPerMinute} spm. Needle Y and shuttle X from stepHoweLockstitch.`,
+      note: `${sew.stitchesPerMinute} spm · ω ${sew.crankOmegaDegPerS} °/s. Needle Y and shuttle X from stepHoweLockstitch.`,
     };
   }
   if (patentId.includes("engelbart") || patentId.includes("3541541")) {
     const mouse = stepEngelbartMouse({
       mouseSpeed: params.mouseSpeed ?? 350,
       wheelRadius: params.wheelRadius ?? 10,
+      pulsesPerRev: params.pulsesPerRev ?? 200,
     });
     return {
       part: calloutLabel,
@@ -246,7 +252,7 @@ export function materialProbe(
       qty: "CTE",
       value: (wells.cte * 100).toFixed(4),
       unit: "%",
-      note: `${wells.photoElectrons.toLocaleString()} e⁻ in a ${wells.fullWellElectrons.toLocaleString()} e⁻ well.`,
+      note: `${wells.photoElectrons.toLocaleString()} e⁻ in a ${wells.fullWellElectrons.toLocaleString()} e⁻ well. φ ${wells.phasePeriodNs} ns.`,
     };
   }
   if (patentId.includes("tesla-coil") || patentId.includes("533367")) {
@@ -298,7 +304,7 @@ export function materialProbe(
       qty: "H",
       value: kodak.hyperfocalM.toFixed(2),
       unit: "m",
-      note: `EV ${kodak.exposureValueEv}. ${kodak.isInFocus ? "In focus" : "Out of focus"}.`,
+      note: `EV ${kodak.exposureValueEv}. ω ${kodak.barrelOmegaRadPerS} rad/s. ${kodak.isInFocus ? "In focus" : "Out of focus"}.`,
     };
   }
   if (patentId.includes("farnsworth") || patentId.includes("1773980")) {
@@ -401,14 +407,14 @@ export function materialProbe(
     };
   }
   if (patentId.includes("marconi")) {
-    const h = params.aerialHeight ?? 88;
+    const radio = stepMarconiRadio(params.aerialHeight, params.sparkGapMm, params.sparkVoltage);
     return {
       part: calloutLabel,
       material: "Elevated aerial + earth plate",
       qty: "f₀",
-      value: (3e8 / (4 * h) / 1000).toFixed(0),
+      value: String(radio.resonantFreqKhz),
       unit: "kHz",
-      note: `Quarter-wave mast ${h} m. Spark is a damped odd-harmonic train.`,
+      note: `Quarter-wave mast ${params.aerialHeight ?? 88} m. R_rad ${radio.radiationResistanceOhms} Ω.`,
     };
   }
   if (patentId.includes("morse") || patentId.includes("1647")) {
@@ -425,7 +431,7 @@ export function materialProbe(
       qty: "F",
       value: morse.magneticForceN.toFixed(2),
       unit: "N",
-      note: `I² pull ${morse.ampereTurns} A·turns. ${morse.ohmicCurrentMa} mA ohmic · ${morse.wpmSpeed} WPM.`,
+      note: `I² pull ${morse.ampereTurns} A·turns. ${morse.ohmicCurrentMa} mA ohmic · ${morse.wpmSpeed} WPM · dit ${morse.ditMs}/${morse.dahMs} ms.`,
     };
   }
   if (patentId.includes("otto-engine") || patentId.includes("194047")) {
@@ -753,7 +759,7 @@ export function materialProbe(
       value: nobel.detonationVelocityMps.toString(),
       unit: "m/s",
       note: nobel.isInitiated
-        ? "Cap initiated the column."
+        ? `Cap initiated. 20 cm transit ${nobel.chargeTransitUs} µs · flash ${nobel.flashDisplayMs} ms.`
         : "Cap below initiation — no detonation.",
     };
   }
@@ -804,7 +810,13 @@ export function materialProbe(
     };
   }
   if (patentId.includes("goodyear") || patentId.includes("3633")) {
-    const rubber = stepGoodyearRubber(params.vulcanTemp, params.sulfurPct, 30);
+    const rubber = stepGoodyearRubber(
+      params.vulcanTemp,
+      params.sulfurPct,
+      30,
+      params.appliedTensileStretch,
+      params.specimenTempC,
+    );
     return {
       part: calloutLabel,
       material: "India rubber + sulfur, 135–165 °C window",
@@ -848,7 +860,7 @@ export function materialProbe(
     };
   }
   if (patentId.includes("kevlar") || patentId.includes("3671542")) {
-    const k = stepKevlarContinuum(params.drawRatio, params.impactVelocity);
+    const k = stepKevlarContinuum(params.drawRatio, params.impactVelocity, params.appliedTension);
     return {
       part: calloutLabel,
       material: "PPTA nematic dope, hydrogen-bonded sheets",
@@ -963,13 +975,18 @@ export function intervalGhosts(patentId: string, params: Record<string, number>)
     ];
   }
   if (patentId.includes("howe") || patentId.includes("4750")) {
-    const sew = stepHoweSewingMachine(params.crankRpm ?? 240, params.threadTensionGrams ?? 45);
+    const sew = stepHoweSewingMachine(
+      params.crankRpm ?? 240,
+      params.threadTensionGrams ?? 45,
+      params.stitchPitchMm ?? 3.5,
+    );
     return [{ label: "Shear", min: 1, max: 8, live: sew.lockstitchShearStrengthN, unit: "N" }];
   }
   if (patentId.includes("engelbart") || patentId.includes("3541541")) {
     const mouse = stepEngelbartMouse({
       mouseSpeed: params.mouseSpeed ?? 350,
       wheelRadius: params.wheelRadius ?? 10,
+      pulsesPerRev: params.pulsesPerRev ?? 200,
     });
     return [{ label: "ω", min: 0, max: 40, live: mouse.omegaRadPerS, unit: "rad/s" }];
   }
@@ -1069,7 +1086,7 @@ export function intervalGhosts(patentId: string, params: Record<string, number>)
     return [{ label: "G_p", min: 10, max: 35, live: fh.processingGainDb, unit: "dB" }];
   }
   if (patentId.includes("sholes") || patentId.includes("79265")) {
-    const sholes = stepSholesTypewriter(params.typingSpeedWpm ?? 45, 0);
+    const sholes = stepSholesTypewriter(params.typingSpeedWpm ?? 40, 0);
     return [
       {
         label: "Demo",
@@ -1189,7 +1206,13 @@ export function intervalGhosts(patentId: string, params: Record<string, number>)
     return [{ label: "Cycle", min: 200, max: 3000, live: h.cycleTimeMs, unit: "ms" }];
   }
   if (patentId.includes("goodyear") || patentId.includes("3633")) {
-    const rubber = stepGoodyearRubber(params.vulcanTemp, params.sulfurPct, 30);
+    const rubber = stepGoodyearRubber(
+      params.vulcanTemp,
+      params.sulfurPct,
+      30,
+      params.appliedTensileStretch,
+      params.specimenTempC,
+    );
     return [{ label: "σ", min: 200, max: 3200, live: rubber.tensileStrengthPsi, unit: "psi" }];
   }
   if (patentId.includes("wozniak") || patentId.includes("4136359")) {
@@ -1207,7 +1230,7 @@ export function intervalGhosts(patentId: string, params: Record<string, number>)
     ];
   }
   if (patentId.includes("kevlar") || patentId.includes("3671542")) {
-    const k = stepKevlarContinuum(params.drawRatio, params.impactVelocity);
+    const k = stepKevlarContinuum(params.drawRatio, params.impactVelocity, params.appliedTension);
     return [{ label: "E", min: 60, max: 145, live: k.elasticModulusGpa, unit: "GPa" }];
   }
   if (patentId.includes("bardeen") || patentId.includes("2569347")) {
@@ -1272,7 +1295,11 @@ export function fidelityField(
     };
   }
   if (patentId.includes("howe") || patentId.includes("4750")) {
-    const sew = stepHoweSewingMachine(params.crankRpm ?? 240, params.threadTensionGrams ?? 45);
+    const sew = stepHoweSewingMachine(
+      params.crankRpm ?? 240,
+      params.threadTensionGrams ?? 45,
+      params.stitchPitchMm ?? 3.5,
+    );
     return {
       part: "Stitch rate vs 1846 Howe shop",
       model: sew.stitchesPerMinute.toString(),
@@ -1285,6 +1312,7 @@ export function fidelityField(
     const mouse = stepEngelbartMouse({
       mouseSpeed: params.mouseSpeed ?? 350,
       wheelRadius: params.wheelRadius ?? 10,
+      pulsesPerRev: params.pulsesPerRev ?? 200,
     });
     return {
       part: "Resolution vs 1968 NLS mouse",
@@ -1451,8 +1479,8 @@ export function whitneySamples(omegaT: number): { x: number; y: number; bx: numb
 
 export function spectralModes(patentId: string, params: Record<string, number>): SpectralMode[] {
   if (patentId.includes("marconi")) {
-    const h = params.aerialHeight ?? 88;
-    const f0 = 3e8 / (4 * h);
+    const radio = stepMarconiRadio(params.aerialHeight, params.sparkGapMm, params.sparkVoltage);
+    const f0 = radio.resonantFreqMhz * 1e6;
     return [1, 3, 5, 7, 9].map((n) => ({
       n,
       freqHz: f0 * n,
@@ -1461,8 +1489,7 @@ export function spectralModes(patentId: string, params: Record<string, number>):
     }));
   }
   if (patentId.includes("tesla-coil") || patentId.includes("533367")) {
-    const cap = params.primaryCap ?? 45;
-    const f0 = 180e3 * Math.sqrt(45 / Math.max(10, cap));
+    const f0 = teslaCoilResonantKhz(params.primaryCap, params.toploadCapacitancePf) * 1000;
     return [1, 2, 3].map((n) => ({
       n,
       freqHz: f0 * n,
@@ -1800,7 +1827,11 @@ export function coupleLinks(patentId: string, params: Record<string, number>): C
     return [{ from: "photons", to: "well packet", watts: wells.photoElectrons * 1.6e-19 * 1e12 }];
   }
   if (patentId.includes("howe") || patentId.includes("4750")) {
-    const sew = stepHoweSewingMachine(params.crankRpm ?? 240, params.threadTensionGrams ?? 45);
+    const sew = stepHoweSewingMachine(
+      params.crankRpm ?? 240,
+      params.threadTensionGrams ?? 45,
+      params.stitchPitchMm ?? 3.5,
+    );
     return [
       {
         from: "flywheel",

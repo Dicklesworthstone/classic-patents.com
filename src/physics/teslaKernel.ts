@@ -7,6 +7,18 @@ export const TESLA_PATENT_ID = "us-381968-tesla-motor";
 export const TESLA_STROBE_COUNT = 8;
 /** US 381,968 Fig. 4 is a 2-pole field: ns = 120 f / P. */
 export const TESLA_FIELD_POLES = 2;
+/** Electrical ω shown at 1/20 so a 60 Hz field is visible. HUD states ns. */
+export const TESLA_FIELD_DISPLAY_SLOWDOWN = 20;
+/** 2D presentation tick that integrates the same display ω as 3D. */
+export const TESLA_FIELD_DISPLAY_TICK_MS = 30;
+
+export function teslaFieldDisplayOmegaRadPerS(freqHz: number): number {
+  return (2 * Math.PI * Math.max(0, freqHz)) / TESLA_FIELD_DISPLAY_SLOWDOWN;
+}
+
+export function teslaFieldDisplayOmegaDegPerS(freqHz: number): number {
+  return (360 * Math.max(0, freqHz)) / TESLA_FIELD_DISPLAY_SLOWDOWN;
+}
 
 /**
  * Primary tank plus secondary topload. 180 kHz at the registry defaults

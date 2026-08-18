@@ -20,7 +20,10 @@ export const PATENT_PARAM_ALIASES: Record<string, Record<string, ParamAlias>> = 
   "us-542846-diesel-engine": { compressionRatio: same("compRatio") },
   "us-347140-thomson-welding": { currentAmperes: same("weldCurrentAmps") },
   "us-105338-hyatt-celluloid": { tempCelsius: same("steamTempC") },
-  "us-78317-nobel-dynamite": { ngConcentration: same("ngConcentrationPct") },
+  "us-78317-nobel-dynamite": {
+    ngConcentration: same("ngConcentrationPct"),
+    nitroglycerinRatioPct: same("ngConcentrationPct"),
+  },
   "us-135245-pasteur-fermentation": { tempCelsius: same("wortTempC") },
   "us-247804-delaval-separator": { rotorRpm: same("bowlRpm") },
   "us-200521-edison-phonograph": { cylinderRpm: same("mandrelRpm") },
@@ -71,6 +74,7 @@ export const PATENT_PARAM_ALIASES: Record<string, Record<string, ParamAlias>> = 
       canonical: "shutterSpeed",
       toCanonical: (v) => (v > 1 ? 1 / v : v),
     },
+    subjectDistance: same("subjectDist"),
   },
   "us-313224-mergenthaler-linotype": {
     castingLpm: {
