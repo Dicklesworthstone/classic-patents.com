@@ -2,10 +2,7 @@ import { describe, expect, test } from "bun:test";
 import { readFileSync } from "node:fs";
 import { join } from "node:path";
 import { stepBellTelephone } from "@/physics/catalogKernels";
-import {
-  buildBellTelephoneModel,
-  updateBellTelephoneKinematics,
-} from "./bellTelephoneModel";
+import { buildBellTelephoneModel, updateBellTelephoneKinematics } from "./bellTelephoneModel";
 
 const VISUALS_DIRECTORY = join(process.cwd(), "src/components/patents/visuals");
 
@@ -88,16 +85,7 @@ describe("US 174,465 Alexander Graham Bell Telephone visual & acoustics boundary
     expect(model.glassCup).toBeDefined();
     expect(model.waveRings.length).toBe(5);
 
-    updateBellTelephoneKinematics(
-      model,
-      0.016,
-      0.5,
-      138.2,
-      6.5,
-      2.16,
-      true,
-      true,
-    );
+    updateBellTelephoneKinematics(model, 0.016, 0.5, 138.2, 6.5, 2.16, true, true);
     expect(model.materials.brass.opacity).toBe(0.35);
     expect(model.materials.glassCupMat.opacity).toBe(0.25);
 

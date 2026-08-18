@@ -2,19 +2,13 @@ import { describe, expect, test } from "bun:test";
 import { readFileSync } from "node:fs";
 import { join } from "node:path";
 import { stepEdisonBulb } from "@/physics/catalogKernels";
-import {
-  buildEdisonBulbModel,
-  updateEdisonBulbKinematics,
-} from "./edisonBulbModel";
+import { buildEdisonBulbModel, updateEdisonBulbKinematics } from "./edisonBulbModel";
 
 const VISUALS_DIRECTORY = join(process.cwd(), "src/components/patents/visuals");
 
 describe("US 223,898 Thomas Edison Incandescent Lamp visual & physics boundary", () => {
   test("uses pure procedural Three.js WebGL architecture without external GLTF/GLB models", () => {
-    const threeSource = readFileSync(
-      join(VISUALS_DIRECTORY, "three", "EdisonBulb3D.tsx"),
-      "utf8",
-    );
+    const threeSource = readFileSync(join(VISUALS_DIRECTORY, "three", "EdisonBulb3D.tsx"), "utf8");
     const modelSource = readFileSync(
       join(VISUALS_DIRECTORY, "three", "edisonBulbModel.ts"),
       "utf8",
@@ -28,10 +22,7 @@ describe("US 223,898 Thomas Edison Incandescent Lamp visual & physics boundary",
   });
 
   test("maintains deterministic replay without ambient randomness or private clocks in frame loop", () => {
-    const threeSource = readFileSync(
-      join(VISUALS_DIRECTORY, "three", "EdisonBulb3D.tsx"),
-      "utf8",
-    );
+    const threeSource = readFileSync(join(VISUALS_DIRECTORY, "three", "EdisonBulb3D.tsx"), "utf8");
     const modelSource = readFileSync(
       join(VISUALS_DIRECTORY, "three", "edisonBulbModel.ts"),
       "utf8",
@@ -44,10 +35,7 @@ describe("US 223,898 Thomas Edison Incandescent Lamp visual & physics boundary",
   });
 
   test("exposes authentic camera presets and cutaway mode for electric lamp inspection", () => {
-    const threeSource = readFileSync(
-      join(VISUALS_DIRECTORY, "three", "EdisonBulb3D.tsx"),
-      "utf8",
-    );
+    const threeSource = readFileSync(join(VISUALS_DIRECTORY, "three", "EdisonBulb3D.tsx"), "utf8");
 
     for (const preset of [
       "iso",
@@ -99,4 +87,3 @@ describe("US 223,898 Thomas Edison Incandescent Lamp visual & physics boundary",
     model.dispose();
   });
 });
-

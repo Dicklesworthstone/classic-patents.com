@@ -242,7 +242,11 @@ export const BellTelephone3D = memo(() => {
           { label: "Diaphragm Deflection", value: bell.diaphragmUm.toFixed(2), unit: "µm" },
           { label: "Baseline Resistance", value: bell.baseResistanceOhms.toFixed(1), unit: "Ω" },
           { label: "ΔR Modulation", value: bell.resistanceModulationOhms.toFixed(1), unit: "Ω" },
-          { label: "Baseline Current", value: (bell.currentBaselineAmps * 1000).toFixed(1), unit: "mA" },
+          {
+            label: "Baseline Current",
+            value: (bell.currentBaselineAmps * 1000).toFixed(1),
+            unit: "mA",
+          },
           { label: "Modulated Current", value: bell.modulatedMa.toFixed(2), unit: "mA" },
           { label: "Battery Voltage", value: batteryVoltage.toFixed(1), unit: "V" },
           { label: "Liquid Conductivity", value: liquidConductivity.toFixed(2), unit: "S/m" },

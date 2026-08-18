@@ -327,7 +327,7 @@ export function updateBellTelephoneKinematics(
     const ring = model.waveRings[i];
     if (showAcousticWaves) {
       ring.visible = true;
-      const progress = ((timeSec * 3 + i * 0.33) % 1.0);
+      const progress = (timeSec * 3 + i * 0.33) % 1.0;
       ring.position.x = -5.0 + progress * 3.4;
       const scale = 0.5 + progress * 0.8;
       ring.scale.set(scale, scale, scale);
@@ -355,4 +355,3 @@ export function updateBellTelephoneKinematics(
   model.materials.brass.transparent = isCutaway;
   model.materials.glassCupMat.opacity = isCutaway ? 0.25 : 1.0;
 }
-

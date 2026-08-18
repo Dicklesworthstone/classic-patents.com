@@ -278,4 +278,3 @@ export function updateEdisonPhonographKinematics(
   model.materials.tinfoil.opacity = isCutaway ? 0.55 : 1.0;
   model.materials.tinfoil.transparent = isCutaway;
 }
-

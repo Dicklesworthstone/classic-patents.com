@@ -38,6 +38,9 @@ import { sholesTypewriterParallelReadings } from "./sholesTypewriterEdition";
 import { spencerMicrowaveParallelReadings } from "./spencerMicrowaveEdition";
 import { teslaCoil593138ParallelReadings } from "./teslaCoil593138Edition";
 import { teslaMotorParallelReadings } from "./teslaMotorEdition";
+import { lindeAirLiquefactionParallelReadings } from "./lindeAirLiquefactionEdition";
+import { parsonsTurbineParallelReadings } from "./parsonsTurbineEdition";
+
 import { thomsonWeldingParallelReadings } from "./thomsonWeldingEdition";
 import { HOWE_SEWING_MACHINE_PARALLEL_READINGS } from "./us-4750-howe-sewing-machine";
 import { DAIMLER_MARINE_ENGINE_PARALLEL_READINGS } from "./us-361931-daimler-engine";
@@ -86,6 +89,9 @@ export const ARCHIVAL_PARALLEL_READINGS: Readonly<
   "us-361931-daimler-engine": DAIMLER_MARINE_ENGINE_PARALLEL_READINGS,
   "us-1102653-goddard-rocket": goddardRocketParallelReadings,
   "us-381968-tesla-motor": teslaMotorParallelReadings,
+  "us-727650-linde-air-liquefaction": lindeAirLiquefactionParallelReadings,
+  "us-608969-parsons-turbine": parsonsTurbineParallelReadings,
+
   "us-821393-wright-flyer": {
     4: [
       "This is the standard public notice at the start of a United States patent. It addresses any reader who may need to know what the inventors claim to have made.",

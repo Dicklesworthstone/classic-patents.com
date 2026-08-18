@@ -9,10 +9,7 @@ import { TESLA_FIELD_POLES, teslaBAt, teslaFieldDisplayOmegaRadPerS } from "@/ph
 import { useFrankenSimPhysics } from "@/physics/useFrankenSimPhysics";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { soundEngine } from "@/utils/soundEngine";
-import {
-  createThreeStudioScene,
-  type StudioContext,
-} from "./ThreeStudioScene";
+import { createThreeStudioScene, type StudioContext } from "./ThreeStudioScene";
 import { buildTeslaMotorModel } from "./teslaMotorModel";
 import { useLiveSimParams } from "./useLiveSimParams";
 

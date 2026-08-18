@@ -324,4 +324,3 @@ export function updateEdisonBulbKinematics(
 
   return { incandescenceIntensity, glowColor };
 }
-

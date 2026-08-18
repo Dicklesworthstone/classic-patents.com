@@ -1,31 +1,35 @@
 "use client";
 
-import { Activity, Camera, Eye, Volume2, VolumeX, Zap } from "lucide-react";
-import { useEffect, useRef, useState } from "react";
-import * as THREE from "three";
+import { Activity, Camera, Eye, EyeOff, Volume2, VolumeX, Zap } from "lucide-react";
+import { memo, useEffect, useRef, useState } from "react";
+import type * as THREE from "three";
 import { stepPasteurFermentation } from "@/physics/catalogKernels";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
-import { createLcg } from "@/utils/lcg";
 import { soundEngine } from "@/utils/soundEngine";
-import { StudioKernelChips } from "./StudioKernelChips";
 import {
-  createGlowPointTexture,
-  createThreeStudioScene,
-  type StudioContext,
-} from "./ThreeStudioScene";
+  buildPasteurFermentationModel,
+  updatePasteurFermentationKinematics,
+} from "./pasteurFermentationModel";
+import { StudioKernelChips } from "./StudioKernelChips";
+import { createThreeStudioScene, type StudioContext } from "./ThreeStudioScene";
 import { useLiveSimParams } from "./useLiveSimParams";
 import { usePatentAudio } from "./usePatentAudio";
 
-const lcg = createLcg(2000);
+type CameraPreset =
+  | "iso"
+  | "gooseneck_airlock"
+  | "cooling_coil"
+  | "sampling_valve"
+  | "cotton_filter"
+  | "top";
 
-type CameraPreset = "iso" | "gooseneck_airlock" | "cooling_coil" | "sampling_valve" | "top";
-
-export function PasteurFermentation3D() {
+export const PasteurFermentation3D = memo(() => {
   const containerRef = useRef<HTMLDivElement>(null);
+  const [showUiOverlay, setShowUiOverlay] = useState<boolean>(true);
+  const [isCutaway, setIsCutaway] = useState<boolean>(false);
 
   // Biochemical Fermentation Parameters
   const { params } = usePatentPhysics("us-135245-pasteur-fermentation");
-  const [showUiOverlay, setShowUiOverlay] = useState<boolean>(true);
   const fermentationTempC = params.wortTempC ?? params.tempCelsius ?? 22;
   const isPureYeast = params.pureYeast ?? true;
   const pasteur = stepPasteurFermentation({
@@ -33,9 +37,7 @@ export function PasteurFermentation3D() {
     holdTimeMin: params.holdTimeMin ?? 20,
     wortTempC: fermentationTempC,
   });
-  const alcoholAbvPct = pasteur.alcoholAbvPct.toFixed(1);
-  const co2PressureBar = pasteur.co2PressureBar.toFixed(2);
-  const [showBubbles, setShowBubbles] = useState<boolean>(true);
+  const [showBubbles] = useState<boolean>(true);
   const [activeCamera, setActiveCamera] = useState<CameraPreset>("iso");
   const { isAudioMuted, toggleSound: toggleEngine } = usePatentAudio();
 
@@ -46,6 +48,7 @@ export function PasteurFermentation3D() {
     isAudioMuted,
     yeastActivityPct: pasteur.yeastActivityPct,
     logReduction: pasteur.logReduction,
+    isCutaway,
   });
 
   const controlsRef = useRef<StudioContext["controls"] | null>(null);
@@ -73,6 +76,10 @@ export function PasteurFermentation3D() {
       case "sampling_valve":
         camera.position.set(0, -0.8, 3.8);
         controls.target.set(0, -1.2, 1.2);
+        break;
+      case "cotton_filter":
+        camera.position.set(2.8, 3.5, 1.8);
+        controls.target.set(2.2, 3.2, 0);
         break;
       case "top":
         camera.position.set(0, 11.5, 0.1);
@@ -102,155 +109,29 @@ export function PasteurFermentation3D() {
     cameraRef.current = camera;
     controlsRef.current = controls;
 
-    // Materials
-    const tinnedCopperMat = new THREE.MeshStandardMaterial({
-      color: 0xc8963e,
-      roughness: 0.22,
-      metalness: 0.92,
-    });
-
-    const brassPipesMat = new THREE.MeshStandardMaterial({
-      color: 0xd97706,
-      roughness: 0.2,
-      metalness: 0.9,
-    });
-
-    const castIronMat = new THREE.MeshStandardMaterial({
-      color: 0x1e293b,
-      roughness: 0.5,
-      metalness: 0.85,
-    });
-
-    const glassMat = new THREE.MeshStandardMaterial({
-      color: 0xe2e8f0,
-      roughness: 0.1,
-      metalness: 0.1,
-      transparent: true,
-      opacity: 0.45,
-    });
-
-    const bubbleGlowTex = createGlowPointTexture();
-
-    const rootGroup = new THREE.Group();
+    const { rootGroup, nodes, materials, dispose } = buildPasteurFermentationModel();
     scene.add(rootGroup);
-
-    // 1. Cast-Iron Tripod Support Stand
-    const tripod = new THREE.Mesh(new THREE.CylinderGeometry(2.2, 2.6, 1.2, 16), castIronMat);
-    tripod.position.y = -2.2;
-    tripod.receiveShadow = true;
-    rootGroup.add(tripod);
-
-    // 2. Closed Tinned Copper Fermentation Vessel (Claim 1)
-    const vatGroup = new THREE.Group();
-    rootGroup.add(vatGroup);
-
-    // Main Cylindrical Tank
-    const tank = new THREE.Mesh(new THREE.CylinderGeometry(2.1, 2.1, 3.8, 36), tinnedCopperMat);
-    tank.position.y = 0.2;
-    tank.castShadow = true;
-    vatGroup.add(tank);
-
-    // Hemispherical Top Dome Lid
-    const domeLid = new THREE.Mesh(
-      new THREE.SphereGeometry(2.1, 36, 18, 0, Math.PI * 2, 0, Math.PI / 2),
-      tinnedCopperMat,
-    );
-    domeLid.position.y = 2.1;
-    vatGroup.add(domeLid);
-
-    // 3. Goose-Neck Airlock Tube with Cotton Sterile Filter (Claim 2)
-    const airlockCurve = new THREE.CatmullRomCurve3([
-      new THREE.Vector3(0, 3.1, 0),
-      new THREE.Vector3(0, 4.0, 0),
-      new THREE.Vector3(0.8, 4.6, 0),
-      new THREE.Vector3(1.6, 4.0, 0),
-      new THREE.Vector3(1.6, 3.4, 0),
-      new THREE.Vector3(2.2, 3.2, 0),
-    ]);
-    const airlockGeo = new THREE.TubeGeometry(airlockCurve, 32, 0.08, 12, false);
-    const airlockMesh = new THREE.Mesh(airlockGeo, brassPipesMat);
-    vatGroup.add(airlockMesh);
-
-    // Cotton Microbial Filter Bulb
-    const cottonBulb = new THREE.Mesh(
-      new THREE.SphereGeometry(0.35, 16, 16),
-      new THREE.MeshStandardMaterial({ color: 0xffffff, roughness: 0.9 }),
-    );
-    cottonBulb.position.set(2.2, 3.2, 0);
-    vatGroup.add(cottonBulb);
-
-    // 4. Helical Cold-Water Cooling Coil Jacket
-    const coilGroup = new THREE.Group();
-    for (let c = 0; c < 6; c++) {
-      const ring = new THREE.Mesh(new THREE.TorusGeometry(2.18, 0.06, 12, 36), brassPipesMat);
-      ring.rotation.x = Math.PI / 2;
-      ring.position.y = -1.2 + c * 0.45;
-      coilGroup.add(ring);
-    }
-    vatGroup.add(coilGroup);
-
-    // 5. Sight Glass Tube & Tasting Sampling Valve
-    const sightGlass = new THREE.Mesh(new THREE.CylinderGeometry(0.08, 0.08, 2.8, 12), glassMat);
-    sightGlass.position.set(2.2, 0.2, 0);
-    vatGroup.add(sightGlass);
-
-    const samplingCock = new THREE.Mesh(
-      new THREE.CylinderGeometry(0.12, 0.12, 0.6, 12),
-      brassPipesMat,
-    );
-    samplingCock.rotation.z = Math.PI / 2;
-    samplingCock.position.set(0, -1.2, 2.2);
-    vatGroup.add(samplingCock);
-
-    // 6. Fermentation CO2 Gas Bubbles Particles
-    const bubbleCount = 60;
-    const bubbleGeo = new THREE.BufferGeometry();
-    const bubblePositions = new Float32Array(bubbleCount * 3);
-    for (let i = 0; i < bubbleCount; i++) {
-      const idx = i * 3;
-      const r = lcg() * 1.8;
-      const a = lcg() * Math.PI * 2;
-      bubblePositions[idx] = Math.cos(a) * r;
-      bubblePositions[idx + 1] = -1.4 + lcg() * 3.2;
-      bubblePositions[idx + 2] = Math.sin(a) * r;
-    }
-    bubbleGeo.setAttribute("position", new THREE.BufferAttribute(bubblePositions, 3));
-    const bubbleMat = new THREE.PointsMaterial({
-      size: 0.22,
-      map: bubbleGlowTex,
-      transparent: true,
-      opacity: 0.85,
-      blending: THREE.AdditiveBlending,
-      color: 0xfef08a,
-    });
-    const bubblePoints = new THREE.Points(bubbleGeo, bubbleMat);
-    vatGroup.add(bubblePoints);
 
     // Animation Loop
     let reqId: number;
-    let _renderedSteps = 0;
+    let timeSec = 0;
 
     const animate = () => {
       reqId = requestAnimationFrame(animate);
-      _renderedSteps += 1;
-      const delta = 1 / 60;
+      const dt = 1 / 60;
+      timeSec += dt;
       const p = live.current;
 
-      // CO₂ rise tracks yeast activity — off-temp wort goes quiet
-      const activity = Math.max(0, p.yeastActivityPct / 100);
-      const rise = 0.15 + activity * 1.4;
-      const pos = bubblePositions;
-      for (let i = 0; i < bubbleCount; i++) {
-        const idx = i * 3;
-        pos[idx + 1] += rise * delta;
-        if (pos[idx + 1] > 2.0) {
-          pos[idx + 1] = -1.4;
-        }
-      }
-      bubbleGeo.attributes.position.needsUpdate = true;
-      bubblePoints.visible = p.showBubbles && activity > 0.12;
-      bubbleMat.opacity = 0.2 + activity * 0.75;
-      bubbleMat.color.setHex(p.fermentationTempC > 28 ? 0xf87171 : 0xfef08a);
+      updatePasteurFermentationKinematics(
+        nodes,
+        materials,
+        dt,
+        timeSec,
+        p.fermentationTempC,
+        p.yeastActivityPct,
+        p.showBubbles,
+        p.isCutaway ?? false,
+      );
 
       renderer.render(scene, camera);
     };
@@ -259,6 +140,7 @@ export function PasteurFermentation3D() {
 
     return () => {
       cancelAnimationFrame(reqId);
+      dispose();
       studio.cleanup();
     };
   }, [live]);
@@ -288,6 +170,7 @@ export function PasteurFermentation3D() {
               ["gooseneck_airlock", "Gooseneck Trap"],
               ["cooling_coil", "Cooling Coils"],
               ["sampling_valve", "Sampling Valve"],
+              ["cotton_filter", "Cotton Filter"],
               ["top", "Top"],
             ] as [CameraPreset, string][]
           ).map(([preset, label]) => (
@@ -310,16 +193,18 @@ export function PasteurFermentation3D() {
         <div className="flex items-center gap-1.5 bg-parchment-950/80 backdrop-blur-md p-1.5 rounded-xl border border-parchment-700/60 shadow-lg pointer-events-auto">
           <button
             type="button"
-            onClick={() => setShowBubbles(!showBubbles)}
-            title="Toggle CO2 Bubbles"
-            className={`p-1.5 rounded-lg text-xs transition-colors ${
-              showBubbles
-                ? "bg-amber-600/30 text-amber-300 border border-amber-500/40"
-                : "text-parchment-400 hover:text-white"
+            onClick={() => setIsCutaway(!isCutaway)}
+            title={isCutaway ? "Solid Vat" : "Cutaway Copper Vat"}
+            className={`flex items-center gap-1 px-2.5 py-1 text-xs font-sans rounded-lg transition-colors ${
+              isCutaway
+                ? "bg-amber-600/30 text-amber-200 border border-amber-500/40"
+                : "text-parchment-300 hover:text-white hover:bg-parchment-800/60"
             }`}
           >
-            <Eye className="w-4 h-4" />
+            {isCutaway ? <EyeOff className="w-3.5 h-3.5" /> : <Eye className="w-3.5 h-3.5" />}
+            <span>{isCutaway ? "Cutaway" : "Solid"}</span>
           </button>
+
           <button
             type="button"
             onClick={toggleSound}
@@ -340,21 +225,23 @@ export function PasteurFermentation3D() {
 
       <StudioKernelChips
         visible={showUiOverlay}
-        title="Pasteur closed vat"
+        title="Pasteur closed brewing vat kinematics"
         chips={[
           {
-            label: "Wort",
-            value: String(fermentationTempC),
+            label: "Wort Temp",
+            value: `${fermentationTempC}`,
             unit: "°C",
             tone: pasteur.yeastActivityPct > 40 ? "ok" : "warn",
           },
-          { label: "Yeast", value: String(pasteur.yeastActivityPct), unit: "%" },
-          { label: "ABV", value: alcoholAbvPct, unit: "%" },
-          { label: "CO₂", value: co2PressureBar, unit: "bar" },
-          { label: "Log kill", value: pasteur.logReduction.toFixed(1) },
-          { label: "Survivors", value: String(pasteur.survivorPct), unit: "%" },
+          { label: "Yeast Activity", value: `${pasteur.yeastActivityPct}`, unit: "%" },
+          { label: "Alcohol Yield", value: pasteur.alcoholAbvPct.toFixed(1), unit: "% ABV" },
+          { label: "CO₂ Overpressure", value: pasteur.co2PressureBar.toFixed(2), unit: "bar" },
+          { label: "Microbial Log Kill", value: pasteur.logReduction.toFixed(1) },
+          { label: "Spoilage Survivors", value: `${pasteur.survivorPct}`, unit: "%" },
+          { label: "Shelf Life", value: `${pasteur.shelfLifeMonths}`, unit: "months" },
         ]}
       />
     </div>
   );
-}
+});
+

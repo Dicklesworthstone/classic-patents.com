@@ -1,21 +1,32 @@
 "use client";
 
-import { Activity, Camera, Eye, EyeOff, Volume2, VolumeX } from "lucide-react";
-import { useEffect, useRef, useState } from "react";
-import * as THREE from "three";
+import { Activity, Camera, Eye, EyeOff, Volume2, VolumeX, Zap } from "lucide-react";
+import { memo, useEffect, useRef, useState } from "react";
+import type * as THREE from "three";
 import { stepHyattCelluloid } from "@/physics/catalogKernels";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { soundEngine } from "@/utils/soundEngine";
+import {
+  buildHyattCelluloidModel,
+  updateHyattCelluloidKinematics,
+} from "./hyattCelluloidModel";
 import { StudioKernelChips } from "./StudioKernelChips";
 import { createThreeStudioScene, type StudioContext } from "./ThreeStudioScene";
 import { useLiveSimParams } from "./useLiveSimParams";
 import { usePatentAudio } from "./usePatentAudio";
 
-type CameraPreset = "iso" | "hydraulic_ram" | "steam_jacket" | "nozzle_die" | "top";
+type CameraPreset =
+  | "iso"
+  | "hydraulic_ram"
+  | "steam_jacket"
+  | "nozzle_die"
+  | "billiard_balls"
+  | "top";
 
-export function HyattCelluloid3D() {
+export const HyattCelluloid3D = memo(() => {
   const containerRef = useRef<HTMLDivElement>(null);
   const [showUiOverlay, setShowUiOverlay] = useState<boolean>(true);
+  const [isCutaway, setIsCutaway] = useState<boolean>(false);
 
   // Polymer Processing Parameters
   const { params } = usePatentPhysics("us-105338-hyatt-celluloid");
@@ -25,7 +36,6 @@ export function HyattCelluloid3D() {
     steamTempC: processTempC,
     hydraulicPressureMpa,
   });
-  const extrusionRateCmPerMin = hyatt.extrusionRateCmPerMin.toFixed(1);
   const [activeCamera, setActiveCamera] = useState<CameraPreset>("iso");
   const { isAudioMuted, toggleSound: toggleEngine } = usePatentAudio();
 
@@ -34,10 +44,11 @@ export function HyattCelluloid3D() {
     hydraulicPressureMpa,
     isAudioMuted,
     viscosityPaS: hyatt.viscosityPaS,
-    isMelted: hyatt.isMelted ? 1 : 0,
+    isMelted: hyatt.isMelted,
     extrusionRateCmPerMin: hyatt.extrusionRateCmPerMin,
     ramHz: hyatt.ramHz,
     ramStrokeStudio: hyatt.ramStrokeStudio,
+    isCutaway,
   });
 
   const controlsRef = useRef<StudioContext["controls"] | null>(null);
@@ -66,6 +77,10 @@ export function HyattCelluloid3D() {
         camera.position.set(3.8, 1.5, 3.5);
         controls.target.set(2.5, -0.4, 0);
         break;
+      case "billiard_balls":
+        camera.position.set(4.8, -0.5, 2.5);
+        controls.target.set(4.2, -1.6, 0);
+        break;
       case "top":
         camera.position.set(0, 12.5, 0.1);
         controls.target.set(0, 0, 0);
@@ -73,6 +88,7 @@ export function HyattCelluloid3D() {
     }
     controls.update();
   };
+
   const toggleSound = () => {
     toggleEngine(() => {
       soundEngine.playSwitchClick();
@@ -93,145 +109,31 @@ export function HyattCelluloid3D() {
     cameraRef.current = camera;
     controlsRef.current = controls;
 
-    // Materials
-    const castIronMat = new THREE.MeshStandardMaterial({
-      color: 0x1e293b,
-      roughness: 0.5,
-      metalness: 0.85,
-    });
-
-    const polishedSteelMat = new THREE.MeshStandardMaterial({
-      color: 0xf1f5f9,
-      roughness: 0.12,
-      metalness: 0.95,
-    });
-
-    const brassPipesMat = new THREE.MeshStandardMaterial({
-      color: 0xd97706,
-      roughness: 0.22,
-      metalness: 0.9,
-    });
-
-    const celluloidAmberMat = new THREE.MeshStandardMaterial({
-      color: 0xf59e0b,
-      roughness: 0.2,
-      metalness: 0.1,
-      transparent: true,
-      opacity: 0.88,
-    });
-
-    const rootGroup = new THREE.Group();
+    const { rootGroup, nodes, materials, dispose } = buildHyattCelluloidModel();
     scene.add(rootGroup);
-
-    // 1. Heavy Cast-Iron Press Bed & Tie-Rod Columns
-    const bedplate = new THREE.Mesh(new THREE.BoxGeometry(11.5, 0.9, 5.5), castIronMat);
-    bedplate.position.y = -2.2;
-    bedplate.receiveShadow = true;
-    rootGroup.add(bedplate);
-
-    // 4 Heavy Forged Steel Tie Rods
-    [
-      [-1.4, -1.8],
-      [1.4, -1.8],
-      [-1.4, 1.8],
-      [1.4, 1.8],
-    ].forEach(([ty, tz]) => {
-      const rod = new THREE.Mesh(new THREE.CylinderGeometry(0.16, 0.16, 9.5, 16), polishedSteelMat);
-      rod.rotation.z = Math.PI / 2;
-      rod.position.set(0, ty, tz);
-      rootGroup.add(rod);
-    });
-
-    // 2. Steam-Jacketed Heated Barrel (Claim 1)
-    const barrelGroup = new THREE.Group();
-    rootGroup.add(barrelGroup);
-
-    // Outer Annular Steam Jacket
-    const jacket = new THREE.Mesh(new THREE.CylinderGeometry(1.6, 1.6, 4.5, 32), castIronMat);
-    jacket.rotation.z = Math.PI / 2;
-    jacket.castShadow = true;
-    barrelGroup.add(jacket);
-
-    // Steam Inlet & Outlet Brass Flanges
-    [-1.2, 1.2].forEach((sx) => {
-      const pipe = new THREE.Mesh(new THREE.CylinderGeometry(0.15, 0.15, 1.2, 12), brassPipesMat);
-      pipe.position.set(sx, 1.8, 0);
-      barrelGroup.add(pipe);
-    });
-
-    // 3. Hydraulic Plunger Ram (Claim 2)
-    const ramGroup = new THREE.Group();
-    ramGroup.position.set(-3.8, 0, 0);
-    rootGroup.add(ramGroup);
-
-    // Hydraulic Cylinder Housing
-    const hydCyl = new THREE.Mesh(new THREE.CylinderGeometry(1.4, 1.4, 3.2, 24), castIronMat);
-    hydCyl.rotation.z = Math.PI / 2;
-    ramGroup.add(hydCyl);
-
-    // Polished Chrome Plunger Ram
-    const ramPiston = new THREE.Mesh(
-      new THREE.CylinderGeometry(0.7, 0.7, 4.2, 24),
-      polishedSteelMat,
-    );
-    ramPiston.rotation.z = Math.PI / 2;
-    ramPiston.position.x = 1.8;
-    ramGroup.add(ramPiston);
-
-    // 4. Precision Extrusion Nozzle Die & Extruded Celluloid Rod
-    const nozzleGroup = new THREE.Group();
-    nozzleGroup.position.set(2.4, 0, 0);
-    rootGroup.add(nozzleGroup);
-
-    const nozzleCone = new THREE.Mesh(new THREE.ConeGeometry(1.2, 1.2, 24), brassPipesMat);
-    nozzleCone.rotation.z = -Math.PI / 2;
-    nozzleGroup.add(nozzleCone);
-
-    // Continuous Extruded Translucent Celluloid Rod
-    const rodMesh = new THREE.Mesh(
-      new THREE.CylinderGeometry(0.35, 0.35, 3.8, 24),
-      celluloidAmberMat,
-    );
-    rodMesh.rotation.z = Math.PI / 2;
-    rodMesh.position.x = 2.4;
-    rodMesh.castShadow = true;
-    nozzleGroup.add(rodMesh);
-
-    // Molded Billiard Ball Samples
-    [-0.8, 0.8].forEach((bz, idx) => {
-      const ball = new THREE.Mesh(
-        new THREE.SphereGeometry(0.45, 24, 24),
-        new THREE.MeshStandardMaterial({
-          color: idx === 0 ? 0xfffbeb : 0xd97706,
-          roughness: 0.15,
-          metalness: 0.05,
-        }),
-      );
-      ball.position.set(4.2, -1.6, bz);
-      ball.castShadow = true;
-      rootGroup.add(ball);
-    });
 
     // Animation Loop
     let reqId: number;
-    let renderedSteps = 0;
+    let timeSec = 0;
 
     const animate = () => {
       reqId = requestAnimationFrame(animate);
-      renderedSteps += 1;
+      const dt = 1 / 60;
+      timeSec += dt;
       const p = live.current;
 
-      const melted = p.isMelted > 0.5;
-      const ramHz = p.ramHz ?? 0.08;
-      const ramStroke = p.ramStrokeStudio ?? 0.02;
-      ramPiston.position.x =
-        1.8 + Math.sin(renderedSteps * (1 / 60) * ramHz * Math.PI * 2) * ramStroke;
-      // Extrusion only when steam + pressure have melted the camphor-nitrocellulose
-      const flow = melted ? Math.min(1.4, 1800 / Math.max(80, p.viscosityPaS)) : 0.08;
-      rodMesh.visible = melted;
-      rodMesh.scale.x = flow;
-      celluloidAmberMat.opacity = melted ? 0.88 : 0.22;
-      celluloidAmberMat.color.setHex(p.processTempC >= 90 ? 0xf59e0b : 0xb45309);
+      updateHyattCelluloidKinematics(
+        nodes,
+        materials,
+        dt,
+        timeSec,
+        p.processTempC,
+        p.viscosityPaS,
+        p.isMelted ?? true,
+        p.ramHz ?? 0.08,
+        p.ramStrokeStudio ?? 0.02,
+        p.isCutaway ?? false,
+      );
 
       renderer.render(scene, camera);
     };
@@ -240,6 +142,7 @@ export function HyattCelluloid3D() {
 
     return () => {
       cancelAnimationFrame(reqId);
+      dispose();
       studio.cleanup();
     };
   }, [live]);
@@ -269,6 +172,7 @@ export function HyattCelluloid3D() {
               ["hydraulic_ram", "Hydraulic Ram"],
               ["steam_jacket", "Steam Jacket"],
               ["nozzle_die", "Extrusion Die"],
+              ["billiard_balls", "Billiard Balls"],
               ["top", "Top"],
             ] as [CameraPreset, string][]
           ).map(([preset, label]) => (
@@ -291,6 +195,20 @@ export function HyattCelluloid3D() {
         <div className="flex items-center gap-1.5 bg-parchment-950/80 backdrop-blur-md p-1.5 rounded-xl border border-parchment-700/60 shadow-lg pointer-events-auto">
           <button
             type="button"
+            onClick={() => setIsCutaway(!isCutaway)}
+            title={isCutaway ? "Solid Machine" : "Cutaway Jacket"}
+            className={`flex items-center gap-1 px-2.5 py-1 text-xs font-sans rounded-lg transition-colors ${
+              isCutaway
+                ? "bg-amber-600/30 text-amber-200 border border-amber-500/40"
+                : "text-parchment-300 hover:text-white hover:bg-parchment-800/60"
+            }`}
+          >
+            {isCutaway ? <EyeOff className="w-3.5 h-3.5" /> : <Eye className="w-3.5 h-3.5" />}
+            <span>{isCutaway ? "Cutaway" : "Solid"}</span>
+          </button>
+
+          <button
+            type="button"
             onClick={toggleSound}
             title={isAudioMuted ? "Unmute Sound" : "Mute Sound"}
             className="p-1.5 rounded-lg text-xs text-parchment-400 hover:text-white hover:bg-parchment-800 transition-colors"
@@ -300,41 +218,37 @@ export function HyattCelluloid3D() {
           <button
             type="button"
             onClick={() => setShowUiOverlay(!showUiOverlay)}
-            title={showUiOverlay ? "Hide Overlay UI" : "Show Overlay UI"}
             className="p-1.5 rounded-lg text-xs text-parchment-400 hover:text-white hover:bg-parchment-800 transition-colors"
           >
-            {showUiOverlay ? (
-              <EyeOff className="w-4 h-4" />
-            ) : (
-              <Eye className="w-4 h-4 text-amber-400" />
-            )}
+            <Zap className="w-4 h-4 text-amber-400" />
           </button>
         </div>
       </div>
 
       <StudioKernelChips
         visible={showUiOverlay}
-        title="Hyatt hydraulic press"
+        title="Hyatt hydraulic polymer press kinematics"
         chips={[
           {
-            label: "Steam jacket",
-            value: String(processTempC),
+            label: "Steam Temp",
+            value: `${processTempC}`,
             unit: "°C",
-            tone: hyatt.isMelted ? "hot" : "warn",
+            tone: hyatt.isMelted ? "ok" : "warn",
           },
-          { label: "Ram", value: hydraulicPressureMpa.toFixed(0), unit: "MPa" },
-          { label: "η", value: String(hyatt.viscosityPaS), unit: "Pa·s" },
-          { label: "ρ", value: String(hyatt.consolidationDensityGPerCm3), unit: "g/cm³" },
-          { label: "Clear", value: String(hyatt.transparencyPct), unit: "%" },
+          { label: "Hydraulic Ram", value: hydraulicPressureMpa.toFixed(0), unit: "MPa" },
+          { label: "Melt Viscosity", value: `${hyatt.viscosityPaS}`, unit: "Pa·s" },
+          { label: "Consolidation ρ", value: hyatt.consolidationDensityGPerCm3.toFixed(2), unit: "g/cm³" },
+          { label: "Transparency", value: `${hyatt.transparencyPct}`, unit: "%" },
           {
-            label: "Extrusion",
-            value: hyatt.isMelted ? extrusionRateCmPerMin : "0.0",
+            label: "Extrusion Rate",
+            value: hyatt.isMelted ? hyatt.extrusionRateCmPerMin.toFixed(1) : "0.0",
             unit: "cm/min",
             tone: hyatt.isMelted ? "ok" : "warn",
           },
-          { label: "f_ram", value: String(hyatt.ramHz), unit: "Hz" },
+          { label: "Ram Stroke Freq", value: hyatt.ramHz.toFixed(2), unit: "Hz" },
         ]}
       />
     </div>
   );
-}
+});
+

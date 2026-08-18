@@ -8,10 +8,7 @@ const VISUALS_DIRECTORY = join(process.cwd(), "src/components/patents/visuals");
 
 describe("US 381,968 Nikola Tesla Induction Motor visual & electromagnetics boundary", () => {
   test("uses pure procedural Three.js WebGL architecture without external GLTF/GLB models", () => {
-    const threeSource = readFileSync(
-      join(VISUALS_DIRECTORY, "three", "TeslaMotor3D.tsx"),
-      "utf8",
-    );
+    const threeSource = readFileSync(join(VISUALS_DIRECTORY, "three", "TeslaMotor3D.tsx"), "utf8");
     const modelSource = readFileSync(
       join(VISUALS_DIRECTORY, "three", "teslaMotorModel.ts"),
       "utf8",
@@ -24,10 +21,7 @@ describe("US 381,968 Nikola Tesla Induction Motor visual & electromagnetics boun
   });
 
   test("maintains deterministic replay without ambient randomness or private clocks in frame loop", () => {
-    const threeSource = readFileSync(
-      join(VISUALS_DIRECTORY, "three", "TeslaMotor3D.tsx"),
-      "utf8",
-    );
+    const threeSource = readFileSync(join(VISUALS_DIRECTORY, "three", "TeslaMotor3D.tsx"), "utf8");
     const modelSource = readFileSync(
       join(VISUALS_DIRECTORY, "three", "teslaMotorModel.ts"),
       "utf8",
@@ -40,10 +34,7 @@ describe("US 381,968 Nikola Tesla Induction Motor visual & electromagnetics boun
   });
 
   test("exposes authentic camera presets and UI overlay for polyphase motor observation", () => {
-    const threeSource = readFileSync(
-      join(VISUALS_DIRECTORY, "three", "TeslaMotor3D.tsx"),
-      "utf8",
-    );
+    const threeSource = readFileSync(join(VISUALS_DIRECTORY, "three", "TeslaMotor3D.tsx"), "utf8");
 
     for (const preset of ["iso", "stator_coils", "squirrel_cage", "shaft_drive", "top"]) {
       expect(threeSource).toContain(preset);

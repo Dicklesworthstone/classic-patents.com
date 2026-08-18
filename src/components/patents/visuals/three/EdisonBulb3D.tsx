@@ -6,10 +6,7 @@ import * as THREE from "three";
 import { stepEdisonBulb } from "@/physics/catalogKernels";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { soundEngine } from "@/utils/soundEngine";
-import {
-  buildEdisonBulbModel,
-  updateEdisonBulbKinematics,
-} from "./edisonBulbModel";
+import { buildEdisonBulbModel, updateEdisonBulbKinematics } from "./edisonBulbModel";
 import { StudioKernelChips } from "./StudioKernelChips";
 import { createThreeStudioScene, type StudioContext } from "./ThreeStudioScene";
 import { useLiveSimParams } from "./useLiveSimParams";

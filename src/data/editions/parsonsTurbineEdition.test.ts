@@ -77,6 +77,19 @@ describe("US 608,969 manual source edition", () => {
     ]);
   });
 
+  test("makes the selected historical vacuum condition an authored annotation", () => {
+    const terms = parsonsTurbineArchivalEdition.blocks.flatMap((block) =>
+      "inlines" in block
+        ? block.inlines.filter(
+            (inline): inline is Extract<(typeof block.inlines)[number], { kind: "term" }> =>
+              inline.kind === "term",
+          )
+        : [],
+    );
+    expect(terms.map((item) => item.text)).toEqual(["vacuum"]);
+    expect(terms[0]?.definition.length).toBeGreaterThan(80);
+  });
+
   test("pairs every prose block with a source-bounded companion", () => {
     const paragraphIndexes = parsonsTurbineArchivalEdition.blocks.flatMap((block, index) =>
       block.kind === "paragraph" ? [index] : [],
