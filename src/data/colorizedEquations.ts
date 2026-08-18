@@ -2970,8 +2970,64 @@ function buildGeneratedColorizedEquation(patentId: string): ColorizedEquation[] 
   ];
 }
 
+function formatSymbolForDisplay(sym: string): string {
+  const greekMap: Record<string, string> = {
+    "\\alpha": "Alpha (α)",
+    "\\beta": "Beta (β)",
+    "\\gamma": "Gamma (γ)",
+    "\\delta": "Delta (δ)",
+    "\\epsilon": "Epsilon (ε)",
+    "\\varepsilon": "Epsilon (ε)",
+    "\\zeta": "Zeta (ζ)",
+    "\\eta": "Eta (η)",
+    "\\theta": "Theta (θ)",
+    "\\vartheta": "Theta (θ)",
+    "\\iota": "Iota (ι)",
+    "\\kappa": "Kappa (κ)",
+    "\\lambda": "Lambda (λ)",
+    "\\mu": "Mu (μ)",
+    "\\nu": "Nu (ν)",
+    "\\xi": "Xi (ξ)",
+    "\\pi": "Pi (π)",
+    "\\rho": "Rho (ρ)",
+    "\\sigma": "Sigma (σ)",
+    "\\tau": "Tau (τ)",
+    "\\upsilon": "Upsilon (υ)",
+    "\\phi": "Phi (φ)",
+    "\\varphi": "Phi (φ)",
+    "\\chi": "Chi (χ)",
+    "\\psi": "Psi (ψ)",
+    "\\omega": "Omega (ω)",
+    "\\Gamma": "Gamma (Γ)",
+    "\\Delta": "Delta (Δ)",
+    "\\Theta": "Theta (Θ)",
+    "\\Lambda": "Lambda (Λ)",
+    "\\Xi": "Xi (Ξ)",
+    "\\Pi": "Pi (Π)",
+    "\\Sigma": "Sigma (Σ)",
+    "\\Phi": "Phi (Φ)",
+    "\\Psi": "Psi (Ψ)",
+    "\\Omega": "Omega (Ω)",
+    "\\hbar": "h-bar (ℏ)",
+  };
+  const base = sym.replace(/[_\^].*$/, "");
+  if (greekMap[sym]) return greekMap[sym];
+  if (greekMap[base]) return `${greekMap[base]} term`;
+  const clean = sym.replace(/^\\(?:text|mathrm|mathbf)\{/, "").replace(/\}$/, "");
+  return `Parameter (${clean})`;
+}
+
+function cleanNameForSentence(name: string): string {
+  if (name.includes(" / ")) {
+    return name.split(" / ")[0].toLowerCase();
+  }
+  return name.toLowerCase();
+}
+
 /**
  * Intelligently converts any ScientificPrinciple with a LaTeX formula into a full-fledged ColorizedEquation.
+ * Uses domain-aware context detection (optics, computing, aerodynamics, thermodynamics, electromagnetics, materials)
+ * to assign rigorous SI units, physical dimensions, mechanism roles, and natural language explanations.
  */
 export function convertScientificPrincipleToColorizedEquation(
   principle: ScientificPrinciple,
@@ -2999,7 +3055,7 @@ export function convertScientificPrincipleToColorizedEquation(
     "rose",
   ];
 
-  // Exclude mathematical operators and standard LaTeX command names
+  // Exclude mathematical operators, common formatting macros, and dimensionless syntax keywords
   const mathBlacklist = new Set([
     "\\frac",
     "\\sqrt",
@@ -3027,6 +3083,7 @@ export function convertScientificPrincipleToColorizedEquation(
     "\\to",
     "\\infty",
     "\\Delta",
+    "\\nabla",
     "\\text",
     "\\hat",
     "\\dot",
@@ -3053,34 +3110,140 @@ export function convertScientificPrincipleToColorizedEquation(
     "or",
     "min",
     "max",
+    "vs",
+    "\\pi",
+    "\\langle",
+    "\\rangle",
+    "\\propto",
+    "\\gg",
+    "\\ll",
+    "\\sim",
+    "\\equiv",
+    "\\parallel",
+    "\\perp",
+    "\\in",
+    "\\subset",
   ]);
 
-  // Strip text and environment blocks before extracting variable tokens
-  const cleanFormula = formula.replace(/\\(?:text|begin|end)\{[^}]*\}/g, " ");
+  // Robust LaTeX Math Token Extraction
   const tokenRegex =
-    /\\(?:vec\{[a-zA-Z]+\}|[a-zA-Z]+)(?:_[a-zA-Z0-9]+)?|[a-zA-Z](?:_[a-zA-Z0-9]+)?/g;
+    /\\(?:text|mathrm|mathbf|mathit|mathsf|mathtt)\{[^{}]*\}|\\vec\{[a-zA-Z]+\}(?:\([a-zA-Z0-9_+-]+\))?(?:_(?:\{[^{}]*\}|[a-zA-Z0-9]+))?|\\[a-zA-Z]+(?:_(?:\{[^{}]*\}|[a-zA-Z0-9]+))?(?:\^(?:\{[^{}]*\}|[a-zA-Z0-9]+))?|[a-zA-Z](?:_(?:\{[^{}]*\}|[a-zA-Z0-9]+))?(?:\^(?:\{[^{}]*\}|[a-zA-Z0-9]+))?/g;
 
-  let match: RegExpExecArray | null = tokenRegex.exec(cleanFormula);
-  const seenSymbols = new Set<string>();
   const rawTokens: string[] = [];
+  const seenSymbols = new Set<string>();
+  let match: RegExpExecArray | null = tokenRegex.exec(formula);
 
   while (match !== null) {
     const sym = match[0];
-    if (!mathBlacklist.has(sym) && !sym.startsWith("\\text") && sym !== "d" && sym !== "dt") {
-      if (!seenSymbols.has(sym)) {
-        seenSymbols.add(sym);
-        rawTokens.push(sym);
+    if (sym.startsWith("\\text{") || sym.startsWith("\\mathrm{") || sym.startsWith("\\mathbf{")) {
+      const inner = sym
+        .replace(/^\\(?:text|mathrm|mathbf|mathit)\{/, "")
+        .replace(/\}$/, "")
+        .trim();
+      if (["AR", "EV", "COP", "CTE", "MTTF", "ID", "IP", "MT", "CPI"].includes(inner)) {
+        if (!seenSymbols.has(sym)) {
+          seenSymbols.add(sym);
+          rawTokens.push(sym);
+        }
+      }
+    } else {
+      const baseCmd = sym.replace(/[_\^].*$/, "");
+      if (
+        !mathBlacklist.has(sym) &&
+        !mathBlacklist.has(baseCmd) &&
+        sym !== "d" &&
+        sym !== "dt" &&
+        sym !== "dx" &&
+        sym !== "dy"
+      ) {
+        if (!seenSymbols.has(sym)) {
+          seenSymbols.add(sym);
+          rawTokens.push(sym);
+        }
       }
     }
-    match = tokenRegex.exec(cleanFormula);
+    match = tokenRegex.exec(formula);
   }
 
-  // If token extraction found nothing, fallback to simple symbols
+  // Fallback if no variable tokens found
   if (rawTokens.length === 0) {
     rawTokens.push("X", "Y");
   }
 
-  // Create variables
+  // Topic Context Detection
+  const pLower = (principle.principle + " " + principle.explanation + " " + patentId).toLowerCase();
+  const isOptics =
+    category === "optics" ||
+    pLower.includes("camera") ||
+    pLower.includes("lens") ||
+    pLower.includes("photograph") ||
+    pLower.includes("hyperfocal") ||
+    pLower.includes("sensitometry") ||
+    pLower.includes("exposure") ||
+    pLower.includes("emulsion") ||
+    pLower.includes("shutter") ||
+    pLower.includes("focal length") ||
+    pLower.includes("f-number");
+
+  const isComputing =
+    category === "computing" ||
+    pLower.includes("processor") ||
+    pLower.includes("memory") ||
+    pLower.includes("dram") ||
+    pLower.includes("pixel") ||
+    pLower.includes("display") ||
+    pLower.includes("ccd") ||
+    pLower.includes("mouse") ||
+    pLower.includes("fitts") ||
+    pLower.includes("ntsc") ||
+    pLower.includes("transistor") ||
+    pLower.includes("integrated circuit") ||
+    pLower.includes("multiplex");
+
+  const isAero =
+    category === "aviation" ||
+    category === "aerospace" ||
+    pLower.includes("wing") ||
+    pLower.includes("lift") ||
+    pLower.includes("drag") ||
+    pLower.includes("airfoil") ||
+    pLower.includes("rudder") ||
+    pLower.includes("yaw") ||
+    pLower.includes("pitch") ||
+    pLower.includes("roll") ||
+    pLower.includes("rocket") ||
+    pLower.includes("circulation") ||
+    pLower.includes("aspect ratio") ||
+    pLower.includes("warp");
+
+  const isThermal =
+    pLower.includes("thermodynamic") ||
+    pLower.includes("refrigerat") ||
+    pLower.includes("carnot") ||
+    pLower.includes("entropy") ||
+    pLower.includes("enthalpy") ||
+    pLower.includes("joule-thomson") ||
+    pLower.includes("cooling") ||
+    pLower.includes("steam") ||
+    pLower.includes("boiler") ||
+    pLower.includes("diesel") ||
+    pLower.includes("stefan-boltzmann") ||
+    pLower.includes("heat transfer");
+
+  const isMaterials =
+    category === "materials" ||
+    pLower.includes("tensile") ||
+    pLower.includes("polymer") ||
+    pLower.includes("elastic") ||
+    pLower.includes("stress") ||
+    pLower.includes("strain") ||
+    pLower.includes("kevlar") ||
+    pLower.includes("rubber") ||
+    pLower.includes("vulcaniz") ||
+    pLower.includes("dynamite") ||
+    pLower.includes("celluloid");
+
+  // Create variables with domain-accurate dictionary
   const variables: EquationVariable[] = rawTokens.slice(0, 6).map((sym, i) => {
     const color = colorSequence[i % colorSequence.length];
     const safeId = `var_${i}_${sym.replace(/[^a-zA-Z0-9]/g, "_").toLowerCase()}`.replace(
@@ -3088,87 +3251,678 @@ export function convertScientificPrincipleToColorizedEquation(
       "_",
     );
 
-    // Infer name from common symbols or explanation
     let name = `Parameter (${sym})`;
     let unit = "SI Units";
-    let role = `Physical variable in ${principle.principle}`;
+    let dimension = "[1]";
+    let role = `Governing physical parameter in ${principle.principle}`;
+    let telemetryKey: string | undefined = undefined;
+    let telemetryMetricLabel: string | undefined = undefined;
 
-    if (/^L/i.test(sym)) {
-      name = "Lift / Inductance / Length";
-      unit = "N / H / m";
-      role = "Dynamic output force or circuit inductance";
-    } else if (/^V/i.test(sym)) {
-      name = "Velocity / Potential";
-      unit = "m/s / Volts (V)";
-      role = "Airspeed or electric potential difference";
-    } else if (/^P/i.test(sym)) {
-      name = "Power / Pressure";
-      unit = "Watts (W) / Pascals (Pa)";
-      role = "Thermodynamic pressure or power output";
-    } else if (/^I/i.test(sym)) {
-      name = "Electric Current";
-      unit = "Amperes (A)";
-      role = "Charge carrier flow per second";
-    } else if (/^R/i.test(sym)) {
-      name = "Resistance / Radius";
-      unit = "Ohms (Ω) / Meters (m)";
-      role = "Electrical impedance or geometric radius";
-    } else if (/^T/i.test(sym)) {
-      name = "Temperature / Thrust";
-      unit = "Kelvin (K) / Newtons (N)";
-      role = "Core thermodynamic temperature or propulsive force";
-    } else if (/^F/i.test(sym)) {
-      name = "Force";
-      unit = "Newtons (N)";
-      role = "Mechanical vector force";
-    } else if (/^B/i.test(sym) || /\\vec\{B\}/.test(sym)) {
-      name = "Magnetic Flux Density";
-      unit = "Tesla (T)";
-      role = "Magnetic field strength vector";
-    } else if (/\\rho/.test(sym)) {
-      name = "Density / Resistivity";
-      unit = "kg/m³ / Ω·m";
-      role = "Fluid mass density or material resistivity";
-    } else if (/\\sigma/.test(sym)) {
-      name = "Conductivity / Stefan-Boltzmann Constant";
-      unit = "S/m / W/(m²·K⁴)";
-      role = "Material conductivity or radiative constant";
-    } else if (/\\lambda/.test(sym)) {
-      name = "Wavelength / Mean Free Path";
-      unit = "Meters (m)";
-      role = "Electromagnetic spatial wavelength";
-    } else if (/\\omega/.test(sym)) {
-      name = "Angular Frequency";
-      unit = "rad/s";
-      role = "Rotational oscillation frequency";
-    } else if (/\\eta/.test(sym)) {
-      name = "Efficiency Ratio";
-      unit = "Dimensionless [0-1]";
-      role = "Thermodynamic or mechanical conversion efficiency";
-    } else if (/\\Phi/.test(sym)) {
-      name = "Magnetic Flux";
-      unit = "Webers (Wb)";
-      role = "Total magnetic field lines through the cross-section";
-    } else if (/\\Gamma/.test(sym)) {
-      name = "Circulation / Gamma Factor";
-      unit = "m²/s";
-      role = "Vortex circulation line integral";
-    } else if (/C_L|C_D|C_m/.test(sym)) {
-      name = "Aerodynamic Coefficient";
-      unit = "Dimensionless ratio";
-      role = "Non-dimensional aerodynamic force/moment ratio";
-    } else if (/AR/.test(sym)) {
-      name = "Aspect Ratio";
-      unit = "Dimensionless ratio";
-      role = "Wingspan squared divided by area";
-    } else if (/S/.test(sym)) {
-      name = "Surface Area";
-      unit = "Square meters (m²)";
-      role = "Gross planform or cross-sectional area";
-    } else if (/k/.test(sym)) {
-      name = "Multiplication Factor / Thermal Conductivity";
-      unit = "Ratio / W/(m·K)";
-      role = "Neutron reproduction factor or thermal transport rate";
+    // 1. OPTICS / CAMERAS / IMAGING
+    if (isOptics) {
+      if (sym === "H") {
+        name = "Hyperfocal Distance";
+        unit = "Meters (m)";
+        dimension = "[L]";
+        role = "Distance beyond which all objects appear acceptably sharp without focusing";
+      } else if (sym === "D" || sym.startsWith("D_") || sym === "D_{\\text{near}}") {
+        if (pLower.includes("density") || pLower.includes("hurter")) {
+          name = "Optical Density (Film Blackening)";
+          unit = "Dimensionless logarithmic opacity";
+          dimension = "[1]";
+          role = "Logarithmic opacity of processed silver image ($D = \\log_{10}(I_0/I)$)";
+        } else {
+          name = "Near Focus Boundary Distance";
+          unit = "Meters (m)";
+          dimension = "[L]";
+          role = "Closest subject distance in acceptable focus ($D_{\\text{near}} = H / 2$)";
+        }
+      } else if (sym === "f" || sym === "f^2") {
+        name = "Lens Focal Length";
+        unit = "Millimeters (mm) / Meters (m)";
+        dimension = "[L]";
+        role = "Effective focal length of the optical doublet ($57\\text{ mm}$)";
+      } else if (sym === "N" || sym === "N^2") {
+        name = "F-Number (Relative Aperture)";
+        unit = "Dimensionless ratio ($f/9$)";
+        dimension = "[1]";
+        role = "Ratio of focal length to entrance pupil diameter ($N = f/D$)";
+      } else if (sym === "c") {
+        name = "Circle of Confusion Limit";
+        unit = "Millimeters (mm)";
+        dimension = "[L]";
+        role = "Maximum permissible blur spot diameter on negative emulsion ($0.03\\text{ mm}$)";
+      } else if (sym === "\\text{EV}" || sym === "EV") {
+        name = "Exposure Value (EV)";
+        unit = "Log2 Exposure Steps";
+        dimension = "[1]";
+        role = "Logarithmic measure combining shutter speed and relative aperture";
+      } else if (sym === "\\gamma") {
+        name = "Emulsion Contrast (Gamma)";
+        unit = "Dimensionless slope";
+        dimension = "[1]";
+        role = "Slope of the linear region of the Hurter & Driffield sensitometry curve";
+      } else if (sym === "E" || sym.startsWith("E_") || sym.startsWith("E(")) {
+        name = "Radiant Exposure / Lens Illuminance";
+        unit = "Lux-seconds (lx·s) / Lux (lx)";
+        dimension = "[M T^-3]";
+        role = "Light energy per unit area incident upon the photographic emulsion";
+      } else if (sym === "\\Phi_0" || sym === "\\Phi") {
+        name = "Incident Luminous Flux";
+        unit = "Lumens (lm)";
+        dimension = "[J]";
+        role = "Total visible optical flux entering the camera lens aperture";
+      } else if (sym === "\\tau" || sym.startsWith("\\tau_")) {
+        name = "Lens Optical Transmittance";
+        unit = "Dimensionless fraction [0-1]";
+        dimension = "[1]";
+        role = "Percentage of light transmitted through glass elements without internal absorption";
+      } else if (sym === "m") {
+        name = "Optical Magnification Ratio";
+        unit = "Dimensionless ratio";
+        dimension = "[1]";
+        role = "Ratio of image size on film to physical object size";
+      } else if (sym === "I_0" || sym === "I" || sym.startsWith("I_")) {
+        name = "Incident / Transmitted Light Intensity";
+        unit = "Candela (cd) / Lumens (lm)";
+        dimension = "[J]";
+        role = "Luminous flux before vs after traversing the developed negative";
+      } else if (sym === "i") {
+        name = "Emulsion Inertia Threshold";
+        unit = "Lux-seconds (lx·s)";
+        dimension = "[M T^-3]";
+        role =
+          "Minimum exposure required to overcome threshold sensitivity and initiate silver blackening";
+      } else if (sym === "\\theta") {
+        name = "Off-Axis Field Angle";
+        unit = "Degrees (°) / Radians";
+        dimension = "[1]";
+        role = "Angular deviation from the optical axis causing cosine-fourth vignetting";
+      } else if (sym === "t") {
+        name = "Shutter Exposure Duration";
+        unit = "Seconds (s) [e.g. 1/20 s]";
+        dimension = "[T]";
+        role = "Duration during which the rotary shutter aperture uncovers the film";
+      }
+    }
+
+    // 2. COMPUTING / DIGITAL HARDWARE / INTERFACES
+    else if (isComputing) {
+      if (sym === "T_{cycle}") {
+        name = "Master Bus Cycle Period";
+        unit = "Nanoseconds (ns)";
+        dimension = "[T]";
+        role =
+          "Total duration of one interleaved non-overlapping memory access cycle ($978.6\\text{ ns}$)";
+      } else if (sym.startsWith("t_{\\Phi") || sym.startsWith("t_\\Phi")) {
+        name = "Clock Phase Duration";
+        unit = "Nanoseconds (ns)";
+        dimension = "[T]";
+        role = "Dedicated time slot for Video display fetch vs CPU bus access ($489.3\\text{ ns}$)";
+      } else if (sym === "f_{CPU}") {
+        name = "CPU Clock Frequency";
+        unit = "Megahertz (MHz)";
+        dimension = "[T^-1]";
+        role = "Operational clock rate of the 6502 microprocessor ($1.023\\text{ MHz}$)";
+      } else if (sym === "f_{sc}") {
+        name = "NTSC Color Subcarrier Frequency";
+        unit = "Megahertz (MHz)";
+        dimension = "[T^-1]";
+        role =
+          "Standard NTSC chrominance subcarrier ($3.579545\\text{ MHz} = 14.31818\\text{ MHz} / 4$)";
+      } else if (sym === "f_{dot}") {
+        name = "High-Resolution Dot Clock Rate";
+        unit = "Megahertz (MHz)";
+        dimension = "[T^-1]";
+        role = "Pixel shift clock frequency ($7.159\\text{ MHz} = 2 f_{sc}$)";
+      } else if (sym === "t_{pixel}") {
+        name = "Pixel Latency Duration";
+        unit = "Nanoseconds (ns)";
+        dimension = "[T]";
+        role = "Time duration per single horizontal screen dot ($139.7\\text{ ns}$)";
+      } else if (sym === "V_{video}") {
+        name = "Composite Video Voltage";
+        unit = "Volts (V)";
+        dimension = "[M L^2 T^-3 I^-1]";
+        role = "Instantaneous analog composite NTSC video signal waveform";
+      } else if (sym === "Y") {
+        name = "Luminance Component";
+        unit = "Volts (V)";
+        dimension = "[M L^2 T^-3 I^-1]";
+        role = "Monochrome brightness baseband signal ($Y = 0.30R + 0.59G + 0.11B$)";
+      } else if (sym === "I" || sym === "Q") {
+        name = "In-Phase / Quadrature Chrominance";
+        unit = "Volts (V)";
+        dimension = "[M L^2 T^-3 I^-1]";
+        role = "Orthogonal color modulation vectors encoding hue and saturation";
+      } else if (sym === "R_{leak}") {
+        name = "DRAM Storage Cell Leakage Resistance";
+        unit = "Gigaohms (GΩ)";
+        dimension = "[M L^2 T^-3 I^-2]";
+        role = "Sub-threshold dielectric resistance of the dynamic storage capacitor";
+      } else if (sym === "C_{cell}") {
+        name = "DRAM Storage Cell Capacitance";
+        unit = "Femtofarads (fF)";
+        dimension = "[M^-1 L^-2 T^4 I^2]";
+        role = "Capacitance of the 4116 1-T DRAM storage node ($~40\\text{ fF}$)";
+      } else if (sym === "t_{refresh}") {
+        name = "DRAM Row Refresh Period";
+        unit = "Milliseconds (ms)";
+        dimension = "[T]";
+        role =
+          "Time required for video raster addressing to refresh all 64 DRAM row addresses ($4.07\\text{ ms}$)";
+      } else if (sym === "t_{hold}") {
+        name = "Maximum DRAM Retention Limit";
+        unit = "Milliseconds (ms)";
+        dimension = "[T]";
+        role = "Maximum duration capacitor holds logic 1 before discharge ($> 4\\text{ ms}$)";
+      } else if (sym === "MT" || sym === "\\text{MT}") {
+        name = "Target Acquisition Movement Time";
+        unit = "Seconds (s)";
+        dimension = "[T]";
+        role =
+          "Human-motor positioning time predicted by Fitts's Law ($MT = a + b \\cdot \\text{ID}$)";
+      } else if (sym === "\\text{ID}" || sym === "ID") {
+        name = "Fitts's Index of Difficulty";
+        unit = "Bits";
+        dimension = "[1]";
+        role =
+          "Information-theoretic difficulty of acquiring screen target of width W at distance D";
+      } else if (sym === "W") {
+        name = "Screen Target Width";
+        unit = "Pixels / Millimeters (mm)";
+        dimension = "[L]";
+        role = "Spatial tolerance width of the on-screen clickable element";
+      } else if (sym === "D") {
+        name = "Target Travel Distance";
+        unit = "Pixels / Millimeters (mm)";
+        dimension = "[L]";
+        role = "Cursor displacement distance to reach on-screen target";
+      } else if (sym === "\\text{CPI}" || sym === "CPI") {
+        name = "Counts Per Inch (CPI Resolution)";
+        unit = "Pulses / inch";
+        dimension = "[L^-1]";
+        role = "Encoder pulse frequency per unit physical mouse travel";
+      } else if (sym === "\\tau_{shoulder}") {
+        name = "Static Shoulder Muscle Torque";
+        unit = "Newton-meters (N·m)";
+        dimension = "[M L^2 T^-2]";
+        role = "Gravitational deltoid reaction torque eliminated by tabletop arm support";
+      } else if (sym === "n_e") {
+        name = "Photoelectron Packet Count";
+        unit = "Electrons";
+        dimension = "[1]";
+        role = "Number of free electrons generated by photon absorption in pixel";
+      } else if (sym === "P_{opt}") {
+        name = "Incident Optical Power";
+        unit = "Watts (W)";
+        dimension = "[M L^2 T^-3]";
+        role = "Optical radiant power falling on the pixel active area";
+      } else if (sym === "\\eta_{QE}") {
+        name = "Quantum Efficiency";
+        unit = "Dimensionless fraction [0-1]";
+        dimension = "[1]";
+        role = "Fraction of incident photons that liberate a conduction electron";
+      } else if (sym === "T_{int}") {
+        name = "Pixel Integration Time";
+        unit = "Milliseconds (ms)";
+        dimension = "[T]";
+        role = "Time interval during which charges accumulate in the potential well";
+      } else if (sym === "Q_{pixel}") {
+        name = "Accumulated Pixel Charge";
+        unit = "Coulombs (C)";
+        dimension = "[I T]";
+        role = "Total stored packet charge ($Q = q \\cdot n_e$)";
+      } else if (sym === "\\psi_s") {
+        name = "Surface Depletion Potential Well Depth";
+        unit = "Volts (V)";
+        dimension = "[M L^2 T^-3 I^-1]";
+        role = "Electrostatic potential well depth trapping minority electrons";
+      } else if (sym === "S_{out}" || sym === "S_{in}") {
+        name = "Output / Input Charge Signal";
+        unit = "Electrons / Volts";
+        dimension = "[1]";
+        role = "Charge packet size before vs after transfer across CCD shift registers";
+      } else if (sym === "\\epsilon" || sym === "\\text{CTE}") {
+        name = "Charge Transfer Inefficiency / Efficiency";
+        unit = "Fraction per transfer";
+        dimension = "[1]";
+        role = "Fraction of charge lost per CCD transfer step (CTE = 1 - $\\epsilon$)";
+      } else if (sym === "J_{dark}") {
+        name = "Thermal Dark Current Density";
+        unit = "Amperes per square meter (A/m²)";
+        dimension = "[I L^-2]";
+        role = "Spurious thermal electron-hole generation rate in silicon depletion zone";
+      }
+    }
+
+    // 3. AERODYNAMICS / FLIGHT DYNAMICS / PROPULSION
+    else if (isAero) {
+      if (sym === "L" || sym.startsWith("L_")) {
+        name = "Aerodynamic Lift Force";
+        unit = "Newtons (N)";
+        dimension = "[M L T^-2]";
+        role = "Upward aerodynamic reaction force perpendicular to relative wind";
+        telemetryKey = "airspeed";
+        telemetryMetricLabel = "Gross Lift";
+      } else if (sym === "D" || sym === "C_{Di}" || sym.startsWith("D_")) {
+        name = "Aerodynamic Drag / Induced Drag";
+        unit = "Newtons (N) / Dimensionless";
+        dimension = "[M L T^-2]";
+        role = "Aerodynamic resistance opposing forward motion through airmass";
+        telemetryKey = "wingWarp";
+        telemetryMetricLabel = "Induced Drag";
+      } else if (sym === "C_L" || sym === "C_L^2") {
+        name = "Lift Coefficient";
+        unit = "Dimensionless ratio";
+        dimension = "[1]";
+        role = "Non-dimensional lift force generated per unit wing area and dynamic pressure";
+        telemetryKey = "wingWarp";
+      } else if (sym === "\\text{AR}" || sym === "AR") {
+        name = "Wing Aspect Ratio";
+        unit = "Dimensionless ratio ($b^2/S$)";
+        dimension = "[1]";
+        role = "Wingspan squared divided by total wing planform area";
+      } else if (sym === "e") {
+        name = "Oswald Span Efficiency Factor";
+        unit = "Dimensionless factor [0.7 - 1.0]";
+        dimension = "[1]";
+        role = "Efficiency correction for non-elliptical spanwise lift distribution";
+      } else if (sym === "\\rho") {
+        name = "Air Mass Density";
+        unit = "kg/m³ ($1.225\\text{ kg/m}^3$)";
+        dimension = "[M L^-3]";
+        role = "Mass of ambient atmospheric fluid per unit volume";
+      } else if (sym === "V" || sym === "V^2") {
+        name = "True Airspeed";
+        unit = "Meters per second (m/s)";
+        dimension = "[L T^-1]";
+        role = "Velocity of the aircraft relative to surrounding airmass";
+        telemetryKey = "airspeed";
+      } else if (sym === "\\alpha") {
+        name = "Angle of Attack (AoA)";
+        unit = "Degrees (°) / Radians";
+        dimension = "[1]";
+        role = "Angle between wing chord line and oncoming relative airflow vector";
+        telemetryKey = "wingWarp";
+      } else if (sym === "\\phi") {
+        name = "Bank Roll Angle";
+        unit = "Degrees (°) / Radians";
+        dimension = "[1]";
+        role = "Aircraft roll attitude angle during coordinated banking turn";
+      } else if (sym === "\\dot{\psi}" || sym === "\\psi") {
+        name = "Turn Rate / Yaw Heading";
+        unit = "Degrees per second (°/s) / Radians";
+        dimension = "[T^-1]";
+        role = "Rate of heading angular rotation around vertical axis";
+        telemetryKey = "rudderAngle";
+      } else if (sym === "\\Gamma" || sym === "\\Gamma_0") {
+        name = "Vortex Circulation / Peak Circulation";
+        unit = "m²/s";
+        dimension = "[L^2 T^-1]";
+        role = "Bound vortex line integral generating aerodynamic circulation";
+      } else if (sym === "b") {
+        name = "Total Wingspan";
+        unit = "Meters (m)";
+        dimension = "[L]";
+        role = "Tip-to-tip spanwise transverse length of the biplane wings";
+      } else if (sym === "C_m" || sym === "C_{m0}") {
+        name = "Pitching Moment Coefficient";
+        unit = "Dimensionless ratio";
+        dimension = "[1]";
+        role = "Aerodynamic torque around the lateral pitch axis normalized by mean chord";
+      } else if (sym === "\\delta_e") {
+        name = "Canard Pitch Deflection Angle";
+        unit = "Degrees (°)";
+        dimension = "[1]";
+        role = "Angular pitch trim deflection of the forward horizontal canard surface";
+      }
+    }
+
+    // 4. THERMODYNAMICS / HEAT ENGINES / COOLING
+    else if (isThermal) {
+      if (sym === "P" || sym.startsWith("P_")) {
+        name = "Thermodynamic Pressure";
+        unit = "Pascals (Pa) / Atmospheres";
+        dimension = "[M L^-1 T^-2]";
+        role = "Hydrostatic / vapor pressure exerted by the working fluid";
+        telemetryKey = "pressure";
+      } else if (sym === "T" || sym.startsWith("T_") || sym === "T^4") {
+        name = "Absolute Temperature";
+        unit = "Kelvin (K)";
+        dimension = "[\\Theta]";
+        role = "Core thermodynamic thermal energy level of the cycle";
+        telemetryKey = "tempK";
+      } else if (sym === "Q" || sym.startsWith("Q_")) {
+        name = "Thermal Heat Energy";
+        unit = "Joules (J) / Kilowatts (kW)";
+        dimension = "[M L^2 T^-2]";
+        role = "Heat added to or rejected from the thermodynamic cycle";
+      } else if (sym === "W" || sym.startsWith("W_")) {
+        name = "Mechanical Work Output";
+        unit = "Joules (J)";
+        dimension = "[M L^2 T^-2]";
+        role = "Useful mechanical energy extracted by expansion against pistons/turbines";
+      } else if (sym === "\\eta" || sym.startsWith("\\eta_")) {
+        name = "Thermal Conversion Efficiency";
+        unit = "Dimensionless ratio [0-1]";
+        dimension = "[1]";
+        role = "Ratio of useful work produced to total heat consumed";
+      } else if (sym === "\\mu_{JT}") {
+        name = "Joule-Thomson Expansion Coefficient";
+        unit = "Kelvin per Pascal (K/Pa)";
+        dimension = "[M^-1 L T^2 \\Theta]";
+        role = "Rate of temperature drop per unit pressure reduction across throttle valve";
+      } else if (sym === "\\text{COP}" || sym === "COP") {
+        name = "Coefficient of Performance (COP)";
+        unit = "Dimensionless ratio";
+        dimension = "[1]";
+        role = "Ratio of useful refrigeration cooling capacity to compressor electrical work";
+      }
+    }
+
+    // 5. MATERIALS SCIENCE / CHEMISTRY / POLYMERS
+    else if (isMaterials) {
+      if (sym.startsWith("\\sigma")) {
+        name = "Tensile / Shear Stress";
+        unit = "Gigapascals (GPa) / Pascals (Pa)";
+        dimension = "[M L^-1 T^-2]";
+        role = "Internal force per unit cross-sectional area resisting external elongation";
+      } else if (sym.startsWith("\\varepsilon") || sym === "\\epsilon") {
+        name = "Mechanical / Elongational Strain";
+        unit = "Dimensionless fraction / s^-1";
+        dimension = "[1]";
+        role = "Deformation extension normalized by initial gage length";
+      } else if (sym === "E" || sym.startsWith("E_")) {
+        name = "Young's Elastic Modulus";
+        unit = "Gigapascals (GPa) / Pascals (Pa)";
+        dimension = "[M L^-1 T^-2]";
+        role = "Intrinsic axial stiffness of primary covalent polymer bonds";
+      } else if (sym === "c") {
+        name = "Longitudinal Acoustic Shock Velocity";
+        unit = "Meters per second (m/s)";
+        dimension = "[L T^-1]";
+        role = "Speed of stress wave propagation through the crystalline polymer lattice";
+      } else if (sym === "F_b") {
+        name = "Archimedean Buoyant Force";
+        unit = "Newtons (N)";
+        dimension = "[M L T^-2]";
+        role = "Upward hydrostatic force equal to the weight of displaced water volume";
+      } else if (sym === "H_{vap}") {
+        name = "Enthalpy of Polymer Vaporization";
+        unit = "Kilojoules per mole (kJ/mol)";
+        dimension = "[M L^2 T^-2 N^-1]";
+        role = "Thermal energy required to overcome intermolecular cohesive lattice forces";
+      } else if (sym === "V_m") {
+        name = "Molar Volume of Repeating Unit";
+        unit = "Cubic centimeters per mole (cm³/mol)";
+        dimension = "[L^3 N^-1]";
+        role = "Volume occupied by one mole of polymer repeat units";
+      }
+    }
+
+    // 6. NUCLEAR REACTOR PHYSICS & CRITICALITY
+    else if (
+      pLower.includes("reactor") ||
+      pLower.includes("fermi") ||
+      pLower.includes("fission") ||
+      pLower.includes("neutron") ||
+      pLower.includes("moderator") ||
+      pLower.includes("buckling")
+    ) {
+      if (sym === "\\eta") {
+        name = "Fuel Reproduction Factor";
+        unit = "Fast neutrons per thermal absorption";
+        dimension = "[1]";
+        role = "Thermal fission neutron yield of natural uranium fuel lumps";
+      } else if (sym === "\\epsilon") {
+        name = "Fast Fission Factor";
+        unit = "Dimensionless multiplier ($\approx 1.03$)";
+        dimension = "[1]";
+        role = "Fractional increase in total fission neutrons from fast fission of U-238";
+      } else if (sym === "\\xi") {
+        name = "Average Logarithmic Energy Decrement";
+        unit = "Dimensionless decrement per collision";
+        dimension = "[1]";
+        role =
+          "Mean fractional neutron energy reduction per elastic collision with carbon graphite moderator";
+      } else if (sym === "E_0" || sym === "E_{th}") {
+        name = "Fission / Thermal Neutron Energy";
+        unit = "MeV / eV ($2\\text{ MeV} \\to 0.025\\text{ eV}$)";
+        dimension = "[M L^2 T^-2]";
+        role = "Prompt fission kinetic energy vs room-temperature thermal energy";
+      } else if (sym === "n") {
+        name = "Core Neutron Population Density";
+        unit = "Neutrons per cubic centimeter (n/cm³)";
+        dimension = "[L^-3]";
+        role = "Instantaneous thermal neutron density governing reactor power output";
+      } else if (sym === "\\beta") {
+        name = "Delayed Neutron Fraction";
+        unit = "Dimensionless fraction ($\beta \approx 0.0065$)";
+        dimension = "[1]";
+        role = "Fraction of fission neutrons emitted via delayed precursor radioactive decay";
+      } else if (sym === "\\Lambda") {
+        name = "Prompt Neutron Generation Time";
+        unit = "Milliseconds (ms)";
+        dimension = "[T]";
+        role =
+          "Mean elapsed time between thermal neutron absorption and subsequent fission emission";
+      } else if (sym.startsWith("\\lambda")) {
+        name = "Precursor Radioactive Decay Constant";
+        unit = "Inverse seconds (s^-1)";
+        dimension = "[T^-1]";
+        role = "Decay rate of the delayed neutron fission product precursor group";
+      } else if (sym === "N_U") {
+        name = "Uranium Atomic Number Density";
+        unit = "Atoms per cubic centimeter (atoms/cm³)";
+        dimension = "[L^-3]";
+        role = "Concentration of heavy fertile and fissile uranium nuclei in fuel lumps";
+      } else if (sym.startsWith("\\Sigma")) {
+        name = "Macroscopic Scattering Cross Section";
+        unit = "Inverse centimeters (cm^-1)";
+        dimension = "[L^-1]";
+        role =
+          "Probability per unit travel distance that a fast neutron collides elastically with graphite";
+      } else if (sym === "B^2" || sym.startsWith("B_")) {
+        name = "Core Geometric Buckling Factor";
+        unit = "Inverse square meters (m^-2)";
+        dimension = "[L^-2]";
+        role =
+          "Spatial curvature of the neutron flux eigenmode determining leakage loss from core geometry";
+      } else if (sym === "\\Phi") {
+        name = "Scalar Thermal Neutron Flux";
+        unit = "Neutrons per square centimeter per second (n/(cm²·s))";
+        dimension = "[L^-2 T^-1]";
+        role = "Neutron population speed integral driving continuous fission reactions";
+      }
+    }
+
+    // 7. SEMICONDUCTOR & SOLID-STATE PHYSICS
+    if (
+      pLower.includes("transistor") ||
+      pLower.includes("semiconductor") ||
+      pLower.includes("germanium") ||
+      pLower.includes("silicon") ||
+      pLower.includes("depletion") ||
+      pLower.includes("carrier") ||
+      pLower.includes("electromigration") ||
+      pLower.includes("metallization") ||
+      pLower.includes("interconnect")
+    ) {
+      if (sym === "p_0" || sym === "n_0" || sym === "n_i") {
+        name = "Equilibrium Carrier Concentration";
+        unit = "Carriers per cubic centimeter (cm^-3)";
+        dimension = "[L^-3]";
+        role = "Intrinsic vs equilibrium charge carrier density in bulk semiconductor crystal";
+      } else if (sym.startsWith("\\mu_") || sym === "\\mu_p" || sym === "\\mu_n") {
+        name = "Carrier Drift Mobility";
+        unit = "cm²/(V·s)";
+        dimension = "[M^-1 T^2 I]";
+        role = "Drift velocity acquired per unit applied electrostatic field gradient";
+      } else if (sym === "A_V") {
+        name = "Voltage Amplification Gain";
+        unit = "Dimensionless ratio";
+        dimension = "[1]";
+        role = "Ratio of output collector voltage swing to input emitter signal voltage";
+      } else if (sym === "\\alpha") {
+        name = "Common-Base Current Gain";
+        unit = "Dimensionless fraction ($\approx 0.98 - 0.99$)";
+        dimension = "[1]";
+        role = "Fraction of injected emitter carriers successfully collected at the collector";
+      } else if (sym === "t_{transit}") {
+        name = "Base Minority Carrier Transit Time";
+        unit = "Picoseconds (ps) / Nanoseconds (ns)";
+        dimension = "[T]";
+        role =
+          "Time required for injected minority carriers to diffuse across the thin base region";
+      } else if (sym === "\\tau_{RC}") {
+        name = "RC Interconnect Propagation Delay";
+        unit = "Picoseconds (ps)";
+        dimension = "[T]";
+        role = "Distributed Elmore charging delay across on-chip aluminum interconnection lines";
+      } else if (sym === "C_{wire}") {
+        name = "Interconnect Parasitic Capacitance";
+        unit = "Femtofarads per micrometer (fF/μm)";
+        dimension = "[M^-1 L^-3 T^4 I^2]";
+        role = "Capacitive coupling between evaporated aluminum traces and silicon substrate";
+      } else if (sym === "x_{ox}" || sym === "x_{ox}^2") {
+        name = "Thermal Silicon Dioxide Thickness";
+        unit = "Nanometers (nm)";
+        dimension = "[L]";
+        role = "Passivating and insulating thermal oxide dielectric barrier";
+      } else if (sym === "J_{FN}" || sym === "J") {
+        name = "Current Density / Tunneling Current";
+        unit = "Amperes per square centimeter (A/cm²)";
+        dimension = "[I L^-2]";
+        role = "High-field quantum mechanical Fowler-Nordheim field emission tunneling density";
+      } else if (sym === "E_{ox}" || sym === "E_{ox}^2" || sym === "E_{bd}") {
+        name = "Oxide Electric Field / Breakdown Field";
+        unit = "Megavolts per centimeter (MV/cm)";
+        dimension = "[M L T^-3 I^-1]";
+        role = "Electrostatic field gradient across insulating silicon dioxide layer";
+      } else if (sym === "\\text{MTTF}" || sym === "MTTF") {
+        name = "Mean Time To Failure (MTTF)";
+        unit = "Hours / Years";
+        dimension = "[T]";
+        role =
+          "Expected operational lifetime before electromigration creates metal void open-circuits";
+      } else if (sym === "E_a") {
+        name = "Electromigration Activation Energy";
+        unit = "Electron-volts (eV) [~0.7 eV]";
+        dimension = "[M L^2 T^-2]";
+        role = "Thermal energy barrier required for aluminum grain boundary vacancy diffusion";
+      }
+    }
+
+    // 6. DEFAULT GENERAL PHYSICAL DICTIONARY
+    if (name.startsWith("Parameter (")) {
+      if (/^L$/i.test(sym) || /^L_/.test(sym)) {
+        name = "Inductance / Length / Lift";
+        unit = "Henries (H) / Meters (m) / Newtons (N)";
+        dimension = "[M L^2 T^-2 I^-2]";
+        role = "Circuit inductance, characteristic length, or dynamic force";
+      } else if (/^V$/i.test(sym) || /^V\^2/.test(sym) || /^v$/i.test(sym) || /^v_/.test(sym)) {
+        name = "Electric Potential / Flow Velocity";
+        unit = "Volts (V) / Meters per second (m/s)";
+        dimension = "[M L^2 T^-3 I^-1]";
+        role = "Electrical potential difference or fluid flow speed";
+        telemetryKey = "voltage";
+      } else if (/^I$/i.test(sym) || /^I_/.test(sym) || /^i$/i.test(sym)) {
+        name = "Electric Current";
+        unit = "Amperes (A)";
+        dimension = "[I]";
+        role = "Rate of electric charge carrier flow through the conductor cross-section";
+        telemetryKey = "current";
+      } else if (/^R$/i.test(sym) || /^R_/.test(sym)) {
+        name = "Electrical Resistance / Gas Constant";
+        unit = "Ohms (Ω) / J/(mol·K)";
+        dimension = "[M L^2 T^-3 I^-2]";
+        role = "Opposition to electrical charge flow or thermodynamic gas constant";
+      } else if (/^P$/i.test(sym) || /^P_/.test(sym) || /^p$/i.test(sym)) {
+        name = "Power Output / Fluid Pressure";
+        unit = "Watts (W) / Pascals (Pa)";
+        dimension = "[M L^2 T^-3]";
+        role = "Rate of energy transfer or thermodynamic hydrostatic pressure";
+        telemetryKey = "pressure";
+      } else if (/^T$/i.test(sym) || /^T_/.test(sym) || /^T\^4/.test(sym)) {
+        name = "Absolute Temperature / Thrust";
+        unit = "Kelvin (K) / Newtons (N)";
+        dimension = "[\\Theta]";
+        role = "Thermodynamic temperature or mechanical reaction thrust";
+        telemetryKey = "tempK";
+      } else if (/^F$/i.test(sym) || /^F_/.test(sym)) {
+        name = "Mechanical Force Vector";
+        unit = "Newtons (N)";
+        dimension = "[M L T^-2]";
+        role = "Net dynamic vector force acting upon the mechanism";
+        telemetryKey = "thrust";
+      } else if (/^B$/i.test(sym) || /^B_/.test(sym) || /\\vec\{B\}/.test(sym)) {
+        name = "Magnetic Flux Density";
+        unit = "Tesla (T)";
+        dimension = "[M T^-2 I^-1]";
+        role = "Strength and spatial orientation of the magnetic field vector";
+        telemetryMetricLabel = "Stator Field (B)";
+      } else if (/\\omega/.test(sym) || /^f$/i.test(sym) || /^f_/.test(sym)) {
+        name = "Oscillation Frequency / Angular Velocity";
+        unit = "Radians per second (rad/s) / Hertz (Hz)";
+        dimension = "[T^-1]";
+        role = "Rotational speed, AC line frequency, or modulation rate";
+        telemetryKey = "freqHz";
+      } else if (/\\rho/.test(sym)) {
+        name = "Fluid Density / Specific Resistivity";
+        unit = "kg/m³ / Ω·m";
+        dimension = "[M L^-3]";
+        role = "Mass per unit volume of the working medium or material resistance";
+      } else if (/\\sigma/.test(sym)) {
+        name = "Electrical Conductivity / Stefan-Boltzmann Constant";
+        unit = "Siemens per meter (S/m) / W/(m²·K⁴)";
+        dimension = "[M^-1 L^-3 T^3 I^2]";
+        role = "Charge conduction efficiency or radiative blackbody constant";
+      } else if (/^k$/i.test(sym) || /^k_/.test(sym)) {
+        name = "Spring Constant / Thermal Conductivity";
+        unit = "N/m / W/(m·K)";
+        dimension = "[M T^-2]";
+        role = "Mechanical stiffness, thermal conduction rate, or nuclear multiplication";
+      } else if (/^m$/i.test(sym) || /^M$/i.test(sym) || /^m_/.test(sym)) {
+        name = "Inertial Mass / Molecular Weight";
+        unit = "Kilograms (kg) / g/mol";
+        dimension = "[M]";
+        role = "Mass of moving bodies or chemical quantity";
+      } else if (/^a$/i.test(sym) || /^g$/i.test(sym)) {
+        name = "Linear / Gravitational Acceleration";
+        unit = "Meters per second squared (m/s²)";
+        dimension = "[L T^-2]";
+        role = "Rate of change of velocity or local gravitational acceleration field";
+      } else if (/^t$/i.test(sym) || /^\\Delta t/.test(sym)) {
+        name = "Time Duration";
+        unit = "Seconds (s)";
+        dimension = "[T]";
+        role = "Elapsed operational time interval";
+      } else if (/^S$/i.test(sym) || /^A$/i.test(sym)) {
+        name = "Surface Area / Planform Area";
+        unit = "Square meters (m²)";
+        dimension = "[L^2]";
+        role = "Total geometric contact, lifting, or radiative surface area";
+      } else if (sym === "h" || sym === "\\hbar") {
+        name = "Planck's Quantum Action Constant";
+        unit = "Joule-seconds (J·s)";
+        dimension = "[M L^2 T^-1]";
+        role =
+          "Fundamental quantum of electromagnetic action ($6.626 \\times 10^{-34}\\text{ J}\\cdot\\text{s}$)";
+      } else if (sym === "\\nu") {
+        name = "Photon Optical Frequency (ν)";
+        unit = "Hertz (Hz)";
+        dimension = "[T^-1]";
+        role =
+          "Frequency of absorbed actinic light determining photon quantum energy ($E = h\\nu$)";
+      } else if (sym === "e" || sym === "e^-") {
+        name = "Photo-Excited Conduction Electron (e⁻)";
+        unit = "Elementary charge ($1.602 \\times 10^{-19}\\text{ C}$)";
+        dimension = "[I T]";
+        role = "Conduction band electron migrating to silver halide sensitivity specks";
+      } else {
+        name = formatSymbolForDisplay(sym);
+      }
     }
 
     return {
@@ -3178,7 +3932,10 @@ export function convertScientificPrincipleToColorizedEquation(
       color,
       role,
       unit,
-      explanation: `Governs ${name.toLowerCase()} within ${principle.principle.toLowerCase()}: ${principle.explanation.slice(0, 180)}...`,
+      dimension,
+      explanation: `Governs ${cleanNameForSentence(name)} within ${principle.principle.toLowerCase()}: ${principle.explanation.slice(0, 180)}...`,
+      telemetryKey,
+      telemetryMetricLabel,
     };
   });
 
@@ -3189,37 +3946,57 @@ export function convertScientificPrincipleToColorizedEquation(
   }
 
   const colorizerRegex =
-    /(\\(?:text|begin|end)\{[^}]*\}|\\[a-zA-Z]+|[a-zA-Z](?:_[a-zA-Z0-9]+)?|[0-9]+(?:\.[0-9]+)?|[{}()=+\-*/,[\]^_\s]|.)/g;
+    /(\\(?:text|mathrm|mathbf|mathit|mathsf|mathtt)\{[^{}]*\}|\\vec\{[a-zA-Z]+\}(?:\([a-zA-Z0-9_+-]+\))?(?:_(?:\{[^{}]*\}|[a-zA-Z0-9]+))?|\\[a-zA-Z]+(?:_(?:\{[^{}]*\}|[a-zA-Z0-9]+))?(?:\^(?:\{[^{}]*\}|[a-zA-Z0-9]+))?|[a-zA-Z](?:_(?:\{[^{}]*\}|[a-zA-Z0-9]+))?(?:\^(?:\{[^{}]*\}|[a-zA-Z0-9]+))?|[0-9]+(?:\.[0-9]+)?|[{}()=+\-*/,[\]^_\s]|.)/g;
 
   let colorized = "";
   let cMatch: RegExpExecArray | null = colorizerRegex.exec(formula);
   while (cMatch !== null) {
     const token = cMatch[0];
-    if (token.startsWith("\\text{") || token.startsWith("\\begin{") || token.startsWith("\\end{")) {
-      colorized += token;
+    const v = varMap.get(token);
+    if (v && !mathBlacklist.has(token)) {
+      const hex = COLOR_STYLES[v.color].hexLight;
+      colorized += `{\\textcolor{${hex}}{${token}}}`;
     } else {
-      const v = varMap.get(token);
-      if (v && !mathBlacklist.has(token)) {
-        const hex = COLOR_STYLES[v.color].hexLight;
-        colorized += `{\\textcolor{${hex}}{${token}}}`;
-      } else {
-        colorized += token;
-      }
+      colorized += token;
     }
     cMatch = colorizerRegex.exec(formula);
   }
 
-  // Construct Plain English sentence fragments
+  // Construct Plain English sentence fragments linking each variable
   const sentenceFragments: SentenceFragment[] = [
-    { text: `Under the governing principle of ${principle.principle}, ` },
-    { text: "the primary physical balance", variableId: variables[0]?.id },
+    { text: "In the physical operation of this mechanism, " },
+    {
+      text: cleanNameForSentence(variables[0]?.name || "the primary state"),
+      variableId: variables[0]?.id,
+    },
     ...(variables[1]
       ? [
-          { text: " relates to " },
-          { text: variables[1].name.toLowerCase(), variableId: variables[1].id },
+          { text: " is determined by the action of " },
+          {
+            text: cleanNameForSentence(variables[1].name),
+            variableId: variables[1].id,
+          },
         ]
       : []),
-    { text: ": " },
+    ...(variables[2]
+      ? [
+          { text: " scaled by " },
+          {
+            text: cleanNameForSentence(variables[2].name),
+            variableId: variables[2].id,
+          },
+        ]
+      : []),
+    ...(variables[3]
+      ? [
+          { text: " and constrained by " },
+          {
+            text: cleanNameForSentence(variables[3].name),
+            variableId: variables[3].id,
+          },
+        ]
+      : []),
+    { text: ". " },
     { text: principle.explanation },
   ];
 
