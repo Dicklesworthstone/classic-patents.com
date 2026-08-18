@@ -1,6 +1,9 @@
 import type { Patent } from "@/types/patent";
+import { grammeDynamoArchivalEdition } from "../editions/grammeDynamoEdition";
 
-export const grammeDynamoPatent: Patent = {
+// Preserved only as an audit trail for the superseded catalogue copy. The
+// canonical exported record below is the manually reviewed edition.
+export const grammeDynamoSupersededCatalogueRecord: Patent = {
   id: "us-120057-gramme-dynamo",
   patentNumber: "US 120,057",
   title: "Improvement in Magneto-Electric Machines",
@@ -256,4 +259,171 @@ I claim as my invention:
     patentWarYears: "1871–1878",
     impactScore: 100,
   },
+};
+
+export const grammeDynamoPatent: Patent = {
+  id: "us-120057-gramme-dynamo",
+  patentNumber: "US 120,057",
+  title: "Improvement in Magneto-Electric Machines",
+  shortTitle: "Gramme and d’Ivernois Endless-Bobbin Dynamo",
+  subtitle:
+    "Closed Series of Small Coils, Contact Rubbers, and Continuous or Alternate Induction Currents",
+  inventors: ["Zénobe Théophile Gramme", "Eardley Louis Charles d’Ivernois"],
+  inventorLocation: "Paris, Empire of France",
+  grantDate: "1871-10-17",
+  filingDate: "1870-08-17",
+  era: "Civil War & Industrial Acceleration (1860–1880)",
+  category: "electricity",
+  categoryLabel: "Magneto-Electric Machines & Dynamos",
+  summary:
+    "US 120,057 describes several magneto-electric machines built around a continuous series of small coils on a soft-iron ring, cylinder, disk, or moving chain. Contacts at selected coil junctions collect currents that the inventors describe as continuous or, in a stated alternate-current arrangement, opposite in direction. The grant issued October 17, 1871 after a United States application filed August 17, 1870.",
+  heroQuote:
+    "What we consider to be novel and original, and therefore more particularly claim as our invention, is—",
+  originalPdfUrl: "/patents/pdfs/us-120057-gramme-dynamo.pdf",
+  googlePatentsUrl: "https://patents.google.com/patent/US120057A/en",
+  usptoClassification:
+    "H02K 23/04 (permanent-magnet-excited DC commutator motors or generators; current catalog classification)",
+  originalTextAsset: {
+    url: "/patents/transcripts/us-120057-gramme-dynamo-reviewed.txt",
+    pageCount: 9,
+    kind: "reviewed-transcription",
+    reviewedBy: "Classic Patents editorial agent (SunnySpring)",
+    reviewedAt: "2026-08-17",
+    sourcePdfSha256: grammeDynamoArchivalEdition.sourcePdfSha256,
+  },
+  originalText:
+    "The complete, facsimile-reviewed specification and all three claims are presented in the manual archival edition. The grant describes an endless series of small bobbins around soft iron, junction conductors touched by rubbers or springs, and several ring, disk, chain, and concentric-cylinder constructions.",
+  archivalEdition: grammeDynamoArchivalEdition,
+  plainEnglishExplanation: {
+    overview:
+      "The source’s problem is how to take induction from many small coils as a rotating magnetic relation changes, while avoiding a visibly interrupted output. Gramme and d’Ivernois connect the coil sections into an endless circuit, put an accessible conductor at each junction, and use contacts placed between unlike poles to take the like-directed currents that meet there. The patent also sets out a different connection for alternate current; it is not confined to a single later textbook form of the Gramme dynamo.",
+    coreMechanism:
+      "Let a coil section move through magnetic flux. Its induced electromotive force follows Faraday’s relation $\\mathcal{E}=-N\\,d\\Phi/dt$. Around the closed series, sections before unlike poles induce currents whose directions bring like current together at selected junctions. The metal rubbers contact those junction conductors as they pass and take the combined current. The polarity depends on rotor direction, coil handedness, and the north-to-south order, conditions the specification expressly states. In the alternate-current version, two perpendicular pairs of diametrically opposite junctions are connected through the shaft and isolated rod.",
+    mechanicalBreakdown: [
+      {
+        title: "Endless bobbin and magnetic core",
+        summary:
+          "A ring, cylinder, or other endless form carries a closed series of small, insulated coils around soft iron.",
+        technicalDetails:
+          "Each small bobbin connects end-to-end to the next, leaving no free end in the large series. A conductor at every junction makes a moving electrical access point. The source permits a hollow or solid core and soft-iron wires or coils cemented together; it does not specify a universal turn count or modern performance figure. The induced voltage is described by $\\mathcal{E}=-N\\,d\\Phi/dt$.",
+        archaicTerm: "large endless bobbin",
+        modernEquivalent: "closed distributed armature winding on a magnetic core",
+      },
+      {
+        title: "Junction conductors and rubbers",
+        summary:
+          "Springs, rollers, or other metal rubbers touch selected passing junction conductors to extract current.",
+        technicalDetails:
+          "In the Fig. 1–3 construction, thirty-six coil junctions carry thirty-six conductors; springs S and S′ press on them. Fig. 4–6 has seventy-two conductors and four rubbers. The source calls these contacts rubbers, and makes their pressure adjustable by levers, screws, and springs. It does not describe them as an absent contact system.",
+        archaicTerm: "metal rubbers",
+        modernEquivalent: "sliding electrical contacts or brushes",
+      },
+      {
+        title: "Field magnets and motion",
+        summary:
+          "Permanent or electromagnets establish poles while a ring, disk, cylinder, chain, or sometimes the magnets rotate.",
+        technicalDetails:
+          "The figures show two, four, six, or more poles depending on construction. Coil direction, rotation direction, and pole arrangement set output polarity. The source also permits fixed rings with rotating interior magnets, or a rotating ring inside a fixed wound cylinder energized from part of its output.",
+        archaicTerm: "magneto-electric machine",
+        modernEquivalent: "electromagnetic generator architecture",
+      },
+      {
+        title: "Alternate-current arrangement",
+        summary:
+          "The second construction can be reconnected to produce alternating rather than continuous current.",
+        technicalDetails:
+          "Remove the C conductors and S springs, connect the shaft to one diametrically opposite pair of coil junctions, and connect the perpendicular pair to an isolated rod in the shaft as Fig. 11 shows. The frame/shaft and a rubber on that rod are the two stated alternating-current terminals. This is the entire condition, not merely a generic AC claim.",
+        archaicTerm: "alternate or opposite currents",
+        modernEquivalent: "alternating-current output with orthogonal junction taps",
+      },
+    ],
+    scientificPrinciples: [
+      {
+        principle: "Faraday’s law of electromagnetic induction",
+        formula: "\\mathcal{E} = -N\\,d\\Phi/dt",
+        explanation:
+          "A coil develops electromotive force when the magnetic flux linking it changes. The patent’s moving coils and changing relation to unlike magnetic poles are its physical way of producing that change.",
+      },
+      {
+        principle: "Series connection and selected current collection",
+        formula: "V_{\\mathrm{series}} = \\sum_i \\mathcal{E}_i",
+        explanation:
+          "The inventors join small bobbins end-to-end and select junctions where they say like currents meet. In a series path, compatible induced voltages add; the contact placement determines which combined output is taken.",
+      },
+      {
+        principle: "Magnetic-circuit reluctance",
+        formula: "\\Phi = \\mathcal{F}/\\mathcal{R}",
+        explanation:
+          "Soft iron gives the flux a much lower-reluctance route than air. The source repeatedly specifies soft-iron cores, links, and poles, while keeping moving members physically separate from field parts.",
+      },
+    ],
+    whyItMattersToday:
+      "The patent documents a family of distributed-winding generator arrangements at a moment when electric power machinery was moving from laboratory apparatus toward industrial systems. Its legal and technical interest lies in its closed coil series, junction collection, and stated continuous/alternate-current variants, not in later numbers or performance claims absent from the grant.",
+  },
+  claims: [
+    {
+      number: 1,
+      isIndependent: true,
+      originalText:
+        "The employment, in magneto-electric machines, of one or more cylinders, rings, or large endless bobbins arranged and constructed in the manner as has been above described, viz., made into a circular or other suitable endless shape, and consisting of a series of small bobbins or wires enveloping a core of soft iron or other good magnetic material, and connected together end to end in a continuous series, the said endless large bobbin or bobbins or cylinders situated between or in opposition to the poles of fixed or movable permanent or electro-magnets, for the purpose of allowing the production of continuous induction-currents in the conducting-wires, strips, or ribbons of brass or other good conducting metal enveloping the magnetic material, in which wires, strips, or ribbons a continuous displacement of the magnetism takes place without demagnetizing.",
+      plainEnglish:
+        "Claim 1 covers the stated endless closed series of small coils or conductive strips/ribbons on a magnetic core, positioned relative to fixed or moving permanent or electromagnet poles so that continuous induction current is produced. It names the ring/cylinder construction, end-to-end connection, core, field relation, and continuous-current objective; it does not require only the Fig. 1 device.",
+      keyInnovations: [
+        "Endless series of small bobbins",
+        "Soft-iron magnetic core",
+        "Junction-conductor current collection",
+        "Continuous induction-current arrangement",
+      ],
+      legalSignificance:
+        "This is the principal independent claim. Its language reaches rings, cylinders, and other suitable endless forms, and explicitly includes wire, strip, and ribbon conductors under the described field relationship.",
+    },
+    {
+      number: 2,
+      isIndependent: true,
+      originalText:
+        "The arrangements described for allowing of giving rise to alternate or opposite instead of continuous currents.",
+      plainEnglish:
+        "Claim 2 separately claims the described arrangements that yield alternate or opposite currents rather than continuous output. In the specification, that includes the diametrically opposite, perpendicular junction connections through the shaft and insulated rod.",
+      keyInnovations: ["Alternate-current junction arrangement", "Perpendicular diametric taps"],
+      legalSignificance:
+        "The claim is independent and short. Its scope is defined by the described alternate-current arrangements, so the connection details in the specification matter.",
+    },
+    {
+      number: 3,
+      isIndependent: true,
+      originalText:
+        "The general arrangement and combination of parts of the various above-described magneto-electric apparatuses employed for any industrial, physiological, or other purposes for which electric currents may be made use of, substantially as described and illustrated in the annexed drawing and for the purposes set down.",
+      plainEnglish:
+        "Claim 3 claims the overall combinations shown and described for using electrical current, including industrial and physiological uses. Because it says substantially as described and illustrated, it is tied to the detailed apparatus and drawings rather than every future electrical machine.",
+      keyInnovations: ["Combined magneto-electric apparatus", "Claim-linked drawing configurations"],
+      legalSignificance:
+        "This is an independent combination claim whose limiting context is the written description and annexed figures.",
+    },
+  ],
+  drawings: [
+    { figureNumber: "Fig. 1", title: "First machine, vertical projection", caption: "Vertical projective view of the Fig. 1–3 machine; source drawing sheet 1.", svgType: "gramme-dynamo", callouts: [{ id: "gd-fig1-a", figureRef: "Fig. 1", label: "A", element: "Endless bobbin or cylinder", description: "Soft-iron core and continuous coil assembly described with Figs. 1–3.", x: 50, y: 52 }, { id: "gd-fig1-h", figureRef: "Fig. 1", label: "H", element: "Compound permanent magnets", description: "Fixed field magnets of the first apparatus.", x: 23, y: 51 }] },
+    { figureNumber: "Fig. 2", title: "First machine, vertical section", caption: "Vertical section showing the first apparatus’s coil and conductor relation; source drawing sheet 1.", svgType: "gramme-dynamo", callouts: [{ id: "gd-fig2-c", figureRef: "Fig. 2", label: "C", element: "Junction conductors", description: "Two of the thirty-six conductors are shown in the cross-sectional view.", x: 50, y: 50 }] },
+    { figureNumber: "Fig. 3", title: "Detached part", caption: "Detached part of the Fig. 1–3 construction; source drawing sheet 1.", svgType: "gramme-dynamo", callouts: [] },
+    { figureNumber: "Fig. 4", title: "Second machine, vertical projection", caption: "Vertical projection of the six-magnet construction; source drawing sheet 1.", svgType: "gramme-dynamo", callouts: [{ id: "gd-fig4-a", figureRef: "Fig. 4", label: "A", element: "Endless cylinder", description: "Uninterrupted series of small bobbins with conducting rods at junctions.", x: 50, y: 50 }] },
+    { figureNumber: "Fig. 5", title: "Second machine, horizontal projection", caption: "Horizontal projection of the Fig. 4–6 construction; source drawing sheet 1.", svgType: "gramme-dynamo", callouts: [] },
+    { figureNumber: "Fig. 6", title: "Second machine, vertical section", caption: "Vertical section of the Fig. 4–6 construction; source drawing sheet 1.", svgType: "gramme-dynamo", callouts: [] },
+    { figureNumber: "Fig. 7", title: "Disk machine, vertical projection", caption: "Vertical projection of the two-disk construction; source drawing sheet 2.", svgType: "gramme-dynamo", callouts: [{ id: "gd-fig7-a", figureRef: "Fig. 7", label: "A", element: "Revolving disks", description: "The two coil-carrying disks A and A′.", x: 50, y: 51 }] },
+    { figureNumber: "Fig. 8", title: "Disk machine, horizontal section", caption: "Horizontal section of the Fig. 7–9 construction; source drawing sheet 2.", svgType: "gramme-dynamo", callouts: [] },
+    { figureNumber: "Fig. 9", title: "Cylinder modification", caption: "Modification using a cylinder in the Fig. 7–9 construction; source drawing sheet 2.", svgType: "gramme-dynamo", callouts: [] },
+    { figureNumber: "Fig. 10", title: "Twin-cylinder machine, vertical projection", caption: "Vertical projection of the twin-cylinder construction; source drawing sheet 3.", svgType: "gramme-dynamo", callouts: [{ id: "gd-fig10-aa", figureRef: "Fig. 10", label: "A, A′", element: "Twin cylinders", description: "Two rotating cylinders whose bobbins are connected together.", x: 51, y: 51 }] },
+    { figureNumber: "Fig. 11", title: "Twin-cylinder machine, horizontal section", caption: "Horizontal section of the Fig. 10–11 construction; source drawing sheet 3.", svgType: "gramme-dynamo", callouts: [] },
+    { figureNumber: "Fig. 12", title: "Moving-chain machine, longitudinal view", caption: "Longitudinal vertical projection of the chain-and-fixed-bobbin construction; source drawing sheet 3.", svgType: "gramme-dynamo", callouts: [{ id: "gd-fig12-b", figureRef: "Fig. 12", label: "B", element: "Fixed hollow bobbins", description: "Eight fixed hollow bobbins through which the chains pass.", x: 50, y: 45 }] },
+    { figureNumber: "Fig. 13", title: "Moving-chain machine, end view", caption: "End vertical projection of the chain-and-fixed-bobbin construction; source drawing sheet 3.", svgType: "gramme-dynamo", callouts: [] },
+    { figureNumber: "Fig. 14", title: "Circular-pole machine, longitudinal elevation", caption: "Longitudinal elevation of the circular-pole construction, with parts removed; source drawing sheet 4.", svgType: "gramme-dynamo", callouts: [{ id: "gd-fig14-a2", figureRef: "Fig. 14", label: "A²", element: "Soft-iron core", description: "Soft-iron core of the endless bobbin A.", x: 51, y: 53 }] },
+  ],
+  historicalContext: {
+    problemStatement: "The grant addresses magneto-electric machines that needed a usable output from a moving magnetic relation. Its written solution divides the conductor into numerous connected coil sections and collects current at specific junctions rather than treating one coil as the entire armature.",
+    priorArtLimitations: ["A single winding and fixed terminals cannot provide the same selected-junction collection that the specification describes.", "The source distinguishes its continuous-current arrangement from circuit-breakers, pole-changers, and commutators, while still using metal rubbers to contact moving junction conductors."],
+    breakthroughInsight: "Make the winding an endless series of small coils, expose a conductor at every coil junction, and select the points where like currents meet between unlike poles. The same architecture is then reconnected in one described case for alternating current.",
+    patentWars: [{ rivalName: "Gramme Electrical Co. v. Arnoux & Hochhausen Electric Co., 17 F. 838 (C.C.S.D.N.Y. 1883)", rivalClaim: "Whether US 120,057’s term was constrained by the patentees’ Austrian patent under the 1870 Patent Act.", conflictDetails: "The court record identifies this grant, its August 17, 1870 US filing, the French patent of November 22, 1869, and the Austrian patent issued December 30, 1870.", resolution: "The court held that the US patent expired with the foreign patent having the shortest term that was granted before the US patent was granted.", legalOutcome: "The reported decision concluded that US 120,057 no longer continued after the relevant foreign patent expired; this is a term decision, not a judgment that the technical disclosure was invalid." }],
+    civilizationalImpact: "The document preserves an early, unusually broad family of ring, cylinder, disk, chain, and concentric-winding machines at the foundation of industrial electric generation and motor practice.",
+    aftermath: "The legal record in Gramme Electrical Co. v. Arnoux & Hochhausen Electric Co., 17 F. 838 (C.C.S.D.N.Y. 1883), considered the grant’s expiration in light of foreign-patent terms.",
+  },
+  tags: ["Zénobe Théophile Gramme", "Eardley Louis Charles d’Ivernois", "Dynamo", "Endless bobbin", "Electromagnetic induction", "Electric generator"],
+  stats: { totalClaims: 3, independentClaims: 3 },
 };
