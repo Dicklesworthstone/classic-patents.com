@@ -1,4 +1,7 @@
-import { mergenthalerLinotypeClaims } from "@/data/editions/mergenthalerLinotypeEdition";
+import {
+  mergenthalerLinotypeArchivalEdition,
+  mergenthalerLinotypeClaims,
+} from "@/data/editions/mergenthalerLinotypeEdition";
 import type { Patent } from "@/types/patent";
 
 export const mergenthalerLinotypePatent: Patent = {
@@ -11,7 +14,7 @@ export const mergenthalerLinotypePatent: Patent = {
   inventors: ["Ottmar Mergenthaler"],
   inventorLocation: "Baltimore, Maryland",
   grantDate: "1885-03-03",
-  filingDate: "1884-07-14",
+  filingDate: "1884-08-30",
   era: "Gilded Age & Grid (1870–1900)",
   category: "consumer",
   categoryLabel: "Metallurgy & Mechanical Logic",
@@ -22,30 +25,32 @@ export const mergenthalerLinotypePatent: Patent = {
   originalPdfUrl: "/patents/pdfs/us-313224-mergenthaler-linotype.pdf",
   googlePatentsUrl: "https://patents.google.com/patent/US313224A/en",
   usptoClassification: "B41B 11/00 (Matrix-composing machines / Hot-metal casting)",
+  archivalEdition: mergenthalerLinotypeArchivalEdition,
   originalTextAsset: {
-    url: "/patents/source-text/us-313224-mergenthaler-linotype.txt",
+    url: "/patents/transcripts/us-313224-mergenthaler-linotype-reviewed.txt",
     pageCount: 35,
-    kind: "source-pdf-text-layer",
+    kind: "reviewed-transcription",
+    reviewedBy: "Classic Patents editorial agent (SteelNeedle)",
+    reviewedAt: "2026-08-18",
+    sourcePdfSha256: "d85530ab4302e8be7e4c0ac280d438756f1dd21dabc844f2c5b2e76861d7444a",
   },
   originalText: `UNITED STATES PATENT OFFICE.
-OTTMAR MERGENTHALER, OF BALTIMORE, MARYLAND.
+OTTMAR MERGENTHALER, OF BALTIMORE, MARYLAND, ASSIGNOR TO THE
+NATIONAL TYPOGRAPHIC COMPANY, OF WEST VIRGINIA.
 
 MACHINE FOR PRODUCING PRINTING-BARS.
 
 SPECIFICATION forming part of Letters Patent No. 313,224, dated March 3, 1885.
-Application filed July 14, 1884. Serial No. 137,705. (No model.)
+Application filed August 30, 1884. (No model.)
 
 To all whom it may concern:
-Be it known that I, OTTMAR MERGENTHALER, of Baltimore, in the State of Maryland, have invented certain new and useful Improvements in Machines for Producing Printing-Bars; and I do hereby declare that the following is a full, clear, and exact description of the invention.
+Be it known that I, OTTMAR MERGENTHALER, of Baltimore, in the State of Maryland, have invented certain Improvements in Machines for Producing Printing-Bars, of which the following is a specification.
 
-The object of my invention is to produce with great rapidity and precision cast metal bars or slugs containing upon their edges lines of type-characters ready for use in printing-presses, thereby doing away with the necessity for manual typesetting from type-cases and the subsequent distribution of type by hand.
+This invention is directed to the rapid and economical production of letter-press printing, and relates to a machine to be driven by power, and controlled by finger-keys, adapted to produce printing forms or relief surfaces ready for immediate use, thus avoiding the usual operation of type-setting, and also the more recent plan of preparing by machinery matrices from which to cast the forms.
 
-The invention consists, fundamentally:
-First, in a series of independent matrices or matrix-bars containing type dies or female characters, arranged to be stored in an inclined magazine and released individually by the action of key-levers.
-Second, in an assembling mechanism for gathering the released matrices into a line together with expanding wedge-spacers or spacebands.
-Third, in a line-justifying mechanism which drives the wedges upward to expand the spaces between words until the composed line completely fills the predetermined column measure between fixed jaws.
-Fourth, in a casting apparatus comprising a melting-pot containing molten lead-tin-antimony alloy, a pump plunger to inject the molten metal under pressure through a slotted throat into a water-cooled mold against the justified line of matrices, thereby producing a solid printing bar or slug bearing raised type characters.
-Fifth, in an automatic distributing mechanism whereby the matrices, after the slug has been cast, are elevated to the top of the machine and conveyed along a distributor bar provided with longitudinal ribs having varying combinations of teeth, matching corresponding notches in the matrix teeth, so that each matrix falls by gravity into its own proper channel in the magazine.`,
+By the use of my machine the operator is enabled to produce with great rapidity printing-bars bearing in relief the selected characters in the sequence and arrangement in which they are to be printed. In short, the machine will produce printing forms or surfaces properly justified, and adapted to be used in the same manner and with precisely the same results as the printing-forms composed of movable type.
+
+My machine embraces two leading groups of mechanism: first, those which form a temporary and changing matrix representing a number of words; and second, those by which molten or plastic material is delivered to the matrix and discharged therefrom in the form of printing-bars. These two groups, which will, for convenience of reference, be hereinafter designated as the “matrix mechanism” and the “casting mechanism,” are so combined that the casting of one bar may be carried on while the characters are being designated and the devices adjusted to adapt the matrix for the production of the next bar, whereby time is economized and the capacity of the machine greatly increased.`,
   plainEnglishExplanation: {
     overview:
       "For 400 years after Johannes Gutenberg, printing was constrained by the manual compositor: a typesetter standing over type cases, picking individual pieces of lead type from compartmentalized wooden drawers at a rate of 1,200 to 1,500 characters per hour, manually spacing each line with copper shims, and tediously redistributing every character back to its case after printing. Ottmar Mergenthaler automated this entire lifecycle into a continuous mechanical closed loop, raising typesetting speed six-fold to over 8,000 characters per hour and enabling modern daily newspapers, mass publishing, and universal public education.",

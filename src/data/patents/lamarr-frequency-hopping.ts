@@ -86,12 +86,14 @@ export const lamarrPatent: Patent = {
   originalPdfUrl: "/patents/pdfs/us-2292387-lamarr-frequency-hopping.pdf",
   googlePatentsUrl: "https://patents.google.com/patent/US2292387A/en",
   usptoClassification: "Cl. 250-2 (as printed in the grant)",
+  archivalEdition: lamarrFrequencyHoppingArchivalEdition,
   originalTextAsset: {
-    // The source text layer is retained for private comparison. The current
-    // reviewed ledger is not yet long enough to publish as a complete face.
-    url: "/patents/source-text/us-2292387-lamarr-frequency-hopping.txt",
+    url: "/patents/transcripts/us-2292387-lamarr-frequency-hopping-reviewed.txt",
     pageCount: 7,
-    kind: "source-pdf-text-layer",
+    kind: "reviewed-transcription",
+    reviewedBy: "Classic Patents editorial agent (MossyFortress)",
+    reviewedAt: "2026-08-18",
+    sourcePdfSha256: "8204e975e2ea96f34973b87f3cab20d28604e52596c116af367facb74e319292",
   },
   originalText:
     "Reviewed excerpt only. The complete, hand-prepared source reading is available in the Original Patent Text view. This invention relates broadly to secret communication systems involving the use of carrier waves of different frequencies, and is especially useful in the remote control of dirigible craft, such as torpedoes.",

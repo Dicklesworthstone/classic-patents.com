@@ -1,3 +1,7 @@
+import {
+  hollerithTabulatingArchivalEdition,
+  hollerithTabulatingClaims,
+} from "@/data/editions/hollerithTabulatingEdition";
 import type { Patent } from "@/types/patent";
 
 export const hollerithTabulatingPatent: Patent = {
@@ -21,10 +25,14 @@ export const hollerithTabulatingPatent: Patent = {
   originalPdfUrl: "/patents/pdfs/us-395781-hollerith-tabulating.pdf",
   googlePatentsUrl: "https://patents.google.com/patent/US395781A/en",
   usptoClassification: "G06K 7/04 (Punched-card reading / Electro-mechanical tabulators)",
+  archivalEdition: hollerithTabulatingArchivalEdition,
   originalTextAsset: {
-    url: "/patents/source-text/us-395781-hollerith-tabulating.txt",
+    url: "/patents/transcripts/us-395781-hollerith-tabulating-reviewed.txt",
     pageCount: 17,
-    kind: "source-pdf-text-layer",
+    kind: "reviewed-transcription",
+    reviewedBy: "Classic Patents editorial agent (GPT-5.6)",
+    reviewedAt: "2026-08-18",
+    sourcePdfSha256: "39d7c9879f8386f63f609bd43c0a73c96dbe50943d5d17044733c254b8d5a780",
   },
   originalText: `UNITED STATES PATENT OFFICE.
 HERMAN HOLLERITH, OF WASHINGTON, DISTRICT OF COLUMBIA.
@@ -99,84 +107,280 @@ Fourth, in a sorting box containing separate compartments whose covers are opene
           "The force exerted on the ratchet pawl is proportional to the square of the ampere-turns $(NI)^2$ and inversely proportional to the square of the air gap $g$. An inductive time constant $\\tau = L/R \\approx 12\\text{ ms}$ allowed rapid reading cycles up to 80 cards per minute.",
       },
       {
-        principle: "Discrete Binary Matrix Data Encoding",
+        principle: "Liquid Metal Low-Resistance Ohmic Contact Physics",
         formula:
-          "S_{\\text{card}} = \\sum_{r=1}^{M} \\sum_{c=1}^{N} b_{r,c} \\cdot 2^{(r-1)N + c}, \\quad b_{r,c} \\in \\{0, 1\\}",
+          "R_{\\text{contact}} = \\frac{\\rho_{\\text{Hg}}}{A_{\\text{contact}}} \\approx 0.04\\,\\Omega",
         explanation:
-          "Hollerith treated each physical card coordinate $(r, c)$ as a discrete binary bit cell (perforated = 1, solid = 0), establishing the physical punch card as the universal non-volatile digital data storage standard for 90 years.",
+          "Liquid elemental mercury (resistivity $\\rho = 9.61 \\times 10^{-7}\\ \\Omega\\cdot\\text{m}$) conforms perfectly to brass pin surfaces, preventing contact chatter, oxidation arcing, and mechanical bounce during rapid cycling.",
       },
       {
-        principle: "Combinatorial Boolean Relay Logic",
-        formula:
-          "Y_{\\text{bin}} = \\prod_{i \\in \\text{AND}} X_i \\cdot \\sum_{j \\in \\text{OR}} X_j",
+        principle: "Boolean Relay Logic Network Synthesis",
+        formula: "Y = \\sum_{i} \\prod_{j} X_{ij} \\quad (\\text{Disjunctive Normal Form})",
         explanation:
-          "Wiring electromagnetic relays in series performed hardware logical AND operations, while parallel paths performed logical OR, allowing multi-attribute cross-tabulation without software computation.",
-      },
-      {
-        principle: "Information Entropy & Tabulation Bandwidth",
-        formula:
-          "H_{\\text{census}} = -\\sum_{i=1}^K p_i \\log_2(p_i), \\quad C = \\frac{\\text{Bits}}{\\text{Card}} \\cdot f_{\\text{read}} \\approx 288 \\times 1.33 = 384\\text{ bps}",
-        explanation:
-          "Hollerith's system increased demographic data tabulation bandwidth by a factor of 100 over manual tally sheets, completing the 1890 Census of 62.9 million citizens in months rather than an entire decade.",
-      },
-      {
-        principle: "Mercury-Wetted Micro-Contact Interface Conduction",
-        formula:
-          "R_{\\text{contact}} = \\frac{\\rho_{\\text{brass}} + \\rho_{\\text{Hg}}}{4 a} \\ll R_{\\text{dry contact}}",
-        explanation:
-          "Dipping brass pins into liquid mercury pools created liquid-metal meniscus wetting that eliminated dry-contact bounce, oxide film resistance, and contact degradation across hundreds of thousands of daily actuations.",
+          "Series contact wiring implemented Boolean logical AND (conjunction), while parallel contact wiring implemented Boolean logical OR (disjunction), laying the exact foundation for digital logic gates and relay computers.",
       },
     ],
     whyItMattersToday:
-      "Hollerith's tabulating machine established the digital data processing industry. In 1896, Hollerith founded the Tabulating Machine Company, which merged in 1911 to become the Computing-Tabulating-Recording Company (CTR), renamed in 1924 as **International Business Machines (IBM)**. The punched card format remained the dominant primary input medium for mainframe computers until the arrival of magnetic tape and floppy disks in the 1970s.",
+      "Hollerith's punched card tabulator founded the modern information processing industry. In 1896, Hollerith incorporated the Tabulating Machine Company, which merged in 1911 to become CTR (Computing-Tabulating-Recording Company), renamed by Thomas J. Watson in 1924 as **IBM (International Business Machines)**. The 80-column punched card format remained the primary input/output medium for electronic computers until the late 1970s.",
   },
   claims: [
     {
       number: 1,
       isIndependent: true,
-      originalText:
-        "The herein-described method of compiling statistics, which consists in recording separate statistical items upon non-conducting cards by perforations located at predetermined positions, placing said cards in an apparatus provided with electrical contact-points corresponding to the predetermined positions, and actuating one or more electro-mechanical counters by the electric circuits completed through said perforations.",
+      originalText: hollerithTabulatingClaims[0],
       plainEnglish:
-        "The master data processing claim: recording information as holes in non-conducting cards and reading them with electrical contact points that close circuits to actuate electro-mechanical counters.",
+        "The foundational method claim: preparing separate individual record cards, punching index-points according to a fixed distribution plan to represent individual characteristics, and successively applying the cards to circuit-controlling devices to designate statistical items.",
       keyInnovations: [
-        "Punched card digital data encoding",
-        "Circuit completion through punched apertures",
-        "Automated electro-mechanical counting",
+        "Separate unit-record punched cards",
+        "Standardized index-point distribution plan",
+        "Successive electro-mechanical circuit interrogation",
       ],
       legalSignificance:
-        "The master foundational patent of automated data processing, establishing the patent eligibility of electro-mechanical statistical compilation.",
+        "Established the legal foundation for unit-record data processing and automated census tabulation.",
     },
     {
       number: 2,
-      isIndependent: false,
-      dependsOn: [1],
-      originalText:
-        "In a statistical tabulating apparatus, the combination, with a press having a series of spring-actuated contact-pins and an opposing bed containing mercury-cups, of one or more electromagnetic counters connected in circuit with said pins and cups.",
+      isIndependent: true,
+      originalText: hollerithTabulatingClaims[1],
       plainEnglish:
-        "The sensing press apparatus claim: a press with spring-loaded pins opposed to mercury cups connected to electromagnetic dial registers.",
+        "The batch grouping method: punching characteristic index-points for each individual or item, subdividing the cards into distinct demographic groups, and submitting each group to circuit-controlling devices.",
       keyInnovations: [
-        "Spring-loaded pin sensing matrix",
-        "Mercury-cup liquid electrical contacts",
-        "Parallel multi-circuit actuation",
+        "Hierarchical batch subdivision",
+        "Group-wise statistical compilation",
+        "Segmented electrical interrogation",
       ],
-      legalSignificance:
-        "Protected the physical card-reading press mechanism used across government census bureaus and rail freight offices worldwide.",
     },
     {
       number: 3,
-      isIndependent: false,
-      dependsOn: [1],
-      originalText:
-        "In a statistical compiling system, the combination, with the circuit-closing press and counters, of a sorting-box having separate compartments provided with lids, and electro-magnets in circuit with the press for releasing the lids of said compartments according to the perforations in the card.",
+      isIndependent: true,
+      originalText: hollerithTabulatingClaims[2],
       plainEnglish:
-        "The automated card sorting claim: a sorting cabinet whose compartment lids are popped open by solenoids based on specific punch combinations in the card.",
+        "Standard coordinate grid method: establishing index-points in fixed relative spatial positions against a physical standard, dividing cards into series, and successively tabulating through matching circuit-controlling contacts.",
       keyInnovations: [
-        "Solenoid-triggered sorting compartments",
-        "Concurrent tabulating and physical filing",
-        "Hardware-directed record classification",
+        "Fixed standard spatial coordinate grid",
+        "Mechanical registration against datum standards",
+        "Systematic series compilation",
+      ],
+    },
+    {
+      number: 4,
+      isIndependent: true,
+      originalText: hollerithTabulatingClaims[3],
+      plainEnglish:
+        "Permanent record tablet counting: creating a permanent record by punching index points relative to a standard, separating cards into divisions, and electrically counting single items or multi-point combinations.",
+      keyInnovations: [
+        "Permanent punched record tablet",
+        "Multi-point combinatorial counting",
+        "Electrically enumerated statistical items",
+      ],
+    },
+    {
+      number: 5,
+      isIndependent: true,
+      originalText: hollerithTabulatingClaims[4],
+      plainEnglish:
+        "Space apportionment schema: dividing card surface into separate coordinate spaces, assigning specific statistical categories to spaces, punching individual items into assigned spaces, and successively interrogating the cards.",
+      keyInnovations: [
+        "Field-apportioned demographic layout",
+        "Unitary individual record mapping",
+        "Successive electro-mechanical readout",
+      ],
+    },
+    {
+      number: 6,
+      isIndependent: true,
+      originalText: hollerithTabulatingClaims[5],
+      plainEnglish:
+        "Integrated sorting and classification method: punching individual data into assigned spaces, feeding cards successively to an apparatus that determines their division from punched holes, and automatically depositing each card into its corresponding sorting receptacle.",
+      keyInnovations: [
+        "Automated physical sorting",
+        "Hole-directed record routing",
+        "Concurrent classification and deposition",
+      ],
+    },
+    {
+      number: 7,
+      isIndependent: true,
+      originalText: hollerithTabulatingClaims[6],
+      plainEnglish:
+        "Basic system combination: the combination of electrical circuits, operating electromagnets, contact pins controlling those circuits, and separate record cards bearing circuit-controlling index points.",
+      keyInnovations: [
+        "Punched card and electrical contact pin interface",
+        "Electromagnetic actuator circuits",
+        "Unit record circuit control",
+      ],
+    },
+    {
+      number: 8,
+      isIndependent: true,
+      originalText: hollerithTabulatingClaims[7],
+      plainEnglish:
+        "Cooperative tabulating system: record cards with index points, circuit-controlling apparatus matching the index points, electromagnets connected to the contact devices, and operating electromagnets forming the system.",
+      keyInnovations: [
+        "Matching contact pin grid",
+        "Electromagnetic register coupling",
+        "Integrated electrical compiling network",
+      ],
+    },
+    {
+      number: 9,
+      isIndependent: true,
+      originalText: hollerithTabulatingClaims[8],
+      plainEnglish:
+        "Combinatorial logic counting: cards with index points, circuit controllers with contacts matching the index points, and circuit connections configured to actuate an operating electromagnet upon specific combinations of two or more holes.",
+      keyInnovations: [
+        "Multi-variable Boolean AND logic",
+        "Combinatorial circuit closure",
+        "Conjunctive demographic cross-tabulation",
+      ],
+    },
+    {
+      number: 10,
+      isIndependent: true,
+      originalText: hollerithTabulatingClaims[9],
+      plainEnglish:
+        "Counting and sorting apparatus: cards with index points, circuit-controlling devices, operating counting magnets, and a sorting box with compartments and release magnets actuated by the circuits.",
+      keyInnovations: [
+        "Concurrent counting and physical sorting",
+        "Electromagnetically unlatched sorting bins",
+        "Dual-function tabulating workstation",
+      ],
+    },
+    {
+      number: 11,
+      isIndependent: true,
+      originalText: hollerithTabulatingClaims[10],
+      plainEnglish:
+        "Relay logic matrix: circuit-controlling apparatus, operating circuits, and a system of relays connected between circuits so that two or more circuits together control an operating magnet for compound items.",
+      keyInnovations: [
+        "Intermediate electromagnetic relay logic",
+        "Multi-circuit compound switching",
+        "Hardware Boolean evaluation",
+      ],
+    },
+    {
+      number: 12,
+      isIndependent: true,
+      originalText: hollerithTabulatingClaims[11],
+      plainEnglish:
+        "Intermediate relay network: circuit controllers, circuits, and relays where an operating magnet is energized through a relay controlled by a secondary circuit, enabling flexible cross-tabulation.",
+      keyInnovations: [
+        "Secondary circuit relay control",
+        "Cascaded logic switching",
+        "Isolated actuator driving",
+      ],
+    },
+    {
+      number: 13,
+      isIndependent: true,
+      originalText: hollerithTabulatingClaims[12],
+      plainEnglish:
+        "Single-circuit combined counter and sorter: record card, circuit controllers, and an operating counter magnet and sorting box release magnet both wired into the same circuit for simultaneous actuation.",
+      keyInnovations: [
+        "Single-circuit dual actuation",
+        "Synchronous tally and bin release",
+        "Direct parallel loop wiring",
+      ],
+    },
+    {
+      number: 14,
+      isIndependent: true,
+      originalText: hollerithTabulatingClaims[13],
+      plainEnglish:
+        "Selective multi-circuit sorter: record cards, circuit controllers, and a sorting box with release magnets connected to multiple circuits to sort cards according to designated demographic groups.",
+      keyInnovations: [
+        "Multi-category sorting routing",
+        "Group-selective solenoid release",
+        "Classified card sorting matrix",
+      ],
+    },
+    {
+      number: 15,
+      isIndependent: true,
+      originalText: hollerithTabulatingClaims[14],
+      plainEnglish:
+        "Dial counter with visual index: record cards, circuit controller, operating magnets, and counting dials with movable hands or indices advanced by the magnetic armatures.",
+      keyInnovations: [
+        "Clock dial register readout",
+        "Armature escapement pawl drive",
+        "Visual decimal accumulator dial",
+      ],
+    },
+    {
+      number: 16,
+      isIndependent: true,
+      originalText: hollerithTabulatingClaims[15],
+      plainEnglish:
+        "Primary and secondary multi-dial registers: cards, circuit controller, operating magnets, and a counter with primary dials for units/tens and secondary dials for hundreds/thousands advanced by the primary mechanism.",
+      keyInnovations: [
+        "Multi-stage decimal carry mechanism",
+        "Cascaded odometer-style dial registers",
+        "High-capacity demographic accumulation",
+      ],
+    },
+    {
+      number: 17,
+      isIndependent: true,
+      originalText: hollerithTabulatingClaims[16],
+      plainEnglish:
+        "Interchangeable switchboard tabulator: record cards, circuit controller, operating counters, sorting box, and a flexible switchboard for routing circuits to different counters and sorting bins.",
+      keyInnovations: [
+        "Configurable plugboard/switchboard routing",
+        "Reprogrammable tabulating circuits",
+        "Modular sensor-to-register interconnect",
       ],
       legalSignificance:
-        "Protected the automated sorting and batch categorization of punched cards during data compilation.",
+        "Protected the physical patch panel/plugboard mechanism that became standard across all punch-card computing equipment for over 70 years.",
+    },
+    {
+      number: 18,
+      isIndependent: true,
+      originalText: hollerithTabulatingClaims[17],
+      plainEnglish:
+        "Closed-circuit sensing press: perforated cards, circuit system with operating magnets, and a press with a stationary bed and reciprocating platen carrying spring-loaded contact pins that close circuits through card holes.",
+      keyInnovations: [
+        "Reciprocating platen contact press",
+        "Spring-loaded pin array",
+        "Liquid/solid stationary contact bed",
+      ],
+    },
+    {
+      number: 19,
+      isIndependent: true,
+      originalText: hollerithTabulatingClaims[18],
+      plainEnglish:
+        "Card alignment safety interlock: cards with index points, bed plate with contacts, reciprocating platen with spring pins, card positioning gauges, and a safety ground pin at the card margin that prevents circuit closure until the card is properly aligned.",
+      keyInnovations: [
+        "Card alignment edge gauge",
+        "Margin ground interlock pin",
+        "False-reading misfeed prevention",
+      ],
+    },
+    {
+      number: 20,
+      isIndependent: true,
+      originalText: hollerithTabulatingClaims[19],
+      plainEnglish:
+        "Common ground return bus: record cards, platen contact points, bed contacts, and a series of conductors connecting bed contacts to a common ground bus co-operating with a platen return pin to complete all active circuits.",
+      keyInnovations: [
+        "Common ground return path",
+        "Single-bus circuit completion",
+        "Simplified parallel wiring architecture",
+      ],
+    },
+    {
+      number: 21,
+      isIndependent: true,
+      originalText: hollerithTabulatingClaims[20],
+      plainEnglish:
+        "The complete integrated statistical compilation system: record cards with index points, sensing press apparatus, reconfigurable switchboard, electromagnetic dial counters, and solenoid sorting box cabinets interconnected by a circuit network for concurrent counting and sorting.",
+      keyInnovations: [
+        "Complete integrated tabulating workstation",
+        "End-to-end punched card computing system",
+        "Synchronous multi-dial counting and 24-bin sorting",
+      ],
+      legalSignificance:
+        "The master omnibus system claim protecting the complete electro-mechanical computing architecture commercialized by Hollerith and the Tabulating Machine Company (IBM).",
     },
   ],
   drawings: [
@@ -284,8 +488,8 @@ Fourth, in a sorting box containing separate compartments whose covers are opene
     "Gilded Age",
   ],
   stats: {
-    totalClaims: 3,
-    independentClaims: 1,
+    totalClaims: 21,
+    independentClaims: 21,
     patentWarYears: "1889–1911",
     impactScore: 100,
   },

@@ -2,7 +2,7 @@ import { engelbartMouseArchivalEdition } from "@/data/editions/engelbartMouseEdi
 import type { Patent } from "@/types/patent";
 
 /** Preserved legacy draft; it is intentionally not exported or registered. */
-const legacyEngelbartMousePatent: Patent = {
+const _legacyEngelbartMousePatent: Patent = {
   id: "us-3541541-engelbart-mouse",
   patentNumber: "US 3,541,541",
   title: "X-Y Position Indicator for a Display System",
@@ -316,40 +316,111 @@ export const engelbartMousePatent: Patent = {
   era: "Information Age & Silicon Revolution (1960–1990)",
   category: "computing",
   categoryLabel: "Computing & Human-Computer Interaction",
-  summary: "US 3,541,541 describes a hand-moved X-Y position control for a CRT display system. Two perpendicular wheels, a third ball-bearing support, transducers, and a flexible cable let a computer place and hold a cursor while buttons select display operations.",
-  heroQuote: "The indicator control remains stationary so long as it is left in place; therefore the cursor 20 remains fixed without any effort of the human operator.",
+  summary:
+    "US 3,541,541 describes a hand-moved X-Y position control for a CRT display system. Two perpendicular wheels, a third ball-bearing support, transducers, and a flexible cable let a computer place and hold a cursor while buttons select display operations.",
+  heroQuote:
+    "The indicator control remains stationary so long as it is left in place; therefore the cursor 20 remains fixed without any effort of the human operator.",
   originalPdfUrl: "/patents/pdfs/us-3541541-engelbart-mouse.pdf",
   googlePatentsUrl: "https://patents.google.com/patent/US3541541A/en",
   usptoClassification: "U.S. Cl. 340-324; Int. Cl. H01j 29/70",
-  // The complete authored edition and reviewed ledger remain patent-local
-  // WIP. They are intentionally not bound to the public record until the
-  // ledger achieves full literal parity and root registers its companion map.
-  originalText: "This invention relates to visual display systems and, more particularly, to devices for altering the display at selected locations. One subject of the invention is to provide an X-Y position indicating control mechanism for controlling indications of positions on a cathode ray tube (CRT) display, by movement along a surface which can be other than the face of the CRT.",
+  archivalEdition: engelbartMouseArchivalEdition,
+  originalTextAsset: {
+    url: "/patents/transcripts/us-3541541-engelbart-mouse-reviewed.txt",
+    pageCount: 7,
+    kind: "reviewed-transcription",
+    reviewedBy: "Classic Patents editorial agent (gpt-5.6)",
+    reviewedAt: "2026-08-18",
+    sourcePdfSha256: "2a01a32bc3d4c3eec1745dd77fcb92f1404e02844c640c9c10a451ed3b5791e0",
+  },
+  originalText:
+    "This invention relates to visual display systems and, more particularly, to devices for altering the display at selected locations. One subject of the invention is to provide an X-Y position indicating control mechanism for controlling indications of positions on a cathode ray tube (CRT) display, by movement along a surface which can be other than the face of the CRT.",
   plainEnglishExplanation: {
-    overview: "Engelbart's patent moves pointing from a vertical CRT surface to a control resting on a desk. The hand moves a housing; two perpendicular wheels report the two components of that movement; the computer places a CRT cursor from those signals.",
-    coreMechanism: "For each wheel, translation along its rolling direction produces shaft rotation. The two perpendicular axes separate X and Y displacement; potentiometer voltage, absolute encoder outputs, or signed incremental pulses carry the resulting position information through the cable to the computer.",
+    overview:
+      "Engelbart's patent moves pointing from a vertical CRT surface to a control resting on a desk. The hand moves a housing; two perpendicular wheels report the two components of that movement; the computer places a CRT cursor from those signals.",
+    coreMechanism:
+      "For each wheel, translation along its rolling direction produces shaft rotation. The two perpendicular axes separate X and Y displacement; potentiometer voltage, absolute encoder outputs, or signed incremental pulses carry the resulting position information through the cable to the computer.",
     mechanicalBreakdown: [
-      { title: "Three-point housing support", summary: "Two rimmed wheels and a ball bearing support the housing.", technicalDetails: "The three contacts keep both wheels on the surface and help suppress jitter while the housing is at rest.", archaicTerm: "position indicator control", modernEquivalent: "desk-supported pointing device" },
-      { title: "Orthogonal wheels", summary: "X and Y wheels have perpendicular rotation axes.", technicalDetails: "Each wheel shaft can drive its own transducer, so the computer receives separate signals for the two position components.", archaicTerm: "position wheel", modernEquivalent: "axis encoder wheel" },
-      { title: "Digital readout alternatives", summary: "The specification gives shaft-position and incremental encoder circuits.", technicalDetails: "The incremental embodiments create directional pulses which an up-down counter accumulates; they reduce lead count compared with an absolute multi-output disk.", archaicTerm: "transducer means", modernEquivalent: "rotary position encoder" },
+      {
+        title: "Three-point housing support",
+        summary: "Two rimmed wheels and a ball bearing support the housing.",
+        technicalDetails:
+          "The three contacts keep both wheels on the surface and help suppress jitter while the housing is at rest.",
+        archaicTerm: "position indicator control",
+        modernEquivalent: "desk-supported pointing device",
+      },
+      {
+        title: "Orthogonal wheels",
+        summary: "X and Y wheels have perpendicular rotation axes.",
+        technicalDetails:
+          "Each wheel shaft can drive its own transducer, so the computer receives separate signals for the two position components.",
+        archaicTerm: "position wheel",
+        modernEquivalent: "axis encoder wheel",
+      },
+      {
+        title: "Digital readout alternatives",
+        summary: "The specification gives shaft-position and incremental encoder circuits.",
+        technicalDetails:
+          "The incremental embodiments create directional pulses which an up-down counter accumulates; they reduce lead count compared with an absolute multi-output disk.",
+        archaicTerm: "transducer means",
+        modernEquivalent: "rotary position encoder",
+      },
     ],
     scientificPrinciples: [
-      { principle: "Orthogonal coordinate resolution", formula: "Δx = rθx; Δy = rθy", explanation: "Rolling displacement turns a wheel by angle θ; two perpendicular wheel axes provide separate coordinate measurements." },
-      { principle: "Potentiometer voltage division", formula: "Vout = Vref Rwiper/Rtotal", explanation: "Figure 4 reads each wiper voltage relative to ground to infer the corresponding wheel setting." },
-      { principle: "Signed pulse counting", formula: "N = Nup - Ndown", explanation: "Figures 6 and 7 use direction-sensitive pulse logic and an up-down counter for a digital position result." },
+      {
+        principle: "Orthogonal coordinate resolution",
+        formula: "Δx = rθx; Δy = rθy",
+        explanation:
+          "Rolling displacement turns a wheel by angle θ; two perpendicular wheel axes provide separate coordinate measurements.",
+      },
+      {
+        principle: "Potentiometer voltage division",
+        formula: "Vout = Vref Rwiper/Rtotal",
+        explanation:
+          "Figure 4 reads each wiper voltage relative to ground to infer the corresponding wheel setting.",
+      },
+      {
+        principle: "Signed pulse counting",
+        formula: "N = Nup - Ndown",
+        explanation:
+          "Figures 6 and 7 use direction-sensitive pulse logic and an up-down counter for a digital position result.",
+      },
     ],
-    whyItMattersToday: "The grant is an early primary document for desktop pointing in a computer-controlled display system. Its particular implementation is two orthogonal wheels and a cable, not the later optical sensor familiar in modern mice.",
+    whyItMattersToday:
+      "The grant is an early primary document for desktop pointing in a computer-controlled display system. Its particular implementation is two orthogonal wheels and a cable, not the later optical sensor familiar in modern mice.",
   },
   claims: [1, 2, 3, 4, 5, 6, 7, 8].map((number) => ({
     number,
     isIndependent: number === 1 || number === 5 || number === 8,
-    ...(number >= 2 && number <= 4 ? { dependsOn: [number === 2 || number === 4 ? 1 : 2] } : number === 6 || number === 7 ? { dependsOn: [5] } : {}),
+    ...(number >= 2 && number <= 4
+      ? { dependsOn: [number === 2 || number === 4 ? 1 : 2] }
+      : number === 6 || number === 7
+        ? { dependsOn: [5] }
+        : {}),
     originalText: manualClaimText(number),
     plainEnglish: `Claim ${number} preserves the particular combination and limitations printed in the source edition: it ties the stated X-Y position control, wheel-transducer arrangement, and where applicable its encoder, counter, conductor, or display-system limitation to the legal scope of this claim.`,
     keyInnovations: ["Position wheel", "Digital position signal", "Flexible conductor"],
   })),
-  drawings: [1, 2, 3, 4, 5, 6, 7].map((number) => ({ figureNumber: `Fig. ${number}`, title: `Source drawing Fig. ${number}`, caption: `Facsimile crop of Fig. ${number} from US 3,541,541.`, svgType: "engelbart-mouse", callouts: [] })),
-  historicalContext: { problemStatement: "The source identifies light-pencil use against a CRT as an obstacle because it occupies one hand and obscures the editing area.", priorArtLimitations: ["A light pencil must be held against the CRT.", "A shaft-position encoder can require a large cable."], breakthroughInsight: "A housing resting on two perpendicular wheels and a ball bearing can report position without holding a detector against the screen.", patentWars: [], civilizationalImpact: "The patent documents a desk-surface pointing control coupled to a computer display, including analog and incremental digital signal paths.", aftermath: "This record makes no broader legal-priority claim beyond the reviewed grant." },
+  drawings: [1, 2, 3, 4, 5, 6, 7].map((number) => ({
+    figureNumber: `Fig. ${number}`,
+    title: `Source drawing Fig. ${number}`,
+    caption: `Facsimile crop of Fig. ${number} from US 3,541,541.`,
+    svgType: "engelbart-mouse",
+    callouts: [],
+  })),
+  historicalContext: {
+    problemStatement:
+      "The source identifies light-pencil use against a CRT as an obstacle because it occupies one hand and obscures the editing area.",
+    priorArtLimitations: [
+      "A light pencil must be held against the CRT.",
+      "A shaft-position encoder can require a large cable.",
+    ],
+    breakthroughInsight:
+      "A housing resting on two perpendicular wheels and a ball bearing can report position without holding a detector against the screen.",
+    patentWars: [],
+    civilizationalImpact:
+      "The patent documents a desk-surface pointing control coupled to a computer display, including analog and incremental digital signal paths.",
+    aftermath: "This record makes no broader legal-priority claim beyond the reviewed grant.",
+  },
   tags: ["human-computer interaction", "CRT", "position encoder", "computer mouse"],
   stats: { totalClaims: 8, independentClaims: 3 },
 };

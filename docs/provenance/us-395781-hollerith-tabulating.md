@@ -1,0 +1,48 @@
+# US 395,781 — Art of Compiling Statistics
+
+## Source identity
+
+- **Catalogue id:** `us-395781-hollerith-tabulating`
+- **Granted title:** *Art of Compiling Statistics*
+- **Inventor as printed:** Herman Hollerith, of New York, N. Y.
+- **Grant date:** January 8, 1889
+- **Filing date:** June 8, 1887; Serial No. 240,029
+- **Primary public record:** <https://patents.google.com/patent/US395781A/en>
+- **Pinned local facsimile:** `public/patents/pdfs/us-395781-hollerith-tabulating.pdf`
+- **Retrieved and visually reviewed:** 2026-08-18; two complete page-by-page rendered-image passes.
+- **Rights basis:** The historical United States patent text and drawings are United States Government material and are treated here as public-domain source material.
+- **SHA-256:** `39d7c9879f8386f63f609bd43c0a73c96dbe50943d5d17044733c254b8d5a780`
+- **PDF page count:** 17
+
+## Facsimile map
+
+| PDF page | Material directly checked |
+| --- | --- |
+| 1 | Drawing sheet 1 of 6: Fig. 1; witnesses and inventor signature. |
+| 2 | Drawing sheet 2 of 6: Figs. 2 and 4; witnesses and inventor signature. |
+| 3 | Drawing sheet 3 of 6: Figs. 3 and 5 through 7; witnesses and inventor signature. |
+| 4 | Drawing sheet 4 of 6: Figs. 8 and 9; witnesses and inventor signature. |
+| 5 | Drawing sheet 5 of 6: Figs. 10 through 13; witnesses and inventor signature. |
+| 6 | Drawing sheet 6 of 6: Figs. 14 through 17; witnesses and inventor signature. |
+| 7 | Specification p. 1: Patent Office masthead, identity, formal notice, overview, Figs. 1–17 references. |
+| 8 | Specification p. 2: record-card arrangement and Baltimore mortality-card example. |
+| 9 | Specification p. 3: record-card definition, bed-plate, platen, mercury cups, pins. |
+| 10 | Specification p. 4: classification and sorting-box method. |
+| 11 | Specification p. 5: indicator lids, sorting cabinet, switch-board. |
+| 12 | Specification p. 6: direct circuits, relays, and Figs. 6–9 combinations. |
+| 13 | Specification p. 7: relay systems in Figs. 7 and 8. |
+| 14 | Specification p. 8: Fig. 11 and Fig. 12 circuit combinations and sorting sequence. |
+| 15 | Specification p. 9: Figs. 14–17 circuit variants; claims 1–3 begin. |
+| 16 | Specification p. 10: claims 3–14. |
+| 17 | Specification p. 11: claims 14–21, inventor and witnesses. |
+
+## Editorial and preservation boundary
+
+The immutable PDF above is the facsimile. The intended visitor-facing source
+face is an explicitly typed React/TypeScript archival edition, and the intended
+comparison ledger is `public/patents/transcripts/us-395781-hollerith-tabulating-reviewed.txt`.
+The intended source crops live under
+`public/patents/figures/us-395781-hollerith-tabulating/`. The grant prints 21
+claims and 17 numbered figures. PDF text layers, OCR, and machine drafts are
+research aids only; they are not the public source edition or evidence of its
+completeness.

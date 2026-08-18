@@ -1,0 +1,63 @@
+--- REVIEWED TRANSCRIPTION PAGE 1 OF 7 ---
+
+Nov. 17, 1970. D. C. ENGELBART. 3,541,541.
+X-Y POSITION INDICATOR FOR A DISPLAY SYSTEM. Filed June 21, 1967. 3 Sheets-Sheet 1.
+FIGS. 1, 2, AND 3. INVENTOR: DOUGLAS C. ENGELBART. ATTORNEYS: LINDENBERG & FREILICH.
+
+--- REVIEWED TRANSCRIPTION PAGE 2 OF 7 ---
+
+Nov. 17, 1970. D. C. ENGELBART. 3,541,541.
+X-Y POSITION INDICATOR FOR A DISPLAY SYSTEM. Filed June 21, 1967. 3 Sheets-Sheet 2.
+FIGS. 4, 5, AND 6. INVENTOR: DOUGLAS C. ENGELBART. ATTORNEYS: LINDENBERG & FREILICH.
+
+--- REVIEWED TRANSCRIPTION PAGE 3 OF 7 ---
+
+Nov. 17, 1970. D. C. ENGELBART. 3,541,541.
+X-Y POSITION INDICATOR FOR A DISPLAY SYSTEM. Filed June 21, 1967. 3 Sheets-Sheet 3.
+FIG. 7. INVENTOR: DOUGLAS C. ENGELBART. ATTORNEYS: LINDENBERG & FREILICH.
+
+--- REVIEWED TRANSCRIPTION PAGE 4 OF 7 ---
+
+UNITED STATES PATENT OFFICE. 3,541,541. X-Y POSITION INDICATOR FOR A DISPLAY SYSTEM. Douglas C. Engelbart, Palo Alto, Calif., assignor to Stanford Research Institute, Menlo Park, Calif., a corporation of California. Filed June 21, 1967, Ser. No. 647,872. Int. Cl. H01j 29/70. U.S. Cl. 340-324. 8 Claims. Patented Nov. 17, 1970.
+
+ABSTRACT OF THE DISCLOSURE
+
+An X-Y position indicator control for movement by the hand over any surface to move a cursor over the display on a cathode ray tube, the indicator control generating signals indicating its position to cause a cursor to be displayed on the tube at the corresponding position. The indicator control mechanism contains X and Y position wheels mounted perpendicular to each other, which rotate according to the X and Y movements of the mechanism, and which operate rheostats to send signals along a wire to a computer which controls the CRT display.
+
+BACKGROUND OF THE INVENTION
+
+This invention relates to visual display systems and, more particularly, to devices for altering the display at selected locations.
+
+--- REVIEWED TRANSCRIPTION PAGE 5 OF 7 ---
+
+SUMMARY OF THE INVENTION AND DESCRIPTION OF THE PREFERRED EMBODIMENTS
+
+The foregoing and other objects are realized by an X-Y position indicator control mechanism comprising a small housing adapted to be held in the hand and having two wheels and an idler ball bearing for contacting the surface on which it rests. The two wheels are mounted with their axes perpendicular to each other and each wheel is attached to a potentiometer or other means for indicating its rotation.
+
+FIG. 1 shows a display system constructed in accordance with the invention, comprising a cathode ray tube display 10, a computer system 14 including a typewriter input apparatus 15, and an X-Y position indicator control 16.
+
+--- REVIEWED TRANSCRIPTION PAGE 6 OF 7 ---
+
+The particular mechanical construction shown in FIGS. 2 and 3 are especially well adapted for maintaining accuracy of output and ease of use. The use of only three points of contact, comprising the two wheels and the ball bearing support, help to assure that both wheels will constantly remain in firm contact with the surface on which the position indicator control rests.
+
+I claim:
+
+1. In a display system controlled by a computer whereby the display is alterable in accordance with signals delivered to said computer which indicate positions on said display and changes desired to be made therein, the improvement in a position indicating control apparatus which is movable over a surface to provide position indications corresponding to positions on said display comprising: a housing; a first position wheel rotatably mounted on said housing and having a rim portion extending past the boundaries defined by said housing for supporting said housing on said surface; a second position wheel rotatably mounted on said housing with its axis of rotation oriented perpendicular to the axis of said first wheel, said second position wheel having a rim portion extending past said housing for supporting said housing on said surface; transducer means connected to each of said first and second wheels, for generating digital position indicating signals indicating the degree of rotation of said wheels; and flexible conductor means for connecting said transducer means to said computer, for conducting said position indicating signals to said computer while enabling unrestrained movement of said housing relative to said computer.
+
+--- REVIEWED TRANSCRIPTION PAGE 7 OF 7 ---
+
+2. The improvement in a position indicating control apparatus as defined in claim 1 wherein: said transducer means comprises an incremental encoder connected to said first position wheel and said flexible conductor means for generating first pulses at each predetermined increment of rotation of said first position wheel in a first direction and for generating second pulses at each increment of rotation of said first position wheel in the opposite direction; and including: counter means connected to said flexible conductor means, for generating a digital count indicating the net rotation of said first position wheel.
+
+3. The improvement in a position indicating control apparatus as defined in claim 2 wherein said incremental encoder comprises: a disc connected to said first position wheel having track means, said track means having a plurality of spaced conductor segments; a control contact and a stepping contact disposed along said track means, said control and stepping contacts positioned for the electrical connection of only one of said contacts with said segments at first predetermined angular positions of said disc and for the simultaneous electrical connection of both of said contacts with said segments at second predetermined angular positions of said disc; and logic means connected to said control and stepping contacts for generating said first pulses when said stepping contact makes a first direction of transition between electrical connection with one of said segments and lack of electrical connection with one of said segments at the same time that said control contact is in a first predetermined state of electrical connection with one of said segments and for generating said second pulses.
+
+4. The improvement of a position indicating control apparatus as defined in claim 1 wherein: said transducer means comprises a shaft position encoder having a plurality of outputs and said conductor means comprises a plurality of conductors connected to said outputs of said encoder, whereby to constantly indicate the position of said position indicating apparatus.
+
+5. In a display system controlled by a computer whereby the display is alterable in accordance with signals delivered to said computer which indicate positions on said display and changes desired to be made therein, the improvement in a position indicating control apparatus which is movable over a surface to provide position indications corresponding to positions on said display comprising: a housing; a first position wheel rotatably mounted on said housing and having a rim portion extending past the boundaries defined by said housing for supporting said housing on said surface; a second position wheel rotatably mounted on said housing with its axis of rotation oriented perpendicular to the axis of said first wheel, said second position wheel having a rim portion extending past said housing for supporting said housing on said surface; and transducer means connected to each of said first and second wheels, for generating digital position indicating signals indicating the degree of rotation of said wheels.
+
+6. The improvement described in claim 5 including: coupling means for substantially unrestrained coupling of said transducer means to said computer, to couple said position indicating signals to said computer while enabling substantially unrestrained movement of said housing relative to said computer.
+
+7. The improvement described in claim 5 including: a flexible conductor for connecting said transducer means to said computer, to carry position indicating signals to said computer while enabling substantially unrestrained movement of said housing relative to said computer.
+
+8. A display system for presenting an alterable visual display comprising: cathode ray tube means for providing a visual display; computer means connected to said cathode ray tube means for controlling inputs to said cathode ray tube means to define the visual display thereof, said computer means including means for generating signals defining a cursor for display at variable positions on said cathode ray tube means and means for altering inputs to said tube means to cause a change in the display about the position of said cursor; a position indicator control connected to said computer means, said position indicator control having a housing which contains transducer means for delivering signals for causing movement of said cursor on said cathode ray tube means in response to movement of said housing over a surface; and at least one cathode ray tube display control switch disposed on said position indicator control.
+
+References Cited: 3,304,434 Koster; 3,346,853 Koster et al.; 3,355,730 Neasham. THOMAS B. HABECKER, Primary Examiner. D. L. TRAFTON, Assistant Examiner.

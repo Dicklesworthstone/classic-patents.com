@@ -92,9 +92,9 @@ describe("FrankenSim Physics Telemetry Gate", () => {
     expect(wright.liftNewtons).toBeGreaterThan(0);
 
     // Tesla Motor
-    const tesla = FrankenSimEngine.stepTeslaMotor(60, 2, 15);
-    expect(tesla.magneticFluxDensityTesla).toBe(1.2);
-    expect(tesla.currentAmperes).toBeGreaterThan(0);
+    const tesla = FrankenSimEngine.stepTeslaMotorFig9(60);
+    expect(tesla.poleShiftRpm).toBe(tesla.generatorRpm);
+    expect(tesla.usesGeneratorContactRings).toBe(true);
 
     // Einstein Refrigerator
     const einstein = FrankenSimEngine.stepEinsteinRefrigerator(200, 10, 0.65);

@@ -1,4 +1,8 @@
-import { FERMI_REACTOR_FIGURE_CAPTIONS } from "@/data/editions/fermiReactorEdition";
+import {
+  FERMI_REACTOR_FIGURE_CAPTIONS,
+  fermiReactorArchivalEdition,
+  fermiReactorClaims,
+} from "@/data/editions/fermiReactorEdition";
 import type { Patent } from "@/types/patent";
 
 export const fermiReactorPatent: Patent = {
@@ -21,10 +25,14 @@ export const fermiReactorPatent: Patent = {
   originalPdfUrl: "/patents/pdfs/us-2708656-fermi-reactor.pdf",
   googlePatentsUrl: "https://patents.google.com/patent/US2708656A/en",
   usptoClassification: "G21C 1/00 (Nuclear reactors; Core structures and control)",
+  archivalEdition: fermiReactorArchivalEdition,
   originalTextAsset: {
-    url: "/patents/source-text/us-2708656-fermi-reactor.txt",
+    url: "/patents/transcripts/us-2708656-fermi-reactor-reviewed.txt",
     pageCount: 58,
-    kind: "source-pdf-text-layer",
+    kind: "reviewed-transcription",
+    reviewedBy: "Classic Patents editorial agent (SteelNeedle)",
+    reviewedAt: "2026-08-18",
+    sourcePdfSha256: "e32bdaa34dda164d2ab62273c182c437464f5a2b88e480beabba0fa2aae60ef3",
   },
   originalText: `UNITED STATES PATENT OFFICE
 2,708,656
@@ -122,8 +130,7 @@ The 58-page pinned facsimile comprises 27 drawing sheets, the complete two-colum
     {
       number: 1,
       isIndependent: true,
-      originalText:
-        "A neutronic reactor which comprises a moderator of graphite and natural uranium rods disposed in a geometric pattern therein, the size of the rods and the volume ratio of moderator to uranium being within the area encompassed by the k=1.00 curve of Figure 3, the purity of the graphite and the uranium and the total mass thereof being sufficient to sustain a chain reaction.",
+      originalText: fermiReactorClaims[0].text,
       plainEnglish:
         "This claim is limited to graphite moderator and natural-uranium rods. Their size and graphite-to-uranium volume ratio must fall within the Fig. 3 region marked k=1.00, and the materials and total mass must be sufficient for a self-sustaining chain reaction.",
       keyInnovations: ["Graphite moderator", "Natural-uranium rods", "Fig. 3 criticality contour"],
@@ -133,8 +140,7 @@ The 58-page pinned facsimile comprises 27 drawing sheets, the complete two-colum
     {
       number: 2,
       isIndependent: true,
-      originalText:
-        "A neutronic reactor which comprises a moderator selected from the group consisting of heavy water and graphite and bodies of a thermal neutron fissionable material selected from the group consisting of natural uranium and natural uranium oxide disposed in a geometric pattern therein, each body being surrounded by moderator and the moderator being in a substantially continuous phase, the shape of the bodies and the radius of the bodies and the volume ratio of moderator to thermal neutron fissionable material being within the area encompassed by the k=1.00 curve of Figures 2 through 6, the purity of the moderator and the thermal neutron fissionable material and the total mass thereof being sufficient to sustain a chain reaction.",
+      originalText: fermiReactorClaims[1].text,
       plainEnglish:
         "This broader independent claim permits graphite or heavy water, natural uranium or natural uranium oxide, and several fuel-body shapes. The geometry must fall within the k=1.00 contour regions in Figs. 2–6, with continuous surrounding moderator and enough pure material and mass for a chain reaction.",
       keyInnovations: [
@@ -148,8 +154,7 @@ The 58-page pinned facsimile comprises 27 drawing sheets, the complete two-colum
     {
       number: 3,
       isIndependent: true,
-      originalText:
-        "A neutronic reactor which comprises a moderator of graphite and bodies of natural uranium in the form of spheres disposed in a geometric pattern therein, each body being surrounded by moderator and the moderator being in a substantially continuous phase, the radius of the bodies and the volume ratio of moderator to uranium being within the area encompassed by the k=1.00 curve of Figure 2, the purity of the moderator and the uranium and the total mass thereof being sufficient to sustain a chain reaction.",
+      originalText: fermiReactorClaims[2].text,
       plainEnglish:
         "Claim 3 narrows the construction to natural-uranium spheres in continuous graphite, using the Fig. 2 k=1.00 contour to define the allowed sphere radius and moderator-to-uranium ratio.",
       keyInnovations: [
@@ -163,8 +168,7 @@ The 58-page pinned facsimile comprises 27 drawing sheets, the complete two-colum
     {
       number: 4,
       isIndependent: true,
-      originalText:
-        "A neutronic reactor which comprises a moderator of graphite and bodies of natural uranium oxide in the form of spheres disposed in a geometric pattern therein, each body being surrounded by moderator and the moderator being in a substantially continuous phase, the radius of the bodies and the volume ratio of moderator to uranium oxide being within the area encompassed by the k=1.00 curve of Figure 4, the purity of the moderator and the uranium oxide and the total mass thereof being sufficient to sustain a chain reaction.",
+      originalText: fermiReactorClaims[3].text,
       plainEnglish:
         "Claim 4 is the uranium-oxide-sphere counterpart of claim 3. It requires continuous graphite around each sphere and uses Fig. 4, not Fig. 2, for the k=1.00 geometry range.",
       keyInnovations: [
@@ -176,8 +180,7 @@ The 58-page pinned facsimile comprises 27 drawing sheets, the complete two-colum
     {
       number: 5,
       isIndependent: true,
-      originalText:
-        "A neutronic reactor which comprises a moderator of graphite and bodies of natural uranium oxide in the form of rods disposed in a geometric pattern therein, each body being surrounded by moderator and the moderator being in a substantially continuous phase, the radius of the bodies and the volume ratio of moderator to uranium oxide being within the area encompassed by the k=1.00 curve of Figure 5, the purity of the moderator and the uranium oxide and the total mass thereof being sufficient to sustain a chain reaction.",
+      originalText: fermiReactorClaims[4].text,
       plainEnglish:
         "Claim 5 changes the uranium-oxide bodies from spheres to rods and points to Fig. 5 for the k=1.00 radius and volume-ratio range; the graphite must remain a continuous phase around each body.",
       keyInnovations: [
@@ -189,8 +192,7 @@ The 58-page pinned facsimile comprises 27 drawing sheets, the complete two-colum
     {
       number: 6,
       isIndependent: true,
-      originalText:
-        "A neutronic reactor which comprises a moderator of heavy water and bodies of natural uranium in the form of rods disposed in a geometric pattern therein, each body being surrounded by moderator and the moderator being in a substantially continuous phase, the radius of the bodies and the volume ratio of moderator to uranium being within the area encompassed by the k=1.00 curve of Figure 6, the purity of the moderator and the uranium and the total mass thereof being sufficient to sustain a chain reaction.",
+      originalText: fermiReactorClaims[5].text,
       plainEnglish:
         "Claim 6 covers natural-uranium rods in heavy water. It requires a continuous heavy-water phase and locates the working rod size and moderator-to-uranium ratio on the Fig. 6 k=1.00 contour.",
       keyInnovations: [
@@ -202,8 +204,7 @@ The 58-page pinned facsimile comprises 27 drawing sheets, the complete two-colum
     {
       number: 7,
       isIndependent: true,
-      originalText:
-        "In a neutronic reactor having an active portion comprising a moderator of graphite having dispersed therein uranium containing U235 and U238, the improved construction wherein the uranium is aggregated in the form of bodies substantially free of moderator and of neutron absorbers other than U238, said bodies being in the moderator, geometrically spaced therein, and surrounded by the moderator, the moderator being in a substantially continuous phase, said bodies having all dimensions thereof at least 0.5 centimeter, the purity of the moderator and the uranium, the size and spacing of the bodies of uranium in the moderator, and the total mass of uranium and moderator being sufficient to sustain a chain reaction.",
+      originalText: fermiReactorClaims[6].text,
       plainEnglish:
         "Claim 7 states the broader graphite-lattice construction in terms of uranium containing U-235 and U-238. It requires fuel bodies at least 0.5 cm in every dimension, substantially free of moderator and other absorbers, geometrically spaced and surrounded by a continuous graphite phase, with sufficient purity, size, spacing, and mass for a chain reaction.",
       keyInnovations: [
@@ -215,8 +216,7 @@ The 58-page pinned facsimile comprises 27 drawing sheets, the complete two-colum
     {
       number: 8,
       isIndependent: true,
-      originalText:
-        "In a neutronic reactor having an active portion comprising a mass of moderator selected from the group consisting of graphite and heavy water, having dispersed therein a thermal neutron fissionable material containing a thermal neutron fissionable isotope and an isotope having a resonance absorption for neutrons, the improved construction wherein the thermal neutron fissionable material is aggregated in the form of bodies substantially free of moderator and of neutron absorbers other than said latter isotope, said bodies being in the moderator, geometrically spaced therein, and surrounded by the moderator, the moderator being in a substantially continuous phase, said bodies having all dimensions thereof at least 0.5 centimeter, the purity of the moderator and the thermal neutron fissionable material, the size and spacing of the bodies of fissionable material in the moderator, and the total mass of fissionable material and moderator being sufficient to sustain a chain reaction.",
+      originalText: fermiReactorClaims[7].text,
       plainEnglish:
         "Claim 8 generalizes the 0.5 cm discrete-body lattice to graphite or heavy water and to a fuel that contains both a thermally fissionable isotope and a resonance-absorbing isotope. It preserves the same continuous moderator phase, geometric spacing, purity, and total-mass conditions.",
       keyInnovations: [

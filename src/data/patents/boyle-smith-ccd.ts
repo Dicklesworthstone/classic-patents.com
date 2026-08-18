@@ -1,5 +1,6 @@
 import type { Patent } from "@/types/patent";
 import {
+  boyleSmithCcdArchivalEdition,
   boyleSmithCcdClaimTexts,
   boyleSmithCcdFigureSheets,
 } from "../editions/boyleSmithCcdEdition";
@@ -24,6 +25,15 @@ export const boyleSmithCcdPatent: Patent = {
   originalPdfUrl: "/patents/pdfs/us-3858232-boyle-smith-ccd.pdf",
   googlePatentsUrl: "https://patents.google.com/patent/US3858232A/en",
   usptoClassification: "US 357/24, 357/23, 307/304; Int. Cl. H01L 11/14.",
+  archivalEdition: boyleSmithCcdArchivalEdition,
+  originalTextAsset: {
+    url: "/patents/transcripts/us-3858232-boyle-smith-ccd-reviewed.txt",
+    pageCount: 19,
+    kind: "reviewed-transcription",
+    reviewedBy: "Classic Patents editorial agent (SilverRiver)",
+    reviewedAt: "2026-08-18",
+    sourcePdfSha256: "769ab5a1dc91d51bfeebea53b082de4d9b712deb41c096cdac41aae4d3142ec2",
+  },
   originalText:
     "The source-corrected record points to the reviewed US 3,858,232 facsimile. The former US 3,923,554 text remains preserved as an unserved comparison asset and is not a transcription of this record.",
   plainEnglishExplanation: {

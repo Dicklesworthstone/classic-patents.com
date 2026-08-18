@@ -22,7 +22,7 @@ occupy PDF pages 2 and 3.
 
 | Material | Exact PDF locator | Editorial treatment |
 | --- | --- | --- |
-| Drawing sheet, Figs. 1-4 | PDF p. 1 | Figure-sheet node with selected source-facsimile crops for each cited figure |
+| Drawing sheet, printed identity, Figs. 1-4, inventor/attorney execution, witness signatures | PDF p. 1 | Typed drawing-sheet formal matter, selected source-facsimile crops for each cited figure, and a literal ledger transcription of legible formal text. One second handwritten witness signature is visibly present but not readable enough in this scan to expand without guessing. |
 | Masthead through cylinder recording and playback description | PDF p. 2 | Explicit masthead and ordered, authored source-paragraph nodes |
 | Detachable record, stereotyping, spiral plate, strip, thread/ink alternatives, Claims 1-4, execution, witnesses | PDF p. 3 | Explicit ordered source-paragraph, figure-reference, claim, execution, and witness nodes |
 
@@ -36,9 +36,10 @@ OCR, generated HTML, a PDF text layer, or a formatter's paragraph guesses.
 
 The independently reviewable text ledger is
 `public/patents/transcripts/us-200521-edison-phonograph-reviewed.txt`. It has
-one explicit marker for each page of the pinned PDF. Page 1 records the drawing
-sheet identity; pages 2 and 3 contain the checked specification, all four
-claims, the execution, and witnesses. Page markers belong only to this review
+one explicit marker for each page of the pinned PDF. Page 1 records the printed
+drawing-sheet identity, its four figure labels, legible inventor/attorney
+execution, and witness formal matter; pages 2 and 3 contain the checked
+specification, all four claims, the execution, and witnesses. Page markers belong only to this review
 artifact. The visitor-facing edition remains a continuous document and does
 not impose scan-page breaks on the reading experience.
 
@@ -64,7 +65,7 @@ sheet. The crop is a reader aid, never a substitute for the facsimile:
 | --- | --- |
 | Fig. 1 | `public/patents/figures/us-200521-edison-phonograph-fig-1-source-crop.png` |
 | Fig. 2 | `public/patents/figures/us-200521-edison-phonograph-fig-2-tight-source-crop.png` |
-| Fig. 3 | `public/patents/figures/us-200521-edison-phonograph-fig-3-source-crop.png` |
+| Fig. 3 | `public/patents/figures/us-200521-edison-phonograph-fig-3-complete-source-crop-v2.png` (includes the complete printed Fig. 3 mechanism and label) |
 | Fig. 4 | `public/patents/figures/us-200521-edison-phonograph-fig-4-source-crop.png` |
 
 No labels, linework, or reconstructed annotations are added to these image

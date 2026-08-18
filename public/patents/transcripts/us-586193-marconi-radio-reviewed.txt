@@ -1,0 +1,157 @@
+--- REVIEWED TRANSCRIPTION PAGE 1 OF 11 ---
+(No Model.) 3 Sheets-Sheet 1. G. MARCONI. TRANSMITTING ELECTRICAL SIGNALS. No. 586,193. Patented July 13, 1897. Figures 1, 2, 3, 4, 5, 6: Spark transmitter, oscillator spheres in oil, parabolic reflector, cylindrical parabolic receiver reflector, metallic powder tube detector, and coherer detail. Guglielmo Marconi, Inventor. By his Attorneys, Baldwin, Davidson & Wight.
+
+--- REVIEWED TRANSCRIPTION PAGE 2 OF 11 ---
+(No Model.) 3 Sheets-Sheet 2. G. MARCONI. TRANSMITTING ELECTRICAL SIGNALS. No. 586,193. Patented July 13, 1897. Figures 7, 8, 9: Receiving circuit, battery, relay, Morse sounder/instrument, trembler hammer for shaking the powder tube, and non-inductive resistance shunts across inductive coils. Guglielmo Marconi, Inventor. By his Attorneys, Baldwin, Davidson & Wight.
+
+--- REVIEWED TRANSCRIPTION PAGE 3 OF 11 ---
+(No Model.) 3 Sheets-Sheet 3. G. MARCONI. TRANSMITTING ELECTRICAL SIGNALS. No. 586,193. Patented July 13, 1897. Figures 10, 11, 12: Elevated antenna aerial plates, earth ground connections, balloons and kites for supporting conductor wires, and long-distance signalling arrangements. Guglielmo Marconi, Inventor. By his Attorneys, Baldwin, Davidson & Wight.
+
+--- REVIEWED TRANSCRIPTION PAGE 4 OF 11 ---
+UNITED STATES PATENT OFFICE. GUGLIELMO MARCONI, OF LONDON, ENGLAND. TRANSMITTING ELECTRICAL SIGNALS. SPECIFICATION forming part of Letters Patent No. 586,193, dated July 13, 1897. Application filed December 7, 1896. Serial No. 614,838. (No model.)
+
+To all whom it may concern:
+Be it known that I, GUGLIELMO MARCONI, student, a subject of the King of Italy, residing at 21 Burlington Road, London, in the county of Middlesex, England, have invented certain new and useful Improvements in Transmitting Electrical Impulses and Signals and in Apparatus Therefor, of which the following is a specification.
+
+According to this invention electrical signals, actions, or manifestations are transmitted through the air, earth, or water by means of oscillations of high frequency, such as have been called the "Hertz rays" or "Hertz oscillations." Usually all line-wires are dispensed with.
+
+--- REVIEWED TRANSCRIPTION PAGE 5 OF 11 ---
+Specification columns 3 and 4: Detailed description of the spark transmitter apparatus, induction coil, adjustable balls d and e immersed in insulating oil, parabolic reflectors, and spherical wave radiator constructions.
+
+--- REVIEWED TRANSCRIPTION PAGE 6 OF 11 ---
+Specification columns 5 and 6: Detailed description of the receiving apparatus, evacuated glass tube j, metallic plugs j1 and j2, sensitive metallic powder filling (nickel and silver with trace mercury), connecting plates or wings k and k1, and choking coils k1.
+
+--- REVIEWED TRANSCRIPTION PAGE 7 OF 11 ---
+Specification columns 7 and 8: Detailed description of the local receiving circuits, battery g, sensitive relay n, telegraphic instrument or Morse sounder r, trembler or tapper p for automatically restoring powder resistance, and inductive spark-suppressing resistance shunts.
+
+--- REVIEWED TRANSCRIPTION PAGE 8 OF 11 ---
+Specification columns 9 and 10: Detailed description of elevated conductors, aerial plates t, earth ground connections E, transmission across obstacles, hills, and large distances without line wires, and tuning of receiver resonators to transmitter wavelength.
+
+--- REVIEWED TRANSCRIPTION PAGE 9 OF 11 ---
+Specification columns 11 and 12: Further operating considerations, transmission through water or earth, and opening of the formal claims.
+
+What I claim is:
+
+1. In a receiver for electrical oscillations the combination of an imperfect electrical contact, a circuit through the contact and means actuated by the circuit for shaking the contact.
+
+2. In a receiver for electrical oscillations the combination of an imperfect electrical contact, metallic plates connected to it, a circuit through the contact and means actuated by the circuit for shaking the contact.
+
+3. In a receiver for electrical oscillations the combination of an imperfect electrical contact, metallic plates connected to the contact, choking-coils connected to the contact, a circuit through the contact and means actuated by the circuit for shaking the contact.
+
+4. In a receiver for electrical oscillations the combination of a tube containing metallic powder, a circuit through the powder and means actuated by the circuit for shaking the powder.
+
+5. In a receiver for electrical oscillations the combination of a tube containing metallic powder, metallic plates connected to the powder, a circuit through the powder and means actuated by the circuit for shaking the powder.
+
+6. In a receiver for electrical oscillations the combination of a tube containing metallic powder, metallic plates connected to the powder, choking-coils connected to the powder, a circuit through the coils and powder and means actuated by the circuit for shaking the powder.
+
+7. In a receiver for electrical oscillations the combination of a tube containing a mixture of metallic powders, a circuit through the powder and means actuated by the circuit for shaking the powder.
+
+8. In a receiver for electrical oscillations the combination of a tube containing a mixture of metallic powders, metallic plates connected to the powder, a circuit through the powder and means actuated by the circuit for shaking the powder.
+
+9. In a receiver for electrical oscillations the combination of a tube containing a mixture of metallic powders, metallic plates connected to the powder, choking-coils connected to the powder, a circuit through the coils and powder and means actuated by the circuit for shaking the powder.
+
+10. In a receiver for electrical oscillations the combination of a tube containing a mixture of metallic powder and mercury, a circuit through the powder and means actuated by the circuit for shaking the powder.
+
+11. In a receiver for electrical oscillations the combination of a tube containing a mixture of metallic powder and mercury, metallic plates connected to the powder, a circuit through the powder and means actuated by the circuit for shaking the powder.
+
+12. In a receiver for electrical oscillations the combination of a tube containing a mixture of metallic powder and mercury, metallic plates connected to the powder, choking-coils connected to the powder, a circuit through the coils and powder and means actuated by the circuit for shaking the powder.
+
+13. In a receiver for electrical oscillations the combination of a tube, metallic plugs in the tube, metallic powder between the plugs, a circuit through the plugs and powder and means actuated by the circuit for shaking the powder.
+
+14. In a receiver for electrical oscillations the combination of a tube, metallic plugs in the tube, metallic powder between the plugs, metallic plates connected to the plugs, a circuit through the plugs and powder and means actuated by the circuit for shaking the powder.
+
+15. In a receiver for electrical oscillations the combination of a tube, metallic plugs in the tube, metallic powder between the plugs, metallic plates connected to the plugs, choking-coils connected to the plugs, a circuit through the coils, plugs and powder and means actuated by the circuit for shaking the powder.
+
+16. In a receiver for electrical oscillations the combination of a tube, metallic plugs in the tube, a mixture of metallic powders between the plugs, a circuit through the plugs and powder and means actuated by the circuit for shaking the powder.
+
+17. In a receiver for electrical oscillations the combination of a tube, metallic plugs in the tube, a mixture of metallic powders between the plugs, metallic plates connected to the plugs, a circuit through the plugs and powder and means actuated by the circuit for shaking the powder.
+
+18. In a receiver for electrical oscillations the combination of a tube, metallic plugs in the tube, a mixture of metallic powders between the plugs, metallic plates connected to the plugs, choking-coils connected to the plugs, a circuit through the coils, plugs and powder and means actuated by the circuit for shaking the powder.
+
+19. In a receiver for electrical oscillations the combination of a tube, metallic plugs in the tube, a mixture of metallic powder and mercury between the plugs, a circuit through the plugs and powder and means actuated by the circuit for shaking the powder.
+
+20. In a receiver for electrical oscillations the combination of a tube, metallic plugs in the tube, a mixture of metallic powder and mercury between the plugs, metallic plates connected to the plugs, a circuit through the plugs and powder and means actuated by the circuit for shaking the powder.
+
+--- REVIEWED TRANSCRIPTION PAGE 10 OF 11 ---
+Specification columns 13 and 14: Claims 21 through 40.
+
+21. In a receiver for electrical oscillations the combination of a tube, metallic plugs in the tube, a mixture of metallic powder and mercury between the plugs, metallic plates connected to the plugs, choking-coils connected to the plugs, a circuit through the coils, plugs and powder and means actuated by the circuit for shaking the powder.
+
+22. In a receiver for electrical oscillations the combination of an imperfect electrical contact, a circuit through the contact, a relay actuated by the circuit and means actuated by the relay for shaking the contact.
+
+23. In a receiver for electrical oscillations the combination of an imperfect electrical contact, metallic plates connected to it, a circuit through the contact, a relay actuated by the circuit and means actuated by the relay for shaking the contact.
+
+24. In a receiver for electrical oscillations the combination of an imperfect electrical contact, metallic plates connected to the contact, choking-coils connected to the contact, a circuit through the coils and contact, a relay actuated by the circuit and means actuated by the relay for shaking the contact.
+
+25. In a receiver for electrical oscillations the combination of a tube containing metallic powder, a circuit through the powder, a relay actuated by the circuit and means actuated by the relay for shaking the powder.
+
+26. In a receiver for electrical oscillations the combination of a tube containing metallic powder, metallic plates connected to the powder, a circuit through the powder, a relay actuated by the circuit and means actuated by the relay for shaking the powder.
+
+27. In a receiver for electrical oscillations the combination of a tube containing metallic powder, metallic plates connected to the powder, choking-coils connected to the powder, a circuit through the coils and powder, a relay actuated by the circuit and means actuated by the relay for shaking the powder.
+
+28. In a receiver for electrical oscillations the combination of a tube containing a mixture of metallic powders, a circuit through the powder, a relay actuated by the circuit and means actuated by the relay for shaking the powder.
+
+29. In a receiver for electrical oscillations the combination of a tube containing a mixture of metallic powders, metallic plates connected to the powder, a circuit through the powder, a relay actuated by the circuit and means actuated by the relay for shaking the powder.
+
+30. In a receiver for electrical oscillations the combination of a tube containing a mixture of metallic powders, metallic plates connected to the powder, choking-coils connected to the powder, a circuit through the coils and powder, a relay actuated by the circuit and means actuated by the relay for shaking the powder.
+
+31. In a receiver for electrical oscillations the combination of a tube containing a mixture of metallic powder and mercury, a circuit through the powder, a relay actuated by the circuit and means actuated by the relay for shaking the powder.
+
+32. In a receiver for electrical oscillations the combination of a tube containing a mixture of metallic powder and mercury, metallic plates connected to the powder, a circuit through the powder, a relay actuated by the circuit and means actuated by the relay for shaking the powder.
+
+33. In a receiver for electrical oscillations the combination of a tube containing a mixture of metallic powder and mercury, metallic plates connected to the powder, choking-coils connected to the powder, a circuit through the coils and powder, a relay actuated by the circuit and means actuated by the relay for shaking the powder.
+
+34. In a receiver for electrical oscillations the combination of a tube, metallic plugs in the tube, metallic powder between the plugs, a circuit through the plugs and powder, a relay actuated by the circuit and means actuated by the relay for shaking the powder.
+
+35. In a receiver for electrical oscillations the combination of a tube, metallic plugs in the tube, metallic powder between the plugs, metallic plates connected to the plugs, a circuit through the plugs and powder, a relay actuated by the circuit and means actuated by the relay for shaking the powder.
+
+36. In a receiver for electrical oscillations the combination of a tube, metallic plugs in the tube, metallic powder between the plugs, metallic plates connected to the plugs, choking-coils connected to the plugs, a circuit through the coils, plugs and powder, a relay actuated by the circuit and means actuated by the relay for shaking the powder.
+
+37. In a receiver for electrical oscillations the combination of a tube, metallic plugs in the tube, a mixture of metallic powders between the plugs, a circuit through the plugs and powder, a relay actuated by the circuit and means actuated by the relay for shaking the powder.
+
+38. In a receiver for electrical oscillations the combination of a tube, metallic plugs in the tube, a mixture of metallic powders between the plugs, metallic plates connected to the plugs, a circuit through the plugs and powder, a relay actuated by the circuit and means actuated by the relay for shaking the powder.
+
+39. In a receiver for electrical oscillations the combination of a tube, metallic plugs in the tube, a mixture of metallic powders between the plugs, metallic plates connected to the plugs, choking-coils connected to the plugs, a circuit through the coils, plugs and powder, a relay actuated by the circuit and means actuated by the relay for shaking the powder.
+
+40. In a receiver for electrical oscillations the combination of a tube, metallic plugs in the tube, a mixture of metallic powder and mercury between the plugs, a circuit through the plugs and powder, a relay actuated by the circuit and means actuated by the relay for shaking the powder.
+
+--- REVIEWED TRANSCRIPTION PAGE 11 OF 11 ---
+Specification columns 15 and 16: Claims 41 through 56 and signatures.
+
+41. In a receiver for electrical oscillations the combination of a tube, metallic plugs in the tube, a mixture of metallic powder and mercury between the plugs, metallic plates connected to the plugs, a circuit through the plugs and powder, a relay actuated by the circuit and means actuated by the relay for shaking the powder.
+
+42. In a receiver for electrical oscillations the combination of a tube, metallic plugs in the tube, a mixture of metallic powder and mercury between the plugs, metallic plates connected to the plugs, choking-coils connected to the plugs, a circuit through the coils, plugs and powder, a relay actuated by the circuit and means actuated by the relay for shaking the powder.
+
+43. The combination of a spark-producer at the transmitting-station, an earth connection to one end of the spark-producer, an insulated conductor connected to the other end, an imperfect electrical contact at the receiving-station, an earth connection to one end of the contact, an insulated conductor connected to the other end and a circuit through the contact.
+
+44. The combination of a spark-producer at the transmitting-station, an earth connection to one end of the spark-producer, an insulated conductor connected to the other end, an imperfect electrical contact at the receiving-station, an earth connection to one end of the contact, an insulated conductor connected to the other end, a circuit through the contact and means actuated by the circuit for shaking the contact.
+
+45. The combination of a spark-producer at the transmitting-station, an earth connection to one end of the spark-producer, an insulated conductor connected to the other end, an imperfect electrical contact at the receiving-station, choking-coils connected to each end of the contact, an earth connection to one end of the imperfect contact, an insulated conductor connected to the other end and a circuit through the coils and contact.
+
+46. The combination of a spark-producer at the transmitting-station, an earth connection to one end of the spark-producer, an insulated conductor connected to the other end, an imperfect electrical contact at the receiving-station, choking-coils connected to each end of the contact, an earth connection to one end of the imperfect contact, an insulated conductor connected to the other end, a circuit through the coils and contact and means actuated by the circuit for shaking the contact.
+
+47. The combination of a spark-producer at the transmitting-station, an earth connection to one end of the spark-producer, an insulated conductor connected to the other end, a tube containing metallic powder at the receiving-station, an earth connection to one end of the powder, an insulated conductor connected to the other end and a circuit through the powder.
+
+48. The combination of a spark-producer at the transmitting-station, an earth connection to one end of the spark-producer, an insulated conductor connected to the other end, a tube containing metallic powder at the receiving-station, an earth connection to one end of the powder, an insulated conductor connected to the other end, a circuit through the powder and means actuated by the circuit for shaking the powder.
+
+49. The combination of a spark-producer at the transmitting-station, an earth connection to one end of the spark-producer, an insulated conductor connected to the other end, a tube containing metallic powder at the receiving-station, choking-coils connected to each end of the powder, an earth connection to one end of the powder, an insulated conductor connected to the other end and a circuit through the coils and powder.
+
+50. The combination of a spark-producer at the transmitting-station, an earth connection to one end of the spark-producer, an insulated conductor connected to the other end, a tube containing metallic powder at the receiving-station, choking-coils connected to each end of the powder, an earth connection to one end of the powder, an insulated conductor connected to the other end, a circuit through the coils and powder and means actuated by the circuit for shaking the powder.
+
+51. The combination of a spark-producer at the transmitting-station, an earth connection to one end of the spark-producer, an insulated conductor connected to the other end, a tube containing metallic powder at the receiving-station, choking-coils and earth connection through condensers connected to each end of the powder, a circuit through the coils and powder and means actuated by the circuit for shaking the powder.
+
+52. In a receiver for electrical oscillations, the combination of an imperfect electrical contact, a circuit through the contact, an electric trembler shaking the contact, and means for preventing the self-induction of the trembler from affecting the contact.
+
+53. A receiver for electrical oscillatory impulses having a medium whose electrical resistance is altered by the received electrical oscillations, a trembler or shaker for acting upon the variable-resistance medium to restore it to its normal condition of electrical resistance, and means for controlling such trembler to cause it to act upon the variable-resistance medium to restore it to its normal condition after each reception of such oscillatory impulses.
+
+54. A receiver for electrical oscillatory impulses having a medium whose electrical resistance is altered by the received electrical oscillations, a trembler or shaker for acting upon the variable-resistance medium to restore it to its normal condition of electrical resistance, means controlling such trembler to cause it to act upon the variable-resistance medium to restore it to its normal condition after each reception of such oscillatory impulses, and means for rendering manifest said electrical oscillatory impulses consecutively received, whereby defined signals may be given out by the receiver.
+
+55. The combination of a transmitter capable of producing at will of the operator electric oscillatory impulses or rays, and a receiver responsive thereto having a variable-resistance medium whose resistance is altered by such received oscillatory impulses, means controlled by the received oscillations for restoring such medium to its normal condition after each reception of such oscillations, and means for rendering manifest the received oscillations, whereby signals sent from the transmitter may be received upon the receiver.
+
+56. The combination of a transmitter capable of producing electrical oscillations or rays at the will of the operator, and a receiver located at a distance and having a conductor tuned to respond to such oscillations, a variable-resistance medium, in circuit with the conductor, whose resistance is altered by the received oscillations, means controlled by the received oscillations for restoring the resistance medium to its normal condition after each reception of such oscillations, and means for rendering the received oscillations manifest.
+
+GUGLIELMO MARCONI.
+
+Witnesses:
+GEO. J. B. FRANKLIN,
+W. H. BALLANTYNE.

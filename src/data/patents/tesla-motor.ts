@@ -39,9 +39,9 @@ The practical solution of the problem of the electrical conversion and transmiss
 My present invention is directed to the production and improvement of apparatus capable of more nearly meeting these requirements than those heretofore available, and though I have described various means for the purpose, they involve the same main principles of construction and mode of operation, which may be described as follows: A motor is employed in which there are two or more independent circuits through which alternate currents are passed at proper intervals, in the manner hereinafter described, for the purpose of effecting a progressive shifting of the magnetism or of the “lines of force” in accordance with the well-known theory, and a consequent action of the motor.`,
   plainEnglishExplanation: {
     overview:
-      "Tesla's stated problem is a practical transmission-and-conversion system: a motor should hold a substantially uniform speed through normal loads, use simpler and more reliable apparatus, and reduce the danger associated with high-tension transmission. This grant answers with two or more motor circuits that receive alternating currents at proper intervals. Their changing magnetic effects shift the places of greatest attraction around the motor, and a disk or armature follows that shift. The document gives several arrangements, including directly connected motor and generator circuits; it should not be read as a complete specification of every later squirrel-cage induction motor.",
+      "Tesla's stated problem is a practical transmission-and-conversion system: a motor should hold a substantially uniform speed through normal loads, use simpler and more reliable apparatus, and reduce the danger associated with high-tension transmission. This grant answers with two or more motor circuits that receive alternating currents at proper intervals. Their changing magnetic effects shift the places of greatest attraction around the motor, and a disk or armature follows that shift. The document gives several arrangements, including directly connected motor and generator circuits; it does not specify every later alternating-current motor construction.",
     coreMechanism:
-      "For the two-circuit arrangement, one generator coil can be near zero while the other is at a maximum; an eighth turn later both contribute, and the resultant motor-pole direction lies between the two coil axes. In compact form, the resultant field is the vector sum B_resultant = B₁ + B₂. Tesla traces that sum through eight generator positions and says that one generator revolution shifts the motor's poles around the ring once. The free magnetic disk follows the moving position of greatest attraction. Other illustrated arrangements use three circuits, fixed coils, or windings on both field and armature, but retain the same causal chain: timed currents, progressive pole shift, then mechanical rotation.",
+      "For the two-circuit arrangement, one generator coil can be near zero while the other is at a maximum; an eighth turn later both contribute, and the resultant motor-pole direction lies between the two coil axes. In modern vector notation, the teaching shorthand is B_net = B_B + B_B′. Tesla traces that resultant through eight generator positions and says that one generator revolution shifts the motor's poles around the ring once. The free magnetic disk follows the moving position of greatest attraction. Other illustrated arrangements use three circuits, fixed coils, or windings on both field and armature, but retain the same causal chain: timed currents, progressive pole shift, then mechanical rotation.",
     mechanicalBreakdown: [
       {
         title: "Independent motor circuits",
@@ -57,7 +57,7 @@ My present invention is directed to the production and improvement of apparatus 
         summary:
           "A magnetic disk or a wound armature turns within a ring or field structure as the field's attractive region moves.",
         technicalDetails:
-          "Figure 9 places magnetic disk D inside annular ring R. Tesla says the disk takes the position embracing the greatest possible number of magnetic lines and therefore follows the moving points of greatest attraction. Later figures instead use a wound drum armature, a disk between stationary coils, or a field and armature both supplied with coils. The grant does not describe a squirrel-cage rotor.",
+          "Figure 9 places magnetic disk D inside annular ring R. Tesla says the disk takes the position embracing the greatest possible number of magnetic lines and therefore follows the moving points of greatest attraction. Later figures instead use a wound drum armature, a disk between stationary coils, or a field and armature both supplied with coils. The grant does not specify a single universal rotor construction.",
         archaicTerm: "armature",
         modernEquivalent: "the motor's rotating magnetic element",
       },
@@ -84,26 +84,28 @@ My present invention is directed to the production and improvement of apparatus 
     scientificPrinciples: [
       {
         principle: "Superposition of the magnetic effects",
-        formula: "B_resultant = B₁ + B₂",
+        formula: "\\mathbf{B}_{\\mathrm{net}} = \\mathbf{B}_{B} + \\mathbf{B}_{B'}",
         explanation:
           "Tesla's sequence diagrams combine the magnetic effects from separate coil pairs. As the relative strengths and directions change, the resultant pole position advances around the ring. The source illustrates positions rather than supplying a modern sinusoidal field equation.",
       },
       {
         principle: "Synchronous relation in the Figure 9 form",
-        formula: "one generator revolution → one full shift of the motor poles",
+        formula:
+          "\\Delta\\theta_{\\mathrm{poles}} = 2\\pi \\quad \\text{per generator revolution in Fig. 9}",
         explanation:
           "Tesla says that one generator-armature revolution moves the attractive region around the ring once. In that construction he reports that the disk motion is synchronous with the generator armature, subject to the arrangement and normal working conditions he describes.",
       },
       {
         principle: "Relative movement of two magnetic patterns",
         formula:
-          "field advance one way + armature advance the other way → greater relative rotation",
+          "\\Delta\\theta_{\\mathrm{relative}} = \\Delta\\theta_{\\mathrm{field}} - \\Delta\\theta_{\\mathrm{armature}}",
         explanation:
-          "For Figures 17 and 19, the wiring shifts the field-magnet's high-attraction regions opposite to those on the armature. Tesla states that this arrangement increases the speed of rotation. The grant does not provide a modern torque-versus-slip curve.",
+          "For Figures 17 and 19, the wiring shifts the field-magnet's high-attraction regions opposite to those on the armature. Tesla states that this arrangement increases the speed of rotation. The grant does not provide a modern torque characteristic.",
       },
       {
         principle: "Core subdivision",
-        formula: "smaller separated iron sections → fewer circulating induced currents in the core",
+        formula:
+          "P_{\\mathrm{circulating}} \\propto d^2 \\quad \\text{(modern explanatory shorthand)}",
         explanation:
           "The drum-armature core is to be split up as far as practicable to prevent circulating currents of induction. The grant gives that constructional reason but does not assign a modern material, thickness, frequency, or numerical efficiency to the laminations.",
       },

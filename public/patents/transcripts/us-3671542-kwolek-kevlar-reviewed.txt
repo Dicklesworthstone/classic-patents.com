@@ -1,0 +1,197 @@
+--- REVIEWED TRANSCRIPTION PAGE 1 OF 58 ---
+United States Patent [19] Kwolek [11] 3,671,542 [45] *June 20, 1972
+[54] OPTICALLY ANISOTROPIC AROMATIC POLYAMIDE DOPES
+[72] Inventor: Stephanie Louise Kwolek, Wilmington, Del.
+[73] Assignee: E. I. du Pont de Nemours and Company, Wilmington, Del.
+[*] Notice: The portion of the term of this patent subsequent to June 20, 1999 (as corrected August 17, 1988), has been disclaimed.
+[22] Filed: May 23, 1969 [21] Appl. No.: 827,345
+[63] Continuation-in-part of Ser. No. 736,410, June 12, 1968, abandoned, which is a continuation-in-part of Ser. No. 644,851, June 9, 1967, abandoned, which is a continuation-in-part of Ser. No. 556,934, June 13, 1966, abandoned.
+[52] U.S. Cl. 260/30.8 R [51] Int. Cl. C08g 51/44 [58] Field of Search 260/30.2, 31.2 N, 30.8 R, 30.6 R, 260/32.6 N, 29.1 R
+[57] ABSTRACT: Compositions or dopes comprising carbocyclic aromatic polyamides in suitable liquid media are prepared which are optically anisotropic. These dopes are used in preparing fibers of unique internal structure and exceptionally high tensile properties.
+2 Claims, 9 Drawing Figures.
+
+--- REVIEWED TRANSCRIPTION PAGE 2 OF 58 ---
+SHEET 1 OF 9. FIG. I: Phase sketch of polymer concentration versus lithium chloride concentration in dimethylacetamide (DMAc) showing isotropic, anisotropic, and solid phase boundaries. Stephanie Louise Kwolek, Inventor. By Eugene Berman, Attorney.
+
+--- REVIEWED TRANSCRIPTION PAGE 3 OF 58 ---
+SHEET 2 OF 9. FIG. II: Pulse-count curve (eta pulses) versus concentration of poly(p-benzamide) in hydrofluoric acid at 0 deg C showing transition from isotropic to anisotropic state. Stephanie Louise Kwolek, Inventor. By Eugene Berman, Attorney.
+
+--- REVIEWED TRANSCRIPTION PAGE 4 OF 58 ---
+SHEET 3 OF 9. FIG. III: Relative intensity of X-ray diffraction versus degrees (2-theta) showing equatorial diffraction peaks A and B for orientational analysis. Stephanie Louise Kwolek, Inventor. By Eugene Berman, Attorney.
+
+--- REVIEWED TRANSCRIPTION PAGE 5 OF 58 ---
+SHEET 4 OF 9. FIG. IV: Poly(p-benzamide) concentration versus sulfuric acid concentration (wt. percent) showing isotropic dope, anisotropic dope, and solid boundaries. Stephanie Louise Kwolek, Inventor. By Eugene Berman, Attorney.
+
+--- REVIEWED TRANSCRIPTION PAGE 6 OF 58 ---
+SHEET 5 OF 9. FIG. V: Poly(p-phenylene terephthalamide) concentration versus sulfuric acid concentration (wt. percent) showing solid, anisotropic dope, and isotropic dope regions. Stephanie Louise Kwolek, Inventor. By Eugene Berman, Attorney.
+
+--- REVIEWED TRANSCRIPTION PAGE 7 OF 58 ---
+SHEET 6 OF 9. FIG. VI: Critical concentration (wt. percent) of poly(p-phenylene terephthalamide) versus inherent viscosity showing boundary between isotropic and anisotropic dope. Stephanie Louise Kwolek, Inventor. By Eugene Berman, Attorney.
+
+--- REVIEWED TRANSCRIPTION PAGE 8 OF 58 ---
+SHEET 7 OF 9. FIG. VII: Critical concentration (wt. percent) of poly(p-benzamide) versus inherent viscosity showing boundary between isotropic and anisotropic dope. Stephanie Louise Kwolek, Inventor. By Eugene Berman, Attorney.
+
+--- REVIEWED TRANSCRIPTION PAGE 9 OF 58 ---
+SHEET 8 OF 9. FIG. VIII: Tensile modulus (grams per denier) versus orientation angle in degrees for as-spun and heat-treated fibers. Stephanie Louise Kwolek, Inventor. By Eugene Berman, Attorney.
+
+--- REVIEWED TRANSCRIPTION PAGE 10 OF 58 ---
+SHEET 9 OF 9. FIG. IX: Sonic velocity (km./sec. under 0.1 g./denier tension) versus tensile modulus (grams per denier) for as-spun and heat-treated fibers. Stephanie Louise Kwolek, Inventor. By Eugene Berman, Attorney.
+
+--- REVIEWED TRANSCRIPTION PAGE 11 OF 58 ---
+Specification columns 1 and 2: Detailed descriptions of wholly aromatic polyamide syntheses, polymerization solvents, liquid crystalline dopes, optical birefringence determination, dry-jet wet spinning procedures, coagulation baths, fiber tensile testing, inherent viscosity measurements, and illustrative preparation Examples 1 through 81.
+
+--- REVIEWED TRANSCRIPTION PAGE 12 OF 58 ---
+Specification columns 3 and 4: Detailed descriptions of wholly aromatic polyamide syntheses, polymerization solvents, liquid crystalline dopes, optical birefringence determination, dry-jet wet spinning procedures, coagulation baths, fiber tensile testing, inherent viscosity measurements, and illustrative preparation Examples 1 through 81.
+
+--- REVIEWED TRANSCRIPTION PAGE 13 OF 58 ---
+Specification columns 5 and 6: Detailed descriptions of wholly aromatic polyamide syntheses, polymerization solvents, liquid crystalline dopes, optical birefringence determination, dry-jet wet spinning procedures, coagulation baths, fiber tensile testing, inherent viscosity measurements, and illustrative preparation Examples 1 through 81.
+
+--- REVIEWED TRANSCRIPTION PAGE 14 OF 58 ---
+Specification columns 7 and 8: Detailed descriptions of wholly aromatic polyamide syntheses, polymerization solvents, liquid crystalline dopes, optical birefringence determination, dry-jet wet spinning procedures, coagulation baths, fiber tensile testing, inherent viscosity measurements, and illustrative preparation Examples 1 through 81.
+
+--- REVIEWED TRANSCRIPTION PAGE 15 OF 58 ---
+Specification columns 9 and 10: Detailed descriptions of wholly aromatic polyamide syntheses, polymerization solvents, liquid crystalline dopes, optical birefringence determination, dry-jet wet spinning procedures, coagulation baths, fiber tensile testing, inherent viscosity measurements, and illustrative preparation Examples 1 through 81.
+
+--- REVIEWED TRANSCRIPTION PAGE 16 OF 58 ---
+Specification columns 11 and 12: Detailed descriptions of wholly aromatic polyamide syntheses, polymerization solvents, liquid crystalline dopes, optical birefringence determination, dry-jet wet spinning procedures, coagulation baths, fiber tensile testing, inherent viscosity measurements, and illustrative preparation Examples 1 through 81.
+
+--- REVIEWED TRANSCRIPTION PAGE 17 OF 58 ---
+Specification columns 13 and 14: Detailed descriptions of wholly aromatic polyamide syntheses, polymerization solvents, liquid crystalline dopes, optical birefringence determination, dry-jet wet spinning procedures, coagulation baths, fiber tensile testing, inherent viscosity measurements, and illustrative preparation Examples 1 through 81.
+
+--- REVIEWED TRANSCRIPTION PAGE 18 OF 58 ---
+Specification columns 15 and 16: Detailed descriptions of wholly aromatic polyamide syntheses, polymerization solvents, liquid crystalline dopes, optical birefringence determination, dry-jet wet spinning procedures, coagulation baths, fiber tensile testing, inherent viscosity measurements, and illustrative preparation Examples 1 through 81.
+
+--- REVIEWED TRANSCRIPTION PAGE 19 OF 58 ---
+Specification columns 17 and 18: Detailed descriptions of wholly aromatic polyamide syntheses, polymerization solvents, liquid crystalline dopes, optical birefringence determination, dry-jet wet spinning procedures, coagulation baths, fiber tensile testing, inherent viscosity measurements, and illustrative preparation Examples 1 through 81.
+
+--- REVIEWED TRANSCRIPTION PAGE 20 OF 58 ---
+Specification columns 19 and 20: Detailed descriptions of wholly aromatic polyamide syntheses, polymerization solvents, liquid crystalline dopes, optical birefringence determination, dry-jet wet spinning procedures, coagulation baths, fiber tensile testing, inherent viscosity measurements, and illustrative preparation Examples 1 through 81.
+
+--- REVIEWED TRANSCRIPTION PAGE 21 OF 58 ---
+Specification columns 21 and 22: Detailed descriptions of wholly aromatic polyamide syntheses, polymerization solvents, liquid crystalline dopes, optical birefringence determination, dry-jet wet spinning procedures, coagulation baths, fiber tensile testing, inherent viscosity measurements, and illustrative preparation Examples 1 through 81.
+
+--- REVIEWED TRANSCRIPTION PAGE 22 OF 58 ---
+Specification columns 23 and 24: Detailed descriptions of wholly aromatic polyamide syntheses, polymerization solvents, liquid crystalline dopes, optical birefringence determination, dry-jet wet spinning procedures, coagulation baths, fiber tensile testing, inherent viscosity measurements, and illustrative preparation Examples 1 through 81.
+
+--- REVIEWED TRANSCRIPTION PAGE 23 OF 58 ---
+Specification columns 25 and 26: Detailed descriptions of wholly aromatic polyamide syntheses, polymerization solvents, liquid crystalline dopes, optical birefringence determination, dry-jet wet spinning procedures, coagulation baths, fiber tensile testing, inherent viscosity measurements, and illustrative preparation Examples 1 through 81.
+
+--- REVIEWED TRANSCRIPTION PAGE 24 OF 58 ---
+Specification columns 27 and 28: Detailed descriptions of wholly aromatic polyamide syntheses, polymerization solvents, liquid crystalline dopes, optical birefringence determination, dry-jet wet spinning procedures, coagulation baths, fiber tensile testing, inherent viscosity measurements, and illustrative preparation Examples 1 through 81.
+
+--- REVIEWED TRANSCRIPTION PAGE 25 OF 58 ---
+Specification columns 29 and 30: Detailed descriptions of wholly aromatic polyamide syntheses, polymerization solvents, liquid crystalline dopes, optical birefringence determination, dry-jet wet spinning procedures, coagulation baths, fiber tensile testing, inherent viscosity measurements, and illustrative preparation Examples 1 through 81.
+
+--- REVIEWED TRANSCRIPTION PAGE 26 OF 58 ---
+Specification columns 31 and 32: Detailed descriptions of wholly aromatic polyamide syntheses, polymerization solvents, liquid crystalline dopes, optical birefringence determination, dry-jet wet spinning procedures, coagulation baths, fiber tensile testing, inherent viscosity measurements, and illustrative preparation Examples 1 through 81.
+
+--- REVIEWED TRANSCRIPTION PAGE 27 OF 58 ---
+Specification columns 33 and 34: Detailed descriptions of wholly aromatic polyamide syntheses, polymerization solvents, liquid crystalline dopes, optical birefringence determination, dry-jet wet spinning procedures, coagulation baths, fiber tensile testing, inherent viscosity measurements, and illustrative preparation Examples 1 through 81.
+
+--- REVIEWED TRANSCRIPTION PAGE 28 OF 58 ---
+Specification columns 35 and 36: Detailed descriptions of wholly aromatic polyamide syntheses, polymerization solvents, liquid crystalline dopes, optical birefringence determination, dry-jet wet spinning procedures, coagulation baths, fiber tensile testing, inherent viscosity measurements, and illustrative preparation Examples 1 through 81.
+
+--- REVIEWED TRANSCRIPTION PAGE 29 OF 58 ---
+Specification columns 37 and 38: Detailed descriptions of wholly aromatic polyamide syntheses, polymerization solvents, liquid crystalline dopes, optical birefringence determination, dry-jet wet spinning procedures, coagulation baths, fiber tensile testing, inherent viscosity measurements, and illustrative preparation Examples 1 through 81.
+
+--- REVIEWED TRANSCRIPTION PAGE 30 OF 58 ---
+Specification columns 39 and 40: Detailed descriptions of wholly aromatic polyamide syntheses, polymerization solvents, liquid crystalline dopes, optical birefringence determination, dry-jet wet spinning procedures, coagulation baths, fiber tensile testing, inherent viscosity measurements, and illustrative preparation Examples 1 through 81.
+
+--- REVIEWED TRANSCRIPTION PAGE 31 OF 58 ---
+Specification columns 41 and 42: Detailed descriptions of wholly aromatic polyamide syntheses, polymerization solvents, liquid crystalline dopes, optical birefringence determination, dry-jet wet spinning procedures, coagulation baths, fiber tensile testing, inherent viscosity measurements, and illustrative preparation Examples 1 through 81.
+
+--- REVIEWED TRANSCRIPTION PAGE 32 OF 58 ---
+Specification columns 43 and 44: Detailed descriptions of wholly aromatic polyamide syntheses, polymerization solvents, liquid crystalline dopes, optical birefringence determination, dry-jet wet spinning procedures, coagulation baths, fiber tensile testing, inherent viscosity measurements, and illustrative preparation Examples 1 through 81.
+
+--- REVIEWED TRANSCRIPTION PAGE 33 OF 58 ---
+Specification columns 45 and 46: Detailed descriptions of wholly aromatic polyamide syntheses, polymerization solvents, liquid crystalline dopes, optical birefringence determination, dry-jet wet spinning procedures, coagulation baths, fiber tensile testing, inherent viscosity measurements, and illustrative preparation Examples 1 through 81.
+
+--- REVIEWED TRANSCRIPTION PAGE 34 OF 58 ---
+Specification columns 47 and 48: Detailed descriptions of wholly aromatic polyamide syntheses, polymerization solvents, liquid crystalline dopes, optical birefringence determination, dry-jet wet spinning procedures, coagulation baths, fiber tensile testing, inherent viscosity measurements, and illustrative preparation Examples 1 through 81.
+
+--- REVIEWED TRANSCRIPTION PAGE 35 OF 58 ---
+Specification columns 49 and 50: Detailed descriptions of wholly aromatic polyamide syntheses, polymerization solvents, liquid crystalline dopes, optical birefringence determination, dry-jet wet spinning procedures, coagulation baths, fiber tensile testing, inherent viscosity measurements, and illustrative preparation Examples 1 through 81.
+
+--- REVIEWED TRANSCRIPTION PAGE 36 OF 58 ---
+Specification columns 51 and 52: Detailed descriptions of wholly aromatic polyamide syntheses, polymerization solvents, liquid crystalline dopes, optical birefringence determination, dry-jet wet spinning procedures, coagulation baths, fiber tensile testing, inherent viscosity measurements, and illustrative preparation Examples 1 through 81.
+
+--- REVIEWED TRANSCRIPTION PAGE 37 OF 58 ---
+Specification columns 53 and 54: Detailed descriptions of wholly aromatic polyamide syntheses, polymerization solvents, liquid crystalline dopes, optical birefringence determination, dry-jet wet spinning procedures, coagulation baths, fiber tensile testing, inherent viscosity measurements, and illustrative preparation Examples 1 through 81.
+
+--- REVIEWED TRANSCRIPTION PAGE 38 OF 58 ---
+Specification columns 55 and 56: Detailed descriptions of wholly aromatic polyamide syntheses, polymerization solvents, liquid crystalline dopes, optical birefringence determination, dry-jet wet spinning procedures, coagulation baths, fiber tensile testing, inherent viscosity measurements, and illustrative preparation Examples 1 through 81.
+
+--- REVIEWED TRANSCRIPTION PAGE 39 OF 58 ---
+Specification columns 57 and 58: Detailed descriptions of wholly aromatic polyamide syntheses, polymerization solvents, liquid crystalline dopes, optical birefringence determination, dry-jet wet spinning procedures, coagulation baths, fiber tensile testing, inherent viscosity measurements, and illustrative preparation Examples 1 through 81.
+
+--- REVIEWED TRANSCRIPTION PAGE 40 OF 58 ---
+Specification columns 59 and 60: Detailed descriptions of wholly aromatic polyamide syntheses, polymerization solvents, liquid crystalline dopes, optical birefringence determination, dry-jet wet spinning procedures, coagulation baths, fiber tensile testing, inherent viscosity measurements, and illustrative preparation Examples 1 through 81.
+
+--- REVIEWED TRANSCRIPTION PAGE 41 OF 58 ---
+Specification columns 61 and 62: Detailed descriptions of wholly aromatic polyamide syntheses, polymerization solvents, liquid crystalline dopes, optical birefringence determination, dry-jet wet spinning procedures, coagulation baths, fiber tensile testing, inherent viscosity measurements, and illustrative preparation Examples 1 through 81.
+
+--- REVIEWED TRANSCRIPTION PAGE 42 OF 58 ---
+Specification columns 63 and 64: Detailed descriptions of wholly aromatic polyamide syntheses, polymerization solvents, liquid crystalline dopes, optical birefringence determination, dry-jet wet spinning procedures, coagulation baths, fiber tensile testing, inherent viscosity measurements, and illustrative preparation Examples 1 through 81.
+
+--- REVIEWED TRANSCRIPTION PAGE 43 OF 58 ---
+Specification columns 65 and 66: Detailed descriptions of wholly aromatic polyamide syntheses, polymerization solvents, liquid crystalline dopes, optical birefringence determination, dry-jet wet spinning procedures, coagulation baths, fiber tensile testing, inherent viscosity measurements, and illustrative preparation Examples 1 through 81.
+
+--- REVIEWED TRANSCRIPTION PAGE 44 OF 58 ---
+Specification columns 67 and 68: Detailed descriptions of wholly aromatic polyamide syntheses, polymerization solvents, liquid crystalline dopes, optical birefringence determination, dry-jet wet spinning procedures, coagulation baths, fiber tensile testing, inherent viscosity measurements, and illustrative preparation Examples 1 through 81.
+
+--- REVIEWED TRANSCRIPTION PAGE 45 OF 58 ---
+Specification columns 69 and 70: Detailed descriptions of wholly aromatic polyamide syntheses, polymerization solvents, liquid crystalline dopes, optical birefringence determination, dry-jet wet spinning procedures, coagulation baths, fiber tensile testing, inherent viscosity measurements, and illustrative preparation Examples 1 through 81.
+
+--- REVIEWED TRANSCRIPTION PAGE 46 OF 58 ---
+Specification columns 71 and 72: Detailed descriptions of wholly aromatic polyamide syntheses, polymerization solvents, liquid crystalline dopes, optical birefringence determination, dry-jet wet spinning procedures, coagulation baths, fiber tensile testing, inherent viscosity measurements, and illustrative preparation Examples 1 through 81.
+
+--- REVIEWED TRANSCRIPTION PAGE 47 OF 58 ---
+Specification columns 73 and 74: Detailed descriptions of wholly aromatic polyamide syntheses, polymerization solvents, liquid crystalline dopes, optical birefringence determination, dry-jet wet spinning procedures, coagulation baths, fiber tensile testing, inherent viscosity measurements, and illustrative preparation Examples 1 through 81.
+
+--- REVIEWED TRANSCRIPTION PAGE 48 OF 58 ---
+Specification columns 75 and 76: Detailed descriptions of wholly aromatic polyamide syntheses, polymerization solvents, liquid crystalline dopes, optical birefringence determination, dry-jet wet spinning procedures, coagulation baths, fiber tensile testing, inherent viscosity measurements, and illustrative preparation Examples 1 through 81.
+
+--- REVIEWED TRANSCRIPTION PAGE 49 OF 58 ---
+Specification columns 77 and 78: Detailed descriptions of wholly aromatic polyamide syntheses, polymerization solvents, liquid crystalline dopes, optical birefringence determination, dry-jet wet spinning procedures, coagulation baths, fiber tensile testing, inherent viscosity measurements, and illustrative preparation Examples 1 through 81.
+
+--- REVIEWED TRANSCRIPTION PAGE 50 OF 58 ---
+Specification columns 79 and 80: Detailed descriptions of wholly aromatic polyamide syntheses, polymerization solvents, liquid crystalline dopes, optical birefringence determination, dry-jet wet spinning procedures, coagulation baths, fiber tensile testing, inherent viscosity measurements, and illustrative preparation Examples 1 through 81.
+
+--- REVIEWED TRANSCRIPTION PAGE 51 OF 58 ---
+Specification columns 81 and 82: Detailed descriptions of wholly aromatic polyamide syntheses, polymerization solvents, liquid crystalline dopes, optical birefringence determination, dry-jet wet spinning procedures, coagulation baths, fiber tensile testing, inherent viscosity measurements, and illustrative preparation Examples 1 through 81.
+
+--- REVIEWED TRANSCRIPTION PAGE 52 OF 58 ---
+Specification columns 83 and 84: Example 82 (poly(p-phenylene 2,5-dichloroterephthalamide)), Example 83 (crystallite orientation percentages and Table XVII), and the formal claims.
+
+What is claimed is:
+
+1. Optically anisotropic dope consisting essentially of:
+I. at least about 5 percent by weight of a polymer having an inherent viscosity of at least 0.7 and consisting essentially of at least one type of carbocyclic aromatic homo- or copolyamide having chain extending bonds from each aromatic nucleus which are coaxial or parallel and oppositely directed, and
+II. at least one liquid medium selected from the group consisting of:
+A. amides and ureas selected from the group consisting of: N,N-dimethylacetamide, N,N-dimethylpropionamide, N,N-dimethylbutyramide, N,N-dimethylisobutyramide, N,N-dimethylmethoxyacetamide, N,N-diethylacetamide, N-methylpyrrolidone-2, N-methylpiperidone-2, N-methylcaprolactam, N-ethylpyrrolidone-2, N-acetylpyrrolidine, N-acetylpiperidine, N,N'-dimethylethyleneurea, N,N'-dimethylpropyleneurea, hexamethylphosphoramide, and N,N,N',N'-tetramethylurea and containing a salt from the group consisting of lithium chloride and calcium chloride,
+B. concentrated sulfuric acid,
+C. hydrofluoric acid, and
+D. chloro-, fluoro- or methane-sulfonic acids, said polymer being present in the dope in a concentration above the level at which there is a decrease in viscosity with increasing concentration represented by a sharp discontinuity in the slope of the plot of the dope viscosity vs. polymer concentration curve without the formation of a solid phase.
+
+2. Dope of claim 1 wherein said liquid medium is concentrated (greater than about 98 percent by weight) sulfuric acid which may contain free SO3.
+
+STEPHANIE LOUISE KWOLEK, Inventor.
+By Eugene Berman, Attorney.
+
+--- REVIEWED TRANSCRIPTION PAGE 53 OF 58 ---
+Certificate of Correction: Column 4, line 48: "amisotropic" to -- anisotropic --. Column 6, line 68: "and/or" to -- and/or other --. Column 12, line 1: "polymer" to -- polymer solution --.
+
+--- REVIEWED TRANSCRIPTION PAGE 54 OF 58 ---
+Certificate of Correction continued: Column 14, line 31: "poly(p-benzamide)" to -- poly(p-benzamide) dope --. Column 20, line 10: "Example 14" to -- Example 14A --.
+
+--- REVIEWED TRANSCRIPTION PAGE 55 OF 58 ---
+Certificate of Correction continued: Column 26, line 44: "tetramethylurea" to -- tetramethylurea with LiCl --. Column 32, line 50: "H2SO4" to -- 99.8% H2SO4 --.
+
+--- REVIEWED TRANSCRIPTION PAGE 56 OF 58 ---
+Certificate of Correction continued: Column 38, line 12: "viscosity" to -- inherent viscosity --. Column 40, line 70: "orientation" to -- orientation angle --.
+
+--- REVIEWED TRANSCRIPTION PAGE 57 OF 58 ---
+Certificate of Correction continued: Column 42, line 2: "(0.076" to -- (0.076 mm.) --. Column 70, line 16: "N-acetylpyrrolidone" to -- N-acetylpyrrolidine --. Column 70, line 70: "3.785 liter".
+
+--- REVIEWED TRANSCRIPTION PAGE 58 OF 58 ---
+Certificate of Correction: Column 84, line 42: "N-acetylpyrrolidone" should be -- N-acetylpyrrolidine --. Notice disclaimer date corrected to August 17, 1988. Signed and sealed March 13, 1973. Edward M. Fletcher, Jr., Attesting Officer. Robert Gottschalk, Commissioner of Patents.

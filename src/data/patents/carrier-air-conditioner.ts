@@ -305,12 +305,15 @@ I claim as my invention:
   },
 };
 
-const manualClaims = carrierAirConditionerArchivalEdition.blocks
-  .filter((block) => block.kind === "claim")
-  .map((block) => ({
-    number: block.number,
-    originalText: block.inlines.map((inline) => inline.text).join(""),
-  }));
+function manualClaimText(number: number): string {
+  const block = carrierAirConditionerArchivalEdition.blocks.find(
+    (candidate) => candidate.kind === "claim" && candidate.number === number,
+  );
+  if (block?.kind !== "claim") {
+    throw new Error(`Carrier manual edition is missing claim ${number}.`);
+  }
+  return block.inlines.map((inline) => inline.text).join("");
+}
 
 export const carrierAirConditionerPatent: Patent = {
   id: "us-808897-carrier-air-conditioner",
@@ -390,39 +393,113 @@ export const carrierAirConditionerPatent: Patent = {
     whyItMattersToday:
       "The patent records a practical early air-washer and mist-separator problem: create wet contact for particle capture, then prevent liquid carryover. Its complete source also matters because it distinguishes this plate-separator grant from Carrier's separate humidity-control work.",
   },
-  claims: manualClaims.map(({ number, originalText }) => ({
-    number,
-    isIndependent: true,
-    originalText,
-    plainEnglish:
-      [
-        "Claim 1 covers the two-zone upright plate construction: smooth wet front faces distribute liquid, while a projected rear portion separates it as air follows sinuous passages.",
-        "Claim 2 adds the general air-moistening means and specifies smooth front plate portions with projections in the succeeding portions.",
-        "Claim 3 focuses on upright bends and projecting flanges that form upright gutters in a moistened-air separator.",
-        "Claim 4 states the plate system more compactly as continuous zigzig surfaces with gutter-forming projections at salient portions.",
-        "Claim 5 claims the separator plate itself: angled sections overlap so the front of the rear section forms a gutter at the joint.",
-      ][number - 1] ?? "Exact scope is set by the printed claim text.",
-    keyInnovations: [
-      "upright separator plates",
-      "sinuous air passages",
-      "liquid-separation gutters",
-    ],
-  })),
-  drawings: [1, 2, 3, 4, 5, 6].map((number) => ({
-    figureNumber: `Fig. ${number}`,
-    title:
-      [
-        "Air-treatment apparatus",
-        "Separator section",
-        "Separator diagram",
-        "Separator plate",
-        "Spray-nozzle section",
-        "Spray-nozzle section in a second plane",
-      ][number - 1] ?? "Source drawing",
-    caption: `Source facsimile Fig. ${number} from US 808,897.`,
-    svgType: "carrier-air-conditioner",
-    callouts: [],
-  })),
+  claims: [
+    {
+      number: 1,
+      isIndependent: true,
+      originalText: manualClaimText(1),
+      plainEnglish:
+        "Claim 1 covers the complete separator assembly inside an air conduit. Each upright plate must have successive oblique faces that make a continuous sinuous surface; its front portion remains unobstructed so liquid can spread from face to face, while the succeeding portion has projections that stop liquid from continuing along the conduit and help remove it from the air. The plates must be spaced to make the matching continuous sinuous air passages.",
+      keyInnovations: [
+        "Two-zone plate surface with unobstructed wet front portion",
+        "Projected rear portion that interrupts lengthwise liquid flow",
+        "Spaced plates forming continuous sinuous conduit passages",
+      ],
+    },
+    {
+      number: 2,
+      isIndependent: true,
+      originalText: manualClaimText(2),
+      plainEnglish:
+        "Claim 2 claims the air-moistening combination with the separator. It requires moistening means, an air conduit, and spaced upright plates whose upright bends produce oblique faces and sinuous passages. It then specifies smooth, unobstructed front plate surfaces and surface projections in the succeeding plate portions that obstruct liquid travel lengthwise of the conduit. Unlike Claim 1, this wording expressly includes the means that wet the incoming air.",
+      keyInnovations: [
+        "Air-moistening means coupled to the separator",
+        "Smooth unobstructed front plate surfaces",
+        "Succeeding plate-surface projections that block conduitwise liquid flow",
+      ],
+    },
+    {
+      number: 3,
+      isIndependent: true,
+      originalText: manualClaimText(3),
+      plainEnglish:
+        "Claim 3 narrows the moistening-air apparatus to the bend-and-gutter arrangement. The spaced upright plates must have upright bends that define continuous sinuous air passages, and some of those bends must carry projecting flanges. Those flanges form upright gutters, making the drainage and droplet-separation feature itself part of the claimed combination.",
+      keyInnovations: [
+        "Upright bends defining continuous sinuous air passages",
+        "Projecting flanges mounted on selected bends",
+        "Upright gutters formed by the flanges",
+      ],
+    },
+    {
+      number: 4,
+      isIndependent: true,
+      originalText: manualClaimText(4),
+      plainEnglish:
+        "Claim 4 states a shorter combination claim for the moistening means, conduit, and separator. Its plate limitation is a continuous zigzig surface on spaced upright plates, with projections that form gutters at the salient portions of those surfaces. It does not restate the full front-versus-rear distribution language of Claim 1; the protected detail here is the continuously folded surface and gutter placement at its projecting turns.",
+      keyInnovations: [
+        "Continuous zigzig plate surfaces",
+        "Gutters located at salient surface portions",
+        "Compact moistening-air separator combination",
+      ],
+    },
+    {
+      number: 5,
+      isIndependent: true,
+      originalText: manualClaimText(5),
+      plainEnglish:
+        "Claim 5 is directed to one separator plate rather than the whole air-treatment apparatus. The plate is made from separate angled sections. The front part of the rear section must project past the rear part of the adjacent front section, so their overlap creates a gutter at the junction. That overlap geometry is the claimed article-level construction.",
+      keyInnovations: [
+        "Separate angled separator-plate sections",
+        "Rear-section front edge projecting beyond the adjacent section",
+        "Junction gutter created by overlapping section geometry",
+      ],
+    },
+  ],
+  drawings: [
+    {
+      figureNumber: "Fig. 1",
+      title: "Air-treatment apparatus",
+      caption:
+        "Part elevation and part vertical section of the air-treatment apparatus described in US 808,897.",
+      svgType: "carrier-air-conditioner",
+      callouts: [],
+    },
+    {
+      figureNumber: "Fig. 2",
+      title: "Separating device in horizontal section",
+      caption: "Enlarged fragmentary horizontal section through the separating device.",
+      svgType: "carrier-air-conditioner",
+      callouts: [],
+    },
+    {
+      figureNumber: "Fig. 3",
+      title: "Separating-device diagram",
+      caption: "Diagram of the separating device.",
+      svgType: "carrier-air-conditioner",
+      callouts: [],
+    },
+    {
+      figureNumber: "Fig. 4",
+      title: "Separator plate or element",
+      caption: "Perspective view of one separator plate or element.",
+      svgType: "carrier-air-conditioner",
+      callouts: [],
+    },
+    {
+      figureNumber: "Fig. 5",
+      title: "Spray nozzle in section",
+      caption: "Enlarged section of one detached spray nozzle.",
+      svgType: "carrier-air-conditioner",
+      callouts: [],
+    },
+    {
+      figureNumber: "Fig. 6",
+      title: "Spray nozzle in a second plane",
+      caption: "Enlarged section in a different plane of the detached spray nozzle.",
+      svgType: "carrier-air-conditioner",
+      callouts: [],
+    },
+  ],
   historicalContext: {
     problemStatement:
       "An air washer needs to expose suspended material to liquid, then remove the liquid and captured material without allowing the air to bypass the separator path.",

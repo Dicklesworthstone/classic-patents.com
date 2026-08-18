@@ -1,33 +1,50 @@
 --- REVIEWED TRANSCRIPTION PAGE 1 OF 8 ---
-Drawing sheet 1 of 3: Figs. 1 and 2.
-April 25, 1961. R. N. NOYCE. 2,981,877.
-SEMICONDUCTOR DEVICE-AND-LEAD STRUCTURE.
-Filed July 30, 1959. 3 Sheets-Sheet 1.
-Fig. 1: Greatly enlarged plan view of a transistor-and-lead structure.
-Fig. 2: Cross-section taken along line 2-2 of Fig. 1.
-INVENTOR: ROBERT N. NOYCE.
+April 25, 1961                         R. N. NOYCE                         2,981,877
+SEMICONDUCTOR DEVICE-AND-LEAD STRUCTURE
+Filed July 30, 1959                                                     3 Sheets-Sheet 1
+FIG. 1
+~ OXIDE INSULATION ~
+2-2; 1; 2; 3; 4; 5; 5′; 5″; 6; 7; 8; 9; 10; I; N; P.
+FIG. 2
+INVENTOR.
+ROBERT N. NOYCE
+BY
+JEFFERS & KELLS
+ATTORNEYS
 
 --- REVIEWED TRANSCRIPTION PAGE 2 OF 8 ---
-Drawing sheet 2 of 3: Figs. 3, 4, and 5.
-April 25, 1961. R. N. NOYCE. 2,981,877.
-SEMICONDUCTOR DEVICE-AND-LEAD STRUCTURE.
-Filed July 30, 1959. 3 Sheets-Sheet 2.
-Fig. 3: Greatly enlarged plan view of a multi-device semiconductor-and-lead structure.
-Fig. 4: Cross-section taken along line 4-4 of Fig. 3.
-Fig. 5: Simplified equivalent circuit of the structure shown in Figs. 3 and 4.
-INVENTOR: ROBERT N. NOYCE.
+April 25, 1961                         R. N. NOYCE                         2,981,877
+SEMICONDUCTOR DEVICE-AND-LEAD STRUCTURE
+Filed July 30, 1959                                                     3 Sheets-Sheet 2
+~ OXIDE INSULATION ~
+FIG. 3
+4-4; 11; 12; 13; 14; 15; 16; 17; 18; 19; 20; 21; 22; 23; 24; 25; 26; 27; 28; 29; 30; 31; 32; N; P.
+FIG. 4
+FIG. 5
+13′; 14′; 15′; 16′; 17′; 18′; 19′; 22′; 23′; 24′; 25′; 26′; 28′; 30′; 31′; 32′; 34; 35; 36.
+INVENTOR.
+ROBERT N. NOYCE
+BY
+JEFFERS & KELLS
+ATTORNEYS
 
 --- REVIEWED TRANSCRIPTION PAGE 3 OF 8 ---
-Drawing sheet 3 of 3: Figs. 6 and 7.
-April 25, 1961. R. N. NOYCE. 2,981,877.
-SEMICONDUCTOR DEVICE-AND-LEAD STRUCTURE.
-Filed July 30, 1959. 3 Sheets-Sheet 3.
-Fig. 6: Greatly enlarged plan view of another transistor-and-lead structure with parallel-strip contacts.
-Fig. 7: Cross-section taken along line 7-7 of Fig. 6.
-INVENTOR: ROBERT N. NOYCE.
+April 25, 1961                         R. N. NOYCE                         2,981,877
+SEMICONDUCTOR DEVICE-AND-LEAD STRUCTURE
+Filed July 30, 1959                                                     3 Sheets-Sheet 3
+~ OXIDE INSULATION ~
+FIG. 6
+7-7; 37; 38; 40; 41; 43; 44; 45.
+FIG. 7
+37; 38; 39; 40; 41; 42; 43; 44; 45; N; P.
+INVENTOR.
+ROBERT N. NOYCE
+BY
+JEFFERS & KELLS
+ATTORNEYS
 
 --- REVIEWED TRANSCRIPTION PAGE 4 OF 8 ---
-UNITED STATES PATENT OFFICE.
+UNITED STATES PATENT OFFICE
 2,981,877.
 SEMICONDUCTOR DEVICE-AND-LEAD STRUCTURE.
 Robert N. Noyce, Los Altos, Calif., assignor to Fairchild Semiconductor Corporation, Mountain View, Calif., a corporation of Delaware.
@@ -121,4 +138,3 @@ UNITED STATES PATENTS:
 2,836,878. Shepard. June 3, 1958.
 2,842,723. Koch et al. July 8, 1958.
 2,849,664. Beale. Aug. 26, 1958.
-

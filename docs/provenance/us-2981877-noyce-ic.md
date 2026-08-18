@@ -20,8 +20,12 @@
 ## Facsimile map and comparison record
 
 The pinned eight-page PDF was rendered and visually checked in two complete
-passes. The visitor-facing edition remains continuous: this ledger retains the
-scan-page locators solely so a reviewer can repeat the comparison.
+passes. The second pass, on 2026-08-18, rechecked the three drawing sheets
+against the literal reviewed-ledger entries: every printed heading, sheet
+designation, figure label, numeral set, inventor line, and Jeffers & Kells
+attorney line is retained there. The visitor-facing edition remains continuous:
+this ledger retains scan-page locators solely so a reviewer can repeat the
+comparison.
 
 | Facsimile locator | Content checked |
 | --- | --- |

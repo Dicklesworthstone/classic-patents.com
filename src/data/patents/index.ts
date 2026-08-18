@@ -1,5 +1,5 @@
 import type { Patent } from "@/types/patent";
-import { bardeenTransistorPatent } from "./bardeen-transistor";
+import { bardeenTransistor2524035Patent } from "./bardeen-transistor-2524035";
 import { bellTelephonePatent } from "./bell-telephone";
 import { boyleSmithCcdPatent } from "./boyle-smith-ccd";
 import { carrierAirConditionerPatent } from "./carrier-air-conditioner";
@@ -103,7 +103,7 @@ export const allPatents: Patent[] = parsePatentCatalog([
   einsteinRefrigeratorPatent,
   lamarrFrequencyHoppingPatent,
   spencerMicrowavePatent,
-  bardeenTransistorPatent,
+  bardeenTransistor2524035Patent,
   fermiReactorPatent,
   noyceIcPatent,
   engelbartMousePatent,
@@ -123,6 +123,7 @@ export function getPatentById(id: string): Patent | undefined {
  */
 export const LEGACY_PATENT_REDIRECTS = {
   "us-533367-tesla-coil": "us-593138-tesla-coil",
+  "us-2569347-bardeen-transistor": "us-2524035-bardeen-transistor",
 } as const;
 
 export function legacyPatentRedirectFor(id: string): string | undefined {
@@ -140,7 +141,7 @@ export function getFeaturedPatents(): Patent[] {
     wozniakApplePatent,
     engelbartMousePatent,
     fermiReactorPatent,
-    bardeenTransistorPatent,
+    bardeenTransistor2524035Patent,
     noyceIcPatent,
     goddardRocketPatent,
     einsteinRefrigeratorPatent,

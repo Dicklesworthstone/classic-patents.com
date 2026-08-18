@@ -1,3 +1,7 @@
+import {
+  kwolekKevlarArchivalEdition,
+  kwolekKevlarClaims,
+} from "@/data/editions/kwolekKevlarEdition";
 import type { Patent } from "@/types/patent";
 
 export const kwolekKevlarPatent: Patent = {
@@ -21,10 +25,14 @@ export const kwolekKevlarPatent: Patent = {
   originalPdfUrl: "/patents/pdfs/us-3671542-kwolek-kevlar.pdf",
   googlePatentsUrl: "https://patents.google.com/patent/US3671542A/en",
   usptoClassification: "D01F 6/60 (Synthetic polyamide fibers)",
+  archivalEdition: kwolekKevlarArchivalEdition,
   originalTextAsset: {
-    url: "/patents/source-text/us-3671542-kwolek-kevlar.txt",
+    url: "/patents/transcripts/us-3671542-kwolek-kevlar-reviewed.txt",
     pageCount: 58,
-    kind: "source-pdf-text-layer",
+    kind: "reviewed-transcription",
+    reviewedBy: "Classic Patents editorial agent (SteelNeedle)",
+    reviewedAt: "2026-08-18",
+    sourcePdfSha256: "7a2b753cf8d6f329d5fad750dc2de510f723876cac6aa41a4076f0343a7a62c4",
   },
   originalText: `UNITED STATES PATENT OFFICE.
 STEPHANIE L. KWOLEK, OF WILMINGTON, DELAWARE, ASSIGNOR TO E. I. DU PONT DE NEMOURS AND COMPANY, OF WILMINGTON, DELAWARE.
@@ -140,49 +148,30 @@ I claim as my invention:
     {
       number: 1,
       isIndependent: true,
-      originalText:
-        "An optically anisotropic spinning dope comprising from 5% to 25% by weight of a carbocyclic aromatic polyamide consisting essentially of repeating units of the formula -NH-Ar-NH-CO-Ar'-CO- wherein Ar and Ar' are para-oriented carbocyclic aromatic radicals, dissolved in a solvent consisting essentially of sulfuric acid having a concentration of at least 98%, said dope exhibiting optical birefringence in the quiescent state, substantially as described.",
+      originalText: kwolekKevlarClaims[0].text,
       plainEnglish:
-        "The master composition claim for the liquid-crystalline Kevlar spinning dope: a para-aramid polymer (5–25% by weight) dissolved in concentrated sulfuric acid, forming an optically anisotropic, birefringent solution in the resting state.",
+        "The master composition claim for the optically anisotropic spinning dope: at least 5% by weight of a carbocyclic aromatic polyamide having coaxial or parallel and oppositely directed chain-extending bonds (para-orientation) and inherent viscosity of at least 0.7, dissolved in concentrated sulfuric acid, hydrofluoric acid, sulfonic acids, or amide/urea solvents with salts, at a concentration above the viscosity-drop threshold without forming a solid phase.",
       keyInnovations: [
         "Lyotropic liquid-crystalline polymer dope",
-        "Para-aramid PPD-T chemistry in concentrated acid",
-        "Spontaneous nematic domain ordering",
+        "Para-aramid PPD-T chemistry in selected liquid media",
+        "Spontaneous nematic domain ordering and viscosity drop",
       ],
       legalSignificance:
-        "The master composition-of-matter patent that established DuPont's global monopoly on high-modulus aramid fiber production.",
+        "The master composition-of-matter patent that established DuPont's global foundation for high-modulus aramid fiber production.",
     },
     {
       number: 2,
       isIndependent: false,
       dependsOn: [1],
-      originalText:
-        "A process for preparing high-tenacity aromatic polyamide fibers which comprises extruding the optically anisotropic dope of claim 1 through a spinneret into an air gap, thence into an aqueous coagulating bath, and collecting the resulting oriented fiber without secondary mechanical drawing.",
+      originalText: kwolekKevlarClaims[1].text,
       plainEnglish:
-        "The dry-jet wet spinning process: extruding the liquid-crystalline dope through spinneret capillaries across an air gap into a cold water coagulation bath to create ultra-high-strength oriented fibers without mechanical stretching.",
+        "A dependent dope claim narrowing the liquid medium of claim 1 specifically to concentrated sulfuric acid of greater than about 98 percent by weight concentration, which may contain free sulfur trioxide (SO3).",
       keyInnovations: [
-        "Dry-jet wet spinning method",
-        "Air-gap elongational flow alignment",
-        "Spontaneous crystallization without secondary hot drawing",
+        "Concentrated sulfuric acid solvent system (>98% H2SO4)",
+        "Dissolution of rigid-rod polyamides without chain degradation",
       ],
       legalSignificance:
-        "Protected the revolutionary manufacturing process that made industrial-scale Kevlar fiber production commercially viable.",
-    },
-    {
-      number: 3,
-      isIndependent: false,
-      dependsOn: [1],
-      originalText:
-        "A synthetic fiber produced from the dope of claim 1 consisting essentially of poly(p-phenylene terephthalamide) having a tenacity of at least 20 grams per denier and an initial modulus of at least 400 grams per denier.",
-      plainEnglish:
-        "An aramid fiber article of manufacture made from poly-p-phenylene terephthalamide exhibiting a tenacity of at least 20 g/denier (>3,000 MPa) and an initial modulus of at least 400 g/denier.",
-      keyInnovations: [
-        "Synthetic fiber with tensile strength exceeding steel",
-        "Ultra-high elastic modulus aramid yarn",
-        "Thermal stability beyond 500°C without melting",
-      ],
-      legalSignificance:
-        "Defined the performance thresholds for commercial aramid fibers, laying the legal foundation for modern ballistic protection standards.",
+        "Specifically protected the commercial sulfuric acid dope system used for industrial Kevlar production.",
     },
   ],
   drawings: [
@@ -289,7 +278,7 @@ I claim as my invention:
     "DuPont",
   ],
   stats: {
-    totalClaims: 3,
+    totalClaims: 2,
     independentClaims: 1,
     patentWarYears: "1968–1988",
     impactScore: 100,

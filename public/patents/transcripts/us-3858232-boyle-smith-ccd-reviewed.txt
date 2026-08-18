@@ -1,0 +1,165 @@
+--- REVIEWED TRANSCRIPTION PAGE 1 OF 19 ---
+U.S. Patent Dec. 31, 1974 Sheet 1 of 14 3,858,232.
+FIG. 1A, FIG. 1B, FIG. 1C, FIG. 1D: Schematic diagrams illustrating the charge translating mechanism. Inventors: Willard S. Boyle, George E. Smith. By Attorney: Peter V. D. Wilde.
+
+--- REVIEWED TRANSCRIPTION PAGE 2 OF 19 ---
+U.S. Patent Dec. 31, 1974 Sheet 2 of 14 3,858,232.
+FIG. 2: Front sectional view, partly schematic, of a shift register embodying the novel information storage feature with input, output, and regeneration stages.
+FIG. 3: Pulse program for the three-phase shift register of FIG. 2.
+
+--- REVIEWED TRANSCRIPTION PAGE 3 OF 19 ---
+U.S. Patent Dec. 31, 1974 Sheet 3 of 14 3,858,232.
+FIG. 4: Front sectional view illustrating a preferred method of charge translation using a uniform depletion layer and overlapping gate bias.
+
+--- REVIEWED TRANSCRIPTION PAGE 4 OF 19 ---
+U.S. Patent Dec. 31, 1974 Sheet 4 of 14 3,858,232.
+FIG. 5: Sectional view of a buried channel charge coupled device with an electrically depleted homogeneous storage layer.
+
+--- REVIEWED TRANSCRIPTION PAGE 5 OF 19 ---
+U.S. Patent Dec. 31, 1974 Sheet 5 of 14 3,858,232.
+FIG. 6: Front sectional view, partly schematic, illustrating a gated input arrangement for introducing charge into the device.
+
+--- REVIEWED TRANSCRIPTION PAGE 6 OF 19 ---
+U.S. Patent Dec. 31, 1974 Sheet 6 of 14 3,858,232.
+FIG. 7A: Capacitive bridge output detection stage.
+FIG. 7B: Alternating-current power dissipation output detection stage.
+FIG. 7C: Integrated field-effect-transistor direct voltage measurement output stage.
+
+--- REVIEWED TRANSCRIPTION PAGE 7 OF 19 ---
+U.S. Patent Dec. 31, 1974 Sheet 7 of 14 3,858,232.
+FIG. 8: Sectional view showing transfer of stored charge between storage sites on opposite sides of a semiconductor storage medium.
+
+--- REVIEWED TRANSCRIPTION PAGE 8 OF 19 ---
+U.S. Patent Dec. 31, 1974 Sheet 8 of 14 3,858,232.
+FIG. 9A: Field enhancement using closely spaced adjacent transfer conductors.
+FIG. 9B: Shaped-pulse field enhancement providing asymmetric drive fields.
+
+--- REVIEWED TRANSCRIPTION PAGE 9 OF 19 ---
+U.S. Patent Dec. 31, 1974 Sheet 9 of 14 3,858,232.
+FIG. 10: Plan view of a multichannel shift register having multiple parallel transfer channels.
+
+--- REVIEWED TRANSCRIPTION PAGE 10 OF 19 ---
+U.S. Patent Dec. 31, 1974 Sheet 10 of 14 3,858,232.
+FIG. 11: Plan view of a three-phase conductor arrangement designed to avoid conductor crossovers in a linear or multichannel array.
+
+--- REVIEWED TRANSCRIPTION PAGE 11 OF 19 ---
+U.S. Patent Dec. 31, 1974 Sheet 11 of 14 3,858,232.
+FIG. 12: Perspective view of a portion of a charge translating device illustrating a preferred electrical contact arrangement with stepped oxide thicknesses.
+
+--- REVIEWED TRANSCRIPTION PAGE 12 OF 19 ---
+U.S. Patent Dec. 31, 1974 Sheet 12 of 14 3,858,232.
+FIG. 13: Front sectional view of a charge translating device showing an alternative two-level electrode metallization arrangement.
+
+--- REVIEWED TRANSCRIPTION PAGE 13 OF 19 ---
+U.S. Patent Dec. 31, 1974 Sheet 13 of 14 3,858,232.
+FIG. 14: Front section, largely schematic, of a parallel read-in optical image detection device employing charge-coupling features.
+
+--- REVIEWED TRANSCRIPTION PAGE 14 OF 19 ---
+U.S. Patent Dec. 31, 1974 Sheet 14 of 14 3,858,232.
+FIG. 15: Acoustic-wave charge translation using a piezoelectric layer deposited over discrete metal contacts.
+FIG. 16: Electrodeless acoustic-wave device where acoustic waves in a piezoelectric layer directly propagate potential wells in the underlying semiconductor.
+
+--- REVIEWED TRANSCRIPTION PAGE 15 OF 19 ---
+UNITED STATES PATENT OFFICE
+3,858,232. Patented Dec. 31, 1974.
+INFORMATION STORAGE DEVICES.
+Willard Sterling Boyle, Summit, and George Elwood Smith, Murray Hill, N.J., assignors to Bell Telephone Laboratories, Incorporated, Berkeley Heights, N.J.
+Filed Nov. 9, 1971, Ser. No. 196,933. Claims priority, application Ser. No. 11,541, Feb. 16, 1970. 32 Claims. (Cl. 357-24).
+
+CROSS REFERENCE TO RELATED APPLICATION: This application is a continuation-in-part of our copending application, Ser. No. 11,541, filed Feb. 16, 1970, now abandoned. This invention relates to information storage devices known as charge coupled devices.
+BACKGROUND OF THE INVENTION: Information storage relies on magnetic mechanisms, electrostatic camera targets scanned by electron beams, dynamic delay lines, and logic arrays.
+STATEMENT OF THE INVENTION: Electric charge is stored in a spatially defined potential minimum (potential well) within a single-conductivity semiconductor, and the storage site can be selected and translated in at least two dimensions.
+
+--- REVIEWED TRANSCRIPTION PAGE 16 OF 19 ---
+DETAILED DESCRIPTION OF THE INVENTION:
+The basic charge translation mechanism (FIGS. 1A to 1D) creates a potential well by biasing an MIS electrode, accumulating minority carriers, then establishing an overlapping deeper potential well beneath an adjacent electrode to transfer the packet.
+A three-phase shift register (FIG. 2) uses phase conductors phi-1, phi-2, phi-3 with pulse program (FIG. 3). Overlapping pulses ensure smooth transit.
+FIG. 4 shows a preferred mode where a uniform depletion bias is applied to the semiconductor surface and localized pulse voltages create moving potential wells.
+Buried channel devices (FIG. 5) transfer charge within an electrically depleted homogeneous layer away from surface states.
+
+--- REVIEWED TRANSCRIPTION PAGE 17 OF 19 ---
+INPUT, DETECTION, AND THREE-DIMENSIONAL TRANSFER:
+Charge is introduced by p-n junction injection (FIG. 6) or optical photon absorption.
+Detection stages include capacitive bridge sensing (FIG. 7A), AC power dissipation sensing (FIG. 7B), and integrated field-effect transistor sensing (FIG. 7C) where charge Q modulates an FET gate.
+Three-dimensional transfer (FIG. 8) moves charge between opposite surfaces of the semiconductor slab through its thickness.
+
+--- REVIEWED TRANSCRIPTION PAGE 18 OF 19 ---
+FIELD ENHANCEMENT, ASYMMETRY, MULTICHANNEL, AND IMAGING:
+Transfer efficiency is enhanced by fringe fields (FIG. 9A) and shaped pulses (FIG. 9B).
+Asymmetry in drive fields allows two-phase operation via stepped oxide (FIG. 12) or implanted fixed charge.
+Multichannel shift registers (FIG. 10) and crossover-free conductor routing (FIG. 11) allow dense arrays.
+Optical image sensing (FIG. 14) integrates photoelectrons in potential wells and shifts them serially into output lines.
+Acoustic traveling waves (FIGS. 15, 16) translate charge packets in synchronism with piezoelectric acoustic waves.
+Fabrication utilizes silicon substrates, thermally grown silicon dioxide (1,200 Angstroms), and gold or aluminum electrodes.
+
+--- REVIEWED TRANSCRIPTION PAGE 19 OF 19 ---
+What is claimed is:
+
+1. In a charge transfer apparatus of the type for storage and serial transfer of charge carriers localized in a plurality of induced potential energy minima along a portion of a semiconductor charge storage medium by sequentially applying different potentials to successive portions of the surface of the medium through a plurality of electrodes, the invention characterized in that the charge storage medium is of a single conductivity type.
+
+2. In a charge transfer apparatus of the type for storage and serial transfer of charge carriers localized in a plurality of induced potential energy minima along a portion of a semiconductor charge storage medium by sequentially applying different potentials to successive portions of the surface of the medium through a plurality of electrodes, the invention characterized in that the portion of the charge storage medium in which charges are stored and transferred and which directly underlies each electrode of said plurality of electrodes is of a single conductivity type.
+
+3. The apparatus of claim 2 in which the charge storage medium is covered with an insulating layer and the plurality of electrodes are disposed on the insulating layer.
+
+4. The apparatus of claim 3 in which the charge storage medium is silicon.
+
+5. The apparatus of claim 3 in which the insulating layer comprises SiO₂.
+
+6. The apparatus of claim 2 including means for exposing the device to light in order to form the charge carriers.
+
+7. The apparatus of claim 6 in which charge carriers are formed simultaneously in a plurality of potential energy minima.
+
+8. The apparatus of claim 2 further including a piezoelectric layer formed on one surface of the device with means for creating an acoustic wave in the layer so that an electrical field is created by the acoustic wave propagating in the piezoelectric layer.
+
+9. The apparatus of claim 2 in which the portion of the charge storage medium in which charges are stored and transferred is a surface portion.
+
+10. A charge coupled device comprising a charge storage medium, a charge input region at a first location in the charge storage medium at which charge carriers representing signal information can be introduced into the medium, a charge detection region at a second location in the charge storage medium at which charge carriers can be detected and a charge storage and transfer channel interconnecting the input region and the detection region, the charge storage and transfer channel consisting of a single conductivity type semiconductor, an insulating layer overlying the charge storage medium, and at least four discrete electrodes disposed on the insulating layer overlying the charge storage and transfer channel.
+
+11. The device of claim 10 in which the charge input region for introducing charge carriers comprises a p-n junction.
+
+12. The device of claim 10 in which the charge input region for introducing charge carriers comprises a metal-insulator-semiconductor device.
+
+13. A semiconductive device comprising a semiconductive charge storage layer having a major surface, an insulating layer overlying said major surface, an electrode assembly on the insulating layer including a plurality of electrodes, means for forming a succession of spaced storage sites for the storage of charge carriers in the charge storage layer and for transferring stored charge carriers between successive sites in a predetermined direction, and wherein the charge storage and transfer layer consists of a material that is of a single conductivity type.
+
+14. A semiconductive device comprising a semiconductive charge storage layer having a major surface, an insulating layer overlying said major surface, an electrode assembly on the insulating layer including a plurality of electrodes, means for forming a succession of spaced storage sites for the storage of charge carriers in the charge storage layer and for transferring stored charge carriers between successive sites in a predetermined direction, and wherein the portion of the charge storage and transfer layer that directly underlies each electrode is of a single conductivity type.
+
+15. The device of claim 14 further including three separate conductors each connected to a different one of every third electrode of the plurality of electrodes.
+
+16. The device of claim 15 in which the electrodes are shaped and placed so that the three separate conductors extend parallel to one another.
+
+17. The device of claim 14 in which the means for forming a succession of spaced storage sites includes circuit means connected to the plurality of electrodes for applying pulses sequentially to each of the plurality of electrodes.
+
+18. The device of claim 17 in which the pulses are square wave pulses.
+
+19. The device of claim 17 in which the pulses are sine wave pulses.
+
+20. The device of claim 17 in which the pulses are sawtooth pulses.
+
+21. The device of claim 14 including electrical circuit means for biasing all of the electrodes at a uniform potential so that the surface of the semiconductor charge storage layer can be maintained depleted during operation of the device.
+
+22. The device of claim 14 in which the space between each of the plurality of electrodes is approximately 3 microns.
+
+23. The device of claim 14 in which the length of each of the plurality of electrodes as measured in the predetermined direction is comparable to or less than the thickness of the insulating layer.
+
+24. The device of claim 14 including charge detection means at a charge detection region for detecting the presence, absence or amount of charge in the charge detection region.
+
+25. The device of claim 24 in which the charge detection means comprises a metal-insulator-semiconductor device.
+
+26. The device of claim 25 in which the metal-insulator-semiconductor device is connected to the gate of a field-effect transistor for measuring the capacitance of the metal-insulator-semiconductor device.
+
+27. The device of claim 24 in which the charge detection means is coupled to a charge input means to recirculate charge.
+
+28. The device of claim 24 including means for regenerating the charge detected by the charge detection means.
+
+29. The device of claim 24 in which the charge detection means comprises a capacitive bridge circuit electrically coupled to the charge detection region for measuring changes in the capacitance of the charge detection region.
+
+30. The device of claim 24 in which the charge detection means comprises two adjacent electrodes overlying the charge detection region with means for connecting an alternating current to the electrodes and means for measuring the power dissipation of the alternating current.
+
+31. A multichannel shift register comprising a body of semiconductor material of a uniform conductivity type, a thin insulating layer covering at least a portion of one surface of said body, a plurality of series of metal electrodes formed on the insulating layer, each series constituting one channel of the shift register and defining a path along the subjacent surface of the semiconductor body, the path having a single conductivity type, means for establishing charge carriers in the body of the semiconductor beneath a first electrode of each series, electrical circuit means interconnecting the electrodes to sequentially vary the bias on each series of electrodes and propagate a potential well stepwise along said path below the electrodes thereby translating the charge carriers through the semiconductor along said path, and detector means in each series associated with an electrode removed in the series from said first electrode for detecting the presence or absence of charge carriers in the semiconductor below its associated electrode.
+
+32. A multichannel shift register comprising a semiconductor body, a thin insulating layer covering at least a portion of one surface of said body, an array of metal electrodes formed on the insulating layer, a plurality of input electrodes arranged along one side of the array, a plurality of output electrodes arranged along the opposite side of the array and a series of groups of transfer electrodes extending between each input electrode and an output electrode, each series comprising with its associated input and output electrodes one channel of the shift register, the spacing between electrodes in each series being less than the spacing between electrodes in adjacent series, each group of electrodes comprising a first electrode, a second electrode, and a third electrode in sequence, first, second and third conductors respectively connected to every first, second and third electrodes, and electrical circuit means interconnected to vary sequentially the bias on the first, second and third conductors with electrical pulses which overlap, the shift register characterized in that the regions of the semiconductor body directly beneath each transfer electrode are of a single conductivity type.
+
+WILLARD STERLING BOYLE
+GEORGE ELWOOD SMITH
+Inventor(s)
+By Peter V. D. Wilde, Attorney

@@ -1,6 +1,16 @@
 import { edisonPhonographArchivalEdition } from "@/data/editions/edisonPhonographEdition";
 import type { Patent } from "@/types/patent";
 
+function manualClaimText(number: number): string {
+  const block = edisonPhonographArchivalEdition.blocks.find(
+    (candidate) => candidate.kind === "claim" && candidate.number === number,
+  );
+  if (block?.kind !== "claim") {
+    throw new Error(`US 200,521 manual edition is missing Claim ${number}.`);
+  }
+  return block.inlines.map((inline) => inline.text).join("");
+}
+
 export const edisonPhonographPatent: Patent = {
   id: "us-200521-edison-phonograph",
   patentNumber: "US 200,521",
@@ -71,7 +81,7 @@ The invention consists in arranging a plate, diaphragm, or other flexible body c
           "Metallic foil is Edison's preferred material on cylinder A, but paper and other yielding materials are also expressly allowed.",
         technicalDetails:
           "The material must retain marks that correspond to the diaphragm's motion and later yield that motion to a point. Edison also proposes soft paper saturated or coated with paraffine and carrying a metal-foil surface. The patent gives no composition, thickness, purity, adhesive, or measured deformation depth.",
-        archaicTerm: "Yielding material such as tinfoil or sheet-lead",
+        archaicTerm: "Yielding material such as metallic foil",
         modernEquivalent: "Analog recording substrate (wax / lacquer master)",
       },
       {
@@ -121,8 +131,7 @@ The invention consists in arranging a plate, diaphragm, or other flexible body c
     {
       number: 1,
       isIndependent: true,
-      originalText:
-        "The method herein specified of reproducing the human voice or other sounds by causing the sound-vibrations to be recorded, substantially as specified, and obtaining motion from that record, substantially as set forth, for the reproduction of the sound-vibrations.",
+      originalText: manualClaimText(1),
       plainEnglish:
         "Claim 1 covers the stated sequence, not a particular foil cylinder: make a record of sound vibrations, take motion from that record, and use the recovered motion to reproduce sound vibrations.",
       keyInnovations: [
@@ -136,8 +145,7 @@ The invention consists in arranging a plate, diaphragm, or other flexible body c
     {
       number: 2,
       isIndependent: true,
-      originalText:
-        "The combination, with a diaphragm exposed to sound-vibrations, of a moving surface of yielding material—such as metallic foil—upon which marks are made corresponding to the sound-vibrations, and of a character adapted to use in the reproduction of the sound, substantially as set forth.",
+      originalText: manualClaimText(2),
       plainEnglish:
         "Claim 2 is an apparatus combination: a sound-driven diaphragm works with a moving yielding surface, such as metallic foil, whose marks both follow the sound vibrations and can later be used to reproduce them.",
       keyInnovations: [
@@ -149,8 +157,7 @@ The invention consists in arranging a plate, diaphragm, or other flexible body c
     {
       number: 3,
       isIndependent: true,
-      originalText:
-        "The combination, with a surface having marks thereon corresponding to sound-vibrations, of a point receiving motion from such marks, and a diaphragm connected to said point, and responding to the motion of the point, substantially as set forth.",
+      originalText: manualClaimText(3),
       plainEnglish:
         "Claim 3 covers the reproducing side: a point follows a marked surface, and its movement drives a connected diaphragm.",
       keyInnovations: [
@@ -162,8 +169,7 @@ The invention consists in arranging a plate, diaphragm, or other flexible body c
     {
       number: 4,
       isIndependent: true,
-      originalText:
-        "In an instrument for making a record of sound-vibrations, the combination, with the diaphragm and point, of a cylinder having a helical groove and means for revolving the cylinder and communicating an end movement corresponding to the inclination of the helical groove, substantially as set forth.",
+      originalText: manualClaimText(4),
       plainEnglish:
         "Claim 4 is the illustrated cylinder arrangement: the diaphragm and point work with a helically grooved cylinder whose drive both turns it and advances it endwise according to the helical groove.",
       keyInnovations: [
@@ -312,6 +318,5 @@ The invention consists in arranging a plate, diaphragm, or other flexible body c
   stats: {
     totalClaims: 4,
     independentClaims: 4,
-    impactScore: 99,
   },
 };

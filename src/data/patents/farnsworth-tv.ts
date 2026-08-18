@@ -1,5 +1,5 @@
-import type { Patent } from "@/types/patent";
 import { farnsworthTvArchivalEdition } from "@/data/editions/farnsworthTvEdition";
+import type { Patent } from "@/types/patent";
 
 function manualClaimText(number: number): string {
   const block = farnsworthTvArchivalEdition.blocks.find(
@@ -102,24 +102,78 @@ An electrical shutter is then interposed between said sensitive plate and the an
       "The grant is a detailed early proposal for translating an optical image into a sequential electrical signal and rebuilding it by synchronized optical placement. Its claims make the apparatus-level and method-level components of that proposal legible without attributing later magnetic-raster or display technologies to this particular source.",
   },
   claims: [
-    ["Requires an electrical image and a shutter traversal fast enough to cover its elementary areas within the optical period.", "optical-period electrical-image scan"],
-    ["Covers moving the electrical image in more than one direction by analyzing potentials and making current intensity depend on its position.", "two-direction analyzing potential"],
-    ["Specifies the optical image, photo-electric sensitive plate, shutter, and two transverse potentials of different frequencies as one method.", "photo-electric cell with transverse potentials"],
-    ["Claims the cell apparatus: photo-sensitive plate, anode, intermediate plates, and differently timed potentials imposed on those plates.", "multi-plate picture dissector"],
-    ["Claims the image-dissecting cell with photo-sensitive plate, anode, shutter, and electrical bending of its discharge.", "electrically bent discharge"],
-    ["Defines a method in which a cross-sectionally brightness-corresponding discharge is successively transmitted and used to modulate light.", "brightness-corresponding electrical discharge"],
-    ["Claims full optical-period analysis and reconstruction: variable energy modulates constant light and correlated portions reform the image.", "optical-period light reconstruction"],
-    ["Requires a substantially straight-line electrical oscillation for analysis and conversion of the resulting varying energy back to light.", "straight-line analyzing waveform"],
-    ["Adds use of the straight-line potential at reception to correlate the successive light portions after the analysis and conversion steps.", "straight-line waveform correlation"],
-    ["Requires two differently frequent, substantially straight-line potentials for analysis, followed by energy production and conversion to varying light.", "two-frequency straight-line potentials"],
-    ["Extends claim 10’s two potentials to correlation of the light portions so that the image is reformed.", "two-frequency optical correlation"],
-    ["Claims a continuous, transversely reciprocating scan path: rapid coverage along the path and slow transverse displacement between reciprocations.", "reciprocating transverse scan path"],
-    ["Claims movement of an electrical image in two directions over a small shutter aperture so the output current is a function of the registered area.", "aperture-registered electrical image"],
-    ["Requires two differently frequent potentials to move the electrical image across the shutter and form current from the registered portion.", "two-potential shutter registration"],
-    ["Claims television apparatus that forms an electrical image, scans every elementary area, and produces energy according to the scanned area’s intensity.", "scanned-area energy train"],
-    ["Claims apparatus that moves an electric image in more than one direction with an analyzing potential and varies current by image position.", "position-responsive current apparatus"],
-    ["Claims the photo-electric-cell assembly in detail: focused object image, anode, shutter, transverse plates, and differently frequent potentials.", "complete photo-electric shutter cell"],
-    ["Claims the long system combination: coupled oscillators and straight-line potentials, two-direction scan, carrier modulation and reception, light modulation, and image correlation.", "oscillator-to-optical television chain"],
+    [
+      "Requires an electrical image and a shutter traversal fast enough to cover its elementary areas within the optical period.",
+      "optical-period electrical-image scan",
+    ],
+    [
+      "Covers moving the electrical image in more than one direction by analyzing potentials and making current intensity depend on its position.",
+      "two-direction analyzing potential",
+    ],
+    [
+      "Specifies the optical image, photo-electric sensitive plate, shutter, and two transverse potentials of different frequencies as one method.",
+      "photo-electric cell with transverse potentials",
+    ],
+    [
+      "Claims the cell apparatus: photo-sensitive plate, anode, intermediate plates, and differently timed potentials imposed on those plates.",
+      "multi-plate picture dissector",
+    ],
+    [
+      "Claims the image-dissecting cell with photo-sensitive plate, anode, shutter, and electrical bending of its discharge.",
+      "electrically bent discharge",
+    ],
+    [
+      "Defines a method in which a cross-sectionally brightness-corresponding discharge is successively transmitted and used to modulate light.",
+      "brightness-corresponding electrical discharge",
+    ],
+    [
+      "Claims full optical-period analysis and reconstruction: variable energy modulates constant light and correlated portions reform the image.",
+      "optical-period light reconstruction",
+    ],
+    [
+      "Requires a substantially straight-line electrical oscillation for analysis and conversion of the resulting varying energy back to light.",
+      "straight-line analyzing waveform",
+    ],
+    [
+      "Adds use of the straight-line potential at reception to correlate the successive light portions after the analysis and conversion steps.",
+      "straight-line waveform correlation",
+    ],
+    [
+      "Requires two differently frequent, substantially straight-line potentials for analysis, followed by energy production and conversion to varying light.",
+      "two-frequency straight-line potentials",
+    ],
+    [
+      "Extends claim 10’s two potentials to correlation of the light portions so that the image is reformed.",
+      "two-frequency optical correlation",
+    ],
+    [
+      "Claims a continuous, transversely reciprocating scan path: rapid coverage along the path and slow transverse displacement between reciprocations.",
+      "reciprocating transverse scan path",
+    ],
+    [
+      "Claims movement of an electrical image in two directions over a small shutter aperture so the output current is a function of the registered area.",
+      "aperture-registered electrical image",
+    ],
+    [
+      "Requires two differently frequent potentials to move the electrical image across the shutter and form current from the registered portion.",
+      "two-potential shutter registration",
+    ],
+    [
+      "Claims television apparatus that forms an electrical image, scans every elementary area, and produces energy according to the scanned area’s intensity.",
+      "scanned-area energy train",
+    ],
+    [
+      "Claims apparatus that moves an electric image in more than one direction with an analyzing potential and varies current by image position.",
+      "position-responsive current apparatus",
+    ],
+    [
+      "Claims the photo-electric-cell assembly in detail: focused object image, anode, shutter, transverse plates, and differently frequent potentials.",
+      "complete photo-electric shutter cell",
+    ],
+    [
+      "Claims the long system combination: coupled oscillators and straight-line potentials, two-direction scan, carrier modulation and reception, light modulation, and image correlation.",
+      "oscillator-to-optical television chain",
+    ],
   ].map(([plainEnglish, innovation], index) => ({
     number: index + 1,
     isIndependent: true,
@@ -140,7 +194,8 @@ An electrical shutter is then interposed between said sensitive plate and the an
           figureRef: "Fig. 1",
           label: "6",
           element: "Light sensitive plate",
-          description: "Photo-sensitive mesh cathode whose electronic discharge forms the electrical image.",
+          description:
+            "Photo-sensitive mesh cathode whose electronic discharge forms the electrical image.",
           x: 20,
           y: 50,
         },
