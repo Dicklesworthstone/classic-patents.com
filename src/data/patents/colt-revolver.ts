@@ -21,9 +21,7 @@ export const coltRevolverPatent: Patent = {
   inventorLocation: "Hartford, Connecticut",
   grantDate: "1836-02-25",
   // The pinned specification names the grant date but gives no application date.
-  // This legacy required field predates the source-only edition model; retain the
-  // existing catalogue value pending a shared schema/provenance decision.
-  filingDate: "1836-01-09",
+  filingDate: null,
   era: "Early Republic & Industrial Dawn (1790–1839)",
   category: "consumer",
   categoryLabel: "Mechanical Indexing & Fire-Arms",
@@ -35,11 +33,11 @@ export const coltRevolverPatent: Patent = {
   usptoClassification: "Historical U.S. patent; revolving fire-arms",
   archivalEdition: coltRevolverArchivalEdition,
   originalTextAsset: {
-    url: "/patents/transcripts/us-x9430-colt-revolver.txt",
+    url: "/patents/transcripts/us-x9430-colt-revolver-reviewed.txt",
     pageCount: 7,
     kind: "reviewed-transcription",
-    reviewedBy: "codex-charlie",
-    reviewedAt: "2026-08-17",
+    reviewedBy: "Classic Patents editorial agent (GPT-5.6)",
+    reviewedAt: "2026-08-18",
     sourcePdfSha256: "61eed2c1b5ea259a301fb2690a7d3d17e1a59560cfb002dc91c29a50f5841d01",
   },
   originalText:

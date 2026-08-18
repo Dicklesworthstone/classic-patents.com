@@ -1,6 +1,12 @@
+import {
+  wozniakAppleArchivalEdition,
+  wozniakAppleClaimText,
+} from "@/data/editions/wozniakAppleEdition";
 import type { Patent } from "@/types/patent";
 
-export const wozniakApplePatent: Patent = {
+// Preserved migration witness. The public export below is separately bound to
+// the reviewed seven-page facsimile; this legacy copy is not rendered.
+const _legacyWozniakApplePatent: Patent = {
   id: "us-4136359-wozniak-apple",
   patentNumber: "US 4,136,359",
   title: "Microcomputer for Use with Video Display",
@@ -22,9 +28,12 @@ export const wozniakApplePatent: Patent = {
   usptoClassification:
     "G06F 13/00 (Data processing; Program control and shared memory bus systems)",
   originalTextAsset: {
-    url: "/patents/source-text/us-4136359-wozniak-apple.txt",
+    url: "/patents/transcripts/us-4136359-wozniak-apple-reviewed.txt",
     pageCount: 7,
-    kind: "source-pdf-text-layer",
+    kind: "reviewed-transcription",
+    reviewedBy: "Classic Patents editorial agent (GPT-5.6)",
+    reviewedAt: "2026-08-18",
+    sourcePdfSha256: wozniakAppleArchivalEdition.sourcePdfSha256,
   },
   originalText: `UNITED STATES PATENT OFFICE
 4,136,359
@@ -291,4 +300,312 @@ I CLAIM:
     totalClaims: 3,
     independentClaims: 1,
   },
+};
+
+/**
+ * Source-faithful catalogue record for the actual US 4,136,359 grant. Its
+ * claims concern video timing, phase compensation, and digital color output;
+ * they do not claim the legacy record's invented shared-memory architecture.
+ */
+export const wozniakApplePatent: Patent = {
+  id: "us-4136359-wozniak-apple",
+  patentNumber: "US 4,136,359",
+  title: "Microcomputer for Use with Video Display",
+  shortTitle: "Wozniak Video Timing and Color Circuit",
+  subtitle:
+    "A crystal-locked horizontal timing correction and recirculating shift-register generator for color graphics on a raster television display.",
+  inventors: ["Stephen G. Wozniak"],
+  inventorLocation: "Cupertino, California",
+  grantDate: "1979-01-23",
+  filingDate: "1977-04-11",
+  era: "Information Age & Silicon Revolution (1960–1990)",
+  category: "computing",
+  categoryLabel: "Microcomputers & Digital Hardware",
+  summary:
+    "US 4,136,359 describes a microcomputer video circuit that derives color directly from recirculating digital bits. Its timing circuit operates horizontal synchronization at an odd submultiple of the chroma reference, then inserts a controlled delay to keep successive raster lines aligned in color phase.",
+  heroQuote:
+    "Through use of a timing compensation means, counting in the horizontal synchronization counter is delayed to compensate for the fact that the counter operates at an odd-submultiple frequency of a color reference signal.",
+  originalPdfUrl: "/patents/pdfs/us-4136359-wozniak-apple.pdf",
+  googlePatentsUrl: "https://patents.google.com/patent/US4136359A/en",
+  usptoClassification: "H04N 9/44 (color television; color-signal generation)",
+  originalTextAsset: {
+    url: "/patents/transcripts/us-4136359-wozniak-apple-reviewed.txt",
+    pageCount: 7,
+    kind: "reviewed-transcription",
+    reviewedBy: "Classic Patents editorial agent (GPT-5.6)",
+    reviewedAt: "2026-08-18",
+    sourcePdfSha256: wozniakAppleArchivalEdition.sourcePdfSha256,
+  },
+  originalText: `UNITED STATES PATENT
+STEPHEN G. WOZNIAK, OF CUPERTINO, CALIF., ASSIGNOR TO APPLE COMPUTER, INC., OF CUPERTINO, CALIF.
+
+MICROCOMPUTER FOR USE WITH VIDEO DISPLAY.
+
+Patent No. 4,136,359. Patented Jan. 23, 1979.
+Application No. 786,197. Filed Apr. 11, 1977. 8 Claims, 4 Drawing Figures.
+
+The invention is for the generation of signals for raster scanned video displays employing digital means.`,
+  archivalEdition: wozniakAppleArchivalEdition,
+  plainEnglishExplanation: {
+    overview:
+      "This grant addresses a television-timing problem that appeared when a home microcomputer tried to draw stable color graphics on an ordinary raster CRT. It uses one crystal reference for the video timing chain, deliberately compensates a line-to-line chroma phase reversal, and circulates digital color data through shift registers rather than generating and mixing separate analog color signals.",
+    coreMechanism:
+      "The oscillator produces 14.31818 MHz, which the disclosed dividers reduce to the 7.15909 MHz and 3.579545 MHz timing relationships used by the circuit. The horizontal counter runs at about 15,734 Hz, an odd submultiple relationship that would otherwise shift chroma phase by 180 degrees each raster line. At a selected counter event, the shift-register counter waits two master-clock cycles, equal to half a chroma cycle, restoring vertical color alignment. Separately, RAM color bits circulate through two four-bit registers and a phase-select multiplexer to form a display-compatible output.",
+    mechanicalBreakdown: [
+      {
+        title: "Crystal Reference and Divider Chain",
+        summary:
+          "Oscillator 51 and dividers 55 and 57 establish the master, half-rate, and color-subcarrier timing relationships shown in Figure 3.",
+        technicalDetails:
+          "The source gives 14.31818 MHz on line 33, 7.15909 MHz on line 56, and 3.579545 MHz on line 58. Those signals keep the color reference and the horizontal-timing correction tied to a common clock rather than to independent oscillators.",
+        archaicTerm: "timing reference means",
+        modernEquivalent: "crystal-derived video clock and timing chain",
+      },
+      {
+        title: "Horizontal Counter Compensation",
+        summary:
+          "A temporary extension of the counter sequence adds half of a chroma cycle once per line to cancel the unwanted phase flip.",
+        technicalDetails:
+          "Counter 63 runs at approximately 15,734 Hz. Because its line period contains three and a half chroma cycles, the source says a two-cycle delay at 14.318 MHz is inserted when the prescribed count occurs. Two master-clock cycles equal 180 degrees at 3.58 MHz, so the color relationship is restored line-to-line.",
+        archaicTerm: "timing compensation means",
+        modernEquivalent: "deterministic phase-correction interval",
+      },
+      {
+        title: "Recirculating Digital Color Register",
+        summary:
+          "Two four-bit shift registers accept color bits from RAM and repeatedly circulate them at the master-clock rate.",
+        technicalDetails:
+          "Registers 36 and 37 receive eight bits in parallel at 1 MHz. In color mode they recirculate the data at 14.31818 MHz; phase-select multiplexer 38 chooses staged output bits so the television receives an appropriate color-phase signal without a separate analog color generator.",
+        archaicTerm: "recirculating shift register",
+        modernEquivalent: "clocked digital serializer with feedback",
+      },
+    ],
+    scientificPrinciples: [
+      {
+        principle: "Line-to-line chroma phase correction",
+        formula:
+          "Each 15,734 Hz line contains three and one-half 3.579545 MHz chroma cycles; a two-cycle delay at 14.31818 MHz supplies one-half chroma cycle.",
+        explanation:
+          "An odd half-cycle remainder reverses the chroma phase on the next line. The disclosed delay adds exactly that missing half-cycle before normal counting resumes, so a vertical color edge does not alternate phase on adjacent raster lines.",
+      },
+      {
+        principle: "Digital color generation by recirculation",
+        formula:
+          "Eight RAM bits load two four-bit registers at 1 MHz and are recirculated at 14.31818 MHz.",
+        explanation:
+          "The source's engineering move is temporal: it converts stored bit patterns into the required frequency components by clocking and phase-selecting them, rather than producing independent continuous-wave color signals and mixing them.",
+      },
+    ],
+    whyItMattersToday:
+      "The patent is a clear period example of treating a television display as a timing problem as much as a memory problem. Its complete source reading preserves the counter sequence, frequencies, color codes, and figures that explain why a small delay could make digital color graphics legible on a standard raster display.",
+  },
+  claims: [
+    {
+      number: 1,
+      isIndependent: true,
+      originalText: wozniakAppleClaimText(1),
+      plainEnglish:
+        "Claims a video-display timing apparatus with three linked pieces: a color-reference source, horizontal synchronization that occurs at an odd submultiple of that reference, and a compensation circuit that adjusts horizontal timing so the signals remain phase-related. The claimed result is vertically sharp color graphics on a raster CRT.",
+      keyInnovations: ["color reference", "odd-submultiple horizontal sync", "timing compensation"],
+    },
+    {
+      number: 2,
+      isIndependent: false,
+      dependsOn: [1],
+      originalText: wozniakAppleClaimText(2),
+      plainEnglish:
+        "Narrows claim 1 by requiring the horizontal synchronization means to be a digital counter. It does not claim every counter in a video system; it keeps the parent timing and phase-compensation combination and specifies its horizontal-sync element.",
+      keyInnovations: ["digital horizontal counter"],
+    },
+    {
+      number: 3,
+      isIndependent: false,
+      dependsOn: [2],
+      originalText: wozniakAppleClaimText(3),
+      plainEnglish:
+        "Further narrows the counter version by requiring the timing compensation to periodically delay counting. The legal work of this claim is the intermittent alteration of the counter sequence, not merely a continuously different clock rate.",
+      keyInnovations: ["periodic count delay"],
+    },
+    {
+      number: 4,
+      isIndependent: false,
+      dependsOn: [3],
+      originalText: wozniakAppleClaimText(4),
+      plainEnglish:
+        "Adds the stated operating figures: a roughly 3.58 MHz color-reference signal and horizontal synchronization of roughly 15,734 Hz. It ties those numerical relationships to the already claimed periodic timing compensation.",
+      keyInnovations: ["3.58 MHz chroma reference", "15,734 Hz horizontal rate"],
+    },
+    {
+      number: 5,
+      isIndependent: true,
+      originalText: wozniakAppleClaimText(5),
+      plainEnglish:
+        "Claims the timing arrangement from the counter side. A horizontal counter is synchronized by a color-reference source whose frequency is an odd multiple above the counter rate. At a predetermined count, delay circuitry postpones counting, allowing well-defined color graphics to be stored and displayed.",
+      keyInnovations: ["horizontal counter", "odd-multiple reference", "predetermined-count delay"],
+    },
+    {
+      number: 6,
+      isIndependent: false,
+      dependsOn: [5],
+      originalText: wozniakAppleClaimText(6),
+      plainEnglish:
+        "Narrows claim 5 by requiring an odd-integer digital divider between the reference means and the horizontal counter. That divider establishes the unusual timing ratio that makes periodic phase correction necessary while retaining the parent claim's counter, reference, delay, storage, and display relationship.",
+      keyInnovations: ["odd-integer digital divider"],
+    },
+    {
+      number: 7,
+      isIndependent: false,
+      dependsOn: [6],
+      originalText: wozniakAppleClaimText(7),
+      plainEnglish:
+        "Narrows the odd-divider circuit to a shift-register counter whose loading is interrupted at the predetermined count. It connects the abstract delay in the earlier claims to the register-sequence implementation described in Figure 3.",
+      keyInnovations: ["shift-register counter", "interrupted loading"],
+    },
+    {
+      number: 8,
+      isIndependent: false,
+      dependsOn: [7],
+      originalText: wozniakAppleClaimText(8),
+      plainEnglish:
+        "Adds the same approximate numeric relationship to the shift-register-counter version: 3.58 MHz color reference and a predetermined count reached at about 15,734 Hz. It is the most specific dependent expression of that timing chain.",
+      keyInnovations: ["3.58 MHz reference", "15,734 Hz predetermined event"],
+    },
+  ],
+  drawings: [
+    {
+      figureNumber: "Fig. 1",
+      title: "Microcomputer block diagram",
+      caption:
+        "CPU 10, ROM 14, RAM 23, video generator 25, address multiplexer 28, and timing and synchronization generator 15 as printed in the source.",
+      svgType: "wozniak-apple",
+      callouts: [
+        {
+          id: "woz-fig1-cpu",
+          figureRef: "Fig. 1",
+          label: "10",
+          element: "CPU",
+          description: "The central processing unit shown in the source block diagram.",
+          x: 17,
+          y: 45,
+        },
+        {
+          id: "woz-fig1-video",
+          figureRef: "Fig. 1",
+          label: "25",
+          element: "Video generator",
+          description: "The circuit detailed in Figure 2 and connected to output line 26.",
+          x: 66,
+          y: 39,
+        },
+        {
+          id: "woz-fig1-timing",
+          figureRef: "Fig. 1",
+          label: "15",
+          element: "Timing and synchronization generator",
+          description: "The timing circuit detailed in Figure 3.",
+          x: 55,
+          y: 83,
+        },
+      ],
+    },
+    {
+      figureNumber: "Fig. 2",
+      title: "Video generator shift registers",
+      caption:
+        "Two four-bit shift registers and phase-select multiplexer 38, as printed in the source.",
+      svgType: "wozniak-apple",
+      callouts: [
+        {
+          id: "woz-fig2-register36",
+          figureRef: "Fig. 2",
+          label: "36",
+          element: "Four-bit shift register",
+          description: "One of the two registers receiving RAM color data.",
+          x: 30,
+          y: 36,
+        },
+        {
+          id: "woz-fig2-mux",
+          figureRef: "Fig. 2",
+          label: "38",
+          element: "Phase-select multiplexer",
+          description: "Selects staged register outputs for video line 26.",
+          x: 57,
+          y: 78,
+        },
+      ],
+    },
+    {
+      figureNumber: "Fig. 3",
+      title: "Timing and synchronization generator",
+      caption:
+        "Crystal oscillator 51, dividers, shift-register counter 60, horizontal counter 63, and vertical counter 64 as printed in the source.",
+      svgType: "wozniak-apple",
+      callouts: [
+        {
+          id: "woz-fig3-oscillator",
+          figureRef: "Fig. 3",
+          label: "51",
+          element: "Crystal oscillator",
+          description: "The 14.31818 MHz timing reference source.",
+          x: 22,
+          y: 24,
+        },
+        {
+          id: "woz-fig3-counter",
+          figureRef: "Fig. 3",
+          label: "63",
+          element: "Divide-by-65 counter",
+          description: "Produces the horizontal synchronization event.",
+          x: 39,
+          y: 74,
+        },
+      ],
+    },
+    {
+      figureNumber: "Fig. 4",
+      title: "Color and high-resolution waveform examples",
+      caption:
+        "Printed waveforms for red, light blue, brown, gray, and high-resolution green or violet output.",
+      svgType: "wozniak-apple",
+      callouts: [
+        {
+          id: "woz-fig4-red",
+          figureRef: "Fig. 4",
+          label: "71",
+          element: "Red waveform",
+          description: "The source's waveform example for the code 0001.",
+          x: 18,
+          y: 44,
+        },
+        {
+          id: "woz-fig4-hires",
+          figureRef: "Fig. 4",
+          label: "77–78",
+          element: "High-resolution waveforms",
+          description: "The source's examples for green or violet high-resolution output.",
+          x: 17,
+          y: 82,
+        },
+      ],
+    },
+  ],
+  historicalContext: {
+    problemStatement:
+      "The grant identifies a compatibility problem between digital microcomputer information and ordinary raster-scanned television receivers: maintaining near-standard horizontal synchronization while keeping vertical color lines coherent.",
+    priorArtLimitations: [
+      "An odd-submultiple horizontal timing relationship produces a line-to-line chroma phase reversal and ragged vertical color lines unless corrected.",
+      "An even-submultiple workaround moves horizontal synchronization away from its standard frequency and can require receiver adjustment.",
+      "Earlier color generation stored four digital bits but used separate pure-color generation, gating, and mixing circuitry that the source calls complex.",
+    ],
+    breakthroughInsight:
+      "Treat the chroma phase reversal as a deterministic counter-sequence error: extend the sequence by two master-clock cycles at the prescribed event, then use recirculating digital shift registers to turn RAM color bits into the display signal.",
+    patentWars: [],
+    civilizationalImpact:
+      "The source captures a concrete engineering route from low-cost digital logic to a usable color raster display: tie color, horizontal sync, and digital data circulation to one clock, then explicitly correct the timing mismatch that makes vertical color edges unstable.",
+    aftermath:
+      "This record is limited to what the reviewed 1979 grant establishes. The complete manual source edition preserves the circuit, timing values, color table, and all eight printed claims; later product history and other Apple II architecture claims require separate evidence.",
+  },
+  tags: ["Stephen Wozniak", "raster video", "digital color", "shift register", "timing"],
+  stats: { totalClaims: 8, independentClaims: 2 },
 };

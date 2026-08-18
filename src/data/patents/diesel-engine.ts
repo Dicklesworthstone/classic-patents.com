@@ -1,70 +1,59 @@
+import {
+  dieselEngineArchivalEdition,
+  dieselManualClaimText,
+} from "@/data/editions/dieselEngineEdition";
 import type { Patent } from "@/types/patent";
 
 export const dieselEnginePatent: Patent = {
   id: "us-542846-diesel-engine",
   patentNumber: "US 542,846",
-  title: "Internal-Combustion Engine",
-  shortTitle: "Diesel High-Compression Ignition Engine",
+  title: "Method of and Apparatus for Converting Heat into Work",
+  shortTitle: "Diesel Controlled-Combustion Heat Motor",
   subtitle:
     "Adiabatic Compression Self-Ignition, Constant-Pressure Expansion, and Extreme Thermal Efficiency",
   inventors: ["Rudolf Diesel"],
   inventorLocation: "Berlin, Germany",
   grantDate: "1895-07-16",
-  filingDate: "1895-03-14",
+  filingDate: "1892-08-26",
   era: "Gilded Age & Grid (1870–1900)",
   category: "materials",
   categoryLabel: "High-Pressure Thermodynamics",
   summary:
-    "Shattering all existing thermodynamic thermal efficiency records: on July 16, 1895, German engineer Rudolf Diesel received US Patent No. 542,846 for the compression-ignition internal combustion engine. Before Diesel, steam engines wasted over 88% of fuel energy (thermal efficiency $\\eta \\approx 10\\text{--}12\\%$) and Otto gasoline engines were limited to low compression ratios ($r \\approx 4:1$) to avoid violent premature spark knocking. Diesel compressed ambient air to extreme pressure (>35 bar, $r = 18:1$), heating the air adiabatically to over $650^\\circ\\text{C}$ ($T_2 = T_1 r^{\\gamma-1}$) well above fuel auto-ignition temperature. Liquid fuel injected under high-pressure blast air ignited instantly upon entry, burning at near-constant pressure without spark plugs and achieving unprecedented thermal efficiencies exceeding 40%.",
+    "US 542,846 claims a process and machines for converting fuel heat into work: mechanically compress air before combustion, then admit fuel gradually while the working gases expand. Diesel describes solid, liquid, and gaseous fuels, single- and double-acting engines, air reservoirs, and a governed cut-off rather than a spark-ignition engine.",
   heroQuote:
-    "Be it known that I, Rudolf Diesel, of Berlin, Germany, have invented certain new and useful Improvements in Internal-Combustion Engines, of which the following is a specification...",
+    "The method forming my present invention differs from all those previously described, and is illustrated by the theoretical diagram shown in Fig. 2.",
   originalPdfUrl: "/patents/pdfs/us-542846-diesel-engine.pdf",
   googlePatentsUrl: "https://patents.google.com/patent/US542846A/en",
-  usptoClassification: "F02B 1/12 (Compression-ignition engines / High-pressure injection)",
+  usptoClassification: "F02B 1/12 (internal-combustion engines using compression ignition)",
   originalTextAsset: {
-    url: "/patents/source-text/us-542846-diesel-engine.txt",
+    url: "/patents/transcripts/us-542846-diesel-engine-reviewed.txt",
     pageCount: 10,
-    kind: "source-pdf-text-layer",
+    kind: "reviewed-transcription",
+    reviewedBy: "Classic Patents editorial agent (GPT-5.6)",
+    reviewedAt: "2026-08-18",
+    sourcePdfSha256: dieselEngineArchivalEdition.sourcePdfSha256,
   },
-  originalText: `UNITED STATES PATENT OFFICE.
-RUDOLF DIESEL, OF BERLIN, GERMANY.
-
-INTERNAL-COMBUSTION ENGINE.
-
-SPECIFICATION forming part of Letters Patent No. 542,846, dated July 16, 1895.
-Application filed March 14, 1895. Serial No. 541,757. (No model.) Patented in Germany February 28, 1892, No. 67,207.
-
-To all whom it may concern:
-Be it known that I, RUDOLF DIESEL, a subject of the King of Bavaria, residing at Berlin, in the Kingdom of Prussia, German Empire, have invented certain new and useful Improvements in Internal-Combustion Engines; and I do hereby declare that the following is a full, clear, and exact description of the invention.
-
-The object of my invention is to increase the thermal efficiency of internal-combustion engines and approach more closely than has hitherto been possible the theoretical maximum efficiency of the Carnot cycle.
-
-In existing internal-combustion engines, a mixture of combustible gas or vapor and air is compressed within the cylinder and then ignited by a spark, flame, or hot tube, causing an instantaneous explosion with a sudden, violent rise in temperature and pressure. In such engines, the compression is strictly limited to prevent premature ignition or knocking, and large quantities of heat are lost to the water-cooled cylinder walls.
-
-According to my present invention:
-First, pure air is drawn into the working cylinder and compressed by the working piston to a degree far exceeding that used in ordinary engines—namely, to a pressure of from thirty to ninety atmospheres—whereby the temperature of the air is raised by the work of compression alone to a degree far above the ignition point of the fuel to be used.
-Second, into this highly compressed and red-hot air, finely divided liquid or pulverized solid fuel is gradually injected during a portion of the forward stroke of the piston, so that the fuel burns instantly and progressively upon its entry into the cylinder without an explosive rise in pressure.
-Third, the rate of fuel injection is so regulated in proportion to the piston displacement that the combustion takes place at substantially constant pressure or constant temperature.
-Fourth, after fuel injection ceases, the hot gases expand further down to near atmospheric pressure, converting their heat energy into useful mechanical work before being exhausted.`,
+  archivalEdition: dieselEngineArchivalEdition,
+  originalText: `UNITED STATES PATENT OFFICE.\nRUDOLF DIESEL, OF BERLIN, GERMANY.\n\nMETHOD OF AND APPARATUS FOR CONVERTING HEAT INTO WORK.\n\nSPECIFICATION forming part of Letters Patent No. 542,846, dated July 16, 1895. Application filed August 26, 1892, serial No. 444,246.\n\nMy invention has reference to improvements in the methods of and apparatus for converting heat into work. The method forming my present invention differs from all those previously described: pure atmospheric air is compressed before ignition or combustion, then finely-divided fuel is gradually introduced while the gases expand.`,
   plainEnglishExplanation: {
     overview:
-      "While studying thermodynamics under Carl von Linde at the Munich Polytechnic, Rudolf Diesel learned that the most efficient steam engines converted barely 10% of heat energy into work, wasting 90% up the smokestack. Inspired by Nicolas Léonard Sadi Carnot's 1824 treatise on maximum theoretical heat engine efficiency, Diesel spent fifteen years developing an engine that compressed pure air so intensely that the air itself ignited the fuel, doubling thermodynamic efficiency and creating the most fuel-efficient internal combustion engine in human history.",
+      "The patent's stated departure is a controlled-combustion process: compress air before fuel is admitted, introduce the fuel gradually during expansion, and stop admission at cut-off before further expansion. This source face does not treat the 1895 specification as a description of a later production diesel engine.",
     coreMechanism:
-      "On the intake stroke, the heavy cast-steel cylinder draws in pure ambient air at $P_1 = 1\\text{ bar}, T_1 = 300\\text{ K}$. On the upward compression stroke, the piston forces the air into a tight combustion bowl at an extreme compression ratio ($r = V_1 / V_2 = 18:1$). By adiabatic gas compression ($T_2 = T_1 r^{\\gamma-1}, \\gamma = 1.4$), the air pressure surges to $P_2 \\approx 40\\text{ bar}$ ($580\\text{ psi}$) and temperature reaches $T_2 \\approx 953\\text{ K}$ ($680^\\circ\\text{C}$), glowing red-hot. At top dead center, an air-blast injector pumps liquid heavy petroleum/peanut oil atomized under $P_{\\text{blast}} = 65\\text{ bar}$ through a multi-hole nozzle. Because the air temperature exceeds the fuel auto-ignition threshold ($T_{\\text{auto}} \\approx 210^\\circ\\text{C}$), the droplets ignite spontaneously as they enter. The fuel burns progressively over $10\\%\\text{ to } 15\\%$ of the expansion stroke, sustaining a nearly constant combustion pressure ($P \\approx 45\\text{ bar}$) while the piston descends. The burning gases then expand adiabatically down to $P_4 \\approx 2.5\\text{ bar}$, delivering maximum mechanical torque to the crankshaft with a thermal brake efficiency exceeding $42\\%$.",
+      "Diesel describes air compressed before combustion to the required subsequent-combustion temperature, then fuel introduced gradually while the gases expand. His Figure 2 gives illustrative initial pressures for stated temperatures; the patent's legal process is controlled admission and expansion, not a fixed pressure, ratio, injector geometry, or efficiency figure.",
     mechanicalBreakdown: [
       {
         title: "Extreme High-Pressure Compression Cylinder",
-        summary: "Heavy-walled cast-iron cylinder achieving 40 bar compression ratio.",
+        summary: "A single-acting cylinder and plunger for the coal-fuel example.",
         technicalDetails:
-          "Machined from high-tensile alloy cast iron with a $250\\text{ mm}$ bore and $400\\text{ mm}$ stroke. Designed to withstand peak internal hoop stresses exceeding $\\sigma_{\\text{hoop}} = \\frac{P_{\\text{peak}} r}{t} \\approx 120\\text{ MPa}$.",
+          "The source names cylinder C, high-pressure plunger P, connecting-rod b, crank c, shaft d, and plunger guides a. It does not give a bore, stroke, alloy, wall thickness, or stress rating for this construction.",
         archaicTerm: "Working-cylinder with high-compression piston",
         modernEquivalent: "High-compression heavy-duty cylinder block",
       },
       {
         title: "Air-Blast High-Pressure Fuel Injection Nozzle",
-        summary: "Compressed-air atomizer injecting liquid fuel against 40 bar cylinder pressure.",
+        summary: "A nozzle and needle that gradually admit liquid fuel in the liquid-fuel form.",
         technicalDetails:
-          "An auxiliary multi-stage compressor provides air at $P_{\\text{blast}} = 65\\text{ to } 80\\text{ bar}$. A cam-actuated needle valve atomizes fuel into micro-droplets ($d_{32} < 25\\,\\mu\\text{m}$) to ensure rapid, complete combustion within $12\\text{ milliseconds}$.",
+          "The source says a feed-pump maintains liquid fuel in the nozzle above cylinder-compression pressure and that the distributing gear opens needle n near the highest compression. It supplies no blast-air pressure, droplet diameter, or time value.",
         archaicTerm: "Compressed-air fuel-injecting valve and nozzle",
         modernEquivalent: "High-pressure fuel injection valve / Common-rail injector",
       },
@@ -72,7 +61,7 @@ Fourth, after fuel injection ceases, the hot gases expand further down to near a
         title: "Progressive Cam-Governed Injection Cutoff",
         summary: "Mechanical governor regulating fuel cutoff ratio under varying load.",
         technicalDetails:
-          "A flyball centrifugal governor varies the duration of the fuel needle valve opening (cutoff ratio $r_c = V_3 / V_2$ from $1.2$ at idle to $2.2$ at full load), maintaining constant maximum cycle pressure across load variations.",
+          "The source attributes fuel regulation to governor E and describes an adjustable piece moved by rod St that changes the period of fuel admission. It specifies neither a modern cut-off ratio nor a fixed pressure-control target.",
         archaicTerm: "Regulating valve-gear and centrifugal governor",
         modernEquivalent: "Variable fuel injection metering governor",
       },
@@ -86,9 +75,9 @@ Fourth, after fuel injection ceases, the hot gases expand further down to near a
       },
       {
         title: "Multi-Stage Auxiliary Blast Air Compressor",
-        summary: "Crankshaft-driven two-stage reciprocating pump generating 80 bar injection air.",
+        summary: "Preparatory air compression and a reservoir in the two-cylinder arrangement.",
         technicalDetails:
-          "A two-stage reciprocating air pump with interstage cooling water jackets ($D_1 = 80\\text{ mm}, D_2 = 35\\text{ mm}$). Powered by an eccentric link from the main connecting rod, it supplies dry compressed air to an external forged steel receiver flask ($V = 30\\text{ L}, P = 80\\text{ bar}$) for blast-air fuel injection and cold pneumatic starting.",
+          "The two-cylinder form uses the lower part of central cylinder B as an air pump and reservoir L for preparatory compression and starting. The source gives no pump diameter, receiver volume, construction material, or pressure rating.",
         archaicTerm: "Air-compressing pump driven by the engine",
         modernEquivalent: "Auxiliary multi-stage blast injection compressor / Common rail pump",
       },
@@ -96,90 +85,80 @@ Fourth, after fuel injection ceases, the hot gases expand further down to near a
     scientificPrinciples: [
       {
         principle: "Adiabatic Compression Heating Law",
-        formula:
-          "T_2 = T_1 \\cdot r^{\\gamma - 1} = 300\\text{ K} \\cdot (18)^{0.40} \\approx 953.3\\text{ K} \\implies 680.2^\\circ\\text{C}",
+        formula: "Higher compression raises the air temperature before fuel admission.",
         explanation:
-          "Compressing gas without heat loss elevates its temperature according to the isentropic relation. At $r = 18$, the cylinder temperature easily exceeds the $210^\\circ\\text{C}$ auto-ignition temperature of heavy hydrocarbons, guaranteeing reliable self-ignition without electrical ignition systems.",
+          "The specification's operative point is qualitative and conditional: compress air to the temperature at which the subsequently admitted fuel will ignite. It supplies illustrative diagram values, not an engine-wide modern design calculation.",
       },
       {
         principle: "Diesel Cycle Ideal Thermal Efficiency",
         formula:
-          "\\eta_{\\text{Diesel}} = 1 - \\frac{1}{r^{\\gamma - 1}} \\left[\\frac{r_c^\\gamma - 1}{\\gamma (r_c - 1)}\\right], \\quad \\eta_{\\text{Diesel}} \\approx 1 - \\frac{1}{(18)^{0.4}} \\left[\\frac{1.6^{1.4} - 1}{1.4 (1.6 - 1)}\\right] \\approx 62.8\\% \\text{ (ideal)}, \\quad 42\\% \\text{ (brake)}",
+          "Fuel admission continues only to cut-off; expansion then continues without further heat transfer.",
         explanation:
-          "The Diesel cycle achieves the highest thermal efficiency of any practical internal combustion cycle by combining extreme compression ratio $r$ with constant-pressure heat addition ($r_c = V_3 / V_2$).",
+          "The patent contrasts a controlled heat-and-expansion path with an uncontrolled explosive rise, but it does not establish a numerical efficiency ranking for later practical engines.",
       },
       {
         principle: "Fuel Droplet Atomization & Sauter Mean Diameter",
         formula:
-          "d_{32} \\propto \\left(\\frac{\\sigma_{\\text{fuel}}}{\\rho_{\\text{gas}} v_{\\text{rel}}^2}\\right)^{0.5} \\cdot \\left(\\frac{\\mu_{\\text{fuel}}}{\\sqrt{\\sigma_{\\text{fuel}} \\rho_{\\text{fuel}} D_{\\text{orifice}}}}\\right)^{0.1}",
+          "Fuel is gradually admitted in a finely divided state during the prescribed part of the stroke.",
         explanation:
-          "High blast-air velocity through the injection orifice creates intense aerodynamic shear, shattering viscous liquid fuel into a fine aerosol with enormous specific surface area ($A/V = 6 / d_{32}$), enabling rapid droplet evaporation and smokeless combustion.",
+          "The source describes a liquid jet and nozzle, a needle opened by distributing gear, and gradual admission. It does not specify a droplet-size model, blast velocity, or smokeless-combustion result.",
       },
       {
         principle: "Carnot Thermodynamic Theoretical Upper Bound",
         formula:
-          "\\eta_{\\text{Carnot}} = 1 - \\frac{T_L}{T_H} = 1 - \\frac{300\\text{ K}}{2100\\text{ K}} \\approx 85.7\\%",
+          "The source uses compression to establish the desired combustion temperature before fuel enters.",
         explanation:
-          "Diesel's core intellectual thesis was to approach Carnot theoretical efficiency as closely as physical materials allow by maximizing the combustion peak temperature $T_H$ through extreme pre-compression.",
+          "The legal document describes the timing and thermal control of its cycle. Broader claims about theoretical limits need separate historical and engineering evidence and are not attributed to this source alone.",
       },
       {
         principle: "Droplet Evaporation & D-Squared Combustion Law",
         formula:
-          "d^2(t) = d_0^2 - K t, \\quad K = \\frac{8 k_{\\text{gas}}}{\\rho_{\\text{fuel}} C_{p,\\text{gas}}} \\ln(1 + B_q)",
+          "The patent requires gradual fuel admission into compressed air while the gases expand.",
         explanation:
-          "Micro-droplets evaporating in the $950\\text{ K}$ cylinder air undergo steady quasi-steady regression, where the burning rate constant $K$ governs the transition from diffusive evaporation to turbulent deflagration.",
+          "This historical specification does not provide a droplet-evaporation law, a cylinder-air temperature, or a turbulence model. Its source-supported contribution is the controlled timing of fuel introduction.",
       },
     ],
     whyItMattersToday:
-      "Rudolf Diesel's engine powers modern global trade and industrial civilization. Today, diesel engines propel over 90% of global maritime freight shipping, long-haul freight rail, heavy highway trucking, agricultural tractors, mining machinery, and emergency hospital backup power grids. Modern common-rail direct-injection diesel engines achieve brake thermal efficiencies approaching 50%, remaining the most fuel-efficient internal combustion powertrains ever built.",
+      "The patent is an early source for compression-before-admission and cut-off-controlled combustion. Its connection to later engines should be described with separately cited historical and technical evidence rather than unsupported global market or efficiency figures.",
   },
   claims: [
     {
       number: 1,
       isIndependent: true,
-      originalText:
-        "The method of operating internal-combustion engines, which consists in compressing pure air in the cylinder by the working piston to a pressure and temperature above the ignition-point of the fuel to be used, then injecting fuel gradually into said compressed and heated air, whereby the fuel ignites and burns spontaneously upon entry without explosive rise of pressure, and then allowing the resulting gases to expand against the piston, substantially as described.",
+      originalText: dieselManualClaimText(1),
       plainEnglish:
-        "The historic master process claim of the diesel engine: compressing air to a temperature above the fuel's auto-ignition point, then gradually injecting fuel to self-ignite and burn at constant pressure without spark plugs.",
+        "Claim 1 is a process claim. It requires compression of air, or air diluted with neutral gas or vapor, until its temperature exceeds the proposed fuel's ignition point. Fuel must then enter gradually during expansion against enough load to avoid an essential pressure or temperature rise; admission ends and the gases continue to expand without heat transfer.",
       keyInnovations: [
         "Pure air high-pressure compression",
         "Compression-ignition without spark plugs",
         "Gradual constant-pressure combustion",
       ],
       legalSignificance:
-        "The master patent claim covering all compression-ignition internal combustion engines worldwide, upheld across international patent courts.",
+        "This is the grant's broad process claim, bounded by staged admission and controlled expansion rather than an assertion about every later diesel engine.",
     },
     {
       number: 2,
-      isIndependent: false,
-      dependsOn: [1],
-      originalText:
-        "In an internal-combustion engine, the combination, with a working cylinder and piston adapted to compress air to a pressure of thirty atmospheres or more, of a fuel-injection nozzle communicating with the cylinder, and an air-pump delivering air under a pressure higher than the cylinder compression to inject fuel into the heated air in the cylinder.",
+      isIndependent: true,
+      originalText: dieselManualClaimText(2),
       plainEnglish:
-        "The air-blast fuel injection apparatus claim: combining a high-compression cylinder (30+ bar) with a high-pressure air pump that blasts fuel into the red-hot compressed air.",
+        "Claim 2 is a separate apparatus combination. It calls for a cylinder and piston, a valved air or neutral-gas inlet, a fuel feed that discharges fuel gradually, and valve gear that opens that feed at the working stroke's beginning and closes it at a predetermined portion of that stroke.",
       keyInnovations: [
-        "Blast-air fuel atomization",
-        "Over-pressure fuel injection",
-        "High-density combustion chamber delivery",
+        "Valved suction inlet",
+        "Gradual fuel feed",
+        "Working-stroke cut-off valve gear",
       ],
       legalSignificance:
-        "Protected the high-pressure fuel injection delivery system that made early diesel engines functional before the development of modern hydraulic pumps.",
+        "The claim secures the timed, gradual-feed valve arrangement described in the specification, not the later common-rail system attributed to the legacy record.",
     },
     {
       number: 3,
-      isIndependent: false,
-      dependsOn: [1],
-      originalText:
-        "In an internal-combustion engine, the combination, with the fuel-injection valve, of a governor adapted to vary the duration of fuel injection according to the load on the engine, whereby combustion is maintained at substantially constant pressure regardless of load.",
+      isIndependent: true,
+      originalText: dieselManualClaimText(3),
       plainEnglish:
-        "The governor-controlled fuel cutoff claim: a governor that adjusts the duration of fuel injection to maintain constant combustion pressure across varying engine loads.",
-      keyInnovations: [
-        "Variable fuel cutoff timing",
-        "Load-governed constant-pressure expansion",
-        "High part-load thermal efficiency",
-      ],
+        "Claim 3 is another apparatus claim. It combines a combustion cylinder with gradual admission up to cut-off, an air compressor, a reservoir connected both to compressor and cylinder, and an expansion chamber for exhaust gas. Each named vessel has a distinct thermodynamic job in the described arrangement.",
+      keyInnovations: ["Air compressor", "Compressed-air reservoir", "Exhaust expansion chamber"],
       legalSignificance:
-        "Protected variable-load engine governing in compression-ignition machinery.",
+        "The claim is limited to the specified compressor, reservoir, cylinder, cut-off, and exhaust-expansion combination.",
     },
   ],
   drawings: [
@@ -258,7 +237,7 @@ Fourth, after fuel injection ceases, the hot gases expand further down to near a
         conflictDetails:
           "Akroyd-Stuart's engine used a low compression ratio (under 4:1) and relied on an uncooled external 'hot-bulb' vaporizing chamber to ignite fuel, running with low thermal efficiency (15%).",
         resolution:
-          "Courts recognized that Diesel's true high-compression self-ignition ($r > 14:1$, $\\eta > 40\\%$) was a distinct and vastly superior thermodynamic breakthrough.",
+          "This record makes no court or later-performance claim without a separately reviewed historical source; the 1895 facsimile itself supplies no litigation finding.",
         legalOutcome:
           "Diesel's patents were licensed worldwide by Krupp, Maschinenfabrik Augsburg (MAN), Sulzer Brothers, and American brewer Adolphus Busch (founding Busch-Sulzer Diesel).",
       },
@@ -287,8 +266,6 @@ Fourth, after fuel injection ceases, the hot gases expand further down to near a
   ],
   stats: {
     totalClaims: 3,
-    independentClaims: 1,
-    patentWarYears: "1892–1912",
-    impactScore: 100,
+    independentClaims: 3,
   },
 };

@@ -12,7 +12,7 @@ const claim = (number: number, value: string) => ({
   inlines: text(value),
 });
 
-const figure = (number: number): CuratedSpecificationInline => ({
+const figure = (number: number, width: number, height: number): CuratedSpecificationInline => ({
   kind: "reference",
   text: `Fig. ${number}`,
   href: `#fig-${number}`,
@@ -22,8 +22,8 @@ const figure = (number: number): CuratedSpecificationInline => ({
     {
       src: `/patents/figures/us-388850-eastman-kodak/fig-${number}-source-crop-v1.png`,
       alt: `Fig. ${number} from George Eastman's US 388,850 Camera drawing sheets.`,
-      width: 900,
-      height: 700,
+      width,
+      height,
     },
   ],
 });
@@ -77,24 +77,32 @@ export const eastmanKodakArchivalEdition: CuratedSpecificationEdition = {
         kind: "text",
         text: "In the accompanying drawings, wherein I have illustrated one embodiment of my present improvements, ",
       },
-      figure(1),
+      figure(1, 1500, 820),
       { kind: "text", text: " is a view in perspective of the complete instrument. " },
-      figure(2),
+      figure(2, 1000, 650),
       { kind: "text", text: " is a side and " },
-      figure(3),
+      figure(3, 1050, 660),
       {
         kind: "text",
         text: " a top view of the camera, the side and top of the box being removed to disclose the interior arrangement. ",
       },
-      figure(4),
+      figure(4, 500, 650),
       { kind: "text", text: " is a front view with cap or end of box removed. " },
-      figure(5),
+      figure(5, 400, 680),
       { kind: "text", text: " is a view in perspective of the lens-holder and shutter. " },
-      figure(6),
+      figure(6, 450, 780),
       {
         kind: "text",
-        text: " is a view in perspective of the lens-holder and shutter, several of the parts being detached. Figs. 7, 8, 9, and 10 are views in perspective of the ",
+        text: " is a view in perspective of the lens-holder and shutter, several of the parts being detached. ",
       },
+      figure(7, 850, 600),
+      { kind: "text", text: ", " },
+      figure(8, 850, 600),
+      { kind: "text", text: ", " },
+      figure(9, 950, 820),
+      { kind: "text", text: ", and " },
+      figure(10, 900, 800),
+      { kind: "text", text: " are views in perspective of the " },
       {
         kind: "term",
         text: "roller-holder",
@@ -103,7 +111,7 @@ export const eastmanKodakArchivalEdition: CuratedSpecificationEdition = {
         label: "Period mechanism term",
       },
       { kind: "text", text: ", looking from opposite sides. " },
-      figure(11),
+      figure(11, 650, 900),
       {
         kind: "text",
         text: " is a detail view illustrating the manner of mounting and supporting the spool. Similar letters of reference in the several figures indicate the same parts.",
@@ -463,6 +471,9 @@ export const eastmanKodakParallelReadings: Readonly<Record<number, readonly stri
   24: [
     "The winding-spool uses a similar support but adds the external winding key. The described fittings preserve the light barrier while leaving the indicator visible.",
   ],
-  66: ["The inventor's printed signature closes the legal claims."],
-  67: ["Edwin O. Sago and George W. Deming are printed as witnesses to the grant."],
+  25: [
+    "The final construction statement explains that the rear holder must fit the tube, expose its indicator and winding key only through controlled openings, and otherwise exclude light.",
+  ],
+  68: ["The inventor's printed signature closes the legal claims."],
+  69: ["Edwin O. Sago and George W. Deming are printed as witnesses to the grant."],
 };

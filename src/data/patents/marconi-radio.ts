@@ -1,6 +1,9 @@
+import { marconiRadioClaimText } from "@/data/editions/marconiRadioEdition";
 import type { Patent } from "@/types/patent";
 
-export const marconiRadioPatent: Patent = {
+// Preserved legacy research state. It was not transcribed from the pinned PDF
+// and is deliberately not exported or used by the catalogue.
+const _legacyMarconiRadioResearch: Patent = {
   id: "us-586193-marconi-radio",
   patentNumber: "US 586,193",
   title: "Transmitting Electrical Impulses and Signals, and an Apparatus Therefor",
@@ -284,4 +287,230 @@ Figure 4 is a longitudinal sectional view of the evacuated sensitive tube (coher
     patentWarYears: "1897–1943",
     impactScore: 100,
   },
+};
+
+const claimPlainEnglish = (number: number) =>
+  `Claim ${number} protects one stated combination in the receiving or transmitting arrangement, rather than wireless radio in the abstract. Its limits are the listed electrical contact or metallic-powder detector, circuit path, and, where stated, plates, choking-coils, relay, earth connection, or automatic shaking/reset mechanism. Removing a listed part changes the claimed combination.`;
+
+export const marconiRadioPatent: Patent = {
+  id: "us-586193-marconi-radio",
+  patentNumber: "US 586,193",
+  title: "Transmitting Electrical Signals",
+  shortTitle: "Marconi Spark-Oscillation Receiver and Reset Mechanism",
+  subtitle:
+    "High-Frequency Spark Oscillations, Metallic-Powder Detection, and Automatic Decohering",
+  inventors: ["Guglielmo Marconi"],
+  inventorLocation: "21 Burlington Road, London, Middlesex, England",
+  grantDate: "1897-07-13",
+  filingDate: "1896-12-07",
+  era: "Electrification & Early Modern (1870–1920)",
+  category: "telecom",
+  categoryLabel: "Telecommunications & RF Electromagnetism",
+  summary:
+    "US 586,193 describes a spark-oscillation signalling system with directed reflectors, a metallic-powder circuit-closer, and a trembler that restores the detector after each received impulse. The printed claims concentrate on the receiver's variable-resistance contact, its local circuit, choking coils, automatic reset, and transmitter-receiver combinations using earth and insulated conductors.",
+  heroQuote:
+    "According to this invention electrical signals, actions, or manifestations are transmitted through the air, earth, or water by means of oscillations of high frequency.",
+  originalPdfUrl: "/patents/pdfs/us-586193-marconi-radio.pdf",
+  googlePatentsUrl: "https://patents.google.com/patent/US586193A/en",
+  usptoClassification: "H03B 11/02 (shock-excited oscillations using a spark)",
+  originalTextAsset: {
+    // The existing text layer is retained as private comparison evidence. The
+    // checked-in ledger and semantic edition are not yet complete enough to
+    // serve as the archival face.
+    url: "/patents/source-text/us-586193-marconi-radio.txt",
+    pageCount: 11,
+    kind: "source-pdf-text-layer",
+  },
+  originalText: `To all whom it may concern:
+
+Be it known that I, GUGLIELMO MARCONI, student, a subject of the King of Italy, residing at 21 Burlington Road, London, in the county of Middlesex, England, have invented certain new and useful Improvements in Transmitting Electrical Impulses and Signals and in Apparatus Therefor, of which the following is a specification.
+
+According to this invention electrical signals, actions, or manifestations are transmitted through the air, earth, or water by means of oscillations of high frequency, such as have been called the "Hertz rays" or "Hertz oscillations." Usually all line-wires are dispensed with.`,
+  plainEnglishExplanation: {
+    overview:
+      "The document is not a modern antenna patent. Its central practical problem is how a received high-frequency disturbance can operate an ordinary local telegraph circuit and then reset itself. Marconi uses a loose metallic-powder contact as the switch, a relay or instrument to make the result manifest, and a trembler to break the conductive state after reception.",
+    coreMechanism:
+      "A Ruhmkorff coil and spark producer make damped high-frequency oscillations. At the receiver, those oscillations alter the resistance of the powder contact. A local battery can then operate a relay or telegraph instrument. The trembler taps or moves the contact so its resistance returns to the normal state before the next impulse.",
+    mechanicalBreakdown: [
+      {
+        title: "Spark oscillator and reflector",
+        summary:
+          "A high-tension coil excites adjustable metallic balls; a cylindrical parabolic reflector directs the apparatus.",
+        technicalDetails:
+          "The source specifies an eight-inch spark coil, an e-to-e gap of about one twenty-fifth to one thirtieth inch, and a d-to-e distance of about one and a half inches. It calls for reflector dimensions at least double the emitted wavelength.",
+        archaicTerm: "Ruhmkorff coil",
+        modernEquivalent: "Interrupted-primary high-voltage induction coil",
+      },
+      {
+        title: "Metallic-powder circuit-closer",
+        summary:
+          "Loose metal grains in a sealed tube form a resistance that incoming oscillations can alter.",
+        technicalDetails:
+          "The document specifies hard nickel with about ten per cent hard-silver filings as a preferred mixture. It distinguishes the detector's high-frequency response from the separate local-battery circuit that operates a relay or telegraphic instrument.",
+        archaicTerm: "Circuit-closer",
+        modernEquivalent: "Coherer-style variable-resistance RF detector",
+      },
+      {
+        title: "Trembler reset",
+        summary: "A relay-driven trembler taps the detector and interrupts its conducting state.",
+        technicalDetails:
+          "The source explicitly says a well-prepared tube continues conducting after the transmitter oscillations cease until it is shaken or tapped. The reset is therefore an essential operating step in many claims, not a decorative accessory.",
+        archaicTerm: "Trembler",
+        modernEquivalent: "Electromechanical detector reset actuator",
+      },
+    ],
+    scientificPrinciples: [
+      {
+        principle: "Damped oscillation in a spark-excited circuit",
+        formula: "i(t) = I_0 e^{-Rt/(2L)} sin(omega_d t)",
+        explanation:
+          "A spark excitation produces a decaying oscillation determined by circuit inductance, capacitance, and loss. The patent calls these high-frequency oscillations or Hertz oscillations and uses reflectors to direct them.",
+      },
+      {
+        principle: "Variable-resistance contact",
+        formula: "V = I R",
+        explanation:
+          "The receiver works because the powder contact changes resistance after electrical oscillations arrive. That resistance change allows the separate local-battery circuit to drive a relay, telegraph instrument, or trembler.",
+      },
+    ],
+    whyItMattersToday:
+      "The grant records a very early complete signalling chain: a high-frequency source, a receiver responsive to it, a local output circuit, and a reset path. Modern radio receivers use different detector physics, but still require a received signal, a selective or responsive circuit, an output, and recovery for the next symbol.",
+  },
+  claims: Array.from({ length: 56 }, (_, index) => {
+    const number = index + 1;
+    return {
+      number,
+      isIndependent: true,
+      originalText: marconiRadioClaimText(number),
+      plainEnglish: claimPlainEnglish(number),
+      keyInnovations: [
+        number <= 21
+          ? "Metallic-powder circuit-closer"
+          : number <= 42
+            ? "Relay-actuated detector reset"
+            : number <= 52
+              ? "Spark transmitter and receiver combination"
+              : "Variable-resistance receiver recovery",
+      ],
+    };
+  }),
+  drawings: [
+    {
+      figureNumber: "Figs. 1 to 3",
+      title: "Air-transmission instruments and oscillator details",
+      caption:
+        "Sheet 1 shows the transmitter, reflector, adjustable oscillator, and rotating contact detail.",
+      svgType: "marconi-radio",
+      callouts: [
+        {
+          id: "marconi-a",
+          figureRef: "Fig. 1",
+          label: "a",
+          element: "Battery",
+          description: "Battery in the primary circuit of the Ruhmkorff coil.",
+          x: 66,
+          y: 70,
+        },
+        {
+          id: "marconi-c",
+          figureRef: "Fig. 1",
+          label: "c",
+          element: "Ruhmkorff coil",
+          description: "High-tension coil used to produce the desired oscillations.",
+          x: 45,
+          y: 70,
+        },
+        {
+          id: "marconi-d",
+          figureRef: "Fig. 2a",
+          label: "d/e",
+          element: "Oscillator balls",
+          description: "Adjustable metallic balls inside the insulating-tube assembly.",
+          x: 49,
+          y: 87,
+        },
+      ],
+    },
+    {
+      figureNumber: "Figs. 4 to 8",
+      title: "Receiver, detector, and liquid resistance",
+      caption:
+        "Sheet 2 shows the local circuit, sensitive tube, plates, choking coils, trembler, and related detector details.",
+      svgType: "marconi-radio",
+      callouts: [
+        {
+          id: "marconi-j",
+          figureRef: "Fig. 5",
+          label: "j",
+          element: "Sensitive tube",
+          description: "Tube containing the metallic powder or grains used as the circuit-closer.",
+          x: 50,
+          y: 59,
+        },
+        {
+          id: "marconi-k",
+          figureRef: "Fig. 5",
+          label: "k/k'",
+          element: "Plates and choking coils",
+          description: "Tuned plates and small coils connecting the detector to the local circuit.",
+          x: 65,
+          y: 59,
+        },
+        {
+          id: "marconi-p",
+          figureRef: "Fig. 4",
+          label: "p",
+          element: "Trembler",
+          description: "Automatic tapping mechanism that restores the detector contact.",
+          x: 56,
+          y: 36,
+        },
+      ],
+    },
+    {
+      figureNumber: "Figs. 9 to 11",
+      title: "Long-distance and earth-or-water arrangements",
+      caption:
+        "Sheet 3 shows alternative transmitting and receiving arrangements with suspended plates and earth connections.",
+      svgType: "marconi-radio",
+      callouts: [
+        {
+          id: "marconi-t",
+          figureRef: "Fig. 9",
+          label: "t/t2",
+          element: "Suspended poles and plates",
+          description:
+            "Poles, rope, and insulated suspended metallic plates used for long-distance work.",
+          x: 51,
+          y: 30,
+        },
+        {
+          id: "marconi-e",
+          figureRef: "Fig. 10",
+          label: "E",
+          element: "Earth connection",
+          description: "Earth connection for the alternative transmitter arrangement.",
+          x: 65,
+          y: 75,
+        },
+      ],
+    },
+  ],
+  historicalContext: {
+    problemStatement:
+      "The source describes the problem as signalling through air, earth, or water without line wires while converting a received high-frequency oscillation into an ordinary telegraphic indication.",
+    priorArtLimitations: [
+      "A detector contact that remains conducting after reception cannot distinguish subsequent impulses without a reset.",
+      "High-frequency energy can be weakened when it dissipates along the local-battery wiring.",
+    ],
+    breakthroughInsight:
+      "The claims repeatedly combine a variable-resistance contact with a local circuit and an automatic mechanical restoration, treating detection and reset as one receiving instrument.",
+    patentWars: [],
+    civilizationalImpact:
+      "The patent is a primary record of late-nineteenth-century wireless signalling hardware, including a spark source, sensitive contact, relay output, and automatic recovery mechanism.",
+    aftermath:
+      "The facsimile records the grant on July 13, 1897; it does not itself establish later litigation or a particular communications milestone.",
+  },
+  tags: ["wireless signalling", "spark oscillator", "coherer", "telegraphy"],
+  stats: { totalClaims: 56, independentClaims: 56 },
 };

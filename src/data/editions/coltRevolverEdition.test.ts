@@ -3,11 +3,12 @@ import { existsSync, readFileSync } from "node:fs";
 import { resolve } from "node:path";
 import { validateCuratedSpecificationEdition } from "@/data/archivalEditionValidation";
 import { coltRevolverPatent } from "@/data/patents/colt-revolver";
+import { validateReviewedTranscription } from "@/data/patents/sourceTextValidation";
 import { coltRevolverArchivalEdition, coltRevolverParallelReadings } from "./coltRevolverEdition";
 
 const transcriptPath = resolve(
   process.cwd(),
-  "public/patents/transcripts/us-x9430-colt-revolver.txt",
+  "public/patents/transcripts/us-x9430-colt-revolver-reviewed.txt",
 );
 const sourcePdfSha256 = "61eed2c1b5ea259a301fb2690a7d3d17e1a59560cfb002dc91c29a50f5841d01";
 
@@ -15,7 +16,7 @@ const normalizeForTranscriptComparison = (text: string): string =>
   text.replaceAll("′", "'").replaceAll("’", "'");
 
 describe("coltRevolverArchivalEdition", () => {
-  test("pins US X9430 to its complete reviewed seven-page transcript", () => {
+  test("pins US X9430 to its complete reviewed seven-page ledger", () => {
     expect(validateCuratedSpecificationEdition(coltRevolverArchivalEdition)).toEqual({
       valid: true,
       errors: [],
@@ -25,28 +26,35 @@ describe("coltRevolverArchivalEdition", () => {
 
     expect(coltRevolverPatent.id).toBe("us-x9430-colt-revolver");
     expect(coltRevolverPatent.originalPdfUrl).toBe("/patents/pdfs/us-x9430-colt-revolver.pdf");
+    expect(coltRevolverPatent.filingDate).toBeNull();
     expect(coltRevolverPatent.originalTextAsset).toEqual({
-      url: "/patents/transcripts/us-x9430-colt-revolver.txt",
+      url: "/patents/transcripts/us-x9430-colt-revolver-reviewed.txt",
       pageCount: 7,
       kind: "reviewed-transcription",
-      reviewedBy: "codex-charlie",
-      reviewedAt: "2026-08-17",
+      reviewedBy: "Classic Patents editorial agent (GPT-5.6)",
+      reviewedAt: "2026-08-18",
       sourcePdfSha256,
     });
     expect(existsSync(transcriptPath)).toBe(true);
 
-    const transcript = readFileSync(transcriptPath, "utf8");
-    expect(transcript).toContain(
+    const ledger = readFileSync(transcriptPath, "utf8");
+    expect(validateReviewedTranscription(ledger, 7)).toEqual({ valid: true });
+    expect(ledger).toContain(
       "9430X. Specification forming part of Letters Patent dated February 25, 1836.",
     );
-    expect(transcript.match(/Patented Feb\. 25, 1836\./g)).toHaveLength(4);
-    expect(transcript).toContain("SAMUEL COLT.");
-    expect(transcript).toContain("Witnesses: ROBERT CLARKE, WM. WALLIS.");
+    expect(ledger.match(/Patented Feb\. 25, 1836\./g)).toHaveLength(4);
+    expect(ledger).toContain("SAMUEL COLT.");
+    expect(ledger).toContain("Witnesses: ROBERT CLARKE, WM. WALLIS.");
+
+    const ledgerSourceText = ledger.replace(
+      /^--- REVIEWED TRANSCRIPTION PAGE \d+ OF \d+ ---$/gm,
+      "",
+    );
 
     for (const block of coltRevolverArchivalEdition.blocks) {
       if (block.kind !== "paragraph" && block.kind !== "claim") continue;
       const sourceText = block.inlines.map((inline) => inline.text).join("");
-      expect(normalizeForTranscriptComparison(transcript)).toContain(
+      expect(normalizeForTranscriptComparison(ledgerSourceText)).toContain(
         normalizeForTranscriptComparison(sourceText),
       );
     }
@@ -62,7 +70,7 @@ describe("coltRevolverArchivalEdition", () => {
     );
   });
 
-  test("has one handwritten non-lossy companion for every and only source paragraph", () => {
+  test("has one concrete non-lossy companion for every and only source paragraph", () => {
     const paragraphIndexes = coltRevolverArchivalEdition.blocks.flatMap((block, index) =>
       block.kind === "paragraph" ? [index] : [],
     );
@@ -76,11 +84,13 @@ describe("coltRevolverArchivalEdition", () => {
     expect(readingIndexes).toEqual(paragraphIndexes);
     for (const reading of Object.values(coltRevolverParallelReadings)) {
       expect(reading).toHaveLength(1);
-      expect(reading[0]?.trim().length).toBeGreaterThan(100);
+      const rendered = reading.join(" ").trim();
+      expect(rendered.length).toBeGreaterThan(100);
+      expect(rendered).not.toMatch(/^This (paragraph|text|passage) /i);
     }
   });
 
-  test("does not leave a source drawing citation stranded in a plain text node", () => {
+  test("makes every source drawing citation a semantic reference with a local crop", () => {
     const bareDrawingCitation = /\b(?:(?:fig(?:s)?\.?|figure)\s+\d+|(?:section|division)\s+\d+)\b/i;
 
     for (const block of coltRevolverArchivalEdition.blocks) {
@@ -88,8 +98,33 @@ describe("coltRevolverArchivalEdition", () => {
       for (const inline of block.inlines) {
         if (inline.kind === "text") {
           expect(inline.text).not.toMatch(bareDrawingCitation);
+          continue;
+        }
+        if (inline.kind === "reference" && inline.referenceType === "figure") {
+          expect(inline.figurePreviews?.length).toBeGreaterThan(0);
+          for (const preview of inline.figurePreviews ?? []) {
+            expect(existsSync(resolve(process.cwd(), "public", preview.src.slice(1)))).toBe(true);
+          }
         }
       }
+    }
+
+    for (let number = 1; number <= 9; number += 1) {
+      const sourceCrop = `/patents/figures/us-x9430-colt-revolver/fig-${number}-source-crop-v1.png`;
+      expect(existsSync(resolve(process.cwd(), "public", sourceCrop.slice(1)))).toBe(true);
+      expect(
+        coltRevolverArchivalEdition.blocks.some(
+          (block) =>
+            "inlines" in block &&
+            block.inlines.some(
+              (inline) =>
+                inline.kind === "reference" &&
+                inline.referenceType === "figure" &&
+                inline.text === `Figure ${number}` &&
+                inline.figurePreviews?.some((preview) => preview.src === sourceCrop),
+            ),
+        ),
+      ).toBe(true);
     }
   });
 });

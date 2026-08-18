@@ -1,13 +1,12 @@
+import { eastmanKodakArchivalEdition } from "@/data/editions/eastmanKodakEdition";
 import type { Patent } from "@/types/patent";
-import {
-  eastmanKodakArchivalEdition,
-} from "@/data/editions/eastmanKodakEdition";
 
 function manualClaimText(number: number): string {
   const block = eastmanKodakArchivalEdition.blocks.find(
     (candidate) => candidate.kind === "claim" && candidate.number === number,
   );
-  if (block?.kind !== "claim") throw new Error(`Eastman manual edition is missing claim ${number}.`);
+  if (block?.kind !== "claim")
+    throw new Error(`Eastman manual edition is missing claim ${number}.`);
   return block.inlines.map((inline) => inline.text).join("");
 }
 
@@ -95,14 +94,53 @@ This invention relates more particularly to improvements in that class of photog
     coreMechanism:
       "The optical path runs through a front aperture and lens. A hollow cylinder around the lens has matching openings on opposite sides; opaque cylinder wall blocks the path at rest, and a spring-driven half-turn moves the openings across the lens. A rear roller-holder holds the film on supply and winding spools and seals the rear of the tubular case.",
     mechanicalBreakdown: [
-      { title: "Front block and chamber", summary: "A sectional front block receives the removable lens-and-shutter unit while excluding stray light.", technicalDetails: "The patent calls the chamber b'. Its matched openings and close-fitting sections create a controlled optical path rather than an open camera interior.", archaicTerm: "Block or diaphragm", modernEquivalent: "Light-tight front bulkhead" },
-      { title: "Cylindrical shutter", summary: "A hollow cylinder with coincident openings surrounds the lens.", technicalDetails: "At rest the opaque cylinder covers both lens faces. During a controlled half-revolution the aligned openings cross the optical axis, admitting light through the lens before the latch stops the shutter again.", archaicTerm: "Cylindrical shutter", modernEquivalent: "Rotary barrel shutter" },
-      { title: "Spring drive and release", summary: "An external cord winds a spring through a ratchet; a push-pin and latch release and arrest motion.", technicalDetails: "The ratchet prevents reverse winding. Cam abutments, the pivoted latch, and spring 27 determine the shutter's stop positions and prevent more than a half-revolution per release.", archaicTerm: "Motor mechanism", modernEquivalent: "Spring-powered shutter drive" },
-      { title: "Roller-holder", summary: "The rear assembly carries prepared film, guides it over a platen, and winds it forward.", technicalDetails: "Supply and winding spools, guide rollers, a platen, a tension device, detaining mechanism, and measuring indicator are mounted between side pieces so the holder can slide into the tubular case.", archaicTerm: "Roller-holder", modernEquivalent: "Removable roll-film carrier" },
+      {
+        title: "Front block and chamber",
+        summary:
+          "A sectional front block receives the removable lens-and-shutter unit while excluding stray light.",
+        technicalDetails:
+          "The patent calls the chamber b'. Its matched openings and close-fitting sections create a controlled optical path rather than an open camera interior.",
+        archaicTerm: "Block or diaphragm",
+        modernEquivalent: "Light-tight front bulkhead",
+      },
+      {
+        title: "Cylindrical shutter",
+        summary: "A hollow cylinder with coincident openings surrounds the lens.",
+        technicalDetails:
+          "At rest the opaque cylinder covers both lens faces. During a controlled half-revolution the aligned openings cross the optical axis, admitting light through the lens before the latch stops the shutter again.",
+        archaicTerm: "Cylindrical shutter",
+        modernEquivalent: "Rotary barrel shutter",
+      },
+      {
+        title: "Spring drive and release",
+        summary:
+          "An external cord winds a spring through a ratchet; a push-pin and latch release and arrest motion.",
+        technicalDetails:
+          "The ratchet prevents reverse winding. Cam abutments, the pivoted latch, and spring 27 determine the shutter's stop positions and prevent more than a half-revolution per release.",
+        archaicTerm: "Motor mechanism",
+        modernEquivalent: "Spring-powered shutter drive",
+      },
+      {
+        title: "Roller-holder",
+        summary:
+          "The rear assembly carries prepared film, guides it over a platen, and winds it forward.",
+        technicalDetails:
+          "Supply and winding spools, guide rollers, a platen, a tension device, detaining mechanism, and measuring indicator are mounted between side pieces so the holder can slide into the tubular case.",
+        archaicTerm: "Roller-holder",
+        modernEquivalent: "Removable roll-film carrier",
+      },
     ],
     scientificPrinciples: [
-      { principle: "Light exclusion", explanation: "Photography requires the sensitive film to see light only through the intended lens aperture. The patent repeatedly protects that condition with overlapping covers, chambers, flush controls, and shutters on both sides of the lens." },
-      { principle: "Rotational energy storage", explanation: "A wound spring stores mechanical energy. Ratchets transmit winding torque in one direction and the latch-and-abutment system converts the stored energy into a bounded shutter rotation." },
+      {
+        principle: "Light exclusion",
+        explanation:
+          "Photography requires the sensitive film to see light only through the intended lens aperture. The patent repeatedly protects that condition with overlapping covers, chambers, flush controls, and shutters on both sides of the lens.",
+      },
+      {
+        principle: "Rotational energy storage",
+        explanation:
+          "A wound spring stores mechanical energy. Ratchets transmit winding torque in one direction and the latch-and-abutment system converts the stored energy into a bounded shutter rotation.",
+      },
     ],
     whyItMattersToday:
       "The document is a detailed example of system-level camera engineering: optical admission, light sealing, release control, modular service, film transport, and frame indication are treated as coupled mechanisms rather than as an isolated lens or shutter.",
@@ -112,19 +150,54 @@ This invention relates more particularly to improvements in that class of photog
     isIndependent: true,
     originalText: manualClaimText(index + 1),
     plainEnglish,
-    keyInnovations: index < 31 ? ["Lens-support and cylindrical shutter mechanism"] : ["Removable roller-holder and film transport"],
+    keyInnovations:
+      index < 31
+        ? ["Lens-support and cylindrical shutter mechanism"]
+        : ["Removable roller-holder and film transport"],
   })),
   drawings: [
-    { figureNumber: "Fig. 1", title: "Complete camera", caption: "Perspective source drawing of the complete instrument.", svgType: "eastman-kodak", callouts: [{ id: "eastman-a", figureRef: "Fig. 1", label: "A", element: "Camera box or case", description: "The rectangular tube that receives the front block and rear roller-holder.", x: 53, y: 47 }, { id: "eastman-b", figureRef: "Fig. 1", label: "B", element: "Front block", description: "The front block or diaphragm that contains the lens-support and shutter chamber.", x: 31, y: 62 }] },
+    {
+      figureNumber: "Fig. 1",
+      title: "Complete camera",
+      caption: "Perspective source drawing of the complete instrument.",
+      svgType: "eastman-kodak",
+      callouts: [
+        {
+          id: "eastman-a",
+          figureRef: "Fig. 1",
+          label: "A",
+          element: "Camera box or case",
+          description: "The rectangular tube that receives the front block and rear roller-holder.",
+          x: 53,
+          y: 47,
+        },
+        {
+          id: "eastman-b",
+          figureRef: "Fig. 1",
+          label: "B",
+          element: "Front block",
+          description:
+            "The front block or diaphragm that contains the lens-support and shutter chamber.",
+          x: 31,
+          y: 62,
+        },
+      ],
+    },
   ],
   historicalContext: {
-    problemStatement: "The source identifies the need for a simple, compact, readily portable camera that can hold prepared film while excluding unwanted light from the exposing chamber.",
+    problemStatement:
+      "The source identifies the need for a simple, compact, readily portable camera that can hold prepared film while excluding unwanted light from the exposing chamber.",
     priorArtLimitations: ["The facsimile does not provide a comparative prior-art narrative."],
-    breakthroughInsight: "Eastman combines a removable front lens-and-shutter module with a removable rear roller-holder in a tubular, light-tight case.",
+    breakthroughInsight:
+      "Eastman combines a removable front lens-and-shutter module with a removable rear roller-holder in a tubular, light-tight case.",
     patentWars: [],
-    civilizationalImpact: "The grant documents a complete mechanical architecture for a portable prepared-film camera, including exposure, light sealing, and film handling.",
-    aftermath: "No post-grant litigation or commercial outcome is asserted here because it is not established by the pinned facsimile.",
-    sideNotes: ["The printed specification cites Eastman's Patents Nos. 317,019, 317,050, and 316,933 and a prior application, Serial No. 199,329, filed April 19, 1886."],
+    civilizationalImpact:
+      "The grant documents a complete mechanical architecture for a portable prepared-film camera, including exposure, light sealing, and film handling.",
+    aftermath:
+      "No post-grant litigation or commercial outcome is asserted here because it is not established by the pinned facsimile.",
+    sideNotes: [
+      "The printed specification cites Eastman's Patents Nos. 317,019, 317,050, and 316,933 and a prior application, Serial No. 199,329, filed April 19, 1886.",
+    ],
   },
   tags: ["camera", "photography", "roll film", "shutter", "optics"],
   stats: { totalClaims: 41, independentClaims: 41 },

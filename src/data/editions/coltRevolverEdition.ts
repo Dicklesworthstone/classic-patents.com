@@ -2,6 +2,27 @@ import type { CuratedSpecificationEdition, CuratedSpecificationInlines } from "@
 
 const literal = (text: string): CuratedSpecificationInlines => [{ kind: "text", text }];
 
+const individualFigurePreview = (number: number) => ({
+  src: `/patents/figures/us-x9430-colt-revolver/fig-${number}-source-crop-v1.png`,
+  alt: `Source-facsimile crop of Fig. ${number} from US X9430.`,
+  width: 600,
+  height: 600,
+});
+
+const individualFigurePreviews: Readonly<
+  Record<string, readonly ReturnType<typeof individualFigurePreview>[]>
+> = {
+  "Figure 1": [individualFigurePreview(1)],
+  "Figure 2": [individualFigurePreview(2)],
+  "Figure 3": [individualFigurePreview(3)],
+  "Figure 4": [individualFigurePreview(4)],
+  "Figure 5": [individualFigurePreview(5)],
+  "Figure 6": [individualFigurePreview(6)],
+  "Figure 7": [individualFigurePreview(7)],
+  "Figure 8": [individualFigurePreview(8)],
+  "Figure 9": [individualFigurePreview(9)],
+};
+
 const figure = (
   text: string,
   group: "division-2" | "division-3" | "division-4" | "plate-2",
@@ -27,7 +48,7 @@ const figure = (
     href: `#${group}-drawing`,
     referenceType: "figure",
     label: `${text}, ${group.replace("-", " ")} source drawing crop`,
-    figurePreviews: [
+    figurePreviews: individualFigurePreviews[text] ?? [
       { src, alt: `${text} in the US X9430 ${group.replace("-", " ")} drawing.`, width, height },
     ],
   };

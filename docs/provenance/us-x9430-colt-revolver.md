@@ -5,9 +5,10 @@
 - Local immutable file: `public/patents/pdfs/us-x9430-colt-revolver.pdf`
 - Authoritative record and PDF URL: `https://patentimages.storage.googleapis.com/pdfs/USX9430.pdf`
 - Public archival metadata URL: `https://patents.google.com/patent/USX9430I1/en`
-- Retrieved and visually reviewed: 2026-08-17
+- Retrieved and visually reviewed: 2026-08-17; complete second visual comparison: 2026-08-18
 - SHA-256: `61eed2c1b5ea259a301fb2690a7d3d17e1a59560cfb002dc91c29a50f5841d01`
 - Page count: 7 PDF pages
+- Filing date: not stated in the reviewed primary facsimile; canonical record uses `null`.
 - Rights basis: United States patent issued February 25, 1836; the historical patent text and drawings are public-domain United States Government material.
 
 ## Direct full-PDF review log
@@ -50,8 +51,10 @@ served nor cited by US X9430.
 
 ## Editorial boundary
 
-The manual edition and reviewed transcript were typed after direct visual
-comparison with this facsimile. They are not OCR output. The current shared
-edition renderer has no per-record figure-crop asset integration for this
-corrected ID; that shared integration remains an orchestrator-owned follow-up
-and is not represented as a completed local-preview proof here.
+The manual edition and the page-marked reviewed ledger
+`public/patents/transcripts/us-x9430-colt-revolver-reviewed.txt` were typed
+after direct visual comparison with this facsimile. They are not OCR output;
+the earlier unreviewed `us-x9430-colt-revolver.txt` remains preserved solely as
+non-exported research evidence. Every printed figure, Division, Section, and
+Plate citation in the source face is an authored semantic reference to a
+source-local crop under `public/patents/figures/us-x9430-colt-revolver/`.

@@ -10,8 +10,7 @@ import {
 } from "./lamarrFrequencyHoppingEdition";
 
 describe("US 2,292,387 manual source edition", () => {
-  test("pins all seven reviewed source sheets and every printed claim", () => {
-    expect(lamarrPatent.archivalEdition).toBe(lamarrFrequencyHoppingArchivalEdition);
+  test("retains all seven source sheets and every printed claim for continued authoring", () => {
     expect(validateCuratedSpecificationEdition(lamarrFrequencyHoppingArchivalEdition)).toEqual({
       valid: true,
       errors: [],
@@ -66,6 +65,14 @@ describe("US 2,292,387 manual source edition", () => {
       expect(preview).toBeDefined();
       expect(existsSync(resolve(process.cwd(), "public", preview?.src.slice(1) ?? ""))).toBe(true);
     }
+  });
+
+  test("keeps the incomplete source treatment out of the public archival face", () => {
+    expect(lamarrPatent.archivalEdition).toBeUndefined();
+    expect(lamarrPatent.originalTextAsset).toMatchObject({
+      kind: "source-pdf-text-layer",
+      url: "/patents/source-text/us-2292387-lamarr-frequency-hopping.txt",
+    });
   });
 
   test("keeps fabricated preamble and synthetic claims out of visitor-facing data", () => {
