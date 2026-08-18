@@ -28,6 +28,13 @@ export interface WrightSiState {
   netYawNm: number;
   coordinated: boolean;
   adverseYawDominant: boolean;
+  cl: number;
+  propDisplayOmegaRadPerS: number;
+  streamFlowSpeed: number;
+  downwashSpeed: number;
+  cradleStudioX: number;
+  leftBayTension: number;
+  rightBayTension: number;
 }
 
 export function coupledRudderDeg(wingWarpDeg: number): number {
@@ -79,5 +86,16 @@ export function stepWrightFlyerSi(controls: WrightControls): WrightSiState {
     coordinated: Math.abs(netYawNm) < 8 && Math.abs(controls.wingWarpDeg) > 6,
     adverseYawDominant:
       !controls.coupled && Math.abs(controls.wingWarpDeg) > 8 && Math.abs(netYawNm) > 10,
+    cl,
+    propDisplayOmegaRadPerS: Number(((controls.airspeedMph / 25) * 45).toFixed(3)),
+    streamFlowSpeed: Number(((controls.airspeedMph / 30) * 18).toFixed(3)),
+    downwashSpeed: Number((cl * 0.08).toFixed(4)),
+    cradleStudioX: Number((-0.35 + (controls.wingWarpDeg / 15) * 0.12).toFixed(4)),
+    leftBayTension: Number(
+      Math.max(0, liftNewtons / 2200 + controls.wingWarpDeg / 15).toFixed(4),
+    ),
+    rightBayTension: Number(
+      Math.max(0, liftNewtons / 2200 - controls.wingWarpDeg / 15).toFixed(4),
+    ),
   };
 }

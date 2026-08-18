@@ -142,6 +142,7 @@ export function stepEricssonPropeller(params: { shaftRpm?: number; bladePitchAng
     wakeSwirlScale: 0.4,
     wakeFlowSpeed: 6.5,
     wakeSwirlCoeff: 0.08,
+    wakeOpacity: Number(Math.min(0.95, 0.3 + (Math.round((rpm / 120) ** 2 * 18 * pitchFactor) / 30) * 0.65).toFixed(3)),
   };
 }
 
@@ -463,6 +464,7 @@ export function stepZeppelinAirship(params: {
     propellerOmegaRadPerS: rpmToOmega(propellerRpm).omegaRadPerS,
     propellerDisplayOmegaRadPerS: Number(((propellerRpm / 60) * 8).toFixed(3)),
     hullStudioY: Number(((netLiftKn / 40) * 0.9).toFixed(4)),
+    trimSvgX: Number(((trimM / 15) * 140 - 10).toFixed(2)),
   };
 }
 
@@ -862,6 +864,7 @@ export function stepColtRevolver(params: {
     muzzleEnergyJoules: Math.round(0.5 * 0.0052 * muzzleVelocityMps ** 2),
     powderGrains: Math.round((pMpa - 40) / 1.5 + 15),
     cycleDisplayMs: 800,
+    recoilKick: Number((0.05 + (muzzleVelocityMps / 400) * 0.1).toFixed(4)),
   };
 }
 
