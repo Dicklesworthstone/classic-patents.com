@@ -14,65 +14,16 @@ import { usePatentAudio } from "./usePatentAudio";
 
 type CameraPreset = "iso" | "photocathode" | "aperture" | "coils" | "top";
 
-interface ScenarioPreset {
-  id: string;
-  name: string;
-  desc: string;
-  voltageKv: number;
-  hFreqKhz: number;
-  vFreqHz: number;
-  lux: number;
-}
-
-const _SCENARIOS: ScenarioPreset[] = [
-  {
-    id: "farnsworth_1927_nominal",
-    name: "1927 Green Street Lab Transmission",
-    desc: "Farnsworth's historic all-electronic image dissector tube successfully transmitting a straight line image (US 1,773,980).",
-    voltageKv: 3.5,
-    hFreqKhz: 15.75,
-    vFreqHz: 60,
-    lux: 500,
-  },
-  {
-    id: "high_def",
-    name: "High-Resolution Raster Scan",
-    desc: "Higher accelerating potential with 30 kHz magnetic sawtooth deflection creating a sharp, high-density electron raster.",
-    voltageKv: 5.5,
-    hFreqKhz: 30.0,
-    vFreqHz: 60,
-    lux: 1200,
-  },
-  {
-    id: "low_light_dollar",
-    name: "Low-Light '$' Dollar Sign Test",
-    desc: "Simulating the historic transmission of the dollar sign slide with high-gain electron multiplication.",
-    voltageKv: 4.0,
-    hFreqKhz: 15.75,
-    vFreqHz: 60,
-    lux: 150,
-  },
-  {
-    id: "slow_scan",
-    name: "Slow-Motion Raster Breakdown",
-    desc: "5.0 kHz slow sweep showing Lorentz force F = q(v × B) shifting the entire electron image past the aperture hole.",
-    voltageKv: 2.5,
-    hFreqKhz: 5.0,
-    vFreqHz: 30,
-    lux: 400,
-  },
-];
-
 export function FarnsworthTV3D() {
   const containerRef = useRef<HTMLDivElement>(null);
 
   // Dissector Tube State Controls
-  const { params, updateParam } = usePatentPhysics("us-1773980-farnsworth-tv");
+  const { params, updateParam: _updateParam } = usePatentPhysics("us-1773980-farnsworth-tv");
   const [showUiOverlay, setShowUiOverlay] = useState<boolean>(true);
   const acceleratingVoltageKv = (params.anodeVoltage ?? 1500) / 1000;
-  const [horizontalFreqKhz, setHorizontalFreqKhz] = useState<number>(15.75); // 5 to 30 kHz
-  const [verticalFreqHz, setVerticalFreqHz] = useState<number>(60); // 30 to 120 Hz
-  const [lightIntensityLux, setLightIntensityLux] = useState<number>(500); // 100 to 2000 Lux
+  const horizontalFreqKhz = params.horizontalFreqKhz ?? 15.75;
+  const verticalFreqHz = params.verticalFreqHz ?? 60;
+  const lightIntensityLux = params.lightIntensityLux ?? 500;
   const [showElectronBeam, _setShowElectronBeam] = useState<boolean>(true);
   const [showCalloutPins, setShowCalloutPins] = useState<boolean>(false);
   const [activeCamera, setActiveCamera] = useState<CameraPreset>("iso");
@@ -140,16 +91,6 @@ export function FarnsworthTV3D() {
         break;
     }
     controls.update();
-  };
-
-  const _applyScenario = (s: ScenarioPreset) => {
-    updateParam("anodeVoltage", s.voltageKv * 1000);
-    setHorizontalFreqKhz(s.hFreqKhz);
-    setVerticalFreqHz(s.vFreqHz);
-    setLightIntensityLux(s.lux);
-    if (!isAudioMuted) {
-      soundEngine.playSwitchClick();
-    }
   };
 
   const toggleSound = () => {
