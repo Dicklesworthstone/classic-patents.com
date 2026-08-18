@@ -79,4 +79,17 @@ describe("coltRevolverArchivalEdition", () => {
       expect(reading[0]?.trim().length).toBeGreaterThan(100);
     }
   });
+
+  test("does not leave a source drawing citation stranded in a plain text node", () => {
+    const bareDrawingCitation = /\b(?:(?:fig(?:s)?\.?|figure)\s+\d+|(?:section|division)\s+\d+)\b/i;
+
+    for (const block of coltRevolverArchivalEdition.blocks) {
+      if (!("inlines" in block)) continue;
+      for (const inline of block.inlines) {
+        if (inline.kind === "text") {
+          expect(inline.text).not.toMatch(bareDrawingCitation);
+        }
+      }
+    }
+  });
 });
