@@ -279,16 +279,21 @@ This is a catalogue excerpt. Open Original Patent Text for the complete manually
     scientificPrinciples: [
       {
         principle: "Momentum transfer by deflecting a water stream",
+        formula: "F_{\\text{tangential}} = \\dot{m} (v_{\\text{jet}} - u)(1 - \\cos\\beta)",
         explanation:
           "A moving water stream carries momentum. When a bucket changes its direction, the water exerts a force on the bucket in the opposite direction. Pelton explicitly connects the twin curved paths and outward discharge to that additional force, but supplies no numerical deflection angle or force calculation.",
       },
       {
         principle: "Avoiding interference between successive buckets",
+        formula:
+          "\\Delta t_{\\text{drain}} < \\frac{2\\pi}{\\omega \\cdot N_{\\text{buckets}}}, \\quad \\vec{v}_{\\text{exit}} \\cdot \\hat{n}_{\\text{following}} \\le 0",
         explanation:
           "The source describes an unwanted feedback path: splash from a flat bucket can react against the next bucket. Splitting the stream and discharging it beside the wheel gives the water a route that does not meet that next bucket. The sloped front also prevents a bucket face from striking the jet before its apex reaches the right position.",
       },
       {
-        principle: "Tangential jet application",
+        principle: "Tangential jet application and torque generation",
+        formula:
+          "\\tau = r_{\\text{wheel}} \\times F_{\\text{tangential}} = r_{\\text{wheel}} \\cdot \\rho A_{\\text{jet}} v_{\\text{jet}} (v_{\\text{jet}} - u)(1 - \\cos\\beta)",
         explanation:
           "A tangential jet acts at the rim and therefore tends to turn the wheel around its axle. Pelton specifies tangent placement and center strike on the bucket, but does not give a pressure, jet velocity, nozzle diameter, or rotational speed in this patent.",
       },

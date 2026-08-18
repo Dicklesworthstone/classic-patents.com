@@ -140,31 +140,120 @@ I claim as my invention:
       number: 1,
       isIndependent: true,
       originalText:
-        "An electric welding apparatus comprising an induction coil or transformer having a primary of high resistance and a secondary of very low resistance and large current-carrying capacity, clamping jaws connected to the terminals of said secondary for holding the pieces to be welded in abutment, and means for applying pressure to force said pieces together when heated by the current.",
+        "The herein-described art of effecting union between two pieces of metal, consisting in holding the same in contact at the point of union and simultaneously passing a current of electricity through the joint of a power to fuse and unite the pieces, as and for the purpose described.",
       plainEnglish:
-        "Master pioneer claim: an electric welding apparatus comprising a step-down transformer with a massive low-resistance secondary, clamping jaws holding workpieces in contact, and mechanical means to exert forging pressure when heated by the kiloampere current.",
+        "Master process claim covering the foundational art of joining metals by holding their ends in contact and simultaneously passing an electric current through the contact junction of sufficient power to fuse the metals together.",
       keyInnovations: [
-        "Step-down transformer generating high-amperage low-voltage welding current",
-        "Resistance butt-welding clamping architecture",
-        "Simultaneous Joule heating and axial forging pressure",
+        "Electric fusion welding",
+        "Simultaneous contact and current application",
+        "Joule interfacial heating",
       ],
       legalSignificance:
-        "The foundational master claim for electric resistance welding, establishing the Thomson Electric Welding Company.",
+        "The broadest method claim for electric resistance welding, asserting exclusive priority over all simultaneous contact-and-current fusion.",
     },
     {
       number: 2,
-      isIndependent: false,
-      dependsOn: [1],
+      isIndependent: true,
       originalText:
-        "The method of welding metals by passing a heavy electric current across the abutting ends of the pieces to generate localized heating at the contact interface, and simultaneously forcing the pieces together by mechanical pressure.",
+        "The process or art of electric welding, consisting in the application of heavy currents to traverse a joint to be welded, and the simultaneous application of a pressure or force tending to move together the pieces to be welded.",
       plainEnglish:
-        "Process claim covering the method of joining metals by passing heavy electric current across abutting ends to create localized interface heat and simultaneously applying mechanical forging pressure.",
+        "Process claim covering electric resistance butt-welding: applying heavy electric current across the joint while simultaneously exerting mechanical pressure or forging force tending to press the workpieces together as they plasticize.",
       keyInnovations: [
-        "Joule contact-resistance interfacial heating method",
-        "Thermo-mechanical solid-state forging fusion",
+        "Simultaneous heavy current and forging pressure",
+        "Axial upset movement",
+        "Thermo-mechanical fusion",
       ],
       legalSignificance:
-        "Protected the fundamental metallurgical process of electric resistance welding.",
+        "Establishes the combination of heavy current and mechanical forging pressure as the defining signature of electric resistance butt-welding.",
+    },
+    {
+      number: 3,
+      isIndependent: true,
+      originalText:
+        "The process or art of causing union between the ends of metal pieces in contact by simultaneous application of fusing-currents of electricity and mechanical pressure at the contact.",
+      plainEnglish:
+        "Method claim specifically directed to joining the abutting ends of metal pieces through simultaneous application of localized fusing currents and mechanical contact pressure.",
+      keyInnovations: [
+        "Abutting end joint geometry",
+        "Localized interface fusion",
+        "Direct contact consolidation",
+      ],
+      legalSignificance: "Protects end-to-end butt-welding of wires, rods, bars, and pipes.",
+    },
+    {
+      number: 4,
+      isIndependent: true,
+      originalText:
+        "In an apparatus for electric jointing of metals, suitable clamps for holding the pieces to be joined movable toward one another, and means, such as a spring, for exerting a pressure for forcing the pieces into contact, and means of applying fusing-currents of electricity while such pieces rest in pressure contact, as described.",
+      plainEnglish:
+        "Apparatus claim covering workpiece clamps movable toward each other, spring or mechanical pressure means forcing the pieces into contact, and electrical supply means delivering fusing current during pressure contact.",
+      keyInnovations: [
+        "Movable clamping jaws",
+        "Spring-loaded axial pressure mechanism",
+        "Concurrently energized electrode vise",
+      ],
+      legalSignificance:
+        "The core apparatus claim for spring-loaded electric resistance butt-welding machines.",
+    },
+    {
+      number: 5,
+      isIndependent: true,
+      originalText:
+        "The combination, in an apparatus for electric welding, of two arms or supports, L L', connected with a source of electric current, removable dies or holding-clamps carried by said arms, and means whereby said arms may be pressed toward one another, as and for the purpose described.",
+      plainEnglish:
+        "Apparatus combination claim covering two conductive arms (L, L') connected to an electric source, interchangeable/removable holding dies tailored to different wire gauges or workpiece cross-sections, and mechanisms for pressing the arms together.",
+      keyInnovations: [
+        "Pivoted or sliding conductive arms (L, L')",
+        "Removable interchangeable clamping dies",
+        "Modular tooling architecture",
+      ],
+      legalSignificance:
+        "Secured the modular industrial welding machine design with interchangeable clamping jaws for different wire sizes.",
+    },
+    {
+      number: 6,
+      isIndependent: true,
+      originalText:
+        "The combination, in an apparatus for electric welding, of clamps or holders for grasping the pieces to be welded, connections from said clamps to a suitable source of electric current, and an adjustable spring, or its equivalent, as described, for adjusting the force with which the pieces are pressed toward one another during the operation of welding.",
+      plainEnglish:
+        "Apparatus combination claim providing calibrated, adjustable spring force to regulate the precise axial forging pressure applied across the workpieces as they soften.",
+      keyInnovations: [
+        "Calibrated adjustable forging spring",
+        "Regulated axial upset force",
+        "Variable pressure control",
+      ],
+      legalSignificance:
+        "Protected the adjustable pressure regulator essential for welding diverse metals with different plastic yield strengths.",
+    },
+    {
+      number: 7,
+      isIndependent: true,
+      originalText:
+        "In an apparatus for electric jointing of metal wires, bars, &c., a primary feeding-line connected to any suitable source of current and controlled by a switch, and a secondary fusing or welding circuit connected to the pieces to be welded, and which are held in pressure contact, together with suitable means of transfer of energy from said primary line to the circuit of the fusing or welding apparatus, as described.",
+      plainEnglish:
+        "System claim covering a switch-controlled primary AC line, a high-current secondary welding circuit connected to the workpieces in pressure contact, and an electromagnetic energy transfer transformer coupling the primary to the low-voltage secondary.",
+      keyInnovations: [
+        "Step-down transformer coupling",
+        "Primary-switched heavy secondary loop",
+        "Transformer-based resistance welder",
+      ],
+      legalSignificance:
+        "The foundational patent claim for transformer-powered electric welding systems, the universal standard in modern industry.",
+    },
+    {
+      number: 8,
+      isIndependent: true,
+      originalText:
+        "The art or process of electric welding, consisting in applying to suitably guided and clamped pieces to be joined a powerful electric current at the junction simultaneously with a pressure, whereby upon incipient fusion at the joint a complete union is effected.",
+      plainEnglish:
+        "Process claim covering the guided thermo-mechanical cycle: guiding and clamping the workpieces, applying intense current at the junction simultaneously with pressure, and effecting complete fusion upon reaching incipient melting temperature.",
+      keyInnovations: [
+        "Precision workpiece alignment guidance",
+        "Incipient surface melt threshold",
+        "Solid-phase fusion consolidation",
+      ],
+      legalSignificance:
+        "Guaranteed process coverage for high-precision guided industrial butt-welding.",
     },
   ],
   drawings: [
@@ -253,7 +342,7 @@ I claim as my invention:
     "General Electric",
   ],
   stats: {
-    totalClaims: 2,
-    independentClaims: 1,
+    totalClaims: 8,
+    independentClaims: 8,
   },
 };

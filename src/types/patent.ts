@@ -171,6 +171,15 @@ export interface CuratedSpecificationEdition {
     /** Precise source-facing evidence of the absence. */
     evidence: string;
   };
+  /**
+   * Present only when the reviewed historical facsimile genuinely contains no
+   * drawing sheets. It prevents the catalogue from flagging historical text-only grants.
+   */
+  drawingStatus?: {
+    kind: "no-drawings-in-facsimile";
+    /** Precise source-facing evidence of the absence. */
+    evidence: string;
+  };
   /** The ordered authored content of the continuous reading edition. */
   blocks: CuratedSpecificationBlock[];
 }

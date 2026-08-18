@@ -479,16 +479,22 @@ This is a catalogue excerpt. Open Original Patent Text for the complete manually
     scientificPrinciples: [
       {
         principle: "Resistive heating and current distribution",
+        formula:
+          "P_{\\text{loss}} = I^2 R_{\\text{line}} = \\left(\\frac{P_{\\text{total}}}{V}\\right)^2 R_{\\text{line}}, \\quad R_{\\text{lamp}} = \\frac{\\rho L}{A} \\gg R_{\\text{line}}",
         explanation:
           "A resistive element converts electrical input into heat, and at sufficiently high temperature it emits visible light. Edison frames high resistance as a distribution-system choice: many lamps in parallel can be fed with smaller main conductors than a population of very low-resistance lamps. The specification supplies resistance ranges but does not state a system voltage, current, or percentage saving.",
       },
       {
         principle: "Vacuum protection of hot carbon",
+        formula:
+          "P_{\\text{evac}} \\le \\frac{1}{10^6}\\text{ atm}, \\quad \\text{Rate}_{\\text{oxidation}} \\propto P_{\\text{O}_2} \\cdot e^{-\\frac{E_a}{k_B T}} \\to 0",
         explanation:
           "A nearly perfect vacuum removes the atmospheric medium that Edison says oxidizes or otherwise injures the hot carbon. He also rejects a gas-filled receiver because rapid gas movement can wear the slightly coherent, highly heated carbon surface. This is the source's physical rationale for exhausting the bulb.",
       },
       {
         principle: "Thermal expansion at the glass seal",
+        formula:
+          "\\Delta L = \\alpha \\cdot L_0 \\cdot \\Delta T, \\quad \\alpha_{\\text{platinum}} \\approx \\alpha_{\\text{lead-glass}}",
         explanation:
           "The lead wire crosses a difficult interface: it must conduct current without opening the glass seal as temperature changes. Edison says platina is suitable because its expansion is nearly the same as that of glass, reducing the tendency for the lead-through to crack the vacuum bulb.",
       },
@@ -585,14 +591,35 @@ This is a catalogue excerpt. Open Original Patent Text for the complete manually
       title: "Plastic material before winding",
       caption: "Source Fig. 2: the plastic material before it is wound into a spiral.",
       svgType: "edison-bulb",
-      callouts: [],
+      callouts: [
+        {
+          id: "edison-fig2-plastic",
+          figureRef: "Fig. 2",
+          label: "c",
+          element: "Plastic compound strip",
+          description: "Tar and lamp-black kneaded into a coherent filamentary thread.",
+          x: 50,
+          y: 50,
+        },
+      ],
     },
     {
       figureNumber: "Fig. 3",
       title: "Spiral after carbonization",
       caption: "Source Fig. 3: the carbonized spiral ready to receive a blown glass bulb.",
       svgType: "edison-bulb",
-      callouts: [],
+      callouts: [
+        {
+          id: "edison-fig3-spiral",
+          figureRef: "Fig. 3",
+          label: "a",
+          element: "Carbonized spiral",
+          description:
+            "The high-resistance carbon filament after heating in a closed carbonizing chamber.",
+          x: 50,
+          y: 50,
+        },
+      ],
     },
   ],
   historicalContext: {

@@ -167,6 +167,12 @@ const curatedSpecificationEditionSchema = z.object({
       evidence: z.string().min(1),
     })
     .optional(),
+  drawingStatus: z
+    .object({
+      kind: z.literal("no-drawings-in-facsimile"),
+      evidence: z.string().min(1),
+    })
+    .optional(),
   blocks: z.array(curatedSpecificationBlockSchema).min(1),
 });
 

@@ -25,6 +25,11 @@ export const nobelDynamiteArchivalEdition: CuratedSpecificationEdition = {
   preparedBy: "Classic Patents editorial agent (codex-bravo)",
   preparedAt: "2026-08-17",
   completeFacsimileReviewed: true,
+  drawingStatus: {
+    kind: "no-drawings-in-facsimile",
+    evidence:
+      "US Patent 78,317 (1868) is a chemical explosive composition patent granted without attached drawing sheets.",
+  },
   blocks: [
     {
       kind: "masthead",

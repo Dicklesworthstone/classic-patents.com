@@ -333,11 +333,15 @@ This is a catalogue excerpt. Open Original Patent Text for the complete manually
     scientificPrinciples: [
       {
         principle: "Radial separation in a rotating liquid",
+        formula:
+          "v_{\\text{terminal}} = \\frac{d^2 (\\rho_{\\text{skim}} - \\rho_{\\text{fat}}) \\omega^2 r}{18 \\mu_{\\text{fluid}}}",
         explanation:
           "The source uses relative density rather than a numerical model. In a rotating chamber, the greater-specific-gravity portion is described as tending toward the outer circumference, while the lighter portion remains closer to the center. The nested outlets turn those different radial locations into separate discharge streams.",
       },
       {
         principle: "Continuous displacement and overflow",
+        formula:
+          "Q_{\\text{total}} = Q_{\\text{cream}} + Q_{\\text{skim}}, \\quad \\Delta P = \\frac{1}{2} \\rho \\omega^2 (r_{\\text{outer}}^2 - r_{\\text{inner}}^2)",
         explanation:
           "Continuous feed through q displaces material already in the chamber. De Laval describes the heavier portion reaching G through X and l, while cream or another light portion reaches H through n. For a finite charge, he adds a restart-and-displacement step to push the final light portion through the inner tube.",
       },

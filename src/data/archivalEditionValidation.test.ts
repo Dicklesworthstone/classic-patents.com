@@ -97,4 +97,23 @@ describe("validateCuratedSpecificationEdition", () => {
       "cannot contain claim blocks",
     );
   });
+
+  test("validates drawingStatus evidence when present", () => {
+    const edition = validEdition();
+    edition.drawingStatus = {
+      kind: "no-drawings-in-facsimile",
+      evidence:
+        "The historical Letters Patent grant is a continuous text-only instrument without drawing sheets.",
+    };
+    expect(validateCuratedSpecificationEdition(edition)).toEqual({ valid: true, errors: [] });
+
+    const emptyEvidence = validEdition();
+    emptyEvidence.drawingStatus = {
+      kind: "no-drawings-in-facsimile",
+      evidence: "   ",
+    };
+    expect(validateCuratedSpecificationEdition(emptyEvidence).errors.join("\n")).toContain(
+      "A no-drawings edition must state its facsimile evidence.",
+    );
+  });
 });

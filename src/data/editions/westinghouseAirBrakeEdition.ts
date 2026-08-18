@@ -338,17 +338,22 @@ export const westinghouseAirBrakeRecordCorrections: Pick<
     ],
     scientificPrinciples: [
       {
-        principle: "Stored pneumatic energy",
+        principle: "Stored pneumatic energy and clamping work",
+        formula:
+          "F_{\\text{clamp}} = \\eta_{\\text{rigging}} \\cdot P_{\\text{cyl}} \\cdot \\left(\\frac{\\pi D^2}{4}\\right)",
         explanation:
           "The air receiver stores compressed air locally. A changed valve path can release that stored pressure into a brake cylinder, so braking does not depend solely on an uninterrupted direct supply from the locomotive.",
       },
       {
         principle: "Fail-safe mechanical triggering",
+        formula: "F_{\\text{trip}} \\ge k_{\\text{spring}} \\Delta x_{\\text{sear}} + \\mu F_N",
         explanation:
           "The automatic function derives from a physical change in the train: a low stem meeting track hardware after a derailment, or a cord pulled taut by a separated coupling. Both move the cock that changes the pneumatic path.",
       },
       {
         principle: "Pressure-coded communication",
+        formula:
+          "\\Delta P = \\frac{\\rho_{\\text{air}} v_{\\text{flow}}^2}{2} + \\Delta h_{\\text{index}} \\cdot S_{\\text{gauge}}",
         explanation:
           "The signalling feature treats gauge positions as a finite code. A controlled pressure change moves an index to a designated graduation, and a whistle tells the remote operator to read that position.",
       },

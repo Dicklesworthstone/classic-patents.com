@@ -85,17 +85,22 @@ This is a catalogue excerpt. Open Original Patent Text for the complete manually
     ],
     scientificPrinciples: [
       {
-        principle: "Torsional clamping",
+        principle: "Torsional clamping and helical normal force",
+        formula:
+          "F_N = \\frac{2 \\pi T_{\\text{twist}}}{p_{\\text{pitch}}} \\cdot \\cos(\\theta_{\\text{helix}})",
         explanation:
           "Twisting two long wires stores torsional deformation and brings their surfaces into repeated contact. Here that geometry also traps the bent middle of a third, short wire. The patent relies on the resulting contact and shape, not on soldering or an added fastener.",
       },
       {
-        principle: "Constraint of translation and rotation",
+        principle: "Constraint of translation and rotational shear",
+        formula:
+          "F_{\\text{slip}} = \\mu_s F_N + \\sigma_{\\text{yield}} \\cdot A_{\\text{shoulder}}",
         explanation:
           "A barb fails if it slides along the carrier wire or turns until its ends lie in a harmless direction. Glidden describes two independent constraints: the twist holds the central bend at an allotted place, and the closely approaching strands make shoulders that block turning.",
       },
       {
-        principle: "Tension adjustment through a post",
+        principle: "Catenary tension and torsional pitch relation",
+        formula: "T = \\frac{w L^2}{8 d} + \\frac{G J \\theta}{L}",
         explanation:
           "The twisting key converts a hand rotation at the post into additional twist in the paired fence wire. Retightening restores the clamping relation around the spur wires and removes slack from the span.",
       },

@@ -351,16 +351,22 @@ This is a catalogue excerpt. Open Original Patent Text for the complete manually
     scientificPrinciples: [
       {
         principle: "Muzzle-gas pressure acting on a sleeve",
+        formula:
+          "F_{\\text{sleeve}}(t) = P_{\\text{blast}}(t) \\cdot (A_{\\text{sleeve}} - A_{\\text{bullet}}), \\quad I = \\int_0^{\\Delta t} F_{\\text{sleeve}}(t) \\, dt",
         explanation:
           "The working impulse in this document is gas expansion at the muzzle acting on the sleeve's shoulders. The source does not state a pressure, area, or impulse value, so a visitor should not infer a numerical force from the drawing alone.",
       },
       {
         principle: "Kinematic motion reversal",
+        formula:
+          "x_{\\text{breech}}(\\theta) = r_{\\text{crank}} (1 - \\cos\\theta), \\quad \\dot{x}_{\\text{breech}} = -\\left(\\frac{L_{\\text{lever2}}}{L_{\\text{lever1}}}\\right) \\dot{x}_{\\text{sleeve}}",
         explanation:
           "The sleeve travels forward while rods c′ and the breech mechanism travel rearward. Levers n, links o, rods c′, crankshaft e, and slotted cross-head d are the physical chain that reverses the direction and couples the two motions.",
       },
       {
         principle: "Stored elastic return energy",
+        formula:
+          "U_{\\text{spring}} = \\frac{1}{2} k_{\\theta} \\theta_{\\text{wind}}^2, \\quad \\tau_{\\text{return}} = k_{\\theta} \\theta_{\\text{wind}}",
         explanation:
           "Partial rotation of crankshaft e winds spring k. Its return rotation restores the sleeve and breech, advances the described feed system, closes the breech, and enables the next firing sequence. The facsimile calls the spring like an ordinary clock spring, not a measured spring design.",
       },

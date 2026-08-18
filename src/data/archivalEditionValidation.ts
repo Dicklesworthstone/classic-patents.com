@@ -157,5 +157,12 @@ export function validateCuratedSpecificationEdition(
     );
   }
 
+  const noDrawings = edition.drawingStatus?.kind === "no-drawings-in-facsimile";
+  if (noDrawings) {
+    if (!edition.drawingStatus?.evidence.trim()) {
+      errors.push("A no-drawings edition must state its facsimile evidence.");
+    }
+  }
+
   return { valid: errors.length === 0, errors };
 }

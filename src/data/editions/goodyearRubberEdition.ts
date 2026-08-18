@@ -13,6 +13,11 @@ export const goodyearRubberArchivalEdition: CuratedSpecificationEdition = {
   preparedBy: "Classic Patents editorial agent (SunnySpring)",
   preparedAt: "2026-08-17",
   completeFacsimileReviewed: true,
+  drawingStatus: {
+    kind: "no-drawings-in-facsimile",
+    evidence:
+      "US Patent 3,633 (1844) was issued as a text-only Letters Patent without attached drawing sheets.",
+  },
   blocks: [
     {
       kind: "masthead",

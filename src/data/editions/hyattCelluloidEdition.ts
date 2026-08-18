@@ -13,6 +13,11 @@ export const hyattCelluloidArchivalEdition: CuratedSpecificationEdition = {
   preparedBy: "Classic Patents editorial agent (StormyCreek)",
   preparedAt: "2026-08-17",
   completeFacsimileReviewed: true,
+  drawingStatus: {
+    kind: "no-drawings-in-facsimile",
+    evidence:
+      "US Patent 105,338 (1870) is a chemical manufacturing process patent granted without attached drawing sheets.",
+  },
   blocks: [
     {
       kind: "masthead",

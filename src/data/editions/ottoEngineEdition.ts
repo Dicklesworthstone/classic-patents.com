@@ -618,16 +618,22 @@ export const ottoEngineRecordCorrections: Pick<
     scientificPrinciples: [
       {
         principle: "Concentration-dependent flame propagation",
+        formula:
+          "S_L(\\phi) = S_{L0} \\cdot \\left(\\frac{T_u}{T_0}\\right)^\\alpha \\left(\\frac{P}{P_0}\\right)^\\beta \\cdot e^{-\\frac{E_a}{2 R T_{\\text{flame}}}}",
         explanation:
           "A combustible mixture does not burn with the same behavior at every dilution. Otto’s own account uses the spacing of combustible particles as a qualitative model: close particles near ignition transmit flame readily, while increasingly dispersed particles ahead slow that transfer. The patent’s technical contribution is to arrange the charge spatially, not merely to state that fuel and air can be introduced separately.",
       },
       {
         principle: "Pressure from heated confined gas",
+        formula:
+          "P(t) = \\frac{m_{\\text{gas}} R_s T(t)}{V(t)}, \\quad \\frac{dP}{dt} = \\frac{\\gamma - 1}{V(t)} \\frac{dQ_{\\text{comb}}}{dt} - \\frac{\\gamma P(t)}{V(t)} \\frac{dV}{dt}",
         explanation:
           "When combustion heats the cylinder charge, its pressure rises and exerts force on the piston. Otto stresses the rate of that rise. The interposed air charge is described as a cushion or buffer that further reduces the suddenness of transmitted expansive force.",
       },
       {
-        principle: "Four-stroke timing",
+        principle: "Four-stroke timing and thermodynamic work",
+        formula:
+          "W_{\\text{net}} = \\oint P \\, dV = \\eta_{\\text{Otto}} \\cdot Q_{\\text{in}}, \\quad \\omega_{\\text{cam}} = \\frac{1}{2} \\omega_{\\text{crank}}",
         explanation:
           "The illustrated operating sequence has four piston motions: draw in air and combustible mixture, compress the charge, make a working outstroke after ignition, and expel the products. The source links that sequence to one to-and-fro motion of the slide while the engine shaft makes two revolutions.",
       },

@@ -1,3 +1,4 @@
+import { mergenthalerLinotypeClaims } from "@/data/editions/mergenthalerLinotypeEdition";
 import type { Patent } from "@/types/patent";
 
 export const mergenthalerLinotypePatent: Patent = {
@@ -131,55 +132,7 @@ Fifth, in an automatic distributing mechanism whereby the matrices, after the sl
     whyItMattersToday:
       "Mergenthaler's Linotype powered the global print revolution from 1886 until the phototypesetting and digital desktop publishing transitions of the 1970s and 1980s. It enabled the modern daily newspaper, 100-page Sunday editions, mass-market paperbacks, and universal public literacy. Mergenthaler's binary matrix distributor also represents one of the earliest mechanical implementations of binary combinatorics in industrial computing.",
   },
-  claims: [
-    {
-      number: 1,
-      isIndependent: true,
-      originalText:
-        "The combination, with a magazine containing a series of independent matrix-bars and a series of key-levers for releasing said matrices, of an assembling mechanism for grouping the matrices in line, a casting mechanism for forming a cast slug or printing-bar from the assembled line of matrices, and an automatic distributing mechanism for returning the matrices to their respective channels in the magazine, substantially as described.",
-      plainEnglish:
-        "The master system claim covering the complete closed-loop typesetting cycle: keyboard matrix release from a magazine, line assembly, casting a solid type bar from the line, and automated matrix redistribution back to the magazine.",
-      keyInnovations: [
-        "Closed-loop matrix circulation",
-        "Continuous hot metal line casting",
-        "Automated mechanical redistribution",
-      ],
-      legalSignificance:
-        "Formed the unassailable legal monopoly of the Mergenthaler Linotype Company, protected in federal court and dominating global print manufacturing for over 80 years.",
-    },
-    {
-      number: 2,
-      isIndependent: false,
-      dependsOn: [1],
-      originalText:
-        "In a machine for producing printing-bars, the combination of independent matrices and expansible wedge-shaped spacebands, with means for driving the wedges to justify the line before casting.",
-      plainEnglish:
-        "The landmark spaceband justification claim: combining sliding wedge pairs between brass word matrices and driving them upward to automatically justify the line to exact column width.",
-      keyInnovations: [
-        "Two-piece sliding wedge spacebands",
-        "Simultaneous automatic line justification",
-        "Elimination of manual spacing shims",
-      ],
-      legalSignificance:
-        "Considered the mechanical linchpin of the machine; prevented competitors from building automated typesetters that did not require manual compositor spacing.",
-    },
-    {
-      number: 3,
-      isIndependent: false,
-      dependsOn: [1],
-      originalText:
-        "In a machine for producing printing-bars, a distributor-bar having its exterior surface provided with longitudinal ribs having varying combinations of teeth, in combination with matrices having matching notched tooth combinations, whereby each matrix is conveyed along the bar until it reaches the point where its teeth disengage, and is there permitted to drop into its magazine channel.",
-      plainEnglish:
-        "The binary matrix distribution claim: a ribbed rail with combinatorial tooth patterns that sorts each matrix by its 7-bit binary tooth keyway into its matching magazine channel.",
-      keyInnovations: [
-        "7-bit binary tooth keyway",
-        "Combinatorial sorting rail",
-        "Gravity matrix redistribution",
-      ],
-      legalSignificance:
-        "Early landmark patent on physical binary sorting logic and demultiplexing in automated industrial machinery.",
-    },
-  ],
+  claims: mergenthalerLinotypeClaims,
   drawings: [
     {
       figureNumber: "Fig. 1",
@@ -284,8 +237,8 @@ Fifth, in an automatic distributing mechanism whereby the matrices, after the sl
     "Publishing Revolution",
   ],
   stats: {
-    totalClaims: 3,
-    independentClaims: 1,
+    totalClaims: 70,
+    independentClaims: 70,
     patentWarYears: "1885–1898",
     impactScore: 100,
   },
