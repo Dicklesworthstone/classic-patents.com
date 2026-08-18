@@ -181,6 +181,24 @@ export function DualProjectionViewer({ patent, initialView }: DualProjectionView
     }
   }, []);
 
+  // Quick keyboard shortcuts: 1-6 for instant face switching
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.target instanceof HTMLInputElement || e.target instanceof HTMLTextAreaElement) return;
+      if (e.metaKey || e.ctrlKey || e.altKey) return;
+      if (e.key === "1") setViewModeState("plain-english");
+      else if (e.key === "2") setViewModeState("original-spec");
+      else if (e.key === "3") setViewModeState("interactive-sim");
+      else if (e.key === "4") setViewModeState("schematic-sheet");
+      else if (e.key === "5") setViewModeState("pdf-facsimile");
+      else if (e.key === "6") {
+        setViewModeState((curr) => (curr === "split-view" ? "plain-english" : "split-view"));
+      }
+    };
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, []);
+
   const setViewMode = (mode: PatentViewMode) => {
     setViewModeState(mode);
   };
@@ -196,7 +214,8 @@ export function DualProjectionViewer({ patent, initialView }: DualProjectionView
           <button
             type="button"
             onClick={() => setViewMode("plain-english")}
-            className={`px-4 py-2.5 rounded-xl flex items-center gap-2 transition-colors ${
+            title="Plain English Face (Shortcut: 1)"
+            className={`px-3.5 sm:px-4 py-2 sm:py-2.5 rounded-xl flex items-center gap-2 transition-colors cursor-pointer ${
               viewMode === "plain-english"
                 ? "bg-amber-700 text-white font-bold shadow-sm dark:bg-amber-600"
                 : "text-ink-800 dark:text-parchment-200 hover:bg-parchment-200 dark:hover:bg-ink-800 font-medium"
@@ -204,12 +223,16 @@ export function DualProjectionViewer({ patent, initialView }: DualProjectionView
           >
             <Sparkles className="w-4 h-4 text-amber-300" />
             <span>Plain English Face</span>
+            <kbd className="hidden md:inline-block text-[10px] font-mono px-1 py-0.2 rounded bg-black/15 dark:bg-white/15 opacity-80">
+              1
+            </kbd>
           </button>
 
           <button
             type="button"
             onClick={() => setViewMode("original-spec")}
-            className={`px-4 py-2.5 rounded-xl flex items-center gap-2 transition-colors ${
+            title="Original Specification (Shortcut: 2)"
+            className={`px-3.5 sm:px-4 py-2 sm:py-2.5 rounded-xl flex items-center gap-2 transition-colors cursor-pointer ${
               viewMode === "original-spec"
                 ? "bg-amber-700 text-white font-bold shadow-sm dark:bg-amber-600"
                 : "text-ink-800 dark:text-parchment-200 hover:bg-parchment-200 dark:hover:bg-ink-800 font-medium"
@@ -217,12 +240,16 @@ export function DualProjectionViewer({ patent, initialView }: DualProjectionView
           >
             <Scroll className="w-4 h-4 text-amber-300" />
             <span>{completeTextAsset ? "Complete Source Text" : "Original Source Status"}</span>
+            <kbd className="hidden md:inline-block text-[10px] font-mono px-1 py-0.2 rounded bg-black/15 dark:bg-white/15 opacity-80">
+              2
+            </kbd>
           </button>
 
           <button
             type="button"
             onClick={() => setViewMode("interactive-sim")}
-            className={`px-4 py-2.5 rounded-xl flex items-center gap-2 transition-colors ${
+            title="Interactive 3D Simulator (Shortcut: 3)"
+            className={`px-3.5 sm:px-4 py-2 sm:py-2.5 rounded-xl flex items-center gap-2 transition-colors cursor-pointer ${
               viewMode === "interactive-sim"
                 ? "bg-amber-700 text-white font-bold shadow-sm dark:bg-amber-600"
                 : "text-ink-800 dark:text-parchment-200 hover:bg-parchment-200 dark:hover:bg-ink-800 font-medium"
@@ -230,12 +257,16 @@ export function DualProjectionViewer({ patent, initialView }: DualProjectionView
           >
             <Activity className="w-4 h-4 text-amber-300" />
             <span>Interactive 3D Simulator</span>
+            <kbd className="hidden md:inline-block text-[10px] font-mono px-1 py-0.2 rounded bg-black/15 dark:bg-white/15 opacity-80">
+              3
+            </kbd>
           </button>
 
           <button
             type="button"
             onClick={() => setViewMode("schematic-sheet")}
-            className={`px-4 py-2.5 rounded-xl flex items-center gap-2 transition-colors ${
+            title="Schematic & Pins (Shortcut: 4)"
+            className={`px-3.5 sm:px-4 py-2 sm:py-2.5 rounded-xl flex items-center gap-2 transition-colors cursor-pointer ${
               viewMode === "schematic-sheet"
                 ? "bg-amber-700 text-white font-bold shadow-sm dark:bg-amber-600"
                 : "text-ink-800 dark:text-parchment-200 hover:bg-parchment-200 dark:hover:bg-ink-800 font-medium"
@@ -243,12 +274,16 @@ export function DualProjectionViewer({ patent, initialView }: DualProjectionView
           >
             <Compass className="w-4 h-4 text-amber-300" />
             <span>Schematic &amp; Pins</span>
+            <kbd className="hidden md:inline-block text-[10px] font-mono px-1 py-0.2 rounded bg-black/15 dark:bg-white/15 opacity-80">
+              4
+            </kbd>
           </button>
 
           <button
             type="button"
             onClick={() => setViewMode("pdf-facsimile")}
-            className={`px-4 py-2.5 rounded-xl flex items-center gap-2 transition-colors ${
+            title="Full Original PDF (Shortcut: 5)"
+            className={`px-3.5 sm:px-4 py-2 sm:py-2.5 rounded-xl flex items-center gap-2 transition-colors cursor-pointer ${
               viewMode === "pdf-facsimile"
                 ? "bg-amber-700 text-white font-bold shadow-sm dark:bg-amber-600"
                 : "text-ink-800 dark:text-parchment-200 hover:bg-parchment-200 dark:hover:bg-ink-800 font-medium"
@@ -256,6 +291,9 @@ export function DualProjectionViewer({ patent, initialView }: DualProjectionView
           >
             <FileText className="w-4 h-4 text-amber-300" />
             <span>Full Original PDF</span>
+            <kbd className="hidden md:inline-block text-[10px] font-mono px-1 py-0.2 rounded bg-black/15 dark:bg-white/15 opacity-80">
+              5
+            </kbd>
           </button>
         </div>
 
@@ -265,7 +303,7 @@ export function DualProjectionViewer({ patent, initialView }: DualProjectionView
             type="button"
             onClick={handlePrint}
             title="Print Museum Plaque & Broadside"
-            className="px-3.5 py-2 rounded-xl text-xs sm:text-sm font-sans border border-parchment-300 dark:border-ink-700 hover:bg-parchment-200 dark:hover:bg-ink-800 text-ink-800 dark:text-ink-200 font-medium flex items-center gap-1.5 transition-colors shadow-xs"
+            className="px-3.5 py-2 rounded-xl text-xs sm:text-sm font-sans border border-parchment-300 dark:border-ink-700 hover:bg-parchment-200 dark:hover:bg-ink-800 text-ink-800 dark:text-ink-200 font-medium flex items-center gap-1.5 transition-colors shadow-xs cursor-pointer"
           >
             <Printer className="w-4 h-4 text-amber-700 dark:text-amber-400" />
             <span className="hidden sm:inline">Print Broadside</span>
@@ -274,7 +312,8 @@ export function DualProjectionViewer({ patent, initialView }: DualProjectionView
           <button
             type="button"
             onClick={() => setViewMode(viewMode === "split-view" ? "plain-english" : "split-view")}
-            className={`px-4 py-2 rounded-xl text-xs sm:text-sm font-sans border flex items-center gap-2 transition-colors shadow-xs ${
+            title="Toggle Dual Split-Screen (Shortcut: 6)"
+            className={`px-4 py-2 rounded-xl text-xs sm:text-sm font-sans border flex items-center gap-2 transition-colors shadow-xs cursor-pointer ${
               viewMode === "split-view"
                 ? "bg-blue-600 text-white border-blue-700 font-bold"
                 : "border-parchment-300 dark:border-ink-700 hover:bg-parchment-200 dark:hover:bg-ink-800 text-ink-800 dark:text-ink-200 font-semibold"
@@ -282,6 +321,9 @@ export function DualProjectionViewer({ patent, initialView }: DualProjectionView
           >
             <Columns className="w-4 h-4" />
             <span className="hidden sm:inline">Dual Split-Screen</span>
+            <kbd className="hidden md:inline-block text-[10px] font-mono px-1 py-0.2 rounded bg-black/15 dark:bg-white/15 opacity-80">
+              6
+            </kbd>
           </button>
         </div>
       </div>

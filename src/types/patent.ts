@@ -79,6 +79,72 @@ export interface PlainEnglishExplanation {
   whyItMattersToday: string;
 }
 
+/**
+ * The only permitted source format for a published archival edition.
+ *
+ * These nodes are deliberately authored one by one in the catalogue, rather
+ * than inferred from OCR, HTML, Markdown, or a raw PDF text layer. The source
+ * document is rendered as a continuous reading experience; scan-page numbers
+ * and page breaks belong to the facsimile, not to this edition.
+ */
+export type CuratedSpecificationInline =
+  | { kind: "text"; text: string }
+  | {
+      kind: "term";
+      /** Exact words from the historical specification. */
+      text: string;
+      /** A concise modern definition, authored for this exact occurrence. */
+      definition: string;
+      /** Optional short label when the definition needs a historical qualifier. */
+      label?: string;
+    }
+  | { kind: "emphasis"; text: string }
+  | { kind: "small-caps"; text: string };
+
+export type CuratedSpecificationInlines = CuratedSpecificationInline[];
+
+export type CuratedSpecificationBlock =
+  | { kind: "masthead"; lines: string[] }
+  | { kind: "heading"; level: 2 | 3; text: string }
+  | { kind: "paragraph"; inlines: CuratedSpecificationInlines }
+  | {
+      kind: "claim";
+      number: number;
+      inlines: CuratedSpecificationInlines;
+    }
+  | {
+      kind: "figure-sheet";
+      figureLabel: string;
+      title?: string;
+      description: CuratedSpecificationInlines;
+    }
+  | {
+      kind: "table";
+      caption?: string;
+      headers: CuratedSpecificationInlines[];
+      rows: CuratedSpecificationInlines[][];
+    }
+  | {
+      kind: "equation";
+      /** Exact mathematical notation or formula appearing in the source. */
+      text: string;
+      description?: string;
+    };
+
+export interface CuratedSpecificationEdition {
+  kind: "manual-react-edition";
+  /** SHA-256 of the exact PDF served by originalPdfUrl. */
+  sourcePdfSha256: string;
+  /** Named agent/editor who prepared the continuous edition. */
+  preparedBy: string;
+  /** ISO calendar date on which preparation finished. */
+  preparedAt: string;
+  /** An explicit attestation that the full facsimile, not OCR alone, was checked. */
+  completeFacsimileReviewed: true;
+  /** The ordered authored content of the continuous reading edition. */
+  blocks: CuratedSpecificationBlock[];
+}
+
 export type OriginalTextAssetKind = "reviewed-transcription" | "source-pdf-text-layer";
 
 export interface OriginalTextAsset {
@@ -121,6 +187,11 @@ export interface Patent {
   originalText: string;
   /** Complete source text loaded only when a reader opens the archival face. */
   originalTextAsset?: OriginalTextAsset;
+  /**
+   * Optional until this patent is manually prepared. When present, this is the
+   * sole public source for the complete archival specification face.
+   */
+  archivalEdition?: CuratedSpecificationEdition;
   plainEnglishExplanation: PlainEnglishExplanation;
   claims: PatentClaim[];
   drawings: PatentDrawing[];
