@@ -35,7 +35,7 @@ export function ColorizedEquation({
   const [activeVarId, setActiveVarId] = useState<string | null>(
     initialActiveVariableId ?? (equation.variables[0]?.id || null),
   );
-  const [isPinned, setIsPinned] = useState<boolean>(false);
+  const [pinnedVarId, setPinnedVarId] = useState<string | null>(null);
   const [isExpanded, setIsExpanded] = useState<boolean>(defaultExpanded);
   const [colorBlindMode, setColorBlindMode] = useState<boolean>(false);
 
@@ -77,13 +77,19 @@ export function ColorizedEquation({
 
   const handleSelectVar = useCallback((id: string, pin = false) => {
     setActiveVarId(id);
-    if (pin) setIsPinned(true);
+    if (pin) setPinnedVarId(id);
   }, []);
 
   const handleReset = useCallback(() => {
     setActiveVarId(equation.variables[0]?.id ?? null);
-    setIsPinned(false);
+    setPinnedVarId(null);
   }, [equation.variables]);
+
+  const handleFormulaMouseLeave = useCallback(() => {
+    if (pinnedVarId) {
+      setActiveVarId(pinnedVarId);
+    }
+  }, [pinnedVarId]);
 
   // Interactive formula event delegation: hover on any KaTeX term inside equation
   const handleFormulaMouseOver = useCallback(
@@ -91,18 +97,24 @@ export function ColorizedEquation({
       const target = (e.target as HTMLElement).closest("[data-var], [class*='eq-term-']");
       if (!target) return;
       let varId = target.getAttribute("data-var");
-      if (!varId) {
-        const match = target.className.match(/eq-term-([a-zA-Z0-9_-]+)/);
+      if (!varId && typeof target.className === "string") {
+        const match = target.className.match(/\beq-term-([a-zA-Z0-9_-]+)\b/);
         if (match) varId = match[1];
       }
-      if (varId && !isPinned) {
-        const exists = equation.variables.some((v) => v.id === varId);
-        if (exists) {
-          setActiveVarId(varId);
+      if (varId) {
+        const matchingVar = equation.variables.find(
+          (v) =>
+            v.id === varId ||
+            v.id.toLowerCase() === varId?.toLowerCase() ||
+            varId?.startsWith(`var_${v.id}`) ||
+            v.id.includes(varId || ""),
+        );
+        if (matchingVar) {
+          setActiveVarId(matchingVar.id);
         }
       }
     },
-    [equation.variables, isPinned],
+    [equation.variables],
   );
 
   // Interactive formula event delegation: click on any KaTeX term inside equation
@@ -111,14 +123,20 @@ export function ColorizedEquation({
       const target = (e.target as HTMLElement).closest("[data-var], [class*='eq-term-']");
       if (!target) return;
       let varId = target.getAttribute("data-var");
-      if (!varId) {
-        const match = target.className.match(/eq-term-([a-zA-Z0-9_-]+)/);
+      if (!varId && typeof target.className === "string") {
+        const match = target.className.match(/\beq-term-([a-zA-Z0-9_-]+)\b/);
         if (match) varId = match[1];
       }
       if (varId) {
-        const exists = equation.variables.some((v) => v.id === varId);
-        if (exists) {
-          handleSelectVar(varId, true);
+        const matchingVar = equation.variables.find(
+          (v) =>
+            v.id === varId ||
+            v.id.toLowerCase() === varId?.toLowerCase() ||
+            varId?.startsWith(`var_${v.id}`) ||
+            v.id.includes(varId || ""),
+        );
+        if (matchingVar) {
+          handleSelectVar(matchingVar.id, true);
         }
       }
     },
@@ -136,9 +154,7 @@ export function ColorizedEquation({
     }
 
     if (activeVarId) {
-      const targets = container.querySelectorAll(
-        `.eq-term-${activeVarId}, [data-var="${activeVarId}"]`,
-      );
+      const targets = container.querySelectorAll(`.eq-term-${activeVarId}`);
       for (let i = 0; i < targets.length; i++) {
         targets[i].classList.add("eq-term-active");
       }
@@ -219,7 +235,7 @@ export function ColorizedEquation({
       {/* 2. Main Visual Canvas */}
       <div className="p-4 sm:p-6 space-y-6">
         {/* Colorized Mathematical Formula */}
-        <div className="relative py-4 px-6 rounded-2xl bg-parchment-100/70 dark:bg-ink-900/80 border border-parchment-200 dark:border-ink-800 flex flex-col items-center justify-center text-center shadow-inner overflow-x-auto">
+        <div className="relative py-6 px-6 sm:px-8 rounded-2xl bg-parchment-100/70 dark:bg-ink-900/80 border border-parchment-200 dark:border-ink-800 flex flex-col items-center justify-center text-center shadow-inner overflow-x-auto overflow-y-visible min-h-[110px]">
           <div className="text-[11px] font-mono uppercase tracking-widest text-ink-500 dark:text-ink-400 mb-2 font-semibold flex items-center gap-1.5">
             <Sparkles className="w-3.5 h-3.5 text-amber-600" />
             <span>Mathematical Governing Law</span>
@@ -232,7 +248,8 @@ export function ColorizedEquation({
             ref={formulaRef}
             onMouseOver={handleFormulaMouseOver}
             onClick={handleFormulaClick}
-            className="text-lg sm:text-2xl font-serif py-2 tracking-wide text-ink-950 dark:text-parchment-50 select-text overflow-x-auto max-w-full cursor-default"
+            onMouseLeave={handleFormulaMouseLeave}
+            className="text-lg sm:text-2xl font-serif py-3 tracking-wide text-ink-950 dark:text-parchment-50 select-text overflow-x-auto overflow-y-visible max-w-full cursor-default"
           >
             <LatexRenderer math={interactiveLatex} block={true} className="text-center" />
           </div>
@@ -250,7 +267,7 @@ export function ColorizedEquation({
                   key={v.id}
                   type="button"
                   onClick={() => handleSelectVar(v.id, true)}
-                  onMouseEnter={() => !isPinned && setActiveVarId(v.id)}
+                  onMouseEnter={() => setActiveVarId(v.id)}
                   aria-pressed={isSelected}
                   aria-label={`Highlight ${v.name} (${v.symbol})`}
                   className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-[11px] font-mono font-bold transition-all border ${
@@ -318,7 +335,7 @@ export function ColorizedEquation({
                   key={`${compId}-frag-${v.id}-${idx}`}
                   type="button"
                   onClick={() => handleSelectVar(v.id, true)}
-                  onMouseEnter={() => !isPinned && setActiveVarId(v.id)}
+                  onMouseEnter={() => setActiveVarId(v.id)}
                   aria-pressed={isActive}
                   aria-label={`${v.name} (${v.symbol}): ${v.role}`}
                   className={`inline-block font-serif font-bold mx-0.5 px-1.5 py-0.5 rounded-md transition-all cursor-pointer border ${

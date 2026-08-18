@@ -1,5 +1,4 @@
 import { COLOR_STYLES } from "@/components/ui/colorPalette";
-import { allPatents } from "@/data/patents";
 import { PATENT_PHYSICS_REGISTRY } from "@/physics/telemetryData";
 import type {
   ColorizedEquation,
@@ -3248,8 +3247,15 @@ export function getColorizedEquationsForPatent(
 ): ColorizedEquation[] {
   const bespokeList = ALL_COLORIZED_EQUATIONS[patentId] || [];
 
-  // Resolve patent object from parameter or registry
-  const targetPatent = patent || allPatents.find((p) => p.id === patentId);
+  let targetPatent = patent;
+  if (!targetPatent) {
+    try {
+      const { allPatents } = require("@/data/patents");
+      targetPatent = allPatents.find((p: Patent) => p.id === patentId);
+    } catch {
+      // Dynamic import fallback
+    }
+  }
 
   if (targetPatent?.plainEnglishExplanation?.scientificPrinciples) {
     const results: ColorizedEquation[] = [];
