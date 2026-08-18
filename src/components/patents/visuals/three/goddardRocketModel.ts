@@ -27,13 +27,24 @@ export interface GoddardRocketModel {
   plumeGeo: THREE.BufferGeometry;
   plumePos: Float32Array;
   plumeColors: Float32Array;
+  plumeJitter: Float32Array;
+  materials: {
+    aluminumHullMat: THREE.MeshStandardMaterial;
+    tankSeamMat: THREE.MeshStandardMaterial;
+    copperNozzleMat: THREE.MeshStandardMaterial;
+    feedPipeMat: THREE.MeshStandardMaterial;
+    darkVaneMat: THREE.MeshStandardMaterial;
+    interstageMat: THREE.MeshStandardMaterial;
+    plumeMat: THREE.PointsMaterial;
+  };
   updateKinematics: (
     delta: number,
     activeStage: number,
     gyroGimbalAngleDeg: number,
     expansionRatio: number,
-    exhaustVelocityMps: number,
+    plumeAdvancePerS: number,
     showExhaustPlume: boolean,
+    isCutaway?: boolean,
   ) => void;
   dispose: () => void;
 }
@@ -155,7 +166,6 @@ export function buildGoddardRocketModel(): GoddardRocketModel {
   const deLavalMesh = new THREE.Mesh(deLavalGeo, copperNozzleMat);
   deLavalMesh.castShadow = true;
   nozzleGroup.add(deLavalMesh);
-  let lastExpansion = initialExpansion;
 
   // Regenerative Cooling Manifold Ring
   const manifoldGeo = new THREE.TorusGeometry(0.93, 0.05, 12, 36);
@@ -234,6 +244,7 @@ export function buildGoddardRocketModel(): GoddardRocketModel {
   disposables.push(plumeGeo);
   const plumePos = new Float32Array(plumeCount * 3);
   const plumeColors = new Float32Array(plumeCount * 3);
+  const plumeJitter = new Float32Array(plumeCount * 3);
   const glowTex = createGlowPointTexture();
   disposables.push(glowTex);
 
@@ -242,6 +253,10 @@ export function buildGoddardRocketModel(): GoddardRocketModel {
     plumePos[idx] = (lcg() - 0.5) * 0.4;
     plumePos[idx + 1] = -4.2 - lcg() * 4.5;
     plumePos[idx + 2] = (lcg() - 0.5) * 0.4;
+
+    plumeJitter[idx] = lcg() - 0.5;
+    plumeJitter[idx + 1] = lcg();
+    plumeJitter[idx + 2] = lcg() - 0.5;
 
     const progress = (-plumePos[idx + 1] - 4.2) / 4.5;
     plumeColors[idx] = 1.0;
@@ -266,59 +281,25 @@ export function buildGoddardRocketModel(): GoddardRocketModel {
   const plumePoints = new THREE.Points(plumeGeo, plumeMat);
   root.add(plumePoints);
 
-  // ==========================================
-  // KINEMATICS & GAS DYNAMICS UPDATE FUNCTION
-  // ==========================================
   const updateKinematics = (
     delta: number,
     activeStage: number,
     gyroGimbalAngleDeg: number,
     expansionRatio: number,
-    exhaustVelocityMps: number,
+    plumeAdvancePerS: number,
     showExhaustPlume: boolean,
+    isCutaway = false,
   ) => {
-    const gimbalRad = (gyroGimbalAngleDeg * Math.PI) / 180;
-    nozzleGroup.rotation.z = gimbalRad;
-
-    const ar = expansionRatio ?? 3.5;
-    if (Math.abs(ar - lastExpansion) > 0.04) {
-      lastExpansion = ar;
-      deLavalMesh.geometry.dispose();
-      deLavalMesh.geometry = new THREE.LatheGeometry(
-        deLavalMeridian(ar).map(([r, y]) => new THREE.Vector2(r, y)),
-        48,
-      );
-    }
-
-    if (activeStage === 2) {
-      stage2Group.position.y += (7.5 - stage2Group.position.y) * 0.05;
-      stage1Group.position.y += (-6.0 - stage1Group.position.y) * 0.05;
-    } else {
-      stage2Group.position.y += (4.2 - stage2Group.position.y) * 0.1;
-      stage1Group.position.y += (0 - stage1Group.position.y) * 0.1;
-    }
-
-    const plumeOk = exhaustVelocityMps >= 800;
-    if (showExhaustPlume && plumeOk) {
-      const velocitySpeed = (exhaustVelocityMps / 2000) * 35.0 * delta;
-      const exitSpread = 0.22 * Math.sqrt(Math.max(2, ar));
-
-      for (let i = 0; i < plumeCount; i++) {
-        const idx = i * 3;
-        plumePos[idx + 1] -= velocitySpeed;
-        plumePos[idx] += Math.sin(gimbalRad) * velocitySpeed * 0.4;
-
-        if (plumePos[idx + 1] < -8.5) {
-          plumePos[idx] = (lcg() - 0.5) * exitSpread;
-          plumePos[idx + 1] = -4.2;
-          plumePos[idx + 2] = (lcg() - 0.5) * exitSpread;
-        }
-      }
-      plumeGeo.attributes.position.needsUpdate = true;
-      plumePoints.visible = true;
-    } else {
-      plumePoints.visible = false;
-    }
+    updateGoddardRocketKinematics(
+      model,
+      delta,
+      activeStage,
+      gyroGimbalAngleDeg,
+      expansionRatio,
+      plumeAdvancePerS,
+      showExhaustPlume,
+      isCutaway,
+    );
   };
 
   const dispose = () => {
@@ -327,7 +308,7 @@ export function buildGoddardRocketModel(): GoddardRocketModel {
     }
   };
 
-  return {
+  const model: GoddardRocketModel = {
     root,
     stage1Group,
     stage2Group,
@@ -337,7 +318,84 @@ export function buildGoddardRocketModel(): GoddardRocketModel {
     plumeGeo,
     plumePos,
     plumeColors,
+    plumeJitter,
+    materials: {
+      aluminumHullMat,
+      tankSeamMat,
+      copperNozzleMat,
+      feedPipeMat,
+      darkVaneMat,
+      interstageMat,
+      plumeMat,
+    },
     updateKinematics,
     dispose,
   };
+
+  return model;
+}
+
+let lastExpansionRatio = 3.5;
+
+/**
+ * Updates Goddard liquid-propellant rocket staging kinematics, de Laval nozzle mesh expansion, gimbal angle, and exhaust plume.
+ */
+export function updateGoddardRocketKinematics(
+  model: GoddardRocketModel,
+  delta: number,
+  activeStage: number,
+  gyroGimbalAngleDeg: number,
+  expansionRatio: number,
+  plumeAdvancePerS: number,
+  showExhaustPlume: boolean,
+  isCutaway = false,
+): void {
+  const gimbalRad = (gyroGimbalAngleDeg * Math.PI) / 180;
+  model.nozzleGroup.rotation.z = gimbalRad;
+
+  const ar = expansionRatio;
+  if (Math.abs(ar - lastExpansionRatio) > 0.04) {
+    lastExpansionRatio = ar;
+    model.deLavalMesh.geometry.dispose();
+    model.deLavalMesh.geometry = new THREE.LatheGeometry(
+      deLavalMeridian(ar).map(([r, y]) => new THREE.Vector2(r, y)),
+      48,
+    );
+  }
+
+  if (activeStage === 2) {
+    model.stage2Group.position.y += (7.5 - model.stage2Group.position.y) * 0.05;
+    model.stage1Group.position.y += (-6.0 - model.stage1Group.position.y) * 0.05;
+  } else {
+    model.stage2Group.position.y += (4.2 - model.stage2Group.position.y) * 0.1;
+    model.stage1Group.position.y += (0 - model.stage1Group.position.y) * 0.1;
+  }
+
+  const plumeOk = plumeAdvancePerS > 0;
+  if (showExhaustPlume && plumeOk) {
+    const velocitySpeed = plumeAdvancePerS * delta;
+    const exitSpread = 0.22 * Math.sqrt(Math.max(2, ar));
+
+    for (let i = 0; i < model.plumePos.length / 3; i++) {
+      const idx = i * 3;
+      model.plumePos[idx + 1] -= velocitySpeed;
+      model.plumePos[idx] += Math.sin(gimbalRad) * velocitySpeed * 0.4;
+
+      if (model.plumePos[idx + 1] < -8.5) {
+        model.plumePos[idx] = model.plumeJitter[idx] * exitSpread;
+        model.plumePos[idx + 1] = -4.2;
+        model.plumePos[idx + 2] = model.plumeJitter[idx + 2] * exitSpread;
+      }
+    }
+    model.plumeGeo.attributes.position.needsUpdate = true;
+    model.plumePoints.visible = true;
+  } else {
+    model.plumePoints.visible = false;
+  }
+
+  // Cutaway mode: make aluminum tank hulls and interstage fairings translucent
+  model.materials.aluminumHullMat.opacity = isCutaway ? 0.35 : 1.0;
+  model.materials.aluminumHullMat.transparent = isCutaway;
+  model.materials.interstageMat.opacity = isCutaway ? 0.35 : 1.0;
+  model.materials.interstageMat.transparent = isCutaway;
 }

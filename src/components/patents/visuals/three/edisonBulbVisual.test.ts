@@ -61,6 +61,8 @@ describe("US 223,898 Thomas Edison Incandescent Lamp visual & physics boundary",
     expect(result.hotResistanceOhm).toBeGreaterThan(50);
     expect(result.radiantWatts).toBeGreaterThan(20);
     expect(result.luminousLmPerW).toBeGreaterThan(1.0);
+    expect(result.incandescenceIntensity).toBeCloseTo(1, 3);
+    expect(result.thermalJitterPerS).toBeGreaterThan(0);
   });
 
   test("builds and articulates procedural pear glass bulb, screw base, platinum leads, and horseshoe filament correctly", () => {
@@ -70,12 +72,16 @@ describe("US 223,898 Thomas Edison Incandescent Lamp visual & physics boundary",
     expect(model.filamentMesh).toBeDefined();
     expect(model.bulbLight).toBeDefined();
 
+    const bulb = stepEdisonBulb({ voltage: 110, filamentLength: 22 });
     const { incandescenceIntensity, glowColor } = updateEdisonBulbKinematics(
       model,
       0.016,
       0.5,
-      110,
-      2100,
+      bulb.incandescenceIntensity,
+      bulb.filamentTempK,
+      bulb.thermalJitterPerS,
+      bulb.filamentEmissiveScale,
+      bulb.bulbLightScale,
       1e-6,
       true,
       true,

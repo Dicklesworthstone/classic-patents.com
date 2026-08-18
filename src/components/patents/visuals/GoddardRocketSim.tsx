@@ -4,7 +4,7 @@ import { Rocket } from "lucide-react";
 import { useState } from "react";
 import { TextWithLatex } from "@/components/ui/LatexRenderer";
 import { FrankenSimEngine } from "@/physics/engine";
-import { goddardNozzleMatch, goddardThermo } from "@/physics/thermochem";
+import { goddardNozzleMatch } from "@/physics/thermochem";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 
 export function GoddardRocketSim() {
@@ -27,7 +27,6 @@ export function GoddardRocketSim() {
   const specificImpulseSec = Math.round(res.specificImpulseSec);
   const exhaustVelocityMs = res.exhaustVelocityMps;
   const thrustPounds = res.thrustLbf;
-  const thermo = goddardThermo(combustionPressurePsi, nozzleExpansionRatio);
   const { optimalEpsilon, expansionEfficiency } = goddardNozzleMatch(
     altitudeMiles,
     nozzleExpansionRatio,
@@ -282,15 +281,15 @@ export function GoddardRocketSim() {
               </div>
               <div className="flex justify-between">
                 <span>T_c</span>
-                <span className="font-bold">{thermo.chamberTempK} K</span>
+                <span className="font-bold">{res.chamberTempK} K</span>
               </div>
               <div className="flex justify-between">
                 <span>T_e</span>
-                <span className="font-bold">{thermo.exhaustTempK} K</span>
+                <span className="font-bold">{res.exhaustTempK} K</span>
               </div>
               <div className="flex justify-between">
                 <span>γ</span>
-                <span className="font-bold">{thermo.gamma.toFixed(2)}</span>
+                <span className="font-bold">{res.gamma.toFixed(2)}</span>
               </div>
               <div className="flex justify-between">
                 <span>I_sp</span>

@@ -19,12 +19,16 @@ import { FrankenSimEngine } from "@/physics/engine";
 import { useFrankenSimPhysics } from "@/physics/useFrankenSimPhysics";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { soundEngine } from "@/utils/soundEngine";
-import { buildColtRevolverModel, type ColtRevolverModel } from "./coltRevolverModel";
+import {
+  buildColtRevolverModel,
+  type ColtRevolverModel,
+  updateColtRevolverKinematics,
+} from "./coltRevolverModel";
 import { createThreeStudioScene, type StudioContext } from "./ThreeStudioScene";
 import { useLiveSimParams } from "./useLiveSimParams";
 import { usePatentAudio } from "./usePatentAudio";
 
-type CameraPreset = "iso" | "cylinder" | "lockwork" | "sightline" | "top";
+type CameraPreset = "iso" | "cylinder" | "lockwork" | "sightline" | "loading_lever" | "top";
 
 export function ColtRevolver3D() {
   const containerRef = useRef<HTMLDivElement>(null);
@@ -111,6 +115,10 @@ export function ColtRevolver3D() {
       case "sightline":
         camera.position.set(-5.2, 1.38, 0.0);
         controls.target.set(6.0, 1.25, 0.0);
+        break;
+      case "loading_lever":
+        camera.position.set(3.2, -1.8, 4.5);
+        controls.target.set(2.0, -0.4, 0);
         break;
       case "top":
         camera.position.set(1.2, 9.5, 0.05);
@@ -216,53 +224,22 @@ export function ColtRevolver3D() {
 
     // Animation Loop
     let reqId = 0;
-    let targetCylinderAngle = 0;
-    let currentCylinderAngle = 0;
     let smokePuffScale = 1.0;
 
     const animate = () => {
       reqId = requestAnimationFrame(animate);
       const p = live.current;
 
-      // 1. Animate Hammer Cocking Rotation
-      // 0 deg = hammer resting against percussion nipple; 45 deg = full cock
-      const hammerTargetAngle = (p.cockingAngleDeg / 45) * 0.72;
-      model.hammerGroup.rotation.z += (hammerTargetAngle - model.hammerGroup.rotation.z) * 0.2;
-
-      // 2. Animate Paterson Folding Trigger
-      // Trigger drops out of the frame mortise automatically as the hammer is cocked!
-      const triggerDeployFraction = Math.min(1.0, p.cockingAngleDeg / 35);
-      model.triggerGroup.rotation.z = -triggerDeployFraction * 0.45;
-      model.triggerGroup.position.y = -1.42 - triggerDeployFraction * 0.32;
-
-      // 3. Animate 5-Chamber Cylinder Indexing
-      // Each shot steps 360° / 5 = 72° (2 * PI / 5)
-      const chamberStepRad = (2 * Math.PI) / 5;
-      targetCylinderAngle =
-        (p.currentChamberIndex - 1) * chamberStepRad + (p.cockingAngleDeg / 45) * chamberStepRad;
-      currentCylinderAngle += (targetCylinderAngle - currentCylinderAngle) * 0.18;
-      model.cylinderGroup.rotation.x = currentCylinderAngle;
-
-      // 4. Animate Loading Lever & Rammer Plunger
-      const rammerFraction = p.rammerPositionPct / 100;
-      model.loadingLeverGroup.rotation.z = -rammerFraction * 0.65;
-      model.rammerPlunger.position.x = 1.4 - 0.2 - rammerFraction * 1.1;
-
-      // 5. Lockwork Cutaway Visibility
-      model.lockworkCutawayGroup.visible = p.showLockworkCutaway;
-
-      // 6. Muzzle Blast, Flash Flare, Smoke Cloud & Recoil Kick
-      const blastMat = model.blastMesh.material as THREE.MeshBasicMaterial;
-      const smokeMat = model.smokeMesh.material as THREE.PointsMaterial;
-      const sparkMat = model.sparkPoints.material as THREE.PointsMaterial;
+      updateColtRevolverKinematics(
+        model,
+        p.cockingAngleDeg,
+        p.currentChamberIndex,
+        p.rammerPositionPct,
+        p.isFiring,
+        p.showLockworkCutaway,
+      );
 
       if (p.isFiring) {
-        // Flash flare
-        blastMat.opacity = Math.max(0, blastMat.opacity + (0.95 - blastMat.opacity) * 0.6);
-        smokeMat.opacity = Math.min(0.85, smokeMat.opacity + 0.3);
-        sparkMat.opacity = 0.95;
-
-        // Expanding smoke puff
         smokePuffScale += 0.12;
         model.smokeMesh.scale.set(smokePuffScale, smokePuffScale, smokePuffScale);
 
@@ -270,9 +247,6 @@ export function ColtRevolver3D() {
         model.group.rotation.z = Math.min(0.24, model.group.rotation.z + kick);
         model.group.position.x = Math.max(-0.4, model.group.position.x - kick * 0.8);
       } else {
-        blastMat.opacity *= 0.7;
-        smokeMat.opacity *= 0.86;
-        sparkMat.opacity *= 0.8;
         smokePuffScale = 1.0;
         model.smokeMesh.scale.set(1, 1, 1);
 
@@ -310,6 +284,7 @@ export function ColtRevolver3D() {
               ["cylinder", "Cylinder"],
               ["lockwork", "Action"],
               ["sightline", "Sightline"],
+              ["loading_lever", "Loading Lever"],
               ["top", "Top Plan"],
             ] as [CameraPreset, string][]
           ).map(([preset, label]) => (

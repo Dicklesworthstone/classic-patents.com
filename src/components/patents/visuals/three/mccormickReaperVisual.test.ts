@@ -2,7 +2,7 @@ import { describe, expect, test } from "bun:test";
 import { readFileSync } from "node:fs";
 import { join } from "node:path";
 import { stepMcCormickReaper } from "@/physics/catalogKernels";
-import { buildMcCormickReaperModel } from "./mccormickReaperModel";
+import { buildMcCormickReaperModel, updateMcCormickReaperKinematics } from "./mccormickReaperModel";
 
 const VISUALS_DIRECTORY = join(process.cwd(), "src/components/patents/visuals");
 
@@ -21,6 +21,7 @@ describe("US X8277 Cyrus McCormick Grain Reaper visual & kinematics boundary", (
     expect(threeSource).not.toContain(".glb");
     expect(threeSource).not.toContain(".gltf");
     expect(modelSource).toContain("buildMcCormickReaperModel");
+    expect(modelSource).toContain("updateMcCormickReaperKinematics");
   });
 
   test("maintains deterministic replay without ambient randomness or private clocks in frame loop", () => {
@@ -45,11 +46,12 @@ describe("US X8277 Cyrus McCormick Grain Reaper visual & kinematics boundary", (
       "utf8",
     );
 
-    for (const preset of ["iso", "sickle_guards", "grain_reel", "platform", "top"]) {
+    for (const preset of ["iso", "sickle_guards", "grain_reel", "platform", "drive_wheel", "top"]) {
       expect(threeSource).toContain(preset);
     }
 
     expect(threeSource).toContain("McCormick Reaper 3D");
+    expect(threeSource).toContain("isCutaway");
   });
 
   test("computes genuine ground drive ratio, reel speed, and cutter frequency in SI units", () => {
@@ -61,29 +63,24 @@ describe("US X8277 Cyrus McCormick Grain Reaper visual & kinematics boundary", (
   });
 
   test("builds and articulates procedural platform, bull drive wheel, guard fingers, sickle bar, and reel correctly", () => {
-    const {
-      rootGroup,
-      platformGroup,
-      driveWheelGroup,
-      cutterAssembly,
-      sickleBarGroup,
-      reelGroup,
-      stalksInstanced,
-      materials,
-      dispose,
-    } = buildMcCormickReaperModel();
+    const model = buildMcCormickReaperModel();
 
-    expect(rootGroup.children.length).toBeGreaterThan(2);
-    expect(platformGroup).toBeDefined();
-    expect(driveWheelGroup).toBeDefined();
-    expect(cutterAssembly).toBeDefined();
-    expect(sickleBarGroup).toBeDefined();
-    expect(reelGroup).toBeDefined();
-    expect(stalksInstanced).toBeDefined();
-    expect(materials.weatheredWood).toBeDefined();
-    expect(materials.castIron).toBeDefined();
-    expect(materials.sickleSteel).toBeDefined();
+    expect(model.rootGroup.children.length).toBeGreaterThan(2);
+    expect(model.platformGroup).toBeDefined();
+    expect(model.driveWheelGroup).toBeDefined();
+    expect(model.cutterAssembly).toBeDefined();
+    expect(model.sickleBarGroup).toBeDefined();
+    expect(model.reelGroup).toBeDefined();
+    expect(model.stalksInstanced).toBeDefined();
+    expect(model.materials.weatheredWood).toBeDefined();
+    expect(model.materials.castIron).toBeDefined();
+    expect(model.materials.sickleSteel).toBeDefined();
 
-    dispose();
+    // Test kinematics update & cutaway
+    updateMcCormickReaperKinematics(model, 3.5, 1.2, 10.0, 1.0, true, true);
+    expect(model.driveWheelGroup.rotation.x).toBe(3.5);
+    expect(model.materials.weatheredWood.opacity).toBe(0.35);
+
+    model.dispose();
   });
 });

@@ -122,8 +122,8 @@ export const GliddenBarbedWire3D = memo(() => {
         materials,
         dt,
         timeSec,
-        p.flyerOmegaRadPerS ?? 31.4,
-        p.reelOmegaRadPerS ?? 6.28,
+        p.flyerOmegaRadPerS,
+        p.reelOmegaRadPerS,
         p.isLocked ?? true,
         p.isCutaway ?? false,
       );

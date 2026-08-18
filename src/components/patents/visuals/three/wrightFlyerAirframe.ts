@@ -37,6 +37,8 @@ export interface FlyerAirframe {
   rightPropBlades: THREE.Group;
   leftBayWireMat: THREE.MeshStandardMaterial;
   rightBayWireMat: THREE.MeshStandardMaterial;
+  muslinMat: THREE.MeshStandardMaterial;
+  spruceMat: THREE.MeshStandardMaterial;
   textures: THREE.Texture[];
 }
 
@@ -1004,6 +1006,64 @@ export function buildWrightFlyerAirframe(): FlyerAirframe {
     rightPropBlades,
     leftBayWireMat,
     rightBayWireMat,
+    muslinMat,
+    spruceMat,
     textures,
   };
+}
+
+/**
+ * Updates Wright Flyer propeller rotation, wing warp deflection, elevator canard pitch, rudder yaw, wire tension colors, and fabric cutaway.
+ */
+export function updateWrightFlyerKinematics(
+  airframe: FlyerAirframe,
+  delta: number,
+  wingWarpDeg: number,
+  rudderYawDeg: number,
+  elevatorPitchDeg: number,
+  airspeedMph: number,
+  liftNewtons: number,
+  isCutaway = false,
+): void {
+  // Propellers Rotation (Counter-Rotating to eliminate gyroscopic torque)
+  const propSpeed = (airspeedMph / 25) * 45;
+  airframe.leftPropBlades.rotation.z += propSpeed * delta;
+  airframe.rightPropBlades.rotation.z -= propSpeed * delta;
+
+  // Animate Wing Warping Deflection on Mesh Tips
+  const warpRad = (wingWarpDeg * Math.PI) / 180;
+  const leftTipUpper = airframe.upperWing.getObjectByName("leftTip");
+  const rightTipUpper = airframe.upperWing.getObjectByName("rightTip");
+  const leftTipLower = airframe.lowerWing.getObjectByName("leftTip");
+  const rightTipLower = airframe.lowerWing.getObjectByName("rightTip");
+
+  if (leftTipUpper && rightTipUpper && leftTipLower && rightTipLower) {
+    leftTipUpper.rotation.x = warpRad * 0.6;
+    leftTipLower.rotation.x = warpRad * 0.6;
+    rightTipUpper.rotation.x = -warpRad * 0.6;
+    rightTipLower.rotation.x = -warpRad * 0.6;
+  }
+
+  // Pilot hip cradle sliding sideways during wing warping
+  airframe.cradleGroup.position.x = -0.35 + (wingWarpDeg / 15) * 0.12;
+
+  // Animate Elevator & Rudder
+  airframe.canardGroup.rotation.x = (-elevatorPitchDeg * Math.PI) / 180;
+  airframe.rudderGroup.rotation.y = (-rudderYawDeg * Math.PI) / 180;
+
+  // Interplane X-wires: the high-AoA tip carries extra lift, so that bay's
+  // piano wire goes amber, then red. Slack bay stays steel-grey.
+  const leftTension = Math.max(0, liftNewtons / 2200 + wingWarpDeg / 15);
+  const rightTension = Math.max(0, liftNewtons / 2200 - wingWarpDeg / 15);
+  const paintBay = (mat: THREE.MeshStandardMaterial, tension: number) => {
+    if (tension > 1.15) mat.color.setHex(0xef4444);
+    else if (tension > 0.55) mat.color.setHex(0xf59e0b);
+    else mat.color.setHex(0x94a3b8);
+  };
+  paintBay(airframe.leftBayWireMat, leftTension);
+  paintBay(airframe.rightBayWireMat, rightTension);
+
+  // Cutaway muslin transparency for inspecting internal rib truss and control cables
+  airframe.muslinMat.opacity = isCutaway ? 0.35 : 1.0;
+  airframe.muslinMat.transparent = isCutaway;
 }

@@ -3,38 +3,37 @@ import { createLcg } from "@/utils/lcg";
  * edisonPhonographModel.ts
  *
  * Museum-Grade Procedural 3D Model for Thomas Alva Edison's 1878 Tinfoil Phonograph (US Patent 200,521).
- * Features authentic Victorian mahogany baseboard, twin cast-iron arch stanchions, precision lead-screw,
- * heavy spoked flywheel, tinfoil-wrapped grooved brass cylinder mandrel, pivoting reproducer soundbox,
- * and flared acoustic brass horn.
+ * It distinguishes the source-specified cylinder, foil, diaphragms, hard point,
+ * threaded shaft, and clock-work drive from illustrative display geometry. The
+ * patent does not state the material, dimensions, horn profile, or drive train.
  */
 
 import * as THREE from "three";
-
-const lcg = createLcg(2185);
 
 export interface EdisonPhonographModel {
   rootGroup: THREE.Group;
   cylinderGroup: THREE.Group;
   soundBoxGroup: THREE.Group;
   stylus: THREE.Mesh;
-  flywheel: THREE.Mesh;
+  rotationReferenceWheel: THREE.Mesh;
   materials: {
-    mahogany: THREE.MeshStandardMaterial;
-    castIron: THREE.MeshStandardMaterial;
-    polishedBrass: THREE.MeshStandardMaterial;
+    illustrativeBase: THREE.MeshStandardMaterial;
+    illustrativeDarkMetal: THREE.MeshStandardMaterial;
+    illustrativeWarmMetal: THREE.MeshStandardMaterial;
     tinfoil: THREE.MeshStandardMaterial;
-    steel: THREE.MeshStandardMaterial;
+    illustrativeLightMetal: THREE.MeshStandardMaterial;
   };
   dispose: () => void;
 }
 
 export function buildEdisonPhonographModel(): EdisonPhonographModel {
+  const lcg = createLcg(2185);
   const rootGroup = new THREE.Group();
   const texturesToDispose: THREE.Texture[] = [];
   const materialsToDispose: THREE.Material[] = [];
   const geometriesToDispose: THREE.BufferGeometry[] = [];
 
-  // Procedural Mahogany Texture
+  // Illustrative support texture. No wood species is stated in US 200,521.
   let woodTexture: THREE.CanvasTexture | undefined;
   if (typeof document !== "undefined") {
     const woodCanvas = document.createElement("canvas");
@@ -58,27 +57,27 @@ export function buildEdisonPhonographModel(): EdisonPhonographModel {
   }
 
   // Materials
-  const mahoganyMat = new THREE.MeshStandardMaterial({
+  const illustrativeBaseMat = new THREE.MeshStandardMaterial({
     ...(woodTexture ? { map: woodTexture } : {}),
     color: 0x4a1d0a,
     roughness: 0.45,
     metalness: 0.08,
   });
-  materialsToDispose.push(mahoganyMat);
+  materialsToDispose.push(illustrativeBaseMat);
 
-  const castIronMat = new THREE.MeshStandardMaterial({
+  const illustrativeDarkMetalMat = new THREE.MeshStandardMaterial({
     color: 0x1e293b,
     roughness: 0.48,
     metalness: 0.85,
   });
-  materialsToDispose.push(castIronMat);
+  materialsToDispose.push(illustrativeDarkMetalMat);
 
-  const polishedBrassMat = new THREE.MeshStandardMaterial({
+  const illustrativeWarmMetalMat = new THREE.MeshStandardMaterial({
     color: 0xd97706,
     roughness: 0.18,
     metalness: 0.92,
   });
-  materialsToDispose.push(polishedBrassMat);
+  materialsToDispose.push(illustrativeWarmMetalMat);
 
   const tinfoilMat = new THREE.MeshStandardMaterial({
     color: 0xe2e8f0,
@@ -87,143 +86,173 @@ export function buildEdisonPhonographModel(): EdisonPhonographModel {
   });
   materialsToDispose.push(tinfoilMat);
 
-  const steelMat = new THREE.MeshStandardMaterial({
+  const illustrativeLightMetalMat = new THREE.MeshStandardMaterial({
     color: 0xf1f5f9,
     roughness: 0.12,
     metalness: 0.96,
   });
-  materialsToDispose.push(steelMat);
+  materialsToDispose.push(illustrativeLightMetalMat);
 
   // ==========================================
-  // 1. Victorian Mahogany Baseboard Plinth
+  // 1. Illustrative support base. Its material and dimensions are not source claims.
   // ==========================================
   const baseGroup = new THREE.Group();
   rootGroup.add(baseGroup);
 
-  const basePlinth = new THREE.Mesh(new THREE.BoxGeometry(11.0, 0.7, 5.8), mahoganyMat);
+  const basePlinth = new THREE.Mesh(new THREE.BoxGeometry(11.0, 0.7, 5.8), illustrativeBaseMat);
   basePlinth.position.y = -1.8;
   basePlinth.receiveShadow = true;
   basePlinth.castShadow = true;
   baseGroup.add(basePlinth);
 
-  // 4 Brass Leveling Feet
+  // Illustrative leveling feet.
   [
     [-4.8, -2.2],
     [4.8, -2.2],
     [-4.8, 2.2],
     [4.8, 2.2],
   ].forEach(([fx, fz]) => {
-    const foot = new THREE.Mesh(new THREE.CylinderGeometry(0.25, 0.35, 0.3, 16), polishedBrassMat);
+    const foot = new THREE.Mesh(
+      new THREE.CylinderGeometry(0.25, 0.35, 0.3, 16),
+      illustrativeWarmMetalMat,
+    );
     foot.position.set(fx, -2.2, fz);
     baseGroup.add(foot);
   });
 
-  // Twin Cast-Iron Arch Bearing Stanchions
+  // Illustrative bearing stanchions.
   [-3.6, 3.6].forEach((bx) => {
-    const stanchion = new THREE.Mesh(new THREE.BoxGeometry(0.7, 2.4, 1.4), castIronMat);
+    const stanchion = new THREE.Mesh(
+      new THREE.BoxGeometry(0.7, 2.4, 1.4),
+      illustrativeDarkMetalMat,
+    );
     stanchion.position.set(bx, -0.4, 0);
     stanchion.castShadow = true;
     baseGroup.add(stanchion);
 
-    // Bronze Bearing Cap with Oil Cup
-    const cap = new THREE.Mesh(new THREE.CylinderGeometry(0.32, 0.32, 0.4, 16), polishedBrassMat);
+    // Illustrative bearing cap and oil cup.
+    const cap = new THREE.Mesh(
+      new THREE.CylinderGeometry(0.32, 0.32, 0.4, 16),
+      illustrativeWarmMetalMat,
+    );
     cap.rotation.z = Math.PI / 2;
     cap.position.set(bx, 0.8, 0);
     baseGroup.add(cap);
 
-    const oilCup = new THREE.Mesh(new THREE.ConeGeometry(0.1, 0.22, 12), polishedBrassMat);
+    const oilCup = new THREE.Mesh(new THREE.ConeGeometry(0.1, 0.22, 12), illustrativeWarmMetalMat);
     oilCup.position.set(bx, 1.1, 0);
     baseGroup.add(oilCup);
   });
 
   // ==========================================
-  // 2. Grooved Brass Cylinder Mandrel & Lead-Screw (Claim 1 & 2)
+  // 2. Source-specified grooved cylinder and threaded shaft (Claim 4).
   // ==========================================
   const cylinderGroup = new THREE.Group();
   cylinderGroup.position.set(0, 0.8, 0);
   rootGroup.add(cylinderGroup);
 
-  // Continuous Steel Lead-Screw Shaft
-  const leadScrew = new THREE.Mesh(new THREE.CylinderGeometry(0.18, 0.18, 10.2, 24), steelMat);
+  // Shaft X is source-specified; its display material and length are illustrative.
+  const leadScrew = new THREE.Mesh(
+    new THREE.CylinderGeometry(0.18, 0.18, 10.2, 24),
+    illustrativeLightMetalMat,
+  );
   leadScrew.rotation.z = Math.PI / 2;
   leadScrew.castShadow = true;
   cylinderGroup.add(leadScrew);
 
-  // Heavy Brass Mandrel Wrapped in Tinfoil
+  // Cylinder A with source-specified metallic-foil recording surface.
   const mandrel = new THREE.Mesh(new THREE.CylinderGeometry(1.45, 1.45, 4.8, 36), tinfoilMat);
   mandrel.rotation.z = Math.PI / 2;
   mandrel.position.x = -0.4;
   mandrel.castShadow = true;
   cylinderGroup.add(mandrel);
 
-  // Spiral Helical Groove Scoring on Mandrel (Decorative Visual Indentations)
+  // Illustrative groove cue for the source-specified ten-groove-per-inch helix.
   for (let g = 0; g < 8; g++) {
-    const ring = new THREE.Mesh(new THREE.TorusGeometry(1.46, 0.015, 8, 36), polishedBrassMat);
+    const ring = new THREE.Mesh(
+      new THREE.TorusGeometry(1.46, 0.015, 8, 36),
+      illustrativeWarmMetalMat,
+    );
     ring.rotation.y = Math.PI / 2;
     ring.position.x = -2.4 + g * 0.6;
     cylinderGroup.add(ring);
   }
 
-  // Heavy Cast-Iron Flywheel (Left Side)
-  const flywheel = new THREE.Mesh(new THREE.TorusGeometry(1.8, 0.18, 16, 36), castIronMat);
-  flywheel.position.x = -4.5;
-  flywheel.rotation.y = Math.PI / 2;
-  flywheel.castShadow = true;
-  cylinderGroup.add(flywheel);
+  // Illustrative rotation reference. The source names clock-work M or another power source.
+  const rotationReferenceWheel = new THREE.Mesh(
+    new THREE.TorusGeometry(1.8, 0.18, 16, 36),
+    illustrativeDarkMetalMat,
+  );
+  rotationReferenceWheel.position.x = -4.5;
+  rotationReferenceWheel.rotation.y = Math.PI / 2;
+  rotationReferenceWheel.castShadow = true;
+  cylinderGroup.add(rotationReferenceWheel);
 
-  // 6 Flywheel Curved Spokes
+  // Spokes are illustrative display geometry.
   for (let s = 0; s < 6; s++) {
     const angle = (s * Math.PI) / 3;
-    const spoke = new THREE.Mesh(new THREE.CylinderGeometry(0.04, 0.07, 1.6, 8), castIronMat);
+    const spoke = new THREE.Mesh(
+      new THREE.CylinderGeometry(0.04, 0.07, 1.6, 8),
+      illustrativeDarkMetalMat,
+    );
     spoke.position.set(-4.5, Math.cos(angle) * 0.85, Math.sin(angle) * 0.85);
     spoke.rotation.x = angle;
     cylinderGroup.add(spoke);
   }
 
-  // Hand Crank (Right Side)
-  const crankArm = new THREE.Mesh(new THREE.BoxGeometry(0.18, 1.6, 0.35), castIronMat);
+  // Illustrative drive indicator, not a claimed hand crank.
+  const crankArm = new THREE.Mesh(new THREE.BoxGeometry(0.18, 1.6, 0.35), illustrativeDarkMetalMat);
   crankArm.position.set(4.9, 0.6, 0);
   cylinderGroup.add(crankArm);
 
-  const crankHandle = new THREE.Mesh(new THREE.CylinderGeometry(0.12, 0.14, 0.6, 12), mahoganyMat);
+  const crankHandle = new THREE.Mesh(
+    new THREE.CylinderGeometry(0.12, 0.14, 0.6, 12),
+    illustrativeBaseMat,
+  );
   crankHandle.rotation.x = Math.PI / 2;
   crankHandle.position.set(4.9, 1.3, 0.4);
   cylinderGroup.add(crankHandle);
 
   // ==========================================
-  // 3. Acoustic Sound-Box Diaphragm & Needle Stylus (Claim 3)
+  // 3. Source-specified diaphragm and hard point (Claim 3).
   // ==========================================
   const soundBoxGroup = new THREE.Group();
   soundBoxGroup.position.set(0, 1.6, 1.8);
   rootGroup.add(soundBoxGroup);
 
   // Pivot Arm Carriage
-  const pivotArm = new THREE.Mesh(new THREE.BoxGeometry(0.3, 0.3, 1.8), polishedBrassMat);
+  const pivotArm = new THREE.Mesh(new THREE.BoxGeometry(0.3, 0.3, 1.8), illustrativeWarmMetalMat);
   pivotArm.position.set(0, -0.4, -0.8);
   soundBoxGroup.add(pivotArm);
 
-  // Brass Circular Sound-Box Chamber
+  // Illustrative diaphragm housing.
   const soundBox = new THREE.Mesh(
     new THREE.CylinderGeometry(0.75, 0.75, 0.4, 24),
-    polishedBrassMat,
+    illustrativeWarmMetalMat,
   );
   soundBox.rotation.x = Math.PI / 2;
   soundBox.castShadow = true;
   soundBoxGroup.add(soundBox);
 
-  // Flexible Parchment/Mica Diaphragm Membrane
-  const diaphragm = new THREE.Mesh(new THREE.CylinderGeometry(0.68, 0.68, 0.05, 24), steelMat);
+  // The source names a diaphragm but provides no material.
+  const diaphragm = new THREE.Mesh(
+    new THREE.CylinderGeometry(0.68, 0.68, 0.05, 24),
+    illustrativeLightMetalMat,
+  );
   diaphragm.rotation.x = Math.PI / 2;
   soundBoxGroup.add(diaphragm);
 
-  // Precision Indenting Needle Stylus
-  const stylus = new THREE.Mesh(new THREE.ConeGeometry(0.06, 0.55, 12), steelMat);
+  // The source requires hard material but does not identify it.
+  const stylus = new THREE.Mesh(new THREE.ConeGeometry(0.06, 0.55, 12), illustrativeLightMetalMat);
   stylus.rotation.x = -Math.PI / 2;
   stylus.position.set(0, -0.55, -0.2);
   soundBoxGroup.add(stylus);
 
-  // Flared Victorian Brass Acoustic Horn
-  const horn = new THREE.Mesh(new THREE.ConeGeometry(1.8, 3.6, 24, 1, true), polishedBrassMat);
+  // Illustrative speaking-tube profile. The source does not specify a horn profile.
+  const horn = new THREE.Mesh(
+    new THREE.ConeGeometry(1.8, 3.6, 24, 1, true),
+    illustrativeWarmMetalMat,
+  );
   horn.rotation.x = -Math.PI / 3.2;
   horn.position.set(0, 1.8, 2.0);
   horn.castShadow = true;
@@ -240,41 +269,40 @@ export function buildEdisonPhonographModel(): EdisonPhonographModel {
     cylinderGroup,
     soundBoxGroup,
     stylus,
-    flywheel,
+    rotationReferenceWheel,
     materials: {
-      mahogany: mahoganyMat,
-      castIron: castIronMat,
-      polishedBrass: polishedBrassMat,
+      illustrativeBase: illustrativeBaseMat,
+      illustrativeDarkMetal: illustrativeDarkMetalMat,
+      illustrativeWarmMetal: illustrativeWarmMetalMat,
       tinfoil: tinfoilMat,
-      steel: steelMat,
+      illustrativeLightMetal: illustrativeLightMetalMat,
     },
     dispose,
   };
 }
 
 /**
- * Updates cylinder mandrel rotation, stylus indentation, and cutaway mode.
+ * Updates the source-linked cylinder rotation and an illustrative stylus motion.
  */
 export function updateEdisonPhonographKinematics(
   model: EdisonPhonographModel,
   dt: number,
   timeSec: number,
-  cylinderRpm: number,
+  mandrelOmegaRadPerS: number,
   grooveDepthMicrons: number,
   isCutaway: boolean,
 ) {
-  const omegaRad = (cylinderRpm * 2 * Math.PI) / 60;
-  model.cylinderGroup.rotation.x += omegaRad * dt;
-  model.flywheel.rotation.x += omegaRad * dt;
+  model.cylinderGroup.rotation.x += mandrelOmegaRadPerS * dt;
+  model.rotationReferenceWheel.rotation.x += mandrelOmegaRadPerS * dt;
 
-  // Stylus acoustic indentation vibration
+  // Illustrative display motion only. The source specifies no amplitude or frequency.
   const depthMm = (grooveDepthMicrons / 1000) * 0.05;
   const vibration = Math.sin(timeSec * 45) * depthMm;
   model.stylus.position.y = -0.55 + vibration;
 
   // Cutaway Mode
-  model.materials.mahogany.opacity = isCutaway ? 0.35 : 1.0;
-  model.materials.mahogany.transparent = isCutaway;
+  model.materials.illustrativeBase.opacity = isCutaway ? 0.35 : 1.0;
+  model.materials.illustrativeBase.transparent = isCutaway;
   model.materials.tinfoil.opacity = isCutaway ? 0.55 : 1.0;
   model.materials.tinfoil.transparent = isCutaway;
 }

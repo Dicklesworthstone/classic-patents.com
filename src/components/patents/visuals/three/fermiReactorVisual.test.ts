@@ -2,7 +2,7 @@ import { describe, expect, test } from "bun:test";
 import { readFileSync } from "node:fs";
 import { join } from "node:path";
 import { FrankenSimEngine } from "@/physics/engine";
-import { buildFermiReactorModel } from "./fermiReactorModel";
+import { buildFermiReactorModel, updateFermiReactorKinematics } from "./fermiReactorModel";
 
 const VISUALS_DIRECTORY = join(process.cwd(), "src", "components", "patents", "visuals");
 
@@ -20,6 +20,7 @@ describe("US 2,708,656 Enrico Fermi Chicago Pile-1 Nuclear Reactor visual & kine
     expect(modelSource).not.toContain("useGLTF");
     expect(modelSource).not.toContain(".gltf");
     expect(modelSource).not.toContain(".glb");
+    expect(modelSource).toContain("updateFermiReactorKinematics");
     expect(threeSource).not.toContain("useGLTF");
   });
 
@@ -44,9 +45,10 @@ describe("US 2,708,656 Enrico Fermi Chicago Pile-1 Nuclear Reactor visual & kine
       "utf8",
     );
 
-    for (const preset of ["iso", "control_rods", "graphite_core", "gantry", "top"]) {
+    for (const preset of ["iso", "control_rods", "graphite_core", "gantry", "detector", "top"]) {
       expect(threeSource).toContain(preset);
     }
+    expect(threeSource).toContain("isCutaway");
   });
 
   test("computes genuine four-factor formula, effective neutron multiplication (k_eff), and thermal power in SI units", () => {
@@ -67,9 +69,10 @@ describe("US 2,708,656 Enrico Fermi Chicago Pile-1 Nuclear Reactor visual & kine
     expect(model.bf3Detector).toBeDefined();
     expect(model.neutronPoints).toBeDefined();
 
-    // Test kinematics update
-    model.updateKinematics(1 / 60, 90, 1.001, 99.5, 4.0, true);
+    // Test kinematics update & cutaway
+    updateFermiReactorKinematics(model, 1 / 60, 90, 1.001, 99.5, 4.0, true, true);
     expect(model.neutronPoints.visible).toBe(true);
+    expect(model.graphiteMat.opacity).toBe(0.35);
 
     model.dispose();
   });

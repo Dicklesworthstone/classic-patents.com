@@ -1,16 +1,16 @@
 "use client";
 
-import { Camera, Flame, Play, Volume2, VolumeX } from "lucide-react";
+import { Camera, Flame, Layers, Play, Volume2, VolumeX } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { FrankenSimEngine } from "@/physics/engine";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { soundEngine } from "@/utils/soundEngine";
-import { buildDaimlerEngineModel } from "./daimlerEngineModel";
+import { buildDaimlerEngineModel, updateDaimlerEngineKinematics } from "./daimlerEngineModel";
 import { createThreeStudioScene, type StudioContext } from "./ThreeStudioScene";
 import { useLiveSimParams } from "./useLiveSimParams";
 import { usePatentAudio } from "./usePatentAudio";
 
-type CameraPreset = "iso" | "cylinder" | "crankcase" | "hottube";
+type CameraPreset = "iso" | "cylinder" | "crankcase" | "hottube" | "flywheel" | "top";
 
 export function DaimlerEngine3D() {
   const containerRef = useRef<HTMLDivElement>(null);
@@ -26,6 +26,8 @@ export function DaimlerEngine3D() {
 
   const [isPlaying, setIsPlaying] = useState<boolean>(true);
   const [showUiOverlay, setShowUiOverlay] = useState<boolean>(true);
+  const [isCutaway, setIsCutaway] = useState<boolean>(false);
+  const [activeCamera, setActiveCamera] = useState<CameraPreset>("iso");
   const { isMuted, toggleMute } = usePatentAudio();
 
   const brakeHorsepower = daimler.brakeHorsepower;
@@ -34,6 +36,7 @@ export function DaimlerEngine3D() {
     engineRpm,
     hotTubeTempC,
     isPlaying,
+    isCutaway,
     bmepBar: daimler.bmepBar,
     brakeHorsepower: daimler.brakeHorsepower,
     outerWheelRpm: daimler.outerWheelRpm,
@@ -76,52 +79,28 @@ export function DaimlerEngine3D() {
       const dt = 1 / 60;
       const p = live.current;
 
-      // Hot-tube glow modulation
-      const tube = p.hotTubeTempC;
-      model.materials.hotTubeMat.emissiveIntensity =
-        tube >= 800 ? 2.8 : Math.max(0.15, (tube / 800) * 2.2);
-      model.materials.hotTubeMat.emissive.setHex(
-        tube >= 800 ? 0xf97316 : tube >= 600 ? 0xb45309 : 0x334155,
-      );
-
       if (p.isPlaying && p.isRunning > 0) {
-        const speed = p.runningOmegaRadPerS ?? (p.engineRpm * 2 * Math.PI) / 60;
+        const speed = p.runningOmegaRadPerS;
         crankAngle = (crankAngle + speed * dt) % (Math.PI * 4); // 4-stroke cycle = 720° (4π rad)
 
         const cycleAngle = crankAngle % (Math.PI * 2);
-        model.crankshaftGroup.rotation.z = cycleAngle;
 
-        // Kinematics: crankpin position
-        const crankR = 0.42;
-        const pinY = -0.65 + Math.sin(cycleAngle) * crankR;
-        const pinX = Math.cos(cycleAngle) * crankR;
-
-        const rodLen = 1.7;
-        const pistonY = pinY + Math.sqrt(Math.max(0.1, rodLen ** 2 - pinX ** 2));
-
-        model.pistonGroup.position.y = pistonY;
-        model.conRodGroup.position.set(pinX, pinY, 0);
-        const rodAngle = Math.atan2(pistonY - pinY, -pinX);
-        model.conRodGroup.rotation.z = rodAngle - Math.PI / 2;
-
-        // Exhaust valve cam pushrod motion (opens during exhaust stroke: 3π to 4π)
-        const isExhaust = crankAngle >= Math.PI * 3;
-        const exhaustLift = isExhaust ? Math.sin(crankAngle - Math.PI * 3) * 0.12 : 0;
-        model.exhaustPushrod.position.y = 0.2 + exhaustLift;
-        model.exhaustRocker.rotation.z = exhaustLift * 1.5;
-        model.exhaustValve.position.y = 2.5 - exhaustLift;
-
-        // Combustion flash at TDC of power stroke (crankAngle ≈ π)
-        const isFiring = Math.abs(crankAngle - Math.PI) < 0.25;
-        model.combustionFlame.visible = isFiring;
+        const { strokeIndex } = updateDaimlerEngineKinematics(
+          model,
+          cycleAngle,
+          crankAngle,
+          p.hotTubeTempC,
+          p.isCutaway,
+        );
 
         // Sound trigger on power stroke
-        const strokeIndex = Math.floor(crankAngle / (Math.PI * 4));
-        if (isFiring && strokeIndex !== lastAudioStroke) {
+        if (strokeIndex === 2 && strokeIndex !== lastAudioStroke) {
           lastAudioStroke = strokeIndex;
           if (!isMuted) {
             soundEngine.playPneumaticPuff();
           }
+        } else if (strokeIndex !== 2) {
+          lastAudioStroke = strokeIndex;
         }
       }
 
@@ -140,12 +119,15 @@ export function DaimlerEngine3D() {
   }, [isMuted, live]);
 
   const setCameraView = (view: CameraPreset) => {
+    setActiveCamera(view);
     const studio = studioRef.current;
     if (!studio) return;
     if (view === "iso") studio.controls.setView([6.5, 3.8, 6.5], [0, 0.4, 0]);
     if (view === "cylinder") studio.controls.setView([0.1, 1.8, 3.8], [0, 1.1, 0]);
     if (view === "crankcase") studio.controls.setView([2.4, -0.4, 2.8], [0, -0.6, 0]);
     if (view === "hottube") studio.controls.setView([1.8, 2.5, 1.8], [0.65, 2.3, 0]);
+    if (view === "flywheel") studio.controls.setView([3.8, 0.8, 3.5], [0, 0, 0]);
+    if (view === "top") studio.controls.setView([0, 8.0, 0.1], [0, 0, 0]);
   };
 
   return (
@@ -171,6 +153,18 @@ export function DaimlerEngine3D() {
         </div>
 
         <div className="flex items-center gap-2 pointer-events-auto">
+          <button
+            type="button"
+            onClick={() => setIsCutaway(!isCutaway)}
+            title={isCutaway ? "Switch to Solid Engine" : "Switch to Cutaway View"}
+            className={`p-2 rounded-xl border transition-colors ${
+              isCutaway
+                ? "bg-amber-600 border-amber-500 text-white shadow-sm"
+                : "bg-slate-900/90 border-slate-700/80 text-slate-200 hover:text-white"
+            }`}
+          >
+            <Layers className="w-4 h-4" />
+          </button>
           <button
             type="button"
             onClick={toggleMute}
@@ -281,34 +275,29 @@ export function DaimlerEngine3D() {
           {/* Camera View Switcher */}
           <div className="flex flex-wrap items-center gap-1.5 bg-slate-900/90 backdrop-blur-md border border-slate-700/80 rounded-xl p-1.5 shadow-xl pointer-events-auto">
             <Camera className="w-4 h-4 text-slate-400 ml-1.5 mr-0.5" />
-            <button
-              type="button"
-              onClick={() => setCameraView("iso")}
-              className="px-2.5 py-1 rounded-lg text-xs font-mono text-slate-300 hover:text-white hover:bg-slate-800 transition-colors"
-            >
-              Isometric
-            </button>
-            <button
-              type="button"
-              onClick={() => setCameraView("cylinder")}
-              className="px-2.5 py-1 rounded-lg text-xs font-mono text-slate-300 hover:text-white hover:bg-slate-800 transition-colors"
-            >
-              Cylinder
-            </button>
-            <button
-              type="button"
-              onClick={() => setCameraView("crankcase")}
-              className="px-2.5 py-1 rounded-lg text-xs font-mono text-slate-300 hover:text-white hover:bg-slate-800 transition-colors"
-            >
-              Flywheels
-            </button>
-            <button
-              type="button"
-              onClick={() => setCameraView("hottube")}
-              className="px-2.5 py-1 rounded-lg text-xs font-mono text-slate-300 hover:text-white hover:bg-slate-800 transition-colors"
-            >
-              Hot Tube
-            </button>
+            {(
+              [
+                ["iso", "Isometric"],
+                ["cylinder", "Cylinder"],
+                ["crankcase", "Crankcase"],
+                ["hottube", "Hot Tube"],
+                ["flywheel", "Flywheels"],
+                ["top", "Top"],
+              ] as [CameraPreset, string][]
+            ).map(([preset, label]) => (
+              <button
+                key={preset}
+                type="button"
+                onClick={() => setCameraView(preset)}
+                className={`px-2.5 py-1 rounded-lg text-xs font-mono transition-colors ${
+                  activeCamera === preset
+                    ? "bg-amber-600 text-white font-semibold shadow-sm"
+                    : "text-slate-300 hover:text-white hover:bg-slate-800"
+                }`}
+              >
+                {label}
+              </button>
+            ))}
           </div>
         </div>
       )}

@@ -3,8 +3,6 @@ import { blackbodyRgb } from "@/physics/blackbody";
 import { createLcg } from "@/utils/lcg";
 import { createGlowPointTexture } from "./ThreeStudioScene";
 
-const lcg = createLcg(1880);
-
 export interface EdisonBulbModel {
   rootGroup: THREE.Group;
   bulbGroup: THREE.Group;
@@ -27,6 +25,7 @@ export interface EdisonBulbModel {
 }
 
 export function buildEdisonBulbModel(): EdisonBulbModel {
+  const lcg = createLcg(1880);
   const rootGroup = new THREE.Group();
   const materialsToDispose: THREE.Material[] = [];
   const geometriesToDispose: THREE.BufferGeometry[] = [];
@@ -279,22 +278,24 @@ export function updateEdisonBulbKinematics(
   model: EdisonBulbModel,
   dt: number,
   timeSec: number,
-  appliedVoltage: number,
+  incandescenceIntensity: number,
   filamentTempKelvin: number,
+  thermalJitterPerS: number,
+  filamentEmissiveScale: number,
+  bulbLightScale: number,
   vacuumTorr: number,
   showGasMolecules: boolean,
   isCutaway: boolean,
 ): { incandescenceIntensity: number; glowColor: THREE.Color } {
-  const incandescenceIntensity = Math.min(1.0, (appliedVoltage / 110) ** 2);
   const isGlowing = incandescenceIntensity > 0.05;
   const glowColor = new THREE.Color(blackbodyRgb(filamentTempKelvin));
 
   if (isGlowing) {
     model.materials.filamentMat.emissive = glowColor;
     model.materials.filamentMat.color.copy(glowColor);
-    model.materials.filamentMat.emissiveIntensity = incandescenceIntensity * 3.5;
+    model.materials.filamentMat.emissiveIntensity = incandescenceIntensity * filamentEmissiveScale;
     model.bulbLight.color = glowColor;
-    model.bulbLight.intensity = incandescenceIntensity * 18.0;
+    model.bulbLight.intensity = incandescenceIntensity * bulbLightScale;
   } else {
     model.materials.filamentMat.emissiveIntensity = 0;
     model.bulbLight.intensity = 0;
@@ -304,7 +305,7 @@ export function updateEdisonBulbKinematics(
   if (showGasMolecules && vacuumTorr > 1e-4) {
     model.gasPoints.visible = true;
     const gPos = model.gasPositions;
-    const thermalJitter = (filamentTempKelvin / 300) * 0.4 * dt;
+    const thermalJitter = thermalJitterPerS * dt;
     for (let i = 0; i < model.gasCount; i++) {
       const idx = i * 3;
       const phase = timeSec * 2.0 + i;

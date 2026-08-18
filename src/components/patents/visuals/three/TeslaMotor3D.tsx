@@ -1,19 +1,16 @@
 "use client";
 
-import { Activity, Camera, Eye, EyeOff, RotateCcw, Volume2, VolumeX, Zap } from "lucide-react";
+import { Camera, Eye, EyeOff, Layers, RotateCcw, Volume2, VolumeX, Zap } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import * as THREE from "three";
-import { HudText } from "@/components/ui/LatexRenderer";
-import { FrankenSimEngine } from "@/physics/engine";
-import { TESLA_FIELD_POLES, teslaBAt, teslaFieldDisplayOmegaRadPerS } from "@/physics/teslaKernel";
-import { useFrankenSimPhysics } from "@/physics/useFrankenSimPhysics";
+import { stepTeslaMotorFig9, teslaBAt } from "@/physics/teslaKernel";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { soundEngine } from "@/utils/soundEngine";
 import { createThreeStudioScene, type StudioContext } from "./ThreeStudioScene";
-import { buildTeslaMotorModel } from "./teslaMotorModel";
+import { buildTeslaMotorModel, updateTeslaMotorKinematics } from "./teslaMotorModel";
 import { useLiveSimParams } from "./useLiveSimParams";
 
-type CameraPreset = "iso" | "stator_coils" | "squirrel_cage" | "shaft_drive" | "top";
+type CameraPreset = "iso" | "stator_coils" | "disk" | "shaft" | "generator" | "top";
 
 export function TeslaMotor3D() {
   const containerRef = useRef<HTMLDivElement>(null);
@@ -21,36 +18,26 @@ export function TeslaMotor3D() {
   // Electrical & Mechanical Simulation State
   const { params, updateParam } = usePatentPhysics("us-381968-tesla-motor");
   const [showUiOverlay, setShowUiOverlay] = useState<boolean>(true);
+  const [isCutaway, setIsCutaway] = useState<boolean>(false);
   const acFrequencyHz = params.frequency ?? 60;
   const phaseCount = (params.phaseCount as 2 | 3) ?? 2;
-  const appliedLoadTorqueNm = params.loadTorque ?? 38.5;
-  const [showMagneticFlux, setShowMagneticFlux] = useState<boolean>(true);
+  // The shared phase selector chooses a printed arrangement. It does not turn
+  // Fig. 9's two-circuit synchronous-disk relation into a general three-phase law.
+  const sourceFigure = phaseCount === 3 ? "Fig. 13" : "Fig. 9";
+  const [showMagneticFlux] = useState<boolean>(true);
   const [showCalloutPins, setShowCalloutPins] = useState<boolean>(false);
   const [activeCamera, setActiveCamera] = useState<CameraPreset>("iso");
   const isPlayingAudio = (params.acHum ?? 0) === 1;
 
-  // Electromechanical Induction Physics Calculations (FrankenSim Engine)
-  const fieldPoles = TESLA_FIELD_POLES;
-  const polePairs = fieldPoles / 2;
-  const emPhysics = FrankenSimEngine.stepTeslaMotor(acFrequencyHz, fieldPoles, appliedLoadTorqueNm);
-  const synchronousSpeedRpm = emPhysics.synchronousRpm;
-  const slip = emPhysics.slipFraction;
-  const rotorSpeedRpm = emPhysics.rotorRpm;
-  const electricalPowerWatts = emPhysics.electricalInputWatts;
-  const rotorInducedCurrentAmps = Math.round(emPhysics.currentAmperes);
-
-  useFrankenSimPhysics("us-381968-tesla-motor", {
-    domain: "electromagnetics_flux",
-    em: emPhysics,
-  });
+  const apparatus = stepTeslaMotorFig9(acFrequencyHz);
 
   const live = useLiveSimParams({
     acFrequencyHz,
-    polePairs,
-    slip,
+    phaseCount,
     showMagneticFlux,
+    isCutaway,
     isPlayingAudio,
-    fieldDisplayOmegaRadPerS: teslaFieldDisplayOmegaRadPerS(acFrequencyHz),
+    fieldDisplayOmegaRadPerS: apparatus.fieldDisplayOmegaRadPerS,
   });
 
   const controlsRef = useRef<StudioContext["controls"] | null>(null);
@@ -71,13 +58,17 @@ export function TeslaMotor3D() {
         camera.position.set(0, 4.2, 5.8);
         controls.target.set(0, 0, 0);
         break;
-      case "squirrel_cage":
+      case "disk":
         camera.position.set(0, 1.8, 3.8);
         controls.target.set(0, -0.4, 0);
         break;
-      case "shaft_drive":
+      case "shaft":
         camera.position.set(5.5, 1.5, 3.5);
         controls.target.set(2.0, -0.4, 0);
+        break;
+      case "generator":
+        camera.position.set(-5.5, 2.5, 3.5);
+        controls.target.set(-2.5, 0.5, 0);
         break;
       case "top":
         camera.position.set(0, 11.5, 0.1);
@@ -90,14 +81,14 @@ export function TeslaMotor3D() {
   // Web Audio AC Motor 60Hz Harmonic Sound
   useEffect(() => {
     if (isPlayingAudio) {
-      soundEngine.playTeslaMotorHum(acFrequencyHz, rotorSpeedRpm);
+      soundEngine.playTeslaMotorHum(acFrequencyHz, apparatus.diskRpm);
     } else {
       soundEngine.stopContinuousTone();
     }
     return () => {
       soundEngine.stopContinuousTone();
     };
-  }, [isPlayingAudio, acFrequencyHz, rotorSpeedRpm]);
+  }, [isPlayingAudio, acFrequencyHz, apparatus.diskRpm]);
 
   useEffect(() => {
     const container = containerRef.current;
@@ -114,8 +105,10 @@ export function TeslaMotor3D() {
     controlsRef.current = controls;
 
     // --- 3D STATOR & ROTOR ASSEMBLY ---
-    const model = buildTeslaMotorModel(phaseCount);
-    scene.add(model.rootGroup);
+    const fig9Model = buildTeslaMotorModel(2);
+    const fig13Model = buildTeslaMotorModel(3);
+    fig13Model.rootGroup.visible = false;
+    scene.add(fig9Model.rootGroup, fig13Model.rootGroup);
 
     // --- ROTATING B-FIELD VECTOR ARROW ---
     const bFieldArrow = new THREE.ArrowHelper(
@@ -130,63 +123,52 @@ export function TeslaMotor3D() {
 
     // --- RENDER LOOP & REAL-TIME PHYSICS SIMULATION ---
     let reqId: number;
-    let renderedSteps = 0;
     let bFieldAngle = 0;
+    let lastFrameTimeMs: number | undefined;
 
-    const animate = () => {
+    const animate = (frameTimeMs: number) => {
       reqId = requestAnimationFrame(animate);
-      renderedSteps += 1;
-      const delta = 1 / 60;
-      const elapsed = renderedSteps * (1 / 60);
+      const delta =
+        lastFrameTimeMs === undefined ? 0 : Math.min((frameTimeMs - lastFrameTimeMs) / 1000, 0.1);
+      lastFrameTimeMs = frameTimeMs;
       const p = live.current;
+      const activePhaseCount = p.phaseCount === 3 ? 3 : 2;
+      const model = activePhaseCount === 3 ? fig13Model : fig9Model;
+      fig9Model.rootGroup.visible = activePhaseCount === 2;
+      fig13Model.rootGroup.visible = activePhaseCount === 3;
 
       // Electrical ω shown at 1/20 so a 60 Hz field is visible.
-      const omegaDisplay =
-        p.fieldDisplayOmegaRadPerS ?? teslaFieldDisplayOmegaRadPerS(p.acFrequencyHz);
+      const omegaDisplay = p.fieldDisplayOmegaRadPerS;
       bFieldAngle += omegaDisplay * delta;
-      const field = teslaBAt(bFieldAngle, phaseCount);
+      const field = teslaBAt(bFieldAngle, activePhaseCount);
       bFieldArrow.setDirection(new THREE.Vector3(field.bx, 0, field.by));
 
-      const omegaRotor = omegaDisplay * (1 - p.slip);
-      model.rotorGroup.rotation.y += omegaRotor * delta;
+      updateTeslaMotorKinematics(
+        model,
+        delta,
+        omegaDisplay,
+        bFieldAngle,
+        activePhaseCount,
+        p.showMagneticFlux,
+        p.isCutaway,
+      );
 
-      for (const item of model.coilMeshes) {
-        const phaseOffset = item.phaseIdx * (phaseCount === 2 ? Math.PI / 2 : (2 * Math.PI) / 3);
-        const currentI = Math.sin(elapsed * p.acFrequencyHz * 0.5 + phaseOffset);
-        const mat = item.mesh.material as THREE.MeshStandardMaterial;
-        mat.emissive = new THREE.Color(0xf59e0b);
-        mat.emissiveIntensity = Math.abs(currentI) * 0.9;
-      }
-
-      const fPos = model.fluxPositions;
-      for (let i = 0; i < model.fluxCount; i++) {
-        const idx = i * 3;
-        const x = fPos[idx];
-        const z = fPos[idx + 2];
-        const r = Math.sqrt(x * x + z * z);
-        let curAngle = Math.atan2(z, x);
-        curAngle += omegaDisplay * delta;
-
-        fPos[idx] = Math.cos(curAngle) * r;
-        fPos[idx + 2] = Math.sin(curAngle) * r;
-      }
-      model.fluxPoints.geometry.attributes.position.needsUpdate = true;
-      model.fluxPoints.visible = p.showMagneticFlux;
       bFieldArrow.visible = p.showMagneticFlux;
 
       controls.update();
       renderer.render(scene, camera);
     };
 
-    animate();
+    reqId = requestAnimationFrame(animate);
 
     return () => {
       cancelAnimationFrame(reqId);
-      model.dispose();
+      fig9Model.dispose();
+      fig13Model.dispose();
       bFieldArrow.dispose();
       studio.dispose();
     };
-  }, [live, phaseCount]);
+  }, [live]);
 
   return (
     <div className="flex flex-col h-full bg-parchment-50/60 dark:bg-ink-950/80 rounded-2xl overflow-hidden border border-parchment-300 dark:border-ink-800 shadow-patent">
@@ -200,51 +182,66 @@ export function TeslaMotor3D() {
             <div className="bg-white/90 dark:bg-ink-900/90 backdrop-blur-md p-2 sm:px-3.5 sm:py-2.5 rounded-xl border border-parchment-300 dark:border-ink-700 shadow-sm">
               <div className="text-[10px] sm:text-[11px] font-sans text-amber-700 dark:text-amber-400 font-bold uppercase tracking-wider flex items-center gap-1.5">
                 <Zap className="w-3 h-3 sm:w-3.5 sm:h-3.5 animate-pulse text-amber-500" />
-                Polyphase Induction Telemetry
+                US 381,968 {sourceFigure} Teaching Model
               </div>
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-3 gap-y-0.5 sm:gap-y-1 mt-1 text-[10px] sm:text-xs font-sans">
-                <div>
-                  <span className="text-ink-600 dark:text-ink-400">
-                    <HudText text="Sync ($n_s$):" />
-                  </span>{" "}
-                  <span className="font-bold text-blue-600 dark:text-blue-400">
-                    {synchronousSpeedRpm} RPM
-                  </span>
+              {phaseCount === 2 ? (
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-3 gap-y-0.5 sm:gap-y-1 mt-1 text-[10px] sm:text-xs font-sans">
+                  <div>
+                    <span className="text-ink-600 dark:text-ink-400">Generator rotation:</span>{" "}
+                    <span className="font-bold text-blue-600 dark:text-blue-400">
+                      {apparatus.generatorRpm} RPM
+                    </span>
+                  </div>
+                  <div>
+                    <span className="text-ink-600 dark:text-ink-400">Pole shift around R:</span>{" "}
+                    <span className="font-bold text-emerald-600 dark:text-emerald-400">
+                      {apparatus.poleShiftRpm} RPM
+                    </span>
+                  </div>
+                  <div>
+                    <span className="text-ink-600 dark:text-ink-400">Disk D:</span>{" "}
+                    <span className="font-bold text-amber-600 dark:text-amber-400">
+                      synchronous relation
+                    </span>
+                  </div>
+                  <div>
+                    <span className="text-ink-600 dark:text-ink-400">Generator contacts:</span>{" "}
+                    <span className="font-bold text-purple-600 dark:text-purple-400">
+                      collector rings and brushes
+                    </span>
+                  </div>
                 </div>
-                <div>
-                  <span className="text-ink-600 dark:text-ink-400">
-                    <HudText text="Rotor ($n_r$):" />
-                  </span>{" "}
-                  <span className="font-bold text-emerald-600 dark:text-emerald-400">
-                    {rotorSpeedRpm} RPM
-                  </span>
+              ) : (
+                <div className="mt-1 text-[10px] sm:text-xs font-sans text-ink-700 dark:text-ink-300">
+                  Fig. 13 compares three independent generator and motor circuits: six motor poles,
+                  three armature coils, six collector rings, and collecting brushes. It is not the
+                  Fig. 9 disk-D synchronous-rate demonstration.
                 </div>
-                <div>
-                  <span className="text-ink-600 dark:text-ink-400">
-                    <HudText text="Slip ($s$):" />
-                  </span>{" "}
-                  <span className="font-bold text-amber-600 dark:text-amber-400">
-                    {(slip * 100).toFixed(1)}%
-                  </span>
-                </div>
-                <div>
-                  <span className="text-ink-600 dark:text-ink-400">Power:</span>{" "}
-                  <span className="font-bold text-purple-600 dark:text-purple-400">
-                    {electricalPowerWatts} W ({(electricalPowerWatts / 745.7).toFixed(1)} HP)
-                  </span>
-                </div>
-              </div>
+              )}
             </div>
 
             <div className="hidden sm:flex bg-white/90 dark:bg-ink-900/90 backdrop-blur-md px-3 py-1.5 rounded-lg border border-parchment-300 dark:border-ink-700 text-[11px] font-sans text-ink-700 dark:text-ink-300 items-center gap-2 max-w-full">
-              <Activity className="w-3.5 h-3.5 text-blue-500 animate-spin-slow shrink-0" />
-              <span className="truncate">Rotor Current: {rotorInducedCurrentAmps} A RMS</span>
+              <span className="truncate">
+                Fig. 15–16 is the distinct source variant that dispenses with sliding contacts.
+              </span>
             </div>
           </div>
         )}
 
-        {/* Top Right Tool Bar (Toggle UI, Audio, Pins, Reset) */}
+        {/* Top Right Tool Bar (Toggle UI, Audio, Pins, Cutaway, Reset) */}
         <div className="absolute top-3 right-3 sm:top-4 sm:right-4 z-10 flex gap-1.5 sm:gap-2">
+          <button
+            type="button"
+            onClick={() => setIsCutaway(!isCutaway)}
+            title={isCutaway ? "Switch to Solid Stator" : "Switch to Stator Cutaway"}
+            className={`p-1.5 sm:p-2.5 rounded-xl backdrop-blur-md border transition-colors shadow-sm ${
+              isCutaway
+                ? "bg-amber-600 text-white border-amber-700 shadow-md ring-2 ring-amber-500/30"
+                : "bg-white/90 dark:bg-ink-900/90 border-parchment-300 dark:border-ink-700 text-ink-700 dark:text-parchment-300 hover:bg-parchment-100"
+            }`}
+          >
+            <Layers className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
+          </button>
           <button
             type="button"
             onClick={() => setShowUiOverlay(!showUiOverlay)}
@@ -313,8 +310,9 @@ export function TeslaMotor3D() {
               [
                 ["iso", "Isometric"],
                 ["stator_coils", "Stator Coils"],
-                ["squirrel_cage", "Rotor & Bars"],
-                ["shaft_drive", "Shaft & Pulley"],
+                ["disk", "Magnetic Disk D"],
+                ["shaft", "Axis a"],
+                ["generator", "Generator G"],
                 ["top", "Plan View"],
               ] as const
             ).map(([preset, label]) => (

@@ -225,11 +225,12 @@ export function updateNobelDynamiteKinematics(
   dt: number,
   timeSec: number,
   isFuseLit: boolean,
-  detonationVelocityMps: number,
+  shockwaveGlow: number,
+  stickDisplayOmegaRadPerS: number,
   isCutaway: boolean,
 ) {
   // 1. Slow presentation rotation
-  nodes.stickGroup.rotation.y += dt * 0.2;
+  nodes.stickGroup.rotation.y += dt * stickDisplayOmegaRadPerS;
 
   // 2. Pulse Fuse Spark when lit
   if (isFuseLit) {
@@ -242,7 +243,7 @@ export function updateNobelDynamiteKinematics(
     const scale = 1.0 + wave * 1.5;
     nodes.shockwaveMesh.scale.set(scale, scale, scale);
     materials.shockwaveMat.opacity = Math.max(0, 0.4 - wave * 0.35);
-    materials.shockwaveMat.emissiveIntensity = 1.0 + (detonationVelocityMps / 6000) * 1.5;
+    materials.shockwaveMat.emissiveIntensity = shockwaveGlow;
   } else {
     materials.sparkMat.opacity = 0;
     materials.kieselguhrMatrix.emissiveIntensity = 0;

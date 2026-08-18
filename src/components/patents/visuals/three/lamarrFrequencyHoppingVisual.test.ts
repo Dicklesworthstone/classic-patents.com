@@ -2,7 +2,10 @@ import { describe, expect, test } from "bun:test";
 import { readFileSync } from "node:fs";
 import { join } from "node:path";
 import { FrankenSimEngine } from "@/physics/engine";
-import { buildLamarrFrequencyHoppingModel } from "./lamarrFrequencyHoppingModel";
+import {
+  buildLamarrFrequencyHoppingModel,
+  updateLamarrFrequencyHoppingKinematics,
+} from "./lamarrFrequencyHoppingModel";
 
 const VISUALS_DIRECTORY = join(process.cwd(), "src", "components", "patents", "visuals");
 
@@ -20,6 +23,8 @@ describe("US 2,292,387 Hedy Lamarr & George Antheil Secret Communication System 
     expect(modelSource).not.toContain("useGLTF");
     expect(modelSource).not.toContain(".gltf");
     expect(modelSource).not.toContain(".glb");
+    expect(modelSource).toContain("buildLamarrFrequencyHoppingModel");
+    expect(modelSource).toContain("updateLamarrFrequencyHoppingKinematics");
     expect(threeSource).not.toContain("useGLTF");
   });
 
@@ -44,9 +49,10 @@ describe("US 2,292,387 Hedy Lamarr & George Antheil Secret Communication System 
       "utf8",
     );
 
-    for (const preset of ["iso", "roll", "waterfall", "escapement", "torpedo"]) {
+    for (const preset of ["iso", "roll", "waterfall", "escapement", "torpedo", "top"]) {
       expect(threeSource).toContain(preset);
     }
+    expect(threeSource).toContain("isCutaway");
   });
 
   test("computes genuine processing gain and anti-jamming margin in SI / dB units", () => {
@@ -57,7 +63,7 @@ describe("US 2,292,387 Hedy Lamarr & George Antheil Secret Communication System 
     expect(result.spreadSpectrumBandwidthMhz).toBeLessThan(50);
   });
 
-  test("builds and articulates procedural torpedo bay, twin reels, paper roll web, sensing comb, and 88-bar waterfall correctly", () => {
+  test("builds and articulates procedural torpedo bay, twin reels, paper roll web, sensing comb, and waterfall correctly", () => {
     const model = buildLamarrFrequencyHoppingModel();
     expect(model.root.children.length).toBeGreaterThan(0);
     expect(model.apparatusGroup).toBeDefined();
@@ -66,12 +72,13 @@ describe("US 2,292,387 Hedy Lamarr & George Antheil Secret Communication System 
     expect(model.paperWeb).toBeDefined();
     expect(model.comb).toBeDefined();
     expect(model.spectrumBarsGroup).toBeDefined();
-    expect(model.barMeshes.length).toBe(88);
+    expect(model.barMeshes.length).toBe(44);
     expect(model.hopPoints).toBeDefined();
 
-    // Test kinematics update
-    model.updateKinematics(1 / 60, 44, 88, true, 26);
-    expect(model.barMeshes[44].scale.y).toBeGreaterThan(1.0);
+    // Test kinematics update & cutaway
+    updateLamarrFrequencyHoppingKinematics(model, 1 / 60, 22, 44, true, 13, true);
+    expect(model.barMeshes[22].scale.y).toBeGreaterThan(1.0);
+    expect(model.materials.torpedoBayMat.opacity).toBe(0.35);
 
     model.dispose();
   });

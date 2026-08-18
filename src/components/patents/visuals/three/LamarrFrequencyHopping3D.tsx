@@ -1,21 +1,32 @@
 "use client";
 
-import { Camera, Eye, EyeOff, Radio, RotateCcw, Shield, Volume2, VolumeX, Zap } from "lucide-react";
+import {
+  Camera,
+  Eye,
+  EyeOff,
+  Layers,
+  Radio,
+  RotateCcw,
+  Shield,
+  Volume2,
+  VolumeX,
+  Zap,
+} from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import type * as THREE from "three";
 import { FrankenSimEngine } from "@/physics/engine";
 import { useFrankenSimPhysics } from "@/physics/useFrankenSimPhysics";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
-import { createLcg } from "@/utils/lcg";
 import { soundEngine } from "@/utils/soundEngine";
-import { buildLamarrFrequencyHoppingModel } from "./lamarrFrequencyHoppingModel";
+import {
+  buildLamarrFrequencyHoppingModel,
+  updateLamarrFrequencyHoppingKinematics,
+} from "./lamarrFrequencyHoppingModel";
 import { createThreeStudioScene, type StudioContext } from "./ThreeStudioScene";
 import { useLiveSimParams } from "./useLiveSimParams";
 import { usePatentAudio } from "./usePatentAudio";
 
-const lcg = createLcg(2278);
-
-type CameraPreset = "iso" | "roll" | "waterfall" | "escapement" | "torpedo";
+type CameraPreset = "iso" | "roll" | "waterfall" | "escapement" | "torpedo" | "top";
 
 export function LamarrFrequencyHopping3D() {
   const containerRef = useRef<HTMLDivElement>(null);
@@ -23,6 +34,7 @@ export function LamarrFrequencyHopping3D() {
   // Spread Spectrum State Controls
   const { params } = usePatentPhysics("us-2292387-lamarr-frequency-hopping");
   const [showUiOverlay, setShowUiOverlay] = useState<boolean>(true);
+  const [isCutaway, setIsCutaway] = useState<boolean>(false);
   const carrierChannelsCount = params.channels ?? 88;
   const hopRateHopsPerSec = params.hopRate ?? 4;
   const isJammingActive = params.isJammingActive !== 0;
@@ -72,6 +84,7 @@ export function LamarrFrequencyHopping3D() {
     hopRateHopsPerSec,
     isJammingActive,
     carrierChannelsCount,
+    isCutaway,
     jamChannel: params.jamChannel ?? Math.floor(carrierChannelsCount * 0.3),
     isAudioMuted,
   });
@@ -105,6 +118,10 @@ export function LamarrFrequencyHopping3D() {
       case "torpedo":
         camera.position.set(8, 3, 9);
         controls.target.set(0, 0.5, 0);
+        break;
+      case "top":
+        camera.position.set(0, 10.5, 0.1);
+        controls.target.set(0, 0, 0);
         break;
     }
     controls.update();
@@ -168,7 +185,15 @@ export function LamarrFrequencyHopping3D() {
         Math.max(0, Math.round(p.jamChannel ?? liveChannels * 0.3) - 1),
       );
 
-      model.updateKinematics(delta, activeChan, liveChannels, p.isJammingActive, jamCenter);
+      updateLamarrFrequencyHoppingKinematics(
+        model,
+        delta,
+        activeChan,
+        liveChannels,
+        p.isJammingActive,
+        jamCenter,
+        p.isCutaway,
+      );
 
       controls.update();
       renderer.render(scene, camera);
@@ -234,8 +259,20 @@ export function LamarrFrequencyHopping3D() {
           </div>
         )}
 
-        {/* Top Right Tool Bar (Toggle UI, Audio, Pins, Reset) */}
+        {/* Top Right Tool Bar (Toggle UI, Audio, Pins, Cutaway, Reset) */}
         <div className="absolute top-3 right-3 sm:top-4 sm:right-4 z-10 flex gap-1.5 sm:gap-2">
+          <button
+            type="button"
+            onClick={() => setIsCutaway(!isCutaway)}
+            title={isCutaway ? "Switch to Solid Torpedo Bay" : "Switch to Torpedo Bay Cutaway"}
+            className={`p-1.5 sm:p-2.5 rounded-xl backdrop-blur-md border transition-colors shadow-sm ${
+              isCutaway
+                ? "bg-amber-600 text-white border-amber-700 shadow-md ring-2 ring-amber-500/30"
+                : "bg-white/90 dark:bg-ink-900/90 border-parchment-300 dark:border-ink-700 text-ink-700 dark:text-parchment-300 hover:bg-parchment-100"
+            }`}
+          >
+            <Layers className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
+          </button>
           <button
             type="button"
             onClick={() => setShowUiOverlay(!showUiOverlay)}
@@ -303,6 +340,7 @@ export function LamarrFrequencyHopping3D() {
                 ["waterfall", "RF Waterfall"],
                 ["escapement", "Escapement"],
                 ["torpedo", "Torpedo Bay"],
+                ["top", "Top View"],
               ] as const
             ).map(([id, label]) => (
               <button

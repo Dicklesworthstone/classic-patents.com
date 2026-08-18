@@ -2,8 +2,6 @@ import * as THREE from "three";
 import { createLcg } from "@/utils/lcg";
 import { createGlowPointTexture } from "./ThreeStudioScene";
 
-const lcg = createLcg(1838);
-
 export interface EricssonPropellerModel {
   rootGroup: THREE.Group;
   hullGroup: THREE.Group;
@@ -28,6 +26,7 @@ export interface EricssonPropellerModel {
 }
 
 export function buildEricssonPropellerModel(): EricssonPropellerModel {
+  const lcg = createLcg(1838);
   const rootGroup = new THREE.Group();
   const materialsToDispose: THREE.Material[] = [];
   const geometriesToDispose: THREE.BufferGeometry[] = [];
@@ -305,4 +304,53 @@ export function buildEricssonPropellerModel(): EricssonPropellerModel {
     },
     dispose,
   };
+}
+
+/**
+ * Updates Ericsson contra-rotating propeller drums, wake vortex, and cutaway state.
+ */
+export function updateEricssonPropellerKinematics(
+  model: EricssonPropellerModel,
+  dt: number,
+  shaftOmegaRadPerS: number,
+  wakeSwirlScale: number,
+  showWake: boolean,
+  isCutaway = false,
+): void {
+  // Counter-rotating propeller drums (US Patent 588)
+  const dAngle = shaftOmegaRadPerS * dt;
+  model.forwardDrumGroup.rotation.x += dAngle;
+  model.aftDrumGroup.rotation.x -= dAngle;
+
+  if (showWake) {
+    model.wakePoints.visible = true;
+    const wPos = model.wakePositions;
+    const flowVelocity = 6.5 * dt;
+    const swirlVelocity = shaftOmegaRadPerS * 0.08 * dt * wakeSwirlScale;
+
+    for (let i = 0; i < model.wakeCount; i++) {
+      const idx = i * 3;
+      wPos[idx] += flowVelocity; // Travel downstream (+X)
+
+      // Swirl vortex
+      const y = wPos[idx + 1];
+      const z = wPos[idx + 2];
+      wPos[idx + 1] = y * Math.cos(swirlVelocity) - z * Math.sin(swirlVelocity);
+      wPos[idx + 2] = y * Math.sin(swirlVelocity) + z * Math.cos(swirlVelocity);
+
+      // Recycle downstream particles
+      if (wPos[idx] > 10.5) {
+        wPos[idx] = 2.2;
+      }
+    }
+    model.wakePoints.geometry.attributes.position.needsUpdate = true;
+  } else {
+    model.wakePoints.visible = false;
+  }
+
+  // Cutaway mode
+  model.materials.bronzeGunmetal.opacity = isCutaway ? 0.45 : 1.0;
+  model.materials.bronzeGunmetal.transparent = isCutaway;
+  model.materials.shipHullWood.opacity = isCutaway ? 0.35 : 1.0;
+  model.materials.shipHullWood.transparent = isCutaway;
 }

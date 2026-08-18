@@ -45,6 +45,10 @@ export const EdisonBulb3D = memo(() => {
     vacuumTorr,
     isCutaway,
     isAudioMuted,
+    incandescenceIntensity: bulb.incandescenceIntensity,
+    thermalJitterPerS: bulb.thermalJitterPerS,
+    filamentEmissiveScale: bulb.filamentEmissiveScale,
+    bulbLightScale: bulb.bulbLightScale,
   });
 
   const controlsRef = useRef<StudioContext["controls"] | null>(null);
@@ -122,8 +126,11 @@ export const EdisonBulb3D = memo(() => {
         model,
         dt,
         timeSec,
-        p.appliedVoltage,
+        p.incandescenceIntensity,
         p.filamentTempKelvin,
+        p.thermalJitterPerS,
+        p.filamentEmissiveScale,
+        p.bulbLightScale,
         p.vacuumTorr,
         p.showGasMolecules,
         p.isCutaway,

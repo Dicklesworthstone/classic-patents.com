@@ -2,7 +2,7 @@ import { describe, expect, test } from "bun:test";
 import { readFileSync } from "node:fs";
 import { join } from "node:path";
 import { stepCorlissEngine } from "@/physics/catalogKernels";
-import { buildCorlissEngineModel } from "./corlissSteamEngineModel";
+import { buildCorlissEngineModel, updateCorlissEngineKinematics } from "./corlissSteamEngineModel";
 
 const VISUALS_DIRECTORY = join(process.cwd(), "src/components/patents/visuals");
 
@@ -21,6 +21,7 @@ describe("US 6,162 George Corliss Steam Engine visual & kinematics boundary", ()
     expect(threeSource).not.toContain(".glb");
     expect(threeSource).not.toContain(".gltf");
     expect(modelSource).toContain("buildCorlissEngineModel");
+    expect(modelSource).toContain("updateCorlissEngineKinematics");
   });
 
   test("maintains deterministic replay without ambient randomness or private clocks in frame loop", () => {
@@ -45,10 +46,11 @@ describe("US 6,162 George Corliss Steam Engine visual & kinematics boundary", ()
       "utf8",
     );
 
-    for (const preset of ["iso", "wrist_plate", "dashpots", "flywheel", "top"]) {
+    for (const preset of ["iso", "wrist_plate", "dashpots", "flywheel", "governor", "top"]) {
       expect(threeSource).toContain(preset);
     }
 
+    expect(threeSource).toContain("isCutaway");
     expect(threeSource).toContain("Corliss Steam Engine 3D");
   });
 
@@ -60,17 +62,22 @@ describe("US 6,162 George Corliss Steam Engine visual & kinematics boundary", ()
   });
 
   test("builds and articulates procedural wrist plate, 4 rotary valves, dashpots, and governor correctly", () => {
-    const { rootGroup, wristPlate, valveLevers, dashpotRods, governorBalls, materials, dispose } =
-      buildCorlissEngineModel();
+    const model = buildCorlissEngineModel();
 
-    expect(rootGroup.children.length).toBeGreaterThan(4);
-    expect(wristPlate).toBeDefined();
-    expect(valveLevers.length).toBe(4);
-    expect(dashpotRods.length).toBe(2);
-    expect(governorBalls.length).toBe(2);
-    expect(materials.mahogany).toBeDefined();
-    expect(materials.castIron).toBeDefined();
+    expect(model.rootGroup.children.length).toBeGreaterThan(4);
+    expect(model.wristPlate).toBeDefined();
+    expect(model.valveLevers.length).toBe(4);
+    expect(model.dashpotRods.length).toBe(2);
+    expect(model.governorBalls.length).toBe(2);
+    expect(model.materials.mahogany).toBeDefined();
+    expect(model.materials.castIron).toBeDefined();
 
-    dispose();
+    const { strokeX, wristAngle } = updateCorlissEngineKinematics(model, Math.PI / 4, 65, 25, true);
+
+    expect(strokeX).toBeDefined();
+    expect(wristAngle).toBeDefined();
+    expect(model.materials.mahogany.opacity).toBe(0.35);
+
+    model.dispose();
   });
 });

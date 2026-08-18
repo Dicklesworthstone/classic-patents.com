@@ -4,6 +4,7 @@ import {
   Camera,
   Eye,
   EyeOff,
+  Layers,
   RotateCcw,
   Shield,
   Sparkles,
@@ -18,12 +19,12 @@ import { FrankenSimEngine } from "@/physics/engine";
 import { useFrankenSimPhysics } from "@/physics/useFrankenSimPhysics";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { soundEngine } from "@/utils/soundEngine";
-import { buildFermiReactorModel } from "./fermiReactorModel";
+import { buildFermiReactorModel, updateFermiReactorKinematics } from "./fermiReactorModel";
 import { createThreeStudioScene, type StudioContext } from "./ThreeStudioScene";
 import { useLiveSimParams } from "./useLiveSimParams";
 import { usePatentAudio } from "./usePatentAudio";
 
-type CameraPreset = "iso" | "control_rods" | "graphite_core" | "gantry" | "top";
+type CameraPreset = "iso" | "control_rods" | "graphite_core" | "gantry" | "detector" | "top";
 
 export function FermiReactor3D() {
   const containerRef = useRef<HTMLDivElement>(null);
@@ -31,6 +32,7 @@ export function FermiReactor3D() {
   // Nuclear Reactor Kinetics State Controls
   const { params } = usePatentPhysics("us-2708656-fermi-reactor");
   const [showUiOverlay, setShowUiOverlay] = useState<boolean>(true);
+  const [isCutaway, setIsCutaway] = useState<boolean>(false);
   const controlRodWithdrawalPct = params.rodWithdrawal ?? 83.5;
   const moderatorPurityPct = params.moderatorPurity ?? 99.5;
   const fuelEnrichmentPct = params.fuelEnrichmentPct ?? 0.72;
@@ -62,6 +64,7 @@ export function FermiReactor3D() {
     controlRodWithdrawalPct,
     moderatorPurityPct,
     showNeutronCascade,
+    isCutaway,
     kEff,
     geigerIntervalMs: reactorKinetics.geigerIntervalMs,
     isAudioMuted,
@@ -93,6 +96,10 @@ export function FermiReactor3D() {
       case "gantry":
         camera.position.set(0, 7.5, 6.0);
         controls.target.set(0, 4.0, 0);
+        break;
+      case "detector":
+        camera.position.set(5.5, 0.5, 3.2);
+        controls.target.set(2.4, -0.5, 0);
         break;
       case "top":
         camera.position.set(0, 11.0, 0.1);
@@ -133,18 +140,20 @@ export function FermiReactor3D() {
       const delta = 1 / 60;
       const p = live.current;
 
-      model.updateKinematics(
+      updateFermiReactorKinematics(
+        model,
         delta,
         p.controlRodWithdrawalPct,
         Number(p.kEff),
-        p.moderatorPurityPct ?? 99.5,
-        p.neutronDisplaySpeed ?? Number(p.kEff) * 4.0,
+        p.moderatorPurityPct,
+        p.neutronDisplaySpeed,
         p.showNeutronCascade,
+        p.isCutaway,
       );
 
       if (p.showNeutronCascade) {
         geigerClickTimer += delta;
-        const clickInterval = Math.max(0.05, (p.geigerIntervalMs ?? 800) / 1000);
+        const clickInterval = Math.max(0.05, p.geigerIntervalMs / 1000);
         if (geigerClickTimer > clickInterval) {
           geigerClickTimer = 0;
           if (!p.isAudioMuted) {
@@ -227,8 +236,20 @@ export function FermiReactor3D() {
           </div>
         )}
 
-        {/* Top Right Tool Bar (Toggle UI, Audio, Pins, Reset) */}
+        {/* Top Right Tool Bar (Toggle UI, Audio, Pins, Cutaway, Reset) */}
         <div className="absolute top-3 right-3 sm:top-4 sm:right-4 z-10 flex gap-1.5 sm:gap-2">
+          <button
+            type="button"
+            onClick={() => setIsCutaway(!isCutaway)}
+            title={isCutaway ? "Switch to Solid Graphite" : "Switch to Core Cutaway"}
+            className={`p-1.5 sm:p-2.5 rounded-xl backdrop-blur-md border transition-colors shadow-sm ${
+              isCutaway
+                ? "bg-amber-600 text-white border-amber-700 shadow-md ring-2 ring-amber-500/30"
+                : "bg-white/90 dark:bg-ink-900/90 border-parchment-300 dark:border-ink-700 text-ink-700 dark:text-parchment-300 hover:bg-parchment-100"
+            }`}
+          >
+            <Layers className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
+          </button>
           <button
             type="button"
             onClick={() => setShowUiOverlay(!showUiOverlay)}
@@ -295,6 +316,7 @@ export function FermiReactor3D() {
                 ["control_rods", "Cadmium Rods"],
                 ["graphite_core", "Graphite Core"],
                 ["gantry", "Timber Rigging"],
+                ["detector", "BF3 Detector"],
                 ["top", "Core Grid"],
               ] as const
             ).map(([id, label]) => (

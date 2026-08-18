@@ -149,7 +149,7 @@ export function OttoEngine3D() {
       reqId = requestAnimationFrame(animate);
       const delta = 1 / 60;
       const currentRpm = live.current.isRunning ? live.current.engineRpm : 0;
-      const omega = (currentRpm * 2 * Math.PI) / 60;
+      const omega = live.current.isRunning ? live.current.crankOmegaRadPerS : 0;
 
       if (currentRpm > 0) {
         crankAngle = (crankAngle + omega * delta) % (Math.PI * 4); // 720 deg 4-stroke period

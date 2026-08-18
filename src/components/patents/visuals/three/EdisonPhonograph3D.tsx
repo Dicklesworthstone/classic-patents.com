@@ -20,8 +20,8 @@ type CameraPreset =
   | "iso"
   | "stylus_groove"
   | "tinfoil_cylinder"
-  | "brass_horn"
-  | "flywheel"
+  | "speaking_tube"
+  | "illustrative_drive"
   | "top";
 
 export function EdisonPhonograph3D() {
@@ -71,11 +71,11 @@ export function EdisonPhonograph3D() {
         camera.position.set(-1.8, 1.8, 3.8);
         controls.target.set(-0.4, 0.8, 0);
         break;
-      case "brass_horn":
+      case "speaking_tube":
         camera.position.set(2.8, 3.0, 4.0);
         controls.target.set(0, 1.8, 1.8);
         break;
-      case "flywheel":
+      case "illustrative_drive":
         camera.position.set(-4.5, 2.0, 3.5);
         controls.target.set(-3.5, 0.5, 0);
         break;
@@ -125,7 +125,7 @@ export function EdisonPhonograph3D() {
         model,
         dt,
         timeSec,
-        p.cylinderRpm,
+        p.mandrelOmegaRadPerS,
         p.grooveDepthMicrons,
         p.isCutaway,
       );
@@ -166,8 +166,8 @@ export function EdisonPhonograph3D() {
               ["iso", "Isometric"],
               ["stylus_groove", "Stylus & Diaphragm"],
               ["tinfoil_cylinder", "Tinfoil Cylinder"],
-              ["brass_horn", "Brass Horn"],
-              ["flywheel", "Flywheel"],
+              ["speaking_tube", "Speaking Tube"],
+              ["illustrative_drive", "Illustrative Drive"],
               ["top", "Top"],
             ] as [CameraPreset, string][]
           ).map(([preset, label]) => (
@@ -224,14 +224,28 @@ export function EdisonPhonograph3D() {
         visible={showUiOverlay}
         title="Edison cylinder acoustics"
         chips={[
-          { label: "Mandrel Speed", value: String(cylinderRpm), unit: "rpm" },
-          { label: "Surface Velocity", value: phono.surfaceSpeedCmPerS.toFixed(1), unit: "cm/s" },
-          { label: "Groove Depth", value: phono.grooveDepthMicrons.toFixed(1), unit: "µm" },
-          { label: "Audio Bandwidth", value: String(phono.audioBandwidthHz), unit: "Hz" },
-          { label: "Axial Feed", value: phono.axialTravelMmPerS.toFixed(2), unit: "mm/s" },
-          { label: "ω_mandrel", value: phono.mandrelOmegaRadPerS.toFixed(1), unit: "rad/s" },
+          {
+            label: "Source groove pitch",
+            value: String(phono.sourceGroovesPerInch),
+            unit: "grooves/in",
+          },
+          {
+            label: "Source thread pitch",
+            value: String(phono.sourceThreadsPerInch),
+            unit: "threads/in",
+          },
+          { label: "Illustrative rate", value: String(cylinderRpm), unit: "rpm" },
+          { label: "Model axial display", value: phono.axialTravelMmPerS.toFixed(2), unit: "mm/s" },
+          { label: "Model ω", value: phono.mandrelOmegaRadPerS.toFixed(1), unit: "rad/s" },
         ]}
       />
+      <p className="pointer-events-none absolute bottom-3 left-4 right-4 rounded-lg bg-parchment-950/85 px-3 py-2 text-xs leading-relaxed text-parchment-200">
+        US 200,521 specifies a cylinder, metallic foil or another yielding material, a
+        ten-groove-per-inch helix, a matching ten-thread-per-inch shaft, diaphragms, and clock-work
+        M or another power source. This studio's geometry, materials, drive form, rate, indentation
+        depth, and bandwidth are illustrative display assumptions, not measurements printed in the
+        patent.
+      </p>
     </div>
   );
 }

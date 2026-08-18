@@ -110,7 +110,7 @@ export function GatlingGun3D() {
       model.materials.bronzeReceiver.opacity = p.isCutaway ? 0.35 : 1.0;
       model.materials.bronzeReceiver.transparent = p.isCutaway;
 
-      const omegaRadPerSec = p.crankOmegaRadPerS ?? (p.crankRpm * 2 * Math.PI) / 60;
+      const omegaRadPerSec = p.crankOmegaRadPerS;
       model.barrelClusterGroup.rotation.x += omegaRadPerSec * delta;
       model.crankGroup.rotation.x += omegaRadPerSec * delta;
 

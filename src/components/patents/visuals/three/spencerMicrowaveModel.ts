@@ -24,12 +24,22 @@ export interface SpencerMicrowaveModel {
   spokePoints: THREE.Points;
   spokeGeo: THREE.BufferGeometry;
   spokePos: Float32Array;
+  materials: {
+    copperAnodeMat: THREE.MeshStandardMaterial;
+    cathodeMat: THREE.MeshStandardMaterial;
+    alnicoMagnetMat: THREE.MeshStandardMaterial;
+    darkCavityMat: THREE.MeshStandardMaterial;
+    boreMat: THREE.MeshStandardMaterial;
+    steelMat: THREE.MeshStandardMaterial;
+    spokeMat: THREE.PointsMaterial;
+  };
   updateKinematics: (
     delta: number,
     isOscillating: boolean,
     microwaveFreqMhz: number,
     dielectricLoss: number,
     showSpokeWheel: boolean,
+    isCutaway?: boolean,
   ) => void;
   dispose: () => void;
 }
@@ -98,65 +108,71 @@ export function buildSpencerMicrowaveModel(): SpencerMicrowaveModel {
   // Central Cylindrical Interaction Bore
   const boreGeo = new THREE.CylinderGeometry(1.5, 1.5, 3.42, 36);
   disposables.push(boreGeo);
-  const centerBore = new THREE.Mesh(boreGeo, boreMat);
-  magnetronGroup.add(centerBore);
+  const boreMesh = new THREE.Mesh(boreGeo, boreMat);
+  magnetronGroup.add(boreMesh);
 
-  // 8 Radial Hole-and-Slot Resonant Cavities
+  // 8 Resonant LC Cavity Holes and Slot Necks (Claim 1)
   const numCavities = 8;
-  for (let i = 0; i < numCavities; i++) {
-    const angle = (i * 2 * Math.PI) / numCavities;
-    const holeGeo = new THREE.CylinderGeometry(0.62, 0.62, 3.42, 24);
-    disposables.push(holeGeo);
-    const hole = new THREE.Mesh(holeGeo, darkCavityMat);
-    hole.position.set(Math.cos(angle) * 2.8, 0, Math.sin(angle) * 2.8);
-    magnetronGroup.add(hole);
+  for (let c = 0; c < numCavities; c++) {
+    const angle = (c / numCavities) * Math.PI * 2;
+    const rCavity = 2.75;
+    const x = Math.cos(angle) * rCavity;
+    const z = Math.sin(angle) * rCavity;
 
-    const slotGeo = new THREE.BoxGeometry(1.3, 3.42, 0.18);
+    // Resonant Inductive Cylinder Hole
+    const cavGeo = new THREE.CylinderGeometry(0.72, 0.72, 3.44, 24);
+    disposables.push(cavGeo);
+    const cavMesh = new THREE.Mesh(cavGeo, darkCavityMat);
+    cavMesh.position.set(x, 0, z);
+    magnetronGroup.add(cavMesh);
+
+    // Capacitive Coupling Slot Neck to Center Bore
+    const slotGeo = new THREE.BoxGeometry(0.24, 3.44, 1.35);
     disposables.push(slotGeo);
-    const slot = new THREE.Mesh(slotGeo, darkCavityMat);
-    slot.position.set(Math.cos(angle) * 2.1, 0, Math.sin(angle) * 2.1);
-    slot.rotation.y = -angle;
-    magnetronGroup.add(slot);
+    const slotMesh = new THREE.Mesh(slotGeo, darkCavityMat);
+    slotMesh.position.set(Math.cos(angle) * 2.05, 0, Math.sin(angle) * 2.05);
+    slotMesh.rotation.y = -angle;
+    magnetronGroup.add(slotMesh);
   }
 
-  // Double Pi-Mode Strapping Rings
-  [-1.6, 1.6].forEach((yPos) => {
-    const innerRingGeo = new THREE.TorusGeometry(1.8, 0.05, 8, 36);
-    disposables.push(innerRingGeo);
-    const innerRing = new THREE.Mesh(innerRingGeo, copperAnodeMat);
-    innerRing.rotation.x = Math.PI / 2;
-    innerRing.position.y = yPos;
-    magnetronGroup.add(innerRing);
-
-    const outerRingGeo = new THREE.TorusGeometry(2.3, 0.05, 8, 36);
-    disposables.push(outerRingGeo);
-    const outerRing = new THREE.Mesh(outerRingGeo, copperAnodeMat);
-    outerRing.rotation.x = Math.PI / 2;
-    outerRing.position.y = yPos;
-    magnetronGroup.add(outerRing);
+  // Upper and Lower Pi-Mode Copper Strapping Rings
+  [-1.75, 1.75].forEach((yRing) => {
+    const strapGeo = new THREE.TorusGeometry(2.35, 0.08, 12, 48);
+    disposables.push(strapGeo);
+    const strapMesh = new THREE.Mesh(strapGeo, copperAnodeMat);
+    strapMesh.rotation.x = Math.PI / 2;
+    strapMesh.position.y = yRing;
+    magnetronGroup.add(strapMesh);
   });
 
-  // Central Thermionic Cathode Rod
-  const cathodeGeo = new THREE.CylinderGeometry(0.38, 0.38, 4.2, 24);
+  // Central Thermionic Barium Oxide Cathode Emitter
+  const cathodeGeo = new THREE.CylinderGeometry(0.42, 0.42, 4.4, 24);
   disposables.push(cathodeGeo);
   const cathodeMesh = new THREE.Mesh(cathodeGeo, cathodeMat);
-  cathodeMesh.castShadow = true;
   magnetronGroup.add(cathodeMesh);
 
-  // End Hat Shields
-  [-2.1, 2.1].forEach((yEnd) => {
-    const hatGeo = new THREE.CylinderGeometry(0.65, 0.65, 0.12, 24);
-    disposables.push(hatGeo);
-    const endHat = new THREE.Mesh(hatGeo, steelMat);
-    endHat.position.y = yEnd;
-    magnetronGroup.add(endHat);
-  });
+  // Output Waveguide Coupling Loop (Claim 2)
+  const waveguideGroup = new THREE.Group();
+  waveguideGroup.position.set(3.8, 0, 0);
 
-  // Alnico Permanent Magnet Pole Shoes
-  [-3.2, 3.2].forEach((yMag) => {
-    const magGeo = new THREE.CylinderGeometry(3.5, 4.2, 1.8, 36);
-    disposables.push(magGeo);
-    const poleShoe = new THREE.Mesh(magGeo, alnicoMagnetMat);
+  const guideGeo = new THREE.BoxGeometry(3.5, 2.2, 1.4);
+  disposables.push(guideGeo);
+  const guideMesh = new THREE.Mesh(guideGeo, steelMat);
+  guideMesh.position.x = 1.75;
+  waveguideGroup.add(guideMesh);
+
+  const loopGeo = new THREE.TorusGeometry(0.55, 0.06, 8, 24);
+  disposables.push(loopGeo);
+  const loopMesh = new THREE.Mesh(loopGeo, copperAnodeMat);
+  loopMesh.rotation.y = Math.PI / 2;
+  waveguideGroup.add(loopMesh);
+  magnetronGroup.add(waveguideGroup);
+
+  // Permanent Alnico Magnet Pole Shoes (Axial B-Field)
+  [-2.8, 2.8].forEach((yMag) => {
+    const poleGeo = new THREE.CylinderGeometry(4.6, 4.6, 1.2, 36);
+    disposables.push(poleGeo);
+    const poleShoe = new THREE.Mesh(poleGeo, alnicoMagnetMat);
     poleShoe.position.y = yMag;
     magnetronGroup.add(poleShoe);
   });
@@ -197,23 +213,23 @@ export function buildSpencerMicrowaveModel(): SpencerMicrowaveModel {
   const spokePoints = new THREE.Points(spokeGeo, spokeMat);
   magnetronGroup.add(spokePoints);
 
-  // ==========================================
-  // KINEMATICS & RF ROTATION UPDATE FUNCTION
-  // ==========================================
   const updateKinematics = (
     delta: number,
     isOscillating: boolean,
-    microwaveFreqMhz: number,
-    dielectricLoss: number,
+    spokeDisplayOmegaRadPerS: number,
+    spokeOpacity: number,
     showSpokeWheel: boolean,
+    isCutaway = false,
   ) => {
-    if (isOscillating) {
-      spokePoints.visible = showSpokeWheel;
-      spokePoints.rotation.y += delta * (microwaveFreqMhz / 2450) * 4.5;
-      spokeMat.opacity = Math.min(0.95, 0.25 + (dielectricLoss / 2000) * 0.7);
-    } else {
-      spokePoints.visible = false;
-    }
+    updateSpencerMicrowaveKinematics(
+      model,
+      delta,
+      isOscillating,
+      spokeDisplayOmegaRadPerS,
+      spokeOpacity,
+      showSpokeWheel,
+      isCutaway,
+    );
   };
 
   const dispose = () => {
@@ -222,7 +238,7 @@ export function buildSpencerMicrowaveModel(): SpencerMicrowaveModel {
     }
   };
 
-  return {
+  const model: SpencerMicrowaveModel = {
     root,
     magnetronGroup,
     anodeOuter,
@@ -230,7 +246,45 @@ export function buildSpencerMicrowaveModel(): SpencerMicrowaveModel {
     spokePoints,
     spokeGeo,
     spokePos,
+    materials: {
+      copperAnodeMat,
+      cathodeMat,
+      alnicoMagnetMat,
+      darkCavityMat,
+      boreMat,
+      steelMat,
+      spokeMat,
+    },
     updateKinematics,
     dispose,
   };
+
+  return model;
+}
+
+/**
+ * Updates Percy Spencer cavity magnetron electron spoke wheel rotation, RF dielectric loss glow, and anode block cutaway.
+ */
+export function updateSpencerMicrowaveKinematics(
+  model: SpencerMicrowaveModel,
+  delta: number,
+  isOscillating: boolean,
+  spokeDisplayOmegaRadPerS: number,
+  spokeOpacity: number,
+  showSpokeWheel: boolean,
+  isCutaway = false,
+): void {
+  if (isOscillating) {
+    model.spokePoints.visible = showSpokeWheel;
+    model.spokePoints.rotation.y += delta * spokeDisplayOmegaRadPerS;
+    model.materials.spokeMat.opacity = spokeOpacity;
+  } else {
+    model.spokePoints.visible = false;
+  }
+
+  // Cutaway mode: make copper anode block and magnet pole shoes translucent
+  model.materials.copperAnodeMat.opacity = isCutaway ? 0.35 : 1.0;
+  model.materials.copperAnodeMat.transparent = isCutaway;
+  model.materials.alnicoMagnetMat.opacity = isCutaway ? 0.35 : 1.0;
+  model.materials.alnicoMagnetMat.transparent = isCutaway;
 }

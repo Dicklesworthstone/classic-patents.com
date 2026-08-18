@@ -43,7 +43,7 @@ describe("US 200,521 Thomas Edison Tinfoil Phonograph visual & acoustics boundar
     }
   });
 
-  test("exposes authentic camera presets and cutaway mode for phonograph observation", () => {
+  test("exposes source-linked views and an explicitly illustrative drive view", () => {
     const threeSource = readFileSync(
       join(VISUALS_DIRECTORY, "three", "EdisonPhonograph3D.tsx"),
       "utf8",
@@ -53,8 +53,8 @@ describe("US 200,521 Thomas Edison Tinfoil Phonograph visual & acoustics boundar
       "iso",
       "stylus_groove",
       "tinfoil_cylinder",
-      "brass_horn",
-      "flywheel",
+      "speaking_tube",
+      "illustrative_drive",
       "top",
     ]) {
       expect(threeSource).toContain(preset);
@@ -64,28 +64,58 @@ describe("US 200,521 Thomas Edison Tinfoil Phonograph visual & acoustics boundar
     expect(threeSource).toContain("Edison Phonograph 3D");
   });
 
-  test("computes genuine cylinder surface velocity, groove depth, and axial lead-screw pitch in SI units", () => {
+  test("keeps the source-specified pitch distinct from illustrative display assumptions", () => {
     const result = stepEdisonPhonograph({
       mandrelRpm: 60,
       voiceVolumeDb: 75,
     });
-    expect(result.surfaceSpeedCmPerS).toBeGreaterThan(15);
-    expect(result.grooveDepthMicrons).toBeGreaterThan(5);
-    expect(result.axialTravelMmPerS).toBeGreaterThan(1);
-    expect(result.audioBandwidthHz).toBeGreaterThan(1000);
+    expect(result.sourceGroovesPerInch).toBe(10);
+    expect(result.sourceThreadsPerInch).toBe(10);
+    expect(result.leadScrewPitchMm).toBe(2.54);
+    expect(result.modelMandrelDiameterInches).toBe(4);
   });
 
-  test("builds and articulates procedural mahogany plinth, tinfoil cylinder, diaphragm, stylus, and horn correctly", () => {
+  test("builds a source-linked cylinder and labels unsupported display geometry as illustrative", () => {
     const model = buildEdisonPhonographModel();
     expect(model.rootGroup.children.length).toBeGreaterThan(0);
     expect(model.cylinderGroup).toBeDefined();
     expect(model.soundBoxGroup).toBeDefined();
     expect(model.stylus).toBeDefined();
-    expect(model.flywheel).toBeDefined();
+    expect(model.rotationReferenceWheel).toBeDefined();
 
-    updateEdisonPhonographKinematics(model, 0.016, 0.5, 60, 25, true);
-    expect(model.materials.mahogany.transparent).toBe(true);
+    updateEdisonPhonographKinematics(model, 0.016, 0.5, (60 * 2 * Math.PI) / 60, 25, true);
+    expect(model.materials.illustrativeBase.transparent).toBe(true);
 
     model.dispose();
+  });
+
+  test("does not pass model-only material, drive, or acoustics assumptions off as printed facts", () => {
+    const twoDimensionalSource = readFileSync(
+      join(VISUALS_DIRECTORY, "EdisonPhonographSim.tsx"),
+      "utf8",
+    );
+    const threeDimensionalSource = readFileSync(
+      join(VISUALS_DIRECTORY, "three", "EdisonPhonograph3D.tsx"),
+      "utf8",
+    );
+    const modelSource = readFileSync(
+      join(VISUALS_DIRECTORY, "three", "edisonPhonographModel.ts"),
+      "utf8",
+    );
+    const kernelSource = readFileSync(
+      join(process.cwd(), "src", "physics", "catalogKernels.ts"),
+      "utf8",
+    );
+
+    expect(twoDimensionalSource).toContain("Illustrative clock-work rate");
+    expect(twoDimensionalSource).toContain("does not claim");
+    expect(threeDimensionalSource).toContain("illustrative display assumptions");
+    expect(modelSource).toContain("not source claims");
+    expect(kernelSource).toContain("model-only display");
+    for (const unsupportedHistoricalLabel of ["Mica Diaphragm", "Brass Horn", "Flywheel"]) {
+      expect(twoDimensionalSource).not.toContain(unsupportedHistoricalLabel);
+      expect(threeDimensionalSource).not.toContain(unsupportedHistoricalLabel);
+      expect(modelSource).not.toContain(unsupportedHistoricalLabel);
+    }
   });
 });

@@ -2,7 +2,10 @@ import { describe, expect, test } from "bun:test";
 import { readFileSync } from "node:fs";
 import { join } from "node:path";
 import { stepEricssonPropeller } from "@/physics/catalogKernels";
-import { buildEricssonPropellerModel } from "./ericssonPropellerModel";
+import {
+  buildEricssonPropellerModel,
+  updateEricssonPropellerKinematics,
+} from "./ericssonPropellerModel";
 
 const VISUALS_DIRECTORY = join(process.cwd(), "src/components/patents/visuals");
 
@@ -21,6 +24,7 @@ describe("US 588 John Ericsson Screw Propeller visual & hydrodynamics boundary",
     expect(threeSource).not.toContain(".glb");
     expect(threeSource).not.toContain(".gltf");
     expect(modelSource).toContain("buildEricssonPropellerModel");
+    expect(modelSource).toContain("updateEricssonPropellerKinematics");
   });
 
   test("maintains deterministic replay without ambient randomness or private clocks in frame loop", () => {
@@ -45,10 +49,18 @@ describe("US 588 John Ericsson Screw Propeller visual & hydrodynamics boundary",
       "utf8",
     );
 
-    for (const preset of ["iso", "propeller_drum", "helical_blades", "sternpost", "top"]) {
+    for (const preset of [
+      "iso",
+      "propeller_drum",
+      "helical_blades",
+      "sternpost",
+      "rudder",
+      "top",
+    ]) {
       expect(threeSource).toContain(preset);
     }
 
+    expect(threeSource).toContain("isCutaway");
     expect(threeSource).toContain("Ericsson Screw Propeller 3D");
   });
 
@@ -61,26 +73,21 @@ describe("US 588 John Ericsson Screw Propeller visual & hydrodynamics boundary",
   });
 
   test("builds and articulates procedural tandem drums, concentric shafts, and wake particles correctly", () => {
-    const {
-      rootGroup,
-      hullGroup,
-      forwardDrumGroup,
-      aftDrumGroup,
-      innerShaftMesh,
-      outerShaftMesh,
-      materials,
-      dispose,
-    } = buildEricssonPropellerModel();
+    const model = buildEricssonPropellerModel();
 
-    expect(rootGroup.children.length).toBeGreaterThan(3);
-    expect(hullGroup).toBeDefined();
-    expect(forwardDrumGroup).toBeDefined();
-    expect(aftDrumGroup).toBeDefined();
-    expect(innerShaftMesh).toBeDefined();
-    expect(outerShaftMesh).toBeDefined();
-    expect(materials.bronzeGunmetal).toBeDefined();
-    expect(materials.copperSheathing).toBeDefined();
+    expect(model.rootGroup.children.length).toBeGreaterThan(3);
+    expect(model.hullGroup).toBeDefined();
+    expect(model.forwardDrumGroup).toBeDefined();
+    expect(model.aftDrumGroup).toBeDefined();
+    expect(model.innerShaftMesh).toBeDefined();
+    expect(model.outerShaftMesh).toBeDefined();
+    expect(model.materials.bronzeGunmetal).toBeDefined();
+    expect(model.materials.copperSheathing).toBeDefined();
 
-    dispose();
+    updateEricssonPropellerKinematics(model, 0.016, 12.5, 0.4, true, true);
+    expect(model.materials.bronzeGunmetal.opacity).toBe(0.45);
+    expect(model.wakePoints.visible).toBe(true);
+
+    model.dispose();
   });
 });

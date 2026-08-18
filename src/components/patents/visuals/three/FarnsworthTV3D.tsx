@@ -1,22 +1,30 @@
 "use client";
 
-import { Camera, Eye, EyeOff, RotateCcw, Sparkles, Tv, Volume2, VolumeX, Zap } from "lucide-react";
+import {
+  Camera,
+  Eye,
+  EyeOff,
+  Layers,
+  RotateCcw,
+  Sparkles,
+  Tv,
+  Volume2,
+  VolumeX,
+  Zap,
+} from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import type * as THREE from "three";
 import { FrankenSimEngine } from "@/physics/engine";
 import { useFrankenSimPhysics } from "@/physics/useFrankenSimPhysics";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
-import { createLcg } from "@/utils/lcg";
 import { soundEngine } from "@/utils/soundEngine";
-import { buildFarnsworthTvModel } from "./farnsworthTvModel";
+import { buildFarnsworthTvModel, updateFarnsworthTvKinematics } from "./farnsworthTvModel";
 import { createThreeStudioScene, type StudioContext } from "./ThreeStudioScene";
 import { useLiveSimParams } from "./useLiveSimParams";
 
 import { usePatentAudio } from "./usePatentAudio";
 
-const lcg = createLcg(1240);
-
-type CameraPreset = "iso" | "photocathode" | "aperture" | "coils" | "top";
+type CameraPreset = "iso" | "photocathode" | "aperture" | "coils" | "electron_gun" | "top";
 
 export function FarnsworthTV3D() {
   const containerRef = useRef<HTMLDivElement>(null);
@@ -24,6 +32,7 @@ export function FarnsworthTV3D() {
   // Dissector Tube State Controls
   const { params, updateParam: _updateParam } = usePatentPhysics("us-1773980-farnsworth-tv");
   const [showUiOverlay, setShowUiOverlay] = useState<boolean>(true);
+  const [isCutaway, setIsCutaway] = useState<boolean>(false);
   const acceleratingVoltageKv = (params.anodeVoltage ?? 1500) / 1000;
   const coilCurrentA = params.coilCurrent ?? 0.42;
   const deflectionGauss = FrankenSimEngine.farnsworthDeflectionGauss(coilCurrentA);
@@ -57,6 +66,9 @@ export function FarnsworthTV3D() {
       busBandwidthMbps: 0,
       electronVelocityMps: velocityMps,
       relativisticFractionC: Number(velocityFractionC),
+      voltageGain: 1.0,
+      powerGainDb: 0,
+      collectorCurrentMa: 0,
     },
   });
 
@@ -65,8 +77,10 @@ export function FarnsworthTV3D() {
     horizontalFreqKhz,
     verticalFreqHz,
     showElectronBeam,
+    isCutaway,
     isAudioMuted,
     velocityMps,
+    electronDisplaySpeed: beamState.electronDisplaySpeed,
     lightIntensityLux,
     gyroRadiusMm: beamState.gyroRadiusMm,
   });
@@ -96,6 +110,10 @@ export function FarnsworthTV3D() {
       case "coils":
         camera.position.set(0, 3.8, 3.2);
         controls.target.set(0, 0, 0);
+        break;
+      case "electron_gun":
+        camera.position.set(3.6, 2.2, 3.2);
+        controls.target.set(3.2, 0, 0);
         break;
       case "top":
         camera.position.set(0, 9.5, 0.1);
@@ -137,13 +155,15 @@ export function FarnsworthTV3D() {
       const delta = 1 / 60;
       const p = live.current;
 
-      model.updateKinematics(
+      updateFarnsworthTvKinematics(
+        model,
         delta,
         renderedSteps,
-        p.velocityMps,
+        p.electronDisplaySpeed,
         p.horizontalFreqKhz,
         p.verticalFreqHz,
         p.showElectronBeam,
+        p.isCutaway,
       );
 
       controls.update();
@@ -210,8 +230,20 @@ export function FarnsworthTV3D() {
           </div>
         )}
 
-        {/* Top Right Tool Bar (Toggle UI, Audio, Pins, Reset) */}
+        {/* Top Right Tool Bar (Toggle UI, Audio, Pins, Cutaway, Reset) */}
         <div className="absolute top-3 right-3 sm:top-4 sm:right-4 z-10 flex gap-1.5 sm:gap-2">
+          <button
+            type="button"
+            onClick={() => setIsCutaway(!isCutaway)}
+            title={isCutaway ? "Switch to Solid Tube Mounts" : "Switch to Tube Cutaway"}
+            className={`p-1.5 sm:p-2.5 rounded-xl backdrop-blur-md border transition-colors shadow-sm ${
+              isCutaway
+                ? "bg-amber-600 text-white border-amber-700 shadow-md ring-2 ring-amber-500/30"
+                : "bg-white/90 dark:bg-ink-900/90 border-parchment-300 dark:border-ink-700 text-ink-700 dark:text-parchment-300 hover:bg-parchment-100"
+            }`}
+          >
+            <Layers className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
+          </button>
           <button
             type="button"
             onClick={() => setShowUiOverlay(!showUiOverlay)}
@@ -278,6 +310,7 @@ export function FarnsworthTV3D() {
                 ["photocathode", "Photocathode"],
                 ["aperture", "Anode Aperture"],
                 ["coils", "Deflection Coils"],
+                ["electron_gun", "Electron Collector"],
                 ["top", "Optical Axis"],
               ] as const
             ).map(([id, label]) => (

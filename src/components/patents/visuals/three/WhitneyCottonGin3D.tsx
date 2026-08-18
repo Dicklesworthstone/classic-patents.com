@@ -1,6 +1,6 @@
 "use client";
 
-import { Activity, Camera, Eye, EyeOff, Volume2, VolumeX, Zap } from "lucide-react";
+import { Activity, Camera, Eye, EyeOff, Layers, Volume2, VolumeX, Zap } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import type * as THREE from "three";
 import { stepWhitneyCottonGin } from "@/physics/catalogKernels";
@@ -10,9 +10,12 @@ import { StudioKernelChips } from "./StudioKernelChips";
 import { createThreeStudioScene, type StudioContext } from "./ThreeStudioScene";
 import { useLiveSimParams } from "./useLiveSimParams";
 import { usePatentAudio } from "./usePatentAudio";
-import { buildWhitneyCottonGinModel } from "./whitneyCottonGinModel";
+import {
+  buildWhitneyCottonGinModel,
+  updateWhitneyCottonGinKinematics,
+} from "./whitneyCottonGinModel";
 
-type CameraPreset = "iso" | "grate_saws" | "brush_drum" | "hopper" | "top";
+type CameraPreset = "iso" | "grate_saws" | "brush_drum" | "hopper" | "crank_drive" | "top";
 
 export function WhitneyCottonGin3D() {
   const containerRef = useRef<HTMLDivElement>(null);
@@ -20,6 +23,7 @@ export function WhitneyCottonGin3D() {
   // Mechanical Simulation Parameters
   const { params } = usePatentPhysics("us-x72-whitney-cotton-gin");
   const [showUiOverlay, setShowUiOverlay] = useState<boolean>(true);
+  const [isCutaway, setIsCutaway] = useState<boolean>(false);
   const crankRpm = params.crankRpm ?? 180;
   const gin = stepWhitneyCottonGin({ crankRpm });
   const sawSpeedRpm = gin.sawRpm;
@@ -36,6 +40,7 @@ export function WhitneyCottonGin3D() {
     sawSpeedRpm,
     brushSpeedRpm,
     showFibers,
+    isCutaway,
     isAudioMuted,
     outputLbsPerDay: gin.outputLbsPerDay,
     crankOmegaRadPerS: gin.crankOmegaRadPerS,
@@ -68,6 +73,10 @@ export function WhitneyCottonGin3D() {
       case "hopper":
         camera.position.set(0, 6.2, 2.5);
         controls.target.set(0, 1.5, 0);
+        break;
+      case "crank_drive":
+        camera.position.set(5.5, 0.8, 2.5);
+        controls.target.set(3.5, 0, 0);
         break;
       case "top":
         camera.position.set(0, 12.0, 0.1);
@@ -109,29 +118,15 @@ export function WhitneyCottonGin3D() {
       const delta = 1 / 60;
       const p = live.current;
 
-      const sawRadPerSec = p.sawOmegaRadPerS ?? (p.sawSpeedRpm * 2 * Math.PI) / 60;
-      const brushRadPerSec = p.brushOmegaRadPerS ?? (p.brushSpeedRpm * 2 * Math.PI) / 60;
-      const crankRadPerSec = p.crankOmegaRadPerS ?? (p.crankRpm * 2 * Math.PI) / 60;
-
-      model.sawCylinderGroup.rotation.x += sawRadPerSec * delta;
-      model.brushCylinderGroup.rotation.x -= brushRadPerSec * delta; // Counter-rotating (Claim 2)
-      model.crankGroup.rotation.x += crankRadPerSec * delta;
-      model.drivePulleyGroup.rotation.x += sawRadPerSec * delta;
-
-      // Animate fibers moving from saw teeth through brush ejection
-      const pos = model.fiberPositions;
-      for (let i = 0; i < model.fiberCount; i++) {
-        const idx = i * 3;
-        pos[idx + 2] += (p.outputLbsPerDay / 50) * 4.2 * delta;
-        pos[idx + 1] += Math.sin(pos[idx + 2] * 3) * 0.02;
-        if (pos[idx + 2] > 3.0) {
-          pos[idx + 2] = -1.2;
-          pos[idx + 1] = 0.2 + ((i % 7) / 7 - 0.5) * 0.8;
-          pos[idx] = ((i % 11) / 11 - 0.5) * 6.0;
-        }
-      }
-      model.fiberPoints.geometry.attributes.position.needsUpdate = true;
-      model.fiberPoints.visible = p.showFibers;
+      updateWhitneyCottonGinKinematics(
+        model,
+        delta,
+        p.crankOmegaRadPerS,
+        p.sawOmegaRadPerS,
+        p.brushOmegaRadPerS,
+        p.showFibers,
+        p.isCutaway,
+      );
 
       renderer.render(scene, camera);
     };
@@ -171,6 +166,7 @@ export function WhitneyCottonGin3D() {
               ["grate_saws", "Grate & Saws"],
               ["brush_drum", "Brush Drum"],
               ["hopper", "Hopper Chute"],
+              ["crank_drive", "Crank Drive"],
               ["top", "Top"],
             ] as [CameraPreset, string][]
           ).map(([preset, label]) => (
@@ -193,6 +189,18 @@ export function WhitneyCottonGin3D() {
         <div className="flex items-center gap-1.5 bg-parchment-950/80 backdrop-blur-md p-1.5 rounded-xl border border-parchment-700/60 shadow-lg pointer-events-auto">
           <button
             type="button"
+            onClick={() => setIsCutaway(!isCutaway)}
+            title={isCutaway ? "Switch to Solid Frame" : "Switch to Frame Cutaway"}
+            className={`p-1.5 rounded-lg text-xs transition-colors ${
+              isCutaway
+                ? "bg-amber-600 text-white shadow-sm"
+                : "text-parchment-400 hover:text-white hover:bg-parchment-800"
+            }`}
+          >
+            <Layers className="w-4 h-4" />
+          </button>
+          <button
+            type="button"
             onClick={() => setShowFibers(!showFibers)}
             title="Toggle Fiber Stream Particles"
             className={`p-1.5 rounded-lg text-xs transition-colors ${
@@ -201,7 +209,11 @@ export function WhitneyCottonGin3D() {
                 : "text-parchment-400 hover:text-white"
             }`}
           >
-            {showFibers ? <Eye className="w-4 h-4" /> : <EyeOff className="w-4 h-4" />}
+            {showFibers ? (
+              <Eye className="w-4 h-4" />
+            ) : (
+              <EyeOff className="w-4 h-4 text-amber-400" />
+            )}
           </button>
           <button
             type="button"

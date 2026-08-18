@@ -1,8 +1,6 @@
 import * as THREE from "three";
 import { createLcg } from "@/utils/lcg";
 
-const lcg = createLcg(9430);
-
 /**
  * 1836 Samuel Colt Paterson Revolver (.36 Caliber No. 5 Texas Model)
  * Authentic Historical Engineering Specifications from US Patent 138 (Feb 25, 1836)
@@ -37,7 +35,10 @@ export interface ColtRevolverModel {
  * Procedural Color Case-Hardened Steel Texture
  * Recreates the historic charcoal-and-bone quench oxidation swirling patterns.
  */
-function createCaseHardenedTexture(): THREE.CanvasTexture {
+function createCaseHardenedTexture(lcg: () => number): THREE.CanvasTexture {
+  if (typeof document === "undefined") {
+    return new THREE.CanvasTexture({} as HTMLCanvasElement);
+  }
   const canvas = document.createElement("canvas");
   canvas.width = 512;
   canvas.height = 512;
@@ -94,7 +95,10 @@ function createCaseHardenedTexture(): THREE.CanvasTexture {
 /**
  * Procedural American Black Walnut Gunstock Texture
  */
-function createWalnutGripTexture(): THREE.CanvasTexture {
+function createWalnutGripTexture(lcg: () => number): THREE.CanvasTexture {
+  if (typeof document === "undefined") {
+    return new THREE.CanvasTexture({} as HTMLCanvasElement);
+  }
   const canvas = document.createElement("canvas");
   canvas.width = 512;
   canvas.height = 512;
@@ -108,21 +112,27 @@ function createWalnutGripTexture(): THREE.CanvasTexture {
   // Flowing wood grain growth rings
   for (let i = 0; i < 110; i++) {
     const y = i * 4.8 + (lcg() - 0.5) * 3;
-    const alpha = 0.09 + (i % 4 === 0 ? 0.18 : 0.05);
-    ctx.strokeStyle = `rgba(24, 11, 4, ${alpha})`;
-    ctx.lineWidth = 1.2 + (i % 3) * 0.8;
+    ctx.strokeStyle = i % 4 === 0 ? "rgba(26, 12, 5, 0.65)" : "rgba(84, 46, 22, 0.45)";
+    ctx.lineWidth = 1.2 + (lcg() - 0.5) * 0.8;
     ctx.beginPath();
     ctx.moveTo(0, y);
-    ctx.bezierCurveTo(140, y + 20, 350, y - 18, 512, y + 8);
+    ctx.bezierCurveTo(
+      150,
+      y + (lcg() - 0.5) * 18,
+      350,
+      y + (lcg() - 0.5) * 22,
+      512,
+      y + (lcg() - 0.5) * 12,
+    );
     ctx.stroke();
   }
 
-  // Walnut pores and medullary rays
-  for (let j = 0; j < 450; j++) {
-    const px = lcg() * 512;
-    const py = lcg() * 512;
-    ctx.fillStyle = "rgba(16, 7, 2, 0.25)";
-    ctx.fillRect(px, py, 4 + lcg() * 8, 1.2);
+  // Cross-pore medullary rays
+  for (let j = 0; j < 350; j++) {
+    const rx = lcg() * 512;
+    const ry = lcg() * 512;
+    ctx.fillStyle = "rgba(18, 9, 4, 0.35)";
+    ctx.fillRect(rx, ry, 1.2, 3.5 + lcg() * 4);
   }
 
   const tex = new THREE.CanvasTexture(canvas);
@@ -137,6 +147,9 @@ function createWalnutGripTexture(): THREE.CanvasTexture {
  * Recreates the historic Texas naval battle cylinder engraving on Colt Paterson revolvers.
  */
 function createCylinderEngravingTexture(): THREE.CanvasTexture {
+  if (typeof document === "undefined") {
+    return new THREE.CanvasTexture({} as HTMLCanvasElement);
+  }
   const canvas = document.createElement("canvas");
   canvas.width = 1024;
   canvas.height = 256;
@@ -179,11 +192,12 @@ function createCylinderEngravingTexture(): THREE.CanvasTexture {
  * Builds a blueprint-accurate, museum-quality 3D Colt Paterson 1836 Revolver.
  */
 export function buildColtRevolverModel(): ColtRevolverModel {
+  const lcg = createLcg(9430);
   const rootGroup = new THREE.Group();
   const textures: THREE.Texture[] = [];
 
-  const caseHardenedTex = createCaseHardenedTexture();
-  const walnutTex = createWalnutGripTexture();
+  const caseHardenedTex = createCaseHardenedTexture(lcg);
+  const walnutTex = createWalnutGripTexture(lcg);
   const engravingTex = createCylinderEngravingTexture();
   textures.push(caseHardenedTex, walnutTex, engravingTex);
 
@@ -717,4 +731,47 @@ export function buildColtRevolverModel(): ColtRevolverModel {
     textures,
     dispose,
   };
+}
+
+/**
+ * Updates Colt Paterson revolver hammer cocking, cylinder rotation, folding trigger drop, rammer, and cutaway.
+ */
+export function updateColtRevolverKinematics(
+  model: ColtRevolverModel,
+  cockingAngleDeg: number,
+  currentChamberIndex: number,
+  rammerPositionPct: number,
+  isFiring: boolean,
+  showLockworkCutaway: boolean,
+): void {
+  // Hammer rotation: 0° (hammer down) to 45° (full cock)
+  const cockProgress = cockingAngleDeg / 45;
+  model.hammerGroup.rotation.z = -(cockingAngleDeg * Math.PI) / 180;
+
+  // Folding Trigger drop: emerges from frame slot as hammer is cocked
+  model.triggerGroup.position.y = -0.3 - cockProgress * 0.38;
+  model.triggerGroup.rotation.z = -cockProgress * 0.25;
+
+  // Cylinder indexing: 5 chambers -> 72° per chamber (2π/5)
+  const baseChamberAngle = ((currentChamberIndex - 1) * 2 * Math.PI) / 5;
+  model.cylinderGroup.rotation.x = baseChamberAngle + cockProgress * ((2 * Math.PI) / 5);
+
+  // Loading Lever & Creeping Rammer plunger
+  const rammerProgress = rammerPositionPct / 100;
+  model.loadingLeverGroup.rotation.z = -rammerProgress * 0.65;
+  model.rammerPlunger.position.x = -rammerProgress * 0.55;
+
+  // Muzzle flash / smoke explosion during firing
+  if (isFiring) {
+    model.blastMesh.visible = true;
+    (model.smokeMesh.material as THREE.PointsMaterial).opacity = 0.85;
+    (model.sparkPoints.material as THREE.PointsMaterial).opacity = 1.0;
+  } else {
+    model.blastMesh.visible = false;
+    (model.smokeMesh.material as THREE.PointsMaterial).opacity = 0;
+    (model.sparkPoints.material as THREE.PointsMaterial).opacity = 0;
+  }
+
+  // Lockwork Cutaway view
+  model.lockworkCutawayGroup.visible = showLockworkCutaway;
 }

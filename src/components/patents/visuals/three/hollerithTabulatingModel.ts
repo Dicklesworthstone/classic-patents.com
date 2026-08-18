@@ -289,12 +289,11 @@ export function updateHollerithTabulatingKinematics(
   materials: HollerithTabulatingMaterials,
   _dt: number,
   timeSec: number,
-  cardsPerMin: number,
+  pressOmegaRadPerS: number,
   solenoidForceN: number,
   isCutaway: boolean,
 ) {
-  const pressFreq = (cardsPerMin / 60) * 2 * Math.PI;
-  const pressPhase = Math.sin(timeSec * pressFreq);
+  const pressPhase = Math.sin(timeSec * pressOmegaRadPerS);
 
   // 1. Pin Press Plunging Stroke & Lever Handle Action
   if (pressPhase > 0) {
@@ -307,7 +306,7 @@ export function updateHollerithTabulatingKinematics(
   }
 
   // 2. Stepping Dial Pointers
-  const stepCount = Math.floor(timeSec * (cardsPerMin / 60));
+  const stepCount = Math.floor((timeSec * pressOmegaRadPerS) / (2 * Math.PI));
   for (let d = 0; d < nodes.dialHands.length; d++) {
     const rot = ((stepCount + d * 3) % 100) * ((Math.PI * 2) / 100);
     nodes.dialHands[d].rotation.z = rot;

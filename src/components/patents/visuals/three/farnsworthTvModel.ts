@@ -28,13 +28,28 @@ export interface FarnsworthTvModel {
   beamGeo: THREE.BufferGeometry;
   beamPos: Float32Array;
   beamColors: Float32Array;
+  /** Deterministic per-particle offsets, sampled only during model construction. */
+  beamJitter: Float32Array;
+  /** Materials whose opacity changes in the deliberate cutaway presentation. */
+  materials: {
+    glassEnvelopeMat: THREE.MeshPhysicalMaterial;
+    photocathodeMat: THREE.MeshStandardMaterial;
+    copperCoilMat: THREE.MeshStandardMaterial;
+    anodeBrassMat: THREE.MeshStandardMaterial;
+    mahoganyMat: THREE.MeshStandardMaterial;
+    goldMat: THREE.MeshStandardMaterial;
+    apertureMat: THREE.MeshStandardMaterial;
+    focusCoilMat: THREE.MeshStandardMaterial;
+    beamMat: THREE.PointsMaterial;
+  };
   updateKinematics: (
     delta: number,
     renderedSteps: number,
-    velocityMps: number,
+    electronDisplaySpeed: number,
     horizontalFreqKhz: number,
     verticalFreqHz: number,
     showElectronBeam: boolean,
+    isCutaway?: boolean,
   ) => void;
   dispose: () => void;
 }
@@ -213,36 +228,53 @@ export function buildFarnsworthTvModel(): FarnsworthTvModel {
   focusCoil.position.x = -0.2;
   tubeGroup.add(focusCoil);
 
-  for (let d = 0; d < 4; d++) {
-    const dAngle = (d * Math.PI) / 2;
-    const yokeGeo = new THREE.BoxGeometry(2.4, 0.35, 1.2);
-    disposables.push(yokeGeo);
-    const saddleYoke = new THREE.Mesh(yokeGeo, copperCoilMat);
-    saddleYoke.position.set(0.5, Math.cos(dAngle) * 2.3, Math.sin(dAngle) * 2.3);
-    saddleYoke.rotation.x = dAngle;
-    tubeGroup.add(saddleYoke);
-  }
+  // 5. Orthogonal Saddle Deflection Scanning Coils (Horizontal & Vertical Scanning)
+  const saddleCoilGeo = new THREE.TorusGeometry(1.72, 0.08, 16, 32, Math.PI * 0.8);
+  disposables.push(saddleCoilGeo);
 
-  // ==========================================
-  // SCANNING ELECTRON IMAGE BEAM PARTICLES
-  // ==========================================
-  const beamCount = 350;
+  const saddleH1 = new THREE.Mesh(saddleCoilGeo, copperCoilMat);
+  saddleH1.position.set(-0.2, 0, 0);
+  root.add(saddleH1);
+
+  const saddleH2 = new THREE.Mesh(saddleCoilGeo, copperCoilMat);
+  saddleH2.rotation.y = Math.PI;
+  saddleH2.position.set(-0.2, 0, 0);
+  root.add(saddleH2);
+
+  const saddleV1 = new THREE.Mesh(saddleCoilGeo, copperCoilMat);
+  saddleV1.rotation.x = Math.PI / 2;
+  saddleV1.position.set(-0.2, 0, 0);
+  root.add(saddleV1);
+
+  const saddleV2 = new THREE.Mesh(saddleCoilGeo, copperCoilMat);
+  saddleV2.rotation.x = -Math.PI / 2;
+  saddleV2.position.set(-0.2, 0, 0);
+  root.add(saddleV2);
+
+  // --- RELATIVISTIC SCANNING ELECTRON BEAM PARTICLES ---
+  const beamCount = 220;
   const beamGeo = new THREE.BufferGeometry();
   disposables.push(beamGeo);
   const beamPos = new Float32Array(beamCount * 3);
   const beamColors = new Float32Array(beamCount * 3);
+  const beamJitter = new Float32Array(beamCount * 3);
+
   const glowTex = createGlowPointTexture();
   disposables.push(glowTex);
 
   for (let i = 0; i < beamCount; i++) {
     const idx = i * 3;
-    const progress = i / beamCount;
-    beamPos[idx] = -4.5 + progress * 9.3;
-    beamPos[idx + 1] = 0;
-    beamPos[idx + 2] = 0;
+    beamPos[idx] = -4.2 + lcg() * 6.5;
+    beamPos[idx + 1] = (lcg() - 0.5) * 1.6;
+    beamPos[idx + 2] = (lcg() - 0.5) * 1.6;
 
-    beamColors[idx] = 0.3 + progress * 0.4;
-    beamColors[idx + 1] = 0.8 + progress * 0.2;
+    beamJitter[idx] = (lcg() - 0.5) * 0.2;
+    beamJitter[idx + 1] = (lcg() - 0.5) * 1.5;
+    beamJitter[idx + 2] = (lcg() - 0.5) * 1.5;
+
+    // Glowing cyan-electric blue electron image beam
+    beamColors[idx] = 0.15;
+    beamColors[idx + 1] = 0.75 + lcg() * 0.25;
     beamColors[idx + 2] = 1.0;
   }
 
@@ -263,46 +295,25 @@ export function buildFarnsworthTvModel(): FarnsworthTvModel {
   const beamPoints = new THREE.Points(beamGeo, beamMat);
   root.add(beamPoints);
 
-  // ==========================================
-  // KINEMATICS & SCANNING DYNAMICS UPDATE FUNCTION
-  // ==========================================
   const updateKinematics = (
     delta: number,
     renderedSteps: number,
-    velocityMps: number,
+    electronDisplaySpeed: number,
     horizontalFreqKhz: number,
     verticalFreqHz: number,
     showElectronBeam: boolean,
+    isCutaway = false,
   ) => {
-    if (showElectronBeam) {
-      const bPos = beamPos;
-      const speed = (velocityMps / 20000000) * 45.0 * delta;
-
-      const simTimeSec = renderedSteps * (1 / 60);
-      const hScan = Math.sin(simTimeSec * horizontalFreqKhz * 0.4) * 0.9;
-      const vScan = Math.sin(simTimeSec * verticalFreqHz * 0.2) * 0.9;
-
-      for (let i = 0; i < beamCount; i++) {
-        const idx = i * 3;
-        bPos[idx] += speed;
-
-        const pX = bPos[idx];
-        const frac = Math.max(0, Math.min(1, (pX + 4.5) / 8.0));
-
-        bPos[idx + 1] = frac * vScan + (lcg() - 0.5) * 0.08;
-        bPos[idx + 2] = frac * hScan + (lcg() - 0.5) * 0.08;
-
-        if (bPos[idx] > 4.2) {
-          bPos[idx] = -4.5 + (lcg() - 0.5) * 0.2;
-          bPos[idx + 1] = (lcg() - 0.5) * 1.5;
-          bPos[idx + 2] = (lcg() - 0.5) * 1.5;
-        }
-      }
-      beamGeo.attributes.position.needsUpdate = true;
-      beamPoints.visible = true;
-    } else {
-      beamPoints.visible = false;
-    }
+    updateFarnsworthTvKinematics(
+      model,
+      delta,
+      renderedSteps,
+      electronDisplaySpeed,
+      horizontalFreqKhz,
+      verticalFreqHz,
+      showElectronBeam,
+      isCutaway,
+    );
   };
 
   const dispose = () => {
@@ -311,7 +322,7 @@ export function buildFarnsworthTvModel(): FarnsworthTvModel {
     }
   };
 
-  return {
+  const model: FarnsworthTvModel = {
     root,
     tubeGroup,
     photocathode,
@@ -323,7 +334,73 @@ export function buildFarnsworthTvModel(): FarnsworthTvModel {
     beamGeo,
     beamPos,
     beamColors,
+    beamJitter,
+    materials: {
+      glassEnvelopeMat,
+      photocathodeMat,
+      copperCoilMat,
+      anodeBrassMat,
+      mahoganyMat,
+      goldMat,
+      apertureMat,
+      focusCoilMat,
+      beamMat,
+    },
     updateKinematics,
     dispose,
   };
+
+  return model;
+}
+
+/**
+ * Updates Farnsworth Dissector Tube relativistic electron beam scanning raster and cutaway.
+ */
+export function updateFarnsworthTvKinematics(
+  model: FarnsworthTvModel,
+  delta: number,
+  renderedSteps: number,
+  electronDisplaySpeed: number,
+  horizontalFreqKhz: number,
+  verticalFreqHz: number,
+  showElectronBeam: boolean,
+  isCutaway = false,
+): void {
+  if (showElectronBeam) {
+    const bPos = model.beamPos;
+    const speed = electronDisplaySpeed * delta;
+
+    const simTimeSec = renderedSteps * (1 / 60);
+    const hScan = Math.sin(simTimeSec * horizontalFreqKhz * 0.4) * 0.9;
+    const vScan = Math.sin(simTimeSec * verticalFreqHz * 0.2) * 0.9;
+
+    for (let i = 0; i < model.beamPos.length / 3; i++) {
+      const idx = i * 3;
+      bPos[idx] += speed;
+
+      const pX = bPos[idx];
+      const frac = Math.max(0, Math.min(1, (pX + 4.5) / 8.0));
+
+      bPos[idx + 1] = frac * vScan + model.beamJitter[idx + 1] * 0.05;
+      bPos[idx + 2] = frac * hScan + model.beamJitter[idx + 2] * 0.05;
+
+      if (bPos[idx] > 4.2) {
+        bPos[idx] = -4.5 + model.beamJitter[idx];
+        bPos[idx + 1] = model.beamJitter[idx + 1];
+        bPos[idx + 2] = model.beamJitter[idx + 2];
+      }
+    }
+    model.beamGeo.attributes.position.needsUpdate = true;
+    model.beamPoints.visible = true;
+  } else {
+    model.beamPoints.visible = false;
+  }
+
+  // Cutaway mode: make focusing/deflection coils and tube hardware translucent
+  model.materials.focusCoilMat.opacity = isCutaway ? 0.35 : 1.0;
+  model.materials.focusCoilMat.transparent = isCutaway;
+  model.materials.copperCoilMat.opacity = isCutaway ? 0.35 : 1.0;
+  model.materials.copperCoilMat.transparent = isCutaway;
+  model.materials.mahoganyMat.opacity = isCutaway ? 0.35 : 1.0;
+  model.materials.mahoganyMat.transparent = isCutaway;
 }

@@ -108,7 +108,7 @@ export function DieselEngine3D() {
       const p = live.current;
 
       if (p.isPlaying) {
-        const speed = p.crankOmegaRadPerS ?? (p.engineRpm / 60) * Math.PI * 2;
+        const speed = p.crankOmegaRadPerS;
         crankAngle = (crankAngle + speed * dt) % (Math.PI * 4);
 
         updateDieselEngineKinematics(

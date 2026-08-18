@@ -469,15 +469,14 @@ export function updateMaximMachineGunKinematics(
   model: MaximMachineGunModel,
   _dt: number,
   timeSec: number,
-  fireRateRpm: number,
+  fireOmegaRadPerS: number,
   recoilStrokeM: number,
   barrelTempC: number,
   waterEvapRateGs: number,
   showMuzzleFlash: boolean,
   isCutaway: boolean,
 ): { isMuzzleFlash: boolean } {
-  const fireFreq = (fireRateRpm / 60) * 2 * Math.PI;
-  const cycleTime = (timeSec * fireFreq) % (Math.PI * 2);
+  const cycleTime = (timeSec * fireOmegaRadPerS) % (Math.PI * 2);
   const isFiring = Math.sin(cycleTime);
 
   // 1. Barrel and barrel extension recoil rearward

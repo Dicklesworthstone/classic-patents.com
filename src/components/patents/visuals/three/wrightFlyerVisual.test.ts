@@ -2,7 +2,7 @@ import { describe, expect, test } from "bun:test";
 import { readFileSync } from "node:fs";
 import { join } from "node:path";
 import { readWrightControls, stepWrightFlyerSi } from "@/physics/wrightKernel";
-import { buildWrightFlyerAirframe } from "./wrightFlyerAirframe";
+import { buildWrightFlyerAirframe, updateWrightFlyerKinematics } from "./wrightFlyerAirframe";
 
 const VISUALS_DIRECTORY = join(process.cwd(), "src", "components", "patents", "visuals");
 
@@ -17,6 +17,8 @@ describe("US 821,393 Wright Brothers Flying-Machine 3D visual & aerodynamic boun
     expect(modelSource).not.toContain("useGLTF");
     expect(modelSource).not.toContain(".gltf");
     expect(modelSource).not.toContain(".glb");
+    expect(modelSource).toContain("buildWrightFlyerAirframe");
+    expect(modelSource).toContain("updateWrightFlyerKinematics");
     expect(threeSource).not.toContain("useGLTF");
   });
 
@@ -30,6 +32,15 @@ describe("US 821,393 Wright Brothers Flying-Machine 3D visual & aerodynamic boun
     expect(modelSource).not.toContain("Math.random");
     expect(threeSource).not.toContain("Math.random");
     expect(threeSource).not.toContain("performance.now()");
+  });
+
+  test("exposes authentic camera presets and HUD for 3-axis flight control observation", () => {
+    const threeSource = readFileSync(join(VISUALS_DIRECTORY, "three", "WrightFlyer3D.tsx"), "utf8");
+
+    for (const preset of ["iso", "wing_warp", "canard", "rudder", "engine_props", "top"]) {
+      expect(threeSource).toContain(preset);
+    }
+    expect(threeSource).toContain("isCutaway");
   });
 
   test("computes genuine aerodynamic lift, induced drag, and adverse yaw cancellation in SI units", () => {
@@ -58,11 +69,9 @@ describe("US 821,393 Wright Brothers Flying-Machine 3D visual & aerodynamic boun
     expect(airframe.leftPropBlades).toBeDefined();
     expect(airframe.rightPropBlades).toBeDefined();
 
-    // Articulate flight controls
-    airframe.canardGroup.rotation.x = (-4.0 * Math.PI) / 180;
-    airframe.rudderGroup.rotation.y = (-8.0 * Math.PI) / 180;
-
+    updateWrightFlyerKinematics(airframe, 0.016, 6.0, 8.0, 3.0, 30.0, 1500, true);
     expect(airframe.rudderGroup.rotation.y).toBeCloseTo((-8.0 * Math.PI) / 180, 2);
-    expect(airframe.canardGroup.rotation.x).toBeCloseTo((-4.0 * Math.PI) / 180, 2);
+    expect(airframe.canardGroup.rotation.x).toBeCloseTo((-3.0 * Math.PI) / 180, 2);
+    expect(airframe.muslinMat.opacity).toBe(0.35);
   });
 });

@@ -121,7 +121,7 @@ export function HollerithTabulating3D() {
         materials,
         dt,
         timeSec,
-        p.cardsPerMin,
+        p.pressOmegaRadPerS,
         p.solenoidForceN,
         p.isCutaway,
       );

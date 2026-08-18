@@ -52,6 +52,9 @@ export function MorseTelegraph3D() {
     ampereTurns: morse.ampereTurns,
     tapeAdvanceRadPerS: morse.tapeAdvanceRadPerS,
     unitDurationMs: morse.unitDurationMs,
+    keyOscillationRadPerS: morse.keyOscillationRadPerS,
+    armatureStrikeM: morse.armatureStrikeM,
+    electronDisplaySpeed: morse.electronDisplaySpeed,
   });
 
   const controlsRef = useRef<StudioContext["controls"] | null>(null);
@@ -130,8 +133,10 @@ export function MorseTelegraph3D() {
         materials,
         dt,
         timeSec,
-        p.wpmSpeed ?? 20,
-        p.magneticForceN,
+        p.keyOscillationRadPerS,
+        p.armatureStrikeM,
+        p.tapeAdvanceRadPerS,
+        p.electronDisplaySpeed,
         p.keyIsDown,
         p.isCutaway,
       );

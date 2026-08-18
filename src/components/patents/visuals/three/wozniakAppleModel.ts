@@ -264,7 +264,7 @@ export function buildWozniakAppleModel(): WozniakAppleModel {
     isCpuActive: boolean,
   ) => {
     const bPos = busPos;
-    const speed = (busDisplaySpeed ?? 4.0) * delta;
+    const speed = busDisplaySpeed * delta;
 
     for (let i = 0; i < busPacketCount; i++) {
       const idx = i * 3;

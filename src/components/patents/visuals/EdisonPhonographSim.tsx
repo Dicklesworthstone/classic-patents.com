@@ -9,18 +9,15 @@ import { usePatentAudio } from "./three/usePatentAudio";
 export function EdisonPhonographSim() {
   const { params, updateParam, resetParams } = usePatentPhysics("us-200521-edison-phonograph");
   const { isAudioMuted, toggleSound } = usePatentAudio();
-  const crankRpm = params.mandrelRpm ?? 60;
+  const mandrelRpm = params.mandrelRpm ?? 60;
   const voiceVolumeDb = params.voiceVolumeDb ?? 75;
   const [isPlaying, setIsPlaying] = useState<boolean>(true);
   const [cylinderAngleDeg, setCylinderAngleDeg] = useState<number>(0);
   const animRef = useRef<number | null>(null);
 
-  const phono = stepEdisonPhonograph({ mandrelRpm: crankRpm, voiceVolumeDb });
+  const phono = stepEdisonPhonograph({ mandrelRpm, voiceVolumeDb });
   const leadScrewPitchMm = phono.leadScrewPitchMm;
-  const surfaceSpeedMps = phono.surfaceSpeedMps;
   const axialTravelMm = Number((((cylinderAngleDeg / 360) * leadScrewPitchMm) % 40).toFixed(1));
-  const indentationDepthMicrons = phono.grooveDepthMicrons;
-  const audioBandwidthHz = phono.audioBandwidthHz;
 
   useEffect(() => {
     if (!isPlaying) return;
@@ -49,8 +46,8 @@ export function EdisonPhonographSim() {
             Edison Tinfoil Cylinder Phonograph (US 200,521)
           </h3>
           <p className="font-sans text-xs text-ink-500 dark:text-ink-400">
-            Interactive 2D Acoustic Model — Threaded Lead-Screw Mandrel, Tinfoil Micro-Indentations,
-            and Diaphragm Playback
+            Interactive mechanism study: cylinder A, metallic foil, threaded shaft X, and the
+            recording and reproducing diaphragms.
           </p>
         </div>
         <div className="flex items-center gap-2 self-end sm:self-auto">
@@ -123,7 +120,7 @@ export function EdisonPhonographSim() {
             />
           ))}
 
-          {/* Grooved Brass Cylinder wrapped in Tinfoil (Translating Axially) */}
+          {/* Cylinder A and its metal-foil recording surface, translated by the source-specified thread. */}
           <g transform={`translate(${160 + axialTravelMm * 2}, 130)`}>
             <rect
               x="0"
@@ -131,7 +128,7 @@ export function EdisonPhonographSim() {
               width="200"
               height="80"
               rx="4"
-              fill="#D4AF37"
+              fill="#9A7B4F"
               stroke="#744210"
               strokeWidth="2"
             />
@@ -161,11 +158,11 @@ export function EdisonPhonographSim() {
             ))}
           </g>
 
-          {/* Acoustic Recording Mouthpiece & Stylus */}
+          {/* Source-specified speaking tube, diaphragm, and hard indenting point. */}
           <g transform="translate(260, 60)">
-            {/* Conical Horn */}
-            <polygon points="0,0 60,-35 60,35" fill="#C5A059" stroke="#8B5A2B" strokeWidth="2" />
-            {/* Mica Diaphragm */}
+            {/* The widening tube is an illustrative profile, not a source-specified horn geometry. */}
+            <polygon points="0,0 60,-35 60,35" fill="#8B6F47" stroke="#60472A" strokeWidth="2" />
+            {/* Source specifies a diaphragm but not its material. */}
             <line
               x1="0"
               y1="-20"
@@ -175,7 +172,7 @@ export function EdisonPhonographSim() {
               strokeWidth="3"
               strokeLinecap="round"
             />
-            {/* Indenting Steel Stylus */}
+            {/* Source specifies a hard indenting point but not its material. */}
             <polygon points="0,20 -3,45 3,45" fill="#1A202C" />
             <text
               x="-60"
@@ -185,11 +182,11 @@ export function EdisonPhonographSim() {
               fontWeight="bold"
               fontFamily="sans-serif"
             >
-              Acoustic Horn
+              Speaking tube B
             </text>
           </g>
 
-          {/* Heavy Flywheel & Hand Crank on Right */}
+          {/* Illustrative rotation indicator. The patent names clock-work M or another power source, not this drive geometry. */}
           <g transform="translate(520, 170)">
             <circle cx="0" cy="0" r="50" fill="none" stroke="#2D3748" strokeWidth="10" />
             <circle cx="0" cy="0" r="8" fill="#111" />
@@ -215,34 +212,34 @@ export function EdisonPhonographSim() {
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 my-4">
         <div className="bg-parchment-100 dark:bg-ink-900 border border-parchment-200 dark:border-ink-800 p-2.5 rounded-xl text-center">
           <span className="text-[10px] uppercase tracking-wider text-ink-500 dark:text-ink-400 block font-sans">
-            Surface Speed
+            Source groove pitch
           </span>
           <span className="font-mono text-sm sm:text-base font-bold text-ink-900 dark:text-parchment-100">
-            {surfaceSpeedMps} m/s ({crankRpm} RPM)
+            {phono.sourceGroovesPerInch} grooves/in
           </span>
         </div>
         <div className="bg-parchment-100 dark:bg-ink-900 border border-parchment-200 dark:border-ink-800 p-2.5 rounded-xl text-center">
           <span className="text-[10px] uppercase tracking-wider text-ink-500 dark:text-ink-400 block font-sans">
-            Axial Travel
+            Source thread pitch
           </span>
           <span className="font-mono text-sm sm:text-base font-bold text-amber-700 dark:text-amber-500">
-            {axialTravelMm} mm (10 TPI)
+            {phono.sourceThreadsPerInch} threads/in
           </span>
         </div>
         <div className="bg-parchment-100 dark:bg-ink-900 border border-parchment-200 dark:border-ink-800 p-2.5 rounded-xl text-center">
           <span className="text-[10px] uppercase tracking-wider text-ink-500 dark:text-ink-400 block font-sans">
-            Indentation Depth
+            Model axial display
           </span>
           <span className="font-mono text-sm sm:text-base font-bold text-emerald-700 dark:text-emerald-500">
-            {indentationDepthMicrons} μm
+            {axialTravelMm} mm
           </span>
         </div>
         <div className="bg-parchment-100 dark:bg-ink-900 border border-parchment-200 dark:border-ink-800 p-2.5 rounded-xl text-center">
           <span className="text-[10px] uppercase tracking-wider text-ink-500 dark:text-ink-400 block font-sans">
-            Audio Bandwidth
+            Model turn setting
           </span>
           <span className="font-mono text-sm sm:text-base font-bold text-ink-900 dark:text-parchment-100">
-            {audioBandwidthHz} Hz
+            {mandrelRpm} RPM
           </span>
         </div>
       </div>
@@ -251,15 +248,15 @@ export function EdisonPhonographSim() {
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-2 border-t border-parchment-200 dark:border-ink-800">
         <div>
           <div className="flex justify-between text-xs font-sans font-medium text-ink-700 dark:text-parchment-300 mb-1">
-            <span>Hand Crank Speed</span>
-            <span className="font-mono">{crankRpm} RPM</span>
+            <span>Illustrative clock-work rate</span>
+            <span className="font-mono">{mandrelRpm} RPM</span>
           </div>
           <input
             type="range"
             min="40"
             max="140"
             step="5"
-            value={crankRpm}
+            value={mandrelRpm}
             onChange={(e) => updateParam("mandrelRpm", Number(e.target.value))}
             className="w-full accent-amber-600 cursor-pointer"
           />
@@ -280,6 +277,13 @@ export function EdisonPhonographSim() {
           />
         </div>
       </div>
+      <p className="mt-4 text-xs leading-relaxed text-ink-600 dark:text-ink-300">
+        The patent specifies cylinder A, metallic foil or another yielding material, a
+        ten-groove-per-inch helix, a matching ten-thread-per-inch shaft, a diaphragm, and clock-work
+        M or another source of power. This animation deliberately does not claim the displayed
+        profile, dimensions, drive, rate, indentation depth, or acoustic bandwidth as historical
+        measurements.
+      </p>
     </div>
   );
 }

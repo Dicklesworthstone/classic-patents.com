@@ -2,8 +2,6 @@ import * as THREE from "three";
 import { createLcg } from "@/utils/lcg";
 import { createGlowPointTexture } from "./ThreeStudioScene";
 
-const lcg = createLcg(1930);
-
 export interface EinsteinRefrigeratorModel {
   rootGroup: THREE.Group;
   fridgeGroup: THREE.Group;
@@ -29,6 +27,7 @@ export interface EinsteinRefrigeratorModel {
 }
 
 export function buildEinsteinRefrigeratorModel(): EinsteinRefrigeratorModel {
+  const lcg = createLcg(1930);
   const rootGroup = new THREE.Group();
   const materialsToDispose: THREE.Material[] = [];
   const geometriesToDispose: THREE.BufferGeometry[] = [];
@@ -266,4 +265,38 @@ export function buildEinsteinRefrigeratorModel(): EinsteinRefrigeratorModel {
     },
     dispose,
   };
+}
+
+/**
+ * Updates Einstein-Szilard single-pressure absorption refrigerator convection circulation, heating glow, and cutaway.
+ */
+export function updateEinsteinRefrigeratorKinematics(
+  model: EinsteinRefrigeratorModel,
+  delta: number,
+  fluidDisplaySpeed: number,
+  heaterGlowIntensity: number,
+  generatorGlowIntensity: number,
+  isHeating: boolean,
+  isCutaway = false,
+): void {
+  // Convection thermosiphon circulation
+  const pos = model.fluidPositions;
+  const speed = fluidDisplaySpeed * delta;
+  for (let i = 0; i < model.fluidCount; i++) {
+    const idx = i * 3;
+    pos[idx + 1] += (i % 2 === 0 ? 1 : -1) * speed;
+    if (pos[idx + 1] > 2.8) pos[idx + 1] = -2.8;
+    if (pos[idx + 1] < -2.8) pos[idx + 1] = 2.8;
+  }
+  model.fluidPoints.geometry.attributes.position.needsUpdate = true;
+
+  // Heater & Generator Glow
+  model.materials.heaterGlow.emissiveIntensity = isHeating ? heaterGlowIntensity : 0.1;
+  model.materials.hotGenerator.emissiveIntensity = isHeating ? generatorGlowIntensity : 0.1;
+
+  // Cutaway transparency
+  model.materials.weldedSteel.opacity = isCutaway ? 0.35 : 1.0;
+  model.materials.weldedSteel.transparent = isCutaway;
+  model.materials.absorberMat.opacity = isCutaway ? 0.35 : 1.0;
+  model.materials.absorberMat.transparent = isCutaway;
 }

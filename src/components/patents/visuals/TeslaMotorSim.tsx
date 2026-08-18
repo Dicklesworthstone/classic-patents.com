@@ -2,13 +2,11 @@
 
 import { Zap } from "lucide-react";
 import { useEffect, useState } from "react";
-import { FrankenSimEngine } from "@/physics/engine";
 import {
+  stepTeslaMotorFig9,
   TESLA_FIELD_DISPLAY_SLOWDOWN,
   TESLA_FIELD_DISPLAY_TICK_MS,
-  TESLA_FIELD_POLES,
   teslaBAt,
-  teslaFieldDisplayOmegaDegPerS,
 } from "@/physics/teslaKernel";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { soundEngine } from "@/utils/soundEngine";
@@ -17,38 +15,32 @@ export function TeslaMotorSim() {
   const { params, updateParam } = usePatentPhysics("us-381968-tesla-motor");
   const phaseCount = (params.phaseCount as 2 | 3) ?? 2;
   const frequencyHz = params.frequency ?? 60;
-  const loadTorque = params.loadTorque ?? 38.5;
   const isPlayingAudio = (params.acHum ?? 0) === 1;
   const [_activePedagogyStep, setActivePedagogyStep] = useState<number>(1);
   const [angle, setAngle] = useState<number>(0);
 
-  const fieldPoles = TESLA_FIELD_POLES;
-  const em = FrankenSimEngine.stepTeslaMotor(frequencyHz, fieldPoles, loadTorque);
-  const syncSpeedRpm = em.synchronousRpm;
-  const slip = em.slipFraction;
-  const rotorSpeedRpm = em.rotorRpm;
+  const apparatus = stepTeslaMotorFig9(frequencyHz);
 
   // Animation Loop for Stator Field & Rotor Rotation
   useEffect(() => {
-    const degPerTick =
-      teslaFieldDisplayOmegaDegPerS(frequencyHz) * (TESLA_FIELD_DISPLAY_TICK_MS / 1000);
+    const degPerTick = apparatus.fieldDisplayOmegaDegPerS * (TESLA_FIELD_DISPLAY_TICK_MS / 1000);
     const interval = setInterval(() => {
       setAngle((prev) => (prev + degPerTick) % 360);
     }, TESLA_FIELD_DISPLAY_TICK_MS);
     return () => clearInterval(interval);
-  }, [frequencyHz]);
+  }, [apparatus.fieldDisplayOmegaDegPerS]);
 
   // Audio AC Hum feedback
   useEffect(() => {
     if (isPlayingAudio) {
-      soundEngine.playTeslaMotorHum(frequencyHz, rotorSpeedRpm);
+      soundEngine.playTeslaMotorHum(frequencyHz, apparatus.diskRpm);
     } else {
       soundEngine.stopContinuousTone();
     }
     return () => {
       soundEngine.stopContinuousTone();
     };
-  }, [isPlayingAudio, frequencyHz, rotorSpeedRpm]);
+  }, [isPlayingAudio, frequencyHz, apparatus.diskRpm]);
 
   const _applyPedagogyStep = (step: number) => {
     setActivePedagogyStep(step);
@@ -56,17 +48,14 @@ export function TeslaMotorSim() {
       // Step 1: Low frequency 2-phase demonstration
       updateParam("frequency", 30);
       updateParam("phaseCount", 2);
-      updateParam("loadTorque", 10);
     } else if (step === 2) {
       // Step 2: Standard 60Hz 2-phase Polyphase Stator
       updateParam("frequency", 60);
       updateParam("phaseCount", 2);
-      updateParam("loadTorque", 25);
     } else if (step === 3) {
       // Step 3: High efficiency 3-phase AC Motor
       updateParam("frequency", 60);
       updateParam("phaseCount", 3);
-      updateParam("loadTorque", 40);
     }
   };
 
@@ -88,8 +77,9 @@ export function TeslaMotorSim() {
             </h3>
           </div>
           <p className="text-xs text-ink-600 dark:text-ink-400 mt-1">
-            Observe how out-of-phase AC currents generate a smooth, rotating magnetic stator vortex
-            with <strong>zero mechanical brushes</strong>.
+            Fig. 9 routes two generator circuits through{" "}
+            <strong>collector rings and brushes</strong>
+            to matching motor-coil pairs; the motor itself needs no commutator.
           </p>
         </div>
 
@@ -104,7 +94,7 @@ export function TeslaMotorSim() {
                 : "text-ink-700 dark:text-ink-400 hover:text-ink-900"
             }`}
           >
-            1. 2-Phase 30Hz
+            1. Fig. 9 phase sequence
           </button>
           <button
             type="button"
@@ -115,7 +105,7 @@ export function TeslaMotorSim() {
                 : "text-ink-700 dark:text-ink-400 hover:text-ink-900"
             }`}
           >
-            2. Standard 60Hz
+            2. Faster generator sequence
           </button>
           <button
             type="button"
@@ -126,7 +116,7 @@ export function TeslaMotorSim() {
                 : "text-ink-700 dark:text-ink-400 hover:text-ink-900"
             }`}
           >
-            3. 3-Phase Polyphase
+            3. Fig. 13 three-circuit comparison
           </button>
         </div>
       </div>
@@ -250,8 +240,8 @@ export function TeslaMotorSim() {
             />
             <circle cx={200 + bVectorX} cy={150 + bVectorY} r="5" fill="#f59e0b" />
 
-            {/* Rotating Armature / Rotor Body */}
-            <g transform={`translate(200, 150) rotate(${angle * (1 - slip)})`}>
+            {/* Fig. 9 magnetic disk D inside the annular ring R. */}
+            <g transform={`translate(200, 150) rotate(${angle})`}>
               <circle
                 cx="0"
                 cy="0"
@@ -261,40 +251,29 @@ export function TeslaMotorSim() {
                 strokeWidth="2"
               />
               <circle cx="0" cy="0" r="8" fill="#0f172a" stroke="#94a3b8" strokeWidth="2" />
-              {/* Squirrel Cage Copper Bars */}
-              {Array.from({ length: 8 }).map((_, i) => {
-                const barAngle = (i * 45 * Math.PI) / 180;
-                return (
-                  <circle
-                    key={i}
-                    cx={Math.cos(barAngle) * 36}
-                    cy={Math.sin(barAngle) * 36}
-                    r="4"
-                    fill="#f59e0b"
-                    stroke="#d97706"
-                    strokeWidth="1"
-                  />
-                );
-              })}
+              <path d="M-42 -16h84v32H-42z" fill="none" stroke="#cbd5e1" strokeWidth="1.5" />
+              <text x="0" y="4" fill="#f8fafc" fontSize="13" textAnchor="middle" fontWeight="bold">
+                D
+              </text>
             </g>
           </svg>
 
           {/* Real-Time Telemetry Bar */}
           <div className="w-full grid grid-cols-3 gap-2 text-center text-xs font-mono pt-3 border-t border-ink-800 text-ink-300">
             <div>
-              <span className="text-ink-500 block text-[10px]">SYNC SPEED</span>
+              <span className="text-ink-500 block text-[10px]">GENERATOR REVOLUTION</span>
               <span className="text-amber-400 font-bold">
-                {syncSpeedRpm} RPM · ω/{TESLA_FIELD_DISPLAY_SLOWDOWN}{" "}
-                {teslaFieldDisplayOmegaDegPerS(frequencyHz).toFixed(0)} °/s
+                {apparatus.generatorRpm} RPM · ω/{TESLA_FIELD_DISPLAY_SLOWDOWN}{" "}
+                {apparatus.fieldDisplayOmegaDegPerS.toFixed(0)} °/s
               </span>
             </div>
             <div>
-              <span className="text-ink-500 block text-[10px]">ROTOR SPEED</span>
-              <span className="text-emerald-400 font-bold">{rotorSpeedRpm} RPM</span>
+              <span className="text-ink-500 block text-[10px]">POLE SHIFT AROUND R</span>
+              <span className="text-emerald-400 font-bold">{apparatus.poleShiftRpm} RPM</span>
             </div>
             <div>
-              <span className="text-ink-500 block text-[10px]">INDUCTION SLIP</span>
-              <span className="text-blue-400 font-bold">{(slip * 100).toFixed(1)}%</span>
+              <span className="text-ink-500 block text-[10px]">FIG. 9 DISK D</span>
+              <span className="text-blue-400 font-bold">follows synchronously</span>
             </div>
           </div>
         </div>

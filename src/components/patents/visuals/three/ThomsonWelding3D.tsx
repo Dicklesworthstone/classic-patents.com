@@ -131,7 +131,7 @@ export function ThomsonWelding3D() {
         dt,
         timeSec,
         p.weldTempCelsius,
-        p.upsetBurrWidthMm ?? 3.8,
+        p.upsetBurrWidthMm,
         p.isForged > 0.5,
         p.showSparks,
       );

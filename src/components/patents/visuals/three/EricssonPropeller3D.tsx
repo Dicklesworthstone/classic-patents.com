@@ -1,18 +1,21 @@
 "use client";
 
-import { Activity, Camera, Eye, EyeOff, Volume2, VolumeX, Waves } from "lucide-react";
+import { Activity, Camera, Eye, EyeOff, Layers, Volume2, VolumeX, Waves } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import type * as THREE from "three";
 import { stepEricssonPropeller } from "@/physics/catalogKernels";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { soundEngine } from "@/utils/soundEngine";
-import { buildEricssonPropellerModel } from "./ericssonPropellerModel";
+import {
+  buildEricssonPropellerModel,
+  updateEricssonPropellerKinematics,
+} from "./ericssonPropellerModel";
 import { StudioKernelChips } from "./StudioKernelChips";
 import { createThreeStudioScene, type StudioContext } from "./ThreeStudioScene";
 import { useLiveSimParams } from "./useLiveSimParams";
 import { usePatentAudio } from "./usePatentAudio";
 
-type CameraPreset = "iso" | "propeller_drum" | "helical_blades" | "sternpost" | "top";
+type CameraPreset = "iso" | "propeller_drum" | "helical_blades" | "sternpost" | "rudder" | "top";
 
 export function EricssonPropeller3D() {
   const containerRef = useRef<HTMLDivElement>(null);
@@ -20,6 +23,7 @@ export function EricssonPropeller3D() {
   // Marine Hydrodynamics Parameters
   const { params } = usePatentPhysics("us-588-ericsson-propeller");
   const [showUiOverlay, setShowUiOverlay] = useState<boolean>(true);
+  const [isCutaway, setIsCutaway] = useState<boolean>(false);
   const shaftRpm = params.shaftRpm ?? 120;
   const ericson = stepEricssonPropeller({
     shaftRpm,
@@ -37,6 +41,7 @@ export function EricssonPropeller3D() {
     shaftRpm,
     shipSpeedKnots,
     showWake,
+    isCutaway,
     isAudioMuted,
     thrustKn: ericson.thrustKn,
     bladePitchAngleDeg: params.bladePitchAngleDeg ?? 35,
@@ -70,6 +75,10 @@ export function EricssonPropeller3D() {
       case "sternpost":
         camera.position.set(-3.2, 1.2, 3.5);
         controls.target.set(-1.5, 0, 0);
+        break;
+      case "rudder":
+        camera.position.set(4.2, 0.8, 2.5);
+        controls.target.set(2.8, 0, 0);
         break;
       case "top":
         camera.position.set(0, 11.0, 0.1);
@@ -111,35 +120,17 @@ export function EricssonPropeller3D() {
       const delta = 1 / 60;
       const p = live.current;
 
-      const omegaRadPerSec = p.shaftOmegaRadPerS ?? (p.shaftRpm * 2 * Math.PI) / 60;
+      const omegaRadPerSec = p.shaftOmegaRadPerS;
 
-      // Forward drum rotates clockwise
-      model.forwardDrumGroup.rotation.x += omegaRadPerSec * delta;
-      model.outerShaftMesh.rotation.x += omegaRadPerSec * delta;
+      updateEricssonPropellerKinematics(
+        model,
+        delta,
+        omegaRadPerSec,
+        p.wakeSwirlScale,
+        p.showWake,
+        p.isCutaway,
+      );
 
-      // Aft drum counter-rotates counter-clockwise (US 588 Tandem Counter-Rotation)
-      model.aftDrumGroup.rotation.x -= omegaRadPerSec * delta;
-      model.innerShaftMesh.rotation.x -= omegaRadPerSec * delta;
-
-      // Animate wake spiral streamlines
-      const pos = model.wakePositions;
-      for (let i = 0; i < model.wakeCount; i++) {
-        const idx = i * 3;
-        pos[idx] += (p.shipSpeedKnots / 8.5) * 6.5 * delta;
-        const y = pos[idx + 1];
-        const z = pos[idx + 2];
-        let curAngle = Math.atan2(z, y);
-        curAngle += omegaRadPerSec * delta * (p.wakeSwirlScale ?? 0.4);
-        const r = Math.sqrt(y * y + z * z);
-        pos[idx + 1] = Math.cos(curAngle) * r;
-        pos[idx + 2] = Math.sin(curAngle) * r;
-
-        if (pos[idx] > 8.5) {
-          pos[idx] = 1.8;
-        }
-      }
-      model.wakePoints.geometry.attributes.position.needsUpdate = true;
-      model.wakePoints.visible = p.showWake;
       const wakeMat = model.materials.wakeMat;
       wakeMat.opacity = Math.min(0.95, 0.3 + (p.thrustKn / 30) * 0.65);
       wakeMat.color.setHex(p.thrustKn > 12 ? 0x38bdf8 : 0x64748b);
@@ -181,6 +172,7 @@ export function EricssonPropeller3D() {
               ["propeller_drum", "Propeller Drum"],
               ["helical_blades", "Helical Blades"],
               ["sternpost", "Sternpost"],
+              ["rudder", "Rudder"],
               ["top", "Top"],
             ] as [CameraPreset, string][]
           ).map(([preset, label]) => (
@@ -201,6 +193,18 @@ export function EricssonPropeller3D() {
 
         {/* Toggles */}
         <div className="flex items-center gap-1.5 bg-parchment-950/80 backdrop-blur-md p-1.5 rounded-xl border border-parchment-700/60 shadow-lg pointer-events-auto">
+          <button
+            type="button"
+            onClick={() => setIsCutaway(!isCutaway)}
+            title={isCutaway ? "Switch to Solid Hull" : "Switch to Hull Cutaway"}
+            className={`p-1.5 rounded-lg text-xs transition-colors ${
+              isCutaway
+                ? "bg-amber-600 text-white shadow-sm"
+                : "text-parchment-400 hover:text-white hover:bg-parchment-800"
+            }`}
+          >
+            <Layers className="w-4 h-4" />
+          </button>
           <button
             type="button"
             onClick={() => setShowWake(!showWake)}

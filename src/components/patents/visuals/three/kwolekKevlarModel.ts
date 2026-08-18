@@ -19,12 +19,23 @@ export interface KwolekKevlarModel {
   hBondsGroup: THREE.Group;
   bulletMesh: THREE.Mesh;
   chains: { group: THREE.Group; baseY: number }[];
+  materials: {
+    carbonRingMat: THREE.MeshStandardMaterial;
+    amideNitrogenMat: THREE.MeshStandardMaterial;
+    carbonylOxygenMat: THREE.MeshStandardMaterial;
+    spinneretSteelMat: THREE.MeshStandardMaterial;
+    bulletMat: THREE.MeshStandardMaterial;
+    hBondMat: THREE.MeshStandardMaterial;
+    bondStickMat: THREE.MeshStandardMaterial;
+    holeMat: THREE.MeshStandardMaterial;
+  };
   updateKinematics: (
     delta: number,
     isImpactTesting: boolean,
     showHydrogenBonds: boolean,
     shearRate: number,
-    impactVelocityMps: number,
+    bulletDisplaySpeed: number,
+    isCutaway?: boolean,
   ) => void;
   dispose: () => void;
 }
@@ -99,83 +110,84 @@ export function buildKwolekKevlarModel(): KwolekKevlarModel {
   const spinneretPack = new THREE.Group();
   spinneretPack.position.set(-6.0, 0, 0);
 
-  const nozzleGeo = new THREE.CylinderGeometry(2.4, 2.8, 1.4, 32);
-  disposables.push(nozzleGeo);
-  const nozzleBody = new THREE.Mesh(nozzleGeo, spinneretSteelMat);
-  nozzleBody.rotation.z = Math.PI / 2;
-  spinneretPack.add(nozzleBody);
+  const packGeo = new THREE.BoxGeometry(1.6, 6.8, 2.2);
+  disposables.push(packGeo);
+  const packMesh = new THREE.Mesh(packGeo, spinneretSteelMat);
+  spinneretPack.add(packMesh);
 
-  for (let o = -2; o <= 2; o++) {
-    const holeGeo = new THREE.CylinderGeometry(0.1, 0.1, 0.2, 12);
+  // Spinneret extrusion capillary holes
+  const numChains = 5;
+  for (let c = 0; c < numChains; c++) {
+    const yPos = (c - (numChains - 1) / 2) * 1.35;
+    const holeGeo = new THREE.CylinderGeometry(0.18, 0.18, 0.05, 16);
     disposables.push(holeGeo);
     const hole = new THREE.Mesh(holeGeo, holeMat);
     hole.rotation.z = Math.PI / 2;
-    hole.position.set(0.7, o * 0.9, 0);
+    hole.position.set(0.81, yPos, 0);
     spinneretPack.add(hole);
   }
-  polymerGroup.add(spinneretPack);
+  root.add(spinneretPack);
 
   // ==========================================
-  // 5 EXTENDED PPTA POLYMER CHAINS
+  // PPTA POLYMER CHAINS & AROMATIC RINGS
   // ==========================================
   const chains: { group: THREE.Group; baseY: number }[] = [];
-  const numChains = 5;
 
   for (let c = 0; c < numChains; c++) {
-    const chainG = new THREE.Group();
-    const yPos = (c - (numChains - 1) / 2) * 1.35;
-    chainG.position.set(0, yPos, 0);
+    const chainGroup = new THREE.Group();
+    const baseY = (c - (numChains - 1) / 2) * 1.35;
+    chainGroup.position.set(0, baseY, 0);
 
-    for (let u = 0; u < 6; u++) {
-      const xPos = -4.2 + u * 1.55;
+    // Build repeating monomer units along chain axis
+    for (let u = 0; u < 5; u++) {
+      const uGroup = new THREE.Group();
+      const xOffset = -4.0 + u * 1.55;
+      uGroup.position.set(xOffset, 0, 0);
 
-      // Hexagonal Benzene Ring
-      const ringG = new THREE.Group();
-      ringG.position.x = xPos;
-      for (let r = 0; r < 6; r++) {
-        const angle = (r * Math.PI) / 3;
-        const nextAngle = ((r + 1) * Math.PI) / 3;
-        const ax = Math.cos(angle) * 0.38;
-        const ay = Math.sin(angle) * 0.38;
-        const bx = Math.cos(nextAngle) * 0.38;
-        const by = Math.sin(nextAngle) * 0.38;
+      // 1,4-Phenylene aromatic ring
+      const ringGeo = new THREE.CylinderGeometry(0.42, 0.42, 0.08, 6);
+      disposables.push(ringGeo);
+      const ring = new THREE.Mesh(ringGeo, carbonRingMat);
+      ring.rotation.x = Math.PI / 2;
+      uGroup.add(ring);
 
-        const atomGeo = new THREE.SphereGeometry(0.11, 12, 12);
-        disposables.push(atomGeo);
-        const atom = new THREE.Mesh(atomGeo, carbonRingMat);
-        atom.position.set(ax, ay, 0);
-        ringG.add(atom);
-
-        const stickGeo = new THREE.CylinderGeometry(0.03, 0.03, 0.38, 8);
-        disposables.push(stickGeo);
-        const bondStick = new THREE.Mesh(stickGeo, bondStickMat);
-        bondStick.position.set((ax + bx) / 2, (ay + by) / 2, 0);
-        bondStick.rotation.z = angle + Math.PI / 6;
-        ringG.add(bondStick);
-      }
-      chainG.add(ringG);
-
-      // Amide Group
-      const nGeo = new THREE.SphereGeometry(0.14, 12, 12);
+      // Amide nitrogen atom (-NH-)
+      const nGeo = new THREE.SphereGeometry(0.16, 12, 12);
       disposables.push(nGeo);
       const nAtom = new THREE.Mesh(nGeo, amideNitrogenMat);
-      nAtom.position.set(xPos + 0.55, 0.22, 0);
-      chainG.add(nAtom);
+      nAtom.position.set(0.55, u % 2 === 0 ? 0.22 : -0.22, 0);
+      uGroup.add(nAtom);
 
-      const oGeo = new THREE.SphereGeometry(0.14, 12, 12);
+      // Carbonyl oxygen atom (=O)
+      const oGeo = new THREE.SphereGeometry(0.16, 12, 12);
       disposables.push(oGeo);
       const oAtom = new THREE.Mesh(oGeo, carbonylOxygenMat);
-      oAtom.position.set(xPos + 0.95, -0.22, 0);
-      chainG.add(oAtom);
+      oAtom.position.set(-0.55, u % 2 === 0 ? -0.22 : 0.22, 0);
+      uGroup.add(oAtom);
+
+      // Covalent backbone bond sticks
+      const stickGeo = new THREE.CylinderGeometry(0.05, 0.05, 0.45, 8);
+      disposables.push(stickGeo);
+
+      const stick1 = new THREE.Mesh(stickGeo, bondStickMat);
+      stick1.rotation.z = Math.PI / 2;
+      stick1.position.set(0.35, 0, 0);
+      uGroup.add(stick1);
+
+      const stick2 = new THREE.Mesh(stickGeo, bondStickMat);
+      stick2.rotation.z = Math.PI / 2;
+      stick2.position.set(-0.35, 0, 0);
+      uGroup.add(stick2);
+
+      chainGroup.add(uGroup);
     }
 
-    chainG.castShadow = true;
-    polymerGroup.add(chainG);
-    chains.push({ group: chainG, baseY: yPos });
+    polymerGroup.add(chainGroup);
+    chains.push({ group: chainGroup, baseY });
   }
 
   // ==========================================
-  // HYDROGEN BONDS NETWORK (CLAIM 2)
+  // HYDROGEN BOND NETWORK (CLAIM 2)
   // ==========================================
   const hBondsGroup = new THREE.Group();
   for (let c = 0; c < numChains - 1; c++) {
@@ -207,18 +219,18 @@ export function buildKwolekKevlarModel(): KwolekKevlarModel {
     isImpactTesting: boolean,
     showHydrogenBonds: boolean,
     shearRate: number,
-    impactVelocityMps: number,
+    bulletDisplaySpeed: number,
+    isCutaway = false,
   ) => {
-    hBondsGroup.visible = showHydrogenBonds;
-
-    if (isImpactTesting) {
-      bulletMesh.position.x -= delta * (impactVelocityMps / 400) * 15.0;
-      if (bulletMesh.position.x < 1.0) {
-        bulletMesh.position.x = 6.5;
-      }
-    } else {
-      bulletMesh.position.x = 6.5;
-    }
+    updateKwolekKevlarKinematics(
+      model,
+      delta,
+      isImpactTesting,
+      showHydrogenBonds,
+      shearRate,
+      bulletDisplaySpeed,
+      isCutaway,
+    );
   };
 
   const dispose = () => {
@@ -227,14 +239,54 @@ export function buildKwolekKevlarModel(): KwolekKevlarModel {
     }
   };
 
-  return {
+  const model: KwolekKevlarModel = {
     root,
     polymerGroup,
     spinneretPack,
     hBondsGroup,
     bulletMesh,
     chains,
+    materials: {
+      carbonRingMat,
+      amideNitrogenMat,
+      carbonylOxygenMat,
+      spinneretSteelMat,
+      bulletMat,
+      hBondMat,
+      bondStickMat,
+      holeMat,
+    },
     updateKinematics,
     dispose,
   };
+
+  return model;
+}
+
+/**
+ * Updates Stephanie Kwolek PPTA liquid crystalline Kevlar polymer sheet dynamics, hydrogen bond network, projectile strain dissipation, and spinneret cutaway.
+ */
+export function updateKwolekKevlarKinematics(
+  model: KwolekKevlarModel,
+  delta: number,
+  isImpactTesting: boolean,
+  showHydrogenBonds: boolean,
+  _shearRate: number,
+  bulletDisplaySpeed: number,
+  isCutaway = false,
+): void {
+  model.hBondsGroup.visible = showHydrogenBonds;
+
+  if (isImpactTesting) {
+    model.bulletMesh.position.x -= delta * bulletDisplaySpeed;
+    if (model.bulletMesh.position.x < 1.0) {
+      model.bulletMesh.position.x = 6.5;
+    }
+  } else {
+    model.bulletMesh.position.x = 6.5;
+  }
+
+  // Cutaway mode: make spinneret steel block translucent
+  model.materials.spinneretSteelMat.opacity = isCutaway ? 0.35 : 1.0;
+  model.materials.spinneretSteelMat.transparent = isCutaway;
 }

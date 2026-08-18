@@ -2,7 +2,10 @@ import { describe, expect, test } from "bun:test";
 import { readFileSync } from "node:fs";
 import { join } from "node:path";
 import { stepEinsteinRefrigerator } from "@/physics/catalogKernels";
-import { buildEinsteinRefrigeratorModel } from "./einsteinRefrigeratorModel";
+import {
+  buildEinsteinRefrigeratorModel,
+  updateEinsteinRefrigeratorKinematics,
+} from "./einsteinRefrigeratorModel";
 
 const VISUALS_DIRECTORY = join(process.cwd(), "src/components/patents/visuals");
 
@@ -21,6 +24,7 @@ describe("US 1,781,541 Albert Einstein & Leo Szilard Refrigerator visual & therm
     expect(threeSource).not.toContain(".glb");
     expect(threeSource).not.toContain(".gltf");
     expect(modelSource).toContain("buildEinsteinRefrigeratorModel");
+    expect(modelSource).toContain("updateEinsteinRefrigeratorKinematics");
   });
 
   test("maintains deterministic replay without ambient randomness or private clocks in frame loop", () => {
@@ -45,10 +49,11 @@ describe("US 1,781,541 Albert Einstein & Leo Szilard Refrigerator visual & therm
       "utf8",
     );
 
-    for (const preset of ["iso", "generator", "condenser", "evaporator", "absorber"]) {
+    for (const preset of ["iso", "generator", "condenser", "evaporator", "absorber", "top"]) {
       expect(threeSource).toContain(preset);
     }
 
+    expect(threeSource).toContain("isCutaway");
     expect(threeSource).toContain("Albert Einstein & Leo Szilard (US 1,781,541)");
   });
 
@@ -61,33 +66,39 @@ describe("US 1,781,541 Albert Einstein & Leo Szilard Refrigerator visual & therm
     expect(result.coolingWatts).toBeGreaterThan(30);
     expect(result.evapTempC).toBeLessThan(5);
     expect(result.cop).toBeGreaterThan(0.1);
+    expect(result.fluidDisplaySpeed).toBeCloseTo(result.coolingWatts / 45 + 0.8, 2);
   });
 
   test("builds and articulates procedural boiler generator, condenser coil, and evaporator correctly", () => {
-    const {
-      rootGroup,
-      fridgeGroup,
-      generatorMesh,
-      heaterMesh,
-      condenserGroup,
-      evaporatorMesh,
-      absorberMesh,
-      economizerMesh,
-      materials,
-      dispose,
-    } = buildEinsteinRefrigeratorModel();
+    const model = buildEinsteinRefrigeratorModel();
 
-    expect(rootGroup.children.length).toBeGreaterThan(0);
-    expect(fridgeGroup).toBeDefined();
-    expect(generatorMesh).toBeDefined();
-    expect(heaterMesh).toBeDefined();
-    expect(condenserGroup).toBeDefined();
-    expect(evaporatorMesh).toBeDefined();
-    expect(absorberMesh).toBeDefined();
-    expect(economizerMesh).toBeDefined();
-    expect(materials.coldEvaporator).toBeDefined();
-    expect(materials.hotGenerator).toBeDefined();
+    expect(model.rootGroup.children.length).toBeGreaterThan(0);
+    expect(model.fridgeGroup).toBeDefined();
+    expect(model.generatorMesh).toBeDefined();
+    expect(model.heaterMesh).toBeDefined();
+    expect(model.condenserGroup).toBeDefined();
+    expect(model.evaporatorMesh).toBeDefined();
+    expect(model.absorberMesh).toBeDefined();
+    expect(model.economizerMesh).toBeDefined();
+    expect(model.materials.coldEvaporator).toBeDefined();
+    expect(model.materials.hotGenerator).toBeDefined();
 
-    dispose();
+    const fridge = stepEinsteinRefrigerator({
+      heatInput: 220,
+      totalPressure: 15,
+      ammoniaRatio: 0.65,
+    });
+    updateEinsteinRefrigeratorKinematics(
+      model,
+      0.016,
+      fridge.fluidDisplaySpeed,
+      fridge.heaterGlowIntensity,
+      fridge.generatorGlowIntensity,
+      true,
+      true,
+    );
+    expect(model.materials.weldedSteel.opacity).toBe(0.35);
+
+    model.dispose();
   });
 });

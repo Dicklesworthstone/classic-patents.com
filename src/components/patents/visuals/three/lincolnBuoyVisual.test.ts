@@ -2,7 +2,7 @@ import { describe, expect, test } from "bun:test";
 import { readFileSync } from "node:fs";
 import { join } from "node:path";
 import { stepLincolnBuoy } from "@/physics/catalogKernels";
-import { buildLincolnBuoyModel } from "./lincolnBuoyModel";
+import { buildLincolnBuoyModel, updateLincolnBuoyKinematics } from "./lincolnBuoyModel";
 
 const VISUALS_DIRECTORY = join(process.cwd(), "src/components/patents/visuals");
 
@@ -18,6 +18,9 @@ describe("US 6,469 Abraham Lincoln Buoying Vessels Over Shoals visual & hydrosta
     expect(threeSource).not.toContain(".glb");
     expect(threeSource).not.toContain(".gltf");
     expect(modelSource).toContain("buildLincolnBuoyModel");
+    expect(modelSource).toContain("updateLincolnBuoyKinematics");
+    expect(modelSource).toContain("paddleDisplayOmegaRadPerS");
+    expect(modelSource).not.toContain("-= 0.02");
   });
 
   test("maintains deterministic replay without ambient randomness or private clocks in frame loop", () => {
@@ -36,10 +39,11 @@ describe("US 6,469 Abraham Lincoln Buoying Vessels Over Shoals visual & hydrosta
   test("exposes authentic camera presets and UI overlay for steamboat buoyancy observation", () => {
     const threeSource = readFileSync(join(VISUALS_DIRECTORY, "three", "LincolnBuoy3D.tsx"), "utf8");
 
-    for (const preset of ["iso", "bellows_chambers", "pilothouse", "paddlewheel", "top"]) {
+    for (const preset of ["iso", "bellows_chambers", "pilothouse", "paddlewheel", "keel", "top"]) {
       expect(threeSource).toContain(preset);
     }
 
+    expect(threeSource).toContain("isCutaway");
     expect(threeSource).toContain("Abraham Lincoln (US 6,469)");
   });
 
@@ -48,31 +52,26 @@ describe("US 6,469 Abraham Lincoln Buoying Vessels Over Shoals visual & hydrosta
     expect(result.liftTons).toBeGreaterThan(20);
     expect(result.hullDraftFt).toBeLessThan(result.baseDraftFt);
     expect(result.liftKn).toBeGreaterThan(300);
+    expect(result.paddleDisplayOmegaRadPerS).toBeCloseTo(1.2, 5);
   });
 
   test("builds and articulates procedural steamboat hull, expandable air bellows, and sandbar shelf correctly", () => {
-    const {
-      rootGroup,
-      boatGroup,
-      portBellows,
-      stbdBellows,
-      paddlewheelGroup,
-      waterMesh,
-      sandbarMesh,
-      materials,
-      dispose,
-    } = buildLincolnBuoyModel();
+    const model = buildLincolnBuoyModel();
 
-    expect(rootGroup.children.length).toBeGreaterThan(2);
-    expect(boatGroup).toBeDefined();
-    expect(portBellows).toBeDefined();
-    expect(stbdBellows).toBeDefined();
-    expect(paddlewheelGroup).toBeDefined();
-    expect(waterMesh).toBeDefined();
-    expect(sandbarMesh).toBeDefined();
-    expect(materials.bellowsRubber).toBeDefined();
-    expect(materials.hullWood).toBeDefined();
+    expect(model.rootGroup.children.length).toBeGreaterThan(2);
+    expect(model.boatGroup).toBeDefined();
+    expect(model.portBellows).toBeDefined();
+    expect(model.stbdBellows).toBeDefined();
+    expect(model.paddlewheelGroup).toBeDefined();
+    expect(model.waterMesh).toBeDefined();
+    expect(model.sandbarMesh).toBeDefined();
+    expect(model.materials.bellowsRubber).toBeDefined();
+    expect(model.materials.hullWood).toBeDefined();
 
-    dispose();
+    updateLincolnBuoyKinematics(model, 1 / 60, 85, 3.5, 5.2, 4.1, 1.2, true);
+    expect(model.materials.hullWood.opacity).toBe(0.35);
+    expect(model.portBellowsBody.scale.y).toBeGreaterThan(1.0);
+
+    model.dispose();
   });
 });

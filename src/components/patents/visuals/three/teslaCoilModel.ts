@@ -251,7 +251,6 @@ export function buildTeslaCoilModel(): TeslaCoilModel {
 
         const segs = 14;
         for (let i = 1; i < segs; i++) {
-          const progress = i / (segs - 1);
           curX += Math.cos(theta) * (length / segs) + (lcg() - 0.5) * 0.35;
           curY += (lcg() - 0.3) * (length / segs) * 0.5;
           curZ += Math.sin(theta) * (length / segs) + (lcg() - 0.5) * 0.35;

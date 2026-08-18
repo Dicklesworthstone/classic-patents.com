@@ -85,7 +85,7 @@ describe("US 319,596 Sir Hiram Maxim Automatic Machine Gun visual & ballistics b
       model,
       0.016,
       0.5,
-      600,
+      (600 * 2 * Math.PI) / 60,
       0.019,
       120,
       10,

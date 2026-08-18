@@ -21,6 +21,9 @@ describe("US 4,750 Elias Howe Sewing Machine visual & kinematics boundary", () =
     expect(threeSource).not.toContain(".glb");
     expect(threeSource).not.toContain(".gltf");
     expect(modelSource).toContain("buildHoweSewingMachineModel");
+    expect(threeSource).toContain("needleStudioRotZ");
+    expect(threeSource).not.toContain("/ 45");
+    expect(threeSource).not.toContain("/ 90");
   });
 
   test("maintains deterministic replay without ambient randomness or private clocks in frame loop", () => {
@@ -57,6 +60,7 @@ describe("US 4,750 Elias Howe Sewing Machine visual & kinematics boundary", () =
     expect(result.stitchFrequencyHz).toBe(4.0);
     expect(result.clothFeedMmPerS).toBe(14.0);
     expect(result.crankOmegaRadPerS).toBeCloseTo(8 * Math.PI, 2);
+    expect(result.clothStudioAdvancePerS).toBeCloseTo(1.4, 3);
   });
 
   test("builds and articulates procedural eye-pointed needle, shuttle, and baster plate correctly", () => {

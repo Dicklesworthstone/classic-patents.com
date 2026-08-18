@@ -2,7 +2,10 @@ import { describe, expect, test } from "bun:test";
 import { readFileSync } from "node:fs";
 import { join } from "node:path";
 import { stepWhitneyCottonGin } from "@/physics/catalogKernels";
-import { buildWhitneyCottonGinModel } from "./whitneyCottonGinModel";
+import {
+  buildWhitneyCottonGinModel,
+  updateWhitneyCottonGinKinematics,
+} from "./whitneyCottonGinModel";
 
 const VISUALS_DIRECTORY = join(process.cwd(), "src/components/patents/visuals");
 
@@ -21,6 +24,7 @@ describe("US X72 Eli Whitney Cotton Gin visual & kinematics boundary", () => {
     expect(threeSource).not.toContain(".glb");
     expect(threeSource).not.toContain(".gltf");
     expect(modelSource).toContain("buildWhitneyCottonGinModel");
+    expect(modelSource).toContain("updateWhitneyCottonGinKinematics");
   });
 
   test("maintains deterministic replay without ambient randomness or private clocks in frame loop", () => {
@@ -45,10 +49,11 @@ describe("US X72 Eli Whitney Cotton Gin visual & kinematics boundary", () => {
       "utf8",
     );
 
-    for (const preset of ["iso", "grate_saws", "brush_drum", "hopper", "top"]) {
+    for (const preset of ["iso", "grate_saws", "brush_drum", "hopper", "crank_drive", "top"]) {
       expect(threeSource).toContain(preset);
     }
 
+    expect(threeSource).toContain("isCutaway");
     expect(threeSource).toContain("Whitney Cotton Gin 3D");
   });
 
@@ -61,33 +66,25 @@ describe("US X72 Eli Whitney Cotton Gin visual & kinematics boundary", () => {
   });
 
   test("builds and articulates procedural timber frame, breastwork grate, saw cylinder, and brush cylinder correctly", () => {
-    const {
-      rootGroup,
-      frameGroup,
-      grateGroup,
-      sawCylinderGroup,
-      brushCylinderGroup,
-      crankGroup,
-      drivePulleyGroup,
-      fiberPoints,
-      seedsGroup,
-      materials,
-      dispose,
-    } = buildWhitneyCottonGinModel();
+    const model = buildWhitneyCottonGinModel();
 
-    expect(rootGroup.children.length).toBeGreaterThan(4);
-    expect(frameGroup).toBeDefined();
-    expect(grateGroup).toBeDefined();
-    expect(sawCylinderGroup).toBeDefined();
-    expect(brushCylinderGroup).toBeDefined();
-    expect(crankGroup).toBeDefined();
-    expect(drivePulleyGroup).toBeDefined();
-    expect(fiberPoints).toBeDefined();
-    expect(seedsGroup).toBeDefined();
-    expect(materials.walnutWood).toBeDefined();
-    expect(materials.ironSaw).toBeDefined();
-    expect(materials.brassGrate).toBeDefined();
+    expect(model.rootGroup.children.length).toBeGreaterThan(4);
+    expect(model.frameGroup).toBeDefined();
+    expect(model.grateGroup).toBeDefined();
+    expect(model.sawCylinderGroup).toBeDefined();
+    expect(model.brushCylinderGroup).toBeDefined();
+    expect(model.crankGroup).toBeDefined();
+    expect(model.drivePulleyGroup).toBeDefined();
+    expect(model.fiberPoints).toBeDefined();
+    expect(model.seedsGroup).toBeDefined();
+    expect(model.materials.walnutWood).toBeDefined();
+    expect(model.materials.ironSaw).toBeDefined();
+    expect(model.materials.brassGrate).toBeDefined();
 
-    dispose();
+    updateWhitneyCottonGinKinematics(model, 0.016, 18.8, 18.8, 47.1, true, true);
+    expect(model.materials.walnutWood.opacity).toBe(0.35);
+    expect(model.fiberPoints.visible).toBe(true);
+
+    model.dispose();
   });
 });

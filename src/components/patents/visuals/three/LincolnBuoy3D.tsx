@@ -1,17 +1,28 @@
 "use client";
 
-import { Anchor, Camera, Eye, EyeOff, RotateCcw, Volume2, VolumeX, Waves, Zap } from "lucide-react";
+import {
+  Anchor,
+  Camera,
+  Eye,
+  EyeOff,
+  Layers,
+  RotateCcw,
+  Volume2,
+  VolumeX,
+  Waves,
+  Zap,
+} from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import type * as THREE from "three";
 import { stepLincolnBuoy } from "@/physics/catalogKernels";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { soundEngine } from "@/utils/soundEngine";
-import { buildLincolnBuoyModel } from "./lincolnBuoyModel";
+import { buildLincolnBuoyModel, updateLincolnBuoyKinematics } from "./lincolnBuoyModel";
 import { createThreeStudioScene, type StudioContext } from "./ThreeStudioScene";
 import { useLiveSimParams } from "./useLiveSimParams";
 import { usePatentAudio } from "./usePatentAudio";
 
-type CameraPreset = "iso" | "bellows_chambers" | "pilothouse" | "paddlewheel" | "top";
+type CameraPreset = "iso" | "bellows_chambers" | "pilothouse" | "paddlewheel" | "keel" | "top";
 
 export function LincolnBuoy3D() {
   const containerRef = useRef<HTMLDivElement>(null);
@@ -19,6 +30,7 @@ export function LincolnBuoy3D() {
   // Marine Hydrostatic State Controls
   const { params } = usePatentPhysics("us-6469-lincoln-buoy");
   const [showUiOverlay, setShowUiOverlay] = useState<boolean>(true);
+  const [isCutaway, setIsCutaway] = useState<boolean>(false);
   const bellowsInflationPct = params.inflationPct ?? 75;
   const steamboatWeightTons = params.weightTons ?? 380;
   const riverShoalDepthFt = params.shoalDepth ?? 3.5;
@@ -47,9 +59,11 @@ export function LincolnBuoy3D() {
     riverShoalDepthFt,
     baseDraftFt,
     effectiveDraftFt,
+    isCutaway,
     isAudioMuted,
     liftKn: lincoln.liftKn,
     shoalClearanceFt: lincoln.shoalClearanceFt,
+    paddleDisplayOmegaRadPerS: lincoln.paddleDisplayOmegaRadPerS,
   });
 
   const controlsRef = useRef<StudioContext["controls"] | null>(null);
@@ -77,6 +91,10 @@ export function LincolnBuoy3D() {
       case "paddlewheel":
         camera.position.set(8.5, 1.2, 3.5);
         controls.target.set(6.8, 0, 0);
+        break;
+      case "keel":
+        camera.position.set(0, -4.5, 8.5);
+        controls.target.set(0, -1.0, 0);
         break;
       case "top":
         camera.position.set(0, 13.0, 0.1);
@@ -115,20 +133,21 @@ export function LincolnBuoy3D() {
 
     const animate = () => {
       reqId = requestAnimationFrame(animate);
-      const delta = 1 / 60;
       const p = live.current;
 
-      model.paddlewheelGroup.rotation.z -= delta * (p.shoalClearanceFt > 0 ? 1.8 : 0.35);
+      const dt = 1 / 60;
+      updateLincolnBuoyKinematics(
+        model,
+        dt,
+        p.bellowsInflationPct,
+        p.riverShoalDepthFt,
+        p.baseDraftFt,
+        p.effectiveDraftFt,
+        p.paddleDisplayOmegaRadPerS,
+        p.isCutaway,
+      );
+
       model.materials.hullWood.color.setHex(p.shoalClearanceFt > 0 ? 0x5c3a21 : 0x991b1b);
-
-      const inflationScale = 0.3 + (p.bellowsInflationPct / 100) * 0.9;
-      model.portBellows.scale.set(1.0, inflationScale, inflationScale);
-      model.stbdBellows.scale.set(1.0, inflationScale, inflationScale);
-
-      const targetBoatY = (6.0 - p.effectiveDraftFt) * 0.35 - 0.5;
-      model.boatGroup.position.y += (targetBoatY - model.boatGroup.position.y) * 0.1;
-
-      model.sandbarMesh.position.y = -p.riverShoalDepthFt * 0.35;
 
       controls.update();
       renderer.render(scene, camera);
@@ -203,6 +222,18 @@ export function LincolnBuoy3D() {
         <div className="absolute top-3 right-3 sm:top-4 sm:right-4 z-10 flex gap-1.5 sm:gap-2">
           <button
             type="button"
+            onClick={() => setIsCutaway(!isCutaway)}
+            title={isCutaway ? "Switch to Solid Hull" : "Switch to Hull Cutaway"}
+            className={`p-1.5 sm:p-2.5 rounded-xl backdrop-blur-md border transition-colors shadow-sm ${
+              isCutaway
+                ? "bg-amber-600 text-white border-amber-700 shadow-md"
+                : "bg-white/90 dark:bg-ink-900/90 border-parchment-300 dark:border-ink-700 text-ink-700 dark:text-parchment-300 hover:bg-parchment-100"
+            }`}
+          >
+            <Layers className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
+          </button>
+          <button
+            type="button"
             onClick={() => setShowUiOverlay(!showUiOverlay)}
             className={`p-1.5 sm:p-2.5 rounded-xl backdrop-blur-md border transition-colors shadow-sm ${
               showUiOverlay
@@ -267,6 +298,7 @@ export function LincolnBuoy3D() {
                 ["bellows_chambers", "Air Bellows"],
                 ["pilothouse", "Pilothouse"],
                 ["paddlewheel", "Paddlewheel"],
+                ["keel", "Keel & Hull"],
                 ["top", "Plan View"],
               ] as const
             ).map(([preset, label]) => (

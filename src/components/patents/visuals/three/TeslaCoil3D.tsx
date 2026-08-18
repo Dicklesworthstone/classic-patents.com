@@ -5,17 +5,13 @@ import { useEffect, useRef, useState } from "react";
 import type * as THREE from "three";
 import { HudText } from "@/components/ui/LatexRenderer";
 import { FrankenSimEngine } from "@/physics/engine";
-import { teslaCoilResonantKhz } from "@/physics/teslaKernel";
 import { ensureTeslaWasm } from "@/physics/teslaWasm";
 import { useFrankenSimPhysics } from "@/physics/useFrankenSimPhysics";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
-import { createLcg } from "@/utils/lcg";
 import { soundEngine } from "@/utils/soundEngine";
 import { createThreeStudioScene, type StudioContext } from "./ThreeStudioScene";
 import { buildTeslaCoilModel } from "./teslaCoilModel";
 import { useLiveSimParams } from "./useLiveSimParams";
-
-const lcg = createLcg(896);
 
 type CameraPreset = "iso" | "toroid_breakout" | "primary_spiral" | "spark_gap" | "top";
 
@@ -31,7 +27,6 @@ export function TeslaCoil3D() {
   const [showUiOverlay, setShowUiOverlay] = useState<boolean>(true);
   const primaryCap = params.primaryCap ?? 45;
   const toploadCapacitancePf = params.toploadCapacitancePf ?? 35;
-  const resonantFreqKhz = teslaCoilResonantKhz(primaryCap, toploadCapacitancePf);
   const sparkGapDistanceMm = params.sparkGapDistanceMm ?? 12;
   const inputVoltageKv = params.inputVoltageKv ?? 15;
   const couplingK = params.couplingK ?? 0.18;
@@ -42,14 +37,15 @@ export function TeslaCoil3D() {
   const [isPlayingAudio, setIsPlayingAudio] = useState<boolean>(false);
 
   // Interpretive coupled-LC host-model calculations.
-  const coilPhysics = FrankenSimEngine.stepTeslaCoil(
-    resonantFreqKhz,
+  const coilPhysics = FrankenSimEngine.stepTeslaCoilFromControls({
+    primaryCap,
+    toploadCapacitancePf,
     inputVoltageKv,
     sparkGapDistanceMm,
-    145,
     couplingK,
     secondaryTurns,
-  );
+  });
+  const resonantFreqKhz = coilPhysics.resonantFreqKhz;
   const secondaryVoltageMv = coilPhysics.secondaryPotentialMv.toFixed(2);
   const streamerLengthInches = coilPhysics.streamerLengthInches.toFixed(1);
   const streamerLengthMeters = coilPhysics.streamerLengthMeters.toFixed(2);

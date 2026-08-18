@@ -2,13 +2,15 @@ import * as THREE from "three";
 import { createLcg } from "@/utils/lcg";
 import { createGlowPointTexture } from "./ThreeStudioScene";
 
-const lcg = createLcg(1888);
-
 export interface TeslaMotorModel {
   rootGroup: THREE.Group;
   statorGroup: THREE.Group;
   rotorGroup: THREE.Group;
-  drivePulley: THREE.Mesh;
+  shaftMarker: THREE.Mesh;
+  /** Fig. 9 / Fig. 13 source generator, separate from disk D's motor shaft. */
+  generatorGroup: THREE.Group;
+  generatorCollectorRings: THREE.Mesh[];
+  generatorBrushes: THREE.Mesh[];
   coilMeshes: { mesh: THREE.Mesh; phaseIdx: number; defaultEmissive: THREE.Color }[];
   fluxPoints: THREE.Points;
   fluxPositions: Float32Array;
@@ -17,7 +19,7 @@ export interface TeslaMotorModel {
     statorIron: THREE.MeshStandardMaterial;
     bedplateMat: THREE.MeshStandardMaterial;
     copperCoil: THREE.MeshStandardMaterial;
-    copperRotorBar: THREE.MeshStandardMaterial;
+    diskSteel: THREE.MeshStandardMaterial;
     rotorCoreMat: THREE.MeshStandardMaterial;
     shaftSteel: THREE.MeshStandardMaterial;
     brassTrim: THREE.MeshStandardMaterial;
@@ -28,6 +30,7 @@ export interface TeslaMotorModel {
 }
 
 export function buildTeslaMotorModel(phaseCount: 2 | 3 = 2): TeslaMotorModel {
+  const lcg = createLcg(1888);
   const rootGroup = new THREE.Group();
   const materialsToDispose: THREE.Material[] = [];
   const geometriesToDispose: THREE.BufferGeometry[] = [];
@@ -55,12 +58,12 @@ export function buildTeslaMotorModel(phaseCount: 2 | 3 = 2): TeslaMotorModel {
   });
   materialsToDispose.push(copperCoil);
 
-  const copperRotorBar = new THREE.MeshStandardMaterial({
-    color: 0xf59e0b,
-    roughness: 0.15,
-    metalness: 0.95,
+  const diskSteel = new THREE.MeshStandardMaterial({
+    color: 0x64748b,
+    roughness: 0.32,
+    metalness: 0.78,
   });
-  materialsToDispose.push(copperRotorBar);
+  materialsToDispose.push(diskSteel);
 
   const rotorCoreMat = new THREE.MeshStandardMaterial({
     color: 0x64748b,
@@ -247,57 +250,87 @@ export function buildTeslaMotorModel(phaseCount: 2 | 3 = 2): TeslaMotorModel {
     statorGroup.add(poleGroup);
   }
 
-  // --- 3. ROTOR & SQUIRREL CAGE ARMATURE ---
+  // --- 3. FIG. 9 MAGNETIC DISK AND SHAFT ---
   const rotorGroup = new THREE.Group();
   rootGroup.add(rotorGroup);
 
-  // Laminated Iron Rotor Cylinder Core
-  const rotorCoreGeo = new THREE.CylinderGeometry(2.45, 2.45, 3.4, 32);
+  // Fig. 9 labels D as a magnetic disk mounted freely inside ring R.
+  const rotorCoreGeo = new THREE.CylinderGeometry(2.65, 2.65, 0.55, 32);
   geometriesToDispose.push(rotorCoreGeo);
   const rotorCore = new THREE.Mesh(rotorCoreGeo, rotorCoreMat);
   rotorCore.castShadow = true;
   rotorCore.receiveShadow = true;
   rotorGroup.add(rotorCore);
 
-  // Polished Drive Shaft with Keyway Slot
-  const shaftGeo = new THREE.CylinderGeometry(0.55, 0.55, 9.8, 24);
+  // The drawing gives D an axis a, not a later industrial output rotor.
+  const shaftGeo = new THREE.CylinderGeometry(0.18, 0.18, 5.2, 24);
   geometriesToDispose.push(shaftGeo);
   const shaft = new THREE.Mesh(shaftGeo, shaftSteel);
   shaft.rotation.x = Math.PI / 2;
   rotorGroup.add(shaft);
 
-  // Embedded Copper Conductive Bars (Squirrel Cage)
-  const barCount = 18;
-  const barGeo = new THREE.CylinderGeometry(0.09, 0.09, 3.5, 12);
-  geometriesToDispose.push(barGeo);
-
-  for (let b = 0; b < barCount; b++) {
-    const bAngle = (b * Math.PI * 2) / barCount;
-    const bar = new THREE.Mesh(barGeo, copperRotorBar);
-    bar.position.set(Math.cos(bAngle) * 2.38, 0, Math.sin(bAngle) * 2.38);
-    bar.castShadow = true;
-    rotorGroup.add(bar);
+  // Two opposite cutaways echo the outline shown for D on Fig. 9.
+  const cutawayGeo = new THREE.BoxGeometry(1.2, 0.62, 1.55);
+  geometriesToDispose.push(cutawayGeo);
+  for (const x of [-2.45, 2.45]) {
+    const cutaway = new THREE.Mesh(cutawayGeo, statorIron);
+    cutaway.position.set(x, 0, 0);
+    rotorGroup.add(cutaway);
   }
 
-  // Heavy Copper Short-Circuiting End-Rings
-  const endRingGeo = new THREE.TorusGeometry(2.38, 0.14, 12, 36);
-  geometriesToDispose.push(endRingGeo);
-  [-1.75, 1.75].forEach((ey) => {
-    const endRing = new THREE.Mesh(endRingGeo, copperRotorBar);
-    endRing.rotation.x = Math.PI / 2;
-    endRing.position.y = ey;
-    endRing.castShadow = true;
-    rotorGroup.add(endRing);
-  });
+  const markerGeo = new THREE.CylinderGeometry(0.42, 0.42, 0.16, 20);
+  geometriesToDispose.push(markerGeo);
+  const shaftMarker = new THREE.Mesh(markerGeo, diskSteel);
+  shaftMarker.position.y = 0.38;
+  rotorGroup.add(shaftMarker);
 
-  // Output Cast-Iron Belt Pulley
-  const pulleyGeo = new THREE.CylinderGeometry(1.6, 1.6, 1.2, 32);
-  geometriesToDispose.push(pulleyGeo);
-  const drivePulley = new THREE.Mesh(pulleyGeo, statorIron);
-  drivePulley.rotation.x = Math.PI / 2;
-  drivePulley.position.z = 4.2;
-  drivePulley.castShadow = true;
-  rotorGroup.add(drivePulley);
+  // --- 3a. SOURCE GENERATOR, COLLECTOR RINGS, AND BRUSHES ---
+  // Fig. 9 prints two generator coils B/B′ and four insulated rings b b b′ b′.
+  // Fig. 13 is the distinct three-circuit comparison with three coils K/K′/K″
+  // and six rings e e e′ e′ e″ e″. These are collector rings on the generator,
+  // not a commutator on the motor.
+  const generatorGroup = new THREE.Group();
+  generatorGroup.position.set(7.3, 0, 0);
+  rootGroup.add(generatorGroup);
+
+  const generatorYokeGeo = new THREE.BoxGeometry(1.05, 5.4, 5.1);
+  geometriesToDispose.push(generatorYokeGeo);
+  const generatorYoke = new THREE.Mesh(generatorYokeGeo, statorIron);
+  generatorYoke.position.x = 1.35;
+  generatorGroup.add(generatorYoke);
+
+  const generatorArmatureGeo = new THREE.CylinderGeometry(1.35, 1.35, 3.25, 28);
+  geometriesToDispose.push(generatorArmatureGeo);
+  const generatorArmature = new THREE.Mesh(generatorArmatureGeo, copperCoil);
+  generatorArmature.rotation.z = Math.PI / 2;
+  generatorArmature.position.x = -0.15;
+  generatorGroup.add(generatorArmature);
+
+  const generatorShaftGeo = new THREE.CylinderGeometry(0.18, 0.18, 6.2, 16);
+  geometriesToDispose.push(generatorShaftGeo);
+  const generatorShaft = new THREE.Mesh(generatorShaftGeo, shaftSteel);
+  generatorShaft.rotation.z = Math.PI / 2;
+  generatorShaft.position.x = -0.85;
+  generatorGroup.add(generatorShaft);
+
+  const generatorCollectorRings: THREE.Mesh[] = [];
+  const generatorBrushes: THREE.Mesh[] = [];
+  const ringGeo = new THREE.TorusGeometry(0.39, 0.07, 8, 18);
+  const brushGeo = new THREE.BoxGeometry(0.26, 0.38, 0.18);
+  geometriesToDispose.push(ringGeo, brushGeo);
+  const circuitCount = phaseCount === 2 ? 2 : 3;
+  for (let ringIndex = 0; ringIndex < circuitCount * 2; ringIndex++) {
+    const ring = new THREE.Mesh(ringGeo, brassTrim);
+    ring.rotation.y = Math.PI / 2;
+    ring.position.set(-2.5 + ringIndex * 0.28, 0, 0);
+    generatorGroup.add(ring);
+    generatorCollectorRings.push(ring);
+
+    const brush = new THREE.Mesh(brushGeo, bedplateMat);
+    brush.position.set(-2.5 + ringIndex * 0.28, 0.5, 0);
+    generatorGroup.add(brush);
+    generatorBrushes.push(brush);
+  }
 
   // --- 4. MAGNETIC FLUX FIELD STREAMLINES ---
   const fluxCount = 160;
@@ -348,7 +381,10 @@ export function buildTeslaMotorModel(phaseCount: 2 | 3 = 2): TeslaMotorModel {
     rootGroup,
     statorGroup,
     rotorGroup,
-    drivePulley,
+    shaftMarker,
+    generatorGroup,
+    generatorCollectorRings,
+    generatorBrushes,
     coilMeshes,
     fluxPoints,
     fluxPositions,
@@ -357,7 +393,7 @@ export function buildTeslaMotorModel(phaseCount: 2 | 3 = 2): TeslaMotorModel {
       statorIron,
       bedplateMat,
       copperCoil,
-      copperRotorBar,
+      diskSteel,
       rotorCoreMat,
       shaftSteel,
       brassTrim,
@@ -366,4 +402,48 @@ export function buildTeslaMotorModel(phaseCount: 2 | 3 = 2): TeslaMotorModel {
     },
     dispose,
   };
+}
+
+/**
+ * Updates Tesla induction motor rotor rotation, phase coil energization glow, magnetic flux field streamlines, and cutaway.
+ */
+export function updateTeslaMotorKinematics(
+  model: TeslaMotorModel,
+  delta: number,
+  omegaDisplay: number,
+  bFieldAngle: number,
+  activePhaseCount: 2 | 3,
+  showMagneticFlux: boolean,
+  isCutaway = false,
+): void {
+  model.rotorGroup.rotation.y += omegaDisplay * delta;
+
+  for (const item of model.coilMeshes) {
+    const phaseOffset = item.phaseIdx * (activePhaseCount === 2 ? Math.PI / 2 : (2 * Math.PI) / 3);
+    const currentI = Math.sin(bFieldAngle + phaseOffset);
+    const mat = item.mesh.material as THREE.MeshStandardMaterial;
+    mat.emissive = new THREE.Color(0xf59e0b);
+    mat.emissiveIntensity = Math.abs(currentI) * 0.9;
+  }
+
+  const fPos = model.fluxPositions;
+  for (let i = 0; i < model.fluxCount; i++) {
+    const idx = i * 3;
+    const x = fPos[idx];
+    const z = fPos[idx + 2];
+    const r = Math.sqrt(x * x + z * z);
+    let curAngle = Math.atan2(z, x);
+    curAngle += omegaDisplay * delta;
+
+    fPos[idx] = Math.cos(curAngle) * r;
+    fPos[idx + 2] = Math.sin(curAngle) * r;
+  }
+  model.fluxPoints.geometry.attributes.position.needsUpdate = true;
+  model.fluxPoints.visible = showMagneticFlux;
+
+  // Cutaway transparency for stator and bedplate
+  model.materials.statorIron.opacity = isCutaway ? 0.35 : 1.0;
+  model.materials.statorIron.transparent = isCutaway;
+  model.materials.bedplateMat.opacity = isCutaway ? 0.35 : 1.0;
+  model.materials.bedplateMat.transparent = isCutaway;
 }

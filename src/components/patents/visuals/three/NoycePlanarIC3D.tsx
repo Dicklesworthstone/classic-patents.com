@@ -46,6 +46,7 @@ export const NoycePlanarIC3D = memo(() => {
     oxideLayerThicknessNm,
     showLogicSignals,
     clockPeriodNs: noyce.clockPeriodNs,
+    signalDisplaySpeed: noyce.signalDisplaySpeed,
     isCutaway,
   });
 
@@ -133,7 +134,7 @@ export const NoycePlanarIC3D = memo(() => {
         materials,
         dt,
         timeSec,
-        p.clockFrequencyMhz,
+        p.signalDisplaySpeed,
         p.showLogicSignals,
         p.isCutaway ?? false,
       );

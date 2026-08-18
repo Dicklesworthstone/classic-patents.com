@@ -2,7 +2,7 @@ import { describe, expect, test } from "bun:test";
 import { readFileSync } from "node:fs";
 import { join } from "node:path";
 import { FrankenSimEngine } from "@/physics/engine";
-import { buildKwolekKevlarModel } from "./kwolekKevlarModel";
+import { buildKwolekKevlarModel, updateKwolekKevlarKinematics } from "./kwolekKevlarModel";
 
 const VISUALS_DIRECTORY = join(process.cwd(), "src", "components", "patents", "visuals");
 
@@ -20,6 +20,8 @@ describe("US 3,671,542 Stephanie Kwolek Kevlar visual & polymer physics boundary
     expect(modelSource).not.toContain("useGLTF");
     expect(modelSource).not.toContain(".gltf");
     expect(modelSource).not.toContain(".glb");
+    expect(modelSource).toContain("buildKwolekKevlarModel");
+    expect(modelSource).toContain("updateKwolekKevlarKinematics");
     expect(threeSource).not.toContain("useGLTF");
   });
 
@@ -44,9 +46,10 @@ describe("US 3,671,542 Stephanie Kwolek Kevlar visual & polymer physics boundary
       "utf8",
     );
 
-    for (const preset of ["iso", "ring", "hbonds", "spinneret", "impact"]) {
+    for (const preset of ["iso", "ring", "hbonds", "spinneret", "impact", "top"]) {
       expect(threeSource).toContain(preset);
     }
+    expect(threeSource).toContain("isCutaway");
   });
 
   test("computes genuine tensile strength, elastic modulus, and draw ratio scaling in SI units", () => {
@@ -54,6 +57,7 @@ describe("US 3,671,542 Stephanie Kwolek Kevlar visual & polymer physics boundary
     expect(result.tensileStrengthGpa).toBeGreaterThan(2.0);
     expect(result.elasticModulusGpa).toBeGreaterThan(100);
     expect(result.alignmentPct).toBeGreaterThan(80);
+    expect(result.bulletDisplaySpeed).toBeCloseTo((450 / 400) * 15, 2);
   });
 
   test("builds and articulates procedural spinneret pack, 5 PPTA polymer chains, and hydrogen bond struts correctly", () => {
@@ -65,9 +69,19 @@ describe("US 3,671,542 Stephanie Kwolek Kevlar visual & polymer physics boundary
     expect(model.bulletMesh).toBeDefined();
     expect(model.chains.length).toBe(5);
 
-    // Test kinematics update
-    model.updateKinematics(1 / 60, true, true, 450, 450);
+    // Test kinematics update & cutaway
+    const kevlar = FrankenSimEngine.stepKevlarContinuum(6.5, 450, 30);
+    updateKwolekKevlarKinematics(
+      model,
+      1 / 60,
+      true,
+      true,
+      kevlar.shearAlignment,
+      kevlar.bulletDisplaySpeed,
+      true,
+    );
     expect(model.hBondsGroup.visible).toBe(true);
+    expect(model.materials.spinneretSteelMat.opacity).toBe(0.35);
 
     model.dispose();
   });

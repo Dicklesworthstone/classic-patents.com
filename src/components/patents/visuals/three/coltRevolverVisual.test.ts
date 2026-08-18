@@ -2,6 +2,7 @@ import { describe, expect, test } from "bun:test";
 import { readFileSync } from "node:fs";
 import { join } from "node:path";
 import { stepColtRevolver } from "@/physics/catalogKernels";
+import { buildColtRevolverModel, updateColtRevolverKinematics } from "./coltRevolverModel";
 
 const VISUALS_DIRECTORY = join(process.cwd(), "src/components/patents/visuals");
 
@@ -20,6 +21,7 @@ describe("US X9430 Colt Paterson Revolver visual & physics boundary", () => {
     expect(threeSource).not.toContain(".glb");
     expect(threeSource).not.toContain(".gltf");
     expect(modelSource).toContain("buildColtRevolverModel");
+    expect(modelSource).toContain("updateColtRevolverKinematics");
     expect(modelSource).toContain("dispose");
   });
 
@@ -34,13 +36,13 @@ describe("US X9430 Colt Paterson Revolver visual & physics boundary", () => {
     }
   });
 
-  test("exposes all 5 authentic camera presets and 8 historical patent callouts", () => {
+  test("exposes all 6 authentic camera presets and 8 historical patent callouts", () => {
     const threeSource = readFileSync(
       join(VISUALS_DIRECTORY, "three", "ColtRevolver3D.tsx"),
       "utf8",
     );
 
-    for (const preset of ["iso", "cylinder", "lockwork", "sightline", "top"]) {
+    for (const preset of ["iso", "cylinder", "lockwork", "sightline", "loading_lever", "top"]) {
       expect(threeSource).toContain(preset);
     }
 
@@ -70,5 +72,23 @@ describe("US X9430 Colt Paterson Revolver visual & physics boundary", () => {
     const hammerDown = stepColtRevolver({ chamberPressureMpa: 85, cockingAngleDeg: 0 });
     expect(hammerDown.isLocked).toBe(false);
     expect(hammerDown.indexAngleDeg).toBe(0);
+  });
+
+  test("builds and articulates procedural 5-chamber cylinder, folding trigger, and lockwork cutaway correctly", () => {
+    const model = buildColtRevolverModel();
+
+    expect(model.group.children.length).toBeGreaterThan(3);
+    expect(model.cylinderGroup).toBeDefined();
+    expect(model.hammerGroup).toBeDefined();
+    expect(model.triggerGroup).toBeDefined();
+    expect(model.loadingLeverGroup).toBeDefined();
+    expect(model.rammerPlunger).toBeDefined();
+
+    updateColtRevolverKinematics(model, 45, 1, 50, true, true);
+    expect(model.hammerGroup.rotation.z).toBeCloseTo(-(45 * Math.PI) / 180, 2);
+    expect(model.blastMesh.visible).toBe(true);
+    expect(model.lockworkCutawayGroup.visible).toBe(true);
+
+    model.dispose();
   });
 });

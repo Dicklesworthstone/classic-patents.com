@@ -73,6 +73,9 @@ describe("US 1,647 Samuel Morse Electro-Magnetic Telegraph visual & circuitry bo
     expect(result.ampereTurns).toBeGreaterThan(20);
     expect(result.lineResistanceOhms).toBeGreaterThan(100);
     expect(result.loopResistanceOhms).toBeGreaterThan(200);
+    expect(result.tapeAdvanceRadPerS).toBeGreaterThan(0);
+    expect(result.keyOscillationRadPerS).toBeCloseTo(5 * Math.PI, 2);
+    expect(result.electronDisplaySpeed).toBe(8);
   });
 
   test("builds and articulates procedural baseboard, key lever, electromagnet sounder, and paper spool correctly", () => {
@@ -83,7 +86,24 @@ describe("US 1,647 Samuel Morse Electro-Magnetic Telegraph visual & circuitry bo
     expect(nodes.tapeSpool).toBeDefined();
     expect(nodes.electronPositions.length).toBe(50 * 3);
 
-    updateMorseTelegraphKinematics(nodes, materials, 0.016, 0.5, 20, 1.2, true, true);
+    const morse = stepMorseTelegraph({
+      wireTurns: 1200,
+      lineVoltageV: 24,
+      lineLengthMiles: 44,
+      wpmSpeed: 20,
+    });
+    updateMorseTelegraphKinematics(
+      nodes,
+      materials,
+      0.016,
+      0.5,
+      morse.keyOscillationRadPerS,
+      morse.armatureStrikeM,
+      morse.tapeAdvanceRadPerS,
+      morse.electronDisplaySpeed,
+      true,
+      true,
+    );
     expect(materials.mahogany.transparent).toBe(true);
 
     dispose();

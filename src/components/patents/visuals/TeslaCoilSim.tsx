@@ -3,7 +3,6 @@
 import { Zap } from "lucide-react";
 import { SparkWaterfall } from "@/components/patents/visuals/SparkWaterfall";
 import { FrankenSimEngine } from "@/physics/engine";
-import { teslaCoilResonantKhz } from "@/physics/teslaKernel";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 
 export function TeslaCoilSim() {
@@ -17,15 +16,15 @@ export function TeslaCoilSim() {
   const toploadCapacitancePf = params.toploadCapacitancePf ?? 35;
 
   // Interpretive host-model calculations; see the source-edition gate on the record.
-  const resonantFreqKhz = teslaCoilResonantKhz(primaryCapacitanceNf, toploadCapacitancePf);
-  const res = FrankenSimEngine.stepTeslaCoil(
-    resonantFreqKhz,
-    inputKv,
-    sparkGap,
-    145,
+  const res = FrankenSimEngine.stepTeslaCoilFromControls({
+    primaryCap: primaryCapacitanceNf,
+    toploadCapacitancePf,
+    inputVoltageKv: inputKv,
+    sparkGapDistanceMm: sparkGap,
     couplingK,
     secondaryTurns,
-  );
+  });
+  const resonantFreqKhz = res.resonantFreqKhz;
   const secondaryVoltageKv = res.secondaryPotentialKv;
   const streamerScale = res.streamerScale;
 

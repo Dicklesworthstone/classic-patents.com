@@ -1,8 +1,5 @@
 import * as THREE from "three";
-import { createLcg } from "@/utils/lcg";
 import { createGlowPointTexture } from "./ThreeStudioScene";
-
-const lcg = createLcg(1876);
 
 export interface BellTelephoneModel {
   rootGroup: THREE.Group;

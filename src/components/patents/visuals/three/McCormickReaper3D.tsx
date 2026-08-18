@@ -1,16 +1,16 @@
 "use client";
 
-import { Activity, Camera, Eye, EyeOff } from "lucide-react";
+import { Activity, Camera, Eye, EyeOff, Layers } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import type * as THREE from "three";
 import { stepMcCormickReaper } from "@/physics/catalogKernels";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
-import { buildMcCormickReaperModel } from "./mccormickReaperModel";
+import { buildMcCormickReaperModel, updateMcCormickReaperKinematics } from "./mccormickReaperModel";
 import { StudioKernelChips } from "./StudioKernelChips";
 import { createThreeStudioScene, type StudioContext } from "./ThreeStudioScene";
 import { useLiveSimParams } from "./useLiveSimParams";
 
-type CameraPreset = "iso" | "sickle_guards" | "grain_reel" | "platform" | "top";
+type CameraPreset = "iso" | "sickle_guards" | "grain_reel" | "platform" | "drive_wheel" | "top";
 
 export function McCormickReaper3D() {
   const containerRef = useRef<HTMLDivElement>(null);
@@ -22,6 +22,7 @@ export function McCormickReaper3D() {
   const cutterCrankRpm = reaper.cutterCrankRpm;
   const reelRpm = reaper.reelRpm;
   const [showStalks, setShowStalks] = useState<boolean>(true);
+  const [isCutaway, setIsCutaway] = useState<boolean>(false);
   const [activeCamera, setActiveCamera] = useState<CameraPreset>("iso");
 
   const live = useLiveSimParams({
@@ -29,6 +30,7 @@ export function McCormickReaper3D() {
     cutterCrankRpm,
     reelRpm,
     showStalks,
+    isCutaway,
     groundWheelOmegaRadPerS: reaper.groundWheelOmegaRadPerS,
     reelOmegaRadPerS: reaper.reelOmegaRadPerS,
     cutterOmegaRadPerS: reaper.cutterOmegaRadPerS,
@@ -59,6 +61,10 @@ export function McCormickReaper3D() {
       case "platform":
         camera.position.set(0, 5.0, 0);
         controls.target.set(0, -0.5, -0.5);
+        break;
+      case "drive_wheel":
+        camera.position.set(-5.0, 1.2, 3.2);
+        controls.target.set(-3.2, 0.4, 0);
         break;
       case "top":
         camera.position.set(0, 13.0, 0.1);
@@ -96,21 +102,20 @@ export function McCormickReaper3D() {
       const elapsedSeconds = presentationStep / 60;
       presentationStep += 1;
 
-      const sourceKinematics = stepMcCormickReaper({ forwardSpeedMph: p.groundSpeedMph });
-      const wheelRadPerSec =
-        p.groundWheelOmegaRadPerS ?? (sourceKinematics.groundWheelRpm * 2 * Math.PI) / 60;
-      const reelRadPerSec = p.reelOmegaRadPerS ?? (p.reelRpm * 2 * Math.PI) / 60;
+      const wheelRadPerSec = p.groundWheelOmegaRadPerS;
+      const reelRadPerSec = p.reelOmegaRadPerS;
 
-      model.driveWheelGroup.rotation.x = wheelRadPerSec * elapsedSeconds;
-      model.reelGroup.rotation.x = reelRadPerSec * elapsedSeconds;
+      updateMcCormickReaperKinematics(
+        model,
+        wheelRadPerSec,
+        reelRadPerSec,
+        p.cutterOmegaRadPerS,
+        elapsedSeconds,
+        p.showStalks,
+        p.isCutaway,
+      );
 
-      // Reciprocate Sickle Bar
-      const sicklePhase =
-        elapsedSeconds * (p.cutterOmegaRadPerS ?? (p.cutterCrankRpm / 60) * Math.PI * 2);
-      model.sickleBarGroup.position.x = Math.sin(sicklePhase) * 0.18;
-
-      model.stalksInstanced.visible = p.showStalks;
-
+      controls.update();
       renderer.render(scene, camera);
     };
 
@@ -119,7 +124,7 @@ export function McCormickReaper3D() {
     return () => {
       cancelAnimationFrame(reqId);
       model.dispose();
-      studio.cleanup();
+      studio.dispose();
     };
   }, [live]);
 
@@ -151,6 +156,7 @@ export function McCormickReaper3D() {
               ["sickle_guards", "Sickle Bar"],
               ["grain_reel", "Grain Reel"],
               ["platform", "Platform"],
+              ["drive_wheel", "Drive Wheel"],
               ["top", "Top"],
             ] as [CameraPreset, string][]
           ).map(([preset, label]) => (
@@ -171,6 +177,18 @@ export function McCormickReaper3D() {
 
         {/* Toggles */}
         <div className="flex items-center gap-1.5 bg-parchment-950/80 backdrop-blur-md p-1.5 rounded-xl border border-parchment-700/60 shadow-lg pointer-events-auto">
+          <button
+            type="button"
+            onClick={() => setIsCutaway(!isCutaway)}
+            title={isCutaway ? "Switch to Solid Platform" : "Switch to Platform Cutaway"}
+            className={`p-1.5 rounded-lg text-xs transition-colors ${
+              isCutaway
+                ? "bg-amber-600/30 text-amber-300 border border-amber-500/40"
+                : "text-parchment-400 hover:text-white"
+            }`}
+          >
+            <Layers className="w-4 h-4" />
+          </button>
           <button
             type="button"
             onClick={() => setShowStalks(!showStalks)}

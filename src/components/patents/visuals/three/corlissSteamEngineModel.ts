@@ -315,12 +315,21 @@ export function buildCorlissEngineModel(): CorlissEngineModel {
   crossheadGroup.add(xhead);
 
   // Piston Rod
-  const pRodGeo = new THREE.CylinderGeometry(0.08, 0.08, 2.4, 12);
+  const pRodGeo = new THREE.CylinderGeometry(0.08, 0.08, 3.8, 12);
   geometriesToDispose.push(pRodGeo);
   const pRod = new THREE.Mesh(pRodGeo, polishedSteel);
   pRod.rotation.z = Math.PI / 2;
-  pRod.position.x = -1.2;
+  pRod.position.x = -1.9;
   crossheadGroup.add(pRod);
+
+  // Internal Double-Acting Steam Piston Head
+  const pistonGeo = new THREE.CylinderGeometry(1.5, 1.5, 0.45, 32);
+  geometriesToDispose.push(pistonGeo);
+  const pistonHead = new THREE.Mesh(pistonGeo, polishedSteel);
+  pistonHead.rotation.z = Math.PI / 2;
+  pistonHead.position.x = -3.2;
+  pistonHead.castShadow = true;
+  crossheadGroup.add(pistonHead);
 
   // Marine Connecting Rod
   const conRodGroup = new THREE.Group();
@@ -383,4 +392,63 @@ export function buildCorlissEngineModel(): CorlissEngineModel {
     },
     dispose,
   };
+}
+
+/**
+ * Updates Corliss steam engine kinematics, valve trips, and cutaway state.
+ */
+export function updateCorlissEngineKinematics(
+  model: CorlissEngineModel,
+  crankAngle: number,
+  engineRpm: number,
+  cutoffPct: number,
+  isCutaway = false,
+): { strokeX: number; wristAngle: number } {
+  model.crankGroup.rotation.z = -crankAngle;
+
+  const govAngle = crankAngle * 2.5;
+  model.governorGroup.rotation.y = govAngle;
+  const govSpread = 0.35 + Math.min(0.35, (engineRpm / 100) * 0.25);
+  model.governorBalls[0].position.x = -govSpread;
+  model.governorBalls[1].position.x = govSpread;
+
+  // Kinematics: crankpin position
+  const crankR = 0.65;
+  const pinX = 3.8 + Math.cos(crankAngle) * crankR;
+  const pinY = Math.sin(crankAngle) * crankR;
+
+  // Slider-crank crosshead position
+  const rodL = 4.4;
+  const strokeX = pinX - Math.sqrt(Math.max(0.1, rodL ** 2 - pinY ** 2));
+  model.crossheadGroup.position.x = strokeX;
+
+  // Connecting rod pose
+  model.conRodGroup.position.set(strokeX, 0, 0);
+  const rodAngle = Math.atan2(pinY, pinX - strokeX);
+  model.conRodGroup.rotation.z = rodAngle;
+
+  // Central wrist plate harmonic oscillation (Claim 2)
+  const wristAmp = 0.18 + (cutoffPct / 100) * 0.35;
+  const wristAngle = Math.sin(crankAngle + Math.PI * 0.25) * wristAmp;
+  model.wristPlate.rotation.z = wristAngle;
+
+  // 4 Rotary oscillating valve levers (Claim 1)
+  model.valveLevers[0].rotation.z = wristAngle * 0.9;
+  model.valveLevers[1].rotation.z = -wristAngle * 0.9;
+  model.valveLevers[2].rotation.z = Math.sin(crankAngle) * wristAmp * 0.7;
+  model.valveLevers[3].rotation.z = -Math.sin(crankAngle) * wristAmp * 0.7;
+
+  // Dashpot rods drop motion
+  const drop1 = Math.max(0, -wristAngle * 1.2);
+  const drop2 = Math.max(0, wristAngle * 1.2);
+  model.dashpotRods[0].position.y = 1.5 - drop1;
+  model.dashpotRods[1].position.y = 1.5 - drop2;
+
+  // Cutaway mode
+  model.materials.mahogany.opacity = isCutaway ? 0.35 : 1.0;
+  model.materials.mahogany.transparent = isCutaway;
+  model.materials.castIron.opacity = isCutaway ? 0.65 : 1.0;
+  model.materials.castIron.transparent = isCutaway;
+
+  return { strokeX, wristAngle };
 }

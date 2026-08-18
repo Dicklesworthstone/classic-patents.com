@@ -4,6 +4,7 @@ import {
   Camera,
   Eye,
   EyeOff,
+  Layers,
   Radio,
   RotateCcw,
   Sparkles,
@@ -17,15 +18,21 @@ import { HudText } from "@/components/ui/LatexRenderer";
 import { FrankenSimEngine } from "@/physics/engine";
 import { useFrankenSimPhysics } from "@/physics/useFrankenSimPhysics";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
-import { createLcg } from "@/utils/lcg";
 import { soundEngine } from "@/utils/soundEngine";
-import { buildSpencerMicrowaveModel } from "./spencerMicrowaveModel";
+import {
+  buildSpencerMicrowaveModel,
+  updateSpencerMicrowaveKinematics,
+} from "./spencerMicrowaveModel";
 import { createThreeStudioScene, type StudioContext } from "./ThreeStudioScene";
 import { useLiveSimParams } from "./useLiveSimParams";
 
-const lcg = createLcg(1661);
-
-type CameraPreset = "iso" | "cavity_resonator" | "electron_spokes" | "waveguide_launch" | "top";
+type CameraPreset =
+  | "iso"
+  | "cavity_resonator"
+  | "electron_spokes"
+  | "waveguide_launch"
+  | "strapping_rings"
+  | "top";
 
 export function SpencerMicrowave3D() {
   const containerRef = useRef<HTMLDivElement>(null);
@@ -33,6 +40,7 @@ export function SpencerMicrowave3D() {
   // Magnetron & Cavity Resonator State
   const { params } = usePatentPhysics("us-2495429-spencer-microwave");
   const [showUiOverlay, setShowUiOverlay] = useState<boolean>(true);
+  const [isCutaway, setIsCutaway] = useState<boolean>(false);
   const anodeVoltageKv = (params.anodeVoltage ?? 2200) / 1000;
   const magneticFieldGauss = params.magneticFieldGauss ?? 1450;
   const rfPowerWatts = params.rfPowerSetting ?? 800;
@@ -82,8 +90,11 @@ export function SpencerMicrowave3D() {
     showSpokeWheel,
     showWaterDipoles,
     isOscillating,
+    isCutaway,
     microwaveFreqMhz: rfPhysics.microwaveFreqMhz,
     dielectricLoss: rfPhysics.dielectricLossWattsPerDm3,
+    spokeDisplayOmegaRadPerS: rfPhysics.spokeDisplayOmegaRadPerS,
+    spokeOpacity: rfPhysics.spokeOpacity,
   });
 
   const controlsRef = useRef<StudioContext["controls"] | null>(null);
@@ -111,6 +122,10 @@ export function SpencerMicrowave3D() {
       case "waveguide_launch":
         camera.position.set(4.5, 2.5, 3.5);
         controls.target.set(3.0, 0, 0);
+        break;
+      case "strapping_rings":
+        camera.position.set(0, 3.2, 3.8);
+        controls.target.set(0, 1.8, 0);
         break;
       case "top":
         camera.position.set(0, 13.0, 0.1);
@@ -156,12 +171,14 @@ export function SpencerMicrowave3D() {
       const delta = 1 / 60;
       const p = live.current;
 
-      model.updateKinematics(
+      updateSpencerMicrowaveKinematics(
+        model,
         delta,
         p.isOscillating,
-        p.microwaveFreqMhz,
-        p.dielectricLoss,
+        p.spokeDisplayOmegaRadPerS,
+        p.spokeOpacity,
         p.showSpokeWheel,
+        p.isCutaway,
       );
 
       controls.update();
@@ -232,8 +249,20 @@ export function SpencerMicrowave3D() {
           </div>
         )}
 
-        {/* Top Right Tool Bar (Toggle UI, Audio, Pins, Reset) */}
+        {/* Top Right Tool Bar (Toggle UI, Audio, Pins, Cutaway, Reset) */}
         <div className="absolute top-3 right-3 sm:top-4 sm:right-4 z-10 flex gap-1.5 sm:gap-2">
+          <button
+            type="button"
+            onClick={() => setIsCutaway(!isCutaway)}
+            title={isCutaway ? "Switch to Solid Magnetron" : "Switch to Magnetron Cutaway"}
+            className={`p-1.5 sm:p-2.5 rounded-xl backdrop-blur-md border transition-colors shadow-sm ${
+              isCutaway
+                ? "bg-amber-600 text-white border-amber-700 shadow-md ring-2 ring-amber-500/30"
+                : "bg-white/90 dark:bg-ink-900/90 border-parchment-300 dark:border-ink-700 text-ink-700 dark:text-parchment-300 hover:bg-parchment-100"
+            }`}
+          >
+            <Layers className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
+          </button>
           <button
             type="button"
             onClick={() => setShowUiOverlay(!showUiOverlay)}
@@ -300,6 +329,7 @@ export function SpencerMicrowave3D() {
                 ["cavity_resonator", "Cavity"],
                 ["electron_spokes", "Spokes"],
                 ["waveguide_launch", "Waveguide"],
+                ["strapping_rings", "Strapping Rings"],
                 ["top", "Interaction Space"],
               ] as const
             ).map(([id, label]) => (

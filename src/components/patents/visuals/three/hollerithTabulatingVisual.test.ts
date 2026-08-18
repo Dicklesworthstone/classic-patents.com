@@ -78,7 +78,15 @@ describe("US 395,781 Herman Hollerith Electro-Mechanical Punched-Card Tabulator 
     expect(nodes.sortLids.length).toBe(24);
     expect(nodes.pinPlate).toBeDefined();
 
-    updateHollerithTabulatingKinematics(nodes, materials, 0.016, 0.5, 60, 15.0, true);
+    updateHollerithTabulatingKinematics(
+      nodes,
+      materials,
+      0.016,
+      0.5,
+      (60 * 2 * Math.PI) / 60,
+      15.0,
+      true,
+    );
     expect(materials.oakWood.transparent).toBe(true);
 
     dispose();

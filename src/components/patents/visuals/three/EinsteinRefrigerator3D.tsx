@@ -4,6 +4,7 @@ import {
   Camera,
   Eye,
   EyeOff,
+  Layers,
   RotateCcw,
   Sparkles,
   Thermometer,
@@ -16,12 +17,15 @@ import type * as THREE from "three";
 import { stepEinsteinRefrigerator } from "@/physics/catalogKernels";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { soundEngine } from "@/utils/soundEngine";
-import { buildEinsteinRefrigeratorModel } from "./einsteinRefrigeratorModel";
+import {
+  buildEinsteinRefrigeratorModel,
+  updateEinsteinRefrigeratorKinematics,
+} from "./einsteinRefrigeratorModel";
 import { createThreeStudioScene, type StudioContext } from "./ThreeStudioScene";
 import { useLiveSimParams } from "./useLiveSimParams";
 import { usePatentAudio } from "./usePatentAudio";
 
-type CameraPreset = "iso" | "generator" | "condenser" | "evaporator" | "absorber";
+type CameraPreset = "iso" | "generator" | "condenser" | "evaporator" | "absorber" | "top";
 
 export function EinsteinRefrigerator3D() {
   const containerRef = useRef<HTMLDivElement>(null);
@@ -29,6 +33,7 @@ export function EinsteinRefrigerator3D() {
   // Absorption Thermodynamics State Controls
   const { params } = usePatentPhysics("us-1781541-einstein-refrigerator");
   const [showUiOverlay, setShowUiOverlay] = useState<boolean>(true);
+  const [isCutaway, setIsCutaway] = useState<boolean>(false);
   const heatInputWatts = params.heatInput ?? 220;
   const systemPressureAtm = params.totalPressure ?? 15;
   const auxiliaryGasRatio = params.ammoniaRatio ?? params.auxiliaryGasRatio ?? 0.65;
@@ -50,10 +55,15 @@ export function EinsteinRefrigerator3D() {
   const live = useLiveSimParams({
     heatInputWatts,
     isHeating,
+    isCutaway,
     isAudioMuted,
     coolingWatts: frige.coolingWatts,
     evapTempC: frige.evapTempC,
     cop: frige.cop,
+    fluidDisplaySpeed: frige.fluidDisplaySpeed,
+    heaterGlowIntensity: frige.heaterGlowIntensity,
+    generatorGlowIntensity: frige.generatorGlowIntensity,
+    evaporatorGlowIntensity: frige.evaporatorGlowIntensity,
   });
 
   const controlsRef = useRef<StudioContext["controls"] | null>(null);
@@ -85,6 +95,10 @@ export function EinsteinRefrigerator3D() {
       case "absorber":
         camera.position.set(-3.2, -0.6, 3.6);
         controls.target.set(-2.8, -1.4, 0);
+        break;
+      case "top":
+        camera.position.set(0, 11.5, 0.1);
+        controls.target.set(0, 0, 0);
         break;
     }
     controls.update();
@@ -122,31 +136,18 @@ export function EinsteinRefrigerator3D() {
       const delta = 1 / 60;
       const p = live.current;
 
-      const fPos = model.fluidPositions;
-      const circSpeed = (p.isHeating ? p.coolingWatts / 70 : 0) * 3.5 * delta;
-      model.materials.coldEvaporator.emissiveIntensity = Math.min(
-        1.3,
-        Math.max(0.08, -p.evapTempC / 35),
-      );
+      model.materials.coldEvaporator.emissiveIntensity = p.evaporatorGlowIntensity;
       model.materials.coldEvaporator.color.setHex(p.evapTempC < -10 ? 0x7dd3fc : 0x64748b);
-      model.materials.heaterGlow.emissiveIntensity = p.isHeating
-        ? Math.min(1.5, 0.4 + (p.heatInputWatts / 300) * 0.8)
-        : 0.05;
 
-      for (let i = 0; i < model.fluidCount; i++) {
-        const idx = i * 3;
-
-        if (fPos[idx] > 2.0 && fPos[idx + 1] < 2.0) {
-          fPos[idx + 1] += circSpeed;
-        } else if (fPos[idx + 1] >= 2.0 && fPos[idx] > -2.5) {
-          fPos[idx] -= circSpeed;
-        } else if (fPos[idx] <= -2.5 && fPos[idx + 1] > -2.0) {
-          fPos[idx + 1] -= circSpeed;
-        } else {
-          fPos[idx] += circSpeed;
-        }
-      }
-      model.fluidPoints.geometry.attributes.position.needsUpdate = true;
+      updateEinsteinRefrigeratorKinematics(
+        model,
+        delta,
+        p.fluidDisplaySpeed,
+        p.heaterGlowIntensity,
+        p.generatorGlowIntensity,
+        p.isHeating,
+        p.isCutaway,
+      );
 
       controls.update();
       renderer.render(scene, camera);
@@ -213,8 +214,20 @@ export function EinsteinRefrigerator3D() {
           </div>
         )}
 
-        {/* Top Right Tool Bar (Toggle UI, Audio, Pins, Reset) */}
+        {/* Top Right Tool Bar (Toggle UI, Audio, Pins, Cutaway, Reset) */}
         <div className="absolute top-3 right-3 sm:top-4 sm:right-4 z-10 flex gap-1.5 sm:gap-2">
+          <button
+            type="button"
+            onClick={() => setIsCutaway(!isCutaway)}
+            title={isCutaway ? "Switch to Solid Steel" : "Switch to Vessel Cutaway"}
+            className={`p-1.5 sm:p-2.5 rounded-xl backdrop-blur-md border transition-colors shadow-sm ${
+              isCutaway
+                ? "bg-amber-600 text-white border-amber-700 shadow-md ring-2 ring-amber-500/30"
+                : "bg-white/90 dark:bg-ink-900/90 border-parchment-300 dark:border-ink-700 text-ink-700 dark:text-parchment-300 hover:bg-parchment-100"
+            }`}
+          >
+            <Layers className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
+          </button>
           <button
             type="button"
             onClick={() => setShowUiOverlay(!showUiOverlay)}
@@ -282,6 +295,7 @@ export function EinsteinRefrigerator3D() {
                 ["condenser", "Condenser Fins"],
                 ["evaporator", "Cold Evaporator"],
                 ["absorber", "Absorber Column"],
+                ["top", "Top View"],
               ] as const
             ).map(([preset, label]) => (
               <button

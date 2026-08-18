@@ -4,6 +4,7 @@ import {
   Camera,
   Eye,
   EyeOff,
+  Layers,
   RotateCcw,
   Shield,
   Sparkles,
@@ -13,15 +14,15 @@ import {
 } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import type * as THREE from "three";
-import { FrankenSimEngine } from "@/physics/engine";
+import { stepKevlarContinuum } from "@/physics/catalogKernels";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { soundEngine } from "@/utils/soundEngine";
-import { buildKwolekKevlarModel } from "./kwolekKevlarModel";
+import { buildKwolekKevlarModel, updateKwolekKevlarKinematics } from "./kwolekKevlarModel";
 import { createThreeStudioScene, type StudioContext } from "./ThreeStudioScene";
 import { useLiveSimParams } from "./useLiveSimParams";
 import { usePatentAudio } from "./usePatentAudio";
 
-type CameraPreset = "iso" | "ring" | "hbonds" | "spinneret" | "impact";
+type CameraPreset = "iso" | "ring" | "hbonds" | "spinneret" | "impact" | "top";
 
 export function KwolekKevlar3D() {
   const containerRef = useRef<HTMLDivElement>(null);
@@ -29,8 +30,8 @@ export function KwolekKevlar3D() {
   // Polymer Chemistry State Controls
   const { params } = usePatentPhysics("us-3671542-kwolek-kevlar");
   const [showUiOverlay, setShowUiOverlay] = useState<boolean>(true);
+  const [isCutaway, setIsCutaway] = useState<boolean>(false);
   const drawRatio = params.drawRatio ?? 6.5;
-  const shearRate = 50 + ((drawRatio - 2) / 7) * 950;
   const polymerConcentrationPct = params.polymerConcentrationPct ?? 18.5;
   const temperatureCelsius = params.temperatureCelsius ?? 85;
   const showHydrogenBonds = params.showHydrogenBonds !== 0;
@@ -39,26 +40,31 @@ export function KwolekKevlar3D() {
   const [activeCamera, setActiveCamera] = useState<CameraPreset>("iso");
   const { isAudioMuted, toggleSound } = usePatentAudio();
 
-  const kevlar = FrankenSimEngine.stepKevlarContinuum(
+  const kevlar = stepKevlarContinuum(
     drawRatio,
     params.impactVelocity ?? 450,
     params.appliedTension ?? 30,
+    temperatureCelsius,
   );
   const isNematicLCP = polymerConcentrationPct >= 12.0 && temperatureCelsius < 105;
   const tensileStrengthGpa = kevlar.tensileStrengthGpa.toFixed(2);
   const modulusGpa = kevlar.elasticModulusGpa.toFixed(0);
 
   const live = useLiveSimParams({
-    shearRate,
     temperatureCelsius,
     showHydrogenBonds,
     isImpactTesting,
     isNematicLCP,
+    isCutaway,
     isAudioMuted,
     elasticModulusGpa: kevlar.elasticModulusGpa,
     tensileStressMpa: kevlar.tensileStressMpa,
     impactVelocityMps: params.impactVelocity ?? 450,
+    bulletDisplaySpeed: kevlar.bulletDisplaySpeed,
     impactDisplayMs: kevlar.impactDisplayMs,
+    chainWiggleOmegaRadPerS: kevlar.chainWiggleOmegaRadPerS,
+    thermalDisorder: kevlar.thermalDisorder,
+    shearAlignment: kevlar.shearAlignment,
   });
 
   const controlsRef = useRef<StudioContext["controls"] | null>(null);
@@ -91,6 +97,10 @@ export function KwolekKevlar3D() {
         camera.position.set(4.0, 1.5, 5.0);
         controls.target.set(1.5, 0, 0);
         break;
+      case "top":
+        camera.position.set(0, 11.5, 0.1);
+        controls.target.set(0, 0, 0);
+        break;
     }
     controls.update();
   };
@@ -119,47 +129,37 @@ export function KwolekKevlar3D() {
     scene.add(model.root);
 
     let reqId: number;
-    let renderedSteps = 0;
+    let elapsed = 0;
 
     const animate = () => {
       reqId = requestAnimationFrame(animate);
-      renderedSteps += 1;
       const delta = 1 / 60;
-      const elapsed = renderedSteps * (1 / 60);
+      elapsed += delta;
       const p = live.current;
 
-      const shearAlignment = Math.min(1.0, p.shearRate / 600);
-      const thermalDisorder = Math.max(0, (p.temperatureCelsius - 60) / 60) * 0.3;
+      const shearAlignment = p.shearAlignment;
+      const thermalDisorder = p.thermalDisorder;
+      const wiggle = p.chainWiggleOmegaRadPerS;
 
       for (let i = 0; i < model.chains.length; i++) {
         const item = model.chains[i];
         if (p.isNematicLCP) {
           item.group.rotation.z =
-            Math.sin(elapsed * 2.0 + i) * (0.05 * (1 - shearAlignment) + thermalDisorder);
-          item.group.position.y = item.baseY + Math.cos(elapsed * 2.0 + i) * 0.04;
-        } else {
-          item.group.rotation.z = Math.sin(elapsed * 1.5 + i) * 0.45;
-          item.group.position.y = item.baseY + Math.sin(elapsed * 1.5 + i) * 0.3;
+            Math.sin(elapsed * wiggle + i) * (0.05 * (1 - shearAlignment) + thermalDisorder);
+          item.group.position.y =
+            item.baseY + Math.sin(elapsed * 2.0 + i) * (0.03 * thermalDisorder);
         }
       }
 
-      model.hBondsGroup.visible = p.showHydrogenBonds && p.isNematicLCP;
-
-      const stopsProjectile = p.isNematicLCP && p.elasticModulusGpa >= 130;
-
-      if (p.isImpactTesting) {
-        model.bulletMesh.position.x -= delta * ((p.impactVelocityMps ?? 450) / 25);
-        if (stopsProjectile && model.bulletMesh.position.x < 1.0) {
-          model.bulletMesh.position.x = 1.0;
-          model.polymerGroup.position.x = -Math.sin(elapsed * 30.0) * 0.25;
-        } else if (!stopsProjectile && model.bulletMesh.position.x < -7.0) {
-          model.bulletMesh.position.x = -7.0;
-          model.polymerGroup.position.x = 0;
-        }
-      } else {
-        model.bulletMesh.position.x = 6.5;
-        model.polymerGroup.position.x = 0;
-      }
+      updateKwolekKevlarKinematics(
+        model,
+        delta,
+        p.isImpactTesting,
+        p.showHydrogenBonds,
+        p.shearAlignment,
+        p.bulletDisplaySpeed,
+        p.isCutaway,
+      );
 
       controls.update();
       renderer.render(scene, camera);
@@ -229,8 +229,20 @@ export function KwolekKevlar3D() {
           </div>
         )}
 
-        {/* Top Right Tool Bar (Toggle UI, Audio, Pins, Reset) */}
+        {/* Top Right Tool Bar (Toggle UI, Audio, Pins, Cutaway, Reset) */}
         <div className="absolute top-3 right-3 sm:top-4 sm:right-4 z-10 flex gap-1.5 sm:gap-2">
+          <button
+            type="button"
+            onClick={() => setIsCutaway(!isCutaway)}
+            title={isCutaway ? "Switch to Solid Spinneret" : "Switch to Spinneret Cutaway"}
+            className={`p-1.5 sm:p-2.5 rounded-xl backdrop-blur-md border transition-colors shadow-sm ${
+              isCutaway
+                ? "bg-amber-600 text-white border-amber-700 shadow-md ring-2 ring-amber-500/30"
+                : "bg-white/90 dark:bg-ink-900/90 border-parchment-300 dark:border-ink-700 text-ink-700 dark:text-parchment-300 hover:bg-parchment-100"
+            }`}
+          >
+            <Layers className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
+          </button>
           <button
             type="button"
             onClick={() => setShowUiOverlay(!showUiOverlay)}
@@ -298,6 +310,7 @@ export function KwolekKevlar3D() {
                 ["hbonds", "H-Bonds Sheet"],
                 ["spinneret", "Spinneret Die"],
                 ["impact", "Ballistic Impact"],
+                ["top", "Top View"],
               ] as const
             ).map(([id, label]) => (
               <button

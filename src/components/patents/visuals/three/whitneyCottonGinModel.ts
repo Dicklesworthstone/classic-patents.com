@@ -2,8 +2,6 @@ import * as THREE from "three";
 import { createLcg } from "@/utils/lcg";
 import { createGlowPointTexture } from "./ThreeStudioScene";
 
-const lcg = createLcg(1794);
-
 export interface WhitneyCottonGinModel {
   rootGroup: THREE.Group;
   frameGroup: THREE.Group;
@@ -29,6 +27,7 @@ export interface WhitneyCottonGinModel {
 }
 
 export function buildWhitneyCottonGinModel(): WhitneyCottonGinModel {
+  const lcg = createLcg(1794);
   const rootGroup = new THREE.Group();
   const materialsToDispose: THREE.Material[] = [];
   const geometriesToDispose: THREE.BufferGeometry[] = [];
@@ -328,4 +327,50 @@ export function buildWhitneyCottonGinModel(): WhitneyCottonGinModel {
     },
     dispose,
   };
+}
+
+/**
+ * Updates Whitney cotton gin saw cylinder, brush doffing drum, crank handle, cotton fibers, and cutaway.
+ */
+export function updateWhitneyCottonGinKinematics(
+  model: WhitneyCottonGinModel,
+  dt: number,
+  crankOmegaRadPerS: number,
+  sawOmegaRadPerS: number,
+  brushOmegaRadPerS: number,
+  showFibers: boolean,
+  isCutaway = false,
+): void {
+  // Crank handle manual rotation
+  model.crankGroup.rotation.x += crankOmegaRadPerS * dt;
+
+  // Saw cylinder rotation (forward, into hopper grate)
+  model.sawCylinderGroup.rotation.x += sawOmegaRadPerS * dt;
+  model.drivePulleyGroup.rotation.x += sawOmegaRadPerS * dt;
+
+  // Brush cylinder high-speed counter-rotation (doffing fibers backwards)
+  model.brushCylinderGroup.rotation.x -= brushOmegaRadPerS * dt;
+
+  // Animate cotton fibers through the gin grate and doffing chamber
+  if (showFibers) {
+    model.fiberPoints.visible = true;
+    const pos = model.fiberPositions;
+    for (let i = 0; i < model.fiberCount; i++) {
+      const idx = i * 3;
+      pos[idx + 2] += (sawOmegaRadPerS * 0.12 + 1.8) * dt; // Flow toward rear (+Z)
+      pos[idx + 1] -= 0.6 * dt; // Gravity descent
+
+      if (pos[idx + 2] > 3.2) {
+        pos[idx + 2] = -0.6;
+        pos[idx + 1] = 0.8;
+      }
+    }
+    model.fiberPoints.geometry.attributes.position.needsUpdate = true;
+  } else {
+    model.fiberPoints.visible = false;
+  }
+
+  // Cutaway transparency for timber casing and frame
+  model.materials.walnutWood.opacity = isCutaway ? 0.35 : 1.0;
+  model.materials.walnutWood.transparent = isCutaway;
 }

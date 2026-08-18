@@ -262,14 +262,14 @@ export function buildNoycePlanarIcModel(): NoycePlanarIcModelResult {
     dt: number,
     activeLayer: "all" | "silicon" | "oxide" | "metal",
     showLogicSignals: boolean,
-    clockFrequencyMhz: number,
+    signalDisplaySpeed: number,
   ) => {
     updateNoycePlanarIcKinematics(
       nodes,
       materials,
       dt,
       0,
-      clockFrequencyMhz,
+      signalDisplaySpeed,
       showLogicSignals,
       false,
     );
@@ -298,11 +298,11 @@ export function updateNoycePlanarIcKinematics(
   materials: NoycePlanarIcMaterials,
   dt: number,
   _timeSec: number,
-  clockFrequencyMhz: number,
+  signalDisplaySpeed: number,
   showLogicSignals: boolean,
   isCutaway: boolean,
 ) {
-  const signalSpeed = clockFrequencyMhz * 0.45 * dt;
+  const signalSpeed = signalDisplaySpeed * dt;
   const pos = nodes.signalPos;
 
   for (let i = 0; i < nodes.signalCount; i++) {

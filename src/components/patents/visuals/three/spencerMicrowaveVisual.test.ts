@@ -2,7 +2,10 @@ import { describe, expect, test } from "bun:test";
 import { readFileSync } from "node:fs";
 import { join } from "node:path";
 import { FrankenSimEngine } from "@/physics/engine";
-import { buildSpencerMicrowaveModel } from "./spencerMicrowaveModel";
+import {
+  buildSpencerMicrowaveModel,
+  updateSpencerMicrowaveKinematics,
+} from "./spencerMicrowaveModel";
 
 const VISUALS_DIRECTORY = join(process.cwd(), "src", "components", "patents", "visuals");
 
@@ -20,6 +23,8 @@ describe("US 2,495,429 Percy Spencer Microwave Cavity Magnetron visual & RF phys
     expect(modelSource).not.toContain("useGLTF");
     expect(modelSource).not.toContain(".gltf");
     expect(modelSource).not.toContain(".glb");
+    expect(modelSource).toContain("buildSpencerMicrowaveModel");
+    expect(modelSource).toContain("updateSpencerMicrowaveKinematics");
     expect(threeSource).not.toContain("useGLTF");
   });
 
@@ -49,10 +54,12 @@ describe("US 2,495,429 Percy Spencer Microwave Cavity Magnetron visual & RF phys
       "cavity_resonator",
       "electron_spokes",
       "waveguide_launch",
+      "strapping_rings",
       "top",
     ]) {
       expect(threeSource).toContain(preset);
     }
+    expect(threeSource).toContain("isCutaway");
   });
 
   test("computes genuine Hull cutoff condition, microwave frequency, and dielectric loss in SI units", () => {
@@ -71,10 +78,11 @@ describe("US 2,495,429 Percy Spencer Microwave Cavity Magnetron visual & RF phys
     expect(model.cathodeMesh).toBeDefined();
     expect(model.spokePoints).toBeDefined();
 
-    // Test kinematics update
-    model.updateKinematics(1 / 60, true, 2450, 850, true);
+    // Test kinematics update & cutaway
+    updateSpencerMicrowaveKinematics(model, 1 / 60, true, 4.5, 0.547, true, true);
     expect(model.spokePoints.visible).toBe(true);
     expect(model.spokePoints.rotation.y).toBeGreaterThan(0);
+    expect(model.materials.copperAnodeMat.opacity).toBe(0.35);
 
     model.dispose();
   });

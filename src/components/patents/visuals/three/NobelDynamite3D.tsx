@@ -36,6 +36,8 @@ export const NobelDynamite3D = memo(function NobelDynamite3D() {
     ngPercentage,
     detonationVelocityMps,
     isFuseLit,
+    shockwaveGlow: nobel.shockwaveGlow,
+    stickDisplayOmegaRadPerS: nobel.stickDisplayOmegaRadPerS,
     isAudioMuted,
     isCutaway,
     blastOverpressureMpa: nobel.blastOverpressureMpa,
@@ -142,7 +144,8 @@ export const NobelDynamite3D = memo(function NobelDynamite3D() {
         dt,
         timeSec,
         p.isFuseLit,
-        p.detonationVelocityMps,
+        p.shockwaveGlow,
+        p.stickDisplayOmegaRadPerS,
         p.isCutaway,
       );
 

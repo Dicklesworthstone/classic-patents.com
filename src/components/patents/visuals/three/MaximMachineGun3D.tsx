@@ -137,7 +137,7 @@ export function MaximMachineGun3D() {
         model,
         dt,
         timeSec,
-        p.fireRateRpm,
+        p.fireOmegaRadPerS,
         p.recoilStrokeM,
         p.barrelTempC,
         p.waterEvapRateGs,

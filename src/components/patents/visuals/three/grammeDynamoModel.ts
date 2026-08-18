@@ -290,13 +290,13 @@ export function updateGrammeDynamoKinematics(
   materials: GrammeDynamoMaterials,
   dt: number,
   timeSec: number,
-  shaftRate: number,
+  _shaftRate: number,
   inducedEmfIndex: number,
   displayRadPerFrame: number,
   showMagneticFlux: boolean,
   isCutaway: boolean,
 ) {
-  const radiansPerSec = (displayRadPerFrame ?? (shaftRate * Math.PI * 2) / 240) * 60;
+  const radiansPerSec = displayRadPerFrame * 60;
   nodes.armatureGroup.rotation.x += radiansPerSec * dt;
 
   const pos = nodes.fluxPositions;

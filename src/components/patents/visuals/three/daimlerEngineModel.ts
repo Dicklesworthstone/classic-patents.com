@@ -405,3 +405,77 @@ export function buildDaimlerEngineModel(): DaimlerEngineModel {
     dispose,
   };
 }
+
+/**
+ * Updates Daimler high-speed engine 4-stroke cycle kinematics, valves, and combustion.
+ */
+export function updateDaimlerEngineKinematics(
+  model: DaimlerEngineModel,
+  cycleAngle: number,
+  fourStrokePhase: number,
+  hotTubeTempC: number,
+  isCutaway = false,
+): { strokeIndex: number; pistonY: number } {
+  // Hot-tube glow modulation
+  model.materials.hotTubeMat.emissiveIntensity =
+    hotTubeTempC >= 800 ? 2.8 : Math.max(0.15, (hotTubeTempC / 800) * 2.2);
+  model.materials.hotTubeMat.emissive.setHex(
+    hotTubeTempC >= 800 ? 0xf97316 : hotTubeTempC >= 600 ? 0xb45309 : 0x334155,
+  );
+
+  model.crankshaftGroup.rotation.z = cycleAngle;
+
+  // Kinematics: crankpin position
+  const crankR = 0.42;
+  const pinY = -0.65 + Math.sin(cycleAngle) * crankR;
+  const pinX = Math.cos(cycleAngle) * crankR;
+
+  const rodLen = 1.7;
+  const pistonY = pinY + Math.sqrt(Math.max(0.1, rodLen ** 2 - pinX ** 2));
+  model.pistonGroup.position.y = pistonY;
+
+  // Connecting rod pose
+  model.conRodGroup.position.set(pinX, pinY, 0);
+  const rodAngle = Math.atan2(pistonY - pinY, -pinX) - Math.PI / 2;
+  model.conRodGroup.rotation.z = rodAngle;
+
+  // 4-Stroke Cycle Dynamics:
+  const strokeIndex = Math.floor(fourStrokePhase / Math.PI) % 4;
+
+  if (strokeIndex === 0) {
+    // Intake Stroke: automatic valve sucked open
+    const intakeLift = Math.sin(fourStrokePhase) * 0.08;
+    model.intakeValve.position.y = 2.5 - intakeLift;
+    model.combustionFlame.visible = false;
+  } else if (strokeIndex === 1) {
+    // Compression Stroke
+    model.intakeValve.position.y = 2.5;
+    model.combustionFlame.visible = false;
+  } else if (strokeIndex === 2) {
+    // Power Stroke: combustion flash near top dead center
+    model.intakeValve.position.y = 2.5;
+    const powerProgress = fourStrokePhase - 2 * Math.PI;
+    if (powerProgress < Math.PI * 0.4) {
+      model.combustionFlame.visible = true;
+      model.combustionFlame.position.y = pistonY + 0.35;
+      const flashScale = 0.6 + Math.sin((powerProgress / (Math.PI * 0.4)) * Math.PI) * 0.4;
+      model.combustionFlame.scale.set(flashScale, flashScale, flashScale);
+    } else {
+      model.combustionFlame.visible = false;
+    }
+  } else {
+    // Exhaust Stroke: cam-operated pushrod
+    model.intakeValve.position.y = 2.5;
+    model.combustionFlame.visible = false;
+    const exhaustLift = Math.sin(fourStrokePhase - 3 * Math.PI) * 0.12;
+    model.exhaustPushrod.position.y = 0.2 + exhaustLift;
+    model.exhaustRocker.rotation.z = -exhaustLift * 1.5;
+    model.exhaustValve.position.y = 2.5 - exhaustLift;
+  }
+
+  // Cutaway transparency
+  model.materials.castIron.opacity = isCutaway ? 0.35 : 1.0;
+  model.materials.castIron.transparent = isCutaway;
+
+  return { strokeIndex, pistonY };
+}

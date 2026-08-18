@@ -38,6 +38,7 @@ export function DeLavalSeparator3D() {
     isAudioMuted,
     displayOmegaRadPerS: sep.displayOmegaRadPerS,
     bowlOmegaRadPerS: sep.bowlOmegaRadPerS,
+    creamDropAdvancePerS: sep.creamDropAdvancePerS,
   });
 
   const controlsRef = useRef<StudioContext["controls"] | null>(null);
@@ -100,13 +101,12 @@ export function DeLavalSeparator3D() {
 
     // Animation Loop
     let reqId: number;
-    let renderedSteps = 0;
+    let elapsed = 0;
 
     const animate = () => {
       reqId = requestAnimationFrame(animate);
-      renderedSteps += 1;
       const delta = 1 / 60;
-      const elapsed = renderedSteps * (1 / 60);
+      elapsed += delta;
       const p = live.current;
 
       const omega = p.displayOmegaRadPerS ?? 0;
@@ -116,7 +116,7 @@ export function DeLavalSeparator3D() {
 
       // Cream (inner) vs skim (outer) only when g-force is high enough to split
       const split = p.centrifugalGs > 2000;
-      const creamSpeed = (p.creamFlowLph / 300) * 1.6;
+      const creamSpeed = p.creamDropAdvancePerS;
       model.creamDrops.forEach((drop, i) => {
         drop.visible = split;
         drop.position.y = 0.35 - ((elapsed * creamSpeed + i * 0.18) % 1.8);

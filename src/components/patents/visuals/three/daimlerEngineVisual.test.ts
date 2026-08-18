@@ -2,7 +2,7 @@ import { describe, expect, test } from "bun:test";
 import { readFileSync } from "node:fs";
 import { join } from "node:path";
 import { FrankenSimEngine } from "@/physics/engine";
-import { buildDaimlerEngineModel } from "./daimlerEngineModel";
+import { buildDaimlerEngineModel, updateDaimlerEngineKinematics } from "./daimlerEngineModel";
 
 const VISUALS_DIRECTORY = join(process.cwd(), "src/components/patents/visuals");
 
@@ -21,6 +21,7 @@ describe("US 361,931 Gottlieb Daimler High-Speed Four-Stroke Engine visual & kin
     expect(threeSource).not.toContain(".glb");
     expect(threeSource).not.toContain(".gltf");
     expect(modelSource).toContain("buildDaimlerEngineModel");
+    expect(modelSource).toContain("updateDaimlerEngineKinematics");
   });
 
   test("maintains deterministic replay without ambient randomness or private clocks in frame loop", () => {
@@ -45,10 +46,11 @@ describe("US 361,931 Gottlieb Daimler High-Speed Four-Stroke Engine visual & kin
       "utf8",
     );
 
-    for (const preset of ["iso", "cylinder", "crankcase", "hottube"]) {
+    for (const preset of ["iso", "cylinder", "crankcase", "hottube", "flywheel", "top"]) {
       expect(threeSource).toContain(preset);
     }
 
+    expect(threeSource).toContain("isCutaway");
     expect(threeSource).toContain("Daimler High-Speed Petrol Engine 3D");
   });
 
@@ -64,25 +66,28 @@ describe("US 361,931 Gottlieb Daimler High-Speed Four-Stroke Engine visual & kin
   });
 
   test("builds and articulates procedural enclosed flywheels, hot-tube igniter, and valve pushrod correctly", () => {
-    const {
-      rootGroup,
-      crankshaftGroup,
-      flywheelGroup,
-      pistonGroup,
-      conRodGroup,
-      hotTubeMesh,
-      materials,
-      dispose,
-    } = buildDaimlerEngineModel();
+    const model = buildDaimlerEngineModel();
 
-    expect(rootGroup.children.length).toBeGreaterThan(4);
-    expect(crankshaftGroup).toBeDefined();
-    expect(flywheelGroup).toBeDefined();
-    expect(pistonGroup).toBeDefined();
-    expect(conRodGroup).toBeDefined();
-    expect(hotTubeMesh).toBeDefined();
-    expect(materials.hotTubeMat).toBeDefined();
+    expect(model.rootGroup.children.length).toBeGreaterThan(4);
+    expect(model.crankshaftGroup).toBeDefined();
+    expect(model.flywheelGroup).toBeDefined();
+    expect(model.pistonGroup).toBeDefined();
+    expect(model.conRodGroup).toBeDefined();
+    expect(model.hotTubeMesh).toBeDefined();
+    expect(model.materials.hotTubeMat).toBeDefined();
 
-    dispose();
+    // Test 4-stroke cycle kinematics
+    // Power stroke (stroke 2)
+    const power = updateDaimlerEngineKinematics(model, Math.PI * 0.1, Math.PI * 2.1, 850, true);
+    expect(power.strokeIndex).toBe(2);
+    expect(model.combustionFlame.visible).toBe(true);
+    expect(model.materials.castIron.opacity).toBe(0.35);
+
+    // Exhaust stroke (stroke 3)
+    const exhaust = updateDaimlerEngineKinematics(model, Math.PI * 1.5, Math.PI * 3.5, 850, false);
+    expect(exhaust.strokeIndex).toBe(3);
+    expect(model.exhaustPushrod.position.y).toBeGreaterThan(0.2);
+
+    model.dispose();
   });
 });

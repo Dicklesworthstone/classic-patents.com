@@ -1,24 +1,37 @@
 "use client";
 
-import { Camera, Eye, EyeOff, Flame, Rocket, RotateCcw, Volume2, VolumeX, Zap } from "lucide-react";
+import {
+  Camera,
+  Eye,
+  EyeOff,
+  Flame,
+  Layers,
+  Rocket,
+  RotateCcw,
+  Volume2,
+  VolumeX,
+  Zap,
+} from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import type * as THREE from "three";
 import { FrankenSimEngine } from "@/physics/engine";
 import { ensureGoddardWasm } from "@/physics/goddardWasm";
-import { deLavalMeridian, goddardThermo } from "@/physics/thermochem";
 import { useFrankenSimPhysics } from "@/physics/useFrankenSimPhysics";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
-import { createLcg } from "@/utils/lcg";
 import { soundEngine } from "@/utils/soundEngine";
-import { buildGoddardRocketModel } from "./goddardRocketModel";
+import { buildGoddardRocketModel, updateGoddardRocketKinematics } from "./goddardRocketModel";
 import { createThreeStudioScene, type StudioContext } from "./ThreeStudioScene";
 import { useLiveSimParams } from "./useLiveSimParams";
 
 import { usePatentAudio } from "./usePatentAudio";
 
-const lcg = createLcg(1309);
-
-type CameraPreset = "iso" | "de_laval_nozzle" | "combustion_chamber" | "gimbal_actuator" | "top";
+type CameraPreset =
+  | "iso"
+  | "de_laval_nozzle"
+  | "combustion_chamber"
+  | "gimbal_actuator"
+  | "interstage"
+  | "top";
 
 export function GoddardRocket3D() {
   const containerRef = useRef<HTMLDivElement>(null);
@@ -30,6 +43,7 @@ export function GoddardRocket3D() {
   // Propulsion & Staging State Controls
   const { params } = usePatentPhysics("us-1102653-goddard-rocket");
   const [showUiOverlay, setShowUiOverlay] = useState<boolean>(true);
+  const [isCutaway, setIsCutaway] = useState<boolean>(false);
   const chamberPressurePsi = params.chamberPressure ?? 350;
   const expansionRatio = params.expansionRatio ?? 3.5;
   const fuelFlowRateKgs = params.fuelFlowRateKgs ?? 1.8;
@@ -65,20 +79,21 @@ export function GoddardRocket3D() {
       fluidFlowVelocityMps: rocketPhysics.exhaustVelocityMps,
     },
   });
-  const thermo = goddardThermo(chamberPressurePsi, expansionRatio);
   const specificImpulseSec = Number(rocketPhysics.specificImpulseSec.toFixed(1));
   const exhaustVelocityMps = rocketPhysics.exhaustVelocityMps;
   const machExit = rocketPhysics.machExit;
   const thrustNewtons = rocketPhysics.thrustNewtons;
-  const thrustLbf = rocketPhysics.thrustLbf ?? Math.round(thrustNewtons * 0.224809);
+  const thrustLbf = rocketPhysics.thrustLbf;
 
   const live = useLiveSimParams({
     activeStage,
     gyroGimbalAngleDeg,
     showExhaustPlume,
+    isCutaway,
     exhaustVelocityMps,
-    expansionRatio,
-    exhaustTempK: thermo.exhaustTempK,
+    expansionRatio: rocketPhysics.expansionRatio,
+    plumeAdvancePerS: rocketPhysics.plumeAdvancePerS,
+    exhaustTempK: rocketPhysics.exhaustTempK,
     isAudioMuted,
   });
 
@@ -107,6 +122,10 @@ export function GoddardRocket3D() {
       case "gimbal_actuator":
         camera.position.set(2.8, -2.4, 3.5);
         controls.target.set(0, -2.5, 0);
+        break;
+      case "interstage":
+        camera.position.set(2.8, 1.8, 4.2);
+        controls.target.set(0, 1.5, 0);
         break;
       case "top":
         camera.position.set(0, 11.5, 0.1);
@@ -146,13 +165,15 @@ export function GoddardRocket3D() {
       const delta = 1 / 60;
       const p = live.current;
 
-      model.updateKinematics(
+      updateGoddardRocketKinematics(
+        model,
         delta,
         p.activeStage,
         p.gyroGimbalAngleDeg,
-        p.expansionRatio ?? 3.5,
-        p.exhaustVelocityMps ?? 0,
+        p.expansionRatio,
+        p.plumeAdvancePerS,
         p.showExhaustPlume,
+        p.isCutaway,
       );
 
       controls.update();
@@ -219,8 +240,20 @@ export function GoddardRocket3D() {
           </div>
         )}
 
-        {/* Top Right Tool Bar (Toggle UI, Audio, Pins, Reset) */}
+        {/* Top Right Tool Bar (Toggle UI, Audio, Pins, Cutaway, Reset) */}
         <div className="absolute top-3 right-3 sm:top-4 sm:right-4 z-10 flex gap-1.5 sm:gap-2">
+          <button
+            type="button"
+            onClick={() => setIsCutaway(!isCutaway)}
+            title={isCutaway ? "Switch to Solid Hull" : "Switch to Rocket Hull Cutaway"}
+            className={`p-1.5 sm:p-2.5 rounded-xl backdrop-blur-md border transition-colors shadow-sm ${
+              isCutaway
+                ? "bg-amber-600 text-white border-amber-700 shadow-md ring-2 ring-amber-500/30"
+                : "bg-white/90 dark:bg-ink-900/90 border-parchment-300 dark:border-ink-700 text-ink-700 dark:text-parchment-300 hover:bg-parchment-100"
+            }`}
+          >
+            <Layers className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
+          </button>
           <button
             type="button"
             onClick={() => setShowUiOverlay(!showUiOverlay)}
@@ -287,6 +320,7 @@ export function GoddardRocket3D() {
                 ["de_laval_nozzle", "De Laval Nozzle"],
                 ["combustion_chamber", "Chamber"],
                 ["gimbal_actuator", "Gimbal Vanes"],
+                ["interstage", "Interstage Stage 2"],
                 ["top", "Aero Profile"],
               ] as const
             ).map(([id, label]) => (

@@ -2,7 +2,7 @@ import { describe, expect, test } from "bun:test";
 import { readFileSync } from "node:fs";
 import { join } from "node:path";
 import { stepPeltonWheel } from "@/physics/catalogKernels";
-import { buildPeltonWheelModel } from "./peltonWheelModel";
+import { buildPeltonWheelModel, updatePeltonWheelKinematics } from "./peltonWheelModel";
 
 const VISUALS_DIRECTORY = join(process.cwd(), "src/components/patents/visuals");
 
@@ -18,6 +18,9 @@ describe("US 233,692 Lester Pelton Impulse Water Wheel visual & hydrodynamics bo
     expect(threeSource).not.toContain(".glb");
     expect(threeSource).not.toContain(".gltf");
     expect(modelSource).toContain("buildPeltonWheelModel");
+    expect(modelSource).toContain("updatePeltonWheelKinematics");
+    expect(modelSource).toContain("jetDisplaySpeed");
+    expect(modelSource).not.toContain("/ 90");
   });
 
   test("maintains deterministic replay without ambient randomness or private clocks in frame loop", () => {
@@ -36,10 +39,18 @@ describe("US 233,692 Lester Pelton Impulse Water Wheel visual & hydrodynamics bo
   test("exposes authentic camera presets and UI overlay for impulse turbine observation", () => {
     const threeSource = readFileSync(join(VISUALS_DIRECTORY, "three", "PeltonWheel3D.tsx"), "utf8");
 
-    for (const preset of ["iso", "split_bucket", "needle_nozzle", "runner_wheel", "top"]) {
+    for (const preset of [
+      "iso",
+      "split_bucket",
+      "needle_nozzle",
+      "runner_wheel",
+      "tailrace",
+      "top",
+    ]) {
       expect(threeSource).toContain(preset);
     }
 
+    expect(threeSource).toContain("isCutaway");
     expect(threeSource).toContain("Pelton Water Wheel 3D");
   });
 
@@ -48,27 +59,38 @@ describe("US 233,692 Lester Pelton Impulse Water Wheel visual & hydrodynamics bo
     expect(result.jetVelocityMps).toBeGreaterThan(90);
     expect(result.shaftPowerKw).toBeGreaterThan(150);
     expect(result.etaPct).toBeGreaterThan(85);
+    expect(result.jetDisplaySpeed).toBeCloseTo((result.jetVelocityMps / 90) * 12, 2);
+    expect(result.sprayDisplaySpeed).toBe(8);
   });
 
   test("builds and articulates procedural 18-bucket runner, needle nozzle, and spray particles correctly", () => {
-    const {
-      rootGroup,
-      runnerGroup,
-      nozzleNeedle,
-      needleHandwheel,
-      casingGroup,
-      materials,
-      dispose,
-    } = buildPeltonWheelModel();
+    const model = buildPeltonWheelModel();
 
-    expect(rootGroup.children.length).toBeGreaterThan(3);
-    expect(runnerGroup).toBeDefined();
-    expect(nozzleNeedle).toBeDefined();
-    expect(needleHandwheel).toBeDefined();
-    expect(casingGroup).toBeDefined();
-    expect(materials.bronzeBucket).toBeDefined();
-    expect(materials.waterJet).toBeDefined();
+    expect(model.rootGroup.children.length).toBeGreaterThan(3);
+    expect(model.runnerGroup).toBeDefined();
+    expect(model.nozzleNeedle).toBeDefined();
+    expect(model.needleHandwheel).toBeDefined();
+    expect(model.casingGroup).toBeDefined();
+    expect(model.materials.bronzeBucket).toBeDefined();
+    expect(model.materials.waterJet).toBeDefined();
 
-    dispose();
+    const pelton = stepPeltonWheel({ headMeters: 450, runnerRpm: 600 });
+    updatePeltonWheelKinematics(
+      model,
+      0.016,
+      pelton.runnerOmegaRadPerS,
+      pelton.jetDisplaySpeed,
+      pelton.sprayDisplaySpeed,
+      pelton.pressureNeedleRad,
+      pelton.needleStudioX,
+      pelton.needleStudioY,
+      pelton.handwheelOmegaRadPerS,
+      true,
+      true,
+    );
+    expect(model.materials.castIron.opacity).toBe(0.35);
+    expect(model.jetPoints.visible).toBe(true);
+
+    model.dispose();
   });
 });

@@ -25,7 +25,9 @@ export interface FermiReactorModel {
   neutronPoints: THREE.Points;
   neutronGeo: THREE.BufferGeometry;
   neutronPos: Float32Array;
+  neutronVel: Float32Array;
   neutronColors: Float32Array;
+  neutronCount: number;
   graphiteMat: THREE.MeshStandardMaterial;
   uraniumFuelMat: THREE.MeshStandardMaterial;
   updateKinematics: (
@@ -44,7 +46,6 @@ export function buildFermiReactorModel(): FermiReactorModel {
   const disposables: Array<{ dispose: () => void }> = [];
   const lcg = createLcg(19421202);
 
-  // --- AUTHENTIC MATERIALS ---
   const graphiteMat = new THREE.MeshStandardMaterial({
     color: 0x1e293b,
     roughness: 0.5,
@@ -85,9 +86,6 @@ export function buildFermiReactorModel(): FermiReactorModel {
   });
   disposables.push(detectorMat);
 
-  // ==========================================
-  // MULTI-TIER HEAVY TIMBER SCAFFOLD GANTRY
-  // ==========================================
   const timberGroup = new THREE.Group();
   timberGroup.position.y = -3.4;
   root.add(timberGroup);
@@ -98,110 +96,118 @@ export function buildFermiReactorModel(): FermiReactorModel {
     const beamX = new THREE.Mesh(beamXGeo, timberSupportMat);
     beamX.position.set(0, 0, -4.5 + b * 1.8);
     timberGroup.add(beamX);
-
-    const beamZGeo = new THREE.BoxGeometry(0.45, 0.45, 11.0);
-    disposables.push(beamZGeo);
-    const beamZ = new THREE.Mesh(beamZGeo, timberSupportMat);
-    beamZ.position.set(-4.5 + b * 1.8, 0.45, 0);
-    timberGroup.add(beamZ);
   }
 
-  [
-    [-5.0, -5.0],
-    [5.0, -5.0],
-    [-5.0, 5.0],
-    [5.0, 5.0],
-  ].forEach(([cx, cz]) => {
-    const postGeo = new THREE.BoxGeometry(0.6, 6.2, 0.6);
-    disposables.push(postGeo);
-    const post = new THREE.Mesh(postGeo, timberSupportMat);
-    post.position.set(cx, 3.1, cz);
-    timberGroup.add(post);
-  });
+  for (let c = 0; c < 4; c++) {
+    const colGeo = new THREE.BoxGeometry(0.5, 7.5, 0.5);
+    disposables.push(colGeo);
+    const col = new THREE.Mesh(colGeo, timberSupportMat);
+    const cx = c % 2 === 0 ? -4.5 : 4.5;
+    const cz = c < 2 ? -3.8 : 3.8;
+    col.position.set(cx, 3.5, cz);
+    timberGroup.add(col);
+  }
 
-  const gantryGeo = new THREE.BoxGeometry(11.0, 0.5, 0.5);
-  disposables.push(gantryGeo);
-  const gantryBeam = new THREE.Mesh(gantryGeo, timberSupportMat);
-  gantryBeam.position.set(0, 6.2, 0);
-  timberGroup.add(gantryBeam);
+  for (let g = 0; g < 3; g++) {
+    const gantryGeo = new THREE.BoxGeometry(10.2, 0.35, 0.35);
+    disposables.push(gantryGeo);
+    const gantry = new THREE.Mesh(gantryGeo, timberSupportMat);
+    gantry.position.set(0, 7.2, -2.5 + g * 2.5);
+    timberGroup.add(gantry);
 
-  [-0.8, 0.8].forEach((px) => {
-    const pulleyGeo = new THREE.CylinderGeometry(0.35, 0.35, 0.15, 16);
+    const pulleyGeo = new THREE.CylinderGeometry(0.32, 0.32, 0.15, 16);
     disposables.push(pulleyGeo);
     const pulley = new THREE.Mesh(pulleyGeo, pulleyMat);
     pulley.rotation.z = Math.PI / 2;
-    pulley.position.set(px, 5.8, 0);
+    pulley.position.set(0, 7.0, -2.5 + g * 2.5);
     timberGroup.add(pulley);
-  });
+  }
 
-  // ==========================================
-  // GRAPHITE MODERATOR BRICK MATRIX (CLAIM 1)
-  // ==========================================
   const pileGroup = new THREE.Group();
-  const layerSize = 5;
-  const blockSize = 1.4;
+  pileGroup.position.y = -1.2;
+  root.add(pileGroup);
 
-  for (let x = 0; x < layerSize; x++) {
-    for (let z = 0; z < layerSize; z++) {
-      for (let y = 0; y < 5; y++) {
-        const blockGeo = new THREE.BoxGeometry(blockSize * 0.94, 0.68, blockSize * 0.94);
-        disposables.push(blockGeo);
-        const block = new THREE.Mesh(blockGeo, graphiteMat);
-        block.position.set((x - 2) * blockSize, -2.6 + y * 0.72, (z - 2) * blockSize);
-        block.castShadow = true;
-        block.receiveShadow = true;
-        pileGroup.add(block);
+  const pileLayers = 14;
+  const pileRadius = 3.6;
+
+  for (let l = 0; l < pileLayers; l++) {
+    const layerFraction = (l / (pileLayers - 1) - 0.5) * 2;
+    const r = Math.sqrt(Math.max(0.1, 1 - layerFraction * layerFraction * 0.85)) * pileRadius;
+    const layerGroup = new THREE.Group();
+    layerGroup.position.y = -2.2 + l * 0.32;
+
+    const brickCount = Math.floor(r * 2.4);
+    for (let bx = -brickCount; bx <= brickCount; bx++) {
+      for (let bz = -brickCount; bz <= brickCount; bz++) {
+        const dist = Math.sqrt(bx * bx + bz * bz) * 0.35;
+        if (dist <= r) {
+          const brickGeo = new THREE.BoxGeometry(0.33, 0.3, 0.33);
+          disposables.push(brickGeo);
+          const brick = new THREE.Mesh(brickGeo, graphiteMat);
+          brick.position.set(bx * 0.35, 0, bz * 0.35);
+          brick.castShadow = true;
+          brick.receiveShadow = true;
+          layerGroup.add(brick);
+        }
+      }
+    }
+    pileGroup.add(layerGroup);
+  }
+
+  const fuelGroup = new THREE.Group();
+  fuelGroup.position.y = -1.2;
+  root.add(fuelGroup);
+
+  for (let fl = 2; fl < pileLayers - 2; fl += 2) {
+    const layerY = -2.2 + fl * 0.32;
+    for (let fx = -4; fx <= 4; fx += 2) {
+      for (let fz = -4; fz <= 4; fz += 2) {
+        if (Math.sqrt(fx * fx + fz * fz) * 0.35 < pileRadius * 0.85) {
+          const fuelGeo = new THREE.CylinderGeometry(0.09, 0.09, 0.22, 12);
+          disposables.push(fuelGeo);
+          const fuel = new THREE.Mesh(fuelGeo, uraniumFuelMat);
+          fuel.position.set(fx * 0.35, layerY, fz * 0.35);
+          fuelGroup.add(fuel);
+        }
       }
     }
   }
-  root.add(pileGroup);
 
-  // ==========================================
-  // URANIUM FUEL LUMPS LATTICE
-  // ==========================================
-  const fuelGroup = new THREE.Group();
-  for (let x = -1; x <= 1; x++) {
-    for (let z = -1; z <= 1; z++) {
-      const fuelGeo = new THREE.CylinderGeometry(0.24, 0.24, 3.2, 16);
-      disposables.push(fuelGeo);
-      const fuel = new THREE.Mesh(fuelGeo, uraniumFuelMat);
-      fuel.position.set(x * blockSize * 1.5, -1.2, z * blockSize * 1.5);
-      fuel.castShadow = true;
-      fuelGroup.add(fuel);
-    }
-  }
-  root.add(fuelGroup);
-
-  // ==========================================
-  // MOVABLE CADMIUM CONTROL RODS (CLAIM 2 & CLAIM 3)
-  // ==========================================
   const rodGroup = new THREE.Group();
-  const rodGeo = new THREE.CylinderGeometry(0.12, 0.12, 5.2, 16);
-  disposables.push(rodGeo);
-  const rod1 = new THREE.Mesh(rodGeo, cadmiumRodMat);
-  rod1.position.set(-0.8, 0.4, 0);
-  rod1.castShadow = true;
-  const rod2 = rod1.clone();
-  rod2.position.set(0.8, 0.4, 0);
-  rodGroup.add(rod1);
-  rodGroup.add(rod2);
   root.add(rodGroup);
 
-  // Boron Trifluoride (BF3) Detector
-  const bf3Geo = new THREE.CylinderGeometry(0.18, 0.18, 1.8, 16);
-  disposables.push(bf3Geo);
-  const bf3Detector = new THREE.Mesh(bf3Geo, detectorMat);
-  bf3Detector.position.set(3.8, -0.6, 3.8);
-  bf3Detector.castShadow = true;
+  const rodCoords: [number, number][] = [
+    [0, 0],
+    [-0.7, 0.7],
+    [0.7, -0.7],
+  ];
+
+  for (const [rx, rz] of rodCoords) {
+    const rodGeo = new THREE.CylinderGeometry(0.08, 0.08, 5.8, 16);
+    disposables.push(rodGeo);
+    const rod = new THREE.Mesh(rodGeo, cadmiumRodMat);
+    rod.position.set(rx, 1.2, rz);
+    rodGroup.add(rod);
+
+    const wireGeo = new THREE.CylinderGeometry(0.015, 0.015, 4.2, 8);
+    disposables.push(wireGeo);
+    const wire = new THREE.Mesh(wireGeo, cadmiumRodMat);
+    wire.position.set(rx, 4.8, rz);
+    rodGroup.add(wire);
+  }
+
+  const detectorGeo = new THREE.CylinderGeometry(0.12, 0.12, 1.4, 16);
+  disposables.push(detectorGeo);
+  const bf3Detector = new THREE.Mesh(detectorGeo, detectorMat);
+  bf3Detector.position.set(2.4, -0.5, 0);
+  bf3Detector.rotation.z = Math.PI / 2;
   root.add(bf3Detector);
 
-  // ==========================================
-  // THERMAL NEUTRON DIFFUSION CASCADE
-  // ==========================================
   const neutronCount = 300;
   const neutronGeo = new THREE.BufferGeometry();
   disposables.push(neutronGeo);
   const neutronPos = new Float32Array(neutronCount * 3);
+  const neutronVel = new Float32Array(neutronCount * 3);
   const neutronColors = new Float32Array(neutronCount * 3);
   const glowTex = createGlowPointTexture();
   disposables.push(glowTex);
@@ -211,6 +217,12 @@ export function buildFermiReactorModel(): FermiReactorModel {
     neutronPos[idx] = (lcg() - 0.5) * 6.5;
     neutronPos[idx + 1] = -2.6 + lcg() * 3.2;
     neutronPos[idx + 2] = (lcg() - 0.5) * 6.5;
+
+    const theta = lcg() * Math.PI * 2;
+    const phi = (lcg() - 0.5) * Math.PI;
+    neutronVel[idx] = Math.cos(phi) * Math.cos(theta);
+    neutronVel[idx + 1] = Math.sin(phi);
+    neutronVel[idx + 2] = Math.cos(phi) * Math.sin(theta);
 
     neutronColors[idx] = 0.2;
     neutronColors[idx + 1] = 0.8;
@@ -234,9 +246,6 @@ export function buildFermiReactorModel(): FermiReactorModel {
   const neutronPoints = new THREE.Points(neutronGeo, neutronMat);
   root.add(neutronPoints);
 
-  // ==========================================
-  // KINEMATICS & REACTOR CRITICALITY UPDATE FUNCTION
-  // ==========================================
   const updateKinematics = (
     delta: number,
     controlRodWithdrawalPct: number,
@@ -245,33 +254,15 @@ export function buildFermiReactorModel(): FermiReactorModel {
     neutronDisplaySpeed: number,
     showNeutronCascade: boolean,
   ) => {
-    const targetRodY = -0.5 + (controlRodWithdrawalPct / 100) * 3.2;
-    rodGroup.position.y += (targetRodY - rodGroup.position.y) * 0.1;
-
-    const purity = (moderatorPurityPct ?? 99.5) / 100;
-    graphiteMat.color.setRGB(0.12 * purity, 0.13 * purity, 0.15 * purity);
-    uraniumFuelMat.emissiveIntensity = Math.max(0, (kEff - 0.98) * 8);
-    uraniumFuelMat.emissive = new THREE.Color(kEff > 1.002 ? 0xf97316 : 0x22c55e);
-
-    if (showNeutronCascade) {
-      const speed = (neutronDisplaySpeed ?? kEff * 4.0) * delta;
-      for (let i = 0; i < neutronCount; i++) {
-        const idx = i * 3;
-        neutronPos[idx] += (lcg() - 0.5) * speed * 2.0;
-        neutronPos[idx + 1] += (lcg() - 0.5) * speed * 2.0;
-        neutronPos[idx + 2] += (lcg() - 0.5) * speed * 2.0;
-
-        if (Math.abs(neutronPos[idx]) > 3.6 || Math.abs(neutronPos[idx + 2]) > 3.6) {
-          neutronPos[idx] = (lcg() - 0.5) * 1.5;
-          neutronPos[idx + 1] = -2.0 + (lcg() - 0.5) * 1.5;
-          neutronPos[idx + 2] = (lcg() - 0.5) * 1.5;
-        }
-      }
-      neutronGeo.attributes.position.needsUpdate = true;
-      neutronPoints.visible = true;
-    } else {
-      neutronPoints.visible = false;
-    }
+    updateFermiReactorKinematics(
+      model,
+      delta,
+      controlRodWithdrawalPct,
+      kEff,
+      moderatorPurityPct,
+      neutronDisplaySpeed,
+      showNeutronCascade,
+    );
   };
 
   const dispose = () => {
@@ -280,7 +271,7 @@ export function buildFermiReactorModel(): FermiReactorModel {
     }
   };
 
-  return {
+  const model: FermiReactorModel = {
     root,
     timberGroup,
     pileGroup,
@@ -290,10 +281,63 @@ export function buildFermiReactorModel(): FermiReactorModel {
     neutronPoints,
     neutronGeo,
     neutronPos,
+    neutronVel,
     neutronColors,
+    neutronCount,
     graphiteMat,
     uraniumFuelMat,
     updateKinematics,
     dispose,
   };
+
+  return model;
+}
+
+export function updateFermiReactorKinematics(
+  model: FermiReactorModel,
+  delta: number,
+  controlRodWithdrawalPct: number,
+  kEff: number,
+  moderatorPurityPct: number,
+  neutronDisplaySpeed: number,
+  showNeutronCascade: boolean,
+  isCutaway = false,
+): void {
+  const targetRodY = -0.5 + (controlRodWithdrawalPct / 100) * 3.2;
+  model.rodGroup.position.y += (targetRodY - model.rodGroup.position.y) * 0.1;
+
+  const purity = moderatorPurityPct / 100;
+  model.graphiteMat.color.setRGB(0.12 * purity, 0.13 * purity, 0.15 * purity);
+  model.uraniumFuelMat.emissiveIntensity = Math.max(0, (kEff - 0.98) * 8);
+  model.uraniumFuelMat.emissive = new THREE.Color(kEff > 1.002 ? 0xf97316 : 0x22c55e);
+
+  if (showNeutronCascade) {
+    const speed = neutronDisplaySpeed * delta;
+    const pos = model.neutronPos;
+    const vel = model.neutronVel;
+    for (let i = 0; i < model.neutronCount; i++) {
+      const idx = i * 3;
+      pos[idx] += vel[idx] * speed * 2.0;
+      pos[idx + 1] += vel[idx + 1] * speed * 2.0;
+      pos[idx + 2] += vel[idx + 2] * speed * 2.0;
+
+      if (
+        Math.abs(pos[idx]) > 3.6 ||
+        Math.abs(pos[idx + 2]) > 3.6 ||
+        pos[idx + 1] > 0.5 ||
+        pos[idx + 1] < -4.0
+      ) {
+        pos[idx] = ((i % 17) / 17 - 0.5) * 1.5;
+        pos[idx + 1] = -2.0 + ((i % 13) / 13 - 0.5) * 1.5;
+        pos[idx + 2] = ((i % 19) / 19 - 0.5) * 1.5;
+      }
+    }
+    model.neutronGeo.attributes.position.needsUpdate = true;
+    model.neutronPoints.visible = true;
+  } else {
+    model.neutronPoints.visible = false;
+  }
+
+  model.graphiteMat.opacity = isCutaway ? 0.35 : 1.0;
+  model.graphiteMat.transparent = isCutaway;
 }

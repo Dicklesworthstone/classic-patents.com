@@ -293,18 +293,16 @@ export function updateBardeenTransistorKinematics(
   materials: BardeenTransistorMaterials,
   dt: number,
   _timeSec: number,
-  pointContactGapMicrons: number,
-  emitterCurrentMa: number,
-  currentGainAlpha: number,
-  holeDiffusion: number,
+  gapStudioUnits: number,
+  holeDriftSpeed: number,
   showHoleDrift: boolean,
   isCutaway: boolean,
 ) {
-  const currentGapUnits = pointContactGapMicrons * 0.012;
+  const currentGapUnits = gapStudioUnits;
   nodes.emitterGroup.position.x = -currentGapUnits / 2;
   nodes.collectorGroup.position.x = currentGapUnits / 2;
 
-  const driftSpeed = currentGainAlpha * (emitterCurrentMa / 2.5) * (holeDiffusion / 49) * 3.5 * dt;
+  const driftSpeed = holeDriftSpeed * dt;
   const pos = nodes.holePos;
 
   for (let i = 0; i < nodes.holeCount; i++) {

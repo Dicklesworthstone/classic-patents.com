@@ -130,7 +130,7 @@ export function MarconiRadio3D() {
         materials,
         dt,
         timeSec,
-        p.aerialHeightMeters ?? 88,
+        p.aerialHeightMeters,
         p.resonantFreqMhz,
         p.peakRfPowerKw,
         p.isSparking,

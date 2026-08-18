@@ -137,9 +137,9 @@ export const BellTelephone3D = memo(() => {
         model,
         dt,
         timeSec,
-        p.acousticDisplayOmegaRadPerS ?? 138.2,
+        p.acousticDisplayOmegaRadPerS,
         p.diaphragmUm,
-        p.electronDisplaySpeed ?? 2.16,
+        p.electronDisplaySpeed,
         p.showAcousticWaves,
         p.isCutaway,
       );

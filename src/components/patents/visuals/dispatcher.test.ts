@@ -22,4 +22,9 @@ describe("PatentVisualDispatcher coverage", () => {
 
     expect(missingCases).toEqual([]);
   });
+
+  test("routes the corrected Bardeen and Brattain grant, not the unrelated Shockley grant", () => {
+    expect(indexSource).toContain('case "us-2524035-bardeen-transistor":');
+    expect(indexSource).not.toContain('case "us-2569347-bardeen-transistor":');
+  });
 });

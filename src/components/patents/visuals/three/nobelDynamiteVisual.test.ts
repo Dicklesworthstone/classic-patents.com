@@ -71,6 +71,8 @@ describe("US 78,317 Alfred Nobel Porous-Earth Explosive Dynamite visual & detona
     expect(result.energyMjPerKg).toBeGreaterThan(4.0);
     expect(result.capEnergyJoules).toBe(1.2);
     expect(result.isInitiated).toBe(true);
+    expect(result.shockwaveGlow).toBeCloseTo(1 + (result.detonationVelocityMps / 6000) * 1.5, 2);
+    expect(result.stickDisplayOmegaRadPerS).toBeCloseTo(0.2, 5);
   });
 
   test("builds and articulates procedural wax paper shell, kieselguhr core, diatom grains, and detonator cap correctly", () => {
@@ -82,7 +84,17 @@ describe("US 78,317 Alfred Nobel Porous-Earth Explosive Dynamite visual & detona
     expect(nodes.fuseMesh).toBeDefined();
     expect(nodes.grainInst.count).toBe(35);
 
-    updateNobelDynamiteKinematics(nodes, materials, 0.016, 0.5, true, 6500, true);
+    const nobel = stepNobelDynamite({ ngConcentrationPct: 75, capEnergyJoules: 1.2 });
+    updateNobelDynamiteKinematics(
+      nodes,
+      materials,
+      0.016,
+      0.5,
+      true,
+      nobel.shockwaveGlow,
+      nobel.stickDisplayOmegaRadPerS,
+      true,
+    );
     expect(materials.waxPaper.transparent).toBe(true);
     expect(nodes.shockwaveMesh.visible).toBe(true);
 

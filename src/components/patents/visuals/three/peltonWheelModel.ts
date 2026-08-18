@@ -17,8 +17,6 @@
 import * as THREE from "three";
 import { createLcg } from "@/utils/lcg";
 
-const lcg = createLcg(1127);
-
 export interface PeltonWheelModel {
   rootGroup: THREE.Group;
   runnerGroup: THREE.Group;
@@ -42,6 +40,7 @@ export interface PeltonWheelModel {
 }
 
 export function buildPeltonWheelModel(): PeltonWheelModel {
+  const lcg = createLcg(1127);
   const rootGroup = new THREE.Group();
   const materialsToDispose: THREE.Material[] = [];
   const geometriesToDispose: THREE.BufferGeometry[] = [];
@@ -415,4 +414,67 @@ export function buildPeltonWheelModel(): PeltonWheelModel {
     },
     dispose,
   };
+}
+
+/**
+ * Updates Pelton wheel runner rotation, needle nozzle jet, bucket spray, and cutaway state.
+ */
+export function updatePeltonWheelKinematics(
+  model: PeltonWheelModel,
+  dt: number,
+  runnerOmegaRadPerS: number,
+  jetDisplaySpeed: number,
+  sprayDisplaySpeed: number,
+  pressureNeedleRad: number,
+  needleStudioX: number,
+  needleStudioY: number,
+  handwheelOmegaRadPerS: number,
+  showJet: boolean,
+  isCutaway = false,
+): void {
+  // Runner wheel rotation
+  model.runnerGroup.rotation.z += runnerOmegaRadPerS * dt;
+
+  // Pressure gauge needle deflection
+  model.pressureNeedle.rotation.z = pressureNeedleRad;
+  model.nozzleNeedle.position.set(needleStudioX, needleStudioY, 0);
+  model.needleHandwheel.rotation.z += dt * handwheelOmegaRadPerS;
+
+  if (showJet) {
+    model.jetPoints.visible = true;
+    model.sprayPoints.visible = true;
+
+    // High-speed jet streamline flow
+    const jPos = model.jetPoints.geometry.attributes.position.array as Float32Array;
+    const jetSpeed = jetDisplaySpeed * dt;
+    for (let i = 0; i < jPos.length; i += 3) {
+      jPos[i] += jetSpeed;
+      jPos[i + 1] += jetSpeed * 0.7;
+      if (jPos[i] > 0) {
+        jPos[i] = -3.2;
+        jPos[i + 1] = -2.25;
+      }
+    }
+    model.jetPoints.geometry.attributes.position.needsUpdate = true;
+
+    // Deflected spray mist flow downwards
+    const sPos = model.sprayPoints.geometry.attributes.position.array as Float32Array;
+    const spraySpeed = sprayDisplaySpeed * dt;
+    for (let i = 0; i < sPos.length; i += 3) {
+      sPos[i + 1] -= spraySpeed;
+      if (sPos[i + 1] < -3.8) {
+        sPos[i + 1] = -1.0;
+      }
+    }
+    model.sprayPoints.geometry.attributes.position.needsUpdate = true;
+  } else {
+    model.jetPoints.visible = false;
+    model.sprayPoints.visible = false;
+  }
+
+  // Cutaway transparency
+  model.materials.castIron.opacity = isCutaway ? 0.35 : 1.0;
+  model.materials.castIron.transparent = isCutaway;
+  model.materials.darkCastIron.opacity = isCutaway ? 0.35 : 1.0;
+  model.materials.darkCastIron.transparent = isCutaway;
 }

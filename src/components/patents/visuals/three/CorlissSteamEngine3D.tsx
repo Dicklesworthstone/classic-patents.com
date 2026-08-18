@@ -1,18 +1,18 @@
 "use client";
 
-import { Activity, Camera, Eye, EyeOff, Volume2, VolumeX } from "lucide-react";
+import { Activity, Camera, Eye, EyeOff, Layers, Volume2, VolumeX } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import type * as THREE from "three";
 import { stepCorlissEngine } from "@/physics/catalogKernels";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { soundEngine } from "@/utils/soundEngine";
-import { buildCorlissEngineModel } from "./corlissSteamEngineModel";
+import { buildCorlissEngineModel, updateCorlissEngineKinematics } from "./corlissSteamEngineModel";
 import { StudioKernelChips } from "./StudioKernelChips";
 import { createThreeStudioScene, type StudioContext } from "./ThreeStudioScene";
 import { useLiveSimParams } from "./useLiveSimParams";
 import { usePatentAudio } from "./usePatentAudio";
 
-type CameraPreset = "iso" | "wrist_plate" | "dashpots" | "flywheel" | "top";
+type CameraPreset = "iso" | "wrist_plate" | "dashpots" | "flywheel" | "governor" | "top";
 
 export function CorlissSteamEngine3D() {
   const containerRef = useRef<HTMLDivElement>(null);
@@ -20,10 +20,10 @@ export function CorlissSteamEngine3D() {
   // Thermodynamic Simulation Parameters
   const { params } = usePatentPhysics("us-6162-corliss-steam-engine");
   const [showUiOverlay, setShowUiOverlay] = useState<boolean>(true);
+  const [isCutaway, setIsCutaway] = useState<boolean>(false);
   const engineRpm = params.engineRpm ?? 65;
   const steamPressurePsi = params.steamPressurePsi ?? 100;
   const cutoffPct = params.cutoffPct ?? 25;
-  const [_showCalloutPins, _setShowCalloutPins] = useState<boolean>(false);
   const [activeCamera, setActiveCamera] = useState<CameraPreset>("iso");
   const { isAudioMuted, toggleSound: toggleEngine } = usePatentAudio();
 
@@ -36,6 +36,7 @@ export function CorlissSteamEngine3D() {
     steamPressurePsi,
     cutoffPct,
     isAudioMuted,
+    isCutaway,
     indicatedHp,
     thermalEfficiencyPct: Number(thermalEfficiencyPct),
     crankOmegaRadPerS: corliss.crankOmegaRadPerS,
@@ -67,6 +68,10 @@ export function CorlissSteamEngine3D() {
       case "flywheel":
         camera.position.set(4.5, 2.5, 6.0);
         controls.target.set(3.8, 0.5, 0);
+        break;
+      case "governor":
+        camera.position.set(-1.0, 3.2, 4.0);
+        controls.target.set(-1.0, 1.8, 1.2);
         break;
       case "top":
         camera.position.set(0, 14.0, 0.1);
@@ -108,50 +113,10 @@ export function CorlissSteamEngine3D() {
       const delta = 1 / 60;
       const p = live.current;
 
-      const omegaRadPerSec = p.crankOmegaRadPerS ?? (p.engineRpm * 2 * Math.PI) / 60;
+      const omegaRadPerSec = p.crankOmegaRadPerS;
       crankAngle = (crankAngle + omegaRadPerSec * delta) % (Math.PI * 2);
 
-      // Crank & flywheel rotation
-      model.crankGroup.rotation.z = crankAngle;
-
-      // Governor rotation & flyball expansion
-      const govOmega = p.governorOmegaRadPerS ?? omegaRadPerSec * 1.8;
-      model.governorGroup.rotation.y += govOmega * delta;
-      const govSpread = 0.35 + Math.min(0.35, (p.engineRpm / 100) * 0.25);
-      model.governorBalls[0].position.x = -govSpread;
-      model.governorBalls[1].position.x = govSpread;
-
-      // Kinematics: crankpin position
-      const crankR = 0.65;
-      const pinX = 3.8 + Math.cos(crankAngle) * crankR;
-      const pinY = Math.sin(crankAngle) * crankR;
-
-      // Slider-crank crosshead position
-      const rodL = 4.4;
-      const strokeX = pinX - Math.sqrt(Math.max(0.1, rodL ** 2 - pinY ** 2));
-      model.crossheadGroup.position.x = strokeX;
-
-      // Connecting rod pose
-      model.conRodGroup.position.set(strokeX, 0, 0);
-      const rodAngle = Math.atan2(pinY, pinX - strokeX);
-      model.conRodGroup.rotation.z = rodAngle;
-
-      // Central wrist plate harmonic oscillation
-      const wristAmp = 0.18 + (p.cutoffPct / 100) * 0.35;
-      const wristAngle = Math.sin(crankAngle + Math.PI * 0.25) * wristAmp;
-      model.wristPlate.rotation.z = wristAngle;
-
-      // 4 Rotary oscillating valve levers
-      model.valveLevers[0].rotation.z = wristAngle * 0.9;
-      model.valveLevers[1].rotation.z = -wristAngle * 0.9;
-      model.valveLevers[2].rotation.z = Math.sin(crankAngle) * wristAmp * 0.7;
-      model.valveLevers[3].rotation.z = -Math.sin(crankAngle) * wristAmp * 0.7;
-
-      // Dashpot rods drop motion
-      const drop1 = Math.max(0, -wristAngle * 1.2);
-      const drop2 = Math.max(0, wristAngle * 1.2);
-      model.dashpotRods[0].position.y = 1.5 - drop1;
-      model.dashpotRods[1].position.y = 1.5 - drop2;
+      updateCorlissEngineKinematics(model, crankAngle, p.engineRpm, p.cutoffPct, p.isCutaway);
 
       renderer.render(scene, camera);
     };
@@ -190,6 +155,7 @@ export function CorlissSteamEngine3D() {
               ["wrist_plate", "Wrist Plate"],
               ["dashpots", "Dashpots"],
               ["flywheel", "Flywheel"],
+              ["governor", "Governor"],
               ["top", "Top"],
             ] as [CameraPreset, string][]
           ).map(([preset, label]) => (
@@ -210,6 +176,18 @@ export function CorlissSteamEngine3D() {
 
         {/* Toggles */}
         <div className="flex items-center gap-1.5 bg-parchment-950/80 backdrop-blur-md p-1.5 rounded-xl border border-parchment-700/60 shadow-lg pointer-events-auto">
+          <button
+            type="button"
+            onClick={() => setIsCutaway(!isCutaway)}
+            title={isCutaway ? "Switch to Solid Engine" : "Switch to Cylinder Cutaway"}
+            className={`p-1.5 rounded-lg text-xs transition-colors ${
+              isCutaway
+                ? "bg-amber-600 text-white shadow-sm"
+                : "text-parchment-400 hover:text-white hover:bg-parchment-800"
+            }`}
+          >
+            <Layers className="w-4 h-4" />
+          </button>
           <button
             type="button"
             onClick={() => setShowUiOverlay(!showUiOverlay)}

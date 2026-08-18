@@ -6,7 +6,7 @@ import { stepBardeenTransistor } from "@/physics/catalogKernels";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 
 export function BardeenTransistorSim() {
-  const { params, updateParam } = usePatentPhysics("us-2569347-bardeen-transistor");
+  const { params, updateParam } = usePatentPhysics("us-2524035-bardeen-transistor");
   const emitterCurrentMa = params.emitterCurrent ?? 1.5;
   const collectorVoltageV = Math.abs(params.collectorBias ?? -40);
   const pointSpacingMicrons = params.pointSpacing ?? 50;
@@ -29,7 +29,7 @@ export function BardeenTransistorSim() {
           <div className="flex items-center gap-2.5">
             <Cpu className="w-6 h-6 text-emerald-500 animate-pulse" />
             <h3 className="font-serif text-2xl font-bold text-ink-950 dark:text-parchment-50">
-              Bardeen &amp; Brattain&apos;s Point-Contact Transistor Simulator (US 2,569,347)
+              Bardeen &amp; Brattain&apos;s Point-Contact Transistor Simulator (US 2,524,035)
             </h3>
           </div>
           <p className="text-sm sm:text-base text-ink-700 dark:text-ink-300 mt-1">

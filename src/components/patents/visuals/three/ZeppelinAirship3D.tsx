@@ -47,7 +47,7 @@ export function ZeppelinAirship3D() {
     netLiftKn: zep.netLiftKn,
     pitchTrimDeg: zep.pitchTrimDeg,
     parasiteDragKn: zep.parasiteDragKn,
-    propellerOmegaRadPerS: (zep.propellerRpm / 60) * 2 * Math.PI,
+    propellerOmegaRadPerS: zep.propellerDisplayOmegaRadPerS,
   });
 
   const controlsRef = useRef<StudioContext["controls"] | null>(null);

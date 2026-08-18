@@ -5,14 +5,11 @@ import { useEffect, useRef, useState } from "react";
 import type * as THREE from "three";
 import { stepWozniakApple } from "@/physics/catalogKernels";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
-import { createLcg } from "@/utils/lcg";
 import { soundEngine } from "@/utils/soundEngine";
 import { createThreeStudioScene, type StudioContext } from "./ThreeStudioScene";
 import { useLiveSimParams } from "./useLiveSimParams";
 import { usePatentAudio } from "./usePatentAudio";
 import { buildWozniakAppleModel } from "./wozniakAppleModel";
-
-const lcg = createLcg(1237);
 
 type CameraPreset = "iso" | "cpu" | "ram_matrix" | "slots" | "top";
 
@@ -118,12 +115,7 @@ export function WozniakApple3D() {
       const delta = 1 / 60;
       const p = live.current;
 
-      model.updateKinematics(
-        delta,
-        renderedSteps,
-        p.busDisplaySpeed ?? p.cpuClockMhz * 4.0,
-        p.isCpuActive,
-      );
+      model.updateKinematics(delta, renderedSteps, p.busDisplaySpeed, p.isCpuActive);
 
       controls.update();
       renderer.render(scene, camera);

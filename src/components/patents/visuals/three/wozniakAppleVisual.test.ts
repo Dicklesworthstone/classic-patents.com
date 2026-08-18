@@ -21,6 +21,8 @@ describe("US 4,136,359 Steve Wozniak Apple II Microcomputer visual & bus timing 
     expect(threeSource).not.toContain(".glb");
     expect(threeSource).not.toContain(".gltf");
     expect(modelSource).toContain("buildWozniakAppleModel");
+    expect(modelSource).not.toContain("?? 4.0");
+    expect(threeSource).not.toContain("cpuClockMhz * 4.0");
   });
 
   test("maintains deterministic replay without ambient randomness or private clocks in frame loop", () => {

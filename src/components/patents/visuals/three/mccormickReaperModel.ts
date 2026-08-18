@@ -275,3 +275,27 @@ export function buildMcCormickReaperModel(): McCormickReaperModel {
     dispose,
   };
 }
+
+/**
+ * Updates Cyrus McCormick grain reaper master bull-wheel rotation, reel vanes, sickle bar reciprocating stroke, and platform cutaway.
+ */
+export function updateMcCormickReaperKinematics(
+  model: McCormickReaperModel,
+  wheelRadPerSec: number,
+  reelRadPerSec: number,
+  cutterRadPerSec: number,
+  elapsedSeconds: number,
+  showStalks: boolean,
+  isCutaway = false,
+): void {
+  model.driveWheelGroup.rotation.x = elapsedSeconds * wheelRadPerSec;
+  model.reelGroup.rotation.x = elapsedSeconds * reelRadPerSec;
+  model.sickleBarGroup.position.x = Math.sin(elapsedSeconds * cutterRadPerSec) * 0.22;
+  model.stalksInstanced.visible = showStalks;
+
+  // Cutaway mode: make wooden platform deck and divider boards translucent
+  model.materials.weatheredWood.opacity = isCutaway ? 0.35 : 1.0;
+  model.materials.weatheredWood.transparent = isCutaway;
+  model.materials.ashWood.opacity = isCutaway ? 0.35 : 1.0;
+  model.materials.ashWood.transparent = isCutaway;
+}

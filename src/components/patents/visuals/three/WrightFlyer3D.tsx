@@ -1,6 +1,6 @@
 "use client";
 
-import { Compass, Eye, EyeOff, Play, Wind } from "lucide-react";
+import { Camera, Compass, Eye, EyeOff, Layers, Play, Wind } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import * as THREE from "three";
 import { ensureFlyerWasm, flyerAeroSource, flyerKernelSource } from "@/physics/flyerWasm";
@@ -8,11 +8,21 @@ import { TickScheduler } from "@/physics/tickScheduler";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { identityAeroBody, stepWrightAeroBody } from "@/physics/wrightAeroBody";
 import { readWrightControls, stepWrightFlyerSi, WRIGHT_PATENT_ID } from "@/physics/wrightKernel";
-import { createGlowPointTexture, createThreeStudioScene } from "./ThreeStudioScene";
+import {
+  createGlowPointTexture,
+  createThreeStudioScene,
+  type StudioContext,
+} from "./ThreeStudioScene";
 import { useLiveSimParams } from "./useLiveSimParams";
-import { buildWrightFlyerAirframe, FLYER_DIM } from "./wrightFlyerAirframe";
+import {
+  buildWrightFlyerAirframe,
+  FLYER_DIM,
+  updateWrightFlyerKinematics,
+} from "./wrightFlyerAirframe";
 
 const FIXED_RENDER_STEP_S = 1 / 60;
+
+type CameraPreset = "iso" | "wing_warp" | "canard" | "rudder" | "engine_props" | "top";
 
 function deterministicUnit(index: number, channel: number, generation = 0): number {
   const sample =
@@ -48,6 +58,8 @@ export function WrightFlyer3D() {
   } = controls;
 
   const [showUiOverlay, setShowUiOverlay] = useState<boolean>(true);
+  const [isCutaway, setIsCutaway] = useState<boolean>(false);
+  const [activeCamera, setActiveCamera] = useState<CameraPreset>("iso");
   const [showStreamlines, setShowStreamlines] = useState<boolean>(true);
   const [showVectors, setShowVectors] = useState<boolean>(true);
   const [isAutoFlying, setIsAutoFlying] = useState<boolean>(true);
@@ -63,12 +75,51 @@ export function WrightFlyer3D() {
     showStreamlines,
     showVectors,
     isAutoFlying,
+    isCutaway,
     liftNewtons: si.liftNewtons,
     dragNewtons: si.totalDragNewtons,
     netYawNm: si.netYawNm,
     coupled: isCoupled ? 1 : 0,
     cl: baseCl,
   });
+
+  const controlsRef = useRef<StudioContext["controls"] | null>(null);
+  const cameraRef = useRef<THREE.PerspectiveCamera | null>(null);
+
+  const applyCameraPreset = (preset: CameraPreset) => {
+    setActiveCamera(preset);
+    const camera = cameraRef.current;
+    const ctrl = controlsRef.current;
+    if (!camera || !ctrl) return;
+
+    switch (preset) {
+      case "iso":
+        camera.position.set(7.6, 3.2, 8.4);
+        ctrl.target.set(0, 0.15, 0);
+        break;
+      case "wing_warp":
+        camera.position.set(-6.5, 1.8, 4.2);
+        ctrl.target.set(-4.5, 0.2, 0);
+        break;
+      case "canard":
+        camera.position.set(0, 1.2, 5.5);
+        ctrl.target.set(0, 0.4, 2.5);
+        break;
+      case "rudder":
+        camera.position.set(0, 1.4, -6.0);
+        ctrl.target.set(0, 0.4, -2.5);
+        break;
+      case "engine_props":
+        camera.position.set(2.8, 1.2, -1.8);
+        ctrl.target.set(0, 0.2, -0.5);
+        break;
+      case "top":
+        camera.position.set(0, 13.5, 0.1);
+        ctrl.target.set(0, 0, 0);
+        break;
+    }
+    ctrl.update();
+  };
 
   useEffect(() => {
     ensureFlyerWasm().then(() => {
@@ -88,23 +139,13 @@ export function WrightFlyer3D() {
     });
 
     const { scene, camera, renderer, controls } = studio;
+    cameraRef.current = camera;
+    controlsRef.current = controls;
     controls.setRadius(11);
 
     const airframe = buildWrightFlyerAirframe();
     const flyerGroup = airframe.group;
     scene.add(flyerGroup);
-
-    const {
-      upperWing,
-      lowerWing,
-      canardGroup,
-      rudderGroup,
-      cradleGroup,
-      leftPropBlades,
-      rightPropBlades,
-      leftBayWireMat,
-      rightBayWireMat,
-    } = airframe;
 
     // --- AERODYNAMIC AIRFLOW STREAMLINE PARTICLES ---
     const particleCount = 280;
@@ -219,31 +260,17 @@ export function WrightFlyer3D() {
         flyerGroup.position.y = 0;
       }
 
-      // Propellers Rotation (Counter-Rotating to eliminate gyroscopic torque)
-      const propSpeed = (p.airspeedMph / 25) * 45;
-      leftPropBlades.rotation.z += propSpeed * delta;
-      rightPropBlades.rotation.z -= propSpeed * delta;
-
-      // Animate Wing Warping Deflection on Mesh Tips
-      const warpRad = (p.wingWarpDeg * Math.PI) / 180;
-      const leftTipUpper = upperWing.getObjectByName("leftTip");
-      const rightTipUpper = upperWing.getObjectByName("rightTip");
-      const leftTipLower = lowerWing.getObjectByName("leftTip");
-      const rightTipLower = lowerWing.getObjectByName("rightTip");
-
-      if (leftTipUpper && rightTipUpper && leftTipLower && rightTipLower) {
-        leftTipUpper.rotation.x = warpRad * 0.6;
-        leftTipLower.rotation.x = warpRad * 0.6;
-        rightTipUpper.rotation.x = -warpRad * 0.6;
-        rightTipLower.rotation.x = -warpRad * 0.6;
-      }
-
-      // Pilot hip cradle sliding sideways during wing warping
-      cradleGroup.position.x = -0.35 + (p.wingWarpDeg / 15) * 0.12;
-
-      // Animate Elevator & Rudder
-      canardGroup.rotation.x = (-p.elevatorPitchDeg * Math.PI) / 180;
-      rudderGroup.rotation.y = (-p.rudderYawDeg * Math.PI) / 180;
+      // Interplane airframe kinematics & fabric cutaway
+      updateWrightFlyerKinematics(
+        airframe,
+        delta,
+        p.wingWarpDeg,
+        p.rudderYawDeg,
+        p.elevatorPitchDeg,
+        p.airspeedMph,
+        p.liftNewtons,
+        p.isCutaway,
+      );
 
       // Streamline Flow Particle Physics
       const posArr = particlePositions;
@@ -272,18 +299,6 @@ export function WrightFlyer3D() {
       liftVector.setLength(Math.max(0.5, p.liftNewtons / 1100), 0.4, 0.25);
       dragVector.setLength(Math.max(0.3, p.dragNewtons / 400), 0.3, 0.2);
 
-      // Interplane X-wires: the high-AoA tip carries extra lift, so that bay's
-      // piano wire goes amber, then red. Slack bay stays steel-grey.
-      const leftTension = Math.max(0, p.liftNewtons / 2200 + p.wingWarpDeg / 15);
-      const rightTension = Math.max(0, p.liftNewtons / 2200 - p.wingWarpDeg / 15);
-      const paintBay = (mat: THREE.MeshStandardMaterial, tension: number) => {
-        if (tension > 1.15) mat.color.setHex(0xef4444);
-        else if (tension > 0.55) mat.color.setHex(0xf59e0b);
-        else mat.color.setHex(0x94a3b8);
-      };
-      paintBay(leftBayWireMat, leftTension);
-      paintBay(rightBayWireMat, rightTension);
-
       controls.update();
       renderer.render(scene, camera);
     };
@@ -302,6 +317,38 @@ export function WrightFlyer3D() {
       {/* 3D WebGL Canvas Viewport */}
       <div className="relative flex-1 min-h-[380px] sm:min-h-[460px] w-full cursor-grab active:cursor-grabbing">
         <div ref={containerRef} className="absolute inset-0 w-full h-full" />
+
+        {/* Camera Views Bar (Top-Left) */}
+        {showUiOverlay && (
+          <div className="absolute top-3 left-3 sm:top-4 sm:left-4 z-10 flex flex-nowrap overflow-x-auto scrollbar-none max-w-[calc(100%-12rem)] sm:max-w-none gap-1 sm:gap-1.5 bg-white/85 dark:bg-ink-900/85 backdrop-blur-md p-1 sm:p-1.5 rounded-xl border border-parchment-300 dark:border-ink-700 shadow-sm text-[10px] sm:text-xs transition-opacity duration-200">
+            <span className="px-1.5 sm:px-2 py-0.5 sm:py-1 text-ink-500 font-sans flex items-center gap-1 shrink-0">
+              <Camera className="w-3 h-3 sm:w-3.5 sm:h-3.5" /> View:
+            </span>
+            {(
+              [
+                ["iso", "Isometric"],
+                ["wing_warp", "Wing Warp"],
+                ["canard", "Pitch Canard"],
+                ["rudder", "Coupled Rudder"],
+                ["engine_props", "Engine & Props"],
+                ["top", "Plan View"],
+              ] as const
+            ).map(([preset, label]) => (
+              <button
+                key={preset}
+                type="button"
+                onClick={() => applyCameraPreset(preset)}
+                className={`px-2 py-1 rounded-lg transition-colors font-medium shrink-0 ${
+                  activeCamera === preset
+                    ? "bg-amber-600 text-white shadow-xs"
+                    : "text-ink-700 dark:text-ink-300 hover:bg-parchment-200 dark:hover:bg-ink-800"
+                }`}
+              >
+                {label}
+              </button>
+            ))}
+          </div>
+        )}
 
         {/* Live HUD Telemetry Overlay (Docked Bottom-Left to prevent overlap with top-right controls) */}
         {showUiOverlay && (
@@ -366,6 +413,19 @@ export function WrightFlyer3D() {
 
         {/* Camera & Toggle Controls (Top-Right) */}
         <div className="absolute top-3 right-3 sm:top-4 sm:right-4 z-10 flex flex-wrap justify-end gap-1.5 sm:gap-2 max-w-[90%]">
+          <button
+            type="button"
+            onClick={() => setIsCutaway(!isCutaway)}
+            title={isCutaway ? "Switch to Solid Fabric" : "Switch to Wing Truss Cutaway"}
+            className={`p-1.5 sm:px-2.5 sm:py-1.5 rounded-lg text-xs font-sans font-semibold border transition-colors shadow-xs ${
+              isCutaway
+                ? "bg-amber-700 text-white border-amber-800 shadow-md ring-2 ring-amber-500/30 dark:bg-amber-600"
+                : "bg-parchment-50/90 dark:bg-ink-900/90 text-ink-800 dark:text-ink-200 border-parchment-300 dark:border-ink-700 hover:bg-parchment-100"
+            }`}
+          >
+            <Layers className="w-3.5 h-3.5 inline sm:mr-1" />
+            <span className="hidden md:inline">Cutaway</span>
+          </button>
           <button
             type="button"
             onClick={() => setShowUiOverlay(!showUiOverlay)}

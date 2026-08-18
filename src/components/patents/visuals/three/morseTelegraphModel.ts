@@ -274,22 +274,24 @@ export function updateMorseTelegraphKinematics(
   materials: MorseTelegraphMaterials,
   dt: number,
   timeSec: number,
-  wpmSpeed: number,
-  magneticForceN: number,
+  keyOscillationRadPerS: number,
+  armatureStrikeM: number,
+  tapeAdvanceRadPerS: number,
+  electronDisplaySpeed: number,
   keyIsDown: boolean,
   isCutaway: boolean,
 ) {
   // 1. Key Action (manual or rhythmic Morse oscillation)
-  const isKeyActive = keyIsDown || Math.sin(timeSec * (wpmSpeed / 4) * Math.PI) > 0.2;
+  const isKeyActive = keyIsDown || Math.sin(timeSec * keyOscillationRadPerS) > 0.2;
   nodes.keyLeverGroup.rotation.z = isKeyActive ? 0.08 : 0;
 
   // 2. Sounder Armature Strike
-  const strike = isKeyActive ? -Math.min(0.2, 0.08 + (magneticForceN / 10) * 0.1) : 0;
+  const strike = isKeyActive ? -armatureStrikeM : 0;
   nodes.armatureGroup.position.y = 2.0 + strike;
 
   // 3. Paper Tape Advance
   if (isKeyActive) {
-    nodes.tapeSpool.rotation.y += dt * (wpmSpeed / 20) * 2.0;
+    nodes.tapeSpool.rotation.y += dt * tapeAdvanceRadPerS;
   }
 
   // 4. Flowing Circuit Electrons
@@ -297,7 +299,7 @@ export function updateMorseTelegraphKinematics(
   for (let i = 0; i < nodes.electronCount; i++) {
     const idx = i * 3;
     if (isKeyActive) {
-      pos[idx] += dt * 8.0;
+      pos[idx] += dt * electronDisplaySpeed;
       if (pos[idx] > 3.5) {
         pos[idx] = -3.5;
       }

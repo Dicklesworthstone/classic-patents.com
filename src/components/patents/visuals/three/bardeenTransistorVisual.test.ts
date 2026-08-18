@@ -10,7 +10,7 @@ import {
 
 const VISUALS_DIRECTORY = join(process.cwd(), "src", "components", "patents", "visuals");
 
-describe("US 2,569,347 John Bardeen & Walter Brattain Point-Contact Transistor visual & minority transport boundary", () => {
+describe("US 2,524,035 John Bardeen & Walter Brattain Point-Contact Transistor visual & minority transport boundary", () => {
   test("uses pure procedural Three.js WebGL architecture without external GLTF/GLB models", () => {
     const modelSource = readFileSync(
       join(VISUALS_DIRECTORY, "three", "bardeenTransistorModel.ts"),
@@ -25,6 +25,8 @@ describe("US 2,569,347 John Bardeen & Walter Brattain Point-Contact Transistor v
     expect(modelSource).not.toContain(".gltf");
     expect(modelSource).not.toContain(".glb");
     expect(threeSource).not.toContain("useGLTF");
+    expect(threeSource).toContain('usePatentPhysics("us-2524035-bardeen-transistor")');
+    expect(threeSource).not.toContain("us-2569347-bardeen-transistor");
   });
 
   test("maintains deterministic replay without ambient randomness or private clocks in frame loop", () => {
@@ -60,6 +62,8 @@ describe("US 2,569,347 John Bardeen & Walter Brattain Point-Contact Transistor v
     const semiState = FrankenSimEngine.stepBardeenTransistor(1.5, -40, 50);
     expect(semiState.currentGainAlpha).toBeGreaterThan(0.5);
     expect(semiState.holeDiffusionCoefficientCm2ps).toBeGreaterThan(0);
+    expect(semiState.holeDriftSpeed).toBeGreaterThan(0);
+    expect(semiState.gapStudioUnits).toBeCloseTo(0.6, 3);
   });
 
   test("builds and articulates procedural copper platen, germanium crystal, polystyrene wedge, gold foil ribbons, and minority hole drift correctly", () => {
@@ -73,15 +77,14 @@ describe("US 2,569,347 John Bardeen & Walter Brattain Point-Contact Transistor v
     expect(model.nodes.holePoints).toBeDefined();
 
     // Test kinematics update
+    const step = FrankenSimEngine.stepBardeenTransistor(1.5, -40, 50);
     updateBardeenTransistorKinematics(
       model.nodes,
       model.materials,
       1 / 60,
       1.0,
-      50,
-      1.5,
-      0.85,
-      49,
+      step.gapStudioUnits ?? 0.6,
+      step.holeDriftSpeed ?? 0,
       true,
       false,
     );

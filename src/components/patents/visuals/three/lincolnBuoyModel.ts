@@ -306,3 +306,47 @@ export function buildLincolnBuoyModel(): LincolnBuoyModel {
     dispose,
   };
 }
+
+/**
+ * Updates Lincoln inflatable buoy steamboat displacement, bellows inflation, sandbar depth, and cutaway.
+ */
+export function updateLincolnBuoyKinematics(
+  model: LincolnBuoyModel,
+  dt: number,
+  bellowsInflationPct: number,
+  riverShoalDepthFt: number,
+  baseDraftFt: number,
+  effectiveDraftFt: number,
+  paddleDisplayOmegaRadPerS: number,
+  isCutaway = false,
+): void {
+  // Bellows extension/inflation scaling
+  const infl = Math.max(0, Math.min(100, bellowsInflationPct)) / 100;
+  const bellowsScaleY = 0.25 + infl * 0.95;
+  const bellowsScaleZ = 0.35 + infl * 0.85;
+
+  model.portBellowsBody.scale.set(1.0, bellowsScaleY, bellowsScaleZ);
+  model.stbdBellowsBody.scale.set(1.0, bellowsScaleY, bellowsScaleZ);
+
+  const frameY = -0.7 - infl * 0.65;
+  model.portLowerFrame.position.y = frameY;
+  model.stbdLowerFrame.position.y = frameY;
+
+  // Hull waterline displacement based on draft change
+  const draftReductionFt = baseDraftFt - effectiveDraftFt;
+  const boatY = draftReductionFt * 0.45;
+  model.boatGroup.position.y = boatY;
+
+  // River sandbar shoal height
+  const sandbarY = -1.0 - riverShoalDepthFt * 0.45;
+  model.sandbarMesh.position.y = sandbarY;
+
+  // Paddlewheel rotation
+  model.paddlewheelGroup.rotation.z -= paddleDisplayOmegaRadPerS * dt;
+
+  // Cutaway mode
+  model.materials.hullWood.opacity = isCutaway ? 0.35 : 1.0;
+  model.materials.hullWood.transparent = isCutaway;
+  model.materials.bellowsRubber.opacity = isCutaway ? 0.45 : 1.0;
+  model.materials.bellowsRubber.transparent = isCutaway;
+}

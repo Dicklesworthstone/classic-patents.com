@@ -2,7 +2,7 @@ import { describe, expect, test } from "bun:test";
 import { readFileSync } from "node:fs";
 import { join } from "node:path";
 import { FrankenSimEngine } from "@/physics/engine";
-import { buildFarnsworthTvModel } from "./farnsworthTvModel";
+import { buildFarnsworthTvModel, updateFarnsworthTvKinematics } from "./farnsworthTvModel";
 
 const VISUALS_DIRECTORY = join(process.cwd(), "src", "components", "patents", "visuals");
 
@@ -20,6 +20,10 @@ describe("US 1,773,980 Philo T. Farnsworth Television System visual & electron o
     expect(modelSource).not.toContain("useGLTF");
     expect(modelSource).not.toContain(".gltf");
     expect(modelSource).not.toContain(".glb");
+    expect(modelSource).toContain("buildFarnsworthTvModel");
+    expect(modelSource).toContain("updateFarnsworthTvKinematics");
+    expect(modelSource).toContain("electronDisplaySpeed");
+    expect(modelSource).not.toContain("20000000");
     expect(threeSource).not.toContain("useGLTF");
   });
 
@@ -44,9 +48,10 @@ describe("US 1,773,980 Philo T. Farnsworth Television System visual & electron o
       "utf8",
     );
 
-    for (const preset of ["iso", "photocathode", "aperture", "coils", "top"]) {
+    for (const preset of ["iso", "photocathode", "aperture", "coils", "electron_gun", "top"]) {
       expect(threeSource).toContain(preset);
     }
+    expect(threeSource).toContain("isCutaway");
   });
 
   test("computes genuine electron velocity, relativistic beta, and photocathode current in SI units", () => {
@@ -56,6 +61,7 @@ describe("US 1,773,980 Philo T. Farnsworth Television System visual & electron o
     expect(result.relativisticBeta).toBeGreaterThan(0.05);
     expect(result.photocathodeCurrentUa).toBeGreaterThan(0);
     expect(result.gyroRadiusMm).toBeGreaterThan(0);
+    expect(result.electronDisplaySpeed).toBeCloseTo((result.electronVelocityMps / 2e7) * 45, 1);
   });
 
   test("builds and articulates procedural mahogany bench, borosilicate dissector envelope, photocathode disc, and anode aperture correctly", () => {
@@ -69,9 +75,20 @@ describe("US 1,773,980 Philo T. Farnsworth Television System visual & electron o
     expect(model.focusCoil).toBeDefined();
     expect(model.beamPoints).toBeDefined();
 
-    // Test kinematics update
-    model.updateKinematics(1 / 60, 60, 2.3e7, 15.75, 60, true);
+    // Test kinematics update & cutaway mode
+    const beam = FrankenSimEngine.stepFarnsworthTv(1.5, 120, 500);
+    updateFarnsworthTvKinematics(
+      model,
+      1 / 60,
+      60,
+      beam.electronDisplaySpeed,
+      15.75,
+      60,
+      true,
+      true,
+    );
     expect(model.beamPoints.visible).toBe(true);
+    expect(model.materials.focusCoilMat.opacity).toBe(0.35);
 
     model.dispose();
   });

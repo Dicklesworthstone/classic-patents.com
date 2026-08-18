@@ -134,21 +134,21 @@ export const BoyleSmithCcd3D = memo(() => {
     scene.add(rootGroup);
 
     let reqId: number;
-    let renderedSteps = 0;
+    let _renderedSteps = 0;
     let phaseTimer = 0;
     let currentActivePhase: 1 | 2 | 3 = 1;
     let timeSec = 0;
 
     const animate = () => {
       reqId = requestAnimationFrame(animate);
-      renderedSteps += 1;
+      _renderedSteps += 1;
       const delta = 1 / 60;
       timeSec += delta;
       const p = live.current;
 
       if (p.isAutoClocking) {
         phaseTimer += delta;
-        if (phaseTimer > (p.phaseDisplayMs ?? 200) / 1000) {
+        if (phaseTimer > p.phaseDisplayMs / 1000) {
           phaseTimer = 0;
           currentActivePhase = ((currentActivePhase % 3) + 1) as 1 | 2 | 3;
         }
@@ -156,12 +156,7 @@ export const BoyleSmithCcd3D = memo(() => {
         currentActivePhase = p.clockPhase;
       }
 
-      const wells = stepCcdWells(
-        currentActivePhase,
-        p.incidentLux ?? 850,
-        p.clockFreq ?? 2.5,
-        p.gateVoltageV ?? 8,
-      );
+      const wells = stepCcdWells(currentActivePhase, p.incidentLux, p.clockFreq, p.gateVoltageV);
 
       updateBoyleSmithCcdKinematics(
         nodes,

@@ -465,7 +465,7 @@ export function PatentVisualDispatcher({ patentId }: PatentVisualDispatcherProps
             );
           case "us-2495429-spencer-microwave":
             return renderMode === "3d-physics" ? <SpencerMicrowave3D /> : <SpencerMicrowaveSim />;
-          case "us-2569347-bardeen-transistor":
+          case "us-2524035-bardeen-transistor":
             return renderMode === "3d-physics" ? <BardeenTransistor3D /> : <BardeenTransistorSim />;
           case "us-2708656-fermi-reactor":
             return renderMode === "3d-physics" ? <FermiReactor3D /> : <FermiReactorSim />;

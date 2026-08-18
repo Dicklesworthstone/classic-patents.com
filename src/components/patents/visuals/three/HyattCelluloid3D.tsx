@@ -127,8 +127,8 @@ export const HyattCelluloid3D = memo(() => {
         p.processTempC,
         p.viscosityPaS,
         p.isMelted ?? true,
-        p.ramHz ?? 0.08,
-        p.ramStrokeStudio ?? 0.02,
+        p.ramHz,
+        p.ramStrokeStudio,
         p.isCutaway ?? false,
       );
 

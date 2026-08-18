@@ -125,7 +125,7 @@ export function WestinghouseAirBrake3D() {
       const delta = 1 / 60;
       const p = live.current;
 
-      const clampRatio = p.clampRatio ?? (p.isBrakeClamped ? 1 : 0);
+      const clampRatio = p.clampRatio;
       const wheelOmega = p.rollingOmegaRadPerS ?? 0;
 
       wheelAngle -= wheelOmega * delta;

@@ -3,7 +3,6 @@
 import { Activity, Camera, Eye, EyeOff, Volume2, VolumeX, Zap } from "lucide-react";
 import { memo, useEffect, useRef, useState } from "react";
 import type * as THREE from "three";
-import { bardeenLoadLine, stepBardeenTransistor } from "@/physics/catalogKernels";
 import { FrankenSimEngine } from "@/physics/engine";
 import { useFrankenSimPhysics } from "@/physics/useFrankenSimPhysics";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
@@ -25,7 +24,7 @@ export const BardeenTransistor3D = memo(() => {
   const [isCutaway, setIsCutaway] = useState<boolean>(false);
 
   // Semiconductor Point-Contact State Controls
-  const { params } = usePatentPhysics("us-2569347-bardeen-transistor");
+  const { params } = usePatentPhysics("us-2524035-bardeen-transistor");
   const emitterCurrentMa = params.emitterCurrent ?? 1.5;
   const collectorVoltageV = params.collectorBias ?? -40;
   const pointContactGapMicrons = params.pointSpacing ?? 50;
@@ -40,7 +39,7 @@ export const BardeenTransistor3D = memo(() => {
     pointContactGapMicrons,
   );
 
-  useFrankenSimPhysics("us-2569347-bardeen-transistor", {
+  useFrankenSimPhysics("us-2524035-bardeen-transistor", {
     domain: "semiconductor_carrier",
     timestampMs: Date.now(),
     timeStepDt: 0.016,
@@ -48,16 +47,10 @@ export const BardeenTransistor3D = memo(() => {
     semi: semiState,
   });
 
-  const bardeen = stepBardeenTransistor(
-    emitterCurrentMa,
-    collectorVoltageV,
-    pointContactGapMicrons,
-  );
   const alphaCurrentGain = semiState.currentGainAlpha.toFixed(2);
-  const collectorCurrentMa = bardeen.collectorCurrentMa.toFixed(2);
-  const loadLine = bardeenLoadLine(semiState.currentGainAlpha);
-  const voltageGain = loadLine.voltageGain;
-  const powerGainDb = loadLine.powerGainDb;
+  const collectorCurrentMa = semiState.collectorCurrentMa.toFixed(2);
+  const voltageGain = semiState.voltageGain;
+  const powerGainDb = semiState.powerGainDb;
 
   const live = useLiveSimParams({
     emitterCurrentMa,
@@ -66,6 +59,8 @@ export const BardeenTransistor3D = memo(() => {
     showHoleDrift,
     currentGainAlpha: semiState.currentGainAlpha,
     holeDiffusion: semiState.holeDiffusionCoefficientCm2ps,
+    holeDriftSpeed: semiState.holeDriftSpeed ?? 0,
+    gapStudioUnits: semiState.gapStudioUnits ?? 0,
     isCutaway,
   });
 
@@ -144,10 +139,8 @@ export const BardeenTransistor3D = memo(() => {
         materials,
         dt,
         timeSec,
-        p.pointContactGapMicrons,
-        p.emitterCurrentMa,
-        p.currentGainAlpha,
-        p.holeDiffusion,
+        p.gapStudioUnits,
+        p.holeDriftSpeed,
         p.showHoleDrift,
         p.isCutaway ?? false,
       );

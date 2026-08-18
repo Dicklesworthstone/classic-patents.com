@@ -1,25 +1,23 @@
 "use client";
 
-import { Activity, Camera, Eye, EyeOff, Volume2, VolumeX, Waves } from "lucide-react";
+import { Activity, Camera, Eye, EyeOff, Layers, Volume2, VolumeX, Waves } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import type * as THREE from "three";
 import { stepPeltonWheel } from "@/physics/catalogKernels";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
-import { createLcg } from "@/utils/lcg";
 import { soundEngine } from "@/utils/soundEngine";
-import { buildPeltonWheelModel } from "./peltonWheelModel";
+import { buildPeltonWheelModel, updatePeltonWheelKinematics } from "./peltonWheelModel";
 import { StudioKernelChips } from "./StudioKernelChips";
 import { createThreeStudioScene, type StudioContext } from "./ThreeStudioScene";
 import { useLiveSimParams } from "./useLiveSimParams";
 import { usePatentAudio } from "./usePatentAudio";
 
-const lcg = createLcg(1127);
-
-type CameraPreset = "iso" | "split_bucket" | "needle_nozzle" | "runner_wheel" | "top";
+type CameraPreset = "iso" | "split_bucket" | "needle_nozzle" | "runner_wheel" | "tailrace" | "top";
 
 export function PeltonWheel3D() {
   const containerRef = useRef<HTMLDivElement>(null);
   const [showUiOverlay, setShowUiOverlay] = useState<boolean>(true);
+  const [isCutaway, setIsCutaway] = useState<boolean>(false);
 
   // Hydrodynamic Impulse Parameters
   const { params } = usePatentPhysics("us-233692-pelton-water-wheel");
@@ -38,11 +36,19 @@ export function PeltonWheel3D() {
     wheelRpm,
     jetVelocityMps,
     showJet,
+    isCutaway,
     isAudioMuted,
     etaPct: hydraulicEfficiencyPct,
     shaftPowerKw: powerKw,
     speedRatio: pelton.speedRatio,
     runnerOmegaRadPerS: pelton.runnerOmegaRadPerS,
+    jetDisplaySpeed: pelton.jetDisplaySpeed,
+    sprayDisplaySpeed: pelton.sprayDisplaySpeed,
+    pressureNeedleRad: pelton.pressureNeedleRad,
+    needleStudioX: pelton.needleStudioX,
+    needleStudioY: pelton.needleStudioY,
+    handwheelOmegaRadPerS: pelton.handwheelOmegaRadPerS,
+    jetOpacity: pelton.jetOpacity,
   });
 
   const controlsRef = useRef<StudioContext["controls"] | null>(null);
@@ -70,6 +76,10 @@ export function PeltonWheel3D() {
       case "runner_wheel":
         camera.position.set(0, 1.0, 4.5);
         controls.target.set(0, 0, 0);
+        break;
+      case "tailrace":
+        camera.position.set(0, -3.2, 5.0);
+        controls.target.set(0, -2.0, 0);
         break;
       case "top":
         camera.position.set(0, 12.5, 0.1);
@@ -103,70 +113,35 @@ export function PeltonWheel3D() {
     const model = buildPeltonWheelModel();
     scene.add(model.rootGroup);
 
-    // Dynamic jet particle positions
-    const jetCount = 200;
-    const jetPositions = (model.jetPoints.geometry.attributes.position as THREE.BufferAttribute)
-      .array as Float32Array;
-
-    // Dynamic spray particle positions
-    const sprayCount = 300;
-    const sprayPositions = (model.sprayPoints.geometry.attributes.position as THREE.BufferAttribute)
-      .array as Float32Array;
-
     // Animation Loop
     let reqId: number;
-    let _renderedSteps = 0;
 
     const animate = () => {
       reqId = requestAnimationFrame(animate);
-      _renderedSteps += 1;
       const delta = 1 / 60;
       const p = live.current;
 
-      const omegaRadPerSec = p.runnerOmegaRadPerS ?? (p.wheelRpm * 2 * Math.PI) / 60;
-      model.runnerGroup.rotation.z += omegaRadPerSec * delta;
+      const omegaRadPerSec = p.runnerOmegaRadPerS;
 
-      // Needle valve translation based on head/flow
-      const needlePos = (p.headMeters / 1000) * 0.25;
-      model.nozzleNeedle.position.set(0.2 + needlePos * 0.5, 0.12 + needlePos * 0.28, 0);
-      model.needleHandwheel.rotation.z += delta * 0.5;
-
-      // Pressure gauge needle deflection (0 to 1000m head maps to -2.0 to 2.0 rad)
-      const headFraction = Math.min(1.0, p.headMeters / 800);
-      model.pressureNeedle.rotation.z = -1.8 + headFraction * 3.6;
-
-      // Animate concentrated water jet particles
-      for (let i = 0; i < jetCount; i++) {
-        const idx = i * 3;
-        jetPositions[idx] += (p.jetVelocityMps / 50) * 7.5 * delta;
-        jetPositions[idx + 1] += (p.jetVelocityMps / 50) * 5.2 * delta;
-        if (jetPositions[idx] > 0.1 || jetPositions[idx + 1] > 0.1) {
-          jetPositions[idx] = -3.2 + (i / jetCount) * 0.5;
-          jetPositions[idx + 1] = -2.25 + (i / jetCount) * 0.35;
-        }
-      }
-      model.jetPoints.geometry.attributes.position.needsUpdate = true;
-      model.jetPoints.visible = p.showJet;
-
-      // Animate deflected water spray sheets (165° exit)
-      for (let i = 0; i < sprayCount; i++) {
-        const idx = i * 3;
-        sprayPositions[idx + 1] -= (2.5 + lcg() * 2.0) * delta;
-        sprayPositions[idx] += (lcg() - 0.5) * 1.5 * delta;
-        if (sprayPositions[idx + 1] < -3.0) {
-          sprayPositions[idx] = (lcg() - 0.5) * 1.2;
-          sprayPositions[idx + 1] = -0.6 - lcg() * 0.4;
-          sprayPositions[idx + 2] = (lcg() > 0.5 ? 1 : -1) * (0.25 + lcg() * 0.6);
-        }
-      }
-      model.sprayPoints.geometry.attributes.position.needsUpdate = true;
-      model.sprayPoints.visible = p.showJet;
+      updatePeltonWheelKinematics(
+        model,
+        delta,
+        omegaRadPerSec,
+        p.jetDisplaySpeed,
+        p.sprayDisplaySpeed,
+        p.pressureNeedleRad,
+        p.needleStudioX,
+        p.needleStudioY,
+        p.handwheelOmegaRadPerS,
+        p.showJet,
+        p.isCutaway,
+      );
 
       // Euler optimum is u/v ≈ 0.5. Off-design color shift
-      const ratioErr = Math.abs((p.speedRatio ?? 0.5) - 0.5);
+      const ratioErr = Math.abs(p.speedRatio - 0.5);
       const jetMat = model.materials.waterJet;
       jetMat.color.setHex(ratioErr < 0.08 ? 0x38bdf8 : p.speedRatio < 0.5 ? 0x0284c7 : 0xfb7185);
-      jetMat.opacity = 0.55 + (p.etaPct / 93) * 0.4;
+      jetMat.opacity = p.jetOpacity;
 
       renderer.render(scene, camera);
     };
@@ -205,6 +180,7 @@ export function PeltonWheel3D() {
               ["split_bucket", "Split Bucket"],
               ["needle_nozzle", "Needle Nozzle"],
               ["runner_wheel", "Runner Wheel"],
+              ["tailrace", "Tailrace"],
               ["top", "Top"],
             ] as [CameraPreset, string][]
           ).map(([preset, label]) => (
@@ -225,6 +201,18 @@ export function PeltonWheel3D() {
 
         {/* Toggles */}
         <div className="flex items-center gap-1.5 bg-parchment-950/80 backdrop-blur-md p-1.5 rounded-xl border border-parchment-700/60 shadow-lg pointer-events-auto">
+          <button
+            type="button"
+            onClick={() => setIsCutaway(!isCutaway)}
+            title={isCutaway ? "Switch to Solid Casing" : "Switch to Casing Cutaway"}
+            className={`p-1.5 rounded-lg text-xs transition-colors ${
+              isCutaway
+                ? "bg-amber-600 text-white shadow-sm"
+                : "text-parchment-400 hover:text-white hover:bg-parchment-800"
+            }`}
+          >
+            <Layers className="w-4 h-4" />
+          </button>
           <button
             type="button"
             onClick={() => setShowJet(!showJet)}
@@ -256,7 +244,7 @@ export function PeltonWheel3D() {
             ) : (
               <Eye className="w-4 h-4 text-amber-400" />
             )}
-          </button>{" "}
+          </button>
         </div>
       </div>
 
