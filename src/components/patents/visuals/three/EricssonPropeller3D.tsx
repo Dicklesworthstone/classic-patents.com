@@ -48,6 +48,8 @@ export function EricssonPropeller3D() {
     propulsiveEfficiencyPct: Number(propulsiveEfficiencyPct),
     shaftOmegaRadPerS: ericson.shaftOmegaRadPerS,
     wakeSwirlScale: ericson.wakeSwirlScale,
+    wakeFlowSpeed: ericson.wakeFlowSpeed,
+    wakeSwirlCoeff: ericson.wakeSwirlCoeff,
   });
 
   const controlsRef = useRef<StudioContext["controls"] | null>(null);
@@ -127,6 +129,8 @@ export function EricssonPropeller3D() {
         delta,
         omegaRadPerSec,
         p.wakeSwirlScale,
+        p.wakeFlowSpeed,
+        p.wakeSwirlCoeff,
         p.showWake,
         p.isCutaway,
       );

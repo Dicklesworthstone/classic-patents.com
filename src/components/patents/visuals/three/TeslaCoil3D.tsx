@@ -80,6 +80,7 @@ export function TeslaCoil3D() {
     showLightningStreamers,
     secondaryVoltageMv,
     streamerLengthInches: coilPhysics.streamerLengthInches,
+    streamerStudioLength: coilPhysics.streamerStudioLength,
     sparkRateHz: params.sparkRateHz ?? 120,
   });
 
@@ -153,10 +154,12 @@ export function TeslaCoil3D() {
       const delta = 1 / 60;
       const p = live.current;
 
-      const inches = Number(p.streamerLengthInches) || 0;
-      const meters = inches * 0.0254;
-
-      model.updateKinematics(delta, p.showLightningStreamers, meters, Number(p.secondaryVoltageMv));
+      model.updateKinematics(
+        delta,
+        p.showLightningStreamers,
+        p.streamerStudioLength,
+        Number(p.secondaryVoltageMv),
+      );
 
       controls.update();
       renderer.render(scene, camera);

@@ -41,6 +41,7 @@ describe("US 593,138 Nikola Tesla High-Frequency Electrical Transformer visual &
     const result = FrankenSimEngine.stepTeslaCoil(150, 15, 12, 145, 0.18, 850);
     expect(result.secondaryPotentialMv).toBeGreaterThan(0.1);
     expect(result.streamerLengthMeters).toBeGreaterThan(0.1);
+    expect(result.streamerStudioLength).toBeCloseTo(result.streamerLengthMeters / 1.5, 2);
   });
 
   test("builds and articulates procedural mahogany base, secondary resonator, spiral primary, topload toroid, and spark gap correctly", () => {
@@ -53,7 +54,8 @@ describe("US 593,138 Nikola Tesla High-Frequency Electrical Transformer visual &
     expect(model.sparkGapBase).toBeDefined();
     expect(model.streamerLines.length).toBeGreaterThan(0);
 
-    model.updateKinematics(0.016, true, 1.2, 0.85);
+    const coil = FrankenSimEngine.stepTeslaCoil(150, 15, 12, 145, 0.18, 850);
+    model.updateKinematics(0.016, true, coil.streamerStudioLength, coil.secondaryPotentialMv);
     expect(model.coronaPoints.visible).toBe(true);
 
     model.dispose();

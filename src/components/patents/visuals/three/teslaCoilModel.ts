@@ -29,7 +29,7 @@ export interface TeslaCoilModel {
   updateKinematics: (
     delta: number,
     showLightningStreamers: boolean,
-    streamerLengthMeters: number,
+    streamerStudioLength: number,
     secondaryVoltageMv: number,
   ) => void;
   dispose: () => void;
@@ -226,7 +226,7 @@ export function buildTeslaCoilModel(): TeslaCoilModel {
   const updateKinematics = (
     _delta: number,
     showLightningStreamers: boolean,
-    streamerLengthMeters: number,
+    streamerStudioLength: number,
     _secondaryVoltageMv: number,
   ) => {
     if (showLightningStreamers) {
@@ -239,7 +239,7 @@ export function buildTeslaCoilModel(): TeslaCoilModel {
         const pos = posAttr.array as Float32Array;
 
         const theta = (s * Math.PI * 2) / streamerCount + (lcg() - 0.5) * 0.4;
-        const length = (streamerLengthMeters / 1.5) * (2.2 + lcg() * 1.8);
+        const length = streamerStudioLength * (2.2 + lcg() * 1.8);
 
         let curX = Math.cos(theta) * 1.8;
         let curY = 2.4;

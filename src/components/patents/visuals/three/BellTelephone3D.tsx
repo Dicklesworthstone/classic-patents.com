@@ -56,6 +56,7 @@ export const BellTelephone3D = memo(() => {
     modulatedMa: bell.modulatedMa,
     acousticDisplayOmegaRadPerS: bell.acousticDisplayOmegaRadPerS,
     electronDisplaySpeed: bell.electronDisplaySpeed,
+    electronStudioSpeed: bell.electronStudioSpeed,
     waveAdvancePerS: bell.waveAdvancePerS,
     isCutaway,
     isAudioMuted,
@@ -140,7 +141,7 @@ export const BellTelephone3D = memo(() => {
         timeSec,
         p.acousticDisplayOmegaRadPerS,
         p.diaphragmStudioScale,
-        p.electronDisplaySpeed,
+        p.electronStudioSpeed,
         p.showAcousticWaves,
         p.isCutaway,
       );

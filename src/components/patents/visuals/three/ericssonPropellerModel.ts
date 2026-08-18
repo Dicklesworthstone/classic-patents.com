@@ -314,6 +314,8 @@ export function updateEricssonPropellerKinematics(
   dt: number,
   shaftOmegaRadPerS: number,
   wakeSwirlScale: number,
+  wakeFlowSpeed: number,
+  wakeSwirlCoeff: number,
   showWake: boolean,
   isCutaway = false,
 ): void {
@@ -325,8 +327,8 @@ export function updateEricssonPropellerKinematics(
   if (showWake) {
     model.wakePoints.visible = true;
     const wPos = model.wakePositions;
-    const flowVelocity = 6.5 * dt;
-    const swirlVelocity = shaftOmegaRadPerS * 0.08 * dt * wakeSwirlScale;
+    const flowVelocity = wakeFlowSpeed * dt;
+    const swirlVelocity = shaftOmegaRadPerS * wakeSwirlCoeff * dt * wakeSwirlScale;
 
     for (let i = 0; i < model.wakeCount; i++) {
       const idx = i * 3;

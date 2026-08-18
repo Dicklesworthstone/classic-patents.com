@@ -84,7 +84,7 @@ describe("US 588 John Ericsson Screw Propeller visual & hydrodynamics boundary",
     expect(model.materials.bronzeGunmetal).toBeDefined();
     expect(model.materials.copperSheathing).toBeDefined();
 
-    updateEricssonPropellerKinematics(model, 0.016, 12.5, 0.4, true, true);
+    updateEricssonPropellerKinematics(model, 0.016, 12.5, 0.4, 6.5, 0.08, true, true);
     expect(model.materials.bronzeGunmetal.opacity).toBe(0.45);
     expect(model.wakePoints.visible).toBe(true);
 

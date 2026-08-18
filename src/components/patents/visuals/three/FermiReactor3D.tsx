@@ -69,6 +69,8 @@ export function FermiReactor3D() {
     geigerIntervalMs: reactorKinetics.geigerIntervalMs,
     isAudioMuted,
     neutronDisplaySpeed: reactorKinetics.neutronDisplaySpeed,
+    rodStudioY: reactorKinetics.rodStudioY,
+    fuelGlowIntensity: reactorKinetics.fuelGlowIntensity,
   });
 
   const controlsRef = useRef<StudioContext["controls"] | null>(null);
@@ -147,6 +149,8 @@ export function FermiReactor3D() {
         Number(p.kEff),
         p.moderatorPurityPct,
         p.neutronDisplaySpeed,
+        p.rodStudioY,
+        p.fuelGlowIntensity,
         p.showNeutronCascade,
         p.isCutaway,
       );

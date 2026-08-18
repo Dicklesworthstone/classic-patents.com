@@ -70,7 +70,7 @@ describe("US 2,708,656 Enrico Fermi Chicago Pile-1 Nuclear Reactor visual & kine
     expect(model.neutronPoints).toBeDefined();
 
     // Test kinematics update & cutaway
-    updateFermiReactorKinematics(model, 1 / 60, 90, 1.001, 99.5, 4.0, true, true);
+    updateFermiReactorKinematics(model, 1 / 60, 90, 1.001, 99.5, 4.0, 2.38, 0.168, true, true);
     expect(model.neutronPoints.visible).toBe(true);
     expect(model.graphiteMat.opacity).toBe(0.35);
 

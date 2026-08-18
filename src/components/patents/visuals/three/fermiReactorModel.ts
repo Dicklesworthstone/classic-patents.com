@@ -296,19 +296,21 @@ export function buildFermiReactorModel(): FermiReactorModel {
 export function updateFermiReactorKinematics(
   model: FermiReactorModel,
   delta: number,
-  controlRodWithdrawalPct: number,
+  _controlRodWithdrawalPct: number,
   kEff: number,
   moderatorPurityPct: number,
   neutronDisplaySpeed: number,
+  rodStudioY: number,
+  fuelGlowIntensity: number,
   showNeutronCascade: boolean,
   isCutaway = false,
 ): void {
-  const targetRodY = -0.5 + (controlRodWithdrawalPct / 100) * 3.2;
+  const targetRodY = rodStudioY;
   model.rodGroup.position.y += (targetRodY - model.rodGroup.position.y) * 0.1;
 
   const purity = moderatorPurityPct / 100;
   model.graphiteMat.color.setRGB(0.12 * purity, 0.13 * purity, 0.15 * purity);
-  model.uraniumFuelMat.emissiveIntensity = Math.max(0, (kEff - 0.98) * 8);
+  model.uraniumFuelMat.emissiveIntensity = fuelGlowIntensity;
   model.uraniumFuelMat.emissive = new THREE.Color(kEff > 1.002 ? 0xf97316 : 0x22c55e);
 
   if (showNeutronCascade) {

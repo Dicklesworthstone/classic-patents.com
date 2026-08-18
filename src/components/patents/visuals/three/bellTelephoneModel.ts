@@ -306,7 +306,7 @@ export function updateBellTelephoneKinematics(
   timeSec: number,
   acousticDisplayOmegaRadPerS: number,
   diaphragmStudioScale: number,
-  electronDisplaySpeed: number,
+  electronStudioSpeed: number,
   showAcousticWaves: boolean,
   isCutaway: boolean,
 ) {
@@ -337,7 +337,7 @@ export function updateBellTelephoneKinematics(
 
   // Flowing Electron Drift Current
   const ePos = model.electronPositions;
-  const drift = electronDisplaySpeed * dt * 0.5;
+  const drift = electronStudioSpeed * dt;
   for (let i = 0; i < model.electronCount; i++) {
     const idx = i * 3;
     ePos[idx] += drift;
