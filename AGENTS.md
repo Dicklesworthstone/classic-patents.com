@@ -284,8 +284,7 @@ claims, the SI kernel, and the working model.
    invent claims to satisfy the type). Every `dependsOn` value must name an
    included claim. Each claim needs:
 
-   - exact `originalText` pulled from the edition (Wright's `manualClaimText`
-     helper; do not maintain a second, drift-prone transcription)
+   - exact `originalText` pulled from the edition (using a helper like Wright's `manualClaimText` function). **NEVER HARDCODE OR DUPLICATE CLAIM TEXT IN THE PATENT RECORD FILE (e.g. do not create a `MANUALLY_REVIEWED_CLAIM_TEXT` map).** The canonical source of truth for all literal patent text is the archival edition. Reconstructing or hardcoding string literals in the patent data file creates a second, drift-prone transcription and violates the strict single-source-of-truth architecture. You MUST dynamically look up the claim from the edition's `blocks` array at runtime, and never write tests that forbid `manualClaimText`.
    - a `plainEnglish` decoder that names the physical part and the legal work
      it does (Tesla's test requires more than 30 words)
    - `keyInnovations` as concrete nouns (`Differential wing warping`, not
