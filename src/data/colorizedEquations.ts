@@ -6,7 +6,7 @@ import type {
   EquationVariable,
   SentenceFragment,
 } from "@/types/equation";
-import type { Patent, ScientificPrinciple } from "@/types/patent";
+import type { ScientificPrinciple } from "@/types/patent";
 
 export const ALL_COLORIZED_EQUATIONS: Record<string, ColorizedEquation[]> = {
   // 1. Wright Flyer (US 821,393)
@@ -2885,7 +2885,7 @@ export const ALL_COLORIZED_EQUATIONS: Record<string, ColorizedEquation[]> = {
  * Universal fallback builder that constructs a valid ColorizedEquation from
  * a patent's PATENT_PHYSICS_REGISTRY definition or scientific principles.
  */
-function buildGeneratedColorizedEquation(patentId: string): ColorizedEquation[] {
+function _buildGeneratedColorizedEquation(patentId: string): ColorizedEquation[] {
   const reg = PATENT_PHYSICS_REGISTRY[patentId];
   if (!reg) return [];
 
@@ -3037,7 +3037,7 @@ function cleanNameForSentence(name: string): string {
  * Uses domain-aware context detection (optics, computing, aerodynamics, thermodynamics, electromagnetics, materials)
  * to assign rigorous SI units, physical dimensions, mechanism roles, and natural language explanations.
  */
-export function convertScientificPrincipleToColorizedEquation(
+function _convertScientificPrincipleToColorizedEquation(
   principle: ScientificPrinciple,
   patentId: string,
   index: number,
@@ -5401,14 +5401,15 @@ export function convertScientificPrincipleToColorizedEquation(
 }
 
 /**
- * Helper to retrieve all colorized equations for a specific patent.
- * Returns bespoke hand-crafted deep equations when available, and transforms
- * all patent.plainEnglishExplanation.scientificPrinciples into interactive colorized equations.
+ * Retrieves only equations that have been deliberately authored for this
+ * patent.  A formula in `scientificPrinciples` is useful on its own, but it
+ * is not sufficient evidence for a variable-by-variable decoder: variable
+ * names, units, physical roles, and claim links must be reviewed together.
+ *
+ * Do not add a heuristic fallback here.  The detail page has a faithful,
+ * non-interactive rendering path for authored scientific-principle formulas.
  */
-export function getColorizedEquationsForPatent(
-  patentId: string,
-  patent?: Patent,
-): ColorizedEquation[] {
+export function getColorizedEquationsForPatent(patentId: string): ColorizedEquation[] {
   const EQUATION_ID_ALIASES: Record<string, string> = {
     "us-1102653-goddard-rocket": "us-1155986-goddard-rocket",
     "us-3858232-boyle-smith-ccd": "us-3923554-boyle-smith-ccd",
@@ -5419,59 +5420,5 @@ export function getColorizedEquationsForPatent(
     ALL_COLORIZED_EQUATIONS[EQUATION_ID_ALIASES[patentId] ?? ""] ||
     [];
 
-  let targetPatent = patent;
-  if (!targetPatent) {
-    try {
-      const { allPatents } = require("@/data/patents");
-      targetPatent = allPatents.find((p: Patent) => p.id === patentId);
-    } catch {
-      // Dynamic import fallback
-    }
-  }
-
-  if (targetPatent?.plainEnglishExplanation?.scientificPrinciples) {
-    const results: ColorizedEquation[] = [];
-    const seenTitles = new Set<string>();
-    const seenFormulas = new Set<string>();
-
-    // First, add all bespoke equations
-    for (const eq of bespokeList) {
-      results.push(eq);
-      seenTitles.add(eq.title.toLowerCase());
-      seenFormulas.add(eq.rawLatex.replace(/\s+/g, ""));
-    }
-
-    // Next, convert any scientific principle that has a formula and isn't already covered
-    targetPatent.plainEnglishExplanation.scientificPrinciples.forEach((principle, idx) => {
-      if (!principle.formula) return;
-      const normalizedFormula = principle.formula.replace(/\s+/g, "");
-      const normalizedTitle = principle.principle.toLowerCase();
-
-      // Check if already covered by an existing equation
-      const alreadyCovered =
-        seenFormulas.has(normalizedFormula) ||
-        Array.from(seenTitles).some(
-          (t) => t.includes(normalizedTitle) || normalizedTitle.includes(t),
-        );
-
-      if (!alreadyCovered) {
-        const converted = convertScientificPrincipleToColorizedEquation(
-          principle,
-          patentId,
-          idx,
-          targetPatent.category,
-        );
-        if (converted) {
-          results.push(converted);
-          seenTitles.add(normalizedTitle);
-          seenFormulas.add(normalizedFormula);
-        }
-      }
-    });
-
-    if (results.length > 0) return results;
-  }
-
-  if (bespokeList.length > 0) return bespokeList;
-  return buildGeneratedColorizedEquation(patentId);
+  return bespokeList;
 }

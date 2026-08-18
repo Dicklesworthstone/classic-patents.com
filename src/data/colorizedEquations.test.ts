@@ -5,7 +5,8 @@
  */
 
 import { describe, expect, test } from "bun:test";
-import { ALL_COLORIZED_EQUATIONS } from "./colorizedEquations";
+import { ALL_COLORIZED_EQUATIONS, getColorizedEquationsForPatent } from "./colorizedEquations";
+import { allPatents } from "./patents";
 
 describe("Colorized Equations Master Registry Integrity", () => {
   test("bespoke equations contain deep SI physics and claim citations", () => {
@@ -94,6 +95,18 @@ describe("Colorized Equations Master Registry Integrity", () => {
             });
           }).not.toThrow();
         }
+      }
+    }
+  });
+
+  test("never fabricates an interactive equation card from a patent formula or physics registry", () => {
+    expect(getColorizedEquationsForPatent("us-x72-whitney-cotton-gin")).toEqual([]);
+    expect(getColorizedEquationsForPatent("unknown-patent-with-no-authored-card")).toEqual([]);
+
+    const authoredCards = new Set(Object.values(ALL_COLORIZED_EQUATIONS).flat());
+    for (const patent of allPatents) {
+      for (const card of getColorizedEquationsForPatent(patent.id)) {
+        expect(authoredCards.has(card)).toBe(true);
       }
     }
   });
