@@ -1,17 +1,237 @@
-UNITED STATES PATENT OFFICE. CHARLES ALGERNON PARSONS, OF NEWCASTLE-UPON-TYNE, ENGLAND.
+No. 608,969. C. A. PARS ONS. Patented Aug. 9,
 
-STEAM-TURBINE.
+1898. Ma,
 
-Specification forming part of Letters Patent No. 608,969, dated August 9, 1898. Application filed September 7, 1897.
+<pre class="font-mono text-sm whitespace-pre overflow-x-auto p-4 bg-ink-900/10 dark:bg-parchment-100/10 rounded-lg">No. 608,969.                                             Patented Aug. 9, 1898.</pre>
 
-To all whom it may concern: Be it known that I, The Honorable CHARLES ALGERNON PARSONS, a subject of the Queen of Great Britain, residing at Newcastle-upon-Tyne, in the county of Northumberland, England, have invented certain new and useful Improvements in Steam Turbines, of which the following is a specification:
+C. A. PARSONS. MARINE STEAM TURBINE. (Application filed Mar. 4, 1898.)
 
-My invention relates to improvements in parallel-flow or axial-flow steam turbines, in which steam passes longitudinally through an annular casing containing alternating rings of fixed guide-blades and rotating moving blades.
+<pre class="font-mono text-sm whitespace-pre overflow-x-auto p-4 bg-ink-900/10 dark:bg-parchment-100/10 rounded-lg">(No Model.)                   se                                 3 sheets-Sheet 2.</pre>
 
-In single-stage steam turbines (such as the De Laval turbine), the full pressure drop from the boiler to the condenser occurs across a single nozzle, producing steam jet velocities of 3,000 to 4,000 feet per second, requiring wheel speeds of 30,000 revolutions per minute, which are dangerous, difficult to gear down, and waste energy in blade friction.
+<pre class="font-mono text-sm whitespace-pre overflow-x-auto p-4 bg-ink-900/10 dark:bg-parchment-100/10 rounded-lg"> 77zayzes.'                          A.22276.</pre>
 
-The object of my invention is to split the total steam expansion into a large number of small, gradual successive stages (pressure compounding), so that the steam velocity across each individual ring of blades is kept at a moderate, practical value (300 to 600 feet per second), allowing direct coupling to dynamos and ship propeller shafts at efficient speeds.
+<pre class="font-mono text-sm whitespace-pre overflow-x-auto p-4 bg-ink-900/10 dark:bg-parchment-100/10 rounded-lg">                                         f2422.74 2a12-a                     ||</pre>
 
-The invention comprises: 1. A cylindrical rotor shaft surrounded by a stationary outer casing. 2. A large series of alternating annular rings of stationary guide-vanes attached to the casing and moving rotor blades attached to the shaft. 3. The blade passages between both the fixed and moving blades are shaped as convergent nozzles, so that the steam expands and drops in pressure in both the stationary guide-rings and the moving blade-rings, driving the rotor forward both by the impulse of the entering jet and by the reaction of the expanding jet leaving the moving blades (50% reaction blading). 4. The annular radial height and passage area of the blade rings increase progressively in steps from the small high-pressure inlet end to the large low-pressure exhaust end, providing for the immense volumetric expansion of the steam as its pressure falls to a vacuum condenser. 5. Dummy balance pistons mounted on the shaft to balance the longitudinal axial steam thrust, and pressurized oil-film bearings to support the high-speed rotor.
+<pre class="font-mono text-sm whitespace-pre overflow-x-auto p-4 bg-ink-900/10 dark:bg-parchment-100/10 rounded-lg"> azz247-                                        (s/          2</pre>
 
-I claim as my invention: 1. In a multi-stage reaction steam turbine, the combination of a casing and a rotor with alternating rings of fixed and moving blades having converging passages, the annular area of said blade rings increasing from the high-pressure inlet to the exhaust to accommodate the volumetric expansion of the steam, substantially as described. 2. The combination with the stepped rotor and blade rings of dummy balance pistons to equalize the axial steam thrust, substantially as described.
+<pre class="font-mono text-sm whitespace-pre overflow-x-auto p-4 bg-ink-900/10 dark:bg-parchment-100/10 rounded-lg">  (2%t-c-e-----e.                                                   a ar42for-veezzi:</pre>
+
+No. 608,969.      C. A. PARSONS. Patented Aug. 9,
+
+1898. MARINE STEAM TURBINE. . (Application filed Mar. 4, 1898.) 3 sheets-Sheet
+
+3.
+
+UNITED STATES PATENT OFFICE.
+
+CHARLES ALGERNON PARSONS, OF NEWCASTLE-UPON-TYNE, ENGLAND. MARINE STEAM - TURBINE. <dfn title="The comprehensive written description of an invention and the manner of constructing and operating it, in terms sufficiently clear to enable any person skilled in the art to replicate it. (Modern: Patent Detailed Description & Embodiments)" class="cursor-help underline decoration-dotted decoration-amber-600 dark:decoration-amber-400 decoration-2 underline-offset-4 text-ink-950 dark:text-parchment-50 hover:bg-amber-500/10 dark:hover:bg-amber-400/10 rounded px-0.5 transition-colors">SPECIFICATION</dfn> forming part of <dfn title="An open document ('litterae patentes') issued by a sovereign or government under public seal, granting an inventor exclusive legal monopoly rights to manufacture, use, and vend an invention. (Modern: Granted Patent Document / Certificate)" class="cursor-help underline decoration-dotted decoration-amber-600 dark:decoration-amber-400 decoration-2 underline-offset-4 text-ink-950 dark:text-parchment-50 hover:bg-amber-500/10 dark:hover:bg-amber-400/10 rounded px-0.5 transition-colors">Letters Patent</dfn> No. 608,969, dated August 9,
+
+1898. Application filed March 4, 1898, Serial No. 672,594, (No model.) To all tufuon, it may concern. Be it known that I, CHARLES ALGERNON ing    Nos. purposes the steam shall flow through 1, 2, 3, and 4 compound engines in se PARSONS, engineer, a subject of the Queen of ries from Great Britain and Ireland, residing at Heaton exhaustingtheinto first to the last, the last turbine 55 the condenser. For this pur 5 Works, Newcastle-upon-Tyne, England, have pose      I  arrange   turbines Nos. 1, 2, 3, and 4 invented certain new and useful Improve so that the capacity ments the    in Marine following      Steam-Turbines, of which cessively from one toorfour-that is a <dfn title="The comprehensive written description of an invention and the manner of constructing and operating it, in terms sufficiently clear to enable any person skilled in the art to replicate it. (Modern: Patent Detailed Description & Embodiments)" class="cursor-help underline decoration-dotted decoration-amber-600 dark:decoration-amber-400 decoration-2 underline-offset-4 text-ink-950 dark:text-parchment-50 hover:bg-amber-500/10 dark:hover:bg-amber-400/10 rounded px-0.5 transition-colors">specification</dfn>. volume increases suc is, generally speaking,   the  capacity   of  No.  2  is greater My invention relates to marine steam-en than the capacity of No. 1, and so on through logines; and it is chiefly applicable to engines out the series. By this arrangement the of the steam-turbine class. My object is to SO arrange the engines and steam, pands practically speaking, continually ex from   the moment of entering No. 1 couple up the steam connections as to enable       until it finally discharges at the low-pres
+
+<pre class="font-mono text-sm whitespace-pre overflow-x-auto p-4 bg-ink-900/10 dark:bg-parchment-100/10 rounded-lg">     the engines to be operated more economically sure        end of No. 4 to the condenser. This</pre>
+
+I5 under all conditions of power and speed variation that is, my object is to enable the engines to by increasein incapacity    may be secured either operate with the maximum economy of steam four or by the increase in speed offrom actual dimensions       one to rotation, per horse-power expended at low powers as a combination of both; also, each individ Well as at high powers and also at slow speeds or ual turbine of the series is preferably gradu 2O as well as at high speeds. .
+
+In all modern engines of high economy the inlet in ated     capacity, so that the turbines at the end are smaller than those at the exit steam is expanded successively in a series of cylinders or engines, the first of which cylin end. quired, When greater power, however, is re the pipe connections are so made that 75
+
+<pre class="font-mono text-sm whitespace-pre overflow-x-auto p-4 bg-ink-900/10 dark:bg-parchment-100/10 rounded-lg">     ders or engines takes steam directly from the the high-pressure         steam from the boiler is</pre>
+
+25 which boiler again and exhausts   into  the  next  cylinder,  admitted to the inlet of No. 1 and also to the exhausts into the next, and so on inlet of No. 2 and passes from the exit of No.
+
+<pre class="font-mono text-sm whitespace-pre overflow-x-auto p-4 bg-ink-900/10 dark:bg-parchment-100/10 rounded-lg">    throughout the series. . .                         1 to the inlet of No. 3 and from the exit of</pre>
+
+I am aware that at present for mechanical No. 2 to the inlet of No. 4, then from the reasons the exhaust-Steam from one cylinder exit of Nos. 3 and 4 to the condenser, and
+
+<pre class="font-mono text-sm whitespace-pre overflow-x-auto p-4 bg-ink-900/10 dark:bg-parchment-100/10 rounded-lg"> 3o is Sometimes caused to supply two low-pres thus          the steam flows through all four tur</pre>
+
+sure cylinders, so as to more nearly equalize binesin the Weight of the moving parts acting on the parallel.”what may be described as “compound several crank-shafts. I am aware also that Usually the compound-parallel coupling live steam is sometimes admitted to the low will be sufficient for most purposes; but in 35 pressure steam-chest directly from the boiler exceptional cases I may arrange the Valves for starting purposes, or for the purpose of so as to admit the high-pressure steam to each
+
+<pre class="font-mono text-sm whitespace-pre overflow-x-auto p-4 bg-ink-900/10 dark:bg-parchment-100/10 rounded-lg">    increasing the power of the engine under ex inlet        of Nos. 1, 2, 3, and 4 turbines and con</pre>
+
+<pre class="font-mono text-sm whitespace-pre overflow-x-auto p-4 bg-ink-900/10 dark:bg-parchment-100/10 rounded-lg">    ceptional conditions. My invention, how nect the             exit of each turbine to the conden</pre>
+
+ever, does not concern itself with such me ser. The coupling is then in simple parallel; 9o
+
+<pre class="font-mono text-sm whitespace-pre overflow-x-auto p-4 bg-ink-900/10 dark:bg-parchment-100/10 rounded-lg">4o chanical purposes as I have indicated.             but in such cases where great power is re</pre>
+
+My invention consists in new methods of quired arranging, proportioning, and operating a set bines soI that generally prefer to arrange the tur
+
+<pre class="font-mono text-sm whitespace-pre overflow-x-auto p-4 bg-ink-900/10 dark:bg-parchment-100/10 rounded-lg">    of steam-turbines so as to enable economy may suffice. the         I</pre>
+
+compound-parallel coupling may  also sometimes in cases 95 to be maintained under widely-varying con where the boiler-pressure
+
+<pre class="font-mono text-sm whitespace-pre overflow-x-auto p-4 bg-ink-900/10 dark:bg-parchment-100/10 rounded-lg">45 ditions, such as occur in connection with ma-. arrange the valves so thathas        to be reduced</pre>
+
+Nos. 1 and 2 shall rine Steam propulsion.
+
+<pre class="font-mono text-sm whitespace-pre overflow-x-auto p-4 bg-ink-900/10 dark:bg-parchment-100/10 rounded-lg">       In carrying my invention into effect-say be        in parallel and Nos. 3 and 4 in series, re</pre>
+
+to a case where four screw-shafts are used, also No.their
+
+<pre class="font-mono text-sm whitespace-pre overflow-x-auto p-4 bg-ink-900/10 dark:bg-parchment-100/10 rounded-lg">                                                      ceiving        steam from the exit of No. 2 and</pre>
+
+1. Such an arrangement might be OO each shaft being driven by a separate com
+
+<pre class="font-mono text-sm whitespace-pre overflow-x-auto p-4 bg-ink-900/10 dark:bg-parchment-100/10 rounded-lg">5o pound steam-turbine-I so couple these four used          to enable the boiler-pressure to be low</pre>
+
+ered to atmospheric pressure when going into separate turbines by suitable valves and pipes action. that when reduced power is required for cruis In order that the expansion of the steam
+
+<pre class="font-mono text-sm whitespace-pre overflow-x-auto p-4 bg-ink-900/10 dark:bg-parchment-100/10 rounded-lg">  2                                         608,969</pre>
+
+shall be properly distributed throughout the cured and different outputs of power more economically obtained than by the methods turbines under both conditions of working that is, either while Working in compound at present in use. parallel or in series-it is necessary, gener Isometimes prefer to make the turbine en ally speaking, as I have already described, gines in two or more distinct portions or banks to make the capacity increase from No. 1 of cylinders, and I then arrange the valves so throughout the series continually or by mod that the steam may be turned through either erate steps in the capacity.
+
+While operat portion or both or more portions, and under 75 ing, however, at full power in compound par these circumstances the engines to which no O allel, the pressures delivered on the several steam is being supplied will preferably Work screw-shafts will not be equal. This, how in the vacuum of the condenser.
+
+ever, I meet by a small variation in the screws In the case of changing the course of the on the several shafts, and also sometimes by flow of steam through successive cylinders a modification of the capacities of the turbines with an engine of the turbine class the dis from the sizes most economical for series tribution may be so carried out as to receive working, which modification does not detract suitable drops in pressure, so as to secure a materially from their efficiency under either maximum efficiency under different speeds of
+
+<pre class="font-mono text-sm whitespace-pre overflow-x-auto p-4 bg-ink-900/10 dark:bg-parchment-100/10 rounded-lg">   arrangement of coupling.                         rotation.</pre>
+
+My invention may be varied; but the essen In carrying my invention into effect with tial features consist in so proportioning the reference to the accompanying three sheets number and form of turbines and so connect of drawings, Figure 1, Sheet l, shows a set of ing them by suitable valves and pipes that I eight turbines arranged for working on four am enabled to operate them economically screw-shafts, according to one part of my in either in series, the steam passing from one vention. Fig. 2, Sheet 2, shows a modifica to the other, or in compound or simple par tion of my invention having four main tur allel, the steam being Supplied to the high bine motors A, B, C, and D working on four pressure end of one, two, three, or four of shafts numbered 1, 2, 3, and
+
+4. Fig. 3, Sheet the lot and discharged into the condenser or 3, shows another modification in which six 95 the atmosphere through four or a less num turbines and three screw-shafts are used.
+
+<pre class="font-mono text-sm whitespace-pre overflow-x-auto p-4 bg-ink-900/10 dark:bg-parchment-100/10 rounded-lg">3O ber at the low-pressure end or ends of sepa         In Fig. 1, Sheet 1, is shown a form of my in</pre>
+
+rate turbines. Under the invention thus it vention having a set of eight turbines A A' is evident that the turbines may be placed in B B C C D D'arranged in banks and coupled IOO pairs on each of two screw-shafts instead of to four screw-shafts numbered 1, 2, 3, and 4, four, or three screw-shafts and six turbine two turbines on each shaft. Turbines A and
+
+<pre class="font-mono text-sm whitespace-pre overflow-x-auto p-4 bg-ink-900/10 dark:bg-parchment-100/10 rounded-lg">35 motors may be used.                              A" are coupled to shaft No. 1, turbines B and</pre>
+
+Four shafts and eight turbine motors may B' are coupled to shaft No. 2, turbines C and be used in this case if the shafts be num C are coupled to shaft No. 3, and turbines bered 1, 2, 3, and 4 and the motors A A' B D and D' are coupled to shaft No.
+
+4. Tur B C C D D'. Then for series working the bines A, B, C, and D are of regularly-increas steam will pass through the motors in the or ing capacity from A to D, and the turbine der AA'B B C C D D' and for compound par blades on each of the respective motors are allel Working through A B C D in series from preferably of increasing capacity toward the IIO boiler to condenser and similarly through exhaust ends. Turbines A, B, C, and D' out A B C D'; also, from boiler to con are similarly graduated, but each of the lat 45 denser. Also further modifications may be ter set are preferably of somewhat larger made in the coupling for exceptional cases. capacity than the corresponding members of In such cases by a proper combination of the the first set. In the case of series Working turbine sets on each shaft a greater number the turbines may be connected in two ways. II5 of different powers may be dealt with by suit In the first the main inlet-pipe P supplies So able combination of the turbines on the steam from the boilers, which then passes steam distribution and a greater degree of through turbine A and by Way of valve R' economy realized, especially so in the case of and pipe P to turbine A'. From Aitpasses large war-ships where the engines are re by valve R* and pipe P to the inlet end of quired to run with the greatest economy at turbine B, from turbine B by valve R* and 55 various cruising speeds, as well as at full pipe P4 to turbine B', from turbine B' by power, as by means of a large number of sepa valve R. and pipe P to turbine C, from tur rate turbines of different sizes the power may bine C by valve Rand pipe P to turbine C', be varied within large limits, and at the same from turbine C' by valve R and pipe P to I 25 time a large range of expansion in the tur turbine D, from turbine D by valve R and
+
+<pre class="font-mono text-sm whitespace-pre overflow-x-auto p-4 bg-ink-900/10 dark:bg-parchment-100/10 rounded-lg">     bines can be maintained under all circum pipe P8 to turbine D', and from turbine             D'</pre>
+
+<pre class="font-mono text-sm whitespace-pre overflow-x-auto p-4 bg-ink-900/10 dark:bg-parchment-100/10 rounded-lg">     stances.                                        by pipe P0 to the condenser E. In this ar</pre>
+
+From the description I have given it will rangement the valves R to R, inclusive, are
+
+<pre class="font-mono text-sm whitespace-pre overflow-x-auto p-4 bg-ink-900/10 dark:bg-parchment-100/10 rounded-lg">     be seen that by simply changing the connec closed.                         -</pre>
+
+tions between the engines or cylinders the In the second method of connecting for se steam is caused to flow through different suc ries working the steam passes from the boiler cessive cylinders or engines, by which differ to turbine A by the pipe P, from turbine A ent degrees of successive expansion are se by valve Rand pipe Q' to turbine B, from
+
+<pre class="font-mono text-sm whitespace-pre overflow-x-auto p-4 bg-ink-900/10 dark:bg-parchment-100/10 rounded-lg">                                                   608,969.                                            3.</pre>
+
+turbine B by valve R and pipe Q to tur and T are opened and valves T, T, and T8 bine A', from turbine A' by valve R18 and closed. The steam-pipe S" only is then used, pipe Q to turbine B', from turbine B' by and the condenser His cut off from the cir valve   R and pipe P to turbine C, from tur 5 bine C by valve Rand pipe Q to turbine D, culating water, so that it becomesinoperative.
+
+<pre class="font-mono text-sm whitespace-pre overflow-x-auto p-4 bg-ink-900/10 dark:bg-parchment-100/10 rounded-lg">       from turbine D by valve R16 and pipe Q to The           course of the steam in this case will then</pre>
+
+turbine C", from turbine C' by valve R4 and pipe S"follows:
+
+<pre class="font-mono text-sm whitespace-pre overflow-x-auto p-4 bg-ink-900/10 dark:bg-parchment-100/10 rounded-lg">                                                          be  as             from boiler by valve T and</pre>
+
+pipe Q to turbine D', and from turbine D' S° and valve T to A,
+
+<pre class="font-mono text-sm whitespace-pre overflow-x-auto p-4 bg-ink-900/10 dark:bg-parchment-100/10 rounded-lg">                                                                   to turbine        from turbine A by pipe</pre>
+
+turbine  B, from turbine B by pipe P to the condenser E. In this ar O rangement the valves R. R. R. R. R. R. R11 by pipe S to turbine D, from turbine D. 75
+
+<pre class="font-mono text-sm whitespace-pre overflow-x-auto p-4 bg-ink-900/10 dark:bg-parchment-100/10 rounded-lg">       Rare closed.                          ..    '      through condenser H, pipe S", and valve T</pre>
+
+In the case of compound-parallel working where  to turbine C, from turbine C to condenser G,
+
+<pre class="font-mono text-sm whitespace-pre overflow-x-auto p-4 bg-ink-900/10 dark:bg-parchment-100/10 rounded-lg">       the flow of steam is as follows: from the provided         it is finally condensed. Walve T is</pre>
+
+boiler by the pipe P' to turbine A, from tur the two sets      to enable the pressure admitted to bine A by valve R8 and pipe Q' to turbine B, working at full      of turbines to be equalized when power.
+
+<pre class="font-mono text-sm whitespace-pre overflow-x-auto p-4 bg-ink-900/10 dark:bg-parchment-100/10 rounded-lg">       from turbine B by valve R and pipe Q to T° and T are closed andFor                T</pre>
+
+reversing valves and T0 opened. turbine C, from turbine C by valve R10 and Thus steam is admitted by pipes
+
+<pre class="font-mono text-sm whitespace-pre overflow-x-auto p-4 bg-ink-900/10 dark:bg-parchment-100/10 rounded-lg">      pipe Q to turbine D, from turbine D by valve X, and from turbine X by pipesSto              S</pre>
+
+turbine to con
+
+<pre class="font-mono text-sm whitespace-pre overflow-x-auto p-4 bg-ink-900/10 dark:bg-parchment-100/10 rounded-lg">       R and pipes P and P0 to the condenser E, denser G, also by pipe S8 through turbine                  Y</pre>
+
+also from the boiler by way of the pipe P by pipe S9 to condenser H. One or both of through the turbine A', from turbine A' by these reversing-motors may be used, accord valve R and pipe Q to turbine B', from ing to the speed required in going astern. turbine B' by valve Rand pipe Q to tur The proportions of the internal parts of the
+
+<pre class="font-mono text-sm whitespace-pre overflow-x-auto p-4 bg-ink-900/10 dark:bg-parchment-100/10 rounded-lg">      bine C', and from turbine C' by valve R1 and turbine         motors depend largely upon the re 9o</pre>
+
+pipe. Q. to turbine D', and from turbine D' quirements
+
+<pre class="font-mono text-sm whitespace-pre overflow-x-auto p-4 bg-ink-900/10 dark:bg-parchment-100/10 rounded-lg">      by the pipe P to the condenser E. The is designed. ofThus            the service for which the ship</pre>
+
+if economy at full speed . valves not mentioned in the above cases is of the utmost importance should mentS. be closed in the respectivearrange identical with turbine B andturbine       Ais made similarly turbine 3o Either of the sets A, B, C, and D or A, B', able     C identical with turbine D; but if it is desir 95 C', and D' may be used independently. Any cruising      to secure a greater degree of economy at set not being used revolves freely in vacuum. and turbine     speeds then a compromise is made, Other combinations may be made, as will A, and similarly       B is made of larger capacity than
+
+<pre class="font-mono text-sm whitespace-pre overflow-x-auto p-4 bg-ink-900/10 dark:bg-parchment-100/10 rounded-lg">      readily be seen from the above description;                               turbine C is made larger -</pre>
+
+<pre class="font-mono text-sm whitespace-pre overflow-x-auto p-4 bg-ink-900/10 dark:bg-parchment-100/10 rounded-lg"> 35 but the principle and mode of operation are than           D. In the same way the proportions of OO</pre>
+
+the rows of turbines on each of the motors similar. In Fig. 2, Sheet 2, a set of turbines and con alongtheir and the graduation in size and capacity barrels  are regulated by the above
+
+<pre class="font-mono text-sm whitespace-pre overflow-x-auto p-4 bg-ink-900/10 dark:bg-parchment-100/10 rounded-lg">     nections are shown of about ten thousand col mentioned conditions,              which have to be met</pre>
+
+lective horse-power suitable for a fast vesselor in    each class of service. a torpedo-boat destroyer. In this modification
+
+<pre class="font-mono text-sm whitespace-pre overflow-x-auto p-4 bg-ink-900/10 dark:bg-parchment-100/10 rounded-lg">     four screw-shafts are employed, only two of ofInmyFig.         3, Sheet 3, is shown a modification</pre>
+
+invention    in which three screw-shafts
+
+<pre class="font-mono text-sm whitespace-pre overflow-x-auto p-4 bg-ink-900/10 dark:bg-parchment-100/10 rounded-lg">     which are indicated in Fig. 2, numbered 1 and numbered 1, 2, and             3 are used, to which are</pre>
+
+<pre class="font-mono text-sm whitespace-pre overflow-x-auto p-4 bg-ink-900/10 dark:bg-parchment-100/10 rounded-lg">     4, and four turbines A B C D act thereon for coupled six motors, two             on each shaft, A and</pre>
+
+the usual forward driving; but for reversing 45 two suitable turbine motors X and Y are A on shaft No. 1, B and B' on shaft No. 2, O and C and C on shaft No.
+
+3. In this group of shown, acting on the same shafts with the tur motors
+
+<pre class="font-mono text-sm whitespace-pre overflow-x-auto p-4 bg-ink-900/10 dark:bg-parchment-100/10 rounded-lg">     bines CD. These motors X and Y, when op                     I have made, for the sake of simplic</pre>
+
+erated, will drive their respective shafts in the ity,  turbines A, B, and C, each identically the same as also A'B'C' exactly alike, but each
+
+<pre class="font-mono text-sm whitespace-pre overflow-x-auto p-4 bg-ink-900/10 dark:bg-parchment-100/10 rounded-lg">    reverse direction, thus propelling the vessel larger        than the members of the first set. EO II5</pre>
+
+<pre class="font-mono text-sm whitespace-pre overflow-x-auto p-4 bg-ink-900/10 dark:bg-parchment-100/10 rounded-lg">    astern. When these motors are not in use series working                the flow of steam would be as</pre>
+
+<pre class="font-mono text-sm whitespace-pre overflow-x-auto p-4 bg-ink-900/10 dark:bg-parchment-100/10 rounded-lg">    for reversing, they are suitably connected follows:            from    the   boiler by the pipe U to</pre>
+
+<pre class="font-mono text-sm whitespace-pre overflow-x-auto p-4 bg-ink-900/10 dark:bg-parchment-100/10 rounded-lg">    with the condenser, so that they will be run turbine A, from turbine                A by valve W' and</pre>
+
+<pre class="font-mono text-sm whitespace-pre overflow-x-auto p-4 bg-ink-900/10 dark:bg-parchment-100/10 rounded-lg">    ning freely in vacuum. When going full pipe               U  to  turbine   B, from  turbine B by valve</pre>
+
+power ahead, the turbine Atakes steam from 55 the main supply-pipe S". After partial expan W° and pipe U to turbine C, from turbine C. by valve V8 and pipe U to turbine C', from sion in this motor it passes by the pipe S0 to turbine turbine C, where the expansion is completed, bine B', from    C by valve V and pipe U to tur
+
+<pre class="font-mono text-sm whitespace-pre overflow-x-auto p-4 bg-ink-900/10 dark:bg-parchment-100/10 rounded-lg">    and the steam passes thence to the condenser U to turbine turbine              B' by valve Wand pipe</pre>
+
+G. Similarly the turbine B takes steam from U, US, and U9 to the turbine
+
+<pre class="font-mono text-sm whitespace-pre overflow-x-auto p-4 bg-ink-900/10 dark:bg-parchment-100/10 rounded-lg">                                                                          A',  from            A' by pipes</pre>
+
+condenser K. For I25
+
+<pre class="font-mono text-sm whitespace-pre overflow-x-auto p-4 bg-ink-900/10 dark:bg-parchment-100/10 rounded-lg">    the pipe Sand passes it on by Way of the pipe compound-parallel             working the flow of steam</pre>
+
+<pre class="font-mono text-sm whitespace-pre overflow-x-auto p-4 bg-ink-900/10 dark:bg-parchment-100/10 rounded-lg">    S' after partial expansion to the motor D, would be-first group:                from boiler by pipe U'</pre>
+
+<pre class="font-mono text-sm whitespace-pre overflow-x-auto p-4 bg-ink-900/10 dark:bg-parchment-100/10 rounded-lg">    which delivers it to the condenser H. The to turbine motor A, from                   motor A by valve</pre>
+
+motors thus arranged give full power ahead.
+
+<pre class="font-mono text-sm whitespace-pre overflow-x-auto p-4 bg-ink-900/10 dark:bg-parchment-100/10 rounded-lg">    For working at cruising speeds and therefore Wand           pipe U to motor A', and from motor</pre>
+
+A by pipes U, US, and U9 to condenser K; 65 with reduced power the coupling-pipes Sand second
+
+<pre class="font-mono text-sm whitespace-pre overflow-x-auto p-4 bg-ink-900/10 dark:bg-parchment-100/10 rounded-lg">   S are utilized, and the connecting-valves T. W, and group:             from boiler by pipe U", valve</pre>
+
+pipe U to motor B, from motor B by
+
+60 969 valve V and pipe U14 to motor B', and from ple parallel or in compound parallel, sub 25 motor B' by valve W9, pipes U1, U1, U8, and stantially as described.
+
+2. In combination, a plurality of screw Uto condenser K; third group: from boiler shafts,   plurality of turbines on the separate by pipe U to valve V, pipe U18, and valve shafts, pipe connections between the turbines V", and pipe U to motor C; from motor C by valve Wand pipe U to motor C', and from with       valves to connect them in series or in motor C" by valve V11 and pipes U1, U15, U16, on the shaftparallel, compound of one and a reversing-turbine of the first-mentioned tur U, and Uto condenser K. For simple-par bines with pipe-and-valve allel working the steam flows from the boiler the said reversing-turbineconnections     thereto, running in vacuum IO to the main parallel supply-pipes U19 U17 and U18 U19 by means of the pipes U' and U. while      the first-mentioned turbines are run 35 Each of the turbines A, B, and C is supplied
+
+3. In combination,asthe ning,  substantially     described. plurality of shafts, from pipes U", U, and U7, and each also exhausts into the condenser K. In the same the       plurality of turbines with pipe connec
+
+<pre class="font-mono text-sm whitespace-pre overflow-x-auto p-4 bg-ink-900/10 dark:bg-parchment-100/10 rounded-lg">   way each of the turbines A, B, and C' is tions        and a reversing-turbine connected with</pre>
+
+one of the shafts and running in vacuum when
+
+<pre class="font-mono text-sm whitespace-pre overflow-x-auto p-4 bg-ink-900/10 dark:bg-parchment-100/10 rounded-lg">   supplied from pipes U, U1, and U19, and the         first-mentioned turbines are running, sub</pre>
+
+each exhausts into the condenser. Having thus described my invention, what stantially In as described. witness  whereof I have hereunto set my I claim as new, and desire to secure by Letters hand in presence    of two witnesses. Patent, is
+
+1. In combination, a plurality of screw Witnesses: CIARES ALGERNON PARSONS, shafts, a plurality of turbines and the pipes
+
+<pre class="font-mono text-sm whitespace-pre overflow-x-auto p-4 bg-ink-900/10 dark:bg-parchment-100/10 rounded-lg">    and valves forming the connection between              GEORGE GREY,</pre>
+
+<pre class="font-mono text-sm whitespace-pre overflow-x-auto p-4 bg-ink-900/10 dark:bg-parchment-100/10 rounded-lg">    the turbines to couple them in series in sim           ABRAHAM BEURCK GOLDSBROUGH.</pre>

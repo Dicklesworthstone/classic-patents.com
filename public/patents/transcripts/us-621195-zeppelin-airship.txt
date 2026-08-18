@@ -1,19 +1,135 @@
-UNITED STATES PATENT OFFICE. FERDINAND GRAF VON ZEPPELIN, OF STUTTGART, GERMANY.
+<pre class="font-mono text-sm whitespace-pre overflow-x-auto p-4 bg-ink-900/10 dark:bg-parchment-100/10 rounded-lg">  No. 62,195.                                                    Patented Mar. 14, 1899.</pre>
 
-NAVIGABLE BALLOON.
+FER DNAND GRAF ZEPPEN. NAWGABLE BALOOM. (Application filed Dec. 29, 1897.
 
-SPECIFICATION forming part of Letters Patent No. 621,195, dated March 14, 1899. Application filed August 11, 1898. Serial No. 688,382. (No model.) Patented in Germany June 12, 1898, No. 98,580.
+<pre class="font-mono text-sm whitespace-pre overflow-x-auto p-4 bg-ink-900/10 dark:bg-parchment-100/10 rounded-lg"> (No   Odel.)
 
-To all whom it may concern: Be it known that I, FERDINAND GRAF VON ZEPPELIN, a subject of the King of Würtemberg, residing at Stuttgart, in the Kingdom of Würtemberg, German Empire, have invented certain new and useful Improvements in Navigable Balloons; and I do hereby declare that the following is a full, clear, and exact description of the invention.
+4. Sheets-Sileet .</pre>
 
-The object of my invention is to produce a navigable balloon or airship of great length and carrying capacity, which retains its rigid outer form regardless of changes in internal gas pressure or external atmospheric conditions, and which can be propelled and steered through the air with certainty.
+s
 
-In carrying my invention into effect: First, I construct an elongated, rigid skeleton or framework of light metal, such as aluminum, comprising a series of transverse polygonal rings connected by longitudinal lattice girders, forming a stiff prismatic or cylindrical body with tapered ends. Second, within the interior of this rigid framework I arrange a plurality of independent gas-tight balloonets or gasbags, each containing lifting-gas (hydrogen), whereby a puncture or leakage in one gasbag will not cause the collapse of the airship or the loss of more than a small fraction of the total buoyant lift. Third, the exterior of the framework is covered with a taut weather-proof fabric envelope, thereby providing a smooth aerodynamic outer surface, reducing skin friction, and shielding the internal gasbags from direct sunlight, rain, and wind. Fourth, I mount engines and propellers upon rigid cars suspended below or attached to the framework, and provide horizontal and vertical rudders for controlling the direction and elevation of the airship during flight.
+"SC fA/444, 7 a. le ven Tor FRONAND Graf Zeppelin
 
-I claim as my invention:
+7.
 
-1. (Independent) A navigable balloon or airship comprising an elongated rigid framework of light metal, a plurality of independent gasbags or balloonets contained within said framework, an outer fabric covering surrounding the framework, and propulsion and steering mechanisms supported by the framework, substantially as described.
+His fit to RNEYS.
 
-2. In a rigid airship, the combination, with the rigid framework and the internal gasbags, of an outer taut fabric envelope spaced apart from the gasbags by the framework, whereby an air space is maintained between the gasbags and the outer envelope to insulate the gas from solar heat and atmospheric changes.
+<pre class="font-mono text-sm whitespace-pre overflow-x-auto p-4 bg-ink-900/10 dark:bg-parchment-100/10 rounded-lg"> No. 62,195.                          Patented Mar. 4, 1899.</pre>
 
-3. In a rigid airship, the combination, with the rigid framework, of an internal longitudinal keel gangway, cars suspended below the framework containing motors, and a movable trim-weight movable along said keel for altering the center of gravity and trimming the airship in pitch.
+FERNAND GRAF ZEPPEN. NAVGABLE BALL00 N. Application filed Dec. 29, 1897.
+
+<pre class="font-mono text-sm whitespace-pre overflow-x-auto p-4 bg-ink-900/10 dark:bg-parchment-100/10 rounded-lg">(No Model.)
+
+4. Sheets-Sheet 2.</pre>
+
+4S S
+
+N s Earl
+
+S | Invent or Foundar Zeppelin I HIS firror NEYs
+
+<pre class="font-mono text-sm whitespace-pre overflow-x-auto p-4 bg-ink-900/10 dark:bg-parchment-100/10 rounded-lg">No. 62,195.                                           Patented Mar. 14, 1899.</pre>
+
+FERDIN AND GRAF ZEPPELIN. NAVIGABLE BALOON. (Application filed Dec. 29, 1897.)
+
+<pre class="font-mono text-sm whitespace-pre overflow-x-auto p-4 bg-ink-900/10 dark:bg-parchment-100/10 rounded-lg">(No Moded.)
+
+4. Sheets-Sheet 3.</pre>
+
+INVENTOR N FDINAND GAF Zeppelin
+
+his AT TORN ENs.
+
+<pre class="font-mono text-sm whitespace-pre overflow-x-auto p-4 bg-ink-900/10 dark:bg-parchment-100/10 rounded-lg"> No. 62,195.                                           Patented Mar. 4, 1899.</pre>
+
+FERD NAND GRAF ZEPPEN. AWGABLE BALOON. (Application filed Dec. 29, 1897.)
+
+<pre class="font-mono text-sm whitespace-pre overflow-x-auto p-4 bg-ink-900/10 dark:bg-parchment-100/10 rounded-lg"> Goode.
+
+4. Sheets-Sheet 4.</pre>
+
+MN - His
+
+ID SITE iss ITIS E. III IH III. S III s HAIIII Y TVEs
+
+e
+
+<pre class="font-mono text-sm whitespace-pre overflow-x-auto p-4 bg-ink-900/10 dark:bg-parchment-100/10 rounded-lg"> N ESSES:                                                   4 Ernia nGaAF ZEPEur</pre>
+
+a? 44; 26. 3 &
+
+24.
+
+UNITED STATES PATENT OFFICE.
+
+FERDIN AND GRAF ZEPPELIN, OF STUTTGART, GERMANY. NAVGABLE BALOON.
+
+<dfn title="The comprehensive written description of an invention and the manner of constructing and operating it, in terms sufficiently clear to enable any person skilled in the art to replicate it. (Modern: Patent Detailed Description & Embodiments)" class="cursor-help underline decoration-dotted decoration-amber-600 dark:decoration-amber-400 decoration-2 underline-offset-4 text-ink-950 dark:text-parchment-50 hover:bg-amber-500/10 dark:hover:bg-amber-400/10 rounded px-0.5 transition-colors">SPECIFICATION</dfn> forming part of <dfn title="An open document ('litterae patentes') issued by a sovereign or government under public seal, granting an inventor exclusive legal monopoly rights to manufacture, use, and vend an invention. (Modern: Granted Patent Document / Certificate)" class="cursor-help underline decoration-dotted decoration-amber-600 dark:decoration-amber-400 decoration-2 underline-offset-4 text-ink-950 dark:text-parchment-50 hover:bg-amber-500/10 dark:hover:bg-amber-400/10 rounded px-0.5 transition-colors">Letters Patent</dfn> No. 621,195, dated March 14,
+
+1899. Application filed December 29, 1897, Serial No, 664,295, (No model.)
+
+<pre class="font-mono text-sm whitespace-pre overflow-x-auto p-4 bg-ink-900/10 dark:bg-parchment-100/10 rounded-lg">       To all whon, it 7-?tly coicci'i.                 an outer shell or casing d" of silk or similar</pre>
+
+IBe it known that I, FERDINAND GRAF ZEP material. The framework is stiffened inter PELIN, general-lieutenant Z. d. general à la nally by means of partition-walls a, vertical 55 suite of IIis Majesty the King of Württem stays , Figs. 3 and 4, between which lie cir berg, of Stuttgart, Germany, have invented cumferential rings at, and diagonal stays at'. certain new and useful Improvements in and IBy means of the said partition-walls the bal Relating to Navigable Balloons; and I do loon is divided into separate compartments or hereby declare the following to be a full, chambers, Fig.
+
+3, in which correspondingly- 6o clear, and exact description of the invention, shaped gas bags or envelops are introduced O such as will enable others skilled in the art in a folded-together condition, and are then to which it appertains to make and use the filled with gas. This arrangement permits Se, the use of rigid chambers as gas-spaces with This invention relates to a navigable bal out bringing the gas into contact with the 65 loon which is characterized essentially in that atmospheric air in the chambers during fill it is provided with a number of motors ar ing. The filling of the gas bags or envelops ranged separately from each other.
+
+In this takes place without interfering with the cy manner it is possible to give the balloon or lindrical form of the balloon - framework, buoyant part of the apparatus, which receives which the gas and is preferably cylindrical with of the isouter   continuously maintained by means 7o casing d and is only contin rounded ends, a smaller diameter in propor ued up to such a degree that the necessary tion to the driving power developed by the free space is left to permit expansion of the motors and to correspondingly reduce the air gas when the balloon ascends to great alti resistance. A navigable balloon or aircraft tudes and when heated.
+
+By means of this 75 of this kind can be combined with several limited charge of gas, which is, however, to 25 other balloons or air crafts in such a manner be sufficient for lifting the craft, it is possible that the foremost craft contains the driving to retain the necessary quantity of gas even gear, while the others serve for the reception for journeys of very long duration. The gas
+
+<pre class="font-mono text-sm whitespace-pre overflow-x-auto p-4 bg-ink-900/10 dark:bg-parchment-100/10 rounded-lg">    of the goods or load to be carried.                bags or envelops are provided with safety- 8o</pre>
+
+In the accompanying drawings, Figure 1 is valves and outlet-valves, (not shown on the a side elevation of my improved navigable drawings,) which in the ordinary course are balloon or air craft. Fig. 2 is a front eleva not used. In order to obviate the necessity tion thereof. Fig. 3 is a longitudinal section of     having to let out gas from the main gas showing a part of the said craft drawn to an bags in long journeys to compensate for the 85 enlarged Scale. Fig. 4 is a transverse section reduction in the weight to be carried due to 35 through the craft. Figs. 5 and 6 show the the consumption of fuel or other material arrangement of the separate gas bags or en used in driving the craft, which results in velops in the several compartments of the spoiling
+
+<pre class="font-mono text-sm whitespace-pre overflow-x-auto p-4 bg-ink-900/10 dark:bg-parchment-100/10 rounded-lg">    balloon. Figs. 7 and S show in side eleva arrange the           gas by the introduction of air, I</pre>
+
+tion and plan, respectively, the arrangement main gas-bags O, several
+
+<pre class="font-mono text-sm whitespace-pre overflow-x-auto p-4 bg-ink-900/10 dark:bg-parchment-100/10 rounded-lg">                                                                in the           chambers, near the go</pre>
+
+special auxiliary bags, which 40 of an adjustable running-weight which serves may be termed “maneuvering bags or con for giving the balloon any desired inclination tainers p, Figs. 5 and 6, and are of the same to the horizontal. Fig. 9 shows a modifica diameteras the main gas-bags and of suitable tion in which the running-weight is replaced length. In filling these special maneuvering 95 by adjustable towing or trailing ropes. Fig. bags or containers p are filled with gas before 45 10 shows a number of balloons connected to the main gas-bags, with which they are con gether, so as to form a train. Figs. 11 and nected, so that they retain their position when 12 illustrate the method of coupling the sev the filling of the main gasbags or containers
+
+<pre class="font-mono text-sm whitespace-pre overflow-x-auto p-4 bg-ink-900/10 dark:bg-parchment-100/10 rounded-lg">   eral balloons together.                            afterward takes place. If now gas be allowed Ioo</pre>
+
+In order to give the balloon a rigid form, it to escape from the maneuvering    bags or con is provided with a framework or skeleton of tainers when the reduction in weight renders tubes , wire ropes s, and wire gauze or net this necessary, the main gas bags or contain ting d, Figs. 1, 3, and 4, over which is stretched ers O expand under the action of the up
+
+<pre class="font-mono text-sm whitespace-pre overflow-x-auto p-4 bg-ink-900/10 dark:bg-parchment-100/10 rounded-lg">   2                                          621,195</pre>
+
+wardly-pressing gas contained therein until, weight is to be used as a simple running after the emptying of the maneuvering-bags, weight, even while it is partly or entirely they fill up the whole of the upper part of the drawn up, the fusees can be loosed from con: chamber. The main gas bags or containers nection with the drums and the wire rope l'
+
+<pre class="font-mono text-sm whitespace-pre overflow-x-auto p-4 bg-ink-900/10 dark:bg-parchment-100/10 rounded-lg">   () thus retain their full quantity of gas.        unhooked from the weight b, so that these</pre>
+
+IBeneath the balloon or buoyant part of the ropes and the tackle do not interfere with one apparatus runs a gangway l, rigidly con another's action. Instead of a running-weight nected thereto, from which all parts of the of this kind two or more towing or trailing 75 balloon can be reached by means of ropelad ropest, arranged at a suitable distance apart, Id dersf, as well as two or more cars (1, for the can also be employed, as shown in Fig. 9, reception of the aeronaut or controller of the which ropes can be adjusted in the longitu driving-gear, of the fuel or other material dinal direction of the balloon.
+
+These tow used in driving thc craft, the passengers, and ing or trailing ropes, which can be arranged the useful load or cargo. Each driving mech singly or in groups, are secured to an endless anism drives two air-screws i, Fig. 1, pro cable, by means of which they can be adjusted vided on both sides of the buoyant cylinder in one or the other direction. In traveling in at about the same height as the center of re the air the towing or trailing ropes as soon
+
+<pre class="font-mono text-sm whitespace-pre overflow-x-auto p-4 bg-ink-900/10 dark:bg-parchment-100/10 rounded-lg">   sistance.                                         as they no longer trail on the earth are tied</pre>
+
+The steering of the balloon to either side is or connected together at their lower ends in effected by means of two rudders (1, Fig. 1, any suitable manner, so as to enable the tow which are arranged above and beneath at the ing or trailing ropes to automatically main front or the rear part of the balloon and can tain the vehicle in the required position. be operated by means of suitable steering In order to permit greater loads to be car
+
+<pre class="font-mono text-sm whitespace-pre overflow-x-auto p-4 bg-ink-900/10 dark:bg-parchment-100/10 rounded-lg">   gear.                                             ried, one or more similarly-built load-carry</pre>
+
+25 In order to bring the balloon into a hori ing balloons, but without driving-gear, can Zontal or inclined position, as desired, a weight be suspended to the balloon provided with d) is suspended beneath it by incans of pulley driving-gear, as shown in Fig.
+
+10. All crafts blocks and tackle l', Figs. 1, 7, and S. The are connected together in such a manner that 95 movable carriag( or traveler n, to which the they form a connected train. The connection upper pulley-block is secured, rests adjust of the single balloons is effected by means of ably on a wire rope secured to the shell or couplings c, Figs. 11 and 12, which are mov casing of the ballooli and can be drawn to and able in all directions. The space between fro between suitable limiting positions by each two balloons is closed by means of all OO neans of an endless wire rope, which runs extensible covere, which lies over the cylin 35 several times around over two rotatable drums drical shells of the two adjacent balloons, so ly, Figs. 7 and S, arranged at equal distances that the wind cannot obtain a hold in the in from the middle of the balloon. To each of termediate space. the two drums is secured a fusee or snail 2, The compensation for the difference in spe Io5 rotating the '(with. The threads of the said cific gravity of the balloons of a train, due to fusees are so calculated that the wire rope U° the consumption of the fuel or material used is kept continually stretched between them in driving the balloon or of the provisions or and the running-weightly, since it simultane loss of gas or to other causes, is preferably ously Winds onto one and unwinds from the effected by the transfer of liquids-for exam to other when the position of the weight is al ple, benzin, water, or the like-or by trans 45 tered by moving the traveler supporting it. ferring heavy objects-for example, provi This arrangement insures that in the hori sions, useful freight of all kinds, sand, or the Zontal position of the whole balloon as far as like-out of the specifically heavier into the relates to the adjustment of the running lighter balloon, or by condensing gases or at I 5 weight to compensate for other displacements mospheric air in the latter. or redistributions of weight-for example, IIaving now described particularly the na change in the position of men-the two wire ture of my invention, what claim, and desiro ropes l° shall always remain under a slight to secure by <dfn title="An open document ('litterae patentes') issued by a sovereign or government under public seal, granting an inventor exclusive legal monopoly rights to manufacture, use, and vend an invention. (Modern: Granted Patent Document / Certificate)" class="cursor-help underline decoration-dotted decoration-amber-600 dark:decoration-amber-400 decoration-2 underline-offset-4 text-ink-950 dark:text-parchment-50 hover:bg-amber-500/10 dark:hover:bg-amber-400/10 rounded px-0.5 transition-colors">Letters Patent</dfn>, is tension. In this manner they automatically
+
+1. In a balloon, the combination of a framc contribute toward maintaining a horizontal work divided into separate compartments, 55 position, for when, for example, the front with a main gas-bag in each compartment, end of the balloon begins to rise the running adapted to expand and fill the same when Weight in its tendency to remain perpendicu permitted,       and auxiliary gas-bags in the com larly below the traveler will exert a pull in partments for maneuvering, to permit the I25 the wire rope running to the front fusee. If main gas-bags to retain their full quantity of the balloon is to be maintained in an up gas unaffected by the admission of air, sub Wardly directed position, for example, the stantially as set forth. front wire rope continuously exerts a pull,
+
+2. The combination of a balloon, with a run this, however, increasing if the point rises still higher. The suspension of the weight is ef ning-weight tary drums suspended beneath the same, ro provided with fusees, and a rope fected by means of pulley-blocks and tackle stretched from the weight       to and around each l in order to enable it to be drawn up when fusee, substantially as and for the purpose the balloon descends to the ground. If the Sust, forth,
+
+<pre class="font-mono text-sm whitespace-pre overflow-x-auto p-4 bg-ink-900/10 dark:bg-parchment-100/10 rounded-lg">                                                  621,195                                          2</pre>
+
+3. The combination of a balloon, with a the remainder adapted to carry the load or weight suspended beneath the same, and ad-freight, and extensible covers secured to the justable in height, a movable carriage sup-rigid casings and covering the intermediate 45 porting the weight, rotary drums to which spaces between two adjacent balloons. 5the carriage is connected and which are pro- In testimony that I claim the foregoing as vided with fusees and a rope stretched from my invention I have signed my name in pres the weight to and around each fusee, substan- ence of two subscribing witnesses.
+
+<pre class="font-mono text-sm whitespace-pre overflow-x-auto p-4 bg-ink-900/10 dark:bg-parchment-100/10 rounded-lg">       tially as and for the purpose set forth.             . . .     t      Y L. trin). TrAT</pre>
+
+<pre class="font-mono text-sm whitespace-pre overflow-x-auto p-4 bg-ink-900/10 dark:bg-parchment-100/10 rounded-lg">-
+
+4. An air-craft comprising a series of bal-            FERDIN ANI) GRAF ZEPPELIN. L. s.</pre>
+
+<pre class="font-mono text-sm whitespace-pre overflow-x-auto p-4 bg-ink-900/10 dark:bg-parchment-100/10 rounded-lg">    Io loons coupled together and provided with        Witnesses:</pre>
+
+<pre class="font-mono text-sm whitespace-pre overflow-x-auto p-4 bg-ink-900/10 dark:bg-parchment-100/10 rounded-lg">       rigid casings, the foremost of said balloons        WM. IIAHN,</pre>
+
+<pre class="font-mono text-sm whitespace-pre overflow-x-auto p-4 bg-ink-900/10 dark:bg-parchment-100/10 rounded-lg">      being provided with driving mechanism, and            II. WAGNER.</pre>

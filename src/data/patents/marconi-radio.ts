@@ -21,9 +21,9 @@ export const marconiRadioPatent: Patent = {
   googlePatentsUrl: "https://patents.google.com/patent/US586193A/en",
   usptoClassification: "H04B 1/02 (Radio transmitters)",
   originalTextAsset: {
-    url: "/patents/transcripts/us-586193-marconi-radio.txt",
+    url: "/patents/source-text/us-586193-marconi-radio.txt",
     pageCount: 11,
-    kind: "reviewed-transcription",
+    kind: "source-pdf-text-layer",
   },
   originalText: `UNITED STATES PATENT OFFICE.
 GUGLIELMO MARCONI, OF LONDON, ENGLAND.

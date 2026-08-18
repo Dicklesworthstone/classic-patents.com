@@ -13,6 +13,7 @@
       "!**/dist",
       "!**/build",
       "!**/.next",
+      "!**/.next-backup",
       "!**/.vercel",
       "!**/public/wasm",
       "!**/public/patents",

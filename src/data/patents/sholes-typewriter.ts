@@ -21,9 +21,9 @@ export const sholesTypewriterPatent: Patent = {
   googlePatentsUrl: "https://patents.google.com/patent/US79265/en",
   usptoClassification: "B41J 1/28 (Typewriters; Typebar mechanisms; Keyboard layouts)",
   originalTextAsset: {
-    url: "/patents/transcripts/us-79265-sholes-typewriter.txt",
+    url: "/patents/source-text/us-79265-sholes-typewriter.txt",
     pageCount: 6,
-    kind: "reviewed-transcription",
+    kind: "source-pdf-text-layer",
   },
   originalText: `UNITED STATES PATENT OFFICE.
 C. LATHAM SHOLES, CARLOS GLIDDEN, AND SAMUEL W. SOULE, OF MILWAUKEE, WISCONSIN.

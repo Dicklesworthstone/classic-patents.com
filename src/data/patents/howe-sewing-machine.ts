@@ -22,9 +22,9 @@ export const howeSewingMachinePatent: Patent = {
   googlePatentsUrl: "https://patents.google.com/patent/US4750A/en",
   usptoClassification: "D05B 1/02 (Sewing machines; lockstitch forming)",
   originalTextAsset: {
-    url: "/patents/transcripts/us-4750-howe-sewing-machine.txt",
+    url: "/patents/source-text/us-4750-howe-sewing-machine.txt",
     pageCount: 6,
-    kind: "reviewed-transcription",
+    kind: "source-pdf-text-layer",
   },
   originalText: `UNITED STATES PATENT OFFICE.
 ELIAS HOWE, JR., OF CAMBRIDGE, MASSACHUSETTS.

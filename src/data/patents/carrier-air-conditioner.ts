@@ -22,9 +22,9 @@ export const carrierAirConditionerPatent: Patent = {
   googlePatentsUrl: "https://patents.google.com/patent/US808897A/en",
   usptoClassification: "F24F 3/14 (Air conditioning / Dehumidification by liquid contact)",
   originalTextAsset: {
-    url: "/patents/transcripts/us-808897-carrier-air-conditioner.txt",
+    url: "/patents/source-text/us-808897-carrier-air-conditioner.txt",
     pageCount: 4,
-    kind: "reviewed-transcription",
+    kind: "source-pdf-text-layer",
   },
   originalText: `UNITED STATES PATENT OFFICE.
 WILLIS H. CARRIER, OF BUFFALO, NEW YORK.

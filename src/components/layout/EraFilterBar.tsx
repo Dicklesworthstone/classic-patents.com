@@ -1,6 +1,8 @@
 "use client";
 
-import { Search } from "lucide-react";
+import { Search, X } from "lucide-react";
+import { useMemo } from "react";
+import { allPatents } from "@/data/patents";
 
 interface EraFilterBarProps {
   selectedCategory: string;
@@ -16,7 +18,7 @@ const CATEGORIES: { id: string; label: string }[] = [
   { id: "electricity", label: "Electricity & AC" },
   { id: "telecom", label: "Telecommunications" },
   { id: "computing", label: "Computing & Silicon" },
-  { id: "consumer", label: "Consumer Physics" },
+  { id: "consumer", label: "Consumer & Mechanical" },
   { id: "materials", label: "Materials Science" },
   { id: "optics", label: "Optics & Imaging" },
 ];
@@ -28,6 +30,14 @@ export function EraFilterBar({
   onSearchChange,
   resultCount,
 }: EraFilterBarProps) {
+  const categoryCounts = useMemo(() => {
+    const counts: Record<string, number> = { all: allPatents.length };
+    for (const p of allPatents) {
+      counts[p.category] = (counts[p.category] || 0) + 1;
+    }
+    return counts;
+  }, []);
+
   return (
     <div className="space-y-4 bg-parchment-100/90 dark:bg-ink-900/80 p-5 sm:p-6 rounded-2xl border border-parchment-300 dark:border-ink-800 shadow-sm">
       <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-4">
@@ -43,8 +53,19 @@ export function EraFilterBar({
             placeholder="e.g. Wright, US 821,393, magnetron"
             value={searchQuery}
             onChange={(e) => onSearchChange(e.target.value)}
-            className="w-full pl-11 pr-4 py-3 bg-parchment-50 dark:bg-ink-950 border border-parchment-300 dark:border-ink-700 rounded-xl text-sm sm:text-base font-sans text-ink-950 dark:text-parchment-100 placeholder:text-ink-400 focus:outline-none focus:ring-2 focus:ring-amber-600 dark:focus:ring-amber-400 transition-colors shadow-inner"
+            className="w-full pl-11 pr-10 py-3 bg-parchment-50 dark:bg-ink-950 border border-parchment-300 dark:border-ink-700 rounded-xl text-sm sm:text-base font-sans text-ink-950 dark:text-parchment-100 placeholder:text-ink-400 focus:outline-none focus:ring-2 focus:ring-amber-600 dark:focus:ring-amber-400 transition-colors shadow-inner"
           />
+          {searchQuery && (
+            <button
+              type="button"
+              onClick={() => onSearchChange("")}
+              className="absolute right-3.5 top-1/2 -translate-y-1/2 p-1 text-ink-400 hover:text-ink-700 dark:hover:text-ink-200 transition-colors"
+              title="Clear search query"
+              aria-label="Clear search query"
+            >
+              <X className="w-4 h-4" />
+            </button>
+          )}
         </div>
 
         <div className="text-sm font-sans text-ink-600 dark:text-ink-300 whitespace-nowrap self-center sm:self-auto font-medium">
@@ -56,22 +77,36 @@ export function EraFilterBar({
         </div>
       </div>
 
-      {/* Category Filter Pills */}
+      {/* Category Filter Pills with Item Counts */}
       <div className="flex flex-wrap items-center gap-2 pt-1">
-        {CATEGORIES.map((cat) => (
-          <button
-            key={cat.id}
-            type="button"
-            onClick={() => onSelectCategory(cat.id)}
-            className={`px-4 py-2 rounded-xl text-xs sm:text-sm font-sans font-semibold transition-colors shadow-xs ${
-              selectedCategory === cat.id
-                ? "bg-amber-700 text-white font-bold shadow dark:bg-amber-600"
-                : "bg-parchment-50 dark:bg-ink-950 text-ink-800 dark:text-parchment-200 border border-parchment-300 dark:border-ink-800 hover:bg-parchment-200 dark:hover:bg-ink-800"
-            }`}
-          >
-            {cat.label}
-          </button>
-        ))}
+        {CATEGORIES.map((cat) => {
+          const count = categoryCounts[cat.id] ?? 0;
+          const isSelected = selectedCategory === cat.id;
+
+          return (
+            <button
+              key={cat.id}
+              type="button"
+              onClick={() => onSelectCategory(cat.id)}
+              className={`px-3.5 py-2 rounded-xl text-xs sm:text-sm font-sans font-semibold transition-colors shadow-xs flex items-center gap-2 ${
+                isSelected
+                  ? "bg-amber-700 text-white font-bold shadow dark:bg-amber-600"
+                  : "bg-parchment-50 dark:bg-ink-950 text-ink-800 dark:text-parchment-200 border border-parchment-300 dark:border-ink-800 hover:bg-parchment-200 dark:hover:bg-ink-800"
+              }`}
+            >
+              <span>{cat.label}</span>
+              <span
+                className={`text-[11px] font-mono px-1.5 py-0.5 rounded-md ${
+                  isSelected
+                    ? "bg-white/20 text-white"
+                    : "bg-parchment-200 dark:bg-ink-800 text-ink-600 dark:text-ink-400"
+                }`}
+              >
+                {count}
+              </span>
+            </button>
+          );
+        })}
       </div>
     </div>
   );

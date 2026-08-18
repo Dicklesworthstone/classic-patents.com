@@ -21,9 +21,9 @@ export const otisElevatorPatent: Patent = {
   googlePatentsUrl: "https://patents.google.com/patent/US31128/en",
   usptoClassification: "B66B 5/18 (Braking or catching gear for elevator cars)",
   originalTextAsset: {
-    url: "/patents/transcripts/us-31128-otis-elevator.txt",
+    url: "/patents/source-text/us-31128-otis-elevator.txt",
     pageCount: 3,
-    kind: "reviewed-transcription",
+    kind: "source-pdf-text-layer",
   },
   originalText: `UNITED STATES PATENT OFFICE.
 ELISHA G. OTIS, OF YONKERS, NEW YORK.

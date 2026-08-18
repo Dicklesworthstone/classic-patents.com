@@ -1,23 +1,55 @@
-UNITED STATES PATENT OFFICE. JOHN W. HYATT, JR., AND ISAIAH S. HYATT, OF ALBANY, NEW YORK.
+UNITED STATES PATENT OFFICE.
 
-IMPROVEMENT IN TREATING AND MOLDING PYROXYLINE.
+JOEN W. HYATT, JR, AND ISAIAH S. HYATT, OF ALBANY, NEW YORK. MPROVEMENT N TREATNG AND MOLDING PYROXYNE.
 
-Specification forming part of Letters Patent No. 105,338, dated July 12, 1870.
+<dfn title="The comprehensive written description of an invention and the manner of constructing and operating it, in terms sufficiently clear to enable any person skilled in the art to replicate it. (Modern: Patent Detailed Description & Embodiments)" class="cursor-help underline decoration-dotted decoration-amber-600 dark:decoration-amber-400 decoration-2 underline-offset-4 text-ink-950 dark:text-parchment-50 hover:bg-amber-500/10 dark:hover:bg-amber-400/10 rounded px-0.5 transition-colors">Specification</dfn> forming part of <dfn title="An open document ('litterae patentes') issued by a sovereign or government under public seal, granting an inventor exclusive legal monopoly rights to manufacture, use, and vend an invention. (Modern: Granted Patent Document / Certificate)" class="cursor-help underline decoration-dotted decoration-amber-600 dark:decoration-amber-400 decoration-2 underline-offset-4 text-ink-950 dark:text-parchment-50 hover:bg-amber-500/10 dark:hover:bg-amber-400/10 rounded px-0.5 transition-colors">Letters Patent</dfn> No. 105,33s, dated July 12, 1870.
 
-To all whom it may concern: Be it known that we, JOHN W. HYATT, Jr., and ISAIAH S. HYATT, of the city and county of Albany, in the State of New York, have invented a new and useful Process of Treating and Molding Pyroxyline, of which the following is a specification:
+te, JoHN W. HYATT, Jr., and IsAIAH S. prevent the pyroxyline from burning or ex HYATT, both of Albany, in the county of Al ploding during the remaining process. Third, bany and State of New York, have invented
 
-Our invention consists in a new process of dissolving and consolidating pyroxyline (soluble gun-cotton or nitrocellulose) by combining it with solid gum-camphor and subjecting the mixture to heat and pressure in a closed mold or press.
+<pre class="font-mono text-sm whitespace-pre overflow-x-auto p-4 bg-ink-900/10 dark:bg-parchment-100/10 rounded-lg"> a new and Improved Process of Dissolving the         mixture is then placed in a mold of any</pre>
 
-Heretofore, pyroxyline has been dissolved in volatile liquid solvents such as alcohol and ether (forming collodion or 'Parkesine'), which required great quantities of expensive solvents, shrank excessively upon evaporation, and produced brittle, warped articles.
+appropriate form, which is beated by steam Pyroxyline and of Making Solid Collodion, of or by any convenieut method, to from 1500 to
 
-In our process: 1. We take pyroxylin in a finely divided or pulped condition and mix it thoroughly with finely ground solid gum-camphor in the proportion of one part by weight of camphor to about two parts of pyroxyline. 2. The dry, intimate mixture is placed in a strong mold and subjected to heavy pressure (from 500 to 2,000 pounds per square inch) while simultaneously heating the mold to a temperature of 150 to 250 degrees Fahrenheit (65 to 120 degrees Celsius). 3. Under this combined heat and pressure, the camphor melts and acts as a solvent upon the pyroxylin, converting the dry, porous mass into a uniform, dense, gelatinized, and perfectly homogenous solid without requiring any volatile liquid solvent. 4. When cooled under pressure, the mass solidifies into a hard, tough, elastic material resembling ivory, tortoise-shell, or horn, which can be turned in a lathe, planed, sawed, polished, or pressed into intricate molds.
+<pre class="font-mono text-sm whitespace-pre overflow-x-auto p-4 bg-ink-900/10 dark:bg-parchment-100/10 rounded-lg"> which the following is a <dfn title="The comprehensive written description of an invention and the manner of constructing and operating it, in terms sufficiently clear to enable any person skilled in the art to replicate it. (Modern: Patent Detailed Description & Embodiments)" class="cursor-help underline decoration-dotted decoration-amber-600 dark:decoration-amber-400 decoration-2 underline-offset-4 text-ink-950 dark:text-parchment-50 hover:bg-amber-500/10 dark:hover:bg-amber-400/10 rounded px-0.5 transition-colors">specification</dfn>:         3000 Fahrenheit, to suit the proportion of cam.</pre>
 
-We term this new manufactured material "Celluloid."
+Our invention consists, first, of so prepar phor and the size of the mass, and is subjected ing pyroxyline that pigments and other sub to a heavy pressure in a hydraulic or other statices in a powdered condition can be easily press. The heat, according to the degree and thoroughly imixed therewith before the used, vaporizes or liquefies the camphor, and pyroxyline is subjected to the action of a solv thus converts it into a solvent of the pyroxy ent; secondly, of mixing with the pyroxyline line.
 
-I claim as our invention: 1. The process of dissolving or transforming pyroxyline into a solid homogenous mass by comminuting it with solid camphor and subjecting the mixture to heat and pressure, substantially as described. 2. The solid manufactured product or plastic composition (Celluloid) resulting from the heat and pressure transformation of pyroxyline and camphor.
+By introducing the solvent in the man so prepared any desirable pigment, coloring ner here       described, and using heat to make matter, or other material, and also any sub the solventactive, and pressure to force it into stance in a powdered state which may be va intimate contact every particle of the pyroxy porized or liquefied and couverted into a solv line, we are able to use a less proportion of ent of pyroxyline by the application of beat; this or any solvent which depends upon heat. and thirdly, of subjecting the compound so for its activity that has ever been known here Inade to heavy pressure while heated, so that tofore.
 
-I claim as my invention:
+After keeping the mixture under heat the least practicable proportion of solveut may aud  pressure long enough to collaplete the soiv be used in the production of solid collodion ent action throughout the mass it is cooled
 
-1. (Independent) The process of dissolving or transforming pyroxyline into a solid homogenous mass by comminuting it with solid camphor and subjecting the mixture to heat and pressure, substantially as described.
+<pre class="font-mono text-sm whitespace-pre overflow-x-auto p-4 bg-ink-900/10 dark:bg-parchment-100/10 rounded-lg">and its compounds.                               while still under pressure, and then taken out</pre>
 
-2. The solid manufactured product or plastic composition (Celluloid) resulting from the heat and pressure transformation of pyroxyline and camphor.
+The following is a description of our pro of     the mold. The product is a solid about the
+
+<pre class="font-mono text-sm whitespace-pre overflow-x-auto p-4 bg-ink-900/10 dark:bg-parchment-100/10 rounded-lg">cess: First, we prepare the pyroxyline by consistency         of sole-leather, but which subse</pre>
+
+grinding it in water until it is reduced to a quently becomes as hard as horn or bone by fiue pulp by means of a machine similar to the evaporation of the camphor. Before the those employed in grinding paper-pulp. Sec camphor is evaporated the material is easily ond, any suitable white or coloring pigment or softened by heat, and may be molded into any dyes, when desired, are then mixed and thor
+
+<pre class="font-mono text-sm whitespace-pre overflow-x-auto p-4 bg-ink-900/10 dark:bg-parchment-100/10 rounded-lg">oughly ground with the pyroxyline pulp, or desirable        form, which neither changes nor ap</pre>
+
+preciably shrinks in hardening. any powdered or granulated material is incor We are aware that camphor made iuto a so porated that may be adapted to the purpose lution with alcohol or other solvents of cam of the manufacture. While the ground palpis phor bras been used in a liquid state as a solv still wet we nuix therewith finely-pulverized ent of xyloidine. Such use of camphor as a gull-calinphor in about the proportions of one solvent of pyroxyline we disclaim.
+
+<pre class="font-mono text-sm whitespace-pre overflow-x-auto p-4 bg-ink-900/10 dark:bg-parchment-100/10 rounded-lg">part (by weight) of the camphor to two parts                         Claims</pre>
+
+of the pyroxyliue when in a dry state. These proportions may be somewhat varied with We claim as our invention good results. The guun-camphor may be com
+
+1. Grinding pyroxyline into a pulp, as and minuted by grinding in water, by pounding,
+
+<pre class="font-mono text-sm whitespace-pre overflow-x-auto p-4 bg-ink-900/10 dark:bg-parchment-100/10 rounded-lg">or rolling; or, if preferred, the camphor may for2.the   purpose described.              - -</pre>
+
+The use of finely-comminuted camphor be dissolved in alcohol or spirits of wine, and gun mixed with pyroxyliue pulp, and ren then precipitated by adding water, the alcohol dered a solvent thereof by the application of leaviug the camphor and uniting with the wa heat, substantially as described. ter, when both the alcohol and the water may be
+
+3. In conjunction with such use of camphor drawn off, leaving the camphorin a very finely gum, the employment of pressure, and con divided state. After the powdered camphor tinuing the same until the mold and contents is thoroughly mixed with the wet pyroxyline are cooled, substantially as described.
+
+<pre class="font-mono text-sm whitespace-pre overflow-x-auto p-4 bg-ink-900/10 dark:bg-parchment-100/10 rounded-lg">pulp aud the other ingredients, we expel the                                     %.</pre>
+
+<pre class="font-mono text-sm whitespace-pre overflow-x-auto p-4 bg-ink-900/10 dark:bg-parchment-100/10 rounded-lg">water as far as possible by straining the mix                       JOHN    W.   HYATT,   JR.</pre>
+
+<pre class="font-mono text-sm whitespace-pre overflow-x-auto p-4 bg-ink-900/10 dark:bg-parchment-100/10 rounded-lg">ture and subjecting it to an immense press                           SAAB S. HYATT,</pre>
+
+ure in a perforated vessel. This leaves the Witnesses:
+
+<pre class="font-mono text-sm whitespace-pre overflow-x-auto p-4 bg-ink-900/10 dark:bg-parchment-100/10 rounded-lg">mixture in a comparatively solid and dry               WM. H. SLINGERLANL,</pre>
+
+<pre class="font-mono text-sm whitespace-pre overflow-x-auto p-4 bg-ink-900/10 dark:bg-parchment-100/10 rounded-lg">state, but containing sufficient moisture to               O. M. EYATT,</pre>

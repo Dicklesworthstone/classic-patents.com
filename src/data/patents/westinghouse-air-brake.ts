@@ -22,9 +22,9 @@ export const westinghouseAirBrakePatent: Patent = {
   googlePatentsUrl: "https://patents.google.com/patent/US124404/en",
   usptoClassification: "B60T 15/18 (Triple-valves; Automatic pneumatic brake control)",
   originalTextAsset: {
-    url: "/patents/transcripts/us-124404-westinghouse-air-brake.txt",
+    url: "/patents/source-text/us-124404-westinghouse-air-brake.txt",
     pageCount: 4,
-    kind: "reviewed-transcription",
+    kind: "source-pdf-text-layer",
   },
   originalText: `UNITED STATES PATENT OFFICE.
 GEORGE WESTINGHOUSE, JR., OF PITTSBURGH, PENNSYLVANIA.

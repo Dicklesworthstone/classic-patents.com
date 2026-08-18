@@ -22,9 +22,9 @@ export const hyattCelluloidPatent: Patent = {
   googlePatentsUrl: "https://patents.google.com/patent/US105338/en",
   usptoClassification: "C08L 1/18 (Cellulose nitrate compositions; Celluloid)",
   originalTextAsset: {
-    url: "/patents/transcripts/us-105338-hyatt-celluloid.txt",
+    url: "/patents/source-text/us-105338-hyatt-celluloid.txt",
     pageCount: 1,
-    kind: "reviewed-transcription",
+    kind: "source-pdf-text-layer",
   },
   originalText: `UNITED STATES PATENT OFFICE.
 JOHN W. HYATT, JR., AND ISAIAH S. HYATT, OF ALBANY, NEW YORK.

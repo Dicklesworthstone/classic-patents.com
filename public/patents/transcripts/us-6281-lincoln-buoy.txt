@@ -1,10 +1,16 @@
-UNITED STATES PATENT OFFICE. ABRAHAM LINCOLN, OF SPRINGFIELD, ILLINOIS.
+UNITED STATES PATENT OFFICE.
+
+ABRAHAM LINCOLN, OF SPRINGFIELD, ILLINOIS.
 
 BUOYING VESSELS OVER SHOALS.
 
-Specification of Letters Patent No. 6,281, dated May 22, 1849.
+<dfn title="The comprehensive written description of an invention and the manner of constructing and operating it, in terms sufficiently clear to enable any person skilled in the art to replicate it. (Modern: Patent Detailed Description & Embodiments)" class="cursor-help underline decoration-dotted decoration-amber-600 dark:decoration-amber-400 decoration-2 underline-offset-4 text-ink-950 dark:text-parchment-50 hover:bg-amber-500/10 dark:hover:bg-amber-400/10 rounded px-0.5 transition-colors">Specification</dfn> of <dfn title="An open document ('litterae patentes') issued by a sovereign or government under public seal, granting an inventor exclusive legal monopoly rights to manufacture, use, and vend an invention. (Modern: Granted Patent Document / Certificate)" class="cursor-help underline decoration-dotted decoration-amber-600 dark:decoration-amber-400 decoration-2 underline-offset-4 text-ink-950 dark:text-parchment-50 hover:bg-amber-500/10 dark:hover:bg-amber-400/10 rounded px-0.5 transition-colors">Letters Patent</dfn> No. 6,281, dated May 22,
 
-To all whom it may concern: Be it known that I, ABRAHAM LINCOLN, of Springfield, in the County of Sangamon, in the State of Illinois, have invented a new and improved manner of Combining Buoyant Chambers with Steam Boats or other Vessels, for the purpose of enabling them to pass over bars, or through shallow water, without discharging their cargoes; and I do hereby declare that the following is a full and exact description thereof.
+1849.
+
+To all whom it may concern:
+
+Be it known that I, ABRAHAM LINCOLN, of Springfield, in the County of Sangamon, in the State of Illinois, have invented a new and improved manner of Combining Buoyant Chambers with Steam Boats or other Vessels, for the purpose of enabling them to pass over bars, or through shallow water, without discharging their cargoes; and I do hereby declare that the following is a full and exact description thereof.
 
 The nature of my invention consists in providing adjustable buoyant chambers with steam boats or other vessels, in such a manner that they may be expanded and filled with air whenever the vessel reaches shallow water or grounds upon a bar, thereby displacing a large amount of water and buoying the vessel upward so that her draft is materially lessened.
 
@@ -16,6 +22,6 @@ The additional displacement thus created exerts a powerful upward buoyant lift, 
 
 I claim as my invention:
 
-1. (Independent) What I claim as my invention and desire to secure by letters patent is the combination of expandable buoyant chambers placed at the sides of a vessel, with the vertical sliding uprights and ropes and pulleys, or their equivalents, for the purpose of expanding said buoyant chambers, and thereby buoying the vessel over shoals, shallow water, and other obstructions, substantially as herein set forth.
+1. (Independent) What I claim as my invention and desire to secure by <dfn title="An open document ('litterae patentes') issued by a sovereign or government under public seal, granting an inventor exclusive legal monopoly rights to manufacture, use, and vend an invention. (Modern: Granted Patent Document / Certificate)" class="cursor-help underline decoration-dotted decoration-amber-600 dark:decoration-amber-400 decoration-2 underline-offset-4 text-ink-950 dark:text-parchment-50 hover:bg-amber-500/10 dark:hover:bg-amber-400/10 rounded px-0.5 transition-colors">letters patent</dfn> is the combination of expandable buoyant chambers placed at the sides of a vessel, with the vertical sliding uprights and ropes and pulleys, or their equivalents, for the purpose of expanding said buoyant chambers, and thereby buoying the vessel over shoals, shallow water, and other obstructions, substantially as herein set forth.
 
 2. The combination of the expandable buoyant chambers with a central longitudinal shaft driven by the power of the vessel, for simultaneously operating all the sliding uprights and expanding the chambers equally on both sides of the vessel.

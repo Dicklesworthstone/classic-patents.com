@@ -21,11 +21,6 @@ export const boyleSmithCcdPatent: Patent = {
   originalPdfUrl: "/patents/pdfs/us-3923554-boyle-smith-ccd.pdf",
   googlePatentsUrl: "https://patents.google.com/patent/US3923554A/en",
   usptoClassification: "H01L 27/148 (Charge coupled device image sensors)",
-  originalTextAsset: {
-    url: "/patents/transcripts/us-3923554-boyle-smith-ccd.txt",
-    pageCount: 6,
-    kind: "reviewed-transcription",
-  },
   originalText: `UNITED STATES PATENT OFFICE.
 WILLARD S. BOYLE AND GEORGE E. SMITH, RESIDING AT SUMMIT AND BERKELEY HEIGHTS, N.J., ASSIGNORS TO BELL TELEPHONE LABORATORIES, INCORPORATED, MURRAY HILL, N.J.
 

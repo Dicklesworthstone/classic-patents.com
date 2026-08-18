@@ -22,9 +22,9 @@ export const wozniakApplePatent: Patent = {
   usptoClassification:
     "G06F 13/00 (Data processing; Program control and shared memory bus systems)",
   originalTextAsset: {
-    url: "/patents/transcripts/us-4136359-wozniak-apple.txt",
+    url: "/patents/source-text/us-4136359-wozniak-apple.txt",
     pageCount: 7,
-    kind: "reviewed-transcription",
+    kind: "source-pdf-text-layer",
   },
   originalText: `UNITED STATES PATENT OFFICE
 4,136,359

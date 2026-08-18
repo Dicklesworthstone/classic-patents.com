@@ -22,9 +22,9 @@ export const maximMachineGunPatent: Patent = {
   googlePatentsUrl: "https://patents.google.com/patent/US319596A/en",
   usptoClassification: "F41A 5/02 (Recoil-operated automatic weapons / Toggle-lock mechanisms)",
   originalTextAsset: {
-    url: "/patents/transcripts/us-319596-maxim-machine-gun.txt",
+    url: "/patents/source-text/us-319596-maxim-machine-gun.txt",
     pageCount: 5,
-    kind: "reviewed-transcription",
+    kind: "source-pdf-text-layer",
   },
   originalText: `UNITED STATES PATENT OFFICE.
 HIRAM S. MAXIM, OF LONDON, ENGLAND.

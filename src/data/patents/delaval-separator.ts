@@ -22,9 +22,9 @@ export const delavalSeparatorPatent: Patent = {
   googlePatentsUrl: "https://patents.google.com/patent/US247804/en",
   usptoClassification: "B04B 5/02 (Centrifuges for separating milk; Cream separators)",
   originalTextAsset: {
-    url: "/patents/transcripts/us-247804-delaval-separator.txt",
+    url: "/patents/source-text/us-247804-delaval-separator.txt",
     pageCount: 3,
-    kind: "reviewed-transcription",
+    kind: "source-pdf-text-layer",
   },
   originalText: `UNITED STATES PATENT OFFICE.
 CARL GUSTAF PATRIK DE LAVAL, OF STOCKHOLM, SWEDEN.

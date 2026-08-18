@@ -22,9 +22,9 @@ export const kwolekKevlarPatent: Patent = {
   googlePatentsUrl: "https://patents.google.com/patent/US3671542A/en",
   usptoClassification: "D01F 6/60 (Synthetic polyamide fibers)",
   originalTextAsset: {
-    url: "/patents/transcripts/us-3671542-kwolek-kevlar.txt",
+    url: "/patents/source-text/us-3671542-kwolek-kevlar.txt",
     pageCount: 58,
-    kind: "reviewed-transcription",
+    kind: "source-pdf-text-layer",
   },
   originalText: `UNITED STATES PATENT OFFICE.
 STEPHANIE L. KWOLEK, OF WILMINGTON, DELAWARE, ASSIGNOR TO E. I. DU PONT DE NEMOURS AND COMPANY, OF WILMINGTON, DELAWARE.

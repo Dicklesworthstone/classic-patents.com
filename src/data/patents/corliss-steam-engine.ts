@@ -22,9 +22,9 @@ export const corlissSteamEnginePatent: Patent = {
   googlePatentsUrl: "https://patents.google.com/patent/US6162/en",
   usptoClassification: "F01L 31/00 (Valve-gear with variable cut-off governed by engine speed)",
   originalTextAsset: {
-    url: "/patents/transcripts/us-6162-corliss-steam-engine.txt",
+    url: "/patents/source-text/us-6162-corliss-steam-engine.txt",
     pageCount: 8,
-    kind: "reviewed-transcription",
+    kind: "source-pdf-text-layer",
   },
   originalText: `UNITED STATES PATENT OFFICE.
 GEORGE H. CORLISS, OF PROVIDENCE, RHODE ISLAND.

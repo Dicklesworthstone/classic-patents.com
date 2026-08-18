@@ -22,9 +22,9 @@ export const goodyearRubberPatent: Patent = {
   googlePatentsUrl: "https://patents.google.com/patent/US3633A/en",
   usptoClassification: "C08J 3/24 (Crosslinking of rubber compounds)",
   originalTextAsset: {
-    url: "/patents/transcripts/us-3633-goodyear-rubber.txt",
+    url: "/patents/source-text/us-3633-goodyear-rubber.txt",
     pageCount: 2,
-    kind: "reviewed-transcription",
+    kind: "source-pdf-text-layer",
   },
   originalText: `UNITED STATES PATENT OFFICE.
 CHARLES GOODYEAR, OF NEW YORK, N. Y.

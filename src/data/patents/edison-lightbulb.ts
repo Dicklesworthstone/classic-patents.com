@@ -21,9 +21,9 @@ export const edisonBulbPatent: Patent = {
   googlePatentsUrl: "https://patents.google.com/patent/US223898A/en",
   usptoClassification: "H01K 1/00 (Incandescent lamps)",
   originalTextAsset: {
-    url: "/patents/transcripts/us-223898-edison-lightbulb.txt",
+    url: "/patents/source-text/us-223898-edison-lightbulb.txt",
     pageCount: 4,
-    kind: "reviewed-transcription",
+    kind: "source-pdf-text-layer",
   },
   originalText: `UNITED STATES PATENT OFFICE.
 THOMAS A. EDISON, OF MENLO PARK, NEW JERSEY.

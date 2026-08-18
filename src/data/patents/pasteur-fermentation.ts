@@ -23,9 +23,9 @@ export const pasteurFermentationPatent: Patent = {
   usptoClassification:
     "C12H 1/06 (Pasteurisation, sterilisation, preservation of alcoholic beverages)",
   originalTextAsset: {
-    url: "/patents/transcripts/us-135245-pasteur-fermentation.txt",
+    url: "/patents/source-text/us-135245-pasteur-fermentation.txt",
     pageCount: 3,
-    kind: "reviewed-transcription",
+    kind: "source-pdf-text-layer",
   },
   originalText: `UNITED STATES PATENT OFFICE.
 LOUIS PASTEUR, OF PARIS, FRANCE.

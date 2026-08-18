@@ -117,22 +117,20 @@ export function ColtRevolverSim() {
       </div>
 
       {/* Visual Canvas & Interactive Schematics */}
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
-        {/* SVG Mechanism Diagram */}
-        <div className="lg:col-span-8 relative bg-[#090d16] rounded-2xl border border-parchment-300 dark:border-ink-800 p-6 flex flex-col items-center justify-center min-h-[380px] overflow-hidden select-none">
-          {/* Blueprint Grid Background */}
-          <div className="absolute inset-0 bg-[linear-gradient(to_right,#1e293b_1px,transparent_1px),linear-gradient(to_bottom,#1e293b_1px,transparent_1px)] bg-[size:20px_20px] opacity-35 pointer-events-none" />
+      <div className="relative bg-[#090d16] rounded-2xl border border-parchment-300 dark:border-ink-800 p-6 flex flex-col items-center justify-center min-h-[380px] overflow-hidden select-none">
+        {/* Blueprint Grid Background */}
+        <div className="absolute inset-0 bg-[linear-gradient(to_right,#1e293b_1px,transparent_1px),linear-gradient(to_bottom,#1e293b_1px,transparent_1px)] bg-[size:20px_20px] opacity-35 pointer-events-none" />
 
-          {/* Firing Status Banner */}
-          {bulletFired && (
-            <div className="absolute top-4 left-4 z-20 px-3 py-1.5 bg-amber-950/90 border border-amber-500 rounded-lg text-amber-300 text-xs font-mono flex items-center gap-2 animate-pulse shadow-md">
-              <Sparkles className="w-4 h-4 text-amber-400" />
-              <span>
-                CHAMBER #{currentChamberIndex} FIRED: {muzzleVelocityMps} m/s | Energy:{" "}
-                {muzzleEnergyJoules} J | Hoop Stress: {hoopStressMpa} MPa
-              </span>
-            </div>
-          )}
+        {/* Firing Status Banner */}
+        {bulletFired && (
+          <div className="absolute top-4 left-4 z-20 px-3 py-1.5 bg-amber-950/90 border border-amber-500 rounded-lg text-amber-300 text-xs font-mono flex items-center gap-2 animate-pulse shadow-md">
+            <Sparkles className="w-4 h-4 text-amber-400" />
+            <span>
+              CHAMBER #{currentChamberIndex} FIRED: {muzzleVelocityMps} m/s | Energy:{" "}
+              {muzzleEnergyJoules} J | Hoop Stress: {hoopStressMpa} MPa
+            </span>
+          </div>
+        )}
 
           <svg viewBox="0 0 600 320" className="w-full max-w-xl h-auto relative z-10">
             {/* Center Arbor Pin (Axis of Rotation Y = 135) */}
@@ -367,76 +365,6 @@ export function ColtRevolverSim() {
             </g>
           </svg>
         </div>
-
-        {/* SI Metrics & Kinematic Breakdown */}
-        <div className="lg:col-span-4 space-y-4">
-          <div className="bg-white/80 dark:bg-ink-900/80 rounded-2xl border border-parchment-300 dark:border-ink-800 p-4 space-y-3 shadow-sm">
-            <h4 className="font-mono text-xs uppercase tracking-wider font-bold text-ink-900 dark:text-parchment-100 flex items-center justify-between">
-              <span>SI Ballistic Metrics</span>
-              <span className="text-amber-600 font-bold">Chamber #{currentChamberIndex} / 5</span>
-            </h4>
-
-            <div className="space-y-2 text-xs font-sans">
-              <div className="flex justify-between border-b border-parchment-200 dark:border-ink-800 pb-1.5">
-                <span className="text-ink-600 dark:text-ink-400">Combustion Pressure (P):</span>
-                <span className="font-mono font-bold text-amber-700 dark:text-amber-400">
-                  {chamberPressureMpa} MPa
-                </span>
-              </div>
-              <div className="flex justify-between border-b border-parchment-200 dark:border-ink-800 pb-1.5">
-                <span className="text-ink-600 dark:text-ink-400">
-                  Cylinder Hoop Stress (σ_hoop):
-                </span>
-                <span className="font-mono font-bold text-red-600 dark:text-red-400">
-                  {hoopStressMpa} MPa
-                </span>
-              </div>
-              <div className="flex justify-between border-b border-parchment-200 dark:border-ink-800 pb-1.5">
-                <span className="text-ink-600 dark:text-ink-400">Muzzle Velocity (v_muzzle):</span>
-                <span className="font-mono font-bold text-blue-600 dark:text-blue-400">
-                  {muzzleVelocityMps} m/s
-                </span>
-              </div>
-              <div className="flex justify-between border-b border-parchment-200 dark:border-ink-800 pb-1.5">
-                <span className="text-ink-600 dark:text-ink-400">Bullet Kinetic Energy (E_k):</span>
-                <span className="font-mono font-bold text-emerald-600 dark:text-emerald-400">
-                  {muzzleEnergyJoules} Joules
-                </span>
-              </div>
-              <div className="flex justify-between">
-                <span className="text-ink-600 dark:text-ink-400">Cylinder Index Step:</span>
-                <span className="font-mono font-bold text-ink-900 dark:text-parchment-100">
-                  {cylinderRotationAngle.toFixed(0)}° / 72° (5 Shots)
-                </span>
-              </div>
-            </div>
-          </div>
-
-          {/* Real-time Slider Control */}
-          <div className="bg-white/80 dark:bg-ink-900/80 rounded-2xl border border-parchment-300 dark:border-ink-800 p-4 space-y-3 shadow-sm">
-            <span className="font-mono text-xs uppercase tracking-wider font-bold text-ink-900 dark:text-parchment-100 block">
-              Black Powder Load (Combustion Pressure)
-            </span>
-            <div className="flex justify-between text-xs font-mono text-ink-600 dark:text-ink-400">
-              <span>50 MPa (15 Gr)</span>
-              <span className="font-bold text-amber-700 dark:text-amber-400">
-                {chamberPressureMpa} MPa
-              </span>
-              <span>120 MPa (50 Gr)</span>
-            </div>
-            <input
-              type="range"
-              aria-label="Chamber Combustion Pressure"
-              min="50"
-              max="120"
-              step="5"
-              value={chamberPressureMpa}
-              onChange={(e) => updateParam("chamberPressure", Number(e.target.value))}
-              className="w-full accent-amber-600 cursor-pointer"
-            />
-          </div>
-        </div>
-      </div>
     </div>
   );
 }

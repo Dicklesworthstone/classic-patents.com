@@ -1,29 +1,109 @@
-UNITED STATES PATENT OFFICE 1,781,541 Patented Nov. 11, 1930
+<pre class="font-mono text-sm whitespace-pre overflow-x-auto p-4 bg-ink-900/10 dark:bg-parchment-100/10 rounded-lg">Nov. 11,
 
-REFRIGERATION Albert Einstein, Berlin, and Leo Szilard, Berlin-Wilmersdorf, Germany, assignors to Electrolux Servel Corporation, New York, N.Y., a corporation of Delaware Application filed December 16, 1927, Serial No. 240,436, and in Germany December 16, 1926 10 Claims. (Cl. 62-119.5)
+1930.   A. EINSTEIN E AL             1,781,541</pre>
 
-SPECIFICATION
+REFRIGERATION Filed Dec.   6   l927
 
-TO ALL WHOM IT MAY CONCERN: Be it known that we, ALBERT EINSTEIN, residing at Berlin, Germany, and LEO SZILARD, residing at Berlin-Wilmersdorf, Germany, citizens of Switzerland and Hungary respectively, have invented certain new and useful improvements in REFRIGERATION, of which the following is a specification:
+0
 
-OBJECT OF THE INVENTION The present invention relates to refrigeration apparatus and more particularly to apparatus of the absorption type wherein cooling is produced without the necessity of mechanical compressors, pumps, valves, or rotating stuffing box seals.
+//
 
-In domestic mechanical refrigerators of the compressor type, the wear of moving parts and the degradation of shaft packings frequently leads to the escape of irritating or toxic refrigerant vapors into the living quarters. It is an object of the present invention to provide a refrigerator which is entirely sealed, hermetically welded, devoid of moving parts, and which operates silently and reliably over an indefinite lifespan.
+VENTg S
 
-OPERATION OF THE UNIFORM PRESSURE CYCLE According to our invention, the entire internal apparatus is maintained under a substantially uniform total pressure throughout all vessels and connecting conduits, for example at a pressure of ten atmospheres.
+<pre class="font-mono text-sm whitespace-pre overflow-x-auto p-4 bg-ink-900/10 dark:bg-parchment-100/10 rounded-lg">   Patented Nov. 11, 1930                                                                  1,781,541</pre>
 
-The apparatus utilizes three working media: 1. A refrigerant liquid having a relatively low boiling point under reduced partial pressure (such as butane, ethyl chloride, or propane); 2. An auxiliary gas which is inert with respect to the refrigerant but highly soluble in an absorption liquid (such as ammonia gas); 3. An absorption liquid possessing high affinity for the auxiliary gas and low affinity for the refrigerant (such as water).
+UNITED STATES PATENT OFFICE ALBERT EINSTEIN, OF BERLIN, AND LEO SZILARD, of BERLIN-WILMIERSDORF, GER MANY, ASSIGNORS TO ELECTROLUX SERVEL CORPORATION, of NEw YoRK, N.Y., A. CORPORATION OF DELAWARE REFRIGERATION w Application filed December 16, 1927, Serial No. 240,566, and in Germany December 16,
 
-Heat applied to the generator expels ammonia gas from the aqueous solution. The gaseous ammonia flows into the evaporator, where it encounters liquid butane. By Dalton's law of partial pressures, the presence of the ammonia reduces the partial vapor pressure of the butane from 10 atmospheres down to 1 or 2 atmospheres, causing the butane to evaporate vigorously at low temperature (-10° C.) and extract heat from the cooling chamber.
+1926. A Our invention relates to the art of refrig denser 6 where it terminates in a distributor eration and particularly to an apparatus and head
 
-The resulting mixture of butane and ammonia vapors flows to the absorber, where water absorbs the ammonia gas, liberating the butane vapor. The butane vapor flows to an air-cooled condenser, liquefies, and returns to the evaporator, while the ammonia-water solution is returned to the generator by thermosiphon lifting action.
+35. Conduit 37 passes within cooling method for producing refrigeration wherein Water jacket 12 in order that fluid passing the refrigerant evaporates in the presence of through this conduit may be cooled. A vent 6 an inert gas and more particularly to the type conduit 34 connects the upper part of con 55 disclosed in Patent No. 1,685,764 granted Sep tainer 33 with the upper part of condenser 6. tember 25th, 1928, to Von <dfn title="The cylindrical rubber or wooden roller on a typewriter that supports the paper and advances it line by line under typing strikes. (Modern: Typewriter Paper Roller Drum)" class="cursor-help underline decoration-dotted decoration-amber-600 dark:decoration-amber-400 decoration-2 underline-offset-4 text-ink-950 dark:text-parchment-50 hover:bg-amber-500/10 dark:hover:bg-amber-400/10 rounded px-0.5 transition-colors">Platen</dfn> and Munters The operation of the above described appa
 
-WE CLAIM: 1. An apparatus for refrigeration comprising an evaporator, an absorber, a generator, and a condenser connected in a closed hermetic circuit maintaining a substantially uniform total internal pressure, said circuit containing a volatile liquid refrigerant, an auxiliary evaporating gas, and an absorption liquid, said auxiliary gas being adapted to reduce the partial pressure of the refrigerant in the evaporator causing evaporation thereof at low temperature, and said absorption liquid being adapted to dissolve said auxiliary gas in the absorber to permit separation and recycling. 2. An apparatus as set forth in claim 1, wherein said refrigerant is butane, said auxiliary gas is ammonia, and said absorption liquid is water.
+<pre class="font-mono text-sm whitespace-pre overflow-x-auto p-4 bg-ink-900/10 dark:bg-parchment-100/10 rounded-lg">    and our British Patent No. 282,428.            ratus is as follows: ·</pre>
 
-I claim as my invention:
+The objects and advantages of our inven A suitable refrigerant, for instance butane, 60 10 tion will be apparent from the following de in liquid form is contained within evaporator scription considered in connection with the
 
-1. (Independent) 1. An apparatus for refrigeration comprising an evaporator, an absorber, a generator, and a condenser connected in a closed hermetic circuit maintaining a substantially uniform total internal pressure, said circuit containing a volatile liquid refrigerant, an auxiliary evaporating gas, and an absorption liquid, said auxiliary gas being adapted to reduce the partial pressure of the refrigerant in the evaporator causing evaporation thereof at low temperature, and said absorption liquid being adapted to dissolve said auxiliary gas in the absorber to permit separation and recycling.
+1. An inert gas, for instance ammonia, is in accompanying drawing which shows, more or troduced into evaporator 1 through conduit less diagrammatically, a preferred embodi 30 and distributor head
 
-2. 2. An apparatus as set forth in claim 1, wherein said refrigerant is butane, said auxiliary gas is ammonia, and said absorption liquid is water.
+31. The refrigerant
 
-3. 3. An apparatus as set forth in claim 1, wherein the circulation of the absorption liquid between the generator and the absorber is effected by a vapor-lift pump operated by heat applied to said generator.
+<pre class="font-mono text-sm whitespace-pre overflow-x-auto p-4 bg-ink-900/10 dark:bg-parchment-100/10 rounded-lg">    ment of our invention.                         evaporates in the evaporator in the presence</pre>
+
+15    Referring to the drawing, reference char of the inert gas due to the fact that the partial 65 acter 1 designates an evaporator, which is or pressure of the refrigerantis reduced thereby dinarily placed within a chamber to be cooled. and the resulting gaseous mixture passes A conduit 5 connects the upper part of evapo through conduit 5 to within condenser 6. rator 1 with the more intermediate portion Here the mixture comes in intimate contact 20 of the condenser
+
+6. A conduit 11 communi with an absorption liquid, for example water, 70 cates with the bottom of evaporator 1 and ex which is introduced into the condenser tends within condenser 6 at a level below the through conduit 37 and distributor head 35. point of communication of conduit 5 with the Inasmuch as the ammonia gas is very soluble condenser. A cooling water jacket 12 sur in water, while the butane is quite insoluble, 25 rounds the condenser and is adapted for the the ammonia gas is absorbed by the water, 75 passage therethrough of water for the pur thus freeing the butane from the gaseous mix
+
+<pre class="font-mono text-sm whitespace-pre overflow-x-auto p-4 bg-ink-900/10 dark:bg-parchment-100/10 rounded-lg">   pose of cooling the condenser.                ture. Thus the butane assumes substantially</pre>
+
+A conduit 27 communicates with the bottom the entire pressure within the condenser, of condenser 6 and with the lower part of a which pressure is sufficient to cause its lique heat exchanger jacket
+
+28. The upper part of faction at the temperature maintained therein 80 jacket 28 is connected to the lower part of by the cooling water. generator
+
+29. Generator 29 is heated in any The specific grayity of liquid butane is less suitable manner. A conduit 30 communicates than that of the solution of ammonia in water with the upper part of generator 29 and ex and hence stratification of the two liquids 85 tends within evaporator 1 to a point near the occurs, the liquid butane floating upon the bottom thereof where it terminates in a dis ammonia solution. The latter solution is in tributor head
+
+31. Conduit 30 extends within dicated by reference character
+
+26. The liquid conduit 5 in order that the fluids passing butane      passes from condenser 6 through con duit 11 and returns to evaporator 1, where 90 through   the   respective conduits   may   be 40 brough into heat exchange relationship with it is again evaporated and the cycle repeated.
+
+<pre class="font-mono text-sm whitespace-pre overflow-x-auto p-4 bg-ink-900/10 dark:bg-parchment-100/10 rounded-lg">   each other.      .                                The ammonia solution flows by gravity</pre>
+
+from condenser 6 through conduit ? and heat A conduit 32 extends upwardly from with exchanger
+
+<pre class="font-mono text-sm whitespace-pre overflow-x-auto p-4 bg-ink-900/10 dark:bg-parchment-100/10 rounded-lg">   in the lower part of generator 29 and com                  jacket 28 to within generator 29.</pre>
+
+municates with a container 33 placed at a level Here the application of heat causes the am 05 45 above that of condenser
+
+6. A source of heat 36 monia to be expelled as a gas from the solu is provided for heating conduit 32 at a point tion   and this ammonia gas passes through above generator
+
+29. A conduit 37 extends conduit 30 and distributor head 31 to with downwardly from container 33 and passes in evaporator 1, where it reduces the par within heat exchanger jacket 28 and thence tial pressure of the butane, wherefore the lat 00 50 upwardly to within the upper part of con ter evaporates as previously described.
+
+<pre class="font-mono text-sm whitespace-pre overflow-x-auto p-4 bg-ink-900/10 dark:bg-parchment-100/10 rounded-lg">   2                                        1,781,541</pre>
+
+Water, containing but little ammonia in duit for conducting weak absorption liquid solution, passes from generator 29 into con from said container to said condenser by duit 32 where it is further heated by the gravity, a conduit extending upwardly from source of heat
+
+36. This heating causes the said generator to said container and means formation of vapor in conduit 32 which lifts to heat the last-mentioned conduit to lift liq 70 liquid through this conduit to within con uid from the generator to the container. tainer
+
+33. The liquid thus supplied to con
+
+2. Refrigerating apparatus comprising a tainer 33 may pass by gravity through con generator, a condenser arranged at a higher duit 37 to condenser
+
+6. The hot weak liquid level than the generator, an evaporator, a O passing through conduit 37 is brought into container arranged at a higher level than the 75 heat exchange relationship with the cool condenser, said generator containing an inert strong liquid passing through heat ex gas dissolved in absorption liquid and changer jacket 28 and an exchange of heat adapted to expel the inert gas from solution, between the two liquids takes place. The a conduit for conducting the inert gas from 5 weak liquid is further cooled by being the generator to the evaporator, a conduit 80 brought into heat exchange relation with for conducting liquid refrigerant from the the cooling water in jacket 12 and is hence condenser to the evaporator, a conduit for in a condition to rapidly absorb ammonia in conducting mixed vapor of refrigerant and
+
+<pre class="font-mono text-sm whitespace-pre overflow-x-auto p-4 bg-ink-900/10 dark:bg-parchment-100/10 rounded-lg">    the condenser.                                    inert gas from the evaporator to the con</pre>
+
+20     Vapor entering container 33 from conduit denser in heat exchange relation with inert 85 32 passes therefrom through vent conduit 34 gas passing into the evaporator, a conduit
+
+<pre class="font-mono text-sm whitespace-pre overflow-x-auto p-4 bg-ink-900/10 dark:bg-parchment-100/10 rounded-lg">    to the condenser.                                 for conducting rich absorption liquid from</pre>
+
+During the operation of the hereinbefore the condenser to the generator by gravity, described apparatus, the pressure existing in a conduit for conducting weak absorption 25 the varios members is uniform with the ex liquid from said container to said condenser 90 ception of slight pressure differences, suf by gravity, a conduit extending upwardly ficient to cause flow of fluids, caused by liquid from said generator to said container, means columns. The pressure existing in generator to heat the last-mentioned conduit to lift 29 must be sufficiently greater than that ex liquid from the generator to the container 95 30 isting in the upper part of evaporator 1 to and a vent conduit connecting the upper
+
+<pre class="font-mono text-sm whitespace-pre overflow-x-auto p-4 bg-ink-900/10 dark:bg-parchment-100/10 rounded-lg">    cause the flow of vapor to take place from part        of said container with said condenser. .</pre>
+
+distributor head 31, or, in other words, to
+
+3. Refrigerating apparatus comprising a overcome the liquid head designated by h. generator, a condenser arranged at a higher This excess pressure in the generator is bal level than the generator, an evaporator, a anced by the head exerted by the column of container arranged at a higher level than the 00 liquid equal to the differences in levels be condenser, said generator containing am tween the liquid in condenser 6 and genera monia dissolved in water and adapted to ex tor 29, indicated by hi. It is, of course, nec pel the ammonia from solution, a conduit essary that the head represented by his less for conducting the ammonia gas from the 40 than that represented by h in order that generator to the evaporator, a conduit for OS
+
+<pre class="font-mono text-sm whitespace-pre overflow-x-auto p-4 bg-ink-900/10 dark:bg-parchment-100/10 rounded-lg">    flow shall take place. . .            .           conducting liquid butane from the condenser</pre>
+
+While we have described a preferred em to the evaporator, a conduit for conducting bodiment for carrying out our invention, it mixed vapor of butane and ammonia from is to be understood, that modifications there the evaporator to the condenser in heat ex of fall within the scope of the invention, change relation with ammonia gas passing which is to be limited only by the appended into the evaporator, a conduit for conducting claims viewed in the light of the <dfn title="All public knowledge, published literature, pre-existing machines, and earlier patents existing before the date of an inventor's claimed invention. (Modern: Pre-existing Technical State of the Art)" class="cursor-help underline decoration-dotted decoration-amber-600 dark:decoration-amber-400 decoration-2 underline-offset-4 text-ink-950 dark:text-parchment-50 hover:bg-amber-500/10 dark:hover:bg-amber-400/10 rounded px-0.5 transition-colors">prior art</dfn>. strong solution of ammonia in water from
+
+<pre class="font-mono text-sm whitespace-pre overflow-x-auto p-4 bg-ink-900/10 dark:bg-parchment-100/10 rounded-lg">       What we claim is:                              the condenser to the generator by gravity,</pre>
+
+1. Refrigerating apparatus comprising a a conduit for conducting weak solution of 115 generator,   a condenser arranged at a higher ammonia in water from said container to level than the generator, an evaporator, a. said condenser by gravity, a conduit extend container arranged at a higher level than the ing upwardly from said generator to said condenser, said generator containing an inert container and means to heat the last-men gas  dissolved in absorption liquid and adapt tioned conduit to lift liquid from the gen 20 55 ed to expel the inert gas from solution, a erator to the container. conduit for conducting the inert gas from the
+
+4. Refrigerating apparatus comprising a generator to the evaporator, a conduit for generator, a condenser arranged at a higher conducting liquid refrigerant from the con level than the generator, an evaporator, a denser to the evaporator, a conduit for con container arranged at a higher level than ducting mixed vapor of refrigerant and inert the condenser, said generator containing am 25 gas from the evaporator to the condenser monia dissolved in water and adapted to in heat exchange relation with inert gas pass expel the ammonia from solution, a conduit ing intorich the absorption evaporator,liquid a conduit  for  con  for conducting the ammonia gas from the
+
+<pre class="font-mono text-sm whitespace-pre overflow-x-auto p-4 bg-ink-900/10 dark:bg-parchment-100/10 rounded-lg">    ducting                            from  the con  generator to the evaporator, a conduit for</pre>
+
+(5 denserto the generator by gravity, a con conducting liquid butane from the condenser 30
+
+1,781,541 to the evaporator, a conduit for conducting mixed vapor of butane and ammonia from the evaporator to the condenser in heat ex change relation with ammonia gas passing into the evaporator, a conduit for conduct ing strong solution of ammonia in water from the condenser to the generator by gravity, a conduit for conducting weak solution of am monia in water from said container to said oO condenser by gravity, a conduit extending upwardly from said generator to said con tainer, means to heat the last-mentioned con duit to lift liquid from the generator to the container and a vent conduit connecting the 5 upper part of said container with said con
+
+<pre class="font-mono text-sm whitespace-pre overflow-x-auto p-4 bg-ink-900/10 dark:bg-parchment-100/10 rounded-lg">    denser.              -</pre>
+
+5. Method of refrigerating which com prises evaporating a liquid-cooling agent in the presence of an inert gas to absorb heat 20, and thus forming a gaseous mixture of cool ing agent and inert gas, conveying the gase ous mixture into the presence of an absorp tion liquid at such condition that the cooling agent condenses on being deprived of inert gas in gaseous mixture therewith due to the introduction of absorption liquid into. the presence of the inert gas, separating the solu tion of inert gas in absorption medium from the condensed cooling agent, returning the 30 condensed cooling agent to the presence of the inert gas, separating the inert gas and ab sorption liquid by heat, circulating the ab- . sorption liquid by means of a separate ource of heat to the presence of the gaseous mix 33 ture of cooling agent and inert gas and re turning the inert gas to the presence of the liquid cooling agent. In testimony whereof we hereunto affix our
+
+<pre class="font-mono text-sm whitespace-pre overflow-x-auto p-4 bg-ink-900/10 dark:bg-parchment-100/10 rounded-lg">     signatures.                   a</pre>
+
+<pre class="font-mono text-sm whitespace-pre overflow-x-auto p-4 bg-ink-900/10 dark:bg-parchment-100/10 rounded-lg">4)                    ALBERT ENSTEIN.</pre>
+
+LEO SZILARD.

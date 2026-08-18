@@ -22,9 +22,9 @@ export const mergenthalerLinotypePatent: Patent = {
   googlePatentsUrl: "https://patents.google.com/patent/US313224A/en",
   usptoClassification: "B41B 11/00 (Matrix-composing machines / Hot-metal casting)",
   originalTextAsset: {
-    url: "/patents/transcripts/us-313224-mergenthaler-linotype.txt",
+    url: "/patents/source-text/us-313224-mergenthaler-linotype.txt",
     pageCount: 35,
-    kind: "reviewed-transcription",
+    kind: "source-pdf-text-layer",
   },
   originalText: `UNITED STATES PATENT OFFICE.
 OTTMAR MERGENTHALER, OF BALTIMORE, MARYLAND.

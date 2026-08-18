@@ -25,50 +25,6 @@ import { usePatentAudio } from "./usePatentAudio";
 
 type CameraPreset = "iso" | "cylinder" | "lockwork" | "sightline" | "top";
 
-interface ScenarioPreset {
-  id: string;
-  name: string;
-  desc: string;
-  powderGrain: number;
-  chamberPressureMpa: number;
-  cockingAngleDeg: number;
-}
-
-const SCENARIOS: ScenarioPreset[] = [
-  {
-    id: "colt_1836_paterson",
-    name: "1836 Colt Paterson Original .36 Caliber",
-    desc: "Samuel Colt's original 5-shot revolving cylinder with hand pawl ratchet indexing and folding trigger (US 138).",
-    powderGrain: 25,
-    chamberPressureMpa: 75,
-    cockingAngleDeg: 45,
-  },
-  {
-    id: "texas_walker_heavy",
-    name: "Heavy 45-Grain Cavalry Load",
-    desc: "High-power black powder charge generating 110 MPa chamber pressure with 340 m/s muzzle velocity and intense barrel hoop stress.",
-    powderGrain: 45,
-    chamberPressureMpa: 110,
-    cockingAngleDeg: 45,
-  },
-  {
-    id: "light_target_practice",
-    name: "18-Grain Light Target Load",
-    desc: "Mild 55 MPa target charge ensuring long cylinder life and minimal frame recoil impulse.",
-    powderGrain: 18,
-    chamberPressureMpa: 55,
-    cockingAngleDeg: 45,
-  },
-  {
-    id: "slow_motion_lockwork",
-    name: "Slow-Motion Lockwork Inspection",
-    desc: "Examine the 3-stage mechanical hand pawl advancing the cylinder ratchet exactly 72° while the bolt locks.",
-    powderGrain: 28,
-    chamberPressureMpa: 85,
-    cockingAngleDeg: 22,
-  },
-];
-
 export function ColtRevolver3D() {
   const containerRef = useRef<HTMLDivElement>(null);
   const { params, updateParam, resetParams } = usePatentPhysics("us-138-colt-revolver");
@@ -175,11 +131,6 @@ export function ColtRevolver3D() {
       setIsFiring(false);
       setCurrentChamberIndex((prev) => (prev % 5) + 1);
     }, 850);
-  };
-
-  const applyScenario = (sc: ScenarioPreset) => {
-    updateParam("chamberPressure", sc.chamberPressureMpa);
-    updateParam("cockingAngle", sc.cockingAngleDeg);
   };
 
   useEffect(() => {
@@ -395,6 +346,31 @@ export function ColtRevolver3D() {
           ))}
         </div>
 
+        {/* Action Buttons Overlay */}
+        <div className="absolute top-3 left-3 sm:top-4 sm:left-4 z-10 flex flex-col gap-2">
+          <button
+            type="button"
+            onClick={handleCockHammer}
+            className="flex items-center gap-2 px-3 py-2 bg-amber-600/90 hover:bg-amber-700 active:scale-95 text-white font-mono text-xs font-bold rounded-xl shadow-sm backdrop-blur-md transition-all cursor-pointer"
+          >
+            <Activity className="w-4 h-4" />
+            Cock Hammer (72° Index)
+          </button>
+          <button
+            type="button"
+            onClick={handlePullTrigger}
+            disabled={!isFullCock || isFiring}
+            className={`flex items-center gap-2 px-3 py-2 font-mono text-xs font-bold rounded-xl shadow-sm backdrop-blur-md transition-all cursor-pointer ${
+              isFullCock && !isFiring
+                ? "bg-red-600/90 hover:bg-red-700 active:scale-95 text-white animate-pulse"
+                : "bg-ink-900/60 text-ink-400 cursor-not-allowed border border-ink-800"
+            }`}
+          >
+            <Flame className="w-4 h-4" />
+            {isFiring ? "Discharging..." : "Pull Trigger (Fire)"}
+          </button>
+        </div>
+
         {/* Floating View Actions */}
         <div className="absolute top-3 right-3 sm:top-4 sm:right-4 z-10 flex items-center gap-1.5">
           <button
@@ -441,117 +417,6 @@ export function ColtRevolver3D() {
           >
             {isAudioMuted ? <VolumeX className="w-4 h-4" /> : <Volume2 className="w-4 h-4" />}
           </button>
-        </div>
-      </div>
-
-      {/* Interactive Controls & Historical Scenarios Panel */}
-      <div className="p-4 sm:p-5 bg-parchment-100/70 dark:bg-ink-900/70 border-t border-parchment-300 dark:border-ink-800 space-y-4">
-        {/* Scenario Presets */}
-        <div className="space-y-1.5">
-          <span className="text-[11px] font-mono uppercase tracking-wider text-ink-500 dark:text-ink-400 font-semibold block">
-            Historical Scenarios & Mechanical Modes
-          </span>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-2">
-            {SCENARIOS.map((sc) => (
-              <button
-                key={sc.id}
-                type="button"
-                onClick={() => applyScenario(sc)}
-                className="p-2 text-left rounded-lg bg-white/80 dark:bg-ink-950/60 border border-parchment-300/80 dark:border-ink-800 hover:border-amber-500 dark:hover:border-amber-500 transition-all text-xs group cursor-pointer"
-              >
-                <div className="font-semibold text-ink-900 dark:text-parchment-100 group-hover:text-amber-700 dark:group-hover:text-amber-400">
-                  {sc.name}
-                </div>
-                <div className="text-[11px] text-ink-500 dark:text-ink-400 line-clamp-2 mt-0.5">
-                  {sc.desc}
-                </div>
-              </button>
-            ))}
-          </div>
-        </div>
-
-        {/* Firing Mechanism Action Buttons */}
-        <div className="flex flex-wrap items-center gap-3 pt-2 border-t border-parchment-200 dark:border-ink-800">
-          <button
-            type="button"
-            onClick={handleCockHammer}
-            className="flex items-center gap-2 px-4 py-2 bg-amber-600 hover:bg-amber-700 active:scale-95 text-white font-mono text-xs font-bold rounded-xl shadow transition-all cursor-pointer"
-          >
-            <Activity className="w-4 h-4" />
-            1. Cock Hammer (72° Index)
-          </button>
-          <button
-            type="button"
-            onClick={handlePullTrigger}
-            disabled={!isFullCock || isFiring}
-            className={`flex items-center gap-2 px-4 py-2 font-mono text-xs font-bold rounded-xl shadow transition-all cursor-pointer ${
-              isFullCock && !isFiring
-                ? "bg-red-600 hover:bg-red-700 active:scale-95 text-white animate-pulse"
-                : "bg-ink-200 dark:bg-ink-800 text-ink-400 dark:text-ink-600 cursor-not-allowed opacity-60"
-            }`}
-          >
-            <Flame className="w-4 h-4" />
-            {isFiring ? "Discharging..." : "2. Pull Trigger (Fire)"}
-          </button>
-          <button
-            type="button"
-            onClick={() => setShowLockworkCutaway(!showLockworkCutaway)}
-            className={`flex items-center gap-2 px-3.5 py-2 font-mono text-xs font-semibold rounded-xl border transition-all cursor-pointer ${
-              showLockworkCutaway
-                ? "bg-amber-50 dark:bg-amber-950/40 text-amber-800 dark:text-amber-300 border-amber-400"
-                : "bg-white dark:bg-ink-950 text-ink-700 dark:text-parchment-200 border-parchment-300 dark:border-ink-700"
-            }`}
-          >
-            <Layers className="w-4 h-4" />
-            {showLockworkCutaway ? "Hide Lockwork" : "Inspect Hand Pawl Lockwork"}
-          </button>
-        </div>
-
-        {/* Parameter Sliders */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-1 text-xs">
-          <div className="space-y-1.5">
-            <div className="flex justify-between font-sans font-semibold text-ink-800 dark:text-parchment-200">
-              <span>Black Powder Combustion Pressure:</span>
-              <span className="font-mono text-amber-700 dark:text-amber-400 font-bold">
-                {chamberPressureMpa} MPa ({powderGrains} Grains)
-              </span>
-            </div>
-            <input
-              type="range"
-              aria-label="Black Powder Charge"
-              min="50"
-              max="120"
-              step="5"
-              value={chamberPressureMpa}
-              onChange={(e) => {
-                const pMpa = Number(e.target.value);
-                updateParam("chamberPressure", pMpa);
-              }}
-              className="w-full accent-amber-600 cursor-pointer"
-            />
-          </div>
-
-          <div className="space-y-1.5">
-            <div className="flex justify-between font-sans font-semibold text-ink-800 dark:text-parchment-200">
-              <span>Hammer Cocking Angle:</span>
-              <span className="font-mono text-blue-600 dark:text-blue-400 font-bold">
-                {cockingAngleDeg}° ({isFullCock ? "Full Cock" : "Half Cock"})
-              </span>
-            </div>
-            <input
-              type="range"
-              aria-label="Hammer Cocking Angle"
-              min="0"
-              max="45"
-              step="1"
-              value={cockingAngleDeg}
-              onChange={(e) => {
-                const angle = Number(e.target.value);
-                updateParam("cockingAngle", angle);
-              }}
-              className="w-full accent-blue-600 cursor-pointer"
-            />
-          </div>
         </div>
       </div>
     </div>

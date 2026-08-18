@@ -22,9 +22,9 @@ export const morseTelegraphPatent: Patent = {
   googlePatentsUrl: "https://patents.google.com/patent/US1647A/en",
   usptoClassification: "H04L 15/00 (Telegraph signaling)",
   originalTextAsset: {
-    url: "/patents/transcripts/us-1647-morse-telegraph.txt",
+    url: "/patents/source-text/us-1647-morse-telegraph.txt",
     pageCount: 9,
-    kind: "reviewed-transcription",
+    kind: "source-pdf-text-layer",
   },
   originalText: `UNITED STATES PATENT OFFICE.
 SAMUEL F. B. MORSE, OF NEW YORK, N. Y.

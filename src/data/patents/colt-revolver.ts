@@ -21,9 +21,9 @@ export const coltRevolverPatent: Patent = {
   googlePatentsUrl: "https://patents.google.com/patent/US138/en",
   usptoClassification: "F41C 3/14 (Revolvers; Revolving cylinder mechanisms)",
   originalTextAsset: {
-    url: "/patents/transcripts/us-138-colt-revolver.txt",
+    url: "/patents/source-text/us-138-colt-revolver.txt",
     pageCount: 2,
-    kind: "reviewed-transcription",
+    kind: "source-pdf-text-layer",
   },
   originalText: `UNITED STATES PATENT OFFICE.
 SAMUEL COLT, OF HARTFORD, CONNECTICUT.

@@ -1296,12 +1296,54 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
         defaultValue: 0.42,
         unit: "A",
       },
+      {
+        id: "lightIntensityLux",
+        label: "Subject Light Intensity",
+        min: 100,
+        max: 2000,
+        step: 50,
+        defaultValue: 500,
+        unit: "Lux",
+      },
+      {
+        id: "horizontalFreqKhz",
+        label: "Horizontal Sweep Rate",
+        min: 5,
+        max: 30,
+        step: 0.25,
+        defaultValue: 15.75,
+        unit: "kHz",
+      },
+      {
+        id: "verticalFreqHz",
+        label: "Vertical Sweep Rate",
+        min: 30,
+        max: 120,
+        step: 1,
+        defaultValue: 60,
+        unit: "Hz",
+      },
+      {
+        id: "scanLines",
+        label: "Raster Scan Lines",
+        min: 30,
+        max: 240,
+        step: 10,
+        defaultValue: 60,
+        unit: "Lines",
+      },
     ],
     computeMetrics: (p) => {
       const v = p.anodeVoltage ?? 1500;
       const i = p.coilCurrent ?? 0.42;
+      const hFreq = p.horizontalFreqKhz ?? 15.75;
+      const vFreq = p.verticalFreqHz ?? 60;
+      const lux = p.lightIntensityLux ?? 500;
+      const scanLinesParam = p.scanLines ?? 60;
+      
       const beamVelocity = (Math.sqrt((2 * 1.6e-19 * v) / 9.1e-31) / 1e6).toFixed(2);
       const deflAngle = (i * 48 * (1500 / v) ** 0.5).toFixed(1);
+      const derivedScanLines = Math.round((hFreq * 1000) / vFreq);
 
       return [
         {
@@ -1319,15 +1361,15 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
           progressPct: (Number(deflAngle) / 45) * 100,
         },
         {
-          label: "Scanline Resolution",
-          value: "400",
+          label: "Derived Raster Lines",
+          value: derivedScanLines.toString(),
           unit: "lines",
           badgeColor: "indigo",
-          progressPct: 80,
+          progressPct: (derivedScanLines / 600) * 100,
         },
         {
           label: "Anode Aperture Current",
-          value: (2.4 * (v / 1500)).toFixed(1),
+          value: (2.4 * (v / 1500) * (lux / 500)).toFixed(1),
           unit: "µA",
           badgeColor: "purple",
           progressPct: (Number(beamVelocity) / 30) * 100,

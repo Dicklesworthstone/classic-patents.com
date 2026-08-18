@@ -22,9 +22,9 @@ export const renoEscalatorPatent: Patent = {
   googlePatentsUrl: "https://patents.google.com/patent/US470918A/en",
   usptoClassification: "B66B 21/02 (Escalators / Moving walkways / Comb-plate mechanisms)",
   originalTextAsset: {
-    url: "/patents/transcripts/us-470918-reno-escalator.txt",
+    url: "/patents/source-text/us-470918-reno-escalator.txt",
     pageCount: 4,
-    kind: "reviewed-transcription",
+    kind: "source-pdf-text-layer",
   },
   originalText: `UNITED STATES PATENT OFFICE.
 JESSE W. RENO, OF NEW YORK, N. Y.

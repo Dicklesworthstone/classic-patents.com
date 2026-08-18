@@ -1,10 +1,16 @@
-UNITED STATES PATENT OFFICE. JOHN BARDEEN AND WALTER H. BRATTAIN, OF SUMMIT AND MORRISTOWN, NEW JERSEY, ASSIGNORS TO BELL TELEPHONE LABORATORIES, INCORPORATED, OF NEW YORK, N. Y., A CORPORATION OF NEW YORK.
+UNITED STATES PATENT OFFICE.
+
+JOHN BARDEEN AND WALTER H. BRATTAIN, OF SUMMIT AND MORRISTOWN, NEW JERSEY, ASSIGNORS TO BELL TELEPHONE LABORATORIES, INCORPORATED, OF NEW YORK, N. Y., A CORPORATION OF NEW YORK.
 
 THREE-ELECTRODE CIRCUIT ELEMENT UTILIZING SEMICONDUCTIVE MATERIALS.
 
-Application June 17, 1948, Serial No. 33,466. Patent No. 2,569,347. Patented Oct. 3, 1951.
+Application June 17, 1948, Serial No. 33,466. Patent No. 2,569,347. Patented Oct. 3,
 
-To all whom it may concern: Be it known that we, JOHN BARDEEN and WALTER H. BRATTAIN, citizens of the United States, residing at Summit and Morristown, in the County of Morris and State of New Jersey, have invented certain new and useful Improvements in Three-Electrode Circuit Elements Utilizing Semiconductive Materials, of which the following is a specification, reference being had to the accompanying drawings.
+1951.
+
+To all whom it may concern:
+
+Be it known that we, JOHN BARDEEN and WALTER H. BRATTAIN, citizens of the United States, residing at Summit and Morristown, in the County of Morris and State of New Jersey, have invented certain new and useful Improvements in Three-Electrode Circuit Elements Utilizing Semiconductive Materials, of which the following is a <dfn title="The comprehensive written description of an invention and the manner of constructing and operating it, in terms sufficiently clear to enable any person skilled in the art to replicate it. (Modern: Patent Detailed Description & Embodiments)" class="cursor-help underline decoration-dotted decoration-amber-600 dark:decoration-amber-400 decoration-2 underline-offset-4 text-ink-950 dark:text-parchment-50 hover:bg-amber-500/10 dark:hover:bg-amber-400/10 rounded px-0.5 transition-colors">specification</dfn>, reference being had to the accompanying drawings.
 
 This invention relates to novel circuit elements and methods utilizing semiconductive materials for the amplification and control of electric currents and signals.
 

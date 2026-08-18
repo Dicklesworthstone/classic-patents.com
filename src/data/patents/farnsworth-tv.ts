@@ -21,9 +21,9 @@ export const farnsworthTvPatent: Patent = {
   googlePatentsUrl: "https://patents.google.com/patent/US1773980A/en",
   usptoClassification: "H04N 3/00 (Scanning systems for television)",
   originalTextAsset: {
-    url: "/patents/transcripts/us-1773980-farnsworth-tv.txt",
+    url: "/patents/source-text/us-1773980-farnsworth-tv.txt",
     pageCount: 13,
-    kind: "reviewed-transcription",
+    kind: "source-pdf-text-layer",
   },
   originalText: `UNITED STATES PATENT OFFICE.
 PHILO T. FARNSWORTH, OF SAN FRANCISCO, CALIFORNIA, ASSIGNOR TO TELEVISION LABORATORIES, INC.

@@ -22,9 +22,9 @@ export const thomsonWeldingPatent: Patent = {
   googlePatentsUrl: "https://patents.google.com/patent/US347140/en",
   usptoClassification: "B23K 11/02 (Resistance welding; Butt-welding apparatus)",
   originalTextAsset: {
-    url: "/patents/transcripts/us-347140-thomson-welding.txt",
+    url: "/patents/source-text/us-347140-thomson-welding.txt",
     pageCount: 5,
-    kind: "reviewed-transcription",
+    kind: "source-pdf-text-layer",
   },
   originalText: `UNITED STATES PATENT OFFICE.
 ELIHU THOMSON, OF LYNN, MASSACHUSETTS.

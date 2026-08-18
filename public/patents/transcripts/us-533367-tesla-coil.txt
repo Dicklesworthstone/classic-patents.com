@@ -1,10 +1,18 @@
-UNITED STATES PATENT OFFICE. NIKOLA TESLA, OF NEW YORK, N. Y.
+UNITED STATES PATENT OFFICE.
+
+NIKOLA TESLA, OF NEW YORK, N. Y.
 
 ELECTRICAL TRANSFORMER.
 
-SPECIFICATION forming part of Letters Patent No. 533,367, dated February 6, 1895. Application filed January 18, 1894. Serial No. 497,291. (No model.)
+<dfn title="The comprehensive written description of an invention and the manner of constructing and operating it, in terms sufficiently clear to enable any person skilled in the art to replicate it. (Modern: Patent Detailed Description & Embodiments)" class="cursor-help underline decoration-dotted decoration-amber-600 dark:decoration-amber-400 decoration-2 underline-offset-4 text-ink-950 dark:text-parchment-50 hover:bg-amber-500/10 dark:hover:bg-amber-400/10 rounded px-0.5 transition-colors">SPECIFICATION</dfn> forming part of <dfn title="An open document ('litterae patentes') issued by a sovereign or government under public seal, granting an inventor exclusive legal monopoly rights to manufacture, use, and vend an invention. (Modern: Granted Patent Document / Certificate)" class="cursor-help underline decoration-dotted decoration-amber-600 dark:decoration-amber-400 decoration-2 underline-offset-4 text-ink-950 dark:text-parchment-50 hover:bg-amber-500/10 dark:hover:bg-amber-400/10 rounded px-0.5 transition-colors">Letters Patent</dfn> No. 533,367, dated February 6,
 
-To all whom it may concern: Be it known that I, NIKOLA TESLA, a citizen of the United States, residing at New York, in the County and State of New York, have invented certain new and useful Improvements in Electrical Transformers, of which the following is a specification, reference being had to the drawings accompanying and forming a part of the same.
+1895. Application filed January 18,
+
+1894. Serial No. 497,291. (No model.)
+
+To all whom it may concern:
+
+Be it known that I, NIKOLA TESLA, a citizen of the United States, residing at New York, in the County and State of New York, have invented certain new and useful Improvements in Electrical Transformers, of which the following is a <dfn title="The comprehensive written description of an invention and the manner of constructing and operating it, in terms sufficiently clear to enable any person skilled in the art to replicate it. (Modern: Patent Detailed Description & Embodiments)" class="cursor-help underline decoration-dotted decoration-amber-600 dark:decoration-amber-400 decoration-2 underline-offset-4 text-ink-950 dark:text-parchment-50 hover:bg-amber-500/10 dark:hover:bg-amber-400/10 rounded px-0.5 transition-colors">specification</dfn>, reference being had to the drawings accompanying and forming a part of the same.
 
 The present invention relates to transformers or coils employed in systems for the generation and utilization of electrical currents of high potential and high frequency, such as are produced by disruptive discharge from condensers or analogous sources.
 

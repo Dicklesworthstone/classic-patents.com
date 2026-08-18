@@ -22,9 +22,9 @@ export const teslaTeleautomatonPatent: Patent = {
   googlePatentsUrl: "https://patents.google.com/patent/US613809A/en",
   usptoClassification: "B63H 25/04 (Marine steering / Wireless remote-controlled vessels)",
   originalTextAsset: {
-    url: "/patents/transcripts/us-613809-tesla-teleautomaton.txt",
+    url: "/patents/source-text/us-613809-tesla-teleautomaton.txt",
     pageCount: 13,
-    kind: "reviewed-transcription",
+    kind: "source-pdf-text-layer",
   },
   originalText: `UNITED STATES PATENT OFFICE.
 NIKOLA TESLA, OF NEW YORK, N. Y.
