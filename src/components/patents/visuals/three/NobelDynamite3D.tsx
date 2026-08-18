@@ -29,7 +29,7 @@ export function NobelDynamite3D() {
     capEnergyJoules: params.capEnergyJoules ?? 1.2,
   });
   const detonationVelocityMps = nobel.detonationVelocityMps;
-  const blastOverpressureMpa = nobel.isInitiated ? Math.round(4500 + (ngPercentage - 50) * 120) : 0;
+  const blastOverpressureMpa = nobel.blastOverpressureMpa;
   const [isFuseLit, setIsFuseLit] = useState<boolean>(false);
   const [activeCamera, setActiveCamera] = useState<CameraPreset>("iso");
   const { isAudioMuted, toggleSound: toggleEngine } = usePatentAudio();
@@ -346,6 +346,7 @@ export function NobelDynamite3D() {
             tone: nobel.isInitiated ? "hot" : "warn",
           },
           { label: "P", value: String(blastOverpressureMpa), unit: "MPa" },
+          { label: "Cushion", value: `${nobel.cushionFactor}`, unit: "×" },
         ]}
       />
     </div>

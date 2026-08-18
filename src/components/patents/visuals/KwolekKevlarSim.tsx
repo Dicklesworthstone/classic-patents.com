@@ -2,21 +2,18 @@
 
 import { Shield, ShieldAlert } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
+import { stepKevlarContinuum } from "@/physics/catalogKernels";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 
 export function KwolekKevlarSim() {
   const { params, updateParam } = usePatentPhysics("us-3671542-kwolek-kevlar");
   const drawRatio = params.drawRatio ?? 6.5;
-  const polymerAlignment = Math.min(100, Math.round((drawRatio / 8.0) * 100)); // 0% (isotropic tangled) to 100% (liquid-crystal nematic)
-  const [tensileTension, setTensileTension] = useState<number>(30); // 0 to 100%
+  const polymerAlignment = Math.min(100, Math.round((drawRatio / 8.0) * 100));
+  const [tensileTension, setTensileTension] = useState<number>(30);
   const [bulletFired, setBulletFired] = useState<boolean>(false);
 
-  // Tensile strength in GPa
-  const baseStrength = 0.5; // Nylon
-  const maxStrength = 3.6; // Kevlar PPTA
-  const currentStrengthGPa = baseStrength + (maxStrength - baseStrength) * (polymerAlignment / 100);
-
-  // Pre-stress consumes remaining ballistic capacity: a taut, poorly aligned mat fails first.
+  const kevlar = stepKevlarContinuum(drawRatio, params.impactVelocity ?? 450);
+  const currentStrengthGPa = kevlar.tensileStrengthGpa;
   const residualCapacityGPa = currentStrengthGPa * (1 - tensileTension / 220);
   const isArmorPenetrated = bulletFired && residualCapacityGPa < 1.6;
 

@@ -2,6 +2,7 @@
 
 import { AlertOctagon, Gauge } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
+import { FrankenSimEngine } from "@/physics/engine";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { soundEngine } from "@/utils/soundEngine";
 
@@ -13,16 +14,19 @@ export function WestinghouseAirBrakeSim() {
   const [wheelRotation, setWheelRotation] = useState<number>(0);
   const [trainSpeedMph, setTrainSpeedMph] = useState<number>(45);
 
-  const isEmergency = trainPipePressurePsi < 10;
-  const isService = trainPipePressurePsi < 60 && !isEmergency;
-  const isRelease = trainPipePressurePsi >= 65;
+  const wh = FrankenSimEngine.stepWestinghouseAirBrake({
+    trainPipePressurePsi,
+    carMassTonnes,
+  });
+  const isEmergency = wh.valveState === "EMERGENCY";
+  const isService = wh.valveState === "SERVICE";
+  const isRelease = wh.valveState === "RELEASE";
 
-  // Cylinder pressure equalizes inversely with pipe pressure
-  const cylPressurePsi = Math.max(0, Math.min(55, Math.round((70 - trainPipePressurePsi) * 1.1)));
-  const pistonStrokePx = Math.round((cylPressurePsi / 55) * 18); // 0 to 18px stroke
+  const cylPressurePsi = wh.brakeCylinderPressurePsi;
+  const pistonStrokePx = Math.round((cylPressurePsi / 55) * 18);
   const shoeDistancePx = Math.max(0, 18 - pistonStrokePx);
 
-  const pistonThrustKn = ((cylPressurePsi * 78.5 * 5 * 4.44822) / 1000).toFixed(1);
+  const pistonThrustKn = wh.shoeClampingForceKn.toFixed(1);
 
   // Wheel animation loop
   const animRef = useRef<number | null>(null);

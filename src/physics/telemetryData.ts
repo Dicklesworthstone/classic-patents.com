@@ -294,12 +294,22 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
         defaultValue: 99.5,
         unit: "%",
       },
+      {
+        id: "fuelEnrichmentPct",
+        label: "Uranium-235 Enrichment",
+        min: 0.5,
+        max: 1.2,
+        step: 0.01,
+        defaultValue: 0.72,
+        unit: "%",
+      },
     ],
     computeMetrics: (p) => {
       const rod = p.rodWithdrawal ?? 83.5;
       const mod = p.moderatorPurity ?? 99.5;
-      const keff = fermiKeff(rod, mod);
-      const kinetics = stepFermiKinetics(rod, mod);
+      const enrich = p.fuelEnrichmentPct ?? 0.72;
+      const keff = fermiKeff(rod, mod, enrich);
+      const kinetics = stepFermiKinetics(rod, mod, enrich);
       const rhoDollars = kinetics.reactivityDollars;
       const thermalPower = kinetics.thermalPowerWatts;
       const flux = (thermalPower * 3.2e7).toExponential(2);
@@ -364,6 +374,15 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
         defaultValue: 3.5,
         unit: "ratio",
       },
+      {
+        id: "flightAltitudeMiles",
+        label: "Flight Altitude",
+        min: 0,
+        max: 200,
+        step: 1,
+        defaultValue: 18,
+        unit: "mi",
+      },
     ],
     computeMetrics: (p) => {
       const pc = p.chamberPressure ?? 350;
@@ -405,6 +424,19 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
           unit: "N",
           badgeColor: "indigo",
           progressPct: Math.min(100, (thrust / 800) * 100),
+        },
+        {
+          label: "Optimum Ae/At",
+          value: Math.min(
+            25,
+            Math.max(3, 3.5 * Math.exp((p.flightAltitudeMiles ?? 18) / 12)),
+          ).toFixed(1),
+          unit: "ε*",
+          badgeColor: "purple",
+          progressPct: Math.min(
+            100,
+            (Math.min(25, 3.5 * Math.exp((p.flightAltitudeMiles ?? 18) / 12)) / 25) * 100,
+          ),
         },
       ];
     },
@@ -517,11 +549,21 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
         defaultValue: 15.0,
         unit: "atm",
       },
+      {
+        id: "ammoniaRatio",
+        label: "Ammonia Mole Fraction",
+        min: 0.4,
+        max: 0.9,
+        step: 0.01,
+        defaultValue: 0.65,
+        unit: "x_NH₃",
+      },
     ],
     computeMetrics: (p) => {
       const frige = stepEinsteinRefrigeratorSi({
         heatInput: p.heatInput,
         totalPressure: p.totalPressure,
+        ammoniaRatio: p.ammoniaRatio ?? p.auxiliaryGasRatio,
       });
       const evapTemp = frige.evapTempC;
       const cop = frige.cop;
@@ -807,6 +849,15 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
         unit: "dB",
       },
       {
+        id: "acousticFrequencyHz",
+        label: "Voice Frequency",
+        min: 200,
+        max: 800,
+        step: 10,
+        defaultValue: 440,
+        unit: "Hz",
+      },
+      {
         id: "airGap",
         label: "Diaphragm Magnetic Gap",
         min: 0.1,
@@ -845,11 +896,11 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
           progressPct: (Number(sens) / 40) * 100,
         },
         {
-          label: "Acoustic Bandwidth",
-          value: "300–3,400",
+          label: "Voice Tone",
+          value: (p.acousticFrequencyHz ?? 440).toString(),
           unit: "Hz",
           badgeColor: "indigo",
-          progressPct: 85,
+          progressPct: (((p.acousticFrequencyHz ?? 440) - 200) / 600) * 100,
         },
       ];
     },
@@ -1319,6 +1370,15 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
         defaultValue: 1,
         unit: "",
       },
+      {
+        id: "jamChannel",
+        label: "Spot-Jam Channel",
+        min: 1,
+        max: 88,
+        step: 1,
+        defaultValue: 26,
+        unit: "ch",
+      },
     ],
     computeMetrics: (p) => {
       const hops = p.hopRate ?? 4.0;
@@ -1387,12 +1447,20 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
         defaultValue: 10.0,
         unit: "mm",
       },
+      {
+        id: "pulsesPerRev",
+        label: "Resolver Pulses per Revolution",
+        min: 20,
+        max: 400,
+        step: 4,
+        defaultValue: 200,
+        unit: "ppr",
+      },
     ],
     computeMetrics: (p) => {
       const mouse = stepEngelbartMouse({ mouseSpeed: p.mouseSpeed, wheelRadius: p.wheelRadius });
       const omegaRps = mouse.omegaRadPerS.toFixed(1);
       const dpi = mouse.dpi;
-      const v = p.mouseSpeed ?? 350;
 
       return [
         {
@@ -1418,10 +1486,10 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
         },
         {
           label: "Tracking Slew Rate",
-          value: (v * 3.8).toFixed(0),
+          value: mouse.slewPxPerS.toString(),
           unit: "px/s",
           badgeColor: "purple",
-          progressPct: (v / 800) * 100,
+          progressPct: Math.min(100, (mouse.slewPxPerS / 3000) * 100),
         },
       ];
     },
@@ -1818,6 +1886,24 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
         unit: "kV",
       },
       {
+        id: "secondaryTurns",
+        label: "Secondary Turns",
+        min: 400,
+        max: 1400,
+        step: 50,
+        defaultValue: 850,
+        unit: "N_s",
+      },
+      {
+        id: "sparkRateHz",
+        label: "Rotary Spark Rate",
+        min: 30,
+        max: 400,
+        step: 10,
+        defaultValue: 120,
+        unit: "Hz",
+      },
+      {
         id: "toploadCapacitancePf",
         label: "Topload Capacitance",
         min: 10,
@@ -1834,7 +1920,14 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
       const sparkGap = p.sparkGapDistanceMm ?? 12;
 
       const k = p.couplingK ?? 0.18;
-      const res = FrankenSimEngine.stepTeslaCoil(freqKhz, inputKv, sparkGap, 145, k);
+      const res = FrankenSimEngine.stepTeslaCoil(
+        freqKhz,
+        inputKv,
+        sparkGap,
+        145,
+        k,
+        p.secondaryTurns ?? 850,
+      );
       const peakKv = Math.round(res.secondaryPotentialMv * 1000);
       const streamerM = res.streamerLengthMeters.toFixed(2);
 
@@ -2505,7 +2598,7 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
         },
         {
           label: "Comb-Plate Clearance",
-          value: "1.2 mm",
+          value: `${reno.combPlateClearanceMm} mm`,
           unit: "δ_gap",
           badgeColor: "cyan",
           progressPct: 80,
@@ -3282,10 +3375,10 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
         },
         {
           label: "Thermal Efficiency",
-          value: "24.5%",
+          value: `${corliss.thermalEfficiencyPct}%`,
           unit: "eta_th",
           badgeColor: "emerald",
-          progressPct: 75,
+          progressPct: (corliss.thermalEfficiencyPct / 40) * 100,
         },
       ];
     },
@@ -3384,11 +3477,11 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
           progressPct: isInitiated ? (vDet / 8500) * 100 : 0,
         },
         {
-          label: "Porous Cushioning Factor",
-          value: "3.8×",
-          unit: "safety",
+          label: "Kieselguhr Cushion",
+          value: `${nobel.cushionFactor}×`,
+          unit: "vs free NG",
           badgeColor: "emerald",
-          progressPct: 90,
+          progressPct: Math.min(100, (nobel.cushionFactor / 7) * 100),
         },
       ];
     },
@@ -3414,22 +3507,21 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
       },
     ],
     computeMetrics: (p) => {
-      const wpm = p.typingSpeedWpm ?? 60;
-      const cps = stepSholesTypewriter(wpm, 0).cps;
+      const sholes = stepSholesTypewriter(p.typingSpeedWpm ?? 60, 0);
       return [
         {
           label: "Key Strike Frequency",
-          value: `${cps.toFixed(1)} chars/sec`,
+          value: `${sholes.cps.toFixed(1)} chars/sec`,
           unit: "f_strike",
           badgeColor: "amber",
-          progressPct: (cps / 12) * 100,
+          progressPct: (sholes.cps / 12) * 100,
         },
         {
-          label: "QWERTY Jam Suppression",
-          value: "98.5%",
-          unit: "anti-jam",
+          label: "Platen Pitch",
+          value: sholes.pitchMm.toFixed(2),
+          unit: "mm",
           badgeColor: "emerald",
-          progressPct: 98,
+          progressPct: 100,
         },
       ];
     },
@@ -4001,7 +4093,7 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
         },
         {
           label: "Reaction Expansion",
-          value: "45 Compound Stages",
+          value: `${parsons.stageCount} Compound Stages`,
           unit: "stages",
           badgeColor: "cyan",
           progressPct: 100,

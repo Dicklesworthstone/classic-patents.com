@@ -146,6 +146,19 @@ the visitor can see or hear the kernel change the instrument.
 - [x] P5.53 Tesla motor badge uses the 2-pole kernel (ns = 3600 at 60 Hz), not a 4-pole copy
 - [x] P5.54 Kevlar / Goodyear / Farnsworth / Daimler / Kodak / Hollerith badges call the shared step
 - [x] P5.55 Otis badge arrest force / pawl come from stepOtisElevator
+- [x] P5.56 Fermi 2D/3D/badge share fuelEnrichmentPct; 3D graphite fallback is 99.5% (ZIP)
+- [x] P5.57 Engelbart 3D speed/DPI come from the kernel (350 mm/s, wheel-radius dpi)
+- [x] P5.58 Nobel cushion and blast P come from the kernel; Sholes pitch replaces fake jam %
+- [x] P5.59 Lincoln 2D/3D/badge share stepLincolnBuoy; hull draft depends on registry weight
+- [x] P5.60 Einstein 2D/3D/engine wrap the catalog kernel; ammoniaRatio is on the bus
+- [x] P5.61 Corliss η comes from cutoff; Bell voice frequency is on the bus
+- [x] P5.62 Westinghouse 2D uses the triple-valve kernel; Kevlar 2D strength from draw
+- [x] P5.63 Tesla coil N_s and spark rate are on the bus; streamers scale with turns
+- [x] P5.64 Parsons 2D/3D/badge share 48 compound stages from the kernel
+- [x] P5.65 Engelbart pulses/rev is 200 on the bus; Lamarr jam channel + hop count shared
+- [x] P5.66 Goddard altitude is on the bus; Tesla 3D spark flicker follows sparkRateHz
+- [x] P5.67 Diesel / Maxim / Otto / Colt / Sholes 2D faces call the shared step
+- [x] P5.68 Spencer 2D popcorn heat follows Hull oscillation + dielectric loss
 
 ## Explicitly out of scope
 

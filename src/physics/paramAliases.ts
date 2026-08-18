@@ -81,7 +81,15 @@ export const PATENT_PARAM_ALIASES: Record<string, Record<string, ParamAlias>> = 
       fromCanonical: (psi) => psi / 14.5038,
     },
   },
+  "us-608969-parsons-turbine": {
+    steamPressureBar: {
+      canonical: "inletPressurePsi",
+      toCanonical: (bar) => bar * 14.5038,
+      fromCanonical: (psi) => psi / 14.5038,
+    },
+  },
   "us-3923554-boyle-smith-ccd": { clockSpeedFactor: same("clockFreq") },
+  "us-1781541-einstein-refrigerator": { auxiliaryGasRatio: same("ammoniaRatio") },
 };
 
 export function canonicalizeParam(

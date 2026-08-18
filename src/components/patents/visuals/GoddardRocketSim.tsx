@@ -14,7 +14,7 @@ export function GoddardRocketSim() {
   const nozzleExpansionRatio = params.expansionRatio ?? 3.5;
   const flow = params.fuelFlowRateKgs ?? 1.8;
   const throat = params.throatAreaCm2 ?? 4.2;
-  const [altitudeMiles, setAltitudeMiles] = useState<number>(18);
+  const altitudeMiles = params.flightAltitudeMiles ?? 18;
 
   const res = FrankenSimEngine.stepGoddardRocket(
     combustionPressurePsi,
@@ -263,7 +263,7 @@ export function GoddardRocketSim() {
                     type="button"
                     onClick={() => {
                       setActiveStage(stage as 1 | 2 | 3);
-                      setAltitudeMiles(stage === 1 ? 18 : stage === 2 ? 65 : 180);
+                      updateParam("flightAltitudeMiles", stage === 1 ? 18 : stage === 2 ? 65 : 180);
                     }}
                     className={`p-2.5 rounded-xl border text-center transition-colors shadow-2xs ${
                       activeStage === stage

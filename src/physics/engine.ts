@@ -8,12 +8,14 @@
 import {
   stepDaimlerEngine as catalogStepDaimlerEngine,
   stepHollerithTabulating as catalogStepHollerith,
+  stepLincolnBuoy as catalogStepLincolnBuoy,
   stepBellTelephone,
   stepCorlissEngine,
   stepDavenportMotor,
   stepDeLavalSeparator,
   stepEdisonBulb,
   stepEdisonPhonograph,
+  stepEinsteinRefrigerator as stepEinsteinRefrigeratorCatalog,
   stepEngelbartMouse,
   stepEricssonPropeller,
   stepGatlingGun,
@@ -193,21 +195,21 @@ export const FrankenSimEngine = {
   stepEinsteinRefrigerator(
     heatInputWatts: number,
     systemPressureAtm: number,
-    ammoniaRatio: number,
+    ammoniaRatio: number = 0.65,
   ): ThermodynamicsState {
-    const partialPressureButaneAtm = systemPressureAtm * (1 - ammoniaRatio);
-    const evaporatorTempC = Math.round(-18 + partialPressureButaneAtm * 6.5);
-    const cop = Number((0.35 * (1 - Math.abs(evaporatorTempC) / 100)).toFixed(2));
-    const coolingPowerWatts = Math.round(heatInputWatts * cop);
-
+    const cat = stepEinsteinRefrigeratorCatalog({
+      heatInput: heatInputWatts,
+      totalPressure: systemPressureAtm,
+      ammoniaRatio,
+    });
     return {
-      temperatureCelsius: evaporatorTempC,
-      temperatureKelvin: evaporatorTempC + 273.15,
+      temperatureCelsius: cat.evapTempC,
+      temperatureKelvin: cat.evapTempC + 273.15,
       pressureAtm: systemPressureAtm,
-      partialPressureButaneAtm: Number(partialPressureButaneAtm.toFixed(2)),
+      partialPressureButaneAtm: cat.partialPressureButaneAtm,
       heatInputWatts,
-      coolingPowerWatts,
-      coefficientOfPerformance: cop,
+      coolingPowerWatts: cat.coolingWatts,
+      coefficientOfPerformance: cat.cop,
       blackbodyRadiantPowerWatts: 0,
       fluidFlowVelocityMps: (heatInputWatts / 220) * 0.15,
     };
@@ -409,23 +411,25 @@ export const FrankenSimEngine = {
     sparkGapMm: number,
     qFactor: number = 145,
     couplingK: number = 0.18,
+    secondaryTurns: number = 850,
   ) {
     const k = Math.max(0.05, Math.min(0.5, couplingK));
+    const nScale = Math.max(0.4, Math.min(2, secondaryTurns / 850));
     const wasmRes = tryTeslaWasmStep(resonantFreqKhz, inputKv, sparkGapMm, qFactor);
     if (wasmRes) {
-      // tesla_coil_step has no k input; scale the native result from the registry default.
-      const kScale = k / 0.18;
+      // tesla_coil_step has no k or N_s input; scale from registry defaults.
+      const scale = (k / 0.18) * nScale;
       return {
         resonantFreqKhz: wasmRes.resonant_freq_khz,
-        secondaryPotentialMv: Number((wasmRes.secondary_potential_mv * kScale).toFixed(2)),
-        streamerLengthInches: Number((wasmRes.streamer_length_inches * kScale).toFixed(1)),
-        streamerLengthMeters: Number((wasmRes.streamer_length_meters * kScale).toFixed(2)),
+        secondaryPotentialMv: Number((wasmRes.secondary_potential_mv * scale).toFixed(2)),
+        streamerLengthInches: Number((wasmRes.streamer_length_inches * scale).toFixed(1)),
+        streamerLengthMeters: Number((wasmRes.streamer_length_meters * scale).toFixed(2)),
       };
     }
 
     const primaryL = 0.012; // mH
     const secondaryL = 85.0; // mH
-    const transformationRatio = Math.sqrt(secondaryL / primaryL);
+    const transformationRatio = Math.sqrt(secondaryL / primaryL) * nScale;
     // V₂ ≈ V₁ √(L₂/L₁) k √Q, then spark-gap loading. 28 in/MV air breakdown.
     const secondaryPotentialMv =
       ((inputKv * transformationRatio * k * Math.sqrt(qFactor)) / 1000) * (sparkGapMm / 15);
@@ -464,18 +468,15 @@ export const FrankenSimEngine = {
    * Archimedes Hydrostatic Force & Vessel Draft Relief
    */
   stepLincolnBuoy(expansionPct: number, riverDepthFeet: number) {
-    const chamberVolumeM3 = (expansionPct / 100) * 145.0; // Total bellows capacity
-    const waterDensityKgM3 = 1000.0;
-    const gravity = 9.80665;
-    const buoyancyForceKn = (chamberVolumeM3 * waterDensityKgM3 * gravity) / 1000;
-    const draftReductionInches = Number(((buoyancyForceKn / 65) * 12).toFixed(1));
-    const isFloating = riverDepthFeet * 12 + draftReductionInches >= 60; // 5 ft draft baseline
-
+    const cat = catalogStepLincolnBuoy({
+      inflationPct: expansionPct,
+      shoalDepth: riverDepthFeet,
+    });
     return {
-      chamberVolumeM3: Number(chamberVolumeM3.toFixed(1)),
-      buoyancyForceKn: Math.round(buoyancyForceKn),
-      draftReductionInches,
-      isFloating,
+      chamberVolumeM3: cat.displacedVolumeM3,
+      buoyancyForceKn: cat.liftKn,
+      draftReductionInches: Number((cat.draftReductionFt * 12).toFixed(1)),
+      isFloating: cat.shoalClearanceFt >= 0,
     };
   },
 

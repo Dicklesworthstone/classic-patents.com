@@ -11,7 +11,7 @@ export function FermiReactorSim() {
   const { params, updateParam, resetParams } = usePatentPhysics("us-2708656-fermi-reactor");
   const controlRodWithdrawalPct = params.rodWithdrawal ?? 83.5;
   const moderatorPurityPct = params.moderatorPurity ?? 99.5;
-  const [fuelEnrichmentPct, setFuelEnrichmentPct] = useState<number>(0.72);
+  const fuelEnrichmentPct = params.fuelEnrichmentPct ?? 0.72;
   const [_neutronHistory, setNeutronHistory] = useState<number[]>([200, 200, 200, 200, 200]);
 
   // Compute Nuclear Kinetics via FrankenSimEngine
@@ -48,7 +48,6 @@ export function FermiReactorSim() {
 
   const resetToCriticality = () => {
     resetParams();
-    setFuelEnrichmentPct(0.72);
   };
 
   return (
@@ -320,6 +319,25 @@ export function FermiReactorSim() {
                 step="0.5"
                 value={moderatorPurityPct}
                 onChange={(e) => updateParam("moderatorPurity", Number(e.target.value))}
+                className="w-full accent-amber-600"
+              />
+            </div>
+
+            <div className="space-y-2">
+              <div className="flex justify-between text-xs">
+                <span className="text-ink-700 dark:text-ink-300">U-235 Enrichment:</span>
+                <span className="font-mono font-bold text-amber-600">
+                  {fuelEnrichmentPct.toFixed(2)}%
+                </span>
+              </div>
+              <input
+                type="range"
+                aria-label="Uranium-235 Enrichment"
+                min="0.5"
+                max="1.2"
+                step="0.01"
+                value={fuelEnrichmentPct}
+                onChange={(e) => updateParam("fuelEnrichmentPct", Number(e.target.value))}
                 className="w-full accent-amber-600"
               />
             </div>

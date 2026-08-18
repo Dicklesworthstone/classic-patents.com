@@ -216,7 +216,7 @@ export function materialProbe(
   }
   if (patentId.includes("engelbart") || patentId.includes("3541541")) {
     const mouse = stepEngelbartMouse({
-      mouseSpeed: params.mouseSpeed ?? 140,
+      mouseSpeed: params.mouseSpeed ?? 350,
       wheelRadius: params.wheelRadius ?? 10,
     });
     return {
@@ -253,6 +253,7 @@ export function materialProbe(
       params.sparkGapDistanceMm ?? 12,
       145,
       params.couplingK ?? 0.18,
+      params.secondaryTurns ?? 850,
     );
     return {
       part: calloutLabel,
@@ -495,6 +496,7 @@ export function materialProbe(
     const frige = stepEinsteinRefrigerator({
       heatInput: params.heatInput,
       totalPressure: params.totalPressure,
+      ammoniaRatio: params.ammoniaRatio ?? params.auxiliaryGasRatio,
     });
     return {
       part: calloutLabel,
@@ -938,6 +940,7 @@ export function intervalGhosts(patentId: string, params: Record<string, number>)
     const frige = stepEinsteinRefrigerator({
       heatInput: params.heatInput,
       totalPressure: params.totalPressure,
+      ammoniaRatio: params.ammoniaRatio ?? params.auxiliaryGasRatio,
     });
     return [{ label: "COP", min: 0.1, max: 0.4, live: frige.cop, unit: "" }];
   }
@@ -958,7 +961,7 @@ export function intervalGhosts(patentId: string, params: Record<string, number>)
   }
   if (patentId.includes("engelbart") || patentId.includes("3541541")) {
     const mouse = stepEngelbartMouse({
-      mouseSpeed: params.mouseSpeed ?? 140,
+      mouseSpeed: params.mouseSpeed ?? 350,
       wheelRadius: params.wheelRadius ?? 10,
     });
     return [{ label: "ω", min: 0, max: 40, live: mouse.omegaRadPerS, unit: "rad/s" }];
@@ -989,6 +992,7 @@ export function intervalGhosts(patentId: string, params: Record<string, number>)
       params.sparkGapDistanceMm ?? 12,
       145,
       params.couplingK ?? 0.18,
+      params.secondaryTurns ?? 850,
     );
     return [{ label: "Arc", min: 0.1, max: 4, live: coil.streamerLengthMeters, unit: "m" }];
   }
@@ -1259,7 +1263,7 @@ export function fidelityField(
   }
   if (patentId.includes("engelbart") || patentId.includes("3541541")) {
     const mouse = stepEngelbartMouse({
-      mouseSpeed: params.mouseSpeed ?? 140,
+      mouseSpeed: params.mouseSpeed ?? 350,
       wheelRadius: params.wheelRadius ?? 10,
     });
     return {
@@ -1294,6 +1298,7 @@ export function fidelityField(
       params.sparkGapDistanceMm ?? 12,
       145,
       params.couplingK ?? 0.18,
+      params.secondaryTurns ?? 850,
     );
     return {
       part: "Streamer vs Colorado Springs 1899",
@@ -1742,6 +1747,7 @@ export function coupleLinks(patentId: string, params: Record<string, number>): C
       params.sparkGapDistanceMm ?? 12,
       145,
       params.couplingK ?? 0.18,
+      params.secondaryTurns ?? 850,
     );
     const watts = (params.inputVoltageKv ?? 15) * 20;
     return [{ from: "primary spark", to: `${coil.streamerLengthInches.toFixed(0)} in arc`, watts }];

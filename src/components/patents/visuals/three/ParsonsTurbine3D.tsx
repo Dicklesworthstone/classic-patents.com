@@ -21,7 +21,7 @@ export function ParsonsTurbine3D() {
   const containerRef = useRef<HTMLDivElement>(null);
 
   // Steam Turbomachinery Parameters
-  const { params } = usePatentPhysics("us-328710-parsons-turbine");
+  const { params } = usePatentPhysics("us-608969-parsons-turbine");
   const [showUiOverlay, setShowUiOverlay] = useState<boolean>(true);
   const turbineRpm = params.rotorRpm ?? 3000;
   const steamPressureBar = params.steamPressureBar ?? (params.inletPressurePsi ?? 180) / 14.5038;
@@ -30,7 +30,7 @@ export function ParsonsTurbine3D() {
     inletPressurePsi: params.inletPressurePsi ?? steamPressureBar * 14.5038,
   });
   const powerKw = parsons.shaftPowerKw;
-  const stageCount = 48;
+  const stageCount = parsons.stageCount;
   const [showSteamFlow, setShowSteamFlow] = useState<boolean>(true);
   const [activeCamera, setActiveCamera] = useState<CameraPreset>("iso");
   const { isAudioMuted, toggleSound: toggleEngine } = usePatentAudio();

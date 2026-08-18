@@ -1,7 +1,6 @@
 "use client";
 
 import { RotateCcw, Sparkles, Thermometer, Waves } from "lucide-react";
-import { useState } from "react";
 import { FrankenSimEngine } from "@/physics/engine";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 
@@ -9,7 +8,7 @@ export function EinsteinRefrigeratorSim() {
   const { params, updateParam } = usePatentPhysics("us-1781541-einstein-refrigerator");
   const heatInputWatts = params.heatInput ?? 220;
   const systemPressureAtm = params.totalPressure ?? 15.0;
-  const [ammoniaRatio, setAmmoniaRatio] = useState<number>(0.65);
+  const ammoniaRatio = params.ammoniaRatio ?? params.auxiliaryGasRatio ?? 0.65;
 
   // Thermodynamic absorption calculations via FrankenSimEngine
   const thermo = FrankenSimEngine.stepEinsteinRefrigerator(
@@ -26,7 +25,7 @@ export function EinsteinRefrigeratorSim() {
   const resetToStandardCycle = () => {
     updateParam("heatInput", 220);
     updateParam("totalPressure", 15.0);
-    setAmmoniaRatio(0.65);
+    updateParam("ammoniaRatio", 0.65);
   };
 
   return (

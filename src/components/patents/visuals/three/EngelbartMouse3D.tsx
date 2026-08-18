@@ -30,11 +30,10 @@ export function EngelbartMouse3D() {
   // Mouse Kinematics & Rendering State
   const { params } = usePatentPhysics("us-3541541-engelbart-mouse");
   const [showUiOverlay, setShowUiOverlay] = useState<boolean>(true);
-  const displacementSpeedMmSec = params.mouseSpeed ?? 140;
+  const displacementSpeedMmSec = params.mouseSpeed ?? 350;
   const [mouseTrajectory, _setMouseTrajectory] = useState<
     "figure8" | "circle" | "horizontal" | "vertical"
   >("figure8");
-  const cpiResolution = params.cpiResolution ?? 200;
   const [isClicking, setIsClicking] = useState<boolean>(false);
   const [isXRayMode, setIsXRayMode] = useState<boolean>(false);
   const [showCalloutPins, setShowCalloutPins] = useState<boolean>(false);
@@ -52,6 +51,7 @@ export function EngelbartMouse3D() {
     mouseSpeed: displacementSpeedMmSec,
     wheelRadius: wheelRadiusMm,
   });
+  const cpiResolution = mouse.dpi;
   const pulseRateHz = mouse.slewPxPerS;
 
   const live = useLiveSimParams({
@@ -63,6 +63,7 @@ export function EngelbartMouse3D() {
     wheelRadiusMm,
     dpi: mouse.dpi,
     omegaRadPerS: mouse.omegaRadPerS,
+    pulsesPerRev: params.pulsesPerRev ?? 200,
   });
 
   const controlsRef = useRef<any>(null);
@@ -367,7 +368,12 @@ export function EngelbartMouse3D() {
       prevZ = posZ;
 
       const wheelRadiusMm = p.wheelRadiusMm ?? 10;
-      const resolved = stepEngelbartResolver(dX * 40, dZ * 40, wheelRadiusMm, 200);
+      const resolved = stepEngelbartResolver(
+        dX * 40,
+        dZ * 40,
+        wheelRadiusMm,
+        p.pulsesPerRev ?? 200,
+      );
       if (delta > 0) {
         xWheelRim.rotation.x -= resolved.dThetaX;
         xPotWiper.rotation.x -= resolved.dThetaX;

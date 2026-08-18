@@ -29,6 +29,7 @@ export function TeslaCoil3D() {
   const sparkGapDistanceMm = params.sparkGapDistanceMm ?? 12;
   const inputVoltageKv = params.inputVoltageKv ?? 15;
   const couplingK = params.couplingK ?? 0.18;
+  const secondaryTurns = params.secondaryTurns ?? 850;
   const _toploadCapacitancePf = params.toploadCapacitancePf ?? 35;
   const [showLightningStreamers, _setShowLightningStreamers] = useState<boolean>(true);
   const [showCalloutPins, setShowCalloutPins] = useState<boolean>(false);
@@ -42,6 +43,7 @@ export function TeslaCoil3D() {
     sparkGapDistanceMm,
     145,
     couplingK,
+    secondaryTurns,
   );
   const secondaryVoltageMv = coilPhysics.secondaryPotentialMv.toFixed(2);
   const streamerLengthInches = coilPhysics.streamerLengthInches.toFixed(1);
@@ -73,6 +75,7 @@ export function TeslaCoil3D() {
     showLightningStreamers,
     secondaryVoltageMv,
     streamerLengthInches: coilPhysics.streamerLengthInches,
+    sparkRateHz: params.sparkRateHz ?? 120,
   });
 
   const controlsRef = useRef<any>(null);
@@ -307,7 +310,7 @@ export function TeslaCoil3D() {
           const line = streamerLines[s];
           const geo = streamerGeos[s];
           if (line && geo) {
-            line.visible = Math.random() > 0.15;
+            line.visible = Math.random() < Math.min(0.95, (p.sparkRateHz ?? 120) / 200);
             const posAttr = geo.attributes.position as THREE.BufferAttribute;
             const posArr = posAttr.array as Float32Array;
 

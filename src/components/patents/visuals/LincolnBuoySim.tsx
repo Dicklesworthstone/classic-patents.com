@@ -1,26 +1,26 @@
 "use client";
 
 import { Ship } from "lucide-react";
-import { useState } from "react";
+import { stepLincolnBuoy } from "@/physics/catalogKernels";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 
 export function LincolnBuoySim() {
   const { params, updateParam } = usePatentPhysics("us-6469-lincoln-buoy");
   const bellowsExpansionPercent = params.inflationPct ?? 75;
-  const [vesselCargoTons, setVesselCargoTons] = useState<number>(120); // 50 to 200 tons
+  const vesselCargoTons = params.weightTons ?? 380;
   const riverDepthFeet = params.shoalDepth ?? 3.5;
 
-  // Hydrostatic calculations
-  // Baseline draft = 3.0 ft + (cargo / 50) ft
-  const baseDraftFeet = 3.0 + vesselCargoTons / 60;
-  // Buoyant lift from bellows reduces draft by up to 2.5 feet
-  const draftReductionFeet = (bellowsExpansionPercent / 100) * 2.2;
-  const effectiveDraftFeet = Math.max(1.8, baseDraftFeet - draftReductionFeet);
-  const clearanceFeet = riverDepthFeet - effectiveDraftFeet;
+  const lincoln = stepLincolnBuoy({
+    inflationPct: bellowsExpansionPercent,
+    weightTons: vesselCargoTons,
+    shoalDepth: riverDepthFeet,
+  });
+  const effectiveDraftFeet = lincoln.hullDraftFt;
+  const clearanceFeet = lincoln.shoalClearanceFt;
   const isGrounded = clearanceFeet < 0;
 
-  const displacedVolumeCuFt = Math.round((bellowsExpansionPercent / 100) * 4500);
-  const buoyantLiftTons = Math.round((displacedVolumeCuFt * 62.4) / 2000);
+  const displacedVolumeCuFt = Math.round(lincoln.displacedVolumeM3 * 35.315);
+  const buoyantLiftTons = Number((lincoln.liftKn / 9.81).toFixed(1));
 
   return (
     <div className="rounded-2xl border border-amber-900/20 dark:border-ink-800 bg-parchment-50 dark:bg-ink-950 p-6 sm:p-7 shadow-patent space-y-6">
@@ -255,11 +255,11 @@ export function LincolnBuoySim() {
               <input
                 type="range"
                 aria-label="Cargo Weight"
-                min="50"
-                max="200"
+                min="200"
+                max="600"
                 step="10"
                 value={vesselCargoTons}
-                onChange={(e) => setVesselCargoTons(Number(e.target.value))}
+                onChange={(e) => updateParam("weightTons", Number(e.target.value))}
                 className="w-full accent-blue-600 cursor-pointer h-2 bg-parchment-300 dark:bg-ink-700 rounded-lg"
               />
             </div>
@@ -292,8 +292,9 @@ export function LincolnBuoySim() {
               </span>
               <p className="leading-relaxed">
                 By expanding the side bellows, the submerged volume increases by{" "}
-                {displacedVolumeCuFt} cu ft, generating {buoyantLiftTons} tons of immediate buoyant
-                lift to safely clear the sandbar.
+                {displacedVolumeCuFt} cu ft, {lincoln.draftReductionFt.toFixed(2)} ft draft relief,
+                generating {buoyantLiftTons} tons of immediate buoyant lift to safely clear the
+                sandbar.
               </p>
             </div>
           </div>

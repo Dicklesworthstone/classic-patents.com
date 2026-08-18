@@ -35,7 +35,7 @@ export function FermiReactor3D() {
   const { params } = usePatentPhysics("us-2708656-fermi-reactor");
   const [showUiOverlay, setShowUiOverlay] = useState<boolean>(true);
   const controlRodWithdrawalPct = params.rodWithdrawal ?? 83.5;
-  const moderatorPurityPct = params.moderatorPurity ?? 99.9;
+  const moderatorPurityPct = params.moderatorPurity ?? 99.5;
   const fuelEnrichmentPct = params.fuelEnrichmentPct ?? 0.72;
   const [showNeutronCascade, _setShowNeutronCascade] = useState<boolean>(true);
   const [showCalloutPins, setShowCalloutPins] = useState<boolean>(false);
@@ -299,7 +299,7 @@ export function FermiReactor3D() {
       rodGroup.position.y += (targetRodY - rodGroup.position.y) * 0.1;
 
       const ke = Number(p.kEff);
-      const purity = (p.moderatorPurityPct ?? 99.9) / 100;
+      const purity = (p.moderatorPurityPct ?? 99.5) / 100;
       graphiteMat.color.setRGB(0.12 * purity, 0.13 * purity, 0.15 * purity);
       uraniumFuelMat.emissiveIntensity = Math.max(0, (ke - 0.98) * 8);
       uraniumFuelMat.emissive = new THREE.Color(ke > 1.002 ? 0xf97316 : 0x22c55e);

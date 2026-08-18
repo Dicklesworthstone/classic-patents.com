@@ -47,6 +47,8 @@ export function stepParsonsTurbine(params: { rotorRpm?: number; inletPressurePsi
     enthalpyKjKg,
     shaftPowerKw: Math.round(28 * enthalpyKjKg * 0.84 * (rpm / 3000)),
     inletMpa: Number((psi * 0.00689476).toFixed(2)),
+    stageCount: 48,
+    isentropicEfficiencyPct: 84,
   };
 }
 
@@ -81,6 +83,9 @@ export function stepNobelDynamite(params: {
   return {
     detonationVelocityMps: isInitiated ? Math.round(5500 + (ng - 50) * 80) : 0,
     isInitiated,
+    blastOverpressureMpa: isInitiated ? Math.round(4500 + (ng - 50) * 120) : 0,
+    // Free NG vs kieselguhr dough: more dry meal → higher drop-hammer margin.
+    cushionFactor: Number((1 + (100 - ng) / 8.9).toFixed(1)),
   };
 }
 
@@ -262,7 +267,7 @@ export function stepHollerithTabulating(params: {
 }) {
   const cpm = Math.max(1, params.cardsPerMin ?? 60);
   const v = Math.max(0.5, params.supplyVoltageV ?? 12);
-  const relays = params.activeRelays ?? 8;
+  const relays = params.activeRelays ?? 16;
   return {
     cycleTimeMs: Math.round(60000 / cpm),
     solenoidForceN: Number(
@@ -349,7 +354,7 @@ export function stepWozniakApple(params: { crystalFreq?: number; ramCapacityKb?:
 
 export function stepSpencerMicrowave(anodeKv?: number, magneticGauss?: number, rfWatts?: number) {
   const kv = anodeKv ?? 2.2;
-  const b = magneticGauss ?? 1400;
+  const b = magneticGauss ?? 1450;
   const rf = rfWatts ?? 800;
   const hullCutoffGauss = Math.round(1180 * Math.sqrt(kv / 4.2));
   const isOscillating = b > hullCutoffGauss;
@@ -372,6 +377,7 @@ export function stepKevlarContinuum(drawRatio?: number, impactVelocityMps?: numb
     tensileStressMpa: Math.round((strainPct / 100) * elasticModulusGpa * 1000),
     tensileStrainPct: Number(strainPct.toFixed(2)),
     elasticModulusGpa,
+    tensileStrengthGpa: Number(Math.min(3.6, 0.5 + draw * 0.45).toFixed(2)),
   };
 }
 
@@ -444,16 +450,22 @@ export function stepGoodyearRubber(
   };
 }
 
-export function stepEinsteinRefrigerator(params: { heatInput?: number; totalPressure?: number }) {
+export function stepEinsteinRefrigerator(params: {
+  heatInput?: number;
+  totalPressure?: number;
+  ammoniaRatio?: number;
+}) {
   const qIn = params.heatInput ?? 220;
   const press = params.totalPressure ?? 15.0;
-  const evapTempC = -25 + (press - 10) * 1.4;
+  const nh3 = params.ammoniaRatio ?? 0.65;
+  const evapTempC = -25 + (press - 10) * 1.4 - (nh3 - 0.65) * 18;
   const cop = Number((0.32 * (1 - Math.abs(evapTempC) / 120)).toFixed(2));
   return {
     evapTempC: Number(evapTempC.toFixed(1)),
     coolingWatts: Math.round(qIn * cop),
     cop,
     pressureAtm: press,
+    partialPressureButaneAtm: Number((press * (1 - nh3)).toFixed(2)),
   };
 }
 
@@ -463,15 +475,17 @@ export function stepLincolnBuoy(params: {
   shoalDepth?: number;
 }) {
   const infl = params.inflationPct ?? 75;
+  const weight = params.weightTons ?? 380;
   const depth = params.shoalDepth ?? 3.5;
   const volM3 = Number(((infl / 100) * 42.5).toFixed(1));
   const liftKn = Math.round(volM3 * 9.81);
   const draftRedFt = Number((volM3 * 0.055).toFixed(2));
-  const hullDraftFt = 5.0 - draftRedFt;
+  const hullDraftFt = 5.0 + (weight - 380) / 190 - draftRedFt;
   return {
     displacedVolumeM3: volM3,
     liftKn,
     draftReductionFt: draftRedFt,
+    hullDraftFt: Number(hullDraftFt.toFixed(2)),
     shoalClearanceFt: Number((depth - hullDraftFt).toFixed(2)),
   };
 }

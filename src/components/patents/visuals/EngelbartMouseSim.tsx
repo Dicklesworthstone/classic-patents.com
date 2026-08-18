@@ -14,7 +14,7 @@ export function EngelbartMouseSim() {
   const [pulseCountY, setPulseCountY] = useState<number>(0);
   const wheelRadius = params.wheelRadius ?? 10.0;
   const wheelDiameterMm = wheelRadius * 2;
-  const [pulsesPerRev, setPulsesPerRev] = useState<number>(36);
+  const pulsesPerRev = params.pulsesPerRev ?? 200;
 
   const prevPosRef = useRef<{ x: number; y: number }>({ x: posX, y: posY });
   const containerRef = useRef<SVGSVGElement>(null);
@@ -284,11 +284,11 @@ export function EngelbartMouseSim() {
               <input
                 type="range"
                 aria-label="Disc Pulses / Rev"
-                min="12"
-                max="72"
-                step="6"
+                min="20"
+                max="400"
+                step="4"
                 value={pulsesPerRev}
-                onChange={(e) => setPulsesPerRev(Number(e.target.value))}
+                onChange={(e) => updateParam("pulsesPerRev", Number(e.target.value))}
                 className="w-full accent-amber-600"
               />
             </div>

@@ -65,6 +65,7 @@ export function LamarrFrequencyHopping3D() {
     hopRateHopsPerSec,
     isJammingActive,
     carrierChannelsCount,
+    jamChannel: params.jamChannel ?? Math.floor(carrierChannelsCount * 0.3),
     isAudioMuted,
   });
 
@@ -302,7 +303,10 @@ export function LamarrFrequencyHopping3D() {
         8,
         Math.min(maxDisplayChannels, Math.round(p.carrierChannelsCount)),
       );
-      const jamCenter = Math.floor(liveChannels * 0.3);
+      const jamCenter = Math.min(
+        liveChannels - 1,
+        Math.max(0, Math.round(p.jamChannel ?? liveChannels * 0.3) - 1),
+      );
       for (let c = 0; c < maxDisplayChannels; c++) {
         const bar = barMeshes[c];
         if (c >= liveChannels) {

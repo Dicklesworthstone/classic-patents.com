@@ -13,16 +13,21 @@ function pianoRollChannel(step: number): number {
 }
 
 /** US 2,292,387 88-key span as labeled on the spectrum axis: 302–520 MHz. */
-function channelFrequencyMhz(channel: number): number {
-  return 302 + ((channel - 1) * (520 - 302)) / (PIANO_KEYS - 1);
+function channelFrequencyMhz(channel: number, channelCount: number = PIANO_KEYS): number {
+  const denom = Math.max(1, channelCount - 1);
+  return 302 + ((Math.max(1, channel) - 1) * (520 - 302)) / denom;
 }
 
 export function LamarrFrequencyHoppingSim() {
   const { params, updateParam } = usePatentPhysics("us-2292387-lamarr-frequency-hopping");
   const [isHoppingActive, setIsHoppingActive] = useState<boolean>(true);
   const hopsPerSec = params.hopRate ?? 4.0;
-  const [isEnemyJamming, setIsEnemyJamming] = useState<boolean>(true);
-  const [jammingFrequencyChannel, setJammingFrequencyChannel] = useState<number>(44); // Spot jamming channel 1-88
+  const liveChannels = Math.max(8, Math.min(88, Math.round(params.channels ?? 88)));
+  const isEnemyJamming = params.isJammingActive !== 0;
+  const jammingFrequencyChannel = Math.min(
+    liveChannels,
+    Math.max(1, Math.round(params.jamChannel ?? Math.floor(liveChannels * 0.3))),
+  );
   const [currentChannel, setCurrentChannel] = useState<number>(() => pianoRollChannel(0));
   const [historyChannels, setHistoryChannels] = useState<number[]>(() =>
     [0, 1, 2, 3, 4, 5].map(pianoRollChannel),
@@ -45,8 +50,10 @@ export function LamarrFrequencyHoppingSim() {
   }, [isHoppingActive, hopsPerSec]);
 
   // Is current carrier jammed?
-  const isJammedThisInstant = isEnemyJamming && currentChannel === jammingFrequencyChannel;
-  const jammingInterferencePercent = isEnemyJamming ? (1 / 88) * 100 : 0; // Only 1.14% packet loss!
+  const radioChannel =
+    Math.floor(((Math.max(1, currentChannel) - 1) / PIANO_KEYS) * liveChannels) + 1;
+  const isJammedThisInstant = isEnemyJamming && radioChannel === jammingFrequencyChannel;
+  const jammingInterferencePercent = isEnemyJamming ? (1 / liveChannels) * 100 : 0;
   const recentHopSet = new Set(historyChannels);
 
   return (
@@ -80,7 +87,7 @@ export function LamarrFrequencyHoppingSim() {
           </button>
           <button
             type="button"
-            onClick={() => setIsEnemyJamming(!isEnemyJamming)}
+            onClick={() => updateParam("isJammingActive", isEnemyJamming ? 0 : 1)}
             className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-mono font-bold transition-colors border shadow-sm ${
               isEnemyJamming
                 ? "bg-red-600 text-white border-red-700 animate-pulse"
@@ -104,7 +111,7 @@ export function LamarrFrequencyHoppingSim() {
             ) : (
               <span className="px-3 py-1 bg-emerald-950/90 border border-emerald-700 text-emerald-300 rounded-lg">
                 ✓ SIGNAL CLEAR: Active on Carrier Channel #{currentChannel} (
-                {channelFrequencyMhz(currentChannel).toFixed(1)} MHz)
+                {channelFrequencyMhz(radioChannel, liveChannels).toFixed(1)} MHz)
               </span>
             )}
 
@@ -233,9 +240,9 @@ export function LamarrFrequencyHoppingSim() {
                 type="range"
                 aria-label="Enemy Jammer Target Channel"
                 min="1"
-                max="88"
+                max={liveChannels}
                 value={jammingFrequencyChannel}
-                onChange={(e) => setJammingFrequencyChannel(Number(e.target.value))}
+                onChange={(e) => updateParam("jamChannel", Number(e.target.value))}
                 className="w-full accent-red-600 cursor-pointer h-2 bg-parchment-300 dark:bg-ink-700 rounded-lg"
               />
             </div>

@@ -7,7 +7,7 @@ import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { usePatentAudio } from "./three/usePatentAudio";
 
 export function ParsonsTurbineSim() {
-  const { params, updateParam, resetParams } = usePatentPhysics("us-328710-parsons-turbine");
+  const { params, updateParam, resetParams } = usePatentPhysics("us-608969-parsons-turbine");
   const { isAudioMuted, toggleSound } = usePatentAudio();
   const rotorRpm = params.rotorRpm ?? 3000;
   const inletPressurePsi = params.inletPressurePsi ?? 180;
@@ -16,13 +16,17 @@ export function ParsonsTurbineSim() {
   const animRef = useRef<number | null>(null);
 
   // Reaction Turbine Thermodynamics
-  const { inletMpa: pInletMpa, shaftPowerKw } = FrankenSimEngine.stepParsonsTurbine({
+  const {
+    inletMpa: pInletMpa,
+    shaftPowerKw,
+    stageCount,
+    isentropicEfficiencyPct,
+  } = FrankenSimEngine.stepParsonsTurbine({
     rotorRpm,
     inletPressurePsi,
   });
-  const _condenserVacuumPsi = 1.0; // Near absolute vacuum
-  const _totalStages = 45; // Compound expansion stages
-  const isentropicEfficiencyPct = 84;
+  const _condenserVacuumPsi = 1.0;
+  const _totalStages = stageCount;
   const _steamBladeSpeedRatio = Number(((rotorRpm * 2 * Math.PI * 0.45) / 60 / 320).toFixed(2));
 
   useEffect(() => {

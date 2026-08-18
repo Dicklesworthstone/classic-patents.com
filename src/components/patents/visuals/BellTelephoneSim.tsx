@@ -8,7 +8,7 @@ import { soundEngine } from "@/utils/soundEngine";
 
 export function BellTelephoneSim() {
   const { params, updateParam } = usePatentPhysics("us-174465-bell-telephone");
-  const [acousticFrequency, setAcousticFrequency] = useState<number>(440); // Hz
+  const acousticFrequency = params.acousticFrequencyHz ?? 440;
   const voiceAmplitude = params.voiceAmplitude ?? 75;
   const loudnessSones = sonesFromDbSpl(voiceAmplitude);
   const [signalType, setSignalType] = useState<"continuous-undulating" | "intermittent-make-break">(
@@ -187,7 +187,7 @@ export function BellTelephoneSim() {
                 max="1000"
                 step="10"
                 value={acousticFrequency}
-                onChange={(e) => setAcousticFrequency(Number(e.target.value))}
+                onChange={(e) => updateParam("acousticFrequencyHz", Number(e.target.value))}
                 className="w-full accent-blue-600 cursor-pointer h-2 bg-parchment-300 dark:bg-ink-700 rounded-lg"
               />
             </div>

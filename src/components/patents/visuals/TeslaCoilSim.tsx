@@ -1,7 +1,6 @@
 "use client";
 
 import { Zap } from "lucide-react";
-import { useState } from "react";
 import { FrankenSimEngine } from "@/physics/engine";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 
@@ -11,12 +10,19 @@ export function TeslaCoilSim() {
   const inputKv = params.inputVoltageKv ?? 15;
   const sparkGap = params.sparkGapDistanceMm ?? 12;
   const couplingK = params.couplingK ?? 0.18;
-  const [sparkRateHz, setSparkRateHz] = useState<number>(120); // 30 to 400 sparks/sec
-  const [secondaryTurns, setSecondaryTurns] = useState<number>(850); // 400 to 1500 turns
+  const sparkRateHz = params.sparkRateHz ?? 120;
+  const secondaryTurns = params.secondaryTurns ?? 850;
 
   // Resonant calculations via central physics engine
   const resonantFreqKhz = Math.round(180 * Math.sqrt(45 / primaryCapacitanceNf));
-  const res = FrankenSimEngine.stepTeslaCoil(resonantFreqKhz, inputKv, sparkGap, 145, couplingK);
+  const res = FrankenSimEngine.stepTeslaCoil(
+    resonantFreqKhz,
+    inputKv,
+    sparkGap,
+    145,
+    couplingK,
+    secondaryTurns,
+  );
   const secondaryVoltageKv = Math.round(res.secondaryPotentialMv * 1000);
   const streamerScale = Math.min(2.2, Math.max(0.35, res.streamerLengthInches / 48));
 
@@ -224,7 +230,7 @@ export function TeslaCoilSim() {
                 max="1400"
                 step="50"
                 value={secondaryTurns}
-                onChange={(e) => setSecondaryTurns(Number(e.target.value))}
+                onChange={(e) => updateParam("secondaryTurns", Number(e.target.value))}
                 className="w-full accent-amber-600 cursor-pointer h-2 bg-parchment-300 dark:bg-ink-700 rounded-lg"
               />
             </div>
@@ -246,7 +252,7 @@ export function TeslaCoilSim() {
                 max="400"
                 step="10"
                 value={sparkRateHz}
-                onChange={(e) => setSparkRateHz(Number(e.target.value))}
+                onChange={(e) => updateParam("sparkRateHz", Number(e.target.value))}
                 className="w-full accent-emerald-600 cursor-pointer h-2 bg-parchment-300 dark:bg-ink-700 rounded-lg"
               />
             </div>

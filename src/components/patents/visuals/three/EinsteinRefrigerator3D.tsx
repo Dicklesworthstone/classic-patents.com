@@ -30,7 +30,7 @@ export function EinsteinRefrigerator3D() {
   const [showUiOverlay, setShowUiOverlay] = useState<boolean>(true);
   const heatInputWatts = params.heatInput ?? 220;
   const systemPressureAtm = params.totalPressure ?? 15;
-  const auxiliaryGasRatio = params.auxiliaryGasRatio ?? 0.8;
+  const auxiliaryGasRatio = params.ammoniaRatio ?? params.auxiliaryGasRatio ?? 0.65;
   const [isHeating, _setIsHeating] = useState<boolean>(true);
   const [showCalloutPins, setShowCalloutPins] = useState<boolean>(false);
   const [activeCamera, setActiveCamera] = useState<CameraPreset>("iso");
@@ -39,8 +39,9 @@ export function EinsteinRefrigerator3D() {
   const frige = stepEinsteinRefrigerator({
     heatInput: heatInputWatts,
     totalPressure: systemPressureAtm,
+    ammoniaRatio: auxiliaryGasRatio,
   });
-  const butanePartialPressureAtm = (systemPressureAtm * (1 - auxiliaryGasRatio)).toFixed(2);
+  const butanePartialPressureAtm = frige.partialPressureButaneAtm.toFixed(2);
   const evaporatorTemperatureCelsius = frige.evapTempC;
   const copEfficiency = frige.cop.toFixed(2);
   const coolingPowerWatts = frige.coolingWatts;
