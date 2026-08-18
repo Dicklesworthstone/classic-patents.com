@@ -338,6 +338,24 @@ export function stepWozniakApple(params: { crystalFreq?: number; ramCapacityKb?:
   };
 }
 
+export function stepGoodyearRubber(
+  vulcanizationTempC?: number,
+  sulfurPct?: number,
+  durationMin?: number,
+) {
+  const temp = vulcanizationTempC ?? 145;
+  const sulfur = sulfurPct ?? 8;
+  const duration = durationMin ?? 30;
+  const isOptimalTemp = temp >= 135 && temp <= 165;
+  const crossLinkDensity = (sulfur / 8.0) * (duration / 30) * (isOptimalTemp ? 1.0 : 0.4);
+  return {
+    crossLinkDensity: Number(crossLinkDensity.toFixed(3)),
+    tensileStrengthPsi: Math.min(3200, Math.round(crossLinkDensity * 2800)),
+    elasticReturnPct: Math.min(98, Math.round(50 + crossLinkDensity * 45)),
+    isStickyOrBrittle: !isOptimalTemp || crossLinkDensity < 0.3,
+  };
+}
+
 export function stepEinsteinRefrigerator(params: { heatInput?: number; totalPressure?: number }) {
   const qIn = params.heatInput ?? 220;
   const press = params.totalPressure ?? 15.0;

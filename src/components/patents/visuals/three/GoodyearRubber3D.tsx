@@ -310,7 +310,10 @@ export function GoodyearRubber3D() {
       // Stress vector scaling
       leftArrow.visible = p.showStressVectors;
       rightArrow.visible = p.showStressVectors;
-      const stressScale = Math.min(2.5, Math.max(0.4, (stretch - 1.0) * 1.5 + 0.5));
+      const stressScale = Math.min(
+        2.8,
+        Math.max(0.35, (p.tensileStrengthPsi / 2800) * (stretch - 0.6)),
+      );
       leftArrow.scale.set(stressScale, stressScale, stressScale);
       rightArrow.scale.set(stressScale, stressScale, stressScale);
 

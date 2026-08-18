@@ -398,7 +398,7 @@ export function EdisonBulb3D() {
                 <div>
                   <span className="text-ink-600 dark:text-ink-400">Lifespan:</span>{" "}
                   <span className="font-bold text-purple-600 dark:text-purple-400">
-                    {estimatedLifespanHours} Hours
+                    {estimatedLifespanHours} h · {bulb.luminousLmPerW} lm/W
                   </span>
                 </div>
               </div>

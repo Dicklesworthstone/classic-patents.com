@@ -18,6 +18,7 @@ import {
   stepEricssonPropeller,
   stepGatlingGun,
   stepGliddenBarbedWire,
+  stepGoodyearRubber as stepGoodyearRubberCatalog,
   stepGrammeDynamo,
   stepHyattCelluloid,
   stepMcCormickReaper,
@@ -495,17 +496,7 @@ export const FrankenSimEngine = {
    * Polymer Disulfide Cross-Linking Kinetics
    */
   stepGoodyearRubber(vulcanizationTempC: number, sulfurPct: number, durationMin: number) {
-    const isOptimalTemp = vulcanizationTempC >= 135 && vulcanizationTempC <= 165;
-    const crossLinkDensity = (sulfurPct / 8.0) * (durationMin / 30) * (isOptimalTemp ? 1.0 : 0.4);
-    const tensileStrengthPsi = Math.min(3200, Math.round(crossLinkDensity * 2800));
-    const elasticReturnPct = Math.min(98, Math.round(50 + crossLinkDensity * 45));
-
-    return {
-      crossLinkDensity: Number(crossLinkDensity.toFixed(3)),
-      tensileStrengthPsi,
-      elasticReturnPct,
-      isStickyOrBrittle: !isOptimalTemp || crossLinkDensity < 0.3,
-    };
+    return stepGoodyearRubberCatalog(vulcanizationTempC, sulfurPct, durationMin);
   },
 
   /**

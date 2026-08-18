@@ -34,11 +34,13 @@ export function WozniakApple3D() {
   });
   const cycleTimeNs = Math.round(1000 / apple.cpuClockMhz);
   const phi1VideoAccessWindowNs = apple.dramWindowNs;
-  const effectiveCpuThroughputPct = 100;
+  const effectiveCpuThroughputPct = 100; // video steals Φ1; CPU never DMA-halts
   const colorSubcarrierMhz = apple.colorSubcarrierMhz.toFixed(4);
 
   const live = useLiveSimParams({
     clockFrequencyMhz,
+    cpuClockMhz: apple.cpuClockMhz,
+    dramWindowNs: apple.dramWindowNs,
     videoMode,
     ramCapacityKb,
     isCpuActive,
@@ -285,13 +287,16 @@ export function WozniakApple3D() {
       const p = live.current;
 
       const bPos = busPos;
-      const speed = p.clockFrequencyMhz * 4.0 * delta;
+      const speed = p.cpuClockMhz * 4.0 * delta;
+      const phi2 = Math.sin(clock.getElapsedTime() * p.cpuClockMhz * Math.PI * 2) > 0;
 
       if (p.isCpuActive) {
         for (let i = 0; i < busPacketCount; i++) {
           const idx = i * 3;
-          bPos[idx] += speed * (i % 2 === 0 ? 1 : -1);
-
+          const videoPhi1 = i % 2 === 0;
+          if (videoPhi1 || phi2) {
+            bPos[idx] += speed * (videoPhi1 ? 1 : -1);
+          }
           if (bPos[idx] > 3.5) bPos[idx] = -3.0;
           if (bPos[idx] < -3.5) bPos[idx] = 3.0;
         }
@@ -328,7 +333,7 @@ export function WozniakApple3D() {
                 <div>
                   <span className="text-ink-600 dark:text-ink-400">Throughput:</span>{" "}
                   <span className="font-bold text-emerald-600 dark:text-emerald-400">
-                    {effectiveCpuThroughputPct}% (0 DMA Halts)
+                    {effectiveCpuThroughputPct}% CPU — video on Φ1, no DMA halt
                   </span>
                 </div>
                 <div>

@@ -49,6 +49,7 @@ export function LincolnBuoy3D() {
     effectiveDraftFt,
     isAudioMuted,
     liftKn: lincoln.liftKn,
+    shoalClearanceFt: lincoln.shoalClearanceFt,
   });
 
   const controlsRef = useRef<any>(null);
@@ -147,7 +148,8 @@ export function LincolnBuoy3D() {
 
     const hullGeo = new THREE.ExtrudeGeometry(hullShape, { depth: 4.6, bevelEnabled: false });
     hullGeo.center();
-    const hull = new THREE.Mesh(hullGeo, hullWoodMat);
+    const hullPaint = hullWoodMat.clone();
+    const hull = new THREE.Mesh(hullGeo, hullPaint);
     hull.position.y = 0;
     hull.castShadow = true;
     hull.receiveShadow = true;
@@ -295,7 +297,8 @@ export function LincolnBuoy3D() {
       const delta = clock.getDelta();
       const p = live.current;
 
-      paddleGroup.rotation.z -= delta * 1.8;
+      paddleGroup.rotation.z -= delta * (p.shoalClearanceFt > 0 ? 1.8 : 0.35);
+      hullPaint.color.setHex(p.shoalClearanceFt > 0 ? 0x78350f : 0xf87171);
 
       const inflationScale = 0.3 + (p.bellowsInflationPct / 100) * 0.9;
       portBellows.scale.set(1.0, inflationScale, inflationScale);
