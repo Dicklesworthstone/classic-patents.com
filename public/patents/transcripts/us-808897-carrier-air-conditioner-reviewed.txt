@@ -1,0 +1,61 @@
+--- REVIEWED TRANSCRIPTION PAGE 1 OF 4 ---
+
+No. 808,897. W. H. CARRIER. APPARATUS FOR TREATING AIR. PATENTED JAN. 2, 1906. APPLICATION FILED SEPT. 16, 1904.
+
+Drawing sheet: Fig. 1, a view partly in elevation and partly in vertical section of the complete apparatus; Fig. 2, a fragmentary horizontal section of the separating device; Fig. 3, a diagram of the separating device; Fig. 4, a perspective of one separator plate; and Figs. 5 and 6, enlarged sections in different planes of a spray nozzle. Witnesses: Chas. W. Parker and G. B. Hornbeck. Inventor: Willis H. Carrier.
+
+--- REVIEWED TRANSCRIPTION PAGE 2 OF 4 ---
+
+UNITED STATES PATENT OFFICE.
+WILLIS H. CARRIER, OF BUFFALO, NEW YORK, ASSIGNOR TO BUFFALO FORGE COMPANY, OF BUFFALO, NEW YORK.
+APPARATUS FOR TREATING AIR.
+No. 808,897. Specification of Letters Patent. Patented Jan. 2, 1906.
+Application filed September 16, 1904. Serial No. 224,758.
+
+To all whom it may concern: Be it known that I, WILLIS H. CARRIER, a citizen of the United States, residing at Buffalo, in the county of Erie and State of New York, have invented a new and useful Improvement in Apparatus for Treating Air, of which the following is a specification.
+
+This invention relates to apparatus for treating air previous to its use for ventilating and heating buildings or for other commercial purposes—such as drying, refrigerating, &c.—and more particularly to air-purifying apparatus of that kind in which a liquid or solution in a finely-divided condition or atomized spray is introduced into a current of air to be treated, which is then caused to pass through a separator consisting of baffle-plates which intercept and separate from the air the particles of liquid, together with the solid impurities contained therein.
+
+The object of the invention is to provide an efficient practical apparatus of simple construction which will thoroughly separate all solid impurities, floating particles, and noxious material from the air either with or without altering its temperature and humidity.
+
+In the accompanying drawings, Figure 1 is a view, partly in elevation and partly in vertical section, of an apparatus for treating air embodying the invention. Fig. 2 is a fragmentary horizontal section, on an enlarged scale, of the separating device. Fig. 3 is a diagram of the separating device. Fig. 4 is a perspective view of one of the separator plates or elements. Figs. 5 and 6 are enlarged sections in different planes of one of the spray-nozzles detached.
+
+Like letters of reference refer to like parts in the several figures.
+
+M represents an air trunk, conduit, or casing, of galvanized iron or other suitable material, through which a current of air is caused to pass in a horizontal direction by a fan or other propelling device K, connected with the casing. In the casing M, preferably near its open intake or front end, is located a spraying device H for introducing water or any other suitable treating liquid or solution into the air passing through the casing. The spraying device may be of any suitable construction which will fill the adjacent portion of the casing with a finely divided or atomized spray of the liquid and cause an intimate contact and mixture thereof with all portions of the air-current. The spray device shown consists of a vertical head or pipe connected with a supply-pipe F and provided with spray-nozzles h of a well-known type, (shown in Figs. 5 and 6,) which impart a whirling or circular motion to the issuing liquid and produce a very fine spray or vapor.
+
+In the casing in rear of the spray device is a separator through which the air is passed for eliminating or separating therefrom the solid particles of foreign matter or impurities, together with all or a portion of the water which was introduced into the air for cleansing it. The separator comprises a series of parallel baffle plates or elements, made of sheet metal or other suitable material, separated by intervening passages for the air and arranged in an upright position, which will be understood to mean either vertically or inclined, so that the liquid or moisture removed from the air can flow down the surface of the plates or elements. The separator elements are provided with oblique faces joined by upright bends or angles, so as to form a series of continuous, sinuous, or zigzag passages between the elements for the air, which in its passage is deflected from side to side and caused to impinge against the alternate faces of the opposite separator plates or elements. Each plate or element comprises a forward portion consisting of oblique faces i, joined by a simple upright bend or angle j, and a rear portion consisting of oblique faces f g, joined by upright bends or angles, which are provided with flanges or portions b c, which project outwardly and rearwardly from the plates or in a direction opposed to the direction of movement of the air and form recesses or gutters.
+
+The separator plates or elements are preferably constructed as shown in the drawings, from which it will be seen that the front portion of each plate consists of a single section or piece which is bent at the angle j, while the other portion consists of separate sections or pieces riveted or otherwise joined with the front edge of each section projecting beyond the joint to form the flanges b and c.
+
+--- REVIEWED TRANSCRIPTION PAGE 3 OF 4 ---
+
+An obvious modification of the construction would be to make each plate or element of a single continuous piece and secure separate narrow strips thereon at the angles to form the flanges b and c. The upright rear edge of the last section f of each plate or element is also formed with or has secured thereto a lip or flange which forms a gutter or recess a.
+
+The two portions of the separator-plates perform distinct functions. The front portion does not completely separate the particles of the liquid or solution from the air, but only to a sufficient extent to cover the faces i with thin films or streams of the liquid. The air is brought into intimate contact with these films of liquid by reason of the sinuous passage-ways, and all the solid particles of material or impurities contained in the air are thrown against the films of liquid by reason of their inertia and by the action of centrifugal force produced by the sinuous course of the air. The liquid intercepts the impurities and the same are washed down the separator plates or elements by the downwardly-flowing films of liquid and collect in a suitable basin or trap J in the bottom of the casing, from which the liquid passes out through a suitable filter or sieve L. While the liquid is flowing downwardly on the front portions of the separator-plates, due to the action of gravity, it is also propelled forwardly by the current of air across the unobstructed bends j of the front portions of the plates. The entire surface of the front faces i of the plates is kept wet and offers a large area to catch the impurities from the air; but the front portion of the separator plates is not designed to completely remove the particles of liquid from the air. The projecting flanges or lips b c of the rear portion of the plates, however, obstruct the flow of the liquid across the angles from one face to the other of the rear portion of the plates, so that all of the free particles of liquid or any desired proportion thereof can be separated from the air, depending on the number of the faces f g and flanges b c with which the rear portion of the plates are provided. The number of faces of the front portion and faces and flanges of the rear portion of the separator-plates will depend on the desired degree of purification and elimination of moisture from the air.
+
+The separator-plates can be supported in the casing on transverse horizontal bars e and secured to said bars and the top of the casing by projecting ears or parts d at the lower and upper ends of the plates or they can be mounted and secured in any other desired manner.
+
+B represents pipe-coils located in a suitable portion of the casing in the path of the air and through which a heating or cooling medium is circulated for raising or lowering the temperature of the air as desired or necessary for the purpose for which the air is to be used. These heating or cooling coils constitute no part of the invention and may be of any known construction and their temperature regulated in any suitable manner. They are omitted when it is not desired to alter the temperature of the air.
+
+By the described construction of the separator the air is brought into intimate contact with a large wetted surface, whereby all of the impurities are removed from the air and a perfect separation of the free particles of liquid from the air is secured, while at the same time a minimum amount of resistance is offered to the flow of the air. On account of the continuous sinuous passages for the air the latter cannot flow in any but the intended paths, and thereby defeat to a greater or less extent the desired separation of the impurities and moisture. The construction of the separator is exceedingly simple and inexpensive.
+
+I claim as my invention—
+
+1. In an air-purifying apparatus, the combination of an air-conduit and a separator therein comprising upright plates, each having a succession of oblique faces forming a continuous sinuous surface lengthwise of the conduit and having the front portion of such surface unobstructed to permit the distribution of the liquid along the plate from one face to another, and having its succeeding portion provided with projections which obstruct the flow of the liquid lengthwise of the conduit and promote the separation of the liquid from the air, the plates being spaced from each other to form continuous sinuous air-passages between them, substantially as set forth.
+
+2. In an air-purifying apparatus, the combination of means for moistening the air, an air-conduit, and a separator therein comprising spaced upright plates having upright bends providing each plate with a succession of oblique faces and forming continuous sinuous air-passages between the plates, the surface of the front portions of said plates being smooth and unobstructed, and the succeeding portions of said plates having surface projections which obstruct the flow of the liquid lengthwise of the conduit, substantially as set forth.
+
+3. In an air-purifying apparatus, the combination of means for moistening the air, an air-conduit, and a separator in said conduit comprising spaced upright plates having upright bends whereby the plates form continuous sinuous air-passages between them, a portion of the bends of each plate being provided with projecting flanges forming upright gutters, substantially as set forth.
+
+--- REVIEWED TRANSCRIPTION PAGE 4 OF 4 ---
+
+4. In an air-purifying apparatus, the combination of means for moistening the air, an air-conduit, and a separator in said conduit composed of spaced upright plates having continuous zigzig surfaces and having projections forming gutters at salient portions of said surfaces, substantially as set forth.
+
+5. A separator-plate for air-purifiers having separate sections arranged at an angle to each other, with the front portion of the rear section projecting beyond the rear portion of the adjacent front section, thereby forming a gutter at the junction of the sections, substantially as set forth.
+
+Witness my hand this 14th day of September, 1904.
+
+WILLIS H. CARRIER.
+
+Witnesses: CHAS. W. PARKER, G. B. HORNBECK.

@@ -1,0 +1,42 @@
+--- REVIEWED TRANSCRIPTION PAGE 1 OF 7 ---
+
+US 2,292,387. SECRET COMMUNICATION SYSTEM. H. K. MARKEY ET AL. Filed June 10, 1941. Drawing sheet 1 of 2: Figs. 1, 2, and 3.
+
+--- REVIEWED TRANSCRIPTION PAGE 2 OF 7 ---
+
+US 2,292,387. SECRET COMMUNICATION SYSTEM. H. K. MARKEY ET AL. Filed June 10, 1941. Drawing sheet 2 of 2: Figs. 4, 5, 6, and 7.
+
+--- REVIEWED TRANSCRIPTION PAGE 3 OF 7 ---
+
+UNITED STATES PATENT OFFICE. 2,292,387. SECRET COMMUNICATION SYSTEM. Hedy Kiesler Markey, Los Angeles, and George Antheil, Manhattan Beach, Calif. Application June 10, 1941, Serial No. 397,412. 6 Claims. (Cl. 250-2.)
+
+This invention relates broadly to secret communication systems involving the use of carrier waves of different frequencies, and is especially useful in the remote control of dirigible craft, such as torpedoes.
+
+--- REVIEWED TRANSCRIPTION PAGE 4 OF 7 ---
+
+The continuous manually reviewed specification, preserving all paragraphs, component numbers, figure references, and punctuation from PDF pages 3 through 6, is the typed archival edition in src/data/editions/lamarrFrequencyHoppingEdition.ts. The visitor-facing source face renders that typed edition directly; this ledger records its reviewed source identity and sheet coverage without publishing an OCR layer.
+
+--- REVIEWED TRANSCRIPTION PAGE 5 OF 7 ---
+
+The transmitting station uses a variable-frequency carrier oscillator 20, modulator 21, amplifier 22, antenna 23, tuning condensers 24a through 24g, switches 31, and record strip 37. The receiving station uses antenna 60, selector 61, amplifier 64, detector 65, 100-cycle and 500-cycle filters, magnets, ratchet-operated rudder control, and a synchronized record strip 37'.
+
+--- REVIEWED TRANSCRIPTION PAGE 6 OF 7 ---
+
+We claim:
+
+1. In a secret communication system, a transmitting station including means for generating and transmitting carrier waves of a plurality of frequencies, a first elongated record strip having differently characterized, longitudinally disposed recordings thereon, record-actuated means selectively responsive to different ones of said recordings for determining the frequency of said carrier waves, means for moving said strip past said record-actuated means whereby the carrier wave frequency is changed from time to time in accordance with the recordings on said strip, a receiving station including carrier wave-receiving means having tuning means tunable to said carrier wave frequencies, a second record strip, record-actuated means selectively responsive to different recordings on said second record strip for tuning said receiver to said predetermined carrier frequencies, and means for moving said second strip past its associated record-actuated means in synchronism with said first strip, whereby the record-actuated means at the transmitting station and at the receiving station, respectively, are actuated in synchronism to maintain the receiver tuned to the carrier frequency of the transmitter.
+
+2. Apparatus as described in claim 1, in which said differently characterized recordings on said record strips are distinguished by being differently laterally displaced from each other, and said record-actuated means are selectively responsive to the lateral positioning of said recordings.
+
+3. Apparatus as described in claim 1, in which said record strip comprises a ribbon having longitudinally extending slots therein differently characterized by being differently laterally positioned on said ribbon, and each said record-actuated means includes a plurality of movable elements each movable to tune its associated generating or receiving means to a different one of said frequencies, and means for selectively moving said elements in accordance with the lateral positioning of the slots in said ribbon.
+
+4. In a system of the type described, including a control station and a movable craft to be controlled thereby, apparatus at said control station comprising an oscillator and tuning means therefor, a first elongated record strip having differently characterized, longitudinally disposed recordings thereon, record-actuated means selectively responsive to different ones of said recordings for tuning said oscillator to predetermined different frequencies, means for moving said record strip past said record-actuated means whereby the frequency of oscillation is changed from time to time in accordance with the recordings on said strip, and means for selectively transmitting radio signals corresponding in frequency to the said frequency of oscillation; apparatus on said movable craft comprising a radio receiver having tuning means tunable to said predetermined frequencies, a second record strip, record-actuated means selectively responsive to different recordings on said second record strip for tuning said receiver to said predetermined frequencies, means for moving said second strip past its associated record-actuated means in synchronism with said first strip whereby the record-actuated means at the control station and on the movable craft, respectively, are actuated in synchronism to maintain said radio receiver tuned to the frequency of oscillation of the transmitter; mechanism on said craft for selectively determining its movement, and means responsive to radio signals received by said radio receiver for controlling said mechanism.
+
+--- REVIEWED TRANSCRIPTION PAGE 7 OF 7 ---
+
+5. Apparatus as described in claim 4, in which said mechanism on said craft for selectively determining its movement includes a control element movable by predetermined increments, and means responsive to successive received radio impulses for moving said element by one increment only in response to each separate impulse irrespective of the length of the impulse.
+
+6. Apparatus as described in claim 1, including means at the transmitting station for transmitting radio signals of different frequencies to which said radio receiver tuning means are not tunable, and means coordinated with the recordings on said first strip for indicating at the transmitting station when the transmitting apparatus is tuned to frequencies that are not receivable at the receiving station.
+
+HEDY KIESLER MARKEY.
+GEORGE ANTHEIL.
