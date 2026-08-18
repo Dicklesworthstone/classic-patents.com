@@ -26,7 +26,6 @@ import { goddardRocketParallelReadings } from "./goddardRocketEdition";
 import { goodyearRubberParallelReadings } from "./goodyearRubberEdition";
 import { grammeDynamoParallelReadings } from "./grammeDynamoEdition";
 import { hyattCelluloidParallelReadings } from "./hyattCelluloidEdition";
-import { kwolekKevlarParallelReadings } from "./kwolekKevlarEdition";
 import { lincolnBuoyParallelReadings } from "./lincolnBuoyEdition";
 import { lindeAirLiquefactionParallelReadings } from "./lindeAirLiquefactionEdition";
 import { maximMachineGunParallelReadings } from "./maximMachineGunEdition";
@@ -115,7 +114,6 @@ export const ARCHIVAL_PARALLEL_READINGS: Readonly<
   "us-2495429-spencer-microwave": spencerMicrowaveParallelReadings,
   "us-2524035-bardeen-transistor": bardeenTransistorParallelReadings,
   "us-2981877-noyce-ic": noyceIcParallelReadings,
-  "us-3671542-kwolek-kevlar": kwolekKevlarParallelReadings,
   "us-4136359-wozniak-apple": wozniakAppleParallelReadings,
 
   "us-821393-wright-flyer": {

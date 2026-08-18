@@ -99,6 +99,39 @@ describe("manual-edition publication contract", () => {
     expect(violations).toEqual([]);
   });
 
+  test("rejects page-summary boilerplate masquerading as a reviewed transcription", () => {
+    // A page marker only proves that a ledger has the right number of pages.
+    // These patterns describe a page's contents instead of transcribing them;
+    // allowing either into a published ledger would recreate the exact failure
+    // that made a 58-page source appear complete while omitting its body.
+    const summaryPlaceholders = [
+      /\bSpecification\s+columns?\s+\d+(?:\s*(?:and|-)\s*\d+)?\s*:\s*Detailed descriptions?\b/i,
+      /\bSpecification\s+columns?\s+\d+(?:\s*(?:and|-)\s*\d+)?\s*:\s*Comprehensive technical disclosure\b/i,
+    ];
+    const violations: string[] = [];
+
+    for (const patent of allPatents.filter((candidate) =>
+      archivalEditionForPublication(candidate),
+    )) {
+      const asset = patent.originalTextAsset;
+      if (asset?.kind !== "reviewed-transcription") continue;
+
+      const transcriptPath = publicPath(asset.url);
+      if (!existsSync(transcriptPath)) continue;
+      const transcript = readFileSync(transcriptPath, "utf8");
+
+      for (const placeholder of summaryPlaceholders) {
+        if (placeholder.test(transcript)) {
+          violations.push(
+            `${patent.id}: reviewed transcription contains page-summary boilerplate (${placeholder.source}).`,
+          );
+        }
+      }
+    }
+
+    expect(violations).toEqual([]);
+  });
+
   test("requires a distinct editorial decoder and innovation set for every published claim", () => {
     const violations: string[] = [];
 
