@@ -2,6 +2,42 @@ import type { CuratedSpecificationEdition, CuratedSpecificationInlines } from "@
 
 const literal = (text: string): CuratedSpecificationInlines => [{ kind: "text", text }];
 
+const figure = (
+  text: string,
+  group: "division-2" | "division-3" | "division-4" | "plate-2",
+): CuratedSpecificationInlines[number] => {
+  const previews = {
+    "division-2": [
+      "/patents/figures/us-x9430-colt-revolver/division-2-pistol-section.png",
+      820,
+      1420,
+    ],
+    "division-3": ["/patents/figures/us-x9430-colt-revolver/division-3-lock-parts.png", 760, 1080],
+    "division-4": [
+      "/patents/figures/us-x9430-colt-revolver/division-4-arbor-and-cylinder.png",
+      1000,
+      1220,
+    ],
+    "plate-2": ["/patents/figures/us-x9430-colt-revolver/plate-2-lockwork.png", 980, 1190],
+  } as const;
+  const [src, width, height] = previews[group];
+  return {
+    kind: "reference",
+    text,
+    href: `#${group}-drawing`,
+    referenceType: "figure",
+    label: `${text}, ${group.replace("-", " ")} source drawing crop`,
+    figurePreviews: [
+      { src, alt: `${text} in the US X9430 ${group.replace("-", " ")} drawing.`, width, height },
+    ],
+  };
+};
+
+const cited = (
+  ...parts: (string | CuratedSpecificationInlines[number])[]
+): CuratedSpecificationInlines =>
+  parts.map((part) => (typeof part === "string" ? { kind: "text", text: part } : part));
+
 /**
  * A hand-prepared continuous reading edition of Samuel Colt's US X9430.
  * Four drawing sheets precede the three specification sheets in the pinned
@@ -71,21 +107,28 @@ export const coltRevolverArchivalEdition: CuratedSpecificationEdition = {
     },
     {
       kind: "paragraph",
-      inlines: literal(
-        "Figure 1 of Division 3 represents the hammer which discharges the percussion-caps. It acts upon a fulcrum at a. b is a pin projecting from the hammer, which serves to operate the key that locks the cylinder when its respective chambers are brought directly opposite the barrel. C represents the hole which receives the lower arm of the lifter that turns the cylinder. a represents the part of the hammer where the mainspring acts upon it. e is a projection by which the hammer is drawn back.",
+      inlines: cited(
+        figure("Figure 1", "division-3"),
+        " of Division 3 represents the hammer which discharges the percussion-caps. It acts upon a fulcrum at a. b is a pin projecting from the hammer, which serves to operate the key that locks the cylinder when its respective chambers are brought directly opposite the barrel. C represents the hole which receives the lower arm of the lifter that turns the cylinder. a represents the part of the hammer where the mainspring acts upon it. e is a projection by which the hammer is drawn back.",
       ),
     },
-    { kind: "paragraph", inlines: literal("Figure 2 is the mainspring.") },
+    { kind: "paragraph", inlines: cited(figure("Figure 2", "division-3"), " is the mainspring.") },
     {
       kind: "paragraph",
-      inlines: literal(
-        "Figure 3 is the key that holds the cylinder in its place by the arm a when each chamber is brought opposite the barrel. b is a spring, which is attached to the part c, which has a lateral motion to the right by means of a hinge at d, and serves to allow the pin b in Figure 1 to pass it. The fulcrum of the key is at e. f is the fulcrum-pin. g is the spring which forces the key into the wards of the cylinder.",
+      inlines: cited(
+        figure("Figure 3", "division-3"),
+        " is the key that holds the cylinder in its place by the arm a when each chamber is brought opposite the barrel. b is a spring, which is attached to the part c, which has a lateral motion to the right by means of a hinge at d, and serves to allow the pin b in ",
+        figure("Figure 1", "division-3"),
+        " to pass it. The fulcrum of the key is at e. f is the fulcrum-pin. g is the spring which forces the key into the wards of the cylinder.",
       ),
     },
     {
       kind: "paragraph",
-      inlines: literal(
-        "Figure 4 is the lifter or hand, with a spring on the left side to allow it to move laterally to the left when acted on at a by each tooth of the ratchet. At b is a joint, which connects it with the pin c, which acts in the hole e in Figure 1.",
+      inlines: cited(
+        figure("Figure 4", "division-3"),
+        " is the lifter or hand, with a spring on the left side to allow it to move laterally to the left when acted on at a by each tooth of the ratchet. At b is a joint, which connects it with the pin c, which acts in the hole e in ",
+        figure("Figure 1", "division-3"),
+        ".",
       ),
     },
     {
@@ -212,40 +255,64 @@ export const coltRevolverArchivalEdition: CuratedSpecificationEdition = {
  * explicit editorial evidence rather than generated summaries.
  */
 export const coltRevolverParallelReadings: Readonly<Record<number, readonly string[]>> = {
+  5: [
+    "This formal salutation addresses every reader who may need notice of the instrument. It introduces the legal specification rather than a mechanical part or a claim.",
+  ],
   6: [
-    "Colt identifies himself and says the drawings plus description define how the mechanism is made and works.",
+    "Colt identifies himself as a Hartford inventor and says that the accompanying drawings and written account together give the complete construction and operation. The statement distinguishes the descriptive disclosure from the numbered claims that follow later.",
   ],
   7: [
-    "The drawings are organized as a complete pistol, sectional views, loose parts, and the assembled mechanism so a reader can follow the same parts across views.",
+    "The drawings are organized as a complete pistol, four sectional views, the loose parts of Sections 1 and 2, and the assembled mechanism. That structure lets a reader follow the same hammer, key, hand, ratchet, shackle, cylinder, and arbor from an isolated part to the working gun.",
   ],
   8: [
-    "The hammer both strikes a percussion cap and carries a pin that moves the cylinder-locking key. The lifter enters the hammer through the named hole and turns the cylinder.",
+    "The hammer has two jobs. Its upper end strikes a percussion cap, while pin b lifts the key that locks the cylinder before indexing; the lifter's lower arm enters hole C so hammer motion can turn the cylinder. The mainspring bears on the named hammer portion, and projection e gives the user a place to draw it back.",
+  ],
+  9: [
+    "This short figure identification matters because the mainspring supplies the stored energy that drives the hammer forward after the trigger releases the connecting-rod catch. The specification keeps the spring as a separately identified part rather than treating the firing force as unexplained.",
   ],
   10: [
-    "The key is the cylinder stop: its spring presses it into a cylinder ward after the next chamber has reached the barrel.",
+    "The key is the cylinder stop. Its arm a enters a cylinder ward when a chamber reaches the barrel; spring g supplies the locking force. The hinged part c and spring b let hammer pin b pass during cocking, so the key can withdraw for rotation and then return for alignment.",
   ],
   11: [
-    "The hand or lifter is spring-biased sideways so each ratchet tooth can pass and then be driven on the next cocking movement.",
+    "The hand or lifter is spring-biased sideways. Each ratchet tooth can push it leftward while passing, after which the hand returns to engage and drive the next tooth. Its joint to pin c converts the hammer's motion into the cylinder's stepwise rotation.",
   ],
   12: [
-    "The connecting rod converts hammer motion into trigger positioning and a catch that holds the hammer at full cock.",
+    "The connecting-rod converts the hammer's rearward movement into trigger positioning and a cocked catch. When the hammer draws the rod forward, the trigger claw hooks the rod; a separate spring keeps the rod toward the hammer so it can enter the hammer notch and hold the lock set.",
   ],
   13: [
-    "The arbor carries the cylinder, while the shackle and ratchet transmit the hand's rotation to it without letting the arbor spin in the shield.",
+    "The arbor is the fixed spindle around which the cylinder turns. Its bearings support the cylinder; a key connects the arbor assembly through the shackle, and the shackle's tongues couple it to the cylinder. The nut and keyed connection retain the sections while allowing the cylinder, rather than the arbor, to revolve.",
   ],
   14: [
-    "The separated cap tubes and partitions isolate neighboring caps. The shield is an enclosure against moisture and powder smoke.",
+    "The ratchet sits in the shield and receives the shackle through a tongue or projection, so the hand's motion reaches the cylinder. A pin or key holds the arbor against rotation in the shield; this is the fixed reference that permits the ratchet and cylinder to turn around it.",
   ],
   15: [
-    "Cocking first withdraws the cylinder stop, then the hand advances the ratchet one chamber, and finally the stop spring enters the next ward to lock the chamber opposite the barrel.",
+    "The cylinder has charge chambers at its front, a central arbor hole, locking wards, rear percussion-cap tubes, and partitions between those tubes. When the shield embraces the partitions, they stop fire or smoke from one exploding cap from reaching an adjacent cap. This paragraph ties the physical cap separation directly to the cylinder and lockup features.",
   ],
   16: [
-    "The trigger releases the rod's catch so the mainspring drives the hammer into the cap. The hand resets below the next ratchet tooth for the following shot.",
+    "This section identifies the barrel-side connection: the arbor passes through the section, a key joins it, and the ball enters the barrel from the selected chamber. The barrel fastens to the plate, whose groove steadies the lock plate; the same figure also identifies the bayonet, its pivot, and its catch.",
   ],
   17: [
-    "For long guns Colt substitutes a separate striker called an adopter and a setting lever, while retaining the locked, indexed cylinder principle.",
+    "The assembled view names the complete drive train. Hammer motion reaches the ratchet through the lifter, ratchet, and shackle; the arbor supports the cylinder; a key secures the forward arbor and barrel; and distinct springs load the connecting-rod and the cylinder-locking key. It is a map of which organ performs each mechanical constraint.",
   ],
   18: [
-    "The claimed practical effects are repeat loading, weather and smoke protection, cap separation, a stable hand position, and rapid successive cock-and-fire operation.",
+    "Cocking is an ordered sequence: hammer pin p lifts the rear of the locking key, end r leaves its cylinder ward, and lifter arm d drives ratchet tooth s through the shackle. After pin p passes the key, spring m returns r into the succeeding ward. The lower hammer end also moves the connecting-rod forward until the trigger claw catches it, holding the hammer set.",
+  ],
+  19: [
+    "Pulling the trigger removes the connecting-rod from the hammer catch, so the mainspring drives the hammer into the percussion-cap. During that firing stroke the lifter slips laterally below the next ratchet tooth and the key geometry lets hammer pin p reset below its rear end, preparing the same mechanism for the next chamber.",
+  ],
+  20: [
+    "For rifles, muskets, and other long guns, Colt retains the revolving-cylinder principle but changes four linked features: how the lock is set, a separate adopter that carries hammer force to the cap, the positions of mainspring and trigger, and the stock-retaining lock plate and guards. The paragraph identifies each long-gun part so the following operation can be traced without importing pistol-only geometry.",
+  ],
+  21: [
+    "The long-gun lever first pulls the hammer to the trigger catch. Once the hammer clears the adopter, a coil spring retracts the adopter enough for the cylinder to turn; after release, the mainspring sends the hammer into the adopter, whose far end strikes the cap. Loading uses a key to free Section 4 and then withdraws the locking key so the cylinder can come off the arbor.",
+  ],
+  22: [
+    "Colt names concrete practical effects: easier loading, protection from dampness and powder smoke, partitions that block cap-to-cap ignition, less sight disturbance because the hammer hits the cap at the cylinder end, steadier hand balance from cylinder weight and position, and rapid successive shots. He separately limits the adopter and lever advantages to the long-gun form.",
+  ],
+  32: [
+    "Samuel Colt's signature executes the specification after the claims. It is a formal source block, not an additional technical claim or a plain-English claim decoder.",
+  ],
+  33: [
+    "Robert Clarke and Wm. Wallis are the named witnesses to the executed instrument. Their names document signing and do not add inventors, parts, or claimed subject matter.",
   ],
 };

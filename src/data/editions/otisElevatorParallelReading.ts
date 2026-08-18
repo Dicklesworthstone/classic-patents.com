@@ -20,12 +20,7 @@ export const otisElevatorParallelReadings: Readonly<Record<number, ArchivalParal
   16: ["Pulling U down aligns the two u branches of V. Slide S then moves both belts to idle pulleys and presses shoe Z onto L, stopping power transmission. Once aligned, V no longer pulls T: that geometry prevents the running control from defeating the applied brake."],
   17: ["For ascent, T places O on working pulley L and lifts Z. For descent, T shifts cross-belt P onto L. The same manual input therefore controls direction and the brake position."],
   18: ["If G breaks, springs e and g drive f f into hook racks C C. Load on D then tends to draw uprights B B inward, not spread them apart, so the hooks lock and casual release is prevented. Counterweight R stays on drum H so it does not interfere with this safety action."],
-  19: ["Arm aˣ reads a knot or projection bˣ on rope T at the lowest travel point. It throws O off working pulley L and applies Z at the same time, giving the machine a lower-limit stop independent of the operator's hand."],
   20: ["This is the formal transition from the descriptive specification to the legal claims."],
-  22: ["Claim 1 protects the hook-form relationship of pawls f f and rack teeth C C. Its limitation is not any generic brake: a broken G must let platform weight lock the pawls and teeth together against separation."],
-  23: ["Claim 2 protects the combined arrangement of hand rope T, stop rope U, and branched end V. The claim is tied to their stated operating relationship, including the horizontal alignment that removes V's effect after braking."],
-  24: ["Claim 3 protects slide S with brake shoe Z and rope T, specifically so belt shifting and brake application occur together. It names idle pulleys J and K and belts O and P as part of that combination."],
-  30: ["Claim 4 protects placing counterpoise rope Q on the opposite side of drum H from lifting rope G. The functional limitation is balance of D without interfering with safety mechanism E e f."],
   25: ["E. G. Otis signs the completed specification and claims."],
   26: ["M. M. Livingston and G. H. Reed are witnesses to the executed patent instrument."],
 };

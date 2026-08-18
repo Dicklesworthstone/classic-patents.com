@@ -158,7 +158,9 @@ export const mccormickReaperArchivalEdition: CuratedSpecificationEdition = {
  * to the shared `parallelReadings.ts` registry; this patent-only lane does not
  * own that shared registry.
  */
-export const mccormickReaperParallelReadings = {
+export const mccormickReaperParallelReadings: Readonly<
+  Record<number, readonly string[]>
+> = {
   2: [
     "This is the formal address used before the specification. It introduces the public instrument rather than a technical feature.",
   ],
@@ -180,15 +182,9 @@ export const mccormickReaperParallelReadings = {
   8: [
     "The reel axle can be raised in slotted posts, so its height follows the crop. A belt from the ground-wheel system drives it. Its cross arms and thin bands sweep stalks toward the cutter and then onto the platform, where a person with a rake removes a collected sheaf. The oblique left wheel supports the platform without knocking down standing stalks.",
   ],
-  10: [
-    "The first unnumbered claim covers the overall arrangement and, more specifically, cutting with a crank-driven vibrating blade. It reaches smooth or toothed edges, fixed supports above and below the blade, and an alternative pair of oppositely moving cutter or bar elements. The stated functional limits are supporting the grain, reducing friction and wear, and holding the grain at a proper angle to the cutter.",
-  ],
-  11: [
-    "The second unnumbered claim covers the reel carrying grain back to the cutter and onto a platform, including reel-height adjustment. It also names the platform's temporary holding function, height adjustment for cutting, separation of the cut swath from standing grain, and the behind-the-horse tongue attachment used for accurate guidance.",
-  ],
   12: [
     "The signature dates McCormick's own attestation June 19, two days before the patent date printed in the masthead. It is not an application-filing statement.",
   ],
   13: ["Cyrus H. McCormick signs as inventor."],
   14: ["Henry Stone and Robert Clark appear as witnesses to the instrument's execution."],
-} as const;
+};

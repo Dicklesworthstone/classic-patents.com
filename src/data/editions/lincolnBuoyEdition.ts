@@ -2,12 +2,34 @@ import type { CuratedSpecificationEdition, CuratedSpecificationInlines } from "@
 
 const literal = (text: string): CuratedSpecificationInlines => [{ kind: "text", text }];
 
-const figure = (number: number) => ({
+const FIGURE_PREVIEWS = {
+  1: {
+    src: "/patents/figures/us-6469-lincoln-buoy-fig-1-hover.png",
+    alt: "US 6,469, Figure 1: side elevation of Lincoln's vessel with the buoyant chambers expanded.",
+    width: 2100,
+    height: 780,
+  },
+  2: {
+    src: "/patents/figures/us-6469-lincoln-buoy-fig-2-hover.png",
+    alt: "US 6,469, Figure 2: transverse section of a contracted buoyant chamber.",
+    width: 900,
+    height: 750,
+  },
+  3: {
+    src: "/patents/figures/us-6469-lincoln-buoy-fig-3-hover.png",
+    alt: "US 6,469, Figure 3: longitudinal vertical section through a buoyant chamber and receiving box.",
+    width: 900,
+    height: 750,
+  },
+} as const;
+
+const figure = (number: keyof typeof FIGURE_PREVIEWS) => ({
   kind: "reference" as const,
   text: `Fig. ${number}`,
   href: `#lincoln-buoy-figure-${number}`,
   referenceType: "figure" as const,
   label: `Figure ${number} in the US 6,469 source drawing sheet`,
+  figurePreviews: [FIGURE_PREVIEWS[number]],
 });
 
 /**
@@ -277,9 +299,6 @@ export const lincolnBuoyParallelReadings: Readonly<Record<number, readonly strin
   ],
   19: [
     "Lincoln says he does not confine himself to one exact mechanical arrangement if substantially the same means attain the same end. That reservation appears in the description; the legal boundary remains the printed claim that follows.",
-  ],
-  20: [
-    "The single claim combines four elements: side-mounted expansible chambers, shaft C, sliding spars D fixed to chamber bottoms, and ropes and pullies or equivalents. It also requires two results of opposite shaft rotations: forced-down, air-filled expansion that buoys by displacement, and contraction into a protected small space.",
   ],
   21: [
     "The printed execution names A. Lincoln and witnesses Z. C. Robbins and H. H. Sylvester. The witnesses attest execution; the source does not present them as co-inventors.",

@@ -56,10 +56,10 @@ describe("gatlingGunArchivalEdition", () => {
     ).toBe(true);
   });
 
-  test("has a non-lossy local companion for every authored source paragraph and claim", () => {
+  test("has a non-lossy local companion for every and only authored source paragraph", () => {
     const translatedBlocks = gatlingGunArchivalEdition.blocks
       .map((block, index) => ({ block, index }))
-      .filter(({ block }) => block.kind === "paragraph" || block.kind === "claim");
+      .filter(({ block }) => block.kind === "paragraph");
 
     expect(
       Object.keys(gatlingGunParallelReadings)
@@ -67,13 +67,10 @@ describe("gatlingGunArchivalEdition", () => {
         .sort((a, b) => a - b),
     ).toEqual(translatedBlocks.map(({ index }) => index));
 
-    for (const { block, index } of translatedBlocks) {
+    for (const { index } of translatedBlocks) {
       const companion = gatlingGunParallelReadings[index];
       expect(companion.length).toBeGreaterThan(0);
       expect(companion.every((paragraph) => paragraph.trim().length > 40)).toBe(true);
-      if (block.kind === "claim") {
-        expect(companion.join(" ")).toContain(`Claim ${block.number}`);
-      }
     }
   });
 });

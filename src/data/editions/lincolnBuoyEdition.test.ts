@@ -49,9 +49,30 @@ describe("lincolnBuoyArchivalEdition", () => {
     ).toContain("A. LINCOLN.");
   });
 
-  test("gives every authored prose paragraph and claim a non-lossy local companion", () => {
+  test("binds every source figure citation to a local source-derived hover preview", () => {
+    const references = lincolnBuoyArchivalEdition.blocks.flatMap((block) =>
+      "inlines" in block
+        ? block.inlines.filter(
+            (inline) => inline.kind === "reference" && inline.referenceType === "figure",
+          )
+        : [],
+    );
+
+    expect(references.length).toBeGreaterThan(0);
+    for (const reference of references) {
+      expect(reference.figurePreviews).toHaveLength(1);
+      for (const preview of reference.figurePreviews ?? []) {
+        expect(preview.src).toStartWith("/patents/figures/us-6469-lincoln-buoy-");
+        expect(existsSync(resolve(process.cwd(), "public", preview.src.replace(/^\//, "")))).toBe(
+          true,
+        );
+      }
+    }
+  });
+
+  test("gives every authored prose paragraph a non-lossy local companion", () => {
     for (const [index, block] of lincolnBuoyArchivalEdition.blocks.entries()) {
-      if (block.kind !== "paragraph" && block.kind !== "claim") continue;
+      if (block.kind !== "paragraph") continue;
       expect(lincolnBuoyParallelReadings[index]?.join(" ").trim().length).toBeGreaterThan(40);
     }
   });

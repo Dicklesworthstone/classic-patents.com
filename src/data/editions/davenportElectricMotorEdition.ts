@@ -224,9 +224,6 @@ export const davenportElectricMotorParallelReadings: Readonly<Record<number, rea
   13: [
     "This is the legal transition to the claim. Davenport announces that the following language, rather than every descriptive detail by itself, is the discovery for which he seeks Letters Patent protection.",
   ],
-  14: [
-    "The sole printed claim seeks the application of magnetic and electromagnetic power as a moving principle for machinery, using the arrangement described above or another arrangement substantially the same in principle. Its legal effect is broad but tied to the stated magnetic motive-power principle; the source does not divide this into separate numbered or dependent commutator claims.",
-  ],
   15: [
     "Thomas Davenport signs the specification, identifying himself as the inventor responsible for the claimed discovery.",
   ],

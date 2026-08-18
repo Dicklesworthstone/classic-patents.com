@@ -3,7 +3,7 @@ import { existsSync, readFileSync } from "node:fs";
 import { resolve } from "node:path";
 import { validateCuratedSpecificationEdition } from "@/data/archivalEditionValidation";
 import { coltRevolverPatent } from "@/data/patents/colt-revolver";
-import { coltRevolverArchivalEdition } from "./coltRevolverEdition";
+import { coltRevolverArchivalEdition, coltRevolverParallelReadings } from "./coltRevolverEdition";
 
 const transcriptPath = resolve(
   process.cwd(),
@@ -60,5 +60,23 @@ describe("coltRevolverArchivalEdition", () => {
         .filter((block) => block.kind === "claim")
         .map((claim) => claim.inlines.map((inline) => inline.text).join("")),
     );
+  });
+
+  test("has one handwritten non-lossy companion for every and only source paragraph", () => {
+    const paragraphIndexes = coltRevolverArchivalEdition.blocks.flatMap((block, index) =>
+      block.kind === "paragraph" ? [index] : [],
+    );
+    const readingIndexes = Object.keys(coltRevolverParallelReadings)
+      .map(Number)
+      .sort((left, right) => left - right);
+
+    expect(paragraphIndexes).toEqual([
+      5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 32, 33,
+    ]);
+    expect(readingIndexes).toEqual(paragraphIndexes);
+    for (const reading of Object.values(coltRevolverParallelReadings)) {
+      expect(reading).toHaveLength(1);
+      expect(reading[0]?.trim().length).toBeGreaterThan(100);
+    }
   });
 });

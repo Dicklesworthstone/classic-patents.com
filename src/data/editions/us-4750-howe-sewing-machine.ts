@@ -63,7 +63,10 @@ const FIGURES = {
   },
 } as const;
 
-const figure = (label: string, numbers: readonly (keyof typeof FIGURES)[]): CuratedSpecificationInline => ({
+const figure = (
+  label: string,
+  numbers: readonly (keyof typeof FIGURES)[],
+): CuratedSpecificationInline => ({
   kind: "reference",
   text: label,
   href: "#",
@@ -135,25 +138,58 @@ export const howeSewingMachineArchivalEdition: CuratedSpecificationEdition = {
     {
       kind: "paragraph",
       inlines: [
-        { kind: "text", text: "In sewing a seam with my machine two threads are employed, one of which threads is carried through the cloth by means of a curved " },
-        { kind: "term", text: "needle", definition: "The upper-thread carrier. Howe places its eye near the pointed end, unlike a hand needle whose eye is at the blunt end.", label: "Mechanism" },
-        { kind: "text", text: ", the pointed end of which is to pass through said cloth. The needle used has the eye that is to receive the thread within a small distance - say, an eighth of an inch - of its inner or pointed end. The other or outer end of the needle is held by an arm that vibrates on a pivot or joint pin, and the curvature of the needle is such as to correspond with the length of the arm as its radius. When the thread is carried through the cloth, which may be done to the distance of about three-fourths of an inch, the thread will be stretched above the curved needle, something in the manner of a bow-string, leaving a small open space between the two." },
+        {
+          kind: "text",
+          text: "In sewing a seam with my machine two threads are employed, one of which threads is carried through the cloth by means of a curved ",
+        },
+        {
+          kind: "term",
+          text: "needle",
+          definition:
+            "The upper-thread carrier. Howe places its eye near the pointed end, unlike a hand needle whose eye is at the blunt end.",
+          label: "Mechanism",
+        },
+        {
+          kind: "text",
+          text: ", the pointed end of which is to pass through said cloth. The needle used has the eye that is to receive the thread within a small distance - say, an eighth of an inch - of its inner or pointed end. The other or outer end of the needle is held by an arm that vibrates on a pivot or joint pin, and the curvature of the needle is such as to correspond with the length of the arm as its radius. When the thread is carried through the cloth, which may be done to the distance of about three-fourths of an inch, the thread will be stretched above the curved needle, something in the manner of a bow-string, leaving a small open space between the two.",
+        },
       ],
     },
     {
       kind: "paragraph",
       inlines: [
         { kind: "text", text: "A small " },
-        { kind: "term", text: "shuttle", definition: "The moving lower-thread carrier, analogous in role to a weaving shuttle. It carries a bobbin through the upper-thread loop.", label: "Sewing mechanism" },
-        { kind: "text", text: " carrying a bobbin filled with silk or thread is then made to pass entirely through this open space between the needle and the thread which it carries, and when the shuttle is returned, which is done by means of a picker-staff or shuttle-driver, the thread which was carried in by the needle is surrounded by that received from the shuttle, and as the needle is drawn out it forces that which was received from the shuttle into the body of the cloth, and as this operation is repeated a seam is formed which has on each side of the cloth the same appearance as that given by stitching, with this peculiarity, that the thread shown on one side of the cloth is exclusively that which was given out by the needle, and the thread seen on the other side is exclusively that which was given out by shuttle. It will therefore be seen that a stitch is made at every back-and-forth movement of the shuttle." },
+        {
+          kind: "term",
+          text: "shuttle",
+          definition:
+            "The moving lower-thread carrier, analogous in role to a weaving shuttle. It carries a bobbin through the upper-thread loop.",
+          label: "Sewing mechanism",
+        },
+        {
+          kind: "text",
+          text: " carrying a bobbin filled with silk or thread is then made to pass entirely through this open space between the needle and the thread which it carries, and when the shuttle is returned, which is done by means of a picker-staff or shuttle-driver, the thread which was carried in by the needle is surrounded by that received from the shuttle, and as the needle is drawn out it forces that which was received from the shuttle into the body of the cloth, and as this operation is repeated a seam is formed which has on each side of the cloth the same appearance as that given by stitching, with this peculiarity, that the thread shown on one side of the cloth is exclusively that which was given out by the needle, and the thread seen on the other side is exclusively that which was given out by shuttle. It will therefore be seen that a stitch is made at every back-and-forth movement of the shuttle.",
+        },
       ],
     },
     {
       kind: "paragraph",
       inlines: [
-        { kind: "text", text: "The two thicknesses of cloth that are to be sewed are held upon pointed wires which project out from a metallic plate, like the teeth of a comb, but at a considerable distance from each other - say three-fourths of an inch, more or less - these pointed wires sustaining the cloth and answering the purpose of ordinary " },
-        { kind: "term", text: "basting", definition: "Temporary hand stitches used to hold layers together before their permanent seam is made.", label: "Period sewing term" },
-        { kind: "text", text: ". The metallic plate from which these wires project has numerous holes through it, which answer the purpose of rack-teeth in enabling the plate to be moved forward by means of a pinion as the stitches are taken. The distance to which said plate is moved, and consequently the length of the stitches, may be regulated at pleasure." },
+        {
+          kind: "text",
+          text: "The two thicknesses of cloth that are to be sewed are held upon pointed wires which project out from a metallic plate, like the teeth of a comb, but at a considerable distance from each other - say three-fourths of an inch, more or less - these pointed wires sustaining the cloth and answering the purpose of ordinary ",
+        },
+        {
+          kind: "term",
+          text: "basting",
+          definition:
+            "Temporary hand stitches used to hold layers together before their permanent seam is made.",
+          label: "Period sewing term",
+        },
+        {
+          kind: "text",
+          text: ". The metallic plate from which these wires project has numerous holes through it, which answer the purpose of rack-teeth in enabling the plate to be moved forward by means of a pinion as the stitches are taken. The distance to which said plate is moved, and consequently the length of the stitches, may be regulated at pleasure.",
+        },
       ],
     },
     {
@@ -165,18 +201,40 @@ export const howeSewingMachineArchivalEdition: CuratedSpecificationEdition = {
         figure("Fig. 2", [2]),
         { kind: "text", text: ", an end elevation thereof, and " },
         figure("Fig. 3", [3]),
-        { kind: "text", text: " a top view. The other figures represent sections and parts in detail, which will be presently explained." },
+        {
+          kind: "text",
+          text: " a top view. The other figures represent sections and parts in detail, which will be presently explained.",
+        },
       ],
     },
-    { kind: "paragraph", inlines: text("A A is the bed or base of the machine, and B B standards rising therefrom, which sustain the main shaft and other parts of the apparatus.") },
-    { kind: "paragraph", inlines: text("C C is the main shaft, which carries the cams that operate the needle, the shuttle-drivers, and other parts of the machine. D is a fly-wheel, and E a winch, on said shaft.") },
-    { kind: "paragraph", inlines: text("F is a bobbin on which the silk is wound that is to supply the needle.") },
+    {
+      kind: "paragraph",
+      inlines: text(
+        "A A is the bed or base of the machine, and B B standards rising therefrom, which sustain the main shaft and other parts of the apparatus.",
+      ),
+    },
+    {
+      kind: "paragraph",
+      inlines: text(
+        "C C is the main shaft, which carries the cams that operate the needle, the shuttle-drivers, and other parts of the machine. D is a fly-wheel, and E a winch, on said shaft.",
+      ),
+    },
+    {
+      kind: "paragraph",
+      inlines: text("F is a bobbin on which the silk is wound that is to supply the needle."),
+    },
     {
       kind: "paragraph",
       inlines: [
-        { kind: "text", text: "G is the needle-arm, that carries the curved needle a. This is seen most distinctly in the end elevation, " },
+        {
+          kind: "text",
+          text: "G is the needle-arm, that carries the curved needle a. This is seen most distinctly in the end elevation, ",
+        },
         figure("Fig. 2", [2]),
-        { kind: "text", text: ". The thread from the bobbin F passes round a small friction-roller, b, or round a smooth groove in the situation of said roller, then up through the eye of the needle at a, which eye is situated near to the needle-point. The cloth is stuck on the points d d, that project from the metallic plate H, which I will call the \"baster-plate.\" This plate is shown most distinctly in the top view, " },
+        {
+          kind: "text",
+          text: '. The thread from the bobbin F passes round a small friction-roller, b, or round a smooth groove in the situation of said roller, then up through the eye of the needle at a, which eye is situated near to the needle-point. The cloth is stuck on the points d d, that project from the metallic plate H, which I will call the "baster-plate." This plate is shown most distinctly in the top view, ',
+        },
         figure("Fig. 3", [3]),
         { kind: "text", text: "." },
       ],
@@ -191,19 +249,34 @@ export const howeSewingMachineArchivalEdition: CuratedSpecificationEdition = {
       kind: "paragraph",
       inlines: [
         figure("Fig. 4", [4]),
-        { kind: "text", text: " represents a part of the same portion of the machine that is shown in " },
+        {
+          kind: "text",
+          text: " represents a part of the same portion of the machine that is shown in ",
+        },
         figure("Fig. 2", [2]),
-        { kind: "text", text: ", but with the needle-arm down and with the needle passed through the cloth. f is the cloth, (seen in section, but not shown in any of the other figures.) e' is the loop or slack thread formed on the outside of the cloth, and which is to be drawn through it by the passing of the shuttle." },
+        {
+          kind: "text",
+          text: ", but with the needle-arm down and with the needle passed through the cloth. f is the cloth, (seen in section, but not shown in any of the other figures.) e' is the loop or slack thread formed on the outside of the cloth, and which is to be drawn through it by the passing of the shuttle.",
+        },
       ],
     },
     {
       kind: "paragraph",
       inlines: [
-        { kind: "text", text: "I in the respective figures is the shuttle box or trough, within which the shuttle is moved back and forth by means of the picker-staves or shuttle-drivers J J. In " },
+        {
+          kind: "text",
+          text: "I in the respective figures is the shuttle box or trough, within which the shuttle is moved back and forth by means of the picker-staves or shuttle-drivers J J. In ",
+        },
         figure("Fig. 5", [5]),
-        { kind: "text", text: " I have given a top view of this box with the shuttle K within it. This shuttle is in its general construction similar to the larger shuttle used in weaving, and its spool g is capable of containing an ordinary skein of silk. The shuttle-box I is represented as made convex on its under side, by which it is adapted to admit a baster-plate that may be in a curved form, although for most purposes a straight baster-plate may be used. The pieces marked i i are light springs above the shuttle, which bear slightly upon it and serve to steady its motion. The shuttle-drivers work on joint-pins, as shown at j, " },
+        {
+          kind: "text",
+          text: " I have given a top view of this box with the shuttle K within it. This shuttle is in its general construction similar to the larger shuttle used in weaving, and its spool g is capable of containing an ordinary skein of silk. The shuttle-box I is represented as made convex on its under side, by which it is adapted to admit a baster-plate that may be in a curved form, although for most purposes a straight baster-plate may be used. The pieces marked i i are light springs above the shuttle, which bear slightly upon it and serve to steady its motion. The shuttle-drivers work on joint-pins, as shown at j, ",
+        },
         figure("Fig. 2", [2]),
-        { kind: "text", text: ", there being a corresponding fixture for the drivers on the other side." },
+        {
+          kind: "text",
+          text: ", there being a corresponding fixture for the drivers on the other side.",
+        },
       ],
     },
     {
@@ -211,31 +284,83 @@ export const howeSewingMachineArchivalEdition: CuratedSpecificationEdition = {
       inlines: [
         { kind: "text", text: "L, " },
         figure("Fig. 3", [3]),
-        { kind: "text", text: ", is the cam that operates the shuttle-drivers, on the upper ends of which drivers there may be friction-rollers j' j'. The cam L acts upon the shuttle-drivers alternately." },
+        {
+          kind: "text",
+          text: ", is the cam that operates the shuttle-drivers, on the upper ends of which drivers there may be friction-rollers j' j'. The cam L acts upon the shuttle-drivers alternately.",
+        },
       ],
     },
     {
       kind: "paragraph",
       inlines: [
-        { kind: "text", text: "M, " }, figure("Fig. 5", [5]), { kind: "text", text: ", is a sliding box fitted into the shuttle-box and moved back and forth in the rear of the shuttle by one of the drivers, and N is a corresponding sliding piece moved by the other driver and adapted to the fore or pointed end of the shuttle. The needle-arm is attached to the rock-shaft O, " }, figure("Fig. 1", [1]), { kind: "text", text: ", which vibrates on a center pin or pivots, and from this shaft rises an arm, P, that carries a pin and friction-roller, k, which enters a space, l, in the cam Q, which space operates as a zigzag groove, and is of course so formed as to give the proper vibration to the needle-arm. There is a groove or narrow channel made across the bottom of the shuttle-box to receive the needle, in order that its upper part may be even with said bottom and allow the shuttle to pass freely over it." },
+        { kind: "text", text: "M, " },
+        figure("Fig. 5", [5]),
+        {
+          kind: "text",
+          text: ", is a sliding box fitted into the shuttle-box and moved back and forth in the rear of the shuttle by one of the drivers, and N is a corresponding sliding piece moved by the other driver and adapted to the fore or pointed end of the shuttle. The needle-arm is attached to the rock-shaft O, ",
+        },
+        figure("Fig. 1", [1]),
+        {
+          kind: "text",
+          text: ", which vibrates on a center pin or pivots, and from this shaft rises an arm, P, that carries a pin and friction-roller, k, which enters a space, l, in the cam Q, which space operates as a zigzag groove, and is of course so formed as to give the proper vibration to the needle-arm. There is a groove or narrow channel made across the bottom of the shuttle-box to receive the needle, in order that its upper part may be even with said bottom and allow the shuttle to pass freely over it.",
+        },
       ],
     },
     {
       kind: "paragraph",
       inlines: [
-        { kind: "text", text: "The baster-plate H, " }, figure("Fig. 3", [3]), { kind: "text", text: ", which receives the cloth to be sewed, is furnished with a row of small holes, m m, drilled at a regular distance from each other, serving the purpose of rack-teeth, and into these round pinion-teeth enter for the purpose of carrying the plate forward to a proper distance at every stitch." },
+        { kind: "text", text: "The baster-plate H, " },
+        figure("Fig. 3", [3]),
+        {
+          kind: "text",
+          text: ", which receives the cloth to be sewed, is furnished with a row of small holes, m m, drilled at a regular distance from each other, serving the purpose of rack-teeth, and into these round pinion-teeth enter for the purpose of carrying the plate forward to a proper distance at every stitch.",
+        },
       ],
     },
     {
       kind: "paragraph",
       inlines: [
-        figure("Fig. 6", [6]), { kind: "text", text: " shows the principal portion of the feeding apparatus as it would appear were a vertical section made through the machine in the line x x of " }, figure("Fig. 3", [3]), { kind: "text", text: ". R is a cam on the cam-shaft C, that vibrates an arm, S, carrying a feeding-claw, T, that takes into a ratchet-wheel, U, on the shaft V, which shaft crosses the bed A of the machine, its fore end being seen at V, " }, figure("Fig. 1", [1]), { kind: "text", text: ". This shaft has on it near its fore end the pinion that carries the pins or teeth that take into the holes m in the baster and cause it to advance between every stitch. The length of the stitch may be regulated by regulating the play of the arm S, and this is effected by the regulating-screw n, " }, figure("Fig. 3", [3]), { kind: "text", text: ", that moves a pin back and forth that serves as a stop to said arm. The pin is represented by the dot o, " }, figure("Fig. 6", [6]), { kind: "text", text: ", and is seen at o, " }, figure("Figs. 2 and 3", [2, 3]), { kind: "text", text: ". p is a spring that retains the ratchet-wheel in place as the claw is taking a new hold. q is a spring for holding the arm S against the cam." },
+        figure("Fig. 6", [6]),
+        {
+          kind: "text",
+          text: " shows the principal portion of the feeding apparatus as it would appear were a vertical section made through the machine in the line x x of ",
+        },
+        figure("Fig. 3", [3]),
+        {
+          kind: "text",
+          text: ". R is a cam on the cam-shaft C, that vibrates an arm, S, carrying a feeding-claw, T, that takes into a ratchet-wheel, U, on the shaft V, which shaft crosses the bed A of the machine, its fore end being seen at V, ",
+        },
+        figure("Fig. 1", [1]),
+        {
+          kind: "text",
+          text: ". This shaft has on it near its fore end the pinion that carries the pins or teeth that take into the holes m in the baster and cause it to advance between every stitch. The length of the stitch may be regulated by regulating the play of the arm S, and this is effected by the regulating-screw n, ",
+        },
+        figure("Fig. 3", [3]),
+        {
+          kind: "text",
+          text: ", that moves a pin back and forth that serves as a stop to said arm. The pin is represented by the dot o, ",
+        },
+        figure("Fig. 6", [6]),
+        { kind: "text", text: ", and is seen at o, " },
+        figure("Figs. 2 and 3", [2, 3]),
+        {
+          kind: "text",
+          text: ". p is a spring that retains the ratchet-wheel in place as the claw is taking a new hold. q is a spring for holding the arm S against the cam.",
+        },
       ],
     },
     {
       kind: "paragraph",
       inlines: [
-        { kind: "text", text: "In sewing with this machine, the thread from the bobbin F is passed over a notch, r, " }, figure("Fig. 1", [1]), { kind: "text", text: ", at the upper end of the needle-arm, and is returned through the notch r. It then passes down in front of said arm, then around the roller b, and through the needle-eye. To regulate the giving out of the thread from the bobbin, friction is made on it by the semicircular clasp s, that is made to press on it by a spring, t, regulated by a tempering-screw." },
+        {
+          kind: "text",
+          text: "In sewing with this machine, the thread from the bobbin F is passed over a notch, r, ",
+        },
+        figure("Fig. 1", [1]),
+        {
+          kind: "text",
+          text: ", at the upper end of the needle-arm, and is returned through the notch r. It then passes down in front of said arm, then around the roller b, and through the needle-eye. To regulate the giving out of the thread from the bobbin, friction is made on it by the semicircular clasp s, that is made to press on it by a spring, t, regulated by a tempering-screw.",
+        },
       ],
     },
     {
@@ -247,70 +372,128 @@ export const howeSewingMachineArchivalEdition: CuratedSpecificationEdition = {
     {
       kind: "paragraph",
       inlines: [
-        { kind: "text", text: "W, " }, figure("Figs. 1 and 2", [1, 2]), { kind: "text", text: ", is a lifting-rod, from the side of which projects the lifting-pin u. The lifting-rod is attached at its upper end to a crank-arm, v, which works on a shaft, w, and this shaft is made to vibrate by means of the cam x on the cam-shaft. This cam operates on a friction-roller, y, on a short arm on the inner end of the shaft w. The lifting-rod stands in front of a plate, X, " }, figure("Figs. 1 and 2", [1, 2]), { kind: "text", text: ", which is attached at its upper end to the frame of the machine, and between the lower end of this plate and the shuttle-box the cloth is to pass. The plate X is furnished with a hinge-joint at its upper end, in order that its distance from the shuttle-box may be regulated to suit cloth of different thicknesses." },
+        { kind: "text", text: "W, " },
+        figure("Figs. 1 and 2", [1, 2]),
+        {
+          kind: "text",
+          text: ", is a lifting-rod, from the side of which projects the lifting-pin u. The lifting-rod is attached at its upper end to a crank-arm, v, which works on a shaft, w, and this shaft is made to vibrate by means of the cam x on the cam-shaft. This cam operates on a friction-roller, y, on a short arm on the inner end of the shaft w. The lifting-rod stands in front of a plate, X, ",
+        },
+        figure("Figs. 1 and 2", [1, 2]),
+        {
+          kind: "text",
+          text: ", which is attached at its upper end to the frame of the machine, and between the lower end of this plate and the shuttle-box the cloth is to pass. The plate X is furnished with a hinge-joint at its upper end, in order that its distance from the shuttle-box may be regulated to suit cloth of different thicknesses.",
+        },
       ],
     },
     {
       kind: "paragraph",
       inlines: [
-        { kind: "text", text: "Y, " }, figure("Fig. 1", [1]), { kind: "text", text: ", is a set-screw, by which it is held in place. From the back part of the lifting-rod proceeds a guide-pin, z, that moves the lifting-rod laterally, so as to govern the action of the lifting-pin u. This guide-pin works against guide-pieces a' b', affixed on the front of the plate X. The dotted lines show the groove formed by the pieces a' b', along which the guide-pin is to pass. The lifting-rod is carried toward the piece b' by means of a spiral spring around its shaft, or in any other convenient mode. In the position in which the apparatus is shown in " }, figure("Fig. 1", [1]), { kind: "text", text: " the lifting-pin is partially raised, and will have lifted the thread. In raising it the guide-pin passes through the groove between a' b', (shown by dotted lines,) and when at the upper end of this groove the needle-arm acts and carries the needle through the cloth. On the side of the needle-arm there is a projecting piece, c', the inclined edge of which, coming in contact with the lifting-rod, pushes it laterally over the angular point of the piece d', and the crank-arm v descending at this moment, the lifting-pin is withdrawn from the thread, which is thereby left slack to a sufficient extent for the purpose designated." },
+        { kind: "text", text: "Y, " },
+        figure("Fig. 1", [1]),
+        {
+          kind: "text",
+          text: ", is a set-screw, by which it is held in place. From the back part of the lifting-rod proceeds a guide-pin, z, that moves the lifting-rod laterally, so as to govern the action of the lifting-pin u. This guide-pin works against guide-pieces a' b', affixed on the front of the plate X. The dotted lines show the groove formed by the pieces a' b', along which the guide-pin is to pass. The lifting-rod is carried toward the piece b' by means of a spiral spring around its shaft, or in any other convenient mode. In the position in which the apparatus is shown in ",
+        },
+        figure("Fig. 1", [1]),
+        {
+          kind: "text",
+          text: " the lifting-pin is partially raised, and will have lifted the thread. In raising it the guide-pin passes through the groove between a' b', (shown by dotted lines,) and when at the upper end of this groove the needle-arm acts and carries the needle through the cloth. On the side of the needle-arm there is a projecting piece, c', the inclined edge of which, coming in contact with the lifting-rod, pushes it laterally over the angular point of the piece d', and the crank-arm v descending at this moment, the lifting-pin is withdrawn from the thread, which is thereby left slack to a sufficient extent for the purpose designated.",
+        },
       ],
     },
     {
       kind: "paragraph",
       inlines: [
-        { kind: "text", text: "The shuttle (shown separately in " }, figure("Fig. 7", [7]), { kind: "text", text: ") has a hole, d', through its side for the thread to pass from the spool; and a slot, f' f', is made through the side of the shuttle-box to allow of the play of the shuttle-thread back and forth. At the time when the shuttle has completed its passage between the needle and its thread, the needle is to be withdrawn from the cloth; and when this is taking place, it is necessary that the shuttle-thread should be held firmly, or the withdrawing of the needle, instead of drawing the shuttle-thread firmly into the body of the cloth and making a perfect seam, would draw a portion of it from the spool and cause it to pass entirely through said cloth." },
+        { kind: "text", text: "The shuttle (shown separately in " },
+        figure("Fig. 7", [7]),
+        {
+          kind: "text",
+          text: ") has a hole, d', through its side for the thread to pass from the spool; and a slot, f' f', is made through the side of the shuttle-box to allow of the play of the shuttle-thread back and forth. At the time when the shuttle has completed its passage between the needle and its thread, the needle is to be withdrawn from the cloth; and when this is taking place, it is necessary that the shuttle-thread should be held firmly, or the withdrawing of the needle, instead of drawing the shuttle-thread firmly into the body of the cloth and making a perfect seam, would draw a portion of it from the spool and cause it to pass entirely through said cloth.",
+        },
       ],
     },
     {
       kind: "paragraph",
       inlines: [
-        { kind: "text", text: "In " }, figure("Fig. 1", [1]), { kind: "text", text: ", f' is the outer end of a lever which is made to rise at the proper moment, and to clip the thread between it and the upper edge of the slot f'. This lever is seen in " }, figure("Fig. 2", [2]), { kind: "text", text: ", its fulcrum being at h'. The rod i serves to depress the inner end of said lever and to raise its outer end, the cam j' on the cam-shaft performing this office." },
+        { kind: "text", text: "In " },
+        figure("Fig. 1", [1]),
+        {
+          kind: "text",
+          text: ", f' is the outer end of a lever which is made to rise at the proper moment, and to clip the thread between it and the upper edge of the slot f'. This lever is seen in ",
+        },
+        figure("Fig. 2", [2]),
+        {
+          kind: "text",
+          text: ", its fulcrum being at h'. The rod i serves to depress the inner end of said lever and to raise its outer end, the cam j' on the cam-shaft performing this office.",
+        },
       ],
     },
     {
       kind: "paragraph",
       inlines: [
-        { kind: "text", text: "The sliding box M does not bear directly against the rear end of the shuttle-box, but has a pin, m', projecting from its fore end, which pin acts against the shuttle. The pin m' constitutes a part of a small lever shown separately in " }, figure("Fig. 8", [8]), { kind: "text", text: ". The part n' of this lever is received within a suitable slot in the sliding box M, and it turns on a fulcrum-pin, p'. When the shuttle has passed through the loop formed by the needle-thread, it is received upon the pin m', and as the needle is retracted the thread will be drawn taut upon said pin. At this time the head of an adjustable spring-piece, z z', bears against the end n' of the small lever, and the force of its pressure has to be overcome before the thread escapes from the pin, which it does by drawing over against the power of the spring. As the loop then escapes, it will draw up the filling-thread from the shuttle firmly against the cloth and embed it within it. The head of the spring Z passes through a mortise in the shuttle-box, as shown by the dotted lines. c' is an adjusting-screw by which the force of the spring Z may be regulated." },
+        {
+          kind: "text",
+          text: "The sliding box M does not bear directly against the rear end of the shuttle-box, but has a pin, m', projecting from its fore end, which pin acts against the shuttle. The pin m' constitutes a part of a small lever shown separately in ",
+        },
+        figure("Fig. 8", [8]),
+        {
+          kind: "text",
+          text: ". The part n' of this lever is received within a suitable slot in the sliding box M, and it turns on a fulcrum-pin, p'. When the shuttle has passed through the loop formed by the needle-thread, it is received upon the pin m', and as the needle is retracted the thread will be drawn taut upon said pin. At this time the head of an adjustable spring-piece, z z', bears against the end n' of the small lever, and the force of its pressure has to be overcome before the thread escapes from the pin, which it does by drawing over against the power of the spring. As the loop then escapes, it will draw up the filling-thread from the shuttle firmly against the cloth and embed it within it. The head of the spring Z passes through a mortise in the shuttle-box, as shown by the dotted lines. c' is an adjusting-screw by which the force of the spring Z may be regulated.",
+        },
       ],
     },
     {
       kind: "paragraph",
       inlines: [
-        { kind: "text", text: "Having thus fully described the manner in which I construct my machine for sewing seams, and shown the operation thereof, what I claim therein as new, and desire to secure by Letters Patent, is -" },
+        {
+          kind: "text",
+          text: "Having thus fully described the manner in which I construct my machine for sewing seams, and shown the operation thereof, what I claim therein as new, and desire to secure by Letters Patent, is -",
+        },
       ],
     },
     {
       kind: "claim",
       number: 1,
-      inlines: text("The forming of the seam by carrying a thread through the cloth by means of a curved needle on the end of a vibrating arm, and the passing of a shuttle furnished with its bobbin, in the manner set forth, between the needle and the thread which it carries under a combination and arrangement of parts substantially the same with that described."),
+      inlines: text(
+        "The forming of the seam by carrying a thread through the cloth by means of a curved needle on the end of a vibrating arm, and the passing of a shuttle furnished with its bobbin, in the manner set forth, between the needle and the thread which it carries under a combination and arrangement of parts substantially the same with that described.",
+      ),
     },
     {
       kind: "claim",
       number: 2,
-      inlines: text("The lifting of the thread that passes through the needle-eye by means of the lifting-rod W, for the purpose of forming a loop of loose thread that is to be subsequently drawn in by the passage of the shuttle, as herein fully described, said lifting-rod being furnished with a lifting-pin, u, and governed in its motions by the guide-pieces and other devices, arranged and operating substantially as described."),
+      inlines: text(
+        "The lifting of the thread that passes through the needle-eye by means of the lifting-rod W, for the purpose of forming a loop of loose thread that is to be subsequently drawn in by the passage of the shuttle, as herein fully described, said lifting-rod being furnished with a lifting-pin, u, and governed in its motions by the guide-pieces and other devices, arranged and operating substantially as described.",
+      ),
     },
     {
       kind: "claim",
       number: 3,
-      inlines: text("The holding of the thread that is given out by the shuttle, so as to prevent its unwinding from the shuttle-bobbin after the shuttle has passed through the loop, said thread being held by means of the lever or clipping-piece f, as herein made known, or in any other manner that is substantially the same in its operation and result."),
+      inlines: text(
+        "The holding of the thread that is given out by the shuttle, so as to prevent its unwinding from the shuttle-bobbin after the shuttle has passed through the loop, said thread being held by means of the lever or clipping-piece f, as herein made known, or in any other manner that is substantially the same in its operation and result.",
+      ),
     },
     {
       kind: "claim",
       number: 4,
-      inlines: text("The manner of arranging and combining the small lever m' n' with the sliding box M, in combination with the spring-piece Z, for the purpose of tightening the stitch as the needle is retracted, as described."),
+      inlines: text(
+        "The manner of arranging and combining the small lever m' n' with the sliding box M, in combination with the spring-piece Z, for the purpose of tightening the stitch as the needle is retracted, as described.",
+      ),
     },
     {
       kind: "claim",
       number: 5,
-      inlines: text("The holding of the cloth to be sewed by the use of a baster-plate furnished with points for that purpose, and with holes enabling it to operate as a rack in the manner set forth, thereby carrying the cloth forward and dispensing altogether with the necessity of basting the parts together."),
+      inlines: text(
+        "The holding of the cloth to be sewed by the use of a baster-plate furnished with points for that purpose, and with holes enabling it to operate as a rack in the manner set forth, thereby carrying the cloth forward and dispensing altogether with the necessity of basting the parts together.",
+      ),
     },
     { kind: "paragraph", inlines: [{ kind: "small-caps", text: "ELIAS HOWE, JR." }] },
     { kind: "paragraph", inlines: text("Witnesses: THOS. P. JONES. GEORGE FISHER.") },
     {
       kind: "paragraph",
       inlines: [
-        { kind: "text", text: "The numbered " }, claims, { kind: "text", text: " above are the five printed claims in the grant." },
+        { kind: "text", text: "The numbered " },
+        claims,
+        { kind: "text", text: " above are the five printed claims in the grant." },
       ],
     },
   ],
@@ -322,7 +505,7 @@ export const howeSewingMachineArchivalEdition: CuratedSpecificationEdition = {
  * or a summary of the whole patent. Each key is the exact paragraph index in
  * `howeSewingMachineArchivalEdition.blocks`.
  */
-export const HOWE_SEWING_MACHINE_PARALLEL_READINGS = {
+export const HOWE_SEWING_MACHINE_PARALLEL_READINGS: Readonly<Record<number, readonly string[]>> = {
   4: [
     "This is the patent's formal public address. It tells any reader that the following document is the inventor's statement to the Patent Office.",
   ],
@@ -420,4 +603,4 @@ export const HOWE_SEWING_MACHINE_PARALLEL_READINGS = {
   36: [
     "This editorial navigation sentence only points back to the five printed claims. Their technical and legal explanations remain the patent record's individual claim decoders; this note does not alter their scope.",
   ],
-} as const satisfies Readonly<Record<number, readonly string[]>>;
+};

@@ -102,21 +102,6 @@ export const gatlingGunParallelReadings: Readonly<Record<number, readonly string
   20: [
     "Gatling expressly narrows the scope before claiming it. He does not claim grooved carrier C by itself when it revolves independently, calling that an old device; nor does he claim its direct combination with an automatic rotating gear or a chamber-pressing device when that device is used alone. The following claims seek only the combinations he treats as new.",
   ],
-  22: [
-    "Claim 1 covers the co-rotating combination of breech D, carrier C, circular plate F, and barrels E on main shaft N. It requires their locks, carrier grooves, and barrels to be parallel to the rotation axis and to revolve together during operation.",
-  ],
-  23: [
-    "Claim 2 separately covers a revolving fire-arm with as many locks as barrels, where the locks revolve simultaneously with the breech and barrels and operate in the described arrangement. It is about the matched one-lock-per-barrel relationship, not merely the presence of several barrels.",
-  ],
-  24: [
-    "Claim 3 covers stationary ring P with its rear inclined planes when combined with lock-cylinder D and the locks. Its legal work is the fixed cam surface that cocks and returns the rotating hammers.",
-  ],
-  25: [
-    "Claim 4 covers the particular lock-tube assembly: tubes a, flanged breech-pins c, springs e, hammers b, and mainsprings d, combined with breech D, disk I, and swell O. It ties the pressure-sealing forward movement and spring-assisted firing action to that stated construction.",
-  ],
-  26: [
-    "Claim 5 covers disk I together with outer casing A, where the casing shields lock-cylinder D and protects the locks and cog-wheels. It is a protective-enclosure claim, distinct from the rotating and firing claims.",
-  ],
   27: [
     "This is Gatling's signature, identifying the inventor who makes the specification and claims.",
   ],

@@ -64,10 +64,10 @@ describe("davenportElectricMotorArchivalEdition", () => {
     ).toBe(false);
   });
 
-  test("exports renderer-compatible readings for every source paragraph and the sole claim", () => {
+  test("exports renderer-compatible readings for every authored source paragraph only", () => {
     const sourceBlocks = davenportElectricMotorArchivalEdition.blocks
       .map((block, sourceBlockIndex) => ({ block, sourceBlockIndex }))
-      .filter(({ block }) => block.kind === "paragraph" || block.kind === "claim");
+      .filter(({ block }) => block.kind === "paragraph");
 
     const readingIndexes = Object.keys(davenportElectricMotorParallelReadings)
       .map(Number)
@@ -80,8 +80,6 @@ describe("davenportElectricMotorArchivalEdition", () => {
         (reading) => Array.isArray(reading) && reading.length > 0 && reading.join(" ").length > 80,
       ),
     ).toBe(true);
-    expect(davenportElectricMotorParallelReadings[14]?.join(" ")).toContain(
-      "substantially the same in principle",
-    );
+    expect(davenportElectricMotorParallelReadings[14]).toBeUndefined();
   });
 });

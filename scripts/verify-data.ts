@@ -9,12 +9,14 @@ import { createHash } from "node:crypto";
 import * as fs from "node:fs";
 import * as path from "node:path";
 import { validateCuratedSpecificationEdition } from "../src/data/archivalEditionValidation";
+import { archivalParallelReadingsFor } from "../src/data/editions/parallelReadings";
 import { allPatents, searchPatents } from "../src/data/patents";
 import { patentSchema } from "../src/data/patents/schema";
 import {
   validateReviewedTranscription,
   validateSourcePdfTextLayer,
 } from "../src/data/patents/sourceTextValidation";
+import type { CuratedSpecificationBlock, CuratedSpecificationInlines } from "../src/types/patent";
 
 const MAX_PDF_TEXT_BUFFER_BYTES = 64 * 1024 * 1024;
 
@@ -41,6 +43,33 @@ function isValidIsoDate(value: string): boolean {
   if (!/^\d{4}-\d{2}-\d{2}$/.test(value)) return false;
   const date = new Date(`${value}T00:00:00.000Z`);
   return !Number.isNaN(date.getTime()) && date.toISOString().slice(0, 10) === value;
+}
+
+function authoredInlinesForBlock(block: CuratedSpecificationBlock): CuratedSpecificationInlines[] {
+  switch (block.kind) {
+    case "paragraph":
+    case "claim":
+      return [block.inlines];
+    case "figure-sheet":
+      return [block.description];
+    case "table":
+      return [...block.headers, ...block.rows.flat()];
+    default:
+      return [];
+  }
+}
+
+function readPngDimensions(filePath: string): { width: number; height: number } | undefined {
+  if (path.extname(filePath).toLowerCase() !== ".png") return undefined;
+
+  const header = fs.readFileSync(filePath);
+  const isPng =
+    header.length >= 24 &&
+    header.subarray(0, 8).equals(Buffer.from([137, 80, 78, 71, 13, 10, 26, 10])) &&
+    header.subarray(12, 16).equals(Buffer.from("IHDR"));
+  if (!isPng) throw new Error("declared PNG preview does not have a valid PNG header");
+
+  return { width: header.readUInt32BE(16), height: header.readUInt32BE(20) };
 }
 
 async function main() {
@@ -262,6 +291,74 @@ async function main() {
         const editionText = editionClaim.inlines.map((inline) => inline.text).join("");
         if (!decoderClaim || decoderClaim.originalText !== editionText) {
           fail(`Claim #${editionClaim.number} differs from the manual archival edition.`);
+        }
+      }
+
+      try {
+        const readings = archivalParallelReadingsFor(patent.id);
+        const paragraphIndexes = patent.archivalEdition.blocks.flatMap((block, index) =>
+          block.kind === "paragraph" ? [index] : [],
+        );
+        const readingIndexes = Object.keys(readings)
+          .map(Number)
+          .sort((left, right) => left - right);
+        if (JSON.stringify(readingIndexes) !== JSON.stringify(paragraphIndexes)) {
+          fail(
+            `manual parallel readings must cover exactly the rendered source paragraphs; expected [${paragraphIndexes.join(", ")}], received [${readingIndexes.join(", ")}].`,
+          );
+        }
+        for (const [index, reading] of Object.entries(readings)) {
+          if (reading.length === 0 || reading.some((paragraph) => !paragraph.trim())) {
+            fail(`manual parallel reading for source paragraph ${index} is empty.`);
+          }
+        }
+      } catch (error: unknown) {
+        const message = error instanceof Error ? error.message : String(error);
+        fail(`manual parallel reading registry: ${message}`);
+      }
+
+      for (const block of patent.archivalEdition.blocks) {
+        for (const inlines of authoredInlinesForBlock(block)) {
+          for (const inline of inlines) {
+            if (inline.kind !== "reference" || inline.referenceType !== "figure") continue;
+            if (!inline.figurePreviews?.length) {
+              fail(`figure reference ${inline.text} has no authored local preview.`);
+              continue;
+            }
+            for (const preview of inline.figurePreviews) {
+              if (!preview.src.startsWith(`/patents/figures/${patent.id}-`)) {
+                fail(`figure reference ${inline.text} preview is not patent-local: ${preview.src}`);
+                continue;
+              }
+              const previewPath = path.join(
+                process.cwd(),
+                "public",
+                preview.src.replace(/^\//, ""),
+              );
+              if (!fs.existsSync(previewPath)) {
+                fail(`figure reference ${inline.text} preview file not found at ${previewPath}`);
+                continue;
+              }
+              if (fs.statSync(previewPath).size === 0) {
+                fail(`figure reference ${inline.text} preview file is empty: ${previewPath}`);
+                continue;
+              }
+              try {
+                const dimensions = readPngDimensions(previewPath);
+                if (
+                  dimensions &&
+                  (dimensions.width !== preview.width || dimensions.height !== preview.height)
+                ) {
+                  fail(
+                    `figure reference ${inline.text} preview dimensions are ${dimensions.width}×${dimensions.height}, not the authored ${preview.width}×${preview.height}.`,
+                  );
+                }
+              } catch (error: unknown) {
+                const message = error instanceof Error ? error.message : String(error);
+                fail(`figure reference ${inline.text} preview is invalid: ${message}`);
+              }
+            }
+          }
         }
       }
     } else {

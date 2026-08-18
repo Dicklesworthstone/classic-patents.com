@@ -27,8 +27,11 @@ describe("mccormickReaperArchivalEdition", () => {
     expect(publicText).not.toContain("Application filed April 19");
   });
 
-  test("provides a non-lossy companion reading for every prose and claim block", () => {
-    for (const index of [2, 3, 4, 5, 6, 7, 8, 10, 11, 12, 13, 14]) {
+  test("provides a non-lossy companion reading for every rendered paragraph block only", () => {
+    const paragraphIndexes = [2, 3, 4, 5, 6, 7, 8, 12, 13, 14];
+    expect(Object.keys(mccormickReaperParallelReadings).map(Number)).toEqual(paragraphIndexes);
+
+    for (const index of paragraphIndexes) {
       expect(mccormickReaperParallelReadings[index]).toBeDefined();
       expect(mccormickReaperParallelReadings[index][0].length).toBeGreaterThan(30);
     }

@@ -1,6 +1,6 @@
+import { describe, expect, test } from "bun:test";
 import { existsSync } from "node:fs";
 import { join } from "node:path";
-import { describe, expect, test } from "bun:test";
 import { validateCuratedSpecificationEdition } from "@/data/archivalEditionValidation";
 import {
   HOWE_SEWING_MACHINE_PARALLEL_READINGS,
@@ -59,7 +59,7 @@ describe("US 4,750 Howe manual archival edition", () => {
 
     for (const index of paragraphIndexes) {
       const block = howeSewingMachineArchivalEdition.blocks[index];
-      if (!block || block.kind !== "paragraph") throw new Error(`Expected paragraph ${index}`);
+      if (block?.kind !== "paragraph") throw new Error(`Expected paragraph ${index}`);
 
       const companion = HOWE_SEWING_MACHINE_PARALLEL_READINGS[index];
       expect(companion).toBeArray();

@@ -1,6 +1,6 @@
 import { describe, expect, test } from "bun:test";
 import { wrightFlyerPatent } from "../patents/wright-flyer";
-import { archivalParallelReadingsFor } from "./parallelReadings";
+import { ARCHIVAL_PARALLEL_READINGS, archivalParallelReadingsFor } from "./parallelReadings";
 
 describe("Wright archival parallel reading", () => {
   test("gives every manually prepared source paragraph a hand-authored companion", () => {
@@ -67,5 +67,35 @@ describe("Wright archival parallel reading", () => {
         expect(readingWordCount / sourceWordCount).toBeGreaterThanOrEqual(0.3);
       }
     }
+  });
+});
+
+describe("manual archival parallel-reading registry", () => {
+  test("fails closed unless every published source paragraph has exactly one explicit reading", async () => {
+    const { allPatents } = await import("@/data/patents");
+    const publishedEditions = allPatents.filter((patent) => patent.archivalEdition);
+
+    for (const patent of publishedEditions) {
+      const edition = patent.archivalEdition;
+      if (!edition) throw new Error(`Expected published edition for ${patent.id}`);
+
+      const readings = archivalParallelReadingsFor(patent.id);
+      const paragraphIndexes = edition.blocks.flatMap((block, index) =>
+        block.kind === "paragraph" ? [index] : [],
+      );
+      const readingIndexes = Object.keys(readings)
+        .map(Number)
+        .sort((left, right) => left - right);
+
+      expect(readingIndexes).toEqual(paragraphIndexes);
+      for (const reading of Object.values(readings)) {
+        expect(reading.length).toBeGreaterThan(0);
+        for (const paragraph of reading) expect(paragraph.trim().length).toBeGreaterThan(0);
+      }
+    }
+
+    expect(Object.keys(ARCHIVAL_PARALLEL_READINGS).sort()).toEqual(
+      publishedEditions.map((patent) => patent.id).sort(),
+    );
   });
 });
