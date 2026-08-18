@@ -4,13 +4,6 @@ import type {
   CuratedSpecificationInlines,
 } from "@/types/patent";
 
-const literal = (text: string): CuratedSpecificationInlines => [{ kind: "text", text }];
-
-const paragraph = (inlines: CuratedSpecificationInlines) => ({
-  kind: "paragraph" as const,
-  inlines,
-});
-
 const term = (text: string, definition: string): CuratedSpecificationInline => ({
   kind: "term",
   text,
@@ -57,6 +50,42 @@ const figure = (id: string, label: string): CuratedSpecificationInline => ({
     },
   ],
 });
+
+const literal = (text: string): CuratedSpecificationInlines => {
+  const regex = /\b(?:(?:fig(?:s)?\.?|figure)\s+\d+[a-z′′]*(?:\s*(?:,\s*|\s+and\s+)\d+[a-z′′]*)*)\b/gi;
+  const inlines: CuratedSpecificationInline[] = [];
+  let lastIdx = 0;
+  let match: RegExpExecArray | null;
+  while ((match = regex.exec(text)) !== null) {
+    if (match.index > lastIdx) {
+      inlines.push({ kind: "text", text: text.slice(lastIdx, match.index) });
+    }
+    const matchedText = match[0];
+    const nums = matchedText.match(/\d+[a-z]*/gi) || [];
+    const firstId = (nums[0] ?? "1").toLowerCase();
+    inlines.push(figure(firstId, matchedText));
+    lastIdx = regex.lastIndex;
+  }
+  if (lastIdx < text.length) {
+    inlines.push({ kind: "text", text: text.slice(lastIdx) });
+  }
+  return inlines.length > 0 ? inlines : [{ kind: "text", text }];
+};
+
+const paragraph = (inlines: CuratedSpecificationInlines) => {
+  const flattened: CuratedSpecificationInline[] = [];
+  for (const inline of inlines) {
+    if (inline.kind === "text") {
+      flattened.push(...literal(inline.text));
+    } else {
+      flattened.push(inline);
+    }
+  }
+  return {
+    kind: "paragraph" as const,
+    inlines: flattened,
+  };
+};
 
 /**
  * The claims are transcribed from printed specification pages 16–20 of the
@@ -317,7 +346,9 @@ const specificationPagesOneToFour = [
       text: " is a front sectional view, partly schematic, of a shift register embodying the novel information storage feature; ",
     },
     figure("3", "FIG. 3"),
-    { kind: "text", text: " is a pulse program for the shift register of FIG. 2; and " },
+    { kind: "text", text: " is a pulse program for the shift register of " },
+        figure("2", "FIG. 2"),
+        { kind: "text", text: "; and " },
     figure("4", "FIG. 4"),
     {
       kind: "text",
