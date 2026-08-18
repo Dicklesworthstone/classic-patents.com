@@ -22,7 +22,7 @@ export function TeslaMotor3D() {
   const [showUiOverlay, setShowUiOverlay] = useState<boolean>(true);
   const acFrequencyHz = params.frequency ?? 60;
   const phaseCount = (params.phaseCount as 2 | 3) ?? 2;
-  const appliedLoadTorqueNm = params.loadTorque ?? 14;
+  const appliedLoadTorqueNm = params.loadTorque ?? 38.5;
   const [showMagneticFlux, _setShowMagneticFlux] = useState<boolean>(true);
   const [showCalloutPins, setShowCalloutPins] = useState<boolean>(false);
   const [activeCamera, setActiveCamera] = useState<CameraPreset>("iso");

@@ -143,6 +143,9 @@ the visitor can see or hear the kernel change the instrument.
 - [x] P5.50 Marconi range and Spencer loss come from the kernel, not a private badge formula
 - [x] P5.51 Bardeen α / transit and Colt hoop / muzzle come from the same step as the 3D HUD
 - [x] P5.52 Bardeen transport uses Ge hole lifetime so 50 µm (the historical gap) still amplifies
+- [x] P5.53 Tesla motor badge uses the 2-pole kernel (ns = 3600 at 60 Hz), not a 4-pole copy
+- [x] P5.54 Kevlar / Goodyear / Farnsworth / Daimler / Kodak / Hollerith badges call the shared step
+- [x] P5.55 Otis badge arrest force / pawl come from stepOtisElevator
 
 ## Explicitly out of scope
 

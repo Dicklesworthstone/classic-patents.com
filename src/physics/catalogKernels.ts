@@ -364,7 +364,7 @@ export function stepSpencerMicrowave(anodeKv?: number, magneticGauss?: number, r
 
 export function stepKevlarContinuum(drawRatio?: number, impactVelocityMps?: number) {
   const draw = drawRatio ?? 6.5;
-  const v = impactVelocityMps ?? 200;
+  const v = impactVelocityMps ?? 450;
   const elasticModulusGpa = Math.min(145, 60 + draw * 20);
   const sonic = Math.sqrt((elasticModulusGpa * 1e9) / 1440);
   const strainPct = (v / sonic) * 100;
@@ -386,8 +386,8 @@ export function stepBardeenTransistor(
   const holeMobilityCm2Vs = 1900;
   const holeDiffusionCoefficient = 0.0259 * holeMobilityCm2Vs;
   const transitTimeNs = ((gap * 1e-4) ** 2 / (2 * holeDiffusionCoefficient)) * 1e9;
-  const transportFactor = Math.max(0.1, 1 - transitTimeNs / 150);
-  const currentGainAlpha = Number((0.95 * transportFactor * 1.8).toFixed(2));
+  const transportFactor = Math.max(0.15, Math.exp(-transitTimeNs / 800));
+  const currentGainAlpha = Number((0.95 * transportFactor * 2.4).toFixed(2));
   return {
     currentGainAlpha,
     holeDiffusionCoefficientCm2ps: Number(holeDiffusionCoefficient.toFixed(1)),

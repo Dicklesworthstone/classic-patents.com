@@ -227,11 +227,12 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
     computeMetrics: (p) => {
       const f = p.frequency ?? 60;
       const torque = p.loadTorque ?? 38.5;
-      const synchRpm = (120 * f) / 4;
-      const slipPct = Math.min(95, Math.max(1.5, (torque / 45) * 4.2));
-      const rotorRpm = Math.round(synchRpm * (1 - slipPct / 100));
-      const _shaftWatts = (torque * (rotorRpm * 2 * Math.PI)) / 60;
-      const effPct = Math.min(96, Math.max(40, 94 - (slipPct - 3) * 3));
+      // Same 2-pole rotating field as TeslaMotor3D / teslaFig4.
+      const em = FrankenSimEngine.stepTeslaMotor(f, 2, torque);
+      const synchRpm = em.synchronousRpm;
+      const slipPct = em.slipFraction * 100;
+      const rotorRpm = Math.round(synchRpm * (1 - em.slipFraction));
+      const effPct = em.efficiencyPct;
 
       return [
         {
@@ -246,14 +247,14 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
           value: rotorRpm.toLocaleString(),
           unit: "RPM",
           badgeColor: "emerald",
-          progressPct: (rotorRpm / synchRpm) * 100,
+          progressPct: (rotorRpm / Math.max(1, synchRpm)) * 100,
         },
         {
           label: "Rotor Slip (s)",
           value: slipPct.toFixed(1),
           unit: "%",
-          badgeColor: slipPct < 8 ? "amber" : "rose",
-          progressPct: Math.min(100, slipPct * 5),
+          badgeColor: slipPct < 20 ? "amber" : "rose",
+          progressPct: Math.min(100, slipPct),
         },
         {
           label: "Efficiency (η)",
@@ -1088,12 +1089,14 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
       },
     ],
     computeMetrics: (p) => {
-      const draw = p.drawRatio ?? 6.5;
-      const vImp = p.impactVelocity ?? 450;
-      const eGpa = Math.min(145, 60 + draw * 11.5);
+      const kevlar = FrankenSimEngine.stepKevlarContinuum(
+        p.drawRatio ?? 6.5,
+        p.impactVelocity ?? 450,
+      );
+      const eGpa = kevlar.elasticModulusGpa;
       const vSonic = Math.round(Math.sqrt((eGpa * 1e9) / 1440));
-      const strainPct = ((vImp / vSonic) * 100).toFixed(2);
-      const stressMpa = Math.round((Number(strainPct) / 100) * eGpa * 1000);
+      const strainPct = kevlar.tensileStrainPct.toFixed(2);
+      const stressMpa = kevlar.tensileStressMpa;
 
       return [
         {
@@ -1157,12 +1160,14 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
       },
     ],
     computeMetrics: (p) => {
-      const temp = p.vulcanTemp ?? 145;
-      const sulfur = p.sulfurPct ?? 8.0;
-      const isOptimal = temp >= 135 && temp <= 165;
-      const crossLink = ((sulfur / 8.0) * (isOptimal ? 1.0 : 0.45)).toFixed(3);
-      const tensilePsi = Math.round(Number(crossLink) * 2900);
-      const returnPct = Math.min(98, Math.round(55 + Number(crossLink) * 42));
+      const rubber = FrankenSimEngine.stepGoodyearRubber(
+        p.vulcanTemp ?? 145,
+        p.sulfurPct ?? 8.0,
+        30,
+      );
+      const crossLink = rubber.crossLinkDensity.toFixed(3);
+      const tensilePsi = rubber.tensileStrengthPsi;
+      const returnPct = rubber.elasticReturnPct;
 
       return [
         {
@@ -1188,17 +1193,17 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
         },
         {
           label: "Thermal Stability",
-          value: isOptimal ? "Resilient" : "Brittle / Plastic",
+          value: rubber.isStickyOrBrittle ? "Brittle / Plastic" : "Resilient",
           unit: "state",
-          badgeColor: isOptimal ? "emerald" : "rose",
-          progressPct: isOptimal ? 95 : 30,
+          badgeColor: rubber.isStickyOrBrittle ? "rose" : "emerald",
+          progressPct: rubber.isStickyOrBrittle ? 30 : 95,
         },
       ];
     },
     pedagogicalInsight:
       "Heating raw polyisoprene rubber with sulfur forms covalent disulfide bridges between entangled polymer chains, transforming thermally plastic gum into resilient, temperature-stable entropic elastomer.",
   },
-  "us-6281-lincoln-buoy": {
+  "us-6469-lincoln-buoy": {
     domain: "continuum_elasticity",
     domainTitle: "Pneumatic Expandable Buoyancy & Riverbed Shoal Navigation",
     equationName: "Archimedes Buoyant Lift & Hydrostatic Draft Reduction",
@@ -1492,11 +1497,11 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
       const hFreq = p.horizontalFreqKhz ?? 15.75;
       const vFreq = p.verticalFreqHz ?? 60;
       const lux = p.lightIntensityLux ?? 500;
-      const _scanLinesParam = p.scanLines ?? 60;
-
-      const beamVelocity = (Math.sqrt((2 * 1.6e-19 * v) / 9.1e-31) / 1e6).toFixed(2);
-      const deflAngle = (i * 48 * (1500 / v) ** 0.5).toFixed(1);
+      const gauss = i * (120 / 0.42);
+      const beam = FrankenSimEngine.stepFarnsworthTv(v / 1000, gauss);
+      const beamVelocity = (beam.electronVelocityMps / 1e6).toFixed(2);
       const derivedScanLines = Math.round((hFreq * 1000) / vFreq);
+      const photoUa = (lux * 0.045).toFixed(1);
 
       return [
         {
@@ -1507,11 +1512,11 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
           progressPct: (Number(beamVelocity) / 35) * 100,
         },
         {
-          label: "Deflection Angle",
-          value: deflAngle,
-          unit: "deg",
+          label: "Gyro Radius",
+          value: beam.gyroRadiusMm.toFixed(1),
+          unit: "mm",
           badgeColor: "emerald",
-          progressPct: (Number(deflAngle) / 45) * 100,
+          progressPct: Math.min(100, (beam.gyroRadiusMm / 40) * 100),
         },
         {
           label: "Derived Raster Lines",
@@ -1521,11 +1526,11 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
           progressPct: (derivedScanLines / 600) * 100,
         },
         {
-          label: "Anode Aperture Current",
-          value: (2.4 * (v / 1500) * (lux / 500)).toFixed(1),
+          label: "Photocathode Current",
+          value: photoUa,
           unit: "µA",
           badgeColor: "purple",
-          progressPct: (Number(beamVelocity) / 30) * 100,
+          progressPct: Math.min(100, (Number(photoUa) / 90) * 100),
         },
       ];
     },
@@ -1867,7 +1872,7 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
     pedagogicalInsight:
       "Air-core primary and secondary coils tuned to identical LC natural resonant frequencies transfer energy inductively over multiple cycles, building up electrostatic voltage until the air dielectric ionizes.",
   },
-  "us-138-colt-revolver": {
+  "us-x9430-colt-revolver": {
     domain: "continuum_elasticity",
     domainTitle: "Pawl-Ratchet Angular Discretization & Internal Ballistic Hoop Stress",
     equationName: "Hoop Stress Limit & 72° Cylinder Indexing",
@@ -1966,14 +1971,15 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
       },
     ],
     computeMetrics: (p) => {
-      const payload = p.cabPayload ?? 650;
-      const tension = p.cableTension ?? 100;
-      const isSnapped = tension < 15;
-      const grossMassKg = 400 + payload;
-      const deflectionCm = ((tension / 100) * 10).toFixed(1);
-      const snapTimeMs = 38;
-      const arrestForceKn = isSnapped ? ((grossMassKg * 9.81 * 1.8) / 1000).toFixed(1) : "0.0";
-      const stopDistCm = isSnapped ? 4.5 : 0;
+      const otis = FrankenSimEngine.stepOtisElevator({
+        cabPayloadKg: p.cabPayload ?? 650,
+        cableTensionPct: p.cableTension ?? 100,
+      });
+      const isSnapped = otis.isSnapped;
+      const deflectionCm = otis.springDeflectionCm.toFixed(1);
+      const snapTimeMs = otis.pawlEngagementMs || 38;
+      const arrestForceKn = otis.peakArrestForceKn.toFixed(1);
+      const stopDistCm = otis.stoppingDistanceCm;
 
       return [
         {
@@ -2224,13 +2230,13 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
       },
     ],
     computeMetrics: (p) => {
-      const rpm = p.engineRpm ?? 750;
-      const temp = p.hotTubeTemp ?? 850;
-      const turn = p.turnAngle ?? 15;
-      const bmep = temp >= 800 ? 4.5 : Number((4.5 * (temp / 800)).toFixed(2));
-      const hp = ((bmep * 100 * 0.000462 * rpm) / (120 * 0.7457)).toFixed(2);
-      const carrierRpm = Math.round(rpm / 4.5);
-      const deltaRpm = Math.round(carrierRpm * Math.sin((turn * Math.PI) / 180) * 0.4);
+      const daimler = FrankenSimEngine.stepDaimlerEngine({
+        engineRpm: p.engineRpm ?? 750,
+        hotTubeTempC: p.hotTubeTemp ?? 850,
+        differentialSlipAngleDeg: p.turnAngle ?? 15,
+      });
+      const bmep = daimler.bmepBar;
+      const hp = daimler.brakeHorsepower.toFixed(2);
 
       return [
         {
@@ -2249,17 +2255,17 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
         },
         {
           label: "Outer Wheel Speed",
-          value: `${carrierRpm + deltaRpm} RPM`,
+          value: `${daimler.outerWheelRpm} RPM`,
           unit: "ω_outer",
           badgeColor: "indigo",
-          progressPct: ((carrierRpm + deltaRpm) / 250) * 100,
+          progressPct: (daimler.outerWheelRpm / 250) * 100,
         },
         {
           label: "Inner Wheel Speed",
-          value: `${carrierRpm - deltaRpm} RPM`,
+          value: `${daimler.innerWheelRpm} RPM`,
           unit: "ω_inner",
           badgeColor: "amber",
-          progressPct: ((carrierRpm - deltaRpm) / 250) * 100,
+          progressPct: (daimler.innerWheelRpm / 250) * 100,
         },
       ];
     },
@@ -2303,42 +2309,42 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
       },
     ],
     computeMetrics: (p) => {
-      const t = p.shutterSpeed ?? 0.05;
-      const n = p.apertureStop ?? 9;
-      const dist = p.subjectDist ?? 3.0;
-      const h = (0.057 ** 2 / (n * 0.00003) + 0.057).toFixed(2);
-      const dofNear = ((Number(h) * dist) / (Number(h) + dist)).toFixed(2);
-      const ev = Math.log2(n ** 2 / t).toFixed(2);
-      const inFocus = dist >= Number(dofNear);
+      const raw = p.shutterSpeed ?? 0.05;
+      const t = raw > 1 ? 1 / raw : raw;
+      const kodak = FrankenSimEngine.stepEastmanKodak({
+        shutterSpeedSec: t,
+        apertureFNumber: p.apertureStop ?? 9,
+        subjectDistanceM: p.subjectDist ?? 3.0,
+      });
 
       return [
         {
           label: "Hyperfocal Point",
-          value: `${h} m`,
+          value: `${kodak.hyperfocalM.toFixed(2)} m`,
           unit: "H",
           badgeColor: "emerald",
-          progressPct: (Number(h) / 15) * 100,
+          progressPct: (kodak.hyperfocalM / 15) * 100,
         },
         {
           label: "Near Focus Limit",
-          value: `${dofNear} m`,
+          value: `${kodak.dofNearM.toFixed(2)} m`,
           unit: "D_near",
           badgeColor: "cyan",
-          progressPct: (Number(dofNear) / 5) * 100,
+          progressPct: (kodak.dofNearM / 5) * 100,
         },
         {
           label: "Exposure Value (EV)",
-          value: `EV ${ev}`,
+          value: `EV ${kodak.exposureValueEv.toFixed(2)}`,
           unit: "EV",
           badgeColor: "indigo",
-          progressPct: (Number(ev) / 15) * 100,
+          progressPct: (kodak.exposureValueEv / 15) * 100,
         },
         {
           label: "Focus Status",
-          value: inFocus ? "SHARP (IN FOCUS)" : "BLURRED (TOO CLOSE)",
+          value: kodak.isInFocus ? "SHARP (IN FOCUS)" : "BLURRED (TOO CLOSE)",
           unit: "status",
-          badgeColor: inFocus ? "emerald" : "rose",
-          progressPct: inFocus ? 100 : 25,
+          badgeColor: kodak.isInFocus ? "emerald" : "rose",
+          progressPct: kodak.isInFocus ? 100 : 25,
         },
       ];
     },
@@ -2382,15 +2388,15 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
       },
     ],
     computeMetrics: (p) => {
-      const cpm = p.cardsPerMin ?? 60;
-      const v = p.batteryVolts ?? 12;
+      const hol = FrankenSimEngine.stepHollerithTabulating({
+        cardsPerMin: p.cardsPerMin ?? 60,
+        supplyVoltageV: p.batteryVolts ?? 12,
+        activeRelays: p.activeRelays ?? 16,
+      });
+      const cycleMs = hol.cycleTimeMs;
+      const forceN = hol.solenoidForceN.toFixed(2);
+      const tauMs = hol.inductiveTauMs.toFixed(1);
       const relays = p.activeRelays ?? 16;
-      const cycleMs = Math.round(60000 / cpm);
-      const forceN = (
-        ((relays * (v / 12) * 35) ** 2 * 1.256e-6 * 0.0004) /
-        (2 * 0.002 ** 2)
-      ).toFixed(2);
-      const tauMs = ((0.08 / (v / 2.4)) * 1000).toFixed(1);
 
       return [
         {

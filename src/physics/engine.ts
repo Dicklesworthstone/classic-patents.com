@@ -301,10 +301,12 @@ export const FrankenSimEngine = {
     const holeDiffusionCoefficient = 0.0259 * holeMobilityCm2Vs; // Einstein relation at 300K
     const transitTimeNs =
       ((pointSpacingMicrons * 1e-4) ** 2 / (2 * holeDiffusionCoefficient)) * 1e9;
-    const transportFactor = Math.max(0.1, 1 - transitTimeNs / 150);
+    // Ge hole lifetime is ~µs; 800 ns is a conservative formed-collector budget.
+    const transportFactor = Math.max(0.15, Math.exp(-transitTimeNs / 800));
     const emitterInjectionEfficiency = 0.95;
+    const formingMultiplication = 2.4;
     const currentGainAlpha = Number(
-      (emitterInjectionEfficiency * transportFactor * 1.8).toFixed(2),
+      (emitterInjectionEfficiency * transportFactor * formingMultiplication).toFixed(2),
     );
     const _collectorCurrentMa = Number(
       (Math.abs(collectorBiasVolts) * 0.8 + emitterCurrentMa * currentGainAlpha).toFixed(2),
@@ -458,7 +460,7 @@ export const FrankenSimEngine = {
   },
 
   /**
-   * Abraham Lincoln Buoyancy Chambers (US 6,281)
+   * Abraham Lincoln Buoyancy Chambers (US 6,469)
    * Archimedes Hydrostatic Force & Vessel Draft Relief
    */
   stepLincolnBuoy(expansionPct: number, riverDepthFeet: number) {
@@ -517,7 +519,7 @@ export const FrankenSimEngine = {
   },
 
   /**
-   * Samuel Colt Revolving Gun (US 138)
+   * Samuel Colt Revolving Gun (US X9430)
    * Single-Action Pawl-Ratchet Indexing & Hoop Stress Mechanics
    */
   stepColtRevolver(params: { chamberPressureMpa?: number; cockingAngleDeg?: number }) {

@@ -38,7 +38,7 @@ export function KwolekKevlar3D() {
   const [activeCamera, setActiveCamera] = useState<CameraPreset>("iso");
   const { isAudioMuted, toggleSound } = usePatentAudio();
 
-  const kevlar = FrankenSimEngine.stepKevlarContinuum(drawRatio, params.impactVelocity ?? 200);
+  const kevlar = FrankenSimEngine.stepKevlarContinuum(drawRatio, params.impactVelocity ?? 450);
   const isNematicLCP = polymerConcentrationPct >= 12.0 && temperatureCelsius < 105;
   const tensileStrengthGpa = (kevlar.tensileStressMpa / 1000).toFixed(2);
   const modulusGpa = kevlar.elasticModulusGpa.toFixed(0);

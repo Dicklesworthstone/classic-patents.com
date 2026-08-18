@@ -335,7 +335,7 @@ export function PatentVisualDispatcher({ patentId }: PatentVisualDispatcherProps
           case "us-x8277-mccormick-reaper":
           case "us-4895-mccormick-reaper":
             return renderMode === "3d-physics" ? <McCormickReaper3D /> : <McCormickReaperSim />;
-          case "us-138-colt-revolver":
+          case "us-x9430-colt-revolver":
             return renderMode === "3d-physics" ? <ColtRevolver3D /> : <ColtRevolverSim />;
           case "us-132-davenport-electric-motor":
             return renderMode === "3d-physics" ? (
@@ -446,7 +446,7 @@ export function PatentVisualDispatcher({ patentId }: PatentVisualDispatcherProps
             return renderMode === "3d-physics" ? <EdisonBulb3D /> : <EdisonBulbSim />;
           case "us-174465-bell-telephone":
             return renderMode === "3d-physics" ? <BellTelephone3D /> : <BellTelephoneSim />;
-          case "us-6281-lincoln-buoy":
+          case "us-6469-lincoln-buoy":
             return renderMode === "3d-physics" ? <LincolnBuoy3D /> : <LincolnBuoySim />;
           case "us-4750-howe-sewing-machine":
             return renderMode === "3d-physics" ? <HoweSewingMachine3D /> : <HoweSewingMachineSim />;

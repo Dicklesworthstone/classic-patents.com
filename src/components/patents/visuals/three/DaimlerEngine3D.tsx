@@ -15,7 +15,7 @@ export function DaimlerEngine3D() {
   const containerRef = useRef<HTMLDivElement>(null);
   const { params, updateParam } = usePatentPhysics("us-361931-daimler-engine");
 
-  const engineRpm = params.engineRpm ?? 720;
+  const engineRpm = params.engineRpm ?? 750;
   const hotTubeTempC = params.hotTubeTemp ?? 850;
   const daimler = FrankenSimEngine.stepDaimlerEngine({
     engineRpm,

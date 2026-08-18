@@ -20,7 +20,7 @@ export function HollerithTabulator3D() {
   const hollerith = FrankenSimEngine.stepHollerithTabulating({
     cardsPerMin: tabulatingSpeedCpm,
     supplyVoltageV: params.batteryVolts ?? 12,
-    activeRelays: params.activeRelays ?? 8,
+    activeRelays: params.activeRelays ?? 16,
   });
 
   const [isPlaying, setIsPlaying] = useState<boolean>(true);
@@ -33,7 +33,7 @@ export function HollerithTabulator3D() {
     isPlaying,
     cycleTimeMs: hollerith.cycleTimeMs,
     solenoidForceN: hollerith.solenoidForceN,
-    activeRelays: params.activeRelays ?? 8,
+    activeRelays: params.activeRelays ?? 16,
   });
 
   const studioRef = useRef<StudioContext | null>(null);
@@ -334,7 +334,7 @@ export function HollerithTabulator3D() {
               <div className="bg-slate-800/80 rounded-lg p-2 border border-slate-700 text-center">
                 <span className="text-[10px] font-mono text-slate-400 block">Solenoid</span>
                 <span className="text-xs font-mono font-bold text-amber-400">
-                  {hollerith.solenoidForceN} N · {params.activeRelays ?? 8} relays
+                  {hollerith.solenoidForceN} N · {params.activeRelays ?? 16} relays
                 </span>
               </div>
             </div>

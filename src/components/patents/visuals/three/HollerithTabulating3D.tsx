@@ -23,7 +23,7 @@ export function HollerithTabulating3D() {
   const hollerith = FrankenSimEngine.stepHollerithTabulating({
     cardsPerMin,
     supplyVoltageV: params.batteryVolts ?? 12,
-    activeRelays: params.activeRelays ?? 8,
+    activeRelays: params.activeRelays ?? 16,
   });
   const cardsPerDay = Math.round((60_000 / hollerith.cycleTimeMs) * 60 * 7);
   const clockDialCount = 40; // register bank on the 1890 census machine
