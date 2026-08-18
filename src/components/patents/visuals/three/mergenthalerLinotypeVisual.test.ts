@@ -74,6 +74,7 @@ describe("US 313,224 Ottmar Mergenthaler Linotype visual & mechanics boundary", 
     expect(result.solidificationTimeMs).toBe(450);
     expect(result.brinellHardness).toBe(24);
     expect(result.isEutecticTemp).toBe(true);
+    expect(result.wedgeLift).toBeCloseTo(0.0975, 3);
   });
 
   test("builds and articulates procedural magazine, spacebands, casting pot, and mold disk correctly", () => {
@@ -84,7 +85,21 @@ describe("US 313,224 Ottmar Mergenthaler Linotype visual & mechanics boundary", 
     expect(nodes.potBody).toBeDefined();
     expect(nodes.moldDisk).toBeDefined();
 
-    updateMergenthalerLinotypeKinematics(nodes, materials, 0.016, 0, 0.2, Math.PI / 4, true, 6.5);
+    const line = stepMergenthalerLinotype({
+      matrixRatePerMin: 60,
+      spacebandWedgeMm: 6.5,
+      potTempC: 260,
+    });
+    updateMergenthalerLinotypeKinematics(
+      nodes,
+      materials,
+      0.016,
+      0,
+      0.2,
+      Math.PI / 4,
+      true,
+      line.wedgeLift,
+    );
     expect(nodes.slugMesh.visible).toBe(true);
 
     dispose();

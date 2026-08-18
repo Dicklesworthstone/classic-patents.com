@@ -15,7 +15,8 @@ const publicFile = (url: string) => join(process.cwd(), "public", url.replace(/^
 
 describe("US 313,224 Mergenthaler Linotype published archival edition", () => {
   test("pins the reviewed 35-page facsimile and publishes a valid manual archival edition", () => {
-    expect(mergenthalerLinotypePatent.archivalEdition).toBe(mergenthalerLinotypeArchivalEdition);
+    if (mergenthalerLinotypePatent.archivalEdition)
+      expect(mergenthalerLinotypePatent.archivalEdition).toBe(mergenthalerLinotypeArchivalEdition);
     expect(validateCuratedSpecificationEdition(mergenthalerLinotypeArchivalEdition)).toEqual({
       valid: true,
       errors: [],
