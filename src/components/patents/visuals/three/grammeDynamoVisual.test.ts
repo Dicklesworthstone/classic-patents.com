@@ -60,6 +60,7 @@ describe("US 120,057 Zénobe Gramme Ring Armature Dynamo visual & electromagneti
     const result = stepGrammeDynamo({ shaftRate: 1 });
     expect(result.displayRadPerFrame).toBeGreaterThan(0);
     expect(result.inducedEmfIndex).toBeGreaterThan(0);
+    expect(result.fluxOpacity).toBeCloseTo(0.688, 2);
   });
 
   test("builds and articulates procedural cast-iron bedplate, ring armature, 36 wound bobbins, brass junction rods, and flux points correctly", () => {
@@ -74,14 +75,16 @@ describe("US 120,057 Zénobe Gramme Ring Armature Dynamo visual & electromagneti
     expect(model.nodes.fluxPoints).toBeDefined();
 
     // Test kinematics update
+    const gramme = stepGrammeDynamo({ shaftRate: 1 });
     updateGrammeDynamoKinematics(
       model.nodes,
       model.materials,
       1 / 60,
       1.0,
       1,
-      1.0,
-      0.05,
+      gramme.inducedEmfIndex,
+      gramme.displayRadPerFrame,
+      gramme.fluxOpacity,
       true,
       false,
     );

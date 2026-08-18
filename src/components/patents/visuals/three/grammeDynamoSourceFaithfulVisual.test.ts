@@ -83,7 +83,19 @@ describe("US 120,057 Gramme source-faithful visual boundary", () => {
     expect(nodes.junctionRods.length).toBe(36);
     expect(nodes.collectorRubbers.length).toBe(2);
 
-    updateGrammeDynamoKinematics(nodes, materials, 0.016, 0.5, 1.0, 100, 0.026, true, true);
+    const gramme = stepGrammeDynamo({ shaftRate: 1 });
+    updateGrammeDynamoKinematics(
+      nodes,
+      materials,
+      0.016,
+      0.5,
+      1.0,
+      gramme.inducedEmfIndex,
+      gramme.displayRadPerFrame,
+      gramme.fluxOpacity,
+      true,
+      true,
+    );
     expect(materials.castIron.transparent).toBe(true);
     expect(nodes.fluxPoints.visible).toBe(true);
 

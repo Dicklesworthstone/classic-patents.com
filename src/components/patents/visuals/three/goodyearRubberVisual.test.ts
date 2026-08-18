@@ -60,6 +60,8 @@ describe("US 3,633 Charles Goodyear Vulcanized Rubber visual & polymer mechanics
     expect(result.crossLinkDensity).toBeGreaterThan(1e-5);
     expect(result.elasticReturnPct).toBeGreaterThan(70);
     expect(result.isStickyOrBrittle).toBe(false);
+    expect(result.stressScale).toBeGreaterThan(0.3);
+    expect(result.clampStudioX).toBeCloseTo(8.1, 3);
   });
 
   test("builds and articulates procedural grip clamps, 6 polyisoprene chains, and 14 sulfur crosslink bridges correctly", () => {
@@ -70,16 +72,17 @@ describe("US 3,633 Charles Goodyear Vulcanized Rubber visual & polymer mechanics
     expect(nodes.leftArrow).toBeDefined();
     expect(nodes.rightArrow).toBeDefined();
 
+    const rubber = FrankenSimEngine.stepGoodyearRubber(145, 8, 30, 1.8, 35);
     updateGoodyearRubberKinematics(
       nodes,
       materials,
       0.016,
       0.5,
       1.8,
-      2500,
-      145,
+      rubber.clampStudioX,
+      rubber.stressScale,
+      rubber.thermalAmplitude,
       true,
-      false,
       true,
       true,
       true,

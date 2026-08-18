@@ -63,6 +63,7 @@ describe("US 361,931 Gottlieb Daimler High-Speed Four-Stroke Engine visual & kin
     expect(result.brakeHorsepower).toBeGreaterThan(0.5);
     expect(result.bmepBar).toBeGreaterThan(2.0);
     expect(result.isRunning).toBe(true);
+    expect(result.hotTubeGlow).toBeCloseTo(2.8, 3);
   });
 
   test("builds and articulates procedural enclosed flywheels, hot-tube igniter, and valve pushrod correctly", () => {
@@ -78,13 +79,32 @@ describe("US 361,931 Gottlieb Daimler High-Speed Four-Stroke Engine visual & kin
 
     // Test 4-stroke cycle kinematics
     // Power stroke (stroke 2)
-    const power = updateDaimlerEngineKinematics(model, Math.PI * 0.1, Math.PI * 2.1, 850, true);
+    const daimler = FrankenSimEngine.stepDaimlerEngine({
+      engineRpm: 750,
+      hotTubeTempC: 850,
+      differentialSlipAngleDeg: 15,
+    });
+    const power = updateDaimlerEngineKinematics(
+      model,
+      Math.PI * 0.1,
+      Math.PI * 2.1,
+      850,
+      daimler.hotTubeGlow,
+      true,
+    );
     expect(power.strokeIndex).toBe(2);
     expect(model.combustionFlame.visible).toBe(true);
     expect(model.materials.castIron.opacity).toBe(0.35);
 
     // Exhaust stroke (stroke 3)
-    const exhaust = updateDaimlerEngineKinematics(model, Math.PI * 1.5, Math.PI * 3.5, 850, false);
+    const exhaust = updateDaimlerEngineKinematics(
+      model,
+      Math.PI * 1.5,
+      Math.PI * 3.5,
+      850,
+      daimler.hotTubeGlow,
+      false,
+    );
     expect(exhaust.strokeIndex).toBe(3);
     expect(model.exhaustPushrod.position.y).toBeGreaterThan(0.2);
 

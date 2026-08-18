@@ -67,6 +67,8 @@ describe("US 347,140 Elihu Thomson Electric Resistance Butt-Welding visual & ele
     expect(result.interfaceTempC).toBeGreaterThan(800);
     expect(result.upsetBurrWidthMm).toBe(3.8);
     expect(result.weldPulseMs).toBeGreaterThan(200);
+    expect(result.weldSeamScale).toBeCloseTo(1.35, 3);
+    expect(result.jawStudioOffset).toBeCloseTo(0.12, 3);
   });
 
   test("builds and articulates procedural transformer, heavy copper clamps, and glowing weld seam correctly", () => {
@@ -77,7 +79,19 @@ describe("US 347,140 Elihu Thomson Electric Resistance Butt-Welding visual & ele
     expect(nodes.weldSeam).toBeDefined();
     expect(nodes.sparkPoints).toBeDefined();
 
-    updateThomsonWeldingKinematics(nodes, materials, 0.016, 0.5, 1200, 3.8, true, true);
+    const weld = stepThomsonWelding({ weldCurrentAmps: 4500, clampPressureMpa: 35 });
+    updateThomsonWeldingKinematics(
+      nodes,
+      materials,
+      0.016,
+      0.5,
+      weld.interfaceTempC,
+      weld.weldGlowIntensity,
+      weld.weldSeamScale,
+      weld.jawStudioOffset,
+      true,
+      true,
+    );
     expect(nodes.sparkPoints.visible).toBe(true);
 
     dispose();

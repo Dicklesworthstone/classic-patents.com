@@ -68,6 +68,7 @@ describe("US 395,781 Herman Hollerith Electro-Mechanical Punched-Card Tabulator 
     expect(result.registerDialCount).toBe(40);
     expect(result.sortingPocketCount).toBe(24);
     expect(result.cardsPerDay).toBeGreaterThan(20000);
+    expect(result.plungeAmp).toBeGreaterThan(0.2);
   });
 
   test("builds and articulates procedural 40 dials, pin press, and sorting box correctly", () => {
@@ -78,13 +79,18 @@ describe("US 395,781 Herman Hollerith Electro-Mechanical Punched-Card Tabulator 
     expect(nodes.sortLids.length).toBe(24);
     expect(nodes.pinPlate).toBeDefined();
 
+    const hollerith = FrankenSimEngine.stepHollerithTabulating({
+      cardsPerMin: 60,
+      supplyVoltageV: 12,
+      activeRelays: 16,
+    });
     updateHollerithTabulatingKinematics(
       nodes,
       materials,
       0.016,
       0.5,
-      (60 * 2 * Math.PI) / 60,
-      15.0,
+      hollerith.pressOmegaRadPerS,
+      hollerith.plungeAmp,
       true,
     );
     expect(materials.oakWood.transparent).toBe(true);
