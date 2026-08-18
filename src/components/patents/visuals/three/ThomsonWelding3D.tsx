@@ -1,35 +1,31 @@
 "use client";
 
-import { Activity, Camera, Eye, EyeOff, Flame, Volume2, VolumeX } from "lucide-react";
+import { Activity, Camera, Eye, EyeOff, Flame, Volume2, VolumeX, Zap } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
-import * as THREE from "three";
+import type * as THREE from "three";
 import { stepThomsonWelding } from "@/physics/catalogKernels";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
-import { createLcg } from "@/utils/lcg";
 import { soundEngine } from "@/utils/soundEngine";
+import { buildThomsonWeldingModel, updateThomsonWeldingKinematics } from "./thomsonWeldingModel";
 import { StudioKernelChips } from "./StudioKernelChips";
-import {
-  createGlowPointTexture,
-  createThreeStudioScene,
-  type StudioContext,
-} from "./ThreeStudioScene";
+import { createThreeStudioScene, type StudioContext } from "./ThreeStudioScene";
 import { useLiveSimParams } from "./useLiveSimParams";
 import { usePatentAudio } from "./usePatentAudio";
 
-const lcg = createLcg(1458);
-
-type CameraPreset = "iso" | "weld_junction" | "transformer_core" | "copper_clamps" | "top";
+type CameraPreset = "iso" | "weld_junction" | "transformer_core" | "copper_clamps" | "compression_screw" | "top";
 
 export function ThomsonWelding3D() {
   const containerRef = useRef<HTMLDivElement>(null);
   const [showUiOverlay, setShowUiOverlay] = useState<boolean>(true);
+  const [isCutaway, setIsCutaway] = useState<boolean>(false);
 
   // Electrical Resistance Welding Parameters
   const { params } = usePatentPhysics("us-347140-thomson-welding");
   const weldCurrentAmps = params.weldCurrentAmps ?? params.currentAmperes ?? 4500;
+  const clampPressureMpa = params.clampPressureMpa ?? 35;
   const weld = stepThomsonWelding({
     weldCurrentAmps,
-    clampPressureMpa: params.clampPressureMpa ?? 35,
+    clampPressureMpa,
   });
   const weldTempCelsius = weld.interfaceTempC;
   const weldPowerKw = weld.jouleKw.toFixed(1);
@@ -42,8 +38,10 @@ export function ThomsonWelding3D() {
     weldTempCelsius,
     jouleKw: weld.jouleKw,
     isForged: weld.isForged ? 1 : 0,
+    upsetBurrWidthMm: weld.upsetBurrWidthMm,
     showSparks,
     isAudioMuted,
+    isCutaway,
   });
 
   const controlsRef = useRef<StudioContext["controls"] | null>(null);
@@ -72,6 +70,10 @@ export function ThomsonWelding3D() {
         camera.position.set(2.4, 1.5, 3.0);
         controls.target.set(0.8, 0.4, 0);
         break;
+      case "compression_screw":
+        camera.position.set(3.8, 1.0, 2.2);
+        controls.target.set(2.4, 0.4, 0);
+        break;
       case "top":
         camera.position.set(0, 12.0, 0.1);
         controls.target.set(0, 0, 0);
@@ -79,6 +81,7 @@ export function ThomsonWelding3D() {
     }
     controls.update();
   };
+
   const toggleSound = () => {
     toggleEngine(() => {
       soundEngine.playSwitchClick();
@@ -99,158 +102,33 @@ export function ThomsonWelding3D() {
     cameraRef.current = camera;
     controlsRef.current = controls;
 
-    // Materials
-    const castIronMat = new THREE.MeshStandardMaterial({
-      color: 0x1e293b,
-      roughness: 0.5,
-      metalness: 0.85,
-    });
-
-    const heavyCopperMat = new THREE.MeshStandardMaterial({
-      color: 0xb45309,
-      roughness: 0.25,
-      metalness: 0.9,
-    });
-
-    const steelBarMat = new THREE.MeshStandardMaterial({
-      color: 0xf1f5f9,
-      roughness: 0.2,
-      metalness: 0.9,
-    });
-
-    const glowingWeldMat = new THREE.MeshStandardMaterial({
-      color: 0xffedd5,
-      roughness: 0.1,
-      emissive: 0xff5500,
-      emissiveIntensity: 1.0,
-    });
-
-    const sparkGlowTex = createGlowPointTexture();
-
-    const rootGroup = new THREE.Group();
+    const { rootGroup, nodes, materials, dispose } = buildThomsonWeldingModel();
     scene.add(rootGroup);
-
-    // 1. Heavy Workshop Bed & Transformer Laminated Core Base (Claim 1)
-    const bed = new THREE.Mesh(new THREE.BoxGeometry(10.0, 0.8, 5.5), castIronMat);
-    bed.position.y = -2.2;
-    bed.receiveShadow = true;
-    rootGroup.add(bed);
-
-    // Laminated Transformer Iron Core Loop
-    const coreGroup = new THREE.Group();
-    coreGroup.position.set(0, -1.2, 0);
-    rootGroup.add(coreGroup);
-
-    const coreMesh = new THREE.Mesh(new THREE.BoxGeometry(4.2, 1.4, 2.2), castIronMat);
-    coreGroup.add(coreMesh);
-
-    // Heavy Secondary Single-Turn Copper Bar
-    const secondaryBar = new THREE.Mesh(new THREE.BoxGeometry(4.8, 0.4, 0.8), heavyCopperMat);
-    secondaryBar.position.y = 0.9;
-    coreGroup.add(secondaryBar);
-
-    // 2. Heavy Dual Copper Clamping Jaws (Claim 2)
-    const clampGroup = new THREE.Group();
-    rootGroup.add(clampGroup);
-
-    // Left Fixed Copper Clamp
-    const leftJaw = new THREE.Mesh(new THREE.BoxGeometry(1.4, 1.6, 1.4), heavyCopperMat);
-    leftJaw.position.set(-1.4, 0.4, 0);
-    leftJaw.castShadow = true;
-    clampGroup.add(leftJaw);
-
-    // Right Movable Copper Clamp with Axial Compression Screw
-    const rightJaw = new THREE.Mesh(new THREE.BoxGeometry(1.4, 1.6, 1.4), heavyCopperMat);
-    rightJaw.position.set(1.4, 0.4, 0);
-    rightJaw.castShadow = true;
-    clampGroup.add(rightJaw);
-
-    // Axial Compression Handwheel & Screw
-    const screwRod = new THREE.Mesh(new THREE.CylinderGeometry(0.12, 0.12, 2.2, 16), steelBarMat);
-    screwRod.rotation.z = Math.PI / 2;
-    screwRod.position.set(2.8, 0.4, 0);
-    clampGroup.add(screwRod);
-
-    // 3. Clamped Steel Bars & Glowing White-Hot Weld Seam
-    const leftBar = new THREE.Mesh(new THREE.CylinderGeometry(0.32, 0.32, 2.6, 24), steelBarMat);
-    leftBar.rotation.z = Math.PI / 2;
-    leftBar.position.set(-1.2, 0.4, 0);
-    clampGroup.add(leftBar);
-
-    const rightBar = new THREE.Mesh(new THREE.CylinderGeometry(0.32, 0.32, 2.6, 24), steelBarMat);
-    rightBar.rotation.z = Math.PI / 2;
-    rightBar.position.set(1.2, 0.4, 0);
-    clampGroup.add(rightBar);
-
-    // White-Hot Bulging Weld Seam (Plastic Forged State)
-    const weldSeam = new THREE.Mesh(new THREE.SphereGeometry(0.42, 24, 24), glowingWeldMat);
-    weldSeam.position.set(0, 0.4, 0);
-    clampGroup.add(weldSeam);
-
-    // 4. Flying Welding Sparks Particles
-    const sparkCount = 80;
-    const sparkGeo = new THREE.BufferGeometry();
-    const sparkPositions = new Float32Array(sparkCount * 3);
-    const sparkVels: number[] = [];
-
-    for (let i = 0; i < sparkCount; i++) {
-      const idx = i * 3;
-      sparkPositions[idx] = 0;
-      sparkPositions[idx + 1] = 0.4;
-      sparkPositions[idx + 2] = 0;
-
-      // Random burst velocity vector
-      sparkVels.push((lcg() - 0.5) * 6.0);
-      sparkVels.push(lcg() * 5.0 + 1.0);
-      sparkVels.push((lcg() - 0.5) * 6.0);
-    }
-
-    sparkGeo.setAttribute("position", new THREE.BufferAttribute(sparkPositions, 3));
-    const sparkMat = new THREE.PointsMaterial({
-      size: 0.2,
-      map: sparkGlowTex,
-      transparent: true,
-      opacity: 0.9,
-      blending: THREE.AdditiveBlending,
-      color: 0xffaa00,
-    });
-    const sparkPoints = new THREE.Points(sparkGeo, sparkMat);
-    clampGroup.add(sparkPoints);
 
     // Animation Loop
     let reqId: number;
-    let _renderedSteps = 0;
+    let timeSec = 0;
 
     const animate = () => {
       reqId = requestAnimationFrame(animate);
-      _renderedSteps += 1;
-      const delta = 1 / 60;
+      const dt = 1 / 60;
+      timeSec += dt;
       const p = live.current;
 
-      // Spark explosion animation
-      const pos = sparkPositions;
-      for (let i = 0; i < sparkCount; i++) {
-        const idx = i * 3;
-        pos[idx] += sparkVels[idx] * delta;
-        pos[idx + 1] += sparkVels[idx + 1] * delta;
-        pos[idx + 2] += sparkVels[idx + 2] * delta;
-        sparkVels[idx + 1] -= 9.81 * delta; // Gravity fall
+      // Update cutaway transparency on cast-iron transformer body
+      materials.castIron.opacity = p.isCutaway ? 0.35 : 1.0;
+      materials.castIron.transparent = p.isCutaway;
 
-        if (pos[idx + 1] < -2.0) {
-          pos[idx] = 0;
-          pos[idx + 1] = 0.4;
-          pos[idx + 2] = 0;
-          sparkVels[idx] = (lcg() - 0.5) * 6.0;
-          sparkVels[idx + 1] = lcg() * 5.0 + 1.0;
-          sparkVels[idx + 2] = (lcg() - 0.5) * 6.0;
-        }
-      }
-      sparkGeo.attributes.position.needsUpdate = true;
-      const forged = p.isForged > 0.5;
-      sparkPoints.visible = p.showSparks && forged;
-      glowingWeldMat.emissiveIntensity = forged ? 2.2 : 0.25;
-      glowingWeldMat.emissive.setHex(p.weldTempCelsius >= 1150 ? 0xfff7ed : 0x7c2d12);
-      weldSeam.scale.setScalar(forged ? 1.05 : 0.72);
+      updateThomsonWeldingKinematics(
+        nodes,
+        materials,
+        dt,
+        timeSec,
+        p.weldTempCelsius,
+        p.upsetBurrWidthMm ?? 3.8,
+        p.isForged > 0.5,
+        p.showSparks,
+      );
 
       renderer.render(scene, camera);
     };
@@ -259,6 +137,7 @@ export function ThomsonWelding3D() {
 
     return () => {
       cancelAnimationFrame(reqId);
+      dispose();
       studio.cleanup();
     };
   }, [live]);
@@ -272,7 +151,7 @@ export function ThomsonWelding3D() {
         <div className="flex items-center gap-2 bg-parchment-950/80 backdrop-blur-md px-3.5 py-2 rounded-xl border border-parchment-700/60 shadow-lg pointer-events-auto">
           <Activity className="w-4 h-4 text-amber-500 animate-pulse" />
           <span className="text-xs font-mono font-bold text-parchment-100 uppercase tracking-wider">
-            Thomson Electric Welding 3D
+            Thomson Butt-Welder 3D
           </span>
           <span className="text-[10px] font-mono px-2 py-0.5 rounded-full bg-amber-500/20 text-amber-300 border border-amber-500/30">
             US Patent 347,140 (1886)
@@ -285,9 +164,10 @@ export function ThomsonWelding3D() {
           {(
             [
               ["iso", "Isometric"],
-              ["weld_junction", "Weld Junction"],
-              ["transformer_core", "Step-Down Core"],
-              ["copper_clamps", "Copper Clamps"],
+              ["weld_junction", "Weld Seam"],
+              ["transformer_core", "Transformer"],
+              ["copper_clamps", "Clamping Jaws"],
+              ["compression_screw", "Screw"],
               ["top", "Top"],
             ] as [CameraPreset, string][]
           ).map(([preset, label]) => (
@@ -310,16 +190,32 @@ export function ThomsonWelding3D() {
         <div className="flex items-center gap-1.5 bg-parchment-950/80 backdrop-blur-md p-1.5 rounded-xl border border-parchment-700/60 shadow-lg pointer-events-auto">
           <button
             type="button"
-            onClick={() => setShowSparks(!showSparks)}
-            title="Toggle Welding Sparks"
-            className={`p-1.5 rounded-lg text-xs transition-colors ${
-              showSparks
-                ? "bg-amber-600/30 text-amber-300 border border-amber-500/40"
-                : "text-parchment-400 hover:text-white"
+            onClick={() => setIsCutaway(!isCutaway)}
+            title={isCutaway ? "Solid Mode" : "Cutaway Machine Bed"}
+            className={`flex items-center gap-1 px-2.5 py-1 text-xs font-sans rounded-lg transition-colors ${
+              isCutaway
+                ? "bg-amber-600/30 text-amber-200 border border-amber-500/40"
+                : "text-parchment-300 hover:text-white hover:bg-parchment-800/60"
             }`}
           >
-            <Flame className="w-4 h-4 text-amber-400" />
+            {isCutaway ? <EyeOff className="w-3.5 h-3.5" /> : <Eye className="w-3.5 h-3.5" />}
+            <span>{isCutaway ? "Cutaway" : "Solid"}</span>
           </button>
+
+          <button
+            type="button"
+            onClick={() => setShowSparks(!showSparks)}
+            title={showSparks ? "Hide Sparks" : "Show Sparks"}
+            className={`flex items-center gap-1 px-2.5 py-1 text-xs font-sans rounded-lg transition-colors ${
+              showSparks
+                ? "bg-amber-600/30 text-amber-200 border border-amber-500/40"
+                : "text-parchment-300 hover:text-white hover:bg-parchment-800/60"
+            }`}
+          >
+            <Flame className="w-3.5 h-3.5" />
+            <span>Sparks</span>
+          </button>
+
           <button
             type="button"
             onClick={toggleSound}
@@ -331,36 +227,29 @@ export function ThomsonWelding3D() {
           <button
             type="button"
             onClick={() => setShowUiOverlay(!showUiOverlay)}
-            title={showUiOverlay ? "Hide Overlay UI" : "Show Overlay UI"}
             className="p-1.5 rounded-lg text-xs text-parchment-400 hover:text-white hover:bg-parchment-800 transition-colors"
           >
-            {showUiOverlay ? (
-              <EyeOff className="w-4 h-4" />
-            ) : (
-              <Eye className="w-4 h-4 text-amber-400" />
-            )}
+            <Zap className="w-4 h-4 text-amber-400" />
           </button>
         </div>
       </div>
 
       <StudioKernelChips
         visible={showUiOverlay}
-        title="Thomson I²R forge"
+        title="Thomson resistance butt-welder"
         chips={[
-          { label: "I", value: String(Math.round(weldCurrentAmps)), unit: "A" },
-          { label: "P", value: weldPowerKw, unit: "kW" },
-          { label: "Burr", value: String(weld.upsetBurrWidthMm), unit: "mm" },
+          { label: "Current", value: String(Math.round(weldCurrentAmps)), unit: "A" },
+          { label: "Power", value: weldPowerKw, unit: "kW" },
           {
-            label: "T",
+            label: "Interface",
             value: String(weldTempCelsius),
             unit: "°C",
-            tone: weld.isForged ? "hot" : "warn",
+            tone: weld.isForged ? "hot" : "ok",
           },
-          {
-            label: "Forge",
-            value: weld.isForged ? "plastic" : "cold",
-            tone: weld.isForged ? "ok" : "warn",
-          },
+          { label: "Pressure", value: String(clampPressureMpa), unit: "MPa" },
+          { label: "State", value: weld.isForged ? "forged" : "heating" },
+          { label: "Burr", value: String(weld.upsetBurrWidthMm), unit: "mm" },
+          { label: "Pulse", value: String(weld.weldPulseMs), unit: "ms" },
         ]}
       />
     </div>

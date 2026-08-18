@@ -1,49 +1,47 @@
 "use client";
 
-import { Activity, Camera, Eye, EyeOff, Volume2, VolumeX } from "lucide-react";
+import { Activity, Camera, Eye, EyeOff, Volume2, VolumeX, Zap } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
-import * as THREE from "three";
+import type * as THREE from "three";
 import { stepZeppelinAirship } from "@/physics/catalogKernels";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { soundEngine } from "@/utils/soundEngine";
+import { buildZeppelinAirshipModel, updateZeppelinAirshipKinematics } from "./zeppelinAirshipModel";
 import { StudioKernelChips } from "./StudioKernelChips";
 import { createThreeStudioScene, type StudioContext } from "./ThreeStudioScene";
 import { useLiveSimParams } from "./useLiveSimParams";
 import { usePatentAudio } from "./usePatentAudio";
 
-type CameraPreset = "iso" | "girders_frame" | "engine_gondola" | "gas_cells" | "top";
+type CameraPreset = "iso" | "girders_frame" | "engine_gondola" | "gas_cells" | "control_fins" | "top";
 
 export function ZeppelinAirship3D() {
   const containerRef = useRef<HTMLDivElement>(null);
   const [showUiOverlay, setShowUiOverlay] = useState<boolean>(true);
+  const [isCutaway, setIsCutaway] = useState<boolean>(false);
 
   // Aerostatic & Aerodynamic Parameters
   const { params } = usePatentPhysics("us-621195-zeppelin-airship");
   const flightSpeedKnots = params.flightSpeedKnots ?? params.airspeedMph ?? 28;
+  const trimWeightPosM = params.trimWeight ?? 5;
   const zep = stepZeppelinAirship({
     gasInflation: params.gasInflation ?? 95,
     flightAlt: params.flightAlt ?? 300,
     flightSpeedKnots: Number(flightSpeedKnots),
-    trimWeight: params.trimWeight ?? 5,
+    trimWeight: trimWeightPosM,
   });
-  const airspeedMph = zep.flightSpeedMph;
-  const engineRpm = zep.propellerRpm;
-  const grossLiftKg = zep.grossLiftKg;
-  const hydrogenVolumeM3 = zep.hydrogenVolumeM3;
-  const [showWireframe, setShowWireframe] = useState<boolean>(false);
   const [activeCamera, setActiveCamera] = useState<CameraPreset>("iso");
   const { isAudioMuted, toggleSound: toggleEngine } = usePatentAudio();
 
   const live = useLiveSimParams({
-    airspeedMph,
-    engineRpm,
-    showWireframe,
+    airspeedKmh: zep.forwardSpeedKmh,
+    engineRpm: zep.propellerRpm,
+    isCutaway,
     isAudioMuted,
+    trimWeightPosM,
     netLiftKn: zep.netLiftKn,
     pitchTrimDeg: zep.pitchTrimDeg,
     parasiteDragKn: zep.parasiteDragKn,
-    propellerDisplayOmegaRadPerS: zep.propellerDisplayOmegaRadPerS,
-    propellerOmegaRadPerS: zep.propellerOmegaRadPerS,
+    propellerOmegaRadPerS: (zep.propellerRpm / 60) * 2 * Math.PI,
   });
 
   const controlsRef = useRef<StudioContext["controls"] | null>(null);
@@ -71,6 +69,10 @@ export function ZeppelinAirship3D() {
       case "gas_cells":
         camera.position.set(3.5, 2.5, 5.0);
         controls.target.set(2.0, 0, 0);
+        break;
+      case "control_fins":
+        camera.position.set(-8.5, 1.5, 3.5);
+        controls.target.set(-6.5, 0, 0);
         break;
       case "top":
         camera.position.set(0, 22.0, 0.1);
@@ -100,135 +102,30 @@ export function ZeppelinAirship3D() {
     cameraRef.current = camera;
     controlsRef.current = controls;
 
-    // Materials
-    const fabricEnvelopeMat = new THREE.MeshStandardMaterial({
-      color: 0xe2e8f0,
-      roughness: 0.65,
-      metalness: 0.1,
-    });
-
-    const duraluminGirdersMat = new THREE.MeshStandardMaterial({
-      color: 0x94a3b8,
-      roughness: 0.3,
-      metalness: 0.9,
-    });
-
-    const gondolaAlumMat = new THREE.MeshStandardMaterial({
-      color: 0xcbd5e1,
-      roughness: 0.25,
-      metalness: 0.92,
-    });
-
-    const propBrassMat = new THREE.MeshStandardMaterial({
-      color: 0xd97706,
-      roughness: 0.2,
-      metalness: 0.95,
-    });
-
-    const rootGroup = new THREE.Group();
+    const { rootGroup, nodes, materials, dispose } = buildZeppelinAirshipModel();
     scene.add(rootGroup);
-
-    // 1. Rigid Streamlined Envelope Hull (Claim 1)
-    const hullGroup = new THREE.Group();
-    rootGroup.add(hullGroup);
-
-    const hullPoints: THREE.Vector2[] = [];
-    hullPoints.push(new THREE.Vector2(0.01, 7.5));
-    hullPoints.push(new THREE.Vector2(0.8, 7.0));
-    hullPoints.push(new THREE.Vector2(1.8, 5.5));
-    hullPoints.push(new THREE.Vector2(2.3, 3.5));
-    hullPoints.push(new THREE.Vector2(2.4, 0));
-    hullPoints.push(new THREE.Vector2(2.3, -3.5));
-    hullPoints.push(new THREE.Vector2(1.8, -5.5));
-    hullPoints.push(new THREE.Vector2(0.8, -7.0));
-    hullPoints.push(new THREE.Vector2(0.01, -7.5));
-
-    const hullGeo = new THREE.LatheGeometry(hullPoints, 32);
-    hullGeo.rotateZ(Math.PI / 2);
-    const hullMesh = new THREE.Mesh(hullGeo, fabricEnvelopeMat);
-    hullMesh.castShadow = true;
-    hullGroup.add(hullMesh);
-
-    // 2. Polygonal Transverse Ring Frames (Duralumin Lattice)
-    for (let r = 0; r < 15; r++) {
-      const rx = -6.0 + r * 0.85;
-      const radiusAtX = 2.4 * Math.cos((rx / 7.5) * (Math.PI / 2.2));
-      const ring = new THREE.Mesh(
-        new THREE.TorusGeometry(Math.max(radiusAtX, 0.4), 0.05, 8, 24),
-        duraluminGirdersMat,
-      );
-      ring.rotation.y = Math.PI / 2;
-      ring.position.x = rx;
-      hullGroup.add(ring);
-    }
-
-    // 3. Keel Catwalk Corridor & Fore / Aft Engine Gondolas
-    const keelCatwalk = new THREE.Mesh(new THREE.BoxGeometry(11.5, 0.25, 0.4), duraluminGirdersMat);
-    keelCatwalk.position.set(0, -2.45, 0);
-    hullGroup.add(keelCatwalk);
-
-    // Fore & Aft Aluminum Gondolas
-    const gondolas: THREE.Group[] = [];
-    const props: THREE.Group[] = [];
-
-    [-3.8, 3.8].forEach((gx) => {
-      const gondolaGroup = new THREE.Group();
-      gondolaGroup.position.set(gx, -3.1, 0);
-
-      const car = new THREE.Mesh(new THREE.CylinderGeometry(0.5, 0.5, 2.2, 16), gondolaAlumMat);
-      car.rotation.z = Math.PI / 2;
-      car.castShadow = true;
-      gondolaGroup.add(car);
-
-      // Outrigger Geared Propellers
-      [-0.8, 0.8].forEach((pz) => {
-        const propGroup = new THREE.Group();
-        propGroup.position.set(0, 0, pz);
-
-        const blade = new THREE.Mesh(new THREE.BoxGeometry(0.12, 1.2, 0.04), propBrassMat);
-        propGroup.add(blade);
-        gondolaGroup.add(propGroup);
-        props.push(propGroup);
-      });
-
-      hullGroup.add(gondolaGroup);
-      gondolas.push(gondolaGroup);
-    });
-
-    // 4. Cruciform Tail Control Fins (Elevators & Rudders)
-    [-1, 1].forEach((dir) => {
-      // Horizontal Fin
-      const hFin = new THREE.Mesh(new THREE.BoxGeometry(1.8, 0.06, 1.6), duraluminGirdersMat);
-      hFin.position.set(-6.5, 0, dir * 1.2);
-      hullGroup.add(hFin);
-
-      // Vertical Fin
-      const vFin = new THREE.Mesh(new THREE.BoxGeometry(1.8, 1.6, 0.06), duraluminGirdersMat);
-      vFin.position.set(-6.5, dir * 1.2, 0);
-      hullGroup.add(vFin);
-    });
 
     // Animation Loop
     let reqId: number;
-    let renderedSteps = 0;
+    let timeSec = 0;
 
     const animate = () => {
       reqId = requestAnimationFrame(animate);
-      renderedSteps += 1;
-      const delta = 1 / 60;
+      const dt = 1 / 60;
+      timeSec += dt;
       const p = live.current;
 
-      const t = renderedSteps * (1 / 60);
-      hullGroup.position.y = (p.netLiftKn / 40) * 0.9 + Math.sin(t * 0.8) * 0.08;
-      hullGroup.rotation.z = (p.pitchTrimDeg * Math.PI) / 180 + Math.sin(t * 0.4) * 0.01;
-
-      // Spin propellers
-      const propSpeed = p.propellerDisplayOmegaRadPerS ?? (p.engineRpm / 60) * 8.0;
-      props.forEach((pr) => {
-        pr.rotation.x += propSpeed * delta;
-      });
-
-      fabricEnvelopeMat.wireframe = p.showWireframe;
+      updateZeppelinAirshipKinematics(
+        nodes,
+        materials,
+        dt,
+        timeSec,
+        p.netLiftKn,
+        p.pitchTrimDeg,
+        p.propellerOmegaRadPerS,
+        p.trimWeightPosM,
+        p.isCutaway,
+      );
 
       renderer.render(scene, camera);
     };
@@ -237,6 +134,7 @@ export function ZeppelinAirship3D() {
 
     return () => {
       cancelAnimationFrame(reqId);
+      dispose();
       studio.cleanup();
     };
   }, [live]);
@@ -250,7 +148,7 @@ export function ZeppelinAirship3D() {
         <div className="flex items-center gap-2 bg-parchment-950/80 backdrop-blur-md px-3.5 py-2 rounded-xl border border-parchment-700/60 shadow-lg pointer-events-auto">
           <Activity className="w-4 h-4 text-amber-500 animate-pulse" />
           <span className="text-xs font-mono font-bold text-parchment-100 uppercase tracking-wider">
-            Zeppelin Rigid Airship 3D
+            Zeppelin LZ-1 Airship 3D
           </span>
           <span className="text-[10px] font-mono px-2 py-0.5 rounded-full bg-amber-500/20 text-amber-300 border border-amber-500/30">
             US Patent 621,195 (1899)
@@ -264,8 +162,9 @@ export function ZeppelinAirship3D() {
             [
               ["iso", "Isometric"],
               ["girders_frame", "Lattice Girders"],
-              ["engine_gondola", "Engine Cars"],
+              ["engine_gondola", "Gondolas"],
               ["gas_cells", "Gas Cells"],
+              ["control_fins", "Tail Fins"],
               ["top", "Top"],
             ] as [CameraPreset, string][]
           ).map(([preset, label]) => (
@@ -288,16 +187,18 @@ export function ZeppelinAirship3D() {
         <div className="flex items-center gap-1.5 bg-parchment-950/80 backdrop-blur-md p-1.5 rounded-xl border border-parchment-700/60 shadow-lg pointer-events-auto">
           <button
             type="button"
-            onClick={() => setShowWireframe(!showWireframe)}
-            title="Toggle Structural Girders Wireframe"
-            className={`p-1.5 rounded-lg text-xs transition-colors ${
-              showWireframe
-                ? "bg-amber-600/30 text-amber-300 border border-amber-500/40"
-                : "text-parchment-400 hover:text-white"
+            onClick={() => setIsCutaway(!isCutaway)}
+            title={isCutaway ? "Solid Envelope" : "Cutaway Hydrogen Cells"}
+            className={`flex items-center gap-1 px-2.5 py-1 text-xs font-sans rounded-lg transition-colors ${
+              isCutaway
+                ? "bg-amber-600/30 text-amber-200 border border-amber-500/40"
+                : "text-parchment-300 hover:text-white hover:bg-parchment-800/60"
             }`}
           >
-            <Eye className="w-4 h-4" />
+            {isCutaway ? <EyeOff className="w-3.5 h-3.5" /> : <Eye className="w-3.5 h-3.5" />}
+            <span>{isCutaway ? "Cutaway" : "Solid"}</span>
           </button>
+
           <button
             type="button"
             onClick={toggleSound}
@@ -309,33 +210,24 @@ export function ZeppelinAirship3D() {
           <button
             type="button"
             onClick={() => setShowUiOverlay(!showUiOverlay)}
-            title={showUiOverlay ? "Hide Overlay UI" : "Show Overlay UI"}
             className="p-1.5 rounded-lg text-xs text-parchment-400 hover:text-white hover:bg-parchment-800 transition-colors"
           >
-            {showUiOverlay ? (
-              <EyeOff className="w-4 h-4" />
-            ) : (
-              <Eye className="w-4 h-4 text-amber-400" />
-            )}
-          </button>{" "}
+            <Zap className="w-4 h-4 text-amber-400" />
+          </button>
         </div>
       </div>
 
       <StudioKernelChips
         visible={showUiOverlay}
-        title="LZ lattice hull"
+        title="Zeppelin rigid aerostat"
         chips={[
-          { label: "H₂", value: String(Math.round(hydrogenVolumeM3)), unit: "m³" },
-          {
-            label: "Lift",
-            value: String(zep.netLiftKn),
-            unit: "kN",
-            tone: zep.netLiftKn > 0 ? "ok" : "warn",
-          },
-          { label: "Mass", value: String(grossLiftKg), unit: "kg" },
+          { label: "Gross", value: String(zep.grossBuoyancyKn), unit: "kN" },
+          { label: "Net", value: String(zep.netLiftKn), unit: "kN" },
+          { label: "Speed", value: zep.forwardSpeedKmh.toFixed(1), unit: "km/h" },
+          { label: "RPM", value: String(zep.propellerRpm), unit: "rpm" },
           { label: "Pitch", value: String(zep.pitchTrimDeg), unit: "°" },
           { label: "Drag", value: String(zep.parasiteDragKn), unit: "kN" },
-          { label: "ω_prop", value: zep.propellerDisplayOmegaRadPerS.toFixed(1), unit: "rad/s" },
+          { label: "Volume", value: String(Math.round(zep.hydrogenVolumeM3)), unit: "m³" },
         ]}
       />
     </div>

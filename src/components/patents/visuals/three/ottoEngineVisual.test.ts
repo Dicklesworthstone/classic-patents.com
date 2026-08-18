@@ -1,0 +1,78 @@
+import { describe, expect, test } from "bun:test";
+import { readFileSync } from "node:fs";
+import { join } from "node:path";
+import { stepOttoEngine } from "@/physics/catalogKernels";
+import { buildOttoEngineModel, updateOttoEngineKinematics } from "./ottoEngineModel";
+
+const VISUALS_DIRECTORY = join(process.cwd(), "src/components/patents/visuals");
+
+describe("US 194,047 Nikolaus Otto Four-Stroke Engine visual & kinematics boundary", () => {
+  test("uses pure procedural Three.js WebGL architecture without external GLTF/GLB models", () => {
+    const threeSource = readFileSync(join(VISUALS_DIRECTORY, "three", "OttoEngine3D.tsx"), "utf8");
+    const modelSource = readFileSync(
+      join(VISUALS_DIRECTORY, "three", "ottoEngineModel.ts"),
+      "utf8",
+    );
+
+    expect(threeSource).not.toContain("GLTFLoader");
+    expect(threeSource).not.toContain(".glb");
+    expect(threeSource).not.toContain(".gltf");
+    expect(modelSource).toContain("buildOttoEngineModel");
+    expect(modelSource).toContain("updateOttoEngineKinematics");
+  });
+
+  test("maintains deterministic replay without ambient randomness or private clocks in frame loop", () => {
+    const threeSource = readFileSync(join(VISUALS_DIRECTORY, "three", "OttoEngine3D.tsx"), "utf8");
+
+    for (const forbidden of ["Math.random", "new THREE.Clock", "performance.now"]) {
+      expect(threeSource).not.toContain(forbidden);
+    }
+  });
+
+  test("exposes authentic camera presets and cutaway mode for internal 4-stroke observation", () => {
+    const threeSource = readFileSync(join(VISUALS_DIRECTORY, "three", "OttoEngine3D.tsx"), "utf8");
+
+    for (const preset of [
+      "iso",
+      "slide_valve",
+      "cylinder_piston",
+      "lay_shaft",
+      "governor",
+      "flywheels",
+    ]) {
+      expect(threeSource).toContain(preset);
+    }
+
+    expect(threeSource).toContain("cutawayMode");
+    expect(threeSource).toContain("2:1 Lay Shaft");
+  });
+
+  test("computes genuine Otto thermodynamic air-standard cycle in reproducible SI units", () => {
+    const otto = stepOttoEngine({
+      engineRpm: 180,
+      compressionRatio: 4.5,
+    });
+
+    expect(otto.brakeHorsepower).toBeGreaterThan(2);
+    expect(otto.thermalEfficiencyPct).toBeGreaterThan(25);
+    expect(otto.peakCompressionBar).toBeGreaterThan(4);
+    expect(otto.peakFiringBar).toBeGreaterThan(15);
+  });
+
+  test("builds and articulates procedural 4-stroke kinematic hierarchy correctly", () => {
+    const { root, nodes, materials } = buildOttoEngineModel();
+    expect(root.children.length).toBeGreaterThan(5);
+
+    // Initial pose at crankAngle = 0 (BDC)
+    updateOttoEngineKinematics(nodes, materials, 0, 4.5, true, true, 180);
+    const bdcPistonX = nodes.pistonGroup.position.x;
+
+    // TDC pose at crankAngle = PI
+    updateOttoEngineKinematics(nodes, materials, Math.PI, 4.5, true, true, 180);
+    const tdcPistonX = nodes.pistonGroup.position.x;
+
+    expect(tdcPistonX).toBeLessThan(bdcPistonX); // Piston moves toward head (-X) at TDC
+    expect(nodes.cylinderCutawayMesh.visible).toBe(true);
+    expect(nodes.cylinderJacketMesh.visible).toBe(false);
+  });
+});

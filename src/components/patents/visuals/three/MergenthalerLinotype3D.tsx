@@ -1,21 +1,23 @@
 "use client";
 
-import { Activity, Camera, Eye, EyeOff, Volume2, VolumeX } from "lucide-react";
+import { Activity, Camera, Eye, EyeOff, Volume2, VolumeX, Zap } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
-import * as THREE from "three";
+import type * as THREE from "three";
 import { stepMergenthalerLinotype } from "@/physics/machineKernels";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { soundEngine } from "@/utils/soundEngine";
+import { buildMergenthalerLinotypeModel, updateMergenthalerLinotypeKinematics } from "./mergenthalerLinotypeModel";
 import { StudioKernelChips } from "./StudioKernelChips";
 import { createThreeStudioScene, type StudioContext } from "./ThreeStudioScene";
 import { useLiveSimParams } from "./useLiveSimParams";
 import { usePatentAudio } from "./usePatentAudio";
 
-type CameraPreset = "iso" | "matrix_magazine" | "casting_pot" | "spaceband_justifier" | "top";
+type CameraPreset = "iso" | "matrix_magazine" | "casting_pot" | "spaceband_justifier" | "keyboard" | "top";
 
 export function MergenthalerLinotype3D() {
   const containerRef = useRef<HTMLDivElement>(null);
   const [showUiOverlay, setShowUiOverlay] = useState<boolean>(true);
+  const [isCutaway, setIsCutaway] = useState<boolean>(false);
 
   // Linotype Mechanical Composing Parameters
   const { params } = usePatentPhysics("us-313224-mergenthaler-linotype");
@@ -37,6 +39,7 @@ export function MergenthalerLinotype3D() {
     spacebandWedge,
     potTempC,
     isAudioMuted,
+    isCutaway,
   });
 
   const controlsRef = useRef<StudioContext["controls"] | null>(null);
@@ -54,7 +57,7 @@ export function MergenthalerLinotype3D() {
         controls.target.set(0, 0, 0);
         break;
       case "matrix_magazine":
-        camera.position.set(0, 3.5, 3.8);
+        camera.position.set(0, 4.2, 3.8);
         controls.target.set(0, 2.2, 0);
         break;
       case "casting_pot":
@@ -64,6 +67,10 @@ export function MergenthalerLinotype3D() {
       case "spaceband_justifier":
         camera.position.set(0, 0.8, 3.2);
         controls.target.set(0, 0.2, 0);
+        break;
+      case "keyboard":
+        camera.position.set(0, 1.2, 3.4);
+        controls.target.set(0, -0.6, 1.4);
         break;
       case "top":
         camera.position.set(0, 14.0, 0.1);
@@ -93,142 +100,40 @@ export function MergenthalerLinotype3D() {
     cameraRef.current = camera;
     controlsRef.current = controls;
 
-    // Materials
-    const castIronMat = new THREE.MeshStandardMaterial({
-      color: 0x1e293b,
-      roughness: 0.5,
-      metalness: 0.85,
-    });
-
-    const brassMat = new THREE.MeshStandardMaterial({
-      color: 0xd97706,
-      roughness: 0.22,
-      metalness: 0.9,
-    });
-
-    const leadMetalMat = new THREE.MeshStandardMaterial({
-      color: 0x64748b,
-      roughness: 0.35,
-      metalness: 0.88,
-    });
-
-    const polishedSteelMat = new THREE.MeshStandardMaterial({
-      color: 0xf1f5f9,
-      roughness: 0.1,
-      metalness: 0.95,
-    });
-
-    const rootGroup = new THREE.Group();
+    const { rootGroup, nodes, materials, dispose } = buildMergenthalerLinotypeModel();
     scene.add(rootGroup);
 
-    // 1. Heavy Cast-Iron C-Frame Column & Base
-    const base = new THREE.Mesh(new THREE.BoxGeometry(6.5, 1.2, 5.5), castIronMat);
-    base.position.y = -2.4;
-    base.receiveShadow = true;
-    rootGroup.add(base);
-
-    const column = new THREE.Mesh(new THREE.BoxGeometry(2.2, 6.5, 2.2), castIronMat);
-    column.position.set(0, 0.8, -1.0);
-    column.castShadow = true;
-    rootGroup.add(column);
-
-    // 2. Slanted Brass Matrix Magazine (Claim 1)
-    const magGroup = new THREE.Group();
-    magGroup.position.set(0, 2.8, 0);
-    magGroup.rotation.x = Math.PI / 6; // 30° Slant
-    rootGroup.add(magGroup);
-
-    const magazine = new THREE.Mesh(new THREE.BoxGeometry(3.6, 4.2, 0.35), brassMat);
-    magazine.castShadow = true;
-    magGroup.add(magazine);
-
-    // Vertical magazine channels — brass matrices drop one channel at a time
-    const channelMats: THREE.Mesh[] = [];
-    for (let c = 0; c < 12; c++) {
-      const channel = new THREE.Mesh(new THREE.BoxGeometry(0.16, 3.6, 0.05), polishedSteelMat);
-      channel.position.set(-1.65 + c * 0.3, 0.05, 0.22);
-      magGroup.add(channel);
-      const stacked = new THREE.Mesh(new THREE.BoxGeometry(0.14, 0.22, 0.06), brassMat);
-      stacked.position.set(-1.65 + c * 0.3, 1.4, 0.28);
-      magGroup.add(stacked);
-      channelMats.push(stacked);
-    }
-
-    // 3. Molten Type-Metal Melting Pot & Pump Plunger (Claim 2)
-    const potGroup = new THREE.Group();
-    potGroup.position.set(-1.8, -0.4, 0.4);
-    rootGroup.add(potGroup);
-
-    const metalPot = new THREE.Mesh(new THREE.CylinderGeometry(0.85, 0.7, 1.4, 24), castIronMat);
-    metalPot.castShadow = true;
-    potGroup.add(metalPot);
-
-    // Molten Lead Surface
-    const leadSurface = new THREE.Mesh(
-      new THREE.CylinderGeometry(0.78, 0.78, 0.1, 24),
-      leadMetalMat,
-    );
-    leadSurface.position.y = 0.6;
-    potGroup.add(leadSurface);
-
-    // Pump Plunger Rod
-    const plungerRod = new THREE.Mesh(
-      new THREE.CylinderGeometry(0.08, 0.08, 2.2, 12),
-      polishedSteelMat,
-    );
-    plungerRod.position.set(0, 1.2, 0);
-    potGroup.add(plungerRod);
-
-    // 4. Casting Mold Disk & Cast Lead Slug Output
-    const moldDisk = new THREE.Mesh(
-      new THREE.CylinderGeometry(1.2, 1.2, 0.25, 32),
-      polishedSteelMat,
-    );
-    moldDisk.rotation.z = Math.PI / 2;
-    moldDisk.position.set(0, -0.4, 0.8);
-    rootGroup.add(moldDisk);
-
-    // Cast Lead Slug (Linotype Line of Type)
-    const leadSlug = new THREE.Mesh(new THREE.BoxGeometry(0.12, 0.28, 2.4), leadMetalMat);
-    leadSlug.position.set(0.6, -0.6, 1.2);
-    rootGroup.add(leadSlug);
-
-    // 5. 90-Key Composing Keyboard Deck
-    const keyDeck = new THREE.Mesh(new THREE.BoxGeometry(3.2, 0.35, 1.8), castIronMat);
-    keyDeck.position.set(0, -1.2, 2.0);
-    keyDeck.rotation.x = Math.PI / 8;
-    rootGroup.add(keyDeck);
-
-    const fallingMatrix = new THREE.Mesh(new THREE.BoxGeometry(0.18, 0.32, 0.08), brassMat);
-    fallingMatrix.position.set(0, 2.4, 0.4);
-    rootGroup.add(fallingMatrix);
-
+    // Animation Loop
     let reqId: number;
-    let renderedSteps = 0;
+    let timeSec = 0;
 
     const animate = () => {
       reqId = requestAnimationFrame(animate);
-      renderedSteps += 1;
+      const dt = 1 / 60;
+      timeSec += dt;
       const p = live.current;
+
       const step = stepMergenthalerLinotype({
         matrixRatePerMin: p.matrixRate,
         spacebandWedgeMm: p.spacebandWedge,
         potTempC: p.potTempC,
-        elapsedS: renderedSteps * (1 / 60),
+        elapsedS: timeSec,
       });
 
-      plungerRod.position.y = 1.2 + step.plungerY;
-      moldDisk.rotation.y = step.moldAngle;
-      leadSlug.visible = step.slugOut;
-      leadSlug.position.x = 0.6 + (step.slugOut ? (step.phase - 0.72) * 4 : 0);
-      fallingMatrix.position.y = 2.6 - step.phase * 2.4;
-      fallingMatrix.visible = step.phase < 0.55;
-      fallingMatrix.position.x = -1.65 + (Math.floor(step.phase * 12) % 12) * 0.3;
-      leadMetalMat.color.setHex(step.isEutecticTemp ? 0x94a3b8 : 0x475569);
-      channelMats.forEach((mat, i) => {
-        mat.position.y =
-          1.4 - (i === Math.floor(step.phase * 12) % 12 && step.phase < 0.5 ? 0.35 : 0);
-      });
+      // Update cutaway transparency on metal pot
+      materials.castIron.opacity = p.isCutaway ? 0.35 : 1.0;
+      materials.castIron.transparent = p.isCutaway;
+
+      updateMergenthalerLinotypeKinematics(
+        nodes,
+        materials,
+        dt,
+        timeSec,
+        step.plungerY,
+        step.moldAngle,
+        step.slugOut,
+        p.spacebandWedge,
+      );
 
       renderer.render(scene, camera);
     };
@@ -237,6 +142,7 @@ export function MergenthalerLinotype3D() {
 
     return () => {
       cancelAnimationFrame(reqId);
+      dispose();
       studio.cleanup();
     };
   }, [live]);
@@ -263,9 +169,10 @@ export function MergenthalerLinotype3D() {
           {(
             [
               ["iso", "Isometric"],
-              ["matrix_magazine", "Matrix Magazine"],
-              ["casting_pot", "Melting Pot"],
-              ["spaceband_justifier", "Mold Disk"],
+              ["matrix_magazine", "Magazine"],
+              ["casting_pot", "Casting Pot"],
+              ["spaceband_justifier", "Spacebands"],
+              ["keyboard", "Keyboard"],
               ["top", "Top"],
             ] as [CameraPreset, string][]
           ).map(([preset, label]) => (
@@ -288,6 +195,20 @@ export function MergenthalerLinotype3D() {
         <div className="flex items-center gap-1.5 bg-parchment-950/80 backdrop-blur-md p-1.5 rounded-xl border border-parchment-700/60 shadow-lg pointer-events-auto">
           <button
             type="button"
+            onClick={() => setIsCutaway(!isCutaway)}
+            title={isCutaway ? "Solid Castings" : "Cutaway Frame & Pot"}
+            className={`flex items-center gap-1 px-2.5 py-1 text-xs font-sans rounded-lg transition-colors ${
+              isCutaway
+                ? "bg-amber-600/30 text-amber-200 border border-amber-500/40"
+                : "text-parchment-300 hover:text-white hover:bg-parchment-800/60"
+            }`}
+          >
+            {isCutaway ? <EyeOff className="w-3.5 h-3.5" /> : <Eye className="w-3.5 h-3.5" />}
+            <span>{isCutaway ? "Cutaway" : "Solid"}</span>
+          </button>
+
+          <button
+            type="button"
             onClick={toggleSound}
             title={isAudioMuted ? "Unmute Sound" : "Mute Sound"}
             className="p-1.5 rounded-lg text-xs text-parchment-400 hover:text-white hover:bg-parchment-800 transition-colors"
@@ -297,37 +218,25 @@ export function MergenthalerLinotype3D() {
           <button
             type="button"
             onClick={() => setShowUiOverlay(!showUiOverlay)}
-            title={showUiOverlay ? "Hide Overlay UI" : "Show Overlay UI"}
             className="p-1.5 rounded-lg text-xs text-parchment-400 hover:text-white hover:bg-parchment-800 transition-colors"
           >
-            {showUiOverlay ? (
-              <EyeOff className="w-4 h-4" />
-            ) : (
-              <Eye className="w-4 h-4 text-amber-400" />
-            )}
-          </button>{" "}
+            <Zap className="w-4 h-4 text-amber-400" />
+          </button>
         </div>
       </div>
 
       <StudioKernelChips
         visible={showUiOverlay}
-        title="Mergenthaler slug cycle"
+        title="Mergenthaler hot-metal linecaster"
         chips={[
-          { label: "Matrices", value: String(matrixRate), unit: "/min" },
-          { label: "Chars", value: charsPerHour.toLocaleString(), unit: "/h" },
-          { label: "Lines", value: castingLpm.toFixed(2), unit: "/min" },
-          {
-            label: "Pot",
-            value: String(potTempC),
-            unit: "°C",
-            tone: linotypeIdle.isEutecticTemp ? "ok" : "warn",
-          },
-          { label: "Justified", value: String(linotypeIdle.justificationWidthMm), unit: "mm" },
-          {
-            label: "Slug",
-            value: linotypeIdle.slugOut ? "eject" : "cast",
-            tone: linotypeIdle.slugOut ? "hot" : "ok",
-          },
+          { label: "Lines", value: castingLpm.toFixed(1), unit: "lpm" },
+          { label: "Throughput", value: String(charsPerHour), unit: "char/hr" },
+          { label: "Wedge", value: String(spacebandWedge), unit: "mm" },
+          { label: "Pot", value: String(Math.round(potTempC)), unit: "°C" },
+          { label: "Width", value: String(linotypeIdle.justificationWidthMm), unit: "mm" },
+          { label: "Solid", value: String(linotypeIdle.solidificationTimeMs), unit: "ms" },
+          { label: "Hardness", value: String(linotypeIdle.brinellHardness), unit: "HB" },
+          { label: "Dist", value: String(linotypeIdle.distributorFreqHz), unit: "Hz" },
         ]}
       />
     </div>
