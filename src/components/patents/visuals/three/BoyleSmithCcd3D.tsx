@@ -9,10 +9,10 @@ import { useFrankenSimPhysics } from "@/physics/useFrankenSimPhysics";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { soundEngine } from "@/utils/soundEngine";
 import {
-  createGlowPointTexture,
   createThreeStudioScene,
   type StudioContext,
 } from "./ThreeStudioScene";
+import { buildBoyleSmithCcdModel } from "./boyleSmithCcdModel";
 import { useLiveSimParams } from "./useLiveSimParams";
 import { usePatentAudio } from "./usePatentAudio";
 
@@ -121,177 +121,24 @@ export function BoyleSmithCcd3D() {
     cameraRef.current = camera;
     controlsRef.current = controls;
 
-    // --- PBR MATERIALS ---
-    const pSiliconSubstrateMat = new THREE.MeshStandardMaterial({
-      color: 0x334155,
-      roughness: 0.25,
-      metalness: 0.85,
-    });
+    const model = buildBoyleSmithCcdModel();
+    scene.add(model.root);
 
-    const gatePolySiliconMat = new THREE.MeshStandardMaterial({
-      color: 0xca8a04,
-      roughness: 0.2,
-      metalness: 0.9,
-    });
-
-    const gateActiveMat = new THREE.MeshStandardMaterial({
-      color: 0x3b82f6,
-      roughness: 0.15,
-      metalness: 0.8,
-      emissive: 0x2563eb,
-      emissiveIntensity: 0.85,
-    });
-
-    const oxideMat = new THREE.MeshPhysicalMaterial({
-      color: 0x38bdf8,
-      transmission: 0.85,
-      opacity: 0.9,
-      transparent: true,
-      roughness: 0.05,
-      ior: 1.46,
-    });
-
-    // --- 3D CHARGE-COUPLED DEVICE (CCD) ASSEMBLY ---
-    const ccdGroup = new THREE.Group();
-    scene.add(ccdGroup);
-
-    // P-Type Silicon Substrate Ingot
-    const substrate = new THREE.Mesh(new THREE.BoxGeometry(9.6, 1.0, 5.4), pSiliconSubstrateMat);
-    substrate.position.y = -0.5;
-    substrate.castShadow = true;
-    substrate.receiveShadow = true;
-    ccdGroup.add(substrate);
-
-    // Channel Stop Boron Isolation Barriers
-    [-2.4, 2.4].forEach((sz) => {
-      const channelStop = new THREE.Mesh(
-        new THREE.BoxGeometry(9.4, 0.2, 0.4),
-        new THREE.MeshStandardMaterial({ color: 0x1e1b4b, roughness: 0.8 }),
-      );
-      channelStop.position.set(0, 0.05, sz);
-      ccdGroup.add(channelStop);
-    });
-
-    // SiO2 Gate Dielectric Oxide Layer
-    const oxide = new THREE.Mesh(new THREE.BoxGeometry(9.4, 0.25, 4.4), oxideMat);
-    oxide.position.y = 0.12;
-    ccdGroup.add(oxide);
-
-    // 3-Phase Clock Bus Lines
-    const busColors = [0x0284c7, 0xd97706, 0x9333ea];
-    for (let b = 0; b < 3; b++) {
-      const busLine = new THREE.Mesh(
-        new THREE.BoxGeometry(9.0, 0.12, 0.22),
-        new THREE.MeshStandardMaterial({ color: busColors[b], metalness: 0.9, roughness: 0.2 }),
-      );
-      busLine.position.set(0, 0.38, 2.0 - b * 0.35);
-      ccdGroup.add(busLine);
-    }
-
-    // 9 Transparent Polysilicon Gate Electrodes
-    const gates: { mesh: THREE.Mesh; phase: number; x: number }[] = [];
-    const numGates = 9;
-
-    for (let g = 0; g < numGates; g++) {
-      const gX = -3.6 + g * 0.85;
-      const phaseNum = (g % 3) + 1;
-
-      const gateMesh = new THREE.Mesh(new THREE.BoxGeometry(0.72, 0.24, 3.2), gatePolySiliconMat);
-      gateMesh.position.set(gX, 0.36, -0.4);
-      gateMesh.castShadow = true;
-      ccdGroup.add(gateMesh);
-
-      // Contact Via connecting to corresponding clock bus line
-      const busZ = 2.0 - (phaseNum - 1) * 0.35;
-      const via = new THREE.Mesh(
-        new THREE.BoxGeometry(0.12, 0.14, Math.abs(busZ - -0.4)),
-        new THREE.MeshStandardMaterial({ color: busColors[phaseNum - 1], metalness: 0.85 }),
-      );
-      via.position.set(gX, 0.36, (-0.4 + busZ) / 2);
-      ccdGroup.add(via);
-
-      gates.push({ mesh: gateMesh, phase: phaseNum, x: gX });
-    }
-
-    // Output Floating Diffusion Sensing Node & Reset Gate
-    const outputNode = new THREE.Mesh(
-      new THREE.BoxGeometry(0.65, 0.3, 3.2),
-      new THREE.MeshStandardMaterial({ color: 0x10b981, roughness: 0.3, metalness: 0.8 }),
-    );
-    outputNode.position.set(4.3, 0.38, -0.4);
-    ccdGroup.add(outputNode);
-
-    // --- GLOWING ELECTRON CHARGE PACKETS ---
-    const packetCount = 240;
-    const packetGeo = new THREE.BufferGeometry();
-    const packetPos = new Float32Array(packetCount * 3);
-    const packetColors = new Float32Array(packetCount * 3);
-
-    const glowTex = createGlowPointTexture();
-
-    // Deterministic PRNG for visual placement
-    let setupSeed = 3858232;
-    const lcgSetup = () => {
-      setupSeed = (setupSeed * 1664525 + 1013904223) % 4294967296;
-      return setupSeed / 4294967296;
-    };
-
-    for (let i = 0; i < packetCount; i++) {
-      const idx = i * 3;
-      const pixelIdx = Math.floor(i / (packetCount / 3));
-      const baseGateX = -3.6 + pixelIdx * 3 * 0.85;
-
-      packetPos[idx] = baseGateX + (lcgSetup() - 0.5) * 0.5;
-      packetPos[idx + 1] = -0.2 - lcgSetup() * 0.25;
-      packetPos[idx + 2] = (lcgSetup() - 0.5) * 2.8;
-
-      packetColors[idx] = 0.1;
-      packetColors[idx + 1] = 0.9;
-      packetColors[idx + 2] = 1.0;
-    }
-
-    packetGeo.setAttribute("position", new THREE.BufferAttribute(packetPos, 3));
-    packetGeo.setAttribute("color", new THREE.BufferAttribute(packetColors, 3));
-
-    const packetPoints = new THREE.Points(
-      packetGeo,
-      new THREE.PointsMaterial({
-        size: 0.4,
-        map: glowTex,
-        vertexColors: true,
-        transparent: true,
-        opacity: 0.9,
-        blending: THREE.AdditiveBlending,
-        depthWrite: false,
-      }),
-    );
-    ccdGroup.add(packetPoints);
-
-    // --- RENDER LOOP & REAL-TIME CHARGE TRANSFER DYNAMICS ---
     let reqId: number;
-    let renderedSteps = 0;
     let phaseTimer = 0;
     let currentActivePhase: 1 | 2 | 3 = 1;
 
     const animate = () => {
       reqId = requestAnimationFrame(animate);
-      renderedSteps += 1;
       const delta = 1 / 60;
       const p = live.current;
 
-      let loopSeed = Math.floor(renderedSteps * (1 / 60) * 1000) + 12345;
-      const lcgLoop = () => {
-        loopSeed = (loopSeed * 1664525 + 1013904223) % 4294967296;
-        return loopSeed / 4294967296;
-      };
-
       if (p.isAutoClocking) {
-        // Visible 3-phase step from the kernel (not leftover 0.8 / f or 1/(2f)).
         phaseTimer += delta;
         if (phaseTimer > (p.phaseDisplayMs ?? 200) / 1000) {
           phaseTimer = 0;
           currentActivePhase = ((currentActivePhase % 3) + 1) as 1 | 2 | 3;
-          if (!p.isAudioMuted && lcgLoop() < 0.3) {
+          if (!p.isAudioMuted) {
             soundEngine.playSwitchClick();
           }
         }
@@ -306,32 +153,7 @@ export function BoyleSmithCcd3D() {
         p.gateVoltageV ?? 8,
       );
 
-      // Update Gate Colors & Potential Wells
-      for (const g of gates) {
-        const wellE = wells.wells[g.phase - 1] ?? 0;
-        const fill = Math.min(1, wellE / Math.max(1, wells.fullWellElectrons));
-        if (g.phase === currentActivePhase) {
-          g.mesh.material = gateActiveMat;
-          g.mesh.position.y = 0.38;
-          g.mesh.scale.y = 1 + fill * 0.8;
-        } else {
-          g.mesh.material = gatePolySiliconMat;
-          g.mesh.position.y = 0.42;
-          g.mesh.scale.y = 1 + fill * 0.25;
-        }
-      }
-      (packetPoints.material as THREE.PointsMaterial).opacity = 0.35 + wells.cte * 0.55;
-
-      // Animate Electron Charge Packets shifting to active potential well
-      const pPos = packetPos;
-      for (let i = 0; i < packetCount; i++) {
-        const idx = i * 3;
-        const pixelIdx = Math.floor(i / (packetCount / 3));
-        const targetGateX = -3.6 + (pixelIdx * 3 + (currentActivePhase - 1)) * 0.85;
-
-        pPos[idx] += (targetGateX + (lcgLoop() - 0.5) * 0.4 - pPos[idx]) * 0.15;
-      }
-      packetGeo.attributes.position.needsUpdate = true;
+      model.updateKinematics(delta, currentActivePhase, wells);
 
       controls.update();
       renderer.render(scene, camera);
@@ -341,6 +163,7 @@ export function BoyleSmithCcd3D() {
 
     return () => {
       cancelAnimationFrame(reqId);
+      model.dispose();
       studio.dispose();
     };
   }, [live]);
