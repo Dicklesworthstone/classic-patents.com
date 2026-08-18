@@ -45,6 +45,19 @@ function isValidIsoDate(value: string): boolean {
   return !Number.isNaN(date.getTime()) && date.toISOString().slice(0, 10) === value;
 }
 
+/**
+ * Reviewed ledgers keep source-page markers for auditability. They are not
+ * part of the historical wording, so claim-parity checks must bridge a claim
+ * that happens to cross a source-page boundary without weakening word-level
+ * verification.
+ */
+function normalizeReviewedLedgerText(value: string): string {
+  return value
+    .replace(/^--- REVIEWED TRANSCRIPTION PAGE \d+ OF \d+ ---$/gm, "")
+    .replace(/\s+/g, " ")
+    .trim();
+}
+
 function authoredInlinesForBlock(block: CuratedSpecificationBlock): CuratedSpecificationInlines[] {
   switch (block.kind) {
     case "paragraph":
@@ -294,6 +307,31 @@ async function main() {
         const editionText = editionClaim.inlines.map((inline) => inline.text).join("");
         if (!decoderClaim || decoderClaim.originalText !== editionText) {
           fail(`Claim #${editionClaim.number} differs from the manual archival edition.`);
+        }
+      }
+
+      const reviewedAsset = patent.originalTextAsset;
+      if (reviewedAsset?.kind !== "reviewed-transcription") {
+        fail("manual archival edition requires a reviewed-transcription ledger for claim parity.");
+      } else {
+        const reviewedLedgerPath = path.join(
+          process.cwd(),
+          "public",
+          reviewedAsset.url.replace(/^\//, ""),
+        );
+        if (!fs.existsSync(reviewedLedgerPath)) {
+          fail(
+            "manual archival edition reviewed-transcription ledger is missing for claim parity.",
+          );
+        } else {
+          const normalizedLedger = normalizeReviewedLedgerText(
+            fs.readFileSync(reviewedLedgerPath, "utf8"),
+          );
+          for (const claim of patent.claims) {
+            if (!normalizedLedger.includes(normalizeReviewedLedgerText(claim.originalText))) {
+              fail(`Claim #${claim.number} is absent from the reviewed-transcription ledger.`);
+            }
+          }
         }
       }
 

@@ -23,34 +23,15 @@ export const gatlingGunPatent: Patent = {
   googlePatentsUrl: "https://patents.google.com/patent/US36836/en",
   usptoClassification: "F41F 1/10 (Multiple barrel guns; Rotary barrel cluster)",
   originalTextAsset: {
-    url: "/patents/source-text/us-36836-gatling-gun.txt",
+    url: "/patents/transcripts/us-36836-gatling-gun-reviewed.txt",
     pageCount: 3,
-    kind: "source-pdf-text-layer",
+    kind: "reviewed-transcription",
+    reviewedBy: "Classic Patents editorial agent (GPT-5.6)",
+    reviewedAt: "2026-08-18",
+    sourcePdfSha256: "1eb10666b48d84d2e2be3e09168c6f4f224e531428f7f7c39fdf70ff60d0683f",
   },
-  originalText: `UNITED STATES PATENT OFFICE.
-RICHARD J. GATLING, OF INDIANAPOLIS, INDIANA.
-
-IMPROVEMENT IN REVOLVING BATTERY-GUNS.
-
-Specification forming part of Letters Patent No. 36,836, dated November 4, 1862.
-
-To all whom it may concern:
-Be it known that I, RICHARD J. GATLING, of Indianapolis, in the County of Marion and State of Indiana, have invented a new and useful Revolving Battery-Gun, of which the following is a specification:
-
-The nature of my invention consists in:
-1. A series of barrels revolving around a central axis, each barrel having its own corresponding lock or breech-pin moving in an aligned channel.
-2. A stationary cylindrical casing having an internal spiral or helical cam track on its inner surface, which imparts a longitudinal reciprocating motion to the locks as they revolve with the barrels.
-3. A hopper placed above the revolving lock cylinder through which cartridges are fed by gravity into the carrier troughs.
-4. A cocking ring or cam which retracts the firing pin or striker against a spring and releases it when the barrel is locked at the bottom position, firing the charge.
-
-As the hand crank is turned, the barrels, carrier cylinder, and lock cylinder rotate continuously in unison. During the top half of the revolution, each lock is pushed forward by the spiral cam, pushing a cartridge from the hopper into the barrel chamber and locking the breech. As the barrel reaches the bottom dead center, the striker is released by the cocking cam, discharging the round. During the ascending half of the revolution, the spiral cam retracts the lock, an extractor hook draws the spent case from the chamber, and the case falls out through an ejection chute at the bottom.
-
-Thus, every turn of the crank continuously and harmoniously cycles all the barrels in succession without pause or jamming, keeping the barrels comparatively cool by distributing the heat across the entire cluster.
-
-I claim as my invention:
-1. The combination of a series of revolving barrels with corresponding reciprocating locks, operated by a stationary helical cam track to perform the operations of loading, cocking, firing, and extracting continuously.
-2. The combination with the revolving barrels and locks of the gravity feed hopper and slotted carrier cylinder for supplying cartridges in succession to the chambers.
-3. Distributing the thermal strain of rapid firing across a revolving cluster of multiple independent barrels.`,
+  originalText:
+    "The complete source-checked specification, all five claims, drawing-sheet descriptions, signature, and witnesses are presented in the manually prepared Original Patent Text edition.",
   plainEnglishExplanation: {
     overview:
       "During the American Civil War, single-shot muzzle-loading muskets had a maximum firing rate of 3 rounds per minute. Single-barrel rapid-fire guns overheated and fouled with black powder after a few dozen shots. Dr. Richard Gatling solved both problems by arranging 6 to 10 barrels in a circle rotated by a hand crank. By giving each barrel its own reciprocating bolt guided by a stationary 3D spiral cam track, the mechanical actions of loading, firing, and extracting happened simultaneously across different barrels, while the heat of firing was distributed across the entire rotating mass.",

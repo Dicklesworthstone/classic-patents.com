@@ -32,6 +32,7 @@ does not synthesize scan pagination, a diagram, a figure number, or a preview.
 ## Editorial boundaries
 
 - `src/data/editions/hyattCelluloidEdition.ts` is the complete public source face. It consists of individually authored typed nodes, not OCR, a PDF text layer, Markdown conversion, or HTML reflow.
+- `public/patents/transcripts/us-105338-hyatt-celluloid-reviewed.txt` is the accountable one-page review ledger for that continuous edition. It is pinned in the catalogue as a `reviewed-transcription`, names its reviewer and review date, and carries the PDF digest above without imposing a page break on the visitor-facing edition.
 - The existing legacy `public/patents/source-text/us-105338-hyatt-celluloid.txt` and `public/patents/transcripts/us-105338-hyatt-celluloid.txt` assets were intentionally left untouched. They are not represented as a reviewed complete transcription or used as renderer input for this edition.
 - The source contains three printed claims. The first two are independently stated; claim 3 says `In conjunction with such use of camphor-gum` and is presented in the canonical decoder as dependent on claim 2. No claim text has been expanded or modernized.
 - The facsimile has no drawing, `Fig.` label, figure callout, or figure citation. The empty canonical `drawings` list and the absence of figure-preview nodes are source-true, not missing editorial work.

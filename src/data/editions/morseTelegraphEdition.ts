@@ -5,37 +5,124 @@ import type {
 } from "@/types/patent";
 
 const text = (value: string): CuratedSpecificationInlines => [{ kind: "text", text: value }];
+const term = (value: string, definition: string): CuratedSpecificationInline => ({
+  kind: "term",
+  text: value,
+  definition,
+});
 
-const SHEETS = {
-  1: {
-    src: "/patents/figures/us-1647-morse-telegraph-sheet-1-preview.png",
-    alt: "Sheet 1 of 3 from US 1,647: Morse's Examples 1 through 6, including numeral and letter sign systems.",
-    width: 1392,
-    height: 2045,
-  },
-  2: {
-    src: "/patents/figures/us-1647-morse-telegraph-sheet-2-preview.png",
-    alt: "Sheet 2 of 3 from US 1,647: Morse's Examples 7 through 9, including straight and circular port-rules.",
-    width: 1392,
-    height: 2045,
-  },
-  3: {
-    src: "/patents/figures/us-1647-morse-telegraph-sheet-3-preview.png",
-    alt: "Sheet 3 of 3 from US 1,647: Example 10, the register and its clockwork, marking, and alarm details.",
-    width: 1392,
-    height: 2045,
-  },
-} as const;
+const crop = (file: string, width: number, height: number, label: string) => ({
+  src: `/patents/figures/us-1647-morse-telegraph-fig-${file}.png`,
+  alt: `Source-facsimile crop of ${label} from US 1,647.`,
+  width,
+  height,
+});
+
+/**
+ * Each printed reference below selects its own source crop. The three full
+ * drawing sheets remain public facsimiles; they are not stand-ins for a
+ * reference-specific preview.
+ */
+const FIGURE_PREVIEWS: Record<
+  string,
+  readonly { src: string; alt: string; width: number; height: number }[]
+> = {
+  "1:Example 1, Mode 1": [crop("ex1", 1000, 300, "Example 1, numerical-sign modes")],
+  "1:Example 1, Mode 2": [crop("ex1", 1000, 300, "Example 1, numerical-sign modes")],
+  "1:Example 1, Mode 3": [crop("ex1", 1000, 300, "Example 1, numerical-sign modes")],
+  "1:Example 1, Mode 4": [crop("ex1", 1000, 300, "Example 1, numerical-sign modes")],
+  "1:Example 1, Modes 1, 2, and 3": [crop("ex1", 1000, 300, "Example 1, numerical-sign modes")],
+  "1:Example 1": [crop("ex1", 1000, 300, "Example 1, numerical-sign modes")],
+  "1:Example 2": [crop("ex2", 1050, 220, "Example 2, compound numerals")],
+  "1:Example 3": [crop("ex3", 1050, 190, "Example 3, letter signs")],
+  "1:Example 4, Fig. 1": [crop("ex4-fig1", 1000, 155, "Example 4, Fig. 1")],
+  "1:Example 4, Fig. 2": [crop("ex4-fig2", 1000, 165, "Example 4, Fig. 2")],
+  "1:Example 5": [crop("ex5", 1040, 230, "Example 5, letter type")],
+  "1:Example 6, Figs. 1 and 3": [
+    crop("ex6-fig1", 420, 280, "Example 6, Fig. 1"),
+    crop("ex6-fig3", 470, 280, "Example 6, Fig. 3"),
+  ],
+  "1:Example 6, Figs. 2 and 3": [
+    crop("ex6-fig2", 440, 280, "Example 6, Fig. 2"),
+    crop("ex6-fig3", 470, 280, "Example 6, Fig. 3"),
+  ],
+  "1:Fig. 3": [crop("ex6-fig3", 470, 280, "Example 6, Fig. 3")],
+  "1:Figs. 1 and 3": [
+    crop("ex6-fig1", 420, 280, "Example 6, Fig. 1"),
+    crop("ex6-fig3", 470, 280, "Example 6, Fig. 3"),
+  ],
+  "1:Examples 4, 5, and 6": [
+    crop("ex4-fig1", 1000, 155, "Example 4, Fig. 1"),
+    crop("ex4-fig2", 1000, 165, "Example 4, Fig. 2"),
+    crop("ex5", 1040, 230, "Example 5"),
+    crop("ex6-fig1", 420, 280, "Example 6, Fig. 1"),
+    crop("ex6-fig2", 440, 280, "Example 6, Fig. 2"),
+    crop("ex6-fig3", 470, 280, "Example 6, Fig. 3"),
+  ],
+  "2:Example 7": [crop("ex7", 620, 190, "Example 7, type-rule")],
+  "2:Example 8": [crop("ex8", 900, 340, "Example 8, straight port-rule")],
+  "2:Example 8, Fig. 1, A": [crop("ex8", 900, 340, "Example 8, Fig. 1")],
+  "2:Example 8, Figs. 1, 2, and 3": [crop("ex8", 900, 340, "Example 8, Figs. 1 through 3")],
+  "2:Example 9, Fig. 1, A": [crop("ex9-fig1", 720, 400, "Example 9, Fig. 1")],
+  "2:Example 9, Fig. 3": [crop("ex9-fig3", 760, 180, "Example 9, Fig. 3")],
+  "2:Example 9, Figs. 1 and 2": [
+    crop("ex9-fig1", 720, 400, "Example 9, Fig. 1"),
+    crop("ex9-fig2", 380, 350, "Example 9, Fig. 2"),
+  ],
+  "2:Fig. 1": [crop("ex9-fig1", 720, 400, "Example 9, Fig. 1")],
+  "2:Fig. 2": [crop("ex9-fig2", 380, 350, "Example 9, Fig. 2")],
+  "2:Fig. 3": [crop("ex9-fig3", 760, 180, "Example 9, Fig. 3")],
+  "2:Fig. 4": [crop("ex9-fig4", 300, 300, "Example 9, Fig. 4")],
+  "2:Figs. 1 and 3": [
+    crop("ex9-fig1", 720, 400, "Example 9, Fig. 1"),
+    crop("ex9-fig3", 760, 180, "Example 9, Fig. 3"),
+  ],
+  "2:Figs. 1, 2": [
+    crop("ex9-fig1", 720, 400, "Example 9, Fig. 1"),
+    crop("ex9-fig2", 380, 350, "Example 9, Fig. 2"),
+  ],
+  "3:Example 10, Figs. 1, 2, and 4": [
+    crop("ex10-fig1", 720, 300, "Example 10, Fig. 1"),
+    crop("ex10-fig2", 760, 270, "Example 10, Fig. 2"),
+    crop("ex10-fig4", 760, 280, "Example 10, Fig. 4"),
+  ],
+  "3:Example 10, Fig. 5": [crop("ex10-fig5", 600, 260, "Example 10, Fig. 5")],
+  "3:Example 10, Figs. 2 and 5": [
+    crop("ex10-fig2", 760, 270, "Example 10, Fig. 2"),
+    crop("ex10-fig5", 600, 260, "Example 10, Fig. 5"),
+  ],
+  "3:Fig. 4": [crop("ex10-fig4", 760, 280, "Example 10, Fig. 4")],
+  "3:Fig. 5": [crop("ex10-fig5", 600, 260, "Example 10, Fig. 5")],
+  "3:Figs. 1, 2, and 3": [
+    crop("ex10-fig1", 720, 300, "Example 10, Fig. 1"),
+    crop("ex10-fig2", 760, 270, "Example 10, Fig. 2"),
+    crop("ex10-fig3", 730, 220, "Example 10, Fig. 3"),
+  ],
+  "3:Figs. 2 and 3": [
+    crop("ex10-fig2", 760, 270, "Example 10, Fig. 2"),
+    crop("ex10-fig3", 730, 220, "Example 10, Fig. 3"),
+  ],
+  "3:Figs. 2 and 5": [
+    crop("ex10-fig2", 760, 270, "Example 10, Fig. 2"),
+    crop("ex10-fig5", 600, 260, "Example 10, Fig. 5"),
+  ],
+};
 
 /** Every reference is selected at its printed occurrence. No prose is parsed. */
-const figure = (label: string, sheet: keyof typeof SHEETS): CuratedSpecificationInline => ({
-  kind: "reference",
-  text: label,
-  href: "#",
-  referenceType: "figure",
-  label: `Open ${label} on the matching US 1,647 source drawing sheet`,
-  figurePreviews: [SHEETS[sheet]],
-});
+const figure = (label: string, sheet: 1 | 2 | 3): CuratedSpecificationInline => {
+  const previews = FIGURE_PREVIEWS[`${sheet}:${label}`];
+  if (!previews) {
+    throw new Error(`US 1,647 has no authored source crop for ${label} on sheet ${sheet}.`);
+  }
+  return {
+    kind: "reference",
+    text: label,
+    href: "#",
+    referenceType: "figure",
+    label: `Open the source-facsimile crop for ${label} in US 1,647`,
+    figurePreviews: previews,
+  };
+};
 
 const p = (inlines: CuratedSpecificationInlines) => ({ kind: "paragraph" as const, inlines });
 const claim = (number: number, value: string) => ({
@@ -47,8 +134,9 @@ const claim = (number: number, value: string) => ({
 export const morseTelegraphArchivalEdition: CuratedSpecificationEdition = {
   kind: "manual-react-edition",
   sourcePdfSha256: "07a534f54894e6130980052a77c565492e53d6cd527c092b47016e8cc243ed93",
-  preparedBy: "Classic Patents editorial agent (codex-foxtrot)",
-  preparedAt: "2026-08-17",
+  preparedBy:
+    "Classic Patents editorial agents (codex-foxtrot; independent corrective review by GPT-5.6)",
+  preparedAt: "2026-08-18",
   completeFacsimileReviewed: true,
   blocks: [
     {
@@ -94,13 +182,45 @@ export const morseTelegraphArchivalEdition: CuratedSpecificationEdition = {
     p([
       {
         kind: "text",
-        text: 'It consists of the following parts - first, of a circuit of electric or galvanic conductors from any generator of electricity or galvanism and of electro-magnets at any one or more points in said circuit; second, a system of signs by which numerals, and words represented by numerals, and thereby sentences of words, as well as of numerals, and letters of any extent and combination of each, are communicated to any one or more points in the before-described circuit; third, a set of type adapted to regulate the communication of the above-mentioned signs, also cases for convenient keeping of the type and rules in which to set and use the type; fourth, an apparatus called the "straight port-rule," and another called the "circular port-rule," each of which regulates the movement of the type when in use, and also that of the signal-lever; fifth, a signal-lever which breaks and connects the circuit of conductors; sixth, a register which records permanently the signs communicated at any desired points in the circuit; seventh, a dictionary or vocabulary of words to which are prefixed numerals for the uses hereinafter described; eighth, modes of laying the circuit of conductors.',
+        text: "It consists of the following parts - first, of a circuit of electric or ",
+      },
+      term(
+        "galvanic",
+        "Powered by chemical cells that produce direct electric current; nineteenth-century patent language often uses it interchangeably with electrical current.",
+      ),
+      {
+        kind: "text",
+        text: " conductors from any generator of electricity or galvanism and of electro-magnets at any one or more points in said circuit; second, a system of signs by which numerals, and words represented by numerals, and thereby sentences of words, as well as of numerals, and letters of any extent and combination of each, are communicated to any one or more points in the before-described circuit; third, a set of ",
+      },
+      term(
+        "type",
+        "Reusable metal pieces whose cut teeth and spaces mechanically encode the marks sent through the circuit, not movable type for printing prose.",
+      ),
+      {
+        kind: "text",
+        text: ' adapted to regulate the communication of the above-mentioned signs, also cases for convenient keeping of the type and rules in which to set and use the type; fourth, an apparatus called the "',
+      },
+      term(
+        "straight port-rule",
+        "Morse's linear carrier: a grooved rail and driven rule that moves the selected type under the signal lever.",
+      ),
+      {
+        kind: "text",
+        text: '," and another called the "',
+      },
+      term(
+        "circular port-rule",
+        "The wheel-shaped alternative to the straight carrier. Cogs advance curved type from a stationary feeder past the signal lever and into a return box.",
+      ),
+      {
+        kind: "text",
+        text: '," each of which regulates the movement of the type when in use, and also that of the signal-lever; fifth, a signal-lever which breaks and connects the circuit of conductors; sixth, a register which records permanently the signs communicated at any desired points in the circuit; seventh, a dictionary or vocabulary of words to which are prefixed numerals for the uses hereinafter described; eighth, modes of laying the circuit of conductors.',
       },
     ]),
     p([
       {
         kind: "text",
-        text: "The circuit of conductors may be made of any metal - such as copper, or iron wire, or strips of copper or iron, or of cord or twine, or other substances - gilt, silvered, or covered with any thin metal leaf properly insulated and in the ground, or through or beneath the water, or through the air. By causing an electric or galvanic current to pass through the circuit of conductors, aid aforesaid, by means of any generator of electricity or galvanism, to one or more electro-magnets placed at any point or points in said circuit, the magnetic power thus concentrated in such magnets is used for the purposes of producing sounds and visible signs, and for permanently recording the latter at any and each of said points at the pleasure of the operator and in the manner hereinafter described - that is to say, by using the system of signs which is formed of the following parts and variations, viz:",
+        text: "The circuit of conductors may be made of any metal - such as copper, or iron wire, or strips of copper or iron, or of cord or twine, or other substances - gilt, silvered, or covered with any thin metal leaf properly insulated and in the ground, or through or beneath the water, or through the air. By causing an electric or galvanic current to pass through the circuit of conductors, laid as aforesaid, by means of any generator of electricity or galvanism, to one or more electro-magnets placed at any point or points in said circuit, the magnetic power thus concentrated in such magnets is used for the purposes of producing sounds and visible signs, and for permanently recording the latter at any and each of said points at the pleasure of the operator and in the manner hereinafter described - that is to say, by using the system of signs which is formed of the following parts and variations, viz:",
       },
     ]),
     p([
@@ -165,12 +285,12 @@ export const morseTelegraphArchivalEdition: CuratedSpecificationEdition = {
     p([
       {
         kind: "text",
-        text: "The type for producing the signs of numerals consist, first, of five pieces or plates of thin metal, such as type-metal, brass, iron, or like substances, with teeth or indentations upon one side or edge of ten of said type, corresponding in number to the dots or punctures or marks requisite to constitute the numerals respectively heretofore described in the system of signs, and having also a space left upon the side or edge of each type, at one end thereof, without teeth or indentations, corresponding in length with the distance or separation desired between each sign of a numeral. Another of said type has two indentations, forming thereby three teeth only, and without any space at either end, to correspond with the size of a cipher, as heretofore described by reference to ",
+        text: "The type for producing the signs of numerals consist, first, of fourteen pieces or plates of thin metal, such as type-metal, brass, iron, or like substances, with teeth or indentations upon one side or edge of ten of said type, corresponding in number to the dots or punctures or marks requisite to constitute the numerals respectively heretofore described in the system of signs, and having also a space left upon the side or edge of each type, at one end thereof, without teeth or indentations, corresponding in length with the distance or separation desired between each sign of a numeral. Another of said type has two indentations, forming thereby three teeth only, and without any space at either end, to correspond with the size of a cipher, as heretofore described by reference to ",
       },
       figure("Example 1, Modes 1, 2, and 3", 1),
       {
         kind: "text",
-        text: '. One object of said type is without any indentation on its side or edge and being in length to correspond with the distance or separation desired between distinct or compound numerals, and with the sign heretofore described for that purpose. One of the remaining two of said type is formed with one corner of it beveled, and is called a "rest," and the other is in a pointed form and is called a "stop."',
+        text: ', of drawings in said system of signs. One other of said type is without any indentation on its side or edge, and being in length to correspond with the distance or separation desired between distinct or compound numerals, and with the sign heretofore described for that purpose. One of the remaining two of said type is formed with one corner of it beveled, and is called a "rest," and the other is in a pointed form and called a "stop."',
       },
     ]),
     p([
@@ -178,7 +298,7 @@ export const morseTelegraphArchivalEdition: CuratedSpecificationEdition = {
         kind: "text",
         text: "Each of said type is particularly delineated on the annexed drawing marked ",
       },
-      figure("Example 4, Figs. 1 and 2", 1),
+      figure("Example 4, Fig. 1", 1),
       {
         kind: "text",
         text: ", and numbered or labeled in accordance with the purposes for which they are designed respectively, and are used, in like manner, for producing each of the several signs of numerals heretofore described in the system of signs.",
@@ -213,12 +333,15 @@ export const morseTelegraphArchivalEdition: CuratedSpecificationEdition = {
         text: '. The type for producing both signs of numerals and signs of letters are adapted for use to either a straight rule, called the "straight port-rule," and are in that case made straight lengthwise, as described in the drawings annexed and heretofore referred to in Example 5, or to a circular port-rule, in which case they are lengthwise circular or formed into sections of a circle, as represented in the drawings annexed marked ',
       },
       figure("Example 6, Figs. 2 and 3", 1),
-      { kind: "text", text: "." },
+      {
+        kind: "text",
+        text: ", and as will be further understood by the descriptions hereinafter contained of the straight and circular port-rules.",
+      },
     ]),
     p([
       {
         kind: "text",
-        text: "On the under side of the type for the circular port-rule is a groove (system of type, Example 6, A in ",
+        text: "On the under side of the type for the circular port-rule (which type are of greater thickness than those for the straight port-rule) is a groove (system of type, Example 6, A in ",
       },
       figure("Figs. 1 and 3", 1),
       {
@@ -233,13 +356,21 @@ export const morseTelegraphArchivalEdition: CuratedSpecificationEdition = {
       figure("Example 6, Figs. 1 and 3", 1),
       {
         kind: "text",
-        text: ". The type-cases are wood, or of any other material, with small compartments of the exact length of the type, for greater convenience in distributing and reassembling those in common use among printers. The type-rules are of wood or metal, or other material that may be preferred, and about three feet in length, with a groove, into which the type, when used, are placed. On the under side of each type-rule are cogs, by which they are adapted to a pinion-wheel having corresponding cogs and forming part of a port-rule.",
+        text: ". The type-cases are wood, or of any other material, with small compartments of the exact length of the type, for greater convenience in distributing, and resembling those in common use among printers. The type-rules are of wood or metal, or other material that may be preferred, and about three feet in length, with a groove, into which the type, when used, are placed. On the under side of each type-rule are cogs, by which they are adapted to a pinion-wheel having corresponding cogs and forming part of a port-rule.",
       },
     ]),
     p([
       {
         kind: "text",
-        text: "The eighth portion consists of a pinion-wheel, before mentioned, turned by a hand-crank attached to a horizontal screw that plays into the cogs of the pinion-wheel as the latter do into the cogs of the type-rule, or by any other power in any of the well-known methods of mechanism. It is connected with a rail-way or groove, in and by which the type-rule, from the motion imparted to it by said wheel, is conveyed in a direct line beneath a lever that breaks and connects the galvanic circuit in the manner hereinafter mentioned. A delineation of said wheel, crank, and screw is contained in the drawings hereto annexed marked ",
+        text: "The type-rule in use is moved onward as motion is given to the said wheel. A delineation of the type-rule is contained in the annexed drawing marked ",
+      },
+      figure("Example 7", 2),
+      { kind: "text", text: "." },
+    ]),
+    p([
+      {
+        kind: "text",
+        text: "The straight port-rule consists of a pinion-wheel, before mentioned, turned by a hand-crank attached to a horizontal screw that plays into the cogs of the pinion-wheel as the latter do into the cogs of the type-rule, or by any other power in any of the well-known methods of mechanism. It is connected with a rail-way or groove, in and by which the type-rule, from the motion imparted to it by said wheel, is conveyed in a direct line beneath a lever that breaks and connects the galvanic circuit in the manner hereinafter mentioned. A delineation of said wheel, crank, and screw is contained in the drawings hereunto annexed marked ",
       },
       figure("Example 8, Figs. 1, 2, and 3", 2),
       { kind: "text", text: "." },
@@ -257,24 +388,79 @@ export const morseTelegraphArchivalEdition: CuratedSpecificationEdition = {
       figure("Figs. 1, 2", 2),
       {
         kind: "text",
-        text: ", corresponding in depth with the thickness of the type used, and in width, by equal to that of the type, exclusive of the teeth or indentations.",
+        text: ", corresponding in depth with the thickness of the type used, and in width, b, equal to that of the type, exclusive of their teeth or indentations.",
       },
     ]),
     p([
       {
         kind: "text",
-        text: "The operation of said circular port-rule in regulating the movement of the type in use is as follows: When the wheel A is set in motion the type resting immediately upon the shoulder of the wheel, in the manner mentioned above, as in ",
+        text: "Near the outer edge of the surface of said shoulder or cavity are cogs c, throughout the circumference of the wheel, projecting upward at a distance from each other equal to one-half of the width of the teeth or indentations of the type, and otherwise corresponding in size to the width and depth of the groove D D, ",
+      },
+      figure("Fig. 4", 2),
+      {
+        kind: "text",
+        text: ", in the under sides of the circular type before described and illustrated by reference to ",
+      },
+      figure("Example 6, Figs. 1 and 3", 1),
+      {
+        kind: "text",
+        text: ". Directly over said shoulder or cavity and cogs, and at one or more points on the circumference of said wheel, is extended from a fixture outside of the orbit of the wheel a stationary type-feeder, E, ",
+      },
+      figure("Fig. 1", 2),
+      {
+        kind: "text",
+        text: ", formed of one end, e, and one side, E, perpendicular, of tin or brass plate or other substance, and of interior size and shape to receive any number of the type which are therein deposited with their indentations projecting outward, as in ",
+      },
+      figure("Fig. 2", 2),
+      {
+        kind: "text",
+        text: ", and their grooves downward, as in ",
+      },
+      figure("Fig. 4", 2),
+      {
+        kind: "text",
+        text: ". Said type-feeder is so suspended from its fixture F F over the shoulder or cavity of the wheel A, before described, as to admit of the passage under it of said wheel in its circuit as near the bottom of the feeder as practicable, without coming in contact therewith. The type deposited in the feeder as before mentioned form a perpendicular column, as in ",
+      },
+      figure("Fig. 2", 2),
+      {
+        kind: "text",
+        text: ", the lower type of which rests upon the surface of the before-named shoulder of the wheel b, ",
+      },
+      figure("Fig. 2", 2),
+      {
+        kind: "text",
+        text: ", and the cog of the wheel, projecting upward, enters the groove D D, ",
+      },
+      figure("Fig. 4", 2),
+      { kind: "text", text: ", of the type hereinbefore described." },
+    ]),
+    p([
+      {
+        kind: "text",
+        text: "The operation of said circular port-rule in regulating the increment of the type in use is as follows: When the wheel A is set in motion the type resting immediately upon the shoulder of the wheel, in the manner mentioned above, as in ",
       },
       figure("Fig. 2", 2),
       {
         kind: "text",
         text: ", is carried forward on the curvature of the wheel from beneath the column of type resting upon it in the stationary type-feeder by means of one of the before-named cogs coming in contact with that point D, ",
       },
-      figure("Fig. 3", 2),
+      figure("Fig. 3", 1),
       {
         kind: "text",
-        text: ", Example 6, in the groove of the type, hereinbefore described as forming the termination of said groove. As said lower type in the column that is held by the stationary feeder is carried forward and removed, the next type settles immediately upon the shoulder of the wheel, and, after the manner of the removed type, is brought in contact with another cog of said shoulder within the groove of the type, and thence carried forward from beneath the incumbent column, as its predecessor.",
+        text: ", Example 6, in the groove of the type, hereinbefore described as forming the termination of said groove, and which is particularly delineated at the points D D in the annexed drawings, marked Example 6, ",
       },
+      figure("Fig. 3", 1),
+      {
+        kind: "text",
+        text: ". As by said process the lower type in the column that is held by the stationary feeder is carried forward and removed, the next type settles immediately upon the shoulder of the wheel, and, after the manner of the removed type, is brought in contact with another cog of said shoulder within the groove of the type, and thence carried forward from beneath the incumbent column, as was its predecessor. Then follows consecutively in the same method each type deposited within the feeder so long as the wheel is kept in motion. The deposit of the type in the stationary feeder is regulated by the order in which the letters or numerals or words they represent are designed to be communicated at any distant point or points. After the type are respectively carried forward on the curvature of the wheel in the manner stated above, beyond the point where they are acted upon by the signal-lever, as is hereinafter described, they are lifted, each in its turn, from the shoulder of the wheel A and cast off into a box or pocket, G, below the wheel by means of a slender shaft or spindle, H, made of any metal, and resembling in form a common plowshare, extending downward from a fixture, o, placed outside of the wheel, into a groove, K, within the before-named shoulder of said wheel A, and on the inner side of the cogs c, already described. By means of said groove the downward point of said shaft or spindle H is brought within the curvature and below the surface of said shoulder b, ",
+      },
+      figure("Fig. 2", 2),
+      {
+        kind: "text",
+        text: ", and consequently under the approaching end of the type, so that each type successively, as it is carried forward on said curvature, in the manner before described, is lifted from the shoulder and forced upward on the inclined shaft or spindle by the type in contact with it at the other end until turned off into the before-named box or pocket G below, ready for a redistribution. For a more particular delineation of the several parts of said circular port-rule reference is made to the annexed drawings marked ",
+      },
+      figure("Example 9, Figs. 1 and 2", 2),
+      { kind: "text", text: "." },
     ]),
     p([
       { kind: "text", text: "The signal-lever, " },
@@ -286,13 +472,51 @@ export const morseTelegraphArchivalEdition: CuratedSpecificationEdition = {
       figure("Example 8, Fig. 1, A", 2),
       {
         kind: "text",
-        text: ", of a strip of wood of any length from six to twenty-four inches, resting upon a pivot, a, or in a notched pillar formed into a fulcrum by a metal pin, a, passing through it and the lever. At one end of the lever a metallic wire, bent to a semicircular or half-square form, as at A, or resembling the prongs of a fork distended, is attached by its center, as described in the annexed drawings, Example 8, at the point marked A. Between said end of the lever and the fulcrum a, and near the latter, on the side of lever A, is inserted a metallic tooth or cog, b, curved on the side nearest to the fulcrum, and in other respects corresponding to the teeth or indentations upon the type already described.",
+        text: ", of a strip of wood of any length from six to twenty-four inches, resting upon a pivot, a, or in a notched pillar formed into a fulcrum by a metal pin, a, passing through it and the lever. At one end of the lever a metallic wire, bent to a semicircular or half-square form, as at A, or resembling the prongs of a fork distended, is attached by its center, as described in the annexed drawings, Example 8, at the point marked A. Between said end of the lever and the fulcrum a, and near the latter, on the under side of the lever A, is inserted a metallic tooth or cog, b, curved on the side nearest to the fulcrum, and in other respects corresponding to the teeth or indentations upon the type already described.",
       },
     ]),
     p([
       {
         kind: "text",
-        text: "The movement of the type-rule brings each tooth of the type therein set in contact with the tooth or cog of the lever, and thereby forces the lever upward until the points of the two teeth in contact have passed each other, when the lever again descends as the teeth of the type proceeds onward from the tooth of the lever. This motion is repeated as frequently as the indentations or the teeth of the type are brought in contact with the tooth of the lever. By thus forcing the said lever upward and downward the ends of the forked metallic wire are made alternately to rise and fall into two small cups or vessels of mercury, E E, in each of which is an end or termination of the metallic circuit of conductors, first described above. This alternate immersion breaks and limits the current of electricity or galvanism through the circuit; but a connection of the circuit is effected or restored by the falling of the two ends of the pronged wire A attached to said lever into the two cups, connecting the one cup with the other in that way.",
+        text: "On the opposite extremity of the lever is a small weight, C, to balance or offset, in part, when needed, the weight of the lever on the opposite side of the fulcrum. The lever thus formed is stationed directly over the rail-way or groove D D, heretofore described as forming a connected part of the straight port-rule. The movement of the type-rule brings the tooth of each type therein set in contact with the tooth or cog of the lever, and thereby forces the lever upward until the points of the two teeth in contact have passed each other, when the lever again descends as the teeth of the type proceeds onward from the tooth of the lever. This operation is repeated as frequently as the teeth of the type are brought in contact with the tooth of the lever. By thus forcing the said lever upward and downward the ends of the semicircular or pronged wire are made alternately to rise from and fall into two small cups or vessels of mercury, E E, in each of which is an end or termination of the metallic circuit-conductors, first described above. This termination of the metallic circuit in the two cups or vessels breaks and limits the current of electricity or galvanism through the circuit; but a connection of the circuit is effected or restored by the falling of the two ends of the pronged wire A attached to said lever into the two cups, connecting the one cup with the other in that way. By the rising of the lever, and consequently the wire upon its end, from its connection with said cups, said circuit is in like manner again broken, and the current of electricity or galvanism destroyed. To effect at pleasure these two purposes of breaking and connecting said circuit is the design of said motion that is imparted in the before-mentioned manner to said lever, and to regulate this motion, and reduce it to the system of intelligible signs before described, is the design and use of the variations in the form of the type, also before described. A plate of copper, silver, or other conductor connected with the broken parts of said circuit of conductors, and receiving the contact of the wire attached to said lever, may be substituted, if preferred, for said cups of mercury. For a particular delineation of the several parts of said lever, reference is made to the annexed drawing marked ",
+      },
+      figure("Example 8", 2),
+      { kind: "text", text: "." },
+    ]),
+    p([
+      {
+        kind: "text",
+        text: "The signal-lever consists, secondly, for use with the circular port-rule, ",
+      },
+      figure("Example 9, Fig. 3", 2),
+      {
+        kind: "text",
+        text: ", of a strip of wood, G, with a metallic wire, A, at one end, of the form and for the purposes of the lever already described above. It turns on a pivot or fulcrum, a, placed either near the middle or in the end of the lever. At the end of the lever, at C, opposite to the metallic wire A, an elbow, c, is formed on a right angle with the main lever, and extending downward from the level with the pivot or fulcrum sufficiently for a metallic tooth, H, in the end thereof, corresponding with the teeth or indentations of the type, already described, to press against the type projecting from the shoulder or cavity of the wheel A, ",
+      },
+      figure("Fig. 1", 2),
+      {
+        kind: "text",
+        text: ", that forms the circular port-rule, before described. Said wheel is placed beneath the said lever, as seen at G, ",
+      },
+      figure("Fig. 1", 2),
+      {
+        kind: "text",
+        text: ", in a position to be reached by the extremity or tooth H of the arm of the lever just mentioned. The tooth H in the arm of the lever is kept in constant contact with the type of the circular port-rule by the pressure of a spring, B, upon it, as described in the annexed drawings marked Example 9, at B. ",
+      },
+      figure("Figs. 1 and 3", 2),
+      {
+        kind: "text",
+        text: " in the same example exhibit sections of the said lever. The action thus produced by the contact of the teeth of the type in the port-rule, when said wheel is in motion, with the tooth in the arm of the lever, lifts up and draws down the opposite extremity, A, of said lever, having the metallic wire upon it, as the tooth of said lever passes into or out of the indentations of the type, and in the same manner and to the same effect as the first-described lever rises and falls, and accordingly breaks and closes the circuit of conductors, as in the former instance. In the use of this circular port-rule and its appropriate lever, ",
+      },
+      figure("Fig. 3", 2),
+      {
+        kind: "text",
+        text: ", type may be used having the points of their teeth and their indentations shaped as counterparts or reverses to those delineated in the annexed drawings heretofore referred to and marked ",
+      },
+      figure("Examples 4, 5, and 6", 1),
+      {
+        kind: "text",
+        text: ", and thereby the forms of the recorded signs will be changed in a corresponding manner.",
       },
     ]),
     p([
@@ -324,13 +548,67 @@ export const morseTelegraphArchivalEdition: CuratedSpecificationEdition = {
       figure("Fig. 4", 3),
       {
         kind: "text",
-        text: ", at points marked c c c. The distance between said bands of tape on the rollers is such as to admit of the pencil, or other marking instrument in the lever, to drop upon the intervening space of the cylinder.",
+        text: ", at points marked c c c. The distance between said bands of tape on the rollers is such as to admit of the pencil, or other marking instrument in the lever, to drop upon the intervening space of the cylinder. Near by said cylinder is a spool to turn on an axis, and marked d in the said figure, to receive any desired length of paper or other substance formed into slips or a continuous ribbon, and for the purpose of receiving a record of the signs of intelligence communicated. When the register is in motion one end of the paper on said spool being inserted between the under surfaces of said two rollers, under the strips of tape that connect them and the cylinder, it is drawn by the friction or pressure thus caused upon it forward from said spool gradually, and passed over said cylinder, and is thence deposited in a box on the opposite side, or is cut off at any desired length as it passes from the cylinder and rollers.",
       },
     ]),
     p([
       {
         kind: "text",
-        text: "The several parts of the register are set in motion by the communication to or action upon the before-named armature of a magnet, attached to the lever of the register, of the electric or galvanic current in the circuit of conductors, and from an electro-magnet in said circuit, as before described, stationed near the said armature. As said armature is drawn or attracted from its stationary and horizontal position toward the said magnet when the latter is charged from the circuit of conductors, said lever is turned upon its fulcrum, and the opposite end thereof necessarily descends and brings the pen, or marking-instrument which it contains in contact with the paper or other substance on the revolving cylinder directly beneath it. As said armature ceases to be thus drawn or attracted by said magnet, as is thus the case as soon as said magnet ceases to be charged from the circuit of conductors, or as the current in said circuit is broken in the manner hereinbefore described, the said armature is forced back by its own specific gravity, or by a spring or weight, as may be needed, to its former position, and the pen or marking-instrument in the opposite end of the lever is again raised.",
+        text: "Thirdly, of an alarm-bell, A, ",
+      },
+      figure("Example 10, Fig. 5", 3),
+      {
+        kind: "text",
+        text: ", which is struck by means of a lever-hammer, B, that is acted upon by a movable cog, b, placed upon an axis or pin, b, that confines it in the lower extremity of a pendulum-lever, (marked E in ",
+      },
+      figure("Fig. 5", 3),
+      {
+        kind: "text",
+        text: " of Example 10,) having an armature of a magnet attached to it at d, and acted upon by an electro-magnet, o, placed near it and the before-named magnet, and in the same circuit of conductors with the latter. Said cog b moves in a quarter-circle only, as the motion of said arm of the lever passes backward and forward in the act of recording, as hereinafter described. When forced into a horizontal position in said quarter-circle it ceases to act upon the hammer; but when moved from a perpendicular position it presses upon the projection in the end of the hammer, causing the opposite end of the hammer to be raised, from which elevation it again falls upon a stationary bell, A, as soon as said cog reaches a horizontal position, and ceases, as before mentioned, to press upon the hammer. Thus a notice, by sound or an alarm, is given at the point to which intelligence is to be communicated as soon as the register begins to act, and such sound may be continued or not, at pleasure, for the purpose mentioned or for any other uses, as the hammer shall be suspended or not from contact with the bell, or with any number of bells that may be employed. ",
+      },
+      figure("Fig. 5", 3),
+      {
+        kind: "text",
+        text: " of said example, marked 10 in the annexed drawings, represents sections of said hammer and bell.",
+      },
+    ]),
+    p([
+      {
+        kind: "text",
+        text: "The several parts of the register are set in motion by the communication to or action upon the before-named ",
+      },
+      term(
+        "armature",
+        "The movable iron piece attracted by an energized electromagnet; here it is fixed to a lever that brings the marker into contact with the moving record surface.",
+      ),
+      {
+        kind: "text",
+        text: " of a magnet, attached to the lever of the register, of the electric or galvanic current in the circuit of conductors, and from an electro-magnet in said circuit, as before described, stationed near the said armature. As said armature is drawn or attracted from its stationary and horizontal position toward the said magnet when the latter is charged from the circuit of conductors, said lever is turned upon its fulcrum, and the opposite end thereof necessarily descends and brings the pen, or marking-instrument which it contains in contact with the paper or other substance on the revolving cylinder directly beneath it. As said armature ceases to be thus drawn or attracted by said magnet, as is the case as soon as said magnet ceases to be charged from the circuit of conductors, or as the current in said circuit is broken in the manner hereinbefore described, the said armature is forced back by its own specific gravity, or by a spring or weight, as may be needed, to its former position, and the pen or marking-instrument in the opposite end of the lever is again raised from its contact with the paper or other substance on the before-named revolving cylinder. This same action is communicated simultaneously from the same circuit of conductors to as many registers as there are corresponding magnets provided within any circuit and at any desired distances from each other. The cylinder and its two associate rollers are set in motion simultaneously with the first motion of the lever by the withdrawal of a small wire or spindle, g, ",
+      },
+      figure("Example 10, Figs. 2 and 5", 3),
+      {
+        kind: "text",
+        text: ", from beneath one branch of a fly-wheel, E, that forms a part of the clock machinery hereinafter named. Said wire g is withdrawn by the action upon said wire of a small electro-magnet, o, ",
+      },
+      figure("Figs. 2 and 5", 3),
+      {
+        kind: "text",
+        text: ", stationed in the circuit and near the large magnet before named, as delineated in ",
+      },
+      figure("Fig. 5", 3),
+      {
+        kind: "text",
+        text: " of Example 10. Said cylinder and rollers are subsequently kept in motion by a train of wheels similar to common clock-wheels, as in ",
+      },
+      figure("Figs. 2 and 3", 3),
+      {
+        kind: "text",
+        text: ", acted upon by a weight, raised as occasion may require by a hand-crank, and their motion is regulated by the same wheels to correspond with the action of the registering-pen or marking-instrument. Said train is represented in ",
+      },
+      figure("Figs. 1, 2, and 3", 3),
+      {
+        kind: "text",
+        text: " of said Example 10. The electro-magnet thus used is made in any of the usual modes, such as winding insulated copper wire, or strips of copper, or tin-foil, or other metal around a bar of soft iron, either straight or bent into a circular form, and having the two extremities of the coils connected with the circuit of conductors, so that the coils around the magnet make part of the circuit.",
       },
     ]),
     p([
@@ -355,11 +633,20 @@ export const morseTelegraphArchivalEdition: CuratedSpecificationEdition = {
         "The dictionary or vocabulary consists of words alphabetically arranged and regularly numbered, beginning with the letters of the alphabet, so that each word in the language has its telegraphic number, and is designated at pleasure, through the signs of numerals.",
       ),
     ),
-    p(
-      text(
-        "The modes which I propose of insulating the wires or other metal for conductors, and of laying the circuits, are various. The wires may be insulated by winding each wire with silk, cotton, flax, or hemp, and then dipping them into a solution of caoutchouc, or into a solution of shellac, or into pitch or resin and caoutchouc. They may be laid through the air, inclosed above the ground, in the ground, or in the water. When through the air they may be insulated by a covering that shall protect them from the weather, such as cotton, flax, or hemp, and dipped into any solution which is a non-conductor, and elevated upon pillars. When inclosed above the ground they may be laid in tubes of iron or lead, and these again may be inclosed in wood, if desirable. When laid in the ground they may be inclosed in iron, leaden, wooden, or earthen tubes, and buried beneath the surface. Across rivers the circuit may be carried beneath the bridges, or, where there are no bridges, inclosed in lead or iron, and sunk at the bottom, or stretched across, where the banks are high, upon pillars elevated on each side of the river.",
+    p([
+      {
+        kind: "text",
+        text: "The modes which I propose of insulating the wires or other metal for conductors, and of laying the circuits, are various. The wires may be insulated by winding each wire with silk, cotton, flax, or hemp, and then dipping them into a solution of ",
+      },
+      term(
+        "caoutchouc",
+        "Natural rubber, dissolved for use as an insulating coating around a conductor.",
       ),
-    ),
+      {
+        kind: "text",
+        text: ", or into a solution of shellac, or into pitch or resin and caoutchouc. They may be laid through the air, inclosed above the ground, in the ground, or in the water. When through the air they may be insulated by a covering that shall protect them from the weather, such as cotton, flax, or hemp, and dipped into any solution which is a non-conductor, and elevated upon pillars. When inclosed above the ground they may be laid in tubes of iron or lead, and these again may be inclosed in wood, if desirable. When laid in the ground they may be inclosed in iron, leaden, wooden, or earthen tubes, and buried beneath the surface. Across rivers the circuit may be carried beneath the bridges, or, where there are no bridges, inclosed in lead or iron, and sunk at the bottom, or stretched across, where the banks are high, upon pillars elevated on each side of the river.",
+      },
+    ]),
     p(text("What I claim as my invention, and desire to secure by Letters Patent, is as follows:")),
     claim(
       1,
@@ -462,63 +749,90 @@ export const morseTelegraphParallelReadings: Readonly<Record<number, readonly st
   ],
   18: [
     "Letter types use the same family of metal pieces, varied through twenty-three forms. Straight pieces travel in a straight port-rule; curved pieces are arcs for a circular port-rule. The alternative is mechanical geometry, not a different electrical principle.",
+    "The source explicitly sends the reader forward to the separate descriptions of both port-rules. It treats the shape of each piece and the carrier it fits as a coupled mechanical choice, while the electrical signal mechanism remains the same.",
   ],
   19: [
     "The circular type has a half-thickness groove that ends before the pointed teeth. The shoulder and cogs of the wheel guide each piece. Type cases store the pieces, while a three-foot type-rule and pinion provide repeatable feed motion.",
     "The groove starts at the space end and terminates at points D D, halfway from the opposite ends. Cogs around the wheel are spaced to match the type teeth or indentations, and a stationary type-feeder holds a column of pieces above the shoulder. These dimensions and relations explain why the circular pieces can be selected and moved without falling out of the carrier.",
   ],
   20: [
-    "A hand crank and screw drive the pinion-wheel, which moves the type-rule along a groove under the circuit-breaking lever. The drawings identify the linked wheel, crank, screw, rail, and lever as one feed mechanism.",
-    "The source permits another familiar mechanical power in place of the hand crank. Its limitation is functional: motion is conveyed in a direct line beneath the lever that breaks and connects the galvanic circuit.",
+    "The type-rule itself moves when the pinion is driven. Example 7 is the patent's separate drawing of that straight carrier, not an ornamental repetition of the type drawings.",
   ],
   21: [
-    "The circular port-rule replaces the straight rule with a wheel whose shoulder receives curved type. Its pinion drives the wheel; the shoulder depth matches type thickness, and its cogs engage the grooves in the pieces.",
-    "The wheel may be horizontal or inclined and may be wood or metal. The cavity has the selected type's width exclusive of its teeth, preserving the fit that lets the type move around the circumference.",
+    "The straight port-rule is the linear feed mechanism. A hand crank and horizontal screw turn the pinion, and the pinion's teeth move the straight type-rule along a rail or groove beneath the circuit-breaking lever.",
+    "Morse permits another familiar source of mechanical power, but preserves the same causal arrangement: wheel motion carries the selected type in a straight line under the lever. The cited drawing identifies the crank, screw, wheel, rail, and lever as interacting parts.",
   ],
   22: [
-    "As the wheel carries the lower piece away from the stationary type feeder, the next piece drops onto the shoulder. A cog enters each piece's groove and carries it onward. That sequence makes the type feed automatically and in order.",
-    "The removed piece travels from below the incumbent column as its predecessor did. The paragraph conditions the sequence on keeping the wheel in motion, so the mechanical feed, rather than a manually placed mark, regulates the order of signs.",
+    "The circular port-rule is an alternative carrier. It replaces both the straight rule and the separate type-rule with a wheel whose upper shoulder receives curved type pieces. A lower pinion turns the wheel.",
+    "The wheel can be horizontal or inclined and made of wood or metal. Its shoulder has the type's thickness and width, excluding the teeth, so the type can be supported around the rim without the teeth being mistaken for the load-bearing surface.",
   ],
   23: [
-    "For the straight rule, a tooth on the moving type lifts and drops a pivoted signal lever. The lever carries a forked wire. Its repeated movement is the mechanical origin of each opening and closing of the circuit.",
-    "The source permits a six-to-twenty-four-inch wood lever on a pivot or notched pillar, with a metal pin fulcrum. The tooth near that fulcrum matches the type teeth and indentations; that physical matching is the constraint that translates the selected type profile into lever travel.",
+    "Cogs around the wheel engage the grooves in the curved type. Their spacing is one half the type teeth or indentations, and their dimensions match the groove. That geometry advances each selected type piece without hand placement.",
+    "A stationary feeder sits over the wheel's shoulder. Type pieces are loaded as a vertical column with their teeth outward and grooves downward. The wheel passes beneath the feeder, so a cog enters the groove of the bottom piece and carries it around the circumference.",
+    "The paragraph specifies the feeder's thin plate shape, support, clearance, and the relationship between its lower type, the shoulder, and the cog. These are the material constraints that make the magazine-like feed possible, not incidental labels in a diagram.",
   ],
   24: [
-    "When the lever rises, the forked wire leaves or limits the mercury contacts; when it falls, the contacts reconnect the circuit. The type's teeth and gaps therefore become current pulses with durations and spaces determined by the selected metal piece.",
-    "Two mercury cups, each connected to a circuit termination, receive the fork's ends. Their alternate immersion breaks and limits current; falling into both cups restores the connection. The source also permits metallic contact plates in place of cups, preserving the same circuit-making function.",
+    "With the wheel moving, a cog enters the terminating point of the groove in the lower type and carries that piece away. The next piece settles onto the shoulder, meets the next cog, and follows in the same sequence. Motion of the wheel is therefore the gate for advancing the loaded type.",
+    "The operator controls the message before the wheel runs by choosing the order of letters, numerals, or word types placed in the feeder. The machine then takes them in that order, so the type store is a physical program for the transmitted sign sequence.",
+    "After a piece passes the signal-lever position, it is not left on the wheel. A plowshare-shaped spindle rises through an inner groove below the shoulder. The approaching type rides up that spindle and is shed into the collection box for redistribution.",
+    "The recovery path matters mechanically: the spindle is below the wheel's support surface, enters the designated groove, and lifts the type from the opposite end as a following piece advances. The circular port-rule therefore feeds, signals, and returns its reusable type in one continuous path.",
   ],
   25: [
-    "The register uses a lever whose armature faces an electromagnet. At the other end the patent permits a pencil, fountain pen, printing wheel, or other marking tool. Magnetic attraction moves the armature and makes that tool mark the material below it.",
+    "For the straight port-rule, a pivoted wood signal lever carries a fork-like metal wire at one end and a tooth near its fulcrum. The tooth is shaped to meet the teeth or indentations of the type moving below it.",
+    "The source permits a six-to-twenty-four-inch lever and gives both a pivot and notched-pillar form of its fulcrum. Its metal tooth is on the underside near that fulcrum, directly above the rail or groove that guides the type-rule.",
   ],
   26: [
-    "A yielding-covered cylinder and two tape-linked rollers move the paper or other recording material. The narrow tape bands leave a central gap so the marking instrument can reach the cylinder; a spool supplies a continuous strip and receives the record after it passes the rollers.",
-    "The cylinder can be metal or wood and turns on an axis below the marker. Friction between the bands and cylinder draws the strip forward gradually; after passing the cylinder and rollers it may be deposited in a box or cut off at a chosen length.",
+    "A small counterweight offsets part of the lever's load. As each type tooth reaches the lever tooth, it raises the lever; once the tooth points have passed, the lever falls again. Repetition of that contact follows the physical pattern cut into the type.",
+    "The lever's forked wire alternately enters and leaves two mercury cups connected to the conductor ends. Falling into both cups completes the circuit between them. Rising out of the cups breaks it, so the type's geometry is converted into intervals of current and no current.",
+    "Morse expressly says this motion is intended to break and connect the circuit at will and to reduce those changes to intelligible signs. A plate of copper, silver, or another conductor may replace the mercury cups if it receives the wire's contact, preserving the same switching function.",
   ],
   27: [
-    "When current energizes the magnet, the armature turns the register lever and lowers the marking tool to the moving material. When current stops, gravity, a spring, or a weight returns the lever and raises the tool. The same circuit can operate as many remote registers as have corresponding magnets.",
-    "The timing is simultaneous: the circuit signal both makes the mark and can act at multiple points. The mark persists because the cylinder continues to move underneath it, turning the interval during which current flows into a visible sign on the paper or substitute material.",
+    "The circular port-rule has its own lever. A wood strip carries a wire at one end and an elbow arm at the other. A tooth in that elbow bears against type projecting from the wheel's shoulder, while a spring holds the tooth in contact.",
+    "When the wheel turns, the type teeth and indentations move the elbow tooth. The opposite end rises and falls just as in the straight-rule lever, so its wire opens and closes the conductor circuit. The two carrier styles therefore share the same electrical effect.",
+    "Morse also allows reverse or counterpart tooth profiles for the circular type. Reversing the profiles changes the recorded sign's form while retaining the wheel, lever, contact, and circuit relationship described in the patent.",
   ],
   28: [
-    "For longer routes, Morse describes a fresh-battery relay. A receiving magnet moves a forked wire into contacts of a second circuit. That second circuit is a new source of current and can in turn repeat the operation through further circuits.",
-    "The receiving armature has the register's general form but substitutes the forked wire for its marking instrument. Beneath it are mercury cups or plates connected to the fresh circuit, the same arrangement used in the first circuit. This is a concrete two-circuit arrangement, including a specified contact action and battery source.",
+    "The register begins with a lever whose lower elbow carries a magnetic armature opposite an electromagnet. At its other end, the patent allows a pencil, fountain pen, printing wheel, or another marking instrument.",
+    "When the magnet attracts the armature, this lever pivots and brings its marking end toward the recording surface. The named drawing shows the lever, armature, marker, and magnet as a specific arrangement rather than merely naming a generic receiver.",
   ],
   29: [
-    "The first circuit actuates the relay magnet, which closes the second circuit. Repeating this arrangement can extend the signal through another and another circuit, with intervening registers operating at any distance. This is the printed relay mechanism, not a claim to all forms of electrical communication.",
+    "The recording surface is a cloth-covered cylinder or barrel with two rollers. Tape bands running across the cylinder give the paper feed traction, while the gap between bands leaves a place for the marker to touch the paper or other material.",
+    "A nearby spool stores a strip or continuous ribbon. Friction draws that strip from the spool, over the cylinder, and into a box or to a cut-off length. Thus the register makes a permanent moving record instead of an instantaneous visual display.",
+    "The cylinder may be metal or wood, turns on an axis, and sits directly beneath the selected pencil, pen, printing wheel, or other marking instrument.",
   ],
   30: [
-    "The dictionary is an alphabetically arranged, numbered vocabulary. Instead of spelling every word, an operator may transmit that word's number through the numerical signs.",
+    "The third register component is an alarm bell with a lever-hammer and a movable cog in the lower end of a pendulum lever. A second electromagnet moves that lever in the same circuit as the marking magnet.",
+    "As the cog sweeps its quarter-circle, it either presses the hammer's projection or stops doing so. The raised hammer then falls against a stationary bell. The result is an audible notice when the register begins operating, which can be sustained or suppressed by the hammer's relation to the bell.",
+    "The specification permits any number of bells and identifies the sectional drawing of the bell and hammer. This is not a later sounder substitution: it is a specified alert mechanism coupled to the recording action.",
   ],
   31: [
-    "The final engineering discussion gives insulation and route options: textile wrapping plus caoutchouc, shellac, pitch, or resin; aerial support; tubes above or below ground; and river crossings by bridge, submerged lead or iron, or elevated pillars.",
-    "The claim is not that every route is identical. Above-ground lines may sit on pillars and need weather protection; enclosed aerial lines may use iron or lead tubes with an outer wood enclosure; buried lines may use iron, lead, wood, or earthen tubes. For a river, the described alternatives depend on whether a bridge exists and on the banks' height.",
+    "Current in the conductor energizes the register magnet and attracts its armature. The lever pivots down, placing the pen or other marker on the revolving cylinder. When current stops, gravity, a spring, or a weight restores the armature and lifts the marker away.",
+    "The same circuit can actuate multiple distant registers at once. The patent makes the persistence of the sign a joint result of electrical timing and continued cylinder motion: a longer contact marks a longer interval on the moving paper.",
+    "The first lever motion withdraws a small wire or spindle from a flywheel branch, releasing the clockwork drive. A small electromagnet provides that withdrawal. Thereafter a weight-driven train of clock-like wheels keeps the cylinder and rollers moving at a speed coordinated with the marking tool.",
+    "Morse also states how the magnet is made: insulated copper wire, copper strip, tin foil, or other metal wound around soft iron, straight or bent, with both coil ends joined to the conductor circuit. The coil is part of the circuit, and its attraction is the actuator for the register and clockwork release.",
   ],
   32: [
+    "For longer routes, Morse describes a fresh-battery relay. A receiving magnet moves a forked wire into contacts of a second circuit. That second circuit is a new source of current and can in turn repeat the operation through further circuits.",
+    "The receiving armature has the register's general form but substitutes the forked wire for its marking instrument. Beneath it are mercury cups or plates connected to the fresh circuit, the same contact arrangement used in the first circuit. This is a concrete two-circuit arrangement, including an armature, contact action, and battery source.",
+  ],
+  33: [
+    "The first circuit actuates the relay magnet, which closes the second circuit. The second circuit supplies a fresh current to its magnets. Repeating this arrangement extends the signal through another and another circuit, with intervening registers operating at chosen distances.",
+    "The phrase 'ad infinitum' describes repeatable stages of the stated apparatus, not an ownership claim over every form of electrical communication. The mechanism still depends on a magnet-actuated armature, forked contact wire, new generator, and the specified circuit relationship.",
+  ],
+  34: [
+    "The dictionary is an alphabetically arranged, numbered vocabulary. Instead of spelling every word, an operator may transmit that word's number through the numerical signs.",
+  ],
+  35: [
+    "The final engineering discussion gives insulation and route options: textile wrapping plus caoutchouc, shellac, pitch, or resin; aerial support; tubes above or below ground; and river crossings by bridge, submerged lead or iron, or elevated pillars.",
+    "The routes have different stated treatments. Overhead conductors need weather protection and pillars; enclosed overhead lines can use iron or lead tubes with an outer wood enclosure; buried lines can use iron, lead, wood, or earthen tubes. For a river, the listed route depends on bridge availability and the banks' height.",
+  ],
+  36: [
     "This sentence introduces the nine legal claims. They define the combinations for which Morse asks Letters Patent after the detailed specification has described their parts and operation.",
   ],
-  42: [
+  46: [
     "Morse executes the specification on 7 April 1838. The date belongs to the signed instrument; the patent notice at the masthead gives the June 20, 1840 grant date.",
   ],
-  43: [
+  47: [
     "B. B. French and Charles Monroe appear as the witnesses to Morse's signature. The drawing sheets separately display Joseph G. Clark and Alexr. Jackson as witnesses on those sheets.",
   ],
 };

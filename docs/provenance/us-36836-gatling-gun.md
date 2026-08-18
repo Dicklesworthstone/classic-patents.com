@@ -18,14 +18,16 @@ The published continuous edition in `src/data/editions/gatlingGunEdition.ts` was
 
 | Material | PDF locator | Edition treatment |
 | --- | --- | --- |
-| Signed drawing sheet, title, and Figures 1–7 | PDF sheet 1 | Individual local preview crops; explicit figure-reference nodes in the description and figure-sheet node |
-| Patent-office masthead, inventor/title, formal notice | PDF sheet 2, top | Authored masthead and opening paragraphs |
+| Signed drawing sheet, title, and Figures 1–7 | PDF sheet 1 | Individual local preview crops; explicit figure-reference nodes in the description and figure-sheet node; reviewed-transcription ledger page 1 |
+| Patent-office masthead, inventor/title, formal notice | PDF sheet 2, top | Authored masthead and opening paragraphs; reviewed-transcription ledger page 2 |
 | Figure descriptions | PDF sheet 2, left column, opening paragraph | Explicit links to Figures 1–7 |
 | Construction of barrels, carrier, lock-cylinder, ring P | PDF sheet 2, both columns | Consecutive authored paragraphs with period terms annotated where needed |
-| Disk I, swell O, shafts, loading/firing sequence, disclaimer | PDF sheet 3, both columns above claims | Consecutive authored paragraphs |
-| Claims 1–5 | PDF sheet 3, right column below “What I do claim” | Five exact typed claim nodes and matching typed decoders |
+| Disk I, swell O, shafts, loading/firing sequence, disclaimer | PDF sheet 3, both columns above claims | Consecutive authored paragraphs; reviewed-transcription ledger page 3 |
+| Claims 1–5 | PDF sheet 3, right column below “What I do claim” | Five exact typed claim nodes, matching typed decoders, and reviewed-transcription ledger page 3 |
 | Signature and witnesses | PDF sheet 3, lower right | Authored closing nodes: Richard J. Gatling; A. F. Mathew; W. O. Rockwood |
 
 ## Editorial boundary
+
+`public/patents/transcripts/us-36836-gatling-gun-reviewed.txt` is the accountable three-page review ledger for the continuous edition. It is pinned in the catalogue as a `reviewed-transcription`, names its reviewer and review date, and carries the source PDF digest above. It records the page coverage without imposing source-sheet breaks on the visitor-facing React edition.
 
 `public/patents/source-text/us-36836-gatling-gun.txt` and `public/patents/transcripts/us-36836-gatling-gun.txt` are retained comparison layers. They are not the published manual edition and must not be used as evidence of source accuracy. The complete visitor-facing source reading is represented only by the explicitly typed `manual-react-edition` nodes.

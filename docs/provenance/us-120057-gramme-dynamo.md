@@ -27,10 +27,10 @@ the reviewed canonical text.
 
 | PDF locator | Reviewed content | Published treatment |
 | --- | --- | --- |
-| p. 1 | Drawing sheet 1, Figs. 1–6 | `drawing-sheet-1.png`; figure-sheet block and Fig. 1–6 references |
-| p. 2 | Drawing sheet 2, Figs. 7–9 | `drawing-sheet-2.png`; figure-sheet block and Fig. 7–9 references |
-| p. 3 | Drawing sheet 3, Figs. 10–13 | `drawing-sheet-3.png`; figure-sheet block and Fig. 10–13 references |
-| p. 4 | Drawing sheet 4, Fig. 14 | `drawing-sheet-4.png`; figure-sheet block and Fig. 14 reference |
+| p. 1 | Drawing sheet 1, Figs. 1–6 | Figure-sheet block; separately reviewed local crops `fig-1.png` through `fig-6.png`; Fig. 1–6 references |
+| p. 2 | Drawing sheet 2, Figs. 7–9 | Figure-sheet block; separately reviewed local crops `fig-7-source-crop.png`, `fig-8.png`, and `fig-9.png`; Fig. 7–9 references |
+| p. 3 | Drawing sheet 3, Figs. 10–13 | Figure-sheet block; separately reviewed local crops `fig-10.png` through `fig-13.png`; Fig. 10–13 references |
+| p. 4 | Drawing sheet 4, Fig. 14 | Figure-sheet block; separately reviewed local crop `fig-14.png`; Fig. 14 references |
 | p. 5 | Masthead, co-inventors, introduction, endless-bobbin principle | Manual edition masthead and opening paragraphs |
 | p. 6 | Figs. 1–6 constructions and continuous-current explanation | Manual edition blocks with Figs. 1–6 references |
 | p. 7 | Figs. 7–13 constructions | Manual edition blocks with Figs. 7–13 references |
@@ -45,6 +45,22 @@ claim 2 is the alternate-current arrangement; claim 3 is the described and
 illustrated apparatus combination. Inline glossary annotations are confined to
 the exact printed terms “circuit-breakers, pole-changers, or commutators” and
 “endless bobbin”; they do not alter the historical wording.
+
+## Figure-crop receipt
+
+Each `public/patents/figures/us-120057-gramme-dynamo/fig-*.png` image is a
+local derivative of its corresponding pinned drawing sheet, made only to give
+the reader a legible preview of the precise printed figure at a source-text
+reference. No labels, linework, or explanatory overlays were added. The
+edition maps every source citation to one or more of these crops and rejects
+an unregistered citation at module construction time. The original four
+drawing sheets remain preserved in the facsimile PDF; the crop is a reader
+aid, not a replacement source.
+
+Figure 7 and Figure 9 overlap physically on drawing sheet 2. The complete
+Figure 7 crop therefore retains the upper Figure 9 detail exactly as printed,
+rather than erasing or redrawing either figure to make an artificial isolated
+image.
 
 ## Secondary checks and boundaries
 

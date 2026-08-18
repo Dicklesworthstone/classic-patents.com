@@ -23,6 +23,14 @@ export const hyattCelluloidPatent: Patent = {
   originalPdfUrl: "/patents/pdfs/us-105338-hyatt-celluloid.pdf",
   googlePatentsUrl: "https://patents.google.com/patent/US105338A/en",
   usptoClassification: "C08L 1/18 (cellulose nitrate compositions)",
+  originalTextAsset: {
+    url: "/patents/transcripts/us-105338-hyatt-celluloid-reviewed.txt",
+    pageCount: 1,
+    kind: "reviewed-transcription",
+    reviewedBy: "Classic Patents editorial agent (GPT-5.6)",
+    reviewedAt: "2026-08-18",
+    sourcePdfSha256: "186dd64b072c5a1182eac0c9c2cb4d2edb20f17296f3e5d934c9114ed684df82",
+  },
   // This is a source-true on-page excerpt. The complete public source is the
   // explicit archivalEdition below; the preserved legacy text assets are not
   // represented as a reviewed transcription.

@@ -1,6 +1,10 @@
+import {
+  maximMachineGunArchivalEdition,
+  maximMachineGunRecordCorrections,
+} from "@/data/editions/maximMachineGunEdition";
 import type { Patent } from "@/types/patent";
 
-export const maximMachineGunPatent: Patent = {
+const legacyMaximMachineGunPatent: Patent = {
   id: "us-319596-maxim-machine-gun",
   patentNumber: "US 319,596",
   title: "Automatic Gun",
@@ -288,4 +292,23 @@ Fifth, the barrel is enclosed within a water-jacket or casing containing cooling
     patentWarYears: "1884–1898",
     impactScore: 100,
   },
+};
+
+/**
+ * The legacy record is retained only as a migration witness. The public record
+ * below is constrained to the reviewed five-sheet facsimile: it is a direct
+ * muzzle-gas mechanism, not the later recoil and water-jacket narrative.
+ */
+export const maximMachineGunPatent: Patent = {
+  ...legacyMaximMachineGunPatent,
+  originalTextAsset: {
+    url: "/patents/transcripts/us-319596-maxim-machine-gun-reviewed.txt",
+    pageCount: 5,
+    kind: "reviewed-transcription",
+    reviewedBy: "Classic Patents editorial agent (GPT-5.6)",
+    reviewedAt: "2026-08-18",
+    sourcePdfSha256: "ca385c254e2e390451a2eecd28273fee662afd0179451bcbf9f48bf8fde63dcb",
+  },
+  archivalEdition: maximMachineGunArchivalEdition,
+  ...maximMachineGunRecordCorrections,
 };

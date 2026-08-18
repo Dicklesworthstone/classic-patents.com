@@ -1,6 +1,10 @@
+import {
+  peltonWaterWheelArchivalEdition,
+  peltonWaterWheelRecordCorrections,
+} from "@/data/editions/peltonWaterWheelEdition";
 import type { Patent } from "@/types/patent";
 
-export const peltonWaterWheelPatent: Patent = {
+const legacyPeltonWaterWheelPatent: Patent = {
   id: "us-233692-pelton-water-wheel",
   patentNumber: "US 233,692",
   title: "Water Wheel",
@@ -246,4 +250,23 @@ I claim as my invention:
     totalClaims: 2,
     independentClaims: 1,
   },
+};
+
+/**
+ * The prior catalogue object is retained as a migration witness. The published
+ * record below replaces its invented performance figures, additional claim,
+ * and non-source hardware with the reviewed historic document.
+ */
+export const peltonWaterWheelPatent: Patent = {
+  ...legacyPeltonWaterWheelPatent,
+  originalTextAsset: {
+    url: "/patents/transcripts/us-233692-pelton-water-wheel-reviewed.txt",
+    pageCount: 3,
+    kind: "reviewed-transcription",
+    reviewedBy: "Classic Patents editorial agent (GPT-5.6)",
+    reviewedAt: "2026-08-18",
+    sourcePdfSha256: "b81019c0239af3ab932bd477970c1a414a91f765a68b28f9b22444e4f95c597c",
+  },
+  archivalEdition: peltonWaterWheelArchivalEdition,
+  ...peltonWaterWheelRecordCorrections,
 };

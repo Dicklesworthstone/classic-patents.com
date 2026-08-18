@@ -78,17 +78,26 @@ export const ericssonPropellerArchivalEdition: CuratedSpecificationEdition = {
       kind: "figure-sheet",
       figureLabel: "SHEET 1, 2 SHEETS",
       title: "Figures 1 and 2",
-      description: text(
-        "J. Ericsson. Screw Propeller. No. 588. Patented Feb. 1, 1838. Figure 1 is the longitudinal stern section; Figure 2 develops the spiral plate form on a cylinder.",
-      ),
+      description: [
+        { kind: "text", text: "J. Ericsson. Screw Propeller. No. 588. Patented Feb. 1, 1838. " },
+        figure("Figure 1", [1]),
+        { kind: "text", text: " is the longitudinal stern section; " },
+        figure("Figure 2", [2]),
+        { kind: "text", text: " develops the spiral plate form on a cylinder." },
+      ],
     },
     {
       kind: "figure-sheet",
       figureLabel: "SHEET 2, 2 SHEETS",
       title: "Figures 3 through 6",
-      description: text(
-        "J. Ericsson. Screw Propeller. No. 588. Patented Feb. 1, 1838. Figures 3, 4, 5, and 6 show the end view, stern installation, plan, and gearing section.",
-      ),
+      description: [
+        { kind: "text", text: "J. Ericsson. Screw Propeller. No. 588. Patented Feb. 1, 1838. " },
+        figure("Figures 3, 4, 5, and 6", [3, 4, 5, 6]),
+        {
+          kind: "text",
+          text: " show the end view, stern installation, plan, and gearing section.",
+        },
+      ],
     },
     { kind: "paragraph", inlines: [{ kind: "emphasis", text: "To all whom it may concern:" }] },
     {
@@ -106,7 +115,7 @@ export const ericssonPropellerArchivalEdition: CuratedSpecificationEdition = {
         },
       ],
     },
-    { kind: "heading", level: 2, text: "Description of the drawing No. 1 hereto attached." },
+    { kind: "heading", level: 2, text: "Description of the drawing No. 1 hereto attached.—" },
     {
       kind: "paragraph",
       inlines: [
@@ -197,7 +206,7 @@ export const ericssonPropellerArchivalEdition: CuratedSpecificationEdition = {
         "And I, the said JOHN ERICSSON, do hereby declare that the application of my propeller represented in the annexed drawing No. 2 and hereafter described will be highly useful either for ships of war or merchant vessels.",
       ),
     },
-    { kind: "heading", level: 2, text: "Description of the drawing No. 2." },
+    { kind: "heading", level: 2, text: "Description of the drawing No. 2.—" },
     {
       kind: "paragraph",
       inlines: [
@@ -272,7 +281,7 @@ export const ericssonPropellerArchivalEdition: CuratedSpecificationEdition = {
       inlines: [
         {
           kind: "text",
-          text: "Now whereas the use of spiral planes acting obliquely against the water and moving in contrary directions for propelling steam boats is not new, I do not claim as my invention the use of such spiral planes or their contrary motion; but I claim as my invention:",
+          text: "Now whereas the use of spiral planes acting obliquely against the water and moving in contrary directions for propelling steam boats is not new, I do not claim as my invention the use of such spiral planes or their contrary motion; but I claim as my invention—",
         },
       ],
     },

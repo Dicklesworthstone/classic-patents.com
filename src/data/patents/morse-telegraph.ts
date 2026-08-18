@@ -34,9 +34,12 @@ export const morseTelegraphPatent: Patent = {
   googlePatentsUrl: "https://patents.google.com/patent/US1647A/en",
   usptoClassification: "H04L 15/00 (Telegraph signaling)",
   originalTextAsset: {
-    url: "/patents/source-text/us-1647-morse-telegraph.txt",
+    url: "/patents/transcripts/us-1647-morse-telegraph-reviewed.txt",
     pageCount: 9,
-    kind: "source-pdf-text-layer",
+    kind: "reviewed-transcription",
+    reviewedBy: "Classic Patents editorial agent (GPT-5.6)",
+    reviewedAt: "2026-08-18",
+    sourcePdfSha256: "07a534f54894e6130980052a77c565492e53d6cd527c092b47016e8cc243ed93",
   },
   archivalEdition: morseTelegraphArchivalEdition,
   originalText: `UNITED STATES PATENT OFFICE.

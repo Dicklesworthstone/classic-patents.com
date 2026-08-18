@@ -23,9 +23,12 @@ export const ericssonPropellerPatent: Patent = {
   googlePatentsUrl: "https://patents.google.com/patent/US588/en",
   usptoClassification: "B63H 1/14 (Marine propellers; Screw propellers)",
   originalTextAsset: {
-    url: "/patents/source-text/us-588-ericsson-propeller.txt",
+    url: "/patents/transcripts/us-588-ericsson-propeller-reviewed.txt",
     pageCount: 5,
-    kind: "source-pdf-text-layer",
+    kind: "reviewed-transcription",
+    reviewedBy: "Classic Patents editorial agent (GPT-5.6)",
+    reviewedAt: "2026-08-18",
+    sourcePdfSha256: "40582250d44f6558cf9a438801e312a469ccb83b6755ebc813943fba54c3ea9a",
   },
   originalText:
     "Be it known that I, JOHN ERICSSON, a subject of the Kingdom of Sweden, residing at London, England, have invented a new and useful Propeller for the Purpose of Propelling Steamboats Effectually Notwithstanding Any Variations in Their Draft of Water. The complete, manually prepared edition is available in the Original Patent Text face.",

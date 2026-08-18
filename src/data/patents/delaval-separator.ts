@@ -1,6 +1,10 @@
+import {
+  delavalSeparatorArchivalEdition,
+  delavalSeparatorRecordCorrections,
+} from "@/data/editions/delavalSeparatorEdition";
 import type { Patent } from "@/types/patent";
 
-export const delavalSeparatorPatent: Patent = {
+const legacyDelavalSeparatorPatent: Patent = {
   id: "us-247804-delaval-separator",
   patentNumber: "US 247,804",
   title: "Centrifugal Cream-Separator",
@@ -256,4 +260,23 @@ I claim as my invention:
     patentWarYears: "1878–1889",
     impactScore: 98,
   },
+};
+
+/**
+ * The legacy catalogue entry is retained only as a migration witness. The
+ * public record below removes non-source measurements, mechanisms, claims,
+ * and historical assertions in favor of the reviewed three-sheet document.
+ */
+export const delavalSeparatorPatent: Patent = {
+  ...legacyDelavalSeparatorPatent,
+  originalTextAsset: {
+    url: "/patents/transcripts/us-247804-delaval-separator-reviewed.txt",
+    pageCount: 3,
+    kind: "reviewed-transcription",
+    reviewedBy: "Classic Patents editorial agent (GPT-5.6)",
+    reviewedAt: "2026-08-18",
+    sourcePdfSha256: "aa9e284bf20a53467a36a3ae648c7ce5bc4b9599837af32281e04b316b5ef187",
+  },
+  archivalEdition: delavalSeparatorArchivalEdition,
+  ...delavalSeparatorRecordCorrections,
 };

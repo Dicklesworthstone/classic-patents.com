@@ -6,49 +6,91 @@ import type {
 
 const literal = (text: string): CuratedSpecificationInlines => [{ kind: "text", text }];
 
-const drawingSheet = (
-  number: 1 | 2 | 3 | 4,
-  figures: string,
-): Extract<CuratedSpecificationInline, { kind: "reference" }> => ({
-  kind: "reference",
-  text: `Figs. ${figures}`,
-  href: `#drawing-sheet-${number}`,
-  referenceType: "figure",
-  label: `Drawing sheet ${number} from the pinned US 120,057 facsimile, containing Figs. ${figures}`,
-  figurePreviews: [
-    {
-      src: `/patents/figures/us-120057-gramme-dynamo/drawing-sheet-${number}.png`,
-      alt: `US 120,057 drawing sheet ${number}, containing Figs. ${figures}.`,
-      width: 1392,
-      height: 2045,
-    },
-  ],
+const crop = (number: number, width: number, height: number, label: string) => ({
+  src: `/patents/figures/us-120057-gramme-dynamo/fig-${number}.png`,
+  alt: `Source-facsimile crop of ${label} from US 120,057.`,
+  width,
+  height,
 });
 
-const figure1To3 = drawingSheet(1, "1–3");
-const figure4To6 = drawingSheet(1, "4–6");
-const figure7To9 = drawingSheet(2, "7–9");
-const figure10To13 = drawingSheet(3, "10–13");
-const figure14 = drawingSheet(4, "14");
+const FIGURE_CROPS = {
+  1: crop(1, 380, 500, "Fig. 1"),
+  2: crop(2, 320, 520, "Fig. 2"),
+  3: crop(3, 250, 150, "Fig. 3"),
+  4: crop(4, 1220, 600, "Fig. 4"),
+  5: crop(5, 1220, 580, "Fig. 5"),
+  6: crop(6, 440, 500, "Fig. 6"),
+  7: {
+    src: "/patents/figures/us-120057-gramme-dynamo/fig-7-source-crop.png",
+    alt: "Complete source-facsimile crop of Fig. 7 from US 120,057; the source sheet physically overlaps the upper portion with Fig. 9.",
+    width: 1300,
+    height: 900,
+  },
+  8: crop(8, 1100, 650, "Fig. 8"),
+  9: crop(9, 1100, 340, "Fig. 9"),
+  10: crop(10, 620, 660, "Fig. 10"),
+  11: crop(11, 650, 560, "Fig. 11"),
+  12: crop(12, 940, 720, "Fig. 12"),
+  13: crop(13, 500, 720, "Fig. 13"),
+  14: crop(14, 1000, 1500, "Fig. 14"),
+} as const;
+
+type FigureNumber = keyof typeof FIGURE_CROPS;
+type FigureReference = Extract<CuratedSpecificationInline, { kind: "reference" }>;
+
+const figureGroup = (text: string, sheet: 1 | 2 | 3 | 4, figures: readonly FigureNumber[]) =>
+  ({
+    kind: "reference",
+    text,
+    href: `#drawing-sheet-${sheet}`,
+    referenceType: "figure",
+    label: `Open the source-facsimile crop for ${text} in US 120,057`,
+    figurePreviews: figures.map((figure) => FIGURE_CROPS[figure]),
+  }) satisfies FigureReference;
+
+const figure1To3 = figureGroup("Figs. 1, 2, and 3", 1, [1, 2, 3]);
+const figure4To6 = figureGroup("Figs. 4, 5, and 6", 1, [4, 5, 6]);
+const figure7To9 = figureGroup("Figs. 7, 8, and 9", 2, [7, 8, 9]);
+const figure10To13 = figureGroup("Figs. 10, 11, 12, and 13", 3, [10, 11, 12, 13]);
+const figure14 = figureGroup("Fig. 14", 4, [14]);
+
+const REFERENCE_CROPS: Record<string, readonly FigureNumber[]> = {
+  "1:Figure 1": [1],
+  "1:Fig. 1": [1],
+  "1:Fig. 2": [2],
+  "1:Fig. 3": [3],
+  "1:Fig. 4": [4],
+  "1:Fig. 5": [5],
+  "1:Fig. 6": [6],
+  "1:Figs. 1 and 2": [1, 2],
+  "1:Figs. 4, 5, and 6": [4, 5, 6],
+  "2:Fig. 7": [7],
+  "2:Fig. 8": [8],
+  "2:Fig. 9": [9],
+  "2:Figs. 7 and 8": [7, 8],
+  "3:Fig. 10": [10],
+  "3:Fig. 11": [11],
+  "3:Fig. 12": [12],
+  "3:Fig. 13": [13],
+  "4:Fig. 14": [14],
+};
 
 const sourceFigure = (
   text: string,
   sheet: 1 | 2 | 3 | 4,
 ): Extract<CuratedSpecificationInline, { kind: "reference" }> => {
-  const sourceSheet = {
-    1: figure1To3,
-    2: figure7To9,
-    3: figure10To13,
-    4: figure14,
-  }[sheet];
+  const figures = REFERENCE_CROPS[`${sheet}:${text}`];
+  if (!figures) {
+    throw new Error(`US 120,057 has no authored source crop for ${text} on sheet ${sheet}.`);
+  }
 
   return {
     kind: "reference",
     text,
     href: `#drawing-sheet-${sheet}`,
     referenceType: "figure",
-    label: `${text} on drawing sheet ${sheet} of the pinned US 120,057 facsimile`,
-    figurePreviews: sourceSheet.figurePreviews,
+    label: `Open the source-facsimile crop for ${text} in US 120,057`,
+    figurePreviews: figures.map((figure) => FIGURE_CROPS[figure]),
   };
 };
 
@@ -191,14 +233,7 @@ export const grammeDynamoArchivalEdition: CuratedSpecificationEdition = {
           kind: "text",
           text: "The core might be formed of a suitable number of soft-iron wires or coils cemented together by resin or other suitable cement; and the conducting-wires are wound round the core in such manner as to form thirty-six small bobbins, all of them coiled in the same direction and connected together into one large endless bobbin by soldering the end of the wire of each of them to the end of the wire of the next one and soldering to each of these junctions a metal rod or conductor, C, two of which are shown in the cross-sectional view, ",
         },
-        {
-          kind: "reference",
-          text: "Fig. 2",
-          href: "#drawing-sheet-1",
-          referenceType: "figure",
-          label: "Fig. 2 on drawing sheet 1",
-          figurePreviews: figure1To3.figurePreviews,
-        },
+        sourceFigure("Fig. 2", 1),
         {
           kind: "text",
           text: ". The thirty-six small bobbins consequently present thirty-six junctions and thirty-six conductors C, kept duly isolated from each other and pressed in positions between the bosses F and G.",
@@ -230,14 +265,7 @@ export const grammeDynamoArchivalEdition: CuratedSpecificationEdition = {
           kind: "text",
           text: "The mode of acting of the apparatus may be explained as follows: Supposing the revolving motion of the cylinder A to take place in the direction of the arrow a′, ",
         },
-        {
-          kind: "reference",
-          text: "Fig. 1",
-          href: "#drawing-sheet-1",
-          referenceType: "figure",
-          label: "Fig. 1 on drawing sheet 1",
-          figurePreviews: figure1To3.figurePreviews,
-        },
+        sourceFigure("Fig. 1", 1),
         {
           kind: "text",
           text: ", and the north pole to be situated at the left-hand side and the south pole at the right-hand side of this figure, the positive current developed in each small bobbin at the moment it passes before the north pole will flow from this bobbin to the next one situated in the direction from left to right; whereas the positive current developed in each bobbin when passing before the south pole will pass to the next bobbin situated in the direction from right to left; and these two similar currents thus flowing in opposite directions through the series of bobbins will meet in the bobbin which at that moment is arrived at the top, as will be readily understood by the arrows g and i; and this bobbin communicating in that moment with the rubber S, the said two positive currents will combine and leave the cylinder A by this rubber S if the electric circuit be closed; and if the revolution of the cylinder is continued without interruption the flow of these currents will take place likewise without interruption, viz., in a continuous manner.",

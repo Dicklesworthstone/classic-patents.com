@@ -37,9 +37,12 @@ export const wrightFlyerPatent: Patent = {
   googlePatentsUrl: "https://patents.google.com/patent/US821393A/en",
   usptoClassification: "B64C 13/00 (Aeronautics; Aircraft control systems)",
   originalTextAsset: {
-    url: "/patents/source-text/us-821393-wright-flyer.txt",
+    url: "/patents/transcripts/us-821393-wright-flyer-reviewed.txt",
     pageCount: 10,
-    kind: "source-pdf-text-layer",
+    kind: "reviewed-transcription",
+    reviewedBy: "Classic Patents editorial agent (GPT-5.6)",
+    reviewedAt: "2026-08-18",
+    sourcePdfSha256: "678bea5d81cb4e90a15c998bc932d2cf01bc87cfc3fcc53f0ecbdbdc70097966",
   },
   archivalEdition: wrightFlyerArchivalEdition,
   originalText: `UNITED STATES PATENT OFFICE.

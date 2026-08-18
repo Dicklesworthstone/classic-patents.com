@@ -1,4 +1,5 @@
 import { describe, expect, test } from "bun:test";
+import { createHash } from "node:crypto";
 import { existsSync, readFileSync } from "node:fs";
 import { join } from "node:path";
 import { validateCuratedSpecificationEdition } from "@/data/archivalEditionValidation";
@@ -7,6 +8,7 @@ import {
   hyattCelluloidParallelReadings,
 } from "@/data/editions/hyattCelluloidEdition";
 import { hyattCelluloidPatent } from "@/data/patents/hyatt-celluloid";
+import { validateReviewedTranscription } from "@/data/patents/sourceTextValidation";
 
 describe("hyattCelluloidArchivalEdition", () => {
   test("is a complete manual edition pinned to the reviewed US 105,338 facsimile", () => {
@@ -99,5 +101,40 @@ describe("hyattCelluloidArchivalEdition", () => {
     expect(
       hyattCelluloidArchivalEdition.blocks.filter((block) => block.kind === "claim").length,
     ).toBe(3);
+  });
+
+  test("pins every authored source block to a reviewed one-sheet ledger", () => {
+    const asset = hyattCelluloidPatent.originalTextAsset;
+    expect(asset).toMatchObject({
+      url: "/patents/transcripts/us-105338-hyatt-celluloid-reviewed.txt",
+      pageCount: 1,
+      kind: "reviewed-transcription",
+      reviewedBy: "Classic Patents editorial agent (GPT-5.6)",
+      reviewedAt: "2026-08-18",
+      sourcePdfSha256: "186dd64b072c5a1182eac0c9c2cb4d2edb20f17296f3e5d934c9114ed684df82",
+    });
+    if (!asset?.sourcePdfSha256) {
+      throw new Error("Hyatt reviewed transcript asset or source digest is missing.");
+    }
+
+    const transcript = readFileSync(`${process.cwd()}/public${asset.url}`, "utf8");
+    expect(validateReviewedTranscription(transcript, asset.pageCount)).toEqual({ valid: true });
+    const sourcePdf = readFileSync(`${process.cwd()}/public${hyattCelluloidPatent.originalPdfUrl}`);
+    expect(createHash("sha256").update(sourcePdf).digest("hex")).toBe(asset.sourcePdfSha256);
+
+    const normalizedTranscript = transcript
+      .replace(/^--- REVIEWED TRANSCRIPTION PAGE \d+ OF \d+ ---$/gm, "")
+      .replace(/\s+/g, " ")
+      .trim();
+    const textualBlocks = hyattCelluloidArchivalEdition.blocks.filter(
+      (block) => block.kind === "masthead" || block.kind === "paragraph" || block.kind === "claim",
+    );
+    for (const block of textualBlocks) {
+      const sourceText =
+        block.kind === "masthead"
+          ? block.lines.join(" ")
+          : block.inlines.map((inline) => inline.text).join("");
+      expect(normalizedTranscript).toContain(sourceText.replace(/\s+/g, " ").trim());
+    }
   });
 });

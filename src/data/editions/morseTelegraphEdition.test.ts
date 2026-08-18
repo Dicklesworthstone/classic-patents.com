@@ -1,6 +1,10 @@
 import { describe, expect, test } from "bun:test";
+import { createHash } from "node:crypto";
+import { existsSync, readFileSync } from "node:fs";
+import { resolve } from "node:path";
 import { validateCuratedSpecificationEdition } from "@/data/archivalEditionValidation";
 import { morseTelegraphPatent } from "@/data/patents/morse-telegraph";
+import { validateReviewedTranscription } from "@/data/patents/sourceTextValidation";
 import {
   morseTelegraphArchivalEdition,
   morseTelegraphParallelReadings,
@@ -23,7 +27,42 @@ describe("morseTelegraphArchivalEdition", () => {
     ).toEqual([1, 2, 3, 4, 5, 6, 7, 8, 9]);
   });
 
-  test("uses explicit source nodes for all printed figure references and never an OCR input", () => {
+  test("pins every authored source block to a reviewed nine-page ledger", () => {
+    const asset = morseTelegraphPatent.originalTextAsset;
+    expect(asset).toMatchObject({
+      url: "/patents/transcripts/us-1647-morse-telegraph-reviewed.txt",
+      pageCount: 9,
+      kind: "reviewed-transcription",
+      reviewedBy: "Classic Patents editorial agent (GPT-5.6)",
+      reviewedAt: "2026-08-18",
+      sourcePdfSha256: "07a534f54894e6130980052a77c565492e53d6cd527c092b47016e8cc243ed93",
+    });
+    if (!asset?.sourcePdfSha256) {
+      throw new Error("Morse reviewed transcript asset or source digest is missing.");
+    }
+
+    const transcript = readFileSync(`${process.cwd()}/public${asset.url}`, "utf8");
+    expect(validateReviewedTranscription(transcript, asset.pageCount)).toEqual({ valid: true });
+    const sourcePdf = readFileSync(`${process.cwd()}/public${morseTelegraphPatent.originalPdfUrl}`);
+    expect(createHash("sha256").update(sourcePdf).digest("hex")).toBe(asset.sourcePdfSha256);
+
+    const normalizedTranscript = transcript
+      .replace(/^--- REVIEWED TRANSCRIPTION PAGE \d+ OF \d+ ---$/gm, "")
+      .replace(/\s+/g, " ")
+      .trim();
+    const textualBlocks = morseTelegraphArchivalEdition.blocks.filter(
+      (block) => block.kind === "masthead" || block.kind === "paragraph" || block.kind === "claim",
+    );
+    for (const block of textualBlocks) {
+      const sourceText =
+        block.kind === "masthead"
+          ? block.lines.join(" ")
+          : block.inlines.map((inline) => inline.text).join("");
+      expect(normalizedTranscript).toContain(sourceText.replace(/\s+/g, " ").trim());
+    }
+  });
+
+  test("uses a source-derived crop for every printed figure reference and never an OCR input", () => {
     const serialized = JSON.stringify(morseTelegraphArchivalEdition.blocks);
     expect(serialized).not.toContain("SOURCE PDF PAGE");
     expect(serialized).not.toContain("pdftotext");
@@ -32,10 +71,11 @@ describe("morseTelegraphArchivalEdition", () => {
       if (block.kind !== "paragraph") continue;
       for (const inline of block.inlines) {
         if (inline.kind !== "reference" || inline.referenceType !== "figure") continue;
-        expect(inline.figurePreviews).toHaveLength(1);
-        expect(inline.figurePreviews?.[0]?.src).toStartWith(
-          "/patents/figures/us-1647-morse-telegraph-sheet-",
-        );
+        expect(inline.figurePreviews?.length).toBeGreaterThan(0);
+        for (const preview of inline.figurePreviews ?? []) {
+          expect(preview.src).toStartWith("/patents/figures/us-1647-morse-telegraph-fig-");
+          expect(existsSync(resolve(process.cwd(), "public", preview.src.slice(1)))).toBe(true);
+        }
       }
     }
   });
@@ -51,6 +91,42 @@ describe("morseTelegraphArchivalEdition", () => {
         }
       }
     }
+  });
+
+  test("adds authored hover definitions for the patent's historical technical vocabulary", () => {
+    const definitions = morseTelegraphArchivalEdition.blocks.flatMap((block) =>
+      "inlines" in block ? block.inlines.filter((inline) => inline.kind === "term") : [],
+    );
+
+    expect(definitions.map((definition) => definition.text)).toEqual(
+      expect.arrayContaining([
+        "galvanic",
+        "type",
+        "straight port-rule",
+        "circular port-rule",
+        "armature",
+        "caoutchouc",
+      ]),
+    );
+    for (const definition of definitions) {
+      expect(definition.definition.length).toBeGreaterThan(40);
+      expect(definition.definition).not.toContain("Definition available");
+    }
+  });
+
+  test("retains source-checked mechanisms that were previously omitted or mistranscribed", () => {
+    const source = morseTelegraphArchivalEdition.blocks
+      .flatMap((block) => ("inlines" in block ? block.inlines.map((inline) => inline.text) : []))
+      .join(" ");
+
+    expect(source).toContain("first, of fourteen pieces or plates");
+    expect(source).not.toContain("first, of five pieces or plates");
+    expect(source).toContain("The type-rule in use is moved onward");
+    expect(source).toContain("The straight port-rule consists");
+    expect(source).toContain("a stationary type-feeder");
+    expect(source).toContain("The signal-lever consists, secondly");
+    expect(source).toContain("Thirdly, of an alarm-bell");
+    expect(source).toContain("The electro-magnet thus used is made");
   });
 
   test("prepares a non-lossy patent-owned reading for every prose node", () => {

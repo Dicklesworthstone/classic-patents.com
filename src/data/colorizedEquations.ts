@@ -2879,6 +2879,475 @@ export const ALL_COLORIZED_EQUATIONS: Record<string, ColorizedEquation[]> = {
         "US 608969 revolutionized naval propulsion (Turbinia) and electrical power stations, driving steam turbines in coal, gas, and nuclear power plants worldwide today.",
     },
   ],
+
+  // 25. Samuel Colt Revolver (US X9430)
+  "us-x9430-colt-revolver": [
+    {
+      id: "colt-revolver-indexing-kinematics",
+      patentId: "us-x9430-colt-revolver",
+      title: "Revolver Cylinder Indexing Kinematics & Pawl Torque Transmission",
+      category: "Mechanical Engineering & Firearm Mechanisms",
+      rawLatex:
+        "\\Delta \\theta = \\frac{2\\pi}{N_{\\text{chambers}}} \\quad \\text{and} \\quad \\tau_{\\text{index}} = F_{\\text{hammer}} \\cdot r_{\\text{hand}} \\cdot \\cos\\theta",
+      colorizedLatex:
+        "\\textcolor{#2563eb}{\\Delta \\theta} = \\frac{2\\pi}{\\textcolor{#dc2626}{N_{\\text{chambers}}}} \\quad \\text{and} \\quad \\textcolor{#059669}{\\tau_{\\text{index}}} = \\textcolor{#d97706}{F_{\\text{hammer}}} \\cdot \\textcolor{#0891b2}{r_{\\text{hand}}} \\cdot \\cos\\textcolor{#9333ea}{\\theta}",
+      plainEnglishSentence: [
+        { text: "The " },
+        { text: "angular indexing step", variableId: "dtheta" },
+        { text: " equals a full circle divided by " },
+        { text: "cylinder chamber count", variableId: "n_chambers" },
+        { text: ", generating " },
+        { text: "rotational indexing torque", variableId: "tau_index" },
+        { text: " from " },
+        { text: "cocking hammer force", variableId: "f_hammer" },
+        { text: " through " },
+        { text: "pawl lever arm radius", variableId: "r_hand" },
+        { text: " at " },
+        { text: "pawl ratchet contact angle", variableId: "theta" },
+        { text: "." },
+      ],
+      variables: [
+        {
+          id: "dtheta",
+          symbol: "\\Delta \\theta",
+          name: "Angular Indexing Step",
+          color: "sapphire",
+          role: "Discrete angular rotation step required to bring next chamber into axial bore alignment ($60^\\circ$ for 6-chamber)",
+          unit: "Degrees / Radians",
+          dimension: "[1]",
+          explanation:
+            "Advancing one ratchet tooth advances the cylinder by exactly 1/Nth of a turn, locking it in battery alignment with the fixed barrel.",
+          telemetryMetricLabel: "Indexing Step",
+        },
+        {
+          id: "n_chambers",
+          symbol: "N_{\\text{chambers}}",
+          name: "Cylinder Chamber Count",
+          color: "crimson",
+          role: "Number of bored rotating chambers machined circumferentially around the cylinder (5 to 6 chambers)",
+          unit: "Chambers (count)",
+          dimension: "[1]",
+          explanation:
+            "Machined from solid forged steel to withstand detonation pressure in individual rotating chambers.",
+        },
+        {
+          id: "tau_index",
+          symbol: "\\tau_{\\text{index}}",
+          name: "Cylinder Indexing Torque",
+          color: "emerald",
+          role: "Rotational turning moment overcoming cylinder inertia and friction detent springs",
+          unit: "Newton-meters (N·m)",
+          dimension: "[M L^2 T^-2]",
+          explanation:
+            "Transmitted by the spring-loaded hand pawl engaging ratchet teeth cut into the rear face of the cylinder arbor.",
+        },
+        {
+          id: "f_hammer",
+          symbol: "F_{\\text{hammer}}",
+          name: "Hammer Cocking Force",
+          color: "amber",
+          role: "Thumb force applied to the hammer spur during single-action cocking (approx 15 to 25 N)",
+          unit: "Newtons (N)",
+          dimension: "[M L T^-2]",
+          explanation:
+            "Manually drawing back the hammer simultaneously compresses the heavy mainspring and lifts the internal hand pawl.",
+          telemetryKey: "cockingForce",
+        },
+        {
+          id: "r_hand",
+          symbol: "r_{\\text{hand}}",
+          name: "Hand Pawl Pivot Radius",
+          color: "cyan",
+          role: "Effective radial distance from hammer pivot fulcrum to hand pawl articulation pin",
+          unit: "Millimeters (mm)",
+          dimension: "[L]",
+          explanation:
+            "Geometric moment arm converting angular hammer stroke into vertical pawl thrust.",
+        },
+        {
+          id: "theta",
+          symbol: "\\theta",
+          name: "Pawl Tangential Contact Angle",
+          color: "amethyst",
+          role: "Pressure angle between hand pawl tip and ratchet tooth flank ($15^\\circ$ to $30^\\circ$)",
+          unit: "Degrees",
+          dimension: "[1]",
+          explanation:
+            "Maintains positive camming engagement to prevent pawl slip under rapid cocking cycles.",
+        },
+      ],
+      pedagogicalNote:
+        "Before Colt's 1836 patent, multi-shot firearms required manually turning individual barrels by hand or carrying multiple bulky lock mechanisms. Colt synchronized cylinder rotation, mechanical locking, and hammer cocking into a single thumb stroke.",
+      claimRef: 1,
+      historicalSignificance:
+        "US X9430 created the first practical revolving repeating firearm, transforming small arms manufacturing and pioneering interchangeable parts production at the Colt Hartford Armory.",
+    },
+  ],
+
+  // 26. Samuel Morse Electro-Magnetic Telegraph (US 1,647)
+  "us-1647-morse-telegraph": [
+    {
+      id: "morse-telegraph-relay-attenuation",
+      patentId: "us-1647-morse-telegraph",
+      title: "Distributed Transmission Line Current & Solenoid Armature Magnetic Pull",
+      category: "Telecommunications & Electromagnetic Signaling",
+      rawLatex:
+        "I_{\\text{line}}(t) = \\frac{V_{\\text{batt}}}{R_{\\text{line}} + R_{\\text{relay}}} \\left(1 - e^{-t / \\tau}\\right) \\quad \\text{and} \\quad F_{\\text{armature}} = \\frac{(N \\cdot I)^2 \\mu_0 A}{2 g^2}",
+      colorizedLatex:
+        "\\textcolor{#059669}{I_{\\text{line}}(t)} = \\frac{\\textcolor{#dc2626}{V_{\\text{batt}}}}{\\textcolor{#2563eb}{R_{\\text{line}}} + \\textcolor{#0891b2}{R_{\\text{relay}}}} \\left(1 - e^{-t / \\textcolor{#d97706}{\\tau}}\\right) \\quad \\text{and} \\quad \\textcolor{#ea580c}{F_{\\text{armature}}} = \\frac{(\\textcolor{#9333ea}{N} \\cdot \\textcolor{#059669}{I})^2 \\mu_0 \\textcolor{#0d9488}{A}}{2 \\textcolor{#e11d48}{g^2}}",
+      plainEnglishSentence: [
+        { text: "The " },
+        { text: "signal line current", variableId: "i_line" },
+        { text: " rises toward steady state from " },
+        { text: "battery supply voltage", variableId: "v_batt" },
+        { text: " across " },
+        { text: "transmission line resistance", variableId: "r_line" },
+        { text: " and " },
+        { text: "relay coil resistance", variableId: "r_relay" },
+        { text: " governed by " },
+        { text: "inductive-capacitive time constant", variableId: "tau" },
+        { text: ", producing " },
+        { text: "electromagnetic armature pull", variableId: "f_arm" },
+        { text: " proportional to " },
+        { text: "coil turn count squared", variableId: "turns" },
+        { text: ", " },
+        { text: "core pole area", variableId: "area" },
+        { text: ", and inverse " },
+        { text: "magnetic air gap squared", variableId: "gap" },
+        { text: "." },
+      ],
+      variables: [
+        {
+          id: "i_line",
+          symbol: "I_{\\text{line}}",
+          name: "Signal Line Current",
+          color: "emerald",
+          role: "Dynamic electric current flowing through the long-distance telegraph circuit",
+          unit: "Milliamperes (mA)",
+          dimension: "[I]",
+          explanation:
+            "Weakened by line resistance over dozens of miles, requiring sensitive low-current relay armatures to detect.",
+          telemetryMetricLabel: "Line Current",
+        },
+        {
+          id: "v_batt",
+          symbol: "V_{\\text{batt}}",
+          name: "Battery Supply Potential",
+          color: "crimson",
+          role: "DC potential generated by chemical Grove or Daniell cells (approx 50 to 100 V)",
+          unit: "Volts (V)",
+          dimension: "[M L^2 T^-3 I^-1]",
+          explanation:
+            "Provides the driving EMF to push current through hundreds of miles of iron wire.",
+          telemetryKey: "batteryVolts",
+        },
+        {
+          id: "r_line",
+          symbol: "R_{\\text{line}}",
+          name: "Iron Wire Line Resistance",
+          color: "sapphire",
+          role: "Distributed series resistance of the outdoor galvanized iron telegraph wire (approx 10 to 20 ohms/mile)",
+          unit: "Ohms (Ω)",
+          dimension: "[M L^2 T^-3 I^-2]",
+          explanation:
+            "Longer lines increase total resistance, attenuating signal current below direct register thresholds.",
+        },
+        {
+          id: "r_relay",
+          symbol: "R_{\\text{relay}}",
+          name: "Relay Electromagnet Resistance",
+          color: "cyan",
+          role: "Internal DC resistance of the fine copper wire wound onto the relay electromagnet bobbins",
+          unit: "Ohms (Ω)",
+          dimension: "[M L^2 T^-3 I^-2]",
+          explanation:
+            "Wound with thousands of turns of fine insulated wire to maximize magnetizing force with minimal current.",
+        },
+        {
+          id: "tau",
+          symbol: "\\tau",
+          name: "RL/RC Line Time Constant",
+          color: "amber",
+          role: "Inductive-capacitive rise time constant ($L/R$ or $RC$) of the transmission line",
+          unit: "Milliseconds (ms)",
+          dimension: "[T]",
+          explanation:
+            "Limits maximum signaling rate and pulse sharpness across long transatlantic cables and overland lines.",
+        },
+        {
+          id: "f_arm",
+          symbol: "F_{\\text{armature}}",
+          name: "Armature Mechanical Pull",
+          color: "coral",
+          role: "Electromagnetic attractive force pulling the soft iron armature lever against its return spring",
+          unit: "Newtons (N)",
+          dimension: "[M L T^-2]",
+          explanation:
+            "Closes the local contact switch, energizing a fresh local battery circuit to stamp paper tape or click a sounder.",
+        },
+        {
+          id: "turns",
+          symbol: "N",
+          name: "Solenoid Coil Turn Count",
+          color: "amethyst",
+          role: "Number of wire turns wound on soft iron horseshoe bobbins (1,000 to 5,000 turns)",
+          unit: "Turns (count)",
+          dimension: "[1]",
+          explanation:
+            "Multiplying turns compensates for weak milliampere line currents by maintaining high ampere-turns ($N \\cdot I$).",
+        },
+        {
+          id: "area",
+          symbol: "A",
+          name: "Electromagnet Pole Face Area",
+          color: "teal",
+          role: "Cross-sectional surface area of the cylindrical soft iron core poles",
+          unit: "Square meters (m^2)",
+          dimension: "[L^2]",
+          explanation: "Focuses magnetic flux density directly across the working air gap.",
+        },
+        {
+          id: "gap",
+          symbol: "g",
+          name: "Magnetic Working Air Gap",
+          color: "rose",
+          role: "Physical spacing between soft iron core faces and the pivoted armature (approx 0.5 to 1.5 mm)",
+          unit: "Millimeters (mm)",
+          dimension: "[L]",
+          explanation:
+            "Force drops quadratically with distance ($1/g^2$), requiring precision adjustable stop screws.",
+        },
+      ],
+      pedagogicalNote:
+        "Before Morse's relay invention, electrical signals could only travel a few miles before wire resistance weakened current to zero. Morse invented the electromechanical relay repeater: a weak distant current trips a delicate armature that switches a fresh local battery into the next link, allowing signals to span continents.",
+      claimRef: 1,
+      historicalSignificance:
+        "US 1647 established the world's first practical telecommunications network and digital information code, inaugurating the electronic communications era and the legal foundations of patentable machines.",
+    },
+  ],
+
+  // 27. Nikolaus Otto Four-Stroke Gas Engine (US 194,047)
+  "us-194047-otto-engine": [
+    {
+      id: "otto-four-stroke-thermal-efficiency",
+      patentId: "us-194047-otto-engine",
+      title: "Four-Stroke Otto Cycle Efficiency & Indicated Mean Effective Power",
+      category: "Thermodynamics & Internal Combustion",
+      rawLatex:
+        "\\eta_{\\text{Otto}} = 1 - \\frac{1}{r_c^{\\gamma - 1}} \\quad \\text{and} \\quad P_{\\text{indicated}} = \\frac{\\text{IMEP} \\cdot V_d \\cdot N_{\\text{rpm}}}{120}",
+      colorizedLatex:
+        "\\textcolor{#059669}{\\eta_{\\text{Otto}}} = 1 - \\frac{1}{\\textcolor{#2563eb}{r_c}^{\\textcolor{#d97706}{\\gamma - 1}}} \\quad \\text{and} \\quad \\textcolor{#dc2626}{P_{\\text{indicated}}} = \\frac{\\textcolor{#0891b2}{\\text{IMEP}} \\cdot \\textcolor{#9333ea}{V_d} \\cdot \\textcolor{#ea580c}{N_{\\text{rpm}}}}{120}",
+      plainEnglishSentence: [
+        { text: "The " },
+        { text: "Otto thermodynamic cycle efficiency", variableId: "eta_otto" },
+        { text: " scales with " },
+        { text: "pre-ignition compression ratio", variableId: "r_c" },
+        { text: " governed by " },
+        { text: "air specific heat ratio", variableId: "gamma" },
+        { text: ", delivering " },
+        { text: "indicated mechanical power", variableId: "p_ind" },
+        { text: " proportional to " },
+        { text: "indicated mean effective pressure", variableId: "imep" },
+        { text: ", " },
+        { text: "swept displacement volume", variableId: "v_d" },
+        { text: ", and " },
+        { text: "crankshaft RPM", variableId: "n_rpm" },
+        { text: " across two revolutions per power stroke." },
+      ],
+      variables: [
+        {
+          id: "eta_otto",
+          symbol: "\\eta_{\\text{Otto}}",
+          name: "Ideal Otto Thermal Efficiency",
+          color: "emerald",
+          role: "Theoretical upper bound of thermal conversion efficiency for a 4-stroke spark ignition gas cycle",
+          unit: "Efficiency percentage (%)",
+          dimension: "[1]",
+          explanation:
+            "Otto proved that pre-compressing the air-fuel mixture prior to ignition dramatically multiplies thermodynamic efficiency compared to non-compression Lenoir atmospheric engines.",
+          telemetryMetricLabel: "Otto Efficiency",
+        },
+        {
+          id: "r_c",
+          symbol: "r_c",
+          name: "Volumetric Compression Ratio",
+          color: "sapphire",
+          role: "Ratio of cylinder maximum volume at BDC to clearance volume at TDC ($r_c = 4.5\\text{ to }6.0$)",
+          unit: "Compression ratio (r:1)",
+          dimension: "[1]",
+          explanation:
+            "Pre-compressing charge gas raises mixture density and accelerates deflagration velocity, quadrupling work output.",
+          telemetryKey: "compressionRatio",
+        },
+        {
+          id: "gamma",
+          symbol: "\\gamma",
+          name: "Specific Heat Ratio (Air)",
+          color: "amber",
+          role: "Ratio of constant pressure to constant volume specific heats ($C_p / C_v \\approx 1.40$ for diatomic air)",
+          unit: "Dimensionless ratio (1.40)",
+          dimension: "[1]",
+          explanation:
+            "Governs isentropic temperature and pressure rise during the rapid mechanical compression stroke.",
+        },
+        {
+          id: "p_ind",
+          symbol: "P_{\\text{indicated}}",
+          name: "Indicated Power Output",
+          color: "crimson",
+          role: "Gross mechanical shaft power developed in cylinder combustion chamber before mechanical friction losses",
+          unit: "Kilowatts (kW) / Horsepower (HP)",
+          dimension: "[M L^2 T^-3]",
+          explanation:
+            "Calculated with a 120 divisor because a four-stroke engine executes one power stroke for every two complete crank revolutions ($720^\\circ$).",
+          telemetryMetricLabel: "Indicated Power",
+        },
+        {
+          id: "imep",
+          symbol: "\\text{IMEP}",
+          name: "Indicated Mean Effective Pressure",
+          color: "cyan",
+          role: "Average effective combustion pressure acting on piston crown throughout power stroke (4 to 8 bar)",
+          unit: "Bar / Pascals",
+          dimension: "[M L^-1 T^-2]",
+          explanation:
+            "Determined from the enclosed area of the indicator $P\\text{--}V$ card diagram.",
+        },
+        {
+          id: "v_d",
+          symbol: "V_d",
+          name: "Swept Cylinder Displacement",
+          color: "amethyst",
+          role: "Swept cylinder volume displaced by piston stroke ($V_d = \\frac{\\pi}{4} D^2 \\cdot S$)",
+          unit: "Liters / Cubic meters",
+          dimension: "[L^3]",
+          explanation: "Product of bore cross-sectional area and crankshaft stroke length.",
+        },
+        {
+          id: "n_rpm",
+          symbol: "N_{\\text{rpm}}",
+          name: "Crankshaft Rotational Speed",
+          color: "coral",
+          role: "Rotational velocity of the engine output shaft and inertial flywheels (150 to 300 RPM)",
+          unit: "Revolutions per minute (RPM)",
+          dimension: "[T^-1]",
+          explanation:
+            "Stabilized across the three non-power strokes by dual heavy cast-iron flywheels.",
+          telemetryKey: "engineRpm",
+        },
+      ],
+      pedagogicalNote:
+        "Earlier gas engines (like Lenoir's) ignited gas at atmospheric pressure, achieving under 5% thermal efficiency and consuming exorbitant fuel. Nikolaus Otto invented the four-stroke cycle: Intake, Compression, Power, and Exhaust. Pre-compressing the mixture prior to ignition jumped efficiency to over 20%, creating the modern internal combustion engine.",
+      claimRef: 1,
+      historicalSignificance:
+        "US 194047 established the universal four-stroke 'Otto cycle' that powers billions of automobiles, motorcycles, aircraft, and generators across human history.",
+    },
+  ],
+
+  // 28. Thomas Edison Phonograph (US 200,521)
+  "us-200521-edison-phonograph": [
+    {
+      id: "edison-acoustic-indentation-groove",
+      patentId: "us-200521-edison-phonograph",
+      title: "Acoustic Diaphragm Pressure Coupling & Continuous Helical Tracking Velocity",
+      category: "Acoustics & Sound Recording",
+      rawLatex:
+        "F_{\\text{stylus}} = P_{\\text{acoustic}} \\cdot A_{\\text{diaphragm}} \\quad \\text{and} \\quad v_{\\text{surface}} = 2\\pi r_{\\text{cylinder}} \\cdot \\frac{N_{\\text{rpm}}}{60}",
+      colorizedLatex:
+        "\\textcolor{#059669}{F_{\\text{stylus}}} = \\textcolor{#dc2626}{P_{\\text{acoustic}}} \\cdot \\textcolor{#2563eb}{A_{\\text{diaphragm}}} \\quad \\text{and} \\quad \\textcolor{#d97706}{v_{\\text{surface}}} = 2\\pi \\textcolor{#0891b2}{r_{\\text{cylinder}}} \\cdot \\frac{\\textcolor{#9333ea}{N_{\\text{rpm}}}}{60}",
+      plainEnglishSentence: [
+        { text: "The " },
+        { text: "stylus mechanical indentation force", variableId: "f_stylus" },
+        { text: " equals " },
+        { text: "acoustic wave sound pressure", variableId: "p_ac" },
+        { text: " across " },
+        { text: "flexible diaphragm surface area", variableId: "a_diaph" },
+        { text: ", recording undulating marks at " },
+        { text: "tangential surface speed", variableId: "v_surf" },
+        { text: " governed by " },
+        { text: "cylinder mandrel radius", variableId: "r_cyl" },
+        { text: " and " },
+        { text: "hand-crank rotational RPM", variableId: "n_rpm" },
+        { text: "." },
+      ],
+      variables: [
+        {
+          id: "f_stylus",
+          symbol: "F_{\\text{stylus}}",
+          name: "Stylus Indentation Force",
+          color: "emerald",
+          role: "Dynamic mechanical force exerted by the steel point into the yielding tinfoil surface",
+          unit: "Newtons (N)",
+          dimension: "[M L T^-2]",
+          explanation:
+            "Vibrations of the mica diaphragm push the stylus into the foil, indenting depth variations proportional to instantaneous sound wave amplitude.",
+          telemetryMetricLabel: "Stylus Force",
+        },
+        {
+          id: "p_ac",
+          symbol: "P_{\\text{acoustic}}",
+          name: "Acoustic Wave Sound Pressure",
+          color: "crimson",
+          role: "Alternating atmospheric air pressure variations generated by human speech into the speaking funnel",
+          unit: "Pascals (Pa)",
+          dimension: "[M L^-1 T^-2]",
+          explanation:
+            "Speech sound waves funnel into the speaking tube, exerting pressure fluctuations against the diaphragm.",
+        },
+        {
+          id: "a_diaph",
+          symbol: "A_{\\text{diaphragm}}",
+          name: "Acoustic Diaphragm Area",
+          color: "sapphire",
+          role: "Surface area of the circular clamped mica diaphragm disc (approx 40 to 50 mm diameter)",
+          unit: "Square meters (m^2)",
+          dimension: "[L^2]",
+          explanation:
+            "Acts as a mechanical transformer, collecting low-pressure acoustic energy over a broad disc and concentrating it onto a sharp point.",
+        },
+        {
+          id: "v_surf",
+          symbol: "v_{\\text{surface}}",
+          name: "Tangential Surface Velocity",
+          color: "amber",
+          role: "Linear circumferential speed of the rotating tinfoil cylinder surface relative to the fixed stylus (approx 0.15 to 0.25 m/s)",
+          unit: "Meters / second (m/s)",
+          dimension: "[L T^-1]",
+          explanation:
+            "Determines temporal frequency resolution: higher surface speed spreads sound waveform cycles over greater groove distance.",
+          telemetryKey: "surfaceSpeed",
+        },
+        {
+          id: "r_cyl",
+          symbol: "r_{\\text{cylinder}}",
+          name: "Mandrel Cylinder Radius",
+          color: "cyan",
+          role: "Outer radius of the spiral-grooved brass mandrel cylinder ($r \\approx 25.4\\text{ mm} \\approx 1.0\\text{ inch}$)",
+          unit: "Millimeters (mm)",
+          dimension: "[L]",
+          explanation:
+            "Machined with 10 spiral grooves per inch matching the shaft lead screw pitch.",
+        },
+        {
+          id: "n_rpm",
+          symbol: "N_{\\text{rpm}}",
+          name: "Mandrel Rotational Speed",
+          color: "amethyst",
+          role: "Rotational cranking speed of the cylinder arbor (60 to 80 RPM)",
+          unit: "Revolutions per minute (RPM)",
+          dimension: "[T^-1]",
+          explanation:
+            "Maintained steady by a hand crank or flywheel to preserve audio playback pitch and tempo.",
+          telemetryKey: "crankRpm",
+        },
+      ],
+      pedagogicalNote:
+        "Thomas Edison was testing an automatic telegraph repeater when he noticed the paper tape made humming sounds as it whirred beneath a steel reed. He immediately sketched a grooved cylinder wrapped in tinfoil, spoke 'Mary had a little lamb' into the diaphragm, and successfully played back the first recorded human voice in history.",
+      claimRef: 1,
+      historicalSignificance:
+        "US 200521 introduced sound recording and reproduction to humanity, creating the music recording industry, magnetic audio, optical discs, and speech synthesis.",
+    },
+  ],
 };
 
 /**

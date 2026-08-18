@@ -1,10 +1,11 @@
+import { edisonPhonographArchivalEdition } from "@/data/editions/edisonPhonographEdition";
 import type { Patent } from "@/types/patent";
 
 export const edisonPhonographPatent: Patent = {
   id: "us-200521-edison-phonograph",
   patentNumber: "US 200,521",
-  title: "Improvement in Phonographs or Speaking Machines",
-  shortTitle: "Edison Cylinder Phonograph Sound Recorder",
+  title: "Improvement in Phonograph or Speaking Machines",
+  shortTitle: "Tinfoil Phonograph",
   subtitle:
     "Acoustic Diaphragm, Indenting Stylus, Grooved Lead-Screw Mandrel, and Tinfoil Recording",
   inventors: ["Thomas Alva Edison"],
@@ -15,193 +16,160 @@ export const edisonPhonographPatent: Patent = {
   category: "telecom",
   categoryLabel: "Acoustic Physics & Audio Engineering",
   summary:
-    "The 1878 miracle of Menlo Park that captured human sound: Thomas Alva Edison's phonograph combining an acoustic diaphragm, a blunt steel stylus, and a grooved cylinder wrapped in tinfoil translated axially by a precision threaded lead-screw, embossing sound waves into micro-grooves and playing them back through mechanical resonance.",
+    "Edison describes a diaphragm that marks a yielding surface as sound moves it, then a second point and diaphragm that recover motion from those marks. His illustrated form uses a ten-groove-per-inch cylinder and threaded shaft, but the specification also describes plate, strip, thread-trace, and ink-trace alternatives.",
   heroQuote:
-    "The sound-vibrations are recorded by indenting a yielding material such as tinfoil... and these indentations when subsequently passed under a tracer reproduce the same vibrations upon a diaphragm, recreating the original voice.",
+    "The object of this invention is to record in permanent characters the human voice and other sounds, from which characters such sounds may be reproduced and rendered audible again at a future time.",
   originalPdfUrl: "/patents/pdfs/us-200521-edison-phonograph.pdf",
   googlePatentsUrl: "https://patents.google.com/patent/US200521/en",
   usptoClassification: "G11B 3/00 (Mechanical recording or reproducing; Cylinder phonographs)",
   originalTextAsset: {
-    url: "/patents/source-text/us-200521-edison-phonograph.txt",
+    url: "/patents/transcripts/us-200521-edison-phonograph-reviewed.txt",
     pageCount: 3,
-    kind: "source-pdf-text-layer",
+    kind: "reviewed-transcription",
+    reviewedBy: "Classic Patents editorial agent (GPT-5.6)",
+    reviewedAt: "2026-08-18",
+    sourcePdfSha256: "6ed4354f12dc944b49ac2a2a3dd8d0aaa3f263d0c5f2017b2237a37ffde00ccd",
   },
-  originalText: `UNITED STATES PATENT OFFICE.
-THOMAS A. EDISON, OF MENLO PARK, NEW JERSEY.
+  // The complete historical text is the explicitly authored archival edition below.
+  // This short field remains only for compact catalogue contexts; it is not a
+  // substitute for the complete, reviewed three-page specification and claims.
+  originalText: `To all whom it may concern:
 
-IMPROVEMENT IN PHONOGRAPHS OR SPEAKING MACHINES.
-
-Specification forming part of Letters Patent No. 200,521, dated February 19, 1878; application filed December 24, 1877.
-
-To all whom it may concern:
-
-Be it known that I, THOMAS A. EDISON, of Menlo Park, in the county of Middlesex and State of New Jersey, have invented an Improvement in Phonographs or Speaking Machines, of which the following is a specification:
+Be it known that I, THOMAS A. EDISON, of Menlo Park, in the county of Middlesex and State of New Jersey, have invented an Improvement in Phonograph or Speaking Machines, of which the following is a specification:
 
 The object of this invention is to record in permanent characters the human voice and other sounds, from which characters such sounds may be reproduced and rendered audible again at a future time.
 
-The invention consists in arranging a plate, diaphragm, or other flexible body capable of being vibrated by the human voice or other sounds, in conjunction with a material capable of registering the movements of such vibrating body by embossing or indenting or altering such material, in such a manner that such register-marks will be sufficient to cause a second vibrating plate or body to be set in motion by them, and thus reproduce the motions of the first vibrating body.
-
-The invention further consists in the various combinations of mechanism to carry out my invention.
-
-I have discovered, after a long series of experiments, that a diaphragm or other body capable of being set in motion by the human voice does not give, except in rare instances, superimposed vibrations, as has heretofore been supposed, but that each vibration is separate and distinct, and therefore it becomes possible to record and reproduce the sounds of the human voice.
-
-In the drawings, Figure 1 is a vertical section, illustrating my invention, and Fig. 2 is a plan of the same. Fig. 3 shows a modification.
-
-A is a cylinder having a helical indenting groove cut from end to end—say, ten grooves to the inch. Upon this is placed the material to be indented, preferably metallic foil. This drum or cylinder is secured to a shaft, X, having at one end a thread cut with ten threads to the inch, the bearing P also having a thread cut in it.
-
-L is a tube, provided with a longitudinal slot, and it is rotated by the clock-work at M, or other source of power. The shaft X passes into the tube L, and it is rotated by a pin, 2, secured to the shaft, and passing through the slot on the tube L, the object of the long slot being to allow the shaft X to pass endwise through the center or support P by the action of the screw on X. At the same time that the cylinder is rotated it passes toward the support O.
-
-B is the speaking-tube or mouth-piece, which may be of any desired character, so long as proper slots or holes are provided to re-enforce the hissing consonants. Devices to effect this object are shown in my application, No. 143, filed August 28, 1877. Hence they are not shown or further described herein.
-
-Upon the end of the tube or mouth-piece is a diaphragm, having an indenting-point of hard material secured to its center, and so arranged in relation to the cylinder A that the point will be exactly opposite the groove in the cylinder at any position the cylinder may occupy in its forward rotary movement. The speaking-tube is arranged upon a standard, which, in practice, I provide with devices for causing the tube to approach and recede from the cylinder.
-
-The operation of recording is as follows: The cylinder is, by the action of the screw in X, placed adjacent to the pillar P, which brings the indenting-point of the diaphragm G opposite the first groove on the cylinder, over which is placed a sheet of thick metallic foil, paper, or other yielding material. The tube B is then adjusted toward the cylinder until the indenting-point touches the material and indents it slightly. The clock-work is then set running, and words spoken in the tube B will cause the diaphragm to take up every vibration, and these movements will be recorded with surprising accuracy by indentations in the foil.
-
-After the foil on the cylinder has received the required indentations, or passed to its full limit toward O, it is made to return to P by proper means, and the indented material is brought to a position for reproducing and rendering audible the sounds that had been made by the person speaking into the tube B.
-
-C is a tube similar to B, except that the diaphragm is somewhat lighter and more sensitive, although this is not actually necessary. In front of this diaphragm is a light spring, D, having a small point shorter and finer than the indenting-point on the diaphragm of B. This spring and point are so arranged as to fall exactly into the path of all the indentations. This spring is connected to the diaphragm F of C by a thread or other substance capable of conveying the movements of D.
-
-Now, when the cylinder is allowed to rotate, the spring D is set in motion by each indentation corresponding to its depth and length. This motion is conveyed to the diaphragm either by vibrations through a thread or directly by connecting the spring to the diaphragm F, and these motions being due to the indentations in the foil, the diaphragm will vibrate and produce sounds corresponding to the indentations, and will thus reproduce the original spoken words with great accuracy.
-
-I do not limit myself to recording sound by indentations only, as the transmitting or recording device may be in a sinuous form, resulting from the use of a thread passing with paper beneath the pressure-rollers, (see Fig. 3,) such thread being moved laterally by a fork or eye adjacent to the rollers, and receiving its motion from the diaphragm G, with which such fork or eye is connected, and thus record the movement of the diaphragm by the impression of the thread in the paper to the right and left of a straight line, from which indentation the receiving diaphragm can be vibrated.
-
-I claim as my invention:
-
-1. The method herein specified of reproducing the human voice or other sounds by causing the sound-vibrations to be recorded by embossing or indenting, or otherwise altering a yielding material, and subsequently utilizing such indentations or altered material to set in motion a vibrating plate or diaphragm, substantially as set forth.
-
-2. The combination, with a diaphragm and stylus, of a grooved cylinder mounted on a screw-threaded shaft, to advance longitudinally while rotating, substantially as described.
-
-3. The combination of the grooved cylinder, a sheet of tinfoil or yielding recording material, and an indenting point actuated by acoustic vibrations, substantially as set forth.
-
-4. The combination, with a recording diaphragm and stylus, of a reproducing diaphragm and tracer, adapted to track in the recorded indentations, substantially as specified.`,
+The invention consists in arranging a plate, diaphragm, or other flexible body capable of being vibrated by the human voice or other sounds, in conjunction with a material capable of registering the movements of such vibrating body by embossing or indenting or altering such material, in such a manner that such register-marks will be sufficient to cause a second vibrating plate or body to be set in motion by them, and thus reproduce the motions of the first vibrating body.`,
+  archivalEdition: edisonPhonographArchivalEdition,
   plainEnglishExplanation: {
     overview:
-      "Before December 1877, human sound was completely ephemeral: once a word was spoken or a note was sung, it vanished forever into air friction. While experimenting with telephone diaphragms and high-speed telegraph paper tapes at his Menlo Park laboratory, Thomas Edison realized that voice vibrations could be physically engraved into a moving surface and played back. His 1878 phonograph was the first machine in history that could capture, preserve, and reproduce human speech and music.",
+      "Edison treats sound as a sequence of mechanical movements that can be transferred twice: first from a voice-driven diaphragm to a yielding surface, then from the marks on that surface to a second diaphragm. The specification illustrates a tinfoil cylinder but also preserves alternatives using a spiral plate, a moving strip, a thread trace, and an ink trace.",
     coreMechanism:
-      "A speaker talks loudly into a conical mouthpiece, causing a thin mica or parchment diaphragm to vibrate with acoustic pressure waves ($P_{\\text{acoustic}}(t)$). A blunt steel stylus fixed to the center of the diaphragm presses against a sheet of thin tinfoil wrapped around a heavy brass cylinder. The cylinder has a continuous spiral groove ($10\\text{ threads per inch}$) cut into its surface and is mounted on a threaded lead-screw shaft. As the operator turns a hand crank at steady speed ($60\\text{ RPM}$), the cylinder rotates and slides longitudinally, causing the vibrating stylus to indent vertical 'hills and valleys' into the tinfoil over the groove. To play back the recording, a lighter stylus tracks the indentations, vibrating a reproducing diaphragm that pushes the air to recreate the original human voice.",
+      "A person speaks into tube B. Its diaphragm G moves an indenting point against foil on cylinder A. The cylinder's ten-groove-per-inch helix and the matching ten-thread-per-inch shaft make the recording point meet a fresh track as the cylinder turns and travels toward support O. For replay, a finer point on spring D follows the marks and transfers its motion to the lighter diaphragm F in tube C. The patent does not state the diaphragm material, cylinder material or size, turn rate, stylus dimensions, voltage, or audio bandwidth, so this record does not invent those values.",
     mechanicalBreakdown: [
       {
-        title: "Acoustic Diaphragm & Blunt Indenting Stylus",
-        summary: "Thin mica plate vibrating steel stylus against tinfoil surface.",
+        title: "Speaking diaphragm and indenting point",
+        summary:
+          "Tube B carries a diaphragm with a hard point at its center; speech moves that point against the recording material.",
         technicalDetails:
-          "A circular mica or parchment diaphragm ($D = 50\\text{ mm}$, thickness $0.15\\text{ mm}$) clamped at its perimeter. A sharp-rounded steel stylus ($r_{\\text{tip}} = 0.25\\text{ mm}$) translates sound pressure oscillations into vertical plastic indentations ($z_{\\text{indent}} = 5\\text{ to }50\\;\\mu\\text{m}$).",
+          "The source supplies a causal chain, not dimensions: pressure changes in the speaking tube move the diaphragm; the central point makes an indentation in a yielding surface. Edison allows the tube to approach or recede from the cylinder so the operator can set the contact.",
         archaicTerm: "Diaphragm or elastic plate with indenting-point",
         modernEquivalent: "Acoustic recording transducer & cutting stylus",
       },
       {
-        title: "Threaded Lead-Screw Mandrel & Grooved Cylinder",
-        summary: "Heavy brass cylinder with spiral grooves advanced by lead screw.",
+        title: "Helical cylinder and threaded shaft",
+        summary:
+          "Cylinder A has ten helical grooves per inch and moves endwise while rotating because shaft X and bearing P have matching ten-thread-per-inch threads.",
         technicalDetails:
-          "A brass cylinder ($D = 100\\text{ mm}, L = 100\\text{ mm}$) with a $2.54\\text{ mm}$ pitch ($10\\text{ TPI}$) spiral groove matching the lead-screw threads on the main shaft. Flywheel inertia ($I = \\frac{1}{2} M R^2$) dampens hand-crank rotational jitter, maintaining steady tangential surface velocity ($v = \\omega R \\approx 314\\text{ mm/s}$).",
+          "The ten grooves per inch and ten threads per inch are printed values. Their matched pitch means that one rotation advances the cylinder by one groove spacing, keeping the point opposite the next helical track. The source says clock-work at M or another power source turns L; it does not identify a hand crank, flywheel, cylinder material, or speed.",
         archaicTerm: "Grooved cylinder mounted on a screw-threaded shaft",
         modernEquivalent: "Precision phonograph cylinder mandrel & lead screw",
       },
       {
-        title: "Tinfoil Yielding Plastic Recording Medium",
-        summary: "Thin sheet of annealed tin foil wrapped around the cylinder.",
+        title: "Yielding recording material",
+        summary:
+          "Metallic foil is Edison's preferred material on cylinder A, but paper and other yielding materials are also expressly allowed.",
         technicalDetails:
-          "High-purity tin foil ($98\\%\\text{ Sn}$, thickness $0.05\\text{ mm}$) wrapped tightly over the cylinder and secured with shellac. Tin exhibits low yield strength and high ductility without elastic springback, preserving the exact shape of microscopic groove undulations.",
+          "The material must retain marks that correspond to the diaphragm's motion and later yield that motion to a point. Edison also proposes soft paper saturated or coated with paraffine and carrying a metal-foil surface. The patent gives no composition, thickness, purity, adhesive, or measured deformation depth.",
         archaicTerm: "Yielding material such as tinfoil or sheet-lead",
         modernEquivalent: "Analog recording substrate (wax / lacquer master)",
       },
       {
-        title: "Exponential Acoustic Funnel & Voice Concentrator",
+        title: "Speaking tube and reproducing tube",
         summary:
-          "Conical brass horn transforming free-field air velocity into acoustic pressure at the diaphragm.",
+          "Tube B records through diaphragm G; tube C reproduces through the lighter diaphragm F and spring D.",
         technicalDetails:
-          "Exponential acoustic impedance matching horn ($Z_{\\text{throat}} \\to Z_{\\text{mouth}}$), amplifying sound pressure by $+18\\text{ to }+24\\text{ dB}$ across $300\\text{–}3000\\text{ Hz}$ vocal frequencies without electronic amplification.",
+          "Edison allows any mouthpiece character provided openings re-enforce hissing consonants. He says the reproducing diaphragm may be lighter and more sensitive, though this is not necessary. No horn profile, material, gain, or frequency range is specified.",
         archaicTerm: "Speaking-tube or mouth-piece",
         modernEquivalent: "Acoustic impedance matching horn",
       },
       {
-        title: "Spring-Loaded Playback Tracer & Reproducer",
-        summary: "Delicate spring tracer tracking recorded indentations to recreate sound.",
+        title: "Tracer, thread trace, and ink trace",
+        summary:
+          "Spring D follows foil marks, while Figs. 3 and 4 show alternatives that encode diaphragm motion as a side-to-side thread trace or a varying ink trace.",
         technicalDetails:
-          "A lightweight spring tracer ($k = 120\\text{ N/m}$, mass $0.8\\text{ g}$) compliant enough to ride through embossed tinfoil indentations without tearing the foil, vibrating a sensitive reproducing diaphragm.",
+          "The thread device shifts a thread laterally across paper. The ink device varies pen pressure, so ink quantity changes with diaphragm movement. Edison says a lever can read the ink marks through friction or thickness and move a second diaphragm. Those alternatives matter because the source does not limit the invention to foil indentations.",
         archaicTerm: "Light spring tracer and reproducing diaphragm",
         modernEquivalent: "Phonograph pickup cartridge & loudspeaker driver",
       },
     ],
     scientificPrinciples: [
       {
-        principle: "Acoustic Pressure to Mechanical Displacement Transduction",
-        formula:
-          "F_{\\text{stylus}}(t) = A_{\\text{diaphragm}} \\cdot \\Delta P_{\\text{acoustic}}(t)",
+        principle: "Pressure-driven diaphragm motion",
+        formula: "Force on a diaphragm is pressure difference multiplied by diaphragm area.",
         explanation:
-          "Sound waves in air create oscillating pressure gradients against the diaphragm area, generating a proportional axial force driving the stylus tip.",
+          "Sound pressure on a flexible diaphragm creates motion at its center. Edison uses that motion to move a recording point; the patent does not quantify the pressure, area, displacement, or force.",
       },
       {
-        principle: "Helical Surface Velocity & Spatial Recording Wavelength",
-        formula:
-          "\\lambda_{\\text{groove}} = \\frac{v_{\\text{surface}}}{f_{\\text{acoustic}}} = \\frac{\\pi D \\cdot n_{\\text{RPM}}}{60 \\cdot f}",
+        principle: "Coupled rotation and axial advance",
+        formula: "One matched lead-screw turn advances the cylinder by one helical-groove spacing.",
         explanation:
-          "A cylinder of diameter $100\\text{ mm}$ rotating at $60\\text{ RPM}$ moves at $314\\text{ mm/s}$. A $1000\\text{ Hz}$ vocal formant produces an embossed physical wavelength of $\\lambda = 0.314\\text{ mm}$ along the groove.",
+          "The printed ten-groove-per-inch and ten-thread-per-inch values synchronize the circumferential recording motion with endwise travel. The cylinder therefore presents a continuous helical path rather than repeatedly overwriting one circular line.",
       },
       {
-        principle: "Plastic Indentation Mechanics (Zero Elastic Springback)",
+        principle: "Marks as a mechanical motion record",
         formula:
-          "\\sigma_{\\text{contact}} = \\frac{F_{\\text{stylus}}}{\\pi r_{\\text{tip}}^2} > \\sigma_{\\text{yield}}(\\text{Tin}) \\approx 11\\text{ MPa}",
+          "A later point follows the varying marks and transfers that motion to another diaphragm.",
         explanation:
-          "The stylus tip contact pressure exceeds the yield strength of tin foil, permanently altering the metal surface into microscopic acoustic hills and valleys.",
+          "The source calls for marks that correspond to sound vibrations and are suitable for reproduction. It explains the playback path mechanically rather than supplying a material stress calculation.",
       },
     ],
     whyItMattersToday:
-      "Edison's phonograph was the foundational ancestor of the entire audio recording, music, broadcasting, and information storage industries. By proving that continuous sensory information could be permanently inscribed onto a physical substrate and played back with high fidelity, Edison laid the groundwork for vinyl records, magnetic tapes, optical compact discs, and modern solid-state audio.",
+      "The specification is an early articulation of a general storage principle: convert a time-varying physical signal into durable marks, then convert those marks back into motion. Its cylinder form and its thread and ink alternatives make the document useful for reading the continuity between mechanical recording, later analogue media, and modern transducers without treating later formats as if they were printed in 1878.",
   },
   claims: [
     {
       number: 1,
       isIndependent: true,
       originalText:
-        "The method herein specified of reproducing the human voice or other sounds by causing the sound-vibrations to be recorded by embossing or indenting, or otherwise altering a yielding material, and subsequently utilizing such indentations or altered material to set in motion a vibrating plate or diaphragm, substantially as set forth.",
+        "The method herein specified of reproducing the human voice or other sounds by causing the sound-vibrations to be recorded, substantially as specified, and obtaining motion from that record, substantially as set forth, for the reproduction of the sound-vibrations.",
       plainEnglish:
-        "The broad foundational method of recording sound by embossing physical indentations into a deformable surface (like tinfoil or wax), and later tracking those indentations to vibrate a diaphragm and recreate the original sound.",
+        "Claim 1 covers the stated sequence, not a particular foil cylinder: make a record of sound vibrations, take motion from that record, and use the recovered motion to reproduce sound vibrations.",
       keyInnovations: [
-        "Mechanical sound recording by direct surface indentation",
-        "Dual-phase record-and-playback acoustic process",
-        "Use of yielding malleable substrates without springback",
+        "Recorded sound-vibration pattern",
+        "Motion recovered from the record",
+        "Mechanical reproduction of sound vibrations",
       ],
       legalSignificance:
-        "The master claim that established Thomas Edison as the sole legal inventor of sound recording and reproduction in patent jurisprudence.",
+        "The claim states a broad method sequence, but this record does not treat it as a judicial holding or as proof that Edison was the sole inventor of every form of sound recording.",
     },
     {
       number: 2,
-      isIndependent: false,
-      dependsOn: [1],
+      isIndependent: true,
       originalText:
-        "The combination, with a diaphragm and stylus, of a grooved cylinder mounted on a screw-threaded shaft, to advance longitudinally while rotating, substantially as described.",
+        "The combination, with a diaphragm exposed to sound-vibrations, of a moving surface of yielding material—such as metallic foil—upon which marks are made corresponding to the sound-vibrations, and of a character adapted to use in the reproduction of the sound, substantially as set forth.",
       plainEnglish:
-        "The physical combination of an acoustic diaphragm, stylus needle, and a spiral-grooved cylinder mounted on a threaded lead-screw shaft that moves sideways as it turns.",
+        "Claim 2 is an apparatus combination: a sound-driven diaphragm works with a moving yielding surface, such as metallic foil, whose marks both follow the sound vibrations and can later be used to reproduce them.",
       keyInnovations: [
-        "Threaded lead-screw shaft for helical axial tracking",
-        "Grooved cylinder providing clearance under tinfoil indentations",
-        "Synchronized rotary and linear translation",
+        "Sound-driven diaphragm",
+        "Moving yielding recording surface",
+        "Marks usable for reproduction",
       ],
     },
     {
       number: 3,
-      isIndependent: false,
-      dependsOn: [1],
+      isIndependent: true,
       originalText:
-        "The combination of the grooved cylinder, a sheet of tinfoil or yielding recording material, and an indenting point actuated by acoustic vibrations, substantially as set forth.",
+        "The combination, with a surface having marks thereon corresponding to sound-vibrations, of a point receiving motion from such marks, and a diaphragm connected to said point, and responding to the motion of the point, substantially as set forth.",
       plainEnglish:
-        "The specific recording apparatus comprising the grooved cylinder wrapped in tinfoil and an acoustic vibrating stylus embossing sound waves into the foil.",
+        "Claim 3 covers the reproducing side: a point follows a marked surface, and its movement drives a connected diaphragm.",
       keyInnovations: [
-        "Tinfoil wrapped tightly over a grooved mandrel",
-        "Acoustic-to-mechanical indenting assembly",
+        "Recorded sound marks",
+        "Motion-following point",
+        "Diaphragm driven by recovered motion",
       ],
     },
     {
       number: 4,
-      isIndependent: false,
-      dependsOn: [1],
+      isIndependent: true,
       originalText:
-        "The combination, with a recording diaphragm and stylus, of a reproducing diaphragm and tracer, adapted to track in the recorded indentations, substantially as specified.",
+        "In an instrument for making a record of sound-vibrations, the combination, with the diaphragm and point, of a cylinder having a helical groove and means for revolving the cylinder and communicating an end movement corresponding to the inclination of the helical groove, substantially as set forth.",
       plainEnglish:
-        "The playback reproducer comprising a separate, more delicate diaphragm and flexible spring tracer that tracks the embossed indentations to produce audible speech.",
+        "Claim 4 is the illustrated cylinder arrangement: the diaphragm and point work with a helically grooved cylinder whose drive both turns it and advances it endwise according to the helical groove.",
       keyInnovations: [
-        "Dedicated lightweight playback reproducer",
-        "Spring-mounted tracer needle following embossed furrow",
+        "Helically grooved cylinder",
+        "Coupled rotation and endwise movement",
+        "Diaphragm and point recording assembly",
       ],
     },
   ],
@@ -210,7 +178,7 @@ I claim as my invention:
       figureNumber: "Fig. 1",
       title: "Vertical Cross-Section of Cylinder Phonograph Mechanism",
       caption:
-        "Fig. 1 shows the vertical sectional view of cylinder A mounted upon threaded shaft X, speaking tube B with diaphragm G, and reproducer C with tracer D.",
+        "The source's vertical section shows cylinder A, the speaking tube B, reproducing tube C, diaphragm G, and the support and shaft arrangement.",
       svgType: "edison-phonograph-fig1",
       callouts: [
         {
@@ -218,7 +186,8 @@ I claim as my invention:
           figureRef: "Fig. 1",
           label: "Grooved Cylinder",
           element: "A",
-          description: "Brass mandrel cylinder cut with helical grooves 10 to the inch.",
+          description:
+            "Cylinder with a helical indenting groove, specified as ten grooves to the inch.",
           x: 48,
           y: 42,
         },
@@ -227,7 +196,8 @@ I claim as my invention:
           figureRef: "Fig. 1",
           label: "Threaded Shaft",
           element: "X",
-          description: "Precision 10 TPI lead screw advancing the cylinder axially.",
+          description:
+            "Shaft whose thread is specified as ten threads to the inch and which advances the cylinder endwise.",
           x: 32,
           y: 65,
         },
@@ -263,8 +233,47 @@ I claim as my invention:
           figureRef: "Fig. 2",
           label: "Slotted Drive Tube",
           element: "L",
-          description: "Slotted tube rotated by drive motor, allowing shaft X to slide endwise.",
+          description:
+            "Slotted tube rotated by clock-work or another source of power, allowing shaft X to slide endwise.",
           x: 25,
+          y: 50,
+        },
+      ],
+    },
+    {
+      figureNumber: "Fig. 3",
+      title: "Thread-and-paper recording variant",
+      caption:
+        "The source's Fig. 3 shows the thread, pressure-rollers, and adjacent fork or eye used for the stated sinuous paper trace.",
+      svgType: "edison-phonograph-fig3",
+      callouts: [
+        {
+          id: "callout-thread",
+          figureRef: "Fig. 3",
+          label: "Thread and pressure-rollers",
+          element: "t",
+          description:
+            "A thread passes with paper beneath pressure-rollers; the adjacent fork or eye shifts it laterally with diaphragm motion.",
+          x: 50,
+          y: 50,
+        },
+      ],
+    },
+    {
+      figureNumber: "Fig. 4",
+      title: "Ink-trace recording variant",
+      caption:
+        "The source's Fig. 4 shows the inking-pen variant, in which diaphragm motion changes the pressure at pen u on advancing paper.",
+      svgType: "edison-phonograph-fig4",
+      callouts: [
+        {
+          id: "callout-inking-pen",
+          figureRef: "Fig. 4",
+          label: "Inking-pen",
+          element: "u",
+          description:
+            "The pen rests on moving paper and deposits more or less ink according to diaphragm movement.",
+          x: 48,
           y: 50,
         },
       ],
@@ -272,44 +281,23 @@ I claim as my invention:
   ],
   historicalContext: {
     problemStatement:
-      "Before Edison's 1877 breakthrough, sound was entirely transient: once spoken, human voice was lost forever. Earlier devices like Édouard-Léon Scott de Martinville's 1857 phonautograph could visually trace sound waves onto soot-blackened paper, but no machine in history could play those tracings back as sound.",
+      "The specification frames the engineering problem directly: preserve human voice and other sounds as durable marks, then use those marks to make sound audible again at a later time.",
     priorArtLimitations: [
-      "Scott de Martinville Phonautograph (1857): Inscribed 2D visual tracings on lampblack paper but had no physical depth or mechanism for playback.",
-      "Charles Cros 'Paleophone' Concept (April 1877): Deposited a theoretical sealed envelope at the French Academy proposing photo-engraving tracings onto metal, but never constructed a working physical device.",
-      "Telegraph Repeaters: Could only record and repeat binary on-off telegraph pulses on paper tape, unable to handle continuous analog voice waveforms.",
+      "Édouard-Léon Scott de Martinville's 1857 phonautograph traced sound waves for visual study, but its records were not intended for playback. The Library of Congress describes that limitation; the source is recorded in this patent's provenance receipt.",
     ],
     breakthroughInsight:
-      "While developing a high-speed telegraph repeater that used an embossed paper tape and observing the musical humming sound produced when the tape moved at high speed under a steel spring needle, Edison realized that human voice vibrations from a telephone diaphragm could be directly indented into a yielding surface and immediately played back by tracing those same indentations.",
-    patentWars: [
-      {
-        rivalName: "Alexander Graham Bell & Chichester Bell (Graphophone / Volta Laboratory)",
-        rivalClaim:
-          "Claimed Edison's tinfoil was commercially unviable, patenting incised wax-coated cardboard cylinders (US 341,214 in 1886) and claiming the generic cut-groove recording method.",
-        conflictDetails:
-          "Edison fought back by refining his machine into the 'Perfected Phonograph' with solid wax cylinders, asserting his 1878 master patent (US 200,521) covered all forms of indenting yielding recording materials.",
-        resolution:
-          "Edison and Volta pooled key patents under Jesse Lippincott's North American Phonograph Company in 1888, solidifying Edison's foundational priority.",
-        legalOutcome:
-          "Edison's US 200,521 was upheld in federal courts as the pioneer master patent for all sound recording and reproduction.",
-      },
-      {
-        rivalName: "Emile Berliner (Gramophone Disc System)",
-        rivalClaim:
-          "Patented the lateral flat disc recording system (US 372,786 in 1887) as distinct from Edison's vertical 'hill-and-dale' cylinder.",
-        conflictDetails:
-          "Edison argued his specification explicitly disclosed lateral sinuous recording on flat surfaces (Claim 1 and Fig. 3).",
-        resolution:
-          "Berliner's disc system won consumer convenience, but Edison's patent royalties and cylinder dominance lasted well into the 1910s.",
-        legalOutcome:
-          "Courts recognized Berliner's disc format as valid while confirming Edison's broad method claim priority.",
-      },
-    ],
+      "The document keeps recording and reproduction in one mechanical chain: a sound-driven diaphragm marks a yielding moving surface, and a second point and diaphragm recover motion from those marks. It also expressly tests that idea against several media and geometries instead of limiting it to the illustrated foil cylinder.",
+    patentWars: [],
     civilizationalImpact:
-      "Edison's phonograph was the genesis of recorded sound, transforming human culture. It made music permanently accessible outside live concert halls, preserved the voices of world leaders, gave birth to the global music and broadcasting industries, and established the principle of mechanical analog data storage.",
+      "US 200,521 is a compact early statement of mechanical signal storage: transform an acoustic time series into a physical trace, preserve it, and use the trace to recover motion. Its plate, strip, thread, and ink alternatives make that principle broader than the cylinder pictured in Figs. 1 and 2.",
     funFact:
-      "When Edison first tested the machine in December 1877, he recited 'Mary had a little lamb, its fleece was white as snow.' When the phonograph played his exact words back, his assistant John Kruesi turned pale and exclaimed, 'Mein Gott!'",
+      "The printed specification itself proposes making multiple copies from a tinfoil record by a plaster-of-Paris stereotyping process when musical compositions are wanted for numerous machines.",
     aftermath:
-      "Edison founded the Edison Speaking Phonograph Company in 1878, earning $10,000 for the rights plus 20% of profits, becoming a global celebrity and the 'Wizard of Menlo Park.'",
+      "The granted document is dated February 19, 1878; its signed execution is dated December 15, 1877.",
+    sideNotes: [
+      "The specification expressly declines to claim an earlier magnet-and-paper apparatus described in application No. 128, filed March 26, 1877.",
+      "It cites application No. 143, filed August 28, 1877, for devices intended to re-enforce hissing consonants.",
+    ],
   },
   tags: [
     "Acoustics",
@@ -323,8 +311,7 @@ I claim as my invention:
   ],
   stats: {
     totalClaims: 4,
-    independentClaims: 1,
-    patentWarYears: "1878–1898",
+    independentClaims: 4,
     impactScore: 99,
   },
 };

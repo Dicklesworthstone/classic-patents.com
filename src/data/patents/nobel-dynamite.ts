@@ -27,6 +27,14 @@ export const nobelDynamitePatent: Patent = {
   // not served: it is a corrupt OCR layer, not a reviewed transcription.
   originalText:
     "The nature of the invention consists in forming out of two ingredients long known, viz, the explosive substance nitro-glycerine, and an inexplosive porous substance, hereafter specified, a composition which, without losing the great explosive power of nitro-glycerine, is very much altered as to its explosive and other properties, being far more safe and convenient for transportation, storage, and use, than nitro-glycerine.",
+  originalTextAsset: {
+    url: "/patents/transcripts/us-78317-nobel-dynamite-reviewed.txt",
+    pageCount: 2,
+    kind: "reviewed-transcription",
+    reviewedBy: "Classic Patents editorial agent (GPT-5.6)",
+    reviewedAt: "2026-08-18",
+    sourcePdfSha256: "06f67c50087092ed0c6110cef12d6aadc6a087747b876e516cece34288cf8b55",
+  },
   archivalEdition: nobelDynamiteArchivalEdition,
   plainEnglishExplanation: {
     overview:

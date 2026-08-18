@@ -34,6 +34,11 @@ eight PDF pages. `public/patents/source-text/us-6162-corliss-steam-engine.txt`
 is retained only as a non-authoritative OCR comparison artifact. It was not
 used as public edition input or as completeness proof.
 
+`public/patents/transcripts/us-6162-corliss-steam-engine-reviewed.txt` is the
+reviewed eight-page ledger. It preserves each drawing-sheet header and every
+printed text-page continuation solely for auditability; the visitor-facing
+React edition deliberately omits scan-page divisions.
+
 The published data record names its curated excerpt as an excerpt and attaches
 the complete manual edition. The specification has two printed claims, not the
 three synthetic claims that preceded this receipt.

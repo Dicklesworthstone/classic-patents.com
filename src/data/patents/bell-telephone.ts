@@ -1,3 +1,4 @@
+import { bellTelephoneArchivalEdition } from "@/data/editions/bellTelephoneEdition";
 import type { Patent } from "@/types/patent";
 
 export const bellTelephonePatent: Patent = {
@@ -14,17 +15,22 @@ export const bellTelephonePatent: Patent = {
   category: "telecom",
   categoryLabel: "Telecommunications & Acoustics",
   summary:
-    "The Invention of Voice Telecommunication: On February 14, 1876, Alexander Graham Bell filed US Patent No. 174,465—often called the most valuable patent in history. Bell realized that speech cannot be transmitted by make-and-break telegraph switches, which destroy the acoustic harmonics of the human voice. Instead, he pioneered continuous undulating electric currents that mirror the exact physical waveform of acoustic sound waves in air, transmitting multi-harmonic speech over copper wire to an electromagnetic membrane receiver.",
+    "Filed on February 14, 1876 and granted on March 7, US 174,465 describes harmonic telegraphy and the use of undulatory electrical currents. Bell connects a sound-driven membrane and armature to an electromagnetic receiver so that a current varying with the sound can set a distant armature in corresponding motion.",
   heroQuote:
     "Be it known that I, Alexander Graham Bell, of Salem, Massachusetts, have invented certain new and useful Improvements in Telegraphy, of which the following is a specification...",
   originalPdfUrl: "/patents/pdfs/us-174465-bell-telephone.pdf",
   googlePatentsUrl: "https://patents.google.com/patent/US174465A/en",
   usptoClassification: "H04M 1/00 (Telephonic systems; Transmitters)",
   originalTextAsset: {
-    url: "/patents/source-text/us-174465-bell-telephone.txt",
+    url: "/patents/transcripts/us-174465-bell-telephone-reviewed.txt",
     pageCount: 6,
-    kind: "source-pdf-text-layer",
+    kind: "reviewed-transcription",
+    reviewedBy: "Classic Patents editorial agent (GPT-5.6)",
+    reviewedAt: "2026-08-18",
+    sourcePdfSha256: "cb1a0fa7bd871937575e240adf904fa3ea8f462b3bfceb4e7cbbb0811909a8e9",
   },
+  // This is a short catalogue excerpt only. The complete public source face is
+  // the explicit archival edition below, never a formatter applied to this field.
   originalText: `UNITED STATES PATENT OFFICE.
 ALEXANDER GRAHAM BELL, OF SALEM, MASSACHUSETTS.
 
@@ -35,120 +41,100 @@ Specification forming part of Letters Patent No. 174,465, dated March 7, 1876; a
 To all whom it may concern:
 Be it known that I, ALEXANDER GRAHAM BELL, of Salem, Massachusetts, have invented certain new and useful Improvements in Telegraphy, of which the following is a specification:
 
-In Letters Patent granted to me April 6, 1875, No. 161,739, I have described a method of, and apparatus for, transmitting two or more telegraphic signals simultaneously along a single wire by the employment of transmitting-instruments, each of which occasions a succession of electrical impulses differing in rate from the others; and of receiving-instruments, each tuned to a pitch at which it will be put in vibration to produce its fundamental tone by one only of the transmitting-instruments.
+My present invention consists in the employment of a vibratory or undulatory current of electricity in contradistinction to a merely intermittent or pulsatory current, and of a method of, and apparatus for, producing electrical undulations upon the line-wire.
 
-My present invention consists in the method of, and apparatus for, transmitting vocal or other sounds telegraphically, as hereinafter set forth, by causing electrical undulations, similar in form to the vibrations of the air accompanying the said vocal or other sounds.
-
-In illustration of my method of creating a continuous undulating current of electricity, I shall show and describe several forms of apparatus, although it will be understood that the method is not confined to the specific apparatus herein illustrated.
-
-One such method consists in causing an armature to vibrate in front of the poles of an electro-magnet in a closed circuit, thereby inducing undulating currents in the coils of the magnet corresponding in frequency and amplitude to the acoustic vibrations of the armature.
-
-Another method consists in causing a conducting wire or needle attached to a vibrating membrane to dip into a conducting liquid of variable resistance (such as acidulated water), whereby the vibration of the membrane causes the electrical resistance of the circuit to vary continuously without interrupting the current, generating undulating electrical currents that correspond in waveform to the acoustic pressure of the spoken words.
-
-At the receiving station, these undulating currents pass through the coils of an electro-magnet having an armature or membrane placed in proximity to its pole. The varying magnetic attraction of the electro-magnet causes the receiving membrane to vibrate in exact synchrony with the transmitter, reproducing the original vocal sounds to the human ear.
-
-Referring to the drawings:
-Figure 1 illustrates a battery and intermittent contact circuit producing pulsatory currents.
-Figure 2 represents an undulating current consisting of continuous sinusoidal waves.
-Figure 3 represents a compound undulating current resulting from simultaneous multiple frequencies.
-Figure 4 represents the waveform produced by human speech.
-Figure 5 illustrates an electromagnetic transmitting and receiving instrument.
-Figure 6 illustrates a variable-resistance liquid transmitter and membrane receiver connected in circuit.
-Figure 7 is a diagram showing the telephonic circuit including battery, transmitter, line wire, and receiver.`,
+The method of, and apparatus for, transmitting vocal or other sounds telegraphically, as herein described, by causing electrical undulations, similar in form to the vibrations of the air accompanying the said vocal or other sounds, substantially as set forth.`,
+  archivalEdition: bellTelephoneArchivalEdition,
   plainEnglishExplanation: {
     overview:
-      "In 1875, telecommunication was strictly binary: a Morse telegraph key opened or closed an electrical circuit to produce clicks. Inventors like Philipp Reis attempted to transmit sound by using vibrating diaphragms to make and break contact at acoustic frequencies. However, human voice is not a simple click—it is a complex superposition of fundamental vocal cord vibrations and resonant nasal and throat formant frequencies. Binary make-and-break switches destroy these harmonics, producing unintelligible buzzing. Alexander Graham Bell realized that the circuit must remain closed at all times, carrying a continuous undulating electrical current whose instantaneous voltage and amperage continuously mirror the exact physical waveform of acoustic air pressure.",
+      "Bell begins with harmonic telegraphy, where several tuned instruments share a wire and each receiver answers only the rate of vibration to which it is tuned. He argues that abrupt make-and-break signals become unhelpful as more instruments share the line. The specification instead treats a useful signal as an electrical variation that changes gradually with the vibrating body. That framework can carry pitch, loudness, and a compound waveform rather than only the on-or-off timing of a Morse key.",
     coreMechanism:
-      "When a speaker speaks into the acoustic horn, compression and rarefaction sound waves strike a taut diaphragm. The diaphragm is mechanically linked to a platinum needle dipping into an electrically conductive liquid (dilute sulfuric acid) or an electromagnetic armature. As acoustic pressure vibrates the diaphragm, the submerged depth of the needle modulates the circuit's electrical resistance ($R(t) = R_0 - k \\cdot x(t)$). By Ohm's Law ($I(t) = V / R(t)$), this continuous resistance change modulates the battery current into an unbroken analog undulating electrical wave. At the receiving station, this current energizes an electromagnet coil whose dynamic magnetic flux pulls upon a flexible iron diaphragm, vibrating the surrounding air to faithfully recreate the original human voice.",
+      "In Figure 7, sound moves membrane a inside cone A. The membrane carries spring armature c near electromagnet b, so its motion induces a varying current in the closed circuit. At the distant electromagnet f, the current makes armature h copy c's motion. Bell says a similar sound then proceeds from receiver I. The same specification also claims other ways to make a continuous current vary, including changing circuit resistance or battery power; those alternatives are not a claim that the depicted Figure 7 apparatus is a liquid transmitter.",
     mechanicalBreakdown: [
       {
-        title: "Acoustic Diaphragm & Variable Resistance Needle",
+        title: "Tuned harmonic-telegraph instruments",
         summary:
-          "A taut diaphragm that moves a conducting rod in and out of a conductive liquid cup.",
+          "Several vibrating transmitters and receivers can share a circuit when each receiver has a distinct natural rate of vibration.",
         technicalDetails:
-          "The liquid transmitter utilized a platinum needle dipped into a cup of diluted sulfuric acid. Deep immersion lowered electrical resistance; shallow immersion raised it ($R \\propto 1/A_{submerged}$). This transduced mechanical acoustic pressure $P(t)$ into a continuous electrical resistance function $R(t)$ without breaking contact.",
-        archaicTerm: "Liquid transmitter of variable resistance",
-        modernEquivalent: "Variable resistance acoustic microphone / transducer",
+          "Figures 5 and 6 use spring armatures as mechanically resonant elements. A receiver in unison with a transmitter answers to its vibration, while another receiver with a different pitch stays quiet. Bell uses that selectivity to explain multiple telegraphic signals on one wire before applying the same vocabulary to voice.",
+        archaicTerm: "In unison",
+        modernEquivalent: "Matched mechanical resonance",
       },
       {
-        title: "Electromagnetic Membrane Receiver",
-        summary: "A permanent magnet with an iron-wound coil placed close to an iron diaphragm.",
+        title: "Inductive transmitter and receiver",
+        summary:
+          "A moving armature changes the magnetic relationship at one electromagnet; a matching armature responds at another.",
         technicalDetails:
-          "At the receiving end, the undulating current $I(t)$ passed through an electromagnet coil, producing a dynamic magnetic force $F(t) = \\frac{B(t)^2 A}{2\\mu_0}$ on a thin soft-iron membrane. The membrane vibrated in exact acoustic synchrony with the original voice wave.",
-        archaicTerm: "Electro-magnet with armature diaphragm",
-        modernEquivalent: "Electromagnetic speaker / dynamic headphone driver",
+          "In Figure 5, armature c is clamped to the uncovered leg of electromagnet A and projects above the covered leg. When c vibrates, the induced electrical variation traverses the circuit. At instrument I, electromagnet f drives armature h only when its resonance agrees with c. The patent does not specify a modern loudspeaker force law or measured acoustic fidelity.",
+        archaicTerm: "Body capable of inductive action",
+        modernEquivalent: "A moving conductor or magnetic body that changes magnetic flux",
       },
       {
-        title: "Continuous Undulating Electrical Current",
-        summary: "An unbroken analog electrical wave representing multi-frequency sound.",
+        title: "Undulatory current and waveform sum",
+        summary:
+          "Bell contrasts gradual changes in an unbroken circuit with abrupt pulses caused by opening and closing it.",
         technicalDetails:
-          "Unlike binary pulsed currents (on/off make-and-break), an undulating current varies smoothly in amplitude and frequency: $I(t) = I_{DC} + \\sum A_k \\sin(\\omega_k t + \\phi_k)$, preserving timbre, consonants, and vowels.",
-        archaicTerm: "Electrical undulations similar in form to vibrations of air",
-        modernEquivalent: "Analog audio signal transmission",
+          "Figure 4 gives Bell's graphical account. The curve's height represents electrical intensity, its sign follows direction of vibration, and its horizontal spacing represents oscillation duration. The A+B curve is the algebraical sum of two sinusoidal curves. Bell's point is that simultaneous variations make a compound shape rather than erase one another.",
+        archaicTerm: "Undulatory current",
+        modernEquivalent: "Continuously varying electrical signal",
       },
       {
-        title: "Permanent Magnetic Bias Core",
-        summary: "A permanent magnetic polarization preventing frequency octave doubling.",
+        title: "Voice-driven membrane in Figure 7",
+        summary:
+          "A cone directs sound to a stretched membrane; the membrane moves a nearby armature and the remote armature follows.",
         technicalDetails:
-          "Because magnetic attraction force is proportional to $B^2$, an unpolarized core attracts the diaphragm on both positive and negative half-cycles, doubling acoustic frequency ($2\\omega$). A permanent bias flux $B_{bias}$ linearizes the response so $F \\propto B_{bias} \\cdot I(t)$.",
-        archaicTerm: "Permanent magnet combined with electro-magnet coil",
-        modernEquivalent: "Magnetic bias flux linearization",
+          "The voice mechanism is shown in Figure 7, not Figure 6. Cone A concentrates sound-vibrations on membrane a. The membrane drives armature c near electromagnet b, creating the circuit variation that reaches f. Armature h then copies c's motion, and the receiver's cone I radiates a similar sound. This is the apparatus tied most directly to Claim 5's wording about electrical undulations similar in form to air vibrations.",
+        archaicTerm: "Sound-vibrations",
+        modernEquivalent: "Time-varying acoustic pressure and membrane motion",
+      },
+      {
+        title: "Resistance and battery-power alternatives",
+        summary:
+          "Claim 4 expressly reaches gradual changes in circuit resistance or battery power, in addition to electromagnetic induction.",
+        technicalDetails:
+          "Bell gives mercury or another liquid as an example of a resistance that changes when a conductor is immersed more or less deeply. He separately says that the reciprocal motion of battery elements can vary battery power. Those passages establish claimed methods of producing undulations; the drawing does not identify them as the specific voice transmitter in Figure 7.",
+        archaicTerm: "Voltaic circuit",
+        modernEquivalent: "Battery-powered electrical circuit",
       },
     ],
     scientificPrinciples: [
       {
-        principle: "Acoustic Pressure to Electrical Resistance Transduction",
-        formula:
-          "R(t) = R_0 - k \\cdot x(t), \\quad I(t) = \\frac{V_{battery}}{R(t)} \\approx I_0 + \\frac{V_{battery} k}{R_0^2} x(t)",
+        principle: "Electromagnetic induction",
+        formula: "emf = -N dΦ/dt",
         explanation:
-          "Small diaphragm displacements x(t) linearly modulate the electrical resistance and line current, creating an analog electrical replica of speech without contact interruption.",
+          "A changing magnetic flux Φ through a coil produces an electromotive force. Bell's moving armature and magnet examples rely on the same causal idea: motion changes the magnetic condition and therefore creates a current variation. The formula is a modern compact statement, not printed notation from the patent.",
       },
       {
-        principle: "Fourier Theorem & Multi-Harmonic Acoustic Superposition",
-        formula: "P_{acoustic}(t) = \\sum_{n=1}^{\\infty} A_n \\sin(2\\pi n f_0 t + \\phi_n)",
+        principle: "Superposition of waveforms",
+        formula: "combined trace = A + B",
         explanation:
-          "Human speech is a superposition of fundamental pitch and resonant vocal tract formants; only a continuous undulating current can transmit multiple Fourier components simultaneously over a single circuit.",
+          "Bell explicitly calls the A+B curve in Figure 4 the algebraical sum of two sinusoidal curves. He uses this to argue that two undulatory variations can coexist on one circuit with a recognizable compound shape.",
       },
       {
-        principle: "Permanent Magnet Bias Linearization",
-        formula:
-          "F(t) = \\frac{(B_{bias} + \\Delta B(t))^2 A}{2\\mu_0} \\approx \\frac{B_{bias}^2 A}{2\\mu_0} + \\frac{B_{bias} A \\mu_0 N}{\\mu_0 g} I(t)",
+        principle: "Resistance-controlled current",
+        formula: "I = V/R",
         explanation:
-          "The receiver's permanent magnet bias $B_{bias}$ linearizes electromagnetic force, suppressing the non-linear $(\\Delta B)^2$ term that would otherwise create severe second-harmonic octave distortion.",
-      },
-      {
-        principle: "Heaviside Transmission Line Telegrapher Equation",
-        formula:
-          "\\gamma = \\alpha + j\\beta = \\sqrt{(R + j\\omega L)(G + j\\omega C)}, \\quad V(z) = V_0 e^{-\\alpha z} e^{-j\\beta z}",
-        explanation:
-          "Voice frequencies (300 Hz–3,400 Hz) attenuate along copper wires according to propagation constant $\\gamma$, governing the maximum reach of early telephone networks before loading coils.",
-      },
-      {
-        principle: "Clamped Circular Diaphragm Acoustic Resonance",
-        formula:
-          "f_{01} = \\frac{2.4048}{2\\pi a} \\sqrt{\\frac{T_{tension}}{\\sigma_{mass}}}, \\quad a = \\text{diaphragm radius}",
-        explanation:
-          "The mechanical natural frequency $f_{01}$ of the membrane is tuned above the speech formant band to maintain flat frequency response and prevent acoustic peak clipping.",
+          "With a fixed battery voltage V, changing resistance R changes current I. Bell invokes this relation qualitatively when he describes a conductor entering mercury or another liquid more or less deeply. That example belongs to the broad resistance method in Claim 4, not to a made-up component list for Figure 7.",
       },
     ],
     whyItMattersToday:
-      "Every telephone call, radio broadcast, streaming audio track, and VoIP connection in the world traces its lineage directly to Bell's concept of continuous electrical waveforms representing acoustic sound pressure. Bell's patent also established the American Telephone and Telegraph Company (AT&T) and Bell Laboratories, which went on to invent the transistor, UNIX, C/C++, information theory, and cellular telephony.",
+      "The patent records a crucial shift from timing-only telegraph signals to electrical variations treated as shapes that can preserve pitch, loudness, and combinations. Its five claims were later tested in the nineteenth-century Telephone Cases. The page distinguishes those legal claims and the source's actual apparatus from later microphone, network, and electronics developments.",
   },
   claims: [
     {
       number: 1,
       isIndependent: true,
       originalText:
-        "A system of telegraphy in which the receiver is set in vibration by the employment of undulatory currents of electricity, substantially as described.",
+        "A system of telegraphy in which the receiver is set in vibration by the employment of undulatory currents of electricity, substantially as set forth.",
       plainEnglish:
-        "Covers any telecommunication system where a receiving diaphragm or armature is actuated into mechanical vibration using continuous undulatory electric currents.",
+        "Claims a telegraphy system in which an undulatory electrical current sets the receiving instrument in vibration. The claim names the receiver result, not a single detailed transmitter structure.",
       keyInnovations: [
         "Undulatory current signaling",
         "Vibratory receiver actuation",
         "Continuous wave telecommunication",
       ],
       legalSignificance:
-        "Broadly preempted all continuous-wave acoustic electrical receivers, preventing competitors from building phones with alternative transmitters.",
+        "The claim states the receiver-side system in unusually general terms and was one of the claims examined in the later Bell telephone litigation.",
     },
     {
       number: 2,
@@ -156,14 +142,14 @@ Figure 7 is a diagram showing the telephonic circuit including battery, transmit
       originalText:
         "The combination, substantially as set forth, of a permanent magnet or other body capable of inductive action, with a closed circuit, so that the vibration of the one shall occasion electrical undulations in the other, or in itself, and this I claim, whether the permanent magnet be set in vibration in the neighborhood of the conducting-wire forming the circuit, or whether the conducting-wire be set in vibration in the neighborhood of the permanent magnet, or whether the conducting-wire and the permanent magnet both simultaneously be set in vibration in each other's neighborhood.",
       plainEnglish:
-        "Claims electromagnetic acoustic induction: vibrating a magnet near a coil or vibrating a coil near a magnet in a closed circuit to produce voice-modulated electrical undulations.",
+        "Claims the combination of a permanent magnet or other inductive body with a closed circuit when moving one relative to the other produces electrical undulations. It expressly covers moving the magnet, the wire, or both.",
       keyInnovations: [
         "Electromagnetic voice induction",
         "Closed-circuit transducer",
         "Vibration-to-current conversion",
       ],
       legalSignificance:
-        "Protected electromagnetic microphones and dynamic generator transmitters.",
+        "The claim ties the broad induction method to a closed-circuit combination and expressly lists the alternative relative motions discussed in the specification.",
     },
     {
       number: 3,
@@ -171,14 +157,14 @@ Figure 7 is a diagram showing the telephonic circuit including battery, transmit
       originalText:
         "The method of producing undulations in a continuous voltaic current by the vibration or motion of bodies capable of inductive action, or by the vibration or motion of the conducting-wire itself, in the neighborhood of such bodies, as set forth.",
       plainEnglish:
-        "Claims the method of creating analog electrical waveforms in a DC battery circuit through electromagnetic induction.",
+        "Claims the method of producing undulations in a continuous battery current by moving an inductive body or the conductor itself near such a body.",
       keyInnovations: [
         "Continuous voltaic current modulation",
         "Inductive waveform synthesis",
         "Analog signaling method",
       ],
       legalSignificance:
-        "Secured the process of inductive current modulation for telecommunications.",
+        "This is the method claim for the inductive examples that precede Figure 5, rather than a claim limited to the illustrated armature shape.",
     },
     {
       number: 4,
@@ -186,14 +172,14 @@ Figure 7 is a diagram showing the telephonic circuit including battery, transmit
       originalText:
         "The method of producing undulations in a continuous voltaic circuit by gradually increasing and diminishing the resistance of the circuit, or by gradually increasing and diminishing the power of the battery, as set forth.",
       plainEnglish:
-        "Claims the method of generating voice waveforms by continuously varying the circuit's electrical resistance or power without breaking electrical contact.",
+        "Claims a second way to form an undulatory battery current: gradually vary either the circuit resistance or the battery's power, while retaining a continuous circuit.",
       keyInnovations: [
         "Variable resistance modulation",
         "Continuous uninterrupted current",
         "Closed-circuit analog voice encoding",
       ],
       legalSignificance:
-        "The master claim covering variable-resistance transmitters, including the liquid transmitter, Edison's carbon microphone, and modern resistive transducers.",
+        "The legal text reaches gradual resistance and power changes as alternatives. It should not be read as a claim that the printed Figure 7 is a liquid transmitter.",
     },
     {
       number: 5,
@@ -201,30 +187,31 @@ Figure 7 is a diagram showing the telephonic circuit including battery, transmit
       originalText:
         "The method of, and apparatus for, transmitting vocal or other sounds telegraphically, as herein described, by causing electrical undulations, similar in form to the vibrations of the air accompanying the said vocal or other sounds, substantially as set forth.",
       plainEnglish:
-        "The historic master claim 5 of telephony: the method and apparatus for transmitting human voice by creating electrical waves in a wire whose physical shape and harmonic spectrum mirror the vibrations of air accompanying speech.",
+        "Claims the method and apparatus for sending vocal or other sounds by causing electrical undulations similar in form to the sound-caused air vibrations. It links the legal scope to the source's shape-correspondence account.",
       keyInnovations: [
         "Acoustic-to-electric analog parity",
         "Continuous voice waveform transmission",
         "The foundational claim of telephony",
       ],
       legalSignificance:
-        "The most litigated and valuable claim in USPTO history. Upheld by the US Supreme Court in *The Telephone Cases* (1888), establishing the Bell monopoly over all voice telecommunications.",
+        "Claim 5 was among the claims at issue in the Supreme Court's 1888 Telephone Cases. The page does not treat that case as a blanket description of every later telephone technology.",
     },
   ],
   drawings: [
     {
       figureNumber: "Fig. 5",
-      title: "Electromagnetic Harmonic Telegraph & Telephone Transceiver",
+      title: "Paired harmonic-telegraph instruments",
       caption:
-        "Transverse section of Bell's electromagnetic instrument showing hinged armature vibrating near electromagnet poles.",
+        "Two electromagnetic instruments, A and I, joined by circuit e and battery g. Bell uses the figure to explain a transmitting armature c and a matching receiving armature h.",
       svgType: "bell-phone",
       callouts: [
         {
           id: "bp-5",
           figureRef: "Fig. 5",
           label: "h",
-          element: "Hinged Armature Membrane",
-          description: "Flexible iron plate actuated by acoustic sound pressure.",
+          element: "Receiving armature",
+          description:
+            "The armature at instrument I. Bell says it vibrates when its pitch is in unison with transmitting armature c.",
           x: 40,
           y: 40,
         },
@@ -232,8 +219,9 @@ Figure 7 is a diagram showing the telephonic circuit including battery, transmit
           id: "bp-6",
           figureRef: "Fig. 5",
           label: "b",
-          element: "Electromagnet Coils",
-          description: "Copper-wound coils on iron core inducing undulatory currents.",
+          element: "Leg of electromagnet A",
+          description:
+            "The printed leg label. Bell describes a coil on one leg and the spring armature c clamped to the uncovered leg d.",
           x: 60,
           y: 50,
         },
@@ -241,47 +229,48 @@ Figure 7 is a diagram showing the telephonic circuit including battery, transmit
     },
     {
       figureNumber: "Fig. 6",
-      title: "Variable Resistance Liquid Transmitter & Receiver Circuit",
+      title: "Three tuned groups on one telegraphic circuit",
       caption:
-        "Diagrammatic view of Bell's complete telephonic circuit showing acoustic speaking cone, diaphragm, needle in acidulated liquid cup, battery, line wire, and electromagnetic receiver.",
+        "Three groups of harmonic-telegraph instruments, marked A, B, and C with primed counterparts, are connected to one circuit. The drawing illustrates pitch-selective response, not a liquid transmitter.",
       svgType: "bell-phone",
       callouts: [
         {
           id: "bp-1",
           figureRef: "Fig. 6",
-          label: "A",
-          element: "Acoustic Speaking Horn",
+          label: "A¹",
+          element: "First A-group instrument",
           description:
-            "Cone that concentrates voice sound pressure waves onto the transmitting diaphragm.",
+            "One of the instruments that responds when the A group is set in vibration, according to Bell's accompanying text.",
           x: 20,
           y: 35,
         },
         {
           id: "bp-2",
           figureRef: "Fig. 6",
-          label: "B",
-          element: "Transmitting Diaphragm",
-          description: "Stretched membrane vibrating in response to voice sound waves.",
+          label: "B¹",
+          element: "First B-group instrument",
+          description:
+            "One of the differently tuned B instruments. Bell uses it to distinguish a group that responds to B rather than A.",
           x: 35,
           y: 45,
         },
         {
           id: "bp-3",
           figureRef: "Fig. 6",
-          label: "C",
-          element: "Conducting Needle in Liquid Cup",
+          label: "C¹",
+          element: "First C-group instrument",
           description:
-            "Platinum needle moving in acidulated water to vary circuit resistance continuously.",
+            "One of the C instruments shown in the third group on the shared telegraphic circuit.",
           x: 48,
           y: 60,
         },
         {
           id: "bp-4",
           figureRef: "Fig. 6",
-          label: "E",
-          element: "Electromagnetic Receiver",
+          label: "g",
+          element: "Circuit connection label",
           description:
-            "Iron-core electromagnet vibrating an iron diaphragm to reproduce voice sounds.",
+            "The printed figure label on the shared circuit, retained as a source callout without assigning it an invented component name.",
           x: 82,
           y: 45,
         },

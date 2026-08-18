@@ -38,8 +38,35 @@ continuous semantic edition pinned to the digest above. The pre-existing
 legacy source-PDF text-layer comparison artifact. It is not the public edition,
 not a completeness receipt, and not an editorial authority.
 
+The independently reviewable text ledger is
+`public/patents/transcripts/us-1647-morse-telegraph-reviewed.txt`. It has one
+explicit marker for each of the nine pinned PDF pages. Pages 1 through 3 retain
+the original drawing-sheet titles and defer the graphical examples to the
+immutable facsimile; pages 4 through 9 contain the checked transcription of the
+specification, every claim, execution, and witnesses. The page markers belong
+only to this review artifact: the visitor-facing edition remains continuous and
+does not present the PDF's pagination as reading structure.
+
 The PDF was rendered and visually inspected from the first drawing-sheet notice
 through the ninth-page signature and claims. Figure references in the manual
 edition are deliberate source nodes and point to locally rendered crops from
 the corresponding sheet. No remote figure, OCR, HTML, or parser-derived
 reference is used in the published edition.
+
+## Figure-crop receipt
+
+Every printed figure reference in the source edition selects a local crop from
+one of the immutable drawing-sheet previews; a whole sheet is available as the
+facsimile, but is not substituted for the hover/focus preview of a referenced
+figure.
+
+| Source material | Local crop group | Source sheet |
+| --- | --- | --- |
+| Examples 1-6: numerical and letter signs, type, and circular type details | `us-1647-morse-telegraph-fig-ex1.png` through `us-1647-morse-telegraph-fig-ex6-fig3.png` | PDF p. 1 |
+| Examples 7-9: type-rule, straight and circular port-rules, feeder, and levers | `us-1647-morse-telegraph-fig-ex7.png` through `us-1647-morse-telegraph-fig-ex9-fig4.png` | PDF p. 2 |
+| Example 10: register and alarm-bell details | `us-1647-morse-telegraph-fig-ex10-fig1.png` through `us-1647-morse-telegraph-fig-ex10-fig5.png` | PDF p. 3 |
+
+The edition's `FIGURE_PREVIEWS` table binds the exact printed reference string
+and source sheet to these assets. Its module throws during construction if an
+authored reference does not have a selected crop; the focused test also checks
+that each selected local file exists.

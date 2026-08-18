@@ -25,7 +25,9 @@ const WRIGHT_MANUAL_EDITION_MARKER = 'data-archival-edition="manual-react-editio
 const PUBLICATION_CONTRACT_TESTS = [
   "src/data/editions/archivalEditionSemantics.test.ts",
   "src/data/editions/manualEditionCoverageAudit.test.ts",
+  "src/data/editions/manualEditionPublicationContract.test.ts",
   "src/components/patents/visuals/three/determinism.test.ts",
+  "src/components/patents/visuals/three/perPatentVisualDeterminismAudit.test.ts",
 ] as const;
 
 type CommandResult = {

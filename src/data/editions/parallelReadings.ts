@@ -5,23 +5,34 @@
  * limitations of its matching source block. Keys are explicit block positions
  * in the edition file.
  */
+
+import { bellTelephoneParallelReadings } from "./bellTelephoneEdition";
 import { coltRevolverParallelReadings } from "./coltRevolverEdition";
 import { corlissSteamEngineParallelReadings } from "./corlissSteamEngineEdition";
 import { davenportElectricMotorParallelReadings } from "./davenportElectricMotorEdition";
+import { delavalSeparatorParallelReadings } from "./delavalSeparatorEdition";
+import { edisonLightbulbParallelReadings } from "./edisonLightbulbEdition";
+import { edisonPhonographParallelReadings } from "./edisonPhonographEdition";
 import { ericssonPropellerParallelReadings } from "./ericssonPropellerEdition";
 import { gatlingGunParallelReadings } from "./gatlingGunEdition";
+import { gliddenBarbedWireParallelReadings } from "./gliddenBarbedWireEdition";
 import { goddardRocketParallelReadings } from "./goddardRocketEdition";
 import { goodyearRubberParallelReadings } from "./goodyearRubberEdition";
 import { grammeDynamoParallelReadings } from "./grammeDynamoEdition";
 import { hyattCelluloidParallelReadings } from "./hyattCelluloidEdition";
 import { lincolnBuoyParallelReadings } from "./lincolnBuoyEdition";
+import { maximMachineGunParallelReadings } from "./maximMachineGunEdition";
 import { mccormickReaperParallelReadings } from "./mccormickReaperEdition";
 import { morseTelegraphParallelReadings } from "./morseTelegraphEdition";
 import { nobelDynamiteParallelReadings } from "./nobelDynamiteEdition";
 import { otisElevatorParallelReadings } from "./otisElevatorParallelReading";
+import { ottoEngineParallelReadings } from "./ottoEngineEdition";
 import { pasteurFermentationParallelReadings } from "./pasteurFermentationParallelReading";
+import { peltonWaterWheelParallelReadings } from "./peltonWaterWheelEdition";
+import { sholesTypewriterParallelReadings } from "./sholesTypewriterEdition";
 import { HOWE_SEWING_MACHINE_PARALLEL_READINGS } from "./us-4750-howe-sewing-machine";
 import { DAIMLER_MARINE_ENGINE_PARALLEL_READINGS } from "./us-361931-daimler-engine";
+import { westinghouseAirBrakeParallelReadings } from "./westinghouseAirBrakeEdition";
 import { whitneyCottonGinParallelReadings } from "./whitneyCottonGinParallelReading";
 
 export type ArchivalParallelReading = readonly string[];
@@ -32,6 +43,7 @@ export const ARCHIVAL_PARALLEL_READINGS: Readonly<
   "us-x72-whitney-cotton-gin": whitneyCottonGinParallelReadings,
   "us-x9430-colt-revolver": coltRevolverParallelReadings,
   "us-x8277-mccormick-reaper": mccormickReaperParallelReadings,
+  "us-174465-bell-telephone": bellTelephoneParallelReadings,
   "us-132-davenport-electric-motor": davenportElectricMotorParallelReadings,
   "us-588-ericsson-propeller": ericssonPropellerParallelReadings,
   "us-1647-morse-telegraph": morseTelegraphParallelReadings,
@@ -44,7 +56,16 @@ export const ARCHIVAL_PARALLEL_READINGS: Readonly<
   "us-78317-nobel-dynamite": nobelDynamiteParallelReadings,
   "us-105338-hyatt-celluloid": hyattCelluloidParallelReadings,
   "us-120057-gramme-dynamo": grammeDynamoParallelReadings,
+  "us-124404-westinghouse-air-brake": westinghouseAirBrakeParallelReadings,
   "us-135245-pasteur-fermentation": pasteurFermentationParallelReadings,
+  "us-157124-glidden-barbed-wire": gliddenBarbedWireParallelReadings,
+  "us-194047-otto-engine": ottoEngineParallelReadings,
+  "us-200521-edison-phonograph": edisonPhonographParallelReadings,
+  "us-223898-edison-lightbulb": edisonLightbulbParallelReadings,
+  "us-233692-pelton-water-wheel": peltonWaterWheelParallelReadings,
+  "us-247804-delaval-separator": delavalSeparatorParallelReadings,
+  "us-319596-maxim-machine-gun": maximMachineGunParallelReadings,
+  "us-79265-sholes-typewriter": sholesTypewriterParallelReadings,
   "us-361931-daimler-engine": DAIMLER_MARINE_ENGINE_PARALLEL_READINGS,
   "us-1102653-goddard-rocket": goddardRocketParallelReadings,
   "us-821393-wright-flyer": {

@@ -1,10 +1,13 @@
 import { describe, expect, test } from "bun:test";
+import { createHash } from "node:crypto";
+import { readFileSync } from "node:fs";
 import { validateCuratedSpecificationEdition } from "@/data/archivalEditionValidation";
 import {
   gatlingGunArchivalEdition,
   gatlingGunParallelReadings,
 } from "@/data/editions/gatlingGunEdition";
 import { gatlingGunPatent } from "@/data/patents/gatling-gun";
+import { validateReviewedTranscription } from "@/data/patents/sourceTextValidation";
 
 describe("gatlingGunArchivalEdition", () => {
   test("pins the reviewed three-sheet facsimile and presents its five claims", () => {
@@ -84,6 +87,41 @@ describe("gatlingGunArchivalEdition", () => {
       const companion = gatlingGunParallelReadings[index];
       expect(companion.length).toBeGreaterThan(0);
       expect(companion.every((paragraph) => paragraph.trim().length > 40)).toBe(true);
+    }
+  });
+
+  test("pins every authored source block to a reviewed three-sheet ledger", () => {
+    const asset = gatlingGunPatent.originalTextAsset;
+    expect(asset).toMatchObject({
+      url: "/patents/transcripts/us-36836-gatling-gun-reviewed.txt",
+      pageCount: 3,
+      kind: "reviewed-transcription",
+      reviewedBy: "Classic Patents editorial agent (GPT-5.6)",
+      reviewedAt: "2026-08-18",
+      sourcePdfSha256: "1eb10666b48d84d2e2be3e09168c6f4f224e531428f7f7c39fdf70ff60d0683f",
+    });
+    if (!asset?.sourcePdfSha256) {
+      throw new Error("Gatling reviewed transcript asset or source digest is missing.");
+    }
+
+    const transcript = readFileSync(`${process.cwd()}/public${asset.url}`, "utf8");
+    expect(validateReviewedTranscription(transcript, asset.pageCount)).toEqual({ valid: true });
+    const sourcePdf = readFileSync(`${process.cwd()}/public${gatlingGunPatent.originalPdfUrl}`);
+    expect(createHash("sha256").update(sourcePdf).digest("hex")).toBe(asset.sourcePdfSha256);
+
+    const normalizedTranscript = transcript
+      .replace(/^--- REVIEWED TRANSCRIPTION PAGE \d+ OF \d+ ---$/gm, "")
+      .replace(/\s+/g, " ")
+      .trim();
+    const textualBlocks = gatlingGunArchivalEdition.blocks.filter(
+      (block) => block.kind === "masthead" || block.kind === "paragraph" || block.kind === "claim",
+    );
+    for (const block of textualBlocks) {
+      const sourceText =
+        block.kind === "masthead"
+          ? block.lines.join(" ")
+          : block.inlines.map((inline) => inline.text).join("");
+      expect(normalizedTranscript).toContain(sourceText.replace(/\s+/g, " ").trim());
     }
   });
 });

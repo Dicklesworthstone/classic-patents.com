@@ -24,9 +24,12 @@ export const corlissSteamEnginePatent: Patent = {
   usptoClassification:
     "Historical U.S. patent; no contemporary classification is printed on the local facsimile.",
   originalTextAsset: {
-    url: "/patents/source-text/us-6162-corliss-steam-engine.txt",
+    url: "/patents/transcripts/us-6162-corliss-steam-engine-reviewed.txt",
     pageCount: 8,
-    kind: "source-pdf-text-layer",
+    kind: "reviewed-transcription",
+    reviewedBy: "Classic Patents editorial agent (GPT-5.6)",
+    reviewedAt: "2026-08-18",
+    sourcePdfSha256: "22a03c717ed383165143af5aa3b85c8dac0705eaa4cdadcf93130ba28ef76ff5",
   },
   originalText: `UNITED STATES PATENT OFFICE.
 GEO. H. CORLISS, OF PROVIDENCE, RHODE ISLAND.

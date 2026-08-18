@@ -1,269 +1,245 @@
 import type { Patent } from "@/types/patent";
+import { sholesTypewriterArchivalEdition } from "../editions/sholesTypewriterEdition";
 
 export const sholesTypewriterPatent: Patent = {
   id: "us-79265-sholes-typewriter",
   patentNumber: "US 79,265",
-  title: "Type-Writing Machine",
-  shortTitle: "Sholes & Glidden Typewriter & QWERTY Mechanism",
-  subtitle: "Radial Typebar Basket, Escapement Carriage Stepping, and Inked Ribbon Platen Impact",
+  title: "Improvement in Type-Writing Machines",
+  shortTitle: "Type-bar, carriage, and ribbon mechanisms",
+  subtitle:
+    "Radial type-bars, self-adjusting platen, two-axis paper carriage, ratchet spacing, and ribbon feed",
   inventors: ["Christopher Latham Sholes", "Carlos Glidden", "Samuel W. Soule"],
   inventorLocation: "Milwaukee, Milwaukee County, Wisconsin",
   grantDate: "1868-06-23",
-  filingDate: "1867-10-11",
+  // The facsimile mentions an October 11, 1867 application for the prior
+  // machine it improves, not a filing date for US 79,265 itself.
+  filingDate: null,
   era: "Civil War & Industrial Acceleration (1860–1880)",
   category: "consumer",
   categoryLabel: "Mechanical Information Systems & Ergonomics",
   summary:
-    "The 1868 foundational patent of text processing and mechanical keyboard communication: Christopher Latham Sholes, Carlos Glidden, and Samuel Soule's typewriter combining a circular basket of pivoted typebars converging upward to strike a central ink-ribbon platen, advanced one character pitch per keypress by an escapement wheel, establishing the ancestor of all computer keyboards.",
+    "US 79,265 describes improvements to an earlier type-writing machine: a radially slotted disk and direct key-lever action for type-bars, a self-adjusting platen, a carriage with separate writing-line and line-to-line motions, a key-actuated ratchet spacer, and a driven inking-ribbon feed.",
   heroQuote:
-    "The keys are arranged in rows upon levers... when depressed, they actuate the type-bars through connecting wires, causing the type to strike upward against the inked ribbon and paper, while the carriage moves forward one space for each letter.",
+    "Its features are a better way of working the type-bars, of holding the paper on the carriage, of moving and regulating the movement of the carriage, of holding, applying, and moving the inking-ribbon, a self-adjusting platen, and a rest or cushion for the type-bars to follow.",
   originalPdfUrl: "/patents/pdfs/us-79265-sholes-typewriter.pdf",
   googlePatentsUrl: "https://patents.google.com/patent/US79265/en",
-  usptoClassification: "B41J 1/28 (Typewriters; Typebar mechanisms; Keyboard layouts)",
+  usptoClassification: "B41J (Typewriters and selective printing mechanisms)",
   originalTextAsset: {
-    url: "/patents/source-text/us-79265-sholes-typewriter.txt",
+    url: "/patents/transcripts/us-79265-sholes-typewriter-reviewed.txt",
     pageCount: 6,
-    kind: "source-pdf-text-layer",
+    kind: "reviewed-transcription",
+    reviewedBy: "Classic Patents editorial agent (GPT-5.6)",
+    reviewedAt: "2026-08-18",
+    sourcePdfSha256: "59e3d127ca09c1468d554cd70cd7621b77e155b42df3194e61f04e69d8750aca",
   },
-  originalText: `UNITED STATES PATENT OFFICE.
-C. LATHAM SHOLES, CARLOS GLIDDEN, AND SAMUEL W. SOULE, OF MILWAUKEE, WISCONSIN.
+  archivalEdition: sholesTypewriterArchivalEdition,
+  // This short catalogue excerpt remains supplementary; the manual React
+  // edition above is the complete visitor-facing source specification.
+  originalText: `To all whom it may concern:
 
-TYPE-WRITING MACHINE.
+Be it known that we, C. LATHAM SHOLES, CARLOS GLIDDEN, and SAMUEL W. SOULE, of the city of Milwaukee, and county of Milwaukee, and State of Wisconsin, have invented new and useful Improvements in Type-Writing Machines; and we do hereby declare that the following is a full, clear, and exact description of the invention, which will enable those skilled in the art to make and use the same, reference being had to the accompanying drawings, forming part of this specification, in which—
 
-Specification forming part of Letters Patent No. 79,265, dated June 23, 1868.
-
-To all whom it may concern:
-Be it known that we, C. LATHAM SHOLES, CARLOS GLIDDEN, and SAMUEL W. SOULE, of the city and county of Milwaukee, in the State of Wisconsin, have invented a new and useful Machine for Writing with Type, of which the following is a specification:
-
-The nature of our invention consists in:
-1. An arrangement of type-bars in a circular ring or basket, each type-bar pivoted at its outer end and having a steel letter, numeral, or mark of punctuation at its free inner end, all said type-bars converging to strike upward against a single common printing point on a central platen.
-2. A series of key-levers arranged in rows in front of the machine, connected by pull-wires to the type-bars, so that depressing any key instantly throws the corresponding type-bar upward against the ribbon.
-3. An inked ribbon interposed between the type and the paper, moved automatically by a spooling ratchet at each keystroke to present a fresh inking surface.
-4. A paper carriage mounted on guide rails above the circular type-ring, propelled laterally by a spring barrel and governed by an escapement wheel and vibratory pawls operated by a universal spacer bar beneath the key-levers.
-
-When any key is depressed by the operator's finger, the key-lever pulls upon its connecting wire, causing the corresponding type-bar to swing upward in an arc and strike the underside of the paper against the inked ribbon at the center point. Simultaneously, the key-lever depresses the universal bar, which rocks the escapement pawls, releasing the escapement wheel by one tooth and allowing the spring barrel to advance the paper carriage exactly one letter space for the next character.
-
-I claim as our invention:
-1. The arrangement of the type-bars in a circular ring or basket to strike at a common central printing point, substantially as described.
-2. The combination of the key-levers with the type-bars, the universal spacer bar, and the escapement mechanism for feeding the paper carriage step-by-step at each stroke of a key.
-3. The automatic inking ribbon mechanism arranged to advance between the type and paper simultaneously with the letter spacing.`,
+This invention is of improvements to an invention of a type-writing machine, an application for a patent for which we filed October 11, 1867. Its features are a better way of working the type-bars, of holding the paper on the carriage, of moving and regulating the movement of the carriage, of holding, applying, and moving the inking-ribbon, a self-adjusting platen, and a rest or cushion for the type-bars to follow.`,
   plainEnglishExplanation: {
     overview:
-      "In the 1860s, all business, legal, and government documents were laboriously hand-written with steel dip pens at 20 words per minute. Christopher Latham Sholes and his partners invented the first commercially practical mechanical typewriter. By arranging typebars in a circular basket converging on a central strike point, and linking each key to an escapement carriage step, the typewriter quadrupled writing speed and created the universal keyboard interface used on computers and smartphones today.",
+      "This is not a patent for a particular keyboard arrangement, a ribbon vibrator, or the later commercial Sholes and Glidden machine. The printed specification calls itself an improvement to an earlier type-writing machine and concentrates on a particular mechanical package: direct-acting keys below radial type-bars, a platen that can square itself to the type, two perpendicular carriage motions, a key-driven spacing ratchet, and a ribbon drive linked to carriage motion.",
     coreMechanism:
-      "Depressing a key lever pulls a vertical wire link that swings a pivoted steel typebar upward through a circular basket to strike a single focal printing point on the underside of a rubber platen cylinder. The type face strikes an inked fabric ribbon, transferring a sharp imprint onto the paper. Simultaneously, a crossbar beneath all key levers (the universal spacer bar) pivots an escapement rocker arm, allowing an escapement wheel under spring tension to advance the horizontal paper carriage by exactly one character pitch ($2.54\\text{ mm}$). To prevent typebars from colliding when typing fast, Sholes redesigned the key arrangement into the famous QWERTY layout, separating frequently paired letter hammers.",
+      "A key L pivots on fulcrum M. Its inner finger w directly lifts the matching type-bar from a radial slot in disk B, so the type reaches the common central point beneath platen G. The platen is carried in a spherical bowl, allowing it to adjust its face against the paper. Weights and cords pull the paper carriage, but a bifurcated lever H and serrated ratchet I hold it until a key stroke releases exactly one notch. A separate pin-and-pawl system makes the transverse line-to-line move. The same carriage movement turns cone pulleys and advances a fresh portion of the ribbon beneath the platen.",
     mechanicalBreakdown: [
       {
-        title: "Radial Typebar Basket & Convergent Pivot Ring",
-        summary: "Circular ring of pivoted typebars converging on a single strike point.",
-        technicalDetails:
-          "Forty steel typebars arranged radially around a cast-iron ring ($R = 15\\text{ cm}$). Each typebar swings through an upward arc of $90^\\circ$ to strike the exact focal origin $(0, 0, 0)$ with a kinetic impact velocity of $v_{\\text{strike}} = 3\\text{ to }5\\text{ m/s}$.",
-        archaicTerm: "Type-bars arranged in a circular ring or basket",
-        modernEquivalent: "Radial typebar basket / Type segment",
-      },
-      {
-        title: "Universal Space Bar & Escapement Stepping Gear",
-        summary: "Spring barrel and pallet pawls advancing carriage one pitch per keystroke.",
-        technicalDetails:
-          "A helical spring drum exerts a constant lateral pull force ($F_{\\text{pull}} = 8\\text{ N}$) on the paper carriage. Each key stroke oscillates a double-pallet escapement pawl, stepping a 15-tooth escapement wheel by one tooth pitch ($p = 2.54\\text{ mm}$), ensuring uniform monospace character spacing.",
-        archaicTerm: "Universal spacer bar and escapement mechanism",
-        modernEquivalent: "Escapement wheel & rocker pallet feed mechanism",
-      },
-      {
-        title: "Continuous Inked Fabric Ribbon Drive",
-        summary: "Woven silk ribbon moving automatically between reversing spools.",
-        technicalDetails:
-          "An oil-inked silk ribbon wound between two spools. A ratchet pawl geared to the universal spacer bar indexes the ribbon spool forward by $0.5\\text{ mm}$ with every keypress, ensuring that consecutive typebars never strike the exact same spot and preventing ribbon perforation.",
-        archaicTerm: "Inked ribbon mechanism moving by spooling ratchet",
-        modernEquivalent: "Typewriter ribbon transport / Ribbon vibrator & spool drive",
-      },
-      {
-        title: "Cylindrical Hard-Rubber Platen & Feed Rollers",
+        title: "Radial disk and direct key action",
         summary:
-          "Rotatable anvil cylinder backing the paper sheet and providing line feed indexing.",
+          "Disk B is an annulus with radial grooves; type-bars O pivot at its outer edge and their inner type ends meet one central printing point.",
         technicalDetails:
-          "A vulcanized hard rubber cylindrical roller ($D = 45\\text{ mm}$) serves as the rigid printing anvil. Spring-loaded feed rollers grip the paper sheet against the platen with $12\\text{ N}$ normal force, while a ratchet wheel on the platen axis allows instantaneous line spacing advancement ($h_{\\text{line}} = 4.2\\text{ mm}$) upon carriage return.",
-        archaicTerm: "Cylinder platen and paper feeding rollers",
-        modernEquivalent: "Platen roller & line-feed detent ratchet",
+          "The source specifies brass as the preferred disk material, a diameter of four to five inches, a central hole one to one and a half inches or more across, and radial grooves. It prefers steel for the type-bars. A piano-like keyboard has one more key than the number of types, the extra key being the space-key. The patent says the key finger can be a stiff wire or an integral bent part of the key; it does not state a key count, a named keyboard arrangement, an impact speed, or a force.",
+        archaicTerm: "Type-bars or hammers",
+        modernEquivalent: "Pivoted typebars in a radial type segment",
       },
       {
-        title: "Piano-Wire Pull Links & Cantilever Keylevers",
+        title: "Self-adjusting platen and paper carriage",
         summary:
-          "Parallel four-bar wire linkage transmitting key depression into radial typebar snap.",
+          "Platen G has a spherical upper end seated in a spherical bowl in anvil O′, making a universal joint that lets the face meet the paper squarely.",
         technicalDetails:
-          "Individual forged spring-steel piano wires link the midpoint of each $25\\text{ cm}$ wooden keylever to the crank horn of its corresponding typebar. Pivot friction is minimized by hardened steel knife-edge bearings, yielding a clean, snappy key return in under $20\\text{ ms}$ under the tension of coiled return springs.",
-        archaicTerm: "Wire connections linking key levers to type levers",
-        modernEquivalent: "Typebar pull wires & fulcrum keylever assembly",
+          "The primary open frame C, C′, C² moves in one direction for a line of words. Its secondary frame E, E′, E² moves at right angles for a series of lines. Springs b and a keep paper in the chase and against the platen. The printed text calls for a bar F with equally spaced pins e and a pawl h with spring l; that second mechanism moves the paper carriage the required line-to-line distance. It does not claim a cylindrical rubber platen, a line pitch, or feed-roller force.",
+        archaicTerm: "Platen self-adjustable",
+        modernEquivalent: "Spherically mounted printing platen",
+      },
+      {
+        title: "Key-actuated ratchet spacing",
+        summary:
+          "Cross-bar T lies behind the key fulcrum. A key stroke raises T, which moves bifurcated lever H through the notches in ratchet-bar I to permit one regular carriage step.",
+        technicalDetails:
+          "The source explains a two-fork escapement: each fork alternately fits a serration while the other releases. Weights W and W′, cords v and a′, and pulleys R and e′ provide the carriage pull. The patent makes the causal timing explicit: the paper moves while the type-bar falls to cushion q, and remains held while the type strikes the platen. It provides no tooth count, character pitch, carriage mass, spring constant, or key-repeat rate.",
+        archaicTerm: "Spacer or ratchet",
+        modernEquivalent: "Escapement-style carriage spacing mechanism",
+      },
+      {
+        title: "Carriage-enabled ribbon feed",
+        summary:
+          "Spools m carry an inking-ribbon under platen G. Carriage movement rotates the connected cone pulleys R and k, shaft l, and the driven spool.",
+        technicalDetails:
+          "The source calls the pulley faces cone pulleys, meaning a sequence of diameters. It says their relative sizes can regulate ribbon feed. Ratchet wheel V and pawl t stop pulley R from turning toward bar F, while a weighted pivoted bar P keeps the belt tight. The document does not identify silk, a spool-reversal mechanism, a ribbon step distance, or a per-key ribbon ratchet.",
+        archaicTerm: "Inking-ribbon",
+        modernEquivalent: "Ink-transfer ribbon on supply and take-up spools",
       },
     ],
     scientificPrinciples: [
       {
-        principle: "4-Bar Key Lever Mechanical Advantage",
+        principle: "Radial convergence",
         formula:
-          "F_{\\text{strike}} = F_{\\text{finger}} \\cdot \\left(\\frac{L_1}{L_2}\\right) \\cdot \\left(\\frac{R_{\\text{typebar}}}{r_{\\text{crank}}}\\right), \\quad v_{\\text{strike}} = \\dot{\\theta}_{\\text{key}} \\cdot \\text{ratio}",
+          "Type-bar length equals the disk radius, so each inner type end reaches the same center point.",
         explanation:
-          "The mechanical linkage compounds finger velocity by a factor of 6 to 8, converting a gentle keypress ($1.5\\text{ N}$) into a sharp, high-velocity typebar impact ($12\\text{ N}$) for crisp ink transfer.",
+          "The patent gives a geometric condition, not an impact calculation. Equal radial lengths make a different pivoted bar reach the same point when raised into its slot.",
       },
       {
-        principle: "Escapement Pitch Discretization & Spring Dynamics",
+        principle: "Discrete spacing by alternating catches",
         formula:
-          "m_{\\text{carriage}} \\ddot{x} + c \\dot{x} = F_{\\text{spring}}, \\quad \\Delta x = \\frac{2\\pi r_{\\text{pinion}}}{N_{\\text{escapement teeth}}} = 2.54\\text{ mm}",
+          "One fork releases a serration only while the other catches the next one; the carriage then moves one notch.",
         explanation:
-          "The escapement converts continuous spring potential energy into discrete, high-speed lateral spatial stepping coordinated with the typebar dwell time ($t_{\\text{dwell}} < 15\\text{ ms}$).",
-      },
-      {
-        principle: "Digraph Collision Envelope & QWERTY Geometric Separation",
-        formula:
-          "t_{\\text{flight}} = \\int_0^{\\pi/2} \\frac{d\\theta}{\\omega(\\theta)}, \\quad |\\theta_A - \\theta_B| > \\theta_{\\text{interference threshold}}",
-        explanation:
-          "If two adjacent typebars are actuated within $\\Delta t < t_{\\text{return}}$, their mechanical flight envelopes intersect and they jam at the guide slot. The QWERTY layout geometrically separates common English digraphs (TH, ER, IN, ON) around opposite sides of the circular basket.",
-      },
-      {
-        principle: "Hertzian Impact Contact Pressure & Ink Transfer",
-        formula:
-          "P_{\\text{contact}} = \\frac{F_{\\text{strike}}}{A_{\\text{face}}} = \\frac{12\\text{ N}}{0.6\\text{ mm}^2} = 20\\text{ MPa} > P_{\\text{ink yield}}",
-        explanation:
-          "The impact of the steel character face produces peak localized contact pressures exceeding $20\\text{ MPa}$, forcing oily pigment from the woven silk ribbon matrix directly into the cellulose fibers of the paper sheet.",
+          "This is the mechanism the specification uses to convert a steady pull from the carriage weights into repeatable letter spacing. It never supplies a numerical pitch.",
       },
     ],
     whyItMattersToday:
-      "The Sholes & Glidden typewriter established the universal QWERTY keyboard layout used across billions of computer keyboards, laptops, and smartphone touchscreens worldwide. It sparked the office automation revolution, created the modern administrative workforce, and brought millions of women into the corporate economy.",
+      "The document is valuable as a compact study in coordinating several mechanical functions around each written character: selecting a type, holding paper at one point, moving through a line, moving to the next line, and refreshing the ink interface. Those are distinct design problems in the source, even though later typewriters solve them in very different forms.",
   },
   claims: [
     {
       number: 1,
       isIndependent: true,
       originalText:
-        "The arrangement of the type-bars in a circular ring or basket to strike at a common central printing point, substantially as described.",
+        "The key-levers L, vibrating on the fulcrum M, with the inner ends or fingers w reaching under the type-bars, so that the keys will act directly on the types, substantially as and for the purpose described.",
       plainEnglish:
-        "Master pioneer claim covering the circular arrangement of pivoted typebars converging upward to strike a single common printing point on a central platen.",
-      keyInnovations: [
-        "Radial circular typebar basket",
-        "Single-point focal strike convergence",
-        "Under-strike platen geometry",
-      ],
+        "Claim 1 is narrowly about direct actuation: keys L pivot on beam M and their inner fingers w reach under type-bars, so pressing a key acts directly on a type-bar.",
+      keyInnovations: ["Key-levers L", "Fulcrum M", "Direct fingers w beneath type-bars"],
       legalSignificance:
-        "The foundational structural claim for modern mechanical typewriters, establishing the radial type segment architecture.",
+        "This record identifies the printed combination only; it does not make an unsourced claim about later litigation or the general typewriter field.",
     },
     {
       number: 2,
-      isIndependent: false,
-      dependsOn: [1],
+      isIndependent: true,
       originalText:
-        "The combination of the key-levers with the type-bars, the universal spacer bar, and the escapement mechanism for feeding the paper carriage step-by-step at each stroke of a key.",
+        "The spacer or ratchet I, combined with the bifurcated lever H, connected with the bar T, pivoted at s and resting on and across the arms of the keys L behind the fulcrum M, so that striking the faces of the keys will work the teeth of the forks of the lever up and down and into the notches of the spaces and give a certain uniform and regular space movement to the paper-carriage in line of the types, when made substantially as described.",
       plainEnglish:
-        "Specifies the combination of keyboard levers, typebars, universal space bar, and escapement gear that automatically steps the paper carriage by one character width per keypress.",
+        "Claim 2 protects the detailed spacing train. A key raises cross-bar T; that moves the two-forked lever H against ratchet I, and the alternating fork teeth permit a regular one-notch movement of the carriage along the line of type.",
       keyInnovations: [
-        "Universal spacer bar linkage",
-        "Key-actuated escapement carriage stepping",
-        "Monospace character feed synchronization",
+        "Ratchet I",
+        "Bifurcated lever H",
+        "Cross-bar T behind fulcrum M",
+        "Regular in-line carriage movement",
       ],
       legalSignificance:
-        "Protected the mechanical timing synchronization between character impact and letter spacing.",
+        "The printed claim requires the named ratchet, lever, bar, keys, and their stated spacing relationship; it is not a claim to every carriage advance mechanism.",
     },
     {
       number: 3,
-      isIndependent: false,
-      dependsOn: [1],
+      isIndependent: true,
       originalText:
-        "The automatic inking ribbon mechanism arranged to advance between the type and paper simultaneously with the letter spacing.",
+        "The pins e, fastened to the table A′, combined with the pawl h and the spring l, to give the paper-carriage a certain and regular cross-line movement at a right angle to the space movement from line to line, when made substantially as described.",
       plainEnglish:
-        "Covers the automatic advancing ribbon transport mechanism that feeds fresh inked ribbon across the printing point with each character typed.",
-      keyInnovations: [
-        "Automatic advancing fabric ink ribbon",
-        "Continuous ribbon spool transport",
-      ],
+        "Claim 3 covers the separate line-to-line mechanism: pins e on table A′ cooperate with pawl h and spring l to move the carriage across the writing direction by a regular amount.",
+      keyInnovations: ["Line-spacing pins e", "Pawl h", "Spring l", "Cross-line carriage movement"],
       legalSignificance:
-        "Secured the clean ribbon inking system that replaced messy carbon paper and dipping inkwells.",
+        "The claim is for the named pin, pawl, and spring combination that provides transverse motion, not merely for paper line spacing in the abstract.",
+    },
+    {
+      number: 4,
+      isIndependent: true,
+      originalText:
+        "The clasps or springs b, attached to the bars C′ and C² on a line through the middle of the platen G, combined with the springs a, attached to the bar E, to hold the paper to the carriage and press it down smooth and tight in passing under the platen, when made substantially as described.",
+      plainEnglish:
+        "Claim 4 covers the paper-holding arrangement: springs or clasps b on the primary frame work with springs a on the secondary frame so paper stays smooth and tight as it passes beneath platen G.",
+      keyInnovations: [
+        "Springs or clasps b",
+        "Springs a",
+        "Bars C′, C², and E",
+        "Paper held smooth under platen G",
+      ],
+    },
+    {
+      number: 5,
+      isIndependent: true,
+      originalText:
+        "The spools m, combined with the gudgeon s′, the shaft l, the pulleys k and R, the band v′, the cord v, the weight W, the ratchet-wheel V, the pawl t, and the bar P, pivoted to the back of the case A² to feed a fresh part of the inking-ribbon under the platen to each type successively, when made substantially as described.",
+      plainEnglish:
+        "Claim 5 is the complete ribbon-feed train. The carriage pull and its pulleys drive a shaft and spools while a ratchet, pawl, and weighted pivoted bar preserve direction and belt tension, bringing a fresh ribbon portion under the platen.",
+      keyInnovations: [
+        "Ribbon spools m",
+        "Shaft l and pulleys k and R",
+        "Weighted cord v and weight W",
+        "Ratchet-wheel V and pawl t",
+      ],
     },
   ],
   drawings: [
     {
       figureNumber: "Fig. 1",
-      title: "Plan and Sectional View of Sholes Typewriter Mechanism",
+      title: "Perspective view of the type-writing machine",
       caption:
-        "Cutaway drawing showing circular typebar basket, key lever bank, pull-wires, central platen carriage, and escapement rack.",
+        "Fig. 1 is the source perspective view. It shows the case A, annular type-bar disk B, frames C and E, platen G, keys L, ratchet I, and the linked carriage and ribbon mechanisms.",
       svgType: "sholes-typewriter",
       callouts: [
         {
           id: "st-1",
           figureRef: "Fig. 1",
-          label: "A",
-          element: "Radial Typebar Basket",
-          description: "Circular cast-iron ring supporting pivoted converging typebars.",
-          x: 50,
-          y: 40,
+          label: "Case",
+          element: "A",
+          description:
+            "The case and its cover provide the mounting surface for the disk, key-board, carriage, and other named parts.",
+          x: 38,
+          y: 61,
         },
         {
           id: "st-2",
           figureRef: "Fig. 1",
-          label: "B",
-          element: "Keyboard Levers & Universal Bar",
-          description: "Four-bank keyboard levers actuating typebar pull-wires.",
-          x: 50,
-          y: 80,
+          label: "Annular type-bar disk",
+          element: "B",
+          description:
+            "The radially slotted annular disk in which type-bars pivot and rise toward the central point.",
+          x: 48,
+          y: 31,
         },
         {
           id: "st-3",
           figureRef: "Fig. 1",
-          label: "C",
-          element: "Paper Carriage & Platen Roller",
-          description: "Horizontal roller advancing along rails via spring barrel.",
-          x: 50,
-          y: 20,
+          label: "Primary carriage frame",
+          element: "C",
+          description:
+            "The larger open carriage frame, which moves in the writing-line direction and carries the secondary paper frame.",
+          x: 60,
+          y: 50,
         },
         {
           id: "st-4",
           figureRef: "Fig. 1",
-          label: "D",
-          element: "Escapement Wheel & Pallet Pawls",
-          description: "Stepping mechanism releasing carriage by 2.54 mm per keypress.",
-          x: 25,
-          y: 25,
+          label: "Arm to the anvil",
+          element: "D",
+          description:
+            "Arm D reaches from the case edge toward the solid anvil above the disk; it supports the platen arrangement described in Fig. 7.",
+          x: 26,
+          y: 22,
         },
       ],
     },
   ],
   historicalContext: {
     problemStatement:
-      "In the mid-19th century, rapid telegraphy and expanding transcontinental railroad commerce created a paper documentation crisis: court stenographers, merchants, and telegraph operators could not keep pace with voice dictation or electric wire messages using dip pens.",
+      "The inventors present US 79,265 as a set of practical improvements to an earlier type-writing machine: better type-bar action, paper holding, carriage movement, ribbon management, a self-adjusting platen, and a type-bar rest.",
     priorArtLimitations: [
-      "Burt's 1829 'Typographer' used a rotating index dial that required turning a pointer by hand, typing slower than a pen.",
-      "Early writing machines used flat printing plates or piano-key levers that were massive, fragile, and jammed constantly.",
-      "No mechanism existed that combined high-speed radial typebars with automatic escapement letter spacing and an inked ribbon.",
+      "The printed specification says an application for the earlier type-writing machine was filed October 11, 1867; it identifies the need for improved type-bar, carriage, ribbon, platen, and cushion arrangements rather than claiming that every prior writing machine failed in the same way.",
     ],
     breakthroughInsight:
-      "While working on a page-numbering machine in a Milwaukee machine shop in 1867, Sholes and Soule realized that numbers could be replaced with the letters of the alphabet, and Glidden suggested turning it into a complete typing instrument.",
-    patentWars: [
-      {
-        rivalName: "E. Remington & Sons and Rival Keyboards",
-        rivalClaim:
-          "Early critics claimed the QWERTY layout was unnatural compared to alphabetical arrangements.",
-        conflictDetails:
-          "In 1873, Sholes and his financial promoter James Densmore brought the machine to gunmaker E. Remington & Sons in Ilion, New York. Remington's master gunsmiths Jefferson Clough and William Jenne retooled the design into the 'Sholes & Glidden Type-Writer' (Remington No. 1), enclosed in a sewing-machine-style case.",
-        resolution:
-          "Remington patented the famous Remington No. 2 in 1878 with a shift-key for upper and lower case letters. Sholes's QWERTY arrangement became so universally entrenched that typists trained exclusively on it, making it the unshakeable worldwide standard.",
-        legalOutcome:
-          "The Sholes patents were licensed exclusively to Remington, establishing Remington as the premier typewriter company in the world.",
-      },
-    ],
+      "The source ties selection, registration, and inking together: direct key fingers lift radial bars; a self-adjusting platen holds the paper at their common point; ratchet and pin mechanisms define the two carriage motions; and carriage motion advances the ribbon.",
+    patentWars: [],
     civilizationalImpact:
-      "The typewriter transformed commercial communication and opened professional white-collar corporate careers for millions of women as typists and stenographers. Author Mark Twain purchased a Remington in 1874 and submitted the manuscript for Life on the Mississippi in 1883 as the first typed book manuscript in history.",
+      "The patent makes an early writing machine legible as a coordinated information mechanism. It distinguishes selection of a character, spacing within a line, moving to the next line, keeping paper against the platen, and refreshing the inked interface.",
     funFact:
-      "Christopher Latham Sholes was an unassuming Milwaukee newspaper editor and state senator who sold his patent rights to James Densmore for just $12,000. Late in life, Sholes stated: 'I do feel that I have done something for the women who have always had to work so hard. This will enable them more easily to earn a living.'",
+      "The inventors prefer brass for the four-to-five-inch annular disk and steel for its type-bars, but allow other suitable materials and sizes.",
     aftermath:
-      "Sholes continued inventing improved typewriter mechanisms until his death in Milwaukee in 1890 at age 71. In 1919, the National Shorthand Reporters Association dedicated a monument to Sholes in Forest Home Cemetery in Milwaukee, commemorating him as 'The Father of the Typewriter'.",
+      "The printed grant is dated June 23, 1868, and the execution at the end of the specification is dated May 1, 1868.",
   },
-  tags: [
-    "Christopher Sholes",
-    "Typewriter",
-    "QWERTY",
-    "Escapement",
-    "Office Automation",
-    "Keyboard Interface",
-  ],
+  tags: ["Christopher Sholes", "Typewriter", "Escapement", "Paper Carriage", "Inking Ribbon"],
   stats: {
-    totalClaims: 3,
-    independentClaims: 1,
+    totalClaims: 5,
+    independentClaims: 5,
   },
 };

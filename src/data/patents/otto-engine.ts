@@ -1,6 +1,10 @@
+import {
+  ottoEngineArchivalEdition,
+  ottoEngineRecordCorrections,
+} from "@/data/editions/ottoEngineEdition";
 import type { Patent } from "@/types/patent";
 
-export const ottoEnginePatent: Patent = {
+const legacyOttoEnginePatent: Patent = {
   id: "us-194047-otto-engine",
   patentNumber: "US 194,047",
   title: "Improvement in Gas-Motor Engines",
@@ -255,4 +259,32 @@ I claim as my invention:
     totalClaims: 2,
     independentClaims: 1,
   },
+};
+
+/**
+ * The prior catalogue object above is retained only as a migration witness for
+ * the source correction. This is the public record used by the registry. It
+ * intentionally overwrites every source-sensitive field that the former
+ * generic "Otto cycle" summary fabricated or misdated.
+ */
+export const ottoEnginePatent: Patent = {
+  ...legacyOttoEnginePatent,
+  originalTextAsset: {
+    url: "/patents/transcripts/us-194047-otto-engine-reviewed.txt",
+    pageCount: 8,
+    kind: "reviewed-transcription",
+    reviewedBy: "Classic Patents editorial agent (GPT-5.6)",
+    reviewedAt: "2026-08-18",
+    sourcePdfSha256: "ad6cfd50e5aaca4dbf9dcb594eb53dc1e619339314f50fdd49a6b4f34eb30baf",
+  },
+  archivalEdition: ottoEngineArchivalEdition,
+  originalText: `UNITED STATES PATENT OFFICE.
+NICOLAUS A. OTTO, OF DEUTZ, GERMANY.
+
+IMPROVEMENT IN GAS-MOTOR ENGINES.
+
+Specification forming part of Letters Patent No. 194,047, dated August 14, 1877; application filed July 13, 1876.
+
+This is a catalogue excerpt. Open Original Patent Text for the complete manually prepared edition, including all four drawing sheets, the full specification, and all six printed claims.`,
+  ...ottoEngineRecordCorrections,
 };

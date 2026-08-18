@@ -1,9 +1,13 @@
 import { describe, expect, test } from "bun:test";
+import { createHash } from "node:crypto";
+import { readFileSync } from "node:fs";
 import { validateCuratedSpecificationEdition } from "@/data/archivalEditionValidation";
 import {
   ericssonPropellerArchivalEdition,
   ericssonPropellerParallelReadings,
 } from "@/data/editions/ericssonPropellerEdition";
+import { ericssonPropellerPatent } from "@/data/patents/ericsson-propeller";
+import { validateReviewedTranscription } from "@/data/patents/sourceTextValidation";
 
 describe("ericssonPropellerArchivalEdition", () => {
   test("is an explicit, continuous edition of the pinned US 588 facsimile", () => {
@@ -56,6 +60,43 @@ describe("ericssonPropellerArchivalEdition", () => {
         .split(/\s+/).length;
       const companionWords = companion.join(" ").trim().split(/\s+/).length;
       if (sourceWords >= 100) expect(companionWords / sourceWords).toBeGreaterThanOrEqual(0.3);
+    }
+  });
+
+  test("pins every authored source block to a reviewed five-sheet ledger", () => {
+    const asset = ericssonPropellerPatent.originalTextAsset;
+    expect(asset).toMatchObject({
+      url: "/patents/transcripts/us-588-ericsson-propeller-reviewed.txt",
+      pageCount: 5,
+      kind: "reviewed-transcription",
+      reviewedBy: "Classic Patents editorial agent (GPT-5.6)",
+      reviewedAt: "2026-08-18",
+      sourcePdfSha256: "40582250d44f6558cf9a438801e312a469ccb83b6755ebc813943fba54c3ea9a",
+    });
+    if (!asset?.sourcePdfSha256) {
+      throw new Error("Ericsson reviewed transcript asset or source digest is missing.");
+    }
+
+    const transcript = readFileSync(`${process.cwd()}/public${asset.url}`, "utf8");
+    expect(validateReviewedTranscription(transcript, asset.pageCount)).toEqual({ valid: true });
+    const sourcePdf = readFileSync(
+      `${process.cwd()}/public${ericssonPropellerPatent.originalPdfUrl}`,
+    );
+    expect(createHash("sha256").update(sourcePdf).digest("hex")).toBe(asset.sourcePdfSha256);
+
+    const normalizedTranscript = transcript
+      .replace(/^--- REVIEWED TRANSCRIPTION PAGE \d+ OF \d+ ---$/gm, "")
+      .replace(/\s+/g, " ")
+      .trim();
+    const textualBlocks = ericssonPropellerArchivalEdition.blocks.filter(
+      (block) => block.kind === "masthead" || block.kind === "paragraph" || block.kind === "claim",
+    );
+    for (const block of textualBlocks) {
+      const sourceText =
+        block.kind === "masthead"
+          ? block.lines.join(" ")
+          : block.inlines.map((inline) => inline.text).join("");
+      expect(normalizedTranscript).toContain(sourceText.replace(/\s+/g, " ").trim());
     }
   });
 });

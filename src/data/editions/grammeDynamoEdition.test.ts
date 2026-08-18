@@ -1,4 +1,6 @@
 import { describe, expect, test } from "bun:test";
+import { existsSync } from "node:fs";
+import { resolve } from "node:path";
 import { validateCuratedSpecificationEdition } from "@/data/archivalEditionValidation";
 import {
   grammeDynamoArchivalEdition,
@@ -23,7 +25,7 @@ describe("grammeDynamoArchivalEdition", () => {
     ).toEqual([1, 2, 3]);
   });
 
-  test("preserves the fourteen real figures as four source-sheet references with checked previews", () => {
+  test("preserves the four source sheets and gives every cited figure its own checked source crop", () => {
     const sheets = grammeDynamoArchivalEdition.blocks.filter(
       (block) => block.kind === "figure-sheet",
     );
@@ -34,14 +36,29 @@ describe("grammeDynamoArchivalEdition", () => {
       "DRAWING SHEET 4",
     ]);
 
+    const figureReferences = grammeDynamoArchivalEdition.blocks.flatMap((block) => {
+      if (!("inlines" in block)) return [];
+      return block.inlines.filter(
+        (inline): inline is Extract<(typeof block.inlines)[number], { kind: "reference" }> =>
+          inline.kind === "reference" && inline.referenceType === "figure",
+      );
+    });
+
     const publicText = JSON.stringify(grammeDynamoArchivalEdition.blocks);
     for (const figure of ["Fig. 1", "Fig. 4", "Fig. 7", "Fig. 10", "Fig. 12", "Fig. 14"]) {
       expect(publicText).toContain(figure);
     }
-    for (const sheet of [1, 2, 3, 4]) {
-      expect(publicText).toContain(
-        `/patents/figures/us-120057-gramme-dynamo/drawing-sheet-${sheet}.png`,
-      );
+    const expectedCropFiles = Array.from({ length: 14 }, (_, index) => `fig-${index + 1}.png`);
+    expectedCropFiles[6] = "fig-7-source-crop.png";
+    for (const cropFile of expectedCropFiles) {
+      expect(publicText).toContain(`/patents/figures/us-120057-gramme-dynamo/${cropFile}`);
+    }
+    for (const reference of figureReferences) {
+      expect(reference.figurePreviews?.length).toBeGreaterThan(0);
+      for (const preview of reference.figurePreviews ?? []) {
+        expect(preview.src).toStartWith("/patents/figures/us-120057-gramme-dynamo/fig-");
+        expect(existsSync(resolve(process.cwd(), "public", preview.src.slice(1)))).toBe(true);
+      }
     }
   });
 

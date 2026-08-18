@@ -1,6 +1,10 @@
+import {
+  edisonLightbulbArchivalEdition,
+  edisonLightbulbRecordCorrections,
+} from "@/data/editions/edisonLightbulbEdition";
 import type { Patent } from "@/types/patent";
 
-export const edisonBulbPatent: Patent = {
+const legacyEdisonBulbPatent: Patent = {
   id: "us-223898-edison-lightbulb",
   patentNumber: "US 223,898",
   title: "Electric-Lamp",
@@ -301,4 +305,24 @@ I claim as my invention:
     patentWarYears: "1880–1895",
     impactScore: 100,
   },
+};
+
+/**
+ * The prior catalogue object above is retained only as a migration witness for
+ * the source correction. This public record intentionally overwrites every
+ * visitor-facing assertion that the weak legacy text layer had supplied or
+ * embellished.
+ */
+export const edisonBulbPatent: Patent = {
+  ...legacyEdisonBulbPatent,
+  originalTextAsset: {
+    url: "/patents/transcripts/us-223898-edison-lightbulb-reviewed.txt",
+    pageCount: 4,
+    kind: "reviewed-transcription",
+    reviewedBy: "Classic Patents editorial agent (GPT-5.6)",
+    reviewedAt: "2026-08-18",
+    sourcePdfSha256: "70c46d7c8624b1e471dffd1175b0f34e70b4b05b6a9adede43c198fe71abc054",
+  },
+  archivalEdition: edisonLightbulbArchivalEdition,
+  ...edisonLightbulbRecordCorrections,
 };

@@ -1,6 +1,9 @@
 import { describe, expect, test } from "bun:test";
+import { createHash } from "node:crypto";
+import { readFileSync } from "node:fs";
 import { validateCuratedSpecificationEdition } from "@/data/archivalEditionValidation";
 import { nobelDynamitePatent } from "@/data/patents/nobel-dynamite";
+import { validateReviewedTranscription } from "@/data/patents/sourceTextValidation";
 import {
   nobelDynamiteArchivalEdition,
   nobelDynamiteParallelReadings,
@@ -57,5 +60,40 @@ describe("nobelDynamiteArchivalEdition", () => {
     expect(publicText).toContain("infusoria");
     expect(publicText).not.toContain("--- SOURCE PDF PAGE");
     expect(publicText).not.toContain("OCR");
+  });
+
+  test("pins every authored source block to a reviewed two-sheet ledger", () => {
+    const asset = nobelDynamitePatent.originalTextAsset;
+    expect(asset).toMatchObject({
+      url: "/patents/transcripts/us-78317-nobel-dynamite-reviewed.txt",
+      pageCount: 2,
+      kind: "reviewed-transcription",
+      reviewedBy: "Classic Patents editorial agent (GPT-5.6)",
+      reviewedAt: "2026-08-18",
+      sourcePdfSha256: "06f67c50087092ed0c6110cef12d6aadc6a087747b876e516cece34288cf8b55",
+    });
+    if (!asset?.sourcePdfSha256) {
+      throw new Error("Nobel reviewed transcript asset or source digest is missing.");
+    }
+
+    const transcript = readFileSync(`${process.cwd()}/public${asset.url}`, "utf8");
+    expect(validateReviewedTranscription(transcript, asset.pageCount)).toEqual({ valid: true });
+    const sourcePdf = readFileSync(`${process.cwd()}/public${nobelDynamitePatent.originalPdfUrl}`);
+    expect(createHash("sha256").update(sourcePdf).digest("hex")).toBe(asset.sourcePdfSha256);
+
+    const normalizedTranscript = transcript
+      .replace(/^--- REVIEWED TRANSCRIPTION PAGE \d+ OF \d+ ---$/gm, "")
+      .replace(/\s+/g, " ")
+      .trim();
+    const textualBlocks = nobelDynamiteArchivalEdition.blocks.filter(
+      (block) => block.kind === "masthead" || block.kind === "paragraph" || block.kind === "claim",
+    );
+    for (const block of textualBlocks) {
+      const sourceText =
+        block.kind === "masthead"
+          ? block.lines.join(" ")
+          : block.inlines.map((inline) => inline.text).join("");
+      expect(normalizedTranscript).toContain(sourceText.replace(/\s+/g, " ").trim());
+    }
   });
 });

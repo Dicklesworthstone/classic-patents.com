@@ -23,6 +23,11 @@
 | 1 | Patent-office masthead; Alfred Nobel / Julius Bandmann assignment line; grant date and title; Schedule line; address; identity; porous-earth composition; absorbent-earth selection; chalk and charcoal comparison; mixing and first ratio sentence | Masthead plus continuous authored paragraphs 1–15. Period terms `absorbent capacity`, `silicious earth`, and `infusoria` are explicit authored term nodes. |
 | 2 | Completion of ratio range; screening; safety and confinement statements; percussion-cap and fuse discussion; bore-hole and cartridge use; sole claim; Nobel signature; Prohme and Bartelssen witnesses | Continuous authored paragraphs 16–35, one claim node, and execution paragraphs 37–38. `sieve`, `percussion-cap`, `tamping`, and `bore-holes` are explicit authored term nodes. |
 
+The reviewed, page-ledger transcription is
+`public/patents/transcripts/us-78317-nobel-dynamite-reviewed.txt`. It preserves
+the printed page-1/page-2 break within the ratio sentence for auditability;
+the visitor-facing React edition intentionally remains continuous prose.
+
 ## Claims and figures
 
 - The grant contains one unnumbered formal claim, on PDF page 2 after “Having thus described my invention.” Its exact text is: “The composition of matter, made substantially of the ingredients and in the manner and for the purposes set forth.”
