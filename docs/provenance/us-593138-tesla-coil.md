@@ -22,6 +22,31 @@
 | 3 | Specification opening through the Figure 1 description |
 | 4 | Remaining specification and all four numbered claims |
 
+## Visual-review record
+
+Two complete visual passes were made from 180-DPI rasters rendered directly
+from the pinned PDF on 2026-08-18. Pass one established the document identity,
+the two drawing sheets, the two specification pages, the printed title and
+application line, and the four claims. Pass two checked every authored source
+paragraph, figure reference, claim, inventor signature, and witness names
+against the same four images. No PDF text layer or OCR output is a public
+edition source.
+
+## Reviewed source ledger
+
+| Edition material | Facsimile locator | Review result |
+| --- | --- | --- |
+| Masthead: office, Tesla, title, patent number, grant date, application date, serial number, no-model line | p. 3, heading | Transcribed as typed masthead lines |
+| Figure 1 source crop and figure-sheet description | p. 1, full drawing sheet | Local crop `fig-1-source-crop-v2.png`; labels A, B, C, G, H, and K visible |
+| Figure 2 source crop and every Figure 2 reference | p. 2, lower drawing | Local crop `fig-2-source-crop-v2.png`; labels B and C visible |
+| Figure 3 source crop and every Figure 3 reference | p. 2, upper drawing | Local crop `fig-3-source-crop-v2.png`; labels B, C, L, and M visible |
+| Formal address through quarter-wave construction | p. 3, body text | Continuous authored paragraphs, no public scan-page boundary |
+| Figure inventory, A/B/C descriptions, transmission arrangement | p. 3 through p. 4 | Every printed Figure 1, 2, and 3 citation is an explicit figure-reference node with a local crop |
+| Cone and two-secondary forms, terminal tubes, numerical 925-per-second illustration | p. 4, left column | Continuous authored paragraphs; source quantities retained |
+| Insulation advantages, spark-over rationale, flat-spiral prior-art disclaimer | p. 4, lower columns | Continuous authored paragraphs; the disclaimer precedes the claim heading |
+| Claims 1–4 | p. 4, right column, lines 68–98 | Four independent claim nodes; typed canonical claim text is synchronized to them |
+| Signature and witnesses | p. 4, lower right | Nikola Tesla; witnesses M. Lawson Dyer and G. W. Martling |
+
 ## Identity correction
 
 The earlier `us-533367-tesla-coil` catalogue id was an identity collision.
@@ -34,8 +59,10 @@ additive byte-identical copy under the correct id.
 
 ## Editorial boundary
 
-This provenance receipt supports the corrected catalogue identity and the
-source-faithful header, figure inventory, and four claims. It is **not** a
-manual React archival edition. The complete original specification remains
-withheld until it is prepared, paragraph-mapped, and independently reviewed
-against all four facsimile pages.
+The complete visitor-facing source reading is the typed manual React edition
+`teslaCoil593138ArchivalEdition`, bound only to the canonical
+`us-593138-tesla-coil` record. Its paragraph companions are patent-local as
+`teslaCoil593138ParallelReadings`; shared registry integration remains a root
+responsibility. The legacy US 533,367 assets are neither cited nor used as a
+source for this edition. The source PDF is immutable; all local figures are
+derived crops, not redrawings or generated diagrams.

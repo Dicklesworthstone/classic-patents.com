@@ -60,7 +60,8 @@ describe("US 4,750 Elias Howe Sewing Machine visual & kinematics boundary", () =
   });
 
   test("builds and articulates procedural eye-pointed needle, shuttle, and baster plate correctly", () => {
-    const { rootGroup, curvedNeedle, shuttleMesh, clothMesh, materials, dispose } = buildHoweSewingMachineModel();
+    const { rootGroup, curvedNeedle, shuttleMesh, clothMesh, materials, dispose } =
+      buildHoweSewingMachineModel();
     expect(rootGroup.children.length).toBeGreaterThan(4);
     expect(curvedNeedle).toBeDefined();
     expect(shuttleMesh).toBeDefined();

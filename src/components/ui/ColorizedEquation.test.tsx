@@ -73,6 +73,19 @@ describe("ColorizedEquation Component", () => {
     expect(html).not.toContain("$AR$");
   });
 
+  test("renders mathematical notation in visible equation labels without leaking delimiters", () => {
+    const eq = {
+      ...wrightFlyerInducedDrag,
+      title: "Wing warping and $\\alpha$",
+      category: "Circulation $\\Gamma$",
+    };
+    const html = renderToString(<ColorizedEquation equation={eq} showLiveTelemetry={false} />);
+
+    expect(html).toContain("katex");
+    expect(html).not.toContain("$\\alpha$");
+    expect(html).not.toContain("$\\Gamma$");
+  });
+
   test("injects interactive equation token targets with data-var attributes for direct formula hover", () => {
     const eq = wrightFlyerInducedDrag;
     const html = renderToString(<ColorizedEquation equation={eq} />);

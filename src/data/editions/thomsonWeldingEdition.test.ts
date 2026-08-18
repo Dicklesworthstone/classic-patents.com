@@ -26,7 +26,7 @@ describe("thomsonWeldingArchivalEdition", () => {
     ).toEqual([1, 2, 3, 4, 5, 6, 7, 8]);
   });
 
-  test("authors every printed figure reference against a local source-sheet preview", () => {
+  test("binds every explicit source-figure occurrence to its own local crop", () => {
     const figureReferences = thomsonWeldingArchivalEdition.blocks.flatMap((block) => {
       if (!("inlines" in block)) return [];
       return block.inlines.filter(
@@ -34,15 +34,57 @@ describe("thomsonWeldingArchivalEdition", () => {
           inline.kind === "reference" && inline.referenceType === "figure",
       );
     });
-    const sourceText = figureReferences.map((reference) => reference.text).join(" ");
-    for (const figureNumber of Array.from({ length: 18 }, (_, index) => index + 1)) {
-      expect(sourceText).toContain(`Fig. ${figureNumber}`);
-    }
+    const expectedFiguresByReference: Readonly<Record<string, readonly number[]>> = {
+      "Figure 1": [1],
+      "Fig. 1": [1],
+      "Fig. 2": [2],
+      "Fig. 3": [3],
+      "Fig. 4": [4],
+      "Fig. 5": [5],
+      "Fig. 6": [6],
+      "Fig. 7": [7],
+      "Fig. 8": [8],
+      "Fig. 9": [9],
+      "Figs. 10, 11, 12, 13, 14, and 15": [10, 11, 12, 13, 14, 15],
+      "Fig. 10": [10],
+      "Fig. 11": [11],
+      "Fig. 12": [12],
+      "Fig. 13": [13],
+      "Fig. 14": [14],
+      "Fig. 15": [15],
+      "Fig. 16": [16],
+      "Fig. 17": [17],
+      "Fig. 18": [18],
+    };
+
     for (const reference of figureReferences) {
-      const [preview] = reference.figurePreviews ?? [];
-      expect(preview).toBeDefined();
-      expect(existsSync(resolve(process.cwd(), "public", preview?.src.slice(1) ?? ""))).toBe(true);
+      const expectedFigures = expectedFiguresByReference[reference.text];
+      expect(expectedFigures).toBeDefined();
+      const previews = reference.figurePreviews ?? [];
+      expect(previews.map((preview) => preview.src)).toEqual(
+        expectedFigures.map(
+          (figureNumber) =>
+            `/patents/figures/us-347140-thomson-welding/figure-${figureNumber}-source-crop-v1.png`,
+        ),
+      );
+      for (const preview of previews) {
+        expect(existsSync(resolve(process.cwd(), "public", preview.src.slice(1)))).toBe(true);
+        expect(preview.width).toBeGreaterThan(0);
+        expect(preview.height).toBeGreaterThan(0);
+      }
     }
+
+    expect(
+      [...new Set(figureReferences.flatMap((reference) => reference.figurePreviews ?? []))].map(
+        (preview) => preview.src,
+      ),
+    ).toEqual(
+      Array.from(
+        { length: 18 },
+        (_, index) =>
+          `/patents/figures/us-347140-thomson-welding/figure-${index + 1}-source-crop-v1.png`,
+      ),
+    );
   });
 
   test("binds the canonical record to the manual claims and reviewed transcript", () => {

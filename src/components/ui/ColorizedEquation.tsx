@@ -175,10 +175,10 @@ export function ColorizedEquation({
           <div className="min-w-0">
             <div className="flex items-center gap-2 flex-wrap">
               <h4 className="font-serif font-bold text-sm sm:text-base text-ink-950 dark:text-parchment-50 truncate">
-                {equation.title}
+                <TextWithLatex text={equation.title} />
               </h4>
               <span className="inline-flex items-center px-2 py-0.5 rounded-md text-[10px] font-mono font-semibold bg-amber-100 dark:bg-amber-950/80 text-amber-900 dark:text-amber-300 border border-amber-300 dark:border-amber-700/60 shrink-0">
-                {equation.category}
+                <TextWithLatex text={equation.category} />
               </span>
               {equation.claimRef && (
                 <span className="inline-flex items-center px-2 py-0.5 rounded-md text-[10px] font-mono font-semibold bg-emerald-100 dark:bg-emerald-950/80 text-emerald-900 dark:text-emerald-300 border border-emerald-300 dark:border-emerald-700/60 shrink-0">

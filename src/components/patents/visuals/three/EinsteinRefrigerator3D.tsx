@@ -12,20 +12,14 @@ import {
   Zap,
 } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
-import * as THREE from "three";
+import type * as THREE from "three";
 import { stepEinsteinRefrigerator } from "@/physics/catalogKernels";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
-import { createLcg } from "@/utils/lcg";
 import { soundEngine } from "@/utils/soundEngine";
-import {
-  createGlowPointTexture,
-  createThreeStudioScene,
-  type StudioContext,
-} from "./ThreeStudioScene";
+import { buildEinsteinRefrigeratorModel } from "./einsteinRefrigeratorModel";
+import { createThreeStudioScene, type StudioContext } from "./ThreeStudioScene";
 import { useLiveSimParams } from "./useLiveSimParams";
 import { usePatentAudio } from "./usePatentAudio";
-
-const lcg = createLcg(2091);
 
 type CameraPreset = "iso" | "generator" | "condenser" | "evaporator" | "absorber";
 
@@ -116,192 +110,30 @@ export function EinsteinRefrigerator3D() {
     cameraRef.current = camera;
     controlsRef.current = controls;
 
-    // --- PBR MATERIALS ---
-    const steelPipeMat = new THREE.MeshStandardMaterial({
-      color: 0x94a3b8,
-      roughness: 0.15,
-      metalness: 0.9,
-    });
-
-    const hotGeneratorMat = new THREE.MeshStandardMaterial({
-      color: 0xef4444,
-      roughness: 0.2,
-      metalness: 0.8,
-      emissive: 0xd97706,
-      emissiveIntensity: 0.5,
-    });
-
-    const coldEvaporatorMat = new THREE.MeshStandardMaterial({
-      color: 0x38bdf8,
-      roughness: 0.1,
-      metalness: 0.85,
-      emissive: 0x0284c7,
-      emissiveIntensity: 0.4,
-    });
-
-    const condenserFinsMat = new THREE.MeshStandardMaterial({
-      color: 0x64748b,
-      roughness: 0.3,
-      metalness: 0.85,
-    });
-
     // --- 3D EINSTEIN-SZILARD REFRIGERATOR ASSEMBLY ---
-    const fridgeGroup = new THREE.Group();
-    scene.add(fridgeGroup);
-
-    // 1. Hermetic Welded Steel Boiler / Bubble-Pump Generator
-    const generator = new THREE.Mesh(
-      new THREE.CylinderGeometry(0.9, 0.9, 3.4, 24),
-      hotGeneratorMat,
-    );
-    generator.position.set(3.4, -1.2, 0);
-    generator.castShadow = true;
-    fridgeGroup.add(generator);
-
-    const bubbleTube = new THREE.Mesh(
-      new THREE.CylinderGeometry(0.12, 0.12, 4.2, 16),
-      condenserFinsMat,
-    );
-    bubbleTube.position.set(3.4, 1.4, 0);
-    fridgeGroup.add(bubbleTube);
-
-    const heater = new THREE.Mesh(
-      new THREE.CylinderGeometry(1.05, 1.05, 0.8, 24),
-      new THREE.MeshStandardMaterial({ color: 0xef4444, emissive: 0xb91c1c, roughness: 0.3 }),
-    );
-    heater.position.set(3.4, -2.6, 0);
-    heater.castShadow = true;
-    fridgeGroup.add(heater);
-
-    // 2. Serpentine Condenser Coil Heat Exchanger
-    const condenserGroup = new THREE.Group();
-    condenserGroup.position.set(2.2, 2.6, 0);
-
-    const condenserPts: THREE.Vector3[] = [];
-    for (let c = 0; c < 5; c++) {
-      const y = (c - 2) * 0.4;
-      const xLeft = -1.2;
-      const xRight = 1.2;
-      condenserPts.push(new THREE.Vector3(c % 2 === 0 ? xLeft : xRight, y, 0));
-      condenserPts.push(new THREE.Vector3(c % 2 === 0 ? xRight : xLeft, y, 0));
-    }
-    const condenserCurve = new THREE.CatmullRomCurve3(condenserPts);
-    const condenserGeo = new THREE.TubeGeometry(condenserCurve, 60, 0.09, 8, false);
-    const condenserMesh = new THREE.Mesh(condenserGeo, condenserFinsMat);
-    condenserMesh.castShadow = true;
-    condenserGroup.add(condenserMesh);
-
-    for (let f = 0; f < 8; f++) {
-      const fin = new THREE.Mesh(new THREE.BoxGeometry(0.04, 2.2, 0.8), condenserFinsMat);
-      fin.position.set(-1.0 + f * 0.28, 0, 0);
-      condenserGroup.add(fin);
-    }
-    fridgeGroup.add(condenserGroup);
-
-    // 3. Evaporator Freezing Chamber
-    const evaporator = new THREE.Mesh(new THREE.BoxGeometry(3.6, 2.6, 2.6), coldEvaporatorMat);
-    evaporator.position.set(-2.8, 1.8, 0);
-    evaporator.castShadow = true;
-    fridgeGroup.add(evaporator);
-
-    for (let s = 0; s < 3; s++) {
-      const shelf = new THREE.Mesh(
-        new THREE.BoxGeometry(3.2, 0.05, 2.2),
-        new THREE.MeshStandardMaterial({ color: 0xe0f2fe, roughness: 0.1 }),
-      );
-      shelf.position.set(-2.8, 0.9 + s * 0.7, 0);
-      fridgeGroup.add(shelf);
-    }
-
-    // 4. Absorber Vessel with Horizontal Heat Radiating Rings
-    const absorber = new THREE.Mesh(new THREE.CylinderGeometry(0.85, 0.85, 3.4, 24), steelPipeMat);
-    absorber.position.set(-2.8, -1.4, 0);
-    absorber.castShadow = true;
-    fridgeGroup.add(absorber);
-
-    for (let a = 0; a < 6; a++) {
-      const ring = new THREE.Mesh(new THREE.TorusGeometry(0.92, 0.05, 8, 24), steelPipeMat);
-      ring.rotation.x = Math.PI / 2;
-      ring.position.set(-2.8, -2.6 + a * 0.5, 0);
-      fridgeGroup.add(ring);
-    }
-
-    // 5. Counter-Flow Concentric Liquid Heat Exchanger Loop
-    const economizerCurve = new THREE.CatmullRomCurve3([
-      new THREE.Vector3(3.4, -0.4, 0),
-      new THREE.Vector3(1.2, -0.8, 0.4),
-      new THREE.Vector3(-1.0, -1.2, 0.4),
-      new THREE.Vector3(-2.8, -0.6, 0),
-    ]);
-    const economizerGeo = new THREE.TubeGeometry(economizerCurve, 32, 0.14, 8, false);
-    const economizer = new THREE.Mesh(economizerGeo, steelPipeMat);
-    economizer.castShadow = true;
-    fridgeGroup.add(economizer);
-
-    // Return Gas Conduit
-    const h2PipeCurve = new THREE.CatmullRomCurve3([
-      new THREE.Vector3(-2.8, 0.5, 0),
-      new THREE.Vector3(0, 0.2, -0.5),
-      new THREE.Vector3(2.4, 1.2, -0.5),
-      new THREE.Vector3(3.4, 0.8, 0),
-    ]);
-    const h2PipeGeo = new THREE.TubeGeometry(h2PipeCurve, 32, 0.09, 8, false);
-    const h2Pipe = new THREE.Mesh(h2PipeGeo, steelPipeMat);
-    fridgeGroup.add(h2Pipe);
-
-    // --- GLOWING WORKING FLUID CONVECTION PARTICLES ---
-    const fluidCount = 120;
-    const fluidGeo = new THREE.BufferGeometry();
-    const fluidPos = new Float32Array(fluidCount * 3);
-    const fluidColors = new Float32Array(fluidCount * 3);
-
-    const glowTex = createGlowPointTexture();
-
-    for (let i = 0; i < fluidCount; i++) {
-      const idx = i * 3;
-      fluidPos[idx] = (lcg() - 0.5) * 6.0;
-      fluidPos[idx + 1] = (lcg() - 0.5) * 4.5;
-      fluidPos[idx + 2] = (lcg() - 0.5) * 0.4;
-
-      const progressX = (fluidPos[idx] + 3.0) / 6.0;
-      fluidColors[idx] = progressX;
-      fluidColors[idx + 1] = 0.5 + (1 - progressX) * 0.4;
-      fluidColors[idx + 2] = 1.0 - progressX * 0.8;
-    }
-
-    fluidGeo.setAttribute("position", new THREE.BufferAttribute(fluidPos, 3));
-    fluidGeo.setAttribute("color", new THREE.BufferAttribute(fluidColors, 3));
-
-    const fluidPoints = new THREE.Points(
-      fluidGeo,
-      new THREE.PointsMaterial({
-        size: 0.38,
-        map: glowTex,
-        vertexColors: true,
-        transparent: true,
-        opacity: 0.9,
-        blending: THREE.AdditiveBlending,
-        depthWrite: false,
-      }),
-    );
-    fridgeGroup.add(fluidPoints);
+    const model = buildEinsteinRefrigeratorModel();
+    scene.add(model.rootGroup);
 
     // --- RENDER LOOP & REAL-TIME THERMOSIPHON CIRCULATION ---
     let reqId: number;
-    let _renderedSteps = 0;
 
     const animate = () => {
       reqId = requestAnimationFrame(animate);
-      _renderedSteps += 1;
       const delta = 1 / 60;
       const p = live.current;
 
-      const fPos = fluidPos;
+      const fPos = model.fluidPositions;
       const circSpeed = (p.isHeating ? p.coolingWatts / 70 : 0) * 3.5 * delta;
-      coldEvaporatorMat.emissiveIntensity = Math.min(1.3, Math.max(0.08, -p.evapTempC / 35));
-      coldEvaporatorMat.color.setHex(p.evapTempC < -10 ? 0x7dd3fc : 0x64748b);
+      model.materials.coldEvaporator.emissiveIntensity = Math.min(
+        1.3,
+        Math.max(0.08, -p.evapTempC / 35),
+      );
+      model.materials.coldEvaporator.color.setHex(p.evapTempC < -10 ? 0x7dd3fc : 0x64748b);
+      model.materials.heaterGlow.emissiveIntensity = p.isHeating
+        ? Math.min(1.5, 0.4 + (p.heatInputWatts / 300) * 0.8)
+        : 0.05;
 
-      for (let i = 0; i < fluidCount; i++) {
+      for (let i = 0; i < model.fluidCount; i++) {
         const idx = i * 3;
 
         if (fPos[idx] > 2.0 && fPos[idx + 1] < 2.0) {
@@ -314,7 +146,7 @@ export function EinsteinRefrigerator3D() {
           fPos[idx] += circSpeed;
         }
       }
-      fluidGeo.attributes.position.needsUpdate = true;
+      model.fluidPoints.geometry.attributes.position.needsUpdate = true;
 
       controls.update();
       renderer.render(scene, camera);
@@ -324,6 +156,7 @@ export function EinsteinRefrigerator3D() {
 
     return () => {
       cancelAnimationFrame(reqId);
+      model.dispose();
       studio.dispose();
     };
   }, [live]);
@@ -448,17 +281,17 @@ export function EinsteinRefrigerator3D() {
                 ["generator", "Boiler Generator"],
                 ["condenser", "Condenser Fins"],
                 ["evaporator", "Cold Evaporator"],
-                ["absorber", "Absorber Rings"],
+                ["absorber", "Absorber Column"],
               ] as const
-            ).map(([id, label]) => (
+            ).map(([preset, label]) => (
               <button
-                key={id}
+                key={preset}
                 type="button"
-                onClick={() => applyCameraPreset(id)}
-                className={`px-2 py-0.5 sm:px-2.5 sm:py-1 rounded-lg font-sans whitespace-nowrap shrink-0 transition-colors ${
-                  activeCamera === id
-                    ? "bg-amber-700 dark:bg-amber-600 text-white font-semibold shadow-xs"
-                    : "text-ink-700 dark:text-parchment-300 hover:bg-parchment-200 dark:hover:bg-ink-800"
+                onClick={() => applyCameraPreset(preset)}
+                className={`px-2 py-1 rounded-lg transition-colors font-medium shrink-0 ${
+                  activeCamera === preset
+                    ? "bg-amber-600 text-white shadow-xs"
+                    : "text-ink-700 dark:text-ink-300 hover:bg-parchment-200 dark:hover:bg-ink-800"
                 }`}
               >
                 {label}

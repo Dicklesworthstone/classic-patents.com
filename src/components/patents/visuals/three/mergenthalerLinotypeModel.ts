@@ -116,12 +116,18 @@ export function buildMergenthalerLinotypeModel(): MergenthalerLinotypeModelResul
   const frameGroup = new THREE.Group();
   rootGroup.add(frameGroup);
 
-  const basePlinth = new THREE.Mesh(trackGeo(new THREE.BoxGeometry(4.2, 0.4, 4.2)), materials.castIron);
+  const basePlinth = new THREE.Mesh(
+    trackGeo(new THREE.BoxGeometry(4.2, 0.4, 4.2)),
+    materials.castIron,
+  );
   basePlinth.position.y = -2.2;
   basePlinth.receiveShadow = true;
   frameGroup.add(basePlinth);
 
-  const mainColumn = new THREE.Mesh(trackGeo(new THREE.BoxGeometry(1.4, 4.8, 1.8)), materials.castIron);
+  const mainColumn = new THREE.Mesh(
+    trackGeo(new THREE.BoxGeometry(1.4, 4.8, 1.8)),
+    materials.castIron,
+  );
   mainColumn.position.set(0, 0.2, 0);
   mainColumn.castShadow = true;
   frameGroup.add(mainColumn);
@@ -138,7 +144,10 @@ export function buildMergenthalerLinotypeModel(): MergenthalerLinotypeModelResul
 
   for (let r = 0; r < 5; r++) {
     for (let c = 0; c < 12; c++) {
-      const keyMesh = new THREE.Mesh(trackGeo(new THREE.CylinderGeometry(0.045, 0.05, 0.08, 10)), materials.keyCaps);
+      const keyMesh = new THREE.Mesh(
+        trackGeo(new THREE.CylinderGeometry(0.045, 0.05, 0.08, 10)),
+        materials.keyCaps,
+      );
       keyMesh.position.set(-0.9 + c * 0.16, 0.15 - r * 0.06, -0.2 + r * 0.16);
       keyboardGroup.add(keyMesh);
     }
@@ -150,13 +159,19 @@ export function buildMergenthalerLinotypeModel(): MergenthalerLinotypeModelResul
   magazineGroup.rotation.x = Math.PI / 5;
   rootGroup.add(magazineGroup);
 
-  const magBody = new THREE.Mesh(trackGeo(new THREE.BoxGeometry(2.6, 3.2, 0.35)), materials.brassMatrix);
+  const magBody = new THREE.Mesh(
+    trackGeo(new THREE.BoxGeometry(2.6, 3.2, 0.35)),
+    materials.brassMatrix,
+  );
   magBody.castShadow = true;
   magazineGroup.add(magBody);
 
   // Channel Escapement Grooves
   for (let ch = -1.1; ch <= 1.1; ch += 0.22) {
-    const channel = new THREE.Mesh(trackGeo(new THREE.BoxGeometry(0.06, 3.0, 0.08)), materials.polishedSteel);
+    const channel = new THREE.Mesh(
+      trackGeo(new THREE.BoxGeometry(0.06, 3.0, 0.08)),
+      materials.polishedSteel,
+    );
     channel.position.set(ch, 0, 0.18);
     magazineGroup.add(channel);
   }
@@ -166,13 +181,19 @@ export function buildMergenthalerLinotypeModel(): MergenthalerLinotypeModelResul
   assemblerGroup.position.set(0, 0.2, 0.95);
   rootGroup.add(assemblerGroup);
 
-  const assemblerChute = new THREE.Mesh(trackGeo(new THREE.BoxGeometry(2.2, 0.35, 0.3)), materials.castIron);
+  const assemblerChute = new THREE.Mesh(
+    trackGeo(new THREE.BoxGeometry(2.2, 0.35, 0.3)),
+    materials.castIron,
+  );
   assemblerGroup.add(assemblerChute);
 
   // Brass Character Matrices
   const matrices: THREE.Mesh[] = [];
   for (let m = 0; m < 8; m++) {
-    const matrix = new THREE.Mesh(trackGeo(new THREE.BoxGeometry(0.12, 0.45, 0.22)), materials.brassMatrix);
+    const matrix = new THREE.Mesh(
+      trackGeo(new THREE.BoxGeometry(0.12, 0.45, 0.22)),
+      materials.brassMatrix,
+    );
     matrix.position.set(-0.7 + m * 0.18, 0.15, 0);
     matrix.castShadow = true;
     assemblerGroup.add(matrix);
@@ -182,7 +203,10 @@ export function buildMergenthalerLinotypeModel(): MergenthalerLinotypeModelResul
   // Sliding Spaceband Wedges (Claim 2)
   const spacebands: THREE.Mesh[] = [];
   for (let s = 0; s < 3; s++) {
-    const band = new THREE.Mesh(trackGeo(new THREE.ConeGeometry(0.08, 0.65, 3)), materials.polishedSteel);
+    const band = new THREE.Mesh(
+      trackGeo(new THREE.ConeGeometry(0.08, 0.65, 3)),
+      materials.polishedSteel,
+    );
     band.position.set(-0.35 + s * 0.36, 0.12, 0);
     band.castShadow = true;
     assemblerGroup.add(band);
@@ -194,15 +218,24 @@ export function buildMergenthalerLinotypeModel(): MergenthalerLinotypeModelResul
   potGroup.position.set(-1.6, -0.4, 0.3);
   rootGroup.add(potGroup);
 
-  const potBody = new THREE.Mesh(trackGeo(new THREE.CylinderGeometry(0.65, 0.55, 1.2, 20)), materials.castIron);
+  const potBody = new THREE.Mesh(
+    trackGeo(new THREE.CylinderGeometry(0.65, 0.55, 1.2, 20)),
+    materials.castIron,
+  );
   potBody.castShadow = true;
   potGroup.add(potBody);
 
-  const moltenPool = new THREE.Mesh(trackGeo(new THREE.CylinderGeometry(0.52, 0.52, 0.1, 16)), materials.moltenAlloy);
+  const moltenPool = new THREE.Mesh(
+    trackGeo(new THREE.CylinderGeometry(0.52, 0.52, 0.1, 16)),
+    materials.moltenAlloy,
+  );
   moltenPool.position.y = 0.52;
   potGroup.add(moltenPool);
 
-  const potPlunger = new THREE.Mesh(trackGeo(new THREE.CylinderGeometry(0.12, 0.12, 1.6, 12)), materials.polishedSteel);
+  const potPlunger = new THREE.Mesh(
+    trackGeo(new THREE.CylinderGeometry(0.12, 0.12, 1.6, 12)),
+    materials.polishedSteel,
+  );
   potPlunger.position.set(0, 0.9, 0);
   potGroup.add(potPlunger);
 
@@ -211,13 +244,19 @@ export function buildMergenthalerLinotypeModel(): MergenthalerLinotypeModelResul
   moldDiskGroup.position.set(-0.75, -0.3, 0.95);
   rootGroup.add(moldDiskGroup);
 
-  const moldDisk = new THREE.Mesh(trackGeo(new THREE.CylinderGeometry(0.72, 0.72, 0.22, 28)), materials.castIron);
+  const moldDisk = new THREE.Mesh(
+    trackGeo(new THREE.CylinderGeometry(0.72, 0.72, 0.22, 28)),
+    materials.castIron,
+  );
   moldDisk.rotation.x = Math.PI / 2;
   moldDisk.castShadow = true;
   moldDiskGroup.add(moldDisk);
 
   // Solid Cast Line-of-Type (Slug)
-  const slugMesh = new THREE.Mesh(trackGeo(new THREE.BoxGeometry(1.6, 0.22, 0.12)), materials.solidSlug);
+  const slugMesh = new THREE.Mesh(
+    trackGeo(new THREE.BoxGeometry(1.6, 0.22, 0.12)),
+    materials.solidSlug,
+  );
   slugMesh.position.set(0.6, 0, 0.2);
   slugMesh.visible = false;
   moldDiskGroup.add(slugMesh);
@@ -227,11 +266,17 @@ export function buildMergenthalerLinotypeModel(): MergenthalerLinotypeModelResul
   distributorArmGroup.position.set(1.4, 1.2, 0);
   rootGroup.add(distributorArmGroup);
 
-  const distArm = new THREE.Mesh(trackGeo(new THREE.CylinderGeometry(0.08, 0.08, 3.6, 12)), materials.castIron);
+  const distArm = new THREE.Mesh(
+    trackGeo(new THREE.CylinderGeometry(0.08, 0.08, 3.6, 12)),
+    materials.castIron,
+  );
   distArm.position.set(0, 1.6, 0);
   distributorArmGroup.add(distArm);
 
-  const distributorBar = new THREE.Mesh(trackGeo(new THREE.BoxGeometry(2.8, 0.15, 0.25)), materials.polishedSteel);
+  const distributorBar = new THREE.Mesh(
+    trackGeo(new THREE.BoxGeometry(2.8, 0.15, 0.25)),
+    materials.polishedSteel,
+  );
   distributorBar.position.set(-1.0, 3.4, -0.4);
   rootGroup.add(distributorBar);
 

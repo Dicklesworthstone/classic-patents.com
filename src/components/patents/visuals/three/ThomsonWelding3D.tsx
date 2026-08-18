@@ -6,13 +6,19 @@ import type * as THREE from "three";
 import { stepThomsonWelding } from "@/physics/catalogKernels";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { soundEngine } from "@/utils/soundEngine";
-import { buildThomsonWeldingModel, updateThomsonWeldingKinematics } from "./thomsonWeldingModel";
 import { StudioKernelChips } from "./StudioKernelChips";
 import { createThreeStudioScene, type StudioContext } from "./ThreeStudioScene";
+import { buildThomsonWeldingModel, updateThomsonWeldingKinematics } from "./thomsonWeldingModel";
 import { useLiveSimParams } from "./useLiveSimParams";
 import { usePatentAudio } from "./usePatentAudio";
 
-type CameraPreset = "iso" | "weld_junction" | "transformer_core" | "copper_clamps" | "compression_screw" | "top";
+type CameraPreset =
+  | "iso"
+  | "weld_junction"
+  | "transformer_core"
+  | "copper_clamps"
+  | "compression_screw"
+  | "top";
 
 export function ThomsonWelding3D() {
   const containerRef = useRef<HTMLDivElement>(null);

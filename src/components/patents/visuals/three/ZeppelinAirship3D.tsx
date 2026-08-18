@@ -6,13 +6,19 @@ import type * as THREE from "three";
 import { stepZeppelinAirship } from "@/physics/catalogKernels";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { soundEngine } from "@/utils/soundEngine";
-import { buildZeppelinAirshipModel, updateZeppelinAirshipKinematics } from "./zeppelinAirshipModel";
 import { StudioKernelChips } from "./StudioKernelChips";
 import { createThreeStudioScene, type StudioContext } from "./ThreeStudioScene";
 import { useLiveSimParams } from "./useLiveSimParams";
 import { usePatentAudio } from "./usePatentAudio";
+import { buildZeppelinAirshipModel, updateZeppelinAirshipKinematics } from "./zeppelinAirshipModel";
 
-type CameraPreset = "iso" | "girders_frame" | "engine_gondola" | "gas_cells" | "control_fins" | "top";
+type CameraPreset =
+  | "iso"
+  | "girders_frame"
+  | "engine_gondola"
+  | "gas_cells"
+  | "control_fins"
+  | "top";
 
 export function ZeppelinAirship3D() {
   const containerRef = useRef<HTMLDivElement>(null);
@@ -33,7 +39,7 @@ export function ZeppelinAirship3D() {
   const { isAudioMuted, toggleSound: toggleEngine } = usePatentAudio();
 
   const live = useLiveSimParams({
-    airspeedKmh: zep.forwardSpeedKmh,
+    airspeedKmh: zep.flightSpeedKmh,
     engineRpm: zep.propellerRpm,
     isCutaway,
     isAudioMuted,
@@ -223,7 +229,7 @@ export function ZeppelinAirship3D() {
         chips={[
           { label: "Gross", value: String(zep.grossBuoyancyKn), unit: "kN" },
           { label: "Net", value: String(zep.netLiftKn), unit: "kN" },
-          { label: "Speed", value: zep.forwardSpeedKmh.toFixed(1), unit: "km/h" },
+          { label: "Speed", value: zep.flightSpeedKmh.toFixed(1), unit: "km/h" },
           { label: "RPM", value: String(zep.propellerRpm), unit: "rpm" },
           { label: "Pitch", value: String(zep.pitchTrimDeg), unit: "°" },
           { label: "Drag", value: String(zep.parasiteDragKn), unit: "kN" },

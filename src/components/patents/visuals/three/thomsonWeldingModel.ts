@@ -120,10 +120,16 @@ export function buildThomsonWeldingModel(): ThomsonWeldingModelResult {
   transformerGroup.position.set(0, -1.2, 0);
   rootGroup.add(transformerGroup);
 
-  const coreMesh = new THREE.Mesh(trackGeo(new THREE.BoxGeometry(4.2, 1.4, 2.2)), materials.castIron);
+  const coreMesh = new THREE.Mesh(
+    trackGeo(new THREE.BoxGeometry(4.2, 1.4, 2.2)),
+    materials.castIron,
+  );
   transformerGroup.add(coreMesh);
 
-  const secondaryBar = new THREE.Mesh(trackGeo(new THREE.BoxGeometry(4.8, 0.4, 0.8)), materials.heavyCopper);
+  const secondaryBar = new THREE.Mesh(
+    trackGeo(new THREE.BoxGeometry(4.8, 0.4, 0.8)),
+    materials.heavyCopper,
+  );
   secondaryBar.position.y = 0.9;
   transformerGroup.add(secondaryBar);
 
@@ -131,12 +137,18 @@ export function buildThomsonWeldingModel(): ThomsonWeldingModelResult {
   const clampGroup = new THREE.Group();
   rootGroup.add(clampGroup);
 
-  const leftJaw = new THREE.Mesh(trackGeo(new THREE.BoxGeometry(1.4, 1.6, 1.4)), materials.heavyCopper);
+  const leftJaw = new THREE.Mesh(
+    trackGeo(new THREE.BoxGeometry(1.4, 1.6, 1.4)),
+    materials.heavyCopper,
+  );
   leftJaw.position.set(-1.4, 0.4, 0);
   leftJaw.castShadow = true;
   clampGroup.add(leftJaw);
 
-  const rightJaw = new THREE.Mesh(trackGeo(new THREE.BoxGeometry(1.4, 1.6, 1.4)), materials.heavyCopper);
+  const rightJaw = new THREE.Mesh(
+    trackGeo(new THREE.BoxGeometry(1.4, 1.6, 1.4)),
+    materials.heavyCopper,
+  );
   rightJaw.position.set(1.4, 0.4, 0);
   rightJaw.castShadow = true;
   clampGroup.add(rightJaw);
@@ -260,7 +272,7 @@ export function updateThomsonWeldingKinematics(
       const radius = seed * 1.8;
       const angle = (i * 2.399963) % (Math.PI * 2);
       pos[idx] = Math.cos(angle) * radius;
-      pos[idx + 1] = 0.4 + Math.sin(seed * Math.PI) * 1.2 - (seed ** 2) * 1.4;
+      pos[idx + 1] = 0.4 + Math.sin(seed * Math.PI) * 1.2 - seed ** 2 * 1.4;
       pos[idx + 2] = Math.sin(angle) * radius;
     }
     geo.attributes.position.needsUpdate = true;

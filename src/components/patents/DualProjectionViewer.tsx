@@ -504,7 +504,7 @@ export function DualProjectionViewer({ patent, initialView }: DualProjectionView
                       <span className="w-6 h-6 rounded-full bg-amber-700 text-white text-xs font-mono font-bold flex items-center justify-center">
                         {idx + 1}
                       </span>
-                      {item.title}
+                      <TextWithLatex text={item.title} />
                     </h5>
                     <div className="text-sm font-sans text-ink-800 dark:text-parchment-200 font-semibold leading-snug">
                       <TextWithLatex text={item.summary} />
@@ -517,11 +517,11 @@ export function DualProjectionViewer({ patent, initialView }: DualProjectionView
                         <span className="text-ink-500">
                           19th-C. Term:{" "}
                           <span className="italic text-ink-700 dark:text-ink-300">
-                            {item.archaicTerm}
+                            <TextWithLatex text={item.archaicTerm} />
                           </span>
                         </span>
                         <span className="text-amber-800 dark:text-amber-400 font-semibold">
-                          Modern: {item.modernEquivalent}
+                          Modern: <TextWithLatex text={item.modernEquivalent} />
                         </span>
                       </div>
                     )}
@@ -567,7 +567,7 @@ export function DualProjectionViewer({ patent, initialView }: DualProjectionView
                       >
                         <div className="flex items-center justify-between gap-2">
                           <span className="text-amber-900 dark:text-amber-400 font-serif font-bold text-base sm:text-lg">
-                            {sci.principle}
+                            <TextWithLatex text={sci.principle} />
                           </span>
                           <span className="text-[10px] font-mono font-bold px-2 py-0.5 rounded-md bg-amber-700/10 text-amber-800 dark:text-amber-400 border border-amber-700/20">
                             Authored Principle {idx + 1}

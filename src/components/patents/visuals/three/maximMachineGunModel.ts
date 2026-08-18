@@ -461,3 +461,57 @@ export function buildMaximMachineGunModel(): MaximMachineGunModel {
     },
   };
 }
+
+/**
+ * Updates Maxim machine gun recoil, toggle lock articulation, muzzle flash, and water jacket cutaway.
+ */
+export function updateMaximMachineGunKinematics(
+  model: MaximMachineGunModel,
+  _dt: number,
+  timeSec: number,
+  fireRateRpm: number,
+  recoilStrokeM: number,
+  barrelTempC: number,
+  waterEvapRateGs: number,
+  showMuzzleFlash: boolean,
+  isCutaway: boolean,
+): { isMuzzleFlash: boolean } {
+  const fireFreq = (fireRateRpm / 60) * 2 * Math.PI;
+  const cycleTime = (timeSec * fireFreq) % (Math.PI * 2);
+  const isFiring = Math.sin(cycleTime);
+
+  // 1. Barrel and barrel extension recoil rearward
+  const strokeScene = Math.max(0.06, recoilStrokeM * 5.0);
+  const recoilDist = isFiring > 0 ? isFiring * strokeScene : 0;
+  model.recoilingBarrelGroup.position.x = -recoilDist;
+
+  // 2. Toggle lock joint breaks upward out of battery
+  const toggleLift = isFiring > 0 ? Math.sin(isFiring * Math.PI) * 0.32 : 0;
+  model.toggleJointGroup.position.y = 0.12 + toggleLift;
+  model.toggleJointGroup.position.x = -0.8 - recoilDist * 1.8;
+
+  // 3. External crank handle rotates downward on cam impact
+  model.crankHandle.rotation.z = isFiring > 0 ? isFiring * 0.75 : 0;
+
+  // 4. Muzzle flash
+  const isMuzzleFlash = isFiring > 0.82 && showMuzzleFlash;
+  model.muzzleFlashMesh.visible = isMuzzleFlash;
+
+  // 5. Water jacket thermal heating & steam emission ($T >= 95 deg C)
+  const isBoiling = barrelTempC >= 95;
+  const steamMat = model.steamPoints.material as THREE.PointsMaterial;
+  steamMat.opacity = isBoiling ? Math.min(0.85, (waterEvapRateGs / 15) * 0.75) : 0;
+
+  // Water jacket color thermal shift
+  model.materials.jacketMat.color.setHex(
+    barrelTempC > 200 ? 0x991b1b : barrelTempC > 100 ? 0xd97706 : 0x273549,
+  );
+
+  // 6. Cutaway Mode
+  model.materials.jacketMat.opacity = isCutaway ? 0.35 : 1.0;
+  model.materials.jacketMat.transparent = isCutaway;
+  model.materials.gunmetal.opacity = isCutaway ? 0.45 : 1.0;
+  model.materials.gunmetal.transparent = isCutaway;
+
+  return { isMuzzleFlash };
+}

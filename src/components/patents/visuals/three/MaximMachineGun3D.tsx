@@ -1,12 +1,16 @@
 "use client";
 
-import { Flame, Volume2, VolumeX } from "lucide-react";
+import { Activity, Camera, Eye, EyeOff, Volume2, VolumeX, Zap } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import * as THREE from "three";
 import { FrankenSimEngine } from "@/physics/engine";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { soundEngine } from "@/utils/soundEngine";
-import { buildMaximMachineGunModel, type MaximMachineGunModel } from "./maximMachineGunModel";
+import {
+  buildMaximMachineGunModel,
+  type MaximMachineGunModel,
+  updateMaximMachineGunKinematics,
+} from "./maximMachineGunModel";
 import { StudioKernelChips } from "./StudioKernelChips";
 import { createThreeStudioScene, type StudioContext } from "./ThreeStudioScene";
 import { useLiveSimParams } from "./useLiveSimParams";
@@ -16,10 +20,11 @@ type CameraPreset = "iso" | "toggle_lock" | "water_jacket" | "belt_feed" | "spad
 
 export function MaximMachineGun3D() {
   const containerRef = useRef<HTMLDivElement>(null);
+  const [showUiOverlay, setShowUiOverlay] = useState<boolean>(true);
+  const [isCutaway, setIsCutaway] = useState<boolean>(false);
 
   // Automatic Recoil Ballistics Parameters
   const { params } = usePatentPhysics("us-319596-maxim-machine-gun");
-  const [showUiOverlay, setShowUiOverlay] = useState<boolean>(true);
   const fireRateRpm = params.firingRate ?? params.fireRateRpm ?? 600;
   const waterLevelLiters = params.waterLevel ?? 4;
   const recoilStrokeMm = params.recoilStroke ?? 19;
@@ -30,7 +35,7 @@ export function MaximMachineGun3D() {
     recoilStrokeMm,
   });
   const recoilStrokeM = maxim.recoilStrokeMm / 1000;
-  const [showMuzzleFlash, _setShowMuzzleFlash] = useState<boolean>(true);
+  const [showMuzzleFlash] = useState<boolean>(true);
   const [activeCamera, setActiveCamera] = useState<CameraPreset>("iso");
   const { isAudioMuted, toggleSound: toggleEngine } = usePatentAudio();
 
@@ -38,6 +43,7 @@ export function MaximMachineGun3D() {
     fireRateRpm,
     showMuzzleFlash,
     isAudioMuted,
+    isCutaway,
     recoilStrokeM,
     barrelTempC: maxim.barrelTempC,
     waterEvapRateGs: maxim.waterEvapRateGs,
@@ -98,13 +104,6 @@ export function MaximMachineGun3D() {
       container,
       cameraPos: [8.5, 5.5, 9.5],
       targetPos: [0.5, 0.2, 0],
-      fov: 38,
-      environmentStyle: "studio",
-      enableFloorGrid: true,
-      floorColor: 0x090d16,
-      gridColor: 0x1e293b,
-      ambientIntensity: 0.9,
-      sunIntensity: 1.6,
     });
 
     const { scene, camera, renderer, controls } = studio;
@@ -123,35 +122,29 @@ export function MaximMachineGun3D() {
 
     // Animation Loop
     let reqId: number;
+    let timeSec = 0;
     let renderedSteps = 0;
     let lastAudioShot = 0;
 
     const animate = () => {
       reqId = requestAnimationFrame(animate);
+      const dt = 1 / 60;
+      timeSec += dt;
       renderedSteps += 1;
       const p = live.current;
 
-      const fireFreq = p.fireOmegaRadPerS ?? (p.fireRateRpm / 60) * 2 * Math.PI;
-      const cycleTime = (renderedSteps * (1 / 60) * fireFreq) % (Math.PI * 2);
-      const isFiring = Math.sin(cycleTime);
+      const { isMuzzleFlash } = updateMaximMachineGunKinematics(
+        model,
+        dt,
+        timeSec,
+        p.fireRateRpm,
+        p.recoilStrokeM,
+        p.barrelTempC,
+        p.waterEvapRateGs,
+        p.showMuzzleFlash,
+        p.isCutaway,
+      );
 
-      // --- KINEMATIC RECOIL CYCLE ---
-      // 1. Barrel and barrel extension recoil rearward 19 mm
-      const strokeScene = Math.max(0.06, p.recoilStrokeM * 5.0);
-      const recoilDist = isFiring > 0 ? isFiring * strokeScene : 0;
-      model.recoilingBarrelGroup.position.x = -recoilDist;
-
-      // 2. Toggle lock joint breaks upward out of battery
-      const toggleLift = isFiring > 0 ? Math.sin(isFiring * Math.PI) * 0.32 : 0;
-      model.toggleJointGroup.position.y = 0.12 + toggleLift;
-      model.toggleJointGroup.position.x = -0.8 - recoilDist * 1.8;
-
-      // 3. External crank handle rotates downward on cam impact
-      model.crankHandle.rotation.z = isFiring > 0 ? isFiring * 0.75 : 0;
-
-      // 4. Muzzle flash & dynamic light synchronization
-      const isMuzzleFlash = isFiring > 0.82 && p.showMuzzleFlash;
-      model.muzzleFlashMesh.visible = isMuzzleFlash;
       flashLight.intensity = isMuzzleFlash ? 4.8 : 0;
 
       // Sound transducer trigger
@@ -162,17 +155,6 @@ export function MaximMachineGun3D() {
         }
       }
 
-      // 5. Water jacket thermal heating & steam emission ($T \ge 100^\circ\text{C}$)
-      const isBoiling = p.barrelTempC >= 95;
-      const steamMat = model.steamPoints.material as THREE.PointsMaterial;
-      steamMat.opacity = isBoiling ? Math.min(0.85, (p.waterEvapRateGs / 15) * 0.75) : 0;
-
-      // Water jacket color thermal shift
-      model.materials.jacketMat.color.setHex(
-        p.barrelTempC > 200 ? 0x991b1b : p.barrelTempC > 100 ? 0xd97706 : 0x273549,
-      );
-
-      controls.update();
       renderer.render(scene, camera);
     };
 
@@ -181,118 +163,91 @@ export function MaximMachineGun3D() {
     return () => {
       cancelAnimationFrame(reqId);
       model.dispose();
-      studio.dispose();
+      studio.cleanup();
     };
   }, [live]);
 
   return (
-    <div className="relative w-full h-[540px] sm:h-[640px] bg-slate-950 rounded-2xl overflow-hidden border border-amber-900/30 dark:border-ink-800 shadow-2xl flex flex-col">
+    <div className="relative w-full h-[620px] bg-parchment-900 rounded-2xl overflow-hidden border border-parchment-700 shadow-2xl flex flex-col">
       <div ref={containerRef} className="w-full h-full cursor-grab active:cursor-grabbing" />
 
-      {/* Top Floating Control Bar */}
-      <div className="absolute top-4 left-4 right-4 flex items-center justify-between pointer-events-none z-10">
-        <div className="bg-slate-900/90 backdrop-blur-md border border-slate-700/80 rounded-2xl px-4 py-2.5 shadow-xl pointer-events-auto">
-          <div className="flex items-center gap-2.5">
-            <Flame className="w-5 h-5 text-amber-400 animate-pulse" />
-            <div>
-              <h3 className="font-serif text-sm sm:text-base font-bold text-slate-100 flex items-center gap-2">
-                Maxim Automatic Recoil Machine Gun 3D
-                <span className="text-[10px] font-mono px-2 py-0.5 rounded-md bg-amber-500/20 text-amber-300 border border-amber-500/30">
-                  US 319,596
-                </span>
-              </h3>
-              <span className="text-[11px] font-mono text-slate-400 block">
-                Knee-Joint Toggle Lock · Water-Cooled Barrel Jacket · Canvas Belt Feed
-              </span>
-            </div>
-          </div>
+      {/* Top HUD Controls */}
+      <div className="absolute top-4 left-4 right-4 flex flex-wrap items-center justify-between gap-3 pointer-events-none z-10">
+        <div className="flex items-center gap-2 bg-parchment-950/80 backdrop-blur-md px-3.5 py-2 rounded-xl border border-parchment-700/60 shadow-lg pointer-events-auto">
+          <Activity className="w-4 h-4 text-amber-500 animate-pulse" />
+          <span className="text-xs font-mono font-bold text-parchment-100 uppercase tracking-wider">
+            Maxim Machine Gun 3D
+          </span>
+          <span className="text-[10px] font-mono px-2 py-0.5 rounded-full bg-amber-500/20 text-amber-300 border border-amber-500/30">
+            US Patent 319,596 (1885)
+          </span>
         </div>
 
-        {/* Camera Views & Audio */}
-        <div className="flex items-center gap-2 pointer-events-auto">
-          <div className="hidden sm:flex items-center bg-slate-900/90 backdrop-blur-md border border-slate-700/80 rounded-2xl p-1.5 shadow-xl">
+        {/* Camera Toolbar */}
+        <div className="flex items-center gap-1.5 bg-parchment-950/80 backdrop-blur-md p-1.5 rounded-xl border border-parchment-700/60 shadow-lg pointer-events-auto">
+          <Camera className="w-3.5 h-3.5 text-parchment-400 ml-1.5 mr-1" />
+          {(
+            [
+              ["iso", "Isometric"],
+              ["toggle_lock", "Toggle Lock"],
+              ["water_jacket", "Water Jacket"],
+              ["belt_feed", "Belt Feed"],
+              ["spade_grips", "Spade Grips"],
+              ["top", "Top"],
+            ] as [CameraPreset, string][]
+          ).map(([preset, label]) => (
             <button
+              key={preset}
               type="button"
-              onClick={() => applyCameraPreset("iso")}
-              className={`px-2.5 py-1 rounded-xl text-xs font-mono font-bold transition-colors ${
-                activeCamera === "iso"
-                  ? "bg-amber-600 text-white"
-                  : "text-slate-300 hover:text-white hover:bg-slate-800"
+              onClick={() => applyCameraPreset(preset)}
+              className={`px-2.5 py-1 text-xs font-sans rounded-lg transition-colors ${
+                activeCamera === preset
+                  ? "bg-amber-600 text-white font-semibold shadow-sm"
+                  : "text-parchment-300 hover:text-white hover:bg-parchment-800/60"
               }`}
             >
-              Overview
+              {label}
             </button>
-            <button
-              type="button"
-              onClick={() => applyCameraPreset("toggle_lock")}
-              className={`px-2.5 py-1 rounded-xl text-xs font-mono font-bold transition-colors ${
-                activeCamera === "toggle_lock"
-                  ? "bg-amber-600 text-white"
-                  : "text-slate-300 hover:text-white hover:bg-slate-800"
-              }`}
-            >
-              Toggle Lock
-            </button>
-            <button
-              type="button"
-              onClick={() => applyCameraPreset("water_jacket")}
-              className={`px-2.5 py-1 rounded-xl text-xs font-mono font-bold transition-colors ${
-                activeCamera === "water_jacket"
-                  ? "bg-amber-600 text-white"
-                  : "text-slate-300 hover:text-white hover:bg-slate-800"
-              }`}
-            >
-              Water Jacket
-            </button>
-            <button
-              type="button"
-              onClick={() => applyCameraPreset("belt_feed")}
-              className={`px-2.5 py-1 rounded-xl text-xs font-mono font-bold transition-colors ${
-                activeCamera === "belt_feed"
-                  ? "bg-amber-600 text-white"
-                  : "text-slate-300 hover:text-white hover:bg-slate-800"
-              }`}
-            >
-              Belt Feed
-            </button>
-            <button
-              type="button"
-              onClick={() => applyCameraPreset("spade_grips")}
-              className={`px-2.5 py-1 rounded-xl text-xs font-mono font-bold transition-colors ${
-                activeCamera === "spade_grips"
-                  ? "bg-amber-600 text-white"
-                  : "text-slate-300 hover:text-white hover:bg-slate-800"
-              }`}
-            >
-              Spade Grips
-            </button>
-          </div>
+          ))}
+        </div>
+
+        {/* Toggles */}
+        <div className="flex items-center gap-1.5 bg-parchment-950/80 backdrop-blur-md p-1.5 rounded-xl border border-parchment-700/60 shadow-lg pointer-events-auto">
+          <button
+            type="button"
+            onClick={() => setIsCutaway(!isCutaway)}
+            title={isCutaway ? "Solid Receiver" : "Cutaway Interior"}
+            className={`flex items-center gap-1 px-2.5 py-1 text-xs font-sans rounded-lg transition-colors ${
+              isCutaway
+                ? "bg-amber-600/30 text-amber-200 border border-amber-500/40"
+                : "text-parchment-300 hover:text-white hover:bg-parchment-800/60"
+            }`}
+          >
+            {isCutaway ? <EyeOff className="w-3.5 h-3.5" /> : <Eye className="w-3.5 h-3.5" />}
+            <span>{isCutaway ? "Cutaway" : "Solid"}</span>
+          </button>
 
           <button
             type="button"
             onClick={toggleSound}
-            className="p-2.5 rounded-xl bg-slate-900/90 border border-slate-700/80 text-slate-200 hover:text-white transition-colors shadow-lg"
-            title={isAudioMuted ? "Unmute gunshot sound" : "Mute gunshot sound"}
+            title={isAudioMuted ? "Unmute Sound" : "Mute Sound"}
+            className="p-1.5 rounded-lg text-xs text-parchment-400 hover:text-white hover:bg-parchment-800 transition-colors"
           >
-            {isAudioMuted ? (
-              <VolumeX className="w-4 h-4 text-slate-400" />
-            ) : (
-              <Volume2 className="w-4 h-4 text-emerald-400" />
-            )}
+            {isAudioMuted ? <VolumeX className="w-4 h-4" /> : <Volume2 className="w-4 h-4" />}
           </button>
           <button
             type="button"
             onClick={() => setShowUiOverlay(!showUiOverlay)}
-            className="px-3 py-2.5 rounded-xl bg-slate-900/90 border border-slate-700/80 text-slate-200 hover:text-white text-xs font-mono font-bold transition-colors shadow-lg"
+            className="p-1.5 rounded-lg text-xs text-parchment-400 hover:text-white hover:bg-parchment-800 transition-colors"
           >
-            {showUiOverlay ? "Hide HUD" : "Show HUD"}
+            <Zap className="w-4 h-4 text-amber-400" />
           </button>
         </div>
       </div>
 
       <StudioKernelChips
         visible={showUiOverlay}
-        title="MAXIM RECOIL BALLISTICS"
+        title="Maxim recoil ballistics"
         chips={[
           { label: "Cyclic Rate", value: String(Math.round(fireRateRpm)), unit: "rds/min" },
           { label: "Recoil Stroke", value: String(Math.round(recoilStrokeM * 1000)), unit: "mm" },

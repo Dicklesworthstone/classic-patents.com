@@ -1,10 +1,11 @@
+import { teslaCoil593138ArchivalEdition } from "@/data/editions/teslaCoil593138Edition";
 import type { Patent } from "@/types/patent";
 
 /**
  * Canonical catalogue record for the four-sheet facsimile inspected on
  * 2026-08-18. Its title sheet and specification identify it as US 593,138,
- * not US 533,367. The complete source face remains deliberately withheld
- * until a separate manual React edition has been prepared against this PDF.
+ * not US 533,367. The complete source face is the separately authored manual
+ * React edition, checked against this pinned PDF.
  */
 export const teslaCoil593138Patent: Patent = {
   id: "us-593138-tesla-coil",
@@ -27,6 +28,14 @@ export const teslaCoil593138Patent: Patent = {
   originalPdfUrl: "/patents/pdfs/us-593138-tesla-coil.pdf",
   googlePatentsUrl: "https://patents.google.com/patent/US593138A/en",
   usptoClassification: "H01F 38/00 (transformers; resonant coils)",
+  originalTextAsset: {
+    url: "/patents/transcripts/us-593138-tesla-coil-reviewed.txt",
+    pageCount: 4,
+    kind: "reviewed-transcription",
+    reviewedBy: "Classic Patents editorial agent (GPT-5.6)",
+    reviewedAt: "2026-08-18",
+    sourcePdfSha256: teslaCoil593138ArchivalEdition.sourcePdfSha256,
+  },
   originalText: `UNITED STATES PATENT OFFICE.
 NIKOLA TESLA, OF NEW YORK, N. Y.
 
@@ -36,6 +45,7 @@ SPECIFICATION forming part of Letters Patent No. 593,138, dated November 2, 1897
 Application filed March 20, 1897. Serial No. 623,453. (No model.)
 
 The present application is based upon an apparatus which I have devised and employed for the purpose of developing electrical currents of high potential.`,
+  archivalEdition: teslaCoil593138ArchivalEdition,
   plainEnglishExplanation: {
     overview:
       "The problem addressed here is insulation, not a generic spark-coil recipe. Tesla arranges the winding so that neighboring turns have relatively little voltage between them, while the terminal at the greatest potential is physically remote from the primary and from a person handling the apparatus.",
@@ -71,19 +81,21 @@ The present application is based upon an apparatus which I have devised and empl
     scientificPrinciples: [
       {
         principle: "Voltage grading along a winding",
-        formula: "V_{adjacent} = V_{n+1} - V_n",
+        formula:
+          "The voltage between adjacent turns is the difference between their local potentials.",
         explanation:
           "The historical claim is architectural: distribute the change in potential along a long winding rather than allowing a large change across closely adjacent conductors.",
       },
       {
         principle: "Standing-wave length described by the specification",
-        formula: "l \u2248 \u03bb / 4",
+        formula:
+          "Tesla specifies a secondary approximately one quarter of the electrical disturbance wavelength.",
         explanation:
-          "Tesla specifies a secondary length approximately one-quarter of the electrical disturbance wavelength so the remote terminal is at maximum potential. A complete manual edition will preserve and explain the source's worked example in full.",
+          "Tesla specifies a secondary length approximately one-quarter of the electrical disturbance wavelength so the remote terminal is at maximum potential. The manual edition preserves and explains the source's numerical example.",
       },
     ],
     whyItMattersToday:
-      "This patent records an early high-potential transformer design whose insulation strategy is geometric and system-level. Its complete specification and figure-by-figure reading are intentionally not yet presented as a finished archival edition.",
+      "This patent records a high-potential transformer design whose insulation strategy is geometric and system-level. The complete source reading retains Tesla's terminal arrangement, quarter-wave example, and Figure 1 to 3 constructions beside their precise modern companions.",
   },
   claims: [
     {
@@ -92,7 +104,7 @@ The present application is based upon an apparatus which I have devised and empl
       originalText:
         "A transformer for developing or converting currents of high potential, comprising a primary and secondary coil, one terminal of the secondary being electrically connected with the primary, and with earth when the transformer is in use, as set forth.",
       plainEnglish:
-        "Claims the primary-secondary transformer arrangement in which one secondary terminal is connected both to the primary and, in operation, to earth.",
+        "Claims a high-potential transformer having primary and secondary coils, with one secondary terminal electrically tied to the primary and, during operation, to earth. The claim makes that specified three-way relationship the legal limitation, without requiring the later flat-spiral geometry.",
       keyInnovations: ["primary-secondary connection", "grounded secondary terminal"],
     },
     {
@@ -101,7 +113,7 @@ The present application is based upon an apparatus which I have devised and empl
       originalText:
         "A transformer for developing or converting currents of high potential, comprising a primary and secondary wound in the form of a flat spiral, the end of the secondary adjacent to the primary being electrically connected therewith and with earth when the transformer is in use, as set forth.",
       plainEnglish:
-        "Narrows the transformer to a flat-spiral winding and specifies the connection at the secondary end nearest the primary.",
+        "Claims the same high-potential transformer when its primary and secondary are wound as a flat spiral. It specifically fixes the secondary end nearest the primary as the end electrically connected both to the primary and, in use, to earth.",
       keyInnovations: ["flat spiral winding", "adjacent secondary terminal"],
     },
     {
@@ -110,7 +122,7 @@ The present application is based upon an apparatus which I have devised and empl
       originalText:
         "A transformer for developing or converting currents of high potential comprising a primary and secondary wound in the form of a spiral, the secondary being inside of, and surrounded by, the convolutions of the primary and having its adjacent terminal electrically connected therewith and with earth when the transformer is in use, as set forth.",
       plainEnglish:
-        "Claims the nested spiral geometry: the secondary lies inside the primary turns and its adjacent terminal shares the primary-and-earth connection.",
+        "Claims a spiral arrangement in which the secondary lies inside and is surrounded by the primary turns. The secondary terminal adjacent to the primary must be electrically connected both to that primary and, while in use, to earth; that nested placement distinguishes this claim from the broader first claim.",
       keyInnovations: ["nested spiral geometry", "surrounding primary winding"],
     },
     {
@@ -119,7 +131,7 @@ The present application is based upon an apparatus which I have devised and empl
       originalText:
         "In a system for the conversion and transmission of electrical energy, the combination of two transformers, one for raising, the other for lowering, the potential of the currents, the said transformers having one terminal of the longer or fine-wire coils connected to line, and the other terminals adjacent to the shorter coils electrically connected therewith and to the earth, as set forth.",
       plainEnglish:
-        "Claims a transmission system with a step-up transformer at one end and a step-down transformer at the other, with the specified line and earth connections.",
+        "Claims a transmission system using two transformers: one raises and the other lowers the current potential. The longer or fine-wire coil has a terminal on the line; its other terminal, adjacent to the shorter coil, is electrically connected to that coil and to earth at each transformer.",
       keyInnovations: ["step-up transformer", "step-down transformer", "line transmission pair"],
     },
   ],
@@ -239,7 +251,7 @@ The present application is based upon an apparatus which I have devised and empl
     civilizationalImpact:
       "The source documents a practical concern central to high-voltage engineering: insulation coordination between winding turns, terminals, lines, and ground.",
     aftermath:
-      "Editorial treatment of the historical context remains provisional until the full manual source edition is prepared and independently reviewed.",
+      "The complete manual source edition is prepared against the four-sheet facsimile; independent facsimile and live-route acceptance remains a separate root quality-control step.",
   },
   tags: ["Nikola Tesla", "transformer", "high potential", "winding insulation"],
   stats: {

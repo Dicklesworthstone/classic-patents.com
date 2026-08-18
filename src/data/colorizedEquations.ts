@@ -2162,8 +2162,7 @@ export const ALL_COLORIZED_EQUATIONS: Record<string, ColorizedEquation[]> = {
           role: "Spatial wavelength of the oscillatory electrical impulse",
           unit: "Meters (m)",
           dimension: "[L]",
-          explanation:
-            "Governed by the LC resonant period of the primary tank discharge.",
+          explanation: "Governed by the LC resonant period of the primary tank discharge.",
         },
         {
           id: "phase_vel",
@@ -2184,8 +2183,7 @@ export const ALL_COLORIZED_EQUATIONS: Record<string, ColorizedEquation[]> = {
           role: "Natural oscillatory frequency of the tuned transformer",
           unit: "Hertz (Hz)",
           dimension: "[T^-1]",
-          explanation:
-            "Typically 50 kHz to 500 kHz in Tesla's high-power experimental stations.",
+          explanation: "Typically 50 kHz to 500 kHz in Tesla's high-power experimental stations.",
         },
       ],
       pedagogicalNote:

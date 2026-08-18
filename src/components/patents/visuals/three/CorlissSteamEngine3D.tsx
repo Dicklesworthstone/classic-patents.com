@@ -101,12 +101,10 @@ export function CorlissSteamEngine3D() {
 
     // Animation Loop
     let reqId: number;
-    let renderedSteps = 0;
     let crankAngle = 0;
 
     const animate = () => {
       reqId = requestAnimationFrame(animate);
-      renderedSteps += 1;
       const delta = 1 / 60;
       const p = live.current;
 

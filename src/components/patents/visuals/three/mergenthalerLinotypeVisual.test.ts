@@ -2,7 +2,10 @@ import { describe, expect, test } from "bun:test";
 import { readFileSync } from "node:fs";
 import { join } from "node:path";
 import { stepMergenthalerLinotype } from "@/physics/machineKernels";
-import { buildMergenthalerLinotypeModel, updateMergenthalerLinotypeKinematics } from "./mergenthalerLinotypeModel";
+import {
+  buildMergenthalerLinotypeModel,
+  updateMergenthalerLinotypeKinematics,
+} from "./mergenthalerLinotypeModel";
 
 const VISUALS_DIRECTORY = join(process.cwd(), "src/components/patents/visuals");
 
@@ -62,7 +65,11 @@ describe("US 313,224 Ottmar Mergenthaler Linotype visual & mechanics boundary", 
   });
 
   test("computes genuine Linotype justification width and eutectic pot properties in SI units", () => {
-    const result = stepMergenthalerLinotype({ matrixRatePerMin: 60, spacebandWedgeMm: 6.5, potTempC: 260 });
+    const result = stepMergenthalerLinotype({
+      matrixRatePerMin: 60,
+      spacebandWedgeMm: 6.5,
+      potTempC: 260,
+    });
     expect(result.justificationWidthMm).toBeGreaterThan(100);
     expect(result.solidificationTimeMs).toBe(450);
     expect(result.brinellHardness).toBe(24);

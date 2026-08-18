@@ -1,0 +1,60 @@
+--- REVIEWED TRANSCRIPTION PAGE 1 OF 5 ---
+No. 727,650. C. LINDE. PROCESS OF PRODUCING LOW TEMPERATURES, THE LIQUEFACTION OF GASES, AND THE SEPARATION OF THE CONSTITUENTS OF GASEOUS MIXTURES. APPLICATION FILED JULY 9, 1895. (NO MODEL.)
+
+Sole source drawing sheet. Witnesses: Thos. W. Thomas; Geo. W. Eisenbraun. Inventor: Carl Linde. Attorney signature on sheet.
+
+--- REVIEWED TRANSCRIPTION PAGE 2 OF 5 ---
+UNITED STATES PATENT OFFICE. CARL LINDE, OF MUNICH, GERMANY, ASSIGNOR OF ONE-THIRD TO CHARLES F. BRUSH, OF CLEVELAND, OHIO. PROCESS OF PRODUCING LOW TEMPERATURES, THE LIQUEFACTION OF GASES, AND THE SEPARATION OF THE CONSTITUENTS OF GASEOUS MIXTURES. SPECIFICATION forming part of Letters Patent No. 727,650, dated May 12, 1903. Application filed July 9, 1895. Serial No. 595,371. (No specimens.)
+
+To all whom it may concern:
+
+Be it known that I, CARL LINDE, professor, a subject of the King of Bavaria, residing at Munich, in the Kingdom of Bavaria, German Empire, have invented new and useful Improvements in Processes of Producing Low Temperatures, the Liquefaction of Gases, and the Separation of the Constituents of Gaseous Mixtures, of which the following is a specification.
+
+My invention relates to improvements in processes for producing very low temperatures, especially for the purpose of liquefying gases or mixtures of the same, such as atmospheric air, and also in separating the constituents of gaseous mixtures. The method of separating the components of atmospheric air is based upon a fact well known to physicists—that oxygen, although having a boiling-point higher than nitrogen, can only be liquefied simultaneously with the nitrogen or part of it, but that the nitrogen is first evaporated on volatilizing the liquefied mixture, so that the mixture will become richer in oxygen the longer the volatilization is continued.
+
+The liquefaction of gases, such as atmospheric air, has hitherto been carried out by producing successive liquefaction and volatilization of liquids of gradually-increasing volatility, such as carbonic acid, nitrous oxid, ethylene, and the like. This method, however, has not proved capable of practical application for the purpose of attaining such low temperatures as that required for liquefying atmospheric air. My process for reaching such low temperatures is based upon the discovery made by Joule and Thomson more than forty years ago that atmospheric air when discharged through a valve from a space under high pressure into a space maintained at a lower pressure by causing the gas to pass off will have a lower temperature. T − T′ = (p² − p′²)(289) / 4T². I make use of this decrease in temperature for gradually reducing the temperature to the desired degree by establishing a constant forced circulation of the air between the high-pressure space and the low-pressure space. I am enabled by this method to liquefy atmospheric air and to practically separate the oxygen from the nitrogen.
+
+--- REVIEWED TRANSCRIPTION PAGE 3 OF 5 ---
+My invention will best be understood when described in connection with the annexed diagrammatic drawing, which represents one form of an apparatus for carrying out my process. In the drawing, C designates a compressor. K is the refrigerator. G′ is a counter-current apparatus consisting of two coiled pipes, one within the other. P is a primary compressor. V′ is a closed vessel beneath the counter-current apparatus into which projects nozzle N with regulating-valve R′. The high-pressure channel extends through K and the inner channel of G′ to R′; the low-pressure channel returns through the space between the pipes to compressor C.
+
+For liquefying atmospheric air I have found a pressure of twenty-five atmospheres in the low-pressure space and seventy-five in the high-pressure space very effective. I have also found that cooling the air which leaves the compressor to a temperature t³ of about 10° centigrade or less to be sufficient. The opposite flows in G′ exchange temperatures until air is liquefied in V′. Vessel V², coil S, and counter-current apparatus G² and G³ further separate nitrogen from oxygen; nitrogen may be gaseous and oxygen gaseous or liquid.
+
+The word “condensation” as used in some of the claims means and comprehends the reduction of the volume of the gas to any desired degree.
+
+--- REVIEWED TRANSCRIPTION PAGE 4 OF 5 ---
+What I claim as new is—
+
+1. The process of refrigerating air or other gas consisting in compressing the gas, cooling it, expanding it through a suitable valve directly into a space maintained at a lower pressure, and causing the expanded cold gas to absorb heat to its full capacity from compressed gas about to be expanded, substantially as described.
+
+2. The process of refrigerating and liquefying air or other gas consisting in compressing the gas, cooling it, expanding it through a suitable valve directly into a space maintained at a lower pressure and causing the expanded cold gas to absorb heat to its full capacity from compressed gas about to be expanded, whereby the gas is progressively cooled until its critical temperature is reached and a portion of it thereafter liquefies, substantially as described.
+
+3. The process of liquefying atmospheric air which consists in causing compressed and cooled air to condense by the continuous expansion of itself around the outside of the conduit in which it is held and through which it passes until the temperature of liquid air is attained, substantially as described.
+
+4. The process consisting in causing a compressed gaseous mixture to be expanded in such manner that its degree of temperature will be diminished, causing the cold expanded mixture to absorb heat to its full capacity from the gases about to be expanded, continuing these steps, whereby the mixture will be liquefied, and liberating the more volatile gas from the resulting liquid by causing the liquid to absorb heat from the mixture about to be expanded, substantially as described.
+
+5. The process consisting in causing compressed air to be expanded in such manner that its degree of temperature will be diminished, causing the cold expanded air to absorb heat to its full capacity from the air about to be expanded, continuing these steps, whereby the mixture will be liquefied, causing the resulting liquid to absorb heat from air about to be expanded, and causing the more volatile gas thus liberated, (nitrogen) to absorb heat from the air about to be expanded, substantially as described.
+
+6. The process consisting in causing compressed air to be expanded in such manner that its degree of temperature will be diminished, causing the cold expanded air to absorb heat to its full capacity from the air about to be expanded, continuing these steps, whereby the air will be liquefied, causing the resulting liquid to absorb heat from the air about to be expanded, causing the nitrogen thus liberated to absorb heat from the air about to be expanded, and causing the less volatile liquid remaining (oxygen), to absorb heat from the air about to be expanded, substantially as described.
+
+7. The process consisting in causing compressed air to be expanded in such manner that its degree of temperature will be diminished, causing the cold expanded air to absorb heat to its full capacity from the air about to be expanded, continuing these steps, whereby the gases will be liquefied, causing the resulting liquid to absorb heat from the air about to be expanded, causing the nitrogen thus volatilized to absorb heat from the air about to be expanded, causing the liquid oxygen thus separated from nitrogen to absorb heat from air about to be expanded, and causing gaseous oxygen thus liberated to absorb heat from air about to be expanded, substantially as described.
+
+8. The process of separating air into two parts, one rich in oxygen, and the other poor in oxygen; consisting in liquefying the air and subjecting the liquid to fractional distillation by heat derived from compressed air about to be liquefied, substantially as set forth.
+
+9. The process of separating air into two parts, one rich in oxygen, and the other poor in oxygen; consisting in liquefying the air, subjecting the liquid to fractional distillation by heat derived from compressed air about to be liquefied, and utilizing the distilled nitrogen to cool compressed air about to be liquefied, substantially as set forth.
+
+10. The process of separating air into two parts, one rich in oxygen and the other poor in oxygen; consisting in liquefying the air, subjecting the liquid to fractional distillation by heat derived from compressed air about to be liquefied, and utilizing the distilled oxygen to cool compressed air about to be liquefied, substantially as set forth.
+
+--- REVIEWED TRANSCRIPTION PAGE 5 OF 5 ---
+11. The fractional distillation of a liquefied mixed gas by heat derived from previously-cooled similar gas undergoing condensation at a higher pressure.
+
+12. A process for separating air or other mixed gas into its constituent gases, consisting in liquefying the gas and subjecting the liquid to fractional distillation by heat derived from previously-cooled gas undergoing condensation at a higher pressure.
+
+13. A process for separating air or other mixed gas into its constituent gases, consisting in liquefying the gas and subjecting the liquid to fractional distillation by heat derived from previously-cooled similar gas undergoing condensation at a higher pressure, and wholly or partly maintaining the supply of liquid by liquid gas thus obtained.
+
+14. A process for separating air or other mixed gas into its constituent gases, consisting in liquefying the gas and subjecting the liquid to fractional distillation by heat derived from previously-cooled gas undergoing condensation at a higher pressure and utilizing the products of distillation to cool gas about to be liquefied.
+
+In testimony whereof I have signed my name to this specification in the presence of two subscribing witnesses.
+
+CARL LINDE.
+
+Witnesses: EMIL WENZEL, ALEX NEGELE.

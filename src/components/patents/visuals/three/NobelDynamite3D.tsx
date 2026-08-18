@@ -1,28 +1,26 @@
 "use client";
 
-import { Activity, Camera, Eye, EyeOff, Flame, Volume2, VolumeX } from "lucide-react";
-import { useEffect, useRef, useState } from "react";
-import * as THREE from "three";
+import { Activity, Camera, Eye, EyeOff, Flame, Volume2, VolumeX, Zap } from "lucide-react";
+import { useEffect, useRef, useState, memo } from "react";
+import type * as THREE from "three";
 import { stepNobelDynamite } from "@/physics/catalogKernels";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
-import { createLcg } from "@/utils/lcg";
 import { soundEngine } from "@/utils/soundEngine";
-import { StudioKernelChips } from "./StudioKernelChips";
 import {
-  createGlowPointTexture,
-  createThreeStudioScene,
-  type StudioContext,
-} from "./ThreeStudioScene";
+  buildNobelDynamiteModel,
+  updateNobelDynamiteKinematics,
+} from "./nobelDynamiteModel";
+import { StudioKernelChips } from "./StudioKernelChips";
+import { createThreeStudioScene, type StudioContext } from "./ThreeStudioScene";
 import { useLiveSimParams } from "./useLiveSimParams";
 import { usePatentAudio } from "./usePatentAudio";
 
-const lcg = createLcg(1323);
+type CameraPreset = "iso" | "blasting_cap" | "matrix_cutaway" | "fuse" | "detonation_wave" | "top";
 
-type CameraPreset = "iso" | "blasting_cap" | "matrix_cutaway" | "fuse" | "top";
-
-export function NobelDynamite3D() {
+export const NobelDynamite3D = memo(function NobelDynamite3D() {
   const containerRef = useRef<HTMLDivElement>(null);
   const [showUiOverlay, setShowUiOverlay] = useState<boolean>(true);
+  const [isCutaway, setIsCutaway] = useState<boolean>(false);
 
   // Chemical Explosives Parameters
   const { params } = usePatentPhysics("us-78317-nobel-dynamite");
@@ -32,7 +30,6 @@ export function NobelDynamite3D() {
     capEnergyJoules: params.capEnergyJoules ?? 1.2,
   });
   const detonationVelocityMps = nobel.detonationVelocityMps;
-  const blastOverpressureMpa = nobel.blastOverpressureMpa;
   const [isFuseLit, setIsFuseLit] = useState<boolean>(false);
   const [activeCamera, setActiveCamera] = useState<CameraPreset>("iso");
   const { isAudioMuted, toggleSound: toggleEngine } = usePatentAudio();
@@ -43,7 +40,8 @@ export function NobelDynamite3D() {
     detonationVelocityMps,
     isFuseLit,
     isAudioMuted,
-    blastOverpressureMpa,
+    isCutaway,
+    blastOverpressureMpa: nobel.blastOverpressureMpa,
     isInitiated: nobel.isInitiated ? 1 : 0,
     chargeTransitUs: nobel.chargeTransitUs,
     flashDisplayMs: nobel.flashDisplayMs,
@@ -74,6 +72,10 @@ export function NobelDynamite3D() {
       case "fuse":
         camera.position.set(0, 4.8, 2.5);
         controls.target.set(0, 3.5, 0);
+        break;
+      case "detonation_wave":
+        camera.position.set(3.5, 2.0, 4.5);
+        controls.target.set(0, 0, 0);
         break;
       case "top":
         camera.position.set(0, 11.0, 0.1);
@@ -124,136 +126,28 @@ export function NobelDynamite3D() {
     cameraRef.current = camera;
     controlsRef.current = controls;
 
-    // Materials
-    const waxPaperMat = new THREE.MeshStandardMaterial({
-      color: 0xd97706,
-      roughness: 0.6,
-      metalness: 0.1,
-    });
-
-    const kieselguhrMatrixMat = new THREE.MeshStandardMaterial({
-      color: 0x92400e,
-      roughness: 0.9,
-      metalness: 0.05,
-      emissive: 0xff4400,
-      emissiveIntensity: 0,
-    });
-
-    const copperCapMat = new THREE.MeshStandardMaterial({
-      color: 0xca8a04,
-      roughness: 0.2,
-      metalness: 0.92,
-    });
-
-    const safetyFuseMat = new THREE.MeshStandardMaterial({
-      color: 0x1c1917,
-      roughness: 0.85,
-      metalness: 0.0,
-    });
-
-    const sparkGlowTex = createGlowPointTexture();
-
-    const rootGroup = new THREE.Group();
+    const { rootGroup, nodes, materials, dispose } = buildNobelDynamiteModel();
     scene.add(rootGroup);
-
-    // 1. Cutaway Wax-Paper Dynamite Cartridge Stick (Claim 1)
-    const stickGroup = new THREE.Group();
-    rootGroup.add(stickGroup);
-
-    // Outer Wax Paper Tube (Half-Cylinder Cutaway)
-    const paperShell = new THREE.Mesh(
-      new THREE.CylinderGeometry(1.2, 1.2, 5.0, 32, 1, false, 0, Math.PI * 1.3),
-      waxPaperMat,
-    );
-    paperShell.castShadow = true;
-    stickGroup.add(paperShell);
-
-    // Inner Porous Kieselguhr-NG Core Matrix
-    const kieselguhrCore = new THREE.Mesh(
-      new THREE.CylinderGeometry(1.15, 1.15, 4.9, 32),
-      kieselguhrMatrixMat,
-    );
-    stickGroup.add(kieselguhrCore);
-
-    // Diatomaceous Kieselguhr Grains / Microscopic Siliceous Shells
-    const grainCount = 35;
-    const grainGeo = new THREE.DodecahedronGeometry(0.12);
-    const grainInst = new THREE.InstancedMesh(
-      grainGeo,
-      new THREE.MeshStandardMaterial({ color: 0xfef08a, roughness: 0.8 }),
-      grainCount,
-    );
-    const dummy = new THREE.Object3D();
-    for (let i = 0; i < grainCount; i++) {
-      dummy.position.set((lcg() - 0.5) * 1.8, (lcg() - 0.5) * 4.2, lcg() * 0.9);
-      dummy.rotation.set(lcg() * Math.PI, lcg() * Math.PI, 0);
-      dummy.updateMatrix();
-      grainInst.setMatrixAt(i, dummy.matrix);
-    }
-    grainInst.instanceMatrix.needsUpdate = true;
-    stickGroup.add(grainInst);
-
-    // 2. Copper Blasting Detonator Cap (Claim 2: Fulminate of Mercury)
-    const capGroup = new THREE.Group();
-    capGroup.position.set(0, 2.2, 0);
-    stickGroup.add(capGroup);
-
-    const copperCasing = new THREE.Mesh(
-      new THREE.CylinderGeometry(0.24, 0.24, 1.8, 16),
-      copperCapMat,
-    );
-    copperCasing.castShadow = true;
-    capGroup.add(copperCasing);
-
-    // 3. Braided Safety Fuse Cord
-    const fuseCurve = new THREE.CatmullRomCurve3([
-      new THREE.Vector3(0, 2.8, 0),
-      new THREE.Vector3(0.4, 3.4, 0.3),
-      new THREE.Vector3(0.1, 4.2, 0.6),
-    ]);
-    const fuseGeo = new THREE.TubeGeometry(fuseCurve, 20, 0.08, 8, false);
-    const fuseMesh = new THREE.Mesh(fuseGeo, safetyFuseMat);
-    stickGroup.add(fuseMesh);
-
-    // 4. Glowing Fuse Spark Particle
-    const sparkMat = new THREE.PointsMaterial({
-      size: 0.6,
-      map: sparkGlowTex,
-      transparent: true,
-      opacity: 0,
-      blending: THREE.AdditiveBlending,
-      color: 0xff6600,
-    });
-    const sparkGeo = new THREE.BufferGeometry();
-    sparkGeo.setAttribute(
-      "position",
-      new THREE.BufferAttribute(new Float32Array([0.1, 4.2, 0.6]), 3),
-    );
-    const sparkPoints = new THREE.Points(sparkGeo, sparkMat);
-    stickGroup.add(sparkPoints);
 
     // Animation Loop
     let reqId: number;
-    let renderedSteps = 0;
+    let timeSec = 0;
 
     const animate = () => {
       reqId = requestAnimationFrame(animate);
-      renderedSteps += 1;
-      const delta = 1 / 60;
+      const dt = 1 / 60;
+      timeSec += dt;
       const p = live.current;
 
-      stickGroup.rotation.y += delta * 0.15;
-
-      // Pulse Fuse Spark when lit
-      if (p.isFuseLit) {
-        sparkMat.opacity = 0.7 + Math.sin(renderedSteps * (1 / 60) * 25) * 0.3;
-      } else {
-        sparkMat.opacity = 0;
-      }
-      // Cap must actually initiate — fuse alone does not detonate kieselguhr-NG
-      const det = p.isFuseLit && p.isInitiated > 0.5;
-      kieselguhrMatrixMat.emissiveIntensity = det ? 1.6 : 0;
-      sparkMat.size = 0.4 + (p.detonationVelocityMps / 8000) * 1.4;
+      updateNobelDynamiteKinematics(
+        nodes,
+        materials,
+        dt,
+        timeSec,
+        p.isFuseLit,
+        p.detonationVelocityMps,
+        p.isCutaway,
+      );
 
       renderer.render(scene, camera);
     };
@@ -262,6 +156,7 @@ export function NobelDynamite3D() {
 
     return () => {
       cancelAnimationFrame(reqId);
+      dispose();
       studio.cleanup();
     };
   }, [live]);
@@ -289,8 +184,9 @@ export function NobelDynamite3D() {
             [
               ["iso", "Isometric"],
               ["blasting_cap", "Blasting Cap"],
-              ["matrix_cutaway", "Porous Matrix"],
+              ["matrix_cutaway", "Kieselguhr Matrix"],
               ["fuse", "Safety Fuse"],
+              ["detonation_wave", "Shockwave"],
               ["top", "Top"],
             ] as [CameraPreset, string][]
           ).map(([preset, label]) => (
@@ -314,14 +210,31 @@ export function NobelDynamite3D() {
           <button
             type="button"
             onClick={igniteFuse}
-            className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold shadow-md transition-colors ${
+            disabled={isFuseLit}
+            className={`flex items-center gap-1 px-2.5 py-1 text-xs font-sans rounded-lg transition-colors ${
               isFuseLit
-                ? "bg-orange-600 text-white animate-pulse"
-                : "bg-amber-600 hover:bg-amber-500 text-white"
+                ? "bg-red-600 text-white animate-pulse"
+                : "bg-amber-600/30 text-amber-200 border border-amber-500/40 hover:bg-amber-600/50"
             }`}
           >
-            <Flame className="w-3.5 h-3.5" /> {isFuseLit ? "Fuse Burning" : "Light Fuse"}
+            <Flame className="w-3.5 h-3.5 text-orange-400" />
+            <span>{isFuseLit ? "DETONATING" : "Ignite Fuse"}</span>
           </button>
+
+          <button
+            type="button"
+            onClick={() => setIsCutaway(!isCutaway)}
+            title={isCutaway ? "Solid Cartridge" : "Cutaway Interior"}
+            className={`flex items-center gap-1 px-2.5 py-1 text-xs font-sans rounded-lg transition-colors ${
+              isCutaway
+                ? "bg-amber-600/30 text-amber-200 border border-amber-500/40"
+                : "text-parchment-300 hover:text-white hover:bg-parchment-800/60"
+            }`}
+          >
+            {isCutaway ? <EyeOff className="w-3.5 h-3.5" /> : <Eye className="w-3.5 h-3.5" />}
+            <span>{isCutaway ? "Cutaway" : "Solid"}</span>
+          </button>
+
           <button
             type="button"
             onClick={toggleSound}
@@ -333,42 +246,26 @@ export function NobelDynamite3D() {
           <button
             type="button"
             onClick={() => setShowUiOverlay(!showUiOverlay)}
-            title={showUiOverlay ? "Hide Overlay UI" : "Show Overlay UI"}
             className="p-1.5 rounded-lg text-xs text-parchment-400 hover:text-white hover:bg-parchment-800 transition-colors"
           >
-            {showUiOverlay ? (
-              <EyeOff className="w-4 h-4" />
-            ) : (
-              <Eye className="w-4 h-4 text-amber-400" />
-            )}
+            <Zap className="w-4 h-4 text-amber-400" />
           </button>
         </div>
       </div>
 
       <StudioKernelChips
         visible={showUiOverlay}
-        title="Nobel kieselguhr"
+        title="Nobel dynamite detonation physics"
         chips={[
-          { label: "NG", value: String(ngPercentage), unit: "%" },
-          {
-            label: "Cap",
-            value: String(params.capEnergyJoules ?? 1.2),
-            unit: "J",
-            tone: nobel.isInitiated ? "ok" : "warn",
-          },
-          {
-            label: "v_d",
-            value: String(detonationVelocityMps),
-            unit: "m/s",
-            tone: nobel.isInitiated ? "hot" : "warn",
-          },
-          { label: "P", value: String(blastOverpressureMpa), unit: "MPa" },
-          { label: "P", value: String(nobel.blastOverpressureGpa), unit: "GPa" },
-          { label: "E", value: String(nobel.energyMjPerKg), unit: "MJ/kg" },
-          { label: "Cushion", value: `${nobel.cushionFactor}`, unit: "×" },
-          { label: "20 cm", value: String(nobel.chargeTransitUs), unit: "µs" },
+          { label: "NG Loading", value: String(ngPercentage), unit: "%" },
+          { label: "Detonation Velocity", value: String(detonationVelocityMps), unit: "m/s" },
+          { label: "Blast Overpressure", value: String(nobel.blastOverpressureMpa), unit: "MPa" },
+          { label: "Specific Energy", value: String(nobel.energyMjPerKg), unit: "MJ/kg" },
+          { label: "Cap Energy", value: String(nobel.capEnergyJoules ?? 1.2), unit: "J" },
+          { label: "Transit Time", value: nobel.chargeTransitUs.toFixed(1), unit: "µs" },
+          { label: "Explosive State", value: isFuseLit ? "DETONATION" : "STABLE" },
         ]}
       />
     </div>
   );
-}
+});

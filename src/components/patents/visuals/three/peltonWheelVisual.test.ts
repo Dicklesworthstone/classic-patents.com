@@ -8,10 +8,7 @@ const VISUALS_DIRECTORY = join(process.cwd(), "src/components/patents/visuals");
 
 describe("US 233,692 Lester Pelton Impulse Water Wheel visual & hydrodynamics boundary", () => {
   test("uses pure procedural Three.js WebGL architecture without external GLTF/GLB models", () => {
-    const threeSource = readFileSync(
-      join(VISUALS_DIRECTORY, "three", "PeltonWheel3D.tsx"),
-      "utf8",
-    );
+    const threeSource = readFileSync(join(VISUALS_DIRECTORY, "three", "PeltonWheel3D.tsx"), "utf8");
     const modelSource = readFileSync(
       join(VISUALS_DIRECTORY, "three", "peltonWheelModel.ts"),
       "utf8",
@@ -24,10 +21,7 @@ describe("US 233,692 Lester Pelton Impulse Water Wheel visual & hydrodynamics bo
   });
 
   test("maintains deterministic replay without ambient randomness or private clocks in frame loop", () => {
-    const threeSource = readFileSync(
-      join(VISUALS_DIRECTORY, "three", "PeltonWheel3D.tsx"),
-      "utf8",
-    );
+    const threeSource = readFileSync(join(VISUALS_DIRECTORY, "three", "PeltonWheel3D.tsx"), "utf8");
     const modelSource = readFileSync(
       join(VISUALS_DIRECTORY, "three", "peltonWheelModel.ts"),
       "utf8",
@@ -40,10 +34,7 @@ describe("US 233,692 Lester Pelton Impulse Water Wheel visual & hydrodynamics bo
   });
 
   test("exposes authentic camera presets and UI overlay for impulse turbine observation", () => {
-    const threeSource = readFileSync(
-      join(VISUALS_DIRECTORY, "three", "PeltonWheel3D.tsx"),
-      "utf8",
-    );
+    const threeSource = readFileSync(join(VISUALS_DIRECTORY, "three", "PeltonWheel3D.tsx"), "utf8");
 
     for (const preset of ["iso", "split_bucket", "needle_nozzle", "runner_wheel", "top"]) {
       expect(threeSource).toContain(preset);
@@ -53,10 +44,10 @@ describe("US 233,692 Lester Pelton Impulse Water Wheel visual & hydrodynamics bo
   });
 
   test("computes genuine Torricelli jet velocity, impulse force, and hydraulic efficiency in SI units", () => {
-    const result = stepPeltonWheel({ headM: 250, nozzleDiameterMm: 50, needlePositionPct: 100 });
-    expect(result.jetVelocityMps).toBeGreaterThan(60);
-    expect(result.shaftPowerKw).toBeGreaterThan(100);
-    expect(result.etaPct).toBeGreaterThan(80);
+    const result = stepPeltonWheel({ headMeters: 450, runnerRpm: 600 });
+    expect(result.jetVelocityMps).toBeGreaterThan(90);
+    expect(result.shaftPowerKw).toBeGreaterThan(150);
+    expect(result.etaPct).toBeGreaterThan(85);
   });
 
   test("builds and articulates procedural 18-bucket runner, needle nozzle, and spray particles correctly", () => {

@@ -45,13 +45,7 @@ describe("US 247,804 Gustaf de Laval Centrifugal Cream Separator visual & fluid 
       "utf8",
     );
 
-    for (const preset of [
-      "iso",
-      "centrifuge_bowl",
-      "conical_discs",
-      "outlet_spouts",
-      "top",
-    ]) {
+    for (const preset of ["iso", "centrifuge_bowl", "conical_discs", "outlet_spouts", "top"]) {
       expect(threeSource).toContain(preset);
     }
 

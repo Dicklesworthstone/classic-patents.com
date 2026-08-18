@@ -1,27 +1,26 @@
 "use client";
 
-import { Activity, Camera, Eye, EyeOff, Volume2, VolumeX } from "lucide-react";
+import { Activity, Camera, Eye, EyeOff, Volume2, VolumeX, Zap } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
-import * as THREE from "three";
+import type * as THREE from "three";
 import { stepDavenportMotor } from "@/physics/catalogKernels";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
-import { createLcg } from "@/utils/lcg";
 import { soundEngine } from "@/utils/soundEngine";
-import { StudioKernelChips } from "./StudioKernelChips";
 import {
-  createGlowPointTexture,
-  createThreeStudioScene,
-  type StudioContext,
-} from "./ThreeStudioScene";
+  buildDavenportMotorModel,
+  updateDavenportMotorKinematics,
+} from "./davenportElectricMotorModel";
+import { StudioKernelChips } from "./StudioKernelChips";
+import { createThreeStudioScene, type StudioContext } from "./ThreeStudioScene";
 import { useLiveSimParams } from "./useLiveSimParams";
 import { usePatentAudio } from "./usePatentAudio";
 
-const lcg = createLcg(2287);
-
-type CameraPreset = "iso" | "commutator" | "stator_magnets" | "rotor" | "top";
+type CameraPreset = "iso" | "commutator" | "stator_magnets" | "rotor" | "brushes" | "top";
 
 export function DavenportElectricMotor3D() {
   const containerRef = useRef<HTMLDivElement>(null);
+  const [showUiOverlay, setShowUiOverlay] = useState<boolean>(true);
+  const [isCutaway, setIsCutaway] = useState<boolean>(false);
 
   // Electromechanical Parameters
   const { params } = usePatentPhysics("us-132-davenport-electric-motor");
@@ -33,14 +32,12 @@ export function DavenportElectricMotor3D() {
   const [activeCamera, setActiveCamera] = useState<CameraPreset>("iso");
   const { isAudioMuted, toggleSound: toggleEngine } = usePatentAudio();
 
-  const motorTorqueNm = loadTorque.toFixed(2);
-  const mechanicalWatts = davenport.shaftPowerW.toFixed(1);
-
   const live = useLiveSimParams({
     motorRpm,
     supplyVoltage,
     showSparkParticles,
     isAudioMuted,
+    isCutaway,
     loadTorque,
     mechanicalWatts: davenport.shaftPowerW,
     shaftOmegaRadPerS: davenport.shaftOmegaRadPerS,
@@ -72,6 +69,10 @@ export function DavenportElectricMotor3D() {
         camera.position.set(0, 4.0, 1.5);
         controls.target.set(0, 0, 0);
         break;
+      case "brushes":
+        camera.position.set(-1.8, 2.2, 2.5);
+        controls.target.set(-0.5, 1.6, 0);
+        break;
       case "top":
         camera.position.set(0, 11.5, 0.1);
         controls.target.set(0, 0, 0);
@@ -100,164 +101,28 @@ export function DavenportElectricMotor3D() {
     cameraRef.current = camera;
     controlsRef.current = controls;
 
-    // Materials
-    const mahoganyMat = new THREE.MeshStandardMaterial({
-      color: 0x5c2c16,
-      roughness: 0.5,
-      metalness: 0.05,
-    });
-
-    const ironCoreMat = new THREE.MeshStandardMaterial({
-      color: 0x1e293b,
-      roughness: 0.4,
-      metalness: 0.85,
-    });
-
-    const copperWireMat = new THREE.MeshStandardMaterial({
-      color: 0xd97706,
-      roughness: 0.25,
-      metalness: 0.9,
-    });
-
-    const brassMat = new THREE.MeshStandardMaterial({
-      color: 0xc8963e,
-      roughness: 0.2,
-      metalness: 0.92,
-    });
-
-    const steelShaftMat = new THREE.MeshStandardMaterial({
-      color: 0xf1f5f9,
-      roughness: 0.1,
-      metalness: 0.95,
-    });
-
-    const sparkGlowTex = createGlowPointTexture();
-
-    const rootGroup = new THREE.Group();
+    const { rootGroup, nodes, materials, dispose } = buildDavenportMotorModel();
     scene.add(rootGroup);
-
-    // 1. Turned Mahogany Baseboard & Stanchion Pillars
-    const baseboard = new THREE.Mesh(new THREE.CylinderGeometry(4.2, 4.5, 0.6, 36), mahoganyMat);
-    baseboard.position.y = -2.0;
-    baseboard.receiveShadow = true;
-    rootGroup.add(baseboard);
-
-    // 4 Corner Turned Brass Stanchions
-    [
-      [-2.4, -2.4],
-      [2.4, -2.4],
-      [-2.4, 2.4],
-      [2.4, 2.4],
-    ].forEach(([sx, sz]) => {
-      const pillar = new THREE.Mesh(new THREE.CylinderGeometry(0.18, 0.22, 3.8, 16), brassMat);
-      pillar.position.set(sx, 0, sz);
-      rootGroup.add(pillar);
-    });
-
-    // 2. Stationary Semicircular Horseshoe Electromagnets (Stator) (Claim 1)
-    const statorGroup = new THREE.Group();
-    rootGroup.add(statorGroup);
-
-    [-1, 1].forEach((dir) => {
-      const magnetGroup = new THREE.Group();
-      magnetGroup.position.x = dir * 2.2;
-
-      // Curved Iron Core Arm
-      const core = new THREE.Mesh(new THREE.TorusGeometry(1.4, 0.35, 16, 24, Math.PI), ironCoreMat);
-      core.rotation.z = dir > 0 ? -Math.PI / 2 : Math.PI / 2;
-      magnetGroup.add(core);
-
-      // Silk-Insulated Copper Wire Coils
-      [-0.8, 0.8].forEach((cy) => {
-        const coil = new THREE.Mesh(new THREE.CylinderGeometry(0.55, 0.55, 1.2, 20), copperWireMat);
-        coil.position.set(0, cy, 0);
-        coil.castShadow = true;
-        magnetGroup.add(coil);
-      });
-
-      statorGroup.add(magnetGroup);
-    });
-
-    // 3. Revolving Cross-Shaped Rotor Armature (Claim 2)
-    const rotorGroup = new THREE.Group();
-    rootGroup.add(rotorGroup);
-
-    // Vertical Steel Drive Shaft
-    const shaft = new THREE.Mesh(new THREE.CylinderGeometry(0.14, 0.14, 5.0, 16), steelShaftMat);
-    shaft.castShadow = true;
-    rotorGroup.add(shaft);
-
-    // 4 Cross-Poles with Copper Windings
-    for (let p = 0; p < 4; p++) {
-      const pAngle = (p * Math.PI) / 2;
-      const poleGroup = new THREE.Group();
-      poleGroup.rotation.y = pAngle;
-
-      const ironPole = new THREE.Mesh(new THREE.CylinderGeometry(0.2, 0.2, 1.6, 12), ironCoreMat);
-      ironPole.rotation.z = Math.PI / 2;
-      ironPole.position.x = 0.9;
-      poleGroup.add(ironPole);
-
-      const coil = new THREE.Mesh(new THREE.CylinderGeometry(0.42, 0.42, 1.1, 16), copperWireMat);
-      coil.rotation.z = Math.PI / 2;
-      coil.position.x = 0.9;
-      coil.castShadow = true;
-      poleGroup.add(coil);
-
-      rotorGroup.add(poleGroup);
-    }
-
-    // 4. Split-Ring Commutator & Copper Leaf Brushes
-    const commutator = new THREE.Mesh(new THREE.CylinderGeometry(0.38, 0.38, 0.5, 24), brassMat);
-    commutator.position.y = 1.6;
-    rotorGroup.add(commutator);
-
-    // Stationary Spring Brushes
-    [-0.5, 0.5].forEach((bx) => {
-      const brush = new THREE.Mesh(new THREE.BoxGeometry(0.04, 0.8, 0.15), copperWireMat);
-      brush.position.set(bx, 1.6, 0);
-      rootGroup.add(brush);
-    });
-
-    // 5. Commutator Sparks Particles
-    const sparkCount = 30;
-    const sparkGeo = new THREE.BufferGeometry();
-    const sparkPositions = new Float32Array(sparkCount * 3);
-    for (let i = 0; i < sparkCount; i++) {
-      sparkPositions[i * 3] = (lcg() > 0.5 ? 0.4 : -0.4) + (lcg() - 0.5) * 0.15;
-      sparkPositions[i * 3 + 1] = 1.6 + (lcg() - 0.5) * 0.2;
-      sparkPositions[i * 3 + 2] = (lcg() - 0.5) * 0.2;
-    }
-    sparkGeo.setAttribute("position", new THREE.BufferAttribute(sparkPositions, 3));
-    const sparkMat = new THREE.PointsMaterial({
-      size: 0.25,
-      map: sparkGlowTex,
-      transparent: true,
-      opacity: 0.9,
-      blending: THREE.AdditiveBlending,
-      color: 0x38bdf8,
-    });
-    const sparkPoints = new THREE.Points(sparkGeo, sparkMat);
-    rootGroup.add(sparkPoints);
 
     // Animation Loop
     let reqId: number;
-    let renderedSteps = 0;
+    let timeSec = 0;
 
     const animate = () => {
       reqId = requestAnimationFrame(animate);
-      renderedSteps += 1;
-      const delta = 1 / 60;
+      const dt = 1 / 60;
+      timeSec += dt;
       const p = live.current;
 
-      const omegaRadPerSec = p.shaftOmegaRadPerS ?? (p.motorRpm * 2 * Math.PI) / 60;
-      rotorGroup.rotation.y += omegaRadPerSec * delta;
-
-      const watts = p.mechanicalWatts;
-      sparkPoints.visible =
-        p.showSparkParticles && watts > 8 && Math.sin(renderedSteps * (1 / 60) * 40) > 0.1;
-      sparkMat.opacity = Math.min(0.95, 0.2 + (watts / 80) * 0.75);
-      sparkMat.size = 0.15 + (p.supplyVoltage / 24) * 0.2;
+      updateDavenportMotorKinematics(
+        nodes,
+        materials,
+        dt,
+        timeSec,
+        p.shaftOmegaRadPerS ?? 0,
+        p.showSparkParticles,
+        p.isCutaway,
+      );
 
       renderer.render(scene, camera);
     };
@@ -266,6 +131,7 @@ export function DavenportElectricMotor3D() {
 
     return () => {
       cancelAnimationFrame(reqId);
+      dispose();
       studio.cleanup();
     };
   }, [live]);
@@ -279,7 +145,7 @@ export function DavenportElectricMotor3D() {
         <div className="flex items-center gap-2 bg-parchment-950/80 backdrop-blur-md px-3.5 py-2 rounded-xl border border-parchment-700/60 shadow-lg pointer-events-auto">
           <Activity className="w-4 h-4 text-amber-500 animate-pulse" />
           <span className="text-xs font-mono font-bold text-parchment-100 uppercase tracking-wider">
-            Davenport Motor 3D
+            Davenport DC Motor 3D
           </span>
           <span className="text-[10px] font-mono px-2 py-0.5 rounded-full bg-amber-500/20 text-amber-300 border border-amber-500/30">
             US Patent 132 (1837)
@@ -294,7 +160,8 @@ export function DavenportElectricMotor3D() {
               ["iso", "Isometric"],
               ["commutator", "Commutator"],
               ["stator_magnets", "Stator"],
-              ["rotor", "Rotor"],
+              ["rotor", "Rotor Armature"],
+              ["brushes", "Brushes"],
               ["top", "Top"],
             ] as [CameraPreset, string][]
           ).map(([preset, label]) => (
@@ -317,16 +184,31 @@ export function DavenportElectricMotor3D() {
         <div className="flex items-center gap-1.5 bg-parchment-950/80 backdrop-blur-md p-1.5 rounded-xl border border-parchment-700/60 shadow-lg pointer-events-auto">
           <button
             type="button"
+            onClick={() => setIsCutaway(!isCutaway)}
+            title={isCutaway ? "Solid Apparatus" : "Cutaway View"}
+            className={`flex items-center gap-1 px-2.5 py-1 text-xs font-sans rounded-lg transition-colors ${
+              isCutaway
+                ? "bg-amber-600/30 text-amber-200 border border-amber-500/40"
+                : "text-parchment-300 hover:text-white hover:bg-parchment-800/60"
+            }`}
+          >
+            {isCutaway ? <EyeOff className="w-3.5 h-3.5" /> : <Eye className="w-3.5 h-3.5" />}
+            <span>{isCutaway ? "Cutaway" : "Solid"}</span>
+          </button>
+
+          <button
+            type="button"
             onClick={() => setShowSparkParticles(!showSparkParticles)}
             title="Toggle Commutator Sparks"
             className={`p-1.5 rounded-lg text-xs transition-colors ${
               showSparkParticles
                 ? "bg-amber-600/30 text-amber-300 border border-amber-500/40"
-                : "text-parchment-400 hover:text-white"
+                : "text-parchment-400 hover:text-white hover:bg-parchment-800/60"
             }`}
           >
-            {showSparkParticles ? <Eye className="w-4 h-4" /> : <EyeOff className="w-4 h-4" />}
+            <Zap className="w-4 h-4 text-sky-400" />
           </button>
+
           <button
             type="button"
             onClick={toggleSound}
@@ -335,21 +217,32 @@ export function DavenportElectricMotor3D() {
           >
             {isAudioMuted ? <VolumeX className="w-4 h-4" /> : <Volume2 className="w-4 h-4" />}
           </button>
+          <button
+            type="button"
+            onClick={() => setShowUiOverlay(!showUiOverlay)}
+            className="p-1.5 rounded-lg text-xs text-parchment-400 hover:text-white hover:bg-parchment-800 transition-colors"
+          >
+            <Zap className="w-4 h-4 text-amber-400" />
+          </button>
         </div>
       </div>
 
       <StudioKernelChips
-        visible
-        title="Davenport commutator"
+        visible={showUiOverlay}
+        title="Davenport commutator DC motor"
         chips={[
-          { label: "V", value: String(supplyVoltage), unit: "V" },
-          { label: "Load", value: motorTorqueNm, unit: "N·m" },
-          { label: "ω", value: String(motorRpm), unit: "rpm" },
-          { label: "P", value: mechanicalWatts, unit: "W" },
-          { label: "P_in", value: String(davenport.electricalWatts), unit: "W" },
-          { label: "I", value: String(davenport.armatureCurrentA), unit: "A" },
-          { label: "η", value: String(davenport.efficiencyPct), unit: "%" },
-          { label: "ω", value: davenport.shaftOmegaRadPerS.toFixed(1), unit: "rad/s" },
+          { label: "Shaft Speed", value: String(Math.round(motorRpm)), unit: "rpm" },
+          { label: "Voltage", value: `${supplyVoltage}`, unit: "V" },
+          { label: "Current", value: `${davenport.armatureCurrentA.toFixed(1)}`, unit: "A" },
+          { label: "Load Torque", value: `${loadTorque.toFixed(2)}`, unit: "N·m" },
+          { label: "Shaft Power", value: `${davenport.shaftPowerW.toFixed(1)}`, unit: "W" },
+          {
+            label: "Electrical Input",
+            value: `${davenport.electricalWatts.toFixed(1)}`,
+            unit: "W",
+          },
+          { label: "Efficiency", value: `${davenport.efficiencyPct.toFixed(1)}`, unit: "%" },
+          { label: "ω_shaft", value: `${davenport.shaftOmegaRadPerS.toFixed(1)}`, unit: "rad/s" },
         ]}
       />
     </div>

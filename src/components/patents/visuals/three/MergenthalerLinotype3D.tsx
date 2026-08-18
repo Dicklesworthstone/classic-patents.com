@@ -6,13 +6,22 @@ import type * as THREE from "three";
 import { stepMergenthalerLinotype } from "@/physics/machineKernels";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { soundEngine } from "@/utils/soundEngine";
-import { buildMergenthalerLinotypeModel, updateMergenthalerLinotypeKinematics } from "./mergenthalerLinotypeModel";
+import {
+  buildMergenthalerLinotypeModel,
+  updateMergenthalerLinotypeKinematics,
+} from "./mergenthalerLinotypeModel";
 import { StudioKernelChips } from "./StudioKernelChips";
 import { createThreeStudioScene, type StudioContext } from "./ThreeStudioScene";
 import { useLiveSimParams } from "./useLiveSimParams";
 import { usePatentAudio } from "./usePatentAudio";
 
-type CameraPreset = "iso" | "matrix_magazine" | "casting_pot" | "spaceband_justifier" | "keyboard" | "top";
+type CameraPreset =
+  | "iso"
+  | "matrix_magazine"
+  | "casting_pot"
+  | "spaceband_justifier"
+  | "keyboard"
+  | "top";
 
 export function MergenthalerLinotype3D() {
   const containerRef = useRef<HTMLDivElement>(null);

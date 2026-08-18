@@ -15,30 +15,161 @@ const claim = (number: number, text: string) => ({
   inlines: literal(text),
 });
 
-const SHEET_ONE = {
-  src: "/patents/figures/us-347140-thomson-welding/fig-1-source-crop-v1.png",
-  alt: "US 347,140 first drawing sheet, containing Figs. 1 through 9 of Thomson's electric-welding apparatus.",
-  width: 2321,
-  height: 3409,
-} as const;
+type FigurePreview = {
+  src: string;
+  alt: string;
+  width: number;
+  height: number;
+};
 
-const SHEET_TWO = {
-  src: "/patents/figures/us-347140-thomson-welding/fig-2-source-crop-v1.png",
-  alt: "US 347,140 second drawing sheet, containing Figs. 10 through 18 of Thomson's electric-welding apparatus and current sources.",
-  width: 2321,
-  height: 3409,
-} as const;
+const FIGURE_PREVIEWS: Readonly<Record<number, FigurePreview>> = {
+  1: {
+    src: "/patents/figures/us-347140-thomson-welding/figure-1-source-crop-v1.png",
+    alt: "US 347,140, Fig. 1: Thomson's pivoted electric-welding clamp and spring-pressure arrangement.",
+    width: 1150,
+    height: 1180,
+  },
+  2: {
+    src: "/patents/figures/us-347140-thomson-welding/figure-2-source-crop-v1.png",
+    alt: "US 347,140, Fig. 2: side view of the electric-welding clamp.",
+    width: 600,
+    height: 1100,
+  },
+  3: {
+    src: "/patents/figures/us-347140-thomson-welding/figure-3-source-crop-v1.png",
+    alt: "US 347,140, Fig. 3: wires in the clamps before abutment.",
+    width: 720,
+    height: 340,
+  },
+  4: {
+    src: "/patents/figures/us-347140-thomson-welding/figure-4-source-crop-v1.png",
+    alt: "US 347,140, Fig. 4: a newly formed welded joint with its burr.",
+    width: 720,
+    height: 370,
+  },
+  5: {
+    src: "/patents/figures/us-347140-thomson-welding/figure-5-source-crop-v1.png",
+    alt: "US 347,140, Fig. 5: removable clamp for a selected wire size.",
+    width: 360,
+    height: 520,
+  },
+  6: {
+    src: "/patents/figures/us-347140-thomson-welding/figure-6-source-crop-v1.png",
+    alt: "US 347,140, Fig. 6: compound clamp with three wire grooves.",
+    width: 360,
+    height: 520,
+  },
+  7: {
+    src: "/patents/figures/us-347140-thomson-welding/figure-7-source-crop-v1.png",
+    alt: "US 347,140, Fig. 7: hand-operated pressure arrangement.",
+    width: 430,
+    height: 400,
+  },
+  8: {
+    src: "/patents/figures/us-347140-thomson-welding/figure-8-source-crop-v1.png",
+    alt: "US 347,140, Fig. 8: gravity-pressure arrangement with an adjustable weight.",
+    width: 1050,
+    height: 285,
+  },
+  9: {
+    src: "/patents/figures/us-347140-thomson-welding/figure-9-source-crop-v1.png",
+    alt: "US 347,140, Fig. 9: modified pressure arrangement for the welding apparatus.",
+    width: 550,
+    height: 620,
+  },
+  10: {
+    src: "/patents/figures/us-347140-thomson-welding/figure-10-source-crop-v1.png",
+    alt: "US 347,140, Fig. 10: two rectangular bars prepared for welding.",
+    width: 560,
+    height: 450,
+  },
+  11: {
+    src: "/patents/figures/us-347140-thomson-welding/figure-11-source-crop-v1.png",
+    alt: "US 347,140, Fig. 11: a flanged work-piece joined to a bar.",
+    width: 500,
+    height: 500,
+  },
+  12: {
+    src: "/patents/figures/us-347140-thomson-welding/figure-12-source-crop-v1.png",
+    alt: "US 347,140, Fig. 12: a rectangular bar joined to a round bar.",
+    width: 600,
+    height: 300,
+  },
+  13: {
+    src: "/patents/figures/us-347140-thomson-welding/figure-13-source-crop-v1.png",
+    alt: "US 347,140, Fig. 13: an endless ring with its joint held between clamps.",
+    width: 550,
+    height: 630,
+  },
+  14: {
+    src: "/patents/figures/us-347140-thomson-welding/figure-14-source-crop-v1.png",
+    alt: "US 347,140, Fig. 14: an endless U-shaped bar.",
+    width: 600,
+    height: 780,
+  },
+  15: {
+    src: "/patents/figures/us-347140-thomson-welding/figure-15-source-crop-v1.png",
+    alt: "US 347,140, Fig. 15: two smaller work-pieces joined to one larger piece.",
+    width: 680,
+    height: 520,
+  },
+  16: {
+    src: "/patents/figures/us-347140-thomson-welding/figure-16-source-crop-v1.png",
+    alt: "US 347,140, Fig. 16: induction-coil apparatus supplying the welding clamps.",
+    width: 1300,
+    height: 600,
+  },
+  17: {
+    src: "/patents/figures/us-347140-thomson-welding/figure-17-source-crop-v1.png",
+    alt: "US 347,140, Fig. 17: modified arrangement of the heavy secondary winding.",
+    width: 650,
+    height: 700,
+  },
+  18: {
+    src: "/patents/figures/us-347140-thomson-welding/figure-18-source-crop-v1.png",
+    alt: "US 347,140, Fig. 18: secondary-battery supply and the welding apparatus.",
+    width: 1600,
+    height: 580,
+  },
+};
+
+const SHEET_ONE = 1 as const;
+const SHEET_TWO = 2 as const;
+
+/** Each source label is manually bound to its own local crop(s); no prose is parsed. */
+const FIGURE_REFERENCE_PREVIEWS: Readonly<Record<string, readonly number[]>> = {
+  "Figure 1": [1],
+  "Fig. 1": [1],
+  "Fig. 2": [2],
+  "Fig. 3": [3],
+  "Fig. 4": [4],
+  "Fig. 5": [5],
+  "Fig. 6": [6],
+  "Fig. 7": [7],
+  "Fig. 8": [8],
+  "Fig. 9": [9],
+  "Figs. 10, 11, 12, 13, 14, and 15": [10, 11, 12, 13, 14, 15],
+  "Fig. 10": [10],
+  "Fig. 11": [11],
+  "Fig. 12": [12],
+  "Fig. 13": [13],
+  "Fig. 14": [14],
+  "Fig. 15": [15],
+  "Fig. 16": [16],
+  "Fig. 17": [17],
+  "Fig. 18": [18],
+};
 
 const figure = (
-  text: string,
-  sheet: { src: string; alt: string; width: number; height: number },
+  text: keyof typeof FIGURE_REFERENCE_PREVIEWS,
+  _sourceSheet: typeof SHEET_ONE | typeof SHEET_TWO,
 ): CuratedSpecificationInline => ({
   kind: "reference",
   text,
   href: "#",
   referenceType: "figure",
-  label: `Preview the source drawing sheet containing ${text}`,
-  figurePreviews: [sheet],
+  label: `Preview the source drawing for ${text}`,
+  figurePreviews: FIGURE_REFERENCE_PREVIEWS[text].map((number) => FIGURE_PREVIEWS[number]),
 });
 
 const term = (text: string, definition: string): CuratedSpecificationInline => ({
@@ -171,7 +302,9 @@ export const thomsonWeldingArchivalEdition: CuratedSpecificationEdition = {
         text: " illustrates one of the ways of generating the heavy currents needed in the practice of my invention. ",
       },
       figure("Fig. 17", SHEET_TWO),
-      { kind: "text", text: " illustrates a modification of a portion of Fig. 16. " },
+      { kind: "text", text: " illustrates a modification of a portion of " },
+      figure("Fig. 16", SHEET_TWO),
+      { kind: "text", text: ". " },
       figure("Fig. 18", SHEET_TWO),
       {
         kind: "text",
@@ -202,7 +335,12 @@ export const thomsonWeldingArchivalEdition: CuratedSpecificationEdition = {
       figure("Fig. 3", SHEET_ONE),
       {
         kind: "text",
-        text: " shows wires W W′ just before abutment together with their relation to the clamps K K′. When in contact, as in Fig. 1, a powerful current is passed from C to C′, which current has to pass the abutted ends at J. However, if of great volume, even though the resistance at J be less than one fifty-thousandth of an ohm for very moderate-sized wires, heat will be developed in the ratio of the square of the current flowing, which heat will be formed at J in sufficient amount to fuse the abutted ends, and under slight pressure they will weld over their whole section with a slight projecting burr or expansion, as indicated at J, ",
+        text: " shows wires W W′ just before abutment together with their relation to the clamps K K′. When in contact, as in ",
+      },
+      figure("Fig. 1", SHEET_ONE),
+      {
+        kind: "text",
+        text: ", a powerful current is passed from C to C′, which current has to pass the abutted ends at J. However, if of great volume, even though the resistance at J be less than one fifty-thousandth of an ohm for very moderate-sized wires, heat will be developed in the ratio of the square of the current flowing, which heat will be formed at J in sufficient amount to fuse the abutted ends, and under slight pressure they will weld over their whole section with a slight projecting burr or expansion, as indicated at J, ",
       },
       figure("Fig. 4", SHEET_ONE),
       {
@@ -221,7 +359,12 @@ export const thomsonWeldingArchivalEdition: CuratedSpecificationEdition = {
       figure("Fig. 7", SHEET_ONE),
       {
         kind: "text",
-        text: " the spring S, Fig. 1, is left off, and is replaced by handles, which may be manually pressed together in forming the joint. A little practice will show the pressure to be used in each case.",
+        text: " the spring S, ",
+      },
+      figure("Fig. 1", SHEET_ONE),
+      {
+        kind: "text",
+        text: ", is left off, and is replaced by handles, which may be manually pressed together in forming the joint. A little practice will show the pressure to be used in each case.",
       },
     ]),
     paragraph([
@@ -229,14 +372,25 @@ export const thomsonWeldingArchivalEdition: CuratedSpecificationEdition = {
       figure("Fig. 8", SHEET_ONE),
       {
         kind: "text",
-        text: " an adjustable weight, P, sliding on L′, extended, which latter may be graduated, forms an efficient substitute for S, Fig. 1, the other parts being suitably disposed.",
+        text: " an adjustable weight, P, sliding on L′, extended, which latter may be graduated, forms an efficient substitute for S, ",
+      },
+      figure("Fig. 1", SHEET_ONE),
+      {
+        kind: "text",
+        text: ", the other parts being suitably disposed.",
       },
     ]),
-    paragraph(
-      literal(
-        "Instead of using a swinging joint, as A, Fig. 1, it is sometimes preferable, as where heavy wires are to be accurately abutted and jointed, that the movable piece L shall slide in guides, giving a rectilinear motion, though equivalent parallel or right-line movements may be attained in other well-known ways.",
-      ),
-    ),
+    paragraph([
+      {
+        kind: "text",
+        text: "Instead of using a swinging joint, as A, ",
+      },
+      figure("Fig. 1", SHEET_ONE),
+      {
+        kind: "text",
+        text: ", it is sometimes preferable, as where heavy wires are to be accurately abutted and jointed, that the movable piece L shall slide in guides, giving a rectilinear motion, though equivalent parallel or right-line movements may be attained in other well-known ways.",
+      },
+    ]),
     paragraph(
       literal(
         "The clamps K K′ can be shaped to suit various forms of wires or bars to be joined—such as square, hexagonal, rectangular, &c.—and it will be evident that tubes can be operated upon instead of bars or wires.",
@@ -262,7 +416,12 @@ export const thomsonWeldingArchivalEdition: CuratedSpecificationEdition = {
       figure("Fig. 13", SHEET_TWO),
       {
         kind: "text",
-        text: ", may be rendered endless; but in this case more current is needed, as a portion passes around the ring; but, further, on account of the greater length, it is small compared with the portion traversing the joint when the clear ends are well abutted and the clamps K K′ embrace the ring, as indicated. In Fig. 13 the lower part of the ring R can, if needful, be immersed in water to avoid any chance of heating.",
+        text: ", may be rendered endless; but in this case more current is needed, as a portion passes around the ring; but, further, on account of the greater length, it is small compared with the portion traversing the joint when the clear ends are well abutted and the clamps K K′ embrace the ring, as indicated. In ",
+      },
+      figure("Fig. 13", SHEET_TWO),
+      {
+        kind: "text",
+        text: " the lower part of the ring R can, if needful, be immersed in water to avoid any chance of heating.",
       },
     ]),
     paragraph([
@@ -270,7 +429,12 @@ export const thomsonWeldingArchivalEdition: CuratedSpecificationEdition = {
       figure("Fig. 14", SHEET_TWO),
       {
         kind: "text",
-        text: " a long bar or wire of metal or a band can be made endless, as in Fig. 13, and I propose to apply my invention to the production of endless steel pieces for band-saws and the like, and so to remove the weaker brazed joint and the consequent destruction of temper near where it is made. My invention can also be applied to the production of endless wires for endless twisted cables, and it may also be used to join the separate ends of the wires of a twisted cable and so make the cable endless. It is also possible to join two smaller pieces to one larger piece, as in ",
+        text: " a long bar or wire of metal or a band can be made endless, as in ",
+      },
+      figure("Fig. 13", SHEET_TWO),
+      {
+        kind: "text",
+        text: ", and I propose to apply my invention to the production of endless steel pieces for band-saws and the like, and so to remove the weaker brazed joint and the consequent destruction of temper near where it is made. My invention can also be applied to the production of endless wires for endless twisted cables, and it may also be used to join the separate ends of the wires of a twisted cable and so make the cable endless. It is also possible to join two smaller pieces to one larger piece, as in ",
       },
       figure("Fig. 15", SHEET_TWO),
       { kind: "text", text: "." },
@@ -288,7 +452,12 @@ export const thomsonWeldingArchivalEdition: CuratedSpecificationEdition = {
       figure("Fig. 16", SHEET_TWO),
       {
         kind: "text",
-        text: " is used. In this case an induction-coil consisting of a core, F, of iron wire wound with two windings is employed. One of the windings is of fine wire, M, and connected into a circuit supplying alternating currents suited to the size wire in M, while a simple switch, B, controls the circuit through M. The other winding, N, is a very few turns of very heavy conductor connected by short and thick connections to the wire-jointing clamps L L′, as in Fig. 1. When all is ready to make a joint, the switch B is closed for a second or two, at which time the currents in N will be induced, and since the resistance of the wires to be joined will be a large fraction of the actual resistance in the secondary circuit, so a large portion of the energy will be evolved where the joint is to be made, incipient fusion will result and subsequent thorough welding. To save parts it may be simpler to give the coil N the disposition indicated in ",
+        text: " is used. In this case an induction-coil consisting of a core, F, of iron wire wound with two windings is employed. One of the windings is of fine wire, M, and connected into a circuit supplying alternating currents suited to the size wire in M, while a simple switch, B, controls the circuit through M. The other winding, N, is a very few turns of very heavy conductor connected by short and thick connections to the wire-jointing clamps L L′, as in ",
+      },
+      figure("Fig. 1", SHEET_ONE),
+      {
+        kind: "text",
+        text: ". When all is ready to make a joint, the switch B is closed for a second or two, at which time the currents in N will be induced, and since the resistance of the wires to be joined will be a large fraction of the actual resistance in the secondary circuit, so a large portion of the energy will be evolved where the joint is to be made, incipient fusion will result and subsequent thorough welding. To save parts it may be simpler to give the coil N the disposition indicated in ",
       },
       figure("Fig. 17", SHEET_TWO),
       {

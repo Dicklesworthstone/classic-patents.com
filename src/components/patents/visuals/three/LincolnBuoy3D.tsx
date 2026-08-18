@@ -2,13 +2,13 @@
 
 import { Anchor, Camera, Eye, EyeOff, RotateCcw, Volume2, VolumeX, Waves, Zap } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
-import * as THREE from "three";
+import type * as THREE from "three";
 import { stepLincolnBuoy } from "@/physics/catalogKernels";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { soundEngine } from "@/utils/soundEngine";
+import { buildLincolnBuoyModel } from "./lincolnBuoyModel";
 import { createThreeStudioScene, type StudioContext } from "./ThreeStudioScene";
 import { useLiveSimParams } from "./useLiveSimParams";
-
 import { usePatentAudio } from "./usePatentAudio";
 
 type CameraPreset = "iso" | "bellows_chambers" | "pilothouse" | "paddlewheel" | "top";
@@ -106,209 +106,29 @@ export function LincolnBuoy3D() {
     cameraRef.current = camera;
     controlsRef.current = controls;
 
-    // --- PBR MATERIALS ---
-    const hullWoodMat = new THREE.MeshStandardMaterial({
-      color: 0x78350f,
-      roughness: 0.45,
-      metalness: 0.1,
-    });
-
-    const cabinWhiteMat = new THREE.MeshStandardMaterial({
-      color: 0xf8fafc,
-      roughness: 0.35,
-      metalness: 0.05,
-    });
-
-    const bellowsRubberMat = new THREE.MeshStandardMaterial({
-      color: 0x334155,
-      roughness: 0.6,
-      metalness: 0.2,
-    });
-
-    const riverWaterMat = new THREE.MeshPhysicalMaterial({
-      color: 0x0284c7,
-      transmission: 0.75,
-      opacity: 0.8,
-      transparent: true,
-      roughness: 0.1,
-      ior: 1.333,
-    });
-
     // --- 3D STEAMBOAT & LINCOLN BELLOWS ASSEMBLY ---
-    const boatGroup = new THREE.Group();
-    scene.add(boatGroup);
-
-    // Hull
-    const hullShape = new THREE.Shape();
-    hullShape.moveTo(-8.0, 0.8);
-    hullShape.lineTo(7.5, 0.8);
-    hullShape.lineTo(6.8, -0.9);
-    hullShape.lineTo(-6.8, -0.9);
-    hullShape.closePath();
-
-    const hullGeo = new THREE.ExtrudeGeometry(hullShape, { depth: 4.6, bevelEnabled: false });
-    hullGeo.center();
-    const hullPaint = hullWoodMat.clone();
-    const hull = new THREE.Mesh(hullGeo, hullPaint);
-    hull.position.y = 0;
-    hull.castShadow = true;
-    hull.receiveShadow = true;
-    boatGroup.add(hull);
-
-    // Outrigger Guards
-    const guardDeck = new THREE.Mesh(new THREE.BoxGeometry(15.2, 0.15, 6.8), hullWoodMat);
-    guardDeck.position.y = 0.85;
-    guardDeck.castShadow = true;
-    boatGroup.add(guardDeck);
-
-    // Passenger Cabins
-    const lowerCabin = new THREE.Mesh(new THREE.BoxGeometry(10.5, 1.2, 3.8), cabinWhiteMat);
-    lowerCabin.position.set(-0.8, 1.5, 0);
-    lowerCabin.castShadow = true;
-    boatGroup.add(lowerCabin);
-
-    const texasDeck = new THREE.Mesh(new THREE.BoxGeometry(7.5, 1.0, 2.8), cabinWhiteMat);
-    texasDeck.position.set(-0.8, 2.6, 0);
-    texasDeck.castShadow = true;
-    boatGroup.add(texasDeck);
-
-    // Pilothouse
-    const pilotHouse = new THREE.Mesh(new THREE.CylinderGeometry(0.9, 0.9, 1.1, 8), cabinWhiteMat);
-    pilotHouse.position.set(-3.2, 3.65, 0);
-    pilotHouse.castShadow = true;
-    boatGroup.add(pilotHouse);
-
-    // Smoke Stacks
-    [-1.0, 1.0].forEach((sz) => {
-      const stack = new THREE.Mesh(
-        new THREE.CylinderGeometry(0.28, 0.28, 4.8, 16),
-        new THREE.MeshStandardMaterial({ color: 0x0f172a, roughness: 0.35, metalness: 0.85 }),
-      );
-      stack.position.set(-2.0, 4.2, sz);
-      stack.castShadow = true;
-      boatGroup.add(stack);
-    });
-
-    // Stern Paddlewheel
-    const paddleGroup = new THREE.Group();
-    paddleGroup.position.set(7.5, 0.2, 0);
-
-    [-1.8, 1.8].forEach((pz) => {
-      const wheelRing = new THREE.Mesh(
-        new THREE.TorusGeometry(1.6, 0.08, 8, 24),
-        new THREE.MeshStandardMaterial({ color: 0xd97706, metalness: 0.85 }),
-      );
-      wheelRing.position.z = pz;
-      paddleGroup.add(wheelRing);
-    });
-
-    for (let b = 0; b < 12; b++) {
-      const bAngle = (b * Math.PI * 2) / 12;
-      const blade = new THREE.Mesh(new THREE.BoxGeometry(0.1, 0.45, 3.4), hullWoodMat);
-      blade.position.set(Math.cos(bAngle) * 1.5, Math.sin(bAngle) * 1.5, 0);
-      blade.rotation.z = bAngle;
-      paddleGroup.add(blade);
-    }
-    boatGroup.add(paddleGroup);
-
-    // Abraham Lincoln's Expandable Air Bellows Chambers (Port & Starboard with Concertina Ribs)
-    const makeBellowsAssembly = (zPos: number) => {
-      const bGroup = new THREE.Group();
-      bGroup.position.set(-0.5, -0.4, zPos);
-
-      // Main Flexible Rubberized Canvas Chamber Body
-      const bellowsBody = new THREE.Mesh(new THREE.BoxGeometry(11.0, 1.2, 1.0), bellowsRubberMat);
-      bellowsBody.castShadow = true;
-      bGroup.add(bellowsBody);
-
-      // Concertina Folding Pleat Ribs (Elastic structural frames)
-      for (let rib = 0; rib < 12; rib++) {
-        const ribX = -5.0 + rib * 0.9;
-        const ribMesh = new THREE.Mesh(
-          new THREE.BoxGeometry(0.08, 1.3, 1.08),
-          new THREE.MeshStandardMaterial({ color: 0x1e293b, roughness: 0.8 }),
-        );
-        ribMesh.position.set(ribX, 0, 0);
-        bGroup.add(ribMesh);
-      }
-
-      // Vertical Rack Guide Rods (sliding through hull outriggers)
-      for (let r = 0; r < 4; r++) {
-        const rackX = -4.0 + r * 2.6;
-        const rack = new THREE.Mesh(
-          new THREE.CylinderGeometry(0.06, 0.06, 2.8, 12),
-          new THREE.MeshStandardMaterial({ color: 0x94a3b8, metalness: 0.9, roughness: 0.2 }),
-        );
-        rack.position.set(rackX, 0.8, 0);
-        bGroup.add(rack);
-      }
-
-      boatGroup.add(bGroup);
-      return bGroup;
-    };
-
-    const portBellows = makeBellowsAssembly(2.8);
-    const stbdBellows = makeBellowsAssembly(-2.8);
-
-    // Horizontal Synchronizing Gear Shafts across Deck (Claim 1 Rack-and-Pinion Drive)
-    for (let s = 0; s < 4; s++) {
-      const shaftX = -4.5 + s * 2.6;
-      const crossShaft = new THREE.Mesh(
-        new THREE.CylinderGeometry(0.08, 0.08, 6.2, 12),
-        new THREE.MeshStandardMaterial({ color: 0x64748b, metalness: 0.85 }),
-      );
-      crossShaft.rotation.x = Math.PI / 2;
-      crossShaft.position.set(shaftX, 1.1, 0);
-      boatGroup.add(crossShaft);
-
-      // Pinion Gears at Ends
-      [-2.8, 2.8].forEach((gearZ) => {
-        const pinion = new THREE.Mesh(
-          new THREE.CylinderGeometry(0.24, 0.24, 0.2, 16),
-          new THREE.MeshStandardMaterial({ color: 0xd97706, metalness: 0.9 }),
-        );
-        pinion.rotation.x = Math.PI / 2;
-        pinion.position.set(shaftX, 1.1, gearZ);
-        boatGroup.add(pinion);
-      });
-    }
-
-    // River Water Plane & Sandbar Bed
-    const waterMesh = new THREE.Mesh(new THREE.PlaneGeometry(36, 24), riverWaterMat);
-    waterMesh.rotation.x = -Math.PI / 2;
-    waterMesh.position.y = 0.2;
-    waterMesh.receiveShadow = true;
-    scene.add(waterMesh);
-
-    const sandbarMesh = new THREE.Mesh(
-      new THREE.BoxGeometry(24, 0.8, 16),
-      new THREE.MeshStandardMaterial({ color: 0xd4a373, roughness: 0.9 }),
-    );
-    sandbarMesh.position.set(0, -2.8, 0);
-    sandbarMesh.receiveShadow = true;
-    scene.add(sandbarMesh);
+    const model = buildLincolnBuoyModel();
+    scene.add(model.rootGroup);
 
     // --- RENDER LOOP & REAL-TIME HYDROSTATIC DYNAMICS ---
     let reqId: number;
-    let _renderedSteps = 0;
 
     const animate = () => {
       reqId = requestAnimationFrame(animate);
-      _renderedSteps += 1;
       const delta = 1 / 60;
       const p = live.current;
 
-      paddleGroup.rotation.z -= delta * (p.shoalClearanceFt > 0 ? 1.8 : 0.35);
-      hullPaint.color.setHex(p.shoalClearanceFt > 0 ? 0x78350f : 0xf87171);
+      model.paddlewheelGroup.rotation.z -= delta * (p.shoalClearanceFt > 0 ? 1.8 : 0.35);
+      model.materials.hullWood.color.setHex(p.shoalClearanceFt > 0 ? 0x5c3a21 : 0x991b1b);
 
       const inflationScale = 0.3 + (p.bellowsInflationPct / 100) * 0.9;
-      portBellows.scale.set(1.0, inflationScale, inflationScale);
-      stbdBellows.scale.set(1.0, inflationScale, inflationScale);
+      model.portBellows.scale.set(1.0, inflationScale, inflationScale);
+      model.stbdBellows.scale.set(1.0, inflationScale, inflationScale);
 
       const targetBoatY = (6.0 - p.effectiveDraftFt) * 0.35 - 0.5;
-      boatGroup.position.y += (targetBoatY - boatGroup.position.y) * 0.1;
+      model.boatGroup.position.y += (targetBoatY - model.boatGroup.position.y) * 0.1;
 
-      sandbarMesh.position.y = -p.riverShoalDepthFt * 0.35;
+      model.sandbarMesh.position.y = -p.riverShoalDepthFt * 0.35;
 
       controls.update();
       renderer.render(scene, camera);
@@ -318,6 +138,7 @@ export function LincolnBuoy3D() {
 
     return () => {
       cancelAnimationFrame(reqId);
+      model.dispose();
       studio.dispose();
     };
   }, [live]);
@@ -448,15 +269,15 @@ export function LincolnBuoy3D() {
                 ["paddlewheel", "Paddlewheel"],
                 ["top", "Plan View"],
               ] as const
-            ).map(([id, label]) => (
+            ).map(([preset, label]) => (
               <button
-                key={id}
+                key={preset}
                 type="button"
-                onClick={() => applyCameraPreset(id)}
-                className={`px-2 py-0.5 sm:px-2.5 sm:py-1 rounded-lg font-sans whitespace-nowrap shrink-0 transition-colors ${
-                  activeCamera === id
-                    ? "bg-amber-700 dark:bg-amber-600 text-white font-semibold shadow-xs"
-                    : "text-ink-700 dark:text-parchment-300 hover:bg-parchment-200 dark:hover:bg-ink-800"
+                onClick={() => applyCameraPreset(preset)}
+                className={`px-2 py-1 rounded-lg transition-colors font-medium shrink-0 ${
+                  activeCamera === preset
+                    ? "bg-amber-600 text-white shadow-xs"
+                    : "text-ink-700 dark:text-ink-300 hover:bg-parchment-200 dark:hover:bg-ink-800"
                 }`}
               >
                 {label}

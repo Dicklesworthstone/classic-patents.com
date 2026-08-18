@@ -1,21 +1,29 @@
 "use client";
 
-import { Activity, Camera, Eye, EyeOff, Volume2, VolumeX } from "lucide-react";
+import { Activity, Camera, Eye, EyeOff, Volume2, VolumeX, Zap } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
-import * as THREE from "three";
+import type * as THREE from "three";
 import { FrankenSimEngine } from "@/physics/engine";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { soundEngine } from "@/utils/soundEngine";
+import { buildEastmanKodakModel, updateEastmanKodakKinematics } from "./eastmanKodakModel";
 import { StudioKernelChips } from "./StudioKernelChips";
 import { createThreeStudioScene, type StudioContext } from "./ThreeStudioScene";
 import { useLiveSimParams } from "./useLiveSimParams";
 import { usePatentAudio } from "./usePatentAudio";
 
-type CameraPreset = "iso" | "roll_film" | "barrel_shutter" | "lens_aperture" | "top";
+type CameraPreset =
+  | "iso"
+  | "roll_film"
+  | "barrel_shutter"
+  | "lens_aperture"
+  | "winding_key"
+  | "top";
 
 export function EastmanKodak3D() {
   const containerRef = useRef<HTMLDivElement>(null);
   const [showUiOverlay, setShowUiOverlay] = useState<boolean>(true);
+  const [isCutaway, setIsCutaway] = useState<boolean>(false);
 
   // Photographic Optics Parameters
   const { params } = usePatentPhysics("us-388850-eastman-kodak");
@@ -29,14 +37,13 @@ export function EastmanKodak3D() {
     subjectDistanceM: params.subjectDist ?? 3,
   });
   const shutterFractionSec = kodak.shutterReciprocal;
-  const exposureCount = kodak.rollCapacity;
-  const filmFormatInches = kodak.filmFormatInches;
   const [activeCamera, setActiveCamera] = useState<CameraPreset>("iso");
   const { isAudioMuted, toggleSound: toggleEngine } = usePatentAudio();
 
   const live = useLiveSimParams({
     shutterFractionSec,
     isAudioMuted,
+    isCutaway,
     exposureValueEv: kodak.exposureValueEv,
     hyperfocalM: kodak.hyperfocalM,
     barrelOmegaRadPerS: kodak.barrelOmegaRadPerS,
@@ -69,6 +76,10 @@ export function EastmanKodak3D() {
         camera.position.set(3.5, 0.5, 2.0);
         controls.target.set(2.2, 0, 0);
         break;
+      case "winding_key":
+        camera.position.set(-2.5, 3.2, 1.0);
+        controls.target.set(-1.6, 2.1, -1.2);
+        break;
       case "top":
         camera.position.set(0, 11.0, 0.1);
         controls.target.set(0, 0, 0);
@@ -97,88 +108,28 @@ export function EastmanKodak3D() {
     cameraRef.current = camera;
     controlsRef.current = controls;
 
-    // Materials
-    const moroccoLeatherMat = new THREE.MeshStandardMaterial({
-      color: 0x18181b,
-      roughness: 0.75,
-      metalness: 0.1,
-    });
-
-    const brassMat = new THREE.MeshStandardMaterial({
-      color: 0xd97706,
-      roughness: 0.22,
-      metalness: 0.9,
-    });
-
-    const rollFilmMat = new THREE.MeshStandardMaterial({
-      color: 0xfef08a,
-      roughness: 0.35,
-      metalness: 0.1,
-    });
-
-    const glassLensMat = new THREE.MeshStandardMaterial({
-      color: 0x38bdf8,
-      roughness: 0.05,
-      metalness: 0.1,
-      transparent: true,
-      opacity: 0.7,
-    });
-
-    const rootGroup = new THREE.Group();
+    const { rootGroup, nodes, materials, dispose } = buildEastmanKodakModel();
     scene.add(rootGroup);
-
-    // 1. Black Morocco Leather Covered Box Camera Body (Claim 1)
-    const boxBody = new THREE.Mesh(new THREE.BoxGeometry(4.8, 3.8, 3.8), moroccoLeatherMat);
-    boxBody.castShadow = true;
-    rootGroup.add(boxBody);
-
-    // 2. Continuous Flexible Roll-Film Spool Mechanism (Claim 1 & Claim 2)
-    const filmGroup = new THREE.Group();
-    rootGroup.add(filmGroup);
-
-    // Supply & Take-Up Spools
-    [-1.6, 1.6].forEach((sx) => {
-      const spool = new THREE.Mesh(new THREE.CylinderGeometry(0.35, 0.35, 3.2, 16), rollFilmMat);
-      spool.position.set(sx, 0, -1.2);
-      filmGroup.add(spool);
-    });
-
-    // Film Plane Backplate
-    const filmBack = new THREE.Mesh(new THREE.BoxGeometry(3.2, 3.0, 0.05), rollFilmMat);
-    filmBack.position.set(0, 0, -1.2);
-    filmGroup.add(filmBack);
-
-    // 3. Rotating Cylindrical Barrel Shutter (Claim 1)
-    const shutterGroup = new THREE.Group();
-    shutterGroup.position.set(2.4, 0, 0);
-    rootGroup.add(shutterGroup);
-
-    const barrel = new THREE.Mesh(new THREE.CylinderGeometry(0.65, 0.65, 0.8, 24), brassMat);
-    barrel.rotation.z = Math.PI / 2;
-    shutterGroup.add(barrel);
-
-    // Glass Doublet Meniscus Lens
-    const lens = new THREE.Mesh(new THREE.CylinderGeometry(0.4, 0.4, 0.1, 24), glassLensMat);
-    lens.rotation.z = Math.PI / 2;
-    lens.position.x = 0.45;
-    shutterGroup.add(lens);
-
-    // Winding Key on Top Deck
-    const key = new THREE.Mesh(new THREE.TorusGeometry(0.3, 0.05, 8, 16), brassMat);
-    key.rotation.x = Math.PI / 2;
-    key.position.set(-1.6, 2.1, -1.2);
-    rootGroup.add(key);
 
     // Animation Loop
     let reqId: number;
-    let _renderedSteps = 0;
+    let timeSec = 0;
 
     const animate = () => {
       reqId = requestAnimationFrame(animate);
-      _renderedSteps += 1;
-      const delta = 1 / 60;
+      const dt = 1 / 60;
+      timeSec += dt;
       const p = live.current;
-      barrel.rotation.x += (p.barrelOmegaRadPerS ?? 0) * delta;
+
+      updateEastmanKodakKinematics(
+        nodes,
+        materials,
+        dt,
+        timeSec,
+        p.barrelOmegaRadPerS ?? 0,
+        p.isCutaway,
+        0.8,
+      );
 
       renderer.render(scene, camera);
     };
@@ -187,6 +138,7 @@ export function EastmanKodak3D() {
 
     return () => {
       cancelAnimationFrame(reqId);
+      dispose();
       studio.cleanup();
     };
   }, [live]);
@@ -213,9 +165,10 @@ export function EastmanKodak3D() {
           {(
             [
               ["iso", "Isometric"],
-              ["roll_film", "Roll Film Spool"],
-              ["barrel_shutter", "Barrel Shutter"],
-              ["lens_aperture", "Lens Aperture"],
+              ["roll_film", "Roll Film"],
+              ["barrel_shutter", "Shutter"],
+              ["lens_aperture", "Lens"],
+              ["winding_key", "Winding Key"],
               ["top", "Top"],
             ] as [CameraPreset, string][]
           ).map(([preset, label]) => (
@@ -238,6 +191,20 @@ export function EastmanKodak3D() {
         <div className="flex items-center gap-1.5 bg-parchment-950/80 backdrop-blur-md p-1.5 rounded-xl border border-parchment-700/60 shadow-lg pointer-events-auto">
           <button
             type="button"
+            onClick={() => setIsCutaway(!isCutaway)}
+            title={isCutaway ? "Solid Camera Body" : "Cutaway Interior"}
+            className={`flex items-center gap-1 px-2.5 py-1 text-xs font-sans rounded-lg transition-colors ${
+              isCutaway
+                ? "bg-amber-600/30 text-amber-200 border border-amber-500/40"
+                : "text-parchment-300 hover:text-white hover:bg-parchment-800/60"
+            }`}
+          >
+            {isCutaway ? <EyeOff className="w-3.5 h-3.5" /> : <Eye className="w-3.5 h-3.5" />}
+            <span>{isCutaway ? "Cutaway" : "Solid"}</span>
+          </button>
+
+          <button
+            type="button"
             onClick={toggleSound}
             title={isAudioMuted ? "Unmute Sound" : "Mute Sound"}
             className="p-1.5 rounded-lg text-xs text-parchment-400 hover:text-white hover:bg-parchment-800 transition-colors"
@@ -247,28 +214,25 @@ export function EastmanKodak3D() {
           <button
             type="button"
             onClick={() => setShowUiOverlay(!showUiOverlay)}
-            title={showUiOverlay ? "Hide Overlay UI" : "Show Overlay UI"}
             className="p-1.5 rounded-lg text-xs text-parchment-400 hover:text-white hover:bg-parchment-800 transition-colors"
           >
-            {showUiOverlay ? (
-              <EyeOff className="w-4 h-4" />
-            ) : (
-              <Eye className="w-4 h-4 text-amber-400" />
-            )}
-          </button>{" "}
+            <Zap className="w-4 h-4 text-amber-400" />
+          </button>
         </div>
       </div>
 
       <StudioKernelChips
         visible={showUiOverlay}
-        title="Eastman roll-holder"
+        title="Eastman roll-film camera"
         chips={[
           { label: "Shutter", value: `1/${shutterFractionSec}`, unit: "s" },
-          { label: "EV", value: kodak.exposureValueEv.toFixed(1) },
-          { label: "Hyperfocal", value: kodak.hyperfocalM.toFixed(1), unit: "m" },
-          { label: "f", value: String(kodak.focalLengthMm), unit: "mm" },
-          { label: "Film", value: `${filmFormatInches} in · ${exposureCount} exp` },
-          { label: "Flash", value: String(kodak.flashDisplayMs), unit: "ms" },
+          { label: "Aperture", value: "f/9", unit: "" },
+          { label: "Capacity", value: String(kodak.rollCapacity), unit: "exp" },
+          { label: "Format", value: `${kodak.filmFormatInches}"`, unit: "dia" },
+          { label: "EV", value: String(kodak.exposureValueEv), unit: "" },
+          { label: "Hyperfocal", value: `${kodak.hyperfocalM}m`, unit: "" },
+          { label: "DoF Near", value: `${kodak.dofNearM}m`, unit: "" },
+          { label: "Focus", value: kodak.isInFocus ? "sharp" : "soft" },
         ]}
       />
     </div>

@@ -715,6 +715,9 @@ export function createThreeStudioScene(opts: StudioOptions): StudioContext {
  * Creates a glowing circular point particle texture for streamlines and sparks.
  */
 export function createGlowPointTexture(): THREE.Texture {
+  if (typeof document === "undefined") {
+    return new THREE.Texture();
+  }
   const canvas = document.createElement("canvas");
   canvas.width = 64;
   canvas.height = 64;

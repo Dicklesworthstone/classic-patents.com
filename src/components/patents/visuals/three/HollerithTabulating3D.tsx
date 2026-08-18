@@ -1,21 +1,26 @@
 "use client";
 
-import { Activity, Camera, Eye, EyeOff, Volume2, VolumeX } from "lucide-react";
+import { Activity, Camera, Eye, EyeOff, Volume2, VolumeX, Zap } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
-import * as THREE from "three";
+import type * as THREE from "three";
 import { FrankenSimEngine } from "@/physics/engine";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { soundEngine } from "@/utils/soundEngine";
+import {
+  buildHollerithTabulatingModel,
+  updateHollerithTabulatingKinematics,
+} from "./hollerithTabulatingModel";
 import { StudioKernelChips } from "./StudioKernelChips";
 import { createThreeStudioScene, type StudioContext } from "./ThreeStudioScene";
 import { useLiveSimParams } from "./useLiveSimParams";
 import { usePatentAudio } from "./usePatentAudio";
 
-type CameraPreset = "iso" | "pin_press" | "dials_board" | "sorting_box" | "top";
+type CameraPreset = "iso" | "pin_press" | "dials_board" | "sorting_box" | "press_lever" | "top";
 
 export function HollerithTabulating3D() {
   const containerRef = useRef<HTMLDivElement>(null);
   const [showUiOverlay, setShowUiOverlay] = useState<boolean>(true);
+  const [isCutaway, setIsCutaway] = useState<boolean>(false);
 
   // Electromechanical Computation Parameters
   const { params } = usePatentPhysics("us-395781-hollerith-tabulating");
@@ -33,6 +38,7 @@ export function HollerithTabulating3D() {
   const live = useLiveSimParams({
     cardsPerMin,
     isAudioMuted,
+    isCutaway,
     cycleTimeMs: hollerith.cycleTimeMs,
     solenoidForceN: hollerith.solenoidForceN,
     cardsPerDay,
@@ -65,6 +71,10 @@ export function HollerithTabulating3D() {
         camera.position.set(3.2, 1.5, 3.5);
         controls.target.set(2.2, 0, 0);
         break;
+      case "press_lever":
+        camera.position.set(-3.5, 1.8, 2.2);
+        controls.target.set(-2.4, 0.2, 0.8);
+        break;
       case "top":
         camera.position.set(0, 13.5, 0.1);
         controls.target.set(0, 0, 0);
@@ -72,6 +82,7 @@ export function HollerithTabulating3D() {
     }
     controls.update();
   };
+
   const toggleSound = () => {
     toggleEngine(() => {
       soundEngine.playSwitchClick();
@@ -92,126 +103,28 @@ export function HollerithTabulating3D() {
     cameraRef.current = camera;
     controlsRef.current = controls;
 
-    // Materials
-    const oakWoodMat = new THREE.MeshStandardMaterial({
-      color: 0x78350f,
-      roughness: 0.55,
-      metalness: 0.05,
-    });
-
-    const dialWhiteMat = new THREE.MeshStandardMaterial({
-      color: 0xfef08a,
-      roughness: 0.2,
-      metalness: 0.1,
-    });
-
-    const brassMat = new THREE.MeshStandardMaterial({
-      color: 0xd97706,
-      roughness: 0.22,
-      metalness: 0.9,
-    });
-
-    const castIronMat = new THREE.MeshStandardMaterial({
-      color: 0x1e293b,
-      roughness: 0.5,
-      metalness: 0.85,
-    });
-
-    const manilaCardMat = new THREE.MeshStandardMaterial({
-      color: 0xfde047,
-      roughness: 0.8,
-      metalness: 0.05,
-    });
-
-    const rootGroup = new THREE.Group();
+    const { rootGroup, nodes, materials, dispose } = buildHollerithTabulatingModel();
     scene.add(rootGroup);
-
-    // 1. Hardwood Table Console Desk
-    const desk = new THREE.Mesh(new THREE.BoxGeometry(10.5, 0.8, 5.5), oakWoodMat);
-    desk.position.y = -1.2;
-    desk.receiveShadow = true;
-    rootGroup.add(desk);
-
-    // 4 Oak Table Legs
-    [
-      [-4.5, -2.0],
-      [4.5, -2.0],
-      [-4.5, 2.0],
-      [4.5, 2.0],
-    ].forEach(([lx, lz]) => {
-      const leg = new THREE.Mesh(new THREE.CylinderGeometry(0.18, 0.18, 2.4, 12), oakWoodMat);
-      leg.position.set(lx, -2.4, lz);
-      rootGroup.add(leg);
-    });
-
-    // 2. Vertical Clock Register Dial Bank (40 Dials) (Claim 1)
-    const dialBackboard = new THREE.Mesh(new THREE.BoxGeometry(6.5, 3.8, 0.35), oakWoodMat);
-    dialBackboard.position.set(0, 1.8, -1.8);
-    dialBackboard.castShadow = true;
-    rootGroup.add(dialBackboard);
-
-    // Printed 1890 register bank: 40 dials in four rows of ten.
-    const registerDialCount = 40;
-    const dialsPerRow = 10;
-    const dialRows = registerDialCount / dialsPerRow;
-    for (let r = 0; r < dialRows; r++) {
-      for (let c = 0; c < dialsPerRow; c++) {
-        const dial = new THREE.Mesh(new THREE.CylinderGeometry(0.24, 0.24, 0.08, 16), dialWhiteMat);
-        dial.rotation.x = Math.PI / 2;
-        dial.position.set(-2.7 + c * 0.6, 3.0 - r * 0.75, -1.6);
-        rootGroup.add(dial);
-      }
-    }
-
-    // 3. Punched Card Pin Press Mechanism (Claim 2)
-    const pressGroup = new THREE.Group();
-    pressGroup.position.set(-2.4, 0.2, 0.8);
-    rootGroup.add(pressGroup);
-
-    // Lower Mercury Contact Well Cup Bed
-    const mercuryBed = new THREE.Mesh(new THREE.BoxGeometry(2.4, 0.35, 1.6), castIronMat);
-    pressGroup.add(mercuryBed);
-
-    // Upper Spring-Loaded Pin Plate
-    const pinPlateGroup = new THREE.Group();
-    pinPlateGroup.position.y = 0.8;
-    pressGroup.add(pinPlateGroup);
-
-    const pinPlate = new THREE.Mesh(new THREE.BoxGeometry(2.4, 0.2, 1.6), brassMat);
-    pinPlateGroup.add(pinPlate);
-
-    // Punched Manila Census Card
-    const punchCard = new THREE.Mesh(new THREE.BoxGeometry(2.1, 0.02, 1.2), manilaCardMat);
-    punchCard.position.y = 0.2;
-    pressGroup.add(punchCard);
-
-    // Press Lever Handle
-    const lever = new THREE.Mesh(new THREE.CylinderGeometry(0.06, 0.06, 2.2, 12), brassMat);
-    lever.rotation.z = Math.PI / 3;
-    lever.position.set(1.2, 0.8, 0);
-    pressGroup.add(lever);
-
-    // 4. Electromagnetic Sorting Box (24 Compartments)
-    const sortBox = new THREE.Mesh(new THREE.BoxGeometry(3.6, 1.4, 2.8), oakWoodMat);
-    sortBox.position.set(2.8, -0.2, 0.8);
-    sortBox.castShadow = true;
-    rootGroup.add(sortBox);
 
     // Animation Loop
     let reqId: number;
-    let renderedSteps = 0;
+    let timeSec = 0;
 
     const animate = () => {
       reqId = requestAnimationFrame(animate);
-      renderedSteps += 1;
-      const _delta = 1 / 60;
+      const dt = 1 / 60;
+      timeSec += dt;
       const p = live.current;
 
-      // Pin press plunging down into card
-      const pressFreq = p.pressOmegaRadPerS ?? (p.cardsPerMin / 60) * 2 * Math.PI;
-      const pressPhase = Math.sin(renderedSteps * (1 / 60) * pressFreq);
-      pinPlateGroup.position.y =
-        0.8 + (pressPhase > 0 ? -pressPhase * (0.2 + (p.solenoidForceN / 40) * 0.35) : 0);
+      updateHollerithTabulatingKinematics(
+        nodes,
+        materials,
+        dt,
+        timeSec,
+        p.cardsPerMin,
+        p.solenoidForceN,
+        p.isCutaway,
+      );
 
       renderer.render(scene, camera);
     };
@@ -220,6 +133,7 @@ export function HollerithTabulating3D() {
 
     return () => {
       cancelAnimationFrame(reqId);
+      dispose();
       studio.cleanup();
     };
   }, [live]);
@@ -233,7 +147,7 @@ export function HollerithTabulating3D() {
         <div className="flex items-center gap-2 bg-parchment-950/80 backdrop-blur-md px-3.5 py-2 rounded-xl border border-parchment-700/60 shadow-lg pointer-events-auto">
           <Activity className="w-4 h-4 text-amber-500 animate-pulse" />
           <span className="text-xs font-mono font-bold text-parchment-100 uppercase tracking-wider">
-            Hollerith Tabulating System 3D
+            Hollerith Tabulator 3D
           </span>
           <span className="text-[10px] font-mono px-2 py-0.5 rounded-full bg-amber-500/20 text-amber-300 border border-amber-500/30">
             US Patent 395,781 (1889)
@@ -249,6 +163,7 @@ export function HollerithTabulating3D() {
               ["pin_press", "Pin Press"],
               ["dials_board", "Register Dials"],
               ["sorting_box", "Sorting Box"],
+              ["press_lever", "Press Lever"],
               ["top", "Top"],
             ] as [CameraPreset, string][]
           ).map(([preset, label]) => (
@@ -271,6 +186,20 @@ export function HollerithTabulating3D() {
         <div className="flex items-center gap-1.5 bg-parchment-950/80 backdrop-blur-md p-1.5 rounded-xl border border-parchment-700/60 shadow-lg pointer-events-auto">
           <button
             type="button"
+            onClick={() => setIsCutaway(!isCutaway)}
+            title={isCutaway ? "Solid Cabinet" : "Cutaway Interior"}
+            className={`flex items-center gap-1 px-2.5 py-1 text-xs font-sans rounded-lg transition-colors ${
+              isCutaway
+                ? "bg-amber-600/30 text-amber-200 border border-amber-500/40"
+                : "text-parchment-300 hover:text-white hover:bg-parchment-800/60"
+            }`}
+          >
+            {isCutaway ? <EyeOff className="w-3.5 h-3.5" /> : <Eye className="w-3.5 h-3.5" />}
+            <span>{isCutaway ? "Cutaway" : "Solid"}</span>
+          </button>
+
+          <button
+            type="button"
             onClick={toggleSound}
             title={isAudioMuted ? "Unmute Sound" : "Mute Sound"}
             className="p-1.5 rounded-lg text-xs text-parchment-400 hover:text-white hover:bg-parchment-800 transition-colors"
@@ -280,29 +209,25 @@ export function HollerithTabulating3D() {
           <button
             type="button"
             onClick={() => setShowUiOverlay(!showUiOverlay)}
-            title={showUiOverlay ? "Hide Overlay UI" : "Show Overlay UI"}
             className="p-1.5 rounded-lg text-xs text-parchment-400 hover:text-white hover:bg-parchment-800 transition-colors"
           >
-            {showUiOverlay ? (
-              <EyeOff className="w-4 h-4" />
-            ) : (
-              <Eye className="w-4 h-4 text-amber-400" />
-            )}
+            <Zap className="w-4 h-4 text-amber-400" />
           </button>
         </div>
       </div>
 
       <StudioKernelChips
         visible={showUiOverlay}
-        title="Hollerith pin press"
+        title="Hollerith punched-card tabulator"
         chips={[
-          { label: "Cards", value: String(cardsPerMin), unit: "/min" },
+          { label: "Throughput", value: String(cardsPerMin), unit: "cpm" },
+          { label: "Dials", value: String(clockDialCount), unit: "" },
+          { label: "Daily Rate", value: String(cardsPerDay), unit: "cards/day" },
           { label: "Cycle", value: String(hollerith.cycleTimeMs), unit: "ms" },
-          { label: "Solenoid", value: String(hollerith.solenoidForceN), unit: "N" },
-          { label: "Day", value: cardsPerDay.toLocaleString() },
-          { label: "Pins", value: String(hollerith.sensingPinCount) },
-          { label: "Dials", value: String(clockDialCount) },
-          { label: "ω_press", value: hollerith.pressOmegaRadPerS.toFixed(2), unit: "rad/s" },
+          { label: "Solenoid", value: `${hollerith.solenoidForceN}`, unit: "N" },
+          { label: "Tau", value: `${hollerith.inductiveTauMs}`, unit: "ms" },
+          { label: "Pins", value: String(hollerith.sensingPinCount), unit: "" },
+          { label: "Pockets", value: String(hollerith.sortingPocketCount), unit: "" },
         ]}
       />
     </div>

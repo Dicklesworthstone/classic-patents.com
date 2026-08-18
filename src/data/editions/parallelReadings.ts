@@ -36,7 +36,9 @@ import { peltonWaterWheelParallelReadings } from "./peltonWaterWheelEdition";
 import { renoEscalatorParallelReadings } from "./renoEscalatorEdition";
 import { sholesTypewriterParallelReadings } from "./sholesTypewriterEdition";
 import { spencerMicrowaveParallelReadings } from "./spencerMicrowaveEdition";
+import { teslaCoil593138ParallelReadings } from "./teslaCoil593138Edition";
 import { teslaMotorParallelReadings } from "./teslaMotorEdition";
+import { thomsonWeldingParallelReadings } from "./thomsonWeldingEdition";
 import { HOWE_SEWING_MACHINE_PARALLEL_READINGS } from "./us-4750-howe-sewing-machine";
 import { DAIMLER_MARINE_ENGINE_PARALLEL_READINGS } from "./us-361931-daimler-engine";
 import { westinghouseAirBrakeParallelReadings } from "./westinghouseAirBrakeEdition";
@@ -78,6 +80,8 @@ export const ARCHIVAL_PARALLEL_READINGS: Readonly<
   "us-2495429-spencer-microwave": spencerMicrowaveParallelReadings,
   "us-2981877-noyce-ic": noyceIcParallelReadings,
   "us-319596-maxim-machine-gun": maximMachineGunParallelReadings,
+  "us-347140-thomson-welding": thomsonWeldingParallelReadings,
+  "us-593138-tesla-coil": teslaCoil593138ParallelReadings,
   "us-79265-sholes-typewriter": sholesTypewriterParallelReadings,
   "us-361931-daimler-engine": DAIMLER_MARINE_ENGINE_PARALLEL_READINGS,
   "us-1102653-goddard-rocket": goddardRocketParallelReadings,
