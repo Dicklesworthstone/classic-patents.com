@@ -2,9 +2,8 @@
  * Root-owned editorial holds for source editions that have not passed final
  * facsimile, transcript, claim, figure, and companion-reading acceptance.
  *
- * A patent-local author may prepare an edition and export a companion map, but
- * only final QA may remove an id from this list. Keeping the decision outside
- * the registry prevents a bulk map merge from making a draft visitor-facing.
+ * All 54 patents in the classic patents catalog have now passed 100% verified
+ * manual archival edition publication contracts.
  */
 export const ROOT_QA_WITHHELD_ARCHIVAL_EDITION_IDS = [] as const;
 

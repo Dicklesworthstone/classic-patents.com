@@ -73,6 +73,8 @@ describe("US 200,521 Thomas Edison Tinfoil Phonograph visual & acoustics boundar
     expect(result.sourceThreadsPerInch).toBe(10);
     expect(result.leadScrewPitchMm).toBe(2.54);
     expect(result.modelMandrelDiameterInches).toBe(4);
+    expect(result.stylusAmp).toBeCloseTo(0.00125, 5);
+    expect(result.stylusOmegaRadPerS).toBe(45);
   });
 
   test("builds a source-linked cylinder and labels unsupported display geometry as illustrative", () => {
@@ -83,7 +85,16 @@ describe("US 200,521 Thomas Edison Tinfoil Phonograph visual & acoustics boundar
     expect(model.stylus).toBeDefined();
     expect(model.rotationReferenceWheel).toBeDefined();
 
-    updateEdisonPhonographKinematics(model, 0.016, 0.5, (60 * 2 * Math.PI) / 60, 25, true);
+    const phono = stepEdisonPhonograph({ mandrelRpm: 60, voiceVolumeDb: 75 });
+    updateEdisonPhonographKinematics(
+      model,
+      0.016,
+      0.5,
+      phono.mandrelOmegaRadPerS,
+      phono.stylusAmp,
+      phono.stylusOmegaRadPerS,
+      true,
+    );
     expect(model.materials.illustrativeBase.transparent).toBe(true);
 
     model.dispose();

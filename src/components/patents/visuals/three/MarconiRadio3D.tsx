@@ -52,6 +52,9 @@ export function MarconiRadio3D() {
     isCutaway,
     resonantFreqMhz: radioPhysics.resonantFreqMhz,
     peakRfPowerKw: radioPhysics.peakRfPowerKw,
+    waveOpacityBase: radioPhysics.waveOpacityBase,
+    wavePhaseRate: radioPhysics.wavePhaseRate,
+    mastStudioScale: radioPhysics.mastStudioScale,
   });
 
   const controlsRef = useRef<StudioContext["controls"] | null>(null);
@@ -132,7 +135,9 @@ export function MarconiRadio3D() {
         timeSec,
         p.aerialHeightMeters,
         p.resonantFreqMhz,
-        p.peakRfPowerKw,
+        p.waveOpacityBase,
+        p.wavePhaseRate,
+        p.mastStudioScale,
         p.isSparking,
         p.showEmWavefronts,
         p.isCutaway,

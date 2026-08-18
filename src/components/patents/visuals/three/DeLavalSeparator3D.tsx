@@ -39,6 +39,8 @@ export function DeLavalSeparator3D() {
     displayOmegaRadPerS: sep.displayOmegaRadPerS,
     bowlOmegaRadPerS: sep.bowlOmegaRadPerS,
     creamDropAdvancePerS: sep.creamDropAdvancePerS,
+    pulleyDisplayOmegaRadPerS: sep.pulleyDisplayOmegaRadPerS,
+    skimDropAdvancePerS: sep.skimDropAdvancePerS,
   });
 
   const controlsRef = useRef<StudioContext["controls"] | null>(null);
@@ -112,7 +114,7 @@ export function DeLavalSeparator3D() {
       const omega = p.displayOmegaRadPerS ?? 0;
       model.bowlGroup.rotation.y += omega * delta;
       model.spindleGroup.rotation.y += omega * delta;
-      model.pulleyGroup.rotation.y += omega * 0.25 * delta;
+      model.pulleyGroup.rotation.y += p.pulleyDisplayOmegaRadPerS * delta;
 
       // Cream (inner) vs skim (outer) only when g-force is high enough to split
       const split = p.centrifugalGs > 2000;
@@ -123,7 +125,7 @@ export function DeLavalSeparator3D() {
       });
       model.skimDrops.forEach((drop, i) => {
         drop.visible = split;
-        drop.position.y = -0.15 - ((elapsed * creamSpeed * 0.85 + i * 0.2) % 2.0);
+        drop.position.y = -0.15 - ((elapsed * p.skimDropAdvancePerS + i * 0.2) % 2.0);
       });
 
       renderer.render(scene, camera);

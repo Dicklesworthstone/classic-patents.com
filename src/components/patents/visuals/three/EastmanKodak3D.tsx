@@ -48,6 +48,8 @@ export function EastmanKodak3D() {
     hyperfocalM: kodak.hyperfocalM,
     barrelOmegaRadPerS: kodak.barrelOmegaRadPerS,
     flashDisplayMs: kodak.flashDisplayMs,
+    filmAdvanceSpeedRadPerS: kodak.filmAdvanceSpeedRadPerS,
+    supplySpoolOmegaRadPerS: kodak.supplySpoolOmegaRadPerS,
   });
 
   const controlsRef = useRef<StudioContext["controls"] | null>(null);
@@ -128,7 +130,8 @@ export function EastmanKodak3D() {
         timeSec,
         p.barrelOmegaRadPerS ?? 0,
         p.isCutaway,
-        0.8,
+        p.filmAdvanceSpeedRadPerS,
+        p.supplySpoolOmegaRadPerS,
       );
 
       renderer.render(scene, camera);

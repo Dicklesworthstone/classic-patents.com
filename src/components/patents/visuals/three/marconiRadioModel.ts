@@ -361,15 +361,17 @@ export function updateMarconiRadioKinematics(
   materials: MarconiRadioMaterials,
   _dt: number,
   timeSec: number,
-  aerialHeightMeters: number,
-  resonantFreqMhz: number,
-  peakRfPowerKw: number,
+  _aerialHeightMeters: number,
+  _resonantFreqMhz: number,
+  waveOpacityBase: number,
+  wavePhaseRate: number,
+  mastStudioScale: number,
   isSparking: boolean,
   showEmWavefronts: boolean,
   isCutaway: boolean,
 ) {
   // 1. Aerial Mast Height Scaling
-  const mastScale = Math.max(0.25, aerialHeightMeters / 88);
+  const mastScale = mastStudioScale;
   nodes.mast.scale.y = mastScale;
   nodes.mast.position.y = nodes.mastBaseY + 4.75 * mastScale;
   nodes.capacityHat.position.y = nodes.mastBaseY + 9.5 * mastScale;
@@ -413,11 +415,11 @@ export function updateMarconiRadioKinematics(
     const ring = nodes.waveRings[i];
     if (ring) {
       ring.visible = showEmWavefronts && isSparking;
-      const wavePhase = (timeSec * (Math.max(0.2, resonantFreqMhz) / 0.85) + i * 0.7) % 3.0;
+      const wavePhase = (timeSec * wavePhaseRate + i * 0.7) % 3.0;
       ring.scale.setScalar(1.0 + wavePhase * 0.6);
       (ring.material as THREE.MeshBasicMaterial).opacity = Math.max(
         0,
-        0.35 + (peakRfPowerKw / 80) * 0.5 - wavePhase * 0.24,
+        waveOpacityBase - wavePhase * 0.24,
       );
     }
   }

@@ -161,6 +161,8 @@ export function stepDeLavalSeparator(params: { bowlRpm?: number; rawMilkFlowLph?
     displaySlowdown,
     displayOmegaRadPerS: Number((bowlOmegaRadPerS * displaySlowdown).toFixed(3)),
     displayOmegaDegPerS: Number((rpm * 6 * displaySlowdown).toFixed(1)),
+    pulleyDisplayOmegaRadPerS: Number((bowlOmegaRadPerS * displaySlowdown * 0.25).toFixed(3)),
+    skimDropAdvancePerS: Number(((creamFlowLph / 300) * 1.6 * 0.85).toFixed(3)),
   };
 }
 
@@ -395,6 +397,8 @@ export function stepEdisonPhonograph(params: { mandrelRpm?: number; voiceVolumeD
     audioBandwidthHz: Math.round(surfaceSpeedMps * 4500),
     mandrelOmegaRadPerS: mandrel.omegaRadPerS,
     mandrelOmegaDegPerS: mandrel.omegaDegPerS,
+    stylusAmp: Number(((((vol / 75) * 25) / 1000) * 0.05).toFixed(5)),
+    stylusOmegaRadPerS: 45,
   };
 }
 
@@ -612,6 +616,7 @@ export function stepBellTelephone(params: {
     acousticDisplayOmegaRadPerS: Number(((2 * Math.PI * freqHz) / 20).toFixed(3)),
     electronDisplaySpeed: Number((currentBaselineAmps * 12).toFixed(3)),
     waveAdvancePerS: 3,
+    diaphragmStudioScale: Number(((displUm / 10) * 0.08).toFixed(5)),
   };
 }
 
@@ -810,15 +815,19 @@ export function stepMarconiRadio(
   const kv = coilKv ?? 28;
   const wavelengthMeters = h * 4;
   const resonantFreqMhz = Number((300 / wavelengthMeters).toFixed(2));
+  const peakRfPowerKw = Number(((kv * kv) / (gap * 1.5)).toFixed(1));
   return {
     wavelengthMeters,
     resonantFreqMhz,
     resonantFreqKhz: Math.round(resonantFreqMhz * 1000),
     maxRangeMiles: Number((0.015 * h * h * (kv / 20)).toFixed(1)),
-    peakRfPowerKw: Number(((kv * kv) / (gap * 1.5)).toFixed(1)),
+    peakRfPowerKw,
     // Thin quarter-wave monopole: R_rad ≈ 36.56 Ω independent of height.
     radiationResistanceOhms: 36.56,
     sparkDisplayMs: 1200,
+    waveOpacityBase: Number((0.35 + (peakRfPowerKw / 80) * 0.5).toFixed(3)),
+    wavePhaseRate: Number((Math.max(0.2, resonantFreqMhz) / 0.85).toFixed(3)),
+    mastStudioScale: Number(Math.max(0.25, h / 88).toFixed(4)),
   };
 }
 

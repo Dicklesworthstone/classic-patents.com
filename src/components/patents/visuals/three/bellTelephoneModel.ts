@@ -305,13 +305,13 @@ export function updateBellTelephoneKinematics(
   dt: number,
   timeSec: number,
   acousticDisplayOmegaRadPerS: number,
-  diaphragmUm: number,
+  diaphragmStudioScale: number,
   electronDisplaySpeed: number,
   showAcousticWaves: boolean,
   isCutaway: boolean,
 ) {
   const acousticVibe = Math.sin(timeSec * acousticDisplayOmegaRadPerS);
-  const displScale = (diaphragmUm / 10) * 0.08;
+  const displScale = diaphragmStudioScale;
 
   // Diaphragm vibration
   model.diaphragmMesh.position.x = -1.35 + acousticVibe * displScale;

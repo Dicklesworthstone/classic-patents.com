@@ -71,6 +71,8 @@ describe("US 388,850 George Eastman Roll-Film Box Camera visual & optics boundar
     expect(result.exposureValueEv).toBeGreaterThan(5);
     expect(result.rollCapacity).toBe(100);
     expect(result.filmFormatInches).toBe(2.5);
+    expect(result.filmAdvanceSpeedRadPerS).toBeCloseTo(0.8, 5);
+    expect(result.supplySpoolOmegaRadPerS).toBeCloseTo(0.64, 5);
   });
 
   test("builds and articulates procedural leather box, film spools, and brass shutter correctly", () => {
@@ -81,7 +83,21 @@ describe("US 388,850 George Eastman Roll-Film Box Camera visual & optics boundar
     expect(nodes.takeupSpool).toBeDefined();
     expect(nodes.barrel).toBeDefined();
 
-    updateEastmanKodakKinematics(nodes, materials, 0.016, 0.5, 120, true, 0.8);
+    const kodak = FrankenSimEngine.stepEastmanKodak({
+      shutterSpeedSec: 0.05,
+      apertureFNumber: 9,
+      subjectDistanceM: 3,
+    });
+    updateEastmanKodakKinematics(
+      nodes,
+      materials,
+      0.016,
+      0.5,
+      kodak.barrelOmegaRadPerS,
+      true,
+      kodak.filmAdvanceSpeedRadPerS,
+      kodak.supplySpoolOmegaRadPerS,
+    );
     expect(materials.moroccoLeather.transparent).toBe(true);
 
     dispose();

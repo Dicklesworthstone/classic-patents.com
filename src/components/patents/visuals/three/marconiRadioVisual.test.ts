@@ -68,6 +68,8 @@ describe("US 586,193 Guglielmo Marconi Wireless Radio Telegraphy visual & electr
     expect(result.radiationResistanceOhms).toBeGreaterThan(30);
     expect(result.peakRfPowerKw).toBeGreaterThan(1);
     expect(result.maxRangeMiles).toBeGreaterThan(10);
+    expect(result.waveOpacityBase).toBeCloseTo(0.35 + (result.peakRfPowerKw / 80) * 0.5, 2);
+    expect(result.mastStudioScale).toBeCloseTo(1, 3);
   });
 
   test("builds and articulates procedural mast, 4-sphere spark gap, Morse key, and wavefront rings correctly", () => {
@@ -78,7 +80,21 @@ describe("US 586,193 Guglielmo Marconi Wireless Radio Telegraphy visual & electr
     expect(nodes.mast).toBeDefined();
     expect(nodes.sparkArc).toBeDefined();
 
-    updateMarconiRadioKinematics(nodes, materials, 0.016, 0.5, 88, 0.85, 25.0, true, true, true);
+    const radio = FrankenSimEngine.stepMarconiRadio(88, 10, 28);
+    updateMarconiRadioKinematics(
+      nodes,
+      materials,
+      0.016,
+      0.5,
+      88,
+      radio.resonantFreqMhz,
+      radio.waveOpacityBase,
+      radio.wavePhaseRate,
+      radio.mastStudioScale,
+      true,
+      true,
+      true,
+    );
     expect(materials.mahoganyBase.transparent).toBe(true);
 
     dispose();

@@ -675,6 +675,8 @@ export const FrankenSimEngine = {
       flashDisplayMs: Math.max(80, Math.round(t * 1000)),
       // One barrel revolution per open time (US 388,850 rotary shutter).
       barrelOmegaRadPerS: Number(((2 * Math.PI) / Math.max(0.01, t)).toFixed(3)),
+      filmAdvanceSpeedRadPerS: 0.8,
+      supplySpoolOmegaRadPerS: 0.64,
     };
   },
 

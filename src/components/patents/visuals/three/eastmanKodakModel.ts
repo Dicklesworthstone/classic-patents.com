@@ -242,6 +242,7 @@ export function updateEastmanKodakKinematics(
   barrelOmegaRadPerS: number,
   isCutaway: boolean,
   filmAdvanceSpeedRadPerS: number,
+  supplySpoolOmegaRadPerS: number,
 ) {
   // 1. Shutter Rotation
   nodes.barrel.rotation.x += barrelOmegaRadPerS * dt;
@@ -249,7 +250,7 @@ export function updateEastmanKodakKinematics(
   // 2. Film Spool & Winding Key Motion during advance
   nodes.windingKey.rotation.y += filmAdvanceSpeedRadPerS * dt;
   nodes.takeupSpool.rotation.y += filmAdvanceSpeedRadPerS * dt;
-  nodes.supplySpool.rotation.y += filmAdvanceSpeedRadPerS * 0.8 * dt;
+  nodes.supplySpool.rotation.y += supplySpoolOmegaRadPerS * dt;
 
   // 3. Cutaway Body Mode
   materials.moroccoLeather.opacity = isCutaway ? 0.28 : 1.0;

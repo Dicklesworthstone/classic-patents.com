@@ -289,15 +289,15 @@ export function updateEdisonPhonographKinematics(
   dt: number,
   timeSec: number,
   mandrelOmegaRadPerS: number,
-  grooveDepthMicrons: number,
+  stylusAmp: number,
+  stylusOmegaRadPerS: number,
   isCutaway: boolean,
 ) {
   model.cylinderGroup.rotation.x += mandrelOmegaRadPerS * dt;
   model.rotationReferenceWheel.rotation.x += mandrelOmegaRadPerS * dt;
 
   // Illustrative display motion only. The source specifies no amplitude or frequency.
-  const depthMm = (grooveDepthMicrons / 1000) * 0.05;
-  const vibration = Math.sin(timeSec * 45) * depthMm;
+  const vibration = Math.sin(timeSec * stylusOmegaRadPerS) * stylusAmp;
   model.stylus.position.y = -0.55 + vibration;
 
   // Cutaway Mode

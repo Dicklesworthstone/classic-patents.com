@@ -58,6 +58,8 @@ describe("US 247,804 Gustaf de Laval Centrifugal Cream Separator visual & fluid 
     expect(result.fatYieldPct).toBeGreaterThan(95);
     expect(result.creamFlowLph).toBeGreaterThan(20);
     expect(result.skimFlowLph).toBeGreaterThan(250);
+    expect(result.pulleyDisplayOmegaRadPerS).toBeCloseTo(result.displayOmegaRadPerS * 0.25, 2);
+    expect(result.skimDropAdvancePerS).toBeCloseTo(result.creamDropAdvancePerS * 0.85, 2);
   });
 
   test("builds and articulates procedural centrifuge bowl, spindle, and collecting pans correctly", () => {

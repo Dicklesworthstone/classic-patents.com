@@ -217,6 +217,7 @@ the visitor can see or hear the kernel change the instrument.
 - [x] P5.124 Otto govDisplayOmega / flyballRadius, Diesel governorBallSpread / pressureNeedleRadPerBar, Maxim steamOpacity, and Parsons steamAdvancePerS / steamOpacity live on the shared steps. 3D no longer converts leftover rpm/180, rpm/150, evap/15, or h/550×n/3000.
 - [x] P5.125 Corliss govSpread / wristAmp, Zeppelin hullStudioY, Otis springBowY, and Mergenthaler wedgeLift live on the shared steps. 3D no longer converts leftover rpm/100, lift/40, deflection/10, or wedge/10.
 - [x] P5.126 Daimler hotTubeGlow, Goodyear stressScale / thermalAmplitude / clampStudioX, Hollerith plungeAmp, Gramme fluxOpacity, and Thomson weldGlow / weldSeamScale / jawStudioOffset live on the shared steps. 3D no longer converts leftover T/800, psi/2800, F/40, EMF/160, or burr/3.8.
+- [x] P5.127 Bell diaphragmStudioScale, Edison phonograph stylusAmp / stylusOmega, Eastman filmAdvance / supplySpool omega, De Laval pulley / skim rates, and Marconi waveOpacity / wavePhaseRate / mastStudioScale live on the shared steps. 3D no longer converts leftover μm/10, μm/1000, spool×0.8, pulley×0.25, or kW/80.
 
 ## Explicitly out of scope
 

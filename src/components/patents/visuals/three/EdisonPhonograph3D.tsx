@@ -46,6 +46,8 @@ export function EdisonPhonograph3D() {
     grooveDepthMicrons: phono.grooveDepthMicrons,
     axialTravelMmPerS: phono.axialTravelMmPerS,
     mandrelOmegaRadPerS: phono.mandrelOmegaRadPerS,
+    stylusAmp: phono.stylusAmp,
+    stylusOmegaRadPerS: phono.stylusOmegaRadPerS,
   });
 
   const controlsRef = useRef<StudioContext["controls"] | null>(null);
@@ -126,7 +128,8 @@ export function EdisonPhonograph3D() {
         dt,
         timeSec,
         p.mandrelOmegaRadPerS,
-        p.grooveDepthMicrons,
+        p.stylusAmp,
+        p.stylusOmegaRadPerS,
         p.isCutaway,
       );
 
