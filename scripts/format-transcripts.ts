@@ -56,7 +56,7 @@ export function normalizePatentProse(rawText: string): string {
     // Clean up multiple spaces and punctuation spacing
     joined = joined
       .replace(/[ \t]+/g, " ")
-      .replace(/ ([,\.;:\?!])/g, "$1")
+      .replace(/ ([,.;:?!])/g, "$1")
       .trim();
 
     if (joined) {
@@ -68,15 +68,13 @@ export function normalizePatentProse(rawText: string): string {
 }
 
 const transcriptsDir = path.join(process.cwd(), "public", "patents", "transcripts");
-const sourceTextDir = path.join(process.cwd(), "public", "patents", "source-text");
 
 if (!fs.existsSync(transcriptsDir)) fs.mkdirSync(transcriptsDir, { recursive: true });
-if (!fs.existsSync(sourceTextDir)) fs.mkdirSync(sourceTextDir, { recursive: true });
 
 console.log("=== Formatting and Normalizing Full Original Patent Transcripts ===");
 
 for (const patent of allPatents) {
-  let specBody = normalizePatentProse(patent.originalText);
+  const specBody = normalizePatentProse(patent.originalText);
 
   // If originalText doesn't have formal header, construct standard header
   let fullCleanText = "";
@@ -117,10 +115,7 @@ for (const patent of allPatents) {
   fullCleanText += "\n";
 
   const transcriptPath = path.join(transcriptsDir, `${patent.id}.txt`);
-  const sourceTextPath = path.join(sourceTextDir, `${patent.id}.txt`);
-
   fs.writeFileSync(transcriptPath, fullCleanText, "utf-8");
-  fs.writeFileSync(sourceTextPath, fullCleanText, "utf-8");
 
   console.log(
     `✓ [${patent.patentNumber}] Formatted transcript: ${patent.id} (${fullCleanText.length} chars)`,

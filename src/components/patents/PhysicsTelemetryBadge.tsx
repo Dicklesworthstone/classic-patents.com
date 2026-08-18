@@ -22,6 +22,7 @@ export function PhysicsTelemetryBadge({
     meta: data,
     metrics: liveMetrics,
     params,
+    updateParam,
     lastChange,
     resetParams,
   } = usePatentPhysics(patentId);
@@ -144,6 +145,55 @@ export function PhysicsTelemetryBadge({
                     style={{ width: `${Math.max(3, Math.min(100, metric.progressPct))}%` }}
                   />
                 </div>
+              )}
+            </div>
+          );
+        })}
+      </div>
+
+      {/* Live Parameter Controls Grid (Unified Physical Inputs) */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 pt-4 border-t border-parchment-200 dark:border-ink-800">
+        {data.controls.map((ctrl) => {
+          const val = params[ctrl.id] ?? ctrl.defaultValue;
+          const isCheckbox = ctrl.min === 0 && ctrl.max === 1 && ctrl.step === 1 && !ctrl.unit;
+          return (
+            <div
+              key={ctrl.id}
+              className="p-3 rounded-xl border border-parchment-200 dark:border-ink-800 bg-white/50 dark:bg-ink-950/50 shadow-2xs space-y-1.5 flex flex-col justify-center"
+            >
+              {isCheckbox ? (
+                <label className="flex items-center gap-2 cursor-pointer text-xs font-mono">
+                  <input
+                    type="checkbox"
+                    checked={val > 0.5}
+                    onChange={(e) => updateParam(ctrl.id, e.target.checked ? 1 : 0)}
+                    className="rounded accent-emerald-600 w-4 h-4"
+                  />
+                  <span className="font-bold text-ink-900 dark:text-parchment-100 truncate">
+                    {ctrl.label}
+                  </span>
+                </label>
+              ) : (
+                <>
+                  <div className="flex items-center justify-between font-mono text-[11px]">
+                    <span className="font-semibold text-ink-800 dark:text-parchment-200 truncate pr-2">
+                      {ctrl.label}
+                    </span>
+                    <span className="text-amber-700 dark:text-amber-400 font-bold whitespace-nowrap">
+                      {val > 0 && ctrl.min < 0 ? `+${val}` : val} {ctrl.unit}
+                    </span>
+                  </div>
+                  <input
+                    type="range"
+                    min={ctrl.min}
+                    max={ctrl.max}
+                    step={ctrl.step}
+                    value={val}
+                    onChange={(e) => updateParam(ctrl.id, Number(e.target.value))}
+                    className="w-full accent-amber-600 dark:accent-amber-400 cursor-pointer h-1.5 bg-parchment-300 dark:bg-ink-700 rounded-lg"
+                    aria-label={ctrl.label}
+                  />
+                </>
               )}
             </div>
           );

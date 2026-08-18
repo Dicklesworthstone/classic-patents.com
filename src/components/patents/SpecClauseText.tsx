@@ -30,7 +30,7 @@ function normalizeParagraph(raw: string): string {
       return `${acc} ${line}`;
     }, "")
     .replace(/[ \t]+/g, " ")
-    .replace(/ ([,\.;:\?!])/g, "$1")
+    .replace(/ ([.,;:?!])/g, "$1")
     .trim();
 }
 
@@ -100,6 +100,20 @@ export function SpecClauseText({ patentId, text, className }: SpecClauseTextProp
             normalized.startsWith("UNITED STATES PATENT OFFICE") ||
             normalized.startsWith("SPECIFICATION") ||
             normalized.startsWith("CLAIMS"));
+
+        // Page Boundary Marker Detection ("--- SOURCE PDF PAGE 1 OF 10 ---")
+        const isPageMarker = /^---\s*SOURCE PDF PAGE \d+ OF \d+\s*---/i.test(normalized);
+        if (isPageMarker) {
+          return (
+            <div key={`page-${idx}`} className="my-8 flex items-center gap-3 select-none">
+              <div className="h-px flex-1 bg-parchment-300 dark:bg-ink-800" />
+              <span className="px-3 py-1 rounded-full bg-parchment-200/80 dark:bg-ink-800/80 text-[11px] font-mono font-bold tracking-widest text-amber-800 dark:text-amber-400 uppercase border border-parchment-300 dark:border-ink-700 shadow-xs">
+                {normalized.replace(/^-+\s*|\s*-+$/g, "")}
+              </span>
+              <div className="h-px flex-1 bg-parchment-300 dark:bg-ink-800" />
+            </div>
+          );
+        }
 
         if (isHeader) {
           return (

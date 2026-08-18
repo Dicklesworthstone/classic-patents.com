@@ -15,6 +15,7 @@
       "!**/.next",
       "!**/.vercel",
       "!**/public/wasm",
+      "!**/public/patents",
       "!bun.lock"
     ]
   },
