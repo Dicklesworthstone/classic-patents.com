@@ -1,0 +1,249 @@
+import type { Patent } from "@/types/patent";
+
+/**
+ * Canonical catalogue record for the four-sheet facsimile inspected on
+ * 2026-08-18. Its title sheet and specification identify it as US 593,138,
+ * not US 533,367. The complete source face remains deliberately withheld
+ * until a separate manual React edition has been prepared against this PDF.
+ */
+export const teslaCoil593138Patent: Patent = {
+  id: "us-593138-tesla-coil",
+  patentNumber: "US 593,138",
+  title: "Electrical Transformer",
+  shortTitle: "Tesla's High-Potential Transformer",
+  subtitle:
+    "A spiral secondary winding that keeps adjacent turns near one another in potential while moving the high-potential terminal away from the primary.",
+  inventors: ["Nikola Tesla"],
+  inventorLocation: "New York, N.Y.",
+  grantDate: "1897-11-02",
+  filingDate: "1897-03-20",
+  era: "Electrification Era (1880–1900)",
+  category: "electricity",
+  categoryLabel: "High-Potential Electrical Transmission",
+  summary:
+    "Tesla's 1897 transformer arranges primary and secondary windings so the secondary's greatest potential is remote from the primary and adjacent turns have a small voltage difference. The grant also describes paired step-up and step-down transformers for transmission.",
+  heroQuote:
+    "The convolutions of the conductor of the latter will be farther removed from the primary as the liability of injury from the effects of potential increases, the terminal or point of highest potential being the most remote.",
+  originalPdfUrl: "/patents/pdfs/us-593138-tesla-coil.pdf",
+  googlePatentsUrl: "https://patents.google.com/patent/US593138A/en",
+  usptoClassification: "H01F 38/00 (transformers; resonant coils)",
+  originalText: `UNITED STATES PATENT OFFICE.
+NIKOLA TESLA, OF NEW YORK, N. Y.
+
+ELECTRICAL TRANSFORMER.
+
+SPECIFICATION forming part of Letters Patent No. 593,138, dated November 2, 1897.
+Application filed March 20, 1897. Serial No. 623,453. (No model.)
+
+The present application is based upon an apparatus which I have devised and employed for the purpose of developing electrical currents of high potential.`,
+  plainEnglishExplanation: {
+    overview:
+      "The problem addressed here is insulation, not a generic spark-coil recipe. Tesla arranges the winding so that neighboring turns have relatively little voltage between them, while the terminal at the greatest potential is physically remote from the primary and from a person handling the apparatus.",
+    coreMechanism:
+      "A secondary coil is wound as a flat spiral or another graded form. Its inner end, nearest the primary, is electrically connected to the primary and to earth in use. The remote end reaches the highest potential. Tesla also describes a transmission pair: a sending transformer raises the line potential and a receiving transformer lowers it again.",
+    mechanicalBreakdown: [
+      {
+        title: "Graded Secondary Winding",
+        summary:
+          "The secondary's geometry separates the high-potential terminal from the primary and keeps neighboring turns closer in potential.",
+        technicalDetails:
+          "The specification identifies a flat spiral as the usual form and permits a frustum-of-cone form. Its stated safety rationale is that potential rises along the winding while the difference between adjacent turns remains comparatively small.",
+        archaicTerm: "convolutions",
+        modernEquivalent: "winding turns",
+      },
+      {
+        title: "Primary and Earth Connection",
+        summary:
+          "The secondary terminal adjacent to the primary is connected to the primary and, in use, to earth.",
+        technicalDetails:
+          "Claims 1 through 3 make this electrical relationship part of the claimed transformer. The source says it reduces the tendency for sparks to jump between adjacent primary and secondary portions.",
+        archaicTerm: "earth",
+        modernEquivalent: "protective ground connection",
+      },
+      {
+        title: "Transmission Pair",
+        summary:
+          "A sending transformer raises potential for a line, and a receiving transformer lowers it for lamps, motors, or another local circuit.",
+        technicalDetails:
+          "Figure 1 depicts this system-level arrangement. Claim 4 covers the relationship between the two transformers and the line and earth terminals of their longer, fine-wire coils.",
+      },
+    ],
+    scientificPrinciples: [
+      {
+        principle: "Voltage grading along a winding",
+        formula: "V_{adjacent} = V_{n+1} - V_n",
+        explanation:
+          "The historical claim is architectural: distribute the change in potential along a long winding rather than allowing a large change across closely adjacent conductors.",
+      },
+      {
+        principle: "Standing-wave length described by the specification",
+        formula: "l \u2248 \u03bb / 4",
+        explanation:
+          "Tesla specifies a secondary length approximately one-quarter of the electrical disturbance wavelength so the remote terminal is at maximum potential. A complete manual edition will preserve and explain the source's worked example in full.",
+      },
+    ],
+    whyItMattersToday:
+      "This patent records an early high-potential transformer design whose insulation strategy is geometric and system-level. Its complete specification and figure-by-figure reading are intentionally not yet presented as a finished archival edition.",
+  },
+  claims: [
+    {
+      number: 1,
+      isIndependent: true,
+      originalText:
+        "A transformer for developing or converting currents of high potential, comprising a primary and secondary coil, one terminal of the secondary being electrically connected with the primary, and with earth when the transformer is in use, as set forth.",
+      plainEnglish:
+        "Claims the primary-secondary transformer arrangement in which one secondary terminal is connected both to the primary and, in operation, to earth.",
+      keyInnovations: ["primary-secondary connection", "grounded secondary terminal"],
+    },
+    {
+      number: 2,
+      isIndependent: true,
+      originalText:
+        "A transformer for developing or converting currents of high potential, comprising a primary and secondary wound in the form of a flat spiral, the end of the secondary adjacent to the primary being electrically connected therewith and with earth when the transformer is in use, as set forth.",
+      plainEnglish:
+        "Narrows the transformer to a flat-spiral winding and specifies the connection at the secondary end nearest the primary.",
+      keyInnovations: ["flat spiral winding", "adjacent secondary terminal"],
+    },
+    {
+      number: 3,
+      isIndependent: true,
+      originalText:
+        "A transformer for developing or converting currents of high potential comprising a primary and secondary wound in the form of a spiral, the secondary being inside of, and surrounded by, the convolutions of the primary and having its adjacent terminal electrically connected therewith and with earth when the transformer is in use, as set forth.",
+      plainEnglish:
+        "Claims the nested spiral geometry: the secondary lies inside the primary turns and its adjacent terminal shares the primary-and-earth connection.",
+      keyInnovations: ["nested spiral geometry", "surrounding primary winding"],
+    },
+    {
+      number: 4,
+      isIndependent: true,
+      originalText:
+        "In a system for the conversion and transmission of electrical energy, the combination of two transformers, one for raising, the other for lowering, the potential of the currents, the said transformers having one terminal of the longer or fine-wire coils connected to line, and the other terminals adjacent to the shorter coils electrically connected therewith and to the earth, as set forth.",
+      plainEnglish:
+        "Claims a transmission system with a step-up transformer at one end and a step-down transformer at the other, with the specified line and earth connections.",
+      keyInnovations: ["step-up transformer", "step-down transformer", "line transmission pair"],
+    },
+  ],
+  drawings: [
+    {
+      figureNumber: "Fig. 1",
+      title: "Sending and receiving transformer system",
+      caption:
+        "The first drawing sheet shows the primary and secondary windings in a transmission arrangement with a dynamo, lamps, and motors.",
+      svgType: "tesla-coil",
+      callouts: [
+        {
+          id: "tesla-593138-a",
+          figureRef: "Fig. 1",
+          label: "A",
+          element: "Core",
+          description:
+            "The core marked A in the source figure; the specification says it may be magnetic when desired.",
+          x: 27,
+          y: 35,
+        },
+        {
+          id: "tesla-593138-b",
+          figureRef: "Fig. 1",
+          label: "B",
+          element: "Secondary coil",
+          description: "The spiral secondary coil shown in each transformer.",
+          x: 25,
+          y: 25,
+        },
+        {
+          id: "tesla-593138-c",
+          figureRef: "Fig. 1",
+          label: "C",
+          element: "Primary coil",
+          description: "The primary wound in proximity to the secondary.",
+          x: 35,
+          y: 31,
+        },
+      ],
+    },
+    {
+      figureNumber: "Fig. 2",
+      title: "Frustum-of-cone winding form",
+      caption:
+        "The second drawing sheet shows a secondary wound on a frustum-of-cone support with the primary around its base.",
+      svgType: "tesla-coil",
+      callouts: [
+        {
+          id: "tesla-593138-fig2-b",
+          figureRef: "Fig. 2",
+          label: "B",
+          element: "Secondary coil",
+          description: "The secondary winding drawn on the conical support.",
+          x: 58,
+          y: 63,
+        },
+        {
+          id: "tesla-593138-fig2-c",
+          figureRef: "Fig. 2",
+          label: "C",
+          element: "Primary coil",
+          description: "The primary winding around the base of the conical form.",
+          x: 77,
+          y: 65,
+        },
+      ],
+    },
+    {
+      figureNumber: "Fig. 3",
+      title: "Two-section secondary construction",
+      caption:
+        "The second drawing sheet also shows two insulating spools, two secondary sections, a surrounding flat-strip primary, and insulating lead-out tubes.",
+      svgType: "tesla-coil",
+      callouts: [
+        {
+          id: "tesla-593138-fig3-b",
+          figureRef: "Fig. 3",
+          label: "B",
+          element: "Secondary coil sections",
+          description: "The two secondary sections wound on insulating spools.",
+          x: 30,
+          y: 28,
+        },
+        {
+          id: "tesla-593138-fig3-c",
+          figureRef: "Fig. 3",
+          label: "C",
+          element: "Primary strip",
+          description: "The spirally wound flat-strip primary surrounding both secondary sections.",
+          x: 48,
+          y: 41,
+        },
+        {
+          id: "tesla-593138-fig3-m",
+          figureRef: "Fig. 3",
+          label: "M",
+          element: "Insulating lead-out tubes",
+          description:
+            "The insulating tubes through which the inner secondary terminals are led out.",
+          x: 16,
+          y: 51,
+        },
+      ],
+    },
+  ],
+  historicalContext: {
+    problemStatement:
+      "Tesla describes earlier transformer and induction-coil construction as unable to produce or practically use the required high potentials without danger to apparatus or people.",
+    priorArtLimitations: [
+      "Ordinary winding arrangements placed conductors with large potential differences too near each other.",
+      "A high-potential line could discharge to nearby grounded objects without adequate insulation and support.",
+    ],
+    breakthroughInsight:
+      "Make the potential gradient a property of the winding geometry and terminal arrangement, then use paired transformers to raise and lower potential across a transmission line.",
+    patentWars: [],
+    civilizationalImpact:
+      "The source documents a practical concern central to high-voltage engineering: insulation coordination between winding turns, terminals, lines, and ground.",
+    aftermath:
+      "Editorial treatment of the historical context remains provisional until the full manual source edition is prepared and independently reviewed.",
+  },
+  tags: ["Nikola Tesla", "transformer", "high potential", "winding insulation"],
+  stats: {
+    totalClaims: 4,
+    independentClaims: 4,
+  },
+};
