@@ -1,5 +1,9 @@
 import { describe, expect, it } from "bun:test";
-import { validateReviewedTranscription, validateSourcePdfTextLayer } from "./sourceTextValidation";
+import {
+  validateReviewedTranscription,
+  validateReviewedTranscriptionCoverage,
+  validateSourcePdfTextLayer,
+} from "./sourceTextValidation";
 
 describe("source-PDF text layer validation", () => {
   it("accepts a complete, ordered page ledger", () => {
@@ -37,6 +41,24 @@ describe("source-PDF text layer validation", () => {
       ),
     ).toEqual({ valid: true });
     expect(validateReviewedTranscription("Complete reviewed text", 1).valid).toBeFalse();
+  });
+
+  it("rejects marker-only and materially underfilled reviewed ledgers", () => {
+    const markerOnly = "--- REVIEWED TRANSCRIPTION PAGE 1 OF 1 ---\n";
+    const source = "A complete archival source reading must remain in the ledger.";
+    expect(validateReviewedTranscriptionCoverage(markerOnly, 1, source)).toEqual({
+      valid: false,
+      error:
+        "The reviewed transcription is materially shorter than the authored source reading; page notes or a partial ledger cannot be published as a complete transcription.",
+    });
+
+    expect(
+      validateReviewedTranscriptionCoverage(
+        `--- REVIEWED TRANSCRIPTION PAGE 1 OF 1 ---\n${source}`,
+        1,
+        source,
+      ),
+    ).toEqual({ valid: true });
   });
 
   it("rejects content before a source or reviewed page-one marker", () => {
