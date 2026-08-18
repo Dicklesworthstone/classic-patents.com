@@ -18,7 +18,7 @@ describe("patent view URL state", () => {
 });
 
 describe("archival publication boundary", () => {
-  test("renders only editions that have explicit paragraph companions", () => {
+  test("renders only editions with approved explicit paragraph companions", () => {
     expect(archivalEditionForPublication(wrightFlyerPatent)).toBe(
       wrightFlyerPatent.archivalEdition,
     );

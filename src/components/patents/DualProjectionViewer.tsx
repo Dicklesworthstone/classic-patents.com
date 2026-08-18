@@ -16,6 +16,7 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 import { ColorizedEquation } from "@/components/ui/ColorizedEquation";
 import { LatexRenderer, TextWithLatex } from "@/components/ui/LatexRenderer";
 import { getColorizedEquationsForPatent } from "@/data/colorizedEquations";
+import { isArchivalEditionExplicitlyWithheld } from "@/data/editions/publicationApproval";
 import {
   ARCHIVAL_PARALLEL_READINGS,
   archivalParallelReadingsFor,
@@ -57,7 +58,9 @@ export function viewModeFromSearch(search: string): PatentViewMode | undefined {
 }
 
 export function archivalEditionForPublication(patent: Pick<Patent, "id" | "archivalEdition">) {
-  return patent.archivalEdition && ARCHIVAL_PARALLEL_READINGS[patent.id]
+  return patent.archivalEdition &&
+    !isArchivalEditionExplicitlyWithheld(patent.id) &&
+    ARCHIVAL_PARALLEL_READINGS[patent.id]
     ? patent.archivalEdition
     : undefined;
 }

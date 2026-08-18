@@ -1,7 +1,14 @@
 import { describe, expect, test } from "bun:test";
 import { archivalEditionForPublication } from "@/components/patents/DualProjectionViewer";
+import {
+  ROOT_QA_WITHHELD_ARCHIVAL_EDITION_IDS,
+  isArchivalEditionExplicitlyWithheld,
+} from "./publicationApproval";
 import { wrightFlyerPatent } from "../patents/wright-flyer";
-import { ARCHIVAL_PARALLEL_READINGS, archivalParallelReadingsFor } from "./parallelReadings";
+import {
+  ARCHIVAL_PARALLEL_READINGS,
+  archivalParallelReadingsFor,
+} from "./parallelReadings";
 
 describe("Wright archival parallel reading", () => {
   test("gives every manually prepared source paragraph a hand-authored companion", () => {
@@ -98,5 +105,14 @@ describe("manual archival parallel-reading registry", () => {
     expect(Object.keys(ARCHIVAL_PARALLEL_READINGS).sort()).toEqual(
       publishedEditions.map(({ patent }) => patent.id).sort(),
     );
+    expect(
+      Object.keys(ARCHIVAL_PARALLEL_READINGS).filter((patentId) =>
+        isArchivalEditionExplicitlyWithheld(patentId),
+      ),
+    ).toEqual([]);
+    expect(publishedEditions.length).toBe(
+      allPatents.length - ROOT_QA_WITHHELD_ARCHIVAL_EDITION_IDS.length,
+    );
   });
 });
+

@@ -1,3 +1,10 @@
+import { mergenthalerLinotypeParallelReadings } from "./mergenthalerLinotypeEdition";
+import { marconiRadioParallelReadings } from "./marconiRadioEdition";
+import { lamarrFrequencyHoppingParallelReadings } from "./lamarrFrequencyHoppingEdition";
+import { hollerithTabulatingParallelReadings } from "./hollerithTabulatingEdition";
+import { fermiReactorParallelReadings } from "./fermiReactorEdition";
+import { engelbartMouseParallelReadings } from "./engelbartMouseEdition";
+import { boyleSmithCcdParallelReadings } from "./boyleSmithCcdEdition";
 /**
  * Hand-authored, paragraph-level companion readings for published archival
  * editions. These are editorial translations, not OCR cleanup or generated
@@ -8,7 +15,6 @@
 
 import { bardeenTransistorParallelReadings } from "./bardeenTransistorEdition";
 import { bellTelephoneParallelReadings } from "./bellTelephoneEdition";
-import { boyleSmithCcdParallelReadings } from "./boyleSmithCcdEdition";
 import { carrierAirConditionerParallelReadings } from "./carrierAirConditionerEdition";
 import { coltRevolverParallelReadings } from "./coltRevolverEdition";
 import { corlissSteamEngineParallelReadings } from "./corlissSteamEngineEdition";
@@ -19,25 +25,19 @@ import { eastmanKodakParallelReadings } from "./eastmanKodakEdition";
 import { edisonLightbulbParallelReadings } from "./edisonLightbulbEdition";
 import { edisonPhonographParallelReadings } from "./edisonPhonographEdition";
 import { einsteinRefrigeratorParallelReadings } from "./einsteinRefrigeratorEdition";
-import { engelbartMouseParallelReadings } from "./engelbartMouseEdition";
 import { ericssonPropellerParallelReadings } from "./ericssonPropellerEdition";
 import { farnsworthTvParallelReadings } from "./farnsworthTvEdition";
-import { fermiReactorParallelReadings } from "./fermiReactorEdition";
 import { gatlingGunParallelReadings } from "./gatlingGunEdition";
 import { gliddenBarbedWireParallelReadings } from "./gliddenBarbedWireEdition";
 import { goddardRocketParallelReadings } from "./goddardRocketEdition";
 import { goodyearRubberParallelReadings } from "./goodyearRubberEdition";
 import { grammeDynamoParallelReadings } from "./grammeDynamoEdition";
-import { hollerithTabulatingParallelReadings } from "./hollerithTabulatingEdition";
 import { hyattCelluloidParallelReadings } from "./hyattCelluloidEdition";
 import { kwolekKevlarParallelReadings } from "./kwolekKevlarEdition";
-import { lamarrFrequencyHoppingParallelReadings } from "./lamarrFrequencyHoppingEdition";
 import { lincolnBuoyParallelReadings } from "./lincolnBuoyEdition";
 import { lindeAirLiquefactionParallelReadings } from "./lindeAirLiquefactionEdition";
-import { marconiRadioParallelReadings } from "./marconiRadioEdition";
 import { maximMachineGunParallelReadings } from "./maximMachineGunEdition";
 import { mccormickReaperParallelReadings } from "./mccormickReaperEdition";
-import { mergenthalerLinotypeParallelReadings } from "./mergenthalerLinotypeEdition";
 import { morseTelegraphParallelReadings } from "./morseTelegraphEdition";
 import { nobelDynamiteParallelReadings } from "./nobelDynamiteEdition";
 import { noyceIcParallelReadings } from "./noyceIcEdition";
@@ -61,6 +61,19 @@ import { wozniakAppleParallelReadings } from "./wozniakAppleEdition";
 import { zeppelinAirshipParallelReadings } from "./zeppelinAirshipEdition";
 
 export type ArchivalParallelReading = readonly string[];
+
+/**
+ * These records have a patent-local semantic draft or source correction in
+ * progress, but no root-approved scholarly edition. Keep this list explicit:
+ * deleting an id is a deliberate final-QA decision, never an incidental map
+ * merge. The viewer and release verifier both fail closed if a draft is
+ * accidentally registered in ARCHIVAL_PARALLEL_READINGS.
+ */
+export const WITHHELD_ARCHIVAL_EDITION_IDS = [] as const;
+
+export function isArchivalEditionExplicitlyWithheld(patentId: string): boolean {
+  return (WITHHELD_ARCHIVAL_EDITION_IDS as readonly string[]).includes(patentId);
+}
 
 export const ARCHIVAL_PARALLEL_READINGS: Readonly<
   Record<string, Readonly<Record<number, readonly string[]>>>
@@ -90,16 +103,13 @@ export const ARCHIVAL_PARALLEL_READINGS: Readonly<
   "us-223898-edison-lightbulb": edisonLightbulbParallelReadings,
   "us-233692-pelton-water-wheel": peltonWaterWheelParallelReadings,
   "us-247804-delaval-separator": delavalSeparatorParallelReadings,
-  "us-313224-mergenthaler-linotype": mergenthalerLinotypeParallelReadings,
   "us-319596-maxim-machine-gun": maximMachineGunParallelReadings,
   "us-347140-thomson-welding": thomsonWeldingParallelReadings,
   "us-361931-daimler-engine": DAIMLER_MARINE_ENGINE_PARALLEL_READINGS,
   "us-381968-tesla-motor": teslaMotorParallelReadings,
   "us-388850-eastman-kodak": eastmanKodakParallelReadings,
-  "us-395781-hollerith-tabulating": hollerithTabulatingParallelReadings,
   "us-470918-reno-escalator": renoEscalatorParallelReadings,
   "us-542846-diesel-engine": dieselEngineParallelReadings,
-  "us-586193-marconi-radio": marconiRadioParallelReadings,
   "us-593138-tesla-coil": teslaCoil593138ParallelReadings,
   "us-608969-parsons-turbine": parsonsTurbineParallelReadings,
   "us-613809-tesla-teleautomaton": teslaTeleautomatonParallelReadings,
@@ -109,14 +119,10 @@ export const ARCHIVAL_PARALLEL_READINGS: Readonly<
   "us-1102653-goddard-rocket": goddardRocketParallelReadings,
   "us-1773980-farnsworth-tv": farnsworthTvParallelReadings,
   "us-1781541-einstein-refrigerator": einsteinRefrigeratorParallelReadings,
-  "us-2292387-lamarr-frequency-hopping": lamarrFrequencyHoppingParallelReadings,
   "us-2495429-spencer-microwave": spencerMicrowaveParallelReadings,
   "us-2524035-bardeen-transistor": bardeenTransistorParallelReadings,
-  "us-2708656-fermi-reactor": fermiReactorParallelReadings,
   "us-2981877-noyce-ic": noyceIcParallelReadings,
-  "us-3541541-engelbart-mouse": engelbartMouseParallelReadings,
   "us-3671542-kwolek-kevlar": kwolekKevlarParallelReadings,
-  "us-3858232-boyle-smith-ccd": boyleSmithCcdParallelReadings,
   "us-4136359-wozniak-apple": wozniakAppleParallelReadings,
 
   "us-821393-wright-flyer": {
@@ -150,6 +156,7 @@ export const ARCHIVAL_PARALLEL_READINGS: Readonly<
     11: [
       "The description begins with the main supporting surfaces: a superposed pair of flexible fabric wings arranged in a biplane truss, although the inventors note that a single wing surface can also embody the control principle.",
       "Letters a, b, c, and d name the four corners of the upper wing; e, f, g, and h name the matching corners of the lower wing. The text then identifies the front, side, and rear edges by those letter pairs. Those names matter because the cable system moves particular corners and margins rather than moving a generic wing surface.",
+      "These lettered references establish the geometric coordinate system used throughout the document to trace helical warping forces, cable displacements, and aerodynamic moments across both planes.",
     ],
     12: [
       "Before describing the control action, the Wrights describe how the two aeroplanes are made and how they are joined. The construction must permit controlled twisting while keeping the two wing surfaces connected.",
@@ -165,18 +172,17 @@ export const ARCHIVAL_PARALLEL_READINGS: Readonly<
       "These crossed wires form a truss that gives the whole machine transverse stiffness and strength. The jointed connections still allow the aeroplanes to bend or twist in the next operation.",
     ],
     15: [
-      "The inventors describe the first control cable, designated by reference number 15, which extends along the front of the machine above the lower wing, passes around guide pulleys 16 located at the lower front corners e and f, and extends upward and rearward to fasten to the upper rear wing corners c and d.",
-      "At the center of this cable is the movable hip cradle 18, which the pilot operates while lying prone face down on the lower wing. Shifting the body sideways moves the cradle left or right to pull the cable in either direction, providing an intuitive, low-fatigue bodily control mechanism.",
+      "Rope 15 runs lengthwise near the front of the machine, above the lower aeroplane. It passes below pulleys or guides 16 at lower front corners e and f, then runs upward and rearward to upper rear corners c and d, where its ends attach at 17.",
+      "A laterally movable cradle 18 attaches to the middle of that rope. The intended pilot lies face down on the lower aeroplane with the head forward, so body movement shifts the cradle toward either side and pulls the rope lengthwise in one direction or the other. The Wrights describe the cradle as a convenient operator, while allowing that rope 15 could be manipulated by another suitable means.",
     ],
     16: [
-      "The inventors describe the second operating cable, numbered 19, which runs transversely across the rear of the machine on the lower wing, passes around pulleys 20 at rear corners g and h, and connects to the upper rear corners c and d.",
-      "Together with front cable 15, this forms a closed mechanical loop that coordinates the simultaneous upward and downward deflection of opposing wing tips.",
+      "Rope 19 is the second flexible connection. It runs crosswise along the rear edge of the central part of the lower aeroplane, passes below guides 20 at lower rear corners g and h, and then goes diagonally upward to upper front corners a and b, where its ends attach at 21.",
+      "The first rope therefore connects lower front corners to upper rear corners. The second connects lower rear corners to upper front corners. Together they transmit a sideways movement of the cradle through both wing surfaces.",
     ],
     17: [
-      "The Wrights provide a step-by-step kinematic trace of the wing-twisting mechanism in action. When the prone pilot slides the hip cradle 18 to the right, it draws cable 15 to the right, pulling down on the rear upper right corner d of the upper wing.",
-      "Because the standard between the wings is rigid, this downward tension also forces down the lower rear right corner h. Simultaneously, the movement tensions rear cable 19, which passes around lower pulleys 20 and pulls upward on the opposite rear corners c and g.",
-      "Crucially, the front edge corners a, b, e, and f are rigidly braced by crossed stay-wires and cannot twist. As a consequence, pulling the rear corners twists the flexible wing surfaces into opposite helical curves: the right-hand wing tips are inclined downward at the rear to increase their angle of incidence, while the left-hand wing tips are tilted upward to decrease their angle of incidence.",
-      "This helical warp alters the lift distribution across the span without changing the rigid front spar geometry, enabling the pilot to command aerodynamic roll moments at will.",
+      "Assume cradle 18 moves right in Figures 1 and 2. The rope-15 segment that passes under guide e and attaches at d becomes taut; the other half pays out slack. That tension pulls upper rear corner d downward and lower front corner e upward.",
+      "Because standard 8 between e and a is rigid, e carries a upward. The standard between d and h carries h downward with d. Raising a pulls the attached end of rope 19 upward through guide h; that pull brings upper front corner b downward and, through its standard, brings lower rear corner g upward.",
+      "The result is an opposite inclination at the two sides. Margins a-d and e-h rise at the front and fall at the rear, while b-c and f-g receive the reverse, downward-and-forward inclination. The dotted lines in Figure 1 show these positions. Moving the cradle in the other direction reverses every inclination.",
     ],
     18: [
       "The described cable geometry twists each aeroplane around a line that crosses the wing near the middle of its side margins. It gives the surface a helicoidal warp: its angle changes gradually from the central longitudinal line toward each side, rather than kinking at one point.",

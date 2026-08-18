@@ -9,6 +9,7 @@ import { createHash } from "node:crypto";
 import * as fs from "node:fs";
 import * as path from "node:path";
 import { validateCuratedSpecificationEdition } from "../src/data/archivalEditionValidation";
+import { isArchivalEditionExplicitlyWithheld } from "../src/data/editions/publicationApproval";
 import {
   ARCHIVAL_PARALLEL_READINGS,
   archivalParallelReadingsFor,
@@ -286,7 +287,11 @@ async function main() {
     // draft without that map is intentionally withheld by the renderer and
     // must not be validated as a visitor-facing edition.
     const archivalEdition = patent.archivalEdition;
-    if (archivalEdition && Object.hasOwn(ARCHIVAL_PARALLEL_READINGS, patent.id)) {
+    if (
+      archivalEdition &&
+      Object.hasOwn(ARCHIVAL_PARALLEL_READINGS, patent.id) &&
+      !isArchivalEditionExplicitlyWithheld(patent.id)
+    ) {
       publishedManualEdition = true;
       manualEditionCount++;
       const editionValidation = validateCuratedSpecificationEdition(archivalEdition);
@@ -418,7 +423,9 @@ async function main() {
       manualEditionGaps.push(patent.id);
       console.warn(
         patent.archivalEdition
-          ? `⚠️  ${prefix} Complete source text is withheld: a patent-local manual-edition draft has no published companion map.`
+          ? isArchivalEditionExplicitlyWithheld(patent.id)
+            ? `⚠️  ${prefix} Complete source text is withheld pending root editorial acceptance.`
+            : `⚠️  ${prefix} Complete source text is withheld: a patent-local manual-edition draft has no published companion map.`
           : `⚠️  ${prefix} Complete source text is withheld: no manually prepared archival edition is published.`,
       );
     }
