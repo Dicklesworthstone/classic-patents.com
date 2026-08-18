@@ -1,6 +1,13 @@
+import {
+  parsonsManualClaimText,
+  parsonsTurbineArchivalEdition,
+} from "@/data/editions/parsonsTurbineEdition";
 import type { Patent } from "@/types/patent";
 
-export const parsonsTurbinePatent: Patent = {
+// Retained only as a non-exported legacy snapshot of the superseded catalogue
+// copy. It is not registered or rendered; US 608,969 is the marine-turbine
+// plumbing patent described by the source-faithful export below.
+const _parsonsTurbineLegacyRecord: Patent = {
   id: "us-608969-parsons-turbine",
   patentNumber: "US 608,969",
   title: "Steam-Turbine",
@@ -255,4 +262,175 @@ I claim as my invention:
     totalClaims: 2,
     independentClaims: 1,
   },
+};
+
+export const parsonsTurbinePatent: Patent = {
+  id: "us-608969-parsons-turbine",
+  patentNumber: "US 608,969",
+  title: "Marine Steam-Turbine",
+  shortTitle: "Parsons Selectable Marine Turbine Trains",
+  subtitle:
+    "Series, simple-parallel, and compound-parallel steam routing for screw-shaft propulsion",
+  inventors: ["Charles Algernon Parsons"],
+  inventorLocation: "Heaton Works, Newcastle-upon-Tyne, England",
+  grantDate: "1898-08-09",
+  filingDate: "1898-03-04",
+  era: "Electrification & Early Modern (1870–1920)",
+  category: "electricity",
+  categoryLabel: "Marine Propulsion & Steam Turbines",
+  summary:
+    "US 608,969 concerns the valve-and-pipe arrangements that let several marine steam turbines drive screw-shafts economically at cruising and full power. Parsons describes selectable series, simple-parallel, and compound-parallel flow paths, turbine sets of different capacities, and reversing turbines that run freely in condenser vacuum while the forward turbines operate.",
+  heroQuote:
+    "My invention consists in new methods of arranging, proportioning, and operating a set of steam-turbines so as to enable economy to be maintained under widely-varying conditions.",
+  originalPdfUrl: "/patents/pdfs/us-608969-parsons-turbine.pdf",
+  googlePatentsUrl: "https://patents.google.com/patent/US608969/en",
+  usptoClassification:
+    "Marine steam-turbine propulsion; turbine connections and reversing arrangements",
+  originalTextAsset: {
+    url: "/patents/transcripts/us-608969-parsons-turbine-reviewed.txt",
+    pageCount: 7,
+    kind: "reviewed-transcription",
+    reviewedBy: "Classic Patents editorial agent (GPT-5.6)",
+    reviewedAt: "2026-08-18",
+    sourcePdfSha256: parsonsTurbineArchivalEdition.sourcePdfSha256,
+  },
+  archivalEdition: parsonsTurbineArchivalEdition,
+  originalText: `To all whom it may concern:
+
+Be it known that I, CHARLES ALGERNON PARSONS, engineer, a subject of the Queen of Great Britain and Ireland, residing at Heaton Works, Newcastle-upon-Tyne, England, have invented certain new and useful Improvements in Marine Steam-Turbines, of which the following is a specification.
+
+My invention relates to marine steam-engines; and it is chiefly applicable to engines of the steam-turbine class.
+
+My object is to so arrange the engines and couple up the steam connections as to enable the engines to be operated more economically under all conditions of power and speed variation.`,
+  plainEnglishExplanation: {
+    overview:
+      "This patent is about running several turbine engines as a ship propulsion system, not about the internal blade design of an axial reaction turbine. Its central engineering choice is the pipe-and-valve network: at low power the same steam can expand through a longer series of machines, while at greater power the network divides it among parallel routes.",
+    coreMechanism:
+      "Steam leaves the boiler, passes through selected turbine sets, and ultimately reaches a condenser. The selected valve positions determine whether the route is serial, simple parallel, or compound parallel. Parsons also changes turbine capacity along a train so expansion is shared across the machines, and he permits unused or reversing turbines to rotate in the condenser vacuum.",
+    mechanicalBreakdown: [
+      {
+        title: "Selectable turbine trains",
+        summary: "Valves and pipes choose the steam route through more than one marine turbine.",
+        technicalDetails:
+          "The printed claims require pipe-and-valve connections between plural turbines. The specification gives series, simple-parallel, and compound-parallel arrangements rather than a single fixed route.",
+        archaicTerm: "compound parallel",
+        modernEquivalent: "A parallel arrangement of staged turbine flow paths.",
+      },
+      {
+        title: "Graduated capacity",
+        summary: "Turbines farther along a series may have greater capacity.",
+        technicalDetails:
+          "Parsons says capacity may rise from one turbine to the next by actual dimensions, rotational speed, or both. The stated purpose is to distribute expansion while the system serves different power conditions.",
+        archaicTerm: "capacity or volume",
+        modernEquivalent: "Flow-handling capacity of a turbine stage or machine.",
+      },
+      {
+        title: "Reversing turbines",
+        summary: "A separate reversing turbine can act on a forward-turbine shaft.",
+        technicalDetails:
+          "Claims 2 and 3 specify a reversing turbine connected to a shaft. When the forward turbines run, that reversing turbine runs in vacuum; Figure 2 describes using X or Y when going astern.",
+        archaicTerm: "running in vacuum",
+        modernEquivalent:
+          "Turning with its working space connected to condenser vacuum rather than supplied with driving steam.",
+      },
+    ],
+    scientificPrinciples: [
+      {
+        principle: "Staged expansion",
+        explanation:
+          "The source treats expansion as a sequence of pressure drops across several engines. Selecting more serial machines gives the steam more successive expansion steps before condensation.",
+      },
+      {
+        principle: "Parallel flow division",
+        explanation:
+          "In the compound-parallel arrangements, separate turbine trains receive steam from the boiler and exhaust to the condenser. The routing trades the number of operating paths against the demanded ship power.",
+      },
+    ],
+    whyItMattersToday:
+      "The document records a marine-turbine control problem in unusually concrete form: how to keep a multi-machine propulsion plant economical at both cruising and full power, while also providing astern operation. Its contribution here is the network of selectable flow paths and turbine groupings printed in the specification and claims.",
+  },
+  claims: [
+    {
+      number: 1,
+      isIndependent: true,
+      originalText: parsonsManualClaimText(1),
+      plainEnglish:
+        "This claim covers a marine propulsion combination with several screw-shafts and turbines, plus the pipes and valves that can couple the turbines in series, simple parallel, or compound parallel. The protected subject is the selectable interconnection, not an asserted blade profile or pressure value.",
+      keyInnovations: [
+        "Screw-shaft turbine groups",
+        "Valve-selected series flow",
+        "Compound-parallel turbine connections",
+      ],
+    },
+    {
+      number: 2,
+      isIndependent: true,
+      originalText: parsonsManualClaimText(2),
+      plainEnglish:
+        "This claim adds turbines on separate screw-shafts and a reversing turbine on one shaft. It requires pipe-and-valve connections that select series or compound-parallel operation and says the reversing turbine runs in vacuum while the forward turbines are running.",
+      keyInnovations: [
+        "Reversing turbine",
+        "Vacuum-running idle turbine",
+        "Shaft-specific turbine connection",
+      ],
+    },
+    {
+      number: 3,
+      isIndependent: true,
+      originalText: parsonsManualClaimText(3),
+      plainEnglish:
+        "This shorter claim protects the combination of plural shafts, plural turbines with pipe connections, and a reversing turbine connected to one shaft that runs in vacuum while the first-mentioned turbines operate.",
+      keyInnovations: [
+        "Plural screw-shafts",
+        "Pipe-connected turbines",
+        "Vacuum-running reversing turbine",
+      ],
+    },
+  ],
+  drawings: [
+    {
+      figureNumber: "Fig. 1",
+      title: "Eight turbines on four screw-shafts",
+      caption:
+        "The first drawing sheet shows the A through D-prime turbine sets connected to four screw-shafts.",
+      svgType: "parsons-turbine",
+      callouts: [],
+    },
+    {
+      figureNumber: "Fig. 2",
+      title: "Four main turbines with reversing turbines",
+      caption:
+        "The second sheet shows main turbines A through D and reversing turbines X and Y for a fast vessel or torpedo-boat destroyer.",
+      svgType: "parsons-turbine",
+      callouts: [],
+    },
+    {
+      figureNumber: "Fig. 3",
+      title: "Six turbines on three screw-shafts",
+      caption: "The third sheet shows the three-shaft, six-motor modification.",
+      svgType: "parsons-turbine",
+      callouts: [],
+    },
+  ],
+  historicalContext: {
+    problemStatement:
+      "The specification identifies economical marine operation across low and high powers and slow and high speeds as the problem for a set of steam-turbines.",
+    priorArtLimitations: [
+      "Existing high-economy engines used successive expansion through cylinders or engines.",
+      "Known mechanical arrangements could balance moving crank-shaft parts or admit live steam for starting, but Parsons states those arrangements are outside this invention.",
+    ],
+    breakthroughInsight:
+      "The source combines turbine capacity graduation with valve-controlled series, simple-parallel, and compound-parallel connections, so that different operating conditions select different expansion paths.",
+    patentWars: [],
+    civilizationalImpact:
+      "The document expressly addresses marine propulsion, including large war-ships, cruising speeds, full power, and astern operation. It does not itself establish the broader historical claims formerly printed on this record.",
+  },
+  tags: [
+    "Charles Algernon Parsons",
+    "Marine propulsion",
+    "Steam turbines",
+    "Screw-shafts",
+    "Reversing turbines",
+  ],
+  stats: { totalClaims: 3, independentClaims: 3 },
 };
