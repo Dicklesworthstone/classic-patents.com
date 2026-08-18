@@ -138,6 +138,11 @@ the visitor can see or hear the kernel change the instrument.
 - [x] P5.45 Goddard 3D steps with Ae/At; HUD I_sp / v_e / Mach from the same step as the badge
 - [x] P5.46 Engelbart 3D HUD shows wheel ω from the kernel; weave probe / fidelity / 1968 scenario
 - [x] P5.47 Diesel / Kodak / Farnsworth / phonograph / Noyce weaves share the same step as the 3D HUD
+- [x] P5.48 Maxim / Westinghouse / Lamarr / Diesel badges call the shared step (no second formula)
+- [x] P5.49 Lamarr 3D freq / jam / HUD use live channel count, not leftover 44-bar / 87-key math
+- [x] P5.50 Marconi range and Spencer loss come from the kernel, not a private badge formula
+- [x] P5.51 Bardeen α / transit and Colt hoop / muzzle come from the same step as the 3D HUD
+- [x] P5.52 Bardeen transport uses Ge hole lifetime so 50 µm (the historical gap) still amplifies
 
 ## Explicitly out of scope
 
