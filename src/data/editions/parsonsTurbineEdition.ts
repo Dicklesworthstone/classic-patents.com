@@ -81,7 +81,7 @@ export const parsonsTurbineArchivalEdition: CuratedSpecificationEdition = {
       figureLabel: "FIG. 1",
       title: "Eight turbines on four screw-shafts",
       description: text(
-        "C. A. PARSONS. MARINE STEAM TURBINE. Application filed Mar. 4, 1898. Patented Aug. 9, 1898. No model. Witnesses: George Grey; Abraham Beurck Goldsbrough. Inventor: Charles Algernon Parsons. By Richardson, his Attorneys.",
+        "C. A. PARSONS. MARINE STEAM TURBINE. Application filed Mar. 4, 1898. Patented Aug. 9, 1898. No model. Witnesses. Inventor. By Richardson, his Attorneys.",
       ),
     },
     {
@@ -89,7 +89,7 @@ export const parsonsTurbineArchivalEdition: CuratedSpecificationEdition = {
       figureLabel: "FIG. 2",
       title: "Four main turbines and reversing turbines",
       description: text(
-        "C. A. PARSONS. MARINE STEAM TURBINE. Application filed Mar. 4, 1898. Patented Aug. 9, 1898. No model. Witnesses: George Grey; Abraham Beurck Goldsbrough. Inventor: Charles Algernon Parsons. By Richardson, his Attorneys.",
+        "C. A. PARSONS. MARINE STEAM TURBINE. Application filed Mar. 4, 1898. Patented Aug. 9, 1898. No model. Witnesses. Inventor. By Richardson, his Attorneys.",
       ),
     },
     {
@@ -97,7 +97,7 @@ export const parsonsTurbineArchivalEdition: CuratedSpecificationEdition = {
       figureLabel: "FIG. 3",
       title: "Six turbines on three screw-shafts",
       description: text(
-        "C. A. PARSONS. MARINE STEAM TURBINE. Application filed Mar. 4, 1898. Patented Aug. 9, 1898. No model. Witnesses: George Grey; Abraham Beurck Goldsbrough. Inventor: Charles Algernon Parsons. By Richardson, his Attorneys.",
+        "C. A. PARSONS. MARINE STEAM TURBINE. Application filed Mar. 4, 1898. Patented Aug. 9, 1898. No model. Witnesses. Inventor. By Richardson, his Attorneys.",
       ),
     },
     { kind: "paragraph", inlines: text("To all whom it may concern:") },

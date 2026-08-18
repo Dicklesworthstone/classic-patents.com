@@ -1,3 +1,7 @@
+import {
+  lindeAirLiquefactionArchivalEdition,
+  manualClaimText,
+} from "@/data/editions/lindeAirLiquefactionEdition";
 import type { Patent } from "@/types/patent";
 
 export const lindeAirLiquefactionPatent: Patent = {
@@ -22,10 +26,14 @@ export const lindeAirLiquefactionPatent: Patent = {
   googlePatentsUrl: "https://patents.google.com/patent/US727650A/en",
   usptoClassification: "F25J 1/00 (Processes or apparatus for liquefying or solidifying gases)",
   originalTextAsset: {
-    url: "/patents/source-text/us-727650-linde-air-liquefaction.txt",
+    url: "/patents/transcripts/us-727650-linde-air-liquefaction-reviewed.txt",
     pageCount: 5,
-    kind: "source-pdf-text-layer",
+    kind: "reviewed-transcription",
+    reviewedBy: "Classic Patents editorial agent (GPT-5.6)",
+    reviewedAt: "2026-08-18",
+    sourcePdfSha256: lindeAirLiquefactionArchivalEdition.sourcePdfSha256,
   },
+  archivalEdition: lindeAirLiquefactionArchivalEdition,
   originalText: `UNITED STATES PATENT OFFICE.
 CARL LINDE, OF MUNICH, GERMANY.
 
@@ -136,49 +144,134 @@ Fifth, this cycle is continued continuously until the temperature at the throttl
     {
       number: 1,
       isIndependent: true,
-      originalText:
-        "The process of liquefying air or other gas, which consists in compressing the gas, removing the heat of compression, passing the compressed gas through a counter-current heat-interchanger, expanding the gas at the cold end of said interchanger through a throttle-valve without performing external work, causing the expanded and cooled gas to flow backward through the interchanger in thermal contact with the incoming compressed gas to continuously precool the same, and continuing the circulation until the temperature is lowered to the point of liquefaction, substantially as described.",
+      originalText: manualClaimText(1),
       plainEnglish:
-        "The master cryogenic liquefaction process claim: compressing gas, removing compression heat, passing it through a counter-current heat exchanger, expanding it through a throttle valve (Joule-Thomson effect), and recirculating the cold expanded gas to precool incoming gas until it liquefies.",
+        "Refrigerate a gas by compressing, cooling, expanding through a valve into lower pressure, and using the cold expanded gas to absorb heat from compressed gas about to be expanded.",
       keyInnovations: [
-        "Continuous regenerative Joule-Thomson liquefaction",
-        "Counter-current cryogenic heat exchange",
-        "Zero-moving-part cold expansion",
+        "compression-cooling-expansion",
+        "counter-current absorption",
+        "closed refrigeration",
       ],
       legalSignificance:
-        "The master foundational patent of the industrial gas industry, establishing the Linde cycle as the primary global method for cryogenic gas production.",
+        "The fundamental process claim establishing the Linde counter-current regenerative cycle for air liquefaction.",
     },
     {
       number: 2,
       isIndependent: false,
       dependsOn: [1],
-      originalText:
-        "In an apparatus for liquefying gases, the combination, with a multi-stage compressor, of a counter-current heat-interchanger comprising concentric tubes, an adjustable expansion-valve at the cold extremity of said tubes, and a vacuum-jacketed collecting-vessel situated below the expansion-valve to collect the liquefied gas.",
+      originalText: manualClaimText(2),
       plainEnglish:
-        "The cryogenic apparatus claim: combining a multi-stage compressor with a concentric-tube heat exchanger, an expansion valve at the cold end, and a vacuum-jacketed vessel to catch the liquid.",
-      keyInnovations: [
-        "Concentric-tube cryogenic heat exchanger",
-        "Integrated vacuum-insulated collection vessel",
-        "Closed-circuit thermodynamic refrigeration loop",
-      ],
+        "Refrigerate and liquefy gas by expanding it through a valve into lower pressure and using the expanded gas to cool incoming compressed gas until critical temperature is reached and liquefaction occurs.",
+      keyInnovations: ["progressive cooling", "critical temperature", "liquefaction threshold"],
       legalSignificance:
-        "Protected the physical machine architecture of commercial air liquefaction plants.",
+        "Protected the progressive regenerative liquefaction regime down to the gas's critical temperature.",
     },
     {
       number: 3,
-      isIndependent: false,
-      dependsOn: [1],
-      originalText:
-        "The continuous process of obtaining liquid oxygen and nitrogen from atmospheric air, which consists in liquefying air by the regenerative throttling process, and subsequently subjecting the liquefied air to fractional evaporation or rectification to separate the nitrogen from the oxygen according to their different boiling-points.",
+      isIndependent: true,
+      originalText: manualClaimText(3),
       plainEnglish:
-        "The fractional air separation claim: liquefying air through regenerative throttling and then distilling it to separate pure liquid oxygen from nitrogen based on their different boiling points.",
+        "Liquefy air by causing compressed and cooled air to condense by continuous expansion of itself around the outside of the conduit through which it passes.",
+      keyInnovations: ["concentric conduit", "self-expansion", "temperature of liquid air"],
+    },
+    {
+      number: 4,
+      isIndependent: true,
+      originalText: manualClaimText(4),
+      plainEnglish:
+        "For a gaseous mixture, repeatedly expand and regenerate cold, then use the resulting liquid to release the more volatile component by heat absorption.",
+      keyInnovations: ["gaseous mixture", "volatile component", "regenerative fractionation"],
+    },
+    {
+      number: 5,
+      isIndependent: false,
+      dependsOn: [4],
+      originalText: manualClaimText(5),
+      plainEnglish:
+        "Apply the regenerative liquefaction sequence to air and use liberated nitrogen as an additional cold stream for incoming air.",
+      keyInnovations: ["air liquefaction", "nitrogen evaporation", "heat absorption"],
+    },
+    {
+      number: 6,
+      isIndependent: false,
+      dependsOn: [5],
+      originalText: manualClaimText(6),
+      plainEnglish:
+        "Continue the air sequence through liquid formation, nitrogen liberation, and oxygen-rich liquid, using each stage to cool the next incoming air.",
+      keyInnovations: ["nitrogen", "oxygen", "cascade cooling"],
+    },
+    {
+      number: 7,
+      isIndependent: false,
+      dependsOn: [6],
+      originalText: manualClaimText(7),
+      plainEnglish:
+        "Separate gaseous nitrogen, liquid oxygen, and gaseous oxygen in successive heat-exchange stages after air liquefies.",
+      keyInnovations: ["nitrogen gas", "liquid oxygen", "gaseous oxygen"],
+    },
+    {
+      number: 8,
+      isIndependent: true,
+      originalText: manualClaimText(8),
+      plainEnglish:
+        "Make an oxygen-rich and oxygen-poor fraction by liquefying air and fractionally distilling it with heat taken from compressed air awaiting liquefaction.",
+      keyInnovations: ["fractional distillation", "oxygen-rich fraction", "heat integration"],
+    },
+    {
+      number: 9,
+      isIndependent: false,
+      dependsOn: [8],
+      originalText: manualClaimText(9),
+      plainEnglish:
+        "The two-fraction air process additionally uses distilled nitrogen to cool compressed air that will be liquefied.",
+      keyInnovations: ["distilled nitrogen", "compressed-air cooling", "air separation"],
+    },
+    {
+      number: 10,
+      isIndependent: false,
+      dependsOn: [8],
+      originalText: manualClaimText(10),
+      plainEnglish:
+        "The two-fraction air process additionally uses distilled oxygen to cool compressed air that will be liquefied.",
+      keyInnovations: ["distilled oxygen", "compressed-air cooling", "air separation"],
+    },
+    {
+      number: 11,
+      isIndependent: true,
+      originalText: manualClaimText(11),
+      plainEnglish:
+        "Fractionally distill a liquefied mixed gas using heat from a similar stream previously cooled while condensing at higher pressure.",
       keyInnovations: [
-        "Cryogenic air distillation",
-        "Continuous industrial oxygen production",
-        "Multi-component gas separation",
+        "liquefied mixed gas",
+        "fractional distillation",
+        "higher-pressure condensation",
       ],
-      legalSignificance:
-        "The landmark claim for industrial cryogenic air separation, revolutionizing 20th-century steel production, medical oxygen, and chemical synthesis.",
+    },
+    {
+      number: 12,
+      isIndependent: false,
+      dependsOn: [11],
+      originalText: manualClaimText(12),
+      plainEnglish:
+        "Separate any mixed gas by liquefying it and fractionally distilling it with heat derived from previously cooled gas condensing at higher pressure.",
+      keyInnovations: ["mixed gas", "liquefaction", "fractional distillation"],
+    },
+    {
+      number: 13,
+      isIndependent: false,
+      dependsOn: [12],
+      originalText: manualClaimText(13),
+      plainEnglish:
+        "The prior separation process also uses the liquid gas obtained to wholly or partly maintain the liquid supply.",
+      keyInnovations: ["liquid supply", "recycle", "higher-pressure condensation"],
+    },
+    {
+      number: 14,
+      isIndependent: true,
+      originalText: manualClaimText(14),
+      plainEnglish:
+        "Separate a mixed gas by liquefaction and fractional distillation, then use the distillation products to cool gas about to be liquefied.",
+      keyInnovations: ["distillation products", "product cooling", "gas separation"],
     },
   ],
   drawings: [
@@ -287,8 +380,8 @@ Fifth, this cycle is continued continuously until the temperature at the throttl
     "Gilded Age",
   ],
   stats: {
-    totalClaims: 3,
-    independentClaims: 1,
+    totalClaims: 14,
+    independentClaims: 6,
     patentWarYears: "1895–1906",
     impactScore: 100,
   },

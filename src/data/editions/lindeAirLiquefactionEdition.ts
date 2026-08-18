@@ -273,3 +273,18 @@ export const lindeAirLiquefactionParallelReadings: Readonly<Record<number, reado
   34: ["The printed inventor signature is Carl Linde."],
   35: ["The two printed witnesses are Emil Wenzel and Alex Negele."],
 };
+
+export const manualClaimText = (claimNumber: number): string => {
+  const block = lindeAirLiquefactionArchivalEdition.blocks.find(
+    (
+      item,
+    ): item is Extract<
+      (typeof lindeAirLiquefactionArchivalEdition.blocks)[number],
+      { kind: "claim" }
+    > => item.kind === "claim" && item.number === claimNumber,
+  );
+  if (!block) {
+    throw new Error(`Missing manual claim ${claimNumber} in US 727,650 edition.`);
+  }
+  return block.inlines.map((i) => i.text).join("");
+};
