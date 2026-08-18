@@ -57,6 +57,8 @@ describe("US 2,708,656 Enrico Fermi Chicago Pile-1 Nuclear Reactor visual & kine
     expect(result.kEffective).toBeLessThan(1.05);
     expect(result.thermalPowerWatts).toBeGreaterThan(0);
     expect(result.geigerIntervalMs).toBeGreaterThan(10);
+    expect(result.rodStudioY).toBeCloseTo(-0.5 + 0.835 * 3.2, 3);
+    expect(result.fuelGlowIntensity).toBeGreaterThan(0);
   });
 
   test("builds and articulates procedural timber scaffold, graphite moderator pile, uranium fuel lattice, and cadmium control rods correctly", () => {
@@ -70,7 +72,19 @@ describe("US 2,708,656 Enrico Fermi Chicago Pile-1 Nuclear Reactor visual & kine
     expect(model.neutronPoints).toBeDefined();
 
     // Test kinematics update & cutaway
-    updateFermiReactorKinematics(model, 1 / 60, 90, 1.001, 99.5, 4.0, 2.38, 0.168, true, true);
+    const kinetics = FrankenSimEngine.stepFermiReactor(83.5, 99.5, 0.72);
+    updateFermiReactorKinematics(
+      model,
+      1 / 60,
+      83.5,
+      kinetics.kEffective,
+      99.5,
+      kinetics.neutronDisplaySpeed,
+      kinetics.rodStudioY,
+      kinetics.fuelGlowIntensity,
+      true,
+      true,
+    );
     expect(model.neutronPoints.visible).toBe(true);
     expect(model.graphiteMat.opacity).toBe(0.35);
 

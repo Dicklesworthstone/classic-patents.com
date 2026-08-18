@@ -70,6 +70,8 @@ describe("US 588 John Ericsson Screw Propeller visual & hydrodynamics boundary",
     expect(result.shipSpeedKnots).toBeGreaterThan(4);
     expect(result.slipFraction).toBeGreaterThan(0);
     expect(result.slipFraction).toBeLessThan(1);
+    expect(result.wakeFlowSpeed).toBeCloseTo(6.5, 5);
+    expect(result.wakeSwirlCoeff).toBeCloseTo(0.08, 5);
   });
 
   test("builds and articulates procedural tandem drums, concentric shafts, and wake particles correctly", () => {
@@ -84,7 +86,17 @@ describe("US 588 John Ericsson Screw Propeller visual & hydrodynamics boundary",
     expect(model.materials.bronzeGunmetal).toBeDefined();
     expect(model.materials.copperSheathing).toBeDefined();
 
-    updateEricssonPropellerKinematics(model, 0.016, 12.5, 0.4, 6.5, 0.08, true, true);
+    const screw = stepEricssonPropeller({ shaftRpm: 120, bladePitchAngleDeg: 35 });
+    updateEricssonPropellerKinematics(
+      model,
+      0.016,
+      screw.shaftOmegaRadPerS,
+      screw.wakeSwirlScale,
+      screw.wakeFlowSpeed,
+      screw.wakeSwirlCoeff,
+      true,
+      true,
+    );
     expect(model.materials.bronzeGunmetal.opacity).toBe(0.45);
     expect(model.wakePoints.visible).toBe(true);
 

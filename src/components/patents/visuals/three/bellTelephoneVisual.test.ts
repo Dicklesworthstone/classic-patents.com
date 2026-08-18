@@ -75,6 +75,7 @@ describe("US 174,465 Alexander Graham Bell Telephone visual & acoustics boundary
     expect(result.currentBaselineAmps).toBeGreaterThan(0.05);
     expect(result.modulatedMa).toBeGreaterThan(0.01);
     expect(result.diaphragmStudioScale).toBeCloseTo((result.diaphragmUm / 10) * 0.08, 4);
+    expect(result.electronStudioSpeed).toBeCloseTo(result.electronDisplaySpeed * 0.5, 3);
   });
 
   test("builds and articulates procedural walnut baseboard, speaking cone, parchment diaphragm, and liquid cup correctly", () => {
@@ -99,7 +100,7 @@ describe("US 174,465 Alexander Graham Bell Telephone visual & acoustics boundary
       0.5,
       bell.acousticDisplayOmegaRadPerS,
       bell.diaphragmStudioScale,
-      bell.electronDisplaySpeed,
+      bell.electronStudioSpeed,
       true,
       true,
     );
