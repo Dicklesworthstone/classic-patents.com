@@ -1,19 +1,32 @@
 "use client";
 
-import { Activity, Camera, Eye, EyeOff } from "lucide-react";
-import { useEffect, useRef, useState } from "react";
+import { Activity, Camera, Eye, EyeOff, Volume2, VolumeX, Zap } from "lucide-react";
+import { memo, useEffect, useRef, useState } from "react";
 import * as THREE from "three";
 import { stepSholesTypewriter } from "@/physics/machineKernels";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
+import { soundEngine } from "@/utils/soundEngine";
+import {
+  buildSholesTypewriterModel,
+  updateSholesTypewriterKinematics,
+} from "./sholesTypewriterModel";
 import { StudioKernelChips } from "./StudioKernelChips";
 import { createThreeStudioScene, type StudioContext } from "./ThreeStudioScene";
 import { useLiveSimParams } from "./useLiveSimParams";
+import { usePatentAudio } from "./usePatentAudio";
 
-type CameraPreset = "iso" | "type_basket" | "platen_carriage" | "keyboard" | "top";
+type CameraPreset =
+  | "iso"
+  | "type_basket"
+  | "platen_carriage"
+  | "keyboard"
+  | "escapement_ratchet"
+  | "top";
 
-export function SholesTypewriter3D() {
+export const SholesTypewriter3D = memo(() => {
   const containerRef = useRef<HTMLDivElement>(null);
   const [showUiOverlay, setShowUiOverlay] = useState<boolean>(true);
+  const [isCutaway, setIsCutaway] = useState<boolean>(false);
 
   // The source states a key-to-type-bar-to-ratchet sequence, not measured speed.
   const { params } = usePatentPhysics("us-79265-sholes-typewriter");
@@ -21,9 +34,11 @@ export function SholesTypewriter3D() {
   const sholesIdle = stepSholesTypewriter(demonstrationCadence, 0);
   const eventsPerSecond = sholesIdle.eventsPerSecond.toFixed(1);
   const [activeCamera, setActiveCamera] = useState<CameraPreset>("iso");
+  const { isAudioMuted, toggleSound: toggleEngine } = usePatentAudio();
 
   const live = useLiveSimParams({
     demonstrationCadence,
+    isCutaway,
   });
 
   const controlsRef = useRef<StudioContext["controls"] | null>(null);
@@ -52,6 +67,10 @@ export function SholesTypewriter3D() {
         camera.position.set(0, 1.5, 4.2);
         controls.target.set(0, -0.8, 1.4);
         break;
+      case "escapement_ratchet":
+        camera.position.set(3.5, 2.8, 1.5);
+        controls.target.set(2.8, 1.8, -0.2);
+        break;
       case "top":
         camera.position.set(0, 11.5, 0.1);
         controls.target.set(0, 0, 0);
@@ -59,6 +78,13 @@ export function SholesTypewriter3D() {
     }
     controls.update();
   };
+
+  const toggleSound = () => {
+    toggleEngine(() => {
+      soundEngine.playSwitchClick();
+    });
+  };
+
   useEffect(() => {
     const container = containerRef.current;
     if (!container) return;
@@ -73,139 +99,11 @@ export function SholesTypewriter3D() {
     cameraRef.current = camera;
     controlsRef.current = controls;
 
-    // Materials
-    const caseMat = new THREE.MeshStandardMaterial({
-      color: 0x4a3728,
-      roughness: 0.58,
-      metalness: 0.3,
-    });
-
-    const polishedSteelMat = new THREE.MeshStandardMaterial({
-      color: 0xf1f5f9,
-      roughness: 0.1,
-      metalness: 0.95,
-    });
-
-    const brassMat = new THREE.MeshStandardMaterial({
-      color: 0xd97706,
-      roughness: 0.22,
-      metalness: 0.9,
-    });
-
-    const hardSmoothPlatenMat = new THREE.MeshStandardMaterial({
-      color: 0x475569,
-      roughness: 0.42,
-      metalness: 0.6,
-    });
-
-    const rootGroup = new THREE.Group();
+    const { rootGroup, nodes, materials, dispose } = buildSholesTypewriterModel();
     scene.add(rootGroup);
-
-    // Case material and finish are left to the maker in the source. This is a neutral study base.
-    const table = new THREE.Mesh(new THREE.BoxGeometry(7.6, 0.28, 5.4), caseMat);
-    table.position.y = -1.55;
-    table.castShadow = true;
-    table.receiveShadow = true;
-    rootGroup.add(table);
-    [
-      [-3.2, -2.2],
-      [3.2, -2.2],
-      [-3.2, 2.0],
-      [3.2, 2.0],
-    ].forEach(([lx, lz]) => {
-      const leg = new THREE.Mesh(new THREE.CylinderGeometry(0.16, 0.22, 2.4, 12), caseMat);
-      leg.position.set(lx, -2.9, lz);
-      rootGroup.add(leg);
-    });
-    const rearColumn = new THREE.Mesh(new THREE.BoxGeometry(1.4, 2.6, 1.1), caseMat);
-    rearColumn.position.set(0, -0.15, -2.1);
-    rearColumn.castShadow = true;
-    rootGroup.add(rearColumn);
-    const topDeck = new THREE.Mesh(new THREE.BoxGeometry(5.4, 0.18, 1.6), caseMat);
-    topDeck.position.set(0, 1.15, -1.4);
-    rootGroup.add(topDeck);
-
-    // Claim 1: direct key action through fingers w under the type-bars.
-    const basketGroup = new THREE.Group();
-    basketGroup.position.set(0, 0.4, 0);
-    rootGroup.add(basketGroup);
-
-    const basketRing = new THREE.Mesh(new THREE.TorusGeometry(1.6, 0.12, 12, 32), brassMat);
-    basketRing.rotation.x = Math.PI / 2;
-    basketGroup.add(basketRing);
-
-    // Twelve bars are a diagrammatic subset. The grant requires one bar for each type but gives no count.
-    const typeBars: THREE.Mesh[] = [];
-    for (let t = 0; t < 12; t++) {
-      const tAngle = (t * Math.PI * 2) / 12;
-      const bar = new THREE.Mesh(
-        new THREE.CylinderGeometry(0.025, 0.025, 1.4, 8),
-        polishedSteelMat,
-      );
-      bar.position.set(Math.cos(tAngle) * 0.8, -0.4, Math.sin(tAngle) * 0.8);
-      bar.rotation.z = Math.sin(tAngle) * 0.45;
-      bar.rotation.x = Math.cos(tAngle) * 0.45;
-      basketGroup.add(bar);
-      typeBars.push(bar);
-    }
-
-    // A single moving bar makes the causal sequence legible; its geometry is not a measured reconstruction.
-    const activeHammer = new THREE.Mesh(
-      new THREE.CylinderGeometry(0.04, 0.04, 1.6, 8),
-      polishedSteelMat,
-    );
-    activeHammer.position.set(0, -0.2, 0.6);
-    basketGroup.add(activeHammer);
-
-    // Claims 2 and 3: platen, ratchet I, and the line-motion parts.
-    const carriageGroup = new THREE.Group();
-    carriageGroup.position.set(0, 1.8, -0.2);
-    rootGroup.add(carriageGroup);
-
-    const platen = new THREE.Mesh(
-      new THREE.CylinderGeometry(0.5, 0.5, 5.2, 24),
-      hardSmoothPlatenMat,
-    );
-    platen.rotation.z = Math.PI / 2;
-    platen.castShadow = true;
-    carriageGroup.add(platen);
-
-    // Paper Sheet Wrapped on Platen
-    const paper = new THREE.Mesh(
-      new THREE.CylinderGeometry(0.52, 0.52, 4.4, 24, 1, true, 0, Math.PI * 1.5),
-      new THREE.MeshStandardMaterial({ color: 0xffffff, roughness: 0.9 }),
-    );
-    paper.rotation.z = Math.PI / 2;
-    carriageGroup.add(paper);
-
-    // A simplified ratchet I, not a claim about tooth count or pitch.
-    const escapement = new THREE.Mesh(new THREE.CylinderGeometry(0.6, 0.6, 0.1, 16), brassMat);
-    escapement.rotation.z = Math.PI / 2;
-    escapement.position.x = 2.8;
-    carriageGroup.add(escapement);
-
-    // A piano-like keyboard is named in the grant. Its layout and key material are not.
-    const keyboardGroup = new THREE.Group();
-    keyboardGroup.position.set(0, -0.4, 2.2);
-    rootGroup.add(keyboardGroup);
-
-    const diagrammaticKeys: THREE.Mesh[] = [];
-    const keyRestY: number[] = [];
-    for (let keyIndex = 0; keyIndex < 12; keyIndex++) {
-      const key = new THREE.Mesh(new THREE.CylinderGeometry(0.12, 0.12, 0.18, 16), brassMat);
-      const restY = 0;
-      key.position.set(-2.2 + keyIndex * 0.4, restY, 0);
-      keyboardGroup.add(key);
-      diagrammaticKeys.push(key);
-      keyRestY.push(restY);
-    }
 
     let reqId: number;
     let displayElapsedS = 0;
-    const restBarRot: Array<{ x: number; z: number }> = typeBars.map((b) => ({
-      x: b.rotation.x,
-      z: b.rotation.z,
-    }));
 
     const animate = () => {
       reqId = requestAnimationFrame(animate);
@@ -213,18 +111,13 @@ export function SholesTypewriter3D() {
       displayElapsedS += 1 / 60;
       const step = stepSholesTypewriter(p.demonstrationCadence, displayElapsedS);
 
-      activeHammer.rotation.x = -step.ratchetReleasePct * 0.5;
-      typeBars.forEach((bar, i) => {
-        const rest = restBarRot[i];
-        const striking = i === step.displayTypebarIndex && step.ratchetReleasePct > 0;
-        bar.rotation.x = rest.x + (striking ? -step.ratchetReleasePct * 0.28 : 0);
-        bar.rotation.z = rest.z;
-      });
-      carriageGroup.position.x = 1.2 - (step.completedSteps % 12) * 0.08;
-      diagrammaticKeys.forEach((key, i) => {
-        const striking = i === step.displayTypebarIndex && step.ratchetReleasePct > 0;
-        key.position.y = keyRestY[i] + (striking ? -0.09 : 0);
-      });
+      updateSholesTypewriterKinematics(
+        nodes,
+        materials,
+        step.ratchetReleasePct,
+        step.displayTypebarIndex,
+        p.isCutaway ?? false,
+      );
 
       renderer.render(scene, camera);
     };
@@ -233,6 +126,7 @@ export function SholesTypewriter3D() {
 
     return () => {
       cancelAnimationFrame(reqId);
+      dispose();
       studio.cleanup();
     };
   }, [live]);
@@ -262,6 +156,7 @@ export function SholesTypewriter3D() {
               ["type_basket", "Type Basket"],
               ["platen_carriage", "Platen Carriage"],
               ["keyboard", "Keyboard"],
+              ["escapement_ratchet", "Escapement"],
               ["top", "Top"],
             ] as [CameraPreset, string][]
           ).map(([preset, label]) => (
@@ -280,33 +175,55 @@ export function SholesTypewriter3D() {
           ))}
         </div>
 
-        {/* Overlay toggle */}
+        {/* Toggles */}
         <div className="flex items-center gap-1.5 bg-parchment-950/80 backdrop-blur-md p-1.5 rounded-xl border border-parchment-700/60 shadow-lg pointer-events-auto">
           <button
             type="button"
-            onClick={() => setShowUiOverlay(!showUiOverlay)}
-            title={showUiOverlay ? "Hide Overlay UI" : "Show Overlay UI"}
+            onClick={() => setIsCutaway(!isCutaway)}
+            title={isCutaway ? "Solid Frame" : "Cutaway Frame"}
+            className={`flex items-center gap-1 px-2.5 py-1 text-xs font-sans rounded-lg transition-colors ${
+              isCutaway
+                ? "bg-amber-600/30 text-amber-200 border border-amber-500/40"
+                : "text-parchment-300 hover:text-white hover:bg-parchment-800/60"
+            }`}
+          >
+            {isCutaway ? <EyeOff className="w-3.5 h-3.5" /> : <Eye className="w-3.5 h-3.5" />}
+            <span>{isCutaway ? "Cutaway" : "Solid"}</span>
+          </button>
+
+          <button
+            type="button"
+            onClick={toggleSound}
+            title={isAudioMuted ? "Unmute Sound" : "Mute Sound"}
             className="p-1.5 rounded-lg text-xs text-parchment-400 hover:text-white hover:bg-parchment-800 transition-colors"
           >
-            {showUiOverlay ? (
-              <EyeOff className="w-4 h-4" />
-            ) : (
-              <Eye className="w-4 h-4 text-amber-400" />
-            )}
+            {isAudioMuted ? <VolumeX className="w-4 h-4" /> : <Volume2 className="w-4 h-4" />}
+          </button>
+          <button
+            type="button"
+            onClick={() => setShowUiOverlay(!showUiOverlay)}
+            className="p-1.5 rounded-lg text-xs text-parchment-400 hover:text-white hover:bg-parchment-800 transition-colors"
+          >
+            <Zap className="w-4 h-4 text-amber-400" />
           </button>
         </div>
       </div>
 
       <StudioKernelChips
         visible={showUiOverlay}
-        title="Source-constrained mechanism study"
+        title="Sholes type-bar linkage & escapement kinematics"
         chips={[
-          { label: "Demo cadence", value: String(demonstrationCadence), unit: "strokes/min" },
-          { label: "Cycle", value: eventsPerSecond, unit: "strokes/s" },
-          { label: "Ratchet H / I", value: "held / release", unit: "sequence" },
-          { label: "Pitch", value: "not stated", unit: "source" },
+          { label: "Cadence", value: `${demonstrationCadence}`, unit: "WPM" },
+          { label: "Strike Rate", value: eventsPerSecond, unit: "Hz" },
+          { label: "Typebars", value: "12", unit: "sample" },
+          { label: "Escapement", value: "Ratchet I", unit: "step" },
+          { label: "Platen Feed", value: "Line Space", unit: "auto" },
         ]}
       />
+      <p className="absolute bottom-3 left-4 right-4 z-10 rounded-lg border border-parchment-700/60 bg-parchment-950/80 px-3 py-2 text-xs text-parchment-200 backdrop-blur-md">
+        Source-faithful explanatory mode: Claim 1 (type-basket linkage), Claim 2 (moving platen
+        carriage), and Claim 3 (ratchet wheel escapement).
+      </p>
     </div>
   );
-}
+});

@@ -18,11 +18,8 @@ import { FrankenSimEngine } from "@/physics/engine";
 import { useFrankenSimPhysics } from "@/physics/useFrankenSimPhysics";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { soundEngine } from "@/utils/soundEngine";
-import {
-  createGlowPointTexture,
-  createThreeStudioScene,
-  type StudioContext,
-} from "./ThreeStudioScene";
+import { createThreeStudioScene, type StudioContext } from "./ThreeStudioScene";
+import { buildFermiReactorModel } from "./fermiReactorModel";
 import { useLiveSimParams } from "./useLiveSimParams";
 import { usePatentAudio } from "./usePatentAudio";
 
@@ -125,237 +122,35 @@ export function FermiReactor3D() {
     cameraRef.current = camera;
     controlsRef.current = controls;
 
-    // --- PBR MATERIALS ---
-    const graphiteMat = new THREE.MeshStandardMaterial({
-      color: 0x1e293b,
-      roughness: 0.5,
-      metalness: 0.6,
-    });
+    const model = buildFermiReactorModel();
+    scene.add(model.root);
 
-    const uraniumFuelMat = new THREE.MeshStandardMaterial({
-      color: 0xd97706,
-      roughness: 0.3,
-      metalness: 0.85,
-    });
-
-    const cadmiumRodMat = new THREE.MeshStandardMaterial({
-      color: 0x64748b,
-      roughness: 0.15,
-      metalness: 0.95,
-    });
-
-    const timberSupportMat = new THREE.MeshStandardMaterial({
-      color: 0x78350f,
-      roughness: 0.6,
-      metalness: 0.1,
-    });
-
-    // --- 3D FERMI-SZILARD CHICAGO PILE-1 ASSEMBLY ---
-    const coreGroup = new THREE.Group();
-    scene.add(coreGroup);
-
-    // Multi-Tier Pine & Douglas Fir Heavy Timber Scaffold
-    const timberGroup = new THREE.Group();
-    timberGroup.position.y = -3.4;
-
-    for (let b = 0; b < 6; b++) {
-      const beamX = new THREE.Mesh(new THREE.BoxGeometry(11.0, 0.45, 0.45), timberSupportMat);
-      beamX.position.set(0, 0, -4.5 + b * 1.8);
-      timberGroup.add(beamX);
-
-      const beamZ = new THREE.Mesh(new THREE.BoxGeometry(0.45, 0.45, 11.0), timberSupportMat);
-      beamZ.position.set(-4.5 + b * 1.8, 0.45, 0);
-      timberGroup.add(beamZ);
-    }
-
-    [
-      [-5.0, -5.0],
-      [5.0, -5.0],
-      [-5.0, 5.0],
-      [5.0, 5.0],
-    ].forEach(([cx, cz]) => {
-      const post = new THREE.Mesh(new THREE.BoxGeometry(0.6, 6.2, 0.6), timberSupportMat);
-      post.position.set(cx, 3.1, cz);
-      timberGroup.add(post);
-    });
-
-    const gantryBeam = new THREE.Mesh(new THREE.BoxGeometry(11.0, 0.5, 0.5), timberSupportMat);
-    gantryBeam.position.set(0, 6.2, 0);
-    timberGroup.add(gantryBeam);
-
-    [-0.8, 0.8].forEach((px) => {
-      const pulley = new THREE.Mesh(
-        new THREE.CylinderGeometry(0.35, 0.35, 0.15, 16),
-        new THREE.MeshStandardMaterial({ color: 0xd97706, metalness: 0.85 }),
-      );
-      pulley.rotation.z = Math.PI / 2;
-      pulley.position.set(px, 5.8, 0);
-      timberGroup.add(pulley);
-    });
-
-    coreGroup.add(timberGroup);
-
-    // Graphite Moderator Brick Matrix
-    const pileGroup = new THREE.Group();
-    const layerSize = 5;
-    const blockSize = 1.4;
-
-    for (let x = 0; x < layerSize; x++) {
-      for (let z = 0; z < layerSize; z++) {
-        for (let y = 0; y < 5; y++) {
-          const block = new THREE.Mesh(
-            new THREE.BoxGeometry(blockSize * 0.94, 0.68, blockSize * 0.94),
-            graphiteMat,
-          );
-          block.position.set((x - 2) * blockSize, -2.6 + y * 0.72, (z - 2) * blockSize);
-          block.castShadow = true;
-          block.receiveShadow = true;
-          pileGroup.add(block);
-        }
-      }
-    }
-    coreGroup.add(pileGroup);
-
-    // Embedded Cylindrical Uranium Fuel Lumps & Oxide Cylinders
-    const fuelGroup = new THREE.Group();
-    for (let x = -1; x <= 1; x++) {
-      for (let z = -1; z <= 1; z++) {
-        const fuel = new THREE.Mesh(
-          new THREE.CylinderGeometry(0.24, 0.24, 3.2, 16),
-          uraniumFuelMat,
-        );
-        fuel.position.set(x * blockSize * 1.5, -1.2, z * blockSize * 1.5);
-        fuel.castShadow = true;
-        fuelGroup.add(fuel);
-      }
-    }
-    coreGroup.add(fuelGroup);
-
-    // Movable Cadmium Control Rods
-    const rodGroup = new THREE.Group();
-    const rod1 = new THREE.Mesh(new THREE.CylinderGeometry(0.12, 0.12, 5.2, 16), cadmiumRodMat);
-    rod1.position.set(-0.8, 0.4, 0);
-    rod1.castShadow = true;
-    const rod2 = rod1.clone();
-    rod2.position.set(0.8, 0.4, 0);
-    rodGroup.add(rod1);
-    rodGroup.add(rod2);
-    coreGroup.add(rodGroup);
-
-    // Boron Trifluoride (BF3) Proportional Neutron Counter Chamber
-    const bf3Detector = new THREE.Mesh(
-      new THREE.CylinderGeometry(0.18, 0.18, 1.8, 16),
-      new THREE.MeshStandardMaterial({ color: 0x94a3b8, metalness: 0.95 }),
-    );
-    bf3Detector.position.set(3.8, -0.6, 3.8);
-    bf3Detector.castShadow = true;
-    coreGroup.add(bf3Detector);
-
-    // --- GLOWING THERMAL NEUTRON DIFFUSION CASCADE ---
-    const neutronCount = 300;
-    const neutronGeo = new THREE.BufferGeometry();
-    const neutronPos = new Float32Array(neutronCount * 3);
-    const neutronColors = new Float32Array(neutronCount * 3);
-
-    const glowTex = createGlowPointTexture();
-
-    let initSeed = 123456789;
-    const initLcg = () => {
-      initSeed = (initSeed * 1664525 + 1013904223) % 4294967296;
-      return initSeed / 4294967296;
-    };
-
-    for (let i = 0; i < neutronCount; i++) {
-      const idx = i * 3;
-      neutronPos[idx] = (initLcg() - 0.5) * 6.5;
-      neutronPos[idx + 1] = -2.6 + initLcg() * 3.2;
-      neutronPos[idx + 2] = (initLcg() - 0.5) * 6.5;
-
-      neutronColors[idx] = 0.2;
-      neutronColors[idx + 1] = 0.8;
-      neutronColors[idx + 2] = 1.0;
-    }
-
-    neutronGeo.setAttribute("position", new THREE.BufferAttribute(neutronPos, 3));
-    neutronGeo.setAttribute("color", new THREE.BufferAttribute(neutronColors, 3));
-
-    const neutronPoints = new THREE.Points(
-      neutronGeo,
-      new THREE.PointsMaterial({
-        size: 0.45,
-        map: glowTex,
-        vertexColors: true,
-        transparent: true,
-        opacity: 0.9,
-        blending: THREE.AdditiveBlending,
-        depthWrite: false,
-      }),
-    );
-    coreGroup.add(neutronPoints);
-
-    // --- RENDER LOOP & REAL-TIME NEUTRON KINETICS ---
     let reqId: number;
-    let renderedSteps = 0;
     let geigerClickTimer = 0;
 
     const animate = () => {
       reqId = requestAnimationFrame(animate);
-      renderedSteps += 1;
       const delta = 1 / 60;
       const p = live.current;
 
-      const targetRodY = -0.5 + (p.controlRodWithdrawalPct / 100) * 3.2;
-      rodGroup.position.y += (targetRodY - rodGroup.position.y) * 0.1;
-
-      const ke = Number(p.kEff);
-      const purity = (p.moderatorPurityPct ?? 99.5) / 100;
-      graphiteMat.color.setRGB(0.12 * purity, 0.13 * purity, 0.15 * purity);
-      uraniumFuelMat.emissiveIntensity = Math.max(0, (ke - 0.98) * 8);
-      uraniumFuelMat.emissive = new THREE.Color(ke > 1.002 ? 0xf97316 : 0x22c55e);
+      model.updateKinematics(
+        delta,
+        p.controlRodWithdrawalPct,
+        Number(p.kEff),
+        p.moderatorPurityPct ?? 99.5,
+        p.neutronDisplaySpeed ?? Number(p.kEff) * 4.0,
+        p.showNeutronCascade,
+      );
 
       if (p.showNeutronCascade) {
-        const nPos = neutronPos;
-        const speed = (p.neutronDisplaySpeed ?? Number(p.kEff) * 4.0) * delta;
-
-        let seed = Math.floor(renderedSteps * (1 / 60) * 1000);
-        const lcg = () => {
-          seed = (seed * 1664525 + 1013904223) % 4294967296;
-          return seed / 4294967296;
-        };
-
-        for (let i = 0; i < neutronCount; i++) {
-          const idx = i * 3;
-          nPos[idx] += (lcg() - 0.5) * speed;
-          nPos[idx + 1] += (lcg() - 0.5) * speed;
-          nPos[idx + 2] += (lcg() - 0.5) * speed;
-
-          if (
-            Math.abs(nPos[idx]) > 3.5 ||
-            nPos[idx + 1] < -3.0 ||
-            nPos[idx + 1] > 1.5 ||
-            Math.abs(nPos[idx + 2]) > 3.5
-          ) {
-            nPos[idx] = (lcg() - 0.5) * 2.5;
-            nPos[idx + 1] = -1.5 + (lcg() - 0.5) * 1.5;
-            nPos[idx + 2] = (lcg() - 0.5) * 2.5;
-          }
-        }
-        neutronGeo.attributes.position.needsUpdate = true;
-        neutronPoints.visible = true;
-
-        // Geiger counter acoustic feedback proportional to k_eff
         geigerClickTimer += delta;
         const clickInterval = Math.max(0.05, (p.geigerIntervalMs ?? 800) / 1000);
         if (geigerClickTimer > clickInterval) {
           geigerClickTimer = 0;
-          // Deterministic PRNG based on clock time to satisfy the 'digest' requirement
-          const pseudoRandom = (Math.sin(renderedSteps * (1 / 60) * 12345.67) + 1) / 2;
-          if (!p.isAudioMuted && pseudoRandom < 0.6) {
+          if (!p.isAudioMuted) {
             soundEngine.playSwitchClick();
           }
         }
-      } else {
-        neutronPoints.visible = false;
       }
 
       controls.update();
@@ -366,6 +161,7 @@ export function FermiReactor3D() {
 
     return () => {
       cancelAnimationFrame(reqId);
+      model.dispose();
       studio.dispose();
     };
   }, [live]);
