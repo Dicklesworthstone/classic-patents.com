@@ -215,6 +215,7 @@ the visitor can see or hear the kernel change the instrument.
 - [x] P5.122 Einstein fluidDisplaySpeed / heaterGlow / generatorGlow / evaporatorGlow live on the absorption step; 3D thermosiphon and glow no longer divide leftover 45 / 250 / 300 / 35.
 - [x] P5.123 Bardeen holeDriftSpeed / gapStudioUnits, Kevlar bulletDisplaySpeed, Morse keyOscillation / armatureStrike / tapeAdvance / electronDisplaySpeed, Edison incandescence / thermalJitter, and Nobel shockwaveGlow / stickDisplayOmega live on the shared steps. 3D kinematics no longer convert leftover Ie/D, v/400, WPM/20, T/300, or v_det/6000 privately.
 - [x] P5.124 Otto govDisplayOmega / flyballRadius, Diesel governorBallSpread / pressureNeedleRadPerBar, Maxim steamOpacity, and Parsons steamAdvancePerS / steamOpacity live on the shared steps. 3D no longer converts leftover rpm/180, rpm/150, evap/15, or h/550×n/3000.
+- [x] P5.125 Corliss govSpread / wristAmp, Zeppelin hullStudioY, Otis springBowY, and Mergenthaler wedgeLift live on the shared steps. 3D no longer converts leftover rpm/100, lift/40, deflection/10, or wedge/10.
 
 ## Explicitly out of scope
 

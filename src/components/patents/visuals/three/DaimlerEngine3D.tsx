@@ -43,6 +43,7 @@ export function DaimlerEngine3D() {
     innerWheelRpm: daimler.innerWheelRpm,
     runningOmegaRadPerS: daimler.runningOmegaRadPerS,
     isRunning: daimler.isRunning ? 1 : 0,
+    hotTubeGlow: daimler.hotTubeGlow,
   });
 
   const studioRef = useRef<StudioContext | null>(null);
@@ -90,6 +91,7 @@ export function DaimlerEngine3D() {
           cycleAngle,
           crankAngle,
           p.hotTubeTempC,
+          p.hotTubeGlow,
           p.isCutaway,
         );
 

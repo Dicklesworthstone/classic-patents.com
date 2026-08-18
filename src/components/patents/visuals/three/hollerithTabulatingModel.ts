@@ -290,14 +290,14 @@ export function updateHollerithTabulatingKinematics(
   _dt: number,
   timeSec: number,
   pressOmegaRadPerS: number,
-  solenoidForceN: number,
+  plungeAmp: number,
   isCutaway: boolean,
 ) {
   const pressPhase = Math.sin(timeSec * pressOmegaRadPerS);
 
   // 1. Pin Press Plunging Stroke & Lever Handle Action
   if (pressPhase > 0) {
-    const plunge = pressPhase * (0.2 + (solenoidForceN / 40) * 0.35);
+    const plunge = pressPhase * plungeAmp;
     nodes.pinPlateGroup.position.y = 0.8 - plunge;
     nodes.pressLever.rotation.z = Math.PI / 3 - plunge * 0.8;
   } else {

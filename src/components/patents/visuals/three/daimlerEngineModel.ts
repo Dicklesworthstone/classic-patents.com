@@ -414,11 +414,11 @@ export function updateDaimlerEngineKinematics(
   cycleAngle: number,
   fourStrokePhase: number,
   hotTubeTempC: number,
+  hotTubeGlow: number,
   isCutaway = false,
 ): { strokeIndex: number; pistonY: number } {
   // Hot-tube glow modulation
-  model.materials.hotTubeMat.emissiveIntensity =
-    hotTubeTempC >= 800 ? 2.8 : Math.max(0.15, (hotTubeTempC / 800) * 2.2);
+  model.materials.hotTubeMat.emissiveIntensity = hotTubeGlow;
   model.materials.hotTubeMat.emissive.setHex(
     hotTubeTempC >= 800 ? 0xf97316 : hotTubeTempC >= 600 ? 0xb45309 : 0x334155,
   );

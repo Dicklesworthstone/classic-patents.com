@@ -70,6 +70,9 @@ export function GoodyearRubber3D() {
     crossLinkDensity: rubberPhysics.crossLinkDensity,
     tensileStrengthPsi: rubberPhysics.tensileStrengthPsi,
     elasticReturnPct: rubberPhysics.elasticReturnPct,
+    stressScale: rubberPhysics.stressScale,
+    thermalAmplitude: rubberPhysics.thermalAmplitude,
+    clampStudioX: rubberPhysics.clampStudioX,
   });
 
   const controlsRef = useRef<StudioContext["controls"] | null>(null);
@@ -148,10 +151,10 @@ export function GoodyearRubber3D() {
         dt,
         timeSec,
         p.appliedTensileStretch,
-        p.tensileStrengthPsi,
-        p.cureTemperatureCelsius,
+        p.clampStudioX,
+        p.stressScale,
+        p.thermalAmplitude,
         p.isVulcanized,
-        p.isGlassy,
         p.showSulfurCrosslinks,
         p.showStressVectors,
         p.isCutaway,

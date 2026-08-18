@@ -504,11 +504,12 @@ export function stepHollerithTabulating(params: {
   const registerDialCount = 40;
   const relays = params.activeRelays ?? sensingPinCount;
   const press = rpmToOmega(cpm);
+  const solenoidForceN = Number(
+    (((relays * (v / 12) * 45) ** 2 * 1.256e-6 * 0.0004) / (2 * 0.002 ** 2)).toFixed(2),
+  );
   return {
     cycleTimeMs: Math.round(60000 / cpm),
-    solenoidForceN: Number(
-      (((relays * (v / 12) * 45) ** 2 * 1.256e-6 * 0.0004) / (2 * 0.002 ** 2)).toFixed(2),
-    ),
+    solenoidForceN,
     inductiveTauMs: Number(((0.08 / (v / 2.4)) * 1000).toFixed(1)),
     contactResistanceOhms: 0.08,
     sensingPinCount,
@@ -518,14 +519,7 @@ export function stepHollerithTabulating(params: {
     cardsPerSec: Number((cpm / 60).toFixed(3)),
     pressOmegaRadPerS: press.omegaRadPerS,
     pressOmegaDegPerS: press.omegaDegPerS,
-    plungeAmp: Number(
-      (
-        0.2 +
-        (Number((((relays * (v / 12) * 45) ** 2 * 1.256e-6 * 0.0004) / (2 * 0.002 ** 2)).toFixed(2)) /
-          40) *
-          0.35
-      ).toFixed(4),
-    ),
+    plungeAmp: Number((0.2 + (solenoidForceN / 40) * 0.35).toFixed(4)),
   };
 }
 
@@ -869,6 +863,8 @@ export function stepGoodyearRubber(
   const tensileStrengthMpa = Number((tensileStrengthPsi * 0.00689476).toFixed(2));
   const glassTransitionTempC = Math.round(-70 + sulfur * 3.8);
   const cure = vulcanKinetics(temp, sulfur);
+  const isGlassy = specimen < glassTransitionTempC;
+  const isVulcanized = isOptimalTemp && crossLinkDensity >= 0.3;
   return {
     crossLinkDensity: Number(crossLinkDensity.toFixed(3)),
     tensileStrengthPsi,
@@ -878,12 +874,19 @@ export function stepGoodyearRubber(
     glassTransitionTempC,
     rateRel: Number(cure.rateRel.toFixed(2)),
     regime: cure.regime,
-    isGlassy: specimen < glassTransitionTempC,
+    isGlassy,
     isRawGumMelted: sulfur < 2 && specimen > 35,
     isRawGumBrittle: sulfur < 2 && specimen < 0,
     trueStressMpa: Number((tensileStrengthMpa * (lambda - 1 / lambda ** 2)).toFixed(2)),
     entropicReductionJ: Number((0.5 * 1.38e-23 * 1e26 * (lambda ** 2 + 2 / lambda - 3)).toFixed(1)),
     glassyModulusMpa: 2400,
+    stressScale: Number(
+      Math.min(2.8, Math.max(0.35, (tensileStrengthPsi / 2800) * (lambda - 0.6))).toFixed(3),
+    ),
+    thermalAmplitude: isGlassy
+      ? 0.005
+      : Number(((temp / 140) * (isVulcanized ? 0.03 : 0.1)).toFixed(4)),
+    clampStudioX: Number((4.5 * lambda).toFixed(4)),
   };
 }
 

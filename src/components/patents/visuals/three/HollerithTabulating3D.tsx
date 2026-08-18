@@ -43,6 +43,7 @@ export function HollerithTabulating3D() {
     solenoidForceN: hollerith.solenoidForceN,
     cardsPerDay,
     pressOmegaRadPerS: hollerith.pressOmegaRadPerS,
+    plungeAmp: hollerith.plungeAmp,
   });
 
   const controlsRef = useRef<StudioContext["controls"] | null>(null);
@@ -122,7 +123,7 @@ export function HollerithTabulating3D() {
         dt,
         timeSec,
         p.pressOmegaRadPerS,
-        p.solenoidForceN,
+        p.plungeAmp,
         p.isCutaway,
       );
 

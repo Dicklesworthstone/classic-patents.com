@@ -272,22 +272,21 @@ export function updateGoodyearRubberKinematics(
   _dt: number,
   timeSec: number,
   appliedTensileStretch: number,
-  tensileStrengthPsi: number,
-  cureTemperatureCelsius: number,
+  clampStudioX: number,
+  stressScale: number,
+  thermalAmplitude: number,
   isVulcanized: boolean,
-  isGlassy: boolean,
   showSulfurCrosslinks: boolean,
   showStressVectors: boolean,
   isCutaway: boolean,
 ) {
   const stretch = appliedTensileStretch;
-  nodes.rightClampGroup.position.x = 4.5 * stretch;
-  nodes.leftClampGroup.position.x = -4.5 * stretch;
+  nodes.rightClampGroup.position.x = clampStudioX;
+  nodes.leftClampGroup.position.x = -clampStudioX;
 
   // Stress vector scaling
   nodes.leftArrow.visible = showStressVectors;
   nodes.rightArrow.visible = showStressVectors;
-  const stressScale = Math.min(2.8, Math.max(0.35, (tensileStrengthPsi / 2800) * (stretch - 0.6)));
   nodes.leftArrow.scale.set(stressScale, stressScale, stressScale);
   nodes.rightArrow.scale.set(stressScale, stressScale, stressScale);
 
@@ -297,10 +296,6 @@ export function updateGoodyearRubberKinematics(
     const item = nodes.chains[c];
     item.mesh.scale.set(stretch, uncoilFactor, uncoilFactor);
 
-    // Brownian thermal fluctuation increases with temperature
-    const thermalAmplitude = isGlassy
-      ? 0.005
-      : (cureTemperatureCelsius / 140) * (isVulcanized ? 0.03 : 0.1);
     item.mesh.position.y = Math.sin(timeSec * 4.0 + c * 1.5) * thermalAmplitude;
     item.mesh.position.z = Math.cos(timeSec * 4.0 + c * 1.5) * thermalAmplitude;
   }

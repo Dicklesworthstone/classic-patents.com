@@ -291,8 +291,9 @@ export function updateGrammeDynamoKinematics(
   dt: number,
   timeSec: number,
   _shaftRate: number,
-  inducedEmfIndex: number,
+  _inducedEmfIndex: number,
   displayRadPerFrame: number,
+  fluxOpacity: number,
   showMagneticFlux: boolean,
   isCutaway: boolean,
 ) {
@@ -310,7 +311,7 @@ export function updateGrammeDynamoKinematics(
   nodes.fluxPoints.geometry.attributes.position.needsUpdate = true;
 
   nodes.fluxPoints.visible = showMagneticFlux;
-  materials.fluxMat.opacity = Math.min(0.95, 0.25 + (inducedEmfIndex / 160) * 0.7);
+  materials.fluxMat.opacity = fluxOpacity;
 
   // Cutaway Mode
   materials.castIron.opacity = isCutaway ? 0.35 : 1.0;
