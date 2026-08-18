@@ -71,6 +71,7 @@ describe("US 319,596 Sir Hiram Maxim Automatic Machine Gun visual & ballistics b
     expect(result.recoilMomentumNs).toBeGreaterThan(5);
     expect(result.toggleUnlockForceN).toBeGreaterThan(100);
     expect(result.muzzleEnergyJoules).toBeGreaterThan(2000);
+    expect(result.steamOpacity).toBeGreaterThan(0);
   });
 
   test("builds and articulates procedural barrel, toggle lock, belt feed, and water jacket correctly", () => {
@@ -81,14 +82,19 @@ describe("US 319,596 Sir Hiram Maxim Automatic Machine Gun visual & ballistics b
     expect(model.crankHandle).toBeDefined();
     expect(model.muzzleFlashMesh).toBeDefined();
 
+    const maxim = FrankenSimEngine.stepMaximMachineGun({
+      firingRateRpm: 600,
+      waterJacketLiters: 4,
+      recoilStrokeMm: 19,
+    });
     const { isMuzzleFlash } = updateMaximMachineGunKinematics(
       model,
       0.016,
       0.5,
-      (600 * 2 * Math.PI) / 60,
-      0.019,
-      120,
-      10,
+      maxim.fireOmegaRadPerS,
+      maxim.recoilStrokeMm / 1000,
+      maxim.barrelTempC,
+      maxim.steamOpacity,
       true,
       true,
     );

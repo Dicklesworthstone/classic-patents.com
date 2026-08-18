@@ -57,6 +57,8 @@ describe("US 194,047 Nikolaus Otto Four-Stroke Engine visual & kinematics bounda
     expect(otto.thermalEfficiencyPct).toBeGreaterThan(25);
     expect(otto.peakCompressionBar).toBeGreaterThan(4);
     expect(otto.peakFiringBar).toBeGreaterThan(15);
+    expect(otto.govDisplayOmegaRadPerS).toBeCloseTo(9, 3);
+    expect(otto.flyballRadius).toBeCloseTo(0.264, 3);
   });
 
   test("builds and articulates procedural 4-stroke kinematic hierarchy correctly", () => {
@@ -64,11 +66,32 @@ describe("US 194,047 Nikolaus Otto Four-Stroke Engine visual & kinematics bounda
     expect(root.children.length).toBeGreaterThan(5);
 
     // Initial pose at crankAngle = 0 (BDC)
-    updateOttoEngineKinematics(nodes, materials, 0, 4.5, true, true, 180);
+    const otto = stepOttoEngine({ engineRpm: 180, compressionRatio: 4.5 });
+    updateOttoEngineKinematics(
+      nodes,
+      materials,
+      0,
+      4.5,
+      true,
+      true,
+      1 / 60,
+      otto.govDisplayOmegaRadPerS,
+      otto.flyballRadius,
+    );
     const bdcPistonX = nodes.pistonGroup.position.x;
 
     // TDC pose at crankAngle = PI
-    updateOttoEngineKinematics(nodes, materials, Math.PI, 4.5, true, true, 180);
+    updateOttoEngineKinematics(
+      nodes,
+      materials,
+      Math.PI,
+      4.5,
+      true,
+      true,
+      1 / 60,
+      otto.govDisplayOmegaRadPerS,
+      otto.flyballRadius,
+    );
     const tdcPistonX = nodes.pistonGroup.position.x;
 
     expect(tdcPistonX).toBeLessThan(bdcPistonX); // Piston moves toward head (-X) at TDC

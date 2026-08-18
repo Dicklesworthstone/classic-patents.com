@@ -71,6 +71,8 @@ describe("US 608,969 Sir Charles Parsons Steam Turbine visual & thermodynamics b
     expect(result.stageCount).toBe(48);
     expect(result.inletMpa).toBeGreaterThan(1.0);
     expect(result.bladeSpeedMps).toBeGreaterThan(40);
+    expect(result.steamAdvancePerS).toBeCloseTo(12, 3);
+    expect(result.steamOpacity).toBeGreaterThan(0.2);
   });
 
   test("builds and articulates procedural casing, rotor stages, dummy piston, and steam streamline flow correctly", () => {
@@ -80,7 +82,18 @@ describe("US 608,969 Sir Charles Parsons Steam Turbine visual & thermodynamics b
     expect(nodes.dummyPiston).toBeDefined();
     expect(nodes.steamPositions.length).toBe(300 * 3);
 
-    updateParsonsTurbineKinematics(nodes, materials, 0.016, 0.5, 25.0, 550, 3000, 1200, true, true);
+    const parsons = stepParsonsTurbine({ rotorRpm: 3000, inletPressurePsi: 180 });
+    updateParsonsTurbineKinematics(
+      nodes,
+      materials,
+      0.016,
+      0.5,
+      parsons.displayOmegaRadPerS,
+      parsons.steamAdvancePerS,
+      parsons.steamOpacity,
+      true,
+      true,
+    );
     expect(materials.castIronCasing.transparent).toBe(true);
 
     dispose();

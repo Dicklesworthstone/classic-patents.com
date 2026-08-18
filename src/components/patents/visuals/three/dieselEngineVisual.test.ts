@@ -60,6 +60,8 @@ describe("US 542,846 Rudolf Diesel Engine visual & thermodynamics boundary", () 
     expect(result.tCompressionC).toBeGreaterThan(500);
     expect(result.isAutoIgnition).toBe(true);
     expect(result.brakeEfficiencyPct).toBeGreaterThan(25);
+    expect(result.governorBallSpread).toBeCloseTo(0.85, 3);
+    expect(result.pressureNeedleRadPerBar).toBeCloseTo((Math.PI * 1.4) / 80, 4);
   });
 
   test("builds and articulates procedural kinematic hierarchy correctly", () => {
@@ -67,11 +69,35 @@ describe("US 542,846 Rudolf Diesel Engine visual & thermodynamics boundary", () 
     expect(root.children.length).toBeGreaterThan(5);
 
     // Initial pose at crankAngle = 0
-    updateDieselEngineKinematics(nodes, materials, 0, 18, true, true, 150);
+    const diesel = FrankenSimEngine.stepDieselEngine({
+      compressionRatio: 18,
+      blastAirPressureBar: 65,
+      cutoffRatio: 1.6,
+      engineRpm: 150,
+    });
+    updateDieselEngineKinematics(
+      nodes,
+      materials,
+      0,
+      18,
+      true,
+      true,
+      diesel.governorBallSpread,
+      diesel.pressureNeedleRadPerBar,
+    );
     const initialPistonY = nodes.pistonGroup.position.y;
 
     // TDC pose at crankAngle = PI
-    updateDieselEngineKinematics(nodes, materials, Math.PI, 18, true, true, 150);
+    updateDieselEngineKinematics(
+      nodes,
+      materials,
+      Math.PI,
+      18,
+      true,
+      true,
+      diesel.governorBallSpread,
+      diesel.pressureNeedleRadPerBar,
+    );
     const tdcPistonY = nodes.pistonGroup.position.y;
 
     expect(tdcPistonY).not.toBe(initialPistonY);
