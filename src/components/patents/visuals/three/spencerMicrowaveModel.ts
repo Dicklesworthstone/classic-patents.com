@@ -210,10 +210,7 @@ export function buildSpencerMicrowaveModel(): SpencerMicrowaveModel {
     if (isOscillating) {
       spokePoints.visible = showSpokeWheel;
       spokePoints.rotation.y += delta * (microwaveFreqMhz / 2450) * 4.5;
-      spokeMat.opacity = Math.min(
-        0.95,
-        0.25 + (dielectricLoss / 2000) * 0.7,
-      );
+      spokeMat.opacity = Math.min(0.95, 0.25 + (dielectricLoss / 2000) * 0.7);
     } else {
       spokePoints.visible = false;
     }

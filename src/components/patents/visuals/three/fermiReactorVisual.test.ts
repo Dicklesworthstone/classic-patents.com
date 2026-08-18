@@ -1,8 +1,8 @@
 import { describe, expect, test } from "bun:test";
 import { readFileSync } from "node:fs";
 import { join } from "node:path";
-import { buildFermiReactorModel } from "./fermiReactorModel";
 import { FrankenSimEngine } from "@/physics/engine";
+import { buildFermiReactorModel } from "./fermiReactorModel";
 
 const VISUALS_DIRECTORY = join(process.cwd(), "src", "components", "patents", "visuals");
 

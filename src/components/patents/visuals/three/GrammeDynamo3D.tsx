@@ -6,10 +6,7 @@ import type * as THREE from "three";
 import { stepGrammeDynamo } from "@/physics/catalogKernels";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { soundEngine } from "@/utils/soundEngine";
-import {
-  buildGrammeDynamoModel,
-  updateGrammeDynamoKinematics,
-} from "./grammeDynamoModel";
+import { buildGrammeDynamoModel, updateGrammeDynamoKinematics } from "./grammeDynamoModel";
 import { StudioKernelChips } from "./StudioKernelChips";
 import { createThreeStudioScene, type StudioContext } from "./ThreeStudioScene";
 import { useLiveSimParams } from "./useLiveSimParams";
@@ -247,10 +244,9 @@ export const GrammeDynamo3D = memo(() => {
         ]}
       />
       <p className="absolute bottom-3 left-4 right-4 z-10 rounded-lg border border-parchment-700/60 bg-parchment-950/80 px-3 py-2 text-xs text-parchment-200 backdrop-blur-md">
-        Source-faithful explanatory mode: 36 joined bobbins, radial junction conductors, and collecting
-        rubbers. US 120,057 established the continuous DC generation principle.
+        Source-faithful explanatory mode: 36 joined bobbins, radial junction conductors, and
+        collecting rubbers. US 120,057 established the continuous DC generation principle.
       </p>
     </div>
   );
 });
-

@@ -1,16 +1,10 @@
 import { describe, expect, test } from "bun:test";
 import { readFileSync } from "node:fs";
 import { join } from "node:path";
-import { buildSpencerMicrowaveModel } from "./spencerMicrowaveModel";
 import { FrankenSimEngine } from "@/physics/engine";
+import { buildSpencerMicrowaveModel } from "./spencerMicrowaveModel";
 
-const VISUALS_DIRECTORY = join(
-  process.cwd(),
-  "src",
-  "components",
-  "patents",
-  "visuals",
-);
+const VISUALS_DIRECTORY = join(process.cwd(), "src", "components", "patents", "visuals");
 
 describe("US 2,495,429 Percy Spencer Microwave Cavity Magnetron visual & RF physics boundary", () => {
   test("uses pure procedural Three.js WebGL architecture without external GLTF/GLB models", () => {
@@ -50,7 +44,13 @@ describe("US 2,495,429 Percy Spencer Microwave Cavity Magnetron visual & RF phys
       "utf8",
     );
 
-    for (const preset of ["iso", "cavity_resonator", "electron_spokes", "waveguide_launch", "top"]) {
+    for (const preset of [
+      "iso",
+      "cavity_resonator",
+      "electron_spokes",
+      "waveguide_launch",
+      "top",
+    ]) {
       expect(threeSource).toContain(preset);
     }
   });

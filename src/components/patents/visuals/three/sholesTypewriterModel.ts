@@ -101,10 +101,7 @@ export function buildSholesTypewriterModel(): SholesTypewriterModelResult {
   };
 
   // 1. Table, turned legs, rear upright column, and top deck plate
-  const table = new THREE.Mesh(
-    trackGeo(new THREE.BoxGeometry(7.6, 0.28, 5.4)),
-    materials.caseMat,
-  );
+  const table = new THREE.Mesh(trackGeo(new THREE.BoxGeometry(7.6, 0.28, 5.4)), materials.caseMat);
   table.position.y = -1.55;
   table.castShadow = true;
   table.receiveShadow = true;

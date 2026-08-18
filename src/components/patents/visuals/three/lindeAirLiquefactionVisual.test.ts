@@ -1,16 +1,10 @@
 import { describe, expect, test } from "bun:test";
 import { readFileSync } from "node:fs";
 import { join } from "node:path";
-import { buildLindeLiquefactionModel } from "./lindeLiquefactionModel";
 import { FrankenSimEngine } from "@/physics/engine";
+import { buildLindeLiquefactionModel } from "./lindeLiquefactionModel";
 
-const VISUALS_DIRECTORY = join(
-  process.cwd(),
-  "src",
-  "components",
-  "patents",
-  "visuals",
-);
+const VISUALS_DIRECTORY = join(process.cwd(), "src", "components", "patents", "visuals");
 
 describe("US 727,650 Carl von Linde Air Liquefaction visual & thermodynamics boundary", () => {
   test("uses pure procedural Three.js WebGL architecture without external GLTF/GLB models", () => {
@@ -50,7 +44,14 @@ describe("US 727,650 Carl von Linde Air Liquefaction visual & thermodynamics bou
       "utf8",
     );
 
-    for (const preset of ["iso", "jt_valve", "counter_heat_exchanger", "liquid_dewar", "spindle_handwheel", "top"]) {
+    for (const preset of [
+      "iso",
+      "jt_valve",
+      "counter_heat_exchanger",
+      "liquid_dewar",
+      "spindle_handwheel",
+      "top",
+    ]) {
       expect(threeSource).toContain(preset);
     }
   });

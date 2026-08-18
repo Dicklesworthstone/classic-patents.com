@@ -2,10 +2,7 @@ import { describe, expect, test } from "bun:test";
 import { readFileSync } from "node:fs";
 import { join } from "node:path";
 import { stepGrammeDynamo } from "@/physics/catalogKernels";
-import {
-  buildGrammeDynamoModel,
-  updateGrammeDynamoKinematics,
-} from "./grammeDynamoModel";
+import { buildGrammeDynamoModel, updateGrammeDynamoKinematics } from "./grammeDynamoModel";
 
 const VISUALS_DIRECTORY = join(process.cwd(), "src/components/patents/visuals");
 
@@ -86,21 +83,10 @@ describe("US 120,057 Gramme source-faithful visual boundary", () => {
     expect(nodes.junctionRods.length).toBe(36);
     expect(nodes.collectorRubbers.length).toBe(2);
 
-    updateGrammeDynamoKinematics(
-      nodes,
-      materials,
-      0.016,
-      0.5,
-      1.0,
-      100,
-      0.026,
-      true,
-      true,
-    );
+    updateGrammeDynamoKinematics(nodes, materials, 0.016, 0.5, 1.0, 100, 0.026, true, true);
     expect(materials.castIron.transparent).toBe(true);
     expect(nodes.fluxPoints.visible).toBe(true);
 
     dispose();
   });
 });
-
