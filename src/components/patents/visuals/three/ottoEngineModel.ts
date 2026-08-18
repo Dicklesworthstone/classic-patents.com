@@ -679,7 +679,9 @@ export function updateOttoEngineKinematics(
   _compressionRatio: number,
   cutawayMode: boolean,
   running: boolean,
-  rpm: number,
+  dt: number,
+  govDisplayOmegaRadPerS: number,
+  flyballRadius: number,
 ) {
   // 1. Crankshaft & Twin Flywheels Rotation
   nodes.crankshaftGroup.rotation.z = crankAngle;
@@ -719,12 +721,10 @@ export function updateOttoEngineKinematics(
 
   // 7. Centrifugal Flyball Governor Kinematics
   if (running) {
-    const govSpeed = (rpm / 180) * 1.5;
-    nodes.governorSpindle.rotation.y += govSpeed * 0.1;
-    const flyRadius = 0.18 + Math.min(0.15, (rpm / 300) * 0.14);
-    nodes.governorBallLeft.position.x = -flyRadius;
-    nodes.governorBallRight.position.x = flyRadius;
-    nodes.governorSleeve.position.y = 0.35 + (flyRadius - 0.18) * 0.8;
+    nodes.governorSpindle.rotation.y += govDisplayOmegaRadPerS * dt;
+    nodes.governorBallLeft.position.x = -flyballRadius;
+    nodes.governorBallRight.position.x = flyballRadius;
+    nodes.governorSleeve.position.y = 0.35 + (flyballRadius - 0.18) * 0.8;
   }
 
   // 8. Cutaway Visibility

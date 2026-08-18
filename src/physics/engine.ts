@@ -731,6 +731,8 @@ export const FrankenSimEngine = {
       engineRpm: rpm,
       crankOmegaRadPerS: crank.omegaRadPerS,
       crankOmegaDegPerS: crank.omegaDegPerS,
+      governorBallSpread: Number(Math.min(1.4, Math.max(0.4, (rpm / 150) * 0.85)).toFixed(3)),
+      pressureNeedleRadPerBar: Number(((Math.PI * 1.4) / 80).toFixed(5)),
     };
   },
 

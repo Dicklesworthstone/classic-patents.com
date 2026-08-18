@@ -728,7 +728,8 @@ export function updateDieselEngineKinematics(
   compressionRatio: number,
   isAutoIgnition: boolean,
   cutawayMode: boolean,
-  engineRpm: number,
+  governorBallSpread: number,
+  pressureNeedleRadPerBar: number,
 ) {
   const crankR = 0.55;
   const rodLen = 2.2;
@@ -816,11 +817,10 @@ export function updateDieselEngineKinematics(
   nodes.compressorLinkage.rotation.z = Math.sin(crankAngleRad) * 0.18;
 
   nodes.flyballGovernor.rotation.y = crankAngleRad * 2.0;
-  const ballSpread = Math.min(1.4, Math.max(0.4, (engineRpm / 150) * 0.85));
-  nodes.governorBallsGroup.scale.set(ballSpread, 1.0, ballSpread);
+  nodes.governorBallsGroup.scale.set(governorBallSpread, 1.0, governorBallSpread);
 
   nodes.fuelPumpPlunger.position.y = Math.sin(cycleAngle * 2) * 0.08;
 
   const pBar = isCompression ? 1 + compProgress * (compressionRatio * 2.2) : isInjection ? 45 : 1.5;
-  nodes.pressureNeedle.rotation.z = -(pBar / 80) * (Math.PI * 1.4);
+  nodes.pressureNeedle.rotation.z = -(pBar * pressureNeedleRadPerBar);
 }

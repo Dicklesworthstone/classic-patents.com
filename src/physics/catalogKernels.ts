@@ -76,6 +76,8 @@ export function stepOttoEngine(params: { engineRpm?: number; compressionRatio?: 
     peakFiringBar: Number((peakCompressionBar * 3.8).toFixed(1)),
     crankOmegaRadPerS: crank.omegaRadPerS,
     crankOmegaDegPerS: crank.omegaDegPerS,
+    govDisplayOmegaRadPerS: Number(((rpm / 180) * 9).toFixed(3)),
+    flyballRadius: Number((0.18 + Math.min(0.15, (rpm / 300) * 0.14)).toFixed(4)),
   };
 }
 
@@ -90,9 +92,10 @@ export function stepParsonsTurbine(params: { rotorRpm?: number; inletPressurePsi
   const rotorOmegaRadPerS = (rpm * 2 * Math.PI) / 60;
   // 3000 rpm is a blur in the studio; 0.08 keeps u/c readable.
   const displaySlowdown = 0.08;
+  const shaftPowerKw = Math.round(28 * enthalpyKjKg * 0.84 * (rpm / 3000));
   return {
     enthalpyKjKg,
-    shaftPowerKw: Math.round(28 * enthalpyKjKg * 0.84 * (rpm / 3000)),
+    shaftPowerKw,
     inletMpa: Number((psi * 0.00689476).toFixed(2)),
     stageCount: 48,
     isentropicEfficiencyPct: 84,
@@ -104,6 +107,8 @@ export function stepParsonsTurbine(params: { rotorRpm?: number; inletPressurePsi
     displaySlowdown,
     displayOmegaRadPerS: Number((rotorOmegaRadPerS * displaySlowdown).toFixed(3)),
     displayOmegaDegPerS: Number((rpm * 6 * displaySlowdown).toFixed(1)),
+    steamAdvancePerS: Number(((enthalpyKjKg / 550) * (rpm / 3000) * 12).toFixed(3)),
+    steamOpacity: Number(Math.min(0.95, 0.25 + (shaftPowerKw / 14000) * 0.7).toFixed(3)),
   };
 }
 
@@ -951,5 +956,7 @@ export function stepMaximMachineGun(params: {
     recoilStrokeMm: stroke,
     fireOmegaRadPerS: rpmToOmega(rpm).omegaRadPerS,
     fireOmegaDegPerS: rpmToOmega(rpm).omegaDegPerS,
+    steamOpacity:
+      barrelTempC >= 95 ? Number(Math.min(0.85, (waterEvapRateGs / 15) * 0.75).toFixed(3)) : 0,
   };
 }

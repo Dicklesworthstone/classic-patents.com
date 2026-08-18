@@ -67,6 +67,8 @@ export function DieselEngine3D() {
     cutawayMode,
     isMuted,
     crankOmegaRadPerS: diesel.crankOmegaRadPerS,
+    governorBallSpread: diesel.governorBallSpread,
+    pressureNeedleRadPerBar: diesel.pressureNeedleRadPerBar,
   });
 
   const studioRef = useRef<StudioContext | null>(null);
@@ -118,7 +120,8 @@ export function DieselEngine3D() {
           p.compressionRatio,
           p.isAutoIgnition > 0,
           p.cutawayMode,
-          p.engineRpm,
+          p.governorBallSpread,
+          p.pressureNeedleRadPerBar,
         );
 
         // Sound cadence on combustion power stroke

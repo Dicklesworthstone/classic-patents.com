@@ -58,6 +58,8 @@ export function OttoEngine3D() {
     thermalEfficiencyPct,
     brakeHorsepower: otto.brakeHorsepower,
     crankOmegaRadPerS: otto.crankOmegaRadPerS,
+    govDisplayOmegaRadPerS: otto.govDisplayOmegaRadPerS,
+    flyballRadius: otto.flyballRadius,
   });
 
   const controlsRef = useRef<StudioContext["controls"] | null>(null);
@@ -163,7 +165,9 @@ export function OttoEngine3D() {
         live.current.compressionRatio,
         live.current.cutawayMode,
         Boolean(live.current.isRunning),
-        currentRpm,
+        delta,
+        live.current.govDisplayOmegaRadPerS,
+        live.current.flyballRadius,
       );
 
       // Deflagration flame flash at ignition (start of power stroke at 360 deg = 2pi rad)
