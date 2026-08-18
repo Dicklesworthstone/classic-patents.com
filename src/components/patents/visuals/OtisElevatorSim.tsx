@@ -197,7 +197,7 @@ export function OtisElevatorSim() {
                   strokeDasharray="3,3"
                 />
                 <text x="240" y="30" fill="#fbbf24" fontSize="9" fontFamily="monospace">
-                  HOISTING ROPE UNDER TENSION (T = {otis.hoistTensionKn} kN)
+                  HOISTING ROPE UNDER TENSION (T = {otis.hoistTensionKn} kN, {hangingMassKg} kg)
                 </text>
               </g>
             ) : (

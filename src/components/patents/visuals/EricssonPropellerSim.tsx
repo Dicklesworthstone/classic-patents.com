@@ -228,7 +228,7 @@ export function EricssonPropellerSim() {
             Ship Speed
           </span>
           <span className="font-mono text-sm sm:text-base font-bold text-ink-900 dark:text-parchment-100">
-            {actualShipSpeedKnots} knots
+            {actualShipSpeedKnots} kn (theor. {theoreticalSpeedKnots})
           </span>
         </div>
         <div className="bg-parchment-100 dark:bg-ink-900 border border-parchment-200 dark:border-ink-800 p-2.5 rounded-xl text-center">
