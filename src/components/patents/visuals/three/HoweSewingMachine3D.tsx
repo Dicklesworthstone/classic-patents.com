@@ -18,7 +18,7 @@ import { stepHoweLockstitch } from "@/physics/machineKernels";
 import { useFrankenSimPhysics } from "@/physics/useFrankenSimPhysics";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { soundEngine } from "@/utils/soundEngine";
-import { createThreeStudioScene } from "./ThreeStudioScene";
+import { createThreeStudioScene, type StudioContext } from "./ThreeStudioScene";
 import { useLiveSimParams } from "./useLiveSimParams";
 import { usePatentAudio } from "./usePatentAudio";
 
@@ -68,7 +68,7 @@ export function HoweSewingMachine3D() {
     isAudioMuted,
   });
 
-  const controlsRef = useRef<any>(null);
+  const controlsRef = useRef<StudioContext["controls"] | null>(null);
   const cameraRef = useRef<THREE.PerspectiveCamera | null>(null);
 
   const applyCameraPreset = (preset: CameraPreset) => {

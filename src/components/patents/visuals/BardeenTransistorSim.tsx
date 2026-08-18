@@ -18,10 +18,8 @@ export function BardeenTransistorSim() {
   );
   const alphaRatio = semi.currentGainAlpha;
   const collectorCurrentMa = emitterCurrentMa * alphaRatio;
-  const loadResistanceKohm = 20;
-  const inputResistanceOhm = 250;
-  const voltageGain = (alphaRatio * (loadResistanceKohm * 1000)) / inputResistanceOhm;
-  const powerGainDb = (10 * Math.log10(Math.max(1e-6, voltageGain * alphaRatio))).toFixed(1);
+  const voltageGain = semi.voltageGain;
+  const powerGainDb = semi.powerGainDb.toFixed(1);
 
   return (
     <div className="rounded-2xl border border-amber-900/20 dark:border-ink-800 bg-parchment-50 dark:bg-ink-950 p-6 sm:p-7 shadow-patent space-y-6">

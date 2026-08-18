@@ -336,6 +336,7 @@ export function SholesTypewriter3D() {
           { label: "Cadence", value: String(typingWpm), unit: "wpm" },
           { label: "Strike", value: charsPerSecond, unit: "s⁻¹" },
           { label: "Pitch", value: escapementStepMm.toFixed(2), unit: "mm" },
+          { label: "Throw", value: String(sholesIdle.typebarStrikeAngleDeg), unit: "°" },
         ]}
       />
     </div>

@@ -18,19 +18,17 @@ export function ColtRevolverSim() {
   const [isFiring, setIsFiring] = useState<boolean>(false);
   const [bulletFired, setBulletFired] = useState<boolean>(false);
 
-  const isFullCock = cockingAngleDeg >= 44;
-  const _cylinderRotationAngle = ((cockingAngleDeg / 45) * 72) % 360; // 5-shot 72° indexing
-  const isBoltLocked = cockingAngleDeg >= 44 || cockingAngleDeg <= 2;
-  const boltRetractionY = cockingAngleDeg > 2 && cockingAngleDeg < 44 ? 12 : 0;
-
   const colt = FrankenSimEngine.stepColtRevolver({
     chamberPressureMpa,
     cockingAngleDeg,
   });
+  const isFullCock = colt.isLocked;
+  const _cylinderRotationAngle = colt.indexAngleDeg;
+  const isBoltLocked = colt.isLocked || cockingAngleDeg <= 2;
+  const boltRetractionY = cockingAngleDeg > 2 && !colt.isLocked ? 12 : 0;
   const hoopStressMpa = colt.hoopStressMpa.toFixed(1);
-  const bulletMassKg = 0.0052;
   const muzzleVelocityMps = colt.muzzleVelocityMps;
-  const muzzleEnergyJoules = Math.round(0.5 * bulletMassKg * muzzleVelocityMps * muzzleVelocityMps);
+  const muzzleEnergyJoules = colt.muzzleEnergyJoules;
 
   const fireTimerRef = useRef<number | null>(null);
 

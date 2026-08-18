@@ -13,14 +13,14 @@ export function EastmanKodakSim() {
   const [exposureCount, setExposureCount] = useState<number>(14);
   const [isShutterTriggered, setIsShutterTriggered] = useState<boolean>(false);
 
-  const totalExposures = 100;
-  const focalLengthMm = 57;
   const fNumber = params.apertureStop ?? 9.0;
   const kodak = FrankenSimEngine.stepEastmanKodak({
     shutterSpeedSec,
     apertureFNumber: fNumber,
     subjectDistanceM: params.subjectDistance ?? 3.0,
   });
+  const totalExposures = kodak.rollCapacity;
+  const focalLengthMm = kodak.focalLengthMm;
 
   const handleTriggerShutter = () => {
     setIsShutterTriggered(true);

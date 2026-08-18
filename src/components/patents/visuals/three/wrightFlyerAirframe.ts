@@ -41,6 +41,16 @@ export interface FlyerAirframe {
 }
 
 /**
+ * Stable texture variation. Museum rendering must not depend on ambient
+ * randomness: the same airframe source should produce the same material
+ * pattern when a visitor replays the same control sequence.
+ */
+function deterministicUnit(index: number, channel: number): number {
+  const sample = Math.sin((index + 1) * 12.9898 + (channel + 1) * 78.233) * 43758.5453;
+  return sample - Math.floor(sample);
+}
+
+/**
  * Procedural Quarter-Sawn White Spruce Grain Texture
  */
 function spruceTexture(): THREE.CanvasTexture {
@@ -56,7 +66,7 @@ function spruceTexture(): THREE.CanvasTexture {
 
   // Fine longitudinal growth rings
   for (let i = 0; i < 96; i++) {
-    const x = i * 5.3 + (Math.random() - 0.5) * 2;
+    const x = i * 5.3 + (deterministicUnit(i, 0) - 0.5) * 2;
     const alpha = 0.08 + (i % 6 === 0 ? 0.12 : 0.04);
     ctx.strokeStyle = `rgba(88, 48, 16, ${alpha})`;
     ctx.lineWidth = 1 + (i % 4) * 0.4;
@@ -68,10 +78,10 @@ function spruceTexture(): THREE.CanvasTexture {
 
   // Subtle wood pores and medullary rays
   for (let j = 0; j < 300; j++) {
-    const px = Math.random() * 512;
-    const py = Math.random() * 512;
+    const px = deterministicUnit(j, 1) * 512;
+    const py = deterministicUnit(j, 2) * 512;
     ctx.fillStyle = "rgba(60, 30, 10, 0.15)";
-    ctx.fillRect(px, py, 1.5, 6 + Math.random() * 12);
+    ctx.fillRect(px, py, 1.5, 6 + deterministicUnit(j, 3) * 12);
   }
 
   const tex = new THREE.CanvasTexture(canvas);
@@ -114,14 +124,14 @@ function muslinTexture(): THREE.CanvasTexture {
   for (let s = 0; s < 40; s++) {
     ctx.strokeStyle = "rgba(110, 85, 50, 0.22)";
     ctx.lineWidth = 1.2;
-    const pos = Math.random() * 256;
+    const pos = deterministicUnit(s, 4) * 256;
     ctx.beginPath();
-    if (Math.random() > 0.5) {
-      ctx.moveTo(pos, Math.random() * 100);
-      ctx.lineTo(pos, pos + 20 + Math.random() * 40);
+    if (deterministicUnit(s, 5) > 0.5) {
+      ctx.moveTo(pos, deterministicUnit(s, 6) * 100);
+      ctx.lineTo(pos, pos + 20 + deterministicUnit(s, 7) * 40);
     } else {
-      ctx.moveTo(Math.random() * 100, pos);
-      ctx.lineTo(pos + 20 + Math.random() * 40, pos);
+      ctx.moveTo(deterministicUnit(s, 8) * 100, pos);
+      ctx.lineTo(pos + 20 + deterministicUnit(s, 9) * 40, pos);
     }
     ctx.stroke();
   }

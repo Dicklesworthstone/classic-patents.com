@@ -23,7 +23,7 @@ export function EdisonBulbSim() {
   const powerWatts =
     resistanceMode === "high-resistance" ? bulb.radiantWatts : (voltage * voltage) / 1.5;
 
-  const feederResistance = 0.4;
+  const feederResistance = bulb.feederResistanceOhm;
   const feederPowerLossWatts = currentAmps ** 2 * feederResistance;
 
   const isBurnedOut = !isVacuumIntact && voltage > 30;

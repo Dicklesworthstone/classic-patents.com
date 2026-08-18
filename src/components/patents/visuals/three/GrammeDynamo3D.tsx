@@ -29,7 +29,7 @@ export function GrammeDynamo3D() {
     coilSegments: params.coilSegments ?? 32,
   });
   const outputVoltageVolts = gramme.emfVolts;
-  const currentAmps = (outputVoltageVolts / 4.5).toFixed(1);
+  const currentAmps = gramme.armatureCurrentA.toFixed(1);
   const powerWatts = gramme.powerWatts.toFixed(0);
   const [showMagneticFlux, setShowMagneticFlux] = useState<boolean>(true);
   const [activeCamera, setActiveCamera] = useState<CameraPreset>("iso");
@@ -365,6 +365,7 @@ export function GrammeDynamo3D() {
           { label: "E", value: String(outputVoltageVolts), unit: "V" },
           { label: "I", value: currentAmps, unit: "A" },
           { label: "P", value: powerWatts, unit: "W" },
+          { label: "Ripple", value: String(gramme.voltageRipplePct), unit: "%" },
         ]}
       />
     </div>

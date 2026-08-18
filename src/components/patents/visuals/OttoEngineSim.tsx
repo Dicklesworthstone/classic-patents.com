@@ -29,13 +29,8 @@ export function OttoEngineSim() {
 
   const isSparkFiring = cycleAngleDeg >= 350 && cycleAngleDeg <= 370;
   const thermalEfficiencyPct = otto.thermalEfficiencyPct;
-  const peakPressureBar = Number(
-    (
-      1.0 *
-      compressionRatio ** 1.35 *
-      (cycleAngleDeg >= 360 && cycleAngleDeg < 450 ? 3.8 : 1.0)
-    ).toFixed(1),
-  );
+  const peakPressureBar =
+    cycleAngleDeg >= 360 && cycleAngleDeg < 450 ? otto.peakFiringBar : otto.peakCompressionBar;
   const indicatedHorsepower = otto.brakeHorsepower;
 
   useEffect(() => {

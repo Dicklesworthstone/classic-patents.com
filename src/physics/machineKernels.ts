@@ -81,6 +81,7 @@ export function stepSholesTypewriter(
   cps: number;
   pitchMm: number;
   carriageXMm: number;
+  typebarStrikeAngleDeg: number;
   hammerAngleRad: number;
   barIndex: number;
   strikePhase: number;
@@ -90,11 +91,14 @@ export function stepSholesTypewriter(
   const charsTyped = Math.max(0, elapsedS) * cps;
   const col = charsTyped % 70;
   const strikePhase = cps > 0 ? (elapsedS * cps) % 1 : 0;
+  const typebarStrikeAngleDeg = 90;
   return {
     cps,
     pitchMm: SHOLES_PITCH_MM,
     carriageXMm: col * SHOLES_PITCH_MM,
-    hammerAngleRad: strikePhase < 0.22 ? (strikePhase / 0.22) * (-Math.PI / 3) : 0,
+    typebarStrikeAngleDeg,
+    hammerAngleRad:
+      strikePhase < 0.22 ? (strikePhase / 0.22) * ((-typebarStrikeAngleDeg * Math.PI) / 180) : 0,
     barIndex: Math.floor(charsTyped) % 24,
     strikePhase,
   };
@@ -116,6 +120,7 @@ export function stepMergenthalerLinotype(params: {
   slugOut: boolean;
   cycleS: number;
   phase: number;
+  alloyMeltPointC: number;
 } {
   const rate = params.matrixRatePerMin ?? 60;
   const wedge = params.spacebandWedgeMm ?? 6.5;
@@ -136,6 +141,7 @@ export function stepMergenthalerLinotype(params: {
     slugOut: phase > 0.72 && phase < 0.92,
     cycleS,
     phase,
+    alloyMeltPointC: 240,
   };
 }
 

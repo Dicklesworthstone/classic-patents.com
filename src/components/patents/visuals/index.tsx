@@ -54,6 +54,11 @@ import { TeslaCoilSim } from "./TeslaCoilSim";
 import { TeslaMotorSim } from "./TeslaMotorSim";
 import { TeslaTeleautomatonSim } from "./TeslaTeleautomatonSim";
 import { ThomsonWeldingSim } from "./ThomsonWeldingSim";
+import { WestinghouseAirBrakeSim } from "./WestinghouseAirBrakeSim";
+import { WhitneyCottonGinSim } from "./WhitneyCottonGinSim";
+import { WozniakAppleSim } from "./WozniakAppleSim";
+import { WrightFlyerSim } from "./WrightFlyerSim";
+import { ZeppelinAirshipSim } from "./ZeppelinAirshipSim";
 
 const ThreeLoading = () => (
   <div className="w-full min-h-[420px] rounded-2xl border border-parchment-300 dark:border-ink-800 bg-[#090d16] flex flex-col items-center justify-center p-6 text-center space-y-3">
@@ -280,12 +285,6 @@ const ZeppelinAirship3D = dynamic(
   () => import("./three/ZeppelinAirship3D").then((mod) => mod.ZeppelinAirship3D),
   { ssr: false, loading: ThreeLoading },
 );
-
-import { WestinghouseAirBrakeSim } from "./WestinghouseAirBrakeSim";
-import { WhitneyCottonGinSim } from "./WhitneyCottonGinSim";
-import { WozniakAppleSim } from "./WozniakAppleSim";
-import { WrightFlyerSim } from "./WrightFlyerSim";
-import { ZeppelinAirshipSim } from "./ZeppelinAirshipSim";
 
 interface PatentVisualDispatcherProps {
   patentId: string;

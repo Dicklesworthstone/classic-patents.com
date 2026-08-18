@@ -320,6 +320,8 @@ export function OttoEngine3D() {
             tone: thermalEfficiencyPct > 25 ? "ok" : "warn",
           },
           { label: "BHP", value: powerBhp },
+          { label: "P2", value: String(otto.peakCompressionBar), unit: "bar" },
+          { label: "P3", value: String(otto.peakFiringBar), unit: "bar" },
         ]}
       />
     </div>

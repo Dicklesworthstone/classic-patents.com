@@ -16,8 +16,12 @@ export function FarnsworthTVSim() {
   const [isScanning, setIsScanning] = useState<boolean>(true);
   const [beamPos, setBeamPos] = useState<{ x: number; y: number }>({ x: 0, y: 0 });
 
-  const deflectionGauss = coilCurrent * (120 / 0.42);
-  const beam = FrankenSimEngine.stepFarnsworthTv(anodeVoltage / 1000, deflectionGauss);
+  const deflectionGauss = FrankenSimEngine.farnsworthDeflectionGauss(coilCurrent);
+  const beam = FrankenSimEngine.stepFarnsworthTv(
+    anodeVoltage / 1000,
+    deflectionGauss,
+    params.lightIntensityLux ?? 500,
+  );
   const speedMultiplier = Math.max(1, beam.electronVelocityMps / 2.1e7);
 
   useEffect(() => {
@@ -113,7 +117,7 @@ export function FarnsworthTVSim() {
             {mode === "electronic-farnsworth" ? (
               <span className="text-emerald-400 font-bold">
                 Electron Optics: {scanLines} lines · {(beam.electronVelocityMps / 1e6).toFixed(1)}{" "}
-                Mm/s · r={beam.gyroRadiusMm} mm
+                Mm/s · r={beam.gyroRadiusMm} mm · {beam.photocathodeCurrentUa} µA
               </span>
             ) : (
               <span className="text-amber-400 font-bold">

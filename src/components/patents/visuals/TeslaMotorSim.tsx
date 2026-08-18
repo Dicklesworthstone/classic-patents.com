@@ -3,7 +3,7 @@
 import { Zap } from "lucide-react";
 import { useEffect, useState } from "react";
 import { FrankenSimEngine } from "@/physics/engine";
-import { teslaBAt } from "@/physics/teslaKernel";
+import { TESLA_FIELD_POLES, teslaBAt } from "@/physics/teslaKernel";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { soundEngine } from "@/utils/soundEngine";
 
@@ -16,7 +16,7 @@ export function TeslaMotorSim() {
   const [_activePedagogyStep, setActivePedagogyStep] = useState<number>(1);
   const [angle, setAngle] = useState<number>(0);
 
-  const fieldPoles = 2;
+  const fieldPoles = TESLA_FIELD_POLES;
   const em = FrankenSimEngine.stepTeslaMotor(frequencyHz, fieldPoles, loadTorque);
   const syncSpeedRpm = em.synchronousRpm;
   const slip = em.slipFraction;

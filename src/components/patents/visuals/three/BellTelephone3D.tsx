@@ -6,7 +6,11 @@ import * as THREE from "three";
 import { stepBellTelephone } from "@/physics/catalogKernels";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { soundEngine } from "@/utils/soundEngine";
-import { createGlowPointTexture, createThreeStudioScene } from "./ThreeStudioScene";
+import {
+  createGlowPointTexture,
+  createThreeStudioScene,
+  type StudioContext,
+} from "./ThreeStudioScene";
 import { useLiveSimParams } from "./useLiveSimParams";
 
 type CameraPreset = "iso" | "speaking_horn" | "liquid_transmitter" | "battery_cells" | "top";
@@ -45,7 +49,7 @@ export function BellTelephone3D() {
     modulatedMa: bell.modulatedMa,
   });
 
-  const controlsRef = useRef<any>(null);
+  const controlsRef = useRef<StudioContext["controls"] | null>(null);
   const cameraRef = useRef<THREE.PerspectiveCamera | null>(null);
 
   const applyCameraPreset = (preset: CameraPreset) => {

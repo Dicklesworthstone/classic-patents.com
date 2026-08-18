@@ -202,6 +202,7 @@ export function GatlingGun3D() {
           { label: "Barrels", value: String(params.barrelCount ?? 6) },
           { label: "RoF", value: String(roundsPerMinute), unit: "rds/min" },
           { label: "Cooling", value: String(gatling.barrelCoolingIntervalS), unit: "s/bbl" },
+          { label: "E", value: String(gatling.muzzleEnergyJoules), unit: "J" },
         ]}
       />
     </div>

@@ -6,7 +6,11 @@ import * as THREE from "three";
 import { stepWozniakApple } from "@/physics/catalogKernels";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { soundEngine } from "@/utils/soundEngine";
-import { createGlowPointTexture, createThreeStudioScene } from "./ThreeStudioScene";
+import {
+  createGlowPointTexture,
+  createThreeStudioScene,
+  type StudioContext,
+} from "./ThreeStudioScene";
 import { useLiveSimParams } from "./useLiveSimParams";
 import { usePatentAudio } from "./usePatentAudio";
 
@@ -46,7 +50,7 @@ export function WozniakApple3D() {
     isAudioMuted,
   });
 
-  const controlsRef = useRef<any>(null);
+  const controlsRef = useRef<StudioContext["controls"] | null>(null);
   const cameraRef = useRef<THREE.PerspectiveCamera | null>(null);
 
   const applyCameraPreset = (preset: CameraPreset) => {

@@ -24,18 +24,24 @@ export function stepGrammeDynamo(params: { shaftRpm?: number; coilSegments?: num
   const rpm = params.shaftRpm ?? 950;
   const segs = params.coilSegments ?? 32;
   const emfVolts = Math.round((rpm / 950) * 110 * (segs / 32));
+  const powerWatts = Math.round(emfVolts ** 2 / 12);
   return {
     emfVolts,
-    powerWatts: Math.round(emfVolts ** 2 / 12),
+    powerWatts,
+    armatureCurrentA: Number((powerWatts / Math.max(1, emfVolts)).toFixed(1)),
+    voltageRipplePct: Number(((Math.PI ** 2 / (2 * segs ** 2)) * 100).toFixed(2)),
   };
 }
 
 export function stepOttoEngine(params: { engineRpm?: number; compressionRatio?: number }) {
   const rpm = params.engineRpm ?? 180;
   const cr = params.compressionRatio ?? 4.5;
+  const peakCompressionBar = Number((1.0 * cr ** 1.35).toFixed(1));
   return {
     brakeHorsepower: Number(((rpm / 180) * (3.0 * (cr / 4.5) ** 0.5)).toFixed(1)),
     thermalEfficiencyPct: Math.round((1 - 1 / cr ** 0.4) * 100),
+    peakCompressionBar,
+    peakFiringBar: Number((peakCompressionBar * 3.8).toFixed(1)),
   };
 }
 
@@ -43,12 +49,17 @@ export function stepParsonsTurbine(params: { rotorRpm?: number; inletPressurePsi
   const rpm = params.rotorRpm ?? 3000;
   const psi = params.inletPressurePsi ?? 180;
   const enthalpyKjKg = Math.round(550 * (psi / 180));
+  const meanRadiusM = 0.45;
+  const bladeSpeedMps = (rpm * 2 * Math.PI * meanRadiusM) / 60;
+  // Axial steam speed scales with the isentropic drop; 320 m/s is the 180 psi design.
+  const steamSpeedMps = 320 * Math.sqrt(enthalpyKjKg / 550);
   return {
     enthalpyKjKg,
     shaftPowerKw: Math.round(28 * enthalpyKjKg * 0.84 * (rpm / 3000)),
     inletMpa: Number((psi * 0.00689476).toFixed(2)),
     stageCount: 48,
     isentropicEfficiencyPct: 84,
+    steamBladeSpeedRatio: Number((bladeSpeedMps / Math.max(1, steamSpeedMps)).toFixed(2)),
   };
 }
 
@@ -99,11 +110,16 @@ export function stepWhitneyCottonGin(params: { crankRpm?: number }) {
 }
 
 export function stepMcCormickReaper(params: { forwardSpeedMph?: number }) {
-  const v = params.forwardSpeedMph ?? 2.5;
+  const groundSpeedMph = params.forwardSpeedMph ?? 2.5;
+  // US X8277 specifies a two-foot ground wheel, then 30:9 and 27:9 gear
+  // engagements to its double crank. It also specifies a 13-inch pulley on
+  // the ground-wheel axle and a 12-inch pulley on the reel. This is a no-slip
+  // kinematic estimate from those printed dimensions, not a field model.
+  const groundWheelRpm = (groundSpeedMph * 88) / (Math.PI * 2);
   return {
-    cutFrequencyHz: Math.round((v * 5280 * 12) / (3600 * 3.5)),
-    reelRpm: Math.round(v * 12.5),
-    harvestAcresPerDay: Number((v * 1.8).toFixed(1)),
+    groundWheelRpm: Number(groundWheelRpm.toFixed(1)),
+    cutterCrankRpm: Number((groundWheelRpm * (30 / 9) * (27 / 9)).toFixed(1)),
+    reelRpm: Number((groundWheelRpm * (13 / 12)).toFixed(1)),
   };
 }
 
@@ -148,6 +164,7 @@ export function stepGatlingGun(params: { crankRpm?: number; barrelCount?: number
   return {
     roundsPerMin: rof,
     barrelCoolingIntervalS: Number(((60 / Math.max(1, rof)) * count).toFixed(2)),
+    muzzleEnergyJoules: 1850,
   };
 }
 
@@ -195,9 +212,15 @@ export function stepGliddenBarbedWire(params: {
 export function stepEdisonPhonograph(params: { mandrelRpm?: number; voiceVolumeDb?: number }) {
   const rpm = params.mandrelRpm ?? 60;
   const vol = params.voiceVolumeDb ?? 75;
+  const trackSpeedInPerS = Number(((rpm / 60) * Math.PI * 4.0).toFixed(1));
+  const surfaceSpeedMps = Number((trackSpeedInPerS * 0.0254).toFixed(2));
+  const leadScrewPitchMm = 2.54;
   return {
-    trackSpeedInPerS: Number(((rpm / 60) * Math.PI * 4.0).toFixed(1)),
+    trackSpeedInPerS,
     grooveDepthMicrons: Number(((vol / 75) * 25).toFixed(1)),
+    leadScrewPitchMm,
+    surfaceSpeedMps,
+    audioBandwidthHz: Math.round(surfaceSpeedMps * 4500),
   };
 }
 
@@ -259,12 +282,15 @@ export function stepDaimlerEngine(params: {
   const speedDeltaRpm = Math.round(
     differentialCarrierRpm * Math.sin((slipDeg * Math.PI) / 180) * 0.4,
   );
+  const engineWeightKg = 40;
   return {
     bmepBar,
     brakeHorsepower,
     differentialCarrierRpm,
     outerWheelRpm: differentialCarrierRpm + speedDeltaRpm,
     innerWheelRpm: differentialCarrierRpm - speedDeltaRpm,
+    engineWeightKg,
+    specificPowerHpPerKg: Number((brakeHorsepower / engineWeightKg).toFixed(3)),
   };
 }
 
@@ -313,6 +339,7 @@ export function stepEdisonBulb(params: { voltage?: number; filamentLength?: numb
     hotResistanceOhm: resOhm,
     radiantWatts: powerWatts,
     luminousLmPerW: Number(Math.max(0.1, ((tempK - 1400) / 1000) ** 2 * 2.8).toFixed(2)),
+    feederResistanceOhm: 0.4,
   };
 }
 
@@ -327,15 +354,36 @@ export function stepBellTelephone(params: { voiceAmplitude?: number; airGap?: nu
   };
 }
 
-export function stepMorseTelegraph(params: { currentMa?: number; wireTurns?: number }) {
-  const i = (params.currentMa ?? 65) / 1000;
+export function stepMorseTelegraph(params: {
+  currentMa?: number;
+  wireTurns?: number;
+  lineVoltageV?: number;
+  lineLengthMiles?: number;
+  wpmSpeed?: number;
+}) {
   const n = params.wireTurns ?? 1200;
+  const miles = params.lineLengthMiles ?? 44;
+  const volts = params.lineVoltageV ?? 24;
+  const ohmsPerMile = 12.5;
+  const coilResistanceOhms = 150;
+  const lineResistanceOhms = Math.round(miles * ohmsPerMile);
+  const loopResistanceOhms = lineResistanceOhms + coilResistanceOhms;
+  const ohmicCurrentMa = Number(((volts / Math.max(1, loopResistanceOhms)) * 1000).toFixed(1));
+  const currentMa = params.currentMa ?? ohmicCurrentMa;
+  const i = currentMa / 1000;
   const forceN = Number(((4e-7 * Math.PI * (n * i) ** 2 * 0.0004) / (2 * 0.0015 ** 2)).toFixed(2));
+  const wpm = params.wpmSpeed ?? 20;
   return {
     magneticForceN: forceN,
     timeConstantMs: Number((n * 0.00012 * 10).toFixed(1)),
     ampereTurns: Math.round(n * i),
     stylusKpa: Number((forceN * 28).toFixed(0)),
+    loopCurrentMa: Number(currentMa.toFixed(1)),
+    ohmicCurrentMa,
+    lineResistanceOhms,
+    loopResistanceOhms,
+    wpmSpeed: wpm,
+    unitDurationMs: Math.round(1200 / Math.max(1, wpm)),
   };
 }
 
@@ -402,10 +450,24 @@ export function stepBardeenTransistor(
   const transitTimeNs = ((gap * 1e-4) ** 2 / (2 * holeDiffusionCoefficient)) * 1e9;
   const transportFactor = Math.max(0.15, Math.exp(-transitTimeNs / 800));
   const currentGainAlpha = Number((0.95 * transportFactor * 2.4).toFixed(2));
+  const loadLine = bardeenLoadLine(currentGainAlpha);
   return {
     currentGainAlpha,
     holeDiffusionCoefficientCm2ps: Number(holeDiffusionCoefficient.toFixed(1)),
     transitTimeNs: Number(transitTimeNs.toFixed(2)),
+    voltageGain: loadLine.voltageGain,
+    powerGainDb: loadLine.powerGainDb,
+  };
+}
+
+/** Point-contact amp load line shared by 2D, 3D, and the badge. */
+export function bardeenLoadLine(currentGainAlpha: number) {
+  const voltageGain = Number(((currentGainAlpha * 20000) / 250).toFixed(1));
+  return {
+    voltageGain,
+    powerGainDb: Number(
+      (10 * Math.log10(Math.max(1e-6, voltageGain * currentGainAlpha))).toFixed(1),
+    ),
   };
 }
 
@@ -432,11 +494,13 @@ export function stepColtRevolver(params: {
 }) {
   const pMpa = params.chamberPressureMpa ?? 85;
   const cockDeg = params.cockingAngleDeg ?? 45;
+  const muzzleVelocityMps = Math.round(180 + Math.sqrt(pMpa) * 13.5);
   return {
     hoopStressMpa: Number(((pMpa * 4.5) / 3.8).toFixed(1)),
     indexAngleDeg: Number(((cockDeg / 45) * 72).toFixed(1)),
     isLocked: cockDeg >= 44,
-    muzzleVelocityMps: Math.round(180 + Math.sqrt(pMpa) * 13.5),
+    muzzleVelocityMps,
+    muzzleEnergyJoules: Math.round(0.5 * 0.0052 * muzzleVelocityMps ** 2),
   };
 }
 
@@ -455,6 +519,7 @@ export function stepGoodyearRubber(
     tensileStrengthPsi: Math.min(3200, Math.round(crossLinkDensity * 2800)),
     elasticReturnPct: Math.min(98, Math.round(50 + crossLinkDensity * 45)),
     isStickyOrBrittle: !isOptimalTemp || crossLinkDensity < 0.3,
+    glassTransitionTempC: Math.round(-70 + sulfur * 3.8),
   };
 }
 
@@ -495,5 +560,36 @@ export function stepLincolnBuoy(params: {
     draftReductionFt: draftRedFt,
     hullDraftFt: Number(hullDraftFt.toFixed(2)),
     shoalClearanceFt: Number((depth - hullDraftFt).toFixed(2)),
+  };
+}
+
+export function stepMaximMachineGun(params: {
+  firingRateRpm?: number;
+  waterJacketLiters?: number;
+  recoilStrokeMm?: number;
+}) {
+  const rpm = params.firingRateRpm ?? 600;
+  const water = params.waterJacketLiters ?? 4.0;
+  const stroke = params.recoilStrokeMm ?? 19;
+  const bulletMassKg = 0.014;
+  const bulletVelMps = 740;
+  const recoilMassKg = 3.2;
+  const recoilVelocityMps = Number(((bulletMassKg * bulletVelMps) / recoilMassKg).toFixed(2));
+  const recoilMomentumNs = Number((recoilMassKg * recoilVelocityMps).toFixed(2));
+  const toggleUnlockForceN = Math.round(180 * (19 / Math.max(5, stroke)));
+  const heatGeneratedWatts = Math.round((rpm / 60) * 45 * 1000 * 0.28);
+  const waterEvapRateGs = Number(((heatGeneratedWatts / 2260) * (water > 0 ? 1 : 0)).toFixed(2));
+  const barrelTempC = water > 0.5 ? 100 : Math.min(450, Math.round(100 + (rpm / 600) * 280));
+  const muzzleEnergyJoules = Math.round(0.5 * bulletMassKg * bulletVelMps ** 2);
+  const cycleIntervalMs = Math.round(60000 / Math.max(1, rpm));
+
+  return {
+    recoilVelocityMps,
+    recoilMomentumNs,
+    toggleUnlockForceN,
+    waterEvapRateGs,
+    barrelTempC,
+    muzzleEnergyJoules,
+    cycleIntervalMs,
   };
 }

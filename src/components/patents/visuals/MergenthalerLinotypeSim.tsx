@@ -20,7 +20,7 @@ export function MergenthalerLinotypeSim() {
     potTempC,
   });
   const lineLengthMm = lino.justificationWidthMm;
-  const alloyMeltPointC = 240;
+  const alloyMeltPointC = lino.alloyMeltPointC;
   const isMetalLiquid = lino.isEutecticTemp;
   const linesPerHour = isMetalLiquid ? Math.round(3600 / Math.max(0.25, lino.cycleS)) : 0;
   const slugSolidificationTimeSec = Number((lino.solidificationTimeMs / 1000).toFixed(2));

@@ -29,8 +29,8 @@ export function EastmanKodak3D() {
     apertureFNumber: params.apertureStop ?? 9,
     subjectDistanceM: params.subjectDist ?? 3,
   });
-  const exposureCount = 100;
-  const filmFormatInches = 2.5; // Circular image
+  const exposureCount = kodak.rollCapacity;
+  const filmFormatInches = kodak.filmFormatInches;
   const [activeCamera, setActiveCamera] = useState<CameraPreset>("iso");
   const { isAudioMuted, toggleSound: toggleEngine } = usePatentAudio();
 
@@ -265,6 +265,7 @@ export function EastmanKodak3D() {
           { label: "Shutter", value: `1/${shutterFractionSec}`, unit: "s" },
           { label: "EV", value: kodak.exposureValueEv.toFixed(1) },
           { label: "Hyperfocal", value: kodak.hyperfocalM.toFixed(1), unit: "m" },
+          { label: "f", value: String(kodak.focalLengthMm), unit: "mm" },
           { label: "Film", value: `${filmFormatInches} in · ${exposureCount} exp` },
         ]}
       />

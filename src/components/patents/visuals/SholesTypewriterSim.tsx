@@ -15,7 +15,7 @@ export function SholesTypewriterSim() {
   const sholes = stepSholesTypewriter(params.typingSpeedWpm ?? 60, 0);
   const characterPitchMm = sholes.pitchMm;
   const carriagePositionMm = Number((typedText.length * characterPitchMm).toFixed(2));
-  const typebarStrikeAngleDeg = 90;
+  const typebarStrikeAngleDeg = sholes.typebarStrikeAngleDeg;
   const isJamDanger = activeKey === "T" || activeKey === "H";
 
   const handleKeyPress = (char: string) => {

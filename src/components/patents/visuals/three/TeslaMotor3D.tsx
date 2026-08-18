@@ -5,11 +5,15 @@ import { useEffect, useRef, useState } from "react";
 import * as THREE from "three";
 import { HudText } from "@/components/ui/LatexRenderer";
 import { FrankenSimEngine } from "@/physics/engine";
-import { teslaBAt } from "@/physics/teslaKernel";
+import { TESLA_FIELD_POLES, teslaBAt } from "@/physics/teslaKernel";
 import { useFrankenSimPhysics } from "@/physics/useFrankenSimPhysics";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { soundEngine } from "@/utils/soundEngine";
-import { createGlowPointTexture, createThreeStudioScene } from "./ThreeStudioScene";
+import {
+  createGlowPointTexture,
+  createThreeStudioScene,
+  type StudioContext,
+} from "./ThreeStudioScene";
 import { useLiveSimParams } from "./useLiveSimParams";
 
 type CameraPreset = "iso" | "stator_coils" | "squirrel_cage" | "shaft_drive" | "top";
@@ -30,7 +34,7 @@ export function TeslaMotor3D() {
 
   // Electromechanical Induction Physics Calculations (FrankenSim Engine)
   // Four/six coil sides around one N–S pair: a 2-pole rotating field.
-  const fieldPoles = 2;
+  const fieldPoles = TESLA_FIELD_POLES;
   const polePairs = fieldPoles / 2;
   const emPhysics = FrankenSimEngine.stepTeslaMotor(acFrequencyHz, fieldPoles, appliedLoadTorqueNm);
   const synchronousSpeedRpm = emPhysics.synchronousRpm;
@@ -55,7 +59,7 @@ export function TeslaMotor3D() {
     isPlayingAudio,
   });
 
-  const controlsRef = useRef<any>(null);
+  const controlsRef = useRef<StudioContext["controls"] | null>(null);
   const cameraRef = useRef<THREE.PerspectiveCamera | null>(null);
 
   const applyCameraPreset = (preset: CameraPreset) => {

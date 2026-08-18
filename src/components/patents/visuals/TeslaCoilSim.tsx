@@ -13,9 +13,10 @@ export function TeslaCoilSim() {
   const couplingK = params.couplingK ?? 0.18;
   const sparkRateHz = params.sparkRateHz ?? 120;
   const secondaryTurns = params.secondaryTurns ?? 850;
+  const toploadCapacitancePf = params.toploadCapacitancePf ?? 35;
 
   // Resonant calculations via central physics engine
-  const resonantFreqKhz = teslaCoilResonantKhz(primaryCapacitanceNf);
+  const resonantFreqKhz = teslaCoilResonantKhz(primaryCapacitanceNf, toploadCapacitancePf);
   const res = FrankenSimEngine.stepTeslaCoil(
     resonantFreqKhz,
     inputKv,

@@ -42,7 +42,7 @@ export function specClausesFor(patentId: string, params: Record<string, number>)
         phrase: "operatively connect this vertical rudder to the wing-warping mechanism",
         active: coupled,
         tone: "held",
-        caption: "Hip-cradle coupling holds Claim 1's rudder linkage.",
+        caption: "Claim 18's rudder linkage follows the cradle-driven rope system.",
       },
       {
         id: "banked-turn",

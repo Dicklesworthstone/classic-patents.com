@@ -116,7 +116,7 @@ export function WrightFlyerSim() {
                 : "text-ink-700 dark:text-ink-400 hover:text-ink-900"
             }`}
           >
-            3. Wright Solution (Claim 1)
+            3. Wright Solution (Claim 18)
           </button>
         </div>
       </div>
@@ -415,7 +415,7 @@ export function WrightFlyerSim() {
           <div>
             <span className="text-ink-500 block text-[10px]">YAW COUPLING</span>
             <span className={isCoupled ? "text-emerald-400 font-bold" : "text-red-400 font-bold"}>
-              {isCoupled ? "Cable Linked (Claim 1)" : "Independent (Unlinked)"}
+              {isCoupled ? "Cable Linked (Claim 18)" : "Independent (Unlinked)"}
             </span>
           </div>
           <div>

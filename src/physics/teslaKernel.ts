@@ -5,11 +5,17 @@
 
 export const TESLA_PATENT_ID = "us-381968-tesla-motor";
 export const TESLA_STROBE_COUNT = 8;
+/** US 381,968 Fig. 4 is a 2-pole field: ns = 120 f / P. */
+export const TESLA_FIELD_POLES = 2;
 
-/** Primary LC: 180 kHz at the 45 nF registry default. Shared by 2D, 3D, badge, weave. */
-export function teslaCoilResonantKhz(primaryCapNf?: number): number {
+/**
+ * Primary tank plus secondary topload. 180 kHz at the registry defaults
+ * (45 nF primary, 35 pF topload over a 15 pF secondary). Shared by 2D, 3D, badge, weave.
+ */
+export function teslaCoilResonantKhz(primaryCapNf?: number, toploadCapacitancePf?: number): number {
   const cap = Math.max(10, primaryCapNf ?? 45);
-  return Math.round(180 * Math.sqrt(45 / cap));
+  const cTop = Math.max(5, toploadCapacitancePf ?? 35);
+  return Math.round(180 * Math.sqrt(45 / cap) * Math.sqrt(50 / (15 + cTop)));
 }
 
 export interface TeslaFieldSample {

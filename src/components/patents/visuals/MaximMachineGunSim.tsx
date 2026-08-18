@@ -21,10 +21,9 @@ export function MaximMachineGunSim() {
     waterJacketLiters: jacketWaterLiters,
     recoilStrokeMm,
   });
-  const _isWaterBoiling = jacketWaterLiters < 0.5;
   const barrelTempC = maxim.barrelTempC;
-  const _muzzleEnergyJoules = 3400;
-  const cycleTimeMs = Math.round(60000 / (cyclicRateRpm + 1e-4));
+  const muzzleEnergyJoules = maxim.muzzleEnergyJoules;
+  const cycleTimeMs = maxim.cycleIntervalMs;
 
   useEffect(() => {
     if (!isPlaying) return;
@@ -234,10 +233,10 @@ export function MaximMachineGunSim() {
         </div>
         <div className="bg-parchment-100 dark:bg-ink-900 border border-parchment-200 dark:border-ink-800 p-2.5 rounded-xl text-center">
           <span className="text-[10px] uppercase tracking-wider text-ink-500 dark:text-ink-400 block font-sans">
-            Recoil Stroke
+            Muzzle Energy
           </span>
           <span className="font-mono text-sm sm:text-base font-bold text-ink-900 dark:text-parchment-100">
-            {recoilStrokeMm} mm
+            {muzzleEnergyJoules} J
           </span>
         </div>
       </div>

@@ -22,7 +22,7 @@ export function DaimlerEngineSim() {
   });
   const isHotTubeIgniting = hotTubeTempC >= 800;
   const powerOutputHp = daimler.brakeHorsepower;
-  const specificPowerHpPerKg = Number((powerOutputHp / 40).toFixed(3));
+  const specificPowerHpPerKg = daimler.specificPowerHpPerKg;
 
   useEffect(() => {
     if (!isPlaying) return;

@@ -42,8 +42,14 @@ export function MorseTelegraphSim() {
   const [activeSymbolIndex, setActiveSymbolIndex] = useState<number>(-1);
   const [isKeyDepressed, setIsKeyDepressed] = useState<boolean>(false);
   const currentMa = params.currentMa ?? 65;
-  const morse = stepMorseTelegraph({ currentMa, wireTurns: params.wireTurns ?? 1200 });
-  const lineLengthMiles = Math.round(120 - currentMa);
+  const lineLengthMiles = params.lineLengthMiles ?? 44;
+  const morse = stepMorseTelegraph({
+    currentMa,
+    wireTurns: params.wireTurns ?? 1200,
+    lineVoltageV: params.lineVoltageV ?? 24,
+    lineLengthMiles,
+    wpmSpeed: params.wpmSpeed ?? 20,
+  });
   const [isRelayEnabled, setIsRelayEnabled] = useState<boolean>(true);
   const isMountedRef = useRef<boolean>(true);
 

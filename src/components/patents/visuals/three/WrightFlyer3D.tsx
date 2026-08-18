@@ -12,6 +12,28 @@ import { createGlowPointTexture, createThreeStudioScene } from "./ThreeStudioSce
 import { useLiveSimParams } from "./useLiveSimParams";
 import { buildWrightFlyerAirframe, FLYER_DIM } from "./wrightFlyerAirframe";
 
+const FIXED_RENDER_STEP_S = 1 / 60;
+
+function deterministicUnit(index: number, channel: number, generation = 0): number {
+  const sample =
+    Math.sin((index + 1) * 12.9898 + (channel + 1) * 78.233 + (generation + 1) * 37.719) *
+    43758.5453;
+  return sample - Math.floor(sample);
+}
+
+function resetStreamlineParticle(
+  positions: Float32Array,
+  particleIndex: number,
+  generation: number,
+) {
+  const offset = particleIndex * 3;
+  positions[offset] =
+    (deterministicUnit(particleIndex, 0, generation) - 0.5) * (FLYER_DIM.span + 2);
+  positions[offset + 1] =
+    (deterministicUnit(particleIndex, 1, generation) - 0.5) * (FLYER_DIM.gap + 1.4);
+  positions[offset + 2] = 8 + deterministicUnit(particleIndex, 2, generation) * 5;
+}
+
 export function WrightFlyer3D() {
   const containerRef = useRef<HTMLDivElement>(null);
   const { params } = usePatentPhysics(WRIGHT_PATENT_ID);
@@ -89,18 +111,17 @@ export function WrightFlyer3D() {
     const particleGeo = new THREE.BufferGeometry();
     const particlePositions = new Float32Array(particleCount * 3);
     const particleColors = new Float32Array(particleCount * 3);
+    const particleGenerations = new Uint32Array(particleCount);
 
     const glowTex = createGlowPointTexture();
 
     for (let i = 0; i < particleCount; i++) {
       const idx = i * 3;
-      particlePositions[idx] = (Math.random() - 0.5) * (FLYER_DIM.span + 2);
-      particlePositions[idx + 1] = (Math.random() - 0.5) * (FLYER_DIM.gap + 1.4);
-      particlePositions[idx + 2] = 8 + Math.random() * 5;
+      resetStreamlineParticle(particlePositions, i, particleGenerations[i]);
 
       // Color code by energy: Cyan-Blue (high speed/low pressure) to Amber (stagnation)
-      particleColors[idx] = 0.2 + Math.random() * 0.4;
-      particleColors[idx + 1] = 0.7 + Math.random() * 0.3;
+      particleColors[idx] = 0.2 + deterministicUnit(i, 3) * 0.4;
+      particleColors[idx + 1] = 0.7 + deterministicUnit(i, 4) * 0.3;
       particleColors[idx + 2] = 1.0;
     }
 
@@ -148,14 +169,15 @@ export function WrightFlyer3D() {
 
     // --- RENDER LOOP & REAL-TIME PHYSICS SIMULATION ---
     let reqId: number;
-    const clock = new THREE.Clock();
+    let renderedSteps = 0;
     let aero = identityAeroBody();
     const scheduler = new TickScheduler(1 / 120, 0, 3);
 
     const animate = () => {
       reqId = requestAnimationFrame(animate);
-      const delta = Math.min(clock.getDelta(), 0.1);
-      const elapsed = clock.getElapsedTime();
+      renderedSteps += 1;
+      const delta = FIXED_RENDER_STEP_S;
+      const elapsed = renderedSteps * FIXED_RENDER_STEP_S;
 
       const p = live.current;
       const siNow = {
@@ -238,9 +260,8 @@ export function WrightFlyer3D() {
 
         // Reset particle when it travels past the tail
         if (posArr[idx + 2] < -8) {
-          posArr[idx + 2] = 8 + Math.random() * 3;
-          posArr[idx] = (Math.random() - 0.5) * (FLYER_DIM.span + 2);
-          posArr[idx + 1] = (Math.random() - 0.5) * (FLYER_DIM.gap + 1.4);
+          particleGenerations[i] += 1;
+          resetStreamlineParticle(posArr, i, particleGenerations[i]);
         }
       }
       particleGeo.attributes.position.needsUpdate = true;
@@ -298,7 +319,7 @@ export function WrightFlyer3D() {
                       : "bg-rose-100 dark:bg-rose-950/60 text-rose-800 dark:text-rose-300 border border-rose-500/30"
                   }`}
                 >
-                  {isCoupled ? "Claim 1 Coupled" : "Unlinked Cables"}
+                  {isCoupled ? "Claim 18 Coupled" : "Unlinked Cables"}
                 </span>
               </div>
               <div className="grid grid-cols-2 gap-x-3 gap-y-1 text-[11px] font-sans">
@@ -333,7 +354,7 @@ export function WrightFlyer3D() {
                   </span>
                 </div>
                 <div className="col-span-2 text-[9px] font-mono text-ink-500 dark:text-ink-400 pt-1 border-t border-parchment-200 dark:border-ink-800/60">
-                  Attitude: aero CG2 + SI wrenches ({aeroLabel}) · hello residual {kernelLabel}
+                  Attitude: host-integrated aerodynamic body ({aeroLabel}) · kernel {kernelLabel}
                 </div>
                 <div className="col-span-2 text-[9px] font-mono text-ink-500 dark:text-ink-400">
                   Guy wires: steel slack · amber working · red peak (high-AoA bay)

@@ -7,6 +7,7 @@
  */
 
 import {
+  bardeenLoadLine,
   stepBellTelephone,
   stepCorlissEngine,
   stepDavenportMotor,
@@ -127,7 +128,7 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
       },
       {
         id: "coupled",
-        label: "Claim 1 hip-cradle coupling",
+        label: "Claim 18 rudder linkage",
         min: 0,
         max: 1,
         step: 1,
@@ -482,12 +483,11 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
     ],
     computeMetrics: (p) => {
       const ie = p.emitterCurrent ?? 1.5;
-      const vcoll = Math.abs(p.collectorBias ?? -40);
       const spacing = p.pointSpacing ?? 50;
       const semi = FrankenSimEngine.stepBardeenTransistor(ie, p.collectorBias ?? -40, spacing);
       const transitTimeNs = semi.clockPeriodNs;
       const alpha = semi.currentGainAlpha;
-      const powerGainDb = (10 * Math.log10(Math.max(1e-6, alpha ** 2 * (vcoll / 1.5)))).toFixed(1);
+      const powerGainDb = bardeenLoadLine(alpha).powerGainDb.toFixed(1);
       const ic = (ie * alpha).toFixed(2);
 
       return [
@@ -1039,7 +1039,13 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
       },
     ],
     computeMetrics: (p) => {
-      const morse = stepMorseTelegraph({ currentMa: p.currentMa, wireTurns: p.wireTurns });
+      const morse = stepMorseTelegraph({
+        currentMa: p.currentMa,
+        wireTurns: p.wireTurns,
+        lineVoltageV: p.lineVoltageV,
+        lineLengthMiles: p.lineLengthMiles,
+        wpmSpeed: p.wpmSpeed,
+      });
       const forceN = morse.magneticForceN.toFixed(2);
       const tauMs = morse.timeConstantMs.toFixed(1);
 
@@ -1067,10 +1073,24 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
         },
         {
           label: "Stylus Emboss Pressure",
-          value: (Number(forceN) * 28).toFixed(0),
+          value: `${morse.stylusKpa}`,
           unit: "kPa",
           badgeColor: "purple",
-          progressPct: ((Number(forceN) * 28) / 250) * 100,
+          progressPct: (morse.stylusKpa / 250) * 100,
+        },
+        {
+          label: "Ohmic Loop Current",
+          value: `${morse.ohmicCurrentMa} mA`,
+          unit: "I_ohm",
+          badgeColor: "cyan",
+          progressPct: (morse.ohmicCurrentMa / 80) * 100,
+        },
+        {
+          label: "PARIS Unit",
+          value: `${morse.unitDurationMs} ms`,
+          unit: "t_unit",
+          badgeColor: "amber",
+          progressPct: (morse.unitDurationMs / 240) * 100,
         },
       ];
     },
@@ -1249,6 +1269,13 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
           unit: "state",
           badgeColor: rubber.isStickyOrBrittle ? "rose" : "emerald",
           progressPct: rubber.isStickyOrBrittle ? 30 : 95,
+        },
+        {
+          label: "Glass Transition",
+          value: `${rubber.glassTransitionTempC} °C`,
+          unit: "Tg",
+          badgeColor: "amber",
+          progressPct: ((rubber.glassTransitionTempC + 80) / 50) * 100,
         },
       ];
     },
@@ -1566,11 +1593,11 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
       const hFreq = p.horizontalFreqKhz ?? 15.75;
       const vFreq = p.verticalFreqHz ?? 60;
       const lux = p.lightIntensityLux ?? 500;
-      const gauss = i * (120 / 0.42);
-      const beam = FrankenSimEngine.stepFarnsworthTv(v / 1000, gauss);
+      const gauss = FrankenSimEngine.farnsworthDeflectionGauss(i);
+      const beam = FrankenSimEngine.stepFarnsworthTv(v / 1000, gauss, lux);
       const beamVelocity = (beam.electronVelocityMps / 1e6).toFixed(2);
       const derivedScanLines = Math.round((hFreq * 1000) / vFreq);
-      const photoUa = (lux * 0.045).toFixed(1);
+      const photoUa = beam.photocathodeCurrentUa.toFixed(1);
 
       return [
         {
@@ -1916,7 +1943,7 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
     ],
     computeMetrics: (p) => {
       const cap = p.primaryCap ?? 45;
-      const freqKhz = teslaCoilResonantKhz(cap);
+      const freqKhz = teslaCoilResonantKhz(cap, p.toploadCapacitancePf);
       const inputKv = p.inputVoltageKv ?? 15;
       const sparkGap = p.sparkGapDistanceMm ?? 12;
 
@@ -2031,6 +2058,13 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
           unit: "detent",
           badgeColor: isLocked ? "emerald" : "amber",
           progressPct: isLocked ? 100 : 30,
+        },
+        {
+          label: "Muzzle Energy",
+          value: `${colt.muzzleEnergyJoules} J`,
+          unit: "E_k",
+          badgeColor: "purple",
+          progressPct: (colt.muzzleEnergyJoules / 400) * 100,
         },
       ];
     },
@@ -2193,8 +2227,8 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
           label: "Lead-Alloy Hardness",
           value: hardness,
           unit: "HB",
-          badgeColor: temp >= 240 && temp <= 275 ? "emerald" : "amber",
-          progressPct: temp >= 240 && temp <= 275 ? 95 : 60,
+          badgeColor: temp >= linotype.alloyMeltPointC && temp <= 275 ? "emerald" : "amber",
+          progressPct: temp >= linotype.alloyMeltPointC && temp <= 275 ? 95 : 60,
         },
         {
           label: "Distributor Sorting",
@@ -2274,6 +2308,13 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
           unit: "T_barrel",
           badgeColor: barrelTemp <= 100 ? "emerald" : "rose",
           progressPct: (barrelTemp / 450) * 100,
+        },
+        {
+          label: "Muzzle Energy",
+          value: `${maxim.muzzleEnergyJoules} J`,
+          unit: "E_k",
+          badgeColor: "amber",
+          progressPct: (maxim.muzzleEnergyJoules / 4000) * 100,
         },
         {
           label: "Steam Vaporization",
@@ -2361,6 +2402,13 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
           badgeColor: "amber",
           progressPct: (daimler.innerWheelRpm / 250) * 100,
         },
+        {
+          label: "Specific Power",
+          value: `${daimler.specificPowerHpPerKg} hp/kg`,
+          unit: "P/m",
+          badgeColor: "purple",
+          progressPct: (daimler.specificPowerHpPerKg / 0.04) * 100,
+        },
       ];
     },
     pedagogicalInsight:
@@ -2439,6 +2487,20 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
           unit: "status",
           badgeColor: kodak.isInFocus ? "emerald" : "rose",
           progressPct: kodak.isInFocus ? 100 : 25,
+        },
+        {
+          label: "Fixed Doublet",
+          value: `${kodak.focalLengthMm} mm`,
+          unit: "f",
+          badgeColor: "amber",
+          progressPct: 100,
+        },
+        {
+          label: "Circular Frame",
+          value: `${kodak.filmFormatInches} in`,
+          unit: "format",
+          badgeColor: "cyan",
+          progressPct: 100,
         },
       ];
     },
@@ -3176,12 +3238,13 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
       "Whitney's saw teeth hook fiber through narrow 2.8mm grate slots that block green seeds. The high-speed counter-rotating brush cylinder removes lint continuously via centrifugal airflow.",
   },
   "us-x8277-mccormick-reaper": {
-    domain: "aerodynamics_mbd",
-    domainTitle: "Ground-Traction Kinematics & Reciprocating Shear",
-    equationName: "Cutter Frequency & Gathering Reel Cycloid Kinematics",
+    domain: "mechanical_kinematics",
+    domainTitle: "Ground-Wheel Gear-Train Kinematics",
+    equationName: "Printed Wheel, Gear, and Pulley Ratios",
     governingEquation:
-      "f_{\\text{cut}} = \\frac{v_{\\text{ground}}}{p_{\\text{stroke}}} \\cdot G_{\\text{ratio}}",
-    engineMethod: "FrankenSimEngine.stepMcCormickReaper",
+      "n_{\\mathrm{wheel}} = \\frac{v}{\\pi(2\\,\\mathrm{ft})},\\quad n_{\\mathrm{crank}} = n_{\\mathrm{wheel}}\\left(\\frac{30}{9}\\right)\\left(\\frac{27}{9}\\right),\\quad n_{\\mathrm{reel}} = n_{\\mathrm{wheel}}\\left(\\frac{13}{12}\\right)",
+    engineMethod:
+      "Host no-slip estimate from dimensions printed in US X8277; no WASM kernel is loaded.",
     controls: [
       {
         id: "forwardSpeedMph",
@@ -3195,35 +3258,29 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
     ],
     computeMetrics: (p) => {
       const reaper = stepMcCormickReaper({ forwardSpeedMph: p.forwardSpeedMph });
-      const fCut = reaper.cutFrequencyHz;
-      const reelRpm = reaper.reelRpm;
-      const harvestRate = reaper.harvestAcresPerDay.toFixed(1);
       return [
         {
-          label: "Cutting Frequency",
-          value: `${fCut} Hz`,
-          unit: "f_cut",
+          label: "24-inch Ground Wheel",
+          value: `${reaper.groundWheelRpm} RPM`,
+          unit: "n_wheel",
           badgeColor: "amber",
-          progressPct: (fCut / 35) * 100,
         },
         {
-          label: "Gathering Reel",
-          value: `${reelRpm} RPM`,
-          unit: "omega_reel",
+          label: "30:9 × 27:9 Crank",
+          value: `${reaper.cutterCrankRpm} RPM`,
+          unit: "n_crank",
           badgeColor: "cyan",
-          progressPct: (reelRpm / 65) * 100,
         },
         {
-          label: "Harvest Velocity",
-          value: `${harvestRate} acres/day`,
-          unit: "dA/dt",
+          label: "13-inch to 12-inch Reel Belt",
+          value: `${reaper.reelRpm} RPM`,
+          unit: "n_reel",
           badgeColor: "emerald",
-          progressPct: (Number(harvestRate) / 10) * 100,
         },
       ];
     },
     pedagogicalInsight:
-      "The master traction bull wheel drives the gathering reel to sweep standing grain stalks across the triangular serrated sickle bar, depositing cut wheat onto the collection bed.",
+      "At the selected ground speed, the readout follows the wheel diameter, tooth counts, and pulley diameters stated in the specification. It illustrates motion transmission only; the patent does not establish a crop yield, a field capacity, or a measured cutting rate.",
   },
   "us-132-davenport-electric-motor": {
     domain: "electromagnetics_flux",
@@ -3431,6 +3488,13 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
           badgeColor: "cyan",
           progressPct: 80,
         },
+        {
+          label: "Muzzle Energy",
+          value: `${gatling.muzzleEnergyJoules} J`,
+          unit: "E_k",
+          badgeColor: "amber",
+          progressPct: (gatling.muzzleEnergyJoules / 2000) * 100,
+        },
       ];
     },
     pedagogicalInsight:
@@ -3522,6 +3586,13 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
           value: sholes.pitchMm.toFixed(2),
           unit: "mm",
           badgeColor: "emerald",
+          progressPct: 100,
+        },
+        {
+          label: "Typebar Throw",
+          value: `${sholes.typebarStrikeAngleDeg}°`,
+          unit: "deg",
+          badgeColor: "cyan",
           progressPct: 100,
         },
       ];
@@ -3627,6 +3698,20 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
           unit: "P_elec",
           badgeColor: "amber",
           progressPct: (power / 3000) * 100,
+        },
+        {
+          label: "Armature Current",
+          value: `${gramme.armatureCurrentA} A`,
+          unit: "I_a",
+          badgeColor: "emerald",
+          progressPct: (gramme.armatureCurrentA / 20) * 100,
+        },
+        {
+          label: "Commutator Ripple",
+          value: `${gramme.voltageRipplePct}%`,
+          unit: "ripple",
+          badgeColor: "purple",
+          progressPct: Math.min(100, gramme.voltageRipplePct * 20),
         },
       ];
     },
@@ -3806,6 +3891,20 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
           badgeColor: "emerald",
           progressPct: etaPct,
         },
+        {
+          label: "Peak Compression",
+          value: `${otto.peakCompressionBar} bar`,
+          unit: "P2",
+          badgeColor: "cyan",
+          progressPct: (otto.peakCompressionBar / 20) * 100,
+        },
+        {
+          label: "Peak Firing",
+          value: `${otto.peakFiringBar} bar`,
+          unit: "P3",
+          badgeColor: "rose",
+          progressPct: (otto.peakFiringBar / 50) * 100,
+        },
       ];
     },
     pedagogicalInsight:
@@ -3859,6 +3958,20 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
           unit: "depth",
           badgeColor: "cyan",
           progressPct: Math.min(100, (Number(depthMicrons) / 35) * 100),
+        },
+        {
+          label: "Lead-Screw Pitch",
+          value: `${phono.leadScrewPitchMm} mm`,
+          unit: "pitch",
+          badgeColor: "emerald",
+          progressPct: 100,
+        },
+        {
+          label: "Audio Bandwidth",
+          value: `${phono.audioBandwidthHz} Hz`,
+          unit: "BW",
+          badgeColor: "purple",
+          progressPct: (phono.audioBandwidthHz / 3000) * 100,
         },
       ];
     },
@@ -4098,6 +4211,13 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
           unit: "stages",
           badgeColor: "cyan",
           progressPct: 100,
+        },
+        {
+          label: "Blade Speed Ratio",
+          value: `${parsons.steamBladeSpeedRatio} u/c`,
+          unit: "u/c",
+          badgeColor: "purple",
+          progressPct: (parsons.steamBladeSpeedRatio / 0.8) * 100,
         },
       ];
     },

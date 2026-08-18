@@ -138,6 +138,10 @@ export function GoodyearRubberSim() {
                 <span>cross-link</span>
                 <span className="font-bold">{cure.crosslinkMolCm3} mol/cm³</span>
               </div>
+              <div className="flex justify-between">
+                <span>Tg</span>
+                <span className="font-bold">{rubber.glassTransitionTempC} °C</span>
+              </div>
             </div>
 
             {/* Sulfur Percentage Slider */}

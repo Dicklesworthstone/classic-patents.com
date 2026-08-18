@@ -28,7 +28,6 @@ export function DaimlerEngine3D() {
   const { isMuted, toggleMute } = usePatentAudio();
 
   const brakeHorsepower = daimler.brakeHorsepower;
-  const _engineWeightKg = 40; // Lightweight 1.1 hp per 40 kg
 
   const live = useLiveSimParams({
     engineRpm,
@@ -324,9 +323,9 @@ export function DaimlerEngine3D() {
                 </span>
               </div>
               <div className="bg-slate-800/80 rounded-lg p-2 border border-slate-700 text-center">
-                <span className="text-[10px] font-mono text-slate-400 block">Mass</span>
+                <span className="text-[10px] font-mono text-slate-400 block">P/m</span>
                 <span className="text-xs font-mono font-bold text-slate-200">
-                  {_engineWeightKg} kg
+                  {daimler.specificPowerHpPerKg} hp/kg
                 </span>
               </div>
             </div>

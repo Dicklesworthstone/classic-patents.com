@@ -65,7 +65,8 @@ export function ColtRevolver3D() {
 
   const hoopStressMpa = coltMech.hoopStressMpa;
   const muzzleVelocityMps = coltMech.muzzleVelocityMps;
-  const isFullCock = cockingAngleDeg >= 44;
+  const muzzleEnergyJoules = coltMech.muzzleEnergyJoules;
+  const isFullCock = coltMech.isLocked;
 
   const live = useLiveSimParams({
     chamberPressureMpa,
@@ -361,9 +362,9 @@ export function ColtRevolver3D() {
                   </span>
                 </div>
                 <div>
-                  <span className="text-ink-600 dark:text-ink-400">Powder Load:</span>{" "}
+                  <span className="text-ink-600 dark:text-ink-400">Muzzle Energy:</span>{" "}
                   <span className="font-mono font-bold text-amber-700 dark:text-amber-300">
-                    {powderGrains} Grains
+                    {muzzleEnergyJoules} J
                   </span>
                 </div>
                 <div>

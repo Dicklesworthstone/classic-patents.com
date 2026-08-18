@@ -102,20 +102,29 @@ export function ParsonsTurbine3D() {
     // Materials
     const castIronCasingMat = new THREE.MeshStandardMaterial({
       color: 0x1e293b,
-      roughness: 0.5,
-      metalness: 0.85,
+      roughness: 0.6,
+      metalness: 0.7,
+      side: THREE.DoubleSide,
     });
 
     const steelRotorMat = new THREE.MeshStandardMaterial({
-      color: 0xf1f5f9,
-      roughness: 0.1,
-      metalness: 0.95,
+      color: 0xe2e8f0,
+      roughness: 0.2,
+      metalness: 0.8,
     });
 
     const bronzeBladesMat = new THREE.MeshStandardMaterial({
       color: 0xd97706,
-      roughness: 0.22,
-      metalness: 0.9,
+      roughness: 0.3,
+      metalness: 0.85,
+      side: THREE.DoubleSide,
+    });
+
+    const statorBladesMat = new THREE.MeshStandardMaterial({
+      color: 0x64748b,
+      roughness: 0.4,
+      metalness: 0.8,
+      side: THREE.DoubleSide,
     });
 
     const steamGlowTex = createGlowPointTexture();
@@ -125,90 +134,174 @@ export function ParsonsTurbine3D() {
 
     // 1. Heavy Foundation Bed & Flanged Bearing Pedestals
     const bedplate = new THREE.Mesh(new THREE.BoxGeometry(13.0, 0.9, 6.5), castIronCasingMat);
-    bedplate.position.y = -2.2;
+    bedplate.position.y = -2.6;
     bedplate.receiveShadow = true;
     rootGroup.add(bedplate);
 
-    // 2. Stepped Reaction Turbine Casing (Lower Half Fixed, Upper Cutaway) (Claim 1)
+    // Bearing pedestals
+    const pedestalLeft = new THREE.Mesh(new THREE.BoxGeometry(1.5, 3.0, 2.0), castIronCasingMat);
+    pedestalLeft.position.set(-5.5, -1.0, 0);
+    rootGroup.add(pedestalLeft);
+    const pedestalRight = new THREE.Mesh(new THREE.BoxGeometry(1.5, 3.0, 2.0), castIronCasingMat);
+    pedestalRight.position.set(5.5, -1.0, 0);
+    rootGroup.add(pedestalRight);
+
+    // 2. Stepped Reaction Turbine Casing (Lower Half Fixed, Upper Cutaway)
     const casingGroup = new THREE.Group();
     rootGroup.add(casingGroup);
 
-    // HP, IP, and LP Stepped Cylinder Housings
-    [
-      [-2.8, 1.4, 3.2], // HP Stage
-      [0.2, 1.8, 3.0], // IP Stage
-      [3.4, 2.4, 3.4], // LP Stage
-    ].forEach(([cx, radius, length]) => {
+    // 3. Stepped Rotor Drum with Bladed Stage Discs
+    const rotorGroup = new THREE.Group();
+    rootGroup.add(rotorGroup);
+
+    // Drive Shaft
+    const shaft = new THREE.Mesh(new THREE.CylinderGeometry(0.3, 0.3, 12.5, 32), steelRotorMat);
+    shaft.rotation.z = Math.PI / 2;
+    rotorGroup.add(shaft);
+
+    // Dummy Piston Balance
+    const dummyPiston = new THREE.Mesh(
+      new THREE.CylinderGeometry(0.85, 0.85, 0.8, 32),
+      steelRotorMat,
+    );
+    dummyPiston.rotation.z = Math.PI / 2;
+    dummyPiston.position.set(-4.8, 0, 0);
+    rotorGroup.add(dummyPiston);
+
+    // Stages Configuration
+    const stages = [
+      { cx: -2.8, drumR: 0.8, casingR: 1.3, length: 3.0, rows: 8, bladeCount: 40 }, // HP Stage
+      { cx: 0.2, drumR: 1.2, casingR: 1.8, length: 2.8, rows: 7, bladeCount: 60 }, // IP Stage
+      { cx: 3.4, drumR: 1.6, casingR: 2.4, length: 3.2, rows: 6, bladeCount: 80 }, // LP Stage
+    ];
+
+    // Crescent Blade Geometry
+    const bladeShape = new THREE.Shape();
+    bladeShape.moveTo(0, 0.08);
+    bladeShape.quadraticCurveTo(0.1, 0.04, 0.15, -0.08);
+    bladeShape.quadraticCurveTo(0.05, -0.02, 0, 0.08);
+    const extrudeSettings = { depth: 1.0, bevelEnabled: false };
+    const baseBladeGeo = new THREE.ExtrudeGeometry(bladeShape, extrudeSettings);
+    baseBladeGeo.center(); // Center it so we can scale Y for height
+
+    let totalRotorBlades = 0;
+    let totalStatorBlades = 0;
+    stages.forEach((s) => {
+      totalRotorBlades += s.rows * s.bladeCount;
+      totalStatorBlades += s.rows * s.bladeCount;
+    });
+
+    const rotorInstanced = new THREE.InstancedMesh(baseBladeGeo, bronzeBladesMat, totalRotorBlades);
+    rotorGroup.add(rotorInstanced);
+
+    const statorInstanced = new THREE.InstancedMesh(
+      baseBladeGeo,
+      statorBladesMat,
+      totalStatorBlades,
+    );
+    casingGroup.add(statorInstanced);
+
+    let rotorIdx = 0;
+    let statorIdx = 0;
+    const dummyObj = new THREE.Object3D();
+
+    stages.forEach(({ cx, drumR, casingR, length, rows, bladeCount }) => {
+      // Drum
+      const drum = new THREE.Mesh(
+        new THREE.CylinderGeometry(drumR, drumR, length, 32),
+        steelRotorMat,
+      );
+      drum.rotation.z = Math.PI / 2;
+      drum.position.set(cx, 0, 0);
+      rotorGroup.add(drum);
+
+      // Casing (cutaway)
       const casing = new THREE.Mesh(
-        new THREE.CylinderGeometry(radius, radius, length, 32, 1, false, 0, Math.PI * 1.3),
+        new THREE.CylinderGeometry(
+          casingR + 0.1,
+          casingR + 0.1,
+          length,
+          64,
+          1,
+          false,
+          0,
+          Math.PI * 1.3,
+        ),
         castIronCasingMat,
       );
       casing.rotation.z = Math.PI / 2;
       casing.position.set(cx, 0, 0);
       casing.castShadow = true;
+      casing.receiveShadow = true;
       casingGroup.add(casing);
-    });
 
-    // 3. Stepped Rotor Drum with Bladed Stage Discs (Claim 2)
-    const rotorGroup = new THREE.Group();
-    rootGroup.add(rotorGroup);
+      const rowSpacing = length / (rows * 2);
+      const startX = cx - length / 2 + rowSpacing;
 
-    // Drive Shaft
-    const shaft = new THREE.Mesh(new THREE.CylinderGeometry(0.25, 0.25, 11.5, 24), steelRotorMat);
-    shaft.rotation.z = Math.PI / 2;
-    rotorGroup.add(shaft);
+      for (let r = 0; r < rows; r++) {
+        // Rotor Row
+        const rX = startX + r * 2 * rowSpacing;
+        const bladeHeight = casingR - drumR - 0.02; // Gap of 0.02
 
-    // Stepped Rotor Drums
-    [
-      [-2.8, 0.9, 3.0],
-      [0.2, 1.3, 2.8],
-      [3.4, 1.8, 3.2],
-    ].forEach(([rx, radius, length]) => {
-      const drum = new THREE.Mesh(
-        new THREE.CylinderGeometry(radius, radius, length, 24),
-        steelRotorMat,
-      );
-      drum.rotation.z = Math.PI / 2;
-      drum.position.set(rx, 0, 0);
-      rotorGroup.add(drum);
-    });
+        for (let b = 0; b < bladeCount; b++) {
+          const angle = (b / bladeCount) * Math.PI * 2;
+          dummyObj.position.set(
+            rX,
+            Math.cos(angle) * (drumR + bladeHeight / 2),
+            Math.sin(angle) * (drumR + bladeHeight / 2),
+          );
+          dummyObj.rotation.set(angle, Math.PI / 2, 0);
+          dummyObj.rotateY(Math.PI / 6); // Angle of attack
+          dummyObj.scale.set(1.0, 1.0, bladeHeight);
+          dummyObj.updateMatrix();
+          rotorInstanced.setMatrixAt(rotorIdx++, dummyObj.matrix);
+        }
 
-    // Hundreds of Peripheral Curved Reaction Blades in Rows
-    const bladeRows: THREE.Group[] = [];
-    for (let row = 0; row < 18; row++) {
-      const rowX = -4.0 + row * 0.45;
-      const stageRadius = row < 6 ? 1.05 : row < 12 ? 1.45 : 1.95;
-      const rowGroup = new THREE.Group();
-      rowGroup.position.x = rowX;
+        // Stator Row (attached to casing, pointing inwards)
+        const sX = startX + r * 2 * rowSpacing + rowSpacing;
+        for (let b = 0; b < bladeCount; b++) {
+          const angle = (b / bladeCount) * Math.PI * 2;
+          // Only add stator blades to the lower half + a bit of the cutaway so it matches the casing shell
+          if (angle > Math.PI * 1.3 && angle < Math.PI * 2) continue; // Skip where casing is cut away
 
-      const numBladesInRow = 24;
-      for (let b = 0; b < numBladesInRow; b++) {
-        const bAngle = (b * Math.PI * 2) / numBladesInRow;
-        const blade = new THREE.Mesh(new THREE.BoxGeometry(0.04, 0.35, 0.12), bronzeBladesMat);
-        blade.position.set(0, Math.cos(bAngle) * stageRadius, Math.sin(bAngle) * stageRadius);
-        blade.rotation.x = bAngle;
-        blade.rotation.y = Math.PI / 5; // Reaction curved angle
-        rowGroup.add(blade);
+          dummyObj.position.set(
+            sX,
+            Math.cos(angle) * (casingR - bladeHeight / 2),
+            Math.sin(angle) * (casingR - bladeHeight / 2),
+          );
+          dummyObj.rotation.set(angle + Math.PI, Math.PI / 2, 0);
+          dummyObj.rotateY(-Math.PI / 6); // Reverse angle of attack for stator
+          dummyObj.scale.set(1.0, 1.0, bladeHeight);
+          dummyObj.updateMatrix();
+          statorInstanced.setMatrixAt(statorIdx++, dummyObj.matrix);
+        }
       }
-
-      rotorGroup.add(rowGroup);
-      bladeRows.push(rowGroup);
-    }
+    });
 
     // 4. Steam Flow Streamline Particles
-    const steamCount = 180;
+    const steamCount = 300;
     const steamGeo = new THREE.BufferGeometry();
     const steamPositions = new Float32Array(steamCount * 3);
     const steamColors = new Float32Array(steamCount * 3);
+    const steamRadii = new Float32Array(steamCount); // Store target radius for each particle
 
     for (let i = 0; i < steamCount; i++) {
       const idx = i * 3;
-      const x = -4.5 + Math.random() * 9.0;
-      const r = 0.6 + ((x + 4.5) / 9.0) * 1.4; // Expanding steam cone
+      const x = -4.5 + Math.random() * 9.5;
+
+      // Determine radius based on stage
+      let maxR = 0.8;
+      if (x > -4.3 && x <= -1.3) maxR = 1.25;
+      else if (x > -1.3 && x <= 1.7) maxR = 1.75;
+      else if (x > 1.7 && x <= 5.0) maxR = 2.35;
+
+      const r = maxR * Math.random() ** 0.5; // distribute within volume
       const a = Math.random() * Math.PI * 2;
+
       steamPositions[idx] = x;
       steamPositions[idx + 1] = Math.cos(a) * r;
       steamPositions[idx + 2] = Math.sin(a) * r;
+      steamRadii[i] = r;
 
       steamColors[idx] = 0.8;
       steamColors[idx + 1] = 0.9;
@@ -221,11 +314,11 @@ export function ParsonsTurbine3D() {
     const steamPoints = new THREE.Points(
       steamGeo,
       new THREE.PointsMaterial({
-        size: 0.22,
+        size: 0.18,
         map: steamGlowTex,
         vertexColors: true,
         transparent: true,
-        opacity: 0.75,
+        opacity: 0.6,
         blending: THREE.AdditiveBlending,
         depthWrite: false,
       }),
@@ -249,16 +342,31 @@ export function ParsonsTurbine3D() {
       for (let i = 0; i < steamCount; i++) {
         const idx = i * 3;
         pos[idx] += (p.enthalpyKjKg / 550) * (p.turbineRpm / 3000) * 12 * delta;
-        const x = pos[idx];
-        const r = 0.6 + ((x + 4.5) / 9.0) * 1.4;
+        let x = pos[idx];
+
+        if (x > 5.0) {
+          x = -4.5;
+          pos[idx] = x;
+        }
+
+        let maxR = 0.8;
+        if (x > -4.3 && x <= -1.3) maxR = 1.25;
+        else if (x > -1.3 && x <= 1.7) maxR = 1.75;
+        else if (x > 1.7 && x <= 5.0) maxR = 2.35;
+
+        // Let steam radii expand to fill the chamber
+        let r = steamRadii[i];
+        if (r < maxR) {
+          r += (maxR - r) * 5.0 * delta;
+        } else if (r > maxR + 0.1) {
+          r -= (r - maxR) * 10.0 * delta;
+        }
+        steamRadii[i] = r;
+
         let a = Math.atan2(pos[idx + 2], pos[idx + 1]);
         a += omegaRadPerSec * delta * 0.04;
         pos[idx + 1] = Math.cos(a) * r;
         pos[idx + 2] = Math.sin(a) * r;
-
-        if (pos[idx] > 5.0) {
-          pos[idx] = -4.5;
-        }
       }
       steamGeo.attributes.position.needsUpdate = true;
       steamPoints.visible = p.showSteamFlow;
@@ -362,6 +470,7 @@ export function ParsonsTurbine3D() {
           { label: "h", value: String(parsons.enthalpyKjKg), unit: "kJ/kg" },
           { label: "Shaft", value: String(powerKw), unit: "kW" },
           { label: "Stages", value: String(stageCount) },
+          { label: "u/c", value: String(parsons.steamBladeSpeedRatio) },
         ]}
       />
     </div>

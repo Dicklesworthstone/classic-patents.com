@@ -16,11 +16,11 @@ export function EdisonPhonographSim() {
   const animRef = useRef<number | null>(null);
 
   const phono = stepEdisonPhonograph({ mandrelRpm: crankRpm, voiceVolumeDb });
-  const leadScrewPitchMm = 2.54;
-  const surfaceSpeedMps = Number((phono.trackSpeedInPerS * 0.0254).toFixed(2));
+  const leadScrewPitchMm = phono.leadScrewPitchMm;
+  const surfaceSpeedMps = phono.surfaceSpeedMps;
   const axialTravelMm = Number((((cylinderAngleDeg / 360) * leadScrewPitchMm) % 40).toFixed(1));
   const indentationDepthMicrons = phono.grooveDepthMicrons;
-  const audioBandwidthHz = Math.round(surfaceSpeedMps * 4500);
+  const audioBandwidthHz = phono.audioBandwidthHz;
 
   useEffect(() => {
     if (!isPlaying) return;

@@ -1,33 +1,28 @@
 "use client";
 
-import { Play, RotateCcw, Volume2, VolumeX } from "lucide-react";
+import { Play, RotateCcw } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { stepMcCormickReaper } from "@/physics/catalogKernels";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
-import { usePatentAudio } from "./three/usePatentAudio";
 
 export function McCormickReaperSim() {
   const { params, updateParam, resetParams } = usePatentPhysics("us-x8277-mccormick-reaper");
-  const { isAudioMuted, toggleSound } = usePatentAudio();
   const groundSpeedMph = params.forwardSpeedMph ?? params.groundSpeedMph ?? 2.5;
   const reaper = stepMcCormickReaper({ forwardSpeedMph: groundSpeedMph });
-  const cutterStrokeRate = Math.round(reaper.cutFrequencyHz * 60);
+  const cutterCyclesPerSecond = reaper.cutterCrankRpm / 60;
   const [isPlaying, setIsPlaying] = useState<boolean>(true);
   const [phase, setPhase] = useState<number>(0);
   const animRef = useRef<number | null>(null);
 
   const groundSpeedMps = Number((groundSpeedMph * 0.44704).toFixed(2));
   const reelRpm = reaper.reelRpm;
-  const harvestedAcresPerDay = reaper.harvestAcresPerDay;
 
   useEffect(() => {
     if (!isPlaying) return;
-    let lastTime = performance.now();
-
-    const loop = (time: number) => {
-      const dt = (time - lastTime) / 1000;
-      lastTime = time;
-      setPhase((prev) => (prev + (cutterStrokeRate / 60) * 2 * Math.PI * dt) % (2 * Math.PI));
+    const loop = () => {
+      // Fixed presentation steps make the visual reproducible from the same
+      // shared control state. They do not claim to be a physical time solver.
+      setPhase((prev) => (prev + (cutterCyclesPerSecond * (2 * Math.PI)) / 60) % (2 * Math.PI));
       animRef.current = requestAnimationFrame(loop);
     };
 
@@ -35,21 +30,22 @@ export function McCormickReaperSim() {
     return () => {
       if (animRef.current) cancelAnimationFrame(animRef.current);
     };
-  }, [isPlaying, cutterStrokeRate]);
+  }, [isPlaying, cutterCyclesPerSecond]);
 
   const cutterX = Math.sin(phase) * 18;
-  const reelAngleDeg = (phase * (reelRpm / (cutterStrokeRate / 60)) * (180 / Math.PI)) % 360;
+  const reelAngleDeg =
+    (phase * (reelRpm / Math.max(cutterCyclesPerSecond * 60, 1)) * (180 / Math.PI)) % 360;
 
   return (
     <div className="w-full rounded-2xl border border-parchment-300 dark:border-ink-800 bg-parchment-50 dark:bg-ink-950 p-4 sm:p-6 shadow-md transition-colors">
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 border-b border-parchment-200 dark:border-ink-800 pb-3 mb-4">
         <div>
           <h3 className="font-serif text-lg font-bold text-ink-900 dark:text-parchment-100">
-            McCormick Grain Reaper & Cutter Bar (US X8277 / US 4,895)
+            McCormick Reaper Motion Transmission (US X8277)
           </h3>
           <p className="font-sans text-xs text-ink-500 dark:text-ink-400">
-            Interactive 2D Kinematics — Rotating Grain Reel, Reciprocating Serrated Sickle, and
-            Guard Fingers
+            Interactive 2D host estimate from the printed wheel, gear, and pulley dimensions; not a
+            measured field-performance simulation.
           </p>
         </div>
         <div className="flex items-center gap-2 self-end sm:self-auto">
@@ -68,18 +64,6 @@ export function McCormickReaperSim() {
             className="p-2 rounded-lg bg-parchment-200 dark:bg-ink-800 hover:bg-parchment-300 dark:hover:bg-ink-700 text-ink-800 dark:text-parchment-200 transition-colors"
           >
             <RotateCcw className="w-4 h-4" />
-          </button>
-          <button
-            type="button"
-            onClick={() => toggleSound()}
-            aria-label={isAudioMuted ? "Unmute Audio" : "Mute Audio"}
-            className="p-2 rounded-lg bg-parchment-200 dark:bg-ink-800 hover:bg-parchment-300 dark:hover:bg-ink-700 text-ink-800 dark:text-parchment-200 transition-colors"
-          >
-            {isAudioMuted ? (
-              <VolumeX className="w-4 h-4" />
-            ) : (
-              <Volume2 className="w-4 h-4 text-amber-600" />
-            )}
           </button>
         </div>
       </div>
@@ -215,23 +199,23 @@ export function McCormickReaperSim() {
         </div>
         <div className="bg-parchment-100 dark:bg-ink-900 border border-parchment-200 dark:border-ink-800 p-2.5 rounded-xl text-center">
           <span className="text-[10px] uppercase tracking-wider text-ink-500 dark:text-ink-400 block font-sans">
-            Cutter Cadence
+            Cutter Crank Estimate
           </span>
           <span className="font-mono text-sm sm:text-base font-bold text-amber-700 dark:text-amber-500">
-            {cutterStrokeRate} strokes/min ({reaper.cutFrequencyHz} Hz)
+            {reaper.cutterCrankRpm} RPM
           </span>
         </div>
         <div className="bg-parchment-100 dark:bg-ink-900 border border-parchment-200 dark:border-ink-800 p-2.5 rounded-xl text-center">
           <span className="text-[10px] uppercase tracking-wider text-ink-500 dark:text-ink-400 block font-sans">
-            Harvest Rate
+            Ground Wheel Estimate
           </span>
           <span className="font-mono text-sm sm:text-base font-bold text-emerald-700 dark:text-emerald-500">
-            {harvestedAcresPerDay} acres/day
+            {reaper.groundWheelRpm} RPM
           </span>
         </div>
         <div className="bg-parchment-100 dark:bg-ink-900 border border-parchment-200 dark:border-ink-800 p-2.5 rounded-xl text-center">
           <span className="text-[10px] uppercase tracking-wider text-ink-500 dark:text-ink-400 block font-sans">
-            Reel Speed
+            Reel Belt Estimate
           </span>
           <span className="font-mono text-sm sm:text-base font-bold text-ink-900 dark:text-parchment-100">
             {reelRpm} RPM
@@ -258,13 +242,13 @@ export function McCormickReaperSim() {
         </div>
         <div>
           <div className="flex justify-between text-xs font-sans font-medium text-ink-700 dark:text-parchment-300 mb-1">
-            <span>Reel Speed (from ground speed)</span>
+            <span>13-inch to 12-inch Reel Belt</span>
             <span className="font-mono">{reelRpm} RPM</span>
           </div>
           <div className="h-2 rounded bg-parchment-200 dark:bg-ink-800 overflow-hidden">
             <div
               className="h-full bg-amber-600"
-              style={{ width: `${Math.min(100, (reelRpm / 62.5) * 100)}%` }}
+              style={{ width: `${Math.min(100, (reelRpm / 80) * 100)}%` }}
             />
           </div>
         </div>

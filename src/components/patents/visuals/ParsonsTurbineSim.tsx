@@ -20,14 +20,11 @@ export function ParsonsTurbineSim() {
     inletMpa: pInletMpa,
     shaftPowerKw,
     stageCount,
-    isentropicEfficiencyPct,
+    steamBladeSpeedRatio,
   } = FrankenSimEngine.stepParsonsTurbine({
     rotorRpm,
     inletPressurePsi,
   });
-  const _condenserVacuumPsi = 1.0;
-  const _totalStages = stageCount;
-  const _steamBladeSpeedRatio = Number(((rotorRpm * 2 * Math.PI * 0.45) / 60 / 320).toFixed(2));
 
   useEffect(() => {
     if (!isPlaying) return;
@@ -54,8 +51,8 @@ export function ParsonsTurbineSim() {
             Parsons Multistage Axial Reaction Steam Turbine (US 328,710)
           </h3>
           <p className="font-sans text-xs text-ink-500 dark:text-ink-400">
-            Interactive 2D Thermodynamic Model — Compound Pressure-Staging (45 Rings), Expanding
-            Conical Casing, and Dummy Piston Balance
+            Interactive 2D Thermodynamic Model — Compound Pressure-Staging ({stageCount} Rings),
+            Expanding Conical Casing, and Dummy Piston Balance
           </p>
         </div>
         <div className="flex items-center gap-2 self-end sm:self-auto">
@@ -254,10 +251,10 @@ export function ParsonsTurbineSim() {
         </div>
         <div className="bg-parchment-100 dark:bg-ink-900 border border-parchment-200 dark:border-ink-800 p-2.5 rounded-xl text-center">
           <span className="text-[10px] uppercase tracking-wider text-ink-500 dark:text-ink-400 block font-sans">
-            Isentropic Eff.
+            Blade Speed Ratio
           </span>
           <span className="font-mono text-sm sm:text-base font-bold text-ink-900 dark:text-parchment-100">
-            {isentropicEfficiencyPct}%
+            {steamBladeSpeedRatio} u/c
           </span>
         </div>
       </div>

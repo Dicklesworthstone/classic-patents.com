@@ -146,7 +146,7 @@ export function materialProbe(
         unit: "N·m",
         note:
           (params.coupled ?? 1) >= 0.5
-            ? "Claim 1 hip-cradle holds: rudder cancels adverse yaw."
+            ? "Claim 18 rudder linkage: rudder counters adverse yaw."
             : "Uncoupled: this fin is not the warp cable. Adverse yaw dominates.",
       };
     }
@@ -251,7 +251,7 @@ export function materialProbe(
   }
   if (patentId.includes("tesla-coil") || patentId.includes("533367")) {
     const cap = params.primaryCap ?? 45;
-    const freqKhz = teslaCoilResonantKhz(cap);
+    const freqKhz = teslaCoilResonantKhz(cap, params.toploadCapacitancePf);
     const coil = FrankenSimEngine.stepTeslaCoil(
       freqKhz,
       params.inputVoltageKv ?? 15,
@@ -303,8 +303,8 @@ export function materialProbe(
   }
   if (patentId.includes("farnsworth") || patentId.includes("1773980")) {
     const anodeKv = (params.anodeVoltage ?? 1500) / 1000;
-    const gauss = (params.coilCurrent ?? 0.42) * (120 / 0.42);
-    const tv = FrankenSimEngine.stepFarnsworthTv(anodeKv, gauss);
+    const gauss = FrankenSimEngine.farnsworthDeflectionGauss(params.coilCurrent);
+    const tv = FrankenSimEngine.stepFarnsworthTv(anodeKv, gauss, params.lightIntensityLux ?? 500);
     return {
       part: calloutLabel,
       material: "Photoelectric dissector + magnetic gyro",
@@ -355,7 +355,7 @@ export function materialProbe(
       qty: "F_toggle",
       value: maxim.toggleUnlockForceN.toString(),
       unit: "N",
-      note: `Barrel ${maxim.barrelTempC} °C. Evap ${maxim.waterEvapRateGs} g/s.`,
+      note: `Barrel ${maxim.barrelTempC} °C. Evap ${maxim.waterEvapRateGs} g/s. ${maxim.muzzleEnergyJoules} J.`,
     };
   }
   if (patentId.includes("westinghouse") || patentId.includes("124404")) {
@@ -415,6 +415,9 @@ export function materialProbe(
     const morse = stepMorseTelegraph({
       currentMa: params.currentMa,
       wireTurns: params.wireTurns,
+      lineVoltageV: params.lineVoltageV,
+      lineLengthMiles: params.lineLengthMiles,
+      wpmSpeed: params.wpmSpeed,
     });
     return {
       part: calloutLabel,
@@ -422,7 +425,7 @@ export function materialProbe(
       qty: "F",
       value: morse.magneticForceN.toFixed(2),
       unit: "N",
-      note: `I² pull ${morse.ampereTurns} A·turns. Type the 2D face to drive the register.`,
+      note: `I² pull ${morse.ampereTurns} A·turns. ${morse.ohmicCurrentMa} mA ohmic · ${morse.wpmSpeed} WPM.`,
     };
   }
   if (patentId.includes("otto-engine") || patentId.includes("194047")) {
@@ -436,7 +439,7 @@ export function materialProbe(
       qty: "η",
       value: otto.thermalEfficiencyPct.toString(),
       unit: "%",
-      note: `Air-standard 1−r^(1−γ). ${otto.brakeHorsepower} BHP at ${params.engineRpm ?? 180} rpm.`,
+      note: `Air-standard 1−r^(1−γ). ${otto.brakeHorsepower} BHP. P2 ${otto.peakCompressionBar} bar / P3 ${otto.peakFiringBar} bar.`,
     };
   }
   if (patentId.includes("pelton") || patentId.includes("233692")) {
@@ -732,11 +735,11 @@ export function materialProbe(
     const reaper = stepMcCormickReaper({ forwardSpeedMph: params.forwardSpeedMph });
     return {
       part: calloutLabel,
-      material: "Sickle bar, 3.5 in stroke, divider reel",
-      qty: "cut",
-      value: reaper.cutFrequencyHz.toString(),
-      unit: "Hz",
-      note: `${reaper.harvestAcresPerDay} ac/day at ${params.forwardSpeedMph ?? 2.5} mph.`,
+      material: "24-inch ground wheel; 30:9 and 27:9 gears; 13-inch to 12-inch reel belt",
+      qty: "crank",
+      value: reaper.cutterCrankRpm.toString(),
+      unit: "rpm",
+      note: "No-slip host kinematic estimate from dimensions printed in US X8277; not a field-capacity measurement.",
     };
   }
   if (patentId.includes("nobel") || patentId.includes("78317")) {
@@ -995,7 +998,7 @@ export function intervalGhosts(patentId: string, params: Record<string, number>)
   }
   if (patentId.includes("tesla-coil") || patentId.includes("533367")) {
     const cap = params.primaryCap ?? 45;
-    const freqKhz = teslaCoilResonantKhz(cap);
+    const freqKhz = teslaCoilResonantKhz(cap, params.toploadCapacitancePf);
     const coil = FrankenSimEngine.stepTeslaCoil(
       freqKhz,
       params.inputVoltageKv ?? 15,
@@ -1026,8 +1029,8 @@ export function intervalGhosts(patentId: string, params: Record<string, number>)
   }
   if (patentId.includes("farnsworth") || patentId.includes("1773980")) {
     const anodeKv = (params.anodeVoltage ?? 1500) / 1000;
-    const gauss = (params.coilCurrent ?? 0.42) * (120 / 0.42);
-    const tv = FrankenSimEngine.stepFarnsworthTv(anodeKv, gauss);
+    const gauss = FrankenSimEngine.farnsworthDeflectionGauss(params.coilCurrent);
+    const tv = FrankenSimEngine.stepFarnsworthTv(anodeKv, gauss, params.lightIntensityLux ?? 500);
     return [{ label: "r_L", min: 1, max: 40, live: tv.gyroRadiusMm, unit: "mm" }];
   }
   if (patentId.includes("phonograph") || patentId.includes("200521")) {
@@ -1144,7 +1147,7 @@ export function intervalGhosts(patentId: string, params: Record<string, number>)
   }
   if (patentId.includes("mccormick") || patentId.includes("x8277")) {
     const reaper = stepMcCormickReaper({ forwardSpeedMph: params.forwardSpeedMph });
-    return [{ label: "Harvest", min: 1, max: 10, live: reaper.harvestAcresPerDay, unit: "ac/day" }];
+    return [{ label: "Crank", min: 0, max: 700, live: reaper.cutterCrankRpm, unit: "rpm" }];
   }
   if (patentId.includes("nobel") || patentId.includes("78317")) {
     const nobel = stepNobelDynamite({
@@ -1306,7 +1309,7 @@ export function fidelityField(
   }
   if (patentId.includes("tesla-coil") || patentId.includes("533367")) {
     const cap = params.primaryCap ?? 45;
-    const freqKhz = teslaCoilResonantKhz(cap);
+    const freqKhz = teslaCoilResonantKhz(cap, params.toploadCapacitancePf);
     const coil = FrankenSimEngine.stepTeslaCoil(
       freqKhz,
       params.inputVoltageKv ?? 15,
@@ -1764,7 +1767,7 @@ export function coupleLinks(patentId: string, params: Record<string, number>): C
   }
   if (patentId.includes("tesla-coil") || patentId.includes("533367")) {
     const cap = params.primaryCap ?? 45;
-    const freqKhz = teslaCoilResonantKhz(cap);
+    const freqKhz = teslaCoilResonantKhz(cap, params.toploadCapacitancePf);
     const coil = FrankenSimEngine.stepTeslaCoil(
       freqKhz,
       params.inputVoltageKv ?? 15,

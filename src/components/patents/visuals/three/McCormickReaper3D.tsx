@@ -1,17 +1,25 @@
 "use client";
 
-import { Activity, Camera, Eye, EyeOff, Volume2, VolumeX } from "lucide-react";
+import { Activity, Camera, Eye, EyeOff } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import * as THREE from "three";
 import { stepMcCormickReaper } from "@/physics/catalogKernels";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
-import { soundEngine } from "@/utils/soundEngine";
 import { StudioKernelChips } from "./StudioKernelChips";
 import { createThreeStudioScene, type StudioContext } from "./ThreeStudioScene";
 import { useLiveSimParams } from "./useLiveSimParams";
-import { usePatentAudio } from "./usePatentAudio";
 
 type CameraPreset = "iso" | "sickle_guards" | "grain_reel" | "platform" | "top";
+
+function deterministicUnit(index: number, channel: number): number {
+  let state = Math.imul(index + 1, 0x9e3779b1) ^ Math.imul(channel + 1, 0x85ebca6b);
+  state ^= state >>> 16;
+  state = Math.imul(state, 0x7feb352d);
+  state ^= state >>> 15;
+  state = Math.imul(state, 0x846ca68b);
+  state ^= state >>> 16;
+  return (state >>> 0) / 0x1_0000_0000;
+}
 
 export function McCormickReaper3D() {
   const containerRef = useRef<HTMLDivElement>(null);
@@ -20,21 +28,16 @@ export function McCormickReaper3D() {
   const { params } = usePatentPhysics("us-x8277-mccormick-reaper");
   const groundSpeedMph = params.forwardSpeedMph ?? params.groundSpeedMph ?? 2.5;
   const reaper = stepMcCormickReaper({ forwardSpeedMph: groundSpeedMph });
-  const sickleCps = reaper.cutFrequencyHz;
+  const cutterCrankRpm = reaper.cutterCrankRpm;
   const reelRpm = reaper.reelRpm;
   const [showStalks, setShowStalks] = useState<boolean>(true);
   const [activeCamera, setActiveCamera] = useState<CameraPreset>("iso");
-  const { isAudioMuted, toggleSound: toggleEngine } = usePatentAudio();
-
-  const acresPerDay = reaper.harvestAcresPerDay.toFixed(1);
-  const laborRatio = (Number(acresPerDay) / 1.0).toFixed(0); // 1 acre/day per man with cradle scythe
 
   const live = useLiveSimParams({
     groundSpeedMph,
-    sickleCps,
+    cutterCrankRpm,
     reelRpm,
     showStalks,
-    isAudioMuted,
   });
 
   const controlsRef = useRef<StudioContext["controls"] | null>(null);
@@ -69,12 +72,6 @@ export function McCormickReaper3D() {
         break;
     }
     controls.update();
-  };
-
-  const toggleSound = () => {
-    toggleEngine(() => {
-      soundEngine.playSwitchClick();
-    });
   };
 
   // biome-ignore lint/correctness/useExhaustiveDependencies: Three.js studio lifecycle
@@ -263,8 +260,16 @@ export function McCormickReaper3D() {
     );
     const dummy = new THREE.Object3D();
     for (let i = 0; i < stalkCount; i++) {
-      dummy.position.set(-2.5 + Math.random() * 5.0, 0.2, 2.2 + Math.random() * 2.5);
-      dummy.rotation.set((Math.random() - 0.5) * 0.2, 0, (Math.random() - 0.5) * 0.2);
+      dummy.position.set(
+        -2.5 + deterministicUnit(i, 0) * 5.0,
+        0.2,
+        2.2 + deterministicUnit(i, 1) * 2.5,
+      );
+      dummy.rotation.set(
+        (deterministicUnit(i, 2) - 0.5) * 0.2,
+        0,
+        (deterministicUnit(i, 3) - 0.5) * 0.2,
+      );
       dummy.updateMatrix();
       stalksInstanced.setMatrixAt(i, dummy.matrix);
     }
@@ -281,22 +286,27 @@ export function McCormickReaper3D() {
 
     // Animation Loop
     let reqId: number;
-    const clock = new THREE.Clock();
+    let presentationStep = 0;
 
     const animate = () => {
       reqId = requestAnimationFrame(animate);
-      const delta = clock.getDelta();
       const p = live.current;
+      // This is deliberately a fixed rendering step. It makes the same
+      // control sequence reproduce the same pose without implying a wall-clock
+      // simulation or a FrankenSim WASM solve.
+      const elapsedSeconds = presentationStep / 60;
+      presentationStep += 1;
 
-      const wheelRadPerSec = (p.groundSpeedMph * 5280 * 12) / (3600 * 38); // 38" wheel diameter
+      const sourceKinematics = stepMcCormickReaper({ forwardSpeedMph: p.groundSpeedMph });
+      const wheelRadPerSec = (sourceKinematics.groundWheelRpm * 2 * Math.PI) / 60;
       const reelRadPerSec = (p.reelRpm * 2 * Math.PI) / 60;
 
-      driveWheelGroup.rotation.x += wheelRadPerSec * delta;
-      reelGroup.rotation.x += reelRadPerSec * delta;
+      driveWheelGroup.rotation.x = wheelRadPerSec * elapsedSeconds;
+      reelGroup.rotation.x = reelRadPerSec * elapsedSeconds;
 
       // Reciprocate Sickle Bar
-      const sicklePhase = clock.getElapsedTime() * p.sickleCps * Math.PI * 2;
-      sickleBarGroup.position.x = Math.sin(sicklePhase) * 0.18; // 3.5-inch stroke
+      const sicklePhase = elapsedSeconds * (p.cutterCrankRpm / 60) * Math.PI * 2;
+      sickleBarGroup.position.x = Math.sin(sicklePhase) * 0.18; // Illustrative visual amplitude only.
 
       stalksInstanced.visible = p.showStalks;
 
@@ -324,6 +334,9 @@ export function McCormickReaper3D() {
           </span>
           <span className="text-[10px] font-mono px-2 py-0.5 rounded-full bg-amber-500/20 text-amber-300 border border-amber-500/30">
             US Patent X8277 (1834)
+          </span>
+          <span className="text-[10px] font-mono px-2 py-0.5 rounded-full bg-parchment-800 text-parchment-300 border border-parchment-700">
+            host ratio estimate
           </span>
         </div>
 
@@ -368,14 +381,6 @@ export function McCormickReaper3D() {
           >
             {showStalks ? <Eye className="w-4 h-4" /> : <EyeOff className="w-4 h-4" />}
           </button>
-          <button
-            type="button"
-            onClick={toggleSound}
-            title={isAudioMuted ? "Unmute Sound" : "Mute Sound"}
-            className="p-1.5 rounded-lg text-xs text-parchment-400 hover:text-white hover:bg-parchment-800 transition-colors"
-          >
-            {isAudioMuted ? <VolumeX className="w-4 h-4" /> : <Volume2 className="w-4 h-4" />}
-          </button>
         </div>
       </div>
 
@@ -384,10 +389,9 @@ export function McCormickReaper3D() {
         title="McCormick cutter bar"
         chips={[
           { label: "Ground", value: String(groundSpeedMph), unit: "mph" },
-          { label: "Sickle", value: String(sickleCps), unit: "Hz" },
+          { label: "24-inch wheel", value: String(reaper.groundWheelRpm), unit: "rpm" },
+          { label: "Crank", value: String(cutterCrankRpm), unit: "rpm" },
           { label: "Reel", value: String(reelRpm), unit: "rpm" },
-          { label: "Harvest", value: acresPerDay, unit: "ac/day" },
-          { label: "vs cradle", value: `${laborRatio}×` },
         ]}
       />
     </div>

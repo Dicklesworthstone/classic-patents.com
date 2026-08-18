@@ -323,6 +323,7 @@ export function MaximMachineGun3D() {
             tone: maxim.barrelTempC > 200 ? "warn" : "ok",
           },
           { label: "Steam", value: String(maxim.waterEvapRateGs), unit: "g/s" },
+          { label: "E", value: String(maxim.muzzleEnergyJoules), unit: "J" },
         ]}
       />
     </div>

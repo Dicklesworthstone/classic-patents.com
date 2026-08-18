@@ -4,7 +4,7 @@
  */
 
 export const WRIGHT_PATENT_ID = "us-821393-wright-flyer";
-/** Claim 1 hip-cradle: rudder deg per degree of warp. */
+/** Claim 18 rudder linkage: rudder degrees per degree of wing warp. */
 export const WRIGHT_COUPLING = 0.45;
 
 export interface WrightControls {

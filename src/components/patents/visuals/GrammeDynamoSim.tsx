@@ -18,8 +18,8 @@ export function GrammeDynamoSim() {
   const gramme = stepGrammeDynamo({ shaftRpm: rotorRpm, coilSegments: coilSections });
   const generatedDcVolts = gramme.emfVolts;
   const electricalPowerWatts = gramme.powerWatts;
-  const outputAmperes = Number((electricalPowerWatts / Math.max(1, generatedDcVolts)).toFixed(1));
-  const voltageRipplePct = Number(((Math.PI ** 2 / (2 * coilSections ** 2)) * 100).toFixed(2));
+  const outputAmperes = gramme.armatureCurrentA;
+  const voltageRipplePct = gramme.voltageRipplePct;
 
   useEffect(() => {
     if (!isPlaying) return;

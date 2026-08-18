@@ -167,6 +167,12 @@ the visitor can see or hear the kernel change the instrument.
 - [x] P5.74 CCD 2D/3D write us-3858232 (page id), not leftover us-3923554. Wright 2D wing lift/drag bars share the kernel lift split (18.5 N per deg warp). Wozniak 3D clock is apple.cpuClockMhz.
 - [x] P5.75 Tesla 2D no longer writes omegaT onto the shared bus every 30 ms; Fig. 4 schematic animates locally. Goddard/CCD colorized equations resolve from page ids via alias.
 - [x] P5.76 Tesla 3D publishes the kernel ElectromagneticsState (1.2 T / 220 V / 87% η), not leftover 0.8 T / 110 V / 78%. Input watts from kernel η. Davenport 3D chips show I and η. Goodyear 3D HUD tensile/return from the kernel.
+- [x] P5.77 Bardeen 2D / 3D / badge share bardeenLoadLine (Av = α·80, G = 10 log10(Av·α)). No more |Vc|/0.6 or α²·Vc/1.5.
+- [x] P5.78 Farnsworth photocathode µA lives on stepFarnsworthTv (lux). 2D / 3D / badge / weave pass incident lux. Engine Bardeen wraps the catalog transport so α cannot drift.
+- [x] P5.79 Farnsworth coil→gauss is farnsworthDeflectionGauss (120 G @ 0.42 A). Otto peak compression/firing (r^1.35 and ×3.8) live on stepOttoEngine; 2D/3D read those bars.
+- [x] P5.80 Gramme I and ripple live on the kernel (no V/4.5 3D split). Gatling 1850 J, Colt ½mv², and Goodyear Tg are kernel fields. Engine Colt wraps catalog.
+- [x] P5.81 Maxim muzzle energy is ½mv² from the same 14 g / 740 m/s already in the recoil step (no leftover 3400 J). Parsons blade u/c lives on the kernel; 2D copy is 48 rings not 45. Otto badge/3D show P2 and P3. Gramme/Gatling/Colt/Goodyear/Daimler/Kodak/Linotype leftover HUD constants now read kernel fields.
+- [x] P5.82 Tesla coil f₀ includes the topload slider (15 pF secondary + C_top). Sholes 90° throw and hammer angle share the kernel. Phonograph lead-screw pitch / surface speed / bandwidth live on stepEdisonPhonograph. Morse V/R (12.5 Ω/mi + 150 Ω coil), WPM unit time, and 3D HUD come from stepMorseTelegraph. Kodak 2.5 in format and Edison feeder 0.4 Ω are kernel fields. Tesla P=2 is TESLA_FIELD_POLES.
 
 ## Explicitly out of scope
 

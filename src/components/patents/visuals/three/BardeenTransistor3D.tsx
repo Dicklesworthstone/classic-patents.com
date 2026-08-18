@@ -14,11 +14,16 @@ import {
 } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import * as THREE from "three";
+import { bardeenLoadLine } from "@/physics/catalogKernels";
 import { FrankenSimEngine } from "@/physics/engine";
 import { useFrankenSimPhysics } from "@/physics/useFrankenSimPhysics";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { soundEngine } from "@/utils/soundEngine";
-import { createGlowPointTexture, createThreeStudioScene } from "./ThreeStudioScene";
+import {
+  createGlowPointTexture,
+  createThreeStudioScene,
+  type StudioContext,
+} from "./ThreeStudioScene";
 import { useLiveSimParams } from "./useLiveSimParams";
 
 import { usePatentAudio } from "./usePatentAudio";
@@ -56,16 +61,9 @@ export function BardeenTransistor3D() {
   });
   const alphaCurrentGain = semiState.currentGainAlpha.toFixed(2);
   const collectorCurrentMa = (semiState.currentGainAlpha * emitterCurrentMa).toFixed(2);
-  const voltageGain = Math.round(Math.abs(collectorVoltageV) / 0.6);
-  const powerGainDb = Math.max(
-    0,
-    Math.round(
-      10 *
-        Math.log10(
-          (Math.abs(collectorVoltageV) * Number(collectorCurrentMa)) / (0.6 * emitterCurrentMa),
-        ),
-    ),
-  );
+  const loadLine = bardeenLoadLine(semiState.currentGainAlpha);
+  const voltageGain = loadLine.voltageGain;
+  const powerGainDb = loadLine.powerGainDb;
 
   const live = useLiveSimParams({
     emitterCurrentMa,
@@ -76,7 +74,7 @@ export function BardeenTransistor3D() {
     holeDiffusion: semiState.holeDiffusionCoefficientCm2ps,
   });
 
-  const controlsRef = useRef<any>(null);
+  const controlsRef = useRef<StudioContext["controls"] | null>(null);
   const cameraRef = useRef<THREE.PerspectiveCamera | null>(null);
 
   const applyCameraPreset = (preset: CameraPreset) => {

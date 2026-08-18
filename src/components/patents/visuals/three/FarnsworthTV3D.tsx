@@ -7,7 +7,11 @@ import { FrankenSimEngine } from "@/physics/engine";
 import { useFrankenSimPhysics } from "@/physics/useFrankenSimPhysics";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { soundEngine } from "@/utils/soundEngine";
-import { createGlowPointTexture, createThreeStudioScene } from "./ThreeStudioScene";
+import {
+  createGlowPointTexture,
+  createThreeStudioScene,
+  type StudioContext,
+} from "./ThreeStudioScene";
 import { useLiveSimParams } from "./useLiveSimParams";
 
 import { usePatentAudio } from "./usePatentAudio";
@@ -22,7 +26,7 @@ export function FarnsworthTV3D() {
   const [showUiOverlay, setShowUiOverlay] = useState<boolean>(true);
   const acceleratingVoltageKv = (params.anodeVoltage ?? 1500) / 1000;
   const coilCurrentA = params.coilCurrent ?? 0.42;
-  const deflectionGauss = coilCurrentA * (120 / 0.42);
+  const deflectionGauss = FrankenSimEngine.farnsworthDeflectionGauss(coilCurrentA);
   const horizontalFreqKhz = params.horizontalFreqKhz ?? 15.75;
   const verticalFreqHz = params.verticalFreqHz ?? 60;
   const lightIntensityLux = params.lightIntensityLux ?? 500;
@@ -32,10 +36,14 @@ export function FarnsworthTV3D() {
   const { isAudioMuted, toggleSound: toggleEngine } = usePatentAudio();
 
   // Electron Optics Physics (FrankenSim Relativistic Electron Beam)
-  const beamState = FrankenSimEngine.stepFarnsworthTv(acceleratingVoltageKv, deflectionGauss);
+  const beamState = FrankenSimEngine.stepFarnsworthTv(
+    acceleratingVoltageKv,
+    deflectionGauss,
+    lightIntensityLux,
+  );
   const velocityMps = beamState.electronVelocityMps;
   const velocityFractionC = (beamState.relativisticBeta * 100).toFixed(1);
-  const photocathodeCurrentUa = (lightIntensityLux * 0.045).toFixed(1);
+  const photocathodeCurrentUa = beamState.photocathodeCurrentUa.toFixed(1);
 
   useFrankenSimPhysics("us-1773980-farnsworth-tv", {
     domain: "semiconductor_microarch",
@@ -63,7 +71,7 @@ export function FarnsworthTV3D() {
     gyroRadiusMm: beamState.gyroRadiusMm,
   });
 
-  const controlsRef = useRef<any>(null);
+  const controlsRef = useRef<StudioContext["controls"] | null>(null);
   const cameraRef = useRef<THREE.PerspectiveCamera | null>(null);
 
   const applyCameraPreset = (preset: CameraPreset) => {

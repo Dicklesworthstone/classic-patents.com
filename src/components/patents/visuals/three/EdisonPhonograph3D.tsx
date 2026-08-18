@@ -24,7 +24,7 @@ export function EdisonPhonograph3D() {
     mandrelRpm: cylinderRpm,
     voiceVolumeDb: params.voiceVolumeDb ?? 75,
   });
-  const surfaceSpeedCmPerSec = (phono.trackSpeedInPerS * 2.54).toFixed(1);
+  const surfaceSpeedCmPerSec = (phono.surfaceSpeedMps * 100).toFixed(1);
   const [activeCamera, setActiveCamera] = useState<CameraPreset>("iso");
   const { isAudioMuted, toggleSound: toggleEngine } = usePatentAudio();
 
@@ -226,6 +226,10 @@ export function EdisonPhonograph3D() {
                   <strong className="text-emerald-400">
                     {phono.grooveDepthMicrons.toFixed(1)} µm
                   </strong>
+                </span>
+                <span className="text-parchment-600">|</span>
+                <span>
+                  BW: <strong className="text-sky-300">{phono.audioBandwidthHz} Hz</strong>
                 </span>
               </div>
             </div>

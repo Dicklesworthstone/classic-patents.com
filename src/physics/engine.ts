@@ -6,6 +6,8 @@
  */
 
 import {
+  stepBardeenTransistor as catalogStepBardeen,
+  stepColtRevolver as catalogStepColt,
   stepDaimlerEngine as catalogStepDaimlerEngine,
   stepHollerithTabulating as catalogStepHollerith,
   stepLincolnBuoy as catalogStepLincolnBuoy,
@@ -23,6 +25,7 @@ import {
   stepGoodyearRubber as stepGoodyearRubberCatalog,
   stepGrammeDynamo,
   stepHyattCelluloid,
+  stepMaximMachineGun,
   stepMcCormickReaper,
   stepMorseTelegraph,
   stepNobelDynamite,
@@ -297,27 +300,14 @@ export const FrankenSimEngine = {
     collectorBiasVolts: number,
     pointSpacingMicrons: number = 50,
   ): SemiconductorState {
-    const holeMobilityCm2Vs = 1900; // Germanium p-type hole mobility
-    const holeDiffusionCoefficient = 0.0259 * holeMobilityCm2Vs; // Einstein relation at 300K
-    const transitTimeNs =
-      ((pointSpacingMicrons * 1e-4) ** 2 / (2 * holeDiffusionCoefficient)) * 1e9;
-    // Ge hole lifetime is ~µs; 800 ns is a conservative formed-collector budget.
-    const transportFactor = Math.max(0.15, Math.exp(-transitTimeNs / 800));
-    const emitterInjectionEfficiency = 0.95;
-    const formingMultiplication = 2.4;
-    const currentGainAlpha = Number(
-      (emitterInjectionEfficiency * transportFactor * formingMultiplication).toFixed(2),
-    );
-    const _collectorCurrentMa = Number(
-      (Math.abs(collectorBiasVolts) * 0.8 + emitterCurrentMa * currentGainAlpha).toFixed(2),
-    );
-
+    const cat = catalogStepBardeen(emitterCurrentMa, collectorBiasVolts, pointSpacingMicrons);
+    const holeMobilityCm2Vs = 1900;
     return {
       biasVoltageVolts: collectorBiasVolts,
-      currentGainAlpha,
-      holeDiffusionCoefficientCm2ps: Number(holeDiffusionCoefficient.toFixed(1)),
+      currentGainAlpha: cat.currentGainAlpha,
+      holeDiffusionCoefficientCm2ps: cat.holeDiffusionCoefficientCm2ps,
       chargeTransferEfficiencyPct: 0,
-      clockPeriodNs: Number(transitTimeNs.toFixed(2)),
+      clockPeriodNs: cat.transitTimeNs,
       busBandwidthMbps: 0,
       electronVelocityMps: Number(
         (holeMobilityCm2Vs * (collectorBiasVolts / (pointSpacingMicrons * 1e-4))).toFixed(0),
@@ -354,7 +344,12 @@ export const FrankenSimEngine = {
    * Philo T. Farnsworth Image Dissector (US 1,773,980)
    * Relativistic Photoelectron Beam & Magnetic Scan Deflection
    */
-  stepFarnsworthTv(anodeKv: number, magneticDeflectionGauss: number) {
+  /** 120 G at the registry 0.42 A coil. Shared by 2D, 3D, badge, weave. */
+  farnsworthDeflectionGauss(coilCurrentA?: number) {
+    return (coilCurrentA ?? 0.42) * (120 / 0.42);
+  },
+
+  stepFarnsworthTv(anodeKv: number, magneticDeflectionGauss: number, incidentLux: number = 500) {
     const electronMassKg = 9.1093837e-31;
     const electronChargeC = 1.60217663e-19;
     const speedOfLightMps = 299792458;
@@ -376,6 +371,7 @@ export const FrankenSimEngine = {
       electronVelocityMps: Math.round(velocityMps),
       relativisticBeta: Number(relativisticBeta.toFixed(3)),
       gyroRadiusMm: Number(gyroRadiusMm.toFixed(1)),
+      photocathodeCurrentUa: Number((Math.max(0, incidentLux) * 0.045).toFixed(1)),
     };
   },
 
@@ -522,22 +518,15 @@ export const FrankenSimEngine = {
    * Single-Action Pawl-Ratchet Indexing & Hoop Stress Mechanics
    */
   stepColtRevolver(params: { chamberPressureMpa?: number; cockingAngleDeg?: number }) {
-    const pMpa = params.chamberPressureMpa ?? 85;
-    const cockDeg = params.cockingAngleDeg ?? 45;
-    const rInnerMm = 4.5; // .36 caliber chamber radius
-    const tWallMm = 3.8;
-    const hoopStressMpa = Number(((pMpa * rInnerMm) / tWallMm).toFixed(1));
-    const indexAngleDeg = Number(((cockDeg / 45) * 72).toFixed(1));
-    const isLocked = cockDeg >= 44;
-    const muzzleVelocityMps = Math.round(180 + Math.sqrt(pMpa) * 13.5);
-
+    const cat = catalogStepColt(params);
     return {
-      chamberPressureMpa: pMpa,
-      cockingAngleDeg: cockDeg,
-      hoopStressMpa,
-      indexAngleDeg,
-      isLocked,
-      muzzleVelocityMps,
+      chamberPressureMpa: params.chamberPressureMpa ?? 85,
+      cockingAngleDeg: params.cockingAngleDeg ?? 45,
+      hoopStressMpa: cat.hoopStressMpa,
+      indexAngleDeg: cat.indexAngleDeg,
+      isLocked: cat.isLocked,
+      muzzleVelocityMps: cat.muzzleVelocityMps,
+      muzzleEnergyJoules: cat.muzzleEnergyJoules,
     };
   },
 
@@ -590,32 +579,7 @@ export const FrankenSimEngine = {
    * Hiram Maxim Automatic Machine Gun (US 319,596)
    * Short-Recoil Conservation of Momentum & Toggle-Lock Dynamics
    */
-  stepMaximMachineGun(params: {
-    firingRateRpm?: number;
-    waterJacketLiters?: number;
-    recoilStrokeMm?: number;
-  }) {
-    const rpm = params.firingRateRpm ?? 600;
-    const water = params.waterJacketLiters ?? 4.0;
-    const stroke = params.recoilStrokeMm ?? 19;
-    const bulletMassKg = 0.014;
-    const bulletVelMps = 740;
-    const recoilMassKg = 3.2;
-    const recoilVelocityMps = Number(((bulletMassKg * bulletVelMps) / recoilMassKg).toFixed(2));
-    const recoilMomentumNs = Number((recoilMassKg * recoilVelocityMps).toFixed(2));
-    const toggleUnlockForceN = Math.round(180 * (19 / Math.max(5, stroke)));
-    const heatGeneratedWatts = Math.round((rpm / 60) * 45 * 1000 * 0.28);
-    const waterEvapRateGs = Number(((heatGeneratedWatts / 2260) * (water > 0 ? 1 : 0)).toFixed(2));
-    const barrelTempC = water > 0.5 ? 100 : Math.min(450, Math.round(100 + (rpm / 600) * 280));
-
-    return {
-      recoilVelocityMps,
-      recoilMomentumNs,
-      toggleUnlockForceN,
-      waterEvapRateGs,
-      barrelTempC,
-    };
-  },
+  stepMaximMachineGun,
 
   /**
    * Gottlieb Daimler High-Speed Motor Carriage (US 361,931)
@@ -655,6 +619,9 @@ export const FrankenSimEngine = {
       dofFarM,
       exposureValueEv: ev,
       isInFocus: dist >= dofNearM && (dofFarM === 999 || dist <= dofFarM),
+      focalLengthMm: Math.round(f * 1000),
+      rollCapacity: 100,
+      filmFormatInches: 2.5,
     };
   },
 

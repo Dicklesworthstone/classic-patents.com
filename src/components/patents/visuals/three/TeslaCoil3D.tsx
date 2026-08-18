@@ -10,7 +10,11 @@ import { ensureTeslaWasm } from "@/physics/teslaWasm";
 import { useFrankenSimPhysics } from "@/physics/useFrankenSimPhysics";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { soundEngine } from "@/utils/soundEngine";
-import { createGlowPointTexture, createThreeStudioScene } from "./ThreeStudioScene";
+import {
+  createGlowPointTexture,
+  createThreeStudioScene,
+  type StudioContext,
+} from "./ThreeStudioScene";
 import { useLiveSimParams } from "./useLiveSimParams";
 
 type CameraPreset = "iso" | "toroid_breakout" | "primary_spiral" | "spark_gap" | "top";
@@ -26,12 +30,12 @@ export function TeslaCoil3D() {
   const { params } = usePatentPhysics("us-533367-tesla-coil");
   const [showUiOverlay, setShowUiOverlay] = useState<boolean>(true);
   const primaryCap = params.primaryCap ?? 45;
-  const resonantFreqKhz = teslaCoilResonantKhz(primaryCap);
+  const toploadCapacitancePf = params.toploadCapacitancePf ?? 35;
+  const resonantFreqKhz = teslaCoilResonantKhz(primaryCap, toploadCapacitancePf);
   const sparkGapDistanceMm = params.sparkGapDistanceMm ?? 12;
   const inputVoltageKv = params.inputVoltageKv ?? 15;
   const couplingK = params.couplingK ?? 0.18;
   const secondaryTurns = params.secondaryTurns ?? 850;
-  const _toploadCapacitancePf = params.toploadCapacitancePf ?? 35;
   const [showLightningStreamers, _setShowLightningStreamers] = useState<boolean>(true);
   const [showCalloutPins, setShowCalloutPins] = useState<boolean>(false);
   const [activeCamera, setActiveCamera] = useState<CameraPreset>("iso");
@@ -79,7 +83,7 @@ export function TeslaCoil3D() {
     sparkRateHz: params.sparkRateHz ?? 120,
   });
 
-  const controlsRef = useRef<any>(null);
+  const controlsRef = useRef<StudioContext["controls"] | null>(null);
   const cameraRef = useRef<THREE.PerspectiveCamera | null>(null);
 
   const applyCameraPreset = (preset: CameraPreset) => {
@@ -380,7 +384,10 @@ export function TeslaCoil3D() {
                     <HudText text="Freq ($f_0$):" />
                   </span>{" "}
                   <span className="font-bold text-blue-600 dark:text-blue-400">
-                    {resonantFreqKhz} kHz <HudText text={`($k = ${couplingK.toFixed(2)}$)`} />
+                    {resonantFreqKhz} kHz{" "}
+                    <HudText
+                      text={`($k = ${couplingK.toFixed(2)}$, $C_t = ${toploadCapacitancePf}$ pF)`}
+                    />
                   </span>
                 </div>
                 <div>

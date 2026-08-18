@@ -6,7 +6,11 @@ import * as THREE from "three";
 import { stepMorseTelegraph } from "@/physics/catalogKernels";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { soundEngine } from "@/utils/soundEngine";
-import { createGlowPointTexture, createThreeStudioScene } from "./ThreeStudioScene";
+import {
+  createGlowPointTexture,
+  createThreeStudioScene,
+  type StudioContext,
+} from "./ThreeStudioScene";
 import { useLiveSimParams } from "./useLiveSimParams";
 
 type CameraPreset = "iso" | "key_lever" | "electromagnet_relay" | "paper_tape_register" | "top";
@@ -20,22 +24,21 @@ export function MorseTelegraph3D() {
   const lineVoltageV = params.lineVoltageV ?? 24;
   const lineLengthMiles = params.lineLengthMiles ?? 44;
   const [keyIsDown, setKeyIsDown] = useState<boolean>(false);
-  const _wpmSpeed = params.wpmSpeed ?? 20;
   const [showCalloutPins, setShowCalloutPins] = useState<boolean>(false);
   const [activeCamera, setActiveCamera] = useState<CameraPreset>("iso");
   const [isPlayingAudio, setIsPlayingAudio] = useState<boolean>(true);
 
-  // Telegraph Circuit Physics Calculations
-  const lineResistanceOhms = Math.round(lineLengthMiles * 12.5);
-  const coilResistanceOhms = 150;
-  const totalResistanceOhms = lineResistanceOhms + coilResistanceOhms;
-  const computedCurrentMa = (lineVoltageV / totalResistanceOhms) * 1000;
-  const loopCurrentMa = (params.currentMa ?? computedCurrentMa).toFixed(1);
   const morse = stepMorseTelegraph({
-    currentMa: Number(loopCurrentMa),
     wireTurns: params.wireTurns ?? 1200,
+    lineVoltageV,
+    lineLengthMiles,
+    wpmSpeed: params.wpmSpeed ?? 20,
   });
+  const loopCurrentMa = morse.loopCurrentMa.toFixed(1);
   const magneticHoldForceN = morse.magneticForceN.toFixed(2);
+  const wpmSpeed = morse.wpmSpeed;
+  const lineResistanceOhms = morse.lineResistanceOhms;
+  const totalResistanceOhms = morse.loopResistanceOhms;
 
   const live = useLiveSimParams({
     keyIsDown,
@@ -46,7 +49,7 @@ export function MorseTelegraph3D() {
     ampereTurns: morse.ampereTurns,
   });
 
-  const controlsRef = useRef<any>(null);
+  const controlsRef = useRef<StudioContext["controls"] | null>(null);
   const cameraRef = useRef<THREE.PerspectiveCamera | null>(null);
 
   const applyCameraPreset = (preset: CameraPreset) => {
@@ -81,8 +84,8 @@ export function MorseTelegraph3D() {
   };
 
   useEffect(() => {
-    updateParam("currentMa", computedCurrentMa);
-  }, [computedCurrentMa, updateParam]);
+    updateParam("currentMa", morse.ohmicCurrentMa);
+  }, [morse.ohmicCurrentMa, updateParam]);
 
   const _handleKeyDown = () => {
     setKeyIsDown(true);
@@ -340,7 +343,7 @@ export function MorseTelegraph3D() {
                 <div>
                   <span className="text-ink-600 dark:text-ink-400">Line Distance:</span>{" "}
                   <span className="font-bold text-purple-600 dark:text-purple-400">
-                    {lineLengthMiles} Mi ({lineVoltageV}V)
+                    {lineLengthMiles} Mi · {wpmSpeed} WPM
                   </span>
                 </div>
               </div>
