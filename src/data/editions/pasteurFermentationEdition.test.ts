@@ -7,7 +7,10 @@ import { pasteurFermentationParallelReadings } from "./pasteurFermentationParall
 
 describe("pasteurFermentationArchivalEdition", () => {
   test("pins the three-sheet facsimile and its sole printed claim", () => {
-    expect(validateCuratedSpecificationEdition(pasteurFermentationArchivalEdition)).toEqual({ valid: true, errors: [] });
+    expect(validateCuratedSpecificationEdition(pasteurFermentationArchivalEdition)).toEqual({
+      valid: true,
+      errors: [],
+    });
     expect(pasteurFermentationArchivalEdition.sourcePdfSha256).toBe(
       "7c9145e813b652e9da76472a8e6d0b2fa3088aeb1cea34b5ae3163f4d673a649",
     );
@@ -23,18 +26,25 @@ describe("pasteurFermentationArchivalEdition", () => {
     const paragraphIndexes = pasteurFermentationArchivalEdition.blocks.flatMap((block, index) =>
       block.kind === "paragraph" ? [index] : [],
     );
-    expect(Object.keys(pasteurFermentationParallelReadings).map(Number).sort((a, b) => a - b)).toEqual(
-      paragraphIndexes,
-    );
+    expect(
+      Object.keys(pasteurFermentationParallelReadings)
+        .map(Number)
+        .sort((a, b) => a - b),
+    ).toEqual(paragraphIndexes);
     for (const index of paragraphIndexes) {
-      expect(pasteurFermentationParallelReadings[index]?.join(" ").trim().length).toBeGreaterThan(30);
+      expect(pasteurFermentationParallelReadings[index]?.join(" ").trim().length).toBeGreaterThan(
+        30,
+      );
     }
   });
 
   test("links each source figure occurrence to an owned facsimile crop", () => {
     const figureReferences = pasteurFermentationArchivalEdition.blocks.flatMap((block) =>
       block.kind === "paragraph"
-        ? block.inlines.filter((inline) => inline.kind === "reference" && inline.referenceType === "figure")
+        ? block.inlines.filter(
+            (inline): inline is Extract<typeof inline, { kind: "reference" }> =>
+              inline.kind === "reference" && inline.referenceType === "figure",
+          )
         : [],
     );
     expect(figureReferences).toHaveLength(3);
@@ -45,7 +55,7 @@ describe("pasteurFermentationArchivalEdition", () => {
     }
   });
 
-  test("is catalog-importable with a reviewed transcription and no invented claims", () => {
+  test("is catalog-importable with a reviewed transcription, no invented claims, and no substituted filing date", () => {
     expect(pasteurFermentationPatent.archivalEdition).toBe(pasteurFermentationArchivalEdition);
     expect(pasteurFermentationPatent.originalTextAsset).toMatchObject({
       kind: "reviewed-transcription",
@@ -53,6 +63,7 @@ describe("pasteurFermentationArchivalEdition", () => {
       sourcePdfSha256: pasteurFermentationArchivalEdition.sourcePdfSha256,
     });
     expect(pasteurFermentationPatent.stats).toMatchObject({ totalClaims: 1, independentClaims: 1 });
+    expect(pasteurFermentationPatent.filingDate).toBeNull();
     expect(parsePatentCatalog([pasteurFermentationPatent])).toHaveLength(1);
   });
 });

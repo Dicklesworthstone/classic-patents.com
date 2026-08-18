@@ -137,6 +137,9 @@ export function getFeaturedPatents(): Patent[] {
 
 export function getPatentsByCategory(category: string): Patent[] {
   if (category === "all") return allPatents;
+  if (category === "aviation") {
+    return allPatents.filter((p) => p.category === "aviation" || p.category === "aerospace");
+  }
   return allPatents.filter((p) => p.category === category);
 }
 

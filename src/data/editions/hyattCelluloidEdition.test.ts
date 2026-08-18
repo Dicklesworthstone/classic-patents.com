@@ -38,6 +38,14 @@ describe("hyattCelluloidArchivalEdition", () => {
     expect(hyattCelluloidPatent.claims[2]?.dependsOn).toEqual([2]);
   });
 
+  test("keeps the unknown filing date null instead of substituting the grant date", () => {
+    expect(hyattCelluloidPatent.grantDate).toBe("1870-07-12");
+    expect(hyattCelluloidPatent.filingDate).toBeNull();
+    expect(
+      readFileSync(join(process.cwd(), "docs/provenance/us-105338-hyatt-celluloid.md"), "utf8"),
+    ).toContain("does not substitute the grant or execution date");
+  });
+
   test("records the source-true absence of figures rather than inventing a press drawing", () => {
     expect(hyattCelluloidPatent.drawings).toEqual([]);
     expect(

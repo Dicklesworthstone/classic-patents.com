@@ -27,10 +27,10 @@ does not match this facsimile. The reviewed transcription is a new asset:
 `transcripts/us-135245-pasteur-fermentation-reviewed.txt`.
 
 The grant gives its execution date as December 8, 1871 and says a French patent
-was granted June 28, 1871. It does not print a U.S. filing date. The required
-catalogue `filingDate` field is therefore populated with the printed execution
-date and this limitation is disclosed in the record rather than inferred as a
-U.S. filing event.
+was granted June 28, 1871. Neither the reviewed grant nor the primary public
+record supplies a U.S. application number or filing date. The catalogue
+`filingDate` is therefore `null`: the execution and grant dates are preserved
+as their own facts and are not substituted for an unknown U.S. filing event.
 
 ## Editorial claims and limits
 

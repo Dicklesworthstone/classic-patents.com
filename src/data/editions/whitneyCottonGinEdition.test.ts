@@ -10,9 +10,7 @@ describe("US X72 Whitney cotton-gin manual edition", () => {
       valid: true,
       errors: [],
     });
-    expect(whitneyCottonGinArchivalEdition.claimStatus?.kind).toBe(
-      "no-formal-claims-in-facsimile",
-    );
+    expect(whitneyCottonGinArchivalEdition.claimStatus?.kind).toBe("no-formal-claims-in-facsimile");
     expect(whitneyCottonGinPatent.claims).toEqual([]);
     expect(whitneyCottonGinPatent.stats).toMatchObject({
       totalClaims: 0,

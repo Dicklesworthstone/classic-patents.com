@@ -29,7 +29,7 @@
 | 7–8 | Breastwork construction, alternative strapped breastwork, and opening of the clearer description | Part III and opening of Part IV. |
 | 9–10 | Clearer, brushes, bristle angle, whirls, band, false whirls, and adjustable tension | Part IV continuous description. |
 | 11 | Hopper, operation, 49/50 labor statement, closing identification, Whitney signature, and witnesses Chauncey Goodrich and John Allen | Part V, closing formal matter, and execution. |
-| 12 | Notarized 1814 affidavit by Eli Whitney before Elizur Goodrich, Alderman and Notary Public | Post-grant affidavit; retained as formal source matter. |
+| 12 | Notarized affidavit dated 28 October 1793 by Eli Whitney before Elizur Goodrich, Alderman and Notary Public | Formal source matter retained with the description. |
 
 ## No-formal-claims finding
 

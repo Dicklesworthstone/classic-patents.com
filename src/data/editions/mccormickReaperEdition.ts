@@ -158,9 +158,7 @@ export const mccormickReaperArchivalEdition: CuratedSpecificationEdition = {
  * to the shared `parallelReadings.ts` registry; this patent-only lane does not
  * own that shared registry.
  */
-export const mccormickReaperParallelReadings: Readonly<
-  Record<number, readonly string[]>
-> = {
+export const mccormickReaperParallelReadings: Readonly<Record<number, readonly string[]>> = {
   2: [
     "This is the formal address used before the specification. It introduces the public instrument rather than a technical feature.",
   ],

@@ -1,9 +1,13 @@
+--- REVIEWED TRANSCRIPTION PAGE 1 OF 6 ---
+
 G. DAIMLER. EXPLOSIVE GAS MARINE ENGINE. No. 361,931. Patented Apr. 26, 1887.
 
 (No Model.) 3 Sheets—Sheet 1.
 Fig. 1.
 Witnesses: George B. Ailes. Robert Garrett.
 Inventor: Gottlieb Daimler, by James L. Norris, Atty.
+
+--- REVIEWED TRANSCRIPTION PAGE 2 OF 6 ---
 
 G. DAIMLER. EXPLOSIVE GAS MARINE ENGINE. No. 361,931. Patented Apr. 26, 1887.
 
@@ -12,12 +16,16 @@ Fig. 2. Fig. 4. Fig. 4a. Fig. 4b. Fig. 5. Fig. 6.
 Witnesses: George B. Ailes. Robert Garrett.
 Inventor: Gottlieb Daimler, by James L. Norris, Atty.
 
+--- REVIEWED TRANSCRIPTION PAGE 3 OF 6 ---
+
 G. DAIMLER. EXPLOSIVE GAS MARINE ENGINE. No. 361,931. Patented Apr. 26, 1887.
 
 (No Model.) 3 Sheets—Sheet 3.
 Fig. 3.
 Witnesses: George B. Ailes. Robert Garrett.
 Inventor: Gottlieb Daimler, by James L. Norris, Atty.
+
+--- REVIEWED TRANSCRIPTION PAGE 4 OF 6 ---
 
 UNITED STATES PATENT OFFICE.
 
@@ -47,9 +55,11 @@ The motor-engine is driven continuously in one and the same direction.
 
 For the forward propulsion of the vessel the propeller-shaft is in the first instance pressed by hand or otherwise toward the motor, so that the half-couplings a a² are in sufficient frictional contact to effect the starting of the screw, whereupon the thrust of the latter itself maintains the required contact. The coupling a a² may be either conical or flat.
 
-For the backward motion of the vessel the propeller-shaft is drawn backward, so as to disconnect the coupling a a², while the intermediate friction-disks, e' e², are at the same time pressed by elbow-levers f' f² against the disks a² c, in consequence of which the screw will be rotated in the contrary direction, so as to propel the ship backward. The elbow-levers f' f² have their fulcra at g' g², and transmit by their connection with the boss of the disk c the longitudinal motion of the propeller-shaft to the disks e' e² by pressing on the projecting centers e³ e⁴ thereof. In order to transmit such pressure equally to the two disks e' e², a cross-head, h' h², pivoted at h³, is employed.
+For the backward motion of the vessel the propeller-shaft is drawn backward, so as to disconnect the coupling a a², while the intermediate friction-disks, e' e², are at the same time pressed by elbow-levers f' f² against the disks a² c, in consequence of which the screw will be rotated in the contrary direction, so as to propel the ship backward. The elbow-levers f' f² have their fulcra at g' g², and transmit by their connection with the boss of the disk c the longitudinal motion of the propeller-shaft to the disks e' e² by pressing on the projecting centers e³ e⁴ thereof. In order to transmit such pressure equally to the two disks e' e², a cross-head, h' h², pivoted at h³, is
 
-The disks e' e² rotate free in their bearings e⁵ e⁶, and when not acted on by the levers f' f² they are pushed outward by helical springs e⁷ e⁸, so as to be out of contact with the disks a² c. In place of the disks a² e' c may also be used bevel-wheels always kept in gear, in which case the wheel taking the place of c would be loose on the propeller-shaft and formed with a coupling similar to a'. A bearing behind the latter would then take the pull of the reversed propeller-shaft, and this pull would effect the frictional contact of the coupling of c for running backward.
+--- REVIEWED TRANSCRIPTION PAGE 5 OF 6 ---
+
+employed. The disks e' e² rotate free in their bearings e⁵ e⁶, and when not acted on by the levers f' f² they are pushed outward by helical springs e⁷ e⁸, so as to be out of contact with the disks a² c. In place of the disks a² e' c may also be used bevel-wheels always kept in gear, in which case the wheel taking the place of c would be loose on the propeller-shaft and formed with a coupling similar to a'. A bearing behind the latter would then take the pull of the reversed propeller-shaft, and this pull would effect the frictional contact of the coupling of c for running backward.
 
 For pressing the propeller-shaft forward toward the motor-engine, a helical spring, i', is provided, which always tends to move the shaft forward, so as to keep the coupling a a² slightly in contact. In order to prevent the coupling a a² from being brought too rapidly into forcible contact by the thrust of the propeller, so as to insure a gradual starting, as also a gradual stopping and reversing, a screw-spindle, k', with hand wheel or crank k², elbow-lever l, and fixed collar i², are provided. The collar i² serves as abutment for the spring i' and is loose on the shaft. In place of the spring i' and collar i², a second fixed collar may be fixed on the shaft in front of the lever l, so that the forward motion of the shaft is also effected by this. The lever may also be arranged either straight or as an elbow-lever to be acted upon directly by hand or foot, instead of through a screw-spindle.
 
@@ -69,7 +79,11 @@ When using petroleum for working the motor-engine, I employ, by preference, the 
 
 Having thus described the nature of my invention and the best means I know for carrying the same into practical effect, I claim—
 
-1. The combination, with the propeller and propeller-shaft of a vessel and with part of a friction-coupling on said shaft, of a gas or petroleum motor-engine having its shaft arranged in line with the propeller-shaft and provided with part of a friction-coupling for effecting the forward motion of the vessel and gearing between the propeller-shaft and the part of the friction-coupling on the engine for effecting the backward motion of the vessel, substantially as described.
+1. The combination, with the propeller and propeller-shaft of a vessel and with part of a friction-coupling on said shaft, of a gas or petroleum motor-engine having its shaft arranged in line with the propeller-shaft and provided
+
+--- REVIEWED TRANSCRIPTION PAGE 6 OF 6 ---
+
+with part of a friction-coupling for effecting the forward motion of the vessel and gearing between the propeller-shaft and the part of the friction-coupling on the engine for effecting the backward motion of the vessel, substantially as described.
 
 2. The combination, with the propeller-shaft having a longitudinal movement in its bearings and provided with part of a friction-clutch, of a gas or petroleum motor-engine having its shaft arranged in line with the propeller-shaft and provided with part of a friction-coupling which engages and disengages the part of the friction-coupling by the longitudinal movement of said propeller-shaft, substantially as described.
 

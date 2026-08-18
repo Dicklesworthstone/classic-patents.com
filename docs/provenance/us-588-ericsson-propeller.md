@@ -8,6 +8,9 @@
 - **Rights basis:** United States Patent No. 588 was granted on 1 February 1838. Its patent specification and drawings are public-domain United States government records.
 - **SHA-256:** `40582250d44f6558cf9a438801e312a469ccb83b6755ebc813943fba54c3ea9a`
 - **PDF pages:** 5
+- **Filing date:** Not documented by the reviewed grant or the cited primary
+  public record. The catalogue records this as `null`; it does not reuse the
+  1 February 1838 grant date as a fabricated filing date.
 - **Editorial method:** direct visual reading of the pinned five-page PDF. The published continuous edition is explicit typed nodes in `src/data/editions/ericssonPropellerEdition.ts`; no OCR or PDF text layer is its source.
 
 ## Page-level locators

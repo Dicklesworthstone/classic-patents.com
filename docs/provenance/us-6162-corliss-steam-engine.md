@@ -6,6 +6,9 @@
 - Retrieved and directly compared: 2026-08-17
 - SHA-256: `22a03c717ed383165143af5aa3b85c8dac0705eaa4cdadcf93130ba28ef76ff5`
 - PDF page count: 8
+- Filing date: Not documented by the reviewed grant or the cited primary
+  public record. The catalogue records this as `null`; it does not reuse the
+  10 March 1849 grant date as a fabricated filing date.
 - Rights basis: United States patent specification issued in 1849. The local
   facsimile is preserved as the source record; this receipt makes no separate
   legal clearance finding for any third-party scan presentation.

@@ -300,7 +300,8 @@ export const otisElevatorPatent: Patent = {
     mechanicalBreakdown: [
       {
         title: "Hook Racks and Safety Pawls",
-        summary: "Pawls f f pivot on levers E and enter hook-form rack teeth C C when rope G no longer holds the mechanism released.",
+        summary:
+          "Pawls f f pivot on levers E and enter hook-form rack teeth C C when rope G no longer holds the mechanism released.",
         technicalDetails:
           "Springs e, g, and g urge the pawls toward engagement. With the loaded platform falling, the upward-pointing hook teeth make the force draw uprights B B inward, which is the claimed anti-separation condition rather than a generic friction brake.",
         archaicTerm: "pawls in gear with the racks",
@@ -316,7 +317,8 @@ export const otisElevatorPatent: Patent = {
       },
       {
         title: "Forked Stop Rope",
-        summary: "Rope U and branched end V convert a stop pull into a non-actuating locked position.",
+        summary:
+          "Rope U and branched end V convert a stop pull into a non-actuating locked position.",
         technicalDetails:
           "When U is pulled down, its two u branches reach one horizontal plane. That geometry lets V actuate T during running but prevents it from moving T after the brake is applied, which is the limitation in claim 2.",
         archaicTerm: "branched end V",
@@ -324,7 +326,8 @@ export const otisElevatorPatent: Patent = {
       },
       {
         title: "Drum Counterpoise",
-        summary: "Counterweight R is connected by rope Q to drum H rather than directly to platform D.",
+        summary:
+          "Counterweight R is connected by rope Q to drum H rather than directly to platform D.",
         technicalDetails:
           "Q winds on the opposite direction from G. The arrangement offsets platform weight but leaves the platform-side safety mechanism free to lock when G breaks, which is the functional limit in claim 4.",
         archaicTerm: "counterpoise",
@@ -383,7 +386,11 @@ export const otisElevatorPatent: Patent = {
         "Attaching the rope Q of the counterpoise R to the drum H on the opposite side from the lifting-rope G, substantially as shown, so as to counterpoise the platform D without preventing or interfering with the action of the safety mechanism E e f.",
       plainEnglish:
         "Claim 4 places counterpoise rope Q on the opposite side of drum H from lifting rope G. The arrangement must balance platform D while preserving the operation of safety mechanism E e f.",
-      keyInnovations: ["counterpoise rope Q", "opposite drum winding", "unobstructed safety mechanism"],
+      keyInnovations: [
+        "counterpoise rope Q",
+        "opposite drum winding",
+        "unobstructed safety mechanism",
+      ],
     },
   ],
   drawings: [
@@ -393,20 +400,69 @@ export const otisElevatorPatent: Patent = {
       caption: "Source drawing sheet, Figure 1: vertical section taken on line x x of Figure 2.",
       svgType: "otis-elevator",
       callouts: [
-        { id: "oe-fig1-a", figureRef: "Fig. 1", label: "A", element: "Base or platform", description: "Base carrying the hoisting apparatus.", x: 73, y: 77 },
-        { id: "oe-fig1-h", figureRef: "Fig. 1", label: "H", element: "Winding drum", description: "Drum to which lifting rope G and counterpoise rope Q attach.", x: 67, y: 37 },
-        { id: "oe-fig1-r", figureRef: "Fig. 1", label: "R", element: "Counterpoise", description: "Weight on rope Q.", x: 78, y: 73 },
+        {
+          id: "oe-fig1-a",
+          figureRef: "Fig. 1",
+          label: "A",
+          element: "Base or platform",
+          description: "Base carrying the hoisting apparatus.",
+          x: 73,
+          y: 77,
+        },
+        {
+          id: "oe-fig1-h",
+          figureRef: "Fig. 1",
+          label: "H",
+          element: "Winding drum",
+          description: "Drum to which lifting rope G and counterpoise rope Q attach.",
+          x: 67,
+          y: 37,
+        },
+        {
+          id: "oe-fig1-r",
+          figureRef: "Fig. 1",
+          label: "R",
+          element: "Counterpoise",
+          description: "Weight on rope Q.",
+          x: 78,
+          y: 73,
+        },
       ],
     },
     {
       figureNumber: "Fig. 2",
       title: "Front view of the hoisting apparatus",
-      caption: "Source drawing sheet, Figure 2: front view identifying platform D, hook racks C C, levers E E, pawls f f, and the winding and belt gear.",
+      caption:
+        "Source drawing sheet, Figure 2: front view identifying platform D, hook racks C C, levers E E, pawls f f, and the winding and belt gear.",
       svgType: "otis-elevator",
       callouts: [
-        { id: "oe-fig2-c", figureRef: "Fig. 2", label: "C", element: "Hook racks", description: "Upward-inclined hook teeth that receive pawls f f.", x: 60, y: 25 },
-        { id: "oe-fig2-d", figureRef: "Fig. 2", label: "D", element: "Platform", description: "Load-bearing platform between the uprights.", x: 52, y: 45 },
-        { id: "oe-fig2-f", figureRef: "Fig. 2", label: "f", element: "Pawls", description: "Spring-biased safety catches on levers E E.", x: 19, y: 37 },
+        {
+          id: "oe-fig2-c",
+          figureRef: "Fig. 2",
+          label: "C",
+          element: "Hook racks",
+          description: "Upward-inclined hook teeth that receive pawls f f.",
+          x: 60,
+          y: 25,
+        },
+        {
+          id: "oe-fig2-d",
+          figureRef: "Fig. 2",
+          label: "D",
+          element: "Platform",
+          description: "Load-bearing platform between the uprights.",
+          x: 52,
+          y: 45,
+        },
+        {
+          id: "oe-fig2-f",
+          figureRef: "Fig. 2",
+          label: "f",
+          element: "Pawls",
+          description: "Spring-biased safety catches on levers E E.",
+          x: 19,
+          y: 37,
+        },
       ],
     },
     {
@@ -415,8 +471,24 @@ export const otisElevatorPatent: Patent = {
       caption: "Source drawing sheet, Figure 3: the rope U, fork V, and related stop linkage.",
       svgType: "otis-elevator",
       callouts: [
-        { id: "oe-fig3-u", figureRef: "Fig. 3", label: "U", element: "Stop rope", description: "Rope that moves the forked stop linkage.", x: 49, y: 56 },
-        { id: "oe-fig3-v", figureRef: "Fig. 3", label: "V", element: "Branched end", description: "Forked end whose alignment isolates rope T after stopping.", x: 46, y: 50 },
+        {
+          id: "oe-fig3-u",
+          figureRef: "Fig. 3",
+          label: "U",
+          element: "Stop rope",
+          description: "Rope that moves the forked stop linkage.",
+          x: 49,
+          y: 56,
+        },
+        {
+          id: "oe-fig3-v",
+          figureRef: "Fig. 3",
+          label: "V",
+          element: "Branched end",
+          description: "Forked end whose alignment isolates rope T after stopping.",
+          x: 46,
+          y: 50,
+        },
       ],
     },
   ],
@@ -435,6 +507,12 @@ export const otisElevatorPatent: Patent = {
     aftermath:
       "The facsimile establishes the January 15, 1861 grant. This edition makes no further litigation or commercial claim without a separately cited historical source.",
   },
-  tags: ["Elisha Graves Otis", "hoisting apparatus", "safety catch", "belt shipper", "counterpoise"],
+  tags: [
+    "Elisha Graves Otis",
+    "hoisting apparatus",
+    "safety catch",
+    "belt shipper",
+    "counterpoise",
+  ],
   stats: { totalClaims: 4, independentClaims: 4 },
 };

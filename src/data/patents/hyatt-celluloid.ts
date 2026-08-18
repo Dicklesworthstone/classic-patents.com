@@ -10,10 +10,9 @@ export const hyattCelluloidPatent: Patent = {
   inventors: ["John W. Hyatt, Jr.", "Isaiah S. Hyatt"],
   inventorLocation: "Albany, Albany County, New York",
   grantDate: "1870-07-12",
-  // The one-page grant bears no application or filing date. The catalogue's
-  // required date field therefore preserves the grant record date rather than
-  // repeating the unsupported legacy 1870-04-02 filing assertion.
-  filingDate: "1870-07-12",
+  // The one-page grant and the primary public record supply no application or
+  // filing date. Do not substitute the grant or execution date.
+  filingDate: null,
   era: "Civil War & Industrial Acceleration (1860–1880)",
   category: "materials",
   categoryLabel: "Materials and Polymer Processing",

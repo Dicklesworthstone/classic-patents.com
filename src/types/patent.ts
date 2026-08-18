@@ -205,7 +205,8 @@ export interface Patent {
   inventors: string[];
   inventorLocation: string;
   grantDate: string; // "YYYY-MM-DD"
-  filingDate: string; // "YYYY-MM-DD"
+  /** `null` only when the reviewed primary record does not document a filing date. */
+  filingDate: string | null; // "YYYY-MM-DD"
   era: string; // "Early Aviation (1900-1910)"
   category: PatentCategory;
   categoryLabel: string;

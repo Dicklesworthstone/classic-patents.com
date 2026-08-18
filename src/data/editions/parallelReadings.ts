@@ -8,18 +8,20 @@
 import { coltRevolverParallelReadings } from "./coltRevolverEdition";
 import { corlissSteamEngineParallelReadings } from "./corlissSteamEngineEdition";
 import { davenportElectricMotorParallelReadings } from "./davenportElectricMotorEdition";
-import { DAIMLER_MARINE_ENGINE_PARALLEL_READINGS } from "./us-361931-daimler-engine";
 import { ericssonPropellerParallelReadings } from "./ericssonPropellerEdition";
 import { gatlingGunParallelReadings } from "./gatlingGunEdition";
 import { goddardRocketParallelReadings } from "./goddardRocketEdition";
 import { goodyearRubberParallelReadings } from "./goodyearRubberEdition";
+import { grammeDynamoParallelReadings } from "./grammeDynamoEdition";
 import { hyattCelluloidParallelReadings } from "./hyattCelluloidEdition";
 import { lincolnBuoyParallelReadings } from "./lincolnBuoyEdition";
 import { mccormickReaperParallelReadings } from "./mccormickReaperEdition";
 import { morseTelegraphParallelReadings } from "./morseTelegraphEdition";
 import { nobelDynamiteParallelReadings } from "./nobelDynamiteEdition";
 import { otisElevatorParallelReadings } from "./otisElevatorParallelReading";
+import { pasteurFermentationParallelReadings } from "./pasteurFermentationParallelReading";
 import { HOWE_SEWING_MACHINE_PARALLEL_READINGS } from "./us-4750-howe-sewing-machine";
+import { DAIMLER_MARINE_ENGINE_PARALLEL_READINGS } from "./us-361931-daimler-engine";
 import { whitneyCottonGinParallelReadings } from "./whitneyCottonGinParallelReading";
 
 export type ArchivalParallelReading = readonly string[];
@@ -41,6 +43,8 @@ export const ARCHIVAL_PARALLEL_READINGS: Readonly<
   "us-36836-gatling-gun": gatlingGunParallelReadings,
   "us-78317-nobel-dynamite": nobelDynamiteParallelReadings,
   "us-105338-hyatt-celluloid": hyattCelluloidParallelReadings,
+  "us-120057-gramme-dynamo": grammeDynamoParallelReadings,
+  "us-135245-pasteur-fermentation": pasteurFermentationParallelReadings,
   "us-361931-daimler-engine": DAIMLER_MARINE_ENGINE_PARALLEL_READINGS,
   "us-1102653-goddard-rocket": goddardRocketParallelReadings,
   "us-821393-wright-flyer": {

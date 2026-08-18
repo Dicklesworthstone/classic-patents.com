@@ -6,7 +6,7 @@
 - Granted title: *Improvement in Treating and Molding Pyroxyline*
 - Inventors as printed: John W. Hyatt, Jr.; Isaiah S. Hyatt, both of Albany, New York
 - Grant date: 1870-07-12
-- Filing date: not printed on the reviewed one-page grant and not supplied by the cited primary record; the canonical schema's required date field uses the grant record date and is not an asserted filing date.
+- Filing date: `null`. It is not printed on the reviewed one-page grant and is not supplied by the cited primary public record. The canonical record does not substitute the grant or execution date.
 - Primary public record: https://patents.google.com/patent/US105338A/en
 - Primary PDF record: https://patentimages.storage.googleapis.com/83/3e/63/9a50c994a0a029/US105338.pdf
 - Local immutable facsimile: `public/patents/pdfs/us-105338-hyatt-celluloid.pdf`

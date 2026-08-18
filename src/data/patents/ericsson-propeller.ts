@@ -10,7 +10,8 @@ export const ericssonPropellerPatent: Patent = {
   inventors: ["John Ericsson"],
   inventorLocation: "London, England",
   grantDate: "1838-02-01",
-  filingDate: "1838-02-01",
+  // Neither the reviewed grant nor the primary public record supplies a filing date.
+  filingDate: null,
   era: "Early Industrial Navigation (1830–1850)",
   category: "aviation",
   categoryLabel: "Marine Propulsion & Hydrodynamics",

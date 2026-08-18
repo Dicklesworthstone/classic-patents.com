@@ -1,5 +1,6 @@
 import { describe, expect, it } from "bun:test";
 import { allPatents, getPatentById } from "@/data/patents";
+import { parsePatentCatalog } from "@/data/patents/schema";
 import { PATENT_PHYSICS_REGISTRY } from "@/physics";
 import { FrankenSimEngine } from "@/physics/engine";
 
@@ -38,6 +39,14 @@ describe("Classic Patents Catalog Integrity", () => {
       expect(found).toBeDefined();
       expect(found?.id).toBe(patent.id);
     }
+  });
+
+  it("permits a documented unavailable filing date without inventing a substitute", () => {
+    const source = allPatents[0];
+    if (!source) throw new Error("Expected a catalog record for null filing-date validation");
+
+    const [parsed] = parsePatentCatalog([{ ...source, filingDate: null }]);
+    expect(parsed?.filingDate).toBeNull();
   });
 });
 
@@ -83,7 +92,7 @@ describe("FrankenSim Physics Telemetry Gate", () => {
     expect(wright.liftNewtons).toBeGreaterThan(0);
 
     // Tesla Motor
-    const tesla = FrankenSimEngine.stepTeslaMotor(60, 4, 15);
+    const tesla = FrankenSimEngine.stepTeslaMotor(60, 2, 15);
     expect(tesla.magneticFluxDensityTesla).toBe(1.2);
     expect(tesla.currentAmperes).toBeGreaterThan(0);
 

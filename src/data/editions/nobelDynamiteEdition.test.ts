@@ -32,6 +32,7 @@ describe("nobelDynamiteArchivalEdition", () => {
   });
 
   test("records the facsimile limitation in the archival edition", () => {
+    expect(nobelDynamitePatent.filingDate).toBeNull();
     expect(nobelDynamitePatent.drawings).toEqual([]);
     expect(nobelDynamiteArchivalEdition.blocks.some((block) => block.kind === "figure-sheet")).toBe(
       false,

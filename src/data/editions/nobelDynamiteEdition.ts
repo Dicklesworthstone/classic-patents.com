@@ -1,7 +1,4 @@
-import type {
-  CuratedSpecificationEdition,
-  CuratedSpecificationInlines,
-} from "@/types/patent";
+import type { CuratedSpecificationEdition, CuratedSpecificationInlines } from "@/types/patent";
 
 const literal = (text: string): CuratedSpecificationInlines => [{ kind: "text", text }];
 
@@ -111,7 +108,10 @@ export const nobelDynamiteArchivalEdition: CuratedSpecificationEdition = {
         "Porous charcoal has also a considerable absorbent capacity, but it has the defect of being itself a combustible material, and also of less elasticity of its particles, which renders it easy to squeeze out a part of its nitro-glycerine.",
       ),
     },
-    { kind: "paragraph", inlines: literal("The two materials are combined in the following manner:") },
+    {
+      kind: "paragraph",
+      inlines: literal("The two materials are combined in the following manner:"),
+    },
     {
       kind: "paragraph",
       inlines: literal(
@@ -161,7 +161,9 @@ export const nobelDynamiteArchivalEdition: CuratedSpecificationEdition = {
     { kind: "paragraph", inlines: literal("The powder is then finished and ready for use.") },
     {
       kind: "paragraph",
-      inlines: literal("The fineness desired for the powder will determine the fineness of the sieve to be used."),
+      inlines: literal(
+        "The fineness desired for the powder will determine the fineness of the sieve to be used.",
+      ),
     },
     {
       kind: "paragraph",
@@ -187,7 +189,12 @@ export const nobelDynamiteArchivalEdition: CuratedSpecificationEdition = {
         "When confined in a tight and strong enclosure it explodes by heat applied in any form, when above the temperature of 360° Fahrenheit. Under all other circumstances it may be exploded by some other explosion in it or into it.",
       ),
     },
-    { kind: "paragraph", inlines: literal("The most simple and certain method known to me of exploding it is as follows:") },
+    {
+      kind: "paragraph",
+      inlines: literal(
+        "The most simple and certain method known to me of exploding it is as follows:",
+      ),
+    },
     {
       kind: "paragraph",
       inlines: annotated(
@@ -208,7 +215,10 @@ export const nobelDynamiteArchivalEdition: CuratedSpecificationEdition = {
         "Blasting term",
       ),
     },
-    { kind: "paragraph", inlines: literal("The fuse explodes the cap, and this explosion explodes the powder.") },
+    {
+      kind: "paragraph",
+      inlines: literal("The fuse explodes the cap, and this explosion explodes the powder."),
+    },
     {
       kind: "paragraph",
       inlines: literal(
@@ -284,40 +294,108 @@ export const nobelDynamiteArchivalEdition: CuratedSpecificationEdition = {
  */
 export const nobelDynamiteParallelReadings: Readonly<Record<number, readonly string[]>> = {
   1: ["This formal address opens the instrument and does not state a chemical limitation."],
-  2: ["Nobel identifies himself as being in Hamburg and identifies the subject in the broad period category of a composition of matter: an explosive powder."],
-  3: ["The stated move is not the discovery of nitro-glycerine. It is a composition made from nitro-glycerine and a later-specified porous material, meant to retain much of the liquid's power while improving handling, storage, and transport."],
-  4: ["Nobel names the required functional property of the added material: it must absorb strongly without chemically degrading the nitro-glycerine or spoiling its explosive action."],
-  5: ["He acknowledges a tradeoff: dilution can reduce concentration of power. His practical answer is a deformable mass that fills the drilled hole, so a cartridge no longer leaves unused annular space around a smaller liquid container."],
-  6: ["This is the enabling promise. Nobel says he will describe both the composition and the way to make and use it so a skilled person can reproduce the stated result."],
-  7: ["Nobel selects a low-density, porous silica-rich earth and gives several contemporary names for it. The property he needs is a homogeneous mineral carrier with high uptake, not a brand name or a particular drawing."],
-  8: ["The stated uptake is about three times the earth's own weight while remaining powder-like. That ratio is why the carrier can hold a large nitro-glycerine fraction without behaving as a free liquid."],
-  9: ["Chalk is the counterexample: it is said to hold only about fifteen percent before a higher loading makes a paste. Nobel uses it to distinguish an inadequate absorber from the selected earth."],
-  10: ["Charcoal is another candidate with uptake, but Nobel rejects it for two stated reasons: it is combustible and its particles lack enough elasticity to retain all of the liquid under pressure."],
-  11: ["This short transition begins the manufacturing description. The following paragraphs specify drying, gradual addition, mixing, and the acceptable loading range."],
-  12: ["Nobel directs that the earth be dried and pulverized first, then receive nitro-glycerine in a sufficiently slow stream to keep the ingredients mixed throughout."],
-  13: ["The historic specification permits hand, hand-held wooden-tool, or wooden-machine mixing. It is reporting the allowed means, not prescribing a modern safety procedure."],
-  14: ["The lower constraint is that enough liquid must be present for an explosive compound; the upper constraint is that the material must remain powder rather than become liquid or pasty."],
-  15: ["Nobel gives a range of sixty parts nitro-glycerine to forty earth as a useful minimum, through seventy-eight to twenty-two as the useful maximum. He records dry appearance at one extreme and paste at the other."],
-  16: ["Within that stated interval, a larger nitro-glycerine share is said to make the powder easier to explode and more powerful. This is a comparative relation, not a claim to every possible mixture."],
-  17: ["Nobel identifies seventy-five parts nitro-glycerine to twenty-five earth as suitable for ordinary practice and says it can be compressed to nearly the specific gravity of pure nitro-glycerine."],
-  18: ["After thorough incorporation, the material is screened through hair, silk, or brass wire. Iron is expressly rejected because it corrodes; remaining lumps are reduced with a stiff brush until they pass the screen."],
+  2: [
+    "Nobel identifies himself as being in Hamburg and identifies the subject in the broad period category of a composition of matter: an explosive powder.",
+  ],
+  3: [
+    "The stated move is not the discovery of nitro-glycerine. It is a composition made from nitro-glycerine and a later-specified porous material, meant to retain much of the liquid's power while improving handling, storage, and transport.",
+  ],
+  4: [
+    "Nobel names the required functional property of the added material: it must absorb strongly without chemically degrading the nitro-glycerine or spoiling its explosive action.",
+  ],
+  5: [
+    "He acknowledges a tradeoff: dilution can reduce concentration of power. His practical answer is a deformable mass that fills the drilled hole, so a cartridge no longer leaves unused annular space around a smaller liquid container.",
+  ],
+  6: [
+    "This is the enabling promise. Nobel says he will describe both the composition and the way to make and use it so a skilled person can reproduce the stated result.",
+  ],
+  7: [
+    "Nobel selects a low-density, porous silica-rich earth and gives several contemporary names for it. The property he needs is a homogeneous mineral carrier with high uptake, not a brand name or a particular drawing.",
+  ],
+  8: [
+    "The stated uptake is about three times the earth's own weight while remaining powder-like. That ratio is why the carrier can hold a large nitro-glycerine fraction without behaving as a free liquid.",
+  ],
+  9: [
+    "Chalk is the counterexample: it is said to hold only about fifteen percent before a higher loading makes a paste. Nobel uses it to distinguish an inadequate absorber from the selected earth.",
+  ],
+  10: [
+    "Charcoal is another candidate with uptake, but Nobel rejects it for two stated reasons: it is combustible and its particles lack enough elasticity to retain all of the liquid under pressure.",
+  ],
+  11: [
+    "This short transition begins the manufacturing description. The following paragraphs specify drying, gradual addition, mixing, and the acceptable loading range.",
+  ],
+  12: [
+    "Nobel directs that the earth be dried and pulverized first, then receive nitro-glycerine in a sufficiently slow stream to keep the ingredients mixed throughout.",
+  ],
+  13: [
+    "The historic specification permits hand, hand-held wooden-tool, or wooden-machine mixing. It is reporting the allowed means, not prescribing a modern safety procedure.",
+  ],
+  14: [
+    "The lower constraint is that enough liquid must be present for an explosive compound; the upper constraint is that the material must remain powder rather than become liquid or pasty.",
+  ],
+  15: [
+    "Nobel gives a range of sixty parts nitro-glycerine to forty earth as a useful minimum, through seventy-eight to twenty-two as the useful maximum. He records dry appearance at one extreme and paste at the other.",
+  ],
+  16: [
+    "Within that stated interval, a larger nitro-glycerine share is said to make the powder easier to explode and more powerful. This is a comparative relation, not a claim to every possible mixture.",
+  ],
+  17: [
+    "Nobel identifies seventy-five parts nitro-glycerine to twenty-five earth as suitable for ordinary practice and says it can be compressed to nearly the specific gravity of pure nitro-glycerine.",
+  ],
+  18: [
+    "After thorough incorporation, the material is screened through hair, silk, or brass wire. Iron is expressly rejected because it corrodes; remaining lumps are reduced with a stiff brush until they pass the screen.",
+  ],
   19: ["Once screened as described, Nobel regards the powder as finished and ready for use."],
-  20: ["The desired final particle fineness controls the fineness of the sieve. The text does not specify one universal mesh size."],
-  21: ["Nobel characterizes the finished powder by reduced susceptibility to accidental or involuntary explosion. It is a performance statement central to the practical purpose of the composition."],
-  22: ["He compares the packed powder with nitro-glycerine under concussion or percussion and states that a wooden cask or box may be smashed without explosion. The qualification is the material in its usual packing."],
-  23: ["The comparison shifts to open-air fire and ordinary packaging. Nobel says the powder burns rather than explodes there, then draws the practical conclusion of lower handling, storage, and transport danger than ordinary gunpowder."],
-  24: ["Confinement changes the stated behavior: above 360° Fahrenheit in a tight, strong enclosure, heat can cause explosion. Otherwise the text says another explosion in or into the material can initiate it."],
-  25: ["Nobel now introduces what he calls the simplest and most certain method of initiating the powder. The details follow in the next paragraph."],
-  26: ["A common blasting fuse enters a percussion cap; its rim is crimped so the fuse end and the cap's fulminating powder are enclosed together. Nobel then directs that this cap-and-fuse end be embedded firmly in the powder."],
-  27: ["For blasting, the powder is pressed around the cap and fuse and covered with tamping that is pressed but not pounded. Nobel treats firm pressing as equivalent to very solid ramming for this purpose."],
-  28: ["This is the causal initiation chain stated in the source: the fuse initiates the cap, and the cap's explosion initiates the powder."],
-  29: ["Nobel notes that a carefully packed fuse alone can sometimes initiate a tightly enclosed, strongly charged powder mass, but expressly rejects that method as too careful and uncertain for general reliance."],
-  30: ["The passage restates the composition-dependent initiation tendency: more nitro-glycerine makes the powder easier to explode."],
-  31: ["For lower nitro-glycerine content, Nobel calls for a correspondingly longer, stronger, heavily charged percussion cap, and prefers such a cap generally for reliable initiation."],
-  32: ["This warning concerns premature contact of fuse fire with the powder. Nobel tells the reader to insert the cap only fairly into the powder and to secure poor fuses near the cap with glued paper, hemp, or another means."],
-  33: ["The bore-hole and charge quantities are expressly framed as practical rather than absolute. They are historical evidence of the claimed use context, not present-day operational guidance."],
-  34: ["Nobel identifies strong-paper cartridges as a convenient form for using the powder, continuing the earlier concern with containment and placement."],
-  35: ["This formal transition identifies the single legal claim that follows. It does not create a separate method claim for the blasting-cap discussion."],
+  20: [
+    "The desired final particle fineness controls the fineness of the sieve. The text does not specify one universal mesh size.",
+  ],
+  21: [
+    "Nobel characterizes the finished powder by reduced susceptibility to accidental or involuntary explosion. It is a performance statement central to the practical purpose of the composition.",
+  ],
+  22: [
+    "He compares the packed powder with nitro-glycerine under concussion or percussion and states that a wooden cask or box may be smashed without explosion. The qualification is the material in its usual packing.",
+  ],
+  23: [
+    "The comparison shifts to open-air fire and ordinary packaging. Nobel says the powder burns rather than explodes there, then draws the practical conclusion of lower handling, storage, and transport danger than ordinary gunpowder.",
+  ],
+  24: [
+    "Confinement changes the stated behavior: above 360° Fahrenheit in a tight, strong enclosure, heat can cause explosion. Otherwise the text says another explosion in or into the material can initiate it.",
+  ],
+  25: [
+    "Nobel now introduces what he calls the simplest and most certain method of initiating the powder. The details follow in the next paragraph.",
+  ],
+  26: [
+    "A common blasting fuse enters a percussion cap; its rim is crimped so the fuse end and the cap's fulminating powder are enclosed together. Nobel then directs that this cap-and-fuse end be embedded firmly in the powder.",
+  ],
+  27: [
+    "For blasting, the powder is pressed around the cap and fuse and covered with tamping that is pressed but not pounded. Nobel treats firm pressing as equivalent to very solid ramming for this purpose.",
+  ],
+  28: [
+    "This is the causal initiation chain stated in the source: the fuse initiates the cap, and the cap's explosion initiates the powder.",
+  ],
+  29: [
+    "Nobel notes that a carefully packed fuse alone can sometimes initiate a tightly enclosed, strongly charged powder mass, but expressly rejects that method as too careful and uncertain for general reliance.",
+  ],
+  30: [
+    "The passage restates the composition-dependent initiation tendency: more nitro-glycerine makes the powder easier to explode.",
+  ],
+  31: [
+    "For lower nitro-glycerine content, Nobel calls for a correspondingly longer, stronger, heavily charged percussion cap, and prefers such a cap generally for reliable initiation.",
+  ],
+  32: [
+    "This warning concerns premature contact of fuse fire with the powder. Nobel tells the reader to insert the cap only fairly into the powder and to secure poor fuses near the cap with glued paper, hemp, or another means.",
+  ],
+  33: [
+    "The bore-hole and charge quantities are expressly framed as practical rather than absolute. They are historical evidence of the claimed use context, not present-day operational guidance.",
+  ],
+  34: [
+    "Nobel identifies strong-paper cartridges as a convenient form for using the powder, continuing the earlier concern with containment and placement.",
+  ],
+  35: [
+    "This formal transition identifies the single legal claim that follows. It does not create a separate method claim for the blasting-cap discussion.",
+  ],
   37: ["Alfred Nobel signs the instrument after the sole claim."],
-  38: ["The facsimile lists Fr. T. Prohme and Heinr. Bartelssen as witnesses. Their names are formal execution matter, not technical claim limitations."],
+  38: [
+    "The facsimile lists Fr. T. Prohme and Heinr. Bartelssen as witnesses. Their names are formal execution matter, not technical claim limitations.",
+  ],
 };

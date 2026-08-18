@@ -180,7 +180,7 @@ export const patentSchema: z.ZodType<Patent> = z
     inventors: z.array(z.string().min(1)).min(1),
     inventorLocation: z.string().min(1),
     grantDate: isoDate,
-    filingDate: isoDate,
+    filingDate: isoDate.nullable(),
     era: z.string().min(1),
     category: z.enum([
       "aviation",
@@ -247,7 +247,7 @@ export function parsePatentCatalog(patents: unknown[]): Patent[] {
       const path = issue?.path.join(".") || "(root)";
       throw new Error(`Patent ${id} failed Zod check at ${path}: ${issue?.message ?? "invalid"}`);
     }
-    if (parsed.data.filingDate > parsed.data.grantDate) {
+    if (parsed.data.filingDate && parsed.data.filingDate > parsed.data.grantDate) {
       throw new Error(`Patent ${parsed.data.id}: filingDate is after grantDate`);
     }
     if (parsed.data.archivalEdition) {

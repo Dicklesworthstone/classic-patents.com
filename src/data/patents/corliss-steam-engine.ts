@@ -10,7 +10,8 @@ export const corlissSteamEnginePatent: Patent = {
   inventors: ["George Henry Corliss"],
   inventorLocation: "Providence, Providence County, Rhode Island",
   grantDate: "1849-03-10",
-  filingDate: "1849-03-10",
+  // Neither the reviewed grant nor the primary public record supplies a filing date.
+  filingDate: null,
   era: "Early Republic & Industrial Dawn (1790–1830)",
   category: "materials",
   categoryLabel: "Thermodynamics & Steam Power",

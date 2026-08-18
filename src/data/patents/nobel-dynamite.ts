@@ -10,9 +10,9 @@ export const nobelDynamitePatent: Patent = {
   inventors: ["Alfred Nobel"],
   inventorLocation: "Hamburg, Germany",
   grantDate: "1868-05-26",
-  // The reviewed grant prints no filing date. This compatibility field uses
-  // the only date the immutable local primary source attests.
-  filingDate: "1868-05-26",
+  // Neither reviewed primary record supplies a U.S. filing date or application
+  // number. Do not substitute the grant or execution date for missing evidence.
+  filingDate: null,
   era: "Civil War & Industrial Acceleration (1860–1880)",
   category: "materials",
   categoryLabel: "Chemical Physics & Energetic Materials",
@@ -44,7 +44,8 @@ export const nobelDynamitePatent: Patent = {
       },
       {
         title: "Nitro-Glycerine Loading Range",
-        summary: "The source sets material ratios and ties them to powder, dry, and pasty behavior.",
+        summary:
+          "The source sets material ratios and ties them to powder, dry, and pasty behavior.",
         technicalDetails:
           "The minimum given is 60 parts by weight of nitro-glycerine to 40 earth; the maximum is 78 to 22. Nobel calls 75 to 25 suitable for ordinary practical purposes and says it can be compressed to a specific gravity nearly equal to pure nitro-glycerine. He contrasts this with chalk, which he says becomes pasty at 20 percent.",
         archaicTerm: "nitro-glycerine",
@@ -56,11 +57,13 @@ export const nobelDynamitePatent: Patent = {
         technicalDetails:
           "A common blasting-fuse is inserted into a percussion-cap and its rim crimped around the fuse so the fulminating powder and fuse end are enclosed. The cap-and-fuse end is embedded in the powder. Nobel then states the causal sequence: the fuse explodes the cap, and the cap's explosion explodes the powder.",
         archaicTerm: "percussion-cap",
-        modernEquivalent: "an initiating cap; the source does not specify its metal or chemical identity",
+        modernEquivalent:
+          "an initiating cap; the source does not specify its metal or chemical identity",
       },
       {
         title: "Paper Cartridge and Bore-Hole Placement",
-        summary: "The powder may be packed in strong-paper cartridges and pressed into a bore-hole.",
+        summary:
+          "The powder may be packed in strong-paper cartridges and pressed into a bore-hole.",
         technicalDetails:
           "Nobel says the semi-pasty material can fill a bore-hole rather than leave the unfilled clearance caused by a smaller cartridge of liquid nitro-glycerine. He later identifies strong-paper cartridges as a convenient form. No source drawing specifies a cartridge geometry, wax treatment, or dimensions.",
         archaicTerm: "bore-hole",
@@ -132,7 +135,19 @@ export const nobelDynamitePatent: Patent = {
     ],
     breakthroughInsight:
       "The patent's stated insight is that a porous earth with high absorbent capacity can retain a large nitro-glycerine fraction in powder-form, allowing the material to be pressed into the bore-hole while retaining much of the liquid's explosive power.",
-    patentWars: [],
+    patentWars: [
+      {
+        rivalName: "Atlantic Giant Powder Company v. Dittmar Powder Manufacturing Company",
+        rivalClaim:
+          "The dispute concerned reissue No. 5,799 of original US 78,317 and whether competing powder mixtures used an absorbent equivalent of the source-described earth.",
+        conflictDetails:
+          "The reported 1880 decision discusses the original specification's use of “inexplosive” and evidence about competing powders containing nitro-glycerine with other absorbent materials. It does not turn the original two-page grant into a two-claim instrument.",
+        resolution:
+          "The court treated the reported Dittmar mixtures as infringing the reissue under the reasons given in earlier cases, while separately discussing the limits created by the original specification and reissue history.",
+        legalOutcome:
+          "This record cites the case only as later history of reissue No. 5,799. The visitor-facing claim remains the one unnumbered claim printed in US 78,317; this is not a current legal-scope opinion.",
+      },
+    ],
     civilizationalImpact:
       "The patent documents a move from loose liquid nitro-glycerine toward a porous-earth explosive powder that could be packed and handled in a mining context. Its importance lies in that source-stated materials and use problem; the facsimile itself contains no civil-works ledger or litigation outcome.",
     funFact:

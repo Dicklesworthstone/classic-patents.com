@@ -395,35 +395,233 @@ export const grammeDynamoPatent: Patent = {
         "The general arrangement and combination of parts of the various above-described magneto-electric apparatuses employed for any industrial, physiological, or other purposes for which electric currents may be made use of, substantially as described and illustrated in the annexed drawing and for the purposes set down.",
       plainEnglish:
         "Claim 3 claims the overall combinations shown and described for using electrical current, including industrial and physiological uses. Because it says substantially as described and illustrated, it is tied to the detailed apparatus and drawings rather than every future electrical machine.",
-      keyInnovations: ["Combined magneto-electric apparatus", "Claim-linked drawing configurations"],
+      keyInnovations: [
+        "Combined magneto-electric apparatus",
+        "Claim-linked drawing configurations",
+      ],
       legalSignificance:
         "This is an independent combination claim whose limiting context is the written description and annexed figures.",
     },
   ],
   drawings: [
-    { figureNumber: "Fig. 1", title: "First machine, vertical projection", caption: "Vertical projective view of the Fig. 1–3 machine; source drawing sheet 1.", svgType: "gramme-dynamo", callouts: [{ id: "gd-fig1-a", figureRef: "Fig. 1", label: "A", element: "Endless bobbin or cylinder", description: "Soft-iron core and continuous coil assembly described with Figs. 1–3.", x: 50, y: 52 }, { id: "gd-fig1-h", figureRef: "Fig. 1", label: "H", element: "Compound permanent magnets", description: "Fixed field magnets of the first apparatus.", x: 23, y: 51 }] },
-    { figureNumber: "Fig. 2", title: "First machine, vertical section", caption: "Vertical section showing the first apparatus’s coil and conductor relation; source drawing sheet 1.", svgType: "gramme-dynamo", callouts: [{ id: "gd-fig2-c", figureRef: "Fig. 2", label: "C", element: "Junction conductors", description: "Two of the thirty-six conductors are shown in the cross-sectional view.", x: 50, y: 50 }] },
-    { figureNumber: "Fig. 3", title: "Detached part", caption: "Detached part of the Fig. 1–3 construction; source drawing sheet 1.", svgType: "gramme-dynamo", callouts: [] },
-    { figureNumber: "Fig. 4", title: "Second machine, vertical projection", caption: "Vertical projection of the six-magnet construction; source drawing sheet 1.", svgType: "gramme-dynamo", callouts: [{ id: "gd-fig4-a", figureRef: "Fig. 4", label: "A", element: "Endless cylinder", description: "Uninterrupted series of small bobbins with conducting rods at junctions.", x: 50, y: 50 }] },
-    { figureNumber: "Fig. 5", title: "Second machine, horizontal projection", caption: "Horizontal projection of the Fig. 4–6 construction; source drawing sheet 1.", svgType: "gramme-dynamo", callouts: [] },
-    { figureNumber: "Fig. 6", title: "Second machine, vertical section", caption: "Vertical section of the Fig. 4–6 construction; source drawing sheet 1.", svgType: "gramme-dynamo", callouts: [] },
-    { figureNumber: "Fig. 7", title: "Disk machine, vertical projection", caption: "Vertical projection of the two-disk construction; source drawing sheet 2.", svgType: "gramme-dynamo", callouts: [{ id: "gd-fig7-a", figureRef: "Fig. 7", label: "A", element: "Revolving disks", description: "The two coil-carrying disks A and A′.", x: 50, y: 51 }] },
-    { figureNumber: "Fig. 8", title: "Disk machine, horizontal section", caption: "Horizontal section of the Fig. 7–9 construction; source drawing sheet 2.", svgType: "gramme-dynamo", callouts: [] },
-    { figureNumber: "Fig. 9", title: "Cylinder modification", caption: "Modification using a cylinder in the Fig. 7–9 construction; source drawing sheet 2.", svgType: "gramme-dynamo", callouts: [] },
-    { figureNumber: "Fig. 10", title: "Twin-cylinder machine, vertical projection", caption: "Vertical projection of the twin-cylinder construction; source drawing sheet 3.", svgType: "gramme-dynamo", callouts: [{ id: "gd-fig10-aa", figureRef: "Fig. 10", label: "A, A′", element: "Twin cylinders", description: "Two rotating cylinders whose bobbins are connected together.", x: 51, y: 51 }] },
-    { figureNumber: "Fig. 11", title: "Twin-cylinder machine, horizontal section", caption: "Horizontal section of the Fig. 10–11 construction; source drawing sheet 3.", svgType: "gramme-dynamo", callouts: [] },
-    { figureNumber: "Fig. 12", title: "Moving-chain machine, longitudinal view", caption: "Longitudinal vertical projection of the chain-and-fixed-bobbin construction; source drawing sheet 3.", svgType: "gramme-dynamo", callouts: [{ id: "gd-fig12-b", figureRef: "Fig. 12", label: "B", element: "Fixed hollow bobbins", description: "Eight fixed hollow bobbins through which the chains pass.", x: 50, y: 45 }] },
-    { figureNumber: "Fig. 13", title: "Moving-chain machine, end view", caption: "End vertical projection of the chain-and-fixed-bobbin construction; source drawing sheet 3.", svgType: "gramme-dynamo", callouts: [] },
-    { figureNumber: "Fig. 14", title: "Circular-pole machine, longitudinal elevation", caption: "Longitudinal elevation of the circular-pole construction, with parts removed; source drawing sheet 4.", svgType: "gramme-dynamo", callouts: [{ id: "gd-fig14-a2", figureRef: "Fig. 14", label: "A²", element: "Soft-iron core", description: "Soft-iron core of the endless bobbin A.", x: 51, y: 53 }] },
+    {
+      figureNumber: "Fig. 1",
+      title: "First machine, vertical projection",
+      caption: "Vertical projective view of the Fig. 1–3 machine; source drawing sheet 1.",
+      svgType: "gramme-dynamo",
+      callouts: [
+        {
+          id: "gd-fig1-a",
+          figureRef: "Fig. 1",
+          label: "A",
+          element: "Endless bobbin or cylinder",
+          description: "Soft-iron core and continuous coil assembly described with Figs. 1–3.",
+          x: 50,
+          y: 52,
+        },
+        {
+          id: "gd-fig1-h",
+          figureRef: "Fig. 1",
+          label: "H",
+          element: "Compound permanent magnets",
+          description: "Fixed field magnets of the first apparatus.",
+          x: 23,
+          y: 51,
+        },
+      ],
+    },
+    {
+      figureNumber: "Fig. 2",
+      title: "First machine, vertical section",
+      caption:
+        "Vertical section showing the first apparatus’s coil and conductor relation; source drawing sheet 1.",
+      svgType: "gramme-dynamo",
+      callouts: [
+        {
+          id: "gd-fig2-c",
+          figureRef: "Fig. 2",
+          label: "C",
+          element: "Junction conductors",
+          description: "Two of the thirty-six conductors are shown in the cross-sectional view.",
+          x: 50,
+          y: 50,
+        },
+      ],
+    },
+    {
+      figureNumber: "Fig. 3",
+      title: "Detached part",
+      caption: "Detached part of the Fig. 1–3 construction; source drawing sheet 1.",
+      svgType: "gramme-dynamo",
+      callouts: [],
+    },
+    {
+      figureNumber: "Fig. 4",
+      title: "Second machine, vertical projection",
+      caption: "Vertical projection of the six-magnet construction; source drawing sheet 1.",
+      svgType: "gramme-dynamo",
+      callouts: [
+        {
+          id: "gd-fig4-a",
+          figureRef: "Fig. 4",
+          label: "A",
+          element: "Endless cylinder",
+          description: "Uninterrupted series of small bobbins with conducting rods at junctions.",
+          x: 50,
+          y: 50,
+        },
+      ],
+    },
+    {
+      figureNumber: "Fig. 5",
+      title: "Second machine, horizontal projection",
+      caption: "Horizontal projection of the Fig. 4–6 construction; source drawing sheet 1.",
+      svgType: "gramme-dynamo",
+      callouts: [],
+    },
+    {
+      figureNumber: "Fig. 6",
+      title: "Second machine, vertical section",
+      caption: "Vertical section of the Fig. 4–6 construction; source drawing sheet 1.",
+      svgType: "gramme-dynamo",
+      callouts: [],
+    },
+    {
+      figureNumber: "Fig. 7",
+      title: "Disk machine, vertical projection",
+      caption: "Vertical projection of the two-disk construction; source drawing sheet 2.",
+      svgType: "gramme-dynamo",
+      callouts: [
+        {
+          id: "gd-fig7-a",
+          figureRef: "Fig. 7",
+          label: "A",
+          element: "Revolving disks",
+          description: "The two coil-carrying disks A and A′.",
+          x: 50,
+          y: 51,
+        },
+      ],
+    },
+    {
+      figureNumber: "Fig. 8",
+      title: "Disk machine, horizontal section",
+      caption: "Horizontal section of the Fig. 7–9 construction; source drawing sheet 2.",
+      svgType: "gramme-dynamo",
+      callouts: [],
+    },
+    {
+      figureNumber: "Fig. 9",
+      title: "Cylinder modification",
+      caption:
+        "Modification using a cylinder in the Fig. 7–9 construction; source drawing sheet 2.",
+      svgType: "gramme-dynamo",
+      callouts: [],
+    },
+    {
+      figureNumber: "Fig. 10",
+      title: "Twin-cylinder machine, vertical projection",
+      caption: "Vertical projection of the twin-cylinder construction; source drawing sheet 3.",
+      svgType: "gramme-dynamo",
+      callouts: [
+        {
+          id: "gd-fig10-aa",
+          figureRef: "Fig. 10",
+          label: "A, A′",
+          element: "Twin cylinders",
+          description: "Two rotating cylinders whose bobbins are connected together.",
+          x: 51,
+          y: 51,
+        },
+      ],
+    },
+    {
+      figureNumber: "Fig. 11",
+      title: "Twin-cylinder machine, horizontal section",
+      caption: "Horizontal section of the Fig. 10–11 construction; source drawing sheet 3.",
+      svgType: "gramme-dynamo",
+      callouts: [],
+    },
+    {
+      figureNumber: "Fig. 12",
+      title: "Moving-chain machine, longitudinal view",
+      caption:
+        "Longitudinal vertical projection of the chain-and-fixed-bobbin construction; source drawing sheet 3.",
+      svgType: "gramme-dynamo",
+      callouts: [
+        {
+          id: "gd-fig12-b",
+          figureRef: "Fig. 12",
+          label: "B",
+          element: "Fixed hollow bobbins",
+          description: "Eight fixed hollow bobbins through which the chains pass.",
+          x: 50,
+          y: 45,
+        },
+      ],
+    },
+    {
+      figureNumber: "Fig. 13",
+      title: "Moving-chain machine, end view",
+      caption:
+        "End vertical projection of the chain-and-fixed-bobbin construction; source drawing sheet 3.",
+      svgType: "gramme-dynamo",
+      callouts: [],
+    },
+    {
+      figureNumber: "Fig. 14",
+      title: "Circular-pole machine, longitudinal elevation",
+      caption:
+        "Longitudinal elevation of the circular-pole construction, with parts removed; source drawing sheet 4.",
+      svgType: "gramme-dynamo",
+      callouts: [
+        {
+          id: "gd-fig14-a2",
+          figureRef: "Fig. 14",
+          label: "A²",
+          element: "Soft-iron core",
+          description: "Soft-iron core of the endless bobbin A.",
+          x: 51,
+          y: 53,
+        },
+      ],
+    },
   ],
   historicalContext: {
-    problemStatement: "The grant addresses magneto-electric machines that needed a usable output from a moving magnetic relation. Its written solution divides the conductor into numerous connected coil sections and collects current at specific junctions rather than treating one coil as the entire armature.",
-    priorArtLimitations: ["A single winding and fixed terminals cannot provide the same selected-junction collection that the specification describes.", "The source distinguishes its continuous-current arrangement from circuit-breakers, pole-changers, and commutators, while still using metal rubbers to contact moving junction conductors."],
-    breakthroughInsight: "Make the winding an endless series of small coils, expose a conductor at every coil junction, and select the points where like currents meet between unlike poles. The same architecture is then reconnected in one described case for alternating current.",
-    patentWars: [{ rivalName: "Gramme Electrical Co. v. Arnoux & Hochhausen Electric Co., 17 F. 838 (C.C.S.D.N.Y. 1883)", rivalClaim: "Whether US 120,057’s term was constrained by the patentees’ Austrian patent under the 1870 Patent Act.", conflictDetails: "The court record identifies this grant, its August 17, 1870 US filing, the French patent of November 22, 1869, and the Austrian patent issued December 30, 1870.", resolution: "The court held that the US patent expired with the foreign patent having the shortest term that was granted before the US patent was granted.", legalOutcome: "The reported decision concluded that US 120,057 no longer continued after the relevant foreign patent expired; this is a term decision, not a judgment that the technical disclosure was invalid." }],
-    civilizationalImpact: "The document preserves an early, unusually broad family of ring, cylinder, disk, chain, and concentric-winding machines at the foundation of industrial electric generation and motor practice.",
-    aftermath: "The legal record in Gramme Electrical Co. v. Arnoux & Hochhausen Electric Co., 17 F. 838 (C.C.S.D.N.Y. 1883), considered the grant’s expiration in light of foreign-patent terms.",
+    problemStatement:
+      "The grant addresses magneto-electric machines that needed a usable output from a moving magnetic relation. Its written solution divides the conductor into numerous connected coil sections and collects current at specific junctions rather than treating one coil as the entire armature.",
+    priorArtLimitations: [
+      "A single winding and fixed terminals cannot provide the same selected-junction collection that the specification describes.",
+      "The source distinguishes its continuous-current arrangement from circuit-breakers, pole-changers, and commutators, while still using metal rubbers to contact moving junction conductors.",
+    ],
+    breakthroughInsight:
+      "Make the winding an endless series of small coils, expose a conductor at every coil junction, and select the points where like currents meet between unlike poles. The same architecture is then reconnected in one described case for alternating current.",
+    patentWars: [
+      {
+        rivalName:
+          "Gramme Electrical Co. v. Arnoux & Hochhausen Electric Co., 17 F. 838 (C.C.S.D.N.Y. 1883)",
+        rivalClaim:
+          "Whether US 120,057’s term was constrained by the patentees’ Austrian patent under the 1870 Patent Act.",
+        conflictDetails:
+          "The court record identifies this grant, its August 17, 1870 US filing, the French patent of November 22, 1869, and the Austrian patent issued December 30, 1870.",
+        resolution:
+          "The court held that the US patent expired with the foreign patent having the shortest term that was granted before the US patent was granted.",
+        legalOutcome:
+          "The reported decision concluded that US 120,057 no longer continued after the relevant foreign patent expired; this is a term decision, not a judgment that the technical disclosure was invalid.",
+      },
+    ],
+    civilizationalImpact:
+      "The document preserves an early, unusually broad family of ring, cylinder, disk, chain, and concentric-winding machines at the foundation of industrial electric generation and motor practice.",
+    aftermath:
+      "The legal record in Gramme Electrical Co. v. Arnoux & Hochhausen Electric Co., 17 F. 838 (C.C.S.D.N.Y. 1883), considered the grant’s expiration in light of foreign-patent terms.",
   },
-  tags: ["Zénobe Théophile Gramme", "Eardley Louis Charles d’Ivernois", "Dynamo", "Endless bobbin", "Electromagnetic induction", "Electric generator"],
+  tags: [
+    "Zénobe Théophile Gramme",
+    "Eardley Louis Charles d’Ivernois",
+    "Dynamo",
+    "Endless bobbin",
+    "Electromagnetic induction",
+    "Electric generator",
+  ],
   stats: { totalClaims: 3, independentClaims: 3 },
 };

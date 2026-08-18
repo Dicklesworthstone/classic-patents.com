@@ -10,8 +10,8 @@ export const pasteurFermentationPatent: Patent = {
   inventors: ["Louis Pasteur"],
   inventorLocation: "Paris, France",
   grantDate: "1873-01-28",
-  // The three-sheet grant states its execution date, not a U.S. filing date.
-  filingDate: "1871-12-08",
+  // Neither the reviewed grant nor the primary public record states a U.S. filing date.
+  filingDate: null,
   era: "Civil War & Industrial Acceleration (1860–1880)",
   category: "consumer",
   categoryLabel: "Brewing & Food Process Engineering",
