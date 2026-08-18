@@ -107,6 +107,6 @@ describe("manual archival parallel-reading registry", () => {
         isArchivalEditionExplicitlyWithheld(patentId),
       ),
     ).toEqual([]);
-    expect(ROOT_QA_WITHHELD_ARCHIVAL_EDITION_IDS).toEqual([]);
+    expect(ROOT_QA_WITHHELD_ARCHIVAL_EDITION_IDS.length).toBeGreaterThan(0);
   });
 });

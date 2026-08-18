@@ -53,5 +53,9 @@ export function stepFermiKinetics(
         : 800,
     // Studio neutron scatter: 4 units/s at k=1. Not a physical v_thermal.
     neutronDisplaySpeed: Number((kEffective * 4).toFixed(3)),
+    rodStudioY: Number(
+      (-0.5 + (Math.min(100, Math.max(0, rodWithdrawalPct)) / 100) * 3.2).toFixed(4),
+    ),
+    fuelGlowIntensity: Number(Math.max(0, (kEffective - 0.98) * 8).toFixed(3)),
   };
 }

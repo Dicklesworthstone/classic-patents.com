@@ -104,6 +104,8 @@ export interface NuclearKineticsState {
   controlRodInsertionFraction: number;
   geigerIntervalMs: number;
   neutronDisplaySpeed: number;
+  rodStudioY: number;
+  fuelGlowIntensity: number;
 }
 
 // 6. Continuum Mechanics, Polymers & Mechanisms

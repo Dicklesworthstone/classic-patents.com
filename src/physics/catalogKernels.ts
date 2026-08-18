@@ -139,6 +139,8 @@ export function stepEricssonPropeller(params: { shaftRpm?: number; bladePitchAng
     shaftOmegaRadPerS: Number(shaftOmegaRadPerS.toFixed(3)),
     shaftOmegaDegPerS: Number((rpm * 6).toFixed(1)),
     wakeSwirlScale: 0.4,
+    wakeFlowSpeed: 6.5,
+    wakeSwirlCoeff: 0.08,
   };
 }
 
@@ -615,6 +617,7 @@ export function stepBellTelephone(params: {
     // 440 Hz shown at 1/20 so the diaphragm is visible. HUD states f.
     acousticDisplayOmegaRadPerS: Number(((2 * Math.PI * freqHz) / 20).toFixed(3)),
     electronDisplaySpeed: Number((currentBaselineAmps * 12).toFixed(3)),
+    electronStudioSpeed: Number((currentBaselineAmps * 6).toFixed(3)),
     waveAdvancePerS: 3,
     diaphragmStudioScale: Number(((displUm / 10) * 0.08).toFixed(5)),
   };

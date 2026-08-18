@@ -411,6 +411,7 @@ export const FrankenSimEngine = {
         streamerScale: Number(
           Math.min(2.2, Math.max(0.35, (wasmRes.streamer_length_inches * scale) / 48)).toFixed(2),
         ),
+        streamerStudioLength: Number(((wasmRes.streamer_length_meters * scale) / 1.5).toFixed(3)),
       };
     }
 
@@ -429,6 +430,7 @@ export const FrankenSimEngine = {
       streamerLengthMeters: Number(((streamerLengthInches * 2.54) / 100).toFixed(2)),
       secondaryPotentialKv: Math.round(secondaryPotentialMv * 1000),
       streamerScale: Number(Math.min(2.2, Math.max(0.35, streamerLengthInches / 48)).toFixed(2)),
+      streamerStudioLength: Number(((streamerLengthInches * 2.54) / 100 / 1.5).toFixed(3)),
     };
   },
 
