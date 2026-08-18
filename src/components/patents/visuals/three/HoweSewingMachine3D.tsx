@@ -28,7 +28,7 @@ export function HoweSewingMachine3D() {
   const containerRef = useRef<HTMLDivElement>(null);
 
   // Mechanical Stitching State Controls
-  const { params, updateParam } = usePatentPhysics("us-4750-howe-sewing-machine");
+  const { params } = usePatentPhysics("us-4750-howe-sewing-machine");
   const [showUiOverlay, setShowUiOverlay] = useState<boolean>(true);
   const stitchingSpeedRpm = params.crankRpm ?? 240;
   const stitchPitchMm = params.stitchPitchMm ?? 3.5;
@@ -58,7 +58,6 @@ export function HoweSewingMachine3D() {
   });
   const stitchesPerSecond = stitchState.stitchFrequencyHz.toFixed(1);
   const clothFeedRateMmPerSec = (stitchState.stitchFrequencyHz * stitchPitchMm).toFixed(1);
-  const handSewingSpeedRatio = (Number(clothFeedRateMmPerSec) / 1.2).toFixed(1);
 
   const live = useLiveSimParams({
     stitchingSpeedRpm,
@@ -433,9 +432,9 @@ export function HoweSewingMachine3D() {
                   </span>
                 </div>
                 <div>
-                  <span className="text-ink-600 dark:text-ink-400">Productivity:</span>{" "}
+                  <span className="text-ink-600 dark:text-ink-400">Lock shear:</span>{" "}
                   <span className="font-bold text-amber-600 dark:text-amber-400">
-                    {handSewingSpeedRatio}× vs Hand
+                    {stitchState.lockstitchShearStrengthN} N
                   </span>
                 </div>
                 <div>

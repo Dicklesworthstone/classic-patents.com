@@ -60,8 +60,20 @@ describe("Colorized Equations Master Registry Integrity", () => {
   test("bespoke equations contain deep SI physics and claim citations", () => {
     const wrightEqs = ALL_COLORIZED_EQUATIONS["us-821393-wright-flyer"];
     expect(wrightEqs).toBeDefined();
-    expect(wrightEqs[0].title).toContain("Induced Drag");
-    expect(wrightEqs[0].claimRef).toBe(1);
+    expect(wrightEqs.length).toBe(5);
+
+    const inducedDragEq = wrightEqs.find((e) => e.id === "wright-induced-drag");
+    expect(inducedDragEq).toBeDefined();
+    expect(inducedDragEq?.title).toContain("Induced Drag");
+    expect(inducedDragEq?.claimRef).toBe(1);
+
+    const liftEq = wrightEqs.find((e) => e.id === "wright-lift-circulation");
+    expect(liftEq).toBeDefined();
+    expect(liftEq?.title).toContain("Aerodynamic Lift");
+
+    const turnEq = wrightEqs.find((e) => e.id === "wright-coordinated-turn");
+    expect(turnEq).toBeDefined();
+    expect(turnEq?.title).toContain("Coordinated Turn");
 
     const teslaEqs = ALL_COLORIZED_EQUATIONS["us-381968-tesla-motor"];
     expect(teslaEqs).toBeDefined();
@@ -76,7 +88,9 @@ describe("Colorized Equations Master Registry Integrity", () => {
     const katex = (await import("katex")).default;
 
     for (const patent of allPatents) {
-      const eqs = getColorizedEquationsForPatent(patent.id);
+      const eqs = getColorizedEquationsForPatent(patent.id, patent);
+      expect(eqs.length).toBeGreaterThan(0);
+
       for (const eq of eqs) {
         // Test rawLatex
         expect(() => {
@@ -84,6 +98,7 @@ describe("Colorized Equations Master Registry Integrity", () => {
             displayMode: true,
             throwOnError: true,
             trust: true,
+            strict: false,
           });
         }).not.toThrow();
 
@@ -94,6 +109,7 @@ describe("Colorized Equations Master Registry Integrity", () => {
               displayMode: true,
               throwOnError: true,
               trust: true,
+              strict: false,
             });
           }).not.toThrow();
         }

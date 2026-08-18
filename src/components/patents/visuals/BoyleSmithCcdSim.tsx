@@ -8,8 +8,9 @@ import { usePatentPhysics } from "@/physics/usePatentPhysics";
 export function BoyleSmithCcdSim() {
   const { params, updateParam } = usePatentPhysics("us-3923554-boyle-smith-ccd");
   const [clockPhase, setClockPhase] = useState<1 | 2 | 3>(1);
-  const [lightIntensityLux, setLightIntensityLux] = useState<number>(850); // 100 to 2000 Lux
+  const incidentLux = params.incidentLux ?? 850;
   const clockFreq = params.clockFreq ?? 2.5;
+  const gateVoltageV = params.gateVoltage ?? 8;
   const [isPlaying, setIsPlaying] = useState<boolean>(false);
 
   useEffect(() => {
@@ -23,7 +24,7 @@ export function BoyleSmithCcdSim() {
     return () => clearInterval(interval);
   }, [isPlaying, clockFreq]);
 
-  const ccd = stepCcdWells(clockPhase, lightIntensityLux, clockFreq);
+  const ccd = stepCcdWells(clockPhase, incidentLux, clockFreq, gateVoltageV);
   const photoElectrons = ccd.photoElectrons;
   const outputSignalMillivolts = ((photoElectrons * 1.602e-19) / 10e-15) * 1000;
   const chargeTransferEfficiency = ccd.cte;
@@ -294,7 +295,7 @@ export function BoyleSmithCcdSim() {
                   {"Incident Light Exposure ($I_{lux}$)"}
                 </span>
                 <span className="text-amber-600 dark:text-amber-400 font-bold">
-                  {lightIntensityLux} Lux
+                  {incidentLux} Lux
                 </span>
               </div>
               <input
@@ -303,8 +304,8 @@ export function BoyleSmithCcdSim() {
                 min="100"
                 max="2000"
                 step="50"
-                value={lightIntensityLux}
-                onChange={(e) => setLightIntensityLux(Number(e.target.value))}
+                value={incidentLux}
+                onChange={(e) => updateParam("incidentLux", Number(e.target.value))}
                 className="w-full accent-amber-600 cursor-pointer h-2 bg-parchment-300 dark:bg-ink-700 rounded-lg"
               />
             </div>

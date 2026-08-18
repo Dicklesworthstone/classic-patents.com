@@ -16,7 +16,7 @@ export function DieselEngine3D() {
   const { params, updateParam } = usePatentPhysics("us-542846-diesel-engine");
 
   const engineRpm = params.engineRpm ?? 160;
-  const compressionRatio = params.compRatio ?? params.compressionRatio ?? 14.5;
+  const compressionRatio = params.compRatio ?? params.compressionRatio ?? 18;
   const diesel = FrankenSimEngine.stepDieselEngine({
     compressionRatio,
     blastAirPressureBar: params.blastAirPressure ?? 65,

@@ -1,16 +1,105 @@
-/**
- * src/data/colorizedEquations.ts
- *
- * Master Registry of Interactive Colorized Math Equations across Classic Patents.
- * Employs the BetterExplained dual-coding pedagogical model with full SI physics and KaTeX color mapping.
- */
-
+import { COLOR_STYLES } from "@/components/ui/colorPalette";
+import { allPatents } from "@/data/patents";
 import { PATENT_PHYSICS_REGISTRY } from "@/physics/telemetryData";
-import type { ColorizedEquation } from "@/types/equation";
+import type {
+  ColorizedEquation,
+  ColorVariant,
+  EquationVariable,
+  SentenceFragment,
+} from "@/types/equation";
+import type { Patent, ScientificPrinciple } from "@/types/patent";
 
 export const ALL_COLORIZED_EQUATIONS: Record<string, ColorizedEquation[]> = {
   // 1. Wright Flyer (US 821,393)
   "us-821393-wright-flyer": [
+    {
+      id: "wright-lift-circulation",
+      patentId: "us-821393-wright-flyer",
+      title: "Aerodynamic Lift & Differential Circulation",
+      category: "Aerodynamics & 6-DoF Flight",
+      rawLatex: "L = \\frac{1}{2} \\rho V^2 S C_L(\\alpha)",
+      colorizedLatex:
+        "\\textcolor{#059669}{L} = \\frac{1}{2} \\textcolor{#0d9488}{\\rho} \\textcolor{#2563eb}{V^2} \\textcolor{#d97706}{S} \\textcolor{#9333ea}{C_L(\\alpha)}",
+      plainEnglishSentence: [
+        { text: "Gross aerodynamic upward lift " },
+        { text: "force", variableId: "lift_force" },
+        { text: " scales directly with ambient " },
+        { text: "atmospheric air density", variableId: "air_density" },
+        { text: ", flight " },
+        { text: "velocity squared", variableId: "flight_vel" },
+        { text: ", total " },
+        { text: "wing surface area", variableId: "wing_area" },
+        { text: ", and the " },
+        { text: "angle-of-attack dependent lift coefficient", variableId: "cl_alpha" },
+        { text: "." },
+      ],
+      variables: [
+        {
+          id: "lift_force",
+          symbol: "L",
+          name: "Total Aerodynamic Lift Force",
+          color: "emerald",
+          role: "Net vertical aerodynamic force supporting the gross weight of the biplane in equilibrium",
+          unit: "Newtons (N)",
+          dimension: "[M L T^-2]",
+          explanation:
+            "Lift is produced by the downward deflection of airflow across the upper and lower surfaces of the cambered fabric wings. Warping increases lift on one wing while decreasing it on the opposite wing to bank the aircraft.",
+          telemetryKey: "airspeed",
+          telemetryMetricLabel: "Gross Lift",
+        },
+        {
+          id: "air_density",
+          symbol: "\\rho",
+          name: "Atmospheric Air Density",
+          color: "teal",
+          role: "Mass of air per unit volume at the flight altitude ($1.225\\text{ kg/m}^3$ at standard sea level)",
+          unit: "kg/m^3",
+          dimension: "[M L^-3]",
+          explanation:
+            "The Wrights chose Kitty Hawk, North Carolina for its dense sea-level coastal air and reliable headwinds, maximizing lift per unit wing area.",
+        },
+        {
+          id: "flight_vel",
+          symbol: "V^2",
+          name: "True Airspeed (Squared)",
+          color: "sapphire",
+          role: "Relative airspeed of oncoming air squared ($V \\approx 13.4\\text{ m/s} \\approx 30\\text{ mph}$)",
+          unit: "(m/s)^2",
+          dimension: "[L^2 T^-2]",
+          explanation:
+            "Because dynamic pressure scales quadratically with airspeed ($q = \\frac{1}{2}\\rho V^2$), doubling forward speed quadruples available lift force.",
+          telemetryKey: "airspeed",
+        },
+        {
+          id: "wing_area",
+          symbol: "S",
+          name: "Gross Wing Planform Area",
+          color: "amber",
+          role: "Combined planform area of both upper and lower biplane wings ($S = 510\\text{ sq ft} \\approx 47.38\\text{ m}^2$)",
+          unit: "Square meters (m^2)",
+          dimension: "[L^2]",
+          explanation:
+            "The biplane configuration doubled effective lifting surface area within a compact, structurally stiff 40-foot wingspan.",
+        },
+        {
+          id: "cl_alpha",
+          symbol: "C_L(\\alpha)",
+          name: "Section Lift Coefficient",
+          color: "amethyst",
+          role: "Non-dimensional lift coefficient governed by local camber and angle of attack $\\alpha$",
+          unit: "Dimensionless slope",
+          dimension: "[1]",
+          explanation:
+            "Warping twists the flexible wooden wing tips to change $\\alpha$ differentially (+3° on one side, -3° on the other), creating roll control torque.",
+          telemetryKey: "wingWarp",
+        },
+      ],
+      pedagogicalNote:
+        "The Wright brothers discovered in their 1901 wind tunnel experiments that prior published lift coefficients (the Smeaton coefficient) were over-estimated by 30%, which had caused Lilienthal and Chanute gliders to fall short of calculated performance.",
+      claimRef: 1,
+      historicalSignificance:
+        "Claim 1 protects the mechanism that varies the angle of incidence between opposite lateral margins to generate differential lift.",
+    },
     {
       id: "wright-induced-drag",
       patentId: "us-821393-wright-flyer",
@@ -85,6 +174,293 @@ export const ALL_COLORIZED_EQUATIONS: Record<string, ColorizedEquation[]> = {
       claimRef: 1,
       historicalSignificance:
         "Claim 1 of US 821,393 protected this exact coupled relationship, forming the cornerstone of modern three-axis flight control.",
+    },
+    {
+      id: "wright-coordinated-turn",
+      patentId: "us-821393-wright-flyer",
+      title: "3-Axis Coordinated Turn Flight Dynamics",
+      category: "Aerodynamics & 6-DoF Flight",
+      rawLatex:
+        "R_{\\text{turn}} = \\frac{V^2}{g \\cdot \\tan(\\phi)}, \\quad \\dot{\\psi} = \\frac{g \\tan(\\phi)}{V}",
+      colorizedLatex:
+        "\\textcolor{#2563eb}{R_{\\text{turn}}} = \\frac{\\textcolor{#059669}{V^2}}{\\textcolor{#d97706}{g} \\cdot \\textcolor{#9333ea}{\\tan(\\phi)}}, \\quad \\textcolor{#ea580c}{\\dot{\\psi}} = \\frac{\\textcolor{#d97706}{g} \\textcolor{#9333ea}{\\tan(\\phi)}}{\\textcolor{#059669}{V}}",
+      plainEnglishSentence: [
+        { text: "The " },
+        { text: "horizontal radius of a coordinated turn", variableId: "r_turn" },
+        { text: " decreases with the " },
+        { text: "tangent of bank angle", variableId: "tan_phi" },
+        { text: ", while the steady " },
+        { text: "heading yaw rate", variableId: "psi_dot" },
+        { text: " balances " },
+        { text: "gravitational acceleration", variableId: "grav" },
+        { text: " against " },
+        { text: "forward airspeed", variableId: "turn_vel" },
+        { text: "." },
+      ],
+      variables: [
+        {
+          id: "r_turn",
+          symbol: "R_{\\text{turn}}",
+          name: "Turn Curvature Radius",
+          color: "sapphire",
+          role: "Instantaneous horizontal turning radius of the flight trajectory",
+          unit: "Meters (m)",
+          dimension: "[L]",
+          explanation:
+            "Banking tilts the lift vector inward, providing the centripetal force needed to turn the aircraft along an arc without slipping sideways.",
+        },
+        {
+          id: "turn_vel",
+          symbol: "V^2",
+          name: "Forward Velocity (Squared)",
+          color: "emerald",
+          role: "Flight speed governing centripetal turning inertia",
+          unit: "(m/s)^2",
+          dimension: "[L^2 T^-2]",
+          explanation:
+            "Faster flight speeds widen the turning radius quadratically for any fixed bank angle.",
+          telemetryKey: "airspeed",
+        },
+        {
+          id: "grav",
+          symbol: "g",
+          name: "Gravitational Field Strength",
+          color: "amber",
+          role: "Standard acceleration due to Earth's gravity ($9.80665\\text{ m/s}^2$)",
+          unit: "m/s^2",
+          dimension: "[L T^-2]",
+          explanation:
+            "Gravity pulls downward while the vertical component of tilted lift ($L \\cos \\phi$) balances gross weight to maintain level altitude in the turn.",
+        },
+        {
+          id: "tan_phi",
+          symbol: "\\tan(\\phi)",
+          name: "Bank Angle Tangent",
+          color: "amethyst",
+          role: "Tangent of the lateral roll bank angle $\\phi$",
+          unit: "Dimensionless ratio",
+          dimension: "[1]",
+          explanation:
+            "Steeper bank angles increase centripetal force ($L \\sin \\phi$), tightening the turn radius and increasing the turn rate.",
+          telemetryKey: "wingWarp",
+        },
+        {
+          id: "psi_dot",
+          symbol: "\\dot{\\psi}",
+          name: "Turn Rate (Heading Velocity)",
+          color: "coral",
+          role: "Angular velocity of heading change around the vertical yaw axis",
+          unit: "Radians per second (rad/s)",
+          dimension: "[T^-1]",
+          explanation:
+            "In a coordinated turn, the rudder deflects just enough to keep the aircraft aligned with the curved flight path, eliminating sideslip.",
+          telemetryKey: "rudderDeflection",
+        },
+      ],
+      pedagogicalNote:
+        "Earlier aviators attempted flat turns using only a vertical rudder like a marine boat, which caused dangerous outward skidding and wing stalls. The Wrights proved that banking with differential lift is essential for turning an aircraft in three dimensions.",
+      claimRef: 1,
+      historicalSignificance:
+        "Established the universal doctrine of 3-axis flight control that remains standard on all modern fixed-wing aircraft today.",
+    },
+    {
+      id: "wright-lifting-line",
+      patentId: "us-821393-wright-flyer",
+      title: "Prandtl Lifting-Line Spanwise Circulation Distribution",
+      category: "Aerodynamics & 6-DoF Flight",
+      rawLatex:
+        "\\Gamma(y) = \\Gamma_0 \\sqrt{1 - \\left(\\frac{2y}{b}\\right)^2} + \\Delta \\Gamma_{\\text{warp}} \\sin\\left(\\frac{\\pi y}{b}\\right)",
+      colorizedLatex:
+        "\\textcolor{#9333ea}{\\Gamma(y)} = \\textcolor{#2563eb}{\\Gamma_0} \\sqrt{1 - \\left(\\frac{2\\textcolor{#d97706}{y}}{\\textcolor{#0891b2}{b}}\\right)^2} + \\textcolor{#dc2626}{\\Delta \\Gamma_{\\text{warp}}} \\sin\\left(\\frac{\\pi \\textcolor{#d97706}{y}}{\\textcolor{#0891b2}{b}}\\right)",
+      plainEnglishSentence: [
+        { text: "The " },
+        { text: "spanwise circulation distribution", variableId: "gamma_y" },
+        { text: " superimposes the " },
+        { text: "midspan peak circulation", variableId: "gamma_0" },
+        { text: " across " },
+        { text: "wingspan", variableId: "span_b" },
+        { text: " with an antisymmetric " },
+        { text: "warping circulation perturbation", variableId: "delta_gamma" },
+        { text: " at lateral station " },
+        { text: "spanwise coordinate", variableId: "span_y" },
+        { text: "." },
+      ],
+      variables: [
+        {
+          id: "gamma_y",
+          symbol: "\\Gamma(y)",
+          name: "Spanwise Bound Circulation",
+          color: "amethyst",
+          role: "Local vortex circulation along the wing span producing sectional lift via the Kutta-Joukowski theorem ($L' = \\rho V \\Gamma$)",
+          unit: "m^2/s",
+          dimension: "[L^2 T^-1]",
+          explanation:
+            "Circulation represents the fluid rotation around the airfoil section. Warping twists the wings to shift circulation asymmetrically across the span.",
+        },
+        {
+          id: "gamma_0",
+          symbol: "\\Gamma_0",
+          name: "Root Circulation Amplitude",
+          color: "sapphire",
+          role: "Maximum bound vortex circulation at the center wing root",
+          unit: "m^2/s",
+          dimension: "[L^2 T^-1]",
+          explanation:
+            "In unwarped level flight, the circulation profile approaches an ellipse, which produces minimum induced drag.",
+        },
+        {
+          id: "span_y",
+          symbol: "y",
+          name: "Spanwise Station Coordinate",
+          color: "amber",
+          role: "Lateral position along the wingspan from centerline ($ -b/2 \\le y \\le b/2 $)",
+          unit: "Meters (m)",
+          dimension: "[L]",
+          explanation:
+            "Coordinate measuring distance from the fuselage center to the outer flexible wingtips.",
+        },
+        {
+          id: "span_b",
+          symbol: "b",
+          name: "Total Wingspan",
+          color: "cyan",
+          role: "Tip-to-tip span length of the biplane wing structure ($b = 40.33\\text{ ft} \\approx 12.29\\text{ m}$)",
+          unit: "Meters (m)",
+          dimension: "[L]",
+          explanation:
+            "A wider span distributes vortex shedding over a broader air mass, reducing downwash velocity.",
+        },
+        {
+          id: "delta_gamma",
+          symbol: "\\Delta \\Gamma_{\\text{warp}}",
+          name: "Helical Warping Circulation Delta",
+          color: "crimson",
+          role: "Antisymmetric circulation increment induced by twisting outer wing margins",
+          unit: "m^2/s",
+          dimension: "[L^2 T^-1]",
+          explanation:
+            "Twisting increases angle of attack on one wingtip (+$\\Delta \\Gamma$) and reduces it on the other (-$\\Delta \\Gamma$), creating the rolling torque that tilts the aircraft.",
+          telemetryKey: "wingWarp",
+        },
+      ],
+      pedagogicalNote:
+        "Ludwig Prandtl later formulated modern lifting-line theory (1918) explaining mathematically what the Wrights had discovered empirically: that twisting a wing produces an antisymmetric circulation perturbation whose downwash distribution governs both roll and yaw.",
+      claimRef: 1,
+      historicalSignificance:
+        "The mathematical foundation for all subsequent 20th-century aeroelastic wing warping and aileron roll control.",
+    },
+    {
+      id: "wright-canard-pitch",
+      patentId: "us-821393-wright-flyer",
+      title: "Canard Longitudinal Static Stability & Pitch Equilibrium",
+      category: "Aerodynamics & 6-DoF Flight",
+      rawLatex:
+        "C_{m} = C_{m0} + \\left(\\frac{x_{\\text{cg}} - x_{\\text{ac}}}{c}\\right) C_L - V_{\\text{canard}} C_{L,\\text{canard}}(\\delta_e)",
+      colorizedLatex:
+        "\\textcolor{#9333ea}{C_{m}} = \\textcolor{#d97706}{C_{m0}} + \\left(\\frac{\\textcolor{#dc2626}{x_{\\text{cg}} - x_{\\text{ac}}}}{\\textcolor{#0d9488}{c}}\\right) \\textcolor{#059669}{C_L} - \\textcolor{#2563eb}{V_{\\text{canard}}} \\textcolor{#ea580c}{C_{L,\\text{canard}}(\\delta_e)}",
+      plainEnglishSentence: [
+        { text: "Net " },
+        { text: "pitching moment coefficient", variableId: "c_m" },
+        { text: " balances the " },
+        { text: "zero-lift wing camber moment", variableId: "c_m0" },
+        { text: ", the " },
+        { text: "center-of-gravity static margin", variableId: "static_margin" },
+        { text: " across " },
+        { text: "mean aerodynamic chord", variableId: "mean_chord" },
+        { text: ", total " },
+        { text: "wing lift", variableId: "gross_cl" },
+        { text: ", and " },
+        { text: "forward canard elevator control lift", variableId: "canard_cl" },
+        { text: " scaled by " },
+        { text: "canard volume ratio", variableId: "v_canard" },
+        { text: "." },
+      ],
+      variables: [
+        {
+          id: "c_m",
+          symbol: "C_{m}",
+          name: "Total Pitching Moment Coefficient",
+          color: "amethyst",
+          role: "Net non-dimensional rotational torque around the lateral pitch axis ($Y$-axis)",
+          unit: "Dimensionless ratio",
+          dimension: "[1]",
+          explanation:
+            "In trimmed level flight, $C_m = 0$, meaning the aircraft maintains a constant angle of attack without pilot intervention.",
+        },
+        {
+          id: "c_m0",
+          symbol: "C_{m0}",
+          name: "Zero-Lift Pitch Moment",
+          color: "amber",
+          role: "Inherent pitching moment of the cambered wing airfoils at zero lift",
+          unit: "Dimensionless ratio",
+          dimension: "[1]",
+          explanation:
+            "Cambered airfoils naturally produce a nose-down pitching moment that must be counteracted by a stabilizing horizontal surface.",
+        },
+        {
+          id: "static_margin",
+          symbol: "x_{\\text{cg}} - x_{\\text{ac}}",
+          name: "Static Margin (CG-AC Offset)",
+          color: "crimson",
+          role: "Distance from center of gravity to wing aerodynamic center ($x_{\\text{cg}} - x_{\\text{ac}}$)",
+          unit: "Meters (m)",
+          dimension: "[L]",
+          explanation:
+            "Locating the center of gravity slightly forward of the aerodynamic center provides positive pitch stability, causing the nose to drop if airspeed drops.",
+        },
+        {
+          id: "mean_chord",
+          symbol: "c",
+          name: "Mean Aerodynamic Chord",
+          color: "teal",
+          role: "Average chord length of the biplane wings ($c \\approx 6.5\\text{ ft} = 1.98\\text{ m}$)",
+          unit: "Meters (m)",
+          dimension: "[L]",
+          explanation:
+            "Reference length used to non-dimensionalize pitching moments and static margins.",
+        },
+        {
+          id: "gross_cl",
+          symbol: "C_L",
+          name: "Main Wing Lift Coefficient",
+          color: "emerald",
+          role: "Gross non-dimensional upward lift coefficient produced by the main biplane wings",
+          unit: "Dimensionless ratio",
+          dimension: "[1]",
+          explanation:
+            "Higher wing lift creates a restorative pitch-up moment through the static margin arm.",
+          telemetryKey: "airspeed",
+        },
+        {
+          id: "v_canard",
+          symbol: "V_{\\text{canard}}",
+          name: "Canard Volume Ratio",
+          color: "sapphire",
+          role: "Volumetric leverage ratio of forward canard surface area and moment arm ($S_c l_c / S c$)",
+          unit: "Dimensionless fraction",
+          dimension: "[1]",
+          explanation:
+            "Measures the pitch control leverage of placing the horizontal elevator ahead of the wings on forward outriggers.",
+        },
+        {
+          id: "canard_cl",
+          symbol: "C_{L,\\text{canard}}(\\delta_e)",
+          name: "Canard Elevator Lift Coefficient",
+          color: "coral",
+          role: "Lift coefficient generated by deflecting the forward canard elevator surface by angle $\\delta_e$",
+          unit: "Dimensionless ratio",
+          dimension: "[1]",
+          explanation:
+            "Moving the left hand lever rotated the forward canard, directly changing pitch trim and climb/glide angle.",
+          telemetryKey: "canardDeflection",
+        },
+      ],
+      pedagogicalNote:
+        "The Wrights placed the horizontal elevator in front (a canard) rather than behind the wings. When pulling up to climb, a canard creates positive upward lift rather than the downward force produced by a conventional aft tail, maximizing total aircraft lifting efficiency.",
+      claimRef: 2,
+      historicalSignificance:
+        "Claim 2 of US 821,393 explicitly claimed the adjustable forward horizontal rudder for controlling the vertical angle of flight.",
     },
   ],
 
@@ -2596,10 +2972,328 @@ function buildGeneratedColorizedEquation(patentId: string): ColorizedEquation[] 
 }
 
 /**
- * Helper to retrieve all colorized equations for a specific patent (with automatic fallback)
+ * Intelligently converts any ScientificPrinciple with a LaTeX formula into a full-fledged ColorizedEquation.
  */
-export function getColorizedEquationsForPatent(patentId: string): ColorizedEquation[] {
-  const bespoke = ALL_COLORIZED_EQUATIONS[patentId];
-  if (bespoke && bespoke.length > 0) return bespoke;
+export function convertScientificPrincipleToColorizedEquation(
+  principle: ScientificPrinciple,
+  patentId: string,
+  index: number,
+  category = "Applied Physics & Mechanics",
+): ColorizedEquation | null {
+  const formula = principle.formula?.trim();
+  if (!formula) return null;
+
+  const eqId = `${patentId}-principle-${index + 1}-${principle.principle
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, "-")}`;
+
+  // Palette of semantic colors
+  const colorSequence: ColorVariant[] = [
+    "emerald",
+    "sapphire",
+    "amber",
+    "crimson",
+    "amethyst",
+    "cyan",
+    "coral",
+    "teal",
+    "rose",
+  ];
+
+  // Exclude mathematical operators and standard LaTeX command names
+  const mathBlacklist = new Set([
+    "\\frac",
+    "\\sqrt",
+    "\\cdot",
+    "\\times",
+    "\\quad",
+    "\\qquad",
+    "\\left",
+    "\\right",
+    "\\cos",
+    "\\sin",
+    "\\tan",
+    "\\exp",
+    "\\ln",
+    "\\log",
+    "\\int",
+    "\\sum",
+    "\\partial",
+    "\\approx",
+    "\\le",
+    "\\ge",
+    "\\ne",
+    "\\pm",
+    "\\mp",
+    "\\to",
+    "\\infty",
+    "\\Delta",
+    "\\text",
+    "\\hat",
+    "\\dot",
+    "\\ddot",
+    "\\dddot",
+    "\\bar",
+    "\\tilde",
+    "\\vec",
+    "\\circ",
+    "\\implies",
+    "\\overline",
+    "\\mathcal",
+    "\\begin",
+    "\\end",
+    "\\cases",
+    "\\xrightarrow",
+    "\\mathbf",
+    "\\mathrm",
+    "\\mathit",
+    "\\mathsf",
+    "\\mathtt",
+    "\\boldsymbol",
+    "and",
+    "or",
+    "min",
+    "max",
+  ]);
+
+  // Strip text and environment blocks before extracting variable tokens
+  const cleanFormula = formula.replace(/\\(?:text|begin|end)\{[^}]*\}/g, " ");
+  const tokenRegex =
+    /\\(?:vec\{[a-zA-Z]+\}|[a-zA-Z]+)(?:_[a-zA-Z0-9]+)?|[a-zA-Z](?:_[a-zA-Z0-9]+)?/g;
+
+  let match: RegExpExecArray | null = tokenRegex.exec(cleanFormula);
+  const seenSymbols = new Set<string>();
+  const rawTokens: string[] = [];
+
+  while (match !== null) {
+    const sym = match[0];
+    if (!mathBlacklist.has(sym) && !sym.startsWith("\\text") && sym !== "d" && sym !== "dt") {
+      if (!seenSymbols.has(sym)) {
+        seenSymbols.add(sym);
+        rawTokens.push(sym);
+      }
+    }
+    match = tokenRegex.exec(cleanFormula);
+  }
+
+  // If token extraction found nothing, fallback to simple symbols
+  if (rawTokens.length === 0) {
+    rawTokens.push("X", "Y");
+  }
+
+  // Create variables
+  const variables: EquationVariable[] = rawTokens.slice(0, 6).map((sym, i) => {
+    const color = colorSequence[i % colorSequence.length];
+    const safeId = `var_${i}_${sym.replace(/[^a-zA-Z0-9]/g, "_").toLowerCase()}`.replace(
+      /_+/g,
+      "_",
+    );
+
+    // Infer name from common symbols or explanation
+    let name = `Parameter (${sym})`;
+    let unit = "SI Units";
+    let role = `Physical variable in ${principle.principle}`;
+
+    if (/^L/i.test(sym)) {
+      name = "Lift / Inductance / Length";
+      unit = "N / H / m";
+      role = "Dynamic output force or circuit inductance";
+    } else if (/^V/i.test(sym)) {
+      name = "Velocity / Potential";
+      unit = "m/s / Volts (V)";
+      role = "Airspeed or electric potential difference";
+    } else if (/^P/i.test(sym)) {
+      name = "Power / Pressure";
+      unit = "Watts (W) / Pascals (Pa)";
+      role = "Thermodynamic pressure or power output";
+    } else if (/^I/i.test(sym)) {
+      name = "Electric Current";
+      unit = "Amperes (A)";
+      role = "Charge carrier flow per second";
+    } else if (/^R/i.test(sym)) {
+      name = "Resistance / Radius";
+      unit = "Ohms (Ω) / Meters (m)";
+      role = "Electrical impedance or geometric radius";
+    } else if (/^T/i.test(sym)) {
+      name = "Temperature / Thrust";
+      unit = "Kelvin (K) / Newtons (N)";
+      role = "Core thermodynamic temperature or propulsive force";
+    } else if (/^F/i.test(sym)) {
+      name = "Force";
+      unit = "Newtons (N)";
+      role = "Mechanical vector force";
+    } else if (/^B/i.test(sym) || /\\vec\{B\}/.test(sym)) {
+      name = "Magnetic Flux Density";
+      unit = "Tesla (T)";
+      role = "Magnetic field strength vector";
+    } else if (/\\rho/.test(sym)) {
+      name = "Density / Resistivity";
+      unit = "kg/m³ / Ω·m";
+      role = "Fluid mass density or material resistivity";
+    } else if (/\\sigma/.test(sym)) {
+      name = "Conductivity / Stefan-Boltzmann Constant";
+      unit = "S/m / W/(m²·K⁴)";
+      role = "Material conductivity or radiative constant";
+    } else if (/\\lambda/.test(sym)) {
+      name = "Wavelength / Mean Free Path";
+      unit = "Meters (m)";
+      role = "Electromagnetic spatial wavelength";
+    } else if (/\\omega/.test(sym)) {
+      name = "Angular Frequency";
+      unit = "rad/s";
+      role = "Rotational oscillation frequency";
+    } else if (/\\eta/.test(sym)) {
+      name = "Efficiency Ratio";
+      unit = "Dimensionless [0-1]";
+      role = "Thermodynamic or mechanical conversion efficiency";
+    } else if (/\\Phi/.test(sym)) {
+      name = "Magnetic Flux";
+      unit = "Webers (Wb)";
+      role = "Total magnetic field lines through the cross-section";
+    } else if (/\\Gamma/.test(sym)) {
+      name = "Circulation / Gamma Factor";
+      unit = "m²/s";
+      role = "Vortex circulation line integral";
+    } else if (/C_L|C_D|C_m/.test(sym)) {
+      name = "Aerodynamic Coefficient";
+      unit = "Dimensionless ratio";
+      role = "Non-dimensional aerodynamic force/moment ratio";
+    } else if (/AR/.test(sym)) {
+      name = "Aspect Ratio";
+      unit = "Dimensionless ratio";
+      role = "Wingspan squared divided by area";
+    } else if (/S/.test(sym)) {
+      name = "Surface Area";
+      unit = "Square meters (m²)";
+      role = "Gross planform or cross-sectional area";
+    } else if (/k/.test(sym)) {
+      name = "Multiplication Factor / Thermal Conductivity";
+      unit = "Ratio / W/(m·K)";
+      role = "Neutron reproduction factor or thermal transport rate";
+    }
+
+    return {
+      id: safeId,
+      symbol: sym,
+      name,
+      color,
+      role,
+      unit,
+      explanation: `Governs ${name.toLowerCase()} within ${principle.principle.toLowerCase()}: ${principle.explanation.slice(0, 180)}...`,
+    };
+  });
+
+  // Construct colorized LaTeX safely token by token
+  const varMap = new Map<string, EquationVariable>();
+  for (const v of variables) {
+    varMap.set(v.symbol, v);
+  }
+
+  const colorizerRegex =
+    /(\\(?:text|begin|end)\{[^}]*\}|\\[a-zA-Z]+|[a-zA-Z](?:_[a-zA-Z0-9]+)?|[0-9]+(?:\.[0-9]+)?|[{}()=+\-*/,[\]^_\s]|.)/g;
+
+  let colorized = "";
+  let cMatch: RegExpExecArray | null = colorizerRegex.exec(formula);
+  while (cMatch !== null) {
+    const token = cMatch[0];
+    if (token.startsWith("\\text{") || token.startsWith("\\begin{") || token.startsWith("\\end{")) {
+      colorized += token;
+    } else {
+      const v = varMap.get(token);
+      if (v && !mathBlacklist.has(token)) {
+        const hex = COLOR_STYLES[v.color].hexLight;
+        colorized += `{\\textcolor{${hex}}{${token}}}`;
+      } else {
+        colorized += token;
+      }
+    }
+    cMatch = colorizerRegex.exec(formula);
+  }
+
+  // Construct Plain English sentence fragments
+  const sentenceFragments: SentenceFragment[] = [
+    { text: `Under the governing principle of ${principle.principle}, ` },
+    { text: "the primary physical balance", variableId: variables[0]?.id },
+    ...(variables[1]
+      ? [
+          { text: " relates to " },
+          { text: variables[1].name.toLowerCase(), variableId: variables[1].id },
+        ]
+      : []),
+    { text: ": " },
+    { text: principle.explanation },
+  ];
+
+  return {
+    id: eqId,
+    patentId,
+    title: principle.principle,
+    category,
+    rawLatex: formula,
+    colorizedLatex: colorized,
+    plainEnglishSentence: sentenceFragments,
+    variables,
+    pedagogicalNote: principle.explanation,
+  };
+}
+
+/**
+ * Helper to retrieve all colorized equations for a specific patent.
+ * Returns bespoke hand-crafted deep equations when available, and transforms
+ * all patent.plainEnglishExplanation.scientificPrinciples into interactive colorized equations.
+ */
+export function getColorizedEquationsForPatent(
+  patentId: string,
+  patent?: Patent,
+): ColorizedEquation[] {
+  const bespokeList = ALL_COLORIZED_EQUATIONS[patentId] || [];
+
+  // Resolve patent object from parameter or registry
+  const targetPatent = patent || allPatents.find((p) => p.id === patentId);
+
+  if (targetPatent?.plainEnglishExplanation?.scientificPrinciples) {
+    const results: ColorizedEquation[] = [];
+    const seenTitles = new Set<string>();
+    const seenFormulas = new Set<string>();
+
+    // First, add all bespoke equations
+    for (const eq of bespokeList) {
+      results.push(eq);
+      seenTitles.add(eq.title.toLowerCase());
+      seenFormulas.add(eq.rawLatex.replace(/\s+/g, ""));
+    }
+
+    // Next, convert any scientific principle that has a formula and isn't already covered
+    targetPatent.plainEnglishExplanation.scientificPrinciples.forEach((principle, idx) => {
+      if (!principle.formula) return;
+      const normalizedFormula = principle.formula.replace(/\s+/g, "");
+      const normalizedTitle = principle.principle.toLowerCase();
+
+      // Check if already covered by an existing equation
+      const alreadyCovered =
+        seenFormulas.has(normalizedFormula) ||
+        Array.from(seenTitles).some(
+          (t) => t.includes(normalizedTitle) || normalizedTitle.includes(t),
+        );
+
+      if (!alreadyCovered) {
+        const converted = convertScientificPrincipleToColorizedEquation(
+          principle,
+          patentId,
+          idx,
+          targetPatent.category,
+        );
+        if (converted) {
+          results.push(converted);
+          seenTitles.add(normalizedTitle);
+          seenFormulas.add(normalizedFormula);
+        }
+      }
+    });
+
+    if (results.length > 0) return results;
+  }
+
+  if (bespokeList.length > 0) return bespokeList;
   return buildGeneratedColorizedEquation(patentId);
 }

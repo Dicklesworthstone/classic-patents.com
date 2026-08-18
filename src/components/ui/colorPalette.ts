@@ -141,3 +141,71 @@ export function wrapKatexColor(symbolLatex: string, color: ColorVariant, isDark 
   const hex = isDark ? cfg.hexDark : cfg.hexLight;
   return `\\textcolor{${hex}}{${symbolLatex}}`;
 }
+
+/**
+ * Returns KaTeX formatted LaTeX wrapped with interactive class, data attribute, and color
+ */
+export function wrapInteractiveKatexTerm(
+  varId: string,
+  symbolLatex: string,
+  color: ColorVariant,
+  isDark = false,
+): string {
+  const cfg = COLOR_STYLES[color];
+  const hex = isDark ? cfg.hexDark : cfg.hexLight;
+  return `\\htmlClass{eq-term eq-term-${varId} eq-term-${color}}{\\htmlData{var=${varId}}{\\textcolor{${hex}}{${symbolLatex}}}}`;
+}
+
+/**
+ * Takes a colorized equation and ensures all variables are wrapped with interactive HTML classes and data attributes for KaTeX rendering.
+ */
+export function prepareInteractiveLatex(equation: {
+  colorizedLatex?: string;
+  rawLatex: string;
+  variables: Array<{ id: string; symbol: string; color: ColorVariant }>;
+}): string {
+  let latex = equation.colorizedLatex || equation.rawLatex;
+
+  for (const v of equation.variables) {
+    if (new RegExp(`\\beq-term-${v.id}\\b`).test(latex)) continue;
+
+    const cfg = COLOR_STYLES[v.color];
+    const hex = cfg.hexLight;
+    const termClass = `eq-term eq-term-${v.id} eq-term-${v.color}`;
+
+    let found = false;
+    const colorTargetPrefix = "\\textcolor{";
+    let searchIdx = latex.indexOf(colorTargetPrefix, 0);
+
+    while (searchIdx !== -1) {
+      const closeBraceColor = latex.indexOf("}", searchIdx + colorTargetPrefix.length);
+      if (closeBraceColor === -1) break;
+
+      const openBraceContent = latex.indexOf("{", closeBraceColor);
+      if (openBraceContent !== closeBraceColor + 1) {
+        searchIdx = latex.indexOf(colorTargetPrefix, closeBraceColor + 1);
+        continue;
+      }
+
+      if (latex.startsWith(v.symbol, openBraceContent + 1)) {
+        const afterSymbolIdx = openBraceContent + 1 + v.symbol.length;
+        if (latex[afterSymbolIdx] === "}") {
+          const fullColoredMatch = latex.slice(searchIdx, afterSymbolIdx + 1);
+          const replacement = `\\htmlClass{${termClass}}{\\htmlData{var=${v.id}}{${fullColoredMatch}}}`;
+          latex = latex.slice(0, searchIdx) + replacement + latex.slice(afterSymbolIdx + 1);
+          found = true;
+          break;
+        }
+      }
+      searchIdx = latex.indexOf(colorTargetPrefix, closeBraceColor + 1);
+    }
+
+    if (!found && latex.includes(v.symbol)) {
+      const rawTarget = v.symbol;
+      const rawReplacement = `\\htmlClass{${termClass}}{\\htmlData{var=${v.id}}{\\textcolor{${hex}}{${rawTarget}}}}`;
+      latex = latex.replace(rawTarget, rawReplacement);
+    }
+  }
+
+  return latex;
+}

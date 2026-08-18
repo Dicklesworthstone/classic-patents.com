@@ -14,7 +14,7 @@ import {
 } from "lucide-react";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { ColorizedEquation } from "@/components/ui/ColorizedEquation";
-import { LatexRenderer, TextWithLatex } from "@/components/ui/LatexRenderer";
+import { TextWithLatex } from "@/components/ui/LatexRenderer";
 import { getColorizedEquationsForPatent } from "@/data/colorizedEquations";
 import { archivalParallelReadingsFor } from "@/data/editions/parallelReadings";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
@@ -105,7 +105,10 @@ export type PatentViewMode =
 
 export function DualProjectionViewer({ patent, initialView }: DualProjectionViewerProps) {
   const { tick, lastChange } = usePatentPhysics(patent.id);
-  const colorizedEquations = useMemo(() => getColorizedEquationsForPatent(patent.id), [patent.id]);
+  const colorizedEquations = useMemo(
+    () => getColorizedEquationsForPatent(patent.id, patent),
+    [patent],
+  );
   const [viewMode, setViewModeState] = useState<PatentViewMode>(
     isPatentViewMode(initialView) ? initialView : "plain-english",
   );
@@ -527,7 +530,7 @@ export function DualProjectionViewer({ patent, initialView }: DualProjectionView
                   </span>
                 </div>
 
-                {/* Primary Interactive Colorized Equations */}
+                {/* Interactive Colorized Equations for All Governing Laws */}
                 {colorizedEquations.length > 0 && (
                   <div className="space-y-6">
                     {colorizedEquations.map((eq: ColorizedEquationType) => (
@@ -536,32 +539,31 @@ export function DualProjectionViewer({ patent, initialView }: DualProjectionView
                   </div>
                 )}
 
-                {/* Additional Scientific Principles Cards */}
-                {patent.plainEnglishExplanation.scientificPrinciples.length > 0 && (
+                {/* Qualitative Principle Notes (for any principles without mathematical formulas) */}
+                {patent.plainEnglishExplanation.scientificPrinciples.some(
+                  (sci) => !sci.formula,
+                ) && (
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-5 pt-2">
-                    {patent.plainEnglishExplanation.scientificPrinciples.map((sci, idx) => (
-                      <div
-                        key={sci.principle}
-                        className="p-6 rounded-2xl bg-parchment-100/80 dark:bg-ink-900/80 border border-parchment-300 dark:border-ink-800 space-y-4 shadow-sm hover:border-amber-700/40 transition-colors"
-                      >
-                        <div className="flex items-center justify-between gap-2">
-                          <span className="text-amber-900 dark:text-amber-400 font-serif font-bold text-base sm:text-lg">
-                            {sci.principle}
-                          </span>
-                          <span className="text-[10px] font-mono font-bold px-2 py-0.5 rounded-md bg-amber-700/10 text-amber-800 dark:text-amber-400 border border-amber-700/20">
-                            Principle {idx + 1}
-                          </span>
-                        </div>
-                        {sci.formula && (
-                          <div className="bg-white dark:bg-ink-950 p-4 rounded-xl text-ink-950 dark:text-parchment-100 text-center text-sm sm:text-base border border-parchment-300 dark:border-ink-800 font-mono overflow-x-auto shadow-inner">
-                            <LatexRenderer math={sci.formula} block={true} />
+                    {patent.plainEnglishExplanation.scientificPrinciples
+                      .filter((sci) => !sci.formula)
+                      .map((sci, idx) => (
+                        <div
+                          key={sci.principle}
+                          className="p-6 rounded-2xl bg-parchment-100/80 dark:bg-ink-900/80 border border-parchment-300 dark:border-ink-800 space-y-4 shadow-sm hover:border-amber-700/40 transition-colors"
+                        >
+                          <div className="flex items-center justify-between gap-2">
+                            <span className="text-amber-900 dark:text-amber-400 font-serif font-bold text-base sm:text-lg">
+                              {sci.principle}
+                            </span>
+                            <span className="text-[10px] font-mono font-bold px-2 py-0.5 rounded-md bg-amber-700/10 text-amber-800 dark:text-amber-400 border border-amber-700/20">
+                              Principle Note {idx + 1}
+                            </span>
                           </div>
-                        )}
-                        <div className="text-xs sm:text-sm text-ink-800 dark:text-parchment-200 font-sans leading-relaxed">
-                          <TextWithLatex text={sci.explanation} />
+                          <div className="text-xs sm:text-sm text-ink-800 dark:text-parchment-200 font-sans leading-relaxed">
+                            <TextWithLatex text={sci.explanation} />
+                          </div>
                         </div>
-                      </div>
-                    ))}
+                      ))}
                   </div>
                 )}
               </div>

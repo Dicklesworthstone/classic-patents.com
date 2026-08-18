@@ -6,15 +6,15 @@
  */
 "use client";
 
-import katex from "katex";
 import { Activity, Info, Maximize2, Minimize2, RotateCcw, Sparkles, Zap } from "lucide-react";
 import { useCallback, useEffect, useId, useMemo, useRef, useState } from "react";
+import { LatexRenderer, TextWithLatex } from "@/components/ui/LatexRenderer";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import type {
   ColorizedEquation as ColorizedEquationModel,
   EquationVariable,
 } from "@/types/equation";
-import { COLOR_STYLES } from "./colorPalette";
+import { COLOR_STYLES, prepareInteractiveLatex } from "./colorPalette";
 
 interface ColorizedEquationProps {
   equation: ColorizedEquationModel;
@@ -42,12 +42,17 @@ export function ColorizedEquation({
   // Bind to live FrankenSim physics bus
   const { params, metrics } = usePatentPhysics(equation.patentId);
 
-  const formulaContainerRef = useRef<HTMLDivElement>(null);
+  const formulaRef = useRef<HTMLDivElement>(null);
 
   // Active variable object
   const activeVar: EquationVariable | undefined = useMemo(() => {
     return equation.variables.find((v) => v.id === activeVarId);
   }, [equation.variables, activeVarId]);
+
+  // Prepare interactive KaTeX markup where each variable symbol is wrapped with hover/click targets
+  const interactiveLatex = useMemo(() => {
+    return prepareInteractiveLatex(equation);
+  }, [equation]);
 
   // Compute live value for active variable from physics bus
   const liveTelemetryValue = useMemo(() => {
@@ -70,23 +75,6 @@ export function ColorizedEquation({
     return null;
   }, [activeVar, params, metrics]);
 
-  // Render KaTeX HTML
-  useEffect(() => {
-    const el = formulaContainerRef.current;
-    if (!el) return;
-
-    try {
-      katex.render(equation.colorizedLatex || equation.rawLatex, el, {
-        displayMode: true,
-        throwOnError: false,
-        trust: true,
-        output: "htmlAndMathml",
-      });
-    } catch {
-      el.textContent = equation.rawLatex;
-    }
-  }, [equation.colorizedLatex, equation.rawLatex]);
-
   const handleSelectVar = useCallback((id: string, pin = false) => {
     setActiveVarId(id);
     if (pin) setIsPinned(true);
@@ -96,6 +84,66 @@ export function ColorizedEquation({
     setActiveVarId(equation.variables[0]?.id ?? null);
     setIsPinned(false);
   }, [equation.variables]);
+
+  // Interactive formula event delegation: hover on any KaTeX term inside equation
+  const handleFormulaMouseOver = useCallback(
+    (e: React.MouseEvent<HTMLDivElement>) => {
+      const target = (e.target as HTMLElement).closest("[data-var], [class*='eq-term-']");
+      if (!target) return;
+      let varId = target.getAttribute("data-var");
+      if (!varId) {
+        const match = target.className.match(/eq-term-([a-zA-Z0-9_-]+)/);
+        if (match) varId = match[1];
+      }
+      if (varId && !isPinned) {
+        const exists = equation.variables.some((v) => v.id === varId);
+        if (exists) {
+          setActiveVarId(varId);
+        }
+      }
+    },
+    [equation.variables, isPinned],
+  );
+
+  // Interactive formula event delegation: click on any KaTeX term inside equation
+  const handleFormulaClick = useCallback(
+    (e: React.MouseEvent<HTMLDivElement>) => {
+      const target = (e.target as HTMLElement).closest("[data-var], [class*='eq-term-']");
+      if (!target) return;
+      let varId = target.getAttribute("data-var");
+      if (!varId) {
+        const match = target.className.match(/eq-term-([a-zA-Z0-9_-]+)/);
+        if (match) varId = match[1];
+      }
+      if (varId) {
+        const exists = equation.variables.some((v) => v.id === varId);
+        if (exists) {
+          handleSelectVar(varId, true);
+        }
+      }
+    },
+    [equation.variables, handleSelectVar],
+  );
+
+  // Sync active CSS classes inside KaTeX DOM when activeVarId changes
+  useEffect(() => {
+    const container = formulaRef.current;
+    if (!container) return;
+
+    const activeElements = container.querySelectorAll(".eq-term-active");
+    for (let i = 0; i < activeElements.length; i++) {
+      activeElements[i].classList.remove("eq-term-active");
+    }
+
+    if (activeVarId) {
+      const targets = container.querySelectorAll(
+        `.eq-term-${activeVarId}, [data-var="${activeVarId}"]`,
+      );
+      for (let i = 0; i < targets.length; i++) {
+        targets[i].classList.add("eq-term-active");
+      }
+    }
+  }, [activeVarId]);
 
   return (
     <div
@@ -177,10 +225,17 @@ export function ColorizedEquation({
             <span>Mathematical Governing Law</span>
           </div>
 
+          {/* biome-ignore lint/a11y/noStaticElementInteractions: Mathematical formula container delegates mouseover and click to internal KaTeX tokens */}
+          {/* biome-ignore lint/a11y/useKeyWithClickEvents: Keyboard users navigate and activate variables via the accessible Term buttons and sentence fragment buttons */}
+          {/* biome-ignore lint/a11y/useKeyWithMouseEvents: Hover delegation provides synchronous visual inspection */}
           <div
-            ref={formulaContainerRef}
-            className="text-lg sm:text-2xl font-serif py-2 tracking-wide text-ink-950 dark:text-parchment-50 select-text overflow-x-auto max-w-full"
-          />
+            ref={formulaRef}
+            onMouseOver={handleFormulaMouseOver}
+            onClick={handleFormulaClick}
+            className="text-lg sm:text-2xl font-serif py-2 tracking-wide text-ink-950 dark:text-parchment-50 select-text overflow-x-auto max-w-full cursor-default"
+          >
+            <LatexRenderer math={interactiveLatex} block={true} className="text-center" />
+          </div>
 
           {/* Quick variable jumper chips */}
           <div className="flex flex-wrap items-center justify-center gap-1.5 mt-3 pt-3 border-t border-parchment-200/80 dark:border-ink-800/80 w-full">
@@ -225,7 +280,7 @@ export function ColorizedEquation({
                                       : "bg-teal-500"
                     }`}
                   />
-                  <span>{v.symbol}</span>
+                  <LatexRenderer math={v.symbol} />
                 </button>
               );
             })}
@@ -244,14 +299,16 @@ export function ColorizedEquation({
             </span>
           </div>
 
-          <p className="font-serif text-sm sm:text-base leading-relaxed text-ink-900 dark:text-parchment-100 select-text">
+          <div className="font-serif text-sm sm:text-base leading-relaxed text-ink-900 dark:text-parchment-100 select-text">
             {equation.plainEnglishSentence.map((fragment, idx) => {
               if (!fragment.variableId) {
-                return <span key={`${compId}-txt-${idx}`}>{fragment.text}</span>;
+                return <TextWithLatex key={`${compId}-txt-${idx}`} text={fragment.text} />;
               }
 
               const v = equation.variables.find((item) => item.id === fragment.variableId);
-              if (!v) return <span key={`${compId}-txt-${idx}`}>{fragment.text}</span>;
+              if (!v) {
+                return <TextWithLatex key={`${compId}-txt-${idx}`} text={fragment.text} />;
+              }
 
               const style = COLOR_STYLES[v.color];
               const isActive = activeVarId === v.id;
@@ -271,11 +328,11 @@ export function ColorizedEquation({
                   } ${colorBlindMode ? "border-dashed !border-ink-400 dark:!border-ink-500 font-sans tracking-wide uppercase text-xs" : ""}`}
                   title={`${v.name} (${v.symbol}): ${v.role}`}
                 >
-                  {fragment.text}
+                  <TextWithLatex text={fragment.text} />
                 </button>
               );
             })}
-          </p>
+          </div>
         </div>
 
         {/* 4. Active Variable Deep Inspector Drawer */}
@@ -292,14 +349,14 @@ export function ColorizedEquation({
                     COLOR_STYLES[activeVar.color].textClass
                   } ${COLOR_STYLES[activeVar.color].borderClass}`}
                 >
-                  {activeVar.symbol}
+                  <LatexRenderer math={activeVar.symbol} />
                 </span>
                 <div>
                   <h5 className="font-serif font-bold text-sm sm:text-base text-ink-950 dark:text-parchment-50">
-                    {activeVar.name}
+                    <TextWithLatex text={activeVar.name} />
                   </h5>
                   <div className="text-[11px] font-sans text-ink-600 dark:text-ink-300">
-                    {activeVar.role}
+                    <TextWithLatex text={activeVar.role} />
                   </div>
                 </div>
               </div>
@@ -307,11 +364,11 @@ export function ColorizedEquation({
               {/* SI Unit & Dimension Badge */}
               <div className="flex items-center gap-2 text-right">
                 <span className="inline-flex items-center px-2 py-0.5 rounded text-[11px] font-mono bg-white/80 dark:bg-ink-950/80 border border-black/10 dark:border-white/10 text-ink-800 dark:text-parchment-200">
-                  {activeVar.unit}
+                  <TextWithLatex text={activeVar.unit} />
                 </span>
                 {activeVar.dimension && (
                   <span className="hidden sm:inline-flex items-center px-2 py-0.5 rounded text-[10px] font-mono text-ink-500 dark:text-ink-400 bg-black/5 dark:bg-white/5">
-                    {activeVar.dimension}
+                    <TextWithLatex text={activeVar.dimension} />
                   </span>
                 )}
               </div>
@@ -319,18 +376,20 @@ export function ColorizedEquation({
 
             {/* Explanation & First-Principles Physics */}
             <div className="space-y-2 text-xs sm:text-sm font-sans leading-relaxed text-ink-800 dark:text-parchment-200">
-              <p>{activeVar.explanation}</p>
+              <p>
+                <TextWithLatex text={activeVar.explanation} />
+              </p>
             </div>
 
             {/* Live Telemetry Value Readout */}
             {showLiveTelemetry && liveTelemetryValue !== null && (
               <div className="flex items-center justify-between pt-2 border-t border-black/10 dark:border-white/10 text-xs font-mono">
                 <div className="flex items-center gap-1.5 text-amber-900 dark:text-amber-300 font-bold">
-                  <Activity className="w-3.5 h-3.5 animate-pulse text-amber-600" />
+                  <Activity className="w-3.5 h-3.5 motion-safe:animate-pulse text-amber-600" />
                   <span>Live Physical Value:</span>
                 </div>
                 <div className="font-bold text-sm px-2 py-0.5 rounded bg-white/90 dark:bg-ink-950/90 border border-amber-300 dark:border-amber-700/60 text-amber-950 dark:text-amber-200 shadow-2xs">
-                  {liveTelemetryValue}
+                  <TextWithLatex text={liveTelemetryValue} />
                 </div>
               </div>
             )}
@@ -345,10 +404,13 @@ export function ColorizedEquation({
               <span className="font-serif font-bold text-ink-950 dark:text-parchment-100 block mb-0.5">
                 Physical Principle &amp; Engineering Insight
               </span>
-              <p>{equation.pedagogicalNote}</p>
+              <p>
+                <TextWithLatex text={equation.pedagogicalNote} />
+              </p>
               {equation.historicalSignificance && (
                 <p className="mt-1.5 text-[11px] text-ink-600 dark:text-ink-400 italic">
-                  <strong>Historical Context:</strong> {equation.historicalSignificance}
+                  <strong>Historical Context:</strong>{" "}
+                  <TextWithLatex text={equation.historicalSignificance} />
                 </p>
               )}
             </div>

@@ -132,6 +132,12 @@ the visitor can see or hear the kernel change the instrument.
 - [x] P5.39 Marconi wavefronts from f₀ and spark kW
 - [x] P5.40 Colt recoil from muzzle velocity
 - [x] P5.41 Farnsworth beam brightness from lux; raster scale from gyro radius
+- [x] P5.42 Howe engine wraps `stepHoweSewingMachine`; badge + 3D HUD show lockstitch shear
+- [x] P5.43 CCD badge / 3D / 2D share `stepCcdWells` (lux, clockFreq, V_gate); no fake 65k e⁻
+- [x] P5.44 Tesla coil streamers drawn from kernel inches; coupling *k* is the registry slider
+- [x] P5.45 Goddard 3D steps with Ae/At; HUD I_sp / v_e / Mach from the same step as the badge
+- [x] P5.46 Engelbart 3D HUD shows wheel ω from the kernel; weave probe / fidelity / 1968 scenario
+- [x] P5.47 Diesel / Kodak / Farnsworth / phonograph / Noyce weaves share the same step as the 3D HUD
 
 ## Explicitly out of scope
 

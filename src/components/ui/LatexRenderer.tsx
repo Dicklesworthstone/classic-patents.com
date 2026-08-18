@@ -1,7 +1,7 @@
 "use client";
 
 import katex from "katex";
-import React, { useLayoutEffect, useMemo, useRef } from "react";
+import React, { useMemo } from "react";
 
 interface LatexRendererProps {
   math: string;
@@ -10,24 +10,32 @@ interface LatexRendererProps {
 }
 
 export function LatexRenderer({ math, block = false, className = "" }: LatexRendererProps) {
-  const hostRef = useRef<HTMLSpanElement>(null);
-
-  useLayoutEffect(() => {
-    const host = hostRef.current;
-    if (!host) return;
+  const html = useMemo(() => {
+    if (!math) return "";
     try {
-      katex.render(math, host, {
+      return katex.renderToString(math, {
         displayMode: block,
         throwOnError: false,
         output: "htmlAndMathml",
+        trust: true,
+        strict: false,
       });
     } catch {
-      host.replaceChildren();
-      host.textContent = math;
+      return null;
     }
   }, [math, block]);
 
-  return <span ref={hostRef} className={`latex-container inline-block ${className}`} />;
+  if (!html) {
+    return <span className={`latex-container inline-block ${className}`}>{math}</span>;
+  }
+
+  return (
+    <span
+      className={`latex-container inline-block ${className}`}
+      // biome-ignore lint/security/noDangerouslySetInnerHtml: KaTeX renderToString returns sanitized markup
+      dangerouslySetInnerHTML={{ __html: html }}
+    />
+  );
 }
 
 /**

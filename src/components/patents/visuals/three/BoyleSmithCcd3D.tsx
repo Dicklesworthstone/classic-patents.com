@@ -18,41 +18,46 @@ export function BoyleSmithCcd3D() {
   const containerRef = useRef<HTMLDivElement>(null);
 
   // CCD Physics & Clocking State Controls
-  const { params, updateParam } = usePatentPhysics("us-3923554-boyle-smith-ccd");
+  const { params } = usePatentPhysics("us-3923554-boyle-smith-ccd");
   const [showUiOverlay, setShowUiOverlay] = useState<boolean>(true);
   const [clockPhase, _setClockPhase] = useState<1 | 2 | 3>(1);
-  const incidentLux = params.incidentLux ?? 450;
-  const gateVoltageV = params.gateVoltage ?? 10;
-  const transferEfficiencyPct = params.transferEfficiencyPct ?? 99.99;
+  const incidentLux = params.incidentLux ?? 850;
+  const gateVoltageV = params.gateVoltage ?? 8;
   const [isAutoClocking, _setIsAutoClocking] = useState<boolean>(true);
-  const clockSpeedFactor = params.clockSpeedFactor ?? 2;
+  const clockFreq = params.clockFreq ?? params.clockSpeedFactor ?? 2.5;
   const [showCalloutPins, setShowCalloutPins] = useState<boolean>(false);
   const [activeCamera, setActiveCamera] = useState<CameraPreset>("iso");
   const { isAudioMuted, toggleSound: toggleEngine } = usePatentAudio();
 
-  // Charge-Coupled Physics Calculations (FrankenSim 3-Phase MOS Well Transfer)
-  const _ccdState = FrankenSimEngine.stepBoyleSmithCcd(clockPhase, gateVoltageV, 65000);
+  const ccdWells = stepCcdWells(clockPhase, incidentLux, clockFreq, gateVoltageV);
+  const ccdState = FrankenSimEngine.stepBoyleSmithCcd(
+    clockPhase,
+    gateVoltageV,
+    incidentLux,
+    clockFreq,
+  );
 
   useFrankenSimPhysics("us-3923554-boyle-smith-ccd", {
     domain: "semiconductor_carrier",
     timestampMs: Date.now(),
     timeStepDt: 0.016,
     refusal: { isRefused: false },
-    semi: _ccdState,
+    semi: ccdState,
   });
-  const ccdWells = stepCcdWells(clockPhase, incidentLux, clockSpeedFactor);
-  const fullWellElectrons = ccdWells.photoElectrons;
+  const fullWellElectrons = ccdWells.fullWellElectrons;
   const collectedChargeElectrons = Math.round(ccdWells.wells[clockPhase - 1] ?? 0);
+  const transferEfficiencyPct = (ccdWells.cte * 100).toFixed(4);
   const chargeTransferInefficiencyEpsilon = (1 - ccdWells.cte).toExponential(2);
 
   const live = useLiveSimParams({
     clockPhase,
     isAutoClocking,
     gateVoltageV,
-    clockSpeedFactor,
+    clockFreq,
     incidentLux,
     isAudioMuted,
     photoElectrons: ccdWells.photoElectrons,
+    fullWellElectrons: ccdWells.fullWellElectrons,
     cte: ccdWells.cte,
   });
 
@@ -261,7 +266,8 @@ export function BoyleSmithCcd3D() {
       const p = live.current;
 
       if (p.isAutoClocking) {
-        phaseTimer += delta * p.clockSpeedFactor;
+        // Clock is MHz; use it as a visual rate, not a real-time 10⁶ tick.
+        phaseTimer += delta * (p.clockFreq ?? 2.5);
         if (phaseTimer > 0.8) {
           phaseTimer = 0;
           currentActivePhase = ((currentActivePhase % 3) + 1) as 1 | 2 | 3;
@@ -275,14 +281,15 @@ export function BoyleSmithCcd3D() {
 
       const wells = stepCcdWells(
         currentActivePhase,
-        p.incidentLux ?? 650,
-        p.clockSpeedFactor ?? 2.5,
+        p.incidentLux ?? 850,
+        p.clockFreq ?? 2.5,
+        p.gateVoltageV ?? 8,
       );
 
       // Update Gate Colors & Potential Wells
       for (const g of gates) {
         const wellE = wells.wells[g.phase - 1] ?? 0;
-        const fill = Math.min(1, wellE / 45000);
+        const fill = Math.min(1, wellE / Math.max(1, wells.fullWellElectrons));
         if (g.phase === currentActivePhase) {
           g.mesh.material = gateActiveMat;
           g.mesh.position.y = 0.38;

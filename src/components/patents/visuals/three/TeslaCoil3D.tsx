@@ -28,6 +28,7 @@ export function TeslaCoil3D() {
   const resonantFreqKhz = Math.round(180 * Math.sqrt(45 / Math.max(10, primaryCap)));
   const sparkGapDistanceMm = params.sparkGapDistanceMm ?? 12;
   const inputVoltageKv = params.inputVoltageKv ?? 15;
+  const couplingK = params.couplingK ?? 0.18;
   const _toploadCapacitancePf = params.toploadCapacitancePf ?? 35;
   const [showLightningStreamers, _setShowLightningStreamers] = useState<boolean>(true);
   const [showCalloutPins, setShowCalloutPins] = useState<boolean>(false);
@@ -39,6 +40,8 @@ export function TeslaCoil3D() {
     resonantFreqKhz,
     inputVoltageKv,
     sparkGapDistanceMm,
+    145,
+    couplingK,
   );
   const secondaryVoltageMv = coilPhysics.secondaryPotentialMv.toFixed(2);
   const streamerLengthInches = coilPhysics.streamerLengthInches.toFixed(1);
@@ -66,8 +69,10 @@ export function TeslaCoil3D() {
     resonantFreqKhz,
     sparkGapDistanceMm,
     inputVoltageKv,
+    couplingK,
     showLightningStreamers,
     secondaryVoltageMv,
+    streamerLengthInches: coilPhysics.streamerLengthInches,
   });
 
   const controlsRef = useRef<any>(null);
@@ -311,7 +316,9 @@ export function TeslaCoil3D() {
             const startY = 2.4;
             const startZ = Math.sin(baseAngle) * 1.65;
 
-            const length = Number(p.secondaryVoltageMv) * 1.6;
+            // Kernel length is inches of air breakdown (28 in/MV). Studio ≈ 0.4 m / unit.
+            const inches = Number(p.streamerLengthInches) || 0;
+            const length = Math.min(8, Math.max(0.35, (inches * 0.0254) / 0.4));
 
             posArr[0] = startX;
             posArr[1] = startY;
@@ -369,7 +376,7 @@ export function TeslaCoil3D() {
                     <HudText text="Freq ($f_0$):" />
                   </span>{" "}
                   <span className="font-bold text-blue-600 dark:text-blue-400">
-                    {resonantFreqKhz} kHz <HudText text="($k \\approx 0.12$)" />
+                    {resonantFreqKhz} kHz <HudText text={`($k = ${couplingK.toFixed(2)}$)`} />
                   </span>
                 </div>
                 <div>

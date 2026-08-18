@@ -12,7 +12,9 @@ import {
   stepDavenportMotor,
   stepDeLavalSeparator,
   stepEdisonBulb,
+  stepEdisonPhonograph,
   stepEinsteinRefrigerator,
+  stepEngelbartMouse,
   stepEricssonPropeller,
   stepGatlingGun,
   stepGliddenBarbedWire,
@@ -25,6 +27,7 @@ import {
   stepMcCormickReaper,
   stepMorseTelegraph,
   stepNobelDynamite,
+  stepNoyceIC,
   stepOttoEngine,
   stepParsonsTurbine,
   stepPasteurFermentation,
@@ -35,8 +38,11 @@ import {
   stepWozniakApple,
   stepZeppelinAirship,
 } from "./catalogKernels";
+import { FrankenSimEngine } from "./engine";
 import { fermiKeff } from "./fermiKinetics";
 import {
+  stepCcdWells,
+  stepHoweSewingMachine,
   stepMergenthalerLinotype,
   stepOtisElevator,
   stepRenoEscalator,
@@ -198,13 +204,137 @@ export function materialProbe(
     };
   }
   if (patentId.includes("howe") || patentId.includes("4750")) {
+    const sew = stepHoweSewingMachine(params.crankRpm ?? 240, params.threadTensionGrams ?? 45);
     return {
       part: calloutLabel,
       material: "Eye-pointed needle + boat shuttle, two threads",
-      qty: "crank",
-      value: (params.crankRpm ?? 180).toFixed(0),
-      unit: "rpm",
-      note: "Needle Y and shuttle X come from stepHoweLockstitch on this crank.",
+      qty: "shear",
+      value: sew.lockstitchShearStrengthN.toString(),
+      unit: "N",
+      note: `${sew.stitchesPerMinute} spm. Needle Y and shuttle X from stepHoweLockstitch.`,
+    };
+  }
+  if (patentId.includes("engelbart") || patentId.includes("3541541")) {
+    const mouse = stepEngelbartMouse({
+      mouseSpeed: params.mouseSpeed ?? 140,
+      wheelRadius: params.wheelRadius ?? 10,
+    });
+    return {
+      part: calloutLabel,
+      material: "Orthogonal wooden wheels + potentiometer wipers",
+      qty: "ω",
+      value: mouse.omegaRadPerS.toFixed(1),
+      unit: "rad/s",
+      note: `${mouse.dpi} dpi, ${mouse.slewPxPerS} px/s from wheel roll.`,
+    };
+  }
+  if (patentId.includes("boyle") || patentId.includes("ccd") || patentId.includes("3923554")) {
+    const wells = stepCcdWells(
+      1,
+      params.incidentLux ?? 850,
+      params.clockFreq ?? 2.5,
+      params.gateVoltage ?? 8,
+    );
+    return {
+      part: calloutLabel,
+      material: "Three-phase MOS polysilicon gates on p-Si",
+      qty: "CTE",
+      value: (wells.cte * 100).toFixed(4),
+      unit: "%",
+      note: `${wells.photoElectrons.toLocaleString()} e⁻ in a ${wells.fullWellElectrons.toLocaleString()} e⁻ well.`,
+    };
+  }
+  if (patentId.includes("tesla-coil") || patentId.includes("533367")) {
+    const cap = params.primaryCap ?? 45;
+    const freqKhz = Math.round(180 * Math.sqrt(45 / Math.max(10, cap)));
+    const coil = FrankenSimEngine.stepTeslaCoil(
+      freqKhz,
+      params.inputVoltageKv ?? 15,
+      params.sparkGapDistanceMm ?? 12,
+      145,
+      params.couplingK ?? 0.18,
+    );
+    return {
+      part: calloutLabel,
+      material: "Air-core dual-tuned LC, spark-gap primary",
+      qty: "arc",
+      value: coil.streamerLengthInches.toFixed(1),
+      unit: "in",
+      note: `${coil.secondaryPotentialMv.toFixed(2)} MV at k=${(params.couplingK ?? 0.18).toFixed(2)}.`,
+    };
+  }
+  if (patentId.includes("diesel") || patentId.includes("542846")) {
+    const diesel = FrankenSimEngine.stepDieselEngine({
+      compressionRatio: params.compRatio ?? params.compressionRatio ?? 18,
+      blastAirPressureBar: params.blastAirPressure ?? 65,
+      cutoffRatio: params.cutoffRatio ?? 1.6,
+    });
+    return {
+      part: calloutLabel,
+      material: "Uncooled cast-iron blast-air injector, 1893 Augsburg",
+      qty: "T₂",
+      value: diesel.tCompressionC.toString(),
+      unit: "°C",
+      note: `${diesel.pCompBar} bar. Autoignition ${diesel.isAutoIgnition ? "yes" : "no"}.`,
+    };
+  }
+  if (patentId.includes("kodak") || patentId.includes("388850")) {
+    const raw = params.shutterSpeed ?? 0.05;
+    const t = raw > 1 ? 1 / raw : raw;
+    const kodak = FrankenSimEngine.stepEastmanKodak({
+      shutterSpeedSec: t,
+      apertureFNumber: params.apertureStop ?? 9,
+      subjectDistanceM: params.subjectDist ?? 3,
+    });
+    return {
+      part: calloutLabel,
+      material: "57 mm barrel lens, paper roll film",
+      qty: "H",
+      value: kodak.hyperfocalM.toFixed(2),
+      unit: "m",
+      note: `EV ${kodak.exposureValueEv}. ${kodak.isInFocus ? "In focus" : "Out of focus"}.`,
+    };
+  }
+  if (patentId.includes("farnsworth") || patentId.includes("1773980")) {
+    const anodeKv = (params.anodeVoltage ?? 1500) / 1000;
+    const gauss = (params.coilCurrent ?? 0.42) * (120 / 0.42);
+    const tv = FrankenSimEngine.stepFarnsworthTv(anodeKv, gauss);
+    return {
+      part: calloutLabel,
+      material: "Photoelectric dissector + magnetic gyro",
+      qty: "r_L",
+      value: tv.gyroRadiusMm.toFixed(1),
+      unit: "mm",
+      note: `β = ${tv.relativisticBeta}. ${tv.electronVelocityMps.toLocaleString()} m/s.`,
+    };
+  }
+  if (patentId.includes("phonograph") || patentId.includes("200521")) {
+    const phono = stepEdisonPhonograph({
+      mandrelRpm: params.mandrelRpm,
+      voiceVolumeDb: params.voiceVolumeDb,
+    });
+    return {
+      part: calloutLabel,
+      material: "Tinfoil on brass mandrel, stylus indent",
+      qty: "groove",
+      value: phono.grooveDepthMicrons.toString(),
+      unit: "µm",
+      note: `${phono.trackSpeedInPerS} in/s at the 4-inch drum.`,
+    };
+  }
+  if (patentId.includes("noyce") || patentId.includes("2981877")) {
+    const ic = stepNoyceIC({
+      reverseBias: params.reverseBias,
+      oxideThickness: params.oxideThickness,
+      clockFrequencyMhz: params.clockFrequencyMhz,
+    });
+    return {
+      part: calloutLabel,
+      material: "Planar SiO₂ over p-n junctions",
+      qty: "W",
+      value: ic.depletionWidthUm.toString(),
+      unit: "µm",
+      note: `Breakdown margin ${ic.breakdownMarginV} V.`,
     };
   }
   if (patentId.includes("bell") || patentId.includes("174465")) {
@@ -780,7 +910,82 @@ export function intervalGhosts(patentId: string, params: Record<string, number>)
     ];
   }
   if (patentId.includes("howe") || patentId.includes("4750")) {
-    return [{ label: "Crank", min: 60, max: 320, live: params.crankRpm ?? 180, unit: "rpm" }];
+    const sew = stepHoweSewingMachine(params.crankRpm ?? 240, params.threadTensionGrams ?? 45);
+    return [{ label: "Shear", min: 1, max: 8, live: sew.lockstitchShearStrengthN, unit: "N" }];
+  }
+  if (patentId.includes("engelbart") || patentId.includes("3541541")) {
+    const mouse = stepEngelbartMouse({
+      mouseSpeed: params.mouseSpeed ?? 140,
+      wheelRadius: params.wheelRadius ?? 10,
+    });
+    return [{ label: "ω", min: 0, max: 40, live: mouse.omegaRadPerS, unit: "rad/s" }];
+  }
+  if (patentId.includes("boyle") || patentId.includes("ccd") || patentId.includes("3923554")) {
+    const wells = stepCcdWells(
+      1,
+      params.incidentLux ?? 850,
+      params.clockFreq ?? 2.5,
+      params.gateVoltage ?? 8,
+    );
+    return [
+      {
+        label: "Packet",
+        min: 0,
+        max: wells.fullWellElectrons,
+        live: wells.photoElectrons,
+        unit: "e⁻",
+      },
+    ];
+  }
+  if (patentId.includes("tesla-coil") || patentId.includes("533367")) {
+    const cap = params.primaryCap ?? 45;
+    const freqKhz = Math.round(180 * Math.sqrt(45 / Math.max(10, cap)));
+    const coil = FrankenSimEngine.stepTeslaCoil(
+      freqKhz,
+      params.inputVoltageKv ?? 15,
+      params.sparkGapDistanceMm ?? 12,
+      145,
+      params.couplingK ?? 0.18,
+    );
+    return [{ label: "Arc", min: 0.1, max: 4, live: coil.streamerLengthMeters, unit: "m" }];
+  }
+  if (patentId.includes("diesel") || patentId.includes("542846")) {
+    const diesel = FrankenSimEngine.stepDieselEngine({
+      compressionRatio: params.compRatio ?? params.compressionRatio ?? 18,
+      blastAirPressureBar: params.blastAirPressure ?? 65,
+      cutoffRatio: params.cutoffRatio ?? 1.6,
+    });
+    return [{ label: "T₂", min: 200, max: 800, live: diesel.tCompressionC, unit: "°C" }];
+  }
+  if (patentId.includes("kodak") || patentId.includes("388850")) {
+    const raw = params.shutterSpeed ?? 0.05;
+    const t = raw > 1 ? 1 / raw : raw;
+    const kodak = FrankenSimEngine.stepEastmanKodak({
+      shutterSpeedSec: t,
+      apertureFNumber: params.apertureStop ?? 9,
+      subjectDistanceM: params.subjectDist ?? 3,
+    });
+    return [{ label: "H", min: 1, max: 20, live: kodak.hyperfocalM, unit: "m" }];
+  }
+  if (patentId.includes("farnsworth") || patentId.includes("1773980")) {
+    const anodeKv = (params.anodeVoltage ?? 1500) / 1000;
+    const gauss = (params.coilCurrent ?? 0.42) * (120 / 0.42);
+    const tv = FrankenSimEngine.stepFarnsworthTv(anodeKv, gauss);
+    return [{ label: "r_L", min: 1, max: 40, live: tv.gyroRadiusMm, unit: "mm" }];
+  }
+  if (patentId.includes("phonograph") || patentId.includes("200521")) {
+    const phono = stepEdisonPhonograph({
+      mandrelRpm: params.mandrelRpm,
+      voiceVolumeDb: params.voiceVolumeDb,
+    });
+    return [{ label: "Groove", min: 5, max: 40, live: phono.grooveDepthMicrons, unit: "µm" }];
+  }
+  if (patentId.includes("noyce") || patentId.includes("2981877")) {
+    const ic = stepNoyceIC({
+      reverseBias: params.reverseBias,
+      oxideThickness: params.oxideThickness,
+    });
+    return [{ label: "W", min: 0.2, max: 3, live: ic.depletionWidthUm, unit: "µm" }];
   }
   if (patentId.includes("sholes") || patentId.includes("79265")) {
     const sholes = stepSholesTypewriter(params.typingSpeedWpm ?? 45, 0);
@@ -975,6 +1180,99 @@ export function fidelityField(
       reference: "27",
       residual: (otto.thermalEfficiencyPct - 27).toString(),
       unit: "%",
+    };
+  }
+  if (patentId.includes("howe") || patentId.includes("4750")) {
+    const sew = stepHoweSewingMachine(params.crankRpm ?? 240, params.threadTensionGrams ?? 45);
+    return {
+      part: "Stitch rate vs 1846 Howe shop",
+      model: sew.stitchesPerMinute.toString(),
+      reference: "250",
+      residual: (sew.stitchesPerMinute - 250).toString(),
+      unit: "spm",
+    };
+  }
+  if (patentId.includes("engelbart") || patentId.includes("3541541")) {
+    const mouse = stepEngelbartMouse({
+      mouseSpeed: params.mouseSpeed ?? 140,
+      wheelRadius: params.wheelRadius ?? 10,
+    });
+    return {
+      part: "Resolution vs 1968 NLS mouse",
+      model: mouse.dpi.toString(),
+      reference: "200",
+      residual: (mouse.dpi - 200).toString(),
+      unit: "dpi",
+    };
+  }
+  if (patentId.includes("boyle") || patentId.includes("ccd") || patentId.includes("3923554")) {
+    const wells = stepCcdWells(
+      1,
+      params.incidentLux ?? 850,
+      params.clockFreq ?? 2.5,
+      params.gateVoltage ?? 8,
+    );
+    return {
+      part: "CTE vs Bell Labs 1969 packet transfer",
+      model: wells.cte.toFixed(5),
+      reference: "0.99995",
+      residual: (wells.cte - 0.99995).toFixed(5),
+      unit: "",
+    };
+  }
+  if (patentId.includes("tesla-coil") || patentId.includes("533367")) {
+    const cap = params.primaryCap ?? 45;
+    const freqKhz = Math.round(180 * Math.sqrt(45 / Math.max(10, cap)));
+    const coil = FrankenSimEngine.stepTeslaCoil(
+      freqKhz,
+      params.inputVoltageKv ?? 15,
+      params.sparkGapDistanceMm ?? 12,
+      145,
+      params.couplingK ?? 0.18,
+    );
+    return {
+      part: "Streamer vs Colorado Springs 1899",
+      model: coil.streamerLengthMeters.toFixed(2),
+      reference: "30",
+      residual: (coil.streamerLengthMeters - 30).toFixed(2),
+      unit: "m",
+    };
+  }
+  if (patentId.includes("diesel") || patentId.includes("542846")) {
+    const diesel = FrankenSimEngine.stepDieselEngine({
+      compressionRatio: params.compRatio ?? params.compressionRatio ?? 18,
+    });
+    return {
+      part: "Adiabatic T₂ vs 210 °C heavy-oil flash",
+      model: diesel.tCompressionC.toString(),
+      reference: "210",
+      residual: (diesel.tCompressionC - 210).toString(),
+      unit: "°C",
+    };
+  }
+  if (patentId.includes("kodak") || patentId.includes("388850")) {
+    const raw = params.shutterSpeed ?? 0.05;
+    const t = raw > 1 ? 1 / raw : raw;
+    const kodak = FrankenSimEngine.stepEastmanKodak({
+      shutterSpeedSec: t,
+      apertureFNumber: params.apertureStop ?? 9,
+    });
+    return {
+      part: "Hyperfocal vs 1888 Kodak No. 1",
+      model: kodak.hyperfocalM.toFixed(2),
+      reference: "12",
+      residual: (kodak.hyperfocalM - 12).toFixed(2),
+      unit: "m",
+    };
+  }
+  if (patentId.includes("noyce") || patentId.includes("2981877")) {
+    const ic = stepNoyceIC({ reverseBias: params.reverseBias });
+    return {
+      part: "Breakdown margin vs 35 V planar oxide",
+      model: ic.breakdownMarginV.toString(),
+      reference: "30",
+      residual: (ic.breakdownMarginV - 30).toFixed(1),
+      unit: "V",
     };
   }
   return null;
@@ -1187,6 +1485,96 @@ export function datedScenarios(patentId: string): DatedScenario[] {
       },
     ];
   }
+  if (patentId.includes("howe") || patentId.includes("4750")) {
+    return [
+      {
+        id: "cambridge-1846",
+        date: "1846-09-10",
+        name: "Howe lockstitch shop rate",
+        writes: { crankRpm: 250, stitchPitchMm: 2.5, threadTensionGrams: 50 },
+      },
+    ];
+  }
+  if (patentId.includes("engelbart") || patentId.includes("3541541")) {
+    return [
+      {
+        id: "sri-1968-12-09",
+        date: "1968-12-09",
+        name: "Mother of All Demos",
+        writes: { mouseSpeed: 140, wheelRadius: 10, cpiResolution: 200 },
+      },
+    ];
+  }
+  if (patentId.includes("boyle") || patentId.includes("ccd") || patentId.includes("3923554")) {
+    return [
+      {
+        id: "murray-hill-1969",
+        date: "1969-10-19",
+        name: "Bell Labs CCD announcement",
+        writes: { clockFreq: 1.0, gateVoltage: 10, incidentLux: 650 },
+      },
+    ];
+  }
+  if (patentId.includes("tesla-coil") || patentId.includes("533367")) {
+    return [
+      {
+        id: "columbia-1891",
+        date: "1891-05-20",
+        name: "Columbia lecture coil",
+        writes: { primaryCap: 45, couplingK: 0.18, inputVoltageKv: 15, sparkGapDistanceMm: 12 },
+      },
+    ];
+  }
+  if (patentId.includes("diesel") || patentId.includes("542846")) {
+    return [
+      {
+        id: "augsburg-1893",
+        date: "1893",
+        name: "Augsburg first fire",
+        writes: { compRatio: 18, blastAirPressure: 65, cutoffRatio: 1.6 },
+      },
+    ];
+  }
+  if (patentId.includes("kodak") || patentId.includes("388850")) {
+    return [
+      {
+        id: "rochester-1888",
+        date: "1888",
+        name: "You press the button",
+        writes: { shutterSpeed: 0.05, apertureStop: 9, subjectDist: 3 },
+      },
+    ];
+  }
+  if (patentId.includes("farnsworth") || patentId.includes("1773980")) {
+    return [
+      {
+        id: "san-francisco-1927",
+        date: "1927-09-07",
+        name: "First dissector image",
+        writes: { anodeVoltage: 1500, coilCurrent: 0.42, lightIntensityLux: 500 },
+      },
+    ];
+  }
+  if (patentId.includes("phonograph") || patentId.includes("200521")) {
+    return [
+      {
+        id: "menlo-1877",
+        date: "1877-12-06",
+        name: "Mary had a little lamb",
+        writes: { mandrelRpm: 60, voiceVolumeDb: 75 },
+      },
+    ];
+  }
+  if (patentId.includes("noyce") || patentId.includes("2981877")) {
+    return [
+      {
+        id: "fairchild-1959",
+        date: "1959-07-30",
+        name: "Fairchild planar process",
+        writes: { reverseBias: 5, oxideThickness: 0.5 },
+      },
+    ];
+  }
   return [];
 }
 
@@ -1209,6 +1597,38 @@ export function coupleLinks(patentId: string, params: Record<string, number>): C
     const v = params.voltage ?? 110;
     const p = (v * v) / 150;
     return [{ from: "I²R", to: "radiation", watts: p }];
+  }
+  if (patentId.includes("tesla-coil") || patentId.includes("533367")) {
+    const cap = params.primaryCap ?? 45;
+    const freqKhz = Math.round(180 * Math.sqrt(45 / Math.max(10, cap)));
+    const coil = FrankenSimEngine.stepTeslaCoil(
+      freqKhz,
+      params.inputVoltageKv ?? 15,
+      params.sparkGapDistanceMm ?? 12,
+      145,
+      params.couplingK ?? 0.18,
+    );
+    const watts = (params.inputVoltageKv ?? 15) * 20;
+    return [{ from: "primary spark", to: `${coil.streamerLengthInches.toFixed(0)} in arc`, watts }];
+  }
+  if (patentId.includes("boyle") || patentId.includes("ccd") || patentId.includes("3923554")) {
+    const wells = stepCcdWells(
+      1,
+      params.incidentLux ?? 850,
+      params.clockFreq ?? 2.5,
+      params.gateVoltage ?? 8,
+    );
+    return [{ from: "photons", to: "well packet", watts: wells.photoElectrons * 1.6e-19 * 1e12 }];
+  }
+  if (patentId.includes("howe") || patentId.includes("4750")) {
+    const sew = stepHoweSewingMachine(params.crankRpm ?? 240, params.threadTensionGrams ?? 45);
+    return [
+      {
+        from: "flywheel",
+        to: "lockstitch",
+        watts: sew.stitchFrequencyHz * sew.lockstitchShearStrengthN * 0.003,
+      },
+    ];
   }
   return [];
 }

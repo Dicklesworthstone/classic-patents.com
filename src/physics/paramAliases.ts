@@ -81,6 +81,7 @@ export const PATENT_PARAM_ALIASES: Record<string, Record<string, ParamAlias>> = 
       fromCanonical: (psi) => psi / 14.5038,
     },
   },
+  "us-3923554-boyle-smith-ccd": { clockSpeedFactor: same("clockFreq") },
 };
 
 export function canonicalizeParam(

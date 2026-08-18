@@ -8,19 +8,33 @@ export function stepCcdWells(
   phase: 1 | 2 | 3,
   lux: number,
   clockMhz: number,
+  gateVoltageV: number = 8,
 ): {
   wells: [number, number, number];
   photoElectrons: number;
+  fullWellElectrons: number;
   cte: number;
 } {
   const cte = Math.max(0.999, 0.99995 - clockMhz * 1e-5);
-  const photoElectrons = Math.round((lux / 1000) * 45000);
+  const fullWellElectrons = Math.max(1, Math.round(12500 * Math.max(0, gateVoltageV)));
+  const photoElectrons = Math.min(fullWellElectrons, Math.round((Math.max(0, lux) / 1000) * 45000));
   const wells: [number, number, number] = [0, 0, 0];
   const idx = phase - 1;
   wells[idx] = photoElectrons;
   const residual = photoElectrons * (1 - cte);
   wells[(idx + 2) % 3] += residual;
-  return { wells, photoElectrons, cte };
+  return { wells, photoElectrons, fullWellElectrons, cte };
+}
+
+export function stepHoweSewingMachine(flywheelRpm: number, stitchTensionGrams: number) {
+  const rpm = Math.max(0, flywheelRpm);
+  const stitchFrequencyHz = Number((rpm / 60).toFixed(1));
+  return {
+    stitchesPerMinute: rpm,
+    stitchFrequencyHz,
+    cycleTimeMs: Math.round(1000 / Math.max(0.01, stitchFrequencyHz)),
+    lockstitchShearStrengthN: Math.round(stitchTensionGrams * 0.088),
+  };
 }
 
 export function stepHoweLockstitch(crankDeg: number): {

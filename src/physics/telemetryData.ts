@@ -37,6 +37,8 @@ import {
 import { FrankenSimEngine } from "./engine";
 import { fermiKeff, stepFermiKinetics } from "./fermiKinetics";
 import {
+  stepCcdWells,
+  stepHoweSewingMachine,
   stepMergenthalerLinotype,
   stepRenoEscalator,
   stepSholesTypewriter,
@@ -1553,12 +1555,23 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
         defaultValue: 8.0,
         unit: "V",
       },
+      {
+        id: "incidentLux",
+        label: "Incident Illuminance",
+        min: 100,
+        max: 2000,
+        step: 50,
+        defaultValue: 850,
+        unit: "lx",
+      },
     ],
     computeMetrics: (p) => {
       const f = p.clockFreq ?? 2.5;
       const vGate = p.gateVoltage ?? 8.0;
-      const wellCap = Math.round(12500 * vGate);
-      const cte = (99.999 - f * 0.0012).toFixed(3);
+      const lux = p.incidentLux ?? 850;
+      const wells = stepCcdWells(1, lux, f, vGate);
+      const wellCap = wells.fullWellElectrons;
+      const cte = (wells.cte * 100).toFixed(4);
       const transitNs = (1000 / (f * 3)).toFixed(1);
 
       return [
@@ -1713,16 +1726,18 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
     computeMetrics: (p) => {
       const rpm = p.crankRpm ?? 240;
       const feed = p.stitchPitchMm ?? 3.5;
-      const shuttleHz = (rpm / 60).toFixed(2);
+      const tension = p.threadTensionGrams ?? 45;
+      const sew = stepHoweSewingMachine(rpm, tension);
+      const shuttleHz = sew.stitchFrequencyHz.toFixed(2);
       const stitchLen = feed.toFixed(1);
 
       return [
         {
           label: "Stitch Velocity",
-          value: rpm.toString(),
+          value: sew.stitchesPerMinute.toString(),
           unit: "SPM",
           badgeColor: "cyan",
-          progressPct: (rpm / 350) * 100,
+          progressPct: (sew.stitchesPerMinute / 350) * 100,
         },
         {
           label: "Shuttle Oscillations",
@@ -1739,11 +1754,11 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
           progressPct: (Number(stitchLen) / 5) * 100,
         },
         {
-          label: "Thread Lock Security",
-          value: "Locked",
-          unit: "state",
+          label: "Lockstitch Shear",
+          value: sew.lockstitchShearStrengthN.toString(),
+          unit: "N",
           badgeColor: "indigo",
-          progressPct: 100,
+          progressPct: Math.min(100, (sew.lockstitchShearStrengthN / 8) * 100),
         },
       ];
     },
@@ -1810,10 +1825,10 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
       const inputKv = p.inputVoltageKv ?? 15;
       const sparkGap = p.sparkGapDistanceMm ?? 12;
 
-      const res = FrankenSimEngine.stepTeslaCoil(freqKhz, inputKv, sparkGap, 145);
+      const k = p.couplingK ?? 0.18;
+      const res = FrankenSimEngine.stepTeslaCoil(freqKhz, inputKv, sparkGap, 145, k);
       const peakKv = Math.round(res.secondaryPotentialMv * 1000);
       const streamerM = res.streamerLengthMeters.toFixed(2);
-      const k = 0.15 + (sparkGap / 20) * 0.1;
 
       return [
         {

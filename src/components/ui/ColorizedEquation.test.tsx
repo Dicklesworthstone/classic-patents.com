@@ -11,8 +11,12 @@ import { ColorizedEquation } from "./ColorizedEquation";
 import { COLOR_STYLES, wrapKatexColor } from "./colorPalette";
 
 describe("ColorizedEquation Component", () => {
+  const wrightFlyerInducedDrag =
+    ALL_COLORIZED_EQUATIONS["us-821393-wright-flyer"].find((e) => e.id === "wright-induced-drag") ??
+    ALL_COLORIZED_EQUATIONS["us-821393-wright-flyer"][0];
+
   test("renders Wright Flyer colorized equation without errors", () => {
-    const eq = ALL_COLORIZED_EQUATIONS["us-821393-wright-flyer"][0];
+    const eq = wrightFlyerInducedDrag;
     expect(eq).toBeDefined();
 
     const html = renderToString(<ColorizedEquation equation={eq} />);
@@ -40,7 +44,7 @@ describe("ColorizedEquation Component", () => {
   });
 
   test("renders collapsed view and custom initial active variable", () => {
-    const eq = ALL_COLORIZED_EQUATIONS["us-821393-wright-flyer"][0];
+    const eq = wrightFlyerInducedDrag;
     const html = renderToString(
       <ColorizedEquation equation={eq} initialActiveVariableId="cl" defaultExpanded={false} />,
     );
@@ -56,5 +60,35 @@ describe("ColorizedEquation Component", () => {
     const html = renderToString(<ColorizedEquation equation={cottonGinEqs[0]} />);
     expect(html).toContain("Mathematical Governing Law");
     expect(html).toContain("Plain English Decoder");
+  });
+
+  test("renders all variable symbols and inline explanation math via KaTeX without raw LaTeX strings", () => {
+    const eq = wrightFlyerInducedDrag;
+    const html = renderToString(
+      <ColorizedEquation equation={eq} initialActiveVariableId="cl" defaultExpanded={true} />,
+    );
+
+    // KaTeX spans should be present
+    expect(html).toContain("katex");
+    expect(html).toContain("katex-mathml");
+
+    // Raw unparsed dollar signs should NOT be present in the output
+    expect(html).not.toContain("($C_L^2$)");
+    expect(html).not.toContain("$AR$");
+  });
+
+  test("injects interactive equation token targets with data-var attributes for direct formula hover", () => {
+    const eq = wrightFlyerInducedDrag;
+    const html = renderToString(<ColorizedEquation equation={eq} />);
+
+    // Check that direct equation terms have interactive classes and data-var attributes
+    expect(html).toContain('data-var="ar"');
+    expect(html).toContain("eq-term-ar");
+    expect(html).toContain('data-var="cl"');
+    expect(html).toContain("eq-term-cl");
+    expect(html).toContain('data-var="c_di"');
+    expect(html).toContain("eq-term-c_di");
+    expect(html).toContain('data-var="e"');
+    expect(html).toContain("eq-term-e");
   });
 });

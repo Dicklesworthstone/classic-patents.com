@@ -437,9 +437,9 @@ export function EngelbartMouse3D() {
                   </span>
                 </div>
                 <div>
-                  <span className="text-ink-600 dark:text-ink-400">Orthogonal Geometry:</span>{" "}
+                  <span className="text-ink-600 dark:text-ink-400">Wheel ω:</span>{" "}
                   <span className="font-bold text-amber-600 dark:text-amber-400">
-                    90° Dual Potentiometer Wheels
+                    {mouse.omegaRadPerS.toFixed(1)} rad/s
                   </span>
                 </div>
               </div>

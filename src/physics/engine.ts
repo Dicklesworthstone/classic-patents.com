@@ -40,6 +40,7 @@ import {
   stepCcdWells,
   stepEngelbartResolver,
   stepHoweLockstitch,
+  stepHoweSewingMachine as stepHoweSewingMachineKernel,
   stepMergenthalerLinotype,
   stepOtisElevator,
   stepRenoEscalator,
@@ -328,23 +329,21 @@ export const FrankenSimEngine = {
    * 3-Phase Potential Well Charge Packet Transfer
    */
   stepBoyleSmithCcd(
-    _phaseStep: number,
+    phaseStep: number,
     clockVoltageV: number,
-    storedElectronsPerPixel: number,
+    incidentLux: number,
+    clockMhz: number = 2.5,
   ): SemiconductorState {
-    const transferEfficiency = 0.99995;
-    const pixelWellCapacity = 100000;
-    const _chargeFraction = Math.min(1.0, storedElectronsPerPixel / pixelWellCapacity);
-    const _channelPotentialVolts = clockVoltageV * 0.72;
-
+    const phase = (Math.max(1, Math.min(3, Math.round(phaseStep))) || 1) as 1 | 2 | 3;
+    const wells = stepCcdWells(phase, incidentLux, clockMhz, clockVoltageV);
     return {
       biasVoltageVolts: clockVoltageV,
       currentGainAlpha: 1.0,
       holeDiffusionCoefficientCm2ps: 35.0,
-      chargeTransferEfficiencyPct: Number((transferEfficiency * 100).toFixed(4)),
-      clockPeriodNs: 100, // 10 MHz readout
+      chargeTransferEfficiencyPct: Number((wells.cte * 100).toFixed(4)),
+      clockPeriodNs: Number((1000 / Math.max(0.1, clockMhz * 3)).toFixed(1)),
       busBandwidthMbps: 10,
-      electronVelocityMps: 45000,
+      electronVelocityMps: wells.photoElectrons,
       relativisticFractionC: 0,
     };
   },
@@ -407,22 +406,27 @@ export const FrankenSimEngine = {
     inputKv: number,
     sparkGapMm: number,
     qFactor: number = 145,
+    couplingK: number = 0.18,
   ) {
+    const k = Math.max(0.05, Math.min(0.5, couplingK));
     const wasmRes = tryTeslaWasmStep(resonantFreqKhz, inputKv, sparkGapMm, qFactor);
     if (wasmRes) {
+      // tesla_coil_step has no k input; scale the native result from the registry default.
+      const kScale = k / 0.18;
       return {
         resonantFreqKhz: wasmRes.resonant_freq_khz,
-        secondaryPotentialMv: wasmRes.secondary_potential_mv,
-        streamerLengthInches: wasmRes.streamer_length_inches,
-        streamerLengthMeters: wasmRes.streamer_length_meters,
+        secondaryPotentialMv: Number((wasmRes.secondary_potential_mv * kScale).toFixed(2)),
+        streamerLengthInches: Number((wasmRes.streamer_length_inches * kScale).toFixed(1)),
+        streamerLengthMeters: Number((wasmRes.streamer_length_meters * kScale).toFixed(2)),
       };
     }
 
     const primaryL = 0.012; // mH
     const secondaryL = 85.0; // mH
     const transformationRatio = Math.sqrt(secondaryL / primaryL);
+    // V₂ ≈ V₁ √(L₂/L₁) k √Q, then spark-gap loading. 28 in/MV air breakdown.
     const secondaryPotentialMv =
-      ((inputKv * 1000 * transformationRatio * qFactor) / 1e6) * (sparkGapMm / 15);
+      ((inputKv * transformationRatio * k * Math.sqrt(qFactor)) / 1000) * (sparkGapMm / 15);
     const streamerLengthInches = secondaryPotentialMv * 28.0;
 
     return {
@@ -478,17 +482,7 @@ export const FrankenSimEngine = {
    * 4-Bar Kinematic Linkage & Shuttle Lockstitch Interlock
    */
   stepHoweSewingMachine(flywheelRpm: number, stitchTensionGrams: number) {
-    const stitchesPerMinute = flywheelRpm;
-    const stitchFrequencyHz = Number((stitchesPerMinute / 60).toFixed(1));
-    const cycleTimeMs = Math.round(1000 / (stitchFrequencyHz + 1e-4));
-    const lockstitchShearStrengthN = Math.round(stitchTensionGrams * 0.088);
-
-    return {
-      stitchesPerMinute,
-      stitchFrequencyHz,
-      cycleTimeMs,
-      lockstitchShearStrengthN,
-    };
+    return stepHoweSewingMachineKernel(flywheelRpm, stitchTensionGrams);
   },
 
   /**

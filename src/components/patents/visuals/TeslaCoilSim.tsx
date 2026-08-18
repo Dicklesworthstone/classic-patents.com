@@ -10,13 +10,15 @@ export function TeslaCoilSim() {
   const primaryCapacitanceNf = params.primaryCap ?? 45;
   const inputKv = params.inputVoltageKv ?? 15;
   const sparkGap = params.sparkGapDistanceMm ?? 12;
+  const couplingK = params.couplingK ?? 0.18;
   const [sparkRateHz, setSparkRateHz] = useState<number>(120); // 30 to 400 sparks/sec
   const [secondaryTurns, setSecondaryTurns] = useState<number>(850); // 400 to 1500 turns
 
   // Resonant calculations via central physics engine
   const resonantFreqKhz = Math.round(180 * Math.sqrt(45 / primaryCapacitanceNf));
-  const res = FrankenSimEngine.stepTeslaCoil(resonantFreqKhz, inputKv, sparkGap, 145);
+  const res = FrankenSimEngine.stepTeslaCoil(resonantFreqKhz, inputKv, sparkGap, 145, couplingK);
   const secondaryVoltageKv = Math.round(res.secondaryPotentialMv * 1000);
+  const streamerScale = Math.min(2.2, Math.max(0.35, res.streamerLengthInches / 48));
 
   return (
     <div className="rounded-2xl border border-amber-900/20 dark:border-ink-800 bg-parchment-50 dark:bg-ink-950 p-6 sm:p-7 shadow-patent space-y-6">
@@ -111,7 +113,13 @@ export function TeslaCoilSim() {
             </g>
 
             {/* High-Frequency Plasma Electrical Streamers (Lightning Discharges) */}
-            <g stroke="#c084fc" strokeWidth="2" fill="none" opacity="0.9">
+            <g
+              stroke="#c084fc"
+              strokeWidth="2"
+              fill="none"
+              opacity="0.9"
+              transform={`translate(300 110) scale(${streamerScale}) translate(-300 -110)`}
+            >
               {/* Left Branching Arc */}
               <path d="M 260 110 Q 220 80 180 90 T 130 60 T 80 110 T 50 140" strokeWidth="2.5" />
               <path d="M 180 90 Q 150 130 110 150" strokeWidth="1.5" />

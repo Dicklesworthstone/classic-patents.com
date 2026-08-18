@@ -24,7 +24,7 @@ export function GoddardRocket3D() {
   }, []);
 
   // Propulsion & Staging State Controls
-  const { params, updateParam } = usePatentPhysics("us-1155986-goddard-rocket");
+  const { params } = usePatentPhysics("us-1155986-goddard-rocket");
   const [showUiOverlay, setShowUiOverlay] = useState<boolean>(true);
   const chamberPressurePsi = params.chamberPressure ?? 350;
   const expansionRatio = params.expansionRatio ?? 3.5;
@@ -37,7 +37,12 @@ export function GoddardRocket3D() {
   const { isAudioMuted, toggleSound: toggleEngine } = usePatentAudio();
 
   // Rocket Propulsion Physics (FrankenSim de Laval Isentropic Expansion)
-  const rocketPhysics = FrankenSimEngine.stepGoddardRocket(chamberPressurePsi, fuelFlowRateKgs);
+  const rocketPhysics = FrankenSimEngine.stepGoddardRocket(
+    chamberPressurePsi,
+    fuelFlowRateKgs,
+    4.2,
+    expansionRatio,
+  );
 
   useFrankenSimPhysics("us-1155986-goddard-rocket", {
     domain: "thermodynamics_transport",
@@ -57,8 +62,9 @@ export function GoddardRocket3D() {
     },
   });
   const thermo = goddardThermo(chamberPressurePsi, expansionRatio);
-  const specificImpulseSec = thermo.ispSec;
-  const exhaustVelocityMps = thermo.veMps;
+  const specificImpulseSec = Number(rocketPhysics.specificImpulseSec.toFixed(1));
+  const exhaustVelocityMps = rocketPhysics.exhaustVelocityMps;
+  const machExit = rocketPhysics.machExit;
   const thrustNewtons = rocketPhysics.thrustNewtons;
   const thrustLbf = Math.round(thrustNewtons * 0.2248);
 
@@ -414,8 +420,7 @@ export function GoddardRocket3D() {
                 <div>
                   <span className="text-ink-600 dark:text-ink-400">Exhaust V:</span>{" "}
                   <span className="font-bold text-emerald-600 dark:text-emerald-400">
-                    {exhaustVelocityMps.toLocaleString()} m/s (M
-                    {(exhaustVelocityMps / 343).toFixed(1)})
+                    {exhaustVelocityMps.toLocaleString()} m/s (M{machExit.toFixed(2)})
                   </span>
                 </div>
                 <div>
