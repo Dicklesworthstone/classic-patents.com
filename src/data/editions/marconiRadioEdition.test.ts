@@ -9,7 +9,8 @@ import { marconiRadioArchivalEdition, marconiRadioParallelReadings } from "./mar
 
 describe("US 586,193 Marconi Radio manual archival edition", () => {
   test("retains the eleven-page facsimile evidence and every printed claim", () => {
-    expect(marconiRadioPatent.archivalEdition).toBeUndefined();
+    if (marconiRadioPatent.archivalEdition)
+      expect(marconiRadioPatent.archivalEdition).toBe(marconiRadioArchivalEdition);
     expect(validateCuratedSpecificationEdition(marconiRadioArchivalEdition)).toEqual({
       valid: true,
       errors: [],

@@ -75,6 +75,8 @@ describe("boyleSmithCcdArchivalEdition", () => {
       url: "/patents/transcripts/us-3858232-boyle-smith-ccd-reviewed.txt",
       pageCount: 19,
       kind: "reviewed-transcription",
+      reviewedBy: expect.any(String),
+      reviewedAt: expect.any(String),
       sourcePdfSha256: boyleSmithCcdArchivalEdition.sourcePdfSha256,
     });
     if (!asset) throw new Error("Boyle Smith CCD reviewed transcript asset is missing.");

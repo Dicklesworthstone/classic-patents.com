@@ -165,16 +165,18 @@ export const ARCHIVAL_PARALLEL_READINGS: Readonly<
       "These crossed wires form a truss that gives the whole machine transverse stiffness and strength. The jointed connections still allow the aeroplanes to bend or twist in the next operation.",
     ],
     15: [
-      "The description continues with the forward elevator or horizontal rudder used for pitch control.",
-      "The elevator is carried on forward outriggers and pivoted so the pilot can tilt its angle of incidence up or down with a hand lever.",
+      "The inventors describe the first control cable, designated by reference number 15, which extends along the front of the machine above the lower wing, passes around guide pulleys 16 located at the lower front corners e and f, and extends upward and rearward to fasten to the upper rear wing corners c and d.",
+      "At the center of this cable is the movable hip cradle 18, which the pilot operates while lying prone face down on the lower wing. Shifting the body sideways moves the cradle left or right to pull the cable in either direction, providing an intuitive, low-fatigue bodily control mechanism.",
     ],
     16: [
-      "Next they describe the vertical rear rudder used for directional yaw control.",
-      "The vertical rudder is mounted on rearward outriggers and linked to the wing-warping system so yaw and roll are coordinated automatically.",
+      "The inventors describe the second operating cable, numbered 19, which runs transversely across the rear of the machine on the lower wing, passes around pulleys 20 at rear corners g and h, and connects to the upper rear corners c and d.",
+      "Together with front cable 15, this forms a closed mechanical loop that coordinates the simultaneous upward and downward deflection of opposing wing tips.",
     ],
     17: [
-      "The inventors explain the pilot's operating station: a sliding hip cradle mounted on the lower wing center section.",
-      "By shifting their hips sideways in the cradle, the pilot pulls cables that twist the wing tips in opposite directions and simultaneously swings the rear rudder toward the high-drag wing.",
+      "The Wrights provide a step-by-step kinematic trace of the wing-twisting mechanism in action. When the prone pilot slides the hip cradle 18 to the right, it draws cable 15 to the right, pulling down on the rear upper right corner d of the upper wing.",
+      "Because the standard between the wings is rigid, this downward tension also forces down the lower rear right corner h. Simultaneously, the movement tensions rear cable 19, which passes around lower pulleys 20 and pulls upward on the opposite rear corners c and g.",
+      "Crucially, the front edge corners a, b, e, and f are rigidly braced by crossed stay-wires and cannot twist. As a consequence, pulling the rear corners twists the flexible wing surfaces into opposite helical curves: the right-hand wing tips are inclined downward at the rear to increase their angle of incidence, while the left-hand wing tips are tilted upward to decrease their angle of incidence.",
+      "This helical warp alters the lift distribution across the span without changing the rigid front spar geometry, enabling the pilot to command aerodynamic roll moments at will.",
     ],
     18: [
       "The described cable geometry twists each aeroplane around a line that crosses the wing near the middle of its side margins. It gives the surface a helicoidal warp: its angle changes gradually from the central longitudinal line toward each side, rather than kinking at one point.",

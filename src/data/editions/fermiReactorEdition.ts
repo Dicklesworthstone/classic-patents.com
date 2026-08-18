@@ -192,6 +192,18 @@ export const FERMI_REACTOR_SOURCE_PDF_SHA256 =
   "e32bdaa34dda164d2ab62273c182c437464f5a2b88e480beabba0fa2aae60ef3";
 export const FERMI_REACTOR_FIGURE_PREVIEWS = FERMI_REACTOR_FIGURE_CAPTIONS;
 
+function claimInlines(claimText: string) {
+  const parts = claimText.split(/(Figures?\s+\d+(?:\s+through\s+\d+)?)/i);
+  return parts.flatMap((part) => {
+    const match = part.match(/^Figures?\s+(\d+)/i);
+    if (match) {
+      const num = parseInt(match[1], 10);
+      return [figure(num, part)];
+    }
+    return part ? [text(part)] : [];
+  });
+}
+
 export const fermiReactorArchivalEdition: CuratedSpecificationEdition = {
   kind: "manual-react-edition",
   sourcePdfSha256: "e32bdaa34dda164d2ab62273c182c437464f5a2b88e480beabba0fa2aae60ef3",
@@ -356,42 +368,42 @@ export const fermiReactorArchivalEdition: CuratedSpecificationEdition = {
     {
       kind: "claim",
       number: 1,
-      inlines: literal(fermiReactorClaims[0].text),
+      inlines: claimInlines(fermiReactorClaims[0].text),
     },
     {
       kind: "claim",
       number: 2,
-      inlines: literal(fermiReactorClaims[1].text),
+      inlines: claimInlines(fermiReactorClaims[1].text),
     },
     {
       kind: "claim",
       number: 3,
-      inlines: literal(fermiReactorClaims[2].text),
+      inlines: claimInlines(fermiReactorClaims[2].text),
     },
     {
       kind: "claim",
       number: 4,
-      inlines: literal(fermiReactorClaims[3].text),
+      inlines: claimInlines(fermiReactorClaims[3].text),
     },
     {
       kind: "claim",
       number: 5,
-      inlines: literal(fermiReactorClaims[4].text),
+      inlines: claimInlines(fermiReactorClaims[4].text),
     },
     {
       kind: "claim",
       number: 6,
-      inlines: literal(fermiReactorClaims[5].text),
+      inlines: claimInlines(fermiReactorClaims[5].text),
     },
     {
       kind: "claim",
       number: 7,
-      inlines: literal(fermiReactorClaims[6].text),
+      inlines: claimInlines(fermiReactorClaims[6].text),
     },
     {
       kind: "claim",
       number: 8,
-      inlines: literal(fermiReactorClaims[7].text),
+      inlines: claimInlines(fermiReactorClaims[7].text),
     },
   ],
 };

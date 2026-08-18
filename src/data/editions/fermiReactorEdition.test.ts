@@ -6,7 +6,6 @@ import { validateCuratedSpecificationEdition } from "@/data/archivalEditionValid
 import { validateReviewedTranscription } from "@/data/patents/sourceTextValidation";
 import { fermiReactorPatent } from "../patents/fermi-reactor";
 import {
-  FERMI_REACTOR_FIGURE_CAPTIONS,
   fermiReactorArchivalEdition,
   fermiReactorClaims,
   fermiReactorParallelReadings,

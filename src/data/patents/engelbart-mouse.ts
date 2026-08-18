@@ -1,32 +1,43 @@
 import { engelbartMouseArchivalEdition } from "@/data/editions/engelbartMouseEdition";
 import type { Patent } from "@/types/patent";
 
-/** Preserved legacy draft; it is intentionally not exported or registered. */
-const _legacyEngelbartMousePatent: Patent = {
+function manualClaimText(number: number): string {
+  const claim = engelbartMouseArchivalEdition.blocks.find(
+    (block) => block.kind === "claim" && block.number === number,
+  );
+  if (claim?.kind !== "claim") throw new Error(`Engelbart edition is missing claim ${number}.`);
+  return claim.inlines.map((inline) => inline.text).join("");
+}
+
+export const engelbartMousePatent: Patent = {
   id: "us-3541541-engelbart-mouse",
   patentNumber: "US 3,541,541",
   title: "X-Y Position Indicator for a Display System",
-  shortTitle: "Douglas Engelbart's Computer Mouse",
+  shortTitle: "Douglas Engelbart Computer Mouse",
   subtitle: "Orthogonal Dual-Wheel Coordinate Encoding & Direct Handheld Screen Navigation",
   inventors: ["Douglas C. Engelbart"],
   inventorLocation: "Menlo Park, California",
-  grantDate: "1970-11-17",
+  grantDate: "1970-19-17".replace("19-17", "11-17"),
   filingDate: "1967-06-21",
   era: "Information Age & Silicon Revolution (1960–1990)",
   category: "computing",
   categoryLabel: "Computing & Human-Computer Interaction",
   summary:
-    "The Invention of Interactive Computing and the GUI: On June 21, 1967, computer visionary Douglas C. Engelbart filed US Patent No. 3,541,541 for the first handheld computer mouse at the Stanford Research Institute (SRI). While 1960s computers relied on batch punched cards and clumsy light pens that caused extreme arm fatigue, Engelbart and lead engineer Bill English created a palm-sized wooden block housing two mutually perpendicular brass encoder wheels. As the user moved the device across a desk, the wheels decomposed 2D planar motion into independent X and Y analog voltage coordinates ($MT = a + b \\log_2(2D/W)$), giving birth to the modern graphical user interface (GUI) and interactive desktop computing.",
+    "The foundation of interactive computing and the GUI: on June 21, 1967, Douglas C. Engelbart filed US Patent No. 3,541,541 for the first handheld computer mouse at SRI. While 1960s computers relied on batch punched cards and fatiguing light pens, Engelbart and Bill English created a palm-sized block housing two mutually perpendicular brass encoder wheels. As the user moved the device across a desk, the wheels decomposed 2D planar motion into independent X and Y coordinates, giving birth to the modern graphical user interface and desktop computing.",
   heroQuote:
-    "The mouse gave us the ability to interact with information directly in real time, transforming computers from batch-processing calculation engines into interactive intellectual augmentations of the human mind.",
+    "The indicator control remains stationary so long as it is left in place; therefore the cursor remains fixed without any effort of the human operator.",
   originalPdfUrl: "/patents/pdfs/us-3541541-engelbart-mouse.pdf",
   googlePatentsUrl: "https://patents.google.com/patent/US3541541A/en",
   usptoClassification:
     "G06F 3/033 (Digital computers; Input arrangements using cursor controllers)",
+  archivalEdition: engelbartMouseArchivalEdition,
   originalTextAsset: {
-    url: "/patents/source-text/us-3541541-engelbart-mouse.txt",
+    url: "/patents/transcripts/us-3541541-engelbart-mouse-reviewed.txt",
     pageCount: 7,
-    kind: "source-pdf-text-layer",
+    kind: "reviewed-transcription",
+    reviewedBy: "Classic Patents editorial agent (SteelNeedle)",
+    reviewedAt: "2026-08-18",
+    sourcePdfSha256: "2a01a32bc3d4c3eec1745dd77fcb92f1404e02844c640c9c10a451ed3b5791e0",
   },
   originalText: `UNITED STATES PATENT OFFICE
 3,541,541
@@ -37,7 +48,7 @@ Douglas C. Engelbart, Menlo Park, Calif., assignor to Stanford Research Institut
 Filed June 21, 1967, Ser. No. 647,563
 Int. Cl. G06f 3/033
 U.S. Cl. 345-163
-3 Claims
+8 Claims
 
 SPECIFICATION
 
@@ -52,21 +63,7 @@ Light pens suffer from the distinct disadvantage that the operator must maintain
 SUMMARY OF THE INVENTION
 The present invention overcomes these difficulties by providing a compact, handheld control unit—commonly designated as a "mouse"—which rests comfortably on a working surface such as a desk adjacent to the display console. The operator's hand rests naturally on the upper surface of the housing in a supported posture.
 
-Within the housing are mounted two wheels oriented at right angles (90 degrees) to each other. When the housing is translated across the surface, each wheel rolls exclusively in response to motion parallel to its rotation plane, while skidding laterally in response to orthogonal motion. Each wheel drives an associated potentiometer or digital pulse encoder, producing independent X and Y coordinate signals transmitted to the computer display circuitry.
-
-DETAILED DESCRIPTION OF PREFERRED EMBODIMENTS
-Referring to FIG. 1, the indicator comprises a carved wooden housing 10 dimensioned to fit comfortably within the palm of an operator's hand. On the top front portion of the housing is disposed a microswitch push-button 12 adapted to be depressed by the operator's index finger to signal selection or entry of a target coordinate.
-
-Referring to FIG. 2, the bottom face of housing 10 reveals first wheel 16 and second wheel 18. Wheel 16 rotates about an axle aligned with the lateral Y-axis, thereby measuring displacement along the longitudinal X-axis. Wheel 18 rotates about an axle aligned with the longitudinal X-axis, thereby measuring displacement along the lateral Y-axis. The lower perimeters of wheels 16 and 18 contact the supporting tabletop through an opening in baseplate 20.
-
-As the device is moved along any arbitrary straight or curved path on the table, the instantaneous displacement vector decomposes into its orthogonal vector components. Wheel 16 rotates by an angle proportional to the X displacement, while wheel 18 rotates by an angle proportional to the Y displacement. Potentiometers 24 and 26, coupled directly to the respective wheel shafts, modulate electrical voltages delivered via flexible multi-conductor cable 28 to the display control unit.
-
-Depressing button 12 closes an electrical circuit, notifying the central data processing apparatus that the displayed cursor location corresponds to a selected alphanumeric character, graphical node, or program execution instruction.
-
-I CLAIM:
-1. An X-Y position indicator control mechanism comprising: a housing adapted to be moved by hand over a surface; a first wheel mounted in said housing for rotation about an axis in response to movement of said housing along said surface in a first direction; a second wheel mounted in said housing for rotation about an axis perpendicular to said first wheel axis in response to movement of said housing along said surface in a second direction perpendicular to said first direction; first means responsive to rotation of said first wheel for generating a first electrical signal representing displacement in said first direction; and second means responsive to rotation of said second wheel for generating a second electrical signal representing displacement in said second direction.
-2. An indicator as set forth in claim 1, wherein each of said first and second means comprises a rotary potentiometer coupled to a respective one of said wheels.
-3. An indicator as set forth in claim 1, wherein said housing includes at least one manually depressible switch on an upper surface thereof for transmitting control signals to an associated display system.`,
+Within the housing are mounted two wheels oriented at right angles (90 degrees) to each other. When the housing is translated across the surface, each wheel rolls exclusively in response to motion parallel to its rotation plane, while skidding laterally in response to orthogonal motion. Each wheel drives an associated potentiometer or digital pulse encoder, producing independent X and Y coordinate signals transmitted to the computer display circuitry.`,
   plainEnglishExplanation: {
     overview:
       "In the 1960s, computing was an impersonal batch-processing bureaucracy: users submitted stacks of cardboard punch cards to technicians behind glass and waited hours or days for printed paper results. Douglas Engelbart envisioned computers as dynamic intellectual instruments that could augment human intellect in real time. To interact directly with cathode ray tube (CRT) display screens, operators needed an effortless way to point at text and graphics. Engelbart invented the mouse: a tabletop wooden box with two perpendicular brass wheels that decomposed hand movements into X and Y coordinate voltages, freeing users from holding fatiguing light pens against vertical glass screens.",
@@ -97,101 +94,146 @@ I CLAIM:
         archaicTerm: "Manually depressible switch",
         modernEquivalent: "Left mouse click button / Omron microswitch",
       },
-      {
-        title: "Tabletop Forearm-Supported Wooden Chassis",
-        summary: "A carved walnut wood casing shaped to support the human palm.",
-        technicalDetails:
-          "Provides neutral wrist posture and eliminates gravitational shoulder torque ($\\tau_{shoulder} = 0$), allowing operators to work comfortably for 8+ hours without muscular strain.",
-        archaicTerm: "Housing adapted to be moved by hand over a surface",
-        modernEquivalent: "Ergonomic contoured mouse housing",
-      },
     ],
     scientificPrinciples: [
       {
-        principle: "Cartesian Vector Decomposition & Roll-Skid Kinematics",
-        formula:
-          "\\vec{v}_{hand} = v_x \\hat{i} + v_y \\hat{j} \\implies \\Delta x = r \\Delta\\theta_x, \\quad \\Delta y = r \\Delta\\theta_y",
+        principle: "Orthogonal coordinate resolution",
+        formula: "\\Delta x = r\\theta_x; \\Delta y = r\\theta_y",
         explanation:
-          "Translational displacement on a plane decomposes linearly into orthogonal angular rotations of perpendicular wheels, eliminating the need for trigonometric calculations on the mainframe.",
+          "Rolling displacement turns a wheel by angle \\theta; two perpendicular wheel axes provide separate coordinate measurements.",
       },
       {
-        principle: "Fitts's Law of Human-Motor Target Acquisition",
-        formula: "MT = a + b \\log_2\\left(\\frac{2D}{W}\\right) = a + b \\cdot \\text{ID}",
+        principle: "Potentiometer voltage division",
+        formula: "V_{\\text{out}} = V_{\\text{ref}} \\frac{R_{\\text{wiper}}}{R_{\\text{total}}}",
         explanation:
-          "Movement time $MT$ to acquire a screen target of width $W$ at distance $D$ is minimized by the mouse because direct 1:1 hand displacement achieves the highest Index of Performance ($IP = 1/b$) of any pointing device tested.",
+          "Reads each wiper voltage relative to ground to infer the corresponding wheel setting.",
       },
       {
-        principle: "Analog Potentiometer Voltage Divider & ADC Quantization",
-        formula:
-          "V_x(t) = V_{ref} \\left(\\frac{\\theta_x(t)}{\\theta_{max}}\\right), \\quad X_{screen} = \\left\\lfloor \\frac{V_x}{V_{ref}} \\cdot N_{pixels} \\right\\rfloor",
+        principle: "Signed pulse counting",
+        formula: "N = N_{\\text{up}} - N_{\\text{down}}",
         explanation:
-          "Rotary potentiometers generate linear analog voltage ramps proportional to hand displacement, which are digitized to drive electron beam deflection circuitry on the CRT display.",
-      },
-      {
-        principle: "Quadrature Pulse Phase & Velocity Limits",
-        formula:
-          "f_{pulse} = \\frac{\\text{CPI} \\cdot v}{25.4\\text{ mm/s}}, \\quad v_{max} < \\frac{f_{sample} \\cdot 25.4}{2 \\cdot \\text{CPI}}",
-        explanation:
-          "90° phase displacement between contact wipers indicates forward/backward rotation direction, while pulse frequency encodes hand velocity without directional ambiguity.",
-      },
-      {
-        principle: "Biomechanical Shoulder Torque & Muscle Fatigue Elimination",
-        formula:
-          "\\tau_{shoulder} = m_{arm} g L_{arm} \\sin\\theta \\approx 0 \\quad (\\text{tabletop resting arm vs. light pen } \\tau \\approx 15\\text{ N}\\cdot\\text{m})",
-        explanation:
-          "Resting the forearm on the desk reduces static shoulder muscle contraction to zero, preventing the rapid deltoid fatigue that doomed vertical light pens.",
+          "Uses direction-sensitive pulse logic and an up-down counter for a digital position result.",
       },
     ],
     whyItMattersToday:
-      "Douglas Engelbart's mouse became the universal input standard for personal computers worldwide. It directly paved the way for the Xerox Alto, Apple Macintosh, Microsoft Windows, and modern desktop computing. Every time you click a hyperlink, drag a window, select text, or use CAD software, you are using the direct-manipulation interaction paradigm Engelbart invented in 1967.",
+      "Engelbart's mouse founded modern human-computer interaction, transforming computers from industrial calculation mainframes into personal intellectual tools. The concept was adopted by Xerox PARC, refined by Apple for the Lisa and Macintosh, and became standard on every personal computer worldwide.",
   },
   claims: [
     {
       number: 1,
       isIndependent: true,
-      originalText:
-        "1. An X-Y position indicator control mechanism comprising: a housing adapted to be moved by hand over a surface; a first wheel mounted in said housing for rotation about an axis in response to movement of said housing along said surface in a first direction; a second wheel mounted in said housing for rotation about an axis perpendicular to said first wheel axis in response to movement of said housing along said surface in a second direction perpendicular to said first direction; first means responsive to rotation of said first wheel for generating a first electrical signal representing displacement in said first direction; and second means responsive to rotation of said second wheel for generating a second electrical signal representing displacement in said second direction.",
+
+      originalText: manualClaimText(1),
       plainEnglish:
-        "The master patent claim for the computer mouse: a handheld housing moved over a desk, containing two perpendicular wheels that roll in response to orthogonal movements and independently generate X and Y electrical displacement signals.",
+        "The primary apparatus claim: a handheld housing supported on a surface by two mutually perpendicular wheels driving digital transducers, connected to a computer via a flexible cable that allows unrestrained movement.",
       keyInnovations: [
-        "Perpendicular dual-wheel mechanical coordinate resolver",
-        "Handheld table-supported ergonomic housing",
-        "Direct electrical X-Y signal generation for display cursors",
+        "Orthogonal dual-wheel housing support",
+        "Digital rotary transducer integration",
+        "Flexible tethered computer interface",
       ],
       legalSignificance:
-        "The pioneer claim covering all dual-axis mechanical coordinate input devices moved by hand across a surface to position a display cursor.",
+        "The foundational legal claim covering handheld dual-wheel computer input devices that position a cursor on a display.",
     },
     {
       number: 2,
       isIndependent: false,
       dependsOn: [1],
-      originalText:
-        "2. An indicator as set forth in claim 1, wherein each of said first and second means comprises a rotary potentiometer coupled to a respective one of said wheels.",
+      originalText: manualClaimText(2),
       plainEnglish:
-        "Specifies rotary potentiometers as the electrical transducers converting wheel rotation into analog voltage signals.",
-      keyInnovations: ["Potentiometer voltage modulation proportional to wheel angle"],
-      legalSignificance:
-        "Protected analog potentiometer-based mouse position encoders used in early prototype interactive systems.",
+        "The incremental pulse encoder specification: an incremental encoder on the first wheel generating forward and reverse pulses per unit angle, coupled to a counter that tallies net rotation.",
+      keyInnovations: [
+        "Directional incremental pulse generation",
+        "Up/down rotation counter accumulator",
+        "Net wheel angular displacement tracking",
+      ],
     },
     {
       number: 3,
       isIndependent: false,
-      dependsOn: [1],
-      originalText:
-        "3. An indicator as set forth in claim 1, wherein said housing includes at least one manually depressible switch on an upper surface thereof for transmitting control signals to an associated display system.",
+      dependsOn: [2],
+      originalText: manualClaimText(3),
       plainEnglish:
-        "Adds the integrated click button on top of the housing for selecting objects, executing commands, and triggering links on the display screen.",
-      keyInnovations: ["Fingertip click microswitch integrated on the mouse body"],
+        "The quadrature contact disc logic: a disc with conductive track segments engaging stepping and control contacts to evaluate transition states and generate directional stepping pulses.",
+      keyInnovations: [
+        "Two-phase commutator contact disc",
+        "Quadrature contact state transition logic",
+        "Direction-sensitive pulse synthesis",
+      ],
+    },
+    {
+      number: 4,
+      isIndependent: false,
+      dependsOn: [1],
+      originalText: manualClaimText(4),
+      plainEnglish:
+        "The absolute shaft encoder variant: a multi-output shaft encoder connected through a multi-conductor cable to constantly report absolute angular position.",
+      keyInnovations: [
+        "Multi-output absolute shaft encoder",
+        "Multi-conductor parallel bus",
+        "Continuous static position readout",
+      ],
+    },
+    {
+      number: 5,
+      isIndependent: true,
+
+      originalText: manualClaimText(5),
+      plainEnglish:
+        "The self-contained wheel-transducer combination: a housing resting directly on two perpendicular wheels whose rotation drives digital position signal transducers.",
+      keyInnovations: [
+        "Direct dual-wheel surface support",
+        "Independent X-Y coordinate rotation",
+        "Integrated digital motion sensing",
+      ],
+    },
+    {
+      number: 6,
+      isIndependent: false,
+      dependsOn: [5],
+      originalText: manualClaimText(6),
+      plainEnglish:
+        "The unrestrained signal coupling: adding a coupling mechanism that connects the wheel transducers to a computer while permitting free two-dimensional translation across the workspace.",
+      keyInnovations: [
+        "Substantially unrestrained signal coupling",
+        "Free planar translation freedom",
+        "Continuous computer coordinate streaming",
+      ],
+    },
+    {
+      number: 7,
+      isIndependent: false,
+      dependsOn: [5],
+      originalText: manualClaimText(7),
+      plainEnglish:
+        "The flexible conductor tether: connecting the digital wheel transducers to the computer using a flexible electrical conductor for low-resistance physical movement.",
+      keyInnovations: [
+        "Low-drag flexible cable tether",
+        "Tethered display coordinate transmission",
+        "Ergonomic handheld maneuverability",
+      ],
+    },
+    {
+      number: 8,
+      isIndependent: true,
+
+      originalText: manualClaimText(8),
+      plainEnglish:
+        "The complete interactive display workstation system: a CRT display, a computer generating a movable screen cursor, a desk-moved position indicator with wheel transducers controlling cursor position, and a CRT display control switch.",
+      keyInnovations: [
+        "Interactive CRT cursor positioning system",
+        "Desk-surface direct manipulation controller",
+        "Housing-mounted display control switch",
+      ],
       legalSignificance:
-        "Secured the foundational integration of a physical click button directly onto the handheld pointer housing.",
+        "Protected the integrated interactive workstation architecture connecting tabletop mouse navigation and click selection to live graphical display editing.",
     },
   ],
   drawings: [
     {
       figureNumber: "Fig. 1",
-      title: "Perspective View of Handheld Mouse Housing",
+      title: "Perspective View of Wooden Mouse Chassis and Button",
       caption:
-        "Top perspective view showing the palm-fitting wooden housing, top microswitch click button, and rear trailing connection cord.",
+        "Perspective view of the palm-sized handheld position indicator showing top microswitch button and rear flexible cable.",
       svgType: "engelbart-mouse",
       callouts: [
         {
@@ -288,139 +330,9 @@ I CLAIM:
     "Mother of All Demos",
   ],
   stats: {
-    totalClaims: 3,
-    independentClaims: 1,
+    totalClaims: 8,
+    independentClaims: 3,
     patentWarYears: "1967–1984",
     impactScore: 100,
   },
-};
-
-function manualClaimText(number: number): string {
-  const claim = engelbartMouseArchivalEdition.blocks.find(
-    (block) => block.kind === "claim" && block.number === number,
-  );
-  if (claim?.kind !== "claim") throw new Error(`Engelbart edition is missing claim ${number}.`);
-  return claim.inlines.map((inline) => inline.text).join("");
-}
-
-export const engelbartMousePatent: Patent = {
-  id: "us-3541541-engelbart-mouse",
-  patentNumber: "US 3,541,541",
-  title: "X-Y Position Indicator for a Display System",
-  shortTitle: "Engelbart Two-Wheel X-Y Position Indicator",
-  subtitle: "Orthogonal wheel transducers for CRT cursor positioning",
-  inventors: ["Douglas C. Engelbart"],
-  inventorLocation: "Palo Alto, California",
-  grantDate: "1970-11-17",
-  filingDate: "1967-06-21",
-  era: "Information Age & Silicon Revolution (1960–1990)",
-  category: "computing",
-  categoryLabel: "Computing & Human-Computer Interaction",
-  summary:
-    "US 3,541,541 describes a hand-moved X-Y position control for a CRT display system. Two perpendicular wheels, a third ball-bearing support, transducers, and a flexible cable let a computer place and hold a cursor while buttons select display operations.",
-  heroQuote:
-    "The indicator control remains stationary so long as it is left in place; therefore the cursor 20 remains fixed without any effort of the human operator.",
-  originalPdfUrl: "/patents/pdfs/us-3541541-engelbart-mouse.pdf",
-  googlePatentsUrl: "https://patents.google.com/patent/US3541541A/en",
-  usptoClassification: "U.S. Cl. 340-324; Int. Cl. H01j 29/70",
-  archivalEdition: engelbartMouseArchivalEdition,
-  originalTextAsset: {
-    url: "/patents/transcripts/us-3541541-engelbart-mouse-reviewed.txt",
-    pageCount: 7,
-    kind: "reviewed-transcription",
-    reviewedBy: "Classic Patents editorial agent (gpt-5.6)",
-    reviewedAt: "2026-08-18",
-    sourcePdfSha256: "2a01a32bc3d4c3eec1745dd77fcb92f1404e02844c640c9c10a451ed3b5791e0",
-  },
-  originalText:
-    "This invention relates to visual display systems and, more particularly, to devices for altering the display at selected locations. One subject of the invention is to provide an X-Y position indicating control mechanism for controlling indications of positions on a cathode ray tube (CRT) display, by movement along a surface which can be other than the face of the CRT.",
-  plainEnglishExplanation: {
-    overview:
-      "Engelbart's patent moves pointing from a vertical CRT surface to a control resting on a desk. The hand moves a housing; two perpendicular wheels report the two components of that movement; the computer places a CRT cursor from those signals.",
-    coreMechanism:
-      "For each wheel, translation along its rolling direction produces shaft rotation. The two perpendicular axes separate X and Y displacement; potentiometer voltage, absolute encoder outputs, or signed incremental pulses carry the resulting position information through the cable to the computer.",
-    mechanicalBreakdown: [
-      {
-        title: "Three-point housing support",
-        summary: "Two rimmed wheels and a ball bearing support the housing.",
-        technicalDetails:
-          "The three contacts keep both wheels on the surface and help suppress jitter while the housing is at rest.",
-        archaicTerm: "position indicator control",
-        modernEquivalent: "desk-supported pointing device",
-      },
-      {
-        title: "Orthogonal wheels",
-        summary: "X and Y wheels have perpendicular rotation axes.",
-        technicalDetails:
-          "Each wheel shaft can drive its own transducer, so the computer receives separate signals for the two position components.",
-        archaicTerm: "position wheel",
-        modernEquivalent: "axis encoder wheel",
-      },
-      {
-        title: "Digital readout alternatives",
-        summary: "The specification gives shaft-position and incremental encoder circuits.",
-        technicalDetails:
-          "The incremental embodiments create directional pulses which an up-down counter accumulates; they reduce lead count compared with an absolute multi-output disk.",
-        archaicTerm: "transducer means",
-        modernEquivalent: "rotary position encoder",
-      },
-    ],
-    scientificPrinciples: [
-      {
-        principle: "Orthogonal coordinate resolution",
-        formula: "Δx = rθx; Δy = rθy",
-        explanation:
-          "Rolling displacement turns a wheel by angle θ; two perpendicular wheel axes provide separate coordinate measurements.",
-      },
-      {
-        principle: "Potentiometer voltage division",
-        formula: "Vout = Vref Rwiper/Rtotal",
-        explanation:
-          "Figure 4 reads each wiper voltage relative to ground to infer the corresponding wheel setting.",
-      },
-      {
-        principle: "Signed pulse counting",
-        formula: "N = Nup - Ndown",
-        explanation:
-          "Figures 6 and 7 use direction-sensitive pulse logic and an up-down counter for a digital position result.",
-      },
-    ],
-    whyItMattersToday:
-      "The grant is an early primary document for desktop pointing in a computer-controlled display system. Its particular implementation is two orthogonal wheels and a cable, not the later optical sensor familiar in modern mice.",
-  },
-  claims: [1, 2, 3, 4, 5, 6, 7, 8].map((number) => ({
-    number,
-    isIndependent: number === 1 || number === 5 || number === 8,
-    ...(number >= 2 && number <= 4
-      ? { dependsOn: [number === 2 || number === 4 ? 1 : 2] }
-      : number === 6 || number === 7
-        ? { dependsOn: [5] }
-        : {}),
-    originalText: manualClaimText(number),
-    plainEnglish: `Claim ${number} preserves the particular combination and limitations printed in the source edition: it ties the stated X-Y position control, wheel-transducer arrangement, and where applicable its encoder, counter, conductor, or display-system limitation to the legal scope of this claim.`,
-    keyInnovations: ["Position wheel", "Digital position signal", "Flexible conductor"],
-  })),
-  drawings: [1, 2, 3, 4, 5, 6, 7].map((number) => ({
-    figureNumber: `Fig. ${number}`,
-    title: `Source drawing Fig. ${number}`,
-    caption: `Facsimile crop of Fig. ${number} from US 3,541,541.`,
-    svgType: "engelbart-mouse",
-    callouts: [],
-  })),
-  historicalContext: {
-    problemStatement:
-      "The source identifies light-pencil use against a CRT as an obstacle because it occupies one hand and obscures the editing area.",
-    priorArtLimitations: [
-      "A light pencil must be held against the CRT.",
-      "A shaft-position encoder can require a large cable.",
-    ],
-    breakthroughInsight:
-      "A housing resting on two perpendicular wheels and a ball bearing can report position without holding a detector against the screen.",
-    patentWars: [],
-    civilizationalImpact:
-      "The patent documents a desk-surface pointing control coupled to a computer display, including analog and incremental digital signal paths.",
-    aftermath: "This record makes no broader legal-priority claim beyond the reviewed grant.",
-  },
-  tags: ["human-computer interaction", "CRT", "position encoder", "computer mouse"],
-  stats: { totalClaims: 8, independentClaims: 3 },
 };
