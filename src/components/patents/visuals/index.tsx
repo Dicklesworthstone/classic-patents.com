@@ -1,6 +1,6 @@
 "use client";
 
-import { Box, Layers } from "lucide-react";
+import { Activity, Sparkles } from "lucide-react";
 // 3D WebGL Physics Simulators
 import dynamic from "next/dynamic";
 import { useState } from "react";
@@ -331,16 +331,6 @@ export function PatentVisualDispatcher({ patentId }: PatentVisualDispatcherProps
       {/* Render Selected Visual Module */}
       {(() => {
         switch (patentId) {
-          case "us-821393-wright-flyer":
-            return renderMode === "3d-physics" ? <WrightFlyer3D /> : <WrightFlyerSim />;
-          case "us-381968-tesla-motor":
-            return renderMode === "3d-physics" ? <TeslaMotor3D /> : <TeslaMotorSim />;
-          case "us-223898-edison-lightbulb":
-            return renderMode === "3d-physics" ? <EdisonBulb3D /> : <EdisonBulbSim />;
-          case "us-2708656-fermi-reactor":
-            return renderMode === "3d-physics" ? <FermiReactor3D /> : <FermiReactorSim />;
-          case "us-2981877-noyce-ic":
-            return renderMode === "3d-physics" ? <NoycePlanarIC3D /> : <NoycePlanarICSim />;
           case "us-x72-whitney-cotton-gin":
             return renderMode === "3d-physics" ? <WhitneyCottonGin3D /> : <WhitneyCottonGinSim />;
           case "us-x8277-mccormick-reaper":
@@ -351,7 +341,7 @@ export function PatentVisualDispatcher({ patentId }: PatentVisualDispatcherProps
             return renderMode === "3d-physics" ? (
               <DavenportElectricMotor3D />
             ) : (
-              <DavenportElectricMotorSim />
+              <DavenportMotorSim />
             );
           case "us-588-ericsson-propeller":
             return renderMode === "3d-physics" ? <EricssonPropeller3D /> : <EricssonPropellerSim />;
@@ -362,11 +352,7 @@ export function PatentVisualDispatcher({ patentId }: PatentVisualDispatcherProps
           case "us-4750-howe-sewing-machine":
             return renderMode === "3d-physics" ? <HoweSewingMachine3D /> : <HoweSewingMachineSim />;
           case "us-6162-corliss-steam-engine":
-            return renderMode === "3d-physics" ? (
-              <CorlissSteamEngine3D />
-            ) : (
-              <CorlissSteamEngineSim />
-            );
+            return renderMode === "3d-physics" ? <CorlissSteamEngine3D /> : <CorlissEngineSim />;
           case "us-6469-lincoln-buoy":
             return renderMode === "3d-physics" ? <LincolnBuoy3D /> : <LincolnBuoySim />;
           case "us-31128-otis-elevator":
@@ -395,10 +381,14 @@ export function PatentVisualDispatcher({ patentId }: PatentVisualDispatcherProps
             );
           case "us-157124-glidden-barbed-wire":
             return renderMode === "3d-physics" ? <GliddenBarbedWire3D /> : <GliddenBarbedWireSim />;
+          case "us-174465-bell-telephone":
+            return renderMode === "3d-physics" ? <BellTelephone3D /> : <BellTelephoneSim />;
           case "us-194047-otto-engine":
             return renderMode === "3d-physics" ? <OttoEngine3D /> : <OttoEngineSim />;
           case "us-200521-edison-phonograph":
             return renderMode === "3d-physics" ? <EdisonPhonograph3D /> : <EdisonPhonographSim />;
+          case "us-223898-edison-lightbulb":
+            return renderMode === "3d-physics" ? <EdisonBulb3D /> : <EdisonBulbSim />;
           case "us-233692-pelton-water-wheel":
             return renderMode === "3d-physics" ? <PeltonWheel3D /> : <PeltonWheelSim />;
           case "us-247804-delaval-separator":
@@ -415,6 +405,8 @@ export function PatentVisualDispatcher({ patentId }: PatentVisualDispatcherProps
             return renderMode === "3d-physics" ? <ThomsonWelding3D /> : <ThomsonWeldingSim />;
           case "us-361931-daimler-engine":
             return renderMode === "3d-physics" ? <DaimlerEngine3D /> : <DaimlerEngineSim />;
+          case "us-381968-tesla-motor":
+            return renderMode === "3d-physics" ? <TeslaMotor3D /> : <TeslaMotorSim />;
           case "us-388850-eastman-kodak":
             return renderMode === "3d-physics" ? <EastmanKodak3D /> : <EastmanKodakSim />;
           case "us-395781-hollerith-tabulating":
@@ -425,8 +417,12 @@ export function PatentVisualDispatcher({ patentId }: PatentVisualDispatcherProps
             );
           case "us-470918-reno-escalator":
             return renderMode === "3d-physics" ? <RenoEscalator3D /> : <RenoEscalatorSim />;
+          case "us-533367-tesla-coil":
+            return renderMode === "3d-physics" ? <TeslaCoil3D /> : <TeslaCoilSim />;
           case "us-542846-diesel-engine":
             return renderMode === "3d-physics" ? <DieselEngine3D /> : <DieselEngineSim />;
+          case "us-586193-marconi-radio":
+            return renderMode === "3d-physics" ? <MarconiRadio3D /> : <MarconiRadioSim />;
           case "us-608969-parsons-turbine":
             return renderMode === "3d-physics" ? <ParsonsTurbine3D /> : <ParsonsTurbineSim />;
           case "us-613809-tesla-teleautomaton":
@@ -449,61 +445,41 @@ export function PatentVisualDispatcher({ patentId }: PatentVisualDispatcherProps
             ) : (
               <CarrierAirConditionerSim />
             );
-
-          // 20th Century Pioneers
           case "us-821393-wright-flyer":
             return renderMode === "3d-physics" ? <WrightFlyer3D /> : <WrightFlyerSim />;
-          case "us-381968-tesla-motor":
-            return renderMode === "3d-physics" ? <TeslaMotor3D /> : <TeslaMotorSim />;
-          case "us-1773980-farnsworth-tv":
-            return renderMode === "3d-physics" ? <FarnsworthTV3D /> : <FarnsworthTVSim />;
-          case "us-2495429-spencer-microwave":
-            return renderMode === "3d-physics" ? <SpencerMicrowave3D /> : <SpencerMicrowaveSim />;
-          case "us-2981877-noyce-ic":
-            return renderMode === "3d-physics" ? <NoycePlanarIC3D /> : <NoycePlanarICSim />;
-          case "us-3671542-kwolek-kevlar":
-            return renderMode === "3d-physics" ? <KwolekKevlar3D /> : <KwolekKevlarSim />;
-          case "us-223898-edison-lightbulb":
-            return renderMode === "3d-physics" ? <EdisonBulb3D /> : <EdisonBulbSim />;
-          case "us-174465-bell-telephone":
-            return renderMode === "3d-physics" ? <BellTelephone3D /> : <BellTelephoneSim />;
-          case "us-6469-lincoln-buoy":
-            return renderMode === "3d-physics" ? <LincolnBuoy3D /> : <LincolnBuoySim />;
-          case "us-4750-howe-sewing-machine":
-            return renderMode === "3d-physics" ? <HoweSewingMachine3D /> : <HoweSewingMachineSim />;
-          case "us-533367-tesla-coil":
-            return renderMode === "3d-physics" ? <TeslaCoil3D /> : <TeslaCoilSim />;
           case "us-1102653-goddard-rocket":
             return renderMode === "3d-physics" ? <GoddardRocket3D /> : <GoddardRocketSim />;
-          case "us-2569347-bardeen-transistor":
-            return renderMode === "3d-physics" ? <BardeenTransistor3D /> : <BardeenTransistorSim />;
-          case "us-3923554-boyle-smith-ccd":
-          case "us-3858232-boyle-smith-ccd":
-            return renderMode === "3d-physics" ? <BoyleSmithCcd3D /> : <BoyleSmithCcdSim />;
-          case "us-586193-marconi-radio":
-            return renderMode === "3d-physics" ? <MarconiRadio3D /> : <MarconiRadioSim />;
-          case "us-1647-morse-telegraph":
-            return renderMode === "3d-physics" ? <MorseTelegraph3D /> : <MorseTelegraphSim />;
-          case "us-3633-goodyear-rubber":
-            return renderMode === "3d-physics" ? <GoodyearRubber3D /> : <GoodyearRubberSim />;
-          case "us-2292387-lamarr-frequency-hopping":
-            return renderMode === "3d-physics" ? (
-              <LamarrFrequencyHopping3D />
-            ) : (
-              <LamarrFrequencyHoppingSim />
-            );
-          case "us-3541541-engelbart-mouse":
-            return renderMode === "3d-physics" ? <EngelbartMouse3D /> : <EngelbartMouseSim />;
-          case "us-2708656-fermi-reactor":
-            return renderMode === "3d-physics" ? <FermiReactor3D /> : <FermiReactorSim />;
-          case "us-4136359-wozniak-apple":
-            return renderMode === "3d-physics" ? <WozniakApple3D /> : <WozniakAppleSim />;
+          case "us-1773980-farnsworth-tv":
+            return renderMode === "3d-physics" ? <FarnsworthTV3D /> : <FarnsworthTVSim />;
           case "us-1781541-einstein-refrigerator":
             return renderMode === "3d-physics" ? (
               <EinsteinRefrigerator3D />
             ) : (
               <EinsteinRefrigeratorSim />
             );
+          case "us-2292387-lamarr-frequency-hopping":
+            return renderMode === "3d-physics" ? (
+              <LamarrFrequencyHopping3D />
+            ) : (
+              <LamarrFrequencyHoppingSim />
+            );
+          case "us-2495429-spencer-microwave":
+            return renderMode === "3d-physics" ? <SpencerMicrowave3D /> : <SpencerMicrowaveSim />;
+          case "us-2569347-bardeen-transistor":
+            return renderMode === "3d-physics" ? <BardeenTransistor3D /> : <BardeenTransistorSim />;
+          case "us-2708656-fermi-reactor":
+            return renderMode === "3d-physics" ? <FermiReactor3D /> : <FermiReactorSim />;
+          case "us-2981877-noyce-ic":
+            return renderMode === "3d-physics" ? <NoycePlanarIC3D /> : <NoycePlanarICSim />;
+          case "us-3541541-engelbart-mouse":
+            return renderMode === "3d-physics" ? <EngelbartMouse3D /> : <EngelbartMouseSim />;
+          case "us-3671542-kwolek-kevlar":
+            return renderMode === "3d-physics" ? <KwolekKevlar3D /> : <KwolekKevlarSim />;
+          case "us-3923554-boyle-smith-ccd":
+          case "us-3858232-boyle-smith-ccd":
+            return renderMode === "3d-physics" ? <BoyleSmithCcd3D /> : <BoyleSmithCcdSim />;
+          case "us-4136359-wozniak-apple":
+            return renderMode === "3d-physics" ? <WozniakApple3D /> : <WozniakAppleSim />;
 
           default:
             return (
