@@ -3,6 +3,20 @@ import * as fs from "node:fs";
 import * as path from "node:path";
 import { allPatents } from "../src/data/patents";
 
+/**
+ * Retired safety guard. Even deterministic PDF text extraction must not
+ * overwrite an existing public source-comparison asset. The non-overwriting
+ * generator is the only permitted raw-layer helper; a difference is an audit
+ * signal, not permission to replace the evidence.
+ */
+async function refuseRetiredBulkMutation(): Promise<void> {
+  throw new Error(
+    "This source-text restorer is retired. It must not overwrite existing public source layers; inspect any difference against the pinned PDF and make a deliberate, reviewed per-patent decision.",
+  );
+}
+
+await refuseRetiredBulkMutation();
+
 const MAX_PDF_TEXT_BUFFER_BYTES = 64 * 1024 * 1024;
 
 function exactSourceTextForPdf(pdfPath: string, expectedPageCount: number): string {

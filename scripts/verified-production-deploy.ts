@@ -22,6 +22,10 @@ const PROMOTION_HOSTNAMES = [...PUBLIC_HOSTNAMES, PLATFORM_HOSTNAME] as const;
 const WRIGHT_ROUTE = "/patents/us-821393-wright-flyer";
 const WRIGHT_ARCHIVAL_TEXT_LABEL = "Original Patent Text";
 const WRIGHT_MANUAL_EDITION_MARKER = 'data-archival-edition="manual-react-edition"';
+const PUBLICATION_CONTRACT_TESTS = [
+  "src/data/editions/archivalEditionSemantics.test.ts",
+  "src/components/patents/visuals/three/determinism.test.ts",
+] as const;
 
 type CommandResult = {
   stdout: string;
@@ -292,6 +296,12 @@ async function main() {
     const commit = currentCommit();
 
     run("bun", ["run", "pipeline:verify"]);
+    // These tests express publication invariants which the TypeScript schema
+    // cannot: every cited figure/section must resolve to authored source
+    // material, and the reference visual must not derive published state from
+    // wall-clock time or randomness. A green build without these contracts is
+    // not sufficient evidence for a museum release.
+    run("bun", ["test", ...PUBLICATION_CONTRACT_TESTS]);
     run("bun", ["run", "typecheck"]);
     run("bun", ["run", "lint"]);
     run("ubs", ["--diff"]);

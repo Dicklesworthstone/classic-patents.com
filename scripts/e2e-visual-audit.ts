@@ -144,28 +144,133 @@ async function main() {
     await themeButton.click(); // Toggle back
   }
 
-  // 2. Test Tab Switching to Verified Specification Face
-  const specTab = iPage.locator('button:has-text("Verified Specification Face")');
-  if ((await specTab.count()) > 0) {
-    await specTab.click();
-    await iPage.waitForTimeout(300);
-    const specContentCount = await iPage
-      .locator('h3:has-text("Specification of Letters Patent")')
-      .count();
-    console.log(
-      `  ✓ Tab Switch to Specification Face: ${specContentCount > 0 ? "Verified" : "Passed"}`,
+  // 2. Test the actual Original Patent Text control, URL state, refresh, and
+  // source-figure hover behavior. A static page must restore this selected
+  // face from ?view=original-spec after a browser refresh.
+  const originalTextTab = iPage.getByRole("button", { name: /^Original Patent Text\b/ });
+  if ((await originalTextTab.count()) !== 1) {
+    totalErrors++;
+    console.log("  ❌ Original Patent Text control is unavailable");
+  } else {
+    await originalTextTab.click();
+    await iPage.waitForFunction(
+      () => new URL(window.location.href).searchParams.get("view") === "original-spec",
     );
+    await iPage.reload({ waitUntil: "domcontentloaded" });
+    await iPage.waitForTimeout(300);
+
+    const specContentCount = await iPage
+      .getByRole("heading", { name: /Specification of Letters Patent/ })
+      .count();
+    if (specContentCount === 0) {
+      totalErrors++;
+      console.log("  ❌ Original Patent Text did not survive refresh");
+    } else {
+      console.log("  ✓ Original Patent Text selection survives refresh");
+    }
+
+    const figureReference = iPage.getByRole("button", {
+      name: /Preview Figure 1 from the original patent facsimile/,
+    });
+    if ((await figureReference.count()) === 0) {
+      totalErrors++;
+      console.log("  ❌ Original Patent Text has no Figure 1 source-preview control");
+    } else {
+      await figureReference.first().hover();
+      const figurePreview = iPage.getByRole("tooltip").locator('a[href$="fig-1-preview.png"]');
+      try {
+        await figurePreview.waitFor({ state: "visible", timeout: 1500 });
+        console.log("  ✓ Figure 1 hover exposes a linked individual source crop");
+      } catch {
+        totalErrors++;
+        console.log("  ❌ Figure 1 hover did not expose its linked source crop");
+      }
+    }
   }
 
-  // 3. Test Tab Switching to Schematic & Pins
-  const pinsTab = iPage.getByRole("button", { name: "Schematic & Pins" });
-  if ((await pinsTab.count()) > 0) {
-    await pinsTab.click();
-    await iPage.waitForTimeout(300);
-    const pinCount = await iPage.locator('button[title*=":"]').count();
-    console.log(
-      `  ✓ Tab Switch to Schematic & Pins: ${pinCount} interactive callout pins rendered`,
+  // 3. Every view must own a URL value, restore after reload, and expose its
+  // selected state accessibly. This also prevents Back from leaving an old
+  // face rendered after the URL returns to a route without `?view=`.
+  const viewChecks = [
+    {
+      name: /^Plain English Face\b/,
+      view: "plain-english",
+      marker: iPage.getByRole("heading", {
+        name: /How It Works: Step-by-Step Mechanical & Physical Breakdown/,
+      }),
+    },
+    {
+      name: /^Interactive 3D Simulator\b/,
+      view: "interactive-sim",
+      marker: iPage.getByRole("button", { name: /^Interactive 3D Simulator\b/ }),
+    },
+    {
+      name: /^Schematic & Pins\b/,
+      view: "schematic-sheet",
+      marker: iPage.getByRole("button", { name: /^Schematic & Pins\b/ }),
+    },
+    {
+      name: /^Full Original PDF\b/,
+      view: "pdf-facsimile",
+      marker: iPage.locator('object[type="application/pdf"]'),
+    },
+    {
+      name: /^Dual Split-Screen\b/,
+      view: "split-view",
+      marker: iPage.getByRole("heading", { name: "Face 2: Complete Archival Source Text" }),
+    },
+  ];
+
+  for (const check of viewChecks) {
+    const tab = iPage.getByRole("button", { name: check.name });
+    if ((await tab.count()) !== 1) {
+      totalErrors++;
+      console.log(`  ❌ ${check.view} control is unavailable`);
+      continue;
+    }
+
+    await tab.click();
+    await iPage.waitForFunction(
+      (view) => new URL(window.location.href).searchParams.get("view") === view,
+      check.view,
     );
+    await iPage.reload({ waitUntil: "domcontentloaded" });
+    await iPage.waitForTimeout(300);
+
+    const restoredTab = iPage.getByRole("button", { name: check.name });
+    const active = (await restoredTab.getAttribute("aria-pressed")) === "true";
+    const markerVisible = await check.marker
+      .first()
+      .isVisible()
+      .catch(() => false);
+    if (!active || !markerVisible) {
+      totalErrors++;
+      console.log(`  ❌ ${check.view} did not restore its selected face after refresh`);
+    } else {
+      console.log(`  ✓ ${check.view} selection survives refresh`);
+    }
+  }
+
+  await iPage.goto(`${BASE_URL}/patents/us-821393-wright-flyer`, {
+    waitUntil: "domcontentloaded",
+  });
+  const originalForBackTest = iPage.getByRole("button", { name: /^Original Patent Text\b/ });
+  await originalForBackTest.click();
+  await iPage.waitForFunction(
+    () => new URL(window.location.href).searchParams.get("view") === "original-spec",
+  );
+  await iPage.goBack({ waitUntil: "domcontentloaded" });
+  await iPage.waitForTimeout(150);
+  const defaultViewRestored =
+    new URL(iPage.url()).searchParams.get("view") === null &&
+    (await iPage
+      .getByRole("button", { name: /^Plain English Face\b/ })
+      .getAttribute("aria-pressed")) === "true";
+  if (!defaultViewRestored) {
+    totalErrors++;
+    console.log("  ❌ Browser Back did not restore the default Plain English face");
+  } else {
+    console.log("  ✓ Browser Back restores the default Plain English face");
   }
 
   await interactiveContext.close();

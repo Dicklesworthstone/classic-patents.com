@@ -1,6 +1,20 @@
 import * as fs from "node:fs";
 import * as path from "node:path";
 
+/**
+ * Retired safety guard. A browser-discovered Google URL is not provenance,
+ * and a downloaded file is not evidence that it is the intended, complete
+ * patent. New immutable facsimiles are admitted only through the per-patent
+ * review/provenance workflow, never by a bulk fetch into public assets.
+ */
+async function refuseRetiredBulkMutation(): Promise<void> {
+  throw new Error(
+    "This public-PDF bulk fetcher is retired. Review the intended facsimile, record provenance and digest, and add the immutable local PDF only as an explicit per-patent change.",
+  );
+}
+
+await refuseRetiredBulkMutation();
+
 const newPatentsToFetch = [
   {
     id: "us-6469-lincoln-buoy",

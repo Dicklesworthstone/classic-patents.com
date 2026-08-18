@@ -329,7 +329,10 @@ async function main() {
               continue;
             }
             for (const preview of inline.figurePreviews) {
-              if (!preview.src.startsWith(`/patents/figures/${patent.id}-`)) {
+              if (
+                !preview.src.startsWith(`/patents/figures/${patent.id}-`) &&
+                !preview.src.startsWith(`/patents/figures/${patent.id}/`)
+              ) {
                 fail(`figure reference ${inline.text} preview is not patent-local: ${preview.src}`);
                 continue;
               }

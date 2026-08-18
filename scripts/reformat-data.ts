@@ -2,6 +2,20 @@ import * as fs from "node:fs";
 import * as path from "node:path";
 import { ESOTERIC_PATENT_GLOSSARY } from "../src/data/esotericPatentTerms.js";
 
+/**
+ * Retired safety guard. The former formatter rewrote public transcript files,
+ * removed page markers, and injected HTML/automatic glossary definitions.
+ * Historical source text is React-escaped authored content; annotations are
+ * explicit typed nodes, never a regex pass over a transcript.
+ */
+async function refuseRetiredBulkMutation(): Promise<void> {
+  throw new Error(
+    "This bulk transcript reformatter is retired. It must not rewrite public patent text or inject HTML/definitions automatically; prepare each source passage and annotation manually from the facsimile.",
+  );
+}
+
+await refuseRetiredBulkMutation();
+
 const sourceDir = path.join(process.cwd(), "public", "patents", "source-text");
 const transcriptsDir = path.join(process.cwd(), "public", "patents", "transcripts");
 
@@ -47,7 +61,7 @@ function formatTranscript(content: string): string {
       if (currentPara.endsWith("-")) {
         currentPara = currentPara.slice(0, -1) + line;
       } else {
-        currentPara += " " + line;
+        currentPara += ` ${line}`;
       }
     }
   }
@@ -113,7 +127,7 @@ function formatTranscript(content: string): string {
     });
   }
 
-  return finalText + "\n";
+  return `${finalText}\n`;
 }
 
 function main() {

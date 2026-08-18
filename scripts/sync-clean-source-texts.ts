@@ -10,6 +10,22 @@ import * as fs from "node:fs";
 import * as path from "node:path";
 import { allPatents } from "../src/data/patents";
 
+/**
+ * Retired safety guard. This script used to manufacture a page ledger by
+ * redistributing transcript paragraphs and inventing a page-one title. Those
+ * operations destroy the facsimile's real page and column order. The source
+ * PDF, raw comparison layer, reviewed transcript, and manual React edition
+ * are distinct editorial artifacts and must never be synthesized from one
+ * another in bulk.
+ */
+async function refuseRetiredBulkMutation(): Promise<void> {
+  throw new Error(
+    "This bulk source-text synchronizer is retired. It may not rewrite public patent text from another transcript; prepare each patent against its facsimile and make an explicit per-patent editorial change.",
+  );
+}
+
+await refuseRetiredBulkMutation();
+
 const sourceTextDir = path.join(process.cwd(), "public", "patents", "source-text");
 const transcriptsDir = path.join(process.cwd(), "public", "patents", "transcripts");
 

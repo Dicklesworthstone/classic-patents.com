@@ -10,6 +10,21 @@ import * as fs from "node:fs";
 import * as path from "node:path";
 import { allPatents } from "../src/data/patents";
 
+/**
+ * Retired safety guard. `originalText` is a catalogue excerpt, not authority
+ * for a complete transcription. A script must not expand it into public
+ * transcript files, fabricate source-page placement, or claim that a
+ * formatter removed OCR defects. Preserve this file as a visible warning for
+ * callers of the old command.
+ */
+async function refuseRetiredBulkMutation(): Promise<void> {
+  throw new Error(
+    "This bulk transcript builder is retired. Complete patent text is prepared per patent from the pinned facsimile as a reviewed transcription and explicit manual React edition, never reconstructed from originalText.",
+  );
+}
+
+await refuseRetiredBulkMutation();
+
 const transcriptsDir = path.join(process.cwd(), "public", "patents", "transcripts");
 const sourceTextDir = path.join(process.cwd(), "public", "patents", "source-text");
 

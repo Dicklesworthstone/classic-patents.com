@@ -1,9 +1,10 @@
 /**
  * e2e-all-visuals-audit.ts
  *
- * Automated Playwright browser verification for every single patent visualization in the museum.
- * Tests 3D WebGL physics engine mount, 2D vector schematic toggle, console errors, page errors,
- * and responsive layout stability across all 22 patents.
+ * Automated Playwright browser verification for every registered patent visualization in the museum.
+ * It tests the actual Interactive 3D Simulator face before checking the WebGL canvas, then tests
+ * the paired 2D Schematic face, console/page errors, and responsive layout stability. Rendering
+ * health is necessary but does not establish historical or physical fidelity.
  */
 
 import { chromium } from "playwright";
@@ -25,7 +26,9 @@ interface PatentTestResult {
 
 async function runVisualsAudit() {
   console.log("=======================================================================");
-  console.log("  Classic Patents Comprehensive 22/22 Browser Visualization Audit");
+  console.log(
+    `  Classic Patents Comprehensive ${allPatents.length}/${allPatents.length} Browser Visualization Audit`,
+  );
   console.log(`  Target: ${BASE_URL}`);
   console.log("=======================================================================\n");
 
@@ -68,7 +71,9 @@ async function runVisualsAudit() {
     page.on("pageerror", onPageError);
     page.on("console", onConsole);
 
-    process.stdout.write(`[${i + 1}/22] Testing ${patent.patentNumber} (${patent.id}) ... `);
+    process.stdout.write(
+      `[${i + 1}/${allPatents.length}] Testing ${patent.patentNumber} (${patent.id}) ... `,
+    );
 
     try {
       const response = await page.goto(url, { waitUntil: "domcontentloaded", timeout: 15000 });
@@ -76,7 +81,13 @@ async function runVisualsAudit() {
         throw new Error(`HTTP Status ${response?.status()}`);
       }
 
-      // 1. Check 3D WebGL Canvas Render (allow dynamic import chunk to finish mounting)
+      const interactiveView = page.getByRole("button", { name: "Interactive 3D Simulator" });
+      if ((await interactiveView.count()) !== 1) {
+        throw new Error("The Interactive 3D Simulator view control is unavailable.");
+      }
+      await interactiveView.click();
+
+      // 1. Check 3D WebGL Canvas Render after entering the interactive face.
       let canvasFound = false;
       try {
         await page.waitForSelector("canvas", { timeout: 6000 });
@@ -92,22 +103,16 @@ async function runVisualsAudit() {
 
       // 2. Test 2D Schematic Switcher
       let twoDStatus: "PASS" | "FAIL" = "PASS";
-      const twoDButton = page.locator('button:has-text("2D Schematic")');
-      if ((await twoDButton.count()) > 0) {
+      const twoDButton = page.getByRole("button", { name: "2D Schematic" });
+      if ((await twoDButton.count()) !== 1) {
+        twoDStatus = "FAIL";
+      } else {
         await twoDButton.click();
         await page.waitForTimeout(300);
 
-        // Verify SVG vector schematic is present
-        const svgCount = await page.locator("svg").count();
-        if (svgCount === 0) {
+        // Verify the actual vector schematic is present after the mode change.
+        if ((await page.locator("svg").count()) === 0) {
           twoDStatus = "FAIL";
-        }
-
-        // Switch back to 3D Engine
-        const threeDButton = page.locator('button:has-text("3D Engine")');
-        if ((await threeDButton.count()) > 0) {
-          await threeDButton.click();
-          await page.waitForTimeout(300);
         }
       }
 
@@ -172,7 +177,9 @@ async function runVisualsAudit() {
   await browser.close();
 
   console.log("\n=======================================================================");
-  console.log(`  Audit Completed: ${22 - failCount}/22 PASSED (${failCount} failures)`);
+  console.log(
+    `  Audit Completed: ${allPatents.length - failCount}/${allPatents.length} PASSED (${failCount} failures)`,
+  );
   console.log("=======================================================================");
 
   if (failCount > 0) {

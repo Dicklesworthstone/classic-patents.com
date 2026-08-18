@@ -3,6 +3,20 @@ import fs from "node:fs";
 import path from "node:path";
 import { allPatents } from "../src/data/patents";
 
+/**
+ * Retired safety guard. `pdftotext` is useful private comparison evidence,
+ * but a new public transcript filename can later be mistaken for a reviewed
+ * complete edition. OCR and extraction output belong under artifacts until a
+ * patent-specific human review creates the ledgered reviewed asset.
+ */
+async function refuseRetiredBulkMutation(): Promise<void> {
+  throw new Error(
+    "This public transcript generator is retired. Keep PDF extraction and OCR in artifacts; publish a transcript only after page-by-page facsimile review and an explicit per-patent catalogue change.",
+  );
+}
+
+await refuseRetiredBulkMutation();
+
 const transcriptsDir = path.join(process.cwd(), "public", "patents", "transcripts");
 const publicDir = path.join(process.cwd(), "public");
 
