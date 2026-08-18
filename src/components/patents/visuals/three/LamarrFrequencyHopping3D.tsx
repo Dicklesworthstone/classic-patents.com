@@ -17,12 +17,12 @@ export function LamarrFrequencyHopping3D() {
   const containerRef = useRef<HTMLDivElement>(null);
 
   // Spread Spectrum State Controls
-  const { params, updateParam } = usePatentPhysics("us-2292387-lamarr-frequency-hopping");
+  const { params } = usePatentPhysics("us-2292387-lamarr-frequency-hopping");
   const [showUiOverlay, setShowUiOverlay] = useState<boolean>(true);
   const carrierChannelsCount = params.channels ?? 88;
   const hopRateHopsPerSec = params.hopRate ?? 4;
   const isJammingActive = params.isJammingActive !== 0;
-  const [currentChannel, setCurrentChannel] = useState<number>(44);
+  const [currentChannel, setCurrentChannel] = useState<number>(1);
   const [showCalloutPins, setShowCalloutPins] = useState<boolean>(false);
   const [activeCamera, setActiveCamera] = useState<CameraPreset>("iso");
   const { isAudioMuted, toggleSound } = usePatentAudio();
@@ -55,9 +55,11 @@ export function LamarrFrequencyHopping3D() {
   });
   const processingGainDb = fhPhysics.processingGainDb.toFixed(1);
   const antiJamMarginDb = fhPhysics.antiJammingMarginDb.toFixed(1);
-  const activeFrequencyMhz = (302 + ((Math.max(1, currentChannel) - 1) * (520 - 302)) / 87).toFixed(
-    1,
-  );
+  const channelDenom = Math.max(1, carrierChannelsCount - 1);
+  const activeFrequencyMhz = (
+    302 +
+    ((Math.max(1, currentChannel) - 1) * (520 - 302)) / channelDenom
+  ).toFixed(1);
 
   const live = useLiveSimParams({
     hopRateHopsPerSec,
@@ -284,7 +286,7 @@ export function LamarrFrequencyHopping3D() {
           Math.min(maxDisplayChannels, Math.round(p.carrierChannelsCount)),
         );
         activeChan = Math.floor(((pianoKey - 1) / PIANO_KEYS) * liveChannels);
-        setCurrentChannel(pianoKey);
+        setCurrentChannel(activeChan + 1);
 
         if (!p.isAudioMuted && rollStep % 3 === 0) {
           const freq = 220 + (pianoKey / PIANO_KEYS) * 660;
@@ -300,7 +302,7 @@ export function LamarrFrequencyHopping3D() {
         8,
         Math.min(maxDisplayChannels, Math.round(p.carrierChannelsCount)),
       );
-      const jamCenter = Math.floor((liveChannels * 13) / 44);
+      const jamCenter = Math.floor(liveChannels * 0.3);
       for (let c = 0; c < maxDisplayChannels; c++) {
         const bar = barMeshes[c];
         if (c >= liveChannels) {
@@ -384,7 +386,7 @@ export function LamarrFrequencyHopping3D() {
                 <div>
                   <span className="text-ink-600 dark:text-ink-400">Carrier Freq:</span>{" "}
                   <span className="font-bold text-emerald-600 dark:text-emerald-400">
-                    {activeFrequencyMhz} MHz (Key #{currentChannel})
+                    {activeFrequencyMhz} MHz (Ch {currentChannel}/{carrierChannelsCount})
                   </span>
                 </div>
                 <div>

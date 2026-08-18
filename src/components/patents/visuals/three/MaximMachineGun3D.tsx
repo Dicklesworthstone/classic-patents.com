@@ -314,6 +314,7 @@ export function MaximMachineGun3D() {
         chips={[
           { label: "Cyclic", value: String(Math.round(fireRateRpm)), unit: "rds/min" },
           { label: "Stroke", value: String(Math.round(recoilStrokeM * 1000)), unit: "mm" },
+          { label: "Toggle", value: String(maxim.toggleUnlockForceN), unit: "N" },
           { label: "p", value: String(maxim.recoilMomentumNs), unit: "N·s" },
           {
             label: "Barrel",
