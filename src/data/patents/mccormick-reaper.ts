@@ -1,56 +1,37 @@
 import type { Patent } from "@/types/patent";
+import { mccormickReaperArchivalEdition } from "@/data/editions/mccormickReaperEdition";
 
 export const mccormickReaperPatent: Patent = {
   id: "us-x8277-mccormick-reaper",
   patentNumber: "US X8277",
-  title: "Improvement in Machines for Reaping Grain",
-  shortTitle: "McCormick Mechanical Grain Reaper",
-  subtitle: "Reciprocating Serrated Sickle, Guard Fingers, Revolving Reel, and Grain Platform",
+  title: "Improvement in Machines for Reaping Small Grain",
+  shortTitle: "McCormick Reaper",
+  subtitle: "Crank-driven cutters, gathering reel, platform, and crop divider",
   inventors: ["Cyrus Hall McCormick"],
   inventorLocation: "Steeles Tavern, Rockbridge County, Virginia",
   grantDate: "1834-06-21",
-  filingDate: "1834-04-19",
-  era: "Early Republic & Industrial Dawn (1790–1830)",
+  filingDate: "1834-06-19",
+  era: "Early Industrial America (1831–1860)",
   category: "consumer",
   categoryLabel: "Agricultural Machinery & Kinematics",
   summary:
-    "The 1834 pioneer agricultural patent that broke the bottleneck of the world food supply: Cyrus McCormick's horse-drawn reaper combining seven synchronized elements—a reciprocating serrated knife, spear-shaped guard fingers, revolving reel, grain divider, master ground drive wheel, side delivery platform, and draft tongue offset—allowing two operators to harvest 12 acres of grain per day instead of two.",
+    "US X8277 describes Cyrus H. McCormick's horse-drawn machine for reaping small grain. Its specification sets out a platform, a ground-wheel gear train and cranks, cutter bars, an adjustable belt-driven reel, a divider, and the draft arrangement; it was patented June 21, 1834.",
   heroQuote:
-    "The cut grain falls back upon the platform, from which it is raked off in sheaves by a man following the machine... the grain being gathered and pressed against the sickle by the revolving reel.",
+    "This reel, by the motion given by the strap as the horses advance, bears the stalks as they are projected inward ... upon the cutter, and when separated lands them on the platform.",
   originalPdfUrl: "/patents/pdfs/us-x8277-mccormick-reaper.pdf",
   googlePatentsUrl: "https://patents.google.com/patent/USX8277/en",
   usptoClassification: "A01D 34/02 (Mowers; Harvesting machines; Cutters)",
   originalTextAsset: {
-    url: "/patents/source-text/us-x8277-mccormick-reaper.txt",
+    url: "/patents/transcripts/us-x8277-mccormick-reaper.txt",
     pageCount: 3,
-    kind: "source-pdf-text-layer",
+    kind: "reviewed-transcription",
+    reviewedBy: "Classic Patents editorial agent (PurpleSummit)",
+    reviewedAt: "2026-08-17",
+    sourcePdfSha256: "24712ca3e966994d72716ccca6df6ef9a1fb3751b30fe34bfeb549ab6ba7f400",
   },
-  originalText: `UNITED STATES PATENT OFFICE.
-CYRUS H. McCORMICK, OF ROCKBRIDGE COUNTY, VIRGINIA.
-
-IMPROVEMENT IN MACHINES FOR REAPING GRAIN.
-
-Letters Patent No. X8277. Dated June 21, 1834.
-Application filed April 19, 1834.
-
-TO ALL TO WHOM THESE PRESENTS SHALL COME:
-Be it known that I, CYRUS H. McCORMICK, of the County of Rockbridge and State of Virginia, have invented a new and useful Improvement in Machines for Reaping all kinds of Small Grain, of which the following is a specification:
-
-My invention consists in the arrangement and combination of the following parts:
-
-1. A main supporting wheel on which the machine rides, having an internal cog-gear or external gearing communicating motion through pinions and a crank to a reciprocating sickle blade.
-2. A straight cutting blade or sickle having serrated triangular teeth, moving rapidly back and forth through slotted spear-shaped fingers projecting forward from the front edge of the platform.
-3. Said fingers or guards projecting ahead of the knife to support the grain stalks both above and below while the knife cuts them, preventing the stalks from bending away without being severed.
-4. A revolving reel driven by a belt from the main axle, having four or six radial vanes that reach forward over the standing grain, pressing it gently backward against the knife and sweeping the cut grain squarely onto the platform.
-5. A grain divider projecting forward from the outer end of the platform to separate the swathe to be cut from the standing grain left in the field.
-6. A platform behind the knife receiving the severed grain, with sufficient space for a laborer riding on the machine to rake off the grain in neat gavels for binding.
-
-The horse is attached by shafts to one side of the platform so as to walk in the stubble alongside the standing grain without trampling it. As the machine advances, the ground wheel rotates the crank, driving the sickle at high speed through the fingers, shearing the stalks cleanly as the reel sweeps them onto the table.
-
-I claim as my invention:
-1. The combination of the reciprocating serrated blade with the slotted stationary fingers projecting ahead of the edge of the platform.
-2. The revolving reel arranged to sweep and press the grain stalks against the cutting knife and lay them on the platform.
-3. The general arrangement of the platform, ground wheel, divider, and offset draft tongue substantially as described.`,
+  originalText:
+    "Be it known that I, CYRUS H. McCORMICK, of Rockbridge county and State of Virginia, have invented a new and useful Improvement in Reaping all Kinds of Small Grain, and I do hereby declare that the following is a full and exact description of the construction and operation of the said machine as invented or improved by me.",
+  archivalEdition: mccormickReaperArchivalEdition,
   plainEnglishExplanation: {
     overview:
       "Since the dawn of agriculture, harvesting grain was strictly limited by the human arm swinging a sickle or cradle scythe. Because ripe wheat spoils or shatters within a brief 10-day window, farm size and world food supply were constrained by how much grain could be cut by hand. Cyrus McCormick combined a fast-reciprocating serrated knife, stationary spear fingers, a rotating reel, and a side-delivery table into a continuous horse-drawn machine that harvested grain ten times faster than human labor.",
@@ -136,92 +117,90 @@ I claim as my invention:
       number: 1,
       isIndependent: true,
       originalText:
-        "The combination of the reciprocating serrated blade with the slotted stationary fingers projecting ahead of the edge of the platform.",
+        "My claim is for the arrangement of the several parts so as to constitute the above-described machine, and I particularly claim the method of cutting by means of a vibrating blade operated by a crank having the edge either smooth or with teeth, either with stationary wires or pieces above and below, and projecting before it, for the purpose of staying or supporting the grain whilst cutting; or using a double crank, and another blade or vibrating bar, as before described, having projections before the blade or cutter on the upper side, both working in contrary directions, thereby lessening the friction and liability to wear, by dividing the motion necessary for one between the two, and improving the principle of cutting by gathering and holding the grain to the cutter, the projections standing at a proper angle to said cutter; also the method of securing them.",
       plainEnglish:
-        "The master claim covering the scissor-like combination of a fast-moving serrated cutting bar sliding through stationary guard fingers that hold grain stalks rigid during the cut.",
+        "This first, unnumbered claim reaches the claimed machine arrangement and the cutting system: a crank-driven moving blade with either a smooth or toothed edge, supports placed above and below and ahead of it, and the alternative of two oppositely moving cutting elements. The described function is to keep grain in position while cutting while dividing motion to reduce friction and wear.",
       keyInnovations: [
-        "Reciprocating serrated sickle bar",
-        "Slotted spear-shaped stationary guard fingers",
-        "Continuous double-shear crop cutting",
+        "Crank-driven vibrating cutter",
+        "Stationary or moving grain-supporting projections",
+        "Oppositely moving cutter-bar alternative",
       ],
-      legalSignificance:
-        "The central mechanical claim of the reaping machine, fiercely defended in court against Obed Hussey and Manny.",
     },
     {
       number: 2,
-      isIndependent: false,
-      dependsOn: [1],
+      isIndependent: true,
       originalText:
-        "The revolving reel arranged to sweep and press the grain stalks against the cutting knife and lay them on the platform.",
+        "I also claim the method of gathering and bringing the grain back to the cutter, and delivering it on the apron or platform by means of a reel, as described above, movable to any height required to suit the grain, and the platform to hold the grain until a sufficient quantity shall have been collected for a sheaf, more or less; likewise the mode of changing the machine for cutting either high or low, as described above; also the method of dividing and keeping separate the grain to be cut from that to be left standing, and the method of attaching the tongue, when behind, to the breast of the horse, to enable him to guide the machine with accuracy.",
       plainEnglish:
-        "Covers the overhead revolving reel positioned to gather standing or lodged grain stalks against the cutter bar and sweep them onto the collection deck.",
+        "This second, unnumbered claim covers the gathering and delivery system: an adjustable-height reel sends grain to the cutter and platform, which holds it until a sheaf can be raked away. It also names the cutter-height adjustment, the divider separating cut from standing grain, and the behind-the-horse tongue attachment used to guide the machine.",
       keyInnovations: [
-        "Revolving gathering reel",
-        "Mechanical crop orientation and platform sweep",
+        "Height-adjustable gathering reel",
+        "Temporary sheaf platform",
+        "Divider and draft-guidance arrangement",
       ],
-      legalSignificance:
-        "Protected the device that allowed the reaper to cut tangled or wind-flattened crops that jammed other machines.",
-    },
-    {
-      number: 3,
-      isIndependent: false,
-      dependsOn: [1],
-      originalText:
-        "The general arrangement of the platform, ground wheel, divider, and offset draft tongue substantially as described.",
-      plainEnglish:
-        "Secures the overall layout of ground wheel drive, offset hitch preventing horses from trampling uncut grain, outer divider, and rear platform.",
-      keyInnovations: [
-        "Offset horse hitch",
-        "Swath-separating grain divider",
-        "Continuous side-delivery grain platform",
-      ],
-      legalSignificance:
-        "Protected the integrated chassis layout that enabled continuous non-stop field harvesting.",
     },
   ],
   drawings: [
     {
-      figureNumber: "Fig. 1",
-      title: "Perspective View of McCormick Virginia Reaper",
+      figureNumber: "Unnumbered drawing sheet",
+      title: "McCormick Reaper",
       caption:
-        "Perspective drawing showing main ground drive wheel, reciprocating sickle bar, slotted guard fingers, overhead revolving reel, and grain platform.",
+        "The single source drawing shows the reaper's platform, tongue, cross-bar, divider, reel, and cutter in perspective. Letter names follow the period drawing key rather than a modern reconstruction.",
       svgType: "mccormick-reaper",
       callouts: [
         {
           id: "mr-1",
-          figureRef: "Fig. 1",
+          figureRef: "Unnumbered drawing sheet",
           label: "A",
-          element: "Main Ground Drive Wheel",
-          description: "Large cleated wheel driving pitman crank and sickle gear train.",
-          x: 25,
-          y: 60,
+          element: "Platform",
+          description: "The receiving surface on which cut grain is held until a raker removes a sheaf.",
+          x: 62,
+          y: 70,
         },
         {
           id: "mr-2",
-          figureRef: "Fig. 1",
+          figureRef: "Unnumbered drawing sheet",
           label: "B",
-          element: "Reciprocating Sickle & Guard Fingers",
-          description: "Serrated blade sliding through stationary spear guard slots.",
-          x: 55,
-          y: 75,
+          element: "Tongue",
+          description: "The long draft member connected to the team and suspended by a pole and chain.",
+          x: 53,
+          y: 86,
         },
         {
           id: "mr-3",
-          figureRef: "Fig. 1",
-          label: "C",
-          element: "Revolving Gathering Reel",
-          description: "Overhead wooden vanes sweeping grain stalks against cutter.",
+          figureRef: "Unnumbered drawing sheet",
+          label: "D",
+          element: "Cross-bar",
+          description: "The cross-bar at the tongue's draft end to which the single-trees attach.",
           x: 50,
-          y: 30,
+          y: 89,
         },
         {
           id: "mr-4",
-          figureRef: "Fig. 1",
-          label: "D",
-          element: "Grain Platform & Divider",
-          description: "Wooden table receiving severed grain and outer crop divider snout.",
-          x: 75,
-          y: 65,
+          figureRef: "Unnumbered drawing sheet",
+          label: "L",
+          element: "Divider",
+          description: "The forward projecting part that separates the grain to be cut from standing grain.",
+          x: 26,
+          y: 49,
+        },
+        {
+          id: "mr-5",
+          figureRef: "Unnumbered drawing sheet",
+          label: "W",
+          element: "Reel",
+          description: "The belt-driven gathering reel carrying stalks inward to the cutter and platform.",
+          x: 57,
+          y: 25,
+        },
+        {
+          id: "mr-6",
+          figureRef: "Unnumbered drawing sheet",
+          label: "T",
+          element: "Cutter",
+          description: "The crank-driven cutting apparatus at the front edge of the platform.",
+          x: 72,
+          y: 42,
         },
       ],
     },
@@ -265,9 +244,7 @@ I claim as my invention:
     "International Harvester",
   ],
   stats: {
-    totalClaims: 3,
-    independentClaims: 1,
-    patentWarYears: "1834–1858",
-    impactScore: 99,
+    totalClaims: 2,
+    independentClaims: 2,
   },
 };

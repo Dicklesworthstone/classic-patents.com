@@ -1,4 +1,5 @@
 import type { Patent } from "@/types/patent";
+import { goodyearRubberArchivalEdition } from "../editions/goodyearRubberEdition";
 
 export const goodyearRubberPatent: Patent = {
   id: "us-3633-goodyear-rubber",
@@ -15,17 +16,22 @@ export const goodyearRubberPatent: Patent = {
   category: "materials",
   categoryLabel: "Materials Science & Chemical Engineering",
   summary:
-    "The Genesis of Modern Elastomers: In 1844, Charles Goodyear patented the thermal vulcanization process, combining raw natural Hevea polyisoprene rubber with sulfur and basic lead carbonate under high-temperature steam curing (270°F–300°F). The sulfur atoms formed covalent disulfide cross-linking bridges between sliding polymer chains, transforming raw sticky, rotting gum into a permanently elastic, weatherproof engineering material that neither melted in summer heat nor shattered in winter freezing.",
+    "In this June 15, 1844 grant, Charles Goodyear claimed a rubber-fabric compound of India-rubber, sulphur, and white lead or related lead salts or oxides; cotton-batting laminates; and heat treatment. The specification gives 25:5:7 parts as its preferred India-rubber, sulphur, and white-lead mixture, permits 212°–350° Fahrenheit heat, and says the best effect approaches 270°.",
   heroQuote:
-    "Be it known that I, Charles Goodyear, have invented a new and useful manner of preparing compositions of India-rubber, whereby the property of said gum is so far altered as not to be softened by the action of the solar or artificial heat, nor rendered brittle by the cold...",
+    "My principal improvement consists in the combining of sulphur and white lead with the india-rubber, and in the submitting of the compound thus formed to the action of heat at a regulated temperature.",
   originalPdfUrl: "/patents/pdfs/us-3633-goodyear-rubber.pdf",
   googlePatentsUrl: "https://patents.google.com/patent/US3633A/en",
-  usptoClassification: "C08J 3/24 (Crosslinking of rubber compounds)",
+  usptoClassification:
+    "Historical grant; modern Google Patents classifications include B32B and C08F8/34",
   originalTextAsset: {
-    url: "/patents/source-text/us-3633-goodyear-rubber.txt",
+    url: "/patents/transcripts/us-3633-goodyear-rubber.txt",
     pageCount: 2,
-    kind: "source-pdf-text-layer",
+    kind: "reviewed-transcription",
+    reviewedBy: "Classic Patents editorial agent (SunnySpring)",
+    reviewedAt: "2026-08-17",
+    sourcePdfSha256: "efd8490327472ea50fd873afd35ec759489f9587c9a9df1a590a500f7a66a8a7",
   },
+  archivalEdition: goodyearRubberArchivalEdition,
   originalText: `UNITED STATES PATENT OFFICE.
 CHARLES GOODYEAR, OF NEW YORK, N. Y.
 
@@ -34,23 +40,14 @@ IMPROVEMENT IN INDIA-RUBBER FABRICS.
 Specification forming part of Letters Patent No. 3,633, dated June 15, 1844.
 
 To all whom it may concern:
-Be it known that I, CHARLES GOODYEAR, of the city of New York, in the State of New York, have invented a new and useful manner of preparing compositions of India-Rubber, by which means the properties of said gum are so far altered as not to be softened by the action of the solar or artificial heat, nor rendered brittle by the cold, and of which the following is a full and exact description.
+Be it known that I, CHARLES GOODYEAR, of the city of New York, in the State of New York, have invented certain new and useful Improvements in the Manner of Preparing Fabrics of Caoutchouc or India-Rubber; and I do hereby declare that the following is a full and exact description thereof.
 
-My principal improvement consists in the combining of sulfur and white lead with India-rubber, and in the subjecting of the compound thus formed to the action of a high degree of heat, by which means the property of the rubber is essentially changed, so that it will withstand the heat of the sun and the action of solvents which previously dissolved it.
-
-The process of manufacture is as follows:
-Take natural India-rubber (gum elastic) and reduce it to a state of plastic dough by mastication between heated rollers. Incorporate with the rubber sulfur in the proportion of from two to five parts by weight of sulfur to one hundred parts of rubber, together with a metallic oxide such as white lead (carbonate of lead) or litharge in the proportion of from twelve to twenty parts by weight.
-
-The thoroughly compounded mixture is then sheeted or molded into the desired articles, such as waterproof cloth, boots, shoes, vehicle springs, or hose pipes.
-
-The articles so formed are then exposed to artificial heat in an oven or steam-chamber heated to a temperature of between two hundred and seventy degrees (270°F) and three hundred degrees (300°F) Fahrenheit, for a period of from one to six hours.
-
-By this heating process, the sulfur combines chemically with the gum, producing a profound transformation: the rubber loses its stickiness, becomes completely insoluble in turpentine, camphene, or essential oils, and retains its elasticity unchanged across extreme temperatures from freezing cold to the boiling point of water.`,
+My principal improvement consists in the combining of sulphur and white lead with the india-rubber, and in the submitting of the compound thus formed to the action of heat at a regulated temperature, by which combination and exposure to heat it will be so far altered in its qualities as not to become softened by the action of the solar ray or of artificial heat at a temperature below that to which it was submitted in its preparation—say to a heat of 270° of Fahrenheit's scale—nor will it be injuriously affected by exposure to cold. It will also resist the action of the expressed oils, and that likewise of spirits of turpentine, or of the other essential oils at common temperatures, which oils are its usual solvents.`,
   plainEnglishExplanation: {
     overview:
-      "In the 1830s, the natural rubber industry collapsed into catastrophic bankruptcy: waterproof coats, boots, and carriage covers made from raw South American latex melted into a rancid, putrid puddle in summer heat and froze into brittle, shattering glass in winter cold. Charles Goodyear spent over a decade in extreme poverty experimenting with rubber chemistry. In 1839, after accidentally dropping a sulfur-treated rubber compound onto a searing hot iron stove, he observed that the char did not melt into liquid goo but charred like leather while remaining completely springy and resilient. Goodyear had discovered vulcanization: high heat activates sulfur molecules, driving them to form permanent covalent chemical bridges across hydrocarbon chains, converting a viscous thermoplastic gum into a permanently elastic thermoset solid.",
+      "Goodyear's document has three linked moves. First, it specifies a compound of India-rubber, sulphur, and white lead. Second, it describes a fabric made by sandwiching cotton-wool between coats of that gum. Third, it exposes the material to heat. His stated aim is not a generic rubber improvement: it is resistance to solar or artificial heat below the preparation temperature, cold, and the oils that usually dissolved the gum.",
     coreMechanism:
-      "Raw natural latex consists of long, tangled polymer chains of cis-1,4-polyisoprene that slide freely past one another when warm (causing irreversible plastic deformation and melting) and crystallize when cold (causing glass-like embrittlement). During thermal vulcanization in a 270°F–300°F (132°C–149°C) steam autoclave, heat breaks eight-membered sulfur rings ($S_8$) into reactive sulfur biradicals. These sulfur atoms react with allylic carbon sites along adjacent polyisoprene backbones, forming permanent covalent mono-, di-, and polysulfide cross-linking bridges ($-C-S_x-C-$). When stretched, the cross-linked chains uncoil, storing mechanical energy through a decrease in conformational entropy ($\\Delta S < 0$); releasing the tensile force allows thermal motion to instantly snap the chains back to their original randomly coiled configuration.",
+      "The claimed manufacturing chain is: mix India-rubber with sulphur and white lead; form it as a sheet or coat it on cloth or leather; optionally put cotton-wool between gum layers; dry it; then heat it. The printed range is 212°F to 350°F, with the best effect said to approach 270°F. The source makes a process claim about the changed properties; it does not disclose a modern molecular mechanism, so later cross-linking terminology is editorial interpretation, not wording from the grant.",
     mechanicalBreakdown: [
       {
         title: "Sulfur Covalent Cross-Linking Bridges",
@@ -138,7 +135,7 @@ By this heating process, the sulfur combines chemically with the gum, producing 
         "Lead oxide acceleration and stabilization",
       ],
       legalSignificance:
-        "Upheld by the US Circuit Court in the landmark 1852 'Great India-Rubber Case' (*Goodyear v. Day*), establishing Goodyear's exclusive monopoly over vulcanized rubber products.",
+        "Claim 1 is the composition claim: it reaches the three-part gum, sulphur, and lead compound, while expressly extending the lead component beyond carbonate of lead.",
     },
     {
       number: 2,
@@ -153,105 +150,41 @@ By this heating process, the sulfur combines chemically with the gum, producing 
         "Thin flexible waterproof sheeting",
       ],
       legalSignificance:
-        "Protected the multi-ply composite fabrication method that enabled rubberized waterproof raincoats, footwear, and inflatable lifeboats.",
+        "Claim 2 is limited to the cotton-batting interlayer fabric described in the specification; it does not claim every rubber-coated textile.",
     },
     {
       number: 3,
-      isIndependent: true,
+      isIndependent: false,
+      dependsOn: [1, 2],
       originalText:
         "In combination with the foregoing, the process of exposing the india-rubber fabric to the action of a high degree of heat, such as is herein specified, by means of which my improved compound is effectually changed in its properties so as to protect it from decomposition or deterioration by the action of those agents which have heretofore been found to produce that effect upon india-rubber goods.",
       plainEnglish:
-        "The process of subjecting the sulfur-compounded rubber article to high-temperature thermal curing (270°F–300°F) to permanently alter its physical state, rendering it impervious to heat, cold, and organic solvents.",
+        "With the preceding compound and fabric, this claim adds the specified high-heat exposure. The specification permits 212°F to 350°F, says the best effect approaches 270°F, and warns that exposure above 270°F must be brief.",
       keyInnovations: [
         "High-temperature thermal curing process",
         "Permanent thermoset cross-linking transformation",
         "Weather and solvent resistance",
       ],
       legalSignificance:
-        "Secured the thermal process patent that defined vulcanization in industrial patent jurisprudence worldwide.",
+        "Claim 3 makes the heat-treatment step part of the claimed combination, tied to the patent's stated protection against deterioration of India-rubber goods.",
     },
   ],
-  drawings: [
-    {
-      figureNumber: "Fig. 1",
-      title: "Molecular Cross-Linking of Vulcanized Polyisoprene",
-      caption:
-        "Schematic diagram illustrating cis-1,4-polyisoprene hydrocarbon polymer chains connected by sulfur covalent bridge atoms ($-S_x-$).",
-      svgType: "goodyear-rubber",
-      callouts: [
-        {
-          id: "gr-1",
-          figureRef: "Fig. 1",
-          label: "A",
-          element: "Polyisoprene Polymer Backbone",
-          description: "Long-chain hydrocarbon backbone providing elastic stretching freedom.",
-          x: 50,
-          y: 35,
-        },
-        {
-          id: "gr-2",
-          figureRef: "Fig. 1",
-          label: "B",
-          element: "Sulfur Cross-Linking Bridges",
-          description: "Disulfide bonds connecting chains to prevent viscous melting.",
-          x: 50,
-          y: 55,
-        },
-      ],
-    },
-    {
-      figureNumber: "Fig. 2",
-      title: "High-Temperature Steam Curing Autoclave Oven",
-      caption:
-        "Cross section of the pressurized steam curing chamber where compounded rubber goods are exposed to 270°F–300°F heat.",
-      svgType: "goodyear-rubber",
-      callouts: [
-        {
-          id: "gr-3",
-          figureRef: "Fig. 2",
-          label: "C",
-          element: "Steam Curing Chamber",
-          description: "Pressurized vessel supplying thermal activation energy for cross-linking.",
-          x: 45,
-          y: 40,
-        },
-      ],
-    },
-  ],
+  // The complete two-page grant has no drawing sheet or printed figure reference.
+  // Modern educational simulations are not represented as archival drawings.
+  drawings: [],
   historicalContext: {
     problemStatement:
-      "The 1830s 'rubber fever' sold millions of dollars in shoes, boots, life preservers, and carriage covers made from raw Hevea latex. In summer heat above 80°F, the goods dissolved into sticky, rotting, foul-smelling sludge; in winter freezing temperatures, they became rock-hard and shattered like porcelain. Every major rubber company, including the Roxbury India Rubber Company, went bankrupt.",
+      "The specification identifies the practical failure directly: ordinary India-rubber softened under solar or artificial heat, was injured by cold, and was dissolved by expressed oils, spirits of turpentine, and other essential oils.",
     priorArtLimitations: [
-      "Untreated natural latex is a thermoplastic gum that undergoes viscous fluid flow above room temperature.",
-      "Raw rubber crystallizes at low temperatures, losing all elasticity below 32°F (0°C).",
-      "Organic solvents (turpentine, camphene, lamp oil) dissolved raw rubber completely.",
-      "Surface nitric acid washes (Goodyear's earlier 'acid gas' process) only cured a microscopic surface skin, leaving the interior to rot.",
+      "The source says that the expressed oils, spirits of turpentine, and other essential oils at common temperatures were the gum's usual solvents.",
+      "Rubber spread on firmer cloth or leather could peel away under moderate force because the gum released the holding fiber.",
+      "During high-heat treatment, the compound could soften enough that it required its supporting cloth and could not support its own weight.",
     ],
     breakthroughInsight:
-      "In the winter of 1839 in Woburn, Massachusetts, Goodyear accidentally dropped a piece of rubber mixed with sulfur and white lead onto a hot iron stove. Instead of melting into a sticky liquid as raw rubber always did, the specimen charred like leather while remaining completely elastic and resilient when cooled. Goodyear realized that high heat was not rubber's destroyer, but the essential catalyst that chemically locked sulfur into the polymer matrix.",
-    patentWars: [
-      {
-        rivalName: "Thomas Hancock (Britain) and Horace H. Day (USA)",
-        rivalClaim:
-          "British rubber pioneer Thomas Hancock obtained samples of Goodyear's vulcanized rubber in London in 1842. Smelling sulfur on the charred edges, Hancock reproduced the experiment by immersing rubber in molten sulfur baths and rushed to file a British patent just weeks before Goodyear's agent arrived. In the US, rival manufacturer Horace H. Day brazenly infringed Goodyear's patent.",
-        conflictDetails:
-          "In the epic 1852 'Great India-Rubber Case' (*Goodyear v. Day*) in Trenton, New Jersey, Goodyear hired legendary statesman Daniel Webster (then US Secretary of State) for a staggering $15,000 fee to defend his patent. Webster delivered a historic two-day closing argument declaring Goodyear the true author of the discovery.",
-        resolution:
-          "The US Circuit Court ruled decisively in Goodyear's favor, permanently enjoining Day from infringing. However, Goodyear lost the British patent rights to Hancock due to British 'first-to-file' patent rules.",
-        legalOutcome:
-          "Goodyear's US Patent No. 3,633 was upheld as fully valid. Hancock coined the term 'vulcanization' (after Vulcan, the Roman god of fire).",
-      },
-    ],
+      "Goodyear's stated move is a compound of India-rubber, sulphur, and white lead exposed to regulated heat. His preferred recipe is 25 parts India-rubber, 5 sulphur, and 7 white lead; the claimed method also uses cotton-wool interlayers and an oven or heated cylinder.",
+    patentWars: [],
     civilizationalImpact:
-      "Goodyear's discovery founded the modern polymer and materials science industries. Vulcanized rubber enabled electrical cable insulation for the telegraph, flexible high-pressure steam hoses for the Industrial Revolution, solid rubber carriage tires, and ultimately the pneumatic rubber tires that made the bicycle and automotive revolutions possible.",
-    funFact:
-      "Goodyear was so obsessed with proving the versatility of vulcanized rubber that he wore an entire wardrobe made of it—including a rubber top hat, rubber vest, rubber boots, and carried a rubber cane. When asked how to find him in New York, a friend remarked: 'If you see a man with an India-rubber coat, India-rubber shoes, an India-rubber cap, and in his pocket an India-rubber purse with not a cent in it, that is Goodyear.'",
-    aftermath:
-      "Despite winning his patent trials, Goodyear was perpetually swindled by unscrupulous business partners and spent much of his life in debtor's prisons in the US and France. When he died in 1860 at age 59, he was $200,000 in debt. Thirty-eight years later, in 1898, Frank and Charles Seiberling founded The Goodyear Tire & Rubber Company in Akron, Ohio, naming it in honor of the impoverished inventor.",
-    sideNotes: [
-      "Natural rubber tree latex (*Hevea brasiliensis*) is an emulsion of cis-1,4-polyisoprene, a polymer synthesized in nature by coagulating white sap.",
-      "Modern vulcanization uses sulfur alongside synthetic chemical accelerators (such as zinc oxide, stearic acid, and sulfenamides) to complete cross-linking in under 10 minutes at 160°C.",
-    ],
+      "The grant documents a reproducible approach to compounded, heat-treated India-rubber fabric: a formulation, fabrication routes, a laminate construction, a temperature range, and three claims. Those concrete process details are the historically useful record preserved here.",
   },
   tags: [
     "Charles Goodyear",
@@ -265,8 +198,6 @@ By this heating process, the sulfur combines chemically with the gum, producing 
   ],
   stats: {
     totalClaims: 3,
-    independentClaims: 3,
-    patentWarYears: "1844–1852",
-    impactScore: 99,
+    independentClaims: 2,
   },
 };

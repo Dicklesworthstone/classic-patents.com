@@ -1,4 +1,16 @@
 import type { Patent } from "@/types/patent";
+import { morseTelegraphArchivalEdition } from "../editions/morseTelegraphEdition";
+
+/** Keep the catalogue decoder tied to the published hand-authored legal node. */
+function manualClaimText(number: number): string {
+  const block = morseTelegraphArchivalEdition.blocks.find(
+    (candidate) => candidate.kind === "claim" && candidate.number === number,
+  );
+  if (block?.kind !== "claim") {
+    throw new Error(`Morse manual edition is missing claim ${number}.`);
+  }
+  return block.inlines.map((inline) => inline.text).join("");
+}
 
 export const morseTelegraphPatent: Patent = {
   id: "us-1647-morse-telegraph",
@@ -15,9 +27,9 @@ export const morseTelegraphPatent: Patent = {
   category: "telecom",
   categoryLabel: "Telecommunications & Information Theory",
   summary:
-    "The Invention of the Victorian Internet: On June 20, 1840, Samuel F. B. Morse received US Patent No. 1,647 for the electro-magnetic telegraph. Transforming telecommunications from optical flags and multi-wire European schemes to a single iron wire, Morse introduced three foundational innovations: a binary temporal pulse modulation scheme (Morse Code), an electromechanical strip-chart register driven by an electromagnet armature, and the world's first electromechanical relay repeater. The relay regenerated attenuated signals using fresh local batteries ($V_{rx} = V_0 e^{-\\alpha x}$), enabling instant communication across thousands of miles. The Supreme Court's 1854 *O'Reilly v. Morse* ruling on this patent remains the bedrock precedent for modern patent eligibility.",
+    "US 1,647, granted June 20, 1840, describes Morse's American Electro-Magnetic Telegraph as a linked system: metallic conductors, mechanical type for numerical and letter signs, straight or circular port-rules, a signal lever that interrupts the circuit, a register that marks a moving surface, a numbered vocabulary, and methods for laying the line. The pinned nine-page facsimile is the 1840 specification, including three drawing sheets and nine printed claims.",
   heroQuote:
-    "Be it known that I, Samuel F. B. Morse, have invented a new method of transmitting intelligence between distant points by means of electro-magnetic circuits and a system of signs composed of dots and lines...",
+    'I denominate said invention the "American Electro-Magnetic Telegraph," of which the following is a full and exact description, to wit:',
   originalPdfUrl: "/patents/pdfs/us-1647-morse-telegraph.pdf",
   googlePatentsUrl: "https://patents.google.com/patent/US1647A/en",
   usptoClassification: "H04L 15/00 (Telegraph signaling)",
@@ -26,30 +38,16 @@ export const morseTelegraphPatent: Patent = {
     pageCount: 9,
     kind: "source-pdf-text-layer",
   },
+  archivalEdition: morseTelegraphArchivalEdition,
   originalText: `UNITED STATES PATENT OFFICE.
 SAMUEL F. B. MORSE, OF NEW YORK, N. Y.
 
 IMPROVEMENT IN THE MODE OF COMMUNICATING INFORMATION BY SIGNALS BY THE APPLICATION OF ELECTRO-MAGNETISM.
 
-Letters Patent No. 1,647, dated June 20, 1840; Reissued January 15, 1846, No. 79; Reissued June 13, 1848, No. 117.
+No. 1,647. Specification forming part of Letters Patent No. 1,647, dated June 20, 1840.
 
 To all whom it may concern:
-Be it known that I, SAMUEL F. B. MORSE, have invented a new and useful Machine and System of Signs for transmitting intelligence between distant points by means of Electro-Magnetism, of which the following is a full and exact description.
-
-The nature of my invention consists in:
-First, in a system of signs consisting of dots, lines, and spaces representing letters, numerals, and punctuation, adapted to be transmitted over electric conductors by closing and breaking a circuit for varying durations of time.
-
-Second, in an apparatus consisting of an electro-magnet whose armature carries a pencil, pen, or steel marking-point, which is caused to mark upon a moving strip of paper whenever the circuit is closed, producing dots and lines corresponding in length to the duration of the current closure.
-
-Third, in a transmitting apparatus or key by which the operator can open and close the circuit with great facility and precision.
-
-Fourth, in the combination of a local receiving electro-magnet and battery circuit with a main line circuit, forming a Relay or Repeater, whereby the weak signal received over a long line closes a local battery circuit capable of recording the signal or repeating it over a subsequent length of wire, thereby enabling intelligence to be transmitted over unlimited distances.
-
-Referring to the drawings:
-Figure 1 is a side elevation of the recording register, showing the clockwork train for advancing the paper strip, and the electro-magnet and armature lever.
-Figure 2 is a perspective view of the transmitting port-rule and key.
-Figure 3 is a diagram of the relay circuit connecting the main line to the local sounder.
-Figure 4 illustrates the dictionary of signs composed of dots and lines.`,
+Be it known that I, the undersigned, SAMUEL F. B. MORSE, of the city, county, and State of New York, have invented a new and useful machine and system of signs for transmitting intelligence between distant points by the means of a new application and effect of electro-magnetism in producing sounds and signs, or either, and also for recording permanently by the same means, and application, and effect of electro-magnetism, any signs thus produced and representing intelligence, transmitted as before named between distant points; and I denominate said invention the "American Electro-Magnetic Telegraph," of which the following is a full and exact description, to wit:`,
   plainEnglishExplanation: {
     overview:
       "Before Morse, long-distance communication moved at the speed of a galloping horse or a steam train. Optical semaphore towers were fast in clear daylight but completely blind at night, during rain, or in fog. Competing European electrical telegraphs (like Cooke and Wheatstone in England) required five separate wires and needle pointers to indicate single letters. Samuel Morse, partnered with machinist Alfred Vail and physicist Joseph Henry, reduced the entire system to a single wire pair, invented variable-duration binary encoding (Morse Code), and built electromechanical relays that re-energized fading electric signals across continent-spanning distances.",
@@ -133,130 +131,93 @@ Figure 4 illustrates the dictionary of signs composed of dots and lines.`,
     {
       number: 1,
       isIndependent: true,
-      originalText:
-        "First, the application of the motive power of the electric or galvanic current, which I call electro-magnetism, for generating or producing motion at a distance, to print characters or mark signs upon a moving surface, substantially as described.",
+      originalText: manualClaimText(1),
       plainEnglish:
-        "The master apparatus claim covering the use of electromagnetism to move a physical recording armature and mark signs or characters upon a moving recording surface.",
-      keyInnovations: [
-        "Electromechanical distant recording",
-        "Magnetic armature stylus actuation",
-        "Continuous paper tape marking",
-      ],
-      legalSignificance:
-        "Upheld by the Supreme Court in *O'Reilly v. Morse* (1854) as a valid patent on a specific mechanical system for recording distant signals.",
+        "Claim 1 covers the stated combination of the type-rule, straight and circular port-rules, two signal levers, register lever, alarm lever and hammer, with the electro-magnet armatures that operate those levers. The legal unit is this particular coordinated machine, not electromagnetism in the abstract.",
+      keyInnovations: ["Type-rule", "Port-rules", "Electromagnet armatures"],
     },
     {
       number: 2,
       isIndependent: true,
-      originalText:
-        "Second, the system of signs consisting of dots and lines and spaces, combined to form words and numerals, substantially as described.",
+      originalText: manualClaimText(2),
       plainEnglish:
-        "The foundational claim covering the Morse Code alphabet, numerals, and punctuation system composed of variable-duration dots, dashes, and spaces.",
-      keyInnovations: [
-        "Binary temporal pulse modulation",
-        "Variable-length character encoding",
-        "Frequency-weighted communication alphabet",
-      ],
-      legalSignificance:
-        "Recognized as the legal cornerstone of discrete telecommunication codes, preceding modern binary digital computing by over a century.",
+        "Claim 2 adds the recording cylinder, its rollers, and the clockwork train to the mechanism already described. It claims the particular arrangement that carries a recording material and coordinates its motion with the marking apparatus.",
+      keyInnovations: ["Recording cylinder", "Rollers", "Train-wheels"],
     },
     {
       number: 3,
-      isIndependent: false,
-      dependsOn: [1],
-      originalText:
-        "Third, the combination of a circuit-closer or key with the conductor and galvanic battery, for the purpose of breaking and closing the circuit in conformity with the system of signs, substantially as set forth.",
+      isIndependent: true,
+      originalText: manualClaimText(3),
       plainEnglish:
-        "A transmitting assembly combining a manual finger key, electrical conductor, and battery to easily make and break circuit pulses.",
-      keyInnovations: [
-        "Tactile finger key mechanism",
-        "Spring-returned contact lever",
-        "Instantaneous pulse transmission",
-      ],
-      legalSignificance:
-        "Protected the ubiquitous manual telegraph key used worldwide for landline and maritime communications.",
+        "Claim 3 claims the specified type and sign system when used with metallic conductors, electromagnetism, and the described mechanism to communicate between distant points. It is limited by that combined system; the printed claim does not say that every code or every electric message is claimed.",
+      keyInnovations: ["Sign system", "Metallic conductors", "Telegraph mechanism"],
     },
     {
       number: 4,
-      isIndependent: false,
-      dependsOn: [1],
-      originalText:
-        "Fourth, the combination of a main line circuit with a local receiving magnet and local battery circuit, forming a Relay or Repeater, whereby the closing of the main circuit closes a local battery circuit to actuate a sounder or register, substantially as described.",
+      isIndependent: true,
+      originalText: manualClaimText(4),
       plainEnglish:
-        "The electromechanical relay repeater: using a weak long-distance current to trip a sensitive magnetic switch, which activates a powerful local battery to record the message or retransmit it across the next line segment.",
-      keyInnovations: [
-        "Electromechanical signal amplification",
-        "Automated circuit relaying",
-        "Overcoming line resistance attenuation",
-      ],
-      legalSignificance:
-        "The technological breakthrough that enabled transcontinental and transatlantic telegraphy without signal loss.",
+        "Claim 4 concerns the mechanical process that opens and closes a galvanic current in a metallic-conductor circuit. In the specification, the teeth and lever control the immersion contacts, turning the circuit on and off to form the selected signs.",
+      keyInnovations: ["Circuit interruption", "Signal lever", "Mercury contacts"],
     },
     {
       number: 5,
-      isIndependent: false,
-      dependsOn: [1],
-      originalText:
-        "Fifth, the recording register consisting of a clockwork mechanism for advancing paper tape at a uniform velocity beneath an electro-magnetically driven marking stylus.",
+      isIndependent: true,
+      originalText: manualClaimText(5),
       plainEnglish:
-        "The physical strip-chart recording instrument using clockwork gear trains to advance paper tape at constant speed beneath an embossing stylus.",
-      keyInnovations: [
-        "Uniform clockwork tape transport",
-        "Embossed permanent paper record",
-        "Constant-velocity time-to-distance conversion",
-      ],
-      legalSignificance:
-        "Provided the permanent, non-volatile physical paper audit trail demanded by early commercial banking and railroad dispatchers.",
+        "Claim 5 addresses carrying and connecting current through any desired number of metallic-conductor circuits from a known generator. The specification supplies the concrete relay arrangement: one circuit's magnet moves a forked wire into a fresh circuit's contacts.",
+      keyInnovations: ["Successive circuits", "Fresh battery", "Relay connection"],
+    },
+    {
+      number: 6,
+      isIndependent: true,
+      originalText: manualClaimText(6),
+      plainEnglish:
+        "Claim 6 states the use of electro-magnets in one or more metallic circuits to move the stated levers and machinery, so signs and sounds can communicate intelligence at distant and simultaneous points. The scope remains anchored to the described machine and its moving levers.",
+      keyInnovations: ["Electromagnets", "Lever motion", "Simultaneous points"],
+    },
+    {
+      number: 7,
+      isIndependent: true,
+      originalText: manualClaimText(7),
+      plainEnglish:
+        "Claim 7 covers permanently marking transmitted signs by the specified application of electro-magnetism or galvanism. The register turns magnetic attraction into a pen or other marker's contact with a moving recording surface.",
+      keyInnovations: ["Permanent record", "Register lever", "Marking instrument"],
     },
     {
       number: 8,
       isIndependent: true,
-      originalText:
-        "Eighth, I do not propose to limit myself to the specific machinery or parts of machinery described in the foregoing specification and claims; the essence of my invention being the use of the motive power of the electric or galvanic current, which I call electro-magnetism, however developed, for making or printing intelligible characters, signs, or letters at any distances, being a new application of that power of which I claim to be the first inventor or discoverer.",
+      originalText: manualClaimText(8),
       plainEnglish:
-        "The infamous 'Claim 8' attempting to patent the general use of electromagnetism for transmitting intelligence over any distance by any mechanical means whatsoever.",
-      keyInnovations: [
-        "Universal claim to electromagnetic communication",
-        "Broad abstraction beyond specific machinery",
-      ],
-      legalSignificance:
-        "Struck down by the U.S. Supreme Court in *O'Reilly v. Morse* (1854) as an impermissible attempt to patent an abstract law of nature, establishing Section 101 patent eligibility doctrine cited in modern software cases (*Alice*, *Mayo*).",
+        "Claim 8 is the printed combination of electro-magnets in metallic circuits with magnet armatures for transmitting intelligence by signs or sounds to distant and simultaneous points. It is a machine-combination claim, not the later, much broader claim frequently associated with Morse litigation.",
+      keyInnovations: ["Magnet armatures", "Signs and sounds", "Multiple destinations"],
+    },
+    {
+      number: 9,
+      isIndependent: true,
+      originalText: manualClaimText(9),
+      plainEnglish:
+        "Claim 9 joins the mechanism, the system of type and signs, and the numbered dictionary or vocabulary. The vocabulary lets an operator designate whole words through numerical signs; the claim is to their mutual adaptation within this telegraph system.",
+      keyInnovations: ["Dictionary vocabulary", "Numbered words", "Type and signs"],
     },
   ],
   drawings: [
     {
-      figureNumber: "Fig. 1",
-      title: "Morse Telegraph Register & Sounder",
+      figureNumber: "Example 10, Fig. 1",
+      title: "Register, perspective view",
       caption:
-        "Elevation drawing showing clockwork weight drive, paper tape spool, horseshoe electromagnet, and embossing lever.",
+        "Sheet 3 of 3, Example 10, Fig. 1: the register in perspective. The source specification identifies lever A, its armature and magnet, the marking instrument, cylinder, rollers, and clockwork in the accompanying Example 10 figures.",
       svgType: "morse-telegraph",
       callouts: [
         {
           id: "mt-1",
-          figureRef: "Fig. 1",
+          figureRef: "Example 10, Fig. 1",
           label: "A",
-          element: "Horseshoe Electromagnet",
-          description: "Dual insulated copper wire coils creating magnetic flux from line current.",
-          x: 40,
-          y: 45,
-        },
-        {
-          id: "mt-2",
-          figureRef: "Fig. 1",
-          label: "B",
-          element: "Pivoted Armature Lever",
-          description: "Iron bar carrying steel embossing stylus against moving paper tape.",
-          x: 55,
-          y: 35,
-        },
-        {
-          id: "mt-3",
-          figureRef: "Fig. 1",
-          label: "C",
-          element: "Clockwork Paper Feed Rollers",
-          description: "Spring-driven gears drawing paper tape from continuous spool.",
-          x: 75,
-          y: 50,
+          element: "Register lever",
+          description:
+            "The source calls A the register lever. Its armature faces an electro-magnet; the other end carries a pencil, pen, printing wheel, or other marking instrument.",
+          x: 60,
+          y: 36,
         },
       ],
     },
@@ -307,9 +268,8 @@ Figure 4 illustrates the dictionary of signs composed of dots and lines.`,
     "19th Century",
   ],
   stats: {
-    totalClaims: 6,
-    independentClaims: 3,
+    totalClaims: 9,
+    independentClaims: 9,
     patentWarYears: "1848–1854",
-    impactScore: 100,
   },
 };

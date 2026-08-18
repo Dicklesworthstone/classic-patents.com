@@ -1,4 +1,5 @@
 import type { Patent } from "@/types/patent";
+import { ericssonPropellerArchivalEdition } from "../editions/ericssonPropellerEdition";
 
 export const ericssonPropellerPatent: Patent = {
   id: "us-588-ericsson-propeller",
@@ -7,16 +8,16 @@ export const ericssonPropellerPatent: Patent = {
   shortTitle: "Ericsson Submerged Screw Propeller",
   subtitle: "Contra-Rotating Helical Spiral Blades, Hydrofoil Camber, and Submerged Shaft Thrust",
   inventors: ["John Ericsson"],
-  inventorLocation: "London, Great Britain & New York, New York",
+  inventorLocation: "London, England",
   grantDate: "1838-02-01",
-  filingDate: "1837-12-14",
-  era: "Early Republic & Industrial Dawn (1790–1830)",
+  filingDate: "1838-02-01",
+  era: "Early Industrial Navigation (1830–1850)",
   category: "aviation",
   categoryLabel: "Marine Propulsion & Hydrodynamics",
   summary:
-    "The 1838 marine propulsion revolution: John Ericsson's submerged contra-rotating helical screw propeller mounted on an axial shaft below the waterline, replacing vulnerable, inefficient paddle wheels with a continuous hydrodynamic axial thrust drive that protected warship propulsion from cannon fire and operated unaffected by rolling seas.",
+    "John Ericsson's specification describes two submerged broad hoops carrying short spiral plates. Concentric shafts and unequal gearing drive the hoops in contrary directions; the third claim covers a removable upright-stem installation with a protected gear casing.",
   heroQuote:
-    "The propeller consists of two or more metallic cylinders or hubs, armed with helical spiral blades revolving in opposite directions below the water-line, whereby an oblique reaction is produced against the water to propel the vessel.",
+    "This invention which I name as above consists in two thin broad metallic hoops or short cylinders supported by spiral arms or spokes and made to revolve in contrary directions.",
   originalPdfUrl: "/patents/pdfs/us-588-ericsson-propeller.pdf",
   googlePatentsUrl: "https://patents.google.com/patent/US588/en",
   usptoClassification: "B63H 1/14 (Marine propellers; Screw propellers)",
@@ -25,31 +26,9 @@ export const ericssonPropellerPatent: Patent = {
     pageCount: 5,
     kind: "source-pdf-text-layer",
   },
-  originalText: `UNITED STATES PATENT OFFICE.
-JOHN ERICSSON, OF LONDON, GREAT BRITAIN.
-
-IMPROVEMENT IN SCREW-PROPELLERS FOR VESSELS.
-
-Specification forming part of Letters Patent No. 588, dated February 1, 1838.
-
-To all whom it may concern:
-Be it known that I, JOHN ERICSSON, engineer, of London, in the Kingdom of Great Britain, have invented a new and improved mode of Propelling Vessels by the application of submerged spiral or screw blades, of which the following is a specification:
-
-My invention consists in applying one, two, or more metallic wheels or cylinders to a shaft or shafts passing out through the stern of a vessel below the water-line, said wheels being armed with segments of a spiral screw or helical blades placed at an angle to the axis of the shaft.
-
-The construction of the apparatus comprises:
-1. An outer shaft hollowed to receive a central inner shaft passing through it, mounted in water-tight stuffing boxes in the sternpost.
-2. Two concentric wheel drums or hubs, the forward drum keyed to the outer shaft and the aft drum keyed to the inner shaft.
-3. A series of helical spiral blades or segments of a screw secured to the peripheries of said drums, the spirals on the forward wheel being of opposite pitch to those on the aft wheel.
-4. Gearing or direct connecting rods from the steam engine so arranged that the inner and outer shafts are driven with equal velocities in opposite directions.
-
-By this arrangement, as the two wheels revolve in contrary directions beneath the water, the helical blades act obliquely upon the surrounding fluid, producing a continuous axial thrust that propels the vessel forward. The contrary rotation of the two wheels neutralizes the rotational swirl imparted to the water, preventing the stern from yawing to either side and converting nearly the entire power of the engine into direct forward propulsion.
-
-Furthermore, because the entire propeller is placed beneath the water-line and behind the stern, it is completely protected from the shot of enemy artillery in naval warfare and remains fully submerged and effective regardless of how the vessel rolls, pitches, or changes its draft in heavy seas.
-
-I claim as my invention:
-1. The arrangement of two wheels armed with spiral or helical blades revolving in contrary directions on concentric shafts below the water-line for propelling vessels.
-2. The combination of submerged helical screw blades with an axial shaft and thrust bearing for transmitting the axial reaction of the water directly to the hull of the vessel.`,
+  originalText:
+    "Be it known that I, JOHN ERICSSON, a subject of the Kingdom of Sweden, residing at London, England, have invented a new and useful Propeller for the Purpose of Propelling Steamboats Effectually Notwithstanding Any Variations in Their Draft of Water. The complete, manually prepared edition is available in the Original Patent Text face.",
+  archivalEdition: ericssonPropellerArchivalEdition,
   plainEnglishExplanation: {
     overview:
       "In the early 19th century, steam navigation was chained to giant paddle wheels mounted on the sides of ships. Paddle wheels were mechanically vulnerable in heavy storms, became useless when the ship rolled and lifted one wheel out of the water, and presented massive, unarmored targets for naval cannon fire. Swedish-American engineer John Ericsson replaced paddle wheels with submerged helical screw blades rotating on an axial shaft below the waterline, establishing modern marine propulsion.",
@@ -135,31 +114,34 @@ I claim as my invention:
       number: 1,
       isIndependent: true,
       originalText:
-        "The arrangement of two wheels armed with spiral or helical blades revolving in contrary directions on concentric shafts below the water-line for propelling vessels.",
+        "The metallic hoops or cylinders and the spiral arms or spokes hereinbefore described together with the entire immersion of the propeller by which means I am enabled to employ the whole surface of all the spiral plates at one time and whereby the beneficial result of a great propelling force will be obtained by a propeller of much less dimensions than heretofore.",
       plainEnglish:
-        "Master claim covering submerged contra-rotating helical screw propellers on concentric shafts mounted below the waterline to propel watercraft.",
-      keyInnovations: [
-        "Submerged screw propeller propulsion below waterline",
-        "Concentric contra-rotating shaft architecture",
-        "Elimination of rotational wake swirl",
-      ],
+        "Claims the hoop-and-spoke construction together with complete immersion, so all of the short spiral plates can work in water at once and a smaller propeller can produce substantial thrust.",
+      keyInnovations: ["Metallic hoop", "Spiral spoke", "Complete immersion"],
       legalSignificance:
-        "The foundational US patent establishing the practical screw propeller for commercial and naval shipping.",
+        "The claim is limited to Ericsson's stated immersed hoop-and-spoke arrangement, not every use of oblique spiral planes.",
     },
     {
       number: 2,
-      isIndependent: false,
-      dependsOn: [1],
+      isIndependent: true,
       originalText:
-        "The combination of submerged helical screw blades with an axial shaft and thrust bearing for transmitting the axial reaction of the water directly to the hull of the vessel.",
+        "And I also claim as my invention the giving a greater speed to the outer series of spiral plates which move in the current produced by the motion of the other series and by which greater speed the beneficial result of saving of power and increased propelling force will be obtained.",
       plainEnglish:
-        "Covers the mechanical transmission of axial thrust from submerged helical blades through an axial shaft and thrust bearing into the vessel's hull structure.",
-      keyInnovations: [
-        "Axial propeller thrust transmission to ship hull",
-        "Watertight stern tube stuffing box integration",
-      ],
+        "Claims making the outer series faster, where it runs in the water current made by the other series, to save power and increase propelling force.",
+      keyInnovations: ["Outer spiral series", "Higher speed", "Current from inner series"],
       legalSignificance:
-        "Protected the direct mechanical integration of screw propellers with ship keels and steam engine drives.",
+        "This is separately phrased and does not incorporate claim 1 by reference.",
+    },
+    {
+      number: 3,
+      isIndependent: true,
+      originalText:
+        "And I further claim as my invention the application of the propeller as described in drawing No. 2—that is to say: 1stly, I claim the upright hollow stem with its arms or branches for carrying the propeller by means of which stem the propeller may be either suspended and immersed under the water when required to be used, or on other occasions lifted out of the water so as not to interfere with the sailing of the vessel; 2ndly, I claim the drum or conical casing for protecting the bevel wheels and for diminishing the resistance in passing through the water; 3rdly, I claim the attaching the propeller to or detaching it from the engine or other power employed on board the vessel by means of a coupling box at the upper end of the upright shaft of the bevel wheels.",
+      plainEnglish:
+        "Claims the Figure 4–6 installation as three features: a hollow upright stem that can lower or raise the propeller, a fairing around the bevel gears, and a coupling box that connects or disconnects the propeller from shipboard power.",
+      keyInnovations: ["Upright hollow stem", "Conical gear casing", "Sliding coupling box"],
+      legalSignificance:
+        "This claim is the patent's expressly enumerated removable-installation combination.",
     },
   ],
   drawings: [
@@ -239,8 +221,8 @@ I claim as my invention:
     "Naval Architecture",
   ],
   stats: {
-    totalClaims: 2,
-    independentClaims: 1,
+    totalClaims: 3,
+    independentClaims: 3,
     patentWarYears: "1837–1844",
     impactScore: 99,
   },

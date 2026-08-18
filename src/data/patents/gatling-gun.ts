@@ -1,3 +1,4 @@
+import { gatlingGunArchivalEdition } from "@/data/editions/gatlingGunEdition";
 import type { Patent } from "@/types/patent";
 
 export const gatlingGunPatent: Patent = {
@@ -131,48 +132,67 @@ I claim as my invention:
     whyItMattersToday:
       "Gatling's rotary multi-barrel cam architecture is the direct engineering foundation of modern high-speed rotary cannons, including the 6-barrel 20mm M61 Vulcan on F-15/F-16/F-22 fighters (firing at 6,000 rounds/min) and the 7-barrel 30mm GAU-8 Avenger on the A-10 Warthog. Electric and hydraulic motors replaced the hand crank, but the internal helical cam track and revolving bolts remain identical to Gatling's 1862 patent.",
   },
+  archivalEdition: gatlingGunArchivalEdition,
   claims: [
     {
       number: 1,
       isIndependent: true,
       originalText:
-        "The combination of a series of revolving barrels with corresponding reciprocating locks, operated by a stationary helical cam track to perform the operations of loading, cocking, firing, and extracting continuously.",
+        "The combination of the lock-cylinder or breech D with the grooved carrier C, circular plate F, and barrels E E, &c., the lock-cylinder or breech, carrier, and circular plate being firmly fastened upon the main shaft N, and the locks, grooves in the carrier, and barrels being arranged on a line parallel with the axis of revolution, the whole revolving together when the gun is in operation, substantially as described.",
       plainEnglish:
-        "Pioneer master claim covering a cluster of rotating barrels with aligned reciprocating bolts driven by a stationary internal helical cam track to load, cock, fire, and extract ammunition continuously.",
+        "Claims the combined rotating assembly, not a barrel alone: the breech, grooved carrier, circular plate, and barrels must be fixed to one main shaft, with their locks, grooves, and bores parallel to the rotation axis so the parts turn together.",
       keyInnovations: [
-        "Rotary multi-barrel cluster with reciprocating bolts",
-        "Stationary internal helical cam track",
-        "Continuous synchronized pipeline cycling",
+        "Common main shaft",
+        "Rotating lock-cylinder",
+        "Grooved cartridge carrier",
+        "Parallel barrel and lock axes",
       ],
       legalSignificance:
-        "The foundational patent for rotary automatic weapons, creating the entire mechanical class of Gatling-type guns.",
+        "The first claim fixes the coordinated, co-rotating architecture that the specification describes.",
     },
     {
       number: 2,
-      isIndependent: false,
-      dependsOn: [1],
+      isIndependent: true,
       originalText:
-        "The combination with the revolving barrels and locks of the gravity feed hopper and slotted carrier cylinder for supplying cartridges in succession to the chambers.",
+        "In the construction of revolving fire-arms, the use of as many locks as there are barrels, said locks revolving simultaneously with the breech and barrels, and being arranged and operated substantially as set forth.",
       plainEnglish:
-        "Specifies the overhead gravity feed hopper and fluted carrier cylinder that deposits cartridges smoothly into the bolt pathways without manual handling.",
-      keyInnovations: ["Gravity feed magazine integration", "Fluted rotary cartridge carrier"],
+        "Claims the one-lock-per-barrel arrangement, with every lock revolving at the same time as the breech and barrel group and working in the described sequence.",
+      keyInnovations: ["One lock per barrel", "Simultaneous lock rotation"],
       legalSignificance:
-        "Protected the feeding mechanism that allowed uninterrupted rapid fire as long as the hopper was kept filled.",
+        "This is a separate claim to the numerical and kinematic relationship between barrels and locks.",
     },
     {
       number: 3,
-      isIndependent: false,
-      dependsOn: [1],
+      isIndependent: true,
       originalText:
-        "Distributing the thermal strain of rapid firing across a revolving cluster of multiple independent barrels.",
+        "The stationary ring P, provided with inclined planes on its rear edge, in combination with lock-cylinder D and locks, when constructed and operated for the purposes substantially as set forth.",
       plainEnglish:
-        "Claims the method of preventing barrel overheating and fouling during rapid fire by rotating a cluster of barrels so each barrel fires once per revolution.",
-      keyInnovations: [
-        "Multi-barrel thermal distribution",
-        "Rotational forced-air convective cooling",
-      ],
+        "Claims the fixed ring whose two sloping rear surfaces cock and then reposition each rotating hammer in relation to the lock-cylinder.",
+      keyInnovations: ["Stationary cocking ring", "Inclined hammer-cocking planes"],
       legalSignificance:
-        "Recognized the thermodynamic advantage of multi-barrel weapons over single-barrel designs.",
+        "It isolates the triggerless cocking and firing control surface from the broader rotating assembly.",
+    },
+    {
+      number: 4,
+      isIndependent: true,
+      originalText:
+        "The tubes a a, &c., furnished with the flanged breech-pins c c, &c., and springs e e, &c., and which contain the lock-hammers b b, &c., and mainsprings d d, &c., in combination with the revolving breech D, disk I, and swell o, when constructed, arranged, and operated for the purposes substantially as set forth.",
+      plainEnglish:
+        "Claims the lock tubes as an assembly: their flanged breech-pins, springs, hammers, and mainsprings work with the rotating breech, divider disk, and its projecting swell to seat the cartridge-chamber and energize the hammer.",
+      keyInnovations: ["Lock tubes", "Flanged breech-pins", "Disk swell", "Hammer mainsprings"],
+      legalSignificance:
+        "This claim identifies the pressure-sealing and hammer-driving parts inside the rotating breech.",
+    },
+    {
+      number: 5,
+      isIndependent: true,
+      originalText:
+        "The disk I, in combination with the external breech-piece or casing, A, which forms a shield or covering for the lock-cylinder and which protects the locks and cog-wheels from injury.",
+      plainEnglish:
+        "Claims the internal divider disk together with the outer casing, whose forward and rear portions shield the rotating locks and gears from damage.",
+      keyInnovations: ["Divider disk", "Protective outer casing", "Lock and gear shielding"],
+      legalSignificance:
+        "This is the specific protective enclosure claim, separate from the firing and feeding claims.",
     },
   ],
   drawings: [
@@ -261,9 +281,7 @@ I claim as my invention:
     "Vulcan Cannon",
   ],
   stats: {
-    totalClaims: 3,
-    independentClaims: 1,
-    patentWarYears: "1862–1866",
-    impactScore: 99,
+    totalClaims: 5,
+    independentClaims: 5,
   },
 };

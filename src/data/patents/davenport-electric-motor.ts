@@ -1,4 +1,5 @@
 import type { Patent } from "@/types/patent";
+import { davenportElectricMotorArchivalEdition } from "../editions/davenportElectricMotorEdition";
 
 export const davenportElectricMotorPatent: Patent = {
   id: "us-132-davenport-electric-motor",
@@ -22,9 +23,12 @@ export const davenportElectricMotorPatent: Patent = {
   googlePatentsUrl: "https://patents.google.com/patent/US132/en",
   usptoClassification: "H02K 23/00 (DC commutator motors; Commutation)",
   originalTextAsset: {
-    url: "/patents/source-text/us-132-davenport-electric-motor.txt",
+    url: "/patents/transcripts/us-132-davenport-electric-motor.txt",
     pageCount: 3,
-    kind: "source-pdf-text-layer",
+    kind: "reviewed-transcription",
+    reviewedBy: "Classic Patents editorial agent (StormyCreek)",
+    reviewedAt: "2026-08-17",
+    sourcePdfSha256: "9147fc5c9d6565aa765198b42e900c90c5c0fe550b9162fe62727f86a5071960",
   },
   originalText: `UNITED STATES PATENT OFFICE.
 THOMAS DAVENPORT, OF BRANDON, VERMONT.
@@ -49,6 +53,7 @@ By this continuous alternation of attraction and repulsion, a rapid and powerful
 I claim as my invention:
 1. The application of magnetic and electro-magnetic power to the production of continuous rotary motion for propelling machinery.
 2. The combination of revolving electromagnets with stationary magnets, having their polarity reversed twice in each revolution by a commutator, substantially as described.`,
+  archivalEdition: davenportElectricMotorArchivalEdition,
   plainEnglishExplanation: {
     overview:
       "Before Thomas Davenport, electricity was considered an experimental curiosity confined to galvanic shocks and laboratory spark demonstrations. Davenport, a self-taught blacksmith from Vermont, realized that Joseph Henry's electromagnets could be arranged to rotate continuously if their magnetic poles were switched at the exact instant they passed stationary poles. His 1837 patent is the foundational master patent for all direct-current (DC) electric motors.",
@@ -133,31 +138,16 @@ I claim as my invention:
       number: 1,
       isIndependent: true,
       originalText:
-        "The application of magnetic and electro-magnetic power to the production of continuous rotary motion for propelling machinery.",
+        "Applying magnetic and electro-magnetic power as a moving principle for machinery in the manner above described, or in any other substantially the same in principle.",
       plainEnglish:
-        "Pioneer claim broadly asserting the conversion of electrical and magnetic energy into continuous mechanical rotary motion to drive machinery.",
+        "Davenport claims the use of magnetic and electromagnetically generated force to drive machinery by the stated rotating arrangement, and also arrangements materially the same in principle. The claim does not separately enumerate a commutator or a fixed number of poles; those limits are supplied by the described mechanism.",
       keyInnovations: [
-        "Continuous rotary electromagnetic motor",
-        "Electromagnetic conversion of chemical battery power into mechanical work",
+        "Magnetic motive power",
+        "Continuous rotary shaft motion",
+        "Galvanic electromagnet switching arrangement",
       ],
       legalSignificance:
-        "The world's first patent for an electric motor, establishing the entire technical class of electromagnetic rotary engines.",
-    },
-    {
-      number: 2,
-      isIndependent: false,
-      dependsOn: [1],
-      originalText:
-        "The combination of revolving electromagnets with stationary magnets, having their polarity reversed twice in each revolution by a commutator, substantially as described.",
-      plainEnglish:
-        "Specifies the combination of rotating electromagnets and fixed stator magnets with a segmented commutator that inverts rotor polarity twice per revolution to maintain continuous torque.",
-      keyInnovations: [
-        "Segmented rotary mechanical commutator",
-        "Synchronized polarity switching at neutral axis",
-        "Attraction-repulsion continuous magnetic drive",
-      ],
-      legalSignificance:
-        "Protected the fundamental commutator switching geometry used in all direct-current motors.",
+        "The claim's actual broad language is preserved in the edition. It is historically important as an early United States electric-motor claim, but it must not be recast as a modern claim set with invented dependent claims.",
     },
   ],
   drawings: [
@@ -237,7 +227,7 @@ I claim as my invention:
     "Industrial Electrification",
   ],
   stats: {
-    totalClaims: 2,
+    totalClaims: 1,
     independentClaims: 1,
     patentWarYears: "1835–1837",
     impactScore: 98,

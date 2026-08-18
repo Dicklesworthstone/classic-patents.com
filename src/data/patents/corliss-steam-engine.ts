@@ -1,54 +1,42 @@
 import type { Patent } from "@/types/patent";
+import { corlissSteamEngineArchivalEdition } from "../editions/corlissSteamEngineEdition";
 
 export const corlissSteamEnginePatent: Patent = {
   id: "us-6162-corliss-steam-engine",
   patentNumber: "US 6,162",
   title: "Improvement in Cut-Off and Working Valves of Steam-Engines",
-  shortTitle: "Corliss Variable Cut-Off Valve Gear",
-  subtitle:
-    "Four Oscillating Rotary Valves, Centrifugal Governor Trip-Gear, and Pneumatic Dashpot Cutoff",
+  shortTitle: "Governor-Controlled Slide-Valve Gear",
+  subtitle: "Differential Rock-Shaft Motion and Governor-Released Expansion Cut-Off",
   inventors: ["George Henry Corliss"],
   inventorLocation: "Providence, Providence County, Rhode Island",
   grantDate: "1849-03-10",
-  filingDate: "1848-11-20",
+  filingDate: "1849-03-10",
   era: "Early Republic & Industrial Dawn (1790–1830)",
   category: "materials",
   categoryLabel: "Thermodynamics & Steam Power",
   summary:
-    "The 1849 thermodynamic triumph of the Industrial Revolution: George Corliss's four-valve steam engine with variable expansion trip-gear governed directly by a centrifugal flyball governor, snapping steam admission valves shut in milliseconds with pneumatic dashpots to expand steam adiabatically and cutting fuel consumption by over 30 percent.",
+    "US 6,162 describes a tension-braced beam-engine frame, a rock shaft whose arms give unequal travel to paired slide valves, and a centrifugal governor that releases the steam-valve catches earlier as speed rises. The local facsimile is dated March 10, 1849 and records reissue No. 200 on May 13, 1851.",
   heroQuote:
-    "The cut-off of the steam is effected by releasing the valve from the mechanism that opened it, leaving it free to close instantly by weights or springs, the time of release being regulated by the governor according to the resistance on the engine...",
+    "The third part of my invention relates to the method of regulating the cut off, of the steam in the main slide valves.",
   originalPdfUrl: "/patents/pdfs/us-6162-corliss-steam-engine.pdf",
-  googlePatentsUrl: "https://patents.google.com/patent/US6162/en",
-  usptoClassification: "F01L 31/00 (Valve-gear with variable cut-off governed by engine speed)",
+  googlePatentsUrl: "https://patents.google.com/patent/US6162A/en",
+  usptoClassification:
+    "Historical U.S. patent; no contemporary classification is printed on the local facsimile.",
   originalTextAsset: {
     url: "/patents/source-text/us-6162-corliss-steam-engine.txt",
     pageCount: 8,
     kind: "source-pdf-text-layer",
   },
   originalText: `UNITED STATES PATENT OFFICE.
-GEORGE H. CORLISS, OF PROVIDENCE, RHODE ISLAND.
+GEO. H. CORLISS, OF PROVIDENCE, RHODE ISLAND.
 
-IMPROVEMENT IN CUT-OFF AND WORKING VALVES OF STEAM-ENGINES.
+CUT-OFF AND WORKING THE VALVES OF STEAM-ENGINES.
 
-Specification forming part of Letters Patent No. 6,162, dated March 10, 1849.
+Specification forming part of Letters Patent No. 6,162, dated March 10, 1849; Reissued May 13, 1851, No. 200.
 
 To all whom it may concern:
-Be it known that I, GEORGE H. CORLISS, of the city and county of Providence, in the State of Rhode Island, have invented certain new and useful Improvements in the Valves and Cut-Off Mechanism of Steam-Engines, of which the following is a specification:
-
-The principle of my invention consists in:
-1. The employment of four separate oscillating cylindrical valves for each steam cylinder—two at the upper side for the admission of steam and two at the lower side for the exhaust—placed close to the cylinder bore to reduce clearance spaces to a minimum.
-2. The combination with the steam admission valves of a disengaging or trip mechanism operated by the eccentric through a wrist-plate, whereby the valve is opened against the resistance of a weight, spring, or pneumatic dashpot, and at a variable point in the piston's stroke is released from the driving gear, allowing the dashpot to close the valve with extreme rapidity.
-3. The regulation of the point of cut-off directly by the governor, which shifts the tripping cams according to the load on the engine, so that the steam is admitted at full boiler pressure and expanded to do work without throttling.
-
-The construction comprises a central oscillating wrist-plate driven by an eccentric on the crankshaft. From this wrist-plate, four connecting rods extend to cranks on the four valve stems. The steam valve rods carry catch-hooks that engage the valve arms. As the wrist-plate rocks, the valve is opened; but a trip-lever connected to the centrifugal governor pushes the catch-hook out of engagement at a point determined by the engine speed. The instant the hook is tripped, an air-cushioned vacuum dashpot pulls the valve shut, instantly cutting off the steam supply.
-
-The exhaust valves remain connected positively to the wrist-plate throughout the entire stroke, ensuring free and unrestricted exhaust into the condenser or atmosphere without back-pressure.
-
-I claim as my invention:
-1. The method of regulating the velocity of steam-engines by varying the point of cut-off of the steam by means of the governor, substantially as described.
-2. The combination of the catch-hook trip mechanism with the steam admission valves and pneumatic dashpot for closing the valves rapidly when released.
-3. The arrangement of four separate oscillating rotary valves situated at the four corners of the cylinder close to the bore.`,
+Be it known that I, GEORGE H. CORLISS, of the city and county of Providence and State of Rhode Island, have invented certain new and useful Improvements in Steam-Engines; and that the following is a full, clear, and exact description of the principle or character which distinguishes them from all other things before known and of the manner of making, constructing, and using the same, reference being had to the accompanying drawings, making part of this specification, in which—`,
+  archivalEdition: corlissSteamEngineArchivalEdition,
   plainEnglishExplanation: {
     overview:
       "Before George Corliss, steam engines were throttled: a governor opened or choked a narrow neck valve in the steam pipe, wasting immense energy in friction and lowering steam pressure before it even entered the cylinder. Corliss realized that the only thermodynamic way to run an engine efficiently was to admit steam at full boiler pressure and temperature, then snap the valve shut partway through the stroke, letting the trapped steam expand adiabatically like a compressed spring to push the piston.",
@@ -136,44 +124,27 @@ I claim as my invention:
       number: 1,
       isIndependent: true,
       originalText:
-        "The method of regulating the velocity of steam-engines by varying the point of cut-off of the steam by means of the governor, substantially as described.",
+        "The method, substantially as described, of operating the slide valves of steam engines by connecting the valves that govern the ports at opposite ends of the cylinder, with separate arms of the rock shaft, or the mechanical equivalents thereof, so that from the motion thereof the valve that keeps its port or ports closed shall move over a less space while its port or ports is closed than the one that is opening or closing its port, or ports, and vice versa, while at the same time the two arms by which they are operated have the same range of motion, as described, whereby I am enabled to save much of the power heretofore required to work the slide valves of steam engines, and by which also I am enabled to give a greater range of motion to the valves at the periods of opening and closing the ports to facilitate the induction and eduction of steam, as specified.",
       plainEnglish:
-        "The pioneer master claim: controlling the speed of a steam engine by varying the point of expansion cutoff using the governor, rather than throttling the steam pipe.",
+        "Claim 1 covers the differential-motion arrangement: separate arms on one rock shaft operate opposite-end slide valves, but the closed valve receives less travel while it stays shut. The opening or closing valve receives more travel even though both arms swing through the same range, reducing force spent moving a pressure-loaded closed valve while keeping port events rapid.",
       keyInnovations: [
-        "Governor-regulated variable expansion cutoff",
-        "Unthrottled full-boiler-pressure steam admission",
-        "Automatic thermodynamic load adaptation",
+        "Separate rock-shaft arms",
+        "Differential valve travel",
+        "Rapid induction and eduction",
       ],
       legalSignificance:
-        "One of the most valuable thermodynamic claims in patent history, granting Corliss a virtual monopoly on high-efficiency stationary steam power.",
+        "The claim is limited to the stated relation between the separate rock-shaft arms and the slide valves; it is not a blanket claim to every steam-engine governor.",
     },
     {
       number: 2,
-      isIndependent: false,
-      dependsOn: [1],
+      isIndependent: true,
       originalText:
-        "The combination of the catch-hook trip mechanism with the steam admission valves and pneumatic dashpot for closing the valves rapidly when released.",
+        "And lastly I claim the method of regulating the motion of steam engines by means of the centrifugal regulator by combining the said regulator with the catches that liberate the steam valves by means of movable cams or stops, substantially as described.",
       plainEnglish:
-        "Covers the catch-hook disengaging mechanism that releases the valve under governor control and the pneumatic dashpot that snaps it closed instantly.",
-      keyInnovations: ["Disengaging catch-hook trip gear", "Air-cushioned vacuum dashpot closure"],
+        "Claim 2 covers speed regulation by combining the centrifugal governor with the catches that release the admission valves, using movable cams or stops. When speed changes, the governor changes when the catch releases, thereby changing the point of steam cut-off.",
+      keyInnovations: ["Centrifugal regulator", "Valve-release catches", "Movable cams or stops"],
       legalSignificance:
-        "Protected the mechanical trip mechanism that achieved sub-20ms valve closure without shattering valve seats.",
-    },
-    {
-      number: 3,
-      isIndependent: false,
-      dependsOn: [1],
-      originalText:
-        "The arrangement of four separate oscillating rotary valves situated at the four corners of the cylinder close to the bore.",
-      plainEnglish:
-        "Specifies four independent oscillating valves located at the cylinder corners to minimize clearance volume and separate hot steam intake from cold exhaust.",
-      keyInnovations: [
-        "Four-valve corner arrangement",
-        "Separated hot admission and cold exhaust ports",
-        "Minimal parasitic clearance volume",
-      ],
-      legalSignificance:
-        "Defined the physical cylinder architecture of all Corliss-type steam engines worldwide.",
+        "This is a separate method claim. Its legal work is the governor-to-catch-to-movable-cam connection, not merely the use of a governor near a steam engine.",
     },
   ],
   drawings: [
@@ -262,9 +233,7 @@ I claim as my invention:
     "Variable Valve Timing",
   ],
   stats: {
-    totalClaims: 3,
-    independentClaims: 1,
-    patentWarYears: "1849–1865",
-    impactScore: 99,
+    totalClaims: 2,
+    independentClaims: 2,
   },
 };

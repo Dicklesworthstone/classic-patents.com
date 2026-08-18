@@ -1,4 +1,5 @@
 import type { Patent } from "@/types/patent";
+import { howeSewingMachineArchivalEdition } from "../editions/us-4750-howe-sewing-machine";
 
 export const howeSewingMachinePatent: Patent = {
   id: "us-4750-howe-sewing-machine",
@@ -22,10 +23,14 @@ export const howeSewingMachinePatent: Patent = {
   googlePatentsUrl: "https://patents.google.com/patent/US4750A/en",
   usptoClassification: "D05B 1/02 (Sewing machines; lockstitch forming)",
   originalTextAsset: {
-    url: "/patents/source-text/us-4750-howe-sewing-machine.txt",
+    url: "/patents/transcripts/us-4750-howe-sewing-machine.txt",
     pageCount: 6,
-    kind: "source-pdf-text-layer",
+    kind: "reviewed-transcription",
+    reviewedBy: "Classic Patents editorial agent (codex-hotel)",
+    reviewedAt: "2026-08-17",
+    sourcePdfSha256: "8f7449b3d54c2652dd74bab62fd079fdf76bd7216d8f15dd32c6af5def57b053",
   },
+  archivalEdition: howeSewingMachineArchivalEdition,
   originalText: `UNITED STATES PATENT OFFICE.
 ELIAS HOWE, JR., OF CAMBRIDGE, MASSACHUSETTS.
 
@@ -34,13 +39,9 @@ IMPROVEMENT IN SEWING-MACHINES.
 Specification forming part of Letters Patent No. 4,750, dated September 10, 1846.
 
 To all whom it may concern:
-Be it known that I, ELIAS HOWE, JR., of Cambridge, in the County of Middlesex and State of Massachusetts, have invented a new and useful Machine for Sewing Seams in Cloth, Leather, and other substances; and I do hereby declare that the following is a full and exact description thereof.
+Be it known that I, ELIAS HOWE, JR., of Cambridge, in the county of Middlesex and State of Massachusetts, have invented a new and useful machine for sewing seams in cloth or other articles requiring to be sewed; and I do hereby declare that the following is a full and exact description thereof.
 
-In sewing a seam with my machine two threads are employed, one of which threads is carried through the fabric by a curved needle having an eye in or near its point, and the other thread is contained within a shuttle that passes through the loop formed by the needle-thread.
-
-The cloth to be sewed is suspended from a series of pins projecting from a baseler plate or holding bar, which is moved intermittently by a pinion engaging with a rack on the plate, so as to feed the fabric forward at each stitch.
-
-The curved needle is mounted upon a vibrating arm actuated by a cam on the main driving shaft. As the needle penetrates the cloth and begins to retreat, the thread bows out and forms a loop on the reverse side. The shuttle, carrying its bobbin of thread, is thrown through this loop by a reciprocating driver. Upon the complete withdrawal of the needle, both threads are drawn tight, forming a locked stitch in the center of the seam.`,
+In sewing a seam with my machine two threads are employed, one of which threads is carried through the cloth by means of a curved needle, the pointed end of which is to pass through said cloth. The needle used has the eye that is to receive the thread within a small distance - say, an eighth of an inch - of its inner or pointed end.`,
   plainEnglishExplanation: {
     overview:
       "For over twenty thousand years, human clothing was stitched exclusively by hand: a seamstress pushed a needle through fabric and pulled the entire length of thread through with every individual stitch. Early inventors failed because they attempted to mechanize this hand motion. Elias Howe Jr. achieved a historic breakthrough by abandoning hand sewing entirely. He placed the eye of the needle at its piercing tip and introduced a second thread carried inside a flying shuttle. When the needle pushes through cloth and begins to retract, the upper thread bows out into an open loop; the shuttle shoots through that loop, creating a permanent knot buried invisibly inside the fabric thickness.",
@@ -171,7 +172,7 @@ The curved needle is mounted upon a vibrating arm actuated by a cam on the main 
       number: 4,
       isIndependent: true,
       originalText:
-        "The manner of arranging and combining the small lever m' n' with the sliding box M, in combination with the spring-piece z, for the purpose of tightening the stitch as the needle is retracted, as described.",
+        "The manner of arranging and combining the small lever m' n' with the sliding box M, in combination with the spring-piece Z, for the purpose of tightening the stitch as the needle is retracted, as described.",
       plainEnglish:
         "Claims the spring-loaded tensioning linkage that draws the stitch tight at the precise instant the needle retracts from the cloth.",
       keyInnovations: [
