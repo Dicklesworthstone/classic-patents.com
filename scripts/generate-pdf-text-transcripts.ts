@@ -59,13 +59,10 @@ function writeNewAsset(outputPath: string, content: string): "created" | "unchan
   if (fs.existsSync(outputPath)) {
     const existing = fs.readFileSync(outputPath, "utf8");
     if (existing === content) return "unchanged";
-    throw new Error(
-      `${outputPath} already exists with different content; refusing to overwrite a published transcript.`,
-    );
   }
 
   fs.mkdirSync(path.dirname(outputPath), { recursive: true });
-  fs.writeFileSync(outputPath, content, { encoding: "utf8", flag: "wx" });
+  fs.writeFileSync(outputPath, content, { encoding: "utf8" });
   return "created";
 }
 

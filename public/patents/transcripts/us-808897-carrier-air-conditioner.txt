@@ -1,25 +1,21 @@
-UNITED STATES PATENT OFFICE.
-WILLIS H. CARRIER, OF BUFFALO, NEW YORK.
+UNITED STATES PATENT OFFICE. WILLIS H. CARRIER, OF BUFFALO, NEW YORK.
 
 APPARATUS FOR TREATING AIR.
 
-SPECIFICATION forming part of Letters Patent No. 808,897, dated January 2, 1906.
-Application filed September 16, 1902. Serial No. 123,618. (No model.)
+SPECIFICATION forming part of Letters Patent No. 808,897, dated January 2, 1906. Application filed September 16, 1902. Serial No. 123,618. (No model.)
 
-To all whom it may concern:
-Be it known that I, WILLIS H. CARRIER, a citizen of the United States, residing at Buffalo, in the County of Erie and State of New York, have invented certain new and useful Improvements in Apparatus for Treating Air; and I do hereby declare that the following is a full, clear, and exact description of the invention.
+To all whom it may concern: Be it known that I, WILLIS H. CARRIER, a citizen of the United States, residing at Buffalo, in the County of Erie and State of New York, have invented certain new and useful Improvements in Apparatus for Treating Air; and I do hereby declare that the following is a full, clear, and exact description of the invention.
 
 This invention relates to apparatus for treating atmospheric air for heating, cooling, humidifying, or dehumidifying the same, and for freeing it from dust, smoke, and other impurities, in order to condition the air for use in buildings, industrial workshops, and textile mills.
 
 The primary object of the invention is to provide means whereby the moisture content or humidity of the air may be accurately regulated and controlled at any desired degree, irrespective of external weather conditions.
 
-The invention consists, fundamentally:
-First, in a casing or chamber through which the air to be treated is caused to flow by a fan or blower.
-Second, in a series of atomizing spray-nozzles arranged across the path of the air within said chamber, through which water under pressure is discharged in a dense, finely divided atomized spray or mist, in intimate contact with the passing air.
-Third, in means for regulating the temperature of the spray-water so that when the air is to be dehumidified the water is maintained at a temperature below the dew-point of the entering air, whereby moisture is condensed from the air and collected in the water.
-Fourth, in a series of baffle-plates or eliminators located in the chamber beyond the spray-nozzles, having zigzag surfaces for intercepting all suspended water droplets from the air stream while allowing the conditioned air to pass onward without entrained liquid.
+The invention consists, fundamentally: First, in a casing or chamber through which the air to be treated is caused to flow by a fan or blower. Second, in a series of atomizing spray-nozzles arranged across the path of the air within said chamber, through which water under pressure is discharged in a dense, finely divided atomized spray or mist, in intimate contact with the passing air. Third, in means for regulating the temperature of the spray-water so that when the air is to be dehumidified the water is maintained at a temperature below the dew-point of the entering air, whereby moisture is condensed from the air and collected in the water. Fourth, in a series of baffle-plates or eliminators located in the chamber beyond the spray-nozzles, having zigzag surfaces for intercepting all suspended water droplets from the air stream while allowing the conditioned air to pass onward without entrained liquid.
 
-CLAIMS:
-1. An apparatus for treating air, comprising an air-chamber, means for forcing a current of air through said chamber, spray-nozzles arranged in the chamber for discharging atomized water across the path of the air, means for maintaining the temperature of the spray-water below the dew-point of the entering air, whereby moisture is condensed from the air, and eliminators situated beyond the spray-nozzles for intercepting suspended water droplets from the air current, substantially as described.
+I claim as my invention:
+
+1. (Independent) An apparatus for treating air, comprising an air-chamber, means for forcing a current of air through said chamber, spray-nozzles arranged in the chamber for discharging atomized water across the path of the air, means for maintaining the temperature of the spray-water below the dew-point of the entering air, whereby moisture is condensed from the air, and eliminators situated beyond the spray-nozzles for intercepting suspended water droplets from the air current, substantially as described.
+
 2. In an apparatus for treating air, the combination, with the spray-chamber and eliminators, of a heating-coil located beyond the eliminators for raising the temperature of the dehumidified air, whereby the relative humidity of the air discharged from the apparatus is controlled.
+
 3. In an apparatus for treating air, the combination, with the spray-nozzles, of an automatic thermostatic regulator responsive to the temperature of the saturated air leaving the eliminators for regulating the temperature of the water supplied to the spray-nozzles, whereby a predetermined dew-point is automatically maintained.

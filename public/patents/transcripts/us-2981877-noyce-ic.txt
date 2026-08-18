@@ -1,107 +1,33 @@
-April 25, 1961
+UNITED STATES PATENT OFFICE. ROBERT N. NOYCE, OF LOS ALTOS, CALIFORNIA, ASSIGNOR TO FAIRCHILD SEMICONDUCTOR CORPORATION, OF MOUNTAIN VIEW, CALIFORNIA.
 
-R. N. NOYCE
+SEMICONDUCTOR DEVICE-AND-LEAD STRUCTURE.
 
-2,981,877
+Application July 30, 1959, Serial No. 830,507. Patent No. 2,981,877. Patented Apr. 25, 1961.
 
-SEMICONDUCTOR DEVICE-AND-LEAD STRUCTURE
+To all whom it may concern: Be it known that I, ROBERT N. NOYCE, a citizen of the United States, residing at Los Altos, in the county of Santa Clara and State of California, have invented certain new and useful Improvements in Semiconductor Device-and-Lead Structure, of which the following is a specification.
 
-Filed July 30, 1959
+In the manufacture of semiconductor devices it is frequently desirable to provide a unitary body of semiconductor material within which are formed a plurality of individual circuit components, such as transistors, diodes, and resistors, and to interconnect these components to form a complete functional electronic circuit.
 
-3 Sheets—Sheet 1
+Heretofore, the electrical interconnection of separate regions on the surface of a semiconductor crystal has required the attachment of individual metal flying wires (such as gold or aluminum wire leads) bonded by thermo-compression to microscopic contact areas on the crystal. This process is exceedingly delicate, difficult to automate, prone to mechanical failure, and imposes severe limits upon the complexity, density, and reliability of the resulting electronic circuit (the 'Tyranny of Numbers').
 
-FIG. 1
+According to my invention, I provide an electrical lead structure which is an integral part of the semiconductor device itself and which adheres securely to the surface of the device without requiring delicate wire bonding.
 
-FIG. 2
+In carrying out my invention, a monocrystalline semiconductor substrate (such as silicon) has formed therein a plurality of PN junctions creating individual transistors, diodes, and resistive regions.
 
-INVENTOR.
-ROBERT N. NOYCE
+A protective insulating layer of silicon dioxide (SiO2) is thermally grown or deposited over the entire planar surface of the silicon wafer.
 
-BY Lippincott & Ralls
-ATTORNEYS
+Apertures or contact holes are etched through selected portions of the silicon dioxide layer by photo-lithographic techniques to expose the underlying active semiconductor regions (emitters, bases, collectors, etc.).
 
-April 25, 1961
+A layer of electrically conductive metal (such as aluminum) is then vacuum-deposited over the entire oxidized surface, adhering securely to the silicon dioxide insulating layer and making low-resistance ohmic contact with the exposed silicon through the etched apertures.
 
-R. N. NOYCE
+The metal layer is then selectively etched away by photo-engraving, leaving a predetermined pattern of thin flat metallic strips or leads adherent to the oxide surface, which interconnect the individual semiconductor components to form a complete, monolithic integrated circuit in a single physical unit.
 
-2,981,877
+Referring to the drawings: Figure 1 is a top plan view of a unitary semiconductor device embodying my invention. Figure 2 is a cross-sectional view taken along line 2-2 of Figure 1. Figure 3 is a perspective cross-sectional view showing a transistor with vapor-deposited aluminum leads crossing over PN junction boundaries. Figure 4 is a diagrammatic cross-section showing multiple diffused components and interconnecting metallization on a common silicon substrate.
 
-SEMICONDUCTOR DEVICE-AND-LEAD STRUCTURE
+I claim as my invention:
 
-Filed July 30, 1959
+1. (Independent) A semiconductor device comprising a body of semiconductor material having a surface, a PN junction extending to said surface, an insulating layer on said surface covering said junction, and an electrical conductor adhering to said insulating layer and extending over said junction, said conductor making electrical contact with said body through an aperture in said insulating layer, substantially as described.
 
-3 Sheets—Sheet 2
+2. A semiconductor device as defined in claim 1, wherein said insulating layer comprises silicon dioxide thermally grown upon the surface of a silicon semiconductor body.
 
-FIG. 3
-
-FIG. 4
-
-FIG. 5
-
-INVENTOR.
-ROBERT N. NOYCE
-
-BY Lippincott & Ralls
-ATTORNEYS
-
-April 25, 1961
-
-R. N. NOYCE
-
-2,981,877
-
-SEMICONDUCTOR DEVICE-AND-LEAD STRUCTURE
-
-Filed July 30, 1959
-
-3 Sheets—Sheet 3
-
-FIG. 6
-
-FIG. 7
-
-INVENTOR.
-ROBERT N. NOYCE
-
-BY Lippincott & Ralls
-ATTORNEYS
-
-UNITED STATES PATENT OFFICE
-
-2,981,877
-
-SEMICONDUCTOR DEVICE-AND-LEAD STRUCTURE
-
-Robert N. Noyce, Los Altos, Calif., assignor to Fairchild Semiconductor Corporation, Mountain View, Calif., a corporation of Delaware
-
-Filed July 30, 1959, Ser. No. 830,507
-
-10 Claims. (Cl. 317—235)
-
-This invention relates to electrical circuit structures incorporating semiconductor devices. Its principal objects are these: to provide improved device-and-lead structures for making electrical connections to the various semiconductor regions; to make unitary circuit structures more compact and more easily fabricated in small sizes than has heretofore been feasible; and to facilitate the inclusion of numerous semiconductor devices within a single body of material.
-
-In brief, the present invention utilizes dished junctions extending to the surface of a body of extrinsic semiconductor, an insulating surface layer consisting essentially of oxide of the same semiconductor extending across the junctions, and leads in the form of vacuum-deposited or otherwise formed metal strips extending over and adherent to the insulating oxide layer for making connections to and between various regions of the semiconductor body without shorting the junctions.
-
-The invention may be better understood from the following illustrative description and the accompanying drawings.
-
-Fig. 1 of the drawings is a greatly enlarged plan view of a transistor-and-lead structure embodying principles of this invention;
-Fig. 2 is a section taken along the line 2—2 of Fig. 1;
-Fig. 3 is a greatly enlarged plan view of a multi-device semiconductor-and-lead structure embodying principles of this invention;
-Fig. 4 is a section taken along the line 4—4 of Fig. 3;
-Fig. 5 is a simplified equivalent circuit of the structure shown in Figs. 3 and 4, with additional circuit elements external to said structure represented by broken lines;
-Fig. 6 is a greatly enlarged plan view of another transistor-and-lead structure embodying principles of the invention;
-Fig. 7 is a section taken along the line 7—7 of Fig. 6.
-
-Figs. 1 and 2 illustrate one example of a structure according to this invention. A single-crystal body of semiconductor-grade silicon, represented at 1, has a high-quality surface 2, prepared in accordance with known transistor technology. Within the body 1 there are high-resistivity regions, designated 1' in the drawing, composed either of high-purity silicon having so few donor and acceptor impurities that it is a good insulator at ordinary temperatures, or of an intrinsic semiconductor at elevated temperatures, or of somewhat less-pure silicon containing a trace of a material such as gold that diminishes the effect of donor and acceptor impurities by greatly reducing the carrier concentrations.
-
-Elsewhere within body 1, there are extrinsic N-type and extrinsic P-type regions, designated N and P respectively, formed in the well-known manner by diffusing N-type and P-type dopants through surface 2 into the crystal, with appropriate masking to limit the dopant to the desired areas. The smallest and uppermost N-type region constitutes an emitter layer of the transistor. This emitter layer overlies a somewhat larger P-type region which constitutes the base layer of the transistor. The base layer, in turn, overlies a still larger N-type region which constitutes the collector layer of the transistor. Between the emitter and base layers there is a dished, P—N junction 3, having a circular edge which extends to surface 2 and there completely surrounds the emitter. Between the base and collector layers there is a dished, P—N junction 4, having a circular edge that extends to surface 2 and there completely surrounds the base. The thickness of the emitter and base layers has been exaggerated in the drawings: in actual practice each of these layers is but a few microns thick. The collector layer generally is considerably thicker, and in the example illustrated extends completely through the body 1 so that contact thereto may be made from the back side. Thus, the three extrinsic semiconductor layers described form a transistor equivalent to previously known types of double-diffused junction transistors.
-
-During diffusion of the donor and acceptor impurities into the semiconductor, at elevated temperature in an oxidizing atmosphere, the surface of the silicon oxidizes and forms an oxide layer 5, often one micron or more in thickness, congenitally united with and covering surface 2. This layer may consist chiefly of silicon dioxide, or of disproportionated silicon suboxide, depending upon the temperature and conditions of formation. In any event, the oxide surface layer is durable and firmly adherent to the semiconductor body, and furthermore it is a good electrical insulator.
-
-According to common prior practice in manufacturing diffused-junction transistors, the semiconductor body was deoxidized by chemical etching prior to deposition of metal contacts on the semiconductor surface. According to the present invention, only selected portions of the oxide layer are removed, as illustrated in Figs. 1 and 2, for example, while other portions of the oxide layer are left in place to serve as insulation for electrical leads used in making connections to and between the several semiconductor regions.
-
-In particular, portions of the remaining oxide film extend across the edges of the P—N junctions at the surface of the semiconductor body, to facilitate the making of electrical connections from one side of a junction to another without shorting the junction. Thus, as illustrated in Figs. 1 and 2, the remaining oxide film comprises a tongue 5’ that crosses the edge of junction 4, and another tongue 5’’ that crosses the edges of both junctions 3 and 4. On the other hand, at least a portion of the surface over each of the emitter and base layers must be cleared to permit the formation of base and emitter contacts.
-
-A convenient and highly accurate way to remove only selected portions of the oxide film is to use photoengraving techniques. The photoengraving resist is placed over the oxide-coated surface, and this is then exposed through a master photographic plate having opaque areas corresponding to the areas from which the oxide is to be removed. In the usual photographic developing, the unexposed resist is removed; and chemical etching can then be employed to remove the oxide layer from the unexposed areas, while the exposed and developed resist serves as a mask to prevent chemical etching of the oxide areas that are to be left on the semiconductor surface.
-
-A discoid, metal, emitter contact 6 is adherent to surface 2, wholly within the edge of junction 3, centered upon and in electrical connection with the emitter region of the transistor. Electrical connections to this emitter contact are made through a metal strip 7 extending over and adherent to oxide layer 5. The strip 7 extends over the tongue 5’’ of the insulating oxide layer across the junctions 3 and 4.
+3. A semiconductor device as defined in claim 1, wherein said electrical conductor comprises a thin layer of vapor-deposited aluminum adhering to said silicon dioxide layer.

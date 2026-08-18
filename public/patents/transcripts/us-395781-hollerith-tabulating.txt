@@ -1,23 +1,19 @@
-UNITED STATES PATENT OFFICE.
-HERMAN HOLLERITH, OF WASHINGTON, DISTRICT OF COLUMBIA.
+UNITED STATES PATENT OFFICE. HERMAN HOLLERITH, OF WASHINGTON, DISTRICT OF COLUMBIA.
 
 ART OF COMPILING STATISTICS.
 
-SPECIFICATION forming part of Letters Patent No. 395,781, dated January 8, 1889.
-Application filed June 8, 1887. Serial No. 240,660. (No model.)
+SPECIFICATION forming part of Letters Patent No. 395,781, dated January 8, 1889. Application filed June 8, 1887. Serial No. 240,660. (No model.)
 
-To all whom it may concern:
-Be it known that I, HERMAN HOLLERITH, of Washington, in the District of Columbia, have invented certain new and useful Improvements in the Art of Compiling Statistics; and I do hereby declare that the following is a full, clear, and exact description of the invention.
+To all whom it may concern: Be it known that I, HERMAN HOLLERITH, of Washington, in the District of Columbia, have invented certain new and useful Improvements in the Art of Compiling Statistics; and I do hereby declare that the following is a full, clear, and exact description of the invention.
 
 The object of my invention is to facilitate the compilation of statistical information of various kinds, such as demographic censuses, railway freight accounting, insurance mortality tables, and demographic surveys, by recording individual statistical data upon sheets or cards by means of holes punched at predetermined positions, and then compiling said statistics by the aid of electro-mechanical tabulating apparatus controlled by the punched cards.
 
-My invention consists:
-First, in the method of compiling statistics which consists in recording separate statistical items upon non-conducting cards by perforations located at predetermined index positions, placing said cards in an apparatus provided with electrical contact-points corresponding to the index positions, and actuating one or more electro-mechanical counters by the electric circuits completed through said perforations.
-Second, in a press or circuit-closing apparatus having a series of spring-actuated contact-pins and an opposing bed containing corresponding mercury cups or metal contacts, between which the punched card is positioned.
-Third, in an array of electromagnetic dial counters whose index pointers are advanced by ratchet pawls energized whenever an electric circuit is closed through a corresponding hole in the card.
-Fourth, in a sorting box containing separate compartments whose covers are opened automatically by electro-magnets energized by specific circuit combinations, whereby the cards can be classified simultaneously with the counting of the data.
+My invention consists: First, in the method of compiling statistics which consists in recording separate statistical items upon non-conducting cards by perforations located at predetermined index positions, placing said cards in an apparatus provided with electrical contact-points corresponding to the index positions, and actuating one or more electro-mechanical counters by the electric circuits completed through said perforations. Second, in a press or circuit-closing apparatus having a series of spring-actuated contact-pins and an opposing bed containing corresponding mercury cups or metal contacts, between which the punched card is positioned. Third, in an array of electromagnetic dial counters whose index pointers are advanced by ratchet pawls energized whenever an electric circuit is closed through a corresponding hole in the card. Fourth, in a sorting box containing separate compartments whose covers are opened automatically by electro-magnets energized by specific circuit combinations, whereby the cards can be classified simultaneously with the counting of the data.
 
-CLAIMS:
-1. The herein-described method of compiling statistics, which consists in recording separate statistical items upon non-conducting cards by perforations located at predetermined positions, placing said cards in an apparatus provided with electrical contact-points corresponding to the predetermined positions, and actuating one or more electro-mechanical counters by the electric circuits completed through said perforations.
+I claim as my invention:
+
+1. (Independent) The herein-described method of compiling statistics, which consists in recording separate statistical items upon non-conducting cards by perforations located at predetermined positions, placing said cards in an apparatus provided with electrical contact-points corresponding to the predetermined positions, and actuating one or more electro-mechanical counters by the electric circuits completed through said perforations.
+
 2. In a statistical tabulating apparatus, the combination, with a press having a series of spring-actuated contact-pins and an opposing bed containing mercury-cups, of one or more electromagnetic counters connected in circuit with said pins and cups.
+
 3. In a statistical compiling system, the combination, with the circuit-closing press and counters, of a sorting-box having separate compartments provided with lids, and electro-magnets in circuit with the press for releasing the lids of said compartments according to the perforations in the card.

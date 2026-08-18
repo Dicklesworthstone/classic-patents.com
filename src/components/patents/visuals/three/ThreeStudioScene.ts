@@ -390,7 +390,11 @@ export function createThreeStudioScene(opts: StudioOptions): StudioContext {
   };
 
   const onTouchMove = (e: TouchEvent) => {
-    if (e.cancelable) e.preventDefault();
+    // Only prevent default native scrolling if we are actively dragging/pinching the 3D scene.
+    // Otherwise, this breaks all page scrolling on mobile devices when attached to window!
+    if ((isDragging || isPinching || isPanning) && e.cancelable) {
+      e.preventDefault();
+    }
 
     if (isDragging && e.touches.length === 1) {
       const t = e.touches[0];

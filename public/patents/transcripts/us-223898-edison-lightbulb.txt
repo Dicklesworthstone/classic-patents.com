@@ -1,109 +1,29 @@
-T. A. EDISON.
+UNITED STATES PATENT OFFICE. THOMAS A. EDISON, OF MENLO PARK, NEW JERSEY.
+
 ELECTRIC-LAMP.
-No. 223,898. Patented January 27, 1880.
 
-Fig. 1.
-Fig. 2.
-Fig. 3.
+SPECIFICATION forming part of Letters Patent No. 223,898, dated January 27, 1880. Application filed November 4, 1879.
 
-Witnesses:
-CHAS. BATCHELOR.
-GEO. B. PRESSLEY.
+To all whom it may concern: Be it known that I, THOMAS ALVA EDISON, of Menlo Park, in the State of New Jersey, United States of America, have invented an Improvement in Electric Lamps, and in the method of manufacturing the same, of which the following is a specification.
 
-Inventor:
-THOMAS A. EDISON.
+The object of this invention is to produce electric lamps giving light by incandescence, which lamps shall have high resistance, so as to allow of the practical subdivision of the electric light and the distribution of current through main conductors of small diameter.
 
-UNITED STATES PATENT OFFICE.
-THOMAS A. EDISON, OF MENLO PARK, NEW JERSEY.
-ELECTRIC LAMP.
+The invention consists in a light-giving body of carbon wire or filament made as a continuous piece and of high resistance, which is enclosed within a hermetically sealed all-glass globe from which the air has been exhausted to a high degree of vacuum, and provided with platinum leading-in wires passing through the glass and hermetically sealed therein by the fusion of the glass around them.
 
-SPECIFICATION forming part of Letters Patent No. 223,898, dated January 27, 1880.
-Application filed November 4, 1879.
+Heretofore light by incandescence has been obtained by using thick carbon rods of low resistance (from one to four ohms) in vessels from which the air was imperfectly exhausted. When many such lamps were connected in multiple circuit, the enormous current required necessitated copper conductors of impractical thickness and cost. Furthermore, in imperfect vacuums, carbon rods oxidized and deteriorated rapidly due to air-washing and chemical reactions.
 
-To all whom it may concern:
+I have discovered that even a cotton thread properly carbonized and placed in a sealed glass receiver exhausted to one-millionth of an atmosphere offers a resistance of upwards of one hundred ohms, and remains stable when heated to incandescent luminosity by the electric current.
 
-Be it known that I, THOMAS ALVA EDISON, of Menlo Park, in the State of New Jersey, United States of America, have invented an Improvement in Electric Lamps, and in the method of manufacturing the same (Case No. 186,) of which the following is a specification.
+The filament may be formed of cotton or linen thread, wood splint, paper, or fibers of bamboo carbonized in a closed iron mold at a high temperature. Leading-in wires of platinum are clamped to the ends of the carbon filament, and the whole is mounted upon a glass stem fused into the neck of a glass bulb. The bulb is then exhausted upon a Sprengel mercury pump while current is passed through the filament to drive out occluded gases from the carbon and glass walls, after which the tube is sealed off by the blow-pipe.
 
-The object of this invention is to produce electric lamps giving light by incandescence, in which lamps shall have high resistance, so as to allow of the practical subdivision of the electric light.
+Referring to the drawing: Figure 1 is a view of the lamp in elevation, showing the glass globe with the carbon filament mounted on platinum wires and sealed at the base.
 
-The invention consists in a light-giving body of carbon wire or sheets coiled or arranged in such a manner as to offer great resistance to the passage of the electric current, and at the same time present but a slight surface from which radiation can take place.
+I claim as my invention:
 
-The invention further consists in placing such burner of great resistance in a nearly-perfect vacuum, to prevent oxidation and injury to the conductor by the atmosphere. The current is conducted into the vacuum-bulb through platinum wires sealed into the glass.
+1. (Independent) An electric lamp for giving light by incandescence, consisting of a filament of carbon of high resistance, made as described, and secured to metallic wires, as set forth.
 
-The invention further consists in the method of manufacturing carbon conductors of high resistance, so as to be suitable for giving light by incandescence, and in the manner of securing perfect contact between the metallic conductors or leading-wires and the carbon conductor.
+2. (Independent) The combination of carbon filaments with a receiver made entirely of glass and conductors passing through the glass, and from which receiver the air is exhausted, for the purposes set forth.
 
-Heretofore light by incandescence has been obtained from rods of carbon of one to four ohms resistance, placed in closed vessels in which the atmospheric air has been replaced by gases that do not combine chemically with the carbon. The vessel holding the burner has been composed of glass cemented to a metallic base. The connection between the leading-wires and the carbon has been obtained by clamping the carbon to the metal. The leading-wires have always been large, so that their resistance should be many times less than the burner, and, in general, the attempts of previous persons have been to reduce the resistance of the carbon rod.
+3. (Independent) A carbon filament or strip coiled and connected to electric conductors so that only a portion of the surface of such carbon conductors shall be exposed for radiating light, as set forth.
 
-The disadvantages of following this practice are that a lamp having but one to four ohms resistance cannot be worked in great numbers in multiple arc without the employment of main conductors of enormous dimensions; then, owing to the low resistance of the lamp, the leading-wires must be of sufficient dimensions and good conductors, and a glass globe cannot be kept tight at the place where the wires pass in and are cemented; hence, as carbon is consumed, there must be almost a perfect vacuum to render the carbon stable, especially when such carbon is small in mass and high in electrical resistance.
-
-The use of a gas in the receiver at the atmospheric pressure, although not oxidizing the carbon, serves to destroy it in time by “air-washing,” or by the attrition produced by the rapid passage of the air over the slightly-coherent highly-heated surface of the carbon. I have reversed this practice. I have discovered that even a cotton thread properly carbonized and placed in a sealed glass bulb exhausted to one-millionth of an atmosphere offers from one hundred to five hundred ohms resistance to the passage of the current, and that it is absolutely stable at very high temperatures; that if the thread be coiled as a spiral and carbonized, or if any fibrous vegetable substance which will leave a carbon residue after heating in a closed chamber be so coiled, as much as two thousand ohms resistance may be obtained without presenting a radiating-surface greater than three-sixteenths of an inch; that if such carbon material be coated with a plastic compound of lamp-black and tar, its resistance may be made high or low, according to the amount of lamp-black placed upon it; that carbon filaments may be made by a combination of tar and lamp-black, the latter being previously ignited in a closed crucible for several hours and afterward moistened and kneaded until it assumes the consistency of thick putty. Small pieces of this material may be rolled out in the form of wire as small as seven one-thousandths of an inch in diameter and over a foot in length, and the same may be coated with a non-conducting non-carbonizing substance and wound on a bobbin, or as a spiral, and the tar carbonized in a closed chamber by subjecting it to high heat, the spiral after carbonization retaining its form.
-
-All these forms are fragile and cannot be clamped to the leading-wires with sufficient force to insure good contact and prevent burning. I have discovered that if platinum wires are used and the plastic lamp-black and tar material be molded around it in the act of carbonization there is an intimate union by combination and by pressure between the carbon and platinum, and nearly perfect contact is obtained without the necessity of clamps; hence the burner and the leading-wires are connected to the carbon ready to be placed in the vacuum-bulb.
-
-When fibrous material is used the plastic lamp-black and tar are used to secure it to the platinum before carbonizing.
-
-By using the carbon wire of such high resistance I am enabled to use fine platinum wires for leading-wires, as they will have a small resistance compared to the burner, and hence will not heat and crack the sealed vacuum-bulb. Platinum can only be used, as its expansion is nearly the same as that of glass.
-
-By using a considerable length of carbon wire and coiling it the exterior, which is only a small portion of its entire surface, will form the principal radiating-surface; hence I am able to raise the specific heat of the whole of the carbon, and thus prevent the rapid reception and disappearance of the light, which on a plain wire is prejudicial, as it shows the least unsteadiness of the current by the thickening of the light; but if the current is steady the defect does not show.
-
-I have carbonized and used cotton and linen thread, wood splints, papers coiled in various ways, also lamp-black, plumbago, and carbon in various forms, mixed with tar and kneaded so that the same may be rolled out into wires of various lengths and diameters. Each wire, however, is to be uniform in size throughout.
-
-If the carbon thread is liable to be distorted during carbonization it is to be coiled between a helix of copper wire. The ends of the carbon or filament are secured to the platinum leading-wires by plastic carbonizable material, and the whole placed in the carbonizing-chamber. The copper, which has served to prevent distortion of the carbon thread, is afterward eaten away by nitric acid, and the spiral soaked in water, and then dried and placed on the glass holder, and a glass bulb blown over the whole, with a leading-tube for exhaustion by a mercury-pump. This tube, when a high vacuum has been reached, is hermetically sealed.
-
-With substances which are not greatly distorted in carbonizing, they may be coated with a non-conducting non-carbonizable substance, which allows one coil or turn of the carbon to rest upon and be supported by the other.
-
-In the drawings, Figure 1 shows the lamp sectionally. a is the carbon spiral or thread. c c′ are the thickened ends of the spiral, formed of the plastic compound of lamp-black and tar. d d′ are the platinum wires. b b are the clamps which serve to connect the platinum wires, cemented in the carbon, with the leading-wires x x′, sealed in the glass vacuum-bulb. e e are copper wires, connected just outside the bulb to the wires x x′. m is the tube (shown by dotted lines) leading to the vacuum-pump, which, after exhaustion, is hermetically sealed and the surplus removed.
-
-Fig. 2 represents the plastic material before being wound into a spiral.
-
-Fig. 3 shows the spiral after carbonization, ready to have a bulb blown over it.
-
-I claim as my invention—
-
-1. An electric lamp for giving light by incandescence, consisting of a filament of carbon of high resistance, made as described, and secured to metallic wires, as set forth.
-
-2. The combination of carbon filaments with a receiver made entirely of glass and conductors passing through the glass, and from which receiver the air is exhausted, for the purposes set forth.
-
-3. A carbon filament or strip coiled and connected to electric conductors so that only a portion of the surface of such carbon conductors shall be exposed for radiating light, as set forth.
-
-4. The method herein described of securing the platinum contact-wires to the carbon filament and carbonizing of the whole in a closed chamber, substantially as set forth.
-
-Signed by me this 1st day of November, A. D. 1879.
-
-THOMAS A. EDISON.
-
-Witnesses:
-S. L. GRIFFIN.
-JOHN F. RANDOLPH.
-
-POST-GRANT CERTIFICATE AND CANCELLATION.
-
-It is found that the following certificate has been attached to Letters Patent granted to Thomas A. Edison for improvements in “Electric Lamps,” No. 223,898, dated January 27, 1880:
-
-DEPARTMENT OF THE INTERIOR,
-UNITED STATES PATENT OFFICE,
-WASHINGTON, D. C., December 18, 1883.
-
-In compliance with the request of the parties in interest, Letters Patent No. 223,898, granted January 27, 1880, to Thomas A. Edison, of Menlo Park, New Jersey, for an improvement in “Electric Lamps,” is hereby limited so as to expire at the same time with the patent of the following-named, having the shortest time to run, viz.: British patent, dated November 10, 1879, No. 4876; Canadian patent, dated November 17, 1879, No. 10,854; Belgian patent, dated November 29, 1879, No. 49,884; Italian patent, dated December 6, 1879; and French patent, dated January 20, 1880, No. 133,784.
-
-It is hereby certified that the proper entries and corrections have been made in the files and records of the Patent Office.
-
-This amendment is made that the United States patent may conform to the provisions of section 4887 of the Revised Statutes.
-
-BENJ. BUTTERWORTH,
-Commissioner of Patents.
-
-Approved:
-M. L. JOSLYN,
-Acting Secretary of the Interior.
-
-Now, in compliance with the request of the parties in interest, said certificate is hereby canceled and proper entries and corrections have been made in the files and records of the Patent Office.
-
-In testimony whereof I have hereunto set my hand and caused the seal of the Patent Office to be affixed, this 18th day of March, 1885.
-
-W. E. SIMONDS,
-Commissioner of Patents.
-
-Approved:
-PETER BUCHANAN,
-Assistant Secretary of the Interior.
+4. (Independent) The method herein described of securing the platinum contact-wires to the carbon filament and carbonizing of the whole in a closed chamber, substantially as set forth.

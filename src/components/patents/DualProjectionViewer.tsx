@@ -325,6 +325,7 @@ export function DualProjectionViewer({ patent, initialView }: DualProjectionView
       {viewMode === "interactive-sim" && (
         <div className="space-y-6">
           <PatentVisualDispatcher patentId={patent.id} />
+          <WeaveInstrument patentId={patent.id} />
         </div>
       )}
 
@@ -336,6 +337,7 @@ export function DualProjectionViewer({ patent, initialView }: DualProjectionView
             patentNumber={patent.patentNumber}
             patentId={patent.id}
           />
+          <WeaveInstrument patentId={patent.id} />
         </div>
       )}
 
@@ -390,7 +392,7 @@ export function DualProjectionViewer({ patent, initialView }: DualProjectionView
                 <SpecClauseText
                   patentId={patent.id}
                   text={completeOriginalText}
-                  className="font-serif text-sm sm:text-base leading-relaxed text-ink-950 dark:text-parchment-100 whitespace-pre-wrap select-text"
+                  className="font-serif text-sm sm:text-base leading-relaxed text-ink-950 dark:text-parchment-100 select-text space-y-4"
                 />
               ) : (
                 <TranscriptUnavailable patent={patent} loadError={completeOriginalTextError} />
@@ -614,7 +616,7 @@ export function DualProjectionViewer({ patent, initialView }: DualProjectionView
               <SpecClauseText
                 patentId={patent.id}
                 text={completeOriginalText}
-                className="p-8 sm:p-10 rounded-2xl bg-parchment-100/80 dark:bg-ink-900/80 border border-parchment-300 dark:border-ink-800 text-base sm:text-lg font-serif text-ink-950 dark:text-parchment-100 leading-relaxed whitespace-pre-wrap select-text shadow-xs"
+                className="p-8 sm:p-10 rounded-2xl bg-parchment-100/80 dark:bg-ink-900/80 border border-parchment-300 dark:border-ink-800 text-base sm:text-lg font-serif text-ink-950 dark:text-parchment-100 leading-relaxed select-text shadow-xs space-y-6"
               />
             ) : (
               <TranscriptUnavailable patent={patent} loadError={completeOriginalTextError} />

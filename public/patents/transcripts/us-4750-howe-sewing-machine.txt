@@ -1,80 +1,25 @@
-ELIAS HOWE, Jr.
-SEWING MACHINE.
-No. 4,750. Patented September 10, 1846.
+UNITED STATES PATENT OFFICE. ELIAS HOWE, JR., OF CAMBRIDGE, MASSACHUSETTS.
 
-Sheet 1 of 3.
-Fig. 1.
-Fig. 4.
-Fig. 7.
-
-Sheet 2 of 3.
-Fig. 2.
-Fig. 5.
-
-Sheet 3 of 3.
-Fig. 3.
-Fig. 8.
-Fig. 9.
-Fig. 6.
-
-UNITED STATES PATENT OFFICE.
-ELIAS HOWE, JR., OF CAMBRIDGE, MASSACHUSETTS.
 IMPROVEMENT IN SEWING-MACHINES.
 
 Specification forming part of Letters Patent No. 4,750, dated September 10, 1846.
 
-To all whom it may concern:
+To all whom it may concern: Be it known that I, ELIAS HOWE, JR., of Cambridge, in the County of Middlesex and State of Massachusetts, have invented a new and useful Machine for Sewing Seams in Cloth, Leather, and other substances; and I do hereby declare that the following is a full and exact description thereof.
 
-Be it known that I, ELIAS HOWE, Jr., of Cambridge, in the county of Middlesex and State of Massachusetts, have invented a new and useful machine for sewing seams in cloth or other articles requiring to be sewed; and I do hereby declare that the following is a full and exact description thereof.
+In sewing a seam with my machine two threads are employed, one of which threads is carried through the fabric by a curved needle having an eye in or near its point, and the other thread is contained within a shuttle that passes through the loop formed by the needle-thread.
 
-In sewing a seam with my machine two threads are employed, one of which thread is carried through the cloth by means of a curved needle, the pointed end of which is to pass through said cloth. The needle used has the eye that is to receive the thread within a small distance—say, an eighth of an inch—of its inner or pointed end. The other or outer end of the needle is held by an arm that vibrates on a pivot or joint pin, and the curvature of the needle is such as to correspond with the length of the arm as its radius. When the thread is carried through the cloth, which may be done to the distance of about three-fourths of an inch, the thread will be stretched above the curved needle, something in the manner of a bow-string, leaving a small open space between the two. A small shuttle carrying a bobbin filled with silk or thread is then made to pass entirely through this open space between the needle and the thread which it carries, and when the shuttle is returned, which is done by means of a picker-staff or shuttle-driver, the thread which was carried in by the needle is surrounded by that received from the shuttle, and as the needle is drawn out it forces that which was received from the shuttle into the body of the cloth, and as this operation is repeated a seam is formed which has on each side of the cloth the same appearance as that given by stitching, with this peculiarity, that the thread shown on one side of the cloth is exclusively that which was given out by the needle, and the thread seen on the other side is exclusively that which was given out by shuttle. It will therefore be seen that a stitch is made at every back-and-forth movement of the shuttle. The two thicknesses of cloth that are to be sewed are held upon pointed wires which project out from a metallic plate, like the teeth of a comb, but at a considerable distance from each other—say three-fourths of an inch, more or less—these pointed wires sustaining the cloth and answering the purpose of ordinary basting. The metallic plate from which these wires project has numerous holes through it, which answer the purpose of rack-teeth in enabling the plate to be moved forward by means of a pinion as the stitches are taken. The distance to which said plate is moved, and consequently the length of the stitches, may be regulated at pleasure.
+The cloth to be sewed is suspended from a series of pins projecting from a baseler plate or holding bar, which is moved intermittently by a pinion engaging with a rack on the plate, so as to feed the fabric forward at each stitch.
 
-In the accompanying drawings, Figure 1 is a front elevation of the machine; Fig. 2, an end elevation thereof, and Fig. 3 a top view. The other figures represent sections and parts in detail, which will be presently explained.
+The curved needle is mounted upon a vibrating arm actuated by a cam on the main driving shaft. As the needle penetrates the cloth and begins to retreat, the thread bows out and forms a loop on the reverse side. The shuttle, carrying its bobbin of thread, is thrown through this loop by a reciprocating driver. Upon the complete withdrawal of the needle, both threads are drawn tight, forming a locked stitch in the center of the seam.
 
-A A is the bed or base of the machine, and B B standards rising therefrom, which sustain the main shaft and other parts of the apparatus.
+I claim as my invention:
 
-C C is the main shaft, which carries the cams that operate the needle, the shuttle-drivers, and other parts of the machine. D is a fly-wheel, and E a winch, on said shaft.
+1. (Independent) The forming of the seam by carrying a thread through the cloth by means of a curved needle on the end of a vibrating arm, and the passing of a shuttle furnished with its bobbin, in the manner set forth, between the needle and the thread which it carries under a combination and arrangement of parts substantially the same with that described.
 
-F is a bobbin on which the silk is wound that is to supply the needle.
+2. (Independent) The lifting of the thread that passes through the needle-eye by means of the lifting-rod W, for the purpose of forming a loop of loose thread that is to be subsequently drawn in by the passage of the shuttle, as herein fully described, said lifting-rod being furnished with a lifting-pin, u, and governed in its motions by the guide-pieces and other devices, arranged and operating substantially as described.
 
-G is the needle-arm, that carries the curved needle a. This is seen most distinctly in the end elevation, Fig. 2. The thread from the bobbin F passes round a small friction-roller, b, or round a smooth groove in the situation of said roller, then up through the eye of the needle at c, which eye is situated near to the needle-point. The cloth is stuck on the points d d, that project from the metallic plate H, which I will call the “baster-plate.” This plate is shown most distinctly in the top view, Fig. 3. When the thread e is carried through the cloth by the needle a, the upper portion of said thread will be above the needle and will allow the point of the shuttle (to be presently described) to pass between them. To enable it to enter readily, the needle, after entering the cloth, is immediately drawn back to a short distance, which opens the loop slightly. The cam which operates the needle-arm being so formed as to cause such drawing back, the shuttle will, in order to give itself the necessary room, draw a portion of the thread which had been given out by the needle through the cloth, said thread having been left in a loop or slack state for that purpose. Fig. 4 represents a part of the same portion of the machine that is shown in Fig. 2, but with the needle-arm and with the needle passed through the cloth. f is the cloth, (seen in section, but not shown in any of the other figures.) e' is the loop or slack thread formed on the outside of the cloth, and which is to be drawn through it by the passing of the shuttle.
+3. (Independent) The holding of the thread that is given out by the shuttle, so as to prevent its unwinding from the shuttle-bobbin after the shuttle has passed through the loop, said thread being held by means of the lever or clipping-piece f, as herein made known, or in any other manner that is substantially the same in its operation and result.
 
-I in the respective figures is the shuttle box or trough, within which the shuttle is moved back and forth by means of the picker-staves or shuttle-drivers J J. In Fig. 5 I have given a top view of this box with the shuttle K within it. This shuttle is in its general construction similar to the larger shuttle used in weaving, and its spool g is capable of containing an ordinary skein of silk. The shuttle-box I is represented as made convex on its under side, by which it is adapted to admit a baster-plate that may be in a curved form, although for most purposes a straight baster-plate may be used. The pieces marked i i are light springs above the shuttle, which bear slightly upon it and serve to steady its motion. The shuttle-drivers work on joint-pins, as shown at j, Fig. 2, there being a corresponding fixture for the drivers on the other side.
+4. (Independent) The manner of arranging and combining the small lever m' n' with the sliding box M, in combination with the spring-piece z, for the purpose of tightening the stitch as the needle is retracted, as described.
 
-L, Fig. 3, is the cam that operates the shuttle-drivers, on the upper ends of which drivers there may be friction-rollers, j' j'. The cam L acts upon the shuttle-drivers alternately.
-
-M, Fig. 5, is a sliding box fitted into the shuttle-box and moved back and forth in the rear of the shuttle by one of the drivers, and N is a corresponding sliding piece moved by the other driver and adapted to the fore, or pointed end of the shuttle. The needle-arm is attached to the rock-shaft O, Fig. 1, which vibrates on a center pin or pivots, and from this shaft rises an arm, P, that carries a pin and friction-roller, k, which enters a space, l, in the cam Q, which space operates as a zigzag groove, and is of course so formed as to give the proper vibration to the needle-arm. There is a groove or narrow channel made across the bottom of the shuttle-box to receive the needle, in order that its upper part may be even with said bottom and allow the shuttle to pass freely over it.
-
-The baster-plate H, Fig. 3, which receives the cloth to be sewed, is furnished with a row of small holes, m m, drilled at a regular distance from each other, serving the purpose of rack-teeth, and into these round pinion-teeth enter for the purpose of carrying the plate forward to a proper distance at every stitch. Fig. 6 shows the principal portion of the feeding apparatus as it would appear were a vertical section made through the machine in the line x x of Fig. 3. R is a cam on the cam-shaft C, that vibrates an arm, S, carrying a feeding-claw, T, that takes into a ratchet-wheel, U, on the shaft V, which shaft crosses the bed A of the machine, its fore end being seen at V, Fig. 1. This shaft has on it near its fore end the pinion that carries the pins or teeth that take into the holes m in the baster and cause it to advance between every stitch. The length of the stitch may be regulated by regulating the play of the arm S, and this is effected by the regulating-screw n, Fig. 3, that moves a pin back and forth that serves as a stop to said arm. The pin is represented by the dot o, Fig. 6, and is seen at o, Figs. 2 and 3.
-
-p is a spring that retains the ratchet-wheel in place as the claw is taking a new hold. q is a spring for holding the arm S against the cam.
-
-In sewing with this machine, the thread from the bobbin F is passed over a notch, r, Fig. 1, at the upper end of the needle-arm, and is returned through the notch r'. It then passes down in front of said arm, then around the roller, b, and through the needle-eye. To regulate the giving out of the thread from the bobbin, friction is made on it by the semicircular clasp s, that is made to press on it by a spring, t, regulated by a tempering-screw. Before the needle passes through the cloth the thread, which extends from the needle-eye to said cloth, is raised or drawn up by a lifting-pin, so as to form the loop or slack, which is subsequently to be drawn in by the passing of the shuttle between the thread and the needle.
-
-W, Figs. 1 and 2, is a lifting-rod, from the side of which projects the lifting-pin u. The lifting-rod is attached at its upper end to a crank-arm, v, which works on a shaft, w, and this shaft is made to vibrate by means of the cam o on the cam-shaft. This cam operates on a friction-roller, y, on a short arm on the inner end of the shaft w. The lifting-rod stands in front of a plate, X, Figs. 1 and 2, which is attached at its upper end to the frame of the machine, and between the lower end of this plate and the shuttle-box the cloth is to pass. The plate X is furnished with a hinge-joint at its upper end, in order that its distance from the shuttle-box may be regulated to suit cloth of different thicknesses.
-
-Y, Fig. 1, is a set-screw, by which it is held in place. From the back part of the lifting-rod proceeds a guide-pin, z, that moves the lifting-rod laterally, so as to govern the action of the lifting-pin u. This guide-pin works against guide-pieces a' b', affixed on the front of the plate X. The dotted lines show the groove formed by the pieces a' b', along which the guide-pin is to pass. The lifting-rod is carried toward the piece b' by means of a spiral spring around its shaft, or in any other convenient mode. In the position in which the apparatus is shown in Fig. 1 the lifting-pin is partially raised, and will have lifted the thread. In raising it the guide-pin passes through the groove between a' b' (shown by dotted lines), and when at the upper end of this groove the needle-arm acts and carries the needle through the cloth. On the side of the needle-arm there is a projecting piece, c', the inclined edge of which, coming in contact with the lifting-rod, pushes it laterally over the angular point of the piece a', and the crank-arm v descending at this moment, the lifting-pin is withdrawn from the thread, which is thereby left slack to a sufficient extent for the purpose designated.
-
-The shuttle (shown separately in Fig. 7) has a hole, n', through its side for the thread to pass from the spool; and a slot, f' f', is made through the side of the shuttle-box to allow of the play of the shuttle-thread back and forth. At the time when the shuttle has completed its passage between the needle and its thread, the needle is to be withdrawn from the cloth; and when this is taking place, it is necessary that the shuttle-thread should be held firmly, or the withdrawing of the needle, instead of drawing the shuttle-thread firmly into the body of the cloth and making a perfect seam, would draw a portion of it from the spool and cause it to pass entirely through said cloth.
-
-In Fig. 1, f is the outer end of a lever which is made to rise at the proper moment, and to clip the thread between it and the upper edge of the slot f' f'. This lever is seen in Fig. 2, its fulcrum being at h'. The rod i' serves to depress the inner end of said lever and to raise its outer end, the cam j'' on the cam-shaft performing this office.
-
-The sliding box M does not bear directly against the rear end of the shuttle-box, but has a pin, m', projecting from its fore end, which pin acts against the shuttle. The pin m' constitutes a part of a small lever shown separately in Fig. 8. The part n' of this lever is received within a suitable slot in the sliding box M, and it turns on a fulcrum-pin, p'. When the shuttle has passed through the loop formed by the needle-thread, it is received upon the pin m', and as the needle is retracted the thread will be drawn taut upon said pin. At this time the head of an adjustable spring-piece, z = z', bears against the end n' of the small lever, and the force of its pressure has to be overcome before the thread escapes from the pin, which it does by drawing over against the power of the spring. As the loop then escapes, it will draw up the filling-thread from the shuttle firmly against the cloth and embed it within it. The head of the spring z passes through a mortise in the shuttle-box, as shown in the dotted lines. z' is an adjusting-screw by which the force of the spring z may be regulated.
-
-Having thus fully described the manner in which I construct my machine for sewing seams, and shown the operation thereof, what I claim therein as new, and desire to secure by Letters Patent, is—
-
-1. The forming of the seam by carrying a thread through the cloth by means of a curved needle on the end of a vibrating arm, and the passing of a shuttle furnished with its bobbin, in the manner set forth, between the needle and the thread which it carries under a combination and arrangement of parts substantially the same with that described.
-
-2. The lifting of the thread that passes through the needle-eye by means of the lifting-rod W, for the purpose of forming a loop of loose thread that is to be subsequently drawn in by the passage of the shuttle, as herein fully described, said lifting-rod being furnished with a lifting-pin, u, and governed in its motions by the guide-pieces and other devices, arranged and operating substantially as described.
-
-3. The holding of the thread that is given out by the shuttle, so as to prevent its unwinding from the shuttle-bobbin after the shuttle has passed through the loop, said thread being held by means of the lever or clipping-piece f, as herein made known, or in any other manner that is substantially the same in its operation and result.
-
-4. The manner of arranging and combining the small lever m' n' with the sliding box M, in combination with the spring-piece z, for the purpose of tightening the stitch as the needle is retracted, as described.
-
-5. The holding of the cloth to be sewed by the use of a baster-plate furnished with points for that purpose, and with holes enabling it to operate as a rack in the manner set forth, thereby carrying the cloth forward and dispensing altogether with the necessity of basting the parts together.
-
-ELIAS HOWE, Jr.
-
-Witnesses:
-THOS. P. JONES.
-GEORGE FISHER.
+5. (Independent) The holding of the cloth to be sewed by the use of a baster-plate furnished with points for that purpose, and with holes enabling it to operate as a rack in the manner set forth, thereby carrying the cloth forward and dispensing altogether with the necessity of basting the parts together.

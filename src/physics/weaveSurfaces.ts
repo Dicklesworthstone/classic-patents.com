@@ -157,6 +157,60 @@ export function materialProbe(
       note: `v_e ${th.veMps} m/s, I_sp ${th.ispSec} s. Ae/At = ${params.expansionRatio ?? 3.5}.`,
     };
   }
+  if (patentId.includes("fermi")) {
+    const rod = params.rodWithdrawal ?? 83.5;
+    const mod = params.moderatorPurity ?? 99.5;
+    const keff = 0.85 + (rod / 100) * 0.18 * (mod / 100);
+    return {
+      part: calloutLabel,
+      material: "Cadmium in a graphite–uranium lattice",
+      qty: "k_eff",
+      value: keff.toFixed(4),
+      unit: "",
+      note: `Rods at ${rod.toFixed(0)}% withdrawn. Delayed-critical band is 0.998–1.002.`,
+    };
+  }
+  if (patentId.includes("howe") || patentId.includes("4750")) {
+    return {
+      part: calloutLabel,
+      material: "Eye-pointed needle + boat shuttle, two threads",
+      qty: "crank",
+      value: (params.crankRpm ?? 180).toFixed(0),
+      unit: "rpm",
+      note: "Needle Y and shuttle X come from stepHoweLockstitch on this crank.",
+    };
+  }
+  if (patentId.includes("bell") || patentId.includes("174465")) {
+    return {
+      part: calloutLabel,
+      material: "Iron diaphragm over acidulated water",
+      qty: "voice",
+      value: (params.voiceAmplitude ?? 75).toFixed(0),
+      unit: "dB",
+      note: "Undulating current. Make-and-break is the Reis failure mode.",
+    };
+  }
+  if (patentId.includes("marconi")) {
+    const h = params.aerialHeight ?? 88;
+    return {
+      part: calloutLabel,
+      material: "Elevated aerial + earth plate",
+      qty: "f₀",
+      value: (3e8 / (4 * h) / 1000).toFixed(0),
+      unit: "kHz",
+      note: `Quarter-wave mast ${h} m. Spark is a damped odd-harmonic train.`,
+    };
+  }
+  if (patentId.includes("morse") || patentId.includes("1647")) {
+    return {
+      part: calloutLabel,
+      material: "Soft-iron horseshoe + paper tape",
+      qty: "I",
+      value: (params.currentMa ?? 65).toFixed(0),
+      unit: "mA",
+      note: "Armature pull scales with I². Type the 2D face to drive the register.",
+    };
+  }
   return null;
 }
 
@@ -177,6 +231,27 @@ export function intervalGhosts(patentId: string, params: Record<string, number>)
   if (patentId.includes("goddard")) {
     const th = goddardThermo(params.chamberPressure ?? 350, params.expansionRatio ?? 3.5);
     return [{ label: "v_e", min: 1200, max: 2800, live: th.veMps, unit: "m/s" }];
+  }
+  if (patentId.includes("bell") || patentId.includes("174465")) {
+    return [{ label: "Voice", min: 40, max: 95, live: params.voiceAmplitude ?? 75, unit: "dB" }];
+  }
+  if (patentId.includes("edison")) {
+    const v = params.voltage ?? 110;
+    return [{ label: "Voltage", min: 40, max: 130, live: v, unit: "V" }];
+  }
+  if (patentId.includes("marconi")) {
+    return [
+      {
+        label: "Aerial",
+        min: 10,
+        max: 120,
+        live: params.aerialHeight ?? 88,
+        unit: "m",
+      },
+    ];
+  }
+  if (patentId.includes("howe") || patentId.includes("4750")) {
+    return [{ label: "Crank", min: 60, max: 320, live: params.crankRpm ?? 180, unit: "rpm" }];
   }
   return [];
 }
@@ -312,6 +387,36 @@ export function datedScenarios(patentId: string): DatedScenario[] {
         date: "1926-03-16",
         name: "Auburn first liquid hop",
         writes: { chamberPressure: 250, expansionRatio: 3.0 },
+      },
+    ];
+  }
+  if (patentId.includes("edison")) {
+    return [
+      {
+        id: "menlo-1879-10-21",
+        date: "1879-10-21",
+        name: "Menlo Park 40-hour lamp",
+        writes: { voltage: 110 },
+      },
+    ];
+  }
+  if (patentId.includes("marconi")) {
+    return [
+      {
+        id: "poldhu-1901-12-12",
+        date: "1901-12-12",
+        name: "Poldhu–St John's",
+        writes: { aerialHeight: 48, sparkVoltage: 40 },
+      },
+    ];
+  }
+  if (patentId.includes("morse") || patentId.includes("1647")) {
+    return [
+      {
+        id: "baltimore-1844-05-24",
+        date: "1844-05-24",
+        name: "What hath God wrought",
+        writes: { currentMa: 65 },
       },
     ];
   }

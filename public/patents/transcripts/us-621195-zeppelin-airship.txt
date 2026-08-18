@@ -1,23 +1,19 @@
-UNITED STATES PATENT OFFICE.
-FERDINAND GRAF VON ZEPPELIN, OF STUTTGART, GERMANY.
+UNITED STATES PATENT OFFICE. FERDINAND GRAF VON ZEPPELIN, OF STUTTGART, GERMANY.
 
 NAVIGABLE BALLOON.
 
-SPECIFICATION forming part of Letters Patent No. 621,195, dated March 14, 1899.
-Application filed August 11, 1898. Serial No. 688,382. (No model.) Patented in Germany June 12, 1898, No. 98,580.
+SPECIFICATION forming part of Letters Patent No. 621,195, dated March 14, 1899. Application filed August 11, 1898. Serial No. 688,382. (No model.) Patented in Germany June 12, 1898, No. 98,580.
 
-To all whom it may concern:
-Be it known that I, FERDINAND GRAF VON ZEPPELIN, a subject of the King of Würtemberg, residing at Stuttgart, in the Kingdom of Würtemberg, German Empire, have invented certain new and useful Improvements in Navigable Balloons; and I do hereby declare that the following is a full, clear, and exact description of the invention.
+To all whom it may concern: Be it known that I, FERDINAND GRAF VON ZEPPELIN, a subject of the King of Würtemberg, residing at Stuttgart, in the Kingdom of Würtemberg, German Empire, have invented certain new and useful Improvements in Navigable Balloons; and I do hereby declare that the following is a full, clear, and exact description of the invention.
 
 The object of my invention is to produce a navigable balloon or airship of great length and carrying capacity, which retains its rigid outer form regardless of changes in internal gas pressure or external atmospheric conditions, and which can be propelled and steered through the air with certainty.
 
-In carrying my invention into effect:
-First, I construct an elongated, rigid skeleton or framework of light metal, such as aluminum, comprising a series of transverse polygonal rings connected by longitudinal lattice girders, forming a stiff prismatic or cylindrical body with tapered ends.
-Second, within the interior of this rigid framework I arrange a plurality of independent gas-tight balloonets or gasbags, each containing lifting-gas (hydrogen), whereby a puncture or leakage in one gasbag will not cause the collapse of the airship or the loss of more than a small fraction of the total buoyant lift.
-Third, the exterior of the framework is covered with a taut weather-proof fabric envelope, thereby providing a smooth aerodynamic outer surface, reducing skin friction, and shielding the internal gasbags from direct sunlight, rain, and wind.
-Fourth, I mount engines and propellers upon rigid cars suspended below or attached to the framework, and provide horizontal and vertical rudders for controlling the direction and elevation of the airship during flight.
+In carrying my invention into effect: First, I construct an elongated, rigid skeleton or framework of light metal, such as aluminum, comprising a series of transverse polygonal rings connected by longitudinal lattice girders, forming a stiff prismatic or cylindrical body with tapered ends. Second, within the interior of this rigid framework I arrange a plurality of independent gas-tight balloonets or gasbags, each containing lifting-gas (hydrogen), whereby a puncture or leakage in one gasbag will not cause the collapse of the airship or the loss of more than a small fraction of the total buoyant lift. Third, the exterior of the framework is covered with a taut weather-proof fabric envelope, thereby providing a smooth aerodynamic outer surface, reducing skin friction, and shielding the internal gasbags from direct sunlight, rain, and wind. Fourth, I mount engines and propellers upon rigid cars suspended below or attached to the framework, and provide horizontal and vertical rudders for controlling the direction and elevation of the airship during flight.
 
-CLAIMS:
-1. A navigable balloon or airship comprising an elongated rigid framework of light metal, a plurality of independent gasbags or balloonets contained within said framework, an outer fabric covering surrounding the framework, and propulsion and steering mechanisms supported by the framework, substantially as described.
+I claim as my invention:
+
+1. (Independent) A navigable balloon or airship comprising an elongated rigid framework of light metal, a plurality of independent gasbags or balloonets contained within said framework, an outer fabric covering surrounding the framework, and propulsion and steering mechanisms supported by the framework, substantially as described.
+
 2. In a rigid airship, the combination, with the rigid framework and the internal gasbags, of an outer taut fabric envelope spaced apart from the gasbags by the framework, whereby an air space is maintained between the gasbags and the outer envelope to insulate the gas from solar heat and atmospheric changes.
+
 3. In a rigid airship, the combination, with the rigid framework, of an internal longitudinal keel gangway, cars suspended below the framework containing motors, and a movable trim-weight movable along said keel for altering the center of gravity and trimming the airship in pitch.
