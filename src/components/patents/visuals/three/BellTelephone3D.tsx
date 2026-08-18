@@ -7,8 +7,8 @@ import { stepBellTelephone } from "@/physics/catalogKernels";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { soundEngine } from "@/utils/soundEngine";
 import {
-  buildBellTelephoneModel,
   type BellTelephoneModel,
+  buildBellTelephoneModel,
   updateBellTelephoneKinematics,
 } from "./bellTelephoneModel";
 import { StudioKernelChips } from "./StudioKernelChips";

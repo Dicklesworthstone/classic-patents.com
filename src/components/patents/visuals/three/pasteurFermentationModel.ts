@@ -14,8 +14,8 @@
  */
 
 import * as THREE from "three";
-import { createGlowPointTexture } from "./ThreeStudioScene";
 import { createLcg } from "@/utils/lcg";
+import { createGlowPointTexture } from "./ThreeStudioScene";
 
 const lcg = createLcg(2000);
 

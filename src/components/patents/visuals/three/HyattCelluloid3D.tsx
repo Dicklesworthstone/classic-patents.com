@@ -6,10 +6,7 @@ import type * as THREE from "three";
 import { stepHyattCelluloid } from "@/physics/catalogKernels";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { soundEngine } from "@/utils/soundEngine";
-import {
-  buildHyattCelluloidModel,
-  updateHyattCelluloidKinematics,
-} from "./hyattCelluloidModel";
+import { buildHyattCelluloidModel, updateHyattCelluloidKinematics } from "./hyattCelluloidModel";
 import { StudioKernelChips } from "./StudioKernelChips";
 import { createThreeStudioScene, type StudioContext } from "./ThreeStudioScene";
 import { useLiveSimParams } from "./useLiveSimParams";
@@ -237,7 +234,11 @@ export const HyattCelluloid3D = memo(() => {
           },
           { label: "Hydraulic Ram", value: hydraulicPressureMpa.toFixed(0), unit: "MPa" },
           { label: "Melt Viscosity", value: `${hyatt.viscosityPaS}`, unit: "Pa·s" },
-          { label: "Consolidation ρ", value: hyatt.consolidationDensityGPerCm3.toFixed(2), unit: "g/cm³" },
+          {
+            label: "Consolidation ρ",
+            value: hyatt.consolidationDensityGPerCm3.toFixed(2),
+            unit: "g/cm³",
+          },
           { label: "Transparency", value: `${hyatt.transparencyPct}`, unit: "%" },
           {
             label: "Extrusion Rate",
@@ -251,4 +252,3 @@ export const HyattCelluloid3D = memo(() => {
     </div>
   );
 });
-

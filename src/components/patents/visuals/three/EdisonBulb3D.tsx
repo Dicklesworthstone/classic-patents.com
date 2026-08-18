@@ -1,8 +1,8 @@
 "use client";
 
 import { Activity, Camera, Eye, EyeOff, Volume2, VolumeX, Zap } from "lucide-react";
-import { useEffect, useRef, useState, memo } from "react";
-import * as THREE from "three";
+import { memo, useEffect, useRef, useState } from "react";
+import type * as THREE from "three";
 import { stepEdisonBulb } from "@/physics/catalogKernels";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { soundEngine } from "@/utils/soundEngine";

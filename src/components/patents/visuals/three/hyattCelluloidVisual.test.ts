@@ -2,10 +2,7 @@ import { describe, expect, test } from "bun:test";
 import { readFileSync } from "node:fs";
 import { join } from "node:path";
 import { stepHyattCelluloid } from "@/physics/catalogKernels";
-import {
-  buildHyattCelluloidModel,
-  updateHyattCelluloidKinematics,
-} from "./hyattCelluloidModel";
+import { buildHyattCelluloidModel, updateHyattCelluloidKinematics } from "./hyattCelluloidModel";
 
 const VISUALS_DIRECTORY = join(process.cwd(), "src/components/patents/visuals");
 
@@ -85,18 +82,7 @@ describe("US 105,338 John Wesley Hyatt Camphor-Pyroxyline Celluloid visual & pol
     expect(nodes.rodMesh).toBeDefined();
     expect(nodes.billiardBalls.length).toBe(2);
 
-    updateHyattCelluloidKinematics(
-      nodes,
-      materials,
-      0.016,
-      0.5,
-      95,
-      850,
-      true,
-      0.75,
-      0.42,
-      true,
-    );
+    updateHyattCelluloidKinematics(nodes, materials, 0.016, 0.5, 95, 850, true, 0.75, 0.42, true);
     expect(materials.castIron.transparent).toBe(true);
     expect(nodes.rodMesh.visible).toBe(true);
 

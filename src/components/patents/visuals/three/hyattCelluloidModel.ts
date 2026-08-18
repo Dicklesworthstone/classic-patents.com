@@ -256,8 +256,7 @@ export function updateHyattCelluloidKinematics(
   ramStroke: number,
   isCutaway: boolean,
 ) {
-  nodes.ramPiston.position.x =
-    1.8 + Math.sin(timeSec * ramHz * Math.PI * 2) * ramStroke;
+  nodes.ramPiston.position.x = 1.8 + Math.sin(timeSec * ramHz * Math.PI * 2) * ramStroke;
 
   const flow = isMelted ? Math.min(1.4, 1800 / Math.max(80, viscosityPaS)) : 0.08;
   nodes.rodMesh.visible = isMelted;
