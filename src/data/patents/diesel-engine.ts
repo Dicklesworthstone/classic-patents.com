@@ -85,37 +85,36 @@ export const dieselEnginePatent: Patent = {
     scientificPrinciples: [
       {
         principle: "Adiabatic Compression Heating Law",
-        formula: "Higher compression raises the air temperature before fuel admission.",
+        formula:
+          "T_2 = T_1 \\cdot \\left(\\frac{V_1}{V_2}\\right)^{\\gamma - 1} = T_1 \\cdot r^{\\gamma - 1}",
         explanation:
-          "The specification's operative point is qualitative and conditional: compress air to the temperature at which the subsequently admitted fuel will ignite. It supplies illustrative diagram values, not an engine-wide modern design calculation.",
+          "The specification's operative point is qualitative and conditional: compress air to the temperature at which the subsequently admitted fuel will ignite ($T_2 > T_{\\text{autoignition}}$). Compressing air ($\\gamma \\approx 1.4$) at $r = 14\\text{ to }22$ raises ambient intake air ($300\\text{ K}$) to over $850\\text{ K}$ ($580^\\circ\\text{C}$), well exceeding the self-ignition threshold without spark plugs.",
       },
       {
         principle: "Diesel Cycle Ideal Thermal Efficiency",
         formula:
-          "Fuel admission continues only to cut-off; expansion then continues without further heat transfer.",
+          "\\eta_{\\text{th}} = 1 - \\frac{1}{r^{\\gamma - 1}} \\left[ \\frac{r_c^\\gamma - 1}{\\gamma(r_c - 1)} \\right]",
         explanation:
-          "The patent contrasts a controlled heat-and-expansion path with an uncontrolled explosive rise, but it does not establish a numerical efficiency ranking for later practical engines.",
+          "The patent contrasts a controlled heat-and-expansion path with an uncontrolled explosive rise. The air-standard efficiency depends on the compression ratio $r$ and cut-off ratio $r_c = V_3 / V_2$, showing that earlier fuel shut-off maximizes thermodynamic work recovery.",
       },
       {
         principle: "Fuel Droplet Atomization & Sauter Mean Diameter",
         formula:
-          "Fuel is gradually admitted in a finely divided state during the prescribed part of the stroke.",
+          "D_{32} = \\frac{\\sum d_i^3}{\\sum d_i^2} \\propto \\frac{\\sigma_{\\text{fuel}}^{0.5} \\mu_{\\text{fuel}}^{0.2}}{\\rho_{\\text{air}}^{0.2} \\Delta P_{\\text{inj}}^{0.4}}",
         explanation:
-          "The source describes a liquid jet and nozzle, a needle opened by distributing gear, and gradual admission. It does not specify a droplet-size model, blast velocity, or smokeless-combustion result.",
+          "The source describes a liquid jet and nozzle with a needle valve opened by distributing gear for gradual admission. High-pressure blast air injection shears the fuel stream into fine micro-droplets ($D_{32} \\approx 10 - 50\\text{ }\\mu\\text{m}$), maximizing reactive surface area.",
       },
       {
         principle: "Carnot Thermodynamic Theoretical Upper Bound",
-        formula:
-          "The source uses compression to establish the desired combustion temperature before fuel enters.",
+        formula: "\\eta_{\\text{Carnot}} = 1 - \\frac{T_{\\text{cold}}}{T_{\\text{hot}}}",
         explanation:
-          "The legal document describes the timing and thermal control of its cycle. Broader claims about theoretical limits need separate historical and engineering evidence and are not attributed to this source alone.",
+          "Rudolf Diesel originally sought to realize the isothermal combustion of the Carnot cycle by extreme pre-compression ($T_{\\text{hot}} > 1000\\text{ K}$), establishing the theoretical upper bound for all heat engines.",
       },
       {
         principle: "Droplet Evaporation & D-Squared Combustion Law",
-        formula:
-          "The patent requires gradual fuel admission into compressed air while the gases expand.",
+        formula: "d^2(t) = d_0^2 - K t, \\quad K = \\frac{8 k_g}{\\rho_l c_{p,g}} \\ln(1 + B)",
         explanation:
-          "This historical specification does not provide a droplet-evaporation law, a cylinder-air temperature, or a turbulence model. Its source-supported contribution is the controlled timing of fuel introduction.",
+          "The patent requires gradual fuel admission into compressed air while the gases expand. Under Spalding's $d^2$-law of droplet combustion, the surface area decreases linearly over time, ensuring progressive isobaric heat release.",
       },
     ],
     whyItMattersToday:

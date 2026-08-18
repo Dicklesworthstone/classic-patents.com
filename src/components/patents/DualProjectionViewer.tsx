@@ -48,6 +48,22 @@ const PATENT_VIEW_MODES: PatentViewMode[] = [
   "split-view",
 ];
 
+function isFormulaPureLatex(str: string): boolean {
+  if (!str) return false;
+  const trimmed = str.trim();
+  if (trimmed.startsWith("$") && trimmed.endsWith("$")) return false;
+  if (/\\[a-zA-Z]+/.test(trimmed)) return true;
+  const words = trimmed.split(/\s+/);
+  if (words.length > 3 && !/[=+\-/*^_<>]/.test(trimmed)) {
+    return false;
+  }
+  const longWords = words.filter((w) => /^[a-zA-Z]{4,}$/.test(w));
+  if (longWords.length >= 3 && !trimmed.includes("\\")) {
+    return false;
+  }
+  return true;
+}
+
 function isPatentViewMode(value: string | undefined): value is PatentViewMode {
   return !!value && (PATENT_VIEW_MODES as string[]).includes(value);
 }
@@ -593,11 +609,17 @@ export function DualProjectionViewer({ patent, initialView }: DualProjectionView
                             <span className="block text-[10px] font-mono font-bold uppercase tracking-wider text-ink-500 dark:text-ink-400 mb-2">
                               Stated relation
                             </span>
-                            <LatexRenderer
-                              math={sci.formula}
-                              block
-                              className="text-ink-950 dark:text-parchment-50"
-                            />
+                            {isFormulaPureLatex(sci.formula) ? (
+                              <LatexRenderer
+                                math={sci.formula}
+                                block
+                                className="text-ink-950 dark:text-parchment-50"
+                              />
+                            ) : (
+                              <p className="text-xs sm:text-sm font-serif italic text-ink-900 dark:text-parchment-100 leading-relaxed">
+                                <TextWithLatex text={sci.formula} />
+                              </p>
+                            )}
                           </div>
                         )}
                         <div className="text-xs sm:text-sm text-ink-800 dark:text-parchment-200 font-sans leading-relaxed">
