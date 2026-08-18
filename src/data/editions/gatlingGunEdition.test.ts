@@ -1,6 +1,9 @@
 import { describe, expect, test } from "bun:test";
 import { validateCuratedSpecificationEdition } from "@/data/archivalEditionValidation";
-import { gatlingGunArchivalEdition } from "@/data/editions/gatlingGunEdition";
+import {
+  gatlingGunArchivalEdition,
+  gatlingGunParallelReadings,
+} from "@/data/editions/gatlingGunEdition";
 import { gatlingGunPatent } from "@/data/patents/gatling-gun";
 
 describe("gatlingGunArchivalEdition", () => {
@@ -45,5 +48,32 @@ describe("gatlingGunArchivalEdition", () => {
     expect(
       references.every((reference) => reference.figurePreviews?.[0]?.src.includes("gatling-gun")),
     ).toBe(true);
+    expect(
+      references.every((reference) => {
+        const preview = reference.figurePreviews?.[0];
+        return (preview?.width ?? 0) > 0 && (preview?.height ?? 0) > 0;
+      }),
+    ).toBe(true);
+  });
+
+  test("has a non-lossy local companion for every authored source paragraph and claim", () => {
+    const translatedBlocks = gatlingGunArchivalEdition.blocks
+      .map((block, index) => ({ block, index }))
+      .filter(({ block }) => block.kind === "paragraph" || block.kind === "claim");
+
+    expect(
+      Object.keys(gatlingGunParallelReadings)
+        .map(Number)
+        .sort((a, b) => a - b),
+    ).toEqual(translatedBlocks.map(({ index }) => index));
+
+    for (const { block, index } of translatedBlocks) {
+      const companion = gatlingGunParallelReadings[index];
+      expect(companion.length).toBeGreaterThan(0);
+      expect(companion.every((paragraph) => paragraph.trim().length > 40)).toBe(true);
+      if (block.kind === "claim") {
+        expect(companion.join(" ")).toContain(`Claim ${block.number}`);
+      }
+    }
   });
 });

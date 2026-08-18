@@ -261,3 +261,76 @@ export const ericssonPropellerArchivalEdition: CuratedSpecificationEdition = {
     { kind: "paragraph", inlines: text("Witnesses: JAMES M. CURLEY. JOSEPH MARQUETTE.") },
   ],
 };
+
+/**
+ * Patent-local, hand-authored paragraph companions. These keys are the exact
+ * zero-based block positions in ericssonPropellerArchivalEdition, intentionally
+ * kept beside the source nodes until the shared publication registry is assigned.
+ */
+export const ericssonPropellerParallelReadings: Readonly<Record<number, readonly string[]>> = {
+  3: [
+    "This formal address opens the public specification. It tells any interested reader that the following text is Ericsson's statement of the invention and the claims that follow it.",
+  ],
+  4: [
+    "Ericsson identifies himself as a Swedish subject living in London, England. He says the object is a new propeller that can propel steamboats even as their draft changes, and he promises both construction and operating detail rather than merely naming a result.",
+  ],
+  5: [
+    "The machine has two broad metal hoops, or short cylinders, carried by spiral spokes on one common center. They turn in opposite directions and at unequal speeds. Each hoop has a series of short spiral plates set at the reverse angle of the plates on the other hoop.",
+    "Both assemblies sit wholly below the water at the stern. Steam power turns them so that, despite a change in the vessel's draft, the plates remain usable as propelling surfaces. This paragraph states the physical arrangement; it does not claim every earlier use of oblique spiral planes.",
+  ],
+  7: [
+    "Figure 1 is the longitudinal stern section. Hoops A and B are wrought-iron cylinders driven on concentric axes: the b shaft is hollow so the a shaft can pass and work inside it, and both pass through the stern post into the vessel.",
+    "Plates 1 through 5 and 9 through 13 are riveted to those hoops. Ericsson asks the reader to obtain their shape by wrapping a thread or blade around a cylinder, then uses Figure 2 to make that geometric construction explicit.",
+  ],
+  8: [
+    "Figure 2 is a development rule for the blades, not a second vessel arrangement. A cylinder equal in diameter to the Figure 1 hoops receives eight equally spaced spiral plates. One turn advances three cylinder diameters, so the pitch is fixed by the printed geometry.",
+    "Cutting that model at lines D, E, and F G gives the exact plate pieces numbered 9–13 for one hoop. Running the spiral in the contrary direction gives the forms and positions of plates 1–5 for the other hoop. The two series therefore have opposed spiral senses by construction.",
+  ],
+  9: [
+    "The narrow hoops c reinforce the spiral plates at the D locations shown in Figure 3. Stay E is bolted to the vessel stern and carries brass bearing e for the enlarged outer end of shaft a; the other end works through stuffing box F on shaft b.",
+    "Shaft b is supported by cast-iron framing G and plumber block g. Stuffing box C is fixed to the stern post so water cannot enter around b while allowing that shaft to turn freely. These details identify a load path and a watertight penetration, not a modern generic stern tube.",
+  ],
+  10: [
+    "Cog wheels H and I mesh, with I about one fifth larger. I drives shaft b and H is on crank shaft L L; shaft a receives motion through coupling box N from crank shaft M M. Cranks, pins, coupling link S, connecting rod T, and link U transmit a steam engine's reciprocating motion to both shafts.",
+    "A second engine may connect at crank pin q for steadier power. The described gear ratio and linkage are important because the following paragraph derives opposite shaft rotation and unequal speed from them, rather than assuming a generic contra-rotating propeller.",
+  ],
+  11: [
+    "Driving cranks l and m turns L and M in the same direction. Unequal gears I and H make shaft b rotate opposite shaft a and more slowly, so the two plate-carrying hoops turn oppositely at unequal velocities. Ericsson specifies the indicated direction: leftward rotation of cylinder A and plates 1–5 drives the vessel forward; rightward rotation backs it.",
+    "The split rudder W W is held by stays V with loops at v. The loops leave it free to move, so the stern control surface can operate beside the submerged machinery.",
+  ],
+  12: [
+    "Figure 3 is the end view of hoop A and its plates. Cross stays e reinforce stay E. Three spiral arms X meet at boss Y, which is bored for shaft a and keyed to it; the arms are shaped to reduce the resistance they otherwise present to the vessel's progress.",
+    "Angle pieces D join the segments of the narrow hoop C that supports the spiral plates. J marks the ordinary water line. Ericsson then says the drawing No. 2 installation is useful for either warships or merchant vessels, a statement of proposed use rather than a claim by itself.",
+  ],
+  13: [
+    "Ericsson expressly declares that the second drawing's application of the propeller would be useful to ships of war and merchant vessels. It bridges from the shaft-and-hoop machine in drawing No. 1 to the removable installation in drawing No. 2.",
+  ],
+  15: [
+    "Drawing No. 2 contains the deployment hardware. Figure 4 is the longitudinal stern section, Figure 5 the stern plan, and Figure 6 the section that explains how contrary motion is produced. The same reference letters intentionally name like parts throughout those three figures.",
+  ],
+  16: [
+    "In Figure 6, hollow wrought-iron stem A has collars d d and flat branches a a. Steel axle B works within hollow wrought-iron axle C; the branch bearings D D support both. Upright shaft E passes through the hollow stem, and crank F attaches through sliding coupling box f and key x.",
+    "Conical gears b, c, and e are fixed on axles B, C, and E. Turning the upright shaft therefore turns B and C in contrary directions. This is the Figure 6 version of the opposed-drive condition, with the components and their coupling stated explicitly.",
+  ],
+  17: [
+    "Hoops G and H are fixed respectively to axle B and hollow axle C, each with spiral planes. Their spiral spokes g and h bend outward to clear stem A's flat branches. That clearance is a physical constraint on the installation, not decoration in the drawing.",
+    "A three-part, pointed, light-metal drum P P P encloses the underwater gear. Its center fixes to the branches and its end caps fix to the propeller spokes; slits and about one eighth of an inch between the three parts let the propellers move freely in contrary directions while the casing protects the bevel wheels and reduces water resistance.",
+  ],
+  18: [
+    "Figure 4 shows the attachment at the stern. Bracket K carries hollow stem A through collars d d, retained by chained key k. Hinged stay L both holds the stem upright and receives or communicates the propellers' force at the stern post, while the rudder works between l, l and fork M receives the hollow stem.",
+    "Ring N supplies a hoisting eye. Removing keys m, k, and x and pushing down coupling box f detaches the stem, upright shaft, and propeller, so tackle at n can lift the apparatus from the water or aboard. When it is aboard, stay L is lifted and suspended at R in the dotted-line position. These are the removal conditions later claimed in claim 3.",
+  ],
+  19: [
+    "Ericsson recommends a steam engine on crank F, illustrated in Figure 5 as two high-pressure cylinders S S placed nearly at right angles and connected by forked rods s s. He also permits manual force where steam engines are objectionable: long winches, chain-pump-like gear, or a capstan can turn conical wheel T in Figure 4, which drives conical wheel V on upright shaft F.",
+    "The paragraph identifies alternative power sources but leaves the opposed bevel-gear and removable-stem mechanism intact. It does not enlarge the later claims to every engine or capstan arrangement.",
+  ],
+  20: [
+    "Ericsson narrows the legal premise before claiming. He admits that oblique spiral planes and their contrary motion for steamboat propulsion were not new, and expressly disclaims claiming those ideas alone. The three numbered claims therefore seek the specific immersed hoop-and-spoke construction, speed relation, and drawing No. 2 installation.",
+  ],
+  24: [
+    "J. Ericsson signs the completed specification after the three claims. The signature adopts the described construction and the stated claim limitations as his patent instrument.",
+  ],
+  25: [
+    "James M. Curley and Joseph Marquette are printed as witnesses. They witness execution of the document; the source does not present them as co-inventors or as authors of any claim.",
+  ],
+};

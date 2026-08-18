@@ -374,12 +374,15 @@ export const morseTelegraphParallelReadings: Readonly<Record<number, readonly st
   ],
   5: [
     "Morse identifies himself and calls the whole arrangement the American Electro-Magnetic Telegraph. He claims a machine and sign system: electric current produces sounds, visible signs, or permanent marks at distant stations.",
+    "The stated object is intelligence between distant points. He includes either sound or visible signs and explicitly includes a durable record, so the description does not confine the system to a single receiving effect.",
   ],
   6: [
     "This inventory has eight parts. It is broader than the familiar hand key and Morse alphabet: it also includes reusable metal type, straight and circular carriers for that type, a circuit-breaking lever, a recorder, a numbered word dictionary, and ways of laying the conductors.",
+    "The order matters. Conductors carry power from a generator to electromagnets; type determines which sign is sent; port-rules move that type; the signal lever makes and breaks the circuit; and the register preserves the resulting sign. The numbered vocabulary is a separate compression device, not an alternative name for the alphabet.",
   ],
   7: [
     "The line may be wire, strip, or even metal-covered cord, insulated and run underground, under water, or through air. A battery drives current through it; one or more electromagnets convert that current at the selected station into sound, a visible sign, or a permanent record.",
+    "The paragraph allows copper, iron, metal-covered textile conductors, and several routes, but requires proper insulation. It also permits several magnets at one or more points, preserving the condition that the operator may choose where the signs are produced and recorded.",
   ],
   8: [
     "The first numerical code represents 1 through 0 by one through ten equally spaced punctures. A second character can be reserved as a cipher. This is a printed mark system, not the later international dot-and-dash alphabet.",
@@ -392,6 +395,7 @@ export const morseTelegraphParallelReadings: Readonly<Record<number, readonly st
   ],
   11: [
     "The fourth code combines dots and lines. Four numbers use dots; a line represents 5, and dots before or after it distinguish 6 through 9. Two such lines represent 0. The corresponding printed example fixes the exact convention.",
+    "Its line has a defined physical length: the space between the two dots used for another numeral. The order of prefix and suffix dots is therefore a material limitation of this fourth mode.",
   ],
   12: [
     "Morse expressly permits whichever of these modes an operator prefers. The following machine is meant to produce the selected sign form, rather than to mandate one visual code.",
@@ -404,45 +408,56 @@ export const morseTelegraphParallelReadings: Readonly<Record<number, readonly st
   ],
   15: [
     "The first numeral type is a set of thin metal pieces whose teeth or indentations encode the desired mark count and whose blank end supplies spacing. A special three-tooth piece is a cipher; the unindented piece is a separation, while the beveled rest and pointed stop control the mechanism.",
+    "The source specifies type-metal, brass, iron, or similar thin metal. Each indented edge corresponds to a numerical sign, while the unindented end has the required length for separating it from the next numeral. The rest and stop are named shapes in the set, not editorial labels.",
   ],
   16: [
     "Example 4 identifies the individual type pieces by label and number. The physical pieces turn a selected numerical sign into a repeatable mechanical input rather than relying on a freehand mark.",
   ],
   17: [
     "The second numerical type set reuses four earlier pieces, a long-space piece, and six pieces with other tooth and space patterns. Together they generate the fourth, dot-and-line mode shown in Example 1.",
+    "The arrangement is thus tailored to the signs of the fourth mode, including its line-and-dot distinctions and its explicitly shown spaces.",
   ],
   18: [
     "Letter types use the same family of metal pieces, varied through twenty-three forms. Straight pieces travel in a straight port-rule; curved pieces are arcs for a circular port-rule. The alternative is mechanical geometry, not a different electrical principle.",
   ],
   19: [
     "The circular type has a half-thickness groove that ends before the pointed teeth. The shoulder and cogs of the wheel guide each piece. Type cases store the pieces, while a three-foot type-rule and pinion provide repeatable feed motion.",
+    "The groove starts at the space end and terminates at points D D, halfway from the opposite ends. Cogs around the wheel are spaced to match the type teeth or indentations, and a stationary type-feeder holds a column of pieces above the shoulder. These dimensions and relations explain why the circular pieces can be selected and moved without falling out of the carrier.",
   ],
   20: [
     "A hand crank and screw drive the pinion-wheel, which moves the type-rule along a groove under the circuit-breaking lever. The drawings identify the linked wheel, crank, screw, rail, and lever as one feed mechanism.",
+    "The source permits another familiar mechanical power in place of the hand crank. Its limitation is functional: motion is conveyed in a direct line beneath the lever that breaks and connects the galvanic circuit.",
   ],
   21: [
     "The circular port-rule replaces the straight rule with a wheel whose shoulder receives curved type. Its pinion drives the wheel; the shoulder depth matches type thickness, and its cogs engage the grooves in the pieces.",
+    "The wheel may be horizontal or inclined and may be wood or metal. The cavity has the selected type's width exclusive of its teeth, preserving the fit that lets the type move around the circumference.",
   ],
   22: [
     "As the wheel carries the lower piece away from the stationary type feeder, the next piece drops onto the shoulder. A cog enters each piece's groove and carries it onward. That sequence makes the type feed automatically and in order.",
+    "The removed piece travels from below the incumbent column as its predecessor did. The paragraph conditions the sequence on keeping the wheel in motion, so the mechanical feed, rather than a manually placed mark, regulates the order of signs.",
   ],
   23: [
     "For the straight rule, a tooth on the moving type lifts and drops a pivoted signal lever. The lever carries a forked wire. Its repeated movement is the mechanical origin of each opening and closing of the circuit.",
+    "The source permits a six-to-twenty-four-inch wood lever on a pivot or notched pillar, with a metal pin fulcrum. The tooth near that fulcrum matches the type teeth and indentations; that physical matching is the constraint that translates the selected type profile into lever travel.",
   ],
   24: [
     "When the lever rises, the forked wire leaves or limits the mercury contacts; when it falls, the contacts reconnect the circuit. The type's teeth and gaps therefore become current pulses with durations and spaces determined by the selected metal piece.",
+    "Two mercury cups, each connected to a circuit termination, receive the fork's ends. Their alternate immersion breaks and limits current; falling into both cups restores the connection. The source also permits metallic contact plates in place of cups, preserving the same circuit-making function.",
   ],
   25: [
     "The register uses a lever whose armature faces an electromagnet. At the other end the patent permits a pencil, fountain pen, printing wheel, or other marking tool. Magnetic attraction moves the armature and makes that tool mark the material below it.",
   ],
   26: [
     "A yielding-covered cylinder and two tape-linked rollers move the paper or other recording material. The narrow tape bands leave a central gap so the marking instrument can reach the cylinder; a spool supplies a continuous strip and receives the record after it passes the rollers.",
+    "The cylinder can be metal or wood and turns on an axis below the marker. Friction between the bands and cylinder draws the strip forward gradually; after passing the cylinder and rollers it may be deposited in a box or cut off at a chosen length.",
   ],
   27: [
     "When current energizes the magnet, the armature turns the register lever and lowers the marking tool to the moving material. When current stops, gravity, a spring, or a weight returns the lever and raises the tool. The same circuit can operate as many remote registers as have corresponding magnets.",
+    "The timing is simultaneous: the circuit signal both makes the mark and can act at multiple points. The mark persists because the cylinder continues to move underneath it, turning the interval during which current flows into a visible sign on the paper or substitute material.",
   ],
   28: [
     "For longer routes, Morse describes a fresh-battery relay. A receiving magnet moves a forked wire into contacts of a second circuit. That second circuit is a new source of current and can in turn repeat the operation through further circuits.",
+    "The receiving armature has the register's general form but substitutes the forked wire for its marking instrument. Beneath it are mercury cups or plates connected to the fresh circuit, the same arrangement used in the first circuit. This is a concrete two-circuit arrangement, including a specified contact action and battery source.",
   ],
   29: [
     "The first circuit actuates the relay magnet, which closes the second circuit. Repeating this arrangement can extend the signal through another and another circuit, with intervening registers operating at any distance. This is the printed relay mechanism, not a claim to all forms of electrical communication.",
@@ -452,6 +467,7 @@ export const morseTelegraphParallelReadings: Readonly<Record<number, readonly st
   ],
   31: [
     "The final engineering discussion gives insulation and route options: textile wrapping plus caoutchouc, shellac, pitch, or resin; aerial support; tubes above or below ground; and river crossings by bridge, submerged lead or iron, or elevated pillars.",
+    "The claim is not that every route is identical. Above-ground lines may sit on pillars and need weather protection; enclosed aerial lines may use iron or lead tubes with an outer wood enclosure; buried lines may use iron, lead, wood, or earthen tubes. For a river, the described alternatives depend on whether a bridge exists and on the banks' height.",
   ],
   32: [
     "This sentence introduces the nine legal claims. They define the combinations for which Morse asks Letters Patent after the detailed specification has described their parts and operation.",

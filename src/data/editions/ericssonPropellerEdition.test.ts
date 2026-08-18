@@ -1,6 +1,9 @@
 import { describe, expect, test } from "bun:test";
 import { validateCuratedSpecificationEdition } from "@/data/archivalEditionValidation";
-import { ericssonPropellerArchivalEdition } from "@/data/editions/ericssonPropellerEdition";
+import {
+  ericssonPropellerArchivalEdition,
+  ericssonPropellerParallelReadings,
+} from "@/data/editions/ericssonPropellerEdition";
 
 describe("ericssonPropellerArchivalEdition", () => {
   test("is an explicit, continuous edition of the pinned US 588 facsimile", () => {
@@ -24,5 +27,22 @@ describe("ericssonPropellerArchivalEdition", () => {
     expect(publicText).not.toContain("---");
     expect(publicText).toContain("JAMES M. CURLEY");
     expect(publicText).toContain("JOSEPH MARQUETTE");
+  });
+
+  test("pairs every authored source paragraph with a non-lossy local companion", () => {
+    for (const [index, block] of ericssonPropellerArchivalEdition.blocks.entries()) {
+      if (block.kind !== "paragraph") continue;
+      const companion = ericssonPropellerParallelReadings[index];
+      expect(companion).toBeArray();
+      expect(companion.join(" ").trim().length).toBeGreaterThan(0);
+
+      const sourceWords = block.inlines
+        .map((inline) => inline.text)
+        .join(" ")
+        .trim()
+        .split(/\s+/).length;
+      const companionWords = companion.join(" ").trim().split(/\s+/).length;
+      if (sourceWords >= 100) expect(companionWords / sourceWords).toBeGreaterThanOrEqual(0.3);
+    }
   });
 });

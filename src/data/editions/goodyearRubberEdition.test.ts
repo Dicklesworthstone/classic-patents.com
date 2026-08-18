@@ -1,6 +1,9 @@
 import { describe, expect, test } from "bun:test";
 import { validateCuratedSpecificationEdition } from "@/data/archivalEditionValidation";
-import { goodyearRubberArchivalEdition } from "@/data/editions/goodyearRubberEdition";
+import {
+  goodyearRubberArchivalEdition,
+  goodyearRubberParallelReadings,
+} from "@/data/editions/goodyearRubberEdition";
 import { goodyearRubberPatent } from "@/data/patents/goodyear-rubber";
 
 describe("goodyearRubberArchivalEdition", () => {
@@ -39,5 +42,21 @@ describe("goodyearRubberArchivalEdition", () => {
       sourcePdfSha256: goodyearRubberArchivalEdition.sourcePdfSha256,
     });
     expect(goodyearRubberPatent.claims.map((claim) => claim.number)).toEqual([1, 2, 3]);
+  });
+
+  test("exports renderer-ready, non-lossy readings for every authored source paragraph", () => {
+    const paragraphIndexes = goodyearRubberArchivalEdition.blocks.flatMap((block, index) =>
+      block.kind === "paragraph" ? [index] : [],
+    );
+    const companionIndexes = Object.keys(goodyearRubberParallelReadings)
+      .map(Number)
+      .sort((left, right) => left - right);
+
+    expect(companionIndexes).toEqual(paragraphIndexes);
+    for (const reading of Object.values(goodyearRubberParallelReadings)) {
+      expect(reading).toHaveLength(1);
+      expect(reading[0].length).toBeGreaterThan(100);
+      expect(reading[0]).not.toContain("$\\");
+    }
   });
 });

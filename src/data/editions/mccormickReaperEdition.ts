@@ -70,7 +70,10 @@ export const mccormickReaperArchivalEdition: CuratedSpecificationEdition = {
       description: [
         { kind: "text", text: "C. H. McCORMICK. REAPER. Patented June 21, 1834. " },
         drawingReference("The single drawing sheet"),
-        { kind: "text", text: " carries the lettered construction to which the specification refers." },
+        {
+          kind: "text",
+          text: " carries the lettered construction to which the specification refers.",
+        },
       ],
     },
     { kind: "paragraph", inlines: literal("To all whom it may concern:") },
@@ -186,10 +189,6 @@ export const mccormickReaperParallelReadings = {
   12: [
     "The signature dates McCormick's own attestation June 19, two days before the patent date printed in the masthead. It is not an application-filing statement.",
   ],
-  13: [
-    "Cyrus H. McCormick signs as inventor.",
-  ],
-  14: [
-    "Henry Stone and Robert Clark appear as witnesses to the instrument's execution.",
-  ],
+  13: ["Cyrus H. McCormick signs as inventor."],
+  14: ["Henry Stone and Robert Clark appear as witnesses to the instrument's execution."],
 } as const;

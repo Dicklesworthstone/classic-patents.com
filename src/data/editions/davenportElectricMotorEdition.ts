@@ -180,3 +180,57 @@ export const davenportElectricMotorArchivalEdition: CuratedSpecificationEdition 
     { kind: "paragraph", inlines: literal("Witnesses: W. W. AYRES, CHAS. A. COOK.") },
   ],
 };
+
+/**
+ * Renderer-compatible patent-local parallel readings. Keys are zero-based
+ * source block indexes from `davenportElectricMotorArchivalEdition.blocks`.
+ * Each literal array is the complete companion reading for that source block;
+ * no adapter, parser, or inferred paragraph alignment is involved.
+ */
+export const davenportElectricMotorParallelReadings: Readonly<Record<number, readonly string[]>> = {
+  2: [
+    "This is the conventional notice that follows. It tells every reader that the inventor is about to define the legal subject of the patent.",
+  ],
+  3: [
+    "Thomas Davenport identifies himself as a Brandon, Rutland County, Vermont inventor and says his discovery applies magnetism and electromagnetism to driving machinery. He expressly incorporates the annexed drawing sheet into the specification, so the lettered parts on that sheet are part of what the text describes.",
+  ],
+  4: [
+    "Davenport now turns from the legal introduction to the machine itself. The following paragraphs state the physical arrangement that gives the broad claim its concrete operating meaning.",
+  ],
+  5: [
+    "Frame A is the supporting structure. It need not be circular: it may have another shape and two or more platforms B and C, provided it is strong and large enough to carry the apparatus. The source therefore treats the frame geometry as adaptable rather than the source of the motor's action.",
+  ],
+  6: [
+    "Battery D uses alternating copper E and zinc F plates in diluted acid G. Each cell sends one conductor H from copper and one I from zinc to the insulated copper plates K and L on the lower platform. Those plates are separate arc segments around the shaft. Connecting copper to one segment and zinc to the next, repeatedly around the circle when there are more than two, establishes position-dependent electrical contacts instead of one fixed connection.",
+  ],
+  7: [
+    "The rotating members M, N, O, and P are soft-iron bars, horseshoes, or another form wound with silk-insulated copper wire Q. They project from and turn with vertical shaft R, while their wires run down alongside that shaft to contact plates K and L. Wheel V fastens the magnets to the shaft. In modern terms, this paragraph defines a rotor whose electromagnet poles can change as its contacts move.",
+  ],
+  8: [
+    "The stationary field members S and T are ordinary steel magnets fixed to the upper platform. Davenport permits any number and strength of them and makes them curved segments of the platform's circle. He also permits stationary galvanic magnets in crescent or horseshoe form, provided their poles face the shaft. The condition that matters is inward-facing stationary poles around the rotor.",
+  ],
+  9: [
+    "Davenport first fixes the initial condition: the machine is at rest. With north field pole 5 and south field pole 6, rotating magnet 1 stands opposite north, magnet 3 opposite south 6, and magnets 2 and 4 lie between those field poles. This positional account supplies the reference state for the switching sequence that follows.",
+  ],
+  10: [
+    "There are as many separated copper contact plates below the field magnets as the arrangement requires. The rotor wires touch those plates. Because the wires travel with the rotor in the same relative layout in which the rotor magnets travel past the stationary magnets, moving a wire to a different plate changes its battery connection at a particular rotor position. This is the mechanical commutation relation described by the patent.",
+  ],
+  11: [
+    "To start motion, the copper-side battery path makes rotating magnet 2 a north pole and the zinc-side path makes magnet 4 a south pole. Stationary south pole 6 attracts north pole 2, and stationary north pole 5 attracts south pole 4, so each moves one quarter-circle. Momentum carries the arms past poles 5 and 6; by then their wires have reached different copper plates, ready to change the rotating poles again. The paragraph therefore gives both the polarity condition and the quarter-turn mechanical result.",
+  ],
+  12: [
+    "After the contacts change, magnet 2 becomes south because its wire reaches a zinc-side conductor, while magnet 4 becomes north after moving from zinc to copper. The stationary poles that had attracted them now repel them. Repeating this attraction, travel past the poles, contact change, and repulsion cycle sustains one-direction rotary motion in the shaft, which can then propel machinery. This is the patent's complete causal chain, not merely a statement that a motor turns.",
+  ],
+  13: [
+    "This is the legal transition to the claim. Davenport announces that the following language, rather than every descriptive detail by itself, is the discovery for which he seeks Letters Patent protection.",
+  ],
+  14: [
+    "The sole printed claim seeks the application of magnetic and electromagnetic power as a moving principle for machinery, using the arrangement described above or another arrangement substantially the same in principle. Its legal effect is broad but tied to the stated magnetic motive-power principle; the source does not divide this into separate numbered or dependent commutator claims.",
+  ],
+  15: [
+    "Thomas Davenport signs the specification, identifying himself as the inventor responsible for the claimed discovery.",
+  ],
+  16: [
+    "W. W. Ayres and Chas. A. Cook are recorded as witnesses. Their names are formal source matter and are retained rather than replaced with editorial commentary.",
+  ],
+};

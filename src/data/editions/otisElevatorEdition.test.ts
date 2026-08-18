@@ -1,5 +1,6 @@
 import { describe, expect, test } from "bun:test";
 import { validateCuratedSpecificationEdition } from "@/data/archivalEditionValidation";
+import { parsePatentCatalog } from "@/data/patents/schema";
 import { otisElevatorPatent } from "../patents/otis-elevator";
 import { otisElevatorArchivalEdition } from "./otisElevatorEdition";
 import { otisElevatorParallelReadings } from "./otisElevatorParallelReading";
@@ -33,5 +34,9 @@ describe("otisElevatorArchivalEdition", () => {
       pageCount: 3,
       sourcePdfSha256: otisElevatorArchivalEdition.sourcePdfSha256,
     });
+  });
+
+  test("passes the catalogue schema with its reviewed transcript metadata", () => {
+    expect(parsePatentCatalog([otisElevatorPatent])).toHaveLength(1);
   });
 });

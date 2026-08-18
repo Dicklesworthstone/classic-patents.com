@@ -5,11 +5,22 @@
  * limitations of its matching source block. Keys are explicit block positions
  * in the edition file.
  */
+import { corlissSteamEngineParallelReadings } from "./corlissSteamEngineEdition";
+import { ericssonPropellerParallelReadings } from "./ericssonPropellerEdition";
+import { mccormickReaperParallelReadings } from "./mccormickReaperEdition";
+import { morseTelegraphParallelReadings } from "./morseTelegraphEdition";
+import { otisElevatorParallelReadings } from "./otisElevatorParallelReading";
+
 export type ArchivalParallelReading = readonly string[];
 
 export const ARCHIVAL_PARALLEL_READINGS: Readonly<
   Record<string, Readonly<Record<number, ArchivalParallelReading>>>
 > = {
+  "us-x8277-mccormick-reaper": mccormickReaperParallelReadings,
+  "us-588-ericsson-propeller": ericssonPropellerParallelReadings,
+  "us-1647-morse-telegraph": morseTelegraphParallelReadings,
+  "us-6162-corliss-steam-engine": corlissSteamEngineParallelReadings,
+  "us-31128-otis-elevator": otisElevatorParallelReadings,
   "us-821393-wright-flyer": {
     4: [
       "This is the standard public notice at the start of a United States patent. It addresses any reader who may need to know what the inventors claim to have made.",

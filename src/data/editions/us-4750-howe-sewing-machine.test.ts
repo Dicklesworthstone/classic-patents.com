@@ -2,7 +2,10 @@ import { existsSync } from "node:fs";
 import { join } from "node:path";
 import { describe, expect, test } from "bun:test";
 import { validateCuratedSpecificationEdition } from "@/data/archivalEditionValidation";
-import { howeSewingMachineArchivalEdition } from "./us-4750-howe-sewing-machine";
+import {
+  HOWE_SEWING_MACHINE_PARALLEL_READINGS,
+  howeSewingMachineArchivalEdition,
+} from "./us-4750-howe-sewing-machine";
 
 describe("US 4,750 Howe manual archival edition", () => {
   test("pins the reviewed six-sheet facsimile and represents every printed claim", () => {
@@ -44,5 +47,33 @@ describe("US 4,750 Howe manual archival edition", () => {
     expect(publicText).not.toContain("--- REVIEWED TRANSCRIPTION PAGE");
     expect(publicText).not.toContain("--- SOURCE PDF PAGE");
     expect(publicText).not.toContain("source-text/us-4750-howe-sewing-machine");
+  });
+
+  test("gives every authored Howe paragraph a patent-local, non-lossy companion", () => {
+    const paragraphIndexes = howeSewingMachineArchivalEdition.blocks.flatMap((block, index) =>
+      block.kind === "paragraph" ? [index] : [],
+    );
+    const companionIndexes = Object.keys(HOWE_SEWING_MACHINE_PARALLEL_READINGS).map(Number);
+
+    expect(companionIndexes.sort((left, right) => left - right)).toEqual(paragraphIndexes);
+
+    for (const index of paragraphIndexes) {
+      const block = howeSewingMachineArchivalEdition.blocks[index];
+      if (!block || block.kind !== "paragraph") throw new Error(`Expected paragraph ${index}`);
+
+      const companion = HOWE_SEWING_MACHINE_PARALLEL_READINGS[index];
+      expect(companion).toBeArray();
+      expect(companion.join(" ").trim().length).toBeGreaterThan(0);
+
+      const sourceWords = block.inlines
+        .map((inline) => inline.text)
+        .join(" ")
+        .trim()
+        .split(/\s+/).length;
+      const companionWords = companion.join(" ").trim().split(/\s+/).length;
+      if (sourceWords >= 100) {
+        expect(companionWords / sourceWords).toBeGreaterThanOrEqual(0.3);
+      }
+    }
   });
 });

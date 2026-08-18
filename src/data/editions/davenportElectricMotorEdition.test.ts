@@ -2,7 +2,10 @@ import { describe, expect, test } from "bun:test";
 import { existsSync, readFileSync } from "node:fs";
 import { join } from "node:path";
 import { validateCuratedSpecificationEdition } from "@/data/archivalEditionValidation";
-import { davenportElectricMotorArchivalEdition } from "@/data/editions/davenportElectricMotorEdition";
+import {
+  davenportElectricMotorArchivalEdition,
+  davenportElectricMotorParallelReadings,
+} from "@/data/editions/davenportElectricMotorEdition";
 
 describe("davenportElectricMotorArchivalEdition", () => {
   test("is a complete manual edition pinned to the US 132 facsimile", () => {
@@ -59,5 +62,26 @@ describe("davenportElectricMotorArchivalEdition", () => {
         ),
       }).valid,
     ).toBe(false);
+  });
+
+  test("exports renderer-compatible readings for every source paragraph and the sole claim", () => {
+    const sourceBlocks = davenportElectricMotorArchivalEdition.blocks
+      .map((block, sourceBlockIndex) => ({ block, sourceBlockIndex }))
+      .filter(({ block }) => block.kind === "paragraph" || block.kind === "claim");
+
+    const readingIndexes = Object.keys(davenportElectricMotorParallelReadings)
+      .map(Number)
+      .sort((left, right) => left - right);
+
+    expect(readingIndexes).toHaveLength(sourceBlocks.length);
+    expect(readingIndexes).toEqual(sourceBlocks.map(({ sourceBlockIndex }) => sourceBlockIndex));
+    expect(
+      Object.values(davenportElectricMotorParallelReadings).every(
+        (reading) => Array.isArray(reading) && reading.length > 0 && reading.join(" ").length > 80,
+      ),
+    ).toBe(true);
+    expect(davenportElectricMotorParallelReadings[14]?.join(" ")).toContain(
+      "substantially the same in principle",
+    );
   });
 });

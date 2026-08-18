@@ -1,5 +1,5 @@
-import type { Patent } from "@/types/patent";
 import { mccormickReaperArchivalEdition } from "@/data/editions/mccormickReaperEdition";
+import type { Patent } from "@/types/patent";
 
 export const mccormickReaperPatent: Patent = {
   id: "us-x8277-mccormick-reaper",
@@ -153,7 +153,8 @@ export const mccormickReaperPatent: Patent = {
           figureRef: "Unnumbered drawing sheet",
           label: "A",
           element: "Platform",
-          description: "The receiving surface on which cut grain is held until a raker removes a sheaf.",
+          description:
+            "The receiving surface on which cut grain is held until a raker removes a sheaf.",
           x: 62,
           y: 70,
         },
@@ -162,7 +163,8 @@ export const mccormickReaperPatent: Patent = {
           figureRef: "Unnumbered drawing sheet",
           label: "B",
           element: "Tongue",
-          description: "The long draft member connected to the team and suspended by a pole and chain.",
+          description:
+            "The long draft member connected to the team and suspended by a pole and chain.",
           x: 53,
           y: 86,
         },
@@ -180,7 +182,8 @@ export const mccormickReaperPatent: Patent = {
           figureRef: "Unnumbered drawing sheet",
           label: "L",
           element: "Divider",
-          description: "The forward projecting part that separates the grain to be cut from standing grain.",
+          description:
+            "The forward projecting part that separates the grain to be cut from standing grain.",
           x: 26,
           y: 49,
         },
@@ -189,7 +192,8 @@ export const mccormickReaperPatent: Patent = {
           figureRef: "Unnumbered drawing sheet",
           label: "W",
           element: "Reel",
-          description: "The belt-driven gathering reel carrying stalks inward to the cutter and platform.",
+          description:
+            "The belt-driven gathering reel carrying stalks inward to the cutter and platform.",
           x: 57,
           y: 25,
         },

@@ -2,7 +2,11 @@ import { otisElevatorArchivalEdition } from "@/data/editions/otisElevatorEdition
 import type { Patent } from "@/types/patent";
 
 /** Source-checked catalogue record for the actual four-claim US 31,128 grant. */
-const _unreviewedOtisElevatorDraft: Patent = {
+/*
+ * Preserved, unreviewed pre-edition draft. It is deliberately not exported or
+ * executed: its leaf-spring narrative and two claims do not describe US 31,128.
+ */
+/* const _unreviewedOtisElevatorDraft: Patent = {
   id: "us-31128-otis-elevator",
   patentNumber: "US 31,128",
   title: "Improvement in Hoisting Apparatus",
@@ -254,6 +258,7 @@ I claim as my invention:
     independentClaims: 1,
   },
 };
+*/
 
 /** Source-checked catalogue record for the actual four-claim US 31,128 grant. */
 export const otisElevatorPatent: Patent = {

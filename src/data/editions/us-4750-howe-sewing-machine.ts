@@ -315,3 +315,109 @@ export const howeSewingMachineArchivalEdition: CuratedSpecificationEdition = {
     },
   ],
 };
+
+/**
+ * Patent-local, block-addressed Plain English companions for the continuous
+ * Howe edition. These are hand-authored explanations, not a renderer fallback
+ * or a summary of the whole patent. Each key is the exact paragraph index in
+ * `howeSewingMachineArchivalEdition.blocks`.
+ */
+export const HOWE_SEWING_MACHINE_PARALLEL_READINGS = {
+  4: [
+    "This is the patent's formal public address. It tells any reader that the following document is the inventor's statement to the Patent Office.",
+  ],
+  5: [
+    "Howe identifies himself, his Cambridge residence, and the subject of the invention: a machine for sewing seams in cloth and other articles. He presents the following description as the complete technical disclosure supporting the legal claims at the end, not as a claim by itself.",
+  ],
+  6: [
+    "The upper thread does not follow the hand-sewing motion of pulling a long thread through the cloth. A curved needle carries it through the work, with the eye about one-eighth inch from the pointed end. Its outer end pivots on the vibrating arm, whose radius matches the needle's curve.",
+    "After the needle enters roughly three-fourths inch, the thread spans above the curved needle like a bowstring. That geometry leaves an open space between thread and needle. The clearance is a necessary condition for the shuttle described next; without it, a lower-thread carrier could not pass through the upper-thread loop.",
+  ],
+  7: [
+    "A small shuttle carrying a bobbin passes through the opening between the needle and the upper thread. A picker-staff, or shuttle-driver, returns it. The shuttle's thread wraps the thread carried by the needle, and withdrawing the needle pulls that interlock into the body of the cloth.",
+    "The result is a two-thread lockstitch: the visible thread on one face comes from the needle, and the visible thread on the other from the shuttle. Each back-and-forth shuttle stroke produces a stitch. This paragraph states the causal mechanism behind claim 1, but the claim limits protection to the specified combination and arrangement of parts.",
+  ],
+  8: [
+    "Howe holds the two cloth layers on widely spaced pointed wires in a metal plate. Those points replace temporary hand basting, so the machine can hold the layers while the needle and shuttle act. The stated spacing is approximately three-fourths inch, not a generic clamp with no geometry.",
+    "Holes in that plate act as rack teeth. A pinion engages them and advances the plate as stitches are made; choosing the distance moved chooses stitch length. This is the physical feed arrangement later claimed in claim 5, including both the points and the rack-like holes.",
+  ],
+  9: [
+    "Howe deliberately tells the reader how to use the drawing sheets: Figure 1 is the front elevation, Figure 2 the end elevation, and Figure 3 the top view. The later figures are not separate machines; they are sectional or detailed views of named portions of this one mechanism.",
+  ],
+  10: [
+    "A is the bed or base. The paired B standards rise from it and support the main shaft and the machine's other moving structure. The lettering establishes a positional vocabulary for the following descriptions and figures.",
+  ],
+  11: [
+    "C is the main shaft. Its cams time the needle and shuttle drivers, while D is the flywheel and E the hand winch on that shaft. Thus the operator's rotation is converted into coordinated repeating motion rather than independently moving the needle and shuttle.",
+  ],
+  12: [
+    "F is the bobbin supplying the needle thread. It is the upper-thread store, distinct from the bobbin carried by the shuttle below the cloth.",
+  ],
+  13: [
+    "G is the pivoted needle arm that carries curved needle a; Figure 2 gives the clearest end view. Thread leaves upper bobbin F, goes over friction roller b or an equivalent smooth groove, then enters the eye near the needle point. The near-point eye is what lets the needle carry only a small local loop through the work.",
+    "The cloth sits on points d d of plate H, the baster-plate, which Figure 3 shows from above. This links the needle path, the needle-thread route, and the pinned feed plate to the specific reference letters on Figures 2 and 3 rather than treating them as anonymous sewing-machine parts.",
+  ],
+  14: [
+    "When needle a carries thread e through the cloth, the upper portion remains above the needle and the shuttle point can enter between them. The needle then retracts a short distance, opening the loop. That partial withdrawal, not full removal, creates the clearance.",
+    "The needle-arm cam is shaped to produce that retreat. While it happens, the shuttle draws some previously delivered upper thread through the cloth, leaving it as a loop or slack. The timing condition is essential: the shuttle needs enough room to pass before the loop is tightened.",
+  ],
+  15: [
+    "Figure 4 freezes the same needle area from Figure 2 with the arm down and the needle through the cloth. It labels f as the cloth in section and e' as the loose loop on the outside. The shuttle must pass through that e' loop; the figure is evidence for the loop-formation sequence, not decorative art.",
+  ],
+  16: [
+    "I is the shuttle box or trough, and J J are the picker-staves that drive the shuttle back and forth. Figure 5 shows the box from above with shuttle K inside. Howe compares K to a weaving shuttle and says its spool g can hold an ordinary skein of silk, identifying both its construction and its lower-thread supply.",
+    "The underside of box I is convex so it can clear a curved baster-plate, though Howe says a straight plate will serve most purposes. Light springs i i bear gently on the shuttle to steady it, and the drivers pivot at j in Figure 2 with a counterpart on the other side. These are stated structural limits on the shuttle's travel, not merely labels.",
+  ],
+  17: [
+    "L in Figure 3 is the cam that operates the shuttle drivers. Optional friction rollers j' j' can sit at their upper ends. The cam works the two drivers alternately, giving the shuttle its repeated reciprocal passage through the upper-thread loop.",
+  ],
+  18: [
+    "Figure 5's M is a sliding box behind the shuttle, while N is the opposing sliding piece at its pointed end. Separate drivers move them back and forth. This describes the box arrangement that later appears in claim 4 with the small lever and spring-piece Z.",
+    "Needle arm G connects to rock shaft O in Figure 1. Arm P on that shaft carries roller k in the zigzag groove l of cam Q, so the cam gives the arm its required vibration. A channel across the shuttle-box bottom receives the needle and keeps its upper surface level enough for the shuttle to pass freely over it. The groove is a clearance constraint between two moving organs.",
+  ],
+  19: [
+    "Baster-plate H in Figure 3 receives the cloth. Its regularly spaced holes m m function as rack teeth; a round pinion enters them and advances the plate by the proper distance after each stitch. This repeats the feed mechanism with its reference letters and connects it to the claimed no-basting result.",
+  ],
+  20: [
+    "Figure 6 isolates the feed in a vertical section taken on line x x of Figure 3. Cam R on shaft C rocks arm S. S carries feeding claw T, which engages ratchet wheel U on shaft V. V crosses bed A; its front end is visible in Figure 1, and a pinion near that end engages the holes m in the baster-plate.",
+    "The claw-and-ratchet sequence advances the plate between stitches rather than while the needle is in the cloth. Changing the play of arm S changes stitch length. Regulating screw n in Figure 3 moves a stop pin, shown as o in Figure 6 and also visible in Figures 2 and 3. Spring p holds the ratchet-wheel while the claw takes a new tooth, and spring q holds arm S against the cam. Those springs preserve engagement and timing, not merely comfort or ornament.",
+  ],
+  21: [
+    "Thread from upper bobbin F goes over notch r at the needle-arm top, returns through that notch, descends in front of the arm, passes around roller b, and reaches the needle eye. Howe then gives an adjustable tension device: semicircular clasp s presses on the thread through spring t, whose force is set by a tempering-screw.",
+    "That friction controls how readily the bobbin gives out thread. It must provide enough thread for the needle's loop without allowing uncontrolled slack that would interfere with shuttle passage or final tightening.",
+  ],
+  22: [
+    "Before penetration, a lifting-pin raises the span of thread between needle eye and cloth. Raising it deliberately makes the loop or slack that the shuttle will later draw in while traveling between the thread and the needle. This is the function claimed in claim 2, not a claim to every kind of thread tensioning.",
+  ],
+  23: [
+    "W is the lifting rod, and pin u projects from it. Its upper end connects to crank arm v on shaft w; a cam on the main cam-shaft vibrates w through roller y. The linkage converts main-shaft rotation into the temporary lift that creates the shuttle-clearance loop.",
+    "The rod stands before plate X, shown in Figures 1 and 2. Cloth passes between the lower end of X and shuttle box I. X hinges at its top, so its spacing from the shuttle box can be set for different cloth thicknesses. That adjustment is a stated operating condition, not a license to ignore the described plate and shuttle geometry.",
+  ],
+  24: [
+    "Y is the set-screw that holds the adjustable plate arrangement. Guide-pin z from the lifting rod moves the rod sideways and governs lifting pin u. It follows a groove between guide pieces a' and b' on plate X, shown by dotted lines. A spiral spring draws the rod toward b', while other equivalent means may provide that bias.",
+    "In the Figure 1 position, the lifting pin has already raised the thread. As z reaches the upper end of its guide groove, the needle arm drives the needle through the cloth. A projecting piece c' on the needle arm contacts the lifting rod, pushes it over angular piece d', and, as crank arm v descends, withdraws pin u. The thread is then left with sufficient slack for the shuttle operation. The paragraph supplies the timed guide, release, and slack conditions behind claim 2.",
+  ],
+  25: [
+    "Figure 7 shows shuttle K's thread hole d' and the shuttle-box slot f' f', which permits the shuttle thread to move back and forth. After the shuttle has passed between needle and upper thread, the needle must be withdrawn. At that moment the lower thread must be held firmly.",
+    "If it were not held, needle withdrawal would pull extra lower thread from the spool instead of drawing the interlock into the cloth. The machine would lose the intended tight seam. The needed restraint is the functional problem addressed by the retaining lever of claim 3.",
+  ],
+  26: [
+    "In Figure 1, f' is the outer end of the lever that rises at the correct moment and clips the shuttle thread against the upper edge of slot f'. Figure 2 shows its fulcrum h'. Rod i depresses the inner end and raises the outer end, and cam j' on the main shaft performs that motion. This gives claim 3 a specific timed clipping mechanism, not an unexplained promise to hold thread.",
+  ],
+  27: [
+    "Sliding box M does not bear directly on the shuttle-box rear; its projecting pin m' bears against the shuttle. Figure 8 isolates the small lever containing m'. Its n' portion fits a slot in M and pivots at p'. After the shuttle passes the needle-thread loop, the loop lands on m', and retracting the needle draws the thread taut there.",
+    "Adjustable spring-piece z z' bears on the lever end n'. The thread cannot leave m' until it overcomes that spring force. When it does, the loop pulls the shuttle's filling thread tight against the cloth and embeds it. Spring Z passes through a mortise in the shuttle box, and adjusting screw c' sets its force. These named relationships are the combination and tightening effect claimed in claim 4.",
+  ],
+  28: [
+    "Howe closes the description and identifies the next material as the legal claims. The claims do not repeat every descriptive paragraph; they define five selected combinations and operations for which he seeks Letters Patent.",
+  ],
+  34: [
+    "Elias Howe, Jr. signs the specification. The signature is formal execution of the inventor's description and claims; it does not add a separate mechanism or claim limitation.",
+  ],
+  35: [
+    "Thos. P. Jones and George Fisher are the printed witnesses to Howe's signing. They document execution of the patent instrument and are not named inventors or claimants.",
+  ],
+  36: [
+    "This editorial navigation sentence only points back to the five printed claims. Their technical and legal explanations remain the patent record's individual claim decoders; this note does not alter their scope.",
+  ],
+} as const satisfies Readonly<Record<number, readonly string[]>>;

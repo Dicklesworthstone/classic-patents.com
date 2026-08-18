@@ -16,9 +16,7 @@ describe("mccormickReaperArchivalEdition", () => {
     );
     expect(mccormickReaperArchivalEdition.completeFacsimileReviewed).toBe(true);
 
-    const claims = mccormickReaperArchivalEdition.blocks.filter(
-      (block) => block.kind === "claim",
-    );
+    const claims = mccormickReaperArchivalEdition.blocks.filter((block) => block.kind === "claim");
     expect(claims.map((claim) => claim.number)).toEqual([1, 2]);
   });
 

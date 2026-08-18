@@ -154,3 +154,44 @@ export const goodyearRubberArchivalEdition: CuratedSpecificationEdition = {
     { kind: "paragraph", inlines: literal("Witnesses: THOS. P. JONES, B. R. MORSELL.") },
   ],
 };
+
+/**
+ * Renderer-ready, explicitly authored paragraph readings. Keys are zero-based
+ * indexes in `goodyearRubberArchivalEdition.blocks`; numbered claims retain
+ * their exact legal text and decoders in the canonical patent record.
+ */
+export const goodyearRubberParallelReadings: Readonly<Record<number, readonly string[]>> = {
+  1: [
+    "This is the formal notice that the following document addresses every reader concerned with the grant. It introduces no technical limitation.",
+  ],
+  2: [
+    "Goodyear identifies himself, his New York residence, and the subject of the grant: making fabrics from caoutchouc, also called India-rubber. He presents the text as a full description of that particular improvement, not as a claim to every use of rubber.",
+  ],
+  3: [
+    "The principal process combines India-rubber with sulphur and white lead, then heats the compound at a controlled temperature. Goodyear says the prepared material should resist softening below its preparation temperature, cold exposure, expressed oils, turpentine, and other essential oils that ordinarily dissolved the gum. The printed benchmark is 270°F; it is a condition of the description, not a claim that every cure uses exactly that temperature.",
+  ],
+  4: [
+    "For the preferred mixture, Goodyear gives a mass recipe of 25 parts India-rubber, 5 parts sulphur, and 7 parts white lead. He describes dissolving the rubber and separately grinding the other ingredients in turpentine or another essential oil, then spreading the mixture as a removable sheet on a smooth surface or glazed cloth. This paragraph supplies a preferred working recipe and sheet-forming route; claim 1 later reaches proportion changes that produce a like result.",
+  ],
+  5: [
+    "As an alternative to dissolving the rubber, the prepared sulphur and white lead may be worked directly into it with heated cylinders or calender-rollers. The rollers make a sheet of chosen thickness or coat cloth or leather. Goodyear also gives an odor-removal wash of potash, vinegar, or a small amount of essential oil or other sulphur solvent. These are manufacturing options and finishing steps, not printed figure references; this grant has none.",
+  ],
+  6: [
+    "A rubber coating can peel from firm cloth or leather because the gum releases the holding fibers. Goodyear's response is a laminate: put a cotton-wool bat, taken from the doffer of a carding machine, over a coat of compounded gum and cover it with another gum coat. Repeating the stack two or three times changes thickness. This is the physical construction narrowed by claim 2: cotton-batting lies between gum layers, rather than merely any textile being rubber-coated.",
+  ],
+  7: [
+    "After drying, the compound or coated fabric receives heat. The stated range is 212°F to 350°F, with the best effect approaching 270°F. Heating can use a cylinder, but Goodyear prefers an oven atmosphere that passes the sheet or web through on rollers. A fabric of this compound must stay on its cloth support because it softens during treatment; above 270°F, exposure must be very brief. Those temperature and support limits give operational meaning to claim 3's high-heat step.",
+  ],
+  8: [
+    "Goodyear expressly narrows the boundary of this grant. He does not claim sulphur combined with caoutchouc by itself, at the named proportion or any other, because he says that combination was covered by his February 24, 1839 patent. The 1844 claims therefore concern the additional lead component, laminate construction, and heat-treatment combination set out next.",
+  ],
+  9: [
+    "This is the formal transition from description to the three legal claims. The following numbered nodes, rather than this lead-in, state the enforceable boundaries asserted in the grant.",
+  ],
+  13: [
+    "The inventor's printed signature identifies Charles Goodyear as the person making the specification and claims. It adds no separate technical limitation.",
+  ],
+  14: [
+    "The printed witness line names Thos. P. Jones and B. R. Morsell. It is formal closing matter, preserved as source text rather than interpreted as part of the claimed process.",
+  ],
+};

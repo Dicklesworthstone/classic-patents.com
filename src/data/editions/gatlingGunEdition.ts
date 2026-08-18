@@ -2,16 +2,28 @@ import type { CuratedSpecificationEdition, CuratedSpecificationInlines } from "@
 
 const literal = (text: string): CuratedSpecificationInlines => [{ kind: "text", text }];
 
+/** Measured with ImageMagick identify against the committed local PNG crops. */
+const GATLING_FIGURE_PREVIEW_DIMENSIONS: Record<number, readonly [number, number]> = {
+  1: [560, 830],
+  2: [420, 1580],
+  3: [800, 760],
+  4: [420, 420],
+  5: [260, 290],
+  6: [180, 400],
+  7: [180, 170],
+};
+
 const previews = Object.fromEntries(
   Array.from({ length: 7 }, (_, index) => {
     const figure = index + 1;
+    const [width, height] = GATLING_FIGURE_PREVIEW_DIMENSIONS[figure];
     return [
       figure,
       {
         src: `/patents/figures/us-36836-gatling-gun-fig-${figure}-preview.png`,
         alt: `Figure ${figure} from US 36,836, Improvement in Revolving Battery-Guns.`,
-        width: 0,
-        height: 0,
+        width,
+        height,
       },
     ];
   }),
@@ -25,6 +37,91 @@ const figure = (number: number) => ({
   label: `Open Figure ${number} from the pinned US 36,836 facsimile`,
   figurePreviews: [previews[number]],
 });
+
+/**
+ * Paragraph- and claim-level companion reading for this edition. Keys are the
+ * exact zero-based indexes of `gatlingGunArchivalEdition.blocks`; the mapping
+ * is intentionally local until an editor elects to register it globally.
+ */
+export const gatlingGunParallelReadings: Readonly<Record<number, readonly string[]>> = {
+  2: [
+    "This formal address is the patent's public notice. It introduces the legal instrument to anyone who may need to inspect what follows.",
+  ],
+  3: [
+    "Gatling identifies himself, his Indianapolis location, and the subject as an improvement in fire-arms. He also makes the required specification promise: the written description plus its drawings are meant to be full enough for a skilled reader to make and use the invention.",
+  ],
+  4: [
+    "Figure 1 shows the gun in side elevation with part of the wheels removed; Figure 2 cuts lengthwise through its center; and Figure 3 looks down with part of casing A and the middle of the barrels removed. Those cuts reveal relationships that an exterior view hides.",
+    "Figure 4 is a cross-section of lock-cylinder D on line x-y, Figure 5 is the end of grooved carrier C, Figure 6 isolates a lock tube and its hammer and spring, and Figure 7 isolates ring P. The ring's two rear inclined planes are the fixed surfaces that push each hammer back into its working positions.",
+  ],
+  5: [
+    "The proposed gun is meant to be compact and durable enough for attack or defence, lighter and more portable than field artillery, rapidly fired, and operated by few people. This is an intended operating role, not a numerical rate-of-fire claim.",
+  ],
+  6: [
+    "The central arrangement is a rotating lock-cylinder or breech, a grooved carrier, and multiple barrels all fixed to one shaft. Each lock, carrier groove, and barrel runs parallel to the shaft axis, so rotating the shaft carries the matched parts around together rather than turning an independent feeder beside stationary barrels.",
+  ],
+  7: [
+    "A fixed ring P cocks and repositions the rotating hammers without a conventional trigger. Separate inner lock tubes also move forward against cartridge-chambers at discharge, helping seal the chamber to the barrel and keeping the protected lock mechanism inside casing A and disk I.",
+  ],
+  8: [
+    "The same letters identify the same part wherever it appears in the several drawings. The text therefore uses the drawing labels as a cross-reference system, not as generic names.",
+  ],
+  9: [
+    "Gatling now changes from the invention statement to construction and operation. The following paragraphs specify the physical arrangement a skilled maker would reproduce.",
+  ],
+  10: [
+    "The usual construction has six rifle barrels E secured at both ends in circular plates F and G on shaft N. That shaft also carries carrier C, lock-cylinder D, and cog-wheel K; casing A protects D and K, while frame B and an ordinary gun-carriage support the rotating group.",
+  ],
+  11: [
+    "Lock-cylinder D has six longitudinal holes, one for each barrel, plus slots from the surface to admit hammer projections b. Figure 4 shows the six-hole relationship; Figure 6 shows one of the locks inserted into one such hole.",
+  ],
+  12: [
+    "Each lock is a tube a with a flanged breech-pin c at its rear, hammer b, and mainspring d. The flange gives the coiled spring a reaction surface, and Figure 2 is the source view for the assembled cross-section.",
+  ],
+  13: [
+    "Carrier C lifts loaded cartridge-chambers from hopper H to the firing position, then continues rotating until they fall out by gravity. A fixed comb or rake on the frame, shown in Figures 2 and 3, ensures a chamber is removed instead of remaining in a groove.",
+  ],
+  14: [
+    "Ring P is fixed to frame B, not to the rotating lock-cylinder. Its larger rear incline cocks each hammer as it passes; its smaller incline returns the hammer into its tube after it strikes the percussion-cap, allowing the fired cartridge-chamber to leave carrier C.",
+  ],
+  15: [
+    "Disk I divides casing A: its forward part shields the locks, and its rear part protects cog-wheels K and L. Steel plug O projects slightly from the disk; as a tube reaches that swell, it pushes the tube and cartridge-chamber forward against the barrel, reducing powder-gas escape and also compressing mainspring d so hammer b strikes the percussion-cap harder.",
+  ],
+  16: [
+    "The rounded head of each breech-pin c rests against disk I under spring e. Until it reaches swell O, the lock front stays flush with lock-cylinder D; at the swell it moves forward as described. This states both the normal position and the limited position in which the sealing advance occurs.",
+  ],
+  17: [
+    "Main shaft N carries D, C, barrels E, and gear K and is supported at disk I and frame B. Separate crank-shaft M runs through casing A with pinion L and hand crank S; L meshes with K to turn the main rotating assembly.",
+  ],
+  18: [
+    "Adjusting screw T changes the pressure applied to cartridge-chambers R. Loaded chambers, with cap or nipple ends facing the hammers, go into hopper H; turning crank S turns M, pinion L, gear K, then N, D, C, and E. The chambers roll into carrier C, rise to discharge, and remain aligned because hammers, chambers, and barrels are parallel to the rotation axis.",
+  ],
+  19: [
+    "The large incline on stationary ring P pushes hammer b back. Once past that incline's highest point, mainspring e drives the hammer into the percussion-cap on the cartridge-chamber nipple; after discharge the holder continues around and falls out by its own weight for reloading.",
+  ],
+  20: [
+    "Gatling expressly narrows the scope before claiming it. He does not claim grooved carrier C by itself when it revolves independently, calling that an old device; nor does he claim its direct combination with an automatic rotating gear or a chamber-pressing device when that device is used alone. The following claims seek only the combinations he treats as new.",
+  ],
+  22: [
+    "Claim 1 covers the co-rotating combination of breech D, carrier C, circular plate F, and barrels E on main shaft N. It requires their locks, carrier grooves, and barrels to be parallel to the rotation axis and to revolve together during operation.",
+  ],
+  23: [
+    "Claim 2 separately covers a revolving fire-arm with as many locks as barrels, where the locks revolve simultaneously with the breech and barrels and operate in the described arrangement. It is about the matched one-lock-per-barrel relationship, not merely the presence of several barrels.",
+  ],
+  24: [
+    "Claim 3 covers stationary ring P with its rear inclined planes when combined with lock-cylinder D and the locks. Its legal work is the fixed cam surface that cocks and returns the rotating hammers.",
+  ],
+  25: [
+    "Claim 4 covers the particular lock-tube assembly: tubes a, flanged breech-pins c, springs e, hammers b, and mainsprings d, combined with breech D, disk I, and swell O. It ties the pressure-sealing forward movement and spring-assisted firing action to that stated construction.",
+  ],
+  26: [
+    "Claim 5 covers disk I together with outer casing A, where the casing shields lock-cylinder D and protects the locks and cog-wheels. It is a protective-enclosure claim, distinct from the rotating and firing claims.",
+  ],
+  27: [
+    "This is Gatling's signature, identifying the inventor who makes the specification and claims.",
+  ],
+  28: ["A. F. Mathew and W. O. Rockwood are printed as witnesses to the instrument."],
+};
 
 /**
  * Manually prepared from the three sheets of US 36,836. The document remains
