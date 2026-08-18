@@ -14,16 +14,15 @@ import {
 } from "lucide-react";
 import { useEffect, useState } from "react";
 import { LatexRenderer, TextWithLatex } from "@/components/ui/LatexRenderer";
-import { validateReviewedTranscription } from "@/data/patents/sourceTextValidation";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import type { Patent } from "@/types/patent";
 import { ClaimsDecoder } from "./ClaimsDecoder";
+import { CuratedSpecificationEdition } from "./CuratedSpecificationEdition";
 import { HistoricalContextPanel } from "./HistoricalContextPanel";
 import { InteractiveDiagramViewer } from "./InteractiveDiagramViewer";
 import { KernelTickChip } from "./KernelTickChip";
 import { MuseumBroadsidePlaque } from "./MuseumBroadsidePlaque";
 import { PhysicsTelemetryBadge } from "./PhysicsTelemetryBadge";
-import { SpecClauseText } from "./SpecClauseText";
 import { PatentVisualDispatcher } from "./visuals";
 import { WeaveInstrument } from "./WeaveInstrument";
 
@@ -53,11 +52,9 @@ function handlePrint() {
 
 function TranscriptUnavailable({
   patent,
-  loadError,
   hasRawSourceText,
 }: {
   patent: Patent;
-  loadError: string | null;
   hasRawSourceText: boolean;
 }) {
   return (
@@ -66,18 +63,16 @@ function TranscriptUnavailable({
       role="status"
     >
       <h4 className="font-serif text-xl font-bold">
-        Complete machine-readable text is unavailable
+        Complete archival edition is not published yet
       </h4>
       <p className="mt-2 font-sans text-sm leading-relaxed">
-        {loadError
-          ? `${loadError} This is a publishing failure, so the page will not substitute a short editorial excerpt.`
-          : hasRawSourceText
-            ? "A raw machine text layer exists, but it has not passed page-by-page transcription review. It is deliberately not displayed as a verified specification."
-            : "This record does not yet have a complete source-text asset that passed the catalogue gate. The page intentionally does not substitute its short editorial excerpt for the full legal instrument."}
+        {hasRawSourceText
+          ? "A private raw comparison layer exists, but it is not a publication-ready edition. The page deliberately does not render it or substitute a short editorial excerpt."
+          : "This record does not yet have an explicitly authored archival edition. The page deliberately does not substitute its short editorial excerpt for the full legal instrument."}
       </p>
       <p className="mt-3 font-sans text-sm leading-relaxed">
         The complete primary source is available as the scanned patent PDF. It remains the
-        authoritative comparison document until a complete text asset is published.
+        authoritative comparison document until a full manual React edition is published.
       </p>
       <a
         href={patent.originalPdfUrl}
@@ -104,73 +99,19 @@ export function DualProjectionViewer({ patent, initialView }: DualProjectionView
   const [viewMode, setViewModeState] = useState<PatentViewMode>(
     isPatentViewMode(initialView) ? initialView : "plain-english",
   );
-  const [completeOriginalText, setCompleteOriginalText] = useState<string | null>(null);
-  const [isLoadingCompleteOriginalText, setIsLoadingCompleteOriginalText] = useState(false);
-  const [completeOriginalTextError, setCompleteOriginalTextError] = useState<string | null>(null);
-
-  // A raw PDF text layer is evidence for reviewers, not a publication-ready
-  // transcription. Only a named, dated, hash-pinned reviewed transcription can
-  // occupy the reader-facing specification face.
+  // A raw PDF text layer is private comparison evidence, never a public
+  // publication source. The optional edition is already hand-authored in
+  // semantic nodes; this component intentionally performs no text cleanup.
   const rawSourceTextAsset =
     patent.originalTextAsset?.kind === "source-pdf-text-layer"
       ? patent.originalTextAsset
       : undefined;
-  const completeTextAsset =
-    patent.originalTextAsset?.kind === "reviewed-transcription"
-      ? patent.originalTextAsset
-      : undefined;
-  const hasCompleteOriginalText = completeOriginalText !== null;
-  const originalTextLabel = completeTextAsset
-    ? `Reviewed complete transcription · ${completeTextAsset.pageCount} source page${completeTextAsset.pageCount === 1 ? "" : "s"}`
+  const archivalEdition = patent.archivalEdition;
+  const originalTextLabel = archivalEdition
+    ? `Complete manually prepared edition · facsimile reviewed ${archivalEdition.preparedAt}`
     : rawSourceTextAsset
-      ? "Raw source-PDF text layer present · page-by-page review pending"
-      : "Complete machine-readable text unavailable";
-
-  useEffect(() => {
-    const asset = completeTextAsset;
-    if (!asset) {
-      setCompleteOriginalText(null);
-      setCompleteOriginalTextError(null);
-      setIsLoadingCompleteOriginalText(false);
-      return;
-    }
-
-    const controller = new AbortController();
-    setCompleteOriginalText(null);
-    setCompleteOriginalTextError(null);
-    setIsLoadingCompleteOriginalText(true);
-
-    fetch(asset.url, { signal: controller.signal })
-      .then((response) => {
-        if (!response.ok) {
-          throw new Error(`Could not load archival transcript: ${response.status}`);
-        }
-        return response.text();
-      })
-      .then((text) => {
-        const validation = validateReviewedTranscription(text, asset.pageCount);
-        if (!validation.valid) {
-          throw new Error(
-            validation.error ?? "The reviewed transcription failed its complete-page verification.",
-          );
-        }
-        const completeText = text.trim();
-        if (!completeText) throw new Error("The complete transcript asset is empty.");
-        setCompleteOriginalText(completeText);
-      })
-      .catch((error: unknown) => {
-        if (error instanceof DOMException && error.name === "AbortError") return;
-        console.error(error);
-        setCompleteOriginalTextError(
-          error instanceof Error ? error.message : "Could not load the complete transcript asset.",
-        );
-      })
-      .finally(() => {
-        if (!controller.signal.aborted) setIsLoadingCompleteOriginalText(false);
-      });
-
-    return () => controller.abort();
-  }, [completeTextAsset]);
+      ? "Raw source-PDF text layer retained privately · manual edition pending"
+      : "Complete archival edition unavailable";
 
   // Hydration-safe: SSR stays on the default face; deep links apply after mount.
   // Reading searchParams in the RSC page would force every patent route dynamic.
@@ -204,7 +145,10 @@ export function DualProjectionViewer({ patent, initialView }: DualProjectionView
   };
 
   return (
-    <div className="space-y-8 print:space-y-4">
+    <div
+      className="space-y-8 print:space-y-4"
+      data-archival-edition={archivalEdition?.kind ?? "withheld"}
+    >
       {/* Archival Broadside Plaque Header (Active during print) */}
       <MuseumBroadsidePlaque patent={patent} />
 
@@ -239,7 +183,7 @@ export function DualProjectionViewer({ patent, initialView }: DualProjectionView
             }`}
           >
             <Scroll className="w-4 h-4 text-amber-300" />
-            <span>{completeTextAsset ? "Complete Source Text" : "Original Source Status"}</span>
+            <span>{archivalEdition ? "Complete Source Text" : "Original Source Status"}</span>
             <kbd className="hidden md:inline-block text-[10px] font-mono px-1 py-0.2 rounded bg-black/15 dark:bg-white/15 opacity-80">
               2
             </kbd>
@@ -439,24 +383,16 @@ export function DualProjectionViewer({ patent, initialView }: DualProjectionView
             </div>
             <div className="rounded-2xl border border-parchment-300 dark:border-ink-800 bg-parchment-50 dark:bg-ink-950 p-6 sm:p-7 shadow-patent space-y-4 max-h-[700px] overflow-y-auto overscroll-contain">
               <p className="text-[11px] font-mono uppercase tracking-wider text-amber-800 dark:text-amber-400">
-                {isLoadingCompleteOriginalText
-                  ? "Loading complete transcription…"
-                  : originalTextLabel}
+                {originalTextLabel}
               </p>
-              {isLoadingCompleteOriginalText ? (
-                <p className="font-sans text-sm text-ink-700 dark:text-ink-300" aria-live="polite">
-                  Loading complete source text…
-                </p>
-              ) : hasCompleteOriginalText ? (
-                <SpecClauseText
-                  patentId={patent.id}
-                  text={completeOriginalText}
+              {archivalEdition ? (
+                <CuratedSpecificationEdition
+                  edition={archivalEdition}
                   className="font-serif text-sm sm:text-base leading-relaxed text-ink-950 dark:text-parchment-100 select-text space-y-4"
                 />
               ) : (
                 <TranscriptUnavailable
                   patent={patent}
-                  loadError={completeOriginalTextError}
                   hasRawSourceText={Boolean(rawSourceTextAsset)}
                 />
               )}
@@ -631,31 +567,20 @@ export function DualProjectionViewer({ patent, initialView }: DualProjectionView
             <div className="flex flex-wrap items-center justify-between gap-3 border-b border-parchment-200 dark:border-ink-800 pb-4">
               <div>
                 <span className="text-xs sm:text-sm font-mono text-amber-700 dark:text-amber-400 font-bold uppercase tracking-widest block">
-                  {completeTextAsset
-                    ? "Reviewed Complete Primary-Source Transcription"
+                  {archivalEdition
+                    ? "Complete Manually Prepared Archival Edition"
                     : rawSourceTextAsset
-                      ? "Raw Source Layer Awaiting Human Review"
-                      : "Original-Source Transcript Status"}
+                      ? "Raw Source Layer Withheld From Publication"
+                      : "Original-Source Edition Status"}
                 </span>
                 <h3 className="font-serif text-2xl sm:text-3xl font-bold text-ink-950 dark:text-parchment-50">
                   {patent.patentNumber} · Specification of Letters Patent
                 </h3>
                 <p className="mt-1 text-xs font-mono text-ink-600 dark:text-ink-400">
-                  {isLoadingCompleteOriginalText
-                    ? "Loading complete transcription…"
-                    : originalTextLabel}
+                  {originalTextLabel}
                 </p>
               </div>
               <div className="flex flex-wrap gap-2">
-                {completeTextAsset && (
-                  <a
-                    href={completeTextAsset.url}
-                    download
-                    className="px-4 py-2 rounded-xl border border-parchment-300 dark:border-ink-700 text-ink-900 dark:text-parchment-100 text-sm font-mono font-bold transition-colors flex items-center gap-2 hover:bg-parchment-200 dark:hover:bg-ink-800 shadow-sm"
-                  >
-                    <Download className="w-4 h-4" /> Download Text
-                  </a>
-                )}
                 <a
                   href={patent.originalPdfUrl}
                   target="_blank"
@@ -667,49 +592,17 @@ export function DualProjectionViewer({ patent, initialView }: DualProjectionView
               </div>
             </div>
 
-            {/* Never replace unavailable complete text with an editorial excerpt. */}
-            {isLoadingCompleteOriginalText ? (
-              <p
-                className="p-8 font-sans text-sm text-ink-700 dark:text-ink-300"
-                aria-live="polite"
-              >
-                Loading complete source text…
-              </p>
-            ) : hasCompleteOriginalText ? (
-              <SpecClauseText
-                patentId={patent.id}
-                text={completeOriginalText}
-                className="p-8 sm:p-10 rounded-2xl bg-parchment-100/80 dark:bg-ink-900/80 border border-parchment-300 dark:border-ink-800 text-base sm:text-lg font-serif text-ink-950 dark:text-parchment-100 leading-relaxed select-text shadow-xs space-y-6"
+            {archivalEdition ? (
+              <CuratedSpecificationEdition
+                edition={archivalEdition}
+                className="rounded-2xl border border-parchment-300 bg-parchment-100/80 p-8 font-serif text-base leading-relaxed text-ink-950 shadow-xs select-text dark:border-ink-800 dark:bg-ink-900/80 dark:text-parchment-100 sm:p-10 sm:text-lg"
               />
             ) : (
               <TranscriptUnavailable
                 patent={patent}
-                loadError={completeOriginalTextError}
                 hasRawSourceText={Boolean(rawSourceTextAsset)}
               />
             )}
-
-            {/* Claims section */}
-            <div className="space-y-4 pt-5 border-t border-parchment-200 dark:border-ink-800">
-              <h4 className="font-serif font-bold text-xl text-ink-950 dark:text-parchment-50">
-                Formal Numbered Claims
-              </h4>
-              <div className="space-y-4">
-                {patent.claims.map((claim) => (
-                  <div
-                    key={claim.number}
-                    className="p-5 rounded-xl bg-parchment-100/60 dark:bg-ink-900/60 border border-parchment-200 dark:border-ink-800 space-y-2 text-sm font-mono shadow-xs"
-                  >
-                    <span className="font-bold text-amber-800 dark:text-amber-400 block text-base">
-                      Claim #{claim.number} {claim.isIndependent ? "(Independent)" : "(Dependent)"}
-                    </span>
-                    <p className="text-ink-900 dark:text-parchment-100 italic leading-relaxed text-sm sm:text-base">
-                      &ldquo;{claim.originalText}&rdquo;
-                    </p>
-                  </div>
-                ))}
-              </div>
-            </div>
           </div>
         </div>
       )}

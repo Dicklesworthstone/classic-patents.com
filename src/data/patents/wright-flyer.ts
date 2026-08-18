@@ -1,4 +1,20 @@
 import type { Patent } from "@/types/patent";
+import { wrightFlyerArchivalEdition } from "../editions/wrightFlyerEdition";
+
+/**
+ * Claims are transcribed once in the hand-authored edition. The decoder cites
+ * those exact authored nodes rather than maintaining a second, drift-prone
+ * transcription of the same legal text.
+ */
+function manualClaimText(number: number): string {
+  const block = wrightFlyerArchivalEdition.blocks.find(
+    (candidate) => candidate.kind === "claim" && candidate.number === number,
+  );
+  if (block?.kind !== "claim") {
+    throw new Error(`Wright manual edition is missing claim ${number}.`);
+  }
+  return block.inlines.map((inline) => inline.text).join("");
+}
 
 export const wrightFlyerPatent: Patent = {
   id: "us-821393-wright-flyer",
@@ -16,7 +32,7 @@ export const wrightFlyerPatent: Patent = {
   summary:
     "The 1906 flying-machine patent that first claimed coordinated three-axis control: hip-cradle wing warping for roll, a rear rudder linked to that same cradle to cancel adverse yaw, and a forward canard for pitch. Filed 23 March 1903, nine months before the first powered hops at Kitty Hawk.",
   heroQuote:
-    "Our invention relates to that class of flying-machines in which the weight is sustained by the reactions resulting when one or more aeroplanes are moved through the air downwardly and forwardly at a small angle of incidence...",
+    "Our invention relates to that class of flying-machines in which the weight is sustained by the reactions resulting when one or more aeroplanes are moved through the air edgewise at a small angle of incidence...",
   originalPdfUrl: "/patents/pdfs/us-821393-wright-flyer.pdf",
   googlePatentsUrl: "https://patents.google.com/patent/US821393A/en",
   usptoClassification: "B64C 13/00 (Aeronautics; Aircraft control systems)",
@@ -25,6 +41,7 @@ export const wrightFlyerPatent: Patent = {
     pageCount: 10,
     kind: "source-pdf-text-layer",
   },
+  archivalEdition: wrightFlyerArchivalEdition,
   originalText: `UNITED STATES PATENT OFFICE.
 ORVILLE WRIGHT AND WILBUR WRIGHT, OF DAYTON, OHIO.
 
@@ -152,54 +169,159 @@ The operator lies prone in a movable cradle 6 upon the lower aeroplane. By shift
     {
       number: 1,
       isIndependent: true,
-      originalText:
-        "In a flying-machine, a normally flat aeroplane having lateral marginal portions capable of being moved to different angles relatively to the normal plane of the body of the aeroplane, so as to present to the atmosphere different angles of incidence, for the purpose of controlling the lateral balance of the apparatus, substantially as described.",
+      originalText: manualClaimText(1),
       plainEnglish:
-        "Broadest claim covering any flying machine that twists or changes the angle of its outer wing margins relative to the center to control lateral balance (roll).",
+        "Claims the broad control principle: independently change the incidence of the two wing margins to restore lateral balance.",
       keyInnovations: [
         "Differential wing warping",
-        "Variable angle of incidence on lateral tips",
-        "Active lateral roll balance",
+        "Opposed wing-margin incidence",
+        "Active lateral balance",
       ],
+      legalSignificance:
+        "This is the broad claim that made the later aileron dispute legally consequential.",
     },
     {
       number: 2,
-      isIndependent: false,
-      originalText:
-        "In a flying-machine, superposed aeroplanes having lateral marginal portions capable of being moved to different angles of incidence on opposite sides of the machine, and upright posts connecting said aeroplanes and pivotally connected thereto, substantially as described.",
+      isIndependent: true,
+      originalText: manualClaimText(2),
       plainEnglish:
-        "Covers multi-wing (biplane) designs where the wings are connected by pivoted upright struts that allow opposite wingtips to twist simultaneously.",
-      keyInnovations: [
-        "Biplane superposed structure",
-        "Pivoted universal strut joints",
-        "Helical box-truss twisting",
-      ],
+        "Claims the biplane implementation: flexible-jointed uprights preserve the separation of the two wings while their margins move.",
+      keyInnovations: ["Superposed aeroplanes", "Flexible upright joints", "Fixed wing spacing"],
     },
     {
       number: 3,
-      isIndependent: false,
-      originalText:
-        "In a flying-machine, superposed aeroplanes, upright posts connecting said aeroplanes and pivotally attached thereto, and operating cables connected to the outer marginal portions of the aeroplanes and extending to a central operating point, whereby the lateral margins of the aeroplanes may be flexed to present different angles of incidence to the atmosphere, substantially as described.",
+      isIndependent: true,
+      originalText: manualClaimText(3),
       plainEnglish:
-        "Covers the cable rigging system connecting the flexible wing margins to a central pilot control mechanism.",
+        "Claims a single flat wing whose left and right margins change both relative to the wing plane and relative to each other.",
       keyInnovations: [
-        "Centralized flight control rigging",
-        "Tension cable actuation",
-        "Single-operator mechanical linkage",
+        "Normal wing plane",
+        "Simultaneous opposed motion",
+        "Differential incidence",
       ],
+    },
+    {
+      number: 4,
+      isIndependent: true,
+      originalText: manualClaimText(4),
+      plainEnglish:
+        "Claims the paired-wing version in which the margins on each side move together while the two sides take different angles.",
+      keyInnovations: [
+        "Paired wing surfaces",
+        "Equal same-side angle",
+        "Flexible jointed uprights",
+      ],
+    },
+    {
+      number: 5,
+      isIndependent: true,
+      originalText: manualClaimText(5),
+      plainEnglish:
+        "Claims the transverse rectangular wing geometry and its inboard transverse axis of warp.",
+      keyInnovations: ["Transverse wing span", "Inboard warp axis", "Variable lateral margins"],
+    },
+    {
+      number: 6,
+      isIndependent: true,
+      originalText: manualClaimText(6),
+      plainEnglish:
+        "Claims the full biplane geometry, flexible connections, and simultaneous movement of all four margins.",
+      keyInnovations: ["Biplane warp", "Equidistant standards", "Opposed margin angles"],
     },
     {
       number: 7,
       isIndependent: true,
-      originalText:
-        "In a flying-machine, the combination, with an aeroplane, and means for moving the lateral marginal portions thereof to different angles of incidence, of a vertical rudder, and means for operating said vertical rudder in conjunction with said lateral marginal portions, substantially as described.",
+      originalText: manualClaimText(7),
       plainEnglish:
-        "The critical master claim: combining wing-warping (roll) with a movable vertical rudder (yaw) operated in direct conjunction to overcome adverse yaw.",
-      keyInnovations: [
-        "Synchronized roll-yaw flight control",
-        "Adverse yaw neutralization",
-        "First true 3-axis dynamic control system",
-      ],
+        "Claims a vertical rudder mechanically coordinated with differential wing incidence so it faces the low-resistance side.",
+      keyInnovations: ["Coupled roll and yaw", "Vertical rudder", "Adverse-yaw correction"],
+      legalSignificance:
+        "This expresses the coupled-control relation, rather than merely adding a rudder to an aircraft.",
+    },
+    {
+      number: 8,
+      isIndependent: true,
+      originalText: manualClaimText(8),
+      plainEnglish: "Claims the coupled vertical-rudder arrangement in the two-wing machine.",
+      keyInnovations: ["Superposed wings", "Coupled rudder", "Differential resistance"],
+    },
+    {
+      number: 9,
+      isIndependent: true,
+      originalText: manualClaimText(9),
+      plainEnglish:
+        "Claims a helicoidal, or continuously twisting, warp of a transversely elongated wing.",
+      keyInnovations: ["Helicoidal warp", "Central transverse axis", "Continuous twist"],
+    },
+    {
+      number: 10,
+      isIndependent: true,
+      originalText: manualClaimText(10),
+      plainEnglish:
+        "Claims simultaneous helicoidal warping of both wings through flexibly connected standards.",
+      keyInnovations: ["Two warped wings", "Flexible standards", "Synchronized warp"],
+    },
+    {
+      number: 11,
+      isIndependent: true,
+      originalText: manualClaimText(11),
+      plainEnglish:
+        "Claims the helicoidally warped biplane together with the coordinated vertical rudder.",
+      keyInnovations: ["Helicoidal biplane warp", "Vertical rudder", "Low-drag-side steering"],
+    },
+    {
+      number: 12,
+      isIndependent: true,
+      originalText: manualClaimText(12),
+      plainEnglish:
+        "Claims the flexible horizontal control surface that curves upward or downward behind its normal plane.",
+      keyInnovations: ["Horizontal rudder", "Flexible curvature", "Pitch control"],
+    },
+    {
+      number: 13,
+      isIndependent: true,
+      originalText: manualClaimText(13),
+      plainEnglish:
+        "Claims the pivot, springs, and rear-edge actuation that control the horizontal rudder.",
+      keyInnovations: ["Transverse pivot", "Restoring springs", "Rear-edge control"],
+    },
+    {
+      number: 14,
+      isIndependent: true,
+      originalText: manualClaimText(14),
+      plainEnglish: "Claims the combined roll, yaw, and pitch-control machine as a system.",
+      keyInnovations: ["Three-axis control", "Vertical rudder", "Horizontal rudder"],
+    },
+    {
+      number: 15,
+      isIndependent: true,
+      originalText: manualClaimText(15),
+      plainEnglish:
+        "Adds the characteristic placement: vertical rudder aft and horizontal rudder forward.",
+      keyInnovations: ["Aft yaw control", "Forward pitch control", "Coordinated surfaces"],
+    },
+    {
+      number: 16,
+      isIndependent: true,
+      originalText: manualClaimText(16),
+      plainEnglish: "Claims the parallel tail arms and their pivoted vertical rudder mounting.",
+      keyInnovations: ["Tail arms", "Vertical rudder pivot", "Free upward motion"],
+    },
+    {
+      number: 17,
+      isIndependent: true,
+      originalText: manualClaimText(17),
+      plainEnglish:
+        "Claims the flexible biplane structure and the two crossed control ropes that produce the wing warp.",
+      keyInnovations: ["Universal joints", "Diagonal stay-wires", "Front and rear control ropes"],
+    },
+    {
+      number: 18,
+      isIndependent: true,
+      originalText: manualClaimText(18),
+      plainEnglish:
+        "Adds the vertical rudder and tiller-rope linkage to the complete rope-operated wing-warping structure.",
+      keyInnovations: ["Tiller-rope", "Rudder linkage", "Wing-warping rigging"],
     },
   ],
   drawings: [
@@ -311,9 +433,7 @@ The operator lies prone in a movable cradle 6 upon the lower aeroplane. By shift
     "3-Axis Control",
   ],
   stats: {
-    totalClaims: 4,
-    independentClaims: 2,
-    patentWarYears: "1909–1917",
-    impactScore: 100,
+    totalClaims: 18,
+    independentClaims: 18,
   },
 };

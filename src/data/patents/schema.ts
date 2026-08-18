@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { validateCuratedSpecificationEdition } from "@/data/archivalEditionValidation";
 import type { Patent } from "@/types/patent";
 
 const isoDate = z
@@ -90,6 +91,61 @@ const originalTextAssetSchema = z.object({
     .optional(),
 });
 
+const curatedSpecificationInlineSchema = z.discriminatedUnion("kind", [
+  z.object({ kind: z.literal("text"), text: z.string().min(1) }),
+  z.object({
+    kind: z.literal("term"),
+    text: z.string().min(1),
+    definition: z.string().min(1),
+    label: z.string().min(1).optional(),
+  }),
+  z.object({ kind: z.literal("emphasis"), text: z.string().min(1) }),
+  z.object({ kind: z.literal("small-caps"), text: z.string().min(1) }),
+]);
+
+const curatedSpecificationInlinesSchema = z.array(curatedSpecificationInlineSchema).min(1);
+
+const curatedSpecificationBlockSchema = z.discriminatedUnion("kind", [
+  z.object({ kind: z.literal("masthead"), lines: z.array(z.string().min(1)).min(1) }),
+  z.object({
+    kind: z.literal("heading"),
+    level: z.union([z.literal(2), z.literal(3)]),
+    text: z.string().min(1),
+  }),
+  z.object({ kind: z.literal("paragraph"), inlines: curatedSpecificationInlinesSchema }),
+  z.object({
+    kind: z.literal("claim"),
+    number: z.number().int().positive(),
+    inlines: curatedSpecificationInlinesSchema,
+  }),
+  z.object({
+    kind: z.literal("figure-sheet"),
+    figureLabel: z.string().min(1),
+    title: z.string().min(1).optional(),
+    description: curatedSpecificationInlinesSchema,
+  }),
+  z.object({
+    kind: z.literal("table"),
+    caption: z.string().min(1).optional(),
+    headers: z.array(curatedSpecificationInlinesSchema).min(1),
+    rows: z.array(z.array(curatedSpecificationInlinesSchema).min(1)).min(1),
+  }),
+  z.object({
+    kind: z.literal("equation"),
+    text: z.string().min(1),
+    description: z.string().min(1).optional(),
+  }),
+]);
+
+const curatedSpecificationEditionSchema = z.object({
+  kind: z.literal("manual-react-edition"),
+  sourcePdfSha256: z.string().regex(/^[a-f0-9]{64}$/, "expected a SHA-256 hex digest"),
+  preparedBy: z.string().min(1),
+  preparedAt: isoDate,
+  completeFacsimileReviewed: z.literal(true),
+  blocks: z.array(curatedSpecificationBlockSchema).min(1),
+});
+
 export const patentSchema: z.ZodType<Patent> = z.object({
   id: z.string().min(1),
   patentNumber: z.string().min(1),
@@ -119,6 +175,7 @@ export const patentSchema: z.ZodType<Patent> = z.object({
   usptoClassification: z.string().min(1),
   originalText: z.string().min(1),
   originalTextAsset: originalTextAssetSchema.optional(),
+  archivalEdition: curatedSpecificationEditionSchema.optional(),
   plainEnglishExplanation: plainEnglishSchema,
   claims: z.array(patentClaimSchema).min(1),
   drawings: z.array(patentDrawingSchema).min(1),
@@ -148,6 +205,14 @@ export function parsePatentCatalog(patents: unknown[]): Patent[] {
     }
     if (parsed.data.filingDate > parsed.data.grantDate) {
       throw new Error(`Patent ${parsed.data.id}: filingDate is after grantDate`);
+    }
+    if (parsed.data.archivalEdition) {
+      const editionValidation = validateCuratedSpecificationEdition(parsed.data.archivalEdition);
+      if (!editionValidation.valid) {
+        throw new Error(
+          `Patent ${parsed.data.id}: invalid manual archival edition: ${editionValidation.errors.join(" ")}`,
+        );
+      }
     }
     return parsed.data;
   });

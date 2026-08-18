@@ -8,6 +8,7 @@ import { execFileSync } from "node:child_process";
 import { createHash } from "node:crypto";
 import * as fs from "node:fs";
 import * as path from "node:path";
+import { validateCuratedSpecificationEdition } from "../src/data/archivalEditionValidation";
 import { allPatents, searchPatents } from "../src/data/patents";
 import { patentSchema } from "../src/data/patents/schema";
 import {
@@ -62,8 +63,9 @@ async function main() {
   }
 
   let errorCount = 0;
-  let completeSourceTextCount = 0;
-  const sourceTextGaps: string[] = [];
+  let sourceTextLayerCount = 0;
+  let manualEditionCount = 0;
+  const manualEditionGaps: string[] = [];
 
   for (const patent of allPatents) {
     const prefix = `[${patent.patentNumber} - ${patent.id}]`;
@@ -157,10 +159,10 @@ async function main() {
       }
     }
 
-    // 7. Check complete source-text asset integrity. A page is never allowed
-    // to imply that its editorial excerpt is a full specification.
+    // 7. Check raw source-comparison assets. A machine text layer is never a
+    // public complete edition, even if it is mechanically complete.
     if (patent.originalTextAsset) {
-      completeSourceTextCount++;
+      sourceTextLayerCount++;
       const assetPath = path.join(
         process.cwd(),
         "public",
@@ -220,14 +222,49 @@ async function main() {
           }
         }
       }
+    }
+
+    // 8. A public complete specification must be a manual React edition, not
+    // an OCR result, text transcript, HTML string, or runtime reconstruction.
+    if (patent.archivalEdition) {
+      manualEditionCount++;
+      const editionValidation = validateCuratedSpecificationEdition(patent.archivalEdition);
+      if (!editionValidation.valid) {
+        fail(`manual archival edition: ${editionValidation.errors.join(" ")}`);
+      }
+      if (fs.existsSync(localPdfPath)) {
+        const sourcePdfSha256 = createHash("sha256")
+          .update(fs.readFileSync(localPdfPath))
+          .digest("hex");
+        if (sourcePdfSha256 !== patent.archivalEdition.sourcePdfSha256) {
+          fail("manual archival edition sourcePdfSha256 does not match the local PDF.");
+        }
+      }
+
+      const editionClaims = patent.archivalEdition.blocks.filter((block) => block.kind === "claim");
+      const editionClaimNumbers = editionClaims.map((claim) => claim.number);
+      const catalogClaimNumbers = patent.claims.map((claim) => claim.number);
+      if (
+        editionClaimNumbers.length !== catalogClaimNumbers.length ||
+        editionClaimNumbers.some((number, index) => number !== catalogClaimNumbers[index])
+      ) {
+        fail("manual archival edition claim numbers do not exactly match the claim decoder.");
+      }
+      for (const editionClaim of editionClaims) {
+        const decoderClaim = patent.claims.find((claim) => claim.number === editionClaim.number);
+        const editionText = editionClaim.inlines.map((inline) => inline.text).join("");
+        if (!decoderClaim || decoderClaim.originalText !== editionText) {
+          fail(`Claim #${editionClaim.number} differs from the manual archival edition.`);
+        }
+      }
     } else {
-      sourceTextGaps.push(patent.id);
+      manualEditionGaps.push(patent.id);
       console.warn(
-        `⚠️  ${prefix} Complete source text is withheld: no asset has passed the completeness gate.`,
+        `⚠️  ${prefix} Complete source text is withheld: no manually prepared archival edition is published.`,
       );
     }
 
-    // 8. Check drawing callout coordinate bounds
+    // 9. Check drawing callout coordinate bounds
     for (const drawing of patent.drawings ?? []) {
       for (const callout of drawing.callouts ?? []) {
         if (callout.x < 0 || callout.x > 100 || callout.y < 0 || callout.y > 100) {
@@ -238,7 +275,7 @@ async function main() {
       }
     }
 
-    // 9. Check plain English explanations
+    // 10. Check plain English explanations
     if (
       !patent.plainEnglishExplanation?.overview ||
       !patent.plainEnglishExplanation.coreMechanism ||
@@ -247,7 +284,7 @@ async function main() {
       fail("Incomplete plain English explanation.");
     }
 
-    // 10. Check historical context & patent wars
+    // 11. Check historical context & patent wars
     if (
       !patent.historicalContext?.problemStatement ||
       !patent.historicalContext.breakthroughInsight ||
@@ -265,7 +302,7 @@ async function main() {
     }
   }
 
-  // 11. Check chronological ordering of allPatents
+  // 12. Check chronological ordering of allPatents
   for (let i = 1; i < allPatents.length; i++) {
     if (allPatents[i].grantDate < allPatents[i - 1].grantDate) {
       console.error(
@@ -275,7 +312,7 @@ async function main() {
     }
   }
 
-  // 12. Test search queries
+  // 13. Test search queries
   const testQueries = ["Tesla", "Wright", "821,393", "Transistor", "Kevlar", "Noyce", "Wozniak"];
   for (const q of testQueries) {
     const results = searchPatents(q);
@@ -285,14 +322,16 @@ async function main() {
     }
   }
 
-  console.log(`\nComplete source-text coverage: ${completeSourceTextCount}/${allPatents.length}.`);
-  if (sourceTextGaps.length > 0) {
-    console.warn(`Withheld pending source correction or OCR: ${sourceTextGaps.join(", ")}.`);
+  console.log(
+    `\nManual archival-edition coverage: ${manualEditionCount}/${allPatents.length}; raw source comparison layers: ${sourceTextLayerCount}/${allPatents.length}.`,
+  );
+  if (manualEditionGaps.length > 0) {
+    console.warn(`Withheld pending manual preparation: ${manualEditionGaps.join(", ")}.`);
   }
   console.log(
     `Verification Result: ${
       errorCount === 0
-        ? `ALL SOFTWARE AND PUBLISHED-ASSET CHECKS PASSED; ${completeSourceTextCount}/${allPatents.length} COMPLETE SOURCE-TEXT ASSETS PUBLISHED`
+        ? `ALL SOFTWARE AND PUBLISHED-ASSET CHECKS PASSED; ${manualEditionCount}/${allPatents.length} MANUAL ARCHIVAL EDITIONS PUBLISHED`
         : `${errorCount} ERRORS FOUND`
     }`,
   );

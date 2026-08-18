@@ -12,19 +12,15 @@ import { createHash } from "node:crypto";
 import * as fs from "node:fs";
 import { createServer } from "node:net";
 import * as path from "node:path";
+import { validateCuratedSpecificationEdition } from "../src/data/archivalEditionValidation";
+import { wrightFlyerPatent } from "../src/data/patents/wright-flyer";
 
 const DEPLOYMENT_LOCK_PORT = 45_267;
 const PUBLIC_HOSTNAMES = ["classic-patents.com", "www.classic-patents.com"] as const;
 const PLATFORM_HOSTNAME = "classic-patents.vercel.app";
 const PROMOTION_HOSTNAMES = [...PUBLIC_HOSTNAMES, PLATFORM_HOSTNAME] as const;
 const WRIGHT_ROUTE = "/patents/us-821393-wright-flyer";
-const WRIGHT_SOURCE_TEXT_ROUTE = "/patents/source-text/us-821393-wright-flyer.txt";
-const WRIGHT_SOURCE_TEXT_FILE = path.join(
-  "public",
-  "patents",
-  "source-text",
-  "us-821393-wright-flyer.txt",
-);
+const WRIGHT_MANUAL_EDITION_MARKER = 'data-archival-edition="manual-react-edition"';
 
 type CommandResult = {
   stdout: string;
@@ -124,6 +120,39 @@ function sha256(content: string | Buffer): string {
   return createHash("sha256").update(content).digest("hex");
 }
 
+function assertWrightManualEditionInWorkspace() {
+  const edition = wrightFlyerPatent.archivalEdition;
+  if (!edition) {
+    throw new Error("Wright has no manually prepared archival edition; refusing release.");
+  }
+
+  const validation = validateCuratedSpecificationEdition(edition);
+  if (!validation.valid) {
+    throw new Error(
+      `Wright manual edition failed its publication contract: ${validation.errors.join(" ")}`,
+    );
+  }
+
+  const localPdfPath = path.join(
+    process.cwd(),
+    "public",
+    wrightFlyerPatent.originalPdfUrl.replace(/^\//, ""),
+  );
+  if (!fs.existsSync(localPdfPath)) {
+    throw new Error("Wright source PDF is missing; refusing release.");
+  }
+  if (sha256(fs.readFileSync(localPdfPath)) !== edition.sourcePdfSha256) {
+    throw new Error("Wright manual edition is pinned to a different source PDF; refusing release.");
+  }
+
+  const claimNumbers = edition.blocks
+    .filter((block) => block.kind === "claim")
+    .map((block) => block.number);
+  if (claimNumbers.length !== 18 || claimNumbers.some((number, index) => number !== index + 1)) {
+    throw new Error("Wright manual edition does not contain the complete ordered claim set.");
+  }
+}
+
 function assertCompletePrebuiltArtifact(buildStartedAtMs: number) {
   const outputDirectory = path.join(process.cwd(), ".vercel", "output");
   const configPath = path.join(outputDirectory, "config.json");
@@ -161,20 +190,7 @@ function assertCompletePrebuiltArtifact(buildStartedAtMs: number) {
     );
   }
 
-  const sourcePath = path.join(process.cwd(), WRIGHT_SOURCE_TEXT_FILE);
-  const prebuiltSourcePath = path.join(outputDirectory, "static", WRIGHT_SOURCE_TEXT_ROUTE);
-  if (!fs.existsSync(sourcePath) || !fs.existsSync(prebuiltSourcePath)) {
-    throw new Error(
-      "Vercel output is missing the Wright complete source-text asset required for release.",
-    );
-  }
-  const sourceHash = sha256(fs.readFileSync(sourcePath));
-  const prebuiltSourceHash = sha256(fs.readFileSync(prebuiltSourcePath));
-  if (sourceHash !== prebuiltSourceHash) {
-    throw new Error(
-      "Vercel output's Wright source-text asset does not match the current workspace; refusing stale or mixed output.",
-    );
-  }
+  assertWrightManualEditionInWorkspace();
   console.log(`Validated fresh Vercel artifact: ${fileCount} files.`);
 }
 
@@ -235,34 +251,12 @@ function assertProtectedPreviewResponse(
 
 async function assertReleaseRoutes(url: string) {
   await assertResponse(url, WRIGHT_ROUTE, "Complete Source Text");
-  const sourceText = await assertResponse(
-    url,
-    WRIGHT_SOURCE_TEXT_ROUTE,
-    "--- SOURCE PDF PAGE 1 OF 10 ---",
-  );
-  assertWrightSourceTextMatchesWorkspace(sourceText, url);
+  await assertResponse(url, WRIGHT_ROUTE, WRIGHT_MANUAL_EDITION_MARKER);
 }
 
 function assertProtectedPreviewRoutes(deployment: string) {
   assertProtectedPreviewResponse(deployment, WRIGHT_ROUTE, "Complete Source Text");
-  const sourceText = assertProtectedPreviewResponse(
-    deployment,
-    WRIGHT_SOURCE_TEXT_ROUTE,
-    "--- SOURCE PDF PAGE 1 OF 10 ---",
-  );
-  assertWrightSourceTextMatchesWorkspace(sourceText, deployment);
-}
-
-function assertWrightSourceTextMatchesWorkspace(sourceText: string, location: string) {
-  const workspaceSource = fs.readFileSync(
-    path.join(process.cwd(), WRIGHT_SOURCE_TEXT_FILE),
-    "utf8",
-  );
-  if (sha256(sourceText) !== sha256(workspaceSource)) {
-    throw new Error(
-      `Release check failed for ${location}${WRIGHT_SOURCE_TEXT_ROUTE}: the served text differs from the current source asset.`,
-    );
-  }
+  assertProtectedPreviewResponse(deployment, WRIGHT_ROUTE, WRIGHT_MANUAL_EDITION_MARKER);
 }
 
 async function acquireDeploymentLock() {
