@@ -99,7 +99,7 @@ function conflictingBuilds(): string[] {
   return processList
     .split("\n")
     .filter((line) =>
-      /\b(?:next\s+build|vercel\s+(?:build|deploy)|bun\s+(?:run\s+build|scripts\/build\.ts))\b/.test(
+      /\b(?:next\s+(?:build|dev)|vercel\s+(?:build|deploy)|bun\s+(?:run\s+(?:build|dev)|scripts\/build\.ts))\b/.test(
         line,
       ),
     );
@@ -109,7 +109,7 @@ function assertNoConflictingBuilds(stage: string) {
   const conflicts = conflictingBuilds();
   if (conflicts.length > 0) {
     throw new Error(
-      `${stage}: another build or deployment is using the shared artifacts. Wait for it to finish:\n${conflicts.join("\n")}`,
+      `${stage}: another Next process, build, or deployment is using shared artifacts. Wait for it to finish:\n${conflicts.join("\n")}`,
     );
   }
 }
