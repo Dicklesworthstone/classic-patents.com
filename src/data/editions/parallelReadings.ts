@@ -5,22 +5,34 @@
  * limitations of its matching source block. Keys are explicit block positions
  * in the edition file.
  */
+import { coltRevolverParallelReadings } from "./coltRevolverEdition";
 import { corlissSteamEngineParallelReadings } from "./corlissSteamEngineEdition";
+import { davenportElectricMotorParallelReadings } from "./davenportElectricMotorEdition";
 import { ericssonPropellerParallelReadings } from "./ericssonPropellerEdition";
+import { gatlingGunParallelReadings } from "./gatlingGunEdition";
+import { goodyearRubberParallelReadings } from "./goodyearRubberEdition";
+import { lincolnBuoyParallelReadings } from "./lincolnBuoyEdition";
 import { mccormickReaperParallelReadings } from "./mccormickReaperEdition";
 import { morseTelegraphParallelReadings } from "./morseTelegraphEdition";
 import { otisElevatorParallelReadings } from "./otisElevatorParallelReading";
+import { HOWE_SEWING_MACHINE_PARALLEL_READINGS } from "./us-4750-howe-sewing-machine";
 
 export type ArchivalParallelReading = readonly string[];
 
 export const ARCHIVAL_PARALLEL_READINGS: Readonly<
   Record<string, Readonly<Record<number, ArchivalParallelReading>>>
 > = {
+  "us-x9430-colt-revolver": coltRevolverParallelReadings,
   "us-x8277-mccormick-reaper": mccormickReaperParallelReadings,
+  "us-132-davenport-electric-motor": davenportElectricMotorParallelReadings,
   "us-588-ericsson-propeller": ericssonPropellerParallelReadings,
   "us-1647-morse-telegraph": morseTelegraphParallelReadings,
+  "us-3633-goodyear-rubber-vulcanization": goodyearRubberParallelReadings,
+  "us-4750-howe-sewing-machine": HOWE_SEWING_MACHINE_PARALLEL_READINGS,
   "us-6162-corliss-steam-engine": corlissSteamEngineParallelReadings,
+  "us-6469-lincoln-buoy": lincolnBuoyParallelReadings,
   "us-31128-otis-elevator": otisElevatorParallelReadings,
+  "us-36836-gatling-gun": gatlingGunParallelReadings,
   "us-821393-wright-flyer": {
     4: [
       "This is the standard public notice at the start of a United States patent. It addresses any reader who may need to know what the inventors claim to have made.",
