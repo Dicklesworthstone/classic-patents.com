@@ -18,6 +18,19 @@ If I tell you to do something, even if it goes against what follows below, YOU M
 
 ---
 
+## RULE NUMBER 2: ZERO TOLERANCE FOR LEGACY PAGES ROUTER (`src/pages`) OR ROGUE ROOT FILES
+
+**UNDER NO CIRCUMSTANCES IS ANY AGENT EVER PERMITTED TO CREATE A `src/pages` DIRECTORY, RECREATE LEGACY PAGES-ROUTER FILES (`_error.tsx`, `_app.tsx`, `_document.tsx`, `index.tsx` under `src/pages`), OR SCATTER UNAPPROVED ROOT SCRATCH FILES IN THIS REPOSITORY.**
+
+**VIOLATION OF THIS RULE CARRIES IMMEDIATE INSTANCE TERMINATION AND PERMANENT BANISHMENT FROM THIS PROJECT FOREVER WITH ZERO EXCEPTIONS.**
+
+1. **Pure Next.js 15 App Router Architecture Only**: This repository operates strictly and exclusively under Next.js 15 App Router (`src/app/`). Next.js activates legacy Pages Router dual-resolution when `src/pages` exists (even if empty or containing a single `.keep` file), which completely corrupts production static page data collection, route manifests, OpenGraph metadata routes, and pre-rendering.
+2. **Never Create `src/pages` For Any Reason**: Error boundaries belong in `src/app/error.tsx` and `src/app/global-error.tsx`. 404 handlers belong in `src/app/not-found.tsx`. All routes live exclusively in `src/app/`.
+3. **No Rogue Root Scratch Files**: Do not generate temporary Python, JavaScript, or Shell scripts in the repository root or source tree. Use the designated `<appDataDir>/brain/<conversation-id>/scratch/` directory or proper typed test fixtures.
+4. **Permanent Enforcement Gate**: `scripts/verify-data.ts` enforces this invariant on every single build gate and pipeline run. Any violation will instantly abort with an architectural violation error.
+
+---
+
 ## Irreversible Git & Filesystem Actions — DO NOT EVER BREAK GLASS
 
 1. **Absolutely forbidden commands:** `git reset --hard`, `git clean -fd`, `rm -rf`, or any command that can delete or overwrite code/data must never be run unless the user explicitly provides the exact command and states, in the same message, that they understand and want the irreversible consequences.

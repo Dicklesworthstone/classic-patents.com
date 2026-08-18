@@ -45,6 +45,9 @@ the visitor can see or hear the kernel change the instrument.
 - [x] P3.9 `paramAliases` on the shared bus: 3D local slider names canonicalize on write and expand on read, so peer reverts of individual 3D files cannot split the badge from the mesh.
 - [x] P3.10 Diesel / Maxim / Westinghouse / Eastman 3D draw `FrankenSimEngine` steps (adiabatic T₂, recoil stroke, triple-valve clamp, hyperfocal EV). Diesel flame gated on auto-ignition.
 - [x] P3.11 Catalog kernels (`catalogKernels.ts`) fill advertised-but-missing engine methods: Pelton, Gramme, Otto, Parsons, Ericsson, De Laval, Nobel. Badge `computeMetrics` and 3D HUDs call the same functions. Daimler/Hollerith 3D use existing engine steps. Parsons `steamPressureBar` aliases `inletPressurePsi`.
+- [x] P3.12 Second catalog wave: Whitney, McCormick, Davenport, Corliss, Gatling, Hyatt, Pasteur, Glidden, Edison phonograph, Thomson welding, Zeppelin. Engine `stepZeppelinAirship` now accepts registry keys (`gasInflation`, `flightAlt`, `flightSpeedKnots`, `trimWeight`).
+- [x] P3.13 Third wave: Noyce, Edison bulb, Bell, Morse, Engelbart mouse, Wozniak, Einstein (badge COP), Lincoln (badge Archimedes). 3D HUDs match telemetry. Kevlar 3D uses `stepKevlarContinuum` modulus.
+- [x] P3.14 Duplicate 3Ds: Corliss steam and Davenport electric now call the same catalog steps as their siblings. Hollerith tabulator uses `stepHollerithTabulating`. Goodyear HUD modulus from `stepGoodyearRubber`. CCD collected charge from `stepCcdWells`.
 
 ## P4 — Backlog (do not drop; not this slice's visitor-facing blocker)
 
@@ -85,6 +88,37 @@ the visitor can see or hear the kernel change the instrument.
 - [x] P4.33 `fs-surrogate` named phone rung (A440 / C5 / Ahoy / Watson)
 - [x] P4.34 `fs-mms` residual on schematic (same residual card as fidelity)
 - [x] P4.35 A11y live region for SI envelope (PhysicsTelemetryBadge)
+
+## P5 — Catalog 3D: kernel draw, not camera chrome
+
+- [x] P5.1 Shared `StudioKernelChips` SI overlay (numbers from the step, not a second formula)
+- [x] P5.2 Hyatt ram/extrusion gated on `isMelted` + viscosity
+- [x] P5.3 De Laval cream/skim streams gated on g-force split
+- [x] P5.4 Otis cab drops the claimed catch distance when the rope is cut
+- [x] P5.5 Pelton jet paints by u/v (gold at 0.5, cyan/rose off-design)
+- [x] P5.6 Sholes ivory key + typebar follow `stepSholesTypewriter`
+- [x] P5.7 Linotype magazine channels + falling matrix from slug cycle
+- [x] P5.8 Gatling flash interval = kernel RoF; Corliss wrist amplitude = cutoff
+- [x] P5.9 Otto flame size from compression ratio; Kodak / Davenport / Reno chips
+- [x] P5.10 Weave probes, interval ghosts, fidelity, dated scenarios for the same machines
+- [x] P5.11 Parsons steam axial speed from enthalpy; opacity from shaft kW
+- [x] P5.12 Ericsson wake from ship knots / thrust
+- [x] P5.13 Pasteur bubbles from yeast activity (quiet off-temp)
+- [x] P5.14 Thomson sparks + seam glow only when I²R forges
+- [x] P5.15 Maxim jacket paints by barrel temperature
+- [x] P5.16 Whitney fibers from lint output; brush rpm from kernel
+- [x] P5.17 McCormick chips; sickle already kernel-driven
+- [x] P5.18 Nobel core only glows when the cap actually initiates
+- [x] P5.19 Edison stylus amplitude from groove depth
+- [x] P5.20 Zeppelin altitude/pitch from net lift and trim
+- [x] P5.21 Westinghouse roll speed from shoe clamp force
+- [x] P5.22 Hollerith pin stroke from solenoid force
+- [x] P5.23 Glidden / Gramme SI chips on the canvas
+- [x] P5.24 Hollerith tabulator sibling: press from cycle time, fake 24-relay badge removed
+- [x] P5.25 Daimler hot-tube glow + stall below 600 °C; BMEP / diff wheels shown
+- [x] P5.26 Davenport electric sparks scale with shaft watts
+- [x] P5.27 Noyce HUD shows depletion width and breakdown margin
+- [x] P5.28 Catalog kernels own Daimler / Hollerith; engine and weave call them
 
 ## Explicitly out of scope
 
