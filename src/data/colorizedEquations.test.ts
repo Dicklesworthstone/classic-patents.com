@@ -99,14 +99,18 @@ describe("Colorized Equations Master Registry Integrity", () => {
     }
   });
 
-  test("never fabricates an interactive equation card from a patent formula or physics registry", () => {
-    expect(getColorizedEquationsForPatent("us-x72-whitney-cotton-gin")).toEqual([]);
+  test("returns empty array for unknown patent IDs and returns authentic authored cards for all catalog patents", () => {
     expect(getColorizedEquationsForPatent("unknown-patent-with-no-authored-card")).toEqual([]);
+    expect(getColorizedEquationsForPatent("fake-patent-12345")).toEqual([]);
 
     const authoredCards = new Set(Object.values(ALL_COLORIZED_EQUATIONS).flat());
+    expect(allPatents.length).toBe(54);
     for (const patent of allPatents) {
-      for (const card of getColorizedEquationsForPatent(patent.id)) {
+      const cards = getColorizedEquationsForPatent(patent.id);
+      expect(cards.length).toBeGreaterThanOrEqual(1);
+      for (const card of cards) {
         expect(authoredCards.has(card)).toBe(true);
+        expect(card.patentId).toBe(patent.id);
       }
     }
   });

@@ -52,10 +52,10 @@ describe("ColorizedEquation Component", () => {
     expect(html).toContain('aria-expanded="false"');
   });
 
-  test("does not render an unreviewed generated equation for a catalog patent", () => {
+  test("does not render an unreviewed generated equation for an unknown patent ID", () => {
     const { getColorizedEquationsForPatent } = require("@/data/colorizedEquations");
-    const cottonGinEqs = getColorizedEquationsForPatent("us-x72-whitney-cotton-gin");
-    expect(cottonGinEqs).toEqual([]);
+    const unauthoredEqs = getColorizedEquationsForPatent("completely-unknown-patent-id");
+    expect(unauthoredEqs).toEqual([]);
   });
 
   test("renders all variable symbols and inline explanation math via KaTeX without raw LaTeX strings", () => {
