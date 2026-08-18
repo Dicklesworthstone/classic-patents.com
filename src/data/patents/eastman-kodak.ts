@@ -1,6 +1,8 @@
 import type { Patent } from "@/types/patent";
+import { eastmanKodakPatent as sourceCorrectEastmanKodakPatent } from "./eastmanKodakSourceRecord";
 
-export const eastmanKodakPatent: Patent = {
+/** @deprecated Replaced by the source-checked record exported below. */
+export const legacyEastmanKodakPatent: Patent = {
   id: "us-388850-eastman-kodak",
   patentNumber: "US 388,850",
   title: "Camera",
@@ -289,3 +291,6 @@ Fourth, a string-cocking device whereby the shutter spring can be rewound from t
     impactScore: 100,
   },
 };
+
+/** Source-checked canonical record for US 388,850. */
+export const eastmanKodakPatent = sourceCorrectEastmanKodakPatent;
