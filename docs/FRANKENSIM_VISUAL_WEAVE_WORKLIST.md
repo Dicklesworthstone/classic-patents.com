@@ -44,7 +44,7 @@ the visitor can see or hear the kernel change the instrument.
 - [x] P4.1 Host-pumped TickScheduler + bounded catch-up (Wright 3D hello loop)
 - [x] P4.2 Shared bus for Tesla / Howe / CCD / Engelbart 3D (2D already on the bus)
 - [x] P4.2b Remaining original-catalog 3D sliders write the same registry keys as 2D / badge
-- [x] P4.3 Aero kernel (`stepFlyerAero` CG2 + SI torque; hello_spin is not the attitude law)
+- [x] P4.3 Aero kernel (`stepFlyerAero` CG2 + SI torque). `flyer_aero_step` added to fs-flyer-wasm; HUD reports wasm vs TS. hello_spin is residual only.
 - [x] P4.4 Live USPTO raster warp (Wright Fig. 4 ghost sheet skews with wingWarp)
 - [x] P4.5 Callout = material probe (live SI on pin inspector)
 - [x] P4.6 `fs-regime` invalid region on the figure (uncoupled high warp)

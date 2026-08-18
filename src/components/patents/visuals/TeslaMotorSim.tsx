@@ -1,18 +1,17 @@
 "use client";
 
-import { Volume2, VolumeX, Zap } from "lucide-react";
+import { Zap } from "lucide-react";
 import { useEffect, useState } from "react";
-import { TwoClocksStrip } from "@/components/patents/TwoClocksStrip";
 import { teslaBAt } from "@/physics/teslaKernel";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { soundEngine } from "@/utils/soundEngine";
 
 export function TeslaMotorSim() {
   const { params, updateParam } = usePatentPhysics("us-381968-tesla-motor");
-  const [phaseCount, setPhaseCount] = useState<2 | 3>(2);
+  const phaseCount = (params.phaseCount as 2 | 3) ?? 2;
   const frequencyHz = params.frequency ?? 60;
   const loadTorque = params.loadTorque ?? 20;
-  const [isPlayingAudio, setIsPlayingAudio] = useState<boolean>(false);
+  const isPlayingAudio = (params.acHum ?? 0) === 1;
   const [_activePedagogyStep, setActivePedagogyStep] = useState<number>(1);
   const [angle, setAngle] = useState<number>(0);
 
@@ -52,17 +51,17 @@ export function TeslaMotorSim() {
     if (step === 1) {
       // Step 1: Low frequency 2-phase demonstration
       updateParam("frequency", 30);
-      setPhaseCount(2);
+      updateParam("phaseCount", 2);
       updateParam("loadTorque", 10);
     } else if (step === 2) {
       // Step 2: Standard 60Hz 2-phase Polyphase Stator
       updateParam("frequency", 60);
-      setPhaseCount(2);
+      updateParam("phaseCount", 2);
       updateParam("loadTorque", 25);
     } else if (step === 3) {
       // Step 3: High efficiency 3-phase AC Motor
       updateParam("frequency", 60);
-      setPhaseCount(3);
+      updateParam("phaseCount", 3);
       updateParam("loadTorque", 40);
     }
   };
@@ -124,26 +123,6 @@ export function TeslaMotorSim() {
             }`}
           >
             3. 3-Phase Polyphase
-          </button>
-        </div>
-
-        <div className="flex items-center gap-2">
-          <button
-            aria-label="Toggle test tone"
-            type="button"
-            onClick={() => setIsPlayingAudio(!isPlayingAudio)}
-            className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-mono font-medium transition-colors border shadow-sm ${
-              isPlayingAudio
-                ? "bg-amber-600 text-white border-amber-700 animate-pulse"
-                : "bg-parchment-200 dark:bg-ink-800 text-ink-800 dark:text-parchment-200 border-parchment-300 dark:border-ink-700 hover:bg-parchment-300"
-            }`}
-          >
-            {isPlayingAudio ? (
-              <Volume2 className="w-3.5 h-3.5" />
-            ) : (
-              <VolumeX className="w-3.5 h-3.5" />
-            )}
-            <span>{isPlayingAudio ? "AC Hum (Live)" : "Play AC Hum"}</span>
           </button>
         </div>
       </div>
@@ -309,102 +288,6 @@ export function TeslaMotorSim() {
             <div>
               <span className="text-ink-500 block text-[10px]">INDUCTION SLIP</span>
               <span className="text-blue-400 font-bold">{(slip * 100).toFixed(1)}%</span>
-            </div>
-          </div>
-        </div>
-
-        {/* Controls Sidebar */}
-        <div className="lg:col-span-4 space-y-4">
-          <div className="rounded-2xl border border-parchment-300 dark:border-ink-800 bg-parchment-100/70 dark:bg-ink-900/60 p-5 space-y-4">
-            <span className="font-serif font-bold text-sm text-ink-900 dark:text-parchment-100 block">
-              AC Generator &amp; Motor Controls
-            </span>
-
-            {/* Polyphase Mode Selection */}
-            <div>
-              <span className="text-xs font-mono block text-ink-700 dark:text-ink-300 font-semibold mb-1">
-                AC Phase Configuration
-              </span>
-              <div className="grid grid-cols-2 gap-2 text-xs font-mono">
-                <button
-                  type="button"
-                  onClick={() => setPhaseCount(2)}
-                  className={`p-2 rounded-lg border text-center transition-colors ${
-                    phaseCount === 2
-                      ? "bg-amber-700 text-white border-amber-800 font-bold"
-                      : "bg-parchment-200 dark:bg-ink-800 text-ink-700 dark:text-ink-300 border-parchment-300"
-                  }`}
-                >
-                  2-Phase (90° Quad)
-                </button>
-                <button
-                  type="button"
-                  onClick={() => setPhaseCount(3)}
-                  className={`p-2 rounded-lg border text-center transition-colors ${
-                    phaseCount === 3
-                      ? "bg-amber-700 text-white border-amber-800 font-bold"
-                      : "bg-parchment-200 dark:bg-ink-800 text-ink-700 dark:text-ink-300 border-parchment-300"
-                  }`}
-                >
-                  3-Phase (120° Poly)
-                </button>
-              </div>
-            </div>
-
-            <TwoClocksStrip
-              title="electrical field vs shaft"
-              fast={{
-                name: "Stator B period",
-                period: (1000 / Math.max(1, frequencyHz)).toFixed(1),
-                scale: "ms",
-                detail: `One revolution of the air-gap field at ${frequencyHz} Hz.`,
-              }}
-              slow={{
-                name: "Rotor turn",
-                period: (60 / Math.max(1, rotorSpeedRpm)).toFixed(3),
-                scale: "s",
-                detail: `${rotorSpeedRpm} RPM. Slip keeps the field sweeping the copper so torque exists.`,
-              }}
-            />
-
-            {/* Frequency Slider */}
-            <div className="space-y-1">
-              <div className="flex justify-between text-xs font-mono">
-                <span className="font-semibold text-ink-800 dark:text-parchment-200">
-                  Stator AC Frequency
-                </span>
-                <span className="text-amber-600 dark:text-amber-400 font-bold">
-                  {frequencyHz} Hz
-                </span>
-              </div>
-              <input
-                type="range"
-                aria-label="Stator AC Frequency"
-                min="20"
-                max="120"
-                value={frequencyHz}
-                onChange={(e) => updateParam("frequency", Number(e.target.value))}
-                className="w-full accent-amber-600 cursor-pointer h-2 bg-parchment-300 dark:bg-ink-700 rounded-lg"
-              />
-            </div>
-
-            {/* Mechanical Load Slider */}
-            <div className="space-y-1">
-              <div className="flex justify-between text-xs font-mono">
-                <span className="font-semibold text-ink-800 dark:text-parchment-200">
-                  Shaft Load Torque
-                </span>
-                <span className="text-blue-600 dark:text-blue-400 font-bold">{loadTorque} N·m</span>
-              </div>
-              <input
-                type="range"
-                aria-label="Shaft Mechanical Load"
-                min="5"
-                max="45"
-                value={loadTorque}
-                onChange={(e) => updateParam("loadTorque", Number(e.target.value))}
-                className="w-full accent-blue-600 cursor-pointer h-2 bg-parchment-300 dark:bg-ink-700 rounded-lg"
-              />
             </div>
           </div>
         </div>

@@ -102,10 +102,10 @@ export function GatlingGun3D() {
 
     const studio = createThreeStudioScene({
       container: containerRef.current,
-      cameraPos: [9.0, 5.0, 10.0],
-      targetPos: [0, 0, 0],
+      cameraPos: [3, 2, 8],
+      targetPos: [0, -0.5, 0],
+      fov: 38,
     });
-
     const { scene, camera, renderer, controls } = studio;
     cameraRef.current = camera;
     controlsRef.current = controls;

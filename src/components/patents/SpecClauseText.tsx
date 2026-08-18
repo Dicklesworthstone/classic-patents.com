@@ -75,9 +75,19 @@ export function SpecClauseText({ patentId, text, className }: SpecClauseTextProp
   // Parse text into logical blocks
   const blocks = useMemo(() => {
     if (!text) return [];
-    return text
-      .replace(/\r\n/g, "\n")
-      .replace(/\r/g, "\n")
+
+    let processed = text.replace(/\r\n/g, "\n").replace(/\r/g, "\n");
+
+    // Heuristic: If a document has almost no double newlines (raw OCR),
+    // inject double newlines before apparent paragraph starts:
+    // We assume lines starting with 4 or more spaces and a capital letter
+    // are new paragraphs (or at least good breaking points to prevent walls of text).
+    processed = processed.replace(/\n(\s{4,}[A-Z0-9])/g, "\n\n$1");
+
+    // Ensure numbered claims start on a new block
+    processed = processed.replace(/\n(\s*\d+\.\s+[A-Z])/g, "\n\n$1");
+
+    return processed
       .split(/\n{2,}/)
       .map((b) => b.trim())
       .filter(Boolean);
@@ -104,15 +114,7 @@ export function SpecClauseText({ patentId, text, className }: SpecClauseTextProp
         // Page Boundary Marker Detection ("--- SOURCE PDF PAGE 1 OF 10 ---")
         const isPageMarker = /^---\s*SOURCE PDF PAGE \d+ OF \d+\s*---/i.test(normalized);
         if (isPageMarker) {
-          return (
-            <div key={`page-${idx}`} className="my-8 flex items-center gap-3 select-none">
-              <div className="h-px flex-1 bg-parchment-300 dark:bg-ink-800" />
-              <span className="px-3 py-1 rounded-full bg-parchment-200/80 dark:bg-ink-800/80 text-[11px] font-mono font-bold tracking-widest text-amber-800 dark:text-amber-400 uppercase border border-parchment-300 dark:border-ink-700 shadow-xs">
-                {normalized.replace(/^-+\s*|\s*-+$/g, "")}
-              </span>
-              <div className="h-px flex-1 bg-parchment-300 dark:bg-ink-800" />
-            </div>
-          );
+          return null;
         }
 
         if (isHeader) {

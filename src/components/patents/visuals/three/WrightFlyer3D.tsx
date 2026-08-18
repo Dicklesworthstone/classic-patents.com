@@ -3,7 +3,7 @@
 import { Compass, Eye, EyeOff, Play, Wind } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import * as THREE from "three";
-import { ensureFlyerWasm, flyerKernelSource } from "@/physics/flyerWasm";
+import { ensureFlyerWasm, flyerAeroSource, flyerKernelSource } from "@/physics/flyerWasm";
 import { TickScheduler } from "@/physics/tickScheduler";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { identityAeroBody, stepWrightAeroBody } from "@/physics/wrightAeroBody";
@@ -30,6 +30,7 @@ export function WrightFlyer3D() {
   const [showVectors, setShowVectors] = useState<boolean>(true);
   const [isAutoFlying, setIsAutoFlying] = useState<boolean>(true);
   const [kernelLabel, setKernelLabel] = useState(flyerKernelSource());
+  const [aeroLabel, setAeroLabel] = useState(flyerAeroSource());
   const baseCl = 0.45 + elevatorPitchDeg * 0.04;
 
   const live = useLiveSimParams({
@@ -50,6 +51,7 @@ export function WrightFlyer3D() {
   useEffect(() => {
     ensureFlyerWasm().then(() => {
       setKernelLabel(flyerKernelSource());
+      setAeroLabel(flyerAeroSource());
     });
 
     const container = containerRef.current;
@@ -331,7 +333,7 @@ export function WrightFlyer3D() {
                   </span>
                 </div>
                 <div className="col-span-2 text-[9px] font-mono text-ink-500 dark:text-ink-400 pt-1 border-t border-parchment-200 dark:border-ink-800/60">
-                  Attitude: aero CG2 + SI wrenches · residual {kernelLabel}
+                  Attitude: aero CG2 + SI wrenches ({aeroLabel}) · hello residual {kernelLabel}
                 </div>
                 <div className="col-span-2 text-[9px] font-mono text-ink-500 dark:text-ink-400">
                   Guy wires: steel slack · amber working · red peak (high-AoA bay)

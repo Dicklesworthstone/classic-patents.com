@@ -151,6 +151,15 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
     engineMethod: "FrankenSimEngine.stepTeslaMotor",
     controls: [
       {
+        id: "phaseCount",
+        label: "Stator Phases (2 or 3)",
+        min: 2,
+        max: 3,
+        step: 1,
+        defaultValue: 2,
+        unit: "phases",
+      },
+      {
         id: "frequency",
         label: "Line AC Frequency",
         min: 20,
@@ -167,6 +176,15 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
         step: 0.5,
         defaultValue: 38.5,
         unit: "N·m",
+      },
+      {
+        id: "acHum",
+        label: "Live AC Hum Audio",
+        min: 0,
+        max: 1,
+        step: 1,
+        defaultValue: 0,
+        unit: "on/off",
       },
     ],
     computeMetrics: (p) => {

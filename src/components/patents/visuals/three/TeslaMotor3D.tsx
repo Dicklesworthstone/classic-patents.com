@@ -1,16 +1,6 @@
 "use client";
 
-import {
-  Activity,
-  Camera,
-  Eye,
-  EyeOff,
-  RotateCcw,
-  Sparkles,
-  Volume2,
-  VolumeX,
-  Zap,
-} from "lucide-react";
+import { Activity, Camera, Eye, EyeOff, RotateCcw, Volume2, VolumeX, Zap } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import * as THREE from "three";
 import { HudText } from "@/components/ui/LatexRenderer";
@@ -33,41 +23,6 @@ interface ScenarioPreset {
   loadTorqueNm: number;
 }
 
-const SCENARIOS: ScenarioPreset[] = [
-  {
-    id: "tesla_1888_2phase",
-    name: "1888 Tesla Original 2-Phase Motor",
-    desc: "Nikola Tesla's 4-pole two-phase motor operating on 90° quadrature AC current with a copper squirrel-cage rotor.",
-    freqHz: 60,
-    phases: 2,
-    loadTorqueNm: 14.0,
-  },
-  {
-    id: "high_torque_industrial",
-    name: "Heavy Industrial Induction Drive",
-    desc: "3-Phase 6-pole high-torque motor under heavy 28 Nm mechanical brake load with increased slip and induced current.",
-    freqHz: 50,
-    phases: 3,
-    loadTorqueNm: 28.0,
-  },
-  {
-    id: "light_load_synchronous",
-    name: "Low Slip No-Load Run",
-    desc: "Motor running near synchronous speed with minimal slip ($s < 2\\%$) and low secondary rotor losses.",
-    freqHz: 60,
-    phases: 2,
-    loadTorqueNm: 2.0,
-  },
-  {
-    id: "high_frequency_120hz",
-    name: "120 Hz High-Speed Rotation",
-    desc: "120 Hz high-frequency excitation driving the synchronous magnetic field to 3,600 RPM.",
-    freqHz: 120,
-    phases: 3,
-    loadTorqueNm: 12.0,
-  },
-];
-
 export function TeslaMotor3D() {
   const containerRef = useRef<HTMLDivElement>(null);
 
@@ -75,12 +30,12 @@ export function TeslaMotor3D() {
   const { params, updateParam } = usePatentPhysics("us-381968-tesla-motor");
   const [showUiOverlay, setShowUiOverlay] = useState<boolean>(true);
   const acFrequencyHz = params.frequency ?? 60;
-  const [phaseCount, setPhaseCount] = useState<2 | 3>(2);
+  const phaseCount = (params.phaseCount as 2 | 3) ?? 2;
   const appliedLoadTorqueNm = params.loadTorque ?? 14;
   const [showMagneticFlux, _setShowMagneticFlux] = useState<boolean>(true);
   const [showCalloutPins, setShowCalloutPins] = useState<boolean>(false);
   const [activeCamera, setActiveCamera] = useState<CameraPreset>("iso");
-  const [isPlayingAudio, setIsPlayingAudio] = useState<boolean>(false);
+  const isPlayingAudio = (params.acHum ?? 0) === 1;
 
   // Electromechanical Induction Physics Calculations (FrankenSim Engine)
   // Four/six coil sides around one N–S pair: a 2-pole rotating field.
@@ -155,9 +110,9 @@ export function TeslaMotor3D() {
     controls.update();
   };
 
-  const applyScenario = (s: ScenarioPreset) => {
+  const _applyScenario = (s: ScenarioPreset) => {
     updateParam("frequency", s.freqHz);
-    setPhaseCount(s.phases);
+    updateParam("phaseCount", s.phases);
     updateParam("loadTorque", s.loadTorqueNm);
     if (isPlayingAudio) {
       soundEngine.playTeslaMotorHum(s.freqHz, Math.round(((120 * s.freqHz) / 2) * 0.95));
@@ -602,7 +557,7 @@ export function TeslaMotor3D() {
           <button
             aria-label="Toggle test tone"
             type="button"
-            onClick={() => setIsPlayingAudio(!isPlayingAudio)}
+            onClick={() => updateParam("acHum", isPlayingAudio ? 0 : 1)}
             className="p-1.5 sm:p-2.5 rounded-xl bg-white/90 dark:bg-ink-900/90 backdrop-blur-md border border-parchment-300 dark:border-ink-700 text-ink-700 dark:text-parchment-300 hover:bg-parchment-100 dark:hover:bg-ink-800 transition-colors shadow-sm"
             title={isPlayingAudio ? "Mute Motor Audio" : "Enable Motor Harmonic Sound"}
           >
@@ -666,137 +621,6 @@ export function TeslaMotor3D() {
             ))}
           </div>
         )}
-      </div>
-
-      {/* Interactive Controls & Scenario Bar */}
-      <div className="p-4 sm:p-5 bg-parchment-100/90 dark:bg-ink-900/90 border-t border-parchment-300 dark:border-ink-800 space-y-4">
-        {/* Scenario Presets */}
-        <div className="space-y-1.5">
-          <div className="text-xs font-sans font-bold text-ink-700 dark:text-ink-300 uppercase tracking-wider flex items-center gap-1.5">
-            <Sparkles className="w-3.5 h-3.5 text-amber-600" /> Historical Induction Scenarios:
-          </div>
-          <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
-            {SCENARIOS.map((s) => (
-              <button
-                key={s.id}
-                type="button"
-                onClick={() => applyScenario(s)}
-                className="p-2.5 rounded-xl border border-parchment-300 dark:border-ink-700 bg-white/70 dark:bg-ink-950/70 hover:bg-parchment-50 dark:hover:bg-ink-800 text-left transition-colors group"
-              >
-                <div className="text-xs font-serif font-bold text-ink-900 dark:text-parchment-100 group-hover:text-amber-700 dark:group-hover:text-amber-400">
-                  {s.name}
-                </div>
-                <div className="text-[10px] font-sans text-ink-500 dark:text-ink-400 line-clamp-2 mt-0.5">
-                  <HudText text={s.desc} />
-                </div>
-              </button>
-            ))}
-          </div>
-        </div>
-
-        {/* Sliders Grid */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 text-xs font-sans pt-1">
-          {/* AC Frequency */}
-          <div className="space-y-1.5">
-            <div className="flex justify-between font-medium text-ink-900 dark:text-parchment-100">
-              <span>
-                <HudText text="AC Frequency ($f$):" />
-              </span>
-              <span className="font-bold text-amber-700 dark:text-amber-400">
-                {acFrequencyHz} Hz
-              </span>
-            </div>
-            <input
-              type="range"
-              aria-label="AC Frequency (f)"
-              min="10"
-              max="120"
-              step="5"
-              value={acFrequencyHz}
-              onChange={(e) => updateParam("frequency", Number(e.target.value))}
-              className="w-full accent-amber-600 dark:accent-amber-400 cursor-pointer"
-            />
-            <span className="text-[10px] text-ink-500 dark:text-ink-400 block">
-              <HudText text="Rotating flux velocity $\\omega_s = 4\\pi f / P$" />
-            </span>
-          </div>
-
-          {/* Phase System */}
-          <div className="space-y-1.5">
-            <div className="flex justify-between font-medium text-ink-900 dark:text-parchment-100">
-              <span>Phase System:</span>
-              <span className="font-bold text-blue-600 dark:text-blue-400">
-                {phaseCount === 2 ? "2-Phase (90° Quad)" : "3-Phase (120° Balanced)"}
-              </span>
-            </div>
-            <div className="grid grid-cols-2 gap-2 pt-0.5">
-              <button
-                type="button"
-                onClick={() => setPhaseCount(2)}
-                className={`py-1.5 px-2 rounded-lg text-xs font-semibold border transition-colors ${
-                  phaseCount === 2
-                    ? "bg-blue-600 text-white border-blue-700 shadow-sm"
-                    : "bg-white/80 dark:bg-ink-800 text-ink-700 dark:text-ink-300 border-parchment-300 dark:border-ink-700"
-                }`}
-              >
-                2-Phase (Tesla 1888)
-              </button>
-              <button
-                type="button"
-                onClick={() => setPhaseCount(3)}
-                className={`py-1.5 px-2 rounded-lg text-xs font-semibold border transition-colors ${
-                  phaseCount === 3
-                    ? "bg-blue-600 text-white border-blue-700 shadow-sm"
-                    : "bg-white/80 dark:bg-ink-800 text-ink-700 dark:text-ink-300 border-parchment-300 dark:border-ink-700"
-                }`}
-              >
-                3-Phase Modern
-              </button>
-            </div>
-          </div>
-
-          {/* Mechanical Load Torque */}
-          <div className="space-y-1.5">
-            <div className="flex justify-between font-medium text-ink-900 dark:text-parchment-100">
-              <span>Shaft Load Torque:</span>
-              <span className="font-bold text-emerald-600 dark:text-emerald-400">
-                {appliedLoadTorqueNm.toFixed(1)} N·m
-              </span>
-            </div>
-            <input
-              type="range"
-              aria-label="Shaft Load Torque"
-              min="0"
-              max="38"
-              step="1"
-              value={appliedLoadTorqueNm}
-              onChange={(e) => updateParam("loadTorque", Number(e.target.value))}
-              className="w-full accent-emerald-600 dark:accent-emerald-400 cursor-pointer"
-            />
-            <span className="text-[10px] text-ink-500 dark:text-ink-400 block">
-              <HudText text="Higher load increases slip $s$ to induce torque" />
-            </span>
-          </div>
-
-          {/* Rotor Induction Efficiency */}
-          <div className="space-y-1.5">
-            <div className="flex justify-between font-medium text-ink-900 dark:text-parchment-100">
-              <span>Electromechanical Efficiency:</span>
-              <span className="font-bold text-purple-600 dark:text-purple-400">
-                {((1 - slip) * 94).toFixed(1)}%
-              </span>
-            </div>
-            <div className="w-full bg-parchment-300 dark:bg-ink-800 rounded-full h-3 overflow-hidden mt-2 border border-parchment-400 dark:border-ink-700">
-              <div
-                className="bg-gradient-to-r from-emerald-500 to-amber-500 h-full transition-colors duration-300"
-                style={{ width: `${Math.max(5, (1 - slip) * 94)}%` }}
-              />
-            </div>
-            <span className="text-[10px] text-ink-500 dark:text-ink-400 block">
-              {"η ≈ (1 − s) · η_mag (brushless)"}
-            </span>
-          </div>
-        </div>
       </div>
     </div>
   );

@@ -104,6 +104,7 @@ export function FermiReactor3D() {
 
   const live = useLiveSimParams({
     controlRodWithdrawalPct,
+    moderatorPurityPct,
     showNeutronCascade,
     kEff,
     isAudioMuted,
