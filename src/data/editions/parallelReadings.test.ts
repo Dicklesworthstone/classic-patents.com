@@ -1,4 +1,5 @@
 import { describe, expect, test } from "bun:test";
+import { archivalEditionForPublication } from "@/components/patents/DualProjectionViewer";
 import { wrightFlyerPatent } from "../patents/wright-flyer";
 import { ARCHIVAL_PARALLEL_READINGS, archivalParallelReadingsFor } from "./parallelReadings";
 
@@ -73,12 +74,12 @@ describe("Wright archival parallel reading", () => {
 describe("manual archival parallel-reading registry", () => {
   test("fails closed unless every published source paragraph has exactly one explicit reading", async () => {
     const { allPatents } = await import("@/data/patents");
-    const publishedEditions = allPatents.filter((patent) => patent.archivalEdition);
+    const publishedEditions = allPatents.flatMap((patent) => {
+      const edition = archivalEditionForPublication(patent);
+      return edition ? [{ patent, edition }] : [];
+    });
 
-    for (const patent of publishedEditions) {
-      const edition = patent.archivalEdition;
-      if (!edition) throw new Error(`Expected published edition for ${patent.id}`);
-
+    for (const { patent, edition } of publishedEditions) {
       const readings = archivalParallelReadingsFor(patent.id);
       const paragraphIndexes = edition.blocks.flatMap((block, index) =>
         block.kind === "paragraph" ? [index] : [],
@@ -95,7 +96,7 @@ describe("manual archival parallel-reading registry", () => {
     }
 
     expect(Object.keys(ARCHIVAL_PARALLEL_READINGS).sort()).toEqual(
-      publishedEditions.map((patent) => patent.id).sort(),
+      publishedEditions.map(({ patent }) => patent.id).sort(),
     );
   });
 });

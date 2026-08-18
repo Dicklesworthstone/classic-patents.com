@@ -16,7 +16,10 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 import { ColorizedEquation } from "@/components/ui/ColorizedEquation";
 import { LatexRenderer, TextWithLatex } from "@/components/ui/LatexRenderer";
 import { getColorizedEquationsForPatent } from "@/data/colorizedEquations";
-import { archivalParallelReadingsFor } from "@/data/editions/parallelReadings";
+import {
+  ARCHIVAL_PARALLEL_READINGS,
+  archivalParallelReadingsFor,
+} from "@/data/editions/parallelReadings";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import type { ColorizedEquation as ColorizedEquationType } from "@/types/equation";
 import type { Patent } from "@/types/patent";
@@ -51,6 +54,12 @@ function isPatentViewMode(value: string | undefined): value is PatentViewMode {
 export function viewModeFromSearch(search: string): PatentViewMode | undefined {
   const candidate = new URLSearchParams(search).get("view") ?? undefined;
   return isPatentViewMode(candidate) ? candidate : undefined;
+}
+
+export function archivalEditionForPublication(patent: Pick<Patent, "id" | "archivalEdition">) {
+  return patent.archivalEdition && ARCHIVAL_PARALLEL_READINGS[patent.id]
+    ? patent.archivalEdition
+    : undefined;
 }
 
 function viewModeFromLocation(): PatentViewMode | undefined {
@@ -120,7 +129,10 @@ export function DualProjectionViewer({ patent, initialView }: DualProjectionView
     patent.originalTextAsset?.kind === "source-pdf-text-layer"
       ? patent.originalTextAsset
       : undefined;
-  const archivalEdition = patent.archivalEdition;
+  // A semantic edition becomes visitor-facing only together with its explicit
+  // paragraph companions. Treat an accidentally bound draft as withheld rather
+  // than calling the fail-closed lookup during render and crashing the route.
+  const archivalEdition = archivalEditionForPublication(patent);
   const originalTextLabel = archivalEdition
     ? `Complete manually prepared edition · facsimile reviewed ${archivalEdition.preparedAt}`
     : rawSourceTextAsset
@@ -362,13 +374,13 @@ export function DualProjectionViewer({ patent, initialView }: DualProjectionView
       {/* VIEW MODE: SCHEMATIC SHEET & NUMBERED CALLOUTS */}
       {viewMode === "schematic-sheet" && (
         <div className="space-y-6">
-          {patent.archivalEdition?.drawingStatus?.kind === "no-drawings-in-facsimile" ? (
+          {archivalEdition?.drawingStatus?.kind === "no-drawings-in-facsimile" ? (
             <div className="rounded-2xl border border-amber-300 dark:border-amber-800 bg-amber-50/80 dark:bg-amber-950/20 p-6 text-ink-900 dark:text-parchment-100">
               <h4 className="font-serif text-xl font-bold">
                 Historical Text-Only Instrument (No Drawing Sheets)
               </h4>
               <p className="mt-2 font-sans text-sm leading-relaxed">
-                {patent.archivalEdition.drawingStatus.evidence}
+                {archivalEdition.drawingStatus.evidence}
               </p>
             </div>
           ) : (
@@ -622,7 +634,7 @@ export function DualProjectionViewer({ patent, initialView }: DualProjectionView
           <ClaimsDecoder
             claims={patent.claims}
             patentId={patent.id}
-            claimStatus={patent.archivalEdition?.claimStatus}
+            claimStatus={archivalEdition?.claimStatus}
           />
 
           {/* Historical Context & Patent Wars */}
