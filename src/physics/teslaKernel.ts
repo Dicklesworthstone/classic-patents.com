@@ -30,10 +30,66 @@ export function teslaCoilResonantKhz(primaryCapNf?: number, toploadCapacitancePf
   return Math.round(180 * Math.sqrt(45 / cap) * Math.sqrt(50 / (15 + cTop)));
 }
 
+/** Registry-shaped controls for the interpretive US 593,138 host model. */
+export function teslaCoilControls(params: {
+  primaryCap?: number;
+  primaryCapNf?: number;
+  toploadCapacitancePf?: number;
+  inputVoltageKv?: number;
+  sparkGapDistanceMm?: number;
+  couplingK?: number;
+  secondaryTurns?: number;
+}) {
+  return {
+    resonantFreqKhz: teslaCoilResonantKhz(
+      params.primaryCap ?? params.primaryCapNf,
+      params.toploadCapacitancePf,
+    ),
+    inputKv: params.inputVoltageKv ?? 15,
+    sparkGapMm: params.sparkGapDistanceMm ?? 12,
+    couplingK: params.couplingK ?? 0.18,
+    secondaryTurns: params.secondaryTurns ?? 850,
+  };
+}
+
 export interface TeslaFieldSample {
   omegaT: number;
   bx: number;
   by: number;
+}
+
+/**
+ * Source-bound state for the Fig. 9 apparatus in US 381,968.
+ *
+ * Tesla says that one revolution of the generator armature shifts the ring's
+ * attractive region once around the ring and that, in this arrangement, disk
+ * D follows synchronously. This is a teaching model of that illustrated
+ * motor-generator pair, not a later squirrel-cage induction-motor model.
+ */
+export interface TeslaFig9State {
+  phaseCycleHz: number;
+  generatorRpm: number;
+  poleShiftRpm: number;
+  diskRpm: number;
+  fieldDisplayOmegaRadPerS: number;
+  fieldDisplayOmegaDegPerS: number;
+  usesGeneratorContactRings: true;
+  usesMotorCommutator: false;
+}
+
+export function stepTeslaMotorFig9(phaseCycleHz: number): TeslaFig9State {
+  const boundedHz = Math.max(1, phaseCycleHz);
+  const generatorRpm = Math.round(boundedHz * 60);
+  return {
+    phaseCycleHz: boundedHz,
+    generatorRpm,
+    poleShiftRpm: generatorRpm,
+    diskRpm: generatorRpm,
+    fieldDisplayOmegaRadPerS: teslaFieldDisplayOmegaRadPerS(boundedHz),
+    fieldDisplayOmegaDegPerS: teslaFieldDisplayOmegaDegPerS(boundedHz),
+    usesGeneratorContactRings: true,
+    usesMotorCommutator: false,
+  };
 }
 
 export function teslaBAt(

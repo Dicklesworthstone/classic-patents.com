@@ -59,6 +59,7 @@ export function stepHoweSewingMachine(
     crankOmegaRadPerS: Number((stitchFrequencyHz * 2 * Math.PI).toFixed(3)),
     crankOmegaDegPerS: Number((stitchFrequencyHz * 360).toFixed(1)),
     crankDisplayTickMs: 30,
+    clothStudioAdvancePerS: Number((stitchFrequencyHz * pitch * 0.1).toFixed(3)),
   };
 }
 
@@ -67,14 +68,22 @@ export function stepHoweLockstitch(crankDeg: number): {
   shuttleX: number;
   loopOpen: boolean;
   loopWidth: number;
+  needleStudioRotZ: number;
+  needleStudioY: number;
+  shuttleStudioZ: number;
 } {
   const rad = (crankDeg * Math.PI) / 180;
   const loopOpen = crankDeg > 80 && crankDeg < 220;
+  const sinR = Math.sin(rad);
+  const cosR = Math.cos(rad);
   return {
-    needleY: Math.sin(rad) * 45,
-    shuttleX: Math.cos(rad) * 60,
+    needleY: sinR * 45,
+    shuttleX: cosR * 60,
     loopOpen,
     loopWidth: loopOpen ? Math.sin((crankDeg - 80) * (Math.PI / 140)) * 24 : 0,
+    needleStudioRotZ: Number((sinR * 0.45).toFixed(4)),
+    needleStudioY: Number((1.8 + sinR * 0.5).toFixed(4)),
+    shuttleStudioZ: Number((cosR * 1.2).toFixed(4)),
   };
 }
 

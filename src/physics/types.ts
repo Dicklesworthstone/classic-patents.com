@@ -72,6 +72,11 @@ export interface SemiconductorState {
   busBandwidthMbps: number; // MB/s
   electronVelocityMps: number; // m/s
   relativisticFractionC: number; // % c
+  voltageGain: number;
+  powerGainDb: number;
+  collectorCurrentMa: number;
+  holeDriftSpeed?: number;
+  gapStudioUnits?: number;
 }
 
 // 4. Thermodynamics, Heat & Phase Transport

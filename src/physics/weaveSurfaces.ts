@@ -40,7 +40,7 @@ import {
   stepZeppelinAirship,
 } from "./catalogKernels";
 import { FrankenSimEngine } from "./engine";
-import { fermiKeff, stepFermiKinetics } from "./fermiKinetics";
+import { stepFermiKinetics } from "./fermiKinetics";
 import {
   stepCcdWells,
   stepHoweSewingMachine,
@@ -49,8 +49,8 @@ import {
   stepRenoEscalator,
   stepSholesTypewriter,
 } from "./machineKernels";
-import { teslaBAt, teslaCoilResonantKhz } from "./teslaKernel";
-import { goddardThermo } from "./thermochem";
+import { teslaBAt } from "./teslaKernel";
+
 import { readWrightControls, stepWrightFlyerSi } from "./wrightKernel";
 
 export interface MaterialProbe {
@@ -181,14 +181,19 @@ export function materialProbe(
     };
   }
   if (patentId.includes("goddard")) {
-    const th = goddardThermo(params.chamberPressure ?? 350, params.expansionRatio ?? 3.5);
+    const rocket = FrankenSimEngine.stepGoddardRocket(
+      params.chamberPressure ?? 350,
+      params.fuelFlowRateKgs ?? 1.8,
+      4.2,
+      params.expansionRatio ?? 3.5,
+    );
     return {
       part: calloutLabel,
       material: "Copper regenerative nozzle, LOX/gasoline",
       qty: "T_e",
-      value: th.exhaustTempK.toString(),
+      value: rocket.exhaustTempK.toString(),
       unit: "K",
-      note: `v_e ${th.veMps} m/s, I_sp ${th.ispSec} s. Ae/At = ${params.expansionRatio ?? 3.5}.`,
+      note: `v_e ${rocket.exhaustVelocityMps} m/s, I_sp ${rocket.specificImpulseSec} s. Ae/At = ${params.expansionRatio ?? 3.5}.`,
     };
   }
   if (patentId.includes("fermi")) {
@@ -256,16 +261,7 @@ export function materialProbe(
     };
   }
   if (patentId.includes("tesla-coil") || patentId.includes("593138")) {
-    const cap = params.primaryCap ?? 45;
-    const freqKhz = teslaCoilResonantKhz(cap, params.toploadCapacitancePf);
-    const coil = FrankenSimEngine.stepTeslaCoil(
-      freqKhz,
-      params.inputVoltageKv ?? 15,
-      params.sparkGapDistanceMm ?? 12,
-      145,
-      params.couplingK ?? 0.18,
-      params.secondaryTurns ?? 850,
-    );
+    const coil = FrankenSimEngine.stepTeslaCoilFromControls(params);
     return {
       part: calloutLabel,
       material: "Air-core dual-tuned LC, spark-gap primary",
@@ -915,12 +911,17 @@ export function intervalGhosts(patentId: string, params: Record<string, number>)
   if (patentId.includes("fermi")) {
     const rod = params.rodWithdrawal ?? 83.5;
     const mod = params.moderatorPurity ?? 99.5;
-    const keff = fermiKeff(rod, mod);
+    const keff = stepFermiKinetics(rod, mod).kEffective;
     return [{ label: "k_eff", min: 0.85, max: 1.05, live: keff, unit: "" }];
   }
   if (patentId.includes("goddard")) {
-    const th = goddardThermo(params.chamberPressure ?? 350, params.expansionRatio ?? 3.5);
-    return [{ label: "v_e", min: 1200, max: 2800, live: th.veMps, unit: "m/s" }];
+    const rocket = FrankenSimEngine.stepGoddardRocket(
+      params.chamberPressure ?? 350,
+      params.fuelFlowRateKgs ?? 1.8,
+      4.2,
+      params.expansionRatio ?? 3.5,
+    );
+    return [{ label: "v_e", min: 1200, max: 2800, live: rocket.exhaustVelocityMps, unit: "m/s" }];
   }
   if (patentId.includes("bell") || patentId.includes("174465")) {
     return [{ label: "Voice", min: 40, max: 95, live: params.voiceAmplitude ?? 75, unit: "dB" }];
@@ -1015,16 +1016,7 @@ export function intervalGhosts(patentId: string, params: Record<string, number>)
     ];
   }
   if (patentId.includes("tesla-coil") || patentId.includes("593138")) {
-    const cap = params.primaryCap ?? 45;
-    const freqKhz = teslaCoilResonantKhz(cap, params.toploadCapacitancePf);
-    const coil = FrankenSimEngine.stepTeslaCoil(
-      freqKhz,
-      params.inputVoltageKv ?? 15,
-      params.sparkGapDistanceMm ?? 12,
-      145,
-      params.couplingK ?? 0.18,
-      params.secondaryTurns ?? 850,
-    );
+    const coil = FrankenSimEngine.stepTeslaCoilFromControls(params);
     return [{ label: "Arc", min: 0.1, max: 4, live: coil.streamerLengthMeters, unit: "m" }];
   }
   if (patentId.includes("diesel") || patentId.includes("542846")) {
@@ -1345,16 +1337,7 @@ export function fidelityField(
     };
   }
   if (patentId.includes("tesla-coil") || patentId.includes("593138")) {
-    const cap = params.primaryCap ?? 45;
-    const freqKhz = teslaCoilResonantKhz(cap, params.toploadCapacitancePf);
-    const coil = FrankenSimEngine.stepTeslaCoil(
-      freqKhz,
-      params.inputVoltageKv ?? 15,
-      params.sparkGapDistanceMm ?? 12,
-      145,
-      params.couplingK ?? 0.18,
-      params.secondaryTurns ?? 850,
-    );
+    const coil = FrankenSimEngine.stepTeslaCoilFromControls(params);
     return {
       part: "Streamer vs Colorado Springs 1899",
       model: coil.streamerLengthMeters.toFixed(2),
@@ -1445,13 +1428,18 @@ export function fidelityField(
 
 export function smokePolicy(patentId: string, params: Record<string, number>): SmokePolicy {
   if (patentId.includes("goddard")) {
-    const th = goddardThermo(params.chamberPressure ?? 350, params.expansionRatio ?? 3.5);
-    if (th.veMps < 800) {
+    const rocket = FrankenSimEngine.stepGoddardRocket(
+      params.chamberPressure ?? 350,
+      params.fuelFlowRateKgs ?? 1.8,
+      4.2,
+      params.expansionRatio ?? 3.5,
+    );
+    if (rocket.exhaustVelocityMps < 800) {
       return { allowed: false, reason: "v_e below sonic throat — no exhaust plume drawn." };
     }
     return {
       allowed: true,
-      reason: `Plume from isentropic v_e = ${th.veMps} m/s, T_e = ${th.exhaustTempK} K.`,
+      reason: `Plume from isentropic v_e = ${rocket.exhaustVelocityMps} m/s, T_e = ${rocket.exhaustTempK} K.`,
     };
   }
   if (patentId.includes("spencer")) {
@@ -1491,7 +1479,7 @@ export function spectralModes(patentId: string, params: Record<string, number>):
     }));
   }
   if (patentId.includes("tesla-coil") || patentId.includes("593138")) {
-    const f0 = teslaCoilResonantKhz(params.primaryCap, params.toploadCapacitancePf) * 1000;
+    const f0 = FrankenSimEngine.stepTeslaCoilFromControls(params).resonantFreqKhz * 1000;
     return [1, 2, 3].map((n) => ({
       n,
       freqHz: f0 * n,
@@ -1787,11 +1775,9 @@ export function coupleLinks(patentId: string, params: Record<string, number>): C
     ];
   }
   if (patentId.includes("tesla-motor") || patentId.includes("381968")) {
-    const f = params.frequency ?? 60;
-    const load = params.loadTorque ?? 38.5;
-    const em = FrankenSimEngine.stepTeslaMotor(f, 2, load);
-    const pout = em.shaftPowerWatts;
-    return [{ from: "stator B", to: "shaft", watts: pout }];
+    // The source illustrates progressive attraction, not a quantified power
+    // path. Suppress a fictitious wattage weave for this historical model.
+    return [];
   }
   if (patentId.includes("223898") || patentId.includes("lightbulb")) {
     const bulb = stepEdisonBulb({
@@ -1801,16 +1787,7 @@ export function coupleLinks(patentId: string, params: Record<string, number>): C
     return [{ from: "I²R", to: "radiation", watts: bulb.radiantWatts }];
   }
   if (patentId.includes("tesla-coil") || patentId.includes("593138")) {
-    const cap = params.primaryCap ?? 45;
-    const freqKhz = teslaCoilResonantKhz(cap, params.toploadCapacitancePf);
-    const coil = FrankenSimEngine.stepTeslaCoil(
-      freqKhz,
-      params.inputVoltageKv ?? 15,
-      params.sparkGapDistanceMm ?? 12,
-      145,
-      params.couplingK ?? 0.18,
-      params.secondaryTurns ?? 850,
-    );
+    const coil = FrankenSimEngine.stepTeslaCoilFromControls(params);
     const watts = (params.inputVoltageKv ?? 15) * 20;
     return [{ from: "primary spark", to: `${coil.streamerLengthInches.toFixed(0)} in arc`, watts }];
   }

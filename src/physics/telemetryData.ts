@@ -7,8 +7,6 @@
  */
 
 import {
-  bardeenLoadLine,
-  stepBardeenTransistor,
   stepBellTelephone,
   stepCorlissEngine,
   stepDavenportMotor,
@@ -37,7 +35,7 @@ import {
   stepZeppelinAirship,
 } from "./catalogKernels";
 import { FrankenSimEngine } from "./engine";
-import { fermiKeff, stepFermiKinetics } from "./fermiKinetics";
+import { stepFermiKinetics } from "./fermiKinetics";
 import {
   stepCcdWells,
   stepHoweSewingMachine,
@@ -45,7 +43,7 @@ import {
   stepRenoEscalator,
   stepSholesTypewriter,
 } from "./machineKernels";
-import { teslaCoilResonantKhz } from "./teslaKernel";
+
 import { goddardNozzleMatch } from "./thermochem";
 import { readWrightControls, stepWrightFlyerSi } from "./wrightKernel";
 
@@ -185,15 +183,14 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
   },
   "us-381968-tesla-motor": {
     domain: "electromagnetics_flux",
-    domainTitle: "Discrete de Rham Stator Electromagnetics & Rotor Slip",
-    equationName: "Rotating Magnetic Field & Induction Slip",
-    governingEquation:
-      "\\vec{B}(t) = B_0(\\cos\\omega t\\,\\hat{i} + \\sin\\omega t\\,\\hat{j}) \\quad \\text{with} \\quad s = \\frac{n_s - n}{n_s}",
-    engineMethod: "FrankenSimEngine.stepTeslaMotor",
+    domainTitle: "Progressive Magnetic Poles in Tesla's Fig. 9 Apparatus",
+    equationName: "Resultant Magnetizing Forces",
+    governingEquation: "\\mathbf{B}_{\\mathrm{net}} = \\mathbf{B}_{B} + \\mathbf{B}_{B'}",
+    engineMethod: "FrankenSimEngine.stepTeslaMotorFig9",
     controls: [
       {
         id: "phaseCount",
-        label: "Stator Phases (2 or 3)",
+        label: "Illustrated circuit families (2 or 3)",
         min: 2,
         max: 3,
         step: 1,
@@ -202,21 +199,12 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
       },
       {
         id: "frequency",
-        label: "Line AC Frequency",
+        label: "Generator phase-cycle rate (teaching model)",
         min: 20,
         max: 120,
         step: 1,
         defaultValue: 60,
         unit: "Hz",
-      },
-      {
-        id: "loadTorque",
-        label: "Mechanical Load Torque",
-        min: 5,
-        max: 45,
-        step: 0.5,
-        defaultValue: 38.5,
-        unit: "N·m",
       },
       {
         id: "acHum",
@@ -230,47 +218,41 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
     ],
     computeMetrics: (p) => {
       const f = p.frequency ?? 60;
-      const torque = p.loadTorque ?? 38.5;
-      // Same 2-pole rotating field as TeslaMotor3D / teslaFig4.
-      const em = FrankenSimEngine.stepTeslaMotor(f, 2, torque);
-      const synchRpm = em.synchronousRpm;
-      const slipPct = em.slipFraction * 100;
-      const rotorRpm = em.rotorRpm;
-      const effPct = em.efficiencyPct;
+      const apparatus = FrankenSimEngine.stepTeslaMotorFig9(f);
 
       return [
         {
-          label: "Synchronous Speed",
-          value: Math.round(synchRpm).toLocaleString(),
+          label: "Generator rotation",
+          value: apparatus.generatorRpm.toLocaleString(),
           unit: "RPM",
           badgeColor: "cyan",
-          progressPct: (synchRpm / 3600) * 100,
+          progressPct: Math.min(100, (apparatus.generatorRpm / 7200) * 100),
         },
         {
-          label: "Rotor Speed",
-          value: rotorRpm.toLocaleString(),
+          label: "Pole shift around ring",
+          value: apparatus.poleShiftRpm.toLocaleString(),
           unit: "RPM",
           badgeColor: "emerald",
-          progressPct: (rotorRpm / Math.max(1, synchRpm)) * 100,
+          progressPct: Math.min(100, (apparatus.poleShiftRpm / 7200) * 100),
         },
         {
-          label: "Rotor Slip (s)",
-          value: slipPct.toFixed(1),
-          unit: "%",
-          badgeColor: slipPct < 20 ? "amber" : "rose",
-          progressPct: Math.min(100, slipPct),
+          label: "Fig. 9 disk relation",
+          value: apparatus.diskRpm.toLocaleString(),
+          unit: "RPM",
+          badgeColor: "amber",
+          progressPct: Math.min(100, (apparatus.diskRpm / 7200) * 100),
         },
         {
-          label: "Efficiency (η)",
-          value: effPct.toFixed(1),
-          unit: "%",
+          label: "Generator collector rings",
+          value: "present",
+          unit: "Fig. 9",
           badgeColor: "indigo",
-          progressPct: effPct,
+          progressPct: 100,
         },
       ];
     },
     pedagogicalInsight:
-      "Two alternating currents 90° out of phase excite orthogonal stator poles, synthesizing a smooth rotating magnetic field that drags the short-circuited rotor across magnetic lines of flux.",
+      "The source's Fig. 9 model routes two generator circuits through collector rings and brushes to corresponding motor-coil pairs. Their changing magnetizing forces progressively shift the ring poles; Tesla says disk D follows the moving points of greatest attraction.",
   },
   "us-2708656-fermi-reactor": {
     domain: "nuclear_kinetics",
@@ -312,8 +294,8 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
       const rod = p.rodWithdrawal ?? 83.5;
       const mod = p.moderatorPurity ?? 99.5;
       const enrich = p.fuelEnrichmentPct ?? 0.72;
-      const keff = fermiKeff(rod, mod, enrich);
       const kinetics = stepFermiKinetics(rod, mod, enrich);
+      const keff = kinetics.kEffective;
       const rhoDollars = kinetics.reactivityDollars;
       const thermalPower = kinetics.thermalPowerWatts;
       const flux = (thermalPower * 3.2e7).toExponential(2);
@@ -489,7 +471,7 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
     pedagogicalInsight:
       "Converging-diverging de Laval nozzle geometry accelerates subsonic combustion gases past the sonic throat ($M=1$) into supersonic exhaust, transferring thermal enthalpy into axial kinetic momentum.",
   },
-  "us-2569347-bardeen-transistor": {
+  "us-2524035-bardeen-transistor": {
     domain: "semiconductor_carrier",
     domainTitle: "Point-Contact Minority Carrier Injection & Hole Diffusion",
     equationName: "Einstein Diffusion & Current Gain Alpha",
@@ -531,12 +513,8 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
       const semi = FrankenSimEngine.stepBardeenTransistor(ie, p.collectorBias ?? -40, spacing);
       const transitTimeNs = semi.clockPeriodNs;
       const alpha = semi.currentGainAlpha;
-      const powerGainDb = bardeenLoadLine(alpha).powerGainDb.toFixed(1);
-      const ic = stepBardeenTransistor(
-        ie,
-        p.collectorBias ?? -40,
-        spacing,
-      ).collectorCurrentMa.toFixed(2);
+      const powerGainDb = semi.powerGainDb.toFixed(1);
+      const ic = semi.collectorCurrentMa.toFixed(2);
 
       return [
         {
@@ -2263,22 +2241,18 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
       },
     ],
     computeMetrics: (p) => {
-      const cap = p.primaryCap ?? 45;
-      const freqKhz = teslaCoilResonantKhz(cap, p.toploadCapacitancePf);
-      const inputKv = p.inputVoltageKv ?? 15;
-      const sparkGap = p.sparkGapDistanceMm ?? 12;
-
-      const k = p.couplingK ?? 0.18;
-      const res = FrankenSimEngine.stepTeslaCoil(
-        freqKhz,
-        inputKv,
-        sparkGap,
-        145,
-        k,
-        p.secondaryTurns ?? 850,
-      );
+      const res = FrankenSimEngine.stepTeslaCoilFromControls({
+        primaryCap: p.primaryCap,
+        toploadCapacitancePf: p.toploadCapacitancePf,
+        inputVoltageKv: p.inputVoltageKv,
+        sparkGapDistanceMm: p.sparkGapDistanceMm,
+        couplingK: p.couplingK,
+        secondaryTurns: p.secondaryTurns,
+      });
+      const freqKhz = res.resonantFreqKhz;
       const peakKv = res.secondaryPotentialKv;
       const streamerM = res.streamerLengthMeters.toFixed(2);
+      const k = p.couplingK ?? 0.15;
 
       return [
         {

@@ -55,12 +55,11 @@ import {
   stepRenoEscalator,
   stepSholesTypewriter,
 } from "./machineKernels";
-import { teslaBAt, teslaFig4Strobe } from "./teslaKernel";
+import { stepTeslaMotorFig9, teslaBAt, teslaCoilControls, teslaFig4Strobe } from "./teslaKernel";
 import { tryTeslaWasmStep } from "./teslaWasm";
 import { goddardThermo } from "./thermochem";
 import type {
   AerodynamicsState,
-  ElectromagneticsState,
   NuclearKineticsState,
   SemiconductorState,
   ThermodynamicsState,
@@ -119,9 +118,7 @@ export const FrankenSimEngine = {
     };
   },
 
-  /**
-   * Tesla Polyphase Induction Motor (US 381,968)
-   */
+  /** Tesla's source-specific Fig. 9 motor-generator apparatus (US 381,968). */
   teslaBAt,
   teslaFig4Strobe,
   stepCcdWells,
@@ -152,47 +149,7 @@ export const FrankenSimEngine = {
   stepEngelbartMouse,
   stepWozniakApple,
 
-  stepTeslaMotor(
-    freqHz: number,
-    poles: number,
-    appliedLoadTorqueNm: number,
-  ): ElectromagneticsState {
-    const synchronousRpm = (120 * freqHz) / poles;
-    const maxBreakdownTorqueNm = 45.0;
-    // Kloss inversion, stable (low-slip) branch. 1888 squirrel cages run
-    // breakdown near s_m ≈ 0.18; T/T_max = T/45 must not be read as slip.
-    const breakdownSlip = 0.18;
-    const torqueRatio = Math.min(0.98, Math.max(0.02, appliedLoadTorqueNm / maxBreakdownTorqueNm));
-    const inv = 1 / torqueRatio;
-    const slipFraction = Number(
-      Math.min(
-        0.95,
-        Math.max(0.015, breakdownSlip * (inv - Math.sqrt(Math.max(0, inv * inv - 1)))),
-      ).toFixed(4),
-    );
-    const rotorRpm = synchronousRpm * (1 - slipFraction);
-    const shaftPowerWatts = (appliedLoadTorqueNm * (rotorRpm * 2 * Math.PI)) / 60;
-    const electricalInputWatts = shaftPowerWatts * 1.15;
-    const currentAmps = slipFraction * 65.0 * (freqHz / 60);
-
-    return {
-      frequencyHz: freqHz,
-      magneticFluxDensityTesla: 1.2,
-      electricFieldVpm: 220,
-      phaseAngleRad: Math.acos(0.85),
-      inductanceHenry: 0.045,
-      capacitanceFarad: 0,
-      currentAmperes: currentAmps,
-      voltageVolts: 220,
-      powerFactor: 0.85,
-      efficiencyPct: Math.round((shaftPowerWatts / (electricalInputWatts + 1e-4)) * 100),
-      synchronousRpm,
-      slipFraction,
-      rotorRpm: Math.round(rotorRpm),
-      shaftPowerWatts: Math.round(shaftPowerWatts),
-      electricalInputWatts: Math.round(electricalInputWatts),
-    };
-  },
+  stepTeslaMotorFig9,
 
   /**
    * Enrico Fermi Chicago Pile-1 (US 2,708,656).
@@ -270,7 +227,17 @@ export const FrankenSimEngine = {
       _throatAreaCm2,
       expansionRatio,
     );
+    const thermo = goddardThermo(chamberPressurePsi, expansionRatio);
+    const chemicalEnthalpyWatts = Number(
+      (
+        fuelFlowKgPerSec *
+        ((thermo.gamma / (thermo.gamma - 1)) * 365 * thermo.chamberTempK)
+      ).toFixed(0),
+    );
     if (wasmRes) {
+      const exhaustKineticWatts = Number(
+        (0.5 * fuelFlowKgPerSec * wasmRes.exhaust_velocity_mps ** 2).toFixed(0),
+      );
       return {
         chamberPressurePsi: wasmRes.chamber_pressure_psi,
         chamberPressurePa: wasmRes.chamber_pressure_psi * 6894.76,
@@ -279,16 +246,28 @@ export const FrankenSimEngine = {
         specificImpulseSec: wasmRes.exhaust_velocity_mps / 9.80665,
         machExit: wasmRes.mach_exit,
         thrustLbf: Math.round(wasmRes.thrust_newtons * 0.224809),
+        exhaustTempK: thermo.exhaustTempK,
+        chamberTempK: thermo.chamberTempK,
+        gamma: thermo.gamma,
+        chemicalEnthalpyWatts,
+        exhaustKineticWatts,
+        expansionRatio,
+        plumeAdvancePerS:
+          wasmRes.exhaust_velocity_mps >= 800
+            ? Number(((wasmRes.exhaust_velocity_mps / 2000) * 35).toFixed(3))
+            : 0,
       };
     }
 
     const chamberPressurePa = chamberPressurePsi * 6894.76;
     const gamma = 1.24;
-    const thermo = goddardThermo(chamberPressurePsi, expansionRatio);
     const machExit = Math.sqrt((2 / (gamma - 1)) * (expansionRatio ** (2 / (gamma + 1)) - 1));
     const exhaustVelocityMps = thermo.veMps;
     const thrustNewtons = Math.round(fuelFlowKgPerSec * exhaustVelocityMps);
     const specificImpulseSec = thermo.ispSec;
+    const exhaustKineticWatts = Number(
+      (0.5 * fuelFlowKgPerSec * exhaustVelocityMps ** 2).toFixed(0),
+    );
 
     return {
       chamberPressurePsi,
@@ -298,6 +277,16 @@ export const FrankenSimEngine = {
       specificImpulseSec,
       machExit: Number(machExit.toFixed(2)),
       thrustLbf: Math.round(thrustNewtons * 0.224809),
+      exhaustTempK: thermo.exhaustTempK,
+      chamberTempK: thermo.chamberTempK,
+      gamma: thermo.gamma,
+      chemicalEnthalpyWatts,
+      exhaustKineticWatts,
+      expansionRatio,
+      plumeAdvancePerS:
+        exhaustVelocityMps >= 800
+          ? Number(((exhaustVelocityMps / 2000) * 35).toFixed(3))
+          : 0,
     };
   },
 
@@ -323,6 +312,11 @@ export const FrankenSimEngine = {
         (holeMobilityCm2Vs * (collectorBiasVolts / (pointSpacingMicrons * 1e-4))).toFixed(0),
       ),
       relativisticFractionC: 0,
+      voltageGain: cat.voltageGain,
+      powerGainDb: cat.powerGainDb,
+      collectorCurrentMa: cat.collectorCurrentMa,
+      holeDriftSpeed: cat.holeDriftSpeed,
+      gapStudioUnits: cat.gapStudioUnits,
     };
   },
 
@@ -347,6 +341,9 @@ export const FrankenSimEngine = {
       busBandwidthMbps: 10,
       electronVelocityMps: wells.photoElectrons,
       relativisticFractionC: 0,
+      voltageGain: 1.0,
+      powerGainDb: 0,
+      collectorCurrentMa: 0,
     };
   },
 
@@ -383,6 +380,7 @@ export const FrankenSimEngine = {
       gyroRadiusMm: Number(gyroRadiusMm.toFixed(1)),
       photocathodeCurrentUa: Number((Math.max(0, incidentLux) * 0.045).toFixed(1)),
       rasterAdvance: Number(Math.max(1, velocityMps / 2.1e7).toFixed(2)),
+      electronDisplaySpeed: Number(((velocityMps / 2e7) * 45).toFixed(3)),
     };
   },
 
@@ -441,6 +439,29 @@ export const FrankenSimEngine = {
       secondaryPotentialKv: Math.round(secondaryPotentialMv * 1000),
       streamerScale: Number(Math.min(2.2, Math.max(0.35, streamerLengthInches / 48)).toFixed(2)),
     };
+  },
+
+  /**
+   * Same interpretive coil step, but the resonant frequency is owned here
+   * (teslaCoilResonantKhz) so 2D / 3D / badge / weave cannot drift.
+   */
+  stepTeslaCoilFromControls(params: {
+    primaryCap?: number;
+    toploadCapacitancePf?: number;
+    inputVoltageKv?: number;
+    sparkGapDistanceMm?: number;
+    couplingK?: number;
+    secondaryTurns?: number;
+  }) {
+    const c = teslaCoilControls(params);
+    return FrankenSimEngine.stepTeslaCoil(
+      c.resonantFreqKhz,
+      c.inputKv,
+      c.sparkGapMm,
+      145,
+      c.couplingK,
+      c.secondaryTurns,
+    );
   },
 
   /**

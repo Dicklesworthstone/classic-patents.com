@@ -29,6 +29,15 @@ export function stepPeltonWheel(params: { headMeters?: number; runnerRpm?: numbe
     shaftPowerKw: Math.round(hydroKw * (etaPct / 100)),
     runnerOmegaRadPerS: runner.omegaRadPerS,
     runnerOmegaDegPerS: runner.omegaDegPerS,
+    jetDisplaySpeed: Number(((vJet / 90) * 12).toFixed(3)),
+    sprayDisplaySpeed: 8,
+    pressureNeedleRad: Number(
+      (-Math.PI * 0.75 + Math.min(Math.PI * 1.5, (h / 600) * Math.PI * 1.2)).toFixed(4),
+    ),
+    needleStudioX: Number((0.2 + (h / 1000) * 0.125).toFixed(4)),
+    needleStudioY: Number((0.12 + (h / 1000) * 0.07).toFixed(4)),
+    handwheelOmegaRadPerS: 0.5,
+    jetOpacity: Number((0.55 + (etaPct / 93) * 0.4).toFixed(3)),
   };
 }
 
@@ -134,11 +143,13 @@ export function stepDeLavalSeparator(params: { bowlRpm?: number; rawMilkFlowLph?
   const gForce = Math.round((bowlOmegaRadPerS ** 2 * 0.1) / 9.80665);
   // 6500 rpm is a blur; 0.15 keeps the nested discs readable.
   const displaySlowdown = 0.15;
+  const creamFlowLph = Number((flow * 0.12).toFixed(1));
   return {
     gForce,
     fatYieldPct: Math.min(99.9, Number((95 + (gForce / 5000) * 4.5).toFixed(1))),
-    creamFlowLph: Number((flow * 0.12).toFixed(1)),
+    creamFlowLph,
     skimFlowLph: Number((flow * 0.88).toFixed(1)),
+    creamDropAdvancePerS: Number(((creamFlowLph / 300) * 1.6).toFixed(3)),
     bowlOmegaRadPerS: Number(bowlOmegaRadPerS.toFixed(2)),
     bowlOmegaDegPerS: Number((rpm * 6).toFixed(1)),
     displaySlowdown,
@@ -172,6 +183,8 @@ export function stepNobelDynamite(params: {
     flashDisplayMs: isInitiated
       ? Math.max(200, Math.round((0.2 / Math.max(1, detonationVelocityMps)) * 1e6))
       : 0,
+    shockwaveGlow: Number((1 + (detonationVelocityMps / 6000) * 1.5).toFixed(3)),
+    stickDisplayOmegaRadPerS: 0.2,
   };
 }
 
@@ -349,14 +362,22 @@ export function stepGliddenBarbedWire(params: {
 }
 
 export function stepEdisonPhonograph(params: { mandrelRpm?: number; voiceVolumeDb?: number }) {
+  // US 200,521 specifies ten grooves and ten threads to the inch. It does not
+  // specify mandrel diameter, rotation rate, indentation depth, or bandwidth.
+  // The other quantities returned here are explicitly model-only display
+  // assumptions, not measured attributes of Edison's patented apparatus.
   const rpm = params.mandrelRpm ?? 60;
   const vol = params.voiceVolumeDb ?? 75;
-  const trackSpeedInPerS = Number(((rpm / 60) * Math.PI * 4.0).toFixed(1));
+  const modelMandrelDiameterInches = 4.0;
+  const trackSpeedInPerS = Number(((rpm / 60) * Math.PI * modelMandrelDiameterInches).toFixed(1));
   const surfaceSpeedMps = Number((trackSpeedInPerS * 0.0254).toFixed(2));
   const leadScrewPitchMm = 2.54;
   const axialTravelMmPerS = Number(((rpm / 60) * leadScrewPitchMm).toFixed(3));
   const mandrel = rpmToOmega(rpm);
   return {
+    sourceGroovesPerInch: 10,
+    sourceThreadsPerInch: 10,
+    modelMandrelDiameterInches,
     trackSpeedInPerS,
     grooveDepthMicrons: Number(((vol / 75) * 25).toFixed(1)),
     leadScrewPitchMm,
@@ -479,6 +500,7 @@ export function stepHollerithTabulating(params: {
     registerDialCount,
     sortingPocketCount: 24,
     cardsPerDay: Math.round(cpm * 60 * 7),
+    cardsPerSec: Number((cpm / 60).toFixed(3)),
     pressOmegaRadPerS: press.omegaRadPerS,
     pressOmegaDegPerS: press.omegaDegPerS,
   };
@@ -505,6 +527,7 @@ export function stepNoyceIC(params: {
     maxClockGhz: Number((1000 / Math.max(1, propDelayPs * 4)).toFixed(2)),
     clockFrequencyMhz: clockMhz,
     clockPeriodNs: Number((1000 / Math.max(0.1, clockMhz)).toFixed(2)),
+    signalDisplaySpeed: Number((clockMhz * 0.45).toFixed(3)),
   };
 }
 
@@ -535,6 +558,10 @@ export function stepEdisonBulb(params: { voltage?: number; filamentLength?: numb
     lowResistanceAmps,
     lowResistanceTempK: Math.round(300 + lowResistanceWatts ** 0.45 * 160),
     lowResistanceFeederLossWatts: Number((lowResistanceAmps ** 2 * 0.4).toFixed(1)),
+    incandescenceIntensity: Number(Math.min(1, (v / 110) ** 2).toFixed(3)),
+    thermalJitterPerS: Number(((tempK / 300) * 0.4).toFixed(3)),
+    filamentEmissiveScale: 3.5,
+    bulbLightScale: 18,
   };
 }
 
@@ -608,6 +635,9 @@ export function stepMorseTelegraph(params: {
     letterGapMs: unitDurationMs * 3,
     wordGapMs: unitDurationMs * 7,
     tapeAdvanceRadPerS: Number((1.2 / Math.max(0.02, unitDurationMs / 1000)).toFixed(2)),
+    keyOscillationRadPerS: Number(((wpm / 4) * Math.PI).toFixed(3)),
+    armatureStrikeM: Number(Math.min(0.2, 0.08 + (forceN / 10) * 0.1).toFixed(4)),
+    electronDisplaySpeed: 8,
   };
 }
 
@@ -667,6 +697,10 @@ export function stepSpencerMicrowave(anodeKv?: number, magneticGauss?: number, r
     dielectricLossWattsPerDm3: isOscillating ? Math.round(rf * 1.8) : 0,
     popcornHeatStepC: isOscillating ? Number(((rf * 1.8) / 450).toFixed(3)) : 0,
     heatTickMs: 200,
+    spokeDisplayOmegaRadPerS: isOscillating ? Number(((2450 / 2450) * 4.5).toFixed(3)) : 0,
+    spokeOpacity: isOscillating
+      ? Number(Math.min(0.95, 0.25 + (Math.round(rf * 1.8) / 2000) * 0.7).toFixed(3))
+      : 0,
     // 250 g water, c = 4180 J/(kg·K): t = mcΔT / P for one kelvin.
     waterHeatSecondsPerK: isOscillating ? Number(((4180 * 0.25) / Math.max(1, rf)).toFixed(2)) : 0,
     popcornThresholdC: 100,
@@ -683,10 +717,12 @@ export function stepKevlarContinuum(
   drawRatio?: number,
   impactVelocityMps?: number,
   appliedTension?: number,
+  temperatureCelsius?: number,
 ) {
   const draw = drawRatio ?? 6.5;
   const v = impactVelocityMps ?? 450;
   const load = appliedTension ?? 30;
+  const tempC = temperatureCelsius ?? 85;
   const elasticModulusGpa = Math.min(145, 60 + draw * 20);
   const sonic = Math.sqrt((elasticModulusGpa * 1e9) / 1440);
   const strainPct = (v / sonic) * 100;
@@ -700,6 +736,11 @@ export function stepKevlarContinuum(
     alignmentPct: Math.min(100, Math.round((draw / 8.0) * 100)),
     residualStrengthGpa: Number((tensileStrengthGpa * (1 - load / 220)).toFixed(2)),
     impactDisplayMs: Math.round(Math.max(400, 1e6 / Math.max(50, v))),
+    chainWiggleOmegaRadPerS: Number((draw >= 4 ? 2 : 1.5).toFixed(3)),
+    thermalDisorder: Number((Math.max(0, (tempC - 60) / 60) * 0.3).toFixed(3)),
+    shearRatePerS: Number((50 + ((draw - 2) / 7) * 950).toFixed(1)),
+    shearAlignment: Number(Math.min(1, (50 + ((draw - 2) / 7) * 950) / 600).toFixed(3)),
+    bulletDisplaySpeed: Number(((v / 400) * 15).toFixed(3)),
   };
 }
 
@@ -724,6 +765,10 @@ export function stepBardeenTransistor(
     voltageGain: loadLine.voltageGain,
     powerGainDb: loadLine.powerGainDb,
     collectorCurrentMa: Number((_ie * currentGainAlpha).toFixed(2)),
+    holeDriftSpeed: Number(
+      (currentGainAlpha * (_ie / 2.5) * (holeDiffusionCoefficient / 49) * 3.5).toFixed(3),
+    ),
+    gapStudioUnits: Number((gap * 0.012).toFixed(4)),
   };
 }
 
@@ -829,12 +874,19 @@ export function stepEinsteinRefrigerator(params: {
   const nh3 = params.ammoniaRatio ?? 0.65;
   const evapTempC = -25 + (press - 10) * 1.4 - (nh3 - 0.65) * 18;
   const cop = Number((0.32 * (1 - Math.abs(evapTempC) / 120)).toFixed(2));
+  const coolingWatts = Math.round(qIn * cop);
   return {
     evapTempC: Number(evapTempC.toFixed(1)),
-    coolingWatts: Math.round(qIn * cop),
+    coolingWatts,
     cop,
     pressureAtm: press,
     partialPressureButaneAtm: Number((press * (1 - nh3)).toFixed(2)),
+    fluidDisplaySpeed: Number((coolingWatts / 45 + 0.8).toFixed(3)),
+    heaterGlowIntensity: Number(((qIn / 250) * 0.95).toFixed(3)),
+    generatorGlowIntensity: Number(((qIn / 300) * 0.7).toFixed(3)),
+    evaporatorGlowIntensity: Number(
+      Math.min(1.3, Math.max(0.08, -evapTempC / 35)).toFixed(3),
+    ),
   };
 }
 
@@ -866,6 +918,7 @@ export function stepLincolnBuoy(params: {
     waterDensityLbsPerCuFt: 62.4,
     baseDraftFt,
     waterplaneAreaSqFt: Math.round(hullLengthFt * hullBeamFt * 0.78),
+    paddleDisplayOmegaRadPerS: 1.2,
   };
 }
 

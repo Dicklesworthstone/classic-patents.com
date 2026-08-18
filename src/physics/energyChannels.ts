@@ -1,7 +1,6 @@
 import type { EnergyChannel } from "@/components/patents/EnergyFlowStrip";
 import { stepEdisonBulb, stepEinsteinRefrigerator } from "./catalogKernels";
 import { FrankenSimEngine } from "./engine";
-import { goddardThermo } from "./thermochem";
 import { readWrightControls, stepWrightFlyerSi } from "./wrightKernel";
 
 export function energyChannelsFor(
@@ -33,22 +32,20 @@ export function energyChannelsFor(
     ];
   }
   if (patentId === "us-1155986-goddard-rocket" || patentId === "us-1102653-goddard-rocket") {
-    const pc = params.chamberPressure ?? 350;
-    const eps = params.expansionRatio ?? 3.5;
     const rocket = FrankenSimEngine.stepGoddardRocket(
-      pc,
+      params.chamberPressure ?? 350,
       params.fuelFlowRateKgs ?? 1.8,
       params.throatAreaCm2 ?? 4.2,
-      eps,
+      params.expansionRatio ?? 3.5,
     );
-    const mdot = params.fuelFlowRateKgs ?? 1.8;
-    const th = goddardThermo(pc, eps);
-    const chem = mdot * ((th.gamma / (th.gamma - 1)) * 365 * th.chamberTempK);
-    const kin = 0.5 * mdot * rocket.exhaustVelocityMps ** 2;
     return [
-      { name: "Chem. enthalpy", watts: chem, tone: "in" },
-      { name: "Exhaust KE", watts: kin, tone: "useful" },
-      { name: "Heat leak", watts: Math.max(0, chem - kin), tone: "loss" },
+      { name: "Chem. enthalpy", watts: rocket.chemicalEnthalpyWatts, tone: "in" },
+      { name: "Exhaust KE", watts: rocket.exhaustKineticWatts, tone: "useful" },
+      {
+        name: "Heat leak",
+        watts: Math.max(0, rocket.chemicalEnthalpyWatts - rocket.exhaustKineticWatts),
+        tone: "loss",
+      },
     ];
   }
   if (patentId === "us-1781541-einstein-refrigerator") {
@@ -68,16 +65,9 @@ export function energyChannelsFor(
     ];
   }
   if (patentId === "us-381968-tesla-motor") {
-    const f = params.frequency ?? 60;
-    const load = params.loadTorque ?? 38.5;
-    const em = FrankenSimEngine.stepTeslaMotor(f, 2, load);
-    const pout = em.shaftPowerWatts;
-    const pin = em.electricalInputWatts;
-    return [
-      { name: "Stator input", watts: pin, tone: "in" },
-      { name: "Shaft", watts: pout, tone: "useful" },
-      { name: "I²R + iron", watts: pin - pout, tone: "loss" },
-    ];
+    // US 381,968 gives apparatus relations but no source values for power,
+    // current, or losses. Do not fabricate an energy-flow display.
+    return [];
   }
   return [];
 }
