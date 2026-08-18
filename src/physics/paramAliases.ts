@@ -74,7 +74,7 @@ export const PATENT_PARAM_ALIASES: Record<string, Record<string, ParamAlias>> = 
       fromCanonical: (cpm) => cpm / 42,
     },
   },
-  "us-608969-parsons-turbine": {
+  "us-328710-parsons-turbine": {
     steamPressureBar: {
       canonical: "inletPressurePsi",
       toCanonical: (bar) => bar * 14.5038,

@@ -3,6 +3,7 @@
 import { Rocket } from "lucide-react";
 import { useState } from "react";
 import { TextWithLatex } from "@/components/ui/LatexRenderer";
+import { FrankenSimEngine } from "@/physics/engine";
 import { goddardThermo } from "@/physics/thermochem";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 
@@ -11,22 +12,27 @@ export function GoddardRocketSim() {
   const [activeStage, setActiveStage] = useState<1 | 2 | 3>(1);
   const combustionPressurePsi = params.chamberPressure ?? 350;
   const nozzleExpansionRatio = params.expansionRatio ?? 3.5;
+  const flow = params.fuelFlowRateKgs ?? 1.8;
+  const throat = params.throatAreaCm2 ?? 4.2;
   const [altitudeMiles, setAltitudeMiles] = useState<number>(18);
 
-  // Optimal expansion ratio rises as ambient pressure falls with altitude.
-  const optimalEpsilon = 8 + Math.min(22, altitudeMiles / 6);
-  const mismatch = Math.abs(Math.log(nozzleExpansionRatio / optimalEpsilon));
-  const expansionEfficiency = Math.max(0.55, Math.exp(-mismatch));
+  const res = FrankenSimEngine.stepGoddardRocket(
+    combustionPressurePsi,
+    flow,
+    throat,
+    nozzleExpansionRatio,
+  );
 
-  // Supersonic de Laval calculations, derated by over/under-expansion at this altitude
-  const specificImpulseSec = Math.round(
-    (180 + Math.sqrt(combustionPressurePsi) * 4 + nozzleExpansionRatio * 2) * expansionEfficiency,
-  );
-  const exhaustVelocityMs = Math.round(specificImpulseSec * 9.80665);
-  const thrustPounds = Math.round(
-    ((combustionPressurePsi * 2.8 * nozzleExpansionRatio) / activeStage) * expansionEfficiency,
-  );
+  // Supersonic de Laval calculations via central physics engine
+  const specificImpulseSec = Math.round(res.specificImpulseSec);
+  const exhaustVelocityMs = res.exhaustVelocityMps;
+  const thrustPounds = Math.round(res.thrustNewtons * 0.224809);
   const thermo = goddardThermo(combustionPressurePsi, nozzleExpansionRatio);
+  const optimalEpsilon = Math.min(25, Math.max(3, 3.5 * Math.exp(altitudeMiles / 12)));
+  const expansionEfficiency = Math.max(
+    0.6,
+    1 - Math.abs(nozzleExpansionRatio - optimalEpsilon) / (optimalEpsilon * 2),
+  );
 
   return (
     <div className="rounded-2xl border border-amber-900/20 dark:border-ink-800 bg-parchment-50 dark:bg-ink-950 p-6 sm:p-7 shadow-patent space-y-6">

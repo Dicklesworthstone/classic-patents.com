@@ -3,7 +3,39 @@
  * No CSV, QR, receipts, or invented WASM.
  */
 
+import {
+  stepBellTelephone,
+  stepCorlissEngine,
+  stepDaimlerEngine,
+  stepDavenportMotor,
+  stepDeLavalSeparator,
+  stepEdisonBulb,
+  stepEinsteinRefrigerator,
+  stepEricssonPropeller,
+  stepGatlingGun,
+  stepGliddenBarbedWire,
+  stepGrammeDynamo,
+  stepHollerithTabulating,
+  stepHyattCelluloid,
+  stepLincolnBuoy,
+  stepMcCormickReaper,
+  stepMorseTelegraph,
+  stepNobelDynamite,
+  stepOttoEngine,
+  stepParsonsTurbine,
+  stepPasteurFermentation,
+  stepPeltonWheel,
+  stepThomsonWelding,
+  stepWhitneyCottonGin,
+  stepZeppelinAirship,
+} from "./catalogKernels";
 import { fermiKeff } from "./fermiKinetics";
+import {
+  stepMergenthalerLinotype,
+  stepOtisElevator,
+  stepRenoEscalator,
+  stepSholesTypewriter,
+} from "./machineKernels";
 import { teslaBAt } from "./teslaKernel";
 import { goddardThermo } from "./thermochem";
 import { readWrightControls, stepWrightFlyerSi } from "./wrightKernel";
@@ -182,13 +214,17 @@ export function materialProbe(
     };
   }
   if (patentId.includes("bell") || patentId.includes("174465")) {
+    const bell = stepBellTelephone({
+      voiceAmplitude: params.voiceAmplitude,
+      airGap: params.airGap,
+    });
     return {
       part: calloutLabel,
       material: "Iron diaphragm over acidulated water",
-      qty: "voice",
-      value: (params.voiceAmplitude ?? 75).toFixed(0),
-      unit: "dB",
-      note: "Undulating current. Make-and-break is the Reis failure mode.",
+      qty: "Δi",
+      value: bell.modulatedMa.toFixed(2),
+      unit: "mA",
+      note: `Diaphragm ${bell.diaphragmUm} µm. ${bell.sensitivityMvPerPa} mV/Pa.`,
     };
   }
   if (patentId.includes("marconi")) {
@@ -203,13 +239,391 @@ export function materialProbe(
     };
   }
   if (patentId.includes("morse") || patentId.includes("1647")) {
+    const morse = stepMorseTelegraph({
+      currentMa: params.currentMa,
+      wireTurns: params.wireTurns,
+    });
     return {
       part: calloutLabel,
       material: "Soft-iron horseshoe + paper tape",
-      qty: "I",
-      value: (params.currentMa ?? 65).toFixed(0),
-      unit: "mA",
-      note: "Armature pull scales with I². Type the 2D face to drive the register.",
+      qty: "F",
+      value: morse.magneticForceN.toFixed(2),
+      unit: "N",
+      note: `I² pull ${morse.ampereTurns} A·turns. Type the 2D face to drive the register.`,
+    };
+  }
+  if (patentId.includes("otto-engine") || patentId.includes("194047")) {
+    const otto = stepOttoEngine({
+      engineRpm: params.engineRpm,
+      compressionRatio: params.compressionRatio,
+    });
+    return {
+      part: calloutLabel,
+      material: "Slide-valve four-stroke, coal-gas charge",
+      qty: "η",
+      value: otto.thermalEfficiencyPct.toString(),
+      unit: "%",
+      note: `Air-standard 1−r^(1−γ). ${otto.brakeHorsepower} BHP at ${params.engineRpm ?? 180} rpm.`,
+    };
+  }
+  if (patentId.includes("pelton") || patentId.includes("233692")) {
+    const pelton = stepPeltonWheel({
+      headMeters: params.headMeters,
+      runnerRpm: params.runnerRpm,
+    });
+    return {
+      part: calloutLabel,
+      material: "Split bronze bucket, 165° deflection",
+      qty: "v_jet",
+      value: pelton.jetVelocityMps.toString(),
+      unit: "m/s",
+      note: `u/v = ${pelton.speedRatio}. η ${pelton.etaPct}% → ${pelton.shaftPowerKw} kW.`,
+    };
+  }
+  if (patentId.includes("gramme") || patentId.includes("120057")) {
+    const gramme = stepGrammeDynamo({
+      shaftRpm: params.shaftRpm,
+      coilSegments: params.coilSegments,
+    });
+    return {
+      part: calloutLabel,
+      material: "Toroidal ring armature, two brushes",
+      qty: "E",
+      value: gramme.emfVolts.toString(),
+      unit: "V",
+      note: `${gramme.powerWatts} W into the load. Continuous DC from the Gramme ring.`,
+    };
+  }
+  if (patentId.includes("glidden") || patentId.includes("157124")) {
+    const wire = stepGliddenBarbedWire({
+      wireTensionN: params.wireTensionN,
+      twistsPerFoot: params.twistsPerFoot,
+      animalPushForceN: params.animalPushForceN,
+    });
+    return {
+      part: calloutLabel,
+      material: "Two-strand galvanized line, locked diamond barb",
+      qty: "lock",
+      value: wire.isLocked ? "held" : "slip",
+      unit: "",
+      note: `Sag ${wire.sagCm} cm. Barb holds ${wire.barbSlipThresholdN} N.`,
+    };
+  }
+  if (patentId.includes("lincoln") || patentId.includes("6281")) {
+    const buoy = stepLincolnBuoy({
+      inflationPct: params.inflationPct,
+      weightTons: params.weightTons,
+      shoalDepth: params.shoalDepth,
+    });
+    return {
+      part: calloutLabel,
+      material: "India-rubber bellows under the hull",
+      qty: "Δd",
+      value: buoy.draftReductionFt.toFixed(2),
+      unit: "ft",
+      note: `${buoy.liftKn} kN lift. Shoal clearance ${buoy.shoalClearanceFt} ft.`,
+    };
+  }
+  if (patentId.includes("einstein") || patentId.includes("1781541")) {
+    const frige = stepEinsteinRefrigerator({
+      heatInput: params.heatInput,
+      totalPressure: params.totalPressure,
+    });
+    return {
+      part: calloutLabel,
+      material: "NH₃ / butane / water, no moving parts",
+      qty: "COP",
+      value: frige.cop.toFixed(2),
+      unit: "",
+      note: `T_evap ${frige.evapTempC} °C, ${frige.coolingWatts} W.`,
+    };
+  }
+  if (patentId.includes("davenport") || patentId.includes("us-132")) {
+    const motor = stepDavenportMotor({
+      batteryVoltage: params.batteryVoltage,
+      loadTorque: params.loadTorque,
+    });
+    return {
+      part: calloutLabel,
+      material: "Permanent shoes + split-ring commutator",
+      qty: "ω",
+      value: motor.shaftRpm.toString(),
+      unit: "rpm",
+      note: `${motor.shaftPowerW} W shaft. Voltage ${params.batteryVoltage ?? 12} V.`,
+    };
+  }
+  if (patentId.includes("corliss") || patentId.includes("6162")) {
+    const corliss = stepCorlissEngine({
+      steamPressurePsi: params.steamPressurePsi,
+      engineRpm: params.engineRpm,
+    });
+    return {
+      part: calloutLabel,
+      material: "Wrist-plate trip gear, dashpot cutoff",
+      qty: "IHP",
+      value: corliss.indicatedHp.toString(),
+      unit: "hp",
+      note: `η ${corliss.thermalEfficiencyPct}%. Cutoff is a trip, not a throttle.`,
+    };
+  }
+  if (
+    patentId.includes("edison") &&
+    (patentId.includes("223898") || patentId.includes("lightbulb"))
+  ) {
+    const bulb = stepEdisonBulb({
+      voltage: params.voltage,
+      filamentLength: params.filamentLength,
+    });
+    return {
+      part: calloutLabel,
+      material: "Carbonized bamboo in hard vacuum",
+      qty: "T",
+      value: bulb.filamentTempK.toString(),
+      unit: "K",
+      note: `${bulb.radiantWatts} W, ${bulb.luminousLmPerW} lm/W, ${bulb.hotResistanceOhm} Ω hot.`,
+    };
+  }
+  if (patentId.includes("sholes") || patentId.includes("79265")) {
+    const wpm = params.typingSpeedWpm ?? 45;
+    const sholes = stepSholesTypewriter(wpm, 0);
+    return {
+      part: calloutLabel,
+      material: "Up-striking type-basket, 10-pitch platen",
+      qty: "f_strike",
+      value: sholes.cps.toFixed(1),
+      unit: "s⁻¹",
+      note: `${wpm} wpm · ${sholes.pitchMm} mm/char Remington pitch.`,
+    };
+  }
+  if (patentId.includes("linotype") || patentId.includes("313224")) {
+    const lino = stepMergenthalerLinotype({
+      matrixRatePerMin: params.matrixRate,
+      spacebandWedgeMm: params.spacebandWedge,
+      potTempC: params.potTemp,
+    });
+    return {
+      part: calloutLabel,
+      material: "Eutectic type-metal pot + spaceband justifier",
+      qty: "cycle",
+      value: lino.cycleS.toFixed(1),
+      unit: "s",
+      note: `Pot ${params.potTemp ?? 260} °C ${lino.isEutecticTemp ? "eutectic" : "off-band"}. ${lino.justificationWidthMm} mm line.`,
+    };
+  }
+  if (patentId.includes("reno") || patentId.includes("470918")) {
+    const reno = stepRenoEscalator({
+      passengerCount: params.passengerCount,
+      inclineAngleDeg: params.inclineAngle,
+      velocityMps: params.beltSpeed,
+    });
+    return {
+      part: calloutLabel,
+      material: "Hardwood cleats into bronze comb teeth",
+      qty: "v",
+      value: reno.speedFpm.toString(),
+      unit: "fpm",
+      note: `${reno.throughputPerHour}/h · ${reno.motorTorqueNm} N·m · ${reno.combPlateClearanceMm} mm comb gap.`,
+    };
+  }
+  if (patentId.includes("otis") || patentId.includes("31128")) {
+    const otis = stepOtisElevator({
+      cabPayloadKg: params.cabPayload,
+      cableTensionPct: params.cableTension,
+    });
+    return {
+      part: calloutLabel,
+      material: "Wagon-spring dogs on notched racks",
+      qty: "F_arrest",
+      value: otis.peakArrestForceKn.toString(),
+      unit: "kN",
+      note: otis.isPawlEngaged
+        ? `Rope gone. Pawls fire in ${otis.pawlEngagementMs} ms, stop in ${otis.stoppingDistanceCm} cm.`
+        : `Cable at ${otis.cableTensionPct}%. Pawls stowed.`,
+    };
+  }
+  if (patentId.includes("delaval") || patentId.includes("247804")) {
+    const sep = stepDeLavalSeparator({
+      bowlRpm: params.bowlRpm ?? params.rotorRpm,
+      rawMilkFlowLph: params.rawMilkFlowLph,
+    });
+    return {
+      part: calloutLabel,
+      material: "Nested conical discs on a flexible spindle",
+      qty: "g",
+      value: sep.gForce.toString(),
+      unit: "×g",
+      note: `${sep.fatYieldPct}% fat yield · cream ${sep.creamFlowLph} L/h.`,
+    };
+  }
+  if (patentId.includes("hyatt") || patentId.includes("105338")) {
+    const hyatt = stepHyattCelluloid({
+      steamTempC: params.steamTempC ?? params.tempCelsius,
+      hydraulicPressureMpa: params.hydraulicPressureMpa,
+    });
+    return {
+      part: calloutLabel,
+      material: "Camphor-plasticized nitrocellulose in a steam jacket",
+      qty: "η",
+      value: hyatt.viscosityPaS.toString(),
+      unit: "Pa·s",
+      note: hyatt.isMelted
+        ? "Charge is plastic — ram can extrude."
+        : "Below melt — ram just packs powder.",
+    };
+  }
+  if (patentId.includes("gatling") || patentId.includes("36836")) {
+    const gat = stepGatlingGun({
+      crankRpm: params.crankRpm,
+      barrelCount: params.barrelCount,
+    });
+    return {
+      part: calloutLabel,
+      material: "Six-barrel cam cluster, gravity hopper",
+      qty: "RoF",
+      value: gat.roundsPerMin.toString(),
+      unit: "rds/min",
+      note: `${gat.barrelCoolingIntervalS} s between shots on one barrel.`,
+    };
+  }
+  if (patentId.includes("parsons") || patentId.includes("608969")) {
+    const parsons = stepParsonsTurbine({
+      rotorRpm: params.rotorRpm,
+      inletPressurePsi: params.inletPressurePsi ?? (params.steamPressureBar ?? 12.4) * 14.5038,
+    });
+    return {
+      part: calloutLabel,
+      material: "HP/IP/LP reaction drum, 48 blade rows",
+      qty: "P",
+      value: parsons.shaftPowerKw.toString(),
+      unit: "kW",
+      note: `${parsons.enthalpyKjKg} kJ/kg at ${parsons.inletMpa} MPa.`,
+    };
+  }
+  if (patentId.includes("ericsson") || patentId.includes("us-588")) {
+    const screw = stepEricssonPropeller({
+      shaftRpm: params.shaftRpm,
+      bladePitchAngleDeg: params.bladePitchAngleDeg,
+    });
+    return {
+      part: calloutLabel,
+      material: "Gunmetal hoop + six helical blades",
+      qty: "T",
+      value: screw.thrustKn.toString(),
+      unit: "kN",
+      note: `${screw.shipSpeedKnots} kn at ${params.shaftRpm ?? 120} rpm.`,
+    };
+  }
+  if (patentId.includes("pasteur") || patentId.includes("135245")) {
+    const vat = stepPasteurFermentation({
+      pasteurizationTempC: params.pasteurizationTempC,
+      holdTimeMin: params.holdTimeMin,
+      wortTempC: params.wortTempC ?? params.tempCelsius,
+    });
+    return {
+      part: calloutLabel,
+      material: "Closed tinned vat + gooseneck cotton trap",
+      qty: "yeast",
+      value: vat.yeastActivityPct.toString(),
+      unit: "%",
+      note: `${vat.logReduction} log kill on the pasteurizing hold.`,
+    };
+  }
+  if (patentId.includes("thomson") || patentId.includes("347140")) {
+    const weld = stepThomsonWelding({
+      weldCurrentAmps: params.weldCurrentAmps ?? params.currentAmperes,
+      clampPressureMpa: params.clampPressureMpa,
+    });
+    return {
+      part: calloutLabel,
+      material: "Single-turn secondary, copper jaws",
+      qty: "T",
+      value: weld.interfaceTempC.toString(),
+      unit: "°C",
+      note: `${weld.jouleKw} kW I²R. ${weld.isForged ? "Plastic forge." : "Below forge."}`,
+    };
+  }
+  if (patentId.includes("whitney") || patentId.includes("x72")) {
+    const gin = stepWhitneyCottonGin({ crankRpm: params.crankRpm });
+    return {
+      part: calloutLabel,
+      material: "Wire grate + saw cylinder + brush drum",
+      qty: "lint",
+      value: gin.outputLbsPerDay.toString(),
+      unit: "lb/day",
+      note: `Saws ${gin.sawRpm} rpm, brush ${gin.brushRpm} rpm.`,
+    };
+  }
+  if (patentId.includes("mccormick") || patentId.includes("x8277")) {
+    const reaper = stepMcCormickReaper({ forwardSpeedMph: params.forwardSpeedMph });
+    return {
+      part: calloutLabel,
+      material: "Sickle bar, 3.5 in stroke, divider reel",
+      qty: "cut",
+      value: reaper.cutFrequencyHz.toString(),
+      unit: "Hz",
+      note: `${reaper.harvestAcresPerDay} ac/day at ${params.forwardSpeedMph ?? 2.5} mph.`,
+    };
+  }
+  if (patentId.includes("nobel") || patentId.includes("78317")) {
+    const nobel = stepNobelDynamite({
+      ngConcentrationPct: params.ngConcentrationPct ?? params.ngConcentration,
+      capEnergyJoules: params.capEnergyJoules,
+    });
+    return {
+      part: calloutLabel,
+      material: "Kieselguhr + nitroglycerin, fulminate cap",
+      qty: "v_d",
+      value: nobel.detonationVelocityMps.toString(),
+      unit: "m/s",
+      note: nobel.isInitiated
+        ? "Cap initiated the column."
+        : "Cap below initiation — no detonation.",
+    };
+  }
+  if (patentId.includes("zeppelin") || patentId.includes("621195")) {
+    const zep = stepZeppelinAirship({
+      gasInflation: params.gasInflation,
+      flightAlt: params.flightAlt,
+      flightSpeedKnots: params.flightSpeedKnots,
+      trimWeight: params.trimWeight,
+    });
+    return {
+      part: calloutLabel,
+      material: "Aluminum lattice, hydrogen cells",
+      qty: "L",
+      value: zep.netLiftKn.toString(),
+      unit: "kN",
+      note: `${zep.hydrogenVolumeM3} m³ H₂. Pitch ${zep.pitchTrimDeg}°.`,
+    };
+  }
+  if (patentId.includes("daimler") || patentId.includes("361931")) {
+    const d = stepDaimlerEngine({
+      engineRpm: params.engineRpm,
+      hotTubeTempC: params.hotTubeTemp,
+      differentialSlipAngleDeg: params.turnAngle,
+    });
+    return {
+      part: calloutLabel,
+      material: "Enclosed crankcase, platinum hot-tube",
+      qty: "BHP",
+      value: d.brakeHorsepower.toString(),
+      unit: "hp",
+      note: `BMEP ${d.bmepBar} bar. Diff ${d.innerWheelRpm}/${d.outerWheelRpm} rpm.`,
+    };
+  }
+  if (patentId.includes("hollerith") || patentId.includes("395781")) {
+    const h = stepHollerithTabulating({
+      cardsPerMin: params.cardsPerMin,
+      supplyVoltageV: params.batteryVolts,
+      activeRelays: params.activeRelays,
+    });
+    return {
+      part: calloutLabel,
+      material: "Pin press, mercury cups, clock-dial registers",
+      qty: "cycle",
+      value: h.cycleTimeMs.toString(),
+      unit: "ms",
+      note: `${h.solenoidForceN} N pin force · τ ${h.inductiveTauMs} ms.`,
     };
   }
   return null;
@@ -236,9 +650,44 @@ export function intervalGhosts(patentId: string, params: Record<string, number>)
   if (patentId.includes("bell") || patentId.includes("174465")) {
     return [{ label: "Voice", min: 40, max: 95, live: params.voiceAmplitude ?? 75, unit: "dB" }];
   }
-  if (patentId.includes("edison")) {
-    const v = params.voltage ?? 110;
-    return [{ label: "Voltage", min: 40, max: 130, live: v, unit: "V" }];
+  if (
+    patentId.includes("edison") &&
+    (patentId.includes("223898") || patentId.includes("lightbulb"))
+  ) {
+    const bulb = stepEdisonBulb({
+      voltage: params.voltage,
+      filamentLength: params.filamentLength,
+    });
+    return [{ label: "T_fil", min: 1200, max: 2400, live: bulb.filamentTempK, unit: "K" }];
+  }
+  if (patentId.includes("otto-engine") || patentId.includes("194047")) {
+    const otto = stepOttoEngine({
+      engineRpm: params.engineRpm,
+      compressionRatio: params.compressionRatio,
+    });
+    return [{ label: "η", min: 20, max: 60, live: otto.thermalEfficiencyPct, unit: "%" }];
+  }
+  if (patentId.includes("pelton") || patentId.includes("233692")) {
+    const pelton = stepPeltonWheel({
+      headMeters: params.headMeters,
+      runnerRpm: params.runnerRpm,
+    });
+    return [{ label: "η", min: 40, max: 93, live: pelton.etaPct, unit: "%" }];
+  }
+  if (patentId.includes("lincoln") || patentId.includes("6281")) {
+    const buoy = stepLincolnBuoy({
+      inflationPct: params.inflationPct,
+      weightTons: params.weightTons,
+      shoalDepth: params.shoalDepth,
+    });
+    return [{ label: "Clearance", min: -1, max: 4, live: buoy.shoalClearanceFt, unit: "ft" }];
+  }
+  if (patentId.includes("einstein") || patentId.includes("1781541")) {
+    const frige = stepEinsteinRefrigerator({
+      heatInput: params.heatInput,
+      totalPressure: params.totalPressure,
+    });
+    return [{ label: "COP", min: 0.1, max: 0.4, live: frige.cop, unit: "" }];
   }
   if (patentId.includes("marconi")) {
     return [
@@ -253,6 +702,118 @@ export function intervalGhosts(patentId: string, params: Record<string, number>)
   }
   if (patentId.includes("howe") || patentId.includes("4750")) {
     return [{ label: "Crank", min: 60, max: 320, live: params.crankRpm ?? 180, unit: "rpm" }];
+  }
+  if (patentId.includes("sholes") || patentId.includes("79265")) {
+    const sholes = stepSholesTypewriter(params.typingSpeedWpm ?? 45, 0);
+    return [{ label: "Strike", min: 1, max: 10, live: sholes.cps, unit: "s⁻¹" }];
+  }
+  if (patentId.includes("linotype") || patentId.includes("313224")) {
+    const lino = stepMergenthalerLinotype({
+      matrixRatePerMin: params.matrixRate,
+      potTempC: params.potTemp,
+    });
+    return [{ label: "Cycle", min: 5, max: 90, live: lino.cycleS, unit: "s" }];
+  }
+  if (patentId.includes("reno") || patentId.includes("470918")) {
+    const reno = stepRenoEscalator({
+      velocityMps: params.beltSpeed,
+      inclineAngleDeg: params.inclineAngle,
+      passengerCount: params.passengerCount,
+    });
+    return [
+      { label: "Throughput", min: 1000, max: 8000, live: reno.throughputPerHour, unit: "/h" },
+    ];
+  }
+  if (patentId.includes("otis") || patentId.includes("31128")) {
+    const otis = stepOtisElevator({
+      cabPayloadKg: params.cabPayload,
+      cableTensionPct: params.cableTension,
+    });
+    return [{ label: "Arrest", min: 0, max: 20, live: otis.peakArrestForceKn, unit: "kN" }];
+  }
+  if (patentId.includes("delaval") || patentId.includes("247804")) {
+    const sep = stepDeLavalSeparator({ bowlRpm: params.bowlRpm ?? params.rotorRpm });
+    return [{ label: "g", min: 500, max: 12000, live: sep.gForce, unit: "×g" }];
+  }
+  if (patentId.includes("hyatt") || patentId.includes("105338")) {
+    const hyatt = stepHyattCelluloid({
+      steamTempC: params.steamTempC ?? params.tempCelsius,
+      hydraulicPressureMpa: params.hydraulicPressureMpa,
+    });
+    return [{ label: "η", min: 80, max: 4000, live: hyatt.viscosityPaS, unit: "Pa·s" }];
+  }
+  if (patentId.includes("gatling") || patentId.includes("36836")) {
+    const gat = stepGatlingGun({ crankRpm: params.crankRpm, barrelCount: params.barrelCount });
+    return [{ label: "RoF", min: 60, max: 1200, live: gat.roundsPerMin, unit: "rds/min" }];
+  }
+  if (patentId.includes("parsons") || patentId.includes("608969")) {
+    const parsons = stepParsonsTurbine({
+      rotorRpm: params.rotorRpm,
+      inletPressurePsi: params.inletPressurePsi ?? (params.steamPressureBar ?? 12.4) * 14.5038,
+    });
+    return [{ label: "Shaft", min: 1000, max: 20000, live: parsons.shaftPowerKw, unit: "kW" }];
+  }
+  if (patentId.includes("ericsson") || patentId.includes("us-588")) {
+    const screw = stepEricssonPropeller({
+      shaftRpm: params.shaftRpm,
+      bladePitchAngleDeg: params.bladePitchAngleDeg,
+    });
+    return [{ label: "Thrust", min: 2, max: 40, live: screw.thrustKn, unit: "kN" }];
+  }
+  if (patentId.includes("pasteur") || patentId.includes("135245")) {
+    const vat = stepPasteurFermentation({
+      wortTempC: params.wortTempC ?? params.tempCelsius,
+      pasteurizationTempC: params.pasteurizationTempC,
+      holdTimeMin: params.holdTimeMin,
+    });
+    return [{ label: "Yeast", min: 0, max: 100, live: vat.yeastActivityPct, unit: "%" }];
+  }
+  if (patentId.includes("thomson") || patentId.includes("347140")) {
+    const weld = stepThomsonWelding({
+      weldCurrentAmps: params.weldCurrentAmps ?? params.currentAmperes,
+      clampPressureMpa: params.clampPressureMpa,
+    });
+    return [{ label: "T_weld", min: 200, max: 1600, live: weld.interfaceTempC, unit: "°C" }];
+  }
+  if (patentId.includes("whitney") || patentId.includes("x72")) {
+    const gin = stepWhitneyCottonGin({ crankRpm: params.crankRpm });
+    return [{ label: "Lint", min: 10, max: 90, live: gin.outputLbsPerDay, unit: "lb/day" }];
+  }
+  if (patentId.includes("mccormick") || patentId.includes("x8277")) {
+    const reaper = stepMcCormickReaper({ forwardSpeedMph: params.forwardSpeedMph });
+    return [{ label: "Harvest", min: 1, max: 10, live: reaper.harvestAcresPerDay, unit: "ac/day" }];
+  }
+  if (patentId.includes("nobel") || patentId.includes("78317")) {
+    const nobel = stepNobelDynamite({
+      ngConcentrationPct: params.ngConcentrationPct ?? params.ngConcentration,
+      capEnergyJoules: params.capEnergyJoules,
+    });
+    return [{ label: "v_d", min: 0, max: 8000, live: nobel.detonationVelocityMps, unit: "m/s" }];
+  }
+  if (patentId.includes("zeppelin") || patentId.includes("621195")) {
+    const zep = stepZeppelinAirship({
+      gasInflation: params.gasInflation,
+      flightAlt: params.flightAlt,
+      flightSpeedKnots: params.flightSpeedKnots,
+      trimWeight: params.trimWeight,
+    });
+    return [{ label: "Lift", min: -20, max: 40, live: zep.netLiftKn, unit: "kN" }];
+  }
+  if (patentId.includes("daimler") || patentId.includes("361931")) {
+    const d = stepDaimlerEngine({
+      engineRpm: params.engineRpm,
+      hotTubeTempC: params.hotTubeTemp,
+      differentialSlipAngleDeg: params.turnAngle,
+    });
+    return [{ label: "BHP", min: 0.2, max: 2.5, live: d.brakeHorsepower, unit: "hp" }];
+  }
+  if (patentId.includes("hollerith") || patentId.includes("395781")) {
+    const h = stepHollerithTabulating({
+      cardsPerMin: params.cardsPerMin,
+      supplyVoltageV: params.batteryVolts,
+      activeRelays: params.activeRelays,
+    });
+    return [{ label: "Cycle", min: 200, max: 3000, live: h.cycleTimeMs, unit: "ms" }];
   }
   return [];
 }
@@ -279,6 +840,32 @@ export function fidelityField(
       reference: "3600",
       residual: (ns - 3600).toFixed(0),
       unit: "rpm",
+    };
+  }
+  if (patentId.includes("pelton") || patentId.includes("233692")) {
+    const pelton = stepPeltonWheel({
+      headMeters: params.headMeters,
+      runnerRpm: params.runnerRpm,
+    });
+    return {
+      part: "Impulse speed ratio u/v",
+      model: pelton.speedRatio.toFixed(3),
+      reference: "0.500",
+      residual: (pelton.speedRatio - 0.5).toFixed(3),
+      unit: "",
+    };
+  }
+  if (patentId.includes("otto-engine") || patentId.includes("194047")) {
+    const otto = stepOttoEngine({
+      engineRpm: params.engineRpm,
+      compressionRatio: params.compressionRatio,
+    });
+    return {
+      part: "Air-standard η vs 1876 Deutz shop",
+      model: otto.thermalEfficiencyPct.toString(),
+      reference: "27",
+      residual: (otto.thermalEfficiencyPct - 27).toString(),
+      unit: "%",
     };
   }
   return null;
@@ -418,6 +1005,76 @@ export function datedScenarios(patentId: string): DatedScenario[] {
         date: "1844-05-24",
         name: "What hath God wrought",
         writes: { currentMa: 65 },
+      },
+    ];
+  }
+  if (patentId.includes("otis") || patentId.includes("31128")) {
+    return [
+      {
+        id: "crystal-palace-1854",
+        date: "1854-05-23",
+        name: "Crystal Palace cut-rope",
+        writes: { cableTension: 0, cabPayload: 650 },
+      },
+    ];
+  }
+  if (patentId.includes("otto-engine") || patentId.includes("194047")) {
+    return [
+      {
+        id: "deutz-1876",
+        date: "1876",
+        name: "Deutz four-stroke shop engine",
+        writes: { engineRpm: 180, compressionRatio: 4.5 },
+      },
+    ];
+  }
+  if (patentId.includes("pelton") || patentId.includes("233692")) {
+    return [
+      {
+        id: "nevada-city-1880",
+        date: "1880",
+        name: "Nevada City 450 m head",
+        writes: { headMeters: 450, runnerRpm: 600 },
+      },
+    ];
+  }
+  if (patentId.includes("sholes") || patentId.includes("79265")) {
+    return [
+      {
+        id: "remington-1874",
+        date: "1874",
+        name: "Remington No. 1 shop rate",
+        writes: { typingSpeedWpm: 40 },
+      },
+    ];
+  }
+  if (patentId.includes("parsons") || patentId.includes("608969")) {
+    return [
+      {
+        id: "turbinia-1897",
+        date: "1897",
+        name: "Turbinia Spithead review",
+        writes: { rotorRpm: 3000, inletPressurePsi: 180 },
+      },
+    ];
+  }
+  if (patentId.includes("pasteur") || patentId.includes("135245")) {
+    return [
+      {
+        id: "lille-1873",
+        date: "1873",
+        name: "Lille brewery closed vat",
+        writes: { wortTempC: 22, pasteurizationTempC: 58, holdTimeMin: 20 },
+      },
+    ];
+  }
+  if (patentId.includes("thomson") || patentId.includes("347140")) {
+    return [
+      {
+        id: "lynn-1886",
+        date: "1886",
+        name: "Lynn bar-butt weld",
+        writes: { weldCurrentAmps: 4500, clampPressureMpa: 35 },
       },
     ];
   }

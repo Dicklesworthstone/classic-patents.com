@@ -4,9 +4,10 @@ import { Play, RotateCcw, Volume2, VolumeX } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { usePatentAudio } from "./three/usePatentAudio";
+import { FrankenSimEngine } from "@/physics/engine";
 
 export function ParsonsTurbineSim() {
-  const { params, updateParam, resetParams } = usePatentPhysics("us-608969-parsons-turbine");
+  const { params, updateParam, resetParams } = usePatentPhysics("us-328710-parsons-turbine");
   const { isAudioMuted, toggleSound } = usePatentAudio();
   const rotorRpm = params.rotorRpm ?? 3000;
   const inletPressurePsi = params.inletPressurePsi ?? 180;
@@ -15,12 +16,13 @@ export function ParsonsTurbineSim() {
   const animRef = useRef<number | null>(null);
 
   // Reaction Turbine Thermodynamics
-  const pInletMpa = Number((inletPressurePsi * 0.00689476).toFixed(2));
+  const { inletMpa: pInletMpa, shaftPowerKw } = FrankenSimEngine.stepParsonsTurbine({
+    rotorRpm,
+    inletPressurePsi,
+  });
   const _condenserVacuumPsi = 1.0; // Near absolute vacuum
   const _totalStages = 45; // Compound expansion stages
-  const enthalpyDropKjPerKg = Math.round(550 * (inletPressurePsi / 180));
   const isentropicEfficiencyPct = 84;
-  const shaftPowerKw = Math.round(28 * enthalpyDropKjPerKg * (isentropicEfficiencyPct / 100)); // 28 kg/s flow
   const _steamBladeSpeedRatio = Number(((rotorRpm * 2 * Math.PI * 0.45) / 60 / 320).toFixed(2));
 
   useEffect(() => {
@@ -45,7 +47,7 @@ export function ParsonsTurbineSim() {
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 border-b border-parchment-200 dark:border-ink-800 pb-3 mb-4">
         <div>
           <h3 className="font-serif text-lg font-bold text-ink-900 dark:text-parchment-100">
-            Parsons Multistage Axial Reaction Steam Turbine (US 608,969)
+            Parsons Multistage Axial Reaction Steam Turbine (US 328,710)
           </h3>
           <p className="font-sans text-xs text-ink-500 dark:text-ink-400">
             Interactive 2D Thermodynamic Model — Compound Pressure-Staging (45 Rings), Expanding

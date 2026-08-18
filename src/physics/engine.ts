@@ -6,15 +6,35 @@
  */
 
 import {
+  stepDaimlerEngine as catalogStepDaimlerEngine,
+  stepHollerithTabulating as catalogStepHollerith,
+  stepBellTelephone,
+  stepCorlissEngine,
+  stepDavenportMotor,
   stepDeLavalSeparator,
+  stepEdisonBulb,
+  stepEdisonPhonograph,
+  stepEngelbartMouse,
   stepEricssonPropeller,
+  stepGatlingGun,
+  stepGliddenBarbedWire,
   stepGrammeDynamo,
+  stepHyattCelluloid,
+  stepMcCormickReaper,
+  stepMorseTelegraph,
   stepNobelDynamite,
+  stepNoyceIC,
   stepOttoEngine,
   stepParsonsTurbine,
+  stepPasteurFermentation,
   stepPeltonWheel,
+  stepThomsonWelding,
+  stepWhitneyCottonGin,
+  stepWozniakApple,
+  stepZeppelinAirship,
 } from "./catalogKernels";
 import { stepFermiKinetics } from "./fermiKinetics";
+import { tryGoddardWasmStep } from "./goddardWasm";
 import {
   stepCcdWells,
   stepEngelbartResolver,
@@ -25,6 +45,7 @@ import {
   stepSholesTypewriter,
 } from "./machineKernels";
 import { teslaBAt, teslaFig4Strobe } from "./teslaKernel";
+import { tryTeslaWasmStep } from "./teslaWasm";
 import type {
   AerodynamicsState,
   ContinuumState,
@@ -103,6 +124,22 @@ export const FrankenSimEngine = {
   stepEricssonPropeller,
   stepDeLavalSeparator,
   stepNobelDynamite,
+  stepWhitneyCottonGin,
+  stepMcCormickReaper,
+  stepDavenportMotor,
+  stepCorlissEngine,
+  stepGatlingGun,
+  stepHyattCelluloid,
+  stepPasteurFermentation,
+  stepGliddenBarbedWire,
+  stepEdisonPhonograph,
+  stepThomsonWelding,
+  stepNoyceIC,
+  stepEdisonBulb,
+  stepBellTelephone,
+  stepMorseTelegraph,
+  stepEngelbartMouse,
+  stepWozniakApple,
 
   stepTeslaMotor(
     freqHz: number,
@@ -204,6 +241,23 @@ export const FrankenSimEngine = {
     _throatAreaCm2: number = 4.2,
     expansionRatio: number = 3.5,
   ) {
+    const wasmRes = tryGoddardWasmStep(
+      chamberPressurePsi,
+      fuelFlowKgPerSec,
+      _throatAreaCm2,
+      expansionRatio,
+    );
+    if (wasmRes) {
+      return {
+        chamberPressurePsi: wasmRes.chamber_pressure_psi,
+        chamberPressurePa: wasmRes.chamber_pressure_psi * 6894.76,
+        exhaustVelocityMps: wasmRes.exhaust_velocity_mps,
+        thrustNewtons: wasmRes.thrust_newtons,
+        specificImpulseSec: wasmRes.exhaust_velocity_mps / 9.80665,
+        machExit: wasmRes.mach_exit,
+      };
+    }
+
     const chamberPressurePa = chamberPressurePsi * 6894.76;
     const gamma = 1.24; // Combustion products heat capacity ratio
     const combustionTempK = 2850;
@@ -353,6 +407,16 @@ export const FrankenSimEngine = {
     sparkGapMm: number,
     qFactor: number = 145,
   ) {
+    const wasmRes = tryTeslaWasmStep(resonantFreqKhz, inputKv, sparkGapMm, qFactor);
+    if (wasmRes) {
+      return {
+        resonantFreqKhz: wasmRes.resonant_freq_khz,
+        secondaryPotentialMv: wasmRes.secondary_potential_mv,
+        streamerLengthInches: wasmRes.streamer_length_inches,
+        streamerLengthMeters: wasmRes.streamer_length_meters,
+      };
+    }
+
     const primaryL = 0.012; // mH
     const secondaryL = 85.0; // mH
     const transformationRatio = Math.sqrt(secondaryL / primaryL);
@@ -576,25 +640,7 @@ export const FrankenSimEngine = {
     hotTubeTempC?: number;
     differentialSlipAngleDeg?: number;
   }) {
-    const rpm = params.engineRpm ?? 750;
-    const tubeTemp = params.hotTubeTempC ?? 850;
-    const slipDeg = params.differentialSlipAngleDeg ?? 15;
-    const bmepBar = tubeTemp >= 800 ? 4.5 : Number((4.5 * (tubeTemp / 800)).toFixed(2));
-    const brakeHorsepower = Number(((bmepBar * 100 * 0.000462 * rpm) / (120 * 0.7457)).toFixed(2));
-    const differentialCarrierRpm = Math.round(rpm / 4.5);
-    const speedDeltaRpm = Math.round(
-      differentialCarrierRpm * Math.sin((slipDeg * Math.PI) / 180) * 0.4,
-    );
-    const outerWheelRpm = differentialCarrierRpm + speedDeltaRpm;
-    const innerWheelRpm = differentialCarrierRpm - speedDeltaRpm;
-
-    return {
-      bmepBar,
-      brakeHorsepower,
-      differentialCarrierRpm,
-      outerWheelRpm,
-      innerWheelRpm,
-    };
+    return catalogStepDaimlerEngine(params);
   },
 
   /**
@@ -635,22 +681,7 @@ export const FrankenSimEngine = {
     supplyVoltageV?: number;
     activeRelays?: number;
   }) {
-    const cpm = params.cardsPerMin ?? 60;
-    const v = params.supplyVoltageV ?? 12;
-    const relays = params.activeRelays ?? 8;
-    const cycleTimeMs = Math.round(60000 / cpm);
-    const solenoidForceN = Number(
-      (((relays * (v / 12) * 45) ** 2 * 1.256e-6 * 0.0004) / (2 * 0.002 ** 2)).toFixed(2),
-    );
-    const inductiveTauMs = Number(((0.08 / (v / 2.4)) * 1000).toFixed(1));
-    const contactResistanceOhms = 0.08;
-
-    return {
-      cycleTimeMs,
-      solenoidForceN,
-      inductiveTauMs,
-      contactResistanceOhms,
-    };
+    return catalogStepHollerith(params);
   },
 
   /**
@@ -726,35 +757,7 @@ export const FrankenSimEngine = {
    * Ferdinand von Zeppelin Rigid Airship (US 621,195)
    * Archimedes Multi-Cell Hydrogen Buoyancy & Space-Frame Stress
    */
-  stepZeppelinAirship(params: {
-    gasInflationPct?: number;
-    altitudeM?: number;
-    forwardSpeedKmh?: number;
-    trimWeightPosM?: number;
-  }) {
-    const inflation = params.gasInflationPct ?? 95;
-    const alt = params.altitudeM ?? 300;
-    const speedKmh = params.forwardSpeedKmh ?? 30;
-    const trimM = params.trimWeightPosM ?? 0;
-    const rhoAir = 1.225 * Math.exp(-alt / 8400);
-    const rhoH2 = 0.089 * Math.exp(-alt / 8400);
-    const totalVolumeM3 = 11300 * (inflation / 100);
-    const grossBuoyancyKn = Number(((totalVolumeM3 * 9.81 * (rhoAir - rhoH2)) / 1000).toFixed(1));
-    const structuralWeightKn = 98.0;
-    const netLiftKn = Number((grossBuoyancyKn - structuralWeightKn).toFixed(1));
-    const pitchTrimDeg = Number(((trimM * 300 * 9.81) / 15000).toFixed(1));
-    const parasiteDragKn = Number(
-      ((0.5 * rhoAir * (speedKmh / 3.6) ** 2 * 85 * 0.025) / 1000).toFixed(2),
-    );
-
-    return {
-      grossBuoyancyKn,
-      netLiftKn,
-      pitchTrimDeg,
-      parasiteDragKn,
-      ambientAirDensityKgM3: Number(rhoAir.toFixed(3)),
-    };
-  },
+  stepZeppelinAirship,
 
   /**
    * Carl Linde Air Liquefaction (US 727,650)

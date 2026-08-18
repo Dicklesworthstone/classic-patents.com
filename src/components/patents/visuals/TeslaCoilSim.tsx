@@ -2,22 +2,21 @@
 
 import { Zap } from "lucide-react";
 import { useState } from "react";
+import { FrankenSimEngine } from "@/physics/engine";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 
 export function TeslaCoilSim() {
   const { params, updateParam } = usePatentPhysics("us-533367-tesla-coil");
   const primaryCapacitanceNf = params.primaryCap ?? 45;
+  const inputKv = params.inputVoltageKv ?? 15;
+  const sparkGap = params.sparkGapDistanceMm ?? 12;
   const [sparkRateHz, setSparkRateHz] = useState<number>(120); // 30 to 400 sparks/sec
   const [secondaryTurns, setSecondaryTurns] = useState<number>(850); // 400 to 1500 turns
-  const [_breakoutArcLengthInches, _setBreakoutArcLengthInches] = useState<number>(36);
 
-  // Resonant calculations
-  const primaryInductanceUh = 15; // 15 uH
-  const resonantFreqKhz =
-    1 / (2 * Math.PI * Math.sqrt(primaryInductanceUh * 1e-6 * primaryCapacitanceNf * 1e-9)) / 1000;
-  const secondaryVoltageKv = Math.round(
-    15 * Math.sqrt(secondaryTurns / 10) * (primaryCapacitanceNf / 20),
-  );
+  // Resonant calculations via central physics engine
+  const resonantFreqKhz = Math.round(180 * Math.sqrt(45 / primaryCapacitanceNf));
+  const res = FrankenSimEngine.stepTeslaCoil(resonantFreqKhz, inputKv, sparkGap, 145);
+  const secondaryVoltageKv = Math.round(res.secondaryPotentialMv * 1000);
 
   return (
     <div className="rounded-2xl border border-amber-900/20 dark:border-ink-800 bg-parchment-50 dark:bg-ink-950 p-6 sm:p-7 shadow-patent space-y-6">

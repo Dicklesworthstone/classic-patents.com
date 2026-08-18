@@ -7,14 +7,34 @@
  */
 
 import {
+  stepBellTelephone,
+  stepCorlissEngine,
+  stepDavenportMotor,
   stepDeLavalSeparator,
+  stepEdisonBulb,
+  stepEdisonPhonograph,
+  stepEinsteinRefrigerator as stepEinsteinRefrigeratorSi,
+  stepEngelbartMouse,
   stepEricssonPropeller,
+  stepGatlingGun,
+  stepGliddenBarbedWire,
   stepGrammeDynamo,
+  stepHyattCelluloid,
+  stepLincolnBuoy as stepLincolnBuoySi,
+  stepMcCormickReaper,
+  stepMorseTelegraph,
   stepNobelDynamite,
+  stepNoyceIC,
   stepOttoEngine,
   stepParsonsTurbine,
+  stepPasteurFermentation,
   stepPeltonWheel,
+  stepThomsonWelding,
+  stepWhitneyCottonGin,
+  stepWozniakApple,
+  stepZeppelinAirship,
 } from "./catalogKernels";
+import { FrankenSimEngine } from "./engine";
 import { fermiKeff, stepFermiKinetics } from "./fermiKinetics";
 import {
   stepMergenthalerLinotype,
@@ -345,10 +365,14 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
     computeMetrics: (p) => {
       const pc = p.chamberPressure ?? 350;
       const ar = p.expansionRatio ?? 3.5;
-      const mach = Math.sqrt((2 / 0.24) * (ar ** (2 / 2.24) - 1));
-      const ve = Math.round(1650 * Math.sqrt(1 - (1 / ar) ** 0.24) * 1.62);
-      const isp = (ve / 9.80665).toFixed(1);
-      const thrust = Math.round(0.205 * ve * (pc / 350));
+      const flow = p.fuelFlowRateKgs ?? 1.8;
+      const throat = p.throatAreaCm2 ?? 4.2;
+
+      const res = FrankenSimEngine.stepGoddardRocket(pc, flow, throat, ar);
+      const mach = res.machExit;
+      const ve = res.exhaustVelocityMps;
+      const isp = res.specificImpulseSec.toFixed(1);
+      const thrust = res.thrustNewtons;
 
       return [
         {
@@ -491,11 +515,14 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
       },
     ],
     computeMetrics: (p) => {
-      const qIn = p.heatInput ?? 220;
-      const press = p.totalPressure ?? 15.0;
-      const evapTemp = -25 + (press - 10) * 1.4;
-      const cop = Number((0.32 * (1 - Math.abs(evapTemp) / 120)).toFixed(2));
-      const coolingWatts = Math.round(qIn * cop);
+      const frige = stepEinsteinRefrigeratorSi({
+        heatInput: p.heatInput,
+        totalPressure: p.totalPressure,
+      });
+      const evapTemp = frige.evapTempC;
+      const cop = frige.cop;
+      const coolingWatts = frige.coolingWatts;
+      const press = frige.pressureAtm;
 
       return [
         {
@@ -644,11 +671,14 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
       },
     ],
     computeMetrics: (p) => {
-      const vr = p.reverseBias ?? 5.0;
-      const tox = p.oxideThickness ?? 0.5;
-      const w = (0.5 * Math.sqrt(0.7 + vr)).toFixed(2);
-      const propDelay = (0.8 + (1 / tox) * 0.2 + vr * 0.02).toFixed(2);
-      const cap = (28 / Number(w)).toFixed(1);
+      const ic = stepNoyceIC({
+        reverseBias: p.reverseBias,
+        oxideThickness: p.oxideThickness,
+        clockFrequencyMhz: p.clockFrequencyMhz,
+      });
+      const w = ic.depletionWidthUm.toFixed(2);
+      const propDelay = ic.propDelayNs.toFixed(2);
+      const cap = ic.junctionCapPfPerMm2.toFixed(1);
 
       return [
         {
@@ -674,10 +704,10 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
         },
         {
           label: "Breakdown Margin",
-          value: (35 - vr).toFixed(1),
+          value: ic.breakdownMarginV.toFixed(1),
           unit: "V",
           badgeColor: "indigo",
-          progressPct: ((35 - vr) / 35) * 100,
+          progressPct: (ic.breakdownMarginV / 35) * 100,
         },
       ];
     },
@@ -712,12 +742,11 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
       },
     ],
     computeMetrics: (p) => {
-      const v = p.voltage ?? 110;
-      const len = p.filamentLength ?? 22;
-      const tempK = Math.round(1200 + (v / 130) * 1150);
-      const res = Math.round(90 + (tempK / 2350) * 60 * (len / 22));
-      const powerWatts = Number((v ** 2 / res).toFixed(1));
-      const lumEff = Math.max(0.1, ((tempK - 1400) / 1000) ** 2 * 2.8).toFixed(2);
+      const bulb = stepEdisonBulb({ voltage: p.voltage, filamentLength: p.filamentLength });
+      const tempK = bulb.filamentTempK;
+      const res = bulb.hotResistanceOhm;
+      const powerWatts = bulb.radiantWatts;
+      const lumEff = bulb.luminousLmPerW.toFixed(2);
 
       return [
         {
@@ -781,11 +810,10 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
       },
     ],
     computeMetrics: (p) => {
-      const db = p.voiceAmplitude ?? 75;
-      const gap = p.airGap ?? 0.35;
-      const displMicrons = (10 ** ((db - 40) / 30) * 0.45).toFixed(2);
-      const modCurrent = ((Number(displMicrons) / (gap * 1000)) * 18.5).toFixed(2);
-      const sens = (18.5 / (gap + 0.1)).toFixed(1);
+      const bell = stepBellTelephone({ voiceAmplitude: p.voiceAmplitude, airGap: p.airGap });
+      const displMicrons = bell.diaphragmUm.toFixed(2);
+      const modCurrent = bell.modulatedMa.toFixed(2);
+      const sens = bell.sensitivityMvPerPa.toFixed(1);
 
       return [
         {
@@ -953,10 +981,9 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
       },
     ],
     computeMetrics: (p) => {
-      const i = (p.currentMa ?? 65) / 1000;
-      const n = p.wireTurns ?? 1200;
-      const forceN = ((4e-7 * Math.PI * (n * i) ** 2 * 0.0004) / (2 * 0.0015 ** 2)).toFixed(2);
-      const tauMs = (n * 0.00012 * 10).toFixed(1);
+      const morse = stepMorseTelegraph({ currentMa: p.currentMa, wireTurns: p.wireTurns });
+      const forceN = morse.magneticForceN.toFixed(2);
+      const tauMs = morse.timeConstantMs.toFixed(1);
 
       return [
         {
@@ -975,10 +1002,10 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
         },
         {
           label: "Ampere-Turns (NI)",
-          value: Math.round(n * i).toString(),
+          value: morse.ampereTurns.toString(),
           unit: "A·turns",
           badgeColor: "indigo",
-          progressPct: (Math.round(n * i) / 200) * 100,
+          progressPct: (morse.ampereTurns / 200) * 100,
         },
         {
           label: "Stylus Emboss Pressure",
@@ -1203,13 +1230,15 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
       },
     ],
     computeMetrics: (p) => {
-      const infl = p.inflationPct ?? 75;
-      const depth = p.shoalDepth ?? 3.5;
-      const volM3 = ((infl / 100) * 42.5).toFixed(1);
-      const liftKn = Math.round(Number(volM3) * 9.81);
-      const draftRedFt = (Number(volM3) * 0.055).toFixed(2);
-      const hullDraftFt = 5.0 - Number(draftRedFt);
-      const clearanceFt = (depth - hullDraftFt).toFixed(2);
+      const buoy = stepLincolnBuoySi({
+        inflationPct: p.inflationPct,
+        weightTons: p.weightTons,
+        shoalDepth: p.shoalDepth,
+      });
+      const volM3 = buoy.displacedVolumeM3.toFixed(1);
+      const liftKn = buoy.liftKn;
+      const draftRedFt = buoy.draftReductionFt.toFixed(2);
+      const clearanceFt = buoy.shoalClearanceFt.toFixed(2);
 
       return [
         {
@@ -1350,10 +1379,10 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
       },
     ],
     computeMetrics: (p) => {
+      const mouse = stepEngelbartMouse({ mouseSpeed: p.mouseSpeed, wheelRadius: p.wheelRadius });
+      const omegaRps = mouse.omegaRadPerS.toFixed(1);
+      const dpi = mouse.dpi;
       const v = p.mouseSpeed ?? 350;
-      const r = p.wheelRadius ?? 10.0;
-      const omegaRps = (v / r).toFixed(1);
-      const dpi = Math.round((200 * 10) / r);
 
       return [
         {
@@ -1594,10 +1623,13 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
       },
     ],
     computeMetrics: (p) => {
-      const f = p.crystalFreq ?? 14.318;
-      const cpuClock = (f / 14).toFixed(3);
-      const colorSubcarrier = (f / 4).toFixed(3);
-      const dramWindow = ((1000 / Number(cpuClock)) * 0.5).toFixed(1);
+      const apple = stepWozniakApple({
+        crystalFreq: p.crystalFreq,
+        ramCapacityKb: p.ramCapacityKb,
+      });
+      const cpuClock = apple.cpuClockMhz.toFixed(3);
+      const colorSubcarrier = apple.colorSubcarrierMhz.toFixed(3);
+      const dramWindow = apple.dramWindowNs.toFixed(1);
 
       return [
         {
@@ -1774,10 +1806,14 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
     ],
     computeMetrics: (p) => {
       const cap = p.primaryCap ?? 45;
-      const k = p.couplingK ?? 0.18;
       const freqKhz = Math.round(180 * Math.sqrt(45 / cap));
-      const peakKv = Math.round(350 * (k / 0.18) * Math.sqrt(cap / 45));
-      const streamerM = (peakKv * 0.0032).toFixed(2);
+      const inputKv = p.inputVoltageKv ?? 15;
+      const sparkGap = p.sparkGapDistanceMm ?? 12;
+
+      const res = FrankenSimEngine.stepTeslaCoil(freqKhz, inputKv, sparkGap, 145);
+      const peakKv = Math.round(res.secondaryPotentialMv * 1000);
+      const streamerM = res.streamerLengthMeters.toFixed(2);
+      const k = 0.15 + (sparkGap / 20) * 0.1;
 
       return [
         {
@@ -2682,14 +2718,15 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
       },
     ],
     computeMetrics: (p) => {
-      const inflation = p.gasInflation ?? 95;
-      const alt = p.flightAlt ?? 300;
-      const trim = p.trimWeight ?? 5;
-      const rhoAir = 1.225 * Math.exp(-alt / 8400);
-      const rhoH2 = 0.089 * Math.exp(-alt / 8400);
-      const grossKn = ((11300 * (inflation / 100) * 9.81 * (rhoAir - rhoH2)) / 1000).toFixed(1);
-      const netKn = (Number(grossKn) - 98.0).toFixed(1);
-      const pitchDeg = ((trim * 300 * 9.81) / 15000).toFixed(1);
+      const zep = stepZeppelinAirship({
+        gasInflation: p.gasInflation,
+        flightAlt: p.flightAlt,
+        flightSpeedKnots: p.flightSpeedKnots,
+        trimWeight: p.trimWeight,
+      });
+      const grossKn = zep.grossBuoyancyKn.toFixed(1);
+      const netKn = zep.netLiftKn.toFixed(1);
+      const pitchDeg = zep.pitchTrimDeg.toFixed(1);
 
       return [
         {
@@ -2715,10 +2752,10 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
         },
         {
           label: "Air Density",
-          value: `${rhoAir.toFixed(3)} kg/m³`,
+          value: `${zep.ambientAirDensityKgM3.toFixed(3)} kg/m³`,
           unit: "ρ_air",
           badgeColor: "purple",
-          progressPct: (rhoAir / 1.225) * 100,
+          progressPct: (zep.ambientAirDensityKgM3 / 1.225) * 100,
         },
       ];
     },
@@ -2989,10 +3026,10 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
       },
     ],
     computeMetrics: (p) => {
-      const rpm = p.crankRpm ?? 180;
-      const sawRpm = Math.round(rpm * 3.5);
-      const brushRpm = Math.round(rpm * 12.0);
-      const outputLbs = Math.round((rpm / 180) * 50);
+      const gin = stepWhitneyCottonGin({ crankRpm: p.crankRpm });
+      const sawRpm = gin.sawRpm;
+      const brushRpm = gin.brushRpm;
+      const outputLbs = gin.outputLbsPerDay;
       return [
         {
           label: "Saw Cylinder Speed",
@@ -3039,10 +3076,10 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
       },
     ],
     computeMetrics: (p) => {
-      const v = p.forwardSpeedMph ?? 2.5;
-      const fCut = Math.round((v * 5280 * 12) / (3600 * 3.5));
-      const reelRpm = Math.round(v * 12.5);
-      const harvestRate = (v * 1.8).toFixed(1);
+      const reaper = stepMcCormickReaper({ forwardSpeedMph: p.forwardSpeedMph });
+      const fCut = reaper.cutFrequencyHz;
+      const reelRpm = reaper.reelRpm;
+      const harvestRate = reaper.harvestAcresPerDay.toFixed(1);
       return [
         {
           label: "Cutting Frequency",
@@ -3098,10 +3135,12 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
       },
     ],
     computeMetrics: (p) => {
-      const v = p.batteryVoltage ?? 12;
-      const load = p.loadTorque ?? 0.8;
-      const rpm = Math.round((v / 12) * (450 / Math.max(0.5, load)));
-      const powerW = Math.round(((rpm * 2 * Math.PI) / 60) * load);
+      const motor = stepDavenportMotor({
+        batteryVoltage: p.batteryVoltage,
+        loadTorque: p.loadTorque,
+      });
+      const rpm = motor.shaftRpm;
+      const powerW = motor.shaftPowerW;
       return [
         {
           label: "Motor Speed",
@@ -3203,9 +3242,11 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
       },
     ],
     computeMetrics: (p) => {
-      const psi = p.steamPressurePsi ?? 100;
-      const rpm = p.engineRpm ?? 65;
-      const ihp = Math.round(psi * rpm * 0.25 * 1.8);
+      const corliss = stepCorlissEngine({
+        steamPressurePsi: p.steamPressurePsi,
+        engineRpm: p.engineRpm,
+      });
+      const ihp = corliss.indicatedHp;
       return [
         {
           label: "Indicated Horsepower",
@@ -3254,9 +3295,8 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
       },
     ],
     computeMetrics: (p) => {
-      const rpm = p.crankRpm ?? 60;
-      const count = p.barrelCount ?? 6;
-      const rof = Math.round(rpm * count);
+      const gatling = stepGatlingGun({ crankRpm: p.crankRpm, barrelCount: p.barrelCount });
+      const rof = gatling.roundsPerMin;
       return [
         {
           label: "Rate of Fire",
@@ -3267,7 +3307,7 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
         },
         {
           label: "Barrel Cooling Interval",
-          value: `${((60 / Math.max(1, rof)) * count).toFixed(2)} s`,
+          value: `${gatling.barrelCoolingIntervalS.toFixed(2)} s`,
           unit: "t_cool",
           badgeColor: "cyan",
           progressPct: 80,
@@ -3398,10 +3438,12 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
       },
     ],
     computeMetrics: (p) => {
-      const temp = p.steamTempC ?? 95;
-      const press = p.hydraulicPressureMpa ?? 10;
-      const visc = Math.round(1800 * Math.exp(-0.03 * (temp - 70)));
-      const isMelted = temp >= 80 && press >= 6;
+      const hyatt = stepHyattCelluloid({
+        steamTempC: p.steamTempC,
+        hydraulicPressureMpa: p.hydraulicPressureMpa,
+      });
+      const visc = hyatt.viscosityPaS;
+      const isMelted = hyatt.isMelted;
       return [
         {
           label: "Melt Viscosity",
@@ -3509,11 +3551,13 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
       },
     ],
     computeMetrics: (p) => {
-      const pTemp = p.pasteurizationTempC ?? 58;
-      const hold = p.holdTimeMin ?? 20;
-      const temp = p.wortTempC ?? 22;
-      const logRed = Math.min(8.0, (hold / 20) * ((pTemp - 45) / 10) * 4.5);
-      const activity = Math.min(100, Math.round(100 * Math.exp(-0.02 * (temp - 24) ** 2)));
+      const pasteur = stepPasteurFermentation({
+        pasteurizationTempC: p.pasteurizationTempC,
+        holdTimeMin: p.holdTimeMin,
+        wortTempC: p.wortTempC,
+      });
+      const logRed = pasteur.logReduction;
+      const activity = pasteur.yeastActivityPct;
       return [
         {
           label: "Bacterial Inactivation",
@@ -3571,12 +3615,13 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
       },
     ],
     computeMetrics: (p) => {
-      const t = p.wireTensionN ?? 650;
-      const twists = p.twistsPerFoot ?? 5;
-      const push = p.animalPushForceN ?? 120;
-      const sagCm = Number((2800 / Math.max(100, t)).toFixed(1));
-      const barbSlipThresholdN = twists * 95;
-      const isLocked = barbSlipThresholdN >= push;
+      const wire = stepGliddenBarbedWire({
+        wireTensionN: p.wireTensionN,
+        twistsPerFoot: p.twistsPerFoot,
+        animalPushForceN: p.animalPushForceN,
+      });
+      const sagCm = wire.sagCm;
+      const isLocked = wire.isLocked;
       return [
         {
           label: "Span Sag",
@@ -3676,10 +3721,12 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
       },
     ],
     computeMetrics: (p) => {
-      const rpm = p.mandrelRpm ?? 60;
-      const vol = p.voiceVolumeDb ?? 75;
-      const trackSpeed = ((rpm / 60) * Math.PI * 4.0).toFixed(1);
-      const depthMicrons = ((vol / 75) * 25).toFixed(1);
+      const phono = stepEdisonPhonograph({
+        mandrelRpm: p.mandrelRpm,
+        voiceVolumeDb: p.voiceVolumeDb,
+      });
+      const trackSpeed = phono.trackSpeedInPerS.toFixed(1);
+      const depthMicrons = phono.grooveDepthMicrons.toFixed(1);
       return [
         {
           label: "Linear Tracking Speed",
@@ -3845,11 +3892,13 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
       },
     ],
     computeMetrics: (p) => {
-      const i = p.weldCurrentAmps ?? 4500;
-      const press = p.clampPressureMpa ?? 35;
-      const kw = Math.round((i ** 2 * 0.00018) / 1000);
-      const tempC = Math.round(25 + (kw / 3.6) * 850);
-      const isForged = tempC >= 1150 && press >= 25;
+      const weld = stepThomsonWelding({
+        weldCurrentAmps: p.weldCurrentAmps,
+        clampPressureMpa: p.clampPressureMpa,
+      });
+      const kw = weld.jouleKw;
+      const tempC = weld.interfaceTempC;
+      const isForged = weld.isForged;
       return [
         {
           label: "Joule Heat Rate",
@@ -3877,7 +3926,7 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
     pedagogicalInsight:
       "A massive single-turn copper secondary bar steps AC down to 1.5V at 2,500A. Localized resistance at the abutted joint heats steel to plastic fusion temperature where an upset screw welds the bond.",
   },
-  "us-608969-parsons-turbine": {
+  "us-328710-parsons-turbine": {
     domain: "aerodynamics_mbd",
     domainTitle: "Multi-Stage Axial Steam Expansion & Reaction Blading",
     equationName: "Reaction Turbine Enthalpy Drop & Stage Expansion",
