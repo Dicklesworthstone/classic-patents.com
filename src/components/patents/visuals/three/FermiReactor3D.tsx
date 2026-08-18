@@ -66,6 +66,7 @@ export function FermiReactor3D() {
     moderatorPurityPct,
     showNeutronCascade,
     kEff,
+    geigerIntervalMs: reactorKinetics.geigerIntervalMs,
     isAudioMuted,
   });
 
@@ -342,7 +343,7 @@ export function FermiReactor3D() {
 
         // Geiger counter acoustic feedback proportional to k_eff
         geigerClickTimer += delta;
-        const clickInterval = Math.max(0.08, 0.4 / Number(p.kEff) ** 2);
+        const clickInterval = Math.max(0.05, (p.geigerIntervalMs ?? 800) / 1000);
         if (geigerClickTimer > clickInterval) {
           geigerClickTimer = 0;
           // Deterministic PRNG based on clock time to satisfy the 'digest' requirement

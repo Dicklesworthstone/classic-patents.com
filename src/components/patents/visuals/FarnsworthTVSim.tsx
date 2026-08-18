@@ -22,7 +22,7 @@ export function FarnsworthTVSim() {
     deflectionGauss,
     params.lightIntensityLux ?? 500,
   );
-  const speedMultiplier = Math.max(1, beam.electronVelocityMps / 2.1e7);
+  const speedMultiplier = beam.rasterAdvance;
 
   useEffect(() => {
     if (!isScanning) return;

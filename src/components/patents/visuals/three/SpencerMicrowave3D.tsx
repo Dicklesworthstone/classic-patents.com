@@ -67,6 +67,9 @@ export function SpencerMicrowave3D() {
       efficiencyPct: 0,
       synchronousRpm: 0,
       slipFraction: 0,
+      rotorRpm: 0,
+      shaftPowerWatts: 0,
+      electricalInputWatts: 0,
     },
   });
   const hullCutoffGauss = rfPhysics.hullCutoffGauss;

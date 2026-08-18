@@ -14,7 +14,7 @@ import {
 } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import * as THREE from "three";
-import { bardeenLoadLine } from "@/physics/catalogKernels";
+import { bardeenLoadLine, stepBardeenTransistor } from "@/physics/catalogKernels";
 import { FrankenSimEngine } from "@/physics/engine";
 import { useFrankenSimPhysics } from "@/physics/useFrankenSimPhysics";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
@@ -59,8 +59,13 @@ export function BardeenTransistor3D() {
     refusal: { isRefused: false },
     semi: semiState,
   });
+  const bardeen = stepBardeenTransistor(
+    emitterCurrentMa,
+    collectorVoltageV,
+    pointContactGapMicrons,
+  );
   const alphaCurrentGain = semiState.currentGainAlpha.toFixed(2);
-  const collectorCurrentMa = (semiState.currentGainAlpha * emitterCurrentMa).toFixed(2);
+  const collectorCurrentMa = bardeen.collectorCurrentMa.toFixed(2);
   const loadLine = bardeenLoadLine(semiState.currentGainAlpha);
   const voltageGain = loadLine.voltageGain;
   const powerGainDb = loadLine.powerGainDb;

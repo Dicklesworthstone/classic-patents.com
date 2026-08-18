@@ -24,7 +24,7 @@ export function PasteurFermentationSim() {
   const isMicrobesKilled = decimalReductionLog >= 6;
   const isAromaPreserved = bathTempC <= 65;
   const survivingBacteriaPct = pasteur.survivorPct;
-  const shelfLifeMonths = isMicrobesKilled ? 24 : 0.5;
+  const shelfLifeMonths = pasteur.shelfLifeMonths;
 
   useEffect(() => {
     if (!isPlaying) return;

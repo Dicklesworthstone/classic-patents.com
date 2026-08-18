@@ -22,8 +22,8 @@ export function MergenthalerLinotypeSim() {
   const lineLengthMm = lino.justificationWidthMm;
   const alloyMeltPointC = lino.alloyMeltPointC;
   const isMetalLiquid = lino.isEutecticTemp;
-  const linesPerHour = isMetalLiquid ? Math.round(3600 / Math.max(0.25, lino.cycleS)) : 0;
-  const slugSolidificationTimeSec = Number((lino.solidificationTimeMs / 1000).toFixed(2));
+  const linesPerHour = lino.linesPerHour;
+  const slugSolidificationTimeSec = lino.solidificationTimeSec;
 
   const handleCastLine = () => {
     if (isMetalLiquid) {

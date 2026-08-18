@@ -23,7 +23,6 @@ export function NoycePlanarIC3D() {
   const { params } = usePatentPhysics("us-2981877-noyce-ic");
   const [showUiOverlay, setShowUiOverlay] = useState<boolean>(true);
   const clockFrequencyMhz = params.clockFrequencyMhz ?? 10;
-  const oxideLayerThicknessNm = (params.oxideThickness ?? 0.5) * 1000;
   const [activeLayer, _setActiveLayer] = useState<"all" | "silicon" | "oxide" | "metal">("all");
   const [showLogicSignals, _setShowLogicSignals] = useState<boolean>(true);
   const [showCalloutPins, setShowCalloutPins] = useState<boolean>(false);
@@ -35,9 +34,10 @@ export function NoycePlanarIC3D() {
     oxideThickness: params.oxideThickness ?? 0.5,
     clockFrequencyMhz,
   });
+  const oxideLayerThicknessNm = noyce.oxideThicknessNm;
   const gateCapacitancePf = noyce.junctionCapPfPerMm2;
-  const gatePropagationDelayPs = Math.round(noyce.propDelayNs * 1000);
-  const maxClockGhz = (1000 / Math.max(1, gatePropagationDelayPs * 4)).toFixed(2);
+  const gatePropagationDelayPs = noyce.propDelayPs;
+  const maxClockGhz = noyce.maxClockGhz.toFixed(2);
 
   const live = useLiveSimParams({
     clockFrequencyMhz,

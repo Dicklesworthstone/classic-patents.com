@@ -39,7 +39,11 @@ export function HoweSewingMachine3D() {
   const { isAudioMuted, toggleSound: toggleEngine } = usePatentAudio();
 
   // Lockstitch Kinematics Calculations (FrankenSim 4-Bar Mechanism)
-  const stitchState = FrankenSimEngine.stepHoweSewingMachine(stitchingSpeedRpm, threadTensionGrams);
+  const stitchState = FrankenSimEngine.stepHoweSewingMachine(
+    stitchingSpeedRpm,
+    threadTensionGrams,
+    stitchPitchMm,
+  );
 
   useFrankenSimPhysics("us-4750-howe-sewing-machine", {
     domain: "continuum_elasticity",
@@ -52,12 +56,12 @@ export function HoweSewingMachine3D() {
       elasticModulusGpa: 0,
       crossLinkDensityMolesPerCm3: 0,
       stitchFrequencyHz: stitchState.stitchFrequencyHz,
-      feedVelocityMmPs: stitchState.stitchFrequencyHz * stitchPitchMm,
+      feedVelocityMmPs: stitchState.clothFeedMmPerS,
       buoyancyLiftForceKiloNewtons: 0,
     },
   });
   const stitchesPerSecond = stitchState.stitchFrequencyHz.toFixed(1);
-  const clothFeedRateMmPerSec = (stitchState.stitchFrequencyHz * stitchPitchMm).toFixed(1);
+  const clothFeedRateMmPerSec = stitchState.clothFeedMmPerS.toFixed(1);
 
   const live = useLiveSimParams({
     stitchingSpeedRpm,
@@ -379,7 +383,12 @@ export function HoweSewingMachine3D() {
         const currentCycle = Math.floor(crankAngle / (2 * Math.PI));
         if (currentCycle !== prevStitchCycle) {
           prevStitchCycle = currentCycle;
-          if (!p.isAudioMuted && Math.random() < 0.8) {
+          let seed = currentCycle * 12345 + 6789;
+          const lcg = () => {
+            seed = (seed * 1664525 + 1013904223) % 4294967296;
+            return seed / 4294967296;
+          };
+          if (!p.isAudioMuted && lcg() < 0.8) {
             soundEngine.playLockstitchClack();
           }
         }

@@ -30,7 +30,7 @@ export function SpencerMicrowaveSim() {
     if (!isEmitting) return;
     const interval = setInterval(() => {
       if (foodType === "water-popcorn") {
-        const heatStep = rf.isOscillating ? rf.dielectricLossWattsPerDm3 / 450 : 0;
+        const heatStep = rf.popcornHeatStepC;
         const nextTemp = Math.min(180, tempRef.current + heatStep);
         tempRef.current = nextTemp;
         setTempCelsius(nextTemp);
@@ -46,7 +46,7 @@ export function SpencerMicrowaveSim() {
       }
     }, 200);
     return () => clearInterval(interval);
-  }, [isEmitting, foodType, rf.isOscillating, rf.dielectricLossWattsPerDm3]);
+  }, [isEmitting, foodType, rf.popcornHeatStepC]);
 
   const resetHeating = () => {
     setTempCelsius(20);

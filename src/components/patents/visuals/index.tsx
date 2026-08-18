@@ -292,43 +292,55 @@ interface PatentVisualDispatcherProps {
 
 export function PatentVisualDispatcher({ patentId }: PatentVisualDispatcherProps) {
   const [renderMode, setRenderMode] = useState<"3d-physics" | "vector-diagram">("3d-physics");
+  const hasVerifiedVisual = true;
 
   return (
     <div className="space-y-4">
       {/* 3D vs 2D Toggle Switcher */}
       <div className="flex justify-end">
-        <div className="flex items-center gap-1 bg-parchment-200 dark:bg-ink-900 p-1 rounded-xl border border-parchment-300 dark:border-ink-800 text-xs sm:text-sm font-sans shadow-sm">
-          <button
-            type="button"
-            onClick={() => setRenderMode("3d-physics")}
-            className={`flex items-center gap-1.5 sm:gap-2 px-2.5 sm:px-3.5 py-1 sm:py-1.5 rounded-lg transition-colors ${
-              renderMode === "3d-physics"
-                ? "bg-amber-700 text-white font-bold shadow dark:bg-amber-600"
-                : "text-ink-700 dark:text-parchment-300 hover:text-ink-950 font-medium"
-            }`}
-          >
-            <Box className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
-            <span>3D Engine</span>
-          </button>
-          <button
-            type="button"
-            onClick={() => setRenderMode("vector-diagram")}
-            className={`flex items-center gap-1.5 sm:gap-2 px-2.5 sm:px-3.5 py-1 sm:py-1.5 rounded-lg transition-colors ${
-              renderMode === "vector-diagram"
-                ? "bg-amber-700 text-white font-bold shadow dark:bg-amber-600"
-                : "text-ink-700 dark:text-parchment-300 hover:text-ink-950 font-medium"
-            }`}
-          >
-            <Layers className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
-            <span>2D Schematic</span>
-          </button>
-        </div>
+        {hasVerifiedVisual && (
+          <div className="flex items-center gap-1 bg-parchment-200 dark:bg-ink-900 p-1 rounded-xl border border-parchment-300 dark:border-ink-800 text-xs sm:text-sm font-sans shadow-sm">
+            <button
+              type="button"
+              onClick={() => setRenderMode("3d-physics")}
+              className={`flex items-center gap-1.5 sm:gap-2 px-2.5 sm:px-3.5 py-1 sm:py-1.5 rounded-lg transition-colors ${
+                renderMode === "3d-physics"
+                  ? "bg-amber-600 text-white font-bold shadow-xs"
+                  : "text-ink-700 dark:text-parchment-300 hover:text-amber-800 dark:hover:text-amber-400"
+              }`}
+            >
+              <Sparkles className="w-3.5 h-3.5" />
+              <span>3D Physics Simulation</span>
+            </button>
+            <button
+              type="button"
+              onClick={() => setRenderMode("vector-diagram")}
+              className={`flex items-center gap-1.5 sm:gap-2 px-2.5 sm:px-3.5 py-1 sm:py-1.5 rounded-lg transition-colors ${
+                renderMode === "vector-diagram"
+                  ? "bg-amber-600 text-white font-bold shadow-xs"
+                  : "text-ink-700 dark:text-parchment-300 hover:text-amber-800 dark:hover:text-amber-400"
+              }`}
+            >
+              <Activity className="w-3.5 h-3.5" />
+              <span>2D Technical Diagram</span>
+            </button>
+          </div>
+        )}
       </div>
 
-      {/* Render Specific Dynamic Simulation */}
+      {/* Render Selected Visual Module */}
       {(() => {
         switch (patentId) {
-          // Pre-1920 New Additions
+          case "us-821393-wright-flyer":
+            return renderMode === "3d-physics" ? <WrightFlyer3D /> : <WrightFlyerSim />;
+          case "us-381968-tesla-motor":
+            return renderMode === "3d-physics" ? <TeslaMotor3D /> : <TeslaMotorSim />;
+          case "us-223898-edison-lightbulb":
+            return renderMode === "3d-physics" ? <EdisonBulb3D /> : <EdisonBulbSim />;
+          case "us-2708656-fermi-reactor":
+            return renderMode === "3d-physics" ? <FermiReactor3D /> : <FermiReactorSim />;
+          case "us-2981877-noyce-ic":
+            return renderMode === "3d-physics" ? <NoycePlanarIC3D /> : <NoycePlanarICSim />;
           case "us-x72-whitney-cotton-gin":
             return renderMode === "3d-physics" ? <WhitneyCottonGin3D /> : <WhitneyCottonGinSim />;
           case "us-x8277-mccormick-reaper":
@@ -339,12 +351,24 @@ export function PatentVisualDispatcher({ patentId }: PatentVisualDispatcherProps
             return renderMode === "3d-physics" ? (
               <DavenportElectricMotor3D />
             ) : (
-              <DavenportMotorSim />
+              <DavenportElectricMotorSim />
             );
           case "us-588-ericsson-propeller":
             return renderMode === "3d-physics" ? <EricssonPropeller3D /> : <EricssonPropellerSim />;
+          case "us-1647-morse-telegraph":
+            return renderMode === "3d-physics" ? <MorseTelegraph3D /> : <MorseTelegraphSim />;
+          case "us-3633-goodyear-rubber":
+            return renderMode === "3d-physics" ? <GoodyearRubber3D /> : <GoodyearRubberSim />;
+          case "us-4750-howe-sewing-machine":
+            return renderMode === "3d-physics" ? <HoweSewingMachine3D /> : <HoweSewingMachineSim />;
           case "us-6162-corliss-steam-engine":
-            return renderMode === "3d-physics" ? <CorlissSteamEngine3D /> : <CorlissEngineSim />;
+            return renderMode === "3d-physics" ? (
+              <CorlissSteamEngine3D />
+            ) : (
+              <CorlissSteamEngineSim />
+            );
+          case "us-6469-lincoln-buoy":
+            return renderMode === "3d-physics" ? <LincolnBuoy3D /> : <LincolnBuoySim />;
           case "us-31128-otis-elevator":
             return renderMode === "3d-physics" ? <OtisElevator3D /> : <OtisElevatorSim />;
           case "us-36836-gatling-gun":

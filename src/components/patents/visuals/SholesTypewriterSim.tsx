@@ -1,27 +1,22 @@
 "use client";
 
-import { RotateCcw, Volume2, VolumeX } from "lucide-react";
+import { RotateCcw } from "lucide-react";
 import { useState } from "react";
 import { stepSholesTypewriter } from "@/physics/machineKernels";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
-import { usePatentAudio } from "./three/usePatentAudio";
 
 export function SholesTypewriterSim() {
-  const { params, resetParams } = usePatentPhysics("us-79265-sholes-typewriter");
-  const { isAudioMuted, toggleSound } = usePatentAudio();
-  const [typedText, setTypedText] = useState<string>("THE QUICK BROWN FOX");
-  const [activeKey, setActiveKey] = useState<string>("T");
+  const { params, resetParams, updateParam } = usePatentPhysics("us-79265-sholes-typewriter");
+  const [typedMarks, setTypedMarks] = useState<string>("••••••••");
+  const [activeKeyIndex, setActiveKeyIndex] = useState<number>(0);
 
-  const sholes = stepSholesTypewriter(params.typingSpeedWpm ?? 60, 0);
-  const characterPitchMm = sholes.pitchMm;
-  const carriagePositionMm = Number((typedText.length * characterPitchMm).toFixed(2));
-  const typebarStrikeAngleDeg = sholes.typebarStrikeAngleDeg;
-  const isJamDanger = activeKey === "T" || activeKey === "H";
+  const sholes = stepSholesTypewriter(params.typingSpeedWpm ?? 40, 0);
+  const displayColumn = typedMarks.length % 12;
 
-  const handleKeyPress = (char: string) => {
-    setActiveKey(char);
-    if (typedText.length < 28) {
-      setTypedText((prev) => prev + char);
+  const handleKeyPress = (keyNumber: number) => {
+    setActiveKeyIndex(keyNumber - 1);
+    if (typedMarks.length < 28) {
+      setTypedMarks((previous) => `${previous}•`);
     }
   };
 
@@ -30,37 +25,25 @@ export function SholesTypewriterSim() {
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 border-b border-parchment-200 dark:border-ink-800 pb-3 mb-4">
         <div>
           <h3 className="font-serif text-lg font-bold text-ink-900 dark:text-parchment-100">
-            Sholes &amp; Glidden Typewriter &amp; Escapement (US 79,265)
+            Type-Writing Machine Mechanism Study (US 79,265)
           </h3>
           <p className="font-sans text-xs text-ink-500 dark:text-ink-400">
-            Interactive 2D Mechanical Model — Circular Typebar Basket, Escapement Carriage Advance,
-            and Inked Ribbon Strike
+            Source-constrained diagram of the key, radial type-bar, ratchet, carriage, and
+            inking-ribbon relationship
           </p>
         </div>
         <div className="flex items-center gap-2 self-end sm:self-auto">
           <button
             type="button"
             onClick={() => {
-              setTypedText("");
-              setActiveKey("A");
+              setTypedMarks("");
+              setActiveKeyIndex(0);
               resetParams();
             }}
-            aria-label="Clear Typewriter Text"
+            aria-label="Clear diagrammatic type marks"
             className="p-2 rounded-lg bg-parchment-200 dark:bg-ink-800 hover:bg-parchment-300 dark:hover:bg-ink-700 text-ink-800 dark:text-parchment-200 transition-colors"
           >
             <RotateCcw className="w-4 h-4" />
-          </button>
-          <button
-            type="button"
-            onClick={() => toggleSound()}
-            aria-label={isAudioMuted ? "Unmute Audio" : "Mute Audio"}
-            className="p-2 rounded-lg bg-parchment-200 dark:bg-ink-800 hover:bg-parchment-300 dark:hover:bg-ink-700 text-ink-800 dark:text-parchment-200 transition-colors"
-          >
-            {isAudioMuted ? (
-              <VolumeX className="w-4 h-4" />
-            ) : (
-              <Volume2 className="w-4 h-4 text-amber-600" />
-            )}
           </button>
         </div>
       </div>
@@ -69,7 +52,7 @@ export function SholesTypewriterSim() {
       <div className="relative w-full aspect-[16/9] max-h-[360px] bg-parchment-100 dark:bg-ink-900 rounded-xl overflow-hidden border border-parchment-200 dark:border-ink-800 flex items-center justify-center">
         <svg viewBox="0 0 600 340" className="w-full h-full">
           {/* Paper Platen Roller & Escapement Carriage */}
-          <g transform={`translate(${200 - carriagePositionMm * 2}, 40)`}>
+          <g transform={`translate(${200 - displayColumn * 6}, 40)`}>
             <rect
               x="0"
               y="0"
@@ -89,7 +72,7 @@ export function SholesTypewriterSim() {
               stroke="#CBD5E0"
               strokeWidth="1"
             />
-            {/* Typed characters on paper */}
+            {/* Diagrammatic marks, not a transcription or keyboard layout. */}
             <text
               x="30"
               y="2"
@@ -98,11 +81,11 @@ export function SholesTypewriterSim() {
               fontSize="13"
               fontWeight="bold"
             >
-              {typedText}
+              {typedMarks}
             </text>
           </g>
 
-          {/* Central Strike Point & Inked Ribbon Spools */}
+          {/* Central strike point and the inking-ribbon spools named in claim 5. */}
           <g transform="translate(300, 75)">
             <circle cx="0" cy="0" r="6" fill="#E53E3E" opacity="0.8" />
             <line
@@ -125,7 +108,7 @@ export function SholesTypewriterSim() {
               fontWeight="bold"
               fontFamily="sans-serif"
             >
-              Inked Fabric Ribbon
+              Inking ribbon
             </text>
           </g>
 
@@ -141,13 +124,13 @@ export function SholesTypewriterSim() {
             opacity="0.4"
           />
 
-          {/* Radial Typebars Converging on Center */}
+          {/* A deliberately small diagrammatic subset. The grant specifies one bar and key per type, not a number. */}
           <g id="typebar-basket">
-            {Array.from({ length: 18 }).map((_, i) => {
-              const bAngle = i * 20 + 10;
+            {Array.from({ length: 12 }).map((_, i) => {
+              const bAngle = i * 30 + 15;
               const xStart = 300 + Math.cos((bAngle * Math.PI) / 180) * 140;
               const yStart = 200 + Math.sin((bAngle * Math.PI) / 180) * 70;
-              const isCurrentActive = i === 9; // Striking bar
+              const isCurrentActive = i === activeKeyIndex;
               return (
                 <g key={`typebar-${bAngle}`}>
                   <line
@@ -173,7 +156,7 @@ export function SholesTypewriterSim() {
             })}
           </g>
 
-          {/* Escapement Wheel & Stepping Pawls */}
+          {/* Ratchet I and bifurcated lever H are shown schematically, not to scale. */}
           <g transform="translate(140, 60)">
             <circle cx="0" cy="0" r="18" fill="#C5A059" stroke="#5C4033" strokeWidth="2" />
             {Array.from({ length: 12 }).map((_, i) => (
@@ -188,9 +171,20 @@ export function SholesTypewriterSim() {
               />
             ))}
             <text x="-40" y="-22" fill="#888" fontSize="10" fontFamily="sans-serif">
-              Escapement Step
+              Ratchet I / lever H
             </text>
           </g>
+          <text
+            x="300"
+            y="320"
+            textAnchor="middle"
+            fill="#718096"
+            fontSize="10"
+            fontFamily="sans-serif"
+          >
+            Diagrammatic subset: the source states one key and type-bar for each type, without a
+            count.
+          </text>
         </svg>
       </div>
 
@@ -198,79 +192,75 @@ export function SholesTypewriterSim() {
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 my-4">
         <div className="bg-parchment-100 dark:bg-ink-900 border border-parchment-200 dark:border-ink-800 p-2.5 rounded-xl text-center">
           <span className="text-[10px] uppercase tracking-wider text-ink-500 dark:text-ink-400 block font-sans">
-            Carriage Position
+            Diagram carriage step
           </span>
           <span className="font-mono text-sm sm:text-base font-bold text-ink-900 dark:text-parchment-100">
-            {carriagePositionMm} mm
+            {displayColumn}
           </span>
         </div>
         <div className="bg-parchment-100 dark:bg-ink-900 border border-parchment-200 dark:border-ink-800 p-2.5 rounded-xl text-center">
           <span className="text-[10px] uppercase tracking-wider text-ink-500 dark:text-ink-400 block font-sans">
-            Character Pitch
+            Source pitch
           </span>
           <span className="font-mono text-sm sm:text-base font-bold text-amber-700 dark:text-amber-500">
-            {characterPitchMm} mm (10 CPI)
+            Not stated
           </span>
         </div>
         <div className="bg-parchment-100 dark:bg-ink-900 border border-parchment-200 dark:border-ink-800 p-2.5 rounded-xl text-center">
           <span className="text-[10px] uppercase tracking-wider text-ink-500 dark:text-ink-400 block font-sans">
-            Active Character
+            Active control
           </span>
           <span className="font-mono text-sm sm:text-base font-bold text-emerald-700 dark:text-emerald-500">
-            "{activeKey}"
+            Key {activeKeyIndex + 1}
           </span>
         </div>
         <div className="bg-parchment-100 dark:bg-ink-900 border border-parchment-200 dark:border-ink-800 p-2.5 rounded-xl text-center">
           <span className="text-[10px] uppercase tracking-wider text-ink-500 dark:text-ink-400 block font-sans">
-            Strike Angle &amp; Jam State
+            Ratchet state
           </span>
-          <span
-            className={`font-mono text-sm sm:text-base font-bold ${
-              isJamDanger
-                ? "text-amber-600 dark:text-amber-400"
-                : "text-ink-900 dark:text-parchment-100"
-            }`}
-          >
-            {typebarStrikeAngleDeg}° ({isJamDanger ? "Adjacent TH Digraph" : "Clear Stroke"})
+          <span className="font-mono text-sm sm:text-base font-bold text-ink-900 dark:text-parchment-100">
+            {sholes.ratchetReleasePct > 0 ? "Releasing" : "Held"}
           </span>
         </div>
       </div>
 
-      {/* Interactive QWERTY Keyboard Row */}
+      <label className="mb-4 block rounded-xl border border-parchment-200 bg-parchment-100 p-3 dark:border-ink-800 dark:bg-ink-900">
+        <span className="mb-2 flex items-baseline justify-between gap-3 text-xs font-sans font-medium text-ink-700 dark:text-parchment-300">
+          <span>Demonstration cadence</span>
+          <span className="font-mono text-amber-700 dark:text-amber-400">
+            {params.typingSpeedWpm ?? 40} strokes/min
+          </span>
+        </span>
+        <input
+          aria-label="Demonstration cadence in strokes per minute"
+          className="w-full accent-amber-600"
+          type="range"
+          min="10"
+          max="120"
+          step="5"
+          value={params.typingSpeedWpm ?? 40}
+          onChange={(event) => updateParam("typingSpeedWpm", Number(event.target.value))}
+        />
+        <span className="mt-1 block text-[11px] text-ink-500 dark:text-ink-400">
+          Visitor-selected display pace only. The source gives no measured operating rate.
+        </span>
+      </label>
+
+      {/* The source calls for piano-like keys but does not identify their arrangement. */}
       <div className="pt-2 border-t border-parchment-200 dark:border-ink-800">
         <div className="text-xs font-sans font-medium text-ink-700 dark:text-parchment-300 mb-2">
-          Click Keys to Test Sholes Typebar Strike & Escapement Advance:
+          Trigger a diagrammatic key to follow the direct key-to-type-bar and ratchet sequence:
         </div>
         <div className="flex flex-wrap gap-1.5 justify-center">
-          {[
-            "Q",
-            "W",
-            "E",
-            "R",
-            "T",
-            "Y",
-            "U",
-            "I",
-            "O",
-            "P",
-            "A",
-            "S",
-            "D",
-            "F",
-            "G",
-            "H",
-            "J",
-            "K",
-            "L",
-            "SPACE",
-          ].map((key) => (
+          {Array.from({ length: 12 }, (_, index) => index + 1).map((keyNumber) => (
             <button
-              key={key}
+              key={keyNumber}
               type="button"
-              onClick={() => handleKeyPress(key === "SPACE" ? " " : key)}
+              onClick={() => handleKeyPress(keyNumber)}
+              aria-label={`Trigger diagrammatic key ${keyNumber}`}
               className="px-2.5 py-2 rounded-lg bg-parchment-200 dark:bg-ink-800 hover:bg-amber-600 hover:text-white dark:hover:bg-amber-600 font-mono text-xs font-bold text-ink-800 dark:text-parchment-200 transition-colors shadow-sm"
             >
-              {key}
+              Key {keyNumber}
             </button>
           ))}
         </div>

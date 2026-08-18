@@ -25,7 +25,7 @@ export function HollerithTabulating3D() {
     supplyVoltageV: params.batteryVolts ?? 12,
     activeRelays: params.activeRelays ?? 16,
   });
-  const cardsPerDay = Math.round((60_000 / hollerith.cycleTimeMs) * 60 * 7);
+  const cardsPerDay = hollerith.cardsPerDay;
   const clockDialCount = hollerith.registerDialCount;
   const [activeCamera, setActiveCamera] = useState<CameraPreset>("iso");
   const { isAudioMuted, toggleSound: toggleEngine } = usePatentAudio();

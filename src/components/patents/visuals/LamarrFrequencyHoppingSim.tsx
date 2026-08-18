@@ -39,7 +39,10 @@ export function LamarrFrequencyHoppingSim() {
   useEffect(() => {
     if (!isHoppingActive) return;
 
-    const intervalMs = Math.round(1000 / Math.max(1, hopsPerSec));
+    const intervalMs = FrankenSimEngine.stepLamarrFrequencyHopping(
+      liveChannels,
+      hopsPerSec,
+    ).hopIntervalMs;
     const interval = setInterval(() => {
       rollStepRef.current += 1;
       const nextChannel = pianoRollChannel(rollStepRef.current);
@@ -48,14 +51,14 @@ export function LamarrFrequencyHoppingSim() {
     }, intervalMs);
 
     return () => clearInterval(interval);
-  }, [isHoppingActive, hopsPerSec]);
+  }, [isHoppingActive, hopsPerSec, liveChannels]);
 
   // Is current carrier jammed?
   const radioChannel =
     Math.floor(((Math.max(1, currentChannel) - 1) / PIANO_KEYS) * liveChannels) + 1;
   const isJammedThisInstant = isEnemyJamming && radioChannel === jammingFrequencyChannel;
   const fh = FrankenSimEngine.stepLamarrFrequencyHopping(liveChannels, hopsPerSec);
-  const jammingInterferencePercent = isEnemyJamming ? (1 / fh.channelsCount) * 100 : 0;
+  const jammingInterferencePercent = isEnemyJamming ? fh.jamOccupancyPct : 0;
   const recentHopSet = new Set(historyChannels);
 
   return (

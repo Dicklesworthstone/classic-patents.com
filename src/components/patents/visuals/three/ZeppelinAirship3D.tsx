@@ -20,14 +20,14 @@ export function ZeppelinAirship3D() {
   // Aerostatic & Aerodynamic Parameters
   const { params } = usePatentPhysics("us-621195-zeppelin-airship");
   const flightSpeedKnots = params.flightSpeedKnots ?? params.airspeedMph ?? 28;
-  const airspeedMph = params.airspeedMph ?? Number((Number(flightSpeedKnots) * 1.15078).toFixed(1));
   const zep = stepZeppelinAirship({
     gasInflation: params.gasInflation ?? 95,
     flightAlt: params.flightAlt ?? 300,
     flightSpeedKnots: Number(flightSpeedKnots),
     trimWeight: params.trimWeight ?? 5,
   });
-  const engineRpm = (airspeedMph / 17.5) * 1000;
+  const airspeedMph = zep.flightSpeedMph;
+  const engineRpm = zep.propellerRpm;
   const grossLiftKg = zep.grossLiftKg;
   const hydrogenVolumeM3 = zep.hydrogenVolumeM3;
   const [showWireframe, setShowWireframe] = useState<boolean>(false);

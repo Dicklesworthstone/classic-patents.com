@@ -23,12 +23,12 @@ export function OtisElevator3D() {
   const cableTensionPct = params.cableTension ?? 100;
   const otis = stepOtisElevator({ cabPayloadKg, cableTensionPct });
   const isRopeSevered = otis.isSnapped;
-  const cabWeightLbs = Math.round(cabPayloadKg * 2.20462);
+  const cabWeightLbs = otis.cabPayloadLbs;
   const [activeCamera, setActiveCamera] = useState<CameraPreset>("iso");
   const { isAudioMuted, toggleSound } = usePatentAudio();
 
   const pawlEngagementMs = otis.pawlEngagementMs;
-  const stoppingDistanceInches = Number((otis.stoppingDistanceCm / 2.54).toFixed(1));
+  const stoppingDistanceInches = otis.stoppingDistanceIn;
 
   const live = useLiveSimParams({
     isRopeSevered,

@@ -20,7 +20,7 @@ export function TeslaMotorSim() {
   const em = FrankenSimEngine.stepTeslaMotor(frequencyHz, fieldPoles, loadTorque);
   const syncSpeedRpm = em.synchronousRpm;
   const slip = em.slipFraction;
-  const rotorSpeedRpm = Math.round(syncSpeedRpm * (1 - slip));
+  const rotorSpeedRpm = em.rotorRpm;
 
   // Animation Loop for Stator Field & Rotor Rotation
   useEffect(() => {

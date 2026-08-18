@@ -70,7 +70,7 @@ export function GoddardRocket3D() {
   const exhaustVelocityMps = rocketPhysics.exhaustVelocityMps;
   const machExit = rocketPhysics.machExit;
   const thrustNewtons = rocketPhysics.thrustNewtons;
-  const thrustLbf = Math.round(thrustNewtons * 0.2248);
+  const thrustLbf = rocketPhysics.thrustLbf ?? Math.round(thrustNewtons * 0.224809);
 
   const live = useLiveSimParams({
     activeStage,

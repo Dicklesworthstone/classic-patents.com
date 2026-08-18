@@ -30,8 +30,8 @@ export function PasteurFermentation3D() {
     holdTimeMin: params.holdTimeMin ?? 20,
     wortTempC: fermentationTempC,
   });
-  const alcoholAbvPct = (5.2 * (pasteur.yeastActivityPct / 100)).toFixed(1);
-  const co2PressureBar = (1.8 * (pasteur.yeastActivityPct / 100)).toFixed(2);
+  const alcoholAbvPct = pasteur.alcoholAbvPct.toFixed(1);
+  const co2PressureBar = pasteur.co2PressureBar.toFixed(2);
   const [showBubbles, setShowBubbles] = useState<boolean>(true);
   const [activeCamera, setActiveCamera] = useState<CameraPreset>("iso");
   const { isAudioMuted, toggleSound: toggleEngine } = usePatentAudio();

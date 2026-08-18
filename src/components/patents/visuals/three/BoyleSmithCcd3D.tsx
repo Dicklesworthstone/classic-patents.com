@@ -227,14 +227,21 @@ export function BoyleSmithCcd3D() {
 
     const glowTex = createGlowPointTexture();
 
+    // Deterministic PRNG for visual placement
+    let setupSeed = 3858232;
+    const lcgSetup = () => {
+      setupSeed = (setupSeed * 1664525 + 1013904223) % 4294967296;
+      return setupSeed / 4294967296;
+    };
+
     for (let i = 0; i < packetCount; i++) {
       const idx = i * 3;
       const pixelIdx = Math.floor(i / (packetCount / 3));
       const baseGateX = -3.6 + pixelIdx * 3 * 0.85;
 
-      packetPos[idx] = baseGateX + (Math.random() - 0.5) * 0.5;
-      packetPos[idx + 1] = -0.2 - Math.random() * 0.25;
-      packetPos[idx + 2] = (Math.random() - 0.5) * 2.8;
+      packetPos[idx] = baseGateX + (lcgSetup() - 0.5) * 0.5;
+      packetPos[idx + 1] = -0.2 - lcgSetup() * 0.25;
+      packetPos[idx + 2] = (lcgSetup() - 0.5) * 2.8;
 
       packetColors[idx] = 0.1;
       packetColors[idx + 1] = 0.9;
@@ -269,13 +276,19 @@ export function BoyleSmithCcd3D() {
       const delta = clock.getDelta();
       const p = live.current;
 
+      let loopSeed = Math.floor(clock.getElapsedTime() * 1000) + 12345;
+      const lcgLoop = () => {
+        loopSeed = (loopSeed * 1664525 + 1013904223) % 4294967296;
+        return loopSeed / 4294967296;
+      };
+
       if (p.isAutoClocking) {
         // Clock is MHz; use it as a visual rate, not a real-time 10⁶ tick.
         phaseTimer += delta * (p.clockFreq ?? 2.5);
         if (phaseTimer > 0.8) {
           phaseTimer = 0;
           currentActivePhase = ((currentActivePhase % 3) + 1) as 1 | 2 | 3;
-          if (!p.isAudioMuted && Math.random() < 0.3) {
+          if (!p.isAudioMuted && lcgLoop() < 0.3) {
             soundEngine.playSwitchClick();
           }
         }
@@ -313,7 +326,7 @@ export function BoyleSmithCcd3D() {
         const pixelIdx = Math.floor(i / (packetCount / 3));
         const targetGateX = -3.6 + (pixelIdx * 3 + (currentActivePhase - 1)) * 0.85;
 
-        pPos[idx] += (targetGateX + (Math.random() - 0.5) * 0.4 - pPos[idx]) * 0.15;
+        pPos[idx] += (targetGateX + (lcgLoop() - 0.5) * 0.4 - pPos[idx]) * 0.15;
       }
       packetGeo.attributes.position.needsUpdate = true;
 

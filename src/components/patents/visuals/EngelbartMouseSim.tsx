@@ -2,6 +2,7 @@
 
 import { MousePointer, Move, RotateCcw, Sparkles } from "lucide-react";
 import { useRef, useState } from "react";
+import { stepEngelbartMouse } from "@/physics/catalogKernels";
 import { stepEngelbartResolver } from "@/physics/machineKernels";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 
@@ -13,15 +14,17 @@ export function EngelbartMouseSim() {
   const [pulseCountX, setPulseCountX] = useState<number>(0);
   const [pulseCountY, setPulseCountY] = useState<number>(0);
   const wheelRadius = params.wheelRadius ?? 10.0;
-  const wheelDiameterMm = wheelRadius * 2;
   const pulsesPerRev = params.pulsesPerRev ?? 200;
+  const mouse = stepEngelbartMouse({
+    mouseSpeed: params.mouseSpeed ?? 350,
+    wheelRadius,
+    pulsesPerRev,
+  });
+  const wheelDiameterMm = mouse.wheelDiameterMm;
+  const resolutionMmPerPulse = mouse.mmPerPulse;
 
   const prevPosRef = useRef<{ x: number; y: number }>({ x: posX, y: posY });
   const containerRef = useRef<SVGSVGElement>(null);
-
-  // Wheel rotation calculation
-  const wheelCircumferenceMm = Math.PI * wheelDiameterMm;
-  const resolutionMmPerPulse = wheelCircumferenceMm / pulsesPerRev;
 
   const handlePointerDown = () => {
     isDraggingRef.current = true;

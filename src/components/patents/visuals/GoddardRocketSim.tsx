@@ -4,7 +4,7 @@ import { Rocket } from "lucide-react";
 import { useState } from "react";
 import { TextWithLatex } from "@/components/ui/LatexRenderer";
 import { FrankenSimEngine } from "@/physics/engine";
-import { goddardThermo } from "@/physics/thermochem";
+import { goddardNozzleMatch, goddardThermo } from "@/physics/thermochem";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 
 export function GoddardRocketSim() {
@@ -26,12 +26,11 @@ export function GoddardRocketSim() {
   // Supersonic de Laval calculations via central physics engine
   const specificImpulseSec = Math.round(res.specificImpulseSec);
   const exhaustVelocityMs = res.exhaustVelocityMps;
-  const thrustPounds = Math.round(res.thrustNewtons * 0.224809);
+  const thrustPounds = res.thrustLbf;
   const thermo = goddardThermo(combustionPressurePsi, nozzleExpansionRatio);
-  const optimalEpsilon = Math.min(25, Math.max(3, 3.5 * Math.exp(altitudeMiles / 12)));
-  const expansionEfficiency = Math.max(
-    0.6,
-    1 - Math.abs(nozzleExpansionRatio - optimalEpsilon) / (optimalEpsilon * 2),
+  const { optimalEpsilon, expansionEfficiency } = goddardNozzleMatch(
+    altitudeMiles,
+    nozzleExpansionRatio,
   );
 
   return (

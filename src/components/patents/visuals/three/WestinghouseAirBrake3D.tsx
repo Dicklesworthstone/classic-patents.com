@@ -26,7 +26,7 @@ export function WestinghouseAirBrake3D() {
   });
   const isBrakeClamped = westinghouse.valveState !== "RELEASE";
   const clampingForceKn = westinghouse.shoeClampingForceKn;
-  const stoppingDistanceFt = Math.round(westinghouse.stoppingDistanceM * 3.28084);
+  const stoppingDistanceFt = westinghouse.stoppingDistanceFt;
   const [activeCamera, setActiveCamera] = useState<CameraPreset>("iso");
   const { isAudioMuted, toggleSound: toggleEngine } = usePatentAudio();
 

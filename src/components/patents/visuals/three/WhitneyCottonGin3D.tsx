@@ -33,7 +33,7 @@ export function WhitneyCottonGin3D() {
   const { isAudioMuted, toggleSound: toggleEngine } = usePatentAudio();
 
   const dailyOutputLbs = gin.outputLbsPerDay.toFixed(1);
-  const laborMultiplier = (gin.outputLbsPerDay / 1.0).toFixed(0);
+  const laborMultiplier = String(gin.laborMultiplier);
 
   const live = useLiveSimParams({
     crankRpm,

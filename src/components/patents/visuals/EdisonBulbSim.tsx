@@ -19,12 +19,16 @@ export function EdisonBulbSim() {
   const bulb = stepEdisonBulb({ voltage, filamentLength: params.filamentLength ?? 22 });
   // High-R path is the Edison kernel. Low-R is the Swan/Maxim counterfactual for feeder I²R.
   const resistanceOhms = resistanceMode === "high-resistance" ? bulb.hotResistanceOhm : 1.5;
-  const currentAmps = voltage / resistanceOhms;
+  const currentAmps =
+    resistanceMode === "high-resistance" ? bulb.currentAmps : voltage / resistanceOhms;
   const powerWatts =
     resistanceMode === "high-resistance" ? bulb.radiantWatts : (voltage * voltage) / 1.5;
 
   const feederResistance = bulb.feederResistanceOhm;
-  const feederPowerLossWatts = currentAmps ** 2 * feederResistance;
+  const feederPowerLossWatts =
+    resistanceMode === "high-resistance"
+      ? bulb.feederLossWatts
+      : currentAmps ** 2 * feederResistance;
 
   const isBurnedOut = !isVacuumIntact && voltage > 30;
   const tempKelvin = isBurnedOut

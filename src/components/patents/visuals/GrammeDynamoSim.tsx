@@ -9,26 +9,19 @@ import { usePatentAudio } from "./three/usePatentAudio";
 export function GrammeDynamoSim() {
   const { params, updateParam, resetParams } = usePatentPhysics("us-120057-gramme-dynamo");
   const { isAudioMuted, toggleSound } = usePatentAudio();
-  const rotorRpm = params.shaftRpm ?? 950;
-  const coilSections = params.coilSegments ?? 32;
+  const shaftRate = params.shaftRate ?? 1;
+  const gramme = stepGrammeDynamo({ shaftRate });
+  const printedJunctionCount = 36; // US 120,057 Fig. 1 specifies 36 bobbins
   const [isPlaying, setIsPlaying] = useState<boolean>(true);
   const [angleDeg, setAngleDeg] = useState<number>(0);
   const animRef = useRef<number | null>(null);
 
-  const gramme = stepGrammeDynamo({ shaftRpm: rotorRpm, coilSegments: coilSections });
-  const generatedDcVolts = gramme.emfVolts;
-  const electricalPowerWatts = gramme.powerWatts;
-  const outputAmperes = gramme.armatureCurrentA;
-  const voltageRipplePct = gramme.voltageRipplePct;
-
   useEffect(() => {
     if (!isPlaying) return;
-    let lastTime = performance.now();
-
-    const loop = (time: number) => {
-      const dt = (time - lastTime) / 1000;
-      lastTime = time;
-      setAngleDeg((prev) => (prev + (rotorRpm / 60) * 360 * dt) % 360);
+    const loop = () => {
+      // The animation is a visual cue, not a historical speed measurement.
+      // Fixed per-frame steps avoid deriving state from a private wall clock.
+      setAngleDeg((prev) => (prev + shaftRate * 1.5) % 360);
       animRef.current = requestAnimationFrame(loop);
     };
 
@@ -36,18 +29,18 @@ export function GrammeDynamoSim() {
     return () => {
       if (animRef.current) cancelAnimationFrame(animRef.current);
     };
-  }, [isPlaying, rotorRpm]);
+  }, [isPlaying, shaftRate]);
 
   return (
     <div className="w-full rounded-2xl border border-parchment-300 dark:border-ink-800 bg-parchment-50 dark:bg-ink-950 p-4 sm:p-6 shadow-md transition-colors">
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 border-b border-parchment-200 dark:border-ink-800 pb-3 mb-4">
         <div>
           <h3 className="font-serif text-lg font-bold text-ink-900 dark:text-parchment-100">
-            Gramme Continuous DC Ring Dynamo (US 120,057)
+            Gramme Continuous-Current Ring Apparatus (US 120,057)
           </h3>
           <p className="font-sans text-xs text-ink-500 dark:text-ink-400">
-            Interactive 2D Electromagnetic Model — Toroidal Iron Ring Armature, Endless Multitap
-            Coils, and Smooth DC Commutation
+            Explanatory model of the printed endless ring, thirty-six joined bobbins, junction
+            conductors, and collecting rubbers. The patent gives no electrical rating.
           </p>
         </div>
         <div className="flex items-center gap-2 self-end sm:self-auto">
@@ -126,8 +119,8 @@ export function GrammeDynamoSim() {
             <circle cx="0" cy="0" r="100" fill="none" stroke="#4A5568" strokeWidth="30" />
 
             {/* Distributed Endless Helical Coils around Ring */}
-            {Array.from({ length: coilSections }).map((_, i) => {
-              const cAngle = (i * 360) / coilSections;
+            {Array.from({ length: printedJunctionCount }).map((_, i) => {
+              const cAngle = (i * 360) / printedJunctionCount;
               const rad = (cAngle * Math.PI) / 180;
               const xPos = Math.cos(rad) * 100;
               const yPos = Math.sin(rad) * 100;
@@ -147,28 +140,28 @@ export function GrammeDynamoSim() {
               );
             })}
 
-            {/* Central Commutator Drum */}
-            <circle cx="0" cy="0" r="35" fill="#C5A059" stroke="#744210" strokeWidth="2" />
-            {Array.from({ length: 16 }).map((_, i) => (
+            {/* Junction conductors rotate with the endless bobbin; this is not a later commutator. */}
+            <circle cx="0" cy="0" r="35" fill="#4A5568" stroke="#1A202C" strokeWidth="2" />
+            {Array.from({ length: printedJunctionCount }).map((_, i) => (
               <line
-                key={`comm-seg-${i * 22.5}`}
-                x1="0"
-                y1="0"
-                x2={Math.cos((i * 22.5 * Math.PI) / 180) * 35}
-                y2={Math.sin((i * 22.5 * Math.PI) / 180) * 35}
-                stroke="#1A202C"
-                strokeWidth="1.5"
+                key={`junction-${i * (360 / printedJunctionCount)}`}
+                x1={Math.cos((i * 2 * Math.PI) / printedJunctionCount) * 35}
+                y1={Math.sin((i * 2 * Math.PI) / printedJunctionCount) * 35}
+                x2={Math.cos((i * 2 * Math.PI) / printedJunctionCount) * 48}
+                y2={Math.sin((i * 2 * Math.PI) / printedJunctionCount) * 48}
+                stroke="#C5A059"
+                strokeWidth="2"
               />
             ))}
           </g>
 
-          {/* Stationary DC Carbon / Copper Gauze Brushes (Vertical Neutral Plane) */}
+          {/* Stationary collecting rubbers S engage the rotating junction conductors. */}
           <rect
             x="294"
             y="125"
             width="12"
             height="15"
-            fill="#B87333"
+            fill="#1A202C"
             stroke="#2D3748"
             strokeWidth="1.5"
           />
@@ -177,29 +170,29 @@ export function GrammeDynamoSim() {
             y="200"
             width="12"
             height="15"
-            fill="#B87333"
+            fill="#1A202C"
             stroke="#2D3748"
             strokeWidth="1.5"
           />
           <text
             x="315"
             y="135"
-            fill="#B87333"
+            fill="#1A202C"
             fontSize="11"
             fontWeight="bold"
             fontFamily="sans-serif"
           >
-            + Brush ({generatedDcVolts} V DC)
+            Collecting rubber S
           </text>
           <text
             x="315"
             y="215"
-            fill="#B87333"
+            fill="#1A202C"
             fontSize="11"
             fontWeight="bold"
             fontFamily="sans-serif"
           >
-            - Brush (Ground)
+            Opposed collector contact
           </text>
         </svg>
       </div>
@@ -208,67 +201,53 @@ export function GrammeDynamoSim() {
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 my-4">
         <div className="bg-parchment-100 dark:bg-ink-900 border border-parchment-200 dark:border-ink-800 p-2.5 rounded-xl text-center">
           <span className="text-[10px] uppercase tracking-wider text-ink-500 dark:text-ink-400 block font-sans">
-            Generated DC Voltage
+            Induced e.m.f. (illustrative)
           </span>
           <span className="font-mono text-sm sm:text-base font-bold text-ink-900 dark:text-parchment-100">
-            {generatedDcVolts} V
+            {gramme.inducedEmfIndex}
           </span>
         </div>
         <div className="bg-parchment-100 dark:bg-ink-900 border border-parchment-200 dark:border-ink-800 p-2.5 rounded-xl text-center">
           <span className="text-[10px] uppercase tracking-wider text-ink-500 dark:text-ink-400 block font-sans">
-            Output Current
+            Printed joined bobbins
           </span>
           <span className="font-mono text-sm sm:text-base font-bold text-amber-700 dark:text-amber-500">
-            {outputAmperes} A
+            {gramme.printedJunctionCount}
           </span>
         </div>
         <div className="bg-parchment-100 dark:bg-ink-900 border border-parchment-200 dark:border-ink-800 p-2.5 rounded-xl text-center">
           <span className="text-[10px] uppercase tracking-wider text-ink-500 dark:text-ink-400 block font-sans">
-            Electrical Power
+            Collection continuity (idealized)
           </span>
           <span className="font-mono text-sm sm:text-base font-bold text-emerald-700 dark:text-emerald-500">
-            {electricalPowerWatts} W
+            {gramme.collectionContinuityPct}%
           </span>
         </div>
         <div className="bg-parchment-100 dark:bg-ink-900 border border-parchment-200 dark:border-ink-800 p-2.5 rounded-xl text-center">
           <span className="text-[10px] uppercase tracking-wider text-ink-500 dark:text-ink-400 block font-sans">
-            Voltage Ripple
+            Source boundary
           </span>
           <span className="font-mono text-sm sm:text-base font-bold text-ink-900 dark:text-parchment-100">
-            {voltageRipplePct}%
+            no V/A/W stated
           </span>
         </div>
       </div>
 
       {/* Sliders */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-2 border-t border-parchment-200 dark:border-ink-800">
+      <div className="grid grid-cols-1 gap-4 pt-2 border-t border-parchment-200 dark:border-ink-800">
         <div>
           <div className="flex justify-between text-xs font-sans font-medium text-ink-700 dark:text-parchment-300 mb-1">
-            <span>Dynamo Armature Speed</span>
-            <span className="font-mono">{rotorRpm} RPM</span>
+            <span>Illustrative shaft-rate factor</span>
+            <span className="font-mono">{shaftRate.toFixed(1)}×</span>
           </div>
           <input
             type="range"
-            min="300"
-            max="1600"
-            step="50"
-            value={rotorRpm}
-            onChange={(e) => updateParam("shaftRpm", Number(e.target.value))}
-            className="w-full accent-amber-600 cursor-pointer"
-          />
-        </div>
-        <div>
-          <div className="flex justify-between text-xs font-sans font-medium text-ink-700 dark:text-parchment-300 mb-1">
-            <span>Ring Winding Coil Sections</span>
-            <span className="font-mono">{coilSections} Sections</span>
-          </div>
-          <input
-            type="range"
-            min="12"
-            max="48"
-            step="4"
-            value={coilSections}
-            onChange={(e) => updateParam("coilSegments", Number(e.target.value))}
+            aria-label="Illustrative shaft-rate factor"
+            min="0.4"
+            max="1.6"
+            step="0.1"
+            value={shaftRate}
+            onChange={(e) => updateParam("shaftRate", Number(e.target.value))}
             className="w-full accent-amber-600 cursor-pointer"
           />
         </div>

@@ -27,7 +27,7 @@ export function BoyleSmithCcdSim() {
 
   const ccd = stepCcdWells(clockPhase, incidentLux, clockFreq, gateVoltageV);
   const photoElectrons = ccd.photoElectrons;
-  const outputSignalMillivolts = ((photoElectrons * 1.602e-19) / 10e-15) * 1000;
+  const outputSignalMillivolts = ccd.outputSignalMv;
   const chargeTransferEfficiency = ccd.cte;
 
   return (

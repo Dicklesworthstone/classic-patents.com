@@ -15,29 +15,23 @@ import {
 import { useLiveSimParams } from "./useLiveSimParams";
 import { usePatentAudio } from "./usePatentAudio";
 
-type CameraPreset = "iso" | "ring_armature" | "commutator" | "pole_pieces" | "top";
+type CameraPreset = "iso" | "ring_armature" | "collector_rods" | "pole_pieces" | "top";
 
 export function GrammeDynamo3D() {
   const containerRef = useRef<HTMLDivElement>(null);
   const [showUiOverlay, setShowUiOverlay] = useState<boolean>(true);
 
-  // Electrical Dynamo Parameters
+  // The shared parameter map carries an explicitly illustrative shaft rate.
   const { params } = usePatentPhysics("us-120057-gramme-dynamo");
-  const dynamoRpm = params.shaftRpm ?? params.rotorRpm ?? 950;
-  const gramme = stepGrammeDynamo({
-    shaftRpm: dynamoRpm,
-    coilSegments: params.coilSegments ?? 32,
-  });
-  const outputVoltageVolts = gramme.emfVolts;
-  const currentAmps = gramme.armatureCurrentA.toFixed(1);
-  const powerWatts = gramme.powerWatts.toFixed(0);
+  const shaftRate = params.shaftRate ?? 1;
+  const gramme = stepGrammeDynamo({ shaftRate });
   const [showMagneticFlux, setShowMagneticFlux] = useState<boolean>(true);
   const [activeCamera, setActiveCamera] = useState<CameraPreset>("iso");
   const { isAudioMuted, toggleSound: toggleEngine } = usePatentAudio();
 
   const live = useLiveSimParams({
-    dynamoRpm,
-    outputVoltageVolts,
+    shaftRate,
+    inducedEmfIndex: gramme.inducedEmfIndex,
     showMagneticFlux,
     isAudioMuted,
   });
@@ -60,7 +54,7 @@ export function GrammeDynamo3D() {
         camera.position.set(0, 0.8, 4.2);
         controls.target.set(0, 0, 0);
         break;
-      case "commutator":
+      case "collector_rods":
         camera.position.set(-2.8, 1.2, 3.2);
         controls.target.set(-1.4, 0, 0);
         break;
@@ -112,6 +106,12 @@ export function GrammeDynamo3D() {
       color: 0xc8963e,
       roughness: 0.2,
       metalness: 0.92,
+    });
+
+    const rubberMat = new THREE.MeshStandardMaterial({
+      color: 0x111827,
+      roughness: 0.92,
+      metalness: 0.02,
     });
 
     const steelShaftMat = new THREE.MeshStandardMaterial({
@@ -174,8 +174,9 @@ export function GrammeDynamo3D() {
     ironRing.rotation.y = Math.PI / 2;
     armatureGroup.add(ironRing);
 
-    // 16 Discrete Toroidal Copper Coil Sectors
-    const sectorCount = 16;
+    // The first construction expressly states thirty-six small bobbins joined
+    // end to end around the ring.
+    const sectorCount = 36;
     for (let s = 0; s < sectorCount; s++) {
       const sAngle = (s * Math.PI * 2) / sectorCount;
       const coilSector = new THREE.Mesh(new THREE.TorusGeometry(0.55, 0.14, 12, 16), copperCoilMat);
@@ -186,17 +187,23 @@ export function GrammeDynamo3D() {
       armatureGroup.add(coilSector);
     }
 
-    // 4. Multi-Segment Radial Commutator Drum & Copper Brushes
-    const commutator = new THREE.Mesh(new THREE.CylinderGeometry(0.7, 0.7, 1.2, 32), brassMat);
-    commutator.rotation.z = Math.PI / 2;
-    commutator.position.x = -2.2;
-    armatureGroup.add(commutator);
+    // 4. Junction conductors C rotate with the ring. They are collected by
+    // rubbers S, as described in US 120,057; this is not a later segmented
+    // commutator drum.
+    const junctionRodGeometry = new THREE.CylinderGeometry(0.055, 0.055, 0.85, 10);
+    for (let junction = 0; junction < sectorCount; junction++) {
+      const angle = (junction * Math.PI * 2) / sectorCount;
+      const junctionRod = new THREE.Mesh(junctionRodGeometry, brassMat);
+      junctionRod.rotation.z = Math.PI / 2;
+      junctionRod.position.set(-0.55, Math.cos(angle) * 1.8, Math.sin(angle) * 1.8);
+      armatureGroup.add(junctionRod);
+    }
 
-    // Stationary Brush Holders
+    // Stationary collecting rubbers contact successive junction rods.
     [-1, 1].forEach((dir) => {
-      const brush = new THREE.Mesh(new THREE.BoxGeometry(0.18, 0.6, 0.25), copperCoilMat);
-      brush.position.set(-2.2, dir * 0.8, 0);
-      rootGroup.add(brush);
+      const collectorRubber = new THREE.Mesh(new THREE.BoxGeometry(0.22, 0.46, 0.8), rubberMat);
+      collectorRubber.position.set(-0.95, dir * 1.8, 0);
+      rootGroup.add(collectorRubber);
     });
 
     // 5. Magnetic Flux Vector Field Particles
@@ -207,11 +214,11 @@ export function GrammeDynamo3D() {
 
     for (let i = 0; i < fluxCount; i++) {
       const idx = i * 3;
-      const a = Math.random() * Math.PI * 2;
-      const r = 1.4 + Math.random() * 0.9;
-      fluxPositions[idx] = (Math.random() - 0.5) * 2.2;
-      fluxPositions[idx + 1] = Math.cos(a) * r;
-      fluxPositions[idx + 2] = Math.sin(a) * r;
+      const angle = (i * Math.PI * 2) / fluxCount;
+      const radius = 1.42 + (i % 6) * 0.14;
+      fluxPositions[idx] = ((i % 5) - 2) * 0.2;
+      fluxPositions[idx + 1] = Math.cos(angle) * radius;
+      fluxPositions[idx + 2] = Math.sin(angle) * radius;
 
       fluxColors[idx] = 0.2;
       fluxColors[idx + 1] = 0.85;
@@ -237,33 +244,32 @@ export function GrammeDynamo3D() {
 
     // Animation Loop
     let reqId: number;
-    const clock = new THREE.Clock();
+    let frame = 0;
 
     const animate = () => {
       reqId = requestAnimationFrame(animate);
-      const delta = clock.getDelta();
+      frame += 1;
       const p = live.current;
 
-      const omegaRadPerSec = (p.dynamoRpm * 2 * Math.PI) / 60;
-      armatureGroup.rotation.x += omegaRadPerSec * delta;
+      const radiansPerFrame = (p.shaftRate * Math.PI * 2) / 240;
+      armatureGroup.rotation.x = frame * radiansPerFrame;
 
-      // Animate flux vectors circulating in ring
+      // Deterministic display motion: a fixed frame sequence, with no ambient
+      // randomness or private wall-clock state.
       const pos = fluxPositions;
       for (let i = 0; i < fluxCount; i++) {
         const idx = i * 3;
-        const y = pos[idx + 1];
-        const z = pos[idx + 2];
-        let a = Math.atan2(z, y);
-        a += omegaRadPerSec * delta * 0.3;
-        const r = Math.sqrt(y * y + z * z);
-        pos[idx + 1] = Math.cos(a) * r;
-        pos[idx + 2] = Math.sin(a) * r;
+        const angle = (i * Math.PI * 2) / fluxCount + frame * radiansPerFrame * 0.3;
+        const radius = 1.42 + (i % 6) * 0.14;
+        pos[idx + 1] = Math.cos(angle) * radius;
+        pos[idx + 2] = Math.sin(angle) * radius;
       }
-      fluxGeo.attributes.position.needsUpdate = true;
+      const fluxPositionAttribute = fluxGeo.getAttribute("position");
+      fluxPositionAttribute.needsUpdate = true;
       fluxPoints.visible = p.showMagneticFlux;
       (fluxPoints.material as THREE.PointsMaterial).opacity = Math.min(
         0.95,
-        0.25 + (p.outputVoltageVolts / 200) * 0.7,
+        0.25 + (p.inducedEmfIndex / 160) * 0.7,
       );
 
       renderer.render(scene, camera);
@@ -300,7 +306,7 @@ export function GrammeDynamo3D() {
             [
               ["iso", "Isometric"],
               ["ring_armature", "Ring Armature"],
-              ["commutator", "Commutator"],
+              ["collector_rods", "Junctions & Rubbers"],
               ["pole_pieces", "Field Poles"],
               ["top", "Top"],
             ] as [CameraPreset, string][]
@@ -359,15 +365,22 @@ export function GrammeDynamo3D() {
 
       <StudioKernelChips
         visible={showUiOverlay}
-        title="Gramme ring"
+        title="Gramme ring collection"
         chips={[
-          { label: "Shaft", value: String(Math.round(dynamoRpm)), unit: "rpm" },
-          { label: "E", value: String(outputVoltageVolts), unit: "V" },
-          { label: "I", value: currentAmps, unit: "A" },
-          { label: "P", value: powerWatts, unit: "W" },
-          { label: "Ripple", value: String(gramme.voltageRipplePct), unit: "%" },
+          { label: "Shaft", value: shaftRate.toFixed(1), unit: "relative" },
+          { label: "E", value: String(gramme.inducedEmfIndex), unit: "index" },
+          { label: "Junctions", value: String(gramme.printedJunctionCount), unit: "printed" },
+          {
+            label: "Collection",
+            value: String(gramme.collectionContinuityPct),
+            unit: "% idealized",
+          },
         ]}
       />
+      <p className="absolute bottom-3 left-4 right-4 z-10 rounded-lg border border-parchment-700/60 bg-parchment-950/80 px-3 py-2 text-xs text-parchment-200 backdrop-blur-md">
+        Source-faithful explanatory mode: joined bobbins, junction conductors, and collecting
+        rubbers. US 120,057 gives no historical rpm, volts, amperes, or watts.
+      </p>
     </div>
   );
 }

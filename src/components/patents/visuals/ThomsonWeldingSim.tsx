@@ -14,7 +14,7 @@ export function ThomsonWeldingSim() {
   const [isWelding, setIsWelding] = useState<boolean>(false);
 
   const weld = stepThomsonWelding({ weldCurrentAmps, clampPressureMpa });
-  const jouleHeatWatts = weld.jouleKw * 1000;
+  const jouleHeatWatts = weld.jouleWatts;
   const interfaceTempC = weld.interfaceTempC;
   const isPlasticForged = weld.isForged;
   const upsetBurrWidthMm = weld.upsetBurrWidthMm;

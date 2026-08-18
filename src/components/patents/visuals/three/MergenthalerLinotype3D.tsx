@@ -3,7 +3,7 @@
 import { Activity, Camera, Eye, EyeOff, Volume2, VolumeX } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import * as THREE from "three";
-import { LINOTYPE_CHARS_PER_LINE, stepMergenthalerLinotype } from "@/physics/machineKernels";
+import { stepMergenthalerLinotype } from "@/physics/machineKernels";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { soundEngine } from "@/utils/soundEngine";
 import { StudioKernelChips } from "./StudioKernelChips";
@@ -22,13 +22,13 @@ export function MergenthalerLinotype3D() {
   const matrixRate = params.matrixRate ?? 60;
   const spacebandWedge = params.spacebandWedge ?? 6.5;
   const potTempC = params.potTemp ?? 260;
-  const castingLpm = matrixRate / LINOTYPE_CHARS_PER_LINE;
-  const charsPerHour = Math.round(matrixRate * 60);
   const linotypeIdle = stepMergenthalerLinotype({
     matrixRatePerMin: matrixRate,
     spacebandWedgeMm: spacebandWedge,
     potTempC,
   });
+  const castingLpm = linotypeIdle.linesPerMin;
+  const charsPerHour = linotypeIdle.charsPerHour;
   const [activeCamera, setActiveCamera] = useState<CameraPreset>("iso");
   const { isAudioMuted, toggleSound: toggleEngine } = usePatentAudio();
 

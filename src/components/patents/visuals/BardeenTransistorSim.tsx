@@ -17,7 +17,7 @@ export function BardeenTransistorSim() {
     pointSpacingMicrons,
   );
   const alphaRatio = semi.currentGainAlpha;
-  const collectorCurrentMa = emitterCurrentMa * alphaRatio;
+  const collectorCurrentMa = semi.collectorCurrentMa;
   const voltageGain = semi.voltageGain;
   const powerGainDb = semi.powerGainDb.toFixed(1);
 

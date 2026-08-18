@@ -40,12 +40,12 @@ export function FermiReactorSim() {
 
   useEffect(() => {
     if (kEffective <= 1.0 || soundEngine.getIsMuted()) return;
-    const periodMs = Math.max(50, Math.round(280 / Math.max(0.05, kEffective - 0.98)));
+    const periodMs = kinetics.geigerIntervalMs;
     const timer = setInterval(() => {
       soundEngine.playMorseClick();
     }, periodMs);
     return () => clearInterval(timer);
-  }, [kEffective]);
+  }, [kEffective, kinetics.geigerIntervalMs]);
 
   const resetToCriticality = () => {
     resetParams();

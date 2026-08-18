@@ -26,8 +26,8 @@ export function TeslaCoilSim() {
     couplingK,
     secondaryTurns,
   );
-  const secondaryVoltageKv = Math.round(res.secondaryPotentialMv * 1000);
-  const streamerScale = Math.min(2.2, Math.max(0.35, res.streamerLengthInches / 48));
+  const secondaryVoltageKv = res.secondaryPotentialKv;
+  const streamerScale = res.streamerScale;
 
   return (
     <div className="rounded-2xl border border-amber-900/20 dark:border-ink-800 bg-parchment-50 dark:bg-ink-950 p-6 sm:p-7 shadow-patent space-y-6">

@@ -40,7 +40,7 @@ export function WozniakAppleSim() {
   const [dramAddress, setDramAddress] = useState<string>("0x0400");
   const busTickRef = useRef(0);
 
-  const intervalMs = Math.max(50, Math.round(2100 / crystalFreq));
+  const intervalMs = apple.busTickIntervalMs;
 
   // Dynamic Phase 1 / Phase 2 Interleaving Clock (14.31818 MHz master crystal divided down)
   useEffect(() => {

@@ -39,11 +39,8 @@ export function TeslaMotor3D() {
   const emPhysics = FrankenSimEngine.stepTeslaMotor(acFrequencyHz, fieldPoles, appliedLoadTorqueNm);
   const synchronousSpeedRpm = emPhysics.synchronousRpm;
   const slip = emPhysics.slipFraction;
-  const rotorSpeedRpm = Math.round(synchronousSpeedRpm * (1 - slip));
-  const shaftPowerWatts = (appliedLoadTorqueNm * (rotorSpeedRpm * 2 * Math.PI)) / 60;
-  const electricalPowerWatts = Math.round(
-    shaftPowerWatts / Math.max(0.2, emPhysics.efficiencyPct / 100),
-  );
+  const rotorSpeedRpm = emPhysics.rotorRpm;
+  const electricalPowerWatts = emPhysics.electricalInputWatts;
   const rotorInducedCurrentAmps = Math.round(emPhysics.currentAmperes);
 
   useFrankenSimPhysics("us-381968-tesla-motor", {

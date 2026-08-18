@@ -23,7 +23,7 @@ export function WestinghouseAirBrakeSim() {
   const isRelease = wh.valveState === "RELEASE";
 
   const cylPressurePsi = wh.brakeCylinderPressurePsi;
-  const pistonStrokePx = Math.round((cylPressurePsi / 55) * 18);
+  const pistonStrokePx = Math.round(wh.pistonStrokeRatio * 18);
   const shoeDistancePx = Math.max(0, 18 - pistonStrokePx);
 
   const pistonThrustKn = wh.shoeClampingForceKn.toFixed(1);
@@ -41,7 +41,7 @@ export function WestinghouseAirBrakeSim() {
       setTrainSpeedMph((prev) => {
         if (cylPressurePsi > 5) {
           // Decelerate proportionally to clamping pressure
-          const decel = (cylPressurePsi / 50) * 18 * dt;
+          const decel = wh.pistonStrokeRatio * 18 * dt;
           return Math.max(0, prev - decel);
         }
         // Accelerate back to 45 mph if release
@@ -56,7 +56,7 @@ export function WestinghouseAirBrakeSim() {
     return () => {
       if (animRef.current) cancelAnimationFrame(animRef.current);
     };
-  }, [cylPressurePsi, trainSpeedMph]);
+  }, [cylPressurePsi, trainSpeedMph, wh.pistonStrokeRatio]);
 
   const setPreset = (psi: number, _label?: string) => {
     updateParam("trainPipePressure", psi);

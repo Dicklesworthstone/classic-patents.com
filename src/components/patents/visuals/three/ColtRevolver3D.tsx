@@ -34,7 +34,6 @@ export function ColtRevolver3D() {
   const chamberPressureMpa = params.chamberPressure ?? 85;
   const cockingAngleDeg = params.cockingAngle ?? 45; // 0 (hammer down) to 45 (full cock)
   const rammerPositionPct = params.rammerPosition ?? 0; // 0 (latched under barrel) to 100 (fully rammed)
-  const powderGrains = Math.round((chamberPressureMpa - 40) / 1.5 + 15);
 
   const [showUiOverlay, setShowUiOverlay] = useState<boolean>(true);
   const [currentChamberIndex, setCurrentChamberIndex] = useState<number>(1);
@@ -69,6 +68,7 @@ export function ColtRevolver3D() {
   const hoopStressMpa = coltMech.hoopStressMpa;
   const muzzleVelocityMps = coltMech.muzzleVelocityMps;
   const muzzleEnergyJoules = coltMech.muzzleEnergyJoules;
+  const powderGrains = coltMech.powderGrains;
   const isFullCock = coltMech.isLocked;
 
   const live = useLiveSimParams({
