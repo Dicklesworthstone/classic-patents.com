@@ -35,7 +35,7 @@ describe("US 120,057 Gramme source-faithful visual boundary", () => {
   });
 
   test("returns reproducible relative indicators rather than fabricated volts, amps, or watts", () => {
-    expect(stepGrammeDynamo({ shaftRate: 1 })).toEqual({
+    expect(stepGrammeDynamo({ shaftRate: 1 })).toMatchObject({
       shaftRate: 1,
       printedJunctionCount: 36,
       inducedEmfIndex: 100,

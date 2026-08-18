@@ -8,6 +8,8 @@ import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { createThreeStudioScene, type StudioContext } from "./ThreeStudioScene";
 import { useLiveSimParams } from "./useLiveSimParams";
 import { usePatentAudio } from "./usePatentAudio";
+import { soundEngine } from "@/utils/soundEngine";
+import { buildDaimlerEngineModel } from "./daimlerEngineModel";
 
 type CameraPreset = "iso" | "cylinder" | "crankcase" | "hottube";
 
@@ -37,13 +39,12 @@ export function DaimlerEngine3D() {
     brakeHorsepower: daimler.brakeHorsepower,
     outerWheelRpm: daimler.outerWheelRpm,
     innerWheelRpm: daimler.innerWheelRpm,
+    runningOmegaRadPerS: daimler.runningOmegaRadPerS,
+    isRunning: daimler.isRunning ? 1 : 0,
   });
 
   const studioRef = useRef<StudioContext | null>(null);
   const animRef = useRef<number | null>(null);
-  const flywheelRef = useRef<THREE.Group | null>(null);
-  const pistonRef = useRef<THREE.Mesh | null>(null);
-  const conRodRef = useRef<THREE.Mesh | null>(null);
 
   useEffect(() => {
     const container = containerRef.current;
@@ -62,118 +63,63 @@ export function DaimlerEngine3D() {
     studioRef.current = studio;
     const { scene, renderer } = studio;
 
-    // --- MATERIALS ---
-    const castIron = new THREE.MeshStandardMaterial({
-      color: 0x334155,
-      roughness: 0.45,
-      metalness: 0.85,
-    });
-    const _brassMat = new THREE.MeshStandardMaterial({
-      color: 0xd4af37,
-      roughness: 0.25,
-      metalness: 0.9,
-    });
-    const steelMat = new THREE.MeshStandardMaterial({
-      color: 0x94a3b8,
-      roughness: 0.2,
-      metalness: 0.95,
-    });
-    const hotTubeMat = new THREE.MeshStandardMaterial({
-      color: 0xffedd5,
-      emissive: 0xf97316,
-      emissiveIntensity: 2.2,
-      roughness: 0.2,
-    });
+    // Build procedural 3D model
+    const model = buildDaimlerEngineModel();
+    scene.add(model.rootGroup);
 
-    // --- 1. ENCLOSED CRANKCASE HOUSING ---
-    const caseMesh = new THREE.Mesh(new THREE.CylinderGeometry(1.2, 1.2, 1.4, 24), castIron);
-    caseMesh.rotation.z = Math.PI / 2;
-    caseMesh.position.set(0, -0.6, 0);
-    caseMesh.castShadow = true;
-    scene.add(caseMesh);
-
-    // --- 2. VERTICAL CYLINDER & WATER JACKET ---
-    const cylMesh = new THREE.Mesh(new THREE.CylinderGeometry(0.55, 0.55, 2.2, 24), castIron);
-    cylMesh.position.set(0, 1.1, 0);
-    cylMesh.castShadow = true;
-    scene.add(cylMesh);
-
-    // Cylinder Head & Valves
-    const headMesh = new THREE.Mesh(new THREE.BoxGeometry(1.2, 0.6, 1.2), castIron);
-    headMesh.position.set(0, 2.3, 0);
-    scene.add(headMesh);
-
-    // Glowing Platinum Hot-Tube Ignition Holder
-    const hotTube = new THREE.Mesh(new THREE.CylinderGeometry(0.06, 0.06, 0.45, 12), hotTubeMat);
-    hotTube.rotation.z = Math.PI / 2;
-    hotTube.position.set(0.65, 2.3, 0);
-    scene.add(hotTube);
-
-    // --- 3. TWIN INTERNAL ENCLOSED FLYWHEELS & CRANKSHAFT ---
-    const flywheelG = new THREE.Group();
-    flywheelG.position.set(0, -0.6, 0);
-    flywheelRef.current = flywheelG;
-
-    for (const sign of [-1, 1]) {
-      const disc = new THREE.Mesh(new THREE.CylinderGeometry(0.95, 0.95, 0.18, 24), castIron);
-      disc.rotation.x = Math.PI / 2;
-      disc.position.z = sign * 0.45;
-      flywheelG.add(disc);
-    }
-    // Crankpin between flywheels
-    const pin = new THREE.Mesh(new THREE.CylinderGeometry(0.08, 0.08, 0.9, 12), steelMat);
-    pin.rotation.x = Math.PI / 2;
-    pin.position.set(0.4, 0, 0);
-    flywheelG.add(pin);
-
-    scene.add(flywheelG);
-
-    // --- 4. RECIPROCATING PISTON & CONNECTING ROD ---
-    const piston = new THREE.Mesh(new THREE.CylinderGeometry(0.48, 0.48, 0.7, 20), steelMat);
-    piston.position.set(0, 1.0, 0);
-    pistonRef.current = piston;
-    scene.add(piston);
-
-    const conRod = new THREE.Mesh(new THREE.CylinderGeometry(0.06, 0.06, 1.6, 12), steelMat);
-    conRod.position.set(0, 0.2, 0);
-    conRodRef.current = conRod;
-    scene.add(conRod);
-
-    // --- 5. ANIMATION LOOP ---
+    // Kinematic state
     let crankAngle = 0;
-    let _renderedSteps = 0;
+    let renderedSteps = 0;
+    let lastAudioStroke = -1;
 
     const renderLoop = () => {
-      _renderedSteps += 1;
+      renderedSteps += 1;
       const dt = 1 / 60;
+      const p = live.current;
 
-      const tube = live.current.hotTubeTempC;
-      hotTubeMat.emissiveIntensity = tube >= 800 ? 2.4 : Math.max(0.15, (tube / 800) * 2.2);
-      hotTubeMat.emissive.setHex(tube >= 800 ? 0xf97316 : tube >= 600 ? 0xb45309 : 0x334155);
+      // Hot-tube glow modulation
+      const tube = p.hotTubeTempC;
+      model.materials.hotTubeMat.emissiveIntensity = tube >= 800 ? 2.8 : Math.max(0.15, (tube / 800) * 2.2);
+      model.materials.hotTubeMat.emissive.setHex(tube >= 800 ? 0xf97316 : tube >= 600 ? 0xb45309 : 0x334155);
 
-      if (live.current.isPlaying && tube >= 600) {
-        const rpm = live.current.engineRpm * (live.current.bmepBar / 4.5);
-        const speed = (rpm / 60) * Math.PI * 2;
-        crankAngle = (crankAngle + speed * dt) % (Math.PI * 2);
+      if (p.isPlaying && p.isRunning > 0) {
+        const speed = p.runningOmegaRadPerS ?? (p.engineRpm * 2 * Math.PI) / 60;
+        crankAngle = (crankAngle + speed * dt) % (Math.PI * 4); // 4-stroke cycle = 720° (4π rad)
 
-        if (flywheelRef.current) {
-          flywheelRef.current.rotation.z = crankAngle;
-        }
+        const cycleAngle = crankAngle % (Math.PI * 2);
+        model.crankshaftGroup.rotation.z = cycleAngle;
 
-        const crankR = 0.4;
-        const pinY = -0.6 + Math.sin(crankAngle) * crankR;
-        const pinX = Math.cos(crankAngle) * crankR;
+        // Kinematics: crankpin position
+        const crankR = 0.42;
+        const pinY = -0.65 + Math.sin(cycleAngle) * crankR;
+        const pinX = Math.cos(cycleAngle) * crankR;
 
-        const rodLen = 1.6;
+        const rodLen = 1.7;
         const pistonY = pinY + Math.sqrt(Math.max(0.1, rodLen ** 2 - pinX ** 2));
 
-        if (pistonRef.current) {
-          pistonRef.current.position.y = pistonY;
-        }
-        if (conRodRef.current) {
-          conRodRef.current.position.set(pinX / 2, (pinY + pistonY) / 2, 0);
-          const rodAngle = Math.atan2(pistonY - pinY, -pinX);
-          conRodRef.current.rotation.z = rodAngle - Math.PI / 2;
+        model.pistonGroup.position.y = pistonY;
+        model.conRodGroup.position.set(pinX, pinY, 0);
+        const rodAngle = Math.atan2(pistonY - pinY, -pinX);
+        model.conRodGroup.rotation.z = rodAngle - Math.PI / 2;
+
+        // Exhaust valve cam pushrod motion (opens during exhaust stroke: 3π to 4π)
+        const isExhaust = crankAngle >= Math.PI * 3;
+        const exhaustLift = isExhaust ? Math.sin((crankAngle - Math.PI * 3)) * 0.12 : 0;
+        model.exhaustPushrod.position.y = 0.2 + exhaustLift;
+        model.exhaustRocker.rotation.z = exhaustLift * 1.5;
+        model.exhaustValve.position.y = 2.5 - exhaustLift;
+
+        // Combustion flash at TDC of power stroke (crankAngle ≈ π)
+        const isFiring = Math.abs(crankAngle - Math.PI) < 0.25;
+        model.combustionFlame.visible = isFiring;
+
+        // Sound trigger on power stroke
+        const strokeIndex = Math.floor(crankAngle / (Math.PI * 4));
+        if (isFiring && strokeIndex !== lastAudioStroke) {
+          lastAudioStroke = strokeIndex;
+          if (!isMuted) {
+            soundEngine.playPneumaticPuff();
+          }
         }
       }
 
@@ -186,11 +132,10 @@ export function DaimlerEngine3D() {
 
     return () => {
       if (animRef.current) cancelAnimationFrame(animRef.current);
+      model.dispose();
       studio.dispose();
     };
-    // live is a stable ref; reading live.current inside rAF. Remounting on sliders
-    // tore down the WebGL context.
-  }, [live]);
+  }, [isMuted, live]);
 
   const setCameraView = (view: CameraPreset) => {
     const studio = studioRef.current;

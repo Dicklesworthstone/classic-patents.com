@@ -19,6 +19,7 @@ export function DieselEngineSim() {
     compressionRatio,
     blastAirPressureBar: params.blastAirPressure ?? 65,
     cutoffRatio: params.cutoffRatio ?? 1.6,
+    engineRpm,
   });
   const peakAirTempC = diesel.tCompressionC;
   const peakAirTempKelvin = peakAirTempC + 273;
@@ -36,7 +37,7 @@ export function DieselEngineSim() {
       const dt = Math.min(0.1, (time - lastTime) / 1000);
       lastTime = time;
 
-      setCrankAngleDeg((prev) => (prev + engineRpm * 6 * dt) % 720);
+      setCrankAngleDeg((prev) => (prev + diesel.crankOmegaDegPerS * dt) % 720);
       animRef.current = requestAnimationFrame(loop);
     };
 
@@ -44,7 +45,7 @@ export function DieselEngineSim() {
     return () => {
       if (animRef.current) cancelAnimationFrame(animRef.current);
     };
-  }, [isPlaying, engineRpm]);
+  }, [isPlaying, diesel.crankOmegaDegPerS]);
 
   const cycleAngleDeg = crankAngleDeg % 720;
   const isInjectingFuel = cycleAngleDeg >= 355 && cycleAngleDeg <= 390;

@@ -9,7 +9,6 @@ export function McCormickReaperSim() {
   const { params, updateParam, resetParams } = usePatentPhysics("us-x8277-mccormick-reaper");
   const groundSpeedMph = params.forwardSpeedMph ?? params.groundSpeedMph ?? 2.5;
   const reaper = stepMcCormickReaper({ forwardSpeedMph: groundSpeedMph });
-  const cutterCyclesPerSecond = reaper.cutterHz;
   const [isPlaying, setIsPlaying] = useState<boolean>(true);
   const [phase, setPhase] = useState<number>(0);
   const animRef = useRef<number | null>(null);
@@ -22,7 +21,7 @@ export function McCormickReaperSim() {
     const loop = () => {
       // Fixed presentation steps make the visual reproducible from the same
       // shared control state. They do not claim to be a physical time solver.
-      setPhase((prev) => (prev + (cutterCyclesPerSecond * (2 * Math.PI)) / 60) % (2 * Math.PI));
+      setPhase((prev) => (prev + reaper.cutterOmegaRadPerS / 60) % (2 * Math.PI));
       animRef.current = requestAnimationFrame(loop);
     };
 
@@ -30,11 +29,14 @@ export function McCormickReaperSim() {
     return () => {
       if (animRef.current) cancelAnimationFrame(animRef.current);
     };
-  }, [isPlaying, cutterCyclesPerSecond]);
+  }, [isPlaying, reaper.cutterOmegaRadPerS]);
 
   const cutterX = Math.sin(phase) * 18;
   const reelAngleDeg =
-    (phase * (reelRpm / Math.max(cutterCyclesPerSecond * 60, 1)) * (180 / Math.PI)) % 360;
+    (phase *
+      (reaper.reelOmegaRadPerS / Math.max(1e-6, reaper.cutterOmegaRadPerS)) *
+      (180 / Math.PI)) %
+    360;
 
   return (
     <div className="w-full rounded-2xl border border-parchment-300 dark:border-ink-800 bg-parchment-50 dark:bg-ink-950 p-4 sm:p-6 shadow-md transition-colors">

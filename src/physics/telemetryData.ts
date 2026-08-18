@@ -2057,6 +2057,13 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
           progressPct: 100,
         },
         {
+          label: "Visual Φ2",
+          value: `${apple.phi2DisplayHz}`,
+          unit: "Hz",
+          badgeColor: "purple",
+          progressPct: (apple.phi2DisplayHz / 8) * 100,
+        },
+        {
           label: "Φ2 CPU Duty",
           value: `${apple.cpuDutyPct}%`,
           unit: "duty",
@@ -3106,6 +3113,7 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
         compressionRatio: p.compRatio ?? 18,
         blastAirPressureBar: p.blastAirPressure ?? 65,
         cutoffRatio: p.cutoffRatio ?? 1.6,
+        engineRpm: p.engineRpm ?? 150,
       });
       const tCompC = diesel.tCompressionC;
       const pComp = diesel.pCompBar.toFixed(1);
@@ -3139,6 +3147,13 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
           unit: "state",
           badgeColor: diesel.isAutoIgnition ? "emerald" : "rose",
           progressPct: diesel.isAutoIgnition ? 100 : 0,
+        },
+        {
+          label: "Crank ω",
+          value: `${diesel.crankOmegaRadPerS}`,
+          unit: "rad/s",
+          badgeColor: "cyan",
+          progressPct: Math.min(100, (diesel.crankOmegaRadPerS / 30) * 100),
         },
       ];
     },
@@ -3583,6 +3598,13 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
           unit: "s",
           badgeColor: "indigo",
           progressPct: wh.stoppingTimeS > 0 ? Math.min(100, (wh.stoppingTimeS / 60) * 100) : 0,
+        },
+        {
+          label: "Wheel ω",
+          value: `${wh.rollingOmegaRadPerS}`,
+          unit: "rad/s",
+          badgeColor: "cyan",
+          progressPct: Math.min(100, (wh.rollingOmegaRadPerS / 60) * 100),
         },
         {
           label: "Triple Valve State",

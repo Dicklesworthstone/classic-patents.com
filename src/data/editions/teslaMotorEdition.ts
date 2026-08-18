@@ -604,4 +604,3 @@ export const teslaMotorParallelReadings: Readonly<Record<number, readonly string
   ],
 };
 
-

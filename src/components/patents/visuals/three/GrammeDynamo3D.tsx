@@ -34,6 +34,7 @@ export function GrammeDynamo3D() {
     inducedEmfIndex: gramme.inducedEmfIndex,
     showMagneticFlux,
     isAudioMuted,
+    displayRadPerFrame: gramme.displayRadPerFrame,
   });
 
   const controlsRef = useRef<StudioContext["controls"] | null>(null);
@@ -251,7 +252,7 @@ export function GrammeDynamo3D() {
       frame += 1;
       const p = live.current;
 
-      const radiansPerFrame = (p.shaftRate * Math.PI * 2) / 240;
+      const radiansPerFrame = p.displayRadPerFrame ?? (p.shaftRate * Math.PI * 2) / 240;
       armatureGroup.rotation.x = frame * radiansPerFrame;
 
       // Deterministic display motion: a fixed frame sequence, with no ambient
@@ -375,6 +376,7 @@ export function GrammeDynamo3D() {
             value: String(gramme.collectionContinuityPct),
             unit: "% idealized",
           },
+          { label: "dθ", value: String(gramme.displayDegPerFrame), unit: "°/frame" },
         ]}
       />
       <p className="absolute bottom-3 left-4 right-4 z-10 rounded-lg border border-parchment-700/60 bg-parchment-950/80 px-3 py-2 text-xs text-parchment-200 backdrop-blur-md">

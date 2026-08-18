@@ -30,7 +30,7 @@ export function DavenportMotorSim() {
       const dt = Math.min(0.1, (time - lastTime) / 1000);
       lastTime = time;
 
-      setRotorAngleDeg((prev) => (prev + actualRpm * 6 * dt) % 360);
+      setRotorAngleDeg((prev) => (prev + motor.shaftOmegaDegPerS * dt) % 360);
       animRef.current = requestAnimationFrame(loop);
     };
 
@@ -38,7 +38,7 @@ export function DavenportMotorSim() {
     return () => {
       if (animRef.current) cancelAnimationFrame(animRef.current);
     };
-  }, [isPlaying, actualRpm]);
+  }, [isPlaying, actualRpm, motor.shaftOmegaDegPerS]);
 
   // Commutator polarity flip condition: every 180 degrees
   const isPolarityReversed = rotorAngleDeg % 180 > 90;
@@ -246,7 +246,7 @@ export function DavenportMotorSim() {
             Motor Speed
           </span>
           <span className="font-mono text-sm sm:text-base font-bold text-ink-900 dark:text-parchment-100">
-            {actualRpm} RPM
+            {actualRpm} RPM · {motor.shaftOmegaDegPerS} °/s
           </span>
         </div>
         <div className="bg-parchment-100 dark:bg-ink-900 border border-parchment-200 dark:border-ink-800 p-2.5 rounded-xl text-center">

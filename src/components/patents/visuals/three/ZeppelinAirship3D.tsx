@@ -42,6 +42,8 @@ export function ZeppelinAirship3D() {
     netLiftKn: zep.netLiftKn,
     pitchTrimDeg: zep.pitchTrimDeg,
     parasiteDragKn: zep.parasiteDragKn,
+    propellerDisplayOmegaRadPerS: zep.propellerDisplayOmegaRadPerS,
+    propellerOmegaRadPerS: zep.propellerOmegaRadPerS,
   });
 
   const controlsRef = useRef<StudioContext["controls"] | null>(null);
@@ -221,7 +223,7 @@ export function ZeppelinAirship3D() {
       hullGroup.rotation.z = (p.pitchTrimDeg * Math.PI) / 180 + Math.sin(t * 0.4) * 0.01;
 
       // Spin propellers
-      const propSpeed = (p.engineRpm / 60) * 8.0;
+      const propSpeed = p.propellerDisplayOmegaRadPerS ?? (p.engineRpm / 60) * 8.0;
       props.forEach((pr) => {
         pr.rotation.x += propSpeed * delta;
       });
@@ -333,6 +335,7 @@ export function ZeppelinAirship3D() {
           { label: "Mass", value: String(grossLiftKg), unit: "kg" },
           { label: "Pitch", value: String(zep.pitchTrimDeg), unit: "°" },
           { label: "Drag", value: String(zep.parasiteDragKn), unit: "kN" },
+          { label: "ω_prop", value: zep.propellerDisplayOmegaRadPerS.toFixed(1), unit: "rad/s" },
         ]}
       />
     </div>

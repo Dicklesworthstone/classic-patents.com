@@ -42,6 +42,7 @@ export function DieselEngine3D() {
     compressionRatio,
     blastAirPressureBar: blastAirPressure,
     cutoffRatio,
+    engineRpm,
   });
 
   const [isPlaying, setIsPlaying] = useState<boolean>(true);
@@ -65,6 +66,7 @@ export function DieselEngine3D() {
     peakTempC,
     cutawayMode,
     isMuted,
+    crankOmegaRadPerS: diesel.crankOmegaRadPerS,
   });
 
   const studioRef = useRef<StudioContext | null>(null);
@@ -106,7 +108,7 @@ export function DieselEngine3D() {
       const p = live.current;
 
       if (p.isPlaying) {
-        const speed = (p.engineRpm / 60) * Math.PI * 2;
+        const speed = p.crankOmegaRadPerS ?? (p.engineRpm / 60) * Math.PI * 2;
         crankAngle = (crankAngle + speed * dt) % (Math.PI * 4);
 
         updateDieselEngineKinematics(
@@ -412,6 +414,7 @@ export function DieselEngine3D() {
           { label: "P_blast", value: String(blastAirPressure), unit: "bar" },
           { label: "η_brake", value: String(thermalEfficiencyPct), unit: "%" },
           { label: "Ignition", value: isAutoIgnition ? "Spontaneous" : "Sub-critical" },
+          { label: "ω", value: diesel.crankOmegaRadPerS.toFixed(2), unit: "rad/s" },
         ]}
       />
     </div>

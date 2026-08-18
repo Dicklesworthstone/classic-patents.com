@@ -3,8 +3,8 @@ import { createHash } from "node:crypto";
 import { existsSync, readFileSync } from "node:fs";
 import { resolve } from "node:path";
 import { validateCuratedSpecificationEdition } from "@/data/archivalEditionValidation";
-import { spencerMicrowavePatent } from "@/data/patents/spencer-microwave";
 import { validateReviewedTranscription } from "@/data/patents/sourceTextValidation";
+import { spencerMicrowavePatent } from "@/data/patents/spencer-microwave";
 import {
   spencerMicrowaveArchivalEdition,
   spencerMicrowaveParallelReadings,
@@ -25,9 +25,7 @@ describe("US 2,495,429 manual source edition", () => {
     expect(createHash("sha256").update(pdf).digest("hex")).toBe(
       spencerMicrowaveArchivalEdition.sourcePdfSha256,
     );
-    expect(spencerMicrowavePatent.claims.map((claim) => claim.number)).toEqual([
-      1, 2, 3, 4, 5, 6,
-    ]);
+    expect(spencerMicrowavePatent.claims.map((claim) => claim.number)).toEqual([1, 2, 3, 4, 5, 6]);
     expect(spencerMicrowavePatent.claims.every((claim) => claim.isIndependent)).toBe(true);
   });
 

@@ -5,7 +5,7 @@
 
 import { vulcanKinetics } from "./thermochem";
 
-function rpmToOmega(rpm: number) {
+export function rpmToOmega(rpm: number) {
   return {
     omegaRadPerS: Number(((Math.max(0, rpm) * 2 * Math.PI) / 60).toFixed(3)),
     omegaDegPerS: Number((Math.max(0, rpm) * 6).toFixed(1)),
@@ -43,11 +43,15 @@ export function stepGrammeDynamo(params: { shaftRate?: number }) {
   const shaftRate = Math.max(0.4, Math.min(1.6, params.shaftRate ?? 1));
   const printedJunctionCount = 36;
   const inducedEmfIndex = Math.round(100 * shaftRate);
+  // Relative display only. 1.5°/frame ≡ 2π/240 rad/frame. Not a historical rpm.
+  const displayDegPerFrame = Number((shaftRate * 1.5).toFixed(4));
   return {
     shaftRate,
     printedJunctionCount,
     inducedEmfIndex,
     collectionContinuityPct: Number((100 - 100 / printedJunctionCount).toFixed(1)),
+    displayDegPerFrame,
+    displayRadPerFrame: Number(((displayDegPerFrame * Math.PI) / 180).toFixed(6)),
   };
 }
 
@@ -198,12 +202,21 @@ export function stepMcCormickReaper(params: { forwardSpeedMph?: number }) {
   // kinematic estimate from those printed dimensions, not a field model.
   const groundWheelRpm = (groundSpeedMph * 88) / (Math.PI * 2);
   const cutterCrankRpm = Number((groundWheelRpm * (30 / 9) * (27 / 9)).toFixed(1));
+  const reelRpm = Number((groundWheelRpm * (13 / 12)).toFixed(1));
+  const cutterHz = Number((cutterCrankRpm / 60).toFixed(2));
+  const wheel = rpmToOmega(groundWheelRpm);
+  const reel = rpmToOmega(reelRpm);
+  const cutter = rpmToOmega(cutterCrankRpm);
   return {
     groundWheelRpm: Number(groundWheelRpm.toFixed(1)),
     cutterCrankRpm,
-    reelRpm: Number((groundWheelRpm * (13 / 12)).toFixed(1)),
+    reelRpm,
     groundSpeedMps: Number((groundSpeedMph * 0.44704).toFixed(2)),
-    cutterHz: Number((cutterCrankRpm / 60).toFixed(2)),
+    cutterHz,
+    groundWheelOmegaRadPerS: wheel.omegaRadPerS,
+    reelOmegaRadPerS: reel.omegaRadPerS,
+    cutterOmegaRadPerS: cutter.omegaRadPerS,
+    cutterOmegaDegPerS: cutter.omegaDegPerS,
   };
 }
 
@@ -269,12 +282,16 @@ export function stepHyattCelluloid(params: { steamTempC?: number; hydraulicPress
   const temp = params.steamTempC ?? 95;
   const press = params.hydraulicPressureMpa ?? 10;
   const isMelted = temp >= 80 && press >= 6;
+  const extrusionRateCmPerMin = isMelted ? Number((temp * 0.15).toFixed(1)) : 0;
   return {
     viscosityPaS: Math.round(1800 * Math.exp(-0.03 * (temp - 70))),
     isMelted,
     consolidationDensityGPerCm3: Number((1.2 + (press / 20) * 0.18).toFixed(2)),
     transparencyPct: isMelted ? Math.min(95, Math.round(50 + (temp - 80) * 1.2)) : 10,
-    extrusionRateCmPerMin: isMelted ? Number((temp * 0.15).toFixed(1)) : 0,
+    extrusionRateCmPerMin,
+    // Presentation ram: 14.25 cm/min → 0.75 Hz. Stroke is studio units.
+    ramHz: isMelted ? Number(Math.max(0.08, extrusionRateCmPerMin / 19).toFixed(3)) : 0.08,
+    ramStrokeStudio: isMelted ? Number((0.12 + press * 0.03).toFixed(3)) : 0.02,
   };
 }
 
@@ -388,6 +405,7 @@ export function stepZeppelinAirship(params: {
   const totalVolumeM3 = 11300 * (inflation / 100);
   const grossBuoyancyKn = Number(((totalVolumeM3 * 9.81 * (rhoAir - rhoH2)) / 1000).toFixed(1));
   const netLiftKn = Number((grossBuoyancyKn - 98.0).toFixed(1));
+  const propellerRpm = Math.round((speedKmh / 1.60934 / 17.5) * 1000);
   return {
     grossBuoyancyKn,
     netLiftKn,
@@ -399,7 +417,9 @@ export function stepZeppelinAirship(params: {
     usefulPayloadKg: Math.max(0, Math.round((netLiftKn / 9.81) * 1000)),
     flightSpeedKmh: Number(speedKmh.toFixed(1)),
     flightSpeedMph: Number((speedKmh / 1.60934).toFixed(1)),
-    propellerRpm: Math.round((speedKmh / 1.60934 / 17.5) * 1000),
+    propellerRpm,
+    propellerOmegaRadPerS: rpmToOmega(propellerRpm).omegaRadPerS,
+    propellerDisplayOmegaRadPerS: Number(((propellerRpm / 60) * 8).toFixed(3)),
   };
 }
 
@@ -418,6 +438,9 @@ export function stepDaimlerEngine(params: {
     differentialCarrierRpm * Math.sin((slipDeg * Math.PI) / 180) * 0.4,
   );
   const engineWeightKg = 40;
+  const crank = rpmToOmega(rpm);
+  const runningRpm = tubeTemp >= 600 ? rpm * (bmepBar / 4.5) : 0;
+  const running = rpmToOmega(runningRpm);
   return {
     bmepBar,
     brakeHorsepower,
@@ -426,6 +449,10 @@ export function stepDaimlerEngine(params: {
     innerWheelRpm: differentialCarrierRpm - speedDeltaRpm,
     engineWeightKg,
     specificPowerHpPerKg: Number((brakeHorsepower / engineWeightKg).toFixed(3)),
+    crankOmegaRadPerS: crank.omegaRadPerS,
+    crankOmegaDegPerS: crank.omegaDegPerS,
+    isRunning: tubeTemp >= 600,
+    runningOmegaRadPerS: running.omegaRadPerS,
   };
 }
 
@@ -611,6 +638,9 @@ export function stepWozniakApple(params: { crystalFreq?: number; ramCapacityKb?:
     cpuDutyPct: 100,
     cycleTimeNs: Math.round(1000 / cpuMhz),
     busTickIntervalMs: Math.max(50, Math.round(2100 / f)),
+    // Visual Φ2 window. A 1.023 MHz sine aliases to noise on rAF.
+    phi2DisplayHz: 4,
+    busDisplaySpeed: Number((cpuMhz * 4).toFixed(2)),
   };
 }
 

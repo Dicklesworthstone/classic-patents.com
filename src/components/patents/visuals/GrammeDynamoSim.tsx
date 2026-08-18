@@ -11,7 +11,7 @@ export function GrammeDynamoSim() {
   const { isAudioMuted, toggleSound } = usePatentAudio();
   const shaftRate = params.shaftRate ?? 1;
   const gramme = stepGrammeDynamo({ shaftRate });
-  const printedJunctionCount = 36; // US 120,057 Fig. 1 specifies 36 bobbins
+  const printedJunctionCount = gramme.printedJunctionCount;
   const [isPlaying, setIsPlaying] = useState<boolean>(true);
   const [angleDeg, setAngleDeg] = useState<number>(0);
   const animRef = useRef<number | null>(null);
@@ -21,7 +21,7 @@ export function GrammeDynamoSim() {
     const loop = () => {
       // The animation is a visual cue, not a historical speed measurement.
       // Fixed per-frame steps avoid deriving state from a private wall clock.
-      setAngleDeg((prev) => (prev + shaftRate * 1.5) % 360);
+      setAngleDeg((prev) => (prev + gramme.displayDegPerFrame) % 360);
       animRef.current = requestAnimationFrame(loop);
     };
 
@@ -29,7 +29,7 @@ export function GrammeDynamoSim() {
     return () => {
       if (animRef.current) cancelAnimationFrame(animRef.current);
     };
-  }, [isPlaying, shaftRate]);
+  }, [isPlaying, gramme.displayDegPerFrame]);
 
   return (
     <div className="w-full rounded-2xl border border-parchment-300 dark:border-ink-800 bg-parchment-50 dark:bg-ink-950 p-4 sm:p-6 shadow-md transition-colors">

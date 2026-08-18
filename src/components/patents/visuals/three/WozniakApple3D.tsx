@@ -51,6 +51,8 @@ export function WozniakApple3D() {
     ramCapacityKb,
     isCpuActive,
     isAudioMuted,
+    phi2DisplayHz: apple.phi2DisplayHz,
+    busDisplaySpeed: apple.busDisplaySpeed,
   });
 
   const controlsRef = useRef<StudioContext["controls"] | null>(null);
@@ -294,9 +296,9 @@ export function WozniakApple3D() {
       const p = live.current;
 
       const bPos = busPos;
-      const speed = p.cpuClockMhz * 4.0 * delta;
-      // Visual Φ2 window (~4 Hz). A 1.023 MHz sine aliases to noise on rAF.
-      const phi2 = Math.sin(renderedSteps * (1 / 60) * Math.PI * 8) > 0;
+      const speed = (p.busDisplaySpeed ?? p.cpuClockMhz * 4.0) * delta;
+      const phi2Hz = p.phi2DisplayHz ?? 4;
+      const phi2 = Math.sin(renderedSteps * (1 / 60) * 2 * Math.PI * phi2Hz) > 0;
 
       if (p.isCpuActive) {
         for (let i = 0; i < busPacketCount; i++) {

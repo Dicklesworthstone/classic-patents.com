@@ -33,7 +33,7 @@ export function DaimlerEngineSim() {
       const dt = Math.min(0.1, (time - lastTime) / 1000);
       lastTime = time;
 
-      setCrankAngleDeg((prev) => (prev + engineRpm * 6 * dt) % 720);
+      setCrankAngleDeg((prev) => (prev + daimler.crankOmegaDegPerS * dt) % 720);
       animRef.current = requestAnimationFrame(loop);
     };
 
@@ -41,7 +41,7 @@ export function DaimlerEngineSim() {
     return () => {
       if (animRef.current) cancelAnimationFrame(animRef.current);
     };
-  }, [isPlaying, engineRpm]);
+  }, [isPlaying, daimler.crankOmegaDegPerS]);
 
   const crankRad = ((crankAngleDeg % 360) * Math.PI) / 180;
   const pistonDisplacement = (1 - Math.cos(crankRad)) * 30;

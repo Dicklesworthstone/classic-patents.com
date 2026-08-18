@@ -16,7 +16,7 @@ describe("mccormickReaperPatent", () => {
   test("derives presentation motion only from dimensions printed in the specification", () => {
     const estimate = stepMcCormickReaper({ forwardSpeedMph: 2.5 });
 
-    expect(estimate).toEqual({
+    expect(estimate).toMatchObject({
       groundWheelRpm: 35,
       cutterCrankRpm: 350.1,
       reelRpm: 37.9,

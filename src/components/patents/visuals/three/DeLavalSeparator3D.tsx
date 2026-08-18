@@ -11,6 +11,8 @@ import { createThreeStudioScene, type StudioContext } from "./ThreeStudioScene";
 import { useLiveSimParams } from "./useLiveSimParams";
 import { usePatentAudio } from "./usePatentAudio";
 
+import { buildDeLavalSeparatorModel } from "./delavalSeparatorModel";
+
 type CameraPreset = "iso" | "centrifuge_bowl" | "conical_discs" | "outlet_spouts" | "top";
 
 export function DeLavalSeparator3D() {
@@ -93,125 +95,9 @@ export function DeLavalSeparator3D() {
     cameraRef.current = camera;
     controlsRef.current = controls;
 
-    // Materials
-    const castIronPedestalMat = new THREE.MeshStandardMaterial({
-      color: 0x1e293b,
-      roughness: 0.5,
-      metalness: 0.85,
-    });
-
-    const polishedSteelBowlMat = new THREE.MeshStandardMaterial({
-      color: 0xf1f5f9,
-      roughness: 0.1,
-      metalness: 0.95,
-    });
-
-    const tinnedBrassMat = new THREE.MeshStandardMaterial({
-      color: 0xd97706,
-      roughness: 0.22,
-      metalness: 0.9,
-    });
-
-    const creamMat = new THREE.MeshStandardMaterial({
-      color: 0xfef08a,
-      roughness: 0.3,
-      metalness: 0.05,
-    });
-    const skimMat = new THREE.MeshStandardMaterial({
-      color: 0xf8fafc,
-      roughness: 0.35,
-      metalness: 0.05,
-    });
-
-    const rootGroup = new THREE.Group();
-    scene.add(rootGroup);
-
-    // 1. Heavy Cast-Iron Flanged Pedestal Stand
-    const pedestal = new THREE.Mesh(
-      new THREE.CylinderGeometry(1.2, 2.2, 4.2, 24),
-      castIronPedestalMat,
-    );
-    pedestal.position.y = -1.8;
-    pedestal.receiveShadow = true;
-    rootGroup.add(pedestal);
-
-    // 2. High-Speed Centrifuge Bowl Assembly (Claim 1)
-    const bowlGroup = new THREE.Group();
-    bowlGroup.position.set(0, 0.8, 0);
-    rootGroup.add(bowlGroup);
-
-    // Flexible Vertical Spindle
-    const spindle = new THREE.Mesh(
-      new THREE.CylinderGeometry(0.12, 0.12, 3.8, 16),
-      polishedSteelBowlMat,
-    );
-    spindle.position.y = -0.5;
-    bowlGroup.add(spindle);
-
-    // Solid Forged Steel Conical Bowl Shell
-    const bowlPoints: THREE.Vector2[] = [];
-    bowlPoints.push(new THREE.Vector2(0.01, 1.8));
-    bowlPoints.push(new THREE.Vector2(0.8, 1.6));
-    bowlPoints.push(new THREE.Vector2(1.8, 0.4));
-    bowlPoints.push(new THREE.Vector2(1.8, -0.6));
-    bowlPoints.push(new THREE.Vector2(0.4, -1.2));
-    bowlPoints.push(new THREE.Vector2(0.01, -1.2));
-
-    const bowlGeo = new THREE.LatheGeometry(bowlPoints, 32);
-    const bowlMesh = new THREE.Mesh(bowlGeo, polishedSteelBowlMat);
-    bowlMesh.castShadow = true;
-    bowlGroup.add(bowlMesh);
-
-    // 3. Stack of Nested Conical Separator Discs (Claim 2)
-    for (let d = 0; d < 8; d++) {
-      const disc = new THREE.Mesh(
-        new THREE.ConeGeometry(1.6 - d * 0.08, 0.35, 24, 1, true),
-        polishedSteelBowlMat,
-      );
-      disc.position.y = -0.4 + d * 0.18;
-      bowlGroup.add(disc);
-    }
-
-    // 4. Concentric Cream & Skim Milk Collecting Receiver Spouts
-    const receiverGroup = new THREE.Group();
-    receiverGroup.position.set(0, 2.2, 0);
-    rootGroup.add(receiverGroup);
-
-    // Top Inflow Funnel Cup
-    const funnel = new THREE.Mesh(new THREE.ConeGeometry(1.4, 1.2, 24, 1, true), tinnedBrassMat);
-    funnel.position.y = 1.2;
-    receiverGroup.add(funnel);
-
-    // Upper Cream Outlet Spout
-    const creamSpout = new THREE.Mesh(
-      new THREE.CylinderGeometry(0.12, 0.12, 1.8, 12),
-      tinnedBrassMat,
-    );
-    creamSpout.rotation.z = Math.PI / 3;
-    creamSpout.position.set(1.4, 0.4, 0);
-    receiverGroup.add(creamSpout);
-
-    // Lower Skim Milk Outlet Spout
-    const milkSpout = new THREE.Mesh(
-      new THREE.CylinderGeometry(0.15, 0.15, 2.2, 12),
-      tinnedBrassMat,
-    );
-    milkSpout.rotation.z = -Math.PI / 3;
-    milkSpout.position.set(-1.6, -0.2, 0);
-    receiverGroup.add(milkSpout);
-
-    const creamDrops: THREE.Mesh[] = [];
-    const skimDrops: THREE.Mesh[] = [];
-    for (let i = 0; i < 10; i++) {
-      const cream = new THREE.Mesh(new THREE.SphereGeometry(0.07, 8, 8), creamMat);
-      cream.position.set(2.0, 0.1 - i * 0.18, 0);
-      receiverGroup.add(cream);
-      creamDrops.push(cream);
-      const skim = new THREE.Mesh(new THREE.SphereGeometry(0.08, 8, 8), skimMat);
-      skim.position.set(-2.3, -0.5 - i * 0.2, 0);
-      receiverGroup.add(skim);
-      skimDrops.push(skim);
-    }
+    // Build procedural 3D model
+    const model = buildDeLavalSeparatorModel();
+    scene.add(model.rootGroup);
 
     // Animation Loop
     let reqId: number;
@@ -224,18 +110,21 @@ export function DeLavalSeparator3D() {
       const elapsed = renderedSteps * (1 / 60);
       const p = live.current;
 
-      bowlGroup.rotation.y += (p.displayOmegaRadPerS ?? 0) * delta;
+      const omega = p.displayOmegaRadPerS ?? 0;
+      model.bowlGroup.rotation.y += omega * delta;
+      model.spindleGroup.rotation.y += omega * delta;
+      model.pulleyGroup.rotation.y += omega * 0.25 * delta;
 
       // Cream (inner) vs skim (outer) only when g-force is high enough to split
       const split = p.centrifugalGs > 2000;
       const creamSpeed = (p.creamFlowLph / 300) * 1.6;
-      creamDrops.forEach((drop, i) => {
+      model.creamDrops.forEach((drop, i) => {
         drop.visible = split;
-        drop.position.y = 0.2 - ((elapsed * creamSpeed + i * 0.18) % 1.8);
+        drop.position.y = 0.35 - ((elapsed * creamSpeed + i * 0.18) % 1.8);
       });
-      skimDrops.forEach((drop, i) => {
+      model.skimDrops.forEach((drop, i) => {
         drop.visible = split;
-        drop.position.y = -0.4 - ((elapsed * creamSpeed * 0.85 + i * 0.2) % 2.0);
+        drop.position.y = -0.15 - ((elapsed * creamSpeed * 0.85 + i * 0.2) % 2.0);
       });
 
       renderer.render(scene, camera);
@@ -245,6 +134,7 @@ export function DeLavalSeparator3D() {
 
     return () => {
       cancelAnimationFrame(reqId);
+      model.dispose();
       studio.cleanup();
     };
   }, [live]);

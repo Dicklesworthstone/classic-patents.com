@@ -199,6 +199,8 @@ the visitor can see or hear the kernel change the instrument.
 - [x] P5.106 De Laval bowl ω and 0.15 display ω live on the step; 2D disc vanes and 3D bowl integrate displayOmega, not leftover rpm×2π×0.15. Parsons rotor ω, blade u, steam c, and 0.08 display ω live on the step; 2D shaft-end and 3D drum share it. Ericsson shaft ω and wakeSwirlScale 0.4 live on the step; 2D blades and 3D screw use shaftOmegaDegPerS / shaftOmegaRadPerS.
 - [x] P5.107 rpmToOmega helper. Whitney crank/saw/brush ω, Gatling crank ω, Pelton runner ω, Davenport shaft ω, and Maxim fire ω live on the shared step. 2D clocks and 3D rotors read those fields instead of leftover rpm×6 / rpm×2π/60.
 - [x] P5.108 Otto/Corliss crank ω, Glidden flyer/reel ω, phonograph mandrel ω, and Hollerith press ω live on the shared step. 2D crank/cylinder clocks and 3D flywheel/governor/flyer/mandrel/press use those fields.
+- [x] P5.109 Diesel step takes engineRpm; crank ω lives on the step (15.71 rad/s at 150 rpm). 2D 720° clock and 3D crank use it. Daimler running ω (hot-tube BMEP scale) lives on the step; 3D no longer does leftover rpm×BMEP/4.5. McCormick wheel/reel/cutter ω live on the printed kinematic step; 2D sickle and 3D wheel/reel/sickle share them.
+- [x] P5.110 Davenport 2D rotor uses shaftOmegaDegPerS (not leftover rpm×6). Gramme displayDegPerFrame / displayRadPerFrame (1.5° ≡ 2π/240 at shaftRate=1) live on the step; 2D/3D share it; bobbin loop uses printedJunctionCount. Zeppelin propeller display ω (rpm/60×8) lives on the step; 3D props integrate it.
 
 ## Explicitly out of scope
 

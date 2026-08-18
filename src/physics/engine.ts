@@ -12,6 +12,7 @@ import {
   stepHollerithTabulating as catalogStepHollerith,
   stepKevlarContinuum as catalogStepKevlar,
   stepLincolnBuoy as catalogStepLincolnBuoy,
+  rpmToOmega,
   stepBellTelephone,
   stepCorlissEngine,
   stepDavenportMotor,
@@ -576,6 +577,9 @@ export const FrankenSimEngine = {
         : 0;
     const stoppingTimeS =
       decelerationMps2 > 0 ? Number((approachSpeedMps / decelerationMps2).toFixed(1)) : 0;
+    const wheelRadiusM = 0.42;
+    const clampRatio =
+      pipePsi >= 65 ? 0 : Number(Math.min(1, Math.max(0, (65 - pipePsi) / 55)).toFixed(3));
 
     return {
       trainPipePressurePsi: pipePsi,
@@ -591,6 +595,12 @@ export const FrankenSimEngine = {
       decelerationMps2,
       decelerationMphPerS: Number((decelerationMps2 / 0.44704).toFixed(2)),
       stoppingTimeS,
+      wheelRadiusM,
+      clampRatio,
+      freeWheelOmegaRadPerS: Number((approachSpeedMps / wheelRadiusM).toFixed(3)),
+      rollingOmegaRadPerS: Number(
+        ((approachSpeedMps / wheelRadiusM) * (1 - clampRatio * 0.95)).toFixed(3),
+      ),
     };
   },
 
@@ -681,10 +691,12 @@ export const FrankenSimEngine = {
     compressionRatio?: number;
     blastAirPressureBar?: number;
     cutoffRatio?: number;
+    engineRpm?: number;
   }) {
     const r = params.compressionRatio ?? 18;
     const pBlast = params.blastAirPressureBar ?? 65;
     const rc = params.cutoffRatio ?? 1.6;
+    const rpm = params.engineRpm ?? 150;
     const gamma = 1.4;
     const tIntakeK = 300;
     const tCompressionK = Math.round(tIntakeK * r ** (gamma - 1));
@@ -695,6 +707,7 @@ export const FrankenSimEngine = {
     );
     const brakeEfficiencyPct = Number((idealEfficiencyPct * 0.68).toFixed(1));
     const isAutoIgnition = tCompressionC > 210 && pBlast > pCompBar;
+    const crank = rpmToOmega(rpm);
 
     return {
       tCompressionC,
@@ -702,6 +715,9 @@ export const FrankenSimEngine = {
       idealEfficiencyPct,
       brakeEfficiencyPct,
       isAutoIgnition,
+      engineRpm: rpm,
+      crankOmegaRadPerS: crank.omegaRadPerS,
+      crankOmegaDegPerS: crank.omegaDegPerS,
     };
   },
 

@@ -64,11 +64,12 @@ export const spencerMicrowaveArchivalEdition: CuratedSpecificationEdition = {
     {
       kind: "masthead",
       lines: [
-        "UNITED STATES PATENT OFFICE.",
-        "2,495,429.",
-        "METHOD OF TREATING FOODSTUFFS.",
-        "Percy L. Spencer, West Newton, Mass., assignor to Raytheon Manufacturing Company, Newton, Mass., a corporation of Delaware.",
-        "Application October 8, 1945, Serial No. 620,919. 6 Claims. (Cl. 99-217.)",
+        "UNITED STATES PATENT OFFICE",
+        "2,495,429",
+        "METHOD OF TREATING FOODSTUFFS",
+        "Percy L. Spencer, West Newton, Mass., assignor to Raytheon Manufacturing Company, Newton, Mass., a corporation of Delaware",
+        "Application October 8, 1945, Serial No. 620,919",
+        "6 Claims. (Cl. 99-217)",
       ],
     },
     {
@@ -258,9 +259,7 @@ export const spencerMicrowaveArchivalEdition: CuratedSpecificationEdition = {
  * These paragraph companions intentionally retain the mechanism, dimensions,
  * stated economy figures, and claim-facing limits of their source paragraphs.
  */
-export const spencerMicrowaveParallelReadings: Readonly<
-  Record<number, readonly string[]>
-> = {
+export const spencerMicrowaveParallelReadings: Readonly<Record<number, readonly string[]>> = {
   2: [
     "Spencer states a field of use rather than a particular kitchen appliance: treating food, especially cooking it, with electromagnetic energy.",
   ],

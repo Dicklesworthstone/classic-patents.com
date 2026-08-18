@@ -36,6 +36,8 @@ export function HyattCelluloid3D() {
     viscosityPaS: hyatt.viscosityPaS,
     isMelted: hyatt.isMelted ? 1 : 0,
     extrusionRateCmPerMin: hyatt.extrusionRateCmPerMin,
+    ramHz: hyatt.ramHz,
+    ramStrokeStudio: hyatt.ramStrokeStudio,
   });
 
   const controlsRef = useRef<StudioContext["controls"] | null>(null);
@@ -220,9 +222,8 @@ export function HyattCelluloid3D() {
       const p = live.current;
 
       const melted = p.isMelted > 0.5;
-      // Presentation Hz tracks the kernel extrusion (14.25 cm/min → 0.75 Hz).
-      const ramHz = melted ? Math.max(0.08, (p.extrusionRateCmPerMin ?? 0) / 19) : 0.08;
-      const ramStroke = melted ? 0.12 + p.hydraulicPressureMpa * 0.03 : 0.02;
+      const ramHz = p.ramHz ?? 0.08;
+      const ramStroke = p.ramStrokeStudio ?? 0.02;
       ramPiston.position.x =
         1.8 + Math.sin(renderedSteps * (1 / 60) * ramHz * Math.PI * 2) * ramStroke;
       // Extrusion only when steam + pressure have melted the camphor-nitrocellulose
@@ -331,6 +332,7 @@ export function HyattCelluloid3D() {
             unit: "cm/min",
             tone: hyatt.isMelted ? "ok" : "warn",
           },
+          { label: "Ram", value: String(hyatt.ramHz), unit: "Hz" },
         ]}
       />
     </div>

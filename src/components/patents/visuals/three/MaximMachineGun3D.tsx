@@ -158,7 +158,7 @@ export function MaximMachineGun3D() {
       if (isMuzzleFlash && Math.floor(renderedSteps / 6) !== lastAudioShot) {
         lastAudioShot = Math.floor(renderedSteps / 6);
         if (!p.isAudioMuted) {
-          soundEngine.playPistonStroke(0.45);
+          soundEngine.playGunshot();
         }
       }
 

@@ -60,14 +60,14 @@ describe("US 381,968 manual source edition", () => {
     }
   });
 
-  test("pairs every prose paragraph with a non-lossy explanation", () => {
-    const paragraphBlocks = teslaMotorArchivalEdition.blocks.flatMap((block, index) =>
-      block.kind === "paragraph" ? [index] : [],
+  test("pairs every prose paragraph and claim with a non-lossy explanation", () => {
+    const explainableBlocks = teslaMotorArchivalEdition.blocks.flatMap((block, index) =>
+      block.kind === "paragraph" || block.kind === "claim" ? [index] : [],
     );
     expect(Object.keys(teslaMotorParallelReadings).map(Number).sort((a, b) => a - b)).toEqual(
-      paragraphBlocks,
+      explainableBlocks,
     );
-    for (const index of paragraphBlocks) {
+    for (const index of explainableBlocks) {
       expect(teslaMotorParallelReadings[index]?.join(" ").trim().length).toBeGreaterThan(40);
     }
   });

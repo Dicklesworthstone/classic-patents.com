@@ -280,6 +280,7 @@ export function materialProbe(
       compressionRatio: params.compRatio ?? params.compressionRatio ?? 18,
       blastAirPressureBar: params.blastAirPressure ?? 65,
       cutoffRatio: params.cutoffRatio ?? 1.6,
+      engineRpm: params.engineRpm ?? 150,
     });
     return {
       part: calloutLabel,
@@ -287,7 +288,7 @@ export function materialProbe(
       qty: "T₂",
       value: diesel.tCompressionC.toString(),
       unit: "°C",
-      note: `${diesel.pCompBar} bar. Autoignition ${diesel.isAutoIgnition ? "yes" : "no"}.`,
+      note: `${diesel.pCompBar} bar. Autoignition ${diesel.isAutoIgnition ? "yes" : "no"} · ω ${diesel.crankOmegaRadPerS} rad/s.`,
     };
   }
   if (patentId.includes("kodak") || patentId.includes("388850")) {
@@ -375,7 +376,7 @@ export function materialProbe(
       qty: "F_shoe",
       value: wh.shoeClampingForceKn.toString(),
       unit: "kN",
-      note: `${wh.valveState} at ${wh.brakeCylinderPressurePsi} psi cyl.`,
+      note: `${wh.valveState} at ${wh.brakeCylinderPressurePsi} psi cyl · ω ${wh.rollingOmegaRadPerS} rad/s.`,
     };
   }
   if (patentId.includes("lamarr") || patentId.includes("2292387")) {
@@ -472,7 +473,7 @@ export function materialProbe(
       qty: "relative E",
       value: gramme.inducedEmfIndex.toString(),
       unit: "index",
-      note: `${gramme.printedJunctionCount} printed junctions; continuous-current collection is illustrated without inventing a historical rating.`,
+      note: `${gramme.printedJunctionCount} printed junctions · ${gramme.displayDegPerFrame} °/frame display. Continuous-current collection is illustrated without inventing a historical rating.`,
     };
   }
   if (patentId.includes("glidden") || patentId.includes("157124")) {
@@ -650,7 +651,7 @@ export function materialProbe(
       value: hyatt.viscosityPaS.toString(),
       unit: "Pa·s",
       note: hyatt.isMelted
-        ? `Charge is plastic — ram can extrude. ρ ${hyatt.consolidationDensityGPerCm3} g/cm³ · ${hyatt.transparencyPct}% clear.`
+        ? `Charge is plastic — ram can extrude. ρ ${hyatt.consolidationDensityGPerCm3} g/cm³ · ${hyatt.transparencyPct}% clear · ram ${hyatt.ramHz} Hz.`
         : "Below melt — ram just packs powder.",
     };
   }
@@ -744,7 +745,7 @@ export function materialProbe(
       qty: "crank",
       value: reaper.cutterCrankRpm.toString(),
       unit: "rpm",
-      note: `${reaper.cutterHz} Hz · ${reaper.groundSpeedMps} m/s. No-slip host kinematic estimate from dimensions printed in US X8277; not a field-capacity measurement.`,
+      note: `${reaper.cutterHz} Hz · ${reaper.groundSpeedMps} m/s · ω ${reaper.cutterOmegaRadPerS} rad/s. No-slip host kinematic estimate from dimensions printed in US X8277; not a field-capacity measurement.`,
     };
   }
   if (patentId.includes("nobel") || patentId.includes("78317")) {
@@ -776,7 +777,7 @@ export function materialProbe(
       qty: "L",
       value: zep.netLiftKn.toString(),
       unit: "kN",
-      note: `${zep.hydrogenVolumeM3} m³ H₂. Pitch ${zep.pitchTrimDeg}°.`,
+      note: `${zep.hydrogenVolumeM3} m³ H₂. Pitch ${zep.pitchTrimDeg}° · prop ω ${zep.propellerDisplayOmegaRadPerS} rad/s display.`,
     };
   }
   if (patentId.includes("daimler") || patentId.includes("361931")) {
@@ -791,7 +792,7 @@ export function materialProbe(
       qty: "BHP",
       value: d.brakeHorsepower.toString(),
       unit: "hp",
-      note: `BMEP ${d.bmepBar} bar. Diff ${d.innerWheelRpm}/${d.outerWheelRpm} rpm.`,
+      note: `BMEP ${d.bmepBar} bar. Diff ${d.innerWheelRpm}/${d.outerWheelRpm} rpm · ω ${d.runningOmegaRadPerS} rad/s.`,
     };
   }
   if (patentId.includes("hollerith") || patentId.includes("395781")) {

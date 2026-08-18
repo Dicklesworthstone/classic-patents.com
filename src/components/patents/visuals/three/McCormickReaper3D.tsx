@@ -38,6 +38,9 @@ export function McCormickReaper3D() {
     cutterCrankRpm,
     reelRpm,
     showStalks,
+    groundWheelOmegaRadPerS: reaper.groundWheelOmegaRadPerS,
+    reelOmegaRadPerS: reaper.reelOmegaRadPerS,
+    cutterOmegaRadPerS: reaper.cutterOmegaRadPerS,
   });
 
   const controlsRef = useRef<StudioContext["controls"] | null>(null);
@@ -298,14 +301,16 @@ export function McCormickReaper3D() {
       presentationStep += 1;
 
       const sourceKinematics = stepMcCormickReaper({ forwardSpeedMph: p.groundSpeedMph });
-      const wheelRadPerSec = (sourceKinematics.groundWheelRpm * 2 * Math.PI) / 60;
-      const reelRadPerSec = (p.reelRpm * 2 * Math.PI) / 60;
+      const wheelRadPerSec =
+        p.groundWheelOmegaRadPerS ?? (sourceKinematics.groundWheelRpm * 2 * Math.PI) / 60;
+      const reelRadPerSec = p.reelOmegaRadPerS ?? (p.reelRpm * 2 * Math.PI) / 60;
 
       driveWheelGroup.rotation.x = wheelRadPerSec * elapsedSeconds;
       reelGroup.rotation.x = reelRadPerSec * elapsedSeconds;
 
       // Reciprocate Sickle Bar
-      const sicklePhase = elapsedSeconds * (p.cutterCrankRpm / 60) * Math.PI * 2;
+      const sicklePhase =
+        elapsedSeconds * (p.cutterOmegaRadPerS ?? (p.cutterCrankRpm / 60) * Math.PI * 2);
       sickleBarGroup.position.x = Math.sin(sicklePhase) * 0.18; // Illustrative visual amplitude only.
 
       stalksInstanced.visible = p.showStalks;
@@ -394,6 +399,7 @@ export function McCormickReaper3D() {
           { label: "Reel", value: String(reelRpm), unit: "rpm" },
           { label: "v", value: String(reaper.groundSpeedMps), unit: "m/s" },
           { label: "f_cut", value: String(reaper.cutterHz), unit: "Hz" },
+          { label: "ω_cut", value: reaper.cutterOmegaRadPerS.toFixed(2), unit: "rad/s" },
         ]}
       />
     </div>

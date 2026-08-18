@@ -16,6 +16,8 @@ import {
 import { useLiveSimParams } from "./useLiveSimParams";
 import { usePatentAudio } from "./usePatentAudio";
 
+import { buildPeltonWheelModel } from "./peltonWheelModel";
+
 const lcg = createLcg(1127);
 
 type CameraPreset = "iso" | "split_bucket" | "needle_nozzle" | "runner_wheel" | "top";
@@ -102,131 +104,19 @@ export function PeltonWheel3D() {
     cameraRef.current = camera;
     controlsRef.current = controls;
 
-    // Materials
-    const castIronMat = new THREE.MeshStandardMaterial({
-      color: 0x1e293b,
-      roughness: 0.5,
-      metalness: 0.85,
-    });
+    // Build procedural 3D model
+    const model = buildPeltonWheelModel();
+    scene.add(model.rootGroup);
 
-    const bronzeBucketMat = new THREE.MeshStandardMaterial({
-      color: 0xc8963e,
-      roughness: 0.22,
-      metalness: 0.92,
-    });
+    // Dynamic jet particle positions
+    const jetCount = 200;
+    const jetPositions = (model.jetPoints.geometry.attributes.position as THREE.BufferAttribute)
+      .array as Float32Array;
 
-    const steelShaftMat = new THREE.MeshStandardMaterial({
-      color: 0xf1f5f9,
-      roughness: 0.1,
-      metalness: 0.95,
-    });
-
-    const waterGlowTex = createGlowPointTexture();
-
-    const rootGroup = new THREE.Group();
-    scene.add(rootGroup);
-
-    // 1. Cast-Iron Casing Housing with Viewing Cutaway
-    const housing = new THREE.Mesh(
-      new THREE.CylinderGeometry(3.6, 3.6, 1.8, 32, 1, false, 0, Math.PI * 1.5),
-      castIronMat,
-    );
-    housing.rotation.x = Math.PI / 2;
-    housing.position.set(0, 0, 0);
-    housing.castShadow = true;
-    rootGroup.add(housing);
-
-    // 2. Pelton Runner Wheel with 18 Split Double-Cup Buckets (Claim 1 & Claim 2)
-    const runnerGroup = new THREE.Group();
-    rootGroup.add(runnerGroup);
-
-    // Central Disc Hub
-    const hub = new THREE.Mesh(new THREE.CylinderGeometry(1.8, 1.8, 0.4, 32), castIronMat);
-    hub.rotation.x = Math.PI / 2;
-    runnerGroup.add(hub);
-
-    // Drive Shaft
-    const shaft = new THREE.Mesh(new THREE.CylinderGeometry(0.2, 0.2, 5.0, 16), steelShaftMat);
-    shaft.rotation.x = Math.PI / 2;
-    runnerGroup.add(shaft);
-
-    // 18 Peripheral Split Ellipsoidal Buckets with Central Splitter Ridge (Claim 2)
-    const bucketCount = 18;
-    for (let b = 0; b < bucketCount; b++) {
-      const bAngle = (b * Math.PI * 2) / bucketCount;
-      const bucketGroup = new THREE.Group();
-      bucketGroup.position.set(Math.cos(bAngle) * 2.2, Math.sin(bAngle) * 2.2, 0);
-      bucketGroup.rotation.z = bAngle - Math.PI / 2;
-
-      // Left Cup
-      const leftCup = new THREE.Mesh(
-        new THREE.SphereGeometry(0.35, 12, 12, 0, Math.PI, 0, Math.PI),
-        bronzeBucketMat,
-      );
-      leftCup.position.set(0, 0, -0.22);
-      leftCup.rotation.y = -Math.PI / 2;
-      bucketGroup.add(leftCup);
-
-      // Right Cup
-      const rightCup = new THREE.Mesh(
-        new THREE.SphereGeometry(0.35, 12, 12, 0, Math.PI, 0, Math.PI),
-        bronzeBucketMat,
-      );
-      rightCup.position.set(0, 0, 0.22);
-      rightCup.rotation.y = -Math.PI / 2;
-      bucketGroup.add(rightCup);
-
-      // Central Knife-Edge Splitter Wedge
-      const splitter = new THREE.Mesh(new THREE.ConeGeometry(0.08, 0.5, 4), bronzeBucketMat);
-      splitter.rotation.z = Math.PI / 2;
-      splitter.position.set(0.1, 0, 0);
-      bucketGroup.add(splitter);
-
-      runnerGroup.add(bucketGroup);
-    }
-
-    // 3. High-Pressure Spear Needle Nozzle (Claim 1)
-    const nozzleGroup = new THREE.Group();
-    nozzleGroup.position.set(-3.2, -2.2, 0);
-    rootGroup.add(nozzleGroup);
-
-    const nozzleBody = new THREE.Mesh(new THREE.ConeGeometry(0.45, 1.8, 16), castIronMat);
-    nozzleBody.rotation.z = -Math.PI / 3;
-    nozzleGroup.add(nozzleBody);
-
-    // 4. High-Speed Water Jet Stream Particles
-    const jetCount = 140;
-    const jetGeo = new THREE.BufferGeometry();
-    const jetPositions = new Float32Array(jetCount * 3);
-    const jetColors = new Float32Array(jetCount * 3);
-
-    for (let i = 0; i < jetCount; i++) {
-      const idx = i * 3;
-      jetPositions[idx] = -3.0 + lcg() * 2.8;
-      jetPositions[idx + 1] = -2.0 + lcg() * 1.8;
-      jetPositions[idx + 2] = (lcg() - 0.5) * 0.15;
-
-      jetColors[idx] = 0.4;
-      jetColors[idx + 1] = 0.85;
-      jetColors[idx + 2] = 1.0;
-    }
-
-    jetGeo.setAttribute("position", new THREE.BufferAttribute(jetPositions, 3));
-    jetGeo.setAttribute("color", new THREE.BufferAttribute(jetColors, 3));
-
-    const jetPoints = new THREE.Points(
-      jetGeo,
-      new THREE.PointsMaterial({
-        size: 0.25,
-        map: waterGlowTex,
-        vertexColors: false,
-        transparent: true,
-        opacity: 0.9,
-        blending: THREE.AdditiveBlending,
-        depthWrite: false,
-      }),
-    );
-    rootGroup.add(jetPoints);
+    // Dynamic spray particle positions
+    const sprayCount = 300;
+    const sprayPositions = (model.sprayPoints.geometry.attributes.position as THREE.BufferAttribute)
+      .array as Float32Array;
 
     // Animation Loop
     let reqId: number;
@@ -239,25 +129,48 @@ export function PeltonWheel3D() {
       const p = live.current;
 
       const omegaRadPerSec = p.runnerOmegaRadPerS ?? (p.wheelRpm * 2 * Math.PI) / 60;
-      runnerGroup.rotation.z += omegaRadPerSec * delta;
+      model.runnerGroup.rotation.z += omegaRadPerSec * delta;
 
-      // Animate jet trajectory from nozzle to bucket
-      const pos = jetPositions;
+      // Needle valve translation based on head/flow
+      const needlePos = (p.headMeters / 1000) * 0.25;
+      model.nozzleNeedle.position.set(0.2 + needlePos * 0.5, 0.12 + needlePos * 0.28, 0);
+      model.needleHandwheel.rotation.z += delta * 0.5;
+
+      // Pressure gauge needle deflection (0 to 1000m head maps to -2.0 to 2.0 rad)
+      const headFraction = Math.min(1.0, p.headMeters / 800);
+      model.pressureNeedle.rotation.z = -1.8 + headFraction * 3.6;
+
+      // Animate concentrated water jet particles
       for (let i = 0; i < jetCount; i++) {
         const idx = i * 3;
-        pos[idx] += (p.jetVelocityMps / 50) * 8.0 * delta;
-        pos[idx + 1] += (p.jetVelocityMps / 50) * 4.6 * delta;
-        if (pos[idx] > 0.2) {
-          pos[idx] = -3.0;
-          pos[idx + 1] = -2.0;
+        jetPositions[idx] += (p.jetVelocityMps / 50) * 7.5 * delta;
+        jetPositions[idx + 1] += (p.jetVelocityMps / 50) * 5.2 * delta;
+        if (jetPositions[idx] > 0.1 || jetPositions[idx + 1] > 0.1) {
+          jetPositions[idx] = -3.2 + (i / jetCount) * 0.5;
+          jetPositions[idx + 1] = -2.25 + (i / jetCount) * 0.35;
         }
       }
-      jetGeo.attributes.position.needsUpdate = true;
-      jetPoints.visible = p.showJet;
-      // Euler optimum is u/v ≈ 0.5. Off-design paints the jet: cyan too-slow, rose too-fast.
+      model.jetPoints.geometry.attributes.position.needsUpdate = true;
+      model.jetPoints.visible = p.showJet;
+
+      // Animate deflected water spray sheets (165° exit)
+      for (let i = 0; i < sprayCount; i++) {
+        const idx = i * 3;
+        sprayPositions[idx + 1] -= (2.5 + lcg() * 2.0) * delta;
+        sprayPositions[idx] += (lcg() - 0.5) * 1.5 * delta;
+        if (sprayPositions[idx + 1] < -3.0) {
+          sprayPositions[idx] = (lcg() - 0.5) * 1.2;
+          sprayPositions[idx + 1] = -0.6 - lcg() * 0.4;
+          sprayPositions[idx + 2] = (lcg() > 0.5 ? 1 : -1) * (0.25 + lcg() * 0.6);
+        }
+      }
+      model.sprayPoints.geometry.attributes.position.needsUpdate = true;
+      model.sprayPoints.visible = p.showJet;
+
+      // Euler optimum is u/v ≈ 0.5. Off-design color shift
       const ratioErr = Math.abs((p.speedRatio ?? 0.5) - 0.5);
-      const jetMat = jetPoints.material as THREE.PointsMaterial;
-      jetMat.color.setHex(ratioErr < 0.08 ? 0xfbbf24 : p.speedRatio < 0.5 ? 0x38bdf8 : 0xfb7185);
+      const jetMat = model.materials.waterJet;
+      jetMat.color.setHex(ratioErr < 0.08 ? 0x38bdf8 : p.speedRatio < 0.5 ? 0x0284c7 : 0xfb7185);
       jetMat.opacity = 0.55 + (p.etaPct / 93) * 0.4;
 
       renderer.render(scene, camera);
@@ -267,6 +180,7 @@ export function PeltonWheel3D() {
 
     return () => {
       cancelAnimationFrame(reqId);
+      model.dispose();
       studio.cleanup();
     };
   }, [live]);

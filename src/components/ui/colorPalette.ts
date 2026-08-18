@@ -194,16 +194,37 @@ export function prepareInteractiveLatex(equation: {
           const replacement = `\\htmlClass{${termClass}}{\\htmlData{var=${v.id}}{${fullColoredMatch}}}`;
           latex = latex.slice(0, searchIdx) + replacement + latex.slice(afterSymbolIdx + 1);
           found = true;
-          break;
+          searchIdx = searchIdx + replacement.length;
+          continue;
         }
       }
       searchIdx = latex.indexOf(colorTargetPrefix, closeBraceColor + 1);
     }
 
     if (!found && latex.includes(v.symbol)) {
-      const rawTarget = v.symbol;
-      const rawReplacement = `\\htmlClass{${termClass}}{\\htmlData{var=${v.id}}{\\textcolor{${hex}}{${rawTarget}}}}`;
-      latex = latex.replace(rawTarget, rawReplacement);
+      const rawReplacement = `\\htmlClass{${termClass}}{\\htmlData{var=${v.id}}{\\textcolor{${hex}}{${v.symbol}}}}`;
+      
+      const escapeRegExp = (s: string) => s.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+      const isAlphaNumStart = /^[a-zA-Z0-9]/.test(v.symbol);
+      const isAlphaNumEnd = /[a-zA-Z0-9]$/.test(v.symbol);
+      
+      const prefix = isAlphaNumStart ? "(?<![a-zA-Z0-9\\\\_])" : "";
+      const suffix = isAlphaNumEnd ? "(?![a-zA-Z0-9])" : "";
+      const regexStr = `${prefix}${escapeRegExp(v.symbol)}${suffix}`;
+      
+      try {
+        const re = new RegExp(regexStr, "g");
+        const parts = latex.split(/(\\text\{[^{}]*\})/g);
+        for (let i = 0; i < parts.length; i++) {
+          if (!parts[i].startsWith("\\text{")) {
+            parts[i] = parts[i].replace(re, rawReplacement);
+          }
+        }
+        latex = parts.join("");
+      } catch (e) {
+        // Fallback to basic string replacement if regex fails on legacy browser
+        latex = latex.replaceAll(v.symbol, rawReplacement);
+      }
     }
   }
 
