@@ -14,7 +14,7 @@ interface EraFilterBarProps {
 
 const CATEGORIES: { id: string; label: string }[] = [
   { id: "all", label: "All Masterpieces" },
-  { id: "aviation", label: "Aviation" },
+  { id: "aviation", label: "Aviation & Aerospace" },
   { id: "electricity", label: "Electricity & AC" },
   { id: "telecom", label: "Telecommunications" },
   { id: "computing", label: "Computing & Silicon" },
@@ -33,7 +33,8 @@ export function EraFilterBar({
   const categoryCounts = useMemo(() => {
     const counts: Record<string, number> = { all: allPatents.length };
     for (const p of allPatents) {
-      counts[p.category] = (counts[p.category] || 0) + 1;
+      const catKey = p.category === "aerospace" ? "aviation" : p.category;
+      counts[catKey] = (counts[catKey] || 0) + 1;
     }
     return counts;
   }, []);

@@ -53,7 +53,7 @@ export default async function PatentDetailPage({ params }: PatentPageProps) {
       homeLocation: patent.inventorLocation,
     })),
     datePublished: patent.grantDate,
-    dateCreated: patent.filingDate,
+    ...(patent.filingDate ? { dateCreated: patent.filingDate } : {}),
     publisher: {
       "@type": "Organization",
       name: "Classic Patents",

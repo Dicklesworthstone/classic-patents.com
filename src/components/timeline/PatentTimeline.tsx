@@ -37,20 +37,31 @@ export function PatentTimeline() {
     });
   }, [sortedPatents, selectedEra]);
 
-  const selectedPatent = sortedPatents.find((p) => p.id === selectedPatentId) || sortedPatents[0];
+  const selectedPatent =
+    filteredPatents.find((p) => p.id === selectedPatentId) ||
+    sortedPatents.find((p) => p.id === selectedPatentId) ||
+    sortedPatents[0];
   const currentIndex = sortedPatents.findIndex((p) => p.id === selectedPatent.id);
+  const currentFilteredIndex = filteredPatents.findIndex((p) => p.id === selectedPatent.id);
+
+  // Sync selected patent to filtered set on era tab switch
+  useEffect(() => {
+    if (filteredPatents.length > 0 && !filteredPatents.some((p) => p.id === selectedPatentId)) {
+      setSelectedPatentId(filteredPatents[0].id);
+    }
+  }, [filteredPatents, selectedPatentId]);
 
   const selectPrevious = useCallback(() => {
-    if (currentIndex > 0) {
-      setSelectedPatentId(sortedPatents[currentIndex - 1].id);
+    if (currentFilteredIndex > 0) {
+      setSelectedPatentId(filteredPatents[currentFilteredIndex - 1].id);
     }
-  }, [currentIndex, sortedPatents]);
+  }, [currentFilteredIndex, filteredPatents]);
 
   const selectNext = useCallback(() => {
-    if (currentIndex < sortedPatents.length - 1) {
-      setSelectedPatentId(sortedPatents[currentIndex + 1].id);
+    if (currentFilteredIndex < filteredPatents.length - 1) {
+      setSelectedPatentId(filteredPatents[currentFilteredIndex + 1].id);
     }
-  }, [currentIndex, sortedPatents]);
+  }, [currentFilteredIndex, filteredPatents]);
 
   // Keyboard navigation: Left/Right arrows
   useEffect(() => {
@@ -183,7 +194,7 @@ export function PatentTimeline() {
               <button
                 type="button"
                 onClick={selectPrevious}
-                disabled={currentIndex === 0}
+                disabled={currentFilteredIndex <= 0}
                 className="p-1.5 rounded-lg text-ink-700 dark:text-parchment-300 hover:bg-parchment-300 dark:hover:bg-ink-800 disabled:opacity-30 disabled:hover:bg-transparent transition-colors cursor-pointer"
                 title="Previous Milestone (← Arrow Key)"
                 aria-label="Previous Milestone"
@@ -193,7 +204,7 @@ export function PatentTimeline() {
               <button
                 type="button"
                 onClick={selectNext}
-                disabled={currentIndex === sortedPatents.length - 1}
+                disabled={currentFilteredIndex >= filteredPatents.length - 1}
                 className="p-1.5 rounded-lg text-ink-700 dark:text-parchment-300 hover:bg-parchment-300 dark:hover:bg-ink-800 disabled:opacity-30 disabled:hover:bg-transparent transition-colors cursor-pointer"
                 title="Next Milestone (→ Arrow Key)"
                 aria-label="Next Milestone"

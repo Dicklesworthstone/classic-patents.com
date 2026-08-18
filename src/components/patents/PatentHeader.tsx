@@ -106,7 +106,7 @@ export function PatentHeader({ patent }: PatentHeaderProps) {
             <Calendar className="w-3.5 h-3.5 text-amber-700 dark:text-amber-400" /> Filing Date
           </span>
           <span className="font-bold text-ink-950 dark:text-parchment-100 text-sm sm:text-base">
-            {patent.filingDate}
+            {patent.filingDate ?? "Not recorded"}
           </span>
         </div>
 

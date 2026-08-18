@@ -191,203 +191,159 @@ class SoundEngine {
   }
 
   /**
-   * Morse telegraph key click sound
+   * Helper to construct and track transient Web Audio voices with automatic node graph cleanup.
    */
-  public playMorseClick() {
+  private playTransientVoice(
+    setup: (osc: OscillatorNode, gain: GainNode, ctx: AudioContext) => number,
+  ) {
     if (this.isMuted) return;
     this.initContext();
     if (!this.ctx) return;
 
     const osc = this.ctx.createOscillator();
     const gain = this.ctx.createGain();
-
-    osc.type = "triangle";
-    osc.frequency.setValueAtTime(800, this.ctx.currentTime);
-    osc.frequency.exponentialRampToValueAtTime(150, this.ctx.currentTime + 0.015);
-
-    gain.gain.setValueAtTime(0.2, this.ctx.currentTime);
-    gain.gain.exponentialRampToValueAtTime(0.001, this.ctx.currentTime + 0.015);
+    const duration = setup(osc, gain, this.ctx);
 
     osc.connect(gain);
     gain.connect(this.ctx.destination);
 
+    this.transientNodes.add(osc);
+    this.transientNodes.add(gain);
+
+    const cleanup = () => {
+      try {
+        osc.disconnect();
+        gain.disconnect();
+      } catch {
+        // Ignored
+      }
+      this.transientNodes.delete(osc);
+      this.transientNodes.delete(gain);
+    };
+
+    osc.onended = cleanup;
     osc.start();
-    osc.stop(this.ctx.currentTime + 0.02);
+    osc.stop(this.ctx.currentTime + duration);
+  }
+
+  /**
+   * Morse telegraph key click sound
+   */
+  public playMorseClick() {
+    this.playTransientVoice((osc, gain, ctx) => {
+      osc.type = "triangle";
+      osc.frequency.setValueAtTime(800, ctx.currentTime);
+      osc.frequency.exponentialRampToValueAtTime(150, ctx.currentTime + 0.015);
+
+      gain.gain.setValueAtTime(0.2, ctx.currentTime);
+      gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.015);
+      return 0.02;
+    });
   }
 
   /**
    * Filament click / contact switch sound
    */
   public playSwitchClick() {
-    if (this.isMuted) return;
-    this.initContext();
-    if (!this.ctx) return;
+    this.playTransientVoice((osc, gain, ctx) => {
+      osc.type = "sine";
+      osc.frequency.setValueAtTime(1200, ctx.currentTime);
+      osc.frequency.exponentialRampToValueAtTime(300, ctx.currentTime + 0.02);
 
-    const osc = this.ctx.createOscillator();
-    const gain = this.ctx.createGain();
-
-    osc.type = "sine";
-    osc.frequency.setValueAtTime(1200, this.ctx.currentTime);
-    osc.frequency.exponentialRampToValueAtTime(300, this.ctx.currentTime + 0.02);
-
-    gain.gain.setValueAtTime(0.12, this.ctx.currentTime);
-    gain.gain.exponentialRampToValueAtTime(0.001, this.ctx.currentTime + 0.02);
-
-    osc.connect(gain);
-    gain.connect(this.ctx.destination);
-
-    osc.start();
-    osc.stop(this.ctx.currentTime + 0.03);
+      gain.gain.setValueAtTime(0.12, ctx.currentTime);
+      gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.02);
+      return 0.03;
+    });
   }
 
   /**
    * Authentic mechanical microswitch click (Engelbart Mouse)
    */
   public playMicroswitchClick() {
-    if (this.isMuted) return;
-    this.initContext();
-    if (!this.ctx) return;
+    this.playTransientVoice((osc, gain, ctx) => {
+      osc.type = "triangle";
+      osc.frequency.setValueAtTime(1800, ctx.currentTime);
+      osc.frequency.exponentialRampToValueAtTime(450, ctx.currentTime + 0.012);
 
-    const osc = this.ctx.createOscillator();
-    const gain = this.ctx.createGain();
-
-    osc.type = "triangle";
-    osc.frequency.setValueAtTime(1800, this.ctx.currentTime);
-    osc.frequency.exponentialRampToValueAtTime(450, this.ctx.currentTime + 0.012);
-
-    gain.gain.setValueAtTime(0.22, this.ctx.currentTime);
-    gain.gain.exponentialRampToValueAtTime(0.001, this.ctx.currentTime + 0.012);
-
-    osc.connect(gain);
-    gain.connect(this.ctx.destination);
-
-    osc.start();
-    osc.stop(this.ctx.currentTime + 0.015);
+      gain.gain.setValueAtTime(0.22, ctx.currentTime);
+      gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.012);
+      return 0.015;
+    });
   }
 
   /**
    * Mechanical shuttle & needle lockstitch clack (Howe Sewing Machine)
    */
   public playLockstitchClack() {
-    if (this.isMuted) return;
-    this.initContext();
-    if (!this.ctx) return;
+    this.playTransientVoice((osc, gain, ctx) => {
+      osc.type = "square";
+      osc.frequency.setValueAtTime(320, ctx.currentTime);
+      osc.frequency.exponentialRampToValueAtTime(80, ctx.currentTime + 0.025);
 
-    const osc = this.ctx.createOscillator();
-    const gain = this.ctx.createGain();
-
-    osc.type = "square";
-    osc.frequency.setValueAtTime(320, this.ctx.currentTime);
-    osc.frequency.exponentialRampToValueAtTime(80, this.ctx.currentTime + 0.025);
-
-    gain.gain.setValueAtTime(0.08, this.ctx.currentTime);
-    gain.gain.exponentialRampToValueAtTime(0.001, this.ctx.currentTime + 0.025);
-
-    osc.connect(gain);
-    gain.connect(this.ctx.destination);
-
-    osc.start();
-    osc.stop(this.ctx.currentTime + 0.03);
+      gain.gain.setValueAtTime(0.08, ctx.currentTime);
+      gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.025);
+      return 0.03;
+    });
   }
 
   /**
    * Spread-spectrum carrier frequency hop chime (Lamarr Piano Roll)
    */
   public playPianoKeyHop(frequencyHz: number) {
-    if (this.isMuted) return;
-    this.initContext();
-    if (!this.ctx) return;
+    this.playTransientVoice((osc, gain, ctx) => {
+      osc.type = "sine";
+      osc.frequency.setValueAtTime(Math.max(100, Math.min(2000, frequencyHz)), ctx.currentTime);
 
-    const osc = this.ctx.createOscillator();
-    const gain = this.ctx.createGain();
-
-    osc.type = "sine";
-    osc.frequency.setValueAtTime(Math.max(100, Math.min(2000, frequencyHz)), this.ctx.currentTime);
-
-    gain.gain.setValueAtTime(0.06, this.ctx.currentTime);
-    gain.gain.exponentialRampToValueAtTime(0.001, this.ctx.currentTime + 0.06);
-
-    osc.connect(gain);
-    gain.connect(this.ctx.destination);
-
-    osc.start();
-    osc.stop(this.ctx.currentTime + 0.07);
+      gain.gain.setValueAtTime(0.06, ctx.currentTime);
+      gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.06);
+      return 0.07;
+    });
   }
 
   /**
    * Elastic polymer snap / relaxation sound (Goodyear Rubber)
    */
   public playElastomerSnap(stretchFactor = 1.0) {
-    if (this.isMuted) return;
-    this.initContext();
-    if (!this.ctx) return;
+    this.playTransientVoice((osc, gain, ctx) => {
+      const pitch = 200 + stretchFactor * 180;
+      osc.type = "sine";
+      osc.frequency.setValueAtTime(pitch, ctx.currentTime);
+      osc.frequency.exponentialRampToValueAtTime(60, ctx.currentTime + 0.04);
 
-    const osc = this.ctx.createOscillator();
-    const gain = this.ctx.createGain();
-
-    const pitch = 200 + stretchFactor * 180;
-    osc.type = "sine";
-    osc.frequency.setValueAtTime(pitch, this.ctx.currentTime);
-    osc.frequency.exponentialRampToValueAtTime(60, this.ctx.currentTime + 0.04);
-
-    gain.gain.setValueAtTime(0.15, this.ctx.currentTime);
-    gain.gain.exponentialRampToValueAtTime(0.001, this.ctx.currentTime + 0.04);
-
-    osc.connect(gain);
-    gain.connect(this.ctx.destination);
-
-    osc.start();
-    osc.stop(this.ctx.currentTime + 0.05);
+      gain.gain.setValueAtTime(0.15, ctx.currentTime);
+      gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.04);
+      return 0.05;
+    });
   }
 
   /**
    * Heavy mechanical impact / ratchet arrest thud (Otis Elevator Safety Catch)
    */
   public playImpactThud(intensity = 1.0) {
-    if (this.isMuted) return;
-    this.initContext();
-    if (!this.ctx) return;
+    this.playTransientVoice((osc, gain, ctx) => {
+      osc.type = "sawtooth";
+      osc.frequency.setValueAtTime(140 * intensity, ctx.currentTime);
+      osc.frequency.exponentialRampToValueAtTime(30, ctx.currentTime + 0.08);
 
-    const osc = this.ctx.createOscillator();
-    const gain = this.ctx.createGain();
-
-    osc.type = "sawtooth";
-    osc.frequency.setValueAtTime(140 * intensity, this.ctx.currentTime);
-    osc.frequency.exponentialRampToValueAtTime(30, this.ctx.currentTime + 0.08);
-
-    gain.gain.setValueAtTime(0.3 * intensity, this.ctx.currentTime);
-    gain.gain.exponentialRampToValueAtTime(0.001, this.ctx.currentTime + 0.08);
-
-    osc.connect(gain);
-    gain.connect(this.ctx.destination);
-
-    osc.start();
-    osc.stop(this.ctx.currentTime + 0.1);
+      gain.gain.setValueAtTime(0.3 * intensity, ctx.currentTime);
+      gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.08);
+      return 0.1;
+    });
   }
 
   /**
    * High-voltage spark gap discharge click / pop (Tesla Teleautomaton / Marconi Radio / Tesla Coil)
    */
   public playSparkDischarge(intensity = 1.0) {
-    if (this.isMuted) return;
-    this.initContext();
-    if (!this.ctx) return;
+    this.playTransientVoice((osc, gain, ctx) => {
+      osc.type = "sawtooth";
+      osc.frequency.setValueAtTime(2400 * intensity, ctx.currentTime);
+      osc.frequency.exponentialRampToValueAtTime(120, ctx.currentTime + 0.02);
 
-    const osc = this.ctx.createOscillator();
-    const gain = this.ctx.createGain();
-
-    osc.type = "sawtooth";
-    osc.frequency.setValueAtTime(2400 * intensity, this.ctx.currentTime);
-    osc.frequency.exponentialRampToValueAtTime(120, this.ctx.currentTime + 0.02);
-
-    gain.gain.setValueAtTime(0.25 * intensity, this.ctx.currentTime);
-    gain.gain.exponentialRampToValueAtTime(0.001, this.ctx.currentTime + 0.02);
-
-    osc.connect(gain);
-    gain.connect(this.ctx.destination);
-
-    osc.start();
-    osc.stop(this.ctx.currentTime + 0.025);
+      gain.gain.setValueAtTime(0.25 * intensity, ctx.currentTime);
+      gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.02);
+      return 0.025;
+    });
   }
 
   /**
@@ -399,24 +355,14 @@ class SoundEngine {
     type: OscillatorType = "sine",
     gainLevel = 0.1,
   ) {
-    if (this.isMuted) return;
-    this.initContext();
-    if (!this.ctx) return;
+    this.playTransientVoice((osc, gain, ctx) => {
+      osc.type = type;
+      osc.frequency.setValueAtTime(Math.max(20, Math.min(8000, frequencyHz)), ctx.currentTime);
 
-    const osc = this.ctx.createOscillator();
-    const gain = this.ctx.createGain();
-
-    osc.type = type;
-    osc.frequency.setValueAtTime(Math.max(20, Math.min(8000, frequencyHz)), this.ctx.currentTime);
-
-    gain.gain.setValueAtTime(gainLevel, this.ctx.currentTime);
-    gain.gain.exponentialRampToValueAtTime(0.0001, this.ctx.currentTime + durationSec);
-
-    osc.connect(gain);
-    gain.connect(this.ctx.destination);
-
-    osc.start();
-    osc.stop(this.ctx.currentTime + durationSec + 0.02);
+      gain.gain.setValueAtTime(gainLevel, ctx.currentTime);
+      gain.gain.exponentialRampToValueAtTime(0.0001, ctx.currentTime + durationSec);
+      return durationSec + 0.02;
+    });
   }
 
   /**
@@ -431,50 +377,30 @@ class SoundEngine {
    * Steam engine pneumatic puff / exhaust stroke (Corliss Engine)
    */
   public playPneumaticPuff() {
-    if (this.isMuted) return;
-    this.initContext();
-    if (!this.ctx) return;
+    this.playTransientVoice((osc, gain, ctx) => {
+      osc.type = "sine";
+      osc.frequency.setValueAtTime(160, ctx.currentTime);
+      osc.frequency.exponentialRampToValueAtTime(40, ctx.currentTime + 0.06);
 
-    const osc = this.ctx.createOscillator();
-    const gain = this.ctx.createGain();
-
-    osc.type = "sine";
-    osc.frequency.setValueAtTime(160, this.ctx.currentTime);
-    osc.frequency.exponentialRampToValueAtTime(40, this.ctx.currentTime + 0.06);
-
-    gain.gain.setValueAtTime(0.12, this.ctx.currentTime);
-    gain.gain.exponentialRampToValueAtTime(0.001, this.ctx.currentTime + 0.06);
-
-    osc.connect(gain);
-    gain.connect(this.ctx.destination);
-
-    osc.start();
-    osc.stop(this.ctx.currentTime + 0.08);
+      gain.gain.setValueAtTime(0.12, ctx.currentTime);
+      gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.06);
+      return 0.08;
+    });
   }
 
   /**
    * Rapid ballistic report / percussion cap discharge (Gatling Gun / Colt Revolver)
    */
   public playGunshot() {
-    if (this.isMuted) return;
-    this.initContext();
-    if (!this.ctx) return;
+    this.playTransientVoice((osc, gain, ctx) => {
+      osc.type = "sawtooth";
+      osc.frequency.setValueAtTime(450, ctx.currentTime);
+      osc.frequency.exponentialRampToValueAtTime(45, ctx.currentTime + 0.05);
 
-    const osc = this.ctx.createOscillator();
-    const gain = this.ctx.createGain();
-
-    osc.type = "sawtooth";
-    osc.frequency.setValueAtTime(450, this.ctx.currentTime);
-    osc.frequency.exponentialRampToValueAtTime(45, this.ctx.currentTime + 0.05);
-
-    gain.gain.setValueAtTime(0.28, this.ctx.currentTime);
-    gain.gain.exponentialRampToValueAtTime(0.001, this.ctx.currentTime + 0.05);
-
-    osc.connect(gain);
-    gain.connect(this.ctx.destination);
-
-    osc.start();
-    osc.stop(this.ctx.currentTime + 0.07);
+      gain.gain.setValueAtTime(0.28, ctx.currentTime);
+      gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.05);
+      return 0.07;
+    });
   }
 
   /**

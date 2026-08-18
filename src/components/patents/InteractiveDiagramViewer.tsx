@@ -33,20 +33,20 @@ const SCHEMATIC_HINTS: Array<[RegExp, string]> = [
   [/noyce|2981877|2,981,877/, "noyce-ic"],
   [/kwolek|kevlar|3671542|3,671,542/, "kwolek-kevlar"],
   [/bell|174465|174,465/, "bell-phone"],
-  [/lincoln|buoy|6281/, "lincoln-buoy"],
-  [/howe|sewing|4750/, "howe-sewing"],
-  [/goddard|rocket|1155986|1,155,986/, "goddard-rocket"],
-  [/bardeen|transistor|2569347|2,569,347/, "bardeen-transistor"],
-  [/boyle|ccd|3923554|3,923,554/, "boyle-smith-ccd"],
-  [/morse|telegraph|1647/, "morse-telegraph"],
-  [/goodyear|rubber|3633/, "goodyear-rubber"],
+  [/lincoln|buoy|6281|6469|6,469/, "lincoln-buoy"],
+  [/howe|sewing|4750|4,750/, "howe-sewing"],
+  [/goddard|rocket|1155986|1,155,986|1102653|1,102,653/, "goddard-rocket"],
+  [/bardeen|transistor|2569347|2,569,347|2524191/, "bardeen-transistor"],
+  [/boyle|ccd|3923554|3,923,554|3858232|3,858,232|3792322/, "boyle-smith-ccd"],
+  [/morse|telegraph|1647|1,647/, "morse-telegraph"],
+  [/goodyear|rubber|3633|3,633/, "goodyear-rubber"],
   [/lamarr|hopping|2292387|2,292,387/, "lamarr-frequency-hopping"],
   [/marconi|586193|586,193/, "marconi-radio"],
   [/engelbart|mouse|3541541|3,541,541/, "engelbart-mouse"],
   [/fermi|reactor|2708656|2,708,656/, "fermi-reactor"],
   [/wozniak|apple|4136359|4,136,359/, "wozniak-apple"],
   [/einstein|refrigerator|1781541|1,781,541/, "einstein-refrigerator"],
-  [/colt|revolver|138/, "colt-revolver"],
+  [/colt|revolver|138|x9430|9430/, "colt-revolver"],
   [/otis|elevator|31128|31,128/, "otis-elevator"],
   [/whitney|cotton[- ]gin|x72/, "whitney-cotton-gin"],
   [/mccormick|reaper|x8277|4895|4,895/, "mccormick-reaper"],
@@ -73,7 +73,7 @@ const SCHEMATIC_HINTS: Array<[RegExp, string]> = [
   [/hollerith|tabulating|395781|395,781/, "hollerith-tabulating"],
   [/reno|escalator|470918|470,918/, "reno-escalator"],
   [/diesel|542846|542,846/, "diesel-engine"],
-  [/parsons|turbine|608969|608,969/, "parsons-turbine"],
+  [/parsons|turbine|608969|608,969|328710|328,710/, "parsons-turbine"],
   [/teleautomaton|613809|613,809/, "tesla-teleautomaton"],
   [/zeppelin|airship|621195|621,195/, "zeppelin-airship"],
   [/linde|liquefaction|727650|727,650/, "linde-air-liquefaction"],
@@ -2763,6 +2763,25 @@ export function InteractiveDiagramViewer({
   const [activeCalloutId, setActiveCalloutId] = useState<string | null>(null);
   const [hoveredCalloutId, setHoveredCalloutId] = useState<string | null>(null);
   const [zoomLevel, setZoomLevel] = useState<number>(1);
+  const [teslaOmegaDeg, setTeslaOmegaDeg] = useState<number>(0);
+  const isTeslaMotorSchematic = Boolean(
+    patentId && /381968|tesla-motor/.test(patentId) && !/coil|533367/.test(patentId),
+  );
+
+  useEffect(() => {
+    if (!isTeslaMotorSchematic) return;
+    const freq = livePhysicsParams.frequency ?? 60;
+    let raf = 0;
+    let last = performance.now();
+    const loop = (now: number) => {
+      const dt = (now - last) / 1000;
+      last = now;
+      setTeslaOmegaDeg((prev) => (prev + freq * 4.444 * dt) % 360);
+      raf = requestAnimationFrame(loop);
+    };
+    raf = requestAnimationFrame(loop);
+    return () => cancelAnimationFrame(raf);
+  }, [isTeslaMotorSchematic, livePhysicsParams.frequency]);
 
   const activeDrawing = drawings[activeFigIndex] || drawings[0];
   const callouts = useMemo(() => activeDrawing?.callouts ?? [], [activeDrawing]);
@@ -2940,7 +2959,9 @@ export function InteractiveDiagramViewer({
                 activeDrawing.figureNumber,
                 patentNumber,
                 patentId,
-                livePhysicsParams,
+                isTeslaMotorSchematic
+                  ? { ...livePhysicsParams, omegaT: teslaOmegaDeg }
+                  : livePhysicsParams,
               )}
 
               {/* Animated Radar Target Reticle on selected pin */}

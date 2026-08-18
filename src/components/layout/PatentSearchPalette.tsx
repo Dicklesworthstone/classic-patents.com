@@ -196,7 +196,7 @@ export function PatentSearchPalette({ isOpen, onClose }: PatentSearchPaletteProp
               <Compass className="w-3.5 h-3.5 text-amber-600" /> 54 Curated Patents
             </span>
             <span className="hidden sm:inline">•</span>
-            <span className="hidden sm:inline flex items-center gap-1">
+            <span className="hidden sm:inline-flex items-center gap-1">
               <Sparkles className="w-3.5 h-3.5 text-emerald-600" /> Full 3D Physics
             </span>
           </div>

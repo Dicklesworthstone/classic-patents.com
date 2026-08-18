@@ -1,5 +1,6 @@
 "use client";
 
+import type { TrustContext } from "katex";
 import katex from "katex";
 import React, { useMemo } from "react";
 
@@ -7,6 +8,16 @@ interface LatexRendererProps {
   math: string;
   block?: boolean;
   className?: string;
+}
+
+/**
+ * ColorizedEquation emits these two KaTeX extensions for its own stable,
+ * authored variable tokens. Full `trust: true` would also enable \href,
+ * \includegraphics, and style-bearing HTML commands for every prose field
+ * rendered by TextWithLatex.
+ */
+function trustInteractiveTokenMarkup(context: TrustContext): boolean {
+  return context.command === "\\htmlClass" || context.command === "\\htmlData";
 }
 
 export function LatexRenderer({ math, block = false, className = "" }: LatexRendererProps) {
@@ -17,7 +28,7 @@ export function LatexRenderer({ math, block = false, className = "" }: LatexRend
         displayMode: block,
         throwOnError: false,
         output: "htmlAndMathml",
-        trust: true,
+        trust: trustInteractiveTokenMarkup,
         strict: false,
       });
     } catch {
@@ -32,7 +43,7 @@ export function LatexRenderer({ math, block = false, className = "" }: LatexRend
   return (
     <span
       className={`latex-container inline-block ${className}`}
-      // biome-ignore lint/security/noDangerouslySetInnerHtml: KaTeX renderToString returns sanitized markup
+      // biome-ignore lint/security/noDangerouslySetInnerHtml: KaTeX serializes the formula; trust is restricted above.
       dangerouslySetInnerHTML={{ __html: html }}
     />
   );

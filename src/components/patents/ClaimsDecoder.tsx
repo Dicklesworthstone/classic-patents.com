@@ -1,7 +1,7 @@
 "use client";
 
 import { BookOpen, Check, ChevronLeft, ChevronRight, Copy, Scale, Sparkles } from "lucide-react";
-import { useCallback, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { TextWithLatex } from "@/components/ui/LatexRenderer";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { WRIGHT_PATENT_ID } from "@/physics/wrightKernel";
@@ -29,15 +29,23 @@ export function ClaimsDecoder({ claims, patentId, claimStatus }: ClaimsDecoderPr
   const [copied, setCopied] = useState<boolean>(false);
   const { params } = usePatentPhysics(patentId || "");
 
+  useEffect(() => {
+    if (claims.length > 0 && !claims.some((c) => c.number === activeClaimNum)) {
+      setActiveClaimNum(claims[0].number);
+    }
+  }, [claims, activeClaimNum]);
+
   const activeIndex = claims.findIndex((c) => c.number === activeClaimNum);
   const claim = claims[activeIndex] || claims[0];
 
   const handleCopyClaim = useCallback(() => {
     if (!claim) return;
     const textToCopy = `[Claim ${claim.number} · ${claim.isIndependent ? "Independent" : `Dependent on #${claim.dependsOn?.join(", ")}`}]\n\nOriginal Text:\n"${claim.originalText}"\n\nPlain English Translation:\n${claim.plainEnglish}\n\nKey Innovations:\n${claim.keyInnovations.join(", ")}`;
-    navigator.clipboard.writeText(textToCopy);
-    setCopied(true);
-    setTimeout(() => setCopied(false), 2000);
+    if (typeof navigator !== "undefined" && navigator.clipboard?.writeText) {
+      navigator.clipboard.writeText(textToCopy).catch(() => {});
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    }
   }, [claim]);
 
   if (claims.length === 0) {

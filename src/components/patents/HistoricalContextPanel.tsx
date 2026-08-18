@@ -57,59 +57,61 @@ export function HistoricalContextPanel({ context }: HistoricalContextPanelProps)
       </div>
 
       {/* Patent Battles & Litigation Wars */}
-      <div className="space-y-4">
-        <div className="flex items-center gap-2.5 border-b border-parchment-300 dark:border-ink-800 pb-3">
-          <Swords className="w-5 h-5 text-red-600" />
-          <h3 className="font-serif text-lg sm:text-xl font-bold text-ink-950 dark:text-parchment-100">
-            Patent Wars &amp; Legal Litigations
-          </h3>
-        </div>
+      {context.patentWars && context.patentWars.length > 0 && (
+        <div className="space-y-4">
+          <div className="flex items-center gap-2.5 border-b border-parchment-300 dark:border-ink-800 pb-3">
+            <Swords className="w-5 h-5 text-red-600" />
+            <h3 className="font-serif text-lg sm:text-xl font-bold text-ink-950 dark:text-parchment-100">
+              Patent Wars &amp; Legal Litigations
+            </h3>
+          </div>
 
-        <div className="space-y-5">
-          {context.patentWars.map((war) => (
-            <div
-              key={war.rivalName}
-              className="rounded-2xl border border-parchment-300 dark:border-ink-800 bg-parchment-50/90 dark:bg-ink-950 p-6 sm:p-7 shadow-patent space-y-4"
-            >
-              <div className="flex flex-wrap items-center justify-between gap-2 border-b border-parchment-200 dark:border-ink-800 pb-3.5">
-                <span className="font-serif font-bold text-ink-950 dark:text-parchment-100 text-base sm:text-lg">
-                  Vs. {war.rivalName}
-                </span>
-                <span className="text-xs sm:text-sm font-sans px-3 py-1 rounded-md bg-red-100 dark:bg-red-950 text-red-800 dark:text-red-300 border border-red-300 dark:border-red-800 font-semibold">
-                  Infringement Challenge
-                </span>
-              </div>
+          <div className="space-y-5">
+            {context.patentWars.map((war) => (
+              <div
+                key={war.rivalName}
+                className="rounded-2xl border border-parchment-300 dark:border-ink-800 bg-parchment-50/90 dark:bg-ink-950 p-6 sm:p-7 shadow-patent space-y-4"
+              >
+                <div className="flex flex-wrap items-center justify-between gap-2 border-b border-parchment-200 dark:border-ink-800 pb-3.5">
+                  <span className="font-serif font-bold text-ink-950 dark:text-parchment-100 text-base sm:text-lg">
+                    Vs. {war.rivalName}
+                  </span>
+                  <span className="text-xs sm:text-sm font-sans px-3 py-1 rounded-md bg-red-100 dark:bg-red-950 text-red-800 dark:text-red-300 border border-red-300 dark:border-red-800 font-semibold">
+                    Infringement Challenge
+                  </span>
+                </div>
 
-              <div className="space-y-3 text-sm sm:text-base font-sans text-ink-800 dark:text-ink-200">
-                <div>
-                  <span className="font-bold text-ink-950 dark:text-parchment-100 block font-sans text-xs uppercase tracking-wider mb-1">
-                    Rival Claim &amp; Defense:
-                  </span>
-                  <div className="leading-relaxed">
-                    <TextWithLatex text={war.rivalClaim} />
+                <div className="space-y-3 text-sm sm:text-base font-sans text-ink-800 dark:text-ink-200">
+                  <div>
+                    <span className="font-bold text-ink-950 dark:text-parchment-100 block font-sans text-xs uppercase tracking-wider mb-1">
+                      Rival Claim &amp; Defense:
+                    </span>
+                    <div className="leading-relaxed">
+                      <TextWithLatex text={war.rivalClaim} />
+                    </div>
                   </div>
-                </div>
-                <div>
-                  <span className="font-bold text-ink-950 dark:text-parchment-100 block font-sans text-xs uppercase tracking-wider mb-1">
-                    Litigation Conflict:
-                  </span>
-                  <div className="leading-relaxed">
-                    <TextWithLatex text={war.conflictDetails} />
+                  <div>
+                    <span className="font-bold text-ink-950 dark:text-parchment-100 block font-sans text-xs uppercase tracking-wider mb-1">
+                      Litigation Conflict:
+                    </span>
+                    <div className="leading-relaxed">
+                      <TextWithLatex text={war.conflictDetails} />
+                    </div>
                   </div>
-                </div>
-                <div>
-                  <span className="font-bold text-ink-950 dark:text-parchment-100 block font-sans text-xs uppercase tracking-wider mb-1">
-                    Final Resolution &amp; Judicial Outcome:
-                  </span>
-                  <div className="text-emerald-800 dark:text-emerald-300 font-semibold leading-relaxed">
-                    <TextWithLatex text={war.resolution} />
+                  <div>
+                    <span className="font-bold text-ink-950 dark:text-parchment-100 block font-sans text-xs uppercase tracking-wider mb-1">
+                      Final Resolution &amp; Judicial Outcome:
+                    </span>
+                    <div className="text-emerald-800 dark:text-emerald-300 font-semibold leading-relaxed">
+                      <TextWithLatex text={war.resolution} />
+                    </div>
                   </div>
                 </div>
               </div>
-            </div>
-          ))}
+            ))}
+          </div>
         </div>
-      </div>
+      )}
 
       {/* Aftermath */}
       {context.aftermath && (
