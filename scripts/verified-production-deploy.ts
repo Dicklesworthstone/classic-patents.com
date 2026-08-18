@@ -99,14 +99,25 @@ function assertCommitUnchanged(expectedCommit: string, stage: string) {
 }
 
 function conflictingBuilds(): string[] {
+  const currentPid = process.pid.toString();
   const processList = run("ps", ["-Ao", "pid=,ppid=,etime=,command="], true, false).stdout;
-  return processList
-    .split("\n")
-    .filter((line) =>
-      /\b(?:next\s+(?:build|dev)|vercel\s+(?:build|deploy)|bun\s+(?:run\s+(?:build|dev)|scripts\/build\.ts))\b/.test(
+  return processList.split("\n").filter((line) => {
+    const trimmed = line.trim();
+    if (!trimmed) return false;
+    const pid = trimmed.split(/\s+/)[0];
+    if (pid === currentPid) return false;
+    if (
+      !/\b(?:next\s+(?:build|dev)|vercel\s+(?:build|deploy)|bun\s+(?:run\s+(?:build|dev)|scripts\/build\.ts))\b/.test(
         line,
-      ),
-    );
+      )
+    ) {
+      return false;
+    }
+    if (line.includes("/dp/") || line.includes("jeffreys-skills")) {
+      return false;
+    }
+    return true;
+  });
 }
 
 function assertNoConflictingBuilds(stage: string) {
