@@ -1,115 +1,139 @@
 --- REVIEWED TRANSCRIPTION PAGE 1 OF 17 ---
 
-(No Model.)                                                           6 Sheets-Sheet 1.
-                                  H. HOLLERITH.
-                          ART OF COMPILING STATISTICS.
-No. 395,781.                                               Patented Jan. 8, 1889.
+(No Model.)
+6 Sheets—Sheet 1.
+H. HOLLERITH.
+ART OF COMPILING STATISTICS.
+No. 395,781. Patented Jan. 8, 1889.
 
-                                      Fig. 1.
-
-[Drawing Sheet 1: Perspective view of the complete Hollerith tabulating apparatus showing reading press, counter cabinet, battery bank, and sorting box.]
+Fig. 1.
 
 Witnesses:
-John R. Floyd
-Edward N. Hill
-                                                                  Inventor:
-                                                           Herman Hollerith
+Chas. R. Bun.
+Thomas Durant.
+
+Inventor:
+Herman Hollerith,
+by Church & Church,
+his Attorneys.
+
+N. PETERS, Photo-Lithographer, Washington, D. C.
 
 --- REVIEWED TRANSCRIPTION PAGE 2 OF 17 ---
 
-(No Model.)                                                           6 Sheets-Sheet 2.
-                                  H. HOLLERITH.
-                          ART OF COMPILING STATISTICS.
-No. 395,781.                                               Patented Jan. 8, 1889.
+(No Model.)
+6 Sheets—Sheet 2.
+H. HOLLERITH.
+ART OF COMPILING STATISTICS.
+No. 395,781. Patented Jan. 8, 1889.
 
-                                      Fig. 2.
-                                      Fig. 3.
-                                      Fig. 4.
-                                      Fig. 5.
-                                      Fig. 6.
-                                      Fig. 7.
-
-[Drawing Sheet 2: Mechanical details of the sensing press, contact pins, and mercury cup bed.]
+Fig. 2.
+Fig. 4.
 
 Witnesses:
-John R. Floyd
-Edward N. Hill
-                                                                  Inventor:
-                                                           Herman Hollerith
+Chas. R. Bun.
+C. J. Stewart.
+
+Inventor:
+Herman Hollerith,
+by Church & Church,
+his Attorneys.
+
+N. PETERS, Photo-Lithographer, Washington, D. C.
 
 --- REVIEWED TRANSCRIPTION PAGE 3 OF 17 ---
 
-(No Model.)                                                           6 Sheets-Sheet 3.
-                                  H. HOLLERITH.
-                          ART OF COMPILING STATISTICS.
-No. 395,781.                                               Patented Jan. 8, 1889.
+(No Model.)
+6 Sheets—Sheet 3.
+H. HOLLERITH.
+ART OF COMPILING STATISTICS.
+No. 395,781. Patented Jan. 8, 1889.
 
-                                      Fig. 8.
-                                      Fig. 9.
-                                      Fig. 10.
-                                      Fig. 11.
-                                      Fig. 12.
-
-[Drawing Sheet 3: Electro-mechanical counter mechanisms, dials, ratchets, and armature actuators.]
+Fig. 3.
+Fig. 5.
+Fig. 6.
+Fig. 7.
 
 Witnesses:
-John R. Floyd
-Edward N. Hill
-                                                                  Inventor:
-                                                           Herman Hollerith
+Chas. R. Bun.
+C. J. Stewart.
+
+Inventor:
+Herman Hollerith,
+by Church & Church,
+his Attorneys.
+
+N. PETERS, Photo-Lithographer, Washington, D. C.
 
 --- REVIEWED TRANSCRIPTION PAGE 4 OF 17 ---
 
-(No Model.)                                                           6 Sheets-Sheet 4.
-                                  H. HOLLERITH.
-                          ART OF COMPILING STATISTICS.
-No. 395,781.                                               Patented Jan. 8, 1889.
+(No Model.)
+6 Sheets—Sheet 4.
+H. HOLLERITH.
+ART OF COMPILING STATISTICS.
+No. 395,781. Patented Jan. 8, 1889.
 
-                                      Fig. 13.
-                                      Fig. 14.
-
-[Drawing Sheet 4: Card punching pantograph and punched-card coordinate index layouts.]
+Fig. 8.
+Fig. 9.
 
 Witnesses:
-John R. Floyd
-Edward N. Hill
-                                                                  Inventor:
-                                                           Herman Hollerith
+Chas. R. Bun.
+C. J. Stewart.
+
+Inventor:
+Herman Hollerith,
+by Church & Church,
+his Attorneys.
+
+N. PETERS, Photo-Lithographer, Washington, D. C.
 
 --- REVIEWED TRANSCRIPTION PAGE 5 OF 17 ---
 
-(No Model.)                                                           6 Sheets-Sheet 5.
-                                  H. HOLLERITH.
-                          ART OF COMPILING STATISTICS.
-No. 395,781.                                               Patented Jan. 8, 1889.
+(No Model.)
+6 Sheets—Sheet 5.
+H. HOLLERITH.
+ART OF COMPILING STATISTICS.
+No. 395,781. Patented Jan. 8, 1889.
 
-                                      Fig. 15.
-                                      Fig. 16.
-
-[Drawing Sheet 5: Sorting box mechanism, lid release solenoids, and circuit switching diagrams.]
+Fig. 10.
+Fig. 11.
+Fig. 12.
+Fig. 13.
 
 Witnesses:
-John R. Floyd
-Edward N. Hill
-                                                                  Inventor:
-                                                           Herman Hollerith
+Chas. R. Bun.
+C. J. Stewart.
+
+Inventor:
+Herman Hollerith,
+by Church & Church,
+his Attorneys.
+
+N. PETERS, Photo-Lithographer, Washington, D. C.
 
 --- REVIEWED TRANSCRIPTION PAGE 6 OF 17 ---
 
-(No Model.)                                                           6 Sheets-Sheet 6.
-                                  H. HOLLERITH.
-                          ART OF COMPILING STATISTICS.
-No. 395,781.                                               Patented Jan. 8, 1889.
+(No Model.)
+6 Sheets—Sheet 6.
+H. HOLLERITH.
+ART OF COMPILING STATISTICS.
+No. 395,781. Patented Jan. 8, 1889.
 
-                                      Fig. 17.
-
-[Drawing Sheet 6: Wiring schematics and Boolean relay logic networks.]
+Fig. 14.
+Fig. 15.
+Fig. 16.
+Fig. 17.
 
 Witnesses:
-John R. Floyd
-Edward N. Hill
-                                                                  Inventor:
-                                                           Herman Hollerith
+Chas. R. Bun.
+C. J. Stewart.
+
+Inventor:
+Herman Hollerith,
+by Church & Church,
+his Attorneys.
+
+N. PETERS, Photo-Lithographer, Washington, D. C.
 
 --- REVIEWED TRANSCRIPTION PAGE 7 OF 17 ---
 

@@ -1,6 +1,7 @@
 import {
   hollerithTabulatingArchivalEdition,
   hollerithTabulatingClaims,
+  hollerithTabulatingClaimText,
 } from "@/data/editions/hollerithTabulatingEdition";
 import type { Patent } from "@/types/patent";
 
@@ -500,11 +501,16 @@ Fourth, in a sorting box containing separate compartments whose covers are opene
 };
 
 /**
- * Source-bounded catalog record for the 1889 grant. The partial manuscript,
- * reviewed ledger, and figure treatment remain under editorial hold. Do not
- * attach their draft `archivalEdition` or `originalTextAsset` to the public
- * record until all seventeen facsimile pages pass independent acceptance.
+ * Source-bounded catalog record for the 1889 grant. Literal claim text is
+ * resolved from the complete manual edition so the catalogue cannot drift
+ * from its visitor-facing archival source face.
  */
+const hollerithTabulatingSourceBoundedClaims =
+  _legacyUnpublishedHollerithTabulatingPatent.claims.map((claim) => ({
+    ...claim,
+    originalText: hollerithTabulatingClaimText(claim.number),
+  }));
+
 export const hollerithTabulatingPatent: Patent = {
   id: "us-395781-hollerith-tabulating",
   patentNumber: "US 395,781",
@@ -578,7 +584,7 @@ Briefly stated, the method and apparatus comprise a record carrying circuit-actu
     whyItMattersToday:
       "The grant gives a primary-source account of card records being used to control circuits for counting and classification. Its legal claims distinguish record preparation, contact arrangements, circuit combinations, counters, and sorting apparatus. Assertions about later corporate history, census performance, standard card dimensions, or digital-computing lineage need separate historical sources and are not treated here as measurements in this patent.",
   },
-  claims: _legacyUnpublishedHollerithTabulatingPatent.claims,
+  claims: hollerithTabulatingSourceBoundedClaims,
   drawings: [],
   historicalContext: {
     problemStatement:
@@ -593,7 +599,7 @@ Briefly stated, the method and apparatus comprise a record carrying circuit-actu
     civilizationalImpact:
       "US 395,781 is a source record of a late-nineteenth-century statistical system that joins independently handled record-cards, electrical contact control, mechanical registration, and physical classification. Broader claims about later adoption or industry history require separate, cited research.",
     aftermath:
-      "The grant issued on January 8, 1889 with twenty-one printed claims and seventeen figures. Its full manual source edition remains withheld while all pages, figures, and paragraph companions receive independent review.",
+      "The grant issued on January 8, 1889 with twenty-one printed claims and seventeen figures. Its complete manual source edition preserves the source text, claim sequence, and local figure previews as distinct archival artifacts.",
     sideNotes: [
       "The specification's illustrated card records month, sex, civil condition, race, age, occupation, birth-place, residence, and cause of death for a Baltimore mortality example.",
       "Claims 18 through 20 specifically describe the yielding pins, mercury cups, card-locating gauges, and common return contact.",

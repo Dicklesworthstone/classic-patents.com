@@ -156,6 +156,12 @@ const figureReference = (
   figurePreviews: previews,
 });
 
+const term = (text: string, definition: string): CuratedSpecificationInline => ({
+  kind: "term",
+  text,
+  definition,
+});
+
 /**
  * Literal source blocks manually read from specification page 1 (PDF page 7).
  * They are intentionally not yet exported as a CuratedSpecificationEdition:
@@ -426,7 +432,15 @@ export const hollerithTabulatingSourceBlocksDraft: readonly CuratedSpecification
     inlines: [
       {
         kind: "text",
-        text: "The card, strip, or tablet, provided with the index-points arranged according to the predetermined order or system I shall hereinafter designate the “record-card,” and by the term “index-points” I mean any device, contrivance, or structure employed for recording the separate items and capable of acting directly or indirectly upon the various circuit-controlling devices.",
+        text: "The card, strip, or tablet, provided with the index-points arranged according to the predetermined order or system I shall hereinafter designate the “",
+      },
+      term(
+        "record-card",
+        "Hollerith's complete individual record medium: a card, strip, or tablet carrying positioned index-points that can act directly or indirectly on the circuit-controlling apparatus.",
+      ),
+      {
+        kind: "text",
+        text: ",” and by the term “index-points” I mean any device, contrivance, or structure employed for recording the separate items and capable of acting directly or indirectly upon the various circuit-controlling devices.",
       },
     ],
   },
@@ -627,7 +641,15 @@ export const hollerithTabulatingSourcePages10To14Draft: readonly CuratedSpecific
     inlines: [
       {
         kind: "text",
-        text: 'A convenient form and arrangement of distributing devices suitable for carrying said system into practice is illustrated in the figures. The apparatus which I term the "sorting-box" is composed of two or more boxes or series of boxes, R, arranged, for convenience, side by side in the form of a cabinet, the upper end of each box being open, while one side is made movable to permit access to be had to the interior. Each box is furnished with an indicating device, R′, controlled by an electro-magnet, R², the arrangement being such that whenever the electro-magnet is energized the indicator will be displayed. It is obvious that any suitable electric indicator might be employed for this purpose; but, as I prefer to use in connection with the visible indicator a mechanical cut-off device controlling the entrance or passage leading to the box, I have constructed the indicator in the form of a lid or cover, r, pivotally mounted in supports r′ near one side of the open end of the box, so that when the lid r is elevated to indicate the location it will at the same time uncover the receptacle in which the card is to be deposited.',
+        text: 'A convenient form and arrangement of distributing devices suitable for carrying said system into practice is illustrated in the figures. The apparatus which I term the "',
+      },
+      term(
+        "sorting-box",
+        "A cabinet of separate receptacles whose electrically controlled indicator or lid identifies and opens the destination assigned to the current record-card.",
+      ),
+      {
+        kind: "text",
+        text: '" is composed of two or more boxes or series of boxes, R, arranged, for convenience, side by side in the form of a cabinet, the upper end of each box being open, while one side is made movable to permit access to be had to the interior. Each box is furnished with an indicating device, R′, controlled by an electro-magnet, R², the arrangement being such that whenever the electro-magnet is energized the indicator will be displayed. It is obvious that any suitable electric indicator might be employed for this purpose; but, as I prefer to use in connection with the visible indicator a mechanical cut-off device controlling the entrance or passage leading to the box, I have constructed the indicator in the form of a lid or cover, r, pivotally mounted in supports r′ near one side of the open end of the box, so that when the lid r is elevated to indicate the location it will at the same time uncover the receptacle in which the card is to be deposited.',
       },
     ],
   },
@@ -702,7 +724,15 @@ export const hollerithTabulatingSourcePages10To14Draft: readonly CuratedSpecific
       ),
       {
         kind: "text",
-        text: " a section of the circuit-controlling device (using the press form by way of example only) embracing six pointers or pins and mercury-contacts corresponding to the six selected items representing sex, (male and female,) race, (white and colored,) and nativity, (native and foreign.) A seventh pin (marked G) is also shown, which pin is located in the press at the end of the platen opposite the gage or stop. This pin G is independent of the other series of pins, and is included in circuit with all of them, serving to connect each circuit with its battery or the ground-end of the line, so that until said pin G engages the opposite contact in the bed-plate no current will flow through any of the circuits controlled by the other pins. All the pins being grounded through this pin G, and the latter being located as described, it follows that until the card has been properly located the electrical devices cannot be set in action, for if a portion of the card is interposed between this pin and its contact the pin will be held back by the card, thus holding open the circuits. By this means I suspend the action of the circuit-controlling devices when a card is improperly inserted and prevent erroneous counts being made, such as would otherwise inevitably take place should the press be operated before the card was properly located and while its index-points registered with any of the series of points or pins other than those assigned to the specific items. This pin G may also be utilized to prevent sparking at the other contacts by simply increasing the interval between its point and the opposite contact, as by shortening the pin or reducing the level of the mercury in the cup below that in other cups, so that, the card being properly located, the several circuits will be fully closed through the pins before the pin G closes the ground. By this means the oxidation or burning of the electrodes which takes place when the circuit is broken and closed is confined to the pin G and its opposite contact.",
+        text: " a section of the circuit-controlling device (using the press form by way of example only) embracing six pointers or pins and ",
+      },
+      term(
+        "mercury-contacts",
+        "Contacts in which a pin reaching its assigned perforation meets a mercury-filled receptacle, completing the associated electrical circuit through the record-card.",
+      ),
+      {
+        kind: "text",
+        text: " corresponding to the six selected items representing sex, (male and female,) race, (white and colored,) and nativity, (native and foreign.) A seventh pin (marked G) is also shown, which pin is located in the press at the end of the platen opposite the gage or stop. This pin G is independent of the other series of pins, and is included in circuit with all of them, serving to connect each circuit with its battery or the ground-end of the line, so that until said pin G engages the opposite contact in the bed-plate no current will flow through any of the circuits controlled by the other pins. All the pins being grounded through this pin G, and the latter being located as described, it follows that until the card has been properly located the electrical devices cannot be set in action, for if a portion of the card is interposed between this pin and its contact the pin will be held back by the card, thus holding open the circuits. By this means I suspend the action of the circuit-controlling devices when a card is improperly inserted and prevent erroneous counts being made, such as would otherwise inevitably take place should the press be operated before the card was properly located and while its index-points registered with any of the series of points or pins other than those assigned to the specific items. This pin G may also be utilized to prevent sparking at the other contacts by simply increasing the interval between its point and the opposite contact, as by shortening the pin or reducing the level of the mercury in the cup below that in other cups, so that, the card being properly located, the several circuits will be fully closed through the pins before the pin G closes the ground. By this means the oxidation or burning of the electrodes which takes place when the circuit is broken and closed is confined to the pin G and its opposite contact.",
       },
     ],
   },
@@ -736,7 +766,20 @@ export const hollerithTabulatingSourcePages10To14Draft: readonly CuratedSpecific
       figureReference("Fig. 6", ...hollerithTabulatingFigureCrops["Fig. 6"]),
       {
         kind: "text",
-        text: ', the letters m¹ m², &c., designate the electro-magnets of ordinary relays, the coils of which are included in circuits, as indicated by dotted lines, with the six cups on one side and with the battery and cup of the pin G on the other. M¹, M², M³, M⁴, M⁵, and M⁶ represent a series of magnets, some or all of which belong to the counting mechanism or sorting-boxes, or to both. The coils of each of these magnets are connected in circuit with a battery or batteries on the one side and on the other with a contact controlled by one or more of the series of relay-magnets, the circuits being indicated by full lines. From tracing the circuits indicated by dotted and full lines, and which I shall, for convenience, term the "primary" and "secondary" circuits, respectively, it will be observed that the primary circuit, including relay m¹, is controlled by the pointer or pin marked "white," m² by "colored," m³ by "native," m⁴ by "foreign," m⁵ by "male," and m⁶ by "female."',
+        text: ', the letters m¹ m², &c., designate the electro-magnets of ordinary relays, the coils of which are included in circuits, as indicated by dotted lines, with the six cups on one side and with the battery and cup of the pin G on the other. M¹, M², M³, M⁴, M⁵, and M⁶ represent a series of magnets, some or all of which belong to the counting mechanism or sorting-boxes, or to both. The coils of each of these magnets are connected in circuit with a battery or batteries on the one side and on the other with a contact controlled by one or more of the series of relay-magnets, the circuits being indicated by full lines. From tracing the circuits indicated by dotted and full lines, and which I shall, for convenience, term the "',
+      },
+      term(
+        "primary",
+        "Hollerith's name for the first circuit series: card-controlled circuits that energize relay coils before those relays govern the operating circuits.",
+      ),
+      { kind: "text", text: '" and "' },
+      term(
+        "secondary",
+        "Hollerith's name for the second circuit series: relay-contact-controlled circuits that supply the work of actuating counters or distributing devices.",
+      ),
+      {
+        kind: "text",
+        text: '" circuits, respectively, it will be observed that the primary circuit, including relay m¹, is controlled by the pointer or pin marked "white," m² by "colored," m³ by "native," m⁴ by "foreign," m⁵ by "male," and m⁶ by "female."',
       },
     ],
   },
@@ -1091,3 +1134,17 @@ export const hollerithTabulatingArchivalEdition: CuratedSpecificationEdition = {
     ...hollerithTabulatingSignatureDraft,
   ],
 };
+
+/**
+ * The record is forbidden to carry a second transcription of a claim. Resolve
+ * every displayed claim from the manually authored edition at use time.
+ */
+export function hollerithTabulatingClaimText(number: number): string {
+  const block = hollerithTabulatingArchivalEdition.blocks.find(
+    (candidate) => candidate.kind === "claim" && candidate.number === number,
+  );
+  if (block?.kind !== "claim") {
+    throw new Error(`Hollerith manual edition is missing claim ${number}.`);
+  }
+  return block.inlines.map((inline) => inline.text).join("");
+}
