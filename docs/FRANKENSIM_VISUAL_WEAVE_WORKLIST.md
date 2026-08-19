@@ -303,6 +303,11 @@ the visitor can see or hear the kernel change the instrument.
 - [x] P5.210 Edison phonograph leadScrewThreadX / foilGrooveX. 2D no longer converts leftover i×10 / i×11 privately.
 - [x] P5.211 Wright rudderSvgScale. 2D no longer converts leftover rudder×1.2 privately.
 - [x] P5.212 Hollerith 2D press pins read cupCols / cupSvgOriginX / Pitch. 2D no longer converts leftover 20+i×25 privately.
+- [x] P5.213 Tesla teslaPoleCurrent. teslaBAt and 2D share pole phase/polarity/current; 2D no longer converts leftover π/2 or 2π/3 privately.
+- [x] P5.214 Tesla statorRingOuter/InnerSvgR, pole W/H, phase-vector opacity. 2D no longer converts leftover r=110/95 or 36×24 privately.
+- [x] P5.215 Wright wrightHoverY / hoverOmegaRadPerS / hoverAmpM. 3D no longer converts leftover sin(elapsed×1.4)×0.04 privately.
+- [x] P5.216 schematicCalloutSvg. Schematic reticle no longer converts leftover callout×4 / ×3 privately.
+- [x] P5.217 Ericsson schematicForward/Aft radii. Schematic no longer converts leftover 14/50/46 privately.
 
 ## Explicitly out of scope
 

@@ -69,6 +69,12 @@ describe("US 381,968 Tesla Fig. 9 motor visual & electromagnetics boundary", () 
     expect(result.schematicLiveLen).toBe(44);
     expect(result.schematicStrobeOpacityBase).toBe(0.18);
     expect(result.schematicStrobeStroke).toBe(1.2);
+    expect(result.statorRingOuterSvgR).toBe(110);
+    expect(result.twoPhaseVectorOpacity).toBe(0.55);
+
+    const twoDSource = readFileSync(join(VISUALS_DIRECTORY, "TeslaMotorSim.tsx"), "utf8");
+    expect(twoDSource).toContain("teslaPoleCurrent");
+    expect(twoDSource).not.toContain("Math.PI / 2");
   });
 
   test("builds Fig. 9's annular field, disk, generator collector rings, brushes, and flux field procedurally", () => {

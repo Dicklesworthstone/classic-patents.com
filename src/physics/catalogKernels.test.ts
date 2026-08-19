@@ -154,6 +154,8 @@ describe("Catalog Kernels & Shared SI Stepping Functions", () => {
     expect(res.aftBladeSvgRy).toBe(45);
     expect(res.bladeCount).toBe(6);
     expect(res.bladePitchDeg).toBe(60);
+    expect(res.schematicForwardRy).toBe(50);
+    expect(res.schematicAftRy).toBe(46);
   });
 
   test("DeLaval centrifugal separator computes radial g-force and separation efficiency", () => {

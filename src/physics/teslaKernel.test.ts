@@ -14,6 +14,7 @@ import {
   teslaFieldDisplayOmegaRadPerS,
   teslaFig4Strobe,
   teslaPhaseVectors,
+  teslaPoleCurrent,
   teslaSchematicStrobeOpacity,
   teslaStatorPole,
 } from "./teslaKernel";
@@ -44,6 +45,11 @@ describe("Tesla Polyphase AC & Resonant Induction Kernels", () => {
     expect(state60Hz.schematicStrobeOpacityBase).toBe(0.18);
     expect(teslaSchematicStrobeOpacity(0)).toBe(0.18);
     expect(teslaSchematicStrobeOpacity(7)).toBe(0.46);
+    expect(state60Hz.statorRingOuterSvgR).toBe(110);
+    expect(state60Hz.statorPoleSvgW).toBe(36);
+    const coil0 = teslaPoleCurrent(0, 2, 0);
+    expect(coil0.current).toBeCloseTo(0, 5);
+    expect(teslaPoleCurrent(0, 2, Math.PI / 2).current).toBeCloseTo(1, 5);
     const pole0 = teslaStatorPole(0, 4);
     expect(pole0.cx).toBeCloseTo(200, 1);
     expect(pole0.cy).toBeCloseTo(42, 1);

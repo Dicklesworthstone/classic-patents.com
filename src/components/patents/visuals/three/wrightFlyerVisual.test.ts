@@ -4,6 +4,7 @@ import { join } from "node:path";
 import {
   readWrightControls,
   stepWrightFlyerSi,
+  wrightHoverY,
   wrightSchematicPose,
   wrightWarpFromPointerNx,
 } from "@/physics/wrightKernel";
@@ -27,6 +28,8 @@ describe("US 821,393 Wright Brothers Flying-Machine 3D visual & aerodynamic boun
     expect(threeSource).not.toContain("useGLTF");
     expect(threeSource).not.toContain("/ 1100");
     expect(threeSource).not.toContain("/ 400");
+    expect(threeSource).toContain("wrightHoverY");
+    expect(threeSource).not.toContain("* 1.4");
   });
 
   test("maintains deterministic replay without ambient randomness or private clocks in frame loop", () => {
@@ -114,6 +117,9 @@ describe("US 821,393 Wright Brothers Flying-Machine 3D visual & aerodynamic boun
     expect(airframe.muslinMat.opacity).toBe(0.35);
     expect(pose.airframeRollDeg).toBeCloseTo(5.4, 3);
     expect(pose.rudderSvgScale).toBe(1.2);
+    expect(pose.hoverOmegaRadPerS).toBe(1.4);
+    expect(pose.hoverAmpM).toBe(0.04);
+    expect(wrightHoverY(0, pose.hoverOmegaRadPerS, pose.hoverAmpM)).toBe(0);
     expect(pose.canardSvgY).toBeCloseTo(-3.6, 3);
     expect(pose.leftLiftSvgY).toBeGreaterThan(0);
     expect(pose.leftDragSvgX).toBeGreaterThan(0);
