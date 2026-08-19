@@ -1,7 +1,7 @@
 import { describe, expect, test } from "bun:test";
 import { readFileSync } from "node:fs";
 import { join } from "node:path";
-import { readWrightControls, stepWrightFlyerSi } from "@/physics/wrightKernel";
+import { readWrightControls, stepWrightFlyerSi, wrightSchematicPose } from "@/physics/wrightKernel";
 import { buildWrightFlyerAirframe, updateWrightFlyerKinematics } from "./wrightFlyerAirframe";
 
 const VISUALS_DIRECTORY = join(process.cwd(), "src", "components", "patents", "visuals");
@@ -64,6 +64,11 @@ describe("US 821,393 Wright Brothers Flying-Machine 3D visual & aerodynamic boun
     expect(si.dragVectorLength).toBeGreaterThan(0.3);
     expect(si.leftLiftN + si.rightLiftN).toBeGreaterThan(0);
     expect(si.leftWingLiftPct).toBeGreaterThan(0);
+    const pose = wrightSchematicPose({ wingWarp: 15, rudder: 10, coupled: 1 });
+    expect(pose.warpPx).toBeCloseTo(12, 3);
+    expect(pose.rasterSkew).toBeCloseTo(8, 3);
+    expect(pose.rudderAngle).toBeCloseTo(7, 3);
+    expect(pose.strutDelta).toBeCloseTo(8.4, 3);
   });
 
   test("builds and articulates procedural biplane wings, flexible rib warp, forward elevator, and twin rudders correctly", () => {
@@ -99,5 +104,9 @@ describe("US 821,393 Wright Brothers Flying-Machine 3D visual & aerodynamic boun
     expect(airframe.rudderGroup.rotation.y).toBeCloseTo((-8.0 * Math.PI) / 180, 2);
     expect(airframe.canardGroup.rotation.x).toBeCloseTo((-3.0 * Math.PI) / 180, 2);
     expect(airframe.muslinMat.opacity).toBe(0.35);
+    expect(pose.airframeRollDeg).toBeCloseTo(5.4, 3);
+    expect(pose.canardSvgY).toBeCloseTo(-3.6, 3);
+    expect(pose.leftLiftSvgY).toBeGreaterThan(0);
+    expect(pose.leftDragSvgX).toBeGreaterThan(0);
   });
 });

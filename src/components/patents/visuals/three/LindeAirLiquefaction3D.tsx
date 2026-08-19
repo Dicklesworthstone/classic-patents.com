@@ -18,10 +18,10 @@ import { usePatentAudio } from "./usePatentAudio";
 
 type CameraPreset =
   | "iso"
-  | "jt_valve"
-  | "counter_heat_exchanger"
-  | "liquid_dewar"
-  | "spindle_handwheel"
+  | "regulating_valve"
+  | "counter_current_apparatus"
+  | "vessel_v_prime"
+  | "regulator"
   | "top";
 
 export function LindeAirLiquefaction3D() {
@@ -29,29 +29,19 @@ export function LindeAirLiquefaction3D() {
   const [showUiOverlay, setShowUiOverlay] = useState<boolean>(true);
   const [cutawayMode, setCutawayMode] = useState<boolean>(true);
 
-  // Cryogenic Thermodynamics Parameters
-  const { params } = usePatentPhysics("us-727650-linde-air-liquefaction");
-  const inletPressureBar = params.inletBar ?? params.inletPressureBar ?? 200;
-  const [showMist, setShowMist] = useState<boolean>(true);
+  // The shared physics entry is source-bounded: this grant does not provide
+  // a flow rate, a yield, or a terminal temperature to simulate.
+  usePatentPhysics("us-727650-linde-air-liquefaction");
+  const linde = FrankenSimEngine.stepLindeAirLiquefaction();
+  const [showFlowTracer, setShowFlowTracer] = useState<boolean>(true);
   const [activeCamera, setActiveCamera] = useState<CameraPreset>("iso");
   const { isAudioMuted, toggleSound: toggleEngine } = usePatentAudio();
 
-  const linde = FrankenSimEngine.stepLindeAirLiquefaction({
-    compressorPressureBar: inletPressureBar,
-    heatExchangerPasses: 48,
-  });
-
   const live = useLiveSimParams({
-    inletPressureBar,
-    showMist,
+    highPressureAtm: linde.highPressureAtm,
+    showFlowTracer,
     cutawayMode,
     isAudioMuted,
-    coldEndTempK: linde.coldEndTempK,
-    coldEndTempC: linde.coldEndTempC,
-    jtDeltaTPerPass: linde.jtDeltaTPerPass,
-    isLiquefying: linde.isLiquefying,
-    liquidYieldPct: linde.liquidYieldPct,
-    liquidOutputLitersPerHr: linde.liquidOutputLitersPerHr,
   });
 
   const controlsRef = useRef<StudioContext["controls"] | null>(null);
@@ -68,19 +58,19 @@ export function LindeAirLiquefaction3D() {
         camera.position.set(7.5, 4.5, 8.5);
         controls.target.set(0, 0, 0);
         break;
-      case "jt_valve":
+      case "regulating_valve":
         camera.position.set(0, -0.8, 3.2);
         controls.target.set(0, -1.6, 0);
         break;
-      case "counter_heat_exchanger":
+      case "counter_current_apparatus":
         camera.position.set(2.8, 1.8, 3.2);
         controls.target.set(0, 0.8, 0);
         break;
-      case "liquid_dewar":
+      case "vessel_v_prime":
         camera.position.set(0, -2.0, 3.4);
         controls.target.set(0, -2.4, 0);
         break;
-      case "spindle_handwheel":
+      case "regulator":
         camera.position.set(1.4, 5.0, 3.0);
         controls.target.set(0, 4.2, 0);
         break;
@@ -112,7 +102,8 @@ export function LindeAirLiquefaction3D() {
     cameraRef.current = camera;
     controlsRef.current = controls;
 
-    // Procedural Linde Cryogenic Liquefier Model
+    // Diagrammatic model of the named apparatus. It does not recreate a
+    // measured installation or infer unprinted construction details.
     const liquefierModel: LindeLiquefactionModelResult = buildLindeLiquefactionModel();
     scene.add(liquefierModel.root);
 
@@ -131,8 +122,8 @@ export function LindeAirLiquefaction3D() {
         liquefierModel.materials,
         delta,
         timeSec,
-        p.inletPressureBar,
-        p.showMist,
+        p.highPressureAtm,
+        p.showFlowTracer,
         p.cutawayMode,
       );
 
@@ -158,7 +149,7 @@ export function LindeAirLiquefaction3D() {
         <div className="flex items-center gap-2 bg-slate-900/85 backdrop-blur-md px-3.5 py-2 rounded-xl border border-slate-700/60 shadow-lg pointer-events-auto">
           <Wind className="w-4 h-4 text-cyan-400 animate-pulse" />
           <span className="text-xs font-mono font-bold text-slate-100 uppercase tracking-wider">
-            Linde Regenerative Air Liquefier 3D
+            Linde apparatus diagram, source-bounded 3D
           </span>
           <span className="text-[10px] font-mono px-2 py-0.5 rounded-full bg-cyan-500/20 text-cyan-300 border border-cyan-500/30">
             US Patent 727,650 (1903)
@@ -171,10 +162,10 @@ export function LindeAirLiquefaction3D() {
           {(
             [
               ["iso", "Overview"],
-              ["counter_heat_exchanger", "Coil Exchanger"],
-              ["jt_valve", "J-T Valve"],
-              ["liquid_dewar", "Liquid Dewar"],
-              ["spindle_handwheel", "Handwheel"],
+              ["counter_current_apparatus", "G′ exchanger"],
+              ["regulating_valve", "N / R′"],
+              ["vessel_v_prime", "V′ vessel"],
+              ["regulator", "Regulator"],
               ["top", "Top"],
             ] as [CameraPreset, string][]
           ).map(([preset, label]) => (
@@ -209,10 +200,12 @@ export function LindeAirLiquefaction3D() {
           </button>
           <button
             type="button"
-            onClick={() => setShowMist(!showMist)}
-            title={showMist ? "Hide Cryogenic Jet" : "Show Cryogenic Jet"}
+            onClick={() => setShowFlowTracer(!showFlowTracer)}
+            title={
+              showFlowTracer ? "Hide illustrative flow tracer" : "Show illustrative flow tracer"
+            }
             className={`p-1.5 rounded-lg text-xs transition-colors ${
-              showMist
+              showFlowTracer
                 ? "bg-cyan-600 text-white font-semibold shadow-sm"
                 : "text-slate-400 hover:text-white hover:bg-slate-800"
             }`}
@@ -239,18 +232,17 @@ export function LindeAirLiquefaction3D() {
 
       <StudioKernelChips
         visible={showUiOverlay}
-        title="Linde Joule-Thomson Cryogenics"
+        title="US 727,650 source conditions"
         chips={[
-          { label: "Inlet P", value: `${inletPressureBar} bar` },
-          { label: "Cold End T", value: `${linde.coldEndTempC} °C (${linde.coldEndTempK} K)` },
-          { label: "ΔT / Pass", value: `-${linde.jtDeltaTPerPass.toFixed(1)} K` },
+          { label: "p² high", value: `${linde.highPressureAtm} atmospheres` },
+          { label: "p′ low", value: `${linde.lowPressureAtm} atmospheres` },
+          { label: "t³ after K", value: `about ${linde.coolerOutletC} °C or less` },
           {
-            label: "State",
-            value: linde.isLiquefying ? "LIQUEFYING" : "PRE-COOLING",
-            tone: linde.isLiquefying ? "ok" : "warn",
+            label: "G′ construction",
+            value: `${linde.counterCurrentLengthM} m suggested`,
+            tone: "ok",
           },
-          { label: "Liquid Yield", value: `${linde.liquidYieldPct}%` },
-          { label: "Output", value: `${linde.liquidOutputLitersPerHr} L/h` },
+          { label: "Boundary", value: "No yield or terminal temperature printed", tone: "warn" },
         ]}
       />
     </div>

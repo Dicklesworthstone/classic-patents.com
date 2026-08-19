@@ -61,6 +61,7 @@ describe("US 4,750 Elias Howe Sewing Machine visual & kinematics boundary", () =
     expect(result.clothFeedMmPerS).toBe(14.0);
     expect(result.crankOmegaRadPerS).toBeCloseTo(8 * Math.PI, 2);
     expect(result.clothStudioAdvancePerS).toBeCloseTo(1.4, 3);
+    expect(result.crankDisplayTickS).toBeCloseTo(0.03, 5);
   });
 
   test("builds and articulates procedural eye-pointed needle, shuttle, and baster plate correctly", () => {

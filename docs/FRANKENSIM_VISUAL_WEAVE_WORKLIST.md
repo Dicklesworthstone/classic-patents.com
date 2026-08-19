@@ -230,6 +230,16 @@ the visitor can see or hear the kernel change the instrument.
 - [x] P5.137 Fermi geigerIntervalS / thermalFluxE7 and CCD phaseDisplayS live on the shared steps. 3D no longer converts leftover ms/1000 privately.
 - [x] P5.138 Edison glowOpacity / lowResistanceGlowOpacity, Marconi mastSvgY / fundamentalHz, and Kevlar chainWaviness / chainEndX live on the shared steps. 2D no longer converts leftover W/150, h×1.6, MHz×1e6, (100−align)×0.25, or tension×0.28 privately.
 - [x] P5.139 Tesla fieldDisplayTickS / bVectorSvgScale / teslaBAt bxSvg, Thomson burrSvgRx, and Mergenthaler slugSvgWidth live on the shared steps. 2D no longer converts leftover tick_ms/1000, B×60, burr×1.5, or line mm×2.8 privately.
+- [x] P5.140 pistonSvgDisplacement helper; Otto / Diesel pistonStrokePx 35, Daimler 30, Corliss pistonStrokePx 45 / wristPlateAmpPx 22, Westinghouse pistonStrokePx / shoeDistancePx. 2D no longer converts leftover (1−cos)×35/30 or sin×45/22 privately.
+- [x] P5.141 Edison schematicGlowOpacity and Fermi schematicRodY live on the shared steps. Westinghouse schematic reads the engine step (and the cylinder-piston line x1 is a real number, not a leftover string).
+- [x] P5.142 wrightSchematicPose owns Fig. 4 warp/raster/rudder/strut leftover SI. Tesla schematic uses stepTeslaMotorFig9 fieldDisplayOmegaDegPerS (no leftover freq×4.444 clock) plus schematicFieldIntensity / fill / arrow lengths.
+- [x] P5.143 Colt schematic reads indexAngleDeg / isLocked / schematicBoltRetractY. Otis schematic reads isSnapped / schematicSpringBowPx / schematicPawlExtPx.
+- [x] P5.144 Hollerith pocketSvgPitch / hollerithPocketSvgX, Corliss intakeOpenWindowDeg, Edison glowStopInner/Outer / schematicGlowFill, Otis springBowSvgH / pawlSvgX / pawlSvgY live on the shared steps.
+- [x] P5.145 Wright 2D leftover airframeRollDeg / canardSvgY / leftLiftSvgY / rightLiftSvgY / leftDragSvgX / rightDragSvgX and Bell scopeNorm / scopeSineAmp / scopeHarmonicAmp / scopeSquareAmp live on the shared steps.
+- [x] P5.146 renoCleatSvg + cleatSvgPitch/wrap/origin/scale/rotate. Corliss 2D crank pin uses pistonStrokePx. Howe crankDisplayTickS. Bell 3D voiceNorm. Spencer microwaveFreqHz / magneticFluxDensityTesla / electricFieldVpm / voltageVolts. Goddard thermo bus uses chamberPressureAtm.
+- [x] P5.147 De Laval cream/skim drop origin, spacing, and wrap live on the separator step. 3D no longer converts leftover 0.35/0.18/1.8 or −0.15/0.2/2.0 privately.
+- [x] P5.148 Gatling camStrokeStudio / boltHomeX / barrelSpacingRad / fireIntervalS / muzzleFlashDecayPerS / clusterRadiusPx / boltStrokePx / crankPinRadiusPx plus gatlingBoltStudioX / gatlingBoltSvgX. 2D/3D no longer convert leftover cos×0.38, π/3, 60/rpm, or (1−cos)/2×90 privately.
+- [x] P5.149 Hollerith dialNeedleRadiusPx / hollerithDialNeedle. McCormick cutterSvgAmp. 2D no longer converts leftover val/100×2π×14 or sin×18 privately.
 
 ## Explicitly out of scope
 

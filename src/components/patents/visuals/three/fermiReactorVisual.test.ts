@@ -62,6 +62,7 @@ describe("US 2,708,656 Enrico Fermi Chicago Pile-1 Nuclear Reactor visual & kine
     expect(result.rodStudioY).toBeCloseTo(-0.5 + 0.835 * 3.2, 3);
     expect(result.fuelGlowIntensity).toBeGreaterThan(0);
     expect(result.rodSvgY).toBeCloseTo(30 - 0.835 * 120, 2);
+    expect(result.schematicRodY).toBeCloseTo(20 + ((100 - 83.5) / 100) * 70, 2);
   });
 
   test("builds and articulates procedural timber scaffold, graphite moderator pile, uranium fuel lattice, and cadmium control rods correctly", () => {

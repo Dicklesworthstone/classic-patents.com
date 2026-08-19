@@ -64,6 +64,7 @@ describe("US 361,931 Gottlieb Daimler High-Speed Four-Stroke Engine visual & kin
     expect(result.bmepBar).toBeGreaterThan(2.0);
     expect(result.isRunning).toBe(true);
     expect(result.hotTubeGlow).toBeCloseTo(2.8, 3);
+    expect(result.pistonStrokePx).toBe(30);
   });
 
   test("builds and articulates procedural enclosed flywheels, hot-tube igniter, and valve pushrod correctly", () => {

@@ -87,6 +87,6 @@ describe("US 727,650 Carl von Linde Air Liquefaction visual & cryogenics boundar
     updateLindeLiquefactionKinematics(nodes, materials, 0.1, 1.0, 200, true, true);
     expect(nodes.cutawayCasingMesh.visible).toBe(true);
     expect(nodes.solidCasingMesh.visible).toBe(false);
-    expect(materials.cryoMistParticle.opacity).toBeGreaterThan(0);
+    expect(materials.flowTracer.opacity).toBeGreaterThan(0);
   });
 });

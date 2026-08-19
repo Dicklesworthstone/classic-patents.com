@@ -59,6 +59,7 @@ describe("US 194,047 Nikolaus Otto Four-Stroke Engine visual & kinematics bounda
     expect(otto.peakFiringBar).toBeGreaterThan(15);
     expect(otto.govDisplayOmegaRadPerS).toBeCloseTo(9, 3);
     expect(otto.flyballRadius).toBeCloseTo(0.264, 3);
+    expect(otto.pistonStrokePx).toBe(35);
   });
 
   test("builds and articulates procedural 4-stroke kinematic hierarchy correctly", () => {

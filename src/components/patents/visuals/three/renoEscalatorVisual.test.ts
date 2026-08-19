@@ -73,6 +73,8 @@ describe("US 470,918 Jesse Reno Inclined Elevator visual & mechanics boundary", 
     expect(result.motorPowerKw).toBeGreaterThan(1.0);
     expect(result.sheaveOmegaRadPerS).toBeCloseTo(1, 3);
     expect(result.treadSvgAdvancePerS).toBeCloseTo(18, 3);
+    expect(result.cleatSvgPitchPx).toBe(35);
+    expect(result.cleatSvgXScale).toBeCloseTo(0.85, 2);
   });
 
   test("builds and articulates procedural cleated deck and balustrades correctly", () => {

@@ -69,6 +69,10 @@ describe("US 395,781 Herman Hollerith Electro-Mechanical Punched-Card Tabulator 
     expect(result.sortingPocketCount).toBe(24);
     expect(result.cardsPerDay).toBeGreaterThan(20000);
     expect(result.plungeAmp).toBeGreaterThan(0.2);
+    expect(result.pocketSvgPitch).toBe(18);
+    expect(result.pocketSvgOriginX).toBe(15);
+    expect(result.dialNeedleRadiusPx).toBe(14);
+    expect(result.dialUnitsPerRev).toBe(100);
   });
 
   test("builds and articulates procedural 40 dials, pin press, and sorting box correctly", () => {

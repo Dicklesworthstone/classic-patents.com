@@ -50,6 +50,10 @@ describe("US 36,836 Richard Gatling Revolving Battery Gun visual & ballistics bo
     expect(result.barrelCoolingIntervalS).toBeGreaterThan(0.8);
     expect(result.muzzleEnergyJoules).toBeGreaterThan(1500);
     expect(result.crankOmegaRadPerS).toBeCloseTo(2 * Math.PI, 2);
+    expect(result.barrelSpacingRad).toBeCloseTo(Math.PI / 3, 4);
+    expect(result.camStrokeStudio).toBeCloseTo(0.38, 3);
+    expect(result.fireIntervalS).toBeCloseTo(result.cycleTimeMs / 1000, 4);
+    expect(result.clusterRadiusPx).toBe(32);
   });
 
   test("builds and articulates procedural 6-barrel cluster and lock bolts correctly", () => {

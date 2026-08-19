@@ -200,7 +200,8 @@ export function buildEdisonPhonographModel(): EdisonPhonographModel {
     cylinderGroup.add(spoke);
   }
 
-  // Illustrative drive indicator, not a claimed hand crank.
+  // Illustrative drive indicator. US 200,521 names clock-work M or another
+  // source of power; this display geometry does not identify a historical drive.
   const crankArm = new THREE.Mesh(new THREE.BoxGeometry(0.18, 1.6, 0.35), illustrativeDarkMetalMat);
   crankArm.position.set(4.9, 0.6, 0);
   cylinderGroup.add(crankArm);

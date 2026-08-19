@@ -3,7 +3,7 @@
 import { Activity, Camera, Eye, EyeOff, Volume2, VolumeX, Zap } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import type * as THREE from "three";
-import { stepGatlingGun } from "@/physics/catalogKernels";
+import { gatlingBoltStudioX, stepGatlingGun } from "@/physics/catalogKernels";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { soundEngine } from "@/utils/soundEngine";
 import { buildGatlingGunModel } from "./gatlingGunModel";
@@ -38,6 +38,11 @@ export function GatlingGun3D() {
     isAudioMuted,
     isCutaway,
     crankOmegaRadPerS: gatling.crankOmegaRadPerS,
+    barrelSpacingRad: gatling.barrelSpacingRad,
+    camStrokeStudio: gatling.camStrokeStudio,
+    boltHomeX: gatling.boltHomeX,
+    fireIntervalS: gatling.fireIntervalS,
+    muzzleFlashDecayPerS: gatling.muzzleFlashDecayPerS,
   });
 
   const controlsRef = useRef<StudioContext["controls"] | null>(null);
@@ -117,16 +122,13 @@ export function GatlingGun3D() {
       // Kinematic Cam Track Bolt Reciprocation
       const currentAngle = model.barrelClusterGroup.rotation.x;
       model.bolts.forEach((bolt, idx) => {
-        const barrelAngle = currentAngle + (idx * Math.PI) / 3;
-        // Cam profile: forward stroke between 0 and PI, extraction stroke between PI and 2PI
-        const camDisplacement = Math.cos(barrelAngle) * 0.38;
-        bolt.position.x = -0.6 + camDisplacement;
+        const barrelAngle = currentAngle + idx * p.barrelSpacingRad;
+        bolt.position.x = gatlingBoltStudioX(barrelAngle, p.boltHomeX, p.camStrokeStudio);
       });
 
       // Muzzle Flash & Acoustic Pulse at 12 o'clock firing position
-      const fireIntervalSec = 60 / Math.max(1, p.roundsPerMinute);
       const now = renderedSteps * (1 / 60);
-      if (now - lastFireTime > fireIntervalSec) {
+      if (now - lastFireTime > p.fireIntervalS) {
         lastFireTime = now;
         if (p.showMuzzleFlash) {
           model.materials.muzzleFlash.opacity = 0.95;
@@ -137,7 +139,7 @@ export function GatlingGun3D() {
       } else {
         model.materials.muzzleFlash.opacity = Math.max(
           0,
-          model.materials.muzzleFlash.opacity - delta * 8.0,
+          model.materials.muzzleFlash.opacity - delta * p.muzzleFlashDecayPerS,
         );
       }
 

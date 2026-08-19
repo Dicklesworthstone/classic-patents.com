@@ -43,7 +43,6 @@ export function EdisonPhonograph3D() {
     cylinderRpm,
     isAudioMuted,
     isCutaway,
-    grooveDepthMicrons: phono.grooveDepthMicrons,
     axialTravelMmPerS: phono.axialTravelMmPerS,
     mandrelOmegaRadPerS: phono.mandrelOmegaRadPerS,
     stylusAmp: phono.stylusAmp,
@@ -116,10 +115,12 @@ export function EdisonPhonograph3D() {
     // Animation Loop
     let reqId: number;
     let timeSec = 0;
+    let lastFrameMs: number | undefined;
 
-    const animate = () => {
+    const animate = (frameMs: number) => {
       reqId = requestAnimationFrame(animate);
-      const dt = 1 / 60;
+      const dt = Math.min(0.1, Math.max(0, (frameMs - (lastFrameMs ?? frameMs)) / 1000));
+      lastFrameMs = frameMs;
       timeSec += dt;
       const p = live.current;
 
@@ -136,7 +137,7 @@ export function EdisonPhonograph3D() {
       renderer.render(scene, camera);
     };
 
-    animate();
+    reqId = requestAnimationFrame(animate);
 
     return () => {
       cancelAnimationFrame(reqId);
@@ -237,8 +238,12 @@ export function EdisonPhonograph3D() {
             value: String(phono.sourceThreadsPerInch),
             unit: "threads/in",
           },
-          { label: "Illustrative rate", value: String(cylinderRpm), unit: "rpm" },
-          { label: "Model axial display", value: phono.axialTravelMmPerS.toFixed(2), unit: "mm/s" },
+          { label: "Illustrative turn setting", value: String(cylinderRpm), unit: "rpm" },
+          {
+            label: "Illustrative axial animation",
+            value: phono.axialTravelMmPerS.toFixed(2),
+            unit: "mm/s",
+          },
           { label: "Model ω", value: phono.mandrelOmegaRadPerS.toFixed(1), unit: "rad/s" },
         ]}
       />
@@ -246,8 +251,8 @@ export function EdisonPhonograph3D() {
         US 200,521 specifies a cylinder, metallic foil or another yielding material, a
         ten-groove-per-inch helix, a matching ten-thread-per-inch shaft, diaphragms, and clock-work
         M or another power source. This studio's geometry, materials, drive form, rate, indentation
-        depth, and bandwidth are illustrative display assumptions, not measurements printed in the
-        patent.
+        motion, and sound are model-only reader aids, not measurements printed in the patent or
+        additional patent claims.
       </p>
     </div>
   );

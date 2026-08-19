@@ -46,10 +46,10 @@ describe("US 727,650 Carl von Linde Air Liquefaction visual & thermodynamics bou
 
     for (const preset of [
       "iso",
-      "jt_valve",
-      "counter_heat_exchanger",
-      "liquid_dewar",
-      "spindle_handwheel",
+      "regulating_valve",
+      "counter_current_apparatus",
+      "vessel_v_prime",
+      "regulator",
       "top",
     ]) {
       expect(threeSource).toContain(preset);
@@ -73,8 +73,8 @@ describe("US 727,650 Carl von Linde Air Liquefaction visual & thermodynamics bou
     expect(model.root.children.length).toBeGreaterThan(0);
     expect(model.nodes.counterCurrentCoilGroup).toBeDefined();
     expect(model.nodes.jtValveGroup).toBeDefined();
-    expect(model.nodes.dewarVessel).toBeDefined();
-    expect(model.nodes.liquidAirVolume).toBeDefined();
+    expect(model.nodes.receiverVessel).toBeDefined();
+    expect(model.nodes.condensedGasVolume).toBeDefined();
 
     model.dispose();
   });

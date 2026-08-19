@@ -81,6 +81,9 @@ describe("US 124,404 George Westinghouse Air Brake visual & kinematics boundary"
     expect(emergency.valveState).toBe("EMERGENCY");
     expect(emergency.shoeClampingForceKn).toBeGreaterThan(20);
     expect(emergency.stoppingDistanceFt).toBeLessThan(2000);
+    expect(emergency.pistonStrokePx).toBe(18);
+    expect(emergency.shoeDistancePx).toBe(0);
+    expect(released.pistonStrokePx).toBe(0);
   });
 
   test("builds and articulates procedural brake rigging and beams correctly", () => {

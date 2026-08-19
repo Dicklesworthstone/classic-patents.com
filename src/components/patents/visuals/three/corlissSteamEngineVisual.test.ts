@@ -61,6 +61,9 @@ describe("US 6,162 George Corliss Steam Engine visual & kinematics boundary", ()
     expect(result.crankOmegaRadPerS).toBeCloseTo((65 * 2 * Math.PI) / 60, 2);
     expect(result.govSpread).toBeCloseTo(0.5125, 3);
     expect(result.wristAmp).toBeCloseTo(0.2675, 3);
+    expect(result.pistonStrokePx).toBe(45);
+    expect(result.wristPlateAmpPx).toBe(22);
+    expect(result.intakeOpenWindowDeg).toBeCloseTo(45, 2);
   });
 
   test("builds and articulates procedural wrist plate, 4 rotary valves, dashpots, and governor correctly", () => {

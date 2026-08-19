@@ -77,6 +77,10 @@ describe("US 174,465 Alexander Graham Bell Telephone visual & acoustics boundary
     expect(result.diaphragmStudioScale).toBeCloseTo((result.diaphragmUm / 10) * 0.08, 4);
     expect(result.electronStudioSpeed).toBeCloseTo(result.electronDisplaySpeed * 0.5, 3);
     expect(result.toneGainSine).toBeCloseTo(0.075, 3);
+    expect(result.scopeNorm).toBeCloseTo(1, 3);
+    expect(result.scopeSineAmp).toBeCloseTo(30, 2);
+    expect(result.scopeSquareAmp).toBeCloseTo(37.5, 2);
+    expect(result.voiceNorm).toBeCloseTo((75 - 40) / 55, 3);
     expect(result.toneGainSquare).toBeCloseTo(0.045, 3);
   });
 

@@ -41,6 +41,12 @@ export function DeLavalSeparator3D() {
     creamDropAdvancePerS: sep.creamDropAdvancePerS,
     pulleyDisplayOmegaRadPerS: sep.pulleyDisplayOmegaRadPerS,
     skimDropAdvancePerS: sep.skimDropAdvancePerS,
+    creamDropOriginY: sep.creamDropOriginY,
+    creamDropSpacing: sep.creamDropSpacing,
+    creamDropWrap: sep.creamDropWrap,
+    skimDropOriginY: sep.skimDropOriginY,
+    skimDropSpacing: sep.skimDropSpacing,
+    skimDropWrap: sep.skimDropWrap,
   });
 
   const controlsRef = useRef<StudioContext["controls"] | null>(null);
@@ -121,11 +127,14 @@ export function DeLavalSeparator3D() {
       const creamSpeed = p.creamDropAdvancePerS;
       model.creamDrops.forEach((drop, i) => {
         drop.visible = split;
-        drop.position.y = 0.35 - ((elapsed * creamSpeed + i * 0.18) % 1.8);
+        drop.position.y =
+          p.creamDropOriginY - ((elapsed * creamSpeed + i * p.creamDropSpacing) % p.creamDropWrap);
       });
       model.skimDrops.forEach((drop, i) => {
         drop.visible = split;
-        drop.position.y = -0.15 - ((elapsed * p.skimDropAdvancePerS + i * 0.2) % 2.0);
+        drop.position.y =
+          p.skimDropOriginY -
+          ((elapsed * p.skimDropAdvancePerS + i * p.skimDropSpacing) % p.skimDropWrap);
       });
 
       renderer.render(scene, camera);

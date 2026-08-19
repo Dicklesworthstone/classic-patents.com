@@ -70,7 +70,7 @@ export function GoddardRocket3D() {
     thermo: {
       temperatureCelsius: 0,
       temperatureKelvin: 0,
-      pressureAtm: rocketPhysics.chamberPressurePa / 101325,
+      pressureAtm: rocketPhysics.chamberPressureAtm,
       partialPressureButaneAtm: 0,
       heatInputWatts: 0,
       coolingPowerWatts: 0,

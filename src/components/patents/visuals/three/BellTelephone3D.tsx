@@ -31,7 +31,6 @@ export const BellTelephone3D = memo(() => {
 
   const { params } = usePatentPhysics("us-174465-bell-telephone");
   const acousticFrequencyHz = params.acousticFrequencyHz ?? 440;
-  const voiceAmplitude = ((params.voiceAmplitude ?? 75) - 40) / 55;
   const batteryVoltage = params.batteryVoltage ?? 6.0;
   const liquidConductivity = params.liquidConductivity ?? 1.2;
   const [showAcousticWaves] = useState<boolean>(true);
@@ -45,6 +44,7 @@ export const BellTelephone3D = memo(() => {
     liquidConductivity,
     acousticFrequencyHz,
   });
+  const voiceAmplitude = bell.voiceNorm;
 
   const live = useLiveSimParams({
     acousticFrequencyHz,
