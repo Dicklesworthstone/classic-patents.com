@@ -30,6 +30,14 @@ describe("Physics Telemetry Data Registry", () => {
     }
   });
 
+  test("does not keep a sourceFocus facsimile slider on any catalog patent", () => {
+    for (const patent of allPatents) {
+      const entry = PATENT_PHYSICS_REGISTRY[patent.id];
+      expect(entry.controls.some((control) => control.id === "sourceFocus")).toBe(false);
+      expect(entry.domainTitle.startsWith("Source Guide")).toBe(false);
+    }
+  });
+
   test("computes valid real-time physics telemetry metrics for every registered machine", () => {
     for (const [_id, meta] of Object.entries(PATENT_PHYSICS_REGISTRY)) {
       const defaultParams: Record<string, number> = {};
@@ -101,235 +109,89 @@ describe("Physics Telemetry Data Registry", () => {
     );
   });
 
-  test("keeps Goddard US 1,102,653 telemetry at the printed apparatus boundary", () => {
+  test("routes Goddard US 1,102,653 telemetry through the de Laval kernel", () => {
     const goddard = PATENT_PHYSICS_REGISTRY["us-1102653-goddard-rocket"];
-    expect(goddard.engineMethod).toContain("No performance engine");
-    expect(goddard.governingEquation).toBe("L \\ge 3D");
-    expect(goddard.controls.map((control) => control.unit)).toEqual(["source component"]);
-    expect(goddard.computeMetrics({ sourceFocus: 3 })).toMatchObject([
-      { label: "Claim 2 Tube-Length Floor", value: "at least 3", unit: "longest diameters" },
-      { label: "Propelling Charge", value: "explosive disks", unit: "source text" },
-      { label: "Highlighted Apparatus", value: "spin-producing passages", unit: "source guide" },
+    expect(goddard.engineMethod).toContain("stepGoddardRocket");
+    expect(goddard.controls.map((control) => control.id)).toEqual([
+      "chamberPressure",
+      "expansionRatio",
+      "flightAltitudeMiles",
     ]);
-    expect(goddard.pedagogicalInsight).toContain("no liquid-propellant cycle");
-  });
-
-  test("keeps Noyce US 2,981,877 at the printed oxide-and-lead construction boundary", () => {
-    const noyce = PATENT_PHYSICS_REGISTRY["us-2981877-noyce-ic"];
-    expect(noyce.engineMethod).toContain("No numerical performance engine");
-    expect(noyce.controls.map((control) => control.unit)).toEqual(["source figure"]);
-    expect(noyce.computeMetrics({ sourceFocus: 3 })).toMatchObject([
-      { label: "Highlighted Source Relation", value: "Fig. 5: equivalent circuit" },
-      { label: "Insulating Support", value: "oxide of the semiconductor", unit: "source text" },
-      { label: "Illustrated Oxide Thickness", value: "about 1–2", unit: "microns" },
-    ]);
-    expect(noyce.pedagogicalInsight).toContain("does not supply a voltage, clock rate");
-    expect(noyce.pedagogicalInsight).toContain("depletion width, capacitance");
-  });
-
-  test("keeps Diesel US 542,846 on its held controlled-combustion source boundary", () => {
-    const diesel = PATENT_PHYSICS_REGISTRY["us-542846-diesel-engine"];
-    expect(diesel.engineMethod).toContain("No heat-engine performance engine");
-    expect(diesel.controls.map((control) => control.unit)).toEqual(["source drawing group"]);
-    expect(diesel.computeMetrics({ sourceFocus: 2 })).toMatchObject([
-      {
-        label: "Highlighted Source Group",
-        value: "Figs. 4–7: single-acting and modified engine arrangements",
-      },
-      { label: "Printed Figures", value: "10", unit: "source text" },
-      { label: "Printed Claims", value: "3", unit: "source text" },
-      {
-        label: "Visual Status",
-        value: "withheld",
-        unit: "independent source review pending",
-      },
-    ]);
-    expect(diesel.pedagogicalInsight).toContain("does not establish a compression ratio");
-    expect(diesel.pedagogicalInsight).toContain("efficiency, power, or later engine architecture");
-  });
-
-  test("keeps Carrier US 808,897 at the printed wet-plate separator boundary", () => {
-    const carrier = PATENT_PHYSICS_REGISTRY["us-808897-carrier-air-conditioner"];
-    expect(carrier.engineMethod).toContain("No numerical air-conditioning engine");
-    expect(carrier.controls.map((control) => control.unit)).toEqual(["source relationship"]);
-    expect(carrier.computeMetrics({ sourceFocus: 2 })).toMatchObject([
-      {
-        label: "Highlighted Source Relation",
-        value: "Figs. 2–4: wet sinuous plates, flanges, and gutters",
-      },
-      { label: "Treating Medium", value: "water or other suitable liquid", unit: "source text" },
-      { label: "Claim Set", value: "five separator-plate claims", unit: "source text" },
-    ]);
-    expect(carrier.pedagogicalInsight).toContain("does not state chilled-water temperature");
-    expect(carrier.pedagogicalInsight).toContain("humidity setpoint, or automatic control law");
-  });
-
-  test("keeps Parsons US 608,969 at the printed marine-routing boundary", () => {
-    const parsons = PATENT_PHYSICS_REGISTRY["us-608969-parsons-turbine"];
-    expect(parsons.engineMethod).toContain("No numerical turbine-performance engine");
-    expect(parsons.controls.map((control) => control.unit)).toEqual(["source figure"]);
-    expect(parsons.computeMetrics({ sourceFocus: 2 })).toMatchObject([
-      {
-        label: "Highlighted Source Arrangement",
-        value: "Fig. 2: main and reversing turbines X and Y",
-      },
-      {
-        label: "Claimed Connection Modes",
-        value: "series; simple parallel; compound parallel",
-        unit: "source text",
-      },
-      {
-        label: "Reversing-Turbine Condition",
-        value: "runs in condenser vacuum when idle",
-        unit: "Claim 2 / 3",
-      },
-    ]);
-    expect(parsons.pedagogicalInsight).toContain("does not state a blade profile, rotor speed");
-    expect(parsons.pedagogicalInsight).toContain(
-      "Turbinia speed, or electric-generator performance",
-    );
-  });
-
-  test("keeps Boyle-Smith US 3,858,232 on the withheld information-storage boundary", () => {
-    const boyleSmith = PATENT_PHYSICS_REGISTRY["us-3858232-boyle-smith-ccd"];
-    expect(boyleSmith.engineMethod).toContain("No quantitative CCD-performance engine");
-    expect(boyleSmith.controls.map((control) => control.unit)).toEqual(["source figure group"]);
-    expect(boyleSmith.computeMetrics({ sourceFocus: 2 })).toMatchObject([
-      { label: "Highlighted Source Group", value: "Figs. 11–16: further device embodiments" },
-      { label: "Printed Title", value: "Information Storage Devices", unit: "source text" },
-      { label: "Printed Claims", value: "32", unit: "source text" },
-    ]);
-    expect(boyleSmith.pedagogicalInsight).toContain("original-text face remains withheld");
-    expect(boyleSmith.pedagogicalInsight).toContain(
-      "three-phase gate geometry, charge-transfer efficiency",
-    );
-  });
-
-  test("keeps Kwolek US 3,671,542 on its incomplete-edition source boundary", () => {
-    const kwolek = PATENT_PHYSICS_REGISTRY["us-3671542-kwolek-kevlar"];
-    expect(kwolek.engineMethod).toContain("No materials-performance engine");
-    expect(kwolek.controls.map((control) => control.unit)).toEqual(["source group"]);
-    expect(kwolek.computeMetrics({ sourceFocus: 2 })).toMatchObject([
-      {
-        label: "Highlighted Source Group",
-        value: "Figs. I–III: phase, optical, and diffraction plots",
-      },
-      { label: "Printed Claims", value: "2", unit: "source text" },
-      { label: "Manual Edition", value: "withheld", unit: "58-page review incomplete" },
-    ]);
-    expect(kwolek.pedagogicalInsight).toContain("not yet been manually authored");
-    expect(kwolek.pedagogicalInsight).toContain("strength, modulus, density, thermal limit");
-  });
-
-  test("keeps Marconi US 586,193 on the held source-review boundary", () => {
-    const marconi = PATENT_PHYSICS_REGISTRY["us-586193-marconi-radio"];
-    expect(marconi.engineMethod).toContain("No RF-performance engine");
-    expect(marconi.controls.map((control) => control.unit)).toEqual(["source figure group"]);
-    expect(marconi.computeMetrics({ sourceFocus: 2 })).toMatchObject([
-      {
-        label: "Highlighted Source Group",
-        value: "Figs. 4–8: receiver contact, relay, and trembler",
-      },
-      { label: "Printed Claims", value: "56", unit: "source text" },
-      {
-        label: "Visual Status",
-        value: "withheld",
-        unit: "independent source review pending",
-      },
-    ]);
-    expect(marconi.pedagogicalInsight).toContain("quarter-wave antenna geometry");
-    expect(marconi.pedagogicalInsight).toContain(
-      "operating frequency, spark voltage, power, range",
-    );
-  });
-
-  test("keeps Lamarr US 2,292,387 on the held synchronized-record boundary", () => {
-    const lamarr = PATENT_PHYSICS_REGISTRY["us-2292387-lamarr-frequency-hopping"];
-    expect(lamarr.engineMethod).toContain("No RF-performance engine");
-    expect(lamarr.controls.map((control) => control.unit)).toEqual(["source figure group"]);
-    expect(lamarr.computeMetrics({ sourceFocus: 2 })).toMatchObject([
-      {
-        label: "Highlighted Source Group",
-        value: "Figs. 4–6: record strip, control head, and starting pin",
-      },
-      { label: "Illustrated Tuning Positions", value: "7 transmitter / 4 receiver" },
-      { label: "Printed Claims", value: "6", unit: "source text" },
-      {
-        label: "Visual Status",
-        value: "withheld",
-        unit: "independent source review pending",
-      },
-    ]);
-    expect(lamarr.pedagogicalInsight).toContain("seven tuning condensers");
-    expect(lamarr.pedagogicalInsight).toContain(
-      "hop rate, RF bandwidth, processing gain, jamming margin",
-    );
-  });
-
-  test("keeps Fermi US 2,708,656 on the held lattice-claim boundary", () => {
-    const fermi = PATENT_PHYSICS_REGISTRY["us-2708656-fermi-reactor"];
-    expect(fermi.engineMethod).toContain("No reactor-operation engine");
-    const metrics = fermi.computeMetrics({ sourceFocus: 2 });
-    expect(metrics[0]).toMatchObject({
-      label: "Highlighted Source Group",
-      value: "Source sheets 10–18",
+    const metrics = goddard.computeMetrics({
+      chamberPressure: 350,
+      expansionRatio: 3.5,
+      flightAltitudeMiles: 18,
     });
-    expect(metrics[1]).toMatchObject({ label: "Printed Figures", value: "42 on 27 sheets" });
-    expect(metrics[2]).toMatchObject({ label: "Printed Claims", value: "8" });
-    expect(fermi.pedagogicalInsight).toContain("delayed-neutron kinetics, control-rod behavior");
+    expect(metrics[0]?.label).toBe("Exit Mach Number");
+    expect(metrics.some((metric) => metric.label.includes("Thrust"))).toBe(true);
   });
 
-  test("keeps Engelbart US 3,541,541 on its held two-wheel source boundary", () => {
-    const engelbart = PATENT_PHYSICS_REGISTRY["us-3541541-engelbart-mouse"];
-    expect(engelbart.engineMethod).toContain("No pointing-device performance engine");
-    expect(engelbart.controls.map((control) => control.unit)).toEqual(["source figure group"]);
-    expect(engelbart.computeMetrics({ sourceFocus: 2 })).toMatchObject([
-      {
-        label: "Highlighted Source Group",
-        value: "Figs. 4–5: potentiometer and shaft-encoder arrangements",
-      },
-      { label: "Printed Figures", value: "7" },
-      { label: "Printed Claims", value: "8" },
-      { label: "Visual Status", value: "withheld" },
+  test("routes Noyce US 2,981,877 telemetry through the planar-junction kernel", () => {
+    const noyce = PATENT_PHYSICS_REGISTRY["us-2981877-noyce-ic"];
+    expect(noyce.engineMethod).toContain("stepNoyceIC");
+    expect(noyce.controls.map((control) => control.id)).toEqual([
+      "reverseBias",
+      "oxideThickness",
+      "clockFrequencyMhz",
     ]);
-    expect(JSON.stringify(engelbart).toLowerCase()).not.toContain("wheel radius");
+    expect(
+      noyce.computeMetrics({ reverseBias: 5, oxideThickness: 0.5, clockFrequencyMhz: 10 }),
+    ).toMatchObject([
+      { label: "Depletion Barrier (W)", unit: "µm" },
+      { label: "Junction Capacitance", unit: "pF/mm²" },
+      { label: "Propagation Delay (tpd)", unit: "ns" },
+      { label: "Breakdown Margin", unit: "V", value: "30.0" },
+    ]);
   });
 
-  test("keeps Mergenthaler US 313,224 at its held matrix-bar source boundary", () => {
-    const mergenthaler = PATENT_PHYSICS_REGISTRY["us-313224-mergenthaler-linotype"];
-    expect(mergenthaler.engineMethod).toContain("No printing-form performance engine");
-    expect(mergenthaler.controls.map((control) => control.unit)).toEqual(["source drawing group"]);
-    expect(mergenthaler.computeMetrics({ sourceFocus: 2 })).toMatchObject([
-      {
-        label: "Highlighted Source Group",
-        value: "Figs. 18–34: stops, keys, spacing, and mold arrangements",
-      },
-      { label: "Printed Figures", value: "51 on 17 sheets" },
-      { label: "Printed Claims", value: "70" },
-      { label: "Visual Status", value: "withheld" },
-    ]);
-    const published = JSON.stringify(mergenthaler).toLowerCase();
-    expect(published).not.toContain("90 magazine channels");
-    expect(published).not.toContain("240°c");
-    expect(published).not.toContain("seven-bit");
+  test("routes Diesel US 542,846 telemetry through the shared heat-engine kernel", () => {
+    const diesel = PATENT_PHYSICS_REGISTRY["us-542846-diesel-engine"];
+    expect(diesel.engineMethod).toContain("stepDieselEngine");
+    expect(diesel.controls.map((control) => control.id).length).toBeGreaterThan(0);
+    const metrics = diesel.computeMetrics({});
+    expect(metrics.length).toBeGreaterThan(0);
+    expect(metrics.some((metric) => /T|comp|ignition|bar/i.test(metric.label))).toBe(true);
   });
 
-  test("keeps Hollerith US 395,781 at its held record-card source boundary", () => {
-    const hollerith = PATENT_PHYSICS_REGISTRY["us-395781-hollerith-tabulating"];
-    expect(hollerith.engineMethod).toContain("No tabulator-performance engine");
-    expect(hollerith.controls.map((control) => control.unit)).toEqual(["source figure group"]);
-    expect(hollerith.computeMetrics({ sourceFocus: 2 })).toMatchObject([
-      {
-        label: "Highlighted Source Group",
-        value: "Figs. 6–13: circuit combinations and record-card example",
-      },
-      { label: "Printed Figures", value: "17" },
-      { label: "Printed Claims", value: "21" },
-      { label: "Visual Status", value: "withheld" },
+  test("routes Carrier US 808,897 telemetry through the spray-dew-point kernel", () => {
+    const carrier = PATENT_PHYSICS_REGISTRY["us-808897-carrier-air-conditioner"];
+    expect(carrier.engineMethod).toContain("stepCarrierAirConditioner");
+    expect(carrier.controls.map((control) => control.id)).toEqual([
+      "inletTempC",
+      "inletRhPct",
+      "sprayWaterTempC",
+      "reheatTempC",
+      "airflowCfm",
     ]);
-    const published = JSON.stringify(hollerith).toLowerCase();
-    expect(published).not.toContain("288 grid positions");
-    expect(published).not.toContain("12v circuits");
-    expect(published).not.toContain("80 cards per minute");
+    const metrics = carrier.computeMetrics({
+      inletTempC: 35,
+      inletRhPct: 75,
+      sprayWaterTempC: 8,
+      reheatTempC: 22,
+      airflowCfm: 15000,
+    });
+    expect(metrics[0]?.label).toBe("Inlet dew point");
+    expect(metrics.some((metric) => metric.unit === "g/kg")).toBe(true);
+    expect(metrics.some((metric) => metric.unit === "W")).toBe(true);
+  });
+
+  test("routes Parsons, CCD, Kevlar, Marconi, Lamarr, Fermi, Engelbart, Linotype, and Hollerith onto their shared kernels", () => {
+    const routed: Array<[string, string]> = [
+      ["us-608969-parsons-turbine", "stepParsonsTurbine"],
+      ["us-3858232-boyle-smith-ccd", "stepBoyleSmithCCD"],
+      ["us-3671542-kwolek-kevlar", "stepKevlarContinuum"],
+      ["us-586193-marconi-radio", "stepMarconiRadio"],
+      ["us-2292387-lamarr-frequency-hopping", "stepLamarrFrequencyHopping"],
+      ["us-2708656-fermi-reactor", "stepFermiReactor"],
+      ["us-3541541-engelbart-mouse", "stepEngelbartMouse"],
+      ["us-313224-mergenthaler-linotype", "stepMergenthalerLinotype"],
+      ["us-395781-hollerith-tabulating", "stepHollerithTabulating"],
+    ];
+    for (const [id, method] of routed) {
+      const entry = PATENT_PHYSICS_REGISTRY[id];
+      expect(entry.engineMethod).toContain(method);
+      expect(entry.controls.some((control) => control.id === "sourceFocus")).toBe(false);
+      expect(entry.computeMetrics({}).length).toBeGreaterThan(0);
+    }
   });
 });

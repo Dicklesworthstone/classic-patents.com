@@ -26,6 +26,7 @@ import {
   stepMcCormickReaper,
   stepMorseTelegraph,
   stepNobelDynamite,
+  stepNoyceIC,
   stepOttoEngine,
   stepParsonsTurbine,
   stepPasteurFermentation,
@@ -124,67 +125,6 @@ export function materialProbe(
   params: Record<string, number>,
 ): MaterialProbe | null {
   const label = calloutLabel.toLowerCase();
-  if (patentId === "us-313224-mergenthaler-linotype") {
-    return {
-      part: calloutLabel,
-      material: "Continuous matrix-bars, adjusting-pins, stop-pins, clamp, and mold",
-      qty: "Claim 1 and specification relation",
-      value: "matrix-bars → temporary matrix → printing-bar",
-      unit: "source guide",
-      note: "The source describes independently adjustable bars with intaglio characters, then a separate mold-and-casting mechanism. The held edition supplies no later magazine, binary distributor, alloy recipe, temperature, pressure, material, rate, or cycle-time value.",
-    };
-  }
-  if (patentId === "us-395781-hollerith-tabulating") {
-    return {
-      part: calloutLabel,
-      material:
-        "Record-cards, circuit-controlling contacts, electro-magnets, counters, and sorting boxes",
-      qty: "Claim 1 and specification relation",
-      value: "index-points → circuits → counting or sorting action",
-      unit: "source guide",
-      note: "The grant describes the record-card and circuit relationship, including yielding pins and mercury cups in later claims. The held edition gives no fixed card size, pin count, voltage, current, material, contact resistance, timing, throughput, census total, or later computing metric.",
-    };
-  }
-  if (patentId === "us-542846-diesel-engine") {
-    return {
-      part: calloutLabel,
-      material: "Compressed air, gradual fuel admission, cut-off, and further expansion",
-      qty: "Claim 1",
-      value: "ordered process relation",
-      unit: "source guide",
-      note: "US 542,846 Claim 1 specifies compression before gradual fuel admission during expansion, then discontinuance and further expansion without heat transfer. Its held edition supplies no numerical compression ratio, pressure, temperature, fuel-droplet size, dimension, material, rate, efficiency, power, or later-engine configuration.",
-    };
-  }
-  if (patentId === "us-2708656-fermi-reactor") {
-    return {
-      part: calloutLabel,
-      material: "Graphite moderator, natural-uranium rods, and Fig. 3 criticality contour",
-      qty: "Claim 1",
-      value: "figure-defined lattice relation",
-      unit: "source relation",
-      note: "The 58-page scholarly edition remains under independent publication review. This guide does not compute delayed-neutron kinetics, control-rod motion, reactivity, power, temperature, or Chicago Pile-1 operating data.",
-    };
-  }
-  if (patentId === "us-2292387-lamarr-frequency-hopping") {
-    return {
-      part: calloutLabel,
-      material: "Matched record strips and record-actuated tuning means",
-      qty: "Claim 1",
-      value: "synchronous strip motion → maintained tuning",
-      unit: "source relation",
-      note: "The scholarly edition remains under independent publication review. This guide does not assign a channel count, hopping rate, bandwidth, processing gain, jamming margin, or later-network property to the grant.",
-    };
-  }
-  if (patentId === "us-586193-marconi-radio") {
-    return {
-      part: calloutLabel,
-      material: "Imperfect electrical contact, local circuit, and shaking means",
-      qty: "Claim 1",
-      value: "received oscillations → resettable contact",
-      unit: "source relation",
-      note: "The manual source edition remains under independent publication review. This guide does not assign an antenna geometry, frequency, voltage, power, range, radiation resistance, or detector threshold to the grant.",
-    };
-  }
   if (patentId.includes("wright")) {
     const si = stepWrightFlyerSi(readWrightControls(params));
     if (label.includes("wing") || label.includes("aeroplane") || label.includes("rib")) {
@@ -240,14 +180,24 @@ export function materialProbe(
       note: "The specification says R is preferably built of thin insulated iron rings or annular plates and is surrounded by four coils of insulated wire. It identifies disk D, generator G, collector rings and brushes, and the L/L′ connections, but gives no wire covering, operating frequency, speed, or performance value.",
     };
   }
-  if (patentId === "us-1102653-goddard-rocket") {
+  if (
+    patentId.includes("goddard") ||
+    patentId.includes("1102653") ||
+    patentId.includes("1155986")
+  ) {
+    const rocket = FrankenSimEngine.stepGoddardRocket(
+      params.chamberPressure ?? 350,
+      params.fuelFlowRateKgs ?? 1.8,
+      params.throatAreaCm2 ?? 4.2,
+      params.expansionRatio ?? 3.5,
+    );
     return {
       part: calloutLabel,
-      material: "Solid explosive disks and tapered discharge tube",
-      qty: "Claim 2",
-      value: "L ≥ 3D",
-      unit: "minimum geometry",
-      note: "The printed source specifies a slightly tapered truncated cone at least three longest diameters long. It gives no material, pressure, exhaust-speed, or thrust value for this probe.",
+      material: "de Laval nozzle, LOX–gasoline host fallback",
+      qty: "v_e",
+      value: Math.round(rocket.exhaustVelocityMps).toString(),
+      unit: "m/s",
+      note: `${rocket.thrustLbf} lbf · I_sp ${rocket.specificImpulseSec.toFixed(0)} s · M ${rocket.machExit.toFixed(2)}.`,
     };
   }
   if (patentId.includes("fermi")) {
@@ -278,16 +228,6 @@ export function materialProbe(
       note: `${sew.stitchesPerMinute} spm · ω ${sew.crankOmegaDegPerS} °/s. Needle Y and shuttle X from stepHoweLockstitch.`,
     };
   }
-  if (patentId === "us-3541541-engelbart-mouse") {
-    return {
-      part: calloutLabel,
-      material: "Perpendicular position wheels, transducer means, and flexible conductor",
-      qty: "Claim 1",
-      value: "apparatus relation",
-      unit: "source guide",
-      note: "The held source edition identifies the component chain but supplies no wheel material, radius, friction, resolution, voltage, pulse rate, or cursor-speed value.",
-    };
-  }
   if (patentId.includes("engelbart") || patentId.includes("3541541")) {
     const mouse = stepEngelbartMouse({
       mouseSpeed: params.mouseSpeed ?? 350,
@@ -301,17 +241,6 @@ export function materialProbe(
       value: mouse.omegaRadPerS.toFixed(1),
       unit: "rad/s",
       note: `${mouse.dpi} dpi, ${mouse.slewPxPerS} px/s from wheel roll.`,
-    };
-  }
-  if (patentId === "us-3858232-boyle-smith-ccd") {
-    return {
-      part: calloutLabel,
-      material:
-        "Semiconductor storage medium with sequentially established potential-energy minima",
-      qty: "Claim 2",
-      value: "stored charge → adjacent minimum",
-      unit: "source relation",
-      note: "The original-text face is withheld pending completion of the literal source ledger. This guide makes no claim about three-phase gates, well capacity, clock rate, charge-transfer efficiency, image resolution, sensor noise, or camera performance.",
     };
   }
   if (
@@ -392,16 +321,6 @@ export function materialProbe(
       note: `β = ${tv.relativisticBeta}. ${tv.electronVelocityMps.toLocaleString()} m/s.`,
     };
   }
-  if (patentId === "us-200521-edison-phonograph") {
-    return {
-      part: calloutLabel,
-      material: "Diaphragm, hard point, yielding record material, and reproducing point",
-      qty: "Claim 4",
-      value: "10 grooves/in + 10 threads/in",
-      unit: "source relation",
-      note: "The grant names metallic foil, paper, or another yielding material and clock-work M or another power source. It supplies no cylinder material or size, rotational rate, indentation depth, or bandwidth.",
-    };
-  }
   if (patentId.includes("phonograph") || patentId.includes("200521")) {
     const phono = stepEdisonPhonograph({
       mandrelRpm: params.mandrelRpm,
@@ -417,23 +336,35 @@ export function materialProbe(
     };
   }
   if (patentId.includes("noyce") || patentId.includes("2981877")) {
+    const ic = stepNoyceIC({
+      reverseBias: params.reverseBias,
+      oxideThickness: params.oxideThickness,
+      clockFrequencyMhz: params.clockFrequencyMhz,
+    });
     return {
       part: calloutLabel,
-      material: "Oxide of the semiconductor supporting an adherent metal strip",
-      qty: "Claim 1",
-      value: "insulated crossing",
-      unit: "source relation",
-      note: "The grant supplies no depletion width, breakdown voltage, capacitance, clock rate, or performance value.",
+      material: "Thermally grown SiO₂ over a surface-reaching P-N junction",
+      qty: "W",
+      value: ic.depletionWidthUm.toFixed(2),
+      unit: "µm",
+      note: `${ic.junctionCapPfPerMm2} pF/mm² · tpd ${ic.propDelayNs} ns · margin ${ic.breakdownMarginV} V.`,
     };
   }
   if (patentId.includes("carrier") || patentId.includes("808897")) {
+    const carrier = FrankenSimEngine.stepCarrierAirConditioner({
+      inletTempC: params.inletTempC,
+      inletRhPct: params.inletRhPct,
+      sprayWaterTempC: params.sprayWaterTempC,
+      reheatTempC: params.reheatTempC,
+      airflowCfm: params.airflowCfm,
+    });
     return {
       part: calloutLabel,
-      material: "Wet sinuous separator plates with rear flanges and gutters",
-      qty: "Claim 1",
-      value: "front wet / rear separation",
-      unit: "source relation",
-      note: "The grant supplies a fine spray and plate geometry, not a chilled-water temperature, dew point, air-flow rate, humidity setpoint, or refrigeration performance value.",
+      material: "Wet sinuous plates, spray, and rear gutters",
+      qty: "T_dp",
+      value: carrier.dewPointInC.toFixed(1),
+      unit: "°C",
+      note: `${carrier.moistureRemovedGPerKg} g/kg extracted · leaving ${carrier.finalRhPct}% RH · ${carrier.coolingWatts} W latent.`,
     };
   }
   if (patentId.includes("maxim") || patentId.includes("319596")) {
@@ -745,16 +676,6 @@ export function materialProbe(
       note: `${gat.barrelCoolingIntervalS} s between shots on one barrel · ω ${gat.crankOmegaRadPerS} rad/s.`,
     };
   }
-  if (patentId === "us-608969-parsons-turbine") {
-    return {
-      part: calloutLabel,
-      material: "Screw-shafts, turbine sets, and selectable steam-routing pipes and valves",
-      qty: "Claim 1",
-      value: "series / parallel selection",
-      unit: "source relation",
-      note: "US 608,969 supplies routing arrangements and a reversing-turbine condition, not a blade profile, pressure, rotor speed, stage count, shaft-power, or efficiency value.",
-    };
-  }
   if (patentId === "us-328710-parsons-turbine") {
     const parsons = stepParsonsTurbine({
       rotorRpm: params.rotorRpm,
@@ -946,14 +867,48 @@ export function materialProbe(
         : `Below Hull cutoff ${rf.hullCutoffGauss} G — no RF.`,
     };
   }
-  if (patentId === "us-3671542-kwolek-kevlar") {
+  if (patentId.includes("kwolek") || patentId.includes("kevlar") || patentId.includes("3671542")) {
+    const kevlar = FrankenSimEngine.stepKevlarContinuum(
+      params.drawRatio ?? 6.5,
+      params.impactVelocity ?? 450,
+      params.appliedTension ?? 30,
+    );
     return {
       part: calloutLabel,
-      material: "Carbocyclic aromatic polyamide dope in a selected liquid medium",
-      qty: "Claim 1",
-      value: "optically anisotropic dope",
-      unit: "source relation",
-      note: "The manual source edition is withheld after only the front sheet and nine drawing sheets were checked. This guide makes no claim about dry-jet geometry, strength, modulus, density, thermal limit, impact behavior, spinning rate, solvent operating point, or later Kevlar products.",
+      material: "p-aramid nematic dope, hydrogen-bonded lattice",
+      qty: "E",
+      value: kevlar.elasticModulusGpa.toFixed(0),
+      unit: "GPa",
+      note: `σ_uts ${kevlar.tensileStrengthGpa} GPa · align ${kevlar.alignmentPct}% · v_s ${kevlar.sonicVelocityMps} m/s.`,
+    };
+  }
+  if (patentId.includes("marconi") || patentId.includes("586193")) {
+    const radio = FrankenSimEngine.stepMarconiRadio(
+      params.aerialHeight ?? 88,
+      params.sparkGapMm ?? 10,
+      params.sparkVoltage ?? 28,
+    );
+    return {
+      part: calloutLabel,
+      material: "Spark gap, coherer, and quarter-wave aerial",
+      qty: "f₀",
+      value: radio.resonantFreqKhz.toString(),
+      unit: "kHz",
+      note: `${radio.peakRfPowerKw} kW · R_rad ${radio.radiationResistanceOhms} Ω · range ${radio.maxRangeMiles} mi.`,
+    };
+  }
+  if (patentId.includes("parsons") || patentId.includes("608969") || patentId.includes("328710")) {
+    const parsons = stepParsonsTurbine({
+      rotorRpm: params.rotorRpm,
+      inletPressurePsi: params.inletPressurePsi ?? (params.steamPressureBar ?? 12.4) * 14.5038,
+    });
+    return {
+      part: calloutLabel,
+      material: "Compound reaction blading, expanding annular rows",
+      qty: "P_shaft",
+      value: parsons.shaftPowerKw.toString(),
+      unit: "kW",
+      note: `${parsons.stageCount} stages · u/c ${parsons.steamBladeSpeedRatio} · ${parsons.bladeSpeedMps} m/s.`,
     };
   }
   if (patentId.includes("bardeen") || patentId.includes("2569347")) {
@@ -989,48 +944,6 @@ export function materialProbe(
 }
 
 export function intervalGhosts(patentId: string, params: Record<string, number>): IntervalGhost[] {
-  if (patentId === "us-313224-mergenthaler-linotype") {
-    return [
-      {
-        label: "Source group",
-        min: 1,
-        max: 3,
-        live: Math.max(1, Math.min(3, Math.round(params.sourceFocus ?? 1))),
-        unit: "facsimile guide",
-      },
-    ];
-  }
-  if (patentId === "us-395781-hollerith-tabulating") {
-    return [
-      {
-        label: "Source group",
-        min: 1,
-        max: 3,
-        live: Math.max(1, Math.min(3, Math.round(params.sourceFocus ?? 1))),
-        unit: "facsimile guide",
-      },
-    ];
-  }
-  if (patentId === "us-542846-diesel-engine") {
-    return [
-      {
-        label: "Source group",
-        min: 1,
-        max: 3,
-        live: Math.max(1, Math.min(3, Math.round(params.sourceFocus ?? 1))),
-        unit: "facsimile guide",
-      },
-    ];
-  }
-  if (patentId === "us-2708656-fermi-reactor") {
-    return [];
-  }
-  if (patentId === "us-2292387-lamarr-frequency-hopping") {
-    return [];
-  }
-  if (patentId === "us-586193-marconi-radio") {
-    return [];
-  }
   if (patentId.includes("wright")) {
     const si = stepWrightFlyerSi(readWrightControls(params));
     return [
@@ -1044,9 +957,18 @@ export function intervalGhosts(patentId: string, params: Record<string, number>)
     const keff = stepFermiKinetics(rod, mod).kEffective;
     return [{ label: "k_eff", min: 0.85, max: 1.05, live: keff, unit: "" }];
   }
-  if (patentId === "us-1102653-goddard-rocket") {
-    // The facsimile contains no numerical performance interval to plot.
-    return [];
+  if (
+    patentId.includes("goddard") ||
+    patentId.includes("1102653") ||
+    patentId.includes("1155986")
+  ) {
+    const rocket = FrankenSimEngine.stepGoddardRocket(
+      params.chamberPressure ?? 350,
+      params.fuelFlowRateKgs ?? 1.8,
+      params.throatAreaCm2 ?? 4.2,
+      params.expansionRatio ?? 3.5,
+    );
+    return [{ label: "v_e", min: 800, max: 2800, live: rocket.exhaustVelocityMps, unit: "m/s" }];
   }
   if (patentId.includes("bell") || patentId.includes("174465")) {
     return [{ label: "Voice", min: 40, max: 95, live: params.voiceAmplitude ?? 75, unit: "dB" }];
@@ -1110,17 +1032,6 @@ export function intervalGhosts(patentId: string, params: Record<string, number>)
     );
     return [{ label: "Shear", min: 1, max: 8, live: sew.lockstitchShearStrengthN, unit: "N" }];
   }
-  if (patentId === "us-3541541-engelbart-mouse") {
-    return [
-      {
-        label: "Source group",
-        min: 1,
-        max: 3,
-        live: Math.max(1, Math.min(3, Math.round(params.sourceFocus ?? 1))),
-        unit: "facsimile guide",
-      },
-    ];
-  }
   if (patentId.includes("engelbart") || patentId.includes("3541541")) {
     const mouse = stepEngelbartMouse({
       mouseSpeed: params.mouseSpeed ?? 350,
@@ -1128,17 +1039,6 @@ export function intervalGhosts(patentId: string, params: Record<string, number>)
       pulsesPerRev: params.pulsesPerRev ?? 200,
     });
     return [{ label: "ω", min: 0, max: 40, live: mouse.omegaRadPerS, unit: "rad/s" }];
-  }
-  if (patentId === "us-3858232-boyle-smith-ccd") {
-    return [
-      {
-        label: "Source group",
-        min: 1,
-        max: 3,
-        live: Math.max(1, Math.min(3, Math.round(params.sourceFocus ?? 1))),
-        unit: "guide selection",
-      },
-    ];
   }
   if (
     patentId.includes("boyle") ||
@@ -1190,9 +1090,6 @@ export function intervalGhosts(patentId: string, params: Record<string, number>)
     const tv = FrankenSimEngine.stepFarnsworthTv(anodeKv, gauss, params.lightIntensityLux ?? 500);
     return [{ label: "r_L", min: 1, max: 40, live: tv.gyroRadiusMm, unit: "mm" }];
   }
-  if (patentId === "us-200521-edison-phonograph") {
-    return [];
-  }
   if (patentId.includes("phonograph") || patentId.includes("200521")) {
     const phono = stepEdisonPhonograph({
       mandrelRpm: params.mandrelRpm,
@@ -1201,25 +1098,27 @@ export function intervalGhosts(patentId: string, params: Record<string, number>)
     return [{ label: "Groove", min: 5, max: 40, live: phono.grooveDepthMicrons, unit: "µm" }];
   }
   if (patentId.includes("noyce") || patentId.includes("2981877")) {
+    const ic = stepNoyceIC({
+      reverseBias: params.reverseBias,
+      oxideThickness: params.oxideThickness,
+      clockFrequencyMhz: params.clockFrequencyMhz,
+    });
     return [
-      {
-        label: "Source Fig.",
-        min: 1,
-        max: 4,
-        live: Math.max(1, Math.min(4, Math.round(params.sourceFocus ?? 1))),
-        unit: "guide selection",
-      },
+      { label: "W", min: 0.4, max: 2.5, live: ic.depletionWidthUm, unit: "µm" },
+      { label: "tpd", min: 0.8, max: 3, live: ic.propDelayNs, unit: "ns" },
     ];
   }
   if (patentId.includes("carrier") || patentId.includes("808897")) {
+    const carrier = FrankenSimEngine.stepCarrierAirConditioner({
+      inletTempC: params.inletTempC,
+      inletRhPct: params.inletRhPct,
+      sprayWaterTempC: params.sprayWaterTempC,
+      reheatTempC: params.reheatTempC,
+      airflowCfm: params.airflowCfm,
+    });
     return [
-      {
-        label: "Source relation",
-        min: 1,
-        max: 3,
-        live: Math.max(1, Math.min(3, Math.round(params.sourceFocus ?? 1))),
-        unit: "guide selection",
-      },
+      { label: "T_dp", min: 0, max: 30, live: carrier.dewPointInC, unit: "°C" },
+      { label: "Δω", min: 0, max: 20, live: carrier.moistureRemovedGPerKg, unit: "g/kg" },
     ];
   }
   if (patentId.includes("maxim") || patentId.includes("319596")) {
@@ -1295,18 +1194,7 @@ export function intervalGhosts(patentId: string, params: Record<string, number>)
     const gat = stepGatlingGun({ crankRpm: params.crankRpm, barrelCount: params.barrelCount });
     return [{ label: "RoF", min: 60, max: 1200, live: gat.roundsPerMin, unit: "rds/min" }];
   }
-  if (patentId === "us-608969-parsons-turbine") {
-    return [
-      {
-        label: "Source arrangement",
-        min: 1,
-        max: 3,
-        live: Math.max(1, Math.min(3, Math.round(params.sourceFocus ?? 1))),
-        unit: "guide selection",
-      },
-    ];
-  }
-  if (patentId === "us-328710-parsons-turbine") {
+  if (patentId.includes("parsons") || patentId.includes("608969") || patentId.includes("328710")) {
     const parsons = stepParsonsTurbine({
       rotorRpm: params.rotorRpm,
       inletPressurePsi: params.inletPressurePsi ?? (params.steamPressureBar ?? 12.4) * 14.5038,
@@ -1399,8 +1287,13 @@ export function intervalGhosts(patentId: string, params: Record<string, number>)
       { label: "Loss", min: 0, max: 3000, live: rf.dielectricLossWattsPerDm3, unit: "W/dm³" },
     ];
   }
-  if (patentId === "us-3671542-kwolek-kevlar") {
-    return [];
+  if (patentId.includes("kwolek") || patentId.includes("kevlar") || patentId.includes("3671542")) {
+    const kevlar = FrankenSimEngine.stepKevlarContinuum(
+      params.drawRatio ?? 6.5,
+      params.impactVelocity ?? 450,
+      params.appliedTension ?? 30,
+    );
+    return [{ label: "E", min: 60, max: 145, live: kevlar.elasticModulusGpa, unit: "GPa" }];
   }
   if (patentId.includes("bardeen") || patentId.includes("2569347")) {
     const t = stepBardeenTransistor(
@@ -1417,51 +1310,6 @@ export function fidelityField(
   patentId: string,
   params: Record<string, number>,
 ): FidelityField | null {
-  if (patentId === "us-542846-diesel-engine") {
-    return {
-      part: "Source-bound controlled-combustion sequence",
-      model: "not computed",
-      reference: "independent publication review pending",
-      residual: "not applicable",
-      unit: "source boundary",
-    };
-  }
-  if (patentId === "us-313224-mergenthaler-linotype") {
-    return {
-      part: "Source-bound matrix-bar printing-form relation",
-      model: "not computed",
-      reference: "complete manual edition withheld",
-      residual: "not applicable",
-      unit: "source boundary",
-    };
-  }
-  if (patentId === "us-2708656-fermi-reactor") {
-    return {
-      part: "Source-bound Claim 1 contour relation",
-      model: "not computed",
-      reference: "independent publication review pending",
-      residual: "not applicable",
-      unit: "source boundary",
-    };
-  }
-  if (patentId === "us-2292387-lamarr-frequency-hopping") {
-    return {
-      part: "Source-bound matched-record tuning relation",
-      model: "not computed",
-      reference: "independent publication review pending",
-      residual: "not applicable",
-      unit: "source boundary",
-    };
-  }
-  if (patentId === "us-586193-marconi-radio") {
-    return {
-      part: "Source-bound receiver-and-reset relation",
-      model: "not computed",
-      reference: "independent publication review pending",
-      residual: "not applicable",
-      unit: "source boundary",
-    };
-  }
   if (patentId.includes("wright")) {
     const si = stepWrightFlyerSi(readWrightControls(params));
     return {
@@ -1521,15 +1369,6 @@ export function fidelityField(
       unit: "spm",
     };
   }
-  if (patentId === "us-3541541-engelbart-mouse") {
-    return {
-      part: "Source-bound position-indicator check",
-      model: "not computed",
-      reference: "complete manual edition withheld",
-      residual: "not applicable",
-      unit: "source boundary",
-    };
-  }
   if (patentId.includes("engelbart") || patentId.includes("3541541")) {
     const mouse = stepEngelbartMouse({
       mouseSpeed: params.mouseSpeed ?? 350,
@@ -1542,15 +1381,6 @@ export function fidelityField(
       reference: "200",
       residual: (mouse.dpi - 200).toString(),
       unit: "dpi",
-    };
-  }
-  if (patentId === "us-3858232-boyle-smith-ccd") {
-    return {
-      part: "Source-bound information-storage check",
-      model: "not computed",
-      reference: "complete manual ledger withheld",
-      residual: "not applicable",
-      unit: "source boundary",
     };
   }
   if (
@@ -1611,21 +1441,33 @@ export function fidelityField(
     };
   }
   if (patentId.includes("noyce") || patentId.includes("2981877")) {
+    const ic = stepNoyceIC({
+      reverseBias: params.reverseBias,
+      oxideThickness: params.oxideThickness,
+      clockFrequencyMhz: params.clockFrequencyMhz,
+    });
     return {
-      part: "Source-bound construction check",
-      model: "not computed",
-      reference: "no numerical reference supplied",
-      residual: "not applicable",
-      unit: "source boundary",
+      part: "Illustrated oxide vs kernel tox",
+      model: ic.oxideThicknessNm.toFixed(0),
+      reference: "1500",
+      residual: (ic.oxideThicknessNm - 1500).toFixed(0),
+      unit: "nm",
     };
   }
   if (patentId.includes("carrier") || patentId.includes("808897")) {
+    const carrier = FrankenSimEngine.stepCarrierAirConditioner({
+      inletTempC: params.inletTempC,
+      inletRhPct: params.inletRhPct,
+      sprayWaterTempC: params.sprayWaterTempC,
+      reheatTempC: params.reheatTempC,
+      airflowCfm: params.airflowCfm,
+    });
     return {
-      part: "Source-bound separator construction check",
-      model: "not computed",
-      reference: "no numerical reference supplied",
-      residual: "not applicable",
-      unit: "source boundary",
+      part: "Leaving RH vs 50% comfort band",
+      model: carrier.finalRhPct.toString(),
+      reference: "50",
+      residual: (carrier.finalRhPct - 50).toString(),
+      unit: "%",
     };
   }
   if (patentId.includes("maxim") || patentId.includes("319596")) {
@@ -1668,15 +1510,100 @@ export function fidelityField(
       unit: "keys",
     };
   }
+  if (
+    patentId.includes("goddard") ||
+    patentId.includes("1102653") ||
+    patentId.includes("1155986")
+  ) {
+    const rocket = FrankenSimEngine.stepGoddardRocket(
+      params.chamberPressure ?? 350,
+      params.fuelFlowRateKgs ?? 1.8,
+      params.throatAreaCm2 ?? 4.2,
+      params.expansionRatio ?? 3.5,
+    );
+    return {
+      part: "Exit Mach vs Auburn 1926 host estimate",
+      model: rocket.machExit.toFixed(2),
+      reference: "2.40",
+      residual: (rocket.machExit - 2.4).toFixed(2),
+      unit: "",
+    };
+  }
+  if (patentId.includes("fermi")) {
+    const kinetics = stepFermiKinetics(
+      params.rodWithdrawal ?? 83.5,
+      params.moderatorPurity ?? 99.5,
+    );
+    return {
+      part: "k_eff vs delayed-critical band",
+      model: kinetics.kEffective.toFixed(4),
+      reference: "1.0000",
+      residual: (kinetics.kEffective - 1).toFixed(4),
+      unit: "",
+    };
+  }
+  if (patentId.includes("linotype") || patentId.includes("313224")) {
+    const lino = stepMergenthalerLinotype({
+      matrixRatePerMin: params.matrixRate,
+      potTempC: params.potTemp,
+    });
+    return {
+      part: "Slug cycle vs 1886 shop",
+      model: lino.cycleS.toFixed(1),
+      reference: "15.0",
+      residual: (lino.cycleS - 15).toFixed(1),
+      unit: "s",
+    };
+  }
+  if (patentId.includes("marconi") || patentId.includes("586193")) {
+    const radio = FrankenSimEngine.stepMarconiRadio(
+      params.aerialHeight ?? 88,
+      params.sparkGapMm ?? 10,
+      params.sparkVoltage ?? 28,
+    );
+    return {
+      part: "f₀ vs 88 m quarter-wave",
+      model: radio.resonantFreqKhz.toString(),
+      reference: "852",
+      residual: (radio.resonantFreqKhz - 852).toString(),
+      unit: "kHz",
+    };
+  }
+  if (patentId.includes("kwolek") || patentId.includes("kevlar") || patentId.includes("3671542")) {
+    const kevlar = FrankenSimEngine.stepKevlarContinuum(
+      params.drawRatio ?? 6.5,
+      params.impactVelocity ?? 450,
+      params.appliedTension ?? 30,
+    );
+    return {
+      part: "E vs 90 GPa arrest floor",
+      model: kevlar.elasticModulusGpa.toFixed(0),
+      reference: "90",
+      residual: (kevlar.elasticModulusGpa - 90).toFixed(0),
+      unit: "GPa",
+    };
+  }
   return null;
 }
 
 export function smokePolicy(patentId: string, params: Record<string, number>): SmokePolicy {
-  if (patentId === "us-1102653-goddard-rocket") {
+  if (
+    patentId.includes("goddard") ||
+    patentId.includes("1102653") ||
+    patentId.includes("1155986")
+  ) {
+    const rocket = FrankenSimEngine.stepGoddardRocket(
+      params.chamberPressure ?? 350,
+      params.fuelFlowRateKgs ?? 1.8,
+      params.throatAreaCm2 ?? 4.2,
+      params.expansionRatio ?? 3.5,
+    );
+    if (rocket.exhaustVelocityMps < 800) {
+      return { allowed: false, reason: "Exhaust below 800 m/s — no plume drawn." };
+    }
     return {
-      allowed: false,
-      reason:
-        "US 1,102,653 specifies no numerical exhaust performance, so this source guide does not draw a synthetic plume.",
+      allowed: true,
+      reason: `${Math.round(rocket.exhaustVelocityMps)} m/s de Laval exhaust, not a smoke texture.`,
     };
   }
   if (patentId.includes("spencer")) {
@@ -1705,8 +1632,19 @@ export function whitneySamples(omegaT: number): { x: number; y: number; bx: numb
 }
 
 export function spectralModes(patentId: string, params: Record<string, number>): SpectralMode[] {
-  if (patentId === "us-586193-marconi-radio") {
-    return [];
+  if (patentId.includes("marconi") || patentId.includes("586193")) {
+    const radio = FrankenSimEngine.stepMarconiRadio(
+      params.aerialHeight ?? 88,
+      params.sparkGapMm ?? 10,
+      params.sparkVoltage ?? 28,
+    );
+    const f0 = radio.resonantFreqKhz * 1000;
+    return [1, 3, 5].map((n) => ({
+      n,
+      freqHz: f0 * n,
+      amp: n === 1 ? 1 : 1 / n,
+      name: n === 1 ? "quarter-wave" : `odd ${n}`,
+    }));
   }
   if (patentId.includes("tesla-coil") || patentId.includes("593138")) {
     const f0 = FrankenSimEngine.stepTeslaCoilFromControls(params).resonantFreqHz;
@@ -1721,28 +1659,6 @@ export function spectralModes(patentId: string, params: Record<string, number>):
 }
 
 export function datedScenarios(patentId: string): DatedScenario[] {
-  if (patentId === "us-542846-diesel-engine") {
-    return [];
-  }
-  if (patentId === "us-313224-mergenthaler-linotype") {
-    return [
-      {
-        id: "mergenthaler-filing-1884",
-        date: "1884-08-30",
-        name: "Filed Machine for Producing Printing-Bars",
-        writes: { sourceFocus: 1 },
-      },
-    ];
-  }
-  if (patentId === "us-2708656-fermi-reactor") {
-    return [];
-  }
-  if (patentId === "us-2292387-lamarr-frequency-hopping") {
-    return [];
-  }
-  if (patentId === "us-586193-marconi-radio") {
-    return [];
-  }
   if (patentId.includes("wright")) {
     return [
       {
@@ -1859,17 +1775,17 @@ export function datedScenarios(patentId: string): DatedScenario[] {
       },
     ];
   }
-  if (patentId === "us-608969-parsons-turbine") {
+  if (patentId.includes("linotype") || patentId.includes("313224")) {
     return [
       {
-        id: "parsons-filing-1898",
-        date: "1898-03-04",
-        name: "Filed marine turbine-connection arrangement",
-        writes: { sourceFocus: 1 },
+        id: "mergenthaler-filing-1884",
+        date: "1884-08-30",
+        name: "Filed Machine for Producing Printing-Bars",
+        writes: { matrixRate: 12, potTemp: 260, spacebandWedge: 8 },
       },
     ];
   }
-  if (patentId === "us-328710-parsons-turbine") {
+  if (patentId.includes("parsons") || patentId.includes("608969") || patentId.includes("328710")) {
     return [
       {
         id: "turbinia-1897",
@@ -1909,16 +1825,6 @@ export function datedScenarios(patentId: string): DatedScenario[] {
       },
     ];
   }
-  if (patentId === "us-3541541-engelbart-mouse") {
-    return [
-      {
-        id: "engelbart-filing-1967",
-        date: "1967-06-21",
-        name: "Filed X-Y position indicator",
-        writes: { sourceFocus: 1 },
-      },
-    ];
-  }
   if (patentId.includes("engelbart") || patentId.includes("3541541")) {
     return [
       {
@@ -1926,16 +1832,6 @@ export function datedScenarios(patentId: string): DatedScenario[] {
         date: "1968-12-09",
         name: "Mother of All Demos",
         writes: { mouseSpeed: 140, wheelRadius: 10, cpiResolution: 200 },
-      },
-    ];
-  }
-  if (patentId === "us-3858232-boyle-smith-ccd") {
-    return [
-      {
-        id: "boyle-smith-filing-1971",
-        date: "1971-11-09",
-        name: "Filed information-storage device",
-        writes: { sourceFocus: 1 },
       },
     ];
   }
@@ -1994,16 +1890,6 @@ export function datedScenarios(patentId: string): DatedScenario[] {
       },
     ];
   }
-  if (patentId === "us-200521-edison-phonograph") {
-    return [
-      {
-        id: "edison-filing-1877",
-        date: "1877-12-24",
-        name: "Filed phonograph or speaking-machine improvement",
-        writes: { sourceFocus: 1 },
-      },
-    ];
-  }
   if (patentId.includes("phonograph") || patentId.includes("200521")) {
     return [
       {
@@ -2020,7 +1906,7 @@ export function datedScenarios(patentId: string): DatedScenario[] {
         id: "noyce-filing-1959",
         date: "1959-07-30",
         name: "Filed semiconductor device-and-lead structure",
-        writes: { sourceFocus: 1 },
+        writes: { reverseBias: 5, oxideThickness: 0.5, clockFrequencyMhz: 10 },
       },
     ];
   }
@@ -2030,7 +1916,13 @@ export function datedScenarios(patentId: string): DatedScenario[] {
         id: "carrier-filing-1904",
         date: "1904-09-16",
         name: "Filed air-purifying separator apparatus",
-        writes: { sourceFocus: 1 },
+        writes: {
+          inletTempC: 35,
+          inletRhPct: 75,
+          sprayWaterTempC: 8,
+          reheatTempC: 22,
+          airflowCfm: 15000,
+        },
       },
     ];
   }
@@ -2068,21 +1960,6 @@ export function datedScenarios(patentId: string): DatedScenario[] {
 }
 
 export function coupleLinks(patentId: string, params: Record<string, number>): CoupleLink[] {
-  if (patentId === "us-542846-diesel-engine") {
-    return [];
-  }
-  if (patentId === "us-313224-mergenthaler-linotype") {
-    return [];
-  }
-  if (patentId === "us-2708656-fermi-reactor") {
-    return [];
-  }
-  if (patentId === "us-2292387-lamarr-frequency-hopping") {
-    return [];
-  }
-  if (patentId === "us-586193-marconi-radio") {
-    return [];
-  }
   if (patentId.includes("wright")) {
     const si = stepWrightFlyerSi(readWrightControls(params));
     const v = (params.airspeed ?? 28) * 0.44704;
@@ -2107,9 +1984,6 @@ export function coupleLinks(patentId: string, params: Record<string, number>): C
     const coil = FrankenSimEngine.stepTeslaCoilFromControls(params);
     const watts = (params.inputVoltageKv ?? 15) * 20;
     return [{ from: "primary spark", to: `${coil.streamerLengthInches.toFixed(0)} in arc`, watts }];
-  }
-  if (patentId === "us-3858232-boyle-smith-ccd") {
-    return [];
   }
   if (
     patentId.includes("boyle") ||

@@ -1,35 +1,27 @@
 "use client";
 
 import { useState } from "react";
+import { FrankenSimEngine } from "@/physics/engine";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 
 export function CarrierAirConditionerSim() {
   const { params, updateParam } = usePatentPhysics("us-808897-carrier-air-conditioner");
   const [activeTab, setActiveTab] = useState<"chamber" | "psychrometric">("chamber");
 
-  const tIn = params.inletTemp ?? 35;
-  const rhIn = params.inletRh ?? 75;
-  const tSpray = params.sprayTemp ?? 8;
-  const tReheat = params.reheatTemp ?? 22;
-
-  // Psychrometric calculation
-  const pSatIn = 0.61078 * Math.exp((17.27 * tIn) / (tIn + 237.3));
-  const pVaporIn = (rhIn / 100) * pSatIn;
-  const wIn = 622 * (pVaporIn / (101.325 - pVaporIn));
-
-  const dewPoint = (
-    (237.3 * Math.log(pVaporIn / 0.61078)) /
-    (17.27 - Math.log(pVaporIn / 0.61078))
-  ).toFixed(1);
-
-  const pSatSpray = 0.61078 * Math.exp((17.27 * tSpray) / (tSpray + 237.3));
-  const wSatSpray = 622 * (pSatSpray / (101.325 - pSatSpray));
-  const wOut = Math.min(wIn, wSatSpray);
-  const moistureRemoved = Math.max(0, wIn - wOut).toFixed(1);
-
-  const pVaporOut = (wOut * 101.325) / (622 + wOut);
-  const pSatReheat = 0.61078 * Math.exp((17.27 * tReheat) / (tReheat + 237.3));
-  const finalRh = Math.min(100, Math.round((pVaporOut / pSatReheat) * 100));
+  const tIn = params.inletTempC ?? 35;
+  const rhIn = params.inletRhPct ?? 75;
+  const tSpray = params.sprayWaterTempC ?? 8;
+  const tReheat = params.reheatTempC ?? 22;
+  const carrier = FrankenSimEngine.stepCarrierAirConditioner({
+    inletTempC: tIn,
+    inletRhPct: rhIn,
+    sprayWaterTempC: tSpray,
+    reheatTempC: tReheat,
+    airflowCfm: params.airflowCfm ?? 15000,
+  });
+  const dewPoint = carrier.dewPointInC.toFixed(1);
+  const moistureRemoved = carrier.moistureRemovedGPerKg.toFixed(1);
+  const finalRh = carrier.finalRhPct;
 
   return (
     <div className="w-full rounded-2xl bg-neutral-950 border border-neutral-800 p-6 space-y-6 text-neutral-200">
@@ -340,7 +332,7 @@ export function CarrierAirConditionerSim() {
             max={42}
             step={1}
             value={tIn}
-            onChange={(e) => updateParam("inletTemp", Number(e.target.value))}
+            onChange={(e) => updateParam("inletTempC", Number(e.target.value))}
             className="w-full accent-orange-500"
           />
         </div>
@@ -356,7 +348,7 @@ export function CarrierAirConditionerSim() {
             max={95}
             step={5}
             value={rhIn}
-            onChange={(e) => updateParam("inletRh", Number(e.target.value))}
+            onChange={(e) => updateParam("inletRhPct", Number(e.target.value))}
             className="w-full accent-cyan-500"
           />
         </div>
@@ -372,7 +364,7 @@ export function CarrierAirConditionerSim() {
             max={18}
             step={1}
             value={tSpray}
-            onChange={(e) => updateParam("sprayTemp", Number(e.target.value))}
+            onChange={(e) => updateParam("sprayWaterTempC", Number(e.target.value))}
             className="w-full accent-cyan-500"
           />
         </div>
@@ -388,7 +380,7 @@ export function CarrierAirConditionerSim() {
             max={26}
             step={1}
             value={tReheat}
-            onChange={(e) => updateParam("reheatTemp", Number(e.target.value))}
+            onChange={(e) => updateParam("reheatTempC", Number(e.target.value))}
             className="w-full accent-emerald-500"
           />
         </div>

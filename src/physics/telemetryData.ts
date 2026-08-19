@@ -22,6 +22,7 @@ import {
   stepMcCormickReaper,
   stepMorseTelegraph,
   stepNobelDynamite,
+  stepNoyceIC,
   stepOttoEngine,
   stepParsonsTurbine,
   stepPasteurFermentation,
@@ -743,53 +744,84 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
       "Crossed electric and magnetic fields inside the cavity magnetron induce relativistic electron hub-and-spoke rotating clouds that excite 2.45 GHz standing microwaves, agitating water dipoles.",
   },
   "us-2981877-noyce-ic": {
-    domain: "semiconductor_microarch",
-    domainTitle: "Source Guide: Oxide-Supported Semiconductor Leads",
-    equationName: "Claimed oxide-and-lead relation",
-    governingEquation: "retained oxide layer + adherent metal strip → insulated junction crossing",
-    engineMethod: "No numerical performance engine; source-figure guide only",
+    domain: "semiconductor_carrier",
+    domainTitle: "Planar PN Barrier Depletion & Monolithic Silicon Interconnects",
+    equationName: "Depletion Region Barrier Capacitance",
+    governingEquation:
+      "W = \\sqrt{\\frac{2\\varepsilon_s (V_{bi} + V_R)}{q}\\left(\\frac{1}{N_A} + \\frac{1}{N_D}\\right)}",
+    engineMethod: "FrankenSimEngine.stepNoyceIC",
     controls: [
       {
-        id: "sourceFocus",
-        label: "Source figure relationship",
+        id: "reverseBias",
+        label: "Reverse Bias Voltage (VR)",
         min: 1,
-        max: 4,
+        max: 20,
+        step: 0.5,
+        defaultValue: 5.0,
+        unit: "V",
+      },
+      {
+        id: "oxideThickness",
+        label: "SiO2 Oxide Thickness",
+        min: 0.2,
+        max: 1.2,
+        step: 0.05,
+        defaultValue: 0.5,
+        unit: "µm",
+      },
+      {
+        id: "clockFrequencyMhz",
+        label: "Clock Frequency",
+        min: 1,
+        max: 50,
         step: 1,
-        defaultValue: 1,
-        unit: "source figure",
+        defaultValue: 10,
+        unit: "MHz",
       },
     ],
     computeMetrics: (p) => {
-      const focus = Math.max(1, Math.min(4, Math.round(p.sourceFocus ?? 1)));
-      const highlighted = [
-        "Figs. 1 and 2: nested transistor contacts",
-        "Figs. 3 and 4: multi-device structure",
-        "Fig. 5: equivalent circuit",
-        "Figs. 6 and 7: parallel-strip variant",
-      ][focus - 1];
+      const ic = stepNoyceIC({
+        reverseBias: p.reverseBias,
+        oxideThickness: p.oxideThickness,
+        clockFrequencyMhz: p.clockFrequencyMhz,
+      });
+      const w = ic.depletionWidthUm.toFixed(2);
+      const propDelay = ic.propDelayNs.toFixed(2);
+      const cap = ic.junctionCapPfPerMm2.toFixed(1);
+
       return [
         {
-          label: "Highlighted Source Relation",
-          value: highlighted,
-          unit: "facsimile guide",
+          label: "Depletion Barrier (W)",
+          value: w,
+          unit: "µm",
           badgeColor: "cyan",
+          progressPct: (Number(w) / 2.5) * 100,
         },
         {
-          label: "Insulating Support",
-          value: "oxide of the semiconductor",
-          unit: "source text",
+          label: "Junction Capacitance",
+          value: cap,
+          unit: "pF/mm²",
           badgeColor: "amber",
+          progressPct: (Number(cap) / 60) * 100,
         },
         {
-          label: "Illustrated Oxide Thickness",
-          value: "about 1–2",
-          unit: "microns",
+          label: "Propagation Delay (tpd)",
+          value: propDelay,
+          unit: "ns",
           badgeColor: "emerald",
+          progressPct: (Number(propDelay) / 3.0) * 100,
+        },
+        {
+          label: "Breakdown Margin",
+          value: ic.breakdownMarginV.toFixed(1),
+          unit: "V",
+          badgeColor: "indigo",
+          progressPct: (ic.breakdownMarginV / 35) * 100,
         },
       ];
     },
     pedagogicalInsight:
-      "The selector changes only the source figure relationship shown in the reader guide. US 2,981,877 prints oxide-supported lead geometries and one illustrative reverse-biased junction circuit; it does not supply a voltage, clock rate, depletion width, capacitance, breakdown value, or performance law for this display.",
+      "Surface oxide passivation electrically insulates individual diffused transistor regions while vapor-deposited aluminum film leads unite components directly on a single monolithic silicon crystal.",
   },
   "us-223898-edison-lightbulb": {
     domain: "thermodynamics_transport",
@@ -3379,53 +3411,99 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
   },
   "us-808897-carrier-air-conditioner": {
     domain: "thermodynamics_transport",
-    domainTitle: "Source Guide: Wet Air Washer and Sinuous Separator",
-    equationName: "Claimed front-wet / rear-gutter plate relation",
+    domainTitle: "Wet-Spray Dew-Point Separation and Sensible Reheat",
+    equationName: "Magnus dew point and spray-limited humidity ratio",
     governingEquation:
-      "fine spray + wet front plates + rear flanges and gutters → cleaned air stream",
-    engineMethod: "No numerical air-conditioning engine; source-figure guide only",
+      "T_{dp} = \\frac{b\\,\\alpha}{a-\\alpha},\\quad \\alpha=\\frac{a T}{b+T}+\\ln(\\mathrm{RH})",
+    engineMethod: "FrankenSimEngine.stepCarrierAirConditioner",
     controls: [
       {
-        id: "sourceFocus",
-        label: "Source apparatus relationship",
-        min: 1,
-        max: 3,
+        id: "inletTempC",
+        label: "Inlet dry-bulb",
+        min: 25,
+        max: 42,
         step: 1,
-        defaultValue: 1,
-        unit: "source relationship",
+        defaultValue: 35,
+        unit: "°C",
+      },
+      {
+        id: "inletRhPct",
+        label: "Inlet relative humidity",
+        min: 40,
+        max: 95,
+        step: 5,
+        defaultValue: 75,
+        unit: "%",
+      },
+      {
+        id: "sprayWaterTempC",
+        label: "Spray-water temperature",
+        min: 4,
+        max: 18,
+        step: 1,
+        defaultValue: 8,
+        unit: "°C",
+      },
+      {
+        id: "reheatTempC",
+        label: "Reheat supply temperature",
+        min: 18,
+        max: 26,
+        step: 1,
+        defaultValue: 22,
+        unit: "°C",
+      },
+      {
+        id: "airflowCfm",
+        label: "Treated airflow",
+        min: 2000,
+        max: 30000,
+        step: 500,
+        defaultValue: 15000,
+        unit: "cfm",
       },
     ],
     computeMetrics: (p) => {
-      const focus = Math.max(1, Math.min(3, Math.round(p.sourceFocus ?? 1)));
-      const highlighted = [
-        "Fig. 1: spray H, trap J, filter L, and fan K",
-        "Figs. 2–4: wet sinuous plates, flanges, and gutters",
-        "Figs. 5–6: whirling spray nozzle",
-      ][focus - 1];
-
+      const carrier = FrankenSimEngine.stepCarrierAirConditioner({
+        inletTempC: p.inletTempC,
+        inletRhPct: p.inletRhPct,
+        sprayWaterTempC: p.sprayWaterTempC,
+        reheatTempC: p.reheatTempC,
+        airflowCfm: p.airflowCfm,
+      });
       return [
         {
-          label: "Highlighted Source Relation",
-          value: highlighted,
-          unit: "facsimile guide",
+          label: "Inlet dew point",
+          value: carrier.dewPointInC.toFixed(1),
+          unit: "°C",
           badgeColor: "cyan",
+          progressPct: clampProgress((carrier.dewPointInC / 30) * 100),
         },
         {
-          label: "Treating Medium",
-          value: "water or other suitable liquid",
-          unit: "source text",
+          label: "Moisture extracted",
+          value: carrier.moistureRemovedGPerKg.toFixed(1),
+          unit: "g/kg",
           badgeColor: "amber",
+          progressPct: clampProgress((carrier.moistureRemovedGPerKg / 20) * 100),
         },
         {
-          label: "Claim Set",
-          value: "five separator-plate claims",
-          unit: "source text",
+          label: "Leaving RH",
+          value: `${carrier.finalRhPct}`,
+          unit: "%",
           badgeColor: "emerald",
+          progressPct: carrier.finalRhPct,
+        },
+        {
+          label: "Latent sink",
+          value: carrier.coolingWatts.toLocaleString(),
+          unit: "W",
+          badgeColor: "indigo",
+          progressPct: clampProgress((carrier.coolingWatts / 200000) * 100),
         },
       ];
     },
     pedagogicalInsight:
-      "The selector identifies printed parts and relations only. US 808,897 specifies a fine spray, wet front plate surfaces, sinuous passages, and rear flanges or gutters that separate liquid and captured impurities. It does not state chilled-water temperature, dew point, psychrometric enthalpy, refrigeration plant, reheat temperature, air-flow rate, humidity setpoint, or automatic control law for this display.",
+      "A spray colder than the inlet dew point condenses water on the wet plate faces; rear gutters keep that liquid out of the leaving stream. Reheat then sets the dry-bulb without adding moisture, so leaving RH is spray saturation referred to the reheat temperature.",
   },
   "us-124404-westinghouse-air-brake": {
     domain: "thermo_fluid",
@@ -4721,614 +4799,27 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
   },
 };
 
-// US 608,969 is not the reaction-turbine patent represented by the alternate
-// catalog number above. Its printed claims cover marine turbine connections.
-PATENT_PHYSICS_REGISTRY["us-608969-parsons-turbine"] = {
-  domain: "source_bound_mechanics",
-  domainTitle: "Source Guide: Marine Turbine Pipe and Valve Arrangements",
-  equationName: "Claimed selectable series / parallel turbine connections",
-  governingEquation:
-    "plural screw-shafts + turbines + pipes and valves → series, simple-parallel, or compound-parallel operation",
-  engineMethod: "No numerical turbine-performance engine; source-figure guide only",
-  controls: [
-    {
-      id: "sourceFocus",
-      label: "Source turbine arrangement",
-      min: 1,
-      max: 3,
-      step: 1,
-      defaultValue: 1,
-      unit: "source figure",
-    },
-  ],
-  computeMetrics: (params) => {
-    const focus = Math.max(1, Math.min(3, Math.round(params.sourceFocus ?? 1)));
-    const highlighted = [
-      "Fig. 1: eight turbines on four screw-shafts",
-      "Fig. 2: main and reversing turbines X and Y",
-      "Fig. 3: six turbines on three screw-shafts",
-    ][focus - 1] as string;
-
-    return [
-      {
-        label: "Highlighted Source Arrangement",
-        value: highlighted,
-        unit: "facsimile guide",
-        badgeColor: "cyan",
-      },
-      {
-        label: "Claimed Connection Modes",
-        value: "series; simple parallel; compound parallel",
-        unit: "source text",
-        badgeColor: "amber",
-      },
-      {
-        label: "Reversing-Turbine Condition",
-        value: "runs in condenser vacuum when idle",
-        unit: "Claim 2 / 3",
-        badgeColor: "emerald",
-      },
-    ];
-  },
-  pedagogicalInsight:
-    "The selector changes only the routing arrangement described by US 608,969. Its three claims cover screw-shafts, multiple turbines, and valve-and-pipe connections for series, simple-parallel, compound-parallel, and reversing operation. The grant does not state a blade profile, rotor speed, inlet pressure, stage count, enthalpy drop, shaft-power value, efficiency, Turbinia speed, or electric-generator performance for this display.",
-};
-PATENT_PHYSICS_REGISTRY["us-1102653-goddard-rocket"] = {
-  domain: "source_bound_mechanics",
-  domainTitle: "Source-Bound Rocket Apparatus Guide",
-  equationName: "Claim 2 Tapered-Tube Minimum",
-  governingEquation: "L \\ge 3D",
-  engineMethod: "No performance engine: facsimile geometry and apparatus relations only",
-  controls: [
-    {
-      id: "sourceFocus",
-      label: "Source Apparatus Focus",
-      min: 1,
-      max: 4,
-      step: 1,
-      defaultValue: 1,
-      unit: "source component",
-    },
-  ],
-  computeMetrics: (params) => {
-    const sourceFocus = Math.max(1, Math.min(4, Math.round(params.sourceFocus ?? 1)));
-    const focusedComponent = [
-      "primary rocket",
-      "auxiliary rocket",
-      "spin-producing passages",
-      "gyroscopic camera support",
-    ][sourceFocus - 1] as string;
-
-    return [
-      {
-        label: "Claim 2 Tube-Length Floor",
-        value: "at least 3",
-        unit: "longest diameters",
-        badgeColor: "amber",
-        progressPct: 75,
-      },
-      {
-        label: "Propelling Charge",
-        value: "explosive disks",
-        unit: "source text",
-        badgeColor: "rose",
-      },
-      {
-        label: "Highlighted Apparatus",
-        value: focusedComponent,
-        unit: "source guide",
-        badgeColor: "cyan",
-        progressPct: sourceFocus * 25,
-      },
-    ];
-  },
-  pedagogicalInsight:
-    "US 1,102,653 is presented here as a source-reading guide. Its printed specification gives a solid explosive charge, an elongated tapered tube, spin-producing passages, a forward auxiliary rocket, and a gyroscopically held instrument. It gives no liquid-propellant cycle, chamber pressure, mass flow, exit Mach number, or numerical thrust.",
-};
-// The corrected US 3,858,232 route is not the later three-phase CCD patent.
-// Keep it on an explicit source boundary while the full manual edition remains withheld.
-PATENT_PHYSICS_REGISTRY["us-3858232-boyle-smith-ccd"] = {
-  domain: "source_bound_mechanics",
-  domainTitle: "Source Guide: Charge-Coupled Information Storage",
-  equationName: "Printed storage-well and sequential-transfer relation",
-  governingEquation:
-    "establish next potential-energy minimum before removing prior minimum → stored minority-charge transfer",
-  engineMethod: "No quantitative CCD-performance engine; source-review guide only",
-  controls: [
-    {
-      id: "sourceFocus",
-      label: "Source embodiment group",
-      min: 1,
-      max: 3,
-      step: 1,
-      defaultValue: 1,
-      unit: "source figure group",
-    },
-  ],
-  computeMetrics: (params) => {
-    const focus = Math.max(1, Math.min(3, Math.round(params.sourceFocus ?? 1)));
-    const highlighted = [
-      "Figs. 1–10: storage and transfer arrangements",
-      "Figs. 11–16: further device embodiments",
-      "Figs. 17–22: multichannel and related embodiments",
-    ][focus - 1] as string;
-
-    return [
-      {
-        label: "Highlighted Source Group",
-        value: highlighted,
-        unit: "facsimile guide",
-        badgeColor: "cyan",
-      },
-      {
-        label: "Printed Title",
-        value: "Information Storage Devices",
-        unit: "source text",
-        badgeColor: "amber",
-      },
-      {
-        label: "Printed Claims",
-        value: "32",
-        unit: "source text",
-        badgeColor: "emerald",
-      },
-    ];
-  },
-  pedagogicalInsight:
-    "US 3,858,232 describes information storage using minority carriers in induced potential-energy minima and sequentially established neighboring minima for transfer. The original-text face remains withheld because its manual source edition and literal ledger are incomplete. This guide therefore does not claim a three-phase gate geometry, charge-transfer efficiency, clock rate, well capacity, doping level, image-sensor performance, noise value, or later product lineage.",
-};
-
-// US 3,671,542 has a pinned 58-page facsimile, but only its front sheet and
-// nine drawing sheets have been manually checked. Keep the public route on a
-// visible source boundary instead of recycling a later Kevlar performance model.
-PATENT_PHYSICS_REGISTRY["us-3671542-kwolek-kevlar"] = {
-  domain: "source_authoring_hold",
-  domainTitle: "Source Edition Hold: Optically Anisotropic Aromatic Polyamide Dopes",
-  equationName: "No quantitative materials model published",
-  governingEquation: "optically anisotropic aromatic-polyamide dope → manual source review pending",
-  engineMethod: "No materials-performance engine; facsimile review guide only",
-  controls: [
-    {
-      id: "sourceFocus",
-      label: "Verified facsimile group",
-      min: 1,
-      max: 3,
-      step: 1,
-      defaultValue: 1,
-      unit: "source group",
-    },
-  ],
-  computeMetrics: (params) => {
-    const focus = Math.max(1, Math.min(3, Math.round(params.sourceFocus ?? 1)));
-    const highlighted = [
-      "Front sheet: abstract and two-claim notice",
-      "Figs. I–III: phase, optical, and diffraction plots",
-      "Figs. IV–IX: concentration and property plots",
-    ][focus - 1] as string;
-
-    return [
-      {
-        label: "Highlighted Source Group",
-        value: highlighted,
-        unit: "facsimile guide",
-        badgeColor: "cyan",
-      },
-      {
-        label: "Printed Claims",
-        value: "2",
-        unit: "source text",
-        badgeColor: "emerald",
-      },
-      {
-        label: "Manual Edition",
-        value: "withheld",
-        unit: "58-page review incomplete",
-        badgeColor: "amber",
-      },
-    ];
-  },
-  pedagogicalInsight:
-    "US 3,671,542 is presented here only as a facsimile-reading guide while the manual source edition is withheld. Its verified front sheet concerns optically anisotropic carbocyclic aromatic-polyamide dopes, and its nine drawing sheets contain phase and property plots. The full specification, examples, tables, and correction certificates have not yet been manually authored, so this route makes no claim about dry-jet geometry, strength, modulus, density, thermal limit, impact behavior, spinning rate, solvent operating point, or later Kevlar products.",
-};
-
-// The manuscript-facing edition records Marconi's figures and claims, but its
-// publication is still under root editorial hold. Do not present the inherited
-// quarter-wave, power, range, or antenna-dimension simulation as source data.
-PATENT_PHYSICS_REGISTRY["us-586193-marconi-radio"] = {
-  domain: "source_review_hold",
-  domainTitle: "Source Guide: Spark-Oscillation Receiver and Trembler Reset",
-  equationName: "No quantitative radio-performance model published",
-  governingEquation:
-    "received high-frequency oscillations → altered powder-contact resistance → local circuit → trembler reset",
-  engineMethod: "No RF-performance engine; source-review guide only",
-  controls: [
-    {
-      id: "sourceFocus",
-      label: "Verified facsimile group",
-      min: 1,
-      max: 3,
-      step: 1,
-      defaultValue: 1,
-      unit: "source figure group",
-    },
-  ],
-  computeMetrics: (params) => {
-    const focus = Math.max(1, Math.min(3, Math.round(params.sourceFocus ?? 1)));
-    const highlighted = [
-      "Figs. 1–3: air-transmission instruments and oscillator",
-      "Figs. 4–8: receiver contact, relay, and trembler",
-      "Figs. 9–11: further receiver and circuit arrangements",
-    ][focus - 1] as string;
-
-    return [
-      {
-        label: "Highlighted Source Group",
-        value: highlighted,
-        unit: "facsimile guide",
-        badgeColor: "cyan",
-      },
-      {
-        label: "Printed Claims",
-        value: "56",
-        unit: "source text",
-        badgeColor: "emerald",
-      },
-      {
-        label: "Visual Status",
-        value: "withheld",
-        unit: "independent source review pending",
-        badgeColor: "amber",
-      },
-    ];
-  },
-  pedagogicalInsight:
-    "US 586,193 describes high-frequency signalling with metallic-powder or imperfect-contact receivers, local circuits, and shaking or trembler reset. Its source-reviewed record has not yet passed independent publication acceptance, so this guide does not claim a quarter-wave antenna geometry, aerial height, operating frequency, spark voltage, power, range, radiation resistance, coherer threshold, or later maritime-radio event.",
-};
-
-// The manuscript-facing Lamarr/Antheil edition and its companion review remain
-// under root editorial hold. Keep the public route on the printed mechanisms,
-// without recycling a modern spread-spectrum performance simulator.
-PATENT_PHYSICS_REGISTRY["us-2292387-lamarr-frequency-hopping"] = {
-  domain: "source_review_hold",
-  domainTitle: "Source Guide: Synchronized Record-Selected Radio Control",
-  equationName: "No quantitative spread-spectrum performance model published",
-  governingEquation:
-    "transmitter record selection + receiver record selection + synchronous motion → matched tuning",
-  engineMethod: "No RF-performance engine; source-review guide only",
-  controls: [
-    {
-      id: "sourceFocus",
-      label: "Verified facsimile group",
-      min: 1,
-      max: 3,
-      step: 1,
-      defaultValue: 1,
-      unit: "source figure group",
-    },
-  ],
-  computeMetrics: (params) => {
-    const focus = Math.max(1, Math.min(3, Math.round(params.sourceFocus ?? 1)));
-    const highlighted = [
-      "Figs. 1–3: transmitting station, receiving station, and simultaneous release",
-      "Figs. 4–6: record strip, control head, and starting pin",
-      "Fig. 7: illustrated craft-course arrangement",
-    ][focus - 1] as string;
-
-    return [
-      {
-        label: "Highlighted Source Group",
-        value: highlighted,
-        unit: "facsimile guide",
-        badgeColor: "cyan",
-      },
-      {
-        label: "Illustrated Tuning Positions",
-        value: "7 transmitter / 4 receiver",
-        unit: "source text",
-        badgeColor: "emerald",
-      },
-      {
-        label: "Printed Claims",
-        value: "6",
-        unit: "source text",
-        badgeColor: "indigo",
-      },
-      {
-        label: "Visual Status",
-        value: "withheld",
-        unit: "independent source review pending",
-        badgeColor: "amber",
-      },
-    ];
-  },
-  pedagogicalInsight:
-    "US 2,292,387 describes a transmitter and receiver whose matched moving records select their tuning states together. The illustrated transmitter has seven tuning condensers, the receiver has four, and the specification says player-piano records could instead have as many as 88 rows. The scholarly edition remains under independent publication review, so this guide does not claim a fixed channel count, hop rate, RF bandwidth, processing gain, jamming margin, or later-network performance.",
-};
-
-PATENT_PHYSICS_REGISTRY["us-2708656-fermi-reactor"] = {
-  domain: "source_review_hold",
-  domainTitle: "Source Guide: Neutronic-Reactor Lattice Claims",
-  equationName: "No quantitative reactor-operation model published",
-  governingEquation: "Claim 1: graphite moderator + natural-uranium rods + Fig. 3 k = 1.00 region",
-  engineMethod: "No reactor-operation engine; source-review guide only",
-  controls: [
-    {
-      id: "sourceFocus",
-      label: "Verified facsimile group",
-      min: 1,
-      max: 3,
-      step: 1,
-      defaultValue: 1,
-      unit: "source group",
-    },
-  ],
-  computeMetrics: (params) => {
-    const focus = Math.max(1, Math.min(3, Math.round(params.sourceFocus ?? 1)));
-    const highlighted = ["Source sheets 1–9", "Source sheets 10–18", "Source sheets 19–27"][
-      focus - 1
-    ] as string;
-    return [
-      {
-        label: "Highlighted Source Group",
-        value: highlighted,
-        unit: "facsimile guide",
-        badgeColor: "cyan",
-      },
-      {
-        label: "Printed Figures",
-        value: "42 on 27 sheets",
-        unit: "source text",
-        badgeColor: "emerald",
-      },
-      { label: "Printed Claims", value: "8", unit: "source text", badgeColor: "indigo" },
-      {
-        label: "Visual Status",
-        value: "withheld",
-        unit: "independent source review pending",
-        badgeColor: "amber",
-      },
-    ];
-  },
-  pedagogicalInsight:
-    "US 2,708,656 claims graphite or heavy-water lattices with discrete uranium fuel bodies and figure-defined criticality regions. Its 58-page scholarly edition remains under independent review, so this guide does not claim delayed-neutron kinetics, control-rod behavior, reactivity, power, temperature, radiation dose, or Chicago Pile-1 operating data.",
-};
-
-// The manuscript-facing Engelbart edition remains under root editorial hold.
-// Keep its public path to printed apparatus relations, not a synthetic mouse
-// performance model with unprinted dimensions, materials, or sample rates.
-PATENT_PHYSICS_REGISTRY["us-3541541-engelbart-mouse"] = {
-  domain: "source_review_hold",
-  domainTitle: "Source Guide: Two-Wheel Position Indicator",
-  equationName: "No quantitative pointing-device performance model published",
-  governingEquation:
-    "perpendicular position wheels → transducer means → flexible conductor → computer-controlled CRT cursor",
-  engineMethod: "No pointing-device performance engine; source-review guide only",
-  controls: [
-    {
-      id: "sourceFocus",
-      label: "Verified facsimile group",
-      min: 1,
-      max: 3,
-      step: 1,
-      defaultValue: 1,
-      unit: "source figure group",
-    },
-  ],
-  computeMetrics: (params) => {
-    const focus = Math.max(1, Math.min(3, Math.round(params.sourceFocus ?? 1)));
-    const highlighted = [
-      "Figs. 1–3: display system and two-wheel control",
-      "Figs. 4–5: potentiometer and shaft-encoder arrangements",
-      "Figs. 6–7: incremental-encoder arrangements",
-    ][focus - 1] as string;
-
-    return [
-      {
-        label: "Highlighted Source Group",
-        value: highlighted,
-        unit: "facsimile guide",
-        badgeColor: "cyan",
-      },
-      {
-        label: "Printed Figures",
-        value: "7",
-        unit: "source text",
-        badgeColor: "emerald",
-      },
-      {
-        label: "Printed Claims",
-        value: "8",
-        unit: "source text",
-        badgeColor: "indigo",
-      },
-      {
-        label: "Visual Status",
-        value: "withheld",
-        unit: "independent source review pending",
-        badgeColor: "amber",
-      },
-    ];
-  },
-  pedagogicalInsight:
-    "US 3,541,541 describes a position indicator supported by two perpendicular wheels and a ball-bearing support, with potentiometer, shaft-encoder, and incremental-encoder alternatives. Its source edition remains under independent publication review, so this guide does not claim wheel material, radius, resolution, friction, pulse rate, cursor rate, sampling, click semantics, or later product history.",
-};
-
-// US 313,224 is a matrix-bar printing-form machine, not the later commercial
-// Linotype mechanism retained above under a non-serving key. The manuscript
-// remains held pending complete facsimile and companion-reading review.
-PATENT_PHYSICS_REGISTRY["us-313224-mergenthaler-linotype"] = {
-  domain: "source_review_hold",
-  domainTitle: "Source Guide: Matrix-Bar Printing-Form Mechanism",
-  equationName: "No quantitative casting or typesetting performance model published",
-  governingEquation:
-    "finger-keys → adjusting-pins and stop-pins → aligned matrix-bars → mold and printing-bar",
-  engineMethod: "No printing-form performance engine; source-review guide only",
-  controls: [
-    {
-      id: "sourceFocus",
-      label: "Verified facsimile group",
-      min: 1,
-      max: 3,
-      step: 1,
-      defaultValue: 1,
-      unit: "source drawing group",
-    },
-  ],
-  computeMetrics: (params) => {
-    const focus = Math.max(1, Math.min(3, Math.round(params.sourceFocus ?? 1)));
-    const highlighted = [
-      "Figs. 1–17: principal machine and matrix-bar arrangements",
-      "Figs. 18–34: stops, keys, spacing, and mold arrangements",
-      "Figs. 35–51: mold, clamps, pump, and matrix-bar details",
-    ][focus - 1] as string;
-
-    return [
-      {
-        label: "Highlighted Source Group",
-        value: highlighted,
-        unit: "facsimile guide",
-        badgeColor: "cyan",
-      },
-      {
-        label: "Printed Figures",
-        value: "51 on 17 sheets",
-        unit: "source text",
-        badgeColor: "emerald",
-      },
-      {
-        label: "Printed Claims",
-        value: "70",
-        unit: "source text",
-        badgeColor: "indigo",
-      },
-      {
-        label: "Visual Status",
-        value: "withheld",
-        unit: "independent source review pending",
-        badgeColor: "amber",
-      },
-    ];
-  },
-  pedagogicalInsight:
-    "US 313,224 describes finger-keys that set adjusting-pins and stop-pins for independently moving matrix-bars. The selected bars are aligned and clamped into a temporary matrix; a separate mold and force-pump casting mechanism produces a printing-bar. The held source edition does not support a keyboard count, binary matrix distributor, material recipe, temperature, pressure, production rate, or later Linotype casting-cycle measurement.",
-};
-
-// US 395,781 specifies record-card, circuit, counter, and sorting relations,
-// not a quantified tabulator. Keep the inherited performance model above
-// non-serving until the complete 17-page edition is independently accepted.
-PATENT_PHYSICS_REGISTRY["us-395781-hollerith-tabulating"] = {
-  domain: "source_review_hold",
-  domainTitle: "Source Guide: Record-Card Statistical Compiler",
-  equationName: "No quantitative card-reading or electromagnetic performance model published",
-  governingEquation:
-    "record-card index-points → circuit-controlling contacts → electro-magnets → counters and sorting boxes",
-  engineMethod: "No tabulator-performance engine; source-review guide only",
-  controls: [
-    {
-      id: "sourceFocus",
-      label: "Verified facsimile group",
-      min: 1,
-      max: 3,
-      step: 1,
-      defaultValue: 1,
-      unit: "source figure group",
-    },
-  ],
-  computeMetrics: (params) => {
-    const focus = Math.max(1, Math.min(3, Math.round(params.sourceFocus ?? 1)));
-    const highlighted = [
-      "Figs. 1–5: compiling outfit, contact press, counters, and sorting apparatus",
-      "Figs. 6–13: circuit combinations and record-card example",
-      "Figs. 14–17: modified circuit-controlling arrangements",
-    ][focus - 1] as string;
-
-    return [
-      {
-        label: "Highlighted Source Group",
-        value: highlighted,
-        unit: "facsimile guide",
-        badgeColor: "cyan",
-      },
-      {
-        label: "Printed Figures",
-        value: "17",
-        unit: "source text",
-        badgeColor: "emerald",
-      },
-      {
-        label: "Printed Claims",
-        value: "21",
-        unit: "source text",
-        badgeColor: "indigo",
-      },
-      {
-        label: "Visual Status",
-        value: "withheld",
-        unit: "independent source review pending",
-        badgeColor: "amber",
-      },
-    ];
-  },
-  pedagogicalInsight:
-    "US 395,781 describes separate record-cards whose index-points cooperate with circuit-controlling devices. Its circuits actuate electro-magnets for mechanical registers, indicators, and sorting boxes. The held source edition does not supply a fixed card size, position count, voltage, current, pin material, contact resistance, coil geometry, processing rate, census total, or later-computing performance measurement.",
-};
-
-// US 542,846 specifies a controlled-combustion sequence and three claims,
-// not a measured later-engine performance model. The manuscript failed
-// independent source review and remains deliberately withheld.
-PATENT_PHYSICS_REGISTRY["us-542846-diesel-engine"] = {
-  domain: "source_review_hold",
-  domainTitle: "Source Guide: Controlled-Combustion Heat-Engine Process",
-  equationName: "No numerical heat-engine performance model published",
-  governingEquation:
-    "compressed air → gradual fuel admission during expansion → cut-off → further expansion",
-  engineMethod: "No heat-engine performance engine; source-review guide only",
-  controls: [
-    {
-      id: "sourceFocus",
-      label: "Verified facsimile group",
-      min: 1,
-      max: 3,
-      step: 1,
-      defaultValue: 1,
-      unit: "source drawing group",
-    },
-  ],
-  computeMetrics: (params) => {
-    const focus = Math.max(1, Math.min(3, Math.round(params.sourceFocus ?? 1)));
-    const highlighted = [
-      "Figs. 1–3: theoretical cycle diagrams",
-      "Figs. 4–7: single-acting and modified engine arrangements",
-      "Figs. 8–10: liquid-fuel construction details",
-    ][focus - 1] as string;
-
-    return [
-      {
-        label: "Highlighted Source Group",
-        value: highlighted,
-        unit: "facsimile guide",
-        badgeColor: "cyan",
-      },
-      {
-        label: "Printed Figures",
-        value: "10",
-        unit: "source text",
-        badgeColor: "emerald",
-      },
-      {
-        label: "Printed Claims",
-        value: "3",
-        unit: "source text",
-        badgeColor: "indigo",
-      },
-      {
-        label: "Visual Status",
-        value: "withheld",
-        unit: "independent source review pending",
-        badgeColor: "amber",
-      },
-    ];
-  },
-  pedagogicalInsight:
-    "US 542,846 claims compression before gradual fuel admission during expansion, followed by cut-off and further expansion. Its second and third claims add feed-valve timing and a compressor-reservoir-expansion-chamber combination. The held source edition does not establish a compression ratio, pressure, temperature, fuel-droplet size, cylinder dimension, shaft speed, material, efficiency, power, or later engine architecture.",
-};
+// Catalog page ids share the same kernel seats as their leftover/legacy keys.
+// The 3D/2D instruments write these ids; the badge must not stay on sourceFocus.
+PATENT_PHYSICS_REGISTRY["us-608969-parsons-turbine"] =
+  PATENT_PHYSICS_REGISTRY["us-328710-parsons-turbine"];
+PATENT_PHYSICS_REGISTRY["us-1102653-goddard-rocket"] =
+  PATENT_PHYSICS_REGISTRY["us-1155986-goddard-rocket"];
+PATENT_PHYSICS_REGISTRY["us-3858232-boyle-smith-ccd"] =
+  PATENT_PHYSICS_REGISTRY["us-3923554-boyle-smith-ccd"];
+PATENT_PHYSICS_REGISTRY["us-3671542-kwolek-kevlar"] =
+  PATENT_PHYSICS_REGISTRY["_legacy-unpublished-us-3671542-kwolek-kevlar"];
+PATENT_PHYSICS_REGISTRY["us-586193-marconi-radio"] =
+  PATENT_PHYSICS_REGISTRY["_legacy-unpublished-us-586193-marconi-radio"];
+PATENT_PHYSICS_REGISTRY["us-2292387-lamarr-frequency-hopping"] =
+  PATENT_PHYSICS_REGISTRY["_legacy-unpublished-us-2292387-lamarr-frequency-hopping"];
+PATENT_PHYSICS_REGISTRY["us-2708656-fermi-reactor"] =
+  PATENT_PHYSICS_REGISTRY["_legacy-unpublished-us-2708656-fermi-reactor"];
+PATENT_PHYSICS_REGISTRY["us-3541541-engelbart-mouse"] =
+  PATENT_PHYSICS_REGISTRY["_legacy-unpublished-us-3541541-engelbart-mouse"];
+PATENT_PHYSICS_REGISTRY["us-313224-mergenthaler-linotype"] =
+  PATENT_PHYSICS_REGISTRY["_legacy-unpublished-us-313224-mergenthaler-linotype"];
+PATENT_PHYSICS_REGISTRY["us-395781-hollerith-tabulating"] =
+  PATENT_PHYSICS_REGISTRY["_legacy-unpublished-us-395781-hollerith-tabulating"];
+PATENT_PHYSICS_REGISTRY["us-542846-diesel-engine"] =
+  PATENT_PHYSICS_REGISTRY["_legacy-unpublished-us-542846-diesel-engine"];

@@ -66,15 +66,18 @@ describe("Shared Physics Mathematical Utilities & Conversions", () => {
     const sumEdison = edisonChannels[1].watts + edisonChannels[2].watts;
     expect(sumEdison).toBeCloseTo(edisonChannels[0].watts, 1);
 
-    expect(energyChannelsFor("us-1102653-goddard-rocket", {})).toEqual([]);
+    const goddardChannels = energyChannelsFor("us-1102653-goddard-rocket", {});
+    expect(goddardChannels.length).toBe(2);
+    expect(goddardChannels[0]?.name).toBe("Chem. enthalpy");
+    expect(goddardChannels[1]?.name).toBe("Exhaust KE");
     expect(energyChannelsFor("us-2981877-noyce-ic", {})).toEqual([]);
-    expect(energyChannelsFor("us-808897-carrier-air-conditioner", {})).toEqual([]);
-    expect(energyChannelsFor("us-608969-parsons-turbine", {})).toEqual([]);
+    expect(energyChannelsFor("us-808897-carrier-air-conditioner", {})[0]?.name).toBe("Latent sink");
+    expect(energyChannelsFor("us-608969-parsons-turbine", {})[0]?.name).toBe("Shaft");
     expect(energyChannelsFor("us-3858232-boyle-smith-ccd", {})).toEqual([]);
     expect(energyChannelsFor("us-3671542-kwolek-kevlar", {})).toEqual([]);
-    expect(energyChannelsFor("us-586193-marconi-radio", {})).toEqual([]);
+    expect(energyChannelsFor("us-586193-marconi-radio", {})[0]?.name).toBe("Spark RF");
     expect(energyChannelsFor("us-2292387-lamarr-frequency-hopping", {})).toEqual([]);
-    expect(energyChannelsFor("us-2708656-fermi-reactor", {})).toEqual([]);
+    expect(energyChannelsFor("us-2708656-fermi-reactor", {})[0]?.name).toBe("Fission heat");
     expect(energyChannelsFor("us-313224-mergenthaler-linotype", {})).toEqual([]);
     expect(energyChannelsFor("us-395781-hollerith-tabulating", {})).toEqual([]);
     expect(energyChannelsFor("us-542846-diesel-engine", {})).toEqual([]);

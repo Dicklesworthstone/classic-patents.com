@@ -32,16 +32,17 @@ export function CarrierAirConditioner3D() {
   // Psychrometric Air Treatment Parameters from Physics Bus
   const { params } = usePatentPhysics("us-808897-carrier-air-conditioner");
   const airflowCfm = params.airflowCfm ?? 15000;
-  const sprayWaterTempC = params.sprayTempC ?? 12.5;
+  const sprayWaterTempC = params.sprayWaterTempC ?? 8;
   const [showSprayMist, setShowSprayMist] = useState<boolean>(true);
   const [activeCamera, setActiveCamera] = useState<CameraPreset>("iso");
   const { isAudioMuted, toggleSound: toggleEngine } = usePatentAudio();
 
   const carrier = FrankenSimEngine.stepCarrierAirConditioner({
-    inletTempC: 28,
-    inletRhPct: 65,
+    inletTempC: params.inletTempC ?? 35,
+    inletRhPct: params.inletRhPct ?? 75,
     sprayWaterTempC,
-    reheatTempC: 20,
+    reheatTempC: params.reheatTempC ?? 22,
+    airflowCfm,
   });
 
   const live = useLiveSimParams({

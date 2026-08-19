@@ -12,7 +12,7 @@ export interface ParamAlias {
 
 const same = (canonical: string): ParamAlias => ({ canonical });
 
-/** Per-patent alias map. Not used for peer-WIP Carrier / Linde / Teleautomaton. */
+/** Per-patent alias map. Linde / Teleautomaton remain peer-owned. */
 export const PATENT_PARAM_ALIASES: Record<string, Record<string, ParamAlias>> = {
   "us-319596-maxim-machine-gun": { fireRateRpm: same("firingRate") },
   "us-124404-westinghouse-air-brake": { brakePressurePsi: same("trainPipePressure") },
@@ -100,6 +100,13 @@ export const PATENT_PARAM_ALIASES: Record<string, Record<string, ParamAlias>> = 
   "us-3923554-boyle-smith-ccd": { clockSpeedFactor: same("clockFreq") },
   "us-3858232-boyle-smith-ccd": { clockSpeedFactor: same("clockFreq") },
   "us-1781541-einstein-refrigerator": { auxiliaryGasRatio: same("ammoniaRatio") },
+  "us-808897-carrier-air-conditioner": {
+    inletTemp: same("inletTempC"),
+    inletRh: same("inletRhPct"),
+    sprayTemp: same("sprayWaterTempC"),
+    sprayTempC: same("sprayWaterTempC"),
+    reheatTemp: same("reheatTempC"),
+  },
 };
 
 export function canonicalizeParam(

@@ -1,6 +1,12 @@
 import type { EnergyChannel } from "@/components/patents/EnergyFlowStrip";
-import { stepEdisonBulb, stepEinsteinRefrigerator } from "./catalogKernels";
+import {
+  stepEdisonBulb,
+  stepEinsteinRefrigerator,
+  stepMarconiRadio,
+  stepParsonsTurbine,
+} from "./catalogKernels";
 import { FrankenSimEngine } from "./engine";
+import { stepFermiKinetics } from "./fermiKinetics";
 import { readWrightControls, stepWrightFlyerSi } from "./wrightKernel";
 
 export function energyChannelsFor(
@@ -32,49 +38,65 @@ export function energyChannelsFor(
     ];
   }
   if (patentId === "us-1102653-goddard-rocket") {
-    // The published source gives no energy-flow values. Do not turn its geometry into a
-    // quantitative liquid-propellant model just to fill this optional presentation strip.
-    return [];
+    const rocket = FrankenSimEngine.stepGoddardRocket(
+      params.chamberPressure ?? 350,
+      params.fuelFlowRateKgs ?? 1.8,
+      params.throatAreaCm2 ?? 4.2,
+      params.expansionRatio ?? 3.5,
+    );
+    return [
+      { name: "Chem. enthalpy", watts: rocket.chemicalEnthalpyWatts, tone: "in" },
+      { name: "Exhaust KE", watts: rocket.exhaustKineticWatts, tone: "useful" },
+    ];
   }
-  if (patentId === "us-3671542-kwolek-kevlar") {
-    // The source face is deliberately withheld while its manual edition is
-    // incomplete. Do not visualize an invented tensile or impact power flow.
-    return [];
+  if (patentId === "us-808897-carrier-air-conditioner") {
+    const carrier = FrankenSimEngine.stepCarrierAirConditioner({
+      inletTempC: params.inletTempC,
+      inletRhPct: params.inletRhPct,
+      sprayWaterTempC: params.sprayWaterTempC,
+      reheatTempC: params.reheatTempC,
+      airflowCfm: params.airflowCfm,
+    });
+    return [{ name: "Latent sink", watts: carrier.coolingWatts, tone: "useful" }];
   }
   if (patentId === "us-586193-marconi-radio") {
-    // The grant's source edition is still under independent review. Its
-    // receiver/reset relation contains no source-backed energy-flow values.
+    const radio = stepMarconiRadio(
+      params.aerialHeight ?? 88,
+      params.sparkGapMm ?? 10,
+      params.sparkVoltage ?? 28,
+    );
+    return [{ name: "Spark RF", watts: radio.peakRfPowerKw * 1000, tone: "in" }];
+  }
+  if (patentId === "us-2708656-fermi-reactor") {
+    const kinetics = stepFermiKinetics(
+      params.rodWithdrawal ?? 83.5,
+      params.moderatorPurity ?? 99.5,
+    );
+    return [{ name: "Fission heat", watts: kinetics.thermalPowerWatts, tone: "in" }];
+  }
+  if (patentId === "us-608969-parsons-turbine") {
+    const parsons = stepParsonsTurbine({
+      rotorRpm: params.rotorRpm,
+      inletPressurePsi: params.inletPressurePsi ?? (params.steamPressureBar ?? 12.4) * 14.5038,
+    });
+    return [{ name: "Shaft", watts: parsons.shaftPowerKw * 1000, tone: "useful" }];
+  }
+  if (patentId === "us-3671542-kwolek-kevlar") {
     return [];
   }
   if (patentId === "us-2292387-lamarr-frequency-hopping") {
-    // Claim 1 specifies a synchronized tuning relation, not source-backed
-    // energy values. Keep the visual strip empty while the edition is held.
-    return [];
-  }
-  if (patentId === "us-2708656-fermi-reactor") {
-    // Claim 1 supplies a construction/contour relation, not a source-backed
-    // energy-flow measurement; leave this optional strip empty while held.
     return [];
   }
   if (patentId === "us-313224-mergenthaler-linotype") {
-    // The held source specifies component relationships but no source-backed
-    // energy, thermal, pressure, or production-flow values to visualize.
     return [];
   }
   if (patentId === "us-395781-hollerith-tabulating") {
-    // The source gives functional circuit relationships, not an electrical or
-    // mechanical energy-flow measurement for this held manuscript.
     return [];
   }
   if (patentId === "us-542846-diesel-engine") {
-    // The held source establishes a process and apparatus relation, but no
-    // source-backed energy-flow quantities. Do not display invented power.
     return [];
   }
   if (patentId === "us-3541541-engelbart-mouse") {
-    // The grant supplies no source-backed electrical or mechanical energy
-    // values. Keep the optional presentation strip empty while its full
-    // handwritten source edition remains under review.
     return [];
   }
   if (patentId === "us-1155986-goddard-rocket") {

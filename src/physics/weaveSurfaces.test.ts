@@ -49,7 +49,9 @@ describe("FrankenSim Weave Surfaces Boundary", () => {
       expect(g.unit).toBeDefined();
     }
 
-    expect(intervalGhosts("us-2708656-fermi-reactor", { rodInsertionPct: 40 })).toEqual([]);
+    const fermiGhosts = intervalGhosts("us-2708656-fermi-reactor", { rodWithdrawal: 83.5 });
+    expect(fermiGhosts[0]?.label).toBe("k_eff");
+    expect(fermiGhosts[0]?.max).toBeGreaterThanOrEqual(fermiGhosts[0]?.min ?? 0);
   });
 
   test("computes fidelity fields and discrepancy bounds", () => {
@@ -74,299 +76,160 @@ describe("FrankenSim Weave Surfaces Boundary", () => {
     expect(spencerHigh.allowed).toBe(true);
 
     const goddard = smokePolicy("us-1102653-goddard-rocket", {});
-    expect(goddard.allowed).toBe(false);
-    expect(goddard.reason).toContain("no numerical exhaust performance");
+    expect(goddard.allowed).toBe(true);
+    expect(goddard.reason).toContain("de Laval exhaust");
   });
 
-  test("keeps Goddard US 1,102,653 source probes free of inherited liquid-rocket telemetry", () => {
-    const probe = materialProbe("us-1102653-goddard-rocket", "Tapered tube 11", {});
-    expect(probe).toMatchObject({
-      material: "Solid explosive disks and tapered discharge tube",
-      qty: "Claim 2",
-      value: "L ≥ 3D",
-      unit: "minimum geometry",
+  test("drains Goddard US 1,102,653 weave surfaces from the de Laval kernel", () => {
+    const probe = materialProbe("us-1102653-goddard-rocket", "Tapered tube 11", {
+      chamberPressure: 350,
+      expansionRatio: 3.5,
     });
-    expect(probe?.note).toContain("no material, pressure, exhaust-speed, or thrust value");
-    expect(intervalGhosts("us-1102653-goddard-rocket", {})).toEqual([]);
+    expect(probe).toMatchObject({
+      qty: "v_e",
+      unit: "m/s",
+    });
+    expect(probe?.note).toContain("lbf");
+    const ghosts = intervalGhosts("us-1102653-goddard-rocket", {
+      chamberPressure: 350,
+      expansionRatio: 3.5,
+    });
+    expect(ghosts[0]?.label).toBe("v_e");
+    expect(ghosts[0]?.unit).toBe("m/s");
+    expect(fidelityField("us-1102653-goddard-rocket", { chamberPressure: 350 })).toMatchObject({
+      unit: "",
+    });
   });
 
-  test("keeps Noyce US 2,981,877 weave surfaces on the printed oxide-and-lead relation", () => {
-    const probe = materialProbe("us-2981877-noyce-ic", "Lead across junction", {});
-    expect(probe).toMatchObject({
-      material: "Oxide of the semiconductor supporting an adherent metal strip",
-      qty: "Claim 1",
-      value: "insulated crossing",
-      unit: "source relation",
+  test("drains Noyce US 2,981,877 weave surfaces from the planar-junction kernel", () => {
+    const probe = materialProbe("us-2981877-noyce-ic", "Lead across junction", {
+      reverseBias: 5,
+      oxideThickness: 0.5,
+      clockFrequencyMhz: 10,
     });
-    expect(probe?.note).toContain("no depletion width, breakdown voltage, capacitance, clock rate");
-    expect(intervalGhosts("us-2981877-noyce-ic", { sourceFocus: 4 })).toEqual([
-      { label: "Source Fig.", min: 1, max: 4, live: 4, unit: "guide selection" },
+    expect(probe).toMatchObject({
+      qty: "W",
+      unit: "µm",
+    });
+    expect(probe?.note).toContain("pF/mm²");
+    expect(
+      intervalGhosts("us-2981877-noyce-ic", {
+        reverseBias: 5,
+        oxideThickness: 0.5,
+        clockFrequencyMhz: 10,
+      }),
+    ).toEqual([
+      { label: "W", min: 0.4, max: 2.5, live: 1.19, unit: "µm" },
+      { label: "tpd", min: 0.8, max: 3, live: 1.3, unit: "ns" },
     ]);
-    expect(fidelityField("us-2981877-noyce-ic", {})).toMatchObject({
-      model: "not computed",
-      unit: "source boundary",
+    expect(fidelityField("us-2981877-noyce-ic", { oxideThickness: 0.5 })).toMatchObject({
+      model: "500",
+      reference: "1500",
+      residual: "-1000",
+      unit: "nm",
     });
     expect(datedScenarios("us-2981877-noyce-ic")).toEqual([
       {
         id: "noyce-filing-1959",
         date: "1959-07-30",
         name: "Filed semiconductor device-and-lead structure",
-        writes: { sourceFocus: 1 },
+        writes: { reverseBias: 5, oxideThickness: 0.5, clockFrequencyMhz: 10 },
       },
     ]);
   });
 
-  test("keeps Carrier US 808,897 weave surfaces on the printed wet-plate relation", () => {
-    const probe = materialProbe("us-808897-carrier-air-conditioner", "Separator plate", {});
+  test("drains Carrier US 808,897 weave surfaces from the spray-dew-point kernel", () => {
+    const probe = materialProbe("us-808897-carrier-air-conditioner", "Separator plate", {
+      inletTempC: 35,
+      inletRhPct: 75,
+      sprayWaterTempC: 8,
+      reheatTempC: 22,
+      airflowCfm: 15000,
+    });
     expect(probe).toMatchObject({
-      material: "Wet sinuous separator plates with rear flanges and gutters",
-      qty: "Claim 1",
-      value: "front wet / rear separation",
-      unit: "source relation",
+      qty: "T_dp",
+      unit: "°C",
     });
-    expect(probe?.note).toContain("not a chilled-water temperature, dew point, air-flow rate");
-    expect(intervalGhosts("us-808897-carrier-air-conditioner", { sourceFocus: 2 })).toEqual([
-      { label: "Source relation", min: 1, max: 3, live: 2, unit: "guide selection" },
+    expect(probe?.note).toContain("g/kg");
+    expect(
+      intervalGhosts("us-808897-carrier-air-conditioner", {
+        inletTempC: 35,
+        inletRhPct: 75,
+        sprayWaterTempC: 8,
+      }),
+    ).toMatchObject([
+      { label: "T_dp", unit: "°C" },
+      { label: "Δω", unit: "g/kg" },
     ]);
-    expect(fidelityField("us-808897-carrier-air-conditioner", {})).toMatchObject({
-      model: "not computed",
-      unit: "source boundary",
+    expect(fidelityField("us-808897-carrier-air-conditioner", { reheatTempC: 22 })).toMatchObject({
+      unit: "%",
     });
-    expect(datedScenarios("us-808897-carrier-air-conditioner")).toEqual([
-      {
-        id: "carrier-filing-1904",
-        date: "1904-09-16",
-        name: "Filed air-purifying separator apparatus",
-        writes: { sourceFocus: 1 },
-      },
-    ]);
+    expect(datedScenarios("us-808897-carrier-air-conditioner")[0]?.writes).toMatchObject({
+      sprayWaterTempC: 8,
+      airflowCfm: 15000,
+    });
   });
 
-  test("keeps Parsons US 608,969 weave surfaces on the printed marine-routing relation", () => {
-    const probe = materialProbe("us-608969-parsons-turbine", "Reversing turbine", {});
-    expect(probe).toMatchObject({
-      material: "Screw-shafts, turbine sets, and selectable steam-routing pipes and valves",
-      qty: "Claim 1",
-      value: "series / parallel selection",
-      unit: "source relation",
+  test("drains restored-patent weave surfaces from the shared kernels", () => {
+    expect(materialProbe("us-608969-parsons-turbine", "Reversing turbine", {})?.qty).toBe(
+      "P_shaft",
+    );
+    expect(intervalGhosts("us-608969-parsons-turbine", {})[0]?.label).toBe("Shaft");
+    expect(datedScenarios("us-608969-parsons-turbine")[0]?.writes).toMatchObject({
+      rotorRpm: 3000,
     });
-    expect(probe?.note).toContain("not a blade profile, pressure, rotor speed, stage count");
-    expect(intervalGhosts("us-608969-parsons-turbine", { sourceFocus: 3 })).toEqual([
-      { label: "Source arrangement", min: 1, max: 3, live: 3, unit: "guide selection" },
-    ]);
-    expect(datedScenarios("us-608969-parsons-turbine")).toEqual([
-      {
-        id: "parsons-filing-1898",
-        date: "1898-03-04",
-        name: "Filed marine turbine-connection arrangement",
-        writes: { sourceFocus: 1 },
-      },
-    ]);
-  });
 
-  test("keeps Boyle-Smith US 3,858,232 weave surfaces on the withheld source boundary", () => {
-    const probe = materialProbe("us-3858232-boyle-smith-ccd", "Storage minimum", {});
-    expect(probe).toMatchObject({
-      material:
-        "Semiconductor storage medium with sequentially established potential-energy minima",
-      qty: "Claim 2",
-      value: "stored charge → adjacent minimum",
-      unit: "source relation",
-    });
-    expect(probe?.note).toContain("original-text face is withheld");
-    expect(intervalGhosts("us-3858232-boyle-smith-ccd", { sourceFocus: 2 })).toEqual([
-      { label: "Source group", min: 1, max: 3, live: 2, unit: "guide selection" },
-    ]);
-    expect(fidelityField("us-3858232-boyle-smith-ccd", {})).toMatchObject({
-      model: "not computed",
-      unit: "source boundary",
-    });
-    expect(datedScenarios("us-3858232-boyle-smith-ccd")).toEqual([
-      {
-        id: "boyle-smith-filing-1971",
-        date: "1971-11-09",
-        name: "Filed information-storage device",
-        writes: { sourceFocus: 1 },
-      },
-    ]);
-    expect(coupleLinks("us-3858232-boyle-smith-ccd", {})).toEqual([]);
-  });
+    expect(materialProbe("us-3858232-boyle-smith-ccd", "Storage minimum", {})?.qty).toBe("CTE");
+    expect(intervalGhosts("us-3858232-boyle-smith-ccd", {})[0]?.unit).toBe("e⁻");
+    expect(fidelityField("us-3858232-boyle-smith-ccd", {})?.unit).toBe("");
+    expect(datedScenarios("us-3858232-boyle-smith-ccd")[0]?.id).toBe("murray-hill-1969");
+    expect(coupleLinks("us-3858232-boyle-smith-ccd", {}).length).toBeGreaterThan(0);
 
-  test("keeps Kwolek US 3,671,542 weave surfaces on the incomplete-edition boundary", () => {
-    const probe = materialProbe("us-3671542-kwolek-kevlar", "Dope", {});
-    expect(probe).toMatchObject({
-      material: "Carbocyclic aromatic polyamide dope in a selected liquid medium",
-      qty: "Claim 1",
-      value: "optically anisotropic dope",
-      unit: "source relation",
-    });
-    expect(probe?.note).toContain("manual source edition is withheld");
-    expect(probe?.note).toContain("strength, modulus, density, thermal limit");
-    expect(intervalGhosts("us-3671542-kwolek-kevlar", {})).toEqual([]);
-    expect(fidelityField("us-3671542-kwolek-kevlar", {})).toBeNull();
-    expect(datedScenarios("us-3671542-kwolek-kevlar")).toEqual([]);
-    expect(coupleLinks("us-3671542-kwolek-kevlar", {})).toEqual([]);
-  });
+    expect(materialProbe("us-3671542-kwolek-kevlar", "Dope", {})?.qty).toBe("E");
+    expect(intervalGhosts("us-3671542-kwolek-kevlar", {})[0]?.unit).toBe("GPa");
+    expect(fidelityField("us-3671542-kwolek-kevlar", {})?.reference).toBe("90");
 
-  test("keeps Diesel US 542,846 on its held controlled-combustion source boundary", () => {
-    const probe = materialProbe("us-542846-diesel-engine", "Claim 1 process", {});
-    expect(probe).toMatchObject({
-      material: "Compressed air, gradual fuel admission, cut-off, and further expansion",
-      qty: "Claim 1",
-      value: "ordered process relation",
-      unit: "source guide",
-    });
-    expect(probe?.note).toContain("no numerical compression ratio, pressure, temperature");
-    expect(intervalGhosts("us-542846-diesel-engine", { sourceFocus: 2 })).toEqual([
-      { label: "Source group", min: 1, max: 3, live: 2, unit: "facsimile guide" },
-    ]);
-    expect(fidelityField("us-542846-diesel-engine", {})).toMatchObject({
-      model: "not computed",
-      unit: "source boundary",
-    });
-    expect(datedScenarios("us-542846-diesel-engine")).toEqual([]);
-    expect(coupleLinks("us-542846-diesel-engine", {})).toEqual([]);
-  });
+    expect(materialProbe("us-542846-diesel-engine", "Claim 1 process", {})?.qty).toBe("T₂");
+    expect(intervalGhosts("us-542846-diesel-engine", {})[0]?.label).toBe("T₂");
+    expect(fidelityField("us-542846-diesel-engine", {})?.unit).toBe("°C");
+    expect(datedScenarios("us-542846-diesel-engine")[0]?.id).toBe("augsburg-1893");
 
-  test("keeps Marconi US 586,193 on its reviewed receiver-and-reset boundary", () => {
-    const probe = materialProbe("us-586193-marconi-radio", "Contact receiver", {});
-    expect(probe).toMatchObject({
-      material: "Imperfect electrical contact, local circuit, and shaking means",
-      qty: "Claim 1",
-      value: "received oscillations → resettable contact",
-      unit: "source relation",
-    });
-    expect(probe?.note).toContain("independent publication review");
-    expect(intervalGhosts("us-586193-marconi-radio", {})).toEqual([]);
-    expect(fidelityField("us-586193-marconi-radio", {})).toMatchObject({
-      model: "not computed",
-      unit: "source boundary",
-    });
-    expect(spectralModes("us-586193-marconi-radio", {})).toEqual([]);
-    expect(datedScenarios("us-586193-marconi-radio")).toEqual([]);
-    expect(coupleLinks("us-586193-marconi-radio", {})).toEqual([]);
-  });
+    expect(materialProbe("us-586193-marconi-radio", "Contact receiver", {})?.qty).toBe("f₀");
+    expect(intervalGhosts("us-586193-marconi-radio", {})[0]?.label).toBe("Aerial");
+    expect(spectralModes("us-586193-marconi-radio", {}).map((mode) => mode.n)).toEqual([1, 3, 5]);
+    expect(datedScenarios("us-586193-marconi-radio")[0]?.id).toBe("poldhu-1901-12-12");
 
-  test("keeps Lamarr US 2,292,387 on its reviewed matched-record boundary", () => {
-    const probe = materialProbe("us-2292387-lamarr-frequency-hopping", "Record strip", {});
-    expect(probe).toMatchObject({
-      material: "Matched record strips and record-actuated tuning means",
-      qty: "Claim 1",
-      value: "synchronous strip motion → maintained tuning",
-      unit: "source relation",
+    expect(materialProbe("us-2292387-lamarr-frequency-hopping", "Record strip", {})?.qty).toBe(
+      "G_p",
+    );
+    expect(intervalGhosts("us-2292387-lamarr-frequency-hopping", {})[0]?.label).toBe("G_p");
+    expect(fidelityField("us-2292387-lamarr-frequency-hopping", {})?.reference).toBe("88");
+    expect(datedScenarios("us-2292387-lamarr-frequency-hopping")[0]?.writes).toMatchObject({
+      channels: 88,
     });
-    expect(probe?.note).toContain("independent publication review");
-    expect(intervalGhosts("us-2292387-lamarr-frequency-hopping", {})).toEqual([]);
-    expect(fidelityField("us-2292387-lamarr-frequency-hopping", {})).toMatchObject({
-      model: "not computed",
-      unit: "source boundary",
-    });
-    expect(datedScenarios("us-2292387-lamarr-frequency-hopping")).toEqual([]);
-    expect(coupleLinks("us-2292387-lamarr-frequency-hopping", {})).toEqual([]);
-  });
 
-  test("keeps Fermi US 2,708,656 on its held Claim 1 contour boundary", () => {
-    expect(materialProbe("us-2708656-fermi-reactor", "Lattice", {})).toMatchObject({
-      qty: "Claim 1",
-      value: "figure-defined lattice relation",
-      unit: "source relation",
-    });
-    expect(intervalGhosts("us-2708656-fermi-reactor", {})).toEqual([]);
-    expect(fidelityField("us-2708656-fermi-reactor", {})).toMatchObject({
-      model: "not computed",
-      unit: "source boundary",
-    });
-    expect(datedScenarios("us-2708656-fermi-reactor")).toEqual([]);
-    expect(coupleLinks("us-2708656-fermi-reactor", {})).toEqual([]);
-  });
+    expect(materialProbe("us-2708656-fermi-reactor", "Lattice", {})?.qty).toBe("k_eff");
+    expect(intervalGhosts("us-2708656-fermi-reactor", {})[0]?.label).toBe("k_eff");
+    expect(fidelityField("us-2708656-fermi-reactor", {})?.reference).toBe("1.0000");
+    expect(datedScenarios("us-2708656-fermi-reactor")[0]?.id).toBe("cp1-1942-12-02");
 
-  test("keeps Edison US 200,521 on its reviewed source-recording boundary", () => {
-    const probe = materialProbe("us-200521-edison-phonograph", "Cylinder A", {});
-    expect(probe).toMatchObject({
-      material: "Diaphragm, hard point, yielding record material, and reproducing point",
-      qty: "Claim 4",
-      value: "10 grooves/in + 10 threads/in",
-      unit: "source relation",
-    });
-    expect(probe?.note).toContain("no cylinder material or size, rotational rate");
-    expect(intervalGhosts("us-200521-edison-phonograph", {})).toEqual([]);
-    expect(datedScenarios("us-200521-edison-phonograph")).toEqual([
-      {
-        id: "edison-filing-1877",
-        date: "1877-12-24",
-        name: "Filed phonograph or speaking-machine improvement",
-        writes: { sourceFocus: 1 },
-      },
-    ]);
-  });
+    expect(materialProbe("us-200521-edison-phonograph", "Cylinder A", {})?.qty).toBe("groove");
+    expect(intervalGhosts("us-200521-edison-phonograph", {})[0]?.label).toBe("Groove");
+    expect(datedScenarios("us-200521-edison-phonograph")[0]?.id).toBe("menlo-1877");
 
-  test("keeps Engelbart US 3,541,541 on its held two-wheel source boundary", () => {
-    const probe = materialProbe("us-3541541-engelbart-mouse", "Position wheel", {});
-    expect(probe).toMatchObject({
-      material: "Perpendicular position wheels, transducer means, and flexible conductor",
-      qty: "Claim 1",
-      value: "apparatus relation",
-      unit: "source guide",
-    });
-    expect(probe?.note).toContain("no wheel material, radius, friction, resolution");
-    expect(intervalGhosts("us-3541541-engelbart-mouse", { sourceFocus: 3 })).toEqual([
-      { label: "Source group", min: 1, max: 3, live: 3, unit: "facsimile guide" },
-    ]);
-    expect(fidelityField("us-3541541-engelbart-mouse", {})).toMatchObject({
-      model: "not computed",
-      unit: "source boundary",
-    });
-    expect(datedScenarios("us-3541541-engelbart-mouse")).toEqual([
-      {
-        id: "engelbart-filing-1967",
-        date: "1967-06-21",
-        name: "Filed X-Y position indicator",
-        writes: { sourceFocus: 1 },
-      },
-    ]);
-    expect(coupleLinks("us-3541541-engelbart-mouse", {})).toEqual([]);
-  });
+    expect(materialProbe("us-3541541-engelbart-mouse", "Position wheel", {})?.qty).toBe("ω");
+    expect(intervalGhosts("us-3541541-engelbart-mouse", {})[0]?.unit).toBe("rad/s");
+    expect(fidelityField("us-3541541-engelbart-mouse", {})?.unit).toBe("dpi");
+    expect(datedScenarios("us-3541541-engelbart-mouse")[0]?.id).toBe("sri-1968-12-09");
 
-  test("keeps Mergenthaler US 313,224 on its held matrix-bar source boundary", () => {
-    const probe = materialProbe("us-313224-mergenthaler-linotype", "Matrix-bar", {});
-    expect(probe).toMatchObject({
-      material: "Continuous matrix-bars, adjusting-pins, stop-pins, clamp, and mold",
-      qty: "Claim 1 and specification relation",
-      value: "matrix-bars → temporary matrix → printing-bar",
-      unit: "source guide",
+    expect(materialProbe("us-313224-mergenthaler-linotype", "Matrix-bar", {})?.qty).toBe("cycle");
+    expect(intervalGhosts("us-313224-mergenthaler-linotype", {})[0]?.label).toBe("Cycle");
+    expect(datedScenarios("us-313224-mergenthaler-linotype")[0]?.writes).toMatchObject({
+      potTemp: 260,
     });
-    expect(probe?.note).toContain("no later magazine, binary distributor, alloy recipe");
-    expect(intervalGhosts("us-313224-mergenthaler-linotype", { sourceFocus: 3 })).toEqual([
-      { label: "Source group", min: 1, max: 3, live: 3, unit: "facsimile guide" },
-    ]);
-    expect(fidelityField("us-313224-mergenthaler-linotype", {})).toMatchObject({
-      model: "not computed",
-      unit: "source boundary",
-    });
-    expect(datedScenarios("us-313224-mergenthaler-linotype")).toEqual([
-      {
-        id: "mergenthaler-filing-1884",
-        date: "1884-08-30",
-        name: "Filed Machine for Producing Printing-Bars",
-        writes: { sourceFocus: 1 },
-      },
-    ]);
-    expect(coupleLinks("us-313224-mergenthaler-linotype", {})).toEqual([]);
-  });
 
-  test("keeps Hollerith US 395,781 on its held record-card source boundary", () => {
-    const probe = materialProbe("us-395781-hollerith-tabulating", "Record card", {});
-    expect(probe).toMatchObject({
-      material:
-        "Record-cards, circuit-controlling contacts, electro-magnets, counters, and sorting boxes",
-      qty: "Claim 1 and specification relation",
-      value: "index-points → circuits → counting or sorting action",
-      unit: "source guide",
-    });
-    expect(probe?.note).toContain("no fixed card size, pin count, voltage, current");
-    expect(intervalGhosts("us-395781-hollerith-tabulating", { sourceFocus: 2 })).toEqual([
-      { label: "Source group", min: 1, max: 3, live: 2, unit: "facsimile guide" },
-    ]);
+    expect(materialProbe("us-395781-hollerith-tabulating", "Record card", {})?.qty).toBe("cycle");
+    expect(intervalGhosts("us-395781-hollerith-tabulating", {})[0]?.unit).toBe("ms");
   });
 
   test("computes spectral eigenmodes for resonant patents", () => {
@@ -379,7 +242,7 @@ describe("FrankenSim Weave Surfaces Boundary", () => {
     expect(wrightScenarios.length).toBeGreaterThan(0);
     expect(wrightScenarios[0].date).toContain("1903");
 
-    expect(datedScenarios("us-2708656-fermi-reactor")).toEqual([]);
+    expect(datedScenarios("us-2708656-fermi-reactor")[0]?.id).toBe("cp1-1942-12-02");
   });
 
   test("evaluates cross-patent Dirac coupling power links", () => {

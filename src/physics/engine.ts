@@ -1095,11 +1095,13 @@ export const FrankenSimEngine = {
     inletRhPct?: number;
     sprayWaterTempC?: number;
     reheatTempC?: number;
+    airflowCfm?: number;
   }) {
     const tIn = params.inletTempC ?? 35;
     const rhIn = params.inletRhPct ?? 75;
     const tSpray = params.sprayWaterTempC ?? 8;
     const tReheat = params.reheatTempC ?? 22;
+    const airflowCfm = Math.max(0, params.airflowCfm ?? 15000);
     // Psychrometric dew point approximation
     const a = 17.27;
     const b = 237.7;
@@ -1119,6 +1121,10 @@ export const FrankenSimEngine = {
         ),
       ),
     );
+    const airMassKgPerS = Number((airflowCfm * 0.00047194745 * 1.2).toFixed(4));
+    const coolingWatts = Number(
+      ((moistureRemovedGPerKg / 1000) * 2.45e6 * airMassKgPerS).toFixed(0),
+    );
 
     return {
       dewPointInC,
@@ -1126,6 +1132,9 @@ export const FrankenSimEngine = {
       moistureRemovedGPerKg,
       finalAirTempC: tReheat,
       finalRhPct,
+      airflowCfm,
+      airMassKgPerS,
+      coolingWatts,
     };
   },
 

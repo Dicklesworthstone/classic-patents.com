@@ -118,6 +118,9 @@ the visitor can see or hear the kernel change the instrument.
 - [x] P5.25 Daimler hot-tube glow + stall below 600 °C; BMEP / diff wheels shown
 - [x] P5.26 Davenport electric sparks scale with shaft watts
 - [x] P5.27 Noyce HUD shows depletion width and breakdown margin
+- [x] P5.377 Public catalog ids (Noyce, Goddard, Fermi, Marconi, Lamarr, Engelbart, Diesel, Parsons, CCD, Kevlar, Linotype, Hollerith) share the kernel telemetry seats; badge no longer stays on sourceFocus after the 3D restore
+- [x] P5.378 Weave probes, ghosts, fidelity, smoke, spectra, and dated scenarios for those same ids drain the shared step (Carrier left on the wet-plate source guide)
+- [x] P5.379 Carrier US 808,897 badge/2D/3D/weave/energy share stepCarrierAirConditioner; catalog ids refuse sourceFocus sliders
 - [x] P5.28 Catalog kernels own Daimler / Hollerith; engine and weave call them
 - [x] P5.29 Morse armature pull from I² force, not a binary key
 - [x] P5.30 Bell diaphragm throw from kernel µm
