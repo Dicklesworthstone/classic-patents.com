@@ -631,10 +631,89 @@ function manualClaimText(number: number): string {
 
 export const noyceIcRecordCorrections: Pick<
   Patent,
-  "originalText" | "claims" | "drawings" | "stats"
+  | "shortTitle"
+  | "subtitle"
+  | "summary"
+  | "heroQuote"
+  | "originalText"
+  | "plainEnglishExplanation"
+  | "claims"
+  | "drawings"
+  | "historicalContext"
+  | "tags"
+  | "stats"
 > = {
+  // The legacy research record deliberately remains non-exported so that its
+  // older prose can be compared during review. Every visitor-facing field it
+  // supplied is explicitly replaced here; do not let a partial object spread
+  // make experimental reconstruction copy public again.
+  shortTitle: "Oxide-insulated semiconductor leads",
+  subtitle:
+    "Metal strips carried over surface-reaching P-N junctions by retained semiconductor oxide",
+  summary:
+    "US 2,981,877 describes semiconductor bodies whose surface-reaching P-N junctions remain covered by an oxide layer except at selected contacts. Metal strips adhere to that oxide and cross the junction without shorting it. The specification illustrates one transistor, a multi-device circuit, and a parallel-strip variant; the grant issued on April 25, 1961, from an application filed July 30, 1959.",
+  heroQuote:
+    "This invention relates to electrical circuit structures incorporating semiconductor devices.",
   originalText:
     "This catalogue excerpt is not the archival edition. Open Original Patent Text for the complete manually prepared specification, all ten claims, all seven figures, and the source-cited references.",
+  plainEnglishExplanation: {
+    overview:
+      "Noyce's specification addresses a practical routing problem inside a semiconductor body. Contacts must reach selected P-type and N-type regions, yet a lead that crosses a surface-reaching P-N junction must not join the two sides electrically. The proposed construction retains an oxide of the semiconductor across the junction and places a metal strip on that insulating surface, opening the oxide only where a contact is intended.",
+    coreMechanism:
+      "First form the semiconductor regions and their surface-reaching junctions. During diffusion in an oxidizing atmosphere, an oxide layer can form on the exposed silicon. Instead of stripping it away everywhere, clear only the chosen contact areas by photoengraving. Deposit metal over both the cleared areas and the remaining oxide, then remove unwanted metal. A strip on oxide can pass over a junction; a contact through a cleared window can reach a selected region. The patent's examples use this relationship for nested transistor contacts, a multi-device circuit, and parallel-strip contacts.",
+    mechanicalBreakdown: [
+      {
+        title: "Surface-reaching dished junctions",
+        summary:
+          "A P-N boundary reaches the semiconductor surface, making its geometry available for both insulation and contact layout.",
+        technicalDetails:
+          "The source calls several such boundaries dished junctions. In the single-transistor example, circular surface edges let a central contact and a surrounding C-shaped contact reach different regions. The important constraint is geometric: contacts on opposite sides of the junction remain separate while the oxide crosses another portion of that same boundary.",
+        archaicTerm: "Dished junction",
+        modernEquivalent: "Surface-reaching P-N junction with a defined planar perimeter",
+      },
+      {
+        title: "Oxide retained as a lead bridge",
+        summary:
+          "The oxide is not merely a coating to remove before contacting the silicon; it carries the crossing portion of a metal lead.",
+        technicalDetails:
+          "The specification describes an insulating layer consisting essentially of oxide of the semiconductor, adherent to the surface and extending across the junction. In the illustrated single-transistor structure, oxide tongues bridge the nested junction edges. The patent reports that the oxide layer may be about one or two microns thick in that example, while making no general performance claim for every device made by the process.",
+        archaicTerm: "Oxide layer congenitally united with the body",
+        modernEquivalent: "Thermally formed insulating surface oxide",
+      },
+      {
+        title: "Contact windows, deposited metal, and photoengraving",
+        summary:
+          "Selected oxide areas are cleared for contacts; the remaining oxide insulates metal strips laid across it.",
+        technicalDetails:
+          "The source permits vacuum deposition through a mask or deposition followed by photoengraving away unwanted metal. It also describes alloying aluminum contacts to silicon to make ohmic contacts. These are alternative fabrication routes in the specification, not a claim that every later integrated circuit uses the same materials, temperatures, or dimensions.",
+        archaicTerm: "Photoengraving",
+        modernEquivalent: "Patterned resist-and-etch process",
+      },
+      {
+        title: "Multi-device circuit and reverse-biased junctions",
+        summary:
+          "The larger example combines rectifying junctions, a transistor, resistive leads, and junction capacitances in one body.",
+        technicalDetails:
+          "In Figs. 3 through 5, the source treats junctions 14 and 15 as rectifiers and explains that a reverse-biased junction 18, and later junction 22, acts as a capacitance. It is an illustrative detector, filtering, and transistor-amplifier arrangement. The patent does not state an operating frequency, clock rate, dopant concentration, or a universal speed limit for the arrangement.",
+        archaicTerm: "Crystal diode rectifier",
+        modernEquivalent: "P-N junction used for rectification",
+      },
+    ],
+    scientificPrinciples: [
+      {
+        principle: "Electrical insulation across a P-N junction",
+        explanation:
+          "A conducting strip can cross the map of a junction only when the strip is kept electrically separate from the semiconductor below it. Here that separation comes from a retained oxide layer. The patent gives geometry and fabrication relationships, not a source equation for capacitance, depletion width, or breakdown voltage.",
+      },
+      {
+        principle: "Reverse-biased junction capacitance",
+        explanation:
+          "The specification expressly uses reverse-biased junctions 18 and 22 as capacitances in the illustrated circuit. It explains the effect through charge layers on both sides of the junction and says the value at junction 18 can be varied by changing its area. No numeric capacitance value or bias voltage is printed in the grant.",
+      },
+    ],
+    whyItMattersToday:
+      "The document is valuable because it makes the routing constraint visible in concrete layouts: a lead can cross an insulating oxide where a P-N junction reaches the surface, while selected windows still provide contact to particular semiconductor regions. The original text shows the legal and geometric details behind that idea rather than treating the patent as a generic history of all later microelectronics.",
+  },
   claims: [
     {
       number: 1,
@@ -815,6 +894,29 @@ export const noyceIcRecordCorrections: Pick<
       svgType: "noyce-ic",
       callouts: [],
     },
+  ],
+  historicalContext: {
+    problemStatement:
+      "The specification identifies the problem as making electrical connections to semiconductor regions while building compact unitary circuit structures that can include numerous devices in one body of material.",
+    priorArtLimitations: [
+      "The source says prior practice removed the oxide layer after diffusion except where contacts were to be made, losing the insulating surface needed for a lead to cross a junction.",
+      "The source describes the difficulty of attaching external leads directly to small emitter and base contacts without damaging the semiconductor body through applied heat or pressure.",
+    ],
+    breakthroughInsight:
+      "Retain the semiconductor oxide across selected junction edges and use it as the insulating support for deposited metal strips, while clearing only the contact areas that need direct electrical connection.",
+    patentWars: [],
+    civilizationalImpact:
+      "The grant provides a primary-source record of a planar semiconductor lead structure: its legal scope, figure geometry, fabrication alternatives, and the illustrative multi-device circuit are available together for close technical reading.",
+    aftermath:
+      "The patent issued on April 25, 1961. This catalogue does not infer a litigation result, a priority award, or a later-product lineage from the grant alone.",
+  },
+  tags: [
+    "Robert N. Noyce",
+    "Semiconductor device-and-lead structure",
+    "P-N junction",
+    "Silicon oxide",
+    "Photoengraving",
+    "Planar metal lead",
   ],
   stats: { totalClaims: 10, independentClaims: 9 },
 };

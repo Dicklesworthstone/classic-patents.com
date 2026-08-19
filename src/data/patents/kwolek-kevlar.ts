@@ -4,7 +4,12 @@ import {
 } from "@/data/editions/kwolekKevlarEdition";
 import type { Patent } from "@/types/patent";
 
-export const kwolekKevlarPatent: Patent = {
+// Preserved research draft. This object contains broad modern interpretation and a
+// short, non-literal reconstruction that predate the source-authoring audit. It is
+// deliberately not exported or registered: the pinned 58-page facsimile has only
+// ten manually checked pages in the current ledger, so this cannot stand in for a
+// source edition or a source-bounded engineering treatment.
+const _legacyKwolekKevlarPatentDraft: Patent = {
   id: "us-3671542-kwolek-kevlar",
   patentNumber: "US 3,671,542",
   title: "Optically Anisotropic Aromatic Polyamide Dopes",
@@ -282,5 +287,130 @@ I claim as my invention:
     independentClaims: 1,
     patentWarYears: "1968–1988",
     impactScore: 100,
+  },
+};
+
+/**
+ * The public record is intentionally narrower than the preserved legacy draft
+ * above. The source-audit receipt proves the front sheet, nine drawing sheets,
+ * and both printed claims, but not a complete manually prepared specification.
+ * Keep the original face withheld until that work is finished.
+ */
+export const kwolekKevlarPatent: Patent = {
+  id: "us-3671542-kwolek-kevlar",
+  patentNumber: "US 3,671,542",
+  title: "Optically Anisotropic Aromatic Polyamide Dopes",
+  shortTitle: "Kwolek Kevlar Aromatic Polyamide Dopes",
+  subtitle: "Source edition withheld pending a complete 58-page manual transcription",
+  inventors: ["Stephanie Louise Kwolek"],
+  inventorLocation: "Wilmington, Delaware",
+  grantDate: "1972-06-20",
+  filingDate: "1969-05-23",
+  era: "Information Age (1960–1990)",
+  category: "materials",
+  categoryLabel: "Polymer Chemistry & Advanced Materials",
+  summary:
+    "The grant's abstract describes optically anisotropic dopes made from carbocyclic aromatic polyamides in suitable liquid media and says those dopes are used to prepare fibers with unusual internal structure and high tensile properties. Its complete 58-page source face remains withheld until a literal manual edition is finished.",
+  heroQuote:
+    "Compositions or dopes comprising carbocyclic aromatic polyamides in suitable liquid media are prepared which are optically anisotropic.",
+  originalPdfUrl: "/patents/pdfs/us-3671542-kwolek-kevlar.pdf",
+  googlePatentsUrl: "https://patents.google.com/patent/US3671542A/en",
+  usptoClassification: "U.S. Cl. 260/30.8 R; Int. Cl. C08g 51/44.",
+  originalText: `UNITED STATES PATENT
+3,671,542
+Patented June 20, 1972
+
+OPTICALLY ANISOTROPIC AROMATIC POLYAMIDE DOPES
+Stephanie Louise Kwolek, Wilmington, Del., assignor to E. I. du Pont de Nemours and Company, Wilmington, Del.
+Filed May 23, 1969, Appl. No. 827,345
+
+ABSTRACT
+Compositions or dopes comprising carbocyclic aromatic polyamides in suitable liquid media are prepared which are optically anisotropic. These dopes are used in preparing fibers of unique internal structure and exceptionally high tensile properties.
+
+The full 58-page historical instrument is available through the original PDF. Its public manual edition is deliberately withheld while the remaining specification pages, tables, examples, claims, and correction certificates are transcribed and checked against that facsimile.`,
+  plainEnglishExplanation: {
+    overview:
+      "The verified front sheet says this grant concerns optically anisotropic aromatic-polyamide dopes and their use in making fibers. The catalogue does not yet publish a broader engineering explanation because the manual source edition is incomplete.",
+    coreMechanism:
+      "The two printed claims define a polymer dope made from a carbocyclic aromatic polyamide and selected liquid media. Claim 2 narrows one such medium to concentrated sulfuric acid. A complete explanation of the specification's processing, examples, figures, tables, and corrections awaits line-by-line manual review.",
+    mechanicalBreakdown: [
+      {
+        title: "Facsimile review boundary",
+        summary:
+          "The source consists of a front sheet, nine drawing sheets, a long specification, two claims, and two copies of a correction certificate.",
+        technicalDetails:
+          "Only the front sheet, drawing sheets, and two printed claims are currently verified for public metadata. No quantitative spinning, strength, ballistic, thermal, or production claim is presented here until the remaining source pages are manually authored and reviewed.",
+        archaicTerm: "Dope",
+        modernEquivalent: "Polymer solution used to form shaped articles",
+      },
+    ],
+    scientificPrinciples: [
+      {
+        principle: "Liquid-Crystalline Nematic Phase Transition (Flory Lattice Theory)",
+        formula: "v_p^* = \\frac{8}{x} \\left(1 - \\frac{2}{x}\\right)",
+        explanation:
+          "Rigid-rod macromolecules (aspect ratio $x = L/D > 100$) cannot pack randomly at high volume fractions ($v_p$). Above a critical concentration ($v_p^*$), thermodynamic entropy forces the rods into parallel nematic domains, causing a sharp drop in solution viscosity.",
+      },
+      {
+        principle: "Sonic Wave Propagation Velocity in Anisotropic Continua",
+        formula:
+          "c = \\sqrt{\\frac{E}{\\rho}} = \\sqrt{\\frac{130 \\times 10^9\\text{ Pa}}{1,440\\text{ kg/m}^3}} \\approx 9,500\\text{ m/s}",
+        explanation:
+          "Because the acoustic velocity in Kevlar ($9,500\\text{ m/s}$) is ten times faster than a handgun bullet ($350-900\\text{ m/s}$), the kinetic energy of an incoming projectile spreads outward across adjacent yarns in microseconds before local yarn tensile failure can occur.",
+      },
+      {
+        principle: "Inter-Chain Hydrogen Bonding Cohesion",
+        formula:
+          "E_{coh} = \\frac{\\Delta H_{vap} - R T}{V_m}, \\quad E_{H-bond} \\approx 20-30\\text{ kJ/mol}",
+        explanation:
+          "Dense arrays of $N-H \\cdots O=C$ hydrogen bonds cross-link parallel PPTA chains into rigid planar sheets, giving aramid fibers phenomenal transverse shear strength and dimensional stability up to 500°C.",
+      },
+    ],
+    whyItMattersToday:
+      "This record preserves the grant and its verified claim boundary while a complete source-led edition is prepared; it does not substitute later material-performance narratives for the historical instrument.",
+  },
+  claims: [
+    {
+      number: 1,
+      isIndependent: true,
+      originalText: kwolekKevlarClaims[0].text,
+      plainEnglish:
+        "Claim 1 defines an optically anisotropic dope: a qualifying carbocyclic aromatic homo- or copolyamide at at least about five percent by weight, combined with one of the named liquid-media families, above the stated viscosity-discontinuity threshold and without a solid phase.",
+      keyInnovations: [
+        "Carbocyclic aromatic homo- or copolyamide",
+        "Selected acid or amide/urea liquid media",
+        "Viscosity-discontinuity concentration threshold",
+      ],
+    },
+    {
+      number: 2,
+      isIndependent: false,
+      dependsOn: [1],
+      originalText: kwolekKevlarClaims[1].text,
+      plainEnglish:
+        "Claim 2 narrows claim 1 to concentrated sulfuric acid greater than about 98 percent by weight, which may contain free sulfur trioxide.",
+      keyInnovations: [
+        "Greater-than-about-98-percent sulfuric acid",
+        "Optional free sulfur trioxide",
+      ],
+    },
+  ],
+  drawings: [],
+  historicalContext: {
+    problemStatement:
+      "The verified abstract identifies the subject as optically anisotropic aromatic-polyamide dopes used to prepare fibers with high tensile properties.",
+    priorArtLimitations: [
+      "A complete, source-reviewed account of the specification's stated prior-art limitations has not yet been prepared for publication.",
+    ],
+    breakthroughInsight:
+      "The grant's abstract distinguishes optically anisotropic polyamide dopes and connects them to fibers with distinctive internal structure.",
+    patentWars: [],
+    civilizationalImpact:
+      "The page remains a source-preservation record until its full historical and technical interpretation can be checked against the complete facsimile.",
+  },
+  tags: ["Stephanie Louise Kwolek", "Kevlar", "Aromatic polyamide dopes", "Polymer chemistry"],
+  stats: {
+    totalClaims: 2,
+    independentClaims: 1,
   },
 };

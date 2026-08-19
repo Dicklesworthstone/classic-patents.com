@@ -69,8 +69,10 @@ be corrected only as part of a later complete source-authoring pass.
 ## Editorial and preservation boundary
 
 - Source-authoring WIP module:
-  `src/data/editions/kwolekKevlarEdition.ts`. It is deliberately not a
-  `CuratedSpecificationEdition` and has no public registration.
+  `src/data/editions/kwolekKevlarEdition.ts`. It preserves a clearly named
+  legacy reconstruction for research comparison alongside explicit WIP
+  metadata, but exports no visitor-facing `CuratedSpecificationEdition` and
+  has no public registration.
 - WIP ledger:
   `public/patents/transcripts/us-3671542-kwolek-kevlar-reviewed.txt`. Its
   first line explicitly says it is incomplete and not a reviewed
@@ -95,7 +97,7 @@ be corrected only as part of a later complete source-authoring pass.
   three-page correction-certificate scans.
 - The existing source-text asset and legacy transcript are not a reviewed
   transcription and were not used to author a manual edition in this lane.
-- No archival-edition binding or companion map has been created. This preserves
-  the fail-closed publication boundary until every source line, formula,
-  table, claim, and correction can be typed and rechecked directly against the
-  facsimile.
+- No archival-edition binding or companion map is present on the public record.
+  This preserves the fail-closed publication boundary until every source line,
+  formula, table, claim, and correction can be typed and rechecked directly
+  against the facsimile.

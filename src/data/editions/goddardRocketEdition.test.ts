@@ -55,6 +55,24 @@ describe("goddardRocketArchivalEdition", () => {
     }
   });
 
+  test("defines period technical terms at their exact source occurrences", () => {
+    const terms = goddardRocketArchivalEdition.blocks.flatMap((block) => {
+      if (block.kind !== "paragraph") return [];
+      return block.inlines.filter((inline) => inline.kind === "term");
+    });
+
+    expect(terms.map((term) => term.text)).toEqual([
+      "combustion chamber",
+      "truncated cone",
+      "backwardly curved tubes or recesses",
+      "key",
+      "firing tube",
+      "gyroscope",
+      "three-phase induction motor",
+    ]);
+    for (const term of terms) expect(term.definition.split(/\s+/).length).toBeGreaterThan(8);
+  });
+
   test("provides a complete-coverage, non-lossy companion for every source paragraph", () => {
     for (const [index, block] of goddardRocketArchivalEdition.blocks.entries()) {
       if (block.kind !== "paragraph") continue;

@@ -6,6 +6,11 @@ import type {
 
 const text = (value: string): CuratedSpecificationInlines => [{ kind: "text", text: value }];
 const p = (inlines: CuratedSpecificationInlines) => ({ kind: "paragraph" as const, inlines });
+const term = (value: string, definition: string): CuratedSpecificationInline => ({
+  kind: "term",
+  text: value,
+  definition,
+});
 const claim = (number: number, value: string) => ({
   kind: "claim" as const,
   number,
@@ -164,14 +169,31 @@ export const goddardRocketArchivalEdition: CuratedSpecificationEdition = {
       fig("Fig. 1"),
       {
         kind: "text",
-        text: ", the rocket apparatus comprises a primary rocket having a casing containing a combustion chamber 10 from which depends an elongated tapered tube 11. The explosive material is indicated as a plurality of disks 12 secured within the chamber 10 by a casting 13. The disks 12 are preferably formed of a series of materials having progressively increasing rates of combustion so that as each disk is ignited it burns with increased rapidity and keeps the pressure in the chamber 10 constant, for which specific pressure the tapered tube 11 is designed. Similar results may be attained by using the explosive in a single mass of progressively varying composition in place of the plurality of disks here shown, and this construction is also within the scope of my invention.",
+        text: ", the rocket apparatus comprises a primary rocket having a casing containing a ",
+      },
+      term(
+        "combustion chamber",
+        "The enclosed space in which the propelling explosive burns before its gases enter the tapered discharge tube.",
+      ),
+      {
+        kind: "text",
+        text: " 10 from which depends an elongated tapered tube 11. The explosive material is indicated as a plurality of disks 12 secured within the chamber 10 by a casting 13. The disks 12 are preferably formed of a series of materials having progressively increasing rates of combustion so that as each disk is ignited it burns with increased rapidity and keeps the pressure in the chamber 10 constant, for which specific pressure the tapered tube 11 is designed. Similar results may be attained by using the explosive in a single mass of progressively varying composition in place of the plurality of disks here shown, and this construction is also within the scope of my invention.",
       },
     ]),
-    p(
-      text(
-        "In the ordinary forms of rocket apparatus, the gases of combustion are discharged through an opening at the rear of the apparatus but I have discovered that by providing the elongated tapered tube 11, I am able to greatly increase the efficiency of the device. The tube is shown in the form of a truncated cone of slight taper and the length of the tube should be not less than three times as great as its longest diameter, while a greater ratio than this will often be necessary to obtain satisfactory results. This construction takes advantage of the expansion of the gases as they pass through the tube and also allows the combustion of the gases to be completed before they finally issue from the tube. By experimentally determining the best proportions for the tube 11, a maximum percentage of the heat energy of the disks 12 may be transformed into kinetic energy. A fuse 14 is indicated which extends downwardly within the tube 11 and provides means by which the disks may be ignited.",
+    p([
+      {
+        kind: "text",
+        text: "In the ordinary forms of rocket apparatus, the gases of combustion are discharged through an opening at the rear of the apparatus but I have discovered that by providing the elongated tapered tube 11, I am able to greatly increase the efficiency of the device. The tube is shown in the form of a ",
+      },
+      term(
+        "truncated cone",
+        "A cone with its tip cut off, leaving two circular ends of different diameters; here it describes the slight taper of tube 11.",
       ),
-    ),
+      {
+        kind: "text",
+        text: " of slight taper and the length of the tube should be not less than three times as great as its longest diameter, while a greater ratio than this will often be necessary to obtain satisfactory results. This construction takes advantage of the expansion of the gases as they pass through the tube and also allows the combustion of the gases to be completed before they finally issue from the tube. By experimentally determining the best proportions for the tube 11, a maximum percentage of the heat energy of the disks 12 may be transformed into kinetic energy. A fuse 14 is indicated which extends downwardly within the tube 11 and provides means by which the disks may be ignited.",
+      },
+    ]),
     p([
       {
         kind: "text",
@@ -180,14 +202,31 @@ export const goddardRocketArchivalEdition: CuratedSpecificationEdition = {
       fig("Fig. 3"),
       {
         kind: "text",
-        text: " and comprising a plurality of substantially radial but backwardly curved tubes or recesses 15 in which is placed explosive material 16. It will be apparent that when this material is ignited the discharge of the gases therefrom will react to produce rotation of the apparatus.",
+        text: " and comprising a plurality of substantially radial but ",
+      },
+      term(
+        "backwardly curved tubes or recesses",
+        "Passages bent opposite the intended spin direction; escaping gas reacts against that curvature to turn the rocket.",
+      ),
+      {
+        kind: "text",
+        text: " 15 in which is placed explosive material 16. It will be apparent that when this material is ignited the discharge of the gases therefrom will react to produce rotation of the apparatus.",
       },
     ]),
-    p(
-      text(
-        "To provide for igniting the several charges 16 simultaneously, I arrange within the outer surface of each charge a fine metal filament or heating element 17, these filaments being all connected in series by wires 18 with a battery 19 and a key 20. The closing of the key 20 sends a current through the wires 18 and instantaneously raises the temperature of the filaments 17 and simultaneously ignites the several charges 16. The explosive force of the gases from the material 16 forces the filaments 17 and the wires 18 out of the tubes 15 so that they can not thereafter interfere with the rotation or flight of the apparatus.",
+    p([
+      {
+        kind: "text",
+        text: "To provide for igniting the several charges 16 simultaneously, I arrange within the outer surface of each charge a fine metal filament or heating element 17, these filaments being all connected in series by wires 18 with a battery 19 and a ",
+      },
+      term(
+        "key",
+        "Period electrical usage for a switch: closing key 20 completes the circuit and heats the ignition filaments.",
       ),
-    ),
+      {
+        kind: "text",
+        text: " 20. The closing of the key 20 sends a current through the wires 18 and instantaneously raises the temperature of the filaments 17 and simultaneously ignites the several charges 16. The explosive force of the gases from the material 16 forces the filaments 17 and the wires 18 out of the tubes 15 so that they can not thereafter interfere with the rotation or flight of the apparatus.",
+      },
+    ]),
     p([
       {
         kind: "text",
@@ -199,11 +238,20 @@ export const goddardRocketArchivalEdition: CuratedSpecificationEdition = {
         text: " in which the rocket is supported upon ball bearings 22 and 23. After the charges 16 have been ignited and the desired speed of rotation has been attained, the fuse 14 may be lighted and the flight of the rocket will commence.",
       },
     ]),
-    p(
-      text(
-        "In order that the apparatus carried by the rocket may be given a further flight after the propelling charge of the main apparatus has been substantially consumed, I provide an elongated tubular projection or firing tube 24 at the forward extremity of the casting 13. Within this tube I provide an auxiliary rocket comprising a combustion chamber 25 having a rearwardly extended tapered tube 26 and containing a plurality of disks of explosive material 27, these parts being substantially similar to the corresponding parts in the main apparatus but constructed on a somewhat reduced scale.",
+    p([
+      {
+        kind: "text",
+        text: "In order that the apparatus carried by the rocket may be given a further flight after the propelling charge of the main apparatus has been substantially consumed, I provide an elongated tubular projection or ",
+      },
+      term(
+        "firing tube",
+        "The forward tube 24 that acts as a launching barrel for the smaller auxiliary rocket after the main charge is substantially consumed.",
       ),
-    ),
+      {
+        kind: "text",
+        text: " 24 at the forward extremity of the casting 13. Within this tube I provide an auxiliary rocket comprising a combustion chamber 25 having a rearwardly extended tapered tube 26 and containing a plurality of disks of explosive material 27, these parts being substantially similar to the corresponding parts in the main apparatus but constructed on a somewhat reduced scale.",
+      },
+    ]),
     p(
       text(
         "A fuse 28 extends from the explosive material 27 through an opening in the casting 13 and projects a short distance into the last disk 12 of explosive material in the chamber 10. Thus when the propelling charge in the main rocket apparatus is substantially exhausted, the fuse 28 will be ignited and the firing tube 24 will act as a gun from which the auxiliary rocket will be projected for further flight. As the auxiliary rocket is of much less weight than the combined weight of the primary and auxiliary rockets, a given amount of explosive in the auxiliary rocket will give a much greater increase in flight than the same amount of explosive would produce if burned in the primary rocket.",
@@ -228,7 +276,23 @@ export const goddardRocketArchivalEdition: CuratedSpecificationEdition = {
     p([
       {
         kind: "text",
-        text: "In order that the support 33 may not partake of the rotation of the head 29, I provide within the support a gyroscope 37 mounted in bearings 38 upon said support and to provide the high initial speed of rotation necessary for the operation of the gyroscope, I construct the latter as the armature of a three-phase induction motor having field coils 39, mounted on a frame 40 also secured to the support 33. The field coils are connected to wires 41 secured within an insulating plug 42 in the support 38. Wires 43 may be introduced through an opening 44 in the head 29 and caused to make contact with the wires 41 in the plug 42, the wires 43 being connected to any suitable source of three-phase current. When the gyroscope has attained the requisite speed of rotation, the wires 43 may be withdrawn and the opening 44 may be closed with the screw 45 shown in ",
+        text: "In order that the support 33 may not partake of the rotation of the head 29, I provide within the support a ",
+      },
+      term(
+        "gyroscope",
+        "A rapidly spinning rotor whose angular momentum resists a change of orientation; here it helps keep the instrument support from turning with the rocket head.",
+      ),
+      {
+        kind: "text",
+        text: " 37 mounted in bearings 38 upon said support and to provide the high initial speed of rotation necessary for the operation of the gyroscope, I construct the latter as the armature of a ",
+      },
+      term(
+        "three-phase induction motor",
+        "An alternating-current motor whose rotating magnetic field brings the gyroscope armature to speed without a mechanically described drive in this specification.",
+      ),
+      {
+        kind: "text",
+        text: " having field coils 39, mounted on a frame 40 also secured to the support 33. The field coils are connected to wires 41 secured within an insulating plug 42 in the support 38. Wires 43 may be introduced through an opening 44 in the head 29 and caused to make contact with the wires 41 in the plug 42, the wires 43 being connected to any suitable source of three-phase current. When the gyroscope has attained the requisite speed of rotation, the wires 43 may be withdrawn and the opening 44 may be closed with the screw 45 shown in ",
       },
       fig("Fig. 1"),
       { kind: "text", text: "." },

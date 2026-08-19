@@ -151,4 +151,28 @@ describe("US 2,981,877 manual source edition", () => {
     ]);
     expect(noyceIcPatent.drawings.map((drawing) => drawing.title)).not.toContain("Source Fig. 1");
   });
+
+  test("does not leak the superseded speculative catalogue reconstruction", () => {
+    expect(noyceIcPatent.shortTitle).toBe("Oxide-insulated semiconductor leads");
+    expect(noyceIcPatent.historicalContext.patentWars).toEqual([]);
+    const visitorCopy = JSON.stringify({
+      summary: noyceIcPatent.summary,
+      heroQuote: noyceIcPatent.heroQuote,
+      plainEnglishExplanation: noyceIcPatent.plainEnglishExplanation,
+      historicalContext: noyceIcPatent.historicalContext,
+      tags: noyceIcPatent.tags,
+    });
+    for (const unsupportedLegacyClaim of [
+      "Tyranny of Numbers",
+      "Noyce v. Kilby",
+      "million transistors",
+      "gigahertz",
+      "1,000°C",
+      "Nobel Prize",
+    ]) {
+      expect(visitorCopy).not.toContain(unsupportedLegacyClaim);
+    }
+    expect(visitorCopy).toContain("surface-reaching P-N junction");
+    expect(visitorCopy).toContain("reverse-biased junctions 18 and 22");
+  });
 });

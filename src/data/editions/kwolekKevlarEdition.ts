@@ -44,6 +44,8 @@ export const kwolekKevlarClaims = [
   },
 ] as const;
 
+// This legacy reconstruction is preserved for research comparison only. It is
+// not a complete transcription of the 58-page primary source and is never
 export const kwolekKevlarArchivalEdition: CuratedSpecificationEdition = {
   kind: "manual-react-edition",
   sourcePdfSha256: "7a2b753cf8d6f329d5fad750dc2de510f723876cac6aa41a4076f0343a7a62c4",
@@ -254,7 +256,7 @@ export const kwolekKevlarArchivalEdition: CuratedSpecificationEdition = {
   ],
 };
 
-export const kwolekKevlarParallelReadings: Readonly<Record<number, readonly string[]>> = {
+const legacyKwolekKevlarUnpublishedParallelReadings: Readonly<Record<number, readonly string[]>> = {
   11: [
     "The application establishes priority through a chain of three earlier abandoned U.S. filings (Ser. Nos. 736,410, 644,851, and 556,934), dating back to June 13, 1966.",
   ],
@@ -313,3 +315,20 @@ export const kwolekKevlarParallelReadings: Readonly<Record<number, readonly stri
     "The formal claims define the legal scope of the patent, reciting the combination of para-oriented aromatic polyamide, critical concentration, and selected liquid media.",
   ],
 };
+
+export const kwolekKevlarParallelReadings = legacyKwolekKevlarUnpublishedParallelReadings;
+
+/**
+ * Non-rendered handoff metadata for the real source-authoring task. Keeping the
+ * legacy draft attached here preserves prior work without allowing its short
+ * reconstruction to be confused with a complete historical edition.
+ */
+export const kwolekKevlarSourceAuthoringWip = {
+  sourcePdfSha256: "7a2b753cf8d6f329d5fad750dc2de510f723876cac6aa41a4076f0343a7a62c4",
+  pageCount: 58,
+  manuallyCheckedPages: 10,
+  remainingWork:
+    "Manually transcribe and review PDF pages 11–58, including all specification columns, tables, eighty-three examples, both claims, and both correction-certificate copies; then author non-lossy paragraph companions and source-derived figure references.",
+  legacyDraft: kwolekKevlarArchivalEdition,
+  legacyParallelReadings: legacyKwolekKevlarUnpublishedParallelReadings,
+} as const;

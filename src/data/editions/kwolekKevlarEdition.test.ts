@@ -2,79 +2,57 @@ import { describe, expect, test } from "bun:test";
 import { createHash } from "node:crypto";
 import { existsSync, readFileSync } from "node:fs";
 import { resolve } from "node:path";
-import { validateCuratedSpecificationEdition } from "@/data/archivalEditionValidation";
 import { kwolekKevlarPatent } from "@/data/patents/kwolek-kevlar";
-import { validateReviewedTranscription } from "@/data/patents/sourceTextValidation";
-import {
-  kwolekKevlarArchivalEdition,
-  kwolekKevlarClaims,
-  kwolekKevlarParallelReadings,
-} from "./kwolekKevlarEdition";
+import { kwolekKevlarClaims, kwolekKevlarSourceAuthoringWip } from "./kwolekKevlarEdition";
 
-describe("US 3,671,542 Stephanie Kwolek Kevlar manual archival edition", () => {
-  test("pins the complete 58-page facsimile and its two printed claims", () => {
-    expect(kwolekKevlarPatent.archivalEdition).toBe(kwolekKevlarArchivalEdition);
-    expect(validateCuratedSpecificationEdition(kwolekKevlarArchivalEdition)).toEqual({
-      valid: true,
-      errors: [],
-    });
-    expect(kwolekKevlarArchivalEdition.sourcePdfSha256).toBe(
+describe("US 3,671,542 Stephanie Kwolek source-authoring boundary", () => {
+  test("pins the 58-page facsimile without claiming an unfinished source edition is public", () => {
+    expect(kwolekKevlarPatent.archivalEdition).toBeUndefined();
+    expect(kwolekKevlarPatent.originalTextAsset).toBeUndefined();
+    expect(kwolekKevlarPatent.filingDate).toBe("1969-05-23");
+    expect(kwolekKevlarSourceAuthoringWip.sourcePdfSha256).toBe(
       "7a2b753cf8d6f329d5fad750dc2de510f723876cac6aa41a4076f0343a7a62c4",
     );
     const pdf = readFileSync(`${process.cwd()}/public${kwolekKevlarPatent.originalPdfUrl}`);
     expect(createHash("sha256").update(pdf).digest("hex")).toBe(
-      kwolekKevlarArchivalEdition.sourcePdfSha256,
+      kwolekKevlarSourceAuthoringWip.sourcePdfSha256,
     );
+    expect(kwolekKevlarSourceAuthoringWip.pageCount).toBe(58);
+    expect(kwolekKevlarSourceAuthoringWip.manuallyCheckedPages).toBe(10);
+    expect(kwolekKevlarSourceAuthoringWip.remainingWork).toContain("PDF pages 11–58");
+  });
+
+  test("keeps the two checked printed claims, without pretending to publish the specification", () => {
     expect(kwolekKevlarPatent.claims.map((claim) => claim.number)).toEqual([1, 2]);
     expect(kwolekKevlarClaims).toHaveLength(2);
+    expect(kwolekKevlarPatent.claims[0]?.originalText).toBe(kwolekKevlarClaims[0].text);
+    expect(kwolekKevlarPatent.claims[1]?.originalText).toBe(kwolekKevlarClaims[1].text);
     expect(kwolekKevlarPatent.stats).toMatchObject({
       totalClaims: 2,
       independentClaims: 1,
     });
+    expect(kwolekKevlarPatent.originalText).toContain("The full 58-page historical instrument");
   });
 
-  test("makes all nine source drawing sheets available as local crops", () => {
-    const references = kwolekKevlarArchivalEdition.blocks.flatMap((block) =>
-      "inlines" in block
-        ? block.inlines.filter(
-            (inline) => inline.kind === "reference" && inline.referenceType === "figure",
-          )
-        : [],
-    );
-    expect(references.length).toBeGreaterThan(0);
-    for (const reference of references) {
-      if (reference.kind !== "reference" || reference.referenceType !== "figure") continue;
-      for (const preview of reference.figurePreviews ?? []) {
-        expect(preview.src).toStartWith("/patents/figures/us-3671542-kwolek-kevlar/");
-        expect(existsSync(resolve(process.cwd(), "public", preview.src.slice(1)))).toBe(true);
-      }
+  test("retains source-derived figure sheets and a ledger that labels its incomplete status", () => {
+    for (let figure = 1; figure <= 9; figure += 1) {
+      expect(
+        existsSync(
+          resolve(
+            process.cwd(),
+            `public/patents/figures/us-3671542-kwolek-kevlar/fig-${figure}-source-preview.png`,
+          ),
+        ),
+      ).toBe(true);
     }
-  });
-
-  test("pairs every prose paragraph with an authored parallel reading", () => {
-    const explainableBlocks = kwolekKevlarArchivalEdition.blocks.flatMap((block, index) =>
-      block.kind === "paragraph" ? [index] : [],
+    const ledger = readFileSync(
+      `${process.cwd()}/public/patents/transcripts/us-3671542-kwolek-kevlar-reviewed.txt`,
+      "utf8",
     );
-    expect(
-      Object.keys(kwolekKevlarParallelReadings)
-        .map(Number)
-        .sort((a, b) => a - b),
-    ).toEqual(explainableBlocks);
-    for (const index of explainableBlocks) {
-      expect(kwolekKevlarParallelReadings[index]?.join(" ").trim().length).toBeGreaterThan(30);
-    }
-  });
-
-  test("publishes a reviewed ledger and validates source text", () => {
-    const asset = kwolekKevlarPatent.originalTextAsset;
-    expect(asset).toMatchObject({
-      url: "/patents/transcripts/us-3671542-kwolek-kevlar-reviewed.txt",
-      pageCount: 58,
-      kind: "reviewed-transcription",
-      sourcePdfSha256: kwolekKevlarArchivalEdition.sourcePdfSha256,
-    });
-    if (!asset) throw new Error("Kwolek Kevlar reviewed transcript asset is missing.");
-    const ledger = readFileSync(`${process.cwd()}/public${asset.url}`, "utf8");
-    expect(validateReviewedTranscription(ledger, 58)).toEqual({ valid: true });
+    expect(ledger).toContain("--- REVIEWED TRANSCRIPTION PAGE 1 OF 58 ---");
+    expect(ledger).toContain("--- REVIEWED TRANSCRIPTION PAGE 58 OF 58 ---");
+    expect(ledger).toContain("What is claimed is:");
+    expect(ledger).toContain("1. Optically anisotropic dope consisting essentially of:");
+    expect(ledger).toContain("2. Dope of claim 1 wherein said liquid medium is concentrated");
   });
 });
