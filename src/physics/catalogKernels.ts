@@ -145,6 +145,10 @@ export function stepOttoEngine(params: { engineRpm?: number; compressionRatio?: 
     flywheelSvgR: 80,
     spokeCount: 6,
     spokePitchDeg: 60,
+    schematicFlywheelCx: 280,
+    schematicFlywheelCy: 130,
+    schematicFlywheelR: 45,
+    schematicHubR: 6,
   };
 }
 
@@ -919,6 +923,10 @@ export function stepDaimlerEngine(params: {
       (tubeTemp >= 800 ? 2.8 : Math.max(0.15, (tubeTemp / 800) * 2.2)).toFixed(3),
     ),
     pistonStrokePx: 30,
+    schematicFlywheelCx: 200,
+    schematicFlywheelCy: 220,
+    schematicFlywheelR: 50,
+    schematicHubR: 6,
   };
 }
 
@@ -961,6 +969,11 @@ export function stepHollerithTabulating(params: {
     schematicPinOriginX: 80,
     schematicPinPitchX: 30,
     schematicPinCount: 9,
+    schematicDialCount: 3,
+    schematicDialOriginX: 140,
+    schematicDialPitchX: 60,
+    schematicDialY: 215,
+    schematicDialR: 18,
     schematicPinY0: 70,
     schematicPinY1: 105,
     schematicCupY: 142,
@@ -969,6 +982,11 @@ export function stepHollerithTabulating(params: {
 
 /** Press-pin / mercury-cup X on the schematic. Shared by the schematic. */
 export function hollerithSchematicPinX(index: number, originX = 80, pitchX = 30) {
+  return originX + index * pitchX;
+}
+
+/** Accumulator-dial X on the schematic. Shared by the schematic. */
+export function hollerithSchematicDialX(index: number, originX = 140, pitchX = 60) {
   return originX + index * pitchX;
 }
 

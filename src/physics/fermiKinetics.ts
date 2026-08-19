@@ -78,6 +78,12 @@ export function stepFermiKinetics(
     schematicSlugCols: 4,
     schematicSlugRows: 2,
     schematicSlugR: 9,
+    schematicGridXs: [140, 200, 260],
+    schematicGridYs: [110, 150, 190],
+    schematicCoreX0: 80,
+    schematicCoreX1: 320,
+    schematicCoreY0: 70,
+    schematicCoreY1: 240,
   };
 }
 

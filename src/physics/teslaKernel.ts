@@ -107,6 +107,10 @@ export interface TeslaFig9State {
   statorPoleSvgH: number;
   twoPhaseVectorOpacity: number;
   threePhaseVectorOpacity: number;
+  schematicStatorOuterR: number;
+  schematicStatorInnerR: number;
+  schematicRotorR: number;
+  schematicHubR: number;
   statorPoleSvgR: number;
   twoPhaseVectorSvgR: number;
   threePhaseVectorSvgR: number;
@@ -144,6 +148,10 @@ export function stepTeslaMotorFig9(phaseCycleHz: number): TeslaFig9State {
     statorPoleSvgH: 24,
     twoPhaseVectorOpacity: 0.55,
     threePhaseVectorOpacity: 0.5,
+    schematicStatorOuterR: 95,
+    schematicStatorInnerR: 65,
+    schematicRotorR: 42,
+    schematicHubR: 8,
     statorPoleSvgR: TESLA_STATOR_POLE_SVG_R,
     twoPhaseVectorSvgR: TESLA_TWO_PHASE_VECTOR_SVG_R,
     threePhaseVectorSvgR: TESLA_THREE_PHASE_VECTOR_SVG_R,

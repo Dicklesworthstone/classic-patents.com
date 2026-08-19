@@ -124,6 +124,12 @@ export interface NuclearKineticsState {
   schematicSlugCols: number;
   schematicSlugRows: number;
   schematicSlugR: number;
+  schematicGridXs: number[];
+  schematicGridYs: number[];
+  schematicCoreX0: number;
+  schematicCoreX1: number;
+  schematicCoreY0: number;
+  schematicCoreY1: number;
 }
 
 // 6. Continuum Mechanics, Polymers & Mechanisms
