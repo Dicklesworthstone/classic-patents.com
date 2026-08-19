@@ -6,7 +6,7 @@ export const ericssonPropellerPatent: Patent = {
   patentNumber: "US 588",
   title: "Screw-Propeller for Vessels",
   shortTitle: "Ericsson Submerged Screw Propeller",
-  subtitle: "Contra-Rotating Helical Spiral Blades, Hydrofoil Camber, and Submerged Shaft Thrust",
+  subtitle: "Contra-Rotating Spiral Plates and a Removable Submerged Stern Installation",
   inventors: ["John Ericsson"],
   inventorLocation: "London, England",
   grantDate: "1838-02-01",
@@ -35,9 +35,9 @@ export const ericssonPropellerPatent: Patent = {
   archivalEdition: ericssonPropellerArchivalEdition,
   plainEnglishExplanation: {
     overview:
-      "In the early 19th century, steam navigation was chained to giant paddle wheels mounted on the sides of ships. Paddle wheels were mechanically vulnerable in heavy storms, became useless when the ship rolled and lifted one wheel out of the water, and presented massive, unarmored targets for naval cannon fire. Swedish-American engineer John Ericsson replaced paddle wheels with submerged helical screw blades rotating on an axial shaft below the waterline, establishing modern marine propulsion.",
+      "This 1838 specification addresses effective steamboat propulsion despite changes in draft. Ericsson's particular arrangement is not a single conventional screw: two broad, fully submerged hoops carry short spiral plates. Concentric shafts and unequal gearing make the hoops turn in opposite directions at unequal speeds, while a second arrangement makes the propeller removable from the stern.",
     coreMechanism:
-      "A steam engine drives an axial propeller shaft passing through a watertight stuffing box in the stern below the waterline. The shaft turns a hub fitted with curved helical blades shaped like sections of a giant screw thread. As the blades slice obliquely through the water, their cambered hydrofoil cross-section accelerates a cylindrical column of water backwards ($\\Delta \\dot{m} v$). By Newton's third law, the water exerts an equal and opposite forward reaction force (thrust $T$) transmitted through a heavy thrust bearing into the vessel's hull, driving the ship forward with high hydrodynamic efficiency.",
+      "A steam engine can drive cranks l and m, which turn crank shafts L and M in the same direction. The unequal cog wheels H and I then make shaft b turn opposite shaft a and at a lower speed. Hoops A and B therefore turn their opposed spiral plate series in contrary directions and at unequal velocities. The source gives construction and motion, not a measured thrust, speed, efficiency, blade-section, or material-performance calculation; any modern fluid-mechanics model must remain a reader aid rather than a value claimed by the grant.",
     mechanicalBreakdown: [
       {
         title: "Helical Screw Hydrofoil Blades",
