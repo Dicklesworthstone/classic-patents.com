@@ -33,7 +33,6 @@ import { HyattCelluloidSim } from "./HyattCelluloidSim";
 import { LamarrFrequencyHoppingSim } from "./LamarrFrequencyHoppingSim";
 import { LincolnBuoySim } from "./LincolnBuoySim";
 import { LindeAirLiquefactionSim } from "./LindeAirLiquefactionSim";
-import { MarconiRadioSim } from "./MarconiRadioSim";
 import { MaximMachineGunSim } from "./MaximMachineGunSim";
 import { McCormickReaperSim } from "./McCormickReaperSim";
 import { MergenthalerLinotypeSim } from "./MergenthalerLinotypeSim";
@@ -175,7 +174,7 @@ const LindeAirLiquefaction3D = dynamic(
   () => import("./three/LindeAirLiquefaction3D").then((mod) => mod.LindeAirLiquefaction3D),
   { ssr: false, loading: ThreeLoading },
 );
-const MarconiRadio3D = dynamic(
+const _MarconiRadio3D = dynamic(
   () => import("./three/MarconiRadio3D").then((mod) => mod.MarconiRadio3D),
   { ssr: false, loading: ThreeLoading },
 );

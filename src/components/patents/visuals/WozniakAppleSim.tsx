@@ -3,27 +3,10 @@
 import { Cpu, Monitor, Sparkles, Zap } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { TextWithLatex } from "@/components/ui/LatexRenderer";
-import { stepWozniakApple } from "@/physics/catalogKernels";
+import { stepWozniakApple, wozniakBusCycle } from "@/physics/catalogKernels";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 
-export function wozniakBusCycle(tick: number, phi2Steal: number) {
-  const normalizedTick = Math.max(0, Math.floor(tick));
-  const normalizedSteal = Math.max(0, Math.min(0.9, phi2Steal));
-  const nominalVideoPhase = normalizedTick % 2 === 1;
-  const videoSlot = Math.ceil(normalizedTick / 2);
-  const stolenVideoSlot =
-    nominalVideoPhase &&
-    Math.floor(videoSlot * normalizedSteal) > Math.floor((videoSlot - 1) * normalizedSteal);
-
-  return {
-    phase: nominalVideoPhase && !stolenVideoSlot ? (1 as const) : (0 as const),
-    advanceRaster: nominalVideoPhase && !stolenVideoSlot,
-    dramAddress: `0x${(0x0400 + ((normalizedTick * 0x31) % 0x0400))
-      .toString(16)
-      .toUpperCase()
-      .padStart(4, "0")}`,
-  };
-}
+export { wozniakBusCycle };
 
 export function WozniakAppleSim() {
   const { params, updateParam } = usePatentPhysics("us-4136359-wozniak-apple");
@@ -47,13 +30,28 @@ export function WozniakAppleSim() {
     if (!isClockRunning) return;
     const interval = setInterval(() => {
       busTickRef.current += 1;
-      const cycle = wozniakBusCycle(busTickRef.current, phi2Steal);
+      const cycle = wozniakBusCycle(
+        busTickRef.current,
+        phi2Steal,
+        apple.videoPhaseDivisor,
+        apple.dramBaseAddr,
+        apple.dramAddrSpan,
+        apple.dramAddrStride,
+      );
       setClockPhase(cycle.phase);
       if (cycle.advanceRaster) setRasterLine((previous) => (previous + 1) % 192);
       setDramAddress(cycle.dramAddress);
     }, intervalMs);
     return () => clearInterval(interval);
-  }, [isClockRunning, intervalMs, phi2Steal]);
+  }, [
+    isClockRunning,
+    intervalMs,
+    phi2Steal,
+    apple.videoPhaseDivisor,
+    apple.dramBaseAddr,
+    apple.dramAddrSpan,
+    apple.dramAddrStride,
+  ]);
 
   return (
     <div className="rounded-2xl border border-amber-900/20 dark:border-ink-800 bg-parchment-50 dark:bg-ink-950 p-4 sm:p-6 shadow-patent space-y-6">

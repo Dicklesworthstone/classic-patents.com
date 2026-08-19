@@ -1021,11 +1021,18 @@ export function stepWozniakApple(params: { crystalFreq?: number; ramCapacityKb?:
 }
 
 /** Φ1/Φ2 bus owner and DRAM address for one host tick. Shared by 2D. */
-export function wozniakBusCycle(tick: number, phi2Steal: number) {
+export function wozniakBusCycle(
+  tick: number,
+  phi2Steal: number,
+  videoPhaseDivisor = 2,
+  dramBaseAddr = 0x0400,
+  dramAddrSpan = 0x0400,
+  dramAddrStride = 0x31,
+) {
   const normalizedTick = Math.max(0, Math.floor(tick));
   const normalizedSteal = Math.max(0, Math.min(0.9, phi2Steal));
-  const nominalVideoPhase = normalizedTick % 2 === 1;
-  const videoSlot = Math.ceil(normalizedTick / 2);
+  const nominalVideoPhase = normalizedTick % videoPhaseDivisor === 1;
+  const videoSlot = Math.ceil(normalizedTick / videoPhaseDivisor);
   const stolenVideoSlot =
     nominalVideoPhase &&
     Math.floor(videoSlot * normalizedSteal) > Math.floor((videoSlot - 1) * normalizedSteal);
@@ -1033,7 +1040,7 @@ export function wozniakBusCycle(tick: number, phi2Steal: number) {
   return {
     phase: nominalVideoPhase && !stolenVideoSlot ? (1 as const) : (0 as const),
     advanceRaster: nominalVideoPhase && !stolenVideoSlot,
-    dramAddress: `0x${(0x0400 + ((normalizedTick * 0x31) % 0x0400))
+    dramAddress: `0x${(dramBaseAddr + ((normalizedTick * dramAddrStride) % dramAddrSpan))
       .toString(16)
       .toUpperCase()
       .padStart(4, "0")}`,
