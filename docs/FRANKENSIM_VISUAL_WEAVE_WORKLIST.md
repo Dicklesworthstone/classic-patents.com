@@ -293,6 +293,16 @@ the visitor can see or hear the kernel change the instrument.
 - [x] P5.200 Otis otisSchematicRailY. Schematic no longer converts leftover 50+i×30 privately.
 - [x] P5.201 Hollerith hollerithSchematicPinX. Schematic no longer converts leftover 80+i×30 privately.
 - [x] P5.202 Parsons schematicStageXs. Schematic no longer hardcodes leftover expanding-stage Xs privately.
+- [x] P5.203 Tesla teslaSchematicStrobeOpacity / strobe stroke. Schematic no longer converts leftover 0.18+i×0.04 or 1.2 privately; Whitney overlay uses statorCenter.
+- [x] P5.204 Otto spokeCount / spokePitchDeg. 2D no longer converts leftover i×60 privately.
+- [x] P5.205 Corliss spokeCount / spokePitchDeg. 2D no longer converts leftover i×60 privately.
+- [x] P5.206 Ericsson bladeCount / bladePitchDeg. 2D no longer converts leftover i×60 privately.
+- [x] P5.207 Westinghouse spokePitchDeg. 2D no longer converts leftover i×60 privately.
+- [x] P5.208 McCormick 2D grain/guard/sickle/crank-pin seats. 2D no longer converts leftover i×14 / i×25 / phase×8 privately.
+- [x] P5.209 Sholes ratchetToothCount / PitchDeg. 2D no longer converts leftover i×30 privately.
+- [x] P5.210 Edison phonograph leadScrewThreadX / foilGrooveX. 2D no longer converts leftover i×10 / i×11 privately.
+- [x] P5.211 Wright rudderSvgScale. 2D no longer converts leftover rudder×1.2 privately.
+- [x] P5.212 Hollerith 2D press pins read cupCols / cupSvgOriginX / Pitch. 2D no longer converts leftover 20+i×25 privately.
 
 ## Explicitly out of scope
 
