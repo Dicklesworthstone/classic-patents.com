@@ -2,7 +2,7 @@
 
 import { ArrowUpRight, Image, ScrollText } from "lucide-react";
 import NextImage from "next/image";
-import type { MouseEvent as ReactMouseEvent, ReactNode } from "react";
+import type { FocusEvent as ReactFocusEvent, MouseEvent as ReactMouseEvent, ReactNode } from "react";
 import { useId, useState } from "react";
 import type {
   CuratedSpecificationEdition as CuratedSpecificationEditionData,
@@ -45,16 +45,19 @@ function AnnotatedTerm({
     }
     setTouchOpen((open) => !open);
   };
+  const closeWhenFocusLeavesAnnotation = (event: ReactFocusEvent<HTMLSpanElement>) => {
+    if (event.currentTarget.contains(event.relatedTarget as Node | null)) return;
+    setTouchOpen(false);
+  };
 
   return (
-    <span className="group relative inline">
+    <span className="group relative inline" onBlur={closeWhenFocusLeavesAnnotation}>
       <button
         type="button"
         aria-controls={tooltipId}
         aria-expanded={touchOpen}
         aria-label={`${inline.text}. ${inline.label ?? "Historical-term definition."}`}
         className="inline cursor-help border-b border-dotted border-amber-700 bg-transparent p-0 font-inherit font-medium text-amber-950 decoration-amber-700 underline decoration-dotted underline-offset-4 dark:border-amber-400 dark:text-amber-200 dark:decoration-amber-400"
-        onBlur={() => setTouchOpen(false)}
         onClick={handleSummaryClick}
       >
         {inline.text}
@@ -120,16 +123,22 @@ function FigureReference({
     }
     setTouchOpen((open) => !open);
   };
+  const closeWhenFocusLeavesPreview = (event: ReactFocusEvent<HTMLSpanElement>) => {
+    // The popover includes a full-size source-crop link. Closing on the
+    // trigger button's blur made that link unreachable by keyboard and could
+    // dismiss the preview before a touch activation completed.
+    if (event.currentTarget.contains(event.relatedTarget as Node | null)) return;
+    setTouchOpen(false);
+  };
 
   return (
-    <span className="group relative inline">
+    <span className="group relative inline" onBlur={closeWhenFocusLeavesPreview}>
       <button
         type="button"
         aria-controls={tooltipId}
         aria-expanded={touchOpen}
         aria-label={inline.label}
         className="mx-0.5 inline-flex items-center gap-1 rounded-md border border-amber-500/45 bg-amber-100/75 px-1.5 py-0.5 align-baseline font-sans text-[0.72em] font-bold leading-none text-amber-950 no-underline shadow-xs transition-colors hover:border-amber-700 hover:bg-amber-200 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-amber-700 dark:border-amber-500/50 dark:bg-amber-950/45 dark:text-amber-100 dark:hover:bg-amber-900/70"
-        onBlur={() => setTouchOpen(false)}
         onClick={handleClick}
       >
         <Image className="h-[0.95em] w-[0.95em]" aria-hidden="true" />

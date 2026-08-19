@@ -25,7 +25,6 @@ export function FermiReactorSim() {
   const kEffective = kinetics.kEffective;
   const reactivityDollars = kinetics.reactivityDollars;
   const thermalPowerWatts = kinetics.thermalPowerWatts;
-  const thermalFlux = kinetics.thermalNeutronFluxNPerCm2S;
 
   const isSupercritical = kEffective > 1.002;
   const isCritical = kEffective >= 0.998 && kEffective <= 1.002;
