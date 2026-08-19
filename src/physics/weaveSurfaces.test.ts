@@ -296,6 +296,33 @@ describe("FrankenSim Weave Surfaces Boundary", () => {
     expect(coupleLinks("us-3541541-engelbart-mouse", {})).toEqual([]);
   });
 
+  test("keeps Mergenthaler US 313,224 on its held matrix-bar source boundary", () => {
+    const probe = materialProbe("us-313224-mergenthaler-linotype", "Matrix-bar", {});
+    expect(probe).toMatchObject({
+      material: "Continuous matrix-bars, adjusting-pins, stop-pins, clamp, and mold",
+      qty: "Claim 1 and specification relation",
+      value: "matrix-bars → temporary matrix → printing-bar",
+      unit: "source guide",
+    });
+    expect(probe?.note).toContain("no later magazine, binary distributor, alloy recipe");
+    expect(intervalGhosts("us-313224-mergenthaler-linotype", { sourceFocus: 3 })).toEqual([
+      { label: "Source group", min: 1, max: 3, live: 3, unit: "facsimile guide" },
+    ]);
+    expect(fidelityField("us-313224-mergenthaler-linotype", {})).toMatchObject({
+      model: "not computed",
+      unit: "source boundary",
+    });
+    expect(datedScenarios("us-313224-mergenthaler-linotype")).toEqual([
+      {
+        id: "mergenthaler-filing-1884",
+        date: "1884-08-30",
+        name: "Filed Machine for Producing Printing-Bars",
+        writes: { sourceFocus: 1 },
+      },
+    ]);
+    expect(coupleLinks("us-313224-mergenthaler-linotype", {})).toEqual([]);
+  });
+
   test("computes spectral eigenmodes for resonant patents", () => {
     const teslaCoilModes = spectralModes("us-593138-tesla-coil", { secondaryTurns: 1000 });
     expect(teslaCoilModes.length).toBeGreaterThan(0);
