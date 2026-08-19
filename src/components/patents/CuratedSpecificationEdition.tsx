@@ -29,7 +29,9 @@ interface CuratedSpecificationEditionProps {
 
 function hasFineHoverPointer() {
   return (
-    typeof window !== "undefined" && window.matchMedia("(hover: hover) and (pointer: fine)").matches
+    typeof window !== "undefined" &&
+    typeof window.matchMedia === "function" &&
+    window.matchMedia("(hover: hover) and (pointer: fine)").matches
   );
 }
 

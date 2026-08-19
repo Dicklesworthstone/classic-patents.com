@@ -58,7 +58,10 @@ describe("US 3,671,542 Stephanie Kwolek Kevlar visual & polymer physics boundary
     expect(result.elasticModulusGpa).toBeGreaterThan(100);
     expect(result.alignmentPct).toBeGreaterThan(80);
     expect(result.bulletDisplaySpeed).toBeCloseTo((450 / 400) * 15, 2);
-    expect(result.chainWaviness).toBeCloseTo((100 - result.alignmentPct) * 0.25 * (1 - 30 / 180), 3);
+    expect(result.chainWaviness).toBeCloseTo(
+      (100 - result.alignmentPct) * 0.25 * (1 - 30 / 180),
+      3,
+    );
     expect(result.chainEndX).toBeCloseTo(350 + 30 * 0.28, 2);
   });
 

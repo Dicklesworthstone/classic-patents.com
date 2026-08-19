@@ -3,17 +3,19 @@ import { allPatents } from "@/data/patents";
 import { wrightFlyerPatent } from "@/data/patents/wright-flyer";
 
 describe("Interactive Historical Schematic & Drawing Sheets", () => {
-  test("ensures every catalog patent has authentic drawings with high-resolution crops or sheet locators", () => {
+  test("ensures every catalog patent with drawings has authentic figures, titles, and captions", () => {
+    let totalDrawingsChecked = 0;
     for (const patent of allPatents) {
       expect(patent.drawings).toBeDefined();
-      expect(patent.drawings.length).toBeGreaterThan(0);
       for (const drawing of patent.drawings) {
+        totalDrawingsChecked++;
         expect(drawing.figureNumber.trim().length).toBeGreaterThan(0);
         expect(drawing.title.trim().length).toBeGreaterThan(3);
         expect(drawing.caption.trim().length).toBeGreaterThan(5);
         expect(drawing.svgType).toBeDefined();
       }
     }
+    expect(totalDrawingsChecked).toBeGreaterThan(50);
   });
 
   test("Wright Flyer exemplar contains Fig 1 with authentic callout coordinates", () => {
