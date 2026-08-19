@@ -1163,7 +1163,14 @@ export function stepKevlarContinuum(
 }
 
 /** Nematic H-bond lattice seat on the schematic. Shared by the schematic. */
-export function kevlarSchematicLattice(row: number, col: number, originX = 80, originY = 80, pitchX = 40, pitchY = 30) {
+export function kevlarSchematicLattice(
+  row: number,
+  col: number,
+  originX = 80,
+  originY = 80,
+  pitchX = 40,
+  pitchY = 30,
+) {
   return {
     cx: originX + col * pitchX,
     cy: originY + row * pitchY,

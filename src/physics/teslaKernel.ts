@@ -180,6 +180,20 @@ export function teslaCoilSiUnits(
     resonantFreqHz: Number((Math.max(0, resonantFreqKhz) * 1000).toFixed(0)),
     inputVoltageVolts: Number((Math.max(0, inputKv) * 1000).toFixed(0)),
     secondaryPotentialVolts: Number((Math.max(0, secondaryPotentialMv) * 1e6).toFixed(0)),
+    secondaryTurnCount: 18,
+    windingTaperPx: 0.55,
+    windingPitchY: 7.5,
+    windingHalfW: 25,
+  };
+}
+
+/** Secondary helical turn on the 2D resonator. Shared by 2D. */
+export function teslaCoilWindingSvg(index: number, taperPx = 0.55, pitchY = 7.5, halfW = 25) {
+  return {
+    x1: Number((-halfW + index * taperPx).toFixed(2)),
+    y1: Number((-index * pitchY).toFixed(2)),
+    x2: Number((halfW - index * taperPx).toFixed(2)),
+    y2: Number((-index * pitchY - 3).toFixed(2)),
   };
 }
 
