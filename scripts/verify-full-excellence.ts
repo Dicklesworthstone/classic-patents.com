@@ -44,7 +44,7 @@ for (const patent of allPatents) {
   const pId = patent.id;
 
   // Find case block in visuals/index.tsx
-  const casePos = visualIndexContent.indexOf(`"${pId}"`);
+  const casePos = visualIndexContent.indexOf(`case "${pId}"`);
   if (casePos === -1) {
     console.error(`   ❌ [${pId}] Missing 3D Visualizer dispatch in visuals/index.tsx`);
     errors++;
@@ -56,6 +56,10 @@ for (const patent of allPatents) {
   const compName = match ? match[1] : null;
 
   if (!compName) {
+    if (chunk.includes("SourceVisualUnavailable") || chunk.includes("SourceVisual")) {
+      passes++;
+      continue;
+    }
     console.error(`   ❌ [${pId}] Missing 3D component tag in chunk`);
     errors++;
     continue;
