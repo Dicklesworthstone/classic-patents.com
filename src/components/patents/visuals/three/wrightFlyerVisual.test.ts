@@ -1,7 +1,12 @@
 import { describe, expect, test } from "bun:test";
 import { readFileSync } from "node:fs";
 import { join } from "node:path";
-import { readWrightControls, stepWrightFlyerSi, wrightSchematicPose } from "@/physics/wrightKernel";
+import {
+  readWrightControls,
+  stepWrightFlyerSi,
+  wrightSchematicPose,
+  wrightWarpFromPointerNx,
+} from "@/physics/wrightKernel";
 import { buildWrightFlyerAirframe, updateWrightFlyerKinematics } from "./wrightFlyerAirframe";
 
 const VISUALS_DIRECTORY = join(process.cwd(), "src", "components", "patents", "visuals");
@@ -66,6 +71,9 @@ describe("US 821,393 Wright Brothers Flying-Machine 3D visual & aerodynamic boun
     expect(si.leftWingLiftPct).toBeGreaterThan(0);
     const pose = wrightSchematicPose({ wingWarp: 15, rudder: 10, coupled: 1 });
     expect(pose.warpPx).toBeCloseTo(12, 3);
+    expect(wrightWarpFromPointerNx(0.5)).toBe(0);
+    expect(wrightWarpFromPointerNx(0)).toBe(-15);
+    expect(wrightWarpFromPointerNx(1)).toBe(15);
     expect(pose.rasterSkew).toBeCloseTo(8, 3);
     expect(pose.rudderAngle).toBeCloseTo(7, 3);
     expect(pose.strutDelta).toBeCloseTo(8.4, 3);

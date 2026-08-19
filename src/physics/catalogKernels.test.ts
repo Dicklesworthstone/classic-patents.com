@@ -359,6 +359,8 @@ describe("Catalog Kernels & Shared SI Stepping Functions", () => {
     const res = stepGoodyearRubber(145, 8, 30);
     expect(res.crossLinkDensity).toBeGreaterThan(0.5);
     expect(res.tensileStrengthPsi).toBeGreaterThan(1000);
+    expect(res.chainSagPx).toBe(25);
+    expect(res.chainSagBezierScale).toBe(1.5);
   });
 
   test("Einstein-Szilard refrigerator computes three-fluid bubble pump thermosyphon circulation", () => {

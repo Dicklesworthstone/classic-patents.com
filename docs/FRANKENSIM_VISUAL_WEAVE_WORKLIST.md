@@ -275,6 +275,14 @@ the visitor can see or hear the kernel change the instrument.
 - [x] P5.182 Westinghouse flywheelSvgR / wheelRimSvgR / Hub / spokeCount. 2D no longer converts leftover spoke×54 privately.
 - [x] P5.183 Spencer spencerPopcornSvg / popcorn ellipse and radii. 2D no longer converts leftover i/12 or rad×0.6 privately.
 - [x] P5.184 Otis railSvgPitch. 2D no longer converts leftover rail i×20 privately.
+- [x] P5.185 Reno renoSchematicCleat / schematicCleatCount / origin / pitch. Schematic no longer converts leftover 60+i×42 or 200−i×20 privately.
+- [x] P5.186 Kevlar kevlarSchematicLattice / schematic lattice rows-cols-pitch. Schematic no longer converts leftover 80+col×40 or 80+row×30 privately.
+- [x] P5.187 CCD ccdSchematicGateX / schematicGateCount / Pitch / Width. Schematic no longer converts leftover 70+i×45 privately.
+- [x] P5.188 Zeppelin zeppelinSchematicCell / schematicCellCount / Pitch. Schematic no longer converts leftover 70+i×32 privately.
+- [x] P5.189 Tesla coil teslaCoilWindingSvg / secondaryTurnCount / taper / pitch. 2D no longer converts leftover i×0.55 or i×7.5 privately.
+- [x] P5.190 Goodyear chainSagPx / chainSagBezierScale. 2D no longer converts leftover sag 25 or sag×1.5 privately.
+- [x] P5.191 McCormick reelArmCount / reelArmSvgLen. 2D no longer converts leftover 4×90° or arm×95 privately.
+- [x] P5.192 Wright wrightWarpFromPointerNx. Schematic no longer converts leftover (nx−0.5)×30 privately.
 
 ## Explicitly out of scope
 
