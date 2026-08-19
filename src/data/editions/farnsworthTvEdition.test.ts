@@ -32,17 +32,62 @@ describe("US 1,773,980 manual source edition", () => {
 
   test("keeps every printed figure reference on a patent-local source sheet", () => {
     const refs = farnsworthTvArchivalEdition.blocks.flatMap((block) => {
-      if (!("inlines" in block)) return [];
-      return block.inlines.flatMap((inline) =>
+      const inlines =
+        block.kind === "figure-sheet"
+          ? block.description
+          : block.kind === "paragraph" || block.kind === "claim"
+            ? block.inlines
+            : [];
+      return inlines.flatMap((inline) =>
         inline.kind === "reference" && inline.referenceType === "figure" ? [inline] : [],
       );
     });
+    const expectedDimensions: Readonly<Record<number, readonly [number, number]>> = {
+      1: [1600, 1150],
+      2: [1600, 450],
+      3: [1500, 760],
+      4: [1300, 270],
+      5: [1300, 230],
+      6: [500, 340],
+      7: [650, 350],
+      8: [380, 360],
+      9: [450, 350],
+      10: [350, 350],
+      11: [1350, 360],
+      12: [1350, 260],
+      13: [1400, 280],
+      14: [400, 560],
+      15: [420, 420],
+      16: [480, 420],
+      17: [400, 400],
+    };
+
     for (const reference of refs) {
       for (const preview of reference.figurePreviews ?? []) {
         expect(preview.src).toStartWith("/patents/figures/us-1773980-farnsworth-tv/");
-        expect(existsSync(resolve(process.cwd(), "public", preview.src.slice(1)))).toBe(true);
-        expect(preview.width).toBeLessThan(1392);
-        expect(preview.height).toBeLessThan(2045);
+        const path = resolve(process.cwd(), "public", preview.src.slice(1));
+        expect(existsSync(path)).toBe(true);
+        const image = readFileSync(path);
+        expect(image.subarray(1, 4).toString("ascii")).toBe("PNG");
+        expect(image.readUInt32BE(16)).toBe(preview.width);
+        expect(image.readUInt32BE(20)).toBe(preview.height);
+      }
+    }
+
+    for (const [figureNumber, dimensions] of Object.entries(expectedDimensions)) {
+      const number = Number(figureNumber);
+      const previewPath = `/patents/figures/us-1773980-farnsworth-tv/fig-${number}-source-crop-v2.png`;
+      const matchingReferences = refs.filter((reference) =>
+        reference.figurePreviews?.some((preview) => preview.src === previewPath),
+      );
+      expect(matchingReferences.length).toBeGreaterThan(0);
+      for (const reference of matchingReferences) {
+        const preview = reference.figurePreviews?.find(
+          (candidate) => candidate.src === previewPath,
+        );
+        expect(preview?.width).toBe(dimensions[0]);
+        expect(preview?.height).toBe(dimensions[1]);
+        expect(preview?.alt).toContain("oriented for legibility");
       }
     }
   });
