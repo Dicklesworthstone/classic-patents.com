@@ -1,6 +1,16 @@
 import { nobelDynamiteArchivalEdition } from "@/data/editions/nobelDynamiteEdition";
 import type { Patent } from "@/types/patent";
 
+function manualClaimText(number: number): string {
+  const block = nobelDynamiteArchivalEdition.blocks.find(
+    (candidate) => candidate.kind === "claim" && candidate.number === number,
+  );
+  if (block?.kind !== "claim") {
+    throw new Error(`Nobel manual edition is missing claim ${number}.`);
+  }
+  return block.inlines.map((inline) => inline.text).join("");
+}
+
 export const nobelDynamitePatent: Patent = {
   id: "us-78317-nobel-dynamite",
   patentNumber: "US 78,317",
@@ -34,6 +44,22 @@ export const nobelDynamitePatent: Patent = {
     reviewedBy: "Classic Patents editorial agent (GPT-5.6)",
     reviewedAt: "2026-08-18",
     sourcePdfSha256: "06f67c50087092ed0c6110cef12d6aadc6a087747b876e516cece34288cf8b55",
+    pageAnchors: [
+      {
+        page: 1,
+        exactSourceText:
+          "The Schedule referred to in these Letters Patent and making part of the same.",
+        sourceRelationship:
+          "Patent-office formal matter and the first physical specification page, including the opening of the ratio sentence.",
+      },
+      {
+        page: 2,
+        exactSourceText:
+          "and seventy-eight parts, by weight, of nitro-glycerine to twenty-two of earth",
+        sourceRelationship:
+          "Second physical specification page, continuing the ratio sentence and containing the sole claim, signature, and witnesses.",
+      },
+    ],
   },
   archivalEdition: nobelDynamiteArchivalEdition,
   plainEnglishExplanation: {
@@ -119,8 +145,7 @@ export const nobelDynamitePatent: Patent = {
     {
       number: 1,
       isIndependent: true,
-      originalText:
-        "The composition of matter, made substantially of the ingredients and in the manner and for the purposes set forth.",
+      originalText: manualClaimText(1),
       plainEnglish:
         "The sole formal claim is to the composition of matter described in the specification: the named ingredients, prepared in the stated manner, for the stated purposes. The cap-and-fuse discussion is explanatory specification text, not a second claim.",
       keyInnovations: [

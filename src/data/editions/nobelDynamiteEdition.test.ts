@@ -3,7 +3,10 @@ import { createHash } from "node:crypto";
 import { readFileSync } from "node:fs";
 import { validateCuratedSpecificationEdition } from "@/data/archivalEditionValidation";
 import { nobelDynamitePatent } from "@/data/patents/nobel-dynamite";
-import { validateReviewedTranscription } from "@/data/patents/sourceTextValidation";
+import {
+  validateReviewedTranscription,
+  validateReviewedTranscriptionPageAnchors,
+} from "@/data/patents/sourceTextValidation";
 import {
   nobelDynamiteArchivalEdition,
   nobelDynamiteParallelReadings,
@@ -78,6 +81,11 @@ describe("nobelDynamiteArchivalEdition", () => {
 
     const transcript = readFileSync(`${process.cwd()}/public${asset.url}`, "utf8");
     expect(validateReviewedTranscription(transcript, asset.pageCount)).toEqual({ valid: true });
+    expect(
+      validateReviewedTranscriptionPageAnchors(transcript, asset.pageCount, asset.pageAnchors),
+    ).toEqual({
+      valid: true,
+    });
     const sourcePdf = readFileSync(`${process.cwd()}/public${nobelDynamitePatent.originalPdfUrl}`);
     expect(createHash("sha256").update(sourcePdf).digest("hex")).toBe(asset.sourcePdfSha256);
 
