@@ -5342,8 +5342,9 @@ export const ALL_COLORIZED_EQUATIONS: Record<string, ColorizedEquation[]> = {
     },
   ],
 
-  // 18. Guglielmo Marconi Wireless Telegraphy (US 586,193)
-  "us-586193-marconi-radio": [
+  // Preserved, non-public legacy model. The public US 586,193 route receives
+  // a claim-bound source card below while its full edition remains on hold.
+  "_legacy-unpublished-us-586193-marconi-radio": [
     {
       id: "marconi-radiation-monopole",
       patentId: "us-586193-marconi-radio",
@@ -5675,6 +5676,82 @@ export const ALL_COLORIZED_EQUATIONS: Record<string, ColorizedEquation[]> = {
       claimRef: 3,
       historicalSignificance:
         "This was the earliest commercial implementation of electromagnetic compatibility (EMC) design in radio receiver architecture.",
+    },
+  ],
+
+  // 18. Guglielmo Marconi Wireless Telegraphy (US 586,193), source-bounded public card.
+  "us-586193-marconi-radio": [
+    {
+      id: "marconi-source-receiver-contact-reset",
+      patentId: "us-586193-marconi-radio",
+      title: "Claim 1: Imperfect-Contact Signal Conduction & Automatic Trembler Reset",
+      category: "Source-Bound Electrical Signalling",
+      rawLatex:
+        "\\text{received oscillation} \\rightarrow \\text{coherer conduction} \\rightarrow \\text{local circuit} \\rightarrow \\text{trembler decohesion}",
+      colorizedLatex:
+        "\\textcolor{#2563eb}{\\text{received oscillation}} \\rightarrow \\textcolor{#059669}{\\text{coherer conduction}} \\rightarrow \\textcolor{#d97706}{\\text{local circuit}} \\rightarrow \\textcolor{#9333ea}{\\text{trembler decohesion}}",
+      plainEnglishSentence: [
+        { text: "Claim 1 combines a " },
+        { text: "metallic-powder contact tube", variableId: "tube" },
+        { text: " rendered conductive by " },
+        { text: "received high-frequency oscillations", variableId: "oscillations" },
+        { text: " with a " },
+        { text: "local battery and receiving instrument", variableId: "local_circuit" },
+        { text: " and an " },
+        { text: "interrupter trembler", variableId: "trembler" },
+        { text: " that mechanically shakes the tube to restore high resistance." },
+      ],
+      variables: [
+        {
+          id: "tube",
+          symbol: "\\text{Tube}",
+          name: "Imperfect-Contact Metallic Powder Tube",
+          color: "emerald",
+          role: "Glass tube with silver pole pieces and nickel-silver powder mixture.",
+          unit: "sensor element",
+          dimension: "[1]",
+          explanation:
+            "The grant specifies a glass tube containing finely divided metallic powder between conductive plugs whose resistance drops when excited by electric oscillations.",
+        },
+        {
+          id: "oscillations",
+          symbol: "\\text{Oscillations}",
+          name: "Received High-Frequency Electric Oscillations",
+          color: "sapphire",
+          role: "Radiated electromagnetic disturbance produced by the transmitting spark gap.",
+          unit: "electric wave",
+          dimension: "[1]",
+          explanation:
+            "Electromagnetic waves received at the aerial plates induce potential differences across the powder contact.",
+        },
+        {
+          id: "local_circuit",
+          symbol: "\\text{Circuit}",
+          name: "Local Relay and Battery Circuit",
+          color: "amber",
+          role: "Direct-current circuit energized when the contact becomes conductive.",
+          unit: "local loop",
+          dimension: "[1]",
+          explanation:
+            "A local cell sends current through the coherer to actuate a sensitive telegraph relay.",
+        },
+        {
+          id: "trembler",
+          symbol: "\\text{Trembler}",
+          name: "Automatic Decohering Trembler",
+          color: "amethyst",
+          role: "Electromagnetic hammer that gently taps the powder tube.",
+          unit: "mechanical reset",
+          dimension: "[1]",
+          explanation:
+            "The trembler vibrates against the tube to break the inter-particle cohesion once the incoming signal pulse ends.",
+        },
+      ],
+      pedagogicalNote:
+        "Marconi's key system breakthrough in US 586,193 was combining a sensitive powder coherer with automatic trembler tapping and isolating chokes, creating the first practical receiver capable of continuous Morse telegraphy reception.",
+      claimRef: 1,
+      historicalSignificance:
+        "US 586,193 established commercial wireless telegraphy, launching the global radio communication and telecommunications era.",
     },
   ],
 
