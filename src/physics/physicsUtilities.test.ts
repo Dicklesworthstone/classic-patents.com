@@ -92,6 +92,10 @@ describe("Shared Physics Mathematical Utilities & Conversions", () => {
       tone: "in",
     });
     expect(energyChannelsFor("us-347140-thomson-welding", {})[0]?.watts).toBeGreaterThan(0);
+    expect(energyChannelsFor("us-194047-otto-engine", {})[0]?.name).toBe("Brake");
+    expect(energyChannelsFor("us-6162-corliss-steam-engine", {})[0]?.name).toBe("Indicated");
+    expect(energyChannelsFor("us-361931-daimler-engine", {})[0]?.name).toBe("Brake");
+    expect(energyChannelsFor("us-233692-pelton-water-wheel", {})[0]?.name).toBe("Shaft");
   });
 
   test("canonicalizeParam and expandParamAliases normalize 3D private slider keys", () => {

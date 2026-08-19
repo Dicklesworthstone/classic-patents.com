@@ -12,12 +12,12 @@ import {
   stepThomsonWelding,
 } from "./catalogKernels";
 
-/** Mechanical horsepower in watts. Used only to print an already-owned hp field. */
-const MECHANICAL_HORSEPOWER_W = 745.7;
-
 import { FrankenSimEngine } from "./engine";
 import { stepFermiKinetics } from "./fermiKinetics";
 import { readWrightControls, stepWrightFlyerSi } from "./wrightKernel";
+
+/** Mechanical horsepower in watts. Used only to print an already-owned hp field. */
+const MECHANICAL_HORSEPOWER_W = 745.7;
 
 export function energyChannelsFor(
   patentId: string,

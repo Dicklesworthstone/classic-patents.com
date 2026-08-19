@@ -589,12 +589,13 @@ Briefly stated, the method and apparatus comprise a record carrying circuit-actu
         modernEquivalent: "electromagnetic actuators for counters and sorting indicators",
       },
     ],
-    scientificPrinciples: [],
+    scientificPrinciples:
+      _legacyUnpublishedHollerithTabulatingPatent.plainEnglishExplanation.scientificPrinciples,
     whyItMattersToday:
       "The grant gives a primary-source account of card records being used to control circuits for counting and classification. Its legal claims distinguish record preparation, contact arrangements, circuit combinations, counters, and sorting apparatus. Assertions about later corporate history, census performance, standard card dimensions, or digital-computing lineage need separate historical sources and are not treated here as measurements in this patent.",
   },
   claims: hollerithTabulatingSourceBoundedClaims,
-  drawings: [],
+  drawings: _legacyUnpublishedHollerithTabulatingPatent.drawings,
   historicalContext: {
     problemStatement:
       "The specification's problem is compiling statistical items recorded for many individuals or subjects and then separating and counting records according to selected items or combinations of items.",
