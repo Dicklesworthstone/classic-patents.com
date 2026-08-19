@@ -386,17 +386,38 @@ export function WestinghouseAirBrakeSim() {
 
               {/* Spinning Railcar Wheel */}
               <g transform={`rotate(${wheelRotation})`}>
-                <circle cx="0" cy="0" r="68" fill="#1e293b" stroke="#94a3b8" strokeWidth="4" />
-                <circle cx="0" cy="0" r="54" fill="#0f172a" stroke="#475569" strokeWidth="2" />
-                <circle cx="0" cy="0" r="16" fill="#cbd5e1" stroke="#475569" strokeWidth="2" />
+                <circle
+                  cx="0"
+                  cy="0"
+                  r={wh.wheelRimSvgR}
+                  fill="#1e293b"
+                  stroke="#94a3b8"
+                  strokeWidth="4"
+                />
+                <circle
+                  cx="0"
+                  cy="0"
+                  r={wh.flywheelSvgR}
+                  fill="#0f172a"
+                  stroke="#475569"
+                  strokeWidth="2"
+                />
+                <circle
+                  cx="0"
+                  cy="0"
+                  r={wh.wheelHubSvgR}
+                  fill="#cbd5e1"
+                  stroke="#475569"
+                  strokeWidth="2"
+                />
                 {/* Wheel Spokes */}
-                {Array.from({ length: 6 }).map((_, i) => (
+                {Array.from({ length: wh.spokeCount }).map((_, i) => (
                   <line
                     key={i}
                     x1="0"
                     y1="0"
-                    x2={54 * Math.cos((i * 60 * Math.PI) / 180)}
-                    y2={54 * Math.sin((i * 60 * Math.PI) / 180)}
+                    x2={wh.flywheelSvgR * Math.cos((i * 60 * Math.PI) / 180)}
+                    y2={wh.flywheelSvgR * Math.sin((i * 60 * Math.PI) / 180)}
                     stroke="#64748b"
                     strokeWidth="3"
                   />

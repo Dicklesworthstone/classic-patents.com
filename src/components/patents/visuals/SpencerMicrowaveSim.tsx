@@ -3,7 +3,7 @@
 import { Radio } from "lucide-react";
 import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import { TwoClocksStrip } from "@/components/patents/TwoClocksStrip";
-import { voltsToKv } from "@/physics/catalogKernels";
+import { spencerPopcornSvg, voltsToKv } from "@/physics/catalogKernels";
 import { FrankenSimEngine } from "@/physics/engine";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { soundEngine } from "@/utils/soundEngine";
@@ -189,12 +189,18 @@ export function SpencerMicrowaveSim() {
               />
 
               {/* Kernels popping into fluffy popcorn */}
-              {Array.from({ length: 12 }).map((_, i) => {
+              {Array.from({ length: rf.popcornKernelCount }).map((_, i) => {
                 const isPopped = i < poppedCount;
-                const angle = (i / 12) * Math.PI * 2;
-                const rad = isPopped ? 18 + (i % 3) * 6 : 8;
-                const px = Math.cos(angle) * rad;
-                const py = Math.sin(angle) * (rad * 0.6) - 15;
+                const { px, py } = spencerPopcornSvg(
+                  i,
+                  isPopped,
+                  rf.popcornKernelCount,
+                  rf.popcornEllipseY,
+                  rf.popcornUnpoppedR,
+                  rf.popcornPoppedBaseR,
+                  rf.popcornPoppedStepR,
+                  rf.popcornOffsetY,
+                );
                 return (
                   <circle
                     key={i}

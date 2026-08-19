@@ -2,7 +2,7 @@
 
 import { Play, RotateCcw, Volume2, VolumeX } from "lucide-react";
 import { useState } from "react";
-import { stepMergenthalerLinotype } from "@/physics/machineKernels";
+import { mergenthalerMatrixSvgX, stepMergenthalerLinotype } from "@/physics/machineKernels";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { usePatentAudio } from "./three/usePatentAudio";
 
@@ -114,12 +114,12 @@ export function MergenthalerLinotypeSim() {
               strokeWidth="2"
             />
             {/* Individual Brass Matrices */}
-            {Array.from({ length: 8 }).map((_, i) => (
+            {Array.from({ length: lino.matrixCount }).map((_, i) => (
               <rect
                 key={`matrix-${i * 14}`}
-                x={i * 18 + 5}
+                x={mergenthalerMatrixSvgX(i, lino.matrixSvgOriginX, lino.matrixSvgPitch)}
                 y="4"
-                width="12"
+                width={lino.matrixSvgWidth}
                 height="42"
                 rx="1"
                 fill="#D4AF37"

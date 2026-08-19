@@ -2,7 +2,7 @@
 
 import { Mic, Volume2, VolumeX, Waves } from "lucide-react";
 import { useEffect, useState } from "react";
-import { stepBellTelephone } from "@/physics/catalogKernels";
+import { bellScopeSample, stepBellTelephone } from "@/physics/catalogKernels";
 import { formatSones, sonesFromDbSpl } from "@/physics/psycho";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { soundEngine } from "@/utils/soundEngine";
@@ -51,17 +51,21 @@ export function BellTelephoneSim() {
   }, [isPlayingAudio, signalType, acousticFrequency, bell.toneGainSine, bell.toneGainSquare]);
 
   // Generate oscilloscope waveform points — spatial frequency tracks the voice-frequency slider.
-  const points = Array.from({ length: 60 })
+  const points = Array.from({ length: bell.scopeSampleCount })
     .map((_, i) => {
-      const x = i * 5;
-      const tVal = (i + time) * 0.2 * bell.scopeNorm;
-      let y = 50;
-      if (signalType === "continuous-undulating") {
-        y = 50 + Math.sin(tVal) * bell.scopeSineAmp + Math.sin(tVal * 2) * bell.scopeHarmonicAmp;
-      } else {
-        y = Math.sin(tVal) > 0 ? 50 - bell.scopeSquareAmp : 50 + bell.scopeSquareAmp;
-      }
-      return `${x},${y}`;
+      const sample = bellScopeSample(
+        i,
+        time,
+        bell.scopeNorm,
+        bell.scopeSineAmp,
+        bell.scopeHarmonicAmp,
+        bell.scopeSquareAmp,
+        signalType,
+        bell.scopeSamplePitchPx,
+        bell.scopeTScale,
+        bell.scopeBaselineY,
+      );
+      return `${sample.x},${sample.y}`;
     })
     .join(" ");
 
