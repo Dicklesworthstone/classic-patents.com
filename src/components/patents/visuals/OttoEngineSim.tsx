@@ -162,8 +162,8 @@ export function OttoEngineSim() {
             <circle cx="0" cy="0" r="90" fill="none" stroke="#2D3748" strokeWidth="16" />
             <circle cx="0" cy="0" r="15" fill="#111" />
             {/* Flywheel Spokes */}
-            {Array.from({ length: 6 }).map((_, i) => {
-              const spkAngle = (i * 60 + (crankAngleDeg % 360)) % 360;
+            {Array.from({ length: otto.spokeCount }).map((_, i) => {
+              const spkAngle = (i * otto.spokePitchDeg + (crankAngleDeg % 360)) % 360;
               return (
                 <line
                   key={`otto-spoke-${spkAngle}`}

@@ -416,8 +416,8 @@ export function WestinghouseAirBrakeSim() {
                     key={i}
                     x1="0"
                     y1="0"
-                    x2={wh.flywheelSvgR * Math.cos((i * 60 * Math.PI) / 180)}
-                    y2={wh.flywheelSvgR * Math.sin((i * 60 * Math.PI) / 180)}
+                    x2={wh.flywheelSvgR * Math.cos((i * wh.spokePitchDeg * Math.PI) / 180)}
+                    y2={wh.flywheelSvgR * Math.sin((i * wh.spokePitchDeg * Math.PI) / 180)}
                     stroke="#64748b"
                     strokeWidth="3"
                   />

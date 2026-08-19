@@ -2,7 +2,14 @@
 
 import { Play, RotateCcw } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
-import { mccormickReelAngleDeg, stepMcCormickReaper } from "@/physics/catalogKernels";
+import {
+  mccormickCrankPinSvg,
+  mccormickFaceSickleX,
+  mccormickGrainStemX,
+  mccormickGuardX,
+  mccormickReelAngleDeg,
+  stepMcCormickReaper,
+} from "@/physics/catalogKernels";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 
 export function McCormickReaperSim() {
@@ -71,10 +78,10 @@ export function McCormickReaperSim() {
         <svg viewBox="0 0 600 340" className="w-full h-full">
           {/* Standing Grain Stems */}
           <g id="grain-field" opacity="0.6">
-            {Array.from({ length: 14 }).map((_, i) => (
+            {Array.from({ length: reaper.grainStemCount }).map((_, i) => (
               <path
-                key={`stem-${i * 12}`}
-                d={`M ${60 + i * 14} 280 Q ${65 + i * 14} 200, ${58 + i * 14} 120`}
+                key={`stem-${i}`}
+                d={`M ${mccormickGrainStemX(i, reaper.grainStemOriginX, reaper.grainStemPitchX)} 280 Q ${mccormickGrainStemX(i, reaper.grainStemOriginX, reaper.grainStemPitchX) + 5} 200, ${mccormickGrainStemX(i, reaper.grainStemOriginX, reaper.grainStemPitchX) - 2} 120`}
                 stroke="#D4AF37"
                 strokeWidth="2.5"
                 fill="none"
@@ -100,10 +107,10 @@ export function McCormickReaperSim() {
 
           {/* Stationary Guard Fingers (Knife Guards) */}
           <g id="guard-fingers" transform="translate(180, 210)">
-            {Array.from({ length: 12 }).map((_, i) => (
+            {Array.from({ length: reaper.guardCount }).map((_, i) => (
               <polygon
-                key={`guard-${i * 24}`}
-                points={`${i * 25},0 ${i * 25 + 12},-35 ${i * 25 + 24},0`}
+                key={`guard-${i}`}
+                points={`${mccormickGuardX(i, reaper.guardPitchX)},0 ${mccormickGuardX(i, reaper.guardPitchX) + 12},-35 ${mccormickGuardX(i, reaper.guardPitchX) + 24},0`}
                 fill="#3A3A3A"
                 stroke="#1A1A1A"
                 strokeWidth="1.5"
@@ -114,10 +121,10 @@ export function McCormickReaperSim() {
           {/* Reciprocating Serrated Sickle Blade */}
           <g id="sickle-blade" transform={`translate(${180 + cutterX}, 205)`}>
             <rect x="0" y="0" width="280" height="6" fill="#C5A059" stroke="#888" strokeWidth="1" />
-            {Array.from({ length: 11 }).map((_, i) => (
+            {Array.from({ length: reaper.sickleToothCount }).map((_, i) => (
               <polygon
-                key={`sickle-tooth-${i * 25}`}
-                points={`${i * 25 + 5},0 ${i * 25 + 16},-26 ${i * 25 + 27},0`}
+                key={`sickle-tooth-${i}`}
+                points={`${mccormickFaceSickleX(i, reaper.sickleToothOriginX, reaper.sickleToothPitchX)},0 ${mccormickFaceSickleX(i, reaper.sickleToothOriginX, reaper.sickleToothPitchX) + 11},-26 ${mccormickFaceSickleX(i, reaper.sickleToothOriginX, reaper.sickleToothPitchX) + 22},0`}
                 fill="#E5E4E2"
                 stroke="#4A4A4A"
                 strokeWidth="1"
@@ -168,7 +175,12 @@ export function McCormickReaperSim() {
               strokeLinecap="round"
             />
             <circle cx="-50" cy="0" r="14" fill="#666666" stroke="#222" strokeWidth="2" />
-            <circle cx={-50 + Math.cos(phase) * 8} cy={Math.sin(phase) * 8} r="5" fill="#C5A059" />
+            <circle
+              cx={mccormickCrankPinSvg(phase, reaper.crankPinHubX, reaper.crankPinOrbitPx).cx}
+              cy={mccormickCrankPinSvg(phase, reaper.crankPinHubX, reaper.crankPinOrbitPx).cy}
+              r="5"
+              fill="#C5A059"
+            />
           </g>
 
           {/* Grain Divider Point */}

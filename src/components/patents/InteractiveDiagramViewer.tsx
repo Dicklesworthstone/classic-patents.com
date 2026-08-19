@@ -58,7 +58,12 @@ import {
   stepRenoEscalator,
   stepSholesTypewriter,
 } from "@/physics/machineKernels";
-import { stepTeslaMotorFig9, teslaBAt, teslaFig4Strobe } from "@/physics/teslaKernel";
+import {
+  stepTeslaMotorFig9,
+  teslaBAt,
+  teslaFig4Strobe,
+  teslaSchematicStrobeOpacity,
+} from "@/physics/teslaKernel";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { materialProbe, whitneySamples } from "@/physics/weaveSurfaces";
 import { wrightSchematicPose, wrightWarpFromPointerNx } from "@/physics/wrightKernel";
@@ -305,8 +310,8 @@ function _renderHistoricalSchematic(
       const strobe = teslaFig4Strobe(2);
       const whitney = whitneySamples(omegaT);
       const arrow = (bx: number, by: number, len: number, opacity: number, width: number) => {
-        const x2 = 200 + bx * len;
-        const y2 = 150 - by * len;
+        const x2 = apparatus.statorCenterX + bx * len;
+        const y2 = apparatus.statorCenterY - by * len;
         return (
           <g key={`${bx.toFixed(3)}-${by.toFixed(3)}-${opacity}`} opacity={opacity}>
             <line x1="200" y1="150" x2={x2} y2={y2} stroke="#ef4444" strokeWidth={width} />
@@ -380,16 +385,34 @@ function _renderHistoricalSchematic(
           />
           <circle cx="200" cy="150" r="8" fill="#10b981" />
           {strobe.map((s, i) =>
-            arrow(s.bx, s.by, apparatus.schematicStrobeLen, 0.18 + i * 0.04, 1.2),
+            arrow(
+              s.bx,
+              s.by,
+              apparatus.schematicStrobeLen,
+              teslaSchematicStrobeOpacity(
+                i,
+                apparatus.schematicStrobeOpacityBase,
+                apparatus.schematicStrobeOpacityStep,
+              ),
+              apparatus.schematicStrobeStroke,
+            ),
           )}
-          {arrow(live.bx, live.by, apparatus.schematicLiveLen, 1, 2.5)}
+          {arrow(live.bx, live.by, apparatus.schematicLiveLen, 1, apparatus.schematicLiveStroke)}
           {whitney.map((w, i) => (
             <line
               key={`wh-${i}`}
-              x1={200 + w.x * apparatus.schematicWhitneyPos}
-              y1={150 - w.y * apparatus.schematicWhitneyPos}
-              x2={200 + w.x * apparatus.schematicWhitneyPos + w.bx * apparatus.schematicWhitneyB}
-              y2={150 - w.y * apparatus.schematicWhitneyPos - w.by * apparatus.schematicWhitneyB}
+              x1={apparatus.statorCenterX + w.x * apparatus.schematicWhitneyPos}
+              y1={apparatus.statorCenterY - w.y * apparatus.schematicWhitneyPos}
+              x2={
+                apparatus.statorCenterX +
+                w.x * apparatus.schematicWhitneyPos +
+                w.bx * apparatus.schematicWhitneyB
+              }
+              y2={
+                apparatus.statorCenterY -
+                w.y * apparatus.schematicWhitneyPos -
+                w.by * apparatus.schematicWhitneyB
+              }
               stroke="#a78bfa"
               strokeWidth="1.2"
               opacity="0.7"

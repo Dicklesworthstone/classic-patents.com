@@ -149,8 +149,8 @@ export function EricssonPropellerSim() {
               opacity="0.8"
             />
             {/* Helical Blades */}
-            {Array.from({ length: 6 }).map((_, i) => {
-              const bladeAngle = (i * 60 + angleDeg) % 360;
+            {Array.from({ length: screw.bladeCount }).map((_, i) => {
+              const bladeAngle = (i * screw.bladePitchDeg + angleDeg) % 360;
               const yOffset = Math.sin((bladeAngle * Math.PI) / 180) * screw.forwardBladeSvgRy;
               const xOffset = Math.cos((bladeAngle * Math.PI) / 180) * screw.bladeSvgRx;
               return (
@@ -181,8 +181,8 @@ export function EricssonPropellerSim() {
               opacity="0.8"
             />
             {/* Helical Blades Counter-Rotating */}
-            {Array.from({ length: 6 }).map((_, i) => {
-              const bladeAngle = (i * 60 - angleDeg) % 360;
+            {Array.from({ length: screw.bladeCount }).map((_, i) => {
+              const bladeAngle = (i * screw.bladePitchDeg - angleDeg) % 360;
               const yOffset = Math.sin((bladeAngle * Math.PI) / 180) * screw.aftBladeSvgRy;
               const xOffset = Math.cos((bladeAngle * Math.PI) / 180) * screw.bladeSvgRx;
               return (

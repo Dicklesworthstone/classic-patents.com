@@ -159,12 +159,12 @@ export function HollerithTabulatingSim() {
                 stroke="#8B5A2B"
                 strokeWidth="2"
               />
-              {Array.from({ length: 8 }).map((_, i) => (
+              {Array.from({ length: hol.cupCols }).map((_, i) => (
                 <line
-                  key={`pin-${i * 25}`}
-                  x1={20 + i * 25}
+                  key={`pin-${i}`}
+                  x1={hol.cupSvgOriginX + i * hol.cupSvgPitchX}
                   y1="30"
-                  x2={20 + i * 25}
+                  x2={hol.cupSvgOriginX + i * hol.cupSvgPitchX}
                   y2="55"
                   stroke="#D4AF37"
                   strokeWidth="3"

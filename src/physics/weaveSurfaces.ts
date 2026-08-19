@@ -360,6 +360,16 @@ export function materialProbe(
       note: `β = ${tv.relativisticBeta}. ${tv.electronVelocityMps.toLocaleString()} m/s.`,
     };
   }
+  if (patentId === "us-200521-edison-phonograph") {
+    return {
+      part: calloutLabel,
+      material: "Diaphragm, hard point, yielding record material, and reproducing point",
+      qty: "Claim 4",
+      value: "10 grooves/in + 10 threads/in",
+      unit: "source relation",
+      note: "The grant names metallic foil, paper, or another yielding material and clock-work M or another power source. It supplies no cylinder material or size, rotational rate, indentation depth, or bandwidth.",
+    };
+  }
   if (patentId.includes("phonograph") || patentId.includes("200521")) {
     const phono = stepEdisonPhonograph({
       mandrelRpm: params.mandrelRpm,
@@ -1114,6 +1124,9 @@ export function intervalGhosts(patentId: string, params: Record<string, number>)
     const gauss = FrankenSimEngine.farnsworthDeflectionGauss(params.coilCurrent);
     const tv = FrankenSimEngine.stepFarnsworthTv(anodeKv, gauss, params.lightIntensityLux ?? 500);
     return [{ label: "r_L", min: 1, max: 40, live: tv.gyroRadiusMm, unit: "mm" }];
+  }
+  if (patentId === "us-200521-edison-phonograph") {
+    return [];
   }
   if (patentId.includes("phonograph") || patentId.includes("200521")) {
     const phono = stepEdisonPhonograph({
@@ -1883,6 +1896,16 @@ export function datedScenarios(patentId: string): DatedScenario[] {
         date: "1927-09-07",
         name: "First dissector image",
         writes: { anodeVoltage: 1500, coilCurrent: 0.42, lightIntensityLux: 500 },
+      },
+    ];
+  }
+  if (patentId === "us-200521-edison-phonograph") {
+    return [
+      {
+        id: "edison-filing-1877",
+        date: "1877-12-24",
+        name: "Filed phonograph or speaking-machine improvement",
+        writes: { sourceFocus: 1 },
       },
     ];
   }

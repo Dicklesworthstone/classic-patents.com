@@ -163,13 +163,17 @@ export function SholesTypewriterSim() {
               stroke="#5C4033"
               strokeWidth="2"
             />
-            {Array.from({ length: 12 }).map((_, i) => (
+            {Array.from({ length: sholes.ratchetToothCount }).map((_, i) => (
               <line
-                key={`esc-tooth-${i * 30}`}
+                key={`esc-tooth-${i}`}
                 x1="0"
                 y1="0"
-                x2={Math.cos((i * 30 * Math.PI) / 180) * sholes.ratchetSvgR}
-                y2={Math.sin((i * 30 * Math.PI) / 180) * sholes.ratchetSvgR}
+                x2={
+                  Math.cos((i * sholes.ratchetToothPitchDeg * Math.PI) / 180) * sholes.ratchetSvgR
+                }
+                y2={
+                  Math.sin((i * sholes.ratchetToothPitchDeg * Math.PI) / 180) * sholes.ratchetSvgR
+                }
                 stroke="#1A1A1A"
                 strokeWidth="2"
               />

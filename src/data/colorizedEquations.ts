@@ -8492,7 +8492,7 @@ export const ALL_COLORIZED_EQUATIONS: Record<string, ColorizedEquation[]> = {
   ],
 
   // 28. Thomas Edison Phonograph (US 200,521)
-  "us-200521-edison-phonograph": [
+  "_legacy-unpublished-us-200521-edison-phonograph": [
     {
       id: "edison-acoustic-stylus-groove-velocity",
       patentId: "us-200521-edison-phonograph",
@@ -18228,5 +18228,59 @@ ALL_COLORIZED_EQUATIONS["us-3541541-engelbart-mouse"] = [
     claimRef: 1,
     historicalSignificance:
       "The card preserves the printed claim relationship without turning a later pointing-device performance model into evidence from US 3,541,541.",
+  },
+];
+
+// The public Edison card stays with the two printed pitches and the stated
+// mechanical chain. The retained cards above add unprinted material, size,
+// speed, depth, and bandwidth values and are deliberately non-serving.
+ALL_COLORIZED_EQUATIONS["us-200521-edison-phonograph"] = [
+  {
+    id: "edison-source-helical-recording-chain",
+    patentId: "us-200521-edison-phonograph",
+    title: "Printed Helical-Groove and Thread Pitch",
+    category: "Source-Bound Mechanical Recording",
+    rawLatex:
+      "g = 10\\,\\text{grooves/in} \\quad \\text{and} \\quad s = 10\\,\\text{threads/in} \\quad \\rightarrow \\quad \\text{rotating cylinder advances endwise}",
+    colorizedLatex:
+      "\\textcolor{#059669}{g} = 10\\,\\text{grooves/in} \\quad \\text{and} \\quad \\textcolor{#2563eb}{s} = 10\\,\\text{threads/in} \\quad \\rightarrow \\quad \\textcolor{#d97706}{\\text{rotating cylinder advances endwise}}",
+    plainEnglishSentence: [
+      { text: "Cylinder A has " },
+      { text: "ten helical grooves per inch", variableId: "groove_pitch" },
+      { text: ". Shaft X and bearing P have " },
+      { text: "ten threads per inch", variableId: "thread_pitch" },
+      {
+        text: ", so the threaded support advances the rotating cylinder along the helical recording path.",
+      },
+    ],
+    variables: [
+      {
+        id: "groove_pitch",
+        symbol: "g",
+        name: "Printed helical-groove pitch",
+        color: "emerald",
+        role: "Cylinder A's stated ten grooves to the inch.",
+        unit: "grooves/in",
+        dimension: "printed inverse-length pitch",
+        explanation:
+          "The source gives this pitch for the illustrated cylinder; it does not state a cylinder diameter or a channel depth.",
+      },
+      {
+        id: "thread_pitch",
+        symbol: "s",
+        name: "Printed shaft and bearing thread pitch",
+        color: "sapphire",
+        role: "The ten-threads-per-inch relation stated for shaft X and bearing P.",
+        unit: "threads/in",
+        dimension: "printed inverse-length pitch",
+        explanation:
+          "Clock-work M or another power source turns L. The grant gives no hand crank, rotational speed, bandwidth, or recording-depth value.",
+      },
+    ],
+    pedagogicalNote:
+      "The source describes sound-driven diaphragm motion marking metallic foil, paper, or another yielding material, then a second point and diaphragm recovering motion from the marks. This card avoids asserting unprinted cylinder alloys, diaphragm compositions, specific diameters, operating rotational speeds, cut depths, or frequency-response measurements.",
+    claimRef: 4,
+    historicalSignificance:
+      "Claim 4 specifies the rotating, helically grooved cylinder and matching endwise movement without turning unprinted dimensions or performance figures into patent measurements.",
   },
 ];

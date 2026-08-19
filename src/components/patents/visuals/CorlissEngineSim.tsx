@@ -215,8 +215,8 @@ export function CorlissEngineSim() {
             <circle cx="0" cy="0" r="95" fill="none" stroke="#4A5568" strokeWidth="16" />
             <circle cx="0" cy="0" r="14" fill="#222" />
             {/* Flywheel Spokes */}
-            {Array.from({ length: 6 }).map((_, i) => {
-              const spkAngle = (i * 60 + crankAngleDeg) % 360;
+            {Array.from({ length: corliss.spokeCount }).map((_, i) => {
+              const spkAngle = (i * corliss.spokePitchDeg + crankAngleDeg) % 360;
               return (
                 <line
                   key={`spoke-${spkAngle}`}

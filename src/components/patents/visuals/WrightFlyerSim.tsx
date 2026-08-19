@@ -284,7 +284,7 @@ export function WrightFlyerSim() {
             </text>
 
             {/* Rear Double Vertical Rudder */}
-            <g transform={`translate(0, 55) rotate(${rudderAngle * 1.2})`}>
+            <g transform={`translate(0, 55) rotate(${rudderAngle * si.rudderSvgScale})`}>
               <rect
                 x="-12"
                 y="0"

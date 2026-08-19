@@ -734,6 +734,7 @@ export const FrankenSimEngine = {
       wheelRimSvgR: 68,
       wheelHubSvgR: 16,
       spokeCount: 6,
+      spokePitchDeg: 60,
     };
   },
 

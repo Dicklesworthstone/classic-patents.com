@@ -201,6 +201,8 @@ export function stepSholesTypewriter(
   schematicTypebarStartDeg: number;
   schematicTypebarPitchDeg: number;
   schematicTypebarCount: number;
+  ratchetToothCount: number;
+  ratchetToothPitchDeg: number;
 } {
   const cadence = Math.min(120, Math.max(0, demonstrationCadencePerMin));
   const eventsPerSecond = cadence / 60;
@@ -231,6 +233,8 @@ export function stepSholesTypewriter(
     schematicTypebarStartDeg: 20,
     schematicTypebarPitchDeg: 25,
     schematicTypebarCount: 14,
+    ratchetToothCount: 12,
+    ratchetToothPitchDeg: 30,
   };
 }
 

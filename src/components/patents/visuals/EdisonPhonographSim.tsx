@@ -2,7 +2,12 @@
 
 import { Play, RotateCcw, Volume2, VolumeX } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
-import { phonographAxialTravelMm, stepEdisonPhonograph } from "@/physics/catalogKernels";
+import {
+  edisonFoilGrooveX,
+  edisonLeadScrewThreadX,
+  phonographAxialTravelMm,
+  stepEdisonPhonograph,
+} from "@/physics/catalogKernels";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { usePatentAudio } from "./three/usePatentAudio";
 
@@ -112,17 +117,24 @@ export function EdisonPhonographSim() {
             strokeWidth="1"
           />
           {/* Screw Threads */}
-          {Array.from({ length: 40 }).map((_, i) => (
-            <line
-              key={`thread-${i * 10}`}
-              x1={90 + i * 10}
-              y1="165"
-              x2={96 + i * 10}
-              y2="175"
-              stroke="#718096"
-              strokeWidth="1"
-            />
-          ))}
+          {Array.from({ length: phono.leadScrewThreadCount }).map((_, i) => {
+            const x = edisonLeadScrewThreadX(
+              i,
+              phono.leadScrewThreadOriginX,
+              phono.leadScrewThreadPitchX,
+            );
+            return (
+              <line
+                key={`thread-${i}`}
+                x1={x}
+                y1="165"
+                x2={x + 6}
+                y2="175"
+                stroke="#718096"
+                strokeWidth="1"
+              />
+            );
+          })}
 
           {/* Cylinder A and its metal-foil recording surface, translated by the source-specified thread. */}
           <g transform={`translate(${160 + axialTravelMm * phono.axialSvgPxPerMm}, 130)`}>
@@ -148,18 +160,21 @@ export function EdisonPhonographSim() {
               Tinfoil Cylinder
             </text>
             {/* Spiral Grooves on Tinfoil */}
-            {Array.from({ length: 16 }).map((_, i) => (
-              <line
-                key={`groove-${i * 11}`}
-                x1={15 + i * 11}
-                y1="5"
-                x2={15 + i * 11}
-                y2="75"
-                stroke="#A0AEC0"
-                strokeWidth="1"
-                strokeDasharray="3 3"
-              />
-            ))}
+            {Array.from({ length: phono.foilGrooveCount }).map((_, i) => {
+              const x = edisonFoilGrooveX(i, phono.foilGrooveOriginX, phono.foilGroovePitchX);
+              return (
+                <line
+                  key={`groove-${i}`}
+                  x1={x}
+                  y1="5"
+                  x2={x}
+                  y2="75"
+                  stroke="#A0AEC0"
+                  strokeWidth="1"
+                  strokeDasharray="3 3"
+                />
+              );
+            })}
           </g>
 
           {/* Source-specified speaking tube, diaphragm, and hard indenting point. */}

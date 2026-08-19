@@ -50,6 +50,7 @@ export interface WrightSiState {
   rightLiftSvgY: number;
   leftDragSvgX: number;
   rightDragSvgX: number;
+  rudderSvgScale: number;
 }
 
 export function coupledRudderDeg(wingWarpDeg: number): number {
@@ -159,5 +160,6 @@ export function stepWrightFlyerSi(controls: WrightControls): WrightSiState {
     rightDragSvgX: Number(
       ((rightLiftN / Math.max(1, liftNewtons)) ** 2 * inducedDragNewtons * 2).toFixed(2),
     ),
+    rudderSvgScale: 1.2,
   };
 }
