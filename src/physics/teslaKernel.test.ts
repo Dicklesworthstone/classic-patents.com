@@ -8,9 +8,12 @@ import {
   teslaBAt,
   teslaCoilControls,
   teslaCoilResonantKhz,
+  teslaCoilSiUnits,
   teslaFieldDisplayOmegaDegPerS,
   teslaFieldDisplayOmegaRadPerS,
   teslaFig4Strobe,
+  teslaPhaseVectors,
+  teslaStatorPole,
 } from "./teslaKernel";
 
 describe("Tesla Polyphase AC & Resonant Induction Kernels", () => {
@@ -33,6 +36,15 @@ describe("Tesla Polyphase AC & Resonant Induction Kernels", () => {
     expect(state60Hz.diskRpm).toBe(3600);
     expect(state60Hz.usesGeneratorContactRings).toBe(true);
     expect(state60Hz.usesMotorCommutator).toBe(false);
+    expect(state60Hz.statorPoleSvgR).toBe(108);
+    expect(state60Hz.twoPhaseVectorSvgR).toBe(52);
+    expect(state60Hz.threePhaseVectorSvgR).toBe(42);
+    const pole0 = teslaStatorPole(0, 4);
+    expect(pole0.cx).toBeCloseTo(200, 1);
+    expect(pole0.cy).toBeCloseTo(42, 1);
+    const twoPhase = teslaPhaseVectors(0, 2);
+    expect(twoPhase[0].x).toBeCloseTo(52, 1);
+    expect(twoPhase[1].y).toBeCloseTo(0, 5);
   });
 
   test("teslaBAt computes pure rotating magnetic field vector for 2-phase and 3-phase systems", () => {
@@ -75,5 +87,9 @@ describe("Tesla Polyphase AC & Resonant Induction Kernels", () => {
     expect(controls.resonantFreqKhz).toBe(180);
     expect(controls.inputKv).toBe(20);
     expect(controls.sparkGapMm).toBe(15);
+    const si = teslaCoilSiUnits(180, 15, 1.25);
+    expect(si.resonantFreqHz).toBe(180000);
+    expect(si.inputVoltageVolts).toBe(15000);
+    expect(si.secondaryPotentialVolts).toBe(1250000);
   });
 });

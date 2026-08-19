@@ -251,6 +251,10 @@ the visitor can see or hear the kernel change the instrument.
 - [x] P5.158 Gramme torusSvgR / junctionInnerSvgR / junctionOuterSvgR. 2D no longer converts leftover ring ×100/35/48 privately.
 - [x] P5.159 Ericsson bladeSvgRx / forwardBladeSvgRy / aftBladeSvgRy. 2D no longer converts leftover helical ×10/50/45 privately.
 - [x] P5.160 Whitney sawSvgR / sawToothOuterSvgR / brushSvgR / bristleOuterSvgR. 2D no longer converts leftover saw ×65/78 or brush ×55/78 privately.
+- [x] P5.161 Tesla coil teslaCoilSiUnits / resonantFreqHz / inputVoltageVolts / secondaryPotentialVolts. 3D and weave no longer convert leftover kHz×1000, kV×1000, or MV×1e6 privately.
+- [x] P5.162 Farnsworth acceleratingVoltageVolts. 3D no longer converts leftover anode kV×1000 privately.
+- [x] P5.163 Tesla motor teslaStatorPole / teslaPhaseVectors / statorPoleSvgR / twoPhaseVectorSvgR / threePhaseVectorSvgR. 2D no longer converts leftover pole ×108 or phase ×52/42 privately.
+- [x] P5.164 Sholes sholesTypebarPose / typebarOuterRx/Ry / typebarRestRx/Ry / ratchetSvgR. 2D no longer converts leftover type-bar ×140/70/25/15 or ratchet ×18 privately.
 
 ## Explicitly out of scope
 

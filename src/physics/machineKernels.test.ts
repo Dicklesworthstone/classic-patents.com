@@ -2,6 +2,7 @@ import { describe, expect, test } from "bun:test";
 import {
   ccdWellSvgDepth,
   LINOTYPE_CHARS_PER_LINE,
+  sholesTypebarPose,
   stepCcdWells,
   stepEngelbartResolver,
   stepHoweLockstitch,
@@ -65,6 +66,11 @@ describe("Machine Kernels & Mechanical Kinematics", () => {
     expect(cycle.displayTypebarIndex).toBe(2);
     expect(cycle.displayColumnWrap).toBe(12);
     expect(cycle.columnPitchPx).toBe(6);
+    expect(cycle.typebarOuterRx).toBe(140);
+    expect(cycle.ratchetSvgR).toBe(18);
+    const bar = sholesTypebarPose(0, 0);
+    expect(bar.isActive).toBe(true);
+    expect(bar.xEnd).toBe(cycle.typebarHubX);
   });
 
   test("stepMergenthalerLinotype computes matrix justification, lead pot solidification, and slug ejection", () => {
