@@ -30,7 +30,6 @@ import { GrammeDynamoSim } from "./GrammeDynamoSim";
 import { HollerithTabulatingSim } from "./HollerithTabulatingSim";
 import { HoweSewingMachineSim } from "./HoweSewingMachineSim";
 import { HyattCelluloidSim } from "./HyattCelluloidSim";
-import { LamarrFrequencyHoppingSim as _LamarrFrequencyHoppingSim } from "./LamarrFrequencyHoppingSim";
 import { LincolnBuoySim } from "./LincolnBuoySim";
 import { LindeAirLiquefactionSim } from "./LindeAirLiquefactionSim";
 import { MaximMachineGunSim } from "./MaximMachineGunSim";

@@ -66,6 +66,19 @@ export function stepPeltonWheel(params: { headMeters?: number; runnerRpm?: numbe
     runnerSvgR: 75,
     hubSvgR: 18,
     bucketCount: 12,
+    schematicRunnerCx: 200,
+    schematicRunnerCy: 130,
+    schematicRunnerR: 60,
+    schematicBucketCount: 8,
+  };
+}
+
+/** Schematic split-bucket seat. Shared by the schematic. */
+export function peltonSchematicBucket(deg: number, cx = 200, cy = 130, radius = 60) {
+  const rad = (deg * Math.PI) / 180;
+  return {
+    x: Number((cx + Math.cos(rad) * radius).toFixed(2)),
+    y: Number((cy + Math.sin(rad) * radius).toFixed(2)),
   };
 }
 
@@ -93,6 +106,21 @@ export function stepGrammeDynamo(params: { shaftRate?: number }) {
     torusSvgR: 100,
     junctionInnerSvgR: 35,
     junctionOuterSvgR: 48,
+    schematicCenterX: 200,
+    schematicCenterY: 150,
+    schematicJunctionInnerR: 22,
+    schematicJunctionOuterR: 32,
+  };
+}
+
+/** Schematic junction-rod seat. Shared by the schematic. */
+export function grammeSchematicJunction(deg: number, cx = 200, cy = 150, innerR = 22, outerR = 32) {
+  const rad = (deg * Math.PI) / 180;
+  return {
+    x1: Number((cx + Math.cos(rad) * innerR).toFixed(2)),
+    y1: Number((cy + Math.sin(rad) * innerR).toFixed(2)),
+    x2: Number((cx + Math.cos(rad) * outerR).toFixed(2)),
+    y2: Number((cy + Math.sin(rad) * outerR).toFixed(2)),
   };
 }
 
@@ -302,6 +330,32 @@ export function stepWhitneyCottonGin(params: { crankRpm?: number; seedGridCleara
     bristleOuterSvgR: 78,
     sawToothCount: 16,
     bristleCount: 24,
+    schematicSawCx: 210,
+    schematicSawCy: 145,
+    schematicSawInnerR: 44,
+    schematicSawOuterR: 52,
+    schematicBrushCx: 300,
+    schematicBrushCy: 145,
+    schematicBrushInnerR: 15,
+    schematicBrushOuterR: 38,
+  };
+}
+
+/** Schematic saw-tooth or brush bristle. Shared by the schematic. */
+export function whitneySchematicRay(
+  deg: number,
+  cx: number,
+  cy: number,
+  innerR: number,
+  outerR: number,
+  twist = 0,
+) {
+  const rad = (deg * Math.PI) / 180;
+  return {
+    x1: Number((cx + Math.cos(rad) * innerR).toFixed(2)),
+    y1: Number((cy + Math.sin(rad) * innerR).toFixed(2)),
+    x2: Number((cx + Math.cos(rad + twist) * outerR).toFixed(2)),
+    y2: Number((cy + Math.sin(rad + twist) * outerR).toFixed(2)),
   };
 }
 
@@ -332,6 +386,9 @@ export function stepMcCormickReaper(params: { forwardSpeedMph?: number }) {
     cutterSvgAmp: 18,
     reelArmCount: 4,
     reelArmSvgLen: 95,
+    schematicReelCx: 210,
+    schematicReelCy: 100,
+    schematicReelR: 50,
     reelToCutterRatio: Number((reel.omegaRadPerS / Math.max(1e-6, cutter.omegaRadPerS)).toFixed(5)),
   };
 }
@@ -413,7 +470,14 @@ export function stepGatlingGun(params: { crankRpm?: number; barrelCount?: number
     clusterRadiusPx: 32,
     boltStrokePx: 90,
     crankPinRadiusPx: 28,
+    schematicBarrelAmpY: 28,
+    schematicBarrelCenterY: 150,
   };
+}
+
+/** Schematic barrel Y on the cluster face. Shared by the schematic. */
+export function gatlingSchematicBarrelY(angleDeg: number, centerY = 150, ampY = 28) {
+  return Number((centerY + Math.sin((angleDeg * Math.PI) / 180) * ampY).toFixed(2));
 }
 
 export function gatlingBoltStudioX(barrelAngleRad: number, homeX = -0.6, stroke = 0.38) {
@@ -1095,6 +1159,19 @@ export function stepSpencerMicrowave(anodeKv?: number, magneticGauss?: number, r
     popcornPoppedBaseR: 18,
     popcornPoppedStepR: 6,
     popcornOffsetY: -15,
+    schematicCavityCount: 8,
+    schematicAnodeCx: 110,
+    schematicAnodeCy: 150,
+    schematicCavityR: 26,
+  };
+}
+
+/** Magnetron cavity seat on the schematic. Shared by the schematic. */
+export function spencerSchematicCavity(index: number, count = 8, cx = 110, cy = 150, radius = 26) {
+  const a = (index * 2 * Math.PI) / Math.max(1, count);
+  return {
+    cx: Number((cx + Math.cos(a) * radius).toFixed(2)),
+    cy: Number((cy + Math.sin(a) * radius).toFixed(2)),
   };
 }
 

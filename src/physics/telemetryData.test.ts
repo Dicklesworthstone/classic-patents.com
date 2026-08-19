@@ -221,4 +221,27 @@ describe("Physics Telemetry Data Registry", () => {
       "operating frequency, spark voltage, power, range",
     );
   });
+
+  test("keeps Lamarr US 2,292,387 on the held synchronized-record boundary", () => {
+    const lamarr = PATENT_PHYSICS_REGISTRY["us-2292387-lamarr-frequency-hopping"];
+    expect(lamarr.engineMethod).toContain("No RF-performance engine");
+    expect(lamarr.controls.map((control) => control.unit)).toEqual(["source figure group"]);
+    expect(lamarr.computeMetrics({ sourceFocus: 2 })).toMatchObject([
+      {
+        label: "Highlighted Source Group",
+        value: "Figs. 4–6: record strip, control head, and starting pin",
+      },
+      { label: "Illustrated Tuning Positions", value: "7 transmitter / 4 receiver" },
+      { label: "Printed Claims", value: "6", unit: "source text" },
+      {
+        label: "Visual Status",
+        value: "withheld",
+        unit: "independent source review pending",
+      },
+    ]);
+    expect(lamarr.pedagogicalInsight).toContain("seven tuning condensers");
+    expect(lamarr.pedagogicalInsight).toContain(
+      "hop rate, RF bandwidth, processing gain, jamming margin",
+    );
+  });
 });

@@ -72,6 +72,7 @@ describe("Shared Physics Mathematical Utilities & Conversions", () => {
     expect(energyChannelsFor("us-3858232-boyle-smith-ccd", {})).toEqual([]);
     expect(energyChannelsFor("us-3671542-kwolek-kevlar", {})).toEqual([]);
     expect(energyChannelsFor("us-586193-marconi-radio", {})).toEqual([]);
+    expect(energyChannelsFor("us-2292387-lamarr-frequency-hopping", {})).toEqual([]);
   });
 
   test("canonicalizeParam and expandParamAliases normalize 3D private slider keys", () => {

@@ -205,4 +205,24 @@ describe("Colorized Equations Quality & Integrity Suite", () => {
       expect(publicCards).not.toContain(unsupportedPublicAssertion);
     }
   });
+
+  test("keeps Lamarr US 2,292,387 at its held synchronized-record claim boundary", () => {
+    const cards = ALL_COLORIZED_EQUATIONS["us-2292387-lamarr-frequency-hopping"];
+    expect(cards.map((card) => card.id)).toEqual(["lamarr-source-synchronized-record-tuning"]);
+    expect(cards[0]?.claimRef).toBe(1);
+    expect(cards[0]?.rawLatex).toContain("first record strip");
+    expect(cards[0]?.rawLatex).toContain("synchronous motion");
+
+    const publicCards = JSON.stringify(cards).toLowerCase();
+    for (const unsupportedPublicAssertion of [
+      "19.44",
+      "anti-jam",
+      "wi-fi",
+      "bluetooth",
+      "10\\text{ to }50",
+      "milliseconds",
+    ]) {
+      expect(publicCards).not.toContain(unsupportedPublicAssertion);
+    }
+  });
 });

@@ -13,6 +13,7 @@ describe("source-integrity visual routing", () => {
       "us-608969-parsons-turbine",
       "us-808897-carrier-air-conditioner",
       "us-586193-marconi-radio",
+      "us-2292387-lamarr-frequency-hopping",
       "us-3671542-kwolek-kevlar",
       "us-3858232-boyle-smith-ccd",
     ]) {
@@ -22,6 +23,7 @@ describe("source-integrity visual routing", () => {
     expect(dispatcherSource).toContain("a different Parsons patent");
     expect(dispatcherSource).toContain("inherited chilled-dew-point air-conditioning model");
     expect(dispatcherSource).toContain("unreviewed antenna dimensions, power, range");
+    expect(dispatcherSource).toContain("unreviewed bandwidth, hop-rate, processing-gain");
     expect(dispatcherSource).toContain("Information Storage Devices");
   });
 
@@ -41,16 +43,21 @@ describe("source-integrity visual routing", () => {
     const marconiBranch = dispatcherSource
       .split('case "us-586193-marconi-radio":')[1]
       ?.split('case "us-608969-parsons-turbine":')[0];
+    const lamarrBranch = dispatcherSource
+      .split('case "us-2292387-lamarr-frequency-hopping":')[1]
+      ?.split('case "us-2495429-spencer-microwave":')[0];
 
     expect(parsonsBranch).toBeDefined();
     expect(kwolekBranch).toBeDefined();
     expect(boyleBranch).toBeDefined();
     expect(carrierBranch).toBeDefined();
     expect(marconiBranch).toBeDefined();
+    expect(lamarrBranch).toBeDefined();
     expect(parsonsBranch).not.toContain("ParsonsTurbine");
     expect(kwolekBranch).not.toContain("KwolekKevlar");
     expect(boyleBranch).not.toContain("BoyleSmithCcd");
     expect(carrierBranch).not.toContain("CarrierAirConditioner");
     expect(marconiBranch).not.toContain("MarconiRadio");
+    expect(lamarrBranch).not.toContain("LamarrFrequencyHopping");
   });
 });

@@ -218,6 +218,24 @@ describe("FrankenSim Weave Surfaces Boundary", () => {
     expect(coupleLinks("us-586193-marconi-radio", {})).toEqual([]);
   });
 
+  test("keeps Lamarr US 2,292,387 on its reviewed matched-record boundary", () => {
+    const probe = materialProbe("us-2292387-lamarr-frequency-hopping", "Record strip", {});
+    expect(probe).toMatchObject({
+      material: "Matched record strips and record-actuated tuning means",
+      qty: "Claim 1",
+      value: "synchronous strip motion → maintained tuning",
+      unit: "source relation",
+    });
+    expect(probe?.note).toContain("independent publication review");
+    expect(intervalGhosts("us-2292387-lamarr-frequency-hopping", {})).toEqual([]);
+    expect(fidelityField("us-2292387-lamarr-frequency-hopping", {})).toMatchObject({
+      model: "not computed",
+      unit: "source boundary",
+    });
+    expect(datedScenarios("us-2292387-lamarr-frequency-hopping")).toEqual([]);
+    expect(coupleLinks("us-2292387-lamarr-frequency-hopping", {})).toEqual([]);
+  });
+
   test("computes spectral eigenmodes for resonant patents", () => {
     const teslaCoilModes = spectralModes("us-593138-tesla-coil", { secondaryTurns: 1000 });
     expect(teslaCoilModes.length).toBeGreaterThan(0);
