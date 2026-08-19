@@ -386,6 +386,11 @@ the visitor can see or hear the kernel change the instrument.
 - [x] P5.293 Default schematic named seats. Generic fallback no longer converts leftover 200,150 r=140/70 privately.
 - [x] P5.294 Goodyear goodyearChainPost / chainPostXs. 2D no longer converts leftover 100/180/260/340 sulfur posts privately.
 - [x] P5.295 Hyatt camphorDx/Dy / meltLink / polymer melt-solid R. 2D no longer converts leftover +12/−6 or +25/+10 privately.
+- [x] P5.296 McCormick grainStem Q/end / guard tips / face-sickle / pitmanCutterPad / reel slat. 2D no longer converts leftover +5/−2 or +50 privately.
+- [x] P5.297 Howe howeStitch / stitchLen / stitch Y. 2D no longer converts leftover +40 lockstitch privately.
+- [x] P5.298 Kevlar kevlarChainBond / chainBondXs. 2D no longer converts leftover 80/140/200/260/320 H-bond posts privately.
+- [x] P5.299 Parsons parsonsStageHeight / bladeMidY / bladeGap / lean. 2D no longer converts leftover 170±10 or 30/45/65 privately.
+- [x] P5.300 Edison phonograph leadScrewThreadDx / Y0 / Y1. 2D no longer converts leftover +6 thread privately.
 
 ## Explicitly out of scope
 
