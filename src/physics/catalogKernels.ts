@@ -871,7 +871,35 @@ export function stepBellTelephone(params: {
     scopeSineAmp: Number((db * 0.4).toFixed(2)),
     scopeHarmonicAmp: Number((db * 0.15).toFixed(2)),
     scopeSquareAmp: Number((db * 0.5).toFixed(2)),
+    scopeSampleCount: 60,
+    scopeSamplePitchPx: 5,
+    scopeTScale: 0.2,
+    scopeBaselineY: 50,
   };
+}
+
+/** Oscilloscope sample for the liquid-transmitter face. Shared by 2D. */
+export function bellScopeSample(
+  index: number,
+  time: number,
+  scopeNorm: number,
+  scopeSineAmp: number,
+  scopeHarmonicAmp: number,
+  scopeSquareAmp: number,
+  signalType: string,
+  pitchPx = 5,
+  tScale = 0.2,
+  baselineY = 50,
+) {
+  const x = index * pitchPx;
+  const tVal = (index + time) * tScale * scopeNorm;
+  let y = baselineY;
+  if (signalType === "continuous-undulating") {
+    y = baselineY + Math.sin(tVal) * scopeSineAmp + Math.sin(tVal * 2) * scopeHarmonicAmp;
+  } else {
+    y = Math.sin(tVal) > 0 ? baselineY - scopeSquareAmp : baselineY + scopeSquareAmp;
+  }
+  return { x, y };
 }
 
 export function stepMorseTelegraph(params: {
@@ -985,6 +1013,30 @@ export function stepWozniakApple(params: { crystalFreq?: number; ramCapacityKb?:
     // Visual Φ2 window. A 1.023 MHz sine aliases to noise on rAF.
     phi2DisplayHz: 4,
     busDisplaySpeed: Number((cpuMhz * 4).toFixed(2)),
+    videoPhaseDivisor: 2,
+    dramBaseAddr: 0x0400,
+    dramAddrSpan: 0x0400,
+    dramAddrStride: 0x31,
+  };
+}
+
+/** Φ1/Φ2 bus owner and DRAM address for one host tick. Shared by 2D. */
+export function wozniakBusCycle(tick: number, phi2Steal: number) {
+  const normalizedTick = Math.max(0, Math.floor(tick));
+  const normalizedSteal = Math.max(0, Math.min(0.9, phi2Steal));
+  const nominalVideoPhase = normalizedTick % 2 === 1;
+  const videoSlot = Math.ceil(normalizedTick / 2);
+  const stolenVideoSlot =
+    nominalVideoPhase &&
+    Math.floor(videoSlot * normalizedSteal) > Math.floor((videoSlot - 1) * normalizedSteal);
+
+  return {
+    phase: nominalVideoPhase && !stolenVideoSlot ? (1 as const) : (0 as const),
+    advanceRaster: nominalVideoPhase && !stolenVideoSlot,
+    dramAddress: `0x${(0x0400 + ((normalizedTick * 0x31) % 0x0400))
+      .toString(16)
+      .toUpperCase()
+      .padStart(4, "0")}`,
   };
 }
 
@@ -1021,6 +1073,30 @@ export function stepSpencerMicrowave(anodeKv?: number, magneticGauss?: number, r
     timeToPopS: isOscillating
       ? Number((((4180 * 0.25) / Math.max(1, rf)) * (100 - 20)).toFixed(1))
       : 0,
+    popcornEllipseY: 0.6,
+    popcornUnpoppedR: 8,
+    popcornPoppedBaseR: 18,
+    popcornPoppedStepR: 6,
+    popcornOffsetY: -15,
+  };
+}
+
+/** Bowl-kernel seat on the 2D magnetron face. Shared by 2D. */
+export function spencerPopcornSvg(
+  index: number,
+  isPopped: boolean,
+  count = 12,
+  ellipseY = 0.6,
+  unpoppedR = 8,
+  poppedBaseR = 18,
+  poppedStepR = 6,
+  offsetY = -15,
+) {
+  const angle = (index / Math.max(1, count)) * Math.PI * 2;
+  const rad = isPopped ? poppedBaseR + (index % 3) * poppedStepR : unpoppedR;
+  return {
+    px: Number((Math.cos(angle) * rad).toFixed(2)),
+    py: Number((Math.sin(angle) * (rad * ellipseY) + offsetY).toFixed(2)),
   };
 }
 

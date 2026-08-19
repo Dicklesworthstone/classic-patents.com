@@ -694,6 +694,10 @@ export const FrankenSimEngine = {
         ((approachSpeedMps / wheelRadiusM) * (1 - clampRatio * 0.95)).toFixed(3),
       ),
       wheelDisplayDegPerMph: 8,
+      flywheelSvgR: 54,
+      wheelRimSvgR: 68,
+      wheelHubSvgR: 16,
+      spokeCount: 6,
     };
   },
 

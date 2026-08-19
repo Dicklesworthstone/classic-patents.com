@@ -257,6 +257,10 @@ export function stepMergenthalerLinotype(params: {
   linesPerMin: number;
   wedgeLift: number;
   slugSvgWidth: number;
+  matrixCount: number;
+  matrixSvgPitch: number;
+  matrixSvgOriginX: number;
+  matrixSvgWidth: number;
 } {
   const rate = params.matrixRatePerMin ?? 60;
   const wedge = params.spacebandWedgeMm ?? 6.5;
@@ -286,7 +290,16 @@ export function stepMergenthalerLinotype(params: {
     linesPerMin: Number((rate / LINOTYPE_CHARS_PER_LINE).toFixed(2)),
     wedgeLift: Number(((wedge / 10) * 0.15).toFixed(4)),
     slugSvgWidth: Number((justificationWidthMm * 2.8).toFixed(2)),
+    matrixCount: 8,
+    matrixSvgPitch: 18,
+    matrixSvgOriginX: 5,
+    matrixSvgWidth: 12,
   };
+}
+
+/** Brass matrix seat on the 2D slug face. Shared by 2D. */
+export function mergenthalerMatrixSvgX(index: number, originX = 5, pitch = 18) {
+  return originX + index * pitch;
 }
 
 export function stepRenoEscalator(params: {
@@ -404,5 +417,6 @@ export function stepOtisElevator(params: { cabPayloadKg?: number; cableTensionPc
     springBowSvgH: isSnapped ? 0 : 18,
     pawlSvgX: isSnapped ? 18 : 4,
     pawlSvgY: isSnapped ? 0 : 7.2,
+    railSvgPitch: 20,
   };
 }
