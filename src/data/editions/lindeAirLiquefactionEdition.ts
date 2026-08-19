@@ -235,7 +235,7 @@ export const lindeAirLiquefactionParallelReadings: Readonly<Record<number, reado
     "The specification distinguishes the earlier cascade of progressively more volatile refrigerants from its own route. It invokes the pressure-drop cooling described by Joule and Thomson, then gives the printed variables, pressure difference examples, and the feedback arrangement: outgoing low-pressure air gives its heat-carrying capacity to incoming high-pressure air while added air maintains pressure.",
   ],
   7: [
-    "Where p² is higher pressure and p′ is lower pressure in atmospheres, the Joule-Thomson expansion equation yields systematic cooling proportional to pressure differential and inversely proportional to absolute temperature squared. For 50 atmospheres differential, cooling increases from 13°C at 283K to 40.7°C at 160K, enabling regenerative cascade liquefaction.",
+    "Where p² is higher pressure and p′ is lower pressure in atmospheres, the Joule-Thomson expansion equation gives the printed temperature decrease as a function of pressure difference and absolute temperature. For a 50-atmosphere difference, the specification lists decreases from 13°C at 283 K to 40.7°C at 160 K. Linde distinguishes this repeated counter-current cooling route from the earlier cascade of volatile refrigerants that he says had not proved practical for liquefying air.",
   ],
   8: [
     "The diagram is an apparatus reference, not a separate claimed figure number. Its lettered parts are the map for the next paragraphs: compressors, cooler, concentric counter-current pipes, vessels, valves, and the separation branch.",

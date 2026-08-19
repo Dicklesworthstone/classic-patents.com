@@ -64,6 +64,13 @@ describe("US 727,650 Carl Linde Air Liquefaction manual archival edition", () =>
     }
   });
 
+  test("does not misname Linde's counter-current route as the rejected refrigerant cascade", () => {
+    const pressureDropReading = lindeAirLiquefactionParallelReadings[7]?.join(" ") ?? "";
+    expect(pressureDropReading).toContain("earlier cascade of volatile refrigerants");
+    expect(pressureDropReading).toContain("repeated counter-current cooling route");
+    expect(pressureDropReading).not.toContain("regenerative cascade liquefaction");
+  });
+
   test("publishes a reviewed ledger and validates source text", () => {
     const asset = lindeAirLiquefactionPatent.originalTextAsset;
     expect(asset).toMatchObject({
