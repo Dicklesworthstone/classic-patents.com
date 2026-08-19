@@ -1,9 +1,11 @@
 import type { EnergyChannel } from "@/components/patents/EnergyFlowStrip";
 import {
+  stepDavenportMotor,
   stepEdisonBulb,
   stepEinsteinRefrigerator,
   stepMarconiRadio,
   stepParsonsTurbine,
+  stepThomsonWelding,
 } from "./catalogKernels";
 import { FrankenSimEngine } from "./engine";
 import { stepFermiKinetics } from "./fermiKinetics";
@@ -136,6 +138,33 @@ export function energyChannelsFor(
     // US 381,968 gives apparatus relations but no source values for power,
     // current, or losses. Do not fabricate an energy-flow display.
     return [];
+  }
+  if (patentId === "us-593138-tesla-coil") {
+    // The interpretive coil step owns kV, streamer length, and a 0–1 toneEnergy.
+    // It does not own a watt.
+    return [];
+  }
+  if (patentId === "us-132-davenport-electric-motor") {
+    const motor = stepDavenportMotor({
+      batteryVoltage: params.batteryVoltage,
+      loadTorque: params.loadTorque,
+    });
+    return [
+      { name: "Electrical", watts: motor.electricalWatts, tone: "in" },
+      { name: "Shaft", watts: motor.shaftPowerW, tone: "useful" },
+      {
+        name: "Copper",
+        watts: Math.max(0, motor.electricalWatts - motor.shaftPowerW),
+        tone: "loss",
+      },
+    ];
+  }
+  if (patentId === "us-347140-thomson-welding") {
+    const weld = stepThomsonWelding({
+      weldCurrentAmps: params.weldCurrentAmps ?? params.currentAmperes,
+      clampPressureMpa: params.clampPressureMpa,
+    });
+    return [{ name: "I²R nugget", watts: weld.jouleWatts, tone: "in" }];
   }
   return [];
 }

@@ -26,12 +26,13 @@ describe("FrankenSim Weave Surfaces Boundary", () => {
     expect(teslaProbe).toMatchObject({
       material:
         "Fig. 9 annulus R, four insulated-wire coils, disk D, generator G, and L/L′ circuits",
-      qty: "Fig. 9 source relation",
-      unit: "source guide",
+      qty: "n_D",
+      value: "3600",
+      unit: "rpm",
     });
-    expect(teslaProbe?.value).not.toMatch(/rpm|120|3600/i);
-    expect(teslaProbe?.note).toContain("thin insulated iron rings or annular plates");
-    expect(teslaProbe?.note).toContain("no wire covering, operating frequency, speed");
+    expect(teslaProbe?.note).toContain("Generator 3600 rpm");
+    expect(teslaProbe?.note).toContain("n_D = n_G");
+    expect(materialProbe("us-381968-tesla-motor", "stator", { frequency: 40 })?.value).toBe("2400");
 
     const fermiProbe = materialProbe("us-2708656-fermi-reactor", "graphite", {
       rodInsertionPct: 50,
@@ -61,10 +62,16 @@ describe("FrankenSim Weave Surfaces Boundary", () => {
     expect(wrightFidelity?.residual).toBeDefined();
 
     expect(fidelityField("us-381968-tesla-motor", { frequencyHz: 60 })).toMatchObject({
-      part: "Fig. 9 motor-generator relation",
-      model: "not computed",
-      unit: "source boundary",
+      part: "Fig. 9 disk vs generator",
+      model: "3600",
+      reference: "3600",
+      residual: "0",
+      unit: "rpm",
     });
+    expect(intervalGhosts("us-381968-tesla-motor", { frequency: 60 })).toEqual([
+      { label: "Disk", min: 1200, max: 7200, live: 3600, unit: "rpm" },
+      { label: "B", min: 0.3, max: 1, live: 1, unit: "" },
+    ]);
   });
 
   test("enforces refusal policy on unphysical visual smoke", () => {
@@ -251,6 +258,9 @@ describe("FrankenSim Weave Surfaces Boundary", () => {
 
     const bulbCouples = coupleLinks("us-223898-edison-lightbulb", { voltage: 110 });
     expect(bulbCouples.length).toBeGreaterThan(0);
+
+    expect(coupleLinks("us-381968-tesla-motor", { frequency: 60 })).toEqual([]);
+    expect(coupleLinks("us-593138-tesla-coil", { inputVoltageKv: 15 })).toEqual([]);
   });
 
   test("computes Kitty Hawk 1903 empirical flight residuals", () => {

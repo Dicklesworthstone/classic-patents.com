@@ -48,7 +48,7 @@ import {
   stepRenoEscalator,
   stepSholesTypewriter,
 } from "./machineKernels";
-import { teslaBAt } from "./teslaKernel";
+import { stepTeslaMotorFig9, teslaBAt, teslaMotorPhaseHz } from "./teslaKernel";
 
 import { readWrightControls, stepWrightFlyerSi } from "./wrightKernel";
 
@@ -170,14 +170,15 @@ export function materialProbe(
     };
   }
   if (patentId.includes("tesla-motor") || patentId.includes("381968")) {
+    const fig9 = stepTeslaMotorFig9(teslaMotorPhaseHz(params));
     return {
       part: calloutLabel,
       material:
         "Fig. 9 annulus R, four insulated-wire coils, disk D, generator G, and L/L′ circuits",
-      qty: "Fig. 9 source relation",
-      value: "generator circuits → progressive shifting → disk D rotation",
-      unit: "source guide",
-      note: "The specification says R is preferably built of thin insulated iron rings or annular plates and is surrounded by four coils of insulated wire. It identifies disk D, generator G, collector rings and brushes, and the L/L′ connections, but gives no wire covering, operating frequency, speed, or performance value.",
+      qty: "n_D",
+      value: fig9.diskRpm.toString(),
+      unit: "rpm",
+      note: `Generator ${fig9.generatorRpm} rpm · pole shift ${fig9.poleShiftRpm} rpm · B intensity ${fig9.schematicFieldIntensity}. Tesla says disk D follows the moving points of greatest attraction; this teaching model keeps n_D = n_G.`,
     };
   }
   if (
@@ -1064,6 +1065,13 @@ export function intervalGhosts(patentId: string, params: Record<string, number>)
       },
     ];
   }
+  if (patentId.includes("tesla-motor") || patentId.includes("381968")) {
+    const fig9 = stepTeslaMotorFig9(teslaMotorPhaseHz(params));
+    return [
+      { label: "Disk", min: 1200, max: 7200, live: fig9.diskRpm, unit: "rpm" },
+      { label: "B", min: 0.3, max: 1, live: fig9.schematicFieldIntensity, unit: "" },
+    ];
+  }
   if (patentId.includes("tesla-coil") || patentId.includes("593138")) {
     const coil = FrankenSimEngine.stepTeslaCoilFromControls(params);
     return [{ label: "Arc", min: 0.1, max: 4, live: coil.streamerLengthMeters, unit: "m" }];
@@ -1323,12 +1331,13 @@ export function fidelityField(
     };
   }
   if (patentId.includes("tesla-motor") || patentId.includes("381968")) {
+    const fig9 = stepTeslaMotorFig9(teslaMotorPhaseHz(params));
     return {
-      part: "Fig. 9 motor-generator relation",
-      model: "not computed",
-      reference: "annulus, coils, disk, generator, and connected circuits",
-      residual: "not applicable",
-      unit: "source boundary",
+      part: "Fig. 9 disk vs generator",
+      model: fig9.diskRpm.toString(),
+      reference: fig9.generatorRpm.toString(),
+      residual: (fig9.diskRpm - fig9.generatorRpm).toString(),
+      unit: "rpm",
     };
   }
   if (patentId.includes("pelton") || patentId.includes("233692")) {
@@ -1984,9 +1993,9 @@ export function coupleLinks(patentId: string, params: Record<string, number>): C
     return [{ from: "I²R", to: "radiation", watts: bulb.radiantWatts }];
   }
   if (patentId.includes("tesla-coil") || patentId.includes("593138")) {
-    const coil = FrankenSimEngine.stepTeslaCoilFromControls(params);
-    const watts = (params.inputVoltageKv ?? 15) * 20;
-    return [{ from: "primary spark", to: `${coil.streamerLengthInches.toFixed(0)} in arc`, watts }];
+    // stepTeslaCoil owns streamer length, secondary potential, and a 0–1 toneEnergy.
+    // It does not own a watt. Do not print kV × 20 as if it were primary-spark power.
+    return [];
   }
   if (
     patentId.includes("boyle") ||

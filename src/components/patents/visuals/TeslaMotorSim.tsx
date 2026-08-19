@@ -7,6 +7,7 @@ import {
   TESLA_FIELD_DISPLAY_SLOWDOWN,
   TESLA_FIELD_DISPLAY_TICK_MS,
   teslaBAt,
+  teslaMotorPhaseHz,
   teslaPhaseVectors,
   teslaPoleCurrent,
   teslaStatorPole,
@@ -17,7 +18,7 @@ import { soundEngine } from "@/utils/soundEngine";
 export function TeslaMotorSim() {
   const { params, updateParam } = usePatentPhysics("us-381968-tesla-motor");
   const phaseCount = (params.phaseCount as 2 | 3) ?? 2;
-  const frequencyHz = params.frequency ?? 60;
+  const frequencyHz = teslaMotorPhaseHz(params);
   const isPlayingAudio = (params.acHum ?? 0) === 1;
   const [_activePedagogyStep, setActivePedagogyStep] = useState<number>(1);
   const [angle, setAngle] = useState<number>(0);

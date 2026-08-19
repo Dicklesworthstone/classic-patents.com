@@ -8,6 +8,7 @@ import {
   teslaBAt,
   teslaCoilControls,
   teslaCoilResonantKhz,
+  teslaMotorPhaseHz,
   teslaCoilSiUnits,
   teslaCoilWindingSvg,
   teslaFieldDisplayOmegaDegPerS,
@@ -31,6 +32,13 @@ describe("Tesla Polyphase AC & Resonant Induction Kernels", () => {
     expect(omegaRad).toBeCloseTo((2 * Math.PI * 60) / 20, 2);
     const omegaDeg = teslaFieldDisplayOmegaDegPerS(60);
     expect(omegaDeg).toBe((360 * 60) / 20);
+  });
+
+  test("teslaMotorPhaseHz reads the registry frequency and the leftover frequencyHz alias", () => {
+    expect(teslaMotorPhaseHz({})).toBe(60);
+    expect(teslaMotorPhaseHz({ frequency: 40 })).toBe(40);
+    expect(teslaMotorPhaseHz({ frequencyHz: 80 })).toBe(80);
+    expect(teslaMotorPhaseHz({ frequency: 45, frequencyHz: 80 })).toBe(45);
   });
 
   test("stepTeslaMotorFig9 computes authentic motor-generator pair synchronization without commutators", () => {

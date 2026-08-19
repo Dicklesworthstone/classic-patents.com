@@ -4,7 +4,7 @@ import { Camera, Eye, EyeOff, RotateCcw, Zap } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import * as THREE from "three";
 import { ensureGenericWasm, genericKernelSource } from "@/physics/genericWasm";
-import { stepTeslaMotorFig9, teslaBAt } from "@/physics/teslaKernel";
+import { stepTeslaMotorFig9, teslaBAt, teslaMotorPhaseHz } from "@/physics/teslaKernel";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { StudioKernelChips } from "./StudioKernelChips";
 import { createThreeStudioScene, type StudioContext } from "./ThreeStudioScene";
@@ -19,7 +19,7 @@ export function TeslaMotor3D() {
   // Electrical & Mechanical Simulation State
   const { params } = usePatentPhysics("us-381968-tesla-motor");
   const [showUiOverlay, setShowUiOverlay] = useState<boolean>(true);
-  const acFrequencyHz = params.frequency ?? 60;
+  const acFrequencyHz = teslaMotorPhaseHz(params);
   const phaseCount = (params.phaseCount as 2 | 3) ?? 2;
   const fig13Unavailable = phaseCount === 3;
   const [showMagneticFlux] = useState<boolean>(true);

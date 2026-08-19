@@ -82,6 +82,16 @@ describe("Shared Physics Mathematical Utilities & Conversions", () => {
     expect(energyChannelsFor("us-395781-hollerith-tabulating", {})).toEqual([]);
     expect(energyChannelsFor("us-542846-diesel-engine", {})).toEqual([]);
     expect(energyChannelsFor("us-3541541-engelbart-mouse", {})).toEqual([]);
+    expect(energyChannelsFor("us-381968-tesla-motor", {})).toEqual([]);
+    expect(energyChannelsFor("us-593138-tesla-coil", {})).toEqual([]);
+    const davenport = energyChannelsFor("us-132-davenport-electric-motor", {});
+    expect(davenport.map((c) => c.name)).toEqual(["Electrical", "Shaft", "Copper"]);
+    expect(davenport[1].watts + davenport[2].watts).toBeCloseTo(davenport[0].watts, 1);
+    expect(energyChannelsFor("us-347140-thomson-welding", {})[0]).toMatchObject({
+      name: "I²R nugget",
+      tone: "in",
+    });
+    expect(energyChannelsFor("us-347140-thomson-welding", {})[0]?.watts).toBeGreaterThan(0);
   });
 
   test("canonicalizeParam and expandParamAliases normalize 3D private slider keys", () => {

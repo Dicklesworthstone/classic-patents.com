@@ -4,6 +4,7 @@
  */
 
 import { stepFermiKinetics } from "./fermiKinetics";
+import { stepTeslaMotorFig9, teslaMotorPhaseHz } from "./teslaKernel";
 
 export interface SpecClause {
   id: string;
@@ -56,7 +57,8 @@ export function specClausesFor(patentId: string, params: Record<string, number>)
   }
 
   if (patentId === TESLA_ID) {
-    const energized = (params.frequency ?? 0) > 0;
+    const fig9 = stepTeslaMotorFig9(teslaMotorPhaseHz(params));
+    const energized = fig9.phaseCycleHz > 0;
     return [
       {
         id: "independent-circuits",
@@ -64,16 +66,14 @@ export function specClausesFor(patentId: string, params: Record<string, number>)
           "two or more independent circuits through which alternate currents are passed at proper intervals",
         active: energized,
         tone: "held",
-        caption:
-          "The source guide animates the described staggered currents without assigning an operating rate.",
+        caption: `Fig. 9 generator at ${fig9.generatorRpm} rpm drives the two collector-ring circuits.`,
       },
       {
         id: "progressive-shift",
         phrase: "a progressive shifting of the magnetism or of the ‘lines of force’",
         active: energized,
         tone: "live",
-        caption:
-          "The guide shows the stated progressive shift without assigning a speed or numerical configuration.",
+        caption: `Pole shift ${fig9.poleShiftRpm} rpm; disk D follows at ${fig9.diskRpm} rpm.`,
       },
     ];
   }

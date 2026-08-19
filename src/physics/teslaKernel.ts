@@ -125,6 +125,11 @@ export interface TeslaFig9State {
   usesMotorCommutator: false;
 }
 
+/** Registry `frequency` (Hz). `frequencyHz` is accepted as a leftover alias. */
+export function teslaMotorPhaseHz(params: { frequency?: number; frequencyHz?: number }): number {
+  return Math.max(1, params.frequency ?? params.frequencyHz ?? 60);
+}
+
 export function stepTeslaMotorFig9(phaseCycleHz: number): TeslaFig9State {
   const boundedHz = Math.max(1, phaseCycleHz);
   const generatorRpm = Math.round(boundedHz * 60);

@@ -34,6 +34,8 @@ describe("Specification Clauses & Interactive Telemetry Weave", () => {
     expect(tesla[0].active).toBe(true);
     expect(tesla[1].phrase).toContain("progressive shifting of the magnetism");
     expect(tesla[1].tone).toBe("live");
+    expect(tesla[0].caption).toContain("3600 rpm");
+    expect(tesla[1].caption).toContain("disk D follows at 3600 rpm");
     expect(tesla.map((clause) => clause.phrase).join(" ")).not.toContain("rotating magnetic field");
     expect(tesla.map((clause) => clause.caption).join(" ")).not.toContain("120 f / P");
   });
