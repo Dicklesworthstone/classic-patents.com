@@ -1480,7 +1480,7 @@ export function spectralModes(patentId: string, params: Record<string, number>):
     }));
   }
   if (patentId.includes("tesla-coil") || patentId.includes("593138")) {
-    const f0 = FrankenSimEngine.stepTeslaCoilFromControls(params).resonantFreqKhz * 1000;
+    const f0 = FrankenSimEngine.stepTeslaCoilFromControls(params).resonantFreqHz;
     return [1, 2, 3].map((n) => ({
       n,
       freqHz: f0 * n,
