@@ -181,33 +181,18 @@ export const ericssonPropellerPatent: Patent = {
   ],
   historicalContext: {
     problemStatement:
-      "In 1836, side-paddle steamers could not function as warships because a single enemy artillery shell into the massive paddle boxes would immobilize the vessel, and paddle wheels could not be submerged deep enough to avoid heavy rolling in mid-Atlantic swells.",
+      "Ericsson frames the problem as propelling steamboats effectively despite variations in their draft of water. The specification's answer is a fully submerged two-hoop propeller, rather than an assertion about all contemporary vessels.",
     priorArtLimitations: [
-      "Archimedean water screws were long, full-turn helical augers that choked with weeds and suffered massive skin-friction drag.",
-      "Francis Pettit Smith's 1836 British screw was an oversized two-turn wood spiral that broke in half during trials.",
-      "The British Admiralty rejected Ericsson's 1837 prototype (the Francis B. Ogden) on the false theoretical belief that steering from the stern would be impossible with a screw propeller!",
+      "Ericsson expressly says that using oblique spiral planes in water, and moving them in contrary directions for steam-boat propulsion, was not new.",
+      "His claims therefore do not attempt to cover those ideas alone; they identify the immersed hoop-and-spoke construction, the speed relation, and the removable drawing No. 2 installation.",
     ],
     breakthroughInsight:
-      "Ericsson shortened the screw into short, high-aspect-ratio multi-bladed helical segments, calculating that a short diameter blade spinning at higher rotational speed produced vastly superior hydrodynamic thrust with minimal frictional drag.",
-    patentWars: [
-      {
-        rivalName: "Francis Pettit Smith and the British Admiralty",
-        rivalClaim:
-          "Smith patented a full-length Archimedean screw in Great Britain in 1836 and claimed priority over all screw-propelled vessels.",
-        conflictDetails:
-          "Discouraged by British Admiralty stubbornness, Ericsson was persuaded by American Navy Captain Robert F. Stockton to move to the United States in 1839. In America, Ericsson designed the USS Princeton (1843), the US Navy's first screw-propelled steam warship, featuring engines located completely below the waterline.",
-        resolution:
-          "The overwhelming success of the USS Princeton proved Ericsson's design decisively. The British Admiralty and world navies converted entirely to submerged screw propulsion, and Smith's long screw was abandoned in favor of Ericsson's short-bladed geometry.",
-        legalOutcome:
-          "Ericsson's US Patent 588 was recognized as the foundational design for all modern marine propellers.",
-      },
-    ],
+      "The document combines two oppositely angled, fully immersed spiral-plate series with concentric shafts that turn contrary at unequal speed. It then adds a separate removable upright-stem installation with protected underwater gears.",
+    patentWars: [],
     civilizationalImpact:
-      "Screw propulsion enabled the creation of transoceanic steamship lines (Cunard, White Star), global maritime commerce, and modern armored navies. In 1862, Ericsson designed and built the ironclad USS Monitor in just 100 days, whose submerged propeller and revolving turret defeated the CSS Virginia at the Battle of Hampton Roads.",
-    funFact:
-      "In 1837, Ericsson demonstrated his 45-foot screw boat, the Francis B. Ogden, on the River Thames by towing the British Admiralty's ceremonial barge at 10 knots. Despite the flawless demonstration, the British Surveyor of the Navy, Sir William Symonds, declared: 'Even if the propeller has the power of propelling a vessel, it would be useless, because it would be impossible to steer!'",
+      "US 588 is a source record for one early American screw-propeller design. It is valuable because its claims, drawings, and mechanisms can be studied without replacing their limited historical evidence with broad claims about worldwide adoption.",
     aftermath:
-      "Ericsson became a national hero in the United States. Following his death in New York in 1889 at age 85, the US Navy transported his body back to Sweden aboard the armored cruiser USS Baltimore with full international military honors.",
+      "The pinned grant does not establish a later lawsuit, commercial deployment, or a causal line to a named later vessel. Those claims are omitted pending separately cited historical research.",
   },
   tags: [
     "John Ericsson",
@@ -220,7 +205,5 @@ export const ericssonPropellerPatent: Patent = {
   stats: {
     totalClaims: 3,
     independentClaims: 3,
-    patentWarYears: "1837–1844",
-    impactScore: 99,
   },
 };

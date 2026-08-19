@@ -1,5 +1,6 @@
 import { describe, expect, test } from "bun:test";
 import {
+  ccdWellSvgDepth,
   LINOTYPE_CHARS_PER_LINE,
   stepCcdWells,
   stepEngelbartResolver,
@@ -18,6 +19,7 @@ describe("Machine Kernels & Mechanical Kinematics", () => {
     expect(res1.cte).toBeGreaterThan(0.999);
     expect(res1.ctePct).toBeCloseTo(res1.cte * 100, 4);
     expect(res1.packetOpacity).toBeCloseTo(0.35 + res1.cte * 0.55, 4);
+    expect(res1.wellSvgDepths[0]).toBe(ccdWellSvgDepth(res1.wells[0], res1.fullWellElectrons));
     expect(res1.fullWellElectrons).toBeGreaterThan(50000);
     expect(res1.phasePeriodNs).toBeCloseTo(33.3, 1);
 

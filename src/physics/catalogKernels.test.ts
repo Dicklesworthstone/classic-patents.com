@@ -80,6 +80,9 @@ describe("Catalog Kernels & Shared SI Stepping Functions", () => {
     expect(res.printedJunctionCount).toBe(36);
     expect(res.collectionContinuityPct).toBeGreaterThan(95);
     expect(res.inducedEmfIndex).toBe(100);
+    expect(res.torusSvgR).toBe(100);
+    expect(res.junctionInnerSvgR).toBe(35);
+    expect(res.junctionOuterSvgR).toBe(48);
   });
 
   test("Otto four-stroke engine computes thermodynamic air-standard cycle", () => {
@@ -104,6 +107,9 @@ describe("Catalog Kernels & Shared SI Stepping Functions", () => {
     expect(res.slipFraction).toBeLessThanOrEqual(1);
     expect(res.slipPct).toBeCloseTo(res.slipFraction * 100, 5);
     expect(res.propulsiveEfficiencyPct).toBeCloseTo((1 - res.slipFraction) * 100, 5);
+    expect(res.bladeSvgRx).toBe(10);
+    expect(res.forwardBladeSvgRy).toBe(50);
+    expect(res.aftBladeSvgRy).toBe(45);
   });
 
   test("DeLaval centrifugal separator computes radial g-force and separation efficiency", () => {
@@ -124,6 +130,10 @@ describe("Catalog Kernels & Shared SI Stepping Functions", () => {
     expect(res.sawRpm).toBeGreaterThan(180);
     expect(res.brushRpm).toBeGreaterThan(res.sawRpm);
     expect(res.outputLbsPerDay).toBeGreaterThan(0);
+    expect(res.sawSvgR).toBe(65);
+    expect(res.sawToothOuterSvgR).toBe(78);
+    expect(res.brushSvgR).toBe(55);
+    expect(res.bristleOuterSvgR).toBe(78);
   });
 
   test("McCormick reaper computes sickle bar reciprocating frequency and harvest rate", () => {
