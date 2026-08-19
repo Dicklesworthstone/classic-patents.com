@@ -56,6 +56,7 @@ export const einsteinRefrigeratorArchivalEdition: CuratedSpecificationEdition = 
         "UNITED STATES PATENT OFFICE.",
         "ALBERT EINSTEIN, OF BERLIN, AND LEO SZILARD, OF BERLIN-WILMERSDORF, GERMANY, ASSIGNORS TO ELECTROLUX SERVEL CORPORATION, OF NEW YORK, N. Y., A CORPORATION OF DELAWARE.",
         "REFRIGERATION.",
+        "1,781,541.",
         "Application filed December 16, 1927, Serial No. 240,566, and in Germany December 16, 1926.",
       ],
     },

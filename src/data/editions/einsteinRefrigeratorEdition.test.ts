@@ -20,6 +20,10 @@ describe("einsteinRefrigeratorArchivalEdition", () => {
     expect(einsteinRefrigeratorArchivalEdition.sourcePdfSha256).toBe(
       "5b67c380be742776b9509862e68e1fc68478a7b1cc92f215ba422efbd76b96e4",
     );
+    const masthead = einsteinRefrigeratorArchivalEdition.blocks.find(
+      (block) => block.kind === "masthead",
+    );
+    expect(masthead?.kind === "masthead" && masthead.lines).toContain("1,781,541.");
     expect(
       einsteinRefrigeratorArchivalEdition.blocks
         .filter((block) => block.kind === "claim")

@@ -11,6 +11,7 @@ Drawing sheet for the apparatus described in the specification. It bears the sol
 UNITED STATES PATENT OFFICE.
 ALBERT EINSTEIN, OF BERLIN, AND LEO SZILARD, OF BERLIN-WILMERSDORF, GERMANY, ASSIGNORS TO ELECTROLUX SERVEL CORPORATION, OF NEW YORK, N. Y., A CORPORATION OF DELAWARE.
 REFRIGERATION.
+1,781,541.
 Application filed December 16, 1927, Serial No. 240,566, and in Germany December 16, 1926.
 
 Our invention relates to the art of refrigeration and particularly to an apparatus and method for producing refrigeration wherein the refrigerant evaporates in the presence of an inert gas and more particularly to the type disclosed in Patent No. 1,685,764 granted September 25th, 1928, to Von Platen and Munters and our British Patent No. 282,428.
