@@ -89,7 +89,7 @@ export function ZeppelinAirshipSim() {
               fill="#CBD5E0"
               stroke="#4A5568"
               strokeWidth="2.5"
-              opacity="0.85"
+              opacity={Math.min(1, 0.6 + zep.liftHeatSample)}
             />
 
             {/* Internal 17 Separate Gas Cell Partitions */}

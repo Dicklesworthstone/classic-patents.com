@@ -155,7 +155,7 @@ export function OttoEngineSim() {
                       ? "#E53E3E" // Power (Fire Red)
                       : "#718096" // Exhaust (Grey smoke)
             }
-            opacity="0.8"
+            opacity={Math.min(1, 0.55 + otto.cycleHeatSample)}
           />
 
           {/* Flame Ignition Port in Slide Valve */}

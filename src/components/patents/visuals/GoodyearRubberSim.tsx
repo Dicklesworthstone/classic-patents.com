@@ -26,12 +26,12 @@ export function GoodyearRubberSim() {
           <div className="flex items-center gap-2">
             <Layers className="w-5 h-5 text-amber-500" />
             <h3 className="font-serif text-xl font-bold text-ink-900 dark:text-parchment-100">
-              Goodyear Thermal Sulfur Vulcanization Simulator (US 3,633)
+              Goodyear India-Rubber Fabric Process & Network Simulation (US 3,633)
             </h3>
           </div>
           <p className="text-xs text-ink-600 dark:text-ink-400 mt-1">
-            Discover how sulfur disulfide cross-links transform temperature-sensitive raw
-            polyisoprene into durable elastomeric rubber.
+            Illustrative molecular model demonstrating how sulfur and heat treatment stabilize raw
+            India-rubber against temperature extremes and solvents.
           </p>
         </div>
 
@@ -48,12 +48,12 @@ export function GoodyearRubberSim() {
             }`}
           >
             {isMelted
-              ? "✗ RAW GUM MELTED: Foul sticky liquid sludge"
+              ? "✗ RAW GUM: Softened / melted by heat"
               : isBrittle
-                ? "✗ RAW GUM FROZEN: Glassy brittle fracture"
+                ? "✗ RAW GUM: Hardened / brittle in cold"
                 : isElastic
-                  ? "✓ VULCANIZED ELASTIC: Thermoset cross-linked elastomer"
-                  : "✓ EBONITE HARD RUBBER: High sulfur hard resin"}
+                  ? "✓ HEAT-TREATED COMPOUND: Temperature-stable elastic fabric"
+                  : "✓ HIGH-SULFUR COMPOUND: Hard rubber resin"}
           </span>
         </div>
       </div>
@@ -73,7 +73,7 @@ export function GoodyearRubberSim() {
                     d={`M 40,${yBase + sag} Q ${220 + stretch},${yBase + sag * rubber.chainSagBezierScale} ${380 + (isElastic ? stretch : 0)},${yBase}`}
                     fill="none"
                     stroke={isMelted ? "#ef4444" : "#f59e0b"}
-                    strokeWidth="4"
+                    strokeWidth={3 + rubber.chainHeatSample * 3}
                     strokeLinecap="round"
                   />
 
@@ -129,7 +129,7 @@ export function GoodyearRubberSim() {
         <div className="lg:col-span-4 space-y-4">
           <div className="rounded-2xl border border-parchment-300 dark:border-ink-800 bg-parchment-100/70 dark:bg-ink-900/60 p-5 space-y-4">
             <span className="font-serif font-bold text-sm text-ink-900 dark:text-parchment-100 block">
-              Vulcanization Parameters
+              Compounding & Process Parameters (Educational Model)
             </span>
             <div className="rounded-lg border border-parchment-200 dark:border-ink-800 p-2.5 text-[11px] font-mono space-y-1">
               <div className="uppercase tracking-wider text-ink-500">Cure kinetics</div>

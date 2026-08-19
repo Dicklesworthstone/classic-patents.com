@@ -165,7 +165,7 @@ export function DaimlerEngineSim() {
             fill="#2D3748"
             stroke="#1A202C"
             strokeWidth="3"
-            opacity="0.4"
+            opacity={Math.min(1, 0.25 + daimler.jacketHeatSample)}
           />
 
           {/* Internal Twin Flywheels on Crankshaft */}

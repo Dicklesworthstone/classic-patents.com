@@ -150,7 +150,15 @@ export function EdisonPhonographSim() {
               stroke="#744210"
               strokeWidth="2"
             />
-            <rect x="10" y="5" width="180" height="70" rx="2" fill="#E2E8F0" opacity="0.9" />
+            <rect
+              x="10"
+              y="5"
+              width="180"
+              height="70"
+              rx="2"
+              fill="#E2E8F0"
+              opacity={Math.min(1, 0.6 + phono.grooveWaveRms)}
+            />
             <text
               x="50"
               y="45"

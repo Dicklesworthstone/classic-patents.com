@@ -7,7 +7,7 @@ import { stepDeLavalSeparator } from "@/physics/catalogKernels";
 import { ensureGenericWasm, genericKernelSource } from "@/physics/genericWasm";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { soundEngine } from "@/utils/soundEngine";
-import { buildDeLavalSeparatorModel, delavalFluidAdvance } from "./delavalSeparatorModel";
+import { buildDeLavalSeparatorModel } from "./delavalSeparatorModel";
 import { StudioKernelChips } from "./StudioKernelChips";
 import { createThreeStudioScene, type StudioContext } from "./ThreeStudioScene";
 import { useLiveSimParams } from "./useLiveSimParams";
@@ -130,8 +130,8 @@ export function DeLavalSeparator3D() {
 
       // Cream (inner) vs skim (outer) only when g-force is high enough to split
       const split = p.centrifugalGs > 2000;
-      const creamSpeed = p.creamDropAdvancePerS * delavalFluidAdvance(elapsed, 0.3);
-      const skimSpeed = p.skimDropAdvancePerS * delavalFluidAdvance(elapsed, 0.75);
+      const creamSpeed = p.creamDropAdvancePerS;
+      const skimSpeed = p.skimDropAdvancePerS;
       model.creamDrops.forEach((drop, i) => {
         drop.visible = split;
         drop.position.y =

@@ -103,7 +103,7 @@ export function PasteurFermentationSim() {
             height="200"
             rx="16"
             fill="#ED8936"
-            opacity={pasteur.bathGlowOpacity}
+            opacity={Math.min(1, pasteur.bathGlowOpacity * (0.85 + pasteur.wortHeatSample))}
             stroke="#C05621"
             strokeWidth="3"
           />

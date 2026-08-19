@@ -200,7 +200,12 @@ export function EricssonPropellerSim() {
           </g>
 
           {/* Reader-aid water-motion lines, not a measured wake. */}
-          <g opacity="0.5" stroke="#63B3ED" strokeWidth="2" strokeDasharray="6 4">
+          <g
+            opacity={Math.min(1, screw.wakeOpacity * (0.45 + screw.wakeCrateDensity))}
+            stroke="#63B3ED"
+            strokeWidth="2"
+            strokeDasharray="6 4"
+          >
             <line x1="410" y1="170" x2="560" y2="150" />
             <line x1="410" y1="200" x2="570" y2="200" />
             <line x1="410" y1="230" x2="560" y2="250" />

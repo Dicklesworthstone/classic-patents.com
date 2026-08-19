@@ -96,7 +96,7 @@ export function EdisonBulbSim() {
                     isBurnedOut
                       ? 0
                       : resistanceMode === "high-resistance"
-                        ? bulb.glowStopInner
+                        ? Math.min(1, bulb.glowStopInner * (1 + Math.abs(bulb.filamentHeatSample)))
                         : bulb.lowResistanceGlowStopInner
                   }
                 />

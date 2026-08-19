@@ -288,6 +288,14 @@ export function GatlingGunSim() {
             {muzzleEnergyJoules} J
           </span>
         </div>
+        <div className="bg-parchment-100 dark:bg-ink-900 border border-parchment-200 dark:border-ink-800 p-2.5 rounded-xl text-center">
+          <span className="text-[10px] uppercase tracking-wider text-ink-500 dark:text-ink-400 block font-sans">
+            Cluster h₁ (fs-symmetry)
+          </span>
+          <span className="font-mono text-sm sm:text-base font-bold text-sky-700 dark:text-sky-400">
+            {gatling.clusterHarmonicH1.toFixed(3)}
+          </span>
+        </div>
       </div>
 
       {/* Sliders */}

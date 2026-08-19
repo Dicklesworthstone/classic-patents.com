@@ -137,7 +137,7 @@ export function DieselEngineSim() {
                   ? "#DD6B20"
                   : "#4299E1"
             }
-            opacity="0.85"
+            opacity={Math.min(1, 0.55 + diesel.cycleHeatSample)}
           />
 
           {/* High-Pressure Air-Blast Fuel Injection Nozzle (Top Center) */}

@@ -4,6 +4,7 @@ import { Activity, Camera, Eye, EyeOff, Volume2, VolumeX, Zap } from "lucide-rea
 import { useEffect, useRef, useState } from "react";
 import type * as THREE from "three";
 import { stepEdisonPhonograph } from "@/physics/catalogKernels";
+import { ensureGenericWasm, genericKernelSource } from "@/physics/genericWasm";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { soundEngine } from "@/utils/soundEngine";
 import {
@@ -38,6 +39,7 @@ export function EdisonPhonograph3D() {
   });
   const [activeCamera, setActiveCamera] = useState<CameraPreset>("iso");
   const { isAudioMuted, toggleSound: toggleEngine } = usePatentAudio();
+  const [crateSource, setCrateSource] = useState(genericKernelSource());
 
   const live = useLiveSimParams({
     cylinderRpm,
@@ -93,6 +95,10 @@ export function EdisonPhonograph3D() {
       soundEngine.playSwitchClick();
     });
   };
+
+  useEffect(() => {
+    void ensureGenericWasm().then((next) => setCrateSource(next));
+  }, []);
 
   useEffect(() => {
     const container = containerRef.current;
@@ -245,6 +251,10 @@ export function EdisonPhonograph3D() {
             unit: "mm/s",
           },
           { label: "Model ω", value: phono.mandrelOmegaRadPerS.toFixed(1), unit: "rad/s" },
+          {
+            label: "Groove crate",
+            value: crateSource === "wasm" ? "fs-fft" : "ts-wave-fallback",
+          },
         ]}
       />
       <p className="pointer-events-none absolute bottom-3 left-4 right-4 rounded-lg bg-parchment-950/85 px-3 py-2 text-xs leading-relaxed text-parchment-200">

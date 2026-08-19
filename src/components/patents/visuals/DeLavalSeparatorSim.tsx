@@ -102,14 +102,14 @@ export function DeLavalSeparatorSim() {
             <path
               d="M -85 -55 L -105 45 Q -95 72, 0 72 Q 95 72, 105 45 L 85 -55 Z"
               fill="#4299E1"
-              opacity="0.75"
+              opacity={Math.min(1, 0.55 + sep.skimCrateDensity)}
             />
 
             {/* Inner Core Layer: Light Butterfat Cream (Yellow) */}
             <path
               d="M -45 -55 L -55 45 Q -45 65, 0 65 Q 45 65, 55 45 L 45 -55 Z"
               fill="#ECC94B"
-              opacity="0.9"
+              opacity={Math.min(1, 0.65 + sep.creamCrateDensity)}
             />
 
             {/* Nested disc vanes — display ω, not leftover rpm×6 */}

@@ -209,8 +209,9 @@ export function MorseTelegraphSim() {
               x2="220"
               y2="110"
               stroke={isKeyDepressed || isPlaying ? "#f59e0b" : "#475569"}
-              strokeWidth="2.5"
+              strokeWidth={2 + morse.lineWaveRms * 2}
               strokeDasharray="4 2"
+              opacity={Math.min(1, 0.5 + morse.lineWaveRms)}
             />
             <text
               x="155"

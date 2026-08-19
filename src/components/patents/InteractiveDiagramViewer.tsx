@@ -4051,8 +4051,9 @@ function _renderHistoricalSchematic(
             x2={pelton.schematicJetX2}
             y2={pelton.schematicJetY}
             stroke="#38bdf8"
-            strokeWidth="4"
+            strokeWidth={2 + pelton.jetCrateDensity * 4}
             strokeDasharray="4 2"
+            opacity={pelton.jetOpacity}
           />
           <text x="70" y="175" fill="#38bdf8" fontSize="8" textAnchor="middle">
             Needle Nozzle

@@ -120,9 +120,9 @@ export function PeltonWheelSim() {
             x2="360"
             y2="260"
             stroke="#3182CE"
-            strokeWidth="8"
+            strokeWidth={6 + pelton.jetCrateDensity * 6}
             strokeLinecap="round"
-            opacity="0.9"
+            opacity={pelton.jetOpacity}
           />
 
           {/* Pelton Turbine Runner Disk (Center) */}
@@ -166,14 +166,14 @@ export function PeltonWheelSim() {
             stroke="#63B3ED"
             strokeWidth="4"
             fill="none"
-            opacity="0.8"
+            opacity={Math.min(1, pelton.jetOpacity)}
           />
           <path
             d="M 360 260 Q 400 280, 450 310"
             stroke="#63B3ED"
             strokeWidth="4"
             fill="none"
-            opacity="0.8"
+            opacity={Math.min(1, pelton.jetOpacity)}
           />
           <text
             x="320"

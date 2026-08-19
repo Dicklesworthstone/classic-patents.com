@@ -152,7 +152,12 @@ export function MarconiRadioSim() {
 
             {/* Radiating Transverse Electromagnetic Wavefronts */}
             {isSparking && (
-              <g fill="none" stroke="#f59e0b" strokeWidth="2.5" opacity="0.8">
+              <g
+                fill="none"
+                stroke="#f59e0b"
+                strokeWidth="2.5"
+                opacity={Math.min(1, radio.waveOpacityBase * (0.45 + radio.sparkWaveRms))}
+              >
                 <circle cx="120" cy={radio.mastSvgY} r={waveRingRadius} />
                 <circle cx="120" cy={radio.mastSvgY} r={Math.max(0, waveRingRadius - 30)} />
                 <circle cx="120" cy={radio.mastSvgY} r={Math.max(0, waveRingRadius - 60)} />

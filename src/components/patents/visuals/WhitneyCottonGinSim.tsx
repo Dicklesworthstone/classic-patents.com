@@ -205,7 +205,7 @@ export function WhitneyCottonGinSim() {
             stroke="#FFFFFF"
             strokeWidth="8"
             strokeDasharray="6 4"
-            opacity="0.8"
+            opacity={Math.min(1, 0.5 + gin.lintCrateDensity)}
           />
           <text x="450" y="50" fill="#888888" fontSize="11" fontFamily="sans-serif">
             Clean Lint Discharge

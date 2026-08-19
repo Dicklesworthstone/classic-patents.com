@@ -77,7 +77,7 @@ export function HyattCelluloidSim() {
             height="160"
             rx="4"
             fill="#E53E3E"
-            opacity={hyatt.steamGlowOpacity}
+            opacity={Math.min(1, hyatt.steamGlowOpacity * (0.75 + hyatt.meltCrateDensity))}
           />
           <rect
             x="420"
@@ -86,7 +86,7 @@ export function HyattCelluloidSim() {
             height="160"
             rx="4"
             fill="#E53E3E"
-            opacity={hyatt.steamGlowOpacity}
+            opacity={Math.min(1, hyatt.steamGlowOpacity * (0.75 + hyatt.meltCrateDensity))}
           />
           <text
             x="110"

@@ -75,7 +75,14 @@ export function LincolnBuoySim() {
             />
 
             {/* River Water Level */}
-            <rect x="0" y="150" width="600" height="170" fill="#0284c7" opacity="0.45" />
+            <rect
+              x="0"
+              y="150"
+              width="600"
+              height="170"
+              fill="#0284c7"
+              opacity={Math.min(1, 0.3 + lincoln.bellowsCrateDensity)}
+            />
 
             {/* Steamboat Hull */}
             <g transform={`translate(0, ${lincoln.hullStudioY})`}>

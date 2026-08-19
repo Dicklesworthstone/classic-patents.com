@@ -127,7 +127,8 @@ export function BellTelephoneSim() {
               <polyline
                 fill="none"
                 stroke={signalType === "continuous-undulating" ? "#10b981" : "#ef4444"}
-                strokeWidth="2.5"
+                strokeWidth={2 + bell.acousticWaveRms * 2}
+                opacity={Math.min(1, 0.55 + bell.acousticWaveRms)}
                 points={points}
               />
             </svg>

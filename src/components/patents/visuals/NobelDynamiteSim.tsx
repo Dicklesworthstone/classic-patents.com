@@ -153,9 +153,27 @@ export function NobelDynamiteSim() {
           {/* Detonation Flash Overlay */}
           {isDetonated && (
             <g>
-              <circle cx="300" cy="170" r="180" fill="#ECC94B" opacity="0.85" />
-              <circle cx="300" cy="170" r="120" fill="#ED8936" opacity="0.9" />
-              <circle cx="300" cy="170" r="60" fill="#FFFFFF" opacity="0.95" />
+              <circle
+                cx="300"
+                cy="170"
+                r="180"
+                fill="#ECC94B"
+                opacity={Math.min(1, 0.55 + nobel.shockWaveRms)}
+              />
+              <circle
+                cx="300"
+                cy="170"
+                r="120"
+                fill="#ED8936"
+                opacity={Math.min(1, 0.6 + nobel.shockWaveRms)}
+              />
+              <circle
+                cx="300"
+                cy="170"
+                r="60"
+                fill="#FFFFFF"
+                opacity={Math.min(1, 0.7 + nobel.shockWaveRms)}
+              />
               <text
                 x="210"
                 y="175"

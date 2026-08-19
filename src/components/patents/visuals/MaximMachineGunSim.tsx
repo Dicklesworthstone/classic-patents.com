@@ -119,7 +119,7 @@ export function MaximMachineGunSim() {
             fill="#B87333"
             stroke="#8B5A2B"
             strokeWidth="2"
-            opacity="0.85"
+            opacity={maxim.steamOpacity > 0 ? Math.min(1, 0.55 + maxim.jacketHeatSample) : 0.45}
           />
           <text
             x="330"

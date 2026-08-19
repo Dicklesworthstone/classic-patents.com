@@ -101,7 +101,15 @@ export function ParsonsTurbineSim() {
 
           {/* High-Pressure Steam Inlet Port (Left) */}
           <g transform="translate(80, 140)">
-            <rect x="0" y="0" width="40" height="60" rx="4" fill="#E53E3E" opacity="0.8" />
+            <rect
+              x="0"
+              y="0"
+              width="40"
+              height="60"
+              rx="4"
+              fill="#E53E3E"
+              opacity={Math.min(1, 0.55 + parsons.steamCrateDensity)}
+            />
             <text
               x="-70"
               y="35"
