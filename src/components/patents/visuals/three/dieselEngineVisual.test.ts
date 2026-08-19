@@ -64,6 +64,9 @@ describe("US 542,846 Rudolf Diesel Engine visual & thermodynamics boundary", () 
     expect(result.pressureNeedleRadPerBar).toBeCloseTo((Math.PI * 1.4) / 80, 4);
     expect(result.pistonStrokePx).toBe(35);
     expect(result.schematicFlywheelR).toBe(40);
+    expect(result.schematicCylinderW).toBe(140);
+    expect(result.schematicInjectorW).toBe(30);
+    expect(result.schematicPistonH).toBe(55);
   });
 
   test("builds and articulates procedural kinematic hierarchy correctly", () => {

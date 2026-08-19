@@ -43,9 +43,6 @@ function claimLiveState(
   if (patentId.includes("bardeen-transistor") && claimNum === 1) {
     return (params.pointSpacingMicrons ?? 50) <= 100 ? "held" : "broken";
   }
-  if (patentId.includes("noyce-ic") && claimNum === 1) {
-    return (params.junctionIsolationVoltage ?? 15) >= 4 ? "held" : "broken";
-  }
   if (patentId.includes("goddard-rocket") && claimNum === 1) {
     return (params.chamberPressure ?? 350) >= 120 ? "held" : "broken";
   }
@@ -75,6 +72,61 @@ function claimLiveState(
   }
   if (patentId.includes("parsons-turbine") && claimNum === 1) {
     return (params.inletPressurePsi ?? 150) >= 40 ? "held" : "broken";
+  }
+  if (patentId.includes("marconi") && claimNum === 1) {
+    return (params.mastHeightM ?? 45) >= 20 ? "held" : "broken";
+  }
+  if (patentId.includes("morse") && claimNum === 1) {
+    return (params.wpmSpeed ?? 20) >= 5 ? "held" : "broken";
+  }
+  if (patentId.includes("westinghouse") && claimNum === 1) {
+    return (params.trainPipePressure ?? 70) <= 65 ? "held" : "broken";
+  }
+  if (patentId.includes("pelton") && claimNum === 1) {
+    return (params.headWaterMeters ?? 150) >= 30 ? "held" : "broken";
+  }
+  if (patentId.includes("hyatt") && claimNum === 1) {
+    return (params.steamTempC ?? 125) >= 100 ? "held" : "broken";
+  }
+  if (patentId.includes("delaval") && claimNum === 1) {
+    return (params.bowlRpm ?? 6000) >= 3000 ? "held" : "broken";
+  }
+  if (patentId.includes("tesla-coil") && claimNum === 1) {
+    return (params.sparkRateHz ?? 240) >= 60 ? "held" : "broken";
+  }
+  if (patentId.includes("lincoln") && claimNum === 1) {
+    return (params.inflationPct ?? 80) >= 20 ? "held" : "broken";
+  }
+  if (patentId.includes("howe") && claimNum === 1) {
+    return (params.crankRpm ?? 240) >= 60 ? "held" : "broken";
+  }
+  if (patentId.includes("otis") && claimNum === 1) {
+    return (params.cableTensionPct ?? 100) >= 10 ? "held" : "broken";
+  }
+  if (patentId.includes("gatling") && claimNum === 1) {
+    return (params.crankRpm ?? 200) >= 50 ? "held" : "broken";
+  }
+  if (patentId.includes("nobel") && claimNum === 1) {
+    return (params.ngConcentrationPct ?? 75) >= 50 ? "held" : "broken";
+  }
+  if (patentId.includes("sholes") && claimNum === 1) {
+    return (params.typingSpeedWpm ?? 40) >= 10 ? "held" : "broken";
+  }
+  if (patentId.includes("gramme") && claimNum === 1) {
+    return (params.shaftRpm ?? 1200) >= 300 ? "held" : "broken";
+  }
+  if (patentId.includes("pasteur") && claimNum === 1) {
+    const t = params.wortTempC ?? 16;
+    return t >= 8 && t <= 35 ? "held" : "broken";
+  }
+  if (patentId.includes("glidden") && claimNum === 1) {
+    return (params.twistsPerFoot ?? 4) >= 2 ? "held" : "broken";
+  }
+  if (patentId.includes("thomson") && claimNum === 1) {
+    return (params.weldCurrentAmps ?? 1200) >= 500 ? "held" : "broken";
+  }
+  if (patentId.includes("wozniak") && claimNum === 1) {
+    return (params.cpuClockMhz ?? 1.023) >= 0.5 ? "held" : "broken";
   }
   if (patentId.includes("engelbart-mouse") && claimNum === 1) {
     return (params.mouseSpeed ?? 350) > 0 ? "held" : "broken";

@@ -12,43 +12,63 @@ import {
 } from "lucide-react";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import {
+  bardeenSchematicDie,
+  coltSchematicTrigger,
   corlissSchematicValve,
+  davenportSchematicArmature,
   delavalSchematicDiscY,
   edisonSchematicGlowFill,
   edisonSchematicGlowOpacity,
   edisonSchematicGrooveX,
+  edisonSchematicTerminal,
+  einsteinSchematicVessel,
+  engelbartSchematicWheel,
   gatlingSchematicBarrelY,
   gliddenSchematicSpurX,
   goodyearSchematicCrosslink,
+  goodyearSchematicLink,
   goodyearSchematicStrand,
+  grammeSchematicBrush,
   grammeSchematicJunction,
   hollerithSchematicDialX,
   hollerithSchematicPinX,
+  hyattSchematicMold,
+  hyattSchematicRam,
+  kevlarSchematicBond,
   kevlarSchematicLattice,
   lincolnSchematicChamber,
   mccormickSchematicReelArm,
   mccormickSchematicSickleX,
+  morseSchematicInstrument,
   nobelSchematicKieselguhr,
   pasteurSchematicBubbleX,
+  pasteurSchematicYeast,
   peltonSchematicBucket,
   spencerSchematicCavity,
+  stepBardeenTransistor,
   stepBellTelephone,
   stepColtRevolver,
   stepCorlissEngine,
   stepDaimlerEngine,
+  stepDavenportMotor,
   stepDeLavalSeparator,
+  stepEdisonBulb,
   stepEdisonPhonograph,
+  stepEinsteinRefrigerator,
+  stepEngelbartMouse,
   stepEricssonPropeller,
   stepGatlingGun,
   stepGliddenBarbedWire,
   stepGoodyearRubber,
   stepGrammeDynamo,
   stepHollerithTabulating,
+  stepHyattCelluloid,
   stepKevlarContinuum,
   stepLincolnBuoy,
   stepMarconiRadio,
   stepMaximMachineGun,
   stepMcCormickReaper,
+  stepMorseTelegraph,
   stepNobelDynamite,
   stepOttoEngine,
   stepParsonsTurbine,
@@ -57,16 +77,20 @@ import {
   stepSpencerMicrowave,
   stepThomsonWelding,
   stepWhitneyCottonGin,
+  stepWozniakApple,
   stepZeppelinAirship,
   thomsonSchematicJawX,
   whitneySchematicRay,
+  wozniakSchematicChip,
   zeppelinSchematicCell,
+  zeppelinSchematicGondola,
 } from "@/physics/catalogKernels";
 import { FrankenSimEngine, lamarrSchematicHop, lamarrSchematicStaffY } from "@/physics/engine";
 import { fermiSchematicSlug, stepFermiKinetics } from "@/physics/fermiKinetics";
 import {
   ccdSchematicGateX,
   mergenthalerSchematicChuteX,
+  otisSchematicPawl,
   otisSchematicRailY,
   renoSchematicCleat,
   sholesSchematicTypebar,
@@ -513,26 +537,35 @@ function _renderHistoricalSchematic(
     }
     case "edison-bulb": {
       const filamentTemp = params?.filamentTemp ?? 2100;
+      const bulb = stepEdisonBulb({});
       const _glowOpacity = edisonSchematicGlowOpacity(filamentTemp);
       return (
         <g stroke="#38bdf8" strokeWidth="1.5" fill="none">
           <path
-            d="M 150 190 C 120 160 120 100 160 70 C 200 40 240 70 280 100 C 280 160 250 190 230 210 L 170 210 Z"
+            d={bulb.schematicEnvelopeD}
             fill="#fef08a"
             fillOpacity={edisonSchematicGlowFill(filamentTemp)}
             stroke="#eab308"
             strokeWidth="2"
           />
-          <path d="M 170 210 L 170 235 L 230 235 L 230 210 Z" fill="#64748b" stroke="#94a3b8" />
-          <line x1="160" y1="245" x2="240" y2="245" stroke="#94a3b8" />
-          <path
-            d="M 185 220 L 185 140 C 185 90 215 90 215 140 L 215 220"
-            stroke="#f59e0b"
-            strokeWidth="3"
-            fill="none"
+          <path d={bulb.schematicBaseD} fill="#64748b" stroke="#94a3b8" />
+          <line
+            x1={bulb.schematicFootX1}
+            y1={bulb.schematicFootY}
+            x2={bulb.schematicFootX2}
+            y2={bulb.schematicFootY}
+            stroke="#94a3b8"
           />
-          <circle cx="185" cy="220" r="4" fill="#d97706" />
-          <circle cx="215" cy="220" r="4" fill="#d97706" />
+          <path d={bulb.schematicFilamentD} stroke="#f59e0b" strokeWidth="3" fill="none" />
+          {bulb.schematicTerminalXs.map((_, i) => {
+            const t = edisonSchematicTerminal(
+              i,
+              bulb.schematicTerminalXs,
+              bulb.schematicTerminalY,
+              bulb.schematicTerminalR,
+            );
+            return <circle key={i} cx={t.cx} cy={t.cy} r={t.r} fill="#d97706" />;
+          })}
         </g>
       );
     }
@@ -546,10 +579,10 @@ function _renderHistoricalSchematic(
       return (
         <g stroke="#38bdf8" strokeWidth="1.5" fill="none">
           <rect
-            x="80"
-            y="70"
-            width="240"
-            height="170"
+            x={kinetics.schematicCoreX0}
+            y={kinetics.schematicCoreY0}
+            width={kinetics.schematicCoreW}
+            height={kinetics.schematicCoreH}
             rx="4"
             fill="#1e293b"
             fillOpacity="0.6"
@@ -601,10 +634,10 @@ function _renderHistoricalSchematic(
           )}
           {/* Cadmium Control Rod moving dynamically into core */}
           <rect
-            x="195"
+            x={kinetics.schematicRodX}
             y={rodY}
-            width="10"
-            height="160"
+            width={kinetics.schematicRodW}
+            height={kinetics.schematicRodH}
             rx="2"
             fill="#ef4444"
             fillOpacity="0.9"
@@ -614,91 +647,184 @@ function _renderHistoricalSchematic(
         </g>
       );
     }
-    case "wozniak-apple":
+    case "wozniak-apple": {
+      const apple = stepWozniakApple({});
+      const cpu = wozniakSchematicChip("cpu", apple.schematicChipSeats);
+      const mux = wozniakSchematicChip("mux", apple.schematicChipSeats);
+      const ram = wozniakSchematicChip("ram", apple.schematicChipSeats);
+      const video = wozniakSchematicChip("video", apple.schematicChipSeats);
       return (
         <g stroke="#38bdf8" strokeWidth="1.5" fill="none">
           <rect
-            x="50"
-            y="60"
-            width="80"
-            height="60"
+            x={cpu.x}
+            y={cpu.y}
+            width={cpu.w}
+            height={cpu.h}
             rx="4"
             fill="#1e3a8a"
             fillOpacity="0.4"
             stroke="#60a5fa"
             strokeWidth="2"
           />
-          <text x="90" y="95" fill="#93c5fd" fontSize="10" textAnchor="middle" fontWeight="bold">
+          <text
+            x={cpu.labelX}
+            y={cpu.labelY}
+            fill="#93c5fd"
+            fontSize="10"
+            textAnchor="middle"
+            fontWeight="bold"
+          >
             MOS 6502
           </text>
           <rect
-            x="170"
-            y="60"
-            width="60"
-            height="60"
+            x={mux.x}
+            y={mux.y}
+            width={mux.w}
+            height={mux.h}
             rx="4"
             fill="#7c2d12"
             fillOpacity="0.4"
             stroke="#f97316"
             strokeWidth="2"
           />
-          <text x="200" y="95" fill="#fdba74" fontSize="10" textAnchor="middle" fontWeight="bold">
+          <text
+            x={mux.labelX}
+            y={mux.labelY}
+            fill="#fdba74"
+            fontSize="10"
+            textAnchor="middle"
+            fontWeight="bold"
+          >
             MUX
           </text>
           <rect
-            x="270"
-            y="60"
-            width="85"
-            height="150"
+            x={ram.x}
+            y={ram.y}
+            width={ram.w}
+            height={ram.h}
             rx="4"
             fill="#065f46"
             fillOpacity="0.4"
             stroke="#34d399"
             strokeWidth="2"
           />
-          <text x="312" y="140" fill="#6ee7b7" fontSize="10" textAnchor="middle" fontWeight="bold">
+          <text
+            x={ram.labelX}
+            y={ram.labelY}
+            fill="#6ee7b7"
+            fontSize="10"
+            textAnchor="middle"
+            fontWeight="bold"
+          >
             48KB RAM
           </text>
           <rect
-            x="50"
-            y="150"
-            width="80"
-            height="60"
+            x={video.x}
+            y={video.y}
+            width={video.w}
+            height={video.h}
             rx="4"
             fill="#4c1d95"
             fillOpacity="0.4"
             stroke="#a855f7"
             strokeWidth="2"
           />
-          <text x="90" y="185" fill="#d8b4fe" fontSize="10" textAnchor="middle" fontWeight="bold">
+          <text
+            x={video.labelX}
+            y={video.labelY}
+            fill="#d8b4fe"
+            fontSize="10"
+            textAnchor="middle"
+            fontWeight="bold"
+          >
             Video Gen
           </text>
-          <line x1="130" y1="90" x2="170" y2="90" stroke="#60a5fa" strokeWidth="2" />
-          <line x1="130" y1="180" x2="170" y2="105" stroke="#a855f7" strokeWidth="2" />
-          <line x1="230" y1="90" x2="270" y2="90" stroke="#f97316" strokeWidth="2" />
+          <line
+            x1={apple.schematicBusCpuMux.x1}
+            y1={apple.schematicBusCpuMux.y1}
+            x2={apple.schematicBusCpuMux.x2}
+            y2={apple.schematicBusCpuMux.y2}
+            stroke="#60a5fa"
+            strokeWidth="2"
+          />
+          <line
+            x1={apple.schematicBusVideoMux.x1}
+            y1={apple.schematicBusVideoMux.y1}
+            x2={apple.schematicBusVideoMux.x2}
+            y2={apple.schematicBusVideoMux.y2}
+            stroke="#a855f7"
+            strokeWidth="2"
+          />
+          <line
+            x1={apple.schematicBusMuxRam.x1}
+            y1={apple.schematicBusMuxRam.y1}
+            x2={apple.schematicBusMuxRam.x2}
+            y2={apple.schematicBusMuxRam.y2}
+            stroke="#f97316"
+            strokeWidth="2"
+          />
         </g>
       );
-    case "engelbart-mouse":
+    }
+    case "engelbart-mouse": {
+      const mouse = stepEngelbartMouse({});
+      const xWheel = engelbartSchematicWheel("x", {
+        x: mouse.schematicXWheelX,
+        y: mouse.schematicXWheelY,
+        w: mouse.schematicXWheelW,
+        h: mouse.schematicXWheelH,
+      });
+      const yWheel = engelbartSchematicWheel("y", undefined, {
+        x: mouse.schematicYWheelX,
+        y: mouse.schematicYWheelY,
+        w: mouse.schematicYWheelW,
+        h: mouse.schematicYWheelH,
+      });
       return (
         <g stroke="#38bdf8" strokeWidth="1.5" fill="none">
           <path
-            d="M 120 220 L 120 100 C 120 60 160 50 200 50 C 240 50 280 60 280 100 L 280 220 Z"
+            d={mouse.schematicBodyD}
             fill="#78350f"
             fillOpacity="0.3"
             stroke="#d97706"
             strokeWidth="2"
           />
-          <rect x="180" y="40" width="40" height="20" rx="4" fill="#ef4444" stroke="#f87171" />
-          <rect x="140" y="130" width="14" height="60" rx="2" fill="#d97706" stroke="#fbbf24" />
-          <text x="147" y="205" fill="#fef3c7" fontSize="9" textAnchor="middle">
+          <rect
+            x={mouse.schematicButtonX}
+            y={mouse.schematicButtonY}
+            width={mouse.schematicButtonW}
+            height={mouse.schematicButtonH}
+            rx="4"
+            fill="#ef4444"
+            stroke="#f87171"
+          />
+          <rect
+            x={xWheel.x}
+            y={xWheel.y}
+            width={xWheel.w}
+            height={xWheel.h}
+            rx="2"
+            fill="#d97706"
+            stroke="#fbbf24"
+          />
+          <text x={xWheel.labelX} y={xWheel.labelY} fill="#fef3c7" fontSize="9" textAnchor="middle">
             X-Wheel
           </text>
-          <rect x="210" y="150" width="60" height="14" rx="2" fill="#d97706" stroke="#fbbf24" />
-          <text x="240" y="180" fill="#fef3c7" fontSize="9" textAnchor="middle">
+          <rect
+            x={yWheel.x}
+            y={yWheel.y}
+            width={yWheel.w}
+            height={yWheel.h}
+            rx="2"
+            fill="#d97706"
+            stroke="#fbbf24"
+          />
+          <text x={yWheel.labelX} y={yWheel.labelY} fill="#fef3c7" fontSize="9" textAnchor="middle">
             Y-Wheel
           </text>
         </g>
       );
+    }
     case "farnsworth-tv": {
       const tv = FrankenSimEngine.stepFarnsworthTv(1.5, 120, 500);
       return (
@@ -774,10 +900,10 @@ function _renderHistoricalSchematic(
       return (
         <g stroke="#38bdf8" strokeWidth="1.5" fill="none">
           <rect
-            x="50"
-            y="55"
-            width="300"
-            height="190"
+            x={spencer.schematicOvenX}
+            y={spencer.schematicOvenY}
+            width={spencer.schematicOvenW}
+            height={spencer.schematicOvenH}
             rx="8"
             fill="#0f172a"
             fillOpacity="0.45"
@@ -787,7 +913,7 @@ function _renderHistoricalSchematic(
           <circle
             cx={spencer.schematicAnodeCx}
             cy={spencer.schematicAnodeCy}
-            r="42"
+            r={spencer.schematicAnodeR}
             fill="#1e293b"
             stroke="#f59e0b"
             strokeWidth="2"
@@ -800,15 +926,31 @@ function _renderHistoricalSchematic(
               spencer.schematicAnodeCy,
               spencer.schematicCavityR,
             );
-            return <circle key={i} cx={cav.cx} cy={cav.cy} r="7" fill="#0f172a" stroke="#fbbf24" />;
+            return (
+              <circle
+                key={i}
+                cx={cav.cx}
+                cy={cav.cy}
+                r={spencer.schematicCavityDotR}
+                fill="#0f172a"
+                stroke="#fbbf24"
+              />
+            );
           })}
           <path
-            d="M 152 150 L 200 130 L 330 130 L 330 170 L 200 170 Z"
+            d={spencer.schematicWaveguideD}
             fill="#7c3aed"
             fillOpacity="0.15"
             stroke="#a78bfa"
           />
-          <circle cx="265" cy="150" r="16" fill="#f59e0b" fillOpacity="0.25" stroke="#fbbf24" />
+          <circle
+            cx={spencer.schematicLoadCx}
+            cy={spencer.schematicLoadCy}
+            r={spencer.schematicLoadR}
+            fill="#f59e0b"
+            fillOpacity="0.25"
+            stroke="#fbbf24"
+          />
         </g>
       );
     }
@@ -852,7 +994,14 @@ function _renderHistoricalSchematic(
             ).cy;
             return (
               <g key={row}>
-                <line x1="60" y1={rowY} x2="340" y2={rowY} stroke="#f59e0b" strokeWidth="3" />
+                <line
+                  x1={kevlar.schematicLatticeX1}
+                  y1={rowY}
+                  x2={kevlar.schematicLatticeX2}
+                  y2={rowY}
+                  stroke="#f59e0b"
+                  strokeWidth="3"
+                />
                 {Array.from({ length: kevlar.schematicLatticeCols }, (_, col) => {
                   const node = kevlarSchematicLattice(
                     row,
@@ -867,7 +1016,7 @@ function _renderHistoricalSchematic(
                       key={col}
                       cx={node.cx}
                       cy={node.cy}
-                      r="5"
+                      r={kevlar.schematicNodeR}
                       fill={row % 2 === 0 ? "#38bdf8" : "#34d399"}
                     />
                   );
@@ -875,9 +1024,20 @@ function _renderHistoricalSchematic(
               </g>
             );
           })}
-          <line x1="120" y1="80" x2="120" y2="200" stroke="#67e8f9" strokeDasharray="3 3" />
-          <line x1="200" y1="80" x2="200" y2="200" stroke="#67e8f9" strokeDasharray="3 3" />
-          <line x1="280" y1="80" x2="280" y2="200" stroke="#67e8f9" strokeDasharray="3 3" />
+          {kevlar.schematicBondXs.map((_, i) => {
+            const x = kevlarSchematicBond(i, kevlar.schematicBondXs).x;
+            return (
+              <line
+                key={x}
+                x1={x}
+                y1={kevlar.schematicBondY0}
+                x2={x}
+                y2={kevlar.schematicBondY1}
+                stroke="#67e8f9"
+                strokeDasharray="3 3"
+              />
+            );
+          })}
           <text x="200" y="250" fill="#fde68a" fontSize="9" textAnchor="middle">
             Nematic aramid H-bond lattice
           </text>
@@ -898,20 +1058,20 @@ function _renderHistoricalSchematic(
             stroke="#94a3b8"
           />
           <rect
-            x="160"
-            y="70"
-            width="80"
-            height="70"
+            x={bell.schematicTransmitterX}
+            y={bell.schematicTransmitterY}
+            width={bell.schematicTransmitterW}
+            height={bell.schematicTransmitterH}
             rx="6"
             fill="#1e293b"
             fillOpacity="0.4"
             stroke="#7dd3fc"
           />
           <rect
-            x="175"
-            y="145"
-            width="50"
-            height="28"
+            x={bell.schematicAcidX}
+            y={bell.schematicAcidY}
+            width={bell.schematicAcidW}
+            height={bell.schematicAcidH}
             rx="4"
             fill="#0f766e"
             fillOpacity="0.4"
@@ -931,10 +1091,10 @@ function _renderHistoricalSchematic(
             />
           ))}
           <rect
-            x="150"
-            y="200"
-            width="100"
-            height="18"
+            x={bell.schematicBaseX}
+            y={bell.schematicBaseY}
+            width={bell.schematicBaseW}
+            height={bell.schematicBaseH}
             rx="3"
             fill="#78350f"
             fillOpacity="0.4"
@@ -948,7 +1108,7 @@ function _renderHistoricalSchematic(
       return (
         <g stroke="#38bdf8" strokeWidth="1.5" fill="none">
           <path
-            d="M 50 110 L 90 80 L 310 80 L 350 110 L 340 140 L 60 140 Z"
+            d={lincoln.schematicHullD}
             fill="#1e3a8a"
             fillOpacity="0.25"
             stroke="#60a5fa"
@@ -974,9 +1134,23 @@ function _renderHistoricalSchematic(
               />
             );
           })}
-          <line x1="50" y1="190" x2="350" y2="190" stroke="#38bdf8" strokeDasharray="6 4" />
+          <line
+            x1={lincoln.schematicWaterX1}
+            y1={lincoln.schematicWaterY}
+            x2={lincoln.schematicWaterX2}
+            y2={lincoln.schematicWaterY}
+            stroke="#38bdf8"
+            strokeDasharray="6 4"
+          />
           {lincoln.schematicTieXs.map((x) => (
-            <line key={x} x1={x} y1="80" x2={x} y2="140" stroke="#f59e0b" />
+            <line
+              key={x}
+              x1={x}
+              y1={lincoln.schematicTieY0}
+              x2={x}
+              y2={lincoln.schematicTieY1}
+              stroke="#f59e0b"
+            />
           ))}
         </g>
       );
@@ -985,8 +1159,16 @@ function _renderHistoricalSchematic(
       const howe = stepHoweSewingMachine(300, 120, 3.5);
       return (
         <g stroke="#38bdf8" strokeWidth="1.5" fill="none">
-          <rect x="70" y="190" width="260" height="22" rx="3" fill="#334155" stroke="#94a3b8" />
-          <path d="M 90 190 L 90 90 L 220 90 L 220 130" stroke="#60a5fa" strokeWidth="3" />
+          <rect
+            x={howe.schematicBedX}
+            y={howe.schematicBedY}
+            width={howe.schematicBedW}
+            height={howe.schematicBedH}
+            rx="3"
+            fill="#334155"
+            stroke="#94a3b8"
+          />
+          <path d={howe.schematicArmD} stroke="#60a5fa" strokeWidth="3" />
           <circle
             cx={howe.schematicShuttleCx}
             cy={howe.schematicShuttleCy}
@@ -997,16 +1179,16 @@ function _renderHistoricalSchematic(
           <line
             x1={howe.schematicShuttleCx}
             y1={howe.schematicShuttleCy}
-            x2={howe.schematicShuttleCx + 22}
-            y2={howe.schematicShuttleCy - 18}
+            x2={howe.schematicShuttleCx + howe.schematicShuttleArmDx}
+            y2={howe.schematicShuttleCy + howe.schematicShuttleArmDy}
             stroke="#fbbf24"
             strokeWidth="2"
           />
           <line
             x1={howe.schematicNeedleX}
-            y1="130"
+            y1={howe.schematicNeedleY0}
             x2={howe.schematicNeedleX}
-            y2="175"
+            y2={howe.schematicNeedleY1}
             stroke="#ef4444"
             strokeWidth="2"
           />
@@ -1016,92 +1198,151 @@ function _renderHistoricalSchematic(
             r={howe.schematicNeedleR}
             fill="#f87171"
           />
-          <rect x="200" y="200" width="40" height="12" rx="2" fill="#d97706" fillOpacity="0.4" />
+          <rect
+            x={howe.schematicFeedX}
+            y={howe.schematicFeedY}
+            width={howe.schematicFeedW}
+            height={howe.schematicFeedH}
+            rx="2"
+            fill="#d97706"
+            fillOpacity="0.4"
+          />
         </g>
       );
     }
-    case "goddard-rocket":
+    case "goddard-rocket": {
+      const rocket = FrankenSimEngine.stepGoddardRocket(350, 1.8);
       return (
         <g stroke="#38bdf8" strokeWidth="1.5" fill="none">
           <path
-            d="M 200 40 L 230 90 L 170 90 Z"
+            d={`M ${rocket.schematicNoseCx} ${rocket.schematicNoseY0} L ${rocket.schematicNoseCx + rocket.schematicNoseHalfW} ${rocket.schematicNoseY1} L ${rocket.schematicNoseCx - rocket.schematicNoseHalfW} ${rocket.schematicNoseY1} Z`}
             fill="#1e3a8a"
             fillOpacity="0.4"
             stroke="#60a5fa"
           />
           <rect
-            x="170"
-            y="90"
-            width="60"
-            height="70"
+            x={rocket.schematicChamberX}
+            y={rocket.schematicChamberY}
+            width={rocket.schematicChamberW}
+            height={rocket.schematicChamberH}
             fill="#0f172a"
             fillOpacity="0.4"
             stroke="#38bdf8"
           />
           <rect
-            x="174"
-            y="162"
-            width="52"
-            height="40"
+            x={rocket.schematicInjectorX}
+            y={rocket.schematicInjectorY}
+            width={rocket.schematicInjectorW}
+            height={rocket.schematicInjectorH}
             fill="#1e293b"
             fillOpacity="0.5"
             stroke="#7dd3fc"
           />
           <path
-            d="M 174 202 L 160 250 L 240 250 L 226 202 Z"
+            d={`M ${rocket.schematicNozzleInnerX0} ${rocket.schematicNozzleY0} L ${rocket.schematicNozzleX0} ${rocket.schematicNozzleY1} L ${rocket.schematicNozzleX1} ${rocket.schematicNozzleY1} L ${rocket.schematicNozzleInnerX1} ${rocket.schematicNozzleY0} Z`}
             fill="#7c2d12"
             fillOpacity="0.4"
             stroke="#f59e0b"
           />
-          <path d="M 190 250 Q 200 275 210 250" fill="#ef4444" fillOpacity="0.5" stroke="#f97316" />
+          <path
+            d={`M ${rocket.schematicFlameCx - rocket.schematicFlameHalfW} ${rocket.schematicNozzleY1} Q ${rocket.schematicFlameCx} ${rocket.schematicFlameY} ${rocket.schematicFlameCx + rocket.schematicFlameHalfW} ${rocket.schematicNozzleY1}`}
+            fill="#ef4444"
+            fillOpacity="0.5"
+            stroke="#f97316"
+          />
         </g>
       );
-    case "bardeen-transistor":
+    }
+    case "bardeen-transistor": {
+      const ge = stepBardeenTransistor();
+      const die = bardeenSchematicDie(
+        ge.schematicDieX,
+        ge.schematicDieY,
+        ge.schematicDieW,
+        ge.schematicDieH,
+      );
       return (
         <g stroke="#38bdf8" strokeWidth="1.5" fill="none">
           <rect
-            x="110"
-            y="150"
-            width="180"
-            height="70"
+            x={die.x}
+            y={die.y}
+            width={die.w}
+            height={die.h}
             rx="4"
             fill="#64748b"
             fillOpacity="0.35"
             stroke="#94a3b8"
           />
-          <text x="200" y="190" fill="#cbd5e1" fontSize="9" textAnchor="middle">
+          <text x={die.labelX} y={die.labelY} fill="#cbd5e1" fontSize="9" textAnchor="middle">
             n-Ge
           </text>
-          <line x1="160" y1="70" x2="175" y2="150" stroke="#f59e0b" strokeWidth="2" />
-          <line x1="240" y1="70" x2="225" y2="150" stroke="#38bdf8" strokeWidth="2" />
-          <circle cx="175" cy="150" r="4" fill="#fbbf24" />
-          <circle cx="225" cy="150" r="4" fill="#7dd3fc" />
-          <text x="150" y="64" fill="#fde68a" fontSize="9" textAnchor="middle">
+          <line
+            x1={ge.schematicEmitterX1}
+            y1={ge.schematicEmitterY1}
+            x2={ge.schematicEmitterX2}
+            y2={ge.schematicEmitterY2}
+            stroke="#f59e0b"
+            strokeWidth="2"
+          />
+          <line
+            x1={ge.schematicCollectorX1}
+            y1={ge.schematicCollectorY1}
+            x2={ge.schematicCollectorX2}
+            y2={ge.schematicCollectorY2}
+            stroke="#38bdf8"
+            strokeWidth="2"
+          />
+          <circle
+            cx={ge.schematicEmitterX2}
+            cy={ge.schematicEmitterY2}
+            r={ge.schematicContactR}
+            fill="#fbbf24"
+          />
+          <circle
+            cx={ge.schematicCollectorX2}
+            cy={ge.schematicCollectorY2}
+            r={ge.schematicContactR}
+            fill="#7dd3fc"
+          />
+          <text
+            x={ge.schematicEmitterLabelX}
+            y={ge.schematicEmitterLabelY}
+            fill="#fde68a"
+            fontSize="9"
+            textAnchor="middle"
+          >
             E
           </text>
-          <text x="250" y="64" fill="#bae6fd" fontSize="9" textAnchor="middle">
+          <text
+            x={ge.schematicCollectorLabelX}
+            y={ge.schematicCollectorLabelY}
+            fill="#bae6fd"
+            fontSize="9"
+            textAnchor="middle"
+          >
             C
           </text>
         </g>
       );
+    }
     case "boyle-smith-ccd": {
       const ccd = stepCcdWells(1, 850, 2.5, 8);
       return (
         <g stroke="#38bdf8" strokeWidth="1.5" fill="none">
           <rect
-            x="60"
-            y="160"
-            width="280"
-            height="50"
+            x={ccd.schematicSubstrateX}
+            y={ccd.schematicSubstrateY}
+            width={ccd.schematicSubstrateW}
+            height={ccd.schematicSubstrateH}
             fill="#1e3a8a"
             fillOpacity="0.35"
             stroke="#60a5fa"
           />
           <rect
-            x="60"
-            y="140"
-            width="280"
-            height="20"
+            x={ccd.schematicSubstrateX}
+            y={ccd.schematicPolyY}
+            width={ccd.schematicSubstrateW}
+            height={ccd.schematicPolyH}
             fill="#334155"
             fillOpacity="0.5"
             stroke="#94a3b8"
@@ -1110,65 +1351,110 @@ function _renderHistoricalSchematic(
             <rect
               key={i}
               x={ccdSchematicGateX(i, ccd.schematicGateOriginX, ccd.schematicGatePitch)}
-              y="100"
+              y={ccd.schematicGateY}
               width={ccd.schematicGateWidth}
-              height="40"
+              height={ccd.schematicGateH}
               fill={i % 3 === 0 ? "#f59e0b" : i % 3 === 1 ? "#38bdf8" : "#34d399"}
               fillOpacity="0.35"
               stroke="#e2e8f0"
             />
           ))}
-          <path d="M 88 180 Q 133 150 178 180" stroke="#fde68a" fill="none" />
+          <path d={ccd.schematicPacketD} stroke="#fde68a" fill="none" />
           <text x="200" y="80" fill="#93c5fd" fontSize="9" textAnchor="middle">
             φ1 · φ2 · φ3 charge packets
           </text>
         </g>
       );
     }
-    case "morse-telegraph":
+    case "morse-telegraph": {
+      const morse = stepMorseTelegraph({});
+      const key = morseSchematicInstrument("key", {
+        x: morse.schematicKeyX,
+        y: morse.schematicKeyY,
+        w: morse.schematicKeyW,
+        h: morse.schematicKeyH,
+      });
+      const relay = morseSchematicInstrument("relay", undefined, {
+        x: morse.schematicRelayX,
+        y: morse.schematicRelayY,
+        w: morse.schematicRelayW,
+        h: morse.schematicRelayH,
+      });
+      const sounder = morseSchematicInstrument("sounder", undefined, undefined, {
+        x: morse.schematicSounderX,
+        y: morse.schematicSounderY,
+        w: morse.schematicSounderW,
+        h: morse.schematicSounderH,
+      });
       return (
         <g stroke="#38bdf8" strokeWidth="1.5" fill="none">
           <rect
-            x="50"
-            y="150"
-            width="70"
-            height="18"
+            x={key.x}
+            y={key.y}
+            width={key.w}
+            height={key.h}
             rx="3"
             fill="#78350f"
             fillOpacity="0.4"
             stroke="#d97706"
           />
-          <line x1="85" y1="150" x2="120" y2="110" stroke="#94a3b8" strokeWidth="2" />
+          <line
+            x1={morse.schematicLeverX1}
+            y1={morse.schematicLeverY1}
+            x2={morse.schematicLeverX2}
+            y2={morse.schematicLeverY2}
+            stroke="#94a3b8"
+            strokeWidth="2"
+          />
           <rect
-            x="160"
-            y="90"
-            width="80"
-            height="50"
+            x={relay.x}
+            y={relay.y}
+            width={relay.w}
+            height={relay.h}
             rx="4"
             fill="#1e3a8a"
             fillOpacity="0.35"
             stroke="#60a5fa"
           />
-          <text x="200" y="120" fill="#93c5fd" fontSize="9" textAnchor="middle">
+          <text x={relay.labelX} y={relay.labelY} fill="#93c5fd" fontSize="9" textAnchor="middle">
             Relay
           </text>
           <rect
-            x="280"
-            y="130"
-            width="70"
-            height="40"
+            x={sounder.x}
+            y={sounder.y}
+            width={sounder.w}
+            height={sounder.h}
             rx="4"
             fill="#334155"
             fillOpacity="0.4"
             stroke="#f59e0b"
           />
-          <text x="315" y="154" fill="#fde68a" fontSize="8" textAnchor="middle">
+          <text
+            x={sounder.labelX}
+            y={sounder.labelY}
+            fill="#fde68a"
+            fontSize="8"
+            textAnchor="middle"
+          >
             Sounder
           </text>
-          <line x1="120" y1="159" x2="160" y2="115" stroke="#38bdf8" />
-          <line x1="240" y1="115" x2="280" y2="150" stroke="#38bdf8" />
+          <line
+            x1={morse.schematicKeyRelayX1}
+            y1={morse.schematicKeyRelayY1}
+            x2={morse.schematicKeyRelayX2}
+            y2={morse.schematicKeyRelayY2}
+            stroke="#38bdf8"
+          />
+          <line
+            x1={morse.schematicRelaySounderX1}
+            y1={morse.schematicRelaySounderY1}
+            x2={morse.schematicRelaySounderX2}
+            y2={morse.schematicRelaySounderY2}
+            stroke="#38bdf8"
+          />
         </g>
       );
+    }
     case "goodyear-rubber": {
       const rubber = stepGoodyearRubber();
       return (
@@ -1184,9 +1470,25 @@ function _renderHistoricalSchematic(
               />
             );
           })}
-          <line x1="88" y1="120" x2="155" y2="125" stroke="#38bdf8" strokeWidth="2" />
-          <line x1="155" y1="170" x2="235" y2="165" stroke="#38bdf8" strokeWidth="2" />
-          <line x1="235" y1="110" x2="315" y2="120" stroke="#38bdf8" strokeWidth="2" />
+          {Array.from({ length: rubber.schematicLinkCount }, (_, i) => {
+            const link = goodyearSchematicLink(
+              i,
+              rubber.schematicLinkXs,
+              rubber.schematicLinkY0s,
+              rubber.schematicLinkY1s,
+            );
+            return (
+              <line
+                key={i}
+                x1={link.x1}
+                y1={link.y1}
+                x2={link.x2}
+                y2={link.y2}
+                stroke="#38bdf8"
+                strokeWidth="2"
+              />
+            );
+          })}
           {Array.from({ length: rubber.schematicCrosslinkCount }, (_, i) => {
             const n = goodyearSchematicCrosslink(i);
             return (
@@ -1204,10 +1506,10 @@ function _renderHistoricalSchematic(
       return (
         <g stroke="#38bdf8" strokeWidth="1.5" fill="none">
           <rect
-            x="50"
-            y="60"
-            width="300"
-            height="160"
+            x={hop.schematicBoxX}
+            y={hop.schematicBoxY}
+            width={hop.schematicBoxW}
+            height={hop.schematicBoxH}
             rx="4"
             fill="#0f172a"
             fillOpacity="0.45"
@@ -1216,9 +1518,9 @@ function _renderHistoricalSchematic(
           {Array.from({ length: hop.schematicStaffCount }, (_, i) => (
             <line
               key={i}
-              x1="70"
+              x1={hop.schematicStaffX1}
               y1={lamarrSchematicStaffY(i, hop.schematicStaffOriginY, hop.schematicStaffPitchY)}
-              x2="330"
+              x2={hop.schematicStaffX2}
               y2={lamarrSchematicStaffY(i, hop.schematicStaffOriginY, hop.schematicStaffPitchY)}
               stroke="#1e293b"
             />
@@ -1237,8 +1539,8 @@ function _renderHistoricalSchematic(
                 key={i}
                 x={slot.x}
                 y={slot.y}
-                width="22"
-                height="11"
+                width={hop.schematicHopW}
+                height={hop.schematicHopH}
                 fill="#f59e0b"
                 fillOpacity="0.7"
               />
@@ -1256,14 +1558,27 @@ function _renderHistoricalSchematic(
         <g stroke="#38bdf8" strokeWidth="1.5" fill="none">
           <line
             x1={radio.schematicMastX}
-            y1="50"
+            y1={radio.schematicMastY0}
             x2={radio.schematicMastX}
-            y2="200"
+            y2={radio.schematicMastY1}
             stroke="#94a3b8"
             strokeWidth="3"
           />
-          <line x1="80" y1="55" x2="160" y2="55" stroke="#f59e0b" strokeWidth="2" />
-          <line x1={radio.schematicMastX} y1="200" x2="200" y2="200" stroke="#38bdf8" />
+          <line
+            x1={radio.schematicAerialX1}
+            y1={radio.schematicAerialY}
+            x2={radio.schematicAerialX2}
+            y2={radio.schematicAerialY}
+            stroke="#f59e0b"
+            strokeWidth="2"
+          />
+          <line
+            x1={radio.schematicMastX}
+            y1={radio.schematicMastY1}
+            x2={radio.schematicLeadX2}
+            y2={radio.schematicMastY1}
+            stroke="#38bdf8"
+          />
           <circle
             cx={radio.schematicGapX0}
             cy={radio.schematicGapY}
@@ -1277,196 +1592,334 @@ function _renderHistoricalSchematic(
             fill="#fbbf24"
           />
           <line
-            x1={radio.schematicGapX0 + 10}
+            x1={radio.schematicGapX0 + radio.schematicSparkDx}
             y1={radio.schematicGapY}
-            x2={radio.schematicGapX1 - 10}
+            x2={radio.schematicGapX1 - radio.schematicSparkDx}
             y2={radio.schematicGapY}
             stroke="#ef4444"
             strokeWidth="2"
           />
-          <rect x="210" y="210" width="80" height="20" fill="#334155" stroke="#94a3b8" />
+          <rect
+            x={radio.schematicEarthX}
+            y={radio.schematicEarthY}
+            width={radio.schematicEarthW}
+            height={radio.schematicEarthH}
+            fill="#334155"
+            stroke="#94a3b8"
+          />
           <text x="250" y="224" fill="#cbd5e1" fontSize="8" textAnchor="middle">
             Earth
           </text>
         </g>
       );
     }
-    case "einstein-refrigerator":
+    case "einstein-refrigerator": {
+      const frige = stepEinsteinRefrigerator({});
+      const generator = einsteinSchematicVessel(
+        "generator",
+        frige.schematicVesselLeftX,
+        frige.schematicVesselRightX,
+        frige.schematicVesselTopY,
+        frige.schematicVesselBottomY,
+        frige.schematicVesselW,
+        frige.schematicVesselH,
+      );
+      const condenser = einsteinSchematicVessel(
+        "condenser",
+        frige.schematicVesselLeftX,
+        frige.schematicVesselRightX,
+        frige.schematicVesselTopY,
+        frige.schematicVesselBottomY,
+        frige.schematicVesselW,
+        frige.schematicVesselH,
+      );
+      const evaporator = einsteinSchematicVessel(
+        "evaporator",
+        frige.schematicVesselLeftX,
+        frige.schematicVesselRightX,
+        frige.schematicVesselTopY,
+        frige.schematicVesselBottomY,
+        frige.schematicVesselW,
+        frige.schematicVesselH,
+      );
+      const absorber = einsteinSchematicVessel(
+        "absorber",
+        frige.schematicVesselLeftX,
+        frige.schematicVesselRightX,
+        frige.schematicVesselTopY,
+        frige.schematicVesselBottomY,
+        frige.schematicVesselW,
+        frige.schematicVesselH,
+      );
       return (
         <g stroke="#38bdf8" strokeWidth="1.5" fill="none">
           <rect
-            x="70"
-            y="50"
-            width="90"
-            height="60"
+            x={generator.x}
+            y={generator.y}
+            width={generator.w}
+            height={generator.h}
             rx="6"
             fill="#7c2d12"
             fillOpacity="0.35"
             stroke="#f97316"
           />
-          <text x="115" y="85" fill="#fdba74" fontSize="9" textAnchor="middle">
+          <text
+            x={generator.labelX}
+            y={generator.labelY}
+            fill="#fdba74"
+            fontSize="9"
+            textAnchor="middle"
+          >
             Generator
           </text>
           <rect
-            x="240"
-            y="50"
-            width="90"
-            height="60"
+            x={condenser.x}
+            y={condenser.y}
+            width={condenser.w}
+            height={condenser.h}
             rx="6"
             fill="#1e3a8a"
             fillOpacity="0.35"
             stroke="#60a5fa"
           />
-          <text x="285" y="85" fill="#93c5fd" fontSize="9" textAnchor="middle">
+          <text
+            x={condenser.labelX}
+            y={condenser.labelY}
+            fill="#93c5fd"
+            fontSize="9"
+            textAnchor="middle"
+          >
             Condenser
           </text>
           <rect
-            x="240"
-            y="170"
-            width="90"
-            height="60"
+            x={evaporator.x}
+            y={evaporator.y}
+            width={evaporator.w}
+            height={evaporator.h}
             rx="6"
             fill="#0f766e"
             fillOpacity="0.35"
             stroke="#2dd4bf"
           />
-          <text x="285" y="205" fill="#99f6e4" fontSize="9" textAnchor="middle">
+          <text
+            x={evaporator.labelX}
+            y={evaporator.labelY}
+            fill="#99f6e4"
+            fontSize="9"
+            textAnchor="middle"
+          >
             Evaporator
           </text>
           <rect
-            x="70"
-            y="170"
-            width="90"
-            height="60"
+            x={absorber.x}
+            y={absorber.y}
+            width={absorber.w}
+            height={absorber.h}
             rx="6"
             fill="#4c1d95"
             fillOpacity="0.35"
             stroke="#a855f7"
           />
-          <text x="115" y="205" fill="#d8b4fe" fontSize="9" textAnchor="middle">
+          <text
+            x={absorber.labelX}
+            y={absorber.labelY}
+            fill="#d8b4fe"
+            fontSize="9"
+            textAnchor="middle"
+          >
             Absorber
           </text>
-          <line x1="160" y1="80" x2="240" y2="80" stroke="#f59e0b" />
-          <line x1="285" y1="110" x2="285" y2="170" stroke="#38bdf8" />
-          <line x1="240" y1="200" x2="160" y2="200" stroke="#34d399" />
-          <line x1="115" y1="170" x2="115" y2="110" stroke="#a855f7" />
+          <line
+            x1={frige.schematicGenCondX1}
+            y1={frige.schematicGenCondY}
+            x2={frige.schematicGenCondX2}
+            y2={frige.schematicGenCondY}
+            stroke="#f59e0b"
+          />
+          <line
+            x1={frige.schematicCondEvapX}
+            y1={frige.schematicCondEvapY1}
+            x2={frige.schematicCondEvapX}
+            y2={frige.schematicCondEvapY2}
+            stroke="#38bdf8"
+          />
+          <line
+            x1={frige.schematicEvapAbsX1}
+            y1={frige.schematicEvapAbsY}
+            x2={frige.schematicEvapAbsX2}
+            y2={frige.schematicEvapAbsY}
+            stroke="#34d399"
+          />
+          <line
+            x1={frige.schematicAbsGenX}
+            y1={frige.schematicAbsGenY1}
+            x2={frige.schematicAbsGenX}
+            y2={frige.schematicAbsGenY2}
+            stroke="#a855f7"
+          />
         </g>
       );
+    }
     case "colt-revolver": {
       const cockDeg = params?.cockingAngle ?? 45;
       const colt = stepColtRevolver({ cockingAngleDeg: cockDeg });
       const rotDeg = colt.indexAngleDeg;
       const isFullCock = colt.isLocked;
       const boltRetractY = colt.schematicBoltRetractY;
+      const trigger = coltSchematicTrigger(
+        isFullCock,
+        colt.schematicTriggerX,
+        colt.schematicTriggerW,
+        colt.schematicTriggerCockY,
+        colt.schematicTriggerRestY,
+        colt.schematicTriggerCockH,
+        colt.schematicTriggerRestH,
+      );
       return (
         <g stroke="#38bdf8" strokeWidth="1.5" fill="none">
-          {/* Central Arbor Pin Axis */}
-          <line x1="80" y1="110" x2="340" y2="110" stroke="#475569" strokeWidth="3" />
           <line
-            x1="80"
-            y1="110"
-            x2="340"
-            y2="110"
+            x1={colt.schematicArborX1}
+            y1={colt.schematicArborY}
+            x2={colt.schematicArborX2}
+            y2={colt.schematicArborY}
+            stroke="#475569"
+            strokeWidth="3"
+          />
+          <line
+            x1={colt.schematicArborX1}
+            y1={colt.schematicArborY}
+            x2={colt.schematicArborX2}
+            y2={colt.schematicArborY}
             stroke="#94a3b8"
             strokeWidth="1"
             strokeDasharray="4,3"
           />
-
-          {/* Octagonal Rifled Barrel (Top Chamber alignment Y = 82) */}
           <rect
-            x="210"
-            y="68"
-            width="150"
-            height="28"
+            x={colt.schematicBarrelX}
+            y={colt.schematicBarrelY}
+            width={colt.schematicBarrelW}
+            height={colt.schematicBarrelH}
             stroke="#60a5fa"
             strokeWidth="2"
             fill="#1e3a8a"
             fillOpacity="0.25"
             rx="2"
           />
-          <line x1="210" y1="82" x2="360" y2="82" stroke="#93c5fd" strokeWidth="6" />
-          <line x1="210" y1="82" x2="360" y2="82" stroke="#0369a1" strokeWidth="3" />
-
-          {/* Barrel Under-Lug Anchoring */}
+          <line
+            x1={colt.schematicBarrelX}
+            y1={colt.schematicBoreY}
+            x2={colt.schematicBoreX2}
+            y2={colt.schematicBoreY}
+            stroke="#93c5fd"
+            strokeWidth="6"
+          />
+          <line
+            x1={colt.schematicBarrelX}
+            y1={colt.schematicBoreY}
+            x2={colt.schematicBoreX2}
+            y2={colt.schematicBoreY}
+            stroke="#0369a1"
+            strokeWidth="3"
+          />
           <path
-            d="M 210 96 L 250 96 L 250 128 L 210 128 Z"
+            d={colt.schematicLugD}
             stroke="#60a5fa"
             strokeWidth="1.5"
             fill="#1e3a8a"
             fillOpacity="0.3"
           />
-          <rect x="224" y="104" width="12" height="16" fill="#94a3b8" stroke="#cbd5e1" />
-
-          {/* Receiver Frame & Recoil Shield */}
+          <rect
+            x={colt.schematicLugPinX}
+            y={colt.schematicLugPinY}
+            width={colt.schematicLugPinW}
+            height={colt.schematicLugPinH}
+            fill="#94a3b8"
+            stroke="#cbd5e1"
+          />
           <path
-            d="M 50 50 L 125 50 L 125 155 L 85 155 L 60 190 L 30 170 L 45 110 Z"
+            d={colt.schematicFrameD}
             stroke="#38bdf8"
             strokeWidth="2"
             fill="#0369a1"
             fillOpacity="0.2"
           />
-
-          {/* 5-Chamber Cylinder (Center Y = 110) */}
           <rect
-            x="125"
-            y="60"
-            width="85"
-            height="100"
+            x={colt.schematicCylinderX}
+            y={colt.schematicCylinderY}
+            width={colt.schematicCylinderW}
+            height={colt.schematicCylinderH}
             stroke="#f59e0b"
             strokeWidth="2"
             fill="#78350f"
             fillOpacity="0.25"
             rx="4"
           />
-          {/* Top Chamber Bore (Alings with barrel at Y = 82) */}
-          <rect x="125" y="74" width="80" height="16" stroke="#fbbf24" strokeWidth="1.5" />
-          <circle cx="195" cy="82" r="5" fill="#94a3b8" />
-          {/* Bottom Chamber Bore */}
           <rect
-            x="125"
-            y="130"
-            width="80"
-            height="16"
+            x={colt.schematicCylinderX}
+            y={colt.schematicTopBoreY}
+            width={colt.schematicBoreW}
+            height={colt.schematicBoreH}
+            stroke="#fbbf24"
+            strokeWidth="1.5"
+          />
+          <circle
+            cx={colt.schematicBoreMouthX}
+            cy={colt.schematicBoreY}
+            r={colt.schematicBoreMouthR}
+            fill="#94a3b8"
+          />
+          <rect
+            x={colt.schematicCylinderX}
+            y={colt.schematicBottomBoreY}
+            width={colt.schematicBoreW}
+            height={colt.schematicBoreH}
             stroke="#fbbf24"
             strokeWidth="1"
             strokeDasharray="3,3"
           />
-
-          {/* Flash Partition Barrier (Claim 3) */}
-          <line x1="120" y1="65" x2="120" y2="100" stroke="#38bdf8" strokeWidth="3" />
-
-          {/* Hammer & Hand Pawl */}
-          <g transform={`translate(80, 110) rotate(${-cockDeg})`}>
-            <path
-              d="M 0 0 L -15 -35 L 6 -62 L 20 -58 L 10 -30 Z"
-              stroke="#cbd5e1"
-              strokeWidth="2"
-              fill="#334155"
+          <line
+            x1={colt.schematicFlashX}
+            y1={colt.schematicFlashY0}
+            x2={colt.schematicFlashX}
+            y2={colt.schematicFlashY1}
+            stroke="#38bdf8"
+            strokeWidth="3"
+          />
+          <g
+            transform={`translate(${colt.schematicHammerPivotX}, ${colt.schematicHammerPivotY}) rotate(${-cockDeg})`}
+          >
+            <path d={colt.schematicHammerD} stroke="#cbd5e1" strokeWidth="2" fill="#334155" />
+            <line
+              x1={colt.schematicPawlX1}
+              y1={colt.schematicPawlY1}
+              x2={colt.schematicPawlX2}
+              y2={colt.schematicPawlY2}
+              stroke="#f59e0b"
+              strokeWidth="3"
             />
-            {/* Pawl Link */}
-            <line x1="8" y1="-20" x2="48" y2="-16" stroke="#f59e0b" strokeWidth="3" />
-            <circle cx="8" cy="-20" r="2.5" fill="#ffffff" />
+            <circle cx={colt.schematicPawlX1} cy={colt.schematicPawlY1} r="2.5" fill="#ffffff" />
           </g>
-
-          {/* Ratchet Wheel */}
-          <circle cx="120" cy="110" r="10" stroke="#f59e0b" strokeWidth="1.5" fill="#334155" />
-
-          {/* Detent Bolt beneath cylinder */}
+          <circle
+            cx={colt.schematicFlashX}
+            cy={colt.schematicArborY}
+            r={colt.schematicRatchetR}
+            stroke="#f59e0b"
+            strokeWidth="1.5"
+            fill="#334155"
+          />
           <rect
-            x="160"
-            y={158 + boltRetractY}
-            width="12"
-            height="14"
+            x={colt.schematicBoltX}
+            y={colt.schematicBoltY + boltRetractY}
+            width={colt.schematicBoltW}
+            height={colt.schematicBoltH}
             fill={isFullCock || cockDeg <= 2 ? "#34d399" : "#fbbf24"}
             stroke={isFullCock || cockDeg <= 2 ? "#10b981" : "#d97706"}
           />
-
-          {/* Folding Trigger */}
           <rect
-            x="95"
-            y={isFullCock ? 155 : 145}
-            width="6"
-            height={isFullCock ? 20 : 8}
+            x={trigger.x}
+            y={trigger.y}
+            width={trigger.w}
+            height={trigger.h}
             fill={isFullCock ? "#f59e0b" : "#64748b"}
             stroke="#cbd5e1"
           />
@@ -1491,40 +1944,60 @@ function _renderHistoricalSchematic(
       const pawlExt = otis.schematicPawlExtPx;
       return (
         <g stroke="#38bdf8" strokeWidth="1.5" fill="none">
-          {/* Guide Rail Ratchets */}
-          <line x1="80" y1="30" x2="80" y2="240" stroke="#64748b" strokeWidth="3" />
-          <line x1="320" y1="30" x2="320" y2="240" stroke="#64748b" strokeWidth="3" />
+          <line
+            x1={otis.schematicRailLeftX}
+            y1={otis.schematicRailY0}
+            x2={otis.schematicRailLeftX}
+            y2={otis.schematicRailY1}
+            stroke="#64748b"
+            strokeWidth="3"
+          />
+          <line
+            x1={otis.schematicRailRightX}
+            y1={otis.schematicRailY0}
+            x2={otis.schematicRailRightX}
+            y2={otis.schematicRailY1}
+            stroke="#64748b"
+            strokeWidth="3"
+          />
           {Array.from({ length: otis.schematicRailCount }, (_, i) => {
             const y = otisSchematicRailY(i, otis.schematicRailOriginY, otis.schematicRailPitchY);
             return (
               <g key={i}>
                 <polygon
-                  points={`${otis.schematicRailLeftX},${y} ${otis.schematicRailLeftX + 10},${y + 6} ${otis.schematicRailLeftX},${y + 12}`}
+                  points={`${otis.schematicRailLeftX},${y} ${otis.schematicRailLeftX + otis.schematicToothIn},${y + otis.schematicToothMid} ${otis.schematicRailLeftX},${y + otis.schematicToothH}`}
                   fill="#94a3b8"
                   stroke="#cbd5e1"
                 />
                 <polygon
-                  points={`${otis.schematicRailRightX},${y} ${otis.schematicRailRightX - 10},${y + 6} ${otis.schematicRailRightX},${y + 12}`}
+                  points={`${otis.schematicRailRightX},${y} ${otis.schematicRailRightX - otis.schematicToothIn},${y + otis.schematicToothMid} ${otis.schematicRailRightX},${y + otis.schematicToothH}`}
                   fill="#94a3b8"
                   stroke="#cbd5e1"
                 />
               </g>
             );
           })}
-
-          {/* Hoist Rope */}
           {!isCut ? (
-            <line x1="200" y1="20" x2="200" y2={90 - springBow} stroke="#f59e0b" strokeWidth="3" />
+            <line
+              x1={otis.schematicRopeX}
+              y1={otis.schematicRopeY0}
+              x2={otis.schematicRopeX}
+              y2={otis.schematicRopeAttachY - springBow}
+              stroke="#f59e0b"
+              strokeWidth="3"
+            />
           ) : (
-            <path d="M 200 20 L 195 40 L 205 55" stroke="#ef4444" strokeWidth="2.5" />
+            <path
+              d={`M ${otis.schematicRopeX} ${otis.schematicRopeY0} L ${otis.schematicRopeX - otis.schematicCutDx} ${otis.schematicCutY1} L ${otis.schematicRopeX + otis.schematicCutDx} ${otis.schematicCutY2}`}
+              stroke="#ef4444"
+              strokeWidth="2.5"
+            />
           )}
-
-          {/* Elevator Frame */}
           <rect
-            x="100"
-            y="100"
-            width="200"
-            height="120"
+            x={otis.schematicFrameX}
+            y={otis.schematicFrameY}
+            width={otis.schematicFrameW}
+            height={otis.schematicFrameH}
             stroke="#60a5fa"
             strokeWidth="2"
             fill="#1e3a8a"
@@ -1532,26 +2005,34 @@ function _renderHistoricalSchematic(
             rx="3"
           />
 
-          {/* Transverse Leaf Spring */}
-          <path d={`M 110 100 Q 200 ${100 - springBow} 290 100`} stroke="#38bdf8" strokeWidth="4" />
-
-          {/* Safety Pawls */}
-          <line
-            x1="110"
-            y1="100"
-            x2={100 - pawlExt}
-            y2="105"
-            stroke={isCut ? "#34d399" : "#38bdf8"}
-            strokeWidth="3.5"
+          <path
+            d={`M ${otis.schematicSpringX0} ${otis.schematicSpringY} Q ${otis.schematicRopeX} ${otis.schematicSpringY - springBow} ${otis.schematicSpringX1} ${otis.schematicSpringY}`}
+            stroke="#38bdf8"
+            strokeWidth="4"
           />
-          <line
-            x1="290"
-            y1="100"
-            x2={300 + pawlExt}
-            y2="105"
-            stroke={isCut ? "#34d399" : "#38bdf8"}
-            strokeWidth="3.5"
-          />
+          {(["left", "right"] as const).map((side) => {
+            const pawl = otisSchematicPawl(
+              side,
+              pawlExt,
+              otis.schematicPawlInnerX0,
+              otis.schematicPawlInnerX1,
+              otis.schematicPawlOuterBase0,
+              otis.schematicPawlOuterBase1,
+              otis.schematicPawlY0,
+              otis.schematicPawlY1,
+            );
+            return (
+              <line
+                key={side}
+                x1={pawl.x1}
+                y1={pawl.y1}
+                x2={pawl.x2}
+                y2={pawl.y2}
+                stroke={isCut ? "#34d399" : "#38bdf8"}
+                strokeWidth="3.5"
+              />
+            );
+          })}
 
           <text x="200" y="70" fill="#fbbf24" fontSize="9" textAnchor="middle">
             {!isCut ? "Hoisting Cable" : "Rope Severed"}
@@ -1578,12 +2059,11 @@ function _renderHistoricalSchematic(
       const cylPsi = wh.brakeCylinderPressurePsi;
       return (
         <g stroke="#38bdf8" strokeWidth="1.5" fill="none">
-          {/* Continuous Train Pipe */}
           <line
-            x1="40"
-            y1="230"
-            x2="360"
-            y2="230"
+            x1={wh.schematicPipeX1}
+            y1={wh.schematicPipeY}
+            x2={wh.schematicPipeX2}
+            y2={wh.schematicPipeY}
             stroke={pipePsi > 40 ? "#10b981" : "#ef4444"}
             strokeWidth="5"
           />
@@ -1591,23 +2071,21 @@ function _renderHistoricalSchematic(
             Continuous Train Pipe ({pipePsi} PSI)
           </text>
 
-          {/* Triple Valve Body */}
           <rect
-            x="60"
-            y="70"
-            width="90"
-            height="110"
+            x={wh.schematicValveX}
+            y={wh.schematicValveY}
+            width={wh.schematicValveW}
+            height={wh.schematicValveH}
             rx="4"
             stroke="#60a5fa"
             fill="#1e3a8a"
             fillOpacity="0.2"
           />
-          {/* Differential Piston (Up in release, down in apply) */}
           <rect
-            x="70"
-            y={isRel ? 85 : 125}
-            width="70"
-            height="14"
+            x={wh.schematicPistonX}
+            y={isRel ? wh.schematicPistonReleaseY : wh.schematicPistonApplyY}
+            width={wh.schematicPistonW}
+            height={wh.schematicPistonH}
             fill="#f59e0b"
             stroke="#d97706"
             rx="2"
@@ -1616,12 +2094,11 @@ function _renderHistoricalSchematic(
             Triple Valve
           </text>
 
-          {/* Auxiliary Reservoir */}
           <rect
-            x="180"
-            y="50"
-            width="100"
-            height="55"
+            x={wh.schematicReservoirX}
+            y={wh.schematicReservoirY}
+            width={wh.schematicReservoirW}
+            height={wh.schematicReservoirH}
             rx="25"
             stroke="#3b82f6"
             fill="#1e3a8a"
@@ -1632,23 +2109,28 @@ function _renderHistoricalSchematic(
             Aux Reservoir (70 PSI)
           </text>
 
-          {/* Brake Cylinder */}
           <rect
-            x="180"
-            y="130"
-            width="80"
-            height="45"
+            x={wh.schematicCylinderX}
+            y={wh.schematicCylinderY}
+            width={wh.schematicCylinderW}
+            height={wh.schematicCylinderH}
             rx="3"
             stroke="#f87171"
             fill="#7f1d1d"
             fillOpacity="0.2"
           />
-          <rect x={190 + wh.pistonStrokePx} y="138" width="8" height="28" fill="#ef4444" />
+          <rect
+            x={wh.schematicPistonBarX + wh.pistonStrokePx}
+            y={wh.schematicPistonBarY}
+            width={wh.schematicPistonBarW}
+            height={wh.schematicPistonBarH}
+            fill="#ef4444"
+          />
           <line
-            x1={200 + wh.pistonStrokePx}
-            y1="152"
-            x2="280"
-            y2="152"
+            x1={wh.schematicRodX1 + wh.pistonStrokePx}
+            y1={wh.schematicRodY}
+            x2={wh.schematicRodX2}
+            y2={wh.schematicRodY}
             stroke="#e2e8f0"
             strokeWidth="4"
           />
@@ -1657,8 +2139,14 @@ function _renderHistoricalSchematic(
           </text>
 
           {/* Wheel & Shoe */}
-          <circle cx="330" cy="152" r={wh.schematicWheelR} stroke="#94a3b8" strokeWidth="3" />
-          <path d="M 285 130 Q 292 152 285 174" stroke="#f59e0b" strokeWidth="4" fill="none" />
+          <circle
+            cx={wh.schematicWheelCx}
+            cy={wh.schematicWheelCy}
+            r={wh.schematicWheelR}
+            stroke="#94a3b8"
+            strokeWidth="3"
+          />
+          <path d={wh.schematicShoeD} stroke="#f59e0b" strokeWidth="4" fill="none" />
           <text x="330" y="200" fill="#94a3b8" fontSize="8" textAnchor="middle">
             Rail Wheel
           </text>
@@ -1669,9 +2157,8 @@ function _renderHistoricalSchematic(
       const lino = stepMergenthalerLinotype({});
       return (
         <g stroke="#38bdf8" strokeWidth="1.5" fill="none">
-          {/* Magazine Chute */}
           <polygon
-            points="120,40 240,40 210,130 90,130"
+            points={lino.schematicMagazinePoints}
             stroke="#60a5fa"
             fill="#1e3a8a"
             fillOpacity="0.2"
@@ -1694,12 +2181,11 @@ function _renderHistoricalSchematic(
               />
             );
           })}
-          {/* Assembler Front & Line of Matrices */}
           <rect
-            x="70"
-            y="145"
-            width="160"
-            height="25"
+            x={lino.schematicAssemblerX}
+            y={lino.schematicAssemblerY}
+            width={lino.schematicAssemblerW}
+            height={lino.schematicAssemblerH}
             rx="3"
             stroke="#fbbf24"
             fill="#78350f"
@@ -1717,10 +2203,10 @@ function _renderHistoricalSchematic(
             strokeWidth="2"
           />
           <rect
-            x="260"
-            y="172"
-            width="40"
-            height="16"
+            x={lino.schematicPumpX}
+            y={lino.schematicPumpY}
+            width={lino.schematicPumpW}
+            height={lino.schematicPumpH}
             fill="#dc2626"
             fillOpacity="0.4"
             stroke="#f87171"
@@ -1728,8 +2214,14 @@ function _renderHistoricalSchematic(
           <text x="280" y="240" fill="#f87171" fontSize="9" textAnchor="middle">
             Casting Mold &amp; Lead Pump
           </text>
-          {/* Distributor Bar Keyways */}
-          <line x1="80" y1="20" x2="320" y2="20" stroke="#4ade80" strokeWidth="3" />
+          <line
+            x1={lino.schematicDistributorX1}
+            y1={lino.schematicDistributorY}
+            x2={lino.schematicDistributorX2}
+            y2={lino.schematicDistributorY}
+            stroke="#4ade80"
+            strokeWidth="3"
+          />
           <text x="200" y="15" fill="#4ade80" fontSize="9" textAnchor="middle">
             7-Bit Binary Distributor Bar
           </text>
@@ -1740,34 +2232,46 @@ function _renderHistoricalSchematic(
       const maxim = stepMaximMachineGun({});
       return (
         <g stroke="#38bdf8" strokeWidth="1.5" fill="none">
-          {/* Water Jacket */}
           <rect
-            x="40"
-            y="90"
-            width="180"
-            height="60"
+            x={maxim.schematicJacketX}
+            y={maxim.schematicJacketY}
+            width={maxim.schematicJacketW}
+            height={maxim.schematicJacketH}
             rx="4"
             stroke="#60a5fa"
             fill="#0284c7"
             fillOpacity="0.25"
           />
-          <line x1="20" y1="120" x2="240" y2="120" stroke="#e2e8f0" strokeWidth="3" />
-          {/* Breech Casing & Toggle Knee Joint */}
-          <rect x="220" y="80" width="140" height="80" rx="3" stroke="#94a3b8" />
           <line
-            x1="240"
-            y1="120"
-            x2="280"
-            y2="105"
+            x1={maxim.schematicBarrelX1}
+            y1={maxim.schematicBarrelY}
+            x2={maxim.schematicBarrelX2}
+            y2={maxim.schematicBarrelY}
+            stroke="#e2e8f0"
+            strokeWidth="3"
+          />
+          <rect
+            x={maxim.schematicBreechX}
+            y={maxim.schematicBreechY}
+            width={maxim.schematicBreechW}
+            height={maxim.schematicBreechH}
+            rx="3"
+            stroke="#94a3b8"
+          />
+          <line
+            x1={maxim.schematicToggleX0}
+            y1={maxim.schematicToggleY0}
+            x2={maxim.schematicToggleX1}
+            y2={maxim.schematicToggleY1}
             stroke="#fbbf24"
             strokeWidth="4"
             strokeLinecap="round"
           />
           <line
-            x1="280"
-            y1="105"
-            x2="330"
-            y2="120"
+            x1={maxim.schematicToggleX1}
+            y1={maxim.schematicToggleY1}
+            x2={maxim.schematicToggleX2}
+            y2={maxim.schematicToggleY2}
             stroke="#fbbf24"
             strokeWidth="4"
             strokeLinecap="round"
@@ -1778,13 +2282,7 @@ function _renderHistoricalSchematic(
             r={maxim.schematicToggleR}
             fill="#fbbf24"
           />
-          {/* Fusee Spring */}
-          <path
-            d="M 330 140 Q 350 150, 330 160 T 310 170"
-            stroke="#4ade80"
-            strokeWidth="2"
-            strokeDasharray="3 2"
-          />
+          <path d={maxim.schematicFuseeD} stroke="#4ade80" strokeWidth="2" strokeDasharray="3 2" />
           <text x="130" y="110" fill="#93c5fd" fontSize="9" textAnchor="middle">
             Water Jacket (4L)
           </text>
@@ -1798,29 +2296,41 @@ function _renderHistoricalSchematic(
       const daimler = stepDaimlerEngine({});
       return (
         <g stroke="#38bdf8" strokeWidth="1.5" fill="none">
-          {/* Cylinder Bore */}
-          <rect x="140" y="30" width="120" height="140" rx="4" stroke="#94a3b8" />
-          {/* Hot-Tube Igniter */}
-          <rect x="90" y="45" width="50" height="14" rx="2" fill="#f97316" stroke="#ea580c" />
+          <rect
+            x={daimler.schematicCylinderX}
+            y={daimler.schematicCylinderY}
+            width={daimler.schematicCylinderW}
+            height={daimler.schematicCylinderH}
+            rx="4"
+            stroke="#94a3b8"
+          />
+          <rect
+            x={daimler.schematicHotTubeX}
+            y={daimler.schematicHotTubeY}
+            width={daimler.schematicHotTubeW}
+            height={daimler.schematicHotTubeH}
+            rx="2"
+            fill="#f97316"
+            stroke="#ea580c"
+          />
           <text x="60" y="56" fill="#f97316" fontSize="8" textAnchor="middle">
             Hot Tube
           </text>
-          {/* Piston & Connecting Rod */}
           <rect
-            x="150"
-            y="70"
-            width="100"
-            height="45"
+            x={daimler.schematicPistonX}
+            y={daimler.schematicPistonY}
+            width={daimler.schematicPistonW}
+            height={daimler.schematicPistonH}
             rx="3"
             fill="#38bdf8"
             fillOpacity="0.2"
             stroke="#38bdf8"
           />
           <line
-            x1="200"
-            y1="115"
-            x2="200"
-            y2="210"
+            x1={daimler.schematicRodX}
+            y1={daimler.schematicRodY0}
+            x2={daimler.schematicRodX}
+            y2={daimler.schematicRodY1}
             stroke="#e2e8f0"
             strokeWidth="6"
             strokeLinecap="round"
@@ -1849,12 +2359,11 @@ function _renderHistoricalSchematic(
       const kodak = FrankenSimEngine.stepEastmanKodak({});
       return (
         <g stroke="#38bdf8" strokeWidth="1.5" fill="none">
-          {/* Box Camera Body */}
           <rect
-            x="80"
-            y="50"
-            width="240"
-            height="180"
+            x={kodak.schematicBodyX}
+            y={kodak.schematicBodyY}
+            width={kodak.schematicBodyW}
+            height={kodak.schematicBodyH}
             rx="8"
             stroke="#94a3b8"
             fill="#1e293b"
@@ -1885,7 +2394,7 @@ function _renderHistoricalSchematic(
           />
           {/* Cone & Barrel Shutter */}
           <polygon
-            points="150,140 260,100 260,180"
+            points={kodak.schematicConePoints}
             stroke="#60a5fa"
             fill="#0284c7"
             fillOpacity="0.15"
@@ -1897,7 +2406,15 @@ function _renderHistoricalSchematic(
             stroke="#38bdf8"
             strokeWidth="2"
           />
-          <rect x="270" y="130" width="20" height="20" rx="2" fill="#38bdf8" fillOpacity="0.4" />
+          <rect
+            x={kodak.schematicFinderX}
+            y={kodak.schematicFinderY}
+            width={kodak.schematicFinderW}
+            height={kodak.schematicFinderH}
+            rx="2"
+            fill="#38bdf8"
+            fillOpacity="0.4"
+          />
           <text x="110" y="145" fill="#fbbf24" fontSize="8" textAnchor="middle">
             100-Exposure Spool
           </text>
@@ -1911,8 +2428,15 @@ function _renderHistoricalSchematic(
       const hollerith = stepHollerithTabulating({});
       return (
         <g stroke="#38bdf8" strokeWidth="1.5" fill="none">
-          {/* Press Head & Spring Pin Matrix */}
-          <rect x="60" y="40" width="280" height="30" rx="3" fill="#64748b" stroke="#94a3b8" />
+          <rect
+            x={hollerith.schematicPressX}
+            y={hollerith.schematicPressY}
+            width={hollerith.schematicPressW}
+            height={hollerith.schematicPressH}
+            rx="3"
+            fill="#64748b"
+            stroke="#94a3b8"
+          />
           {Array.from({ length: hollerith.schematicPinCount }, (_, i) => {
             const x = hollerithSchematicPinX(
               i,
@@ -1931,24 +2455,46 @@ function _renderHistoricalSchematic(
               />
             );
           })}
-          {/* Punched Card Interposed */}
-          <rect x="70" y="105" width="260" height="15" rx="2" fill="#d97706" stroke="#b45309" />
-          {/* Mercury Cup Bed */}
-          <rect x="60" y="125" width="280" height="35" rx="4" fill="#0284c7" stroke="#0369a1" />
+          <rect
+            x={hollerith.schematicCardX}
+            y={hollerith.schematicCardY}
+            width={hollerith.schematicCardW}
+            height={hollerith.schematicCardH}
+            rx="2"
+            fill="#d97706"
+            stroke="#b45309"
+          />
+          <rect
+            x={hollerith.schematicBedX}
+            y={hollerith.schematicBedY}
+            width={hollerith.schematicBedW}
+            height={hollerith.schematicBedH}
+            rx="4"
+            fill="#0284c7"
+            stroke="#0369a1"
+          />
           {Array.from({ length: hollerith.schematicPinCount }, (_, i) => {
             const x = hollerithSchematicPinX(
               i,
               hollerith.schematicPinOriginX,
               hollerith.schematicPinPitchX,
             );
-            return <circle key={i} cx={x} cy={hollerith.schematicCupY} r="5" fill="#38bdf8" />;
+            return (
+              <circle
+                key={i}
+                cx={x}
+                cy={hollerith.schematicCupY}
+                r={hollerith.schematicCupR}
+                fill="#38bdf8"
+              />
+            );
           })}
           {/* Counter Dials Array */}
           <rect
-            x="100"
-            y="180"
-            width="200"
-            height="70"
+            x={hollerith.schematicDialBoxX}
+            y={hollerith.schematicDialBoxY}
+            width={hollerith.schematicDialBoxW}
+            height={hollerith.schematicDialBoxH}
             rx="6"
             stroke="#a855f7"
             fill="#581c87"
@@ -1973,44 +2519,47 @@ function _renderHistoricalSchematic(
         </g>
       );
     }
-    case "reno-escalator":
+    case "reno-escalator": {
+      const reno = stepRenoEscalator({});
       return (
         <g stroke="#38bdf8" strokeWidth="1.5" fill="none">
-          {/* 25-Degree Incline Frame */}
           <line
-            x1="40"
-            y1="210"
-            x2="340"
-            y2="70"
+            x1={reno.schematicInclineX1}
+            y1={reno.schematicInclineY1}
+            x2={reno.schematicInclineX2}
+            y2={reno.schematicInclineY2}
             stroke="#64748b"
             strokeWidth="8"
             strokeLinecap="round"
           />
-          {/* Moving Grooved Cleats */}
-          {Array.from({ length: stepRenoEscalator({}).schematicCleatCount }, (_, i) => {
-            const { x, y } = renoSchematicCleat(i);
+          {Array.from({ length: reno.schematicCleatCount }, (_, i) => {
+            const { x, y } = renoSchematicCleat(
+              i,
+              reno.schematicCleatOriginX,
+              reno.schematicCleatOriginY,
+              reno.schematicCleatPitchX,
+              reno.schematicCleatPitchY,
+            );
             return (
               <rect
                 key={i}
                 x={x}
                 y={y}
-                width="22"
-                height="10"
+                width={reno.schematicCleatW}
+                height={reno.schematicCleatH}
                 rx="2"
                 fill="#d97706"
                 stroke="#fbbf24"
               />
             );
           })}
-          {/* Comb-Plate Landings */}
-          <polygon points="330,65 360,65 345,78" fill="#fbbf24" stroke="#b45309" />
-          <polygon points="30,205 60,205 45,218" fill="#fbbf24" stroke="#b45309" />
-          {/* Moving Handrail */}
+          <polygon points={reno.schematicCombUpper} fill="#fbbf24" stroke="#b45309" />
+          <polygon points={reno.schematicCombLower} fill="#fbbf24" stroke="#b45309" />
           <line
-            x1="40"
-            y1="170"
-            x2="340"
-            y2="30"
+            x1={reno.schematicHandrailX1}
+            y1={reno.schematicHandrailY1}
+            x2={reno.schematicHandrailX2}
+            y2={reno.schematicHandrailY2}
             stroke="#38bdf8"
             strokeWidth="4"
             strokeLinecap="round"
@@ -2023,33 +2572,46 @@ function _renderHistoricalSchematic(
           </text>
         </g>
       );
+    }
     case "diesel-engine": {
       const diesel = FrankenSimEngine.stepDieselEngine({ compressionRatio: 18, engineRpm: 150 });
       return (
         <g stroke="#38bdf8" strokeWidth="1.5" fill="none">
-          {/* High-Pressure Cylinder */}
-          <rect x="130" y="30" width="140" height="170" rx="6" stroke="#94a3b8" />
-          {/* Blast-Air Injector */}
-          <rect x="185" y="15" width="30" height="30" rx="3" fill="#fbbf24" stroke="#d97706" />
+          <rect
+            x={diesel.schematicCylinderX}
+            y={diesel.schematicCylinderY}
+            width={diesel.schematicCylinderW}
+            height={diesel.schematicCylinderH}
+            rx="6"
+            stroke="#94a3b8"
+          />
+          <rect
+            x={diesel.schematicInjectorX}
+            y={diesel.schematicInjectorY}
+            width={diesel.schematicInjectorW}
+            height={diesel.schematicInjectorH}
+            rx="3"
+            fill="#fbbf24"
+            stroke="#d97706"
+          />
           <text x="200" y="10" fill="#fbbf24" fontSize="8" textAnchor="middle">
             Blast-Air Injector (65 bar)
           </text>
-          {/* Piston & Heavy Rod */}
           <rect
-            x="140"
-            y="75"
-            width="120"
-            height="55"
+            x={diesel.schematicPistonX}
+            y={diesel.schematicPistonY}
+            width={diesel.schematicPistonW}
+            height={diesel.schematicPistonH}
             rx="3"
             fill="#38bdf8"
             fillOpacity="0.2"
             stroke="#38bdf8"
           />
           <line
-            x1="200"
-            y1="130"
-            x2="200"
-            y2="230"
+            x1={diesel.schematicRodX}
+            y1={diesel.schematicRodY0}
+            x2={diesel.schematicRodX}
+            y2={diesel.schematicRodY1}
             stroke="#e2e8f0"
             strokeWidth="8"
             strokeLinecap="round"
@@ -2068,7 +2630,7 @@ function _renderHistoricalSchematic(
         </g>
       );
     }
-    case "tesla-teleautomaton":
+    case "tesla-teleautomaton": {
       return (
         <g stroke="#38bdf8" strokeWidth="1.5" fill="none">
           {/* Submersible Boat Hull */}
@@ -2105,38 +2667,60 @@ function _renderHistoricalSchematic(
           </text>
         </g>
       );
-    case "zeppelin-airship":
+    }
+    case "zeppelin-airship": {
+      const zep = stepZeppelinAirship({});
       return (
         <g stroke="#38bdf8" strokeWidth="1.5" fill="none">
-          {/* Streamlined Outer Hull */}
           <ellipse
-            cx="200"
-            cy="140"
-            rx="170"
-            ry="50"
+            cx={zep.schematicHullCx}
+            cy={zep.schematicHullCy}
+            rx={zep.schematicHullRx}
+            ry={zep.schematicHullRy}
             stroke="#94a3b8"
             fill="#1e293b"
             fillOpacity="0.2"
           />
-          {/* Internal gas cells */}
-          {Array.from({ length: stepZeppelinAirship({}).schematicCellCount }, (_, i) => (
+          {Array.from({ length: zep.schematicCellCount }, (_, i) => (
             <ellipse
               key={i}
-              cx={zeppelinSchematicCell(i).cx}
-              cy="140"
-              rx="12"
-              ry="42"
+              cx={zeppelinSchematicCell(i, zep.schematicCellOriginX, zep.schematicCellPitch).cx}
+              cy={zep.schematicCellCy}
+              rx={zep.schematicCellRx}
+              ry={zep.schematicCellRy}
               stroke="#38bdf8"
               strokeOpacity="0.6"
               strokeDasharray="3 2"
             />
           ))}
-          {/* Keel Corridor & Trim Weight */}
-          <line x1="60" y1="180" x2="340" y2="180" stroke="#fbbf24" strokeWidth="2" />
-          <circle cx="220" cy="180" r="5" fill="#fbbf24" />
-          {/* Gondolas */}
-          <rect x="120" y="190" width="30" height="12" rx="2" fill="#64748b" />
-          <rect x="250" y="190" width="30" height="12" rx="2" fill="#64748b" />
+          <line
+            x1={zep.schematicKeelX1}
+            y1={zep.schematicKeelY}
+            x2={zep.schematicKeelX2}
+            y2={zep.schematicKeelY}
+            stroke="#fbbf24"
+            strokeWidth="2"
+          />
+          <circle
+            cx={zep.schematicTrimX}
+            cy={zep.schematicKeelY}
+            r={zep.schematicTrimR}
+            fill="#fbbf24"
+          />
+          {zep.schematicGondolaXs.map((_, i) => {
+            const g = zeppelinSchematicGondola(i, zep.schematicGondolaXs, zep.schematicGondolaY);
+            return (
+              <rect
+                key={i}
+                x={g.x}
+                y={g.y}
+                width={zep.schematicGondolaW}
+                height={zep.schematicGondolaH}
+                rx="2"
+                fill="#64748b"
+              />
+            );
+          })}
           <text x="200" y="80" fill="#38bdf8" fontSize="9" textAnchor="middle">
             Rigid Duralumin Space-Frame (128m)
           </text>
@@ -2145,7 +2729,8 @@ function _renderHistoricalSchematic(
           </text>
         </g>
       );
-    case "linde-air-liquefaction":
+    }
+    case "linde-air-liquefaction": {
       return (
         <g stroke="#38bdf8" strokeWidth="1.5" fill="none">
           {/* Compressor */}
@@ -2198,7 +2783,8 @@ function _renderHistoricalSchematic(
           </text>
         </g>
       );
-    case "carrier-air-conditioner":
+    }
+    case "carrier-air-conditioner": {
       return (
         <g stroke="#38bdf8" strokeWidth="1.5" fill="none">
           {/* Plenum Chamber */}
@@ -2256,30 +2842,29 @@ function _renderHistoricalSchematic(
           </text>
         </g>
       );
+    }
     case "whitney-cotton-gin": {
       const gin = stepWhitneyCottonGin({});
       return (
         <g stroke="#38bdf8" strokeWidth="1.5" fill="none">
           {/* Hopper Frame */}
           <polygon
-            points="60,40 180,40 160,110 80,110"
+            points={gin.schematicHopperPoints}
             stroke="#94a3b8"
             fill="#1e293b"
             fillOpacity="0.2"
           />
-          {/* Slotted Grate Ribs */}
-          <path d="M 160 80 C 180 120, 180 170, 160 210" stroke="#fbbf24" strokeWidth="3" />
+          <path d={gin.schematicGrateD0} stroke="#fbbf24" strokeWidth="3" />
           <path
-            d="M 165 80 C 185 120, 185 170, 165 210"
+            d={gin.schematicGrateD1}
             stroke="#fbbf24"
             strokeWidth="2"
             strokeDasharray="3 3"
           />
-          {/* Saw Cylinder */}
           <circle
             cx={gin.schematicSawCx}
             cy={gin.schematicSawCy}
-            r="48"
+            r={gin.schematicSawR}
             stroke="#38bdf8"
             strokeWidth="2"
             fill="#0369a1"
@@ -2310,7 +2895,7 @@ function _renderHistoricalSchematic(
           <circle
             cx={gin.schematicBrushCx}
             cy={gin.schematicBrushCy}
-            r="36"
+            r={gin.schematicBrushR}
             stroke="#4ade80"
             strokeWidth="2"
             fill="#15803d"
@@ -2355,9 +2940,19 @@ function _renderHistoricalSchematic(
       const reel = stepMcCormickReaper({});
       return (
         <g stroke="#38bdf8" strokeWidth="1.5" fill="none">
-          {/* Master Bull Wheel */}
-          <circle cx="100" cy="180" r="45" stroke="#94a3b8" strokeWidth="3" />
-          <circle cx="100" cy="180" r="12" fill="#64748b" />
+          <circle
+            cx={reel.schematicBullCx}
+            cy={reel.schematicBullCy}
+            r={reel.schematicBullR}
+            stroke="#94a3b8"
+            strokeWidth="3"
+          />
+          <circle
+            cx={reel.schematicBullCx}
+            cy={reel.schematicBullCy}
+            r={reel.schematicBullHubR}
+            fill="#64748b"
+          />
           {/* Gathering Reel */}
           <circle
             cx={reel.schematicReelCx}
@@ -2384,15 +2979,22 @@ function _renderHistoricalSchematic(
                   stroke="#fbbf24"
                   strokeWidth="2"
                 />
-                <rect x={arm.x - 12} y={arm.y - 4} width="24" height="8" fill="#d97706" rx="2" />
+                <rect
+                  x={arm.x - reel.schematicArmOx}
+                  y={arm.y - reel.schematicArmOy}
+                  width={reel.schematicArmW}
+                  height={reel.schematicArmH}
+                  fill="#d97706"
+                  rx="2"
+                />
               </g>
             );
           })}
           {/* Cutting Sickle Bar */}
           <line
-            x1="160"
+            x1={reel.schematicSickleX1}
             y1={reel.schematicSickleY}
-            x2="320"
+            x2={reel.schematicSickleX2}
             y2={reel.schematicSickleY}
             stroke="#ef4444"
             strokeWidth="4"
@@ -2406,14 +3008,14 @@ function _renderHistoricalSchematic(
             return (
               <polygon
                 key={i}
-                points={`${x},${reel.schematicSickleY} ${x + 6},${reel.schematicSickleY - 10} ${x + 12},${reel.schematicSickleY}`}
+                points={`${x},${reel.schematicSickleY} ${x + reel.schematicSickleTipDx},${reel.schematicSickleY - reel.schematicSickleLift} ${x + reel.schematicSickleMidDx},${reel.schematicSickleY}`}
                 fill="#ef4444"
               />
             );
           })}
           {/* Platform */}
           <polygon
-            points="160,210 320,210 300,245 140,245"
+            points={reel.schematicPlatformPoints}
             fill="#1e293b"
             fillOpacity="0.4"
             stroke="#64748b"
@@ -2430,62 +3032,119 @@ function _renderHistoricalSchematic(
         </g>
       );
     }
-    case "davenport-motor":
+    case "davenport-motor": {
+      const motor = stepDavenportMotor({});
+      const armature = davenportSchematicArmature(
+        motor.schematicArmatureX,
+        motor.schematicArmatureY,
+        motor.schematicArmatureW,
+        motor.schematicArmatureH,
+      );
       return (
         <g stroke="#38bdf8" strokeWidth="1.5" fill="none">
-          {/* Permanent Stator Poles */}
           <path
-            d="M 60 70 A 90 90 0 0 1 120 70 L 120 230 A 90 90 0 0 1 60 230 Z"
+            d={motor.schematicNorthD}
             stroke="#38bdf8"
             fill="#0369a1"
             fillOpacity="0.25"
             strokeWidth="2"
           />
           <path
-            d="M 340 70 A 90 90 0 0 0 280 70 L 280 230 A 90 90 0 0 0 340 230 Z"
+            d={motor.schematicSouthD}
             stroke="#ef4444"
             fill="#b91c1c"
             fillOpacity="0.25"
             strokeWidth="2"
           />
-          <text x="90" y="155" fill="#38bdf8" fontSize="14" fontWeight="bold" textAnchor="middle">
+          <text
+            x={motor.schematicNorthLabelX}
+            y={motor.schematicPoleLabelY}
+            fill="#38bdf8"
+            fontSize="14"
+            fontWeight="bold"
+            textAnchor="middle"
+          >
             N
           </text>
-          <text x="310" y="155" fill="#ef4444" fontSize="14" fontWeight="bold" textAnchor="middle">
+          <text
+            x={motor.schematicSouthLabelX}
+            y={motor.schematicPoleLabelY}
+            fill="#ef4444"
+            fontSize="14"
+            fontWeight="bold"
+            textAnchor="middle"
+          >
             S
           </text>
-          {/* Rotating Electromagnet Armature */}
           <rect
-            x="160"
-            y="138"
-            width="80"
-            height="24"
+            x={armature.x}
+            y={armature.y}
+            width={armature.w}
+            height={armature.h}
             rx="4"
             stroke="#fbbf24"
             fill="#78350f"
             fillOpacity="0.3"
             strokeWidth="2"
           />
-          <circle cx="200" cy="150" r="14" stroke="#4ade80" fill="#15803d" fillOpacity="0.4" />
-          {/* Commutator Segment Brushes */}
-          <line x1="180" y1="150" x2="150" y2="150" stroke="#f59e0b" strokeWidth="3" />
-          <line x1="220" y1="150" x2="250" y2="150" stroke="#f59e0b" strokeWidth="3" />
-          <text x="200" y="120" fill="#fbbf24" fontSize="8" textAnchor="middle">
+          <circle
+            cx={motor.schematicCenterX}
+            cy={motor.schematicCenterY}
+            r={motor.schematicCommutatorR}
+            stroke="#4ade80"
+            fill="#15803d"
+            fillOpacity="0.4"
+          />
+          <line
+            x1={motor.schematicLeftBrushX1}
+            y1={motor.schematicBrushY}
+            x2={motor.schematicLeftBrushX2}
+            y2={motor.schematicBrushY}
+            stroke="#f59e0b"
+            strokeWidth="3"
+          />
+          <line
+            x1={motor.schematicRightBrushX1}
+            y1={motor.schematicBrushY}
+            x2={motor.schematicRightBrushX2}
+            y2={motor.schematicBrushY}
+            stroke="#f59e0b"
+            strokeWidth="3"
+          />
+          <text
+            x={motor.schematicCenterX}
+            y={motor.schematicArmatureLabelY}
+            fill="#fbbf24"
+            fontSize="8"
+            textAnchor="middle"
+          >
             Rotating Armature
           </text>
-          <text x="200" y="190" fill="#4ade80" fontSize="8" textAnchor="middle">
+          <text
+            x={motor.schematicCenterX}
+            y={motor.schematicCommutatorLabelY}
+            fill="#4ade80"
+            fontSize="8"
+            textAnchor="middle"
+          >
             Split Commutator
           </text>
         </g>
       );
+    }
     case "ericsson-propeller": {
       const screw = stepEricssonPropeller({});
       return (
         <g stroke="#38bdf8" strokeWidth="1.5" fill="none">
-          {/* Hull Sternpost */}
-          <path d="M 60 80 L 140 140 L 140 160 L 60 220" stroke="#64748b" strokeWidth="3" />
-          {/* Coaxial Propeller Shaft */}
-          <line x1="140" y1="150" x2="340" y2="150" stroke="#94a3b8" strokeWidth="4" />
+          <path d={screw.schematicSternD} stroke="#64748b" strokeWidth="3" />
+          <line
+            x1={screw.schematicShaftX1}
+            y1={screw.schematicShaftY}
+            x2={screw.schematicShaftX2}
+            y2={screw.schematicShaftY}
+            stroke="#94a3b8"
+            strokeWidth="4"
+          />
           {/* Forward Helical Screw */}
           <ellipse
             cx={screw.schematicForwardCx}
@@ -2497,7 +3156,7 @@ function _renderHistoricalSchematic(
             fill="#0284c7"
             fillOpacity="0.2"
           />
-          <path d="M 196 100 Q 210 150 224 200" stroke="#38bdf8" strokeWidth="3" />
+          <path d={screw.schematicForwardHelixD} stroke="#38bdf8" strokeWidth="3" />
           {/* Aft Contra-Rotating Screw */}
           <ellipse
             cx={screw.schematicAftCx}
@@ -2509,7 +3168,7 @@ function _renderHistoricalSchematic(
             fill="#15803d"
             fillOpacity="0.2"
           />
-          <path d="M 294 104 Q 280 150 266 196" stroke="#4ade80" strokeWidth="3" />
+          <path d={screw.schematicAftHelixD} stroke="#4ade80" strokeWidth="3" />
           <text x="210" y="85" fill="#38bdf8" fontSize="8" textAnchor="middle">
             Forward Screw (CW)
           </text>
@@ -2790,55 +3449,95 @@ function _renderHistoricalSchematic(
         </g>
       );
     }
-    case "hyatt-celluloid":
+    case "hyatt-celluloid": {
+      const hyatt = stepHyattCelluloid({});
+      const ram = hyattSchematicRam(
+        hyatt.schematicRamX,
+        hyatt.schematicRamY,
+        hyatt.schematicRamW,
+        hyatt.schematicRamH,
+      );
+      const mold = hyattSchematicMold(
+        hyatt.schematicMoldX,
+        hyatt.schematicMoldY,
+        hyatt.schematicMoldW,
+        hyatt.schematicMoldH,
+      );
       return (
         <g stroke="#38bdf8" strokeWidth="1.5" fill="none">
-          {/* Steam-Jacketed Cylinder */}
           <rect
-            x="70"
-            y="100"
-            width="180"
-            height="80"
+            x={hyatt.schematicJacketX}
+            y={hyatt.schematicJacketY}
+            width={hyatt.schematicJacketW}
+            height={hyatt.schematicJacketH}
             rx="4"
             stroke="#94a3b8"
             fill="#1e293b"
             fillOpacity="0.2"
           />
           <rect
-            x="80"
-            y="110"
-            width="160"
-            height="60"
+            x={hyatt.schematicCylinderX}
+            y={hyatt.schematicCylinderY}
+            width={hyatt.schematicCylinderW}
+            height={hyatt.schematicCylinderH}
             fill="#f59e0b"
             fillOpacity="0.3"
             stroke="#d97706"
           />
-          {/* Hydraulic Ram */}
-          <rect x="40" y="125" width="60" height="30" rx="2" fill="#64748b" stroke="#94a3b8" />
-          {/* Extrusion Nozzle */}
-          <polygon points="250,120 290,135 290,145 250,160" fill="#38bdf8" stroke="#0284c7" />
-          {/* Split Mold */}
           <rect
-            x="295"
-            y="110"
-            width="60"
-            height="60"
+            x={ram.x}
+            y={ram.y}
+            width={ram.w}
+            height={ram.h}
+            rx="2"
+            fill="#64748b"
+            stroke="#94a3b8"
+          />
+          <polygon
+            points={`${hyatt.schematicNozzleX0},${hyatt.schematicNozzleY0} ${hyatt.schematicNozzleX1},${hyatt.schematicNozzleMidY0} ${hyatt.schematicNozzleX1},${hyatt.schematicNozzleMidY1} ${hyatt.schematicNozzleX0},${hyatt.schematicNozzleY1}`}
+            fill="#38bdf8"
+            stroke="#0284c7"
+          />
+          <rect
+            x={mold.x}
+            y={mold.y}
+            width={mold.w}
+            height={mold.h}
             rx="3"
             stroke="#4ade80"
             fill="#15803d"
             fillOpacity="0.2"
           />
-          <text x="160" y="90" fill="#f59e0b" fontSize="8" textAnchor="middle">
+          <text
+            x={hyatt.schematicJacketLabelX}
+            y={hyatt.schematicJacketLabelY}
+            fill="#f59e0b"
+            fontSize="8"
+            textAnchor="middle"
+          >
             Steam Heating Jacket (120°C)
           </text>
-          <text x="70" y="170" fill="#94a3b8" fontSize="8" textAnchor="middle">
+          <text
+            x={hyatt.schematicRamLabelX}
+            y={hyatt.schematicRamLabelY}
+            fill="#94a3b8"
+            fontSize="8"
+            textAnchor="middle"
+          >
             Hydraulic Ram
           </text>
-          <text x="325" y="100" fill="#4ade80" fontSize="8" textAnchor="middle">
+          <text
+            x={hyatt.schematicMoldLabelX}
+            y={hyatt.schematicMoldLabelY}
+            fill="#4ade80"
+            fontSize="8"
+            textAnchor="middle"
+          >
             Split Mold
           </text>
         </g>
       );
+    }
     case "gramme-dynamo": {
       const gramme = stepGrammeDynamo({});
       return (
@@ -2847,7 +3546,7 @@ function _renderHistoricalSchematic(
           <circle
             cx={gramme.schematicCenterX}
             cy={gramme.schematicCenterY}
-            r="55"
+            r={gramme.schematicRingOuterR}
             stroke="#fbbf24"
             strokeWidth="10"
             fill="none"
@@ -2855,7 +3554,7 @@ function _renderHistoricalSchematic(
           <circle
             cx={gramme.schematicCenterX}
             cy={gramme.schematicCenterY}
-            r="48"
+            r={gramme.schematicRingInnerR}
             stroke="#38bdf8"
             strokeWidth="2"
             fill="#0f172a"
@@ -2881,18 +3580,46 @@ function _renderHistoricalSchematic(
               />
             );
           })}
-          {/* Bipolar Field Magnet Poles */}
-          <path d="M 60 100 Q 130 150 60 200" stroke="#38bdf8" strokeWidth="6" fill="none" />
-          <path d="M 340 100 Q 270 150 340 200" stroke="#ef4444" strokeWidth="6" fill="none" />
-          <text x="90" y="155" fill="#38bdf8" fontSize="12" fontWeight="bold">
+          <path d={gramme.schematicNorthPoleD} stroke="#38bdf8" strokeWidth="6" fill="none" />
+          <path d={gramme.schematicSouthPoleD} stroke="#ef4444" strokeWidth="6" fill="none" />
+          <text
+            x={gramme.schematicNorthLabelX}
+            y={gramme.schematicPoleLabelY}
+            fill="#38bdf8"
+            fontSize="12"
+            fontWeight="bold"
+          >
             N
           </text>
-          <text x="300" y="155" fill="#ef4444" fontSize="12" fontWeight="bold">
+          <text
+            x={gramme.schematicSouthLabelX}
+            y={gramme.schematicPoleLabelY}
+            fill="#ef4444"
+            fontSize="12"
+            fontWeight="bold"
+          >
             S
           </text>
-          {/* Brushes */}
-          <rect x="194" y="112" width="12" height="6" fill="#4ade80" />
-          <rect x="194" y="182" width="12" height="6" fill="#4ade80" />
+          {Array.from({ length: gramme.schematicBrushCount }, (_, i) => {
+            const brush = grammeSchematicBrush(
+              i,
+              gramme.schematicBrushX,
+              gramme.schematicBrushY0,
+              gramme.schematicBrushY1,
+              gramme.schematicBrushW,
+              gramme.schematicBrushH,
+            );
+            return (
+              <rect
+                key={i}
+                x={brush.x}
+                y={brush.y}
+                width={brush.w}
+                height={brush.h}
+                fill="#4ade80"
+              />
+            );
+          })}
           <text x="200" y="85" fill="#fbbf24" fontSize="8" textAnchor="middle">
             Continuous Ring Armature
           </text>
@@ -2904,34 +3631,32 @@ function _renderHistoricalSchematic(
     }
     case "pasteur-fermentation": {
       const pasteur = stepPasteurFermentation({});
+      const yeast = pasteurSchematicYeast(
+        pasteur.schematicYeastX,
+        pasteur.schematicYeastY,
+        pasteur.schematicYeastW,
+        pasteur.schematicYeastH,
+      );
       return (
         <g stroke="#38bdf8" strokeWidth="1.5" fill="none">
-          {/* Glass Fermentation Vessel */}
           <path
-            d="M 120 100 L 120 210 C 120 235 280 235 280 210 L 280 100 Z"
+            d={pasteur.schematicVesselD}
             stroke="#38bdf8"
             fill="#0284c7"
             fillOpacity="0.15"
             strokeWidth="2"
           />
-          {/* Swan-Neck Sterile Trap */}
-          <path
-            d="M 200 100 L 200 60 C 200 35 250 35 250 65 C 250 90 290 90 290 60"
-            stroke="#4ade80"
-            strokeWidth="2.5"
-          />
-          {/* Yeast Culture Layer */}
+          <path d={pasteur.schematicSwanD} stroke="#4ade80" strokeWidth="2.5" />
           <rect
-            x="130"
-            y="195"
-            width="140"
-            height="25"
+            x={yeast.x}
+            y={yeast.y}
+            width={yeast.w}
+            height={yeast.h}
             rx="3"
             fill="#f59e0b"
             fillOpacity="0.35"
             stroke="#d97706"
           />
-          {/* Anaerobic CO2 Bubbles */}
           {Array.from({ length: pasteur.schematicBubbleCount }, (_, i) => (
             <circle
               key={i}
@@ -2941,7 +3666,7 @@ function _renderHistoricalSchematic(
                 pasteur.schematicBubblePitchX,
               )}
               cy={pasteur.schematicBubbleY}
-              r="4"
+              r={pasteur.schematicBubbleR}
               fill="#38bdf8"
               fillOpacity="0.5"
             />
@@ -3018,35 +3743,40 @@ function _renderHistoricalSchematic(
       const otto = stepOttoEngine({});
       return (
         <g stroke="#38bdf8" strokeWidth="1.5" fill="none">
-          {/* Water-Cooled Cylinder */}
           <rect
-            x="80"
-            y="70"
-            width="160"
-            height="120"
+            x={otto.schematicCylinderX}
+            y={otto.schematicCylinderY}
+            width={otto.schematicCylinderW}
+            height={otto.schematicCylinderH}
             rx="4"
             stroke="#94a3b8"
             fill="#1e293b"
             fillOpacity="0.2"
           />
-          {/* Slide Valve Ignition */}
-          <rect x="50" y="90" width="30" height="40" fill="#f97316" stroke="#ea580c" rx="2" />
-          {/* Trunk Piston & Connecting Rod */}
           <rect
-            x="120"
-            y="95"
-            width="70"
-            height="70"
+            x={otto.schematicValveX}
+            y={otto.schematicValveY}
+            width={otto.schematicValveW}
+            height={otto.schematicValveH}
+            fill="#f97316"
+            stroke="#ea580c"
+            rx="2"
+          />
+          <rect
+            x={otto.schematicPistonX}
+            y={otto.schematicPistonY}
+            width={otto.schematicPistonW}
+            height={otto.schematicPistonH}
             rx="3"
             fill="#38bdf8"
             fillOpacity="0.3"
             stroke="#38bdf8"
           />
           <line
-            x1="170"
-            y1="130"
-            x2="280"
-            y2="130"
+            x1={otto.schematicRodX1}
+            y1={otto.schematicRodY}
+            x2={otto.schematicRodX2}
+            y2={otto.schematicRodY}
             stroke="#e2e8f0"
             strokeWidth="5"
             strokeLinecap="round"
@@ -3083,10 +3813,10 @@ function _renderHistoricalSchematic(
         <g stroke="#38bdf8" strokeWidth="1.5" fill="none">
           {/* Threaded Mandrel & Cylinder */}
           <rect
-            x="100"
+            x={phonograph.schematicMandrelX}
             y={phonograph.schematicGrooveY0}
-            width="180"
-            height="70"
+            width={phonograph.schematicMandrelW}
+            height={phonograph.schematicMandrelH}
             rx="4"
             stroke="#fbbf24"
             fill="#78350f"
@@ -3111,14 +3841,32 @@ function _renderHistoricalSchematic(
               />
             );
           })}
-          {/* Lead Screw Shaft */}
-          <line x1="60" y1="145" x2="320" y2="145" stroke="#94a3b8" strokeWidth="4" />
-          {/* Diaphragm & Stylus Tracking Arm */}
-          <circle cx="190" cy="90" r="16" stroke="#38bdf8" fill="#0369a1" fillOpacity="0.4" />
-          <line x1="190" y1="90" x2="190" y2="114" stroke="#ef4444" strokeWidth="2.5" />
-          {/* Speaking Horn */}
+          <line
+            x1={phonograph.schematicLeadX1}
+            y1={phonograph.schematicLeadY}
+            x2={phonograph.schematicLeadX2}
+            y2={phonograph.schematicLeadY}
+            stroke="#94a3b8"
+            strokeWidth="4"
+          />
+          <circle
+            cx={phonograph.schematicDiaphragmCx}
+            cy={phonograph.schematicDiaphragmCy}
+            r={phonograph.schematicDiaphragmR}
+            stroke="#38bdf8"
+            fill="#0369a1"
+            fillOpacity="0.4"
+          />
+          <line
+            x1={phonograph.schematicDiaphragmCx}
+            y1={phonograph.schematicDiaphragmCy}
+            x2={phonograph.schematicDiaphragmCx}
+            y2={phonograph.schematicStylusY}
+            stroke="#ef4444"
+            strokeWidth="2.5"
+          />
           <polygon
-            points="190,80 150,30 230,30"
+            points={phonograph.schematicHornPoints}
             stroke="#4ade80"
             fill="#15803d"
             fillOpacity="0.2"
@@ -3160,15 +3908,15 @@ function _renderHistoricalSchematic(
                 <ellipse
                   cx={bucket.x}
                   cy={bucket.y}
-                  rx="8"
-                  ry="6"
+                  rx={pelton.schematicBucketRx}
+                  ry={pelton.schematicBucketRy}
                   stroke="#fbbf24"
                   fill="#d97706"
                 />
                 <line
-                  x1={bucket.x - 4}
+                  x1={bucket.x - pelton.schematicSplitDx}
                   y1={bucket.y}
-                  x2={bucket.x + 4}
+                  x2={bucket.x + pelton.schematicSplitDx}
                   y2={bucket.y}
                   stroke="#ef4444"
                   strokeWidth="1.5"
@@ -3177,12 +3925,12 @@ function _renderHistoricalSchematic(
             );
           })}
           {/* Needle Nozzle High-Pressure Water Jet */}
-          <polygon points="40,185 100,180 100,200 40,195" fill="#0284c7" stroke="#38bdf8" />
+          <polygon points={pelton.schematicNozzlePoints} fill="#0284c7" stroke="#38bdf8" />
           <line
-            x1="100"
-            y1="190"
-            x2="200"
-            y2="190"
+            x1={pelton.schematicJetX1}
+            y1={pelton.schematicJetY}
+            x2={pelton.schematicJetX2}
+            y2={pelton.schematicJetY}
             stroke="#38bdf8"
             strokeWidth="4"
             strokeDasharray="4 2"
@@ -3205,7 +3953,7 @@ function _renderHistoricalSchematic(
         <g stroke="#38bdf8" strokeWidth="1.5" fill="none">
           {/* Conical Centrifuge Bowl */}
           <polygon
-            points="140,80 260,80 230,200 170,200"
+            points={delaval.schematicBowlPoints}
             stroke="#94a3b8"
             fill="#1e293b"
             fillOpacity="0.3"
@@ -3221,17 +3969,37 @@ function _renderHistoricalSchematic(
             return (
               <polyline
                 key={i}
-                points={`180,${y} 200,${y - 10} 220,${y}`}
+                points={`${delaval.schematicDiscX0},${y} ${delaval.schematicDiscCx},${y - delaval.schematicDiscLift} ${delaval.schematicDiscX1},${y}`}
                 stroke="#fbbf24"
                 strokeWidth="1.5"
               />
             );
           })}
           {/* Flexible Spindle */}
-          <line x1="200" y1="200" x2="200" y2="250" stroke="#4ade80" strokeWidth="3" />
-          {/* Cream & Skim Outlets */}
-          <line x1="200" y1="80" x2="200" y2="50" stroke="#fef08a" strokeWidth="2.5" />
-          <line x1="150" y1="80" x2="120" y2="60" stroke="#38bdf8" strokeWidth="2.5" />
+          <line
+            x1={delaval.schematicSpindleX}
+            y1={delaval.schematicSpindleY0}
+            x2={delaval.schematicSpindleX}
+            y2={delaval.schematicSpindleY1}
+            stroke="#4ade80"
+            strokeWidth="3"
+          />
+          <line
+            x1={delaval.schematicCreamX}
+            y1={delaval.schematicCreamY0}
+            x2={delaval.schematicCreamX}
+            y2={delaval.schematicCreamY1}
+            stroke="#fef08a"
+            strokeWidth="2.5"
+          />
+          <line
+            x1={delaval.schematicSkimX0}
+            y1={delaval.schematicSkimY0}
+            x2={delaval.schematicSkimX1}
+            y2={delaval.schematicSkimY1}
+            stroke="#38bdf8"
+            strokeWidth="2.5"
+          />
           <text x="200" y="40" fill="#fef08a" fontSize="8" textAnchor="middle">
             Cream (Light Core)
           </text>
@@ -3249,18 +4017,12 @@ function _renderHistoricalSchematic(
       return (
         <g stroke="#38bdf8" strokeWidth="1.5" fill="none">
           {/* Single-Turn Secondary Bar */}
-          <path
-            d="M 90 90 L 90 200 L 310 200 L 310 90"
-            stroke="#f59e0b"
-            strokeWidth="8"
-            fill="none"
-          />
-          {/* Primary Windings Core */}
+          <path d={weld.schematicBarD} stroke="#f59e0b" strokeWidth="8" fill="none" />
           <rect
-            x="170"
-            y="160"
-            width="60"
-            height="60"
+            x={weld.schematicCoreX}
+            y={weld.schematicCoreY}
+            width={weld.schematicCoreW}
+            height={weld.schematicCoreH}
             rx="4"
             stroke="#60a5fa"
             fill="#1e3a8a"
@@ -3282,7 +4044,14 @@ function _renderHistoricalSchematic(
             />
           ))}
           {/* Incandescent Weld Interface */}
-          <line x1="200" y1="72" x2="200" y2="102" stroke="#ef4444" strokeWidth="4" />
+          <line
+            x1={weld.schematicWeldLineX}
+            y1={weld.schematicWeldLineY0}
+            x2={weld.schematicWeldLineX}
+            y2={weld.schematicWeldLineY1}
+            stroke="#ef4444"
+            strokeWidth="4"
+          />
           <circle
             cx={weld.schematicWeldCx}
             cy={weld.schematicWeldCy}
@@ -3290,8 +4059,22 @@ function _renderHistoricalSchematic(
             fill="#f97316"
           />
           {/* Upsetting Force Arrows */}
-          <line x1="120" y1="87" x2="135" y2="87" stroke="#fbbf24" strokeWidth="2" />
-          <line x1="280" y1="87" x2="265" y2="87" stroke="#fbbf24" strokeWidth="2" />
+          <line
+            x1={weld.schematicUpsetLeftX1}
+            y1={weld.schematicUpsetY}
+            x2={weld.schematicUpsetLeftX2}
+            y2={weld.schematicUpsetY}
+            stroke="#fbbf24"
+            strokeWidth="2"
+          />
+          <line
+            x1={weld.schematicUpsetRightX1}
+            y1={weld.schematicUpsetY}
+            x2={weld.schematicUpsetRightX2}
+            y2={weld.schematicUpsetY}
+            stroke="#fbbf24"
+            strokeWidth="2"
+          />
           <text x="200" y="55" fill="#ef4444" fontSize="8" textAnchor="middle">
             Plastic Fusion Interface ($I^2Rt$)
           </text>
@@ -3307,7 +4090,7 @@ function _renderHistoricalSchematic(
         <g stroke="#38bdf8" strokeWidth="1.5" fill="none">
           {/* Stepped Rotor Core */}
           <polygon
-            points="80,120 150,120 150,110 240,110 240,95 320,95 320,185 240,185 240,170 150,170 150,160 80,160"
+            points={parsons.schematicRotorPoints}
             stroke="#94a3b8"
             fill="#1e293b"
             fillOpacity="0.3"
@@ -3318,19 +4101,39 @@ function _renderHistoricalSchematic(
             <line
               key={x}
               x1={x}
-              y1="85"
+              y1={parsons.schematicBladeY0}
               x2={x}
-              y2="195"
+              y2={parsons.schematicBladeY1}
               stroke="#38bdf8"
               strokeWidth="2"
               strokeDasharray="3 2"
             />
           ))}
           {/* Expanding Casing */}
-          <line x1="60" y1="80" x2="340" y2="65" stroke="#60a5fa" strokeWidth="2.5" />
-          <line x1="60" y1="200" x2="340" y2="215" stroke="#60a5fa" strokeWidth="2.5" />
-          {/* Steam Expansion Arrows */}
-          <line x1="40" y1="140" x2="75" y2="140" stroke="#fbbf24" strokeWidth="3" />
+          <line
+            x1={parsons.schematicCasingX1}
+            y1={parsons.schematicCasingY0}
+            x2={parsons.schematicCasingX2}
+            y2={parsons.schematicCasingY1}
+            stroke="#60a5fa"
+            strokeWidth="2.5"
+          />
+          <line
+            x1={parsons.schematicCasingX1}
+            y1={parsons.schematicCasingY2}
+            x2={parsons.schematicCasingX2}
+            y2={parsons.schematicCasingY3}
+            stroke="#60a5fa"
+            strokeWidth="2.5"
+          />
+          <line
+            x1={parsons.schematicInletX1}
+            y1={parsons.schematicInletY}
+            x2={parsons.schematicInletX2}
+            y2={parsons.schematicInletY}
+            stroke="#fbbf24"
+            strokeWidth="3"
+          />
           <text x="55" y="130" fill="#fbbf24" fontSize="8" textAnchor="middle">
             HP Steam In
           </text>

@@ -49,7 +49,11 @@ export function PatentSearchPalette({ isOpen, onClose }: PatentSearchPaletteProp
     } else if (e.key === "Enter" && results[selectedIndex]) {
       e.preventDefault();
       onClose();
-      router.push(`/patents/${results[selectedIndex].id}`);
+      if (router) {
+        router.push(`/patents/${results[selectedIndex].id}`);
+      } else if (typeof window !== "undefined") {
+        window.location.href = `/patents/${results[selectedIndex].id}`;
+      }
     } else if (e.key === "Escape") {
       e.preventDefault();
       onClose();
