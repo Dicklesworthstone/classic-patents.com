@@ -7,21 +7,21 @@ import type { Patent } from "@/types/patent";
 export const lindeAirLiquefactionPatent: Patent = {
   id: "us-727650-linde-air-liquefaction",
   patentNumber: "US 727,650",
-  title: "Process of Liquefying Air or Other Gases",
-  shortTitle: "Linde Joule-Thomson Cryogenic Air Liquefaction Process",
-  subtitle:
-    "Isenthalpic Joule-Thomson Expansion, Counter-Current Regenerative Heat Exchange, and Fractional Cryogenic Distillation",
+  title:
+    "Process of Producing Low Temperatures, the Liquefaction of Gases, and the Separation of the Constituents of Gaseous Mixtures",
+  shortTitle: "Linde Regenerative Air Liquefaction and Separation",
+  subtitle: "Pressure-Drop Cooling, Counter-Current Heat Exchange, and Fractional Distillation",
   inventors: ["Carl Linde"],
   inventorLocation: "Munich, Germany",
   grantDate: "1903-05-12",
-  filingDate: "1900-10-18",
+  filingDate: "1895-07-09",
   era: "Gilded Age & Grid (1870–1900)",
   category: "materials",
   categoryLabel: "Cryogenic Thermodynamics & Gas Separation",
   summary:
-    "Founding the modern industrial gas industry and opening the frontier of cryogenic physics: on May 12, 1903, German physicist and engineer Carl von Linde received US Patent No. 727,650 for the continuous process of liquefying air and permanent gases. Before Linde, gases like oxygen, nitrogen, and hydrogen were believed to be 'permanent' (unliquefiable in continuous industrial quantities) because standard expansion techniques produced only microscopic mists in laboratory test tubes. Linde combined 200-atmosphere multi-stage compression, a counter-current regenerative coaxial heat exchanger ($\\dot{Q} = U A \\Delta T_{\\text{LMTD}}$), and isenthalpic Joule-Thomson throttling expansion ($\\mu_{\\text{JT}} = (\\partial T / \\partial P)_H$). Each pass through the throttle cooled the incoming compressed stream, feeding back colder gas to precool the next incoming charge until air condensed continuously into a pale-blue liquid boiling at $-193^\\circ\\text{C}$ ($80\\text{ K}$).",
+    "Filed July 9, 1895 and granted May 12, 1903, US 727,650 covers Carl Linde’s process for producing low temperatures, liquefying gases, and separating the constituents of gaseous mixtures. The specification uses a compressor, a cooler, a long insulated counter-current apparatus, and a regulated pressure drop to keep returning low-pressure gas in thermal exchange with incoming high-pressure gas. It gives 75 atmospheres high pressure, 25 atmospheres low pressure, and cooling to about 10 degrees centigrade or less as an effective air-liquefaction example, then describes fractionating the liquid so nitrogen and oxygen may be taken off through further heat-exchange paths.",
   heroQuote:
-    "Be it known that I, Carl Linde, a subject of the Prince Regent of Bavaria, residing at Munich, Germany, have invented certain new and useful Improvements in the Process of Liquefying Air or Other Gases, of which the following is a specification...",
+    "My invention relates to improvements in processes for producing very low temperatures, especially for the purpose of liquefying gases or mixtures of the same, such as atmospheric air, and also in separating the constituents of gaseous mixtures.",
   originalPdfUrl: "/patents/pdfs/us-727650-linde-air-liquefaction.pdf",
   googlePatentsUrl: "https://patents.google.com/patent/US727650A/en",
   usptoClassification: "F25J 1/00 (Processes or apparatus for liquefying or solidifying gases)",
@@ -35,110 +35,85 @@ export const lindeAirLiquefactionPatent: Patent = {
     sourcePdfSha256: "6d5423307d5718474ea8dd5891c52bccc6c7df2103a9ed4b9c7298d27f29c776",
   },
   originalText: `UNITED STATES PATENT OFFICE.
-CARL LINDE, OF MUNICH, GERMANY.
+CARL LINDE, OF MUNICH, GERMANY, ASSIGNOR OF ONE-THIRD TO CHARLES F. BRUSH, OF CLEVELAND, OHIO.
 
-PROCESS OF LIQUEFYING AIR OR OTHER GASES.
+PROCESS OF PRODUCING LOW TEMPERATURES, THE LIQUEFACTION OF GASES, AND THE SEPARATION OF THE CONSTITUENTS OF GASEOUS MIXTURES.
 
 SPECIFICATION forming part of Letters Patent No. 727,650, dated May 12, 1903.
-Application filed October 18, 1900. Serial No. 33,524. (No specimens.) Patented in Germany September 29, 1895, No. 88,824.
+Application filed July 9, 1895. Serial No. 595,371. (No specimens.)
 
 To all whom it may concern:
-Be it known that I, CARL LINDE, a subject of the Prince Regent of Bavaria, residing at Munich, in the Kingdom of Bavaria, German Empire, have invented certain new and useful Improvements in the Process of Liquefying Air or Other Gases; and I do hereby declare that the following is a full, clear, and exact description of the invention.
+Be it known that I, CARL LINDE, professor, a subject of the King of Bavaria, residing at Munich, in the Kingdom of Bavaria, German Empire, have invented new and useful Improvements in Processes of Producing Low Temperatures, the Liquefaction of Gases, and the Separation of the Constituents of Gaseous Mixtures, of which the following is a specification.
 
-The object of my invention is to liquefy atmospheric air and other gases in continuous commercial quantities with high thermodynamic efficiency and without requiring dangerous mechanical expansion engines operating at extremely low temperatures.
+My invention relates to improvements in processes for producing very low temperatures, especially for the purpose of liquefying gases or mixtures of the same, such as atmospheric air, and also in separating the constituents of gaseous mixtures. The method of separating the components of atmospheric air is based upon a fact well known to physicists—that oxygen, although having a boiling-point higher than nitrogen, can only be liquefied simultaneously with the nitrogen or part of it, but that the nitrogen is first evaporated on volatilizing the liquefied mixture, so that the mixture will become richer in oxygen the longer the volatilization is continued.
 
-In carrying out my invention:
-First, air is compressed by a compressor to a high pressure, preferably from one hundred to two hundred atmospheres, and the heat generated by compression is removed by a water-cooler.
-Second, the compressed, dry, and carbon-dioxide-free air is passed through the inner tube of a counter-current heat-interchanger.
-Third, the compressed air is expanded at the cold end of the interchanger through a throttle-valve or nozzle from the high pressure to a lower pressure, thereby experiencing a cooling effect due to the internal work performed against intermolecular attractive forces (the Joule-Thomson effect).
-Fourth, the expanded and cooled air is caused to flow backward through the outer conduit of the counter-current heat-interchanger in thermal contact with the incoming compressed air, thereby continuously precooling the oncoming compressed air before it reaches the expansion throttle.
-Fifth, this cycle is continued continuously until the temperature at the throttle-valve drops below the condensation point of air at the given pressure, whereupon a portion of the expanded air condenses into liquid and collects in a vacuum-jacketed receiver, while the unliquefied vapor returns through the interchanger to precool further incoming charges.`,
+The liquefaction of gases, such as atmospheric air, has hitherto been carried out by producing successive liquefaction and volatilization of liquids of gradually-increasing volatility, such as carbonic acid, nitrous oxid, ethylene, and the like. This method, however, has not proved capable of practical application for the purpose of attaining such low temperatures as that required for liquefying atmospheric air.`,
   plainEnglishExplanation: {
     overview:
-      "Until the late 19th century, oxygen, nitrogen, and air were known as 'permanent gases' because scientists could not liquefy them in usable bulk quantities. French and Swiss physicists used mechanical expansion engines (pistons driven by cold expanding gas), but at sub-zero cryogenic temperatures, lubricants froze solid, pistons seized, and seals shattered. Carl von Linde eliminated all moving parts at the cold end. By exploiting the subtle cooling that occurs when high-pressure gas expands through a simple stationary throttle nozzle (the Joule-Thomson effect) and recirculating the cold gas back through a counter-current heat exchanger, Linde created the world's first industrial liquefier.",
+      "The specification identifies a practical limitation of an earlier cascade method: successive liquefaction and volatilization of carbonic acid, nitrous oxid, ethylene, and similar fluids had not attained temperatures low enough to liquefy atmospheric air in practical use. Linde’s move is a forced circulation between high- and low-pressure spaces. Gas cooled by a pressure drop returns through a long conducting path beside the incoming high-pressure gas, so each circulation begins colder than the last. The document then extends that cold circuit into a separation arrangement in which nitrogen is evaporated from liquid air and the remaining liquid becomes richer in oxygen.",
     coreMechanism:
-      "A three-stage compressor draws ambient air, dries it to remove moisture (which would freeze and clog pipes), purifies it of $\\text{CO}_2$, and compresses it to $P_1 = 200\\text{ bar}$ ($2,900\\text{ psi}$). A water jacket removes the heat of compression, cooling the gas back to $T_1 = 293\\text{ K}$ ($20^\\circ\\text{C}$). The dry compressed air flows down the inner copper tube of a heavily insulated 100-meter helical counter-current heat exchanger. At the bottom, the gas reaches an adjustable needle throttle valve, where it expands isenthalpically from $200\\text{ bar}$ down to $20\\text{ bar}$ (or $1\\text{ bar}$). Because air molecules at room temperature have intermolecular van der Waals attractions ($U_{\\text{pot}} \\propto -a/V$), the gas performs internal work pulling molecules apart as it expands, dropping its temperature by $\\Delta T = \\mu_{\\text{JT}} \\Delta P \\approx 0.215^\\circ\\text{C/bar} \\times 180\\text{ bar} \\approx 39^\\circ\\text{C}$ on the very first pass. The expanded air ($T = -19^\\circ\\text{C}$) flows back up the outer jacket of the heat exchanger, cooling the next incoming $200\\text{ bar}$ stream down to $-15^\\circ\\text{C}$ *before* it reaches the throttle. On the second pass, the throttle drops the air from $-15^\\circ\\text{C}$ to $-54^\\circ\\text{C}$. This regenerative cascade rapidly drives the bottom nozzle temperature down past the dew point of air ($-193^\\circ\\text{C} / 80\\text{ K}$), where about $8\\%$ of the stream condenses into liquid air, raining into a vacuum Dewar flask while the cold dry vapor returns up the exchanger in a self-sustaining thermodynamic loop.",
+      "Compressor C raises the incoming air from $p′$ to $p²$ and cooler K brings it from $t²$ to $t³$. The high-pressure stream travels down the inner channel of G′, two long coiled pipes arranged concentrically; the low-pressure return stream travels in the outer annular channel in the opposite direction. At the cold end, nozzle N and regulating valve R′ discharge the stream into vessel V′ at lower pressure. The patent reports 75 atmospheres in the high-pressure space, 25 atmospheres in the low-pressure space, and $t³$ of about $10^\\circ\\text{C}$ or less as effective operating conditions. The pressure-drop stream first falls to $t⁴$, then, after returning through G′ and absorbing heat from the incoming stream, falls further to $t⁵$. Repetition lowers V′ to or below the critical point so liquid air collects there. The optional V², S, G², and G³ branch evaporates nitrogen and can deliver oxygen in gaseous form or retain it as liquid.",
     mechanicalBreakdown: [
       {
-        title: "Three-Stage 200-Bar Compression Plant",
-        summary: "Multi-stage reciprocating compressor with interstage water coolers.",
+        title: "Compressors C and P",
+        summary:
+          "C establishes the working high pressure; P supplies fresh outside air to maintain the circuit’s pressure.",
         technicalDetails:
-          "Compresses air from $1\\text{ bar}$ through intermediate stages ($6\\text{ bar}, 40\\text{ bar}$) to $200\\text{ bar}$. Interstage shell-and-tube heat exchangers remove compression heat, delivering isothermal boundary conditions $T_{\\text{in}} \\approx 20^\\circ\\text{C}$.",
-        archaicTerm: "Multi-stage compression-pump and water-cooling coil",
-        modernEquivalent: "Three-stage reciprocating industrial gas compressor",
+          "The specification says C receives air at $p′$ and compresses it to $p²$, raising the temperature from $t′$ to $t²$. P feeds the suction of C with outside air. In Linde’s reported air-liquefaction example, the system maintains $75$ atmospheres on the high side and $25$ atmospheres on the low side.",
+        archaicTerm: "compressor",
+        modernEquivalent: "Gas compressor supplying a recirculating pressure loop",
       },
       {
-        title: "Counter-Current Regenerative Coaxial Heat Exchanger",
-        summary: "Coaxial triple-tube copper coil transferring cryogenic enthalpy.",
+        title: "Cooler K and Counter-Current Apparatus G′",
+        summary:
+          "A cooler removes heat after compression; a long two-pipe exchanger lets the returning low-pressure gas cool the incoming high-pressure stream.",
         technicalDetails:
-          "Consists of three concentric copper tubes ($100\\text{ m}$ helical length) wound in an insulated wooden casing filled with sheep's wool. The logarithmic mean temperature difference $\\Delta T_{\\text{LMTD}} < 4\\text{ K}$ enables $98\\%$ thermal recovery.",
-        archaicTerm: "Counter-current heat-interchanger or regenerator",
-        modernEquivalent: "Regenerative counter-current cryogenic heat exchanger",
+          "K is a coil cooled by cold brine or liquid ammonia and lowers the compressed stream to $t³$. G′ has two coiled pipes, one inside the other, giving a central and outer annular channel. The source recommends about $100\\text{ m}$ of pipe and non-conducting material such as sheep’s wool. Opposite-direction streams exchange heat through the conducting inner coil.",
+        archaicTerm: "counter-current apparatus",
+        modernEquivalent: "Concentric-tube regenerative heat exchanger",
       },
       {
-        title: "Isenthalpic Joule-Thomson Throttle Needle Valve",
-        summary: "Zero-moving-part expansion orifice converting enthalpy into refrigeration.",
+        title: "Nozzle N, Regulating Valve R′, and Vessel V′",
+        summary:
+          "The regulated discharge creates the low-pressure cold end in which liquid air can collect.",
         technicalDetails:
-          "Hardened bronze needle valve with adjustable micrometric orifice ($0.5\\text{ to } 2.0\\text{ mm}$). Operates under constant enthalpy ($H_1 = H_2$) with zero mechanical moving parts at cryogenic temperatures.",
-        archaicTerm: "Expansion-cock or throttling-valve",
-        modernEquivalent: "Joule-Thomson cryogenic expansion valve",
+          "N projects into closed vessel V′ from the lower end of G′’s inner pipe, and R′ regulates the difference between the high- and low-pressure spaces. The returning low-pressure path runs from V′ through G′’s annular channel to C’s suction. In the source’s sequence, repeated discharge first reaches $t⁴$, then $t⁵$, and eventually produces liquid air at the bottom of V′.",
+        archaicTerm: "regulating-valve",
+        modernEquivalent: "Pressure-control valve at a regenerative expansion stage",
       },
       {
-        title: "Double-Walled Vacuum Cryogenic Receiver (Dewar Flask)",
-        summary: "Silvered vacuum-insulated vessel collecting liquid nitrogen/oxygen.",
+        title: "Separating Vessel V², Coil S, and Apparatus G²/G³",
+        summary:
+          "The optional separation branch uses the liquefied air to release nitrogen and recover oxygen in gaseous or liquid form.",
         technicalDetails:
-          "Double-walled vacuum vessel with silvered reflective walls ($P_{\\text{vacuum}} < 10^{-4}\\text{ mbar}$) suppressing conductive, convective, and radiative thermal heat leak ($q_{\\text{rad}} = \\epsilon \\sigma (T_{\\text{amb}}^4 - T_{\\text{liq}}^4)$).",
-        archaicTerm: "Vacuum-jacketed liquid-receptacle",
-        modernEquivalent: "Vacuum-insulated cryogenic collection vessel",
-      },
-      {
-        title: "Chemical Adsorption Moisture & CO2 Purifier Scrubbers",
-        summary: "Twin chemical desiccant towers eliminating ice-forming trace contaminants.",
-        technicalDetails:
-          "High-pressure steel cylinders packed with potassium hydroxide ($KOH$) pellets and anhydrous calcium chloride ($CaCl_2$). Strips water vapor (dew point $<-60^\\circ\\text{C}$) and carbon dioxide ($<5\\text{ ppm}$) from the $200\\text{ bar}$ air stream before entering the heat exchanger, preventing catastrophic cryogenic ice blockages in the throttle orifice.",
-        archaicTerm: "Purifying apparatus containing chemical desiccants",
-        modernEquivalent: "Molecular sieve desiccant bed & cryogenic purification column",
+          "V² is connected to V′ through regulating valve R². Incoming air runs through G², coil S, and G³. In V², heat taken from the coil evaporates nitrogen, which leaves by G². Liquid oxygen can pass through G³ and leave as gas; when G³ is omitted, the source says it can be drawn as liquid through valve n.",
+        archaicTerm: "evaporating vessel",
+        modernEquivalent: "Evaporation and fractionation vessel",
       },
     ],
     scientificPrinciples: [
       {
-        principle: "Joule-Thomson Throttling Refrigeration Coefficient",
-        formula:
-          "\\mu_{\\text{JT}} = \\left(\\frac{\\partial T}{\\partial P}\\right)_H = \\frac{1}{C_p} \\left[T \\left(\\frac{\\partial V}{\\partial T}\\right)_P - V\\right] = \\frac{1}{C_p} \\left(\\frac{2a}{R T} - b\\right) > 0 \\quad (T < T_{\\text{inversion}} \\approx 600\\text{ K})",
+        principle: "Printed Joule-Thomson Pressure-Drop Relation",
+        formula: "T - T′ = (p² - p′²)(289) / 4T²",
         explanation:
-          "Because air at room temperature operates below its maximum Joule-Thomson inversion temperature ($T_{\\text{inv}} \\approx 603\\text{ K}$), attractive intermolecular van der Waals forces dominate ($2a/RT > b$). Isenthalpic pressure reduction ($dP < 0$) forces gas molecules apart against their mutual attraction, causing continuous temperature drop ($dT < 0$).",
+          "Linde attributes the pressure-drop observation to Joule and Thomson. He defines $p²$ as the higher pressure, $p′$ as the lower pressure in atmospheres, and $T$ and $T′$ as absolute temperatures. The specification’s examples for a 50-atmosphere difference range from 13 degrees centigrade at $T=283°$ to 40.70 degrees at $T=160°$.",
       },
       {
         principle: "Counter-Current Regenerative Enthalpy Exchange",
         formula:
           "\\dot{Q}_{\\text{exchange}} = U A \\Delta T_{\\text{LMTD}} = \\dot{m}_{\\text{in}} h_{\\text{in}}(P_{\\text{high}}, T) - \\dot{m}_{\\text{return}} h_{\\text{return}}(P_{\\text{low}}, T)",
         explanation:
-          "The returning cold vapor continuously precools the high-pressure gas before it reaches the expansion valve, accumulating the subtle Joule-Thomson cooling over hundreds of cycles until the temperature plummets by over $200^\\circ\\text{C}$.",
+          "The two streams in G′ travel in opposite directions on opposite sides of a conducting inner coil. The returning low-pressure stream absorbs heat from the incoming high-pressure stream. That regenerative exchange is what lets successive pressure drops lower the cold-end temperature from $t³$ to $t⁴$ and then $t⁵$.",
       },
       {
-        principle: "Cryogenic Fractionation & Relative Volatility",
-        formula:
-          "\\alpha_{\\text{sep}} = \\frac{y_{\\text{N}_2} / x_{\\text{N}_2}}{y_{\\text{O}_2} / x_{\\text{O}_2}} = \\frac{P_{\\text{sat, N}_2}(T)}{P_{\\text{sat, O}_2}(T)} \\approx 3.2 \\quad (T = 80\\text{ K})",
+        principle: "Fractional Separation of Liquid Air",
+        formula: "Q = mL",
         explanation:
-          "Because nitrogen boils at $-195.8^\\circ\\text{C}$ while oxygen boils at a warmer $-182.9^\\circ\\text{C}$, the liquid air can be separated in a distillation column, enabling pure industrial gaseous oxygen and nitrogen production.",
-      },
-      {
-        principle: "Linde-Hampson Steady-State Liquefaction Yield",
-        formula:
-          "y = \\frac{\\dot{m}_{\\text{liquid}}}{\\dot{m}_{\\text{compressor}}} = \\frac{h_{\\text{return}}(P_{\\text{low}}, T_1) - h_{\\text{inlet}}(P_{\\text{high}}, T_1)}{h_{\\text{return}}(P_{\\text{low}}, T_1) - h_{\\text{liquid}}} \\approx 8.2\\%",
-        explanation:
-          "At steady-state equilibrium, the fraction $y$ of compressed air converted to liquid is dictated by the enthalpy difference of non-ideal gas at room temperature between 200 bar and 1 bar, yielding approximately 8% liquid per pass.",
-      },
-      {
-        principle: "Stefan-Boltzmann Cryogenic Radiation Insulation Shielding",
-        formula:
-          "q_{\\text{rad}} = \\frac{\\sigma (T_{\\text{room}}^4 - T_{\\text{cryo}}^4)}{\\frac{1}{\\epsilon_{\\text{outer}}} + \\frac{1}{\\epsilon_{\\text{inner}}} - 1}, \\quad \\epsilon_{\\text{silver}} \\approx 0.02 \\implies q_{\\text{rad}} < 5\\text{ W/m}^2",
-        explanation:
-          "High-vacuum insulation ($P < 10^{-4}\\text{ Torr}$) eliminates gas conduction and convection, while silver mirror coatings on the Dewar walls reduce emissivity $\\epsilon$ to $0.02$, minimizing thermal radiation boil-off.",
+          "The specification describes liquid air becoming richer in oxygen as nitrogen first evaporates. In V², the incoming-air coil supplies the heat that evaporates nitrogen, while the oxygen-bearing liquid follows a separate path. $Q=mL$ is the modern heat-balance shorthand for the phase-change duty; the patent does not state numerical latent heats or product purity.",
       },
     ],
     whyItMattersToday:
-      "Carl von Linde's liquefaction cycle founded the entire modern industrial gas industry (**The Linde Group**, today Linde plc, the world's largest industrial gas company). Industrial air separation provides the liquid oxygen that fuels rocket engines (SpaceX Falcon 9, NASA Artemis SLS), supplies pure oxygen for hospital ventilators and steelmaking blast furnaces, and produces ultra-high-purity liquid nitrogen for semiconductor fabrication, MRI machine superconducting magnets, and food freezing.",
+      "The grant makes the engineering chain visible: a pressure-drop cooling effect becomes useful only when a counter-current return stream recovers heat, and the resulting liquid can be separated by using phase change as another heat-exchange stage. Its claims cover both the basic regenerative refrigeration arrangement and more specific routes for separating air or another mixed gas into constituents. The facsimile itself does not establish later production volumes, market position, or modern application claims.",
   },
   claims: [
     {
@@ -157,8 +132,7 @@ Fifth, this cycle is continued continuously until the temperature at the throttl
     },
     {
       number: 2,
-      isIndependent: false,
-      dependsOn: [1],
+      isIndependent: true,
       originalText: manualClaimText(2),
       plainEnglish:
         "Refrigerate and liquefy gas by expanding it through a valve into lower pressure and using the expanded gas to cool incoming compressed gas until critical temperature is reached and liquefaction occurs.",
@@ -184,8 +158,7 @@ Fifth, this cycle is continued continuously until the temperature at the throttl
     },
     {
       number: 5,
-      isIndependent: false,
-      dependsOn: [4],
+      isIndependent: true,
       originalText: manualClaimText(5),
       plainEnglish:
         "Apply the regenerative liquefaction sequence to air and use liberated nitrogen as an additional cold stream for incoming air.",
@@ -193,8 +166,7 @@ Fifth, this cycle is continued continuously until the temperature at the throttl
     },
     {
       number: 6,
-      isIndependent: false,
-      dependsOn: [5],
+      isIndependent: true,
       originalText: manualClaimText(6),
       plainEnglish:
         "Continue the air sequence through liquid formation, nitrogen liberation, and oxygen-rich liquid, using each stage to cool the next incoming air.",
@@ -202,8 +174,7 @@ Fifth, this cycle is continued continuously until the temperature at the throttl
     },
     {
       number: 7,
-      isIndependent: false,
-      dependsOn: [6],
+      isIndependent: true,
       originalText: manualClaimText(7),
       plainEnglish:
         "Separate gaseous nitrogen, liquid oxygen, and gaseous oxygen in successive heat-exchange stages after air liquefies.",
@@ -219,8 +190,7 @@ Fifth, this cycle is continued continuously until the temperature at the throttl
     },
     {
       number: 9,
-      isIndependent: false,
-      dependsOn: [8],
+      isIndependent: true,
       originalText: manualClaimText(9),
       plainEnglish:
         "The two-fraction air process additionally uses distilled nitrogen to cool compressed air that will be liquefied.",
@@ -228,8 +198,7 @@ Fifth, this cycle is continued continuously until the temperature at the throttl
     },
     {
       number: 10,
-      isIndependent: false,
-      dependsOn: [8],
+      isIndependent: true,
       originalText: manualClaimText(10),
       plainEnglish:
         "The two-fraction air process additionally uses distilled oxygen to cool compressed air that will be liquefied.",
@@ -249,8 +218,7 @@ Fifth, this cycle is continued continuously until the temperature at the throttl
     },
     {
       number: 12,
-      isIndependent: false,
-      dependsOn: [11],
+      isIndependent: true,
       originalText: manualClaimText(12),
       plainEnglish:
         "Separate any mixed gas by liquefying it and fractionally distilling it with heat derived from previously cooled gas condensing at higher pressure.",
@@ -258,8 +226,7 @@ Fifth, this cycle is continued continuously until the temperature at the throttl
     },
     {
       number: 13,
-      isIndependent: false,
-      dependsOn: [12],
+      isIndependent: true,
       originalText: manualClaimText(13),
       plainEnglish:
         "The prior separation process also uses the liquid gas obtained to wholly or partly maintain the liquid supply.",
@@ -276,97 +243,78 @@ Fifth, this cycle is continued continuously until the temperature at the throttl
   ],
   drawings: [
     {
-      figureNumber: "Fig. 1",
-      title: "Linde Cryogenic Liquefier Circuit & Counter-Current Column",
+      figureNumber: "Sole diagrammatic drawing",
+      title: "Apparatus for producing low temperatures and separating gaseous mixtures",
       caption:
-        "Thermodynamic flow diagram of Carl von Linde's regenerative air liquefaction system showing the 200-bar compressor, water cooler, coaxial copper heat exchanger, Joule-Thomson expansion needle valve, and vacuum Dewar receiver.",
+        "The sole source drawing is an apparatus diagram bearing the lettered components used in the specification: compressors C and P, refrigerator K, counter-current apparatus G′, closed vessel V′, nozzle N, regulating valves, separating vessel V², coil S, and counter-current apparatus G² and G³.",
       svgType: "linde-air-liquefaction",
       callouts: [
         {
           id: "ll-1",
-          figureRef: "Fig. 1",
-          label: "A",
-          element: "200-Bar Multi-Stage Air Compressor",
+          figureRef: "Sole diagrammatic drawing",
+          label: "C",
+          element: "Compressor",
           description:
-            "Reciprocating compressor compressing dry atmospheric air to 200 atmospheres.",
+            "C receives air at p′ and compresses it to p² before the stream enters cooler K.",
           x: 25,
-          y: 65,
+          y: 32,
         },
         {
           id: "ll-2",
-          figureRef: "Fig. 1",
-          label: "B",
-          element: "Counter-Current Regenerative Heat Exchanger",
+          figureRef: "Sole diagrammatic drawing",
+          label: "K",
+          element: "Refrigerator",
           description:
-            "Coaxial copper tube coil precooling incoming 200 bar air against cold return gas.",
-          x: 52,
-          y: 42,
+            "K cools the compressed air with a coil cooled by cold brine or liquid ammonia.",
+          x: 31,
+          y: 69,
         },
         {
           id: "ll-3",
-          figureRef: "Fig. 1",
-          label: "C",
-          element: "Joule-Thomson Throttle Needle Valve",
+          figureRef: "Sole diagrammatic drawing",
+          label: "G′",
+          element: "Counter-current apparatus",
           description:
-            "Expansion orifice dropping pressure from 200 to 20 bar, cooling gas to -193°C.",
-          x: 52,
-          y: 75,
+            "Two coiled pipes, one within the other, carry high- and low-pressure streams in opposite directions.",
+          x: 56,
+          y: 62,
         },
         {
           id: "ll-4",
-          figureRef: "Fig. 1",
-          label: "D",
-          element: "Vacuum-Jacketed Liquid Air Receiver",
-          description: "Silvered double-walled Dewar flask collecting condensed liquid air (80 K).",
-          x: 52,
-          y: 88,
+          figureRef: "Sole diagrammatic drawing",
+          label: "V′",
+          element: "Closed vessel",
+          description:
+            "V′ receives the regulated discharge from nozzle N and collects liquid air once the cold end reaches the required condition.",
+          x: 72,
+          y: 51,
         },
         {
           id: "ll-5",
-          figureRef: "Fig. 1",
-          label: "E",
-          element: "Cold Gas Return Conduit",
+          figureRef: "Sole diagrammatic drawing",
+          label: "V²",
+          element: "Evaporating vessel",
           description:
-            "Recirculation line carrying -190°C unliquefied vapor back up heat exchanger.",
-          x: 65,
-          y: 50,
+            "V², with coil S and apparatus G² and G³, provides the optional nitrogen and oxygen separation path described in the specification.",
+          x: 58,
+          y: 22,
         },
       ],
     },
   ],
   historicalContext: {
     problemStatement:
-      "In the late 19th century, scientists and industrialists desperately needed liquid oxygen and nitrogen for medical therapies, chemical fertilizers, blast-furnace metallurgy, and refrigeration. However, all existing attempts to liquefy air in commercial quantities failed because mechanical expansion engines (pistons in cylinders) seized up at $-100^\\circ\\text{C}$ when engine oils froze into solid stone. The world needed a method of extreme refrigeration that required no moving mechanical pistons at cryogenic temperatures.",
+      "Linde states that the earlier method of successive liquefaction and volatilization of progressively more volatile liquids had not proved practically capable of reaching the temperatures needed to liquefy atmospheric air. His stated task is both to produce very low temperatures and to separate the constituents of gaseous mixtures.",
     priorArtLimitations: [
-      "Raoul Pictet and Louis Cailletet produced only momentary droplets of liquid oxygen in 1877 by releasing pressurized tubes, impossible to operate as continuous commercial factories.",
-      "Mechanical expansion engines suffered from piston seizure and lubricant freezing below 170 K.",
-      "Chemical cascade refrigeration using ethylene and methane was extraordinarily complex, toxic, explosive, and expensive.",
+      "The specification identifies successive liquefaction and volatilization of liquids of gradually increasing volatility as the earlier route.",
+      "It names carbonic acid, nitrous oxid, and ethylene as examples of those earlier working fluids.",
+      "The source says that route had not proved capable of practical application at the temperature required to liquefy atmospheric air.",
     ],
     breakthroughInsight:
-      "Linde recognized the practical power of the **Joule-Thomson effect** (discovered theoretically by James Joule and William Thomson/Lord Kelvin in 1852). Although the temperature drop from expanding gas through a nozzle is small (less than half a degree per bar of pressure drop), Linde realized that if you **feed that cooled gas back into a counter-current heat exchanger**, the cooling accumulates exponentially, chilling the system all the way down to $-193^\\circ\\text{C}$ without a single moving mechanical part in the cold zone.",
-    patentWars: [
-      {
-        rivalName: "William Hampson and Georges Claude",
-        rivalClaim:
-          "British inventor William Hampson filed a similar throttling patent in 1895, and French engineer Georges Claude patented an expansion engine with petroleum-ether lubrication in 1902.",
-        conflictDetails:
-          "Linde, Hampson, and Claude engaged in intense patent battles in European and US courts over priority in air liquefaction and distillation.",
-        resolution:
-          "Linde was granted master patent US 727,650 for his comprehensive combination of continuous multi-stage compression, regeneration, and liquid air fractionation.",
-        legalOutcome:
-          "Linde and Claude (founder of Air Liquide) divided the European and global markets, creating the multi-billion-dollar global industrial gas duopoly.",
-      },
-    ],
+      "The specification turns the temperature decrease obtained by discharging high-pressure air through a valve into a regenerative loop. Low-pressure air returns beside the incoming high-pressure stream in G′, so the next pressure drop begins from a lower temperature. Once liquid air forms, the same heat-exchange logic can separate nitrogen and oxygen through V², S, G², and G³.",
+    patentWars: [],
     civilizationalImpact:
-      "In May 1895, Carl von Linde operated his first continuous liquefier in Munich, producing three liters of liquid air per hour. In 1902, Linde introduced fractional distillation of liquid air, enabling the first mass production of pure oxygen and pure nitrogen. This made the **Haber-Bosch process** (synthetic ammonia nitrogen fertilizer that feeds half of humanity today) commercially viable and laid the foundation for modern rocketry and cryogenics.",
-    funFact:
-      "Before inventing air liquefaction, Carl von Linde was famous worldwide for inventing the modern commercial ammonia refrigeration compressor in 1876, which was immediately purchased by the Spaten Brewery in Munich to brew cold lager beer year-round regardless of summer heat.",
-    aftermath:
-      "Carl von Linde was knighted as *Ritter von Linde* in 1897. His company grew into a worldwide enterprise. Linde lived to see his cryogenic process power space exploration and modern chemical manufacturing before dying in Munich in 1934 at age 92.",
-    sideNotes: [
-      "Liquid oxygen has a beautiful pale-cyan blue color and is strongly paramagnetic; if poured between the poles of a powerful horseshoe magnet, the liquid oxygen will suspend itself between the magnet poles in mid-air.",
-      "James Dewar invented the vacuum-insulated flask (the 'Thermos' or Dewar flask) in 1892 to store Linde's liquid gases, but failed to patent the domestic consumer application, allowing the Thermos GmbH company to make a fortune selling vacuum coffee thermoses.",
-    ],
+      "The primary source documents a linked industrial problem: generate progressively lower temperatures, liquefy a gas mixture, and use fractional evaporation and heat exchange to obtain nitrogen and oxygen streams. It therefore preserves an early engineering account of regenerative refrigeration coupled to gas-mixture separation, while leaving later commercial and scientific consequences to separately sourced historical research.",
   },
   tags: [
     "Carl Linde",
@@ -381,8 +329,6 @@ Fifth, this cycle is continued continuously until the temperature at the throttl
   ],
   stats: {
     totalClaims: 14,
-    independentClaims: 6,
-    patentWarYears: "1895–1906",
-    impactScore: 100,
+    independentClaims: 14,
   },
 };
