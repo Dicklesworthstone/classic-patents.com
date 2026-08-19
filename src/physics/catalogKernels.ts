@@ -179,7 +179,8 @@ export function stepEricssonPropeller(params: { shaftRpm?: number; bladePitchAng
     wakeSwirlCoeff: 0.08,
     wakeOpacity: Number(Math.min(0.95, 0.3 + (thrustKn / 30) * 0.65).toFixed(3)),
     bladeSvgRx: 10,
-    bladeSvgRy: 45,
+    forwardBladeSvgRy: 50,
+    aftBladeSvgRy: 45,
   };
 }
 
