@@ -43,10 +43,10 @@ const FIGURE_PREVIEWS = {
     height: 420,
   },
   "Fig. 5": {
-    src: "/patents/figures/us-1102653-goddard-rocket-fig-5.png",
+    src: "/patents/figures/us-1102653-goddard-rocket-fig-5-source-crop-v2.png",
     alt: "US 1,102,653, Fig. 5: vertical launching framework with ball bearings supporting the rocket before fuse ignition.",
-    width: 600,
-    height: 670,
+    width: 1300,
+    height: 1100,
   },
 } as const;
 

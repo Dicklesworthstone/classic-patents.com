@@ -8,8 +8,9 @@ import {
   zeppelinAirshipParallelReadings,
 } from "./zeppelinAirshipEdition";
 
-test("US 621,195 presents a continuous source reading instead of scan-sheet cards", () => {
-  expect(zeppelinAirshipPatent.archivalEdition).toBe(zeppelinAirshipArchivalEdition);
+test("US 621,195 keeps its incomplete source face withheld until the missing cited figures are sourced", () => {
+  expect(zeppelinAirshipPatent.archivalEdition).toBeUndefined();
+  expect(zeppelinAirshipPatent.originalTextAsset).toBeUndefined();
   expect(validateCuratedSpecificationEdition(zeppelinAirshipArchivalEdition)).toEqual({
     valid: true,
     errors: [],

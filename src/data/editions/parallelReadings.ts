@@ -17,6 +17,7 @@ import { eastmanKodakParallelReadings } from "./eastmanKodakEdition";
 import { edisonLightbulbParallelReadings } from "./edisonLightbulbEdition";
 import { edisonPhonographParallelReadings } from "./edisonPhonographEdition";
 import { einsteinRefrigeratorParallelReadings } from "./einsteinRefrigeratorEdition";
+import { engelbartMouseParallelReadings } from "./engelbartMouseEdition";
 import { ericssonPropellerParallelReadings } from "./ericssonPropellerEdition";
 import { farnsworthTvParallelReadings } from "./farnsworthTvEdition";
 import { gatlingGunParallelReadings } from "./gatlingGunEdition";
@@ -50,7 +51,6 @@ import { DAIMLER_MARINE_ENGINE_PARALLEL_READINGS } from "./us-361931-daimler-eng
 import { westinghouseAirBrakeParallelReadings } from "./westinghouseAirBrakeEdition";
 import { whitneyCottonGinParallelReadings } from "./whitneyCottonGinEdition";
 import { wozniakAppleParallelReadings } from "./wozniakAppleEdition";
-import { zeppelinAirshipParallelReadings } from "./zeppelinAirshipEdition";
 
 export type ArchivalParallelReading = readonly string[];
 
@@ -91,7 +91,6 @@ export const ARCHIVAL_PARALLEL_READINGS: Readonly<
   "us-593138-tesla-coil": teslaCoil593138ParallelReadings,
   "us-608969-parsons-turbine": parsonsTurbineParallelReadings,
   "us-613809-tesla-teleautomaton": teslaTeleautomatonParallelReadings,
-  "us-621195-zeppelin-airship": zeppelinAirshipParallelReadings,
   "us-727650-linde-air-liquefaction": lindeAirLiquefactionParallelReadings,
   "us-808897-carrier-air-conditioner": carrierAirConditionerParallelReadings,
   "us-1102653-goddard-rocket": goddardRocketParallelReadings,
@@ -101,6 +100,7 @@ export const ARCHIVAL_PARALLEL_READINGS: Readonly<
   "us-2495429-spencer-microwave": spencerMicrowaveParallelReadings,
   "us-2524035-bardeen-transistor": bardeenTransistorParallelReadings,
   "us-2981877-noyce-ic": noyceIcParallelReadings,
+  "us-3541541-engelbart-mouse": engelbartMouseParallelReadings,
   "us-4136359-wozniak-apple": wozniakAppleParallelReadings,
 
   "us-821393-wright-flyer": {

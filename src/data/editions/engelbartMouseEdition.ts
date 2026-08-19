@@ -5,31 +5,38 @@ const p = (value: string | CuratedSpecificationInlines) => ({
   kind: "paragraph" as const,
   inlines: typeof value === "string" ? [text(value)] : value,
 });
-const mouseFigureDims: Record<number, { width: number; height: number }> = {
-  1: { width: 1200, height: 860 },
-  2: { width: 800, height: 570 },
-  3: { width: 800, height: 570 },
-  4: { width: 1200, height: 630 },
-  5: { width: 900, height: 650 },
-  6: { width: 1200, height: 820 },
-  7: { width: 1300, height: 1450 },
+const mouseFigureAssets: Readonly<
+  Record<number, { width: number; height: number; version: "v1" | "v2" | "v4" }>
+> = {
+  1: { width: 1550, height: 850, version: "v2" },
+  2: { width: 1900, height: 640, version: "v4" },
+  3: { width: 2000, height: 1050, version: "v2" },
+  4: { width: 1550, height: 650, version: "v2" },
+  5: { width: 1550, height: 700, version: "v2" },
+  6: { width: 1550, height: 980, version: "v2" },
+  7: { width: 1300, height: 1450, version: "v1" },
 };
 
-const figure = (value: string, figureNumber: number) => ({
-  kind: "reference" as const,
-  text: value,
-  href: `#figure-${figureNumber}`,
-  referenceType: "figure" as const,
-  label: `Source drawing ${value}`,
-  figurePreviews: [
-    {
-      src: `/patents/figures/us-3541541-engelbart-mouse/fig-${figureNumber}-source-crop-v1.png`,
-      alt: `US 3,541,541 source drawing ${value}`,
-      width: mouseFigureDims[figureNumber]?.width ?? 1200,
-      height: mouseFigureDims[figureNumber]?.height ?? 900,
-    },
-  ],
-});
+const figure = (value: string, figureNumber: number) => {
+  const asset = mouseFigureAssets[figureNumber];
+  if (!asset) throw new Error(`US 3,541,541 is missing Figure ${figureNumber} crop metadata.`);
+
+  return {
+    kind: "reference" as const,
+    text: value,
+    href: `#figure-${figureNumber}`,
+    referenceType: "figure" as const,
+    label: `Source drawing ${value}`,
+    figurePreviews: [
+      {
+        src: `/patents/figures/us-3541541-engelbart-mouse/fig-${figureNumber}-source-crop-${asset.version}.png`,
+        alt: `US 3,541,541 source drawing ${value}`,
+        width: asset.width,
+        height: asset.height,
+      },
+    ],
+  };
+};
 const term = (value: string, definition: string) => ({
   kind: "term" as const,
   text: value,
@@ -46,7 +53,7 @@ export const engelbartMouseArchivalEdition: CuratedSpecificationEdition = {
   kind: "manual-react-edition",
   sourcePdfSha256: "2a01a32bc3d4c3eec1745dd77fcb92f1404e02844c640c9c10a451ed3b5791e0",
   preparedBy: "Classic Patents editorial agent (gpt-5.6)",
-  preparedAt: "2026-08-18",
+  preparedAt: "2026-08-19",
   completeFacsimileReviewed: true,
   blocks: [
     {
@@ -67,13 +74,10 @@ export const engelbartMouseArchivalEdition: CuratedSpecificationEdition = {
       title: "Display system and two-wheel control housing",
       description: [
         figure("FIG. 1", 1),
-        text(
-          " pictures the CRT display system, typewriter, computer cabinet, cable, and control; ",
-        ),
+        text(", "),
         figure("FIG. 2", 2),
-        text(" is the sectional elevation; and "),
+        text(", "),
         figure("FIG. 3", 3),
-        text(" is the sectional plan."),
       ],
     },
     {
@@ -82,28 +86,29 @@ export const engelbartMouseArchivalEdition: CuratedSpecificationEdition = {
       title: "Analog and incremental encoder circuits",
       description: [
         figure("FIG. 4", 4),
-        text(" gives the potentiometer circuit; "),
+        text(", "),
         figure("FIG. 5", 5),
-        text(" gives the shaft encoder; and "),
+        text(", "),
         figure("FIG. 6", 6),
-        text(" gives an incremental encoder and counter circuit."),
       ],
     },
     {
       kind: "figure-sheet",
       figureLabel: "SHEET 3 OF 3",
       title: "Second incremental encoder circuit",
-      description: [
-        figure("FIG. 7", 7),
-        text(
-          " gives the Schmitt-trigger, resolver, differentiator, chopper, and up-down-counter circuit.",
-        ),
-      ],
+      description: [figure("FIG. 7", 7)],
     },
     { kind: "heading", level: 2, text: "ABSTRACT OF THE DISCLOSURE" },
-    p(
-      "An X-Y position indicator control for movement by the hand over any surface to move a cursor over the display on a cathode ray tube, the indicator control generating signals indicating its position to cause a cursor to be displayed on the tube at the corresponding position. The indicator control mechanism contains X and Y position wheels mounted perpendicular to each other, which rotate according to the X and Y movements of the mechanism, and which operate rheostats to send signals along a wire to a computer which controls the CRT display.",
-    ),
+    p([
+      text(
+        "An X-Y position indicator control for movement by the hand over any surface to move a cursor over the display on a cathode ray tube, the indicator control generating signals indicating its position to cause a cursor to be displayed on the tube at the corresponding position. The indicator control mechanism contains X and Y position wheels mounted perpendicular to each other, which rotate according to the X and Y movements of the mechanism, and which operate ",
+      ),
+      term(
+        "rheostats",
+        "Variable resistive elements. In the source's analog embodiment, wheel motion changes their electrical state so the computer can infer an X or Y coordinate from the resulting signal.",
+      ),
+      text(" to send signals along a wire to a computer which controls the CRT display."),
+    ]),
     { kind: "heading", level: 2, text: "BACKGROUND OF THE INVENTION" },
     p(
       "This invention relates to visual display systems and, more particularly, to devices for altering the display at selected locations.",
@@ -136,7 +141,26 @@ export const engelbartMouseArchivalEdition: CuratedSpecificationEdition = {
         "A rotary transducer that reports angular position as a set of digital output lines, rather than as the continuously variable resistance of the patent's potentiometer embodiment.",
       ),
       text(
-        " which produces a digital output corresponding to the angular position of the wheel. While such an arrangement provides a direct digital output, instead of an analog output which must be digitally converted to be used by the computer control in the CRT display, the output from a shaft encoder necessitates a large cable. Still another means for indicating position of a wheel is an incremental encoder and counter. An incremental encoder generates an up indicating pulse each time the shaft moves by a certain increment of rotation in one direction and generates a down indicating pulse when the shaft moves in the other direction. These pulses are transmitted to an up-down counter, which provides a digital output equal to the sums of the up inputs minus the sum of the down inputs.",
+        " which produces a digital output corresponding to the angular position of the wheel. While such an arrangement provides a direct digital output, instead of an analog output which must be digitally converted to be used by the computer control in the CRT display, the output from a shaft encoder necessitates a large cable. Still another means for indicating position of a wheel is an ",
+      ),
+      term(
+        "incremental encoder",
+        "A rotary transducer that reports each small angular step as a directional pulse instead of reporting an absolute angle. The companion counter retains the signed total of those steps.",
+      ),
+      text(" and counter. An "),
+      term(
+        "incremental encoder",
+        "Here the source defines the device operationally: it emits an up pulse for a chosen angular increment in one direction and a down pulse for the corresponding reverse increment.",
+      ),
+      text(
+        " generates an up indicating pulse each time the shaft moves by a certain increment of rotation in one direction and generates a down indicating pulse when the shaft moves in the other direction. These pulses are transmitted to an ",
+      ),
+      term(
+        "up-down counter",
+        "A digital counter with separate increment and decrement inputs. Its stored count is the algebraic total of forward and reverse encoder pulses, so it represents a signed position.",
+      ),
+      text(
+        ", which provides a digital output equal to the sums of the up inputs minus the sum of the down inputs.",
       ),
     ]),
     { kind: "heading", level: 2, text: "BRIEF DESCRIPTION OF THE DRAWINGS" },
@@ -192,9 +216,18 @@ export const engelbartMouseArchivalEdition: CuratedSpecificationEdition = {
     p(
       "Each arm 32 and 36 of the bracket 30 holds a potentiometer, the arm 32 holding an X position potentiometer 38 and the arm 36 holding a Y position potentiometer 40. An X position wheel 42 is fixed to a shaft 44 of the potentiometer 38, while a Y position wheel 46 is fixed to a shaft 48 of the Y position potentiometer 40. Each of the position wheels 42 and 46 project through slots 50 and 52, respectively, formed in the bottom wall 28. A ball bearing support 54 fixed to the underside of the bottom wall 28 serves as a third point of support, in addition to the two wheels 42 and 46, to stably support the indicator control on the cabinet 17 or other surface.",
     ),
-    p(
-      "When the position indicator control is moved over the cabinet 17, or any other surface, the X and Y position wheels rotate. Inasmuch as the X and Y position wheels 42 and 46 are mounted on axes that are perpendicular to each other, the X position wheel 42 rotates by an amount equal to the movement in one direction which may be defined as the X direction, while the Y position wheel 46 rotates an amount equal to the movement in a perpendicular or Y direction. As the wheels move, the shafts of their respective potentiometers rotate, and the resistance of the potentiometers enable continuous measurement of the resistance, and therefore of the X and Y positions of the indicator control 16. It may be noted that in most cases multiturn potentiometers are used to enable monitoring of large movements of the indicator control, or conversely, to enable fine control.",
-    ),
+    p([
+      text(
+        "When the position indicator control is moved over the cabinet 17, or any other surface, the X and Y position wheels rotate. Inasmuch as the X and Y position wheels 42 and 46 are mounted on axes that are perpendicular to each other, the X position wheel 42 rotates by an amount equal to the movement in one direction which may be defined as the X direction, while the Y position wheel 46 rotates an amount equal to the movement in a perpendicular or Y direction. As the wheels move, the shafts of their respective potentiometers rotate, and the resistance of the potentiometers enable continuous measurement of the resistance, and therefore of the X and Y positions of the indicator control 16. It may be noted that in most cases ",
+      ),
+      term(
+        "multiturn potentiometers",
+        "Potentiometers designed for several shaft revolutions across their full resistance range. That lets a wheel traverse more distance before the signal repeats, while still allowing fine coordinate control.",
+      ),
+      text(
+        " are used to enable monitoring of large movements of the indicator control, or conversely, to enable fine control.",
+      ),
+    ]),
     p(
       "The position indicator control may be utilized by first placing it on the cabinet 17 and moving it up or down and back or forth to cause corresponding movements in the apparent position of the cursor 20, until the cursor lies in a desired position. The indicator control remains stationary so long as it is left in place; therefore the cursor 20 remains fixed without any effort of the human operator. If it is desired to move the cursor 20, the position indicator control 16 is moved in directions corresponding to the desired movements of the cursor. The resistances of the rheostats, sensed through the conductors contained in the wire 18, continually monitor the position of the indicator control and cause movement of the line cursor 20 accordingly.",
     ),
@@ -293,9 +326,23 @@ export const engelbartMouseArchivalEdition: CuratedSpecificationEdition = {
         ", a disc 140 whose axis is connected to a position wheel such as the X position wheel is provided which has a track 142 having spaced conductive segments. A control contact 146 and stepping contact 148 are disposed over the track to make contact with the conductive segments thereof. The contacts are arranged for contacting the segments at angular positions of the disc which overlap. A lead (not shown) connected to the disc 140 conducts currents to the segments of the two tracks.",
       ),
     ]),
-    p(
-      "The contact 146 is connected to a Schmidt trigger circuit 150 which provides currents to two of four AND gates 152, 154, 156 and 158, at a time. The other contact 148 carries current to a resolver 160 of the Schmidt trigger, on-off type, which provides signals with sharp, standard on-off wavefronts. The output of the resolver is delivered to a differentiator 162 which delivers sharp pulses to an inverter chopper 164 and a normal chopper 166. The outputs of each chopper are delivered to two of the AND gates. The outputs of two of the AND gates deliver pulses to the up input port 168 of an up/down counter 170 while the outputs of two other AND gates are delivered to the down input port 172 of the counter. The counter 170 continuously delivers digital output signals defining the position of disc 140.",
-    ),
+    p([
+      text("The contact 146 is connected to a "),
+      term(
+        "Schmidt trigger",
+        "The patent's spelling for a Schmitt-trigger-like switching circuit: a regenerative threshold stage that turns an uncertain changing contact signal into a clean on or off logic level.",
+      ),
+      text(
+        " circuit 150 which provides currents to two of four AND gates 152, 154, 156 and 158, at a time. The other contact 148 carries current to a ",
+      ),
+      term(
+        "resolver",
+        "In this circuit, the resolver processes the Schmitt trigger's on-off output into a sharp standardized transition before it is differentiated and sent to the two chopper paths.",
+      ),
+      text(
+        " 160 of the Schmidt trigger, on-off type, which provides signals with sharp, standard on-off wavefronts. The output of the resolver is delivered to a differentiator 162 which delivers sharp pulses to an inverter chopper 164 and a normal chopper 166. The outputs of each chopper are delivered to two of the AND gates. The outputs of two of the AND gates deliver pulses to the up input port 168 of an up/down counter 170 while the outputs of two other AND gates are delivered to the down input port 172 of the counter. The counter 170 continuously delivers digital output signals defining the position of disc 140.",
+      ),
+    ]),
     p(
       "While the position indicator control can be used merely to cause a change in cursor position, and other means such as a typewriter can be used for adding to the pattern, the indicator control can be used in other ways. For example, the position indicator control can be placed on a drawing to be displayed on the CRT, and then the indicator control can be moved to trace the lines of the drawing with the computer causing corresponding lines to be displayed on the CRT. For such uses, the wheels and electrical signal generators of the indicator control should cause cursor movements which very closely correspond to indicator control housing movements.",
     ),
@@ -382,6 +429,27 @@ export const engelbartMouseArchivalEdition: CuratedSpecificationEdition = {
         text(
           "8. A display system for presenting an alterable visual display comprising: cathode ray tube means for providing a visual display; computer means connected to said cathode ray tube means for controlling inputs to said cathode ray tube means to define the visual display thereof, said computer means including means for generating signals defining a cursor for display at variable positions on said cathode ray tube means and means for altering inputs to said tube means to cause a change in the display about the position of said cursor; a position indicator control connected to said computer means, said position indicator control having a housing which contains transducer means for delivering signals for causing movement of said cursor on said cathode ray tube means in response to movement of said housing over a surface; and at least one cathode ray tube display control switch disposed on said position indicator control.",
         ),
+      ],
+    },
+    { kind: "heading", level: 3, text: "References Cited" },
+    {
+      kind: "table",
+      caption: "UNITED STATES PATENTS",
+      headers: [[text("Patent")], [text("Date")], [text("Name and classification")]],
+      rows: [
+        [[text("3,304,434")], [text("2/1967")], [text("Koster — 33-141.5 X")]],
+        [[text("3,346,853")], [text("10/1967")], [text("Koster et al. — 340-324 X")]],
+        [[text("3,355,730")], [text("11/1967")], [text("Neasham — 178-18 X")]],
+      ],
+    },
+    {
+      kind: "table",
+      caption: "Examination and cross-reference classification",
+      headers: [[text("Role")], [text("Printed entry")]],
+      rows: [
+        [[text("Primary Examiner")], [text("THOMAS B. HABECKER")]],
+        [[text("Assistant Examiner")], [text("D. L. TRAFTON")]],
+        [[text("U.S. Cl. X.R.")], [text("33-141.5; 178-18; 345-177, 204, 212, 354")]],
       ],
     },
   ],

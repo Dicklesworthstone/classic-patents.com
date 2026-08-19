@@ -17,8 +17,8 @@ const term = (value: string, definition: string): CuratedSpecificationInline => 
   definition,
 });
 
-const crop = (number: number, width: number, height: number) => ({
-  src: `/patents/figures/us-2981877-noyce-ic/fig-${number}-source-crop-v1.png`,
+const crop = (number: number, width: number, height: number, version: "v1" | "v2" = "v1") => ({
+  src: `/patents/figures/us-2981877-noyce-ic/fig-${number}-source-crop-${version}.png`,
   alt: `Source-facsimile crop of Fig. ${number} from US 2,981,877.`,
   width,
   height,
@@ -28,7 +28,7 @@ const FIGURES = {
   "Fig. 1": crop(1, 820, 760),
   "Fig. 2": crop(2, 880, 470),
   "Fig. 3": crop(3, 920, 620),
-  "Fig. 4": crop(4, 920, 520),
+  "Fig. 4": crop(4, 1800, 650, "v2"),
   "Fig. 5": crop(5, 920, 440),
   "Fig. 6": crop(6, 780, 600),
   "Fig. 7": crop(7, 780, 510),

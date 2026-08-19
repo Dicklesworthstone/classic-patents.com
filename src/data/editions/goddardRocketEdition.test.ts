@@ -37,11 +37,35 @@ describe("goddardRocketArchivalEdition", () => {
         expect(inline.figurePreviews?.length).toBeGreaterThan(0);
         for (const preview of inline.figurePreviews ?? []) {
           expect(preview.src).toMatch(
-            /^\/patents\/figures\/us-1102653-goddard-rocket-fig-[1-5]\.png$/,
+            /^\/patents\/figures\/us-1102653-goddard-rocket-fig-[1-4]\.png$|^\/patents\/figures\/us-1102653-goddard-rocket-fig-5-source-crop-v2\.png$/,
           );
         }
       }
     }
+  });
+
+  test("maps the printed Fig. 5 citation to the source crop that visibly contains Fig. 5", () => {
+    const figureFive = goddardRocketArchivalEdition.blocks
+      .filter((block) => block.kind === "paragraph")
+      .flatMap((block) => block.inlines)
+      .find(
+        (inline) =>
+          inline.kind === "reference" &&
+          inline.referenceType === "figure" &&
+          inline.text === "Fig. 5",
+      );
+
+    if (figureFive?.kind !== "reference") {
+      throw new Error("Goddard manual edition is missing its authored Fig. 5 reference.");
+    }
+
+    expect(figureFive.figurePreviews).toEqual([
+      expect.objectContaining({
+        src: "/patents/figures/us-1102653-goddard-rocket-fig-5-source-crop-v2.png",
+        width: 1300,
+        height: 1100,
+      }),
+    ]);
   });
 
   test("turns every source figure citation into an authored preview node", () => {

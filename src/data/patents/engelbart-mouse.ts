@@ -30,6 +30,15 @@ export const engelbartMousePatent: Patent = {
   googlePatentsUrl: "https://patents.google.com/patent/US3541541A/en",
   usptoClassification:
     "G06F 3/033 (Digital computers; Input arrangements using cursor controllers)",
+  originalTextAsset: {
+    url: "/patents/transcripts/us-3541541-engelbart-mouse-reviewed.txt",
+    pageCount: 7,
+    kind: "reviewed-transcription",
+    reviewedBy: "Classic Patents editorial agent (gpt-5.6)",
+    reviewedAt: "2026-08-19",
+    sourcePdfSha256: "2a01a32bc3d4c3eec1745dd77fcb92f1404e02844c640c9c10a451ed3b5791e0",
+  },
+  archivalEdition: engelbartMouseArchivalEdition,
   originalText: `UNITED STATES PATENT OFFICE
 3,541,541
 Patented Nov. 17, 1970
@@ -43,9 +52,7 @@ U.S. Cl. 340-324
 
 ABSTRACT OF THE DISCLOSURE
 
-An X-Y position indicator control for movement by the hand over any surface to move a cursor over the display on a cathode ray tube, the indicator control generating signals indicating its position to cause a cursor to be displayed on the tube at the corresponding position. The indicator control mechanism contains X and Y position wheels mounted perpendicular to each other, which rotate according to the X and Y movements of the mechanism, and which operate rheostats to send signals along a wire to a computer which controls the CRT display.
-
-[Curated source excerpt only. The complete manually prepared source face remains withheld pending final facsimile and transcription acceptance.]`,
+An X-Y position indicator control for movement by the hand over any surface to move a cursor over the display on a cathode ray tube, the indicator control generating signals indicating its position to cause a cursor to be displayed on the tube at the corresponding position. The indicator control mechanism contains X and Y position wheels mounted perpendicular to each other, which rotate according to the X and Y movements of the mechanism, and which operate rheostats to send signals along a wire to a computer which controls the CRT display.`,
   plainEnglishExplanation: {
     overview:
       "The grant addresses the problem of marking a location on a cathode-ray-tube display without holding a light-pencil detector against the tube. Its position indicator moves on another surface. The operator moves a housing; the two wheels report its position to a computer, which places a cursor on the CRT. The document calls this apparatus a position indicator control, not a mouse.",
@@ -218,35 +225,37 @@ An X-Y position indicator control for movement by the hand over any surface to m
       figureNumber: "Fig. 1",
       title: "Display System and Position Indicator",
       caption:
-        "Pictorial illustration of the CRT display, computer, typewriter input, position indicator control, wire, and cursor described in the grant.",
+        "Pictorial illustration of CRT display 10 and face 12, computer system 14 with typewriter input 15, position indicator control 16, wire 18, and cursor 20.",
       svgType: "engelbart-mouse",
       callouts: [
         {
           id: "em-crt",
           figureRef: "Fig. 1",
-          label: "12",
+          label: "10",
           element: "Cathode-ray tube display",
-          description: "CRT display presenting text and graphics to the operator.",
-          x: 50,
-          y: 30,
+          description: "The CRT display 10 creates visual patterns on its face 12.",
+          x: 62,
+          y: 27,
         },
         {
           id: "em-mouse",
           figureRef: "Fig. 1",
-          label: "10",
+          label: "16",
           element: "X-Y position indicator control",
-          description: "Handheld wooden housing moved across table surface.",
-          x: 75,
-          y: 70,
+          description:
+            "The source calls 16 the X-Y position indicator control; it is moved over a supporting surface.",
+          x: 55,
+          y: 58,
         },
         {
           id: "em-cursor",
           figureRef: "Fig. 1",
-          label: "14",
-          element: "Display cursor dot / mark",
-          description: "Movable cursor tracking position control on CRT screen.",
-          x: 52,
-          y: 35,
+          label: "20",
+          element: "Line or other cursor",
+          description:
+            "Computer 14 causes cursor 20 to move on the CRT face according to the control's reported position.",
+          x: 42,
+          y: 34,
         },
       ],
     },
@@ -260,27 +269,30 @@ An X-Y position indicator control for movement by the hand over any surface to m
         {
           id: "em-wheel-x",
           figureRef: "Fig. 2",
-          label: "20",
+          label: "42",
           element: "First wheel (X-axis)",
-          description: "Sharp-edged wheel rolling in contact with table surface.",
+          description:
+            "X position wheel 42 is fixed to the shaft 44 of potentiometer 38 and projects through slot 50.",
           x: 45,
           y: 65,
         },
         {
           id: "em-switch",
           figureRef: "Fig. 2",
-          label: "30",
+          label: "34",
           element: "Display-control pushbutton switch",
-          description: "Switch operated by user's finger to trigger display alterations.",
+          description:
+            "Pushbutton switches 34 close circuits that cause changes in the cathode-ray-tube display.",
           x: 60,
           y: 30,
         },
         {
           id: "em-housing",
           figureRef: "Fig. 2",
-          label: "16",
-          element: "Carved wooden housing",
-          description: "Ergonomic wooden block enclosing wheels, shafts, and potentiometers.",
+          label: "26",
+          element: "Housing",
+          description:
+            "Housing 26 has bottom wall 28 and contains the bracket, switches, wheels, shafts, and potentiometers described in the specification.",
           x: 50,
           y: 45,
         },
@@ -295,18 +307,20 @@ An X-Y position indicator control for movement by the hand over any surface to m
         {
           id: "em-wheel-y",
           figureRef: "Fig. 3",
-          label: "22",
+          label: "46",
           element: "Second perpendicular wheel (Y-axis)",
-          description: "Wheel aligned at 90 degrees to resolve perpendicular motion.",
+          description:
+            "Y position wheel 46 is fixed to shaft 48 of the Y position potentiometer 40 and projects through slot 52.",
           x: 65,
           y: 55,
         },
         {
           id: "em-pot",
           figureRef: "Fig. 3",
-          label: "24, 26",
-          element: "Rotary potentiometers",
-          description: "Variable resistors transducing wheel angular displacement to voltage.",
+          label: "38, 40",
+          element: "X- and Y-position potentiometers",
+          description:
+            "Potentiometers 38 and 40 are carried on the bracket arms and receive the wheel-shaft rotations described for the two coordinate directions.",
           x: 40,
           y: 45,
         },
@@ -321,9 +335,10 @@ An X-Y position indicator control for movement by the hand over any surface to m
         {
           id: "em-pot-circ",
           figureRef: "Fig. 4",
-          label: "40",
-          element: "Bridge readout circuit",
-          description: "Analog potentiometer readout circuit delivering DC coordinates.",
+          label: "38A, 40A",
+          element: "X- and Y-position potentiometer resistances",
+          description:
+            "The circuit labels the two potentiometer resistances 38A and 40A; their wipers connect through leads to the X and Y terminals.",
           x: 50,
           y: 50,
         },
@@ -338,9 +353,10 @@ An X-Y position indicator control for movement by the hand over any surface to m
         {
           id: "em-disc-enc",
           figureRef: "Fig. 5",
-          label: "50",
-          element: "Absolute shaft encoder disc",
-          description: "Coded optical/contact disc generating digital position bytes.",
+          label: "80",
+          element: "Encoding disc",
+          description:
+            "Disc 80 has rings 82, 84, 86, and 88 and sixteen numbered sectors; stationary contacts on wires 92 through 98 provide the stated readouts.",
           x: 50,
           y: 50,
         },
@@ -355,9 +371,10 @@ An X-Y position indicator control for movement by the hand over any surface to m
         {
           id: "em-quad-enc",
           figureRef: "Fig. 6",
-          label: "60",
-          element: "Incremental quadrature encoder",
-          description: "Incremental pulse generator feeding up/down coordinate counter.",
+          label: "100",
+          element: "Incremental-encoder disc",
+          description:
+            "Disc 100 has three contact rows 102, 104, and 106. Its sensor signals feed the logic and up/down counter drawn in the source.",
           x: 50,
           y: 50,
         },
@@ -372,9 +389,10 @@ An X-Y position indicator control for movement by the hand over any surface to m
         {
           id: "em-clock-enc",
           figureRef: "Fig. 7",
-          label: "70",
-          element: "Gated clock encoder",
-          description: "High-frequency clock gating circuit for incremental motion detection.",
+          label: "140",
+          element: "Incremental-encoder disc",
+          description:
+            "Disc 140 has track 142 with spaced conductive segments; contacts 146 and 148 feed the Schmidt-trigger, resolver, differentiator, chopper, and counter circuit.",
           x: 50,
           y: 50,
         },

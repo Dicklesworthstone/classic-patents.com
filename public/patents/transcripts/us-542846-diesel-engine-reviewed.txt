@@ -1,31 +1,83 @@
 --- REVIEWED TRANSCRIPTION PAGE 1 OF 10 ---
-FIGURES 1 TO 3. Theoretical cycle diagrams. Fig. 1 shows the ordinary gas-engine cycle; Fig. 2 and Fig. 3 show Diesel's theoretical cycles.
+(No Model.)
+5 Sheets-Sheet 1.
+R. DIESEL.
+METHOD OF AND APPARATUS FOR CONVERTING HEAT INTO WORK.
+No. 542,846. Patented July 16, 1895.
+
+Fig. 1.
+Fig. 2.
+Fig. 3.
+
+WITNESSES: [two handwritten signatures on the drawing sheet]
+INVENTOR: Rudolf Diesel.
+BY [handwritten attorney signature]
+ATTORNEY.
 
 --- REVIEWED TRANSCRIPTION PAGE 2 OF 10 ---
-FIGURES 4 TO 6. Single-acting coal-fuel engine and admission valve. Fig. 4 is the sectional single-acting engine, Fig. 5 its detail, and Fig. 6 the admission-plug sections.
+(No Model.)
+5 Sheets-Sheet 2.
+R. DIESEL.
+METHOD OF AND APPARATUS FOR CONVERTING HEAT INTO WORK.
+No. 542,846. Patented July 16, 1895.
+
+Fig. 4.
+Fig. 5.
+Fig. 6.
+
+WITNESSES: A. Faber du Faur. J. J. Malle.
+INVENTOR: Rudolf Diesel.
+BY [handwritten attorney signature]
+ATTORNEY.
 
 --- REVIEWED TRANSCRIPTION PAGE 3 OF 10 ---
-FIGURE 7. Modified two-cylinder engine. Fig. 7 shows the two combustion cylinders, central air-pump cylinder, and reservoir.
+(No Model.)
+5 Sheets-Sheet 3.
+R. DIESEL.
+METHOD OF AND APPARATUS FOR CONVERTING HEAT INTO WORK.
+No. 542,846. Patented July 16, 1895.
+
+Fig. 7.
+
+WITNESSES: A. Faber du Faur. J. J. Malle.
+INVENTOR: Rudolf Diesel.
+BY [handwritten attorney signature]
+ATTORNEY.
 
 --- REVIEWED TRANSCRIPTION PAGE 4 OF 10 ---
-FIGURES 8 TO 10. Liquid-fuel construction. Fig. 8 and Fig. 9 are sectional elevations; Fig. 10 is the sectional plan and fuel branch-pipe detail.
+(No Model.)
+5 Sheets-Sheet 4.
+R. DIESEL.
+METHOD OF AND APPARATUS FOR CONVERTING HEAT INTO WORK.
+No. 542,846. Patented July 16, 1895.
+
+Fig. 8.
+Fig. 10.
+
+WITNESSES: A. Faber du Faur. J. J. Malle.
+INVENTOR: Rudolf Diesel.
+BY [handwritten attorney signature]
+ATTORNEY.
 
 --- REVIEWED TRANSCRIPTION PAGE 5 OF 10 ---
-FIGURES 8 TO 10. Liquid-fuel construction. Fig. 8 and Fig. 9 are sectional elevations; Fig. 10 is the sectional plan and fuel branch-pipe detail.
+(No Model.)
+5 Sheets-Sheet 5.
+R. DIESEL.
+METHOD OF AND APPARATUS FOR CONVERTING HEAT INTO WORK.
+No. 542,846. Patented July 16, 1895.
+
+Fig. 9.
+
+WITNESSES: A. Faber du Faur. J. J. Malle.
+INVENTOR: Rudolf Diesel.
+BY [handwritten attorney signature]
+ATTORNEY.
 
 --- REVIEWED TRANSCRIPTION PAGE 6 OF 10 ---
 UNITED STATES PATENT OFFICE.
 RUDOLF DIESEL, OF BERLIN, GERMANY.
 METHOD OF AND APPARATUS FOR CONVERTING HEAT INTO WORK.
 Specification forming part of Letters Patent No. 542,846, dated July 16, 1895. Application filed August 26, 1892, serial No. 444,246. (No model.) Patented in Germany February 28, 1892, No. 67,207; in Switzerland April 2, 1892, No. 6,321; and in England April 14, 1892, No. 7,241.
-
-FIGURES 1 TO 3. Theoretical cycle diagrams. Fig. 1 shows the ordinary gas-engine cycle; Fig. 2 and Fig. 3 show Diesel's theoretical cycles.
-
-FIGURES 4 TO 6. Single-acting coal-fuel engine and admission valve. Fig. 4 is the sectional single-acting engine, Fig. 5 its detail, and Fig. 6 the admission-plug sections.
-
-FIGURE 7. Modified two-cylinder engine. Fig. 7 shows the two combustion cylinders, central air-pump cylinder, and reservoir.
-
-FIGURES 8 TO 10. Liquid-fuel construction. Fig. 8 and Fig. 9 are sectional elevations; Fig. 10 is the sectional plan and fuel branch-pipe detail.
 
 To all whom it may concern:
 
@@ -60,9 +112,11 @@ In Fig. 3 I have shown a diagram obtained when the previously-described method i
 
 My method of working the fuels may be carried out with any kind of fuel, whether solid, liquid, or gaseous. In the case of liquids, gases, or vapors a jet of the fluid under pressure is dispersed in as finely-divided state as possible into the compressed air during the period of admission. Solid fuels may be introduced in a pulverulent or comminuted condition. Such solid fuels which agglomerate in heating or are unsuitable for other reasons are previously converted into gases. Liquid fuels may be previously converted into vapor and introduced in this form. Substances—such, for instance, as anthracite—which are not readily inflammable may be mixed with readily-inflammable material, such as petroleum or the like. The method of working the fuel above described may be carried out in any suitable engine, either single or double acting, and in engines containing one or more cylinders.
 
-I will now proceed to describe some particular forms especially constructed for carrying out said method. Reference being had at present to Figs. 4 and 5 of the drawings, the letter C designates a single-acting cylinder especially constructed for the use of coal in a finely-divided condition. P is a plunger constructed for high pressures. b is the connecting-rod; c, the crank; d, the shaft, and a the guides for the plunger. E is the governor whose shaft g is connected to the shaft d by suitable gears at f. At the upper end of the cylinder is located a hopper B provided with a charging-opening m, Fig. 5, and placed in communication with the cylinder. A disk-valve k closes the discharge end of the hopper and below the same is located a turning valve or plug D by which the fuel is fed to the cylinder.
+I will now proceed to describe some particular forms especially constructed for carrying out said method. Reference being had at present to Figs. 4 and 5 of the drawings, the letter C designates a single-acting cylinder especially constructed for the use of coal in a finely-divided condition. P is a plunger constructed for high pressures. b is the connecting-rod; c, the crank; d, the shaft, and a the guides for the plunger.
 
 --- REVIEWED TRANSCRIPTION PAGE 8 OF 10 ---
+E is the governor whose shaft g is connected to the shaft d by suitable gears at f. At the upper end of the cylinder is located a hopper B provided with a charging-opening m, Fig. 5, and placed in communication with the cylinder. A disk-valve k closes the discharge end of the hopper and below the same is located a turning valve or plug D by which the fuel is fed to the cylinder.
+
 A is the air-admission valve arranged in a passage entering the cylinder laterally. The valves are in this instance operated from a horizontal shaft h geared to the governor-shaft g. On the distributing-shaft h is secured a cam i, connected with the stem of the air-admission valve A, and on said shaft is mounted a second similar cam operating the hopper-valve k by a lever-and-rod connection m. Suitable springs l hold the valves A k upon their seats. The fuel-admission valve D is turned by a suitable worm-and-gear connection with the distributing-shaft h. Referring to Fig. 6, it will be seen that the valve D is provided with a radial groove or chamber r, which, when facing upward, is charged with fuel and when brought to face downward discharges the same into the cylinder, the pressure being equalized owing to the loose condition of the fuel.
 
 I will now proceed to describe the operation of the engine. On the first downward stroke of the plunger induced by the inertia of the fly-wheel atmospheric air is drawn into the cylinder through the open admission-valve A. The midway position of the plunger P is shown by full lines in Fig. 4, in which position the valve A is closed. On the succeeding upward stroke, also induced by the inertia of the fly-wheel, the air in the cylinder is compressed by plunger P to such an extent that the temperature at which later on the combustion has to take place is produced by this compression only. The pressure is determined by the temperature of combustion of the fuel.
@@ -92,13 +146,17 @@ The process in each cylinder is the same as described with reference to Figs. 4 
 
 This simplest possible regulation is effected by cam S, Figs. 9 and 10, by means of the bent lever, as shown in the drawings. The cam S is carried by the distributing-shaft W, which latter is driven by the shaft of the fly-wheel in a similar way, as in Figs. 4 and 5. The nozzle D is kept closed by the needle n and serves for gradually admitting the fuel. The liquid fuel is in the inner space r of the nozzle D, and is maintained there by means of a feed-pump (not shown) provided with an air-chamber under a pressure which is higher than the highest pressure of compression of the air in the cylinder.
 
-In Fig. 10 is shown at t the branch pipe for leading the liquid fuel coming from the pump and to the nozzle. At the moment of the highest compression—that is, when the piston is in the position 2—the needle n is opened by the distributing-gear and allows a thin jet of liquid to enter through the very small opening D, as the liquid is under a pressure greater than the cylinder-pressure. This entrance of fuel continues up to position 3 of the piston, where the distributing device cuts it off exactly, whereupon the gases of combustion continue to expand. For regulating the jet of fuel I have provided here exactly the same construction by which, in Sulzer's valve-gears, the period of steam admission is regulated. An eccentric E moves the steel side piece q in a uniform oviform curve up and down. The steel block r is attached to the rod which actuates the needle n. As soon as the piece q, moving downward, strikes against the piece r, the needle is opened and remains open until the steel piece q releases the piece r. As the piece r is adjustable from the governor by means of the rod St, (see Fig. 9,) the governor regulates simultaneously in the two cylinders the duration of the period of admission of fuel, and in consequence thereof the speed of the engine.
+In Fig. 10 is shown at t the branch pipe for leading the liquid fuel coming from the pump and to the nozzle. At the moment of the highest compression—that is, when the piston is in the position 2—the needle n is opened by the distributing-gear and allows a thin jet of liquid to enter through the very small opening D, as the liquid is under a pressure greater than the cylinder-pressure. This entrance of fuel continues up to position 3 of the piston, where the distributing device cuts it off exactly, whereupon the gases of combustion continue to expand. For regulating the jet of fuel I have provided here exactly the same construction by which, in Sulzer's valve-gears, the period of steam admission is regulated. An eccentric E moves the steel side piece q in a uniform oviform curve up and down. The steel block r is attached to the rod which actuates the needle n. As soon as the piece q, moving downward, strikes against the piece r, the needle is opened and remains open until the steel piece q releases the piece r. As the piece r is adjustable from the governor
+
+--- REVIEWED TRANSCRIPTION PAGE 10 OF 10 ---
+by means of the rod St, (see Fig. 9,) the governor regulates simultaneously in the two cylinders the duration of the period of admission of fuel, and in consequence thereof the speed of the engine.
 
 In Figs. 8 and 10 there is formed round the nozzle D an annular space s, which is in free communication with the interior of the cylinder. When the piston moves backward under decreasing pressure, the air flows from this annular space back into the cylinder and serves in this way both for dividing the jet of fuel and for producing turbulent motion for distributing the combustion heat over the whole air volume. This annular space s is only of practical importance and is not essential for the process. There is, moreover, in Figs. 8 and 10 at O an opening for introducing compressed air or gases from explosive substances serving to start the motor. When in Fig. 8, in place of liquid, gas or vapor is compressed in the inner space r of the nozzle D the same construction may be employed. It is therefore not necessary to show a construction of engine for this application.
 
 It is especially to be remarked that the thermal results are independent of the kind of gas contained in the cylinder. It is sufficient if the quantity of air necessary for combustion is provided. The other considerable quantity of gas, which acts only as a carrier of heat, may consist in former combustion gases, added foreign gases, and vapors or aqueous vapor without altering the result. It follows from the above that closed engines might be arranged so as to take up at each stroke only a small quantity of fresh air for insuring the combustion, but which retain essentially always the same body of gas, a small exhaust of course excepted.
 
---- REVIEWED TRANSCRIPTION PAGE 10 OF 10 ---
+What I claim as new, and desire to secure by Letters Patent, is—
+
 1. The herein described process for converting the heat energy of fuel into work, consisting in first compressing air, or a mixture of air and neutral gas or vapor, to a degree producing a temperature above the igniting point of the fuel to be consumed, then gradually introducing the fuel for combustion into the compressed air while expanding against a resistance sufficiently to prevent an essential increase of temperature and pressure, then discontinuing the supply of fuel and further expanding without transfer of heat.
 
 2. In an internal combustion engine, the combination with the cylinder and piston, of a valved suction inlet for air or a mixture of air and neutral gas, a valved fuel feed constructed to gradually discharge the fuel into the cylinder, and means in operative connection with the feed valve for opening the same at the commencement of the working stroke of the piston and for closing the same at a predetermined part of the stroke, substantially as described.

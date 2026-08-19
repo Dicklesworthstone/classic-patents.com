@@ -17,7 +17,6 @@ const REQUIRED_ROOT_EDITORIAL_HOLDS = [
   "us-542846-diesel-engine",
   "us-586193-marconi-radio",
   "us-2708656-fermi-reactor",
-  "us-3541541-engelbart-mouse",
   "us-3671542-kwolek-kevlar",
   "us-3858232-boyle-smith-ccd",
 ] as const;
@@ -39,12 +38,7 @@ describe("root editorial publication holds", () => {
   });
 
   test("keeps records with known incomplete source ledgers unbound as a second fail-closed layer", () => {
-    for (const patentId of [
-      "us-313224-mergenthaler-linotype",
-      "us-395781-hollerith-tabulating",
-      "us-3541541-engelbart-mouse",
-      "us-542846-diesel-engine",
-    ]) {
+    for (const patentId of ["us-313224-mergenthaler-linotype", "us-395781-hollerith-tabulating"]) {
       const patent = allPatents.find((candidate) => candidate.id === patentId);
       expect(patent, `missing catalog record ${patentId}`).toBeDefined();
       if (!patent) continue;

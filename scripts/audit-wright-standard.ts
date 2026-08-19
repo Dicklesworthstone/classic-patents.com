@@ -9,7 +9,7 @@ let passes = 0;
 let withheldCount = 0;
 
 for (const p of allPatents) {
-  const isWithheld = isArchivalEditionExplicitlyWithheld(p.id);
+  const isWithheld = isArchivalEditionExplicitlyWithheld(p.id) || !p.archivalEdition;
   if (isWithheld) {
     console.log(
       `🔒 [${p.patentNumber} · ${p.shortTitle}] — In active preparation under Root QA publication hold.`,

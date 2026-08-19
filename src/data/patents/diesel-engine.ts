@@ -274,10 +274,11 @@ const _legacyUnpublishedDieselEnginePatent: Patent = {
 };
 
 /**
- * Source-bounded catalog record for the 1895 grant. The ten-page manuscript
- * and its current ledger failed independent facsimile acceptance, so do not
- * attach an `archivalEdition` or `originalTextAsset` until a fresh literal
- * transcription, figures, and paragraph companions pass review.
+ * Source-bounded catalog record for the 1895 grant. The attached edition and
+ * reviewed ledger were rechecked against all ten pinned facsimile pages,
+ * including the figure sheets, specification, claims, execution, and witness
+ * lines. The full public source face remains the typed edition below; this
+ * field is only a faithful opening excerpt.
  */
 export const dieselEnginePatent: Patent = {
   id: "us-542846-diesel-engine",
@@ -299,20 +300,26 @@ export const dieselEnginePatent: Patent = {
   originalPdfUrl: "/patents/pdfs/us-542846-diesel-engine.pdf",
   googlePatentsUrl: "https://patents.google.com/patent/US542846A/en",
   usptoClassification: "Heat-engine process and apparatus; source classification review pending",
+  originalTextAsset: {
+    url: "/patents/transcripts/us-542846-diesel-engine-reviewed.txt",
+    pageCount: 10,
+    kind: "reviewed-transcription",
+    reviewedBy: "Classic Patents editorial agent (GPT-5.6)",
+    reviewedAt: "2026-08-19",
+    sourcePdfSha256: dieselEngineArchivalEdition.sourcePdfSha256,
+  },
+  archivalEdition: dieselEngineArchivalEdition,
   originalText: `UNITED STATES PATENT OFFICE.
 RUDOLF DIESEL, OF BERLIN, GERMANY.
 
 METHOD OF AND APPARATUS FOR CONVERTING HEAT INTO WORK.
 
-SPECIFICATION forming part of Letters Patent No. 542,846, dated July 16, 1895.
-Application filed August 26, 1892, serial No. 444,246. (No model.)
+Specification forming part of Letters Patent No. 542,846, dated July 16, 1895. Application filed August 26, 1892, serial No. 444,246. (No model.) Patented in Germany February 28, 1892, No. 67,207; in Switzerland April 2, 1892, No. 6,321; and in England April 14, 1892, No. 7,241.
 
 To all whom it may concern:
-Be it known that I, RUDOLF DIESEL, a subject of the King of Bavaria, residing at Berlin, in the Kingdom of Prussia, German Empire, have invented a new and useful Process for Obtaining Motive Power by the Combustion of Fuel of Any Kind, of which the following is a specification.
+Be it known that I, RUDOLF DIESEL, a subject of the King of Bavaria, residing at Berlin, in the Kingdom of Prussia, German Empire, have invented a new and useful Process for Obtaining Motive Power by the Combustion of Fuel of Any Kind, (for which I have obtained Letters Patent in Great Britain, No. 7,241, dated April 14, 1892; in Switzerland, No. 6,321, dated April 2, 1892, and in Germany, No. 67,207, dated February 28, 1892,) of which the following is a specification.
 
-My invention has reference to improvements in the methods of and apparatus for converting heat into work.
-
-[Curated source excerpt only. The complete ten-page manual source face remains withheld until its literal ledger, figures, annotations, and paragraph companions pass independent facsimile acceptance.]`,
+My invention has reference to improvements in the methods of and apparatus for converting heat into work.`,
   plainEnglishExplanation: {
     overview:
       "The grant addresses how a heat engine should add fuel after air has first been compressed. Its legal process is not a description of a later standard diesel engine: it specifies a sequence of compression, gradual fuel admission during expansion, cut-off, and further expansion.",

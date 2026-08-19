@@ -85,6 +85,32 @@ describe("US 124,404 manual source edition", () => {
         expect(existsSync(resolve(process.cwd(), "public", preview.src.slice(1)))).toBe(true);
       }
     }
+
+    const sourceParagraphInlines = westinghouseAirBrakeArchivalEdition.blocks
+      .filter(
+        (
+          block,
+        ): block is Extract<
+          (typeof westinghouseAirBrakeArchivalEdition.blocks)[number],
+          { kind: "paragraph" }
+        > => block.kind === "paragraph",
+      )
+      .flatMap((block) => block.inlines);
+    const figuresFiveAndSix = sourceParagraphInlines.findIndex(
+      (inline) => inline.text === "Figs. 5",
+    );
+    expect(figuresFiveAndSix).toBeGreaterThanOrEqual(0);
+    expect(
+      sourceParagraphInlines
+        .slice(figuresFiveAndSix, figuresFiveAndSix + 3)
+        .map((inline) =>
+          inline.kind === "reference" ? inline.figurePreviews?.[0]?.alt : inline.text,
+        ),
+    ).toEqual([
+      "Source-facsimile crop of Fig. 5 from US 124,404.",
+      " and ",
+      "Source-facsimile crop of Fig. 6 from US 124,404.",
+    ]);
   });
 
   test("removes the false triple-valve account from visitor-facing data", () => {
