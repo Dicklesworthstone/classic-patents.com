@@ -98,7 +98,7 @@ export function BardeenTransistorSim() {
             </g>
 
             {/* Emitter Gold Contact (Left Point) */}
-            <g transform={`translate(${280 - pointSpacingMicrons * 0.8}, 160)`}>
+            <g transform={`translate(${280 - semi.pointGapSvgPx}, 160)`}>
               {/* Gold Foil / Phosphor Bronze Whisker */}
               <polygon
                 points="-12,-100 0,-100 0,0 -8,-2"
@@ -123,7 +123,7 @@ export function BardeenTransistorSim() {
             </g>
 
             {/* Collector Gold Contact (Right Point) */}
-            <g transform={`translate(${280 + pointSpacingMicrons * 0.8}, 160)`}>
+            <g transform={`translate(${280 + semi.pointGapSvgPx}, 160)`}>
               {/* Gold Foil / Phosphor Bronze Whisker */}
               <polygon
                 points="0,-100 12,-100 8,-2 0,0"
@@ -150,8 +150,8 @@ export function BardeenTransistorSim() {
             {/* Minority Carrier Hole Injection Stream (Red moving to Collector) */}
             <g transform="translate(150, 160)">
               {Array.from({ length: 12 }).map((_, i) => {
-                const startX = 130 - pointSpacingMicrons * 0.8;
-                const endX = 130 + pointSpacingMicrons * 0.8;
+                const startX = 130 - semi.pointGapSvgPx;
+                const endX = 130 + semi.pointGapSvgPx;
                 const frac = i / 12;
                 const cx = startX + frac * (endX - startX);
                 const cy = 4 + Math.sin(frac * Math.PI) * 10;
@@ -169,25 +169,25 @@ export function BardeenTransistorSim() {
             {/* Point Spacing Dimension Line */}
             <g transform="translate(280, 130)">
               <line
-                x1={-pointSpacingMicrons * 0.8}
+                x1={-semi.pointGapSvgPx}
                 y1="0"
-                x2={pointSpacingMicrons * 0.8}
+                x2={semi.pointGapSvgPx}
                 y2="0"
                 stroke="#f59e0b"
                 strokeWidth="1.5"
               />
               <line
-                x1={-pointSpacingMicrons * 0.8}
+                x1={-semi.pointGapSvgPx}
                 y1="-5"
-                x2={-pointSpacingMicrons * 0.8}
+                x2={-semi.pointGapSvgPx}
                 y2="5"
                 stroke="#f59e0b"
                 strokeWidth="1.5"
               />
               <line
-                x1={pointSpacingMicrons * 0.8}
+                x1={semi.pointGapSvgPx}
                 y1="-5"
-                x2={pointSpacingMicrons * 0.8}
+                x2={semi.pointGapSvgPx}
                 y2="5"
                 stroke="#f59e0b"
                 strokeWidth="1.5"

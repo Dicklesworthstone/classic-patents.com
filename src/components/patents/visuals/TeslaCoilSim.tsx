@@ -190,7 +190,7 @@ export function TeslaCoilSim() {
         <div className="lg:col-span-4 space-y-4">
           <SparkWaterfall
             fundamentalHz={resonantFreqKhz * 1000}
-            energy={Math.min(1, secondaryVoltageKv / 1500)}
+            energy={res.toneEnergy}
             firing={true}
           />
           <div className="rounded-2xl border border-parchment-300 dark:border-ink-800 bg-parchment-100/80 dark:bg-ink-900/70 p-5 space-y-4 shadow-sm">

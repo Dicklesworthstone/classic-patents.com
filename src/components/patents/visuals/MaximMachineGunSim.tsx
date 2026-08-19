@@ -20,7 +20,6 @@ export function MaximMachineGunSim() {
     waterJacketLiters: jacketWaterLiters,
     recoilStrokeMm: params.recoilStroke ?? 19,
   });
-  const recoilStrokeMm = maxim.recoilStrokeMm;
   const barrelTempC = maxim.barrelTempC;
   const muzzleEnergyJoules = maxim.muzzleEnergyJoules;
   const cycleTimeMs = maxim.cycleIntervalMs;
@@ -45,7 +44,7 @@ export function MaximMachineGunSim() {
   }, [isPlaying, maxim.fireOmegaRadPerS]);
 
   // Recoil displacement of barrel & breech
-  const recoilX = (Math.cos(recoilPhase) + 1) * (recoilStrokeMm / 2);
+  const recoilX = (Math.cos(recoilPhase) + 1) * maxim.recoilSvgAmp;
   const isMuzzleFiring = recoilPhase < 0.6;
 
   return (

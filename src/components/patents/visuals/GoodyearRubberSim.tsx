@@ -64,7 +64,7 @@ export function GoodyearRubberSim() {
           <svg viewBox="0 0 440 220" className="w-full max-w-md h-auto select-none">
             {/* Molecular Polyisoprene Chains */}
             {[-40, -15, 10, 35].map((yOffset, idx) => {
-              const stretch = (stretchLambda - 1) * 80;
+              const stretch = rubber.chainStretchPx;
               const yBase = 110 + yOffset;
               const sag = isMelted ? 25 : 0;
               return (

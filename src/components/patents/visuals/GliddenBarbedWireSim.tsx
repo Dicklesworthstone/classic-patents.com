@@ -88,13 +88,13 @@ export function GliddenBarbedWireSim() {
 
           {/* Double-Twisted Wire Strands with Helical Sine Wave */}
           <path
-            d={`M 50 170 Q 100 ${170 - twistsPerFoot * 2}, 150 170 Q 200 ${170 + twistsPerFoot * 2}, 250 170 Q 300 ${170 - twistsPerFoot * 2}, 350 170 Q 400 ${170 + twistsPerFoot * 2}, 450 170 Q 500 ${170 - twistsPerFoot * 2}, 550 170`}
+            d={`M 50 170 Q 100 ${170 - wire.twistWaveAmpPx}, 150 170 Q 200 ${170 + wire.twistWaveAmpPx}, 250 170 Q 300 ${170 - wire.twistWaveAmpPx}, 350 170 Q 400 ${170 + wire.twistWaveAmpPx}, 450 170 Q 500 ${170 - wire.twistWaveAmpPx}, 550 170`}
             stroke="#A0AEC0"
             strokeWidth="3.5"
             fill="none"
           />
           <path
-            d={`M 50 170 Q 100 ${170 + twistsPerFoot * 2}, 150 170 Q 200 ${170 - twistsPerFoot * 2}, 250 170 Q 300 ${170 + twistsPerFoot * 2}, 350 170 Q 400 ${170 - twistsPerFoot * 2}, 450 170 Q 500 ${170 + twistsPerFoot * 2}, 550 170`}
+            d={`M 50 170 Q 100 ${170 + wire.twistWaveAmpPx}, 150 170 Q 200 ${170 - wire.twistWaveAmpPx}, 250 170 Q 300 ${170 + wire.twistWaveAmpPx}, 350 170 Q 400 ${170 - wire.twistWaveAmpPx}, 450 170 Q 500 ${170 + wire.twistWaveAmpPx}, 550 170`}
             stroke="#718096"
             strokeWidth="3.5"
             fill="none"

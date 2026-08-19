@@ -77,7 +77,7 @@ export function HyattCelluloidSim() {
             height="160"
             rx="4"
             fill="#E53E3E"
-            opacity={moldTempC / 150}
+            opacity={hyatt.steamGlowOpacity}
           />
           <rect
             x="420"
@@ -86,7 +86,7 @@ export function HyattCelluloidSim() {
             height="160"
             rx="4"
             fill="#E53E3E"
-            opacity={moldTempC / 150}
+            opacity={hyatt.steamGlowOpacity}
           />
           <text
             x="110"
@@ -100,7 +100,7 @@ export function HyattCelluloidSim() {
           </text>
 
           {/* Hydraulic Ram Piston */}
-          <g transform={`translate(200, ${70 + hydraulicPressureMpa * 2})`}>
+          <g transform={`translate(200, ${hyatt.ramStudioY})`}>
             <rect
               x="0"
               y="0"

@@ -20,14 +20,12 @@ export function WrightFlyerSim() {
   const isCoupled = controls.coupled;
   const [activeStep, setActiveStep] = useState<number>(0);
 
-  const warpLiftN = wingWarpAngle * 18.5;
-  const leftLiftN = Math.max(0, si.liftNewtons / 2 - warpLiftN / 2);
-  const rightLiftN = Math.max(0, si.liftNewtons / 2 + warpLiftN / 2);
-  const liftSpan = Math.max(1, si.liftNewtons);
-  const leftWingLift = (leftLiftN / liftSpan) * 100;
-  const rightWingLift = (rightLiftN / liftSpan) * 100;
-  const leftInducedDrag = (leftLiftN / Math.max(1, si.liftNewtons)) ** 2 * si.inducedDragNewtons;
-  const rightInducedDrag = (rightLiftN / Math.max(1, si.liftNewtons)) ** 2 * si.inducedDragNewtons;
+  const leftLiftN = si.leftLiftN;
+  const rightLiftN = si.rightLiftN;
+  const leftWingLift = si.leftWingLiftPct;
+  const rightWingLift = si.rightWingLiftPct;
+  const leftInducedDrag = si.leftInducedDragNewtons;
+  const rightInducedDrag = si.rightInducedDragNewtons;
   const netYawMoment = si.netYawNm;
   const isCoordinatedTurn = si.coordinated;
   const isAdverseYawCrash = si.adverseYawDominant;

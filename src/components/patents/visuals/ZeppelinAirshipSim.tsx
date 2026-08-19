@@ -21,7 +21,6 @@ export function ZeppelinAirshipSim() {
     flightSpeedKnots,
     trimWeight,
   });
-  const grossLiftKg = zep.grossLiftKg;
   const usefulPayloadKg = zep.usefulPayloadKg;
   const pitchTrimDeg = zep.pitchTrimDeg;
 
@@ -201,7 +200,7 @@ export function ZeppelinAirshipSim() {
             Gross Aerostatic Lift
           </span>
           <span className="font-mono text-sm sm:text-base font-bold text-ink-900 dark:text-parchment-100">
-            {(grossLiftKg / 1000).toFixed(1)} metric tons
+            {zep.grossLiftTonnes} metric tons
           </span>
         </div>
         <div className="bg-parchment-100 dark:bg-ink-900 border border-parchment-200 dark:border-ink-800 p-2.5 rounded-xl text-center">

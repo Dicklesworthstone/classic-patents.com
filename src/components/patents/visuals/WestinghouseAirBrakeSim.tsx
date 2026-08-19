@@ -45,7 +45,7 @@ export function WestinghouseAirBrakeSim() {
         return Math.min(wh.approachSpeedMph, prev + 10 * dt);
       });
 
-      setWheelRotation((prev) => (prev + trainSpeedMph * 8 * dt) % 360);
+      setWheelRotation((prev) => (prev + trainSpeedMph * wh.wheelDisplayDegPerMph * dt) % 360);
       animRef.current = requestAnimationFrame(loop);
     };
 
@@ -53,7 +53,13 @@ export function WestinghouseAirBrakeSim() {
     return () => {
       if (animRef.current) cancelAnimationFrame(animRef.current);
     };
-  }, [cylPressurePsi, trainSpeedMph, wh.decelerationMphPerS, wh.approachSpeedMph]);
+  }, [
+    cylPressurePsi,
+    trainSpeedMph,
+    wh.decelerationMphPerS,
+    wh.approachSpeedMph,
+    wh.wheelDisplayDegPerMph,
+  ]);
 
   const setPreset = (psi: number, _label?: string) => {
     updateParam("trainPipePressure", psi);

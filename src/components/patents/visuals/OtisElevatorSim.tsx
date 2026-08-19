@@ -40,7 +40,7 @@ export function OtisElevatorSim() {
     soundEngine.playElastomerSnap(1.5);
 
     const snapped = stepOtisElevator({ cabPayloadKg, cableTensionPct: 0 });
-    setCabY((prev) => prev + snapped.stoppingDistanceCm * (12 / 4.5));
+    setCabY((prev) => prev + snapped.cabFallPx);
 
     timerRef.current = window.setTimeout(
       () => {

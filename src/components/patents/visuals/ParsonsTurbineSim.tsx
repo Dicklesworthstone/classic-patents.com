@@ -21,7 +21,6 @@ export function ParsonsTurbineSim() {
     inletPressurePsi,
   });
   const pInletMpa = parsons.inletMpa;
-  const shaftPowerKw = parsons.shaftPowerKw;
   const stageCount = parsons.stageCount;
   const steamBladeSpeedRatio = parsons.steamBladeSpeedRatio;
 
@@ -266,7 +265,7 @@ export function ParsonsTurbineSim() {
             Turbine Power
           </span>
           <span className="font-mono text-sm sm:text-base font-bold text-emerald-700 dark:text-emerald-500">
-            {(shaftPowerKw / 1000).toFixed(1)} MW
+            {parsons.shaftPowerMw} MW
           </span>
         </div>
         <div className="bg-parchment-100 dark:bg-ink-900 border border-parchment-200 dark:border-ink-800 p-2.5 rounded-xl text-center">

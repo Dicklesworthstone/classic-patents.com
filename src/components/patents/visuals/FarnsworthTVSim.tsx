@@ -2,6 +2,7 @@
 
 import { Tv } from "lucide-react";
 import { useEffect, useState } from "react";
+import { voltsToKv } from "@/physics/catalogKernels";
 import { FrankenSimEngine } from "@/physics/engine";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 
@@ -18,7 +19,7 @@ export function FarnsworthTVSim() {
 
   const deflectionGauss = FrankenSimEngine.farnsworthDeflectionGauss(coilCurrent);
   const beam = FrankenSimEngine.stepFarnsworthTv(
-    anodeVoltage / 1000,
+    voltsToKv(anodeVoltage),
     deflectionGauss,
     params.lightIntensityLux ?? 500,
   );
@@ -116,8 +117,8 @@ export function FarnsworthTVSim() {
           <div className="text-xs font-mono text-ink-300 mt-3">
             {mode === "electronic-farnsworth" ? (
               <span className="text-emerald-400 font-bold">
-                Electron Optics: {scanLines} lines · {(beam.electronVelocityMps / 1e6).toFixed(1)}{" "}
-                Mm/s · r={beam.gyroRadiusMm} mm · {beam.photocathodeCurrentUa} µA
+                Electron Optics: {scanLines} lines · {beam.electronVelocityMegaMps} Mm/s · r=
+                {beam.gyroRadiusMm} mm · {beam.photocathodeCurrentUa} µA
               </span>
             ) : (
               <span className="text-amber-400 font-bold">

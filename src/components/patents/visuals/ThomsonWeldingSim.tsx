@@ -14,7 +14,6 @@ export function ThomsonWeldingSim() {
   const [isWelding, setIsWelding] = useState<boolean>(false);
 
   const weld = stepThomsonWelding({ weldCurrentAmps, clampPressureMpa });
-  const jouleHeatWatts = weld.jouleWatts;
   const interfaceTempC = weld.interfaceTempC;
   const isPlasticForged = weld.isForged;
   const upsetBurrWidthMm = weld.upsetBurrWidthMm;
@@ -218,7 +217,7 @@ export function ThomsonWeldingSim() {
             Interface Heat Rate
           </span>
           <span className="font-mono text-sm sm:text-base font-bold text-amber-700 dark:text-amber-500">
-            {(jouleHeatWatts / 1000).toFixed(1)} kW (I²R)
+            {weld.jouleKw.toFixed(1)} kW (I²R)
           </span>
         </div>
         <div className="bg-parchment-100 dark:bg-ink-900 border border-parchment-200 dark:border-ink-800 p-2.5 rounded-xl text-center">

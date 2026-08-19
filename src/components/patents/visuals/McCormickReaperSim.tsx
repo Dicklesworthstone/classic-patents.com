@@ -248,10 +248,7 @@ export function McCormickReaperSim() {
             <span className="font-mono">{reelRpm} RPM</span>
           </div>
           <div className="h-2 rounded bg-parchment-200 dark:bg-ink-800 overflow-hidden">
-            <div
-              className="h-full bg-amber-600"
-              style={{ width: `${Math.min(100, (reelRpm / 80) * 100)}%` }}
-            />
+            <div className="h-full bg-amber-600" style={{ width: `${reaper.reelBarPct}%` }} />
           </div>
         </div>
       </div>

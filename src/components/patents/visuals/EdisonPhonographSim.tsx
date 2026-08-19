@@ -2,7 +2,7 @@
 
 import { Play, RotateCcw, Volume2, VolumeX } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
-import { stepEdisonPhonograph } from "@/physics/catalogKernels";
+import { phonographAxialTravelMm, stepEdisonPhonograph } from "@/physics/catalogKernels";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { usePatentAudio } from "./three/usePatentAudio";
 
@@ -17,7 +17,11 @@ export function EdisonPhonographSim() {
 
   const phono = stepEdisonPhonograph({ mandrelRpm, voiceVolumeDb });
   const leadScrewPitchMm = phono.leadScrewPitchMm;
-  const axialTravelMm = Number((((cylinderAngleDeg / 360) * leadScrewPitchMm) % 40).toFixed(1));
+  const axialTravelMm = phonographAxialTravelMm(
+    cylinderAngleDeg,
+    leadScrewPitchMm,
+    phono.axialDisplayWrapMm,
+  );
 
   useEffect(() => {
     if (!isPlaying) return;

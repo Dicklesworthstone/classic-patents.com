@@ -234,7 +234,7 @@ export function MarconiRadioSim() {
         <div className="lg:col-span-4 space-y-4">
           <SparkWaterfall
             fundamentalHz={radio.resonantFreqMhz * 1e6}
-            energy={Math.min(1, radio.peakRfPowerKw / 80)}
+            energy={radio.toneEnergy}
             firing={isSparking}
           />
           <div className="rounded-2xl border border-parchment-300 dark:border-ink-800 bg-parchment-100/70 dark:bg-ink-900/60 p-5 space-y-4">

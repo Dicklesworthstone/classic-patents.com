@@ -64,12 +64,12 @@ export function LincolnBuoySim() {
 
             {/* Riverbed / Sandbar */}
             <path
-              d={`M 0 320 L 0 240 Q 200 ${240 - (8.0 - riverDepthFeet) * 12} 300 ${230 - (8.0 - riverDepthFeet) * 14} Q 400 ${240 - (8.0 - riverDepthFeet) * 12} 600 240 L 600 320 Z`}
+              d={`M 0 320 L 0 240 Q 200 ${lincoln.sandbarShoulderY} 300 ${lincoln.sandbarPeakY} Q 400 ${lincoln.sandbarShoulderY} 600 240 L 600 320 Z`}
               fill="#78350f"
               opacity="0.8"
             />
             <path
-              d={`M 0 320 L 0 250 Q 300 ${245 - (8.0 - riverDepthFeet) * 14} 600 250 L 600 320 Z`}
+              d={`M 0 320 L 0 250 Q 300 ${lincoln.sandbarInnerY} 600 250 L 600 320 Z`}
               fill="#b45309"
               opacity="0.5"
             />
@@ -78,7 +78,7 @@ export function LincolnBuoySim() {
             <rect x="0" y="150" width="600" height="170" fill="#0284c7" opacity="0.45" />
 
             {/* Steamboat Hull */}
-            <g transform={`translate(0, ${150 - (6.0 - effectiveDraftFeet) * 12})`}>
+            <g transform={`translate(0, ${lincoln.hullStudioY})`}>
               {/* Main Wooden Steamboat Hull */}
               <path
                 d="M 120 0 L 150 55 Q 300 65 450 55 L 480 0 Z"

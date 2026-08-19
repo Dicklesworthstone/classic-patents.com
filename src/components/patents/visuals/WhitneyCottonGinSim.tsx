@@ -15,7 +15,7 @@ export function WhitneyCottonGinSim() {
   const [angle, setAngle] = useState<number>(0);
   const animRef = useRef<number | null>(null);
 
-  const gin = stepWhitneyCottonGin({ crankRpm });
+  const gin = stepWhitneyCottonGin({ crankRpm, seedGridClearance: grateClearanceMm });
   const sawSpeedMps = gin.sawTipSpeedMps;
   const brushRpm = gin.brushRpm;
   const ginningRateLbsPerDay = gin.outputLbsPerDay;
@@ -125,7 +125,7 @@ export function WhitneyCottonGinSim() {
               x2="200"
               y2="260"
               stroke="#333333"
-              strokeWidth={grateClearanceMm * 2.5}
+              strokeWidth={gin.grateStrokePx}
               strokeLinecap="round"
             />
             <line
@@ -134,7 +134,7 @@ export function WhitneyCottonGinSim() {
               x2="212"
               y2="260"
               stroke="#444444"
-              strokeWidth={grateClearanceMm * 2.5}
+              strokeWidth={gin.grateStrokePx}
               strokeLinecap="round"
             />
             <line
@@ -143,7 +143,7 @@ export function WhitneyCottonGinSim() {
               x2="224"
               y2="260"
               stroke="#555555"
-              strokeWidth={grateClearanceMm * 2.5}
+              strokeWidth={gin.grateStrokePx}
               strokeLinecap="round"
             />
             <text x="175" y="70" fill="#666666" fontSize="10" fontFamily="sans-serif">
@@ -152,7 +152,7 @@ export function WhitneyCottonGinSim() {
           </g>
 
           {/* Rotating Saw Cylinder */}
-          <g transform={`translate(260, 170) rotate(${angle})`}>
+          <g transform={`translate(260, 170) rotate(${angle * gin.sawToCrankRatio})`}>
             <circle cx="0" cy="0" r="65" fill="#2A2A2A" stroke="#C5A059" strokeWidth="3" />
             {/* Saw teeth */}
             {Array.from({ length: 16 }).map((_, i) => {
@@ -169,8 +169,8 @@ export function WhitneyCottonGinSim() {
             <circle cx="0" cy="0" r="18" fill="#1A1A1A" stroke="#888" strokeWidth="2" />
           </g>
 
-          {/* Rotating Brush Cylinder (Counter-Rotating 3.5x Faster) */}
-          <g transform={`translate(420, 170) rotate(${-angle * 3.5})`}>
+          {/* Rotating Brush Cylinder (counter-rotating at kernel brush/crank ratio) */}
+          <g transform={`translate(420, 170) rotate(${-angle * gin.brushToCrankRatio})`}>
             <circle cx="0" cy="0" r="55" fill="#3D2817" stroke="#8B5A2B" strokeWidth="2" />
             {/* Bristles */}
             {Array.from({ length: 24 }).map((_, i) => {

@@ -34,7 +34,7 @@ export function RenoEscalatorSim() {
       const dt = Math.min(0.1, (time - lastTime) / 1000);
       lastTime = time;
 
-      setTreadOffset((prev) => (prev + beltSpeedMps * 40 * dt) % 40);
+      setTreadOffset((prev) => (prev + reno.treadSvgAdvancePerS * dt) % reno.treadSvgWrapPx);
       animRef.current = requestAnimationFrame(loop);
     };
 
@@ -42,7 +42,7 @@ export function RenoEscalatorSim() {
     return () => {
       if (animRef.current) cancelAnimationFrame(animRef.current);
     };
-  }, [isPlaying, beltSpeedMps]);
+  }, [isPlaying, reno.treadSvgAdvancePerS, reno.treadSvgWrapPx]);
 
   return (
     <div className="w-full rounded-2xl border border-parchment-300 dark:border-ink-800 bg-parchment-50 dark:bg-ink-950 p-4 sm:p-6 shadow-md transition-colors">

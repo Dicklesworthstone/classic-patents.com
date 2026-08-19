@@ -3,6 +3,7 @@
 import { Radio } from "lucide-react";
 import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import { TwoClocksStrip } from "@/components/patents/TwoClocksStrip";
+import { voltsToKv } from "@/physics/catalogKernels";
 import { FrankenSimEngine } from "@/physics/engine";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { soundEngine } from "@/utils/soundEngine";
@@ -11,7 +12,7 @@ export function SpencerMicrowaveSim() {
   const { params, updateParam } = usePatentPhysics("us-2495429-spencer-microwave");
   const powerWatts = params.rfPowerSetting ?? 800;
   const rf = FrankenSimEngine.stepSpencerMicrowave(
-    (params.anodeVoltage ?? 2200) / 1000,
+    voltsToKv(params.anodeVoltage ?? 2200),
     params.magneticFieldGauss ?? 1450,
     powerWatts,
   );
