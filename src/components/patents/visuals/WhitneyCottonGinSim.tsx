@@ -153,14 +153,14 @@ export function WhitneyCottonGinSim() {
 
           {/* Rotating Saw Cylinder */}
           <g transform={`translate(260, 170) rotate(${angle * gin.sawToCrankRatio})`}>
-            <circle cx="0" cy="0" r="65" fill="#2A2A2A" stroke="#C5A059" strokeWidth="3" />
+            <circle cx="0" cy="0" r={gin.sawSvgR} fill="#2A2A2A" stroke="#C5A059" strokeWidth="3" />
             {/* Saw teeth */}
             {Array.from({ length: 16 }).map((_, i) => {
               const toothAngle = (i * 360) / 16;
               return (
                 <path
                   key={`saw-tooth-${toothAngle}`}
-                  d="M 65 0 L 78 -12 L 65 -6 Z"
+                  d={`M ${gin.sawSvgR} 0 L ${gin.sawToothOuterSvgR} -12 L ${gin.sawSvgR} -6 Z`}
                   fill="#D4AF37"
                   transform={`rotate(${toothAngle})`}
                 />
@@ -171,16 +171,16 @@ export function WhitneyCottonGinSim() {
 
           {/* Rotating Brush Cylinder (counter-rotating at kernel brush/crank ratio) */}
           <g transform={`translate(420, 170) rotate(${-angle * gin.brushToCrankRatio})`}>
-            <circle cx="0" cy="0" r="55" fill="#3D2817" stroke="#8B5A2B" strokeWidth="2" />
+            <circle cx="0" cy="0" r={gin.brushSvgR} fill="#3D2817" stroke="#8B5A2B" strokeWidth="2" />
             {/* Bristles */}
             {Array.from({ length: 24 }).map((_, i) => {
               const bristleAngle = (i * 360) / 24;
               return (
                 <line
                   key={`bristle-${bristleAngle}`}
-                  x1="55"
+                  x1={gin.brushSvgR}
                   y1="0"
-                  x2="78"
+                  x2={gin.bristleOuterSvgR}
                   y2="0"
                   stroke="#C2B280"
                   strokeWidth="2"

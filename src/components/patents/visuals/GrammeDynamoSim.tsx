@@ -11,7 +11,7 @@ export function GrammeDynamoSim() {
   const { isAudioMuted, toggleSound } = usePatentAudio();
   const shaftRate = params.shaftRate ?? 1;
   const gramme = stepGrammeDynamo({ shaftRate });
-  const printedJunctionCount = 36;
+  const printedJunctionCount = gramme.printedJunctionCount;
   const [isPlaying, setIsPlaying] = useState<boolean>(true);
   const [angleDeg, setAngleDeg] = useState<number>(0);
   const animRef = useRef<number | null>(null);
@@ -129,8 +129,8 @@ export function GrammeDynamoSim() {
             {Array.from({ length: printedJunctionCount }).map((_, i) => {
               const cAngle = (i * 360) / printedJunctionCount;
               const rad = (cAngle * Math.PI) / 180;
-              const xPos = Math.cos(rad) * 100;
-              const yPos = Math.sin(rad) * 100;
+              const xPos = Math.cos(rad) * gramme.torusSvgR;
+              const yPos = Math.sin(rad) * gramme.torusSvgR;
               return (
                 <rect
                   key={`gramme-coil-${cAngle}`}
@@ -148,14 +148,21 @@ export function GrammeDynamoSim() {
             })}
 
             {/* Junction conductors rotate with the endless bobbin; this is not a later commutator. */}
-            <circle cx="0" cy="0" r="35" fill="#4A5568" stroke="#1A202C" strokeWidth="2" />
+            <circle
+              cx="0"
+              cy="0"
+              r={gramme.junctionInnerSvgR}
+              fill="#4A5568"
+              stroke="#1A202C"
+              strokeWidth="2"
+            />
             {Array.from({ length: printedJunctionCount }).map((_, i) => (
               <line
                 key={`junction-${i * (360 / printedJunctionCount)}`}
-                x1={Math.cos((i * 2 * Math.PI) / printedJunctionCount) * 35}
-                y1={Math.sin((i * 2 * Math.PI) / printedJunctionCount) * 35}
-                x2={Math.cos((i * 2 * Math.PI) / printedJunctionCount) * 48}
-                y2={Math.sin((i * 2 * Math.PI) / printedJunctionCount) * 48}
+                x1={Math.cos((i * 2 * Math.PI) / printedJunctionCount) * gramme.junctionInnerSvgR}
+                y1={Math.sin((i * 2 * Math.PI) / printedJunctionCount) * gramme.junctionInnerSvgR}
+                x2={Math.cos((i * 2 * Math.PI) / printedJunctionCount) * gramme.junctionOuterSvgR}
+                y2={Math.sin((i * 2 * Math.PI) / printedJunctionCount) * gramme.junctionOuterSvgR}
                 stroke="#C5A059"
                 strokeWidth="2"
               />

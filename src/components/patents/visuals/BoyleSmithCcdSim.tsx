@@ -167,7 +167,6 @@ export function BoyleSmithCcdSim() {
                 d={`M 0 0 ${Array.from({ length: 9 })
                   .map((_, i) => {
                     const phaseNum = ((i % 3) + 1) as 1 | 2 | 3;
-                    const _charge = ccd.wells[phaseNum - 1];
                     const depth = ccd.wellSvgDepths[phaseNum - 1];
                     const gx = i * 50;
                     return `L ${gx} 0 L ${gx} ${depth} L ${gx + 45} ${depth} L ${gx + 45} 0`;

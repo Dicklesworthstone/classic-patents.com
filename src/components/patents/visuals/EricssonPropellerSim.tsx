@@ -187,8 +187,8 @@ export function EricssonPropellerSim() {
             {/* Helical Blades Counter-Rotating */}
             {Array.from({ length: 6 }).map((_, i) => {
               const bladeAngle = (i * 60 - angleDeg) % 360;
-              const yOffset = Math.sin((bladeAngle * Math.PI) / 180) * 45;
-              const xOffset = Math.cos((bladeAngle * Math.PI) / 180) * 10;
+              const yOffset = Math.sin((bladeAngle * Math.PI) / 180) * screw.bladeSvgRy;
+              const xOffset = Math.cos((bladeAngle * Math.PI) / 180) * screw.bladeSvgRx;
               return (
                 <path
                   key={`aft-blade-${bladeAngle}`}
