@@ -2,7 +2,11 @@
 
 import { ArrowUpRight, Image, ScrollText } from "lucide-react";
 import NextImage from "next/image";
-import type { FocusEvent as ReactFocusEvent, MouseEvent as ReactMouseEvent, ReactNode } from "react";
+import type {
+  FocusEvent as ReactFocusEvent,
+  MouseEvent as ReactMouseEvent,
+  ReactNode,
+} from "react";
 import { useId, useState } from "react";
 import type {
   CuratedSpecificationEdition as CuratedSpecificationEditionData,
@@ -51,6 +55,7 @@ function AnnotatedTerm({
   };
 
   return (
+    // biome-ignore lint/a11y/noStaticElementInteractions: focus-boundary wrapper for inline annotation popup
     <span className="group relative inline" onBlur={closeWhenFocusLeavesAnnotation}>
       <button
         type="button"
@@ -132,6 +137,7 @@ function FigureReference({
   };
 
   return (
+    // biome-ignore lint/a11y/noStaticElementInteractions: focus-boundary wrapper for inline figure preview
     <span className="group relative inline" onBlur={closeWhenFocusLeavesPreview}>
       <button
         type="button"
