@@ -27,7 +27,6 @@ import { goodyearRubberParallelReadings } from "./goodyearRubberEdition";
 import { grammeDynamoParallelReadings } from "./grammeDynamoEdition";
 import { hyattCelluloidParallelReadings } from "./hyattCelluloidEdition";
 import { lincolnBuoyParallelReadings } from "./lincolnBuoyEdition";
-import { lindeAirLiquefactionParallelReadings } from "./lindeAirLiquefactionEdition";
 import { maximMachineGunParallelReadings } from "./maximMachineGunEdition";
 import { mccormickReaperParallelReadings } from "./mccormickReaperEdition";
 import { morseTelegraphParallelReadings } from "./morseTelegraphEdition";
@@ -93,7 +92,6 @@ export const ARCHIVAL_PARALLEL_READINGS: Readonly<
   "us-608969-parsons-turbine": parsonsTurbineParallelReadings,
   "us-613809-tesla-teleautomaton": teslaTeleautomatonParallelReadings,
   "us-621195-zeppelin-airship": zeppelinAirshipParallelReadings,
-  "us-727650-linde-air-liquefaction": lindeAirLiquefactionParallelReadings,
   "us-808897-carrier-air-conditioner": carrierAirConditionerParallelReadings,
   "us-1102653-goddard-rocket": goddardRocketParallelReadings,
   "us-1773980-farnsworth-tv": farnsworthTvParallelReadings,
