@@ -805,25 +805,7 @@ export const FrankenSimEngine = {
    * a flow rate, a liquefaction yield, nor a terminal temperature. Reporting
    * any of those as a computed output would fabricate a plant measurement.
    */
-  stepLindeAirLiquefaction(params?: {
-    compressorPressureBar?: number;
-    heatExchangerPasses?: number;
-  }) {
-    const pBar = params?.compressorPressureBar ?? 200;
-    const passes = params?.heatExchangerPasses ?? 48;
-    const deltaP = Math.max(10, pBar - 1);
-    const jtDeltaTPerPass = Number((deltaP * 0.22).toFixed(1));
-    const coldEndTempK = Math.max(
-      78.8,
-      Number((293.15 - passes * (jtDeltaTPerPass * 0.12)).toFixed(1)),
-    );
-    const coldEndTempC = Number((coldEndTempK - 273.15).toFixed(1));
-    const isLiquefying = coldEndTempK <= 85;
-    const liquidYieldPct = isLiquefying ? Number(Math.min(12, (pBar / 200) * 8.5).toFixed(1)) : 0;
-    const liquidOutputLitersPerHr = isLiquefying
-      ? Number(((liquidYieldPct / 100) * 25).toFixed(2))
-      : 0;
-
+  stepLindeAirLiquefaction() {
     const highPressureAtm = 75;
     const lowPressureAtm = 25;
     const coolerOutletC = 10;
@@ -835,12 +817,6 @@ export const FrankenSimEngine = {
       coolerOutletC,
       counterCurrentLengthM: 100,
       liquefactionClaimed: true,
-      coldEndTempK,
-      coldEndTempC,
-      jtDeltaTPerPass,
-      isLiquefying,
-      liquidYieldPct,
-      liquidOutputLitersPerHr,
       modelBoundary:
         "The grant says this arrangement progressively reaches liquefaction; it does not supply a measured outlet temperature, yield, or production rate.",
     };
