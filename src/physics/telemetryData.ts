@@ -4979,15 +4979,16 @@ PATENT_PHYSICS_REGISTRY["us-586193-marconi-radio"] = {
     "US 586,193 describes high-frequency signalling with metallic-powder or imperfect-contact receivers, local circuits, and shaking or trembler reset. Its source-reviewed record has not yet passed independent publication acceptance, so this guide does not claim a quarter-wave antenna geometry, aerial height, operating frequency, spark voltage, power, range, radiation resistance, coherer threshold, or later maritime-radio event.",
 };
 
-// The manuscript-facing edition records Markey & Antheil's figures and claims,
-// but its publication is still under root editorial hold.
+// The manuscript-facing Lamarr/Antheil edition and its companion review remain
+// under root editorial hold. Keep the public route on the printed mechanisms,
+// without recycling a modern spread-spectrum performance simulator.
 PATENT_PHYSICS_REGISTRY["us-2292387-lamarr-frequency-hopping"] = {
   domain: "source_review_hold",
-  domainTitle: "Source Guide: Synchronized Record-Selected Carrier Tuning",
-  equationName: "No quantitative radio-control model published",
+  domainTitle: "Source Guide: Synchronized Record-Selected Radio Control",
+  equationName: "No quantitative spread-spectrum performance model published",
   governingEquation:
-    "first record strip + second record strip + synchronous motion → transmitter tuning = receiver tuning",
-  engineMethod: "No spread-spectrum engine; source-review guide only",
+    "transmitter record selection + receiver record selection + synchronous motion → matched tuning",
+  engineMethod: "No RF-performance engine; source-review guide only",
   controls: [
     {
       id: "sourceFocus",
@@ -5002,9 +5003,9 @@ PATENT_PHYSICS_REGISTRY["us-2292387-lamarr-frequency-hopping"] = {
   computeMetrics: (params) => {
     const focus = Math.max(1, Math.min(3, Math.round(params.sourceFocus ?? 1)));
     const highlighted = [
-      "Figs. 1–2: transmitter & receiver radio control system",
-      "Figs. 3–4: perforated record strip & stepping mechanism",
-      "Figs. 5–6: motor drive & synchronizing circuit",
+      "Figs. 1–3: transmitting station, receiving station, and simultaneous release",
+      "Figs. 4–6: record strip, control head, and starting pin",
+      "Fig. 7: illustrated craft-course arrangement",
     ][focus - 1] as string;
 
     return [
@@ -5015,10 +5016,16 @@ PATENT_PHYSICS_REGISTRY["us-2292387-lamarr-frequency-hopping"] = {
         badgeColor: "cyan",
       },
       {
-        label: "Printed Claims",
-        value: "8",
+        label: "Illustrated Tuning Positions",
+        value: "7 transmitter / 4 receiver",
         unit: "source text",
         badgeColor: "emerald",
+      },
+      {
+        label: "Printed Claims",
+        value: "6",
+        unit: "source text",
+        badgeColor: "sapphire",
       },
       {
         label: "Visual Status",
@@ -5029,5 +5036,5 @@ PATENT_PHYSICS_REGISTRY["us-2292387-lamarr-frequency-hopping"] = {
     ];
   },
   pedagogicalInsight:
-    "US 2,292,387 describes secret communications using matched moving record strips to tune transmitter and receiver synchronously across carrier frequencies. Its source-reviewed record has not yet passed independent publication acceptance, so this guide does not claim a channel count, hop rate, RF bandwidth, processing gain, jamming margin, or later spread-spectrum network lineage.",
+    "US 2,292,387 describes a transmitter and receiver whose matched moving records select their tuning states together. The illustrated transmitter has seven tuning condensers, the receiver has four, and the specification says player-piano records could instead have as many as 88 rows. The scholarly edition remains under independent publication review, so this guide does not claim a fixed channel count, hop rate, RF bandwidth, processing gain, jamming margin, or later-network performance.",
 };
