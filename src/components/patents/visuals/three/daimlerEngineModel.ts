@@ -16,6 +16,7 @@
  */
 
 import * as THREE from "three";
+import { fourStrokeIndexFromRad, stepDaimlerEngine } from "@/physics/catalogKernels";
 
 export interface DaimlerEngineModel {
   rootGroup: THREE.Group;
@@ -440,11 +441,12 @@ export function updateDaimlerEngineKinematics(
   model.conRodGroup.rotation.z = rodAngle;
 
   // 4-Stroke Cycle Dynamics:
-  const strokeIndex = Math.floor(fourStrokePhase / Math.PI) % 4;
+  const seats = stepDaimlerEngine({});
+  const strokeIndex = fourStrokeIndexFromRad(fourStrokePhase, seats.strokeRad);
 
   if (strokeIndex === 0) {
     // Intake Stroke: automatic valve sucked open
-    const intakeLift = Math.sin(fourStrokePhase) * 0.08;
+    const intakeLift = Math.sin(fourStrokePhase) * seats.intakeLiftAmp;
     model.intakeValve.position.y = 2.5 - intakeLift;
     model.combustionFlame.visible = false;
   } else if (strokeIndex === 1) {
@@ -454,11 +456,12 @@ export function updateDaimlerEngineKinematics(
   } else if (strokeIndex === 2) {
     // Power Stroke: combustion flash near top dead center
     model.intakeValve.position.y = 2.5;
-    const powerProgress = fourStrokePhase - 2 * Math.PI;
-    if (powerProgress < Math.PI * 0.4) {
+    const powerProgress = fourStrokePhase - 2 * seats.strokeRad;
+    if (powerProgress < seats.powerFlashWindowRad) {
       model.combustionFlame.visible = true;
       model.combustionFlame.position.y = pistonY + 0.35;
-      const flashScale = 0.6 + Math.sin((powerProgress / (Math.PI * 0.4)) * Math.PI) * 0.4;
+      const flashScale =
+        0.6 + Math.sin((powerProgress / seats.powerFlashWindowRad) * Math.PI) * 0.4;
       model.combustionFlame.scale.set(flashScale, flashScale, flashScale);
     } else {
       model.combustionFlame.visible = false;
@@ -467,7 +470,7 @@ export function updateDaimlerEngineKinematics(
     // Exhaust Stroke: cam-operated pushrod
     model.intakeValve.position.y = 2.5;
     model.combustionFlame.visible = false;
-    const exhaustLift = Math.sin(fourStrokePhase - 3 * Math.PI) * 0.12;
+    const exhaustLift = Math.sin(fourStrokePhase - 3 * seats.strokeRad) * seats.exhaustLiftAmp;
     model.exhaustPushrod.position.y = 0.2 + exhaustLift;
     model.exhaustRocker.rotation.z = -exhaustLift * 1.5;
     model.exhaustValve.position.y = 2.5 - exhaustLift;

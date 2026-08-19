@@ -15,6 +15,7 @@
  */
 
 import * as THREE from "three";
+import { dieselCamWindows, wrapCycleRad } from "@/physics/catalogKernels";
 
 export interface DieselEngineNodes {
   rootGroup: THREE.Group;
@@ -750,33 +751,41 @@ export function updateDieselEngineKinematics(
   nodes.crankshaftGroup.rotation.z = crankAngleRad;
   nodes.flywheelGroup.rotation.z = crankAngleRad;
 
-  const cycleAngle = (crankAngleRad * 0.5) % (Math.PI * 2);
+  const cam = dieselCamWindows();
+  const cycleAngle = wrapCycleRad(crankAngleRad * cam.camRatio, cam.camWrapRad);
 
-  const isIntake = cycleAngle >= 0 && cycleAngle < Math.PI * 0.5;
-  const intakeLift = isIntake ? Math.sin((cycleAngle / (Math.PI * 0.5)) * Math.PI) * 0.15 : 0;
+  const isIntake = cycleAngle >= 0 && cycleAngle < cam.intakeCamEndRad;
+  const intakeLift = isIntake
+    ? Math.sin((cycleAngle / cam.intakeCamEndRad) * Math.PI) * cam.intakeLiftAmp
+    : 0;
   nodes.intakeValve.position.y = -intakeLift;
   nodes.intakeRocker.rotation.z = intakeLift * 1.5;
 
-  const isCompression = cycleAngle >= Math.PI * 0.5 && cycleAngle < Math.PI;
-  const compProgress = (cycleAngle - Math.PI * 0.5) / (Math.PI * 0.5);
+  const isCompression =
+    cycleAngle >= cam.intakeCamEndRad && cycleAngle < cam.compressionCamEndRad;
+  const compProgress = (cycleAngle - cam.intakeCamEndRad) / cam.intakeCamEndRad;
 
-  const isInjection = cycleAngle >= Math.PI && cycleAngle < Math.PI * 1.18;
+  const injectionSpan = cam.injectionCamEndRad - cam.injectionCamStartRad;
+  const isInjection =
+    cycleAngle >= cam.injectionCamStartRad && cycleAngle < cam.injectionCamEndRad;
   const injectionLift = isInjection
-    ? Math.sin(((cycleAngle - Math.PI) / (Math.PI * 0.18)) * Math.PI) * 0.12
+    ? Math.sin(((cycleAngle - cam.injectionCamStartRad) / injectionSpan) * Math.PI) *
+      cam.injectionLiftAmp
     : 0;
   nodes.injectorNeedle.position.y = injectionLift;
   nodes.injectorRocker.rotation.z = injectionLift * 1.8;
 
-  const isExhaust = cycleAngle >= Math.PI * 1.5 && cycleAngle < Math.PI * 2;
+  const isExhaust = cycleAngle >= cam.exhaustCamStartRad && cycleAngle < cam.camWrapRad;
+  const exhaustSpan = cam.camWrapRad - cam.exhaustCamStartRad;
   const exhaustLift = isExhaust
-    ? Math.sin(((cycleAngle - Math.PI * 1.5) / (Math.PI * 0.5)) * Math.PI) * 0.15
+    ? Math.sin(((cycleAngle - cam.exhaustCamStartRad) / exhaustSpan) * Math.PI) * cam.exhaustLiftAmp
     : 0;
   nodes.exhaustValve.position.y = -exhaustLift;
   nodes.exhaustRocker.rotation.z = exhaustLift * 1.5;
 
   if (isInjection && isAutoIgnition) {
     nodes.flameMesh.visible = true;
-    const pulse = Math.sin(((cycleAngle - Math.PI) / (Math.PI * 0.18)) * Math.PI);
+    const pulse = Math.sin(((cycleAngle - cam.injectionCamStartRad) / injectionSpan) * Math.PI);
     nodes.flameMesh.scale.setScalar(0.7 + pulse * 0.6);
     materials.flameMat.emissiveIntensity = 3.0 + pulse * 3.0;
   } else {

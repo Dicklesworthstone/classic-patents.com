@@ -5,8 +5,8 @@
  * (US Patent 395,781).
  *
  * Reconstructs the 1890 US Census data-processing landmark:
- * 1. Hardwood oak console desk table with turned support legs.
- * 2. Vertical 40-dial clock register bank (10 columns x 4 rows) with stepping pointers.
+ * 1. Hardwood quarter-sawn oak console desk table with turned support legs.
+ * 2. Vertical 40-dial clock register bank (10 columns x 4 rows) with stepping pointers and brass bezels.
  * 3. Punched card pin press with hinged operating lever, spring-loaded brass pin plate,
  *    and lower mercury contact well cup matrix.
  * 4. Manila paper census punched card with standard 1890 240-position hole pattern.
@@ -39,6 +39,7 @@ export interface HollerithTabulatingMaterials {
   castIron: THREE.MeshStandardMaterial;
   manilaCard: THREE.MeshStandardMaterial;
   mercuryPool: THREE.MeshStandardMaterial;
+  ebonite?: THREE.MeshStandardMaterial;
 }
 
 export interface HollerithTabulatingModelResult {
@@ -48,10 +49,64 @@ export interface HollerithTabulatingModelResult {
   dispose: () => void;
 }
 
+/**
+ * Deterministic unit noise for procedural grain generation.
+ */
+function deterministicUnit(index: number, channel: number): number {
+  const sample = Math.sin((index + 1) * 12.9898 + (channel + 1) * 78.233) * 43758.5453;
+  return sample - Math.floor(sample);
+}
+
+/**
+ * Procedural Quarter-Sawn Golden Oak Texture
+ */
+function createOakTexture(): THREE.CanvasTexture | undefined {
+  if (typeof document === "undefined") return undefined;
+  const canvas = document.createElement("canvas");
+  canvas.width = 512;
+  canvas.height = 512;
+  const ctx = canvas.getContext("2d");
+  if (!ctx) return undefined;
+
+  // Rich golden oak warm base
+  ctx.fillStyle = "#78350f";
+  ctx.fillRect(0, 0, 512, 512);
+
+  // Growth rings & medullary ray flecks
+  for (let i = 0; i < 80; i++) {
+    const x = i * 6.5 + (deterministicUnit(i, 0) - 0.5) * 4;
+    const alpha = 0.08 + (i % 4 === 0 ? 0.15 : 0.04);
+    ctx.strokeStyle = `rgba(60, 20, 5, ${alpha})`;
+    ctx.lineWidth = 1.3 + (i % 3) * 0.6;
+    ctx.beginPath();
+    ctx.moveTo(x, 0);
+    ctx.bezierCurveTo(x + 14, 150, x - 12, 370, x + 6, 512);
+    ctx.stroke();
+  }
+
+  // Medullary ray flecks unique to quarter-sawn oak
+  for (let f = 0; f < 90; f++) {
+    const fx = deterministicUnit(f, 1) * 512;
+    const fy = deterministicUnit(f, 2) * 512;
+    ctx.fillStyle = "rgba(180, 110, 45, 0.25)";
+    ctx.beginPath();
+    ctx.ellipse(fx, fy, 12 + deterministicUnit(f, 3) * 15, 3, Math.PI / 6, 0, Math.PI * 2);
+    ctx.fill();
+  }
+
+  const tex = new THREE.CanvasTexture(canvas);
+  tex.wrapS = THREE.RepeatWrapping;
+  tex.wrapT = THREE.RepeatWrapping;
+  tex.repeat.set(2, 2);
+  tex.colorSpace = THREE.SRGBColorSpace;
+  return tex;
+}
+
 export function buildHollerithTabulatingModel(): HollerithTabulatingModelResult {
   const rootGroup = new THREE.Group();
   const materialsToDispose: THREE.Material[] = [];
   const geometriesToDispose: THREE.BufferGeometry[] = [];
+  const texturesToDispose: THREE.Texture[] = [];
 
   const trackGeo = <T extends THREE.BufferGeometry>(geo: T): T => {
     geometriesToDispose.push(geo);
@@ -62,10 +117,14 @@ export function buildHollerithTabulatingModel(): HollerithTabulatingModelResult 
     return mat;
   };
 
+  const oakTex = createOakTexture();
+  if (oakTex) texturesToDispose.push(oakTex);
+
   // Materials
   const materials: HollerithTabulatingMaterials = {
     oakWood: trackMat(
       new THREE.MeshStandardMaterial({
+        ...(oakTex ? { map: oakTex } : {}),
         color: 0x78350f,
         roughness: 0.55,
         metalness: 0.05,
@@ -73,7 +132,7 @@ export function buildHollerithTabulatingModel(): HollerithTabulatingModelResult 
     ),
     dialFace: trackMat(
       new THREE.MeshStandardMaterial({
-        color: 0xfef08a,
+        color: 0xfef9c3,
         roughness: 0.2,
         metalness: 0.1,
       }),
@@ -106,6 +165,13 @@ export function buildHollerithTabulatingModel(): HollerithTabulatingModelResult 
         metalness: 0.98,
       }),
     ),
+    ebonite: trackMat(
+      new THREE.MeshStandardMaterial({
+        color: 0x0f172a,
+        roughness: 0.45,
+        metalness: 0.15,
+      }),
+    ),
   };
 
   // 1. Hardwood Table Console Desk
@@ -114,21 +180,35 @@ export function buildHollerithTabulatingModel(): HollerithTabulatingModelResult 
 
   const desk = new THREE.Mesh(trackGeo(new THREE.BoxGeometry(10.5, 0.8, 5.5)), materials.oakWood);
   desk.position.y = -1.2;
+  desk.castShadow = true;
   desk.receiveShadow = true;
   deskGroup.add(desk);
 
+  // Turned Oak Desk Legs with Flanged Brass Collars
   [
     [-4.5, -2.0],
     [4.5, -2.0],
     [-4.5, 2.0],
     [4.5, 2.0],
   ].forEach(([lx, lz]) => {
+    const legGroup = new THREE.Group();
+    legGroup.position.set(lx, -2.4, lz);
+
     const leg = new THREE.Mesh(
-      trackGeo(new THREE.CylinderGeometry(0.18, 0.18, 2.4, 12)),
+      trackGeo(new THREE.CylinderGeometry(0.18, 0.14, 2.4, 16)),
       materials.oakWood,
     );
-    leg.position.set(lx, -2.4, lz);
-    deskGroup.add(leg);
+    leg.castShadow = true;
+    legGroup.add(leg);
+
+    const brassCaster = new THREE.Mesh(
+      trackGeo(new THREE.CylinderGeometry(0.12, 0.16, 0.2, 12)),
+      materials.brassParts,
+    );
+    brassCaster.position.y = -1.15;
+    legGroup.add(brassCaster);
+
+    deskGroup.add(legGroup);
   });
 
   // 2. Vertical Clock Register Dial Bank (40 Dials) (Claim 1)
@@ -143,6 +223,14 @@ export function buildHollerithTabulatingModel(): HollerithTabulatingModelResult 
   dialBackboard.castShadow = true;
   dialBankGroup.add(dialBackboard);
 
+  // Architectural Oak Top Cornice on Dial Cabinet
+  const cornice = new THREE.Mesh(
+    trackGeo(new THREE.BoxGeometry(6.8, 0.25, 0.5)),
+    materials.oakWood,
+  );
+  cornice.position.y = 2.0;
+  dialBankGroup.add(cornice);
+
   const dials: THREE.Mesh[] = [];
   const dialHands: THREE.Mesh[] = [];
   const dialsPerRow = 10;
@@ -154,6 +242,7 @@ export function buildHollerithTabulatingModel(): HollerithTabulatingModelResult 
       dialGroup.position.set(-2.7 + c * 0.6, 1.2 - r * 0.75, 0.2);
       dialBankGroup.add(dialGroup);
 
+      // Dial face plate
       const dial = new THREE.Mesh(
         trackGeo(new THREE.CylinderGeometry(0.24, 0.24, 0.08, 16)),
         materials.dialFace,
@@ -162,11 +251,20 @@ export function buildHollerithTabulatingModel(): HollerithTabulatingModelResult 
       dialGroup.add(dial);
       dials.push(dial);
 
+      // Polished brass bezel ring
+      const bezel = new THREE.Mesh(
+        trackGeo(new THREE.TorusGeometry(0.25, 0.03, 8, 16)),
+        materials.brassParts,
+      );
+      bezel.position.z = 0.04;
+      dialGroup.add(bezel);
+
+      // Blued steel clock indicator hand
       const hand = new THREE.Mesh(
         trackGeo(new THREE.BoxGeometry(0.02, 0.18, 0.02)),
         materials.castIron,
       );
-      hand.position.set(0, 0.06, 0.05);
+      hand.position.set(0, 0.06, 0.06);
       dialGroup.add(hand);
       dialHands.push(hand);
     }
@@ -201,7 +299,7 @@ export function buildHollerithTabulatingModel(): HollerithTabulatingModelResult 
   );
   pinPlateGroup.add(pinPlate);
 
-  // Individual Sensing Pins
+  // Individual Sensing Pins in Matrix
   for (let pr = -0.5; pr <= 0.5; pr += 0.25) {
     for (let pc = -0.9; pc <= 0.9; pc += 0.3) {
       const pin = new THREE.Mesh(
@@ -221,7 +319,7 @@ export function buildHollerithTabulatingModel(): HollerithTabulatingModelResult 
   punchCard.position.y = 0.2;
   pressGroup.add(punchCard);
 
-  // Press Lever Handle
+  // Press Lever Handle with Turned Hardwood Grip
   const pressLever = new THREE.Mesh(
     trackGeo(new THREE.CylinderGeometry(0.06, 0.06, 2.2, 12)),
     materials.brassParts,
@@ -275,6 +373,9 @@ export function buildHollerithTabulatingModel(): HollerithTabulatingModelResult 
     }
     for (const g of geometriesToDispose) {
       g.dispose();
+    }
+    for (const t of texturesToDispose) {
+      t.dispose();
     }
   };
 

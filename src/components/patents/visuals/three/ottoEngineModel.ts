@@ -1,4 +1,5 @@
 import * as THREE from "three";
+import { fourStrokeCycle } from "@/physics/catalogKernels";
 
 export interface OttoEngineModelNodes {
   root: THREE.Group;
@@ -702,7 +703,8 @@ export function updateOttoEngineKinematics(
   nodes.connectingRod.rotation.z = rodAngle;
 
   // 4. 2:1 Lay Shaft (Camshaft) Half-Speed Rotation
-  const camAngle = crankAngle * 0.5;
+  const cycle = fourStrokeCycle(crankAngle);
+  const camAngle = cycle.camAngleRad;
   nodes.sideShaftGroup.rotation.x = camAngle;
 
   // 5. Slide Valve Reciprocation (Driven by Lay Shaft Eccentric)
@@ -711,10 +713,12 @@ export function updateOttoEngineKinematics(
   nodes.slideValvePlate.position.x = -3.45 + slideOffset;
   nodes.slideValveEccentricRod.rotation.x = Math.sin(camAngle) * 0.25;
 
-  // 6. Exhaust Valve & Rocker Arm (Opens during Exhaust Stroke 540-720 deg => camAngle 270-360 deg)
-  const cyclePhase = ((crankAngle % (Math.PI * 4)) + Math.PI * 4) % (Math.PI * 4);
-  const isExhaustStroke = cyclePhase >= Math.PI * 3 && cyclePhase < Math.PI * 4;
-  const exhaustLift = isExhaustStroke ? Math.sin(cyclePhase - Math.PI * 3) * 0.12 : 0;
+  // 6. Exhaust Valve & Rocker Arm (Opens during Exhaust Stroke 540-720 deg)
+  const cyclePhase = cycle.cyclePhaseRad;
+  const isExhaustStroke = cycle.strokeIndex === 3;
+  const exhaustLift = isExhaustStroke
+    ? Math.sin(cyclePhase - cycle.exhaustStartRad) * 0.12
+    : 0;
 
   nodes.exhaustValveStem.position.y = -0.35 - exhaustLift;
   nodes.exhaustRockerArm.rotation.z = exhaustLift * 1.8;
@@ -736,22 +740,22 @@ export function updateOttoEngineKinematics(
   nodes.combustionVolumeMesh.scale.set(1, gasLength / 1.8, 1);
   nodes.combustionVolumeMesh.position.x = -3.25 + gasLength / 2;
 
-  if (cyclePhase < Math.PI) {
+  if (cycle.strokeIndex === 0) {
     // INTAKE
     materials.combustionGas.color.setHex(0x38bdf8);
     materials.combustionGas.emissive.setHex(0x0284c7);
     materials.combustionGas.emissiveIntensity = 0.25;
     materials.combustionGas.opacity = 0.35;
-  } else if (cyclePhase < Math.PI * 2) {
+  } else if (cycle.strokeIndex === 1) {
     // COMPRESSION
-    const compFraction = (cyclePhase - Math.PI) / Math.PI;
+    const compFraction = (cyclePhase - cycle.strokeRad) / cycle.strokeRad;
     materials.combustionGas.color.setHex(0xf59e0b);
     materials.combustionGas.emissive.setHex(0xd97706);
     materials.combustionGas.emissiveIntensity = 0.3 + compFraction * 0.5;
     materials.combustionGas.opacity = 0.4 + compFraction * 0.3;
-  } else if (cyclePhase < Math.PI * 3) {
+  } else if (cycle.strokeIndex === 2) {
     // POWER (Expansion & Combustion)
-    const expFraction = (cyclePhase - Math.PI * 2) / Math.PI;
+    const expFraction = (cyclePhase - cycle.powerStartRad) / cycle.strokeRad;
     const intensity = Math.max(0.1, 1.0 - expFraction * 0.7);
     materials.combustionGas.color.setHex(0xffffff);
     materials.combustionGas.emissive.setHex(0xff5500);
