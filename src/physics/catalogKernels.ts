@@ -165,6 +165,9 @@ export function stepEricssonPropeller(params: { shaftRpm?: number; bladePitchAng
   const shaftOmegaRadPerS = (rpm * 2 * Math.PI) / 60;
   const thrustKn = Math.round((rpm / 120) ** 2 * 18 * pitchFactor);
   return {
+    isIllustrativeDisplayModel: true,
+    sourceSpiralAdvanceDiameters: 3,
+    sourceCasingClearanceInches: 0.125,
     shipSpeedKnots,
     thrustKn,
     pitchMeters,

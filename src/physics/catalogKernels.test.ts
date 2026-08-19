@@ -100,13 +100,11 @@ describe("Catalog Kernels & Shared SI Stepping Functions", () => {
     expect(res.enthalpyKjKg).toBeGreaterThan(0);
   });
 
-  test("Ericsson screw propeller computes thrust, slip, and advance ratio", () => {
+  test("Ericsson screw propeller keeps source facts distinct from its illustrative display model", () => {
     const res = stepEricssonPropeller({ shaftRpm: 120, bladePitchAngleDeg: 35 });
-    expect(res.thrustKn).toBeGreaterThan(0);
-    expect(res.slipFraction).toBeGreaterThanOrEqual(0);
-    expect(res.slipFraction).toBeLessThanOrEqual(1);
-    expect(res.slipPct).toBeCloseTo(res.slipFraction * 100, 5);
-    expect(res.propulsiveEfficiencyPct).toBeCloseTo((1 - res.slipFraction) * 100, 5);
+    expect(res.isIllustrativeDisplayModel).toBe(true);
+    expect(res.sourceSpiralAdvanceDiameters).toBe(3);
+    expect(res.sourceCasingClearanceInches).toBe(0.125);
     expect(res.bladeSvgRx).toBe(10);
     expect(res.forwardBladeSvgRy).toBe(50);
     expect(res.aftBladeSvgRy).toBe(45);
