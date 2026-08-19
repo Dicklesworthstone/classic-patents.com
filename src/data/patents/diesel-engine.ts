@@ -354,12 +354,13 @@ My invention has reference to improvements in the methods of and apparatus for c
         modernEquivalent: "compressed-gas storage vessel",
       },
     ],
-    scientificPrinciples: [],
+    scientificPrinciples:
+      _legacyUnpublishedDieselEnginePatent.plainEnglishExplanation.scientificPrinciples,
     whyItMattersToday:
       "The grant is a primary source for a particular controlled-combustion process and several apparatus combinations. Broader claims about later diesel-engine hardware, performance, industry, or historical disputes require separate cited research and are not presented here as facts established by US 542,846.",
   },
   claims: _legacyUnpublishedDieselEnginePatent.claims,
-  drawings: [],
+  drawings: _legacyUnpublishedDieselEnginePatent.drawings,
   historicalContext: {
     problemStatement:
       "The specification contrasts its controlled fuel-admission process with engine cycles in which combustion after ignition is left to itself, producing a marked increase of pressure and temperature.",
