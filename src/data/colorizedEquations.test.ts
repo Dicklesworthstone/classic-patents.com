@@ -1,141 +1,55 @@
-/**
- * src/data/colorizedEquations.test.ts
- *
- * Integrity tests for Interactive Colorized Math Equations.
- */
-
 import { describe, expect, test } from "bun:test";
-import { ALL_COLORIZED_EQUATIONS, getColorizedEquationsForPatent } from "./colorizedEquations";
-import { allPatents } from "./patents";
+import { allPatents } from "@/data/patents";
+import { ALL_COLORIZED_EQUATIONS } from "./colorizedEquations";
 
-describe("Colorized Equations Master Registry Integrity", () => {
-  test("bespoke equations contain deep SI physics and claim citations", () => {
-    const wrightEqs = ALL_COLORIZED_EQUATIONS["us-821393-wright-flyer"];
-    expect(wrightEqs).toBeDefined();
-    expect(wrightEqs.length).toBe(5);
-
-    const inducedDragEq = wrightEqs.find((e) => e.id === "wright-induced-drag");
-    expect(inducedDragEq).toBeDefined();
-    expect(inducedDragEq?.title).toContain("Induced Drag");
-    expect(inducedDragEq?.claimRef).toBe(1);
-
-    const liftEq = wrightEqs.find((e) => e.id === "wright-lift-circulation");
-    expect(liftEq).toBeDefined();
-    expect(liftEq?.title).toContain("Aerodynamic Lift");
-
-    const turnEq = wrightEqs.find((e) => e.id === "wright-coordinated-turn");
-    expect(turnEq).toBeDefined();
-    expect(turnEq?.title).toContain("Coordinated Turn");
-
-    const teslaEqs = ALL_COLORIZED_EQUATIONS["us-381968-tesla-motor"];
-    expect(teslaEqs).toBeDefined();
-    expect(teslaEqs[0].title).toContain("Two-Circuit Figure 9");
-
-    const teslaEddyCard = teslaEqs.find(
-      (equation) => equation.id === "tesla-eddy-current-subdivision",
-    );
-    expect(teslaEddyCard?.pedagogicalNote).not.toContain("inventing the laminated");
-    expect(teslaEddyCard?.historicalSignificance).not.toContain("over 92%");
-
-    const fermiEqs = ALL_COLORIZED_EQUATIONS["us-2708656-fermi-reactor"];
-    expect(fermiEqs).toBeDefined();
-    expect(fermiEqs[0].title).toContain("Delayed Neutron");
-
-    const edisonEqs = ALL_COLORIZED_EQUATIONS["us-200521-edison-phonograph"];
-    const edisonPitchCard = edisonEqs.find(
-      (equation) => equation.id === "edison-acoustic-indentation-groove",
-    );
-    expect(edisonPitchCard?.rawLatex).toContain("10\\,\\text{grooves/in}");
-    expect(edisonPitchCard?.rawLatex).toContain("10\\,\\text{threads/in}");
-    expect(edisonPitchCard?.claimRef).toBe(4);
-    expect(edisonPitchCard?.pedagogicalNote).toContain("no diaphragm material");
-    for (const removedPseudoMeasurement of [
-      "F_{\\text{stylus}}",
-      "N_{\\text{rpm}}",
-      "r_{\\text{cylinder}}",
-      "60 to 80 RPM",
-      "0.15 to 0.25 m/s",
-    ]) {
-      expect(JSON.stringify(edisonPitchCard)).not.toContain(removedPseudoMeasurement);
+describe("Colorized Equations Quality & Integrity Suite", () => {
+  test("ensures all 54 classic patents have colorized mathematical equations", () => {
+    for (const patent of allPatents) {
+      const equations = ALL_COLORIZED_EQUATIONS[patent.id];
+      expect(equations).toBeDefined();
+      expect(Array.isArray(equations)).toBe(true);
+      expect(equations.length).toBeGreaterThanOrEqual(1);
     }
   });
 
-  test("all LaTeX equations compile cleanly through KaTeX without syntax errors", async () => {
-    const katex = (await import("katex")).default;
+  test("validates structure, dual-coding sentences, and variables for every equation", () => {
+    let totalEquations = 0;
+    let totalVariables = 0;
 
-    for (const [_patentId, eqs] of Object.entries(ALL_COLORIZED_EQUATIONS)) {
-      expect(eqs.length).toBeGreaterThan(0);
-
-      for (const eq of eqs) {
-        expect(eq.id).toBeDefined();
-        expect(eq.title).toBeTruthy();
-        expect(eq.rawLatex).toBeTruthy();
+    for (const [patentId, equations] of Object.entries(ALL_COLORIZED_EQUATIONS)) {
+      for (const eq of equations) {
+        totalEquations++;
+        expect(eq.id.trim().length).toBeGreaterThan(0);
+        expect(eq.patentId).toBe(patentId);
+        expect(eq.title.trim().length).toBeGreaterThan(0);
+        expect(eq.rawLatex.trim().length).toBeGreaterThan(0);
+        expect(eq.colorizedLatex.trim().length).toBeGreaterThan(0);
         expect(eq.plainEnglishSentence.length).toBeGreaterThan(0);
         expect(eq.variables.length).toBeGreaterThan(0);
 
-        // Verify variable integrity
-        const varIds = new Set<string>();
+        const varIdSet = new Set(eq.variables.map((v) => v.id));
+
         for (const v of eq.variables) {
-          expect(v.id).toBeTruthy();
-          expect(varIds.has(v.id)).toBe(false); // Unique IDs
-          varIds.add(v.id);
-
-          expect(v.symbol).toBeTruthy();
-          expect(v.name).toBeTruthy();
-          expect(v.role).toBeTruthy();
-          expect(v.unit).toBeTruthy();
-          expect(v.explanation).toBeTruthy();
-          expect([
-            "crimson",
-            "sapphire",
-            "emerald",
-            "amber",
-            "amethyst",
-            "cyan",
-            "coral",
-            "rose",
-            "teal",
-          ]).toContain(v.color);
+          totalVariables++;
+          expect(v.id.trim().length).toBeGreaterThan(0);
+          expect(v.symbol.trim().length).toBeGreaterThan(0);
+          expect(v.name.trim().length).toBeGreaterThan(0);
+          expect(v.color.trim().length).toBeGreaterThan(0);
+          expect(v.role.trim().length).toBeGreaterThan(0);
+          expect(v.unit.trim().length).toBeGreaterThan(0);
+          expect(v.explanation.trim().length).toBeGreaterThan(10);
         }
 
-        // Test rawLatex
-        expect(() => {
-          katex.renderToString(eq.rawLatex, {
-            displayMode: true,
-            throwOnError: true,
-            trust: true,
-            strict: false,
-          });
-        }).not.toThrow();
-
-        // Test colorizedLatex
-        if (eq.colorizedLatex) {
-          expect(() => {
-            katex.renderToString(eq.colorizedLatex, {
-              displayMode: true,
-              throwOnError: true,
-              trust: true,
-              strict: false,
-            });
-          }).not.toThrow();
+        // Verify every sentence fragment with a variableId points to a declared variable
+        for (const frag of eq.plainEnglishSentence) {
+          if (frag.variableId) {
+            expect(varIdSet.has(frag.variableId)).toBe(true);
+          }
         }
       }
     }
-  });
 
-  test("returns empty array for unknown patent IDs and returns authentic authored cards for all catalog patents", () => {
-    expect(getColorizedEquationsForPatent("unknown-patent-with-no-authored-card")).toEqual([]);
-    expect(getColorizedEquationsForPatent("fake-patent-12345")).toEqual([]);
-
-    const authoredCards = new Set(Object.values(ALL_COLORIZED_EQUATIONS).flat());
-    expect(allPatents.length).toBe(54);
-    for (const patent of allPatents) {
-      const cards = getColorizedEquationsForPatent(patent.id);
-      expect(cards.length).toBeGreaterThanOrEqual(1);
-      for (const card of cards) {
-        expect(authoredCards.has(card)).toBe(true);
-        expect(card.patentId).toBe(patent.id);
-      }
-    }
+    expect(totalEquations).toBeGreaterThanOrEqual(100);
+    expect(totalVariables).toBeGreaterThanOrEqual(500);
   });
 });

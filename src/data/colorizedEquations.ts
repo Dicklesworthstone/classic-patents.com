@@ -1399,6 +1399,154 @@ export const ALL_COLORIZED_EQUATIONS: Record<string, ColorizedEquation[]> = {
   // 5. Philo Farnsworth Electronic Television (US 1,773,980)
   "us-1773980-farnsworth-tv": [
     {
+      id: "farnsworth-magnetic-focus-electron-lens",
+      patentId: "us-1773980-farnsworth-tv",
+      title: "Solenoidal Uniform Magnetic Focus & Cyclotron Electron Image Transfer",
+      category: "Electron Optics & Television",
+      rawLatex:
+        "B_{\\text{focus}} = \\frac{2\\pi m_e v_z}{e L} = \\frac{2\\pi}{L}\\sqrt{\\frac{2 m_e V_{\\text{anode}}}{e}} \\quad \\text{and} \\quad T_{\\text{cyclotron}} = \\frac{2\\pi m_e}{e B_{\\text{focus}}}",
+      colorizedLatex:
+        "\\textcolor{#059669}{B_{\\text{focus}}} = \\frac{2\\pi \\textcolor{#2563eb}{m_e} \\textcolor{#dc2626}{v_z}}{\\textcolor{#0891b2}{e} \\textcolor{#9333ea}{L}} = \\frac{2\\pi}{\\textcolor{#9333ea}{L}}\\sqrt{\\frac{2 \\textcolor{#2563eb}{m_e} \\textcolor{#ea580c}{V_{\\text{anode}}}}{\\textcolor{#0891b2}{e}}} \\quad \\text{and} \\quad \\textcolor{#d97706}{T_{\\text{cyclotron}}} = \\frac{2\\pi \\textcolor{#2563eb}{m_e}}{\\textcolor{#0891b2}{e} \\textcolor{#059669}{B_{\\text{focus}}}}",
+      plainEnglishSentence: [
+        {
+          text: "The ",
+        },
+        {
+          text: "longitudinal solenoidal magnetic focus field",
+          variableId: "b_focus",
+        },
+        {
+          text: " forces photoelectrons with ",
+        },
+        {
+          text: "electron mass",
+          variableId: "m_e",
+        },
+        {
+          text: ", ",
+        },
+        {
+          text: "elementary charge",
+          variableId: "e_charge",
+        },
+        {
+          text: ", and ",
+        },
+        {
+          text: "axial forward velocity",
+          variableId: "v_axial",
+        },
+        {
+          text: " accelerated by ",
+        },
+        {
+          text: "anode potential voltage",
+          variableId: "v_anode",
+        },
+        {
+          text: " across ",
+        },
+        {
+          text: "dissector tube drift length",
+          variableId: "l_drift",
+        },
+        {
+          text: " into exact ",
+        },
+        {
+          text: "cyclotron helical gyration periods",
+          variableId: "t_cyclo",
+        },
+        {
+          text: ", preserving a 1:1 undistorted electron image on the aperture plane.",
+        },
+      ],
+      variables: [
+        {
+          id: "b_focus",
+          symbol: "B_{\\text{focus}}",
+          name: "Solenoidal Focusing Magnetic Flux Density",
+          color: "emerald",
+          role: "Uniform longitudinal magnetic field along the dissector tube axis ($2\\text{ to }6\\text{ mT}$)",
+          unit: "Tesla (T) / Gauss (G)",
+          dimension: "[M T^-2 I^-1]",
+          explanation:
+            "Bends transverse velocity components into tight helical circles while leaving forward axial velocity untouched.",
+          telemetryMetricLabel: "Focus Field",
+        },
+        {
+          id: "m_e",
+          symbol: "m_e",
+          name: "Electron Rest Mass",
+          color: "sapphire",
+          role: "Inertial mass of the free electron ($9.1093837 \\times 10^{-31}\\text{ kg}$)",
+          unit: "kg",
+          dimension: "[M]",
+          explanation:
+            "Determines the orbital radius and cyclotron frequency in the magnetic lens.",
+        },
+        {
+          id: "e_charge",
+          symbol: "e",
+          name: "Elementary Electric Charge",
+          color: "cyan",
+          role: "Magnitude of electron charge ($1.60217663 \\times 10^{-19}\\text{ C}$)",
+          unit: "Coulombs (C)",
+          dimension: "[I T]",
+          explanation: "Couples electron velocity to electrostatic and magnetic Lorentz forces.",
+        },
+        {
+          id: "v_axial",
+          symbol: "v_z",
+          name: "Axial Forward Electron Velocity",
+          color: "crimson",
+          role: "Uniform drift velocity toward the aperture anode ($1.5 \\times 10^7\\text{ m/s}$ at $700\\text{ V}$)",
+          unit: "Meters / second (m/s)",
+          dimension: "[L T^-1]",
+          explanation: "Accelerated from the photocathode by the high-voltage anode ring.",
+        },
+        {
+          id: "v_anode",
+          symbol: "V_{\\text{anode}}",
+          name: "Anode Acceleration Potential",
+          color: "coral",
+          role: "Positive DC voltage applied to the target anode mesh ($500\\text{ to }1,200\\text{ V}$)",
+          unit: "Volts (V)",
+          dimension: "[M L^2 T^-3 I^-1]",
+          explanation:
+            "Establishes uniform axial kinetic energy $\\frac{1}{2} m_e v_z^2 = e V_{\\text{anode}}$.",
+          telemetryKey: "anodeVoltage",
+        },
+        {
+          id: "l_drift",
+          symbol: "L",
+          name: "Dissector Tube Drift Length",
+          color: "amethyst",
+          role: "Distance from photocathode plate to aperture scanning target ($0.20\\text{ to }0.35\\text{ m}$)",
+          unit: "Meters (m)",
+          dimension: "[L]",
+          explanation:
+            "Must equal exactly one full helical pitch of the electron cyclotron orbit ($L = v_z \\cdot T_{\\text{cyclotron}}$).",
+        },
+        {
+          id: "t_cyclo",
+          symbol: "T_{\\text{cyclotron}}",
+          name: "Cyclotron Helical Orbit Period",
+          color: "amber",
+          role: "Time for diverging electrons to complete one $360^\\circ$ gyration ($T \\approx 15\\text{ to }25\\text{ ns}$)",
+          unit: "Nanoseconds (ns)",
+          dimension: "[T]",
+          explanation:
+            "Because cyclotron period is independent of transverse velocity, all electrons from a given point reconverge simultaneously at distance $L$.",
+        },
+      ],
+      pedagogicalNote:
+        "Philo Farnsworth achieved the world's first all-electronic television transmission by using a uniform solenoidal magnetic field as an electron lens. Diverging electrons emitted from each optical pixel gyrate in matching helical spirals, arriving in sharp focus at the scanning aperture without mechanical moving parts.",
+      claimRef: 1,
+      historicalSignificance:
+        "US 1773980 eliminated spinning Nipkow mechanical disks, creating the all-electronic television broadcast industry and early video imaging.",
+    },
+    {
       id: "farnsworth-lorentz-deflection",
       patentId: "us-1773980-farnsworth-tv",
       title: "Relativistic Lorentz Magnetic Beam Steering & Anode Scanning",
@@ -2099,6 +2247,101 @@ export const ALL_COLORIZED_EQUATIONS: Record<string, ColorizedEquation[]> = {
 
   // 8. Hedy Lamarr & George Antheil Spread Spectrum (US 2,292,387)
   "us-2292387-lamarr-frequency-hopping": [
+    {
+      id: "lamarr-spread-spectrum-processing-gain",
+      patentId: "us-2292387-lamarr-frequency-hopping",
+      title: "88-Channel Spread-Spectrum Processing Gain & Anti-Jam Margin",
+      category: "Telecommunications & Spread Spectrum",
+      rawLatex:
+        "G_p = 10 \\log_{10}\\left(\\frac{B_{\\text{spread}}}{B_{\\text{signal}}}\\right) = 10 \\log_{10}(N_{\\text{channels}}) = 10 \\log_{10}(88) \\approx 19.44\\text{ dB}",
+      colorizedLatex:
+        "\\textcolor{#059669}{G_p} = 10 \\log_{10}\\left(\\frac{\\textcolor{#2563eb}{B_{\\text{spread}}}}{\\textcolor{#dc2626}{B_{\\text{signal}}}}\\right) = 10 \\log_{10}(\\textcolor{#9333ea}{N_{\\text{channels}}}) = 10 \\log_{10}(\\textcolor{#9333ea}{88}) \\approx \\textcolor{#059669}{19.44\\text{ dB}}",
+      plainEnglishSentence: [
+        {
+          text: "The ",
+        },
+        {
+          text: "spread-spectrum anti-jam processing gain",
+          variableId: "g_gain",
+        },
+        {
+          text: " dilutes interference power by expanding transmission over ",
+        },
+        {
+          text: "wide RF spread bandwidth",
+          variableId: "b_spread",
+        },
+        {
+          text: " relative to ",
+        },
+        {
+          text: "narrowband control signal bandwidth",
+          variableId: "b_signal",
+        },
+        {
+          text: " across ",
+        },
+        {
+          text: "88 piano-roll carrier frequencies",
+          variableId: "n_channels",
+        },
+        {
+          text: ", rendering radio-guided torpedo controls immune to hostile jamming.",
+        },
+      ],
+      variables: [
+        {
+          id: "g_gain",
+          symbol: "G_p",
+          name: "Spread-Spectrum Processing Gain",
+          color: "emerald",
+          role: "Effective signal-to-noise and anti-jam advantage over single-frequency transmission ($+19.44\\text{ dB}$)",
+          unit: "Decibels (dB)",
+          dimension: "[1]",
+          explanation:
+            "A hostile jammer must broadcast 88 times more power across all channels simultaneously to disrupt communication.",
+          telemetryMetricLabel: "Processing Gain",
+        },
+        {
+          id: "b_spread",
+          symbol: "B_{\\text{spread}}",
+          name: "Total Spread RF Transmission Bandwidth",
+          color: "sapphire",
+          role: "Total spectrum span covered by all 88 hopping channels ($10\\text{ to }50\\text{ MHz}$)",
+          unit: "Megahertz (MHz)",
+          dimension: "[T^-1]",
+          explanation:
+            "The wide swath of radio frequencies across which the signal hops pseudo-randomly.",
+        },
+        {
+          id: "b_signal",
+          symbol: "B_{\\text{signal}}",
+          name: "Narrowband Steering Signal Bandwidth",
+          color: "crimson",
+          role: "Bandwidth required for rudder, elevator, and throttle telemetry ($10\\text{ to }50\\text{ kHz}$)",
+          unit: "Kilohertz (kHz)",
+          dimension: "[T^-1]",
+          explanation: "The low-bandwidth control stream encoded onto each instantaneous hop.",
+        },
+        {
+          id: "n_channels",
+          symbol: "N_{\\text{channels}}",
+          name: "Discrete Hopping Channel Count",
+          color: "amethyst",
+          role: "Number of synchronized carrier frequencies controlled by the 88 piano roll perforations ($N = 88$)",
+          unit: "Channels (count)",
+          dimension: "[1]",
+          explanation:
+            "Lamarr and Antheil chose 88 channels inspired by the 88 keys on a standard concert piano keyboard.",
+          telemetryKey: "channelCount",
+        },
+      ],
+      pedagogicalNote:
+        "Hedy Lamarr and George Antheil invented frequency hopping by synchronizing matching slotted piano rolls in the transmitter ship and receiver torpedo. As the perforated tapes advance together, both radios jump simultaneously across 88 distinct carrier frequencies, preventing enemies from intercepting or jamming the steering signal.",
+      claimRef: 1,
+      historicalSignificance:
+        "US 2292387 is the direct ancestor of modern spread-spectrum communications, providing the foundational architecture for Wi-Fi, Bluetooth, CDMA cellular networks, and GPS.",
+    },
     {
       id: "lamarr-spread-spectrum-gain",
       patentId: "us-2292387-lamarr-frequency-hopping",
@@ -5555,6 +5798,121 @@ export const ALL_COLORIZED_EQUATIONS: Record<string, ColorizedEquation[]> = {
   // 20. Lester Pelton Split-Bucket Impulse Water Wheel (US 233,692)
   "us-233692-pelton-water-wheel": [
     {
+      id: "pelton-hydraulic-efficiency-optimal-speed",
+      patentId: "us-233692-pelton-water-wheel",
+      title: "Pelton Runner Hydraulic Efficiency & Optimal Tip-Speed Ratio",
+      category: "Turbomachinery & Fluid Power",
+      rawLatex:
+        "\\eta_{\\text{hydraulic}} = 2 \\frac{u}{v_{\\text{jet}}} \\left(1 - \\frac{u}{v_{\\text{jet}}}\\right)(1 - k_v \\cos\\beta) \\quad \\text{with } \\eta_{\\text{max}} \\approx 0.5(1 - k_v \\cos\\beta)",
+      colorizedLatex:
+        "\\textcolor{#059669}{\\eta_{\\text{hydraulic}}} = 2 \\frac{\\textcolor{#d97706}{u}}{\\textcolor{#2563eb}{v_{\\text{jet}}}} \\left(1 - \\frac{\\textcolor{#d97706}{u}}{\\textcolor{#2563eb}{v_{\\text{jet}}}}\\right)(1 - \\textcolor{#ea580c}{k_v} \\textcolor{#9333ea}{\\cos\\beta})",
+      plainEnglishSentence: [
+        {
+          text: "The ",
+        },
+        {
+          text: "runner hydraulic efficiency",
+          variableId: "eta_hyd",
+        },
+        {
+          text: " is maximized when the ratio of ",
+        },
+        {
+          text: "bucket peripheral speed",
+          variableId: "u_speed",
+        },
+        {
+          text: " to ",
+        },
+        {
+          text: "inlet Torricelli jet velocity",
+          variableId: "v_jet",
+        },
+        {
+          text: " reaches 0.46–0.48, combined with the ",
+        },
+        {
+          text: "bucket surface friction factor",
+          variableId: "k_fric",
+        },
+        {
+          text: " and the ",
+        },
+        {
+          text: "165-degree splitter cup discharge angle",
+          variableId: "beta_angle",
+        },
+        {
+          text: " to transfer over 90% of water kinetic energy directly to the shaft.",
+        },
+      ],
+      variables: [
+        {
+          id: "eta_hyd",
+          symbol: "\\eta_{\\text{hydraulic}}",
+          name: "Runner Hydraulic Efficiency",
+          color: "emerald",
+          role: "Fraction of incoming jet kinetic energy converted into mechanical shaft torque (88% to 94%)",
+          unit: "Dimensionless efficiency [0 to 1]",
+          dimension: "[1]",
+          explanation:
+            "Exceeds all previous water wheel designs because the split cups reverse fluid momentum smoothly without turbulent eddy collisions.",
+          telemetryMetricLabel: "Efficiency",
+        },
+        {
+          id: "u_speed",
+          symbol: "u",
+          name: "Bucket Pitch-Line Velocity",
+          color: "amber",
+          role: "Tangential runner speed at the jet centerline pitch circle ($u = \\omega \\cdot r$)",
+          unit: "Meters / second (m/s)",
+          dimension: "[L T^-1]",
+          explanation:
+            "Matches the moving coordinate frame of the water bucket to minimize entry splash losses.",
+          telemetryKey: "wheelRpm",
+        },
+        {
+          id: "v_jet",
+          symbol: "v_{\\text{jet}}",
+          name: "Inlet High-Head Jet Velocity",
+          color: "sapphire",
+          role: "Torricelli spouting velocity from the high-pressure penstock nozzle ($v = \\sqrt{2 g H}$)",
+          unit: "Meters / second (m/s)",
+          dimension: "[L T^-1]",
+          explanation:
+            "High mountain head converts hydrostatic gravitational potential energy into concentrated kinetic fluid power.",
+          telemetryKey: "headPressureMeters",
+        },
+        {
+          id: "k_fric",
+          symbol: "k_v",
+          name: "Bucket Friction Velocity Coefficient",
+          color: "coral",
+          role: "Empirical velocity reduction factor due to fluid boundary layer drag inside the polished cup ($k_v \\approx 0.92\\text{ to }0.97$)",
+          unit: "Dimensionless factor [0 to 1]",
+          dimension: "[1]",
+          explanation:
+            "Accounts for viscous shear resistance as the divided jet wipes around the curved cup bowl.",
+        },
+        {
+          id: "beta_angle",
+          symbol: "\\beta",
+          name: "Discharge Deflection Angle",
+          color: "amethyst",
+          role: "Exit angle of the water relative to the bucket tangent plane (typically $165^\\circ$)",
+          unit: "Degrees (°)",
+          dimension: "[1]",
+          explanation:
+            "Slightly less than 180° so the spent discharge water clears the following incoming runner bucket.",
+        },
+      ],
+      pedagogicalNote:
+        "Lester Pelton demonstrated that impulse extraction is fundamentally an momentum-transfer optimization: when the cup moves at exactly half the speed of the water jet, the exiting water drops with near-zero absolute velocity, converting kinetic energy into rotational work.",
+      claimRef: 1,
+      historicalSignificance:
+        "Pelton's bucket geometry established the mathematical and mechanical foundation for all modern impulse turbomachinery, driving the electrification of the American West.",
+    },
+    {
       id: "pelton-impulse-momentum",
       patentId: "us-233692-pelton-water-wheel",
       title: "Euler Double-Cup Splitter Bucket Momentum Reversal & Peak Impulse Work",
@@ -5661,6 +6019,156 @@ export const ALL_COLORIZED_EQUATIONS: Record<string, ColorizedEquation[]> = {
 
   // 21. Willis Carrier Air Conditioner (US 808,897)
   "us-808897-carrier-air-conditioner": [
+    {
+      id: "carrier-latent-dehumidification-rate",
+      patentId: "us-808897-carrier-air-conditioner",
+      title: "Spray-Chamber Latent Heat Dehumidification & Condensation Rate",
+      category: "Psychrometrics & Air Conditioning",
+      rawLatex:
+        "\\dot{m}_{\\text{cond}} = \\dot{m}_{\\text{air}} (W_{\\text{in}} - W_{\\text{dew}}) \\quad \\text{and} \\quad \\dot{Q}_{\\text{cooling}} = \\dot{m}_{\\text{air}} [ (h_{\\text{in}} - h_{\\text{dew}}) + c_{pa}(T_{\\text{dew}} - T_{\\text{supply}}) ]",
+      colorizedLatex:
+        "\\textcolor{#059669}{\\dot{m}_{\\text{cond}}} = \\textcolor{#2563eb}{\\dot{m}_{\\text{air}}} (\\textcolor{#dc2626}{W_{\\text{in}}} - \\textcolor{#0891b2}{W_{\\text{dew}}}) \\quad \\text{and} \\quad \\textcolor{#ea580c}{\\dot{Q}_{\\text{cooling}}} = \\textcolor{#2563eb}{\\dot{m}_{\\text{air}}} [ (\\textcolor{#9333ea}{h_{\\text{in}}} - \\textcolor{#9333ea}{h_{\\text{dew}}}) + c_{pa}(\\textcolor{#d97706}{T_{\\text{dew}}} - \\textcolor{#d97706}{T_{\\text{supply}}}) ]",
+      plainEnglishSentence: [
+        {
+          text: "The ",
+        },
+        {
+          text: "water condensation rate",
+          variableId: "m_cond",
+        },
+        {
+          text: " removed from the ",
+        },
+        {
+          text: "air mass flow rate",
+          variableId: "m_air",
+        },
+        {
+          text: " equals the drop from ",
+        },
+        {
+          text: "inlet specific humidity",
+          variableId: "w_in",
+        },
+        {
+          text: " to ",
+        },
+        {
+          text: "saturation dew-point humidity",
+          variableId: "w_dew",
+        },
+        {
+          text: ", requiring ",
+        },
+        {
+          text: "total refrigeration cooling rate",
+          variableId: "q_cool",
+        },
+        {
+          text: " to absorb ",
+        },
+        {
+          text: "enthalpy difference",
+          variableId: "h_diff",
+        },
+        {
+          text: " down to ",
+        },
+        {
+          text: "controlled dew-point temperature",
+          variableId: "t_dew",
+        },
+        {
+          text: ".",
+        },
+      ],
+      variables: [
+        {
+          id: "m_cond",
+          symbol: "\\dot{m}_{\\text{cond}}",
+          name: "Moisture Condensation Removal Rate",
+          color: "emerald",
+          role: "Mass rate of water vapor condensed from the air stream ($10\\text{ to }100\\text{ kg/hr}$)",
+          unit: "Kilograms / hour (kg/hr)",
+          dimension: "[M T^-1]",
+          explanation:
+            "Excess water vapor condenses into atomized cold spray droplets and drains into the collection sump.",
+          telemetryMetricLabel: "Condensation Rate",
+        },
+        {
+          id: "m_air",
+          symbol: "\\dot{m}_{\\text{air}}",
+          name: "Processed Dry Air Mass Flow",
+          color: "sapphire",
+          role: "Total air mass circulated through the spray chamber per second ($2\\text{ to }15\\text{ kg/s}$)",
+          unit: "Kilograms / second (kg/s)",
+          dimension: "[M T^-1]",
+          explanation: "Circulated by the centrifugal blower fan.",
+          telemetryKey: "fanCfm",
+        },
+        {
+          id: "w_in",
+          symbol: "W_{\\text{in}}",
+          name: "Inlet Air Humidity Ratio",
+          color: "crimson",
+          role: "Initial moisture content of unconditioned warm outdoor air ($0.015\\text{ to }0.022\\text{ kg water / kg dry air}$)",
+          unit: "kg moisture / kg dry air",
+          dimension: "[1]",
+          explanation:
+            "High summer humidity that causes paper stretching, rust, and thermal discomfort.",
+          telemetryKey: "inletHumidityPct",
+        },
+        {
+          id: "w_dew",
+          symbol: "W_{\\text{dew}}",
+          name: "Saturation Dew-Point Humidity Ratio",
+          color: "cyan",
+          role: "Moisture content of saturated air leaving the cold water spray chamber ($0.007\\text{ to }0.009\\text{ kg/kg}$)",
+          unit: "kg moisture / kg dry air",
+          dimension: "[1]",
+          explanation:
+            "Fixed precisely by regulating the temperature of the recirculated chilled water spray.",
+        },
+        {
+          id: "q_cool",
+          symbol: "\\dot{Q}_{\\text{cooling}}",
+          name: "Total Thermal Cooling Capacity",
+          color: "coral",
+          role: "Total refrigeration load needed to condense moisture and drop air temperature ($20\\text{ to }150\\text{ kW}$ / tons)",
+          unit: "Kilowatts (kW) / Tons Refrigeration",
+          dimension: "[M L^2 T^-3]",
+          explanation:
+            "Combines sensible heat reduction and the large latent heat of water condensation ($h_{fg} \\approx 2,450\\text{ kJ/kg}$).",
+        },
+        {
+          id: "h_diff",
+          symbol: "h",
+          name: "Specific Enthalpy",
+          color: "amethyst",
+          role: "Thermodynamic heat content per kilogram of moist air ($h_{\\text{in}} \\approx 65\\text{ kJ/kg} \\to h_{\\text{dew}} \\approx 30\\text{ kJ/kg}$)",
+          unit: "Kilojoules / kg (kJ/kg)",
+          dimension: "[L^2 T^-2]",
+          explanation: "Represents the total energy removed across the spray washer.",
+        },
+        {
+          id: "t_dew",
+          symbol: "T_{\\text{dew}}",
+          name: "Apparatus Dew-Point Temperature",
+          color: "amber",
+          role: "Target saturation temperature of the spray mist ($10^\\circ\\text{C}$ to $13^\\circ\\text{C}$)",
+          unit: "Celsius (°C) / Kelvin (K)",
+          dimension: "[\\Theta]",
+          explanation:
+            "Carrier's breakthrough was using water spray to dehumidify air by cooling it below its condensation threshold.",
+          telemetryKey: "sprayWaterTempC",
+        },
+      ],
+      pedagogicalNote:
+        "Willis Carrier solved industrial humidity control by recognizing a counter-intuitive principle: spraying water into humid air can dehumidify it, provided the spray water is chilled below the air's dew point. Moisture from the air condenses onto the cold droplets and drains away, leaving the air dry and conditioned.",
+      claimRef: 1,
+      historicalSignificance:
+        "US 808897 established modern psychrometric engineering and climate control, transforming world architecture, semiconductor cleanrooms, pharmaceutical manufacturing, and modern urbanization.",
+    },
     {
       id: "carrier-psychrometric-enthalpy",
       patentId: "us-808897-carrier-air-conditioner",
@@ -7923,6 +8431,138 @@ export const ALL_COLORIZED_EQUATIONS: Record<string, ColorizedEquation[]> = {
   // 31. Richard Gatling Revolving Battery Gun (US 36,836)
   "us-36836-gatling-gun": [
     {
+      id: "gatling-cyclic-rate-cam-kinematics",
+      patentId: "us-36836-gatling-gun",
+      title: "Multi-Barrel Cluster Firing Rate & Cylindrical Cam Lock Geometry",
+      category: "Ballistics & Rapid-Fire Mechanism",
+      rawLatex:
+        "\\text{Rate}_{\\text{fire}} = N_{\\text{barrels}} \\cdot \\Omega_{\\text{crank}} \\cdot \\left(\\frac{Z_{\\text{crank}}}{Z_{\\text{cluster}}}\\right) \\quad \\text{and} \\quad z_{\\text{bolt}}(\\theta) = R_{\\text{cam}} \\tan\\alpha_{\\text{groove}} \\cdot \\theta",
+      colorizedLatex:
+        "\\textcolor{#059669}{\\text{Rate}_{\\text{fire}}} = \\textcolor{#9333ea}{N_{\\text{barrels}}} \\cdot \\textcolor{#2563eb}{\\Omega_{\\text{crank}}} \\cdot \\left(\\frac{\\textcolor{#ea580c}{Z_{\\text{crank}}}}{\\textcolor{#d97706}{Z_{\\text{cluster}}}}\\right) \\quad \\text{and} \\quad \\textcolor{#dc2626}{z_{\\text{bolt}}(\\theta)} = \\textcolor{#0891b2}{R_{\\text{cam}}} \\tan\\alpha_{\\text{groove}} \\cdot \\theta",
+      plainEnglishSentence: [
+        {
+          text: "The ",
+        },
+        {
+          text: "continuous cyclic firing rate",
+          variableId: "rate_fire",
+        },
+        {
+          text: " scales with the ",
+        },
+        {
+          text: "six revolving barrels",
+          variableId: "n_barrels",
+        },
+        {
+          text: ", ",
+        },
+        {
+          text: "hand-crank rotational speed",
+          variableId: "omega_crank",
+        },
+        {
+          text: ", and ",
+        },
+        {
+          text: "crank-to-cluster gear ratio",
+          variableId: "gear_ratio",
+        },
+        {
+          text: ", while the ",
+        },
+        {
+          text: "axial breech bolt position",
+          variableId: "z_bolt",
+        },
+        {
+          text: " is governed by the ",
+        },
+        {
+          text: "stationary cylindrical cam radius",
+          variableId: "r_cam",
+        },
+        {
+          text: " to lock, fire, and extract cases continuously.",
+        },
+      ],
+      variables: [
+        {
+          id: "rate_fire",
+          symbol: "\\text{Rate}_{\\text{fire}}",
+          name: "Cyclic Firing Rate",
+          color: "emerald",
+          role: "Rate of continuous gunfire ($200\\text{ to }400\\text{ rounds/min}$ hand-cranked; $>3,000\\text{ rpm}$ motorized)",
+          unit: "Rounds / minute (RPM)",
+          dimension: "[T^-1]",
+          explanation:
+            "Because each barrel fires only once per cluster revolution, barrels have five-sixths of each cycle to cool, preventing cook-offs.",
+          telemetryMetricLabel: "Firing Rate",
+        },
+        {
+          id: "n_barrels",
+          symbol: "N_{\\text{barrels}}",
+          name: "Revolving Barrel Count",
+          color: "amethyst",
+          role: "Number of parallel rifled gun barrels arranged symmetrically around the central drive axis ($N = 6$)",
+          unit: "Barrels (count)",
+          dimension: "[1]",
+          explanation: "Six independent barrels and matching breech bolts revolve in unison.",
+          telemetryKey: "barrelCount",
+        },
+        {
+          id: "omega_crank",
+          symbol: "\\Omega_{\\text{crank}}",
+          name: "Hand Crank Angular Velocity",
+          color: "sapphire",
+          role: "Operator manual cranking speed ($40\\text{ to }80\\text{ RPM}$)",
+          unit: "Revolutions / minute (RPM)",
+          dimension: "[T^-1]",
+          explanation:
+            "Turned smoothly by the gunner while a loader feeds gravity hopper cartridges.",
+          telemetryKey: "crankRpm",
+        },
+        {
+          id: "gear_ratio",
+          symbol: "Z_{\\text{crank}}/Z_{\\text{cluster}}",
+          name: "Drive Bevel Gear Ratio",
+          color: "coral",
+          role: "Gear tooth ratio between hand-crank pinion and main barrel cluster ring gear ($1:1\\text{ to }1:2$)",
+          unit: "Ratio (dimensionless)",
+          dimension: "[1]",
+          explanation:
+            "Transmits torque from the lateral crank handle to the central revolving shaft.",
+        },
+        {
+          id: "z_bolt",
+          symbol: "z_{\\text{bolt}}(\\theta)",
+          name: "Axial Bolt Travel Position",
+          color: "crimson",
+          role: "Longitudinal forward/aft position of each breech bolt inside its guide slot ($0\\text{ to }120\\text{ mm}$)",
+          unit: "Millimeters (mm)",
+          dimension: "[L]",
+          explanation:
+            "Reaches maximum forward position and positive mechanical lock at the top of rotation where firing occurs.",
+        },
+        {
+          id: "r_cam",
+          symbol: "R_{\\text{cam}}",
+          name: "Stationary Cylindrical Cam Radius",
+          color: "cyan",
+          role: "Radius of the fixed outer spiral groove housing driving bolt guide lugs ($75\\text{ to }110\\text{ mm}$)",
+          unit: "Millimeters (mm)",
+          dimension: "[L]",
+          explanation:
+            "Forces bolts forward into chambering, holds them locked during powder burn, and pulls them rearward to eject spent copper shells.",
+        },
+      ],
+      pedagogicalNote:
+        "Richard Gatling distributed the rapid-fire load across multiple revolving barrels. While one barrel is firing at top-dead-center, three others are chambering fresh rounds and two are extracting spent shells, eliminating overheating and allowing sustained high-volume fire.",
+      claimRef: 1,
+      historicalSignificance:
+        "US 36836 was the first successful rapid-fire multi-barrel weapon, establishing the rotary cluster mechanism later adapted for modern 20mm M61 Vulcan cannons and GAU-8 Avenger systems.",
+    },
+    {
       id: "gatling-rotary-firing-cadence",
       patentId: "us-36836-gatling-gun",
       title: "Multi-Barrel Rotary Firing Cadence & Cam Bolt Acceleration",
@@ -8026,6 +8666,187 @@ export const ALL_COLORIZED_EQUATIONS: Record<string, ColorizedEquation[]> = {
 
   // 32. Hiram Maxim Automatic Machine Gun (US 319,596)
   "us-319596-maxim-machine-gun": [
+    {
+      id: "maxim-short-recoil-barrel-cooling",
+      patentId: "us-319596-maxim-machine-gun",
+      title: "Short-Recoil Momentum Conservation & Evaporative Water Jacket Cooling",
+      category: "Ballistics & Thermodynamics",
+      rawLatex:
+        "m_{\\text{barrel}} v_{\\text{recoil}} = m_{\\text{bullet}} v_{\\text{muzzle}} + \\int_0^{t_{\\text{exit}}} P(t) A_{\\text{bore}} dt \\quad \\text{and} \\quad \\dot{Q}_{\\text{cool}} = \\dot{m}_{\\text{steam}} h_{fg}",
+      colorizedLatex:
+        "\\textcolor{#2563eb}{m_{\\text{barrel}}} \\textcolor{#059669}{v_{\\text{recoil}}} = \\textcolor{#dc2626}{m_{\\text{bullet}}} \\textcolor{#d97706}{v_{\\text{muzzle}}} + \\int_0^{t_{\\text{exit}}} \\textcolor{#ea580c}{P(t)} \\textcolor{#0891b2}{A_{\\text{bore}}} dt \\quad \\text{and} \\quad \\textcolor{#9333ea}{\\dot{Q}_{\\text{cool}}} = \\textcolor{#059669}{\\dot{m}_{\\text{steam}}} \\textcolor{#2563eb}{h_{fg}}",
+      plainEnglishSentence: [
+        {
+          text: "The ",
+        },
+        {
+          text: "backward recoil velocity",
+          variableId: "v_rec",
+        },
+        {
+          text: " of the ",
+        },
+        {
+          text: "barrel and breech mass",
+          variableId: "m_bar",
+        },
+        {
+          text: " is driven by ",
+        },
+        {
+          text: "bullet mass",
+          variableId: "m_bul",
+        },
+        {
+          text: ", ",
+        },
+        {
+          text: "muzzle exit velocity",
+          variableId: "v_muz",
+        },
+        {
+          text: ", and ",
+        },
+        {
+          text: "expanding propellant gas pressure",
+          variableId: "p_gas",
+        },
+        {
+          text: " across ",
+        },
+        {
+          text: "bore area",
+          variableId: "a_bore",
+        },
+        {
+          text: ", with ",
+        },
+        {
+          text: "evaporative cooling heat rate",
+          variableId: "q_cool",
+        },
+        {
+          text: " boiling ",
+        },
+        {
+          text: "steam mass",
+          variableId: "m_steam",
+        },
+        {
+          text: " at ",
+        },
+        {
+          text: "water vaporization enthalpy",
+          variableId: "h_fg",
+        },
+        {
+          text: " to prevent barrel melting during sustained automatic fire.",
+        },
+      ],
+      variables: [
+        {
+          id: "v_rec",
+          symbol: "v_{\\text{recoil}}",
+          name: "Barrel Short-Recoil Velocity",
+          color: "emerald",
+          role: "Rearward velocity of the barrel and bolt during the initial $19\\text{ mm}$ of travel ($3\\text{ to }6\\text{ m/s}$)",
+          unit: "Meters / second (m/s)",
+          dimension: "[L T^-1]",
+          explanation:
+            "Supplies the kinetic energy to compress the fusee return spring, cock the striker, and advance the cloth ammunition belt.",
+          telemetryMetricLabel: "Recoil Velocity",
+        },
+        {
+          id: "m_bar",
+          symbol: "m_{\\text{barrel}}",
+          name: "Recoiling Barrel and Lock Mass",
+          color: "sapphire",
+          role: "Combined mass of the rifled barrel, extension, and toggle lock assembly ($2.5\\text{ to }4.0\\text{ kg}$)",
+          unit: "kg",
+          dimension: "[M]",
+          explanation: "Moves rearward together locked until the toggle hits the unlocking cam.",
+        },
+        {
+          id: "m_bul",
+          symbol: "m_{\\text{bullet}}",
+          name: "Bullet Projectile Mass",
+          color: "crimson",
+          role: "Mass of the lead/cupronickel projectile ($0.009\\text{ to }0.014\\text{ kg} \\approx 140\\text{ to }215\\text{ grains}$)",
+          unit: "kg",
+          dimension: "[M]",
+          explanation: "Accelerated down the rifled barrel by smokeless powder combustion.",
+        },
+        {
+          id: "v_muz",
+          symbol: "v_{\\text{muzzle}}",
+          name: "Muzzle Exit Velocity",
+          color: "amber",
+          role: "Speed of bullet leaving the muzzle ($700\\text{ to }800\\text{ m/s}$)",
+          unit: "Meters / second (m/s)",
+          dimension: "[L T^-1]",
+          explanation:
+            "High velocity generates large forward momentum, producing matching rearward recoil impulse.",
+        },
+        {
+          id: "p_gas",
+          symbol: "P(t)",
+          name: "Combustion Chamber Pressure",
+          color: "coral",
+          role: "Propellant gas pressure curve peaking at $250\\text{ to }350\\text{ MPa}$ ($40,000\\text{ psi}$)",
+          unit: "Megapascals (MPa)",
+          dimension: "[M L^-1 T^-2]",
+          explanation: "Expands behind the bullet and pushes against the sealed breech face.",
+        },
+        {
+          id: "a_bore",
+          symbol: "A_{\\text{bore}}",
+          name: "Gun Barrel Bore Area",
+          color: "cyan",
+          role: "Cross-sectional internal area of the .303 / 7.62mm rifled bore ($A = \\frac{\\pi d^2}{4}$)",
+          unit: "Square millimeters (mm^2)",
+          dimension: "[L^2]",
+          explanation: "Area across which high pressure acts to produce recoil thrust.",
+        },
+        {
+          id: "q_cool",
+          symbol: "\\dot{Q}_{\\text{cool}}",
+          name: "Evaporative Cooling Heat Dissipation",
+          color: "amethyst",
+          role: "Thermal energy extracted by boiling water inside the 4-liter jacket surrounding the barrel ($15\\text{ to }30\\text{ kW}$)",
+          unit: "Kilowatts (kW)",
+          dimension: "[M L^2 T^-3]",
+          explanation:
+            "At 600 rounds/min, water boils after 600 rounds, carrying away heat as steam through the condenser tube.",
+        },
+        {
+          id: "m_steam",
+          symbol: "\\dot{m}_{\\text{steam}}",
+          name: "Steam Evaporation Mass Rate",
+          color: "emerald",
+          role: "Rate of water boiled into steam during sustained fire ($0.5\\text{ to }1.5\\text{ L / 1,000 rounds}$)",
+          unit: "Kilograms / second (kg/s)",
+          dimension: "[M T^-1]",
+          explanation:
+            "Steam vents through a hose into an external condensing can to avoid revealing the gunner's position.",
+        },
+        {
+          id: "h_fg",
+          symbol: "h_{fg}",
+          name: "Latent Heat of Water Vaporization",
+          color: "sapphire",
+          role: "Specific enthalpy of boiling water at atmospheric pressure ($2,257\\text{ kJ/kg}$)",
+          unit: "Kilojoules / kilogram (kJ/kg)",
+          dimension: "[L^2 T^-2]",
+          explanation:
+            "Water's enormous latent heat of vaporization provides unmatched compact thermal protection.",
+        },
+      ],
+      pedagogicalNote:
+        "Hiram Maxim created the first fully automatic firearm by harnessing the physical energy of recoil that gunners previously fought. Expanding powder gases push the barrel backward, which unlocks a toggle joint, ejects the spent case, chambers a fresh cartridge from a canvas belt, and fires again automatically for as long as the trigger is held.",
+      claimRef: 1,
+      historicalSignificance:
+        "US 319596 introduced automatic weapons to world military history, fundamentally reshaping 20th-century infantry tactics and industrial warfare.",
+    },
     {
       id: "maxim-recoil-momentum-toggle",
       patentId: "us-319596-maxim-machine-gun",
@@ -8610,6 +9431,138 @@ export const ALL_COLORIZED_EQUATIONS: Record<string, ColorizedEquation[]> = {
 
   // 35. Elihu Thomson Electric Resistance Welding (US 347,140)
   "us-347140-thomson-welding": [
+    {
+      id: "thomson-plastic-upset-forging-force",
+      patentId: "us-347140-thomson-welding",
+      title: "Plastic Upset Forging Mechanics & Interface Oxide Exclusion",
+      category: "Metallurgy & Resistance Welding",
+      rawLatex:
+        "\\sigma_{\\text{upset}} = \\frac{F_{\\text{clamp}}}{A_{\\text{bar}}} > \\sigma_{\\text{yield}}(T_{\\text{weld}}) \\quad \\text{and} \\quad \\Delta L_{\\text{upset}} = \\int_0^{t_{\\text{forge}}} \\dot{\\varepsilon}_{\\text{plastic}}(T, \\sigma) \\cdot L_0 \\, dt",
+      colorizedLatex:
+        "\\textcolor{#059669}{\\sigma_{\\text{upset}}} = \\frac{\\textcolor{#dc2626}{F_{\\text{clamp}}}}{\\textcolor{#2563eb}{A_{\\text{bar}}}} > \\textcolor{#ea580c}{\\sigma_{\\text{yield}}(T_{\\text{weld}})} \\quad \\text{and} \\quad \\textcolor{#9333ea}{\\Delta L_{\\text{upset}}} = \\int_0^{\\textcolor{#d97706}{t_{\\text{forge}}}} \\textcolor{#0891b2}{\\dot{\\varepsilon}_{\\text{plastic}}} \\cdot L_0 \\, dt",
+      plainEnglishSentence: [
+        {
+          text: "The ",
+        },
+        {
+          text: "axial upset compressive stress",
+          variableId: "sigma_upset",
+        },
+        {
+          text: " delivered by the ",
+        },
+        {
+          text: "mechanical clamp forging force",
+          variableId: "f_clamp",
+        },
+        {
+          text: " over the ",
+        },
+        {
+          text: "bar cross-sectional area",
+          variableId: "a_bar",
+        },
+        {
+          text: " exceeds the ",
+        },
+        {
+          text: "high-temperature plastic yield strength",
+          variableId: "sigma_yield",
+        },
+        {
+          text: " of incandescent metal, producing an ",
+        },
+        {
+          text: "axial upset shortening displacement",
+          variableId: "delta_l",
+        },
+        {
+          text: " over ",
+        },
+        {
+          text: "forging time",
+          variableId: "t_forge",
+        },
+        {
+          text: " that forces oxidized slag outwards into a protective burr.",
+        },
+      ],
+      variables: [
+        {
+          id: "sigma_upset",
+          symbol: "\\sigma_{\\text{upset}}",
+          name: "Axial Upset Compressive Stress",
+          color: "emerald",
+          role: "Compressive mechanical pressure applied across the incandescent weld interface ($20\\text{ to }60\\text{ MPa}$)",
+          unit: "Megapascals (MPa)",
+          dimension: "[M L^-1 T^-2]",
+          explanation:
+            "Must exceed the hot yield strength to collapse asperities and force plastic intergranular metallic bonding.",
+          telemetryMetricLabel: "Upset Stress",
+        },
+        {
+          id: "f_clamp",
+          symbol: "F_{\\text{clamp}}",
+          name: "Clamp Forging Force",
+          color: "crimson",
+          role: "Mechanical clamping load applied via screw levers or hydraulic jaws holding the metal bars",
+          unit: "Newtons (N) / Kilonewtons (kN)",
+          dimension: "[M L T^-2]",
+          explanation:
+            "Holds the abutted pieces together during Joule heating and squeezes them together when incandescent.",
+          telemetryKey: "clampPressureMpa",
+        },
+        {
+          id: "a_bar",
+          symbol: "A_{\\text{bar}}",
+          name: "Bar Cross-Sectional Area",
+          color: "sapphire",
+          role: "Cross-sectional area of the rods or rails being butt-welded ($A = \\pi r^2$)",
+          unit: "Square millimeters (mm^2) / m^2",
+          dimension: "[L^2]",
+          explanation: "Determines both electrical resistance and mechanical stress distribution.",
+        },
+        {
+          id: "sigma_yield",
+          symbol: "\\sigma_{\\text{yield}}(T)",
+          name: "Hot Plastic Yield Strength",
+          color: "coral",
+          role: "Material yield limit at incandescent welding temperatures ($>1,150^\\circ\\text{C}$ for steel, where strength drops by 95%)",
+          unit: "Megapascals (MPa)",
+          dimension: "[M L^-1 T^-2]",
+          explanation:
+            "As steel reaches yellow heat, its crystalline lattice softens, allowing atomic recrystallization across the boundary.",
+        },
+        {
+          id: "delta_l",
+          symbol: "\\Delta L_{\\text{upset}}",
+          name: "Upset Shortening Displacement",
+          color: "amethyst",
+          role: "Linear travel of the movable clamp as hot metal plasticizes and bulges outward ($3\\text{ to }10\\text{ mm}$)",
+          unit: "Millimeters (mm)",
+          dimension: "[L]",
+          explanation:
+            "Forms the characteristic upset burr ridge around the seam, squeezing oxides and surface impurities out of the joint core.",
+          telemetryMetricLabel: "Upset Burr",
+        },
+        {
+          id: "t_forge",
+          symbol: "t_{\\text{forge}}",
+          name: "Upset Forging Time Interval",
+          color: "amber",
+          role: "Duration of sustained mechanical squeeze while current is tapered ($0.5\\text{ to }1.5\\text{ s}$)",
+          unit: "Seconds (s)",
+          dimension: "[T]",
+          explanation:
+            "Ensures full crystalline consolidation while cooling below the plastic range.",
+        },
+      ],
+      pedagogicalNote:
+        "Elihu Thomson discovered that successful electric resistance welding requires two synchronized actions: high-current Joule heating to plasticize the interface, followed instantly by heavy axial forging pressure that forces molten oxide films outward into an external flash burr, creating a pristine solid-state forged weld.",
+      claimRef: 1,
+      historicalSignificance:
+        "Thomson's butt-welding process enabled continuous steel rail manufacturing, wire drawing, automotive unibody construction, and heavy pipe pipelines.",
+    },
     {
       id: "thomson-resistance-weld-joule-heat",
       patentId: "us-347140-thomson-welding",
@@ -10497,6 +11450,171 @@ export const ALL_COLORIZED_EQUATIONS: Record<string, ColorizedEquation[]> = {
   // 43. Gustaf de Laval Centrifugal Cream Separator (US 247,804)
   "us-247804-delaval-separator": [
     {
+      id: "delaval-centrifugal-sedimentation-separation-factor",
+      patentId: "us-247804-delaval-separator",
+      title: "Centrifugal Separation Factor & Interface Neutral Radius",
+      category: "Centrifugal Separation & Hydrostatics",
+      rawLatex:
+        "G = \\frac{\\omega^2 R_{\\text{bowl}}}{g} \\quad \\text{and} \\quad r_{\\text{interface}} = \\sqrt{\\frac{\\rho_{\\text{skim}} r_{\\text{skim}}^2 - \\rho_{\\text{cream}} r_{\\text{cream}}^2}{\\rho_{\\text{skim}} - \\rho_{\\text{cream}}}}",
+      colorizedLatex:
+        "\\textcolor{#059669}{G} = \\frac{\\textcolor{#0891b2}{\\omega^2} \\textcolor{#9333ea}{R_{\\text{bowl}}}}{g} \\quad \\text{and} \\quad \\textcolor{#dc2626}{r_{\\text{interface}}} = \\sqrt{\\frac{\\textcolor{#2563eb}{\\rho_{\\text{skim}}} \\textcolor{#ea580c}{r_{\\text{skim}}^2} - \\textcolor{#d97706}{\\rho_{\\text{cream}}} \\textcolor{#0891b2}{r_{\\text{cream}}^2}}{\\textcolor{#2563eb}{\\rho_{\\text{skim}}} - \\textcolor{#d97706}{\\rho_{\\text{cream}}}}}",
+      plainEnglishSentence: [
+        {
+          text: "The ",
+        },
+        {
+          text: "centrifugal separation acceleration factor G",
+          variableId: "g_factor",
+        },
+        {
+          text: " magnifies gravitational sedimentation thousands of times via ",
+        },
+        {
+          text: "bowl angular velocity squared",
+          variableId: "omega_speed",
+        },
+        {
+          text: " and ",
+        },
+        {
+          text: "rotor radius",
+          variableId: "r_bowl",
+        },
+        {
+          text: ", establishing a stable ",
+        },
+        {
+          text: "cylindrical liquid-liquid interface radius",
+          variableId: "r_inter",
+        },
+        {
+          text: " between the ",
+        },
+        {
+          text: "dense skim milk stream",
+          variableId: "rho_skim",
+        },
+        {
+          text: " discharging at ",
+        },
+        {
+          text: "outer overflow radius",
+          variableId: "r_skim_exit",
+        },
+        {
+          text: " and ",
+        },
+        {
+          text: "buoyant cream phase",
+          variableId: "rho_cream",
+        },
+        {
+          text: " discharging at ",
+        },
+        {
+          text: "inner overflow radius",
+          variableId: "r_cream_exit",
+        },
+        {
+          text: ".",
+        },
+      ],
+      variables: [
+        {
+          id: "g_factor",
+          symbol: "G",
+          name: "Centrifugal Separation Factor",
+          color: "emerald",
+          role: "Multiplication factor of centrifugal acceleration relative to standard Earth gravity ($4,000\\text{ to }7,000\\text{ g}$)",
+          unit: "Multiples of g (dimensionless)",
+          dimension: "[1]",
+          explanation:
+            "Compresses hours of gravity creaming in settling pans into a few continuous seconds inside the spinning bowl.",
+          telemetryMetricLabel: "Centrifugal Force",
+        },
+        {
+          id: "omega_speed",
+          symbol: "\\omega",
+          name: "Bowl Angular Rotational Speed",
+          color: "cyan",
+          role: "Rotational speed of the solid forged bowl ($6,000\\text{ to }8,000\\text{ RPM} \\approx 630\\text{ to }840\\text{ rad/s}$)",
+          unit: "Radians / second (rad/s)",
+          dimension: "[T^-1]",
+          explanation:
+            "Driven by a high-speed helical bevel gear train or impulse steam turbine on a flexible spindle.",
+          telemetryKey: "rotorRpm",
+        },
+        {
+          id: "r_bowl",
+          symbol: "R_{\\text{bowl}}",
+          name: "Outer Bowl Radius",
+          color: "amethyst",
+          role: "Maximum radial distance from the spin axis to the solid bowl wall ($100\\text{ to }150\\text{ mm}$)",
+          unit: "Meters (m)",
+          dimension: "[L]",
+          explanation:
+            "Defines the outer perimeter where the heaviest fluid components pack under pressure.",
+        },
+        {
+          id: "r_inter",
+          symbol: "r_{\\text{interface}}",
+          name: "Neutral Liquid Interface Radius",
+          color: "crimson",
+          role: "Radial location of the balance boundary between the outward-flowing skim layer and inward-floating cream column",
+          unit: "Meters (m)",
+          dimension: "[L]",
+          explanation:
+            "Hydrostatic balance between two liquid columns of different density spinning at high speed.",
+        },
+        {
+          id: "rho_skim",
+          symbol: "\\rho_{\\text{skim}}",
+          name: "Skim Milk Density",
+          color: "sapphire",
+          role: "Density of fat-free milk serum containing water, proteins, and lactose ($1,035\\text{ kg/m}^3$)",
+          unit: "kg/m^3",
+          dimension: "[M L^-3]",
+          explanation: "Denser aqueous phase forced against the outer perimeter.",
+        },
+        {
+          id: "r_skim_exit",
+          symbol: "r_{\\text{skim}}",
+          name: "Skim Discharge Weir Radius",
+          color: "coral",
+          role: "Radial position of the outer weir ring where separated skim milk escapes continuously",
+          unit: "Meters (m)",
+          dimension: "[L]",
+          explanation:
+            "Positioned further from the axis than the cream weir to maintain hydraulic balance.",
+        },
+        {
+          id: "rho_cream",
+          symbol: "\\rho_{\\text{cream}}",
+          name: "Cream Lipid Density",
+          color: "amber",
+          role: "Density of the concentrated fat globule emulsion ($920\\text{ to }960\\text{ kg/m}^3$)",
+          unit: "kg/m^3",
+          dimension: "[M L^-3]",
+          explanation: "Lighter phase that floats inward toward the central air core.",
+        },
+        {
+          id: "r_cream_exit",
+          symbol: "r_{\\text{cream}}",
+          name: "Cream Discharge Weir Radius",
+          color: "cyan",
+          role: "Radial position of the central cream nozzle ring discharging rich butterfat",
+          unit: "Meters (m)",
+          dimension: "[L]",
+          explanation: "Adjusted with an exchangeable cream screw to control cream fat percentage.",
+        },
+      ],
+      pedagogicalNote:
+        "Gustaf de Laval replaced batch gravitational settling with high-speed continuous fluid stratification. By establishing two concentric discharge weirs at precise radial radii, the spinning liquid bowl continuously separates incoming whole milk into distinct streams of dense skim and light cream without stopping.",
+      claimRef: 1,
+      historicalSignificance:
+        "US 247804 industrialized dairy processing and created the modern continuous centrifuge used throughout biotechnology, chemical manufacturing, and petroleum refining.",
+    },
+    {
       id: "delaval-separator-stokes-centrifugal",
       patentId: "us-247804-delaval-separator",
       title: "Centrifugal Stokes Buoyant Separation Velocity & Fluid Hydrostatic Stratification",
@@ -11613,6 +12731,135 @@ export const ALL_COLORIZED_EQUATIONS: Record<string, ColorizedEquation[]> = {
   // 49. Gottlieb Daimler Marine Engine (US 361,931)
   "us-361931-daimler-engine": [
     {
+      id: "daimler-hot-tube-compression-ignition",
+      patentId: "us-361931-daimler-engine",
+      title: "Hot-Tube Auto-Ignition Timing & High-Speed Brake Power",
+      category: "Thermodynamics & Internal Combustion",
+      rawLatex:
+        "P_{\\text{brake}} = \\eta_{\\text{thermal}} \\cdot \\eta_{\\text{mech}} \\cdot \\frac{V_{\\text{disp}} \\cdot \\text{RPM} \\cdot \\text{BMEP}}{120} \\quad \\text{with } T_{\\text{tube}} \\ge 650^\\circ\\text{C}",
+      colorizedLatex:
+        "\\textcolor{#059669}{P_{\\text{brake}}} = \\textcolor{#2563eb}{\\eta_{\\text{thermal}}} \\cdot \\textcolor{#9333ea}{\\eta_{\\text{mech}}} \\cdot \\frac{\\textcolor{#dc2626}{V_{\\text{disp}}} \\cdot \\textcolor{#0891b2}{\\text{RPM}} \\cdot \\textcolor{#ea580c}{\\text{BMEP}}}{120}",
+      plainEnglishSentence: [
+        {
+          text: "The ",
+        },
+        {
+          text: "high-speed engine brake power",
+          variableId: "p_brake",
+        },
+        {
+          text: " scales with ",
+        },
+        {
+          text: "thermal efficiency",
+          variableId: "eta_th",
+        },
+        {
+          text: ", ",
+        },
+        {
+          text: "mechanical efficiency",
+          variableId: "eta_mech",
+        },
+        {
+          text: ", ",
+        },
+        {
+          text: "cylinder displacement volume",
+          variableId: "v_disp",
+        },
+        {
+          text: ", ",
+        },
+        {
+          text: "high engine rotational speed (800 RPM)",
+          variableId: "rpm_speed",
+        },
+        {
+          text: ", and ",
+        },
+        {
+          text: "brake mean effective pressure",
+          variableId: "bmep",
+        },
+        {
+          text: ", timed reliably by an incandescent hot glow tube.",
+        },
+      ],
+      variables: [
+        {
+          id: "p_brake",
+          symbol: "P_{\\text{brake}}",
+          name: "Engine Brake Horsepower",
+          color: "emerald",
+          role: "Usable mechanical power delivered to the output pulley or vehicle wheel ($0.8\\text{ to }1.5\\text{ kW} \\approx 1.1\\text{ to }2.0\\text{ HP}$)",
+          unit: "Kilowatts (kW) / Horsepower (HP)",
+          dimension: "[M L^2 T^-3]",
+          explanation:
+            "Achieved an unprecedented power-to-weight ratio of 40 kg/HP (down from 300 kg/HP for Otto stationary engines).",
+          telemetryMetricLabel: "Brake Power",
+        },
+        {
+          id: "eta_th",
+          symbol: "\\eta_{\\text{thermal}}",
+          name: "Indicated Thermal Efficiency",
+          color: "sapphire",
+          role: "Percentage of fuel chemical energy converted into expanding cylinder gas work ($16\\%\\text{ to }22\\%$)",
+          unit: "Efficiency percentage [0 to 1]",
+          dimension: "[1]",
+          explanation: "Governed by compression ratio according to the four-stroke Otto cycle.",
+        },
+        {
+          id: "eta_mech",
+          symbol: "\\eta_{\\text{mech}}",
+          name: "Mechanical Transmission Efficiency",
+          color: "amethyst",
+          role: "Fraction of indicated work reaching the crankshaft after piston and bearing friction ($75\\%\\text{ to }85\\%$)",
+          unit: "Efficiency percentage [0 to 1]",
+          dimension: "[1]",
+          explanation:
+            "Enclosed aluminum/iron crankcase with splash lubrication minimized mechanical drag.",
+        },
+        {
+          id: "v_disp",
+          symbol: "V_{\\text{disp}}",
+          name: "Cylinder Displacement Volume",
+          color: "crimson",
+          role: "Swept volume of the single vertical cylinder ($264\\text{ cm}^3 \\approx 0.264\\text{ L}$)",
+          unit: "Liters (L) / Cubic centimeters",
+          dimension: "[L^3]",
+          explanation: "Bore 58 mm, stroke 100 mm in the 1885 'Grandfather Clock' engine.",
+        },
+        {
+          id: "rpm_speed",
+          symbol: "\\text{RPM}",
+          name: "High Engine Crankshaft Speed",
+          color: "cyan",
+          role: "Rotational operating speed ($600\\text{ to }900\\text{ RPM}$)",
+          unit: "Revolutions / minute (RPM)",
+          dimension: "[T^-1]",
+          explanation:
+            "Four times faster than contemporary stationary gas engines (180 RPM), multiplying power output quadruply per unit mass.",
+          telemetryKey: "engineRpm",
+        },
+        {
+          id: "bmep",
+          symbol: "\\text{BMEP}",
+          name: "Brake Mean Effective Pressure",
+          color: "coral",
+          role: "Average effective cylinder pressure during the power stroke ($0.35\\text{ to }0.55\\text{ MPa}$)",
+          unit: "Megapascals (MPa)",
+          dimension: "[M L^-1 T^-2]",
+          explanation: "Measures the effective work output per unit cylinder displacement.",
+        },
+      ],
+      pedagogicalNote:
+        "Gottlieb Daimler recognized that high rotational speed (RPM) was the secret to lightweight mobile propulsion. By replacing unreliable flame slider valves with an incandescent hot-tube glow igniter, Daimler's engine safely ran at 800 RPM, producing enough power to propel the world's first motorcycle (Reitwagen) and motorboat.",
+      claimRef: 1,
+      historicalSignificance:
+        "US 361931 was the foundational patent for high-speed liquid-fueled internal combustion, making practical automobiles, motorboats, and motorized transport possible.",
+    },
+    {
       id: "daimler-engine-propulsion-power",
       patentId: "us-361931-daimler-engine",
       title: "Marine Propeller Shaft Brake Power & Reversible Friction Cone Clutch Torque",
@@ -12284,6 +13531,135 @@ export const ALL_COLORIZED_EQUATIONS: Record<string, ColorizedEquation[]> = {
 
   // 52. Jesse Reno Escalator (US 470,918)
   "us-470918-reno-escalator": [
+    {
+      id: "reno-inclined-cleat-passenger-throughput",
+      patentId: "us-470918-reno-escalator",
+      title: "Reno Comb-Plate Clearance & Inclined Passenger Flux Capacity",
+      category: "Mechanical Transport & Kinematics",
+      rawLatex:
+        "\\dot{N}_{\\text{passengers}} = \\frac{v_{\\text{deck}}}{L_{\\text{tread}}} \\cdot W_{\\text{tread}} \\cdot \\rho_{\\text{person}} \\quad \\text{with clearance } \\delta_{\\text{comb}} \\le 1.5\\text{ mm}",
+      colorizedLatex:
+        "\\textcolor{#059669}{\\dot{N}_{\\text{passengers}}} = \\frac{\\textcolor{#2563eb}{v_{\\text{deck}}}}{\\textcolor{#dc2626}{L_{\\text{tread}}}} \\cdot \\textcolor{#d97706}{W_{\\text{tread}}} \\cdot \\textcolor{#9333ea}{\\rho_{\\text{person}}} \\quad \\text{with clearance } \\textcolor{#ea580c}{\\delta_{\\text{comb}}} \\le 1.5\\text{ mm}",
+      plainEnglishSentence: [
+        {
+          text: "The ",
+        },
+        {
+          text: "continuous passenger transit throughput",
+          variableId: "n_flux",
+        },
+        {
+          text: " scales with ",
+        },
+        {
+          text: "endless deck travel velocity",
+          variableId: "v_deck",
+        },
+        {
+          text: " over ",
+        },
+        {
+          text: "tread cleat pitch length",
+          variableId: "l_tread",
+        },
+        {
+          text: ", ",
+        },
+        {
+          text: "usable walkway width",
+          variableId: "w_tread",
+        },
+        {
+          text: ", and ",
+        },
+        {
+          text: "passenger boarding density",
+          variableId: "rho_dens",
+        },
+        {
+          text: ", safely transferring riders onto stationary landings via ",
+        },
+        {
+          text: "comb-plate intermeshing tooth clearance",
+          variableId: "delta_comb",
+        },
+        {
+          text: ".",
+        },
+      ],
+      variables: [
+        {
+          id: "n_flux",
+          symbol: "\\dot{N}_{\\text{passengers}}",
+          name: "Passenger Transit Throughput",
+          color: "emerald",
+          role: "Maximum continuous carrying capacity ($3,000\\text{ to }6,000\\text{ persons/hour}$)",
+          unit: "Persons / hour",
+          dimension: "[T^-1]",
+          explanation:
+            "Unlike periodic elevators that require stopping and starting, the inclined elevator provides non-stop continuous flow.",
+          telemetryMetricLabel: "Passenger Flux",
+        },
+        {
+          id: "v_deck",
+          symbol: "v_{\\text{deck}}",
+          name: "Inclined Deck Linear Speed",
+          color: "sapphire",
+          role: "Constant travel velocity of the link chain deck ($0.45\\text{ to }0.60\\text{ m/s} \\approx 90\\text{ to }120\\text{ ft/min}$)",
+          unit: "Meters / second (m/s)",
+          dimension: "[L T^-1]",
+          explanation:
+            "Optimized for smooth passenger stepping without loss of footing at landings.",
+          telemetryKey: "motorSpeedFpm",
+        },
+        {
+          id: "l_tread",
+          symbol: "L_{\\text{tread}}",
+          name: "Cleated Tread Pitch Length",
+          color: "crimson",
+          role: "Center-to-center spacing of linked hardwood/rubber tread slats ($150\\text{ to }200\\text{ mm}$)",
+          unit: "Millimeters (mm)",
+          dimension: "[L]",
+          explanation: "Carries longitudinal ridges that interlock with landing comb teeth.",
+        },
+        {
+          id: "w_tread",
+          symbol: "W_{\\text{tread}}",
+          name: "Walkway Width",
+          color: "amber",
+          role: "Clear width between moving handrails ($600\\text{ to }1,000\\text{ mm}$)",
+          unit: "Meters (m)",
+          dimension: "[L]",
+          explanation: "Accommodates single-file or dual-file passenger streams.",
+        },
+        {
+          id: "rho_dens",
+          symbol: "\\rho_{\\text{person}}",
+          name: "Passenger Boarding Density",
+          color: "amethyst",
+          role: "Average number of passengers standing per meter of incline ($1.2\\text{ to }2.0\\text{ persons/m}$)",
+          unit: "Persons / meter (m^-1)",
+          dimension: "[L^-1]",
+          explanation: "Represents rush-hour transit passenger spacing.",
+        },
+        {
+          id: "delta_comb",
+          symbol: "\\delta_{\\text{comb}}",
+          name: "Comb-Plate Tooth Clearance",
+          color: "coral",
+          role: "Mechanical gap between stationary landing comb prongs and moving cleat grooves ($\\le 1.5\\text{ mm}$)",
+          unit: "Millimeters (mm)",
+          dimension: "[L]",
+          explanation:
+            "Reno's critical safety innovation: moving cleats glide beneath stationary comb fingers, gently scooping footwear off the belt without pinching.",
+        },
+      ],
+      pedagogicalNote:
+        "Jesse Reno created the continuous escalator by solving the landing transition problem. His grooved hardwood treads intermesh with stationary comb fingers at the top and bottom landings, creating an unbroken plane that lifts passengers' feet smoothly onto the floor.",
+      claimRef: 1,
+      historicalSignificance:
+        "US 470918 introduced the inclined moving stairway to the world at Coney Island in 1896, transforming department store architecture and subway transit networks globally.",
+    },
     {
       id: "reno-escalator-throughput-safety",
       patentId: "us-470918-reno-escalator",
