@@ -12,6 +12,7 @@ import {
   gliddenSchematicSpurX,
   grammeSchematicJunction,
   hollerithCupSvg,
+  hollerithSchematicDialX,
   hollerithSchematicPinX,
   hyattPolymerSvg,
   kevlarSchematicLattice,
@@ -133,6 +134,7 @@ describe("Catalog Kernels & Shared SI Stepping Functions", () => {
     expect(res.flywheelSvgR).toBe(80);
     expect(res.spokeCount).toBe(6);
     expect(res.spokePitchDeg).toBe(60);
+    expect(res.schematicFlywheelR).toBe(45);
   });
 
   test("Parsons steam turbine computes multi-stage expansion enthalpy", () => {
@@ -328,6 +330,7 @@ describe("Catalog Kernels & Shared SI Stepping Functions", () => {
     const res = stepDaimlerEngine({ engineRpm: 750, hotTubeTempC: 850 });
     expect(res.brakeHorsepower).toBeGreaterThan(0);
     expect(res.isRunning).toBe(true);
+    expect(res.schematicFlywheelR).toBe(50);
   });
 
   test("Hollerith tabulating machine computes pin-brush electrical circuit matrix and tally count", () => {
@@ -340,6 +343,9 @@ describe("Catalog Kernels & Shared SI Stepping Functions", () => {
     expect(res.schematicPinCount).toBe(9);
     expect(hollerithSchematicPinX(0)).toBe(80);
     expect(hollerithSchematicPinX(8)).toBe(320);
+    expect(res.schematicDialCount).toBe(3);
+    expect(hollerithSchematicDialX(0)).toBe(140);
+    expect(hollerithSchematicDialX(2)).toBe(260);
   });
 
   test("Noyce planar integrated circuit computes junction isolation and oxide passivation", () => {

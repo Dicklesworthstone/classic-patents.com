@@ -45,5 +45,7 @@ describe("Enrico Fermi Chicago Pile-1 Nuclear Kinetics Kernel", () => {
     expect(res.schematicSlugCols).toBe(4);
     expect(fermiSchematicSlug(0, 0).cx).toBe(110);
     expect(fermiSchematicSlug(1, 1).cy).toBe(170);
+    expect(res.schematicGridXs).toEqual([140, 200, 260]);
+    expect(res.schematicGridYs).toEqual([110, 150, 190]);
   });
 });

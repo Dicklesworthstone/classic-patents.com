@@ -71,6 +71,8 @@ describe("US 381,968 Tesla Fig. 9 motor visual & electromagnetics boundary", () 
     expect(result.schematicStrobeStroke).toBe(1.2);
     expect(result.statorRingOuterSvgR).toBe(110);
     expect(result.twoPhaseVectorOpacity).toBe(0.55);
+    expect(result.schematicStatorOuterR).toBe(95);
+    expect(result.schematicRotorR).toBe(42);
 
     const twoDSource = readFileSync(join(VISUALS_DIRECTORY, "TeslaMotorSim.tsx"), "utf8");
     expect(twoDSource).toContain("teslaPoleCurrent");

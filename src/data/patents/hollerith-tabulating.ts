@@ -4,7 +4,11 @@ import {
 } from "@/data/editions/hollerithTabulatingEdition";
 import type { Patent } from "@/types/patent";
 
-export const hollerithTabulatingPatent: Patent = {
+// Retained research material for a later generalized punched-card-tabulator
+// narrative. It is deliberately non-exported: the public US 395,781 record
+// below stays at the printed card, contact, circuit, counter, and sorting-box
+// boundary until the full manuscript clears independent review.
+const _legacyUnpublishedHollerithTabulatingPatent: Patent = {
   id: "us-395781-hollerith-tabulating",
   patentNumber: "US 395,781",
   title: "Art of Compiling Statistics",
@@ -492,5 +496,112 @@ Fourth, in a sorting box containing separate compartments whose covers are opene
     independentClaims: 21,
     patentWarYears: "1889–1911",
     impactScore: 100,
+  },
+};
+
+/**
+ * Source-bounded catalog record for the 1889 grant. The partial manuscript,
+ * reviewed ledger, and figure treatment remain under editorial hold. Do not
+ * attach their draft `archivalEdition` or `originalTextAsset` to the public
+ * record until all seventeen facsimile pages pass independent acceptance.
+ */
+export const hollerithTabulatingPatent: Patent = {
+  id: "us-395781-hollerith-tabulating",
+  patentNumber: "US 395,781",
+  title: "Art of Compiling Statistics",
+  shortTitle: "Record-Card Statistical Compiler",
+  subtitle: "Index-points, circuit-controlling contacts, counters, and sorting boxes",
+  inventors: ["Herman Hollerith"],
+  inventorLocation: "New York, New York",
+  grantDate: "1889-01-08",
+  filingDate: "1887-06-08",
+  era: "Gilded Age & Grid (1870–1900)",
+  category: "computing",
+  categoryLabel: "Statistical Machinery & Electrical Circuits",
+  summary:
+    "US 395,781 describes an art and apparatus for compiling statistics from separate record-cards. Circuit-controlling index-points on each card cooperate with contact devices; the resulting circuits actuate electro-magnets for counters, indicators, and sorting boxes. The specification also describes cards prepared for Baltimore mortality statistics as one practical illustration.",
+  heroQuote:
+    "The combination, to form a system for compiling statistical matters, as hereinbefore described, of a series of separate cards, each card bearing a series of index-points representing the items or characteristics of one individual or subject.",
+  originalPdfUrl: "/patents/pdfs/us-395781-hollerith-tabulating.pdf",
+  googlePatentsUrl: "https://patents.google.com/patent/US395781A/en",
+  usptoClassification:
+    "Statistical card-processing apparatus; source classification review pending",
+  originalText: `UNITED STATES PATENT OFFICE.
+HERMAN HOLLERITH, OF NEW YORK, N. Y.
+
+ART OF COMPILING STATISTICS.
+
+SPECIFICATION forming part of Letters Patent No. 395,781, dated January 8, 1889.
+Application filed June 8, 1887. Serial No. 240,029. (No model.)
+
+To all whom it may concern:
+Be it known that I, HERMAN HOLLERITH, of New York, in the county of New York and State of New York, have invented certain new and useful Improvements in the Art and System of Compiling Statistics.
+
+Briefly stated, the method and apparatus comprise a record carrying circuit-actuating index-points; a template index for locating the record; circuit-making and circuit-breaking points; electric circuits controlled by those points; and mechanical registering devices actuated by electro-magnets included in those circuits.
+
+[Curated source excerpt only. The complete seventeen-page manual source face remains withheld until its transcript, figures, annotations, and paragraph companions pass independent facsimile acceptance.]`,
+  plainEnglishExplanation: {
+    overview:
+      "The grant describes a way to turn a record for one individual or subject into a card whose marked index-points can control electrical circuits. The apparatus then uses those circuits to count selected items, operate indicators, and sort cards into groups. Its scope is broader than one census form; the Baltimore mortality card is presented as an example, not as a fixed format for every use.",
+    coreMechanism:
+      "A separate card carries index-points arranged to a predetermined plan. The card is placed between contact devices. When an index-point registers with its corresponding contact, it changes a circuit condition. That circuit energizes an electro-magnet which can operate a counter or a relay controlling a counter circuit. The specification also describes sorting boxes: an indicator or lid identifies the receptacle for a card whose selected points designate a group. The source does not specify card dimensions, pin count, supply voltage, coil turns, current, material composition, contact resistance, processing rate, or a modern digital-data model.",
+    mechanicalBreakdown: [
+      {
+        title: "Separate Record-Cards and Index-Points",
+        summary:
+          "Each card represents an individual or subject, with index-points at predetermined locations for the items to be compiled.",
+        technicalDetails:
+          "The specification prefers a separate strip, card, or tablet rather than the continuous web used in the inventor's earlier work. It says the cards may be paper or another poorly conducting substance and can be marked to show the location for each index-point. The printed example concerns mortality statistics in Baltimore, but the grant says the system is not limited to that application.",
+        archaicTerm: "index-points",
+        modernEquivalent: "recorded card positions that control circuit contacts",
+      },
+      {
+        title: "Contact Press and Circuit Control",
+        summary:
+          "A card is supported between plates or platens whose contact devices cooperate with the card's index-points.",
+        technicalDetails:
+          "The source describes yielding pins carried by a reciprocating platen and corresponding mercury cups in a bed-plate. Claim 19 adds gauges that locate the card and an edge pin that prevents the circuits from closing until the card is properly placed. The document gives the component relation, not an electrical calibration or a measured reading speed.",
+        archaicTerm: "circuit-controlling devices",
+        modernEquivalent: "card-position electrical contacts",
+      },
+      {
+        title: "Registers, Relays, and Sorting Boxes",
+        summary:
+          "Electro-magnets operate counters, indicators, and receptacle lids according to the selected circuit paths.",
+        technicalDetails:
+          "The specification distinguishes direct circuits from relay circuits for combinations of items. It describes a sorting cabinet in which an electro-magnet releases a lid or indicator for the appropriate box. Claims 15 through 21 cover different combinations of cards, contacts, circuits, operating magnets, mechanical counters, sorting boxes, and switch-board connections.",
+        archaicTerm: "operating electro-magnets",
+        modernEquivalent: "electromagnetic actuators for counters and sorting indicators",
+      },
+    ],
+    scientificPrinciples: [],
+    whyItMattersToday:
+      "The grant gives a primary-source account of card records being used to control circuits for counting and classification. Its legal claims distinguish record preparation, contact arrangements, circuit combinations, counters, and sorting apparatus. Assertions about later corporate history, census performance, standard card dimensions, or digital-computing lineage need separate historical sources and are not treated here as measurements in this patent.",
+  },
+  claims: _legacyUnpublishedHollerithTabulatingPatent.claims,
+  drawings: [],
+  historicalContext: {
+    problemStatement:
+      "The specification's problem is compiling statistical items recorded for many individuals or subjects and then separating and counting records according to selected items or combinations of items.",
+    priorArtLimitations: [
+      "The grant contrasts its separate cards with a continuous strip or web used in the inventor's prior applications.",
+      "It says the changes arise from practical use and are intended to simplify, enlarge, and improve the method and apparatus.",
+    ],
+    breakthroughInsight:
+      "A complete record on a separate card can be brought to matching circuit-controlling devices, allowing electro-magnets to operate counters and sorting indicators according to the card's designated index-points.",
+    patentWars: [],
+    civilizationalImpact:
+      "US 395,781 is a source record of a late-nineteenth-century statistical system that joins independently handled record-cards, electrical contact control, mechanical registration, and physical classification. Broader claims about later adoption or industry history require separate, cited research.",
+    aftermath:
+      "The grant issued on January 8, 1889 with twenty-one printed claims and seventeen figures. Its full manual source edition remains withheld while all pages, figures, and paragraph companions receive independent review.",
+    sideNotes: [
+      "The specification's illustrated card records month, sex, civil condition, race, age, occupation, birth-place, residence, and cause of death for a Baltimore mortality example.",
+      "Claims 18 through 20 specifically describe the yielding pins, mercury cups, card-locating gauges, and common return contact.",
+    ],
+  },
+  tags: ["Herman Hollerith", "Record cards", "Statistics", "Electrical contacts"],
+  stats: {
+    totalClaims: 21,
+    independentClaims: 21,
   },
 };
