@@ -2,7 +2,7 @@
 
 import { MousePointer, Move, RotateCcw, Sparkles } from "lucide-react";
 import { useRef, useState } from "react";
-import { stepEngelbartMouse } from "@/physics/catalogKernels";
+import { engelbartRadiusFromDiameterMm, stepEngelbartMouse } from "@/physics/catalogKernels";
 import { stepEngelbartResolver } from "@/physics/machineKernels";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 
@@ -322,7 +322,9 @@ export function EngelbartMouseSim() {
                 max="36"
                 step="1"
                 value={wheelDiameterMm}
-                onChange={(e) => updateParam("wheelRadius", Number(e.target.value) / 2)}
+                onChange={(e) =>
+                  updateParam("wheelRadius", engelbartRadiusFromDiameterMm(Number(e.target.value)))
+                }
                 className="w-full accent-amber-600"
               />
             </div>

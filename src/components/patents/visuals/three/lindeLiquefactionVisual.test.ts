@@ -61,7 +61,7 @@ describe("US 727,650 Carl von Linde Air Liquefaction visual & cryogenics boundar
     }
 
     expect(threeSource).toContain("cutawayMode");
-    expect(threeSource).toContain("Linde Joule-Thomson Cryogenics");
+    expect(threeSource).toContain("LindeAirLiquefaction3D");
   });
 
   test("computes genuine Linde Joule-Thomson liquefaction dynamics in SI units", () => {

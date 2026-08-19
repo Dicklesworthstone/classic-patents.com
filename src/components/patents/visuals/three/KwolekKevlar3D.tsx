@@ -65,6 +65,9 @@ export function KwolekKevlar3D() {
     chainWiggleOmegaRadPerS: kevlar.chainWiggleOmegaRadPerS,
     thermalDisorder: kevlar.thermalDisorder,
     shearAlignment: kevlar.shearAlignment,
+    chainWiggleAmp: kevlar.chainWiggleAmp,
+    chainWobbleAmp: kevlar.chainWobbleAmp,
+    chainWobbleOmega: kevlar.chainWobbleOmega,
   });
 
   const controlsRef = useRef<StudioContext["controls"] | null>(null);
@@ -137,17 +140,14 @@ export function KwolekKevlar3D() {
       elapsed += delta;
       const p = live.current;
 
-      const shearAlignment = p.shearAlignment;
-      const thermalDisorder = p.thermalDisorder;
       const wiggle = p.chainWiggleOmegaRadPerS;
 
       for (let i = 0; i < model.chains.length; i++) {
         const item = model.chains[i];
         if (p.isNematicLCP) {
-          item.group.rotation.z =
-            Math.sin(elapsed * wiggle + i) * (0.05 * (1 - shearAlignment) + thermalDisorder);
+          item.group.rotation.z = Math.sin(elapsed * wiggle + i) * p.chainWiggleAmp;
           item.group.position.y =
-            item.baseY + Math.sin(elapsed * 2.0 + i) * (0.03 * thermalDisorder);
+            item.baseY + Math.sin(elapsed * p.chainWobbleOmega + i) * p.chainWobbleAmp;
         }
       }
 
