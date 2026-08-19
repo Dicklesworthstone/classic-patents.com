@@ -12684,10 +12684,10 @@ export const ALL_COLORIZED_EQUATIONS: Record<string, ColorizedEquation[]> = {
         },
       ],
       pedagogicalNote:
-        "Charles Goodyear accidentally dropped a mixture of raw rubber and sulfur onto a hot stove and discovered that rather than melting, the compound charred into a resilient, waterproof, thermally stable elastic substance.",
+        "In US 3,633, Charles Goodyear specified combining India-rubber, sulphur, and white lead in preferred proportions of 25:5:7 parts, followed by regulated heating between 212°F and 350°F (approaching 270°F). The affine network equation is a modern polymer physics reader aid illustrating how subsequent covalent cross-linking theory explains the temperature stability observed in the 1844 grant.",
       claimRef: 1,
       historicalSignificance:
-        "US 3,633 created the modern elastomer industry, enabling pneumatic tires, waterproof apparel, electrical insulation, and high-pressure steam gaskets.",
+        "US 3,633 established the heat-and-sulfur treatment of India-rubber, providing resistance against seasonal temperature melting/embrittlement and organic solvent dissolution.",
     },
     {
       id: "goodyear-rubber-vulcanization-elasticity",
@@ -12772,10 +12772,10 @@ export const ALL_COLORIZED_EQUATIONS: Record<string, ColorizedEquation[]> = {
         },
       ],
       pedagogicalNote:
-        "Before Charles Goodyear's 1844 patent, natural rubber goods were a commercial disaster: they turned rock-hard and brittle in freezing winter temperatures and melted into a foul-smelling, sticky sludge in summer heat. Goodyear discovered that heating natural latex gum with sulfur and white lead formed permanent covalent sulfur bridges across the polyisoprene chains, inventing vulcanized rubber that stays tough, flexible, and waterproof across all weather conditions.",
+        "The 1844 grant claimed combining India-rubber with sulphur and white lead or other lead salts/oxides, cotton-batting interleaving, and heat treatment to alter its qualities so as not to soften below preparation temperatures (approaching 270°F) or be injuriously affected by cold and common essential oils. The entropic elasticity and shear modulus equations provide a modern quantitative model for student exploration.",
       claimRef: 1,
       historicalSignificance:
-        "US 3633 founded the global polymer and elastomer industry, enabling waterproof apparel, industrial belts, electrical cable insulation, and the two billion vehicle tires produced annually worldwide.",
+        "US 3,633 claimed the fundamental compounding and heating process that made India-rubber practical for apparel, sheeting, and mechanical goods.",
     },
   ],
 

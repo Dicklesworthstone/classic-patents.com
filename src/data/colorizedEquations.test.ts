@@ -326,4 +326,17 @@ describe("Colorized Equations Quality & Integrity Suite", () => {
       expect(published).not.toContain(unsupportedPublicAssertion);
     }
   });
+
+  test("keeps Goodyear US 3,633 at its source compounding and process boundary without discovery anecdotes", () => {
+    const cards = ALL_COLORIZED_EQUATIONS["us-3633-goodyear-rubber"];
+    expect(cards.length).toBeGreaterThan(0);
+    const published = JSON.stringify(cards).toLowerCase();
+    for (const unsupportedAnecdote of [
+      "hot stove",
+      "accidentally dropped",
+      "foul-smelling, sticky sludge",
+    ]) {
+      expect(published).not.toContain(unsupportedAnecdote);
+    }
+  });
 });

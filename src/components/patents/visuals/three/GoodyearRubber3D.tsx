@@ -258,7 +258,7 @@ export function GoodyearRubber3D() {
 
       <StudioKernelChips
         visible={showUiOverlay}
-        title="Goodyear vulcanized elastomer"
+        title="Goodyear rubber fabric model"
         chips={[
           { label: "Cure Temp", value: `${cureTemperatureCelsius}`, unit: "°C" },
           { label: "Sulfur", value: `${sulfurWeightPct}`, unit: "wt%" },
