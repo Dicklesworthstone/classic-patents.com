@@ -18,7 +18,8 @@ describe("US 120,057 Gramme source-faithful visual boundary", () => {
       "utf8",
     );
 
-    expect(twoDimensional).toContain("printedJunctionCount = 36");
+    expect(twoDimensional).toContain("gramme.printedJunctionCount");
+    expect(twoDimensional).toContain("gramme.torusSvgR");
     expect(twoDimensional).toContain("Collecting rubber S");
     expect(twoDimensional).not.toContain("Smooth DC Commutation");
     expect(twoDimensional).not.toContain("Generated DC Voltage");
@@ -70,6 +71,9 @@ describe("US 120,057 Gramme source-faithful visual boundary", () => {
       printedJunctionCount: 36,
       inducedEmfIndex: 100,
       collectionContinuityPct: 97.2,
+      torusSvgR: 100,
+      junctionInnerSvgR: 35,
+      junctionOuterSvgR: 48,
     });
     expect(stepGrammeDynamo({ shaftRate: 1.6 }).inducedEmfIndex).toBe(160);
   });
