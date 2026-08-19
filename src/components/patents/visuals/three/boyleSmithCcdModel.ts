@@ -54,7 +54,12 @@ export interface BoyleSmithCcdModelResult {
   updateKinematics: (
     delta: number,
     activePhase: 1 | 2 | 3,
-    wellsData: { wells: number[]; fullWellElectrons: number; cte: number },
+    wellsData: {
+      wells: number[];
+      fullWellElectrons: number;
+      cte: number;
+      packetOpacity: number;
+    },
   ) => void;
   dispose: () => void;
 }
@@ -274,7 +279,12 @@ export function buildBoyleSmithCcdModel(): BoyleSmithCcdModelResult {
   const updateKinematics = (
     delta: number,
     activePhase: 1 | 2 | 3,
-    wellsData: { wells: number[]; fullWellElectrons: number; cte: number },
+    wellsData: {
+      wells: number[];
+      fullWellElectrons: number;
+      cte: number;
+      packetOpacity: number;
+    },
   ) => {
     updateBoyleSmithCcdKinematics(nodes, materials, delta, 0, activePhase, wellsData, false);
   };
@@ -291,7 +301,7 @@ export function updateBoyleSmithCcdKinematics(
   _dt: number,
   _timeSec: number,
   activePhase: 1 | 2 | 3,
-  wellsData: { wells: number[]; fullWellElectrons: number; cte: number },
+  wellsData: { wells: number[]; fullWellElectrons: number; cte: number; packetOpacity: number },
   isCutaway: boolean,
 ) {
   for (const g of nodes.gates) {
@@ -308,7 +318,7 @@ export function updateBoyleSmithCcdKinematics(
     }
   }
 
-  materials.packetMat.opacity = 0.35 + wellsData.cte * 0.55;
+  materials.packetMat.opacity = wellsData.packetOpacity;
 
   const pPos = nodes.packetPos;
   for (let i = 0; i < nodes.packetCount; i++) {

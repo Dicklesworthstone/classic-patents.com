@@ -64,6 +64,8 @@ describe("US 79,265 Christopher Latham Sholes Type-Writer visual & escapement bo
     expect(result.eventsPerSecond).toBeGreaterThan(0.5);
     expect(result.keyCyclePct).toBeDefined();
     expect(result.ratchetReleasePct).toBeDefined();
+    expect(result.displayColumnWrap).toBe(12);
+    expect(result.columnPitchPx).toBe(6);
   });
 
   test("builds and articulates procedural wooden table, radial type basket, platen carriage, and escapement ratchet correctly", () => {

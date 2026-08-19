@@ -70,6 +70,8 @@ describe("US 79,265 source-faithful visual boundary", () => {
       keyCyclePct: 0,
       ratchetReleasePct: 0,
       displayTypebarIndex: 0,
+      columnPitchPx: 6,
+      displayColumnWrap: 12,
     });
     expect(stepSholesTypewriter(40, 0.3)).toMatchObject({
       completedSteps: 0,

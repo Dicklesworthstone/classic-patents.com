@@ -55,7 +55,7 @@ export const BoyleSmithCcd3D = memo(() => {
 
   const fullWellElectrons = ccdWells.fullWellElectrons;
   const collectedChargeElectrons = Math.round(ccdWells.wells[clockPhase - 1] ?? 0);
-  const transferEfficiencyPct = (ccdWells.cte * 100).toFixed(4);
+  const transferEfficiencyPct = ccdWells.ctePct.toFixed(4);
 
   const live = useLiveSimParams({
     clockPhase,

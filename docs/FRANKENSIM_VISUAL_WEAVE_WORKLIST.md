@@ -242,6 +242,10 @@ the visitor can see or hear the kernel change the instrument.
 - [x] P5.149 Hollerith dialNeedleRadiusPx / hollerithDialNeedle. McCormick cutterSvgAmp. 2D no longer converts leftover val/100×2π×14 or sin×18 privately.
 - [x] P5.150 Engelbart engelbartRadiusFromDiameterMm / diameterToRadius. Kevlar chainWiggleAmp / chainWobbleAmp / chainWobbleOmega. 2D/3D no longer convert leftover diameter/2 or 0.05×(1−align)+disorder / 0.03×disorder privately.
 - [x] P5.151 Engelbart engelbartPointerSvg + pointerSvgWidth/Height/min/max. Corliss flywheelSvgR. 2D no longer converts leftover client×400/300 or spoke×85 privately.
+- [x] P5.152 Otto flywheelSvgR. Edison axialSvgPxPerMm. 2D no longer converts leftover spoke×80 or axialTravelMm×2 privately.
+- [x] P5.153 Howe loopSvgControlX. Sholes displayColumnWrap / columnPitchPx. 2D no longer converts leftover loopWidth×1.5 or column×6 privately.
+- [x] P5.154 Ericsson slipPct / propulsiveEfficiencyPct. Bell 3D reads currentBaselineMa. 2D/3D no longer convert leftover slip×100 or amps×1000 privately.
+- [x] P5.155 CCD ctePct / packetOpacity. Goddard expansionEfficiencyPct. 2D/3D/badge/weave no longer convert leftover cte×100, 0.35+cte×0.55, or expansion×100 privately.
 
 ## Explicitly out of scope
 

@@ -246,7 +246,7 @@ export const BellTelephone3D = memo(() => {
           { label: "ΔR Modulation", value: bell.resistanceModulationOhms.toFixed(1), unit: "Ω" },
           {
             label: "Baseline Current",
-            value: (bell.currentBaselineAmps * 1000).toFixed(1),
+            value: bell.currentBaselineMa.toFixed(1),
             unit: "mA",
           },
           { label: "Modulated Current", value: bell.modulatedMa.toFixed(2), unit: "mA" },

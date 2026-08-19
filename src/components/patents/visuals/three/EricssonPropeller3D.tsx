@@ -35,7 +35,7 @@ export function EricssonPropeller3D() {
   const { isAudioMuted, toggleSound: toggleEngine } = usePatentAudio();
 
   const thrustKn = ericson.thrustKn.toFixed(1);
-  const propulsiveEfficiencyPct = ((1 - ericson.slipFraction) * 100).toFixed(1);
+  const propulsiveEfficiencyPct = ericson.propulsiveEfficiencyPct.toFixed(1);
 
   const live = useLiveSimParams({
     shaftRpm,
@@ -259,7 +259,7 @@ export function EricssonPropeller3D() {
           { label: "Thrust", value: thrustKn, unit: "kN" },
           { label: "Efficiency", value: propulsiveEfficiencyPct, unit: "%" },
           { label: "Pitch", value: String(ericson.pitchMeters.toFixed(2)), unit: "m/rev" },
-          { label: "Slip", value: String((ericson.slipFraction * 100).toFixed(1)), unit: "%" },
+          { label: "Slip", value: String(ericson.slipPct.toFixed(1)), unit: "%" },
         ]}
       />
     </div>
