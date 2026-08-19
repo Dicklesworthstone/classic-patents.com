@@ -14269,7 +14269,9 @@ export const ALL_COLORIZED_EQUATIONS: Record<string, ColorizedEquation[]> = {
   ],
 
   // 51. Herman Hollerith Tabulating System (US 395,781)
-  "us-395781-hollerith-tabulating": [
+  // Retained non-serving tabulator performance cards. The exact US 395,781
+  // route receives an explicitly claim-bounded card below while held.
+  "_legacy-unpublished-us-395781-hollerith-tabulating": [
     {
       id: "hollerith-tabulating-solenoid-cadence",
       patentId: "us-395781-hollerith-tabulating",
@@ -18325,5 +18327,46 @@ ALL_COLORIZED_EQUATIONS["us-313224-mergenthaler-linotype"] = [
     claimRef: 1,
     historicalSignificance:
       "The card preserves the printed matrix-bar limitation without projecting later commercial Linotype machinery back onto the 1885 grant.",
+  },
+];
+
+// The public US 395,781 route deliberately states only its printed record-card
+// and circuit relationship. The retained cards above supply non-source numeric
+// electromagnetic and throughput claims and are non-serving pending review.
+ALL_COLORIZED_EQUATIONS["us-395781-hollerith-tabulating"] = [
+  {
+    id: "hollerith-source-record-card-circuit-chain",
+    patentId: "us-395781-hollerith-tabulating",
+    title: "Claim 1: Record-Cards, Index-Points, and Circuit-Controlling Devices",
+    category: "Source-Bound Statistical-Compilation Construction",
+    rawLatex:
+      "\\text{separate record-cards} \\rightarrow \\text{circuit-controlling index-points} \\rightarrow \\text{circuit-controlling devices}",
+    colorizedLatex:
+      "\\textcolor{#2563eb}{\\text{separate record-cards}} \\rightarrow \\textcolor{#059669}{\\text{circuit-controlling index-points}} \\rightarrow \\textcolor{#d97706}{\\text{circuit-controlling devices}}",
+    plainEnglishSentence: [
+      { text: "Claim 1 starts with " },
+      { text: "separate record-cards", variableId: "record_cards" },
+      {
+        text: " bearing circuit-controlling index-points at predetermined intervals. The cards are then applied successively to matching devices so the recorded points designate the statistical items to be compiled.",
+      },
+    ],
+    variables: [
+      {
+        id: "record_cards",
+        symbol: "record-cards",
+        name: "Claim 1 separate record-cards",
+        color: "emerald",
+        role: "A card represents one individual or subject and carries the fixed-plan index-points required by Claim 1.",
+        unit: "Claim 1 record and contact relation",
+        dimension: "source-defined statistical-record construction",
+        explanation:
+          "The claim requires the card and its index-points to cooperate with circuit-controlling devices. It does not state a card size, grid count, voltage, current, contact force, throughput, or a digital information capacity.",
+      },
+    ],
+    pedagogicalNote:
+      "This card is limited to Claim 1's record-card, index-point, and circuit-controlling-device relationship. The complete seventeen-page source edition remains under independent review, so the site does not present unprinted electrical, mechanical, census-performance, or later-computing measurements as evidence from US 395,781.",
+    claimRef: 1,
+    historicalSignificance:
+      "The card preserves the grant's printed record-and-circuit construction without turning later tabulator data into a measurement made by the 1889 patent.",
   },
 ];

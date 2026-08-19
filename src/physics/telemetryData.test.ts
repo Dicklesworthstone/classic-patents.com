@@ -292,4 +292,23 @@ describe("Physics Telemetry Data Registry", () => {
     expect(published).not.toContain("240°c");
     expect(published).not.toContain("seven-bit");
   });
+
+  test("keeps Hollerith US 395,781 at its held record-card source boundary", () => {
+    const hollerith = PATENT_PHYSICS_REGISTRY["us-395781-hollerith-tabulating"];
+    expect(hollerith.engineMethod).toContain("No tabulator-performance engine");
+    expect(hollerith.controls.map((control) => control.unit)).toEqual(["source figure group"]);
+    expect(hollerith.computeMetrics({ sourceFocus: 2 })).toMatchObject([
+      {
+        label: "Highlighted Source Group",
+        value: "Figs. 6–13: circuit combinations and record-card example",
+      },
+      { label: "Printed Figures", value: "17" },
+      { label: "Printed Claims", value: "21" },
+      { label: "Visual Status", value: "withheld" },
+    ]);
+    const published = JSON.stringify(hollerith).toLowerCase();
+    expect(published).not.toContain("288 grid positions");
+    expect(published).not.toContain("12v circuits");
+    expect(published).not.toContain("80 cards per minute");
+  });
 });

@@ -2834,7 +2834,9 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
     pedagogicalInsight:
       "A fixed 57mm f/9 doublet set at its hyperfocal distance renders everything from 1.2 meters to optical infinity in sharp focus, eliminating viewfinders and focusing bellows.",
   },
-  "us-395781-hollerith-tabulating": {
+  // Retained non-serving tabulator performance model. The exact US 395,781
+  // route receives the source-reading guide below pending full editorial QA.
+  "_legacy-unpublished-us-395781-hollerith-tabulating": {
     domain: "electromagnetics_flux",
     domainTitle: "Punched Card Matrix Logic & Electromagnetic Solenoid Accumulators",
     equationName: "Electromagnetic Solenoid Force & Inductive Time Constant",
@@ -5209,4 +5211,64 @@ PATENT_PHYSICS_REGISTRY["us-313224-mergenthaler-linotype"] = {
   },
   pedagogicalInsight:
     "US 313,224 describes finger-keys that set adjusting-pins and stop-pins for independently moving matrix-bars. The selected bars are aligned and clamped into a temporary matrix; a separate mold and force-pump casting mechanism produces a printing-bar. The held source edition does not support a keyboard count, binary matrix distributor, material recipe, temperature, pressure, production rate, or later Linotype casting-cycle measurement.",
+};
+
+// US 395,781 specifies record-card, circuit, counter, and sorting relations,
+// not a quantified tabulator. Keep the inherited performance model above
+// non-serving until the complete 17-page edition is independently accepted.
+PATENT_PHYSICS_REGISTRY["us-395781-hollerith-tabulating"] = {
+  domain: "source_review_hold",
+  domainTitle: "Source Guide: Record-Card Statistical Compiler",
+  equationName: "No quantitative card-reading or electromagnetic performance model published",
+  governingEquation:
+    "record-card index-points → circuit-controlling contacts → electro-magnets → counters and sorting boxes",
+  engineMethod: "No tabulator-performance engine; source-review guide only",
+  controls: [
+    {
+      id: "sourceFocus",
+      label: "Verified facsimile group",
+      min: 1,
+      max: 3,
+      step: 1,
+      defaultValue: 1,
+      unit: "source figure group",
+    },
+  ],
+  computeMetrics: (params) => {
+    const focus = Math.max(1, Math.min(3, Math.round(params.sourceFocus ?? 1)));
+    const highlighted = [
+      "Figs. 1–5: compiling outfit, contact press, counters, and sorting apparatus",
+      "Figs. 6–13: circuit combinations and record-card example",
+      "Figs. 14–17: modified circuit-controlling arrangements",
+    ][focus - 1] as string;
+
+    return [
+      {
+        label: "Highlighted Source Group",
+        value: highlighted,
+        unit: "facsimile guide",
+        badgeColor: "cyan",
+      },
+      {
+        label: "Printed Figures",
+        value: "17",
+        unit: "source text",
+        badgeColor: "emerald",
+      },
+      {
+        label: "Printed Claims",
+        value: "21",
+        unit: "source text",
+        badgeColor: "indigo",
+      },
+      {
+        label: "Visual Status",
+        value: "withheld",
+        unit: "independent source review pending",
+        badgeColor: "amber",
+      },
+    ];
+  },
+  pedagogicalInsight:
+    "US 395,781 describes separate record-cards whose index-points cooperate with circuit-controlling devices. Its circuits actuate electro-magnets for mechanical registers, indicators, and sorting boxes. The held source edition does not supply a fixed card size, position count, voltage, current, pin material, contact resistance, coil geometry, processing rate, census total, or later-computing performance measurement.",
 };

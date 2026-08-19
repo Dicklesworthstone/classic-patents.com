@@ -313,6 +313,12 @@ the visitor can see or hear the kernel change the instrument.
 - [x] P5.220 Ericsson 2D shroud/hub/blade-tip seats. 2D no longer converts leftover 14/60/55/10/8 or tip 15/6 privately.
 - [x] P5.221 CCD ccdPacketGateIndex / packetCount / packet SVG. 2D no longer converts leftover i×3 or 16×8 privately.
 - [x] P5.222 Tesla coil schematicToploadRx/Ry. Schematic no longer converts leftover 50/18 privately.
+- [x] P5.223 Tesla schematic stator/rotor/hub radii. Schematic no longer converts leftover r=95/65/42/8 privately; arrows use statorCenter.
+- [x] P5.224 Hollerith schematicDialX. Schematic no longer converts leftover 140+i×60 privately.
+- [x] P5.225 Otto schematicFlywheelCx/Cy/R. Schematic no longer converts leftover 280,130 r=45 privately.
+- [x] P5.226 Daimler schematicFlywheelCx/Cy/R. Schematic no longer converts leftover 200,220 r=50 privately.
+- [x] P5.227 Fermi schematicGridXs/Ys. Schematic no longer converts leftover 140/200/260 and 110/150/190 privately.
+- [x] P5.228 Westinghouse schematicWheelR. Schematic no longer converts leftover r=35 privately.
 
 ## Explicitly out of scope
 

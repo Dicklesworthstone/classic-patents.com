@@ -61,6 +61,11 @@ export function energyChannelsFor(
     // energy, thermal, pressure, or production-flow values to visualize.
     return [];
   }
+  if (patentId === "us-395781-hollerith-tabulating") {
+    // The source gives functional circuit relationships, not an electrical or
+    // mechanical energy-flow measurement for this held manuscript.
+    return [];
+  }
   if (patentId === "us-3541541-engelbart-mouse") {
     // The grant supplies no source-backed electrical or mechanical energy
     // values. Keep the optional presentation strip empty while its full

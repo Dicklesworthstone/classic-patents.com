@@ -19,6 +19,7 @@ describe("source-integrity visual routing", () => {
       "us-3541541-engelbart-mouse",
       "us-3671542-kwolek-kevlar",
       "us-3858232-boyle-smith-ccd",
+      "us-395781-hollerith-tabulating",
     ]) {
       expect(dispatcherSource).toContain(`case "${patentId}":`);
     }
@@ -33,6 +34,7 @@ describe("source-integrity visual routing", () => {
     expect(dispatcherSource).toContain("later matrix magazine, binary distributor, alloy recipe");
     expect(dispatcherSource).toContain("unreviewed materials, dimensions, sampling, friction");
     expect(dispatcherSource).toContain("Information Storage Devices");
+    expect(dispatcherSource).toContain("unreviewed card dimensions, contact-pin counts, voltage");
   });
 
   test("does not keep the contradicted model in the corrected route branch", () => {
@@ -63,6 +65,9 @@ describe("source-integrity visual routing", () => {
     const mergenthalerBranch = dispatcherSource
       .split('case "us-313224-mergenthaler-linotype":')[1]
       ?.split('case "us-319596-maxim-machine-gun":')[0];
+    const hollerithBranch = dispatcherSource
+      .split('case "us-395781-hollerith-tabulating":')[1]
+      ?.split('case "us-470918-reno-escalator":')[0];
 
     expect(parsonsBranch).toBeDefined();
     expect(kwolekBranch).toBeDefined();
@@ -73,6 +78,7 @@ describe("source-integrity visual routing", () => {
     expect(fermiBranch).toBeDefined();
     expect(engelbartBranch).toBeDefined();
     expect(mergenthalerBranch).toBeDefined();
+    expect(hollerithBranch).toBeDefined();
     expect(parsonsBranch).not.toContain("ParsonsTurbine");
     expect(kwolekBranch).not.toContain("KwolekKevlar");
     expect(boyleBranch).not.toContain("BoyleSmithCcd");
@@ -82,5 +88,6 @@ describe("source-integrity visual routing", () => {
     expect(fermiBranch).not.toContain("FermiReactor");
     expect(engelbartBranch).not.toContain("EngelbartMouse");
     expect(mergenthalerBranch).not.toContain("MergenthalerLinotype");
+    expect(hollerithBranch).not.toContain("HollerithTabulating");
   });
 });

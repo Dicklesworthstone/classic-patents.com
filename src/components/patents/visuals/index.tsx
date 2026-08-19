@@ -25,7 +25,6 @@ import { GliddenBarbedWireSim } from "./GliddenBarbedWireSim";
 import { GoddardRocketSourceVisual } from "./GoddardRocketSourceVisual";
 import { GoodyearRubberSim } from "./GoodyearRubberSim";
 import { GrammeDynamoSim } from "./GrammeDynamoSim";
-import { HollerithTabulatingSim } from "./HollerithTabulatingSim";
 import { HoweSewingMachineSim } from "./HoweSewingMachineSim";
 import { HyattCelluloidSim } from "./HyattCelluloidSim";
 import { LincolnBuoySim } from "./LincolnBuoySim";
@@ -136,10 +135,6 @@ const GoodyearRubber3D = dynamic(
 );
 const GrammeDynamo3D = dynamic(
   () => import("./three/GrammeDynamo3D").then((mod) => mod.GrammeDynamo3D),
-  { ssr: false, loading: ThreeLoading },
-);
-const HollerithTabulating3D = dynamic(
-  () => import("./three/HollerithTabulating3D").then((mod) => mod.HollerithTabulating3D),
   { ssr: false, loading: ThreeLoading },
 );
 const HoweSewingMachine3D = dynamic(
@@ -267,6 +262,7 @@ export function PatentVisualDispatcher({ patentId }: PatentVisualDispatcherProps
     "us-3541541-engelbart-mouse",
     "us-3671542-kwolek-kevlar",
     "us-3858232-boyle-smith-ccd",
+    "us-395781-hollerith-tabulating",
   ].includes(patentId);
 
   return (
@@ -386,10 +382,11 @@ export function PatentVisualDispatcher({ patentId }: PatentVisualDispatcherProps
           case "us-388850-eastman-kodak":
             return renderMode === "3d-physics" ? <EastmanKodak3D /> : <EastmanKodakSim />;
           case "us-395781-hollerith-tabulating":
-            return renderMode === "3d-physics" ? (
-              <HollerithTabulating3D />
-            ) : (
-              <HollerithTabulatingSim />
+            return (
+              <SourceVisualUnavailable
+                detail="US 395,781 describes record-cards with index-points, contact devices, circuits, electro-magnets, counters, indicators, and sorting boxes. The inherited tabulator model adds unreviewed card dimensions, contact-pin counts, voltage, current, materials, clock rates, census throughput, and later computing history, so it is withheld until a source-specific instrument passes independent review."
+                title="Record-card statistical compiler visual under source review"
+              />
             );
           case "us-470918-reno-escalator":
             return renderMode === "3d-physics" ? <RenoEscalator3D /> : <RenoEscalatorSim />;

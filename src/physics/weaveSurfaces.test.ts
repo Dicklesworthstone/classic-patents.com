@@ -323,6 +323,20 @@ describe("FrankenSim Weave Surfaces Boundary", () => {
     expect(coupleLinks("us-313224-mergenthaler-linotype", {})).toEqual([]);
   });
 
+  test("keeps Hollerith US 395,781 on its held record-card source boundary", () => {
+    const probe = materialProbe("us-395781-hollerith-tabulating", "Record card", {});
+    expect(probe).toMatchObject({
+      material: "Record-cards, circuit-controlling contacts, electro-magnets, counters, and sorting boxes",
+      qty: "Claim 1 and specification relation",
+      value: "index-points → circuits → counting or sorting action",
+      unit: "source guide",
+    });
+    expect(probe?.note).toContain("no fixed card size, pin count, voltage, current");
+    expect(intervalGhosts("us-395781-hollerith-tabulating", { sourceFocus: 2 })).toEqual([
+      { label: "Source group", min: 1, max: 3, live: 2, unit: "facsimile guide" },
+    ]);
+  });
+
   test("computes spectral eigenmodes for resonant patents", () => {
     const teslaCoilModes = spectralModes("us-593138-tesla-coil", { secondaryTurns: 1000 });
     expect(teslaCoilModes.length).toBeGreaterThan(0);

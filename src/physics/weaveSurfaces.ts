@@ -134,6 +134,17 @@ export function materialProbe(
       note: "The source describes independently adjustable bars with intaglio characters, then a separate mold-and-casting mechanism. The held edition supplies no later magazine, binary distributor, alloy recipe, temperature, pressure, material, rate, or cycle-time value.",
     };
   }
+  if (patentId === "us-395781-hollerith-tabulating") {
+    return {
+      part: calloutLabel,
+      material:
+        "Record-cards, circuit-controlling contacts, electro-magnets, counters, and sorting boxes",
+      qty: "Claim 1 and specification relation",
+      value: "index-points → circuits → counting or sorting action",
+      unit: "source guide",
+      note: "The grant describes the record-card and circuit relationship, including yielding pins and mercury cups in later claims. The held edition gives no fixed card size, pin count, voltage, current, material, contact resistance, timing, throughput, census total, or later computing metric.",
+    };
+  }
   if (patentId === "us-2708656-fermi-reactor") {
     return {
       part: calloutLabel,
@@ -968,6 +979,17 @@ export function materialProbe(
 
 export function intervalGhosts(patentId: string, params: Record<string, number>): IntervalGhost[] {
   if (patentId === "us-313224-mergenthaler-linotype") {
+    return [
+      {
+        label: "Source group",
+        min: 1,
+        max: 3,
+        live: Math.max(1, Math.min(3, Math.round(params.sourceFocus ?? 1))),
+        unit: "facsimile guide",
+      },
+    ];
+  }
+  if (patentId === "us-395781-hollerith-tabulating") {
     return [
       {
         label: "Source group",
