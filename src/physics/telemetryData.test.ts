@@ -127,6 +127,27 @@ describe("Physics Telemetry Data Registry", () => {
     expect(noyce.pedagogicalInsight).toContain("depletion width, capacitance");
   });
 
+  test("keeps Diesel US 542,846 on its held controlled-combustion source boundary", () => {
+    const diesel = PATENT_PHYSICS_REGISTRY["us-542846-diesel-engine"];
+    expect(diesel.engineMethod).toContain("No heat-engine performance engine");
+    expect(diesel.controls.map((control) => control.unit)).toEqual(["source drawing group"]);
+    expect(diesel.computeMetrics({ sourceFocus: 2 })).toMatchObject([
+      {
+        label: "Highlighted Source Group",
+        value: "Figs. 4–7: single-acting and modified engine arrangements",
+      },
+      { label: "Printed Figures", value: "10", unit: "source text" },
+      { label: "Printed Claims", value: "3", unit: "source text" },
+      {
+        label: "Visual Status",
+        value: "withheld",
+        unit: "independent source review pending",
+      },
+    ]);
+    expect(diesel.pedagogicalInsight).toContain("does not establish a compression ratio");
+    expect(diesel.pedagogicalInsight).toContain("efficiency, power, or later engine architecture");
+  });
+
   test("keeps Carrier US 808,897 at the printed wet-plate separator boundary", () => {
     const carrier = PATENT_PHYSICS_REGISTRY["us-808897-carrier-air-conditioner"];
     expect(carrier.engineMethod).toContain("No numerical air-conditioning engine");

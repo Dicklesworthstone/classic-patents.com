@@ -1,6 +1,6 @@
 /**
- * Kernel predicates → phrases in the original specification.
- * Highlighted on the spec face so a slider change lights the clause it tests.
+ * Kernel predicates → exact phrases in the original specification.
+ * Highlighted on the spec face so an interaction lights the clause it tests.
  */
 
 import { stepFermiKinetics } from "./fermiKinetics";
@@ -27,7 +27,7 @@ export function specClausesFor(patentId: string, params: Record<string, number>)
         phrase: "twisted or warped in opposite directions",
         active: Math.abs(params.wingWarp ?? 0) > 0.5,
         tone: "live",
-        caption: "Claim 1 warp is live — opposite tip incidence.",
+        caption: "Claim 1 warp is live: opposite tip incidence.",
       },
       {
         id: "adverse-yaw",
@@ -56,25 +56,24 @@ export function specClausesFor(patentId: string, params: Record<string, number>)
   }
 
   if (patentId === TESLA_ID) {
-    const poles = params.poles ?? 2;
-    const freq = params.frequency ?? 60;
+    const energized = (params.frequency ?? 0) > 0;
     return [
       {
-        id: "rotating-field",
-        phrase: "rotating magnetic field",
-        active: freq > 0,
-        tone: "live",
-        caption: `Stator B is rotating at ${freq} Hz.`,
+        id: "independent-circuits",
+        phrase:
+          "two or more independent circuits through which alternate currents are passed at proper intervals",
+        active: energized,
+        tone: "held",
+        caption:
+          "The source guide animates the described staggered currents without assigning an operating rate.",
       },
       {
-        id: "polyphase",
-        phrase: "two or more alternating currents having a phase difference",
-        active: freq > 0,
-        tone: poles === 2 ? "held" : "live",
+        id: "progressive-shift",
+        phrase: "a progressive shifting of the magnetism or of the ‘lines of force’",
+        active: energized,
+        tone: "live",
         caption:
-          poles === 2
-            ? "Two-pole field — ns = 120 f / P matches the patent figure."
-            : `${poles}-pole field: synchronous speed is 120 f / P.`,
+          "The guide shows the stated progressive shift without assigning a speed or numerical configuration.",
       },
     ];
   }
@@ -91,8 +90,8 @@ export function specClausesFor(patentId: string, params: Record<string, number>)
         tone: keff > 1.002 ? "live" : "held",
         caption:
           keff >= 0.998
-            ? `k_eff = ${keff.toFixed(4)} — chain reaction holds.`
-            : `k_eff = ${keff.toFixed(4)} — subcritical.`,
+            ? `k_eff = ${keff.toFixed(4)}: chain reaction holds.`
+            : `k_eff = ${keff.toFixed(4)}: subcritical.`,
       },
     ];
   }

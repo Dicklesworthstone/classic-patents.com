@@ -3,6 +3,7 @@ import {
   bardeenHoleStream,
   bardeenLoadLine,
   bellScopeSample,
+  corlissSchematicValve,
   delavalSchematicDiscY,
   edisonFoilGrooveX,
   edisonLeadScrewThreadX,
@@ -10,12 +11,15 @@ import {
   edisonSchematicGrooveX,
   gatlingSchematicBarrelY,
   gliddenSchematicSpurX,
+  goodyearSchematicCrosslink,
+  goodyearSchematicStrand,
   grammeSchematicJunction,
   hollerithCupSvg,
   hollerithSchematicDialX,
   hollerithSchematicPinX,
   hyattPolymerSvg,
   kevlarSchematicLattice,
+  lincolnSchematicChamber,
   marconiMastHeightFromHz,
   mccormickCrankPinSvg,
   mccormickFaceSickleX,
@@ -72,6 +76,7 @@ import {
   stepWhitneyCottonGin,
   stepWozniakApple,
   stepZeppelinAirship,
+  thomsonSchematicJawX,
   voltsToKv,
   whitneySchematicRay,
   wozniakBusCycle,
@@ -249,6 +254,9 @@ describe("Catalog Kernels & Shared SI Stepping Functions", () => {
     const res = stepCorlissEngine({ steamPressurePsi: 100, engineRpm: 65, cutoffPct: 25 });
     expect(res.indicatedHp).toBeGreaterThan(0);
     expect(res.expansionRatio).toBe(4);
+    expect(res.schematicValveR).toBe(16);
+    expect(corlissSchematicValve(0).cx).toBe(100);
+    expect(corlissSchematicValve(3).cy).toBe(215);
   });
 
   test("Gatling gun computes cyclic fire rate and barrel cluster rotation", () => {
@@ -313,6 +321,9 @@ describe("Catalog Kernels & Shared SI Stepping Functions", () => {
     const res = stepThomsonWelding({ weldCurrentAmps: 5500, clampPressureMpa: 35 });
     expect(res.interfaceTempC).toBeGreaterThan(800);
     expect(res.isForged).toBe(true);
+    expect(res.schematicJawCount).toBe(2);
+    expect(thomsonSchematicJawX(1)).toBe(220);
+    expect(res.schematicWeldR).toBe(6);
   });
 
   test("Zeppelin airship computes aerostatic lift, compartmental displacement, and trim moments", () => {
@@ -372,6 +383,8 @@ describe("Catalog Kernels & Shared SI Stepping Functions", () => {
     });
     expect(res.modulatedMa).toBeGreaterThan(0);
     expect(res.scopeSampleCount).toBe(60);
+    expect(res.schematicHornRx).toBe(55);
+    expect(res.schematicElectrodeXs).toEqual([185, 215]);
     expect(
       bellScopeSample(
         0,
@@ -449,6 +462,8 @@ describe("Catalog Kernels & Shared SI Stepping Functions", () => {
     expect(res.radiationResistanceOhms).toBe(36.56);
     expect(res.resonantFreqKhz).toBeGreaterThan(0);
     expect(marconiMastHeightFromHz(1000000)).toBeGreaterThan(0);
+    expect(res.schematicGapR).toBe(10);
+    expect(res.schematicMastX).toBe(120);
   });
 
   test("Colt revolver computes chamber cylinder index and lock bolt ratchet engagement", () => {
@@ -463,6 +478,9 @@ describe("Catalog Kernels & Shared SI Stepping Functions", () => {
     expect(res.tensileStrengthPsi).toBeGreaterThan(1000);
     expect(res.chainSagPx).toBe(25);
     expect(res.chainSagBezierScale).toBe(1.5);
+    expect(res.schematicStrandCount).toBe(4);
+    expect(goodyearSchematicStrand(0).x).toBe(70);
+    expect(goodyearSchematicCrosslink(0).cx).toBe(122);
   });
 
   test("Einstein-Szilard refrigerator computes three-fluid bubble pump thermosyphon circulation", () => {
@@ -475,11 +493,15 @@ describe("Catalog Kernels & Shared SI Stepping Functions", () => {
     const res = stepLincolnBuoy({ inflationPct: 75, weightTons: 380 });
     expect(res.liftKn).toBeGreaterThan(0);
     expect(res.draftReductionFt).toBeGreaterThan(0);
+    expect(res.schematicChamberXs).toEqual([80, 250]);
+    expect(lincolnSchematicChamber(1).x).toBe(250);
   });
 
   test("Maxim recoil machine gun computes muzzle gas recoil impulse and automatic toggle cycling", () => {
     const res = stepMaximMachineGun({ firingRateRpm: 600, recoilStrokeMm: 19 });
     expect(res.recoilVelocityMps).toBeGreaterThan(0);
     expect(res.toggleUnlockForceN).toBeGreaterThan(0);
+    expect(res.schematicToggleCx).toBe(280);
+    expect(res.schematicToggleR).toBe(4);
   });
 });

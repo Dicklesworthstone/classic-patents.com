@@ -145,6 +145,16 @@ export function materialProbe(
       note: "The grant describes the record-card and circuit relationship, including yielding pins and mercury cups in later claims. The held edition gives no fixed card size, pin count, voltage, current, material, contact resistance, timing, throughput, census total, or later computing metric.",
     };
   }
+  if (patentId === "us-542846-diesel-engine") {
+    return {
+      part: calloutLabel,
+      material: "Compressed air, gradual fuel admission, cut-off, and further expansion",
+      qty: "Claim 1",
+      value: "ordered process relation",
+      unit: "source guide",
+      note: "US 542,846 Claim 1 specifies compression before gradual fuel admission during expansion, then discontinuance and further expansion without heat transfer. Its held edition supplies no numerical compression ratio, pressure, temperature, fuel-droplet size, dimension, material, rate, efficiency, power, or later-engine configuration.",
+    };
+  }
   if (patentId === "us-2708656-fermi-reactor") {
     return {
       part: calloutLabel,
@@ -222,11 +232,12 @@ export function materialProbe(
   if (patentId.includes("tesla-motor") || patentId.includes("381968")) {
     return {
       part: calloutLabel,
-      material: "Laminated iron + cotton-covered copper",
-      qty: "n_s",
-      value: ((120 * (params.frequency ?? 60)) / 2).toFixed(0),
-      unit: "rpm",
-      note: "Two-pole field. ns = 120 f / P, P = 2.",
+      material:
+        "Fig. 9 annulus R, four insulated-wire coils, disk D, generator G, and L/L′ circuits",
+      qty: "Fig. 9 source relation",
+      value: "generator circuits → progressive shifting → disk D rotation",
+      unit: "source guide",
+      note: "The specification says R is preferably built of thin insulated iron rings or annular plates and is surrounded by four coils of insulated wire. It identifies disk D, generator G, collector rings and brushes, and the L/L′ connections, but gives no wire covering, operating frequency, speed, or performance value.",
     };
   }
   if (patentId === "us-1102653-goddard-rocket") {
@@ -1000,6 +1011,17 @@ export function intervalGhosts(patentId: string, params: Record<string, number>)
       },
     ];
   }
+  if (patentId === "us-542846-diesel-engine") {
+    return [
+      {
+        label: "Source group",
+        min: 1,
+        max: 3,
+        live: Math.max(1, Math.min(3, Math.round(params.sourceFocus ?? 1))),
+        unit: "facsimile guide",
+      },
+    ];
+  }
   if (patentId === "us-2708656-fermi-reactor") {
     return [];
   }
@@ -1395,6 +1417,15 @@ export function fidelityField(
   patentId: string,
   params: Record<string, number>,
 ): FidelityField | null {
+  if (patentId === "us-542846-diesel-engine") {
+    return {
+      part: "Source-bound controlled-combustion sequence",
+      model: "not computed",
+      reference: "independent publication review pending",
+      residual: "not applicable",
+      unit: "source boundary",
+    };
+  }
   if (patentId === "us-313224-mergenthaler-linotype") {
     return {
       part: "Source-bound matrix-bar printing-form relation",
@@ -1442,13 +1473,12 @@ export function fidelityField(
     };
   }
   if (patentId.includes("tesla-motor") || patentId.includes("381968")) {
-    const ns = (120 * (params.frequency ?? 60)) / 2;
     return {
-      part: "Synchronous speed",
-      model: ns.toFixed(0),
-      reference: "3600",
-      residual: (ns - 3600).toFixed(0),
-      unit: "rpm",
+      part: "Fig. 9 motor-generator relation",
+      model: "not computed",
+      reference: "annulus, coils, disk, generator, and connected circuits",
+      residual: "not applicable",
+      unit: "source boundary",
     };
   }
   if (patentId.includes("pelton") || patentId.includes("233692")) {
@@ -1691,6 +1721,9 @@ export function spectralModes(patentId: string, params: Record<string, number>):
 }
 
 export function datedScenarios(patentId: string): DatedScenario[] {
+  if (patentId === "us-542846-diesel-engine") {
+    return [];
+  }
   if (patentId === "us-313224-mergenthaler-linotype") {
     return [
       {
@@ -2035,6 +2068,9 @@ export function datedScenarios(patentId: string): DatedScenario[] {
 }
 
 export function coupleLinks(patentId: string, params: Record<string, number>): CoupleLink[] {
+  if (patentId === "us-542846-diesel-engine") {
+    return [];
+  }
   if (patentId === "us-313224-mergenthaler-linotype") {
     return [];
   }

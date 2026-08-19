@@ -559,7 +559,23 @@ export function stepCorlissEngine(params: {
     intakeOpenWindowDeg: Number((cutoff * 180).toFixed(2)),
     spokeCount: 6,
     spokePitchDeg: 60,
+    schematicValveR: 16,
+    schematicValveXs: [100, 300, 100, 300],
+    schematicValveYs: [85, 85, 215, 215],
+    schematicWristCx: 200,
+    schematicWristCy: 150,
+    schematicWristR: 32,
   };
+}
+
+/** Rotary-valve seat on the schematic. Shared by the schematic. */
+export function corlissSchematicValve(
+  index: number,
+  xs = [100, 300, 100, 300],
+  ys = [85, 85, 215, 215],
+) {
+  const i = ((index % xs.length) + xs.length) % xs.length;
+  return { cx: xs[i], cy: ys[i] };
 }
 
 export function stepGatlingGun(params: { crankRpm?: number; barrelCount?: number }) {
@@ -835,7 +851,21 @@ export function stepThomsonWelding(params: {
     weldGlowIntensity: Number((Math.min(1.5, Math.max(0, tempC / 1300)) * 1.8).toFixed(3)),
     weldSeamScale: Number((1 + (press / 35) * 0.35).toFixed(4)),
     jawStudioOffset: Number(((press / 35) * 0.12).toFixed(4)),
+    schematicJawCount: 2,
+    schematicJawOriginX: 140,
+    schematicJawPitchX: 80,
+    schematicJawY: 70,
+    schematicJawW: 40,
+    schematicJawH: 35,
+    schematicWeldCx: 200,
+    schematicWeldCy: 87,
+    schematicWeldR: 6,
   };
+}
+
+/** Water-cooled jaw X on the schematic. Shared by the schematic. */
+export function thomsonSchematicJawX(index: number, originX = 140, pitchX = 80) {
+  return originX + index * pitchX;
 }
 
 export function stepZeppelinAirship(params: {
@@ -1153,6 +1183,13 @@ export function stepBellTelephone(params: {
     scopeSineAmp: Number((db * 0.4).toFixed(2)),
     scopeHarmonicAmp: Number((db * 0.15).toFixed(2)),
     scopeSquareAmp: Number((db * 0.5).toFixed(2)),
+    schematicElectrodeXs: [185, 215],
+    schematicElectrodeY0: 140,
+    schematicElectrodeY1: 200,
+    schematicHornCx: 200,
+    schematicHornCy: 70,
+    schematicHornRx: 55,
+    schematicHornRy: 16,
     scopeSampleCount: 60,
     scopeSamplePitchPx: 5,
     scopeTScale: 0.2,
@@ -1547,6 +1584,11 @@ export function stepMarconiRadio(
     waveAdvancePx: Number(((Math.max(0.2, resonantFreqMhz) / 0.85) * 4).toFixed(3)),
     mastStudioScale: Number(Math.max(0.25, h / 88).toFixed(4)),
     toneEnergy: Number(Math.min(1, peakRfPowerKw / 80).toFixed(3)),
+    schematicGapX0: 230,
+    schematicGapX1: 260,
+    schematicGapY: 175,
+    schematicGapR: 10,
+    schematicMastX: 120,
     mastSvgY: Number((210 - h * 1.6).toFixed(2)),
     fundamentalHz: Number((resonantFreqMhz * 1e6).toFixed(0)),
   };
@@ -1623,7 +1665,31 @@ export function stepGoodyearRubber(
     chainStretchPx: Number(((lambda - 1) * 80).toFixed(2)),
     chainSagPx: 25,
     chainSagBezierScale: 1.5,
+    schematicStrandCount: 4,
+    schematicCrosslinkCount: 3,
+    schematicCrosslinkR: 5,
   };
+}
+
+/** Sulfur-strand path on the schematic. Shared by the schematic. */
+export function goodyearSchematicStrand(index: number) {
+  const strands = [
+    { x: 70, y0: 80, qx: 120, qy: 140, y1: 200 },
+    { x: 140, y0: 70, qx: 190, qy: 150, y1: 220 },
+    { x: 220, y0: 75, qx: 260, qy: 145, y1: 215 },
+    { x: 300, y0: 85, qx: 340, qy: 150, y1: 210 },
+  ];
+  return strands[((index % strands.length) + strands.length) % strands.length];
+}
+
+/** S–S crosslink node on the schematic. Shared by the schematic. */
+export function goodyearSchematicCrosslink(index: number) {
+  const nodes = [
+    { cx: 122, cy: 123 },
+    { cx: 195, cy: 167 },
+    { cx: 275, cy: 115 },
+  ];
+  return nodes[((index % nodes.length) + nodes.length) % nodes.length];
 }
 
 export function stepEinsteinRefrigerator(params: {
@@ -1687,7 +1753,18 @@ export function stepLincolnBuoy(params: {
     sandbarPeakY: Number((230 - (8.0 - depth) * 14).toFixed(2)),
     sandbarInnerY: Number((245 - (8.0 - depth) * 14).toFixed(2)),
     hullStudioY: Number((150 - (6.0 - hullDraftFt) * 12).toFixed(2)),
+    schematicChamberXs: [80, 250],
+    schematicChamberY: 140,
+    schematicChamberW: 70,
+    schematicChamberH: 40,
+    schematicTieXs: [115, 285],
   };
+}
+
+/** Air-chamber seat on the schematic. Shared by the schematic. */
+export function lincolnSchematicChamber(index: number, xs = [80, 250], y = 140) {
+  const i = ((index % xs.length) + xs.length) % xs.length;
+  return { x: xs[i], y };
 }
 
 export function stepMaximMachineGun(params: {
@@ -1726,5 +1803,8 @@ export function stepMaximMachineGun(params: {
     fireOmegaDegPerS: rpmToOmega(rpm).omegaDegPerS,
     steamOpacity:
       barrelTempC >= 95 ? Number(Math.min(0.85, (waterEvapRateGs / 15) * 0.75).toFixed(3)) : 0,
+    schematicToggleCx: 280,
+    schematicToggleCy: 105,
+    schematicToggleR: 4,
   };
 }

@@ -3021,7 +3021,7 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
     pedagogicalInsight:
       "Longitudinally grooved treads pass smoothly under stationary comb-plate fingers with sub-millimeter clearance, lifting footwear off the incline without danger of pinching.",
   },
-  "us-542846-diesel-engine": {
+  "_legacy-unpublished-us-542846-diesel-engine": {
     domain: "thermodynamics_transport",
     domainTitle: "Adiabatic Compression Auto-Ignition & Constant-Pressure Expansion",
     equationName: "Adiabatic Temperature Rise & Diesel Cycle Efficiency",
@@ -5271,4 +5271,64 @@ PATENT_PHYSICS_REGISTRY["us-395781-hollerith-tabulating"] = {
   },
   pedagogicalInsight:
     "US 395,781 describes separate record-cards whose index-points cooperate with circuit-controlling devices. Its circuits actuate electro-magnets for mechanical registers, indicators, and sorting boxes. The held source edition does not supply a fixed card size, position count, voltage, current, pin material, contact resistance, coil geometry, processing rate, census total, or later-computing performance measurement.",
+};
+
+// US 542,846 specifies a controlled-combustion sequence and three claims,
+// not a measured later-engine performance model. The manuscript failed
+// independent source review and remains deliberately withheld.
+PATENT_PHYSICS_REGISTRY["us-542846-diesel-engine"] = {
+  domain: "source_review_hold",
+  domainTitle: "Source Guide: Controlled-Combustion Heat-Engine Process",
+  equationName: "No numerical heat-engine performance model published",
+  governingEquation:
+    "compressed air → gradual fuel admission during expansion → cut-off → further expansion",
+  engineMethod: "No heat-engine performance engine; source-review guide only",
+  controls: [
+    {
+      id: "sourceFocus",
+      label: "Verified facsimile group",
+      min: 1,
+      max: 3,
+      step: 1,
+      defaultValue: 1,
+      unit: "source drawing group",
+    },
+  ],
+  computeMetrics: (params) => {
+    const focus = Math.max(1, Math.min(3, Math.round(params.sourceFocus ?? 1)));
+    const highlighted = [
+      "Figs. 1–3: theoretical cycle diagrams",
+      "Figs. 4–7: single-acting and modified engine arrangements",
+      "Figs. 8–10: liquid-fuel construction details",
+    ][focus - 1] as string;
+
+    return [
+      {
+        label: "Highlighted Source Group",
+        value: highlighted,
+        unit: "facsimile guide",
+        badgeColor: "cyan",
+      },
+      {
+        label: "Printed Figures",
+        value: "10",
+        unit: "source text",
+        badgeColor: "emerald",
+      },
+      {
+        label: "Printed Claims",
+        value: "3",
+        unit: "source text",
+        badgeColor: "indigo",
+      },
+      {
+        label: "Visual Status",
+        value: "withheld",
+        unit: "independent source review pending",
+        badgeColor: "amber",
+      },
+    ];
+  },
+  pedagogicalInsight:
+    "US 542,846 claims compression before gradual fuel admission during expansion, followed by cut-off and further expansion. Its second and third claims add feed-valve timing and a compressor-reservoir-expansion-chamber combination. The held source edition does not establish a compression ratio, pressure, temperature, fuel-droplet size, cylinder dimension, shaft speed, material, efficiency, power, or later engine architecture.",
 };

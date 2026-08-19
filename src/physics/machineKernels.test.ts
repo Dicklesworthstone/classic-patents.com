@@ -6,6 +6,7 @@ import {
   ccdWellSvgDepth,
   LINOTYPE_CHARS_PER_LINE,
   mergenthalerMatrixSvgX,
+  mergenthalerSchematicChuteX,
   otisSchematicRailY,
   renoSchematicCleat,
   sholesSchematicTypebar,
@@ -50,6 +51,8 @@ describe("Machine Kernels & Mechanical Kinematics", () => {
     expect(machine.stitchesPerMinute).toBe(300);
     expect(machine.stitchFrequencyHz).toBe(5);
     expect(machine.clothFeedMmPerS).toBe(17.5);
+    expect(machine.schematicShuttleR).toBe(32);
+    expect(machine.schematicNeedleX).toBe(220);
 
     // Needle Top Dead Center (crankDeg = 90)
     const atTdc = stepHoweLockstitch(90);
@@ -107,6 +110,9 @@ describe("Machine Kernels & Mechanical Kinematics", () => {
     expect(res.slugSvgWidth).toBeGreaterThan(250);
     expect(res.matrixCount).toBe(8);
     expect(mergenthalerMatrixSvgX(0, res.matrixSvgOriginX, res.matrixSvgPitch)).toBe(5);
+    expect(res.schematicChuteCount).toBe(3);
+    expect(mergenthalerSchematicChuteX(0)).toBe(140);
+    expect(res.schematicMoldR).toBe(45);
   });
 
   test("stepRenoEscalator computes inclined cleat deck throughput, motor torque, and comb-plate clearance", () => {

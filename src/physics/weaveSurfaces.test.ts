@@ -23,7 +23,15 @@ describe("FrankenSim Weave Surfaces Boundary", () => {
 
     const teslaProbe = materialProbe("us-381968-tesla-motor", "stator", { frequencyHz: 60 });
     expect(teslaProbe).toBeDefined();
-    expect(teslaProbe?.qty).toBeDefined();
+    expect(teslaProbe).toMatchObject({
+      material:
+        "Fig. 9 annulus R, four insulated-wire coils, disk D, generator G, and L/L′ circuits",
+      qty: "Fig. 9 source relation",
+      unit: "source guide",
+    });
+    expect(teslaProbe?.value).not.toMatch(/rpm|120|3600/i);
+    expect(teslaProbe?.note).toContain("thin insulated iron rings or annular plates");
+    expect(teslaProbe?.note).toContain("no wire covering, operating frequency, speed");
 
     const fermiProbe = materialProbe("us-2708656-fermi-reactor", "graphite", {
       rodInsertionPct: 50,
@@ -50,8 +58,11 @@ describe("FrankenSim Weave Surfaces Boundary", () => {
     expect(wrightFidelity?.part).toBeDefined();
     expect(wrightFidelity?.residual).toBeDefined();
 
-    const teslaFidelity = fidelityField("us-381968-tesla-motor", { frequencyHz: 60 });
-    expect(teslaFidelity).toBeDefined();
+    expect(fidelityField("us-381968-tesla-motor", { frequencyHz: 60 })).toMatchObject({
+      part: "Fig. 9 motor-generator relation",
+      model: "not computed",
+      unit: "source boundary",
+    });
   });
 
   test("enforces refusal policy on unphysical visual smoke", () => {
@@ -195,6 +206,26 @@ describe("FrankenSim Weave Surfaces Boundary", () => {
     expect(fidelityField("us-3671542-kwolek-kevlar", {})).toBeNull();
     expect(datedScenarios("us-3671542-kwolek-kevlar")).toEqual([]);
     expect(coupleLinks("us-3671542-kwolek-kevlar", {})).toEqual([]);
+  });
+
+  test("keeps Diesel US 542,846 on its held controlled-combustion source boundary", () => {
+    const probe = materialProbe("us-542846-diesel-engine", "Claim 1 process", {});
+    expect(probe).toMatchObject({
+      material: "Compressed air, gradual fuel admission, cut-off, and further expansion",
+      qty: "Claim 1",
+      value: "ordered process relation",
+      unit: "source guide",
+    });
+    expect(probe?.note).toContain("no numerical compression ratio, pressure, temperature");
+    expect(intervalGhosts("us-542846-diesel-engine", { sourceFocus: 2 })).toEqual([
+      { label: "Source group", min: 1, max: 3, live: 2, unit: "facsimile guide" },
+    ]);
+    expect(fidelityField("us-542846-diesel-engine", {})).toMatchObject({
+      model: "not computed",
+      unit: "source boundary",
+    });
+    expect(datedScenarios("us-542846-diesel-engine")).toEqual([]);
+    expect(coupleLinks("us-542846-diesel-engine", {})).toEqual([]);
   });
 
   test("keeps Marconi US 586,193 on its reviewed receiver-and-reset boundary", () => {

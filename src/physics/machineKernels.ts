@@ -133,6 +133,12 @@ export function stepHoweSewingMachine(
     crankDisplayTickMs: 30,
     crankDisplayTickS: 0.03,
     clothStudioAdvancePerS: Number((stitchFrequencyHz * pitch * 0.1).toFixed(3)),
+    schematicShuttleCx: 300,
+    schematicShuttleCy: 150,
+    schematicShuttleR: 32,
+    schematicNeedleX: 220,
+    schematicNeedleY: 178,
+    schematicNeedleR: 3,
   };
 }
 
@@ -323,6 +329,15 @@ export function stepMergenthalerLinotype(params: {
   matrixSvgPitch: number;
   matrixSvgOriginX: number;
   matrixSvgWidth: number;
+  schematicChuteCount: number;
+  schematicChuteOriginX: number;
+  schematicChutePitchX: number;
+  schematicChuteDx: number;
+  schematicChuteY1: number;
+  schematicChuteY2: number;
+  schematicMoldCx: number;
+  schematicMoldCy: number;
+  schematicMoldR: number;
 } {
   const rate = params.matrixRatePerMin ?? 60;
   const wedge = params.spacebandWedgeMm ?? 6.5;
@@ -356,7 +371,21 @@ export function stepMergenthalerLinotype(params: {
     matrixSvgPitch: 18,
     matrixSvgOriginX: 5,
     matrixSvgWidth: 12,
+    schematicChuteCount: 3,
+    schematicChuteOriginX: 140,
+    schematicChutePitchX: 40,
+    schematicChuteDx: -30,
+    schematicChuteY1: 40,
+    schematicChuteY2: 130,
+    schematicMoldCx: 280,
+    schematicMoldCy: 180,
+    schematicMoldR: 45,
   };
+}
+
+/** Magazine-chute divider on the schematic. Shared by the schematic. */
+export function mergenthalerSchematicChuteX(index: number, originX = 140, pitchX = 40) {
+  return originX + index * pitchX;
 }
 
 /** Brass matrix seat on the 2D slug face. Shared by 2D. */

@@ -27,13 +27,15 @@ describe("Specification Clauses & Interactive Telemetry Weave", () => {
     expect(uncoupledAdverse?.tone).toBe("broken");
   });
 
-  test("Tesla Electro-Magnetic Motor lights rotating field and polyphase clauses", () => {
+  test("Tesla Electro-Magnetic Motor lights only printed independent-circuit and shifting clauses", () => {
     const tesla = specClausesFor("us-381968-tesla-motor", { frequency: 60, poles: 2 });
     expect(tesla.length).toBe(2);
-    expect(tesla[0].phrase).toContain("rotating magnetic field");
+    expect(tesla[0].phrase).toContain("two or more independent circuits");
     expect(tesla[0].active).toBe(true);
-    expect(tesla[1].phrase).toContain("phase difference");
-    expect(tesla[1].tone).toBe("held");
+    expect(tesla[1].phrase).toContain("progressive shifting of the magnetism");
+    expect(tesla[1].tone).toBe("live");
+    expect(tesla.map((clause) => clause.phrase).join(" ")).not.toContain("rotating magnetic field");
+    expect(tesla.map((clause) => clause.caption).join(" ")).not.toContain("120 f / P");
   });
 
   test("Fermi nuclear reactor lights critical chain-reaction clause", () => {

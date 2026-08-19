@@ -111,6 +111,7 @@ export interface TeslaFig9State {
   schematicStatorInnerR: number;
   schematicRotorR: number;
   schematicHubR: number;
+  schematicPoleCount: number;
   statorPoleSvgR: number;
   twoPhaseVectorSvgR: number;
   threePhaseVectorSvgR: number;
@@ -152,6 +153,7 @@ export function stepTeslaMotorFig9(phaseCycleHz: number): TeslaFig9State {
     schematicStatorInnerR: 65,
     schematicRotorR: 42,
     schematicHubR: 8,
+    schematicPoleCount: 4,
     statorPoleSvgR: TESLA_STATOR_POLE_SVG_R,
     twoPhaseVectorSvgR: TESLA_TWO_PHASE_VECTOR_SVG_R,
     threePhaseVectorSvgR: TESLA_THREE_PHASE_VECTOR_SVG_R,
@@ -236,6 +238,10 @@ export function teslaCoilSiUnits(
     schematicToploadCy: 70,
     schematicToploadRx: 50,
     schematicToploadRy: 18,
+    schematicSparkX0: 160,
+    schematicSparkX1: 240,
+    schematicSparkY: 245,
+    schematicSparkR: 5,
   };
 }
 
@@ -272,6 +278,17 @@ export function teslaBAt(
     bySvg: by * TESLA_B_VECTOR_SVG_SCALE,
     coilCount,
   };
+}
+
+/** Fig. 9 pole rectangle on the schematic. Shared by the schematic. */
+export function teslaSchematicPoleRect(index: number) {
+  const poles = [
+    { x: 180, y: 58, w: 40, h: 26 },
+    { x: 266, y: 130, w: 26, h: 40 },
+    { x: 180, y: 216, w: 40, h: 26 },
+    { x: 108, y: 130, w: 26, h: 40 },
+  ];
+  return poles[((index % poles.length) + poles.length) % poles.length];
 }
 
 /** Fig. 4 strobe fade on the schematic. Shared by the schematic. */

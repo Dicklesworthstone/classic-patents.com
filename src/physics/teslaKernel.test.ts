@@ -15,6 +15,7 @@ import {
   teslaFig4Strobe,
   teslaPhaseVectors,
   teslaPoleCurrent,
+  teslaSchematicPoleRect,
   teslaSchematicStrobeOpacity,
   teslaStatorPole,
 } from "./teslaKernel";
@@ -49,6 +50,9 @@ describe("Tesla Polyphase AC & Resonant Induction Kernels", () => {
     expect(state60Hz.statorPoleSvgW).toBe(36);
     expect(state60Hz.schematicStatorOuterR).toBe(95);
     expect(state60Hz.schematicHubR).toBe(8);
+    expect(state60Hz.schematicPoleCount).toBe(4);
+    expect(teslaSchematicPoleRect(0).w).toBe(40);
+    expect(teslaSchematicPoleRect(1).h).toBe(40);
     const coil0 = teslaPoleCurrent(0, 2, 0);
     expect(coil0.current).toBeCloseTo(0, 5);
     expect(teslaPoleCurrent(0, 2, Math.PI / 2).current).toBeCloseTo(1, 5);
@@ -107,6 +111,8 @@ describe("Tesla Polyphase AC & Resonant Induction Kernels", () => {
     expect(si.secondaryTurnCount).toBe(18);
     expect(si.schematicToploadRx).toBe(50);
     expect(si.schematicToploadRy).toBe(18);
+    expect(si.schematicSparkX0).toBe(160);
+    expect(si.schematicSparkR).toBe(5);
     expect(teslaCoilWindingSvg(0).x1).toBe(-25);
   });
 });

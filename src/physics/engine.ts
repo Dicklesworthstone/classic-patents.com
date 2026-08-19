@@ -459,6 +459,14 @@ export const FrankenSimEngine = {
       electronVelocityMegaMps: Number((velocityMps / 1e6).toFixed(1)),
       relativisticPct: Number((relativisticBeta * 100).toFixed(1)),
       acceleratingVoltageVolts: Number((anodeKv * 1000).toFixed(0)),
+      schematicCathodeCx: 95,
+      schematicCathodeCy: 150,
+      schematicCathodeR: 28,
+      schematicCollectorX: 300,
+      schematicCollectorY: 132,
+      schematicDeflectorX: 150,
+      schematicDeflectorY0: 78,
+      schematicDeflectorY1: 208,
     };
   },
 
@@ -799,6 +807,13 @@ export const FrankenSimEngine = {
       barrelOmegaRadPerS: Number(((2 * Math.PI) / Math.max(0.01, t)).toFixed(3)),
       filmAdvanceSpeedRadPerS: 0.8,
       supplySpoolOmegaRadPerS: 0.64,
+      schematicSpoolCx: 110,
+      schematicSpoolR: 22,
+      schematicSpoolY0: 90,
+      schematicSpoolY1: 190,
+      schematicShutterCx: 280,
+      schematicShutterCy: 140,
+      schematicShutterR: 20,
     };
   },
 
@@ -858,6 +873,9 @@ export const FrankenSimEngine = {
       governorBallSpread: Number(Math.min(1.4, Math.max(0.4, (rpm / 150) * 0.85)).toFixed(3)),
       pressureNeedleRadPerBar: Number(((Math.PI * 1.4) / 80).toFixed(5)),
       pistonStrokePx: 35,
+      schematicFlywheelCx: 200,
+      schematicFlywheelCy: 240,
+      schematicFlywheelR: 40,
     };
   },
 

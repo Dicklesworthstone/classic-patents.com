@@ -66,6 +66,11 @@ export function energyChannelsFor(
     // mechanical energy-flow measurement for this held manuscript.
     return [];
   }
+  if (patentId === "us-542846-diesel-engine") {
+    // The held source establishes a process and apparatus relation, but no
+    // source-backed energy-flow quantities. Do not display invented power.
+    return [];
+  }
   if (patentId === "us-3541541-engelbart-mouse") {
     // The grant supplies no source-backed electrical or mechanical energy
     // values. Keep the optional presentation strip empty while its full
