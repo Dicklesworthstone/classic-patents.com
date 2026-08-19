@@ -63,6 +63,12 @@ describe("US 3,671,542 Stephanie Kwolek Kevlar visual & polymer physics boundary
       3,
     );
     expect(result.chainEndX).toBeCloseTo(350 + 30 * 0.28, 2);
+    expect(result.chainWiggleAmp).toBeCloseTo(
+      0.05 * (1 - result.shearAlignment) + result.thermalDisorder,
+      3,
+    );
+    expect(result.chainWobbleAmp).toBeCloseTo(0.03 * result.thermalDisorder, 4);
+    expect(result.chainWobbleOmega).toBe(2);
   });
 
   test("builds and articulates procedural spinneret pack, 5 PPTA polymer chains, and hydrogen bond struts correctly", () => {

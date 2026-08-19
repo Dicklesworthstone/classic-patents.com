@@ -60,6 +60,8 @@ describe("US 3,541,541 Douglas Engelbart Computer Mouse visual & resolver kinema
     expect(result.dpi).toBeGreaterThan(100);
     expect(result.pathDisplayOmega).toBeCloseTo(350 * 0.018, 3);
     expect(result.resolverSvgScale).toBe(40);
+    expect(result.diameterToRadius).toBe(2);
+    expect(result.pointerSvgWidth).toBe(400);
   });
 
   test("builds and articulates procedural walnut body, metal base, red button, X/Y orthogonal wheels, and potentiometer resolvers correctly", () => {

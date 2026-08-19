@@ -240,6 +240,8 @@ the visitor can see or hear the kernel change the instrument.
 - [x] P5.147 De Laval cream/skim drop origin, spacing, and wrap live on the separator step. 3D no longer converts leftover 0.35/0.18/1.8 or −0.15/0.2/2.0 privately.
 - [x] P5.148 Gatling camStrokeStudio / boltHomeX / barrelSpacingRad / fireIntervalS / muzzleFlashDecayPerS / clusterRadiusPx / boltStrokePx / crankPinRadiusPx plus gatlingBoltStudioX / gatlingBoltSvgX. 2D/3D no longer convert leftover cos×0.38, π/3, 60/rpm, or (1−cos)/2×90 privately.
 - [x] P5.149 Hollerith dialNeedleRadiusPx / hollerithDialNeedle. McCormick cutterSvgAmp. 2D no longer converts leftover val/100×2π×14 or sin×18 privately.
+- [x] P5.150 Engelbart engelbartRadiusFromDiameterMm / diameterToRadius. Kevlar chainWiggleAmp / chainWobbleAmp / chainWobbleOmega. 2D/3D no longer convert leftover diameter/2 or 0.05×(1−align)+disorder / 0.03×disorder privately.
+- [x] P5.151 Engelbart engelbartPointerSvg + pointerSvgWidth/Height/min/max. Corliss flywheelSvgR. 2D no longer converts leftover client×400/300 or spoke×85 privately.
 
 ## Explicitly out of scope
 

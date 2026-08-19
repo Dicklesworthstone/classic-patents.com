@@ -43,7 +43,7 @@ describe("US 727,650 Carl von Linde Air Liquefaction visual & cryogenics boundar
     }
   });
 
-  test("exposes authentic camera presets and cutaway mode for cryostat observation", () => {
+  test("exposes source-named camera presets and cutaway mode for apparatus inspection", () => {
     const threeSource = readFileSync(
       join(VISUALS_DIRECTORY, "three", "LindeAirLiquefaction3D.tsx"),
       "utf8",
@@ -61,30 +61,25 @@ describe("US 727,650 Carl von Linde Air Liquefaction visual & cryogenics boundar
     }
 
     expect(threeSource).toContain("cutawayMode");
-    expect(threeSource).toContain("LindeAirLiquefaction3D");
+    expect(threeSource).toContain("US 727,650 source conditions");
   });
 
-  test("computes genuine Linde Joule-Thomson liquefaction dynamics in SI units", () => {
-    const result = FrankenSimEngine.stepLindeAirLiquefaction({
-      compressorPressureBar: 200,
-      heatExchangerPasses: 50,
-    });
+  test("keeps the fallback inside values printed by the facsimile", () => {
+    const result = FrankenSimEngine.stepLindeAirLiquefaction();
 
-    expect(result.coldEndTempK).toBeLessThan(100);
-    expect(result.coldEndTempC).toBeLessThan(-170);
-    expect(result.jtDeltaTPerPass).toBeGreaterThan(30);
-    expect(result.isLiquefying).toBe(true);
-    expect(result.liquidYieldPct).toBeGreaterThan(0);
-    expect(result.liquidOutputLitersPerHr).toBeGreaterThan(0);
+    expect(result.highPressureAtm).toBe(75);
+    expect(result.lowPressureAtm).toBe(25);
+    expect(result.coolerOutletC).toBe(10);
+    expect(result.modelBoundary).toContain("does not supply");
   });
 
-  test("builds and articulates procedural cryostat column and coils correctly", () => {
+  test("builds an apparatus diagram and labels the flow tracer as illustrative", () => {
     const { root, nodes, materials } = buildLindeLiquefactionModel();
     expect(root.children.length).toBeGreaterThan(4);
     expect(nodes.coilRings.length).toBe(18);
 
     // Initial state
-    updateLindeLiquefactionKinematics(nodes, materials, 0.1, 1.0, 200, true, true);
+    updateLindeLiquefactionKinematics(nodes, materials, 0.1, 1.0, 75, true, true);
     expect(nodes.cutawayCasingMesh.visible).toBe(true);
     expect(nodes.solidCasingMesh.visible).toBe(false);
     expect(materials.flowTracer.opacity).toBeGreaterThan(0);
