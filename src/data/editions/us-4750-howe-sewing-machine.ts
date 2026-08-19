@@ -108,25 +108,50 @@ export const howeSewingMachineArchivalEdition: CuratedSpecificationEdition = {
       kind: "figure-sheet",
       figureLabel: "FIGS. 1, 4, AND 7",
       title: "Front elevation, needle section, and shuttle",
-      description: text(
-        "E. HOWE, JR. SEWING-MACHINE. No. 4,750. Patented Sept. 10, 1846. Sheet 1 of 3 sheets. Figure 1 is the front elevation; Figure 4 is the needle-and-cloth section; Figure 7 shows the shuttle.",
-      ),
+      description: [
+        {
+          kind: "text",
+          text: "E. HOWE, JR. SEWING-MACHINE. No. 4,750. Patented Sept. 10, 1846. Sheet 1 of 3 sheets. ",
+        },
+        figure("Figure 1", [1]),
+        { kind: "text", text: " is the front elevation; " },
+        figure("Figure 4", [4]),
+        { kind: "text", text: " is the needle-and-cloth section; " },
+        figure("Figure 7", [7]),
+        { kind: "text", text: " shows the shuttle." },
+      ],
     },
     {
       kind: "figure-sheet",
       figureLabel: "FIGS. 2 AND 5",
       title: "End elevation and shuttle-box detail",
-      description: text(
-        "E. HOWE, JR. SEWING-MACHINE. No. 4,750. Patented Sept. 10, 1846. Sheet 2 of 3 sheets. Figure 2 is the end elevation; Figure 5 is the shuttle-box detail.",
-      ),
+      description: [
+        {
+          kind: "text",
+          text: "E. HOWE, JR. SEWING-MACHINE. No. 4,750. Patented Sept. 10, 1846. Sheet 2 of 3 sheets. ",
+        },
+        figure("Figure 2", [2]),
+        { kind: "text", text: " is the end elevation; " },
+        figure("Figure 5", [5]),
+        { kind: "text", text: " is the shuttle-box detail." },
+      ],
     },
     {
       kind: "figure-sheet",
       figureLabel: "FIGS. 3, 6, 8, AND 9",
       title: "Top view, feed mechanism, and lever details",
-      description: text(
-        "E. HOWE, JR. SEWING-MACHINE. No. 4,750. Patented Sept. 10, 1846. Sheet 3 of 3 sheets. Figure 3 is the top view; Figure 6 is the feed; Figures 8 and 9 are lever details.",
-      ),
+      description: [
+        {
+          kind: "text",
+          text: "E. HOWE, JR. SEWING-MACHINE. No. 4,750. Patented Sept. 10, 1846. Sheet 3 of 3 sheets. ",
+        },
+        figure("Figure 3", [3]),
+        { kind: "text", text: " is the top view; " },
+        figure("Figure 6", [6]),
+        { kind: "text", text: " is the feed; " },
+        figure("Figures 8 and 9", [8, 9]),
+        { kind: "text", text: " are lever details." },
+      ],
     },
     { kind: "paragraph", inlines: text("To all whom it may concern:") },
     {

@@ -27,6 +27,8 @@ import {
 import type { CuratedSpecificationBlock, CuratedSpecificationInlines } from "../src/types/patent";
 
 const MAX_PDF_TEXT_BUFFER_BYTES = 64 * 1024 * 1024;
+const BARE_DRAWING_REFERENCE =
+  /\b(?:(?:fig(?:s)?\.?|figure)\s+\d+[a-z′′]*|(?:section|division)\s+\d+)\b/i;
 
 // Root acceptance has independently rejected these incomplete source faces.
 // Keep this release-side sentinel separate from the editable publication map:
@@ -416,6 +418,12 @@ async function main() {
       for (const block of archivalEdition.blocks) {
         for (const inlines of authoredInlinesForBlock(block)) {
           for (const inline of inlines) {
+            if (inline.kind === "text" && BARE_DRAWING_REFERENCE.test(inline.text)) {
+              fail(
+                `manual archival edition leaves a drawing reference as inert prose: ${inline.text.match(BARE_DRAWING_REFERENCE)?.[0] ?? inline.text}.`,
+              );
+              continue;
+            }
             if (inline.kind !== "reference" || inline.referenceType !== "figure") continue;
             if (!inline.figurePreviews?.length) {
               fail(`figure reference ${inline.text} has no authored local preview.`);

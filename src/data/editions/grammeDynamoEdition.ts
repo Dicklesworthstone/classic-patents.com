@@ -120,33 +120,55 @@ export const grammeDynamoArchivalEdition: CuratedSpecificationEdition = {
       kind: "figure-sheet",
       figureLabel: "DRAWING SHEET 1",
       title: "Gramme and d’Ivernois magneto-electric machines, Figs. 1–6",
-      description: literal(
-        "Four sheets—Sheet 1. Z. Th. GRAMME & E. L. Ch. d’IVERNOIS. Magneto-Electric Machines. No. 120,057. Patented Oct. 17, 1871. This source sheet contains Figs. 1 through 6.",
-      ),
+      description: [
+        {
+          kind: "text",
+          text: "Four sheets—Sheet 1. Z. Th. GRAMME & E. L. Ch. d’IVERNOIS. Magneto-Electric Machines. No. 120,057. Patented Oct. 17, 1871. This source sheet contains ",
+        },
+        figure1To3,
+        { kind: "text", text: " and " },
+        figure4To6,
+        { kind: "text", text: "." },
+      ],
     },
     {
       kind: "figure-sheet",
       figureLabel: "DRAWING SHEET 2",
       title: "Gramme and d’Ivernois magneto-electric machines, Figs. 7–9",
-      description: literal(
-        "Four sheets—Sheet 2. Z. Th. GRAMME & E. L. Ch. d’IVERNOIS. Magneto-Electric Machines. No. 120,057. Patented Oct. 17, 1871. This source sheet contains Figs. 7 through 9.",
-      ),
+      description: [
+        {
+          kind: "text",
+          text: "Four sheets—Sheet 2. Z. Th. GRAMME & E. L. Ch. d’IVERNOIS. Magneto-Electric Machines. No. 120,057. Patented Oct. 17, 1871. This source sheet contains ",
+        },
+        figure7To9,
+        { kind: "text", text: "." },
+      ],
     },
     {
       kind: "figure-sheet",
       figureLabel: "DRAWING SHEET 3",
       title: "Gramme and d’Ivernois magneto-electric machines, Figs. 10–13",
-      description: literal(
-        "Four sheets—Sheet 3. Z. Th. GRAMME & E. L. Ch. d’IVERNOIS. Magneto-Electric Machines. No. 120,057. Patented Oct. 17, 1871. This source sheet contains Figs. 10 through 13.",
-      ),
+      description: [
+        {
+          kind: "text",
+          text: "Four sheets—Sheet 3. Z. Th. GRAMME & E. L. Ch. d’IVERNOIS. Magneto-Electric Machines. No. 120,057. Patented Oct. 17, 1871. This source sheet contains ",
+        },
+        figure10To13,
+        { kind: "text", text: "." },
+      ],
     },
     {
       kind: "figure-sheet",
       figureLabel: "DRAWING SHEET 4",
       title: "Gramme and d’Ivernois magneto-electric machine, Fig. 14",
-      description: literal(
-        "Four sheets—Sheet 4. Z. Th. GRAMME & E. L. Ch. d’IVERNOIS. Magneto-Electric Machines. No. 120,057. Patented Oct. 17, 1871. This source sheet contains Fig. 14.",
-      ),
+      description: [
+        {
+          kind: "text",
+          text: "Four sheets—Sheet 4. Z. Th. GRAMME & E. L. Ch. d’IVERNOIS. Magneto-Electric Machines. No. 120,057. Patented Oct. 17, 1871. This source sheet contains ",
+        },
+        figure14,
+        { kind: "text", text: "." },
+      ],
     },
     { kind: "paragraph", inlines: literal("To all whom it may concern:") },
     {

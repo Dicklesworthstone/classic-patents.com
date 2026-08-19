@@ -14,6 +14,15 @@ const BARE_DRAWING_REFERENCE =
 
 const manualPatents = () => allPatents.filter((patent) => archivalEditionForPublication(patent));
 
+function inlineGroupsForBlock(
+  block: NonNullable<ReturnType<typeof archivalEditionForPublication>>["blocks"][number],
+) {
+  if (block.kind === "paragraph" || block.kind === "claim") return [block.inlines];
+  if (block.kind === "figure-sheet") return [block.description];
+  if (block.kind === "table") return [...block.headers, ...block.rows.flat()];
+  return [];
+}
+
 describe("manual edition coverage audit", () => {
   test("covers every registered manual edition, not one exemplar", () => {
     expect(manualPatents().length).toBeGreaterThan(0);
@@ -27,14 +36,15 @@ describe("manual edition coverage audit", () => {
       if (!edition) continue;
 
       for (const [blockIndex, block] of edition.blocks.entries()) {
-        if (block.kind !== "paragraph" && block.kind !== "claim") continue;
-        for (const [inlineIndex, inline] of block.inlines.entries()) {
-          if (inline.kind !== "text") continue;
-          const matches = inline.text.match(new RegExp(BARE_DRAWING_REFERENCE, "gi"));
-          if (matches) {
-            violations.push(
-              `${patent.id} block ${blockIndex} inline ${inlineIndex}: ${matches.join(", ")}`,
-            );
+        for (const [groupIndex, inlines] of inlineGroupsForBlock(block).entries()) {
+          for (const [inlineIndex, inline] of inlines.entries()) {
+            if (inline.kind !== "text") continue;
+            const matches = inline.text.match(new RegExp(BARE_DRAWING_REFERENCE, "gi"));
+            if (matches) {
+              violations.push(
+                `${patent.id} block ${blockIndex} group ${groupIndex} inline ${inlineIndex}: ${matches.join(", ")}`,
+              );
+            }
           }
         }
       }
@@ -51,24 +61,27 @@ describe("manual edition coverage audit", () => {
       if (!edition) continue;
 
       for (const [blockIndex, block] of edition.blocks.entries()) {
-        if (!("inlines" in block)) continue;
-        for (const [inlineIndex, inline] of block.inlines.entries()) {
-          if (inline.kind !== "reference" || inline.referenceType !== "figure") continue;
-          if (!inline.figurePreviews?.length) {
-            violations.push(`${patent.id} block ${blockIndex} inline ${inlineIndex}: no preview.`);
-            continue;
-          }
-          for (const preview of inline.figurePreviews) {
-            if (!preview.src.startsWith("/patents/figures/")) {
+        for (const [groupIndex, inlines] of inlineGroupsForBlock(block).entries()) {
+          for (const [inlineIndex, inline] of inlines.entries()) {
+            if (inline.kind !== "reference" || inline.referenceType !== "figure") continue;
+            if (!inline.figurePreviews?.length) {
               violations.push(
-                `${patent.id} block ${blockIndex} inline ${inlineIndex}: non-local preview ${preview.src}.`,
+                `${patent.id} block ${blockIndex} group ${groupIndex} inline ${inlineIndex}: no preview.`,
               );
               continue;
             }
-            if (!existsSync(join(process.cwd(), "public", preview.src.replace(/^\//, "")))) {
-              violations.push(
-                `${patent.id} block ${blockIndex} inline ${inlineIndex}: missing preview ${preview.src}.`,
-              );
+            for (const preview of inline.figurePreviews) {
+              if (!preview.src.startsWith("/patents/figures/")) {
+                violations.push(
+                  `${patent.id} block ${blockIndex} group ${groupIndex} inline ${inlineIndex}: non-local preview ${preview.src}.`,
+                );
+                continue;
+              }
+              if (!existsSync(join(process.cwd(), "public", preview.src.replace(/^\//, "")))) {
+                violations.push(
+                  `${patent.id} block ${blockIndex} group ${groupIndex} inline ${inlineIndex}: missing preview ${preview.src}.`,
+                );
+              }
             }
           }
         }

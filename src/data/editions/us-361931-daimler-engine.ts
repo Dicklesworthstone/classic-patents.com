@@ -97,7 +97,10 @@ export const daimlerMarineEngineArchivalEdition: CuratedSpecificationEdition = {
       figureLabel: "FIG. 1",
       title: "Longitudinal section of vessel installation",
       description: [
-        { kind: "text", text: "G. DAIMLER. EXPLOSIVE GAS MARINE ENGINE. No. 361,931. Patented Apr. 26, 1887. 3 Sheets—Sheet 1. " },
+        {
+          kind: "text",
+          text: "G. DAIMLER. EXPLOSIVE GAS MARINE ENGINE. No. 361,931. Patented Apr. 26, 1887. 3 Sheets—Sheet 1. ",
+        },
         figure("Fig. 1", [1]),
         { kind: "text", text: "." },
       ],
@@ -107,7 +110,10 @@ export const daimlerMarineEngineArchivalEdition: CuratedSpecificationEdition = {
       figureLabel: "FIGS. 2, 4, 4a, 4b, 5, AND 6",
       title: "Cross-section, thrust-bearing, and gas-holder details",
       description: [
-        { kind: "text", text: "G. DAIMLER. EXPLOSIVE GAS MARINE ENGINE. No. 361,931. Patented Apr. 26, 1887. 3 Sheets—Sheet 2. " },
+        {
+          kind: "text",
+          text: "G. DAIMLER. EXPLOSIVE GAS MARINE ENGINE. No. 361,931. Patented Apr. 26, 1887. 3 Sheets—Sheet 2. ",
+        },
         figure("Figs. 2, 4, 4a, 4b, 5, and 6", [2, 4, "4a", "4b", 5, 6]),
         { kind: "text", text: "." },
       ],
@@ -117,7 +123,10 @@ export const daimlerMarineEngineArchivalEdition: CuratedSpecificationEdition = {
       figureLabel: "FIG. 3",
       title: "Plan of vessel installation",
       description: [
-        { kind: "text", text: "G. DAIMLER. EXPLOSIVE GAS MARINE ENGINE. No. 361,931. Patented Apr. 26, 1887. 3 Sheets—Sheet 3. " },
+        {
+          kind: "text",
+          text: "G. DAIMLER. EXPLOSIVE GAS MARINE ENGINE. No. 361,931. Patented Apr. 26, 1887. 3 Sheets—Sheet 3. ",
+        },
         figure("Fig. 3", [3]),
         { kind: "text", text: "." },
       ],

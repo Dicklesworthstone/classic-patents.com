@@ -51,8 +51,18 @@ const FIGURE_PREVIEWS = {
 } as const;
 
 const fig = (
-  value: "Figure 1" | "Figs. 3 and 4" | keyof typeof FIGURE_PREVIEWS,
+  value: "Figure 1" | "Figs. 1 through 5" | "Figs. 3 and 4" | keyof typeof FIGURE_PREVIEWS,
 ): CuratedSpecificationInline => {
+  if (value === "Figs. 1 through 5") {
+    return {
+      kind: "reference",
+      text: value,
+      href: "#",
+      referenceType: "figure",
+      label: "Open Figures 1 through 5 on the US 1,102,653 source drawing sheet",
+      figurePreviews: Object.values(FIGURE_PREVIEWS),
+    };
+  }
   if (value === "Figs. 3 and 4") {
     return {
       kind: "reference",
@@ -96,9 +106,17 @@ export const goddardRocketArchivalEdition: CuratedSpecificationEdition = {
       kind: "figure-sheet",
       figureLabel: "FIGS. 1-5",
       title: "Rocket, head, frame, and transverse sections",
-      description: text(
-        "R. H. Goddard. Rocket Apparatus. Application filed Oct. 1, 1913. No. 1,102,653. Patented July 7, 1914. The sheet includes Figs. 1 through 5, witnesses C. F. Hixon and C. C. Hartnett, and Robert H. Goddard's signature as assignor to C. F. Wesson.",
-      ),
+      description: [
+        {
+          kind: "text",
+          text: "R. H. Goddard. Rocket Apparatus. Application filed Oct. 1, 1913. No. 1,102,653. Patented July 7, 1914. The sheet includes ",
+        },
+        fig("Figs. 1 through 5"),
+        {
+          kind: "text",
+          text: ", witnesses C. F. Hixon and C. C. Hartnett, and Robert H. Goddard's signature as assignor to C. F. Wesson.",
+        },
+      ],
     },
     p(text("To all whom it may concern:")),
     p(

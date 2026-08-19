@@ -97,8 +97,10 @@ export const coltRevolverArchivalEdition: CuratedSpecificationEdition = {
       kind: "figure-sheet",
       figureLabel: "DRAWING SHEET 1 OF 4",
       title: "Division 2, sectional pistol view",
-      description: literal(
-        "S. COLT. Revolving Gun. 9430X. Patented February 25, 1836. The first drawing sheet carries the first sectional representation identified in the specification as Division 2.",
+      description: cited(
+        "S. COLT. Revolving Gun. 9430X. Patented February 25, 1836. The first drawing sheet carries the first sectional representation identified in the specification as ",
+        figure("Division 2", "division-2"),
+        ".",
       ),
     },
     {

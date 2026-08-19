@@ -148,7 +148,9 @@ const FIGURE_REFERENCE_PREVIEWS: Readonly<Record<string, readonly number[]>> = {
   "Fig. 7": [7],
   "Fig. 8": [8],
   "Fig. 9": [9],
+  "Figs. 1 through 9": [1, 2, 3, 4, 5, 6, 7, 8, 9],
   "Figs. 10, 11, 12, 13, 14, and 15": [10, 11, 12, 13, 14, 15],
+  "Figs. 10 through 18": [10, 11, 12, 13, 14, 15, 16, 17, 18],
   "Fig. 10": [10],
   "Fig. 11": [11],
   "Fig. 12": [12],
@@ -204,17 +206,27 @@ export const thomsonWeldingArchivalEdition: CuratedSpecificationEdition = {
       kind: "figure-sheet",
       figureLabel: "DRAWING SHEET 1 OF 2",
       title: "Figs. 1–9: clamps, pressure arrangements, and alternative joints",
-      description: literal(
-        "The first source drawing sheet contains Figs. 1 through 9, including the pivoted clamp apparatus, a section through it, removable clamp forms, manual and weighted pressure arrangements, and a modified jointing arrangement.",
-      ),
+      description: [
+        { kind: "text", text: "The first source drawing sheet contains " },
+        figure("Figs. 1 through 9", SHEET_ONE),
+        {
+          kind: "text",
+          text: ", including the pivoted clamp apparatus, a section through it, removable clamp forms, manual and weighted pressure arrangements, and a modified jointing arrangement.",
+        },
+      ],
     },
     {
       kind: "figure-sheet",
       figureLabel: "DRAWING SHEET 2 OF 2",
       title: "Figs. 10–18: bars, rings, transformer supply, and battery supply",
-      description: literal(
-        "The second source drawing sheet contains Figs. 10 through 18, including alternative work-piece forms, the induction-coil apparatus, its modification, and the secondary-battery arrangement.",
-      ),
+      description: [
+        { kind: "text", text: "The second source drawing sheet contains " },
+        figure("Figs. 10 through 18", SHEET_TWO),
+        {
+          kind: "text",
+          text: ", including alternative work-piece forms, the induction-coil apparatus, its modification, and the secondary-battery arrangement.",
+        },
+      ],
     },
     paragraph(
       literal(

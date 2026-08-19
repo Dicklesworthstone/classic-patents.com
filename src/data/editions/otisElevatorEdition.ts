@@ -6,7 +6,9 @@ import type {
 
 const text = (value: string): CuratedSpecificationInlines => [{ kind: "text", text: value }];
 
-const figure = (label: "Figure 1" | "Fig. 1" | "Fig. 2" | "Fig. 3"): CuratedSpecificationInline => {
+const figure = (
+  label: "Figure 1" | "Figure 2" | "Fig. 1" | "Fig. 2" | "Fig. 3",
+): CuratedSpecificationInline => {
   const number = label.at(-1);
 
   return {
@@ -249,9 +251,14 @@ export const otisElevatorArchivalEdition: CuratedSpecificationEdition = {
       kind: "figure-sheet",
       figureLabel: "Fig. 1",
       title: "Vertical section",
-      description: text(
-        "Source-faithful crop from drawing sheet 1: a vertical section of the complete hoisting apparatus, taken on line x x of Figure 2.",
-      ),
+      description: [
+        {
+          kind: "text",
+          text: "Source-faithful crop from drawing sheet 1: a vertical section of the complete hoisting apparatus, taken on line x x of ",
+        },
+        figure("Figure 2"),
+        { kind: "text", text: "." },
+      ],
     },
     {
       kind: "figure-sheet",

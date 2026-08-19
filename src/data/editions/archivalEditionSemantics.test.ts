@@ -1,4 +1,5 @@
 import { describe, expect, test } from "bun:test";
+import { archivalEditionForPublication } from "@/components/patents/DualProjectionViewer";
 import { allPatents } from "@/data/patents";
 
 /**
@@ -13,22 +14,29 @@ describe("manual archival-edition semantics", () => {
   test("does not leave source drawing references as inert prose", () => {
     const violations: string[] = [];
 
-    for (const patent of allPatents.filter(
-      (candidate) => candidate.id === "us-821393-wright-flyer",
-    )) {
-      const edition = patent.archivalEdition;
+    for (const patent of allPatents) {
+      const edition = archivalEditionForPublication(patent);
       if (!edition) continue;
 
       for (const [blockIndex, block] of edition.blocks.entries()) {
-        if (block.kind !== "paragraph" && block.kind !== "claim") continue;
+        const inlineGroups =
+          block.kind === "paragraph" || block.kind === "claim"
+            ? [block.inlines]
+            : block.kind === "figure-sheet"
+              ? [block.description]
+              : block.kind === "table"
+                ? [...block.headers, ...block.rows.flat()]
+                : [];
 
-        for (const [inlineIndex, inline] of block.inlines.entries()) {
-          if (inline.kind !== "text") continue;
-          const matches = inline.text.match(new RegExp(BARE_DRAWING_REFERENCE, "gi"));
-          if (matches) {
-            violations.push(
-              `${patent.id} block ${blockIndex} inline ${inlineIndex}: ${matches.join(", ")}`,
-            );
+        for (const [groupIndex, inlines] of inlineGroups.entries()) {
+          for (const [inlineIndex, inline] of inlines.entries()) {
+            if (inline.kind !== "text") continue;
+            const matches = inline.text.match(new RegExp(BARE_DRAWING_REFERENCE, "gi"));
+            if (matches) {
+              violations.push(
+                `${patent.id} block ${blockIndex} group ${groupIndex} inline ${inlineIndex}: ${matches.join(", ")}`,
+              );
+            }
           }
         }
       }

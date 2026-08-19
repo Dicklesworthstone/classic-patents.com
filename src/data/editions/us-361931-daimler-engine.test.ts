@@ -46,31 +46,58 @@ describe("US 361,931 Daimler manual marine-engine edition", () => {
     expect(daimlerEnginePatent.stats).toMatchObject({ totalClaims: 10, independentClaims: 10 });
   });
 
-  test("uses only local previews from the three reviewed drawing sheets", () => {
+  test("maps every cited figure to its own source-faithful crop, never a whole drawing sheet", () => {
+    const expectedCropByFigure = {
+      1: "/patents/figures/us-361931-daimler-engine/fig-1-source-crop-v1.png",
+      2: "/patents/figures/us-361931-daimler-engine/fig-2-source-crop-v1.png",
+      3: "/patents/figures/us-361931-daimler-engine/fig-3-source-crop-v1.png",
+      4: "/patents/figures/us-361931-daimler-engine/fig-4-source-crop-v1.png",
+      "4a": "/patents/figures/us-361931-daimler-engine/fig-4a-source-crop-v1.png",
+      "4b": "/patents/figures/us-361931-daimler-engine/fig-4b-source-crop-v1.png",
+      5: "/patents/figures/us-361931-daimler-engine/fig-5-source-crop-v1.png",
+      6: "/patents/figures/us-361931-daimler-engine/fig-6-source-crop-v1.png",
+    } as const;
     const previewSources = new Set<string>();
     for (const block of daimlerMarineEngineArchivalEdition.blocks) {
-      if (block.kind !== "paragraph" && block.kind !== "claim") continue;
-      for (const inline of block.inlines) {
-        if (inline.kind !== "reference" || inline.referenceType !== "figure") continue;
-        for (const preview of inline.figurePreviews ?? []) {
-          previewSources.add(preview.src);
-          expect(existsSync(join(process.cwd(), "public", preview.src))).toBe(true);
+      const inlineGroups =
+        block.kind === "paragraph" || block.kind === "claim"
+          ? [block.inlines]
+          : block.kind === "figure-sheet"
+            ? [block.description]
+            : [];
+      for (const inlines of inlineGroups) {
+        for (const inline of inlines) {
+          if (inline.kind !== "reference" || inline.referenceType !== "figure") continue;
+          const sourceFigures = inline.text.match(/\b\d+[ab]?\b/gi) ?? [];
+          const citedPreviewSources = new Set(inline.figurePreviews?.map((preview) => preview.src));
+          for (const figureNumber of sourceFigures) {
+            expect(citedPreviewSources).toContain(
+              expectedCropByFigure[figureNumber.toLowerCase() as keyof typeof expectedCropByFigure],
+            );
+          }
+          for (const preview of inline.figurePreviews ?? []) {
+            previewSources.add(preview.src);
+            expect(existsSync(join(process.cwd(), "public", preview.src))).toBe(true);
+          }
         }
       }
     }
-    expect([...previewSources].sort()).toEqual([
-      "/patents/figures/us-361931-daimler-engine-fig-1.png",
-      "/patents/figures/us-361931-daimler-engine-fig-2.png",
-      "/patents/figures/us-361931-daimler-engine-fig-3.png",
-    ]);
+    expect([...previewSources].sort()).toEqual([...Object.values(expectedCropByFigure)].sort());
   });
 
   test("keeps every source figure citation as an authored preview node", () => {
     const bareFigureReference = /\b(?:fig(?:s)?\.?|figure)\s+\d+/i;
     for (const block of daimlerMarineEngineArchivalEdition.blocks) {
-      if (block.kind !== "paragraph" && block.kind !== "claim") continue;
-      for (const inline of block.inlines) {
-        if (inline.kind === "text") expect(inline.text).not.toMatch(bareFigureReference);
+      const inlineGroups =
+        block.kind === "paragraph" || block.kind === "claim"
+          ? [block.inlines]
+          : block.kind === "figure-sheet"
+            ? [block.description]
+            : [];
+      for (const inlines of inlineGroups) {
+        for (const inline of inlines) {
+          if (inline.kind === "text") expect(inline.text).not.toMatch(bareFigureReference);
+        }
       }
     }
   });
