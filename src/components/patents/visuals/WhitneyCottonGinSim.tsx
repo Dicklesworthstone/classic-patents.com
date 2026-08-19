@@ -171,7 +171,14 @@ export function WhitneyCottonGinSim() {
 
           {/* Rotating Brush Cylinder (counter-rotating at kernel brush/crank ratio) */}
           <g transform={`translate(420, 170) rotate(${-angle * gin.brushToCrankRatio})`}>
-            <circle cx="0" cy="0" r={gin.brushSvgR} fill="#3D2817" stroke="#8B5A2B" strokeWidth="2" />
+            <circle
+              cx="0"
+              cy="0"
+              r={gin.brushSvgR}
+              fill="#3D2817"
+              stroke="#8B5A2B"
+              strokeWidth="2"
+            />
             {/* Bristles */}
             {Array.from({ length: 24 }).map((_, i) => {
               const bristleAngle = (i * 360) / 24;
