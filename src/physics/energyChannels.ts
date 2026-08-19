@@ -41,6 +41,11 @@ export function energyChannelsFor(
     // incomplete. Do not visualize an invented tensile or impact power flow.
     return [];
   }
+  if (patentId === "us-586193-marconi-radio") {
+    // The grant's source edition is still under independent review. Its
+    // receiver/reset relation contains no source-backed energy-flow values.
+    return [];
+  }
   if (patentId === "us-1155986-goddard-rocket") {
     const rocket = FrankenSimEngine.stepGoddardRocket(
       params.chamberPressure ?? 350,

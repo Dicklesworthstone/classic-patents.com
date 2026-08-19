@@ -23,7 +23,6 @@ import {
   stepHollerithTabulating,
   stepHyattCelluloid,
   stepLincolnBuoy,
-  stepMarconiRadio,
   stepMcCormickReaper,
   stepMorseTelegraph,
   stepNobelDynamite,
@@ -125,6 +124,17 @@ export function materialProbe(
   params: Record<string, number>,
 ): MaterialProbe | null {
   const label = calloutLabel.toLowerCase();
+  if (patentId === "us-586193-marconi-radio") {
+    return {
+      part: calloutLabel,
+      material: "Imperfect electrical contact, local circuit, and shaking means",
+      qty: "Claim 1",
+      value: "received oscillations → resettable contact",
+      unit: "source relation",
+      note:
+        "The manual source edition remains under independent publication review. This guide does not assign an antenna geometry, frequency, voltage, power, range, radiation resistance, or detector threshold to the grant.",
+    };
+  }
   if (patentId.includes("wright")) {
     const si = stepWrightFlyerSi(readWrightControls(params));
     if (label.includes("wing") || label.includes("aeroplane") || label.includes("rib")) {
@@ -919,6 +929,9 @@ export function materialProbe(
 }
 
 export function intervalGhosts(patentId: string, params: Record<string, number>): IntervalGhost[] {
+  if (patentId === "us-586193-marconi-radio") {
+    return [];
+  }
   if (patentId.includes("wright")) {
     const si = stepWrightFlyerSi(readWrightControls(params));
     return [
@@ -1291,6 +1304,15 @@ export function fidelityField(
   patentId: string,
   params: Record<string, number>,
 ): FidelityField | null {
+  if (patentId === "us-586193-marconi-radio") {
+    return {
+      part: "Source-bound receiver-and-reset relation",
+      model: "not computed",
+      reference: "independent publication review pending",
+      residual: "not applicable",
+      unit: "source boundary",
+    };
+  }
   if (patentId.includes("wright")) {
     const si = stepWrightFlyerSi(readWrightControls(params));
     return {
@@ -1526,6 +1548,9 @@ export function whitneySamples(omegaT: number): { x: number; y: number; bx: numb
 }
 
 export function spectralModes(patentId: string, params: Record<string, number>): SpectralMode[] {
+  if (patentId === "us-586193-marconi-radio") {
+    return [];
+  }
   if (patentId.includes("marconi")) {
     const radio = stepMarconiRadio(params.aerialHeight, params.sparkGapMm, params.sparkVoltage);
     const f0 = radio.resonantFreqMhz * 1e6;
@@ -1549,6 +1574,9 @@ export function spectralModes(patentId: string, params: Record<string, number>):
 }
 
 export function datedScenarios(patentId: string): DatedScenario[] {
+  if (patentId === "us-586193-marconi-radio") {
+    return [];
+  }
   if (patentId.includes("wright")) {
     return [
       {
@@ -1854,6 +1882,9 @@ export function datedScenarios(patentId: string): DatedScenario[] {
 }
 
 export function coupleLinks(patentId: string, params: Record<string, number>): CoupleLink[] {
+  if (patentId === "us-586193-marconi-radio") {
+    return [];
+  }
   if (patentId.includes("wright")) {
     const si = stepWrightFlyerSi(readWrightControls(params));
     const v = (params.airspeed ?? 28) * 0.44704;

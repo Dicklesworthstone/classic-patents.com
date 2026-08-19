@@ -199,11 +199,26 @@ describe("FrankenSim Weave Surfaces Boundary", () => {
     expect(coupleLinks("us-3671542-kwolek-kevlar", {})).toEqual([]);
   });
 
-  test("computes spectral eigenmodes for resonant patents", () => {
-    const marconiModes = spectralModes("us-586193-marconi-radio", { aerialHeightMeters: 45 });
-    expect(marconiModes.length).toBeGreaterThan(0);
-    expect(marconiModes[0].freqHz).toBeGreaterThan(0);
+  test("keeps Marconi US 586,193 on its reviewed receiver-and-reset boundary", () => {
+    const probe = materialProbe("us-586193-marconi-radio", "Contact receiver", {});
+    expect(probe).toMatchObject({
+      material: "Imperfect electrical contact, local circuit, and shaking means",
+      qty: "Claim 1",
+      value: "received oscillations → resettable contact",
+      unit: "source relation",
+    });
+    expect(probe?.note).toContain("independent publication review");
+    expect(intervalGhosts("us-586193-marconi-radio", {})).toEqual([]);
+    expect(fidelityField("us-586193-marconi-radio", {})).toMatchObject({
+      model: "not computed",
+      unit: "source boundary",
+    });
+    expect(spectralModes("us-586193-marconi-radio", {})).toEqual([]);
+    expect(datedScenarios("us-586193-marconi-radio")).toEqual([]);
+    expect(coupleLinks("us-586193-marconi-radio", {})).toEqual([]);
+  });
 
+  test("computes spectral eigenmodes for resonant patents", () => {
     const teslaCoilModes = spectralModes("us-593138-tesla-coil", { secondaryTurns: 1000 });
     expect(teslaCoilModes.length).toBeGreaterThan(0);
   });
