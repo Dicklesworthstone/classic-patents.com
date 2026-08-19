@@ -842,7 +842,7 @@ export const FrankenSimEngine = {
       liquidYieldPct,
       liquidOutputLitersPerHr,
       modelBoundary:
-        "The grant says this arrangement progressively reaches liquefaction; it supplies illustrative operating pressures and cryogenic Joule-Thomson expansion physics.",
+        "The grant says this arrangement progressively reaches liquefaction; it does not supply a measured outlet temperature, yield, or production rate.",
     };
   },
 
