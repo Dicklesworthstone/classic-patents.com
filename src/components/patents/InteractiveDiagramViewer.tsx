@@ -31,6 +31,7 @@ import {
   peltonSchematicBucket,
   spencerSchematicCavity,
   stepColtRevolver,
+  stepDaimlerEngine,
   stepDeLavalSeparator,
   stepEdisonPhonograph,
   stepEricssonPropeller,
@@ -42,6 +43,7 @@ import {
   stepMcCormickReaper,
   stepNobelDynamite,
   stepNoyceIC,
+  stepOttoEngine,
   stepParsonsTurbine,
   stepPasteurFermentation,
   stepPeltonWheel,
@@ -1555,7 +1557,7 @@ function _renderHistoricalSchematic(
           </text>
 
           {/* Wheel & Shoe */}
-          <circle cx="330" cy="152" r="35" stroke="#94a3b8" strokeWidth="3" />
+          <circle cx="330" cy="152" r={wh.schematicWheelR} stroke="#94a3b8" strokeWidth="3" />
           <path d="M 285 130 Q 292 152 285 174" stroke="#f59e0b" strokeWidth="4" fill="none" />
           <text x="330" y="200" fill="#94a3b8" fontSize="8" textAnchor="middle">
             Rail Wheel
@@ -1662,7 +1664,8 @@ function _renderHistoricalSchematic(
           </text>
         </g>
       );
-    case "daimler-engine":
+    case "daimler-engine": {
+      const daimler = stepDaimlerEngine({});
       return (
         <g stroke="#38bdf8" strokeWidth="1.5" fill="none">
           {/* Cylinder Bore */}
@@ -1693,8 +1696,19 @@ function _renderHistoricalSchematic(
             strokeLinecap="round"
           />
           {/* Enclosed Flywheel Crankcase */}
-          <circle cx="200" cy="220" r="50" stroke="#fbbf24" strokeWidth="2" />
-          <circle cx="200" cy="210" r="6" fill="#fbbf24" />
+          <circle
+            cx={daimler.schematicFlywheelCx}
+            cy={daimler.schematicFlywheelCy}
+            r={daimler.schematicFlywheelR}
+            stroke="#fbbf24"
+            strokeWidth="2"
+          />
+          <circle
+            cx={daimler.schematicFlywheelCx}
+            cy={daimler.schematicFlywheelCy - 10}
+            r={daimler.schematicHubR}
+            fill="#fbbf24"
+          />
           <text x="200" y="285" fill="#fbbf24" fontSize="9" textAnchor="middle">
             Balanced Crankcase Flywheels
           </text>
@@ -2848,7 +2862,8 @@ function _renderHistoricalSchematic(
         </g>
       );
     }
-    case "otto-engine":
+    case "otto-engine": {
+      const otto = stepOttoEngine({});
       return (
         <g stroke="#38bdf8" strokeWidth="1.5" fill="none">
           {/* Water-Cooled Cylinder */}
@@ -2885,8 +2900,19 @@ function _renderHistoricalSchematic(
             strokeLinecap="round"
           />
           {/* Crank & Flywheel */}
-          <circle cx="280" cy="130" r="45" stroke="#fbbf24" strokeWidth="2.5" />
-          <circle cx="280" cy="130" r="6" fill="#fbbf24" />
+          <circle
+            cx={otto.schematicFlywheelCx}
+            cy={otto.schematicFlywheelCy}
+            r={otto.schematicFlywheelR}
+            stroke="#fbbf24"
+            strokeWidth="2.5"
+          />
+          <circle
+            cx={otto.schematicFlywheelCx}
+            cy={otto.schematicFlywheelCy}
+            r={otto.schematicHubR}
+            fill="#fbbf24"
+          />
           <text x="65" y="80" fill="#f97316" fontSize="8" textAnchor="middle">
             Slide-Valve Igniter
           </text>
@@ -2898,6 +2924,7 @@ function _renderHistoricalSchematic(
           </text>
         </g>
       );
+    }
     case "edison-phonograph": {
       const phonograph = stepEdisonPhonograph({});
       return (
