@@ -249,6 +249,33 @@ describe("FrankenSim Weave Surfaces Boundary", () => {
     expect(coupleLinks("us-2708656-fermi-reactor", {})).toEqual([]);
   });
 
+  test("keeps Engelbart US 3,541,541 on its held two-wheel source boundary", () => {
+    const probe = materialProbe("us-3541541-engelbart-mouse", "Position wheel", {});
+    expect(probe).toMatchObject({
+      material: "Perpendicular position wheels, transducer means, and flexible conductor",
+      qty: "Claim 1",
+      value: "apparatus relation",
+      unit: "source guide",
+    });
+    expect(probe?.note).toContain("no wheel material, radius, friction, resolution");
+    expect(intervalGhosts("us-3541541-engelbart-mouse", { sourceFocus: 3 })).toEqual([
+      { label: "Source group", min: 1, max: 3, live: 3, unit: "facsimile guide" },
+    ]);
+    expect(fidelityField("us-3541541-engelbart-mouse", {})).toMatchObject({
+      model: "not computed",
+      unit: "source boundary",
+    });
+    expect(datedScenarios("us-3541541-engelbart-mouse")).toEqual([
+      {
+        id: "engelbart-filing-1967",
+        date: "1967-06-21",
+        name: "Filed X-Y position indicator",
+        writes: { sourceFocus: 1 },
+      },
+    ]);
+    expect(coupleLinks("us-3541541-engelbart-mouse", {})).toEqual([]);
+  });
+
   test("computes spectral eigenmodes for resonant patents", () => {
     const teslaCoilModes = spectralModes("us-593138-tesla-coil", { secondaryTurns: 1000 });
     expect(teslaCoilModes.length).toBeGreaterThan(0);

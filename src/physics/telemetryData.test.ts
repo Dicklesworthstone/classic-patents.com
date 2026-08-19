@@ -257,4 +257,20 @@ describe("Physics Telemetry Data Registry", () => {
     expect(metrics[2]).toMatchObject({ label: "Printed Claims", value: "8" });
     expect(fermi.pedagogicalInsight).toContain("delayed-neutron kinetics, control-rod behavior");
   });
+
+  test("keeps Engelbart US 3,541,541 on its held two-wheel source boundary", () => {
+    const engelbart = PATENT_PHYSICS_REGISTRY["us-3541541-engelbart-mouse"];
+    expect(engelbart.engineMethod).toContain("No pointing-device performance engine");
+    expect(engelbart.controls.map((control) => control.unit)).toEqual(["source figure group"]);
+    expect(engelbart.computeMetrics({ sourceFocus: 2 })).toMatchObject([
+      {
+        label: "Highlighted Source Group",
+        value: "Figs. 4–5: potentiometer and shaft-encoder arrangements",
+      },
+      { label: "Printed Figures", value: "7" },
+      { label: "Printed Claims", value: "8" },
+      { label: "Visual Status", value: "withheld" },
+    ]);
+    expect(JSON.stringify(engelbart).toLowerCase()).not.toContain("wheel radius");
+  });
 });

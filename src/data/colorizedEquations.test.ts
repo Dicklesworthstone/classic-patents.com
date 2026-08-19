@@ -233,4 +233,15 @@ describe("Colorized Equations Quality & Integrity Suite", () => {
     expect(cards[0]?.rawLatex).toContain("natural-uranium rods");
     expect(JSON.stringify(cards).toLowerCase()).not.toContain("delayed neutron fraction");
   });
+
+  test("keeps Engelbart US 3,541,541 at its held Claim 1 apparatus boundary", () => {
+    const cards = ALL_COLORIZED_EQUATIONS["us-3541541-engelbart-mouse"];
+    expect(cards.map((card) => card.id)).toEqual(["engelbart-source-position-signal-chain"]);
+    expect(cards[0]?.claimRef).toBe(1);
+    expect(cards[0]?.rawLatex).toContain("perpendicular position wheels");
+    expect(cards[0]?.rawLatex).toContain("flexible conductor");
+    const published = JSON.stringify(cards).toLowerCase();
+    expect(published).not.toContain("steel tracking wheel radius");
+    expect(published).not.toContain("kinetic friction coefficient");
+  });
 });
