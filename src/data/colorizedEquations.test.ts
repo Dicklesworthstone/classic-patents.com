@@ -264,4 +264,23 @@ describe("Colorized Equations Quality & Integrity Suite", () => {
     expect(published).not.toContain("steel tracking wheel radius");
     expect(published).not.toContain("kinetic friction coefficient");
   });
+
+  test("keeps Mergenthaler US 313,224 at its held Claim 1 matrix-bar boundary", () => {
+    const cards = ALL_COLORIZED_EQUATIONS["us-313224-mergenthaler-linotype"];
+    expect(cards.map((card) => card.id)).toEqual(["mergenthaler-source-continuous-matrix-bar"]);
+    expect(cards[0]?.claimRef).toBe(1);
+    expect(cards[0]?.rawLatex).toContain("continuous matrix-bar");
+    expect(cards[0]?.rawLatex).toContain("intaglio characters read transversely");
+
+    const published = JSON.stringify(cards).toLowerCase();
+    for (const unsupportedPublicAssertion of [
+      "90 magazine channels",
+      "7-bit binary keyway",
+      "240^\\circ",
+      "water-cooled mold",
+      "eutectic solidification",
+    ]) {
+      expect(published).not.toContain(unsupportedPublicAssertion);
+    }
+  });
 });
