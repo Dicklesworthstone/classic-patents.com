@@ -470,6 +470,10 @@ the visitor can see or hear the kernel change the instrument.
 - [x] P5.374 Nobel sparkOmega / shockwaveScale / matrixEmissive. 3D no longer converts leftover t×25/×8, scale 1+1.5, or 0xff3300 privately.
 - [x] P5.375 Bardeen holeWrapPad / holeResetPad. 3D no longer converts leftover gap/2+0.1 or reset −0.05 privately.
 - [x] P5.376 Zeppelin swayOmega / swayAmp / trimMinX. 3D no longer converts leftover sin(t×0.8)×0.08 or trim ±5 privately.
+- [x] P5.377 Tesla motor weave drains `stepTeslaMotorFig9`. Probe qty is n_D rpm, ghosts are disk rpm / B intensity, fidelity is disk vs generator (residual 0). No more "source guide" / "not computed" HUD on US 381,968.
+- [x] P5.378 Spec-clause captions on Tesla Fig. 9 print generator / pole-shift / disk rpm from the same step. 2D and 3D read `teslaMotorPhaseHz` so leftover `frequencyHz` aliases the registry `frequency`.
+- [x] P5.379 Energy strips only where the kernel already owns a watt: Davenport electrical/shaft/copper, Thomson I²R nugget. Tesla motor, Tesla coil, Diesel, Lamarr, Linotype, Hollerith, Engelbart, Kevlar stay empty.
+- [x] P5.380 Tesla coil `coupleLinks` no longer prints invented `(inputVoltageKv ?? 15) * 20` W. The coil step owns kV and streamer length, not a watt.
 
 ## P6 — Generic crate composition (no per-patent WASM required)
 
