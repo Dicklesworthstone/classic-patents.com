@@ -24,6 +24,7 @@ function validatePageLedger(
   expectedPageCount: number,
   markerPattern: RegExp,
   label: string,
+  requirePageContent = false,
 ): SourceTextValidationResult {
   if (!Number.isSafeInteger(expectedPageCount) || expectedPageCount < 1) {
     return { valid: false, error: "The catalogue has an invalid source page count." };
@@ -55,6 +56,19 @@ function validatePageLedger(
     }
   }
 
+  if (requirePageContent) {
+    for (const [index, marker] of markers.entries()) {
+      const start = (marker.index ?? 0) + marker[0].length;
+      const end = markers[index + 1]?.index ?? text.length;
+      if (normalizedLength(text.slice(start, end)) === 0) {
+        return {
+          valid: false,
+          error: `The ${label} has no reviewed content for source page ${index + 1}.`,
+        };
+      }
+    }
+  }
+
   return { valid: true };
 }
 
@@ -74,6 +88,7 @@ export function validateReviewedTranscription(
     expectedPageCount,
     REVIEWED_PAGE_MARKER,
     "reviewed transcription",
+    true,
   );
 }
 

@@ -43,10 +43,33 @@ describe("source-PDF text layer validation", () => {
     expect(validateReviewedTranscription("Complete reviewed text", 1).valid).toBeFalse();
   });
 
-  it("rejects marker-only and materially underfilled reviewed ledgers", () => {
+  it("rejects blank reviewed source pages", () => {
     const markerOnly = "--- REVIEWED TRANSCRIPTION PAGE 1 OF 1 ---\n";
+    expect(validateReviewedTranscription(markerOnly, 1)).toEqual({
+      valid: false,
+      error: "The reviewed transcription has no reviewed content for source page 1.",
+    });
+
+    expect(
+      validateReviewedTranscription(
+        "--- REVIEWED TRANSCRIPTION PAGE 1 OF 2 ---\n\nFirst page\n\n--- REVIEWED TRANSCRIPTION PAGE 2 OF 2 ---\n",
+        2,
+      ),
+    ).toEqual({
+      valid: false,
+      error: "The reviewed transcription has no reviewed content for source page 2.",
+    });
+  });
+
+  it("rejects materially underfilled reviewed ledgers", () => {
     const source = "A complete archival source reading must remain in the ledger.";
-    expect(validateReviewedTranscriptionCoverage(markerOnly, 1, source)).toEqual({
+    expect(
+      validateReviewedTranscriptionCoverage(
+        "--- REVIEWED TRANSCRIPTION PAGE 1 OF 1 ---\na",
+        1,
+        source,
+      ),
+    ).toEqual({
       valid: false,
       error:
         "The reviewed transcription is materially shorter than the authored source reading; page notes or a partial ledger cannot be published as a complete transcription.",
