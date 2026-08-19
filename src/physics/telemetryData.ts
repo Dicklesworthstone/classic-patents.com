@@ -3819,13 +3819,6 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
     computeMetrics: (_p) => {
       return [
         {
-          label: "Illustrative Vessel Motion",
-          value: "Animated control only",
-          unit: "no source rate",
-          badgeColor: "cyan",
-          progressPct: clampProgress(0),
-        },
-        {
           label: "Source Spiral Advance",
           value: "3",
           unit: "diameters per turn",
@@ -3845,13 +3838,6 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
           unit: "inch",
           badgeColor: "amber",
           progressPct: clampProgress(100),
-        },
-        {
-          label: "Source Quantity Boundary",
-          value: "Not printed",
-          unit: "no thrust, rate, or efficiency",
-          badgeColor: "purple",
-          progressPct: clampProgress(0),
         },
       ];
     },

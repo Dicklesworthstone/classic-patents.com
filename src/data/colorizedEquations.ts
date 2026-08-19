@@ -10612,7 +10612,7 @@ export const ALL_COLORIZED_EQUATIONS: Record<string, ColorizedEquation[]> = {
           unit: "direction and relative speed only",
           dimension: "[T^-1]",
           explanation:
-            "This relation is the source statement; it does not prove torque cancellation, wake recovery, or a numerical gear ratio.",
+            "This relation is the source statement; it does not claim net moment balance, wake energy recovery, or a numerical gear ratio.",
         },
       ],
       pedagogicalNote:

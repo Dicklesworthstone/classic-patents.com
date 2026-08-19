@@ -53,4 +53,24 @@ describe("Colorized Equations Quality & Integrity Suite", () => {
     expect(totalEquations).toBeGreaterThanOrEqual(100);
     expect(totalVariables).toBeGreaterThanOrEqual(500);
   });
+
+  test("keeps Ericsson's public cards within the printed source geometry and shaft relation", () => {
+    const cards = ALL_COLORIZED_EQUATIONS["us-588-ericsson-propeller"];
+    expect(cards.map((card) => card.id)).toEqual([
+      "ericsson-source-helical-development",
+      "ericsson-source-opposed-shaft-motion",
+    ]);
+    expect(cards[0]?.rawLatex).toBe("P = 3D");
+    expect(cards[1]?.rawLatex).toContain("\\omega_b");
+
+    const publicCards = JSON.stringify(cards);
+    for (const unsupportedPublicAssertion of [
+      "10 - 15",
+      "15% efficiency gain",
+      "USS Monitor",
+      "slipstream rotation",
+    ]) {
+      expect(publicCards).not.toContain(unsupportedPublicAssertion);
+    }
+  });
 });

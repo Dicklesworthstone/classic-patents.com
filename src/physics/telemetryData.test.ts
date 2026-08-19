@@ -83,4 +83,21 @@ describe("Physics Telemetry Data Registry", () => {
       "no rate, dimension, diaphragm material, or audio bandwidth",
     );
   });
+
+  test("keeps Ericsson propeller telemetry within the quantities printed by US 588", () => {
+    const ericsson = PATENT_PHYSICS_REGISTRY["us-588-ericsson-propeller"];
+    expect(ericsson.engineMethod).toContain("illustrative display motion only");
+    expect(ericsson.controls.map((control) => control.unit)).toEqual([
+      "model RPM",
+      "model degrees",
+    ]);
+    expect(ericsson.computeMetrics({})).toMatchObject([
+      { label: "Source Spiral Advance", value: "3", unit: "diameters per turn" },
+      { label: "Source Shaft Relation", value: "b opposite a", unit: "lower stated speed" },
+      { label: "Source Casing Clearance", value: "about 1/8", unit: "inch" },
+    ]);
+    expect(ericsson.pedagogicalInsight).toContain(
+      "no shaft rate, propeller dimensions, vessel speed",
+    );
+  });
 });
