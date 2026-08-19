@@ -326,7 +326,8 @@ describe("FrankenSim Weave Surfaces Boundary", () => {
   test("keeps Hollerith US 395,781 on its held record-card source boundary", () => {
     const probe = materialProbe("us-395781-hollerith-tabulating", "Record card", {});
     expect(probe).toMatchObject({
-      material: "Record-cards, circuit-controlling contacts, electro-magnets, counters, and sorting boxes",
+      material:
+        "Record-cards, circuit-controlling contacts, electro-magnets, counters, and sorting boxes",
       qty: "Claim 1 and specification relation",
       value: "index-points → circuits → counting or sorting action",
       unit: "source guide",
