@@ -2447,7 +2447,9 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
     pedagogicalInsight:
       "Hoisting cable tension actively holds the safety pawls disengaged by bowing a heavy transverse leaf spring upward. If the cable snaps, the spring instantly straightens flat, firing pawls outward into the vertical guide-rail ratchets within 38 milliseconds.",
   },
-  "us-313224-mergenthaler-linotype": {
+  // Retained non-serving later-Linotype model. The exact US 313,224 route is
+  // assigned a source-reading guide below until its full manual edition passes QA.
+  "_legacy-unpublished-us-313224-mergenthaler-linotype": {
     domain: "materials_kinetics",
     domainTitle: "Binary Matrix Keyway Demultiplexing & Eutectic Solidification",
     equationName: "7-Bit Binary Matrix Address & Solidification Time",
@@ -5147,4 +5149,64 @@ PATENT_PHYSICS_REGISTRY["us-3541541-engelbart-mouse"] = {
   },
   pedagogicalInsight:
     "US 3,541,541 describes a position indicator supported by two perpendicular wheels and a ball-bearing support, with potentiometer, shaft-encoder, and incremental-encoder alternatives. Its source edition remains under independent publication review, so this guide does not claim wheel material, radius, resolution, friction, pulse rate, cursor rate, sampling, click semantics, or later product history.",
+};
+
+// US 313,224 is a matrix-bar printing-form machine, not the later commercial
+// Linotype mechanism retained above under a non-serving key. The manuscript
+// remains held pending complete facsimile and companion-reading review.
+PATENT_PHYSICS_REGISTRY["us-313224-mergenthaler-linotype"] = {
+  domain: "source_review_hold",
+  domainTitle: "Source Guide: Matrix-Bar Printing-Form Mechanism",
+  equationName: "No quantitative casting or typesetting performance model published",
+  governingEquation:
+    "finger-keys → adjusting-pins and stop-pins → aligned matrix-bars → mold and printing-bar",
+  engineMethod: "No printing-form performance engine; source-review guide only",
+  controls: [
+    {
+      id: "sourceFocus",
+      label: "Verified facsimile group",
+      min: 1,
+      max: 3,
+      step: 1,
+      defaultValue: 1,
+      unit: "source drawing group",
+    },
+  ],
+  computeMetrics: (params) => {
+    const focus = Math.max(1, Math.min(3, Math.round(params.sourceFocus ?? 1)));
+    const highlighted = [
+      "Figs. 1–17: principal machine and matrix-bar arrangements",
+      "Figs. 18–34: stops, keys, spacing, and mold arrangements",
+      "Figs. 35–51: mold, clamps, pump, and matrix-bar details",
+    ][focus - 1] as string;
+
+    return [
+      {
+        label: "Highlighted Source Group",
+        value: highlighted,
+        unit: "facsimile guide",
+        badgeColor: "cyan",
+      },
+      {
+        label: "Printed Figures",
+        value: "51 on 17 sheets",
+        unit: "source text",
+        badgeColor: "emerald",
+      },
+      {
+        label: "Printed Claims",
+        value: "70",
+        unit: "source text",
+        badgeColor: "indigo",
+      },
+      {
+        label: "Visual Status",
+        value: "withheld",
+        unit: "independent source review pending",
+        badgeColor: "amber",
+      },
+    ];
+  },
+  pedagogicalInsight:
+    "US 313,224 describes finger-keys that set adjusting-pins and stop-pins for independently moving matrix-bars. The selected bars are aligned and clamped into a temporary matrix; a separate mold and force-pump casting mechanism produces a printing-bar. The held source edition does not support a keyboard count, binary matrix distributor, material recipe, temperature, pressure, production rate, or later Linotype casting-cycle measurement.",
 };

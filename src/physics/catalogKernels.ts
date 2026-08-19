@@ -234,6 +234,13 @@ export function stepEricssonPropeller(params: { shaftRpm?: number; bladePitchAng
     schematicAftCy: 150,
     schematicAftRx: 14,
     schematicAftRy: 46,
+    shroudSvgRx: 14,
+    forwardShroudSvgRy: 60,
+    aftShroudSvgRy: 55,
+    hubSvgR: 10,
+    aftHubSvgR: 8,
+    bladeTipDx: 15,
+    bladeTipDy: 6,
   };
 }
 
@@ -1015,7 +1022,30 @@ export function stepNoyceIC(params: {
     clockPeriodNs: Number((1000 / Math.max(0.1, clockMhz)).toFixed(2)),
     signalDisplaySpeed: Number((clockMhz * 0.45).toFixed(3)),
     toneHz: Number((200 + clockMhz * 15).toFixed(1)),
+    schematicJunctionCount: 3,
+    schematicJunctionOriginX: 90,
+    schematicJunctionPitchX: 80,
+    schematicJunctionY: 150,
+    schematicJunctionW: 50,
+    schematicJunctionH: 50,
+    schematicContactOriginX: 115,
+    schematicContactPitchX: 80,
+    schematicContactY0: 120,
+    schematicContactY1: 150,
   };
+}
+
+/** Planar junction box on the schematic. Shared by the schematic. */
+export function noyceSchematicJunction(index: number, originX = 90, pitchX = 80, y = 150) {
+  return {
+    x: originX + index * pitchX,
+    y,
+  };
+}
+
+/** Oxide-to-metal contact X on the schematic. Shared by the schematic. */
+export function noyceSchematicContactX(index: number, originX = 115, pitchX = 80) {
+  return originX + index * pitchX;
 }
 
 export function stepEdisonBulb(params: { voltage?: number; filamentLength?: number }) {

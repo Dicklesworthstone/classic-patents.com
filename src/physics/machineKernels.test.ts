@@ -1,6 +1,7 @@
 import { describe, expect, test } from "bun:test";
 import {
   ccdGateSvgX,
+  ccdPacketGateIndex,
   ccdSchematicGateX,
   ccdWellSvgDepth,
   LINOTYPE_CHARS_PER_LINE,
@@ -31,6 +32,9 @@ describe("Machine Kernels & Mechanical Kinematics", () => {
     expect(ccdGateSvgX(2, res1.gateSvgPitch)).toBe(100);
     expect(res1.schematicGateCount).toBe(6);
     expect(ccdSchematicGateX(0, res1.schematicGateOriginX, res1.schematicGatePitch)).toBe(70);
+    expect(res1.packetCount).toBe(3);
+    expect(ccdPacketGateIndex(0, 1, res1.packetGateStride)).toBe(0);
+    expect(ccdPacketGateIndex(1, 2, res1.packetGateStride)).toBe(4);
     expect(res1.fullWellElectrons).toBeGreaterThan(50000);
     expect(res1.phasePeriodNs).toBeCloseTo(33.3, 1);
 

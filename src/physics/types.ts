@@ -117,6 +117,13 @@ export interface NuclearKineticsState {
   latticeOriginY: number;
   latticePitchX: number;
   latticePitchY: number;
+  schematicSlugOriginX: number;
+  schematicSlugOriginY: number;
+  schematicSlugPitchX: number;
+  schematicSlugPitchY: number;
+  schematicSlugCols: number;
+  schematicSlugRows: number;
+  schematicSlugR: number;
 }
 
 // 6. Continuum Mechanics, Polymers & Mechanisms

@@ -1,5 +1,10 @@
 import { describe, expect, test } from "bun:test";
-import { fermiKeff, fermiLatticeCell, stepFermiKinetics } from "./fermiKinetics";
+import {
+  fermiKeff,
+  fermiLatticeCell,
+  fermiSchematicSlug,
+  stepFermiKinetics,
+} from "./fermiKinetics";
 
 describe("Enrico Fermi Chicago Pile-1 Nuclear Kinetics Kernel", () => {
   test("fermiKeff computes delayed-critical point near 83.5% rod withdrawal with pure moderator", () => {
@@ -37,5 +42,8 @@ describe("Enrico Fermi Chicago Pile-1 Nuclear Kinetics Kernel", () => {
     expect(res.latticeCols).toBe(7);
     expect(fermiLatticeCell(0, 0).cx).toBe(80);
     expect(fermiLatticeCell(0, 1).cx).toBe(120);
+    expect(res.schematicSlugCols).toBe(4);
+    expect(fermiSchematicSlug(0, 0).cx).toBe(110);
+    expect(fermiSchematicSlug(1, 1).cy).toBe(170);
   });
 });

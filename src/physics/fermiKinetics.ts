@@ -71,6 +71,28 @@ export function stepFermiKinetics(
     latticeOriginY: 60,
     latticePitchX: 40,
     latticePitchY: 38,
+    schematicSlugOriginX: 110,
+    schematicSlugOriginY: 90,
+    schematicSlugPitchX: 60,
+    schematicSlugPitchY: 80,
+    schematicSlugCols: 4,
+    schematicSlugRows: 2,
+    schematicSlugR: 9,
+  };
+}
+
+/** Fuel-slug seat on the schematic lattice. Shared by the schematic. */
+export function fermiSchematicSlug(
+  col: number,
+  row: number,
+  originX = 110,
+  originY = 90,
+  pitchX = 60,
+  pitchY = 80,
+) {
+  return {
+    cx: originX + col * pitchX,
+    cy: originY + row * pitchY,
   };
 }
 

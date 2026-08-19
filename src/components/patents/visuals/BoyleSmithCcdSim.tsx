@@ -3,7 +3,7 @@
 import { Camera, Play } from "lucide-react";
 import { useEffect, useState } from "react";
 import { TextWithLatex } from "@/components/ui/LatexRenderer";
-import { ccdGateSvgX, stepCcdWells } from "@/physics/machineKernels";
+import { ccdGateSvgX, ccdPacketGateIndex, stepCcdWells } from "@/physics/machineKernels";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 
 export function BoyleSmithCcdSim() {
@@ -179,14 +179,21 @@ export function BoyleSmithCcdSim() {
               />
 
               {/* Trapped Electron Charge Packets in Potential Wells */}
-              {Array.from({ length: 3 }).map((_, i) => {
-                const wellGateIndex = i * 3 + (clockPhase - 1);
+              {Array.from({ length: ccd.packetCount }).map((_, i) => {
+                const wellGateIndex = ccdPacketGateIndex(i, clockPhase, ccd.packetGateStride);
                 const px = ccdGateSvgX(wellGateIndex, ccd.gateSvgPitch) + ccd.gateSvgWidth / 2;
-                const py = 50;
+                const py = ccd.packetSvgY;
                 return (
                   <g key={i}>
                     {/* Electron Cloud Packet */}
-                    <ellipse cx={px} cy={py} rx="16" ry="8" fill="#38bdf8" opacity="0.9" />
+                    <ellipse
+                      cx={px}
+                      cy={py}
+                      rx={ccd.packetSvgRx}
+                      ry={ccd.packetSvgRy}
+                      fill="#38bdf8"
+                      opacity="0.9"
+                    />
                     <text
                       x={px - 14}
                       y={py + 3}

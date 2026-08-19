@@ -4,7 +4,10 @@ import {
 } from "@/data/editions/mergenthalerLinotypeEdition";
 import type { Patent } from "@/types/patent";
 
-export const mergenthalerLinotypePatent: Patent = {
+// Retained research material for a later commercial Linotype narrative. It is
+// deliberately non-exported: the published US 313,224 record below is bounded
+// to the printed 1885 matrix-bar grant, not this later-machine reconstruction.
+const _legacyUnpublishedMergenthalerLinotypePatent: Patent = {
   id: "us-313224-mergenthaler-linotype",
   patentNumber: "US 313,224",
   title: "Machine for Producing Printing-Bars",
@@ -246,5 +249,115 @@ My machine embraces two leading groups of mechanism: first, those which form a t
     independentClaims: 70,
     patentWarYears: "1885–1898",
     impactScore: 100,
+  },
+};
+
+/**
+ * Source-bounded catalog record for the 1885 grant. The manual source edition
+ * and its reviewed ledger remain under editorial hold: only the exact claims
+ * have completed a full claim-by-claim facsimile check. Do not add an
+ * `archivalEdition` or `originalTextAsset` here until the 35-page manuscript
+ * passes a fresh, independent acceptance review.
+ */
+export const mergenthalerLinotypePatent: Patent = {
+  id: "us-313224-mergenthaler-linotype",
+  patentNumber: "US 313,224",
+  title: "Machine for Producing Printing-Bars",
+  shortTitle: "Matrix-Bar Printing-Form Machine",
+  subtitle: "Finger-keyed temporary matrices and a separate casting mechanism",
+  inventors: ["Ottmar Mergenthaler"],
+  inventorLocation: "Baltimore, Maryland",
+  grantDate: "1885-03-03",
+  filingDate: "1884-08-30",
+  era: "Gilded Age & Grid (1870–1900)",
+  category: "consumer",
+  categoryLabel: "Printing Machinery & Mechanical Logic",
+  summary:
+    "US 313,224 describes a power-driven, finger-key-controlled machine that forms temporary printing matrices from parallel matrix-bars and then casts printing-bars from them. The specification distinguishes a matrix mechanism from a casting mechanism and says that casting one bar can proceed while the next line is being selected and adjusted.",
+  heroQuote:
+    "My machine embraces two leading groups of mechanism: first, those which form a temporary and changing matrix representing a number of words; and, second, those by which molten or plastic material is delivered to the matrix and discharged therefrom in the form of printing-bars.",
+  originalPdfUrl: "/patents/pdfs/us-313224-mergenthaler-linotype.pdf",
+  googlePatentsUrl: "https://patents.google.com/patent/US313224A/en",
+  usptoClassification: "Printing machinery; source classification review pending",
+  originalText: `UNITED STATES PATENT OFFICE.
+OTTMAR MERGENTHALER, OF BALTIMORE, MARYLAND, ASSIGNOR TO THE
+NATIONAL TYPOGRAPHIC COMPANY, OF WEST VIRGINIA.
+
+MACHINE FOR PRODUCING PRINTING-BARS.
+
+SPECIFICATION forming part of Letters Patent No. 313,224, dated March 3, 1885.
+Application filed August 30, 1884. (No model.)
+
+To all whom it may concern:
+Be it known that I, OTTMAR MERGENTHALER, of Baltimore, in the State of Maryland, have invented certain Improvements in Machines for Producing Printing-Bars, of which the following is a specification.
+
+This invention is directed to the rapid and economical production of letter-press printing, and relates to a machine to be driven by power, and controlled by finger-keys, adapted to produce printing forms or relief surfaces ready for immediate use, thus avoiding the usual operation of type-setting, and also the more recent plan of preparing by machinery matrices from which to cast the forms.
+
+My machine embraces two leading groups of mechanism: first, those which form a temporary and changing matrix representing a number of words; and, second, those by which molten or plastic material is delivered to the matrix and discharged therefrom in the form of printing-bars.
+
+[Curated source excerpt only. The 35-page manual source face remains withheld until its transcript, figures, annotations, and companion readings pass independent facsimile acceptance.]`,
+  plainEnglishExplanation: {
+    overview:
+      "The printed grant tackles the time required to compose a line of letterpress printing. Its answer is not the later commercial Linotype cycle often associated with Mergenthaler. This document describes parallel matrix-bars, each carrying characters and spacing surfaces, that move independently until the selected characters form a temporary matrix. A separate mechanism fills that matrix and releases a printing-bar.",
+    coreMechanism:
+      "Finger-keys set adjusting-pins. Those pins set stop-pins so selected tapered matrix-bars descend to different positions. The bars present recessed characters and blank spacing surfaces in one line. A pin, blade, and clamps bring and hold the selected bars together as a temporary matrix. A sectional mold closes beside it; the specification says a force-pump, melting-pot, and heater deliver type-metal. After the material hardens, the mold opens and delivers the printing-bar. The grant does not state an alloy recipe, a casting temperature, a line rate, a keyboard count, a binary distributor, or a later machine's matrix-return system.",
+    mechanicalBreakdown: [
+      {
+        title: "Continuous Matrix-Bars",
+        summary:
+          "Claim 1 begins with a continuous bar whose edge carries recessed characters read across the bar.",
+        technicalDetails:
+          "The specification describes parallel bars tapered from end to end. Their edge can carry one or more alphabets, numerals, punctuation, symbols, and blank spacing surfaces. A character on one bar can align with a character on an adjacent bar to make a reading line. This is a matrix-forming element, not an assertion about a later magazine or distributor.",
+        archaicTerm: "intaglio characters",
+        modernEquivalent: "recessed matrix letterforms",
+      },
+      {
+        title: "Key-Set Stops and Temporary Matrix",
+        summary:
+          "Finger-keys operate adjusting-pins; the adjusting-pins set stop-pins that arrest selected bars.",
+        technicalDetails:
+          "After descent, the specification describes a pin through holes in the series, a transverse blade entering bar notches, and clamps that close the bars into the precise temporary-matrix position. It also provides a correction operation that restores the pins and indicator after an improper key stroke. The source gives the mechanical relation, not a measured keying or production rate.",
+        archaicTerm: "stop-pins",
+        modernEquivalent: "selectable mechanical position stops",
+      },
+      {
+        title: "Mold and Casting Mechanism",
+        summary:
+          "A sectional mold closes at the matrix; a force-pump, melting-pot, and heater deliver type-metal.",
+        technicalDetails:
+          "The source says that the mold opens and the printing-bar is delivered after the metal has become sufficiently hardened. It also says the next matrix may be selected while a bar is being cast. The document supplies no alloy composition, mold material, pressure, temperature, cooling arrangement, or solidification time.",
+        archaicTerm: "printing-bar",
+        modernEquivalent: "cast relief printing form",
+      },
+    ],
+    scientificPrinciples: [],
+    whyItMattersToday:
+      "The grant is valuable as a detailed primary-source account of an early approach to mechanized composition: choose characters by setting independently moving bar matrices, align and clamp them into a temporary mold face, then cast a printing form. Claims 1 through 70 define variations of that apparatus. Later commercial Linotype technology requires separate, cited treatment rather than being projected backward onto this grant.",
+  },
+  claims: mergenthalerLinotypeClaims,
+  drawings: [],
+  historicalContext: {
+    problemStatement:
+      "The specification identifies the rapid and economical production of letterpress printing as the problem and contrasts its apparatus with ordinary type-setting and with preparing matrices by machinery before casting forms.",
+    priorArtLimitations: [
+      "The grant says ordinary type-setting was an operation to be avoided.",
+      "It also distinguishes the machine from a plan of preparing matrices by machinery before casting the forms.",
+    ],
+    breakthroughInsight:
+      "The printed mechanism separates selection from casting: independently adjustable matrix-bars create a temporary changing matrix, while a separate casting mechanism delivers material to it and releases a printing-bar.",
+    patentWars: [],
+    civilizationalImpact:
+      "US 313,224 records a specific bar-matrix approach to mechanized printing-form production. The source alone does not establish adoption figures, production rates, market dominance, or the history of later commercial Linotype machines.",
+    aftermath:
+      "The grant issued on March 3, 1885 with seventy printed claims. Its full source edition remains withheld while the entire facsimile, figure treatment, and reading companions receive a fresh independent review.",
+    sideNotes: [
+      "The specification says the matrix-bars are tapered and that characters and blank spacing surfaces are arranged in the order of their width.",
+      "Figures 1 through 51 appear across seventeen drawing sheets in the pinned facsimile.",
+    ],
+  },
+  tags: ["Ottmar Mergenthaler", "Matrix-bars", "Letterpress printing", "Printing machinery"],
+  stats: {
+    totalClaims: 70,
+    independentClaims: 70,
   },
 };

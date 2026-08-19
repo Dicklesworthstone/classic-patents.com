@@ -224,6 +224,10 @@ export function teslaCoilSiUnits(
     windingTaperPx: 0.55,
     windingPitchY: 7.5,
     windingHalfW: 25,
+    schematicToploadCx: 200,
+    schematicToploadCy: 70,
+    schematicToploadRx: 50,
+    schematicToploadRy: 18,
   };
 }
 

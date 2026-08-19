@@ -141,8 +141,8 @@ export function EricssonPropellerSim() {
             <ellipse
               cx="0"
               cy="0"
-              rx="14"
-              ry="60"
+              rx={screw.shroudSvgRx}
+              ry={screw.forwardShroudSvgRy}
               fill="none"
               stroke="#B87333"
               strokeWidth="3"
@@ -156,7 +156,7 @@ export function EricssonPropellerSim() {
               return (
                 <path
                   key={`fwd-blade-${bladeAngle}`}
-                  d={`M 0 0 L ${xOffset} ${yOffset} L ${xOffset + 15} ${yOffset - 6} Z`}
+                  d={`M 0 0 L ${xOffset} ${yOffset} L ${xOffset + screw.bladeTipDx} ${yOffset - screw.bladeTipDy} Z`}
                   fill="#D4AF37"
                   stroke="#8B5A2B"
                   strokeWidth="1.5"
@@ -164,7 +164,7 @@ export function EricssonPropellerSim() {
                 />
               );
             })}
-            <circle cx="0" cy="0" r="10" fill="#222" />
+            <circle cx="0" cy="0" r={screw.hubSvgR} fill="#222" />
           </g>
 
           {/* Aft Propeller Wheel (Counter-Clockwise Contra-Rotating) */}
@@ -173,8 +173,8 @@ export function EricssonPropellerSim() {
             <ellipse
               cx="0"
               cy="0"
-              rx="14"
-              ry="55"
+              rx={screw.shroudSvgRx}
+              ry={screw.aftShroudSvgRy}
               fill="none"
               stroke="#B87333"
               strokeWidth="3"
@@ -188,7 +188,7 @@ export function EricssonPropellerSim() {
               return (
                 <path
                   key={`aft-blade-${bladeAngle}`}
-                  d={`M 0 0 L ${xOffset} ${yOffset} L ${xOffset - 15} ${yOffset + 6} Z`}
+                  d={`M 0 0 L ${xOffset} ${yOffset} L ${xOffset - screw.bladeTipDx} ${yOffset + screw.bladeTipDy} Z`}
                   fill="#C5A059"
                   stroke="#8B5A2B"
                   strokeWidth="1.5"
@@ -196,7 +196,7 @@ export function EricssonPropellerSim() {
                 />
               );
             })}
-            <circle cx="0" cy="0" r="8" fill="#222" />
+            <circle cx="0" cy="0" r={screw.aftHubSvgR} fill="#222" />
           </g>
 
           {/* Reader-aid water-motion lines, not a measured wake. */}

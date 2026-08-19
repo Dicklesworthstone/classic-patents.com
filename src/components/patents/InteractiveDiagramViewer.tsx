@@ -24,6 +24,8 @@ import {
   mccormickSchematicReelArm,
   mccormickSchematicSickleX,
   nobelSchematicKieselguhr,
+  noyceSchematicContactX,
+  noyceSchematicJunction,
   pasteurSchematicBubbleX,
   peltonSchematicBucket,
   spencerSchematicCavity,
@@ -38,6 +40,7 @@ import {
   stepKevlarContinuum,
   stepMcCormickReaper,
   stepNobelDynamite,
+  stepNoyceIC,
   stepParsonsTurbine,
   stepPasteurFermentation,
   stepPeltonWheel,
@@ -48,7 +51,7 @@ import {
   zeppelinSchematicCell,
 } from "@/physics/catalogKernels";
 import { FrankenSimEngine, lamarrSchematicHop, lamarrSchematicStaffY } from "@/physics/engine";
-import { stepFermiKinetics } from "@/physics/fermiKinetics";
+import { fermiSchematicSlug, stepFermiKinetics } from "@/physics/fermiKinetics";
 import {
   ccdSchematicGateX,
   otisSchematicRailY,
@@ -62,6 +65,7 @@ import {
 import {
   stepTeslaMotorFig9,
   teslaBAt,
+  teslaCoilSiUnits,
   teslaFig4Strobe,
   teslaSchematicStrobeOpacity,
 } from "@/physics/teslaKernel";
@@ -437,7 +441,8 @@ function _renderHistoricalSchematic(
         </g>
       );
     }
-    case "tesla-coil":
+    case "tesla-coil": {
+      const coil = teslaCoilSiUnits(180, 15, 0);
       return (
         <g stroke="#38bdf8" strokeWidth="1.5" fill="none">
           <rect x="70" y="230" width="260" height="18" rx="3" fill="#334155" stroke="#94a3b8" />
@@ -451,10 +456,10 @@ function _renderHistoricalSchematic(
             strokeWidth="2"
           />
           <ellipse
-            cx="200"
-            cy="70"
-            rx="50"
-            ry="18"
+            cx={coil.schematicToploadCx}
+            cy={coil.schematicToploadCy}
+            rx={coil.schematicToploadRx}
+            ry={coil.schematicToploadRy}
             fill="#d97706"
             fillOpacity="0.4"
             stroke="#f59e0b"
@@ -466,6 +471,7 @@ function _renderHistoricalSchematic(
           <line x1="165" y1="245" x2="235" y2="245" stroke="#f87171" strokeDasharray="2 2" />
         </g>
       );
+    }
     case "edison-bulb": {
       const filamentTemp = params?.filamentTemp ?? 2100;
       const _glowOpacity = edisonSchematicGlowOpacity(filamentTemp);
@@ -518,14 +524,28 @@ function _renderHistoricalSchematic(
           <line x1="200" y1="70" x2="200" y2="240" stroke="#475569" />
           <line x1="260" y1="70" x2="260" y2="240" stroke="#475569" />
           {/* Uranium fuel slug matrix with dynamic criticality color */}
-          <circle cx="110" cy="90" r="9" fill={fuelGlow} stroke="#34d399" />
-          <circle cx="170" cy="90" r="9" fill={fuelGlow} stroke="#34d399" />
-          <circle cx="230" cy="90" r="9" fill={fuelGlow} stroke="#34d399" />
-          <circle cx="290" cy="90" r="9" fill={fuelGlow} stroke="#34d399" />
-          <circle cx="110" cy="170" r="9" fill={fuelGlow} stroke="#34d399" />
-          <circle cx="170" cy="170" r="9" fill={fuelGlow} stroke="#34d399" />
-          <circle cx="230" cy="170" r="9" fill={fuelGlow} stroke="#34d399" />
-          <circle cx="290" cy="170" r="9" fill={fuelGlow} stroke="#34d399" />
+          {Array.from({ length: kinetics.schematicSlugRows }, (_, row) =>
+            Array.from({ length: kinetics.schematicSlugCols }, (_, col) => {
+              const slug = fermiSchematicSlug(
+                col,
+                row,
+                kinetics.schematicSlugOriginX,
+                kinetics.schematicSlugOriginY,
+                kinetics.schematicSlugPitchX,
+                kinetics.schematicSlugPitchY,
+              );
+              return (
+                <circle
+                  key={`${col}-${row}`}
+                  cx={slug.cx}
+                  cy={slug.cy}
+                  r={kinetics.schematicSlugR}
+                  fill={fuelGlow}
+                  stroke="#34d399"
+                />
+              );
+            }),
+          )}
           {/* Cadmium Control Rod moving dynamically into core */}
           <rect
             x="195"
@@ -693,7 +713,8 @@ function _renderHistoricalSchematic(
         </g>
       );
     }
-    case "noyce-ic":
+    case "noyce-ic": {
+      const noyce = stepNoyceIC({});
       return (
         <g stroke="#38bdf8" strokeWidth="1.5" fill="none">
           <rect
@@ -706,33 +727,26 @@ function _renderHistoricalSchematic(
             fillOpacity="0.25"
             stroke="#60a5fa"
           />
-          <rect
-            x="90"
-            y="150"
-            width="50"
-            height="50"
-            fill="#64748b"
-            fillOpacity="0.5"
-            stroke="#94a3b8"
-          />
-          <rect
-            x="170"
-            y="150"
-            width="50"
-            height="50"
-            fill="#64748b"
-            fillOpacity="0.5"
-            stroke="#94a3b8"
-          />
-          <rect
-            x="250"
-            y="150"
-            width="50"
-            height="50"
-            fill="#64748b"
-            fillOpacity="0.5"
-            stroke="#94a3b8"
-          />
+          {Array.from({ length: noyce.schematicJunctionCount }, (_, i) => {
+            const box = noyceSchematicJunction(
+              i,
+              noyce.schematicJunctionOriginX,
+              noyce.schematicJunctionPitchX,
+              noyce.schematicJunctionY,
+            );
+            return (
+              <rect
+                key={i}
+                x={box.x}
+                y={box.y}
+                width={noyce.schematicJunctionW}
+                height={noyce.schematicJunctionH}
+                fill="#64748b"
+                fillOpacity="0.5"
+                stroke="#94a3b8"
+              />
+            );
+          })}
           <rect
             x="80"
             y="110"
@@ -742,14 +756,30 @@ function _renderHistoricalSchematic(
             fillOpacity="0.5"
             stroke="#fbbf24"
           />
-          <line x1="115" y1="120" x2="115" y2="150" stroke="#fbbf24" strokeWidth="2" />
-          <line x1="195" y1="120" x2="195" y2="150" stroke="#fbbf24" strokeWidth="2" />
-          <line x1="275" y1="120" x2="275" y2="150" stroke="#fbbf24" strokeWidth="2" />
+          {Array.from({ length: noyce.schematicJunctionCount }, (_, i) => {
+            const x = noyceSchematicContactX(
+              i,
+              noyce.schematicContactOriginX,
+              noyce.schematicContactPitchX,
+            );
+            return (
+              <line
+                key={i}
+                x1={x}
+                y1={noyce.schematicContactY0}
+                x2={x}
+                y2={noyce.schematicContactY1}
+                stroke="#fbbf24"
+                strokeWidth="2"
+              />
+            );
+          })}
           <text x="200" y="98" fill="#93c5fd" fontSize="9" textAnchor="middle">
             SiO₂ + vapor-deposited Al
           </text>
         </g>
       );
+    }
     case "kwolek-kevlar": {
       const kevlar = stepKevlarContinuum();
       return (

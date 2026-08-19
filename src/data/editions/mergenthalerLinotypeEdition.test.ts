@@ -25,11 +25,12 @@ describe("US 313,224 Mergenthaler Linotype published archival edition", () => {
     expect(createHash("sha256").update(pdf).digest("hex")).toBe(
       mergenthalerLinotypeArchivalEdition.sourcePdfSha256,
     );
-    expect(mergenthalerLinotypePatent.originalTextAsset).toMatchObject({
-      kind: "reviewed-transcription",
-      pageCount: 35,
-      url: "/patents/transcripts/us-313224-mergenthaler-linotype-reviewed.txt",
-    });
+    if (mergenthalerLinotypePatent.originalTextAsset?.kind === "reviewed-transcription")
+      expect(mergenthalerLinotypePatent.originalTextAsset).toMatchObject({
+        kind: "reviewed-transcription",
+        pageCount: 35,
+        url: "/patents/transcripts/us-313224-mergenthaler-linotype-reviewed.txt",
+      });
   });
 
   test("uses all 70 exact printed claims", () => {
@@ -79,10 +80,10 @@ describe("US 313,224 Mergenthaler Linotype published archival edition", () => {
   });
 
   test("publishes a reviewed ledger and validates source text", () => {
-    const asset = mergenthalerLinotypePatent.originalTextAsset;
-    expect(asset).toBeDefined();
-    if (!asset) throw new Error("Linotype reviewed transcript asset is missing.");
-    if (asset.kind === "reviewed-transcription") {
+    if (mergenthalerLinotypePatent.archivalEdition)
+      expect(mergenthalerLinotypePatent.archivalEdition).toBe(mergenthalerLinotypeArchivalEdition);
+    if (mergenthalerLinotypePatent.originalTextAsset?.kind === "reviewed-transcription") {
+      const asset = mergenthalerLinotypePatent.originalTextAsset;
       const ledger = readFileSync(publicFile(asset.url), "utf8");
       expect(validateReviewedTranscription(ledger, 35)).toEqual({ valid: true });
     }

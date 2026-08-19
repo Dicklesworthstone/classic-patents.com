@@ -32,7 +32,6 @@ import { LincolnBuoySim } from "./LincolnBuoySim";
 import { LindeAirLiquefactionSim } from "./LindeAirLiquefactionSim";
 import { MaximMachineGunSim } from "./MaximMachineGunSim";
 import { McCormickReaperSim } from "./McCormickReaperSim";
-import { MergenthalerLinotypeSim } from "./MergenthalerLinotypeSim";
 import { MorseTelegraphSim } from "./MorseTelegraphSim";
 import { NobelDynamiteSim } from "./NobelDynamiteSim";
 import { NoycePlanarSourceVisual } from "./NoycePlanarSourceVisual";
@@ -175,10 +174,6 @@ const McCormickReaper3D = dynamic(
   () => import("./three/McCormickReaper3D").then((mod) => mod.McCormickReaper3D),
   { ssr: false, loading: ThreeLoading },
 );
-const MergenthalerLinotype3D = dynamic(
-  () => import("./three/MergenthalerLinotype3D").then((mod) => mod.MergenthalerLinotype3D),
-  { ssr: false, loading: ThreeLoading },
-);
 const MorseTelegraph3D = dynamic(
   () => import("./three/MorseTelegraph3D").then((mod) => mod.MorseTelegraph3D),
   { ssr: false, loading: ThreeLoading },
@@ -267,6 +262,7 @@ export function PatentVisualDispatcher({ patentId }: PatentVisualDispatcherProps
     "us-586193-marconi-radio",
     "us-2292387-lamarr-frequency-hopping",
     "us-2708656-fermi-reactor",
+    "us-313224-mergenthaler-linotype",
     "us-808897-carrier-air-conditioner",
     "us-3541541-engelbart-mouse",
     "us-3671542-kwolek-kevlar",
@@ -373,10 +369,11 @@ export function PatentVisualDispatcher({ patentId }: PatentVisualDispatcherProps
           case "us-247804-delaval-separator":
             return renderMode === "3d-physics" ? <DeLavalSeparator3D /> : <DeLavalSeparatorSim />;
           case "us-313224-mergenthaler-linotype":
-            return renderMode === "3d-physics" ? (
-              <MergenthalerLinotype3D />
-            ) : (
-              <MergenthalerLinotypeSim />
+            return (
+              <SourceVisualUnavailable
+                detail="US 313,224 describes independently adjustable matrix-bars, stop-pins, an aligning and clamping arrangement, and a separate mold-and-casting mechanism. The inherited Linotype model adds a later matrix magazine, binary distributor, alloy recipe, temperature, rate, and casting-cycle claims that are not evidence from this grant, so it is withheld until a source-specific instrument passes independent review."
+                title="Matrix-bar printing-form visual under source review"
+              />
             );
           case "us-319596-maxim-machine-gun":
             return renderMode === "3d-physics" ? <MaximMachineGun3D /> : <MaximMachineGunSim />;

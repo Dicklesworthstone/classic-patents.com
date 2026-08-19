@@ -31,6 +31,11 @@ export function stepCcdWells(
   schematicGateOriginX: number;
   schematicGatePitch: number;
   schematicGateWidth: number;
+  packetCount: number;
+  packetGateStride: number;
+  packetSvgRx: number;
+  packetSvgRy: number;
+  packetSvgY: number;
 } {
   const f = Math.max(0.1, clockMhz);
   const cte = Math.max(0.999, 0.99995 - clockMhz * 1e-5);
@@ -70,7 +75,17 @@ export function stepCcdWells(
     schematicGateOriginX: 70,
     schematicGatePitch: 45,
     schematicGateWidth: 36,
+    packetCount: 3,
+    packetGateStride: 3,
+    packetSvgRx: 16,
+    packetSvgRy: 8,
+    packetSvgY: 50,
   };
+}
+
+/** Charge-packet gate index on the 2D well face. Shared by 2D. */
+export function ccdPacketGateIndex(packetIndex: number, clockPhase: 1 | 2 | 3, stride = 3) {
+  return packetIndex * stride + (clockPhase - 1);
 }
 
 /** Schematic poly-silicon gate X on the CCD face. Shared by the schematic. */

@@ -13386,7 +13386,9 @@ export const ALL_COLORIZED_EQUATIONS: Record<string, ColorizedEquation[]> = {
   ],
 
   // 48. Ottmar Mergenthaler Linotype (US 313,224)
-  "us-313224-mergenthaler-linotype": [
+  // Retained non-serving later-Linotype cards. The exact US 313,224 route is
+  // assigned a claim-bounded source card below until full editorial acceptance.
+  "_legacy-unpublished-us-313224-mergenthaler-linotype": [
     {
       id: "mergenthaler-linotype-slug-solidification",
       patentId: "us-313224-mergenthaler-linotype",
@@ -18282,5 +18284,46 @@ ALL_COLORIZED_EQUATIONS["us-200521-edison-phonograph"] = [
     claimRef: 4,
     historicalSignificance:
       "Claim 4 specifies the rotating, helically grooved cylinder and matching endwise movement without turning unprinted dimensions or performance figures into patent measurements.",
+  },
+];
+
+// The public US 313,224 route is intentionally limited to its printed
+// matrix-bar construction. The retained cards above describe a later
+// commercial Linotype mechanism and are non-serving pending source review.
+ALL_COLORIZED_EQUATIONS["us-313224-mergenthaler-linotype"] = [
+  {
+    id: "mergenthaler-source-continuous-matrix-bar",
+    patentId: "us-313224-mergenthaler-linotype",
+    title: "Claim 1: Continuous Matrix-Bar with Transverse Intaglio Characters",
+    category: "Source-Bound Printing-Matrix Construction",
+    rawLatex:
+      "\\text{continuous matrix-bar} \\rightarrow \\text{intaglio characters read transversely}",
+    colorizedLatex:
+      "\\textcolor{#2563eb}{\\text{continuous matrix-bar}} \\rightarrow \\textcolor{#059669}{\\text{intaglio characters read transversely}}",
+    plainEnglishSentence: [
+      { text: "Claim 1 requires a " },
+      { text: "continuous matrix-bar", variableId: "continuous_matrix_bar" },
+      {
+        text: " whose edge carries a series of recessed characters read across the bar, rather than separate matrices joined by a flexible band or cord.",
+      },
+    ],
+    variables: [
+      {
+        id: "continuous_matrix_bar",
+        symbol: "matrix-bar",
+        name: "Claim 1 continuous matrix-bar",
+        color: "emerald",
+        role: "The single bar whose edge bears the transversely read intaglio characters required by Claim 1.",
+        unit: "Claim 1 component relation",
+        dimension: "source-defined printing-matrix construction",
+        explanation:
+          "The claim contrasts this continuous bar with a series of matrices united by a flexible band or cord. It supplies no later-machine material, travel rate, temperature, pressure, or production measurement.",
+      },
+    ],
+    pedagogicalNote:
+      "This card is limited to Claim 1's continuous matrix-bar and transverse intaglio-character relation. The full 35-page source edition remains under independent review, so the site does not display a later matrix-magazine, binary distributor, alloy, temperature, timing, or casting-performance model as evidence from US 313,224.",
+    claimRef: 1,
+    historicalSignificance:
+      "The card preserves the printed matrix-bar limitation without projecting later commercial Linotype machinery back onto the 1885 grant.",
   },
 ];
