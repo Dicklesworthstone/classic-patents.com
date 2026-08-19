@@ -6,42 +6,49 @@ import type {
 
 const text = (value: string): CuratedSpecificationInlines => [{ kind: "text", text: value }];
 
+const term = (text: string, definition: string): CuratedSpecificationInline => ({
+  kind: "term",
+  text,
+  definition,
+  label: "Patent vocabulary",
+});
+
 const FIGURES = {
   1: {
-    src: "/patents/figures/us-588-ericsson-propeller-fig-1-preview.png",
-    alt: "Figure 1, first sheet of US 588: longitudinal stern section and spiral-plate geometry.",
-    width: 299,
-    height: 720,
+    src: "/patents/figures/us-588-ericsson-propeller/fig-1-source-crop-v1.png",
+    alt: "Source crop of Figure 1: longitudinal stern section with the concentric propeller axes and broad hoops.",
+    width: 860,
+    height: 1950,
   },
   2: {
-    src: "/patents/figures/us-588-ericsson-propeller-fig-1-preview.png",
-    alt: "Figure 2 on the first sheet of US 588: cylinder and helical development diagram.",
-    width: 299,
-    height: 720,
+    src: "/patents/figures/us-588-ericsson-propeller/fig-2-source-crop-v1.png",
+    alt: "Source crop of Figure 2: cylinder developed with the spiral planes used to set plate geometry.",
+    width: 850,
+    height: 1950,
   },
   3: {
-    src: "/patents/figures/us-588-ericsson-propeller-fig-2-preview.png",
-    alt: "Figure 3 on the second sheet of US 588: end view of a hoop and its spiral plates.",
-    width: 584,
-    height: 720,
+    src: "/patents/figures/us-588-ericsson-propeller/fig-3-source-crop-v1.png",
+    alt: "Source crop of Figure 3: end view of hoop A, spiral plates, stays, and water line.",
+    width: 700,
+    height: 850,
   },
   4: {
-    src: "/patents/figures/us-588-ericsson-propeller-fig-2-preview.png",
-    alt: "Figure 4 on the second sheet of US 588: longitudinal vessel-stern installation.",
-    width: 584,
-    height: 720,
+    src: "/patents/figures/us-588-ericsson-propeller/fig-4-source-crop-v1.png",
+    alt: "Source crop of Figure 4: longitudinal stern installation and removable upright stem.",
+    width: 1050,
+    height: 1100,
   },
   5: {
-    src: "/patents/figures/us-588-ericsson-propeller-fig-2-preview.png",
-    alt: "Figure 5 on the second sheet of US 588: plan of the stern installation.",
-    width: 584,
-    height: 720,
+    src: "/patents/figures/us-588-ericsson-propeller/fig-5-source-crop-v1.png",
+    alt: "Source crop of Figure 5: plan of the stern installation and engine arrangement.",
+    width: 750,
+    height: 1250,
   },
   6: {
-    src: "/patents/figures/us-588-ericsson-propeller-fig-2-preview.png",
-    alt: "Figure 6 on the second sheet of US 588: propeller gearing section.",
-    width: 584,
-    height: 720,
+    src: "/patents/figures/us-588-ericsson-propeller/fig-6-source-crop-v1.png",
+    alt: "Source crop of Figure 6: upright shaft, conical gears, hoops, and coupling arrangement.",
+    width: 1050,
+    height: 1250,
   },
 } as const;
 
@@ -102,16 +109,35 @@ export const ericssonPropellerArchivalEdition: CuratedSpecificationEdition = {
     { kind: "paragraph", inlines: [{ kind: "emphasis", text: "To all whom it may concern:" }] },
     {
       kind: "paragraph",
-      inlines: text(
-        "Be it known that I, JOHN ERICSSON, a subject of the Kingdom of Sweden, residing at London, England, have invented a new and useful Propeller for the Purpose of Propelling Steamboats Effectually Notwithstanding Any Variations in Their Draft of Water, and that the following is a full and exact description of the construction and operation of the said propeller as invented by me.",
-      ),
+      inlines: [
+        {
+          kind: "text",
+          text: "Be it known that I, JOHN ERICSSON, a subject of the Kingdom of Sweden, residing at London, England, have invented a new and useful Propeller for the Purpose of Propelling Steamboats Effectually Notwithstanding Any Variations in Their ",
+        },
+        term(
+          "Draft of Water",
+          "The depth to which a vessel sits in the water; it changes with loading and affects how much of a propulsion device is submerged.",
+        ),
+        {
+          kind: "text",
+          text: ", and that the following is a full and exact description of the construction and operation of the said propeller as invented by me.",
+        },
+      ],
     },
     {
       kind: "paragraph",
       inlines: [
         {
           kind: "text",
-          text: "This invention which I name as above consists in two thin broad metallic hoops or short cylinders supported by spiral arms or spokes and made to revolve in contrary directions but at different velocities from each other around a common center, such hoops or cylinders being also placed entirely under the water at the stern of a boat and furnished each with a series of short spiral planes or plates; the plates of each series standing at an angle, the exact converse of the angle given to those of the other series and kept revolving by the power of a steam engine whereby a steam boat may be propelled effectually notwithstanding any variation in the draft of water.",
+          text: "This invention which I name as above consists in two thin broad metallic hoops or short cylinders supported by spiral arms or spokes and made to revolve in contrary directions but at different velocities from each other around a common center, such hoops or cylinders being also placed entirely under the water at the stern of a boat and furnished each with a series of short ",
+        },
+        term(
+          "spiral planes or plates",
+          "Thin plates shaped as portions of a helical surface, rather than flat paddles set normal to the shaft.",
+        ),
+        {
+          kind: "text",
+          text: "; the plates of each series standing at an angle, the exact converse of the angle given to those of the other series and kept revolving by the power of a steam engine whereby a steam boat may be propelled effectually notwithstanding any variation in the draft of water.",
         },
       ],
     },
@@ -122,7 +148,15 @@ export const ericssonPropellerArchivalEdition: CuratedSpecificationEdition = {
         figure("Figure 1", [1]),
         {
           kind: "text",
-          text: " represents a longitudinal section of the stern of a steam boat with my improved propeller attached. A and B are two cylinders or broad hoops of wrought iron supported by spiral arms or spokes which will be explained hereafter. The hoop A is attached to the axis a, a, a and the hoop B to the axis b, b, b, which latter axis is made hollow in order to admit the former to pass through and work within it and both these axes pass directly through the center of the stern post into the body of the vessel. 1, 2, 3, 4, 5 and 9, 10, 11, 12, 13 are thin metallic plates attached by rivets to the hoops A and B; the face of each plate being twisted so as to form a portion of a spiral plane or thread, the exact form of which will be determined and may be obtained by forming a cylinder and coiling a thread or blade spirally around it on the principle exhibited by the diagram represented in ",
+          text: " represents a longitudinal section of the stern of a steam boat with my improved propeller attached. A and B are two cylinders or broad hoops of wrought iron supported by spiral arms or spokes which will be explained hereafter. The hoop A is attached to the axis a, a, a and the hoop B to the axis b, b, b, which latter axis is made hollow in order to admit the former to pass through and work within it and both these axes pass directly through the center of the ",
+        },
+        term(
+          "stern post",
+          "The substantial vertical member at a vessel's stern through which the propeller shaft can pass.",
+        ),
+        {
+          kind: "text",
+          text: " into the body of the vessel. 1, 2, 3, 4, 5 and 9, 10, 11, 12, 13 are thin metallic plates attached by rivets to the hoops A and B; the face of each plate being twisted so as to form a portion of a spiral plane or thread, the exact form of which will be determined and may be obtained by forming a cylinder and coiling a thread or blade spirally around it on the principle exhibited by the diagram represented in ",
         },
         figure("Fig. 2", [2]),
         { kind: "text", text: "." },
@@ -174,15 +208,47 @@ export const ericssonPropellerArchivalEdition: CuratedSpecificationEdition = {
         figure("Fig. 3", [3]),
         {
           kind: "text",
-          text: ", firmly bolted to the stern of the vessel. e, e, is a brass bearing fixed in the said stay E which bearing carries the outer and enlarged end of the shaft a, a, a, the other end of the shaft being carried by and working through a stuffing box F attached to the shaft b, b, b, which shaft is supported by a strong cast iron framing G and plumber block g. C is a stuffing box fixed to the stern post to prevent the water from entering the vessel around the shaft b, b, b, which should work freely through the stern post.",
+          text: ", firmly bolted to the stern of the vessel. e, e, is a brass bearing fixed in the said stay E which bearing carries the outer and enlarged end of the shaft a, a, a, the other end of the shaft being carried by and working through a ",
+        },
+        term(
+          "stuffing box",
+          "A packed housing around a moving shaft that admits rotation while resisting the entry of water into the hull.",
+        ),
+        {
+          kind: "text",
+          text: " F attached to the shaft b, b, b, which shaft is supported by a strong cast iron framing G and ",
+        },
+        term(
+          "plumber block",
+          "The period spelling for a plummer block: a pedestal bearing that supports a rotating shaft.",
+        ),
+        {
+          kind: "text",
+          text: " g. C is a stuffing box fixed to the stern post to prevent the water from entering the vessel around the shaft b, b, b, which should work freely through the stern post.",
         },
       ],
     },
     {
       kind: "paragraph",
-      inlines: text(
-        "H and I are two broad cog wheels working together, I being about one fifth larger than H and attached to the shaft b, b, b, and H being attached to a crank shaft L L. M M is another crank shaft attached to the shaft a a a by the coupling box N. l and m are cranks on the shafts L and M supported by cast iron frames P P and plumber blocks or bearings p p p p. Q and R are also cranks on the shafts M M and L L fixed at right angles to the cranks l and m. q and r are crank pins and S a coupling link by which the cranks Q and R are coupled together. T is a connecting rod and U is a coupling link attached to the cranks l and m. This connecting rod is to be connected in the ordinary manner to the piston rod or beam of a steam engine the cylinder of which may be placed either vertically or horizontally across the vessel. Another connecting rod connected to another engine may be attached to the crank pin q in a similar manner by which a more regular power will be communicated to the cranks and shafts m M and L L.",
-      ),
+      inlines: [
+        { kind: "text", text: "H and I are two broad " },
+        term(
+          "cog wheels",
+          "Toothed wheels that mesh to transmit rotation and, when their diameters differ, change rotational speed.",
+        ),
+        {
+          kind: "text",
+          text: " working together, I being about one fifth larger than H and attached to the shaft b, b, b, and H being attached to a crank shaft L L. M M is another crank shaft attached to the shaft a a a by the ",
+        },
+        term(
+          "coupling box",
+          "A coupling or clutch-like sleeve that joins shafts so that motion can be transmitted or, in the second arrangement, disconnected.",
+        ),
+        {
+          kind: "text",
+          text: " N. l and m are cranks on the shafts L and M supported by cast iron frames P P and plumber blocks or bearings p p p p. Q and R are also cranks on the shafts M M and L L fixed at right angles to the cranks l and m. q and r are crank pins and S a coupling link by which the cranks Q and R are coupled together. T is a connecting rod and U is a coupling link attached to the cranks l and m. This connecting rod is to be connected in the ordinary manner to the piston rod or beam of a steam engine the cylinder of which may be placed either vertically or horizontally across the vessel. Another connecting rod connected to another engine may be attached to the crank pin q in a similar manner by which a more regular power will be communicated to the cranks and shafts m M and L L.",
+        },
+      ],
     },
     {
       kind: "paragraph",
@@ -231,9 +297,28 @@ export const ericssonPropellerArchivalEdition: CuratedSpecificationEdition = {
     },
     {
       kind: "paragraph",
-      inlines: text(
-        "A is a hollow stem of wrought iron, to which are welded collars d d and broad flat branches or arm a a. B is an axle or shaft of steel on which a hollow axle C of wrought iron is made to work, both these axles B and C are supported by the flat arms a a which arms have eyes or bearings at D D in which the respective axles work. E is an axle or upright shaft of wrought iron working through the hollow stem A. F is a crank attached to the said upright shaft by a sliding coupling box f and key x. b, c, e are conical cog wheels working together and firmly fixed on their respective axles B, C, E by which it becomes evident that if motion be given to the upright shaft the axles B and C will move in contrary directions.",
-      ),
+      inlines: [
+        {
+          kind: "text",
+          text: "A is a hollow stem of wrought iron, to which are welded collars d d and broad flat branches or arm a a. B is an axle or shaft of steel on which a hollow axle C of wrought iron is made to work, both these axles B and C are supported by the flat arms a a which arms have eyes or bearings at D D in which the respective axles work. E is an axle or upright shaft of wrought iron working through the hollow stem A. F is a crank attached to the said upright shaft by a sliding ",
+        },
+        term(
+          "coupling box",
+          "A sliding connector between rotating parts; Ericsson describes it with a key so it can transmit motion and later be released.",
+        ),
+        {
+          kind: "text",
+          text: " f and key x. b, c, e are ",
+        },
+        term(
+          "conical cog wheels",
+          "Bevel gears: toothed, cone-shaped gears that pass rotation between shafts at an angle.",
+        ),
+        {
+          kind: "text",
+          text: " working together and firmly fixed on their respective axles B, C, E by which it becomes evident that if motion be given to the upright shaft the axles B and C will move in contrary directions.",
+        },
+      ],
     },
     {
       kind: "paragraph",
@@ -253,7 +338,15 @@ export const ericssonPropellerArchivalEdition: CuratedSpecificationEdition = {
         figure("Fig. 4", [4]),
         {
           kind: "text",
-          text: ", showing the manner in which it is attached. K is a bracket of iron, better seen at K K, it is firmly fixed to the stern for the purpose of carrying the propeller, by means of the hollow stem A and its collars d d, the hollow stem being kept in its place by the key k which is secured to the bracket K by a slight chain. L is a stay of wrought iron, to keep the hollow stem A firmly in an upright position, and to receive and communicate the force of the propellers for which purpose it is attached to the stern post by hinges on each side of the rudder; its form will be better seen at L L, the rudder being made to work between l, l and the fork M fitted to receive the hollow stem A, which is kept in by a key m this being secured to the stay by a slight chain as shown in the drawing. N is a ring or collar around the upper part of the hollow stem A, having a strong loop or eye at n. It is evident that by driving out the keys m k and x and pushing down the sliding coupling box f the hollow stem with the upright shaft and propeller will become quite detached, and may thus be lifted out of the water or taken on board simply by applying a hoisting tackle at n. The stay L should whenever the propeller is taken on board be lifted up and kept suspended by the hooked rope at R in the position shown by the dotted lines n r.",
+          text: ", showing the manner in which it is attached. K is a bracket of iron, better seen at K K, it is firmly fixed to the stern for the purpose of carrying the propeller, by means of the hollow stem A and its collars d d, the hollow stem being kept in its place by the key k which is secured to the bracket K by a slight chain. L is a stay of wrought iron, to keep the hollow stem A firmly in an upright position, and to receive and communicate the force of the propellers for which purpose it is attached to the stern post by hinges on each side of the rudder; its form will be better seen at L L, the rudder being made to work between l, l and the fork M fitted to receive the hollow stem A, which is kept in by a key m this being secured to the stay by a slight chain as shown in the drawing. N is a ring or collar around the upper part of the hollow stem A, having a strong loop or eye at n. It is evident that by driving out the keys m k and x and pushing down the sliding coupling box f the hollow stem with the upright shaft and propeller will become quite detached, and may thus be lifted out of the water or taken on board simply by applying a ",
+        },
+        term(
+          "hoisting tackle",
+          "A set of ropes, blocks, and pulleys used to lift a heavy object such as the removable propeller assembly.",
+        ),
+        {
+          kind: "text",
+          text: " at n. The stay L should whenever the propeller is taken on board be lifted up and kept suspended by the hooked rope at R in the position shown by the dotted lines n r.",
         },
       ],
     },
