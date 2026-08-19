@@ -277,9 +277,7 @@ describe("Physics Telemetry Data Registry", () => {
   test("keeps Mergenthaler US 313,224 at its held matrix-bar source boundary", () => {
     const mergenthaler = PATENT_PHYSICS_REGISTRY["us-313224-mergenthaler-linotype"];
     expect(mergenthaler.engineMethod).toContain("No printing-form performance engine");
-    expect(mergenthaler.controls.map((control) => control.unit)).toEqual([
-      "source drawing group",
-    ]);
+    expect(mergenthaler.controls.map((control) => control.unit)).toEqual(["source drawing group"]);
     expect(mergenthaler.computeMetrics({ sourceFocus: 2 })).toMatchObject([
       {
         label: "Highlighted Source Group",
