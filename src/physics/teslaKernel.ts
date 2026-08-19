@@ -160,11 +160,7 @@ export function teslaPolePhaseOff(poleIndex: number, phaseCount: 2 | 3) {
 }
 
 /** Instantaneous pole current on the Fig. 9 ring. Shared by teslaBAt and 2D. */
-export function teslaPoleCurrent(
-  poleIndex: number,
-  phaseCount: 2 | 3,
-  omegaT: number,
-) {
+export function teslaPoleCurrent(poleIndex: number, phaseCount: 2 | 3, omegaT: number) {
   const polarity = poleIndex >= phaseCount ? -1 : 1;
   const phaseOff = teslaPolePhaseOff(poleIndex, phaseCount);
   return {

@@ -8,6 +8,7 @@ import {
   TESLA_FIELD_DISPLAY_TICK_MS,
   teslaBAt,
   teslaPhaseVectors,
+  teslaPoleCurrent,
   teslaStatorPole,
 } from "@/physics/teslaKernel";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
@@ -140,11 +141,18 @@ export function TeslaMotorSim() {
             </defs>
 
             {/* Outer Stator Ring */}
-            <circle cx="200" cy="150" r="110" fill="#0f172a" stroke="#334155" strokeWidth="4" />
             <circle
-              cx="200"
-              cy="150"
-              r="95"
+              cx={apparatus.statorCenterX}
+              cy={apparatus.statorCenterY}
+              r={apparatus.statorRingOuterSvgR}
+              fill="#0f172a"
+              stroke="#334155"
+              strokeWidth="4"
+            />
+            <circle
+              cx={apparatus.statorCenterX}
+              cy={apparatus.statorCenterY}
+              r={apparatus.statorRingInnerSvgR}
               fill="none"
               stroke="#475569"
               strokeWidth="1.5"
@@ -153,21 +161,17 @@ export function TeslaMotorSim() {
 
             {/* Stator poles: 4 coils at 90° (2-phase) or 6 coils at 60° (3-phase) */}
             {Array.from({ length: coilCount }, (_, i) => {
-              const phaseOff =
-                (i % phaseCount) * (phaseCount === 2 ? Math.PI / 2 : (2 * Math.PI) / 3);
-              // A and A′ are opposite sides of the same winding (N vs S), not the same polarity.
-              const polarity = i >= phaseCount ? -1 : 1;
-              const current = polarity * Math.sin(rad + phaseOff);
+              const { current } = teslaPoleCurrent(i, phaseCount, rad);
               const pole = teslaStatorPole(i, coilCount);
               const labels =
                 phaseCount === 2 ? ["A", "B", "A'", "B'"] : ["A", "B", "C", "A'", "B'", "C'"];
               return (
                 <g key={i}>
                   <rect
-                    x={pole.cx - 18}
-                    y={pole.cy - 12}
-                    width="36"
-                    height="24"
+                    x={pole.cx - apparatus.statorPoleSvgW / 2}
+                    y={pole.cy - apparatus.statorPoleSvgH / 2}
+                    width={apparatus.statorPoleSvgW}
+                    height={apparatus.statorPoleSvgH}
                     rx="4"
                     transform={`rotate(${pole.rotateDeg} ${pole.cx} ${pole.cy})`}
                     fill={current >= 0 ? "#f59e0b" : "#3b82f6"}
@@ -200,7 +204,11 @@ export function TeslaMotorSim() {
                 stroke={comp.color}
                 strokeWidth="2"
                 strokeLinecap="round"
-                opacity={phaseCount === 2 ? 0.55 : 0.5}
+                opacity={
+                  phaseCount === 2
+                    ? apparatus.twoPhaseVectorOpacity
+                    : apparatus.threePhaseVectorOpacity
+                }
               />
             ))}
 
