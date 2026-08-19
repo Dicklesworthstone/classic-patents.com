@@ -163,6 +163,14 @@ export function stepSholesTypewriter(
   displayTypebarIndex: number;
   displayColumnWrap: number;
   columnPitchPx: number;
+  typebarOuterRx: number;
+  typebarOuterRy: number;
+  typebarRestRx: number;
+  typebarRestRy: number;
+  typebarHubX: number;
+  typebarHubY: number;
+  typebarPlatenY: number;
+  ratchetSvgR: number;
 } {
   const cadence = Math.min(120, Math.max(0, demonstrationCadencePerMin));
   const eventsPerSecond = cadence / 60;
@@ -179,6 +187,39 @@ export function stepSholesTypewriter(
     displayTypebarIndex: completedSteps % 12,
     displayColumnWrap: 12,
     columnPitchPx: 6,
+    typebarOuterRx: 140,
+    typebarOuterRy: 70,
+    typebarRestRx: 25,
+    typebarRestRy: 15,
+    typebarHubX: 300,
+    typebarHubY: 200,
+    typebarPlatenY: 75,
+    ratchetSvgR: 18,
+  };
+}
+
+/** Diagrammatic type-bar throw on the US 79,265 2D face. Shared by 2D. */
+export function sholesTypebarPose(
+  barIndex: number,
+  activeKeyIndex: number,
+  outerRx = 140,
+  outerRy = 70,
+  restRx = 25,
+  restRy = 15,
+  hubX = 300,
+  hubY = 200,
+  platenY = 75,
+) {
+  const bAngle = barIndex * 30 + 15;
+  const rad = (bAngle * Math.PI) / 180;
+  const isActive = barIndex === activeKeyIndex;
+  return {
+    bAngle,
+    isActive,
+    xStart: Number((hubX + Math.cos(rad) * outerRx).toFixed(2)),
+    yStart: Number((hubY + Math.sin(rad) * outerRy).toFixed(2)),
+    xEnd: Number((isActive ? hubX : hubX + Math.cos(rad) * restRx).toFixed(2)),
+    yEnd: Number((isActive ? platenY : hubY + Math.sin(rad) * restRy).toFixed(2)),
   };
 }
 

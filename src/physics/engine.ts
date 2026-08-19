@@ -55,7 +55,13 @@ import {
   stepRenoEscalator,
   stepSholesTypewriter,
 } from "./machineKernels";
-import { stepTeslaMotorFig9, teslaBAt, teslaCoilControls, teslaFig4Strobe } from "./teslaKernel";
+import {
+  stepTeslaMotorFig9,
+  teslaBAt,
+  teslaCoilControls,
+  teslaCoilSiUnits,
+  teslaFig4Strobe,
+} from "./teslaKernel";
 import { tryTeslaWasmStep } from "./teslaWasm";
 import { goddardThermo } from "./thermochem";
 import type {
@@ -377,6 +383,7 @@ export const FrankenSimEngine = {
       electronDisplaySpeed: Number(((velocityMps / 2e7) * 45).toFixed(3)),
       electronVelocityMegaMps: Number((velocityMps / 1e6).toFixed(1)),
       relativisticPct: Number((relativisticBeta * 100).toFixed(1)),
+      acceleratingVoltageVolts: Number((anodeKv * 1000).toFixed(0)),
     };
   },
 
@@ -407,9 +414,10 @@ export const FrankenSimEngine = {
     if (wasmRes) {
       // tesla_coil_step has no k or N_s input; scale from registry defaults.
       const scale = (k / 0.18) * nScale;
+      const secondaryPotentialMv = Number((wasmRes.secondary_potential_mv * scale).toFixed(2));
       return {
         resonantFreqKhz: wasmRes.resonant_freq_khz,
-        secondaryPotentialMv: Number((wasmRes.secondary_potential_mv * scale).toFixed(2)),
+        secondaryPotentialMv,
         streamerLengthInches: Number((wasmRes.streamer_length_inches * scale).toFixed(1)),
         streamerLengthMeters: Number((wasmRes.streamer_length_meters * scale).toFixed(2)),
         secondaryPotentialKv: Math.round(wasmRes.secondary_potential_mv * scale * 1000),
@@ -421,6 +429,7 @@ export const FrankenSimEngine = {
           Math.min(1, Math.round(wasmRes.secondary_potential_mv * scale * 1000) / 1500).toFixed(3),
         ),
         toneHz: Number((wasmRes.resonant_freq_khz * 2).toFixed(1)),
+        ...teslaCoilSiUnits(wasmRes.resonant_freq_khz, inputKv, secondaryPotentialMv),
       };
     }
 
@@ -432,9 +441,10 @@ export const FrankenSimEngine = {
       ((inputKv * transformationRatio * k * Math.sqrt(qFactor)) / 1000) * (sparkGapMm / 15);
     const streamerLengthInches = secondaryPotentialMv * 28.0;
 
+    const secondaryPotentialMvRounded = Number(secondaryPotentialMv.toFixed(2));
     return {
       resonantFreqKhz,
-      secondaryPotentialMv: Number(secondaryPotentialMv.toFixed(2)),
+      secondaryPotentialMv: secondaryPotentialMvRounded,
       streamerLengthInches: Number(streamerLengthInches.toFixed(1)),
       streamerLengthMeters: Number(((streamerLengthInches * 2.54) / 100).toFixed(2)),
       secondaryPotentialKv: Math.round(secondaryPotentialMv * 1000),
@@ -442,6 +452,7 @@ export const FrankenSimEngine = {
       streamerStudioLength: Number(((streamerLengthInches * 2.54) / 100 / 1.5).toFixed(3)),
       toneEnergy: Number(Math.min(1, Math.round(secondaryPotentialMv * 1000) / 1500).toFixed(3)),
       toneHz: Number((resonantFreqKhz * 2).toFixed(1)),
+      ...teslaCoilSiUnits(resonantFreqKhz, inputKv, secondaryPotentialMvRounded),
     };
   },
 
