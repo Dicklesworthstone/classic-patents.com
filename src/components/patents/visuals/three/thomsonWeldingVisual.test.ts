@@ -66,6 +66,7 @@ describe("US 347,140 Elihu Thomson Electric Resistance Butt-Welding visual & ele
     expect(result.jouleKw).toBeGreaterThan(3.0);
     expect(result.interfaceTempC).toBeGreaterThan(800);
     expect(result.upsetBurrWidthMm).toBe(3.8);
+    expect(result.burrSvgRx).toBeCloseTo(5.7, 2);
     expect(result.weldPulseMs).toBeGreaterThan(200);
     expect(result.weldSeamScale).toBeCloseTo(1.35, 3);
     expect(result.jawStudioOffset).toBeCloseTo(0.12, 3);

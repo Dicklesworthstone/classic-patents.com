@@ -229,6 +229,7 @@ the visitor can see or hear the kernel change the instrument.
 - [x] P5.136 Einstein evapTempF, Colt recoilKickX (engine wrapper spread), and Parsons inletBar live on the shared steps. 3D no longer converts leftover °C→°F, kick×0.8, or psi/14.5038 privately.
 - [x] P5.137 Fermi geigerIntervalS / thermalFluxE7 and CCD phaseDisplayS live on the shared steps. 3D no longer converts leftover ms/1000 privately.
 - [x] P5.138 Edison glowOpacity / lowResistanceGlowOpacity, Marconi mastSvgY / fundamentalHz, and Kevlar chainWaviness / chainEndX live on the shared steps. 2D no longer converts leftover W/150, h×1.6, MHz×1e6, (100−align)×0.25, or tension×0.28 privately.
+- [x] P5.139 Tesla fieldDisplayTickS / bVectorSvgScale / teslaBAt bxSvg, Thomson burrSvgRx, and Mergenthaler slugSvgWidth live on the shared steps. 2D no longer converts leftover tick_ms/1000, B×60, burr×1.5, or line mm×2.8 privately.
 
 ## Explicitly out of scope
 
