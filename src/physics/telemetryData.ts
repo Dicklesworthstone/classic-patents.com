@@ -992,7 +992,9 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
     pedagogicalInsight:
       "Vibrating iron diaphragm modulates the air gap of an electromagnet, producing an undulating continuous electrical current whose instantaneous voltage mimics human vocal acoustic waveforms.",
   },
-  "us-586193-marconi-radio": {
+  // Preserved, non-public legacy model. The source-reviewed US 586,193 route
+  // is held below until an independently accepted visual can support it.
+  "_legacy-unpublished-us-586193-marconi-radio": {
     domain: "electromagnetics_flux",
     domainTitle: "Spark-Gap Resonant Damped Wave Oscillations & Aerial Radiation",
     equationName: "Monopole Radiation Resistance & Resonant Frequency",
@@ -4919,4 +4921,58 @@ PATENT_PHYSICS_REGISTRY["us-3671542-kwolek-kevlar"] = {
   },
   pedagogicalInsight:
     "US 3,671,542 is presented here only as a facsimile-reading guide while the manual source edition is withheld. Its verified front sheet concerns optically anisotropic carbocyclic aromatic-polyamide dopes, and its nine drawing sheets contain phase and property plots. The full specification, examples, tables, and correction certificates have not yet been manually authored, so this route makes no claim about dry-jet geometry, strength, modulus, density, thermal limit, impact behavior, spinning rate, solvent operating point, or later Kevlar products.",
+};
+
+// The manuscript-facing edition records Marconi's figures and claims, but its
+// publication is still under root editorial hold. Do not present the inherited
+// quarter-wave, power, range, or antenna-dimension simulation as source data.
+PATENT_PHYSICS_REGISTRY["us-586193-marconi-radio"] = {
+  domain: "source_review_hold",
+  domainTitle: "Source Guide: Spark-Oscillation Receiver and Trembler Reset",
+  equationName: "No quantitative radio-performance model published",
+  governingEquation:
+    "received high-frequency oscillations → altered powder-contact resistance → local circuit → trembler reset",
+  engineMethod: "No RF-performance engine; source-review guide only",
+  controls: [
+    {
+      id: "sourceFocus",
+      label: "Verified facsimile group",
+      min: 1,
+      max: 3,
+      step: 1,
+      defaultValue: 1,
+      unit: "source figure group",
+    },
+  ],
+  computeMetrics: (params) => {
+    const focus = Math.max(1, Math.min(3, Math.round(params.sourceFocus ?? 1)));
+    const highlighted = [
+      "Figs. 1–3: air-transmission instruments and oscillator",
+      "Figs. 4–8: receiver contact, relay, and trembler",
+      "Figs. 9–11: further receiver and circuit arrangements",
+    ][focus - 1] as string;
+
+    return [
+      {
+        label: "Highlighted Source Group",
+        value: highlighted,
+        unit: "facsimile guide",
+        badgeColor: "cyan",
+      },
+      {
+        label: "Printed Claims",
+        value: "56",
+        unit: "source text",
+        badgeColor: "emerald",
+      },
+      {
+        label: "Visual Status",
+        value: "withheld",
+        unit: "independent source review pending",
+        badgeColor: "amber",
+      },
+    ];
+  },
+  pedagogicalInsight:
+    "US 586,193 describes high-frequency signalling with metallic-powder or imperfect-contact receivers, local circuits, and shaking or trembler reset. Its source-reviewed record has not yet passed independent publication acceptance, so this guide does not claim a quarter-wave antenna geometry, aerial height, operating frequency, spark voltage, power, range, radiation resistance, coherer threshold, or later maritime-radio event.",
 };
