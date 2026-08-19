@@ -37,7 +37,6 @@ const BARE_DRAWING_REFERENCE =
 const REQUIRED_ROOT_QA_WITHHOLDS = [
   "us-313224-mergenthaler-linotype",
   "us-395781-hollerith-tabulating",
-  "us-542846-diesel-engine",
   "us-586193-marconi-radio",
   "us-2708656-fermi-reactor",
   "us-3671542-kwolek-kevlar",

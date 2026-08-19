@@ -14,12 +14,13 @@ import { ROOT_QA_WITHHELD_ARCHIVAL_EDITION_IDS } from "./publicationApproval";
 const REQUIRED_ROOT_EDITORIAL_HOLDS = [
   "us-313224-mergenthaler-linotype",
   "us-395781-hollerith-tabulating",
-  "us-542846-diesel-engine",
   "us-586193-marconi-radio",
   "us-2708656-fermi-reactor",
   "us-3671542-kwolek-kevlar",
   "us-3858232-boyle-smith-ccd",
 ] as const;
+
+const SOURCE_QA_RELEASED_EDITIONS = ["us-542846-diesel-engine"] as const;
 
 describe("root editorial publication holds", () => {
   test("keeps every rejected edition unavailable through the actual visitor lookup", () => {
@@ -45,6 +46,18 @@ describe("root editorial publication holds", () => {
 
       expect(patent.archivalEdition).toBeUndefined();
       expect(patent.originalTextAsset).toBeUndefined();
+    }
+  });
+
+  test("makes an independently accepted source edition available only with its explicit companion map", () => {
+    for (const patentId of SOURCE_QA_RELEASED_EDITIONS) {
+      const patent = allPatents.find((candidate) => candidate.id === patentId);
+      expect(patent, `missing catalog record ${patentId}`).toBeDefined();
+      if (!patent) continue;
+
+      expect(ROOT_QA_WITHHELD_ARCHIVAL_EDITION_IDS).not.toContain(patentId);
+      expect(ARCHIVAL_PARALLEL_READINGS[patentId]).toBeDefined();
+      expect(archivalEditionForPublication(patent)).toBe(patent.archivalEdition);
     }
   });
 });
