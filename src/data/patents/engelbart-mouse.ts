@@ -27,6 +27,13 @@ export const engelbartMousePatent: Patent = {
   heroQuote:
     "The indicator control remains stationary so long as it is left in place; therefore the cursor remains fixed without any effort of the human operator.",
   originalPdfUrl: "/patents/pdfs/us-3541541-engelbart-mouse.pdf",
+  originalTextAsset: {
+    url: "/patents/transcripts/us-3541541-engelbart-mouse-reviewed.txt",
+    kind: "reviewed-transcription",
+    pageCount: 7,
+    sourcePdfSha256: engelbartMouseArchivalEdition.sourcePdfSha256,
+  },
+  archivalEdition: engelbartMouseArchivalEdition,
   googlePatentsUrl: "https://patents.google.com/patent/US3541541A/en",
   usptoClassification:
     "G06F 3/033 (Digital computers; Input arrangements using cursor controllers)",
@@ -54,7 +61,8 @@ An X-Y position indicator control for movement by the hand over any surface to m
     mechanicalBreakdown: [
       {
         title: "Two Perpendicular Position Wheels",
-        summary: "The housing rests on two wheels whose axes are perpendicular, plus a ball-bearing support.",
+        summary:
+          "The housing rests on two wheels whose axes are perpendicular, plus a ball-bearing support.",
         technicalDetails:
           "For a rolling wheel, travel and angular turn have the reading-aid relation $s = r\\theta$. The grant uses perpendicular axes to distinguish the two coordinate directions, but does not specify $r$, a friction model, or a measured resolution.",
         archaicTerm: "position wheels",
@@ -62,7 +70,8 @@ An X-Y position indicator control for movement by the hand over any surface to m
       },
       {
         title: "Position-Signal Transducers",
-        summary: "The grant presents potentiometers, a shaft encoder, and incremental encoder/counter arrangements.",
+        summary:
+          "The grant presents potentiometers, a shaft encoder, and incremental encoder/counter arrangements.",
         technicalDetails:
           "In Fig. 4, wheel shafts turn potentiometers and the computer reads their wiper voltages relative to ground. Figs. 5 through 7 show digital readout alternatives. A voltage-divider expression such as $V_{out}=V_{ref}(R_{wiper}/R_{total})$ explains the analog arrangement but supplies no source value for the supply or resistance.",
         archaicTerm: "transducer means",
@@ -70,7 +79,8 @@ An X-Y position indicator control for movement by the hand over any surface to m
       },
       {
         title: "Flexible Conductor and Display Controls",
-        summary: "A wire carries position signals to the computer, while housing buttons close additional circuits.",
+        summary:
+          "A wire carries position signals to the computer, while housing buttons close additional circuits.",
         technicalDetails:
           "The specification illustrates three buttons and says they can command changes in the displayed information. It gives examples involving erase operations and a typewriter input apparatus; it does not specify a switch color, interrupt protocol, selectable object model, or hyperlinks.",
         archaicTerm: "display control switch",
@@ -213,58 +223,54 @@ An X-Y position indicator control for movement by the hand over any surface to m
   drawings: [
     {
       figureNumber: "Fig. 1",
-      title: "Perspective View of Wooden Mouse Chassis and Button",
+      title: "Display System and Position Indicator",
       caption:
-        "Perspective view of the palm-sized handheld position indicator showing top microswitch button and rear flexible cable.",
+        "Pictorial illustration of the CRT display, computer, typewriter input, position indicator control, wire, and cursor described in the grant.",
       svgType: "engelbart-mouse",
-      callouts: [
-        {
-          id: "c1",
-          figureRef: "Fig. 1",
-          label: "10",
-          element: "Wooden Housing Chassis",
-          description: "Carved palm-fitting walnut wooden chassis supporting the operator's hand.",
-          x: 45,
-          y: 40,
-        },
-        {
-          id: "c2",
-          figureRef: "Fig. 1",
-          label: "12",
-          element: "Top Click Microswitch",
-          description:
-            "Spring-loaded index finger button for coordinate selection and link triggering.",
-          x: 65,
-          y: 25,
-        },
-      ],
+      callouts: [],
     },
     {
       figureNumber: "Fig. 2",
-      title: "Bottom View of Perpendicular Encoder Wheels",
+      title: "Sectional Elevation of the Position Indicator",
       caption:
-        "Bottom plan view revealing the X and Y brass encoder wheels positioned at an exact 90-degree angle to decompose planar movement.",
+        "Sectional elevation of the housing, switches, wheel/transducer arrangement, and support described in the specification.",
       svgType: "engelbart-mouse",
-      callouts: [
-        {
-          id: "c3",
-          figureRef: "Fig. 2",
-          label: "16",
-          element: "X-Axis Brass Encoder Wheel",
-          description: "Resolves horizontal tabletop displacement into rotational X coordinates.",
-          x: 35,
-          y: 50,
-        },
-        {
-          id: "c4",
-          figureRef: "Fig. 2",
-          label: "18",
-          element: "Y-Axis Brass Encoder Wheel",
-          description: "Resolves vertical tabletop displacement into rotational Y coordinates.",
-          x: 65,
-          y: 50,
-        },
-      ],
+      callouts: [],
+    },
+    {
+      figureNumber: "Fig. 3",
+      title: "Sectional Plan of the Position Indicator",
+      caption: "Sectional plan view of the Fig. 2 mechanism.",
+      svgType: "engelbart-mouse",
+      callouts: [],
+    },
+    {
+      figureNumber: "Fig. 4",
+      title: "Potentiometer Readout Circuit",
+      caption: "Simplified circuit for monitoring the position indicator with potentiometers.",
+      svgType: "engelbart-mouse",
+      callouts: [],
+    },
+    {
+      figureNumber: "Fig. 5",
+      title: "Shaft-Encoder Circuit",
+      caption: "Electrical-circuit embodiment using a shaft encoder.",
+      svgType: "engelbart-mouse",
+      callouts: [],
+    },
+    {
+      figureNumber: "Fig. 6",
+      title: "Incremental-Encoder Circuit",
+      caption: "Electrical-circuit embodiment using an incremental encoder and counter.",
+      svgType: "engelbart-mouse",
+      callouts: [],
+    },
+    {
+      figureNumber: "Fig. 7",
+      title: "Further Incremental-Encoder Circuit",
+      caption: "Another circuit embodiment employing an incremental encoder.",
+      svgType: "engelbart-mouse",
+      callouts: [],
     },
   ],
   historicalContext: {
