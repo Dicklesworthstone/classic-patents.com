@@ -248,7 +248,7 @@ export function FermiReactorSim() {
                   {thermalPowerWatts.toLocaleString()} W
                 </span>
                 <span className="text-[10px] text-ink-500 block mt-0.5">
-                  {(thermalFlux / 1e7).toFixed(1)}e7 n/cm²s
+                  {kinetics.thermalFluxE7}e7 n/cm²s
                 </span>
               </div>
             </div>

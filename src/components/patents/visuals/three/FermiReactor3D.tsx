@@ -67,6 +67,7 @@ export function FermiReactor3D() {
     isCutaway,
     kEff,
     geigerIntervalMs: reactorKinetics.geigerIntervalMs,
+    geigerIntervalS: reactorKinetics.geigerIntervalS,
     isAudioMuted,
     neutronDisplaySpeed: reactorKinetics.neutronDisplaySpeed,
     rodStudioY: reactorKinetics.rodStudioY,
@@ -157,7 +158,7 @@ export function FermiReactor3D() {
 
       if (p.showNeutronCascade) {
         geigerClickTimer += delta;
-        const clickInterval = Math.max(0.05, p.geigerIntervalMs / 1000);
+        const clickInterval = p.geigerIntervalS;
         if (geigerClickTimer > clickInterval) {
           geigerClickTimer = 0;
           if (!p.isAudioMuted) {

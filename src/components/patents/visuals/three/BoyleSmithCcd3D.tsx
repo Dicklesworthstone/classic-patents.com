@@ -68,6 +68,7 @@ export const BoyleSmithCcd3D = memo(() => {
     fullWellElectrons: ccdWells.fullWellElectrons,
     cte: ccdWells.cte,
     phaseDisplayMs: ccdWells.phaseDisplayMs,
+    phaseDisplayS: ccdWells.phaseDisplayS,
     phasePeriodNs: ccdWells.phasePeriodNs,
     isCutaway,
   });
@@ -148,7 +149,7 @@ export const BoyleSmithCcd3D = memo(() => {
 
       if (p.isAutoClocking) {
         phaseTimer += delta;
-        if (phaseTimer > p.phaseDisplayMs / 1000) {
+        if (phaseTimer > p.phaseDisplayS) {
           phaseTimer = 0;
           currentActivePhase = ((currentActivePhase % 3) + 1) as 1 | 2 | 3;
         }

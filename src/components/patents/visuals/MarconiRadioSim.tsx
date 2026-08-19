@@ -98,7 +98,7 @@ export function MarconiRadioSim() {
               x1="120"
               y1="210"
               x2="120"
-              y2={210 - antennaHeightMeters * 1.6}
+              y2={radio.mastSvgY}
               stroke="#fbbf24"
               strokeWidth="3.5"
               strokeLinecap="round"
@@ -107,7 +107,7 @@ export function MarconiRadioSim() {
             {/* Antenna Top Capacity Sphere */}
             <circle
               cx="120"
-              cy={210 - antennaHeightMeters * 1.6}
+              cy={radio.mastSvgY}
               r="8"
               fill="#f59e0b"
               stroke="#fef08a"
@@ -115,7 +115,7 @@ export function MarconiRadioSim() {
             />
             <text
               x="120"
-              y={210 - antennaHeightMeters * 1.6 - 12}
+              y={radio.mastSvgY - 12}
               fill="#fde68a"
               fontSize="10"
               textAnchor="middle"
@@ -156,17 +156,17 @@ export function MarconiRadioSim() {
                 <circle cx="120" cy={210 - antennaHeightMeters * 1.6} r={waveRingRadius} />
                 <circle
                   cx="120"
-                  cy={210 - antennaHeightMeters * 1.6}
+                  cy={radio.mastSvgY}
                   r={Math.max(0, waveRingRadius - 30)}
                 />
                 <circle
                   cx="120"
-                  cy={210 - antennaHeightMeters * 1.6}
+                  cy={radio.mastSvgY}
                   r={Math.max(0, waveRingRadius - 60)}
                 />
                 <circle
                   cx="120"
-                  cy={210 - antennaHeightMeters * 1.6}
+                  cy={radio.mastSvgY}
                   r={Math.max(0, waveRingRadius - 90)}
                 />
               </g>
@@ -233,7 +233,7 @@ export function MarconiRadioSim() {
         {/* Controls Sidebar */}
         <div className="lg:col-span-4 space-y-4">
           <SparkWaterfall
-            fundamentalHz={radio.resonantFreqMhz * 1e6}
+            fundamentalHz={radio.fundamentalHz}
             energy={radio.toneEnergy}
             firing={isSparking}
           />
