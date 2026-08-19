@@ -61,10 +61,14 @@ describe("US 194,047 Nikolaus Otto Four-Stroke Engine visual & kinematics bounda
     expect(otto.flyballRadius).toBeCloseTo(0.264, 3);
     expect(otto.pistonStrokePx).toBe(35);
     expect(otto.flywheelSvgR).toBe(80);
+    expect(otto.spokeCount).toBe(6);
+    expect(otto.spokePitchDeg).toBe(60);
 
     const twoDSource = readFileSync(join(VISUALS_DIRECTORY, "OttoEngineSim.tsx"), "utf8");
     expect(twoDSource).toContain("otto.flywheelSvgR");
+    expect(twoDSource).toContain("otto.spokePitchDeg");
     expect(twoDSource).not.toContain("* 80");
+    expect(twoDSource).not.toContain("i * 60");
   });
 
   test("builds and articulates procedural 4-stroke kinematic hierarchy correctly", () => {

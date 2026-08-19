@@ -113,6 +113,7 @@ describe("US 821,393 Wright Brothers Flying-Machine 3D visual & aerodynamic boun
     expect(airframe.canardGroup.rotation.x).toBeCloseTo((-3.0 * Math.PI) / 180, 2);
     expect(airframe.muslinMat.opacity).toBe(0.35);
     expect(pose.airframeRollDeg).toBeCloseTo(5.4, 3);
+    expect(pose.rudderSvgScale).toBe(1.2);
     expect(pose.canardSvgY).toBeCloseTo(-3.6, 3);
     expect(pose.leftLiftSvgY).toBeGreaterThan(0);
     expect(pose.leftDragSvgX).toBeGreaterThan(0);

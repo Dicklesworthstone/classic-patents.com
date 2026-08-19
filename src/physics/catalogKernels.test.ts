@@ -4,6 +4,8 @@ import {
   bardeenLoadLine,
   bellScopeSample,
   delavalSchematicDiscY,
+  edisonFoilGrooveX,
+  edisonLeadScrewThreadX,
   edisonSchematicGlowOpacity,
   edisonSchematicGrooveX,
   gatlingSchematicBarrelY,
@@ -14,6 +16,10 @@ import {
   hyattPolymerSvg,
   kevlarSchematicLattice,
   marconiMastHeightFromHz,
+  mccormickCrankPinSvg,
+  mccormickFaceSickleX,
+  mccormickGrainStemX,
+  mccormickGuardX,
   mccormickReelAngleDeg,
   mccormickSchematicReelArm,
   mccormickSchematicSickleX,
@@ -123,6 +129,8 @@ describe("Catalog Kernels & Shared SI Stepping Functions", () => {
     expect(res.thermalEfficiencyPct).toBeGreaterThan(40);
     expect(res.peakFiringBar).toBeGreaterThan(res.peakCompressionBar);
     expect(res.flywheelSvgR).toBe(80);
+    expect(res.spokeCount).toBe(6);
+    expect(res.spokePitchDeg).toBe(60);
   });
 
   test("Parsons steam turbine computes multi-stage expansion enthalpy", () => {
@@ -144,6 +152,8 @@ describe("Catalog Kernels & Shared SI Stepping Functions", () => {
     expect(res.bladeSvgRx).toBe(10);
     expect(res.forwardBladeSvgRy).toBe(50);
     expect(res.aftBladeSvgRy).toBe(45);
+    expect(res.bladeCount).toBe(6);
+    expect(res.bladePitchDeg).toBe(60);
   });
 
   test("DeLaval centrifugal separator computes radial g-force and separation efficiency", () => {
@@ -213,6 +223,11 @@ describe("Catalog Kernels & Shared SI Stepping Functions", () => {
     expect(res.schematicSickleCount).toBe(8);
     expect(mccormickSchematicSickleX(0)).toBe(170);
     expect(mccormickSchematicSickleX(7)).toBe(310);
+    expect(res.grainStemCount).toBe(14);
+    expect(mccormickGrainStemX(0)).toBe(60);
+    expect(mccormickGuardX(1, res.guardPitchX)).toBe(25);
+    expect(mccormickFaceSickleX(0)).toBe(5);
+    expect(mccormickCrankPinSvg(0).cx).toBe(-42);
   });
 
   test("Davenport electric motor computes torque and rotational speed from battery electromotive force", () => {
@@ -280,6 +295,9 @@ describe("Catalog Kernels & Shared SI Stepping Functions", () => {
     expect(res.schematicGrooveCount).toBe(8);
     expect(edisonSchematicGrooveX(0)).toBe(120);
     expect(edisonSchematicGrooveX(7)).toBe(260);
+    expect(res.leadScrewThreadCount).toBe(40);
+    expect(edisonLeadScrewThreadX(0)).toBe(90);
+    expect(edisonFoilGrooveX(1)).toBe(26);
   });
 
   test("Thomson welding computes secondary current heating, interface temperature, and upset forge", () => {

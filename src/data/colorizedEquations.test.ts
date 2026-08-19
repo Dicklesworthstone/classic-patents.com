@@ -129,6 +129,26 @@ describe("Colorized Equations Quality & Integrity Suite", () => {
     }
   });
 
+  test("keeps Edison US 200,521 on its printed helical-recording boundary", () => {
+    const cards = ALL_COLORIZED_EQUATIONS["us-200521-edison-phonograph"];
+    expect(cards.map((card) => card.id)).toEqual(["edison-source-helical-recording-chain"]);
+    expect(cards[0]?.claimRef).toBe(4);
+    expect(cards[0]?.rawLatex).toContain("10\\,\\text{grooves/in}");
+    expect(cards[0]?.rawLatex).toContain("10\\,\\text{threads/in}");
+
+    const sourceVariables = JSON.stringify(cards[0]?.variables).toLowerCase();
+    for (const unsupportedPublicAssertion of [
+      "brass cylinder",
+      "mica or steel diaphragm",
+      "four-inch diameter",
+      "60 rpm",
+      "groove depth",
+      "audio-bandwidth",
+    ]) {
+      expect(sourceVariables).not.toContain(unsupportedPublicAssertion);
+    }
+  });
+
   test("keeps Parsons US 608,969 on its printed marine-routing relation", () => {
     const cards = ALL_COLORIZED_EQUATIONS["us-608969-parsons-turbine"];
     expect(cards.map((card) => card.id)).toEqual(["parsons-source-selectable-turbine-routing"]);

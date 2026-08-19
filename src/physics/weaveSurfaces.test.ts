@@ -249,6 +249,26 @@ describe("FrankenSim Weave Surfaces Boundary", () => {
     expect(coupleLinks("us-2708656-fermi-reactor", {})).toEqual([]);
   });
 
+  test("keeps Edison US 200,521 on its reviewed source-recording boundary", () => {
+    const probe = materialProbe("us-200521-edison-phonograph", "Cylinder A", {});
+    expect(probe).toMatchObject({
+      material: "Diaphragm, hard point, yielding record material, and reproducing point",
+      qty: "Claim 4",
+      value: "10 grooves/in + 10 threads/in",
+      unit: "source relation",
+    });
+    expect(probe?.note).toContain("no cylinder material or size, rotational rate");
+    expect(intervalGhosts("us-200521-edison-phonograph", {})).toEqual([]);
+    expect(datedScenarios("us-200521-edison-phonograph")).toEqual([
+      {
+        id: "edison-filing-1877",
+        date: "1877-12-24",
+        name: "Filed phonograph or speaking-machine improvement",
+        writes: { sourceFocus: 1 },
+      },
+    ]);
+  });
+
   test("keeps Engelbart US 3,541,541 on its held two-wheel source boundary", () => {
     const probe = materialProbe("us-3541541-engelbart-mouse", "Position wheel", {});
     expect(probe).toMatchObject({

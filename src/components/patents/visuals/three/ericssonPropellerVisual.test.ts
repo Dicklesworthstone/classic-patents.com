@@ -74,6 +74,8 @@ describe("US 588 John Ericsson Screw Propeller visual & hydrodynamics boundary",
     expect(result.bladeSvgRx).toBe(10);
     expect(result.forwardBladeSvgRy).toBe(50);
     expect(result.aftBladeSvgRy).toBe(45);
+    expect(result.bladeCount).toBe(6);
+    expect(result.bladePitchDeg).toBe(60);
     expect(result.wakeFlowSpeed).toBeCloseTo(6.5, 5);
     expect(result.wakeSwirlCoeff).toBeCloseTo(0.08, 5);
     expect(result.wakeOpacity).toBeGreaterThan(0);

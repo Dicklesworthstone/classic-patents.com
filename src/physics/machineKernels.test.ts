@@ -78,6 +78,8 @@ describe("Machine Kernels & Mechanical Kinematics", () => {
     expect(cycle.columnPitchPx).toBe(6);
     expect(cycle.typebarOuterRx).toBe(140);
     expect(cycle.ratchetSvgR).toBe(18);
+    expect(cycle.ratchetToothCount).toBe(12);
+    expect(cycle.ratchetToothPitchDeg).toBe(30);
     const bar = sholesTypebarPose(0, 0);
     expect(bar.isActive).toBe(true);
     expect(bar.xEnd).toBe(cycle.typebarHubX);
