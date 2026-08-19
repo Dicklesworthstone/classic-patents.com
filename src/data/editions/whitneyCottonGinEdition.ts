@@ -20,7 +20,7 @@ const dims: Record<string, [number, number]> = {
   "7": [599, 815],
   "8": [1078, 783],
   "9": [713, 1300],
-  "10": [618, 1050],
+  "10": [520, 900],
   "11": [471, 1061],
   "12": [850, 760],
   "13": [1013, 737],
@@ -29,6 +29,7 @@ const dims: Record<string, [number, number]> = {
 
 const preview = (number: number | string, label: string): CuratedSpecificationInline => {
   const [w, h] = dims[number.toString()] || [1078, 1600];
+  const assetSuffix = number.toString() === "10" ? "-preview-v2" : "-preview";
   return {
     kind: "reference",
     text: label,
@@ -37,8 +38,8 @@ const preview = (number: number | string, label: string): CuratedSpecificationIn
     label: `Open the source-derived Whitney cotton-gin drawing crop ${number}`,
     figurePreviews: [
       {
-        src: `/patents/figures/us-x72-whitney-cotton-gin-fig-${number}-preview.png`,
-        alt: `Source-derived crop ${number} from the Whitney cotton-gin facsimile drawing sheets.`,
+        src: `/patents/figures/us-x72-whitney-cotton-gin-fig-${number}${assetSuffix}.png`,
+        alt: `Source-derived crop ${number} from the Whitney cotton-gin facsimile drawing sheets.${number.toString() === "10" ? " This crop is framed to retain the printed Figure 10 label and curved breastwork drawing." : ""}`,
         width: w,
         height: h,
       },
