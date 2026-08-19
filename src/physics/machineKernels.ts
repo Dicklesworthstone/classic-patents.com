@@ -68,9 +68,9 @@ export function ccdWellSvgDepth(
   maxDepth = 70,
 ) {
   return Number(
-    (base + Math.min(maxDepth, (Math.max(0, charge) / Math.max(1, fullWellElectrons)) * span)).toFixed(
-      2,
-    ),
+    (
+      base + Math.min(maxDepth, (Math.max(0, charge) / Math.max(1, fullWellElectrons)) * span)
+    ).toFixed(2),
   );
 }
 

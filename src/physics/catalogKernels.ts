@@ -87,6 +87,9 @@ export function stepGrammeDynamo(params: { shaftRate?: number }) {
     displayDegPerFrame,
     displayRadPerFrame: Number(((displayDegPerFrame * Math.PI) / 180).toFixed(6)),
     fluxOpacity: Number(Math.min(0.95, 0.25 + (inducedEmfIndex / 160) * 0.7).toFixed(3)),
+    torusSvgR: 100,
+    junctionInnerSvgR: 35,
+    junctionOuterSvgR: 48,
   };
 }
 
@@ -175,6 +178,8 @@ export function stepEricssonPropeller(params: { shaftRpm?: number; bladePitchAng
     wakeFlowSpeed: 6.5,
     wakeSwirlCoeff: 0.08,
     wakeOpacity: Number(Math.min(0.95, 0.3 + (thrustKn / 30) * 0.65).toFixed(3)),
+    bladeSvgRx: 10,
+    bladeSvgRy: 45,
   };
 }
 
@@ -262,6 +267,10 @@ export function stepWhitneyCottonGin(params: { crankRpm?: number; seedGridCleara
     crankOmegaDegPerS: crank.omegaDegPerS,
     sawOmegaRadPerS: saw.omegaRadPerS,
     brushOmegaRadPerS: brush.omegaRadPerS,
+    sawSvgR: 65,
+    sawToothOuterSvgR: 78,
+    brushSvgR: 55,
+    bristleOuterSvgR: 78,
   };
 }
 
@@ -481,6 +490,7 @@ export function stepEdisonPhonograph(params: { mandrelRpm?: number; voiceVolumeD
     stylusOmegaRadPerS: 45,
     axialDisplayWrapMm: 40,
     axialSvgPxPerMm: 2,
+    driveIndicatorSvgR: 45,
   };
 }
 
