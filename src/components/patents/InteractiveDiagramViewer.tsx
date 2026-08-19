@@ -30,6 +30,7 @@ import {
   stepColtRevolver,
   stepDeLavalSeparator,
   stepEdisonPhonograph,
+  stepEricssonPropeller,
   stepGatlingGun,
   stepGliddenBarbedWire,
   stepGrammeDynamo,
@@ -2224,7 +2225,8 @@ function _renderHistoricalSchematic(
           </text>
         </g>
       );
-    case "ericsson-propeller":
+    case "ericsson-propeller": {
+      const screw = stepEricssonPropeller({});
       return (
         <g stroke="#38bdf8" strokeWidth="1.5" fill="none">
           {/* Hull Sternpost */}
@@ -2233,10 +2235,10 @@ function _renderHistoricalSchematic(
           <line x1="140" y1="150" x2="340" y2="150" stroke="#94a3b8" strokeWidth="4" />
           {/* Forward Helical Screw */}
           <ellipse
-            cx="210"
-            cy="150"
-            rx="14"
-            ry="50"
+            cx={screw.schematicForwardCx}
+            cy={screw.schematicForwardCy}
+            rx={screw.schematicForwardRx}
+            ry={screw.schematicForwardRy}
             stroke="#38bdf8"
             strokeWidth="2"
             fill="#0284c7"
@@ -2245,10 +2247,10 @@ function _renderHistoricalSchematic(
           <path d="M 196 100 Q 210 150 224 200" stroke="#38bdf8" strokeWidth="3" />
           {/* Aft Contra-Rotating Screw */}
           <ellipse
-            cx="280"
-            cy="150"
-            rx="14"
-            ry="46"
+            cx={screw.schematicAftCx}
+            cy={screw.schematicAftCy}
+            rx={screw.schematicAftRx}
+            ry={screw.schematicAftRy}
             stroke="#4ade80"
             strokeWidth="2"
             fill="#15803d"
@@ -2266,6 +2268,7 @@ function _renderHistoricalSchematic(
           </text>
         </g>
       );
+    }
     case "corliss-engine":
       return (
         <g stroke="#38bdf8" strokeWidth="1.5" fill="none">
@@ -3320,48 +3323,48 @@ export function InteractiveDiagramViewer({
                     const pin = schematicCalloutSvg(activePin.x, activePin.y);
                     return (
                       <>
-                  <circle
-                    cx={pin.x}
-                    cy={pin.y}
-                    r={SCHEMATIC_RETICLE_INNER_R}
-                    fill="none"
-                    stroke="#f59e0b"
-                    strokeWidth="1.5"
-                    strokeDasharray="3 3"
-                    className="animate-spin"
-                    style={{
-                      transformOrigin: `${pin.x}px ${pin.y}px`,
-                      animationDuration: "10s",
-                    }}
-                  />
-                  <circle
-                    cx={pin.x}
-                    cy={pin.y}
-                    r={SCHEMATIC_RETICLE_OUTER_R}
-                    fill="none"
-                    stroke="#f59e0b"
-                    strokeWidth="1"
-                    opacity="0.35"
-                  />
-                  {/* Crosshairs */}
-                  <line
-                    x1={pin.x - SCHEMATIC_RETICLE_HAIR}
-                    y1={pin.y}
-                    x2={pin.x + SCHEMATIC_RETICLE_HAIR}
-                    y2={pin.y}
-                    stroke="#f59e0b"
-                    strokeWidth="1"
-                    strokeOpacity="0.6"
-                  />
-                  <line
-                    x1={pin.x}
-                    y1={pin.y - SCHEMATIC_RETICLE_HAIR}
-                    x2={pin.x}
-                    y2={pin.y + SCHEMATIC_RETICLE_HAIR}
-                    stroke="#f59e0b"
-                    strokeWidth="1"
-                    strokeOpacity="0.6"
-                  />
+                        <circle
+                          cx={pin.x}
+                          cy={pin.y}
+                          r={SCHEMATIC_RETICLE_INNER_R}
+                          fill="none"
+                          stroke="#f59e0b"
+                          strokeWidth="1.5"
+                          strokeDasharray="3 3"
+                          className="animate-spin"
+                          style={{
+                            transformOrigin: `${pin.x}px ${pin.y}px`,
+                            animationDuration: "10s",
+                          }}
+                        />
+                        <circle
+                          cx={pin.x}
+                          cy={pin.y}
+                          r={SCHEMATIC_RETICLE_OUTER_R}
+                          fill="none"
+                          stroke="#f59e0b"
+                          strokeWidth="1"
+                          opacity="0.35"
+                        />
+                        {/* Crosshairs */}
+                        <line
+                          x1={pin.x - SCHEMATIC_RETICLE_HAIR}
+                          y1={pin.y}
+                          x2={pin.x + SCHEMATIC_RETICLE_HAIR}
+                          y2={pin.y}
+                          stroke="#f59e0b"
+                          strokeWidth="1"
+                          strokeOpacity="0.6"
+                        />
+                        <line
+                          x1={pin.x}
+                          y1={pin.y - SCHEMATIC_RETICLE_HAIR}
+                          x2={pin.x}
+                          y2={pin.y + SCHEMATIC_RETICLE_HAIR}
+                          stroke="#f59e0b"
+                          strokeWidth="1"
+                          strokeOpacity="0.6"
+                        />
                       </>
                     );
                   })()}

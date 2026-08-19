@@ -10,8 +10,8 @@ import { identityAeroBody, stepWrightAeroBody } from "@/physics/wrightAeroBody";
 import {
   readWrightControls,
   stepWrightFlyerSi,
-  wrightHoverY,
   WRIGHT_PATENT_ID,
+  wrightHoverY,
 } from "@/physics/wrightKernel";
 import {
   createGlowPointTexture,
@@ -249,11 +249,7 @@ export function WrightFlyer3D() {
           aero.quaternion[3],
           aero.quaternion[0],
         );
-        flyerGroup.position.y = wrightHoverY(
-          elapsed,
-          siNow.hoverOmegaRadPerS,
-          siNow.hoverAmpM,
-        );
+        flyerGroup.position.y = wrightHoverY(elapsed, siNow.hoverOmegaRadPerS, siNow.hoverAmpM);
       } else {
         aero = identityAeroBody();
         flyerGroup.quaternion.identity();
