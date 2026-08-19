@@ -17,8 +17,8 @@ const term = (value: string, definition: string): CuratedSpecificationInline => 
   definition,
 });
 
-const crop = (number: number, width: number, height: number) => ({
-  src: `/patents/figures/us-174465-bell-telephone/fig-${number}-source-crop.png`,
+const crop = (number: number, width: number, height: number, revision = "") => ({
+  src: `/patents/figures/us-174465-bell-telephone/fig-${number}-source-crop${revision}.png`,
   alt: `Source-facsimile crop of Fig. ${number} from US 174,465.`,
   width,
   height,
@@ -27,7 +27,9 @@ const crop = (number: number, width: number, height: number) => ({
 const FIGURES = {
   "Fig. 1": crop(1, 980, 210),
   "Fig. 2": crop(2, 980, 185),
-  "Fig. 3": crop(3, 980, 185),
+  // The original v1 selection leaked the adjacent “Fig. 4” label into the
+  // Fig. 3 preview. This tighter source-sheet crop contains only Fig. 3.
+  "Fig. 3": crop(3, 1200, 250, "-v2"),
   "Fig. 4": crop(4, 1050, 430),
   "Fig. 5": crop(5, 1000, 400),
   "Fig. 6": crop(6, 1120, 900),
