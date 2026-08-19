@@ -1,6 +1,6 @@
 import { describe, expect, test } from "bun:test";
 import { createHash } from "node:crypto";
-import { readFileSync } from "node:fs";
+import { existsSync, readFileSync } from "node:fs";
 import { validateCuratedSpecificationEdition } from "@/data/archivalEditionValidation";
 import {
   ericssonPropellerArchivalEdition,
@@ -43,6 +43,74 @@ describe("ericssonPropellerArchivalEdition", () => {
           expect(inline.text).not.toMatch(bareFigureCitation);
         }
       }
+    }
+  });
+
+  test("gives each printed figure a source-faithful local crop and annotates period machinery terms", () => {
+    const expectedFigureCrops = [
+      "/patents/figures/us-588-ericsson-propeller/fig-1-source-crop-v1.png",
+      "/patents/figures/us-588-ericsson-propeller/fig-2-source-crop-v1.png",
+      "/patents/figures/us-588-ericsson-propeller/fig-3-source-crop-v1.png",
+      "/patents/figures/us-588-ericsson-propeller/fig-4-source-crop-v1.png",
+      "/patents/figures/us-588-ericsson-propeller/fig-5-source-crop-v1.png",
+      "/patents/figures/us-588-ericsson-propeller/fig-6-source-crop-v1.png",
+    ];
+    const sourceTerms = ericssonPropellerArchivalEdition.blocks.flatMap((block) =>
+      "inlines" in block
+        ? block.inlines.filter(
+            (inline): inline is Extract<(typeof block.inlines)[number], { kind: "term" }> =>
+              inline.kind === "term",
+          )
+        : [],
+    );
+    const figureCrops = ericssonPropellerArchivalEdition.blocks.flatMap((block) =>
+      "inlines" in block
+        ? block.inlines.flatMap((inline) =>
+            inline.kind === "reference" && inline.referenceType === "figure"
+              ? (inline.figurePreviews ?? []).map((preview) => preview.src)
+              : [],
+          )
+        : [],
+    );
+
+    expect([...new Set(figureCrops)].sort()).toEqual(expectedFigureCrops);
+    for (const crop of expectedFigureCrops) {
+      expect(existsSync(`${process.cwd()}/public${crop}`)).toBe(true);
+    }
+    expect(sourceTerms.map((entry) => entry.text)).toEqual(
+      expect.arrayContaining([
+        "Draft of Water",
+        "spiral planes or plates",
+        "stuffing box",
+        "plumber block",
+        "cog wheels",
+        "coupling box",
+        "conical cog wheels",
+        "hoisting tackle",
+      ]),
+    );
+    expect(sourceTerms.every((entry) => entry.definition.length >= 40)).toBe(true);
+  });
+
+  test("keeps the public engineering and history copy bounded by this grant", () => {
+    expect(ericssonPropellerPatent.historicalContext.patentWars).toEqual([]);
+    expect(ericssonPropellerPatent.stats).toEqual({
+      totalClaims: 3,
+      independentClaims: 3,
+    });
+    const visitorCopy = JSON.stringify({
+      plainEnglish: ericssonPropellerPatent.plainEnglishExplanation,
+      history: ericssonPropellerPatent.historicalContext,
+    });
+    for (const unsupportedDetail of [
+      "lignum-vitae",
+      "50\\\\text{ kN}",
+      "Kingsbury/Mitchell",
+      "Francis B. Ogden",
+      "USS Monitor",
+      "Francis Pettit Smith",
+    ]) {
+      expect(visitorCopy).not.toContain(unsupportedDetail);
     }
   });
 
