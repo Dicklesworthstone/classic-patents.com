@@ -86,36 +86,25 @@ export const ericssonPropellerPatent: Patent = {
     ],
     scientificPrinciples: [
       {
-        principle: "Blade Element Momentum Hydrodynamic Thrust",
-        formula:
-          "T = \\int_{r_{\\text{hub}}}^{R} \\left[\\frac{1}{2} \\rho v_{\\text{rel}}^2 c(r) (C_L \\cos\\phi - C_D \\sin\\phi)\\right] B \\, dr",
+        principle: "Helical Development Stated in the Specification",
+        formula: "P = 3D",
         explanation:
-          "Total axial thrust is the integral of hydrodynamic lift and drag produced by $B$ blade elements operating at local angle of attack $\\alpha(r) = \\phi(r) - \\beta(r)$ in water of density $\\rho = 1025\\text{ kg/m}^3$.",
+          "Here P is the axial advance in one turn and D is the model cylinder diameter. Ericsson says the plate's spiral has not gone once around until it has advanced a distance equal to three diameters. This is a geometric construction statement, not a measured vessel speed or an efficiency result.",
       },
       {
-        principle: "Propeller Advance Ratio & Hydrodynamic Slip",
-        formula:
-          "J = \\frac{v_{\\text{ship}}}{n D}, \\quad s = 1 - \\frac{v_{\\text{ship}}}{n P_{\\text{pitch}}}",
+        principle: "Opposed Rotation Through a Gear Train",
+        formula: "\\omega_b \\text{ is opposite in direction to } \\omega_a",
         explanation:
-          "The advance ratio $J$ and slip fraction $s$ define the operating regime on the $K_T\\text{--}K_Q$ open-water propeller diagram, determining peak hydrodynamic efficiency $\\eta_0 = \\frac{J}{2\\pi} \\frac{K_T}{K_Q}$.",
+          "The source derives the direction relation from crank shafts L and M, then unequal cog wheels H and I. It says b moves at a lower speed than a, so the plate-carrying hoops turn in contrary directions and at unequal velocities. It supplies no revolutions per minute or gear-tooth count from which a numerical ratio could be calculated.",
       },
       {
-        principle: "Hydrodynamic Cavitation Threshold",
-        formula:
-          "\\sigma = \\frac{P_{\\text{ambient}} + \\rho g h - P_{\\text{vapor}}}{\\frac{1}{2} \\rho v_{\\text{tip}}^2} > \\sigma_{\\text{critical}}",
+        principle: "Whole-Surface Immersion",
         explanation:
-          "Submerging the propeller at depth $h$ below the waterline increases hydrostatic pressure, preventing blade suction pressure from dropping below water vapor pressure ($P_{\\text{vap}} \\approx 2.3\\text{ kPa}$ at $20^\\circ\\text{C}$), suppressing cavitation.",
-      },
-      {
-        principle: "Froude-Rankine Actuator Disk Ideal Efficiency",
-        formula:
-          "\\eta_{\\text{ideal}} = \\frac{2}{1 + \\sqrt{1 + C_T}}, \\quad C_T = \\frac{T}{\\frac{1}{2} \\rho v_{\\text{ship}}^2 A_{\\text{disk}}}",
-        explanation:
-          "Actuator disk momentum theory sets the theoretical upper limit on propeller efficiency by modeling the acceleration of the slipstream jet column through disk area $A_{\\text{disk}} = \\frac{\\pi}{4} D^2$.",
+          "Claim 1 ties the hoop-and-spoke construction to entire immersion, saying that this lets the whole surface of all spiral plates be employed at one time. That is the source's stated physical rationale. It does not provide depth, cavitation criteria, density, or a quantified propulsive efficiency.",
       },
     ],
     whyItMattersToday:
-      "Ericsson's submerged screw propeller replaced paddle wheels worldwide and made modern ocean shipping, container fleets, and armored naval warships possible. Ericsson later designed the USS Monitor (1862), whose submerged screw propeller and revolving armored turret revolutionized naval warfare forever.",
+      "The grant is useful today because it makes a specific early screw-propeller proposal inspectable at the level of plate geometry, concentric shafts, gears, seals, and a removable stern installation. It should not be treated as proof that this one patent alone established later marine-propulsion practice; the pinned source does not document adoption, performance trials, or later litigation.",
   },
   claims: [
     {
