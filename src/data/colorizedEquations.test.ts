@@ -40,6 +40,24 @@ describe("Colorized Equations Master Registry Integrity", () => {
     const fermiEqs = ALL_COLORIZED_EQUATIONS["us-2708656-fermi-reactor"];
     expect(fermiEqs).toBeDefined();
     expect(fermiEqs[0].title).toContain("Delayed Neutron");
+
+    const edisonEqs = ALL_COLORIZED_EQUATIONS["us-200521-edison-phonograph"];
+    const edisonPitchCard = edisonEqs.find(
+      (equation) => equation.id === "edison-acoustic-indentation-groove",
+    );
+    expect(edisonPitchCard?.rawLatex).toContain("10\\,\\text{grooves/in}");
+    expect(edisonPitchCard?.rawLatex).toContain("10\\,\\text{threads/in}");
+    expect(edisonPitchCard?.claimRef).toBe(4);
+    expect(edisonPitchCard?.pedagogicalNote).toContain("no diaphragm material");
+    for (const removedPseudoMeasurement of [
+      "F_{\\text{stylus}}",
+      "N_{\\text{rpm}}",
+      "r_{\\text{cylinder}}",
+      "60 to 80 RPM",
+      "0.15 to 0.25 m/s",
+    ]) {
+      expect(JSON.stringify(edisonPitchCard)).not.toContain(removedPseudoMeasurement);
+    }
   });
 
   test("all LaTeX equations compile cleanly through KaTeX without syntax errors", async () => {

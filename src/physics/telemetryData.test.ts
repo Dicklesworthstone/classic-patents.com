@@ -68,4 +68,19 @@ describe("Physics Telemetry Data Registry", () => {
     expect(metrics.some((m) => m.label.includes("Lift"))).toBe(true);
     expect(metrics.some((m) => m.label.includes("Drag"))).toBe(true);
   });
+
+  test("keeps Edison phonograph telemetry within the quantities printed by US 200,521", () => {
+    const edison = PATENT_PHYSICS_REGISTRY["us-200521-edison-phonograph"];
+    expect(edison.engineMethod).toContain("illustrative display motion only");
+    expect(edison.controls.map((control) => control.unit)).toEqual(["model RPM", "model dB"]);
+    expect(edison.computeMetrics({})).toMatchObject([
+      { label: "Source Helical Groove Pitch", value: "10", unit: "grooves/in" },
+      { label: "Source Shaft Thread Pitch", value: "10", unit: "threads/in" },
+      { label: "Named Drive", value: "Clock-work M or other power", unit: "source text" },
+    ]);
+    expect(edison.pedagogicalInsight).toContain("controls animate reader-aid motion only");
+    expect(edison.pedagogicalInsight).toContain(
+      "no rate, dimension, diaphragm material, or audio bandwidth",
+    );
+  });
 });
