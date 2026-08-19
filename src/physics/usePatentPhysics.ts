@@ -63,6 +63,18 @@ export function getPatentPhysicsParams(patentId: string): Record<string, number>
   return expandParamAliases(patentId, getRawPatentPhysicsParams(patentId));
 }
 
+export function subscribePatentPhysics(patentId: string, listener: Listener): () => void {
+  let set = listenersMap.get(patentId);
+  if (!set) {
+    set = new Set();
+    listenersMap.set(patentId, set);
+  }
+  set.add(listener);
+  return () => {
+    set?.delete(listener);
+  };
+}
+
 export function setPatentPhysicsParam(patentId: string, paramId: string, value: number) {
   const canonical = canonicalizeParam(patentId, paramId, value);
   const meta = PATENT_PHYSICS_REGISTRY[patentId];

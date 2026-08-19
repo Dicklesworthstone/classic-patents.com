@@ -1,0 +1,70 @@
+import { describe, expect, test } from "bun:test";
+import {
+  getLastParamChange,
+  getPatentPhysicsParams,
+  getPhysicsTick,
+  resetPatentPhysicsParams,
+  setPatentPhysicsParam,
+  subscribePatentPhysics,
+} from "./usePatentPhysics";
+
+describe("Physics Bus & Reactive Parameter Subscriptions (usePatentPhysics)", () => {
+  const testPatentId = "us-821393-wright-flyer";
+
+  test("getPatentPhysicsParams initializes default controls from physics registry", () => {
+    const params = getPatentPhysicsParams(testPatentId);
+    expect(params).toBeDefined();
+    expect(params.airspeed).toBe(28); // Default Wright airspeed (28 mph)
+    expect(params.wingWarp).toBe(0);
+    expect(params.rudder).toBe(0);
+    expect(params.elevator).toBe(0);
+    expect(params.coupled).toBe(1);
+  });
+
+  test("setPatentPhysicsParam updates parameters and tracks tick changes", () => {
+    const initialTick = getPhysicsTick(testPatentId);
+    setPatentPhysicsParam(testPatentId, "airspeed", 35);
+
+    const updated = getPatentPhysicsParams(testPatentId);
+    expect(updated.airspeed).toBe(35);
+    expect(getPhysicsTick(testPatentId)).toBeGreaterThan(initialTick);
+
+    const change = getLastParamChange(testPatentId);
+    expect(change).not.toBeNull();
+    expect(change?.id).toBe("airspeed");
+    expect(change?.to).toBe(35);
+  });
+
+  test("subscribePatentPhysics notifies subscribers upon parameter changes and unsubscribes cleanly", () => {
+    let notifiedValue = -1;
+    const unsubscribe = subscribePatentPhysics(testPatentId, (params) => {
+      notifiedValue = params.airspeed;
+    });
+
+    setPatentPhysicsParam(testPatentId, "airspeed", 42);
+    expect(notifiedValue).toBe(42);
+
+    // Unsubscribe and verify no further notifications
+    unsubscribe();
+    setPatentPhysicsParam(testPatentId, "airspeed", 50);
+    expect(notifiedValue).toBe(42); // Unchanged after unsubscription
+  });
+
+  test("resetPatentPhysicsParams restores default parameters and notifies listeners", () => {
+    setPatentPhysicsParam(testPatentId, "airspeed", 60);
+    expect(getPatentPhysicsParams(testPatentId).airspeed).toBe(60);
+
+    resetPatentPhysicsParams(testPatentId);
+    const restored = getPatentPhysicsParams(testPatentId);
+    expect(restored.airspeed).toBe(28);
+  });
+
+  test("canonicalizes 3D slider aliases seamlessly across component boundaries", () => {
+    const maximId = "us-319596-maxim-machine-gun";
+    setPatentPhysicsParam(maximId, "fireRateRpm", 700);
+
+    const params = getPatentPhysicsParams(maximId);
+    expect(params.firingRate).toBe(700);
+    expect(params.fireRateRpm).toBe(700);
+  });
+});
