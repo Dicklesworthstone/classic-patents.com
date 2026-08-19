@@ -21,9 +21,7 @@ export function PatentTimeline() {
 
   // Chronological sort
   const sortedPatents = useMemo(() => {
-    return [...allPatents].sort(
-      (a, b) => new Date(a.grantDate).getTime() - new Date(b.grantDate).getTime(),
-    );
+    return [...allPatents].sort((a, b) => a.grantDate.localeCompare(b.grantDate));
   }, []);
 
   const filteredPatents = useMemo(() => {
