@@ -23,6 +23,10 @@ export const TESLA_SCHEMATIC_STROBE_LEN = 28;
 export const TESLA_SCHEMATIC_LIVE_LEN = 44;
 export const TESLA_SCHEMATIC_WHITNEY_POS = 70;
 export const TESLA_SCHEMATIC_WHITNEY_B = 80;
+export const TESLA_SCHEMATIC_STROBE_OPACITY_BASE = 0.18;
+export const TESLA_SCHEMATIC_STROBE_OPACITY_STEP = 0.04;
+export const TESLA_SCHEMATIC_STROBE_STROKE = 1.2;
+export const TESLA_SCHEMATIC_LIVE_STROKE = 2.5;
 
 export function teslaFieldDisplayOmegaRadPerS(freqHz: number): number {
   return (2 * Math.PI * Math.max(0, freqHz)) / TESLA_FIELD_DISPLAY_SLOWDOWN;
@@ -93,6 +97,10 @@ export interface TeslaFig9State {
   schematicLiveLen: number;
   schematicWhitneyPos: number;
   schematicWhitneyB: number;
+  schematicStrobeOpacityBase: number;
+  schematicStrobeOpacityStep: number;
+  schematicStrobeStroke: number;
+  schematicLiveStroke: number;
   statorPoleSvgR: number;
   twoPhaseVectorSvgR: number;
   threePhaseVectorSvgR: number;
@@ -120,6 +128,10 @@ export function stepTeslaMotorFig9(phaseCycleHz: number): TeslaFig9State {
     schematicLiveLen: TESLA_SCHEMATIC_LIVE_LEN,
     schematicWhitneyPos: TESLA_SCHEMATIC_WHITNEY_POS,
     schematicWhitneyB: TESLA_SCHEMATIC_WHITNEY_B,
+    schematicStrobeOpacityBase: TESLA_SCHEMATIC_STROBE_OPACITY_BASE,
+    schematicStrobeOpacityStep: TESLA_SCHEMATIC_STROBE_OPACITY_STEP,
+    schematicStrobeStroke: TESLA_SCHEMATIC_STROBE_STROKE,
+    schematicLiveStroke: TESLA_SCHEMATIC_LIVE_STROKE,
     statorPoleSvgR: TESLA_STATOR_POLE_SVG_R,
     twoPhaseVectorSvgR: TESLA_TWO_PHASE_VECTOR_SVG_R,
     threePhaseVectorSvgR: TESLA_THREE_PHASE_VECTOR_SVG_R,
@@ -222,6 +234,15 @@ export function teslaBAt(
     bySvg: by * TESLA_B_VECTOR_SVG_SCALE,
     coilCount,
   };
+}
+
+/** Fig. 4 strobe fade on the schematic. Shared by the schematic. */
+export function teslaSchematicStrobeOpacity(
+  index: number,
+  base = TESLA_SCHEMATIC_STROBE_OPACITY_BASE,
+  step = TESLA_SCHEMATIC_STROBE_OPACITY_STEP,
+) {
+  return Number((base + index * step).toFixed(3));
 }
 
 /** Tesla Fig. 4: eight successive rotating-field positions. */

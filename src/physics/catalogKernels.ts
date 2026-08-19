@@ -143,6 +143,8 @@ export function stepOttoEngine(params: { engineRpm?: number; compressionRatio?: 
     flyballRadius: Number((0.18 + Math.min(0.15, (rpm / 300) * 0.14)).toFixed(4)),
     pistonStrokePx: 35,
     flywheelSvgR: 80,
+    spokeCount: 6,
+    spokePitchDeg: 60,
   };
 }
 
@@ -222,6 +224,8 @@ export function stepEricssonPropeller(params: { shaftRpm?: number; bladePitchAng
     bladeSvgRx: 10,
     forwardBladeSvgRy: 50,
     aftBladeSvgRy: 45,
+    bladeCount: 6,
+    bladePitchDeg: 60,
   };
 }
 
@@ -432,6 +436,16 @@ export function stepMcCormickReaper(params: { forwardSpeedMph?: number }) {
     schematicSicklePitchX: 20,
     schematicSickleCount: 8,
     schematicSickleY: 210,
+    grainStemCount: 14,
+    grainStemOriginX: 60,
+    grainStemPitchX: 14,
+    guardCount: 12,
+    guardPitchX: 25,
+    sickleToothCount: 11,
+    sickleToothOriginX: 5,
+    sickleToothPitchX: 25,
+    crankPinHubX: -50,
+    crankPinOrbitPx: 8,
     reelToCutterRatio: Number((reel.omegaRadPerS / Math.max(1e-6, cutter.omegaRadPerS)).toFixed(5)),
   };
 }
@@ -453,6 +467,29 @@ export function mccormickSchematicReelArm(deg: number, cx = 210, cy = 100, radiu
 /** Reciprocating sickle tooth X on the schematic. Shared by the schematic. */
 export function mccormickSchematicSickleX(index: number, originX = 170, pitchX = 20) {
   return originX + index * pitchX;
+}
+
+/** Standing-grain stem X on the 2D face. Shared by 2D. */
+export function mccormickGrainStemX(index: number, originX = 60, pitchX = 14) {
+  return originX + index * pitchX;
+}
+
+/** Knife-guard X on the 2D face. Shared by 2D. */
+export function mccormickGuardX(index: number, pitchX = 25) {
+  return index * pitchX;
+}
+
+/** Sickle-tooth X on the 2D face. Shared by 2D. */
+export function mccormickFaceSickleX(index: number, originX = 5, pitchX = 25) {
+  return originX + index * pitchX;
+}
+
+/** Pitman crank-pin seat on the 2D face. Shared by 2D. */
+export function mccormickCrankPinSvg(phaseRad: number, hubX = -50, orbitPx = 8) {
+  return {
+    cx: Number((hubX + Math.cos(phaseRad) * orbitPx).toFixed(2)),
+    cy: Number((Math.sin(phaseRad) * orbitPx).toFixed(2)),
+  };
 }
 
 export function stepDavenportMotor(params: { batteryVoltage?: number; loadTorque?: number }) {
@@ -501,6 +538,8 @@ export function stepCorlissEngine(params: {
     wristPlateAmpPx: 22,
     flywheelSvgR: 85,
     intakeOpenWindowDeg: Number((cutoff * 180).toFixed(2)),
+    spokeCount: 6,
+    spokePitchDeg: 60,
   };
 }
 
@@ -724,7 +763,23 @@ export function stepEdisonPhonograph(params: { mandrelRpm?: number; voiceVolumeD
     schematicGrooveCount: 8,
     schematicGrooveY0: 110,
     schematicGrooveY1: 180,
+    leadScrewThreadCount: 40,
+    leadScrewThreadOriginX: 90,
+    leadScrewThreadPitchX: 10,
+    foilGrooveCount: 16,
+    foilGrooveOriginX: 15,
+    foilGroovePitchX: 11,
   };
+}
+
+/** Lead-screw thread X on the 2D bench. Shared by 2D. */
+export function edisonLeadScrewThreadX(index: number, originX = 90, pitchX = 10) {
+  return originX + index * pitchX;
+}
+
+/** Tinfoil groove X on the 2D cylinder. Shared by 2D. */
+export function edisonFoilGrooveX(index: number, originX = 15, pitchX = 11) {
+  return originX + index * pitchX;
 }
 
 /** Tinfoil groove X on the schematic cylinder. Shared by the schematic. */
