@@ -2246,7 +2246,9 @@ export const ALL_COLORIZED_EQUATIONS: Record<string, ColorizedEquation[]> = {
   ],
 
   // 8. Hedy Lamarr & George Antheil Spread Spectrum (US 2,292,387)
-  "us-2292387-lamarr-frequency-hopping": [
+  // Preserved non-public model. The public route uses the Claim 1 source card
+  // below while the complete scholarly edition remains under root review.
+  "_legacy-unpublished-us-2292387-lamarr-frequency-hopping": [
     {
       id: "lamarr-spread-spectrum-processing-gain",
       patentId: "us-2292387-lamarr-frequency-hopping",
@@ -2420,6 +2422,69 @@ export const ALL_COLORIZED_EQUATIONS: Record<string, ColorizedEquation[]> = {
       claimRef: 1,
       historicalSignificance:
         "US 2292387 is the foundational patent for Wi-Fi, Bluetooth, GPS, and CDMA cellular networks.",
+    },
+  ],
+
+  // 8. Hedy Kiesler Markey & George Antheil (US 2,292,387), source-bounded public card.
+  "us-2292387-lamarr-frequency-hopping": [
+    {
+      id: "lamarr-source-synchronized-record-tuning",
+      patentId: "us-2292387-lamarr-frequency-hopping",
+      title: "Claim 1: Synchronized Record-Selected Tuning",
+      category: "Source-Bound Radio Control",
+      rawLatex:
+        "\\text{first record strip} \\xrightarrow{\\text{synchronous motion}} \\text{transmitter tuning} = \\text{receiver tuning}",
+      colorizedLatex:
+        "\\textcolor{#059669}{\\text{first record strip}} \\xrightarrow{\\textcolor{#d97706}{\\text{synchronous motion}}} \\textcolor{#2563eb}{\\text{transmitter tuning}} = \\textcolor{#9333ea}{\\text{receiver tuning}}",
+      plainEnglishSentence: [
+        { text: "Claim 1 pairs a " },
+        { text: "first moving record strip", variableId: "transmitter_record" },
+        { text: " that selects transmitter tuning with a " },
+        { text: "second moving record strip", variableId: "receiver_record" },
+        { text: " that selects receiver tuning. Their " },
+        { text: "synchronous movement", variableId: "synchronism" },
+        { text: " keeps the receiver tuned to the transmitter's selected carrier frequency." },
+      ],
+      variables: [
+        {
+          id: "transmitter_record",
+          symbol: "first record strip",
+          name: "First record strip",
+          color: "emerald",
+          role: "Claim 1's elongated transmitting-station record whose recordings select carrier frequency.",
+          unit: "Claim 1 selecting element",
+          dimension: "record-controlled tuning relation",
+          explanation:
+            "The claim requires a moving first strip and record-actuated means that determine the transmitter's carrier frequency from its recordings; it states no numeric channel count or hopping rate.",
+        },
+        {
+          id: "receiver_record",
+          symbol: "second record strip",
+          name: "Second record strip",
+          color: "sapphire",
+          role: "Claim 1's receiving-station record whose recordings tune the receiver.",
+          unit: "Claim 1 selecting element",
+          dimension: "record-controlled tuning relation",
+          explanation:
+            "The second strip has its own record-actuated tuning means. Its legal function is to select the receiver's corresponding predetermined carrier frequency.",
+        },
+        {
+          id: "synchronism",
+          symbol: "synchronous motion",
+          name: "Synchronous strip movement",
+          color: "amber",
+          role: "The Claim 1 condition that actuates both stations' record mechanisms together.",
+          unit: "Claim 1 timing relation",
+          dimension: "matched record progression",
+          explanation:
+            "Claim 1 requires the two strips to move in synchronism so their record-actuated means keep transmitter and receiver tuned together; it does not give a dwell interval, RF bandwidth, or processing-gain value.",
+        },
+      ],
+      pedagogicalNote:
+        "This card is limited to Claim 1's two record strips, their selecting mechanisms, and the synchronism condition. The scholarly source edition remains under independent review, so this page does not present a source-backed hop rate, bandwidth, processing gain, jamming margin, or later-network performance model.",
+      claimRef: 1,
+      historicalSignificance:
+        "The card identifies the claimed matched-record tuning relationship without treating later spread-spectrum metrics as measurements in the 1942 grant.",
     },
   ],
 

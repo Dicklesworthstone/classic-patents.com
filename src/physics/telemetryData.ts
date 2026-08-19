@@ -1538,7 +1538,9 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
     pedagogicalInsight:
       "Waterproof bellows affixed to the steamboat hull expand downwards via geared shaft linkages, displacing hundreds of cubic feet of river water to float the grounded hull over shallow sandbars.",
   },
-  "us-2292387-lamarr-frequency-hopping": {
+  // Preserved non-public model. The exact public route is a source guide below
+  // until the scholarly edition's held publication review is complete.
+  "_legacy-unpublished-us-2292387-lamarr-frequency-hopping": {
     domain: "semiconductor_carrier",
     domainTitle: "Slotted Carrier Spread-Spectrum & Processing Anti-Jamming Gain",
     equationName: "Processing Gain & Spread-Spectrum Bandwidth",
@@ -4975,4 +4977,57 @@ PATENT_PHYSICS_REGISTRY["us-586193-marconi-radio"] = {
   },
   pedagogicalInsight:
     "US 586,193 describes high-frequency signalling with metallic-powder or imperfect-contact receivers, local circuits, and shaking or trembler reset. Its source-reviewed record has not yet passed independent publication acceptance, so this guide does not claim a quarter-wave antenna geometry, aerial height, operating frequency, spark voltage, power, range, radiation resistance, coherer threshold, or later maritime-radio event.",
+};
+
+// The manuscript-facing edition records Markey & Antheil's figures and claims,
+// but its publication is still under root editorial hold.
+PATENT_PHYSICS_REGISTRY["us-2292387-lamarr-frequency-hopping"] = {
+  domain: "source_review_hold",
+  domainTitle: "Source Guide: Synchronized Record-Selected Carrier Tuning",
+  equationName: "No quantitative radio-control model published",
+  governingEquation:
+    "first record strip + second record strip + synchronous motion → transmitter tuning = receiver tuning",
+  engineMethod: "No spread-spectrum engine; source-review guide only",
+  controls: [
+    {
+      id: "sourceFocus",
+      label: "Verified facsimile group",
+      min: 1,
+      max: 3,
+      step: 1,
+      defaultValue: 1,
+      unit: "source figure group",
+    },
+  ],
+  computeMetrics: (params) => {
+    const focus = Math.max(1, Math.min(3, Math.round(params.sourceFocus ?? 1)));
+    const highlighted = [
+      "Figs. 1–2: transmitter & receiver radio control system",
+      "Figs. 3–4: perforated record strip & stepping mechanism",
+      "Figs. 5–6: motor drive & synchronizing circuit",
+    ][focus - 1] as string;
+
+    return [
+      {
+        label: "Highlighted Source Group",
+        value: highlighted,
+        unit: "facsimile guide",
+        badgeColor: "cyan",
+      },
+      {
+        label: "Printed Claims",
+        value: "8",
+        unit: "source text",
+        badgeColor: "emerald",
+      },
+      {
+        label: "Visual Status",
+        value: "withheld",
+        unit: "independent source review pending",
+        badgeColor: "amber",
+      },
+    ];
+  },
+  pedagogicalInsight:
+    "US 2,292,387 describes secret communications using matched moving record strips to tune transmitter and receiver synchronously across carrier frequencies. Its source-reviewed record has not yet passed independent publication acceptance, so this guide does not claim a channel count, hop rate, RF bandwidth, processing gain, jamming margin, or later spread-spectrum network lineage.",
 };

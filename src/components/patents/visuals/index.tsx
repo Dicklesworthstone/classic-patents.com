@@ -30,7 +30,7 @@ import { GrammeDynamoSim } from "./GrammeDynamoSim";
 import { HollerithTabulatingSim } from "./HollerithTabulatingSim";
 import { HoweSewingMachineSim } from "./HoweSewingMachineSim";
 import { HyattCelluloidSim } from "./HyattCelluloidSim";
-import { LamarrFrequencyHoppingSim } from "./LamarrFrequencyHoppingSim";
+import { LamarrFrequencyHoppingSim as _LamarrFrequencyHoppingSim } from "./LamarrFrequencyHoppingSim";
 import { LincolnBuoySim } from "./LincolnBuoySim";
 import { LindeAirLiquefactionSim } from "./LindeAirLiquefactionSim";
 import { MaximMachineGunSim } from "./MaximMachineGunSim";
@@ -162,7 +162,7 @@ const HyattCelluloid3D = dynamic(
   () => import("./three/HyattCelluloid3D").then((mod) => mod.HyattCelluloid3D),
   { ssr: false, loading: ThreeLoading },
 );
-const LamarrFrequencyHopping3D = dynamic(
+const _LamarrFrequencyHopping3D = dynamic(
   () => import("./three/LamarrFrequencyHopping3D").then((mod) => mod.LamarrFrequencyHopping3D),
   { ssr: false, loading: ThreeLoading },
 );
@@ -276,6 +276,7 @@ export function PatentVisualDispatcher({ patentId }: PatentVisualDispatcherProps
     "us-1102653-goddard-rocket",
     "us-2981877-noyce-ic",
     "us-586193-marconi-radio",
+    "us-2292387-lamarr-frequency-hopping",
     "us-808897-carrier-air-conditioner",
     "us-3671542-kwolek-kevlar",
     "us-3858232-boyle-smith-ccd",
@@ -456,10 +457,11 @@ export function PatentVisualDispatcher({ patentId }: PatentVisualDispatcherProps
               <EinsteinRefrigeratorSim />
             );
           case "us-2292387-lamarr-frequency-hopping":
-            return renderMode === "3d-physics" ? (
-              <LamarrFrequencyHopping3D />
-            ) : (
-              <LamarrFrequencyHoppingSim />
+            return (
+              <SourceVisualUnavailable
+                detail="US 2,292,387 describes matched moving records that select transmitter and receiver tuning together, plus discrete rudder commands and false-channel indication. The inherited spread-spectrum model adds unreviewed bandwidth, hop-rate, processing-gain, jamming, and modern-network claims, so it is withheld until the source-specific treatment has passed independent review."
+                title="Synchronized-record radio-control visual under source review"
+              />
             );
           case "us-2495429-spencer-microwave":
             return renderMode === "3d-physics" ? <SpencerMicrowave3D /> : <SpencerMicrowaveSim />;

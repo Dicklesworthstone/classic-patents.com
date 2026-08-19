@@ -46,6 +46,11 @@ export function energyChannelsFor(
     // receiver/reset relation contains no source-backed energy-flow values.
     return [];
   }
+  if (patentId === "us-2292387-lamarr-frequency-hopping") {
+    // Claim 1 specifies a synchronized tuning relation, not source-backed
+    // energy values. Keep the visual strip empty while the edition is held.
+    return [];
+  }
   if (patentId === "us-1155986-goddard-rocket") {
     const rocket = FrankenSimEngine.stepGoddardRocket(
       params.chamberPressure ?? 350,

@@ -124,6 +124,16 @@ export function materialProbe(
   params: Record<string, number>,
 ): MaterialProbe | null {
   const label = calloutLabel.toLowerCase();
+  if (patentId === "us-2292387-lamarr-frequency-hopping") {
+    return {
+      part: calloutLabel,
+      material: "Matched record strips and record-actuated tuning means",
+      qty: "Claim 1",
+      value: "synchronous strip motion → maintained tuning",
+      unit: "source relation",
+      note: "The scholarly edition remains under independent publication review. This guide does not assign a channel count, hopping rate, bandwidth, processing gain, jamming margin, or later-network property to the grant.",
+    };
+  }
   if (patentId === "us-586193-marconi-radio") {
     return {
       part: calloutLabel,
@@ -917,6 +927,9 @@ export function materialProbe(
 }
 
 export function intervalGhosts(patentId: string, params: Record<string, number>): IntervalGhost[] {
+  if (patentId === "us-2292387-lamarr-frequency-hopping") {
+    return [];
+  }
   if (patentId === "us-586193-marconi-radio") {
     return [];
   }
@@ -1292,6 +1305,15 @@ export function fidelityField(
   patentId: string,
   params: Record<string, number>,
 ): FidelityField | null {
+  if (patentId === "us-2292387-lamarr-frequency-hopping") {
+    return {
+      part: "Source-bound matched-record tuning relation",
+      model: "not computed",
+      reference: "independent publication review pending",
+      residual: "not applicable",
+      unit: "source boundary",
+    };
+  }
   if (patentId === "us-586193-marconi-radio") {
     return {
       part: "Source-bound receiver-and-reset relation",
@@ -1552,6 +1574,9 @@ export function spectralModes(patentId: string, params: Record<string, number>):
 }
 
 export function datedScenarios(patentId: string): DatedScenario[] {
+  if (patentId === "us-2292387-lamarr-frequency-hopping") {
+    return [];
+  }
   if (patentId === "us-586193-marconi-radio") {
     return [];
   }
@@ -1860,6 +1885,9 @@ export function datedScenarios(patentId: string): DatedScenario[] {
 }
 
 export function coupleLinks(patentId: string, params: Record<string, number>): CoupleLink[] {
+  if (patentId === "us-2292387-lamarr-frequency-hopping") {
+    return [];
+  }
   if (patentId === "us-586193-marconi-radio") {
     return [];
   }
