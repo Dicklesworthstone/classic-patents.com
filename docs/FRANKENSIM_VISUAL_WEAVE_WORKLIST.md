@@ -452,6 +452,12 @@ the visitor can see or hear the kernel change the instrument.
 - [x] P5.359 Hyatt ramHomeX / ramCycleTau / flowMax / flowViscosityRef. 3D no longer converts leftover ram 1.8+sin(2π f t) or 1800/η privately.
 - [x] P5.360 Maxim toggleLiftAmp / toggleHomeY / toggleRecoilCoupling / crankThrowAmp. 3D no longer converts leftover 0.32, −0.8, recoil×1.8, or crank 0.75 privately.
 - [x] P5.361 Edison glowThreshold / gasPhaseOmega / gasYOmega / gasZOmega. 3D no longer converts leftover 0.05 glow or gas t×2 / ×1.3 / ×0.7 privately.
+- [x] P5.362 Diesel gasIntake/compression/injection/exhaust colors, compressionEmissive, injectionBar / idleBar. 3D no longer converts leftover 0x38bdf8 lerp, 2.5/0.1/0.3 emissive, or 2.2/45/1.5 bar privately.
+- [x] P5.363 Otto cylinderTdcX / combustionLengthRef / stroke gas colors and expansionFade. 3D no longer converts leftover −3.25/1.8, 0x38bdf8, or 1−frac×0.7 privately.
+- [x] P5.364 Daimler valveHomeY / exhaustRockerCoupling / flameScale / hotTubeBrightC. 3D no longer converts leftover valve 2.5, rocker ×1.5, flame 0.6+0.4, or 800/600 °C privately.
+- [x] P5.365 Corliss govOmegaRatio / wristLeadRad / intakeValveCoupling / dashpotDropAmp. 3D no longer converts leftover crank×2.5, π/4 lead, ×0.9/0.7, or dashpot 1.2/1.5 privately.
+- [x] P5.366 Tesla motor coilPhaseOffsetRad / coilEmissiveAmp. 3D no longer converts leftover phaseIdx×π/2 or |I|×0.9 privately.
+- [x] P5.367 Edison phonograph stylusHomeY. 3D no longer converts leftover stylus −0.55 privately.
 
 ## Explicitly out of scope
 

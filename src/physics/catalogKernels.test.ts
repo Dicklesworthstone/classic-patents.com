@@ -145,6 +145,8 @@ describe("Catalog Kernels & Shared SI Stepping Functions", () => {
     expect(dieselCamWindows().injectorRockerCoupling).toBe(1.8);
     expect(dieselCamWindows().compressorSwingAmp).toBe(0.18);
     expect(dieselCamWindows().fuelPumpStrokeAmp).toBe(0.08);
+    expect(dieselCamWindows().injectionBar).toBe(45);
+    expect(dieselCamWindows().gasIntakeColor).toBe(0x38bdf8);
     expect(farnsworthBeamFrac(-4.5)).toBe(0);
     expect(farnsworthBeamFrac(-0.5)).toBe(0.5);
     expect(farnsworthBeamFrac(3.5)).toBe(1);
@@ -241,6 +243,10 @@ describe("Catalog Kernels & Shared SI Stepping Functions", () => {
     expect(res.slideHomeX).toBe(-3.45);
     expect(res.exhaustRockerCoupling).toBe(1.8);
     expect(res.sleeveCoupling).toBe(0.8);
+    expect(res.cylinderTdcX).toBe(-3.25);
+    expect(res.combustionLengthRef).toBe(1.8);
+    expect(res.expansionFade).toBe(0.7);
+    expect(res.intakeGasColor).toBe(0x38bdf8);
   });
 
   test("Parsons steam turbine computes multi-stage expansion enthalpy", () => {
@@ -399,6 +405,10 @@ describe("Catalog Kernels & Shared SI Stepping Functions", () => {
     expect(res.intakeCycleDeg).toBe(180);
     expect(res.displayWrapDeg).toBe(360);
     expect(res.crankWrapRad).toBeCloseTo(Math.PI * 2, 10);
+    expect(res.govOmegaRatio).toBe(2.5);
+    expect(res.wristLeadRad).toBeCloseTo(Math.PI * 0.25, 10);
+    expect(res.intakeValveCoupling).toBe(0.9);
+    expect(res.dashpotHomeY).toBe(1.5);
   });
 
   test("Gatling gun computes cyclic fire rate and barrel cluster rotation", () => {
@@ -479,6 +489,7 @@ describe("Catalog Kernels & Shared SI Stepping Functions", () => {
     expect(res.cylinderSvgX).toBe(160);
     expect(res.cylinderSvgW).toBe(200);
     expect(res.schematicDiaphragmR).toBe(16);
+    expect(res.stylusHomeY).toBe(-0.55);
     expect(edisonSchematicGrooveX(0)).toBe(120);
     expect(edisonSchematicGrooveX(7)).toBe(260);
     expect(res.leadScrewThreadCount).toBe(40);
@@ -524,6 +535,10 @@ describe("Catalog Kernels & Shared SI Stepping Functions", () => {
     expect(
       verticalConnectingRod(0, 0, res.pistonStrokePx, res.crankCx, res.crankCy, res.rodOriginY0).x2,
     ).toBe(330);
+    expect(res.valveHomeY).toBe(2.5);
+    expect(res.exhaustRockerCoupling).toBe(1.5);
+    expect(res.flameScale0).toBe(0.6);
+    expect(res.hotTubeBrightC).toBe(800);
   });
 
   test("Hollerith tabulating machine computes pin-brush electrical circuit matrix and tally count", () => {
