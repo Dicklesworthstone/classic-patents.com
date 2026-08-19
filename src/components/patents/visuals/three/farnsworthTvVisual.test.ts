@@ -65,6 +65,8 @@ describe("US 1,773,980 Philo T. Farnsworth Television System visual & electron o
     expect(result.electronVelocityMegaMps).toBeCloseTo(result.electronVelocityMps / 1e6, 1);
     expect(result.relativisticPct).toBeCloseTo(result.relativisticBeta * 100, 1);
     expect(result.acceleratingVoltageVolts).toBe(1500);
+    expect(result.schematicCathodeR).toBe(28);
+    expect(result.schematicCollectorX).toBe(300);
   });
 
   test("builds and articulates procedural mahogany bench, borosilicate dissector envelope, photocathode disc, and anode aperture correctly", () => {

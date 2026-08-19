@@ -5,6 +5,29 @@ import { join } from "node:path";
 const VISUALS_DIRECTORY = join(process.cwd(), "src/components/patents/visuals");
 
 describe("US 2,981,877 source-bounded visual", () => {
+  test("does not invent a live Claim 1 voltage condition when the source guide has no such metric", () => {
+    const claimsDecoder = readFileSync(
+      join(process.cwd(), "src/components/patents/ClaimsDecoder.tsx"),
+      "utf8",
+    );
+    expect(claimsDecoder).not.toContain('patentId.includes("noyce-ic")');
+    expect(claimsDecoder).not.toContain("junctionIsolationVoltage");
+  });
+
+  test("shows the selected Noyce drawing tab as its pinned source crop", () => {
+    const diagramViewer = readFileSync(
+      join(process.cwd(), "src/components/patents/InteractiveDiagramViewer.tsx"),
+      "utf8",
+    );
+    expect(diagramViewer).toContain("noyceFigureSourceCrop(figureNumber)");
+    expect(diagramViewer).toContain("href={sourceCrop}");
+    expect(diagramViewer).toContain("Pinned facsimile crop");
+    expect(diagramViewer).not.toContain("const noyce = stepNoyceIC({});");
+    for (const figure of [1, 2, 3, 4, 5, 6, 7]) {
+      expect(diagramViewer).toContain(`fig-${figure}-source-crop-v1.png`);
+    }
+  });
+
   test("routes the public patent to the pinned-source guide rather than the unverified 2D/3D reconstruction", () => {
     const dispatcherSource = readFileSync(join(VISUALS_DIRECTORY, "index.tsx"), "utf8");
     expect(dispatcherSource).toContain(

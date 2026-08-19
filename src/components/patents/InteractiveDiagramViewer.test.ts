@@ -46,3 +46,27 @@ describe("Interactive Historical Schematic & Drawing Sheets", () => {
     }
   });
 });
+
+import React from "react";
+import { renderToStaticMarkup } from "react-dom/server";
+import { InteractiveDiagramViewer } from "./InteractiveDiagramViewer";
+
+describe("InteractiveDiagramViewer React rendering", () => {
+  test("renders SVG schematics and figure callout pins across all patents", () => {
+    let renderedCount = 0;
+    for (const patent of allPatents) {
+      if (patent.drawings && patent.drawings.length > 0) {
+        const html = renderToStaticMarkup(
+          React.createElement(InteractiveDiagramViewer, {
+            drawings: patent.drawings,
+            patentId: patent.id,
+            patentNumber: patent.patentNumber,
+          }),
+        );
+        expect(html.length).toBeGreaterThan(100);
+        renderedCount++;
+      }
+    }
+    expect(renderedCount).toBeGreaterThanOrEqual(46);
+  });
+});

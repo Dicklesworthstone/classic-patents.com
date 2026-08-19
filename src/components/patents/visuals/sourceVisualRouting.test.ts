@@ -20,6 +20,7 @@ describe("source-integrity visual routing", () => {
       "us-3671542-kwolek-kevlar",
       "us-3858232-boyle-smith-ccd",
       "us-395781-hollerith-tabulating",
+      "us-542846-diesel-engine",
     ]) {
       expect(dispatcherSource).toContain(`case "${patentId}":`);
     }
@@ -35,6 +36,7 @@ describe("source-integrity visual routing", () => {
     expect(dispatcherSource).toContain("unreviewed materials, dimensions, sampling, friction");
     expect(dispatcherSource).toContain("Information Storage Devices");
     expect(dispatcherSource).toContain("unreviewed card dimensions, contact-pin counts, voltage");
+    expect(dispatcherSource).toContain("unreviewed later-engine valve gear, dimensions, pressures");
   });
 
   test("does not keep the contradicted model in the corrected route branch", () => {
@@ -68,6 +70,9 @@ describe("source-integrity visual routing", () => {
     const hollerithBranch = dispatcherSource
       .split('case "us-395781-hollerith-tabulating":')[1]
       ?.split('case "us-470918-reno-escalator":')[0];
+    const dieselBranch = dispatcherSource
+      .split('case "us-542846-diesel-engine":')[1]
+      ?.split('case "us-586193-marconi-radio":')[0];
 
     expect(parsonsBranch).toBeDefined();
     expect(kwolekBranch).toBeDefined();
@@ -79,6 +84,7 @@ describe("source-integrity visual routing", () => {
     expect(engelbartBranch).toBeDefined();
     expect(mergenthalerBranch).toBeDefined();
     expect(hollerithBranch).toBeDefined();
+    expect(dieselBranch).toBeDefined();
     expect(parsonsBranch).not.toContain("ParsonsTurbine");
     expect(kwolekBranch).not.toContain("KwolekKevlar");
     expect(boyleBranch).not.toContain("BoyleSmithCcd");
@@ -89,5 +95,6 @@ describe("source-integrity visual routing", () => {
     expect(engelbartBranch).not.toContain("EngelbartMouse");
     expect(mergenthalerBranch).not.toContain("MergenthalerLinotype");
     expect(hollerithBranch).not.toContain("HollerithTabulating");
+    expect(dieselBranch).not.toContain("DieselEngine");
   });
 });

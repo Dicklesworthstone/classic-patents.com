@@ -162,7 +162,7 @@ export function buildWhitneyCottonGinModel(): WhitneyCottonGinModel {
   woodCore.rotation.z = Math.PI / 2;
   sawCylinderGroup.add(woodCore);
 
-  // Concentric Iron Circular Saw Discs
+  // Concentric Iron Circular Saw Discs with Wooden Spacing Collars
   const sawCount = 27;
   for (let s = 0; s < sawCount; s++) {
     const sx = -3.1 + s * (6.2 / (sawCount - 1));
@@ -173,6 +173,16 @@ export function buildWhitneyCottonGinModel(): WhitneyCottonGinModel {
     sawDisc.position.set(sx, 0, 0);
     sawDisc.castShadow = true;
     sawCylinderGroup.add(sawDisc);
+
+    // Wooden Spacing Collars between adjacent saw blades
+    if (s < sawCount - 1) {
+      const collarGeo = new THREE.CylinderGeometry(1.02, 1.02, 0.19, 16);
+      geometriesToDispose.push(collarGeo);
+      const collar = new THREE.Mesh(collarGeo, walnutWood);
+      collar.rotation.z = Math.PI / 2;
+      collar.position.set(sx + 0.12, 0, 0);
+      sawCylinderGroup.add(collar);
+    }
   }
 
   // Heavy Iron Axle Arbor Shaft
@@ -246,6 +256,37 @@ export function buildWhitneyCottonGinModel(): WhitneyCottonGinModel {
   brushPulley.rotation.z = Math.PI / 2;
   brushPulley.position.set(-4.5, 0.2, 1.2);
   rootGroup.add(brushPulley);
+
+  // Crossed Leather Transmission Belt (Saw Shaft -> Brush Shaft Speed Step-Up)
+  const beltMat = new THREE.MeshStandardMaterial({
+    color: 0x78350f,
+    roughness: 0.8,
+    metalness: 0.1,
+  });
+  materialsToDispose.push(beltMat);
+
+  const beltTopGeo = new THREE.BoxGeometry(0.08, 0.12, 2.05);
+  geometriesToDispose.push(beltTopGeo);
+  const beltTop = new THREE.Mesh(beltTopGeo, beltMat);
+  beltTop.position.set(-4.5, 0.85, 0.2);
+  beltTop.rotation.x = 0.42;
+  rootGroup.add(beltTop);
+
+  const beltBotGeo = new THREE.BoxGeometry(0.08, 0.12, 2.05);
+  geometriesToDispose.push(beltBotGeo);
+  const beltBot = new THREE.Mesh(beltBotGeo, beltMat);
+  beltBot.position.set(-4.5, -0.45, 0.2);
+  beltBot.rotation.x = -0.42;
+  rootGroup.add(beltBot);
+
+  // Inclined Seed Apron Chute (Discharging Clean Seeds)
+  const seedChuteGeo = new THREE.BoxGeometry(7.0, 0.18, 1.8);
+  geometriesToDispose.push(seedChuteGeo);
+  const seedChute = new THREE.Mesh(seedChuteGeo, walnutWood);
+  seedChute.position.set(0, -1.2, 0.2);
+  seedChute.rotation.x = Math.PI / 5;
+  seedChute.receiveShadow = true;
+  frameGroup.add(seedChute);
 
   // --- 7. FLYING COTTON FIBER PARTICLES & BLOCKED SEED HEAP ---
   const fiberCount = 140;

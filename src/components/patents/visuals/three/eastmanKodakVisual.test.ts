@@ -73,6 +73,8 @@ describe("US 388,850 George Eastman Roll-Film Box Camera visual & optics boundar
     expect(result.filmFormatInches).toBe(2.5);
     expect(result.filmAdvanceSpeedRadPerS).toBeCloseTo(0.8, 5);
     expect(result.supplySpoolOmegaRadPerS).toBeCloseTo(0.64, 5);
+    expect(result.schematicSpoolR).toBe(22);
+    expect(result.schematicShutterR).toBe(20);
   });
 
   test("builds and articulates procedural leather box, film spools, and brass shutter correctly", () => {

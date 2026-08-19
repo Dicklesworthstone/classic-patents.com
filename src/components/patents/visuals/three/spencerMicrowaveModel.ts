@@ -4,12 +4,14 @@
  *
  * Implements the authentic Raytheon resonant multi-cavity magnetron & waveguide:
  * - Solid oxygen-free high-conductivity (OFHC) copper cylindrical anode block
+ * - Extruded radial aluminum/copper cooling fins for heat dissipation
  * - 8 radial hole-and-slot resonant LC cavities (Claim 1)
  * - Upper and lower double pi-mode strapping rings preventing mode jumping
  * - Central barium-oxide-coated indirectly heated thermionic cathode emitting electron cloud
- * - Twin Alnico V permanent magnet pole shoes establishing axial uniform B-field
+ * - Twin Alnico V permanent magnet pole shoes & return yoke establishing axial uniform B-field
  * - Rotating 4-spoke electron hub space-charge cloud interacting with RF electric fields
  * - Coaxial output coupling loop launching microwave power into rectangular waveguide (Claim 2)
+ * - Waveguide launch horn and rotating RF mode-stirrer fan
  */
 
 import * as THREE from "three";
@@ -32,6 +34,8 @@ export interface SpencerMicrowaveModel {
     boreMat: THREE.MeshStandardMaterial;
     steelMat: THREE.MeshStandardMaterial;
     spokeMat: THREE.PointsMaterial;
+    ceramicInsulator?: THREE.MeshStandardMaterial;
+    radiatorFin?: THREE.MeshStandardMaterial;
   };
   updateKinematics: (
     delta: number,
@@ -62,7 +66,7 @@ export function buildSpencerMicrowaveModel(): SpencerMicrowaveModel {
     roughness: 0.4,
     metalness: 0.5,
     emissive: 0xef4444,
-    emissiveIntensity: 0.8,
+    emissiveIntensity: 0.85,
   });
   disposables.push(cathodeMat);
 
@@ -91,6 +95,20 @@ export function buildSpencerMicrowaveModel(): SpencerMicrowaveModel {
   });
   disposables.push(steelMat);
 
+  const ceramicInsulator = new THREE.MeshStandardMaterial({
+    color: 0xf8fafc,
+    roughness: 0.2,
+    metalness: 0.1,
+  });
+  disposables.push(ceramicInsulator);
+
+  const radiatorFin = new THREE.MeshStandardMaterial({
+    color: 0x94a3b8,
+    roughness: 0.3,
+    metalness: 0.85,
+  });
+  disposables.push(radiatorFin);
+
   // ==========================================
   // CAVITY MAGNETRON CORE ASSEMBLY (CLAIM 1)
   // ==========================================
@@ -104,6 +122,19 @@ export function buildSpencerMicrowaveModel(): SpencerMicrowaveModel {
   anodeOuter.castShadow = true;
   anodeOuter.receiveShadow = true;
   magnetronGroup.add(anodeOuter);
+
+  // Radial Aluminum Extruded Heat Radiator Cooling Fins
+  const finCount = 24;
+  const finGeo = new THREE.BoxGeometry(1.4, 3.2, 0.08);
+  disposables.push(finGeo);
+  for (let f = 0; f < finCount; f++) {
+    const fAngle = (f * Math.PI * 2) / finCount;
+    const fin = new THREE.Mesh(finGeo, radiatorFin);
+    fin.position.set(Math.cos(fAngle) * 4.9, 0, Math.sin(fAngle) * 4.9);
+    fin.rotation.y = -fAngle;
+    fin.castShadow = true;
+    magnetronGroup.add(fin);
+  }
 
   // Central Cylindrical Interaction Bore
   const boreGeo = new THREE.CylinderGeometry(1.5, 1.5, 3.42, 36);
@@ -151,7 +182,16 @@ export function buildSpencerMicrowaveModel(): SpencerMicrowaveModel {
   const cathodeMesh = new THREE.Mesh(cathodeGeo, cathodeMat);
   magnetronGroup.add(cathodeMesh);
 
-  // Output Waveguide Coupling Loop (Claim 2)
+  // Ceramic High-Voltage Insulator Bushings at tube ends
+  [-2.4, 2.4].forEach((iy) => {
+    const insGeo = new THREE.CylinderGeometry(0.85, 0.85, 0.65, 20);
+    disposables.push(insGeo);
+    const insulator = new THREE.Mesh(insGeo, ceramicInsulator);
+    insulator.position.y = iy;
+    magnetronGroup.add(insulator);
+  });
+
+  // Output Waveguide Coupling Loop & Rectangular Horn (Claim 2)
   const waveguideGroup = new THREE.Group();
   waveguideGroup.position.set(3.8, 0, 0);
 
@@ -159,7 +199,15 @@ export function buildSpencerMicrowaveModel(): SpencerMicrowaveModel {
   disposables.push(guideGeo);
   const guideMesh = new THREE.Mesh(guideGeo, steelMat);
   guideMesh.position.x = 1.75;
+  guideMesh.castShadow = true;
   waveguideGroup.add(guideMesh);
+
+  // Waveguide Mounting Flange
+  const flangeGeo = new THREE.BoxGeometry(0.3, 3.2, 2.2);
+  disposables.push(flangeGeo);
+  const flange = new THREE.Mesh(flangeGeo, steelMat);
+  flange.position.x = 3.5;
+  waveguideGroup.add(flange);
 
   const loopGeo = new THREE.TorusGeometry(0.55, 0.06, 8, 24);
   disposables.push(loopGeo);
@@ -168,14 +216,23 @@ export function buildSpencerMicrowaveModel(): SpencerMicrowaveModel {
   waveguideGroup.add(loopMesh);
   magnetronGroup.add(waveguideGroup);
 
-  // Permanent Alnico Magnet Pole Shoes (Axial B-Field)
+  // Permanent Alnico Magnet Pole Shoes & Outer Magnetic Return Yoke
   [-2.8, 2.8].forEach((yMag) => {
     const poleGeo = new THREE.CylinderGeometry(4.6, 4.6, 1.2, 36);
     disposables.push(poleGeo);
     const poleShoe = new THREE.Mesh(poleGeo, alnicoMagnetMat);
     poleShoe.position.y = yMag;
+    poleShoe.castShadow = true;
     magnetronGroup.add(poleShoe);
   });
+
+  // Heavy steel C-clamp magnetic return yoke bridge
+  const yokeGeo = new THREE.BoxGeometry(1.2, 6.8, 2.2);
+  disposables.push(yokeGeo);
+  const yoke = new THREE.Mesh(yokeGeo, alnicoMagnetMat);
+  yoke.position.set(-4.8, 0, 0);
+  yoke.castShadow = true;
+  magnetronGroup.add(yoke);
 
   // ==========================================
   // ROTATING ELECTRON SPOKE WHEEL PARTICLES
@@ -254,6 +311,8 @@ export function buildSpencerMicrowaveModel(): SpencerMicrowaveModel {
       boreMat,
       steelMat,
       spokeMat,
+      ceramicInsulator,
+      radiatorFin,
     },
     updateKinematics,
     dispose,

@@ -1,11 +1,10 @@
 "use client";
 
-import { Camera, Eye, EyeOff, Layers, RotateCcw, Volume2, VolumeX, Zap } from "lucide-react";
+import { Camera, Eye, EyeOff, RotateCcw, Zap } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import * as THREE from "three";
 import { stepTeslaMotorFig9, teslaBAt } from "@/physics/teslaKernel";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
-import { soundEngine } from "@/utils/soundEngine";
 import { createThreeStudioScene, type StudioContext } from "./ThreeStudioScene";
 import { buildTeslaMotorModel, updateTeslaMotorKinematics } from "./teslaMotorModel";
 import { useLiveSimParams } from "./useLiveSimParams";
@@ -16,18 +15,14 @@ export function TeslaMotor3D() {
   const containerRef = useRef<HTMLDivElement>(null);
 
   // Electrical & Mechanical Simulation State
-  const { params, updateParam } = usePatentPhysics("us-381968-tesla-motor");
+  const { params } = usePatentPhysics("us-381968-tesla-motor");
   const [showUiOverlay, setShowUiOverlay] = useState<boolean>(true);
-  const [isCutaway, setIsCutaway] = useState<boolean>(false);
   const acFrequencyHz = params.frequency ?? 60;
   const phaseCount = (params.phaseCount as 2 | 3) ?? 2;
-  // The shared phase selector chooses a printed arrangement. It does not turn
-  // Fig. 9's two-circuit synchronous-disk relation into a general three-phase law.
-  const sourceFigure = phaseCount === 3 ? "Fig. 13" : "Fig. 9";
+  const fig13Unavailable = phaseCount === 3;
   const [showMagneticFlux] = useState<boolean>(true);
   const [showCalloutPins, setShowCalloutPins] = useState<boolean>(false);
   const [activeCamera, setActiveCamera] = useState<CameraPreset>("iso");
-  const isPlayingAudio = (params.acHum ?? 0) === 1;
 
   const apparatus = stepTeslaMotorFig9(acFrequencyHz);
 
@@ -35,8 +30,6 @@ export function TeslaMotor3D() {
     acFrequencyHz,
     phaseCount,
     showMagneticFlux,
-    isCutaway,
-    isPlayingAudio,
     fieldDisplayOmegaRadPerS: apparatus.fieldDisplayOmegaRadPerS,
   });
 
@@ -78,18 +71,6 @@ export function TeslaMotor3D() {
     controls.update();
   };
 
-  // Web Audio AC Motor 60Hz Harmonic Sound
-  useEffect(() => {
-    if (isPlayingAudio) {
-      soundEngine.playTeslaMotorHum(acFrequencyHz, apparatus.diskRpm);
-    } else {
-      soundEngine.stopContinuousTone();
-    }
-    return () => {
-      soundEngine.stopContinuousTone();
-    };
-  }, [isPlayingAudio, acFrequencyHz, apparatus.diskRpm]);
-
   useEffect(() => {
     const container = containerRef.current;
     if (!container) return;
@@ -105,10 +86,8 @@ export function TeslaMotor3D() {
     controlsRef.current = controls;
 
     // --- 3D STATOR & ROTOR ASSEMBLY ---
-    const fig9Model = buildTeslaMotorModel(2);
-    const fig13Model = buildTeslaMotorModel(3);
-    fig13Model.rootGroup.visible = false;
-    scene.add(fig9Model.rootGroup, fig13Model.rootGroup);
+    const fig9Model = buildTeslaMotorModel();
+    scene.add(fig9Model.rootGroup);
 
     // --- ROTATING B-FIELD VECTOR ARROW ---
     const bFieldArrow = new THREE.ArrowHelper(
@@ -132,28 +111,24 @@ export function TeslaMotor3D() {
         lastFrameTimeMs === undefined ? 0 : Math.min((frameTimeMs - lastFrameTimeMs) / 1000, 0.1);
       lastFrameTimeMs = frameTimeMs;
       const p = live.current;
-      const activePhaseCount = p.phaseCount === 3 ? 3 : 2;
-      const model = activePhaseCount === 3 ? fig13Model : fig9Model;
-      fig9Model.rootGroup.visible = activePhaseCount === 2;
-      fig13Model.rootGroup.visible = activePhaseCount === 3;
+      const sourceGuideAvailable = p.phaseCount !== 3;
+      fig9Model.rootGroup.visible = sourceGuideAvailable;
 
-      // Electrical ω shown at 1/20 so a 60 Hz field is visible.
+      // The shared display rate keeps the field motion legible in the source guide.
       const omegaDisplay = p.fieldDisplayOmegaRadPerS;
       bFieldAngle += omegaDisplay * delta;
-      const field = teslaBAt(bFieldAngle, activePhaseCount);
+      const field = teslaBAt(bFieldAngle);
       bFieldArrow.setDirection(new THREE.Vector3(field.bx, 0, field.by));
 
       updateTeslaMotorKinematics(
-        model,
+        fig9Model,
         delta,
         omegaDisplay,
         bFieldAngle,
-        activePhaseCount,
-        p.showMagneticFlux,
-        p.isCutaway,
+        p.showMagneticFlux && sourceGuideAvailable,
       );
 
-      bFieldArrow.visible = p.showMagneticFlux;
+      bFieldArrow.visible = p.showMagneticFlux && sourceGuideAvailable;
 
       controls.update();
       renderer.render(scene, camera);
@@ -164,7 +139,6 @@ export function TeslaMotor3D() {
     return () => {
       cancelAnimationFrame(reqId);
       fig9Model.dispose();
-      fig13Model.dispose();
       bFieldArrow.dispose();
       studio.dispose();
     };
@@ -182,40 +156,40 @@ export function TeslaMotor3D() {
             <div className="bg-white/90 dark:bg-ink-900/90 backdrop-blur-md p-2 sm:px-3.5 sm:py-2.5 rounded-xl border border-parchment-300 dark:border-ink-700 shadow-sm">
               <div className="text-[10px] sm:text-[11px] font-sans text-amber-700 dark:text-amber-400 font-bold uppercase tracking-wider flex items-center gap-1.5">
                 <Zap className="w-3 h-3 sm:w-3.5 sm:h-3.5 animate-pulse text-amber-500" />
-                US 381,968 {sourceFigure} Teaching Model
+                US 381,968 Fig. 9 Source Guide
               </div>
-              {phaseCount === 2 ? (
+              {!fig13Unavailable ? (
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-3 gap-y-0.5 sm:gap-y-1 mt-1 text-[10px] sm:text-xs font-sans">
                   <div>
-                    <span className="text-ink-600 dark:text-ink-400">Generator rotation:</span>{" "}
+                    <span className="text-ink-600 dark:text-ink-400">Ring R:</span>{" "}
                     <span className="font-bold text-blue-600 dark:text-blue-400">
-                      {apparatus.generatorRpm} RPM
-                    </span>
-                  </div>
-                  <div>
-                    <span className="text-ink-600 dark:text-ink-400">Pole shift around R:</span>{" "}
-                    <span className="font-bold text-emerald-600 dark:text-emerald-400">
-                      {apparatus.poleShiftRpm} RPM
+                      annulus and four coils
                     </span>
                   </div>
                   <div>
                     <span className="text-ink-600 dark:text-ink-400">Disk D:</span>{" "}
-                    <span className="font-bold text-amber-600 dark:text-amber-400">
-                      synchronous relation
+                    <span className="font-bold text-emerald-600 dark:text-emerald-400">
+                      mounted within R
                     </span>
                   </div>
                   <div>
-                    <span className="text-ink-600 dark:text-ink-400">Generator contacts:</span>{" "}
+                    <span className="text-ink-600 dark:text-ink-400">Generator G:</span>{" "}
+                    <span className="font-bold text-amber-600 dark:text-amber-400">
+                      B/B′ coils and contact rings
+                    </span>
+                  </div>
+                  <div>
+                    <span className="text-ink-600 dark:text-ink-400">L/L′:</span>{" "}
                     <span className="font-bold text-purple-600 dark:text-purple-400">
-                      collector rings and brushes
+                      motor-generator circuits
                     </span>
                   </div>
                 </div>
               ) : (
                 <div className="mt-1 text-[10px] sm:text-xs font-sans text-ink-700 dark:text-ink-300">
-                  Fig. 13 compares three independent generator and motor circuits: six motor poles,
-                  three armature coils, six collector rings, and collecting brushes. It is not the
-                  Fig. 9 disk-D synchronous-rate demonstration.
+                  The three-circuit Fig. 13 arrangement is available in the facsimile, but this 3D
+                  source guide deliberately renders Fig. 9 only rather than synthesizing another
+                  model.
                 </div>
               )}
             </div>
@@ -228,20 +202,8 @@ export function TeslaMotor3D() {
           </div>
         )}
 
-        {/* Top Right Tool Bar (Toggle UI, Audio, Pins, Cutaway, Reset) */}
+        {/* Top-right controls for the source guide. */}
         <div className="absolute top-3 right-3 sm:top-4 sm:right-4 z-10 flex gap-1.5 sm:gap-2">
-          <button
-            type="button"
-            onClick={() => setIsCutaway(!isCutaway)}
-            title={isCutaway ? "Switch to Solid Stator" : "Switch to Stator Cutaway"}
-            className={`p-1.5 sm:p-2.5 rounded-xl backdrop-blur-md border transition-colors shadow-sm ${
-              isCutaway
-                ? "bg-amber-600 text-white border-amber-700 shadow-md ring-2 ring-amber-500/30"
-                : "bg-white/90 dark:bg-ink-900/90 border-parchment-300 dark:border-ink-700 text-ink-700 dark:text-parchment-300 hover:bg-parchment-100"
-            }`}
-          >
-            <Layers className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
-          </button>
           <button
             type="button"
             onClick={() => setShowUiOverlay(!showUiOverlay)}
@@ -257,23 +219,6 @@ export function TeslaMotor3D() {
               <EyeOff className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
             ) : (
               <Eye className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
-            )}
-          </button>
-          <button
-            aria-label={isPlayingAudio ? "Stop AC Motor Audio" : "Play AC Motor 60Hz Tone"}
-            type="button"
-            onClick={() => updateParam("acHum", isPlayingAudio ? 0 : 1)}
-            className={`p-1.5 sm:p-2.5 rounded-xl backdrop-blur-md border transition-colors shadow-sm ${
-              isPlayingAudio
-                ? "bg-amber-600 text-white border-amber-700 shadow-md"
-                : "bg-white/90 dark:bg-ink-900/90 border-parchment-300 dark:border-ink-700 text-ink-700 dark:text-parchment-300 hover:bg-parchment-100"
-            }`}
-            title={isPlayingAudio ? "Stop AC Motor Audio" : "Play AC Motor 60Hz Tone"}
-          >
-            {isPlayingAudio ? (
-              <VolumeX className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
-            ) : (
-              <Volume2 className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-amber-600" />
             )}
           </button>
           <button

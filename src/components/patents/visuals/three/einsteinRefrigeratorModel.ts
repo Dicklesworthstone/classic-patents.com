@@ -22,6 +22,8 @@ export interface EinsteinRefrigeratorModel {
     condenserFins: THREE.MeshStandardMaterial;
     absorberMat: THREE.MeshStandardMaterial;
     fluidMat: THREE.PointsMaterial;
+    insulationMat?: THREE.MeshStandardMaterial;
+    frostMat?: THREE.MeshStandardMaterial;
   };
   dispose: () => void;
 }
@@ -81,6 +83,22 @@ export function buildEinsteinRefrigeratorModel(): EinsteinRefrigeratorModel {
   });
   materialsToDispose.push(absorberMat);
 
+  const insulationMat = new THREE.MeshStandardMaterial({
+    color: 0xd4d4d8,
+    roughness: 0.8,
+    metalness: 0.05,
+  });
+  materialsToDispose.push(insulationMat);
+
+  const frostMat = new THREE.MeshStandardMaterial({
+    color: 0xe0f2fe,
+    roughness: 0.15,
+    metalness: 0.2,
+    emissive: 0x38bdf8,
+    emissiveIntensity: 0.3,
+  });
+  materialsToDispose.push(frostMat);
+
   // --- 2. HERMETIC VESSEL HIERARCHY ---
   const fridgeGroup = new THREE.Group();
   rootGroup.add(fridgeGroup);
@@ -118,6 +136,7 @@ export function buildEinsteinRefrigeratorModel(): EinsteinRefrigeratorModel {
     const y = (c - 2) * 0.42;
     const xLeft = -1.2;
     const xRight = 1.2;
+
     condenserPts.push(new THREE.Vector3(c % 2 === 0 ? xLeft : xRight, y, 0));
     condenserPts.push(new THREE.Vector3(c % 2 === 0 ? xRight : xLeft, y, 0));
   }

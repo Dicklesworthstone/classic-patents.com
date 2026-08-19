@@ -13,7 +13,6 @@ import { CorlissEngineSim } from "./CorlissEngineSim";
 import { DaimlerEngineSim } from "./DaimlerEngineSim";
 import { DavenportMotorSim } from "./DavenportMotorSim";
 import { DeLavalSeparatorSim } from "./DeLavalSeparatorSim";
-import { DieselEngineSim } from "./DieselEngineSim";
 import { EastmanKodakSim } from "./EastmanKodakSim";
 import { EdisonBulbSim } from "./EdisonBulbSim";
 import { EdisonPhonographSim } from "./EdisonPhonographSim";
@@ -91,10 +90,6 @@ const DavenportElectricMotor3D = dynamic(
 );
 const DeLavalSeparator3D = dynamic(
   () => import("./three/DeLavalSeparator3D").then((mod) => mod.DeLavalSeparator3D),
-  { ssr: false, loading: ThreeLoading },
-);
-const DieselEngine3D = dynamic(
-  () => import("./three/DieselEngine3D").then((mod) => mod.DieselEngine3D),
   { ssr: false, loading: ThreeLoading },
 );
 const EastmanKodak3D = dynamic(
@@ -393,7 +388,12 @@ export function PatentVisualDispatcher({ patentId }: PatentVisualDispatcherProps
           case "us-593138-tesla-coil":
             return renderMode === "3d-physics" ? <TeslaCoil3D /> : <TeslaCoilSim />;
           case "us-542846-diesel-engine":
-            return renderMode === "3d-physics" ? <DieselEngine3D /> : <DieselEngineSim />;
+            return (
+              <SourceVisualUnavailable
+                detail="US 542,846 claims controlled fuel admission after compression and during expansion. The inherited engine visual adds unreviewed later-engine valve gear, dimensions, pressures, fuel atomization, materials, cycle timing, efficiency, and performance claims, so it is withheld until a source-specific instrument is independently accepted."
+                title="Heat-engine visual under source review"
+              />
+            );
           case "us-586193-marconi-radio":
             return (
               <SourceVisualUnavailable

@@ -12,44 +12,53 @@ import {
 } from "lucide-react";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import {
+  corlissSchematicValve,
   delavalSchematicDiscY,
   edisonSchematicGlowFill,
   edisonSchematicGlowOpacity,
   edisonSchematicGrooveX,
   gatlingSchematicBarrelY,
   gliddenSchematicSpurX,
+  goodyearSchematicCrosslink,
+  goodyearSchematicStrand,
   grammeSchematicJunction,
   hollerithSchematicDialX,
   hollerithSchematicPinX,
   kevlarSchematicLattice,
+  lincolnSchematicChamber,
   mccormickSchematicReelArm,
   mccormickSchematicSickleX,
   nobelSchematicKieselguhr,
-  noyceSchematicContactX,
-  noyceSchematicJunction,
   pasteurSchematicBubbleX,
   peltonSchematicBucket,
   spencerSchematicCavity,
+  stepBellTelephone,
   stepColtRevolver,
+  stepCorlissEngine,
   stepDaimlerEngine,
   stepDeLavalSeparator,
   stepEdisonPhonograph,
   stepEricssonPropeller,
   stepGatlingGun,
   stepGliddenBarbedWire,
+  stepGoodyearRubber,
   stepGrammeDynamo,
   stepHollerithTabulating,
   stepKevlarContinuum,
+  stepLincolnBuoy,
+  stepMarconiRadio,
+  stepMaximMachineGun,
   stepMcCormickReaper,
   stepNobelDynamite,
-  stepNoyceIC,
   stepOttoEngine,
   stepParsonsTurbine,
   stepPasteurFermentation,
   stepPeltonWheel,
   stepSpencerMicrowave,
+  stepThomsonWelding,
   stepWhitneyCottonGin,
   stepZeppelinAirship,
+  thomsonSchematicJawX,
   whitneySchematicRay,
   zeppelinSchematicCell,
 } from "@/physics/catalogKernels";
@@ -57,10 +66,13 @@ import { FrankenSimEngine, lamarrSchematicHop, lamarrSchematicStaffY } from "@/p
 import { fermiSchematicSlug, stepFermiKinetics } from "@/physics/fermiKinetics";
 import {
   ccdSchematicGateX,
+  mergenthalerSchematicChuteX,
   otisSchematicRailY,
   renoSchematicCleat,
   sholesSchematicTypebar,
   stepCcdWells,
+  stepHoweSewingMachine,
+  stepMergenthalerLinotype,
   stepOtisElevator,
   stepRenoEscalator,
   stepSholesTypewriter,
@@ -70,6 +82,7 @@ import {
   teslaBAt,
   teslaCoilSiUnits,
   teslaFig4Strobe,
+  teslaSchematicPoleRect,
   teslaSchematicStrobeOpacity,
 } from "@/physics/teslaKernel";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
@@ -83,6 +96,20 @@ const SCHEMATIC_CALLOUT_SPACE = 100;
 const SCHEMATIC_RETICLE_INNER_R = 18;
 const SCHEMATIC_RETICLE_OUTER_R = 28;
 const SCHEMATIC_RETICLE_HAIR = 36;
+
+const NOYCE_FIGURE_SOURCE_CROPS: Readonly<Record<string, string>> = {
+  "Fig. 1": "/patents/figures/us-2981877-noyce-ic/fig-1-source-crop-v1.png",
+  "Fig. 2": "/patents/figures/us-2981877-noyce-ic/fig-2-source-crop-v1.png",
+  "Fig. 3": "/patents/figures/us-2981877-noyce-ic/fig-3-source-crop-v1.png",
+  "Fig. 4": "/patents/figures/us-2981877-noyce-ic/fig-4-source-crop-v1.png",
+  "Fig. 5": "/patents/figures/us-2981877-noyce-ic/fig-5-source-crop-v1.png",
+  "Fig. 6": "/patents/figures/us-2981877-noyce-ic/fig-6-source-crop-v1.png",
+  "Fig. 7": "/patents/figures/us-2981877-noyce-ic/fig-7-source-crop-v1.png",
+};
+
+function noyceFigureSourceCrop(figureNumber: string): string | null {
+  return NOYCE_FIGURE_SOURCE_CROPS[figureNumber] ?? null;
+}
 
 /** Map 0–100 callout space onto the 400×300 schematic viewBox. */
 function schematicCalloutSvg(xPct: number, yPct: number) {
@@ -366,50 +393,24 @@ function _renderHistoricalSchematic(
             fill="#1e3a8a"
             fillOpacity={apparatus.schematicFillOpacity}
           />
-          <rect
-            x="180"
-            y="58"
-            width="40"
-            height="26"
-            rx="4"
-            fill="#d97706"
-            fillOpacity="0.3"
-            stroke="#f59e0b"
-            strokeWidth="2"
-          />
-          <rect
-            x="180"
-            y="216"
-            width="40"
-            height="26"
-            rx="4"
-            fill="#d97706"
-            fillOpacity="0.3"
-            stroke="#f59e0b"
-            strokeWidth="2"
-          />
-          <rect
-            x="108"
-            y="130"
-            width="26"
-            height="40"
-            rx="4"
-            fill="#2563eb"
-            fillOpacity="0.3"
-            stroke="#38bdf8"
-            strokeWidth="2"
-          />
-          <rect
-            x="266"
-            y="130"
-            width="26"
-            height="40"
-            rx="4"
-            fill="#2563eb"
-            fillOpacity="0.3"
-            stroke="#38bdf8"
-            strokeWidth="2"
-          />
+          {Array.from({ length: apparatus.schematicPoleCount }, (_, i) => {
+            const pole = teslaSchematicPoleRect(i);
+            const isVertical = pole.h > pole.w;
+            return (
+              <rect
+                key={i}
+                x={pole.x}
+                y={pole.y}
+                width={pole.w}
+                height={pole.h}
+                rx="4"
+                fill={isVertical ? "#2563eb" : "#d97706"}
+                fillOpacity="0.3"
+                stroke={isVertical ? "#38bdf8" : "#f59e0b"}
+                strokeWidth="2"
+              />
+            );
+          })}
           <circle
             cx={apparatus.statorCenterX}
             cy={apparatus.statorCenterY}
@@ -487,9 +488,26 @@ function _renderHistoricalSchematic(
             strokeWidth="2"
           />
           <line x1="200" y1="88" x2="200" y2="170" stroke="#fbbf24" strokeWidth="2.5" />
-          <circle cx="160" cy="245" r="5" fill="#ef4444" />
-          <circle cx="240" cy="245" r="5" fill="#ef4444" />
-          <line x1="165" y1="245" x2="235" y2="245" stroke="#f87171" strokeDasharray="2 2" />
+          <circle
+            cx={coil.schematicSparkX0}
+            cy={coil.schematicSparkY}
+            r={coil.schematicSparkR}
+            fill="#ef4444"
+          />
+          <circle
+            cx={coil.schematicSparkX1}
+            cy={coil.schematicSparkY}
+            r={coil.schematicSparkR}
+            fill="#ef4444"
+          />
+          <line
+            x1={coil.schematicSparkX0 + 5}
+            y1={coil.schematicSparkY}
+            x2={coil.schematicSparkX1 - 5}
+            y2={coil.schematicSparkY}
+            stroke="#f87171"
+            strokeDasharray="2 2"
+          />
         </g>
       );
     }
@@ -681,7 +699,8 @@ function _renderHistoricalSchematic(
           </text>
         </g>
       );
-    case "farnsworth-tv":
+    case "farnsworth-tv": {
+      const tv = FrankenSimEngine.stepFarnsworthTv(1.5, 120, 500);
       return (
         <g stroke="#38bdf8" strokeWidth="1.5" fill="none">
           <rect
@@ -695,16 +714,61 @@ function _renderHistoricalSchematic(
             stroke="#7dd3fc"
             strokeWidth="2"
           />
-          <circle cx="95" cy="150" r="28" fill="#0369a1" fillOpacity="0.4" stroke="#38bdf8" />
-          <text x="95" y="154" fill="#bae6fd" fontSize="8" textAnchor="middle">
+          <circle
+            cx={tv.schematicCathodeCx}
+            cy={tv.schematicCathodeCy}
+            r={tv.schematicCathodeR}
+            fill="#0369a1"
+            fillOpacity="0.4"
+            stroke="#38bdf8"
+          />
+          <text
+            x={tv.schematicCathodeCx}
+            y={tv.schematicCathodeCy + 4}
+            fill="#bae6fd"
+            fontSize="8"
+            textAnchor="middle"
+          >
             CsO
           </text>
-          <rect x="300" y="132" width="22" height="36" rx="3" fill="#f59e0b" fillOpacity="0.35" />
-          <line x1="123" y1="150" x2="300" y2="150" stroke="#fbbf24" strokeDasharray="4 3" />
-          <rect x="150" y="78" width="70" height="14" rx="2" fill="#d97706" fillOpacity="0.4" />
-          <rect x="150" y="208" width="70" height="14" rx="2" fill="#d97706" fillOpacity="0.4" />
+          <rect
+            x={tv.schematicCollectorX}
+            y={tv.schematicCollectorY}
+            width="22"
+            height="36"
+            rx="3"
+            fill="#f59e0b"
+            fillOpacity="0.35"
+          />
+          <line
+            x1={tv.schematicCathodeCx + tv.schematicCathodeR}
+            y1={tv.schematicCathodeCy}
+            x2={tv.schematicCollectorX}
+            y2={tv.schematicCathodeCy}
+            stroke="#fbbf24"
+            strokeDasharray="4 3"
+          />
+          <rect
+            x={tv.schematicDeflectorX}
+            y={tv.schematicDeflectorY0}
+            width="70"
+            height="14"
+            rx="2"
+            fill="#d97706"
+            fillOpacity="0.4"
+          />
+          <rect
+            x={tv.schematicDeflectorX}
+            y={tv.schematicDeflectorY1}
+            width="70"
+            height="14"
+            rx="2"
+            fill="#d97706"
+            fillOpacity="0.4"
+          />
         </g>
       );
+    }
     case "spencer-microwave": {
       const spencer = stepSpencerMicrowave();
       return (
@@ -749,68 +813,26 @@ function _renderHistoricalSchematic(
       );
     }
     case "noyce-ic": {
-      const noyce = stepNoyceIC({});
+      const sourceCrop = noyceFigureSourceCrop(figureNumber);
+      if (!sourceCrop) {
+        return (
+          <text x="200" y="150" fill="#94a3b8" fontSize="11" textAnchor="middle">
+            Source drawing crop unavailable for {figureNumber}
+          </text>
+        );
+      }
       return (
-        <g stroke="#38bdf8" strokeWidth="1.5" fill="none">
-          <rect
-            x="70"
-            y="70"
-            width="260"
-            height="160"
-            rx="4"
-            fill="#1e3a8a"
-            fillOpacity="0.25"
-            stroke="#60a5fa"
+        <g>
+          <image
+            href={sourceCrop}
+            x="16"
+            y="42"
+            width="368"
+            height="238"
+            preserveAspectRatio="xMidYMid meet"
           />
-          {Array.from({ length: noyce.schematicJunctionCount }, (_, i) => {
-            const box = noyceSchematicJunction(
-              i,
-              noyce.schematicJunctionOriginX,
-              noyce.schematicJunctionPitchX,
-              noyce.schematicJunctionY,
-            );
-            return (
-              <rect
-                key={i}
-                x={box.x}
-                y={box.y}
-                width={noyce.schematicJunctionW}
-                height={noyce.schematicJunctionH}
-                fill="#64748b"
-                fillOpacity="0.5"
-                stroke="#94a3b8"
-              />
-            );
-          })}
-          <rect
-            x="80"
-            y="110"
-            width="240"
-            height="10"
-            fill="#f59e0b"
-            fillOpacity="0.5"
-            stroke="#fbbf24"
-          />
-          {Array.from({ length: noyce.schematicJunctionCount }, (_, i) => {
-            const x = noyceSchematicContactX(
-              i,
-              noyce.schematicContactOriginX,
-              noyce.schematicContactPitchX,
-            );
-            return (
-              <line
-                key={i}
-                x1={x}
-                y1={noyce.schematicContactY0}
-                x2={x}
-                y2={noyce.schematicContactY1}
-                stroke="#fbbf24"
-                strokeWidth="2"
-              />
-            );
-          })}
-          <text x="200" y="98" fill="#93c5fd" fontSize="9" textAnchor="middle">
-            SiO₂ + vapor-deposited Al
+          <text x="200" y="286" fill="#94a3b8" fontSize="8" textAnchor="middle">
+            Pinned facsimile crop · {figureNumber}
           </text>
         </g>
       );
@@ -862,14 +884,15 @@ function _renderHistoricalSchematic(
         </g>
       );
     }
-    case "bell-phone":
+    case "bell-phone": {
+      const bell = stepBellTelephone({});
       return (
         <g stroke="#38bdf8" strokeWidth="1.5" fill="none">
           <ellipse
-            cx="200"
-            cy="70"
-            rx="55"
-            ry="16"
+            cx={bell.schematicHornCx}
+            cy={bell.schematicHornCy}
+            rx={bell.schematicHornRx}
+            ry={bell.schematicHornRy}
             fill="#334155"
             fillOpacity="0.4"
             stroke="#94a3b8"
@@ -897,8 +920,16 @@ function _renderHistoricalSchematic(
           <text x="200" y="163" fill="#99f6e4" fontSize="8" textAnchor="middle">
             H₂SO₄
           </text>
-          <line x1="185" y1="140" x2="185" y2="200" stroke="#f59e0b" />
-          <line x1="215" y1="140" x2="215" y2="200" stroke="#f59e0b" />
+          {bell.schematicElectrodeXs.map((x) => (
+            <line
+              key={x}
+              x1={x}
+              y1={bell.schematicElectrodeY0}
+              x2={x}
+              y2={bell.schematicElectrodeY1}
+              stroke="#f59e0b"
+            />
+          ))}
           <rect
             x="150"
             y="200"
@@ -911,7 +942,9 @@ function _renderHistoricalSchematic(
           />
         </g>
       );
-    case "lincoln-buoy":
+    }
+    case "lincoln-buoy": {
+      const lincoln = stepLincolnBuoy({});
       return (
         <g stroke="#38bdf8" strokeWidth="1.5" fill="none">
           <path
@@ -921,43 +954,72 @@ function _renderHistoricalSchematic(
             stroke="#60a5fa"
             strokeWidth="2"
           />
-          <rect
-            x="80"
-            y="140"
-            width="70"
-            height="40"
-            rx="8"
-            fill="#0f766e"
-            fillOpacity="0.35"
-            stroke="#2dd4bf"
-          />
-          <rect
-            x="250"
-            y="140"
-            width="70"
-            height="40"
-            rx="8"
-            fill="#0f766e"
-            fillOpacity="0.35"
-            stroke="#2dd4bf"
-          />
+          {lincoln.schematicChamberXs.map((_x, i) => {
+            const chamber = lincolnSchematicChamber(
+              i,
+              lincoln.schematicChamberXs,
+              lincoln.schematicChamberY,
+            );
+            return (
+              <rect
+                key={i}
+                x={chamber.x}
+                y={chamber.y}
+                width={lincoln.schematicChamberW}
+                height={lincoln.schematicChamberH}
+                rx="8"
+                fill="#0f766e"
+                fillOpacity="0.35"
+                stroke="#2dd4bf"
+              />
+            );
+          })}
           <line x1="50" y1="190" x2="350" y2="190" stroke="#38bdf8" strokeDasharray="6 4" />
-          <line x1="115" y1="80" x2="115" y2="140" stroke="#f59e0b" />
-          <line x1="285" y1="80" x2="285" y2="140" stroke="#f59e0b" />
+          {lincoln.schematicTieXs.map((x) => (
+            <line key={x} x1={x} y1="80" x2={x} y2="140" stroke="#f59e0b" />
+          ))}
         </g>
       );
-    case "howe-sewing":
+    }
+    case "howe-sewing": {
+      const howe = stepHoweSewingMachine(300, 120, 3.5);
       return (
         <g stroke="#38bdf8" strokeWidth="1.5" fill="none">
           <rect x="70" y="190" width="260" height="22" rx="3" fill="#334155" stroke="#94a3b8" />
           <path d="M 90 190 L 90 90 L 220 90 L 220 130" stroke="#60a5fa" strokeWidth="3" />
-          <circle cx="300" cy="150" r="32" stroke="#f59e0b" strokeWidth="2" />
-          <line x1="300" y1="150" x2="322" y2="132" stroke="#fbbf24" strokeWidth="2" />
-          <line x1="220" y1="130" x2="220" y2="175" stroke="#ef4444" strokeWidth="2" />
-          <circle cx="220" cy="178" r="3" fill="#f87171" />
+          <circle
+            cx={howe.schematicShuttleCx}
+            cy={howe.schematicShuttleCy}
+            r={howe.schematicShuttleR}
+            stroke="#f59e0b"
+            strokeWidth="2"
+          />
+          <line
+            x1={howe.schematicShuttleCx}
+            y1={howe.schematicShuttleCy}
+            x2={howe.schematicShuttleCx + 22}
+            y2={howe.schematicShuttleCy - 18}
+            stroke="#fbbf24"
+            strokeWidth="2"
+          />
+          <line
+            x1={howe.schematicNeedleX}
+            y1="130"
+            x2={howe.schematicNeedleX}
+            y2="175"
+            stroke="#ef4444"
+            strokeWidth="2"
+          />
+          <circle
+            cx={howe.schematicNeedleX}
+            cy={howe.schematicNeedleY}
+            r={howe.schematicNeedleR}
+            fill="#f87171"
+          />
           <rect x="200" y="200" width="40" height="12" rx="2" fill="#d97706" fillOpacity="0.4" />
         </g>
       );
+    }
     case "goddard-rocket":
       return (
         <g stroke="#38bdf8" strokeWidth="1.5" fill="none">
@@ -1107,24 +1169,36 @@ function _renderHistoricalSchematic(
           <line x1="240" y1="115" x2="280" y2="150" stroke="#38bdf8" />
         </g>
       );
-    case "goodyear-rubber":
+    case "goodyear-rubber": {
+      const rubber = stepGoodyearRubber();
       return (
         <g stroke="#38bdf8" strokeWidth="1.5" fill="none">
-          <path d="M 70 80 Q 120 140 70 200" stroke="#f59e0b" strokeWidth="3" />
-          <path d="M 140 70 Q 190 150 140 220" stroke="#f59e0b" strokeWidth="3" />
-          <path d="M 220 75 Q 260 145 220 215" stroke="#f59e0b" strokeWidth="3" />
-          <path d="M 300 85 Q 340 150 300 210" stroke="#f59e0b" strokeWidth="3" />
+          {Array.from({ length: rubber.schematicStrandCount }, (_, i) => {
+            const s = goodyearSchematicStrand(i);
+            return (
+              <path
+                key={i}
+                d={`M ${s.x} ${s.y0} Q ${s.qx} ${s.qy} ${s.x} ${s.y1}`}
+                stroke="#f59e0b"
+                strokeWidth="3"
+              />
+            );
+          })}
           <line x1="88" y1="120" x2="155" y2="125" stroke="#38bdf8" strokeWidth="2" />
           <line x1="155" y1="170" x2="235" y2="165" stroke="#38bdf8" strokeWidth="2" />
           <line x1="235" y1="110" x2="315" y2="120" stroke="#38bdf8" strokeWidth="2" />
-          <circle cx="122" cy="123" r="5" fill="#34d399" />
-          <circle cx="195" cy="167" r="5" fill="#34d399" />
-          <circle cx="275" cy="115" r="5" fill="#34d399" />
+          {Array.from({ length: rubber.schematicCrosslinkCount }, (_, i) => {
+            const n = goodyearSchematicCrosslink(i);
+            return (
+              <circle key={i} cx={n.cx} cy={n.cy} r={rubber.schematicCrosslinkR} fill="#34d399" />
+            );
+          })}
           <text x="200" y="250" fill="#6ee7b7" fontSize="9" textAnchor="middle">
             Sulfur S–S crosslinks
           </text>
         </g>
       );
+    }
     case "lamarr-frequency-hopping": {
       const hop = FrankenSimEngine.stepLamarrFrequencyHopping();
       return (
@@ -1176,21 +1250,47 @@ function _renderHistoricalSchematic(
         </g>
       );
     }
-    case "marconi-radio":
+    case "marconi-radio": {
+      const radio = stepMarconiRadio();
       return (
         <g stroke="#38bdf8" strokeWidth="1.5" fill="none">
-          <line x1="120" y1="50" x2="120" y2="200" stroke="#94a3b8" strokeWidth="3" />
+          <line
+            x1={radio.schematicMastX}
+            y1="50"
+            x2={radio.schematicMastX}
+            y2="200"
+            stroke="#94a3b8"
+            strokeWidth="3"
+          />
           <line x1="80" y1="55" x2="160" y2="55" stroke="#f59e0b" strokeWidth="2" />
-          <line x1="120" y1="200" x2="200" y2="200" stroke="#38bdf8" />
-          <circle cx="230" cy="175" r="10" fill="#fbbf24" />
-          <circle cx="260" cy="175" r="10" fill="#fbbf24" />
-          <line x1="240" y1="175" x2="250" y2="175" stroke="#ef4444" strokeWidth="2" />
+          <line x1={radio.schematicMastX} y1="200" x2="200" y2="200" stroke="#38bdf8" />
+          <circle
+            cx={radio.schematicGapX0}
+            cy={radio.schematicGapY}
+            r={radio.schematicGapR}
+            fill="#fbbf24"
+          />
+          <circle
+            cx={radio.schematicGapX1}
+            cy={radio.schematicGapY}
+            r={radio.schematicGapR}
+            fill="#fbbf24"
+          />
+          <line
+            x1={radio.schematicGapX0 + 10}
+            y1={radio.schematicGapY}
+            x2={radio.schematicGapX1 - 10}
+            y2={radio.schematicGapY}
+            stroke="#ef4444"
+            strokeWidth="2"
+          />
           <rect x="210" y="210" width="80" height="20" fill="#334155" stroke="#94a3b8" />
           <text x="250" y="224" fill="#cbd5e1" fontSize="8" textAnchor="middle">
             Earth
           </text>
         </g>
       );
+    }
     case "einstein-refrigerator":
       return (
         <g stroke="#38bdf8" strokeWidth="1.5" fill="none">
@@ -1378,7 +1478,7 @@ function _renderHistoricalSchematic(
             5-Chamber Cylinder (Δθ={rotDeg.toFixed(0)}°)
           </text>
           <text x="50" y="42" fill="#bae6fd" fontSize="9">
-            Pawl & Hammer (US X9430)
+            Pawl &amp; Hammer (US X9430)
           </text>
         </g>
       );
@@ -1565,7 +1665,8 @@ function _renderHistoricalSchematic(
         </g>
       );
     }
-    case "mergenthaler-linotype":
+    case "mergenthaler-linotype": {
+      const lino = stepMergenthalerLinotype({});
       return (
         <g stroke="#38bdf8" strokeWidth="1.5" fill="none">
           {/* Magazine Chute */}
@@ -1575,9 +1676,24 @@ function _renderHistoricalSchematic(
             fill="#1e3a8a"
             fillOpacity="0.2"
           />
-          <line x1="140" y1="40" x2="110" y2="130" stroke="#38bdf8" strokeDasharray="3 3" />
-          <line x1="180" y1="40" x2="150" y2="130" stroke="#38bdf8" strokeDasharray="3 3" />
-          <line x1="220" y1="40" x2="190" y2="130" stroke="#38bdf8" strokeDasharray="3 3" />
+          {Array.from({ length: lino.schematicChuteCount }, (_, i) => {
+            const x1 = mergenthalerSchematicChuteX(
+              i,
+              lino.schematicChuteOriginX,
+              lino.schematicChutePitchX,
+            );
+            return (
+              <line
+                key={i}
+                x1={x1}
+                y1={lino.schematicChuteY1}
+                x2={x1 + lino.schematicChuteDx}
+                y2={lino.schematicChuteY2}
+                stroke="#38bdf8"
+                strokeDasharray="3 3"
+              />
+            );
+          })}
           {/* Assembler Front & Line of Matrices */}
           <rect
             x="70"
@@ -1593,7 +1709,13 @@ function _renderHistoricalSchematic(
             Assembled Matrix Line + Spacebands
           </text>
           {/* Casting Mold Disk */}
-          <circle cx="280" cy="180" r="45" stroke="#f87171" strokeWidth="2" />
+          <circle
+            cx={lino.schematicMoldCx}
+            cy={lino.schematicMoldCy}
+            r={lino.schematicMoldR}
+            stroke="#f87171"
+            strokeWidth="2"
+          />
           <rect
             x="260"
             y="172"
@@ -1604,7 +1726,7 @@ function _renderHistoricalSchematic(
             stroke="#f87171"
           />
           <text x="280" y="240" fill="#f87171" fontSize="9" textAnchor="middle">
-            Casting Mold & Lead Pump
+            Casting Mold &amp; Lead Pump
           </text>
           {/* Distributor Bar Keyways */}
           <line x1="80" y1="20" x2="320" y2="20" stroke="#4ade80" strokeWidth="3" />
@@ -1613,7 +1735,9 @@ function _renderHistoricalSchematic(
           </text>
         </g>
       );
-    case "maxim-machine-gun":
+    }
+    case "maxim-machine-gun": {
+      const maxim = stepMaximMachineGun({});
       return (
         <g stroke="#38bdf8" strokeWidth="1.5" fill="none">
           {/* Water Jacket */}
@@ -1648,7 +1772,12 @@ function _renderHistoricalSchematic(
             strokeWidth="4"
             strokeLinecap="round"
           />
-          <circle cx="280" cy="105" r="4" fill="#fbbf24" />
+          <circle
+            cx={maxim.schematicToggleCx}
+            cy={maxim.schematicToggleCy}
+            r={maxim.schematicToggleR}
+            fill="#fbbf24"
+          />
           {/* Fusee Spring */}
           <path
             d="M 330 140 Q 350 150, 330 160 T 310 170"
@@ -1664,6 +1793,7 @@ function _renderHistoricalSchematic(
           </text>
         </g>
       );
+    }
     case "daimler-engine": {
       const daimler = stepDaimlerEngine({});
       return (
@@ -1715,7 +1845,8 @@ function _renderHistoricalSchematic(
         </g>
       );
     }
-    case "eastman-kodak":
+    case "eastman-kodak": {
+      const kodak = FrankenSimEngine.stepEastmanKodak({});
       return (
         <g stroke="#38bdf8" strokeWidth="1.5" fill="none">
           {/* Box Camera Body */}
@@ -1730,9 +1861,28 @@ function _renderHistoricalSchematic(
             fillOpacity="0.3"
           />
           {/* Film Supply & Take-Up Spools */}
-          <circle cx="110" cy="90" r="22" stroke="#fbbf24" strokeWidth="2" />
-          <circle cx="110" cy="190" r="22" stroke="#fbbf24" strokeWidth="2" />
-          <line x1="132" y1="90" x2="132" y2="190" stroke="#fbbf24" strokeWidth="2" />
+          <circle
+            cx={kodak.schematicSpoolCx}
+            cy={kodak.schematicSpoolY0}
+            r={kodak.schematicSpoolR}
+            stroke="#fbbf24"
+            strokeWidth="2"
+          />
+          <circle
+            cx={kodak.schematicSpoolCx}
+            cy={kodak.schematicSpoolY1}
+            r={kodak.schematicSpoolR}
+            stroke="#fbbf24"
+            strokeWidth="2"
+          />
+          <line
+            x1={kodak.schematicSpoolCx + kodak.schematicSpoolR}
+            y1={kodak.schematicSpoolY0}
+            x2={kodak.schematicSpoolCx + kodak.schematicSpoolR}
+            y2={kodak.schematicSpoolY1}
+            stroke="#fbbf24"
+            strokeWidth="2"
+          />
           {/* Cone & Barrel Shutter */}
           <polygon
             points="150,140 260,100 260,180"
@@ -1740,7 +1890,13 @@ function _renderHistoricalSchematic(
             fill="#0284c7"
             fillOpacity="0.15"
           />
-          <circle cx="280" cy="140" r="20" stroke="#38bdf8" strokeWidth="2" />
+          <circle
+            cx={kodak.schematicShutterCx}
+            cy={kodak.schematicShutterCy}
+            r={kodak.schematicShutterR}
+            stroke="#38bdf8"
+            strokeWidth="2"
+          />
           <rect x="270" y="130" width="20" height="20" rx="2" fill="#38bdf8" fillOpacity="0.4" />
           <text x="110" y="145" fill="#fbbf24" fontSize="8" textAnchor="middle">
             100-Exposure Spool
@@ -1750,6 +1906,7 @@ function _renderHistoricalSchematic(
           </text>
         </g>
       );
+    }
     case "hollerith-tabulating": {
       const hollerith = stepHollerithTabulating({});
       return (
@@ -1866,7 +2023,8 @@ function _renderHistoricalSchematic(
           </text>
         </g>
       );
-    case "diesel-engine":
+    case "diesel-engine": {
+      const diesel = FrankenSimEngine.stepDieselEngine({ compressionRatio: 18, engineRpm: 150 });
       return (
         <g stroke="#38bdf8" strokeWidth="1.5" fill="none">
           {/* High-Pressure Cylinder */}
@@ -1897,12 +2055,19 @@ function _renderHistoricalSchematic(
             strokeLinecap="round"
           />
           {/* Crankshaft */}
-          <circle cx="200" cy="240" r="40" stroke="#fbbf24" strokeWidth="2" />
+          <circle
+            cx={diesel.schematicFlywheelCx}
+            cy={diesel.schematicFlywheelCy}
+            r={diesel.schematicFlywheelR}
+            stroke="#fbbf24"
+            strokeWidth="2"
+          />
           <text x="200" y="295" fill="#4ade80" fontSize="9" textAnchor="middle">
             Adiabatic Compression Ratio 18:1 (680°C)
           </text>
         </g>
       );
+    }
     case "tesla-teleautomaton":
       return (
         <g stroke="#38bdf8" strokeWidth="1.5" fill="none">
@@ -1976,7 +2141,7 @@ function _renderHistoricalSchematic(
             Rigid Duralumin Space-Frame (128m)
           </text>
           <text x="200" y="215" fill="#fbbf24" fontSize="8" textAnchor="middle">
-            Sliding Keel Ballast & Twin Engine Cars
+            Sliding Keel Ballast &amp; Twin Engine Cars
           </text>
         </g>
       );
@@ -2357,7 +2522,8 @@ function _renderHistoricalSchematic(
         </g>
       );
     }
-    case "corliss-engine":
+    case "corliss-engine": {
+      const corliss = stepCorlissEngine({});
       return (
         <g stroke="#38bdf8" strokeWidth="1.5" fill="none">
           {/* Engine Cylinder Body */}
@@ -2372,47 +2538,31 @@ function _renderHistoricalSchematic(
             fillOpacity="0.2"
           />
           {/* 4 Oscillating Rotary Valves */}
-          <circle
-            cx="100"
-            cy="85"
-            r="16"
-            stroke="#ef4444"
-            fill="#7f1d1d"
-            fillOpacity="0.3"
-            strokeWidth="2"
-          />
-          <circle
-            cx="300"
-            cy="85"
-            r="16"
-            stroke="#ef4444"
-            fill="#7f1d1d"
-            fillOpacity="0.3"
-            strokeWidth="2"
-          />
-          <circle
-            cx="100"
-            cy="215"
-            r="16"
-            stroke="#38bdf8"
-            fill="#0369a1"
-            fillOpacity="0.3"
-            strokeWidth="2"
-          />
-          <circle
-            cx="300"
-            cy="215"
-            r="16"
-            stroke="#38bdf8"
-            fill="#0369a1"
-            fillOpacity="0.3"
-            strokeWidth="2"
-          />
+          {Array.from({ length: corliss.schematicValveXs.length }, (_, i) => {
+            const valve = corlissSchematicValve(
+              i,
+              corliss.schematicValveXs,
+              corliss.schematicValveYs,
+            );
+            const isSteam = i < 2;
+            return (
+              <circle
+                key={i}
+                cx={valve.cx}
+                cy={valve.cy}
+                r={corliss.schematicValveR}
+                stroke={isSteam ? "#ef4444" : "#38bdf8"}
+                fill={isSteam ? "#7f1d1d" : "#0369a1"}
+                fillOpacity="0.3"
+                strokeWidth="2"
+              />
+            );
+          })}
           {/* Central Wrist-Plate */}
           <circle
-            cx="200"
-            cy="150"
-            r="32"
+            cx={corliss.schematicWristCx}
+            cy={corliss.schematicWristCy}
+            r={corliss.schematicWristR}
             stroke="#fbbf24"
             strokeWidth="2.5"
             fill="#78350f"
@@ -2434,6 +2584,7 @@ function _renderHistoricalSchematic(
           </text>
         </g>
       );
+    }
     case "gatling-gun": {
       const gatling = stepGatlingGun({});
       return (
@@ -2976,7 +3127,7 @@ function _renderHistoricalSchematic(
             Acoustic Horn
           </text>
           <text x="190" y="70" fill="#38bdf8" fontSize="8" textAnchor="middle">
-            Mica Diaphragm & Stylus
+            Mica Diaphragm &amp; Stylus
           </text>
           <text x="190" y="205" fill="#fbbf24" fontSize="8" textAnchor="middle">
             Grooved Brass Cylinder (Tinfoil)
@@ -3093,7 +3244,8 @@ function _renderHistoricalSchematic(
         </g>
       );
     }
-    case "thomson-welding":
+    case "thomson-welding": {
+      const weld = stepThomsonWelding({});
       return (
         <g stroke="#38bdf8" strokeWidth="1.5" fill="none">
           {/* Single-Turn Secondary Bar */}
@@ -3115,31 +3267,28 @@ function _renderHistoricalSchematic(
             fillOpacity="0.4"
           />
           {/* Water-Cooled Clamping Jaws */}
-          <rect
-            x="140"
-            y="70"
-            width="40"
-            height="35"
-            rx="3"
-            fill="#38bdf8"
-            fillOpacity="0.3"
-            stroke="#0284c7"
-            strokeWidth="2"
-          />
-          <rect
-            x="220"
-            y="70"
-            width="40"
-            height="35"
-            rx="3"
-            fill="#38bdf8"
-            fillOpacity="0.3"
-            stroke="#0284c7"
-            strokeWidth="2"
-          />
+          {Array.from({ length: weld.schematicJawCount }, (_, i) => (
+            <rect
+              key={i}
+              x={thomsonSchematicJawX(i, weld.schematicJawOriginX, weld.schematicJawPitchX)}
+              y={weld.schematicJawY}
+              width={weld.schematicJawW}
+              height={weld.schematicJawH}
+              rx="3"
+              fill="#38bdf8"
+              fillOpacity="0.3"
+              stroke="#0284c7"
+              strokeWidth="2"
+            />
+          ))}
           {/* Incandescent Weld Interface */}
           <line x1="200" y1="72" x2="200" y2="102" stroke="#ef4444" strokeWidth="4" />
-          <circle cx="200" cy="87" r="6" fill="#f97316" />
+          <circle
+            cx={weld.schematicWeldCx}
+            cy={weld.schematicWeldCy}
+            r={weld.schematicWeldR}
+            fill="#f97316"
+          />
           {/* Upsetting Force Arrows */}
           <line x1="120" y1="87" x2="135" y2="87" stroke="#fbbf24" strokeWidth="2" />
           <line x1="280" y1="87" x2="265" y2="87" stroke="#fbbf24" strokeWidth="2" />
@@ -3151,6 +3300,7 @@ function _renderHistoricalSchematic(
           </text>
         </g>
       );
+    }
     case "parsons-turbine": {
       const parsons = stepParsonsTurbine({});
       return (

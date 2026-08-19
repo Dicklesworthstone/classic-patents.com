@@ -44,21 +44,17 @@ describe("US 381,968 Tesla Fig. 9 motor visual & electromagnetics boundary", () 
       expect(threeSource).toContain(preset);
     }
 
-    expect(threeSource).toContain("isCutaway");
-    expect(threeSource).toContain("US 381,968 {sourceFigure} Teaching Model");
+    expect(threeSource).not.toContain("isCutaway");
+    expect(threeSource).toContain("US 381,968 Fig. 9 Source Guide");
     expect(threeSource).toContain("Fig. 15–16 is the distinct source variant");
-    expect(threeSource).toContain(
-      "Fig. 13 compares three independent generator and motor circuits",
-    );
-    expect(threeSource).toContain("Fig. 9 disk-D synchronous-rate demonstration");
+    expect(threeSource).toContain("deliberately renders Fig. 9 only");
     expect(threeSource).not.toContain("squirrel_cage");
+    expect(threeSource).not.toContain("RPM");
+    expect(threeSource).not.toContain("pole count");
   });
 
-  test("models the source-stated Fig. 9 synchronous disk relationship without inventing a slip curve", () => {
+  test("keeps the Fig. 9 display relationship separate from an unprinted performance claim", () => {
     const result = FrankenSimEngine.stepTeslaMotorFig9(60);
-    expect(result.generatorRpm).toBe(3600);
-    expect(result.poleShiftRpm).toBe(result.generatorRpm);
-    expect(result.diskRpm).toBe(result.generatorRpm);
     expect(result.usesGeneratorContactRings).toBe(true);
     expect(result.usesMotorCommutator).toBe(false);
     expect(result.fieldDisplayTickS).toBeCloseTo(0.03, 5);
@@ -73,14 +69,15 @@ describe("US 381,968 Tesla Fig. 9 motor visual & electromagnetics boundary", () 
     expect(result.twoPhaseVectorOpacity).toBe(0.55);
     expect(result.schematicStatorOuterR).toBe(95);
     expect(result.schematicRotorR).toBe(42);
+    expect(result.schematicPoleCount).toBe(4);
 
     const twoDSource = readFileSync(join(VISUALS_DIRECTORY, "TeslaMotorSim.tsx"), "utf8");
     expect(twoDSource).toContain("teslaPoleCurrent");
     expect(twoDSource).not.toContain("Math.PI / 2");
   });
 
-  test("builds Fig. 9's annular field, disk, generator collector rings, brushes, and flux field procedurally", () => {
-    const model = buildTeslaMotorModel(2);
+  test("builds only Fig. 9's printed annulus, disk, generator contacts, circuits, and field guide", () => {
+    const model = buildTeslaMotorModel();
 
     expect(model.rootGroup.children.length).toBeGreaterThan(1);
     expect(model.statorGroup).toBeDefined();
@@ -91,21 +88,33 @@ describe("US 381,968 Tesla Fig. 9 motor visual & electromagnetics boundary", () 
     expect(model.generatorBrushes).toHaveLength(4);
     expect(model.coilMeshes.length).toBe(4);
     expect(model.fluxPoints).toBeDefined();
-    expect(model.materials.statorIron).toBeDefined();
-    expect(model.materials.copperCoil).toBeDefined();
-    expect(model.materials.diskSteel).toBeDefined();
+    expect(model.materials.annulusIron).toBeDefined();
+    expect(model.materials.insulatedWire).toBeDefined();
+    expect(model.materials.magneticDisk).toBeDefined();
 
-    updateTeslaMotorKinematics(model, 0.016, 18.8, 1.2, 2, true, true);
-    expect(model.materials.statorIron.opacity).toBe(0.35);
+    updateTeslaMotorKinematics(model, 0.016, 18.8, 1.2, true);
+    expect(model.fluxPoints.visible).toBe(true);
 
     model.dispose();
   });
 
-  test("models the Fig. 13 comparison with three source circuits and six generator rings", () => {
-    const fig13 = buildTeslaMotorModel(3);
-    expect(fig13.coilMeshes).toHaveLength(6);
-    expect(fig13.generatorCollectorRings).toHaveLength(6);
-    expect(fig13.generatorBrushes).toHaveLength(6);
-    fig13.dispose();
+  test("does not manufacture a later industrial machine around the Fig. 9 source guide", () => {
+    const modelSource = readFileSync(
+      join(VISUALS_DIRECTORY, "three", "teslaMotorModel.ts"),
+      "utf8",
+    ).toLowerCase();
+    for (const forbidden of [
+      "bedplate",
+      "anchor boss",
+      "pillow block",
+      "oil cup",
+      "lamination stack",
+      "through-bolt",
+      "terminal board",
+      "cotton-covered",
+      "3600",
+    ]) {
+      expect(modelSource).not.toContain(forbidden);
+    }
   });
 });
