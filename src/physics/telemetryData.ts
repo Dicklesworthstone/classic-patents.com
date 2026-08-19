@@ -5025,7 +5025,7 @@ PATENT_PHYSICS_REGISTRY["us-2292387-lamarr-frequency-hopping"] = {
         label: "Printed Claims",
         value: "6",
         unit: "source text",
-        badgeColor: "sapphire",
+        badgeColor: "indigo",
       },
       {
         label: "Visual Status",
